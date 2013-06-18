@@ -17,7 +17,6 @@ from CMGTools.GenStudies.particles import GenJet, Jet, SimJet, PFJet, Electron, 
 def CountDaughter(particle, rank):
 
     rank += 1
-
     NumberOfLeptons = 0
 
     for i in range(particle.numberOfDaughters()):
@@ -66,8 +65,8 @@ class GenObjectReader( Analyzer ):
         event.genTaus = []
         event.genParticles = []
         event.genParticles3 = []
-
-
+        event.tCounter = [-1 for ic in range(10)]
+        
         event.Nlepton = 0
         
 #        event.Nw = []
@@ -84,7 +83,7 @@ class GenObjectReader( Analyzer ):
 #                        list = CounterDaughter(gp.daughter(idau))
                         event.Nlepton += CountDaughter(gp.daughter(idau), 0)
 
-        print 'Nlepton = ', event.Nlepton
+#        print 'Nlepton = ', event.Nlepton
 #                        event.Nw.append(24)
 #                    elif abs(gp.daughter(idau).pdgId())==5:
 #                        event.Nb.append(5)
@@ -96,8 +95,6 @@ class GenObjectReader( Analyzer ):
             pygp = GenParticle(gp)
             event.genParticles.append(pygp)
 
-
-            
             # keep in mind we're reading C++ reco::GenParticles:
             # http://cmslxr.fnal.gov/lxr/source/DataFormats/Candidate/interface/LeafCandidate.h
 #            event.genParticles.append( pygp )
@@ -114,12 +111,13 @@ class GenObjectReader( Analyzer ):
 
             if gp.status() == 3: 
                 event.genParticles3.append( pygp ) 
-            if abs(gp.pdgId()) == 11: 
-                event.genElectrons.append( Electron(gp.p4()) )
-            elif abs(gp.pdgId()) == 13:
-                event.genMuons.append( Muon(gp.p4()) )
-            elif abs(gp.pdgId()) == 15:
-                event.genTaus.append( Tau(gp.p4()) )
+
+                if abs(gp.pdgId()) == 11: 
+                    event.genElectrons.append( Electron(gp.p4()) )
+                elif abs(gp.pdgId()) == 13:
+                    event.genMuons.append( Muon(gp.p4()) )
+                elif abs(gp.pdgId()) == 15:
+                    event.genTaus.append( Tau(gp.p4()) )
 
 
 #        print '(gen_particle, gen_particle w/stable, Ntaus, gen_jets) = ', len(event.genParticles), len(event.genParticles3), len(event.genTaus), len(event.genJets)

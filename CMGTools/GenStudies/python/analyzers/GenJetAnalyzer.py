@@ -33,15 +33,18 @@ class GenJetAnalyzer( Analyzer ):
 
         event.selectedGenJets = filter(self.testJet, event.genJets)
 
-        # Could have a better lepton rejection at gen level..
+#        print 'all jet!'
+#        print 'Remove Muon---', len(event.selectedGenJets)
         event.cleanGenJets, dummy = cleanObjectCollection( event.selectedGenJets,
                                                            masks = event.genMuons,
                                                            deltaRMin = 0.5 )
 
+#        print 'Remove Electron', len(event.cleanGenJets)
         event.cleanGenJets, dummy = cleanObjectCollection( event.cleanGenJets,
                                                            masks = event.genElectrons,
                                                            deltaRMin = 0.5 )
 
+#        print 'Remove Tau---', len(event.cleanGenJets)
         event.cleanGenJets, dummy = cleanObjectCollection( event.cleanGenJets,
                                                            masks = event.genTaus,
                                                            deltaRMin = 0.5 )

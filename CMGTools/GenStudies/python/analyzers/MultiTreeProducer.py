@@ -13,17 +13,27 @@ class MultiTreeProducer( TreeAnalyzerNumpy ):
     def declareVariables(self):
 
         tr = self.tree
-        bookGenParticle(tr, 'pdgId')
+        var(tr, 'cutflow')
+#        bookGenParticle(tr, 'cutflow')
+
 
     def process(self, iEvent, event):
         
         tr = self.tree
         tr.reset()
 
+        for io in range(len(event.tCounter)):
 
+#            print 'Yuta = ', io, event.tCounter[io]
 
-        for io in range(len(event.genParticles)):
-            fillGenParticle(tr, 'pdgId', event.genParticles[io])
+            if(event.tCounter[io]==-1):
+                continue
+            else:
+                fill(tr, 'cutflow', io)
+                self.tree.tree.Fill()
+
+#        for io in range(len(event.genParticles)):
+#            fillGenParticle(tr, 'pdgId', event.genParticles[io])
 #            fill(tr, 'pdgId', event.genParticles[io])
-            self.tree.tree.Fill()
+#            self.tree.tree.Fill()
        

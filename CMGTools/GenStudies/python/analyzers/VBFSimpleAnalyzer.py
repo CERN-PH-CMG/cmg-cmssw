@@ -45,21 +45,37 @@ class VBFSimpleAnalyzer( Analyzer ):
 
         self.counters.counter('VBF').inc('all events')
 
+        event.tCounter[0] = ['VBF_all', 1]
+
+
         if len(event.cleanGenJets)<2:
             return True
 
+        
+        event.tCounter[1] = ['VBF_2jets', 1]
+
+
         event.vbf = VBF( event.cleanGenJets, 
                          None, self.cfg_ana.cjvPtCut )
+
+#        if(event.vbf.mjj < 0):
+#            print 'Negative Mjj : 1st leading (px,py,pz,eta,E) = ', event.cleanGenJets[0].px(), event.cleanGenJets[0].py(), event.cleanGenJets[0].pz(), event.cleanGenJets[0].eta(), event.cleanGenJets[0].E()
+#            print 'Negative Mjj : 2nd leading (px,py,pz,eta,E) = ', event.cleanGenJets[1].px(), event.cleanGenJets[1].py(), event.cleanGenJets[1].pz(), event.cleanGenJets[1].eta(), event.cleanGenJets[1].E()
+
+
         if event.vbf.mjj > self.cfg_ana.Mjj:
             self.counters.counter('VBF').inc('M_jj > {cut:3.1f}'.format(cut=self.cfg_ana.Mjj) )
+            event.tCounter[2] = ['VBF_Mjj', 1]
         else:
             return True 
         if abs(event.vbf.deta) > self.cfg_ana.deltaEta:
             self.counters.counter('VBF').inc('delta Eta > {cut:3.1f}'.format(cut=self.cfg_ana.deltaEta) )
+            event.tCounter[3] = ['VBF_deltaeta', 1]
         else:
             return True 
         if len(event.vbf.centralJets)==0:
             self.counters.counter('VBF').inc('no central jets')
+            event.tCounter[4] = ['VBF_cjv', 1]
         else:
             return True
         

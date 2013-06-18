@@ -12,18 +12,18 @@ reader = cfg.Analyzer(
     genPartCol = ('genParticles', 'std::vector<reco::GenParticle>'),
     )
 
-
 jetAna = cfg.Analyzer(
     'GenJetAnalyzer',
     jetPt = 10.,
     jetEta = 5.0
     )
 
-
 vbfAna = cfg.Analyzer(
     'VBFSimpleAnalyzer',
     Mjj = 500,
     deltaEta = 3.5,
+#    Mjj = 700,
+#    deltaEta = 4.0,
     cjvPtCut = 30.
     )
 
@@ -40,27 +40,28 @@ multiProducer = cfg.Analyzer(
 
 testComp = cfg.MCComponent(
     name = 'Test',
-    files = ['gen.root'],
+#    files = ['gen.root'],
+    files = ['/data1/ytakahas/data/gen_atlas.root'],
+#    files = ['/data1/ytakahas/data/gen_cms.root'],
     xSection = 1, 
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1 )
-testComp.splitFactor = 1
 
+testComp.splitFactor = 1
+#testComp.splitFactor = 6
 
 selectedComponents = [testComp]  
 
 sequence = cfg.Sequence( [
     reader,
     jetAna,
-#    vbfAna,
+    vbfAna,
     treeProducer,
-#    multiProducer
+    multiProducer
    ] )
 
-# creation of the processing configuration.
-# we define here on which components to run, and
-# what is the sequence of analyzers to run on each event. 
+
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
 
