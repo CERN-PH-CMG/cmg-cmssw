@@ -1,9 +1,8 @@
-import copy, os, glob
+#import os, glob
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
-from CMGTools.RootTools.RootTools import * 
 from CMGTools.GenStudies.analyzers import *
-
+#from CMGTools.GenStudies.analyzers import VBFAnalyzer
 
 
 reader = cfg.Analyzer(
@@ -19,7 +18,7 @@ jetAna = cfg.Analyzer(
     )
 
 vbfAna = cfg.Analyzer(
-    'VBFSimpleAnalyzer',
+    'VBFAnalyzer',
     Mjj = 500,
     deltaEta = 3.5,
 #    Mjj = 700,
