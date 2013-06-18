@@ -7,7 +7,7 @@
 //              Tue Aug 24, 2010 HBP - add HcalNoiseRBXHelper
 //              Thu Sep 02, 2010 HBP - update to new version of HelperFor
 //                               HBP - move classes to separate files
-//$Revision: 1.2 $
+//$Revision: 1.1 $
 //-----------------------------------------------------------------------------
 #include <algorithm>
 #include <iostream>
@@ -89,14 +89,15 @@ GenParticleHelper::analyzeEvent()
                     store = false;
                 }
             }
+          store=true;
         }
       else if(p->status()==1)
         {
           if(p->pt() > 2)
             store = ( abs(p->pdgId()) == 11 || abs(p->pdgId()) == 13 || abs(p->pdgId())== 15);
+          store=true;
         }
-      else if((p->numberOfMothers()>0)&&(p->mother()->pdgId()>=23)&&(p->mother()->pdgId()<=25))
-        store=true;
+
       if ( !store ) break;
 
       char particle[255];
@@ -152,12 +153,15 @@ GenParticleHelper::analyzeObject()
                 store = false;
             }
         }
+      store=true;
     }
   else if(object->status()==1)
     {
       if(object->pt() > 2)
         store = ( abs(object->pdgId()) == 11 || abs(object->pdgId()) == 13 || abs(object->pdgId())== 15);
+      store=true;
     }
+
 
   if ( !store )
   //  if ( object->status() != 3 )

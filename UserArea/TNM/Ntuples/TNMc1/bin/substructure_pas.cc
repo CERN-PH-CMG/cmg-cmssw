@@ -655,74 +655,23 @@ if((abs(genparticlehelper_pdgId[i])==24)&&(genparticlehelper_charge[i]>0)&&(Delt
           }
 
           TLorentzVector H,W1,W2,j11,j12,j21,j22;
-	  int counterJ=0;
-	  int counterW=0;
           for(int i=0;i<ngenparticlehelper;++i)
 	  {    
-	      // pythia
-	      if((abs(genparticlehelper_pdgId[i])>=23)&&(abs(genparticlehelper_pdgId[i])<=25)&&(genparticlehelper_charge[i]<0)&&(cmdline.outputfilename.find("Hpp")==std::string::npos))
+	      if((abs(genparticlehelper_pdgId[i])>=23)&&(abs(genparticlehelper_pdgId[i])<=25)&&(genparticlehelper_charge[i]<0))
 	      {
                   W1.SetPtEtaPhiM(genparticlehelper_pt[i],genparticlehelper_eta[i],genparticlehelper_phi[i],genparticlehelper_mass[i]);
                    j11.SetPtEtaPhiM(genparticlehelper_pt[genparticlehelper_firstDaughter[i]],genparticlehelper_eta[genparticlehelper_firstDaughter[i]],genparticlehelper_phi[genparticlehelper_firstDaughter[i]],genparticlehelper_mass[genparticlehelper_firstDaughter[i]]);
                    j12.SetPtEtaPhiM(genparticlehelper_pt[genparticlehelper_lastDaughter[i]],genparticlehelper_eta[genparticlehelper_lastDaughter[i]],genparticlehelper_phi[genparticlehelper_lastDaughter[i]],genparticlehelper_mass[genparticlehelper_lastDaughter[i]]);
               }
-	      if((abs(genparticlehelper_pdgId[i])>=23)&&(abs(genparticlehelper_pdgId[i])<=25)&&(genparticlehelper_charge[i]>0)&&(cmdline.outputfilename.find("Hpp")==std::string::npos))
+	      if((abs(genparticlehelper_pdgId[i])>=23)&&(abs(genparticlehelper_pdgId[i])<=25)&&(genparticlehelper_charge[i]>0))
               {
 	          W2.SetPtEtaPhiM(genparticlehelper_pt[i],genparticlehelper_eta[i],genparticlehelper_phi[i],genparticlehelper_mass[i]);
                    j21.SetPtEtaPhiM(genparticlehelper_pt[genparticlehelper_firstDaughter[i]],genparticlehelper_eta[genparticlehelper_firstDaughter[i]],genparticlehelper_phi[genparticlehelper_firstDaughter[i]],genparticlehelper_mass[genparticlehelper_firstDaughter[i]]);
                    j22.SetPtEtaPhiM(genparticlehelper_pt[genparticlehelper_lastDaughter[i]],genparticlehelper_eta[genparticlehelper_lastDaughter[i]],genparticlehelper_phi[genparticlehelper_lastDaughter[i]],genparticlehelper_mass[genparticlehelper_lastDaughter[i]]);
               }
-	      // herwig
-/*
-if((abs(genparticlehelper_pdgId[i])>=23)&&(abs(genparticlehelper_pdgId[i])<=25)&&(genparticlehelper_charge[i]<0)&&(cmdline.outputfilename.find("Hpp")!=std::string::npos))
-	      {
-                  W1.SetPtEtaPhiM(genparticlehelper_pt[i],genparticlehelper_eta[i],genparticlehelper_phi[i],genparticlehelper_mass[i]);
-                   j11.SetPtEtaPhiM(genparticlehelper_pt[i+1],genparticlehelper_eta[i+1],genparticlehelper_phi[i+1],genparticlehelper_mass[i+1]);
-                   j12.SetPtEtaPhiM(genparticlehelper_pt[i+2],genparticlehelper_eta[i+2],genparticlehelper_phi[i+2],genparticlehelper_mass[i+2]);
-              }
-	      if((abs(genparticlehelper_pdgId[i])>=23)&&(abs(genparticlehelper_pdgId[i])<=25)&&(genparticlehelper_charge[i]>0)&&(cmdline.outputfilename.find("Hpp")!=std::string::npos))
-              {
-	          W2.SetPtEtaPhiM(genparticlehelper_pt[i],genparticlehelper_eta[i],genparticlehelper_phi[i],genparticlehelper_mass[i]);
-                   j21.SetPtEtaPhiM(genparticlehelper_pt[i+1],genparticlehelper_eta[i+1],genparticlehelper_phi[i+1],genparticlehelper_mass[i+1]);
-                   j22.SetPtEtaPhiM(genparticlehelper_pt[i+2],genparticlehelper_eta[i+2],genparticlehelper_phi[i+2],genparticlehelper_mass[i+2]);
-              }
-*/
-	       if((abs(genparticlehelper_pdgId[i])>=23)&&(abs(genparticlehelper_pdgId[i])<=24)&&(genparticlehelper_status[i]==3)&&(cmdline.outputfilename.find("Hpp")!=std::string::npos))
-	      {
-                  if(counterW==0)
-                  {
-		   W1.SetPtEtaPhiM(genparticlehelper_pt[i],genparticlehelper_eta[i],genparticlehelper_phi[i],genparticlehelper_mass[i]);
-  		   counterW++;
-                  } else if(counterW==1)
-		  {
-                   W2.SetPtEtaPhiM(genparticlehelper_pt[i],genparticlehelper_eta[i],genparticlehelper_phi[i],genparticlehelper_mass[i]);
-  		   counterW++;
-	          }
-              }
-	      if((abs(genparticlehelper_pdgId[i])<20)&&(genparticlehelper_status[i]==2)&&(cmdline.outputfilename.find("Hpp")!=std::string::npos))
-	      {
-                  if(counterJ==0)
-                  {
-		   j11.SetPtEtaPhiM(genparticlehelper_pt[i],genparticlehelper_eta[i],genparticlehelper_phi[i],genparticlehelper_mass[i]);
-  	           counterJ++;
-                  } else if(counterJ==1)
-                  {
-		   j12.SetPtEtaPhiM(genparticlehelper_pt[i],genparticlehelper_eta[i],genparticlehelper_phi[i],genparticlehelper_mass[i]);
-  	           counterJ++;
-                  } else if(counterJ==2)
-                  { 
-		   j21.SetPtEtaPhiM(genparticlehelper_pt[i],genparticlehelper_eta[i],genparticlehelper_phi[i],genparticlehelper_mass[i]);
-  	           counterJ++;
-                  } else if(counterJ==3)
-                  {
-		   j22.SetPtEtaPhiM(genparticlehelper_pt[i],genparticlehelper_eta[i],genparticlehelper_phi[i],genparticlehelper_mass[i]);
-  	           counterJ++;
-                  }
-              }
-
           }
           H=W1+W2;
-	  //std::cerr << H.Pt() << "," << W1.Pt() <<  "," << W2.Pt() <<  "," << j11.Pt() <<  "," << j12.Pt() <<  "," << j21.Pt() <<  "," << j22.Pt() <<  std::endl;
+	  std::cerr << H.Pt() << "," << W1.Pt() <<  "," << W2.Pt() <<  "," << j11.Pt() <<  "," << j12.Pt() <<  "," << j21.Pt() <<  "," << j22.Pt() <<  std::endl;
           computeAngles(H, W1, j11, j12, W2, j21, j22, costheta1, costheta2, Phi, costhetastar, Phi1);
 
           if (triggerresultshelper_hcallasereventfilter2012!=0)
