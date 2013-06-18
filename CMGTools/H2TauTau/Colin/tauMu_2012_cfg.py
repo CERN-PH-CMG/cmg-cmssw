@@ -12,19 +12,17 @@ from CMGTools.RootTools.RootTools import *
 shift = None
 # 1.0, 1.03, 0.97
 tauScaleShift = 1.0
+syncntuple = True
 
 puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
 
-# mine: 
-# puFileMC = '/'.join([puFileDir, 'MyMCPileupHistogram_true.root'])
-# puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_AB_start_196509.root'])
-
-# andrew ICHEP
-# puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-09-12/MC_Summer12_PU_S7.root'
-# puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-09-12/Data_Pileup_2012.root'
 # andrew HCP
-puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/28-09-12/MC_Summer12_PU_S10-600bins.root'
-puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/28-09-12/Data_Pileup_2012_HCP-600bins.root'
+# puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/28-09-12/MC_Summer12_PU_S10-600bins.root'
+# puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/28-09-12/Data_Pileup_2012_HCP-600bins.root'
+
+# Andrew Moriond
+puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/07-01-13/MC_Summer12_PU_S10-600bins.root'
+puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/07-01-13/Data_Pileup_2012_Moriond-600bins.root'
 
 
 vertexFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012/Vertices'
@@ -106,19 +104,12 @@ dyJetsFakeAna = cfg.Analyzer(
 
 WNJetsAna = cfg.Analyzer(
     'WNJetsAnalyzer',
-    verbose = False,
-    fractions = [ 0.744344,
-                  0.175482,
-                  0.0562994,
-                  0.0169402,
-                  0.0069341
-                  ],
+    verbose = False
     )
 
 WNJetsTreeAna = cfg.Analyzer(
     'WNJetsTreeAnalyzer'
     )
-
 
 higgsWeighter = cfg.Analyzer(
     'HiggsPtWeighter',
@@ -179,11 +170,11 @@ treeProducerXCheck = cfg.Analyzer(
 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_MuRm_ColinOct9 import * 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinOct10 import * 
-#from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_Colin import * 
+# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_Colin import * 
+# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanMay23 import * 
 from CMGTools.H2TauTau.proto.samples.run2012.WJets_JanMay29 import * 
 
 #########################################################################################
-
 
 for mc in MC_list:
     mc.puFileMC = puFileMC
@@ -200,6 +191,8 @@ WNJetsAna.nevents = [ WJets.nGenEvents,
                       W4Jets.nGenEvents
                       ]
 
+# Fractions temporarily taken from Jose (29 May 2013):
+WNJetsAna.fractions = [0.74392452, 0.175999, 0.0562617, 0.0168926, 0.00692218]
 
 # selectedComponents = allsamples
 diboson_list = [    WWJetsTo2L2Nu,
@@ -220,21 +213,24 @@ VVgroup = None # This is currently needed for the plotting script
 
 higgs = mc_higgs
 
-w_list = [ WJets, W1Jets, W2Jets, W3Jets, W4Jets ]
-
-selectedComponents = [
-    TTJets, DYJets, 
+selectedComponents = [TTJets, DYJets, WJets,
+    W1Jets, W2Jets, W3Jets, W4Jets,
     data_Run2012A,
     data_Run2012B,
     data_Run2012C_v1,
     data_Run2012C_v2,
     data_Run2012D_v1,
     ]
-selectedComponents.extend( w_list )
+selectedComponents = [TTJets, DYJets, WJets,
+    #WJetsSoup,
+    data_Run2012A,
+    data_Run2012B,
+    data_Run2012C_v1,
+    data_Run2012C_v2,
+    data_Run2012D_v1,
+    ]
 selectedComponents.extend( higgs )
 selectedComponents.extend( embed_list )
-
-selectedComponents = copy.copy( w_list ) 
 
 sequence = cfg.Sequence( [
     # eventSelector,
@@ -244,6 +240,7 @@ sequence = cfg.Sequence( [
     TauMuAna, #Yes!
     dyJetsFakeAna,
     WNJetsAna,
+    WNJetsTreeAna,
     higgsWeighter, 
     vbfAna, #Yes!
     pileUpAna,
@@ -254,23 +251,27 @@ sequence = cfg.Sequence( [
     # treeProducerXCheck
    ] )
 
-
-sequence = [WNJetsAna, WNJetsTreeAna]
+if syncntuple:
+    sequence.append( treeProducerXCheck) #Yes!
 
 selectedComponents = [comp for comp in selectedComponents if comp.dataset_entries > 0]
 
-test = 2
+test = 0
 if test==1:
-    #comp = HiggsGGH125
-    comp = WJets
+    #comp = embed_2012D_PromptReco_v1
+    comp = HiggsVBF125
     selectedComponents = [comp]
-    comp.splitFactor = 1
-    comp.files = comp.files[:10]
+    comp.splitFactor = 5
+    # comp.files = comp.files[:10]
     # comp.files = ['tauMu_fullsel_tree_CMG.root']
 elif test==2:
     for comp in selectedComponents:
-        comp.splitFactor = 2
-        # comp.files = comp.files[:10]
+        comp.splitFactor = 1
+        comp.files = comp.files[:5]
+elif test==3:
+    selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets]
+    for comp in selectedComponents:
+        comp.splitFactor = 20
 
 
 config = cfg.Config( components = selectedComponents,
