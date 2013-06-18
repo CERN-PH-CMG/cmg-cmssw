@@ -12,7 +12,7 @@ process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(10000)
 )
 
 
@@ -31,7 +31,8 @@ process.source = cms.Source("EmptySource")
 # so use Phil's hadronizer instead of this pythia generator
 process.load('CMGTools.GenStudies.generators.pp_ttbar_cfi')
 
-atlas = True
+#atlas = True
+atlas = False
 if atlas: 
     from CMGTools.GenStudies.generators.pythiaUESettingsBlock_ATLAS_cfi import pythiaUESettingsBlock
     process.generator.PythiaParameters.pythiaUESettings = pythiaUESettingsBlock.pythiaUESettings
@@ -79,7 +80,9 @@ process.out = cms.OutputModule(
       'keep *',
       'drop edmHepMCProduct_*_*_*',
       # 'drop recoGenParticles_*_*_*',
-      'drop *_ak5GenJetsNoNu_*_*'
+      'drop *_ak5GenJetsNoNu_*_*',
+      'drop edmTriggerResults_*_*_*',
+      'drop ints_*_*_*'
       )
 )
 
