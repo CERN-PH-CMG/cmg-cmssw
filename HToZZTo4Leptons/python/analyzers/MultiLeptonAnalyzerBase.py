@@ -480,7 +480,7 @@ class MultiLeptonAnalyzerBase( Analyzer ):
             return zBosons[0]
         else:
             # taking the closest from the Z mass
-            zMass = 91.118
+            zMass = 91.1876
             return min(zBosons, key = lambda x: abs( x.mass() - zMass) )
 
     def bestZBosonBySumPt(self, zBosons):

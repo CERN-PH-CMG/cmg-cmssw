@@ -1,13 +1,9 @@
-
 import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 
 
 runOnMC      = False
-runOld5XGT = False
-runOnFastSim = False
-
 process = cms.Process("CMG")
 
 
@@ -20,14 +16,17 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 
 
 from CMGTools.Production.datasetToSource import *
-process.source = datasetToSource(
-    'cmgtools',
-    '/DoubleElectron/Run2012C-24Aug2012-v1/AOD/V5_B/PAT_CMG_V5_10_0'
-   )
 
+datasetInfo = (
+    'cmgtools',
+    '/DoubleElectron/Run2012A-22Jan2013-v1/AOD/PAT_CMG_V5_15_0',
+    '.*root')
+process.source = datasetToSource(
+    *datasetInfo
+    )
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 print 'loading the main CMG sequence'
 
@@ -37,10 +36,14 @@ process.skim=cms.EDFilter('HZZCMGSkim',
                           nLeptons = cms.int32(3)
                           )
 
+process.correctedMuons = cms.EDProducer("MuScleFitPATMuonCorrector", 
+                             src = cms.InputTag("patMuonsWithTrigger"), 
+                             debug = cms.bool(False), 
+                             identifier = cms.string("Data2012_53X_ReReco"), 
+                             applySmearing = cms.bool(runOnMC), 
+                             fakeSmearing = cms.bool(False)
+)
 
-
-process.correctedMuons = cms.EDProducer('RochesterPATMuonCorrector',
-             src = cms.InputTag("patMuonsWithTrigger"))
 
 process.cleanedMuons = cms.EDProducer('PATMuonCleanerBySegments',
              src = cms.InputTag("correctedMuons"),
@@ -58,33 +61,70 @@ process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
                                            )
 
 process.patElectronsWithRegression = cms.EDProducer("RegressionEnergyPatElectronProducer",
-                               debug = cms.untracked.bool(False),
-                               inputPatElectronsTag = cms.InputTag('patElectronsWithTrigger'),
-                               regressionInputFile = cms.string("EGamma/EGammaAnalysisTools/data/eleEnergyRegWeights_V1.root"),
-                               energyRegressionType = cms.uint32(1),
-                               rhoCollection = cms.InputTag('kt6PFJets:rho:RECO'),
-                               vertexCollection = cms.InputTag('goodPrimaryVertices')
+       debug = cms.untracked.bool(False),
+       inputElectronsTag = cms.InputTag('patElectronsWithTrigger'),
+       inputCollectionType = cms.uint32(1),
+       useRecHitCollections = cms.bool(False),
+       produceValueMaps = cms.bool(False),
+       regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyRegWeights_WithSubClusters_VApr15.root"),
+       energyRegressionType = cms.uint32(2),
+       rhoCollection = cms.InputTag('kt6PFJets:rho:RECO'),
+       vertexCollection = cms.InputTag('goodPrimaryVertices'),
+       nameEnergyReg = cms.string("eneRegForGsfEle"),
+       nameEnergyErrorReg = cms.string("eneErrorRegForGsfEle"),
+       recHitCollectionEB = cms.InputTag('reducedEcalRecHitsEB'),
+       recHitCollectionEE = cms.InputTag('reducedEcalRecHitsEE')
 )
 
 
 process.calibratedElectrons = cms.EDProducer("CalibratedPatElectronProducer",
     inputPatElectronsTag = cms.InputTag("patElectronsWithRegression"),
     isMC = cms.bool(runOnMC),
-    isAOD = cms.bool(False),
-    debug = cms.bool(False),
+    verbose = cms.bool(False),
+    synchronization = cms.bool(False),
     updateEnergyError = cms.bool(True),
-    applyCorrections = cms.int32(1),
-    inputDataset = cms.string("2012Jul13ReReco"),
+    applyLinearityCorrection = cms.bool(True),
+    correctionsType = cms.int32(2),
+    combinationType = cms.int32(3),
+    lumiRatio = cms.double(1.0),
+    inputDataset = cms.string("22Jan2013ReReco"),
+    combinationRegressionInputPath = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyRegWeights_WithSubClusters_VApr15.root"),
+    scaleCorrectionsInputPath = cms.string("EgammaAnalysis/ElectronTools/data/scalesNewReg-May2013.csv"),
+    linearityCorrectionsInputPath = cms.string("EgammaAnalysis/ElectronTools/data/linearityNewReg-May2013.csv")
     
 )
 
+#Jet recalibrator
+
+process.cmgPFJetSel = cms.EDProducer(
+    "PFJetCorrector",
+    # make sure your jet and rho collections are compatible
+    src = cms.InputTag( 'cmgPFJetSel' ),
+    vertices = cms.InputTag( 'offlinePrimaryVertices' ),
+    rho = cms.InputTag( 'kt6PFJets:rho:RECO' ),
+    payload = cms.string('AK5PF'),
+    levels = cms.vstring('L1FastJet','L2Relative','L3Absolute'),
+    sort = cms.bool(True),
+    verbose = cms.untracked.bool( False )
+)
+
+
+if not runOnMC:
+    process.cmgPFJetSel.levels = ['L1FastJet','L2Relative','L3Absolute','L2L3Residual']
+
                                                  
 process.cmgElectron.cfg.inputCollection = 'calibratedElectrons'
+
 process.genInfo = cms.EDProducer('HZZGenEmbedder')
 
-process.p = cms.Path(process.genInfo+process.goodPrimaryVertices+process.tunepMuons+process.correctedMuons+process.cleanedMuons+process.cmgMuon+process.cmgMuonSel+\
+process.p = cms.Path(process.genInfo+\
+                     process.goodPrimaryVertices+\
+                     process.correctedMuons+\
+                     process.cleanedMuons+\
+                     process.cmgMuon+\
+                     process.cmgMuonSel+\
                      process.patElectronsWithRegression+process.calibratedElectrons+\
-                     process.cmgElectron+process.cmgElectronSel+process.skim)
+                     process.cmgElectron+process.cmgElectronSel+process.skim+process.cmgPFJetSel)
 
 ########################################################
 ## CMG output definition
@@ -92,7 +132,7 @@ process.p = cms.Path(process.genInfo+process.goodPrimaryVertices+process.tunepMu
 
 process.outcmg = cms.OutputModule(
     "PoolOutputModule",
-    fileName = cms.untracked.string('cmgTuple.root'),
+    fileName = cms.untracked.string('skim.root'),
     SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
     outputCommands = cms.untracked.vstring(
     'keep *_*_*_*',
@@ -102,6 +142,8 @@ process.outcmg = cms.OutputModule(
     'drop *_cmgPFJetLooseJetIdFailed_*_*',
     'drop *_cmgPFJetMediumJetIdFailed_*_*',
     'drop *_cmgPFJetSelCHS_*_*',
+    'drop *_cmgPFJetSel_*_*',
+    'keep *_cmgPFJetSel_*_CMG',
     "drop *_cmgPFJetTightJetIdFailed_*_*" , 
     "drop *_cmgPFJetVeryLooseJetId95Failed_*_*", 
     "drop *_cmgPFJetVeryLooseJetId95gammaFailed_*_*", 
@@ -111,7 +153,6 @@ process.outcmg = cms.OutputModule(
     "drop *_cmgTauSel_*_*",                     
     "drop *_cmgMuonSel_*_PAT",                     
     "drop *_patMuonsWithTrigger_*_PAT",                     
-    "drop *_tunepMuons_*_*",                     
     "drop *_patElectronsWithTrigger_*_PAT",                     
     "drop *_patElectronsWithRegression_*_PAT",                     
     "drop *_cmgMuon_*_CMG",                     
@@ -135,14 +176,10 @@ process.load("Configuration.StandardSequences.GeometryDB_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
-from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
-
-process.GlobalTag.globaltag = getGlobalTag( runOnMC,runOld5XGT)
+from CMGTools.Common.Tools.getGlobalTag import getGlobalTagByDataset
+process.GlobalTag.globaltag = getGlobalTagByDataset( runOnMC, datasetInfo[1])
 print 'Global tag       : ', process.GlobalTag.globaltag
 
-########################################################
-## Below, stuff that you probably don't want to modify
-########################################################
 
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")

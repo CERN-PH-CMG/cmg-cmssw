@@ -19,7 +19,7 @@ from CMGTools.Production.datasetToSource import *
 
 datasetInfo = (
     'cmgtools',
-    '/GluGluToHToZZTo4L_M-500_8TeV-powheg15-pythia6/Summer12_DR53X-PU_S10_START53_V19-v1/AODSIM/PAT_CMG_V5_15_0',
+    '/ZZTo2mu2tau_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_V5_15_0',
     '.*root')
 process.source = datasetToSource(
     *datasetInfo
@@ -104,7 +104,7 @@ process.cmgPFJetSel = cms.EDProducer(
     rho = cms.InputTag( 'kt6PFJets:rho:RECO' ),
     payload = cms.string('AK5PF'),
     levels = cms.vstring('L1FastJet','L2Relative','L3Absolute'),
-    sort = cms.bool(True),
+    sort = cms.bool(False),
     verbose = cms.untracked.bool( False )
 )
 
