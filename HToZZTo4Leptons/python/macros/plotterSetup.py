@@ -19,7 +19,7 @@ class PlotterSetup(object):
         self.data=dict()
         self.data['7TeV'] = dict()
         self.data['8TeV']=dict()
-        self.data['lumi']={'7TeV':5050., '8TeV': 19630.}
+        self.data['lumi']={'7TeV':5050., '8TeV': 19790.}
         self.data['lumiErr']={'7TeV':0.022, '8TeV': 0.044}
 
         self.data['ZZTo4mu']={'8TeV':0.07691,'7TeV':0.024887}
