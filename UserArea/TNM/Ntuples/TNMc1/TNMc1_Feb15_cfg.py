@@ -1,4 +1,4 @@
-#$Revision: 1.18 $
+#$Revision: 1.19 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -31,7 +31,7 @@ runCA8jets = True
 runAK5genjets = True
 runQJets = False
 runOnVVtuples = False
-runOnCMGp = True
+runOnCMGp = False
 
 # Input file
 
@@ -94,10 +94,7 @@ if runOnMC==False:
 
 print 'runOnMC:', runOnMC
 
-if runOnCMGp:
-    process.load("Ntuples.TNMc1.ntuple_cmg_cfi")
-else:
-    process.load("Ntuples.TNMc1.ntuple_cfi")
+process.load("Ntuples.TNMc1.ntuple_cfi")
 
 if runOnVVtuples:
     process.demo.patJetHelperAK5[0]=process.demo.patJetHelperAK5[0].replace("patJetsWithVar","selectedPatJets")
@@ -258,6 +255,12 @@ process.load("CMGTools.Susy.common.susy_cff")
 if runOnCMGp:
   process.razorMJJetSequence.remove(process.razorMJJetGirth)
   process.razorMJJetSequence.remove(process.razorMJJetGirthCharged)
+  process.demo.buffers.remove('patJetHelperAK5')
+  process.demo.buffers.remove('patJetHelperAK5CHS')
+  process.demo.buffers.remove('patMET')
+  process.demo.buffers.remove('patMET1')
+  process.demo.buffers.remove('patTau')
+
 process.razorMJObjectSequence.remove(process.razorMJHemiSequence)
 process.susyGenSequence.remove(process.dumpPdfWeights)
 process.razorMJHadTriggerInfo.printSelections=False
