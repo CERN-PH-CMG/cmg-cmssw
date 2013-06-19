@@ -1,4 +1,5 @@
 #!/bin/env python
+from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi
 
 def var( tree, varName, type=float ):
     tree.var(varName, type)
@@ -40,6 +41,12 @@ def bookDiLepton(tree):
     var( tree, 'pZetaDisc')
     var( tree, 'mt')
     var( tree, 'met')
+    var( tree, 'pthiggs')
+    var( tree, 'deltaPhiL1L2')
+    var( tree, 'deltaEtaL1L2')
+    var( tree, 'deltaRL1L2')
+    var( tree, 'deltaPhiL1MET')
+    var( tree, 'deltaPhiL2MET')
 
 
 def fillDiLepton(tree, diLepton):
@@ -51,6 +58,19 @@ def fillDiLepton(tree, diLepton):
     fill(tree, 'mt', diLepton.mTLeg2())
     fill(tree, 'met', diLepton.met().pt())
 
+    pthiggs = (diLepton.leg1().p4()+diLepton.leg2().p4()+diLepton.met().p4()).pt()
+    fill(tree, 'pthiggs', pthiggs)
+    
+    l1eta = diLepton.leg1().eta()
+    l2eta = diLepton.leg2().eta()
+    l1phi = diLepton.leg1().phi()
+    l2phi = diLepton.leg2().phi()
+    metphi = diLepton.met().phi()
+    fill(tree, 'deltaPhiL1L2', deltaPhi(l1phi, l2phi))
+    fill(tree, 'deltaEtaL1L2', abs(l1eta-l2eta))
+    fill(tree, 'deltaRL1L2', deltaR(l1eta, l1phi, l2eta, l2phi))
+    fill(tree, 'deltaPhiL1MET', deltaPhi(l1phi, metphi))
+    fill(tree, 'deltaPhiL2MET', deltaPhi(l2phi, metphi))
     
 # lepton
 

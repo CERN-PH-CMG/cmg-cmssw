@@ -5,8 +5,6 @@ from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet, GenJet
 from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
 from CMGTools.RootTools.physicsobjects.VBF import VBF
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
-# from CMGTools.H2TauTau.proto.VBFMVA import VBFMVA
-from CMGTools.H2TauTau.proto.VBFMVA import VBFMVA2012 as VBFMVA
 from CMGTools.RootTools.physicsobjects.BTagSF import BTagSF
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
 from CMGTools.RootTools.utils.DeltaR import deltaR2
@@ -25,7 +23,6 @@ class VBFAnalyzer( Analyzer ):
 
     vbfAna = cfg.Analyzer(
     'VBFAnalyzer',
-    vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG_HCP_42X.weights.xml',
     jetCol = 'cmgPFJetSel',
     jetPt = 30,
     jetEta = 5.0,
@@ -38,7 +35,6 @@ class VBFAnalyzer( Analyzer ):
 
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(VBFAnalyzer,self).__init__(cfg_ana, cfg_comp, looperName)
-        self.vbfMva = VBFMVA (cfg_ana.vbfMvaWeights)
         self.btagSF = BTagSF (cfg_ana.btagSFseed)
         # import pdb; pdb.set_trace()
         self.is2012 = isNewerThan('CMSSW_5_2_0')
@@ -167,7 +163,7 @@ class VBFAnalyzer( Analyzer ):
             return True
 
         event.vbf = VBF( event.cleanJets, event.diLepton,
-                         self.vbfMva.vbfMvaCalc, self.cfg_ana.cjvPtCut )
+                         None, self.cfg_ana.cjvPtCut )
         if event.vbf.mjj > self.cfg_ana.Mjj:
             self.counters.counter('VBF').inc('M_jj > {cut:3.1f}'.format(cut=self.cfg_ana.Mjj) )
         else:
