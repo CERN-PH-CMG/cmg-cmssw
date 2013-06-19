@@ -1,12 +1,5 @@
 from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 
-# working points from Matthew, Oct 6
-VBF_mva_WP = 0.676
-if isNewerThan('CMSSW_5_2_0'):
-    VBF_mva_WP = 0.978
-  
-
-#cat_VBF = 'nJets>=2 && VBF_nCentral==0 && VBF_mva>{VBF_mva_WP}'.format(VBF_mva_WP=VBF_mva_WP)
 cat_VBF = 'nJets>=2 && VBF_nCentral==0 && VBF_mjj > 500 && abs(VBF_deta) > 3.5'
 cat_VBF_Rel_30 = 'nJets>=2 && VBF_nCentral==0 && VBF_mjj>200 && abs(VBF_deta) > 2.'
 cat_VBF_Rel_20 = 'nJets20>=2 && VBF_nCentral==0 && VBF_mjj>200 && abs(VBF_deta) > 2.'
@@ -21,6 +14,17 @@ cat_J0 = 'nJets==0 && nBJets==0' # Jose
 #                                                               J1=cat_J1,
 #                                                               J1B=cat_J1B)
 
+cat_J0_high = cat_J0 + ' && l1_pt>45.'
+cat_J0_medium = cat_J0 + ' && l1_pt>30. && l1_pt<=45.'
+cat_J0_low = cat_J0 + ' && l1_pt>20. && l1_pt<=30.'
+
+cat_J1_high_mediumhiggs = cat_J1 + ' && l1_pt>45. && pthiggs>100.'
+cat_J1_high_lowhiggs = cat_J1 + ' && l1_pt>45. && pthiggs<100.'
+cat_J1_medium = cat_J1 + ' && l1_pt>30. && l1_pt<=45.'
+
+cat_VBF_tight = 'nJets>=2 && nBJets==0 && VBF_nCentral==0 && VBF_mjj>700 && abs(VBF_deta)>4. && pthiggs>100.'
+cat_VBF_loose = 'nJets>=2 && nBJets==0 && VBF_nCentral==0 && VBF_mjj>500 && abs(VBF_deta)>3.5 && !({VBF_tight})'.format(VBF_tight=cat_VBF_tight)
+
 def replaceCategories(cutstr, categories):
     for catname, cat in categories.iteritems():
         cutstr = cutstr.replace( catname, cat )
@@ -34,4 +38,13 @@ categories_common = {
     'Xcat_J1X':cat_J1,
     'Xcat_J1BX':cat_J1B,
     'Xcat_J0X':cat_J0,
+    # The following are the Summer 13 categories
+    'Xcat_J0_highX':cat_J0_high,
+    'Xcat_J0_mediumX':cat_J0_medium,
+    'Xcat_J0_lowX':cat_J0_low,
+    'Xcat_J1_high_mediumhiggsX':cat_J1_high_mediumhiggs,
+    'Xcat_J1_high_lowhiggsX':cat_J1_high_lowhiggs,
+    'Xcat_J1_mediumX':cat_J1_medium,
+    'Xcat_VBF_tightX':cat_VBF_tight,
+    'Xcat_VBF_looseX':cat_VBF_loose,
     }
