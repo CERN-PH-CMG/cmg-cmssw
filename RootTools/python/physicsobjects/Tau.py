@@ -51,6 +51,18 @@ class Tau( Lepton ):
             )
         return '\n'.join([lep, spec])
 
+    def electronMVA3Medium(self):
+        icat = int(round(self.tauID('againstElectronMVA3category')))
+        if icat < 0:
+            return False
+        elif icat > 15:
+            return True
+
+        rawMVA = self.tauID('againstElectronMVA3raw')
+        cutsMedium = [0.933,0.921,0.944,0.945,0.918,0.941,0.981,0.943,0.956,0.947,0.951,0.95,0.897,0.958,0.955,0.942]
+
+        return rawMVA > cutsMedium[icat]
+
 
 def isTau(leg):
     '''Duck-typing a tau'''
