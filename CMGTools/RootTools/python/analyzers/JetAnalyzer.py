@@ -87,10 +87,6 @@ class JetAnalyzer( Analyzer ):
                 scale = random.gauss( self.cfg_comp.jetScale,
                                       self.cfg_comp.jetSmear )
                 jet.scaleEnergy( scale )
-            if self.testJet( jet ):
-                event.jets.append(jet)
-            if self.testBJet(jet):
-                event.bJets.append(jet)
             if genJets:
                 # Use DeltaR = 0.25 matching like JetMET
                 pairs = matchObjectCollection( [jet], genJets, 0.25*0.25)
@@ -108,6 +104,11 @@ class JetAnalyzer( Analyzer ):
             #Add JES correction for MC jets.
             if self.cfg_comp.isMC and hasattr(self.cfg_ana, 'jesCorr'):
                 self.jesCorrection(jet, self.cfg_ana.jesCorr)
+            if self.testJet( jet ):
+                event.jets.append(jet)
+            if self.testBJet(jet):
+                event.bJets.append(jet)
+
 
                 
         self.counters.counter('jets').inc('all events')
