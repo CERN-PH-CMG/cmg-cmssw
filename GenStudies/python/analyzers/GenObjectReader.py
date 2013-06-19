@@ -1,27 +1,35 @@
+from ROOT import TLorentzVector
+
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
-from CMGTools.GenStudies.particles import GenJet, Jet, Electron, Muon, Tau
-#from CMGTools.RootTools.physicsobjects.LorentzVectors import LorentzVector
+from CMGTools.GenStudies.particles import GenJet
 
-def HiggsDaughter(particle, rank):
 
-    rank += 1
-    NumberOfLeptons = 0
+def returnHiggsDaughters(particle):
+
+    _HiggsDaughters_ = []
 
     for i in range(particle.numberOfDaughters()):
         if(particle.daughter(i).status()==3):
+            _HiggsDaughters_.append(GenParticle(particle.daughter(i)))
 
-            if(abs(particle.daughter(i).pdgId())==11 or
-               abs(particle.daughter(i).pdgId())==13 or
-               abs(particle.daughter(i).pdgId())==15):
-                NumberOfLeptons += 1
+    return _HiggsDaughters_
+
+
+def returnMETfromHiggsDaughters(particles):
+
+    _met_ = []
+
+    for i in range(len(particles)):
+        for j in range(particles[i].numberOfDaughters()):
+            if(particles[i].daughter(j).status()==3 and
+               abs(particles[i].daughter(j).pdgId()) in [12,14,16]):
                 
-        CountDaughter(particle.daughter(i), rank)        
+                _met_.append(GenParticle(particles[i].daughter(j)))
 
-    return NumberOfLeptons
-
+    return _met_
 
 
 class GenObjectReader(Analyzer):
@@ -41,48 +49,40 @@ class GenObjectReader(Analyzer):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
-        # Retrieve generator-level jets
-        event.genJets = []
-        for gj in self.handles['genJets'].product():
-            event.genJets.append( GenJet(gj.p4()) )
-
-
-        event.genElectrons = []
-        event.genMuons = []
-        event.genTaus = []
-        event.genParticles = []
-        event.genParticles3 = []
+        # For cut flow
         event.tCounter = [-1 for ic in range(10)]
+
+        # keep in mind we're reading C++ reco::GenParticles:
+        # http://cmslxr.fnal.gov/lxr/source/DataFormats/Candidate/interface/LeafCandidate.h
+
+        event.genJets = [GenJet(gj.p4()) for gj in self.handles['genJets'].product()]
+
+        event.genLeptons3 = [l for l in self.handles['genParticles'].product() if
+                             l.status()==3 and abs(l.pdgId()) in [11,13,15]]
+
+        event.genParticles3 = [GenParticle(l) for l in self.handles['genParticles'].product() if
+                               l.status()==3]
+
+        event.Higgs = [l for l in self.handles['genParticles'].product() if
+                       l.status()==3 and l.pdgId()==6] # will be changed later to Higgs
         
-        event.Leptons3 = [l for l in self.handles['genParticles'].product() if
-                          l.status()==3 and abs(l.pdgId()) in [11,13,15]]
+        if(len(event.Higgs)!=1):
+            print 'More than two Higgs !'
+            
+        event.HiggsDaughters = returnHiggsDaughters(event.Higgs[0])
 
-        
-        for gp in self.handles['genParticles'].product():
-            pygp = GenParticle(gp)
-            event.genParticles.append(pygp)
+        if(len(event.HiggsDaughters)!=2):
+            print 'Not two daughters from Higgs!'
+#        else:
+#            print 'OK : ', event.HiggsDaughters[0].pdgId(), event.HiggsDaughters[1].pdgId()
 
-            # keep in mind we're reading C++ reco::GenParticles:
-            # http://cmslxr.fnal.gov/lxr/source/DataFormats/Candidate/interface/LeafCandidate.h
+        event.METfromHiggsDaughters = returnMETfromHiggsDaughters(event.HiggsDaughters)
 
-            if gp.status() == 3: 
-                event.genParticles3.append( pygp ) 
-
-                if abs(gp.pdgId()) == 11: 
-                    event.genElectrons.append( Electron(gp.p4()) )
-                elif abs(gp.pdgId()) == 13:
-                    event.genMuons.append( Muon(gp.p4()) )
-                elif abs(gp.pdgId()) == 15:
-                    event.genTaus.append( Tau(gp.p4()) )
+#        print '# of neutrinos ', len(event.METfromHiggsDaughters)
+#        for a in range(len(event.METfromHiggsDaughters)):
+#            print ' --> ', a, event.METfromHiggsDaughters[a].p4().pt()
 
 
-        # what you want here is the daughters of the Higgs boson 
-        event.higgsdaughters = []
-
-        # create event.cleanGenJets from event.genJets, removing the ones that are close
-        # to the higgs daughters
-        # to do that, check the code in GenJetAnalyzer.py
-        
         return True
     
         

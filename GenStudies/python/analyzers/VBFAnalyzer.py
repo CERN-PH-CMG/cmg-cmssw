@@ -2,7 +2,7 @@ from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
 from CMGTools.RootTools.physicsobjects.VBF import VBF
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
-
+from CMGTools.RootTools.physicsobjects.DiLepton import DiLepton
 
 class VBFAnalyzer( Analyzer ):
     """ Analyses the collection of jets stored in event.cleanJets,
@@ -41,10 +41,10 @@ class VBFAnalyzer( Analyzer ):
         
         event.tCounter[1] = ['VBF_2jets', 1]
 
-        event.diLepton = None
-        
-        event.vbf = VBF( event.cleanGenJets, event.diLepton,
-                         None, self.cfg_ana.cjvPtCut )
+        event.dilepton = DiLepton(event.HiggsDaughters[0], event.HiggsDaughters[1],
+                                  event.METfromHiggsDaughters)
+
+        event.vbf = VBF( event.cleanGenJets, event.dilepton, None, self.cfg_ana.cjvPtCut )
 
         if event.vbf.mjj > self.cfg_ana.Mjj:
             self.counters.counter('VBF').inc('M_jj > {cut:3.1f}'.format(cut=self.cfg_ana.Mjj) )

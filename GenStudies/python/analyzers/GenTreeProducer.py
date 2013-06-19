@@ -40,7 +40,7 @@ class GenTreeProducer( TreeAnalyzerNumpy ):
 
 #        fill(tr, 'nw', len(event.Nw))
 #        fill(tr, 'nb', len(event.Nb))
-        fill(tr, 'Nlepton', len(event.Leptons3))
+        fill(tr, 'Nlepton', len(event.genLeptons3))
 
 #        print 'event_counter'
 #        for a in range(5):
