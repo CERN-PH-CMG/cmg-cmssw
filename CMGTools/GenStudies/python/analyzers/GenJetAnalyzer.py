@@ -29,10 +29,9 @@ class GenJetAnalyzer( Analyzer ):
         self.counters.counter('jets').inc('all events')
         event.selectedGenJets = filter(self.testJet, event.genJets)
 
-        # Removal of the jets from leptons
-        event.genLeptons = event.genMuons + event.genElectrons + event.genTaus
+        # Overlap removal between leptons
         event.cleanGenJets, dummy = cleanObjectCollection( event.selectedGenJets,
-                                                           masks = event.genLeptons,
+                                                           masks = event.genLeptons3,
                                                            deltaRMin = 0.5 )
 
 
