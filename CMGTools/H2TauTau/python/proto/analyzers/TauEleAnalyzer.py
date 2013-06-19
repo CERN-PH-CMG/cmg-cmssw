@@ -115,7 +115,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     def process(self, iEvent, event):
         
-        #        import pdb; pdb.set_trace()
+        import pdb; pdb.set_trace()
         result = super(TauEleAnalyzer, self).process(iEvent, event)
         
         if self.cfg_ana.verbose and result is False:
@@ -169,14 +169,16 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
 
     def testLeg1ID(self, tau):
-        return tau.tauID("againstElectronMVA") >0.5 and \
-               # tau.tauID("againstElectronTightMVA2") >0.5 and \
-               tau.tauID("againstElectronTightMVA3") >0.5 and \
-               # FIXME: ??? what is againstElectronMedium ???
-               tau.tauID("againstElectronMedium") > 0.5 and \
-               # tau.tauID("againstMuonLoose")>0.5 and \
-               tau.tauID("againstMuonLoose2")>0.5 and \
+
+        return tau.electronMVA3Medium() and \
+               tau.tauID("againstMuonLoose")>0.5 and \
                self.testVertex( tau )
+
+               # tau.tauID("againstElectronTightMVA3") >0.5 and \
+               # tau.tauID("againstElectronMVA") >0.5 and \ 
+               # tau.tauID("againstElectronTightMVA2") >0.5 and \
+               # FIXME: ??? what is againstElectronMedium ???
+               # tau.tauID("againstMuonLoose")>0.5 and \
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
