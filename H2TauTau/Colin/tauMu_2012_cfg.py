@@ -13,6 +13,7 @@ shift = None
 # 1.0, 1.03, 0.97
 tauScaleShift = 1.0
 syncntuple = True
+simulatedOnly = False
 
 puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
 
@@ -21,8 +22,12 @@ puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/20
 # puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/28-09-12/Data_Pileup_2012_HCP-600bins.root'
 
 # Andrew Moriond
-puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/07-01-13/MC_Summer12_PU_S10-600bins.root'
-puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/07-01-13/Data_Pileup_2012_Moriond-600bins.root'
+# puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/07-01-13/MC_Summer12_PU_S10-600bins.root'
+# puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/07-01-13/Data_Pileup_2012_Moriond-600bins.root'
+
+# Andrew Summer 13 (MC is identical to the previous one)
+puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-06-13/MC_Summer12_PU_S10-600bins.root'
+puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-06-13/Data_Pileup_2012_ReReco-600bins.root'
 
 
 vertexFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012/Vertices'
@@ -142,17 +147,35 @@ vbfKwargs = dict( Mjj = 500,
                   deltaEta = 3.5    
                   )
 
-vbfAna = cfg.Analyzer(
-    'VBFAnalyzer',
-    vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG_HCP_52X.weights.xml',
+# vbfAna = cfg.Analyzer(
+#     'VBFAnalyzer',
+#     jetCol = 'cmgPFJetSel',
+#     jetPt = 20.,
+#     jetEta = 4.7,
+#     cjvPtCut = 30.,
+#     btagSFseed = 123456,
+#     relaxJetId = False, # For jet ID studies
+#     jerCorr = False, # NEW!
+#     **vbfKwargs
+#     )
+
+jetAna = cfg.Analyzer(
+    'JetAnalyzer',
     jetCol = 'cmgPFJetSel',
     jetPt = 20.,
     jetEta = 4.7,
-    cjvPtCut = 30.,
     btagSFseed = 123456,
-    relaxJetId = False, # For jet ID studies
+    relaxJetId = False, 
     jerCorr = False, # NEW!
+    #jesCorr = 1., # NEW! Plus one sigma JES
+    )
+
+vbfSimpleAna = cfg.Analyzer(
+    'VBFSimpleAnalyzer',
+    vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG_HCP_52X.weights.xml',
+    cjvPtCut = 30.,
     **vbfKwargs
+    
     )
 
 
@@ -172,7 +195,8 @@ treeProducerXCheck = cfg.Analyzer(
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinOct10 import * 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_Colin import * 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanMay23 import * 
-from CMGTools.H2TauTau.proto.samples.run2012.WJets_JanMay29 import * 
+# from CMGTools.H2TauTau.proto.samples.run2012.WJets_JanMay29 import * 
+from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanJun18 import * 
 
 #########################################################################################
 
@@ -215,39 +239,35 @@ higgs = mc_higgs
 
 selectedComponents = [TTJets, DYJets, WJets,
     W1Jets, W2Jets, W3Jets, W4Jets,
-    data_Run2012A,
-    data_Run2012B,
-    data_Run2012C_v1,
-    data_Run2012C_v2,
-    data_Run2012D_v1,
     ]
-selectedComponents = [TTJets, DYJets, WJets,
-    #WJetsSoup,
-    data_Run2012A,
-    data_Run2012B,
-    data_Run2012C_v1,
-    data_Run2012C_v2,
-    data_Run2012D_v1,
-    ]
+
+# selectedComponents = [TTJets, DYJets, WJets,
+#     #WJetsSoup,
+
+#     ]
 selectedComponents.extend( higgs )
-selectedComponents.extend( embed_list )
+
+if not simulatedOnly:
+    selectedComponents.extend( data_list )
+    selectedComponents.extend( embed_list )
 
 sequence = cfg.Sequence( [
     # eventSelector,
     jsonAna, 
-    triggerAna, #No! 
+    triggerAna,
     vertexAna, 
-    TauMuAna, #Yes!
+    TauMuAna,
     dyJetsFakeAna,
     WNJetsAna,
     WNJetsTreeAna,
     higgsWeighter, 
-    vbfAna, #Yes!
+    jetAna,
+    vbfSimpleAna,
     pileUpAna,
     embedWeighter, 
     tauWeighter, 
     muonWeighter, 
-    treeProducer, #Yes! 
+    treeProducer,
     # treeProducerXCheck
    ] )
 
@@ -261,10 +281,11 @@ if test==1:
     #comp = embed_2012D_PromptReco_v1
     comp = HiggsVBF125
     selectedComponents = [comp]
-    comp.splitFactor = 5
+    comp.splitFactor = 1
     # comp.files = comp.files[:10]
     # comp.files = ['tauMu_fullsel_tree_CMG.root']
 elif test==2:
+    selectedComponents = selectedComponents[:12]
     for comp in selectedComponents:
         comp.splitFactor = 1
         comp.files = comp.files[:5]
