@@ -17,14 +17,14 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         # print 'TauEleAnalyzer.declareHandles'
         self.handles['diLeptons'] = AutoHandle(
             'cmgTauEleCorSVFitFullSel',
-            'std::vector<cmg::DiObject<cmg::Tau,cmg::Electron>>'
+            'std::vector<cmg::DiTauObject<cmg::Tau,cmg::Electron>>'
             )
 
-        if hasattr(self.cfg_ana, 'mvametsigs'):
-            self.handles['mvametsigs'] = AutoHandle(
-                self.cfg_ana.mvametsigs, # 'mvaMETTauMu'
-                'std::vector<cmg::METSignificance>'
-                )
+        # if hasattr(self.cfg_ana, 'mvametsigs'):
+        #     self.handles['mvametsigs'] = AutoHandle(
+        #         self.cfg_ana.mvametsigs, # 'mvaMETTauMu'
+        #         'std::vector<cmg::METSignificance>'
+        #         )
         
         self.handles['otherLeptons'] = AutoHandle(
             'cmgMuonSel',
@@ -57,8 +57,8 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             pydil.leg2().eventId = event.eventId
             if not self.testLeg2( pydil.leg2(), 999999 ):
                 continue
-            if hasattr(self.cfg_ana, 'mvametsigs'):
-                pydil.mvaMetSig = mvaMetSig = self.handles['mvametsigs'].product()[index]
+            # if hasattr(self.cfg_ana, 'mvametsigs'):
+            #     pydil.mvaMetSig = mvaMetSig = self.handles['mvametsigs'].product()[index]
             diLeptons.append( pydil )
         return diLeptons
 
@@ -170,9 +170,12 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     def testLeg1ID(self, tau):
         return tau.tauID("againstElectronMVA") >0.5 and \
-               tau.tauID("againstElectronTightMVA2") >0.5 and \
+               # tau.tauID("againstElectronTightMVA2") >0.5 and \
+               tau.tauID("againstElectronTightMVA3") >0.5 and \
+               # FIXME: ??? what is againstElectronMedium ???
                tau.tauID("againstElectronMedium") > 0.5 and \
-               tau.tauID("againstMuonLoose")>0.5 and \
+               # tau.tauID("againstMuonLoose")>0.5 and \
+               tau.tauID("againstMuonLoose2")>0.5 and \
                self.testVertex( tau )
 
 
@@ -192,7 +195,8 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         '''if isocut is None, returns true if loose iso MVA is passed.
         Otherwise, returns true if iso MVA > isocut.'''
         if isocut is None:
-            return tau.tauID("byLooseIsoMVA")>0.5
+            # return tau.tauID("byLooseIsoMVA")>0.5
+            return tau.tauID('byCombinedIsolationDeltaBetaCorrRaw3Hits') < 1.5
         else:
             return tau.tauID("byRawIsoMVA")>isocut
 
