@@ -1,35 +1,9 @@
-from ROOT import TLorentzVector
-
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
 from CMGTools.GenStudies.particles import GenJet
-
-
-def returnHiggsDaughters(particle):
-
-    _HiggsDaughters_ = []
-
-    for i in range(particle.numberOfDaughters()):
-        if(particle.daughter(i).status()==3):
-            _HiggsDaughters_.append(GenParticle(particle.daughter(i)))
-
-    return _HiggsDaughters_
-
-
-def returnMETfromHiggsDaughters(particles):
-
-    _met_ = []
-
-    for i in range(len(particles)):
-        for j in range(particles[i].numberOfDaughters()):
-            if(particles[i].daughter(j).status()==3 and
-               abs(particles[i].daughter(j).pdgId()) in [12,14,16]):
-                
-                _met_.append(GenParticle(particles[i].daughter(j)))
-
-    return _met_
+from CMGTools.RootTools.physicsobjects.DiLepton import Higgs
 
 
 class GenObjectReader(Analyzer):
@@ -49,7 +23,6 @@ class GenObjectReader(Analyzer):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
-        # For cut flow
         event.tCounter = [-1 for ic in range(10)]
 
         # keep in mind we're reading C++ reco::GenParticles:
@@ -57,31 +30,28 @@ class GenObjectReader(Analyzer):
 
         event.genJets = [GenJet(gj.p4()) for gj in self.handles['genJets'].product()]
 
+        event.genParticles3 = []
+        _Higgs_ = []
+        
         event.genLeptons3 = [l for l in self.handles['genParticles'].product() if
                              l.status()==3 and abs(l.pdgId()) in [11,13,15]]
 
-        event.genParticles3 = [GenParticle(l) for l in self.handles['genParticles'].product() if
-                               l.status()==3]
 
-        event.Higgs = [l for l in self.handles['genParticles'].product() if
-                       l.status()==3 and l.pdgId()==6] # will be changed later to Higgs
+        for gp in self.handles['genParticles'].product():
+            pygp = GenParticle(gp)
+
+            if(gp.status()==3):
+                event.genParticles3.append(pygp)
+
+                if gp.pdgId()==6:
+                    _Higgs_.append(pygp)
         
-        if(len(event.Higgs)!=1):
+
+        
+        if(len(_Higgs_)!=1):
             print 'More than two Higgs !'
             
-        event.HiggsDaughters = returnHiggsDaughters(event.Higgs[0])
-
-        if(len(event.HiggsDaughters)!=2):
-            print 'Not two daughters from Higgs!'
-#        else:
-#            print 'OK : ', event.HiggsDaughters[0].pdgId(), event.HiggsDaughters[1].pdgId()
-
-        event.METfromHiggsDaughters = returnMETfromHiggsDaughters(event.HiggsDaughters)
-
-#        print '# of neutrinos ', len(event.METfromHiggsDaughters)
-#        for a in range(len(event.METfromHiggsDaughters)):
-#            print ' --> ', a, event.METfromHiggsDaughters[a].p4().pt()
-
+        event.Higgs = Higgs(_Higgs_[0])
 
         return True
     

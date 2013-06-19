@@ -41,10 +41,9 @@ class VBFAnalyzer( Analyzer ):
         
         event.tCounter[1] = ['VBF_2jets', 1]
 
-        event.dilepton = DiLepton(event.HiggsDaughters[0], event.HiggsDaughters[1],
-                                  event.METfromHiggsDaughters)
-
+        event.dilepton = DiLepton(event.Higgs.leg1(), event.Higgs.leg2(), event.Higgs.met())
         event.vbf = VBF( event.cleanGenJets, event.dilepton, None, self.cfg_ana.cjvPtCut )
+
 
         if event.vbf.mjj > self.cfg_ana.Mjj:
             self.counters.counter('VBF').inc('M_jj > {cut:3.1f}'.format(cut=self.cfg_ana.Mjj) )

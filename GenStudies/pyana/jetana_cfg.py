@@ -1,9 +1,7 @@
-#import os, glob
+import os, glob, sys
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
 from CMGTools.GenStudies.analyzers import *
-#from CMGTools.GenStudies.analyzers import VBFAnalyzer
-
 
 reader = cfg.Analyzer(
     'GenObjectReader',
