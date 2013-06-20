@@ -191,5 +191,5 @@ if __name__ == '__main__':
         WPs=[('CSVM',0.679), ('CSVL',0.244)]
     )
     #el = EventLoop([ Tester("tester", bTagSFEvent1WP, bTagSFEvent2WP, bTagSFEvent3WP) ])
-    el = EventLoop([ Tester2("tester", bTagSFEvent1WP) ])
+    el = EventLoop([ Tester2("tester", bTagSFEvent3WP) ])
     el.loop([tree], maxEvents = 1000)
