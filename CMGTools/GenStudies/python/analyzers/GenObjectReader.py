@@ -46,11 +46,10 @@ class GenObjectReader(Analyzer):
                 if gp.pdgId()==6:
                     _Higgs_.append(pygp)
         
-
-        
         if(len(_Higgs_)!=1):
             print 'More than two Higgs !'
-            
+
+#        print 'Total leptons : ', len(event.genLeptons3)
         event.Higgs = Higgs(_Higgs_[0])
 
         return True
