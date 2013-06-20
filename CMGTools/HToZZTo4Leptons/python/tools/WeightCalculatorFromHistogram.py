@@ -17,6 +17,11 @@ class WeightCalculatorFromHistogram(object):
                 binx = self.histo.GetXaxis().GetNbins()
             if biny > self.histo.GetYaxis().GetNbins():
                 biny = self.histo.GetYaxis().GetNbins()
+
+            if binx ==0:
+                binx=1
+            if biny==0:
+                biny=1
             return self.histo.GetBinContent(binx,biny)
 
 
@@ -33,5 +38,10 @@ class WeightCalculatorFromHistogram(object):
                 binx = self.histo.GetXaxis().GetNbins()
             if biny > self.histo.GetYaxis().GetNbins():
                 biny = self.histo.GetYaxis().GetNbins()
+            if binx ==0:
+                binx=1
+            if biny==0:
+                biny=1
+
             return self.histo.GetBinError(binx,biny)
             
