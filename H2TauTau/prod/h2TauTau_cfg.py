@@ -25,11 +25,11 @@ jetRecalib = False
 useCHS = False
 #newSVFit enables the svfit mass reconstruction used for the H->tau tau analysis.
 # if false, much faster processing but mass is wrong. 
-newSVFit = False
+newSVFit = True
 tauScaling = 0
 # increase to 1000 before running on the batch, to reduce size of log files
 # on your account
-reportInterval = 10
+reportInterval = 1000
 
 print sep_line
 print 'channel', channel
@@ -49,7 +49,9 @@ dataset_user = 'cmgtools'
 
 # dataset_name = '/W1Jet_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
 # dataset_name = '/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
-dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_14_0'
+# dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_14_0'
+# dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_16_0'
+dataset_name = '/TauPlusX/Run2012A-22Jan2013-v1/AOD/PAT_CMG_V5_16_0'
 # /GluGluToHToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_14_0
 
 #dataset_user = 'cmgtools_group'
@@ -113,6 +115,13 @@ process.outpath = cms.EndPath()
 
 # generator ----------------------------------------------
 if not runOnMC:
+    process.tauMuPath.remove( process.cmgTauMuCor )
+    process.cmgTauMuTauPtSel.src = cms.InputTag('mvaMETTauMu')
+    process.diTauPath.remove( process.cmgDiTauCorPreSel )
+    process.mvaMETDiTau.src = cms.InputTag('cmgDiTauPreSel')
+    process.tauElePath.remove( process.cmgTauEleCor )
+    process.cmgTauEleTauPtSel.src = cms.InputTag('mvaMETTauEle')
+
     process.tauMuPath.remove( process.genSequence )
     process.tauElePath.remove( process.genSequence )
     process.diTauPath.remove( process.genSequence )
@@ -253,4 +262,5 @@ else:
 
 # process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byRawIsoMVA") > 0.5')
 process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byRawIsoMVA") > -9999')
+process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") < 10.')
 process.cmgTauMu.cuts.baseline.tauLeg.kinematics.pt = cms.string('leg1().pt() > 10.')
