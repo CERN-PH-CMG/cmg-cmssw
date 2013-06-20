@@ -2,7 +2,7 @@ from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
 from CMGTools.RootTools.physicsobjects.VBF import VBF
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.RootTools.physicsobjects.DiLepton import DiLepton
+from CMGTools.GenStudies.DiLepton import DiLepton
 
 class VBFAnalyzer( Analyzer ):
     """ Analyses the collection of jets stored in event.cleanJets,

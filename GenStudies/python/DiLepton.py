@@ -2,23 +2,21 @@ import copy, sys
 from ROOT import TLorentzVector
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
 
-sys.setrecursionlimit(10000)
-
-def METfromNeutrino(particle, daughters):
-
-    '''Fills daughters with all the daughters of particle.
-    Recursive function.'''
-
-    for i in range( particle.numberOfDaughters() ):
-        dau = GenParticle(particle.daughter(i))
-#        print dau.status(), dau.pdgId()
-        if(dau.status()==1 and (abs(dau.pdgId()) in [12,14,16])):
-            daughters.append( dau )
-
-#            print 'Here we have neutrino', dau.p4().pt()
-
-        daughters = METfromNeutrino(dau, daughters)
-    return daughters
+#def METfromNeutrino(particle, daughters):
+#
+#    '''Fills daughters with all the daughters of particle.
+#    Recursive function.'''
+#
+#    for i in range( particle.numberOfDaughters() ):
+#        dau = GenParticle(particle.daughter(i))
+##        print dau.status(), dau.pdgId()
+#        if(dau.status()==1 and (abs(dau.pdgId()) in [12,14,16])):
+#            daughters.append( dau )
+#
+##            print 'Here we have neutrino', dau.p4().pt()
+#
+#        daughters = METfromNeutrino(dau, daughters)
+#    return daughters
 
 
 class MET(object):
@@ -52,22 +50,22 @@ class DiLepton(object):
 
 class Higgs(DiLepton):
     
-    def __init__(self, genHiggs):
+    def __init__(self, genHiggs, neutrinos):
 
-        _HiggsDaughters_ = []
+        higgsDaughters = []
 
         # find the two daugthers of genHiggs                
         for i in range(genHiggs.numberOfDaughters()):
             if(genHiggs.daughter(i).status()==3):
-                _HiggsDaughters_.append(GenParticle(genHiggs.daughter(i)))
-                
-        if(len(_HiggsDaughters_)!=2):
+                higgsDaughters.append(GenParticle(genHiggs.daughter(i)))
+
+        if(len(higgsDaughters)!=2):
             print 'Not 2 daughters !'
 
         # sort the legs with pT
-        leg1, leg2 = self.buildLeg(_HiggsDaughters_)
-        met = self.buildMet(_HiggsDaughters_[0], _HiggsDaughters_[1])
-
+        leg1, leg2 = self.buildLeg(higgsDaughters)
+        met = self.buildMet(genHiggs, neutrinos)
+        
         super(Higgs, self).__init__(leg1, leg2, met)
         
     def buildLeg(self, node):
@@ -85,24 +83,17 @@ class Higgs(DiLepton):
         return _leg1_, _leg2_
         
     
-    def buildMet(self, node1, node2):
+    def buildMet(self, genHiggs, neutrinos):
 
-        # compute self.met as the sum of the neutrinos in the event status 3
         # find all status 1 neutrinos that are in the decay tree of node
         # add up all the momenta of these neutrinos
         # return a MET object (see MET class above)
 
-        _metobject_ = []
-        METfromNeutrino(node1, _metobject_)
-        METfromNeutrino(node2, _metobject_)
-
         # I know this is very dirty ! Need to be modified !
-        _met_ = copy.deepcopy(node1).p4()
-        _met_ -= _met_
-#        print '_initial_met_, length', _met_.pt(), len(_metobject_)
-        
-        for imet in _metobject_:
-            _met_ += imet.p4()
+        met = genHiggs.__class__(genHiggs).p4()
+        met -= met
 
-#        print 'Total met ', _met_.pt()
+        for ineutrino in neutrinos:
+            met += ineutrino.p4()
+
         return MET(_met_)
