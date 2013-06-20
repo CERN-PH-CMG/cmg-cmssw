@@ -3,7 +3,7 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
 from CMGTools.GenStudies.particles import GenJet
-from CMGTools.RootTools.physicsobjects.DiLepton import Higgs
+from CMGTools.GenStudies.DiLepton import Higgs
 
 
 class GenObjectReader(Analyzer):
@@ -31,11 +31,15 @@ class GenObjectReader(Analyzer):
         event.genJets = [GenJet(gj.p4()) for gj in self.handles['genJets'].product()]
 
         event.genParticles3 = []
-        _Higgs_ = []
+        higgs = []
         
         event.genLeptons3 = [l for l in self.handles['genParticles'].product() if
                              l.status()==3 and abs(l.pdgId()) in [11,13,15]]
 
+        event.neutrinos1 = [GenParticle(l) for l in self.handles['genParticles'].product() if
+                            l.status()==1 and abs(l.pdgId()) in [12,14,16]]
+        
+        
 
         for gp in self.handles['genParticles'].product():
             pygp = GenParticle(gp)
@@ -44,13 +48,14 @@ class GenObjectReader(Analyzer):
                 event.genParticles3.append(pygp)
 
                 if gp.pdgId()==6:
-                    _Higgs_.append(pygp)
+                    higgs.append(pygp)
         
-        if(len(_Higgs_)!=1):
+        if(len(higgs)!=1):
             print 'More than two Higgs !'
 
+
 #        print 'Total leptons : ', len(event.genLeptons3)
-        event.Higgs = Higgs(_Higgs_[0])
+        event.Higgs = Higgs(higgs[0], event.neutrinos1)
 
         return True
     
