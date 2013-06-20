@@ -6,7 +6,7 @@ def findStatus1Leptons(particle):
     leptons = []
     for i in range( particle.numberOfDaughters() ):
         dau = particle.daughter(i)
-        if dau.status() == 1:
+        if dau.status() == 3:
             if abs(dau.pdgId())==11 or abs(dau.pdgId())==13:
                 leptons.append( dau )
             else:

@@ -7,14 +7,9 @@ process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
 
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
-# Pythia settings for ttbar generation
-#
-
-
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(100)
 )
-
 
 process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
     generator = cms.PSet(
@@ -85,7 +80,6 @@ process.out = cms.OutputModule(
     outputCommands = cms.untracked.vstring(
       'keep *',
       'drop edmHepMCProduct_*_*_*',
-      # 'drop recoGenParticles_*_*_*',
       'drop *_ak5GenJetsNoNu_*_*',
       'drop edmTriggerResults_*_*_*',
       'drop ints_*_*_*'
