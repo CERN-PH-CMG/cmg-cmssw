@@ -44,20 +44,28 @@ class CategorizedMVA:
 
 
 _CommonVars = [ 
-    MVAVar("minMWjj := min(minMWjj,200)"),
-    MVAVar("minMWjjPt"),
-    MVAVar("bestMWjj"),
+    #MVAVar("minMWjj := min(minMWjj,200)"),
+    #MVAVar("minMWjjPt"),
+    #MVAVar("bestMWjj"),
     MVAVar("bestMTopHad"),
     MVAVar("nJet25"),
-    MVAVar("q3l := LepGood1_charge+LepGood2_charge+LepGood3_charge"),
-    MVAVar("m3l"),
+    #MVAVar("q3l := LepGood1_charge+LepGood2_charge+LepGood3_charge"),
+    #MVAVar("m3l"),
     MVAVar("Jet1_pt"),
-    MVAVar("Jet2_pt"),
-    MVAVar("Jet2_btagCSV:= max(0,Jet2_btagCSV)"),
+    #MVAVar("Jet2_pt"),
+    #MVAVar("Jet2_btagCSV:= max(0,Jet2_btagCSV)"),
+    #MVAVar("nBJetLoose25"),
+    #MVAVar("nBJetMedium25"),
+    #MVAVar("nBJetTight25 := (Jet1_btagCSV > 0.898)+(Jet2_btagCSV > 0.898)+(Jet3_btagCSV > 0.898)"),
     MVAVar("max_Lep_eta := max(max(abs(LepGood1_eta),abs(LepGood2_eta)),abs(LepGood3_eta))"),
-    MVAVar("minMllAFOS"),
+    #MVAVar("minMllAFOS"),
     MVAVar("minDrllAFOS"),
-   
+    MVAVar("htJet25",'F'),
+    #MVAVar("htJet25Lep := (LepGood1_pt + LepGood2_pt + LepGood3_pt + htJet25)"),
+    #MVAVar("htJet25LepMet := (met + LepGood1_pt + LepGood2_pt + LepGood3_pt + htJet25)"),
+    #MVAVar("htJet25ratio1224 := (Jet1_pt*(abs(Jet1_eta) < 1.2) + Jet2_pt*(abs(Jet2_eta) < 1.2) + Jet3_pt*(abs(Jet3_eta) < 1.2) + Jet4_pt*(abs(Jet4_eta) < 1.2) + Jet5_pt*(abs(Jet5_eta) < 1.2) + Jet6_pt*(abs(Jet6_eta) < 1.2) + Jet7_pt*(abs(Jet7_eta) < 1.2) + Jet8_pt*(abs(Jet8_eta) < 1.2))/ (Jet1_pt*(abs(Jet1_eta) < 2.4) + Jet2_pt*(abs(Jet2_eta) < 2.4) + Jet3_pt*(abs(Jet3_eta) < 2.4) + Jet4_pt*(abs(Jet4_eta) < 2.4) + Jet5_pt*(abs(Jet5_eta) < 2.4) + Jet6_pt*(abs(Jet6_eta) < 2.4) + Jet7_pt*(abs(Jet7_eta) < 2.4) + Jet8_pt*(abs(Jet8_eta) < 2.4))"),
+    MVAVar("htJet25ratio1224Lep := (LepGood1_pt*(abs(LepGood1_eta)<1.2) + LepGood2_pt*(abs(LepGood2_eta)<1.2) + LepGood3_pt*(abs(LepGood3_eta)<1.2) + Jet1_pt*(abs(Jet1_eta) < 1.2) + Jet2_pt*(abs(Jet2_eta) < 1.2) + Jet3_pt*(abs(Jet3_eta) < 1.2) + Jet4_pt*(abs(Jet4_eta) < 1.2) + Jet5_pt*(abs(Jet5_eta) < 1.2) + Jet6_pt*(abs(Jet6_eta) < 1.2) + Jet7_pt*(abs(Jet7_eta) < 1.2) + Jet8_pt*(abs(Jet8_eta) < 1.2))/ (LepGood1_pt + LepGood2_pt + LepGood3_pt + Jet1_pt*(abs(Jet1_eta) < 2.4) + Jet2_pt*(abs(Jet2_eta) < 2.4) + Jet3_pt*(abs(Jet3_eta) < 2.4) + Jet4_pt*(abs(Jet4_eta) < 2.4) + Jet5_pt*(abs(Jet5_eta) < 2.4) + Jet6_pt*(abs(Jet6_eta) < 2.4) + Jet7_pt*(abs(Jet7_eta) < 2.4) + Jet8_pt*(abs(Jet8_eta) < 2.4))"),
+
 ]
 _MultiJetVars = [
 ]

@@ -2,41 +2,45 @@ void trainMVA_3l(TString name) {
     TFile *fOut = new TFile(name+".root","RECREATE");
     TMVA::Factory *factory = new TMVA::Factory(name, fOut, "!V:!Color");
 
-    TFile *fSig = TFile::Open("/afs/cern.ch/work/b/botta/TTHAnalysis/trees/TREES_270213_HADD/TTH/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root");
+    TFile *fSig = TFile::Open("/data/b/botta/TTHAnalysis/trees/TREES_250513_HADD/TTH/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root");
     TTree *tSig = (TTree *) fSig->Get("ttHLepTreeProducerBase");
-    tSig.AddFriend("newMVA/t", "/afs/cern.ch/work/b/botta/TTHAnalysis/trees/TREES_270213_HADD/0_leptonMVA_v3/lepMVAFriend_TTH.root")
+    //tSig.AddFriend("newMVA/t", "/data/b/botta/TTHAnalysis/trees/TREES_250513_HADD/0_leptonMVA_v3/lepMVAFriend_TTH.root")
     factory->AddSignalTree(tSig, 1.0);
 
     //&& min(LepGood1_mva,min(LepGood2_mva,LepGood3_mva)) >= -0.2
-    TCut all = "nLepGood == 3  && abs(mZ1-91.2)>10 && (nJet25 >= 4 || (met*0.00397 + mhtJet25*0.00265 - 0.184 > 0.0 + 0.1*(mZ1 > 0))) && nBJetLoose25 >= 2";
+    TCut all = "nLepGood == 3  && abs(mZ1-91.2)>10 && (nJet25 >= 4 || (met*0.00397 + mhtJet25*0.00265 > 0.2 + 0.1*(mZ1 > 0))) && nBJetLoose25 >= 2";
 
     if (name.Contains("ttW")) {
-        TFile *fBkg = TFile::Open("/afs/cern.ch/work/b/botta/TTHAnalysis/trees/TREES_270213_HADD/TTWJets/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root");
+        TFile *fBkg = TFile::Open("/data/b/botta/TTHAnalysis/trees/TREES_250513_HADD/TTWJets/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root");
         TTree *tBkg = (TTree *) fBkg->Get("ttHLepTreeProducerBase");
-	tBkg.AddFriend("newMVA/t", "/afs/cern.ch/work/b/botta/TTHAnalysis/trees/TREES_270213_HADD/0_leptonMVA_v3/lepMVAFriend_TTWJets.root")
+	//tBkg.AddFriend("newMVA/t", "/data/b/botta/TTHAnalysis/trees/TREES_250513_HADD/0_leptonMVA_v3/lepMVAFriend_TTWJets.root")
         factory->AddBackgroundTree(tBkg, 1.0);
     } else if (name.Contains("ttbar")) {
-        TFile *fBkg = TFile::Open("/afs/cern.ch/work/b/botta/TTHAnalysis/trees/TREES_270213_HADD/TTLep/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root");
+        TFile *fBkg = TFile::Open("/data/b/botta/TTHAnalysis/trees/TREES_250513_HADD/TTLep/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root");
         TTree *tBkg = (TTree *) fBkg->Get("ttHLepTreeProducerBase");
-	tBkg.AddFriend("newMVA/t", "/afs/cern.ch/work/b/botta/TTHAnalysis/trees/TREES_270213_HADD/0_leptonMVA_v3/lepMVAFriend_TTLep.root")
+	//tBkg.AddFriend("newMVA/t", "/data/b/botta/TTHAnalysis/trees/TREES_250513_HADD/0_leptonMVA_v3/lepMVAFriend_TTLep.root")
         factory->AddBackgroundTree(tBkg, 1.0);
     } else if (name.Contains("WZ")) {
-        TFile *fBkg = TFile::Open("/afs/cern.ch/work/b/botta/TTHAnalysis/trees/TREES_270213_HADD/WZJets/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root");
+        TFile *fBkg = TFile::Open("/data/b/botta/TTHAnalysis/trees/TREES_250513_HADD/WZJets/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root");
         TTree *tBkg = (TTree *) fBkg->Get("ttHLepTreeProducerBase");
-	tBkg.AddFriend("newMVA/t", "/afs/cern.ch/work/b/botta/TTHAnalysis/trees/TREES_270213_HADD/0_leptonMVA_v3/lepMVAFriend_WZJets.root")
+	//tBkg.AddFriend("newMVA/t", "/data/b/botta/TTHAnalysis/trees/TREES_250513_HADD/0_leptonMVA_v3/lepMVAFriend_WZJets.root")
         factory->AddBackgroundTree(tBkg, 1.0);	
     } else if (name.Contains("mix")) {
-        TFile *fBkg1 = TFile::Open("/afs/cern.ch/work/b/botta/TTHAnalysis/trees/TREES_270213_HADD/TTLep/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root");
+        TFile *fBkg1 = TFile::Open("/data/b/botta/TTHAnalysis/trees/TREES_250513_HADD/TTLep/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root");
         TTree *tBkg1 = (TTree *) fBkg1->Get("ttHLepTreeProducerBase");
-	tBkg1.AddFriend("newMVA/t", "/afs/cern.ch/work/b/botta/TTHAnalysis/trees/TREES_270213_HADD/0_leptonMVA_v3/lepMVAFriend_TTLep.root")
+	//tBkg1.AddFriend("newMVA/t", "/data/b/botta/TTHAnalysis/trees/TREES_250513_HADD/0_leptonMVA_v3/lepMVAFriend_TTLep.root")
         factory->AddBackgroundTree(tBkg1, 1.0);
-        TFile *fBkg2 = TFile::Open("/afs/cern.ch/work/b/botta/TTHAnalysis/trees/TREES_270213_HADD/TTWJets/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root");
+        TFile *fBkg2 = TFile::Open("/data/b/botta/TTHAnalysis/trees/TREES_250513_HADD/TTWJets/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root");
         TTree *tBkg2 = (TTree *) fBkg2->Get("ttHLepTreeProducerBase");
-	tBkg2.AddFriend("newMVA/t", "/afs/cern.ch/work/b/botta/TTHAnalysis/trees/TREES_270213_HADD/0_leptonMVA_v3/lepMVAFriend_TTWjets.root")
+	//tBkg2.AddFriend("newMVA/t", "/data/b/botta/TTHAnalysis/trees/TREES_250513_HADD/0_leptonMVA_v3/lepMVAFriend_TTWjets.root")
         factory->AddBackgroundTree(tBkg2, 1.0);
-	TFile *fBkg3 = TFile::Open("/afs/cern.ch/work/b/botta/TTHAnalysis/trees/TREES_270213_HADD/WZJets/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root");
+	TFile *fBkg3 = TFile::Open("/data/b/botta/TTHAnalysis/trees/TREES_250513_HADD/WZJets/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root");
         TTree *tBkg3 = (TTree *) fBkg3->Get("ttHLepTreeProducerBase");
-	tBkg3.AddFriend("newMVA/t", "/afs/cern.ch/work/b/botta/TTHAnalysis/trees/TREES_270213_HADD/0_leptonMVA_v3/lepMVAFriend_WZJets.root")
+	//tBkg3.AddFriend("newMVA/t", "/data/b/botta/TTHAnalysis/trees/TREES_250513_HADD/0_leptonMVA_v3/lepMVAFriend_WZJets.root")
+        factory->AddBackgroundTree(tBkg3, 1.0);
+	TFile *fBkg4 = TFile::Open("/data/b/botta/TTHAnalysis/trees/TREES_250513_HADD/TTZJets/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root");
+        TTree *tBkg4 = (TTree *) fBkg3->Get("ttHLepTreeProducerBase");
+	//tBkg4.AddFriend("newMVA/t", "/data/b/botta/TTHAnalysis/trees/TREES_250513_HADD/0_leptonMVA_v3/lepMVAFriend_TTZJets.root")
         factory->AddBackgroundTree(tBkg3, 1.0);
     } else  {
         std::cout << "Training not implemented " << std::endl;
@@ -93,23 +97,54 @@ void trainMVA_3l(TString name) {
 
 
     //VARIABLES
-    factory->AddVariable("minMWjj := min(minMWjj,200)", 'F');
-    factory->AddVariable("minMWjjPt", 'F');
-    factory->AddVariable("bestMWjj", 'F');
+
+    //factory->AddVariable("minMWjj := min(minMWjj,200)", 'F');
+    //factory->AddVariable("minMWjjPt", 'F');
+    //factory->AddVariable("bestMWjj", 'F');
     factory->AddVariable("bestMTopHad", 'F');
     factory->AddVariable("nJet25", 'I');
-    factory->AddVariable("q3l := LepGood1_charge+LepGood2_charge+LepGood3_charge", 'I');
-    factory->AddVariable("m3l",'F');
+    //factory->AddVariable("q3l := LepGood1_charge+LepGood2_charge+LepGood3_charge", 'I');
+    //factory->AddVariable("m3l",'F');
     //factory->AddVariable("LepGood3_pt",'F');
     factory->AddVariable("Jet1_pt", 'F');
-    factory->AddVariable("Jet2_pt", 'F');
-    factory->AddVariable("Jet2_btagCSV:= max(0,Jet2_btagCSV)", 'F');
+    //factory->AddVariable("Jet2_pt", 'F');
+    //factory->AddVariable("Jet2_btagCSV:= max(0,Jet2_btagCSV)", 'F');
+    //factory->AddVariable("nBJetLoose25",'I'); //new
+    //factory->AddVariable("nBJetMedium25",'I'); //new
+    //factory->AddVariable("nBJetTight25 := (Jet1_btagCSV > 0.898)+(Jet2_btagCSV > 0.898)+(Jet3_btagCSV > 0.898)", 'I'); //new
     factory->AddVariable("max_Lep_eta := max(max(abs(LepGood1_eta),abs(LepGood2_eta)),abs(LepGood3_eta))", 'F');
-    factory->AddVariable("minMllAFOS",'F');
+    //factory->AddVariable("minMllAFOS",'F');
     //factory->AddVariable("minMllAFSS",'F');
     //factory->AddVariable("maxMllAFOS",'F');
     //factory->AddVariable("maxMllAFSS",'F');
     factory->AddVariable("minDrllAFOS",'F');
+    factory->AddVariable("htJet25",'F'); //new
+    //factory->AddVariable("htJet25Lep := (LepGood1_pt + LepGood2_pt + LepGood3_pt + htJet25)",'F'); //new
+    //factory->AddVariable("htJet25LepMet := (met + LepGood1_pt + LepGood2_pt + LepGood3_pt + htJet25)",'F'); //new
+    //factory->AddVariable("htJet25ratio1224 := (Jet1_pt*(abs(Jet1_eta) < 1.2) + Jet2_pt*(abs(Jet2_eta) < 1.2) + Jet3_pt*(abs(Jet3_eta) < 1.2) + Jet4_pt*(abs(Jet4_eta) < 1.2) + Jet5_pt*(abs(Jet5_eta) < 1.2) + Jet6_pt*(abs(Jet6_eta) < 1.2) + Jet7_pt*(abs(Jet7_eta) < 1.2) + Jet8_pt*(abs(Jet8_eta) < 1.2))/ (Jet1_pt*(abs(Jet1_eta) < 2.4) + Jet2_pt*(abs(Jet2_eta) < 2.4) + Jet3_pt*(abs(Jet3_eta) < 2.4) + Jet4_pt*(abs(Jet4_eta) < 2.4) + Jet5_pt*(abs(Jet5_eta) < 2.4) + Jet6_pt*(abs(Jet6_eta) < 2.4) + Jet7_pt*(abs(Jet7_eta) < 2.4) + Jet8_pt*(abs(Jet8_eta) < 2.4))", 'F'); //new
+    factory->AddVariable("htJet25ratio1224Lep := (LepGood1_pt*(abs(LepGood1_eta)<1.2) + LepGood2_pt*(abs(LepGood2_eta)<1.2) + LepGood3_pt*(abs(LepGood3_eta)<1.2) + Jet1_pt*(abs(Jet1_eta) < 1.2) + Jet2_pt*(abs(Jet2_eta) < 1.2) + Jet3_pt*(abs(Jet3_eta) < 1.2) + Jet4_pt*(abs(Jet4_eta) < 1.2) + Jet5_pt*(abs(Jet5_eta) < 1.2) + Jet6_pt*(abs(Jet6_eta) < 1.2) + Jet7_pt*(abs(Jet7_eta) < 1.2) + Jet8_pt*(abs(Jet8_eta) < 1.2))/ (LepGood1_pt + LepGood2_pt + LepGood3_pt + Jet1_pt*(abs(Jet1_eta) < 2.4) + Jet2_pt*(abs(Jet2_eta) < 2.4) + Jet3_pt*(abs(Jet3_eta) < 2.4) + Jet4_pt*(abs(Jet4_eta) < 2.4) + Jet5_pt*(abs(Jet5_eta) < 2.4) + Jet6_pt*(abs(Jet6_eta) < 2.4) + Jet7_pt*(abs(Jet7_eta) < 2.4) + Jet8_pt*(abs(Jet8_eta) < 2.4))",'F'); //new
+    
+
+
+    
+
+
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     factory->SetWeightExpression("1");
