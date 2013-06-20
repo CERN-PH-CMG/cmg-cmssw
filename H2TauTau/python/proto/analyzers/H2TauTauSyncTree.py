@@ -24,6 +24,7 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
         var( tr, 'puweight')
         var( tr, 'effweight')
         var( tr, 'weight')
+        var( tr, 'embeddedWeight')
         
         var( tr, 'm_sv')
         var( tr, 'mvis')
@@ -163,6 +164,8 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
         leg2 = event.diLepton.leg1()
         fill( tr, 'effweight', leg1.weight*leg2.weight) 
         fill( tr, 'weight', event.eventWeight ) 
+        if hasattr(event, 'embedWeight'):
+            fill( tr, 'embeddedWeight', event.embedWeight ) 
         
         fill( tr, 'mvis', event.diLepton.mass() ) 
         fill( tr, 'm_sv', event.diLepton.massSVFit() ) 
