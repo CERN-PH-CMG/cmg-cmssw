@@ -22,12 +22,12 @@ class PlotterSetup(object):
         self.data['lumi']={'7TeV':5050., '8TeV': 19790.}
         self.data['lumiErr']={'7TeV':0.022, '8TeV': 0.044}
 
-        self.data['ZZTo4mu']={'8TeV':0.07691,'7TeV':0.024887}
-        self.data['ZZTo4e']={'8TeV':0.07691,'7TeV':0.024993}
-        self.data['ZZTo4tau']={'8TeV':0.07691,'7TeV':0.027223}
-        self.data['ZZTo2e2mu']={'8TeV':0.1767,'7TeV':0.050066}
-        self.data['ZZTo2e2tau']={'8TeV':0.1767,'7TeV':0.051979}
-        self.data['ZZTo2mu2tau']={'8TeV':0.1767,'7TeV':0.051729}
+        self.data['ZZTo4mu']={'8TeV':0.07691,'7TeV':0.06609}
+        self.data['ZZTo4e']={'8TeV':0.07691,'7TeV':0.06609}
+        self.data['ZZTo4tau']={'8TeV':0.07691,'7TeV':0.06609}
+        self.data['ZZTo2e2mu']={'8TeV':0.1767,'7TeV':0.152}
+        self.data['ZZTo2e2tau']={'8TeV':0.1767,'7TeV':0.152}
+        self.data['ZZTo2mu2tau']={'8TeV':0.1767,'7TeV':0.152}
         self.data['GluGluToZZTo4L']={'8TeV':0.0048,'7TeV':0.00174}
         self.data['GluGluToZZTo2L2L']={'8TeV':0.01203, '7TeV':0.00348}
         self.data['higgsXS']  = {'7TeV':HiggsTheory(getFullPath('data/YR_7TeV.json')), '8TeV':HiggsTheory(getFullPath('data/YR_7TeV.json'))}
@@ -101,7 +101,7 @@ class PlotterSetup(object):
             zzPlotters[-1].addCorrectionFactor('puWeight','eventWeight',0.0,'lnN')
             zzPlotters[-1].addCorrectionFactor('sigma',self.data[zzSample][period],0.0,'lnN')
             zzPlotters[-1].addCorrectionFactor('lumi'+period,self.data['lumi'][period],self.data['lumiErr'][period],'lnN')
-            zzPlotters[-1].addCorrectionFactor('efficiencyWeight','efficiencyWeight',0.0,'lnN')
+            zzPlotters[-1].addCorrectionFactor('efficiencyWeight','H_eff',0.0,'lnN')
 
         zzPlotter = MergedPlotter(zzPlotters)
         zzPlotter.setFillProperties(1001,ROOT.kAzure-9)
