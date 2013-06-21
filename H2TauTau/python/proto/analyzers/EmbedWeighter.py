@@ -19,7 +19,7 @@ class EmbedWeighter( Analyzer ):
     def declareHandles(self):
         super(EmbedWeighter,self).declareHandles()
         if self.cfg_comp.isEmbed:
-            import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
             if cmsswIs52X():
                 self.embhandles['minVisPtFilter'] = AutoHandle(
                     ('generator', 'minVisPtFilter'),
