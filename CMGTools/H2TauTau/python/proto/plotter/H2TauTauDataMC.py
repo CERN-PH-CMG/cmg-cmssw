@@ -14,6 +14,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
 
     keeper = {}
     HINDEX = 0
+    NHISTS = 0
 
     def __init__(self, varName, directory, selComps, weights,
                  bins = None, xmin = None, xmax=None, cut = '',
@@ -67,7 +68,8 @@ class H2TauTauDataMC( AnalysisDataMC ):
         else:
             tree = comp.tree
                     
-        histName = '_'.join( [compName, self.varName] )
+        histName = '_'.join( [compName, self.varName, str(self.__class__.NHISTS)] )
+        self.__class__.NHISTS += 1
 
         hist = None
         if self.xmin is not None and self.xmax is not None:
@@ -76,6 +78,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
             hist = TH1F( histName, '', len(self.bins)-1, self.bins )
         hist.Sumw2()
         weight = self.eventWeight
+
 ## to do the following, modify the eventWeight before giving it to self
 ##         if not comp.isData:
 ##             weight = ' * '.join( [self.eventWeight, recEffId.weight(), recEffIso.weight()])
@@ -125,6 +128,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         tree.Project( histName, var, '{weight}*({cut})'.format(cut=cut,
                                                                weight=weight) )
         hist.SetStats(0)
+
         componentName = compName
         legendLine = self._GetHistPref(compName)['legend']
         if legendLine is None:
@@ -143,11 +147,10 @@ class H2TauTauDataMC( AnalysisDataMC ):
                                   self.treeName,
                                   '{treeName}_tree.root'.format(treeName=self.treeName)] )
 
-            # file = self.__class__.keeper[ fileName + str(self.__class__.HINDEX) ] = TFile(fileName) 
+            # tfile = self.__class__.keeper[ fileName + str(self.__class__.HINDEX) ] = TFile(fileName) 
             # self.__class__.HINDEX+=1
 
-            # tree = file.Get( self.treeName )
-
+            # tree = tfile.Get( self.treeName )
 
             # Don't need to open same file twice
             for index in range(0, self.__class__.HINDEX):
