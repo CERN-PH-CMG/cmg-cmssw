@@ -3,6 +3,8 @@ import pprint
 import os
 import re
 import operator
+import subprocess
+import re
 
 from CMGTools.Production.cmgdbApi import CmgdbApi
 from CMGTools.H2TauTau.proto.samples.getFiles import getFiles
@@ -19,9 +21,10 @@ def findFirstAncestor(dataset_id, info):
     else:
         parent_id = rows[0][0]
         groups = ['tauMu_fullsel_tree_CMG', 'tauMu_fullsel_tree', 'tauEle_fullsel_tree_CMG',
-                  'tauEle_fullsel_tree', 'cmgTuple', 'PFAOD']
+                  'tauEle_fullsel_tree', 'diTau_fullsel_tree_CMG', 'diTau_fullsel_tree','cmgTuple', 'PFAOD'] 
         igroup = 0
         while 1:
+            #import pdb ; pdb.set_trace()
             ginfo = groupInfo(dataset_id, groups[igroup])
             if ginfo != None:
                 break
@@ -128,12 +131,12 @@ def processInfo(info):
             step = 'MERGE'
         else:
             step = 'Unknown'
-        # print step
-        # print 'fraction', fraction
-        # processing efficiency using job information
-        # print njobs
-        # print njobs, nmiss, nbad
-        # print ds
+
+        try    :
+          nmiss + nbad 
+        except : 
+          njobs, nbad, nmiss = retrieveInfosFromBadPublished(ds)
+        
         if nmiss+nbad == 0:
             job_eff = 1
         else:
@@ -149,12 +152,12 @@ def processInfo(info):
             # print 'WARNING, number_total_jobs not set for', path_name, 'see savannah task', task_id
         # storing info
         dsInfo.append( dict( path_name = path_name,
-                             step = step,
-                             jobeff=job_eff,
-                             fraction=fraction,
-                             skim=skim,
-                             task_id=task_id,
-                             pde = pde
+                             step      = step,
+                             jobeff    = job_eff,
+                             fraction  = fraction,
+                             skim      = skim,
+                             task_id   = task_id,
+                             pde       = pde
                              )
                        )
         # pprint.pprint( dsInfo[-1] ) 
@@ -180,12 +183,102 @@ def findAlias(path_name, aliases):
         return name 
 
 
+
+def retrieveInfosFromBadPublished(ds) :
+    print '\n'*2
+    print 'WARNING!: has this dataset been published with -f option and some infos got lost? Trying to retrieve njobs informations manually'
+    print ds
+
+    num_of_files        = 0
+    num_of_bad_jobs     = 0
+    num_of_missing_jobs = 0 ### dummy as long as I don't figure out where tot num of jobs is stored
+    
+    ic = ''
+
+    ### retrieve the owner of the dataset
+    command = 'getInfo.py -s "select file_owner, path_name from dataset_details where path_name like \'{SAMPLE}\' order by path_name"'.format(SAMPLE = ds['path_name'])
+    cmd = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+    for line in cmd.stdout :
+      if ds['path_name'] in line :
+        fulluser = line.split('||')[0]
+        fulluser = fulluser.strip(' ')
+              
+    if fulluser == 'cmgtools' :
+      user  = 'cmgtools'
+      group = 'user'
+    elif fulluser == 'cmgtools_group' :
+      user  = 'cmgtools'
+      group = 'group'
+    else :
+      user  = fulluser
+      group = 'user'
+
+    ### list all files in the eos directory
+    eos_command = '/afs/cern.ch/project/eos/installation/0.2.31/bin/eos.select'
+    command = "{EOS} ls /store/cmst3/{GROUP}/{USER}/CMG{SAMPLE}".format(EOS   = eos_command,\
+                                                                        GROUP = group      ,\
+                                                                        USER  = user       ,\
+                                                                        SAMPLE=ds['path_name'])
+    cmd = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+    ic_version = 0
+    ### count the number of files
+    for line in cmd.stdout :
+      if '.root' in line :
+        num_of_files += 1
+      ### retrieve the IntegrityCheck file
+      if 'IntegrityCheck' in line :
+        ### pick the most recent IntegrityCheck (ARE TAG NUMBER INCREMENTAL?!)
+        new_ic_version = re.findall(r"(\d{1,1000})", line)
+        if new_ic_version > ic_version :
+          ic = line.rstrip('\n')
+          ic_version = new_ic_version
+          
+    ### stage the IntegrityCheck file in the user $HOME (THERE'S A WAY TO READ TEXT FILES FROM EOS?)
+    cmsStage_command = '/afs/cern.ch/cms/caf/scripts/cmsStage'
+    os.system("{EOS} /store/cmst3/{GROUP}/{USER}/CMG{SAMPLE}/{INT} {HOME}".format(EOS    = cmsStage_command,\
+                                                                                  GROUP  = group           ,\
+                                                                                  USER   = user            ,\
+                                                                                  SAMPLE = ds['path_name'] ,\
+                                                                                  INT    = ic              ,\
+                                                                                  HOME   = os.environ['HOME']))        
+    icfile = file('{HOME}/{INT}'.format(HOME = os.environ['HOME'], INT  = ic))
+    
+    ### read the IntegrityCheck file and retrieve the number of bad jobs
+    if icfile != '' :
+      for line in icfile:
+        if 'BadJobs' in line:
+          num_of_bad_jobs_list = re.findall(r"(\d{1,100})", line)
+          break        
+    
+    if   len(num_of_bad_jobs_list)==1 :
+      num_of_bad_jobs = int(num_of_bad_jobs_list[0])
+    elif len(num_of_bad_jobs_list)==0 :
+      pass
+    else :
+      print 'WARNING!: number of bad jobs in {INT} badly formatted \nimposing it to 0'.format(INT=ic)
+    
+    ### clean up the user $HOME
+    os.system('rm {HOME}/{INT}'.format(HOME = os.environ['HOME'], INT  = ic) )
+    
+    ### assign sensate numbers
+    njobs = num_of_files
+    nbad  = num_of_bad_jobs
+    nmiss = num_of_missing_jobs
+    print 'got these numbers: \n njobs = %d \n nbad  = %d \n nmiss = %d' %(njobs, nbad, nmiss)
+    print '\n'*2
+
+    return njobs, nbad, nmiss
+
+
+
+
 def connectSample(components, row, filePattern, aliases, cache, verbose):
     id = row[0]
     path_name = row[1]
     file_owner = row[2]
     info = []
     compName = findAlias(path_name, aliases)
+    #import pdb ; pdb.set_trace()
     if compName is None:
         print 'WARNING: cannot find alias for', path_name
         return False
@@ -221,12 +314,13 @@ def connectSample(components, row, filePattern, aliases, cache, verbose):
             raise
     comps = [comp for comp in components if comp.name == compName]
     if len(comps)>1:
+        #import pdb ; pdb.set_trace()
         print 'WARNING find several components for compName', compName
         print map(str, comps)
         return False
     elif len(comps)==0:
         print 'WARNING no component found for compName', compName
-        # import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         return False
     comp = comps[0]
     comp.dataset_entries = dsInfo.dataset_entries
@@ -303,11 +397,13 @@ def connect(components, samplePattern, filePattern, aliases, cache, verbose=Fals
 
     Need help? contact Colin, this module is a bit tricky.
     """
-
+    
     pattern = samplePattern
     cols, rows = db.sql("select dataset_id, path_name, file_owner from dataset_details where path_name like '{pattern}' order by path_name".format(
         pattern = samplePattern
         ))
+    
+#     import pdb ; pdb.set_trace()
     for row in rows:
         connectSample(components, row, filePattern, aliases, cache, verbose)
         
