@@ -20,7 +20,7 @@ numberOfFilesToProcess = 10
 debugEventContent = False
 
 #tau-mu, tau-ele, di-tau, all
-channel = 'tau-mu' # 'tau-mu' #'tau-mu' 'all' 'tau-ele'
+channel = 'tau-mu' # 'tau-mu' #'di-tau' 'all' 'tau-ele'
 jetRecalib = False
 useCHS = False
 #newSVFit enables the svfit mass reconstruction used for the H->tau tau analysis.
@@ -51,7 +51,9 @@ dataset_user = 'cmgtools'
 # dataset_name = '/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
 # dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_14_0'
 # dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_16_0'
-dataset_name = '/TauPlusX/Run2012A-22Jan2013-v1/AOD/PAT_CMG_V5_16_0'
+# dataset_name = '/TauPlusX/Run2012A-22Jan2013-v1/AOD/PAT_CMG_V5_16_0'
+dataset_name = '/DoubleMu/StoreResults-Run2012A_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/PAT_CMG_V5_16_0'
+
 # /GluGluToHToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_14_0
 
 #dataset_user = 'cmgtools_group'
@@ -87,6 +89,8 @@ if numberOfFilesToProcess>0:
     
 runOnMC = process.source.fileNames[0].find('Run201')==-1 and process.source.fileNames[0].find('embedded')==-1
 
+
+
 # Sequence & path definition -------------------------------------------------
 
 
@@ -108,6 +112,43 @@ recoilEnabled = True
 setupRecoilCorrection( process, runOnMC,
                        enable=recoilEnabled, is53X=isNewerThan('CMSSW_5_2_X'))
 
+
+# Kinematic reweighting for the embedded samples from here https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonTauReplacementRecHit
+# Can also put this into a separate file under tools
+
+isEmbedded = process.source.fileNames[0].find('embedded') != -1
+
+if isEmbedded:
+    process.load('TauAnalysis.MCEmbeddingTools.embeddingKineReweight_cff')
+
+    if channel == 'all':
+        print 'ERROR: not possible to run all the channels for the embedded samples right now'
+
+    # for "standard" e+tau channel
+    if channel == 'tau-ele':
+        process.embeddingKineReweightRECembedding.inputFileName = cms.FileInPath("TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_ePtGt20tauPtGt18_recEmbedded.root")
+        process.tauElePath.insert(-1, process.embeddingKineReweightSequenceRECembedding)
+
+    # for e+tau channel of "soft lepton" analysis
+    #embeddingKineReweightRECembedding.inputFileName = cms.FileInPath("TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_ePt9to30tauPtGt18_recEmbedded.root")
+
+    # for "standard" mu+tau channel
+    if channel == 'tau-mu':
+        process.embeddingKineReweightRECembedding.inputFileName = cms.FileInPath("TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_muPtGt16tauPtGt18_recEmbedded.root")
+        process.tauMuPath.insert(-1, process.embeddingKineReweightSequenceRECembedding)
+
+    # for mu+tau channel of "soft lepton" analysis
+    #embeddingKineReweightRECembedding.inputFileName = cms.FileInPath("TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_muPt7to25tauPtGt18_recEmbedded.root")
+
+    # for tautau channel
+    if channel == 'di-tau':
+        process.embeddingKineReweightRECembedding.inputFileName = cms.FileInPath("TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_tautau_recEmbedded.root")
+        process.diTauPath.insert(-1, process.embeddingKineReweightSequenceRECembedding)
+
+    print "Embedded samples; using kinematic reweighting file:", process.embeddingKineReweightRECembedding.inputFileName
+
+    # for emu, mumu and ee channels
+    #embeddingKineReweightRECembedding.inputFileName = cms.FileInPath("TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_recEmbedding_emu.root")
 
 
 # OUTPUT definition ----------------------------------------------------------
