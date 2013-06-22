@@ -17,10 +17,6 @@ from CMGTools.H2TauTau.proto.plotter.DYEstimate_diTau          import *
 from CMGTools.H2TauTau.proto.plotter.SaveHistograms_diTau      import *
 from CMGTools.H2TauTau.proto.plotter.PrepareDictionaries_diTau import *
 
-def bah():
-  print '*'*150
-  print len(gROOT.GetListOfFiles())
-
 def blind(var, varToblind, plot, min, max ) :
   if var==varToblind :
    for bin in range(plot.Hist("Data").weighted.GetNbinsX()):
@@ -34,6 +30,8 @@ def printYields(region, plots, mass=-1, fileout=None, qcd=False, susy=False) :
   if qcd != False : contributions.extend(['QCDdata'])
   if mass!= -1 and not susy : 
     contributions.extend(['HiggsGGH' +str(mass),'HiggsVBF'+str(mass),'HiggsVH' +str(mass)])
+  if mass!= -1 and susy : 
+    contributions.extend(['HiggsGGH125','HiggsVBF125','HiggsVH125'])
   if mass!= -1 and susy : 
     contributions.extend(['HiggsSUSYBB' +str(mass),'HiggsSUSYGluGlu'+str(mass)])
   for c in contributions :
@@ -54,7 +52,8 @@ def shrinkEmbed(selComps, weights, abcd='') :
   D ==> remove embed_2012D_PromptReco_v1
   '''
 
-  dic = { 'A':['embed_Run2012A_13Jul2012_v1','embed_Run2012A_recover_06Aug2012_v1'],
+#   dic = { 'A':['embed_Run2012A_13Jul2012_v1','embed_Run2012A_recover_06Aug2012_v1'],
+  dic = { 'A':['embed_Run2012A_13Jul2012_v1'],
           'B':['embed_Run2012B_13Jul2012_v4'],
           'C':['embed_Run2012C_24Aug2012_v1','embed_Run2012C_PromptReco_v2'],
           'D':['embed_2012D_PromptReco_v1'] }
@@ -96,10 +95,13 @@ blinding = True
 just125  = True
 embZtt   = True
 datacard = 'svfitMass'  ## 'visMass'
-logVars  = []           ## ["met","jet1Pt","jet2Pt","l1Pt","l2Pt"]
+logVars  = []  ##["svfitMass","visMass","nJets","nbJets","sumJetPt","allJetPt","sumbJetPt","allbJetPt","jet1Pt","jet2Pt","l1Pt","l2Pt"]
 
 if __name__ == '__main__':
 
+  ##################################################
+  ##                    OPTIONS                   ##
+  ##################################################
   from optparse import OptionParser
   from CMGTools.RootTools.RootInit import *
 
@@ -139,10 +141,8 @@ if __name__ == '__main__':
   hists       = histogramSet( options )
   cfgFileName = args[1]
   file        = open( cfgFileName, 'r' )
-  #print cfgFileName
-  #print cfgFileName.replace('_gold_cfg.py','_'+options.shift+'_gold_cfg.py')
   cfg         = imp.load_source( 'cfg', cfgFileName, file)
-  
+    
   selComps, weights = prepareComponents(anaDir, cfg.config)
   
   ##################################################
@@ -159,7 +159,7 @@ if __name__ == '__main__':
   ##################################################
   ##         PASS THE PERIOD(S) TO DROP           ##
   ##################################################
-  if embZtt : selComps, weights = shrinkEmbed(selComps, weights, '')          
+  if embZtt : selComps, weights = shrinkEmbed(selComps, weights, 'A')          
   
   ##################################################
   ##  READS THE TREES AND CREATES THE COMPONENTS  ##
@@ -173,22 +173,59 @@ if __name__ == '__main__':
       zeeScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, weightsDataMass, weight, options.embed)
   
   if options.prong :
-    baseline   += ' && abs(jet1Eta)<4.7 && jet1Pt>30. '  ### only for 1p
+    #baseline   += ' && abs(jet1Eta)<4.7 && jet1Pt>30. '  ### only for 1p
     baseline   += ' && l1DecayMode<3 && l2DecayMode<3 '  ### only for 1p
   else :  
-    baseline   += ' && abs(jet1Eta)<3.0 && jet1Pt>50. '
-    #baseline   += ' && (l1DecayMode>2 || l2DecayMode>2) '  ### only for !(1p)
+    pass
+    #baseline   += ' && abs(jet1Eta)<4.7 && jet1Pt>30. '
+    #baseline   += ' && nbJets == 0'
+    #baseline   += ' && abs(jet1Eta)<3.0 && jet1Pt>50. '
   
-  #baseline  += ' && l1DecayMode<3 && l2DecayMode<3 ' 
   baselineSS = baseline.replace('diTauCharge==0','diTauCharge!=0')
 
   cuts=[  
-      ("CMS_2012_nobtag_BOOSTED" , baseline + ' & nbJets==0', '45', ' & pThiggs>140.' , isolationTM , 5 ),
-      ("CMS_2012_btag_BOOSTED"   , baseline + ' & nbJets> 0', '45', ' & pThiggs>140.' , isolationTM , 5 ),
+#       ("CMS_2012_incl_again_control_BOOSTED", baseline , ['45','45'], '', isolationMM , 5 ),
+#       ("CMS_2012_bt_l1Pt45_l2Pt45_BOOSTED"  , baseline , ['45','45'], ' && nbJets > 0' , isolationMM , 5 ),
+      ("CMS_2012_bt_l1Pt50_l2Pt45_BOOSTED"  , baseline , ['50','45'], ' && nbJets > 0' , isolationMM , 5 ),
+      ("CMS_2012_bt_l1Pt55_l2Pt45_BOOSTED"  , baseline , ['55','45'], ' && nbJets > 0' , isolationMM , 5 ),
+      ("CMS_2012_bt_l1Pt60_l2Pt45_BOOSTED"  , baseline , ['60','45'], ' && nbJets > 0' , isolationMM , 5 ),
+      ("CMS_2012_bt_l1Pt65_l2Pt45_BOOSTED"  , baseline , ['65','45'], ' && nbJets > 0' , isolationMM , 5 ),
+      ("CMS_2012_bt_l1Pt70_l2Pt45_BOOSTED"  , baseline , ['70','45'], ' && nbJets > 0' , isolationMM , 5 ),
+      ("CMS_2012_bt_l1Pt90_l2Pt45_BOOSTED"  , baseline , ['90','45'], ' && nbJets > 0' , isolationMM , 5 ),
+      ("CMS_2012_bt_l1Pt100_l2Pt45_BOOSTED"  , baseline , ['100','45'], ' && nbJets > 0' , isolationMM , 5 ),
 
 
-      #("CMS_2012_1pr_VBF"     , baseline + VBFmedium  , '45', ' && pThiggs> 70.' , isolationMM , 5 ),
-      #("CMS_2012_1pr_BOOSTED" , baseline + NOVBFmedium, '45', ' && pThiggs>110.' , isolationTT , 5 ),
+
+
+#       ("CMS_2012_nobt_l1Pt45_l2Pt45_met10_BOOSTED"  , baseline , ['45','45'], ' && nbJets == 0 && met>10', isolationMM , 5 ),
+#       ("CMS_2012_nobt_l1Pt45_l2Pt45_met20_BOOSTED"  , baseline , ['45','45'], ' && nbJets == 0 && met>20', isolationMM , 5 ),
+#       ("CMS_2012_nobt_l1Pt45_l2Pt45_met30_BOOSTED"  , baseline , ['45','45'], ' && nbJets == 0 && met>30', isolationMM , 5 ),
+#       ("CMS_2012_nobt_l1Pt45_l2Pt45_met40_BOOSTED"  , baseline , ['45','45'], ' && nbJets == 0 && met>40', isolationMM , 5 ),
+#       ("CMS_2012_nobt_l1Pt45_l2Pt45_met50_BOOSTED"  , baseline , ['45','45'], ' && nbJets == 0 && met>50', isolationMM , 5 ),
+#       ("CMS_2012_nobt_l1Pt45_l2Pt45_met60_BOOSTED"  , baseline , ['45','45'], ' && nbJets == 0 && met>60', isolationMM , 5 ),
+#       ("CMS_2012_nobt_l1Pt45_l2Pt45_met70_BOOSTED"  , baseline , ['45','45'], ' && nbJets == 0 && met>70', isolationMM , 5 ),
+#       ("CMS_2012_nobt_l1Pt45_l2Pt45_met80_BOOSTED"  , baseline , ['45','45'], ' && nbJets == 0 && met>80', isolationMM , 5 ),
+#       ("CMS_2012_nobt_l1Pt45_l2Pt45_met100_BOOSTED"  , baseline , ['45','45'], ' && nbJets == 0 && met>100', isolationMM , 5 ),
+
+
+
+
+
+
+
+
+#       ("CMS_2012_nobt_l1Pt45_l2Pt45_BOOSTED"  , baseline , ['45','45'], ' && nbJets == 0', isolationMM , 5 ),
+#       ("CMS_2012_nobt_l1Pt50_l2Pt45_BOOSTED"  , baseline , ['50','45'], ' && nbJets == 0' , isolationMM , 5 ),
+#       ("CMS_2012_nobt_l1Pt55_l2Pt45_BOOSTED"  , baseline , ['55','45'], ' && nbJets == 0' , isolationMM , 5 ),
+#       ("CMS_2012_nobt_l1Pt60_l2Pt45_BOOSTED"  , baseline , ['60','45'], ' && nbJets == 0' , isolationMM , 5 ),
+#       ("CMS_2012_nobt_l1Pt65_l2Pt45_BOOSTED"  , baseline , ['65','45'], ' && nbJets == 0' , isolationMM , 5 ),
+#       ("CMS_2012_nobt_l1Pt70_l2Pt45_BOOSTED"  , baseline , ['70','45'], ' && nbJets == 0' , isolationMM , 5 ),
+     #("CMS_2012_nobt_l1Pt75_l2Pt45_BOOSTED"  , baseline , ['75','45'], ' && nbJets == 0' , isolationMM , 5 ),
+     #("CMS_2012_nobt_l1Pt80_l2Pt45_BOOSTED"  , baseline , ['80','45'], ' && nbJets == 0' , isolationMM , 5 ),
+     #("CMS_2012_nobt_l1Pt85_l2Pt45_BOOSTED"  , baseline , ['85','45'], ' && nbJets == 0' , isolationMM , 5 ),
+#       ("CMS_2012_nobt_l1Pt90_l2Pt45_BOOSTED"  , baseline , ['90','45'], ' && nbJets == 0' , isolationMM , 5 ),
+     #("CMS_2012_nobt_l1Pt95_l2Pt45_BOOSTED"  , baseline , ['95','45'], ' && nbJets == 0' , isolationMM , 5 ),
+#       ("CMS_2012_nobt_l1Pt100_l2Pt45_BOOSTED" , baseline , ['100','45'], ' && nbJets == 0' , isolationMM , 5 ),
       ]
   
   ##################################################
@@ -196,18 +233,10 @@ if __name__ == '__main__':
   ##################################################
   for prefix,cut,ptcut,antiqcdcut,isocut,qcdEstimate in cuts:
         
-    prefix += '_'+options.shift
-    
-    ptCut              = ptcut
-    ptCut_up           = ptCut+'*0.97'
-    ptCut_down         = ptCut+'*1.03'
+    prefix      += '_'+options.shift
+    ptCutString  = ' && l1Pt>'+ptcut[0] +' && l2Pt>'+ptcut[1]
+    cut         += ptCutString
  
-    ptCutString        =  ' && l1Pt>'+ptCut      +' && l2Pt>'+ptCut
-    ptCutString_up     =  ' && l1Pt>'+ptCut_up   +' && l2Pt>'+ptCut_up
-    ptCutString_down   =  ' && l1Pt>'+ptCut_down +' && l2Pt>'+ptCut_down
- 
-    bareCut = cut
-
     if str(prefix).find("VBF") > 0 :
       rebin  = 2
       mjjMin = 100
@@ -223,7 +252,9 @@ if __name__ == '__main__':
     ##histos you want to produce, defined in cuts_diTau##
     #####################################################
     variables = hists_pref( rebin, mjjMin, mjjMax, mjjBin, susy )
- 
+    if susy :
+      variables.append(('svfitMass' ,150 , 0 , 1500))
+      #variables.append(('svfitMass' ,150 , 0 , 600))
     #####################################################
     ###               SAVE LIST OF CUTS               ###
     #####################################################
@@ -245,14 +276,6 @@ if __name__ == '__main__':
         xmin = None
         xmax = None
                                        
-      cut     = bareCut
-      print 'I\'ve stripped the old pt cut\n', cut
-      if   ( var == 'svfitMass*1.03' or var == 'visMass*1.03' or var == 'l1Pt*1.03' ):
-        cut += ptCutString_up
-      elif ( var == 'svfitMass*0.97' or var == 'visMass*0.97' or var == 'l1Pt*0.97' ):
-        cut += ptCutString_down 
-      else :
-        cut += ptCutString
       
       print 'I\'m using this cut string\n',cut+isocut+antiqcdcut    
       
@@ -265,7 +288,7 @@ if __name__ == '__main__':
       if not(exists) :
         os.mkdir(os.getcwd()+"/"+prefix)
           
-      if var in logVars or susy:
+      if var in logVars and susy:
         log = True
       else:
         log = False
@@ -273,27 +296,32 @@ if __name__ == '__main__':
       #########################################################
       ##         DEFINITION OF LOOSE ISO CUT FOR QCD         ##
       #########################################################
-      looseisocut     = isolationLL4+" && !(1 "+isocut+")"
+      looseisocut     = isolationLL4 + " && !(1 "+isocut+")"
                 
-      cutSS = cut.replace("diTauCharge==0","diTauCharge!=0")
+      cutSS = cut.replace("diTauCharge==0","diTauCharge!=0") ## correct spell is important
                                   
       #########################################################
       ##            RELAXING VBF SELECTION FOR QCD           ##
       #########################################################
-
+      
+      relaxedVBF = ' && jet2Pt>30. && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>2.0 && mjj>200 && nCentralJets==0 '
+      
       if 'VBF' in prefix : 
-         cutLooseOS      = baseline   + ptCutString + antiqcdcut + isolationLL4 + ' && (l1MedMVAIso<0.5 || l2MedMVAIso<0.5) ' + ' && jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 ' 
-         cutLooseSS      = baselineSS + ptCutString + antiqcdcut + isolationLL4 + ' && (l1MedMVAIso<0.5 || l2MedMVAIso<0.5) ' + ' && jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 ' 
+         cutLooseOS      = cut   + antiqcdcut + looseisocut + relaxedVBF  ## we take the shape from this
+         cutLooseSS      = cutSS + antiqcdcut + looseisocut + relaxedVBF  ## for normalization
+         cutTightSS      = cutSS + antiqcdcut + isocut      + relaxedVBF  ## cutTightSS/cutLooseSS     gives iso/!iso norm factor
+         cutTightSS_VBF  = cutSS + antiqcdcut + looseisocut               ## cutTightSS_VBF/cutLooseSS gives vbf/!vbf norm factor
       else :
-         cutLooseOS      = baseline   + ptCutString + looseisocut + antiqcdcut
-         cutLooseSS      = baselineSS + ptCutString + looseisocut + antiqcdcut
+         cutLooseOS      = cut   + looseisocut + antiqcdcut
+         cutLooseSS      = cutSS + looseisocut + antiqcdcut
+         cutTightSS      = cutSS + isocut      + antiqcdcut 
               
       #########################################################
       ##         CREATE THE THREE QCD CONTROL REGIONS        ##
       #########################################################
 
       TightIsoSS   = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal, nx, xmin, xmax,  
-                                    cut    = cutSS+isocut+antiqcdcut, 
+                                    cut    = cutTightSS, 
                                     weight = weight,                 
                                     embed  = options.embed)
                  
@@ -301,19 +329,36 @@ if __name__ == '__main__':
                                     cut    = cutLooseSS,
                                     weight = weight,#+"*weightQCD_nVert(nVert)*weightQCD_HpT(pThiggs)",                     
                                     embed  = options.embed) 
-                  
-      # for the QCD estimation MC contributions are subtracted in the consistent region NO NEED TO APPLY THE WEIGHT ON THEM
-      LooseIsoOSMC = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal, nx, xmin, xmax,                             
-                                    cut    = cutLooseOS, 
-                                    weight = weight,                  
-                                    embed  = options.embed)
-      
+                        
       LooseIsoOS   = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal, nx, xmin, xmax,                             
                                     cut    = cutLooseOS, 
                                     #weight=weight+"*weightQCD_nVert(nVert)",                   
                                     #weight=weight+"*weightQCD_nVert(nVert)*weightQCD_l1jetPt(l1jetPt)",                   
                                     weight = weight,                   
                                     embed  = options.embed)
+
+      # for the QCD estimation MC contributions are subtracted in the consistent region NO NEED TO APPLY THE WEIGHT ON THEM
+      LooseIsoOSMC = LooseIsoOS
+      #LooseIsoOSMC = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal, nx, xmin, xmax,                             
+      #                              cut    = cutLooseOS, 
+      #                              weight = weight,                  
+      #                              embed  = options.embed)
+
+      if 'VBF' in prefix :
+        TightIsoSS_VBF = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal, nx, xmin, xmax,  
+                                        cut    = cutSS + ptCutString + antiqcdcut + looseisocut, 
+                                        weight = weight,                 
+                                        embed  = options.embed)
+                 
+        QCDShapeVBF, QCDScaleVBF, QCDlooseSSVBF, QCDtightSSVBF, tightLooseVBF, tightLooseErrVBF = QCDEstimate2( prefix, prefix1, var, xmin, xmax,
+                                                                                                                TightIsoSS_VBF, 
+                                                                                                                LooseIsoOS, 
+                                                                                                                LooseIsoOSMC, 
+                                                                                                                LooseIsoSS, 
+                                                                                                                log )
+      else : 
+        QCDScaleVBF = 0.
+
       
       #######################################################
       ###               PLOTTING DATA/MC                  ###
@@ -329,18 +374,22 @@ if __name__ == '__main__':
       else :
         massesRange = [125]
         if susy : 
-          massesRange = [160,600]
-        print 'I\'m plotting distribution just for mass 125 GeV'
+          massesRange = [160]
+        print 'I\'m plotting distribution just for mass {M} GeV'.format(M=str(massesRange))
 
       #####################################################
       ###                 QCD ESTIMATION                ###
       #####################################################
-      QCDShape, QCDScale, QCDlooseSS, QCDtightSS, tightLooseErr = QCDEstimate2( prefix, prefix1, var, xmin, xmax,
-                                                                                TightIsoSS, 
-                                                                                LooseIsoOS, 
-                                                                                LooseIsoOSMC, 
-                                                                                LooseIsoSS, 
-                                                                                log )
+      QCDShape, QCDScale, QCDlooseSS, QCDtightSS, tightLoose, tightLooseErr = QCDEstimate2( prefix, prefix1, var, xmin, xmax,
+                                                                                            TightIsoSS, 
+                                                                                            LooseIsoOS, 
+                                                                                            LooseIsoOSMC, 
+                                                                                            LooseIsoSS, 
+                                                                                            log )
+      
+      if 'VBF' in prefix and QCDScaleVBF>0. :
+        QCDScale *= QCDScaleVBF
+        print 'Scaling QCD down by',QCDScale, '=', QCDScale/QCDScaleVBF,'*', QCDScaleVBF
         
       print "QCD yield uncertainty:", tightLooseErr
       print "QCDShape yield", QCDShape.Integral()
@@ -355,6 +404,10 @@ if __name__ == '__main__':
         printYields('SS tight', TightIsoSS, fileout=Yields_dump, susy=susy)       
         Yields_dump = open(os.getcwd()+"/"+prefix+"/Yields_SSloose"+var+".txt","w")
         printYields('SS loose', LooseIsoSS, fileout=Yields_dump, susy=susy)            
+        if 'VBF' in prefix : 
+          Yields_dump = open(os.getcwd()+"/"+prefix+"/Yields_SS_VBF_tight"+var+".txt","w")
+          printYields('SS vbf tight', TightIsoSS_VBF, fileout=Yields_dump, susy=susy)       
+
 
       #####################################################
       ###        LOOP OVER DIFFERENT HIGGS MASSES       ###
@@ -362,9 +415,30 @@ if __name__ == '__main__':
 
       for mIndex in massesRange :    
         TightIsoOS = H2TauTauDataMC(var, anaDir, selCompsDataMass[mIndex], weightsDataMass[mIndex], nx, xmin, xmax,
-                                    cut = cut+isocut+antiqcdcut, 
-                                    weight=weight,#+'*( (genMass>0.)*weightZTT_dRtt(dRtt) + (genMass<=0.) )',
-                                    embed=options.embed)
+                                    cut    = cut+isocut+antiqcdcut, 
+                                    weight = weight,
+                                    embed  = options.embed)
+
+        #####################################################
+        ###              WJets ESTIMATION                 ###
+        #####################################################
+            
+        if 'VBF'     in prefix : scaleFromMuTau  = 1.06  # for 2012D by Jose          
+        if 'BOOSTED' in prefix : scaleFromMuTau  = 0.65  # for 2012D by Jose
+    
+        WJetsShape        = deepcopy(LooseIsoOSMC.Hist("WJets"))
+        WJetsShapeSS      = deepcopy(LooseIsoSS.Hist("WJets"))
+        
+        WJetsScale        = scaleFromMuTau * TightIsoOS.Hist('WJets').Integral() / LooseIsoOSMC.Hist('WJets').Integral()
+        WJetsScaleSS      = scaleFromMuTau * TightIsoSS.Hist('WJets').Integral() / LooseIsoSS.Hist('WJets').Integral()
+  
+        TightIsoOS.Hist("WJets").obj      = WJetsShape.obj
+        TightIsoOS.Hist("WJets").weighted = WJetsShape.weighted
+        TightIsoOS.Hist("WJets").Scale(WJetsScale)
+  
+        TightIsoSS.Hist('WJets').obj      = WJetsShapeSS.obj
+        TightIsoSS.Hist('WJets').weighted = WJetsShapeSS.weighted
+        TightIsoSS.Hist('WJets').Scale(WJetsScaleSS)
 
         #####################################################
         ###           ADD QCD TO OS TIGHT STACK           ###
@@ -378,25 +452,16 @@ if __name__ == '__main__':
         TightIsoOS.Hist('QCDdata').layer = 0.99
 
         #####################################################
-        ###              WJets Estimation                 ###
+        ###           IF VBF TAKE DY FROM LOOSE OS        ###
         #####################################################
-            
-        if 'VBF'     in prefix : scaleFromMuTau  = 1.06  # for 2012D by Jose          
-        if 'BOOSTED' in prefix : scaleFromMuTau  = 0.65  # for 2012D by Jose
-  
-        WJetsShape        = deepcopy(LooseIsoOSMC.Hist("WJets"))
-        WJetsShapeSS      = deepcopy(LooseIsoSS.Hist("WJets"))
-        
-        WJetsScale        = scaleFromMuTau * TightIsoOS.Hist('WJets').Integral() / LooseIsoOSMC.Hist('WJets').Integral()
-        WJetsScaleSS      = scaleFromMuTau * TightIsoSS.Hist('WJets').Integral() / LooseIsoSS.Hist('WJets').Integral()
 
-        TightIsoOS.Hist("WJets").obj      = WJetsShape.obj
-        TightIsoOS.Hist("WJets").weighted = WJetsShape.weighted
-        TightIsoOS.Hist("WJets").Scale(WJetsScale)
-
-        TightIsoSS.Hist('WJets').obj      = WJetsShapeSS.obj
-        TightIsoSS.Hist('WJets').weighted = WJetsShapeSS.weighted
-        TightIsoSS.Hist('WJets').Scale(WJetsScaleSS)
+        if 'VBF' in prefix :
+          DYJetsScale = TightIsoOS.Hist("DYJets").Integral() / LooseIsoOS.Hist("DYJets").Integral()
+          myDY = {'DYJets':DYJetsScale,'DYJets_Electron':tightLoose,'DYJets_Fakes':tightLoose}
+          for sample in myDY.keys() :
+            TightIsoOS.Hist(sample).obj      = LooseIsoOS.Hist(sample).obj
+            TightIsoOS.Hist(sample).weighted = LooseIsoOS.Hist(sample).weighted
+            TightIsoOS.Hist(sample).Scale(myDY[sample])
 
         #####################################################
         ###         PRINT YIELDS in SIGNAL REGION         ###
@@ -410,17 +475,23 @@ if __name__ == '__main__':
         ###     SAVE ROOT FILES FOR LIMIT COMPUTATION     ###
         #####################################################
 	
-        if datacard in var and isinstance(nx, numpy.ndarray) and 'VBF'     in prefix :
-          saveForLimit(deepcopy(TightIsoOS),prefix,mIndex,datacard,"vbf"  ,susy)
-        if datacard in var and isinstance(nx, numpy.ndarray) and 'BOOSTED' in prefix :
-          saveForLimit(deepcopy(TightIsoOS),prefix,mIndex,datacard,"boost",susy)
+        if datacard in var and (isinstance(nx, numpy.ndarray) or susy) and 'VBF'     in prefix :
+          saveForLimit(deepcopy(TightIsoOS),prefix,mIndex,datacard,not isinstance(nx, numpy.ndarray),"vbf"  ,susy)
+        if datacard in var and (isinstance(nx, numpy.ndarray) or susy) and 'BOOSTED' in prefix :
+          saveForLimit(deepcopy(TightIsoOS),prefix,mIndex,datacard,not isinstance(nx, numpy.ndarray),"boost",susy)
                 
         #####################################################
         ###   BOOSTING THE SIGNAL FOR PICTORIAL RESULTS   ###
         #####################################################
+        ### for mA = 200 
+        # xsec ggA  3.39277529716491699e+03
+        # xsec bbA  3.10879477334919284e+04
+        # BR tautau 1.19457997381687164e-01
+        # nevents ggA 985855 * 1.0
+        # nevents bbA 999408 * 1.0     
         if susy :
-          TightIsoOS.Hist(str('HiggsSUSYBB'    +str(mIndex))).Scale(5)
-          TightIsoOS.Hist(str('HiggsSUSYGluGlu'+str(mIndex))).Scale(5)
+          TightIsoOS.Hist(str('HiggsSUSYBB'    +str(mIndex))).Scale(5)#10*18.4*3.10879477334919284e+04*1.19457997381687164e-01/999408)  
+          TightIsoOS.Hist(str('HiggsSUSYGluGlu'+str(mIndex))).Scale(5)#10*18.4*3.39277529716491699e+03*1.19457997381687164e-01/985855)  
         else :
           TightIsoOS.Hist(str('HiggsGGH'+str(mIndex))).Scale(5)
           TightIsoOS.Hist(str('HiggsVBF'+str(mIndex))).Scale(5)
@@ -429,19 +500,21 @@ if __name__ == '__main__':
         #####################################################
         ###                 GROUPING BKGS                 ###
         #####################################################
-                  
-        TightIsoOS.Group('electroweak'                                   , ['WJets', 'DYJets_Electron', 'DYJets_Fakes','ZZ','WZ','WW'])#,'WJets_Fakes'])
+                             
+        TightIsoOS.Group('electroweak'                                   , ['WJets', 'DYJets_Electron', 'DYJets_Fakes','ZZ','WZ','WW'])
         TightIsoOS.Group('t#bar{t}'                                      , ['TTJets','Tbar_tW','T_tW'])
         TightIsoOS.Group('Fakes'                                         , ['QCDdata'])
         TightIsoOS.Group('Z#rightarrow#tau#tau'                          , ['DYJets'])
         if susy :
-          TightIsoOS.Group('5x#phi('+str(mIndex)+' GeV)#rightarrow#tau#tau, tan#beta=20'  , ['HiggsSUSYBB'+str(mIndex), 'HiggsSUSYGluGlu'+str(mIndex)])         
+          TightIsoOS.Group('10x#phi('+str(mIndex)+' GeV)#rightarrow#tau#tau, tan#beta=20'  , ['HiggsSUSYBB'+str(mIndex), 'HiggsSUSYGluGlu'+str(mIndex)])         
+          TightIsoOS.Group('electroweak'                                                  , ['WJets', 'DYJets_Electron', 'DYJets_Fakes','ZZ','WZ','WW','HiggsVBF125', 'HiggsGGH125', 'HiggsVH125'])
         else :
           TightIsoOS.Group('5xH('   +str(mIndex)+' GeV)#rightarrow#tau#tau'  , ['HiggsVBF'+str(mIndex), 'HiggsGGH'+str(mIndex), 'HiggsVH'+str(mIndex)]) 
 
         #for h in ['electroweak','t#bar{t}','Z#rightarrow#tau#tau','5x H('+str(mIndex)+' GeV)#rightarrow#tau#tau','Data','Fakes'] :
         for h in ['electroweak','t#bar{t}','Z#rightarrow#tau#tau','Data','Fakes'] :
-          TightIsoOS.Hist(h).weighted.SetTitle('CMS preliminary 2012, #sqrt{s} = 8TeV, L = 19.4 fb^{-1}        #tau_{h}#tau_{h}')
+          #TightIsoOS.Hist(h).weighted.SetTitle('CMS preliminary 2012, #sqrt{s} = 8TeV, L = 19.4 fb^{-1}        #tau_{h}#tau_{h}')
+          TightIsoOS.Hist(h).weighted.SetTitle('CMS preliminary 2012, #sqrt{s} = 8TeV, L = 18.4 fb^{-1}        #tau_{h}#tau_{h}')
           TightIsoOS.Hist(h).GetXaxis().SetTitle(xtitles[var])
           if TightIsoOS.Hist(h).Integral()<0.1 :
             TightIsoOS.Group('Fakes', ['QCDdata',h])
@@ -459,8 +532,8 @@ if __name__ == '__main__':
           blind(var, 'visMass'  , TightIsoOS,  80., 120. )
           #blind(var, 'dRtt'     , TightIsoOS,   0.,   2. )
         if blinding and susy:
-          blind(var, 'svfitMass', TightIsoOS, 100., 1500. )
-          blind(var, 'visMass'  , TightIsoOS,  80., 1500. )
+          blind(var, 'svfitMass', TightIsoOS, 110., 1500. )
+          blind(var, 'visMass'  , TightIsoOS,  90., 1500. )
 
         #####################################################
         ###                    PLOTTING                   ###
@@ -474,6 +547,9 @@ if __name__ == '__main__':
         if isinstance(nx, numpy.ndarray) :
           TightIsoOS.NormalizeToBinWidth()
         
+#         if not (susy and var == 'svfitMass' and not isinstance(nx, numpy.ndarray) ):
+#           TightIsoOS.DrawStack("HIST")
+
         TightIsoOS.DrawStack("HIST")
         
         gPad.SaveAs(prefix1+prefix+'_'+TightIsoOS.varName+"_mH"+str(mIndex)+"_data.pdf")
@@ -482,7 +558,7 @@ if __name__ == '__main__':
         ### SAVE ROOT FILE TO ACCESS THE TEMPLATES EASILY ###
         #####################################################
         
-        if not datacard in var or ((len(nx) == 1 and nx<100000) or isinstance(nx, numpy.ndarray)) :
-          saveForPlotting(deepcopy(TightIsoOS),prefix,mIndex,susy)
+        #if not datacard in var or ((len(nx) == 1 and nx<100000) or isinstance(nx, numpy.ndarray)) :
+        #  saveForPlotting(deepcopy(TightIsoOS),prefix,mIndex,susy)
         
         

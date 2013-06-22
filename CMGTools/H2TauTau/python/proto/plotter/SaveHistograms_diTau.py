@@ -6,7 +6,7 @@ from CMGTools.RootTools.RootInit import *
 from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC_diTau import *
 
-def saveForLimit(TightIsoOS, prefixLabel, mass, massType, category, susy):
+def saveForLimit(TightIsoOS, prefixLabel, mass, massType, fine_binning, category, susy):
 
     TightIsoOS.Hist('WW').Add(TightIsoOS.Hist('ZZ'))
     TightIsoOS.Hist('WW').Add(TightIsoOS.Hist('WZ'))
@@ -18,13 +18,14 @@ def saveForLimit(TightIsoOS, prefixLabel, mass, massType, category, susy):
         'WJets'             :'W',
         'TTJets'            :'TT',
         'WW'                :'VV',
-        #'ZZ'                :'',
-        #'WZ'                :'',
         'QCDdata'           :'QCD',
         'Data'              :'data_obs'        
         }        
 
     if susy :
+      TightIsoOS.Hist('HiggsGGH125').Add(TightIsoOS.Hist('HiggsVBF125')) ## adding SM Higgs as a bkg
+      TightIsoOS.Hist('HiggsGGH125').Add(TightIsoOS.Hist('HiggsVH125'))  ## adding SM Higgs as a bkg
+      noscomp.update({'HiggsGGH125':'ggH_SM125+qqH_SM125+VH_SM125'})
       sigcomp = {
           'HiggsSUSYBB'    +str(mass):'bbH'+str(mass),
           'HiggsSUSYGluGlu'+str(mass):'ggH'+str(mass),
@@ -37,28 +38,47 @@ def saveForLimit(TightIsoOS, prefixLabel, mass, massType, category, susy):
           }
 
     allcomp = {}
-    allcomp.update(noscomp)
-    allcomp.update(sigcomp)
 
+    if fine_binning :
+      fbnoscomp = {}
+      fbsigcomp = {}
+      for k in noscomp.keys() :
+        fbnoscomp.update({k:noscomp[k]+'_fine_binning'})   
+      for k in sigcomp.keys() :
+        fbsigcomp.update({k:sigcomp[k]+'_fine_binning'})   
+      allcomp.update(fbnoscomp)
+      allcomp.update(fbsigcomp)
+    else :
+      allcomp.update(noscomp)
+      allcomp.update(sigcomp)
+              
     fileName = '/'.join([os.getcwd(),prefixLabel,prefixLabel+'_tauTau_'+category+'_'+TightIsoOS.varName+'.root'])
 
-    if TightIsoOS.varName == massType+'' :
-    
-     if not os.path.isfile(fileName) :
-       rootfile = TFile(fileName,'recreate')
-       channel  = rootfile.mkdir('tauTau_'+category)
-       for comp in allcomp.keys() :
-         TightIsoOS.Hist(comp).weighted.SetName(allcomp[comp])
-         channel.Add(TightIsoOS.Hist(comp).weighted)
-       channel.Write()
+    if TightIsoOS.varName == massType :
+     
+      if not os.path.isfile(fileName) :
+        rootfile = TFile(fileName,'recreate')
+        channel  = rootfile.mkdir('tauTau_'+category)
+        for comp in allcomp.keys() :
+          TightIsoOS.Hist(comp).weighted.SetName(allcomp[comp])
+          channel.Add(TightIsoOS.Hist(comp).weighted)
+        channel.Write()
        
-     else : 
-       rootfile = TFile(fileName,'update')
-       gDirectory.cd('tauTau_'+category)
-       for comp in sigcomp.keys() :
-         TightIsoOS.Hist(comp).weighted.SetName(allcomp[comp])
-         TightIsoOS.Hist(comp).weighted.Write()
-       gDirectory.cd('..')
+      else : 
+        rootfile = TFile(fileName,'update')
+        rootfile.cd('tauTau_'+category)
+        
+        alreadyIn = []
+        dirList = gDirectory.GetListOfKeys()
+        for k2 in dirList:
+          h2 = k2.ReadObj()
+          alreadyIn.append(h2.GetName())
+
+        for comp in allcomp.keys() :
+          if comp in alreadyIn : pass
+          TightIsoOS.Hist(comp).weighted.SetName(allcomp[comp])
+          TightIsoOS.Hist(comp).weighted.Write()
+        gDirectory.cd('..')
 
     rootfile.Close()
 
@@ -74,13 +94,14 @@ def saveForPlotting(TightIsoOS, prefixLabel, mass, susy):
         'WJets'             :'W',
         'TTJets'            :'TT',
         'WW'                :'VV',
-        #'ZZ'                :'',
-        #'WZ'                :'',
         'QCDdata'           :'QCD',
         'Data'              :'data_obs'        
         }        
 
     if susy :
+      TightIsoOS.Hist('HiggsGGH125').Add(TightIsoOS.Hist('HiggsVBF125')) ## adding SM Higgs as a bkg
+      TightIsoOS.Hist('HiggsGGH125').Add(TightIsoOS.Hist('HiggsVH125'))  ## adding SM Higgs as a bkg
+      noscomp.update({'HiggsGGH125':'ggH_SM125+qqH_SM125+VH_SM125'})
       sigcomp = {
           'HiggsSUSYBB'    +str(mass):'bbH'+str(mass),
           'HiggsSUSYGluGlu'+str(mass):'ggH'+str(mass),
@@ -111,46 +132,6 @@ def saveForPlotting(TightIsoOS, prefixLabel, mass, susy):
       channel.Add(TightIsoOS.Hist(comp).weighted)
     channel.Write()
     rootfile.Close()
-
-
-
-
-
-
-
-#     TightIsoOS.Hist(str('HiggsGGH' +str(mass))).weighted.SetName(str('ggH' +str(mass)))
-#     TightIsoOS.Hist(str('HiggsVBF'+str(mass))).weighted.SetName(str('qqH' +str(mass)))
-#     TightIsoOS.Hist(str('HiggsVH' +str(mass))).weighted.SetName(str('VH' +str(mass)))
-#     #TightIsoOS.Hist('DYJets').Add(TightIsoOS.Hist('DYJets_Photon'))
-#     TightIsoOS.Hist('DYJets').weighted.SetName('ZTT')
-#     TightIsoOS.Hist('DYJets_Electron').weighted.SetName('ZL')
-#     TightIsoOS.Hist('DYJets_Fakes').weighted.SetName('ZJ')
-#     #TightIsoOS.Hist('WJets').Add(TightIsoOS.Hist('WJets_Fakes'))
-#     TightIsoOS.Hist('WJets').weighted.SetName('W')
-#     TightIsoOS.Hist('TTJets').weighted.SetName('TT')
-#     TightIsoOS.Hist('T_tW').Add(TightIsoOS.Hist('Tbar_tW'))
-#     TightIsoOS.Hist('T_tW').weighted.SetName('T')
-#     TightIsoOS.Hist('WW').Add(TightIsoOS.Hist('ZZ'))
-#     TightIsoOS.Hist('WW').Add(TightIsoOS.Hist('WZ'))
-#     TightIsoOS.Hist('WW').weighted.SetName('VV')
-#     TightIsoOS.Hist('QCDdata').weighted.SetName('QCD')
-#     TightIsoOS.Hist('Data').weighted.SetName('data_obs')
-#     channel.Add(TightIsoOS.Hist(str('HiggsGGH' +str(mass))).weighted)
-#     channel.Add(TightIsoOS.Hist(str('HiggsVBF'+str(mass))).weighted)
-#     channel.Add(TightIsoOS.Hist(str('HiggsVH' +str(mass))).weighted)
-#     channel.Add(TightIsoOS.Hist('DYJets').weighted)
-#     channel.Add(TightIsoOS.Hist('DYJets_Electron').weighted)
-#     channel.Add(TightIsoOS.Hist('DYJets_Fakes').weighted)
-#     channel.Add(TightIsoOS.Hist('WJets').weighted)
-#     #channel.Add(TightIsoOS.Hist('W3Jets').weighted)
-#     channel.Add(TightIsoOS.Hist('TTJets').weighted)
-#     channel.Add(TightIsoOS.Hist('T_tW').weighted)
-#     channel.Add(TightIsoOS.Hist('WW').weighted)
-#     channel.Add(TightIsoOS.Hist('QCDdata').weighted)
-#     channel.Add(TightIsoOS.Hist('Data').weighted)
-# 
-#     channel.Write()
-#     rootfile.Close()
 
 def saveQCD(QCDlooseOS, QCDlooseSS, QCDtightSS, var, sys, prefixLabel, mass, corr=False):
 
