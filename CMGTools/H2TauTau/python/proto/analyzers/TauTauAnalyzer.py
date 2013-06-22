@@ -1,4 +1,5 @@
 import math
+from fnmatch import fnmatch as fnm
 from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.DiObject import TauTau
@@ -10,6 +11,12 @@ from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
 from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
 from CMGTools.RootTools.statistics.Counter import Counters
+
+### TauID WP summer13
+#           loose  medium tight
+# old mva > 0.795, 0.884, 0.921  
+# mva2    > 0.85 , 0.90 , 0.94
+# 3hit    < 2    , 1    , 0.8
 
 class TauTauAnalyzer( DiLeptonAnalyzer ):
 
@@ -35,10 +42,6 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
          'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_v6',
          'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v6']
 
-        #self.handles['leptons'] = AutoHandle(
-        #    'cmgTauSel',
-        #    'std::vector<cmg::Tau>'
-        #    )
         if self.cfg_comp.isMC and ("DY" in self.cfg_comp.name or "W" in self.cfg_comp.name or "TTJets" in self.cfg_comp.name or "Higgs" in self.cfg_comp.name):
             self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                      'std::vector<reco::GenParticle>' )
@@ -97,7 +100,15 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
 
     def bestDiLepton(self, diLeptons):
         '''Returns the best diLepton (the one with best isolation).'''
-        return max( [ (min(dilep.leg1().tauID("byRawIsoMVA"), dilep.leg2().tauID("byRawIsoMVA")), dilep) for dilep in diLeptons ] )[1]
+        iso = self.cfg_ana.isolation
+        if iso == 'mva'  : #### Tau ID MVA
+          return max( [ (min(dilep.leg1().tauID("byRawIsoMVA"), dilep.leg2().tauID("byRawIsoMVA")), dilep) for dilep in diLeptons ] )[1]
+        if iso == 'mva2' : #### Tau ID MVA2
+          return max( [ (min(dilep.leg1().tauID("byIsolationMVA2raw"), dilep.leg2().tauID("byIsolationMVA2raw")), dilep) for dilep in diLeptons ] )[1]
+        if iso == 'db3h' : #### Tau ID deltaBeta 3 hits
+          return min( [ (max(dilep.leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits"), dilep.leg2().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits")), dilep) for dilep in diLeptons ] )[1]
+        
+        #### highest sum pt pair
         #return max( [ (dilep.sumPt(), dilep) for dilep in diLeptons ] )[1]
     
     def process(self, iEvent, event):
@@ -117,15 +128,8 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
           if not diLepton.leg2() in event.leptons:
             event.leptons += [diLepton.leg2()]
         self.shiftEnergyScale(event)
-
-        if hasattr(self.cfg_ana,'HCP_matching'):
-            event.triggerObjects=[]
  
 	result = self.selectionSequence(event, fillCounter=True)
-
-	#if event.eventId in [212391570,227704571,254997006,34410222]:
-	#    print "found event"
-	#    print eventId,result
         
 	event.rawMET=self.handles['rawMET'].product()
         
@@ -139,54 +143,26 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
 	        trigres=triggerResults.accept(index)
 	    setattr(event,trig,trigres)
 
-        if hasattr(self.cfg_ana,'HCP_matching'):
-            event.l1TrigMatched=True
-            event.l2TrigMatched=True
 	
         # select non signal dileptons with loose cuts
         if result is False:
-            # Post-Preapproval version
-            if hasattr(self.cfg_ana,'HCP_matching'):
-                selDiLeptons = [ diL for diL in event.diLeptons if \
-                             self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
-			     self.testNonLeg( diL.leg1() ) and self.testNonLeg( diL.leg2() ) and \
-			     (self.testLeg( diL.leg1() ) or self.testLeg( diL.leg2() )) ]
-	    else:
-	        selDiLeptons = [ diL for diL in event.diLeptonsTrigMatched if \
-                             self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
-			     self.testNonLeg( diL.leg1() ) and self.testNonLeg( diL.leg2() ) and \
-			     (self.testLeg( diL.leg1() ) or self.testLeg( diL.leg2() )) ]
-                if len(selDiLeptons)==0:
-                    selDiLeptons = [ diL for diL in event.diLeptons if \
-                             self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
-			     self.testNonLeg( diL.leg1() ) and self.testNonLeg( diL.leg2() ) and \
-			     (self.testLeg( diL.leg1() ) or self.testLeg( diL.leg2() )) ]
-            # loose reference version
-            #selDiLeptons = [ diL for diL in event.diLeptonsTrigMatched if \
-            #                 self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
-		#	     self.testLooseLeg( diL.leg1() ) and self.testLooseLeg( diL.leg2() ) and \
-		#	     (self.testLeg( diL.leg1() ) or self.testLeg( diL.leg2() )) ]
-            # std. medium iso version
-            #selDiLeptons = [ diL for diL in event.diLeptonsTrigMatched if \
-            #                 self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
-		#	     self.testNonLeg( diL.leg1() ) and self.testNonLeg( diL.leg2() ) and \
-		#	     (self.testStdMediumLeg( diL.leg1() ) or self.testStdMediumLeg( diL.leg2() )) ]
-            # std. tight iso version
-            #selDiLeptons = [ diL for diL in event.diLeptonsTrigMatched if \
-            #                 self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
-		#	     self.testLooseStdLeg( diL.leg1() ) and self.testLooseStdLeg( diL.leg2() ) and \
-		#	     (self.testStdTightLeg( diL.leg1() ) or self.testStdTightLeg( diL.leg2() )) ]
-            # relax cuts completely
-	    #if len(selDiLeptons)==0:
-	    #    selDiLeptons=event.diLeptons
-            if len(selDiLeptons)==0:
-                return False
-            event.diLepton = self.bestDiLepton( selDiLeptons )
-            event.leg1 = event.diLepton.leg1()
-            event.leg2 = event.diLepton.leg2()
-            event.isSignal = False
+	  selDiLeptons = [ diL for diL in event.diLeptonsTrigMatched if \
+                           self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
+	                   self.testNonLeg( diL.leg1() ) and self.testNonLeg( diL.leg2() ) and \
+	                  (self.testLeg( diL.leg1() ) or self.testLeg( diL.leg2() )) ]
+          if len(selDiLeptons)==0:
+              selDiLeptons = [ diL for diL in event.diLeptons if \
+                               self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
+	                       self.testNonLeg( diL.leg1() ) and self.testNonLeg( diL.leg2() ) and \
+			       (self.testLeg( diL.leg1() ) or self.testLeg( diL.leg2() )) ]
+          if len(selDiLeptons)==0:
+            return False
+          event.diLepton = self.bestDiLepton( selDiLeptons )
+          event.leg1 = event.diLepton.leg1()
+          event.leg2 = event.diLepton.leg2()
+          event.isSignal = False
         else:
-            event.isSignal = True
+          event.isSignal = True
 
 
         # count muons
@@ -200,9 +176,8 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
                    electron.looseIdForTriLeptonVeto()           and \
                    self.testVertex( electron )           and \
                    electron.relIsoAllChargedDB05() < 0.3]
-
-        # if len(event.muons)+len(event.electrons) > 0:
-        #    return False
+        ####### what ID for veto means
+        ####### http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/CMG/CMGTools/RootTools/python/physicsobjects/HTauTauElectron.py?revision=1.10&view=markup
 
         if self.cfg_comp.isMC and ("WJets" in self.cfg_comp.name or "W0Jets" in self.cfg_comp.name or "W1Jets" in self.cfg_comp.name or "W2Jets" in self.cfg_comp.name or "W3Jets" in self.cfg_comp.name or "W4Jets" in self.cfg_comp.name
 	                        or "DYJets" in self.cfg_comp.name or "DY0Jets" in self.cfg_comp.name or "DY1Jets" in self.cfg_comp.name or "DY2Jets" in self.cfg_comp.name or "DY3Jets" in self.cfg_comp.name or "DY4Jets" in self.cfg_comp.name):
@@ -343,34 +318,19 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             event.generatorWeight = generator.weight()
             event.eventWeight *= event.generatorWeight
 
-#COLIN: no genParticle collection present in embedded samples diTau files...
-##         if self.cfg_comp.isEmbed:
-##             genParticles = self.handles['genParticles'].product()
-##             event.genParticles = map( GenParticle, genParticles)
-## 	    for gen in genParticles:
-##                 if abs(gen.pdgId()) in [23]:
-##                     event.genMass=gen.mass()
-	
+        ## third lepton veto
+        #if len(event.muons)+len(event.electrons) > 0:
+          #import pdb ; pdb.set_trace()
+          #if len(event.electrons) > 0 : print 'electron pt',event.electrons[0].pt()
+          #if len(event.muons)     > 0 : print 'muon pt'    ,event.muons[0].pt()
+          #return False
+        
         return True
 
-
-# trigger: debug it and make sure that trigger matching is working
-# build trigger list for data
-# build trigger map 
-
-# 3rd lepton veto:
-# look for electron or muon that pass loose id
-# none of them 
 
     def selectionSequence(self, event, fillCounter, leg1IsoCut=None, leg2IsoCut=None):
 
         if fillCounter: self.counters.counter('DiLepton').inc('all events')
-        # if not self.triggerList.triggerPassed(event.triggerObject):
-        #    return False
-        # self.counters.counter('DiLepton').inc('trigger passed ')
-
-        # if event.eventId == 155035:
-        #    import pdb; pdb.set_trace()
             
         if len(event.diLeptons) == 0:
             return False
@@ -378,62 +338,75 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
 
         # testing di-lepton itself
         selDiLeptons = event.diLeptons
-        # selDiLeptons = self.selectDiLeptons( selDiLeptons ) 
         
         if not self.leptonAccept( event.leptons ):
             return False
         if fillCounter: self.counters.counter('DiLepton').inc('lepton accept')
 
-
-        if len(self.cfg_comp.triggers)>0:
-            # trigger matching leg1
-            selDiLeptons = [diL for diL in selDiLeptons if \
-                            self.trigMatched(event, diL.leg1(), 'leg1')]
-            if len(selDiLeptons) == 0:
-                event.l1TrigMatched=False
-                if hasattr(self.cfg_ana,'HCP_matching'):
-	            return False
-            else:
-                if fillCounter: self.counters.counter('DiLepton').inc('leg1 trig matched')
-                event.l1TrigMatched=True
-
-        if len(self.cfg_comp.triggers)>0:
-            # trigger matching leg2
-            selDiLeptons = [diL for diL in selDiLeptons if \
-                            self.trigMatched(event, diL.leg2(), 'leg2')]
-            if len(selDiLeptons) == 0:
-                event.l2TrigMatched=False
-                if hasattr(self.cfg_ana,'HCP_matching'):
-	            return False
-            else:
-                if fillCounter: self.counters.counter('DiLepton').inc('leg2 trig matched')
-                event.l2TrigMatched=True
-
-        if len(self.cfg_comp.triggers)>0 and len(self.cfg_ana.triggerMap[ event.hltPath ])>2:
-            # trigger matching jet
-            cmgJets = self.handles['jets'].product()
-	    jets=[]
-            for cmgJet in cmgJets:
-                jet = Jet( cmgJet )
-                if self.testJet( jet ):
-                    jets.append(jet)
-
-	    selDiLeptonsNew=[]
-	    for diL in selDiLeptons:
-                cleanJets, dummy = cleanObjectCollection( jets, masks = [ diL.leg1(), diL.leg2() ], deltaRMin = 0.5 )
-                if len(cleanJets)>0 and self.trigMatched(event, cleanJets[0], 'jet'):
-                    selDiLeptonsNew+=[diL]
-	    selDiLeptons=selDiLeptonsNew
-            if len(selDiLeptons) == 0:
-                event.jetTrigMatched=False
-                if hasattr(self.cfg_ana,'HCP_matching'):
-	            return False
-            else:
-                if fillCounter: self.counters.counter('DiLepton').inc('jet trig matched')
-                event.jetTrigMatched=True
-
-        event.diLeptonsTrigMatched = selDiLeptons
-
+        matching = {}
+        for trig in event.hltPaths :
+                        # {trigName:leg1,leg2,jet}
+          matching.update({trig:[-99,-99,-99]})
+                
+        event.diLeptonsTrigMatched = []
+        
+        for trig in event.hltPaths :
+          selDiLeptons = event.diLeptons
+          if len(self.cfg_comp.triggers)>0:
+              # trigger matching leg1
+              selDiLeptons = [diL for diL in selDiLeptons if self.trigMatched(event, diL.leg1(), 'leg1', trig)]
+              if len(selDiLeptons) == 0:
+                  matching[trig][0]=0
+              else:
+                  if fillCounter: self.counters.counter('DiLepton').inc('leg1 trig matched')
+                  matching[trig][0]=1
+  
+          if len(self.cfg_comp.triggers)>0:
+              # trigger matching leg2
+              selDiLeptons = [diL for diL in selDiLeptons if self.trigMatched(event, diL.leg2(), 'leg2', trig)]
+              if len(selDiLeptons) == 0:
+                  matching[trig][1]=0
+              else:
+                  if fillCounter: self.counters.counter('DiLepton').inc('leg2 trig matched')
+                  matching[trig][1]=1
+  
+          if len(self.cfg_comp.triggers)>0 and len(self.cfg_ana.triggerMap[ trig ])>2:
+              # trigger matching jet
+              cmgJets = self.handles['jets'].product()
+	      jets=[]
+              for cmgJet in cmgJets:
+                  jet = Jet( cmgJet )
+                  if self.testJet( jet ):
+                      jets.append(jet)
+  
+	      selDiLeptonsNew=[]
+	      for diL in selDiLeptons:
+                  cleanJets, dummy = cleanObjectCollection( jets, masks = [ diL.leg1(), diL.leg2() ], deltaRMin = 0.5 )
+                  if len(cleanJets)>0 and self.trigMatched(event, cleanJets[0], 'jet', trig):
+                      selDiLeptonsNew += [diL]
+	      selDiLeptons = selDiLeptonsNew
+              if len(selDiLeptons) == 0:
+                  matching[trig][2]=0
+              else:
+                  if fillCounter: self.counters.counter('DiLepton').inc('jet trig matched')
+                  matching[trig][2]=1
+          
+          event.diLeptonsTrigMatched += selDiLeptons
+        
+        event.diLeptonsTrigMatched = set(event.diLeptonsTrigMatched)
+        
+        ### need unix style wild card to macth different trigger versions in data
+        for trig in matching.keys() :
+          if fnm(trig,'HLT_DoubleMediumIsoPFTau35_Trk*_eta2p1_v*') :
+            event.l1TrigMatched_diTau = matching[trig][0]
+            event.l2TrigMatched_diTau = matching[trig][1]      
+        
+        for trig in matching.keys() :
+          if fnm(trig,'HLT_DoubleMediumIsoPFTau*_Trk*_eta2p1_Jet30_v*') :
+            event.l1TrigMatched_diTauJet  = matching[trig][0]
+            event.l2TrigMatched_diTauJet  = matching[trig][1]
+            event.jetTrigMatched_diTauJet = matching[trig][2]        
+        
         # testing leg1
         selDiLeptons = [ diL for diL in selDiLeptons if \
                          self.testLeg1( diL.leg1(), leg1IsoCut ) ]
@@ -464,8 +437,11 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
         # exactly one? 
         if len(selDiLeptons)==0:
             return False
+        #elif len(selDiLeptons)==1:
         elif len(selDiLeptons)==1:
             if fillCounter: self.counters.counter('DiLepton').inc('exactly 1 di-lepton')
+        #else :
+        #    if fillCounter: self.counters.counter('DiLepton').inc('{NUM} di-lepton(s)'.format(NUM=len(selDiLeptons)))
         
         event.diLepton = self.bestDiLepton( selDiLeptons )
         event.leg1 = event.diLepton.leg1()
@@ -473,71 +449,57 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
 
         return True
     
-
-
     def testLeg1(self, leg, iso=None):
-        #return True
-        #return self.testNonLeg(leg)
         return self.testLeg(leg)
-        #return self.testStdMediumLeg(leg)
-        #return self.testStdTightLeg(leg)
+
     def testLeg2(self, leg, iso=None):
-        #return True
-        #return self.testNonLeg(leg)
         return self.testLeg(leg)
-        #return self.testStdMediumLeg(leg)
-        #return self.testStdTightLeg(leg)
 
     def testLeg(self, leg):
-        return (leg.pt()>45 and abs(leg.eta())<2.1 and \
-	   leg.tauID("decayModeFinding")>0.5 and \
-	   leg.tauID("byMediumIsoMVA")>0.5 and \
-	   leg.tauID("againstElectronLoose")>0.5 and \
-	   leg.tauID("againstMuonLoose")>0.5)
-
-    def testStdMediumLeg(self, leg):
-        return (leg.pt()>45 and abs(leg.eta())<2.1 and \
-	   leg.tauID("decayModeFinding")>0.5 and \
-	   leg.tauID("byMediumCombinedIsolationDeltaBetaCorr")>0.5 and \
-	   leg.tauID("againstElectronLoose")>0.5 and \
-	   leg.tauID("againstMuonLoose")>0.5)
-
-    def testStdTightLeg(self, leg):
-        return (leg.pt()>45 and abs(leg.eta())<2.1 and \
-	   leg.tauID("decayModeFinding")>0.5 and \
-	   leg.tauID("byTightCombinedIsolationDeltaBetaCorr")>0.5 and \
-	   leg.tauID("againstElectronLoose")>0.5 and \
-	   leg.tauID("againstMuonLoose")>0.5)
-
-    #def selectDiLeptons(self, diLeptons, cutString=None):
-    #    selDiLeptons = [ diL for diL in diLeptons if \
-    #                     (diL.leg1().tauID("byTightIsoMVA")>0.5 or diL.leg2().tauID("byTightIsoMVA")>0.5)]
-    #    if len(selDiLeptons) > 0:
-    #        self.counters.counter('DiLepton').inc( 'di-lepton cut string ok')
-    #    return selDiLeptons
+        leg_pt  = self.cfg_ana.pt
+        leg_eta = self.cfg_ana.eta
+        iso     = self.cfg_ana.isolation
+        
+        if iso == 'mva'  : #### Tau ID MVA
+          test_leg_iso = leg.tauID("byRawIsoMVA") > 0.5 # 0.884       
+        if iso == 'mva2' : #### Tau ID MVA2
+          test_leg_iso = leg.tauID("byIsolationMVA2raw") > 0.5 # 0.90
+        if iso == 'db3h' : #### Tau ID deltaBeta 3 hits
+          test_leg_iso = leg.tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") < 15. #15.
+        
+        return (test_leg_iso                                 and \
+                leg.pt()>leg_pt and abs(leg.eta()) < leg_eta and \
+	        leg.tauID("decayModeFinding")      > 0.5     and \
+	        leg.tauID("againstElectronLoose")  > 0.5     and \
+	        leg.tauID("againstMuonLoose2")     > 0.5)
 
     def testLooseLeg(self, leg):
-        return (leg.pt()>45 and abs(leg.eta())<2.1 and \
-	   leg.tauID("decayModeFinding")>0.5 and \
-	   leg.tauID("byRawIsoMVA")>0.5 and \
-	   #leg.tauID("byRawIsoMVA")>0.795 and \
-	   leg.tauID("againstElectronLoose")>0.5 and \
-	   leg.tauID("againstMuonLoose")>0.5)
-
-    def testLooseStdLeg(self, leg):
-        return (leg.pt()>45 and abs(leg.eta())<2.1 and \
-	   leg.tauID("decayModeFinding")>0.5 and \
-	   leg.tauID("byLooseCombinedIsolationDeltaBetaCorr")>0.5 and \
-	   leg.tauID("againstElectronLoose")>0.5 and \
-	   leg.tauID("againstMuonLoose")>0.5)
+        leg_pt  = self.cfg_ana.pt
+        leg_eta = self.cfg_ana.eta
+        iso     = self.cfg_ana.isolation
+        
+        if iso == 'mva'  : #### Tau ID MVA
+          test_leg_iso = leg.tauID("byRawIsoMVA") > 0.5        
+        if iso == 'mva2' : #### Tau ID MVA2
+          test_leg_iso = leg.tauID("byIsolationMVA2raw") > 0.5
+        if iso == 'db3h' : #### Tau ID deltaBeta 3 hits
+          test_leg_iso = leg.tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") < 15. #15.
+        
+        return (test_leg_iso                                 and \
+                leg.pt()>leg_pt and abs(leg.eta()) < leg_eta and \
+	        leg.tauID("decayModeFinding")      > 0.5     and \
+	        leg.tauID("againstElectronLoose")  > 0.5     and \
+	        leg.tauID("againstMuonLoose2")     > 0.5)
 
     def testNonLeg(self, leg):
-        return (leg.pt()>45 and abs(leg.eta())<2.1 and \
-	   leg.tauID("decayModeFinding")>0.5 and \
-	   leg.tauID("againstElectronLoose")>0.5 and \
-	   leg.tauID("againstMuonLoose")>0.5)
+        leg_pt  = self.cfg_ana.pt
+        leg_eta = self.cfg_ana.eta
+        
+        return (leg.pt()>leg_pt and abs(leg.eta()) < leg_eta and \
+	        leg.tauID("decayModeFinding")      > 0.5     and \
+	        leg.tauID("againstElectronLoose")  > 0.5     and \
+	        leg.tauID("againstMuonLoose2")     > 0.5)
 
-    
     def muonIso(self, muon ):
         '''dbeta corrected pf isolation with all charged particles instead of
         charged hadrons'''
@@ -567,7 +529,6 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
                muon.isTrackerMuon() and \
                muon.sourcePtr().userFloat('isPFMuon') and \
                abs(muon.dz()) < 0.2
-               # self.testVertex( muon ) 
             
     def buildMuons(self, cmgLeptons, event):
         '''Build muons for veto, associate best vertex, select loose ID muons.
@@ -580,7 +541,6 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
                 continue
             leptons.append( pyl )
         return leptons
-
 
     def buildElectrons(self, cmgOtherLeptons, event):
         '''Build electrons for third lepton veto, associate best vertex.
@@ -595,13 +555,14 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             otherLeptons.append( pyl )
         return otherLeptons
 
-
-    def trigMatched(self, event, leg, legName):
+    def trigMatched(self, event, leg, legName, trigpath):
         '''Returns true if the leg is matched to a trigger object as defined in the
         triggerMap parameter'''
         if not hasattr( self.cfg_ana, 'triggerMap'):
             return True
-        path = event.hltPath
+        #path = event.hltPath this works if you have only one path
+        path = trigpath
+        #import pdb ; pdb.set_trace()
         triggerObjects = event.triggerObjects
         filters = self.cfg_ana.triggerMap[ path ]
         filter = None
@@ -614,13 +575,12 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
         else:
             raise ValueError( 'legName should be leg1 or leg2, not {leg}'.format(
                 leg=legName )  )
-        # the dR2Max value is 0.3^2
+        # the default dR2Max value is 0.3^2
         pdgIds = None
         if len(filter) == 2:
             filter, pdgIds = filter[0], filter[1]
         return triggerMatched(leg, triggerObjects, path, filter,
-                              # dR2Max=0.089999,
-                              dR2Max=0.25,
+                              dR2Max=0.5*0.5,
                               pdgIds=pdgIds )
 
     def testJetID(self, jet):
