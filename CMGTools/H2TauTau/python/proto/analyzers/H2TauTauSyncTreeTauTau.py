@@ -2,6 +2,7 @@ from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.H2TauTau.proto.analyzers.ntuple import *
 
+#import pdb ; pdb.set_trace()
 
 class H2TauTauSyncTreeTauTau( TreeAnalyzerNumpy ):
     '''Tree producer for the H->tau tau analysis.
@@ -47,7 +48,16 @@ class H2TauTauSyncTreeTauTau( TreeAnalyzerNumpy ):
         var( tr, 'trigweight_1')
         var( tr, 'idweight_1')
         var( tr, 'isoweight_1')
-        
+        var( tr, 'byCombinedIsolationDeltaBetaCorrRaw3Hits_1')
+        var( tr, 'againstElectronMVA3raw_1')
+        var( tr, 'againstElectronMVA3category_1')
+        var( tr, 'byIsolationMVA2raw_1')
+        var( tr, 'againstMuonLoose2_1')
+        var( tr, 'againstMuonMedium2_1')
+        var( tr, 'againstMuonTight2_1')
+        var( tr, 'againstElectronLooseMVA3_1')
+        var( tr, 'againstElectronLoose_1')
+
         
         var( tr, 'gen_pt_2')
         var( tr, 'pt_2')
@@ -64,6 +74,15 @@ class H2TauTauSyncTreeTauTau( TreeAnalyzerNumpy ):
         var( tr, 'trigweight_2')
         var( tr, 'idweight_2')
         var( tr, 'isoweight_2')
+        var( tr, 'byCombinedIsolationDeltaBetaCorrRaw3Hits_2')
+        var( tr, 'againstElectronMVA3raw_2')
+        var( tr, 'againstElectronMVA3category_2')
+        var( tr, 'byIsolationMVA2raw_2')
+        var( tr, 'againstMuonLoose2_2')
+        var( tr, 'againstMuonMedium2_2')
+        var( tr, 'againstMuonTight2_2')
+        var( tr, 'againstElectronLooseMVA3_2')
+        var( tr, 'againstElectronLoose_2')
         
         var( tr, 'met')
         var( tr, 'metphi')
@@ -118,10 +137,26 @@ class H2TauTauSyncTreeTauTau( TreeAnalyzerNumpy ):
         var( tr, 'njets', int)
         var( tr, 'njetspt20', int)
 
-        var( tr, 'l1TrigMatched', int)
-        var( tr, 'l2TrigMatched', int)
-        var( tr, 'jetTrigMatched', int)
+        var( tr, 'l1TrigMatched_diTau', int)
+        var( tr, 'l2TrigMatched_diTau', int)
 
+        var( tr, 'l1TrigMatched_diTauJet' , int)
+        var( tr, 'l2TrigMatched_diTauJet' , int)
+        var( tr, 'jetTrigMatched_diTauJet', int)
+
+
+        ####### TRIGGER WEIGHTS
+        var( tr, 'triggerWeight_diTauJet' )
+        var( tr, 'triggerEffMC_diTauJet'  )
+        var( tr, 'triggerEffData_diTauJet')
+
+        var( tr, 'triggerWeight_diTau' )
+        var( tr, 'triggerEffMC_diTau'  )
+        var( tr, 'triggerEffData_diTau')
+
+        ####### LEPTON VETO 
+        var( tr, 'muon1Pt'    )
+        var( tr, 'electron1Pt')
 
     def declareHandles(self):
         super(H2TauTauSyncTreeTauTau, self).declareHandles()
@@ -132,26 +167,29 @@ class H2TauTauSyncTreeTauTau( TreeAnalyzerNumpy ):
         self.handles['pfmetsig'] = AutoHandle(
             'pfMetSignificance',
             'cmg::METSignificance' 
-            )        
-        
+            )                
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
+#         import pdb ; pdb.set_trace()
         #COLIN : tau tau problem:
         # not event.thirdLeptonVeto or \
         # not event.leptonAccept:
+        # len(event.muons)+len(event.electrons) > 0 or no need to apply it here, it is applied in TauTauAnalyzer.py
         if not event.isSignal or \
-           len(event.muons)+len(event.electrons) > 0 or \
            (hasattr(event, 'thirdLeptonVeto') and not event.thirdLeptonVeto ) or \
-           (hasattr(event, 'leptonAccept') and not event.leptonAccept ):
+           (hasattr(event, 'leptonAccept')    and not event.leptonAccept    ) :
             return False
         tr = self.tree
         tr.reset()
-        import pdb ; pdb.set_trace()
-        #### to be commented for embedded, WHY?!
-        fill( tr, 'run', event.run) 
-        fill( tr, 'lumi',event.lumi)
-        fill( tr, 'evt', event.eventId)
+        #import pdb ; pdb.set_trace()
+        if hasattr(event,"run"):
+            fill( tr,'run', event.run)
+        if hasattr(event,"lumi"):
+            fill( tr,'lumi', event.lumi)
+        if hasattr(event,"eventId"):
+            fill( tr,'evt', event.eventId)
+                
         
         fill( tr, 'npv', len(event.goodVertices)) 
         nPU = -1
@@ -179,15 +217,24 @@ class H2TauTauSyncTreeTauTau( TreeAnalyzerNumpy ):
         fill( tr, 'eta_1', leg1.eta())
         fill( tr, 'm_1', leg1.mass())
         fill( tr, 'q_1', leg1.charge())
-        fill( tr, 'iso_1', leg1.tauID("byRawIsoMVA"))
+        fill( tr, 'iso_1', leg1.tauID("byRawIsoMVA"))        
         fill( tr, 'antiele_1', leg2.tauID("againstElectronMVA")) # we probably need the mva output here. I guess this is a working point
         #fill( tr, 'mva_1', leg1.tauID("againstElectronMVA")) # we probably need the mva output here. I guess this is a working point
         fill( tr, 'passid_1',  1)
         fill( tr, 'passiso_1', 1)
         fill( tr, 'mt_1', event.diLepton.mTLeg1())
         fill( tr, 'trigweight_1', leg1.triggerWeight)
-        fill( tr, 'idweight_1', leg1.idWeight)
-        fill( tr, 'isoweight_1', leg1.isoWeight)
+        fill( tr, 'idweight_1'  , leg1.idWeight)
+        fill( tr, 'isoweight_1' , leg1.isoWeight)
+        fill( tr, 'byCombinedIsolationDeltaBetaCorrRaw3Hits_1', leg1.tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits"))
+        fill( tr, 'againstElectronMVA3raw_1'     , leg1.tauID("againstElectronMVA3raw"))
+        fill( tr, 'againstElectronMVA3category_1', leg1.tauID("againstElectronMVA3category"))
+        fill( tr, 'byIsolationMVA2raw_1'         , leg1.tauID("byIsolationMVA2raw"))
+        fill( tr, 'againstMuonLoose2_1'          , leg1.tauID("againstMuonLoose2"))
+        fill( tr, 'againstMuonMedium2_1'         , leg1.tauID("againstMuonMedium2"))
+        fill( tr, 'againstMuonTight2_1'          , leg1.tauID("againstMuonTight2"))
+        fill( tr, 'againstElectronLooseMVA3_1'   , leg1.tauID("againstElectronLooseMVA3"))
+        fill( tr, 'againstElectronLoose_1'       , leg1.tauID("againstElectronLoose"))
         
         fill( tr, 'gen_pt_2', leg2.physObj.genJetp4().pt())
         fill( tr, 'pt_2', leg2.pt())
@@ -203,6 +250,15 @@ class H2TauTauSyncTreeTauTau( TreeAnalyzerNumpy ):
         fill( tr, 'trigweight_2', leg2.triggerWeight)
         fill( tr, 'idweight_2', leg2.idWeight)
         fill( tr, 'isoweight_2', leg2.isoWeight)
+        fill( tr, 'byCombinedIsolationDeltaBetaCorrRaw3Hits_2', leg2.tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits"))
+        fill( tr, 'againstElectronMVA3raw_2'     , leg2.tauID("againstElectronMVA3raw"))
+        fill( tr, 'againstElectronMVA3category_2', leg2.tauID("againstElectronMVA3category"))
+        fill( tr, 'byIsolationMVA2raw_2'         , leg2.tauID("byIsolationMVA2raw"))
+        fill( tr, 'againstMuonLoose2_2'          , leg2.tauID("againstMuonLoose2"))
+        fill( tr, 'againstMuonMedium2_2'         , leg2.tauID("againstMuonMedium2"))
+        fill( tr, 'againstMuonTight2_2'          , leg2.tauID("againstMuonTight2"))
+        fill( tr, 'againstElectronLooseMVA3_2'   , leg2.tauID("againstElectronLooseMVA3"))
+        fill( tr, 'againstElectronLoose_2'       , leg2.tauID("againstElectronLoose"))
         
         met = self.handles['pfmetraw'].product()[0]
         fill( tr, 'met', met.pt()) # raw 
@@ -213,19 +269,25 @@ class H2TauTauSyncTreeTauTau( TreeAnalyzerNumpy ):
         fill( tr, 'pzetamiss', event.diLepton.pZetaMET())
 
         metsig = self.handles['pfmetsig'].product().significance()
-        # if hasattr(event.diLepton, 'mvaMetSig'):
-        #     metsig = event.diLepton.mvaMetSig.significance()
         fill( tr, 'metcov00', metsig(0,0))
         fill( tr, 'metcov01', metsig(0,1))
         fill( tr, 'metcov10', metsig(1,0))
         fill( tr, 'metcov11', metsig(1,1))
+        
+#         import pdb ; pdb.set_trace()
+        
+#         mvametsig = self.handles['recoilcorrectedmvamet'].product().significance()
+#         fill( tr, 'mvacov00', mvametsig(0,0))
+#         fill( tr, 'mvacov01', mvametsig(0,1))
+#         fill( tr, 'mvacov10', mvametsig(1,0))
+#         fill( tr, 'mvacov11', mvametsig(1,1))
 
         if hasattr( event.diLepton, 'mvaMetSig'):
-            mvametsig = event.diLepton.mvaMetSig.significance()
-            fill( tr, 'mvacov00', mvametsig(0,0))
-            fill( tr, 'mvacov01', mvametsig(0,1))
-            fill( tr, 'mvacov10', mvametsig(1,0))
-            fill( tr, 'mvacov11', mvametsig(1,1))
+          mvametsig = event.diLepton.mvaMetSig.significance()
+          fill( tr, 'mvacov00', mvametsig(0,0))
+          fill( tr, 'mvacov01', mvametsig(0,1))
+          fill( tr, 'mvacov10', mvametsig(1,0))
+          fill( tr, 'mvacov11', mvametsig(1,1))
 
         nJets = len(event.cleanJets30)
         nJetsPt20 = len(event.cleanJets)
@@ -255,7 +317,7 @@ class H2TauTauSyncTreeTauTau( TreeAnalyzerNumpy ):
             fill( tr, 'jpass_2'  , j2.passPuJetId("full53x", 2))
 
         if len(event.cleanBJets)>0:
-            fill( tr, 'bpt', event.cleanBJets[0].pt())
+            fill( tr, 'bpt' , event.cleanBJets[0].pt())
             fill( tr, 'beta', event.cleanBJets[0].eta())
             fill( tr, 'bphi', event.cleanBJets[0].phi())
 
@@ -275,24 +337,61 @@ class H2TauTauSyncTreeTauTau( TreeAnalyzerNumpy ):
             fill( tr, 'visjeteta', vbf.visjeteta)
             fill( tr, 'ptvis', vbf.ptvis)
 
-	#if hasattr(event,"l1TrigMatched"):
-        #    fill( tr, 'l1TrigMatched', event.l1TrigMatched )
-	#else:
-        #    fill( tr, 'l1TrigMatched', -1 )
+        # trigger matching for diTau trigger present in parked dataset 
+	if hasattr(event,"l1TrigMatched_diTau") and hasattr(event,"l2TrigMatched_diTau") :
+          fill( tr, 'l1TrigMatched_diTau' , event.l1TrigMatched_diTau )
+          fill( tr, 'l2TrigMatched_diTau' , event.l2TrigMatched_diTau )
+	else:
+          fill( tr, 'l1TrigMatched_diTau' , 0)
+          fill( tr, 'l2TrigMatched_diTau' , 0)
 
-	#if hasattr(event,"l2TrigMatched"):
-        #    fill( tr, 'l2TrigMatched', event.l2TrigMatched )
-	#else:
-        #    fill( tr, 'l2TrigMatched', -1 )
+        # trigger matching for diTauJet trigger 
+	if hasattr(event,"l1TrigMatched_diTauJet") and hasattr(event,"l2TrigMatched_diTauJet") and hasattr(event,"jetTrigMatched_diTauJet"):
+          fill( tr, 'l1TrigMatched_diTauJet' , event.l1TrigMatched_diTauJet )
+          fill( tr, 'l2TrigMatched_diTauJet' , event.l2TrigMatched_diTauJet )
+          fill( tr, 'jetTrigMatched_diTauJet', event.jetTrigMatched_diTauJet)
+	else:
+          fill( tr, 'l1TrigMatched_diTauJet' , 0)
+          fill( tr, 'l2TrigMatched_diTauJet' , 0)
+          fill( tr, 'jetTrigMatched_diTauJet', 0)
 
-	#if hasattr(event,"jetTrigMatched"):
-        #    fill( tr, 'jetTrigMatched', event.jetTrigMatched )
-	#else:
-        #    fill( tr, 'jetTrigMatched', -1 )
+
+	if hasattr(event,"triggerWeight_diTauJet") and hasattr(event,"triggerEffMC_diTauJet") and hasattr(event,"triggerEffData_diTauJet"):
+          fill( tr, 'triggerWeight_diTauJet' ,event.triggerWeight_diTauJet )
+          fill( tr, 'triggerEffMC_diTauJet'  ,event.triggerEffMC_diTauJet  )
+          fill( tr, 'triggerEffData_diTauJet',event.triggerEffData_diTauJet)
+        else :
+          fill( tr, 'triggerWeight_diTauJet' ,0)
+          fill( tr, 'triggerEffMC_diTauJet'  ,0)
+          fill( tr, 'triggerEffData_diTauJet',0)
+
+
+	if hasattr(event,"triggerWeight_diTau") and hasattr(event,"triggerEffMC_diTau") and hasattr(event,"triggerEffData_diTau"):
+          fill( tr, 'triggerWeight_diTau' ,event.triggerWeight_diTau )
+          fill( tr, 'triggerEffMC_diTau'  ,event.triggerEffMC_diTau  )
+          fill( tr, 'triggerEffData_diTau',event.triggerEffData_diTau)
+        else :
+          fill( tr, 'triggerWeight_diTau' ,0)
+          fill( tr, 'triggerEffMC_diTau'  ,0)
+          fill( tr, 'triggerEffData_diTau',0)
+
 
         fill( tr, 'nbtag', len(event.cleanBJets))
         fill( tr, 'njets', nJets)
         fill( tr, 'njetspt20', nJetsPt20)
-            
+
+        #import pdb ; pdb.set_trace()         
+        if len(event.muons)>0:
+            #import pdb ; pdb.set_trace()
+            fill( tr, 'muon1Pt' , event.muons[0].pt()  )
+	else:
+            fill( tr, 'muon1Pt' , -1 )
+
+        if len(event.electrons)>0:
+            #import pdb ; pdb.set_trace()
+            fill( tr, 'electron1Pt' , event.electrons[0].pt()  )
+	else:
+            fill( tr, 'electron1Pt' , -1 )
+
         self.tree.tree.Fill()
         return True
