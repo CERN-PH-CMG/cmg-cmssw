@@ -374,7 +374,7 @@ def QCDEstimate2(prefix,prefix1,var,xmin,xmax,\
       
       QCDScale=tightLoose
       
-      return QCDlooseOS, QCDScale, QCDlooseSS, QCDtightSS, tightLooseErr/tightLoose
+      return QCDlooseOS, QCDScale, QCDlooseSS, QCDtightSS, tightLoose, tightLooseErr/tightLoose
 
 
 def QCD_WJets_Estimate2(prefix,prefix1,var,xmin,xmax,\

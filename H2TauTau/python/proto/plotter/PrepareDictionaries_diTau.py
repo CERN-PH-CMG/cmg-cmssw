@@ -14,8 +14,11 @@ def lists(just125,susy,run2012) :
   if susy : signal = ['HiggsSUSYBB','HiggsSUSYGluGlu']
   else    : signal = ['HiggsGGH','HiggsVBF','HiggsVH']
   
-  bkg       = ['DYJets','WJets','WW','WZ','ZZ','TTJets','T_tW','Tbar_tW']
-  data2012  = ['data_Run2012A_PromptReco_v1',                                      'data_Run2012B_PromptReco_v1','data_Run2012C_PromptReco_v1','data_Run2012C_PromptReco_v2' ,'data_Run2012D_PromptReco_v1']
+  if susy : bkg    = ['DYJets','WJets','WW','WZ','ZZ','TTJets','T_tW','Tbar_tW','HiggsGGH125','HiggsVBF125','HiggsVH125']
+  else    : bkg    = ['DYJets','WJets','WW','WZ','ZZ','TTJets','T_tW','Tbar_tW']
+  #data2012  = ['data_Run2012A_PromptReco_v1',                                      'data_Run2012B_PromptReco_v1','data_Run2012C_PromptReco_v1','data_Run2012C_PromptReco_v2' ,'data_Run2012D_PromptReco_v1']
+  #embed2012 = ['embed_Run2012A_13Jul2012_v1','embed_Run2012A_recover_06Aug2012_v1','embed_Run2012B_13Jul2012_v4','embed_Run2012C_24Aug2012_v1','embed_Run2012C_PromptReco_v2','embed_2012D_PromptReco_v1'  ]
+  data2012  = ['data_Run2012A_22Jan2013_v1', 'data_Run2012B_22Jan2013_v1','data_Run2012C_22Jan2013_v1','data_Run2012D_22Jan2013_v1']
   embed2012 = ['embed_Run2012A_13Jul2012_v1','embed_Run2012A_recover_06Aug2012_v1','embed_Run2012B_13Jul2012_v4','embed_Run2012C_24Aug2012_v1','embed_Run2012C_PromptReco_v2','embed_2012D_PromptReco_v1'  ]
 
   if just125 : masses = [125]

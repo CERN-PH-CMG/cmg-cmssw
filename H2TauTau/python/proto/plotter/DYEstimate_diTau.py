@@ -5,9 +5,22 @@ from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC_diTau import *
 from CMGTools.RootTools.RootInit import *
 import math
 
+antiLeptons  = ' && l2againstElectronLooseMVA3>0.5 '
+antiLeptons += ' && l1LooseEle>0.5 && l2LooseEle>0.5'
+antiLeptons += ' && l1againstMuonLoose2>0.5 && l2againstMuonLoose2>0.5'
+
+
+
 def embeddedScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, weightsDataMass, weight, prong, trigMatch=True):
     if trigMatch :
-      cutDY = 'abs(jet1Eta)<3.0 && jet1Pt>50. && l1Pt>45 && l2Pt>45 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && isFake==0 && isElectron==0 && l2MVAEle>0.5 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 && (l1TrigMatched==1 && l2TrigMatched==1 && jetTrigMatched!=0)'
+      ### mva
+      #cutDY = 'abs(jet1Eta)<3.0 && jet1Pt>50. && l1Pt>45 && l2Pt>45 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && isFake==0 && isElectron==0 && l2MVAEle>0.5 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 && (l1TrigMatched==1 && l2TrigMatched==1 && jetTrigMatched!=0)'
+#       cutDY = 'l1Pt>45 && l2Pt>45 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && isFake==0 && isElectron==0 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 && (l1TrigMatched==1 && l2TrigMatched==1)'
+      ### mva2
+      #cutDY = 'abs(jet1Eta)<3.0 && jet1Pt>50. && l1Pt>45 && l2Pt>45 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && isFake==0 && isElectron==0 && l2MVAEle>0.5 && l1RawMVA2Iso>0.9 && l2RawMVA2Iso>0.9 && (l1TrigMatched==1 && l2TrigMatched==1 && jetTrigMatched!=0)'
+      ### db3h
+      #cutDY = 'abs(jet1Eta)<3.0 && jet1Pt>50. && l1Pt>45 && l2Pt>45 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && isFake==0 && isElectron==0 && l2MVAEle>0.5 && l1RawDB3HIso<1.0 && l2RawDB3HIso<1.0 && (l1TrigMatched==1 && l2TrigMatched==1 && jetTrigMatched!=0)'
+      cutDY = ' l1Pt>45 && l2Pt>45 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && isFake==0 && isElectron==0 && l1RawDB3HIso<1.0 && l2RawDB3HIso<1.0 && (l1TrigMatched==1 && l2TrigMatched==1)'+ antiLeptons
     else:
       cutDY = 'abs(jet1Eta)<3.0 && jet1Pt>50. && l1Pt>45 && l2Pt>45 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && isFake==0 && isElectron==0 && l2MVAEle>0.5 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 '
     if prong :
@@ -17,10 +30,18 @@ def embeddedScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataM
      			    #50,0,500,
      			    30,0,300,
      			    cut    = cutDY, 
-     			    weight = 'weight/triggerWeight',
+     			    #weight = 'weight/triggerWeight',
+     			    weight = 'weight',
      			    embed  = False)
     
-    cutEmb = 'abs(jet1Eta)<3.0 && jet1Pt>50. && l1Pt>45 && l2Pt>45 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l2MVAEle>0.5 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 '
+    ### mva
+    #cutEmb = 'abs(jet1Eta)<3.0 && jet1Pt>50. && l1Pt>45 && l2Pt>45 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l2MVAEle>0.5 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 '
+#     cutEmb = 'l1Pt>45 && l2Pt>45 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 '
+    ### mva2
+    #cutEmb = 'abs(jet1Eta)<3.0 && jet1Pt>50. && l1Pt>45 && l2Pt>45 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l2MVAEle>0.5 && l1RawMVA2Iso>0.9  && l2RawMVA2Iso>0.9 '
+    ### db3h
+    #cutEmb = 'abs(jet1Eta)<3.0 && jet1Pt>50. && l1Pt>45 && l2Pt>45 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l2MVAEle>0.5 && l1RawDB3HIso<1.0  && l2RawDB3HIso<1.0 '
+    cutEmb = ' l1Pt>45 && l2Pt>45 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l1RawDB3HIso<1.0  && l2RawDB3HIso<1.0 '
     if prong :
       cutEmb += ' && l1DecayMode<3  && l2DecayMode<3'
       cutEmb.replace('abs(jet1Eta)<3.0 && jet1Pt>50.','')
@@ -44,8 +65,8 @@ def embeddedScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataM
     print "DY events in inclusive      ", inclusiveForEmbeddedNormalizationDY.Hist("DYJets").Integral()
     print "Embedded events in inclusive", embeddedHist.Integral()
     
-    embeddedScaleFactor = inclusiveForEmbeddedNormalizationDY.Hist("DYJets").Integral()/embeddedHist.Integral()  ### 0.97 from Valentina
-    #embeddedScaleFactor = 1/0.8*inclusiveForEmbeddedNormalizationDY.Hist("DYJets").Integral()/embeddedHist.Integral()  ### 0.97 from Valentina
+    embeddedScaleFactor = inclusiveForEmbeddedNormalizationDY.Hist("DYJets").Integral()/embeddedHist.Integral()
+    
     print "embeddedScaleFactor", embeddedScaleFactor
 
     # plotting
@@ -69,9 +90,11 @@ def embeddedScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataM
 
 def zeeScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, weightsDataMass, weight, embed):
     # Data/MC scale factors for e->tau fake rate from 2012 ICHEP Object approval presentation: 0.85 for Barrel, 0.65 for Endcap
-    inclusiveForEmbeddedNormalizationZeeBB = H2TauTauDataMC('svfitMass', anaDir, selCompsNoSignal, weightsNoSignal,
-     			    30,70,160,
-     			    cut = 'abs(l1Eta)<1.5 && abs(l2Eta)<1.5 && l1Pt>40 && l2Pt>40 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 && l1MVAEle<0.5 && l2MVAEle<0.5 && jet1Pt>50', weight=weight,
+    #inclusiveForEmbeddedNormalizationZeeBB = H2TauTauDataMC('svfitMass', anaDir, selCompsNoSignal, weightsNoSignal,
+    inclusiveForEmbeddedNormalizationZeeBB = H2TauTauDataMC('l1Pt', anaDir, selCompsNoSignal, weightsNoSignal,
+     			    #30,70,160,
+     			    40,40,80,
+     			    cut = 'abs(l1Eta)<1.5 && abs(l2Eta)<1.5 && l1Pt>45 && l2Pt>45 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l1RawDB3HIso<1.0 && l2RawDB3HIso<1.0 && l1againstElectronLooseMVA3<0.5 && l2againstElectronLooseMVA3<0.5', weight=weight,
      			    embed=embed)
     print "Data events in boosted ee", inclusiveForEmbeddedNormalizationZeeBB.Hist("Data").weighted.Integral()
     print "DYJets events in boosted ee", (inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets").weighted.Integral()+inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets_Electron").weighted.Integral())
