@@ -1,3 +1,15 @@
+# 
+# python cookWSoup_2012.py /afs/cern.ch/work/m/manzoni/public/diTau3May/MVA/mva_nom/WJets /afs/cern.ch/work/m/manzoni/public/diTau3May/MVA/mva_nom/W1Jets /afs/cern.ch/work/m/manzoni/public/diTau3May/MVA/mva_nom/W2Jets /afs/cern.ch/work/m/manzoni/public/diTau3May/MVA/mva_nom/W3Jets /afs/cern.ch/work/m/manzoni/public/diTau3May/MVA/mva_nom/W4Jets
+# python cookWSoup_2012.py /afs/cern.ch/work/m/manzoni/public/diTau3May/MVA2/mva2_nom/WJets /afs/cern.ch/work/m/manzoni/public/diTau3May/MVA2/mva2_nom/W1Jets /afs/cern.ch/work/m/manzoni/public/diTau3May/MVA2/mva2_nom/W2Jets /afs/cern.ch/work/m/manzoni/public/diTau3May/MVA2/mva2_nom/W3Jets /afs/cern.ch/work/m/manzoni/public/diTau3May/MVA2/mva2_nom/W4Jets
+# python cookWSoup_2012.py /afs/cern.ch/work/m/manzoni/public/diTau3May/DB3H/db3h_nom/WJets /afs/cern.ch/work/m/manzoni/public/diTau3May/DB3H/db3h_nom/W1Jets /afs/cern.ch/work/m/manzoni/public/diTau3May/DB3H/db3h_nom/W2Jets /afs/cern.ch/work/m/manzoni/public/diTau3May/DB3H/db3h_nom/W3Jets /afs/cern.ch/work/m/manzoni/public/diTau3May/DB3H/db3h_nom/W4Jets
+##### good
+# python cookWSoup_2012.py /afs/cern.ch/work/m/manzoni/public/diTau_parked_15may_2/nom/WJets /afs/cern.ch/work/m/manzoni/public/diTau_parked_15may_2/nom/W1Jets /afs/cern.ch/work/m/manzoni/public/diTau_parked_15may_2/nom/W2Jets /afs/cern.ch/work/m/manzoni/public/diTau_parked_15may_2/nom/W3Jets /afs/cern.ch/work/m/manzoni/public/diTau_parked_15may_2/nom/W4Jets
+#
+# python cookWSoup_2012.py /afs/cern.ch/work/m/manzoni/public/diTau_parked_2Jun/nom/WJets /afs/cern.ch/work/m/manzoni/public/diTau_parked_2Jun/nom/W1Jets /afs/cern.ch/work/m/manzoni/public/diTau_parked_2Jun/nom/W2Jets /afs/cern.ch/work/m/manzoni/public/diTau_parked_2Jun/nom/W3Jets /afs/cern.ch/work/m/manzoni/public/diTau_parked_2Jun/nom/W4Jets
+
+
+
+
 import copy
 from CMGTools.RootTools.PyRoot import *
 from CMGTools.RootTools.statistics.TreeNumpy import *
@@ -12,11 +24,11 @@ class Component(object):
         self.attachTree()
 
     def attachTree(self):
-        fileName = '{name}/H2TauTauTreeProducerTauEle/H2TauTauTreeProducerTauEle_tree.root'.format(name=self.name)
-        treeName = 'H2TauTauTreeProducerTauEle'
+        fileName = '{name}/H2TauTauTreeProducerTauTau/H2TauTauTreeProducerTauTau_tree.root'.format(name=self.name)
+        treeName = 'H2TauTauTreeProducerTauTau'
         self.file = TFile(fileName)
         self.tree = self.file.Get(treeName)
-        self.tree.SetName('H2TauTauTreeProducerTauEle_{0:d}'.format(self.numberForNaming))
+        self.tree.SetName('H2TauTauTreeProducerTauTau_{0:d}'.format(self.numberForNaming))
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
@@ -29,31 +41,38 @@ class H2TauTauSoup(TreeNumpy):
         self.var('WJetWeight')
         # fraction of events with a given parton jet multiplicity, 
         # from the LO cross sections in prep:
+
         #  0j : (30400.0 - 5400 - 1750 - 519 - 214) / 30400 = 0.740690789474
         #  1j : 5400.0 / 30400.0 = 0.177631578947
         #  2j : 1750.0 / 30400.0 = 0.0575657894737
         #  3j : 519.0 / 30400.0 = 0.0170723684211
         #  4j : 214.0 / 30400.0 = 0.00703947368421
+
+        #  0j : (36257.2 - 6440.4 - 2087.2 - 619.0 - 255.2) / 36257.2 = 
+        #  1j : 6440.4 / 36257.2 =
+        #  2j : 2087.2 / 36257.2 =
+        #  3j : 619.0 / 36257.2 = 
+        #  4j : 255.2 / 36257.2 = 
         self.fractions = [ 
-            0.740690789474,
-            0.177631578947,
-            0.0575657894737,
-            0.0170723684211,
-            0.00703947368421
+            (36257.2 - 6440.4 - 2087.2 - 619.0 - 255.2) / 36257.2,
+            6440.4 / 36257.2,
+            2087.2 / 36257.2,
+            619.0 / 36257.2, 
+            255.2 / 36257.2 
             ]
 
         # number of events in the inclusive sample, corrected for prod efficiency
-        self.ninc = 57142200.4185   # 57709905 w/o weights
+        self.ninc = 57709905*0.99037+18393090*0.993474
         # approximate number of events in each exclusive component of the inclusive sample
         self.Ninc = [frac * self.ninc for frac in self.fractions]
 
         #s number of events in the excusive samples, corrected for prod efficiency
         self.Nexc = [
-            0,
-            21715355.1552,         # 23141598 w/o weights
-            33438921.4062,         # 34044921 w/o weights
-            15214991.5589,         # 15539503 w/o weights
-            13129814.4921          # 13382803 w/o weights
+            0                          ,
+            23141598. * 0.920294737113 , #w/o weights
+            34044921. * 0.966486506452 , #w/o weights
+            15539503. * 0.846858477273 , #w/o weights
+            13382803. * 0.867004523077   #w/o weights
             ]
 
         self.WJetWeights = []
@@ -61,39 +80,8 @@ class H2TauTauSoup(TreeNumpy):
             self.WJetWeights.append (self.Ninc[nJets] / ( self.Ninc[nJets] + self.Nexc[nJets]))
             print nJets, self.WJetWeights[nJets]
 
-        # weights from Christian
-#        self.WJetWeights[0] = 1
-#        self.WJetWeights[1] = 0.37
-#        self.WJetWeights[2] = 0.11
-#        self.WJetWeights[3] = 0.077
-#        self.WJetWeights[4] = 0.038
-
-        # weights that let the two distributions match 
-#        self.WJetWeights[0] = 1
-#        self.WJetWeights[1] = 0.37
-#        self.WJetWeights[2] = 0.125
-#        self.WJetWeights[3] = 0.077
-#        self.WJetWeights[4] = 0.038
-
-#        self.WJetWeights[0] = 1
-#        self.WJetWeights[1] = 1
-#        self.WJetWeights[2] = 1
-#        self.WJetWeights[3] = 1
-#        self.WJetWeights[4] = 1
-
-#        self.Nexc = [
-#            0,
-#            21715355.1552,
-#            0, # 33438921.4062,
-#            0, # 715214991.5589,
-#            0  # 13129814.4921
-#            ]
-
-
-
 # .... .... .... .... .... .... .... .... .... .... .... .... ....
 
-    
     def importEntries(self, comp, nEntries=-1):
         print 'importing', comp.name
         tree = comp.tree
@@ -113,6 +101,7 @@ class H2TauTauSoup(TreeNumpy):
                     continue
                 val = getattr(ie, varName)
                 if varName == 'weight':
+                    #print 'nJets:', nJets
                     val = val * self.WJetWeights[nJets]
                 self.fill(varName, val)
             self.tree.Fill()
@@ -152,8 +141,8 @@ if __name__ == '__main__':
         components.append( Component(arg, numberForNaming) )
         numberForNaming = numberForNaming + 1  
     
-    soupFile = TFile('soup.root','recreate')
-    soup = H2TauTauSoup('H2TauTauTreeProducerTauEle', 'H2TauTauTreeProducerTauEle')
+    soupFile = TFile('soupWdb3h_parked.root','recreate')
+    soup = H2TauTauSoup('H2TauTauTreeProducerTauTau', 'H2TauTauTreeProducerTauTau')
     soup.copyStructure( incComp.tree )
 
     for c in components:
