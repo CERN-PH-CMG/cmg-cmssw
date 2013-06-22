@@ -57,10 +57,11 @@ class Stack:
         # hist = hists[0]
         hist = self.totalHist
         # hist.Draw('hist')
-        hist.Draw(opt)
+        #hist.Draw(opt)  #### riccardo
         if self.ytitle is not None:
             hist.GetYaxis().SetTitle( self.ytitle )
-        self.obj.Draw( opt+'same' )
+        #self.obj.Draw( opt+'same' )  ### riccardo
+        self.obj.Draw( opt )  ### riccardo
         # need to redraw the axes, which are now "under"
         # the stacked histograms. 
         hist.Draw('axissame')
@@ -84,9 +85,9 @@ class Stack:
         '''Draw statistical errors if statErrors is True.'''
         if self.statErrors is False:
             return
-        self.totalHist.weighted.SetFillColor(kGray)
+        #self.totalHist.weighted.SetFillColor(kGray)
         self.totalHist.weighted.SetFillColor(1)
-        self.totalHist.weighted.SetFillStyle(3013)
+        self.totalHist.weighted.SetFillStyle(3544)
         self.totalHist.Draw('samee2')
         
     def SetStyle(self, style ):
