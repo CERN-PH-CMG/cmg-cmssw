@@ -1087,6 +1087,40 @@ double crystalballfunc(double m, double m0, double sigma, double alpha, double n
   }
 
 
+  // Tau Parked with HLT_DoubleMediumIsoPFTau35_Trk*_eta2p1_v*
+  double eff2012IsoParkedTau19fb_Simone(double pt, double eta){
+
+    // for real Taus mT<20
+    if ( fabs(eta) < 1.4 )
+    {
+      return (  0.883869 * 0.5 * (TMath::Erf((pt-43.8723)/2./0.946593 /sqrt(pt))+1.) ) ;// 2012CD measured in one go, take this for all as of may 15
+              
+    }
+    
+    else
+    {
+      return (  0.798480 * 0.5 * (TMath::Erf((pt-43.1362)/2./1.04861  /sqrt(pt))+1.) ) ;// 2012CD measured in one go, take this for all as of may 15
+    }
+    
+  }
+
+
+  double eff2012IsoParkedTau19fbMC_Simone(double pt, double eta){
+
+    // for real Taus using ggH120
+    if ( fabs(eta) < 1.4 )
+    {
+      return ( 0.814832 * 0.5 * (TMath::Erf((pt-40.1457)/2./0.856575  /sqrt(pt))+1.) ) ;
+    }
+    
+    else
+    {
+      return ( 0.661991 * 0.5 * (TMath::Erf((pt-38.0195)/2./0.833499 /sqrt(pt))+1.) ) ;
+    }
+    
+  }
+
+
  
  
 private:
