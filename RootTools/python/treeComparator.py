@@ -169,7 +169,7 @@ def main():
                     name1=a1, name2=a2);
         comp.draw()
         
-    return tree1, tree2, options
+    return tree1, tree2, options, comp
 
 if __name__ == '__main__':
-    tree1, tree2, options = main() 
+    tree1, tree2, options, comparator = main() 
