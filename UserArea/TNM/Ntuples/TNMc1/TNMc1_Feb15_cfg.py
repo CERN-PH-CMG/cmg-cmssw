@@ -1,4 +1,4 @@
-#$Revision: 1.21 $
+#$Revision: 1.22 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -22,7 +22,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 # Run on MC or data
 
-runOnMC = True
+runOnMC = False
 runPATCMG = False
 recalibrateCMGJets = False
 runAK7jets = False
@@ -31,7 +31,10 @@ runCA8jets = True
 runAK5genjets = True
 runQJets = False
 runOnVVtuples = False
-runOnCMGp = False
+runOnCMGp = True
+
+if not runOnMC:
+   runAK5genjets=False
 
 # Input file
 
@@ -89,7 +92,9 @@ if runOnMC==False:
     # Run2012C v1 Dec11ReReco
     #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_201191-201191_8TeV_11Dec2012ReReco-recover_Collisions12_JSON.txt'
     # Run2012C v2 and Run2012D
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
+    #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
+    # Jan22ReReco
+    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
     print 'json:', json
     applyJSON(process, json )
 
@@ -109,11 +114,11 @@ process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
 GT = None
 if runOnMC:
-    GT = 'START53_V15::All' # for Summer12 MC
-#    GT = 'START53_V23::All' # for Summer12 MC with ReReco data
+#    GT = 'START53_V15::All' # for Summer12 MC
+    GT = 'START53_V23::All' # for Summer12 MC with ReReco data
 else:
-    GT = 'GR_P_V39_AN3::All' # for Moriond data
-#    GT = 'FT_53_V21_AN4::All' # for Jan22ReReco data
+#    GT = 'GR_P_V39_AN3::All' # for Moriond data
+    GT = 'FT_53_V21_AN4::All' # for Jan22ReReco data
 process.GlobalTag.globaltag = GT
 
 #### AK5 CHS jets
@@ -254,13 +259,13 @@ process.load("CMGTools.Susy.RazorMultiJet.razorMultijet_cff")
 process.load("CMGTools.Susy.common.susy_cff")
 
 if runOnCMGp:
-  process.razorMJJetSequence.remove(process.razorMJJetGirth)
-  process.razorMJJetSequence.remove(process.razorMJJetGirthCharged)
-  process.demo.buffers.remove('patJetHelperAK5')
-  process.demo.buffers.remove('patJetHelperAK5CHS')
-  process.demo.buffers.remove('patMET')
-  process.demo.buffers.remove('patMET1')
-  process.demo.buffers.remove('patTau')
+    process.razorMJJetSequence.remove(process.razorMJJetGirth)
+    process.razorMJJetSequence.remove(process.razorMJJetGirthCharged)
+    process.demo.buffers.remove('patJetHelperAK5')
+    process.demo.buffers.remove('patJetHelperAK5CHS')
+    process.demo.buffers.remove('patMET')
+    process.demo.buffers.remove('patMET1')
+    process.demo.buffers.remove('patTau')
 
 process.razorMJObjectSequence.remove(process.razorMJHemiSequence)
 process.susyGenSequence.remove(process.dumpPdfWeights)
@@ -269,6 +274,7 @@ process.razorMJHadTriggerInfo.printSelections=False
 if not runOnMC:
     process.demo.buffers.remove('sint')
     process.demo.buffers.remove('recoLeafCandidate')
+    process.demo.buffers.remove('vertexWeight')
 
 if runOnMC:
     process.demo.buffers.remove('hcalFilter')

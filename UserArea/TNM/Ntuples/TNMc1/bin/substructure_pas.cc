@@ -180,7 +180,7 @@ int main(int argc, char** argv)
   stream.select("edmEventHelper_info.luminosityBlock", eventhelper_luminosityBlock);
   stream.select("edmEventHelper_info.orbitNumber", eventhelper_orbitNumber);
   stream.select("edmEventHelper_info.run", eventhelper_run);
-  stream.select("edmEventHelperExtra_info.dijetCHS_invmass", eventhelperextra_dijetCHS_invmass);
+  /*stream.select("edmEventHelperExtra_info.dijetCHS_invmass", eventhelperextra_dijetCHS_invmass);
   stream.select("edmEventHelperExtra_info.dijet_invmass", eventhelperextra_dijet_invmass);
   stream.select("edmEventHelperExtra_info.wj1CHS_energy", eventhelperextra_wj1CHS_energy);
   stream.select("edmEventHelperExtra_info.wj1CHS_eta", eventhelperextra_wj1CHS_eta);
@@ -210,7 +210,9 @@ int main(int argc, char** argv)
   stream.select("edmEventHelperExtra_info.wj2_nconst", eventhelperextra_wj2_nconst);
   stream.select("edmEventHelperExtra_info.wj2_phi", eventhelperextra_wj2_phi);
   stream.select("edmEventHelperExtra_info.wj2_pt", eventhelperextra_wj2_pt);
-  stream.select("GenEventInfoProduct_generator.weight", geneventinfoproduct_weight);
+  stream.select("edmEventHelperExtra_info.wj2_pt", eventhelperextra_wj2_pt);
+  */
+  stream.select("edmEventHelperExtra_info.numberOfPrimaryVertices", eventhelperextra_numberOfPrimaryVertices);
   
   stream.select("patJetHelper_patJetsWithVar.chargedEmEnergyFraction", jethelperNoCHS_chargedEmEnergyFraction);
   stream.select("patJetHelper_patJetsWithVar.chargedHadronEnergyFraction", jethelperNoCHS_chargedHadronEnergyFraction);
@@ -587,6 +589,7 @@ int main(int argc, char** argv)
   dijetWtag->Branch("GenJet1Pt2",&jethelperGenCA8_Pt2[0],"GenJet1Pt2/D");
   dijetWtag->Branch("weight",&weight,"weight/D");
   dijetWtag->Branch("vertexWeight",&vertexWeight,"vertexWeight/D");
+  dijetWtag->Branch("numberOfPrimaryVertices",&eventhelperextra_numberOfPrimaryVertices,"numberOfPrimaryVertices/I");
 
   //---------------------------------------------------------------------------
   // Loop over events
@@ -671,7 +674,7 @@ if((abs(genparticlehelper_pdgId[i])==24)&&(genparticlehelper_charge[i]>0)&&(Delt
               }
           }
           H=W1+W2;
-	  std::cerr << H.Pt() << "," << W1.Pt() <<  "," << W2.Pt() <<  "," << j11.Pt() <<  "," << j12.Pt() <<  "," << j21.Pt() <<  "," << j22.Pt() <<  std::endl;
+	  //std::cerr << H.Pt() << "," << W1.Pt() <<  "," << W2.Pt() <<  "," << j11.Pt() <<  "," << j12.Pt() <<  "," << j21.Pt() <<  "," << j22.Pt() <<  std::endl;
           computeAngles(H, W1, j11, j12, W2, j21, j22, costheta1, costheta2, Phi, costhetastar, Phi1);
 
           if (triggerresultshelper_hcallasereventfilter2012!=0)

@@ -100,6 +100,7 @@ double	eventhelperextra_wj2_mass;
 double	eventhelperextra_wj2_nconst;
 double	eventhelperextra_wj2_phi;
 double	eventhelperextra_wj2_pt;
+int	eventhelperextra_numberOfPrimaryVertices;
 double	geneventinfoproduct_alphaQCD;
 double	geneventinfoproduct_alphaQED;
 int	geneventinfoproduct_hasBinningValues;

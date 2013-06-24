@@ -1,1 +1,0 @@
-root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/RSGravitonToZZ_kMpl01_M-1500_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_1.root
