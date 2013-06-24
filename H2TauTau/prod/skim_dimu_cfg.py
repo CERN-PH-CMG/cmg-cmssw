@@ -26,8 +26,8 @@ numberOfFilesToProcess = 100
 # process.setName_('H2TAUTAU')
 
 
-dataset_user = 'cmgtools' 
-dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
+dataset_user = 'cmgtools'
+dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_16_0'
 dataset_files = 'cmgTuple.*root'
 
 # creating the source

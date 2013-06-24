@@ -9,49 +9,12 @@ canvas = None
 pad = None
 padr = None
 
-def buildCanvas():
-    global can, pad, padr
-    can = TCanvas('can','',600,600)
-    can.cd()
-    can.Draw()
-    sep = 0.35
-    pad = TPad('pad','',0.01,sep,0.99, 0.99)
-    pad.SetBottomMargin(0.04)
-    padr = TPad('padr','',0.01, 0.01, 0.99, sep)
-    padr.SetTopMargin(0.04)
-    padr.SetBottomMargin(0.3)
-    pad.Draw()
-    padr.Draw()
-    return can, pad, padr
 
+#TODO warning normalization
 def drawWithRatio(var, cut, t1, t2, w1, w2, nbins, xmin=0, xmax=200, var2=None):
-    h1, h2, leg = draw(var, cut, t1, t2, w1=w1, w2=w2, normalize=False, graphics=False, nbins=nbins,xmin=xmin, xmax=xmax, var2=var2)
-    pad.cd()
-    h1.Draw()
-    h1.GetYaxis().SetRangeUser(0.1, max(h1.GetMaximum(), h2.GetMaximum())*1.2)
-    h2.Draw('same')
-    leg.Draw('same')
-    padr.cd()
-    hr = h1.Clone()
-    hr.Divide(h2)
-    hr.SetStats(0)
-    hr.Draw()
-    hr.GetYaxis().SetNdivisions(4)
-    # hr.GetYaxis().SetTitle('Exp./Obs.')
-    hr.GetYaxis().SetTitleSize(0.1)
-    hr.GetYaxis().SetTitleOffset(0.5)
-    hr.GetXaxis().SetTitle('{var}'.format(var=var))
-    hr.GetXaxis().SetTitleSize(0.13)
-    hr.GetXaxis().SetTitleOffset(0.9)
-    rls = 0.075
-    hr.GetYaxis().SetLabelSize(rls)
-    hr.GetXaxis().SetLabelSize(rls)
-    hr.GetYaxis().SetRangeUser(0.5, 1.5)
-    can.cd()
-    can.Update()
-    return h1, h2, hr, leg
-
-
+    comp = draw(var, cut, t1, t2, w1=w1, w2=w2, normalize=-1, nbins=nbins,xmin=xmin, xmax=xmax, var2=var2)
+    return comp
+    
 def addWeight(iwstr, wfnam):
     weightFile = shelve.open( wfnam )
     wo = weightFile.values()[0]
@@ -175,30 +138,18 @@ if __name__ == '__main__':
     a1 = p1.split('/')[0]
     a2 = p2.split('/')[0]
     patterns = [ (a1, p1), (a2, p2) ]
-    trees = getTrees('H2TauTauTreeProducerTauMu', patterns)
+    trees = getTreesOld('H2TauTauTreeProducerTauMu', patterns)
     pprint.pprint(trees)
     trees[a1].SetTitle( a1 )
     trees[a2].SetTitle( a2 )
 
-    buildCanvas()
-
-    # cut = cat_Inc + ' && ' + cat_VBF.replace('0.978', '0.5')
-    # cut = cat_Inc + '&& mt<30 && (abs(genWnu_eta)<2.4 || genWnu_eta<-90) && l1_pt>40' + '&&' + cat_J1
-    cut = cat_Inc + ' && ' + cat_J0
-    # cut = cat_Inc + ' && ' + cat_J0
-    # cut = cat_Inc + ' && l1_pt<40 && ' + cat_J1
-    # cut = cat_Inc + ' && ' + cat_J0
-    # cut = cat_Inc + '&& (abs(genWnu_eta)<2.4 || genWnu_eta<-90)'
-    # cut += ' && ' + cat_J2
-    # cut = cat_Inc + ' && l1_' + cat_J1
-    # cut = cat_Inc + '  && ' + cat_VBF_Rel.replace('-0.7','0.5')
-    # cut = cat_Inc + ' && l1_pt<40 && ' + cat_J0
-
+    # beware weight! 
+    cut = cat_Inc + ' && ' + cat_J1
     if a1.find('WJets')!=-1:
         cut += '&& (abs(genWnu_eta)<2.4 || genWnu_eta<-90)'
 
-    dr = 'sqrt((l1_eta-l2_eta)^2 + (l1_phi-l2_phi)^2)>2'
-    cut = cut.replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.5')
+    # dr = 'sqrt((l1_eta-l2_eta)^2 + (l1_phi-l2_phi)^2)>2
+    cut = cut.replace('l1_threeHitIso<1.5', 'l1_threeHitIso<999')
     # cut += ' && ' + dr
     w1 = '1'
     if a1.find('WJets') != -1:
@@ -211,9 +162,12 @@ if __name__ == '__main__':
         var2 = var 
     
     if 0:
-        h1, h2, leg = draw(var, cut, trees[a1], trees[a2],
-                           w1=w1, w2=w2, normalize=False, graphics=False, nbins=20,
-                           var2 = 'mt*80.4/91.2')
+        comp = draw(var, cut, trees[a1], trees[a2],
+                    w1=w1, w2=w2, normalize=False, nbins=20,
+                    var2 = 'mt*80.4/91.2')
+##         h1, h2, leg = draw(var, cut, trees[a1], trees[a2],
+##                            w1=w1, w2=w2, normalize=False, graphics=False, nbins=20,
+##                            var2 = 'mt*80.4/91.2')
         buildCanvas()
         ratio = drawWithRatio(h1, h2, leg, var)
         mtrw = ReWeighter('mt', h1, h2)
@@ -225,7 +179,8 @@ if __name__ == '__main__':
         for wfnam in options.iweight.split(','):
             w2 = addWeight( w2, wfnam )
             
-    h1, h2, hr, leg = drawWithRatio(var, cut, trees[a1], trees[a2], w1=w1, w2=w2, nbins=20, xmin=0, xmax=200, var2=var2)
+    comp = drawWithRatio(var, cut, trees[a1], trees[a2], w1=w1, w2=w2, nbins=20, xmin=0, xmax=200, var2=var2)
+    
     
     if options.oweight:
         weightFile = shelve.open( options.oweight )
