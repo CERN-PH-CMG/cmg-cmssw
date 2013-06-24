@@ -29,9 +29,13 @@ TauMuPlotter::TauMuPlotter(const char * name):
   ZTTType_(1),
   WJetsType_(0),
   mTCut_(20),
-  taupTCut_(40),
   leadJetpTCut_(30),
-  higgspTCut_(0),
+  taupTCut_(40),
+  taupTCut1_(30),
+  taupTCut2_(40),
+  higgspTCutLow_(0),
+  higgspTCutMed_(0),
+  higgspTCutHigh_(0),
   eventWeight_("eventweight"),
   plotvar_("ditaumass"),
   nbins_(100),
@@ -504,16 +508,17 @@ TH1F* TauMuPlotter::getWNJetSum(){
 //   hShape->Add(HW3ShapeInc,totalDataLumi/WIncLumi);
 //   hShape->Add(HW4ShapeInc,totalDataLumi/WIncLumi);
 
-
-  hShape->Add(HW0ShapeInc,totalDataLumi/WIncLumi);
-  hShape->Add(HW1ShapeExc,totalDataLumi/(WIncLumi + findSample("W1JetsToLNu")->getLumi()));
-  hShape->Add(HW2ShapeExc,totalDataLumi/(WIncLumi + findSample("W2JetsToLNu")->getLumi()));
-  hShape->Add(HW3ShapeExc,totalDataLumi/(WIncLumi + findSample("W3JetsToLNu")->getLumi()));
-  hShape->Add(HW4ShapeExc,totalDataLumi/(WIncLumi + findSample("W4JetsToLNu")->getLumi()));
-  hShape->Add(HW1ShapeInc,totalDataLumi/(WIncLumi + findSample("W1JetsToLNu")->getLumi()));
-  hShape->Add(HW2ShapeInc,totalDataLumi/(WIncLumi + findSample("W2JetsToLNu")->getLumi()));
-  hShape->Add(HW3ShapeInc,totalDataLumi/(WIncLumi + findSample("W3JetsToLNu")->getLumi()));
-  hShape->Add(HW4ShapeInc,totalDataLumi/(WIncLumi + findSample("W4JetsToLNu")->getLumi()));
+  if(WIncLumi>0){
+    hShape->Add(HW0ShapeInc,totalDataLumi/WIncLumi);
+    hShape->Add(HW1ShapeExc,totalDataLumi/(WIncLumi + findSample("W1JetsToLNu")->getLumi()));
+    hShape->Add(HW2ShapeExc,totalDataLumi/(WIncLumi + findSample("W2JetsToLNu")->getLumi()));
+    hShape->Add(HW3ShapeExc,totalDataLumi/(WIncLumi + findSample("W3JetsToLNu")->getLumi()));
+    hShape->Add(HW4ShapeExc,totalDataLumi/(WIncLumi + findSample("W4JetsToLNu")->getLumi()));
+    hShape->Add(HW1ShapeInc,totalDataLumi/(WIncLumi + findSample("W1JetsToLNu")->getLumi()));
+    hShape->Add(HW2ShapeInc,totalDataLumi/(WIncLumi + findSample("W2JetsToLNu")->getLumi()));
+    hShape->Add(HW3ShapeInc,totalDataLumi/(WIncLumi + findSample("W3JetsToLNu")->getLumi()));
+    hShape->Add(HW4ShapeInc,totalDataLumi/(WIncLumi + findSample("W4JetsToLNu")->getLumi()));
+  }
 
 
   delete HW0ShapeInc;
@@ -1177,7 +1182,7 @@ TH1F* TauMuPlotter::getQCDIncLowPt(){
 TH1F* TauMuPlotter::getQCDIncHighPt(){
   cout<<"Calling method getQCDHighPt"<<endl;
 
-  TH1F*hNorm=getQCDIncWNJet();///Note is using the of exclusive W samples
+  TH1F*hNorm=getQCDIncWNJet();
 
   int ChcatTmp=Chcat_;
   Chcat_=2;
@@ -3285,6 +3290,8 @@ void  TauMuPlotter::plotTauTrigger(Int_t Region, TString tag){
 
   Float_t xbinsValues[11]={18,20,22,24,26,30,34,38,42,50,60};
   setVariableBinning(10,xbinsValues);
+//   Float_t xbinsValues[15]={18,20,22,24,26,30,34,38,42,50,60,80,100,150,200};//Simones high Tau pT request
+//   setVariableBinning(14,xbinsValues);
   nbins_=0;
 
 
@@ -3292,46 +3299,13 @@ void  TauMuPlotter::plotTauTrigger(Int_t Region, TString tag){
   TString selectionTrigPass="(trigTest1==1||trigTest2==1||trigTest3==1||trigTest4==1||trigTest5==1||trigTest6==1||trigTest7==1||trigTest8==1||trigTest9==1)";
   TString selectionTrigFail="(!"+selectionTrigPass+")";
 
-  TString selection;
+  TString selection="(abs(taueta)<2.3)";//combined
   if(Region==1) selection="(abs(taueta)<1.5)";
   if(Region==2) selection="(abs(taueta)>1.5)";
 
   TString region;
   if(Region==1) region="Barrel";
   if(Region==2) region="EndCap";
-
-
-//   ///Calculate the Fakes Scale factor
-//   ///Changes between Barrel and EndCap
-//   extrasel_ = selection;
-//   TH1F*HW   = getWJetsNJetNoChCut(); 
-//   TH1F*HQCD = getQCDInc();
-//   float FakesScaleFactor=(HW->Integral()+HQCD->Integral())/HW->Integral();
-//   cout<<"W Fakes scale factor: "<<FakesScaleFactor<<endl;
-
-//   extrasel_=selection;
-//   TH1F*HTAUPT=getTotalData(); HTAUPT->SetName("HTAUPT");
-//   TH1F*HMCTAUPT=getPlotHisto("HMCTAUPT");
-//   TH1F*HMCZTT=getZToTauTau();         HMCTAUPT->Add(HMCZTT);                delete HMCZTT; 
-//   TH1F*HMCW=getWJetsNJetNoChCut();
-//   HMCTAUPT->Add(HMCW,FakesScaleFactor); 
-//   TH1F*HMCWRaw=getWNJetSumNoChCut(); //uncorrected yield needed for scaling later the Pass and Fail samples
-  
-//   extrasel_=selection+"*"+selectionTrigPass;
-//   TH1F*HTAUPTTrigPass=getTotalData();  HTAUPTTrigPass->SetName("HTAUPTTrigPass");
-//   TH1F*HMCTAUPTTrigPass=getPlotHisto("HMCTAUPTPass");
-//   TH1F*HMCZTTTrigPass=getZToTauTau();          HMCTAUPTTrigPass->Add(HMCZTTTrigPass);                delete HMCZTTTrigPass; 
-//   TH1F*HMCWTrigPass=getWNJetSumNoChCut();  
-//   HMCTAUPTTrigPass->Add(HMCWTrigPass,FakesScaleFactor*HMCW->Integral()/HMCWRaw->Integral());         delete HMCWTrigPass; 
-  
-//   extrasel_=selection+"*"+selectionTrigFail;
-//   TH1F*HTAUPTTrigFail=getTotalData();  HTAUPTTrigFail->SetName("HTAUPTTrigFail");
-//   TH1F*HMCTAUPTTrigFail=getPlotHisto("HMCTAUPTFail");
-//   TH1F*HMCZTTTrigFail=getZToTauTau();         HMCTAUPTTrigFail->Add(HMCZTTTrigFail);                delete HMCZTTTrigFail; 
-//   TH1F*HMCWTrigFail=getWNJetSumNoChCut(); 
-//   HMCTAUPTTrigFail->Add(HMCWTrigFail,FakesScaleFactor*HMCW->Integral()/HMCWRaw->Integral());        delete HMCWTrigFail; 
-
-
 
 
   extrasel_ = selection;
@@ -3413,78 +3387,78 @@ void  TauMuPlotter::plotTauTrigger(Int_t Region, TString tag){
   FMC.ls(); FMC.Close();
 
 
-  /////////////////compare to the curve from Josh
-  //TriggerEfficiency triggerEff_;
-  TGraph HTAUPTTrigEff_Josh;
-  TGraph HMCTAUPTTrigEff_Josh;
-  for(Int_t p=0;p<100;p++){
-    //float x=17+p;
-    //HTAUPTTrigEff_Josh.SetPoint(p,x,triggerEff_.effTau_muTau_Data_2012ABCD(x,(Region==1)*0.0+(Region==2)*2.0));
-    //HMCTAUPTTrigEff_Josh.SetPoint(p,x,triggerEff_.effTau_muTau_MC_2012ABCD(x,(Region==1)*0.0+(Region==2)*2.0));
-  }
+//   /////////////////compare to the curve from Josh
+//   //TriggerEfficiency triggerEff_;
+//   TGraph HTAUPTTrigEff_Josh;
+//   TGraph HMCTAUPTTrigEff_Josh;
+//   for(Int_t p=0;p<100;p++){
+//     //float x=17+p;
+//     //HTAUPTTrigEff_Josh.SetPoint(p,x,triggerEff_.effTau_muTau_Data_2012ABCD(x,(Region==1)*0.0+(Region==2)*2.0));
+//     //HMCTAUPTTrigEff_Josh.SetPoint(p,x,triggerEff_.effTau_muTau_MC_2012ABCD(x,(Region==1)*0.0+(Region==2)*2.0));
+//   }
 
-  C.Clear();
-  HTAUPTTrigEff->Draw("histpe");
-  HMCTAUPTTrigEff->Draw("histpesame");
-  HTAUPTTrigEff_Josh.SetLineColor(1);
-  HTAUPTTrigEff_Josh.Draw("lsame");
-  HMCTAUPTTrigEff_Josh.SetLineColor(4);
-  HMCTAUPTTrigEff_Josh.Draw("lsame");
-  C.Print(plotFileName+".ps");
-
-
-  ///////////////Compare Real and Fake Taus
-  //Low mT ZTT  
-  MTcat_=1;
-  extrasel_=selection+"*"+selectionTrigPass;
-  TH1F*HTAUPTZTTTrigPass=getZToTauTau();  HTAUPTZTTTrigPass->SetName("HTAUPTZTTTrigPass");
-  extrasel_=selection+"*"+selectionTrigFail;
-  TH1F*HTAUPTZTTTrigFail=getZToTauTau();  HTAUPTZTTTrigFail->SetName("HTAUPTZTTTrigFail");
-  TH1F*HMCTAUPTZTTTrigEff = computeTrigEff(HTAUPTZTTTrigPass,HTAUPTZTTTrigFail); 
-
-  //high MT W : Do not normalize to Data otherwise efficiency is set to Data efficiency
-  MTcat_=3;
-  extrasel_=selection+"*"+selectionTrigPass;
-  TH1F*HMCTAUPTWTrigPass=getWNJetSumNoChCut(); HMCTAUPTWTrigPass->SetName("HMCTAUPTWTrigPass"); 
-  extrasel_=selection+"*"+selectionTrigFail;
-  TH1F*HMCTAUPTWTrigFail=getWNJetSumNoChCut(); HMCTAUPTWTrigFail->SetName("HMCTAUPTWTrigFail"); 
-  TH1F*HMCTAUPTWTrigEff= computeTrigEff(HMCTAUPTWTrigPass,HMCTAUPTWTrigFail);
-
-  //high MT Data 
-  MTcat_=3;
-  extrasel_=selection+"*"+selectionTrigPass;
-  TH1F*HTAUPTWTrigPass=getTotalData();  HTAUPTWTrigPass->SetName("HTAUPTWTrigPass");
-  extrasel_=selection+"*"+selectionTrigFail;
-  TH1F*HTAUPTWTrigFail=getTotalData();  HTAUPTWTrigFail->SetName("HTAUPTWTrigFail");
-  TH1F*HTAUPTWTrigEff= computeTrigEff(HTAUPTWTrigPass,HTAUPTWTrigFail);
+//   C.Clear();
+//   HTAUPTTrigEff->Draw("histpe");
+//   HMCTAUPTTrigEff->Draw("histpesame");
+//   //HTAUPTTrigEff_Josh.SetLineColor(1);
+//   //HTAUPTTrigEff_Josh.Draw("lsame");
+//   //HMCTAUPTTrigEff_Josh.SetLineColor(4);
+//   //HMCTAUPTTrigEff_Josh.Draw("lsame");
+//   C.Print(plotFileName+".ps");
 
 
-  C.Clear();
-  HTAUPTWTrigEff->SetTitle("");
-  HTAUPTWTrigEff->GetXaxis()->SetTitle("Tau p_{T}");
-  HTAUPTWTrigEff->GetYaxis()->SetTitle("Efficiency");
-  HTAUPTWTrigEff->GetYaxis()->SetRangeUser(.0,1);
-  HTAUPTWTrigEff->Draw("histpe");
-  HMCTAUPTWTrigEff->SetMarkerColor(WJetsColor_);
-  HMCTAUPTWTrigEff->SetLineColor(WJetsColor_);
-  HMCTAUPTWTrigEff->Draw("histpesame");
-  HMCTAUPTZTTTrigEff->SetMarkerColor(ZTauTauColor_);
-  HMCTAUPTZTTTrigEff->SetLineColor(ZTauTauColor_);
-  HMCTAUPTZTTTrigEff->Draw("histpesame");
-  TLegend legend;
-  legend.SetFillStyle (0);
-  legend.SetFillColor (0);
-  legend.SetBorderSize(0);
-  legend.SetTextSize(0.04);
-  legend.AddEntry(HMCTAUPTZTTTrigEff,TString("ZTT MC (mT<")+mTCut_+")","pe");
-  legend.AddEntry(HMCTAUPTWTrigEff,"W+jets (mT>70)","pe");
-  legend.AddEntry(HTAUPTWTrigEff,"Data (mT>70)","pe");
-  legend.SetX1NDC(.50);
-  legend.SetX2NDC(.85);
-  legend.SetY1NDC(.22);
-  legend.SetY2NDC(.57);
-  legend.Draw();
-  C.Print(plotFileName+".ps");
+//   ///////////////Compare Real and Fake Taus
+//   //Low mT ZTT  
+//   MTcat_=1;
+//   extrasel_=selection+"*"+selectionTrigPass;
+//   TH1F*HTAUPTZTTTrigPass=getZToTauTau();  HTAUPTZTTTrigPass->SetName("HTAUPTZTTTrigPass");
+//   extrasel_=selection+"*"+selectionTrigFail;
+//   TH1F*HTAUPTZTTTrigFail=getZToTauTau();  HTAUPTZTTTrigFail->SetName("HTAUPTZTTTrigFail");
+//   TH1F*HMCTAUPTZTTTrigEff = computeTrigEff(HTAUPTZTTTrigPass,HTAUPTZTTTrigFail); 
+
+//   //high MT W : Do not normalize to Data otherwise efficiency is set to Data efficiency
+//   MTcat_=3;
+//   extrasel_=selection+"*"+selectionTrigPass;
+//   TH1F*HMCTAUPTWTrigPass=getWNJetSumNoChCut(); HMCTAUPTWTrigPass->SetName("HMCTAUPTWTrigPass"); 
+//   extrasel_=selection+"*"+selectionTrigFail;
+//   TH1F*HMCTAUPTWTrigFail=getWNJetSumNoChCut(); HMCTAUPTWTrigFail->SetName("HMCTAUPTWTrigFail"); 
+//   TH1F*HMCTAUPTWTrigEff= computeTrigEff(HMCTAUPTWTrigPass,HMCTAUPTWTrigFail);
+
+//   //high MT Data 
+//   MTcat_=3;
+//   extrasel_=selection+"*"+selectionTrigPass;
+//   TH1F*HTAUPTWTrigPass=getTotalData();  HTAUPTWTrigPass->SetName("HTAUPTWTrigPass");
+//   extrasel_=selection+"*"+selectionTrigFail;
+//   TH1F*HTAUPTWTrigFail=getTotalData();  HTAUPTWTrigFail->SetName("HTAUPTWTrigFail");
+//   TH1F*HTAUPTWTrigEff= computeTrigEff(HTAUPTWTrigPass,HTAUPTWTrigFail);
+
+
+//   C.Clear();
+//   HTAUPTWTrigEff->SetTitle("");
+//   HTAUPTWTrigEff->GetXaxis()->SetTitle("Tau p_{T}");
+//   HTAUPTWTrigEff->GetYaxis()->SetTitle("Efficiency");
+//   HTAUPTWTrigEff->GetYaxis()->SetRangeUser(.0,1);
+//   HTAUPTWTrigEff->Draw("histpe");
+//   HMCTAUPTWTrigEff->SetMarkerColor(WJetsColor_);
+//   HMCTAUPTWTrigEff->SetLineColor(WJetsColor_);
+//   HMCTAUPTWTrigEff->Draw("histpesame");
+//   HMCTAUPTZTTTrigEff->SetMarkerColor(ZTauTauColor_);
+//   HMCTAUPTZTTTrigEff->SetLineColor(ZTauTauColor_);
+//   HMCTAUPTZTTTrigEff->Draw("histpesame");
+//   TLegend legend;
+//   legend.SetFillStyle (0);
+//   legend.SetFillColor (0);
+//   legend.SetBorderSize(0);
+//   legend.SetTextSize(0.04);
+//   legend.AddEntry(HMCTAUPTZTTTrigEff,TString("ZTT MC (mT<")+mTCut_+")","pe");
+//   legend.AddEntry(HMCTAUPTWTrigEff,"W+jets (mT>70)","pe");
+//   legend.AddEntry(HTAUPTWTrigEff,"Data (mT>70)","pe");
+//   legend.SetX1NDC(.50);
+//   legend.SetX2NDC(.85);
+//   legend.SetY1NDC(.22);
+//   legend.SetY2NDC(.57);
+//   legend.Draw();
+//   C.Print(plotFileName+".ps");
 
 
 

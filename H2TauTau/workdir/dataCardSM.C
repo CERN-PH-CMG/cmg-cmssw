@@ -13,6 +13,7 @@
 #include "configTauMu2012D.C"
 #include "configTauMu2012ABCD.C"
 #include "configTauMu2012Summer13.C"
+#include "configTauMu2012Summer13ReReco.C"
 
 #include "TauElePlotter.h"
 #include "configTauEle2011.C"
@@ -22,6 +23,7 @@
 #include "configTauEle2012D.C"
 #include "configTauEle2012ABCD.C"
 #include "configTauEle2012Summer13.C"
+#include "configTauEle2012Summer13ReReco.C"
 
 void fix0Bins(TH1F* h){
 
@@ -122,6 +124,7 @@ void dataCardSM(Int_t channel, Int_t cat, Int_t year, Int_t dataset, TString mas
       if(dataset==3)analysis=configTauMu2012D("analysis",path);
       if(dataset==4)analysis=configTauMu2012ABCD("analysis",path);
       if(dataset==5)analysis=configTauMu2012Summer13("analysis",path);
+      if(dataset==6)analysis=configTauMu2012Summer13ReReco("analysis",path);
     }
   }
   if(channel==2){
@@ -139,12 +142,14 @@ void dataCardSM(Int_t channel, Int_t cat, Int_t year, Int_t dataset, TString mas
     }
   }
   
-  analysis->plotvar_=mass;
+ 
   bool Blind=0;
   analysis->nbins_=0;
   analysis->Isocat_=1;
   analysis->MTcat_=1; 
   analysis->Chcat_=1; 
+
+  cout<<endl<<"optimizaion with option "<<option<<endl;
 
 //   ///Simple isolation scan
 //   char isocutoption[100];
@@ -158,38 +163,57 @@ void dataCardSM(Int_t channel, Int_t cat, Int_t year, Int_t dataset, TString mas
 //   analysis->tauIsoCut_=isocutoption;
 
   
+//   ////////////////////////optimization of mT cut
+//   if(option>0){
+//     //use the digits of the option for each variable
+//     analysis->mTCut_=5+abs(option)*5;
+//   }
+//   //////////////////////////////////////////////////
 
-  ////////////////////////optimization of mT cut
-  if(option<0){
-    //use the digits of the option for each variable
-    cout<<endl<<"Simultaneous optimizaion with option "<<option<<endl;
-    analysis->mTCut_=5+abs(option)*5;
-  }
-  //////////////////////////////////////////////////
-
-  ////////////////////////simultaneous optimization of 1Jet
+  ////////////////////////optimization of 1Jet : with 2 tau pT categories
   if(option>0){
-    //use the digits of the option for each variable
-    cout<<endl<<"Simultaneous optimizaion with option "<<option<<endl;
-    long tauptcut=(option/10)%10;
-    analysis->taupTCut_ = 20+(tauptcut-1)*5;
-     long higgsptcut=option%10;//vbfvars3: 0->140 : 20 --> 8 
-    analysis->higgspTCut_=(higgsptcut-1)*20;
+
+    //optimize tau pT without higgs pT cut
+    if((option/10)==0)analysis->taupTCut_ = 20+(option)*5;//1->6
+    ///optimize higgs pT cut at low Tau pT
+    if((option/10)==1)analysis->higgspTCutLow_=(option%10-1)*20;//11->18
+    ///optimize higgs pT cut at high Tau pT
+    if((option/10)==2)analysis->higgspTCutHigh_=(option%10-1)*20;//21->28
+
+    //optimize tau and higgs pT cuts at the same time
+    if((option/100)==1){
+      analysis->taupTCut_ = 20+((option%100)/10 - 1)*5;//first digit: 1->6
+      analysis->higgspTCutHigh_=(option%10-1)*20;//second digit: 1->8
+    }
+
   }
   //////////////////////////////////////////////////
 
   analysis->scaleSamplesLumi();
-  TFile output(ChannelName+"_SM"+(long)cat+"_"+analysis->plotvar_+"_"+tag+".root","recreate");
+  TFile output(ChannelName+"_SM"+(long)cat+"_"+mass+"_"+tag+".root","recreate");
   for(long sm=0; sm<NCAT; sm++){
-    if(cat==13 && (sm==4))continue;
-    if(cat==15 && (sm==2 || sm==3))continue;
+    if(cat==9)continue;
+    if(cat==13 && (sm==2 || sm==4))continue;//skip boost_low and vbf
+    if(cat==20 && (sm==3 || sm==4))continue;//skip boost_high and vbf
+    if(cat==23 && (sm==4))continue;//skip vbf
+    if(cat==15 && (sm==2 || sm==3))continue;//skip boost_low and boost_high
 
     TDirectory* dir = output.mkdir(ChannelName+"_"+catdirname[sm]);  
     gROOT->cd();
 
+//     if(sm==0 || sm==1){
+//       analysis->plotvar_="ditaumass";//switch to visible mass for 0jet
+//       analysis->setVariableBinning(NXBINS0JET,xbinsValues0Jet);
+//     }else{
+    analysis->plotvar_=mass;
     if(sm==4)analysis->setVariableBinning(NXBINSVBF,xbinsValuesVBF);
     else analysis->setVariableBinning(NXBINS,xbinsValues);
+    //    }
+    
+      ///Category definition
     analysis->extrasel_ = analysis->getSMcut(sm);
+    //analysis->extrasel_ = analysis->getSMcutOpt(sm);//possible higgs pT cuts
+    //analysis->extrasel_ = analysis->getSMcutSummer13(sm);//use higgs pT < 20 in control regions
 
 
 //     if(option==0)analysis->extrasel_ = analysis->getSMcut(sm) + "*(taudecaymode==0)";
@@ -412,8 +436,10 @@ void plotDataCard(TString file, Int_t channel, Int_t cat=-1){
   C.Print(fname+"[");
 
   for(long sm=0;sm<NCAT;sm++){//
-    if(cat==13 && (sm==4))continue;
-    if(cat==15 && (sm==2 || sm==3))continue;
+    if(cat==13 && (sm==2 || sm==4))continue;//skip boost_low and vbf
+    if(cat==20 && (sm==3 || sm==4))continue;//skip boost_high and vbf
+    if(cat==23 && (sm==4))continue;//skip vbf
+    if(cat==15 && (sm==2 || sm==3))continue;//skip boost_low and boost_high
 
     TH1F* ZTT = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
     if(!ZTT)continue;

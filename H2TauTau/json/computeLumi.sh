@@ -1,8 +1,8 @@
 
-alias lumiCalcVersion="lumiCalc2.py"
+#alias lumiCalcVersion="lumiCalc2.py"
 #alias lumiCalcVersion="pixelLumiCalc.py"
 
-which lumiCalcVersion
+#which lumiCalcVersion
 
 ###-------2011-----------------------------
 #export JsonMay10="/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v3.txt"
@@ -93,3 +93,34 @@ which lumiCalcVersion
 
 ##pile-up for 2012BCD (for Will)
 #pileupCalc.py -i Cert_PromptReco_Collisions12_JSON_for2012BCDPileUp.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 69400 --maxPileupBin 60 --numPileupBins 60  Pileup_2012BCD.true.root
+
+
+######################2012 ReReco#######################
+alias lumiCalcVersion="lumiCalc2.py"
+export jsondir=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing
+export Json2012=$jsondir/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt
+echo $Json2012
+#######mu-tau
+echo 2012A
+export range="--begin 190450 --end 193686"
+echo $range
+lumiCalcVersion -i $Json2012 $range recorded --hltpath HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4 | grep HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4
+lumiCalcVersion -i $Json2012 $range recorded --hltpath HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v5 | grep HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v5
+lumiCalcVersion -i $Json2012 $range recorded --hltpath HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v6 | grep HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v6
+
+echo 2012B
+export range="--begin 193752 --end 197044"
+echo $range
+lumiCalcVersion -i $Json2012 $range recorded --hltpath HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2 | grep HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2
+
+echo 2012C
+export range="--begin 197770 --end 203755"
+echo $range
+lumiCalcVersion -i $Json2012 $range recorded --hltpath HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3 | grep HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3
+lumiCalcVersion -i $Json2012 $range recorded --hltpath HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v6 | grep HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v6
+lumiCalcVersion -i $Json2012 $range recorded --hltpath HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v7 | grep HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v7
+
+echo 2012D
+export range="--begin 203773 --end 208686"
+echo $range
+lumiCalcVersion -i $Json2012 $range recorded --hltpath HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v7 | grep HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v7

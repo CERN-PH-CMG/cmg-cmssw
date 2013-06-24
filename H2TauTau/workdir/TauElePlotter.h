@@ -86,7 +86,7 @@ public:
     for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
       if((*s)->getDataType()=="Data")
 	totalDataLumi+=(*s)->getLumi();
-    cout<<"Total Data lumi = "<<totalDataLumi<<endl;
+    //cout<<"Total Data lumi = "<<totalDataLumi<<endl;
     return totalDataLumi;
   }
 

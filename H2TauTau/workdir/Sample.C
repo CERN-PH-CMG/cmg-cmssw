@@ -68,7 +68,7 @@ TH2F* Sample::getHistoNtpFile(TString xvar, Int_t xnbins, Float_t xmin, Float_t 
   TH2F* h=new TH2F(TString("Sample")+GetName(),"",xnbins,xmin,xmax,ynbins,ymin,ymax);
   h->Sumw2();
   if(ntpChain_->GetNtrees()>0){
-    ntpChain_->Draw(xvar+":"+yvar+">>"+h->GetName(),selection);
+    ntpChain_->Draw(yvar+":"+xvar+">>"+h->GetName(),selection);
     h->Scale(getNorm());
   }
 

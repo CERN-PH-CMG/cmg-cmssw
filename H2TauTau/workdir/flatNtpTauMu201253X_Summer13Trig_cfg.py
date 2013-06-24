@@ -14,32 +14,20 @@ sampleName = os.environ['SAMPLENAME']
 sampleJobIdx = int(os.environ['SAMPLEJOBIDX'])
 sampleMergeFactor = int(os.environ['SAMPLEMERGEFACTOR'])
 
-
-####---->
-#dataset_user  = 'cmgtools'
-#sampleName = 'HiggsVBF125'
-#sampleName = 'TauPlusX2012Cv1'
-#sampleName = 'Embedded2012Cv1'
-#sampleJobIdx = 0
-#sampleMergeFactor = 200
-
 #########################
-
 process.analysis = cms.Path() 
 
 
 ######The analysis module
 process.load('CMGTools.H2TauTau.tools.joseFlatNtpSample_cfi')
 process.flatNtp = process.flatNtpTauMu.clone()
-from CMGTools.H2TauTau.tools.joseFlatNtpSample53X_cff import configureFlatNtpSampleTauMu2012
-configureFlatNtpSampleTauMu2012(process.flatNtp,sampleName)
+from CMGTools.H2TauTau.tools.joseFlatNtpSample53X_cff import configureFlatNtpSampleTauMu2012Trig
+configureFlatNtpSampleTauMu2012Trig(process.flatNtp,sampleName)
 process.flatNtp.metType = 2 #1 PFMET, 2 mva met, 3 mva met presel
-process.flatNtp.runSVFit = 2 #1 old #2 new
-#process.flatNtp.recoilCorrection = 0 #0 no, 1 Z, 2 W
+process.flatNtp.runSVFit = 1 #1 old #2 new
 
 
 ### input files
-#inputfiles = "tauMu_fullsel_tree_CMG_.*root"
 inputfiles = "cmgTuple.*root"
 dataset_name = process.flatNtp.path.value()
 firstfile = sampleJobIdx * sampleMergeFactor
@@ -54,33 +42,7 @@ print lastfile
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource( dataset_user, dataset_name, inputfiles)
 process.source.fileNames = process.source.fileNames[firstfile:lastfile]
-
-
-
-##diff in di-muon veto
-#process.source.fileNames = ['/store/cmst3/user/cmgtools/CMG/TauPlusX/Run2012C-24Aug2012-v1/AOD/V5_B/PAT_CMG_V5_14_0/cmgTuple_233.root']
-#process.source.eventsToProcess = cms.untracked.VEventRange('198230:123724743')
-
-
-
-
-#process.source = cms.Source(
-#    "PoolSource",
-#    fileNames = cms.untracked.vstring(
-#    #'/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0/cmgTuple_0.root'
-#    #'/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1/cmgTuple_0.root'
-#    #'file:../../../Common/prod/TEST/cmgTuple_HToTauTau.root'
-#    'file:./tauMu_fullsel_tree_CMG.root'
-#    )
-#    )
-
-#process.source.fileNames = ['file:./tauMu_fullsel_tree_CMG.root']
-
-
-
-#print process.source.fileNames
-#print process.source.eventsToProcess
-#process.flatNtp.printSelectionPass = 2
+print process.source.fileNames
 
 
 # set up JSON ---------------------------------------------------------------
@@ -114,12 +76,12 @@ process.analysis += process.goodOfflinePrimaryVertices
 ###Apply Tau ES corrections
 process.load('CMGTools.Utilities.tools.cmgTauESCorrector_cfi')
 process.analysis +=  process.cmgTauESCorrector
-if process.flatNtp.correctTauES != 1:
+if process.flatNtp.correctTauES == 1:
    process.cmgTauESCorrector.cfg.OneProngNoPi0Correction = 1.000
-   process.cmgTauESCorrector.cfg.OneProng1Pi0Correction = 1.000
-   process.cmgTauESCorrector.cfg.OneProng1Pi0CorrectionPtSlope = 0.0
-   process.cmgTauESCorrector.cfg.ThreeProngCorrection = 1.000
-   process.cmgTauESCorrector.cfg.ThreeProngCorrectionPtSlope = 0.0
+   process.cmgTauESCorrector.cfg.OneProng1Pi0Correction = 1.015
+   process.cmgTauESCorrector.cfg.OneProng1Pi0CorrectionPtSlope = 0.001
+   process.cmgTauESCorrector.cfg.ThreeProngCorrection = 1.012
+   process.cmgTauESCorrector.cfg.ThreeProngCorrectionPtSlope = 0.001
    
 
 ###apply Tau ES shifts
@@ -137,16 +99,8 @@ process.cmgTauMu.cfg.leg1Collection = 'cmgTauScaler'
 process.cmgTauMu.cfg.metCollection = 'cmgPFMETRaw'
 process.analysis +=  process.cmgTauMu
 
-## event filter --------------------------------
-#process.load('CMGTools.Common.skims.cmgTauMuCount_cfi')
-#process.cmgTauMuCount.src = 'cmgTauMu'
-#process.cmgTauMuCount.minNumber = 1
-#process.analysis += process.cmgTauMuCount
-###No gain in speeed in Higgs signal sample: 1s/1000ev
-
 
 ###MVA MET
-
 if process.flatNtp.metType ==2 :
    #need to use uncorrected Tau for MVA MET computation
    process.cmgTauMuMVAMET = process.cmgTauMu.clone()
@@ -196,14 +150,3 @@ process.MessageLogger = cms.Service("MessageLogger",
     ),    
     )
 )
-
-#process.source.duplicateCheckMode = cms.untracked.string("noDuplicateCheck")
-#print process.dumpPython()
-#process.load('CMGTools.Common.skims.cmgTauMuSel_cfi')
-#process.cmgTauMuPreSel = process.cmgTauMuSel.clone()
-#process.cmgTauMuPreSel.cut = cms.string('')
-#process.cmgTauMuPreSel.cut = cms.string('pt()>0' )
-###I think the this code was removing some good candidates:
-#process.cmgTauMuPreSel.cut = cms.string('leg1().eta()!=leg2().eta() && leg1().pt()>20.0 && abs(leg1().eta())<2.3 && leg1().tauID("decayModeFinding")>0.5 && leg1().tauID("byRawIsoMVA")>-0.5 && leg2().pt()>20.0 && abs(leg2().eta())<2.1 && leg2().relIso(0.5,1)<0.5' )
-#process.cmgTauMuPreSel.cut = cms.string('leg1().pt()>=20.0 && abs(leg1().eta())<=2.3 && leg1().tauID("decayModeFinding")>0.5 && leg1().tauID("byRawIsoMVA")>-0.5 && leg2().pt()>=20.0 && abs(leg2().eta())<=2.1 && leg2().relIso(0.5,1)<0.5' )
-#process.analysis +=  process.cmgTauMuPreSel 

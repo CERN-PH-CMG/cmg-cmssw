@@ -1,10 +1,18 @@
+#include "TString.h"
+#include "TFile.h"
+#include "TCanvas.h"
+#include "TH1F.h"
+
+
 
 
 void plotTriggerEffFits(TString effFile,float xmin=0,float xmax=0){
-  
+  cout<<effFile<<" "<<xmin<<" "<<xmax<<endl;
+
   TriggerEfficiency eff;
   eff.fitEfficiency(effFile.Data(),xmin,xmax);
-  TFile FitResultsFile(TString("TrigEffFitResult_")+effFile.Data(),"read");
+  //TFile FitResultsFile(TString("TrigEffFitResult_")+effFile.Data(),"read");
+  TFile FitResultsFile(effFile+"_Fit.root","read");
   gROOT->cd();
 
 
@@ -28,7 +36,8 @@ void plotTriggerEffFits(TString effFile,float xmin=0,float xmax=0){
   char pars[100];
   sprintf(pars,"m0=%.2f, sigma=%.6f, alpha=%.6f, n=%.6f, norm=%.4f\n",HFitPars->GetBinContent(1),HFitPars->GetBinContent(2),HFitPars->GetBinContent(3),HFitPars->GetBinContent(4),HFitPars->GetBinContent(5));
   title.DrawTextNDC(0.21,.94,pars);
-  C.Print(TString("TrigEffFitPlot_")+effFile.Data()+".png");  
+  //C.Print(TString("TrigEffFitPlot_")+effFile.Data()+".png");  
+  C.Print(effFile+"_Plot.png");  
 
  
   std::cout<<endl<<effFile.Data()<<" : "<<endl;
@@ -40,6 +49,10 @@ void plotTriggerEffFits(TString effFile,float xmin=0,float xmax=0){
 
 
 void runTriggerEffFits(){
+
+  //need the TriggerEfficiency class loaded for the fit
+  gSystem->Load("libCMGToolsH2TauTau.so");
+
 
 //   ///Run2012A
 //   plotTriggerEffFits("TauTriggerEfficiency_muTau_Barrel_Data_A.root");
@@ -142,10 +155,30 @@ void runTriggerEffFits(){
 //   plotTriggerEffFits("TauTriggerEfficiency_muTau_Barrel_ABCD_MC.root",18,50);
 //   plotTriggerEffFits("TauTriggerEfficiency_muTau_EndCap_ABCD_MC.root",18,50);
 
-  plotTriggerEffFits("TauTriggerEfficiency_eTau_Barrel_ABCD_Data.root",18,40);
-  plotTriggerEffFits("TauTriggerEfficiency_eTau_EndCap_ABCD_Data.root",18,50);
-  plotTriggerEffFits("TauTriggerEfficiency_eTau_Barrel_ABCD_MC.root",18,50);
-  plotTriggerEffFits("TauTriggerEfficiency_eTau_EndCap_ABCD_MC.root",18,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_eTau_Barrel_ABCD_Data.root",18,40);
+//   plotTriggerEffFits("TauTriggerEfficiency_eTau_EndCap_ABCD_Data.root",18,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_eTau_Barrel_ABCD_MC.root",18,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_eTau_EndCap_ABCD_MC.root",18,50);
+
+
+  ///Summer13 ReReco mu-Tau
+  //TString path="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/muTau";
+  //   TString path="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/muTauABC";
+  //  TString path="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/muTauD";
+  TString path="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/muTau_highTauPt";
+  plotTriggerEffFits(path+"/TauTriggerEfficiency_muTau_Barrel_Summer13ReReco_Data.root",18,150);
+  plotTriggerEffFits(path+"/TauTriggerEfficiency_muTau_EndCap_Summer13ReReco_Data.root",18,150);
+  plotTriggerEffFits(path+"/TauTriggerEfficiency_muTau_Barrel_Summer13ReReco_MC.root",18,150);
+  plotTriggerEffFits(path+"/TauTriggerEfficiency_muTau_EndCap_Summer13ReReco_MC.root",18,150);
+
+  //TString pathETau="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/eTau_antiETight";
+  //TString pathETau="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/eTau_antiEMedium";
+  //TString pathETau="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/eTauABC_antiEMedium";
+//   TString pathETau="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/eTauD_antiEMedium";
+//   plotTriggerEffFits(pathETau+"/TauTriggerEfficiency_eTau_Barrel_Summer13ReReco_Data.root",18,50);
+//   plotTriggerEffFits(pathETau+"/TauTriggerEfficiency_eTau_EndCap_Summer13ReReco_Data.root",18,50);
+//   plotTriggerEffFits(pathETau+"/TauTriggerEfficiency_eTau_Barrel_Summer13ReReco_MC.root",18,50);
+//   plotTriggerEffFits(pathETau+"/TauTriggerEfficiency_eTau_EndCap_Summer13ReReco_MC.root",18,50);
 
 
 

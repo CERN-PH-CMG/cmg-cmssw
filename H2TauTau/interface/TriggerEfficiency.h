@@ -571,6 +571,31 @@ public:
   }
 
   
+
+  ////**************************************
+  ///mu-Tau Summer 13 ReReco data-set
+  ///****************************************
+  double effMu_muTau_Data_2012ABCDSummer13(double pt, double eta){
+    if      (eta<-1.2)  return efficiency (pt,15.9977,7.64004e-05,6.4951e-08,1.57403,0.865325);
+    else if (eta<-0.8)  return efficiency (pt,17.3974,0.804001,1.47145,1.24295,0.928198) ;
+    else if (eta< 0.0)  return efficiency (pt,16.4307,0.226312,0.265553,1.55756,0.974462) ;
+    else if (eta< 0.8)  return efficiency (pt,17.313,0.662731,1.3412,1.05778,1.26624) ;
+    else if (eta< 1.2)  return efficiency (pt,16.9966,0.550532,0.807863,1.55402,0.885134) ;
+    else                return efficiency (pt,15.9962,0.000106195,4.95058e-08,1.9991,0.851294) ;
+  }
+
+  ////muon MC efficiency remains same as for Moriond
+
+  double effTau_muTau_Data_2012ABCDSummer13(double pt, double eta) {
+    if(fabs(eta)<1.5)  return efficiency(pt,18.444056,    0.363077,    0.126673,    4.798026,    0.932726);
+    else               return efficiency(pt,18.556707,    0.243482,    0.121221,    2.636403,    0.894483);
+  }
+  double effTau_muTau_MC_2012ABCDSummer13(double pt, double eta) {
+    if(fabs(eta)<1.5)  return efficiency(pt,18.540892,    1.323321,    2.901140,    1.001297,    12.472203);
+    else               return efficiency(pt,18.151899,    0.446117,    0.159085,    120.380318,    0.890775);
+  }
+
+
   //********************************
   //e-tau 2012
   //********************************
@@ -766,6 +791,24 @@ public:
   double effTau_eTau_MC_2012ABCD(double pt, double eta) {
     if(fabs(eta)<1.5)  return efficiency(pt,18.431118,    1.572877,    3.301699,    4.760769,    0.899620);
     else               return efficiency(pt,18.257217,    1.632443,    9.283116,    40.219585,    0.858643);
+  }
+
+
+  ////**************************************
+  ///e-Tau Summer 13 ReReco data-set  (done with Ivo's new WP for antiElectronMediumMVA3)
+  ///****************************************
+  double effEle_eTau_Data_2012ABCDSummer13(double pt, double eta){
+    if(fabs(eta)<1.479)  return efficiency (pt,22.9704,1.0258,1.26889,1.31024,1.06409) ;
+    else                 return efficiency (pt,21.9816,1.40993,0.978597,2.33144,0.937552) ;
+  }
+  //electron MC efficiency remains same as Moriond
+  double effTau_eTau_Data_2012ABCDSummer13(double pt, double eta) {
+    if(fabs(eta)<1.5)  return efficiency(pt,18.920740,    1.705521,    1.996879,    35.638721,    0.901402);
+    else               return efficiency(pt,18.712473,    0.263371,    0.146785,    3.342299,    0.853802);
+  }
+  double effTau_eTau_MC_2012ABCDSummer13(double pt, double eta) {
+    if(fabs(eta)<1.5)  return efficiency(pt,18.531258,    0.283163,    0.120956,    5.559196,    0.915048);
+    else               return efficiency(pt,18.641788,    0.742923,    0.598460,    134.920670,    0.865315);
   }
 
 

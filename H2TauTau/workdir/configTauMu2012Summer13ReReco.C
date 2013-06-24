@@ -3,7 +3,7 @@
 #include <TString.h>
 #include "constants.h"
 
-TauMuPlotter * configTauMu2012Summer13(TString name, TString path){  
+TauMuPlotter * configTauMu2012Summer13ReReco(TString name, TString path){  
 
   TauMuPlotter * analysis = new TauMuPlotter(name);
   analysis->setOutputPath(path);
@@ -13,7 +13,7 @@ TauMuPlotter * configTauMu2012Summer13(TString name, TString path){
   analysis->eventWeight_="pupWeights4*embeddedGenWeight*triggerEffWeightsTau4*triggerEffWeightsMu4*selectionEffWeightsId4*selectionEffWeightsIso4*signalWeight";//
   //analysis->tauIsoCut_="(tauisomvaraw>0.795)";//loose
   //analysis->tauIsoCut_="(tauisomva2raw>0.85)";//loose
-  analysis->tauIsoCut_="(tauiso3hitraw<1.5)";//2.0= pre-defined loose wp , 2.74=modified loose wp with same inclusive ggH signal eff
+  analysis->tauIsoCut_="(tauiso3hitraw<1.5)";
 
   //analysis->tauIsoCutQCD_="(tauisomvaraw>0.5)";
   //analysis->tauIsoCutQCD_="(tauisomva2raw>0.5)";
@@ -22,61 +22,52 @@ TauMuPlotter * configTauMu2012Summer13(TString name, TString path){
   ///Moriond
   //analysis->taupTCut_=40;
   
-  ///Moriond+higgsPt
-  analysis->taupTCut_=40;
-  analysis->higgspTCutLow_=0;
-  analysis->higgspTCutHigh_=0;
+//   ///Moriond+higgsPt
+//   analysis->taupTCut_=40;
+//   analysis->higgspTCutLow_=0;
+//   analysis->higgspTCutHigh_=0;
 
-//   //3 boost categories
-//   analysis->taupTCut1_=30;
-//   analysis->taupTCut2_=45;
-//   analysis->higgspTCutLow_=60;
-//   analysis->higgspTCutMed_=20;
-//   analysis->higgspTCutHigh_=80;
+  //3 boost categories
+  analysis->taupTCut1_=30;
+  analysis->taupTCut2_=45;
+  analysis->higgspTCutLow_=60;
+  analysis->higgspTCutMed_=20;
+  analysis->higgspTCutHigh_=80;
 
 
-  Sample* TauPlusX2012A = new Sample("TauPlusX2012A",path);
+  Sample* TauPlusX2012A = new Sample("TauPlusX2012ReRecoA",path);
   TauPlusX2012A->setDataType("Data");
-  TauPlusX2012A->setSampleLumi(96.977+316.128+396.213);
+  TauPlusX2012A->setSampleLumi(96.4+396.9+395.99);
   analysis->addSample(TauPlusX2012A);
 
-  Sample* TauPlusX2012B = new Sample("TauPlusX2012B",path);
+  Sample* TauPlusX2012B = new Sample("TauPlusX2012ReRecoB",path);
   TauPlusX2012B->setDataType("Data");
-  TauPlusX2012B->setSampleLumi(4403.);
+  TauPlusX2012B->setSampleLumi(4429);
   analysis->addSample(TauPlusX2012B);
 
-  Sample* TauPlusX2012Cv1 = new Sample("TauPlusX2012Cv1",path);
-  TauPlusX2012Cv1->setDataType("Data");
-  TauPlusX2012Cv1->setSampleLumi(495.003);
-  analysis->addSample(TauPlusX2012Cv1);
+  Sample* TauPlusX2012C = new Sample("TauPlusX2012ReRecoC",path);
+  TauPlusX2012C->setDataType("Data");
+  TauPlusX2012C->setSampleLumi(1783 + 5087 + 282.69);
+  analysis->addSample(TauPlusX2012C);
 
-  Sample* TauPlusX2012Cv2 = new Sample("TauPlusX2012Cv2",path);
-  TauPlusX2012Cv2->setDataType("Data");
-  TauPlusX2012Cv2->setSampleLumi(1288 + 4828 + 281);
-  analysis->addSample(TauPlusX2012Cv2);
-
-  Sample* TauPlusX2012D = new Sample("TauPlusX2012D",path);
+  Sample* TauPlusX2012D = new Sample("TauPlusX2012ReRecoD",path);
   TauPlusX2012D->setDataType("Data");
-  TauPlusX2012D->setSampleLumi(7274);
+  TauPlusX2012D->setSampleLumi(7318);
   analysis->addSample(TauPlusX2012D);
 
-  Sample* Embedded2012A = new Sample("Embedded2012A",path);
+  Sample* Embedded2012A = new Sample("RHEmbedded2012A",path);
   Embedded2012A->setDataType("Embedded");
   analysis->addSample(Embedded2012A);
 
-  Sample* Embedded2012B = new Sample("Embedded2012B",path);
+  Sample* Embedded2012B = new Sample("RHEmbedded2012B",path);
   Embedded2012B->setDataType("Embedded");
   analysis->addSample(Embedded2012B);
 
-  Sample* Embedded2012Cv1 = new Sample("Embedded2012Cv1",path);
-  Embedded2012Cv1->setDataType("Embedded");
-  analysis->addSample(Embedded2012Cv1);
+  Sample* Embedded2012C = new Sample("RHEmbedded2012Cv2",path);
+  Embedded2012C->setDataType("Embedded");
+  analysis->addSample(Embedded2012C);
 
-  Sample* Embedded2012Cv2 = new Sample("Embedded2012Cv2",path);
-  Embedded2012Cv2->setDataType("Embedded");
-  analysis->addSample(Embedded2012Cv2);
-
-  Sample* Embedded2012D = new Sample("Embedded2012D",path);
+  Sample* Embedded2012D = new Sample("RHEmbedded2012D",path);
   Embedded2012D->setDataType("Embedded");
   analysis->addSample(Embedded2012D);
 

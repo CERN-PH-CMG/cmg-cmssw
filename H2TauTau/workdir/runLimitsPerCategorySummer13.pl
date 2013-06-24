@@ -27,12 +27,16 @@ $limitcommand="limit.py --asymptotic --expectedOnly";#--userOpt '--minosAlgo ste
 ###############
 @Cat=($cat);
 #note codes <10 are reserved for individual cat fits
-if($cat==20){@Cat=(0,1,2);}#Boost_low
-if($cat==13){@Cat=(0,1,3);}#Boost_high
-if($cat==15){@Cat=(0,1,5);}#VBF
-if($cat==23){@Cat=(0,1,2,3);}#1-jet
-if($cat==100){@Cat=(0,1,2,3,5);}##All
-if( 1000<=$cat && $cat<1010){ @Cat=($cat-1000); } ##fits for ZTT and  but no signal
+if($cat==13){@Cat=(0,1,2,3);}
+if($cat==14){@Cat=(0,1,2,4);}
+if($cat==15){@Cat=(0,1,2,5);}
+if($cat==145){@Cat=(0,1,2,4,5);}
+if($cat==1345){@Cat=(0,1,2,3,4,5);}
+if($cat==16){@Cat=(0,1,2,6);} #vbf loose
+if($cat==17){@Cat=(0,1,2,7);} #vbf tight
+if($cat==167){@Cat=(0,1,2,3,4,5);} #vbf
+if($cat==100){@Cat=(0,1,2,3,4,5,6,7);} #all
+
 
 #############
 @Mass=($mass);
@@ -42,12 +46,10 @@ if($mass==0){
 
 ############
 $ch="mt";
-if($channel==2||$channel==102||$channel==202){
+if($channel==2||$channel==102){
     $ch="et";
 }
-if($channel==3||$channel==103||$channel==203){
-    $ch="em";
-}
+
 
 ############plot layout
 $layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout.py";
@@ -65,12 +67,6 @@ if($channel>100){
     #$layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout2012_ABCD.py";
     $layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layoutSummer13.py";
 }
-if($channel>200){
-    $ECMS="14";
-    $layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout_ProjectionStudy.py";
-}
-
-
 
 
 $newinputname="htt_${ch}.inputs-sm-${ECMS}TeV.root";
@@ -87,24 +83,20 @@ if($Input ne "0"){
     `cp -r $UncsDir/${ch} ./std/`;
     `rm -f ./std/${ch}/$newinputname`;
     `cp $Input ./std/${ch}/$newinputname`;
-
-    if($cat<1000){
-	#`scale2SM.py -i $newinput --samples="ggH, qqH, VH" -e ${ECMS} -v 110-145:5`;
-	`scale2SM.py -i $newinput --samples="ggH, qqH, VH" -v 110-145:5`;
-    }
+    `scale2SM.py -i $newinput --samples="ggH, qqH, VH" -v 110-145:5`;
 }  
-
-##new paths for the inputs
 
 
 ####add bin-by-bin uncs
 if($addbbb==1){ 
-    `add_bbb_errors.py '${ch}:${ECMS}TeV:01,03,05:ZLL,ZL,QCD>W' -f -i std -o stdbbb --threshold 0.10`;
+    print "Adding bin-by-bin uncertainties\n";
+    `add_bbb_errors_Opt2.py -f '${ch}:${ECMS}TeV:03,04,05:ZLL,ZL,QCD>W' -i std -o stdbbb --threshold 0.10`;
     $newinput="$topdir/stdbbb/${ch}/$newinputname";
     $newuncsdir="$topdir/stdbbb";
     `rm -rf ./std`;
 }
-if($addbbb==2){##already done once 
+if($addbbb==2){
+    print "By-passing bin-by-bin uncertainties\n";
     $newinput="$topdir/stdbbb/${ch}/$newinputname";
     $newuncsdir="$topdir/stdbbb";
 }
@@ -145,7 +137,7 @@ if(0<=$cat&&$cat<10 && $mass>=0){
 }
 
 #########Combination of categories
-if(10<=$cat && $cat<1000 && $mass>=0){
+if(10<=$cat && $mass>=0){
     print "creating datacard txt files:\n";
     `rm -rf SM${cat}`;
     `mkdir SM${cat}`;
@@ -169,36 +161,10 @@ if(10<=$cat && $cat<1000 && $mass>=0){
     foreach  $i (@Mass){
 	print "${limitcommand} ./SM${cat}/${i}\n";
 	`${limitcommand} ./SM${cat}/${i} >> ./SM${cat}/${i}/limitcommand.log 2>&1`;
-	`limit.py --significance --expectedOnly --toys=-1  ./SM${cat}/${i} >> ./SM${cat}/${i}/significance.log 2>&1`;
+        `limit.py --significance --expectedOnly --toys=-1  ./SM${cat}/${i} >> ./SM${cat}/${i}/significance.log 2>&1`;
     }
-
 }
 
-
-#######fit for ZTT yield
-if(1000<=$cat && $cat<1010 && $mass>=0){
-    print "creating datacard txt files:\n";
-    foreach $d (@Cat){
-	print "SM${d}: \n";
-        `rm -rf SM${d}`;
-	`mkdir SM${d}`;
-	`mkdir SM${d}/125`;
-	chdir("./SM${d}/125");
-	$cardcommand="create-datacard.py -i $newinput   -o SM_${d}_125.txt -c $newuncsdir/${ch}/cgs-ZTT-0${d}.conf -u $newuncsdir/${ch}/unc-ZTT-0${d}.vals -d $newuncsdir/${ch}/unc-ZTT-0${d}.conf 125";
-	print "${cardcommand}\n";
-	`${cardcommand}`;
-	chdir("../../.");
-
-	print "\n";
-    }
-    print "Running fit:\n";
-    foreach $d (@Cat){
-	$cmd="limit.py --max-likelihood --stable --rMin 0 --rMax 2 SM${d}/125 >> SM${d}/125/maxLikelihood.log 2>&1";
-	print "${cmd}\n";
-	`${cmd}`;
-    }
-
-}
 
 
 
@@ -223,7 +189,7 @@ if($plot==1){
     }
 }
 
-#################make post-fit plots
+#################make post-fit plots 
 if($plot==2){
     ##this currently does not work for the ZTT yield fits because templates want the ggH signal not ZTT
     print "Make post-fit plots:\n";
@@ -243,20 +209,18 @@ if($plot==2){
 
     foreach $d (@Cat){
 	`cp ../SM${cat}/125/SM_${d}_125.txt datacards/htt_${ch}_${d}_${ECMS}TeV.txt`;
-	`cp ${CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/test/templates/*.C templates/.`;
-	`python ${CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/test/produce_macros.py -a sm -c '${ch}' --sm-categories-${ch} "${d}" -u 1 -p "${ECMS}TeV"`;
+	`cp ${CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/test_Summer13/templates/*.C templates/.`;
+	`python ${CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/test_Summer13/produce_macros.py -a sm -c '${ch}' --sm-categories-${ch} "${d}" -u 1 -p "${ECMS}TeV"`;
 	`sed -i 's/bool log=true/bool log=false/g' *.C`;
 	#`sed -i 's/BLIND_DATA = true/BLIND_DATA = false/g' *.C`;
 	#`sed -i 's/BLIND_DATA = false/BLIND_DATA = true/g' *.C`;
-	#htt_et_5_8TeV.C
-	if($d==2 || $d==3 || $d==5){
+	if($d==3 || $d==4 || $d==5 || $d==6 || $d==7){
 	    `sed -i 's/BLIND_DATA = false/BLIND_DATA = true/g' htt_${ch}_${d}_${ECMS}TeV.C`;
 	}
-	`python ${CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/test/run_macros.py -a sm -c '${ch}' --sm-categories-${ch} "${d}"  -p "${ECMS}TeV"`;
+	`python ${CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/test_Summer13/run_macros.py -a sm -c '${ch}' --sm-categories-${ch} "${d}"  -p "${ECMS}TeV"`;
     }
     
     chdir("../.");
 }
-
 
 print "runLimitsPerCategory done.\n";

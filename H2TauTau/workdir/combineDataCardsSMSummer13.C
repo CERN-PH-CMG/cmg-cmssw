@@ -2,9 +2,9 @@
 #include <TFile.h>
 #include <TH1F.h>
 #include <TDirectory.h>
-#include "constants.h"
+#include "dataCardSMSummer13.C"
 
-void combineDataCardsSM(Int_t channel, Int_t cat, TString mass){
+void combineDataCardsSMSummer13(Int_t channel, Int_t cat, TString mass){
 
   TString ChannelName;
   if(channel==1)ChannelName="muTau";
@@ -24,28 +24,24 @@ void combineDataCardsSM(Int_t channel, Int_t cat, TString mass){
 
 
   TFile output(ChannelName+"_SM"+(long)cat+"_"+mass+".root","recreate");
-  for(long sm=0;sm<NCAT;sm++){
-    if(cat==13 && (sm==2 || sm==4))continue;//skip boost_low and vbf
-    if(cat==20 && (sm==3 || sm==4))continue;//skip boost_high and vbf
-    if(cat==23 && (sm==4))continue;//skip vbf
-    if(cat==15 && (sm==2 || sm==3))continue;//skip boost_low and boost_high
-    
-    cout<<catdirname[sm]<<endl;
+  for(long sm=0;sm<NCATSUMMER13;sm++){
+    if(skipCategory(cat,sm))continue;
+    cout<<catdirnameSummer13[sm]<<endl;
 
-    TDirectory* dir = output.mkdir(ChannelName+"_"+catdirname[sm]);  
+    TDirectory* dir = output.mkdir(ChannelName+"_"+catdirnameSummer13[sm]);  
     dir->cd();
 
 
     /////////////Nominal histos:
-    TH1F* ZTT = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
-    TH1F* QCD = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/QCD");
-    TH1F* W = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/W");
-    TH1F* TT = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/TT");
-    TH1F* ZL = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZL");
-    TH1F* ZJ = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZJ");
-    TH1F* VV = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/VV");
-    TH1F* ZLL = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZLL");
-    TH1F* data_obs = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/data_obs");
+    TH1F* ZTT = (TH1F*)nominal.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ZTT");
+    TH1F* QCD = (TH1F*)nominal.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/QCD");
+    TH1F* W = (TH1F*)nominal.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/W");
+    TH1F* TT = (TH1F*)nominal.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/TT");
+    TH1F* ZL = (TH1F*)nominal.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ZL");
+    TH1F* ZJ = (TH1F*)nominal.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ZJ");
+    TH1F* VV = (TH1F*)nominal.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/VV");
+    TH1F* ZLL = (TH1F*)nominal.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ZLL");
+    TH1F* data_obs = (TH1F*)nominal.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/data_obs");
 
     ZTT->Write();
     ZL->Write();
@@ -58,28 +54,28 @@ void combineDataCardsSM(Int_t channel, Int_t cat, TString mass){
     data_obs->Write();
 
     /////////////tUp histos
-    TH1F* ZTT_CMS_scale_tUp =  (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
+    TH1F* ZTT_CMS_scale_tUp =  (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ZTT");
     ZTT_CMS_scale_tUp->SetName(TString("ZTT_")+scaleUp);
 
-    TH1F* QCD_CMS_scale_tUp = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/QCD");
+    TH1F* QCD_CMS_scale_tUp = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/QCD");
     QCD_CMS_scale_tUp->SetName(TString("QCD_")+scaleUp);
 
-    TH1F* W_CMS_scale_tUp =  (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/W");
+    TH1F* W_CMS_scale_tUp =  (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/W");
     W_CMS_scale_tUp->SetName(TString("W_")+scaleUp);
 
-    TH1F* TT_CMS_scale_tUp = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/TT");
+    TH1F* TT_CMS_scale_tUp = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/TT");
     TT_CMS_scale_tUp->SetName(TString("TT_")+scaleUp);
 
-    TH1F* ZL_CMS_scale_tUp = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/ZL");
+    TH1F* ZL_CMS_scale_tUp = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ZL");
     ZL_CMS_scale_tUp->SetName(TString("ZL_")+scaleUp);
 
-    TH1F* ZJ_CMS_scale_tUp = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/ZJ");
+    TH1F* ZJ_CMS_scale_tUp = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ZJ");
     ZJ_CMS_scale_tUp->SetName(TString("ZJ_")+scaleUp);
 
-    TH1F* VV_CMS_scale_tUp = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/VV");
+    TH1F* VV_CMS_scale_tUp = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/VV");
     VV_CMS_scale_tUp->SetName(TString("VV_")+scaleUp);
 
-    TH1F* ZLL_CMS_scale_tUp= (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/ZLL");
+    TH1F* ZLL_CMS_scale_tUp= (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ZLL");
     ZLL_CMS_scale_tUp->SetName(TString("ZLL_")+scaleUp);
 
     ZTT_CMS_scale_tUp->Write();
@@ -93,28 +89,28 @@ void combineDataCardsSM(Int_t channel, Int_t cat, TString mass){
 
 
     /////////////tDown histos
-    TH1F* ZTT_CMS_scale_tDown =  (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
+    TH1F* ZTT_CMS_scale_tDown =  (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ZTT");
     ZTT_CMS_scale_tDown->SetName(TString("ZTT_")+scaleDown);
 
-    TH1F* QCD_CMS_scale_tDown = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/QCD");
+    TH1F* QCD_CMS_scale_tDown = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/QCD");
     QCD_CMS_scale_tDown->SetName(TString("QCD_")+scaleDown);
 
-    TH1F* W_CMS_scale_tDown =  (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/W");
+    TH1F* W_CMS_scale_tDown =  (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/W");
     W_CMS_scale_tDown->SetName(TString("W_")+scaleDown);
 
-    TH1F* TT_CMS_scale_tDown = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/TT");
+    TH1F* TT_CMS_scale_tDown = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/TT");
     TT_CMS_scale_tDown->SetName(TString("TT_")+scaleDown);
 
-    TH1F* ZL_CMS_scale_tDown = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/ZL");
+    TH1F* ZL_CMS_scale_tDown = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ZL");
     ZL_CMS_scale_tDown->SetName(TString("ZL_")+scaleDown);
 
-    TH1F* ZJ_CMS_scale_tDown = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/ZJ");
+    TH1F* ZJ_CMS_scale_tDown = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ZJ");
     ZJ_CMS_scale_tDown->SetName(TString("ZJ_")+scaleDown);
 
-    TH1F* VV_CMS_scale_tDown = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/VV");
+    TH1F* VV_CMS_scale_tDown = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/VV");
     VV_CMS_scale_tDown->SetName(TString("VV_")+scaleDown);
 
-    TH1F* ZLL_CMS_scale_tDown= (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/ZLL");
+    TH1F* ZLL_CMS_scale_tDown= (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ZLL");
     ZLL_CMS_scale_tDown->SetName(TString("ZLL_")+scaleDown);
 
 
@@ -131,37 +127,37 @@ void combineDataCardsSM(Int_t channel, Int_t cat, TString mass){
     for(Int_t m=0;m<NMASS;m++){
       long ma=massValues[m];
       
-      cout<<ChannelName+"_"+catdirname[sm]<<" "<<ma<<endl;
+      cout<<ChannelName+"_"+catdirnameSummer13[sm]<<" "<<ma<<endl;
 
       //Nominal histos
-      TH1F* SM = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ggH"+ma);
+      TH1F* SM = (TH1F*)nominal.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ggH"+ma);
       SM->SetName(TString("ggH")+ma);
 
-      TH1F* VBF =  (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/qqH"+ma);
+      TH1F* VBF =  (TH1F*)nominal.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/qqH"+ma);
       VBF->SetName(TString("qqH")+ma);
       
-      TH1F* VH =  (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/VH"+ma);
+      TH1F* VH =  (TH1F*)nominal.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/VH"+ma);
       VH->SetName(TString("VH")+ma);
      
       //tUp histos
-      TH1F* SM_CMS_scale_tUp  = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/ggH"+ma);
+      TH1F* SM_CMS_scale_tUp  = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ggH"+ma);
       SM_CMS_scale_tUp->SetName(TString("ggH")+ma+"_"+scaleUp);
       
-      TH1F* VBF_CMS_scale_tUp  =  (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/qqH"+ma);
+      TH1F* VBF_CMS_scale_tUp  =  (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/qqH"+ma);
       VBF_CMS_scale_tUp->SetName(TString("qqH")+ma+"_"+scaleUp);
 
-      TH1F* VH_CMS_scale_tUp  =  (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/VH"+ma);
+      TH1F* VH_CMS_scale_tUp  =  (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/VH"+ma);
       VH_CMS_scale_tUp->SetName(TString("VH")+ma+"_"+scaleUp);
 
      
       //tDown histos
-      TH1F* SM_CMS_scale_tDown  = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/ggH"+ma);
+      TH1F* SM_CMS_scale_tDown  = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ggH"+ma);
       SM_CMS_scale_tDown->SetName(TString("ggH")+ma+"_"+scaleDown);
       
-      TH1F* VBF_CMS_scale_tDown  =  (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/qqH"+ma);
+      TH1F* VBF_CMS_scale_tDown  =  (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/qqH"+ma);
       VBF_CMS_scale_tDown->SetName(TString("qqH")+ma+"_"+scaleDown);
 
-      TH1F* VH_CMS_scale_tDown  =  (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/VH"+ma);
+      TH1F* VH_CMS_scale_tDown  =  (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/VH"+ma);
       VH_CMS_scale_tDown->SetName(TString("VH")+ma+"_"+scaleDown);
 
 

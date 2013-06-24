@@ -126,7 +126,7 @@ TH1F* TauElePlotter::getSample(TString samplename, bool removeLumiNorm){
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
   if(MTcat_==1)  sel += TString("*(transversemass<")+mTCut_+")";
   //if(MTcat_==3)  sel += "*(transversemass>70)";//this doesnt work for 2-jet
-  if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<150)";
+  if(MTcat_==3)  sel += "*(80<transversemass&&transversemass<150)";
   if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
 
@@ -174,7 +174,7 @@ TH1F* TauElePlotter::getTotalData(){
   if(Isocat_>0)  sel += TString("*(categoryIso==")+(long)Isocat_+")";
   if(MTcat_==1)  sel += TString("*(transversemass<")+mTCut_+")";
   //if(MTcat_==3)  sel += "*(transversemass>70)";
-  if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<150)";
+  if(MTcat_==3)  sel += "*(80<transversemass&&transversemass<150)";
   if(MTcat_==13) sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
   if(blindsel_.CompareTo("1")!=0)sel += TString("*")+blindsel_;
@@ -206,7 +206,7 @@ TH1F* TauElePlotter::getTotalEmbedded(){
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
   if(MTcat_==1)  sel += TString("*(transversemass<")+mTCut_+")";
   //if(MTcat_==3)  sel += "*(transversemass>70)";
-  if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<150)";
+  if(MTcat_==3)  sel += "*(80<transversemass&&transversemass<150)";
   if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
 
@@ -326,7 +326,8 @@ TH1F* TauElePlotter::getZL2012(){
 
 
   //1Prong 0pi0
-  extrasel_+="*(taudecaymode==0)*((abs(taueta)<1.5)*(0.85)+(abs(taueta)>=1.5)*(1.85))";//scale 1prong-0pi0
+  extrasel_+="*(taudecaymode==0)*((abs(taueta)<1.5)*(1.0)+(abs(taueta)>=1.5)*(1.0))";
+  //extrasel_+="*(taudecaymode==0)*((abs(taueta)<1.5)*(0.85)+(abs(taueta)>=1.5)*(1.85))";//scale 1prong-0pi0
   TH1F*h1P0Pi0=getSample("ZToEE");
   h->Add(h1P0Pi0);
   delete h1P0Pi0;
@@ -334,15 +335,18 @@ TH1F* TauElePlotter::getZL2012(){
 
 
   ///now get the 1Prong-1Pi0: 
-  extrasel_+="*(taudecaymode==1)*((abs(taueta)<1.5)*(1.64)+(abs(taueta)>=1.5)*(0.28))"; //scale 1prong-1pi0
+  extrasel_+="*(taudecaymode==1)*((abs(taueta)<1.5)*(1.0)+(abs(taueta)>=1.5)*(1.0))"; 
+  //extrasel_+="*(taudecaymode==1)*((abs(taueta)<1.5)*(1.64)+(abs(taueta)>=1.5)*(0.28))"; //scale 1prong-1pi0
   TString tmpplotvar=plotvar_;
-  if(plotvar_.CompareTo("svfitmass")==0) plotvar_="svfitmass*1.015"; //shift ZEE peak 
+  if(plotvar_.CompareTo("svfitmass")==0) plotvar_="svfitmass*1.000"; //shift ZEE peak 
+  //if(plotvar_.CompareTo("svfitmass")==0) plotvar_="svfitmass*1.015"; //shift ZEE peak 
 
+  if(plotvar_.CompareTo("ditaumass")==0) plotvar_="ditaumass*1.000"; //shift ZEE peak  
 //  if(plotvar_.CompareTo("ditaumass")==0) plotvar_="ditaumass*1.003"; //shift ZEE peak 
 //  if(plotvar_.CompareTo("ditaumass")==0) plotvar_="ditaumass*1.006"; //shift ZEE peak 
 //   if(plotvar_.CompareTo("ditaumass")==0) plotvar_="ditaumass*1.009"; //shift ZEE peak 
-//   if(plotvar_.CompareTo("ditaumass")==0) plotvar_="ditaumass*1.012"; //shift ZEE peak 
-  if(plotvar_.CompareTo("ditaumass")==0) plotvar_="ditaumass*1.015"; //shift ZEE peak 
+//   if(plotvar_.CompareTo("ditaumass")==0) plotvar_="ditaumass*1.012"; //shift ZEE peak
+//  if(plotvar_.CompareTo("ditaumass")==0) plotvar_="ditaumass*1.015"; //shift ZEE peak 
 //   if(plotvar_.CompareTo("ditaumass")==0) plotvar_="ditaumass*1.018"; //shift ZEE peak 
 //   if(plotvar_.CompareTo("ditaumass")==0) plotvar_="ditaumass*1.021"; //shift ZEE peak 
 //   if(plotvar_.CompareTo("ditaumass")==0) plotvar_="ditaumass*1.024"; //shift ZEE peak 
@@ -351,10 +355,9 @@ TH1F* TauElePlotter::getZL2012(){
   h->Add(h1P1Pi0);
   delete h1P1Pi0;
   plotvar_=tmpplotvar;
-  cout<<" WARNING ---------------------> Applying corrections to Z--> ee MC "<<endl;
+  //cout<<" WARNING ---------------------> Applying corrections to Z--> ee MC "<<endl;
+  cout<<" WARNING --------------------->Z-->ee Scale factors turned off"<<endl;
   extrasel_=tmpextrasel;
-
-
 
   return h;
 }
@@ -2134,7 +2137,7 @@ TH1F* TauElePlotter::getZLVBFHCP(){
 
 
   ////Get ZL Yield at Inclusive
-  TH1F*hNorm=getZL2012();//getZL2012Type2();
+  TH1F*hNorm=getZLInc(); //getZL2012();//getZL2012Type2();
   hNorm->SetName("getZLVBFHCP");
   //get Embedded yield at inclusive
   TH1F*hEmbIncl=getTotalEmbedded(); 
@@ -2154,7 +2157,7 @@ TH1F* TauElePlotter::getZLVBFHCP(){
   TString shapesel="(njet20>=2)";
   TString tmpextrasel=extrasel_;
   extrasel_=shapesel;
-  TH1F*hShape=getZL2012();//getZL2012Type2();
+  TH1F*hShape=getZLInc();//getZL2012();//getZL2012Type2();
   hShape->SetName("getZLVBFHCPShape");
   extrasel_=tmpextrasel;
   
@@ -2222,19 +2225,21 @@ TH1F* TauElePlotter::getZLLVBFHCP(){
 TH1F* TauElePlotter::getZLBoost(){
   cout<<"Calling getZLBoost"<<endl;
 
+  TH1F*hNorm=getZLInc();
   //TH1F*hNorm=getZL2012Type2();
-  TH1F*hNorm=getZL2012();
+  //TH1F*hNorm=getZL2012();
   hNorm->SetName("getZLBoost");
 
   Int_t TmpIsocat=Isocat_;
   Int_t MTcatTmp=MTcat_;
   Isocat_=0;
   MTcat_=0;
-  TString shapesel="(njet20>=1&&taupt>40&&metpt>30&&transversemass<30&&muiso<0.2&&tauiso3hitraw<2.0)";
+  TString shapesel="(njet20>=1&&taupt>40&&metpt>20&&transversemass<30&&muiso<0.2&&tauiso3hitraw<2.0)";
   TString tmpextrasel=extrasel_;
   extrasel_=shapesel;
+  TH1F*hShape=getZLInc();
   //TH1F*hShape=getZL2012Type2();
-  TH1F*hShape=getZL2012();
+  //TH1F*hShape=getZL2012();
   hShape->SetName("getZLBoostShape");
  
   Isocat_=TmpIsocat;
@@ -2376,11 +2381,11 @@ bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t
   TH1F*hZL=0;
   if(QCDType==5)  hZL=getZLVBFHCP();
   else if(QCDType==8)  hZL=getZLBoost();
-  //else hZL=getZLInc();
+  else hZL=getZLInc();
   //else hZL=getZL2012();//this is type0
   //else hZL=getZL2012Type1();
   //else hZL=getZL2012Type1LowHigh();
-  else hZL=getZL2012Type2();
+  //else hZL=getZL2012Type2();
   //else hZL=getZLVBFHCP();
   if(!hZL)return 0;
   hZL->SetName("ZL");
@@ -3236,16 +3241,18 @@ void  TauElePlotter::plotTauTrigger(Int_t Region, TString tag){
 
   ///plot the difference in eta
   plotvar_="taupt";
-  nbins_=13;
+  nbins_=30;
   xmin_=0;
-  xmax_=52;
+  xmax_=60;
   Chcat_=1;
   Isocat_=1;
   MTcat_=1;
   extrasel_="1";
 
-  Float_t xbinsValues[15]={17,18,19,20,21,22,24,26,28,30,34,38,42,46,50};
-  setVariableBinning(14,xbinsValues);
+//   Float_t xbinsValues[15]={17,18,19,20,21,22,24,26,28,30,34,38,42,46,50};
+//   setVariableBinning(14,xbinsValues);
+  Float_t xbinsValues[11]={18,20,22,24,26,30,34,38,42,50,60};
+  setVariableBinning(10,xbinsValues);
   nbins_=0;
 
   
@@ -3345,112 +3352,112 @@ void  TauElePlotter::plotTauTrigger(Int_t Region, TString tag){
   FMC.ls(); FMC.Close();
 
 
-  /////////////////compare to the curve from Josh
-  //TriggerEfficiency triggerEff_;
-  TGraph HTAUPTTrigEff_Josh;
-  TGraph HMCTAUPTTrigEff_Josh;
-//   for(Int_t p=0;p<100;p++){
-//     float x=17+p;
-//     //HTAUPTTrigEff_Josh.SetPoint(p,x,triggerEff_.effTau2012ABC_TauEle(x,(Region==1)*0.0+(Region==2)*2.0));
-//     //HMCTAUPTTrigEff_Josh.SetPoint(p,x,triggerEff_.eff2012Tau20MC53X_TauEle(x,(Region==1)*0.0+(Region==2)*2.0));
-//   }
+//   /////////////////compare to the curve from Josh
+//   //TriggerEfficiency triggerEff_;
+//   TGraph HTAUPTTrigEff_Josh;
+//   TGraph HMCTAUPTTrigEff_Josh;
+// //   for(Int_t p=0;p<100;p++){
+// //     float x=17+p;
+// //     //HTAUPTTrigEff_Josh.SetPoint(p,x,triggerEff_.effTau2012ABC_TauEle(x,(Region==1)*0.0+(Region==2)*2.0));
+// //     //HMCTAUPTTrigEff_Josh.SetPoint(p,x,triggerEff_.eff2012Tau20MC53X_TauEle(x,(Region==1)*0.0+(Region==2)*2.0));
+// //   }
 
-  C.Clear();
-  HTAUPTTrigEff->Draw("histpe");
-  HMCTAUPTTrigEff->Draw("histpesame");
-  HTAUPTTrigEff_Josh.SetLineColor(1);
-  HTAUPTTrigEff_Josh.Draw("lsame");
-  HMCTAUPTTrigEff_Josh.SetLineColor(4);
-  HMCTAUPTTrigEff_Josh.Draw("lsame");
-  C.Print(plotFileName+".ps");
-
-
-
-
-  ///////////////Compare Real and Fake Taus
-  //Low mT ZTT  
-  MTcat_=1;
-  extrasel_=selection+"*"+selectionTrigPass;
-  TH1F*HTAUPTZTTTrigPass=getZToTauTau();  HTAUPTZTTTrigPass->SetName("HTAUPTZTTTrigPass");
-  extrasel_=selection+"*"+selectionTrigFail;
-  TH1F*HTAUPTZTTTrigFail=getZToTauTau();  HTAUPTZTTTrigFail->SetName("HTAUPTZTTTrigFail");
-  TH1F*HMCTAUPTZTTTrigEff = computeTrigEff(HTAUPTZTTTrigPass,HTAUPTZTTTrigFail); 
-
-  //Low mT ZEE
-  MTcat_=1;
-  extrasel_=selection+"*"+selectionTrigPass;
-  TH1F*HTAUPTZLTrigPass=getZLInc();  HTAUPTZLTrigPass->SetName("HTAUPTZLTrigPass");
-  extrasel_=selection+"*"+selectionTrigFail;
-  TH1F*HTAUPTZLTrigFail=getZLInc();  HTAUPTZLTrigFail->SetName("HTAUPTZLTrigFail");
-  TH1F*HMCTAUPTZLTrigEff = computeTrigEff(HTAUPTZLTrigPass,HTAUPTZLTrigFail);
-
-  //high MT W : Do not normalize to Data otherwise efficiency is set to Data efficiency
-  MTcat_=3;
-  extrasel_=selection+"*"+selectionTrigPass;
-  TH1F*HMCTAUPTWTrigPass=getWNJetSumNoChCut(); HMCTAUPTWTrigPass->SetName("HMCTAUPTWTrigPass"); 
-  extrasel_=selection+"*"+selectionTrigFail;
-  TH1F*HMCTAUPTWTrigFail=getWNJetSumNoChCut(); HMCTAUPTWTrigFail->SetName("HMCTAUPTWTrigFail"); 
-  TH1F*HMCTAUPTWTrigEff= computeTrigEff(HMCTAUPTWTrigPass,HMCTAUPTWTrigFail);
-
-  //high MT Data 
-  MTcat_=3;
-  extrasel_=selection+"*"+selectionTrigPass;
-  TH1F*HTAUPTWTrigPass=getTotalData();  HTAUPTWTrigPass->SetName("HTAUPTWTrigPass");
-  extrasel_=selection+"*"+selectionTrigFail;
-  TH1F*HTAUPTWTrigFail=getTotalData();  HTAUPTWTrigFail->SetName("HTAUPTWTrigFail");
-  TH1F*HTAUPTWTrigEff= computeTrigEff(HTAUPTWTrigPass,HTAUPTWTrigFail);
+//   C.Clear();
+//   HTAUPTTrigEff->Draw("histpe");
+//   HMCTAUPTTrigEff->Draw("histpesame");
+//   HTAUPTTrigEff_Josh.SetLineColor(1);
+//   HTAUPTTrigEff_Josh.Draw("lsame");
+//   HMCTAUPTTrigEff_Josh.SetLineColor(4);
+//   HMCTAUPTTrigEff_Josh.Draw("lsame");
+//   C.Print(plotFileName+".ps");
 
 
 
-  C.Clear();
-  HTAUPTWTrigEff->SetTitle("");
-  HTAUPTWTrigEff->GetXaxis()->SetTitle("Tau p_{T}");
-  HTAUPTWTrigEff->GetYaxis()->SetTitle("Efficiency");
-  HTAUPTWTrigEff->GetYaxis()->SetRangeUser(.0,1);
-  HTAUPTWTrigEff->Draw("histpe");
-  HMCTAUPTWTrigEff->SetMarkerColor(WJetsColor_);
-  HMCTAUPTWTrigEff->SetLineColor(WJetsColor_);
-  HMCTAUPTWTrigEff->Draw("histpesame");
-  TLegend legend;
-  legend.SetFillStyle (0);
-  legend.SetFillColor (0);
-  legend.SetBorderSize(0);
-  legend.SetTextSize(0.04);
-  legend.AddEntry(HMCTAUPTWTrigEff,"W+jets (mT>70)","pe");
-  legend.AddEntry(HTAUPTWTrigEff,"Data (mT>70)","pe");
-  legend.SetX1NDC(.50);
-  legend.SetX2NDC(.85);
-  legend.SetY1NDC(.22);
-  legend.SetY2NDC(.57);
-  legend.Draw();
-  C.Print(plotFileName+".ps");
+
+//   ///////////////Compare Real and Fake Taus
+//   //Low mT ZTT  
+//   MTcat_=1;
+//   extrasel_=selection+"*"+selectionTrigPass;
+//   TH1F*HTAUPTZTTTrigPass=getZToTauTau();  HTAUPTZTTTrigPass->SetName("HTAUPTZTTTrigPass");
+//   extrasel_=selection+"*"+selectionTrigFail;
+//   TH1F*HTAUPTZTTTrigFail=getZToTauTau();  HTAUPTZTTTrigFail->SetName("HTAUPTZTTTrigFail");
+//   TH1F*HMCTAUPTZTTTrigEff = computeTrigEff(HTAUPTZTTTrigPass,HTAUPTZTTTrigFail); 
+
+//   //Low mT ZEE
+//   MTcat_=1;
+//   extrasel_=selection+"*"+selectionTrigPass;
+//   TH1F*HTAUPTZLTrigPass=getZLInc();  HTAUPTZLTrigPass->SetName("HTAUPTZLTrigPass");
+//   extrasel_=selection+"*"+selectionTrigFail;
+//   TH1F*HTAUPTZLTrigFail=getZLInc();  HTAUPTZLTrigFail->SetName("HTAUPTZLTrigFail");
+//   TH1F*HMCTAUPTZLTrigEff = computeTrigEff(HTAUPTZLTrigPass,HTAUPTZLTrigFail);
+
+//   //high MT W : Do not normalize to Data otherwise efficiency is set to Data efficiency
+//   MTcat_=3;
+//   extrasel_=selection+"*"+selectionTrigPass;
+//   TH1F*HMCTAUPTWTrigPass=getWNJetSumNoChCut(); HMCTAUPTWTrigPass->SetName("HMCTAUPTWTrigPass"); 
+//   extrasel_=selection+"*"+selectionTrigFail;
+//   TH1F*HMCTAUPTWTrigFail=getWNJetSumNoChCut(); HMCTAUPTWTrigFail->SetName("HMCTAUPTWTrigFail"); 
+//   TH1F*HMCTAUPTWTrigEff= computeTrigEff(HMCTAUPTWTrigPass,HMCTAUPTWTrigFail);
+
+//   //high MT Data 
+//   MTcat_=3;
+//   extrasel_=selection+"*"+selectionTrigPass;
+//   TH1F*HTAUPTWTrigPass=getTotalData();  HTAUPTWTrigPass->SetName("HTAUPTWTrigPass");
+//   extrasel_=selection+"*"+selectionTrigFail;
+//   TH1F*HTAUPTWTrigFail=getTotalData();  HTAUPTWTrigFail->SetName("HTAUPTWTrigFail");
+//   TH1F*HTAUPTWTrigEff= computeTrigEff(HTAUPTWTrigPass,HTAUPTWTrigFail);
 
 
 
-  C.Clear();
-  HMCTAUPTZTTTrigEff->SetTitle("");
-  HMCTAUPTZTTTrigEff->GetXaxis()->SetTitle("Tau p_{T}");
-  HMCTAUPTZTTTrigEff->GetYaxis()->SetTitle("Efficiency");
-  HMCTAUPTZTTTrigEff->SetMarkerColor(ZTauTauColor_);
-  HMCTAUPTZTTTrigEff->SetLineColor(ZTauTauColor_);
-  HMCTAUPTZTTTrigEff->GetYaxis()->SetRangeUser(.0,1);
-  HMCTAUPTZTTTrigEff->Draw("histpe");
-  HMCTAUPTZLTrigEff->SetMarkerColor(ZMuMuColor_);
-  HMCTAUPTZLTrigEff->SetLineColor(ZMuMuColor_);
-  HMCTAUPTZLTrigEff->Draw("histpesame");
-  TLegend legend2;
-  legend2.SetFillStyle (0);
-  legend2.SetFillColor (0);
-  legend2.SetBorderSize(0);
-  legend2.SetTextSize(0.04);
-  legend2.AddEntry(HMCTAUPTZTTTrigEff,TString("ZTT MC (mT<")+mTCut_+")","pe");
-  legend2.AddEntry(HMCTAUPTZLTrigEff,TString("Z->ee MC (mT<")+mTCut_+")","pe");
-  legend2.SetX1NDC(.50);
-  legend2.SetX2NDC(.85);
-  legend2.SetY1NDC(.22);
-  legend2.SetY2NDC(.57);
-  legend2.Draw();
-  C.Print(plotFileName+".ps");
+//   C.Clear();
+//   HTAUPTWTrigEff->SetTitle("");
+//   HTAUPTWTrigEff->GetXaxis()->SetTitle("Tau p_{T}");
+//   HTAUPTWTrigEff->GetYaxis()->SetTitle("Efficiency");
+//   HTAUPTWTrigEff->GetYaxis()->SetRangeUser(.0,1);
+//   HTAUPTWTrigEff->Draw("histpe");
+//   HMCTAUPTWTrigEff->SetMarkerColor(WJetsColor_);
+//   HMCTAUPTWTrigEff->SetLineColor(WJetsColor_);
+//   HMCTAUPTWTrigEff->Draw("histpesame");
+//   TLegend legend;
+//   legend.SetFillStyle (0);
+//   legend.SetFillColor (0);
+//   legend.SetBorderSize(0);
+//   legend.SetTextSize(0.04);
+//   legend.AddEntry(HMCTAUPTWTrigEff,"W+jets (mT>70)","pe");
+//   legend.AddEntry(HTAUPTWTrigEff,"Data (mT>70)","pe");
+//   legend.SetX1NDC(.50);
+//   legend.SetX2NDC(.85);
+//   legend.SetY1NDC(.22);
+//   legend.SetY2NDC(.57);
+//   legend.Draw();
+//   C.Print(plotFileName+".ps");
+
+
+
+//   C.Clear();
+//   HMCTAUPTZTTTrigEff->SetTitle("");
+//   HMCTAUPTZTTTrigEff->GetXaxis()->SetTitle("Tau p_{T}");
+//   HMCTAUPTZTTTrigEff->GetYaxis()->SetTitle("Efficiency");
+//   HMCTAUPTZTTTrigEff->SetMarkerColor(ZTauTauColor_);
+//   HMCTAUPTZTTTrigEff->SetLineColor(ZTauTauColor_);
+//   HMCTAUPTZTTTrigEff->GetYaxis()->SetRangeUser(.0,1);
+//   HMCTAUPTZTTTrigEff->Draw("histpe");
+//   HMCTAUPTZLTrigEff->SetMarkerColor(ZMuMuColor_);
+//   HMCTAUPTZLTrigEff->SetLineColor(ZMuMuColor_);
+//   HMCTAUPTZLTrigEff->Draw("histpesame");
+//   TLegend legend2;
+//   legend2.SetFillStyle (0);
+//   legend2.SetFillColor (0);
+//   legend2.SetBorderSize(0);
+//   legend2.SetTextSize(0.04);
+//   legend2.AddEntry(HMCTAUPTZTTTrigEff,TString("ZTT MC (mT<")+mTCut_+")","pe");
+//   legend2.AddEntry(HMCTAUPTZLTrigEff,TString("Z->ee MC (mT<")+mTCut_+")","pe");
+//   legend2.SetX1NDC(.50);
+//   legend2.SetX2NDC(.85);
+//   legend2.SetY1NDC(.22);
+//   legend2.SetY2NDC(.57);
+//   legend2.Draw();
+//   C.Print(plotFileName+".ps");
 
 
 
