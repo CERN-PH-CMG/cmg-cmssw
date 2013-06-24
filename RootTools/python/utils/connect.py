@@ -176,7 +176,7 @@ def findAlias(path_name, aliases):
     if name is None:
         return None
     match = rePatMass.search(path_name)
-    if match and name.find('DYJets')==-1:
+    if match and not path_name.startswith('/DY'):
         mass = match.group(1)
         return name + mass
     else:
