@@ -10,7 +10,7 @@ def lookup( fileName, stringToFind ):
 
 
 recoilfits_leptonic_5X = dict(
-    zmm = 'recoilfit_zmm53X_20pv_njet.root',
+    zmm = 'recoilfit_zmm53XRR_2012_njet.root',
     hig = 'recoilfit_higgs53X_20pv_njet.root',
     wjets = 'recoilfit_wjets53X_20pv_njet.root',
     )
@@ -96,8 +96,8 @@ def basicParameters(is53X):
     correctionType = None
     if is53X:
         print 'picking up 53X recoil fits'
-        fileZmmData = rootfile_dir + 'recoilfit_datamm53X_2012_njet.root'
-        fileZmmMC = rootfile_dir + 'recoilfit_zmm53X_2012_njet.root'
+        fileZmmData = rootfile_dir + 'recoilfit_datamm53XRR_2012_njet.root'
+        fileZmmMC = rootfile_dir + 'recoilfit_zmm53XRR_2012_njet.root'
         correctionType = 1
     else:
         print 'picking up 44X recoil fits'
