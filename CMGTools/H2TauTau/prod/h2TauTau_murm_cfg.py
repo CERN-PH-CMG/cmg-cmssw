@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
+from CMGTools.Common.Tools.cmsswRelease import isNewerThan, cmsswIs44X,cmsswIs52X
 
 sep_line = '-'*70
 
@@ -8,23 +8,28 @@ sep_line = '-'*70
 
 process = cms.Process("H2TAUTAU")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(20000) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
     )
 
 # -1 : process all files
-numberOfFilesToProcess = 100
+numberOfFilesToProcess = 140
 
 debugEventContent = False
 
 #tau-mu, tau-ele, di-tau, all
-channel = 'tau-mu'
+channel = 'tau-mu' # 'tau-mu' #'tau-mu' 'all' 'tau-ele'
 jetRecalib = False
-useCHS = False 
+useCHS = False
+#newSVFit enables the svfit mass reconstruction used for the H->tau tau analysis.
+# if false, much faster processing but mass is wrong. 
 newSVFit = False
 tauScaling = 0
+# increase to 1000 before running on the batch, to reduce size of log files
+# on your account
+reportInterval = 1000
 
 print sep_line
 print 'channel', channel
@@ -40,26 +45,10 @@ print 'tau scaling =', tauScaling
 # Input  & JSON             -------------------------------------------------
 
 
-# process.setName_('H2TAUTAU')
-
-
-dataset_user = 'cbern' 
-# dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
-# dataset_name = '/H2TAUTAU/Sync/GluGlu/AOD/PAT_CMG_V5_5_0'
-# dataset_name = '/H2TAUTAU/Sync/2012/VBF/AOD/PAT_CMG_V5_5_1'
-# dataset_name = '/TauPlusX/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_5_1_runrange_start-200601'
-# dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_V5_6_0_B'
-# dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
-# dataset_name = '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
-# dataset_name = '/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_5_1'
-
-# dataset_name = '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
-# dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
-# dataset_name = '/DoubleMu/Run2011B-16Jan2012-v1/AOD/V5/PAT_CMG_V5_6_0_B'
-# dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
-# dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
-dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0/DIMU_Colin17Oct'
-# dataset_name = '/TauPlusX/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_8_0'
+dataset_user = 'cbern'
+# dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_16_0/DIMU_Colin_17Jun2013'
+dataset_name = '/DY4JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_16_0/DIMU_Colin_17Jun2013'
+# dataset_name = '/TauPlusX/Run2012C-22Jan2013-v1/AOD/PAT_CMG_V5_16_0/DIMU_Colin_17Jun2013'
 
 dataset_files = 'cmgTuple.*root'
 
@@ -70,6 +59,12 @@ process.source = datasetToSource(
     dataset_name,
     dataset_files,
     )
+
+process.source.inputCommands=cms.untracked.vstring(
+    'keep *',
+    'drop cmgStructuredPFJets_cmgStructuredPFJetSel__PAT'
+    )
+
 
 # process.source.fileNames = ['file:VBF_HToTauTau.root']
 
@@ -89,7 +84,6 @@ runOnMC = process.source.fileNames[0].find('Run201')==-1 and process.source.file
 if runOnMC==False:
     from CMGTools.H2TauTau.tools.setupJSON import setupJSON
     json = setupJSON(process)
-
 
 
 # load the channel paths -------------------------------------------
@@ -268,7 +262,9 @@ justn = 30
 # print 'Debug event content'.ljust(justn), debugEventContent
 
 # you can enable printouts of most modules like this:
-# process.cmgTauMuCorPreSelSVFit.verbose = True
+# process.cmgTauMuCorSVFitPreSel.verbose = True
+# process.mvaMETTauMu.verbose = True
+# process.recoilCorMETTauMu.verbose= True
 
 # systematic shift on tau energy scale 
 process.cmgTauScaler.cfg.nSigma = tauScaling
@@ -288,7 +284,7 @@ if channel=='di-tau' or channel=='all':
 
 # Message logger setup.
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = reportInterval
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 
@@ -339,10 +335,11 @@ if useCHS:
 if newSVFit:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 2
     process.cmgTauEleCorSVFitPreSel.SVFitVersion = 2
-    process.MessageLogger.cerr.FwkReport.reportEvery = 1
+    process.cmgDiTauSVFit.SVFitVersion = 2
 else:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 1
     process.cmgTauEleCorSVFitPreSel.SVFitVersion = 1
+    process.cmgDiTauSVFit.SVFitVersion = 1
 
 # process.tauMu_fullsel_tree_CMG.SelectEvents = cms.untracked.PSet()
 
