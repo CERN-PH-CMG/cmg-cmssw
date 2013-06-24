@@ -157,4 +157,14 @@ for dy in mc_dy:
     dy.fractions = dy_fractions
 
 
+w_fractions = [ 0.74392452,
+                0.175999,
+                0.0562617,
+                0.0168926,
+                0.00692218
+                ]
+
+for w in mc_w:
+    w.fractions = w_fractions
+
 #COLIN: need to do the same for WJets
