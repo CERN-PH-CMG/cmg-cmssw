@@ -107,49 +107,54 @@ Tbar_tW = cfg.MCComponent(
     effCorrFactor = 1 )
 
 
+
+mc_dy = [
+    DYJets,
+    DY1Jets,
+    DY2Jets,
+    DY3Jets,
+    DY4Jets,
+    ]
+
+mc_w = [
+    WJets,
+    W1Jets,
+    W2Jets,
+    W3Jets,
+    W4Jets,
+    ]
+
 t_mc_ewk = [
     TTJets,
     T_tW,
     Tbar_tW,
     ]
 
-mc_ewk = [
-    DYJets,
-    DY1Jets,
-    DY2Jets,
-    DY3Jets,
-    DY4Jets,
-    WJets,
-    W1Jets,
-    W2Jets,
-    W3Jets,
-    W4Jets,
-    # WJetsExt,
-    TTJets,
-    T_tW,
-    Tbar_tW,
-    ]
 
-ztt_mc_ewk = [
-    DYJets,
-    DY1Jets,
-    DY2Jets,
-    DY3Jets,
-    DY4Jets,
-    ]
-
-ztt_inc_mc_ewk = [
-    DYJets,
-    ]
-
-w_mc_ewk = [
-    WJets,
-    W1Jets,
-    W2Jets,
-    W3Jets,
-    W4Jets,
-    ]
+mc_ewk = []
+mc_ewk += mc_dy
+mc_ewk += mc_w
+mc_ewk += t_mc_ewk
 
 
-## mc_ewk_up = sampleShift( locals(), [DYJets], 'Up')
-## mc_ewk_down = sampleShift( locals(), [DYJets], 'Down')
+# for backward compatibility:
+ztt_mc_ewk = mc_dy
+ztt_inc_mc_ewk = [DYJets]
+w_mc_ewk = mc_w
+
+
+#stitching:
+
+# from COLIN, measured on inclusive DYJets sample, before any selection.
+dy_fractions = [ 0.72328,
+                 0.188645,
+                 0.0613196,
+                 0.0188489,
+                 0.00790643
+                 ]
+
+for dy in mc_dy:
+    dy.fractions = dy_fractions
+
+
+#COLIN: need to do the same for WJets
