@@ -13,10 +13,6 @@ sampleName = os.environ['SAMPLENAME']
 sampleJobIdx = int(os.environ['SAMPLEJOBIDX'])
 sampleMergeFactor = int(os.environ['SAMPLEMERGEFACTOR'])
 
-#dataset_user  = 'benitezj'
-#sampleName = 'HiggsVBF125'
-#sampleJobIdx = 0
-#sampleMergeFactor = 200
 
 #########################
 process.analysis = cms.Path() 
@@ -25,13 +21,11 @@ process.analysis = cms.Path()
 ######The analysis module
 process.load('CMGTools.H2TauTau.tools.joseFlatNtpSample_cfi')
 process.flatNtp = process.flatNtpTauEle.clone()
-from CMGTools.H2TauTau.tools.joseFlatNtpSample53X_cff import configureFlatNtpSampleTauEle2012
-configureFlatNtpSampleTauEle2012(process.flatNtp,sampleName)
+from CMGTools.H2TauTau.tools.joseFlatNtpSample53X_cff import configureFlatNtpSampleTauEle2012Trig
+configureFlatNtpSampleTauEle2012Trig(process.flatNtp,sampleName)
 process.flatNtp.diTauTag = 'cmgTauEle'
 process.flatNtp.metType = 2
-process.flatNtp.runSVFit = 2 #1 old #2 new
-#process.flatNtp.recoilCorrection = 0 #0 no, 1 Z, 2 W
-
+process.flatNtp.runSVFit = 1 #1 old #2 new
 
 
 ### input files
@@ -51,28 +45,7 @@ from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource( dataset_user, dataset_name, inputfiles)
 process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 
-#process.source = cms.Source(
-#    "PoolSource",
-#    fileNames = cms.untracked.vstring(
-#    #'/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0/cmgTuple_0.root'
-#    #'/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1/cmgTuple_0.root'
-#    #'file:../../../Common/prod/TEST/cmgTuple_HToTauTau.root'
-#   'file:./tauEle_fullsel_tree_CMG.root'
-#    )
-#    )
-
-#process.source.fileNames = ['file:./tauEle_fullsel_tree_CMG.root']
-
-
-#process.source.eventsToProcess = cms.untracked.VEventRange('1:123718', '1:265310', '1:384609', '1:40369', '1:43534', '1:769171')
-
-#process.source.fileNames = ['/store/cmst3/user/cmgtools/CMG/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_16_0/cmgTuple_61.root']
-#process.source.eventsToProcess = cms.untracked.VEventRange('1:100113')
-
 print process.source.fileNames
-#print process.source.eventsToProcess
-#process.flatNtp.printSelectionPass = 2
-
 
 # set up JSON ---------------------------------------------------------------
 if process.flatNtp.dataType != 0 :
@@ -105,12 +78,13 @@ process.analysis += process.goodOfflinePrimaryVertices
 ###Apply Tau ES corrections
 process.load('CMGTools.Utilities.tools.cmgTauESCorrector_cfi')
 process.analysis +=  process.cmgTauESCorrector
-if process.flatNtp.correctTauES != 1:
+if process.flatNtp.correctTauES == 1:
    process.cmgTauESCorrector.cfg.OneProngNoPi0Correction = 1.000
-   process.cmgTauESCorrector.cfg.OneProng1Pi0Correction = 1.000
-   process.cmgTauESCorrector.cfg.OneProng1Pi0CorrectionPtSlope = 0.0
-   process.cmgTauESCorrector.cfg.ThreeProngCorrection = 1.000
-   process.cmgTauESCorrector.cfg.ThreeProngCorrectionPtSlope = 0.0
+   process.cmgTauESCorrector.cfg.OneProng1Pi0Correction = 1.015
+   process.cmgTauESCorrector.cfg.OneProng1Pi0CorrectionPtSlope = 0.001
+   process.cmgTauESCorrector.cfg.ThreeProngCorrection = 1.012
+   process.cmgTauESCorrector.cfg.ThreeProngCorrectionPtSlope = 0.001
+   
 
 ##create mu-tau candidates
 process.load('CMGTools.Common.factories.cmgTauScaler_cfi')
@@ -123,14 +97,6 @@ process.load('CMGTools.Common.factories.cmgTauEle_cfi')
 process.cmgTauEle.cfg.leg1Collection = 'cmgTauScaler'
 process.cmgTauEle.cfg.metCollection = 'cmgPFMETRaw'
 process.analysis +=  process.cmgTauEle
-
-
-## event filter --------------------------------
-#process.load('CMGTools.Common.skims.cmgTauEleCount_cfi')
-#process.cmgTauEleCount.src = 'cmgTauEle'
-#process.cmgTauEleCount.minNumber = 1
-#process.analysis +=  process.cmgTauEleCount
-
 
 ##run the MVA MET 
 if process.flatNtp.metType == 2:
@@ -181,5 +147,3 @@ process.MessageLogger = cms.Service("MessageLogger",
     )
 )
 
-#process.source.duplicateCheckMode = cms.untracked.string("noDuplicateCheck")
-#print process.dumpPython()

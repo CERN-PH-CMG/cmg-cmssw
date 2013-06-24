@@ -300,6 +300,120 @@ public:
     return 0;
   }
 
+  ///////////////Summere13///////////////////
+  double effCorrMuID2012ABCDSummer13(double pt,double eta){
+    if(fabs(eta)<0.8) {
+      if(20.0<pt&&pt<=30.0) return 0.9818;
+      if(30.0<pt) return 0.9852;
+      return 0;
+    }else if(fabs(eta)<1.2) {
+      if(20.0<pt&&pt<=30.0) return 0.9829;
+      if(30.0<pt) return 0.9852;
+      return 0;
+    }else if(fabs(eta)<2.1){
+      if(20.0<pt&&pt<=30.0) return 0.9869;
+      if(30.0<pt) return 0.9884;
+      return 0;
+    }
+    return 0;
+  }
+
+  double effCorrMuIso2012ABCDSummer13(double pt,double eta){
+    if(fabs(eta)<0.8) {
+      if(20.0<pt&&pt<=30.0) return 0.9494;
+      if(30.0<pt) return 0.9883;
+      return 0;
+    }else if(fabs(eta)<1.2) {
+      if(20.0<pt&&pt<=30.0) return 0.9835;
+      if(30.0<pt) return 0.9937;
+      return 0;
+    }else if(fabs(eta)<2.1){
+      if(20.0<pt&&pt<=30.0) return 0.9923;
+      if(30.0<pt) return 0.9996;
+      return 0;
+    }
+    return 0;
+  }
+
+  double effCorrEleID2012ABCDSummer13(double pt,double eta){
+    if(fabs(eta)<1.479) {//Barrel
+      if(24.0<pt&&pt<=30.0) return 0.8999;
+      if(30.0<pt) return 0.9486;
+      return 0;
+    }else if(fabs(eta)<2.1){//Endcap
+      if(24.0<pt&&pt<=30.0) return 0.7945;
+      if(30.0<pt) return 0.8866;
+      return 0;
+    }
+    return 0;
+  }
+  double effCorrEleIso2012ABCDSummer13(double pt,double eta){
+    if(fabs(eta)<1.479) {//Barrel
+      if(24.0<pt&&pt<=30.0) return 0.9417;
+      if(30.0<pt) return 0.9804;
+      return 0;
+    }else if(fabs(eta)<2.1){//Endcap
+      if(24.0<pt&&pt<=30.0) return 0.9471;
+      if(30.0<pt) return 0.9900;
+      return 0;
+    }
+    return 0;
+  }
+
+
+  //this only applies to electrons in the rec-hit embedded sample for e-Tau, computed by Ivo
+  // Tight e-Id as in e+tau, Pt>20, |super-cluster eta|<2.1
+  Float_t elecEffSFTight(Float_t pt, Float_t eta){
+
+    //Define histogram with weights
+    Double_t xAxis1[10] = {10, 15, 20, 25, 30, 40, 55, 70, 100, 200}; 
+    Double_t yAxis1[4] = {0, 0.8, 1.479, 2.5}; 
+   
+    TH2F hPtEtaSF("hPtEtaSF","",9, xAxis1,3, yAxis1);
+    hPtEtaSF.SetBinContent(14,0.95);
+    hPtEtaSF.SetBinContent(15,0.96);
+    hPtEtaSF.SetBinContent(16,0.97);
+    hPtEtaSF.SetBinContent(17,0.98);
+    hPtEtaSF.SetBinContent(18,1.00);
+    hPtEtaSF.SetBinContent(19,0.98);
+    hPtEtaSF.SetBinContent(20,0.99);
+    hPtEtaSF.SetBinContent(21,1.00);
+    hPtEtaSF.SetBinContent(25,0.89);
+    hPtEtaSF.SetBinContent(26,0.93);
+    hPtEtaSF.SetBinContent(27,0.94);
+    hPtEtaSF.SetBinContent(28,0.98);
+    hPtEtaSF.SetBinContent(29,0.96);
+    hPtEtaSF.SetBinContent(30,0.97);
+    hPtEtaSF.SetBinContent(31,0.98);
+    hPtEtaSF.SetBinContent(32,0.93);
+    hPtEtaSF.SetBinContent(36,0.66);
+    hPtEtaSF.SetBinContent(37,0.75);
+    hPtEtaSF.SetBinContent(38,0.78);
+    hPtEtaSF.SetBinContent(39,0.84);
+    hPtEtaSF.SetBinContent(40,0.89);
+    hPtEtaSF.SetBinContent(41,0.89);
+    hPtEtaSF.SetBinContent(42,0.93);
+    hPtEtaSF.SetBinContent(43,1.00);
+
+    if(pt>199.99)
+      pt=199.9;
+    eta=fabs(eta);
+    if(eta>2.49)
+      eta=2.49;
+
+    if(pt<20)
+      return 0;
+
+    Float_t eff=0;
+    Int_t bin = hPtEtaSF.FindFixBin(pt,eta);
+    eff = hPtEtaSF.GetBinContent(bin);
+
+    return eff;
+  }
+
+
+
+
 
 private:
   

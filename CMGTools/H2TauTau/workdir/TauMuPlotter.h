@@ -222,9 +222,13 @@ public:
   Int_t ZTTType_;
   Int_t WJetsType_;
   long mTCut_;
-  long taupTCut_;
   long leadJetpTCut_;
-  long higgspTCut_;
+  long taupTCut_;
+  long taupTCut1_;
+  long taupTCut2_;
+  long higgspTCutLow_;
+  long higgspTCutMed_;
+  long higgspTCutHigh_;
   TString eventWeight_;
   TString tauIsoCut_;
   TString tauIsoCutQCD_;
@@ -297,26 +301,134 @@ public:
     TString zerojetcut=TString("(njet==0&&nbjet==0)");
     TString onejetcut=TString("(njet>=1&&nbjet==0)");
     TString bjetcut="(njet<2&&nbjet>=1)";
-    TString tauhighcut=TString("(taupt>")+taupTCut_+")";
     TString taulowcut=TString("(taupt<")+taupTCut_+")";
-    TString higsptcut=TString("(ditaumetpt>")+higgspTCut_+")";
+    TString tauhighcut=TString("(taupt>")+taupTCut_+")";
+    TString higsptcutlow=TString("(ditaumetpt>")+higgspTCutLow_+")";
+    TString higsptcuthigh=TString("(ditaumetpt>")+higgspTCutHigh_+")";
 
-    TString notboosthigh="(!(taupt>40&&ditaumetpt>80))";
-    TString notboostmedium="(!(taupt>30&&ditaumetpt>80))";
-    
+     TString notboosthigh=TString("(!(taupt>10000&&ditaumetpt>10000))");
+     TString notboosthightau=TString("(taupt<10000)");
+//     TString notboosthigh=TString("(!(taupt>45&&ditaumetpt>80))");
+//     TString notboosthightau=TString("(taupt<45)");
+//     TString notboosthigh=TString("(!(taupt>30&&ditaumetpt>20))");
+//     TString notboosthightau=TString("(taupt<30)");
+
     TString SMcut[7];
     SMcut[0]=zerojetcut+"*"+taulowcut;
-    SMcut[1]=zerojetcut+"*"+tauhighcut;
-    SMcut[2]=notvbfcut+"*"+onejetcut+"*"+taulowcut;
-    SMcut[3]=notvbfcut+"*"+onejetcut+"*"+tauhighcut+"*"+higsptcut;
+    SMcut[1]=zerojetcut+"*"+tauhighcut+"*"+notboosthightau;
+    SMcut[2]=notvbfcut+"*"+onejetcut+"*"+taulowcut+"*"+higsptcutlow;
+    SMcut[3]=notvbfcut+"*"+onejetcut+"*"+tauhighcut+"*"+higsptcuthigh+"*"+notboosthigh;
     SMcut[4]=vbfcut;
     SMcut[5]=bjetcut+"*"+taulowcut;
     SMcut[6]=bjetcut+"*"+tauhighcut;
     cout<<"Category selection : "<<SMcut[sm]<<endl;
 
+    return SMcut[sm];
+  }
+
+
+  TString getSMcutSummer13(Int_t sm){
+    if(sm<0||6<sm){
+      cout<<" Category : "<<sm<<" undefined "<<endl;
+      return TString("");
+    }
+
+    TString vbfcut="(njet>=2&&njetingap==0&&diJetMass>500.&&abs(diJetDeltaEta)>3.5)";
+    TString notvbfcut=TString("(!")+vbfcut+")";
+    TString zerojetcut=TString("(ditaumetpt<20&&nbjet==0)");
+    TString onejetcut=TString("(ditaumetpt>20&&nbjet==0)");
+    TString bjetcut="(njet<2&&nbjet>=1)";
+    TString taulowcut=TString("(taupt<")+taupTCut_+")";
+    TString tauhighcut=TString("(taupt>")+taupTCut_+")";
+    TString higsptcutlow=TString("(ditaumetpt>")+higgspTCutLow_+")";
+    TString higsptcuthigh=TString("(ditaumetpt>")+higgspTCutHigh_+")";
+
+    TString SMcut[7];
+    SMcut[0]=zerojetcut+"*"+taulowcut;
+    SMcut[1]=zerojetcut+"*"+tauhighcut;
+    SMcut[2]=notvbfcut+"*"+onejetcut+"*"+taulowcut+"*"+higsptcutlow;
+    SMcut[3]=notvbfcut+"*"+onejetcut+"*"+tauhighcut+"*"+higsptcuthigh;
+    SMcut[4]=vbfcut;
+    SMcut[5]=bjetcut+"*"+taulowcut;
+    SMcut[6]=bjetcut+"*"+tauhighcut;
+    cout<<"Category selection : "<<SMcut[sm]<<endl;
 
     return SMcut[sm];
   }
+
+
+
+  TString getSMcutOpt2(Int_t sm){
+    if(sm<0||6<sm){
+      cout<<" Category : "<<sm<<" undefined "<<endl;
+      return TString("");
+    }
+
+    TString vbfcut="(njet>=2&&njetingap==0&&diJetMass>500.&&abs(diJetDeltaEta)>3.5)";
+    TString notvbfcut=TString("(!")+vbfcut+")";
+    TString zerojetcut=TString("(njet==0&&nbjet==0)");
+    TString onejetcut=TString("(njet>=1&&nbjet==0)");
+
+    TString taulowcut=TString("(taupt>20)");//need to add another variable here in case optmization cuts higher, also see below
+    TString taumedcut=TString("(taupt>")+taupTCut1_+")";
+    TString tauhighcut=TString("(taupt>")+taupTCut2_+")";
+    TString higsptcutlow=TString("(ditaumetpt>")+higgspTCutLow_+")";
+    TString higsptcutmed=TString("(ditaumetpt>")+higgspTCutMed_+")";
+    TString higsptcuthigh=TString("(ditaumetpt>")+higgspTCutHigh_+")";
+    
+    //Note that optimization of these cuts is done with the boost_high category defined in the previous function
+    TString boosthigh=tauhighcut+"*"+higsptcuthigh;
+    TString notboosthigh=TString("(!(")+boosthigh+"))";
+    TString boostmed=taumedcut+"*"+higsptcutmed+"*"+notboosthigh;
+    TString notboostmed=TString("(!(")+boostmed+"))";
+    TString boostlow=taulowcut+"*"+higsptcutlow+"*"+notboosthigh+"*"+notboostmed;
+
+    TString SMcut[6];
+    SMcut[0]=zerojetcut+"*"+"(taupt>20&&taupt<"+taupTCut1_+")";
+    SMcut[1]=zerojetcut+"*"+"(taupt>"+taupTCut1_+"&&taupt<"+taupTCut2_+")";
+    SMcut[2]=zerojetcut+"*"+"(taupt>"+taupTCut2_+")";
+    SMcut[3]=notvbfcut+"*"+onejetcut+"*"+boostlow;
+    SMcut[4]=notvbfcut+"*"+onejetcut+"*"+boostmed;
+    SMcut[5]=notvbfcut+"*"+onejetcut+"*"+boosthigh;
+    cout<<"Category selection : "<<SMcut[sm]<<endl;
+    
+    
+    return SMcut[sm];
+  }
+
+
+
+  TString getSMCategory(Int_t sm){
+    if(sm<0||7<sm){
+      cout<<" Category : "<<sm<<" undefined "<<endl;
+      return TString("");
+    }
+
+
+    TString zerojetcut=TString("(njet==0&&nbjet==0)");
+    TString onejetcut=TString("(njet>=1&&nbjet==0)");
+    TString vbftightcut="(njet>=2&&njetingap==0&&diJetMass>700.&&abs(diJetDeltaEta)>4.0&&ditaumetpt>100)";
+    TString notvbftightcut=TString("(!")+vbftightcut+")";
+    TString vbfcut="(njet>=2&&njetingap==0&&diJetMass>500.&&abs(diJetDeltaEta)>3.5)";
+    TString notvbfcut=TString("(!")+vbfcut+")";
+
+    TString SMcut[8];
+    SMcut[0]=zerojetcut+"*"+"(20<taupt&&taupt<30)";
+    SMcut[1]=zerojetcut+"*"+"(30<taupt&&taupt<45)";
+    SMcut[2]=zerojetcut+"*"+"(45<taupt)";
+    SMcut[3]=notvbfcut+"*"+onejetcut+"*"+"(30<taupt&&taupt<45&&20<ditaumetpt)";
+    SMcut[4]=notvbfcut+"*"+onejetcut+"*"+"(45<taupt&&20<ditaumetpt&&ditaumetpt<100)";
+    SMcut[5]=notvbfcut+"*"+onejetcut+"*"+"(45<taupt&&100<ditaumetpt)";
+    SMcut[6]=notvbftightcut+"*"+vbfcut;
+    SMcut[7]=vbftightcut;
+    cout<<"Category selection : "<<SMcut[sm]<<endl;
+    
+    
+    return SMcut[sm];
+  }
+
+
+
 
 
   TString getSMcutTauTau(Int_t sm){
@@ -346,7 +458,7 @@ public:
 
     return SMcut[sm];
   }
-
+  
 
 
 

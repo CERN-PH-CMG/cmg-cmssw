@@ -88,7 +88,7 @@ bool TriggerEfficiency::fitEfficiency(const char* filename,float xmin,float xmax
   min->Minimize(); 
   if(min->MinValue()>20) min->Minimize(); 
  
-   const double *xx = min->X();
+  const double *xx = min->X();
 //   std::cout<<"Initial parameters:"<<std::endl;
 //   std::cout<<variable[0]<<" , "<<variable[1]<<" , "<<variable[2]<<" , "<<variable[3]<<" , "<<variable[4]<<std::endl;
 //   std::cout<<"Final parameters:"<<std::endl;
@@ -97,7 +97,7 @@ bool TriggerEfficiency::fitEfficiency(const char* filename,float xmin,float xmax
  
 
   //Save the result in a root file
-  TFile FResults(TString("TrigEffFitResult_")+filename,"recreate");
+  TFile FResults(TString("")+filename+"_Fit.root","recreate");
   TGraph Fit;
   for(Int_t p=0;p<100;p++){
     float x=chi2FunctorHisto->GetXaxis()->GetXmin() + p*(chi2FunctorHisto->GetXaxis()->GetXmax()-chi2FunctorHisto->GetXaxis()->GetXmin())/100.;

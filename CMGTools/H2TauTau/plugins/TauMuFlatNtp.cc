@@ -290,7 +290,7 @@ bool TauMuFlatNtp::applySelections(){
     //if(cand->leg1().tauID("byLooseIsoMVA")>0.5)
     //if(cand->leg1().tauID("byIsolationMVA2raw")>0.5)
     //     if(cand->leg1().tauID("byIsolationMVA2raw")>0.5 ||cand->leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits")<7.0)
-    if(cand->leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits")>7.0)continue;
+    if(cand->leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits")>10.0)continue;
     diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()==0){
@@ -506,11 +506,12 @@ bool TauMuFlatNtp::fill(){
 	if(triggerEff_.eff_2012_Rebecca_TauMu_IsoMu1753XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
 	  triggerEffWeightsMu_[2] = triggerEff_.effMu_muTau_Data_2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
 	    /triggerEff_.eff_2012_Rebecca_TauMu_IsoMu1753XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-	if(triggerEff_.effTau_muTau_MC_2012ABCD(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
-	  triggerEffWeightsTau_[3] = triggerEff_.effTau_muTau_Data_2012ABCD(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
-	    /triggerEff_.effTau_muTau_MC_2012ABCD(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+
+	if(triggerEff_.effTau_muTau_MC_2012ABCDSummer13(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
+	  triggerEffWeightsTau_[3] = triggerEff_.effTau_muTau_Data_2012ABCDSummer13(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	    /triggerEff_.effTau_muTau_MC_2012ABCDSummer13(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
 	if(triggerEff_.effMu_muTau_MC_2012ABCD(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
-	  triggerEffWeightsMu_[3] = triggerEff_.effMu_muTau_Data_2012ABCD(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	  triggerEffWeightsMu_[3] = triggerEff_.effMu_muTau_Data_2012ABCDSummer13(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
 	    /triggerEff_.effMu_muTau_MC_2012ABCD(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 
 
@@ -521,8 +522,8 @@ bool TauMuFlatNtp::fill(){
 	triggerEffWeightsMu_[1] = triggerEff_.effMu2012_Rebecca_TauMu_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 	triggerEffWeightsTau_[2] = triggerEff_.effTau_muTau_Data_2012D(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
 	triggerEffWeightsMu_[2] = triggerEff_.effMu_muTau_Data_2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-	triggerEffWeightsTau_[3] = triggerEff_.effTau_muTau_Data_2012ABCD(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	triggerEffWeightsMu_[3] = triggerEff_.effMu_muTau_Data_2012ABCD(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	triggerEffWeightsTau_[3] = triggerEff_.effTau_muTau_Data_2012ABCDSummer13(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	triggerEffWeightsMu_[3] = triggerEff_.effMu_muTau_Data_2012ABCDSummer13(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
       }
 
 
@@ -530,7 +531,7 @@ bool TauMuFlatNtp::fill(){
       selectionEffWeightsId_[0] = selectionEff_.effCorrMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
       selectionEffWeightsId_[1] = selectionEff_.effCorrMuID2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
       selectionEffWeightsId_[2] = selectionEff_.effCorrMuID2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-      selectionEffWeightsId_[3] = selectionEff_.effCorrMuID2012ABCD(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      selectionEffWeightsId_[3] = selectionEff_.effCorrMuID2012ABCDSummer13(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 
 
       //iso correction only to MC
@@ -538,7 +539,7 @@ bool TauMuFlatNtp::fill(){
 	selectionEffWeightsIso_[0] = 1.;//need to separate the above function
 	selectionEffWeightsIso_[1] = selectionEff_.effCorrMuIso2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 	selectionEffWeightsIso_[2] = selectionEff_.effCorrMuIso2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-	selectionEffWeightsIso_[3] = selectionEff_.effCorrMuIso2012ABCD(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	selectionEffWeightsIso_[3] = selectionEff_.effCorrMuIso2012ABCDSummer13(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
       }
     }
 

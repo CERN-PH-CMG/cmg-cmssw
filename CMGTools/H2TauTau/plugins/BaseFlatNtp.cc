@@ -18,7 +18,6 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   btagWP_(0.679),
   btagsf(12345),
   corrector_(iConfig.getParameter<std::string>("fileCorrectTo")),
-  //corrector2012_(iConfig.getParameter<std::string>("fileCorrectTo")),
   mvaWeights_(iConfig.getParameter<std::string>("mvaWeights")),
   reader_(mvaWeights_.c_str()),
   mvaWeights2012_(iConfig.getParameter<std::string>("mvaWeights2012")),
@@ -183,14 +182,31 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   signalWeightMass_ = iConfig.getParameter<std::string>("signalWeightMass");
   cout<<"signalWeightMass_  "<<signalWeightMass_.c_str()<<endl;
   if((int)(signalWeightMass_.compare("0"))!=0 ){//signal reweighting required
-    TFile F(TString(signalWeightDir_)+"/weight_ptH_"+signalWeightMass_.c_str()+".root","read");
-    TH1F* H=(TH1F*)F.Get(TString("powheg_weight/weight_hqt_fehipro_fit_")+signalWeightMass_.c_str());
+    
+    TH1F* H=0;
+    TH1F* HLow=0;
+    TH1F* HHigh=0;
+    TFile* F=0;
+    if(dataPeriodFlag_==2011){
+      F=new TFile(TString(signalWeightDir_)+"/weight_ptH_"+signalWeightMass_.c_str()+".root","read");
+      H=(TH1F*)F->Get(TString("powheg_weight/weight_hqt_fehipro_fit_")+signalWeightMass_.c_str());
+    }
+    if(dataPeriodFlag_==2012){
+      F=new TFile(TString(signalWeightDir_)+"/weight_ptH_"+signalWeightMass_.c_str()+".root","read");
+      H=(TH1F*)F->Get(TString("Nominal"));
+      HLow=(TH1F*)F->Get(TString("Down"));
+      HHigh=(TH1F*)F->Get(TString("Up"));
+    }
+
     gROOT->cd();
-    if(!H){
-      cout<<"signalWeight requested but histogram not found in "<<F.GetName()<<endl;
+    if(!H ){
+      cout<<"signalWeight requested but histogram not found in "<<endl;
       exit(0);
     }
     signalWeightHisto_=(TH1F*)H->Clone("signalWeightHisto");
+    if(HLow)signalWeightHistoLow_=(TH1F*)HLow->Clone("signalWeightHistoLow");
+    if(HHigh)signalWeightHistoHigh_=(TH1F*)HHigh->Clone("signalWeightHistoHigh");
+    delete F;
   }
 
   cout<<"Trigger paths: "<<endl;
@@ -210,6 +226,11 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   }
 
 
+  //
+  HGenBosonPt_=new TH1F("HGenBosonPt","",500,0,500);
+  HGenBosonMass_=new TH1F("HGenBosonMass","",1100,0,1100);
+  HGenBosonEta_=new TH1F("HGenBosonEta","",200,-10,10);
+  HGenBosonPhi_=new TH1F("HGenBosonPhi","",80,-4,4);
 
 }
 
@@ -220,6 +241,11 @@ BaseFlatNtp::~BaseFlatNtp(){
   for(std::vector<edm::InputTag *>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){
     delete *path;
   }
+
+  delete HGenBosonPt_;
+  delete HGenBosonMass_;
+  delete HGenBosonEta_;
+  delete HGenBosonPhi_;
 
 }
 
@@ -251,6 +277,8 @@ void BaseFlatNtp::beginJob(){
 
   tree_->Branch("btagEffWeight",&btagEffWeight_,"btagEffWeight/F");
   tree_->Branch("signalWeight",&signalWeight_,"signalWeight/F");
+  tree_->Branch("signalWeightLow",&signalWeightLow_,"signalWeightLow/F");
+  tree_->Branch("signalWeightHigh",&signalWeightHigh_,"signalWeightHigh/F");
 
 
   tree_->Branch("pupWeights1",&pupWeights_[0],"pupWeights1/F");
@@ -345,6 +373,7 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("taupx",&taupx_,"taupx/F");
   tree_->Branch("taupy",&taupy_,"taupy/F");
   tree_->Branch("taueta",&taueta_,"taueta/F");
+  tree_->Branch("tautheta",&tautheta_,"tautheta/F");
   tree_->Branch("tauphi",&tauphi_,"tauphi/F");
   tree_->Branch("tauehop",&tauehop_,"tauehop/F");
   tree_->Branch("taueop",&taueop_,"taueop/F");
@@ -361,6 +390,10 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("tauantiemva",&tauantiemva_,"tauantiemva/I");
   tree_->Branch("tauantiemva2raw",&tauantiemva2raw_,"tauantiemva2raw/F");
   tree_->Branch("tauantiemva3raw",&tauantiemva3raw_,"tauantiemva3raw/F");
+  tree_->Branch("tauantiemva3cat",&tauantiemva3cat_,"tauantiemva3cat/I");
+  tree_->Branch("tauantiemva3",&tauantiemva3_,"tauantiemva3/I");
+  tree_->Branch("tauantiemva3new",&tauantiemva3new_,"tauantiemva3new/I");
+  tree_->Branch("tauinecalcrack",&tauinecalcrack_,"tauinecalcrack/I");
 
   tree_->Branch("tauantimu",&tauantimu_,"tauantimu/I");
   tree_->Branch("tauantimu2",&tauantimu2_,"tauantimu2/I");
@@ -381,6 +414,7 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("tauleadhcal",&tauleadhcal_,"tauleadhcal/F");
   tree_->Branch("tauleadecal",&tauleadecal_,"tauleadecal/F");
   tree_->Branch("taucharge",&taucharge_,"taucharge/I");
+  tree_->Branch("tauzimpact",&tauzimpact_,"tauzimpact/F");
 
   tree_->Branch("mupt",&mupt_,"mupt/F");
   tree_->Branch("mueta",&mueta_,"mueta/F");
@@ -514,12 +548,50 @@ void BaseFlatNtp::beginJob(){
 
 void BaseFlatNtp::endJob(){
 
+  //print out gen level quantities
+  cout<<"HGenBosonPt: ";
+  for(Int_t b=1;b<=HGenBosonPt_->GetNbinsX();b++)
+    cout<<","<<HGenBosonPt_->GetBinLowEdge(b);
+  cout<<endl;
+  cout<<"HGenBosonPt: ";
+  for(Int_t b=1;b<=HGenBosonPt_->GetNbinsX();b++)
+    cout<<","<<HGenBosonPt_->GetBinContent(b);
+  cout<<endl;
+
+  cout<<"HGenBosonMass: ";
+  for(Int_t b=1;b<=HGenBosonMass_->GetNbinsX();b++)
+    cout<<","<<HGenBosonMass_->GetBinLowEdge(b);
+  cout<<endl;
+  cout<<"HGenBosonMass: ";
+  for(Int_t b=1;b<=HGenBosonMass_->GetNbinsX();b++)
+    cout<<","<<HGenBosonMass_->GetBinContent(b);
+  cout<<endl;
+
+  cout<<"HGenBosonEta: ";
+  for(Int_t b=1;b<=HGenBosonEta_->GetNbinsX();b++)
+    cout<<","<<HGenBosonEta_->GetBinLowEdge(b);
+  cout<<endl;
+  cout<<"HGenBosonEta: ";
+  for(Int_t b=1;b<=HGenBosonEta_->GetNbinsX();b++)
+    cout<<","<<HGenBosonEta_->GetBinContent(b);
+  cout<<endl;
+
+  cout<<"HGenBosonPhi: ";
+  for(Int_t b=1;b<=HGenBosonPhi_->GetNbinsX();b++)
+    cout<<","<<HGenBosonPhi_->GetBinLowEdge(b);
+  cout<<endl;
+  cout<<"HGenBosonPhi: ";
+  for(Int_t b=1;b<=HGenBosonPhi_->GetNbinsX();b++)
+    cout<<","<<HGenBosonPhi_->GetBinContent(b);
+  cout<<endl;
+
+
   cout<<"counterall = "<<counterall_<<endl;
   cout<<"counterruns = "<<counterruns_<<endl;
-  cout<<"countertrig = "<<countertrig_<<endl;
-  cout<<"countergoodvtx = "<<countergoodvtx_<<endl;
   cout<<"countergen = "<<countergen_<<endl;
   cout<<"countergenmass = "<<countergenmass_<<endl;
+  cout<<"countertrig = "<<countertrig_<<endl;
+  cout<<"countergoodvtx = "<<countergoodvtx_<<endl;
 
 }
 
@@ -547,7 +619,7 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
 
 
   iEvent_->getByLabel(trigPathsListTag_,trig_);
-  //trig_->begin()->printSelections(cout);
+  if(printSelectionPass_>=2)trig_->begin()->printSelections(cout);
 
   //get trigger object list for later
   iEvent_->getByLabel(trigObjsListTag_,trigObjs_);
@@ -655,6 +727,16 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
     }
   }
 
+
+  
+  
+  
+  ////histograms
+  HGenBosonPt_->Fill(genbosonpt_);
+  HGenBosonMass_->Fill(genbosonmass_);
+  HGenBosonEta_->Fill(genbosoneta_);
+  HGenBosonPhi_->Fill(genbosonphi_);
+
   return 1;
 }
 
@@ -669,6 +751,22 @@ bool BaseFlatNtp::applySelections(){
   counterruns_++;
   if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass counterruns"<<endl;
 
+  /////////////////cut on the gen level quantities first
+  if( sampleGenEventType_!=0 && sampleGenEventType_!=genEventType_){
+    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countergen"<<endl;
+    return 0;
+  }
+  countergen_++;
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" passcountergen "<<endl;
+
+  if(genbosonmass_<sampleGenMassMin_ || sampleGenMassMax_<genbosonmass_){
+    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countergenmass"<<endl; 
+    return 0;
+  }
+  countergenmass_++;
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" passcountergenmass "<<endl;
+
+  ///////////Check the Trigger 
   trigpass_=0;
   if(trigPaths_.size()==0)trigpass_=1;//no trigger requirement
   for(std::vector<edm::InputTag *>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){//cmg ObjetSel
@@ -679,7 +777,6 @@ bool BaseFlatNtp::applySelections(){
 	  trigpass_=1;
 	}
   }
-  //cout<<firstRun_<<" "<<lastRun_<<" "<<runnumber_<<" "<<trigpass_<<endl;
   if(!trigpass_){
     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertrig"<<endl;
     return 0;
@@ -687,6 +784,8 @@ bool BaseFlatNtp::applySelections(){
   countertrig_++;
   if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass countertrig"<<endl;
   
+
+  //////////check there are good vertices in the event otherwise fail
   if(nvtx_==0){
     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countergoodvtx"<<endl;
     return 0;
@@ -694,20 +793,7 @@ bool BaseFlatNtp::applySelections(){
   countergoodvtx_++;
   if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass countergoodvtx"<<endl;
 
-  if( sampleGenEventType_!=0 && sampleGenEventType_!=genEventType_){
-    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countergen"<<endl;
-    return 0;
-  }
-  countergen_++;
-  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" passcountergen "<<endl;
 
-  //cout<<genbosonmass_<<" "<<sampleGenMassMin_ <<" "<<sampleGenMassMax_<<endl;
-  if(genbosonmass_<sampleGenMassMin_ || sampleGenMassMax_<genbosonmass_){
-    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countergenmass"<<endl; 
-    return 0;
-  }
-  countergenmass_++;
-  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" passcountergenmass "<<endl;
 
   if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" passed BaseFlatNtp selections "<<endl;
   return 1;
@@ -812,18 +898,605 @@ bool BaseFlatNtp::fill(){
 
   //fill the signalWeight
   signalWeight_=1.;
+  signalWeightLow_=1.;
+  signalWeightHigh_=1.;
   if(signalWeightHisto_){
     if(!genBoson_){
       cout<<"signal weight requested but no genboson found in event."<<endl;
       exit(0);
     }
-    if(0.<genbosonpt_&&genbosonpt_<500.)
+    if(0.<genbosonpt_&&genbosonpt_<500.){
       signalWeight_=signalWeightHisto_->GetBinContent(((int)genbosonpt_)+1);//round the the pt value down
+      if(signalWeightHistoLow_)signalWeightLow_=signalWeightHistoLow_->GetBinContent(((int)genbosonpt_)+1);//round the the pt value down
+      if(signalWeightHistoHigh_)signalWeightHigh_=signalWeightHistoHigh_->GetBinContent(((int)genbosonpt_)+1);//round the the pt value down
+    }
   }
 
 
 
   return 1;
+}
+
+
+void BaseFlatNtp::fillMET(){
+
+    //carry the PFMET always but dont use for SVFit
+    edm::Handle<std::vector< cmg::BaseMET> > pfMET;
+    iEvent_->getByLabel(edm::InputTag("cmgPFMETRaw"),pfMET);
+    pfmetpt_=pfMET->begin()->pt();
+    pfmetphi_=pfMET->begin()->phi();
+
+    ////Below choose the MET for SVFit and transverse mass
+    if(metType_==1){//PFMET
+      edm::Handle<std::vector< cmg::BaseMET> > pfMET;
+      iEvent_->getByLabel(edm::InputTag("cmgPFMETRaw"),pfMET);
+      metpt_=pfMET->begin()->pt();
+      metphi_=pfMET->begin()->phi();
+
+      edm::Handle< cmg::METSignificance > pfMetSigHandle;
+      iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),pfMetSigHandle); 
+      metSig_ = &(*pfMetSigHandle);
+    }
+    
+    if(metType_==2){//MVA MET 
+      edm::Handle<std::vector< cmg::BaseMET> > mvaMETVector;
+      iEvent_->getByLabel(mvaMETTag_,mvaMETVector); 
+      metpt_=(mvaMETVector->at(diobjectindex_)).pt();
+      metphi_=(mvaMETVector->at(diobjectindex_)).phi();
+
+      edm::Handle< std::vector<cmg::METSignificance> > metsigVector;
+      iEvent_->getByLabel(mvaMETSigTag_,metsigVector); 
+      metSig_ = &(metsigVector->at(diobjectindex_));
+    }
+    if(metType_==3){//MVA MET with presel leptons
+      edm::Handle<std::vector< cmg::BaseMET> > mvaMET;
+      iEvent_->getByLabel(mvaMETTag_,mvaMET);
+      metpt_=mvaMET->begin()->pt();
+      metphi_=mvaMET->begin()->phi();
+      
+      edm::Handle< std::vector< cmg::METSignificance > > mvaMetSigHandle;
+      iEvent_->getByLabel(mvaMETSigTag_,mvaMetSigHandle); 
+      metSig_ = &(*(mvaMetSigHandle->begin()));
+    }
+	  
+    if(metType_==5){//Type 1 Corrected MET
+      edm::Handle<std::vector< cmg::BaseMET> > pfMET;
+      iEvent_->getByLabel(edm::InputTag("cmgPFMET"),pfMET);
+      metpt_=pfMET->begin()->pt();
+      metphi_=pfMET->begin()->phi();
+      
+      edm::Handle< cmg::METSignificance > pfMetSigHandle;
+      iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),pfMetSigHandle); 
+      metSig_ = &(*pfMetSigHandle);
+    }
+    
+    
+    if(metType_==2 || metType_==3){//Save the mva met inputs
+      edm::Handle<std::vector< reco::PFMET> > mvaInputMET;
+      iEvent_->getByLabel(edm::InputTag("pfMetForRegression"),mvaInputMET);
+      pfMetForRegression_=mvaInputMET->begin()->pt();
+      iEvent_->getByLabel(edm::InputTag("tkMet"),mvaInputMET);
+      tkMet_=mvaInputMET->begin()->pt();
+      iEvent_->getByLabel(edm::InputTag("nopuMet"),mvaInputMET);
+      nopuMet_=mvaInputMET->begin()->pt();
+      iEvent_->getByLabel(edm::InputTag("puMet"),mvaInputMET);
+      puMet_=mvaInputMET->begin()->pt();
+      iEvent_->getByLabel(edm::InputTag("pcMet"),mvaInputMET);
+      pcMet_=mvaInputMET->begin()->pt();
+    }
+
+
+    if(!metSig_){
+      cout<<" Unrecognized metType "<<endl;
+      exit(0);
+    }
+    
+    
+    //apply MET shift first:
+    // 1) find the corresponding Tau first
+    // 2) calculate the difference in p4
+    // 3) subtract from MET    
+    float dpx=0.;
+    float dpy=0.;
+    for(std::vector<cmg::Tau>::const_iterator cand=unscaledTauList_->begin(); cand!=unscaledTauList_->end(); ++cand){
+      if(cand->eta()==taueta_ && cand->phi()==tauphi_){
+	dpx=taup4_.x() - cand->p4().x();
+	dpy=taup4_.y() - cand->p4().y();
+	break;
+      }
+    }
+    //cout<<dpx<<" "<<dpy<<endl;
+    math::XYZTLorentzVector unscaledmetP4(metpt_*cos(metphi_),metpt_*sin(metphi_),0,0);    
+    math::XYZTLorentzVector deltaTauP4(dpx,dpy,0,0);
+    math::XYZTLorentzVector scaledmetP4 = unscaledmetP4 - deltaTauP4;
+    metpt_=scaledmetP4.pt();
+    metphi_=scaledmetP4.phi();
+
+
+    //save met without recoil correction
+    metptraw_=metpt_;
+    metphiraw_=metphi_;
+    if(recoilCorreciton_>0){
+      if(!genBoson_){
+	cout<<" recoilCorrection requested but no genBoson_ available"<<endl;
+	exit(0);
+      }
+      
+      double u1 = 0.;
+      double u2 = 0.;
+      double fluc = 0.;
+      double lepPt  = 0.;
+      double lepPhi = 0.;
+      int jetMult = 0;
+      if(recoilCorreciton_%10==1){//for Z
+	lepPt  = (mup4_+taup4_).Pt(); //ditaupt_;
+	lepPhi = (mup4_+taup4_).Phi();
+	jetMult = njet_;
+      }else if(recoilCorreciton_%10==2){//for W+jets
+	lepPt  =mupt_;
+	lepPhi =muphi_;
+	jetMult = njetLepLC_;
+      }
+      
+      if(recoilCorreciton_<10) 
+	corrector_.CorrectType1(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
+      else if(recoilCorreciton_<20)
+	corrector_.CorrectType2(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
+    }
+    
+    //met correction needed for ZEE
+    if(metscale_>0.)metpt_*=metscale_;
+
+    metP4_=reco::Candidate::PolarLorentzVector(metpt_,0,metphi_,0);
+    metsigcov00_=(*(metSig_->significance()))[0][0];
+    metsigcov01_=(*(metSig_->significance()))[0][1];
+    metsigcov10_=(*(metSig_->significance()))[1][0];
+    metsigcov11_=(*(metSig_->significance()))[1][1];
+    
+}
+
+void BaseFlatNtp::fillTau(const cmg::Tau * tau){
+     
+    taumass_=tau->p4().M();
+    taupt_=tau->pt();
+    taupx_=tau->p4().x();
+    taupy_=tau->p4().y();
+    taueta_=tau->eta();
+    tautheta_=tau->theta();
+    tauphi_=tau->phi();
+    taudz_=tau->dz();
+    taudxy_=tau->dxy();
+    tautruth_=truthMatchLeg(tau->eta(),tau->phi(),tautruthpt_,tautrutheta_,tautruthstatus_);
+    tauehop_=tau->eOverP();
+    taueop_=tau->leadChargedHadrEcalEnergy()/tau->p();
+    tauhoe_=tau->leadChargedHadrHcalEnergy()/tau->leadChargedHadrEcalEnergy();
+    taudecaymode_=tau->decayMode();
+    taux_=tau->leadChargedHadrVertex().x();
+    tauy_=tau->leadChargedHadrVertex().y();
+    tauz_=tau->leadChargedHadrVertex().z();
+    taucharge_=tau->charge();
+    tauzimpact_=vtxz_+130.0/tan(tau->theta());
+
+    tauleadpt_=tau->leadChargedHadrPt();  
+    tauleadhcal_=tau->leadChargedHadrHcalEnergy();
+    tauleadecal_=tau->leadChargedHadrEcalEnergy();
+
+
+    tauantie_=0;
+    if(tau->tauID("againstElectronLoose")>0.5)tauantie_=1;
+    if(tau->tauID("againstElectronMedium")>0.5)tauantie_=2;
+    if(tau->tauID("againstElectronTight")>0.5)tauantie_=3;
+    tauantiemva_=0;
+    if(tau->tauID("againstElectronMVA")>0.5)tauantiemva_=1;
+    tauantiemva2raw_=tau->tauID("againstElectronMVA2raw");
+
+    tauantiemva3raw_=tau->tauID("againstElectronMVA3raw");
+    tauantiemva3cat_=tau->tauID("againstElectronMVA3category");
+    tauantiemva3_=0;
+    if(tau->tauID("againstElectronLooseMVA3")>0.5)tauantiemva3_=1;
+    if(tau->tauID("againstElectronMediumMVA3")>0.5)tauantiemva3_=2;
+    if(tau->tauID("againstElectronTightMVA3")>0.5)tauantiemva3_=3;
+    if(tau->tauID("againstElectronVTightMVA3")>0.5)tauantiemva3_=4;
+
+    tauantiemva3new_=0;
+    if(passAntiEMVA(tauantiemva3cat_,tauantiemva3raw_,0))tauantiemva3new_=1;
+    if(passAntiEMVA(tauantiemva3cat_,tauantiemva3raw_,1))tauantiemva3new_=2;
+    if(passAntiEMVA(tauantiemva3cat_,tauantiemva3raw_,2))tauantiemva3new_=3;
+    if(passAntiEMVA(tauantiemva3cat_,tauantiemva3raw_,3))tauantiemva3new_=4;
+
+    tauinecalcrack_ = isInEcalCrack(taueta_);
+
+    tauantimu_=0;
+    if(tau->tauID("againstMuonLoose")>0.5)tauantimu_=1;
+    if(tau->tauID("againstMuonMedium")>0.5)tauantimu_=2;
+    if(tau->tauID("againstMuonTight")>0.5)tauantimu_=3;
+    tauantimu2_=0;
+    if(tau->tauID("againstMuonLoose2")>0.5)tauantimu2_=1;
+    if(tau->tauID("againstMuonMedium2")>0.5)tauantimu2_=2;
+    if(tau->tauID("againstMuonTight2")>0.5)tauantimu2_=3;
+
+    tauiso_=0;
+    if(tau->tauID("byVLooseCombinedIsolationDeltaBetaCorr")>0.5)tauiso_=1;
+    if(tau->tauID("byLooseCombinedIsolationDeltaBetaCorr")>0.5)tauiso_=2;
+    if(tau->tauID("byMediumCombinedIsolationDeltaBetaCorr")>0.5)tauiso_=3;
+    if(tau->tauID("byTightCombinedIsolationDeltaBetaCorr")>0.5)tauiso_=4;
+    tauisomvaraw_=tau->tauID("byRawIsoMVA");
+    tauisomva2raw_=tau->tauID("byIsolationMVA2raw");
+    tauiso3hitraw_=tau->tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits");
+}
+
+
+void BaseFlatNtp::fillDiTauVars(){
+    ditaueta_=(mup4_+taup4_).Eta();
+    ditaupt_=(mup4_+taup4_).Pt();
+    ditauphi_=(mup4_+taup4_).Phi();
+    
+    mutaucostheta_=taup4_.Vect().Dot(mup4_.Vect());
+    ditaudeltaR_= reco::deltaR(taup4_.Eta(),taup4_.Phi(),mup4_.Eta(),mup4_.Phi()); 
+    ditaudeltaEta_=mup4_.Eta()-taup4_.Eta();
+    ditaudeltaPhi_=mup4_.Phi()-taup4_.Phi();
+   
+}
+void BaseFlatNtp::fillDiTauMETVars(){
+    pftransversemass_=sqrt(2*mupt_*pfmetpt_*(1-cos(muphi_-pfmetphi_)));
+    transversemass_=sqrt(2*mupt_*metP4_.pt()*(1-cos(muphi_-metP4_.phi())));
+    compZeta(mup4_,taup4_,metP4_.px(),metP4_.py(),&pZeta_,&pZetaVis_);
+
+    ditaumetpt_=(mup4_+taup4_+metP4_).Pt();
+    ditaumetphi_=(mup4_+taup4_+metP4_).Phi();
+    
+    runSVFit();
+}
+
+
+void BaseFlatNtp::fillVBFMVA(){
+    TVector3 vTau, vMu, vMET, vDiTau, vDiTauVis;
+    vTau.SetPtEtaPhi(taupt_,taueta_,tauphi_);
+    vMu.SetPtEtaPhi(mupt_,mueta_,muphi_);
+    vMET.SetPtEtaPhi(metpt_,0,metphi_); 
+
+    vDiTau = vTau + vMu + vMET;
+    vDiTauVis = vTau + vMu;
+    
+    TVector3 vJet1, vJet2, vDiJet;
+    //vJet1.SetPtEtaPhi(leadJet_->pt(), leadJet_->eta(), leadJet_->phi());
+    //vJet2.SetPtEtaPhi(subleadJet_->pt(), subleadJet_->eta(), subleadJet_->phi());
+    vJet1.SetPtEtaPhi(jet20pt1_,jet20eta1_,jet20phi1_);
+    vJet2.SetPtEtaPhi(jet20pt2_,jet20eta2_,jet20phi2_);
+
+    vDiJet = vJet1 + vJet2;
+
+//     Double_t mjj = massPtEtaPhiM(leadJet_->pt(), leadJet_->eta(), leadJet_->phi(), leadJet_->mass(),subleadJet_->pt(), subleadJet_->eta(), subleadJet_->phi(), subleadJet_->mass());
+//     Double_t dEta = fabs(leadJet_->eta() - subleadJet_->eta());
+//     Double_t dPhi = deltaPhi(leadJet_->phi(), subleadJet_->phi());
+    Double_t mjj = massPtEtaPhiM(jet20pt1_,jet20eta1_,jet20phi1_,jet20mass1_,jet20pt2_,jet20eta2_,jet20phi2_,jet20mass2_);
+    Double_t dEta = fabs(jet20eta1_ - jet20eta2_);
+    Double_t dPhi = deltaPhi(jet20phi1_,jet20phi2_);
+
+    Double_t dPhi_hj = deltaPhi(vDiTau.Phi(), vDiJet.Phi());
+
+    // Lorenzo's variables
+    Double_t C1 = min(fabs(vDiTauVis.Eta() - jet20eta1_), fabs(vDiTauVis.Eta() - jet20eta2_));
+    Double_t C2 = vDiTauVis.Pt();
+    
+    // Fill input vector
+    vbfvars_[0] = mjj;
+    vbfvars_[1] = dEta;
+    vbfvars_[2] = dPhi;
+    vbfvars_[3] = vDiTau.Pt();
+    vbfvars_[4] = vDiJet.Pt();
+    vbfvars_[5] = dPhi_hj;
+    vbfvars_[6] = C1;
+    vbfvars_[7] = C2;
+
+    vbfmva_ = reader_.val(vbfvars_[0],vbfvars_[1],vbfvars_[2],vbfvars_[3],vbfvars_[4],vbfvars_[5],vbfvars_[6],vbfvars_[7]);
+}
+
+
+void BaseFlatNtp::fillVBFMVA2012(){
+    TVector3 vTau, vMu, vMET, vDiTau, vDiTauVis;
+    vTau.SetPtEtaPhi(taupt_,taueta_,tauphi_);
+    vMu.SetPtEtaPhi(mupt_,mueta_,muphi_);
+    vMET.SetPtEtaPhi(metpt_,0,metphi_); 
+
+    vDiTau = vTau + vMu + vMET;
+    vDiTauVis = vTau + vMu;
+    
+    TVector3 vJet1, vJet2, vDiJet;
+    vJet1.SetPtEtaPhi(jet20pt1_,jet20eta1_,jet20phi1_);
+    vJet2.SetPtEtaPhi(jet20pt2_,jet20eta2_,jet20phi2_);
+    vDiJet = vJet1 + vJet2;
+
+
+    Double_t mjj = massPtEtaPhiM(jet20pt1_,jet20eta1_,jet20phi1_,jet20mass1_,jet20pt2_,jet20eta2_,jet20phi2_,jet20mass2_);
+    Double_t dEta = fabs(jet20eta1_ - jet20eta2_);
+
+    // Lorenzo's variables
+    Double_t C1 = min(fabs(vDiTauVis.Eta() - jet20eta1_), fabs(vDiTauVis.Eta() - jet20eta2_));
+    Double_t C2 = vDiTauVis.Pt();
+    
+    // Fill input vector
+    vbfvars2012_[0] = mjj;
+    vbfvars2012_[1] = dEta;
+    vbfvars2012_[2] = C1;
+    vbfvars2012_[3] = C2;
+
+    vbfmva2012_ = reader2012_.val(vbfvars2012_[0],vbfvars2012_[1],vbfvars2012_[2],vbfvars2012_[3]);
+}
+
+
+void BaseFlatNtp::fillJetVariables(){
+
+    njet_=pfJetListLC_.size();
+    leadJet_=0;
+    subleadJet_=0;
+    njetingap_=0;
+    if(njet_>0)leadJet_=pfJetListLC_[0];
+    if(njet_>1)subleadJet_=pfJetListLC_[1];
+
+    //jet quantities independent of SM category
+    if(pfJetListLC_.size()>=1){
+      leadJetPt_=leadJet_->pt();
+      leadJetEta_=leadJet_->eta();
+      leadJetRawFactor_=leadJet_->rawFactor();
+      leadJetPUIdMva_=leadJet_->puMva(pujetidname_.c_str());
+    }
+    if(pfJetListLC_.size()>=2){
+      subleadJetPt_=subleadJet_->pt();
+      subleadJetEta_=subleadJet_->eta();
+      subleadJetRawFactor_=subleadJet_->rawFactor();
+      diJetMass_=(leadJet_->p4()+subleadJet_->p4()).mass();
+      diJetPt_ = (leadJet_->p4()+subleadJet_->p4()).pt();  
+      diJetDeltaEta_=fabs(leadJet_->eta() - subleadJet_->eta());
+      diJetEta1Eta2_=(leadJet_->eta())*(subleadJet_->eta());
+     
+      for(std::vector<const cmg::PFJet *>::const_iterator jet3=pfJetListLC_.begin(); jet3!=pfJetListLC_.end(); ++jet3){
+	if(leadJet_->eta()<subleadJet_->eta()) 
+	  if(leadJet_->eta()<(*jet3)->eta()&&(*jet3)->eta()<subleadJet_->eta()) njetingap_++;
+	if(leadJet_->eta()>subleadJet_->eta()) 
+	  if(subleadJet_->eta()<(*jet3)->eta()&&(*jet3)->eta()<leadJet_->eta()) njetingap_++;
+      }
+      
+    }
+    
+    //Jets where only the muon has been removed
+    njetLepLC_=pfJetListLepLC_.size();
+    if(pfJetListLepLC_.size()>=1){
+      muLCleadJetPt_=pfJetListLepLC_[0]->pt();
+      muLCleadJetEta_=pfJetListLepLC_[0]->eta();
+    }
+
+}
+
+void BaseFlatNtp::fillBJetVariables(){
+    nbjet_=pfJetListBTagLC_.size();
+    leadBJet_ = 0 ;
+    if(nbjet_>0){
+      leadBJet_ = pfJetListBTagLC_[0];
+      leadBJetPt_ = leadBJet_->pt();
+      leadBJetEta_ = leadBJet_->eta();
+      leadBJetBTagProb_ = leadBJet_->btag("combinedSecondaryVertexBJetTags");
+    }
+
+    //Loose b-tag jets
+    nbjetLoose_=pfJetListBTagLCLoose_.size();
+    
+}
+
+void BaseFlatNtp::fillJetVariables20(){
+    njet20_=pfJetList20LC_.size();
+
+    jet20pt1_=0.;
+    jet20eta1_=0.;
+    jet20phi1_=0.;
+    jet20mass1_=0.;
+    jet20tagprob1_=0.;
+    jet20flavor1_=0.;
+    jet20pt2_=0.;
+    jet20eta2_=0.;
+    jet20phi2_=0.;
+    jet20mass2_=0.;
+    jet20tagprob2_=0.;
+    jet20flavor2_=0.;
+    jet20pt3_=0.;
+    jet20eta3_=0.;
+    jet20phi3_=0.;
+    jet20mass3_=0.;
+    jet20tagprob3_=0.;
+    jet20flavor3_=0.;
+    jet20pt4_=0.;
+    jet20eta4_=0.;
+    jet20phi4_=0.;
+    jet20mass4_=0.;
+    jet20tagprob4_=0.;
+    jet20flavor4_=0.;
+
+    if(njet20_>=1){
+      jet20pt1_=pfJetList20LC_[0]->pt();
+      jet20eta1_=pfJetList20LC_[0]->eta();
+      jet20phi1_=pfJetList20LC_[0]->phi();
+      jet20mass1_=pfJetList20LC_[0]->mass();
+      jet20tagprob1_=pfJetList20LC_[0]->btag("combinedSecondaryVertexBJetTags");;
+      jet20flavor1_=pfJetList20LC_[0]->partonFlavour();  
+    }
+    if(njet20_>=2){
+      jet20pt2_=pfJetList20LC_[1]->pt();
+      jet20eta2_=pfJetList20LC_[1]->eta();
+      jet20phi2_=pfJetList20LC_[1]->phi();
+      jet20mass2_=pfJetList20LC_[1]->mass();
+      jet20tagprob2_=pfJetList20LC_[1]->btag("combinedSecondaryVertexBJetTags");;
+      jet20flavor2_=pfJetList20LC_[1]->partonFlavour();  
+    }
+
+    if(njet20_>=3){
+      jet20pt3_=pfJetList20LC_[2]->pt();
+      jet20eta3_=pfJetList20LC_[2]->eta();
+      jet20phi3_=pfJetList20LC_[2]->phi();
+      jet20mass3_=pfJetList20LC_[2]->mass();
+      jet20tagprob3_=pfJetList20LC_[2]->btag("combinedSecondaryVertexBJetTags");;
+      jet20flavor3_=pfJetList20LC_[2]->partonFlavour();  
+    }
+
+    if(njet20_>=4){
+      jet20pt4_=pfJetList20LC_[3]->pt();
+      jet20eta4_=pfJetList20LC_[3]->eta();
+      jet20phi4_=pfJetList20LC_[3]->phi();
+      jet20mass4_=pfJetList20LC_[3]->mass();
+      jet20tagprob4_=pfJetList20LC_[3]->btag("combinedSecondaryVertexBJetTags");;
+      jet20flavor4_=pfJetList20LC_[3]->partonFlavour();  
+    }
+    
+}
+
+
+void BaseFlatNtp::fillBTagWeight(){
+    btagEffWeight_ = 1.;
+    if(dataType_!=0) return;//only done for MC
+
+    vector<vector<BTagWeight::JetInfo> > jetinfovec;
+    for (unsigned int i=0; i<pfJetList20LC_.size(); ++i) {//was pfJetListB which has eta cut 2.4, pt>20, and no Lepton cleaning
+      if(abs(pfJetList20LC_[i]->eta())>2.4) continue;
+      //    int index = pfJetList20LC_[i];
+      double jetpt = pfJetList20LC_[i]->pt(); 
+      double jeteta = pfJetList20LC_[i]->eta(); 
+      double jetflavor = TMath::Abs(pfJetList20LC_[i]->partonFlavour());
+      double discr = btagWP_;//1.7;
+    
+      double eff = 1.;
+      double sf = 1.;
+      if (jetflavor==5){
+	eff = btagEff_.btagEFF(discr,1);
+	sf =  btagEff_.btagSF(jetpt,1);
+      }else if (jetflavor==4){
+	eff = btagEff_.btagEFF(discr,0);
+	sf =  btagEff_.btagSF(jetpt,0);
+      }else{
+	eff = btagEff_.mistagEFF(jetpt,jeteta);
+	sf =  btagEff_.mistagSF(jetpt,jeteta);
+      }
+    
+      BTagWeight::JetInfo jetinfo(eff,sf);
+      vector<BTagWeight::JetInfo> jetInfoForAllOPs;
+      jetInfoForAllOPs.push_back(jetinfo);
+      jetinfovec.push_back(jetInfoForAllOPs);
+    
+    }
+    btagEffWeight_ = btagWeight_.weight(jetinfovec);
+}
+  
+
+void BaseFlatNtp::runSVFit(){
+    svfitmass_=0.;
+    //check covariance matrix:
+    float det=((*(metSig_->significance()))[0][0])*((*(metSig_->significance()))[1][1]) - ((*(metSig_->significance()))[1][0])*((*(metSig_->significance()))[0][1]);
+    if(det<1e-8)return;
+
+    if(runSVFit_==1){  //old svfit  
+      NSVfitStandalone2011::Vector measuredMET( metP4_.x(), metP4_.y(), 0);
+      std::vector<NSVfitStandalone2011::MeasuredTauLepton2011> measuredTauLeptons;
+      NSVfitStandalone2011::LorentzVector p1(taup4_);
+      measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(NSVfitStandalone2011::kHadDecay,p1));    
+      NSVfitStandalone2011::LorentzVector p2(mup4_);
+      measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(NSVfitStandalone2011::kLepDecay,p2));
+      NSVfitStandaloneAlgorithm2011 algo(measuredTauLeptons,measuredMET,metSig_->significance(),0);
+      algo.maxObjFunctionCalls(5000);
+      algo.fit();
+      svfitmass_  = algo.fittedDiTauSystem().mass();
+    }else if(runSVFit_==2){    //new svfit
+      std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
+      measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay, taup4_));
+      measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay, mup4_));
+      NSVfitStandaloneAlgorithm algo(measuredTauLeptons, metP4_.Vect(), *(metSig_->significance()), 0);
+      algo.addLogM(false);
+      //algo.integrate();
+      algo.integrateMarkovChain();
+      svfitmass_ = algo.getMass();
+      ditaumetsvfitpt_= algo.pt(); 
+      ditaumetsvfiteta_= algo.eta(); 
+      ditaumetsvfitphi_= algo.phi(); 
+    }else {
+      cout<<" Unrecognized SVFit version "<<endl;
+      exit(0);
+    }
+
+    
+    if(smearSVFitMass0pi0_>0.&&taudecaymode_==0) svfitmass_ += gRandom->Gaus(0,smearSVFitMass0pi0_);
+    if(smearSVFitMass1pi0_>0.&&taudecaymode_==1) svfitmass_ += gRandom->Gaus(0,smearSVFitMass1pi0_);
+
+}
+
+
+
+bool BaseFlatNtp::thirdLeptonVeto(){
+    //int nleptons=0;
+    
+    std::vector<const cmg::Muon * > muonList_;
+    std::vector<const cmg::Electron * > electronList_;
+
+    for(std::vector<cmg::Muon>::const_iterator m=leptonVetoListMuon_->begin(); m!=leptonVetoListMuon_->end(); ++m){  
+      if(m->pt()<=10.0)continue;
+      if(fabs(m->eta())>=2.4)continue;
+      if(!muonVertexCut(&(*m)))continue;
+      if(!muonIDPFMuonTight(&(*m)))continue;
+      if(m->relIso(0.5,1)>=0.3)continue;  
+      muonList_.push_back(&(*m));      
+      //nleptons++;
+    }
+    for(std::vector<cmg::Electron>::const_iterator m=leptonVetoListElectron_->begin(); m!=leptonVetoListElectron_->end(); ++m){  
+      if(m->pt()<=10.0)continue;
+      if(fabs(m->eta())>=2.5)continue;
+      if(!electronVertexCut(&(*m)))continue;
+      if(m->numberOfHits()!=0) continue;
+      if((*(m->sourcePtr()))->passConversionVeto()!=1)continue;
+      if(!electronMVALoose(&(*m)))continue;
+      if( electronRelIsoDBCorr( &(*m) )>=0.3 ) continue; 
+      electronList_.push_back(&(*m));      
+      //nleptons++;
+    }
+    //if(nleptons>=2)return 0;
+
+    if((muonList_.size()+electronList_.size())>=2){
+      if(printSelectionPass_>1){
+	cout<<"*****thirdLeptonVeto fail leptons :  "<<endl;
+	for(std::vector<const cmg::Muon *>::const_iterator m=muonList_.begin(); m!=muonList_.end(); ++m)
+	  printMuonInfo(*m);
+	for(std::vector<const cmg::Electron * >::const_iterator m=electronList_.begin(); m!=electronList_.end(); ++m)
+	  printElectronInfo(*m);
+      }
+	
+     return 0;
+    }
+    
+    return 1;
+}
+
+
+void BaseFlatNtp::fillTruthEventType(float taueta,float tauphi, float mueta, float muphi){
+    //Z-->ll
+    if(abs(genBoson_->pdgId())==23){
+      if(genBosonL1_&&genBosonL2_){
+	if(((reco::deltaR(taueta,tauphi,genBosonL1_->eta(),genBosonL1_->phi())<deltaRTruth_)
+	    ||(reco::deltaR(taueta,tauphi,genBosonL2_->eta(),genBosonL2_->phi())<deltaRTruth_))
+	   && ((reco::deltaR(mueta,muphi,genBosonL1_->eta(),genBosonL1_->phi())<deltaRTruth_)
+	       ||(reco::deltaR(mueta,muphi,genBosonL2_->eta(),genBosonL2_->phi())<deltaRTruth_))
+	   ) truthEventType_=abs(genBosonL1_->pdgId())-10;
+	else truthEventType_=6;
+      }else truthEventType_=6;
+    }
+    
+    //W-->lnu
+    if(abs(genBoson_->pdgId())==24){
+      if(genBosonL1_){
+	if(reco::deltaR(mueta,muphi,genBosonL1_->eta(),genBosonL1_->phi())<deltaRTruth_)
+	  truthEventType_=abs(genBosonL1_->pdgId());
+	else truthEventType_=16;
+      }else if(genBosonL2_){	  
+	if(reco::deltaR(mueta,muphi,genBosonL2_->eta(),genBosonL2_->phi())<deltaRTruth_)
+	  truthEventType_=abs(genBosonL2_->pdgId());
+	else truthEventType_=16;
+      }else truthEventType_=16;
+    }
+
 }
 
 
@@ -847,6 +1520,133 @@ const cmg::TriggerObject * BaseFlatNtp::trigObjMatch(float eta, float phi, std::
   }
   
   return 0;
+}
+
+
+  //custom electron isolation
+float BaseFlatNtp::electronRelIsoDBCorr(const cmg::Electron * cand){
+    if(!cand) return 9999.;
+
+    //these are ok in the cmgElectron
+    float neutralhad=cand->neutralHadronIso();
+    float puchhad=cand->puChargedHadronIso();
+
+    //these two need to be recomputed with proper cone vetos
+    float charged=0.;//cand->chargedAllIsoWithConeVeto();
+    float photon=cand->photonIso();
+    const pat::Electron * input= &(*(*(cand->sourcePtr())));
+
+    //charged particle iso
+    reco::isodeposit::AbsVetos allChargedVetoesCollection ;
+    float coneSizeCh = 0.01 ;
+    if (input->isEE()) coneSizeCh = 0.015 ;
+    reco::isodeposit::ConeVeto allChargedVeto (reco::isodeposit::Direction(input->eta (), input->phi ()), coneSizeCh) ;
+    allChargedVetoesCollection.push_back (&allChargedVeto) ;
+    charged = (input->isoDeposit(pat::PfChargedAllIso)->depositAndCountWithin(0.4,allChargedVetoesCollection,false ).first);
+    
+
+    //photon iso
+    reco::isodeposit::AbsVetos photonVetoesCollection ;
+    float coneSizePhoton = 0.08 ;
+    if (input->isEE()) coneSizePhoton = 0.08 ;
+    reco::isodeposit::ConeVeto photonVeto (reco::isodeposit::Direction(input->eta (), input->phi ()), coneSizePhoton) ;
+    photonVetoesCollection.push_back (&photonVeto) ;    
+    photon = input->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4,photonVetoesCollection,false ).first ;
+    
+    //cout<<" "<<charged<<" "<<photon<<endl;
+
+    if(cand->pt()>0.)
+      return (charged + TMath::Max(neutralhad+photon - 0.5*puchhad,0.))/cand->pt();
+    else return 9999.;
+}
+
+
+
+bool BaseFlatNtp::electronIDWP95(const cmg::Electron * cand){
+    ///https://twiki.cern.ch/twiki/bin/view/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
+    if(!cand) return 0;
+    if((*(cand->sourcePtr()))->isEB()
+       && fabs(cand->deltaEtaSuperClusterTrackAtVtx())<0.007
+       && fabs(cand->deltaPhiSuperClusterTrackAtVtx())<0.800
+       && cand->sigmaIetaIeta()<0.01
+       && cand->hadronicOverEm()<0.15
+       ) return 1;
+    else if((*(cand->sourcePtr()))->isEE()
+	    && fabs(cand->deltaEtaSuperClusterTrackAtVtx())<0.01
+	    && fabs(cand->deltaPhiSuperClusterTrackAtVtx())<0.70
+	    && cand->sigmaIetaIeta()<0.03
+	    )return 1;
+    else return 0;
+}
+
+bool BaseFlatNtp::electronMVATight(const cmg::Electron * cand){
+     //look here https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentification
+     float mvaid=cand->mvaNonTrigV0();
+     float eta=(*(cand->sourcePtr()))->superCluster()->eta();
+     //cout<<eta<<" "<<mvaid<<endl;
+     if(fabs(eta)<0.8)
+       if(mvaid<0.925)return 0; 
+     if(0.8<=fabs(eta)&&fabs(eta)<1.479)
+       if(mvaid<0.975)return 0;
+     if(1.479<=fabs(eta))
+       if(mvaid<0.985)return 0; 
+     
+     //need to check for different pt ranges
+
+     return 1;
+}
+bool BaseFlatNtp::electronMVALoose(const cmg::Electron * cand){
+     float mvaid=cand->mvaNonTrigV0();
+     float eta=(*(cand->sourcePtr()))->superCluster()->eta();
+     if(cand->pt()<20){
+       if(fabs(eta)<0.8)                  if(mvaid<0.925)return 0; 
+       if(0.8<=fabs(eta)&&fabs(eta)<1.479)if(mvaid<0.915)return 0;
+       if(1.479<=fabs(eta))               if(mvaid<0.965)return 0; 
+     }
+     if(cand->pt()>=20){
+       if(fabs(eta)<0.8)                  if(mvaid<0.905)return 0; 
+       if(0.8<=fabs(eta)&&fabs(eta)<1.479)if(mvaid<0.955)return 0;
+       if(1.479<=fabs(eta))               if(mvaid<0.975)return 0; 
+     }
+
+    return 1;
+}
+
+bool BaseFlatNtp::muonIDPFMuonTight(const cmg::Muon * cand){
+    if(!(cand->isGlobal()))return 0; 
+    if(!((*(cand->sourcePtr()))->userFloat("isPFMuon")>0.5))return 0;
+    if(!(cand->normalizedChi2() < 10))return 0;
+    if(!(cand->numberOfValidMuonHits() > 0))return 0;
+    if(!(cand->numberOfMatchedStations() > 1))return 0; //if(!(cand->numberOfMatches() > 1))return 0;
+
+    if(!((*(cand->sourcePtr()))->innerTrack().isNonnull()))return 0;
+    if(!((*(cand->sourcePtr()))->innerTrack().isAvailable()))return 0;
+    if(!((*(cand->sourcePtr()))->innerTrack()->hitPattern().numberOfValidPixelHits() > 0))return 0; 
+
+    if(!(cand->trackerLayersWithMeasurement() > 5))return 0;
+    return 1;
+}
+
+
+bool BaseFlatNtp::checkPFJetId(const cmg::PFJet * jet){
+    //Loose PF Jet id : https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
+    if(fabs(jet->eta()) <= 2.4){
+      if(//(jet->component(5).fraction() + jet->component(6).fraction()) < 0.99
+	 jet->component(5).fraction() < 0.99
+	 &&jet->component(4).fraction() < 0.99
+	 &&jet->nConstituents() > 1
+	 &&jet->component(1).fraction() > 0
+	 &&jet->component(1).number() > 0
+	 &&jet->component(2).fraction() < 0.99 
+	 ) return 1;
+    } else {
+      if(//(jet->component(5).fraction() + jet->component(6).fraction()) < 0.99
+	 jet->component(5).fraction() < 0.99
+	 &&jet->component(4).fraction() < 0.99
+	 &&jet->nConstituents() > 1
+	 ) return 1;
+    }
+    return 0;
 }
 
 
@@ -1087,6 +1887,12 @@ void BaseFlatNtp::printTauInfo(const cmg::Tau * cand){
   cout<<"   againstElectronMedium      = "<< cand->tauID("againstElectronMedium")<<endl;
   cout<<"   againstElectronMVA      = "<< cand->tauID("againstElectronMVA")<<endl;
   cout<<"   againstElectronTightMVA2     = "<< cand->tauID("againstElectronTightMVA2")<<endl;
+  cout<<"   againstElectronMVA3raw     = "<< cand->tauID("againstElectronMVA3raw")<<endl;
+  cout<<"   againstElectronMVA3cat     = "<< cand->tauID("againstElectronMVA3category")<<endl;
+  cout<<"   againstElectronTightMVA3     = "<< cand->tauID("againstElectronTightMVA3")<<endl;
+  cout<<"   againstElectronLooseMVA3new     = "<<passAntiEMVA(cand->tauID("againstElectronMVA3category"),cand->tauID("againstElectronMVA3raw"),0) <<endl;
+  cout<<"   againstElectronMediumMVA3new     = "<<passAntiEMVA(cand->tauID("againstElectronMVA3category"),cand->tauID("againstElectronMVA3raw"),1) <<endl;
+  cout<<"   againstElectronTightMVA3new     = "<<passAntiEMVA(cand->tauID("againstElectronMVA3category"),cand->tauID("againstElectronMVA3raw"),2) <<endl;
 
   //
   const cmg::TriggerObject * trigobj=0;
@@ -1112,7 +1918,9 @@ void BaseFlatNtp::printJetInfo(const cmg::PFJet * cand,int level){
   cout<<cand->pt()<<" ";
   cout<<cand->eta()<<" ";
   cout<<cand->phi()<<" ";
-
+  cout<<cand->puMva(pujetidname_.c_str())<<" ";
+  cout<<cand->btag("combinedSecondaryVertexBJetTags")<<" ";
+  
   cout<<endl;
 }
 
