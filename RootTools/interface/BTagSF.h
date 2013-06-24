@@ -1,7 +1,6 @@
 #ifndef BTagSF_hh
 #define BTagSF_hh
 
-#include "TMath.h"
 #include "TRandom3.h"
 #include <iostream>
 

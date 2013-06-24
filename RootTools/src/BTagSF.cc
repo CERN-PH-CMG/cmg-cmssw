@@ -1,4 +1,5 @@
 #include "CMGTools/RootTools/interface/BTagSF.h"
+#include "TMath.h"
 
 BTagSF::BTagSF( int seed ) {
 
@@ -15,9 +16,10 @@ BTagSF::~BTagSF() {
 
 Bool_t BTagSF::isbtagged(Float_t pt, Float_t eta, Float_t csv, Int_t jetflavor, Bool_t isdata, UInt_t btagsys, UInt_t mistagsys, Bool_t is2012)
 {
-  Bool_t btagged = kFALSE;
   randm->SetSeed((int)((eta+5)*100000));
-  
+
+  Bool_t btagged = kFALSE;
+
   if(isdata) {
     if(csv>0.679) btagged = kTRUE;
     else          btagged = kFALSE;
@@ -95,35 +97,35 @@ Double_t BTagSF::getSFb(Float_t pt, UInt_t btagsys, Bool_t is2012)
   // pT dependent scale factors
   // Tagger: CSVM within 30 < pt < 670 GeV, abs(eta) < 2.4, x = pt
   // SFb = 0.6981*((1.+(0.414063*x))/(1.+(0.300155*x))); (2011)
-  // SFb = 0.726981*((1.+(0.253238*x))/(1.+(0.188389*x))); (2012)
+  // SFb = (0.938887+(0.00017124*x))+(-2.76366e-07*(x*x)); (2012)
   // for pt > 670 (800) GeV: use the SFb value at 670 (800) GeV with twice the quoted uncertainty for 2011 (2012)
   // for pt < 30 (20) GeV: use the SFb value at 30 (20) GeV with a +/-0.12 absolute uncertainty (twice the quoted uncertainty) for 2011 (2012)
   // i.e SFb(pt<30) = SFb(pt=30) +/- 0.12, so the relative uncertainty is 0.12/SFb(pt=30) for 2011
 
   Float_t x = pt;
+  if(!is2012 && pt >= 670.0) x = 669.9;
+  if(!is2012 && pt < 30.0) x = 30.0;
+  if(is2012 && pt >= 800.0) x = 799.9;
+  if(is2012 && pt < 20.0) x = 20.0;
+
   Double_t SFb = 1.0; 
   if(!is2012) {
-    if(pt >= 670.0) x = 669.9;
-    if(pt < 30.0) x = 30.0;
     SFb = 0.6981*((1.+(0.414063*x))/(1.+(0.300155*x)));
   } else {
-    if(pt >= 800.0) x = 799.9;
-    if(pt < 20.0) x = 20.0;
-    SFb = 0.726981*((1.+(0.253238*x))/(1.+(0.188389*x)));
+    SFb = (0.938887+(0.00017124*x))+(-2.76366e-07*(x*x));
   }
-
   if(btagsys == kNo)        return SFb;
 
   Double_t SFb_error_2011[] = {0.0295675, 0.0295095, 0.0210867, 0.0219349, 0.0227033, 0.0204062, 0.0185857, 0.0256242, 0.0383341, 0.0409675, 0.0420284, 0.0541299, 0.0578761, 0.0655432};
   Float_t ptmin_2011[] = {30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500};
   Float_t ptmax_2011[] = {40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 670};
-  Double_t SFb_error_2012[] = {0.0554504, 0.0209663, 0.0207019, 0.0230073, 0.0208719, 0.0200453, 0.0264232, 0.0240102, 0.0229375, 0.0184615, 0.0216242, 0.0248119, 0.0465748, 0.0474666, 0.0718173, 0.0717567};
+  Double_t SFb_error_2012[] = {0.0415707, 0.0204209, 0.0223227, 0.0206655, 0.0199325, 0.0174121, 0.0202332, 0.0182446, 0.0159777, 0.0218531, 0.0204688, 0.0265191, 0.0313175, 0.0415417, 0.0740446, 0.0596716};
   Float_t ptmin_2012[] = {20, 30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500, 600};
   Float_t ptmax_2012[] = {30, 40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 600, 800};
 
   Double_t SFb_error_x = 0.0;
 
-  UInt_t nbins = is2012 ? 16 : 14;
+  UInt_t nbins = is2012 ? 16: 14;
 
   for (UInt_t ibin=0; ibin<nbins; ibin++) {
     if(!is2012) {
@@ -155,29 +157,29 @@ Double_t BTagSF::getSFc(Float_t pt, UInt_t btagsys, Bool_t is2012)
   // SFc = SFb with twice the quoted uncertainty
 
   Float_t x = pt;
+  if(!is2012 && pt >= 670.0) x = 669.9;
+  if(!is2012 && pt < 30.0) x = 30.0;
+  if(is2012 && pt >= 800.0) x = 799.9;
+  if(is2012 && pt < 20.0) x = 20.0;
+
   Double_t SFc = 1.0;
   if(!is2012) {
-    if(pt >= 670.0) x = 669.9;
-    if(pt < 30.0) x = 30.0;
     SFc = 0.6981*((1.+(0.414063*x))/(1.+(0.300155*x)));
   } else {
-    if(pt >= 800.0) x = 799.9;
-    if(pt < 20.0) x = 20.0;
-    SFc = 0.726981*((1.+(0.253238*x))/(1.+(0.188389*x)));
+    SFc = (0.938887+(0.00017124*x))+(-2.76366e-07*(x*x));
   }
-
   if(btagsys == kNo)        return SFc;
 
   Double_t SFb_error_2011[] = {0.0295675, 0.0295095, 0.0210867, 0.0219349, 0.0227033, 0.0204062, 0.0185857, 0.0256242, 0.0383341, 0.0409675, 0.0420284, 0.0541299, 0.0578761, 0.0655432};
   Float_t ptmin_2011[] = {30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500};
   Float_t ptmax_2011[] = {40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 670};
-  Double_t SFb_error_2012[] = {0.0554504, 0.0209663, 0.0207019, 0.0230073, 0.0208719, 0.0200453, 0.0264232, 0.0240102, 0.0229375, 0.0184615, 0.0216242, 0.0248119, 0.0465748, 0.0474666, 0.0718173, 0.0717567};
+  Double_t SFb_error_2012[] = {0.0415707, 0.0204209, 0.0223227, 0.0206655, 0.0199325, 0.0174121, 0.0202332, 0.0182446, 0.0159777, 0.0218531, 0.0204688, 0.0265191, 0.0313175, 0.0415417, 0.0740446, 0.0596716};
   Float_t ptmin_2012[] = {20, 30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500, 600};
   Float_t ptmax_2012[] = {30, 40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 600, 800};
 
   Double_t SFc_error_x = 0.0;
 
-  UInt_t nbins = is2012 ? 16 : 14;
+  UInt_t nbins = is2012 ? 16: 14;
 
   for (UInt_t ibin=0; ibin<nbins; ibin++) {
     if(!is2012) {
@@ -207,7 +209,7 @@ Double_t BTagSF::getSFc(Float_t pt, UInt_t btagsys, Bool_t is2012)
 Double_t BTagSF::getSFl(Float_t pt, Float_t eta, UInt_t mistagsys, Bool_t is2012)
 {
 
-  Float_t x = TMath::Min(double(pt), is2012 ? 670.0 : 800.0);
+  Float_t x = std::min(double(pt), is2012 ? 670.0 : 800.0);
 
   Double_t SFl = 0;
 
@@ -227,17 +229,17 @@ Double_t BTagSF::getSFl(Float_t pt, Float_t eta, UInt_t mistagsys, Bool_t is2012
     }
   } else {
     if(fabs(eta) >= 0.0 && fabs(eta) < 0.8) {
-      if(mistagsys == kNo)        SFl = ((1.06238+(0.00198635*x))+(-4.89082e-06*(x*x)))+(3.29312e-09*(x*(x*x))); 
-      else if(mistagsys == kDown) SFl = ((0.972746+(0.00104424*x))+(-2.36081e-06*(x*x)))+(1.53438e-09*(x*(x*x))); 
-      else if(mistagsys == kUp)   SFl = ((1.15201+(0.00292575*x))+(-7.41497e-06*(x*x)))+(5.0512e-09*(x*(x*x))); 
+      if(mistagsys == kNo)        SFl = ((1.07541+(0.00231827*x))+(-4.74249e-06*(x*x)))+(2.70862e-09*(x*(x*x)));
+      else if(mistagsys == kDown) SFl = ((0.964527+(0.00149055*x))+(-2.78338e-06*(x*x)))+(1.51771e-09*(x*(x*x)));
+      else if(mistagsys == kUp)   SFl = ((1.18638+(0.00314148*x))+(-6.68993e-06*(x*x)))+(3.89288e-09*(x*(x*x)));
     } else if(fabs(eta) >= 0.8 && fabs(eta) < 1.6) {
-      if(mistagsys == kNo)        SFl = ((1.08048+(0.00110831*x))+(-2.96189e-06*(x*x)))+(2.16266e-09*(x*(x*x))); 
-      else if(mistagsys == kDown) SFl = ((0.9836+(0.000649761*x))+(-1.59773e-06*(x*x)))+(1.14324e-09*(x*(x*x))); 
-      else if(mistagsys == kUp)   SFl = ((1.17735+(0.00156533*x))+(-4.32257e-06*(x*x)))+(3.18197e-09*(x*(x*x))); 
+      if(mistagsys == kNo)        SFl = ((1.05613+(0.00114031*x))+(-2.56066e-06*(x*x)))+(1.67792e-09*(x*(x*x)));
+      else if(mistagsys == kDown) SFl = ((0.946051+(0.000759584*x))+(-1.52491e-06*(x*x)))+(9.65822e-10*(x*(x*x)));
+      else if(mistagsys == kUp)   SFl = ((1.16624+(0.00151884*x))+(-3.59041e-06*(x*x)))+(2.38681e-09*(x*(x*x)));
     } else if(fabs(eta) >= 1.6 && fabs(eta) < 2.4) {
-      if(mistagsys == kNo)        SFl = ((1.09145+(0.000687171*x))+(-2.45054e-06*(x*x)))+(1.7844e-09*(x*(x*x)));
-      else if(mistagsys == kDown) SFl = ((1.00616+(0.000358884*x))+(-1.23768e-06*(x*x)))+(6.86678e-10*(x*(x*x))); 
-      else if(mistagsys == kUp)   SFl = ((1.17671+(0.0010147*x))+(-3.66269e-06*(x*x)))+(2.88425e-09*(x*(x*x)));
+      if(mistagsys == kNo)        SFl = ((1.05625+(0.000487231*x))+(-2.22792e-06*(x*x)))+(1.70262e-09*(x*(x*x)));
+      else if(mistagsys == kDown) SFl = ((0.956736+(0.000280197*x))+(-1.42739e-06*(x*x)))+(1.0085e-09*(x*(x*x)));
+      else if(mistagsys == kUp)   SFl = ((1.15575+(0.000693344*x))+(-3.02661e-06*(x*x)))+(2.39752e-09*(x*(x*x)));
     }
   }
 
@@ -248,7 +250,7 @@ Double_t BTagSF::getSFl(Float_t pt, Float_t eta, UInt_t mistagsys, Bool_t is2012
 Double_t BTagSF::getMistag(Float_t pt, Float_t eta)
 {
 
-  Float_t x = TMath::Min(double(pt), 670.0);
+  Float_t x = std::min(double(pt), 670.0);
 
   Double_t eff_l = 0.0;
 
@@ -263,3 +265,4 @@ Double_t BTagSF::getMistag(Float_t pt, Float_t eta)
   return eff_l;
 
 }
+
