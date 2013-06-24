@@ -157,6 +157,7 @@ for dy in mc_dy:
     dy.fractions = dy_fractions
 
 
+# from Jose
 w_fractions = [ 0.74392452,
                 0.175999,
                 0.0562617,
