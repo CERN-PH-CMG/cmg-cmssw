@@ -62,6 +62,7 @@ for comp in mcSamples:
     comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
     comp.puFileData=dataDir+"/puProfile_Data12.root"
     comp.efficiency = eff2012
+    comp.fakeRates=fakeRates2012
 
 
 for comp in dataSamples:

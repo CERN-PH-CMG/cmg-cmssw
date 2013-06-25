@@ -75,14 +75,6 @@ for comp in mcSamples:
     comp.puFileData=dataDir+"/puProfile_Data11.root"
     comp.efficiency = eff2011
 
-
-#Fix the UFL PU crap
-#for comp in uflSamples:
-#    comp.isMC = True
-#    comp.splitFactor = 10
-#    comp.puFileMC=dataDir+"/puProfile_Summer11.root"
-#    comp.puFileData=dataDir+"/puProfile_Data11.root"
-#    comp.efficiency = eff2011
     
 
 for comp in dataSamples:

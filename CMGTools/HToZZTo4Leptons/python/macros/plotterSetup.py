@@ -30,7 +30,7 @@ class PlotterSetup(object):
         self.data['ZZTo2mu2tau']={'8TeV':0.1767,'7TeV':0.152}
         self.data['GluGluToZZTo4L']={'8TeV':0.0048,'7TeV':0.00174}
         self.data['GluGluToZZTo2L2L']={'8TeV':0.01203, '7TeV':0.00348}
-        self.data['higgsXS']  = {'7TeV':HiggsTheory(getFullPath('data/YR_7TeV.json')), '8TeV':HiggsTheory(getFullPath('data/YR_7TeV.json'))}
+        self.data['higgsXS']  = {'7TeV':HiggsTheory(getFullPath('data/YR_7TeV.json')), '8TeV':HiggsTheory(getFullPath('data/YR_8TeV.json'))}
         self.data['finalState']={'4mu':'&&abs(H_Z1_leg1_PdgId)==13 && abs(H_Z2_leg1_PdgId)==13','4e':'&&abs(H_Z1_leg1_PdgId)==11 && abs(H_Z2_leg1_PdgId)==11','2e2mu':'&&abs(H_Z1_leg1_PdgId)!=abs(H_Z2_leg1_PdgId)'}
         self.data['higgsProduction']={'GluGluToH':'GGH','VBF':'VBF','ZH':'ZH','WH':'WH','TTbarH':'TTH'}
         self.data['filterEff']={'GluGluToH':1,'VBF':1,'ZH':0.028,'WH':0.0105,'TTbarH':0.0296}
@@ -138,6 +138,7 @@ class PlotterSetup(object):
         
 
             #Higgs cross section, BR and uncertainties
+            print 'Higgs cross section for '+production+':'+str(xs[self.data['higgsProduction'][production]]['sigma']  )
             higgsPlotters[-1].addCorrectionFactor('sigma',xs[self.data['higgsProduction'][production]]['sigma'],0.0,'lnN')
             higgsPlotters[-1].addCorrectionFactor('BRHiggs_hzz4l',xs['H4F']['llllt'],0.0,'lnN')
 

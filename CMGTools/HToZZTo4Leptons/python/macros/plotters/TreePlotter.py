@@ -21,28 +21,6 @@ class TreePlotter(PlotterBase):
         f=open(filename)
         data=pickle.load(f)
         weightinv = float(data['events'])
-        
-        if finalstate =='MuMu':
-            weightinv = float(data['4mu'])
-        elif finalstate =='MuEle':
-            weightinv = float(data['2e2mu'])
-        elif finalstate =='EleEle':
-            weightinv = float(data['4e'])
-
-        if finalstate in ['MuMu','MuEle','EleEle'] and prod in ['WH','ZH','ttH']:
-            weightinv = float(data['events'])
-            
-
-
-        if prod =='ttH':
-            weightinv=weightinv*float(data['ttH']/float(data['events']))
-        elif prod =='WH':
-            weightinv=weightinv*float(data['WH']/float(data['events']))
-        elif prod =='ZH':
-            weightinv=weightinv*float(data['ZH']/float(data['events']))
-
-
-
         self.addCorrectionFactor("mcWeight",1./weightinv,0.0,'lnN')
 
 
