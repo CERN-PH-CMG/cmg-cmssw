@@ -262,6 +262,7 @@ class TreeToYield:
             plot.SetFillStyle(self.getOption('FillStyle',1001))
         else:
             plot.SetFillStyle(0)
+            plot.SetLineWidth(self.getOption('LineWidth',1))
         plot.SetLineColor(self.getOption('LineColor',1))
         plot.SetMarkerColor(self.getOption('MarkerColor',1))
         plot.SetMarkerStyle(self.getOption('MarkerStyle',20))
@@ -273,12 +274,13 @@ class TreeToYield:
     def getPlot(self,plotspec,cut):
         ret = self.getPlotRaw(plotspec.name, plotspec.expr, plotspec.bins, cut)
         # fold overflow
-        if "TH1" in ret.ClassName():
+        if "TH1" in ret.ClassName() :
             n = ret.GetNbinsX()
-            ret.SetBinContent(1,ret.GetBinContent(0)+ret.GetBinContent(1))
-            ret.SetBinContent(n,ret.GetBinContent(n+1)+ret.GetBinContent(n))
-            ret.SetBinError(1,hypot(ret.GetBinError(0),ret.GetBinError(1)))
-            ret.SetBinError(n,hypot(ret.GetBinError(n+1),ret.GetBinError(n)))
+            if plotspec.getOption('IncludeOverflows',True):
+                ret.SetBinContent(1,ret.GetBinContent(0)+ret.GetBinContent(1))
+                ret.SetBinContent(n,ret.GetBinContent(n+1)+ret.GetBinContent(n))
+                ret.SetBinError(1,hypot(ret.GetBinError(0),ret.GetBinError(1)))
+                ret.SetBinError(n,hypot(ret.GetBinError(n+1),ret.GetBinError(n)))
             rebin = plotspec.getOption('rebinFactor',0)
             if plotspec.bins[0] != "[" and rebin > 1 and n > 5:
                 while n % rebin != 0: rebin -= 1
