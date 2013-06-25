@@ -3,7 +3,7 @@ from CMGTools.HToZZTo4Leptons.macros.plotterSetup import *
 
 
 periods=['7TeV','8TeV']
-periods=['8TeV']
+#periods=['7TeV']
 
 
 
@@ -95,12 +95,12 @@ data = MergedPlotter(dataPlotters)
 zzStack = StackPlotter()
 zzStack.addPlotter(fakes,"FAKES","Z+X","background")
 zzStack.addPlotter(zz,"qq/gg ZZ","ZZ , Z#gamma^{*}","background")
-#zzStack.addPlotter(higgsRV,"RVH","qqH+VH (126 GeV)","signal")
-#zzStack.addPlotter(higgsRF,"RFH","ggH+ttH (126 GeV)","signal")
+zzStack.addPlotter(higgsRV,"RVH","qqH+VH (126 GeV)","signal")
+zzStack.addPlotter(higgsRF,"RFH","ggH+ttH (126 GeV)","signal")
 #zzStack.addPlotter(higgsGGH,"RV1","ggH (126 GeV)","signal")
 #zzStack.addPlotter(higgsQQH,"RV2","qqH (126 GeV)","signal")
 #zzStack.addPlotter(higgsVH,"RV3","VH (126 GeV)","signal")
-zzStack.addPlotter(higgs,"RV3","m_{H} = 126 GeV","signal")
+#zzStack.addPlotter(higgs,"RV3","m_{H} = 126 GeV","signal")
 
 zzStack.addPlotter(data,"data_obs","Data","data")
 
