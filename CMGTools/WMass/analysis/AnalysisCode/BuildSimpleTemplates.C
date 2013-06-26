@@ -1,6 +1,6 @@
 #include "../includes/common.h"
 
-void BuildSimpleTemplates(TString folder=""){
+void BuildSimpleTemplates(TString folder="", int generated_PDF_set=1, int generated_PDF_member=0){
 
   static const int CutSteps = 8;
   int line_marker_color[CutSteps]={1,1,2,8,4,6,7,15};
@@ -18,8 +18,8 @@ void BuildSimpleTemplates(TString folder=""){
 
   TFile *fin=new TFile(Form("%s/../R_WdivZ_OnMC.root",folder.Data()));
   
-  TH1D hWlikePosSimpleTemplate[WMass::etaMuonNSteps][2*WMass::WMassNSteps+1];
-  TH1D hWlikePosSimpleTemplate_NonScaled[WMass::etaMuonNSteps][2*WMass::WMassNSteps+1];
+  TH1D hWlikePosSimpleTemplate[WMass::NtoysMomCorr][WMass::PDF_members][WMass::etaMuonNSteps][2*WMass::WMassNSteps+1];
+  TH1D hWlikePosSimpleTemplate_NonScaled[WMass::NtoysMomCorr][WMass::PDF_members][WMass::etaMuonNSteps][2*WMass::WMassNSteps+1];
   // TCanvas *cWtemplate[2*WMass::WMassNSteps+1];
 
   TFile *foutTemplates=new TFile(Form("%s/WSimpleTemplates.root",folder.Data()),"RECREATE");
@@ -33,50 +33,58 @@ void BuildSimpleTemplates(TString folder=""){
     TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
     for(int j=0; j<2*WMass::WMassNSteps+1; j++){
       int jWmass = WMass::WMassCentral_MeV-(WMass::WMassNSteps-j)*WMass::WMassStep_MeV;
-      cout << "retrieving histo " <<  Form("%s_eta%s_%d",Zana_str[CutSteps-1].Data(),eta_str.Data(),jWmass) << ", ";
-      TH1D*hZ=(TH1D*)Zana->Get(Form("%s_eta%s_%d",Zana_str[CutSteps-1].Data(),eta_str.Data(),jWmass));
-      // if(hZ->Integral()>0)hZ->Scale(1/hZ->Integral());
-      // TH1D*hR=(TH1D*)fin->Get(Form("hR_WdivZ_eta%s_%d",eta_str.Data(),jWmass));
-      cout << "applying reweighting with " <<  Form("%s_eta%s_%d",hR_WdivZana_str[CutSteps-1].Data(),eta_str.Data(),jWmass) << endl;
-      TH1D*hR=(TH1D*)fin->Get(Form("%s_eta%s_%d",hR_WdivZana_str[CutSteps-1].Data(),eta_str.Data(),jWmass));
-      // if(hR->Integral()>0)hR->Scale(1/hR->Integral());
-      hWlikePosSimpleTemplate[i][j]=(*hZ)*(*hR);
-      // hWlikePosSimpleTemplate.Sumw2();
-      hWlikePosSimpleTemplate[i][j].SetName(Form("hWlikePos_PtScaled_RWeighted_SimpleTemplates_eta%s_%d",eta_str.Data(),jWmass));
-      hWlikePosSimpleTemplate[i][j].SetTitle(Form("hWlikePos_PtScaled_RWeighted_SimpleTemplates_eta%s_%d",eta_str.Data(),jWmass));
-      hZ->Print();
-      hR->Print();
-      hWlikePosSimpleTemplate[i][j].Print();
+      for(int h=0; h<WMass::PDF_members; h++){
+        for(int m=0; m<WMass::NtoysMomCorr; m++){
+          cout << "retrieving histo " <<  Form("%s_pdf%d-%d%s_eta%s_%d",Zana_str[CutSteps-1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, WMass::NtoysMomCorr>1?Form("_MomCorrToy%d",m):"",eta_str.Data(),jWmass) << ", ";
+          TH1D*hZ=(TH1D*)Zana->Get(Form("%s_pdf%d-%d%s_eta%s_%d",Zana_str[CutSteps-1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, WMass::NtoysMomCorr>1?Form("_MomCorrToy%d",m):"",eta_str.Data(),jWmass));
+          // if(hZ->Integral()>0)hZ->Scale(1/hZ->Integral());
+          // TH1D*hR=(TH1D*)fin->Get(Form("hR_WdivZ_eta%s_%d",eta_str.Data(),jWmass));
+          cout << "applying reweighting with " <<  Form("%s_eta%s_%d",hR_WdivZana_str[CutSteps-1].Data(),eta_str.Data(),jWmass) << endl;
+          TH1D*hR=(TH1D*)fin->Get(Form("%s_eta%s_%d",hR_WdivZana_str[CutSteps-1].Data(),eta_str.Data(),jWmass));
+          // if(hR->Integral()>0)hR->Scale(1/hR->Integral());
+          hWlikePosSimpleTemplate[m][h][i][j]=(*hZ)*(*hR);
+          // hWlikePosSimpleTemplate.Sumw2();
+          hWlikePosSimpleTemplate[m][h][i][j].SetName(Form("hWlikePos_PtScaled_RWeighted_SimpleTemplates_pdf%d-%d%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, WMass::NtoysMomCorr>1?Form("_MomCorrToy%d",m):"",eta_str.Data(),jWmass));
+          hWlikePosSimpleTemplate[m][h][i][j].SetTitle(Form("hWlikePos_PtScaled_RWeighted_SimpleTemplates_pdf%d-%d%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, WMass::NtoysMomCorr>1?Form("_MomCorrToy%d",m):"",eta_str.Data(),jWmass));
+          hZ->Print();
+          hR->Print();
+          hWlikePosSimpleTemplate[m][h][i][j].Print();
 
-      cout << "retrieving histo " <<  Form("hWlikePos_PtNonScaled_8_JetCut_eta%s_%d",eta_str.Data(),jWmass) << ", ";
-      TH1D*hZ_PtNonScaled=(TH1D*)Zana->Get(Form("hWlikePos_PtNonScaled_8_JetCut_eta%s_%d",eta_str.Data(),jWmass));
-      // if(hZ_PtNonScaled->Integral()>0)hZ_PtNonScaled->Scale(1/hZ_PtNonScaled->Integral());
-      // TH1D*hR_PtNonScaled=(TH1D*)fin->Get(Form("hR_PtNonScaled_WdivZ_eta%s_%d",eta_str.Data(),jWmass));
-      cout << "applying reweighting with " <<  Form("hR_WdivZ_WlikePos_PtNonScaled_8_JetCut_eta%s_%d",eta_str.Data(),jWmass) << endl;
-      TH1D*hR_PtNonScaled=(TH1D*)fin->Get(Form("hR_WdivZ_WlikePos_PtNonScaled_8_JetCut_eta%s_%d",eta_str.Data(),jWmass));
-      // if(hR_PtNonScaled->Integral()>0)hR_PtNonScaled->Scale(1/hR_PtNonScaled->Integral());
-      hWlikePosSimpleTemplate_NonScaled[i][j]=(*hZ_PtNonScaled)*(*hR_PtNonScaled);
-      // hWlikePosSimpleTemplate_NonScaled.Sumw2();
-      hWlikePosSimpleTemplate_NonScaled[i][j].SetName(Form("hWlikePos_PtNonScaled_RWeighted_SimpleTemplates_eta%s_%d",eta_str.Data(),jWmass));
-      hWlikePosSimpleTemplate_NonScaled[i][j].SetTitle(Form("hWlikePos_PtnonScaled_RWeighted_SimpleTemplates_eta%s_%d",eta_str.Data(),jWmass));
-      hZ_PtNonScaled->Print();
-      hR_PtNonScaled->Print();
-      hWlikePosSimpleTemplate_NonScaled[i][j].Print();
-      // cWtemplate[j]=new TCanvas(Form("cR_WdivZ_%d",jWmass));
-      // TH1D*hZ2=(TH1D*)hZ->Clone(Form("WfromZmu2_pt_%d",jWmass));
-      // hZ2->SetMarkerColor(2);
-      // hZ2->SetLineColor(2);
-      // hZ2->DrawNormalized("");
-      // hW->DrawNormalized("same");
+          cout << "retrieving histo " <<  Form("hWlikePos_PtNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, WMass::NtoysMomCorr>1?Form("_MomCorrToy%d",m):"",eta_str.Data(),jWmass) << ", ";
+          TH1D*hZ_PtNonScaled=(TH1D*)Zana->Get(Form("hWlikePos_PtNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, WMass::NtoysMomCorr>1?Form("_MomCorrToy%d",m):"",eta_str.Data(),jWmass));
+          // if(hZ_PtNonScaled->Integral()>0)hZ_PtNonScaled->Scale(1/hZ_PtNonScaled->Integral());
+          // TH1D*hR_PtNonScaled=(TH1D*)fin->Get(Form("hR_PtNonScaled_WdivZ_eta%s_%d",eta_str.Data(),jWmass));
+          cout << "applying reweighting with " <<  Form("hR_WdivZ_WlikePos_PtNonScaled_8_JetCut_eta%s_%d",eta_str.Data(),jWmass) << endl;
+          TH1D*hR_PtNonScaled=(TH1D*)fin->Get(Form("hR_WdivZ_WlikePos_PtNonScaled_8_JetCut_eta%s_%d",eta_str.Data(),jWmass));
+          // if(hR_PtNonScaled->Integral()>0)hR_PtNonScaled->Scale(1/hR_PtNonScaled->Integral());
+          hWlikePosSimpleTemplate_NonScaled[m][h][i][j]=(*hZ_PtNonScaled)*(*hR_PtNonScaled);
+          // hWlikePosSimpleTemplate_NonScaled.Sumw2();
+          hWlikePosSimpleTemplate_NonScaled[m][h][i][j].SetName(Form("hWlikePos_PtNonScaled_RWeighted_SimpleTemplates_pdf%d-%d%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, WMass::NtoysMomCorr>1?Form("_MomCorrToy%d",m):"",eta_str.Data(),jWmass));
+          hWlikePosSimpleTemplate_NonScaled[m][h][i][j].SetTitle(Form("hWlikePos_PtnonScaled_RWeighted_SimpleTemplates_pdf%d-%d%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, WMass::NtoysMomCorr>1?Form("_MomCorrToy%d",m):"",eta_str.Data(),jWmass));
+          hZ_PtNonScaled->Print();
+          hR_PtNonScaled->Print();
+          hWlikePosSimpleTemplate_NonScaled[m][h][i][j].Print();
+          // cWtemplate[j]=new TCanvas(Form("cR_WdivZ_%d",jWmass));
+          // TH1D*hZ2=(TH1D*)hZ->Clone(Form("WfromZmu2_pt_%d",jWmass));
+          // hZ2->SetMarkerColor(2);
+          // hZ2->SetLineColor(2);
+          // hZ2->DrawNormalized("");
+          // hW->DrawNormalized("same");
+        }
+      }
     }
   }
   
   foutTemplates->cd();
   for(int i=0; i<WMass::etaMuonNSteps; i++){
     for(int j=0; j<2*WMass::WMassNSteps+1; j++){
-      hWlikePosSimpleTemplate[i][j].Write();
-      hWlikePosSimpleTemplate_NonScaled[i][j].Write();
-    // cWtemplate[j]->Write();
+      for(int h=0; h<WMass::PDF_members; h++){
+        for(int m=0; m<WMass::NtoysMomCorr; m++){
+          hWlikePosSimpleTemplate[m][h][i][j].Write();
+          hWlikePosSimpleTemplate_NonScaled[m][h][i][j].Write();
+          // cWtemplate[j]->Write();
+        }
+      }
     }
   }
   foutTemplates->Write();

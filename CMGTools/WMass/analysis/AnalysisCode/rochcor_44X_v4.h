@@ -11,11 +11,11 @@
 #include <TRandom3.h>
 
 
-class rochcor_44X_v3 {
+class rochcor_44X_v4 {
  public:
-  rochcor_44X_v3();
-  rochcor_44X_v3(int seed);
-  ~rochcor_44X_v3();
+  rochcor_44X_v4();
+  rochcor_44X_v4(int seed);
+  ~rochcor_44X_v4();
   
   void momcor_mc(TLorentzVector&, float, float);
   void momcor_data(TLorentzVector&, float, float, int);
@@ -24,6 +24,7 @@ class rochcor_44X_v3 {
   
   float zptcor(float);
   int etabin(float);
+  int letabin(float);
   int phibin(float);
   
  private:
@@ -32,24 +33,18 @@ class rochcor_44X_v3 {
   TRandom3 sran;
   bool using_toys;
   
-  
   //  static float netabin[9] = {-2.4,-2.1,-1.4,-0.7,0.0,0.7,1.4,2.1,2.4};
   static const double pi = 3.14159265358979323846;
   static const float netabin[23];
+  static const float nletabin[9];
   
   static const float genm_smr = 9.09956e+01; //gen mass peak with eta dependent gaussian smearing => better match in Z mass profile vs. eta/phi
   static const float genm = 91.06; //gen mass peak without smearing => Z mass profile vs. eta/phi in CMS note
   
-  static const float recmA = 9.09940e+01; //rec mass peak in MC (2011A)
   static const float drecmA = 9.10218e+01; //rec mass peak in data (2011A)
-  static const float mgsclA_stat = 0.0001; //stat. error of global factor for mass peak in MC (2011A)  
-  static const float mgsclA_syst = 0.0006; //syst. error of global factor for mass peak in MC (2011A)  
   static const float dgsclA_stat = 0.0001; //stat. error of global factor for mass peak in data (2011A)
   static const float dgsclA_syst = 0.0008; //syst. error of global factor for mass peak in data (2011A)
-  static const float recmB = 9.10210e+01; //rec mass peak in MC (2011B)
   static const float drecmB = 9.09469e+01; //rec mass peak in data (2011B)
-  static const float mgsclB_stat = 0.0001; //stat. error of global factor for mass peak in MC (2011B)  
-  static const float mgsclB_syst = 0.0006; //syst. error of global factor for mass peak in MC (2011B)  
   static const float dgsclB_stat = 0.0001; //stat. error of global factor for mass peak in data (2011B)
   static const float dgsclB_syst = 0.0008; //syst. error of global factor for mass peak in data (2011B)
   
@@ -97,6 +92,11 @@ class rochcor_44X_v3 {
   static const float dcor_maB[8][22];
   static const float dcor_bfBer[8][22];  
   static const float dcor_maBer[8][22];
+
+  static const float sfm[8];
+  static const float sfp[8];
+  static const float sfmer[8];
+  static const float sfper[8];
 
   //=======================================================================================================
   
