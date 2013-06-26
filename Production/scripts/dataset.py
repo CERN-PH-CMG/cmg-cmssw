@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import pprint
 import fnmatch
 from CMGTools.Production.dataset import createDataset
 
@@ -53,6 +54,8 @@ if __name__ == '__main__':
     data.printInfo()
     data.printFiles(abspath = options.abspath,
                     info = info)
+    pprint.pprint( data.filesAndSizes )
     if options.report:
         pprint.pprint( data.report )
+
 

@@ -116,6 +116,7 @@ if __name__ == '__main__':
 	if options.password is None:
 		options.password = PublishTask.getPassword(options.username)
 	if options.password is None:
+		print "fail"
 		print "Authentication Failed, exiting\n\n"
 		sys.exit(1)
 		

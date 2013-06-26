@@ -67,7 +67,7 @@ def publish(sampleName,fileown,comment,test,user,password, force, savannah,prima
 		
 		# If login fails return None
 		if loginClear is False:
-			print "User authentication failed, exiting\n\n"
+			print "User authentication failed, exiting!\n\n"
 			return None
 		
 		

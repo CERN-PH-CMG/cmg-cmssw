@@ -19,6 +19,7 @@ def getNameWithID(taskID):
     except:
         print "Dataset not found on Savannah"
         return False
+
 def getTaskID(name, category, username, password, isParent):
     
     skip = False
@@ -111,14 +112,13 @@ def validLogin(username, password):
 
                     # Select password form (second item in forms list)
                     br.select_form(nr=1)
-
                     br.form['form_loginname']=username
                     br.form['form_pw']=password
                     br.submit()
                     
 
                     page = br.response().read()
-                    a = re.search("Not Logged In",page )
+		    a = re.search("Not Logged In",page )
                     if a != None:
                              return False
                              print "Client was unable to login, please check login details."
