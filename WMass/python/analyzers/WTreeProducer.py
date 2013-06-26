@@ -63,47 +63,38 @@ class WTreeProducer( TreeAnalyzerNumpy ):
     def declareHandles(self):
       super(WTreeProducer, self).declareHandles()
     
-      # self.handles['pfmet'] = AutoHandle(
-        # 'cmgPFMET',
-        # 'std::vector<cmg::BaseMET>' 
-        # )
-      # self.handles['muons'] = AutoHandle(
-            # 'cmgMuonSel',
-            # 'std::vector<cmg::Muon>'
-            # )
-      # self.handles['electrons'] = AutoHandle(
-            # 'cmgElectronSel',
-            # 'std::vector<cmg::Electron>'
-            # )
-      # self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
-            # 'std::vector<reco::GenParticle>' )
+      self.handles['pfmet'] = AutoHandle(
+        'cmgPFMET',
+        'std::vector<cmg::BaseMET>' 
+        )
+      self.handles['muons'] = AutoHandle(
+            'cmgMuonSel',
+            'std::vector<cmg::Muon>'
+            )
+      self.handles['electrons'] = AutoHandle(
+            'cmgElectronSel',
+            'std::vector<cmg::Electron>'
+            )
+      self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
+            'std::vector<reco::GenParticle>' )
     
-      # self.handles['vertices'] =  AutoHandle(
-          # 'offlinePrimaryVertices',
-          # 'std::vector<reco::Vertex>'
-          # )
+      self.handles['vertices'] =  AutoHandle(
+          'offlinePrimaryVertices',
+          'std::vector<reco::Vertex>'
+          )
       self.mchandles['pusi'] =  AutoHandle(
           'addPileupInfo',
           'std::vector<PileupSummaryInfo>' 
           ) 
-      self.mchandles['generator'] = AutoHandle(
-          'generator','GenEventInfoProduct' 
-          )
-
-          
+    
     def declareVariables(self):
       tr = self.tree
 
-      var(tr, 'scalePDF')
-      var(tr, 'parton1_pdgId')
-      var(tr, 'parton1_x')
-      var(tr, 'parton2_pdgId')
-      var(tr, 'parton2_x')
-      
       var( tr, 'run', int)
       var( tr, 'lumi', int)
       var( tr, 'evt', int)
       var( tr, 'nvtx', int)
+      var( tr, 'njets', int)
       var( tr, 'npu', int)
       var( tr, 'evtHasGoodVtx', int)
       var( tr, 'evtHasTrg', int)
@@ -114,8 +105,6 @@ class WTreeProducer( TreeAnalyzerNumpy ):
       var( tr, 'noTrgMuonsLeadingPt', int)
 
       bookMET( tr, 'pfmet')
-      var( tr, 'MVAmet')
-      var( tr, 'MVAmet_phi')
       
       bookW( tr, 'W')
       var( tr, 'W_mt')
@@ -132,6 +121,7 @@ class WTreeProducer( TreeAnalyzerNumpy ):
       var(tr, 'MuIsTight', int)
       var(tr, 'MuRelIso')
       bookParticle(tr, 'MuGen')
+      bookParticle(tr, 'MuGenStatus1')
       var(tr, 'MuDRGenP')
       
       bookParticle(tr, 'NuGen')
@@ -152,6 +142,7 @@ class WTreeProducer( TreeAnalyzerNumpy ):
           fill(tr, 'WGen_m', event.genW[0].p4().M())
           fill(tr, 'WGen_mt', event.genW_mt)
           fillParticle(tr, 'MuGen',event.genMu[0])
+          fillParticle(tr, 'MuGenStatus1', event.genMuStatus1[0])      
           fill(tr, 'MuDRGenP',event.muGenDeltaRgenP)
           fillParticle(tr, 'NuGen', event.genNu[0])
 
@@ -169,15 +160,13 @@ class WTreeProducer( TreeAnalyzerNumpy ):
           fill(tr, 'MuIsTight', event.selMuonIsTight)
           fill(tr, 'MuRelIso', event.selMuons[0].relIso(0.5))
 
-          fill(tr, 'MVAmet', event.mvamet.pt())
-          fill(tr, 'MVAmet_phi', event.mvamet.phi())
           
         if (event.savegenpW and self.cfg_comp.isMC) or event.WGoodEvent:
           fill( tr, 'run', event.run) 
           fill( tr, 'lumi',event.lumi)
           fill( tr, 'evt', event.eventId)
-          # fill( tr, 'nvtx', len(self.handles['vertices'].product()))          
-          fill( tr, 'nvtx', len(event.goodVertices))          
+          fill( tr, 'nvtx', len(self.handles['vertices'].product()))          
+          fill( tr, 'njets', len(event.selJets))
           if (self.cfg_comp.isMC) :
             event.pileUpInfo = map( PileUpSummaryInfo,
                                     self.mchandles['pusi'].product() )
@@ -185,13 +174,8 @@ class WTreeProducer( TreeAnalyzerNumpy ):
               if puInfo.getBunchCrossing()==0:
                 fill( tr, 'npu', puInfo.nTrueInteractions())
                 # print 'puInfo.nTrueInteractions()= ',puInfo.nTrueInteractions()
-            event.generator = self.mchandles['generator'].product()
-            # print 'WTreeProducer.py: ',event.generator.pdf().scalePDF,' ',event.generator.pdf().id.first,' ',event.generator.pdf().x.first,' ',event.generator.pdf().id.second,' ',event.generator.pdf().x.second
-            fill(tr, 'scalePDF',float(event.generator.pdf().scalePDF))
-            fill(tr, 'parton1_pdgId',float(event.generator.pdf().id.first))
-            fill(tr, 'parton1_x',float(event.generator.pdf().x.first))
-            fill(tr, 'parton2_pdgId',float(event.generator.pdf().id.second))
-            fill(tr, 'parton2_x',float(event.generator.pdf().x.second))
+              # else:
+                # print 'NO INFO FOR puInfo.getBunchCrossing()==0 !!!!'
             
           fill( tr, 'nMuons', event.nMuons)
           fill( tr, 'nTrgMuons', len(event.selMuons))
