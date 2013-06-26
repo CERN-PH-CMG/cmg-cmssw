@@ -24,18 +24,20 @@ void PlotWdistributionsMCvsDATA_stack(TString folderMCsig="",TString folderMCEWK
     for(int j=WMass::WMassNSteps; j<WMass::WMassNSteps+1; j++){
       int jWmass = WMass::WMassCentral_MeV-(WMass::WMassNSteps-j)*WMass::WMassStep_MeV;
       
-      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hnvtx_Sig_eta%s_%d",eta_str.Data(),jWmass),0,0,0,1,";Z mass [GeV];Counts",-1,-1,1);
+      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hnvtx_Sig_eta%s_%d",eta_str.Data(),jWmass),0,0,0,1,";number of vertices;Counts",-1,-1,1);
       // plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hnoTrgMuonsLeadingPt_Sig_eta%s_%d",eta_str.Data(),jWmass),0,0,0,1,";Z mass [GeV];Counts",50,-1,1);
-      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hpfMET_WPos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";Z mass [GeV];Counts",-1,-1,1);
-      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hpfMETphi_WPos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos MET [GeV];Counts",-1,-1,1);
-      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWPos_pt_QCD_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos MET [GeV];Counts",-1,-1,1);
-      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWPos_phi_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos MET [GeV];Counts",-1,-1,1);
-      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWPos_mt_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos m_{T} [GeV];Counts",-1,-1,1);
-      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWPos_mt_QCD_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
-      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMupt_WPos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos m_{T} [GeV];Counts",-1,-1,1);
-      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMueta_WPos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos muon p_{T} [GeV];Counts",-1,-1,1);
-      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMuphi_WPos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,0,0,1,";WlikePos muon p_{T} [GeV];Counts",-1,-1,1);
-      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMulogiso_WPos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,0,0,1,";number of vertices;Counts",-1,-1,1);
+      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hpfMET_WPos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";MET [GeV];Counts",-1,-1,1);
+      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hpfMETphi_WPos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";MET #phi [rad];Counts",-1,-1,1);
+      // plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWPos_pt_unzoomed_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";W p_{T} [GeV];Counts",-1,-1,1);
+      // plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWPos_pt_unzoomed_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";W p_{T} [GeV];Counts",-1,100,1);
+      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWPos_pt_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";W p_{T} [GeV];Counts",-1,-1,1);
+      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWPos_phi_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";W #phi [rad];Counts",-1,-1,1);
+      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWPos_mt_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";W m_{T} [GeV];Counts",-1,-1,1);
+      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWPos_mt_QCD_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";W m_{T} QCD [GeV];Counts",-1,-1,1);
+      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMupt_WPos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";#mu p_{T} [GeV];Counts",-1,-1,1);
+      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMueta_WPos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";#mu #eta;Counts",-1,-1,1);
+      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMuphi_WPos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,0,0,1,";#mu #phi [rad];Counts",-1,-1,1);
+      plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMulogiso_WPos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,0,0,1,";log rel iso;Counts",-1,-1,1);
       // plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hJetpt_WPos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";u1 (GeV);Counts",-1,-1,1);
       // plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hJeteta_WPos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";u2 (GeV);Counts",-1,-1,1);
       // plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hJetphi_WPos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";u2 (GeV);Counts",-1,-1,1);
@@ -174,7 +176,7 @@ void plotAndSaveHisto1D_stack(TFile*fMCsig, TFile*fMCEWK, TFile*fMCTT, TFile*fMC
   leg->SetFillColor(0);
   leg->SetFillStyle(1001);
   leg->AddEntry(hDATA,"DATA","pl");
-  leg->AddEntry(hMCsig,Form("Z#rightarrow#mu#mu (%.1f \%)",fsig),"f");
+  leg->AddEntry(hMCsig,Form("W#rightarrow#mu#nu (%.1f \%)",fsig),"f");
   leg->AddEntry(hMCEWK,Form("EWK (%.1f \%)",fewk),"f");
   leg->AddEntry(hMCQCD,Form("QCD (%.1f \%)",fqcd),"f");
   leg->AddEntry(hMCTT,Form("TT (%.1f \%)",ftt),"f");
