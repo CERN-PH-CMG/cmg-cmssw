@@ -76,7 +76,7 @@ WJets.triggers = ["HLT_IsoMu24_v1","HLT_IsoMu24_v2","HLT_IsoMu24_v3","HLT_IsoMu2
 
 selectedComponents = [WJets]
 
-WJets.splitFactor = 750
+WJets.splitFactor = 1500
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )

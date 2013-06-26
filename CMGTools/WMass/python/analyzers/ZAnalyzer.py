@@ -1,13 +1,13 @@
 import operator
 import copy
-import math
+import math, os
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, Jet, GenParticle
 from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 from CMGTools.RootTools.utils.DeltaR import bestMatch, deltaR, deltaR2
-from CMGTools.Utilities.mvaMET.mvaMet import MVAMet
+# from CMGTools.Utilities.mvaMET.mvaMet import MVAMet
 
 class ZAnalyzer( Analyzer ):
 
@@ -31,7 +31,7 @@ class ZAnalyzer( Analyzer ):
         count.register('Z pt<20*MZ/MW')
         count.register('Z Jet_leading_pt<30')
 
-        self.mvamet = MVAMet() # SHOULD BE MVAMet(0.1)
+        # self.mvamet = MVAMet() # SHOULD BE MVAMet(0.1)
 
         # void    Initialize(const edm::ParameterSet &iConfig, 
         # TString iU1Weights      ="$CMSSW_BASE/src/pharris/data/gbrmet_52.root",
@@ -40,13 +40,13 @@ class ZAnalyzer( Analyzer ):
         # TString iCovU2Weights   ="$CMSSW_BASE/src/pharris/data/gbrcovu2_52.root",
         # MVAMet::MVAType  iType=kBaseline);
 
-        self.mvamet.Initialize(0,
-                          '/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_5/src/CMGTools/Utilities/data/mvaMET/gbrmet_42.root',
-                          '/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_5/src/CMGTools/Utilities/data/mvaMET/gbrmetphi_42.root',
-                          '/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_5/src/CMGTools/Utilities/data/mvaMET/gbrmetu1cov_42.root',
-                          '/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_5/src/CMGTools/Utilities/data/mvaMET/gbrmetu2cov_42.root',
-                          0
-                          )
+        # self.mvamet.Initialize(0,
+                          # os.environ['CMSSW_BASE'] + '/src/CMGTools/Utilities/data/mvaMET/gbrmet_42.root',
+                          # os.environ['CMSSW_BASE'] + '/src/CMGTools/Utilities/data/mvaMET/gbrmetphi_42.root',
+                          # os.environ['CMSSW_BASE'] + '/src/CMGTools/Utilities/data/mvaMET/gbrmetu1cov_42.root',
+                          # os.environ['CMSSW_BASE'] + '/src/CMGTools/Utilities/data/mvaMET/gbrmetu2cov_42.root',
+                          # 0
+                          # )
         
     def buildLeptons(self, cmgMuons, event):
         '''Creates python Leptons from the muons read from the disk.
@@ -91,7 +91,6 @@ class ZAnalyzer( Analyzer ):
         event.ZGoodEvent = False
           # select event
         return self.selectionSequence(event, fillCounter=True)
-
         
     def selectionSequence(self, event, fillCounter):
 
@@ -121,6 +120,10 @@ class ZAnalyzer( Analyzer ):
                                ]
           event.genMuPos = []
           event.genMuNeg = []
+          event.genMuPosStatus1 = []
+          event.genMuNegStatus1 = []
+          
+          
           if len(event.genZ)==1:
           # if the genp event is selected, associate gen muons
             # if(event.genZ[0].daughter(0).pdgId()==13):
@@ -132,6 +135,11 @@ class ZAnalyzer( Analyzer ):
               event.genMuPos.append(event.genZ[0].daughter(1))
               event.genMuNeg.append(event.genZ[0].daughter(0))
             
+            if(len(event.genMuNeg) >0):
+              event.genMuNegStatus1.append(self.returnMuonDaughterStatus1(event.genMuNeg[0]))
+            if(len(event.genMuPos) >0):
+              event.genMuPosStatus1.append(self.returnMuonDaughterStatus1(event.genMuPos[0]))
+
             event.genZ_mt = self.mT(event.genZ[0].daughter(0).p4() , event.genZ[0].daughter(1).p4())
             event.muPosGenDeltaRgenP=1e6
             event.muNegGenDeltaRgenP=1e6
@@ -150,7 +158,7 @@ class ZAnalyzer( Analyzer ):
         event.ZselJets = [ jet for jet in event.ZallJets if not \
                                 (bestMatch( jet , event.ZallMuons ))[1] <0.5
                           ]
-
+        
         # reco events must have good reco vertex and trigger fired...                          
         if not (event.passedVertexAnalyzer and event.passedTriggerAnalyzer):
           return True
@@ -237,8 +245,8 @@ class ZAnalyzer( Analyzer ):
                            # visObjectP4s_array #visObjectP4s
                           # )
                           
-        GetMet_first = self.mvamet.GetMet_first();
-        GetMet_second = self.mvamet.GetMet_second();
+        # GetMet_first = self.mvamet.GetMet_first();
+        # GetMet_second = self.mvamet.GetMet_second();
             
         # associate properly positive and negative muons
         if(event.BestZMuonPairList[1].charge()>0):
@@ -471,3 +479,23 @@ class ZAnalyzer( Analyzer ):
         return triggerMatched(leg, triggerObjects, path, filters,
                               dR2Max=0.01,
                               pdgIds=None )
+                              
+    def returnMuonDaughter(self,genp_muon):
+        if genp_muon.numberOfDaughters()>0:
+           for k in range(0,genp_muon.numberOfDaughters()):
+             if genp_muon.daughter(k).pdgId()==13:
+               return genp_muon.daughter(k)
+             elif genp_muon.daughter(k).pdgId()==-13:
+               return genp_muon.daughter(k)
+             # else:
+               # print 'no muon daughter?'  
+        else:
+          # print 'Satus > 1 muon had no daughter'
+          return genp_muon
+      
+    def returnMuonDaughterStatus1(self,genp_muon_daughter):
+        if genp_muon_daughter.status()==1:
+          return genp_muon_daughter
+        else:
+          #print 'Calling again'
+          return self.returnMuonDaughterStatus1(self.returnMuonDaughter(genp_muon_daughter))

@@ -111,7 +111,7 @@ selectedComponents = [data_Run2011AB_Nov8Nov19ReReco_v1]
 
 data_Run2011A_Nov8ReReco_v1.splitFactor = 1
 data_Run2011B_Nov19ReReco_v1.splitFactor = 1
-data_Run2011AB_Nov8Nov19ReReco_v1.splitFactor = 1000
+data_Run2011AB_Nov8Nov19ReReco_v1.splitFactor = 2000
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )

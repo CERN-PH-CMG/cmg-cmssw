@@ -114,6 +114,7 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
       var( tr, 'lumi', int)
       var( tr, 'evt', int)
       var( tr, 'nvtx', int)
+      var( tr, 'njets', int)
       var( tr, 'npu', int)
       var( tr, 'evtHasGoodVtx', int)
       var( tr, 'evtHasTrg', int)
@@ -147,6 +148,7 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
       var(tr, 'MuPosIsTightAndIso', int)
       var(tr, 'MuPosIsTight', int)
       bookParticle(tr, 'MuPosGen')
+      bookParticle(tr, 'MuPosGenStatus1')
       # var(tr, 'MuPosGen_pdgId', int)
       var(tr, 'MuPosDRGenP')
       bookParticle(tr, 'MuNeg')
@@ -156,6 +158,7 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
       var(tr, 'MuNegIsTightAndIso', int)
       var(tr, 'MuNegIsTight', int)
       bookParticle(tr, 'MuNegGen')
+      bookParticle(tr, 'MuNegGenStatus1')
       # var(tr, 'MuNegGen_pdgId', int)
       var(tr, 'MuNegDRGenP')
       
@@ -173,8 +176,10 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           fillZ(tr, 'ZGen', event.genZ[0].p4())
           fill(tr, 'ZGen_mt', event.genZ_mt)
           fillParticle(tr, 'MuPosGen', event.genMuPos[0])
+          fillParticle(tr, 'MuPosGenStatus1', event.genMuPosStatus1[0])      
           fill(tr, 'MuPosDRGenP', event.muPosGenDeltaRgenP)              
           fillParticle(tr, 'MuNegGen', event.genMuNeg[0])
+          fillParticle(tr, 'MuNegGenStatus1', event.genMuNegStatus1[0])          
           fill(tr, 'MuNegDRGenP', event.muNegGenDeltaRgenP)
           
         if event.ZGoodEvent == True :
@@ -210,6 +215,7 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           fill( tr, 'lumi',event.lumi)
           fill( tr, 'evt', event.eventId)
           fill( tr, 'nvtx', len(self.handles['vertices'].product()))
+          fill( tr, 'njets', len(event.ZselJets))
           if (self.cfg_comp.isMC) :
             event.pileUpInfo = map( PileUpSummaryInfo,
                                     self.mchandles['pusi'].product() )
