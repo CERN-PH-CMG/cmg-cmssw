@@ -1,15 +1,24 @@
-heavy_tagged_dijet_analysis data/fileList_HT_Run2012A-recover-06Aug2012-v1_AOD_PAT_CMG_V5_13_0_NTUPLE_Feb15_grid.txt dijetWtag_Moriond_Run2012Ar.root > dijetWtag_Moriond_Run2012Ar.log &
+heavy_tagged_dijet_analysis data/fileList_HT_Run2012A-22Jan2013-v1_AOD_CMGPF_V5_16_0_NTUPLE_Feb15_grid.txt dijetWtag_Moriond_ReRun2012A.root > dijetWtag_Moriond_ReRun2012A.log &
 sleep 2
-heavy_tagged_dijet_analysis data/fileList_HT_Run2012A-13Jul2012-v1_AOD_PAT_CMG_V5_13_0_NTUPLE_Feb15_grid.txt dijetWtag_Moriond_Run2012A.root > dijetWtag_Moriond_Run2012A.log &
+heavy_tagged_dijet_analysis data/fileList_JetHT_Run2012B-22Jan2013-v1_AOD_CMGPF_V5_16_0_NTUPLE_Feb15_grid.txt dijetWtag_Moriond_ReRun2012B.root > dijetWtag_Moriond_ReRun2012B.log &
 sleep 2
-heavy_tagged_dijet_analysis data/fileList_JetHT_Run2012B-13Jul2012-v1_AOD_PAT_CMG_V5_13_0_NTUPLE_Feb15_grid.txt dijetWtag_Moriond_Run2012B.root > dijetWtag_Moriond_Run2012B.log &
+heavy_tagged_dijet_analysis data/fileList_JetHT_Run2012C-22Jan2013-v1_AOD_CMGPF_V5_16_0_NTUPLE_Feb15_grid.txt dijetWtag_Moriond_ReRun2012C.root > dijetWtag_Moriond_ReRun2012C.log &
 sleep 2
-heavy_tagged_dijet_analysis data/fileList_JetHT_Run2012C-24Aug2012-v2_AOD_PAT_CMG_V5_13_0_NTUPLE_Feb15_grid.txt dijetWtag_Moriond_Run2012C1.root > dijetWtag_Moriond_Run2012C1.log &
+heavy_tagged_dijet_analysis data/fileList_JetHT_Run2012D-22Jan2013-v1_AOD_CMGPF_V5_16_0_NTUPLE_Feb15_grid.txt dijetWtag_Moriond_ReRun2012D.root > dijetWtag_Moriond_ReRun2012D.log &
 sleep 2
-heavy_tagged_dijet_analysis data/fileList_JetHT_Run2012C-PromptReco-v2_AOD_PAT_CMG_V5_13_0_NTUPLE_Feb15_grid.txt dijetWtag_Moriond_Run2012C2.root > dijetWtag_Moriond_Run2012C2.log &
-sleep 2
-heavy_tagged_dijet_analysis data/fileList_JetHT_Run2012D-PromptReco-v1_AOD_PAT_CMG_V5_13_0_NTUPLE_Feb15_grid.txt dijetWtag_Moriond_Run2012D.root > dijetWtag_Moriond_Run2012D.log &
-sleep 2
+
+#heavy_tagged_dijet_analysis data/fileList_HT_Run2012A-recover-06Aug2012-v1_AOD_PAT_CMG_V5_13_0_NTUPLE_Feb15_grid.txt #dijetWtag_Moriond_Run2012Ar.root > dijetWtag_Moriond_Run2012Ar.log &
+#sleep 2
+#heavy_tagged_dijet_analysis data/fileList_HT_Run2012A-13Jul2012-v1_AOD_PAT_CMG_V5_13_0_NTUPLE_Feb15_grid.txt #dijetWtag_Moriond_Run2012A.root > dijetWtag_Moriond_Run2012A.log &
+#sleep 2
+#heavy_tagged_dijet_analysis data/fileList_JetHT_Run2012B-13Jul2012-v1_AOD_PAT_CMG_V5_13_0_NTUPLE_Feb15_grid.txt #dijetWtag_Moriond_Run2012B.root > dijetWtag_Moriond_Run2012B.log &
+#sleep 2
+#heavy_tagged_dijet_analysis data/fileList_JetHT_Run2012C-24Aug2012-v2_AOD_PAT_CMG_V5_13_0_NTUPLE_Feb15_grid.txt #dijetWtag_Moriond_Run2012C1.root > dijetWtag_Moriond_Run2012C1.log &
+#sleep 2
+#heavy_tagged_dijet_analysis data/fileList_JetHT_Run2012C-PromptReco-v2_AOD_PAT_CMG_V5_13_0_NTUPLE_Feb15_grid.txt #dijetWtag_Moriond_Run2012C2.root > dijetWtag_Moriond_Run2012C2.log &
+#sleep 2
+#heavy_tagged_dijet_analysis data/fileList_JetHT_Run2012D-PromptReco-v1_AOD_PAT_CMG_V5_13_0_NTUPLE_Feb15_grid.txt #dijetWtag_Moriond_Run2012D.root > dijetWtag_Moriond_Run2012D.log &
+#sleep 2
 
 heavy_tagged_dijet_analysis data/fileList_RSGravitonToWW_kMpl01_M-1000_Tune23_8TeV-herwigpp_Summer12_DR53X-PU_S10_START53_V7A-v1_AODSIM_V5_B_PAT_CMG_V5_13_0_NTUPLE_Feb15_grid.txt dijetWtag_Moriond_WWHpp1000.root > dijetWtag_Moriond_WWHpp1000.log &
 sleep 2

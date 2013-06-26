@@ -213,6 +213,7 @@ int main(int argc, char** argv)
   stream.select("edmEventHelperExtra_info.wj2_pt", eventhelperextra_wj2_pt);
   */
   stream.select("edmEventHelperExtra_info.numberOfPrimaryVertices", eventhelperextra_numberOfPrimaryVertices);
+  stream.select("GenEventInfoProduct_generator.weight", geneventinfoproduct_weight);
   
   stream.select("patJetHelper_patJetsWithVar.chargedEmEnergyFraction", jethelperNoCHS_chargedEmEnergyFraction);
   stream.select("patJetHelper_patJetsWithVar.chargedHadronEnergyFraction", jethelperNoCHS_chargedHadronEnergyFraction);

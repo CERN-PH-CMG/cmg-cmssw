@@ -562,7 +562,7 @@ int main(int argc, char** argv)
 
 	  bool centralitySelection = deta<1.3;
 
-	  if(!(noiseRemoval && Jets_Selection)) continue;
+	  if(!(noiseRemoval && Jets_Selection && centralitySelection)) continue;
 
 	  // ---------------------
 	  // -- fill histograms --
@@ -577,7 +577,7 @@ int main(int argc, char** argv)
 	     ((Jet1CA8Mass>70)&&(Jet1CA8Mass<100))&&
 	     ((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))&&
 	     ((Jet1CA8Nsub<0.5)&&(Jet2CA8Nsub<0.5)))
-              cout << "filtered " << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << ":" << DijetMass << ":" << Jet1pt << ":" << Jet2pt << ":" << Jet1eta << ":" << Jet2eta << ":" << Jet1phi << ":" << Jet2phi << ":" << Jet1CA8Mass << ":" << Jet2CA8Mass << ":" << Jet1CA8Nsub << ":" << Jet2CA8Nsub << endl;
+              cout << "filtered " << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << ":" << DijetMassCA8 << ":" << Jet1pt << ":" << Jet2pt << ":" << Jet1eta << ":" << Jet2eta << ":" << Jet1phi << ":" << Jet2phi << ":" << Jet1CA8Mass << ":" << Jet2CA8Mass << ":" << Jet1CA8Nsub << ":" << Jet2CA8Nsub << endl;
  
           categories=-1;
           categoriesNS=-1;
