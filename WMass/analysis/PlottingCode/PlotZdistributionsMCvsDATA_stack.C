@@ -244,7 +244,16 @@ void plotAndSaveHisto1D_stack(TFile*fMCsig, TFile*fMCEWK, TFile*fMCTT, TFile*fMC
 
   cout << "Integral hDATA= " << hDATA->Integral() << " hMCsig= " << hMCsig->Integral() << " hMCEWK= " << hMCEWK->Integral() << " hMCTT= " << hMCTT->Integral() << " hMCQCD= " << hMCQCD->Integral() << " MCsum= " << MCsum.Integral() << endl;
   // cout << "Entries hDATA= " << hDATA->GetEntries() << " hMCsig= " << hMCsig->GetEntries() << " hMCEWK= " << hMCEWK->GetEntries() << " hMCTT= " << hMCTT->GetEntries() << " MCsum= " << MCsum.GetEntries() << endl;
+  // Double_t TH1::Chi2TestX(const TH1* h2,  Double_t &chi2, Int_t &ndf, Int_t &igood, Option_t *option,  Double_t *res) const
+  Double_t chi2; Int_t ndf; Int_t igood;
+  cout << "DATA-MC chi2: " << hDATA->Chi2TestX((TH1D*)MCsum,chi2,ndf,igood,"") << endl;
+  cout << "chi2= " << chi2 << " ndf= " << ndf << " norm chi2= " << (chi2/ndf) << " prob= " << TMath::Prob(chi2,ndf) << " igood= " << igood << endl;
   cout << endl;
+  TLatex *t = new TLatex();
+  t->SetNDC();
+  // t->SetTextAlign(22);
+  t->SetTextFont(63);
+  t->SetTextSizePixels(17);
 
   // h1->SetLineColor(2);
   
@@ -291,13 +300,15 @@ void plotAndSaveHisto1D_stack(TFile*fMCsig, TFile*fMCEWK, TFile*fMCTT, TFile*fMC
   leg->AddEntry(hMCTT,Form("TT (%.1f \%)",ftt),"f");
   leg->Draw();
   
+  t->DrawLatex(0.15,0.85,Form("norm chi2= %.2f, prob %.3e",(chi2/ndf),TMath::Prob(chi2,ndf)));
+  
   pad2->cd();
   TH1D*hpull=(TH1D*)hDATA->Clone("hpull");
   for(int i=1;i<hpull->GetNbinsX()+1;i++){
     hpull->SetBinContent(i,hDATA->GetBinError(i)>0?(hDATA->GetBinContent(i)-MCsum.GetBinContent(i))/hDATA->GetBinError(i):0);
     // cout << Form("%f",hDATA->GetBinError(i)>0?(hDATA->GetBinContent(i)-MCsum.GetBinContent(i))/hDATA->GetBinError(i):0) << endl;
   }  
-  
+    
   hpull->GetXaxis()->SetLabelSize(0.04*0.75/0.25);
   hpull->GetXaxis()->SetTitleOffset(1);
   hpull->GetXaxis()->SetTitleSize(0.04*0.75/0.25);
