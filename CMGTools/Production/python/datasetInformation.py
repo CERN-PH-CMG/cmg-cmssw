@@ -31,39 +31,38 @@ from time import strptime
 def isCrabFile(name):
     _, fname = os.path.split(name)
     base, _ = os.path.splitext(fname)              #splits fname at the '.'
-    pattern = "(^.*)(_\d+$)|(^.*)(_\d+_\d+_\w+$)"  #two possible patterns - cmsbatch and crab respectively
+    pattern = "(^.*?)(_\d+_\d+_\w+$)|(^.*?)(_\d+$)"  #two possible patterns - cmsbatch and crab respectively
     regex = re.compile(pattern)
     result = regex.match( base ).groups()          #the returned tuple will be either ( None, None, string, string )
-                                                   #or ( string, string, None, None ) if the filename is valid
+                                                   #( string, string, None, None ) or ( string, string, string, string ) if the filename is valid
 
     if ( result[0] == None ):                      #if it's not cmsbatch file
         if ( result[2] == None ):              #if neither cmsbatch nor crab raise Exception
-            raise NameError( "Invalid filename - Crab of cmsbatch pattern not detected" )
-        else:   #else it's a crab file
-            return True           #return unindexed name
-    else:   #if cmsbatch
-        return False          #return unindexed name
+            raise NameError( "Invalid filename - Crab or cmsbatch pattern not detected" )
+        else:   #else it's a cmsbatch file
+            return False           #return unindexed name
+    else:   #if crab file
+        return True          #return unindexed name
 
 def removeIndex(name):
     _, fname = os.path.split(name)
     base, _ = os.path.splitext(fname)              #splits fname at the '.'
-    pattern = "(^.*)(_\d+$)|(^.*)(_\d+_\d+_\w+$)"  #two possible patterns - cmsbatch and crab respectively
+    pattern = "(^.*?)(_\d+_\d+_\w+$)|(^.*?)(_\d+$)"  #two possible patterns - cmsbatch and crab respectively
     regex = re.compile(pattern)
-    result = regex.match( base ).groups()          #the returned tuple will be either ( None, None, string, string )
-                                                   #or ( string, string, None, None ) if the filename is valid
+    result = regex.match( base ).groups()          
 
     if ( result[0] == None ):                      #if it's not cmsbatch file
         if ( result[2] == None ):              #check if it is a crab file#if neither cmsbatch nor crab raise Exception
-            raise NameError( "Invalid filename - Crab of cmsbatch pattern not detected" )
-        else:   #else it's a crab file
+            raise NameError( "Invalid filename - Crab or cmsbatch pattern not detected" )
+        else:   #else it's a cmsbatch file
             return result[2]           #return unindexed name
-    else:   #if cmsbatch
+    else:   #if crab
         return result[0]          #return unindexed name
 
 def getIndex(name):
     _, fname = os.path.split(name)
     base, _ = os.path.splitext(fname)               #splits fname at the '.'
-    pattern = "(^.*_)(\d+$)|(^.*_)(\d+)(_\d+_\w+$)" #two possible patterns - cmsbatch and crab respectively
+    pattern = "(^.*_)(\d+)(_\d+_\w+$)|(^.*_)(\d+$)" #two possible patterns - cmsbatch and crab respectively
     regex = re.compile(pattern)
     result = regex.match( base ).groups()           #the returned tuple will be either ( None, None, string, string )
                                                     #or ( string, string, None, None ) if the filename is valid
@@ -77,7 +76,7 @@ def getIndex(name):
 
 def createFileName(groupName, number, isCrab):
     if isCrab:
-        return groupName + "_" + str(number)+"_0_***"
+        return groupName + "_" + str(number)+"_*_***"
     else:
         return groupName + "_" + str(number)
 
