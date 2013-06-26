@@ -1,4 +1,4 @@
-#include <rochcor_44X_v3.h>
+#include "rochcor_44X_v3.h"
 #include <TLorentzVector.h>
 
 
@@ -504,9 +504,11 @@ rochcor_44X_v3::rochcor_44X_v3(){
   
   eran.SetSeed(123456);
   sran.SetSeed(13245768);
+  
+  using_toys = false;
     
   for(int i=0; i<8; ++i){
-    for(int j=0; j<8; ++j){
+    for(int j=0; j<22; ++j){
       mptsys_mc_dm[i][j]=0;
       mptsys_mc_da[i][j]=0;
       mptsys_da_dm[i][j]=0;
@@ -519,15 +521,18 @@ rochcor_44X_v3::rochcor_44X_v3(){
 rochcor_44X_v3::rochcor_44X_v3(int seed){
   eran.SetSeed(123456);
   sran.SetSeed(seed);
+  
+  using_toys = true;
 
-  for(int i=0; i<8; ++i){
-      for(int j=0; j<8; ++j){
-          mptsys_mc_dm[i][j]=sran.Gaus(0.0, 1.0);
-          mptsys_mc_da[i][j]=sran.Gaus(0.0, 1.0);
-          mptsys_da_dm[i][j]=sran.Gaus(0.0, 1.0);
-          mptsys_da_da[i][j]=sran.Gaus(0.0, 1.0);
-      }
-  }
+
+  // for(int i=0; i<8; ++i){
+      // for(int j=0; j<22; ++j){
+          // mptsys_mc_dm[i][j]=sran.Gaus(0.0, 1.0);
+          // mptsys_mc_da[i][j]=sran.Gaus(0.0, 1.0);
+          // mptsys_da_dm[i][j]=sran.Gaus(0.0, 1.0);
+          // mptsys_da_da[i][j]=sran.Gaus(0.0, 1.0);
+      // }
+  // }
 }
 
 void rochcor_44X_v3::momcor_mc( TLorentzVector& mu, float charge, float sysdev){
@@ -546,12 +551,30 @@ void rochcor_44X_v3::momcor_mc( TLorentzVector& mu, float charge, float sysdev){
   int mu_phibin = phibin(muphi);
   int mu_etabin = etabin(mueta);
   
+  if(using_toys){
+    // for(int i=0; i<8; ++i){
+      // for(int j=0; j<22; ++j){
+        // mptsys_mc_dm[i][j]=sran.Gaus(0.0, 1.0);
+        // mptsys_mc_da[i][j]=sran.Gaus(0.0, 1.0);
+      // }
+    // }
+    mptsys_mc_dm[mu_phibin][mu_etabin]=sran.Gaus(0.0, 1.0);
+    mptsys_mc_da[mu_phibin][mu_etabin]=sran.Gaus(0.0, 1.0);
+  }
+  // mu.Print();
+  // cout << "mu_phibin= " << mu_phibin << " mu_etabin= " << mu_etabin << endl;
+  // cout << "px= " << px << " py= " << py << " pz= " << pz << " e= " << e << endl;
+  
   //float mptsys = sran.Gaus(0.0,sysdev);
   
   float dm = (mcor_bfA[mu_phibin][mu_etabin] + mptsys_mc_dm[mu_phibin][mu_etabin]*mcor_bfAer[mu_phibin][mu_etabin])/mmavgA[mu_phibin][mu_etabin];
   float da = mcor_maA[mu_phibin][mu_etabin] + mptsys_mc_da[mu_phibin][mu_etabin]*mcor_maAer[mu_phibin][mu_etabin];
+  // cout << "mcor_maA["<<mu_phibin<<"]["<<mu_etabin<<"]= " << mcor_maA[mu_phibin][mu_etabin] 
+       // << " mptsys_mc_da["<<mu_phibin<<"]["<<mu_etabin<<"]= " << mptsys_mc_da[mu_phibin][mu_etabin]
+       // << " mcor_maAer["<<mu_phibin<<"]["<<mu_etabin<<"]= " << mcor_maAer[mu_phibin][mu_etabin] << endl;
   
   float cor = 1.0/(1.0 + dm + charge*da*ptmu);
+  // cout << "dm= " << dm << " da= " << da << " cor= " << cor << endl;
   
   //for the momentum tuning - eta,phi,Q correction
   px *= cor;
@@ -566,18 +589,21 @@ void rochcor_44X_v3::momcor_mc( TLorentzVector& mu, float charge, float sysdev){
   
   float gscl = (genm_smr/recm);
   
+  // cout << "px= " << px << " py= " << py << " pz= " << pz << " e= " << e << endl;
+  // cout << "gscl= " << gscl << " sysdev= " << sysdev << " gscler= " << gscler << endl;
   px *= (gscl + sysdev*gscler);
   py *= (gscl + sysdev*gscler);
   pz *= (gscl + sysdev*gscler);
   e *= (gscl + sysdev*gscler);
+
   
   mu.SetPxPyPzE(px,py,pz,e);
-  
+
 }
 
 
 void rochcor_44X_v3::momcor_data( TLorentzVector& mu, float charge, float sysdev, int runopt){
-    
+  
   float ptmu = mu.Pt();
 
   float muphi = mu.Phi();
@@ -591,6 +617,18 @@ void rochcor_44X_v3::momcor_data( TLorentzVector& mu, float charge, float sysdev
   int mu_phibin = phibin(muphi);
   int mu_etabin = etabin(mueta);
   
+  if(using_toys){
+    // for(int i=0; i<8; ++i){
+      // for(int j=0; j<22; ++j){
+        // mptsys_da_dm[i][j]=sran.Gaus(0.0, 1.0);
+        // mptsys_da_da[i][j]=sran.Gaus(0.0, 1.0);
+      // }
+    // }
+    mptsys_da_dm[mu_phibin][mu_etabin]=sran.Gaus(0.0, 1.0);
+    mptsys_da_da[mu_phibin][mu_etabin]=sran.Gaus(0.0, 1.0);
+
+  }
+
   //float mptsys1 = sran.Gaus(0.0,sysdev);
   
   float dm = 0.0;
@@ -691,7 +729,7 @@ Int_t rochcor_44X_v3::phibin(float phi){
   int nphibin = -1;
   
   for(int i=0; i<8; i++){
-    if(-pi+(2.0*pi/8.0)*i <= phi && -pi+(2.0*pi/8.0)*(i+1) > phi){
+    if(-TMath::Pi()+(2.0*TMath::Pi()/8.0)*i <= phi && -TMath::Pi()+(2.0*TMath::Pi()/8.0)*(i+1) > phi){
       nphibin = i;
       break;
     }

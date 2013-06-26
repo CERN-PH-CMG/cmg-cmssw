@@ -5,18 +5,20 @@
 // found on file: ZTreeProducer_tree.root
 //////////////////////////////////////////////////////////
 
-#ifndef Zanalysis_h
-#define Zanalysis_h
+#ifndef Zanalysis_controlplots_h
+#define Zanalysis_controlplots_h
 
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
+#include <TH1F.h>
+#include <TH2F.h>
 #include <iostream>
 #include <TSystem.h>
 
 using namespace std;
 
-class Zanalysis {
+class Zanalysis_controlplots {
   public :
   TTree          *fChain;   //!pointer to the analyzed TTree or TChain
   Int_t           fCurrent; //!current Tree number in a TChain
@@ -181,8 +183,8 @@ class Zanalysis {
   TBranch        *b_Jet_leading_eta;   //!
   TBranch        *b_Jet_leading_phi;   //!
 
-  Zanalysis(TString f_str=0, double lumi_scaling_input=1, int useGen=0, TTree *tree=0);
-  virtual ~Zanalysis();
+  Zanalysis_controlplots(TString f_str=0, double lumi_scaling_input=1, int useGen=0, TTree *tree=0);
+  virtual ~Zanalysis_controlplots();
   virtual Int_t    Cut(Long64_t entry);
   virtual Int_t    GetEntry(Long64_t entry);
   virtual Long64_t LoadTree(Long64_t entry);
@@ -190,12 +192,20 @@ class Zanalysis {
   virtual void     Loop(int IS_MC_CLOSURE_TEST=0, int isMCorDATA=0, TString outputdir=0, int buildTemplates=0, int useMomentumCorr=0, int smearRochCorrByNsigma=0, int useEffSF=0, int usePtSF=0, int useVtxSF=0, int controlplots=0, TString sampleName="", int generated_PDF_set=-1, int generated_PDF_member=-1, int contains_PDF_reweight=-1);
   virtual Bool_t   Notify();
   virtual void     Show(Long64_t entry = -1);
+
+  virtual void plot1D(string title, float xval, double weight, std::map<string, TH1F*> &allhistos,
+		      int numbinsx, float xmin, float xmax);
+  
+  virtual void plot2D(string title, float xval, float yval, double weight, std::map<string, TH2F*> &allhistos,
+		      int numbinsx, float xmin, float xmax, int numbinsy, float ymin, float ymax);
+  
+
 };
 
 #endif
 
-#ifdef Zanalysis_cxx
-Zanalysis::Zanalysis(TString f_str, double lumi_scaling_input, int useGen, TTree *tree)
+#ifdef Zanalysis_controlplots_cxx
+Zanalysis_controlplots::Zanalysis_controlplots(TString f_str, double lumi_scaling_input, int useGen, TTree *tree)
 {
   // if parameter tree is not specified (or zero), connect the file
   // used to generate this class and read the Tree.
@@ -214,19 +224,19 @@ Zanalysis::Zanalysis(TString f_str, double lumi_scaling_input, int useGen, TTree
   Init(tree);
 }
 
-Zanalysis::~Zanalysis()
+Zanalysis_controlplots::~Zanalysis_controlplots()
 {
   if (!fChain) return;
   delete fChain->GetCurrentFile();
 }
 
-Int_t Zanalysis::GetEntry(Long64_t entry)
+Int_t Zanalysis_controlplots::GetEntry(Long64_t entry)
 {
   // Read contents of entry.
   if (!fChain) return 0;
   return fChain->GetEntry(entry);
 }
-Long64_t Zanalysis::LoadTree(Long64_t entry)
+Long64_t Zanalysis_controlplots::LoadTree(Long64_t entry)
 {
   // Set the environment to read one entry
   if (!fChain) return -5;
@@ -241,7 +251,7 @@ Long64_t Zanalysis::LoadTree(Long64_t entry)
   return centry;
 }
 
-void Zanalysis::Init(TTree *tree)
+void Zanalysis_controlplots::Init(TTree *tree)
 {
   // The Init() function is called when the selector needs to initialize
   // a new tree or chain. Typically here the branch addresses and branch
@@ -339,7 +349,7 @@ void Zanalysis::Init(TTree *tree)
   Notify();
 }
 
-Bool_t Zanalysis::Notify()
+Bool_t Zanalysis_controlplots::Notify()
 {
   // The Notify() function is called when a new file is opened. This
   // can be either for a new TTree in a TChain or when when a new TTree
@@ -350,18 +360,58 @@ Bool_t Zanalysis::Notify()
   return kTRUE;
 }
 
-void Zanalysis::Show(Long64_t entry)
+void Zanalysis_controlplots::Show(Long64_t entry)
 {
   // Print contents of entry.
   // If entry is not specified, print current entry
   if (!fChain) return;
   fChain->Show(entry);
 }
-Int_t Zanalysis::Cut(Long64_t entry)
+Int_t Zanalysis_controlplots::Cut(Long64_t entry)
 {
   // This function may be called from Loop.
   // returns  1 if entry is accepted.
   // returns -1 otherwise.
   return 1;
 }
-#endif // #ifdef Zanalysis_cxx
+
+void Zanalysis_controlplots::plot1D(string title, float xval, double weight, std::map<string, TH1F*> &allhistos,
+                                    int numbinsx, float xmin, float xmax)
+{
+
+  std::map<string, TH1F*>::iterator iter= allhistos.find(title);
+  if(iter == allhistos.end()) //no histo for this yet, so make a new one                                                                                                                  
+    {
+      TH1F* currentHisto= new TH1F(title.c_str(), title.c_str(), numbinsx, xmin, xmax);
+      currentHisto->Sumw2();
+      currentHisto->Fill(xval, weight);
+      allhistos.insert(std::pair<string, TH1F*> (title,currentHisto) );
+    }
+  else // exists already, so just fill it                                                                                                                                                 
+    {
+      (*iter).second->Fill(xval, weight);
+    }
+}
+
+void Zanalysis_controlplots::plot2D(string title, float xval, float yval, double weight, std::map<string, TH2F*> &allhistos,
+                                    int numbinsx, float xmin, float xmax, int numbinsy, float ymin, float ymax)
+{
+
+
+  std::map<string, TH2F*>::iterator iter= allhistos.find(title);
+  if(iter == allhistos.end()) //no histo for this yet, so make a new one                                                                                                                  
+    {
+      TH2F* currentHisto= new TH2F(title.c_str(), title.c_str(), numbinsx, xmin, xmax, numbinsy, ymin, ymax);
+      currentHisto->Fill(xval, yval, weight);
+      allhistos.insert(std::pair<string, TH2F*> (title,currentHisto) );
+    }
+  else // exists already, so just fill it                                                                                                                                                 
+    {
+      (*iter).second->Fill(xval, yval, weight);
+    }
+
+  return;
+
+}
+
+#endif // #ifdef Zanalysis_controlplots_cxx
