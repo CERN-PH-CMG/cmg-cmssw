@@ -36,13 +36,14 @@ httdata_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/'
 #fixed pf cand dZ in TKMet
 #cmgtag = 'PAT_CMG_V5_14_0'
 cmgtag = 'PAT_CMG_V5_16_0'
+cmgtagEmb = 'PAT_CMG_V5_16_0_B'
 
 
 ####--------------------------------------muTau 2012--------------------------------------------
 def configureFlatNtpSampleTauMu2012(module,sampleAlias):
     module.dataPeriodFlag = 2012
-    module.fileZmmData = recoilCorr_dir + 'recoilfit_datamm53X_2012_njet.root'
-    module.fileZmmMC = recoilCorr_dir + 'recoilfit_zmm53X_2012_njet.root'
+    module.fileZmmData = recoilCorr_dir + 'recoilfit_datamm53XRR_2012_njet.root'
+    module.fileZmmMC = recoilCorr_dir + 'recoilfit_zmm53XRR_2012_njet.root'
     module.mvaWeights2012 = cms.string(httdata_dir + 'VBFMVA_BDTG_HCP_52X.weights.xml')
     module.pupWeightNames1 = 'vertexWeightSummer12MC53XICHEPData'
     module.pupWeightNames2 = 'vertexWeightSummer12MC53XHCPData'
@@ -177,7 +178,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
 
 
     if sampleAlias == 'RHEmbedded2012A' : 
-        module.path = "/DoubleMu/StoreResults-Run2012A_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
+        module.path = "/DoubleMu/StoreResults-Run2012A_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtagEmb)
         module.dataType = 2
         module.jsonfile = json_dir + 'Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
         module.correctTauES = 1
@@ -185,15 +186,15 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.sampleGenMassMin = 50.
         module.embeddedWeightType = 2
         module.embeddedKinWeightFile = 'TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_muPtGt16tauPtGt18_recEmbedded.root'
-#        module.trigPath1 = cms.InputTag("HLT_Mu17_Mu8_v16","","")
-#        module.trigPath2 = cms.InputTag("HLT_Mu17_Mu8_v17","","")
-#        module.trigPath3 = cms.InputTag("HLT_Mu17_Mu8_v18","","")
-#        module.trigPath4 = cms.InputTag("HLT_Mu17_Mu8_v19","","")
-#        module.trigPath5 = cms.InputTag("HLT_Mu17_Mu8_v21","","")
-#        module.trigPath6 = cms.InputTag("HLT_Mu17_Mu8_v22","","")
+        module.trigPath1 = cms.InputTag("HLT_Mu17_Mu8_v16","","")
+        module.trigPath2 = cms.InputTag("HLT_Mu17_Mu8_v17","","")
+        module.trigPath3 = cms.InputTag("HLT_Mu17_Mu8_v18","","")
+        module.trigPath4 = cms.InputTag("HLT_Mu17_Mu8_v19","","")
+        module.trigPath5 = cms.InputTag("HLT_Mu17_Mu8_v21","","")
+        module.trigPath6 = cms.InputTag("HLT_Mu17_Mu8_v22","","")
   
     if sampleAlias == 'RHEmbedded2012B' : 
-        module.path = "/DoubleMuParked/StoreResults-Run2012B_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
+        module.path = "/DoubleMuParked/StoreResults-Run2012B_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtagEmb)
         module.dataType = 2
         module.jsonfile = json_dir + 'Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
         module.correctTauES = 1
@@ -201,15 +202,15 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.sampleGenMassMin = 50.
         module.embeddedWeightType = 2
         module.embeddedKinWeightFile = 'TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_muPtGt16tauPtGt18_recEmbedded.root'
-#        module.trigPath1 = cms.InputTag("HLT_Mu17_Mu8_v16","","")
-#        module.trigPath2 = cms.InputTag("HLT_Mu17_Mu8_v17","","")
-#        module.trigPath3 = cms.InputTag("HLT_Mu17_Mu8_v18","","")
-#        module.trigPath4 = cms.InputTag("HLT_Mu17_Mu8_v19","","")
-#        module.trigPath5 = cms.InputTag("HLT_Mu17_Mu8_v21","","")
-#        module.trigPath6 = cms.InputTag("HLT_Mu17_Mu8_v22","","")
+        module.trigPath1 = cms.InputTag("HLT_Mu17_Mu8_v16","","")
+        module.trigPath2 = cms.InputTag("HLT_Mu17_Mu8_v17","","")
+        module.trigPath3 = cms.InputTag("HLT_Mu17_Mu8_v18","","")
+        module.trigPath4 = cms.InputTag("HLT_Mu17_Mu8_v19","","")
+        module.trigPath5 = cms.InputTag("HLT_Mu17_Mu8_v21","","")
+        module.trigPath6 = cms.InputTag("HLT_Mu17_Mu8_v22","","")
         
     if sampleAlias == 'RHEmbedded2012C' : 
-        module.path = "/DoubleMuParked/StoreResults-Run2012C_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
+        module.path = "/DoubleMuParked/StoreResults-Run2012C_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtagEmb)
         module.dataType = 2
         module.jsonfile = json_dir + 'Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
         module.correctTauES = 1
@@ -217,15 +218,15 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.sampleGenMassMin = 50.
         module.embeddedWeightType = 2
         module.embeddedKinWeightFile = 'TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_muPtGt16tauPtGt18_recEmbedded.root'
-#        module.trigPath1 = cms.InputTag("HLT_Mu17_Mu8_v16","","")
-#        module.trigPath2 = cms.InputTag("HLT_Mu17_Mu8_v17","","")
-#        module.trigPath3 = cms.InputTag("HLT_Mu17_Mu8_v18","","")
-#        module.trigPath4 = cms.InputTag("HLT_Mu17_Mu8_v19","","")
-#        module.trigPath5 = cms.InputTag("HLT_Mu17_Mu8_v21","","")
-#        module.trigPath6 = cms.InputTag("HLT_Mu17_Mu8_v22","","")
+        module.trigPath1 = cms.InputTag("HLT_Mu17_Mu8_v16","","")
+        module.trigPath2 = cms.InputTag("HLT_Mu17_Mu8_v17","","")
+        module.trigPath3 = cms.InputTag("HLT_Mu17_Mu8_v18","","")
+        module.trigPath4 = cms.InputTag("HLT_Mu17_Mu8_v19","","")
+        module.trigPath5 = cms.InputTag("HLT_Mu17_Mu8_v21","","")
+        module.trigPath6 = cms.InputTag("HLT_Mu17_Mu8_v22","","")
         
     if sampleAlias == 'RHEmbedded2012D' : 
-        module.path = "/DoubleMuParked/StoreResults-Run2012D_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
+        module.path = "/DoubleMuParked/StoreResults-Run2012D_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtagEmb)
         module.dataType = 2
         module.jsonfile = json_dir + 'Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
         module.correctTauES = 1
@@ -233,12 +234,12 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.sampleGenMassMin = 50.
         module.embeddedWeightType = 2
         module.embeddedKinWeightFile = 'TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_muPtGt16tauPtGt18_recEmbedded.root'
-#        module.trigPath1 = cms.InputTag("HLT_Mu17_Mu8_v16","","")
-#        module.trigPath2 = cms.InputTag("HLT_Mu17_Mu8_v17","","")
-#        module.trigPath3 = cms.InputTag("HLT_Mu17_Mu8_v18","","")
-#        module.trigPath4 = cms.InputTag("HLT_Mu17_Mu8_v19","","")
-#        module.trigPath5 = cms.InputTag("HLT_Mu17_Mu8_v21","","")
-#        module.trigPath6 = cms.InputTag("HLT_Mu17_Mu8_v22","","")
+        module.trigPath1 = cms.InputTag("HLT_Mu17_Mu8_v16","","")
+        module.trigPath2 = cms.InputTag("HLT_Mu17_Mu8_v17","","")
+        module.trigPath3 = cms.InputTag("HLT_Mu17_Mu8_v18","","")
+        module.trigPath4 = cms.InputTag("HLT_Mu17_Mu8_v19","","")
+        module.trigPath5 = cms.InputTag("HLT_Mu17_Mu8_v21","","")
+        module.trigPath6 = cms.InputTag("HLT_Mu17_Mu8_v22","","")
         
         
     if sampleAlias == 'ZToTauTau' or sampleAlias == 'Z1ToTauTau' or sampleAlias == 'Z2ToTauTau' or sampleAlias == 'Z3ToTauTau' or sampleAlias == 'Z4ToTauTau': 
@@ -627,8 +628,8 @@ def configureFlatNtpSampleTauMu2012Trig(module,sampleAlias):
 
 def configureFlatNtpSampleTauEle2012(module,sampleAlias):
     module.dataPeriodFlag = 2012
-    module.fileZmmData = recoilCorr_dir + 'recoilfit_datamm53X_2012_njet.root'
-    module.fileZmmMC = recoilCorr_dir + 'recoilfit_zmm53X_2012_njet.root'
+    module.fileZmmData = recoilCorr_dir + 'recoilfit_datamm53XRR_2012_njet.root'
+    module.fileZmmMC = recoilCorr_dir + 'recoilfit_zmm53XRR_2012_njet.root'
     module.mvaWeights2012 = cms.string(httdata_dir + 'VBFMVA_BDTG_HCP_52X.weights.xml')
     module.pupWeightNames1 = 'vertexWeightSummer12MC53XICHEPData'
     module.pupWeightNames2 = 'vertexWeightSummer12MC53XHCPData'
@@ -789,7 +790,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
 
 
     if sampleAlias == 'RHEmbedded2012A' : 
-        module.path = "/DoubleMu/StoreResults-Run2012A_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
+        module.path = "/DoubleMu/StoreResults-Run2012A_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtagEmb)
         module.dataType = 2
         module.jsonfile = json_dir + 'Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
         module.correctTauES = 1
@@ -797,9 +798,16 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
         module.sampleGenMassMin = 50.
         module.embeddedWeightType = 2
         module.embeddedKinWeightFile = 'TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_ePtGt20tauPtGt18_recEmbedded.root'
-                                                                          
+        module.trigPath1 = cms.InputTag("HLT_Mu17_Mu8_v16","","")
+        module.trigPath2 = cms.InputTag("HLT_Mu17_Mu8_v17","","")
+        module.trigPath3 = cms.InputTag("HLT_Mu17_Mu8_v18","","")
+        module.trigPath4 = cms.InputTag("HLT_Mu17_Mu8_v19","","")
+        module.trigPath5 = cms.InputTag("HLT_Mu17_Mu8_v21","","")
+        module.trigPath6 = cms.InputTag("HLT_Mu17_Mu8_v22","","")
+
+        
     if sampleAlias == 'RHEmbedded2012B' : 
-        module.path = "/DoubleMuParked/StoreResults-Run2012B_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
+        module.path = "/DoubleMuParked/StoreResults-Run2012B_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtagEmb)
         module.dataType = 2
         module.jsonfile = json_dir + 'Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
         module.correctTauES = 1
@@ -807,10 +815,15 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
         module.sampleGenMassMin = 50.
         module.embeddedWeightType = 2
         module.embeddedKinWeightFile = 'TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_ePtGt20tauPtGt18_recEmbedded.root'
-                                                                          
+        module.trigPath1 = cms.InputTag("HLT_Mu17_Mu8_v16","","")
+        module.trigPath2 = cms.InputTag("HLT_Mu17_Mu8_v17","","")
+        module.trigPath3 = cms.InputTag("HLT_Mu17_Mu8_v18","","")
+        module.trigPath4 = cms.InputTag("HLT_Mu17_Mu8_v19","","")
+        module.trigPath5 = cms.InputTag("HLT_Mu17_Mu8_v21","","")
+        module.trigPath6 = cms.InputTag("HLT_Mu17_Mu8_v22","","")
 
     if sampleAlias == 'RHEmbedded2012C' : 
-        module.path = "/DoubleMuParked/StoreResults-Run2012C_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
+        module.path = "/DoubleMuParked/StoreResults-Run2012C_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtagEmb)
         module.dataType = 2
         module.jsonfile = json_dir + 'Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
         module.correctTauES = 1
@@ -818,10 +831,15 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
         module.sampleGenMassMin = 50.
         module.embeddedWeightType = 2
         module.embeddedKinWeightFile = 'TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_ePtGt20tauPtGt18_recEmbedded.root'
-                                                                          
+        module.trigPath1 = cms.InputTag("HLT_Mu17_Mu8_v16","","")
+        module.trigPath2 = cms.InputTag("HLT_Mu17_Mu8_v17","","")
+        module.trigPath3 = cms.InputTag("HLT_Mu17_Mu8_v18","","")
+        module.trigPath4 = cms.InputTag("HLT_Mu17_Mu8_v19","","")
+        module.trigPath5 = cms.InputTag("HLT_Mu17_Mu8_v21","","")
+        module.trigPath6 = cms.InputTag("HLT_Mu17_Mu8_v22","","")                                                                          
 
     if sampleAlias == 'RHEmbedded2012D' : 
-        module.path = "/DoubleMuParked/StoreResults-Run2012D_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
+        module.path = "/DoubleMuParked/StoreResults-Run2012D_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtagEmb)
         module.dataType = 2
         module.jsonfile = json_dir + 'Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
         module.correctTauES = 1
@@ -829,7 +847,12 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
         module.sampleGenMassMin = 50.
         module.embeddedWeightType = 2
         module.embeddedKinWeightFile = 'TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_ePtGt20tauPtGt18_recEmbedded.root'
-
+        module.trigPath1 = cms.InputTag("HLT_Mu17_Mu8_v16","","")
+        module.trigPath2 = cms.InputTag("HLT_Mu17_Mu8_v17","","")
+        module.trigPath3 = cms.InputTag("HLT_Mu17_Mu8_v18","","")
+        module.trigPath4 = cms.InputTag("HLT_Mu17_Mu8_v19","","")
+        module.trigPath5 = cms.InputTag("HLT_Mu17_Mu8_v21","","")
+        module.trigPath6 = cms.InputTag("HLT_Mu17_Mu8_v22","","")
         
     if sampleAlias == 'ZToTauTau'  or sampleAlias == 'Z1ToTauTau' or sampleAlias == 'Z2ToTauTau' or sampleAlias == 'Z3ToTauTau' or sampleAlias == 'Z4ToTauTau' : 
         module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/{0}".format(cmgtag)

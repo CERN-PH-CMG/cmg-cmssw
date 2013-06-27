@@ -214,6 +214,7 @@ protected:
   std::string embeddedKinWeightFile_;
   float embeddedGenWeight_;//for tau embedded samples
   float embeddedGenWeights_[8];
+  float embeddedLeptonWeight_;
 
   edm::InputTag pupWeightNames_[5];
   float pupWeights_[5];

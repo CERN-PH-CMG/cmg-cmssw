@@ -444,6 +444,7 @@ bool TauEleFlatNtp::fill(){
   selectionEffWeight_=1.;
   selectionEffWeightId_=1.;
   selectionEffWeightIso_=1.;
+  embeddedLeptonWeight_=1.;
 
   for(long i=0;i<5;i++){
     triggerEffWeightsMu_[i]=1.;
@@ -478,8 +479,7 @@ bool TauEleFlatNtp::fill(){
 
     if(dataPeriodFlag_==2012){
        
-      if(trigPaths_.size()>0){
-
+      if(dataType_==0){
 	if(triggerEff_.eff2012Tau20MC53X_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
 	  triggerEffWeightsTau_[0] = triggerEff_.effTau2012AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
 	    /triggerEff_.eff2012Tau20MC53X_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta()); 
@@ -498,17 +498,14 @@ bool TauEleFlatNtp::fill(){
 	if(triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
 	  triggerEffWeightsMu_[2] = triggerEff_.effEle_eTau_Data_2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
 	    /triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-
 	if(triggerEff_.effTau_eTau_MC_2012ABCDSummer13(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
 	  triggerEffWeightsTau_[3] = triggerEff_.effTau_eTau_Data_2012ABCDSummer13(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
 	    /triggerEff_.effTau_eTau_MC_2012ABCDSummer13(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
 	if(triggerEff_.effEle_eTau_MC_2012ABCD(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
 	  triggerEffWeightsMu_[3] = triggerEff_.effEle_eTau_Data_2012ABCDSummer13(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
 	    /triggerEff_.effEle_eTau_MC_2012ABCD(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-
-
-	 
-      }else{//no trigger applied --> apply Data efficiency
+      }
+      if(dataType_==2){//no trigger applied --> apply Data efficiency
 	triggerEffWeightsTau_[0] = triggerEff_.effTau2012AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
 	triggerEffWeightsMu_[0] =   triggerEff_.effEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 	triggerEffWeightsTau_[1] = triggerEff_.effTau2012ABC_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
@@ -517,21 +514,18 @@ bool TauEleFlatNtp::fill(){
 	triggerEffWeightsMu_[2] = triggerEff_.effEle_eTau_Data_2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 	triggerEffWeightsTau_[3] =  triggerEff_.effTau_eTau_Data_2012ABCDSummer13(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
 	triggerEffWeightsMu_[3] = triggerEff_.effEle_eTau_Data_2012ABCDSummer13(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-	 
+
+	//special electron id SF for rec-hit embedded
+	embeddedLeptonWeight_= selectionEff_.elecEffSFTight(diTauSel_->leg2().pt(),(*(diTauSel_->leg2().sourcePtr()))->superCluster()->eta());   
       }
 
-      //id
+      //electron id SF
       selectionEffWeightsId_[0] = selectionEff_.effCorrEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
       selectionEffWeightsId_[1] = selectionEff_.effCorrEleID2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
       selectionEffWeightsId_[2] = selectionEff_.effCorrEleID2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
       selectionEffWeightsId_[3] = selectionEff_.effCorrEleID2012ABCDSummer13(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 
-      //electron id SF for  for rec-hit embedded sample
-      if(dataType_==2)
-	selectionEffWeightsId_[3] *= selectionEff_.elecEffSFTight(diTauSel_->leg2().pt(),(*(diTauSel_->leg2().sourcePtr()))->superCluster()->eta());   
-
-
-      //isolation
+      //Electron isolation SF only for MC
       if(dataType_==0){
 	selectionEffWeightsIso_[0] = 1.;//need to separate
 	selectionEffWeightsIso_[1] = selectionEff_.effCorrEleIso2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());

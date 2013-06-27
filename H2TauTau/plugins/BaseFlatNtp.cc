@@ -265,6 +265,7 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("selectionEffWeightId",&selectionEffWeightId_,"selectionEffWeightId/F"); 
   tree_->Branch("selectionEffWeightIso",&selectionEffWeightIso_,"selectionEffWeightIso/F"); 
   tree_->Branch("embeddedGenWeight",&embeddedGenWeight_,"embeddedGenWeight/F"); 
+  tree_->Branch("embeddedLeptonWeight",&embeddedLeptonWeight_,"embeddedLeptonWeight/F"); 
 
   tree_->Branch("embeddedGenWeights1",&embeddedGenWeights_[0],"embeddedGenWeights1/F"); 
   tree_->Branch("embeddedGenWeights2",&embeddedGenWeights_[1],"embeddedGenWeights2/F"); 
@@ -1701,14 +1702,14 @@ void BaseFlatNtp::fillPFJetListBTag(std::vector<const cmg::PFJet * > * fulllist,
 
     ///btagWP value is now hard coded inside this class:
     if(!(btagsf.isbtagged((*jet)->pt(),
-			(*jet)->eta(),
-			(*jet)->btag("combinedSecondaryVertexBJetTags"),
-			TMath::Abs((*jet)->partonFlavour()),
-			dataType_==1
-			,0 , 0,
-			dataPeriodFlag_==2012))) continue;    
+			  (*jet)->eta(),
+			  (*jet)->btag("combinedSecondaryVertexBJetTags"),
+			  TMath::Abs((*jet)->partonFlavour()),
+			  dataType_
+			  ,0 , 0,
+			  dataPeriodFlag_==2012))) continue;    
     
-
+    
     list->push_back((*jet));
   }
 }

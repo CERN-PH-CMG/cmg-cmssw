@@ -487,7 +487,7 @@ bool TauMuFlatNtp::fill(){
 
     if(dataPeriodFlag_==2012){
 
-      if(trigPaths_.size()>0){
+      if(dataType_==0){//MC apply SF
 	if(triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
 	  triggerEffWeightsTau_[0] = triggerEff_.effTau2012AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
 	    /triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
@@ -506,16 +506,15 @@ bool TauMuFlatNtp::fill(){
 	if(triggerEff_.eff_2012_Rebecca_TauMu_IsoMu1753XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
 	  triggerEffWeightsMu_[2] = triggerEff_.effMu_muTau_Data_2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
 	    /triggerEff_.eff_2012_Rebecca_TauMu_IsoMu1753XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-
 	if(triggerEff_.effTau_muTau_MC_2012ABCDSummer13(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
 	  triggerEffWeightsTau_[3] = triggerEff_.effTau_muTau_Data_2012ABCDSummer13(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
 	    /triggerEff_.effTau_muTau_MC_2012ABCDSummer13(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
 	if(triggerEff_.effMu_muTau_MC_2012ABCD(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
 	  triggerEffWeightsMu_[3] = triggerEff_.effMu_muTau_Data_2012ABCDSummer13(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
-	    /triggerEff_.effMu_muTau_MC_2012ABCD(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	    /triggerEff_.effMu_muTau_MC_2012ABCD(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());//note the Muons did not change in the MC for Summer13
 
-
-      }else{
+      }
+      if(dataType_==2){//Embedded apply Efficiency
 	triggerEffWeightsTau_[0] = triggerEff_.effTau2012AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
 	triggerEffWeightsMu_[0] =  triggerEff_.effMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 	triggerEffWeightsTau_[1] = triggerEff_.effTau2012ABC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
@@ -527,7 +526,7 @@ bool TauMuFlatNtp::fill(){
       }
 
 
-      ////////id weight
+      ////////id weight to both MC and Embedded
       selectionEffWeightsId_[0] = selectionEff_.effCorrMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
       selectionEffWeightsId_[1] = selectionEff_.effCorrMuID2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
       selectionEffWeightsId_[2] = selectionEff_.effCorrMuID2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
