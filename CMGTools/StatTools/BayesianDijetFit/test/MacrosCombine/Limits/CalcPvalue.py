@@ -48,7 +48,7 @@ for chan in channels:
             outputfile.write('#!/bin/bash\n')
             outputfile.write("cd ${CMSSW_BASE}/src/CMGTools/StatTools/MacrosCombine; eval `scramv1 run -sh`\n")
 	    if fullToys:
-                outputfile.write("combine datacards/Xvv.mX"+str(mass)+"_"+chan+"_8TeV_channel"+str(bin)+".txt -M HybridNew --testStat LHC -T 10000 -v2 --fork 0 -m "+str(mass) + " -n "+chan+str(bin)+" --signif \n")
+                outputfile.write("combine datacards/Xvv.mX"+str(mass)+"_"+chan+"_8TeV_channel"+str(bin)+".txt -M HybridNew --frequentist -T 1000 --fork 0 -m "+str(mass) + " -n "+chan+str(bin)+" --signif \n")
             else:
                 outputfile.write("combine datacards/Xvv.mX"+str(mass)+"_"+chan+"_8TeV_channel"+str(bin)+".txt -M ProfileLikelihood -v2  -m "+str(mass) + " -n "+chan+str(bin)+" --signif \n")
             outputfile.close()
@@ -56,6 +56,9 @@ for chan in channels:
             command="rm "+outfile
 	    print command
             os.system(command)
-            command="bsub -q 1nh -o "+outfile+" source "+outputname
+	    if fullToys:
+                command="bsub -q 8nh -o "+outfile+" source "+outputname
+            else:
+	        command="bsub -q 1nh -o "+outfile+" source "+outputname
 	    print command
             os.system(command)

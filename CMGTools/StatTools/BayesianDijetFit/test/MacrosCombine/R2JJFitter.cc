@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.12 2013/06/17 13:10:27 hinzmann Exp $
+ * $Id: R2JJFitter.cc,v 1.13 2013/06/17 16:12:05 hinzmann Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -837,8 +837,8 @@ void MakePlots(RooWorkspace* w, Float_t mass, RooFitResult* fitresults, TString 
 
     ctmp->SaveAs("plots/sigmodel_"+signalname+TString::Format("%d_cat%d.png", iMass, c));
     ctmp->SaveAs("plots/sigmodel_"+signalname+TString::Format("%d_cat%d.pdf", iMass, c));
-    ctmp->SaveAs("plots/sigmodel_"+signalname+TString::Format("%d_cat%d.eps", iMass, c));
-    ctmp->SaveAs("plots/sigmodel_"+signalname+TString::Format("%d_cat%d.C", iMass, c));
+    //ctmp->SaveAs("plots/sigmodel_"+signalname+TString::Format("%d_cat%d.eps", iMass, c));
+    //ctmp->SaveAs("plots/sigmodel_"+signalname+TString::Format("%d_cat%d.C", iMass, c));
 
 
   }

@@ -22,8 +22,6 @@ gStyle.SetLegendBorderSize(0)
 
 channels=["WW","ZZ","WZ","qW","qZ"]
 
-fullToys=True
-
 for chan in channels:
     print "chan =",chan
 
@@ -53,6 +51,9 @@ for chan in channels:
                 if "(p-value " in line:
                     print float(line.split("=")[1].split(")")[0])
                     p=float(line.split("=")[1].split(")")[0])
+                if "Null p-value " in line:
+                    print float(line.split(":")[1].strip().split(" ")[0])
+                    p=float(line.split(":")[1].strip().split(" ")[0])
             f_fit.close()
 	    sig+=[s]
 	    pval+=[p]
