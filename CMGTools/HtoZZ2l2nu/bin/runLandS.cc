@@ -523,10 +523,10 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
      for(size_t ip=0; ip<shape.signal.size(); ip++){
          TString proc(shape.signal[ip]->GetTitle());
          if(mass>0 && !proc.Contains(massStr))continue;
-              if(mass>0 && proc.Contains("ggH") && proc.Contains("ZZ"))proc = "ggHZZ2l2v";
-         else if(mass>0 && proc.Contains("qqH") && proc.Contains("ZZ"))proc = "qqHZZ2l2v";
-         else if(mass>0 && proc.Contains("ggH") && proc.Contains("WW"))proc = "ggHWW2l2v";
-         else if(mass>0 && proc.Contains("qqH") && proc.Contains("WW"))proc = "qqHWW2l2v";
+              if(mass>0 && proc.Contains("ggH") && proc.Contains("ZZ"))proc = "ggH";//ZZ2l2v";
+         else if(mass>0 && proc.Contains("qqH") && proc.Contains("ZZ"))proc = "qqH";//ZZ2l2v";
+         else if(mass>0 && proc.Contains("ggH") && proc.Contains("WW"))proc = "ggH";//WW2l2v";
+         else if(mass>0 && proc.Contains("qqH") && proc.Contains("WW"))proc = "qqH";//WW2l2v";
 
         if(proc=="qqHZZ"){shape.signal[ip]->SetLineStyle(2);}
 
@@ -1318,10 +1318,10 @@ std::cout << "TESTB\n";
 
         TString proc(h->GetTitle());
 	if(mass>0 && !proc.Contains(massStr))continue;
-	     if(mass>0 && proc.Contains("ggH") && proc.Contains("ZZ"))proc = "ggHZZ2l2v";
-        else if(mass>0 && proc.Contains("qqH") && proc.Contains("ZZ"))proc = "qqHZZ2l2v";
-        else if(mass>0 && proc.Contains("ggH") && proc.Contains("WW"))proc = "ggHWW2l2v";
-        else if(mass>0 && proc.Contains("qqH") && proc.Contains("WW"))proc = "qqHWW2l2v";
+	     if(mass>0 && proc.Contains("ggH") && proc.Contains("ZZ"))proc = "ggH";//ZZ2l2v";
+        else if(mass>0 && proc.Contains("qqH") && proc.Contains("ZZ"))proc = "qqH";//ZZ2l2v";
+        else if(mass>0 && proc.Contains("ggH") && proc.Contains("WW"))proc = "ggHWW";//2l2v";
+        else if(mass>0 && proc.Contains("qqH") && proc.Contains("WW"))proc = "qqHWW";//2l2v";
 
 	std::vector<std::pair<TString, TH1*> > vars = shapeSt.signalVars[h->GetTitle()];
         std::vector<TString> systs;        
@@ -1467,6 +1467,8 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
    proc.ReplaceAll("(",""); proc.ReplaceAll(")","");    proc.ReplaceAll("+","");    proc.ReplaceAll(" ","");   proc.ReplaceAll("/","");  proc.ReplaceAll("#",""); 
    proc.ReplaceAll("=",""); proc.ReplaceAll(".","");    proc.ReplaceAll("^","");    proc.ReplaceAll("}","");   proc.ReplaceAll("{","");
    proc.ToLower();
+   proc.ReplaceAll("ggh", "ggH");
+   proc.ReplaceAll("qqh", "qqH");
 
    for(unsigned int i=0;i<systs.size();i++){
        TString syst   = systs[i];
@@ -1488,7 +1490,7 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
        }else if(syst.BeginsWith("_pu" )){syst.ReplaceAll("_pu", "_CMS_hzz2l2v_pu");
        }else if(syst.BeginsWith("_ren" )){continue;   //already accounted for in QCD scales
        }else if(syst.BeginsWith("_fact" )){continue; //skip this one
-       }else if(syst.BeginsWith("_interf" )){ 
+       }else if(syst.BeginsWith("_interf" )){syst="_CMS_hzz2l2v"+syst;
        }else{   syst="_CMS_hzz2l2v"+syst;
        }
 
@@ -2399,8 +2401,8 @@ void RescaleForInterference(std::vector<TString>& selCh,map<TString, Shape_t>& a
                  }
 
 //                 if(signalSufix!=""){ //add uncertainty only for NarrowResonnance case
-                    TH1* down = (TH1D*)shape.signal[isignal]->Clone(proc+"interf_ggHDown"); down->Scale(scaleFactorDown / scaleFactor); //must devide by scaleFactor, because this was already applied
-                    TH1* up   = (TH1D*)shape.signal[isignal]->Clone(proc+"interf_ggHUp"  ); up  ->Scale(scaleFactorUp   / scaleFactor); //must devide by scaleFactor, because this was already applied
+                    TH1* down = (TH1D*)shape.signal[isignal]->Clone(proc+"_interf_ggHDown"); down->Scale(scaleFactorDown / scaleFactor); //must devide by scaleFactor, because this was already applied
+                    TH1* up   = (TH1D*)shape.signal[isignal]->Clone(proc+"_interf_ggHUp"  ); up  ->Scale(scaleFactorUp   / scaleFactor); //must devide by scaleFactor, because this was already applied
                     vars.push_back(std::make_pair("_interf_ggHDown", down) );
                     vars.push_back(std::make_pair("_interf_ggHUp"  , up  ) );
 //                 }
