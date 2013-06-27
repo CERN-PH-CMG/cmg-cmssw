@@ -32,6 +32,11 @@ def Plot(files, label, obs):
     efficiencies={}
     for mass in radmasses:
 	efficiencies[mass]=number_of_mc_events*0.005/19800.0
+        # W-tagging scale factor
+        if "qW" in label.split("_")[0] or "qZ" in label.split("_")[0]:
+            efficiencies[mass]*=0.89
+        else:
+            efficiencies[mass]*=0.89*0.89
 
     fChain = []
     for onefile in files:
@@ -124,12 +129,19 @@ def Plot(files, label, obs):
     mg.GetXaxis().SetTitleSize(0.06)
     mg.GetXaxis().SetLabelSize(0.045)
     mg.GetYaxis().SetLabelSize(0.045)
-    mg.GetYaxis().SetRangeUser(0.002,4)
+    mg.GetYaxis().SetRangeUser(0.001,4)
     mg.GetYaxis().SetTitleOffset(1.4)
     mg.GetYaxis().CenterTitle(True)
     mg.GetXaxis().SetTitleOffset(1.1)
     mg.GetXaxis().CenterTitle(True)
-    mg.GetXaxis().SetMoreLogLabels(True)
+    mg.GetXaxis().SetNdivisions(508)
+
+    if "qW" in label.split("_")[0] or "qZ" in label.split("_")[0]:
+        mg.GetXaxis().SetLimits(0.9,4.1)
+    elif "WZ" in label.split("_")[0]:
+        mg.GetXaxis().SetLimits(0.9,2.1)
+    else:
+        mg.GetXaxis().SetLimits(0.9,3.1)
 
     # histo to shade
     n=len(fChain)

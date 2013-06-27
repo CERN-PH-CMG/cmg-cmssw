@@ -22,6 +22,8 @@ gStyle.SetLegendBorderSize(0)
 
 channels=["WW","ZZ","WZ","qW","qZ"]
 
+fullToys=False
+
 for chan in channels:
     print "chan =",chan
 
@@ -42,7 +44,16 @@ for chan in channels:
             outputfile = open(outputname,'w')
             outputfile.write('#!/bin/bash\n')
             outputfile.write("cd ${CMSSW_BASE}/src/CMGTools/StatTools/MacrosCombine; eval `scramv1 run -sh`\n")
-            outputfile.write("combine datacards/Xvv.mX"+str(mass)+"_" + chan + "_8TeV_channel"+str(bin)+".txt -M Asymptotic -v2 -m "+str(mass) + " -n "+chan+str(bin)+" --signif --rMax 1000 --rMin 0.01 &>Xvv.mX"+str(mass)+"_" + chan + "_Asymptotic_8TeV_channel"+str(bin)+".out\n")
+	    if fullToys:
+	        outputfile.write("combine datacards/Xvv.mX"+str(mass)+"_" + chan + "_8TeV_channel"+str(bin)+".txt -M HybridNew --rule CLs --testStat LHC -T 1000 --singlePoint 1.0 --fork 0 --saveHybridResult --saveToys --toysFile toys_mX"+str(mass)+"_" + chan + "_8TeV_channel"+str(bin)+".root -m "+str(mass) + " -n "+chan+str(bin)+" --rMax 1000 --rMin 0.01 &>Xvv.mX"+str(mass)+"_" + chan + "_Full_8TeV_channel"+str(bin)+".out\n")
+	        outputfile.write("combine datacards/Xvv.mX"+str(mass)+"_" + chan + "_8TeV_channel"+str(bin)+".txt -M HybridNew --toysFile toys_mX"+str(mass)+"_" + chan + "_8TeV_channel"+str(bin)+".root -m "+str(mass) + " -n "+chan+str(bin)+" --expectedFromGrid 0.5 &>Xvv.mX"+str(mass)+"_" + chan + "_Full_8TeV_channel"+str(bin)+"_50.out\n")
+	        outputfile.write("combine datacards/Xvv.mX"+str(mass)+"_" + chan + "_8TeV_channel"+str(bin)+".txt -M HybridNew --toysFile toys_mX"+str(mass)+"_" + chan + "_8TeV_channel"+str(bin)+".root -m "+str(mass) + " -n "+chan+str(bin)+" --expectedFromGrid 0.16 &>Xvv.mX"+str(mass)+"_" + chan + "_Full_8TeV_channel"+str(bin)+"_16.out\n")
+	        outputfile.write("combine datacards/Xvv.mX"+str(mass)+"_" + chan + "_8TeV_channel"+str(bin)+".txt -M HybridNew --toysFile toys_mX"+str(mass)+"_" + chan + "_8TeV_channel"+str(bin)+".root -m "+str(mass) + " -n "+chan+str(bin)+" --expectedFromGrid 0.84 &>Xvv.mX"+str(mass)+"_" + chan + "_Full_8TeV_channel"+str(bin)+"_84.out\n")
+	        outputfile.write("combine datacards/Xvv.mX"+str(mass)+"_" + chan + "_8TeV_channel"+str(bin)+".txt -M HybridNew --toysFile toys_mX"+str(mass)+"_" + chan + "_8TeV_channel"+str(bin)+".root -m "+str(mass) + " -n "+chan+str(bin)+" --expectedFromGrid 0.025 &>Xvv.mX"+str(mass)+"_" + chan + "_Full_8TeV_channel"+str(bin)+"_025.out\n")
+	        outputfile.write("combine datacards/Xvv.mX"+str(mass)+"_" + chan + "_8TeV_channel"+str(bin)+".txt -M HybridNew --toysFile toys_mX"+str(mass)+"_" + chan + "_8TeV_channel"+str(bin)+".root -m "+str(mass) + " -n "+chan+str(bin)+" --expectedFromGrid 0.975 &>Xvv.mX"+str(mass)+"_" + chan + "_Full_8TeV_channel"+str(bin)+"_975.out\n")
+            else:
+                outputfile.write("combine datacards/Xvv.mX"+str(mass)+"_" + chan + "_8TeV_channel"+str(bin)+".txt -M Asymptotic -v2 -m "+str(mass) + " -n "+chan+str(bin)+" --rMax 1000 --rMin 0.01 &>Xvv.mX"+str(mass)+"_" + chan + "_Asymptotic_8TeV_channel"+str(bin)+".out\n")
+
             outputfile.write("mv higgsCombine"+chan+str(bin)+".Asymptotic.mH"+str(int(mass))+".root Limits/Xvv.mX"+str(mass)+"_" + chan + "_Asymptotic_8TeV_channel"+str(bin)+".root")
             outputfile.close()
   
