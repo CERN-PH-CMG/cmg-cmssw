@@ -15,6 +15,24 @@
 #include <TH2F.h>
 #include <iostream>
 #include <TSystem.h>
+#include <TMath.h>
+/*
+#include "../includes/common.h"
+// #include "rochcor_42X.h"                                                                                                                                     
+#include "rochcor_44X_v3.h"
+#include "MuScleFitCorrector.h"
+#include "RecoilCorrector.h"
+#include <TH2.h>
+#include <TH1.h>
+#include <TStyle.h>
+#include <TCanvas.h>
+#include <TMath.h>
+#include <TLorentzVector.h>
+#include <TGraphAsymmErrors.h>
+#include <ctime>
+#include <string>
+#include <time.h>
+*/
 
 using namespace std;
 
@@ -199,6 +217,11 @@ class Zanalysis_controlplots {
   virtual void plot2D(string title, float xval, float yval, double weight, std::map<string, TH2F*> &allhistos,
 		      int numbinsx, float xmin, float xmax, int numbinsy, float ymin, float ymax);
   
+
+  virtual float deltaPhi( float phi1 , float phi2 );
+  virtual float getMT( float pt1 , float phi1 , float pt2 , float phi2 );
+  virtual float getPseudoMET(double pfmet_corr, double pfmet_phi_corr, int type);
+  virtual float getPseudoMT(double met, double metphi);
 
 };
 
@@ -413,5 +436,65 @@ void Zanalysis_controlplots::plot2D(string title, float xval, float yval, double
   return;
 
 }
+
+// Delta Phi                                                                                                                                                               
+float Zanalysis_controlplots::deltaPhi( float phi1 , float phi2 ) {
+  float dphi = fabs( phi1 - phi2 );
+  if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
+  return dphi;
+}
+
+float Zanalysis_controlplots::getMT( float pt1 , float phi1 , float pt2 , float phi2 ){
+
+  float dphi = deltaPhi(phi1, phi2);
+  return sqrt( 2 * ( pt1 * pt2 * (1 - cos( dphi ) ) ) );
+
+}
+
+float Zanalysis_controlplots::getPseudoMET(double pfmet_corr, double pfmet_phi_corr, int type)
+{
+
+  float metx = pfmet_corr * cos( pfmet_phi_corr );
+  float mety = pfmet_corr * sin( pfmet_phi_corr );
+
+  float ptx = MuNeg_pt * cos( MuNeg_phi );
+  float pty = MuNeg_pt * sin( MuNeg_phi );
+
+  //recalculate the MET with the negative lepton
+  metx += ptx;
+  mety += pty;
+
+  float metphicorr_lep    = sqrt(metx*metx + mety*mety);
+  float metphicorrphi_lep = atan2( mety , metx );
+
+  if(type==0) return metphicorr_lep;
+  if(type==1) return metphicorrphi_lep;
+
+  return 10.;
+
+}
+
+float Zanalysis_controlplots::getPseudoMT(double pfmet_corr, double pfmet_phi_corr)
+{
+
+  float metx = pfmet_corr * cos( pfmet_phi_corr );
+  float mety = pfmet_corr * sin( pfmet_phi_corr );
+
+  float ptx = MuNeg_pt * cos( MuNeg_phi );
+  float pty = MuNeg_pt * sin( MuNeg_phi );
+
+  //recalculate the MET with the negative lepton
+  metx += ptx;
+  mety += pty;
+
+  float metphicorr_lep    = sqrt(metx*metx + mety*mety);
+  float metphicorrphi_lep = atan2( mety , metx );
+
+  //recalculate the MT with the negative lepton                                                                                                                            
+  float pseudoMT =  getMT(MuPos_pt, MuPos_phi, metphicorr_lep, metphicorrphi_lep);
+  return pseudoMT;
+
+}
+
 
 #endif // #ifdef Zanalysis_controlplots_cxx

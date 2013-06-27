@@ -7,6 +7,7 @@
 
 #define Zanalysis_controlplots_cxx
 #include "Zanalysis_controlplots.h"
+
 #include "../includes/common.h"
 // #include "rochcor_42X.h"
 #include "rochcor_44X_v3.h"
@@ -331,19 +332,24 @@ void Zanalysis_controlplots::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TStrin
 
   /// these are for inclusive jets and inclusive vtx
   /// MADE by Maria
-  std::string fileZmmData_M = "../RecoilCode/recoilfit_Z_inc_1.root";
-  std::string fileZmmMC_M = "../RecoilCode/recoilfit_DATA.root";
+  //  std::string fileZmmMC_M = "../RecoilCode/recoilfit_Z_inc_1.root";
+  std::string fileZmmData_M = "../RecoilCode/recoilfit_DATA.root";
+  std::string fileZmmMC_M = "../RecoilCode/recoilfit_genZ_inc_1.root";
 
-  RecoilCorrector::RecoilCorrector*  correctorRecoil_M_;
   RecoilCorrector::RecoilCorrector*  correctorRecoil_P_;
+  RecoilCorrector::RecoilCorrector*  correctorRecoil_Z_;
 
-  correctorRecoil_M_ = new RecoilCorrector(fileCorrectTo.c_str(),123456); // this file is used to read the jet mutliplicity, will be a dummy file
+  ////////
+  ////////
 
-  correctorRecoil_M_->addDataFile(fileZmmData_M.c_str());
-  correctorRecoil_M_->addMCFile(fileZmmMC_M.c_str());
+  correctorRecoil_Z_ = new RecoilCorrector(fileCorrectTo.c_str(),123456); // this file is used to read the jet mutliplicity, will be a dummy file
+  correctorRecoil_Z_->addDataFile(fileZmmData_M.c_str());
+  correctorRecoil_Z_->addMCFile(fileZmmMC_M.c_str());
+
+  ////////
+  ////////
 
   correctorRecoil_P_ = new RecoilCorrector(fileCorrectTo.c_str(),123456); // this file is used to read the jet mutliplicity, will be a dummy file
-
   correctorRecoil_P_->addDataFile(fileZmmData_P.c_str());
   correctorRecoil_P_->addMCFile(fileZmmMC_P.c_str());
 
@@ -474,48 +480,52 @@ void Zanalysis_controlplots::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TStrin
               
               // good pair within acceptance cuts for both muons
               if(Zcorr.M()>50
-                  && TMath::Abs(muPosCorr.Eta())<WMass::etaMaxMuons[i] && muPosCorr.Pt()>30*WMass::ZMass/iWmass && MuPosTrg
-                  && TMath::Abs(muNegCorr.Eta())<2.4 && muNegCorr.Pt()>10 && MuPos_charge != MuNeg_charge
-                  && noTrgExtraMuonsLeadingPt<10
-                  ){
+		 && TMath::Abs(muPosCorr.Eta())<WMass::etaMaxMuons[i] && muPosCorr.Pt()>30*WMass::ZMass/iWmass && MuPosTrg
+		 && TMath::Abs(muNegCorr.Eta())<2.4 && muNegCorr.Pt()>10 && MuPos_charge != MuNeg_charge
+		 && noTrgExtraMuonsLeadingPt<10
+		 ){
                 // full ID and tight requirements on the muon
-                if(MuPosIsTightAndIso && MuPosRelIso<0.12 && MuPos_dxy<0.02){
+		if(MuPosIsTightAndIso && MuPosRelIso<0.12 && MuPos_dxy<0.02){
 		  
-		  double pfmet_corr_M=pfmet;
-		  double pfmetphi_corr_M=pfmet_phi;
+		  double pfmet_corr_Z=pfmet;
+		  double pfmetphi_corr_Z=pfmet_phi;
 		  
-		  correctorRecoil_M_->CorrectType1( pfmet_corr_M, pfmetphi_corr_M,
+		  correctorRecoil_Z_->CorrectType1( pfmet_corr_Z, pfmetphi_corr_Z,
 						    ZGen_pt, ZGen_phi, 
-						    MuNeg_pt, MuNeg_phi, 
+						    Z_pt, Z_phi,  // ths is for Z like // for W events need to use the 
 						    u1_dummy, u2_dummy, fluc_dummy, zero_dummy,
 						    jetMult);
 		  
-		  
+		  ////////
 		  double pfmet_corr_P=pfmet;
 		  double pfmetphi_corr_P=pfmet_phi;
-		  
+
 		  correctorRecoil_P_->CorrectType1( pfmet_corr_P, pfmetphi_corr_P,
 						    ZGen_pt, ZGen_phi, 
-						    MuNeg_pt, MuNeg_phi, 
+						    Z_pt, Z_phi, 
 						    u1_dummy, u2_dummy, fluc_dummy, zero_dummy,
 						    jetMult );
 		  
-		  
+
+		  double pseudomt=getPseudoMT(pfmet, pfmet_phi);
+
+		  double pseudomt_Z=getPseudoMT(pfmet_corr_Z, pfmetphi_corr_Z);
+		  double pseudomt_P=getPseudoMT(pfmet_corr_P, pfmetphi_corr_P);
+
+		  plot1D("h_mt", pseudomt ,       evt_weight*MuPos_tight_muon_SF, h_1d, 150, 0, 150);
+		  if(!sampleName.Contains("DATA")) plot1D("h_mt_corr_Z", pseudomt_Z ,       evt_weight*MuPos_tight_muon_SF, h_1d, 150, 0, 150);
+		  if(!sampleName.Contains("DATA")) plot1D("h_mt_corr_P", pseudomt_P ,       evt_weight*MuPos_tight_muon_SF, h_1d, 150, 0, 150);
+
 		  plot1D("h_met", pfmet ,       evt_weight*MuPos_tight_muon_SF, h_1d, 100, 0, 100);
-		  
-		  plot1D("h_met_corr_P", pfmet_corr_P ,       evt_weight*MuPos_tight_muon_SF, h_1d, 100, 0, 100);
-		  plot1D("h_met_pull_P", pfmet_corr_P-pfmet ,       evt_weight*MuPos_tight_muon_SF, h_1d, 200, -100, 100);
-		  
-		  plot1D("h_met_corr_M", pfmet_corr_M ,       evt_weight*MuPos_tight_muon_SF, h_1d, 100, 0, 100);
-		  plot1D("h_met_pull_M", pfmet_corr_M-pfmet ,       evt_weight*MuPos_tight_muon_SF, h_1d, 200, -100, 100);
-		  
-		  plot2D("h_met_2D_P", pfmet_corr_P , pfmet,    evt_weight*MuPos_tight_muon_SF, h_2d, 100, 0, 100., 100, 0., 100.);
-		  plot2D("h_met_2D_M", pfmet_corr_M , pfmet,    evt_weight*MuPos_tight_muon_SF, h_2d, 100, 0, 100., 100, 0., 100.);
-		  
-		  plot2D("h_met_2D_M_P", pfmet_corr_M , pfmet_corr_P,    evt_weight*MuPos_tight_muon_SF, h_2d, 100, 0, 100., 100, 0., 100.);
-		  
+		  plot1D("h_metphi", pfmet_phi ,       evt_weight*MuPos_tight_muon_SF, h_1d, 100, -3.15, 3.15);
+
+		  if(!sampleName.Contains("DATA")) plot1D("h_met_corr_Z", pfmet_corr_Z ,       evt_weight*MuPos_tight_muon_SF, h_1d, 100, 0, 100);
+		  if(!sampleName.Contains("DATA")) plot1D("h_metphi_corr_Z", pfmetphi_corr_Z ,       evt_weight*MuPos_tight_muon_SF, h_1d, 100, -3.15, 3.15);
+
+		  if(!sampleName.Contains("DATA")) plot1D("h_met_corr_P", pfmet_corr_P ,       evt_weight*MuPos_tight_muon_SF, h_1d, 100, 0, 100);
+		  if(!sampleName.Contains("DATA")) plot1D("h_metphi_corr_P", pfmetphi_corr_P ,       evt_weight*MuPos_tight_muon_SF, h_1d, 100, -3.15, 3.15);
+
 		  /////////	      cout << "pfmet " << pfmet << " pfmet_corr " << pfmet_corr << endl;
-		  
 		  
 
                   for(int k=0;k<3;k++)
@@ -581,6 +591,7 @@ void Zanalysis_controlplots::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TStrin
                           // control distributions 
                           hnvtx[0][i][j]->Fill(nvtx,evt_weight);
                           Zmass[0][i][j]->Fill(Zcorr.M(),evt_weight*MuPos_tight_muon_SF);
+
                           Zmass_zoomed[0][i][j]->Fill(Zcorr.M(),evt_weight*MuPos_tight_muon_SF);
                           // ZmassVsMuPosEta[0][i][j]->Fill(MuPos_eta,Zcorr.M(),evt_weight*MuPos_tight_muon_SF);
                           ZmassVsMuPosEta[0][i][j]->Fill(muPosCorr.Eta(),Zcorr.M(),evt_weight*MuPos_tight_muon_SF);
