@@ -53,6 +53,35 @@ void combineDataCardsSMSummer13(Int_t channel, Int_t cat, TString mass){
     QCD->Write();
     data_obs->Write();
 
+
+    ///QCD and W shape systematics
+    TH1F* QCDUp=(TH1F*)QCD->Clone(TString("QCD_CMS_htt_QCDShape_mutau_")+catdirnameSummer13[sm]+"_8TeVUp");
+    TH1F* QCDDown=(TH1F*)QCD->Clone(TString("QCD_CMS_htt_QCDShape_mutau_")+catdirnameSummer13[sm]+"_8TeVDown");
+    if(channel==2)QCDUp->SetName(TString("QCD_CMS_htt_QCDShape_etau_")+catdirnameSummer13[sm]+"_8TeVUp");
+    if(channel==2)QCDDown->SetName(TString("QCD_CMS_htt_QCDShape_etau_")+catdirnameSummer13[sm]+"_8TeVDown");
+    for(Int_t b=1;b<=QCD->GetNbinsX();b++){
+      if(QCD->GetBinCenter(b)<=70.){
+	QCDUp->SetBinContent(b,1.15*QCDUp->GetBinContent(b));
+	QCDDown->SetBinContent(b,0.85*QCDDown->GetBinContent(b));
+      }
+    }
+    QCDUp->Write();
+    QCDDown->Write();
+
+    TH1F* WUp=(TH1F*)W->Clone(TString("W_CMS_htt_WShape_mutau_")+catdirnameSummer13[sm]+"_8TeVUp");
+    TH1F* WDown=(TH1F*)W->Clone(TString("W_CMS_htt_WShape_mutau_")+catdirnameSummer13[sm]+"_8TeVDown");
+    if(channel==2)WUp->SetName(TString("W_CMS_htt_WShape_etau_")+catdirnameSummer13[sm]+"_8TeVUp");
+    if(channel==2)WDown->SetName(TString("W_CMS_htt_WShape_etau_")+catdirnameSummer13[sm]+"_8TeVDown");
+    for(Int_t b=1;b<=W->GetNbinsX();b++){
+      if(W->GetBinCenter(b)<=70.){
+	WUp->SetBinContent(b,1.15*WUp->GetBinContent(b));
+	WDown->SetBinContent(b,0.85*WDown->GetBinContent(b));
+      }
+    }
+    WUp->Write();
+    WDown->Write();
+
+
     /////////////tUp histos
     TH1F* ZTT_CMS_scale_tUp =  (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ZTT");
     ZTT_CMS_scale_tUp->SetName(TString("ZTT_")+scaleUp);
@@ -86,7 +115,6 @@ void combineDataCardsSMSummer13(Int_t channel, Int_t cat, TString mass){
     TT_CMS_scale_tUp->Write();
     VV_CMS_scale_tUp->Write();
     QCD_CMS_scale_tUp->Write();
-
 
     /////////////tDown histos
     TH1F* ZTT_CMS_scale_tDown =  (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ZTT");
@@ -131,13 +159,10 @@ void combineDataCardsSMSummer13(Int_t channel, Int_t cat, TString mass){
 
       //Nominal histos
       TH1F* SM = (TH1F*)nominal.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ggH"+ma);
-      SM->SetName(TString("ggH")+ma);
-
+      TH1F* SMUp = (TH1F*)nominal.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ggH"+ma+"_QCDscale_ggH1inUp");
+      TH1F* SMDown = (TH1F*)nominal.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ggH"+ma+"_QCDscale_ggH1inDown");
       TH1F* VBF =  (TH1F*)nominal.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/qqH"+ma);
-      VBF->SetName(TString("qqH")+ma);
-      
       TH1F* VH =  (TH1F*)nominal.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/VH"+ma);
-      VH->SetName(TString("VH")+ma);
      
       //tUp histos
       TH1F* SM_CMS_scale_tUp  = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirnameSummer13[sm]+"/ggH"+ma);
@@ -162,6 +187,8 @@ void combineDataCardsSMSummer13(Int_t channel, Int_t cat, TString mass){
 
 
       SM->Write();
+      SMUp->Write();
+      SMDown->Write();
       VBF->Write();
       VH->Write();
 
@@ -172,30 +199,9 @@ void combineDataCardsSMSummer13(Int_t channel, Int_t cat, TString mass){
       SM_CMS_scale_tDown->Write();
       VBF_CMS_scale_tDown->Write();
       VH_CMS_scale_tDown->Write();
-
-
     }
-
-
   }
   
-
-
-  //for 1Jet_low need to add a shape systematic for QCD 
-  TH1F* QCD = (TH1F*)nominal.Get(ChannelName+"_boost_low/QCD");
-  if(QCD){
-    TH1F* QCDUp=(TH1F*)QCD->Clone("QCD_CMS_htt_QCDShape_mutau_boost_low_8TeVUp");
-    TH1F* QCDDown=(TH1F*)QCD->Clone("QCD_CMS_htt_QCDShape_mutau_boost_low_8TeVDown");
-    for(Int_t b=1;b<=QCD->GetNbinsX();b++){
-      if(QCD->GetBinCenter(b)<=70.){
-	QCDUp->SetBinContent(b,1.15*QCDUp->GetBinContent(b));
-	QCDDown->SetBinContent(b,0.85*QCDDown->GetBinContent(b));
-      }
-    }
-    output.cd("muTau_boost_low");
-    QCDUp->Write();
-    QCDDown->Write();
-  }
 
   output.ls();
   output.Close();

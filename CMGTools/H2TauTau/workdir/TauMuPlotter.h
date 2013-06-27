@@ -108,8 +108,8 @@ public:
  
   //Inclusive/SM0 methods
   TH1F* getWJetsInc();
-  TH1F* getWJetsIncLooseTau();
   TH1F* getTTJetsInc();
+  TH1F* getZNJetSum(TString decay);
   TH1F* getZToLJetInc();
   TH1F* getZLInc();
   TH1F* getQCDInc(Int_t WType=0,bool cleanNegativeBins=1);
@@ -129,19 +129,20 @@ public:
   TString qcdTauIsoRatio_;//formula for the ratio
   TString qcdMuIsoRatio_;//formula for the ratio
   TH1F* getQCDIsoSM();//from anti-isolated taus or anti iso muons
-  TH1F* getWNJetSum();//Exclusive W+jets samples combined 
-  TH1F* getWJetsNJet();//Exclusive W+jets samples combined and normalized to data
+
+  TH1F* getWNJetSum();
+  TH1F* getWJetsNJet();
   TH1F* getWJetsIncShape();
   TH1F* getW3Jets();
   TH1F* getW3JetsVBF();
   TH1F* getW2JetsBJet();
+
   TString wjetsTauIsoRatio_;//formula for the ratio for W+jets 
   TH1F* getWJetsTauIsoSM();//from anti-isolated taus
   TString wjetsTauIsoRatioSS_;//formula for the ratio for W+jets 
   TH1F* getTotalMCSM();//sum of OS backgrounds execpt for the QCD
 
   //Methods for VBF category with loose shape selections
-  TH1F* getWJetsNJetVBFHCP();//note loose selections here are different
   TH1F* getQCDVBFHCP();
   TH1F* getSampleVBFHCPShape(TString sample);//used for the methods below
   TH1F* getSampleVBFHCPShape2(TString sample);//used for the methods below
@@ -152,13 +153,21 @@ public:
   TH1F* getZLLVBFHCP();
   TH1F* getDiBosonVBFHCP();
 
+  //new methods for Summer13
+  TH1F* getQCDBoostTight();
+  TH1F* getQCDVBFLoose();
+  TH1F* getQCDVBFTight();
+  TH1F* getWJetsNJetLooseTau();
+  TH1F* getWJetsNJetVBFLoose();
+  TH1F* getWJetsNJetVBFTight();
+
+
   TH1F* getQCDIncLowPt();
   TH1F* getQCDIncHighPt();
   TH1F* getZL2012(){return 0;}
   TH1F* getZL2012Type2(){return 0;}
   TH1F* getQCDVBFHCP2(){return 0;}
   TH1F* getZLBoost(){return 0;}
-  TH1F* getWJetsNJetLooseTau(){return 0;}
 
   TH1F* getWNJetSumNoChCut();
   TH1F* getWJetsNJetNoChCut();
@@ -399,17 +408,17 @@ public:
 
 
   TString getSMCategory(Int_t sm){
-    if(sm<0||7<sm){
+    if(sm<0||8<sm){
       cout<<" Category : "<<sm<<" undefined "<<endl;
-      return TString("");
+      return TString("0");
     }
 
 
     TString zerojetcut=TString("(njet==0&&nbjet==0)");
     TString onejetcut=TString("(njet>=1&&nbjet==0)");
-    TString vbftightcut="(njet>=2&&njetingap==0&&diJetMass>700.&&abs(diJetDeltaEta)>4.0&&ditaumetpt>100)";
+    TString vbftightcut="(njet>=2&&njetingap==0&&nbjet==0&&diJetMass>700.&&abs(diJetDeltaEta)>4.0&&ditaumetpt>100)";
     TString notvbftightcut=TString("(!")+vbftightcut+")";
-    TString vbfcut="(njet>=2&&njetingap==0&&diJetMass>500.&&abs(diJetDeltaEta)>3.5)";
+    TString vbfcut="(njet>=2&&njetingap==0&&nbjet==0&&diJetMass>500.&&abs(diJetDeltaEta)>3.5)";
     TString notvbfcut=TString("(!")+vbfcut+")";
 
     TString SMcut[8];
@@ -421,6 +430,7 @@ public:
     SMcut[5]=notvbfcut+"*"+onejetcut+"*"+"(45<taupt&&100<ditaumetpt)";
     SMcut[6]=notvbftightcut+"*"+vbfcut;
     SMcut[7]=vbftightcut;
+    SMcut[8]="1";//for inclusive
     cout<<"Category selection : "<<SMcut[sm]<<endl;
     
     
