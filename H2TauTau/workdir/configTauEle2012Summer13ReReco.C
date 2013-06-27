@@ -71,6 +71,19 @@ TauElePlotter * configTauEle2012Summer13ReReco(TString name, TString path){
   ZToLJet->setCrossection(ZToTauTau->getCrossection());
   analysis->addSample(ZToLJet);
 
+  for(long n=1;n<=4;n++){
+    Sample* ZNjet = new Sample(TString("Z")+n+"ToEE",path);
+    ZNjet->setDataType("MCCat");
+    ZNjet->setCrossection(ZToTauTau->getCrossection()*DYNJetFrac[n-1]);
+    analysis->addSample(ZNjet);
+  }
+  for(long n=1;n<=4;n++){
+    Sample* ZNjet = new Sample(TString("Z")+n+"ToLJet",path);
+    ZNjet->setDataType("MCCat");
+    ZNjet->setCrossection(ZToTauTau->getCrossection()*DYNJetFrac[n-1]);
+    analysis->addSample(ZNjet);
+  }
+
   /////////W+jets
   Sample * WJetsToLNu=new Sample("WJetsToLNu",path);
   WJetsToLNu->setDataType("MC");

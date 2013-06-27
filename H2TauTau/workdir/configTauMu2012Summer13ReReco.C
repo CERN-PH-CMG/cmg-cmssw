@@ -17,7 +17,7 @@ TauMuPlotter * configTauMu2012Summer13ReReco(TString name, TString path){
 
   //analysis->tauIsoCutQCD_="(tauisomvaraw>0.5)";
   //analysis->tauIsoCutQCD_="(tauisomva2raw>0.5)";
-  analysis->tauIsoCutQCD_="(tauiso3hitraw<6.0)";
+  analysis->tauIsoCutQCD_="(tauiso3hitraw<10.0)";
 
   ///Moriond
   //analysis->taupTCut_=40;
@@ -89,6 +89,19 @@ TauMuPlotter * configTauMu2012Summer13ReReco(TString name, TString path){
   ZToLJet->setDataType("MC");
   ZToLJet->setCrossection(ZToTauTau->getCrossection());
   analysis->addSample(ZToLJet);
+
+  for(long n=1;n<=4;n++){
+    Sample* ZNjet = new Sample(TString("Z")+n+"ToMuMu",path);
+    ZNjet->setDataType("MCCat");
+    ZNjet->setCrossection(ZToTauTau->getCrossection()*DYNJetFrac[n-1]);
+    analysis->addSample(ZNjet);
+  }
+  for(long n=1;n<=4;n++){
+    Sample* ZNjet = new Sample(TString("Z")+n+"ToLJet",path);
+    ZNjet->setDataType("MCCat");
+    ZNjet->setCrossection(ZToTauTau->getCrossection()*DYNJetFrac[n-1]);
+    analysis->addSample(ZNjet);
+  }
 
 
   //////////TTJets 

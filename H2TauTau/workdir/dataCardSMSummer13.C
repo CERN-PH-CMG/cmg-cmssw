@@ -72,9 +72,13 @@ void dataCardSMSummer13(Int_t channel, Int_t cat, Int_t year, Int_t dataset, TSt
       if(dataset==3)analysis=configTauEle2012D("analysis",path);
       if(dataset==4)analysis=configTauEle2012ABCD("analysis",path);
       if(dataset==5)analysis=configTauEle2012Summer13("analysis",path);
+      if(dataset==6)analysis=configTauEle2012Summer13ReReco("analysis",path);
     }
   }
-  
+  if(!analysis){
+    cout<<"Bad choices for channel/dataset/year"<<endl;
+    exit(0);
+  }
  
   bool Blind=0;
   analysis->nbins_=0;
@@ -95,7 +99,7 @@ void dataCardSMSummer13(Int_t channel, Int_t cat, Int_t year, Int_t dataset, TSt
 
     analysis->plotvar_=mass;
     if(sm==6 || sm==7) analysis->setVariableBinning(NXBINSVBF,xbinsValuesVBF);
-    else      analysis->setVariableBinning(NXBINS,xbinsValues);
+    else               analysis->setVariableBinning(NXBINS,xbinsValues);
 
     ////visible mass in 0-jet
 //     if(sm==0 || sm==1){
@@ -112,41 +116,31 @@ void dataCardSMSummer13(Int_t channel, Int_t cat, Int_t year, Int_t dataset, TSt
 
 
     TH1F* QCD = 0;
-    if(channel==1){//mu-tau
-        if(sm==0) QCD=analysis->getQCDIncWNJet(); 
-        if(sm==1) QCD=analysis->getQCDIncWNJet(); 
-        if(sm==2) QCD=analysis->getQCDMuIsoSM(); 
-        if(sm==3) QCD=analysis->getQCDIncLowPt(); 
-        if(sm==4) QCD=analysis->getQCDMuIsoSM(); 
-        if(sm==5) QCD=analysis->getQCDMuIsoSM(); 
-	if(sm==6||sm==7) QCD=analysis->getQCDVBFHCP();
-
-    }
-    if(channel==2){//e-tau
-        if(sm==0) QCD=analysis->getQCDIncWNJet();
-        if(sm==1) QCD=analysis->getQCDMuIsoSM(); 
-        if(sm==2) QCD=analysis->getQCDMuIsoSM();
-        if(sm==3) QCD=analysis->getQCDIncLowPt();
-        if(sm==4) QCD=analysis->getQCDIncHighPt();
-        if(sm==5) QCD=analysis->getQCDIncHighPt();
-	if(sm==6||sm==7) QCD=analysis->getQCDVBFHCP2();
-    }
+    if(sm==0) QCD=analysis->getQCDIncWNJet();
+    else if(sm==1) QCD=analysis->getQCDIncWNJet(); 
+    else if(sm==2) QCD=analysis->getQCDIncWNJet();
+    else if(sm==3) QCD=analysis->getQCDMuIsoSM();
+    else if(sm==4) QCD=analysis->getQCDMuIsoSM();
+    else if(sm==5) QCD=analysis->getQCDBoostTight();
+    else if(sm==6) QCD=analysis->getQCDVBFLoose(); //note its different from mu-Tau
+    else if(sm==7) QCD=analysis->getQCDVBFTight();
+    else QCD=analysis->getQCDIncWNJet(); 
     QCD->SetName("QCD");
 
 
     TH1F* W = 0;
-    if(channel==1){//mu-tau
-	if(sm==6||sm==7) W = analysis->getWJetsNJetVBFHCP(); 
-	else             W = analysis->getWJetsNJetNoChCut();
-    }
-    if(channel==2){//e-tau
-	if(sm==6||sm==7) W = analysis->getWJetsNJetVBFHCP(); 
-	else             W = analysis->getWJetsNJetNoChCut();
-    }
+    if(sm==5)      W = analysis->getWJetsNJetLooseTau();
+    else if(sm==6) W = analysis->getWJetsNJetVBFLoose(); 
+    else if(sm==7) W = analysis->getWJetsNJetVBFTight(); 
+    else           W = analysis->getWJetsNJetNoChCut();
     W->SetName("W");
     
     TH1F* ZTT = 0;
-    ZTT = analysis->getZToTauTau();
+    if(channel==1)ZTT = analysis->getZToTauTau();
+    if(channel==2){
+      if(sm==7)ZTT = analysis->getZToTauTauVBF();//not enough stats in e-Tau
+      else ZTT = analysis->getZToTauTau();
+    }
     ZTT->SetName("ZTT");
 
     TH1F* TT = 0;
@@ -156,17 +150,8 @@ void dataCardSMSummer13(Int_t channel, Int_t cat, Int_t year, Int_t dataset, TSt
     TT->SetName("TT");
 
     TH1F* ZL =0;
-    if(channel==1){//mu-Tau
-      if(sm==6||sm==7)                            	ZL =analysis->getZLVBFHCP();
-      else 	ZL =analysis->getZLInc();
-    }
-    if(channel==2){//e-Tau
-      if(sm==6||sm==7)   ZL =analysis->getZLVBFHCP();
-      else if(sm==5)     ZL =analysis->getZLBoost();
-      else               ZL =analysis->getZL2012();//analysis->getZL2012Type2();//
-
-
-    }
+    if(sm==6||sm==7)  ZL =analysis->getZLVBFHCP();
+    else              ZL =analysis->getZLInc();
     ZL->SetName("ZL");
 
     TH1F* ZJ = 0;
@@ -234,6 +219,19 @@ void dataCardSMSummer13(Int_t channel, Int_t cat, Int_t year, Int_t dataset, TSt
       TH1F* SM = analysis->getSample(TString("HiggsGG")+ma);
       SM->SetName(TString("ggH")+ma);
 
+      TString EventWeightTmp=analysis->eventWeight_;
+      analysis->eventWeight_+= "*(signalWeightHigh/signalWeight)";
+      TH1F* SMUp = analysis->getSample(TString("HiggsGG")+ma);
+      SMUp->SetName(TString("ggH")+ma+"_QCDscale_ggH1inUp");
+      analysis->eventWeight_=EventWeightTmp;
+
+      EventWeightTmp=analysis->eventWeight_;
+      analysis->eventWeight_+= "*(signalWeightLow/signalWeight)";
+      TH1F* SMDown = analysis->getSample(TString("HiggsGG")+ma);
+      SMDown->SetName(TString("ggH")+ma+"_QCDscale_ggH1inDown");
+      analysis->eventWeight_=EventWeightTmp;
+
+
       TH1F* VBF = analysis->getSample(TString("HiggsVBF")+ma);
       VBF->SetName(TString("qqH")+ma);
 
@@ -241,27 +239,35 @@ void dataCardSMSummer13(Int_t channel, Int_t cat, Int_t year, Int_t dataset, TSt
       VH->SetName(TString("VH")+ma);
 
       SM->Scale(1./analysis->findSample(TString("HiggsGG")+ma)->getCrossection());
+      SMUp->Scale(1./analysis->findSample(TString("HiggsGG")+ma)->getCrossection());
+      SMDown->Scale(1./analysis->findSample(TString("HiggsGG")+ma)->getCrossection());
       VBF->Scale(1./analysis->findSample(TString("HiggsVBF")+ma)->getCrossection());
       VH->Scale(1./analysis->findSample(TString("HiggsVH")+ma)->getCrossection());
       
       //check for empty histos
       if( SM->Integral()<=0.){  SM->SetBinContent(SM->GetNbinsX()/2,1e-4);    SM->SetBinError(SM->GetNbinsX()/2,1e-4); }
+      if( SMUp->Integral()<=0.){  SMUp->SetBinContent(SMUp->GetNbinsX()/2,1e-4);    SMUp->SetBinError(SMUp->GetNbinsX()/2,1e-4); }
+      if( SMDown->Integral()<=0.){  SMDown->SetBinContent(SMDown->GetNbinsX()/2,1e-4);    SMDown->SetBinError(SMDown->GetNbinsX()/2,1e-4); }
+
       if( VBF->Integral()<=0.){ VBF->SetBinContent(VBF->GetNbinsX()/2,1e-4);  VBF->SetBinError(VBF->GetNbinsX()/2,1e-4); }
       if( VH->Integral()<=0.){  VH->SetBinContent(VH->GetNbinsX()/2,1e-4);    VH->SetBinError(VH->GetNbinsX()/2,1e-4); }
 
       dir->cd();
       
      
-      
-      fixSignal(data_obs,MC,VH);  fix0Bins(VH);   VH->Write();
       fixSignal(data_obs,MC,SM);  fix0Bins(SM);   SM->Write();
+      fixSignal(data_obs,MC,SMUp);  fix0Bins(SMUp);   SMUp->Write();
+      fixSignal(data_obs,MC,SMDown);  fix0Bins(SMDown);   SMDown->Write();
+
       fixSignal(data_obs,MC,VBF); fix0Bins(VBF);  VBF->Write();
+      fixSignal(data_obs,MC,VH);  fix0Bins(VH);   VH->Write();
       gROOT->cd();
 
-      delete VH;
       delete SM;
+      delete SMUp;
+      delete SMDown;
       delete VBF;
-
+      delete VH;
     }
 
     delete MC;

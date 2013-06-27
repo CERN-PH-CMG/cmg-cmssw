@@ -1,27 +1,27 @@
 
 /////SM
-//#define NMASS 12
-//long massValues[NMASS]={90,95,100,105,110,115,120,125,130,135,140,145};
-
-#define NMASS 8
-long massValues[NMASS]={110,115,120,125,130,135,140,145};
-
 ///Crossections taken from here:
 ///https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt8TeV
 ///Higgs --> tau tau branching ratios taken from http://arxiv.org/abs/1101.0593 v3
-// Float_t HiggsTauTauBF[NMASS]={1,1,1,1,8.03e-2, 7.65e-2,  7.11e-2,  6.37e-2,  5.49e-2,  4.52e-2, 3.54e-2,2.62e-2};
-// Float_t HiggsGGcross[NMASS]={1,1,1,1,25.04,22.96,21.13,19.52,18.07,16.79,15.63,14.59};
-// Float_t HiggsVBFcross[NMASS]={1,1,1,1,1.809,1.729,1.649,1.578,1.511,1.448,1.389,1.333 };
-// Float_t HiggsWHcross[NMASS]= {1,1,1,1,1.0600,0.9165,0.7966,0.6966,0.6095,0.5351,0.47130,0.41640};
-// Float_t HiggsZHcross[NMASS]= {1,1,1,1,0.5869,0.5117,0.4483,0.3943,0.3473,0.3074,0.27280,0.24240};
-// Float_t HiggsttHcross[NMASS]={1,1,1,1,0.1887,0.1663,0.1470,0.1302,0.1157,0.1031,0.09207,0.08246 };
 
-Float_t HiggsTauTauBF[NMASS]={8.03e-2, 7.65e-2,  7.11e-2,  6.37e-2,  5.49e-2,  4.52e-2, 3.54e-2,2.62e-2};
-Float_t HiggsGGcross[NMASS]={25.04,22.96,21.13,19.52,18.07,16.79,15.63,14.59};
-Float_t HiggsVBFcross[NMASS]={1.809,1.729,1.649,1.578,1.511,1.448,1.389,1.333 };
-Float_t HiggsWHcross[NMASS]= {1.0600,0.9165,0.7966,0.6966,0.6095,0.5351,0.47130,0.41640};
-Float_t HiggsZHcross[NMASS]= {0.5869,0.5117,0.4483,0.3943,0.3473,0.3074,0.27280,0.24240};
-Float_t HiggsttHcross[NMASS]={0.1887,0.1663,0.1470,0.1302,0.1157,0.1031,0.09207,0.08246 };
+// #define NMASS 8
+// long massValues[NMASS]={110,115,120,125,130,135,140,145};
+
+// Float_t HiggsTauTauBF[NMASS]={8.03e-2, 7.65e-2,  7.11e-2,  6.37e-2,  5.49e-2,  4.52e-2, 3.54e-2,2.62e-2};
+// Float_t HiggsGGcross[NMASS]={25.04,22.96,21.13,19.52,18.07,16.79,15.63,14.59};
+// Float_t HiggsVBFcross[NMASS]={1.809,1.729,1.649,1.578,1.511,1.448,1.389,1.333 };
+// Float_t HiggsWHcross[NMASS]= {1.0600,0.9165,0.7966,0.6966,0.6095,0.5351,0.47130,0.41640};
+// Float_t HiggsZHcross[NMASS]= {0.5869,0.5117,0.4483,0.3943,0.3473,0.3074,0.27280,0.24240};
+// Float_t HiggsttHcross[NMASS]={0.1887,0.1663,0.1470,0.1302,0.1157,0.1031,0.09207,0.08246 };
+
+#define NMASS 15
+long massValues[NMASS]={90,95,100,105,110,115,120,125,130,135,140,145,150,155,160};
+Float_t HiggsTauTauBF[NMASS]={1,1,1,1,8.03e-2, 7.65e-2,  7.11e-2,  6.37e-2,  5.49e-2,  4.52e-2, 3.54e-2,2.62e-2,1,1,1};
+Float_t HiggsGGcross[NMASS]={1,1,1,1,25.04,22.96,21.13,19.52,18.07,16.79,15.63,14.59,1,1,1};
+Float_t HiggsVBFcross[NMASS]={1,1,1,1,1.809,1.729,1.649,1.578,1.511,1.448,1.389,1.333,1,1,1};
+Float_t HiggsWHcross[NMASS]= {1,1,1,1,1.0600,0.9165,0.7966,0.6966,0.6095,0.5351,0.47130,0.41640,1,1,1};
+Float_t HiggsZHcross[NMASS]= {1,1,1,1,0.5869,0.5117,0.4483,0.3943,0.3473,0.3074,0.27280,0.24240,1,1,1};
+Float_t HiggsttHcross[NMASS]={1,1,1,1,0.1887,0.1663,0.1470,0.1302,0.1157,0.1031,0.09207,0.08246,1,1,1};
 
 
 #define NCAT 5
@@ -32,16 +32,17 @@ TString catdirname[NCAT]={
  "boost_high",
  "vbf"};
 
-#define NCATSUMMER13 8
+#define NCATSUMMER13 9
 TString catdirnameSummer13[NCATSUMMER13]={
  "0jet_low",
- "0jet_med",
+ "0jet_medium",
  "0jet_high",
- "boost_low",
- "boost_med",
- "boost_high",
+ "1jet_medium",
+ "1jet_high_lowhiggs",
+ "1jet_high_mediumhiggs",
  "vbf_loose",
- "vbf_tight"};
+ "vbf_tight",
+ "inclusive"};
 
 #define NXBINS0JET 37
 Float_t xbinsValues0Jet[NXBINS0JET+1]={0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,160,170,180,190,200,225,250};
@@ -63,13 +64,12 @@ TString svBlindSel="(svfitmass<100||160<svfitmass)";
 //TString mvBlindSel="";
 //TString svBlindSel="";
 
-
 Float_t c[4]={.6,.96,.57,.87};//default legend coordinates
 Float_t c2[4]={.25,.49,.52,.87};//on the left side
 Float_t c3[4]={.6,.96,.22,.57};//on the right side bottom
 Float_t c4[4]={.25,.49,.22,.57};//on the left  bottom
 
-
+float DYNJetFrac[4]={0.1901,0.0613,0.0173,0.0078};
 
 
 /////////////data-card tools//////////////////
