@@ -73,6 +73,11 @@ class HiggsTheory(object):
             out[decay] = dict()
             for property in self.decayProperties:
                 out[decay][property] = self.param[decay][property].getVal()
+
+        for decay in self.decays2:
+            out[decay] = dict()
+            for property in self.decayProperties2:
+                out[decay][property] = self.param[decay][property].getVal()
                 
         out['width'] = self.param['width'].getVal()
         return out

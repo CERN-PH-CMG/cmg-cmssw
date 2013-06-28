@@ -248,7 +248,7 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
         passed=cutFlow.applyCut(self.testFourLeptonMassZ,'4l Z phase space Loose',1,'fourLeptonsZPhaseSpaceLoose')
         if passed:
             event.higgsCandLoose = cutFlow.obj1[0]
-
+            event.higgsCandLoose.fakeRate =event.higgsCandLoose.leg2.leg1.fR_AA*event.higgsCandLoose.leg2.leg2.fR_AA 
 
 
         ##################NOW A SECONDPATH FOR FAKES
@@ -287,7 +287,23 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
         passed=cutFlow.applyCut(self.testFourLeptonMassZ,'4l Z phase space LooseOS',1,'fourLeptonsZPhaseSpaceLooseOS')
         if passed:
             event.higgsCandLooseOS = cutFlow.obj1[0]
-
+            if (not self.testLeptonTight(event.higgsCandLooseOS.leg2.leg1)) and (not self.testLeptonTight(event.higgsCandLooseOS.leg2.leg2)):
+                event.higgsCandLooseOS.fakeRate2P2F=(event.higgsCandLooseOS.leg2.leg1.fR_A/(1-event.higgsCandLooseOS.leg2.leg1.fR_A))*(event.higgsCandLooseOS.leg2.leg2.fR_A/(1-event.higgsCandLooseOS.leg2.leg2.fR_A))
+                event.higgsCandLooseOS.fakeRate3P1F=0
+                event.higgsCandLooseOS.fakeRate2P2F2=(event.higgsCandLooseOS.leg2.leg1.fR_A/(1-event.higgsCandLooseOS.leg2.leg1.fR_A))+(event.higgsCandLooseOS.leg2.leg2.fR_A/(1-event.higgsCandLooseOS.leg2.leg2.fR_A))
+            elif (self.testLeptonTight(event.higgsCandLooseOS.leg2.leg1)) and (not self.testLeptonTight(event.higgsCandLooseOS.leg2.leg2)):    
+                event.higgsCandLooseOS.fakeRate2P2F=0
+                event.higgsCandLooseOS.fakeRate2P2F2=0
+                event.higgsCandLooseOS.fakeRate3P1F = (event.higgsCandLooseOS.leg2.leg2.fR_A/(1-event.higgsCandLooseOS.leg2.leg2.fR_A))
+            elif (self.testLeptonTight(event.higgsCandLooseOS.leg2.leg2)) and (not self.testLeptonTight(event.higgsCandLooseOS.leg2.leg1)):    
+                event.higgsCandLooseOS.fakeRate2P2F=0
+                event.higgsCandLooseOS.fakeRate2P2F2=0
+                event.higgsCandLooseOS.fakeRate3P1F = (event.higgsCandLooseOS.leg2.leg1.fR_A/(1-event.higgsCandLooseOS.leg2.leg1.fR_A))
+            else:
+                event.higgsCandLooseOS.fakeRate2P2F=0
+                event.higgsCandLooseOS.fakeRate2P2F2=0
+                event.higgsCandLooseOS.fakeRate3P1F = 0
+                
         if hasattr(event,'higgsCand') or hasattr(event,'higgsCandLoose') or hasattr(event,'higgsCandLooseOS'):
             return True
         

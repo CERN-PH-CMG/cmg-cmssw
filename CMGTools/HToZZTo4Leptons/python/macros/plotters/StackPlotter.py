@@ -206,7 +206,22 @@ class StackPlotter(object):
         hists=[]
         stack = ROOT.THStack("stack","")
         ROOT.SetOwnership(stack,False)
-        
+
+        canvas.Range(-68.75,-7.5,856.25,42.5)
+        canvas.SetFillColor(0)
+        canvas.SetBorderMode(0)
+        canvas.SetBorderSize(2)
+        canvas.SetTickx(1)
+        canvas.SetTicky(1)
+        canvas.SetLeftMargin(0.15)
+        canvas.SetRightMargin(0.05)
+        canvas.SetTopMargin(0.05)
+        canvas.SetBottomMargin(0.15)
+        canvas.SetFrameFillStyle(0)
+        canvas.SetFrameBorderMode(0)
+        canvas.SetFrameFillStyle(0)
+        canvas.SetFrameBorderMode(0)
+
 
         for (plotter,typeP,label) in zip(self.plotters,self.types,self.labels):
                 hist = plotter.drawTH1(var,cut,"1",bins,mini,maxi,titlex,units)
@@ -236,6 +251,17 @@ class StackPlotter(object):
                 legend.AddEntry(histo,label,"lf")
         ROOT.SetOwnership(legend,False)
         legend.Draw()
+
+
+	pt =ROOT.TPaveText(0.1577181,0.9562937,0.9580537,0.9947552,"brNDC")
+	pt.SetBorderSize(0)
+	pt.SetTextAlign(12)
+	pt.SetFillStyle(0)
+	pt.SetTextFont(42)
+	pt.SetTextSize(0.03)
+	text = pt.AddText(0.01,0.5,"CMS simulation")
+	pt.Draw()   
+
 
         canvas.Update()
 

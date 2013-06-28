@@ -140,7 +140,11 @@ class PlotterSetup(object):
             #Higgs cross section, BR and uncertainties
             print 'Higgs cross section for '+production+':'+str(xs[self.data['higgsProduction'][production]]['sigma']  )
             higgsPlotters[-1].addCorrectionFactor('sigma',xs[self.data['higgsProduction'][production]]['sigma'],0.0,'lnN')
-            higgsPlotters[-1].addCorrectionFactor('BRHiggs_hzz4l',xs['H4F']['llllt'],0.0,'lnN')
+
+            if production in ['WH','ZH','TTbarH']:
+                higgsPlotters[-1].addCorrectionFactor('BRHiggs_hzz4l',xs['H2B']['ZZ'],0.0,'lnN')
+            else:    
+                higgsPlotters[-1].addCorrectionFactor('BRHiggs_hzz4l',xs['H4F']['llllt'],0.0,'lnN')
 
 
           higgsPlotter = MergedPlotter(higgsPlotters)
