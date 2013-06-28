@@ -23,14 +23,22 @@ class FinalMVA_3LCat:
                 MVAVar("htJet25ratio1224Lep := (LepGood1_pt*(abs(LepGood1_eta)<1.2) + LepGood2_pt*(abs(LepGood2_eta)<1.2) + LepGood3_pt*(abs(LepGood3_eta)<1.2) + Jet1_pt*(abs(Jet1_eta) < 1.2) + Jet2_pt*(abs(Jet2_eta) < 1.2) + Jet3_pt*(abs(Jet3_eta) < 1.2) + Jet4_pt*(abs(Jet4_eta) < 1.2) + Jet5_pt*(abs(Jet5_eta) < 1.2) + Jet6_pt*(abs(Jet6_eta) < 1.2) + Jet7_pt*(abs(Jet7_eta) < 1.2) + Jet8_pt*(abs(Jet8_eta) < 1.2))/ (LepGood1_pt + LepGood2_pt + LepGood3_pt + Jet1_pt*(abs(Jet1_eta) < 2.4) + Jet2_pt*(abs(Jet2_eta) < 2.4) + Jet3_pt*(abs(Jet3_eta) < 2.4) + Jet4_pt*(abs(Jet4_eta) < 2.4) + Jet5_pt*(abs(Jet5_eta) < 2.4) + Jet6_pt*(abs(Jet6_eta) < 2.4) + Jet7_pt*(abs(Jet7_eta) < 2.4) + Jet8_pt*(abs(Jet8_eta) < 2.4))", func = lambda ev : (ev.LepGood1_pt*(abs(ev.LepGood1_eta)<1.2) + ev.LepGood2_pt*(abs(ev.LepGood2_eta)<1.2) + ev.LepGood3_pt*(abs(ev.LepGood3_eta)<1.2) + ev.Jet1_pt*(abs(ev.Jet1_eta) < 1.2) + ev.Jet2_pt*(abs(ev.Jet2_eta) < 1.2) + ev.Jet3_pt*(abs(ev.Jet3_eta) < 1.2) + ev.Jet4_pt*(abs(ev.Jet4_eta) < 1.2) + ev.Jet5_pt*(abs(ev.Jet5_eta) < 1.2) + ev.Jet6_pt*(abs(ev.Jet6_eta) < 1.2) + ev.Jet7_pt*(abs(ev.Jet7_eta) < 1.2) + ev.Jet8_pt*(abs(ev.Jet8_eta) < 1.2))/ (ev.LepGood1_pt + ev.LepGood2_pt + ev.LepGood3_pt + ev.Jet1_pt*(abs(ev.Jet1_eta) < 2.4) + ev.Jet2_pt*(abs(ev.Jet2_eta) < 2.4) + ev.Jet3_pt*(abs(ev.Jet3_eta) < 2.4) + ev.Jet4_pt*(abs(ev.Jet4_eta) < 2.4) + ev.Jet5_pt*(abs(ev.Jet5_eta) < 2.4) + ev.Jet6_pt*(abs(ev.Jet6_eta) < 2.4) + ev.Jet7_pt*(abs(ev.Jet7_eta) < 2.4) + ev.Jet8_pt*(abs(ev.Jet8_eta) < 2.4)))
      
         ]
-        P="/afs/cern.ch/user/b/botta/scratch0/TTHAnalysis/BE_031212/CMGTools/CMSSW_5_3_5/src/CMGTools/TTHAnalysis/macros/finalMVA/3l/separatetraining/weights/";
+#        P="/afs/cern.ch/user/b/botta/scratch0/TTHAnalysis/BE_031212/CMGTools/CMSSW_5_3_5/src/CMGTools/TTHAnalysis/macros/finalMVA/3l/separatetrainingMike/weights/";
         
-        self._MVAs["finalMVA_3LCat"] = CategorizedMVA(
-            [ ( lambda ev: ev.bestMTopHad <= 0,
-                    MVATool("ee", P+"3lcat1_mix_BDTG.weights.xml", self._vars_1_6) ),
-              ( lambda ev: ev.bestMTopHad > 0,
-                    MVATool("ee", P+"3lcat2_mix_BDTG.weights.xml", self._vars_1_7) ) ]
-        )
+#         self._MVAs["finalMVA_3LCat"] = CategorizedMVA(
+#             [ ( lambda ev: ev.bestMTopHad <= 0,
+#                     MVATool("ee", P+"3lcat1_mix_BDTG.weights.xml", self._vars_1_6) ),
+#               ( lambda ev: ev.bestMTopHad > 0,
+#                     MVATool("ee", P+"3lcat2_mix_BDTG.weights.xml", self._vars_1_7) ) ]
+#         )
+
+        P="/afs/cern.ch/user/b/botta/scratch0/TTHAnalysis/BE_031212/CMGTools/CMSSW_5_3_5/src/CMGTools/TTHAnalysis/macros/finalMVA/3l/trainMike/weights/";
+
+        self._MVAs["finalMVA_3LMike"] = MVATool("ee", P+"3l_mix_BDTG.weights.xml", self._vars_1_7) 
+
+
+
+        
     def listBranches(self):
         return self._MVAs.keys()
     def __call__(self,event):
