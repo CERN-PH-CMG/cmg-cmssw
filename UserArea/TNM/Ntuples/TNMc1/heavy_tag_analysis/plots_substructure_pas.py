@@ -25,7 +25,7 @@ TGaxis.SetMaxDigits(3)
 if __name__ == '__main__':
 
  theory=False
- runSet=8
+ runSet=2
 
  names = ["npu",
            "npv",
@@ -96,11 +96,19 @@ if __name__ == '__main__':
              "substructure_pas_QCD500.root",
              "substructure_pas_QCD1000.root",
              "substructure_pas_QCDHerwig.root",
+             "substructure_pas_QCDPythia8170.root",
+             "substructure_pas_QCDPythia8300.root",
+             "substructure_pas_QCDPythia8470.root",
+             "substructure_pas_QCDPythia8600.root",
+             "substructure_pas_QCDPythia8800.root",
+             "substructure_pas_QCDPythia81000.root",
+             "substructure_pas_QCDPythia81400.root",
+             "substructure_pas_QCDPythia81800.root",
              "substructure_pas_ReRun2012ABCD.root",
             ]
-  colors=[1,2,4,1]
-  styles=[1,1,2,1]
-  widths=[2,2,2,2]
+  colors=[1,2,4,6,1]
+  styles=[1,1,2,3,1]
+  widths=[2,2,2,2,2]
   ndata=15000
   sets=[""]
 
@@ -332,7 +340,7 @@ if __name__ == '__main__':
        hist.GetYaxis().SetRangeUser(0.001,50000)
        canvas.SetLogy(True)
     if "pruned jet mass" in plot[2]:
-       hist=TH1F(histname,histname,40,0,200);
+       hist=TH1F(histname,histname,40,0,150);
        hist.GetYaxis().SetRangeUser(0,50000)
     if plot[2]=="mass drop":
        hist=TH1F(histname,histname,25,0,1);
@@ -394,8 +402,8 @@ if __name__ == '__main__':
     print "mean",hist.GetMean()
 
     if "QCD1000" in sample:
+        histname500="plot"+names[plots.index(plot)]+gen+str(s-1)
         for his in reversed(hists):
-	    histname500="plot"+names[plots.index(plot)]+gen+str(s-1)
 	    if histname500==his.GetName():
 	        oldIntegral=his.Integral()
 		if his.Integral()>0:
@@ -408,6 +416,35 @@ if __name__ == '__main__':
                     his.Scale(oldIntegral/his.Integral())
 		else:
                     his.Scale(integral/his.Integral())
+ 	        break
+	continue
+    
+    if "QCDPythia8" in sample and not "170" in sample:
+        samplenames=["170","300","470","600","800","1000","1400","1800"]
+	samplenumbers=[800046,490042,500051,492988,400059,400050,200070,194313]
+	samplecrossections=[37974.99,1938.868,124.8942,29.55049,3.871308,0.8031018,0.03637225,0.00197726]
+	samplenumber=0
+        for samplename in samplenames:
+          if samplename in sample:
+            samplenumber=samplenames.index(samplename)
+        histnameFirst="plot"+names[plots.index(plot)]+gen+str(s-samplenumber)
+        print histnameFirst
+        for his in reversed(hists):
+	    if histnameFirst==his.GetName():
+	        oldIntegral=his.Integral()
+		if his.Integral()>0:
+                    his.Scale(originalIntegral[histnameFirst]/his.Integral())
+		if hist.Integral()>0:
+                    hist.Scale(originalIntegral[histname]/hist.Integral())
+                weight=samplecrossections[samplenumber]/samplenumbers[samplenumber]*samplenumbers[0]/samplecrossections[0]
+	        his.Add(hist,weight)
+		if oldIntegral>0:
+		    originalIntegral[histnameFirst]=his.Integral()
+                    his.Scale(oldIntegral/his.Integral())
+		elif his.Integral()>0:
+		    originalIntegral[histnameFirst]=his.Integral()
+                    his.Scale(integral/his.Integral())
+ 	        break
  	continue
     
     if counter==0:
@@ -430,36 +467,11 @@ if __name__ == '__main__':
         maximum=hist.GetMaximum()
 
     if "jet p_{T}" in plot[2] and runSet==2:
-  	hists[0].GetYaxis().SetRangeUser(0.5,maximum*20.0)
+  	hists[0].GetYaxis().SetRangeUser(100,maximum*20.0)
     elif "jet p_{T}" in plot[2]:
   	hists[0].GetYaxis().SetRangeUser(0.001,maximum*20.0)
     else:
         hists[0].GetYaxis().SetRangeUser(0,maximum*2.0)
-
-    #if runSet==2:
-    #  hist.GetYaxis().SetRangeUser(0,0.3*ndata)
-    #  if "jet p_{T}" in plot[2]:
-    #	hist.GetYaxis().SetRangeUser(0.001*ndata,1*ndata)
-    #  if "pruned jet mass" in plot[2]:
-    #	hist.GetYaxis().SetRangeUser(0,0.4*ndata)
-    #  if "C_{2}" in plot[2]:
-    #	hist.GetYaxis().SetRangeUser(0,0.4*ndata)
-    #  if "jet charge" in plot[2]:
-    #	hist.GetYaxis().SetRangeUser(0,0.7*ndata)
-    #  if plot[2]=="mass drop" and "aftermass" in names[plots.index(plot)]:
-    #	hist.GetYaxis().SetRangeUser(0,0.05*ndata)
-    #  if plot[2]=="#tau_{2}/#tau_{1}" and "aftermass" in names[plots.index(plot)]:
-    #	hist.GetYaxis().SetRangeUser(0,0.03*ndata)
-    #else:
-    #  hist.GetYaxis().SetRangeUser(0,0.3)
-    #  if "jet p_{T}" in plot[2]:
-    #	hist.GetYaxis().SetRangeUser(0.001,1)
-    #  if "pruned jet mass" in plot[2]:
-    #	hist.GetYaxis().SetRangeUser(0,0.4)
-    #  if "jet charge" in plot[2]:
-    #	hist.GetYaxis().SetRangeUser(0,0.5)
-    #  if plot[2]=="mass drop" and "aftermass" in names[plots.index(plot)]:
-    #	hist.GetYaxis().SetRangeUser(0,0.4)
 
     if "Run" in sample and counter==0:
       legend.AddEntry(hist,"data","ple")

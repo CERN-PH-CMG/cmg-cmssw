@@ -1214,14 +1214,23 @@ cms.EDAnalyzer("TheNtupleMaker",
     'double  mass()',
     'double  rapidity()',
     'int  nConstituents()',
-    'double  component(0).fraction()',
-    'double  component(1).fraction()',
-    'double  component(2).fraction()',
-    'double  component(3).fraction()',
-    'double  component(4).fraction()',
-    'double  component(5).fraction()',
-    'double  component(6).fraction()',
-    'double  component(7).fraction()',
+    # component numbering is defined in DataFormats/ParticleFlowCandidate/interface/PFCandidate.h line 38
+    'double  component(0).fraction()', #undefined
+    'double  component(0).number()', #undefined
+    'double  component(1).fraction()', #charged hadron
+    'double  component(1).number()', #charged hadron
+    'double  component(2).fraction()', #electron
+    'double  component(2).number()', #electron
+    'double  component(3).fraction()', #muon
+    'double  component(3).number()', #muon
+    'double  component(4).fraction()', #photon
+    'double  component(4).number()', #photon
+    'double  component(5).fraction()', #neutral hadron
+    'double  component(5).number()', #neutral hadron
+    'double  component(6).fraction()', #HF hadron
+    'double  component(6).number()', #HF hadron
+    'double  component(7).fraction()', #HF EM
+    'double  component(7).number()', #HF EM
     ),
                genJet =
                cms.untracked.
