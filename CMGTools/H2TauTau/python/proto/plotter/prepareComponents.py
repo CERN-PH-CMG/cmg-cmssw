@@ -19,6 +19,7 @@ def prepareComponents(dir, config, aliases=None, embed=True,
     else:
         aliases = {'DYJets':'Ztt'}
     aliases['WJetsSoup'] = 'WJets'
+    aliases['DYJetsSoup'] = 'Ztt' 
     
     totIntLumi = 0
     newSelComps = {}

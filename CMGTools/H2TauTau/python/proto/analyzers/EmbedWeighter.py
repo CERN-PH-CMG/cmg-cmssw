@@ -37,6 +37,18 @@ class EmbedWeighter( Analyzer ):
                     ('muonRadiationCorrWeightProducer', 'weight'),
                     'double'
                     )
+                self.embhandles['genTau2PtVsGenTau1Pt'] = AutoHandle(
+                    ('embeddingKineReweightRECembedding', 'genTau2PtVsGenTau1Pt'),
+                    'double'
+                    )
+                self.embhandles['genTau2EtaVsGenTau1Eta'] = AutoHandle(
+                    ('embeddingKineReweightRECembedding', 'genTau2EtaVsGenTau1Eta'),
+                    'double'
+                    )
+                self.embhandles['genDiTauMassVsGenDiTauPt'] = AutoHandle(
+                    ('embeddingKineReweightRECembedding', 'genDiTauMassVsGenDiTauPt'),
+                    'double'
+                    )
             else:
                 self.embhandles['minVisPtFilter'] = AutoHandle(
                     ('generator', 'weight'),
@@ -55,6 +67,9 @@ class EmbedWeighter( Analyzer ):
                 tauspin = self.embhandles['TauSpinnerReco'].product()
                 zmumusel = self.embhandles['ZmumuEvtSelEffCorrWeightProducer'].product()
                 muradcorr = self.embhandles['muonRadiationCorrWeightProducer'].product()
+                genTau2PtVsGenTau1Pt = self.embhandles['genTau2PtVsGenTau1Pt'].product()
+                genTau2EtaVsGenTau1Eta = self.embhandles['genTau2EtaVsGenTau1Eta'].product()
+                genDiTauMassVsGenDiTauPt = self.embhandles['genDiTauMassVsGenDiTauPt'].product()
             except RuntimeError:
                 print 'WARNING EmbedWeighter, cannot find the weight in the event'
                 return False
@@ -63,6 +78,9 @@ class EmbedWeighter( Analyzer ):
                 self.weight *= tauspin[0]
                 self.weight *= zmumusel[0]
                 self.weight *= muradcorr[0]
+                self.weight *= genTau2PtVsGenTau1Pt[0]
+                self.weight *= genTau2EtaVsGenTau1Eta[0]
+                self.weight *= genDiTauMassVsGenDiTauPt[0]
             else: 
                 self.weight = genfilter[0]
         if self.cfg_ana.verbose:

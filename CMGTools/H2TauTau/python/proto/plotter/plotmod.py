@@ -175,7 +175,7 @@ def plot_W(anaDir, comps, weights,
                            embed=embed, treeName=treeName)
     if VVgroup != None :
         mtOS.Group ('VV',VVgroup)
-
+    
     data_OS, mc_OS = fW( mtOS, 'Data', xmin, xmax, VVgroup)
     fW_OS = data_OS / mc_OS
 

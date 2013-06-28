@@ -14,6 +14,9 @@ cat_J0 = 'nJets==0 && nBJets==0' # Jose
 #                                                               J1=cat_J1,
 #                                                               J1B=cat_J1B)
 
+cat_1BInclusive = 'nBJets>=1'
+cat_0B = 'nBJets>=1'
+
 cat_J0_high = cat_J0 + ' && l1_pt>45.'
 cat_J0_medium = cat_J0 + ' && l1_pt>30. && l1_pt<=45.'
 cat_J0_low = cat_J0 + ' && l1_pt>20. && l1_pt<=30.'
@@ -22,8 +25,14 @@ cat_J1_high_mediumhiggs = cat_J1 + ' && l1_pt>45. && pthiggs>100.'
 cat_J1_high_lowhiggs = cat_J1 + ' && l1_pt>45. && pthiggs<100.'
 cat_J1_medium = cat_J1 + ' && l1_pt>30. && l1_pt<=45.'
 
+cat_J1_oldlow = cat_J1 + ' && l1_pt<=40.'
+cat_J1_oldhigh = cat_J1 + ' && l1_pt>40.'
+
+cat_J0_oldlow = cat_J0 + ' && l1_pt<=40.'
+cat_J0_oldhigh = cat_J0 + ' && l1_pt>40.'
+
 cat_VBF_tight = 'nJets>=2 && nBJets==0 && VBF_nCentral==0 && VBF_mjj>700 && abs(VBF_deta)>4. && pthiggs>100.'
-cat_VBF_loose = 'nJets>=2 && nBJets==0 && VBF_nCentral==0 && VBF_mjj>500 && abs(VBF_deta)>3.5 && !({VBF_tight})'.format(VBF_tight=cat_VBF_tight)
+cat_VBF_loose = cat_VBF + '&& nBJets==0 && !({VBF_tight})'.format(VBF_tight=cat_VBF_tight)
 
 def replaceCategories(cutstr, categories):
     for catname, cat in categories.iteritems():
@@ -47,4 +56,10 @@ categories_common = {
     'Xcat_J1_mediumX':cat_J1_medium,
     'Xcat_VBF_tightX':cat_VBF_tight,
     'Xcat_VBF_looseX':cat_VBF_loose,
+    'Xcat_J0_oldlowX':cat_J0_oldlow,
+    'Xcat_J0_oldhighX':cat_J0_oldhigh,
+    'Xcat_J1_oldlowX':cat_J1_oldlow,
+    'Xcat_J1_oldhighX':cat_J1_oldhigh,
+    'Xcat_1BInclusiveX':cat_1BInclusive,
+    'Xcat_0BX':cat_0B,
     }

@@ -10,16 +10,49 @@ class PlotInfo(object):
         
 
 plots_All = {
+
     'l2_pt': PlotInfo('l2_pt', 100, 0, 200),
     'l2_eta': PlotInfo('l2_eta', 50, -3, 3),
-    'l2_relIso05': PlotInfo('l2_relIso05', 50, 0, 0.1),
+    'l2_relIso05': PlotInfo('l2_relIso05', 50, 0, 0.5),
+    'l2_charge': PlotInfo('l2_charge', 3, -1.5, 1.5),
     'l1_pt': PlotInfo('l1_pt', 100, 0, 200),
     'l1_eta': PlotInfo('l1_eta', 50, -3, 3),
-    # 'mt': PlotInfo('mt', 50, 0, 150),
+    'l1_charge': PlotInfo('l1_charge', 3, -1.5, 1.5),
+    'l1_threeHitIso': PlotInfo('l1_threeHitIso', 50, 0., 10.),
+    'l1_decayMode':PlotInfo('l1_decayMode', 15, -0.5, 14.5),
+    'mt': PlotInfo('mt', 50, 0, 150),
     'visMass': PlotInfo('visMass', 50, 0, 200),
     'svfitMass': PlotInfo('svfitMass', 50, 0, 300),
-    'nJets': PlotInfo('nJets', 7, 0, 7),
-    'nVert': PlotInfo('nVert', 50, 0, 50)
+    'svfitMassFewerBins': PlotInfo('svfitMass', 30, 0, 300),
+    'svfitMassFewBins': PlotInfo('svfitMass', 10, 0, 300),
+    'nJets': PlotInfo('nJets', 7, -0.5, 6.5),
+    # 'nJets20': PlotInfo('nJets20', 10, -0.5, 9.5),
+    # 'nVert': PlotInfo('nVert', 50, 0, 50),
+    'met': PlotInfo('met', 50, 0, 150),
+    # 'pfmet': PlotInfo('met', 50, 0, 120),
+    'diTau_pt': PlotInfo('diTau_pt', 50, 0, 150),
+    # 'bjet1_pt': PlotInfo('bjet1_pt', 50, 0, 200),
+    'nVert': PlotInfo('nVert', 51, -0.5, 50.5),
+    'pthiggs': PlotInfo('pthiggs', 50, 0., 150.),
+    'deltaEtaL1L2': PlotInfo('deltaEtaL1L2', 20, 0., 5.),
+    'abs_l1_eta_j1_eta': PlotInfo('abs_l1_eta_j1_eta', 20, 0., 5.),
+    'abs_l2_eta_j1_eta': PlotInfo('abs_l2_eta_j1_eta', 20, 0., 5.),
+    'deltaPhiL1L2' :
+        PlotInfo('deltaPhiL1L2', 25, -3.141593, 3.141593),
+    'deltaPhiL1LMET' :
+        PlotInfo('deltaPhiL1MET', 25, -3.141593, 3.141593),
+    'deltaPhiL2LMET' :
+        PlotInfo('deltaPhiL2MET', 25, -3.141593, 3.141593),
+    'deltaRL1L2' :
+        PlotInfo('deltaRL1L2', 25, 0., 5.),
+    'deltaPhi_l1_j1' :
+        PlotInfo('deltaPhi_l1_j1', 25, 0., 3.141593),
+    # 'deltaPhi_j1_met' :
+        # PlotInfo('deltaPhi_j1_met', 25, 0., 3.141593),
+    'deltaPhi_l2_j1' :
+        PlotInfo('deltaPhi_l2_j1', 25, 0., 3.141593),
+    'jet1_pt': PlotInfo('jet1_pt', 30, 0, 300),
+    
     }
 
 plots_J0 = {

@@ -19,6 +19,10 @@ aliases = {
     '/GluGluToHToTauTau.*START53.*':'HiggsGGH',
     '/WH_ZH_TTH_HToTauTau.*START53.*':'HiggsVH',
     '/DYJets.*START53.*':'DYJets',
+    '/DY1JetsToLL_M-50_TuneZ2Star_8TeV-madgraph.*START53.*':'DY1Jets',
+    '/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph.*START53.*':'DY2Jets',
+    '/DY3JetsToLL_M-50_TuneZ2Star_8TeV-madgraph.*START53.*':'DY3Jets',
+    '/DY4JetsToLL_M-50_TuneZ2Star_8TeV-madgraph.*START53.*':'DY4Jets',
     # '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START53_V9-v1.*':'WJets',
     '/WJets.*START53.*':'WJets',
     '/W1Jets.*START53.*':'W1Jets',
@@ -34,13 +38,13 @@ aliases = {
     '/Tbar_tW-channel.*START53.*':'Tbar_tW',
     '/WWJetsTo2L2Nu.*START53.*':'WWJetsTo2L2Nu',
     '/WZJetsTo2L2Q.*START53.*':'WZJetsTo2L2Q',
-    '/WZJetsTo3LNu.*START53.*_C$':'WZJetsTo3LNu',
+    '/WZJetsTo3LNu.*START53.*':'WZJetsTo3LNu',
     '/WW_TuneZ2star.*START53.*':'WW',
     '/WZ_TuneZ2star.*START53.*':'WZ',
     '/ZZ_TuneZ2star.*START53.*':'ZZ',
     '/ZZJetsTo2L2Nu.*START53.*':'ZZJetsTo2L2Nu',
     '/ZZJetsTo2L2Q.*START53.*':'ZZJetsTo2L2Q',
-    '/ZZJetsTo4L.*START53.*_C$':'ZZJetsTo4L',
+    '/ZZJetsTo4L.*START53.*':'ZZJetsTo4L',
     '/DoubleMu/StoreResults-Run2012A_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012A_22Jan',
     '/DoubleMuParked/StoreResults-Run2012D_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012B_22Jan',
     '/DoubleMuParked/StoreResults-Run2012C_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012C_22Jan',
@@ -53,11 +57,37 @@ MC_list.extend( mc_higgs )
 MC_list.extend( mc_diboson ) 
     
 allsamples = copy.copy( MC_list )
+# allsamples.extend( data_list )
+# allsamples.extend( embed_list )
+
+connect( allsamples, '%TAUMU_SVF%_Jun13%', 'tauMu.*root', aliases, cache=True, verbose=False)
+
+connect( data_list, '%TAUMU_SVF%_Jun21%', 'tauMu.*root', aliases, cache=True, verbose=False)
+connect( embed_list, '%TAUMU_SVF%_Jun21%', 'tauMu.*root', aliases, cache=True, verbose=False)
+
 allsamples.extend( data_list )
 allsamples.extend( embed_list )
 
+# Attach number of generated events for stitching
+dy_nevents = [ DYJets.nGenEvents,
+               DY1Jets.nGenEvents,
+               DY2Jets.nGenEvents,
+               DY3Jets.nGenEvents,
+               DY4Jets.nGenEvents
+               ]
+for dy in mc_dy:
+    dy.nevents = dy_nevents
 
-connect( allsamples, '%TAUMU_SVF%_Jun13%', 'tauMu.*root', aliases, cache=True, verbose=False)
+# Attach number of generated events for stitching
+w_nevents = [ WJets.nGenEvents,
+               W1Jets.nGenEvents,
+               W2Jets.nGenEvents,
+               W3Jets.nGenEvents,
+               W4Jets.nGenEvents
+               ]
+for w in mc_w:
+    w.nevents = w_nevents
+
 
 print [(s.name, s.dataset_entries) for s in allsamples]
 for mc in MC_list:

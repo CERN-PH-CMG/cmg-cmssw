@@ -87,6 +87,9 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         #if event.eventId == 70370:
         #    print 'EVENT', event.eventId
         result = super(TauMuAnalyzer, self).process(iEvent, event)
+
+        # import pdb; pdb.set_trace()
+
         if result is False:
             # trying to get a dilepton from the control region.
             # it must have well id'ed and trig matched legs,
@@ -129,10 +132,9 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         
 
     def testLeg1Iso(self, tau, isocut):
-        '''if isocut is None, returns true if loose iso MVA is passed.
+        '''if isocut is None, returns true if three-hit iso cut is passed.
         Otherwise, returns true if iso MVA > isocut.'''
         if isocut is None:
-            #return tau.tauID("byLooseIsoMVA")>0.5 # JAN: using new tau iso
             return tau.tauID('byCombinedIsolationDeltaBetaCorrRaw3Hits') < 1.5
         else:
             return tau.tauID("byRawIsoMVA")>isocut
@@ -202,6 +204,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
     def bestDiLepton(self, diLeptons):
         '''Returns the best diLepton (1st precedence opposite-sign, 2nd precedence
         highest pt1 + pt2).'''
+        # # FIXME - temporary TEST for bias
+        # return max( diLeptons, key=operator.methodcaller( 'sumPt' ) )
         osDiLeptons = [dl for dl in diLeptons if dl.leg1().charge() != dl.leg2().charge()]
         if osDiLeptons:
             return max( osDiLeptons, key=operator.methodcaller( 'sumPt' ) )

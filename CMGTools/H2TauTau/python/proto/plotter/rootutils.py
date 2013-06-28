@@ -38,13 +38,18 @@ xtitles = {
     'pfmet':'PF E_{T}^{miss} [GeV]',
     'diTau_pt':'p_{T}_{#mu #tau}',
     'bjet1_pt':'p_{T}_{bjet 1}',
-    'abs_l1_eta_l2_eta':'#Delta#eta (#tau, #mu)',
+    'deltaEtaL1L2':'#Delta#eta (#tau, #mu)',
     'abs_l1_eta_j1_eta':'#Delta#eta (#tau, jet 1)',
     'abs_l2_eta_j1_eta':'#Delta#eta (#mu, jet 1)',
-    'deltaPhi_l1_l2':'#Delta#Phi (#tau, #mu)',
+    'deltaPhiL1L2':'#Delta#Phi (#tau, #mu)',
+    'deltaRL1L2':'#Delta R (#tau, #mu)',
+    'deltaPhiL1MET':'#Delta#Phi (#tau, E_{T}^{miss})',
+    'deltaPhiL2MET':'#Delta#Phi (#mu, E_{T}^{miss})',
     'deltaPhi_l1_j1':'#Delta#Phi (#tau, jet 1)',
     'deltaPhi_l2_j1':'#Delta#Phi (#mu, jet 1)',
     'l1_threeHitIso':'#tau 3-hit iso [GeV]',
+    'pthiggs':'p_{T} Higgs (GeV)',
+    'l1_decayMode':'#tau decay mode',
 
     }
 
@@ -160,7 +165,8 @@ def draw(plot, doBlind=True, channel='TauMu', plotprefix = None, SetLogy = 0):
     if xtitle is None:
         xtitle = ''
     global can, pad, padr, ratio
-    if pad is None:
+    #if pad is None:
+    if not pad:
         can, pad, padr = buildCanvas()
     pad.cd()
     pad.SetLogy (SetLogy)
@@ -178,6 +184,7 @@ def draw(plot, doBlind=True, channel='TauMu', plotprefix = None, SetLogy = 0):
         ratio.Blind(blindxmin, blindxmax, True)
     ratio.DrawRatioStack('HIST', ymin=0.4, ymax=1.6)
     hr = ratio.stack.totalHist
+    plot.ratioTotalHist = hr
     # hr.weighted.Fit('pol1')
     hr.GetYaxis().SetNdivisions(4)
     hr.GetYaxis().SetTitle('Exp./Obs.')

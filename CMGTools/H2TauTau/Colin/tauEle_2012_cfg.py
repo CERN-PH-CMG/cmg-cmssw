@@ -13,23 +13,30 @@ shift = None
 # 1.0, 1.03, 0.97
 tauScaleShift = 1.0
 syncntuple = True
+doThePlot = True
 
 puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
 
-
-puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/28-09-12/MC_Summer12_PU_S10-600bins.root'
-puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/28-09-12/Data_Pileup_2012_HCP-600bins.root'
-
+puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-06-13/MC_Summer12_PU_S10-600bins.root'
+puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-06-13/Data_Pileup_2012_ReReco-600bins.root'
 
 # vertexFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012/Vertices'
 # vertexFileData = '/'.join([vertexFileDir, 'vertices_data_2012A_2012B_start_195947.root'])
 
 mc_vertexWeight = None
 
-hlt_tauEffWeight_mc = 'eff2012Tau20MC53X_TauEle'
-hlt_tauEffWeight = 'effTau2012ABC_TauEle'
-hlt_eleEffWeight_mc = 'eff_2012_Rebecca_TauEle_Ele2253XMC'
-hlt_eleEffWeight = 'effEle2012_Rebecca_TauEle_ABC'
+hlt_tauEffWeight_mc = 'effTau_eTau_MC_2012ABCDSummer13'
+hlt_tauEffWeight = 'effTau_eTau_Data_2012ABCDSummer13'
+hlt_eleEffWeight_mc = 'effEle_eTau_MC_2012ABCD'
+hlt_eleEffWeight = 'effEle_eTau_Data_2012ABCDSummer13'
+    
+eventSelector = cfg.Analyzer(
+    'EventSelector',
+    toSelect = [
+    # 569585, 57550, 912336, 133349, 423876, 468948, 676704, 126551, 586718, 375970, 922574, 206784
+    168219, 936722, 147035, 57589, 207111
+    ]
+    )
 
 jsonAna = cfg.Analyzer(
     'JSONAnalyzer',
@@ -90,15 +97,10 @@ dyLLReweighterTauEle = cfg.Analyzer(
     verbose = False
     )
 
-WNJetsAna = cfg.Analyzer(
-    'WNJetsAnalyzer',
+NJetsAna = cfg.Analyzer(
+    'NJetsAnalyzer',
     verbose = False,
-    fractions = [ 0.743912391955,
-                  0.175996204386,
-                  0.0562852166761,
-                  0.0168876628296,
-                  0.00691852415316,
-                ],
+    fillTree = True,
     )
 
 higgsWeighter = cfg.Analyzer(
@@ -157,7 +159,7 @@ treeProducerXCheck = cfg.Analyzer(
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.run2012.tauEle_Sync_Colin import *
+from CMGTools.H2TauTau.proto.samples.run2012.tauEle_JanJun25 import *
 
 #########################################################################################
 
@@ -170,12 +172,6 @@ for emb in embed_list:
     emb.puFileData = None
     emb.puFileMC = None
 
-WNJetsAna.nevents = [ WJets.nGenEvents,
-                      W1Jets.nGenEvents,
-                      W2Jets.nGenEvents,
-                      W3Jets.nGenEvents,
-                      W4Jets.nGenEvents
-                      ]
 
 # selectedComponents = allsamples
 diboson_list = [    WWJetsTo2L2Nu,
@@ -189,13 +185,32 @@ diboson_list = [    WWJetsTo2L2Nu,
                     ]
 WJetsSoup = copy.copy(WJets)
 WJetsSoup.name = 'WJetsSoup'
+
+DYJetsSoup = copy.copy(DYJets)
+DYJetsSoup.name = 'DYJetsSoup'
+
 VVgroup = [comp.name for comp in diboson_list]
 # higgs = [HiggsVBF125, HiggsGGH125, HiggsVH125]
-selectedComponents =  [WJetsSoup, TTJets, DYJets]
-# selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets, TTJets, DYJets]
+
+selectedComponents = [
+    WJets, W1Jets, W2Jets, W3Jets, W4Jets, 
+    TTJets, 
+    DYJets, DY1Jets, DY2Jets, DY3Jets, DY4Jets,
+    ]
+
+if doThePlot:
+    selectedComponents = [
+    WJetsSoup,
+    TTJets, 
+    DYJetsSoup
+    ]
+
+    VVgroup = None
+
 higgs = mc_higgs
-selectedComponents.extend( higgs )
-selectedComponents.extend( diboson_list )
+if not doThePlot:
+    selectedComponents.extend( higgs )
+    selectedComponents.extend( diboson_list )
 selectedComponents.extend( data_list )
 selectedComponents.extend( embed_list )
 
@@ -207,7 +222,7 @@ sequence = cfg.Sequence( [
     tauEleAna,
     dyJetsFakeAna,
     dyLLReweighterTauEle,
-    WNJetsAna, 
+    NJetsAna, 
     higgsWeighter, 
     vbfAna,
     pileUpAna,
@@ -225,8 +240,9 @@ test = 1
 if test==1:
     comp = HiggsVBF125
     # comp.files = comp.files[:5]
+    # comp = embed_Run2012D_22Jan
     selectedComponents = [comp]
-    comp.splitFactor = 14
+    comp.splitFactor = 10
 elif test==2:
     selectedComponents = copy.copy(data_list)
     selectedComponents.extend(embed_list)

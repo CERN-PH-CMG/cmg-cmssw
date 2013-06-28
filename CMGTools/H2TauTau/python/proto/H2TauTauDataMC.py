@@ -64,6 +64,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
                                                                    weight=self.eventWeight) )
         hist.SetStats(0)
         # hist.Sumw2()
+
         componentName = compName
         legendLine = compName
         if legendLine=='Data':

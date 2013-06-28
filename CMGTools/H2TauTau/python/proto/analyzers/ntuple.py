@@ -41,6 +41,7 @@ def bookDiLepton(tree):
     var( tree, 'pZetaDisc')
     var( tree, 'mt')
     var( tree, 'met')
+    var( tree, 'metphi')
     var( tree, 'pthiggs')
     var( tree, 'deltaPhiL1L2')
     var( tree, 'deltaEtaL1L2')
@@ -57,6 +58,7 @@ def fillDiLepton(tree, diLepton):
     fill(tree, 'pZetaDisc', diLepton.pZetaDisc())
     fill(tree, 'mt', diLepton.mTLeg2())
     fill(tree, 'met', diLepton.met().pt())
+    fill(tree, 'metphi', diLepton.met().phi())
 
     pthiggs = (diLepton.leg1().p4()+diLepton.leg2().p4()+diLepton.met().p4()).pt()
     fill(tree, 'pthiggs', pthiggs)
@@ -150,7 +152,9 @@ def bookTau( tree, pName ):
     var(tree, '{pName}_againstElectronMVA'.format(pName=pName))    
     var(tree, '{pName}_againstElectronTightMVA2'.format(pName=pName))
     var(tree, '{pName}_againstElectronTightMVA3'.format(pName=pName))
-    var(tree, '{pName}_againstElectronMedium'.format(pName=pName))    
+    var(tree, '{pName}_againstElectronMedium'.format(pName=pName))
+    var(tree, '{pName}_againstElectronMVA3Medium'.format(pName=pName))
+    
     var(tree, '{pName}_againstMuonLoose'.format(pName=pName))
     var(tree, '{pName}_againstMuonLoose2'.format(pName=pName))
 
@@ -192,6 +196,9 @@ def fillTau( tree, pName, tau ):
          tau.tauID("againstElectronTightMVA3"))
     fill(tree, '{pName}_againstElectronMedium'.format(pName=pName),
          tau.tauID("againstElectronMedium"))
+    fill(tree, '{pName}_againstElectronMVA3Medium'.format(pName=pName),
+         tau.electronMVA3Medium())
+
     fill(tree, '{pName}_againstMuonLoose'.format(pName=pName),
          tau.tauID("againstMuonLoose"))
     fill(tree, '{pName}_againstMuonLoose2'.format(pName=pName),

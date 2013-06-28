@@ -115,7 +115,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     def process(self, iEvent, event):
         
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         result = super(TauEleAnalyzer, self).process(iEvent, event)
         
         if self.cfg_ana.verbose and result is False:
@@ -194,10 +194,9 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
 
     def testLeg1Iso(self, tau, isocut):
-        '''if isocut is None, returns true if loose iso MVA is passed.
+        '''if isocut is None, returns true if three-hit iso MVA is passed.
         Otherwise, returns true if iso MVA > isocut.'''
         if isocut is None:
-            # return tau.tauID("byLooseIsoMVA")>0.5
             return tau.tauID('byCombinedIsolationDeltaBetaCorrRaw3Hits') < 1.5
         else:
             return tau.tauID("byRawIsoMVA")>isocut
