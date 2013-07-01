@@ -223,6 +223,8 @@ class Zanalysis_controlplots {
   virtual float getPseudoMET(double pfmet_corr, double pfmet_phi_corr, int type);
   virtual float getPseudoMT(double met, double metphi);
 
+  virtual pair<float,float> getPhiCorrMET( float met, float metphi, int nvtx, bool ismc );
+
 };
 
 #endif
@@ -496,5 +498,29 @@ float Zanalysis_controlplots::getPseudoMT(double pfmet_corr, double pfmet_phi_co
 
 }
 
+
+pair<float,float> Zanalysis_controlplots::getPhiCorrMET( float met, float metphi, int nvtx, bool ismc ) {                                                 
+
+  //using met phi corrections from C. Veelken (revision 1.6)
+  //functions are available here:                                                                                                            
+  //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/JetMETCorrections/Type1MET/python/pfMETsysShiftCorrections_cfi.py                               
+  float metx = met * cos( metphi );
+  float mety = met * sin( metphi );
+
+  float shiftx = 0.;
+  float shifty = 0.;
+
+  //use correction for data vs. mc                                                                                                                  // these numbers are documented in AN2012_333_v5
+  shiftx = ismc ? (0.1166 + 0.0200*nvtx)
+    : (0.2661 + 0.3217*nvtx);
+  shifty = ismc ? (0.2764 - 0.1280*nvtx)
+    : (-0.2251 - 0.1747*nvtx);
+
+  metx -= shiftx;
+  mety -= shifty;
+
+  pair<float, float> phicorrmet = make_pair( sqrt( metx*metx + mety*mety ), atan2( mety , metx ) );
+  return phicorrmet;
+}
 
 #endif // #ifdef Zanalysis_controlplots_cxx
