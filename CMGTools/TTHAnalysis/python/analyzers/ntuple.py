@@ -65,6 +65,7 @@ def bookLepton( tree, pName, isMC=False ):
     var(tree, '{pName}_mva'.format(pName=pName))
     var(tree, '{pName}_tightCharge'.format(pName=pName), int)
     if isMC:
+        var(tree, '{pName}_mcMatchTau'.format(pName=pName), int)
         var(tree, '{pName}_mcMatchId'.format(pName=pName), int)
         var(tree, '{pName}_mcMatchAny'.format(pName=pName), int)
         var(tree, '{pName}_mcDeltaRB'.format(pName=pName))
@@ -136,6 +137,7 @@ def fillLepton( tree, pName, lepton ):
             fill(tree, '{pName}_mvaNoCorr'.format(pName=pName), lepton.mvaNoCorr)
             fill(tree, '{pName}_mvaDoubleCorr'.format(pName=pName), lepton.mvaDoubleCorr)
     if hasattr(lepton, 'mcMatchId'):
+        fill(tree, '{pName}_mcMatchTau'.format(pName=pName), lepton.mcMatchTau)
         fill(tree, '{pName}_mcMatchId'.format(pName=pName), lepton.mcMatchId)
         fill(tree, '{pName}_mcMatchAny'.format(pName=pName), lepton.mcMatchAny)
         fill(tree, '{pName}_mcDeltaRB'.format(pName=pName), lepton.mcDeltaRB)

@@ -68,6 +68,7 @@ class ttHGenLevelAnalyzer( Analyzer ):
         for i in xrange( particle.numberOfDaughters() ):
             dau = GenParticle(particle.daughter(i))
             dau.sourceId = sourceId
+            dau.isTau = isTau
             id = abs(dau.pdgId())
             if id in [11,13]:
                 if isTau: event.gentauleps.append(dau)

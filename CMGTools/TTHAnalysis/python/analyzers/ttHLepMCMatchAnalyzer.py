@@ -84,6 +84,7 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
         for lep in event.selectedLeptons:
             gen = match[lep]
             lep.mcMatchId = (gen.sourceId if gen != None else 0)
+            lep.mcMatchTau = (gen.isTau if gen != None else -99)
 
     def isFromB(self,particle):
         for i in xrange( particle.numberOfMothers() ): 
