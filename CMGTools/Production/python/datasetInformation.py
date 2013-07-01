@@ -67,10 +67,10 @@ def getIndex(name):
     result = regex.match( base ).groups()           #the returned tuple will be either ( None, None, string, string )
                                                     #or ( string, string, None, None ) if the filename is valid
     if ( result[1] == None ):
-        if ( result[3] == None ):
+        if ( result[4] == None ):
             raise NameError( "Invalid filename - Crab of cmsbatch pattern not detected" )
         else:
-            return int( result[3] )
+            return int( result[4] )
     else:
         return int( result[1] )
 
