@@ -20,6 +20,7 @@ class LepTreeProducer(Module):
         self.t.branch("run","F")
         self.t.branch("pair_probeMultiplicity","F")
         self.t.branch("nVert","F")
+        self.t.branch("nJet25","F")
         #tight charge cuts
         self.t.branch("tightCharge","F")
         self.t.branch("convVeto","F")
@@ -32,6 +33,7 @@ class LepTreeProducer(Module):
         if len(mu) < 2: return True
         self.t.run = event.run
         self.t.nVert = event.nVert
+        self.t.nJet25 = event.nJet25
         for i,tag in enumerate(mu):
             pairs = []
             if tag.relIso > 0.2: continue
