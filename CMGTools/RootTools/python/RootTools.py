@@ -3,7 +3,7 @@ Load the libraries needed to use RootTools
 """
 # import ROOT as rt
 
-from ROOT import TH1F, TH2F, TProfile, TTree, TFile, TLegend
+from ROOT import gROOT, TFile, TCanvas, TPad, gPad, TBrowser, TH2F, TH1F, TH1D , TProfile, TLegend, gDirectory
 
 def loadLibs():
     print 'loading FWLite.'
