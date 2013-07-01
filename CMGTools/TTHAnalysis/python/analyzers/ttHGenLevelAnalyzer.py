@@ -137,14 +137,14 @@ class ttHGenLevelAnalyzer( Analyzer ):
             def hasDescendent(particle, filter):
                 for i in xrange(particle.numberOfDaughters()):
                     dau = particle.daughter(i)
-                    if filter(dau) or hasAncestor(dau, filter):
+                    if filter(dau) or hasDescendent(dau, filter):
                         return True
                 return False
 
-            bosons = [ gp for gp in event.genParticles if gp.status() == 3 and abs(gp.pdgId()) in [22,23,34] ]
+            bosons = [ gp for gp in event.genParticles if gp.status() == 3 and abs(gp.pdgId()) in [22,23,24] ]
             for b in bosons:
                 if hasAncestor(b,   lambda gp : abs(gp.pdgId()) == 6): continue
-                if hasDescendent(b, lambda gp : abs(gp.pdgId()) in [22,23,34] and gp.status() == 3): continue
+                if hasDescendent(b, lambda gp : abs(gp.pdgId()) in [22,23,24] and gp.status() == 3): continue
                 self.fillGenLeptons(event, b, sourceId=abs(b.pdgId()))
                 self.fillWZQuarks(event, b, isWZ=True, sourceId=abs(b.pdgId()))
         else:
