@@ -159,14 +159,14 @@ class InstallCMGTools(object):
                         if ( analysisdataformats_repo_cloned == False ):    #git clone if not already cloned
                             subprocess.call(['git', 
                                              'clone', 
-                                             'git@github.com:anantoni/AnalysisDataFormats.git'])
+                                             'https://github.com/anantoni/AnalysisDataFormats.git'])
                             analysisdataformats_repo_clone = True
                     
                     if ( cmg_repo == "CMGTools" ):                          #CMGTools repo
                         if ( cmgtools_repo_cloned == False ):               #git clone if not already cloned
                             subprocess.call(['git', 
                                              'clone', 
-                                             'git@github.com:anantoni/CMGTools.git'])
+                                             'https://github.com/anantoni/CMGTools.git'])
                             cmgtools_repo_clone = True
                     
                     pwd = os.getcwd()
