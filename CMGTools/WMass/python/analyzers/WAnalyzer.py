@@ -150,8 +150,10 @@ class WAnalyzer( Analyzer ):
         # total number of reco muons
         event.nMuons=len(event.selMuons)
         # clean jets by removing muons
-        event.selJets = [ jet for jet in event.allJets if not \
-                                (bestMatch( jet , event.selMuons ))[1] <0.5
+        event.selJets = [ jet for jet in event.allJets if ( \
+                                        not (bestMatch( jet , event.selMuons ))[1] <0.5 \
+                                        and jet.looseJetId() and jet.pt()>30 \
+                                        )
                         ]
 
         # reco events must have good reco vertex and trigger fired...
@@ -273,8 +275,11 @@ class WAnalyzer( Analyzer ):
         metVect.SetZ(0.) # use only transverse info
         WVect = event.W4V.Vect()
         WVect.SetZ(0.) # use only transverse info
-        recoilVect = copy.deepcopy(metVect)
-        recoilVect -= WVect
+        recoilVect = - copy.deepcopy(metVect) ## FIXED (met sign inverted)
+        # recoilVect -= WVect
+        temp_recoil = event.selMuons[0].p4().Vect()
+        temp_recoil.SetZ(0.) # use only transverse info
+        recoilVect -= temp_recoil ## FIXED (subtract only lepton for consistent recoil definition)
         
         uWVect = WVect.Unit()
         zAxis = type(WVect)(0,0,1)
@@ -360,7 +365,9 @@ class WAnalyzer( Analyzer ):
         # return True
         return ( leg.tightId() and \
                  leg.dxy() < 0.2 and\
-                 leg.dz() < 0.5 )
+                 leg.dz() < 0.5 and\
+                 leg.trackerLayersWithMeasurement() > 8
+                 )
 
     
     def testLegIso(self, leg, isocut):

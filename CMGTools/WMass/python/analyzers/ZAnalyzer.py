@@ -155,8 +155,10 @@ class ZAnalyzer( Analyzer ):
         # store event MET and jets in all gen events (necessary to make cuts in genp studies...)
         event.ZpfmetNoMu = event.pfmet.p4()
         # clean jets by removing muons
-        event.ZselJets = [ jet for jet in event.ZallJets if not \
-                                (bestMatch( jet , event.ZallMuons ))[1] <0.5
+        event.ZselJets = [ jet for jet in event.ZallJets if ( \
+                                not (bestMatch( jet , event.ZallMuons ))[1] <0.5 \
+                                and jet.looseJetId() and jet.pt()>30 \
+                                )
                           ]
         
         # reco events must have good reco vertex and trigger fired...                          
@@ -308,7 +310,7 @@ class ZAnalyzer( Analyzer ):
         metVect.SetZ(0.) # use only transverse info
         ZVect = event.Z4V.Vect()
         ZVect.SetZ(0.) # use only transverse info
-        recoilVect = copy.deepcopy(metVect)                # XCHECK FOR A BUG !!!! SHOULD THE MET SIGN BE INVERTED?!?!?!?!?  vU = - vMET - vZ !!!
+        recoilVect = - copy.deepcopy(metVect)  ## FIXED (met sign inverted) vU = - vMET - vZ
         recoilVect -= ZVect
         
         uZVect = ZVect.Unit()
@@ -413,7 +415,8 @@ class ZAnalyzer( Analyzer ):
         # return True
         return (leg.tightId() and \
                 leg.dxy() < 0.2 and \
-                leg.dz() < 0.5 )
+                leg.dz() < 0.5 and \
+                leg.trackerLayersWithMeasurement() > 8)
                 
                 
     def testLegIso(self, leg, isocut):
