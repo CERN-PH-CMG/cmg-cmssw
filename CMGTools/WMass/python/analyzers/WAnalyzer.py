@@ -286,7 +286,7 @@ class WAnalyzer( Analyzer ):
         uWVectPerp = WVect.Cross(zAxis).Unit()
 
         u1 = - recoilVect.Dot(uWVect) # recoil parallel to W pt
-        u2 = recoilVect.Dot(uWVectPerp) # recoil perpendicular to W pt
+        u2 = - recoilVect.Dot(uWVectPerp) # recoil perpendicular to W pt
 
         event.u1 = u1
         event.u2 = u2
