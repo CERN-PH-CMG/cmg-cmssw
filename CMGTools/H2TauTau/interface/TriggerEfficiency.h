@@ -591,8 +591,8 @@ public:
     else               return efficiency(pt,18.701715,    0.216523,    0.148111,    2.245081,    0.895320);
   }
   double effTau_muTau_MC_2012ABCDSummer13(double pt, double eta) {
-    if(fabs(eta)<1.5)  return efficiency(pt,18.537441,    1.385790,    3.102076,    1.002486,    6.275127);
-    else               return efficiency(pt,18.393366,    1.526254,    2.021678,    124.741631,    0.894280);
+    if(fabs(eta)<1.5)  return efficiency(pt,18.532997,    1.027880,    2.262950,    1.003322,    5.297292);
+    else               return efficiency(pt,18.212782,    0.338119,    0.122828,    12.577926,    0.893975);
   }
 
 
@@ -807,8 +807,8 @@ public:
     else               return efficiency(pt,18.756548,    0.230732,    0.142859,    3.358497,    0.851919);
   }
   double effTau_eTau_MC_2012ABCDSummer13(double pt, double eta) {
-    if(fabs(eta)<1.5)  return efficiency(pt,18.525766,    0.275904,    0.126185,    4.957594,    0.915910);
-    else               return efficiency(pt,18.552006,    0.632002,    0.426891,    133.934952,    0.866543);
+    if(fabs(eta)<1.5)  return efficiency(pt,18.605055,    0.264062,    0.139561,    4.792849,    0.915035);
+    else               return efficiency(pt,18.557810,    0.280908,    0.119282,    17.749043,    0.865756);
   }
 
 
