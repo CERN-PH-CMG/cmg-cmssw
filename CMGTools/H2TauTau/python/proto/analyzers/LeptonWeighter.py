@@ -57,7 +57,8 @@ class LeptonWeighter( Analyzer ):
                                                       lep.eta() )
             lep.triggerWeight = lep.triggerEffData
 
-            if self.trigEff.lepEffMC is not None and \
+            # JAN: Don't apply MC trigger efficiency for embedded samples
+            if not self.cfg_comp.isEmbed and self.trigEff.lepEffMC is not None and \
                    len(self.cfg_comp.triggers)>0:
                 lep.triggerEffMC = self.trigEff.lepEffMC( lep.pt(),
                                                           lep.eta() )
@@ -79,7 +80,8 @@ class LeptonWeighter( Analyzer ):
 
             if hasattr( self.cfg_ana, 'idWeight'):
                 lep.idWeight = self.cfg_ana.idWeight.weight(lep.pt(), abs(lep.eta()) ).weight.value
-            if hasattr( self.cfg_ana, 'isoWeight'):
+            # JAN: Do not apply iso weight for embedded sample
+            if hasattr( self.cfg_ana, 'isoWeight') and not self.cfg_comp.isEmbed:
                 lep.isoWeight = self.cfg_ana.isoWeight.weight(lep.pt(), abs(lep.eta()) ).weight.value
             
         lep.recEffWeight = lep.idWeight * lep.isoWeight
