@@ -87,9 +87,9 @@ void load(TTree *iTree, int type) {
     iTree->SetBranchAddress("eta_2" ,&fEta2);
     iTree->SetBranchAddress("phi_2" ,&fPhi2);
     iTree->SetBranchAddress("taujetpt" ,&fPt2);
+  */
     iTree->SetBranchAddress("pt_vis"  ,&fPt1);
     iTree->SetBranchAddress("phi_vis" ,&fPhi1);
-  */
 
   iTree->SetBranchAddress("MuNeg_eta" ,&fEta2);
   iTree->SetBranchAddress("MuNeg_phi" ,&fPhi2);
@@ -99,8 +99,8 @@ void load(TTree *iTree, int type) {
   iTree->SetBranchAddress("MuPos_pt"  ,&fPt1); 
   iTree->SetBranchAddress("MuPos_phi" ,&fPhi1); */ // this maybe for the W
 
-  iTree->SetBranchAddress("Z_pt"  ,&fPt1); //
-  iTree->SetBranchAddress("Z_phi" ,&fPhi1);
+  // iTree->SetBranchAddress("Z_pt"  ,&fPt1); //
+  // iTree->SetBranchAddress("Z_phi" ,&fPhi1);
 
   //iTree->SetBranchAddress("Weight",&fWeight); // this is set to 1 fot now
 
@@ -912,7 +912,7 @@ void runRecoilFit_v6(int MCtype) {
 
     cout << "PROCESSING DY MC " << endl;
     //  fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
-    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = false; fId = 1;
     //    fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_Z_inc_1.root");
@@ -923,7 +923,7 @@ void runRecoilFit_v6(int MCtype) {
 
     cout << "PROCESSING DY MC " << endl;
     //  fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
-    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = false; fId = 2;
     fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_Z_inc_2.root");
@@ -934,7 +934,7 @@ void runRecoilFit_v6(int MCtype) {
 
     cout << "PROCESSING DY MC " << endl;
     //  fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
-    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = false; fId = 3;
     fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_Z_inc_3.root");
@@ -945,7 +945,7 @@ void runRecoilFit_v6(int MCtype) {
 
     cout << "PROCESSING DY MC " << endl;
     //  fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
-    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = false; fId = 4;
     fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_Z_inc_4.root");
@@ -955,7 +955,7 @@ void runRecoilFit_v6(int MCtype) {
 
     cout << "PROCESSING DY MC " << endl;
     //  fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
-    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = false; fId = 5;
     fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_Z_inc_5.root");
@@ -965,7 +965,7 @@ void runRecoilFit_v6(int MCtype) {
 
     cout << "PROCESSING DY MC " << endl;
     //  fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
-    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = false; fId = 6;
     fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_Z_inc_6.root");
@@ -976,7 +976,7 @@ void runRecoilFit_v6(int MCtype) {
 
   if(MCtype==10) {
     cout << "PROCESSING DY DATA " << endl;
-    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DATA/ZTreeProducer_tree_RecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DATA/ZTreeProducer_tree_RecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = true; fId = 1;
     fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_DATA.root");
@@ -984,7 +984,7 @@ void runRecoilFit_v6(int MCtype) {
 
   if(MCtype==12) {
     cout << "PROCESSING DY DATA " << endl;
-    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DATA/ZTreeProducer_tree_RecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DATA/ZTreeProducer_tree_RecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = true; fId = 2;
     fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_DATA_2.root");
@@ -993,7 +993,7 @@ void runRecoilFit_v6(int MCtype) {
 
   if(MCtype==13) {
     cout << "PROCESSING DY DATA " << endl;
-    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DATA/ZTreeProducer_tree_RecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DATA/ZTreeProducer_tree_RecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = true; fId = 3;
     fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_DATA_3.root");
@@ -1002,7 +1002,7 @@ void runRecoilFit_v6(int MCtype) {
 
   if(MCtype==14) {
     cout << "PROCESSING DY DATA " << endl;
-    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DATA/ZTreeProducer_tree_RecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DATA/ZTreeProducer_tree_RecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = true; fId = 4;
     fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_DATA_4.root");
