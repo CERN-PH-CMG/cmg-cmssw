@@ -317,7 +317,7 @@ class ZAnalyzer( Analyzer ):
         zAxis = type(ZVect)(0,0,1)
         uZVectPerp = ZVect.Cross(zAxis).Unit()
 
-        u1 = - recoilVect.Dot(uZVect) # recoil parallel to Z pt
+        u1 = recoilVect.Dot(uZVect) # recoil parallel to Z pt
         u2 = - recoilVect.Dot(uZVectPerp) # recoil perpendicular to Z pt
 
         event.Zu1 = u1
