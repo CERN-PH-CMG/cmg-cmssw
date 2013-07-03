@@ -108,6 +108,13 @@ pathsAndFilters = {
     'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_v1': ("hltDoublePFTau35TrackPt1MediumIsolationProng4Dz02","hltDoublePFTau35TrackPt1MediumIsolationProng4Dz02"),
     'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_v3': ("hltDoublePFTau35TrackPt1MediumIsolationProng4Dz02","hltDoublePFTau35TrackPt1MediumIsolationProng4Dz02"),
     'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_v4': ("hltDoublePFTau35TrackPt1MediumIsolationProng4Dz02","hltDoublePFTau35TrackPt1MediumIsolationProng4Dz02"),
+    # Embedded triggers: No filters
+    'HLT_Mu17_Mu8_v16':('', ''),
+    'HLT_Mu17_Mu8_v17':('', ''),
+    'HLT_Mu17_Mu8_v18':('', ''),
+    'HLT_Mu17_Mu8_v19':('', ''),
+    'HLT_Mu17_Mu8_v21':('', ''),
+    'HLT_Mu17_Mu8_v22':('', ''),
     }
     
 

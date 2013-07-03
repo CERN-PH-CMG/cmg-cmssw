@@ -2,6 +2,8 @@ from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.statistics.Average import Average
 from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
+from CMGTools.RootTools.statistics.Counter import Counter, Counters
 
 class EmbedWeighter( Analyzer ):
     '''Gets lepton efficiency weight and puts it in the event'''
@@ -14,6 +16,10 @@ class EmbedWeighter( Analyzer ):
         print self, self.__class__
         super(EmbedWeighter,self).beginLoop()
         self.averages.add('weight', Average('weight') )
+        self.counters.addCounter('EmbedWeighter')
+        count = self.counters.counter('EmbedWeighter')
+        count.register('all events')
+        count.register('gen Z mass > 50')
 
 
     def declareHandles(self):
@@ -49,6 +55,10 @@ class EmbedWeighter( Analyzer ):
                     ('embeddingKineReweightRECembedding', 'genDiTauMassVsGenDiTauPt'),
                     'double'
                     )
+                self.embhandles['genpart'] =  AutoHandle(
+                    'genTausFromZsForEmbeddingKineReweight',
+                    'std::vector<reco::GenParticle>'
+                    )
             else:
                 self.embhandles['minVisPtFilter'] = AutoHandle(
                     ('generator', 'weight'),
@@ -81,6 +91,16 @@ class EmbedWeighter( Analyzer ):
                 self.weight *= genTau2PtVsGenTau1Pt[0]
                 self.weight *= genTau2EtaVsGenTau1Eta[0]
                 self.weight *= genDiTauMassVsGenDiTauPt[0]
+
+                self.counters.counter('EmbedWeighter').inc('all events')
+
+                event.genParticles = map( GenParticle, self.embhandles['genpart'].product() )
+                genZMass = (event.genParticles[0].p4() + event.genParticles[1].p4()).mass()
+                # import pdb; pdb.set_trace()
+                
+                if genZMass < 50.:
+                    return False
+                self.counters.counter('EmbedWeighter').inc('gen Z mass > 50')
             else: 
                 self.weight = genfilter[0]
         if self.cfg_ana.verbose:

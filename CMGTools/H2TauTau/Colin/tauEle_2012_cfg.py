@@ -13,7 +13,7 @@ shift = None
 # 1.0, 1.03, 0.97
 tauScaleShift = 1.0
 syncntuple = True
-doThePlot = True
+doThePlot = False
 
 puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
 
@@ -236,7 +236,7 @@ if syncntuple:
     sequence.append( treeProducerXCheck)
 
 
-test = 1
+test = 0
 if test==1:
     comp = HiggsVBF125
     # comp.files = comp.files[:5]

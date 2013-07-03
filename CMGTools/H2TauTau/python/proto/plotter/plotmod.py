@@ -85,7 +85,7 @@ def addQCD( plot, dataName, VVgroup):
     
     
 
-def getQCD( plotSS, plotOS, dataName, VVgroup=None, scale=1.06 ):
+def getQCD( plotSS, plotOS, dataName, VVgroup=None, scale=1.06, subtractBGForShape=True ):
 
     # use SS data as a control region
     # to get the expected QCD shape and yield
@@ -98,7 +98,11 @@ def getQCD( plotSS, plotOS, dataName, VVgroup=None, scale=1.06 ):
     
     plotOSWithQCD = copy.deepcopy( plotOS )
 
-    qcdOS = copy.deepcopy( plotSSWithQCD.Hist('QCD') )
+    if subtractBGForShape:
+        qcdOS = copy.deepcopy( plotSSWithQCD.Hist('QCD') )
+    else:
+        qcdOS = copy.deepcopy( plotSSWithQCD.Hist('Data') )
+        
     # qcdOS.RemoveNegativeValues()
     qcdOS.Scale( qcd_yield / qcdOS.Integral() )
 

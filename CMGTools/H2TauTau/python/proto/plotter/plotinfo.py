@@ -20,6 +20,7 @@ plots_All = {
     'l1_charge': PlotInfo('l1_charge', 3, -1.5, 1.5),
     'l1_threeHitIso': PlotInfo('l1_threeHitIso', 50, 0., 10.),
     'l1_decayMode':PlotInfo('l1_decayMode', 15, -0.5, 14.5),
+    'l1_mass':PlotInfo('l1_mass', 30, 0., 2.),
     'mt': PlotInfo('mt', 50, 0, 150),
     'visMass': PlotInfo('visMass', 50, 0, 200),
     'svfitMass': PlotInfo('svfitMass', 50, 0, 300),

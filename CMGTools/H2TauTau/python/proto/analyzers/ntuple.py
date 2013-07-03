@@ -167,6 +167,7 @@ def bookTau( tree, pName ):
    
     var(tree, '{pName}_EOverp'.format(pName=pName))
     var(tree, '{pName}_decayMode'.format(pName=pName))
+    var(tree, '{pName}_mass'.format(pName=pName))
 
 def fillTau( tree, pName, tau ):
     fillLepton(tree, pName, tau)
@@ -222,6 +223,8 @@ def fillTau( tree, pName, tau ):
          tau.calcEOverP())
     fill(tree, '{pName}_decayMode'.format(pName=pName),
          tau.decayMode())
+    fill(tree, '{pName}_mass'.format(pName=pName),
+         tau.mass())
 
 
 # jet

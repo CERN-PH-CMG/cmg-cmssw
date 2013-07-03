@@ -50,6 +50,7 @@ xtitles = {
     'l1_threeHitIso':'#tau 3-hit iso [GeV]',
     'pthiggs':'p_{T} Higgs (GeV)',
     'l1_decayMode':'#tau decay mode',
+    'l1_mass':'#tau mass [GeV]',
 
     }
 

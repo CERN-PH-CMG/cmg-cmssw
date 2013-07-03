@@ -11,7 +11,7 @@ from CMGTools.H2TauTau.proto.samples.run2012.ewk import *
 from CMGTools.H2TauTau.proto.samples.run2012.diboson import *
 from CMGTools.H2TauTau.proto.samples.run2012.higgs import *
 
-from CMGTools.H2TauTau.proto.samples.run2012.triggers_tauMu import data_triggers, mc_triggers
+from CMGTools.H2TauTau.proto.samples.run2012.triggers_tauMu import data_triggers, mc_triggers, embed_triggers
 
 aliases = {
     '/VBF_HToTauTau.*START53.*':'HiggsVBF',
@@ -63,7 +63,7 @@ allsamples = copy.copy( MC_list )
 connect( allsamples, '%TAUMU_SVF%_Jun13%', 'tauMu.*root', aliases, cache=True, verbose=False)
 
 connect( data_list, '%TAUMU_SVF%_Jun21%', 'tauMu.*root', aliases, cache=True, verbose=False)
-connect( embed_list, '%TAUMU_SVF%_Jun21%', 'tauMu.*root', aliases, cache=True, verbose=False)
+connect( embed_list, '%TAUMU_SVF%_Jul02', 'tauMu.*root', aliases, cache=True, verbose=False)
 
 allsamples.extend( data_list )
 allsamples.extend( embed_list )
@@ -101,6 +101,7 @@ for data in data_list:
 for embed in embed_list:
     if len(embed.files):
         embed.json = jsonPick( data.files[0], jsonMap)
+        embed.triggers = embed_triggers
         # No trigger requirements for embedded samples
 for c in allsamples:
     c.splitFactor = splitFactor(c, 5e4)

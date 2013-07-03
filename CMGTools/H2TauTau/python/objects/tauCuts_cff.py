@@ -15,6 +15,7 @@ def getTauCuts( leg, channel='tauMu'):
     if channel == 'tauMu':
         id = cms.PSet(
             decay = cms.string('{leg}().tauID("decayModeFinding")'.format(leg=leg)),
+            muRejection = cms.string('{leg}().tauID("againstMuonTight") > 0.5'.format(leg=leg))
             )
     elif channel == 'tauEle':    
         id = cms.PSet(
