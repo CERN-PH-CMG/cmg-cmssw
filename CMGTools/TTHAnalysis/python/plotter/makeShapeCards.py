@@ -12,6 +12,7 @@ parser.add_option("-v", "--verbose",  dest="verbose",  default=0,  type="int",  
 (options, args) = parser.parse_args()
 options.weight = True
 options.final  = True
+options.allProcesses  = True
 
 mca  = MCAnalysis(args[0],options)
 cuts = CutsFile(args[1],options)
@@ -19,8 +20,9 @@ cuts = CutsFile(args[1],options)
 binname = os.path.basename(args[1]).replace(".txt","") if options.outname == None else options.outname
 outdir  = options.outdir+"/" if options.outdir else ""
 
-report = mca.getPlotsRaw("x", args[2], args[3], cuts.allCuts(), nodata=True)
-report['data_obs'] = mergePlots("x_data_obs", [p for n,p in report.iteritems()])
+report = mca.getPlotsRaw("x", args[2], args[3], cuts.allCuts())
+
+report['data_obs'] = report['data'].Clone("x_data_obs")
 
 allyields = dict([(p,h.Integral()) for p,h in report.iteritems()])
 procs = []; iproc = {}
@@ -36,7 +38,8 @@ systsEnv = {}
 for sysfile in args[4:]:
     for line in open(sysfile, 'r'):
         if re.match("\s*#.*", line): continue
-        line = re.sub("#.*","",line)
+        line = re.sub("#.*","",line).strip()
+        if len(line) == 0: continue
         field = [f.strip() for f in line.split(':')]
         if len(field) < 4:
             raise RuntimeError, "Malformed line %s in file %s"%(line.strip(),sysfile)
@@ -45,11 +48,13 @@ for sysfile in args[4:]:
             if re.match(binmap,binname) == None: continue
             if name not in systs: systs[name] = []
             systs[name].append((re.compile(procmap),amount))
-        elif field[4] in ["envelop","shapeOnly"]:
+        elif field[4] in ["envelop","shapeOnly","templates"]:
             (name, procmap, binmap, amount) = field[:4]
             if re.match(binmap,binname) == None: continue
             if name not in systs: systsEnv[name] = []
             systsEnv[name].append((re.compile(procmap),amount,field[4]))
+        else:
+            raise RuntimeError, "Unknown systematic type %s" % field[4]
     if options.verbose:
         print "Loaded %d systematics" % len(systs)
         print "Loaded %d envelop systematics" % len(systsEnv)
@@ -71,8 +76,12 @@ for name in systsEnv.keys():
         effect0  = "-"
         effect12 = "-"
         for (procmap,amount,mode) in systsEnv[name]:
-            if re.match(procmap, p): effect = float(amount)
-        if effect != "-":
+            if re.match(procmap, p): effect = float(amount) if mode != "templates" else amount
+        if effect == "-" or effect == "0": 
+            effmap0[p]  = "-" 
+            effmap12[p] = "-" 
+            continue
+        if mode in ["envelop","shapeOnly"]:
             nominal = report[p]
             p0up = nominal.Clone(nominal.GetName()+"_"+name+"0Up"  ); p0up.Scale(effect)
             p0dn = nominal.Clone(nominal.GetName()+"_"+name+"0Down"); p0dn.Scale(1.0/effect)
@@ -105,9 +114,21 @@ for name in systsEnv.keys():
                 h.SetFillStyle(0); h.SetLineWidth(2)
             for h in p1up, p1dn: h.SetLineColor(4)
             for h in p2up, p2dn: h.SetLineColor(2)
+        elif mode in ["templates"]:
+            nominal = report[p]
+            p0Up = report["%s_%s_Up" % (p, effect)]
+            p0Dn = report["%s_%s_Dn" % (p, effect)]
+            if not p0Up or not p0Dn: 
+                raise RuntimeError, "Missing templates %s_%s_(Up,Dn) for %s" % (p,effect,name)
+            p0Up.SetName("%s_%sUp"   % (nominal.GetName(),name))
+            p0Dn.SetName("%s_%sDown" % (nominal.GetName(),name))
+            report[p0Up.GetName()] = p0Up
+            report[p0Dn.GetName()] = p0Dn
+            effect0  = "1"
+            effect12 = "-"
         effmap0[p]  = effect0 
         effmap12[p] = effect12 
-    systsEnv[name] = (effmap0,effmap12)
+    systsEnv[name] = (effmap0,effmap12,mode)
 
 
 datacard = open(outdir+binname+".card.txt", "w"); 
@@ -129,10 +150,14 @@ datacard.write('rate            '+(" ".join([fpatt % allyields[p] for p in procs
 datacard.write('##----------------------------------\n')
 for name,effmap in systs.iteritems():
     datacard.write(('%-12s lnN' % name) + " ".join([kpatt % effmap[p]   for p in procs]) +"\n")
-for name,(effmap0,effmap12) in systsEnv.iteritems():
-    datacard.write(('%-10s shape' % (name+"0")) + " ".join([kpatt % effmap0[p]  for p in procs]) +"\n")
-    datacard.write(('%-10s shape' % (name+"1")) + " ".join([kpatt % effmap12[p] for p in procs]) +"\n")
-    datacard.write(('%-10s shape' % (name+"2")) + " ".join([kpatt % effmap12[p] for p in procs]) +"\n")
+for name,(effmap0,effmap12,mode) in systsEnv.iteritems():
+    if mode == "templates":
+        datacard.write(('%-10s shape' % name) + " ".join([kpatt % effmap0[p]  for p in procs]) +"\n")
+    if mode == "envelop":
+        datacard.write(('%-10s shape' % (name+"0")) + " ".join([kpatt % effmap0[p]  for p in procs]) +"\n")
+    if mode in ["envelop", "shapeOnly"]:
+        datacard.write(('%-10s shape' % (name+"1")) + " ".join([kpatt % effmap12[p] for p in procs]) +"\n")
+        datacard.write(('%-10s shape' % (name+"2")) + " ".join([kpatt % effmap12[p] for p in procs]) +"\n")
 
 
 datacard.close()

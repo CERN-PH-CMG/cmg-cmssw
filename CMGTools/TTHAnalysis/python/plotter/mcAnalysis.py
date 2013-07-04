@@ -99,12 +99,12 @@ class MCAnalysis:
         return process != 'data' and not self._isSignal[process]
     def isSignal(self,process):
         return self._isSignal[process]
-    def listSignals(self):
-        ret = [ p for p in self._allData.keys() if p != 'data' and self._isSignal[p] and self.getProcessOption(p, 'SkipMe') != True  ]
+    def listSignals(self,allProcs=False):
+        ret = [ p for p in self._allData.keys() if p != 'data' and self._isSignal[p] and (self.getProcessOption(p, 'SkipMe') != True or allProcs) ]
         ret.sort(key = lambda n : self._rank[n], reverse = True)
         return ret
-    def listBackgrounds(self):
-        ret = [ p for p in self._allData.keys() if p != 'data' and not self._isSignal[p] and self.getProcessOption(p, 'SkipMe') != True ]
+    def listBackgrounds(self,allProcs=False):
+        ret = [ p for p in self._allData.keys() if p != 'data' and not self._isSignal[p] and (self.getProcessOption(p, 'SkipMe') != True or allProcs) ]
         ret.sort(key = lambda n : self._rank[n], reverse = True)
         return ret
     def hasProcess(self,process):
@@ -214,13 +214,16 @@ class MCAnalysis:
         fmtlen = 10
         nfmtL = "  %8d"
         nfmtS = "  %8.2f" if self._options.weight else nfmtL
+        nfmtX = "  %8.4f" if self._options.weight else nfmtL
 
         if self._options.errors:
             nfmtS+=u"%7.2f"
+            nfmtX+=u"%7.4f"
             nfmtL+=u"%7.2f"
             fmtlen+=8
         if self._options.fractions:
             nfmtS+="%7.1f%%"
+            nfmtX+="%7.1f%%"
             nfmtL+="%7.1f%%"
             fmtlen+=8
 
@@ -239,7 +242,7 @@ class MCAnalysis:
                 toPrint = (nev,)
                 if self._options.errors:    toPrint+=(err,)
                 if self._options.fractions: toPrint+=(fraction*100,)
-                if self._options.weight and nev < 1000: print nfmtS % toPrint,
+                if self._options.weight and nev < 1000: print ( nfmtS if nev > 0.2 else nfmtX) % toPrint,
                 else                                  : print nfmtL % toPrint,
             print ""
     def _getYields(self,ttylist,cuts):

@@ -9,10 +9,12 @@ import json
 
 parser = OptionParser(usage="usage: %prog [options] rootfile [what] \nrun with --help to get list of options")
 parser.add_option("-r", "--run-range",  dest="runrange", default=(0,99999999), type="float", nargs=2, help="Run range")
-parser.add_option("-c", "--cut",  dest="cut", default=None, type="string", help="Cut file to apply")
+parser.add_option("-c", "--cut-file",  dest="cutfile", default=None, type="string", help="Cut file to apply")
+parser.add_option("-C", "--cut",  dest="cut", default=None, type="string", help="Cut to apply")
 parser.add_option("-T", "--type",  dest="type", default=None, type="string", help="Type of events to select")
 parser.add_option("-F", "--fudge",   dest="fudge",  default=False, action="store_true",  help="print -999 for missing variables")
 parser.add_option("-m", "--mc",     dest="ismc",  default=False, action="store_true",  help="print MC match info")
+parser.add_option("--mm", "--more-mc",     dest="moremc",  default=False, action="store_true",  help="print more MC match info")
 parser.add_option("-j", "--json",   dest="json",  default=None, type="string", help="JSON file to apply")
 parser.add_option("-n", "--maxEvents",  dest="maxEvents", default=-1, type="int", help="Max events")
 parser.add_option("-f", "--format",   dest="fmt",  default=None, type="string",  help="Print this format string")
@@ -28,6 +30,8 @@ parser.add_option("-A", "--add-cut",     dest="cutsToAdd",     action="append", 
 (options, args) = parser.parse_args()
 what = args[1] if len(args) > 1 else "signal"
 if what not in [ "signal", "CRss", "CRos" ]: raise RuntimeError, "Unknown what"
+
+if options.cut and options.cutfile: raise RuntimeError, "You can't specify both a cut and a cutfile"
 
 jsonmap = {}
 if options.json:
@@ -83,6 +87,8 @@ class BaseDumper(Module):
                     i+1, l.pdgId,l.pt,l.eta,l.phi, l.mva, l.relIso, l.sip3d, 10*l.dxy, 10*l.dz, l.jetPtRatio, l.jetDR, min(1.,max(0.,l.jetBTagCSV))),
             if self.options.ismc:
                 print "   mcMatch %+3d" % (l.mcMatchId if l.mcMatchId > 0 else -l.mcMatchAny),
+                if self.options.moremc:
+                    print "   mcDRB %4.2f" % (l.mcDeltaRB if l.mcMatchAny == 2 and l.mcDeltaRB < 99 else 9.99),
             if abs(l.pdgId) == 11:
                 print "   mvaId %5.3f misHit %d conVeto %d tightCh %d mvaIdTrig %5.3f relIso03 %5.3f  pf pt %.1f" % (l.mvaId, l.innerHits, l.convVeto, l.tightCharge, l.tightId, l.relIso03/(l.pfpt if l.pfpt else l.pt), l.pfpt)
             else:
@@ -104,14 +110,23 @@ class BaseDumper(Module):
             print "    vertices %d    pu weight %5.2f" % (ev.nVert, ev.puWeight)
         else:
             print "    vertices %d" % (ev.nVert)
+        if self.options.moremc:
+            gleps = [g for f in Collection(ev,"GenLep") if g.pt > 0 ]
+            for i,l in enumerate(gleps):
+                print "    gen lep %d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f sourceId %2d" % (i+1, l.pdgId,l.pt,l.eta,l.phi, l.sourceId)
+            gtaus = [g for f in Collection(ev,"GenLepFromTau","nGenLepsFromTau") if g.pt > 0 ]
+            for i,l in enumerate(gtaus):
+                print "    gen lep %d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f sourceId %2d " % (i+1, l.pdgId,l.pt,l.eta,l.phi, l.sourceId)
         print ""
         print ""
         print ""
 
 
 cut = None
-if options.cut:
-    cut = CutsFile(options.cut,options).allCuts()
+if options.cutfile:
+    cut = CutsFile(options.cutfile,options).allCuts()
+elif options.cut:
+    cut = options.cut
  
 file = ROOT.TFile.Open(args[0])
 treename = "ttHLepTreeProducerBase"

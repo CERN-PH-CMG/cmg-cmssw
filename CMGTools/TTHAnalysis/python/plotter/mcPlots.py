@@ -34,6 +34,33 @@ class PlotFile:
     def plots(self):
         return self._plots[:]
 
+def getDataPoissonErrors(h, drawZeroBins=False, drawXbars=False):
+    xaxis = h.GetXaxis()
+    q=(1-0.6827)/2.;
+    points = []
+    errors = []
+    for i in xrange(h.GetNbinsX()):
+        N = h.GetBinContent(i+1);
+        if drawZeroBins or N > 0:
+            x = xaxis.GetBinCenter(i+1);
+            points.append( (x,N) )
+            EYlow  = (N-ROOT.ROOT.Math.chisquared_quantile_c(1-q,2*N)/2.) if N > 0 else 0
+            EYhigh = ROOT.ROOT.Math.chisquared_quantile_c(q,2*(N+1))/2.-N;
+            EXhigh, EXlow = (xaxis.GetBinUpEdge(i+1)-x, x-xaxis.GetBinLowEdge(i+1)) if drawXbars else (0,0)
+            errors.append( (EXlow,EXhigh,EYlow,EYhigh) )
+    ret = ROOT.TGraphAsymmErrors(len(points))
+    ret.SetName(h.GetName()+"_graph")
+    for i,((x,y),(EXlow,EXhigh,EYlow,EYhigh)) in enumerate(zip(points,errors)):
+        ret.SetPoint(i, x, y)
+        ret.SetPointError(i, EXlow,EXhigh,EYlow,EYhigh)
+    ret.SetLineWidth(h.GetLineWidth())
+    ret.SetLineColor(h.GetLineColor())
+    ret.SetLineStyle(h.GetLineStyle())
+    ret.SetMarkerSize(h.GetMarkerSize())
+    ret.SetMarkerColor(h.GetMarkerColor())
+    ret.SetMarkerStyle(h.GetMarkerStyle())
+    return ret
+
 def doSpam(text,x1,y1,x2,y2,align=12,fill=False,textSize=0.033,_noDelete={}):
     cmsprel = ROOT.TPaveText(x1,y1,x2,y2,"NDC");
     cmsprel.SetTextSize(textSize);
@@ -64,10 +91,17 @@ def reMax(hist,hist2,islog,factorLin=1.3,factorLog=2.0):
         hist = hist.GetHistogram()
     max0 = hist.GetMaximum()
     max2 = hist2.GetMaximum()*(factorLog if islog else factorLin)
+    if hasattr(hist2,'poissonGraph'):
+       for i in xrange(hist2.poissonGraph.GetN()):
+          max2 = max(max2, (hist2.poissonGraph.GetY()[i] + hist2.poissonGraph.GetErrorYhigh(i))*(factorLog if islog else factorLin))
+    elif "TH1" in hist2.ClassName():
+       for b in xrange(1,hist2.GetNbinsX()+1):
+          max2 = max(max2, (hist2.GetBinContent(b) + hist2.GetBinError(b))*(factorLog if islog else factorLin))
     if max2 > max0:
         max0 = max2;
         if islog: hist.GetYaxis().SetRangeUser(0.9,max0)
         else:     hist.GetYaxis().SetRangeUser(0,max0)
+
 def doDataNorm(pspec,pmap):
     if "data" not in pmap: return None
     total = sum([v.Integral() for k,v in pmap.iteritems() if k != 'data' and not hasattr(v,'summary')])
@@ -138,10 +172,21 @@ def doScaleSigNormData(pspec,pmap,mca):
     return sf
 
 
-def doRatioHists(pspec,pmap,total,totalSyst,maxRange):
+def doRatioHists(pspec,pmap,total,totalSyst,maxRange,fitRatio=False):
     if "data" not in pmap: return (None,None,None,None)
-    ratio = pmap["data"].Clone("data_div"); 
-    ratio.Divide(total)
+    ratio = None
+    if hasattr(pmap['data'], 'poissonGraph'):
+        ratio = pmap["data"].poissonGraph.Clone("data_div"); 
+        for i in xrange(ratio.GetN()):
+            x    = ratio.GetX()[i]
+            div  = total.GetBinContent(total.GetXaxis().FindBin(x))
+            ratio.SetPoint(i, x, ratio.GetY()[i]/div if div > 0 else 0)
+            ratio.SetPointError(i, ratio.GetErrorXlow(i), ratio.GetErrorXhigh(i), 
+                                   ratio.GetErrorYlow(i)/div  if div > 0 else 0, 
+                                   ratio.GetErrorYhigh(i)/div if div > 0 else 0) 
+    else:
+        ratio = pmap["data"].Clone("data_div"); 
+        ratio.Divide(total)
     unity  = totalSyst.Clone("sim_div");
     unity0 = total.Clone("sim_div");
     rmin, rmax =  1,1
@@ -151,9 +196,17 @@ def doRatioHists(pspec,pmap,total,totalSyst,maxRange):
         unity.SetBinError(b, e/n if n > 0 else 0)
         unity0.SetBinContent(b,  1 if n > 0 else 0)
         unity0.SetBinError(b, e0/n if n > 0 else 0)
-        if ratio.GetBinContent(b) != 0:
-            rmin = min([ rmin, 1-2*e/n if n > 0 else 1, ratio.GetBinContent(b) - 2*ratio.GetBinError(b) ]) 
-            rmax = max([ rmax, 1+2*e/n if n > 0 else 1, ratio.GetBinContent(b) + 2*ratio.GetBinError(b) ])  
+        rmin = min([ rmin, 1-2*e/n if n > 0 else 1])
+        rmax = max([ rmax, 1+2*e/n if n > 0 else 1])
+    if ratio.ClassName() != "TGraphAsymmErrors":
+        for b in xrange(1,unity.GetNbinsX()+1):
+            if ratio.GetBinContent(b) == 0: continue
+            rmin = min([ rmin, ratio.GetBinContent(b) - 2*ratio.GetBinError(b) ]) 
+            rmax = max([ rmax, ratio.GetBinContent(b) + 2*ratio.GetBinError(b) ])  
+    else:
+        for i in xrange(ratio.GetN()):
+            rmin = min([ rmin, ratio.GetY()[i] - 2*ratio.GetErrorYlow(i)  ]) 
+            rmax = max([ rmax, ratio.GetY()[i] + 2*ratio.GetErrorYhigh(i) ])  
     if rmin < maxRange[0]: rmin = maxRange[0]; 
     if rmax > maxRange[1]: rmax = maxRange[1];
     unity.SetFillStyle(1001);
@@ -166,7 +219,15 @@ def doRatioHists(pspec,pmap,total,totalSyst,maxRange):
     unity0.SetMarkerColor(53);
     ROOT.gStyle.SetErrorX(0.5);
     unity.Draw("E2");
-    unity0.Draw("E2 SAME");
+    if fitRatio:
+        from CMGTools.TTHAnalysis.tools.plotDecorations import fitTGraph
+        fitTGraph(ratio,order=fitRatio)
+        unity.SetFillStyle(3013);
+        unity0.SetFillStyle(3013);
+        unity.Draw("AXIS SAME");
+        unity0.Draw("E2 SAME");
+    else:
+        unity0.Draw("E2 SAME");
     unity.GetYaxis().SetRangeUser(rmin,rmax);
     unity.GetXaxis().SetTitleSize(0.14)
     unity.GetYaxis().SetTitleSize(0.14)
@@ -185,25 +246,31 @@ def doRatioHists(pspec,pmap,total,totalSyst,maxRange):
     line.SetLineWidth(2);
     line.SetLineColor(58);
     line.Draw("L")
-    ratio.Draw("E SAME");
+    ratio.Draw("E SAME" if ratio.ClassName() != "TGraphAsymmErrors" else "PZ SAME");
     return (ratio, unity, unity0, line)
 
 def doStatTests(total,data,test,legendCorner):
     #print "Stat tests for %s:" % total.GetName()
     ksprob = data.KolmogorovTest(total,"XN")
     #print "\tKS  %.4f" % ksprob
-    chi2l, chi2p, nb = 0, 0, 0
+    chi2l, chi2p, chi2gq, chi2lp, nb = 0, 0, 0, 0, 0
     for b in xrange(1,data.GetNbinsX()+1):
         oi = data.GetBinContent(b)
         ei = total.GetBinContent(b)
+        dei = total.GetBinError(b)
         if ei <= 0: continue
         nb += 1
         chi2l += - 2*(oi*log(ei/oi)+(oi-ei) if oi > 0 else -ei)
         chi2p += (oi-ei)**2 / ei
-    #print "\tc2p %.4f (%6.2f/%3d)" % (ROOT.TMath.Prob(chi2p, nb), chi2p, nb)
-    #print "\tc2l %.4f (%6.2f/%3d)" % (ROOT.TMath.Prob(chi2l, nb), chi2l, nb)
-    if test == "chi2l" or test == "chi2p":
-        chi2 = chi2l if test == "chi2l" else chi2p
+        chi2gq += (oi-ei)**2 /(ei+dei**2)
+        #chi2lp +=
+    print "\tc2p  %.4f (%6.2f/%3d)" % (ROOT.TMath.Prob(chi2p,  nb), chi2p,  nb)
+    print "\tc2l  %.4f (%6.2f/%3d)" % (ROOT.TMath.Prob(chi2l,  nb), chi2l,  nb)
+    print "\tc2qg %.4f (%6.2f/%3d)" % (ROOT.TMath.Prob(chi2gq, nb), chi2gq, nb)
+    #print "\tc2lp %.4f (%6.2f/%3d)" % (ROOT.TMath.Prob(chi2lp, nb), chi2lp, nb)
+    chi2s = { "chi2l":chi2l, "chi2p":chi2p, "chi2gq":chi2gq, "chi2lp":chi2lp }
+    if test in chi2s:
+        chi2 = chi2s[test]
         pval = ROOT.TMath.Prob(chi2, nb)
         text = "#chi^{2} p-value %.3f" % pval if pval < 0.02 else "#chi^{2} p-value %.2f" % pval
     else:
@@ -216,18 +283,18 @@ def doStatTests(total,data,test,legendCorner):
 
 
 legend_ = None;
-def doLegend(pmap,mca,corner="TR",textSize=0.035,cutoff=1e-2):
+def doLegend(pmap,mca,corner="TR",textSize=0.035,cutoff=1e-2,mcStyle="F"):
         if (corner == None): return
         total = sum([x.Integral() for x in pmap.itervalues()])
         sigEntries = []; bgEntries = []
-        for p in mca.listSignals():
+        for p in mca.listSignals(allProcs=True):
             if p in pmap and pmap[p].Integral() >= cutoff*total: 
                 lbl = mca.getProcessOption(p,'Label',p)
-                sigEntries.append( (pmap[p],lbl,'F') )
-        for p in mca.listBackgrounds():
+                sigEntries.append( (pmap[p],lbl,mcStyle) )
+        for p in mca.listBackgrounds(allProcs=True):
             if p in pmap and pmap[p].Integral() >= cutoff*total: 
                 lbl = mca.getProcessOption(p,'Label',p)
-                bgEntries.append( (pmap[p],lbl,'F') )
+                bgEntries.append( (pmap[p],lbl,mcStyle) )
         nentries = len(sigEntries) + len(bgEntries) + ('data' in pmap)
 
         (x1,y1,x2,y2) = (.7, .75 - textSize*max(nentries-3,0), .93, .93)
@@ -308,8 +375,11 @@ class PlotMaker:
                 hists = [v for k,v in pmap.iteritems() if k != 'data']
                 total = hists[0].Clone(pspec.name+"_total"); total.Reset()
                 totalSyst = hists[0].Clone(pspec.name+"_totalSyst"); totalSyst.Reset()
+                if self._options.plotmode == "norm": 
+                    total.GetYaxis().SetTitle("density/bin")
+                    total.GetYaxis().SetDecimals(True)
                 if options.scaleSignalToData: doScaleSigNormData(pspec,pmap,mca)
-                for p in mca.listBackgrounds() + mca.listSignals():
+                for p in mca.listBackgrounds(allProcs=True) + mca.listSignals(allProcs=True):
                     if p in pmap: 
                         plot = pmap[p]
                         if plot.Integral() <= 0: continue
@@ -379,8 +449,13 @@ class PlotMaker:
                 if pspec.getOption('MoreY',1.0) > 1.0:
                     total.SetMaximum(pspec.getOption('MoreY',1.0)*total.GetMaximum())
                 if 'data' in pmap: 
+                    if options.poisson:
+                        pdata = getDataPoissonErrors(pmap['data'], False, True)
+                        pdata.Draw("PZ SAME")
+                        pmap['data'].poissonGraph = pdata ## attach it so it doesn't get deleted
+                    else:
+                        pmap['data'].Draw("E SAME")
                     reMax(total,pmap['data'],islog)
-                    pmap['data'].Draw("E SAME")
                     if xblind[0] < xblind[1]:
                         blindbox = ROOT.TBox(xblind[0],total.GetYaxis().GetXmin(),xblind[1],total.GetMaximum())
                         blindbox.SetFillColor(ROOT.kBlue+3)
@@ -388,11 +463,13 @@ class PlotMaker:
                         blindbox.Draw()
                         xblind.append(blindbox) # so it doesn't get deleted
                     if options.doStatTests:
-                        doStatTests(total,pmap['data'], options.doStatTests, legendCorner=pspec.getOption('Legend','TR'))
+                        doStatTests(totalSyst, pmap['data'], options.doStatTests, legendCorner=pspec.getOption('Legend','TR'))
                 if pspec.hasOption('YMin') and pspec.hasOption('YMax'):
                     total.GetYaxis().SetRangeUser(pspec.getOption('YMin',1.0), pspec.getOption('YMax',1.0))
+                legendCutoff = pspec.getOption('LegendCutoff', 1e-5 if c1.GetLogy() else 1e-2)
+                if self._options.plotmode == "norm": legendCutoff = 0 
                 doLegend(pmap,mca,corner=pspec.getOption('Legend','TR'),
-                                  cutoff=pspec.getOption('LegendCutoff', 1e-5 if c1.GetLogy() else 1e-2),
+                                  cutoff=legendCutoff, mcStyle=("F" if self._options.plotmode == "stack" else "L"),
                                   textSize=(0.039 if doRatio else 0.035))
                 doTinyCmsPrelim(hasExpo = total.GetMaximum() > 9e4 and not c1.GetLogy(),textSize=(0.036 if doRatio else 0.033))
                 signorm = None; datnorm = None; sfitnorm = None
@@ -415,7 +492,7 @@ class PlotMaker:
                 rdata,rnorm,rnorm2,rline = (None,None,None,None)
                 if doRatio:
                     p2.cd(); 
-                    rdata,rnorm,rnorm2,rline = doRatioHists(pspec,pmap,total,totalSyst, maxRange=options.maxRatioRange)
+                    rdata,rnorm,rnorm2,rline = doRatioHists(pspec,pmap,total,totalSyst, maxRange=options.maxRatioRange, fitRatio=options.fitRatio)
                 if self._options.printPlots:
                     for ext in self._options.printPlots.split(","):
                         fdir = self._options.printDir;
@@ -425,9 +502,9 @@ class PlotMaker:
                             if os.path.exists("/afs/cern.ch"): os.system("cp /afs/cern.ch/user/g/gpetrucc/php/index.php "+fdir)
                         if ext == "txt":
                             dump = open("%s/%s.%s" % (fdir, pspec.name, ext), "w")
-                            maxlen = max([len(mca.getProcessOption(p,'Label',p)) for p in mca.listSignals() + mca.listBackgrounds()]+[7])
+                            maxlen = max([len(mca.getProcessOption(p,'Label',p)) for p in mca.listSignals(allProcs=True) + mca.listBackgrounds(allProcs=True)]+[7])
                             fmt    = "%%-%ds %%9.2f +/- %%9.2f (stat)" % (maxlen+1)
-                            for p in mca.listSignals() + mca.listBackgrounds() + ["signal", "background"]:
+                            for p in mca.listSignals(allProcs=True) + mca.listBackgrounds(allProcs=True) + ["signal", "background"]:
                                 if p not in pmap: continue
                                 plot = pmap[p]
                                 if plot.Integral() <= 0: continue
@@ -458,11 +535,13 @@ def addPlotMakerOptions(parser):
     parser.add_option("--showDatShape", dest="showDatShape", action="store_true", default=False, help="Stack a normalized data shape")
     parser.add_option("--showSFitShape", dest="showSFitShape", action="store_true", default=False, help="Stack a shape of background + scaled signal normalized to total data")
     parser.add_option("--showRatio", dest="showRatio", action="store_true", default=False, help="Add a data/sim ratio plot at the bottom")
+    parser.add_option("--fitRatio", dest="fitRatio", type="int", default=False, help="Fit the ratio with a polynomial of the specified order")
     parser.add_option("--scaleSigToData", dest="scaleSignalToData", action="store_true", default=False, help="Scale all signal processes so that the overall event yield matches the observed one")
     parser.add_option("--maxRatioRange", dest="maxRatioRange", type="float", nargs=2, default=(0.0, 5.0), help="Min and max for the ratio")
     parser.add_option("--doStatTests", dest="doStatTests", type="string", default=None, help="Do this stat test: chi2p (Pearson chi2), chi2l (binned likelihood equivalent of chi2)")
     parser.add_option("--plotmode", dest="plotmode", type="string", default="stack", help="Show as stacked plot (stack), a non-stacked comparison (nostack) and a non-stacked comparison of normalized shapes (norm)")
     parser.add_option("--rebin", dest="globalRebin", type="int", default="0", help="Rebin all plots by this factor")
+    parser.add_option("--poisson", dest="poisson", action="store_true", default=False, help="Draw Poisson error bars")
     parser.add_option("--select-plot", "--sP", dest="plotselect", action="append", default=[], help="Select only these plots out of the full file")
 
 if __name__ == "__main__":
