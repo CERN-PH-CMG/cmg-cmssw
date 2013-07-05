@@ -600,15 +600,5 @@ class PlotterBase(object):
         importPackage=[pdf,cball,meanCB,sigmaCB]    
         return convolved,params,observables,importPackage
 
-    def drawSmoothedTH1(self,var,cuts,bins,mini,maxi,binsy=20,miny=0,maxy=1e+10):
-        data,observables = self.makeDataSet(var,cuts,mini,maxi,miny,maxy,"tmpData")
-        if len(observables)==1:
-            pdf=ROOT.RooNDKeysPdf('pdf',"keyspdf",ROOT.RooArgList(observables[0]), data, "am",1,3)
-            h=pdf.createHistogram("observable",bins)
-        else:    
-            pdf=ROOT.RooNDKeysPdf('pdf',"keyspdf",ROOT.RooArgList(observables[0],observables[1]), data, "am",1,3)
-            h=pdf.createHistogram("observable1,observable2",bins,binsy)
-
-        return h
 
 

@@ -4,6 +4,7 @@ from CMGTools.HToZZTo4Leptons.macros.plotters.StackPlotter import *
 from CMGTools.HToZZTo4Leptons.macros.plotters.TreePlotter import *
 from CMGTools.HToZZTo4Leptons.macros.plotters.MergedPlotter import *
 from CMGTools.HToZZTo4Leptons.macros.plotters.HZZFakeRatePlotter import *
+from CMGTools.HToZZTo4Leptons.macros.plotters.HZZFakeRatePlotterBoth import *
 from CMGTools.HToZZTo4Leptons.macros.plotters.HZZSignalParamPlotter import *
 from CMGTools.HToZZTo4Leptons.macros.plotters.HZZBkgParamPlotter import *
 from CMGTools.HToZZTo4Leptons.tools.fullPath import getFullPath
@@ -162,6 +163,21 @@ class PlotterSetup(object):
         plotter.setCR(controlRegion)
         plotter.setOSLS(1.2,1.08,1.02,0.99)
         plotter.setFakeRateVar('HLoose_fakeRate',period)
+        if factorizationRegion is not None:
+            plotter.setFactorizedRegion(factorizationRegion)
+            plotter.applyFactorization(factorization)
+        plotter.setFillProperties(1001,ROOT.kRed)
+
+        return {'plotter':plotter,'deps':[plotter]}
+
+    def getFakePlotterBoth(self,period,factorizationRegion = None ,factorization=1):
+
+        plotter = HZZFakeRatePlotterBoth(period+"/DATA.root","FourLeptonTreeProducer/tree",'1')
+        plotter.name='FAKES'
+        plotter.setCRs('abs(HLooseOS_Z2_leg1_SIP3D)<4&&abs(HLooseOS_Z2_leg2_SIP3D)<4',
+                      'abs(HLooseOS_Z2_leg1_SIP3D)<4&&abs(HLooseOS_Z2_leg2_SIP3D)<4',
+                      'HLoose_Z2_Charge!=0&&abs(HLoose_Z2_leg1_SIP3D)<4&&abs(HLoose_Z2_leg2_SIP3D)<4')
+        plotter.setOSLS(1.2,1.08,1.02,1.0)
         if factorizationRegion is not None:
             plotter.setFactorizedRegion(factorizationRegion)
             plotter.applyFactorization(factorization)

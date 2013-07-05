@@ -14,7 +14,6 @@ class TreePlotter(PlotterBase):
             print "Tree not found\n"
             sys.exit()
         self.weight=weight
-        self.smooth=False
         super(TreePlotter,self).__init__()
 
     def setupFromFile(self,filename,finalstate = 'All',prod  = 'All'):
@@ -46,21 +45,6 @@ class TreePlotter(PlotterBase):
                 corrString = corrString+"*("+str(corr['value'])+")" 
         self.tree.Draw(var+">>tmpTH1","("+cuts+")*"+lumi+"*"+self.weight+"*("+corrString+")","goff")
 
-        if self.smooth:
-           integral=h.Integral()
-           h=self.drawSmoothedTH1(var,cuts,bins,min,max)
-           h.Scale(integral/h.Integral())
-           h.SetLineStyle(self.linestyle)
-           h.SetLineColor(self.linecolor)
-           h.SetLineWidth(self.linewidth)
-           h.SetFillStyle(self.fillstyle)
-           h.SetFillColor(self.fillcolor)
-           h.SetMarkerStyle(self.markerstyle)
-           h.GetXaxis().SetTitle(titlex+ " ["+units+"]")
-
-
-
-#        h.Draw(drawStyle)
         return h
 
 
@@ -80,19 +64,6 @@ class TreePlotter(PlotterBase):
         for corr in self.corrFactors:
                 corrString = corrString+"*"+str(corr['value']) 
         self.tree.Draw(var+">>tmpTH2","("+cuts+")*"+lumi+"*"+self.weight+"*("+corrString+")","goff")
-
-        if self.smooth:
-           integral=h.Integral()
-           h=self.drawSmoothedTH1(var,cuts,binsx,minx,maxx,binsy)
-           h.Scale(integral/h.Integral())
-           h.SetLineStyle(self.linestyle)
-           h.SetLineColor(self.linecolor)
-           h.SetLineWidth(self.linewidth)
-           h.SetFillStyle(self.fillstyle)
-           h.SetFillColor(self.fillcolor)
-           h.SetMarkerStyle(self.markerstyle)
-           h.GetXaxis().SetTitle(titlex+ " ["+unitsx+"]")
-           h.GetYaxis().SetTitle(titley+ " ["+unitsy+"]")
 
         return h
 
@@ -135,19 +106,6 @@ class TreePlotter(PlotterBase):
                 corrString = corrString+"*"+str(corr['value']) 
         self.tree.Draw(var+">>tmpTH2","("+cuts+")*"+lumi+"*"+self.weight+"*("+corrString+")","goff")
 
-        if self.smooth:
-           integral=h.Integral()
-           h=self.drawSmoothedTH1(var,cuts,binsx,minx,maxx,binsy)
-           h.Scale(integral/h.Integral())
-           h.SetLineStyle(self.linestyle)
-           h.SetLineColor(self.linecolor)
-           h.SetLineWidth(self.linewidth)
-           h.SetFillStyle(self.fillstyle)
-           h.SetFillColor(self.fillcolor)
-           h.SetMarkerStyle(self.markerstyle)
-           h.GetXaxis().SetTitle(titlex+ " ["+unitsx+"]")
-           h.GetYaxis().SetTitle(titley+ " ["+unitsy+"]")
-
         return h
 
     def drawTH1Binned(self,var,cuts,lumi,binningx,titlex = "",unitsx = "", drawStyle = "COLZ"):
@@ -166,19 +124,6 @@ class TreePlotter(PlotterBase):
         for corr in self.corrFactors:
                 corrString = corrString+"*"+str(corr['value']) 
         self.tree.Draw(var+">>tmpTH1","("+cuts+")*"+lumi+"*"+self.weight+"*("+corrString+")","goff")
-
-        if self.smooth:
-           integral=h.Integral()
-           h=self.drawSmoothedTH1(var,cuts,binsx,minx,maxx,binsy)
-           h.Scale(integral/h.Integral())
-           h.SetLineStyle(self.linestyle)
-           h.SetLineColor(self.linecolor)
-           h.SetLineWidth(self.linewidth)
-           h.SetFillStyle(self.fillstyle)
-           h.SetFillColor(self.fillcolor)
-           h.SetMarkerStyle(self.markerstyle)
-           h.GetXaxis().SetTitle(titlex+ " ["+unitsx+"]")
-           h.GetYaxis().SetTitle(titley+ " ["+unitsy+"]")
 
         return h
 

@@ -199,7 +199,7 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
 
         ##################NOW A PATH FOR FAKES
         if event.bestZ is not None:
-            event.leptonsForLooseZ2 = copy.copy(event.looseLeptons)
+            event.leptonsForLooseZ2 = copy.copy(event.cleanLeptons)
             event.leptonsForLooseZ2.remove( event.bestZ.leg1)
             event.leptonsForLooseZ2.remove( event.bestZ.leg2)
 
@@ -217,7 +217,7 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
         #Z2 SF 
         passed=cutFlow.applyCut(self.testZSF,'SF for Z2 Loose',1,'zBosons2SFLoose')
         #Z2 SS 
-        passed=cutFlow.applyCut(lambda x: x.charge()!=0,'SF for Z2 Loose',1,'zBosons2SFLoose')
+        passed=cutFlow.applyCut(lambda x: x.charge()!=0,'SS for Z2 Loose',1,'zBosons2SSLoose')
         #Z2 SIP CUT
         passed=cutFlow.applyCut(lambda x: abs(x.leg1.sip3D())<4 and abs(x.leg2.sip3D())<4,'SIP cut for Z2 loose',1,'zBosons2SIP')
         #pick the highest pt pair
@@ -256,7 +256,7 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
         #Z2 SF 
         passed=cutFlow.applyCut(self.testZSF,'OS for Z2 Loose',1,'zBosons3SFLoose')
         #Z2 OS 
-        passed=cutFlow.applyCut(lambda x: x.charge()==0,'SF for Z2 Loose',1,'zBosons3SFLoose')
+        passed=cutFlow.applyCut(lambda x: x.charge()==0,'SF for Z2 Loose',1,'zBosons3OSLoose')
         #Z2 SIP CUT
         passed=cutFlow.applyCut(lambda x: abs(x.leg1.sip3D())<4 and abs(x.leg2.sip3D())<4,'SIP cut for Z2 loose',1,'zBosons3SIP')
         #pick the highest pt pair
@@ -271,7 +271,7 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
         #Z2 mass
         passed=cutFlow.applyCut(self.testZ2Mass,'Mass for Z2 Loose',1,'zBosons3MassLoose')
 
-        if event.bestZ is not None and passed:
+        if (event.bestZ is not None) and passed:
             event.fourLeptonsLooseOS = [self.mergePairs(event.bestZ,cutFlow.obj1[0])]
             self.boostFourLeptons(event.fourLeptonsLooseOS,event)
             cutFlow.setSource1(event.fourLeptonsLooseOS)
