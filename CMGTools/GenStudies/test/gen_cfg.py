@@ -8,7 +8,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(10000)
 )
 
 process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
@@ -22,7 +22,17 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 # generate the LHE file yourself with POWHEG
 #process.source = cms.Source("EmptySource")
 process.source = cms.Source("LHESource",
-                            fileNames = cms.untracked.vstring('/store/lhe/8245/pwgevents-0001.lhe'))
+    fileNames = cms.untracked.vstring('/store/lhe/8704/pwgevents-0006.lhe', 
+        '/store/lhe/8704/pwgevents-0012.lhe', 
+        '/store/lhe/8704/pwgevents-0018.lhe', 
+        '/store/lhe/8704/pwgevents-0022.lhe', 
+        '/store/lhe/8704/pwgevents-0023.lhe', 
+        '/store/lhe/8704/pwgevents-0027.lhe', 
+        '/store/lhe/8704/pwgevents-0032.lhe', 
+        '/store/lhe/8704/pwgevents-0038.lhe', 
+        '/store/lhe/8704/pwgevents-0044.lhe', 
+        '/store/lhe/8704/pwgevents-0049.lhe')
+)
                                                                   
 
 # if you read LHE, you need to hadronize the event with pythia,
@@ -40,9 +50,7 @@ if atlas:
 # gen particle production
 # gen particle for jet selection
 # gen jet creation
-# I could do that with my system.
-
-                                                                  
+# I could do that with my system.                                                                  
 
 process.load('PhysicsTools.HepMCCandAlgos.genParticles_cfi')
 
