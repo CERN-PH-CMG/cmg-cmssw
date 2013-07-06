@@ -37,7 +37,7 @@ razorMJIsolatedElectrons = cms.EDProducer(
 
 from CMGTools.Common.skims.cmgElectronSel_cfi import *
 razorMJElectronLoose = cmgElectronSel.clone(src = "cmgElectronSel", cut = "(pt()> 5.) && (abs(eta()) < 2.5)  && sourcePtr().userFloat('isLooseLeptonSAK')")
-razorMJElectronTight = cmgElectronSel.clone(src = "razorMJIsolatedElectrons", cut = 'pt() >= 30 && getSelection("cuts_mediumNoVtx") && abs(dxy()) < 0.02 && abs(dz()) < 0.1 && (abs(sourcePtr().superCluster().eta()) <= 1.4442 || abs(sourcePtr().superCluster().eta()) > 1.566)')
+razorMJElectronTight = cmgElectronSel.clone(src = "razorMJIsolatedElectrons", cut = 'pt() >= 30  && (abs(eta()) < 2.5) && getSelection("cuts_mediumNoVtx") && abs(dxy()) < 0.02 && abs(dz()) < 0.1 && (abs(sourcePtr().superCluster().eta()) <= 1.4442 || abs(sourcePtr().superCluster().eta()) > 1.566)')
 
 razorMJElectronSequence = cms.Sequence(
     razorMJElectronLoose+
@@ -389,8 +389,6 @@ razorMJSequence = cms.Sequence(
 
 ###Selections for analysis and side bands
 razorMJSkimSequenceHad = cms.Sequence(
-    #require *some* trigger fired
-    razorMJTriggerSequence+
     #veto events with too many jets
     ~razorPFJetSelCount+ 
     #now make the sequence
@@ -408,8 +406,6 @@ razorMJSkimSequenceHad = cms.Sequence(
     )
 
 razorMJSkimSequenceEle = cms.Sequence(
-    #require *some* trigger fired
-    razorMJTriggerSequence+
     #veto events with too many jets
     ~razorPFJetSelCount+ 
     #now make the sequence
@@ -429,8 +425,6 @@ razorMJSkimSequenceEle = cms.Sequence(
     )
 
 razorMJSkimSequenceMu = cms.Sequence(
-    #require *some* trigger fired
-    razorMJTriggerSequence+
     #veto events with too many jets
     ~razorPFJetSelCount+ 
     #now make the sequence

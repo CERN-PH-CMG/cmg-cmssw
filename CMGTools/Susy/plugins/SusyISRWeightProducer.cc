@@ -13,6 +13,8 @@
 #include <iostream>
 #include <vector>
 
+/* see https://twiki.cern.ch/twiki/bin/viewauth/CMS/SMST2ccMadgraph8TeV */
+
 class SusyISRWeightProducer : public edm::EDFilter{
  public:
 

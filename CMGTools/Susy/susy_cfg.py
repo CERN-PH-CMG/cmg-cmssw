@@ -1,13 +1,30 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 from CMGTools.Production.datasetToSource import *
-#datasetInfo = ('cmgtools', '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0','patTuple_[0-9]+\\.root')
-datasetInfo = ('cmgtools', '/SMS-T2tt_FineBin_Mstop-225to1200_mLSP-0to1000_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B','patTuple_[0-9]+\\.root')
+#datasetInfo = ('lucieg', '/SMS-T2tt_mStop-150to350_mLSP-0to250_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/PAT_CMG_V5_14_0/','cmgTuple_[0-9]+_[0-9]+_[A-z,a-z,0-9]+\\.root')
+#datasetInfo = ('lucieg', '/SMS-T2tt_mStop-375to475_mLSP-0to375_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/PAT_CMG_V5_14_0/','cmgTuple_[0-9]+_[0-9]+_[A-z,a-z,0-9]+\\.root')
+datasetInfo = ('lucieg', '/SMS-T2tt_mStop-500to650_mLSP-0to225_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/PAT_CMG_V5_14_0/','cmgTuple_[0-9]+_[0-9]+_[A-z,a-z,0-9]+\\.root')
+#datasetInfo = ('lucieg', '/SMS-T2tt_mStop-500to650_mLSP-250to550_8TeV-Pythia6Z_Summer12-START52_V9_FSIM-v1_AODSIM/','cmgTuple_[0-9]+_[0-9]+_[A-z,a-z,0-9]+\\.root')
+#datasetInfo = ('lucieg', '/SMS-T2tt_mStop-675to800_mLSP-0to275_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/PAT_CMG_V5_14_0/','cmgTuple_[0-9]+_[0-9]+_[A-z,a-z,0-9]+\\.root')
+#datasetInfo = ('lucieg', '/SMS-T2tt_mStop-675to800_mLSP-300to700_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/PAT_CMG_V5_14_0/','cmgTuple_[0-9]+_[0-9]+_[A-z,a-z,0-9]+\\.root')
+
+
 process.source = datasetToSource(
     *datasetInfo
     )
-process.source.fileNames = process.source.fileNames[:1]
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(200) )
+#process.source.fileNames = process.source.fileNames[:1]
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+
+##process.source.skipEvents=cms.untracked.uint32(1000)
+##process.source.skipEvents=cms.untracked.uint32(2000)
+##process.source.skipEvents=cms.untracked.uint32(3000)
+##process.source.skipEvents=cms.untracked.uint32(4000)
+##process.source.skipEvents=cms.untracked.uint32(5000)
+##process.source.skipEvents=cms.untracked.uint32(6000)
+##process.source.skipEvents=cms.untracked.uint32(7000)
+##process.source.skipEvents=cms.untracked.uint32(8000)
+##process.source.skipEvents=cms.untracked.uint32(9000)
+
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -28,7 +45,7 @@ if not runOnMC:
     applyJSON(process, json )
 
 ##########
-skimEvents = True
+skimEvents = False
 runPAT = False
 # Message logger setup.
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
@@ -36,7 +53,16 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 process.setName_('MJSkim')
 
-ext = 'CMG'
+ext = 'CMG_0'
+##ext = 'CMG_1'
+##ext = 'CMG_2'
+##ext = 'CMG_3'
+##ext = 'CMG_4'
+##ext = 'CMG_5'
+##ext = 'CMG_6'
+##ext = 'CMG_7'  
+##ext = 'CMG_8' 
+##ext = 'CMG_9'
 
 # output to be stored
 
@@ -102,14 +128,14 @@ process.out.SelectEvents = cms.untracked.PSet( SelectEvents = SelectEvents )
 
 
 #plot the correlations between the selection paths
-process.load('CMGTools.Common.histograms.triggerCorrelationHistograms_cfi')
-process.triggerCorrelationHistograms.names = cms.untracked.vstring( SelectEvents )
-process.schedule.append( process.triggerCorrelationHistogramsEndPath )
+## process.load('CMGTools.Common.histograms.triggerCorrelationHistograms_cfi')
+## process.triggerCorrelationHistograms.names = cms.untracked.vstring( SelectEvents )
+## process.schedule.append( process.triggerCorrelationHistogramsEndPath )
 
-process.TFileService = cms.Service(
-    "TFileService",
-    fileName = cms.string("susy_histograms_%s.root" %  outFileNameExt)
-    )
+## process.TFileService = cms.Service(
+##     "TFileService",
+##     fileName = cms.string("susy_histograms_%s.root" %  outFileNameExt)
+##     )
 
 print 'output file: ', process.out.fileName
 

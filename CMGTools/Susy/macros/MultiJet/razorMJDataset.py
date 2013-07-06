@@ -24,7 +24,7 @@ def getFiles(datasets, user, pattern):
     files = []
     for d in datasets:
         ds = datasetToSource(
-                             'wreece',
+                             'lucieg',
                              #os.environ['USER'],
                              d,
                              pattern
@@ -96,11 +96,17 @@ if __name__ == '__main__':
                   VarParsing.varType.bool,          # string, int, or float
                   "Run on MC or data")
 
+    options.register ('mLSP',
+                  0,
+                  VarParsing.multiplicity.singleton, # singleton or list
+                  VarParsing.varType.float,          # string, int, or float
+                  "LSP mass")
+
     options.parseArguments()
     runOnMC = options.runOnMC
-
+    mLSPskim = float(options.mLSP)
+    
     runSMS = False
-    if True:
     if options.datasetName:
         runSMS = 'SMS' in options.datasetName
         runOnMC = 'START' in options.datasetName
@@ -117,14 +123,14 @@ if __name__ == '__main__':
             else:
                 name = '%s-%s-%s_%d.root' % (names[0],names[1],names[-1],options.index)
             options.outputFile = os.path.join(options.outputDirectory,name)
-            
         
         files = getFiles(
             [options.datasetName],
-            'wreece',
-            'susy_tree_CMG_[0-9]+.root'                
+            'lucieg',
+            'susy_tree_CMG_[0-9]+_[0-9]+.root'                
+           # 'susy_tree_CMG_[0-9]+.root'                
             )
-       # files = 'susy_tree_CMG.root'
+
         if options.maxFiles > 0:
             options.inputFiles = files[0:options.maxFiles]
         else:
@@ -186,6 +192,11 @@ struct Variables{\
     Double_t hemi2Phi;\
     Double_t pileUpWeightABCD;\
     Double_t pileUpWeightBCD;\
+    Double_t isrWeightUp;\
+    Double_t isrWeight;\
+    Double_t isrWeightDown;\
+    Double_t polarizationWeightPlus1;\
+    Double_t polarizationWeightMinus1;\
     Double_t MRT;\
     Double_t MCT;\
     Double_t MEFF;\
@@ -236,13 +247,15 @@ struct Filters{\
     Bool_t isolatedTrack10LeptonFilter;\
 };""")
 
+
     top_dir = os.path.join(os.environ['CMSSW_BASE'],'src/CMGTools/Susy/macros/MultiJet')
     rt.gROOT.ProcessLine(".L %s/calcVariables.C+" % top_dir)
-    
+    rt.gROOT.ProcessLine(".L %s/StopReweight.C+" % top_dir)
+          
     #see http://mctlib.hepforge.org/
     rt.gROOT.ProcessLine(".L %s/mctlib.C+" % top_dir)
 
-    from ROOT import Variables, Info, Filters#, mR, mRT
+    from ROOT import Variables, Info, Filters, SUSYGenParticle#, mR, mRT
     from ROOT import mctlib
     mct_calc = mctlib()
 
@@ -331,7 +344,8 @@ struct Filters{\
     pdfH = Handle('std::vector<double>')
     candH = Handle("std::vector<reco::LeafCandidate>")
     vertexH = Handle("std::vector<reco::Vertex>")
-
+    genH    = Handle("std::vector<reco::GenParticle>")
+    
     electronH = Handle("std::vector<cmg::Electron>")
     muonH = Handle("std::vector<cmg::Muon>")
     tauH = Handle("std::vector<cmg::Tau>")
@@ -357,7 +371,12 @@ struct Filters{\
     bins = {}
 
     # loop over events
+    nEvents = 0
     for event in events:
+        print 'event', nEvents
+        nEvents+=1
+        if nEvents > 1000 :
+            break
 
         info.event = event.object().id().event()
         info.lumi = event.object().id().luminosityBlock()
@@ -412,7 +431,7 @@ struct Filters{\
                     masses = map(float,parameters.split('_')[-2:])
                     vars.mStop = masses[0]
                     vars.mLSP = masses[1]
-                if skimEvents and vars.mLSP > 0.0:
+                if skimEvents and not (vars.mLSP == mLSPskim ) :
                     #TODO: For Moriond, only consider the zero LSP mass strip
                     continue
 
@@ -542,11 +561,11 @@ struct Filters{\
 
         #get leading and subleading leptons pt/eta for data/MC scaling
         if len(muonH.product()):
-            for mu in muonH.product()[:2]:
+            for mu in muonH.product():
                 muTight_pt.push_back(mu.pt())
                 muTight_eta.push_back(mu.eta())
         if len(electronH.product()):
-            for ele in electronH.product()[:2]:
+            for ele in electronH.product():
                 eleTight_pt.push_back(ele.pt())
                 eleTight_eta.push_back(ele.eta())
 
@@ -573,7 +592,7 @@ struct Filters{\
             pfcandschg = pfcandschgH.product()
 
             veto10 = False
-            for i in xrange(len(pfcandspt)):
+            for i in xrange(len(pfcandspt)):     
                 if pfcandspt.at(i) >= 10. and pfcandschg.at(i) > 0:
                     reliso = pfcandstrkiso.at(i)/pfcandspt.at(i)
                     if reliso < 0.1:
@@ -595,6 +614,12 @@ struct Filters{\
 
             veto10 = False
             for i in xrange(len(pfcandspt)):
+               ##  if len(electronH.product()) :
+##                     if pfcandschg.at(i) * electronH.product()[0].charge() > 0:
+##                         continue
+##                 elif len(muonH.product()) :
+##                     if pfcandschg.at(i) * muonH.product()[0].charge() > 0:
+##                         continue
                 if pfcandspt.at(i) >= 10. and pfcandschg.at(i) > 0:
                     reliso = pfcandstrkiso.at(i)/pfcandspt.at(i)
                     if reliso < 0.1:
@@ -743,6 +768,7 @@ struct Filters{\
         vars.caloMET_x = calomet.px()
         vars.caloMET_y = calomet.py()    
 
+           
         if runOnMC:
             event.getByLabel(('topGenInfo'),candH)
             if options.model is not None and candH.isValid() and len(candH.product()):
@@ -754,6 +780,37 @@ struct Filters{\
                     diTop = candH.product()[0]
                 vars.diTopPt = diTop.pt()
 
+           
+            event.getByLabel(('genParticlesStatus3'), genH)
+            genParticles  = std.vector('SUSYGenParticle')()
+            thetaMixingTargetPlus1  = -0.437
+            thetaMixingTargetMinus1 = -1.134
+            thetaMixingReference = 0.785
+            from ROOT import Reweight_Stop_to_TopChi0_with_SUSYmodel
+            polarizationWeightPlus1  = -100
+            polarizationWeightMinus1 = -100
+            if genH.isValid():
+                for gen in genH.product():
+                    genPart = SUSYGenParticle()
+                    genPart.pdgId  = gen.pdgId()
+                    genPart.energy = gen.energy()
+                    genPart.pt     = gen.pt()
+                    genPart.eta    = gen.eta()
+                    genPart.phi    = gen.phi()
+                    idx = 0
+                    if gen.numberOfMothers() > 0:
+                        for genP in genH.product() :
+                            if  gen.mother() == genP :
+                                genPart.firstMother = idx
+                                break
+                            idx+=1
+                    else :
+                        genPart.firstMother = -1
+                    genParticles.push_back(genPart)
+            polarizationWeightPlus1  = Reweight_Stop_to_TopChi0_with_SUSYmodel (genParticles, thetaMixingTargetPlus1)
+            polarizationWeightMinus1 = Reweight_Stop_to_TopChi0_with_SUSYmodel (genParticles, thetaMixingTargetMinus1)
+            vars.polarizationWeightPlus1  = polarizationWeightPlus1
+            vars.polarizationWeightMinus1 = polarizationWeightMinus1
         
             event.getByLabel(('simpleGenInfo'),filterH)
             if filterH.isValid():
@@ -765,12 +822,15 @@ struct Filters{\
             vars.pileUpWeightABCD = pileUpH.product()[0]
             event.getByLabel(('vertexWeightSummer12MC53X2012BCDData'),pileUpH)
             vars.pileUpWeightBCD = pileUpH.product()[0]
-
-
+            
+            event.getByLabel(('isrWeight'),doubleH)
+            vars.isrWeightUp   = doubleH.product()[0]
+            vars.isrWeight     = doubleH.product()[1]
+            vars.isrWeightDown = doubleH.product()[2]
 
         #TODO: Place some cut here
-        if skimEvents and vars.RSQ < 0.05 or vars.MR < 350:
-            continue
+        if skimEvents and (vars.RSQ < 0.05 or vars.MR < 350):
+             continue
 
         tree.Fill()
 
