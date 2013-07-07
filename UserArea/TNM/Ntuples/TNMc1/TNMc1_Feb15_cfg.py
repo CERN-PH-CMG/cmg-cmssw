@@ -1,4 +1,4 @@
-#$Revision: 1.23 $
+#$Revision: 1.24 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -18,20 +18,20 @@ process.load("Configuration.StandardSequences.GeometryDB_cff")
 #process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 # Run on MC or data
 
-runOnMC = True
+runOnMC = False
 runPATCMG = False
 recalibrateCMGJets = False
 runAK7jets = False
 runPrunedAK7jets = False
 runCA8jets = True
-runAK5genjets = True
+runAK5genjets = False
 runQJets = False
 runOnVVtuples = False
-runOnCMGp = False
+runOnCMGp = True
 
 if not runOnMC:
    runAK5genjets=False
@@ -39,7 +39,8 @@ if not runOnMC:
 # Input file
 
 dataset_user = 'cmgtools' 
-dataset_name = '/RSGravitonToWW_kMpl01_M-1000_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0'
+dataset_name = '/SingleMu/Run2012D-22Jan2013-v1/AOD/CMGPF_V5_16_0'
+#dataset_name = '/RSGravitonToWW_kMpl01_M-1000_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0'
 #dataset_name = '/QCD_HT-1000ToInf_TuneZ2star_8TeV-madgraph-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0'
 #dataset_name = '/QCD_Pt-15to3000_Tune4C_Flat_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_16_0'
 #dataset_name = '/MultiJet/Run2012A-13Jul2012-v1/AOD/PAT_CMG_V5_12_0'
@@ -275,6 +276,7 @@ if not runOnMC:
     process.demo.buffers.remove('sint')
     process.demo.buffers.remove('recoLeafCandidate')
     process.demo.buffers.remove('vertexWeight')
+    process.demo.buffers.remove('edmTriggerResultsHelper2')
 
 if runOnMC:
     process.demo.buffers.remove('hcalFilter')

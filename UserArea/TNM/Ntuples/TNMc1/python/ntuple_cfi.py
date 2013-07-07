@@ -30,6 +30,8 @@ cms.EDAnalyzer("TheNtupleMaker",
     'cmgMET',
     'patMET',
     'patMET1',
+    'recoCaloMET',
+    'recoCaloMET1',
     'patElectronHelper',
     'patMuonHelper',
     'patTau',
@@ -39,6 +41,7 @@ cms.EDAnalyzer("TheNtupleMaker",
     'recoGenParticleHelper',
     'edmTriggerResultsHelper',
     'edmTriggerResultsHelper1',
+    'edmTriggerResultsHelper2',
     'sint',
     'cmgBaseMET',
     'cmgBaseMET1',
@@ -734,6 +737,7 @@ cms.EDAnalyzer("TheNtupleMaker",
     'double  daughter(0)->rapidity()',
     'double  daughter(0)->phi()',
     'double  daughter(0)->mass()',
+    #'float daughter_0_comb()',
     #'float  daughter(0)->chargedHadronEnergyFraction()',
     #'float  daughter(0)->neutralHadronEnergyFraction()',
     #'float  daughter(0)->chargedEmEnergyFraction()',
@@ -748,6 +752,7 @@ cms.EDAnalyzer("TheNtupleMaker",
     'double  daughter(1)->rapidity()',
     'double  daughter(1)->phi()',
     'double  daughter(1)->mass()',
+    #'float daughter_1_comb()',
     #'float  daughter(1)->chargedHadronEnergyFraction()',
     #'float  daughter(1)->neutralHadronEnergyFraction()',
     #'float  daughter(1)->chargedEmEnergyFraction()',
@@ -874,6 +879,30 @@ cms.EDAnalyzer("TheNtupleMaker",
     #---------------------------------------------------------------------
     'double  energy()',
     'double  et()',
+    'double  pt()',
+    'double  phi()',
+    'double  sumEt()',
+    'double  mEtSig()',
+    'double  significance()'
+    ),
+               recoCaloMET =
+               cms.untracked.
+               vstring(
+    'recoCaloMET                    corMetGlobalMuons                 200',
+    #---------------------------------------------------------------------
+    'double  energy()',
+    'double  pt()',
+    'double  phi()',
+    'double  sumEt()',
+    'double  mEtSig()',
+    'double  significance()'
+    ),
+               recoCaloMET1 =
+               cms.untracked.
+               vstring(
+    'recoCaloMET                     met                             200',
+    #---------------------------------------------------------------------
+    'double  energy()',
     'double  pt()',
     'double  phi()',
     'double  sumEt()',
@@ -1018,20 +1047,32 @@ cms.EDAnalyzer("TheNtupleMaker",
     # If this doesn't work, try to specify the label as shown below:
     "edmTriggerResultsHelper          TriggerResults::PAT               1",
     #----------------------------------------------------------------------
-    '   int   value("totalKinematicsFilterPath")  totalKinematicsFilterPath',
-    '   int   value("EcalDeadCellBoundaryEnergyFilterPath")  EcalDeadCellBoundaryEnergyFilterPath',
-    '   int   value("simpleDRfilterPath")  simpleDRfilterPath',
+    #'   int   value("totalKinematicsFilterPath")  totalKinematicsFilterPath',
+    #'   int   value("EcalDeadCellBoundaryEnergyFilterPath")  EcalDeadCellBoundaryEnergyFilterPath',
+    #'   int   value("simpleDRfilterPath")  simpleDRfilterPath',
     '   int   value("EcalDeadCellTriggerPrimitiveFilterPath")  EcalDeadCellTriggerPrimitiveFilterPath',
-    '   int   value("greedyMuonPFCandidateFilterPath")  greedyMuonPFCandidateFilterPath',
+    #'   int   value("greedyMuonPFCandidateFilterPath")  greedyMuonPFCandidateFilterPath',
     '   int   value("hcalLaserEventFilterPath")  hcalLaserEventFilterPath',
-    '   int   value("inconsistentMuonPFCandidateFilterPath")  inconsistentMuonPFCandidateFilterPath',
+    #'   int   value("inconsistentMuonPFCandidateFilterPath")  inconsistentMuonPFCandidateFilterPath',
     '   int   value("trackingFailureFilterPath")  trackingFailureFilterPath',
     '   int   value("CSCTightHaloFilterPath")  CSCTightHaloFilterPath',
     '   int   value("HBHENoiseFilterPath")  HBHENoiseFilterPath',
     '   int   value("primaryVertexFilterPath")  primaryVertexFilterPath',
     '   int   value("noscrapingFilterPath")  noscrapingFilterPath',
     '   int   value("metNoiseCleaningPath")  metNoiseCleaningPath',
+    '   int   value("eeBadScFilterPath")  eeBadScFilterPath',
+    '   int   value("trkPOGFiltersPath")  trkPOGFiltersPath',
     ),
+               edmTriggerResultsHelper2 =
+               cms.untracked.
+               vstring(
+    #"edmTriggerResultsHelper          TriggerResults                    1",
+    # If this doesn't work, try to specify the label as shown below:
+    "edmTriggerResultsHelper          TriggerResults::PAT               1",
+    #----------------------------------------------------------------------
+    '   int   value("totalKinematicsFilterPath")  totalKinematicsFilterPath',
+    ),
+
                edmTriggerResultsHelper =
                cms.untracked.
                vstring( 
@@ -1203,7 +1244,7 @@ cms.EDAnalyzer("TheNtupleMaker",
                cmgPFJet =
                cms.untracked.
                vstring(
-    'cmgPFJet                        cmgPFJetSel                     200',
+    'cmgPFJet                        cmgPFJetSelCHS                 200',
     #---------------------------------------------------------------------
     'double  energy()',
     'double  et()',
@@ -1231,6 +1272,13 @@ cms.EDAnalyzer("TheNtupleMaker",
     'double  component(6).number()', #HF hadron
     'double  component(7).fraction()', #HF EM
     'double  component(7).number()', #HF EM
+    # btag
+    'double  btag(0) trackCountingHighEffBJetTag',
+    'double  btag(1) trackCountingHighPurBJetTags',
+    'double  btag(2) jetProbabilityBJetTags',
+    'double  btag(3) jetBProbabilityBJetTags',
+    'double  btag(6) combinedSecondaryVertexBJetTags',
+    'double  btag(7) combinedSecondaryVertexMVABJetTags'
     ),
                genJet =
                cms.untracked.
