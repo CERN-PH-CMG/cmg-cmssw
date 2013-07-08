@@ -24,6 +24,9 @@ TGaxis.SetMaxDigits(3)
 
 if __name__ == '__main__':
 
+ scenario="_lowPU"
+ #scenario=""
+
  samples = ["substructure_pas_QCD500.root",
              "substructure_pas_QCD1000.root",
              "substructure_pas_WWPy61000.root",
@@ -37,15 +40,30 @@ if __name__ == '__main__':
         ("Jet1C2beta17","C_{2} (#beta=1.7)",-1,10,False),
         ]
 
+ if scenario=="_lowPU":
+   plots=[("Jet1Nsub","#tau_{2}/#tau_{1} <PU>=22",-1,10,False),
+        ("Jet1NsubPruned","pruned #tau_{2}/#tau_{1} <PU>=22",-1,10,False),
+        ("Jet1MassDrop","mass drop <PU>=22",-1,10,False),
+        ("Jet1C2beta17","C_{2} (#beta=1.7) <PU>=22",-1,10,False),
+        ("Jet1Nsub","#tau_{2}/#tau_{1} <PU>=12",-1,10,False,"lowPU"),
+        ("Jet1NsubPruned","pruned #tau_{2}/#tau_{1} <PU>=12",-1,10,False,"lowPU"),
+        ("Jet1MassDrop","mass drop <PU>=12",-1,10,False,"lowPU"),
+        ("Jet1C2beta17","C_{2} (#beta=1.7) <PU>=12",-1,10,False,"lowPU"),
+        ]
+
  names = ["tau21",
 	   "tau21pruned",
 	   "massdrop",
 	   "C2beta17",
+	   "tau21_lowPU",
+	   "tau21pruned_lowPU",
+	   "massdrop_lowPU",
+	   "C2beta17_lowPU",
 	   ]
 
- colors=[1,2,4,6]
- widths=[2,2,2,2]
- styles=[1,2,3,4]
+ colors=[1,2,4,6,1,2,4,6]
+ widths=[2,2,2,2,1,1,1,1]
+ styles=[1,2,3,4,1,2,3,4]
 
  results=[]
 
@@ -53,9 +71,11 @@ if __name__ == '__main__':
  canvas.SetLogy(False)
  mg = TMultiGraph()
  mg2 = TMultiGraph()
- legend=TLegend(0.2,0.2,0.85,0.4)
+ legend=TLegend(0.2,0.2,0.85,0.5)
 
  for plot in plots:
+  if "lowPU" in names[plots.index(plot)] and not "&&(nPU<17)" in selection:
+      selection+="&&(nPU<17)"
   event_count=[]
   for sample in samples:
     f=TFile.Open(sample)
@@ -132,11 +152,11 @@ if __name__ == '__main__':
  banner.SetTextSize(0.04)
  banner.Draw();  
 
- canvas.SaveAs("substructure_pas_roc.png")
- canvas.SaveAs("substructure_pas_roc.pdf")
- canvas.SaveAs("substructure_pas_roc.root")
- canvas.SaveAs("substructure_pas_roc.C")
- canvas.SaveAs("substructure_pas_roc.eps")
+ canvas.SaveAs("substructure_pas_roc"+scenario+".png")
+ canvas.SaveAs("substructure_pas_roc"+scenario+".pdf")
+ canvas.SaveAs("substructure_pas_roc"+scenario+".root")
+ canvas.SaveAs("substructure_pas_roc"+scenario+".C")
+ canvas.SaveAs("substructure_pas_roc"+scenario+".eps")
 
  canvas = TCanvas("","",0,0,200,200)
  canvas.SetLogy(False)
@@ -150,9 +170,10 @@ if __name__ == '__main__':
  legend4.Draw("same")
  legend2.Draw("same")
  legend2a.Draw("same")
+ banner.Draw();  
 
- canvas.SaveAs("substructure_pas_roc2.png")
- canvas.SaveAs("substructure_pas_roc2.pdf")
- canvas.SaveAs("substructure_pas_roc2.root")
- canvas.SaveAs("substructure_pas_roc2.C")
- canvas.SaveAs("substructure_pas_roc2.eps")
+ canvas.SaveAs("substructure_pas_roc2"+scenario+".png")
+ canvas.SaveAs("substructure_pas_roc2"+scenario+".pdf")
+ canvas.SaveAs("substructure_pas_roc2"+scenario+".root")
+ canvas.SaveAs("substructure_pas_roc2"+scenario+".C")
+ canvas.SaveAs("substructure_pas_roc2"+scenario+".eps")

@@ -112,8 +112,32 @@ if __name__ == '__main__':
   ndata=15000
   sets=[""]
 
-  plots = [("nPU","weight*vertexWeight*((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","pileup interactions"),
-           ("numberOfPrimaryVertices","weight*vertexWeight*((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","number of vertices"),
+  names = ["npv",
+	   "pt",
+	   "eta",
+	   "mass",
+	   "massdrop",
+	   "massdrop_aftermass",
+	   "tau21",
+	   "tau21_aftermass",
+	   "tau21pruned",
+	   "tau21pruned_aftermass",
+	   #"C2beta15",
+	   "C2beta17",
+	   #"C2beta20",
+	   "jetcharge03",
+	   "jetcharge05",
+	   "jetcharge10",
+	   "jetcharge03_aftermass",
+	   "jetcharge05_aftermass",
+	   "jetcharge10_aftermass",
+	   "nconstituents",
+	   "ncharged01",
+	   "nneutral01",
+	   "chargedpt2",
+	   "pt2",
+	   ]
+  plots = [("numberOfPrimaryVertices","weight*vertexWeight*((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","number of vertices"),
            ("Jet1pt","weight*vertexWeight*((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","jet p_{T} (GeV)"),
            ("Jet1eta","weight*vertexWeight*((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","jet #eta"),
            ("Jet1Mass","weight*vertexWeight*((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","pruned jet mass (GeV)"),
@@ -255,8 +279,23 @@ if __name__ == '__main__':
 
  results=[]
  for plot in plots:
-  canvas = TCanvas("","",0,0,200,200)
-  canvas.SetLogy(False)
+  if runSet==2:
+    canvas = TCanvas("","",0,0,200,260)
+    canvas.Divide(1,2,0,0,0)
+    canvas.GetPad(1).SetPad(0.0,0.28,1.0,1.0)
+    canvas.GetPad(1).SetLeftMargin(0.13)
+    canvas.GetPad(1).SetRightMargin(0.08)
+    canvas.GetPad(1).SetTopMargin(0.08)
+    canvas.GetPad(1).SetBottomMargin(0.05)
+    canvas.GetPad(2).SetPad(0.0,0.0,1.0,0.28)
+    canvas.GetPad(2).SetLeftMargin(0.13)
+    canvas.GetPad(2).SetRightMargin(0.08)
+    canvas.GetPad(2).SetTopMargin(0.08)
+    canvas.GetPad(2).SetBottomMargin(0.40)
+    canvas.cd(1)
+  else:
+    canvas = TCanvas("","",0,0,200,200)
+  canvas.GetPad(1).SetLogy(False)
   if runSet==2:
     legend=TLegend(0.45,0.7,0.85,0.9)
   else:
@@ -338,7 +377,7 @@ if __name__ == '__main__':
        else:
           hist=TH1F(histname,histname,40,300,1000);
        hist.GetYaxis().SetRangeUser(0.001,50000)
-       canvas.SetLogy(True)
+       canvas.GetPad(1).SetLogy(True)
     if "pruned jet mass" in plot[2]:
        hist=TH1F(histname,histname,40,0,150);
        hist.GetYaxis().SetRangeUser(0,50000)
@@ -389,7 +428,11 @@ if __name__ == '__main__':
     hist.SetFillStyle(0)
     hist.SetMarkerStyle(20)
     #hist.SetMarkerSize(2)
-    hist.GetXaxis().SetTitle(plot[2])
+    if runSet==2:
+      hist.GetXaxis().SetTitle("")
+      hist.GetXaxis().SetLabelColor(0)
+    else:
+      hist.GetXaxis().SetTitle(plot[2])
     hist.GetYaxis().SetTitle("N")
     if "Run" in sample:
         integral=hist.Integral()
@@ -400,6 +443,8 @@ if __name__ == '__main__':
     hist.SetLineStyle(styles[counter])        
     hist.SetLineWidth(widths[counter])
     print "mean",hist.GetMean()
+
+    hists+=[hist]
 
     if "QCD1000" in sample:
         histname500="plot"+names[plots.index(plot)]+gen+str(s-1)
@@ -416,7 +461,9 @@ if __name__ == '__main__':
                     his.Scale(oldIntegral/his.Integral())
 		else:
                     his.Scale(integral/his.Integral())
+ 	        hist=his
  	        break
+    if "QCD500" in sample:
 	continue
     
     if "QCDPythia8" in sample and not "170" in sample:
@@ -428,7 +475,6 @@ if __name__ == '__main__':
           if samplename in sample:
             samplenumber=samplenames.index(samplename)
         histnameFirst="plot"+names[plots.index(plot)]+gen+str(s-samplenumber)
-        print histnameFirst
         for his in reversed(hists):
 	    if histnameFirst==his.GetName():
 	        oldIntegral=his.Integral()
@@ -444,8 +490,10 @@ if __name__ == '__main__':
 		elif his.Integral()>0:
 		    originalIntegral[histnameFirst]=his.Integral()
                     his.Scale(integral/his.Integral())
- 	        break
- 	continue
+ 	        hist=his
+		break
+    if "QCDPythia8" in sample and not "1800" in sample:
+        continue
     
     if counter==0:
       if "Run" in sample:
@@ -462,7 +510,6 @@ if __name__ == '__main__':
       else:
         hist.Draw("histsame")
 
-    hists+=[hist]
     if hist.GetMaximum()>maximum and hist.GetMaximum()<hist.Integral():
         maximum=hist.GetMaximum()
 
@@ -473,9 +520,38 @@ if __name__ == '__main__':
     else:
         hists[0].GetYaxis().SetRangeUser(0,maximum*2.0)
 
+    if runSet==2:
+      canvas.cd(2)
+      ratio=hist.Clone(hist.GetName()+"clone")
+      hists+=[ratio]
+      ratio.Divide(hist,hists[0])
+      for b in range(hist.GetNbinsX()):
+        if hists[0].GetBinContent(b+1)>0:
+          ratio.SetBinError(b+1,hists[0].GetBinError(b+1)/hists[0].GetBinContent(b+1))
+      ratio.GetYaxis().SetTitle("data/MC")
+      ratio.GetYaxis().SetTitleColor(1)
+      ratio.GetYaxis().SetTitleSize(0.16)
+      ratio.SetMarkerSize(0.1)
+      ratio.GetYaxis().SetLabelSize(0.14)
+      ratio.GetYaxis().SetRangeUser(0,2)
+      ratio.GetYaxis().SetNdivisions(503)
+      ratio.GetXaxis().SetLabelColor(1)
+      ratio.GetXaxis().SetTitle(plot[2])
+      ratio.GetXaxis().SetTitleSize(0.16)
+      ratio.GetXaxis().SetTitleOffset(0.8)
+      ratio.GetXaxis().SetLabelSize(0.14)
+      if counter==0:
+        ratio.Draw("histe")
+      else:
+        ratio.Draw("histsame")
+      #line=TLine(ratio.GetXaxis().GetBinLowEdge(1),1,ratio.GetXaxis().GetBinLowEdge(ratio.GetNbinsX()+1),1)
+      #hists+=[line]
+      #line.Draw("same")
+      canvas.cd(1)
+
     if "Run" in sample and counter==0:
       legend.AddEntry(hist,"data","ple")
-    if "QCD500" in sample:
+    if "QCD1000" in sample:
       if gen=="Gen" or runSet==2:
         legend.AddEntry(hist,"QCD Madgraph+Pythia6","l")
       elif runSet==3 and counter==0:

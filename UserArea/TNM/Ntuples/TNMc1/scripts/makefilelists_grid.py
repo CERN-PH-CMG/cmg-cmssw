@@ -64,15 +64,16 @@ samples = [
 #('/QCD_HT-100To250_TuneZ2star_8TeV-madgraph-pythia/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0/NTUPLE_Feb15',False,False,'ProductionTask'),
 #('/QCD_Pt-15to3000_TuneEE3C_Flat_8TeV_herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
 
-('/QCD_Pt-170to300_Tune4C_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
-('/QCD_Pt-300to470_Tune4C_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
-('/QCD_Pt-470to600_Tune4C_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
-('/QCD_Pt-600to800_Tune4C_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
-('/QCD_Pt-800to1000_Tune4C_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
-('/QCD_Pt-1000to1400_Tune4C_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
-('/QCD_Pt-1400to1800_Tune4C_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
-('/QCD_Pt-1800_Tune4C_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
+#('/QCD_Pt-170to300_Tune4C_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
+#('/QCD_Pt-300to470_Tune4C_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
+#('/QCD_Pt-470to600_Tune4C_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
+#('/QCD_Pt-600to800_Tune4C_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
+#('/QCD_Pt-800to1000_Tune4C_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
+#('/QCD_Pt-1000to1400_Tune4C_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
+#('/QCD_Pt-1400to1800_Tune4C_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
+#('/QCD_Pt-1800_Tune4C_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
 
+('/Jet/Run2012A-22Jan2013-v1/AOD/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTaskTNM'),
 #('/HT/Run2012A-22Jan2013-v1/AOD/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
 #('/JetHT/Run2012B-22Jan2013-v1/AOD/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
 #('/JetHT/Run2012C-22Jan2013-v1/AOD/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
@@ -137,7 +138,11 @@ for sample, mc, fastsim, production in samples:
     #else:
     shortsample="_".join(sample.strip("/").split("/"))+"_grid"
     filelist=open("fileList_"+shortsample+".txt","w")
-    if production=="ProductionTask":
+    if production=="ProductionTaskTNM":
+      command="cmsLs -l /store/cmst3/group/tnm/CMG"+sample+"""/ | awk '{size+=$2}END{print size/1024/1024/1024" GB"}'"""
+      os.system(command)
+      command="cmsLs -l /store/cmst3/group/tnm/CMG"+sample
+    elif production=="ProductionTask":
       command="cmsLs -l /store/cmst3/user/hinzmann/CMG"+sample+"""/ | awk '{size+=$2}END{print size/1024/1024/1024" GB"}'"""
       os.system(command)
       command="cmsLs -l /store/cmst3/user/hinzmann/CMG"+sample
