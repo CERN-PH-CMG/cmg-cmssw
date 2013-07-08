@@ -2,7 +2,7 @@ from CMGTools.TTHAnalysis.treeReAnalyzer import *
 
 class EventVarsMike:
     def __init__(self):
-        self.branches = [ "mass_mindr_lepjet","mass_jet_clospair","pt_balance" ]
+        self.branches = [ "mass_mindr_lepjet","mass_jet_clospair","pt_balance", "pt_balancepluslep" ]
     def listBranches(self):
         return self.branches[:]
     def __call__(self,event):
@@ -27,6 +27,7 @@ class EventVarsMike:
             ret["mass_jet_clospair"]=jets[drss[0][1]].mass
             if njet >=4:
                 ret["pt_balance"]=((leps[1-drss[0][2]].p4()+jets[1-drss[0][1]].p4()+ metp4).Pt())-(((jets[drss[0][2]].p4())+(jets[2].p4())+(jets[3].p4())).Pt())
+                ret["pt_balancepluslep"]=((leps[1-drss[0][2]].p4()+jets[1-drss[0][1]].p4()+ metp4).Pt())-(((jets[drss[0][2]].p4())+(jets[2].p4())+(jets[3].p4())+leps[drss[0][2]].p4()).Pt())
         return ret
 
 if __name__ == '__main__':
