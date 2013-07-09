@@ -9,3 +9,5 @@ cmsBatch.py 5 TNMc1_Feb15_cfg.py -b 'bsub -q 1nd < ./batchScript.sh' -f -r /stor
 cmsBatch.py 5 TNMc1_Feb15_cfg.py -b 'bsub -q 1nd < ./batchScript.sh' -f -r /store/cmst3/user/hinzmann/NTUPLE/summer12_WW -o summer12_WW
 cmsBatch.py 5 TNMc1_Feb15_cfg.py -b 'bsub -q 1nd < ./batchScript.sh' -f -r /store/cmst3/user/hinzmann/NTUPLE/summer12_TTBAR -o summer12_TTBAR
 cmsBatch.py 5 TNMc1_Feb15_cfg.py -b 'bsub -q 1nd < ./batchScript.sh' -f -r /store/cmst3/user/hinzmann/NTUPLE/summer12_RSG_WW_lvjj_c0p05_M1000 -o summer12_RSG_WW_lvjj_c0p05_M1000
+
+cmsBatch.py 5 TNMc1_Feb15_FNAL_cfg.py -b 'bsub -q 2nd < ./batchScript.sh' -f -r /store/cmst3/user/hinzmann/NTUPLE/X_WW_lvjj_SM600p-narrow-JHU -o X_WW_lvjj_SM600p-narrow-JHU

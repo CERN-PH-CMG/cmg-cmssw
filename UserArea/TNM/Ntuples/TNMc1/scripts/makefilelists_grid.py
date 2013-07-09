@@ -74,10 +74,10 @@ samples = [
 #('/QCD_Pt-1800_Tune4C_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
 
 ('/Jet/Run2012A-22Jan2013-v1/AOD/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTaskTNM'),
-#('/HT/Run2012A-22Jan2013-v1/AOD/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
-#('/JetHT/Run2012B-22Jan2013-v1/AOD/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
-#('/JetHT/Run2012C-22Jan2013-v1/AOD/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
-#('/JetHT/Run2012D-22Jan2013-v1/AOD/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
+('/HT/Run2012A-22Jan2013-v1/AOD/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTaskTNM'),
+('/JetHT/Run2012B-22Jan2013-v1/AOD/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTaskTNM'),
+('/JetHT/Run2012C-22Jan2013-v1/AOD/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTaskTNM'),
+('/JetHT/Run2012D-22Jan2013-v1/AOD/CMGPF_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTaskTNM'),
 
 #('/QCD_Pt-15to3000_Tune4C_Flat_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_16_0/NTUPLE_Feb15',False,False,'ProductionTask'),
 #('/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0/NTUPLE_Feb15',False,False,'ProductionTask'),
