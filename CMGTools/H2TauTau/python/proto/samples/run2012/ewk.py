@@ -90,6 +90,30 @@ TTJets = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+TTJetsFullLept = cfg.MCComponent(
+    name = 'TTJetsFullLept',
+    files = [],
+    xSection = 225.197*(1-0.676)*(1-0.676),
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
+TTJetsSemiLept = cfg.MCComponent(
+    name = 'TTJetsSemiLept',
+    files = [],
+    xSection = 225.197*(1-0.676)*0.676*2,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
+TTJetsHadronic = cfg.MCComponent(
+    name = 'TTJetsHadronic',
+    files = [],
+    xSection = 225.197*0.676*0.676,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
 T_tW = cfg.MCComponent(
     name = 'T_tW',
     files = [],
@@ -128,6 +152,9 @@ t_mc_ewk = [
     TTJets,
     T_tW,
     Tbar_tW,
+    TTJetsFullLept,
+    TTJetsSemiLept,
+    TTJetsHadronic,
     ]
 
 
