@@ -11,13 +11,6 @@ import urllib, urlparse, string, time, os, shutil, sys
 
 useLHAPDF = False # DEFAULT IS False, before to switch to True follow https://twiki.cern.ch/twiki/bin/view/CMS/CmgWMass#LHAPDF
   
-# foldername = "results_test44X_100massPoints3etabins";
-# foldername = "results_test44X_100massPoints";
-# foldername = "results_test44X_RescaleToWJetsLumi";
-# foldername = "results_test44X_MCDATAcomparison";
-# foldername = "results_test44X_correctPoles";
-# foldername = "results_test44X_RecoilCut";
-# foldername = "results_test44X_correctPoles";
 # foldername = "test_BW_reweighting_normWsig";
 # foldername = "test_controlplots_smear1s";
 # foldername = "test_lhapdfNNPDF23";
@@ -25,9 +18,11 @@ useLHAPDF = False # DEFAULT IS False, before to switch to True follow https://tw
 # foldername = "test_rochGlbUp";
 # foldername = "test_rochGlbDown";
 # foldername = "test_splitCode";
-foldername = "test_ptreweighting1";
+# foldername = "test_ptreweighting1";
+foldername = "test_genpt";
 
-ntuple_folder = "root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/";
+# ntuple_folder = "root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/";
+ntuple_folder = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/";
 # ntuple_folder = "~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/";
 lhapdf_folder="/afs/cern.ch/work/p/perrozzi/private/WMassMC/lhapdf/"
 
@@ -58,12 +53,12 @@ etaMuonNSteps = "1"; # 5
 etaMaxMuons = "0.6"; # 0.6, 0.8, 1.2, 1.6, 2.1
 # etaMaxMuons = "2.1"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
-parallelize = 1;
-resumbit_sample = "" # DATA , WJetsSig ,  WJetsFake ,  DYJetsSig ,  DYJetsFake ,   TTJets ,   ZZJets ,   WWJets ,  WZJets ,  QCD
+parallelize = 0;
+resumbit_sample = "DYJetsSig" # DATA , WJetsSig ,  WJetsFake ,  DYJetsSig ,  DYJetsFake ,   TTJets ,   ZZJets ,   WWJets ,  WZJets ,  QCD
 
-runWanalysis = 1;
+runWanalysis = 0;
 runZanalysis = 1;
-controlplots = 1;
+controlplots = 0;
 
 mergeSigEWKbkg = 0;
 
@@ -203,7 +198,7 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates):
         
         if (resumbit_sample!=""):
             # parallelize = 0
-            if not resumbit_sample in sample[i]: 
+            if not sample[i] in resumbit_sample: 
                 print "skipping ",sample[i]," which is not",resumbit_sample;
                 continue;
           
@@ -337,12 +332,12 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates):
             # os.system("touch *.*");
                 if(useLHAPDF):
                     os.system("sed -i 's/.*\#define\ LHAPDF_ON.*/\#define\ LHAPDF_ON/' Zanalysis.C")
-                    print("c++ -o runZanalysis.o `root-config --glibs --libs --cflags`  -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF  -lm Zanalysis.C rochcor_44X_v3.C runZanalysis.C ../includes/common.h")
-                    os.system("rm runZanalysis.o; c++ -o runZanalysis.o `root-config --glibs --libs --cflags`  -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF  -lm Zanalysis.C rochcor_44X_v3.C runZanalysis.C ../includes/common.h")                    
+                    print("c++ -o runZanalysis.o `root-config --glibs --libs --cflags`  -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF  -lm Zanalysis.C rochcor_44X_v3.C runZanalysis.C common_stuff.C ../includes/common.h")
+                    os.system("rm runZanalysis.o; c++ -o runZanalysis.o `root-config --glibs --libs --cflags`  -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF  -lm Zanalysis.C rochcor_44X_v3.C runZanalysis.C  common_stuff.C ../includes/common.h")                    
                 else:
                     os.system("sed -i 's/.*\#define\ LHAPDF_ON.*/\/\/\#define\ LHAPDF_ON/' Zanalysis.C")
-                    print("c++ -o runZanalysis.o `root-config --glibs --libs --cflags`  -lm Zanalysis.C rochcor_44X_v3.C runZanalysis.C ../includes/common.h")
-                    os.system("rm runZanalysis.o; c++ -o runZanalysis.o `root-config --glibs --libs --cflags`  -lm Zanalysis.C rochcor_44X_v3.C runZanalysis.C ../includes/common.h")
+                    print("c++ -o runZanalysis.o `root-config --glibs --libs --cflags`  -lm Zanalysis.C rochcor_44X_v3.C runZanalysis.C common_stuff.C ../includes/common.h")
+                    os.system("rm runZanalysis.o; c++ -o runZanalysis.o `root-config --glibs --libs --cflags`  -lm Zanalysis.C rochcor_44X_v3.C runZanalysis.C common_stuff.C ../includes/common.h")
 
             print zstring
             if not parallelize:
