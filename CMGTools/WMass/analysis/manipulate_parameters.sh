@@ -12,3 +12,11 @@
   sed "s:PAR_ETA_NSTEP:${5}:g" -i includes/common.h
   # static const float etaMaxMuons[etaMuonNSteps] = {PAR_ETA_STEPS};
   sed "s:PAR_ETA_STEPS:${6}:g" -i includes/common.h
+  # static const int NPDF_sets = PAR_NPDF_SETS;
+  sed "s:PAR_NPDF_SETS:${7}:g" -i includes/common.h
+  # TString PDF_sets[NPDF_sets] = {PAR_PDF_SETS};
+  sed "s:PAR_PDF_SETS:${8}:g" -i includes/common.h
+  # int PDF_members[NPDF_sets] = {PAR_PDF_MEMBERS};
+  sed "s:PAR_PDF_MEMBERS:${9}:g" -i includes/common.h
+  # int NtoysMomCorr = PAR_TOYS_MOMCORR;
+  sed "s:PAR_TOYS_MOMCORR:${10}:g" -i includes/common.h
