@@ -406,8 +406,8 @@ void Zanalysis::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, 
   }
 
   Long64_t nbytes = 0, nb = 0;
-  // for (Long64_t jentry=first_entry; jentry<nentries;jentry++) {
-    for (Long64_t jentry=0; jentry<1e5;jentry++) {
+  for (Long64_t jentry=first_entry; jentry<nentries;jentry++) {
+    // for (Long64_t jentry=0; jentry<1e5;jentry++) {
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;
