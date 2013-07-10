@@ -10,7 +10,6 @@ from CMGTools.TTHAnalysis.tools.plotDecorations import *
 def makeBand(file, base, norm=False, ratio=False, sources=[], ymin=0.02, basePostfix="",outPostfix=""):
     href = file.Get(base+basePostfix)
     if not bool(href): return None
-    print "doing ",base," with ",sources
     bins = href.GetNbinsX()
     fullscale = href.Integral()
     allsources = [ s+"Up"  for s in sources ] + [ s+"Dn" for s in sources ]
@@ -44,7 +43,7 @@ if __name__ == "__main__":
     ROOT.gROOT.ProcessLine(".x /afs/cern.ch/user/g/gpetrucc/cpp/tdrstyle.cc")
     ROOT.gStyle.SetErrorX(0.5)
     ROOT.gStyle.SetOptStat(0)
-    c1 = ROOT.TCanvas("c1","c1")
+    ROOT.gStyle.SetPaperSize(20.,25.)
     plots = [ "nJet25" ]
     leptons = []
     if "3l" in argv[1] or "_em" in argv[1]:
@@ -65,31 +64,83 @@ if __name__ == "__main__":
         if L == "el": FRshape += [ "elBarrel" ]
         for var in plots:
             P = "FR_data"
+            bands = {}
             for LR,R in ('', False), ('_ratio',True):
                 bandN = makeBand(fin, var+"_"+P, norm=False, ratio=R, sources=FRnorm, outPostfix="_N")
-                if not bandN: continue
                 bandS = makeBand(fin, var+"_"+P, norm=True, ratio=R, sources=FRshape, outPostfix="_S")
-                if not bandS: continue
-                bandN.SetFillColor(33);  bandN.SetFillStyle(1001);
-                bandS.SetFillColor(226); bandS.SetFillStyle(1001);
-                bandN.SetName("%s_%s_bands_%s_norm%s"%(var,P,L,LR))
-                bandS.SetName("%s_%s_bands_%s_norm%s"%(var,P,L,LR))
-                bands = ROOT.TMultiGraph("%s_%s_bands_%s%s"%(var,P,L,LR), "FR Uncertainty bands")
-                for b in bandN,bandS:
-                    bands.Add(b, "E2")
-                    fout.WriteTObject(b)
-                fout.WriteTObject(bands)
-                bands.Draw("AE2")
-                bands.GetXaxis().SetTitle(bandS.GetXaxis().GetTitle())
-                bands.GetYaxis().SetTitle("Event yield ratio" if R else "Events")
-                if R: bands.GetYaxis().SetRangeUser(0.0,2.5)
-                leg = doLegend(.67,.75,.92,.91)
-                leg.AddEntry(bandN, "Norm.",  "F")
-                leg.AddEntry(bandS, "Shape",  "F")
-                leg.Draw()
-                doCMSSpam("CMS Preliminary",textSize=0.035)
-                c1.Print(fbase+"/systFR_"+L+"_"+var+LR+".png")
-                c1.Print(fbase+"/systFR_"+L+"_"+var+LR+".pdf")
-                del leg
+                if not bandN or not bandS: continue
+                bandN.SetFillColor(ROOT.kGreen-7 if L == "el" else ROOT.kAzure-9);   bandN.SetFillStyle(1001);
+                bandS.SetFillColor(ROOT.kGreen+2 if L == "el" else ROOT.kAzure+2); bandS.SetFillStyle(1001);
+                bandN.SetName("%s_%s_bands_%s_norm%s" %(var,P,L,LR)); fout.WriteTObject(bandN)
+                bandS.SetName("%s_%s_bands_%s_shape%s"%(var,P,L,LR)); fout.WriteTObject(bandS)
+                bands["norm" +LR] = bandN
+                bands["shape"+LR] = bandS
+            if len(bands) != 4: continue
+            bandN = bands["norm"]
+            bandN.Sort()
+            xmin = bandN.GetX()[0]-bandN.GetErrorXlow(0)
+            xmax = bandN.GetX()[bandN.GetN()-1]+bandN.GetErrorXhigh(bandN.GetN()-1)
+            ymax = max([bandN.GetY()[i]+1.3*bandN.GetErrorYhigh(i) for i in xrange(bandN.GetN())])
+            if var == "nJet25": xmin = 1.5 if "3l" in argv[1] else 3.5
+            ## Prepare split screen
+            c1 = ROOT.TCanvas("c1", "c1", 600, 750); c1.Draw()
+            c1.SetWindowSize(600 + (600 - c1.GetWw()), (750 + (750 - c1.GetWh())));
+            p1 = ROOT.TPad("pad1","pad1",0,0.31,1,0.99);
+            p1.SetBottomMargin(0);
+            p1.Draw();
+            p2 = ROOT.TPad("pad2","pad2",0,0,1,0.31);
+            p2.SetTopMargin(0);
+            p2.SetBottomMargin(0.3);
+            p2.SetFillStyle(0);
+            p2.Draw();
+            p1.cd();
+            ## Draw absolute prediction in top frame
+            frame = ROOT.TH1F("frame","frame",1,xmin,xmax)
+            frame.GetYaxis().SetRangeUser(0,1.1*ymax)
+            frame.GetXaxis().SetLabelOffset(999) ## send them away
+            frame.GetXaxis().SetTitleOffset(999) ## in outer space
+            frame.GetYaxis().SetLabelSize(0.05)
+            frame.GetYaxis().SetLabelSize(0.05)
+            frame.GetYaxis().SetTitle("Event yield")
+            frame.Draw()
+            bands["norm" ].Draw("E2 SAME")
+            bands["shape"].Draw("E2 SAME")
+            frame.Draw("AXIS SAME")
+            ## Draw relaive prediction in the bottom frame
+            p2.cd() 
+            rframe = ROOT.TH1F("rframe","rframe",1,xmin,xmax)
+            rframe.GetXaxis().SetTitle(bandN.GetXaxis().GetTitle())
+            rframe.GetYaxis().SetRangeUser(0,1.95);
+            rframe.GetXaxis().SetTitleSize(0.14)
+            rframe.GetYaxis().SetTitleSize(0.14)
+            rframe.GetXaxis().SetLabelSize(0.11)
+            rframe.GetYaxis().SetLabelSize(0.11)
+            rframe.GetXaxis().SetNdivisions(505 if var == "nJet25" else 510)
+            rframe.GetYaxis().SetNdivisions(505)
+            rframe.GetYaxis().SetDecimals(True)
+            rframe.GetYaxis().SetTitle("Ratio")
+            rframe.GetYaxis().SetTitleOffset(0.52);
+            rframe.Draw()
+            bands[ "norm_ratio"].Draw("E2 SAME")
+            bands["shape_ratio"].Draw("E2 SAME")
+            line = ROOT.TLine(xmin,1,xmax,1)
+            line.SetLineWidth(2);
+            line.SetLineStyle(7);
+            line.SetLineColor(1);
+            line.Draw("L")
+            rframe.Draw("AXIS SAME")
+            p1.cd()
+            leg = doLegend(.67,.75,.92,.91, textSize=0.05)
+            leg.AddEntry(bandN, "Norm.",  "F")
+            leg.AddEntry(bandS, "Shape",  "F")
+            leg.Draw()
+            c1.cd()
+            doCMSSpam("CMS Preliminary",textSize=0.035)
+            c1.Print(fbase+"/systFR_"+L+"_"+var+".png")
+            c1.Print(fbase+"/systFR_"+L+"_"+var+".pdf")
+            del leg
+            del frame
+            del rframe
+            del c1
     fout.Close()
 
