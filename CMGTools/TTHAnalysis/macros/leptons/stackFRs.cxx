@@ -1,12 +1,11 @@
 TString gPrefix = "";
-int neta = 2;
 
 const int ntrig1mu = 5;
 const int trig1mu[ntrig1mu] = { 8, 12, 17, 24, 40 };
 TH2 *FR_qcd1mu_mu[ntrig1mu], *FR_qcd1mu_el[ntrig1mu];
 
 enum LType { EL=0, MU=1, NLTypes = 2 };
-enum FRType { MEDIUM=0, TIGHT=1, LOOSE=2, TEST=3, FRTypes=4 };
+enum FRType { MEDIUM=0, TIGHT=1, LOOSE=2, TEST=3, TEST3=4, TEST4=5, TEST5=6, TEST6=7, TESTA=8, TESTB=9, TESTA2=10, TESTB2=11, FRTypes=12 };
 TH2 *FR_ttl[FRTypes][NLTypes];
 TH2 *FR_zl[FRTypes][NLTypes];
 TH2 *FR_zb[FRTypes][NLTypes];
@@ -36,31 +35,60 @@ void loadData(TString iPrefix, int trig, int what) {
     TFile *fMC = TFile::Open(trig == 1 ? "fakeRates_TTJets_MC.root" : "fakeRates_TTJets_MC_NonTrig.root" );
     if (fMC) {
         FR_ttl[TIGHT ][EL] = (TH2*) fMC->Get(iPrefix+"_tight_el");
-        FR_ttl[MEDIUM][EL] = (TH2*) fMC->Get(iPrefix+"_el");
         FR_ttl[LOOSE ][EL] = (TH2*) fMC->Get(iPrefix+"_loose_el");
         FR_ttl[TIGHT ][MU] = (TH2*) fMC->Get(iPrefix+"_tight_mu");
-        FR_ttl[MEDIUM][MU] = (TH2*) fMC->Get(iPrefix+"_mu");
         FR_ttl[LOOSE ][MU] = (TH2*) fMC->Get(iPrefix+"_loose_mu");
-        //FR_ttl[TEST  ][EL] = (TH2*) fMC->Get(iPrefix+"_tight2_el");
-        //FR_ttl[TEST  ][MU] = (TH2*) fMC->Get(iPrefix+"_tight2_mu");
+        FR_ttl[TEST  ][EL] = (TH2*) fMC->Get(iPrefix+"_tight2_el");
+        FR_ttl[TEST  ][MU] = (TH2*) fMC->Get(iPrefix+"_tight2_mu");
+        FR_ttl[MEDIUM][EL] = (TH2*) fMC->Get(iPrefix+"_el");
+        FR_ttl[MEDIUM][MU] = (TH2*) fMC->Get(iPrefix+"_mu");
+        if (what > 4 && what != 9) {
+            if (what == 6) {
+                FR_ttl[TEST3 ][EL] = (TH2*) fMC->Get(iPrefix+"_tight3_el");
+                FR_ttl[TEST3 ][MU] = (TH2*) fMC->Get(iPrefix+"_tight3_mu");
+                FR_ttl[TEST4 ][EL] = (TH2*) fMC->Get(iPrefix+"_tight4_el");
+                FR_ttl[TEST4 ][MU] = (TH2*) fMC->Get(iPrefix+"_tight4_mu");
+                FR_ttl[TEST5 ][EL] = (TH2*) fMC->Get(iPrefix+"_tight5_el");
+                FR_ttl[TEST5 ][MU] = (TH2*) fMC->Get(iPrefix+"_tight5_mu");
+                FR_ttl[TEST6 ][EL] = (TH2*) fMC->Get(iPrefix+"_tight6_el");
+                FR_ttl[TEST6 ][MU] = (TH2*) fMC->Get(iPrefix+"_tight6_mu");
+            }
+            if (what == 7) {
+                FR_ttl[TESTA ][EL] = (TH2*) fMC->Get(iPrefix+"_tightA_el");
+                FR_ttl[TESTA ][MU] = (TH2*) fMC->Get(iPrefix+"_tightA_mu");
+                FR_ttl[TESTB ][EL] = (TH2*) fMC->Get(iPrefix+"_tightB_el");
+                FR_ttl[TESTB ][MU] = (TH2*) fMC->Get(iPrefix+"_tightB_mu");
+                FR_ttl[TESTA2][EL] = (TH2*) fMC->Get(iPrefix+"_tightA2_el");
+                FR_ttl[TESTA2][MU] = (TH2*) fMC->Get(iPrefix+"_tightA2_mu");
+                FR_ttl[TESTB2][EL] = (TH2*) fMC->Get(iPrefix+"_tightB2_el");
+                FR_ttl[TESTB2][MU] = (TH2*) fMC->Get(iPrefix+"_tightB2_mu");
+            }
+        }
+
     }
 
     TFile *fQCD = TFile::Open(trig == 1 ? "fakeRates_QCDMu_MC.root" : "fakeRates_QCDMu_MC_NonTrig.root");
-    if ((what == 0 || what == 1) && fQCD) {
+    if ((what <= 0 || what == 1) && fQCD) {
         FR_qcd[TIGHT ][EL] = (TH2*) fQCD->Get(iPrefix+"_tight_el");
         FR_qcd[MEDIUM][EL] = (TH2*) fQCD->Get(iPrefix+"_el");
         FR_qcd[LOOSE ][EL] = (TH2*) fQCD->Get(iPrefix+"_loose_el");
         FR_qcd[TIGHT ][MU] = (TH2*) fQCD->Get(iPrefix+"_tight_mu");
         FR_qcd[MEDIUM][MU] = (TH2*) fQCD->Get(iPrefix+"_mu");
         FR_qcd[LOOSE ][MU] = (TH2*) fQCD->Get(iPrefix+"_loose_mu");
+        FR_qcd[TEST  ][EL] = (TH2*) fQCD->Get(iPrefix+"_tight2_el");
+        FR_qcd[TEST  ][MU] = (TH2*) fQCD->Get(iPrefix+"_tight2_mu");
+        FR_qcd[TEST3 ][EL] = (TH2*) fQCD->Get(iPrefix+"_tight2m_el");
+        FR_qcd[TEST3 ][MU] = (TH2*) fQCD->Get(iPrefix+"_tight2m_mu");
     } 
-    if ((what == 0 || what == 2) && fQCD) {
+    if ((what <= 0 || what == 2) && fQCD) {
         FR_qcdj[TIGHT ][EL] = (TH2*) fQCD->Get(iPrefix+"j_tight_el");
         FR_qcdj[MEDIUM][EL] = (TH2*) fQCD->Get(iPrefix+"j_el");
         FR_qcdj[LOOSE ][EL] = (TH2*) fQCD->Get(iPrefix+"j_loose_el");
         FR_qcdj[TIGHT ][MU] = (TH2*) fQCD->Get(iPrefix+"j_tight_mu");
         FR_qcdj[MEDIUM][MU] = (TH2*) fQCD->Get(iPrefix+"j_mu");
         FR_qcdj[LOOSE ][MU] = (TH2*) fQCD->Get(iPrefix+"j_loose_mu");
+        FR_qcdj[TEST  ][EL] = (TH2*) fQCD->Get(iPrefix+"j_tight2_el");
+        FR_qcdj[TEST  ][MU] = (TH2*) fQCD->Get(iPrefix+"j_tight2_mu");
     }
 
 
@@ -71,26 +99,44 @@ void loadData(TString iPrefix, int trig, int what) {
     //}
 
     TFile *fDQCD = 0;
-    if (iPrefix == "FR")  fDQCD = TFile::Open(trig == 1 ? "frFitsSimple.root"         : "frFitsSimple_TagMuL.root");
-    if (iPrefix == "FRC") fDQCD = TFile::Open(trig == 1 ? "frFitsSimpleCutBased.root" : "frFitsSimpleCutBased_TagMuL.root");
-    if ((what == 0 || what == 1) && fDQCD) {
+    if (iPrefix == "FR")  fDQCD  = TFile::Open(trig == 1 ? "frFitsSimple.root"         : "frFitsSimple_TagMuL.root");
+    if (iPrefix == "FRC") fDQCD  = TFile::Open(trig == 1 ? "frFitsSimpleJustIso.root" : "frFitsSimpleJustIso_TagMuL.root");
+    if (iPrefix == "FR")  fDQCD2 = TFile::Open(trig == 1 ? "frFitsSimpleBTight.root" : 0);
+    if ((what <= 0 || what == 1 || what == 9) && fDQCD) {
         d_FR_qcd[TIGHT ][EL] = (TH2*) fDQCD->Get(iPrefix+"_tight_el");
         d_FR_qcd[MEDIUM][EL] = (TH2*) fDQCD->Get(iPrefix+"_el");
         d_FR_qcd[LOOSE ][EL] = (TH2*) fDQCD->Get(iPrefix+"_loose_el");
         d_FR_qcd[TIGHT ][MU] = (TH2*) fDQCD->Get(iPrefix+"_tight_mu");
         d_FR_qcd[MEDIUM][MU] = (TH2*) fDQCD->Get(iPrefix+"_mu");
         d_FR_qcd[LOOSE ][MU] = (TH2*) fDQCD->Get(iPrefix+"_loose_mu");
+        if (fDQCD2) {
+            d_FR_qcd[TEST][EL] = (TH2*) fDQCD2->Get(iPrefix+"_tight_el");
+            d_FR_qcd[TEST][MU] = (TH2*) fDQCD2->Get(iPrefix+"_tight_mu");
+        }
+        if (what == 9) {
+            TFile *fDQCDSS = TFile::Open("frFitsSimpleLLSS.root");
+            TFile *fDQCDOS = TFile::Open("frFitsSimpleLLOS.root");
+            d_FR_qcd[TEST3][EL] = (TH2*) fDQCDSS->Get(iPrefix+"_tight_el");
+            d_FR_qcd[TEST3][MU] = (TH2*) fDQCDSS->Get(iPrefix+"_tight_mu");
+            d_FR_qcd[TEST4][EL] = (TH2*) fDQCDOS->Get(iPrefix+"_tight_el");
+            d_FR_qcd[TEST4][MU] = (TH2*) fDQCDOS->Get(iPrefix+"_tight_mu");
+        }
     }
     TFile *fDQCDJ = 0;
     if (iPrefix == "FR")  fDQCDJ = TFile::Open(trig == 1 ? "frFitsSimpleJet.root"         : "frFitsSimpleJet_TagMuL.root");
-    if (iPrefix == "FRC") fDQCDJ = TFile::Open(trig == 1 ? "frFitsSimpleJetCutBased.root" : "frFitsSimpleJetCutBased_TagMuL.root");
-    if ((what == 0 || what == 2) && fDQCD) {
+    if (iPrefix == "FRC") fDQCDJ = TFile::Open(trig == 1 ? "frFitsSimpleJetJustIso.root" : "frFitsSimpleJetJustIso_TagMuL.root");
+    if (iPrefix == "FR")  fDQCDJ2 = TFile::Open(trig == 1 ? "frFitsSimpleJetBTight.root" : 0);
+    if ((what <= 0 || what == 2) && fDQCDJ) {
         d_FR_qcdj[TIGHT ][EL] = (TH2*) fDQCDJ->Get(iPrefix+"_tight_el");
         d_FR_qcdj[MEDIUM][EL] = (TH2*) fDQCDJ->Get(iPrefix+"_el");
         d_FR_qcdj[LOOSE ][EL] = (TH2*) fDQCDJ->Get(iPrefix+"_loose_el");
         d_FR_qcdj[TIGHT ][MU] = (TH2*) fDQCDJ->Get(iPrefix+"_tight_mu");
         d_FR_qcdj[MEDIUM][MU] = (TH2*) fDQCDJ->Get(iPrefix+"_mu");
         d_FR_qcdj[LOOSE ][MU] = (TH2*) fDQCDJ->Get(iPrefix+"_loose_mu");
+        if (fDQCD2) {
+            d_FR_qcdj[TEST][EL] = (TH2*) fDQCDJ2->Get(iPrefix+"_tight_el");
+            d_FR_qcdj[TEST][MU] = (TH2*) fDQCDJ2->Get(iPrefix+"_tight_mu");
+        }
     }
 
 
@@ -145,14 +191,14 @@ void loadData(TString iPrefix, int trig, int what) {
     float ptbins_merge[101]; 
     for (int i = 0; i <= 100; ++i) { ptbins_merge[i] = 5.0 * exp( i*log(100.0/5.0)/100. ); }
     float etabins_mu[3] = { 0, 1.5,   2.5 };
-    float etabins_el[3] = { 0, 1.479, 2.5 };
+    float etabins_el[4] = { 0, 0.8, 1.479, 2.5 };
     for (int i = 0;  i < FRTypes; ++i) {
         for (int l = 0; l < NLTypes; ++l) {
             if (FR_ttl[i][l] == 0) continue;
             fMergeM->cd();
-            FR_merge[i][l]   = new TH2F(FR_ttl[i][l]->GetName(), "", 100, ptbins_merge, 2, (l==EL ? etabins_el : etabins_mu));
+            FR_merge[i][l]   = new TH2F(FR_ttl[i][l]->GetName(), "", 100, ptbins_merge, (l==EL ? 3 : 2), (l==EL ? etabins_el : etabins_mu));
             fMergeD->cd();
-            d_FR_merge[i][l] = new TH2F(FR_ttl[i][l]->GetName(), "", 100, ptbins_merge, 2, (l==EL ? etabins_el : etabins_mu));
+            d_FR_merge[i][l] = new TH2F(FR_ttl[i][l]->GetName(), "", 100, ptbins_merge, (l==EL ? 3 : 2), (l==EL ? etabins_el : etabins_mu));
             int nbin = 0;
             for (int bx = 1, nbx = FR_merge[i][l]->GetNbinsX(), nby = FR_merge[i][l]->GetNbinsY(); bx <= nbx; ++bx) {
                 for (int by = 1; by <= nby; ++by) {
@@ -281,63 +327,101 @@ TLegend *newLeg(double x1, double y1, double x2, double y2, double textSize=0.03
     return ret;
 }
 
-const char *ETALBL4[4] = { "b1", "b2", "e1", "e2" };
 const char *ETALBL2[2] = { "b", "e" };
-const char *ietalbl(int ieta) {
-    if (neta == 4) return ETALBL4[ieta];
+const char *ETALBL3[3] = { "cb", "fb", "ec" };
+const char *ietalbl(int ieta, LType ilep) {
+    if (ilep == EL) return ETALBL3[ieta];
     else return ETALBL2[ieta];
+}
+const char *etaspam(int ieta, LType ilep) { 
+    if (ilep == MU) {
+        return Form("|#eta| %s 1.5", (ieta ? ">" : "<"));
+    } else {
+        switch (ieta) {
+            case 0: return "0 < |#eta| < 0.8";
+            case 1: return "0.8 < |#eta| < 1.479";
+            case 2: return "|#eta| > 1.479";
+        }
+    }
+    return "NON CAPISCO";
 }
 
 void stackFRs(LType lep, FRType wp, int ieta, int idata=0, int merge = 0) {
+    if (ieta > 1 && lep == MU) return;
+
     frame->Draw();
 
-    TGraph *ttl4 = drawSlice(FR_ttl[wp][lep], ieta,  kAzure-9, 2);
+    TGraph *ttl40 = drawSlice(FR_ttl[wp][lep], ieta,  kAzure-9, 2);
     TGraph *ttl = drawSlice(FR_ttl[wp][lep],  ieta,  62, 1, 1001);
-    TGraph *ttlX = (lep == EL && wp == TIGHT) ? drawSlice(FR_ttl[TEST][lep],  ieta,  1, 1, 3004) : 0;
+    TGraph *ttlX = 0; //wp == TIGHT ? drawSlice(FR_ttl[TEST][lep],   ieta,  1, 1, 3004) : 0;
+    TGraph *ttl1 = wp == TIGHT ? drawSlice(FR_ttl[MEDIUM][lep],  ieta,  209) : 0;
+    //TGraph *ttl2 = wp == TIGHT ? drawSlice(FR_ttl[TEST ][lep],  ieta,  1) : 0;
+    TGraph *ttl4 = wp == TIGHT ? drawSlice(FR_ttl[TEST4][lep],  ieta,  97, 1, 3005) : 0;
+    TGraph *ttl6 = wp == TIGHT ? drawSlice(FR_ttl[TEST6][lep],  ieta, 213, 1, 3007) : 0;
+    TGraph *ttl3 = wp == TIGHT ? drawSlice(FR_ttl[TEST3][lep],  ieta, 206) : 0;
+    TGraph *ttl5 = wp == TIGHT ? drawSlice(FR_ttl[TEST5][lep],  ieta, 213) : 0;
+    TGraph *ttlA  = wp == TIGHT ? drawSlice(FR_ttl[TESTA ][lep],  ieta, 214) : 
+                   (wp == TEST  ? drawSlice(FR_ttl[TESTA2][lep],  ieta, 214) : 0);
+    TGraph *ttlB  = wp == TIGHT ? drawSlice(FR_ttl[TESTB ][lep],  ieta, 206) : 
+                   (wp == TEST  ? drawSlice(FR_ttl[TESTB2][lep],  ieta, 206) : 0);
     TGraph *zl  = merge != 1 ? drawSlice(FR_zl[wp][lep],   ieta,  97, 1, 3006) : 0;
     TGraph *zb  = merge != 1 ? drawSlice(FR_zb[wp][lep],   ieta, 222, 1, 3004) : 0;
+    TGraph *qcd2 =  (wp == TEST && merge != 1 && idata == 0? drawSlice(FR_qcd[TEST3][lep],  ieta, 100, 1, 3007) : 0);
     TGraph *qcd = merge != 1 ? drawSlice(FR_qcd[wp][lep],  ieta, 213, 1, 3005) : 0;
     TGraph *qcj = merge != 1 ? drawSlice(FR_qcdj[wp][lep], ieta, 100, 1, 3007) : 0;
     TGraph *mrg = merge != 0 ? drawSlice(FR_merge[wp][lep],ieta,   1, 1, 3005) : 0;
  
     frame->Draw("AXIS SAME");
 
-    int nplots = (ttl!=0)+(zl!=0)+(zb!=0)+(qcd!=0)+(qcj!=0)+(mrg!=0);
+    int nplots = (ttl!=0)+(zl!=0)+(zb!=0)+(qcd!=0)+(qcd2!=0)+(qcj!=0)+(mrg!=0)+(ttl6 ? 4 : 0)+(ttlB ? 2 : 0)+(ttlX!=0);
     TLegend *leg = newLeg(.27,.85-0.05*nplots,.49,.9);
     leg->AddEntry(ttl,  "MC tt+l", "F");
-    leg->AddEntry(ttl4, "  #pm 40%", "LF");
-    if (ttlX) leg->AddEntry(ttlX,  "(w/ TC)", "F");
+    leg->AddEntry(ttl40, "  #pm 40%", "LF");
+    if (ttlX) leg->AddEntry(ttlX,  "(w/ 2B)", "F");
+    if (ttl1) leg->AddEntry(ttl1,  "(3l or 2j)", "LPE");
+    //if (ttl2) leg->AddEntry(ttl2,  "b tight", "LPE");
+    if (ttl3) leg->AddEntry(ttl3,  "3l b loose", "LPE");
+    if (ttl4) leg->AddEntry(ttl4,  "3l b tight", "F");
+    if (ttl5) leg->AddEntry(ttl5,  "2l b loose", "LPE");
+    if (ttl6) leg->AddEntry(ttl6,  "2l b tight", "F");
+    if (ttlA) leg->AddEntry(ttlA,  "not B", "LPE");
+    if (ttlB) leg->AddEntry(ttlB,  "from B", "LPE");
     if (zl) leg->AddEntry(zl, "MC Z+l",   "F");
     if (zb) leg->AddEntry(zb, "MC Z+l 3D", "F");
     if (qcd) leg->AddEntry(qcd, "MC qcd #mu", "F");
+    if (qcd2) leg->AddEntry(qcd2, " (CSV M)", "F");
     if (qcj) leg->AddEntry(qcj, "MC qcd bj", "F");
     if (mrg) leg->AddEntry(mrg, "MC merge", "F");
     //leg->AddEntry(drawSlice(FR_qcdj[wp][lep], ieta, 209), "MC qcd j", "LP");
     leg->Draw();
     if (idata) {
+        TGraph *dqS = wp == TIGHT && merge != 1 ? drawSlice(d_FR_qcd[TEST3][lep],  ieta,  4, 1, 3005) : 0;
+        TGraph *dqO = wp == TIGHT && merge != 1 ? drawSlice(d_FR_qcd[TEST4][lep],  ieta,  2, 1, 3004) : 0;
         TGraph *dq  = merge != 1 ? drawSlice(d_FR_qcd[wp][lep],  ieta,   1) : 0;
         TGraph *dqj = merge != 1 ? drawSlice(d_FR_qcdj[wp][lep], ieta, 206) : 0;
         TGraph *dzl = merge != 1 ? drawSlice(d_FR_zl[wp][lep], ieta, 206) : 0;
         TGraph *dzb = merge != 1 ? drawSlice(d_FR_zb[wp][lep], ieta, 206) : 0;
         TGraph *dmg = merge != 0 ? drawSlice(d_FR_merge[wp][lep], ieta, 209, 3) : 0;
-        int nplots = (dq!=0)+(dqj!=0)+(dzl!=0)+(dzb!=0)+(dmg!=0);
+        int nplots = (dq!=0)+(dqj!=0)+(dzl!=0)+(dzb!=0)+(dmg!=0)+(dqS!=0?2:0);
         TLegend *leg = newLeg(.55,.87-0.05*nplots,.87,.9);
         if (dq)  leg->AddEntry(dq, "Data qcd #mu", "LPE");
+        if (dqS) leg->AddEntry(dqS, "same-sign", "F");
+        if (dqO) leg->AddEntry(dqO, "oppo-sign", "F");
         if (dqj) leg->AddEntry(dqj, "Data qcd bj", "LPE");
         if (dzl) leg->AddEntry(dzl, "Data Z+l #mu", "LPE");
         if (dzb) leg->AddEntry(dzb, "Data Z+b+l #mu", "LPE");
         if (dmg) leg->AddEntry(dmg, "Data merge", "LPE");
         leg->Draw();
-        cmsprelim(.55, .81-0.05*nplots, .85, .86-0.05*nplots, 22, Form("|#eta| %s %s", ieta ? ">" : "<", lep==EL ? "1.479" : "1.5"), 0.045);
+        cmsprelim(.55, .81-0.05*nplots, .85, .86-0.05*nplots, 22, etaspam(ieta,lep), 0.045);
     } else {
-        cmsprelim(.55, .8, .87, .88, 22, Form("|#eta| %s %s", ieta ? ">" : "<", lep==EL ? "1.479" : "1.5"), 0.045);
+        cmsprelim(.55, .8, .87, .88, 22, etaspam(ieta,lep), 0.045);
     }
     cmsprelim(.21, .945, .40, .995, 12, "CMS Preliminary"); 
     cmsprelim(.48, .945, .96, .995, 32, "#sqrt{s} = 8 TeV, L = 19.6 fb^{-1}");
     const char *pName[NLTypes] = { "el", "mu" };
-    const char *wpName[FRTypes] = { "", "_tight", "_loose" };
-    c1->Print(Form("ttH_plots/250513/FR_QCD_Simple/stacks/%s/%s%s_%s.png", gPrefix.Data(), pName[lep], wpName[wp], ietalbl(ieta)));
-    c1->Print(Form("ttH_plots/250513/FR_QCD_Simple/stacks/%s/%s%s_%s.pdf", gPrefix.Data(), pName[lep], wpName[wp], ietalbl(ieta)));
+    const char *wpName[FRTypes] = { "", "_tight", "_loose", "_test" };
+    c1->Print(Form("ttH_plots/250513/FR_QCD_Simple_v2/stacks/%s/%s%s_%s.png", gPrefix.Data(), pName[lep], wpName[wp], ietalbl(ieta,lep)));
+    c1->Print(Form("ttH_plots/250513/FR_QCD_Simple_v2/stacks/%s/%s%s_%s.pdf", gPrefix.Data(), pName[lep], wpName[wp], ietalbl(ieta,lep)));
 }
 
 void stackFRsMu(int ieta,  int idata=0, int merge=0) { stackFRs(MU, MEDIUM, ieta, idata, merge); }
@@ -361,8 +445,8 @@ void stackFRs1MuMu(int ieta, int idata=0, int merge=0) {
         //leg->AddEntry(drawSlice(d_FR_qcd_mu, ieta, 1), "Data qcd #mu", "LP");
         leg->Draw();
     }
-    c1->Print(Form("ttH_plots/250513/FR_QCD_Simple/stacks/%s/mu_%s_1mu.png", gPrefix.Data(), ietalbl(ieta)));
-    c1->Print(Form("ttH_plots/250513/FR_QCD_Simple/stacks/%s/mu_%s_1mu.pdf", gPrefix.Data(), ietalbl(ieta)));
+    c1->Print(Form("ttH_plots/250513/FR_QCD_Simple_v2/stacks/%s/mu_%s_1mu.png", gPrefix.Data(), ietalbl(ieta)));
+    c1->Print(Form("ttH_plots/250513/FR_QCD_Simple_v2/stacks/%s/mu_%s_1mu.pdf", gPrefix.Data(), ietalbl(ieta)));
 }
 
 void stackFRs1MuEl(int ieta, int idata=0) {
@@ -378,8 +462,8 @@ void stackFRs1MuEl(int ieta, int idata=0) {
         //leg->AddEntry(drawSlice(d_FR_qcd_el, ieta, 1), "Data qcd #mu", "LP");
         leg->Draw();
     }
-    c1->Print(Form("ttH_plots/250513/FR_QCD_Simple/stacks/%s/el_%s_1mu.png", gPrefix.Data(), ietalbl(ieta)));
-    c1->Print(Form("ttH_plots/250513/FR_QCD_Simple/stacks/%s/el_%s_1mu.pdf", gPrefix.Data(), ietalbl(ieta)));
+    c1->Print(Form("ttH_plots/250513/FR_QCD_Simple_v2/stacks/%s/el_%s_1mu.png", gPrefix.Data(), ietalbl(ieta)));
+    c1->Print(Form("ttH_plots/250513/FR_QCD_Simple_v2/stacks/%s/el_%s_1mu.pdf", gPrefix.Data(), ietalbl(ieta)));
 }
 
 void initCanvas(double w=600, double h=600, double lm=0.21, double rm=0.04) {
@@ -403,6 +487,11 @@ void stackFRs(int what=0, int idata=0, int itrigg=1) {
         case 2: loadData("FR",itrigg,what); gPrefix = "qcdj/";    break;
         case 3: loadData("FR",itrigg,what); gPrefix = "z3l/";    break;
         case 4: loadData("FR",itrigg,0);    gPrefix = "merged/"; merge = 1;  break;
+        case 5: loadData("FR",itrigg,5);    gPrefix = "nothing/"; break;
+        case 6: loadData("FR",itrigg,6);    gPrefix = "nothing-more/"; break;
+        case 7: loadData("FR",itrigg,7);    gPrefix = "origin/"; break;
+        case 9: loadData("FR",itrigg,9);    gPrefix = "ss-os/"; break;
+        case -1: loadData("FRC",itrigg,0);    gPrefix = "cutbased/"; break;
     }
     if (idata) gPrefix += "with_data/";
     switch (itrigg) {
@@ -411,7 +500,8 @@ void stackFRs(int what=0, int idata=0, int itrigg=1) {
         case 2: gPrefix += "tag_trig/"; break;
     }
 
-    gSystem->Exec("mkdir -p ttH_plots/250513/FR_QCD_Simple/stacks/"+gPrefix);
+    gSystem->Exec("mkdir -p ttH_plots/250513/FR_QCD_Simple_v2/stacks/"+gPrefix);
+    gSystem->Exec("cp /afs/cern.ch/user/g/gpetrucc/php/index.php ttH_plots/250513/FR_QCD_Simple_v2/stacks/"+gPrefix);
     gROOT->ProcessLine(".x ~gpetrucc/cpp/tdrstyle.cc");
     gStyle->SetOptStat(0);
     initCanvas();
@@ -423,7 +513,7 @@ void stackFRs(int what=0, int idata=0, int itrigg=1) {
     frame->GetXaxis()->SetMoreLogLabels(1);
     frame->GetXaxis()->SetLabelOffset(-0.01);
     frame->GetYaxis()->SetTitleOffset(1.40);
-    for (int i = 0; i < neta; ++i) {
+    for (int i = 0; i < 3; ++i) {
         //frame->GetYaxis()->SetRangeUser(0.0,0.6);
         //frame->GetYaxis()->SetTitle("fake rate (#mu, medium)");
         //frame->GetXaxis()->SetRangeUser(5,80);
@@ -436,7 +526,7 @@ void stackFRs(int what=0, int idata=0, int itrigg=1) {
         //stackFRs1MuEl(i, idata);
         //frame->GetXaxis()->SetRangeUser(10,80);
 
-        frame->GetYaxis()->SetRangeUser(0.0,0.3);
+        frame->GetYaxis()->SetRangeUser(0.0,0.2+0.2*(i==0));
         frame->GetYaxis()->SetTitle("fake rate (#mu, tight)");
         frame->GetXaxis()->SetRangeUser(5,80);
         stackFRsMuT(i, idata, merge);
@@ -452,5 +542,15 @@ void stackFRs(int what=0, int idata=0, int itrigg=1) {
         frame->GetYaxis()->SetTitle("fake rate (e, loose)");
         frame->GetXaxis()->SetRangeUser(7,80);
         stackFRsElL(i, idata, merge);
+
+        frame->GetYaxis()->SetRangeUser(0.0,0.2+0.2*(i==0)+0.3*(idata));
+        frame->GetYaxis()->SetTitle("b-tight fake rate (#mu, tight)");
+        frame->GetXaxis()->SetRangeUser(5,80);
+        stackFRs(MU, TEST, i, idata, merge);
+        frame->GetYaxis()->SetTitle("b-tight fake rate (e, tight)");
+        frame->GetXaxis()->SetRangeUser(7,80);
+        stackFRs(EL, TEST, i, idata, merge);
+
+  
     }
 }

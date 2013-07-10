@@ -1,12 +1,16 @@
-TString gTreePath = "/afs/cern.ch/user/g/gpetrucc/w/ttH/TREES_250513_FR/%s/ttHLepFRAnalyzer/ttHLepFRAnalyzer_tree.root";
+//TString gTreePath = "/afs/cern.ch/user/g/gpetrucc/w/ttH/TREES_250513_FR/%s/ttHLepFRAnalyzer/ttHLepFRAnalyzer_tree.root";
+//TString gTreePath = "/afs/cern.ch/user/g/gpetrucc/w/TREES_250513_FR_v2/%s/ttHLepFRAnalyzer/ttHLepFRAnalyzer_tree.root";
+TString gTreePath = "/afs/cern.ch/user/g/gpetrucc/w/TREES_250513_FR_v3/%s/ttHLepFRAnalyzer/ttHLepFRAnalyzer_tree.root";
+
+
 void fillFR(TString hist, TString cut, TString pass, TString compName) {
     TDirectory *root = gDirectory;
     TFile *f = TFile::Open(Form(gTreePath.Data(),compName.Data()));
     TTree *tree = (TTree*) f->Get("ttHLepFRAnalyzer");
     root->cd();
-    tree->Draw(Form("abs(Probe_eta):min(Probe_pt,99.9)>>+%s_den", hist.Data()),
+    tree->Draw(Form("abs(Probe_eta):min(Probe_pt,79.9)>>+%s_den", hist.Data()),
                cut.Data());
-    tree->Draw(Form("abs(Probe_eta):min(Probe_pt,99.9)>>+%s_num", hist.Data()),
+    tree->Draw(Form("abs(Probe_eta):min(Probe_pt,79.9)>>+%s_num", hist.Data()),
                Form("(%s) && (%s)", cut.Data(), pass.Data()));
     f->Close();
     TH2 *den = (TH2*) gROOT->FindObject(hist+"_den"); den->Sumw2(); den->Write();
@@ -17,12 +21,16 @@ void fillFR(TString hist, TString cut, TString pass, TString compName) {
 }
 
 void fillTrivialFakeRatesFromFRTrees(int triggering=1) {
-    const int npt_mu = 8, npt_el = 7, neta = 2;
-    const int npt_muL = 8, npt_elL = 6;
+    gROOT->ProcessLine(".L ../../python/plotter/functions.cc+");
+
+    const int npt_mu = 8, npt_el = 7, neta_mu = 2, neta_el = 3;
+    const int npt2_mu = 5, npt2_el = 3;
     double ptbins_mu[npt_mu+1] = { 5.0, 7.0, 8.5, 10, 15, 20, 25, 35, 80 };
     double ptbins_el[npt_el+1] = {        7, 8.5, 10, 15, 20, 25, 35, 80 };
-    double etabins_mu[neta+1] = { 0.0, 1.5,   2.5 };
-    double etabins_el[neta+1] = { 0.0, 1.479, 2.5 };
+    double ptbins2_mu[npt2_mu+1] = { 5.0, 7.5, 15, 20, 35, 80 };
+    double ptbins2_el[npt2_el+1] = {        7, 10, 20, 80 };
+    double etabins_mu[neta_mu+1] = { 0.0, 1.5,   2.5 };
+    double etabins_el[neta_el+1] = { 0.0, 0.8, 1.479, 2.5 };
     //double etabins_mu[neta+1] = { 0.0, 0.7, 1.5,   2.0,  2.5 };
     //double etabins_el[neta+1] = { 0.0, 0.7, 1.479, 2.0,  2.5 };
 
@@ -36,36 +44,58 @@ void fillTrivialFakeRatesFromFRTrees(int triggering=1) {
     const int  nsels = 3;
     const char *sels[nsels] = { "FR", "FRC", "FRH" };
     for (int is = 0; is < nsels; ++is) {
-        //TH2F *FR_mu_den = new TH2F(Form("%s_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        //TH2F *FR_mu_num = new TH2F(Form("%s_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FR_tight_mu_den = new TH2F(Form("%s_tight_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FR_tight_mu_num = new TH2F(Form("%s_tight_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FR_loose_mu_den = new TH2F(Form("%s_loose_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FR_loose_mu_num = new TH2F(Form("%s_loose_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        //TH2F *FR_el_den = new TH2F(Form("%s_el_den",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
-        //TH2F *FR_el_num = new TH2F(Form("%s_el_num",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
-        TH2F *FR_tight_el_den = new TH2F(Form("%s_tight_el_den",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
-        TH2F *FR_tight_el_num = new TH2F(Form("%s_tight_el_num",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
-        TH2F *FR_loose_el_den = new TH2F(Form("%s_loose_el_den",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
-        TH2F *FR_loose_el_num = new TH2F(Form("%s_loose_el_num",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
-        //TH2F *FRj_mu_den = new TH2F(Form("%sj_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        //TH2F *FRj_mu_num = new TH2F(Form("%sj_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FRj_tight_mu_den = new TH2F(Form("%sj_tight_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FRj_tight_mu_num = new TH2F(Form("%sj_tight_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FRj_loose_mu_den = new TH2F(Form("%sj_loose_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FRj_loose_mu_num = new TH2F(Form("%sj_loose_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FRj_tight_el_den = new TH2F(Form("%sj_tight_el_den",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
-        TH2F *FRj_tight_el_num = new TH2F(Form("%sj_tight_el_num",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
-        TH2F *FRj_loose_el_den = new TH2F(Form("%sj_loose_el_den",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
-        TH2F *FRj_loose_el_num = new TH2F(Form("%sj_loose_el_num",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
+        //TH2F *FR_mu_den = new TH2F(Form("%s_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        //TH2F *FR_mu_num = new TH2F(Form("%s_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_tight_mu_den = new TH2F(Form("%s_tight_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_tight_mu_num = new TH2F(Form("%s_tight_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_loose_mu_den = new TH2F(Form("%s_loose_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_loose_mu_num = new TH2F(Form("%s_loose_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        //TH2F *FR_el_den = new TH2F(Form("%s_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        //TH2F *FR_el_num = new TH2F(Form("%s_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_tight_el_den = new TH2F(Form("%s_tight_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_tight_el_num = new TH2F(Form("%s_tight_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_loose_el_den = new TH2F(Form("%s_loose_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_loose_el_num = new TH2F(Form("%s_loose_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        //TH2F *FRj_mu_den = new TH2F(Form("%sj_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        //TH2F *FRj_mu_num = new TH2F(Form("%sj_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FRj_tight_mu_den = new TH2F(Form("%sj_tight_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FRj_tight_mu_num = new TH2F(Form("%sj_tight_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FRj_loose_mu_den = new TH2F(Form("%sj_loose_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FRj_loose_mu_num = new TH2F(Form("%sj_loose_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FRj_tight_el_den = new TH2F(Form("%sj_tight_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FRj_tight_el_num = new TH2F(Form("%sj_tight_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FRj_loose_el_den = new TH2F(Form("%sj_loose_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FRj_loose_el_num = new TH2F(Form("%sj_loose_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+
+        TH2F *FR_loose2_mu_den = new TH2F(Form("%s_loose2_mu_den",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_loose2_mu_num = new TH2F(Form("%s_loose2_mu_num",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_loose2_el_den = new TH2F(Form("%s_loose2_el_den",sels[is]),"",npt2_el,ptbins2_el,neta_el,etabins_el);
+        TH2F *FR_loose2_el_num = new TH2F(Form("%s_loose2_el_num",sels[is]),"",npt2_el,ptbins2_el,neta_el,etabins_el);
+        TH2F *FRj_loose2_mu_den = new TH2F(Form("%sj_loose2_mu_den",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FRj_loose2_mu_num = new TH2F(Form("%sj_loose2_mu_num",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FRj_loose2_el_den = new TH2F(Form("%sj_loose2_el_den",sels[is]),"",npt2_el,ptbins2_el,neta_el,etabins_el);
+        TH2F *FRj_loose2_el_num = new TH2F(Form("%sj_loose2_el_num",sels[is]),"",npt2_el,ptbins2_el,neta_el,etabins_el);
+
+        TH2F *FR_tight2_mu_den = new TH2F(Form("%s_tight2_mu_den",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_tight2_mu_num = new TH2F(Form("%s_tight2_mu_num",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_tight2_el_den = new TH2F(Form("%s_tight2_el_den",sels[is]),"",npt2_el,ptbins2_el,neta_el,etabins_el);
+        TH2F *FR_tight2_el_num = new TH2F(Form("%s_tight2_el_num",sels[is]),"",npt2_el,ptbins2_el,neta_el,etabins_el);
+        TH2F *FR_tight2m_mu_den = new TH2F(Form("%s_tight2m_mu_den",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_tight2m_mu_num = new TH2F(Form("%s_tight2m_mu_num",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_tight2m_el_den = new TH2F(Form("%s_tight2m_el_den",sels[is]),"",npt2_el,ptbins2_el,neta_el,etabins_el);
+        TH2F *FR_tight2m_el_num = new TH2F(Form("%s_tight2m_el_num",sels[is]),"",npt2_el,ptbins2_el,neta_el,etabins_el);
+        TH2F *FRj_tight2_mu_den = new TH2F(Form("%sj_tight2_mu_den",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FRj_tight2_mu_num = new TH2F(Form("%sj_tight2_mu_num",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FRj_tight2_el_den = new TH2F(Form("%sj_tight2_el_den",sels[is]),"",npt2_el,ptbins2_el,neta_el,etabins_el);
+        TH2F *FRj_tight2_el_num = new TH2F(Form("%sj_tight2_el_num",sels[is]),"",npt2_el,ptbins2_el,neta_el,etabins_el);
     }
     const int ntrig1mu = 5;
     const int trig1mu[ntrig1mu] = { 8, 12, 17, 24, 40 };
     for (int it = 0; it < ntrig1mu; ++it) {
-        TH2F *FR_mu_den = new TH2F(Form("%s_TagMu%d_mu_den",sels[0],trig1mu[it]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FR_mu_num = new TH2F(Form("%s_TagMu%d_mu_num",sels[0],trig1mu[it]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FR_el_den = new TH2F(Form("%s_TagMu%d_el_den",sels[0],trig1mu[it]),"",npt_el,ptbins_el,neta,etabins_el);
-        TH2F *FR_el_num = new TH2F(Form("%s_TagMu%d_el_num",sels[0],trig1mu[it]),"",npt_el,ptbins_el,neta,etabins_el);
+        TH2F *FR_mu_den = new TH2F(Form("%s_TagMu%d_mu_den",sels[0],trig1mu[it]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_mu_num = new TH2F(Form("%s_TagMu%d_mu_num",sels[0],trig1mu[it]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_el_den = new TH2F(Form("%s_TagMu%d_el_den",sels[0],trig1mu[it]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_el_num = new TH2F(Form("%s_TagMu%d_el_num",sels[0],trig1mu[it]),"",npt_el,ptbins_el,neta_el,etabins_el);
     }
 
     TString baseCut = "Probe_mcMatchId == 0 && ";
@@ -79,10 +109,17 @@ void fillTrivialFakeRatesFromFRTrees(int triggering=1) {
     TString baseCutJ = baseCut + "tagType == 1 && ";
     baseCutJ += "Probe_pt/TagJet_pt < 1 && abs(dphi_tp) > 2.0 && ";
 
+    //TString baseCutJ2 = baseCut + "tagType == 1  && hasSecondB == 1 && (SecondJet_btagCSV > 0.679 || abs(SecondJet_mcFlavour) == 5) && deltaR(Probe_eta,Probe_phi,SecondJet_eta,SecondJet_phi) > 0.0 &&  ";
+    //TString baseCutL2 = baseCut + "tagType == 13 && hasSecondB == 1 && (SecondJet_btagCSV > 0.679 || abs(SecondJet_mcFlavour) == 5) && ";
+    TString baseCutL2M  = baseCut + "tagType == 13 && hasSecondB == 1 && SecondJet_btagCSV > 0.679 && ";
+    TString baseCutL2   = baseCut + "tagType == 13 && hasSecondB == 1 && (SecondJet_btagCSV > 0.274 || abs(SecondJet_mcFlavour) == 5) && ";
+
+
     if (triggering == 1) {
-        baseCutL += "(Trig_Pair_2Mu || Trig_Pair_MuEG) &&";
-        //baseCutJ += "(Trig_Probe_Mu5 || Trig_Event_Mu40 || Trig_Probe_1ElL) &&";
-        baseCutJ += "(Trig_Probe_Mu5 || Trig_Probe_1ElT || Trig_Event_Mu40) &&";
+        baseCutL  += "(Trig_Pair_2Mu || Trig_Pair_MuEG) &&";
+        baseCutL2 += "(Trig_Pair_2Mu || Trig_Pair_MuEG) &&";
+        baseCutJ  += "(Trig_Probe_Mu5 || Trig_Probe_1ElT || Trig_Event_Mu40) &&";
+        //baseCutJ2 += "(Trig_Probe_Mu5 || Trig_Probe_1ElT || Trig_Event_Mu40) &&";
     }
 
     TString tightC = ""; //"(Probe_tightCharge > (abs(Probe_pdgId) == 11)) && ";
@@ -94,6 +131,12 @@ void fillTrivialFakeRatesFromFRTrees(int triggering=1) {
     fillFR("FR_loose_mu", baseCutL +          "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 13", "Probe_mva >= -0.30", "QCDMuPt15");
     fillFR("FR_tight_el", baseCutL + tightC + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 11", "Probe_mva >= 0.70", "QCDMuPt15");
     fillFR("FR_tight_mu", baseCutL + tightC + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 13", "Probe_mva >= 0.70", "QCDMuPt15");
+    fillFR("FR_tight2_el", baseCutL2 + tightC + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 11", "Probe_mva >= 0.70", "QCDMuPt15");
+    fillFR("FR_tight2_mu", baseCutL2 + tightC + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 13", "Probe_mva >= 0.70", "QCDMuPt15");
+    fillFR("FR_tight2m_el", baseCutL2M + tightC + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 11", "Probe_mva >= 0.70", "QCDMuPt15");
+    fillFR("FR_tight2m_mu", baseCutL2M + tightC + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 13", "Probe_mva >= 0.70", "QCDMuPt15");
+    //fillFR("FR_loose2_mu", baseCutL2 +          "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 13", "Probe_mva >= -0.3", "QCDMuPt15");
+    //fillFR("FR_loose2_el", baseCutL2 +          "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 11", "Probe_mva >= -0.3", "QCDMuPt15");
 
     //fillFR("FRj_mu",       baseCutJ +          "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 13", "Probe_mva >=  0.35", "QCDMuPt15");
     //fillFR("FRj_mu",       baseCutJ +          "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 13", "Probe_mva >=  0.35", "QCDMuPt15");
@@ -103,8 +146,14 @@ void fillTrivialFakeRatesFromFRTrees(int triggering=1) {
     fillFR("FRj_tight_mu", baseCutJ + tightC + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 13", "Probe_mva >=  0.70", "QCDMuPt15");
     fillFR("FRj_tight_el", baseCutJ + tightC + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 11", "Probe_mva >=  0.70", "QCDElPt30To80");
     fillFR("FRj_tight_el", baseCutJ + tightC + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 11", "Probe_mva >=  0.70", "QCDElPt80To170");
+    //fillFR("FRj_tight2_mu", baseCutJ2 + tightC + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 13", "Probe_mva >=  0.70", "QCDMuPt15");
+    //fillFR("FRj_tight2_el", baseCutJ2 + tightC + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 11", "Probe_mva >=  0.70", "QCDElPt30To80");
+    //fillFR("FRj_tight2_el", baseCutJ2 + tightC + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 11", "Probe_mva >=  0.70", "QCDElPt80To170");
+    //fillFR("FRj_loose2_mu", baseCutJ2 +          "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 13", "Probe_mva >=  -0.3", "QCDMuPt15");
+    //fillFR("FRj_loose2_el", baseCutJ2 +          "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 11", "Probe_mva >=  -0.3", "QCDElPt30To80");
+    //fillFR("FRj_loose2_el", baseCutJ2 +          "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 11", "Probe_mva >=  -0.3", "QCDElPt80To170");
 
-#if 1
+#if 0
     TString tightCB = tightC + "Probe_sip3d < 4 && Probe_tightCharge > (abs(Probe_pdgId) == 11) && ";
     fillFR("FRC_tight_el",  baseCutL + tightCB + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 11",                  "Probe_relIso < 0.12",  "QCDMuPt15");
     fillFR("FRC_tight_mu",  baseCutL + tightCB + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 13 && Probe_tightId", "Probe_relIso < 0.12 ", "QCDMuPt15");

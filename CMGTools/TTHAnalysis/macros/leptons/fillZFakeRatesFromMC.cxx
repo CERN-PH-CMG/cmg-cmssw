@@ -37,36 +37,36 @@ void fillBaseWeights(TString hist, TString cut, TString pass, TString compName, 
 void fillZFakeRatesFromMC(int withb=0) {
     gROOT->ProcessLine(".L ../../python/plotter/functions.cc+");
 
-    const int npt_mu = 7, npt_el = 5, neta = 2;
+    const int npt_mu = 7, npt_el = 5, neta_mu = 2, neta_el = 3;
     double ptbins_mu[npt_mu+1] = { 5.0, 6.0, 7.0, 8.5, 10, 15, 20, 30 };
     double ptbins_el[npt_el+1] = {           7.0, 8.5, 10, 15, 20, 30 };
     //double etabins_mu[neta+1] = { 0.0, 0.7, 1.5,   2.0,  2.5 };
     //double etabins_el[neta+1] = { 0.0, 0.7, 1.479, 2.0,  2.5 };
-    double etabins_mu[neta+1] = { 0.0, 1.5,   2.5 };
-    double etabins_el[neta+1] = { 0.0, 1.479, 2.5 };
+    double etabins_mu[neta_mu+1] = { 0.0, 1.5,   2.5 };
+    double etabins_el[neta_el+1] = { 0.0, 0.8, 1.479, 2.5 };
 
     TFile *fOut = TFile::Open(withb ? "fakeRates_Zb_DYJets_MC.root" : "fakeRates_Z_DYJets_MC.root", "RECREATE");
     const int  nsels = 3;
     const char *sels[nsels] = { "FR", "FRC", "FRH" };
     for (int is = 0; is < nsels; ++is) {
-        TH2F *FR_mu_den = new TH2F(Form("%s_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FR_mu_num = new TH2F(Form("%s_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FR_tight_mu_den = new TH2F(Form("%s_tight_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FR_tight_mu_num = new TH2F(Form("%s_tight_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FR_loose_mu_den = new TH2F(Form("%s_loose_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FR_loose_mu_num = new TH2F(Form("%s_loose_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FR_el_den = new TH2F(Form("%s_el_den",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
-        TH2F *FR_el_num = new TH2F(Form("%s_el_num",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
-        TH2F *FR_tight_el_den = new TH2F(Form("%s_tight_el_den",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
-        TH2F *FR_tight_el_num = new TH2F(Form("%s_tight_el_num",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
-        TH2F *FR_tight2_el_den = new TH2F(Form("%s_tight2_el_den",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
-        TH2F *FR_tight2_el_num = new TH2F(Form("%s_tight2_el_num",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
-        TH2F *FR_loose_el_den = new TH2F(Form("%s_loose_el_den",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
-        TH2F *FR_loose_el_num = new TH2F(Form("%s_loose_el_num",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
-        TH2F *FR_tightiso_mu_den = new TH2F(Form("%s_tightiso_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FR_tightiso_mu_num = new TH2F(Form("%s_tightiso_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
-        TH2F *FR_tightiso_el_den = new TH2F(Form("%s_tightiso_el_den",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
-        TH2F *FR_tightiso_el_num = new TH2F(Form("%s_tightiso_el_num",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
+        TH2F *FR_mu_den = new TH2F(Form("%s_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_mu_num = new TH2F(Form("%s_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_tight_mu_den = new TH2F(Form("%s_tight_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_tight_mu_num = new TH2F(Form("%s_tight_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_loose_mu_den = new TH2F(Form("%s_loose_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_loose_mu_num = new TH2F(Form("%s_loose_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_el_den = new TH2F(Form("%s_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_el_num = new TH2F(Form("%s_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_tight_el_den = new TH2F(Form("%s_tight_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_tight_el_num = new TH2F(Form("%s_tight_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_tight2_el_den = new TH2F(Form("%s_tight2_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_tight2_el_num = new TH2F(Form("%s_tight2_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_loose_el_den = new TH2F(Form("%s_loose_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_loose_el_num = new TH2F(Form("%s_loose_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_tightiso_mu_den = new TH2F(Form("%s_tightiso_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_tightiso_mu_num = new TH2F(Form("%s_tightiso_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_tightiso_el_den = new TH2F(Form("%s_tightiso_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_tightiso_el_num = new TH2F(Form("%s_tightiso_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
     }
     //TH1 *w_el = new TH1F("W_btag_el", "CSV", 20, 0, 1);
     //TH1 *w_el = new TH1F("W_btag_mu", "CSV", 20, 0, 1);

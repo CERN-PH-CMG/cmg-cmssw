@@ -28,8 +28,8 @@ TString gPostfix = "";
 int ndata = 5;
 const int ndata_max = 8;
 TFile *fQCD[2] = { 0, 0 };
-TFile *fWJ  = 0;
-TFile *fDY[2]  =  { 0, 0 };
+TFile *fWJ[4]  = { 0, 0, 0, 0};
+TFile *fDY[4]  =  { 0, 0, 0, 0 };
 TFile *fdata[ndata_max] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 
 TH1* rebin(TH1 *hist) { 
@@ -45,9 +45,15 @@ void readAndAdd(TString name, TH1 * &prompt, TH1* &qcd, TH1* &data, const TH1 *r
     std::cout << "readAndAdd(" << name << ")" << std::endl;
     for (int i = 0; i <= 7; ++i) std::cout << "fdata[" << i << "] = " << (fdata[i] ? fdata[i]->GetName() : "NULL") << std::endl;
     std::cout << "fQCD[0] = " << (fQCD[0] ? fQCD[0]->GetName() : "NULL") << std::endl;
-    std::cout << "fWJ = " << (fWJ ? fWJ->GetName() : "NULL") << std::endl;
+    std::cout << "fQCD[1] = " << (fQCD[1] ? fQCD[1]->GetName() : "NULL") << std::endl;
+    std::cout << "fWJ[" << 0 << "] = " << (fWJ[0] ? fWJ[0]->GetName() : "NULL") << std::endl;
+    std::cout << "fWJ[" << 1 << "] = " << (fWJ[1] ? fWJ[1]->GetName() : "NULL") << std::endl;
+    std::cout << "fWJ[" << 2 << "] = " << (fWJ[2] ? fWJ[2]->GetName() : "NULL") << std::endl;
+    std::cout << "fWJ[" << 3 << "] = " << (fWJ[3] ? fWJ[3]->GetName() : "NULL") << std::endl;
     std::cout << "fDY[" << 0 << "] = " << (fDY[0] ? fDY[0]->GetName() : "NULL") << std::endl;
-    std::cout << "fDY[" << 1 << "] = " << (fdata[1] ? fdata[1]->GetName() : "NULL") << std::endl;
+    std::cout << "fDY[" << 1 << "] = " << (fDY[1] ? fDY[1]->GetName() : "NULL") << std::endl;
+    std::cout << "fDY[" << 2 << "] = " << (fDY[2] ? fDY[2]->GetName() : "NULL") << std::endl;
+    std::cout << "fDY[" << 3 << "] = " << (fDY[3] ? fDY[3]->GetName() : "NULL") << std::endl;
     */
     data = rebin((TH1*) fdata[0]->Get(name));
     data->Add(rebin((TH1*) fdata[1]->Get(name)));
@@ -68,14 +74,36 @@ void readAndAdd(TString name, TH1 * &prompt, TH1* &qcd, TH1* &data, const TH1 *r
         qcd->Add(qc2);
         delete qc2;
     }
-    prompt = rebin((TH1*) fWJ->Get(name)->Clone());
+    prompt = rebin((TH1*) fWJ[0]->Get(name)->Clone());
     prompt->Sumw2(); prompt->Scale( lumi*1e3 * 36257.2/57e6 );
-    TH1 *zed = rebin((TH1*) fDY[0]->Get(name)->Clone());
-    zed->Sumw2(); zed->Scale( lumi*1e3 * 3503.7/30.5e6 );
-    prompt->Add(zed);
-    zed = rebin((TH1*) fDY[1]->Get(name)->Clone());
-    zed->Sumw2(); zed->Scale( lumi*1e3 * 915/7.1e6 );
-    prompt->Add(zed);
+    if (fWJ[1] != 0) {
+        prompt->Scale(0.5);
+        TH1 *w1j = rebin((TH1*) fWJ[1]->Get(name)->Clone());
+        w1j->Sumw2(); w1j->Scale( 0.5*lumi*1e3 * 6624/22.7e6 ); prompt->Add(w1j);
+        TH1 *w2j = rebin((TH1*) fWJ[2]->Get(name)->Clone());
+        w2j->Sumw2(); w2j->Scale( 0.5*lumi*1e3 * 2152/33.4e6 ); prompt->Add(w2j);
+        TH1 *w3j = rebin((TH1*) fWJ[3]->Get(name)->Clone());
+        w3j->Sumw2(); w3j->Scale( 0.5*lumi*1e3 * 638/15.2e6 ); prompt->Add(w3j);
+    }
+    if (fDY[2] != 0) {
+        TH1 *zed = rebin((TH1*) fDY[0]->Get(name)->Clone());
+        zed->Sumw2(); zed->Scale( 0.5*lumi*1e3 * 3503.7/30.5e6 ); prompt->Add(zed);
+        zed = rebin((TH1*) fDY[2]->Get(name)->Clone());
+        zed->Sumw2(); zed->Scale( 0.5*lumi*1e3 * 666.3/24.0e6 ); prompt->Add(zed);
+        zed = rebin((TH1*) fDY[3]->Get(name)->Clone());
+        zed->Sumw2(); zed->Scale( 0.5*lumi*1e3 * 215.7/2.35e6 ); prompt->Add(zed);
+        // plus low mass
+        zed = rebin((TH1*) fDY[1]->Get(name)->Clone());
+        zed->Sumw2(); zed->Scale( lumi*1e3 * 915/7.1e6 );
+        prompt->Add(zed);
+    } else {
+        TH1 *zed = rebin((TH1*) fDY[0]->Get(name)->Clone());
+        zed->Sumw2(); zed->Scale( lumi*1e3 * 3503.7/30.5e6 );
+        prompt->Add(zed);
+        zed = rebin((TH1*) fDY[1]->Get(name)->Clone());
+        zed->Sumw2(); zed->Scale( lumi*1e3 * 915/7.1e6 );
+        prompt->Add(zed);
+    }
 }
 
 
@@ -84,7 +112,7 @@ void frFromRange(TH1 *num, TH1 *den, double mtmin, double mtmax, double &fr, dou
     double n_den = den->Integral(den->GetXaxis()->FindBin(mtmin), den->GetXaxis()->FindBin(mtmax));
     double events = (n_den/den->Integral()*den->GetEntries());
     int inum = events > 1 ? round(n_num*events/n_den) : 0;
-    std::cout << "frFromRange(" << num->GetName() << ") " << n_num << "\t" << n_den << "\t" << events << "\t" << inum << std::endl;
+    //std::cout << "frFromRange(" << num->GetName() << ") " << n_num << "\t" << n_den << "\t" << events << "\t" << inum << std::endl;
     double fup = events >= 1 ? TEfficiency::ClopperPearson(events, inum, 0.683, 1) : 0; 
     double fdn = events >= 1 ? TEfficiency::ClopperPearson(events, inum, 0.683, 0) : 0; 
     fr = n_num/n_den;
@@ -127,7 +155,7 @@ bool fitFRMTCorr(TString name, TH1 *hewk_den, TH1 *hdat_num, TH1* hdat_den, doub
 
     double lo_lo =  0.0, lo_hi = 15.0;
     double hi_lo = 45.0, hi_hi = 80.0;
-    if (gPostfix.Contains("TagMu")) { 
+    if (gPostfix.Contains("TagMu")) { // || gPrefix.Contains("BTight")) { 
         lo_hi = 35.0; 
         hi_lo = 35.0; 
         hi_hi = 100.0; 
@@ -156,15 +184,17 @@ bool fitFRMTCorr(TString name, TH1 *hewk_den, TH1 *hdat_num, TH1* hdat_den, doub
         //printf("Error boosting factor for %s: %4.1f  (x0/x1 = %.3f +/- %.3f) \n", name.Data(), 1/(1-x0x1), x0x1, x0x1Err);
     }
 
+    if (x0x1 > 0.6) return false;
+
     fr[0] = (frdat[0] - x0x1*frdat[1])/(1-x0x1);
     fr[1] = hypot( frdatErr[0] / (1-x0x1), frdatErr[1] * x0x1 / (1-x0x1) );
     fr[2] = fr[1];
     fr[3] = x0x1Err * std::abs(frdat[0] - frdat[1]) / std::pow(1-x0x1,2);
     if (fr[0]-hypot(fr[1],fr[3]) < 0) {
-        double frmax = max(fr[0],0.)+hypot(fr[1],fr[3]);
+        double frmax = std::max(fr[0],0.)+hypot(fr[1],fr[3]);
         fr[0] = 0.5*frmax; 
-        fr[1] = fr[2] = min(fr[1],0.5*frmax);
-        fr[3] = sqrt(0.25*frmax*frmax - fr[1]*fr[1]);
+        fr[1] = fr[2] = std::min(fr[1],0.5*frmax);
+        fr[3] = std::sqrt(0.25*frmax*frmax - fr[1]*fr[1]);
     }
     return true;
 }
@@ -226,9 +256,14 @@ void fitFRMT(TString name, TH1 *hqcd_num, TH1* hqcd_den, TH1 *hewk_den, TH1 *hda
     TH1F frame("frame", "frame;E_{T}^{miss} [GeV];Fake rate", 1, 0, mtmax_dat[0]);
     frame.SetMaximum(1.3*ymax); frame.Draw(); gStyle->SetOptStat(0);
 
-    gqcd.SetFillColor(65); gqcd.Draw("E2 SAME");
-    gqcdA.SetFillColor(214); gqcdA.SetFillStyle(3004); gqcdA.Draw("E2 SAME");
-    gqcdA.SetLineColor(214); gqcdA.SetLineWidth(3); gqcdA.Draw("P SAME");
+    gqcd.SetFillColor(65); 
+    gqcdA.SetFillColor(214); gqcdA.SetFillStyle(3004); 
+    gqcdA.SetLineColor(214); gqcdA.SetLineWidth(3); 
+    if (!name.Contains("FR_JetTag_el")) {
+        gqcd.Draw("E2 SAME");
+        gqcdA.Draw("E2 SAME");
+        gqcdA.Draw("P SAME");
+    }
     gdatA.SetMarkerStyle(0); gdatA.SetMarkerColor(2);
     gdatA.SetFillColor(2); gdatA.SetFillStyle(3005); gdatA.Draw("E2 SAME");
     gdatA.SetLineColor(2); gdatA.SetLineWidth(3); gdatA.Draw("P SAME");
@@ -240,8 +275,8 @@ void fitFRMT(TString name, TH1 *hqcd_num, TH1* hqcd_den, TH1 *hewk_den, TH1 *hda
     }
     gdat.SetMarkerStyle(20); gdat.SetLineWidth(2); gdat.Draw("P SAME");
 
-    c1->Print("ttH_plots/250513/FR_QCD_Simple/fits/"+gPrefix+gPostfix+"/"+name+".png");
-    c1->Print("ttH_plots/250513/FR_QCD_Simple/fits/"+gPrefix+gPostfix+"/"+name+".pdf");
+    c1->Print("ttH_plots/250513/FR_QCD_Simple_v2/fits/"+gPrefix+gPostfix+"/"+name+".png");
+    c1->Print("ttH_plots/250513/FR_QCD_Simple_v2/fits/"+gPrefix+gPostfix+"/"+name+".pdf");
 
     fr[0] = frdat;
     fr[1] = frdatErrL; fr[2] = frdatErrH;
@@ -266,7 +301,7 @@ void processOneBin(TString name, double *frLoose, double *frTight, bool doCorr) 
     fitFRMT(name+"_fitT", hqcd_numT, hqcd_denT, doCorr ? hprompt_denT : 0, hdata_numT, hdata_denT, frTight);
 
     printf("\nFitting %s%s/%s\n",gPrefix.Data(),gPostfix.Data(),name.Data());
-    FILE *log = fopen(Form("ttH_plots/250513/FR_QCD_Simple/fits/%s%s/%s.txt",gPrefix.Data(),gPostfix.Data(),name.Data()), "w");
+    FILE *log = fopen(Form("ttH_plots/250513/FR_QCD_Simple_v2/fits/%s%s/%s.txt",gPrefix.Data(),gPostfix.Data(),name.Data()), "w");
     printf("BEFORE corrections: \n"); fprintf(log, "BEFORE corrections: \n"); 
     printf(      "FR for loose cut: %.3f +%.3f/-%.3f (stat) +/- %.3f (syst)\t FR in MC = %.3f +/- %.3f\n", frLoose[0], frLoose[2], frLoose[1], frLoose[3], mcLoose, mcLooseErr);
     fprintf(log, "FR for loose cut: %.3f +%.3f/-%.3f (stat) +/- %.3f (syst)\t FR in MC = %.3f +/- %.3f\n", frLoose[0], frLoose[2], frLoose[1], frLoose[3], mcLoose, mcLooseErr);
@@ -291,34 +326,66 @@ void processOneBin(TString name, double *frLoose, double *frTight, bool doCorr) 
 }
 
 
-void fitFRDistsSimple(int iwhichsel=0, int iwhichid=0) {
-    if (iwhichsel == 1) gPrefix = "CutBased";
-    TString dPostfix = "", mPostfix = "";
-    if (iwhichsel == 2) {
-        gPrefix = "";
-        gPostfix = "_TagMuL";
-        dPostfix = gPostfix;
-        mPostfix = "_SingleMu";
+void fitFRDistsSimple(int iwhichsel=0, int iwhichid=0, int iwhichtype=0) {
+    TString dPostfix = "", mPostfix = ""; TString gName = "FR";
+    switch (iwhichsel) {
+        case 0: 
+            break;
+        case 1:
+            gPrefix = "CutBased";
+            break;
+        case 2:
+            gPrefix = "";
+            gPostfix = "_TagMuL";
+            dPostfix = gPostfix;
+            mPostfix = "_SingleMu";
+            break;
+        case 3:
+            gPrefix = "JustIso";
+            gName = "FRC";
+            break;
+        case 4:
+            gPrefix = "BTight";
+            break;
+        case 5:
+            gPrefix = "LLSS";
+            break;
+        case 6:
+            gPrefix = "LLOS";
+            break;
     }
-    fWJ  = TFile::Open("frDistsSimple"+gPrefix+"_WJets"+mPostfix+".root");
+
+    fWJ[0]  = TFile::Open("frDistsSimple"+gPrefix+"_WJets"+mPostfix+".root");
     fDY[0]  = TFile::Open("frDistsSimple"+gPrefix+"_DYJetsM50"+mPostfix+".root");
     fDY[1]  = TFile::Open("frDistsSimple"+gPrefix+"_DYJetsM10"+mPostfix+".root");
 
-    const int npt_mu = 8, npt_el = 7, neta = 2;
+    fWJ[1]  = TFile::Open("frDistsSimple"+gPrefix+"_W1Jets"+mPostfix+".root");
+    fWJ[2]  = TFile::Open("frDistsSimple"+gPrefix+"_W2Jets"+mPostfix+".root");
+    fWJ[3]  = TFile::Open("frDistsSimple"+gPrefix+"_W3Jets"+mPostfix+".root");
+    fDY[2]  = TFile::Open("frDistsSimple"+gPrefix+"_DY1JetsM50"+mPostfix+".root");
+    fDY[3]  = TFile::Open("frDistsSimple"+gPrefix+"_DY2JetsM50"+mPostfix+".root");
+    /*
+    */
+
+    const int npt_mu = 8, npt_el = 7, neta_mu = 2, neta_el = 3;
     double ptbins_mu[npt_mu+1] = { 5.0, 7.0, 8.5, 10, 15, 20, 25, 35, 80 };
     double ptbins_el[npt_el+1] = {        7, 8.5, 10, 15, 20, 25, 35, 80 };
-    double etabins_mu[neta+1] = { 0.0, 1.5,   2.5 };
-    double etabins_el[neta+1] = { 0.0, 1.479, 2.5 };
+    double etabins_mu[neta_mu+1] = { 0.0, 1.5,   2.5 };
+    double etabins_el[neta_el+1] = { 0.0, 0.8, 1.479, 2.5 };
     const int npt_muj = 8;
     double ptbins_muj[npt_muj+1] = { 5, 7, 8.5, 13, 18, 25, 35, 45, 80 };
-
+    const int npt2_mu = 5, npt2_el = 4;
+    const int npt2_muj = 5;
+    double ptbins2_mu[npt_mu+1] = { 5.0, 7.0, 10, 15, 35, 80 };
+    double ptbins2_el[npt_el+1] = {        7, 10, 20, 35, 80 };
+    double ptbins2_muj[npt_muj+1] = { 5.0, 8.5, 15, 25, 45, 80 };
 
 
     gROOT->ProcessLine(".x /afs/cern.ch/user/g/gpetrucc/cpp/tdrstyle.cc");
     c1 = new TCanvas("c1","c1");
     gStyle->SetOptStat(0);
 
-    TString pdir = "ttH_plots/250513/FR_QCD_Simple/fits/"+gPrefix+gPostfix;
+    TString pdir = "ttH_plots/250513/FR_QCD_Simple_v2/fits/"+gPrefix+gPostfix;
     gSystem->Exec("mkdir -p "+pdir);
     gSystem->Exec("cp /afs/cern.ch/user/g/gpetrucc/php/index.php "+pdir);
 
@@ -331,7 +398,8 @@ void fitFRDistsSimple(int iwhichsel=0, int iwhichid=0) {
 
         for (int ipdg = 11; ipdg <= 13; ipdg += 2) {
             //if (itype == 1 && ipdg == 11) continue;
-            if (iwhichid != 0 && ipdg != iwhichid) continue;
+            if (iwhichid   != 0 && ipdg  != iwhichid) continue;
+            if (iwhichtype != 0 && itype != iwhichtype) continue;
             for (int i = 0; i < ndata_max; ++i) { 
                 if (fdata[i]) fdata[i]->Close(); 
                 fdata[i] = NULL; 
@@ -393,23 +461,29 @@ void fitFRDistsSimple(int iwhichsel=0, int iwhichid=0) {
             double *etabins = (ipdg == 11 ? etabins_el : etabins_mu);
             double *ptbins = (ipdg == 11 ? ptbins_el : ptbins_mu);
             int     npt    = (ipdg == 11 ?    npt_el :    npt_mu);
+            int    neta     = (ipdg == 11 ? neta_el : neta_mu);
             if (itype == 1) {
                 ptbins  = (ipdg == 11 ? ptbins_el  : ptbins_muj);
                 npt     = (ipdg == 11 ? npt_el : npt_muj);
             }
-
-            TH2F *hFR = new TH2F(ipdg == 11 ? "FR_loose_el" : "FR_loose_mu", "", npt, ptbins, neta, etabins);
-            TH2F *hFT = new TH2F(ipdg == 11 ? "FR_tight_el" : "FR_tight_mu", "", npt, ptbins, neta, etabins);
+            if (iwhichsel == 4) { // need different binning
+                ptbins  = (ipdg == 11 ? ptbins2_el  : (itype == 13 ? ptbins2_mu : ptbins2_muj));
+                npt     = (ipdg == 11 ? npt2_el     : (itype == 13 ? npt2_mu    : npt2_muj));
+            }
+ 
+            TH2F *hFR = new TH2F(ipdg == 11 ? gName+"_loose_el" : gName+"_loose_mu", "", npt, ptbins, neta, etabins);
+            TH2F *hFT = new TH2F(ipdg == 11 ? gName+"_tight_el" : gName+"_tight_mu", "", npt, ptbins, neta, etabins);
 
             for (int ieta = 0; ieta < neta; ++ieta) {
                 TString name2 = name1 + Form("eta_%.1f-%.1f_",etabins[ieta],etabins[ieta+1]);
 
                 for (int ipt = 0; ipt < npt; ++ipt) {
+                    //if (ptbins[ipt] < 15) continue;
                     TString name = name2 + Form("pt_%.0f-%.0f",ptbins[ipt],ptbins[ipt+1]);
                     if (gPostfix.Contains("TagMu") && ptbins[ipt] >= 30) continue;
                     if (fdata[0]->Get(name+"_den") == 0) continue;
                     std::cout << name << std::endl;
-                    processOneBin(name, frLoose, frTight, ptbins[ipt]>=10&&!(ipdg==11 && itype==1));
+                    processOneBin(name, frLoose, frTight, ptbins[ipt]>=10&&!(ipdg==11 && itype==1 && iwhichsel==1));
                     double fcen = 0.5*((frLoose[0]+frLoose[2])+(frLoose[0]-frLoose[1]));
                     double fsym = 0.5*((frLoose[0]+frLoose[2])-(frLoose[0]-frLoose[1]));
                     hFR->SetBinContent(ipt+1, ieta+1, fcen);
