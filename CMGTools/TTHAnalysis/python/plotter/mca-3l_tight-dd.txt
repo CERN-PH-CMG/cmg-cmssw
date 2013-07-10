@@ -44,10 +44,9 @@ data     : MuEGRec
 data     : MuEGD
 data     : MuEGBadSIP
 
-FR_tt : TTJetsLep: 23.64    ;  FillColor=ROOT.kGray, FakeRate='fakeRate_3l_tight_MC.txt', Label='Top FR'
+FR_tt : TTJetsLep:  25.77: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)  ;  FillColor=ROOT.kGray, FakeRate='fakeRate_3l_tight_MC.txt', Label='Top FR'
 FR_tt : TtW      : 11.73    ;  FillColor=ROOT.kGray, FakeRate='fakeRate_3l_tight_MC.txt', Label='Top FR'
 FR_tt : TbartW   : 11.73    ;  FillColor=ROOT.kGray, FakeRate='fakeRate_3l_tight_MC.txt', Label='Top FR'
-FR_tt : TTG      : 1.444    ;  FillColor=ROOT.kGray, FakeRate='fakeRate_3l_tight_MC.txt', Label='Top FR'
 
 FR_dy : DYJetsM10  : 915     ;  FillColor=ROOT.kCyan+1, FakeRate='fakeRate_3l_tight_MC.txt', Label='DY FR'
 FR_dy : DY1JetsM50 : 666.3   ;  FillColor=ROOT.kCyan+1, FakeRate='fakeRate_3l_tight_MC.txt', Label='DY FR'
