@@ -1,30 +1,45 @@
-# --- ttH split by decay mode
-#ttHWW+   : TTH : 0.1271 : GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10
-#ttHtt+   : TTH : 0.1271 : GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+10
-#ttHZZ+   : TTH : 0.1271 : GenHiggsDecayMode == 23 ; FillColor=ROOT.kOrange+10
+# --- ttH split by decay mode (with proper sigma*BR for 125.7)
+ttH_htt+   : TTH : 0.1271 * 0.0620/0.0722: GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+10
+ttH_hzz+   : TTH : 0.1271 * 0.0281/0.0276: GenHiggsDecayMode == 23 ; FillColor=ROOT.kOrange+10
+ttH_hww+   : TTH : 0.1271 * 0.2262/0.2171: GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10
 # --- ttH inclusive
-ttH+     : TTH : 0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
+#ttH+     : TTH : 0.1271 * 0.0620/0.0722: GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+10
+#ttH+     : TTH : 0.1271 * 0.0281/0.0276: GenHiggsDecayMode == 23 ; FillColor=ROOT.kOrange+10
+#ttH+     : TTH : 0.1271 * 0.2262/0.2171: GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10
 # --- more statistics including also 122 and 127 GeV
 #ttH+     : TTH : 0.334*0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
 #ttH+     : TTH122 : 0.333*0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
 #ttH+     : TTH127 : 0.333*0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
 
 # --- TT+W/Z/WW (TTWW usually quite negligible)
-TTW 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5
-TTZ 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2
-TTWW 	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9
+TTW 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5,  NormSystematic=0.2
+TTZ 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2, NormSystematic=0.2
+TTWW 	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9,   NormSystematic=0.2
 # 
 # or also lumped together
 #TTV 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5, NormSystematic=0.2
 #TTV 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2, NormSystematic=0.2
 #TTV	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9, NormSystematic=0.2
+# --- TT gamma*
+TTGStar	 : FastSim_TTGStarMM: 1.5*0.01233*0.141;  FillColor=ROOT.kCyan-3, Label="TT\#gamma*", NormSystematic=0.5
+TTGStar	 : FastSim_TTGStarEE: 1.5*0.02724*0.104;  FillColor=ROOT.kCyan-3, Label="TT\#gamma*", NormSystematic=0.5
+TTGStar	 : FastSim_TTGStarTT: 1.5*0.00133*0.038;  FillColor=ROOT.kCyan-3, Label="TT\#gamma*", NormSystematic=0.5
+#TTGStarMM	 : FastSim_TTGStarMM: 1.5*0.01233*0.141;  FillColor=ROOT.kCyan-3, Label="TT\#gamma* \#mu\#mu"
+#TTGStarEE	 : FastSim_TTGStarEE: 1.5*0.02724*0.104;  FillColor=ROOT.kSpring+8, Label="TT\#gamma* ee"
+#TTGStarTT	 : FastSim_TTGStarTT: 1.5*0.00133*0.038;  FillColor=ROOT.kMagenta-10, Label="TT\#gamma* \#tau\#tau"
+# older samples with pt > 10 on both leptons
+#TTGStar	 : FastSim_TTGStar: 0.00195*0.3852;  FillColor=ROOT.kCyan-3, Label="TT\#gamma*"
+#TTGStar	 : FastSim_TTGStar: 2.5*0.00195*0.3852;  FillColor=ROOT.kCyan-3, Label="TT\#gamma*"
+
+# --- TT gamma
+TTG      : TTG:        1.444*1.8    ;  FillColor=ROOT.kGray+3    
 
 # --- Multiboson
-VVV 	 : WWWJets:    0.08217  ;  FillColor=ROOT.kViolet
-VVV 	 : WWZJets:    0.0633   ;  FillColor=ROOT.kViolet
+VVV 	 : WWWJets:    0.08217  ;  FillColor=ROOT.kViolet, NormSystematic=0.5
+VVV 	 : WWZJets:    0.0633   ;  FillColor=ROOT.kViolet, NormSystematic=0.5
 # WW 	 : WWJets:     5.995    ;  FillColor=ROOT.kBlue-9 ## NO, this is from FR
-WZ 	 : WZJets:     1.057    ;  FillColor=ROOT.kViolet-4
-ZZ       : ZZJets4L:   0.157    ;  FillColor=ROOT.kAzure-9
+WZ 	 : WZJets:     1.057*1.10   ;  FillColor=ROOT.kViolet-4, NormSystematic=0.2
+ZZ       : ZZJets4L:   0.157*1.21   ;  FillColor=ROOT.kAzure-9, NormSystematic=0.2
 # --- Powheg ZZ (for mll < 12, but less accurate in N(Jet))
 #ZZ	 : ZZ2e2mu:    0.1767   ;  FillColor=ROOT.kAzure-9
 #ZZ 	 : ZZ2e2tau:   0.1767   ;  FillColor=ROOT.kAzure-9
@@ -80,3 +95,338 @@ QF_data  : MuEGC;                 FillColor=ROOT.kGray+1, FakeRate='fakeRate_cha
 QF_data  : MuEGRec;               FillColor=ROOT.kGray+1, FakeRate='fakeRate_chargeFlip_el.txt', Label='QFlip', NormSystematic=0.2
 QF_data  : MuEGD;                 FillColor=ROOT.kGray+1, FakeRate='fakeRate_chargeFlip_el.txt', Label='QFlip', NormSystematic=0.2
 QF_data  : MuEGBadSIP;            FillColor=ROOT.kGray+1, FakeRate='fakeRate_chargeFlip_el.txt', Label='QFlip', NormSystematic=0.2
+
+# ---- These below are only for systematics and datacards, and won't be included in the plots ----
+ttH_htt_JES_Up   : TTH_JES_Up  : 0.1271 * 0.0620/0.0722: GenHiggsDecayMode == 15; FillColor=206,  Label="ttH JES Up", SkipMe=True 
+ttH_hzz_JES_Up   : TTH_JES_Up  : 0.1271 * 0.0281/0.0276: GenHiggsDecayMode == 23; FillColor=206,  Label="ttH JES Up", SkipMe=True 
+ttH_hww_JES_Up   : TTH_JES_Up  : 0.1271 * 0.2262/0.2171: GenHiggsDecayMode == 24; FillColor=206,  Label="ttH JES Up", SkipMe=True 
+ttH_htt_JES_Dn   : TTH_JES_Down: 0.1271 * 0.0620/0.0722: GenHiggsDecayMode == 15; FillColor=206,  Label="ttH JES Dn", SkipMe=True 
+ttH_hzz_JES_Dn   : TTH_JES_Down: 0.1271 * 0.0281/0.0276: GenHiggsDecayMode == 23; FillColor=206,  Label="ttH JES Dn", SkipMe=True 
+ttH_hww_JES_Dn   : TTH_JES_Down: 0.1271 * 0.2262/0.2171: GenHiggsDecayMode == 24; FillColor=206,  Label="ttH JES Dn", SkipMe=True 
+#ttH_JER_Up : TTH_JER_Up   : 0.1271 : GenHiggsDecayMode > 0  ; FillColor=222,  Label="ttH JER Up", SkipMe=True
+#ttH_JER_Dn : TTH_JER_Down : 0.1271 : GenHiggsDecayMode > 0  ; FillColor=209,  Label="ttH JER Dn", SkipMe=True
+
+TTW_JES_Up : TTWJets_JES_Up   : 0.232  ; FillColor=206,  Label="TTW JES Up", SkipMe=True
+TTW_JES_Dn : TTWJets_JES_Down : 0.232  ; FillColor=61,   Label="TTW JES Dn", SkipMe=True
+#TTW_JER_Up : TTWJets_JER_Up   : 0.232  ; FillColor=222,  Label="TTW JER Up", SkipMe=True
+#TTW_JER_Dn : TTWJets_JER_Down : 0.232  ; FillColor=209,  Label="TTW JER Dn", SkipMe=True
+
+TTZ_JES_Up : TTZJets_JES_Up   : 0.208  ; FillColor=206,  Label="TTZ JES Up", SkipMe=True
+TTZ_JES_Dn : TTZJets_JES_Down : 0.208  ; FillColor=61,   Label="TTZ JES Dn", SkipMe=True
+#TTZ_JER_Up : TTZJets_JER_Up   : 0.208  ; FillColor=222,  Label="TTZ JER Up", SkipMe=True
+#TTZ_JER_Dn : TTZJets_JER_Down : 0.208  ; FillColor=209,  Label="TTZ JER Dn", SkipMe=True
+
+
+WZ_JES_Up: WZJets_skim2j_JES_Up:       1.057*1.12    ;  FillColor=ROOT.kViolet-4, SkipMe=True
+WZ_JES_Dn: WZJets_skim2j_JES_Down:     1.057*1.09    ;  FillColor=ROOT.kViolet-4, SkipMe=True
+#ZZ_JES_Up: ZZJets4L_skim3l1j_JES_Up:   0.157    ;  FillColor=ROOT.kAzure-9,  SkipMe=True
+#ZZ_JES_Dn: ZZJets4L_skim3l1j_JES_Down: 0.157    ;  FillColor=ROOT.kAzure-9,  SkipMe=True
+
+
+# ---- All the fakerates you want ----
+# generate in VIM with 
+#.! for X in {all,mu,muPt,muEta,el,elPt,elEta,elBarrel}{Up,Dn}; do perl -ne "s/^..FRTPL: // and s/<X>/$X/g and print;" %; done
+##FRTPL: FR_data_<X> : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-<X>.txt', Label='FR<X>', SkipMe=True
+##FRTPL: FR_data_<X> : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-<X>.txt', Label='FR<X>', SkipMe=True
+##FRTPL: FR_data_<X> : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-<X>.txt', Label='FR<X>', SkipMe=True
+##FRTPL: FR_data_<X> : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-<X>.txt', Label='FR<X>', SkipMe=True
+##FRTPL: FR_data_<X> : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-<X>.txt', Label='FR<X>', SkipMe=True
+##FRTPL: FR_data_<X> : DoubleElectronAB;      FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-<X>.txt', Label='FR<X>', SkipMe=True
+##FRTPL: FR_data_<X> : DoubleElectronC;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-<X>.txt', Label='FR<X>', SkipMe=True
+##FRTPL: FR_data_<X> : DoubleElectronRec;     FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-<X>.txt', Label='FR<X>', SkipMe=True
+##FRTPL: FR_data_<X> : DoubleElectronD;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-<X>.txt', Label='FR<X>', SkipMe=True
+##FRTPL: FR_data_<X> : DoubleElectronBadSIP;  FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-<X>.txt', Label='FR<X>', SkipMe=True
+##FRTPL: FR_data_<X> : MuEGAB;                FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-<X>.txt', Label='FR<X>', SkipMe=True
+##FRTPL: FR_data_<X> : MuEGC;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-<X>.txt', Label='FR<X>', SkipMe=True
+##FRTPL: FR_data_<X> : MuEGRec;               FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-<X>.txt', Label='FR<X>', SkipMe=True
+##FRTPL: FR_data_<X> : MuEGD;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-<X>.txt', Label='FR<X>', SkipMe=True
+##FRTPL: FR_data_<X> : MuEGBadSIP;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-<X>.txt', Label='FR<X>', SkipMe=True
+FR_data_allUp : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allUp.txt', Label='FRallUp', SkipMe=True
+FR_data_allUp : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allUp.txt', Label='FRallUp', SkipMe=True
+FR_data_allUp : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allUp.txt', Label='FRallUp', SkipMe=True
+FR_data_allUp : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allUp.txt', Label='FRallUp', SkipMe=True
+FR_data_allUp : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allUp.txt', Label='FRallUp', SkipMe=True
+FR_data_allUp : DoubleElectronAB;      FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allUp.txt', Label='FRallUp', SkipMe=True
+FR_data_allUp : DoubleElectronC;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allUp.txt', Label='FRallUp', SkipMe=True
+FR_data_allUp : DoubleElectronRec;     FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allUp.txt', Label='FRallUp', SkipMe=True
+FR_data_allUp : DoubleElectronD;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allUp.txt', Label='FRallUp', SkipMe=True
+FR_data_allUp : DoubleElectronBadSIP;  FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allUp.txt', Label='FRallUp', SkipMe=True
+FR_data_allUp : MuEGAB;                FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allUp.txt', Label='FRallUp', SkipMe=True
+FR_data_allUp : MuEGC;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allUp.txt', Label='FRallUp', SkipMe=True
+FR_data_allUp : MuEGRec;               FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allUp.txt', Label='FRallUp', SkipMe=True
+FR_data_allUp : MuEGD;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allUp.txt', Label='FRallUp', SkipMe=True
+FR_data_allUp : MuEGBadSIP;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allUp.txt', Label='FRallUp', SkipMe=True
+FR_data_allDn : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allDn.txt', Label='FRallDn', SkipMe=True
+FR_data_allDn : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allDn.txt', Label='FRallDn', SkipMe=True
+FR_data_allDn : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allDn.txt', Label='FRallDn', SkipMe=True
+FR_data_allDn : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allDn.txt', Label='FRallDn', SkipMe=True
+FR_data_allDn : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allDn.txt', Label='FRallDn', SkipMe=True
+FR_data_allDn : DoubleElectronAB;      FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allDn.txt', Label='FRallDn', SkipMe=True
+FR_data_allDn : DoubleElectronC;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allDn.txt', Label='FRallDn', SkipMe=True
+FR_data_allDn : DoubleElectronRec;     FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allDn.txt', Label='FRallDn', SkipMe=True
+FR_data_allDn : DoubleElectronD;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allDn.txt', Label='FRallDn', SkipMe=True
+FR_data_allDn : DoubleElectronBadSIP;  FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allDn.txt', Label='FRallDn', SkipMe=True
+FR_data_allDn : MuEGAB;                FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allDn.txt', Label='FRallDn', SkipMe=True
+FR_data_allDn : MuEGC;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allDn.txt', Label='FRallDn', SkipMe=True
+FR_data_allDn : MuEGRec;               FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allDn.txt', Label='FRallDn', SkipMe=True
+FR_data_allDn : MuEGD;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allDn.txt', Label='FRallDn', SkipMe=True
+FR_data_allDn : MuEGBadSIP;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-allDn.txt', Label='FRallDn', SkipMe=True
+FR_data_muUp : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muUp.txt', Label='FRmuUp', SkipMe=True
+FR_data_muUp : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muUp.txt', Label='FRmuUp', SkipMe=True
+FR_data_muUp : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muUp.txt', Label='FRmuUp', SkipMe=True
+FR_data_muUp : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muUp.txt', Label='FRmuUp', SkipMe=True
+FR_data_muUp : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muUp.txt', Label='FRmuUp', SkipMe=True
+FR_data_muUp : DoubleElectronAB;      FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muUp.txt', Label='FRmuUp', SkipMe=True
+FR_data_muUp : DoubleElectronC;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muUp.txt', Label='FRmuUp', SkipMe=True
+FR_data_muUp : DoubleElectronRec;     FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muUp.txt', Label='FRmuUp', SkipMe=True
+FR_data_muUp : DoubleElectronD;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muUp.txt', Label='FRmuUp', SkipMe=True
+FR_data_muUp : DoubleElectronBadSIP;  FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muUp.txt', Label='FRmuUp', SkipMe=True
+FR_data_muUp : MuEGAB;                FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muUp.txt', Label='FRmuUp', SkipMe=True
+FR_data_muUp : MuEGC;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muUp.txt', Label='FRmuUp', SkipMe=True
+FR_data_muUp : MuEGRec;               FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muUp.txt', Label='FRmuUp', SkipMe=True
+FR_data_muUp : MuEGD;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muUp.txt', Label='FRmuUp', SkipMe=True
+FR_data_muUp : MuEGBadSIP;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muUp.txt', Label='FRmuUp', SkipMe=True
+FR_data_muDn : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muDn.txt', Label='FRmuDn', SkipMe=True
+FR_data_muDn : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muDn.txt', Label='FRmuDn', SkipMe=True
+FR_data_muDn : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muDn.txt', Label='FRmuDn', SkipMe=True
+FR_data_muDn : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muDn.txt', Label='FRmuDn', SkipMe=True
+FR_data_muDn : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muDn.txt', Label='FRmuDn', SkipMe=True
+FR_data_muDn : DoubleElectronAB;      FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muDn.txt', Label='FRmuDn', SkipMe=True
+FR_data_muDn : DoubleElectronC;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muDn.txt', Label='FRmuDn', SkipMe=True
+FR_data_muDn : DoubleElectronRec;     FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muDn.txt', Label='FRmuDn', SkipMe=True
+FR_data_muDn : DoubleElectronD;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muDn.txt', Label='FRmuDn', SkipMe=True
+FR_data_muDn : DoubleElectronBadSIP;  FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muDn.txt', Label='FRmuDn', SkipMe=True
+FR_data_muDn : MuEGAB;                FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muDn.txt', Label='FRmuDn', SkipMe=True
+FR_data_muDn : MuEGC;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muDn.txt', Label='FRmuDn', SkipMe=True
+FR_data_muDn : MuEGRec;               FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muDn.txt', Label='FRmuDn', SkipMe=True
+FR_data_muDn : MuEGD;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muDn.txt', Label='FRmuDn', SkipMe=True
+FR_data_muDn : MuEGBadSIP;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muDn.txt', Label='FRmuDn', SkipMe=True
+FR_data_muPtUp : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtUp.txt', Label='FRmuPtUp', SkipMe=True
+FR_data_muPtUp : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtUp.txt', Label='FRmuPtUp', SkipMe=True
+FR_data_muPtUp : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtUp.txt', Label='FRmuPtUp', SkipMe=True
+FR_data_muPtUp : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtUp.txt', Label='FRmuPtUp', SkipMe=True
+FR_data_muPtUp : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtUp.txt', Label='FRmuPtUp', SkipMe=True
+FR_data_muPtUp : DoubleElectronAB;      FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtUp.txt', Label='FRmuPtUp', SkipMe=True
+FR_data_muPtUp : DoubleElectronC;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtUp.txt', Label='FRmuPtUp', SkipMe=True
+FR_data_muPtUp : DoubleElectronRec;     FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtUp.txt', Label='FRmuPtUp', SkipMe=True
+FR_data_muPtUp : DoubleElectronD;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtUp.txt', Label='FRmuPtUp', SkipMe=True
+FR_data_muPtUp : DoubleElectronBadSIP;  FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtUp.txt', Label='FRmuPtUp', SkipMe=True
+FR_data_muPtUp : MuEGAB;                FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtUp.txt', Label='FRmuPtUp', SkipMe=True
+FR_data_muPtUp : MuEGC;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtUp.txt', Label='FRmuPtUp', SkipMe=True
+FR_data_muPtUp : MuEGRec;               FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtUp.txt', Label='FRmuPtUp', SkipMe=True
+FR_data_muPtUp : MuEGD;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtUp.txt', Label='FRmuPtUp', SkipMe=True
+FR_data_muPtUp : MuEGBadSIP;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtUp.txt', Label='FRmuPtUp', SkipMe=True
+FR_data_muPtDn : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtDn.txt', Label='FRmuPtDn', SkipMe=True
+FR_data_muPtDn : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtDn.txt', Label='FRmuPtDn', SkipMe=True
+FR_data_muPtDn : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtDn.txt', Label='FRmuPtDn', SkipMe=True
+FR_data_muPtDn : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtDn.txt', Label='FRmuPtDn', SkipMe=True
+FR_data_muPtDn : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtDn.txt', Label='FRmuPtDn', SkipMe=True
+FR_data_muPtDn : DoubleElectronAB;      FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtDn.txt', Label='FRmuPtDn', SkipMe=True
+FR_data_muPtDn : DoubleElectronC;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtDn.txt', Label='FRmuPtDn', SkipMe=True
+FR_data_muPtDn : DoubleElectronRec;     FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtDn.txt', Label='FRmuPtDn', SkipMe=True
+FR_data_muPtDn : DoubleElectronD;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtDn.txt', Label='FRmuPtDn', SkipMe=True
+FR_data_muPtDn : DoubleElectronBadSIP;  FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtDn.txt', Label='FRmuPtDn', SkipMe=True
+FR_data_muPtDn : MuEGAB;                FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtDn.txt', Label='FRmuPtDn', SkipMe=True
+FR_data_muPtDn : MuEGC;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtDn.txt', Label='FRmuPtDn', SkipMe=True
+FR_data_muPtDn : MuEGRec;               FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtDn.txt', Label='FRmuPtDn', SkipMe=True
+FR_data_muPtDn : MuEGD;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtDn.txt', Label='FRmuPtDn', SkipMe=True
+FR_data_muPtDn : MuEGBadSIP;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muPtDn.txt', Label='FRmuPtDn', SkipMe=True
+FR_data_muEtaUp : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaUp.txt', Label='FRmuEtaUp', SkipMe=True
+FR_data_muEtaUp : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaUp.txt', Label='FRmuEtaUp', SkipMe=True
+FR_data_muEtaUp : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaUp.txt', Label='FRmuEtaUp', SkipMe=True
+FR_data_muEtaUp : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaUp.txt', Label='FRmuEtaUp', SkipMe=True
+FR_data_muEtaUp : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaUp.txt', Label='FRmuEtaUp', SkipMe=True
+FR_data_muEtaUp : DoubleElectronAB;      FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaUp.txt', Label='FRmuEtaUp', SkipMe=True
+FR_data_muEtaUp : DoubleElectronC;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaUp.txt', Label='FRmuEtaUp', SkipMe=True
+FR_data_muEtaUp : DoubleElectronRec;     FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaUp.txt', Label='FRmuEtaUp', SkipMe=True
+FR_data_muEtaUp : DoubleElectronD;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaUp.txt', Label='FRmuEtaUp', SkipMe=True
+FR_data_muEtaUp : DoubleElectronBadSIP;  FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaUp.txt', Label='FRmuEtaUp', SkipMe=True
+FR_data_muEtaUp : MuEGAB;                FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaUp.txt', Label='FRmuEtaUp', SkipMe=True
+FR_data_muEtaUp : MuEGC;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaUp.txt', Label='FRmuEtaUp', SkipMe=True
+FR_data_muEtaUp : MuEGRec;               FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaUp.txt', Label='FRmuEtaUp', SkipMe=True
+FR_data_muEtaUp : MuEGD;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaUp.txt', Label='FRmuEtaUp', SkipMe=True
+FR_data_muEtaUp : MuEGBadSIP;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaUp.txt', Label='FRmuEtaUp', SkipMe=True
+FR_data_muEtaDn : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaDn.txt', Label='FRmuEtaDn', SkipMe=True
+FR_data_muEtaDn : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaDn.txt', Label='FRmuEtaDn', SkipMe=True
+FR_data_muEtaDn : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaDn.txt', Label='FRmuEtaDn', SkipMe=True
+FR_data_muEtaDn : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaDn.txt', Label='FRmuEtaDn', SkipMe=True
+FR_data_muEtaDn : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaDn.txt', Label='FRmuEtaDn', SkipMe=True
+FR_data_muEtaDn : DoubleElectronAB;      FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaDn.txt', Label='FRmuEtaDn', SkipMe=True
+FR_data_muEtaDn : DoubleElectronC;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaDn.txt', Label='FRmuEtaDn', SkipMe=True
+FR_data_muEtaDn : DoubleElectronRec;     FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaDn.txt', Label='FRmuEtaDn', SkipMe=True
+FR_data_muEtaDn : DoubleElectronD;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaDn.txt', Label='FRmuEtaDn', SkipMe=True
+FR_data_muEtaDn : DoubleElectronBadSIP;  FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaDn.txt', Label='FRmuEtaDn', SkipMe=True
+FR_data_muEtaDn : MuEGAB;                FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaDn.txt', Label='FRmuEtaDn', SkipMe=True
+FR_data_muEtaDn : MuEGC;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaDn.txt', Label='FRmuEtaDn', SkipMe=True
+FR_data_muEtaDn : MuEGRec;               FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaDn.txt', Label='FRmuEtaDn', SkipMe=True
+FR_data_muEtaDn : MuEGD;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaDn.txt', Label='FRmuEtaDn', SkipMe=True
+FR_data_muEtaDn : MuEGBadSIP;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-muEtaDn.txt', Label='FRmuEtaDn', SkipMe=True
+FR_data_elUp : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elUp.txt', Label='FRelUp', SkipMe=True
+FR_data_elUp : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elUp.txt', Label='FRelUp', SkipMe=True
+FR_data_elUp : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elUp.txt', Label='FRelUp', SkipMe=True
+FR_data_elUp : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elUp.txt', Label='FRelUp', SkipMe=True
+FR_data_elUp : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elUp.txt', Label='FRelUp', SkipMe=True
+FR_data_elUp : DoubleElectronAB;      FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elUp.txt', Label='FRelUp', SkipMe=True
+FR_data_elUp : DoubleElectronC;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elUp.txt', Label='FRelUp', SkipMe=True
+FR_data_elUp : DoubleElectronRec;     FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elUp.txt', Label='FRelUp', SkipMe=True
+FR_data_elUp : DoubleElectronD;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elUp.txt', Label='FRelUp', SkipMe=True
+FR_data_elUp : DoubleElectronBadSIP;  FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elUp.txt', Label='FRelUp', SkipMe=True
+FR_data_elUp : MuEGAB;                FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elUp.txt', Label='FRelUp', SkipMe=True
+FR_data_elUp : MuEGC;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elUp.txt', Label='FRelUp', SkipMe=True
+FR_data_elUp : MuEGRec;               FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elUp.txt', Label='FRelUp', SkipMe=True
+FR_data_elUp : MuEGD;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elUp.txt', Label='FRelUp', SkipMe=True
+FR_data_elUp : MuEGBadSIP;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elUp.txt', Label='FRelUp', SkipMe=True
+FR_data_elDn : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elDn.txt', Label='FRelDn', SkipMe=True
+FR_data_elDn : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elDn.txt', Label='FRelDn', SkipMe=True
+FR_data_elDn : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elDn.txt', Label='FRelDn', SkipMe=True
+FR_data_elDn : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elDn.txt', Label='FRelDn', SkipMe=True
+FR_data_elDn : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elDn.txt', Label='FRelDn', SkipMe=True
+FR_data_elDn : DoubleElectronAB;      FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elDn.txt', Label='FRelDn', SkipMe=True
+FR_data_elDn : DoubleElectronC;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elDn.txt', Label='FRelDn', SkipMe=True
+FR_data_elDn : DoubleElectronRec;     FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elDn.txt', Label='FRelDn', SkipMe=True
+FR_data_elDn : DoubleElectronD;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elDn.txt', Label='FRelDn', SkipMe=True
+FR_data_elDn : DoubleElectronBadSIP;  FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elDn.txt', Label='FRelDn', SkipMe=True
+FR_data_elDn : MuEGAB;                FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elDn.txt', Label='FRelDn', SkipMe=True
+FR_data_elDn : MuEGC;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elDn.txt', Label='FRelDn', SkipMe=True
+FR_data_elDn : MuEGRec;               FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elDn.txt', Label='FRelDn', SkipMe=True
+FR_data_elDn : MuEGD;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elDn.txt', Label='FRelDn', SkipMe=True
+FR_data_elDn : MuEGBadSIP;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elDn.txt', Label='FRelDn', SkipMe=True
+FR_data_elPtUp : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtUp.txt', Label='FRelPtUp', SkipMe=True
+FR_data_elPtUp : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtUp.txt', Label='FRelPtUp', SkipMe=True
+FR_data_elPtUp : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtUp.txt', Label='FRelPtUp', SkipMe=True
+FR_data_elPtUp : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtUp.txt', Label='FRelPtUp', SkipMe=True
+FR_data_elPtUp : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtUp.txt', Label='FRelPtUp', SkipMe=True
+FR_data_elPtUp : DoubleElectronAB;      FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtUp.txt', Label='FRelPtUp', SkipMe=True
+FR_data_elPtUp : DoubleElectronC;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtUp.txt', Label='FRelPtUp', SkipMe=True
+FR_data_elPtUp : DoubleElectronRec;     FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtUp.txt', Label='FRelPtUp', SkipMe=True
+FR_data_elPtUp : DoubleElectronD;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtUp.txt', Label='FRelPtUp', SkipMe=True
+FR_data_elPtUp : DoubleElectronBadSIP;  FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtUp.txt', Label='FRelPtUp', SkipMe=True
+FR_data_elPtUp : MuEGAB;                FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtUp.txt', Label='FRelPtUp', SkipMe=True
+FR_data_elPtUp : MuEGC;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtUp.txt', Label='FRelPtUp', SkipMe=True
+FR_data_elPtUp : MuEGRec;               FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtUp.txt', Label='FRelPtUp', SkipMe=True
+FR_data_elPtUp : MuEGD;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtUp.txt', Label='FRelPtUp', SkipMe=True
+FR_data_elPtUp : MuEGBadSIP;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtUp.txt', Label='FRelPtUp', SkipMe=True
+FR_data_elPtDn : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtDn.txt', Label='FRelPtDn', SkipMe=True
+FR_data_elPtDn : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtDn.txt', Label='FRelPtDn', SkipMe=True
+FR_data_elPtDn : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtDn.txt', Label='FRelPtDn', SkipMe=True
+FR_data_elPtDn : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtDn.txt', Label='FRelPtDn', SkipMe=True
+FR_data_elPtDn : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtDn.txt', Label='FRelPtDn', SkipMe=True
+FR_data_elPtDn : DoubleElectronAB;      FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtDn.txt', Label='FRelPtDn', SkipMe=True
+FR_data_elPtDn : DoubleElectronC;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtDn.txt', Label='FRelPtDn', SkipMe=True
+FR_data_elPtDn : DoubleElectronRec;     FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtDn.txt', Label='FRelPtDn', SkipMe=True
+FR_data_elPtDn : DoubleElectronD;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtDn.txt', Label='FRelPtDn', SkipMe=True
+FR_data_elPtDn : DoubleElectronBadSIP;  FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtDn.txt', Label='FRelPtDn', SkipMe=True
+FR_data_elPtDn : MuEGAB;                FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtDn.txt', Label='FRelPtDn', SkipMe=True
+FR_data_elPtDn : MuEGC;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtDn.txt', Label='FRelPtDn', SkipMe=True
+FR_data_elPtDn : MuEGRec;               FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtDn.txt', Label='FRelPtDn', SkipMe=True
+FR_data_elPtDn : MuEGD;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtDn.txt', Label='FRelPtDn', SkipMe=True
+FR_data_elPtDn : MuEGBadSIP;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elPtDn.txt', Label='FRelPtDn', SkipMe=True
+FR_data_elEtaUp : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaUp.txt', Label='FRelEtaUp', SkipMe=True
+FR_data_elEtaUp : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaUp.txt', Label='FRelEtaUp', SkipMe=True
+FR_data_elEtaUp : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaUp.txt', Label='FRelEtaUp', SkipMe=True
+FR_data_elEtaUp : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaUp.txt', Label='FRelEtaUp', SkipMe=True
+FR_data_elEtaUp : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaUp.txt', Label='FRelEtaUp', SkipMe=True
+FR_data_elEtaUp : DoubleElectronAB;      FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaUp.txt', Label='FRelEtaUp', SkipMe=True
+FR_data_elEtaUp : DoubleElectronC;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaUp.txt', Label='FRelEtaUp', SkipMe=True
+FR_data_elEtaUp : DoubleElectronRec;     FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaUp.txt', Label='FRelEtaUp', SkipMe=True
+FR_data_elEtaUp : DoubleElectronD;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaUp.txt', Label='FRelEtaUp', SkipMe=True
+FR_data_elEtaUp : DoubleElectronBadSIP;  FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaUp.txt', Label='FRelEtaUp', SkipMe=True
+FR_data_elEtaUp : MuEGAB;                FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaUp.txt', Label='FRelEtaUp', SkipMe=True
+FR_data_elEtaUp : MuEGC;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaUp.txt', Label='FRelEtaUp', SkipMe=True
+FR_data_elEtaUp : MuEGRec;               FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaUp.txt', Label='FRelEtaUp', SkipMe=True
+FR_data_elEtaUp : MuEGD;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaUp.txt', Label='FRelEtaUp', SkipMe=True
+FR_data_elEtaUp : MuEGBadSIP;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaUp.txt', Label='FRelEtaUp', SkipMe=True
+FR_data_elEtaDn : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaDn.txt', Label='FRelEtaDn', SkipMe=True
+FR_data_elEtaDn : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaDn.txt', Label='FRelEtaDn', SkipMe=True
+FR_data_elEtaDn : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaDn.txt', Label='FRelEtaDn', SkipMe=True
+FR_data_elEtaDn : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaDn.txt', Label='FRelEtaDn', SkipMe=True
+FR_data_elEtaDn : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaDn.txt', Label='FRelEtaDn', SkipMe=True
+FR_data_elEtaDn : DoubleElectronAB;      FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaDn.txt', Label='FRelEtaDn', SkipMe=True
+FR_data_elEtaDn : DoubleElectronC;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaDn.txt', Label='FRelEtaDn', SkipMe=True
+FR_data_elEtaDn : DoubleElectronRec;     FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaDn.txt', Label='FRelEtaDn', SkipMe=True
+FR_data_elEtaDn : DoubleElectronD;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaDn.txt', Label='FRelEtaDn', SkipMe=True
+FR_data_elEtaDn : DoubleElectronBadSIP;  FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaDn.txt', Label='FRelEtaDn', SkipMe=True
+FR_data_elEtaDn : MuEGAB;                FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaDn.txt', Label='FRelEtaDn', SkipMe=True
+FR_data_elEtaDn : MuEGC;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaDn.txt', Label='FRelEtaDn', SkipMe=True
+FR_data_elEtaDn : MuEGRec;               FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaDn.txt', Label='FRelEtaDn', SkipMe=True
+FR_data_elEtaDn : MuEGD;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaDn.txt', Label='FRelEtaDn', SkipMe=True
+FR_data_elEtaDn : MuEGBadSIP;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elEtaDn.txt', Label='FRelEtaDn', SkipMe=True
+FR_data_elBarrelUp : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelUp.txt', Label='FRelBarrelUp', SkipMe=True
+FR_data_elBarrelUp : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelUp.txt', Label='FRelBarrelUp', SkipMe=True
+FR_data_elBarrelUp : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelUp.txt', Label='FRelBarrelUp', SkipMe=True
+FR_data_elBarrelUp : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelUp.txt', Label='FRelBarrelUp', SkipMe=True
+FR_data_elBarrelUp : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelUp.txt', Label='FRelBarrelUp', SkipMe=True
+FR_data_elBarrelUp : DoubleElectronAB;      FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelUp.txt', Label='FRelBarrelUp', SkipMe=True
+FR_data_elBarrelUp : DoubleElectronC;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelUp.txt', Label='FRelBarrelUp', SkipMe=True
+FR_data_elBarrelUp : DoubleElectronRec;     FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelUp.txt', Label='FRelBarrelUp', SkipMe=True
+FR_data_elBarrelUp : DoubleElectronD;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelUp.txt', Label='FRelBarrelUp', SkipMe=True
+FR_data_elBarrelUp : DoubleElectronBadSIP;  FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelUp.txt', Label='FRelBarrelUp', SkipMe=True
+FR_data_elBarrelUp : MuEGAB;                FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelUp.txt', Label='FRelBarrelUp', SkipMe=True
+FR_data_elBarrelUp : MuEGC;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelUp.txt', Label='FRelBarrelUp', SkipMe=True
+FR_data_elBarrelUp : MuEGRec;               FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelUp.txt', Label='FRelBarrelUp', SkipMe=True
+FR_data_elBarrelUp : MuEGD;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelUp.txt', Label='FRelBarrelUp', SkipMe=True
+FR_data_elBarrelUp : MuEGBadSIP;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelUp.txt', Label='FRelBarrelUp', SkipMe=True
+FR_data_elBarrelDn : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelDn.txt', Label='FRelBarrelDn', SkipMe=True
+FR_data_elBarrelDn : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelDn.txt', Label='FRelBarrelDn', SkipMe=True
+FR_data_elBarrelDn : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelDn.txt', Label='FRelBarrelDn', SkipMe=True
+FR_data_elBarrelDn : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelDn.txt', Label='FRelBarrelDn', SkipMe=True
+FR_data_elBarrelDn : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelDn.txt', Label='FRelBarrelDn', SkipMe=True
+FR_data_elBarrelDn : DoubleElectronAB;      FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelDn.txt', Label='FRelBarrelDn', SkipMe=True
+FR_data_elBarrelDn : DoubleElectronC;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelDn.txt', Label='FRelBarrelDn', SkipMe=True
+FR_data_elBarrelDn : DoubleElectronRec;     FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelDn.txt', Label='FRelBarrelDn', SkipMe=True
+FR_data_elBarrelDn : DoubleElectronD;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelDn.txt', Label='FRelBarrelDn', SkipMe=True
+FR_data_elBarrelDn : DoubleElectronBadSIP;  FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelDn.txt', Label='FRelBarrelDn', SkipMe=True
+FR_data_elBarrelDn : MuEGAB;                FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelDn.txt', Label='FRelBarrelDn', SkipMe=True
+FR_data_elBarrelDn : MuEGC;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelDn.txt', Label='FRelBarrelDn', SkipMe=True
+FR_data_elBarrelDn : MuEGRec;               FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelDn.txt', Label='FRelBarrelDn', SkipMe=True
+FR_data_elBarrelDn : MuEGD;                 FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelDn.txt', Label='FRelBarrelDn', SkipMe=True
+FR_data_elBarrelDn : MuEGBadSIP;            FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss-elBarrelDn.txt', Label='FRelBarrelDn', SkipMe=True
+
+
+
+#FR_data_FRmc : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='fakeRate_2lss_MC.txt', Label='FR MC', SkipMe=True
+#FR_data_FRmc : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='fakeRate_2lss_MC.txt', Label='FR MC', SkipMe=True
+#FR_data_FRmc : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='fakeRate_2lss_MC.txt', Label='FR MC', SkipMe=True
+#FR_data_FRmc : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='fakeRate_2lss_MC.txt', Label='FR MC', SkipMe=True
+#FR_data_FRmc : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='fakeRate_2lss_MC.txt', Label='FR MC', SkipMe=True
+#FR_data_FRmc3j2b : DoubleMuAB;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2b.txt', Label='FR MC 3j2b', SkipMe=True
+#FR_data_FRmc3j2b : DoubleMuC;         FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2b.txt', Label='FR MC 3j2b', SkipMe=True
+#FR_data_FRmc3j2b : DoubleMuRec;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2b.txt', Label='FR MC 3j2b', SkipMe=True
+#FR_data_FRmc3j2b : DoubleMuD;         FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2b.txt', Label='FR MC 3j2b', SkipMe=True
+#FR_data_FRmc3j2b : DoubleMuBadSIP;    FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2b.txt', Label='FR MC 3j2b', SkipMe=True
+#FR_data_FRmc3j2B : DoubleMuAB;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2B.txt', Label='FR MC 3j2B', SkipMe=True
+#FR_data_FRmc3j2B : DoubleMuC;         FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2B.txt', Label='FR MC 3j2B', SkipMe=True
+#FR_data_FRmc3j2B : DoubleMuRec;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2B.txt', Label='FR MC 3j2B', SkipMe=True
+#FR_data_FRmc3j2B : DoubleMuD;         FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2B.txt', Label='FR MC 3j2B', SkipMe=True
+#FR_data_FRmc3j2B : DoubleMuBadSIP;    FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2B.txt', Label='FR MC 3j2B', SkipMe=True
+#FR_data_FRmc : MuEGAB;            FillColor=ROOT.kGray, FakeRate='fakeRate_2lss_MC.txt', Label='FR MC', SkipMe=True
+#FR_data_FRmc : MuEGC;             FillColor=ROOT.kGray, FakeRate='fakeRate_2lss_MC.txt', Label='FR MC', SkipMe=True
+#FR_data_FRmc : MuEGRec;           FillColor=ROOT.kGray, FakeRate='fakeRate_2lss_MC.txt', Label='FR MC', SkipMe=True
+#FR_data_FRmc : MuEGD;             FillColor=ROOT.kGray, FakeRate='fakeRate_2lss_MC.txt', Label='FR MC', SkipMe=True
+#FR_data_FRmc : MuEGBadSIP;        FillColor=ROOT.kGray, FakeRate='fakeRate_2lss_MC.txt', Label='FR MC', SkipMe=True
+#FR_data_FRmc3j2b : MuEGAB;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2b.txt', Label='FR MC 3j2b', SkipMe=True
+#FR_data_FRmc3j2b : MuEGC;         FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2b.txt', Label='FR MC 3j2b', SkipMe=True
+#FR_data_FRmc3j2b : MuEGRec;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2b.txt', Label='FR MC 3j2b', SkipMe=True
+#FR_data_FRmc3j2b : MuEGD;         FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2b.txt', Label='FR MC 3j2b', SkipMe=True
+#FR_data_FRmc3j2b : MuEGBadSIP;    FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2b.txt', Label='FR MC 3j2b', SkipMe=True
+#FR_data_FRmc3j2B : MuEGAB;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2B.txt', Label='FR MC 3j2B', SkipMe=True
+#FR_data_FRmc3j2B : MuEGC;         FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2B.txt', Label='FR MC 3j2B', SkipMe=True
+#FR_data_FRmc3j2B : MuEGRec;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2B.txt', Label='FR MC 3j2B', SkipMe=True
+#FR_data_FRmc3j2B : MuEGD;         FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2B.txt', Label='FR MC 3j2B', SkipMe=True
+#FR_data_FRmc3j2B : MuEGBadSIP;    FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2B.txt', Label='FR MC 3j2B', SkipMe=True
+#FR_data_FRmc : DoubleElectronAB;            FillColor=ROOT.kGray, FakeRate='fakeRate_2lss_MC.txt', Label='FR MC', SkipMe=True
+#FR_data_FRmc : DoubleElectronC;             FillColor=ROOT.kGray, FakeRate='fakeRate_2lss_MC.txt', Label='FR MC', SkipMe=True
+#FR_data_FRmc : DoubleElectronRec;           FillColor=ROOT.kGray, FakeRate='fakeRate_2lss_MC.txt', Label='FR MC', SkipMe=True
+#FR_data_FRmc : DoubleElectronD;             FillColor=ROOT.kGray, FakeRate='fakeRate_2lss_MC.txt', Label='FR MC', SkipMe=True
+#FR_data_FRmc : DoubleElectronBadSIP;        FillColor=ROOT.kGray, FakeRate='fakeRate_2lss_MC.txt', Label='FR MC', SkipMe=True
+#FR_data_FRmc3j2b : DoubleElectronAB;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2b.txt', Label='FR MC 3j2b', SkipMe=True
+#FR_data_FRmc3j2b : DoubleElectronC;         FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2b.txt', Label='FR MC 3j2b', SkipMe=True
+#FR_data_FRmc3j2b : DoubleElectronRec;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2b.txt', Label='FR MC 3j2b', SkipMe=True
+#FR_data_FRmc3j2b : DoubleElectronD;         FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2b.txt', Label='FR MC 3j2b', SkipMe=True
+#FR_data_FRmc3j2b : DoubleElectronBadSIP;    FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2b.txt', Label='FR MC 3j2b', SkipMe=True
+#FR_data_FRmc3j2B : DoubleElectronAB;        FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2B.txt', Label='FR MC 3j2B', SkipMe=True
+#FR_data_FRmc3j2B : DoubleElectronC;         FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2B.txt', Label='FR MC 3j2B', SkipMe=True
+#FR_data_FRmc3j2B : DoubleElectronRec;       FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2B.txt', Label='FR MC 3j2B', SkipMe=True
+#FR_data_FRmc3j2B : DoubleElectronD;         FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2B.txt', Label='FR MC 3j2B', SkipMe=True
+#FR_data_FRmc3j2B : DoubleElectronBadSIP;    FillColor=ROOT.kGray, FakeRate='syst/fakeRate_2lss_MC-3j2B.txt', Label='FR MC 3j2B', SkipMe=True
+#

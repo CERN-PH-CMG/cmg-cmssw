@@ -2,8 +2,8 @@
 TTH+     : TTH  : 0.1271 : GenHiggsDecayMode > 0   ;  FillColor=1,  Label="Nominal"
 TTW+ 	 : TTWJets:    0.232                       ;  FillColor=1,  Label="Nominal"
 TTZ+ 	 : TTZJets:    0.208                       ;  FillColor=1,  Label="Nominal"
-WZ+ 	 : WZJets:     1.057                       ;  FillColor=1,  Label="Nominal"
-ZZ+      : ZZJets4L:   0.157                       ;  FillColor=1,  Label="Nominal"
+WZ+ 	 : WZJets:     1.057*1.10                  ;  FillColor=1,  Label="Nominal"
+ZZ+      : ZZJets4L:   0.157*1.21                  ;  FillColor=1,  Label="Nominal"
 
 
 TTH_JES_Up : TTH_JES_Up   : 0.1271 : GenHiggsDecayMode > 0  ; FillColor=206,  Label="JES Up"
@@ -36,15 +36,15 @@ TTZ_btag_bDn : TTZJets : 0.208 : (SF_btag_bDown/SF_btag) ;  FillColor=61,   Labe
 TTZ_btag_lUp : TTZJets : 0.208 : (SF_btag_lUp/SF_btag)   ;  FillColor=222,  Label="L Up"
 TTZ_btag_lDn : TTZJets : 0.208 : (SF_btag_lDown/SF_btag) ;  FillColor=209,  Label="L Dn"
 
-WZ_btag_bUp : WZJets : 1.057 : (SF_btag_bUp/SF_btag)   ;  FillColor=206,  Label="B Up"
-WZ_btag_bDn : WZJets : 1.057 : (SF_btag_bDown/SF_btag) ;  FillColor=61,   Label="B Dn"
-WZ_btag_lUp : WZJets : 1.057 : (SF_btag_lUp/SF_btag)   ;  FillColor=222,  Label="L Up"
-WZ_btag_lDn : WZJets : 1.057 : (SF_btag_lDown/SF_btag) ;  FillColor=209,  Label="L Dn"
+WZ_btag_bUp : WZJets : 1.057 * 1.11: (SF_btag_bUp/SF_btag)   ;  FillColor=206,  Label="B Up"
+WZ_btag_bDn : WZJets : 1.057 * 1.10: (SF_btag_bDown/SF_btag) ;  FillColor=61,   Label="B Dn"
+WZ_btag_lUp : WZJets : 1.057 * 1.14: (SF_btag_lUp/SF_btag)   ;  FillColor=222,  Label="L Up"
+WZ_btag_lDn : WZJets : 1.057 * 1.06: (SF_btag_lDown/SF_btag) ;  FillColor=209,  Label="L Dn"
 
-ZZ_btag_bUp : ZZJets4L : 0.157 : (SF_btag_bUp/SF_btag)   ;  FillColor=206,  Label="B Up"
-ZZ_btag_bDn : ZZJets4L : 0.157 : (SF_btag_bDown/SF_btag) ;  FillColor=61,   Label="B Dn"
-ZZ_btag_lUp : ZZJets4L : 0.157 : (SF_btag_lUp/SF_btag)   ;  FillColor=222,  Label="L Up"
-ZZ_btag_lDn : ZZJets4L : 0.157 : (SF_btag_lDown/SF_btag) ;  FillColor=209,  Label="L Dn"
+ZZ_btag_bUp : ZZJets4L : 0.157 * 1.21: (SF_btag_bUp/SF_btag)   ;  FillColor=206,  Label="B Up"
+ZZ_btag_bDn : ZZJets4L : 0.157 * 1.20: (SF_btag_bDown/SF_btag) ;  FillColor=61,   Label="B Dn"
+ZZ_btag_lUp : ZZJets4L : 0.157 * 1.23: (SF_btag_lUp/SF_btag)   ;  FillColor=222,  Label="L Up"
+ZZ_btag_lDn : ZZJets4L : 0.157 * 1.19: (SF_btag_lDown/SF_btag) ;  FillColor=209,  Label="L Dn"
 
 TT+ 	 : TTJetsLep:    0.232                       ;  FillColor=1,  Label="Nominal"
 TT_btag_bUp : TTJetsLep : 0.232 : (SF_btag_bUp/SF_btag)   ;  FillColor=206,  Label="B Up"
