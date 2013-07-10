@@ -136,15 +136,10 @@ TH1F* TauElePlotter::getSample(TString samplename, bool removeLumiNorm){
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
     if(TString((*s)->GetName())==samplename){
 
-//       if(MSSMFlag_ && (*s)->getDataType()=="Signal"){
-// 	//apply generator mass cut
-// 	char cuttxt[100];
-// 	sprintf(cuttxt,"*(%.3f<genbosonmass&&genbosonmass<%.3f)",0.7*((*s)->getSignalMass()),1.3*((*s)->getSignalMass()));
-// 	sel += cuttxt;
-// 	cout<<" applying genbosonmass cut "<<cuttxt<<endl;
-//       }
+      if( (*s)->getDataType()=="Signal"){
+	sel = sel +"*(1-0.12*(taudecaymode==0))";
+      }
       
-
       TH1F*hd=0;
       if(nbins_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
       else if(nbinsVariable_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbinsVariable_,xbinsVariable_,sel);
@@ -178,13 +173,13 @@ TH1F* TauElePlotter::getTotalData(){
   if(MTcat_==13) sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
   if(blindsel_.CompareTo("1")!=0)sel += TString("*")+blindsel_;
+  //cout<<"selection : "<<sel<<endl;
   
   TH1F* h=getPlotHisto("hData");
 
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
     if((*s)->getDataType()=="Data"){
-      //TH1F*hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
-      TH1F*hd=0;//
+      TH1F*hd=0;
       if(nbins_>0) hd = (*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
       else if(nbinsVariable_>0) hd = (*s)->getHistoNtpFile(plotvar_,nbinsVariable_,xbinsVariable_,sel);
       else { cout<<"binning not recognized "<<endl; return 0;}
@@ -192,8 +187,6 @@ TH1F* TauElePlotter::getTotalData(){
       delete hd;
     }
  
-  //cout<<"TotalData : "<<h->Integral()<<endl;
-
   return h;
 }
 
@@ -275,8 +268,19 @@ TH1F* TauElePlotter::getDiBoson(){
 
 TH1F* TauElePlotter::getZToTauTau(){  
   TH1F*h=0;
+
+  //fix the decay mode weights
+  TString decaymodeCorrection="*(1-0.12*(taudecaymode==0))";  ///Summer13 SF for 1prong-no-pi0 from Phil
+  TString tmpExtrasel=extrasel_;
+  extrasel_ += decaymodeCorrection;
+  cout<<"WARNING: Correcting for the ZTT tau decay modes weights: "<<decaymodeCorrection<<endl;
+
   if(ZTTType_==1)h=getSample("ZToTauTau");
   if(ZTTType_==2)h=getTotalEmbedded(); 
+
+  extrasel_=tmpExtrasel;
+
+
   return h;
 }
 
@@ -289,11 +293,11 @@ TH1F* TauElePlotter::getTTJetsInc(){
 }
 
 TH1F* TauElePlotter::getZNJetSum(TString decay){
-  cout<<" Calling getZNJetSum"<<endl;
+  //cout<<" Calling getZNJetSum"<<endl;
 
   TString tmpExtrasel=extrasel_;
   
-  TH1F* hShape=getPlotHisto("getZNJetSum");
+  TH1F* hShape=getPlotHisto(TString("getZNJetSum")+decay);
 
   TH1F* H1ShapeExc=getSample(TString("Z1To")+decay,1);
   TH1F* H2ShapeExc=getSample(TString("Z2To")+decay,1);
@@ -364,13 +368,13 @@ TH1F* TauElePlotter::getZLInc(){
 
 //ZEE with corrections
 TH1F* TauElePlotter::getZL2012(){
-  cout<<"Calling getZL2012 "<<endl;
+  //cout<<"Calling getZL2012 "<<endl;
   
   //need to separate the 1Prong-1Pi0 decay mode and shift mass 
   TString tmpextrasel=extrasel_;
   
   extrasel_+="*(taudecaymode!=0&&taudecaymode!=1)";
-  TH1F*h=getSample("ZToEE"); 
+  TH1F*h=getZLInc();//getSample("ZToEE"); 
   h->SetName("getZL2012");
   extrasel_=tmpextrasel;
 
@@ -384,25 +388,29 @@ TH1F* TauElePlotter::getZL2012(){
 //   TString tmpplotvar=plotvar_;
 //   if(plotvar_.CompareTo("svfitmass")==0) plotvar_="svfitmass*1.015"; //shift ZEE peak 
 
-
+//From Ivo for Summer13
+//  ZEEScaleFactorFit_1Prong0Pi0_Barrel_MC :  MC = 738.51 +/- 39.51   DATA = 1008.17 +/- 47.58   DATA/MC = 1.37 +/- 0.10
+//  ZEEScaleFactorFit_1Prong0Pi0_Endcap_MC :  MC = 31.30 +/- 16.51   DATA = 64.66 +/- 19.48   DATA/MC = 2.07 +/- 1.26
+//  ZEEScaleFactorFit_1Prong1Pi0_Barrel_MC :  MC = 1317.86 +/- 120.92   DATA = 2878.11 +/- 102.88   DATA/MC = 2.18 +/- 0.22
+//  ZEEScaleFactorFit_1Prong1Pi0_Endcap_MC :  MC = 839.32 +/- 46.03   DATA = 465.19 +/- 62.92   DATA/MC = 0.55 +/- 0.08
 
   //1Prong 0pi0
-  extrasel_+="*(taudecaymode==0)*((abs(taueta)<1.5)*(1.0)+(abs(taueta)>=1.5)*(1.0))";
-  //extrasel_+="*(taudecaymode==0)*((abs(taueta)<1.5)*(0.85)+(abs(taueta)>=1.5)*(1.85))";//scale 1prong-0pi0
-  TH1F*h1P0Pi0=getSample("ZToEE");
+  //extrasel_+="*(taudecaymode==0)*((abs(taueta)<1.5)*(0.85)+(abs(taueta)>=1.5)*(1.85))";//Moriond
+  extrasel_+="*(taudecaymode==0)*((abs(taueta)<1.5)*(1.37)+(abs(taueta)>=1.5)*(2.07))";//For Summer13
+  TH1F*h1P0Pi0=getZLInc();
   h->Add(h1P0Pi0);
   delete h1P0Pi0;
   extrasel_=tmpextrasel;
 
 
   ///now get the 1Prong-1Pi0: 
-  extrasel_+="*(taudecaymode==1)*((abs(taueta)<1.5)*(1.0)+(abs(taueta)>=1.5)*(1.0))"; 
-  //extrasel_+="*(taudecaymode==1)*((abs(taueta)<1.5)*(1.64)+(abs(taueta)>=1.5)*(0.28))"; //scale 1prong-1pi0
+  //extrasel_+="*(taudecaymode==1)*((abs(taueta)<1.5)*(1.64)+(abs(taueta)>=1.5)*(0.28))"; //Moriond
+  extrasel_+="*(taudecaymode==1)*((abs(taueta)<1.5)*(2.18)+(abs(taueta)>=1.5)*(0.55))"; //Summer13
   TString tmpplotvar=plotvar_;
   if(plotvar_.CompareTo("svfitmass")==0) plotvar_="svfitmass*1.000"; //shift ZEE peak 
   //if(plotvar_.CompareTo("svfitmass")==0) plotvar_="svfitmass*1.015"; //shift ZEE peak 
 
-  if(plotvar_.CompareTo("ditaumass")==0) plotvar_="ditaumass*1.000"; //shift ZEE peak  
+  if(plotvar_.CompareTo("ditaumass")==0) plotvar_="ditaumass*1.000"; //shift ZEE peak  //No shift for Summer13
 //  if(plotvar_.CompareTo("ditaumass")==0) plotvar_="ditaumass*1.003"; //shift ZEE peak 
 //  if(plotvar_.CompareTo("ditaumass")==0) plotvar_="ditaumass*1.006"; //shift ZEE peak 
 //   if(plotvar_.CompareTo("ditaumass")==0) plotvar_="ditaumass*1.009"; //shift ZEE peak 
@@ -412,12 +420,11 @@ TH1F* TauElePlotter::getZL2012(){
 //   if(plotvar_.CompareTo("ditaumass")==0) plotvar_="ditaumass*1.021"; //shift ZEE peak 
 //   if(plotvar_.CompareTo("ditaumass")==0) plotvar_="ditaumass*1.024"; //shift ZEE peak 
 
-  TH1F*h1P1Pi0=getSample("ZToEE");
+  TH1F*h1P1Pi0=getZLInc();
   h->Add(h1P1Pi0);
   delete h1P1Pi0;
   plotvar_=tmpplotvar;
-  //cout<<" WARNING ---------------------> Applying corrections to Z--> ee MC "<<endl;
-  cout<<" WARNING --------------------->Z-->ee Scale factors turned off"<<endl;
+  cout<<" WARNING ---------------------> Applying corrections to Z--> ee MC "<<endl;
   extrasel_=tmpextrasel;
 
   return h;
@@ -425,7 +432,7 @@ TH1F* TauElePlotter::getZL2012(){
 
 //ZEE with corrections
 TH1F* TauElePlotter::getZL2012Type1(){
-  cout<<"Calling getZL2012Type1 "<<endl;
+  //cout<<"Calling getZL2012Type1 "<<endl;
 
   TString tmpextrasel=extrasel_;
   TString tmpplotvar=plotvar_;
@@ -467,7 +474,7 @@ TH1F* TauElePlotter::getZL2012Type1(){
 
 
 TH1F* TauElePlotter::getZL2012Type1LowHigh(){
-  cout<<"Calling getZL2012Type1LowHigh "<<endl;
+  //cout<<"Calling getZL2012Type1LowHigh "<<endl;
 
   TString tmpextrasel=extrasel_;
   TString tmpplotvar=plotvar_;
@@ -514,7 +521,7 @@ TH1F* TauElePlotter::getZL2012Type1LowHigh(){
 
 
 TH1F* TauElePlotter::getZL2012Type2(){
-  cout<<"Calling getZL2012Type2 "<<endl;
+  //cout<<"Calling getZL2012Type2 "<<endl;
 
   TString tmpextrasel=extrasel_;
   TString tmpplotvar=plotvar_;
@@ -619,7 +626,7 @@ TH1F* TauElePlotter::getTotalMCSM(Int_t WType){
 
 //////////W+jets estimations////////////////////////////
 TH1F* TauElePlotter::getWJetsInc(){
-  cout<<"Calling getWJetsInc "<<endl;
+  //cout<<"Calling getWJetsInc "<<endl;
   TString sname="WJetsToLNu";
   
   //shape of W+jets
@@ -653,71 +660,10 @@ TH1F* TauElePlotter::getWJetsInc(){
   return hShape;
 }
 
-TH1F* TauElePlotter::getWJetsIncNoMTCut(){
-  cout<<" Calling getWJetsIncNoMTCut "<<endl;
-  TString sname="WJetsToLNu";
-
-  //shape of W+jets
-  Int_t tmpCategoryMT=MTcat_;
-  MTcat_=-1;
-  Int_t tmpChcat=Chcat_;
-  Chcat_=0;
-  TH1F*hShape=getSample(sname);
-  MTcat_=tmpCategoryMT;
-  Chcat_=tmpChcat;
-  hShape->SetName("getWJetsShape");
-
-  //determine normalization
-  MTcat_=3;
-  TH1F* HWHigh=getSample(sname);  HWHigh->SetName("getWJetsHigh");
-  TH1F* HData=getTotalData();
-  TH1F* HMC=getZToTauTau();
-  TH1F* HTT=getTTJetsInc();   HMC->Add(HTT); delete HTT;
-  TH1F* HZJ=getZToLJetInc();  HMC->Add(HZJ); delete HZJ;
-  MTcat_=tmpCategoryMT;
-
-  TH1F*HWLow=getSample(sname);    HWLow->SetName("getWJetsLow");
-
-
-  if( HWHigh->Integral()>0. && hShape->Integral()>0. ){
-    hShape->Scale(1./hShape->Integral());
-    hShape->Scale(HWLow->Integral()*(HData->Integral()-HMC->Integral())/HWHigh->Integral());
-  }   else {
-    cout<<"WARNING Integral is 0"<<endl;
-    hShape->Scale(0.);
-  }
-
-  delete HData;
-  delete HMC;
-  delete HWLow;
-  delete HWHigh;
-
-  return hShape;
-}
-
 
 TH1F* TauElePlotter::getWNJetSum(){
 
- //  ///get inclusive sample, but apply 1/2 weight to the components added later
-//   TString tmpExtrasel=extrasel_;
-//   extrasel_+="*(1-0.5*(lhenup==6||lhenup==7||lhenup==8||lhenup==9))";
-//   TH1F*hShape=getSample("WJetsToLNu");
-//   hShape->SetName("getWNJetSum");
-//   extrasel_= tmpExtrasel;
-
-//   //cout<<"Inclusive "<<hShape->Integral()<<endl;
-
-//   //add the nJet samples with 1/2 weight
-//   TH1F* HW1Shape=getSample("W1JetsToLNu"); hShape->Add(HW1Shape,0.5); //  cout<<"HW1Shape "<<HW1Shape->Integral()<<endl; 
-//   delete HW1Shape;
-//   TH1F* HW2Shape=getSample("W2JetsToLNu"); hShape->Add(HW2Shape,0.5); //  cout<<"HW2Shape "<<HW2Shape->Integral()<<endl; 
-//   delete HW2Shape;
-//   TH1F* HW3Shape=getSample("W3JetsToLNu"); hShape->Add(HW3Shape,0.5); //  cout<<"HW3Shape "<<HW3Shape->Integral()<<endl; 
-//   delete HW3Shape;
-//   TH1F* HW4Shape=getSample("W4JetsToLNu"); hShape->Add(HW4Shape,0.5); //  cout<<"HW4Shape "<<HW4Shape->Integral()<<endl;  
-//   delete HW4Shape;
-
-  cout<<"Calling getWNJetSum"<<endl;
+  //cout<<"Calling getWNJetSum"<<endl;
   TString tmpExtrasel=extrasel_;
   
   TH1F* hShape=getPlotHisto("getWNJetSum");
@@ -774,53 +720,83 @@ TH1F* TauElePlotter::getWNJetSum(){
 }
 
 
-
 TH1F* TauElePlotter::getWNJetSumNoChCut(){
   Int_t tmpChcat=Chcat_;
   Chcat_=0;
-  TH1F*hShape = getWNJetSum();
+  TH1F*hShape=getWNJetSum();
+  hShape->SetName("getWNJetSumNoChCut");
   Chcat_=tmpChcat;
+
   return hShape;
 }
 
 TH1F* TauElePlotter::getWNJetSumNoChNoMTCut(){
-  Int_t tmpCategoryMT = MTcat_;
-  MTcat_ = -1;
-  TH1F * hShape = getWNJetSumNoChCut();
-  hShape->SetName("getWNJetSum");
+  Int_t tmpChcat=Chcat_;
+  Chcat_=0;
+  Int_t tmpCategoryMT=MTcat_;
+  MTcat_=-1;
+  TH1F*hShape=getWNJetSum();
+  hShape->SetName("getWNJetSumNoChNoMTCut");
+  Chcat_=tmpChcat;
   MTcat_=tmpCategoryMT;
   return hShape;
 }
 
+TH1F* TauElePlotter::getWNJetSumLooseTau(){
+  int tmpIsocat=Isocat_;
+  TString tmpExtrasel=extrasel_;
+  Isocat_=0;
+  extrasel_+="*(muiso<0.1&&tauiso3hitraw<10.0)";
+
+  TH1F*hShape=getWNJetSum();
+  hShape->SetName("getWNJetSumLooseTau");
+
+  Isocat_=tmpIsocat;
+  extrasel_=tmpExtrasel;
+
+  return hShape;
+}
 
 
-TH1F* TauElePlotter::getWJetsNJet(){
-  cout<<"calling method getWJetsNJet"<<endl;
+TH1F* TauElePlotter::getWJetsNJet(int shape){
+  //cout<<"Calling method getWJetsNJet"<<endl;
 
-  TH1F*hShape=getWNJetSumNoChCut();
+  TH1F*hShape=0;
+  if(shape==1) hShape=getWNJetSumNoChCut();
+  else if(shape==2) hShape=getWNJetSumLooseTau();
+  else if(shape==3) hShape=getWNJetSumNoChNoMTCut();
+  else hShape=getWNJetSum();
   hShape->SetName("getWJetsNJet");
 
-  //W Yield at high mT in Data, this should be done yield in current mass range
+  
   Int_t tmpCategoryMT=MTcat_;
   MTcat_=3;
-  TH1F* HData=getTotalData(); // cout<<" Data "<<HData->Integral()<<endl;
-  TH1F* HMC=getZToTauTau();                  cout<<"   ZTT "<<HMC->Integral()<<endl;
-  TH1F* HTT=getTTJetsInc();   HMC->Add(HTT); cout<<"   TT "<<HTT->Integral()<<endl; delete HTT;
-  TH1F* HVV=getDiBoson();     HMC->Add(HVV); cout<<"   VV "<<HVV->Integral()<<endl; delete HVV;
-  TH1F* HZL=getZLInc();      HMC->Add(HZL);  cout<<"   ZL "<<HZL->Integral()<<endl; delete HZL;
-  TH1F* HZJ=getZToLJetInc();  HMC->Add(HZJ); cout<<"   ZJ "<<HZJ->Integral()<<endl; delete HZJ;
+
+
+  TH1F* HData=getTotalData();
+  TH1F* HMC=getZToTauTau(); 
+  TH1F* HTT=getTTJetsInc(); 
+  TH1F* HVV=getDiBoson();  
+  TH1F* HZL=getZLInc();      
+  TH1F* HZJ=getZToLJetInc(); 
   MTcat_=tmpCategoryMT;
-  cout<<"    Data: "<<HData->Integral()<<" - MC: "<<HMC->Integral()<<" ="<<HData->Integral()-HMC->Integral()<<endl;
 
-
-  MTcat_=3;
-  TH1F* HWH=getWNJetSumNoChCut();
-  HWH->SetName("HWH");
-  MTcat_=tmpCategoryMT;
-  TH1F*HWL=getWNJetSumNoChCut();
-  HWL->SetName("HWL");
-
+  cout<<"W+Jets estimation from high mT :"<<endl;
+  cout<<"Data "<<HData->Integral()<<endl;
+  cout<<"ZTT "<<HMC->Integral()<<endl;
+  cout<<"TT "<<HTT->Integral()<<endl;    HMC->Add(HTT);    delete HTT;
+  cout<<"VV "<<HVV->Integral()<<endl;    HMC->Add(HVV);    delete HVV;
+  cout<<"ZL "<<HZL->Integral()<<endl;    HMC->Add(HZL);    delete HZL;
+  cout<<"ZJ "<<HZJ->Integral()<<endl;    HMC->Add(HZJ);    delete HZJ;
+  cout<<"Data - MC at high mT = "<<HData->Integral()-HMC->Integral()<<endl;
+    
   
+  MTcat_=3;
+  TH1F* HWH=getWNJetSum();  HWH->SetName("HWH");
+  MTcat_=tmpCategoryMT;  
+  TH1F*HWL=getWNJetSum();   HWL->SetName("HWL");
+
+
   Float_t ratio=0.;
   if(HWH->Integral()>0.){
     double NWLerr=0.;
@@ -853,188 +829,10 @@ TH1F* TauElePlotter::getWJetsNJet(){
 
 
 
-TH1F* TauElePlotter::getWJetsNJetNoChCut(){
-  cout<<"calling method getWJetsNJetNoChCut"<<endl;
-
-  ///Get the shape
-  TH1F*hShape=getWNJetSumNoChCut();
-  hShape->SetName("getWJetsNJet");
-
-  //W Yield at high mT in Data
-  Int_t tmpCategoryMT=MTcat_;
-  MTcat_=3;
-  TH1F* HData=getTotalData();
-  TH1F* HMC=getZToTauTau();
-  TH1F* HTT=getTTJetsInc();   HMC->Add(HTT); delete HTT;
-  TH1F* HZL=getZLInc();       HMC->Add(HZL); delete HZL;
-  TH1F* HZJ=getZToLJetInc();  HMC->Add(HZJ); delete HZJ;
-  MTcat_=tmpCategoryMT;
-  cout<<"Data: "<<HData->Integral()<<" - MC: "<<HMC->Integral()<<" ="<<HData->Integral()-HMC->Integral()<<endl;
-
-
-
-  MTcat_=3;
-  TH1F* HWH=getWNJetSumNoChCut();
-  HWH->SetName("HWH");
-  MTcat_=tmpCategoryMT;
-  TH1F*HWL=getWNJetSumNoChCut();
-  HWL->SetName("HWL");
-
-  Float_t ratio=0.;
-  if(HWH->Integral()>0.){
-    double NWLerr=0.;
-    double NWHerr=0.;
-    Float_t NWL=HWL->IntegralAndError(1,HWL->GetNbinsX(),NWLerr);
-    Float_t NWH=HWH->IntegralAndError(1,HWH->GetNbinsX(),NWHerr);
-    ratio=NWL/NWH;
-    Float_t ratioerr=ratio*sqrt((NWLerr*NWLerr)/(NWL*NWL)+(NWHerr*NWHerr)/(NWH*NWH));
-
-    cout<<" W high mT : "<<NWH<<" "<<NWHerr<<endl;
-    cout<<" W low mT : "<<NWL<<" "<<NWLerr<<endl;
-    cout<<" extrapolation factor : "<<ratio<<" +- "<<ratioerr<<endl;
-  } else ratio=0.;
-
-
-  /////////////////////////Normalize the Shape
-  if(hShape->Integral()>0.){
-    hShape->Scale(((HData->Integral()-HMC->Integral())*ratio)/hShape->Integral());
-  }else     hShape->Scale(0.);
-
-  delete HData;
-  delete HMC;
-  delete HWH;
-  delete HWL;
-
-  return hShape;
-}
-
-
-TH1F* TauElePlotter::getWJetsNJetNoChNoMTCut(){
-  cout<<"calling method getWJetsNJetNoChNoMTCut"<<endl;
-
-  ///Get the shape
-  TH1F*hShape=getWNJetSumNoChNoMTCut();
-  hShape->SetName("getWJetsNJet");
-
-  //W Yield at high mT in Data
-  Int_t tmpCategoryMT=MTcat_;
-  MTcat_=3;
-  TH1F* HData=getTotalData();
-  TH1F* HMC=getZToTauTau();
-  TH1F* HTT=getTTJetsInc();   HMC->Add(HTT); delete HTT;
-  TH1F* HZJ=getZToLJetInc();  HMC->Add(HZJ); delete HZJ;
-  MTcat_=tmpCategoryMT;
-  cout<<"Data: "<<HData->Integral()<<" - MC: "<<HMC->Integral()<<" ="<<HData->Integral()-HMC->Integral()<<endl;
-
-
-
-  MTcat_=3;
-  TH1F*HWH=getWNJetSumNoChCut();
-  HWH->SetName("HWH");
-  MTcat_=tmpCategoryMT;
-  TH1F*HWL=getWNJetSumNoChCut();
-  HWL->SetName("HWL");
-  
-
-
-  Float_t ratio=0.;
-  if(HWH->Integral()>0.){
-    double NWLerr=0.;
-    double NWHerr=0.;
-    Float_t NWL=HWL->IntegralAndError(1,HWL->GetNbinsX(),NWLerr);
-    Float_t NWH=HWH->IntegralAndError(1,HWH->GetNbinsX(),NWHerr);
-    ratio=NWL/NWH;
-    Float_t ratioerr=ratio*sqrt((NWLerr*NWLerr)/(NWL*NWL)+(NWHerr*NWHerr)/(NWH*NWH));
-
-    cout<<" W high mT : "<<NWH<<" "<<NWHerr<<endl;
-    cout<<" W low mT : "<<NWL<<" "<<NWLerr<<endl;
-    cout<<" extrapolation factor : "<<ratio<<" +- "<<ratioerr<<endl;
-  } else ratio=0.;
-
-
-  /////////////////////////Normalize the Shape
-  if(hShape->Integral()>0.){
-    hShape->Scale(((HData->Integral()-HMC->Integral())*ratio)/hShape->Integral());
-  }else     hShape->Scale(0.);
-
-  delete HData;
-  delete HMC;
-  delete HWH;
-  delete HWL;
-
-  return hShape;
-}
-
-
-
-
-TH1F* TauElePlotter::getWJetsNJetLooseTau(){
-  cout<<"calling method getWJetsNJetLooseTau"<<endl;
-
-  //W Yield at high mT in Data, this should be done yield in current mass range
-  Int_t tmpCategoryMT=MTcat_;
-  MTcat_=3;
-  TH1F* HData=getTotalData();
-  TH1F* HMC=getZToTauTau();
-  TH1F* HTT=getTTJetsInc();   HMC->Add(HTT); delete HTT;
-  TH1F* HVV=getDiBoson();     HMC->Add(HVV); delete HVV;
-  TH1F* HZL=getZLInc();      HMC->Add(HZL); delete HZL;
-  TH1F* HZJ=getZToLJetInc();  HMC->Add(HZJ); delete HZJ;
-  MTcat_=tmpCategoryMT;
-  cout<<"Data: "<<HData->Integral()<<" - MC: "<<HMC->Integral()<<" ="<<HData->Integral()-HMC->Integral()<<endl;
-
-  TString tmpextrasel=extrasel_;
-  Int_t tmpIsocat=Isocat_;
-  Isocat_=0;
-  extrasel_+="*(muiso<0.15&&tauiso3hitraw<10.0)";
-  TH1F* hShape=getWNJetSumNoChCut();
-  hShape->SetName("getWJetsNJetLooseTau");
-
-
-  MTcat_=3;
-  TH1F* HWH=getWNJetSumNoChCut();
-  HWH->SetName("HWH");
-  MTcat_=tmpCategoryMT;
-  TH1F*HWL=getWNJetSumNoChCut();
-  HWL->SetName("HWL");
-  
-  Isocat_=tmpIsocat;
-  extrasel_=tmpextrasel;
-
-  
-  Float_t ratio=0.;
-  if(HWH->Integral()>0.){
-    double NWLerr=0.;
-    double NWHerr=0.;
-    Float_t NWL=HWL->IntegralAndError(1,HWL->GetNbinsX(),NWLerr);
-    Float_t NWH=HWH->IntegralAndError(1,HWH->GetNbinsX(),NWHerr);
-    ratio=NWL/NWH;
-    Float_t ratioerr=ratio*sqrt((NWLerr*NWLerr)/(NWL*NWL)+(NWHerr*NWHerr)/(NWH*NWH));
-
-    cout<<" W high mT : "<<NWH<<" "<<NWHerr<<endl;
-    cout<<" W low mT : "<<NWL<<" "<<NWLerr<<endl;
-    cout<<" extrapolation factor : "<<ratio<<" +- "<<ratioerr<<endl;
-  } else ratio=0.;
-
-
-  /////////////////////////Normalize the Shape
-  if(hShape->Integral()>0.){
-    hShape->Scale(((HData->Integral()-HMC->Integral())*ratio)/hShape->Integral());
-  }else     hShape->Scale(0.);
-
-  delete HData;
-  delete HMC;
-  delete HWH;
-  delete HWL;
-
-  return hShape;
-}
-
-
 
 
 TH1F* TauElePlotter::getWJetsNJetVBFHCP(){
-  cout<<" Calling getWJetsNJetVBFHCP"<<endl;
+  //cout<<" Calling getWJetsNJetVBFHCP"<<endl;
 
 
   Int_t tmpCategoryMT=MTcat_;
@@ -1106,7 +904,7 @@ TH1F* TauElePlotter::getWJetsNJetVBFHCP(){
 
 
 TH1F* TauElePlotter::getWJetsNJetVBFLoose(){
-  cout<<" Calling getWJetsNJetVBFLoose"<<endl;
+  //cout<<" Calling getWJetsNJetVBFLoose"<<endl;
 
 
   Int_t tmpCategoryMT=MTcat_;
@@ -1178,7 +976,7 @@ TH1F* TauElePlotter::getWJetsNJetVBFLoose(){
 
 
 TH1F* TauElePlotter::getWJetsNJetVBFTight(){
-  cout<<" Calling getWJetsNJetVBFTight"<<endl;
+  ///cout<<" Calling getWJetsNJetVBFTight"<<endl;
 
 
   Int_t tmpCategoryMT=MTcat_;
@@ -1250,10 +1048,8 @@ TH1F* TauElePlotter::getWJetsNJetVBFTight(){
 
 
 
-
-
 TH1F* TauElePlotter::getWJetsIncShape(){
-  cout<<" calling method getWJetsIncShape"<<endl;
+  //cout<<" calling method getWJetsIncShape"<<endl;
 
   TString tmpextrasel=extrasel_;
   Int_t tmpMTcat=MTcat_;
@@ -1296,7 +1092,7 @@ TH1F* TauElePlotter::getWJetsIncShape(){
 
 
 TH1F* TauElePlotter::getW3JetsVBF(){
-  cout<<" calling getW3JetsVBF"<<endl;
+  //cout<<" calling getW3JetsVBF"<<endl;
 
   //
   TString TmpExtrasel=extrasel_;
@@ -1348,7 +1144,7 @@ TH1F* TauElePlotter::getW3JetsVBF(){
 
 
 TH1F* TauElePlotter::getW2JetsBJet(){
-  cout<<" calling getW2JetsBJet"<<endl;
+  //cout<<" calling getW2JetsBJet"<<endl;
 
 // Keti:
 // Wjets normalization with p_zeta
@@ -1413,7 +1209,7 @@ TH1F* TauElePlotter::getW2JetsBJet(){
 ////////QCD estimations/////////////////////////////////
 
 TH1F* TauElePlotter::getQCDInc(Int_t WType,bool cleanNegativeBins){
-  cout<<"Calling method getQCDInc"<<endl;
+  //cout<<"Calling method getQCDInc"<<endl;
 
   TH1F* h=getPlotHisto("hQCDInc");
   
@@ -1475,8 +1271,8 @@ TH1F* TauElePlotter::getQCDIncWNJet(){
 }
 
 
-TH1F* TauElePlotter::getQCDMuIsoSM(){
-  cout<<"Calling method getQCDMuIsoSM"<<endl;
+TH1F* TauElePlotter::getQCDMuIso(){
+  //cout<<"Calling method getQCDMuIsoSM"<<endl;
 
   TH1F* hNorm=getQCDInc();
   
@@ -1486,7 +1282,7 @@ TH1F* TauElePlotter::getQCDMuIsoSM(){
   Isocat_=0;
 
   TString extraselTmp=extrasel_;
-  extrasel_+="*(0.2<muiso&&muiso<0.5&&tauiso3hitraw<20.)";  
+  extrasel_+="*(0.2<muiso&&muiso<0.5&&tauiso3hitraw<1.5)";  
   TH1F* hShape=getTotalData();
 
   Isocat_=IsocatTmp;
@@ -1501,9 +1297,36 @@ TH1F* TauElePlotter::getQCDMuIsoSM(){
   return hShape;
 }
 
+TH1F* TauElePlotter::getQCDMuIsoLooseTau(){
+  //cout<<"Calling method getQCDMuIsoSM"<<endl;
+
+  TH1F* hNorm=getQCDInc();
+  
+  int ChcatTmp=Chcat_;
+  Chcat_=2;
+  int IsocatTmp=Isocat_;
+  Isocat_=0;
+
+  TString extraselTmp=extrasel_;
+  extrasel_+="*(0.2<muiso&&muiso<0.5&&tauiso3hitraw<10)";  
+  TH1F* hShape=getTotalData();
+
+  Isocat_=IsocatTmp;
+  Chcat_=ChcatTmp;
+  extrasel_=extraselTmp;
+
+  if(hShape->Integral()>0)
+    hShape->Scale(hNorm->Integral()/hShape->Integral());
+  else hShape->Scale(0.);
+  
+  delete hNorm;
+  return hShape;
+}
+
+
 ///Method for 1-Jet Low pT category
 TH1F* TauElePlotter::getQCDIncLowPt(){
-  cout<<"Calling method getQCDIncLowPt"<<endl;
+  //cout<<"Calling method getQCDIncLowPt"<<endl;
 
   TH1F*hNorm=getQCDIncWNJet();
 
@@ -1532,7 +1355,7 @@ TH1F* TauElePlotter::getQCDIncLowPt(){
 
 ///Method for 1-Jet High pT category
 TH1F* TauElePlotter::getQCDIncHighPt(){
-  cout<<"Calling method getQCDHighPt"<<endl;
+  //cout<<"Calling method getQCDHighPt"<<endl;
 
   TH1F*hNorm=getQCDIncWNJet();///Note is using the of exclusive W samples
 
@@ -1560,7 +1383,7 @@ TH1F* TauElePlotter::getQCDIncHighPt(){
 
 
 TH1F* TauElePlotter::getQCDIncLooseShape(){
-  cout<<"Calling method getQCDIncLooseShape"<<endl;
+  //cout<<"Calling method getQCDIncLooseShape"<<endl;
 
   //integral from SS after subtracting MC
   TH1F* hNorm=getQCDInc();
@@ -1599,7 +1422,7 @@ TH1F* TauElePlotter::getQCDIncLooseShape(){
 
 
 TH1F* TauElePlotter::getQCDIncWJetsShape(){
-  cout<<"Calling method getQCDIncWJetsShape"<<endl;
+  //cout<<"Calling method getQCDIncWJetsShape"<<endl;
 
   //yield
   TH1F* h=getPlotHisto("hQCDInc");
@@ -1659,7 +1482,7 @@ TH1F* TauElePlotter::getQCDIncWJetsShape(){
 
 
 TH1F* TauElePlotter::getQCDIncFit(){
-  cout<<"Calling method getQCDIncFit"<<endl;
+  //cout<<"Calling method getQCDIncFit"<<endl;
   
   /////////////////fit to the transversemass
   //-relax mT cut to be able to make fit
@@ -1817,7 +1640,7 @@ TH1F* TauElePlotter::getQCDIncFit(){
 
   
 TH1F* TauElePlotter::getQCDKeti(){
-  cout<<" Calling getQCDKeti only for b-jet category "<<endl;
+  //cout<<" Calling getQCDKeti only for b-jet category "<<endl;
 
 
 // QCD normalization (Keti)
@@ -1914,6 +1737,59 @@ TH1F* TauElePlotter::getQCDKeti(){
 
   Chcat_=ChcatTmp;
   return hQCDShape;
+}
+
+TH1F* TauElePlotter::getQCDKetiHCP(){
+  cout<<"getQCDKetiHCP"<<endl;
+
+  char isocuttxt[100];
+  sprintf(isocuttxt,"(0.2<muiso&&muiso<0.5)");//for normalization
+  char isocuttxtshape[100];
+  sprintf(isocuttxtshape,"(0.2<muiso&&muiso<0.5)");//for shape 
+  
+  Int_t TmpIsocat=Isocat_;
+  TString TmpExtrasel=extrasel_;  
+  Int_t ChcatTmp=Chcat_;
+  Chcat_=2;
+
+  //SS incl QCD 
+  Isocat_=1;
+  extrasel_="1";
+  TH1F* hQCDInc = getQCDInc();  if(!hQCDInc){cout<<" QCDInc not determined "<<endl; return 0;}   hQCDInc->SetName("hQCDInc");
+ 
+  //SS Loose Incl QCD 
+  Isocat_=-1;
+  extrasel_=isocuttxt;
+  TH1F* hDataIncLoose = getTotalData();  if(!hDataIncLoose){cout<<" Total Data not determined "<<endl; return 0;}   hDataIncLoose->SetName("hDataIncLoose");
+
+  //SS Loose VBF QCD 
+  Isocat_=-1;  
+  extrasel_=TmpExtrasel+"*"+isocuttxt;
+  TH1F* hDataVBFLoose=getTotalData();  if(!hDataVBFLoose){cout<<" Total Data not determined "<<endl; return 0;}   hDataVBFLoose->SetName("hDataVBFLoose");
+
+  //QCD Shape
+  Isocat_=-1;  
+  extrasel_=TmpExtrasel+"*"+isocuttxtshape;
+  TH1F* hShape=getTotalData();  if(!hShape){cout<<" hShape not made "<<endl; return 0;}   hShape->SetName("hShape");
+
+  //return scale factors to normal
+  Isocat_=TmpIsocat;
+  extrasel_=TmpExtrasel;
+  Chcat_=ChcatTmp;
+
+  //OS VBF QCD = 1.11 * (SS VBF QCD with loose iso.) * [(SS incl QCD) / ( SS incl QCD with loose iso.)]
+  cout<<" QCDInc "<<hQCDInc->Integral()<<endl;
+  cout<<" DataVBFLoose "<<hDataVBFLoose->Integral()<<endl;
+  cout<<" DataIncLoose "<<hDataIncLoose->Integral()<<endl;
+  hShape->Scale(hQCDInc->Integral()*(hDataVBFLoose->Integral()/hDataIncLoose->Integral())/hShape->Integral());
+
+
+
+  delete hDataIncLoose;
+  delete hDataVBFLoose;
+  delete hQCDInc;
+
+  return hShape;
 }
 
 
@@ -2074,7 +1950,7 @@ TH1F* TauElePlotter::getQCDVBFHCP(){
 
 
 TH1F* TauElePlotter::getQCDVBFHCP2(){
-  cout<<" Calling getQCDVBFHCP2"<<endl;
+  //cout<<" Calling getQCDVBFHCP2"<<endl;
  
   TString TmpExtrasel=extrasel_;  
   Int_t TmpIsocat=Isocat_;
@@ -2133,7 +2009,7 @@ TH1F* TauElePlotter::getQCDVBFHCP2(){
 }
 
 TH1F* TauElePlotter::getQCDVBFLoose(){
-  cout<<" Calling getQCDVBFLooseIso"<<endl;
+  //cout<<" Calling getQCDVBFLooseIso"<<endl;
  
   TString TmpExtrasel=extrasel_;  
   Int_t TmpIsocat=Isocat_;
@@ -2194,7 +2070,7 @@ TH1F* TauElePlotter::getQCDVBFLoose(){
 
 
 TH1F* TauElePlotter::getQCDVBFTight(){
-  cout<<" Calling getQCDVBFTight"<<endl;
+  //cout<<" Calling getQCDVBFTight"<<endl;
  
   TString TmpExtrasel=extrasel_;  
   Int_t TmpIsocat=Isocat_;
@@ -2218,7 +2094,7 @@ TH1F* TauElePlotter::getQCDVBFTight(){
 
 
   char isocuttxt[100];
-  sprintf(isocuttxt,"(0.2<muiso&&tauiso3hitraw<10.0)");//no events pass otherwise
+  sprintf(isocuttxt,"(0.2<muiso&&tauiso3hitraw<10.0)");
   //SS Loose Incl QCD 
   Isocat_=0;
   extrasel_=isocuttxt;
@@ -2255,7 +2131,7 @@ TH1F* TauElePlotter::getQCDVBFTight(){
 
 
 TH1F* TauElePlotter::getQCDBoostTight(){
-  cout<<"=====Calling getQCDBoostTight======"<<endl;
+  //cout<<"=====Calling getQCDBoostTight======"<<endl;
 
   //incl QCD 
   TString TmpExtrasel=extrasel_; 
@@ -2342,7 +2218,7 @@ TH1F* TauElePlotter::getSampleVBFHCP(TString sample){
 
 
 TH1F* TauElePlotter::getDiBosonVBFHCP(){
-  cout<<"Calling getDiBosonVBFHCP"<<endl;
+  //cout<<"Calling getDiBosonVBFHCP"<<endl;
   TH1F* h=getPlotHisto("hVV");
 
   TH1F* hWW2L2Nu=getSampleVBFHCP("WW2L2Nu"); if(!hWW2L2Nu)return 0;  h->Add(hWW2L2Nu);   delete hWW2L2Nu;
@@ -2360,20 +2236,20 @@ TH1F* TauElePlotter::getDiBosonVBFHCP(){
 
 }
 TH1F* TauElePlotter::getTTJetsVBFHCP(){
-  cout<<"Calling getTTJetsVBFHCP"<<endl;
+  // cout<<"Calling getTTJetsVBFHCP"<<endl;
   TH1F*h=getSampleVBFHCP("TTJets");
   h->Scale(TTJetsCorrFactor[2]);
   h->SetName("getTTJetsVBFHCP");
   return h;
 }
 TH1F* TauElePlotter::getZToLJetVBFHCP(){
-  cout<<"Calling getZToLJetVBFHCP"<<endl;
+  //cout<<"Calling getZToLJetVBFHCP"<<endl;
   TH1F*h=getSampleVBFHCP("ZToLJet");
   h->SetName("getZToLJetVBFHCP");
   return h;
 }
 TH1F* TauElePlotter::getZLVBFHCP(){
-  cout<<"Calling getZLVBFHCP"<<endl;
+  //  cout<<"Calling getZLVBFHCP"<<endl;
 
 //   //Norm from MC
 //   TH1F*hNorm=getZL2012Type2();
@@ -2427,7 +2303,7 @@ TH1F* TauElePlotter::getZLVBFHCP(){
 
 
 TH1F* TauElePlotter::getZLLVBFHCP(){
-  cout<<" Calling getZLLVBFHCP"<<endl;
+  //cout<<" Calling getZLLVBFHCP"<<endl;
 
   //////////MC Norm
 //   TH1F* hZL=getSample("ZToEE");
@@ -2476,7 +2352,7 @@ TH1F* TauElePlotter::getZLLVBFHCP(){
 
 
 TH1F* TauElePlotter::getZLBoost(){
-  cout<<"Calling getZLBoost"<<endl;
+  // cout<<"Calling getZLBoost"<<endl;
 
   TH1F*hNorm=getZLInc();
   //TH1F*hNorm=getZL2012Type2();
@@ -2508,7 +2384,7 @@ TH1F* TauElePlotter::getZLBoost(){
 }
 
 TH1F* TauElePlotter::getZToTauTauVBF(){  
-  cout<<"Calling getZToTauTauVBF"<<endl;
+  //cout<<"Calling getZToTauTauVBF"<<endl;
 
   TH1F*hnorm=getZToTauTau();
   hnorm->SetName("ZTTVBFHCPNorm");
@@ -2555,8 +2431,8 @@ bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t
   TH1F*hQCD = 0;
   if(Chcat_==1){
     if(QCDType==0) hQCD=getQCDIncWNJet();
-    if(QCDType==1) hQCD=getQCDMuIsoSM();
-    if(QCDType==2) hQCD=getQCDIncLooseShape();
+    if(QCDType==1) hQCD=getQCDMuIso();
+    if(QCDType==2) hQCD=getQCDMuIsoLooseTau();
     if(QCDType==3) hQCD=getQCDIncWNJet();
     if(QCDType==4) hQCD=getQCDKeti();
     if(QCDType==5) hQCD=getQCDVBFLoose();
@@ -2577,10 +2453,10 @@ bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t
   if(WJetsType==0) hWJetsToLNu = getWJetsInc(); 
   if(WJetsType==1) hWJetsToLNu = getSample("WJetsToLNu"); 
   if(WJetsType==2) hWJetsToLNu = getWJetsNJet(); 
-  if(WJetsType==3) hWJetsToLNu = getWJetsNJetVBFLoose();//formerly getWJetsNJetVBFHCP();
-  if(WJetsType==4) hWJetsToLNu = getWJetsNJetLooseTau();
-  if(WJetsType==5) hWJetsToLNu = getWJetsNJetNoChCut();
-  if(WJetsType==6) hWJetsToLNu = getWJetsNJetNoChNoMTCut();
+  if(WJetsType==3) hWJetsToLNu = getWJetsNJetVBFLoose();
+  if(WJetsType==4) hWJetsToLNu = getWJetsNJet(2);
+  if(WJetsType==5) hWJetsToLNu = getWJetsNJet(1);
+  if(WJetsType==6) hWJetsToLNu = getWJetsNJet(3);
   if(WJetsType==7) hWJetsToLNu = getWJetsNJetVBFTight();
   if(!hWJetsToLNu){
     cout<<"WJets Background is NULL"<<endl; 
@@ -2636,14 +2512,13 @@ bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t
 
   //keep ZEE separate
   TH1F*hZL=0;
-  if(QCDType==5|| QCDType==9)  hZL=getZLVBFHCP();
+  if(QCDType==5 || QCDType==9)  hZL=getZLVBFHCP();
   //else if(QCDType==8)  hZL=getZLBoost();
-  else hZL=getZLInc();
-  //else hZL=getZL2012();//this is type0
+  //else hZL=getZLInc();
+  else hZL=getZL2012();//this is type0
   //else hZL=getZL2012Type1();
   //else hZL=getZL2012Type1LowHigh();
   //else hZL=getZL2012Type2();
-  //else hZL=getZLVBFHCP();
   if(!hZL)return 0;
   hZL->SetName("ZL");
   hZL->SetLineWidth(1);
@@ -3528,7 +3403,7 @@ void  TauElePlotter::plotTauTrigger(Int_t Region, TString tag){
   ///Calculate the Fakes Scale factor
   ///Changes between Barrel and EndCap
   extrasel_ = selection;
-  TH1F*HW   = getWJetsNJetNoChNoMTCut(); 
+  TH1F*HW   = getWJetsNJet(3); 
   TH1F*HQCD = getQCDInc();
   float FakesScaleFactor=(HW->Integral()+HQCD->Integral())/HW->Integral();
   cout<<"W Fakes scale factor: "<<FakesScaleFactor<<endl;
@@ -3538,7 +3413,7 @@ void  TauElePlotter::plotTauTrigger(Int_t Region, TString tag){
   TH1F*HTAUPT=getTotalData(); HTAUPT->SetName("HTAUPT");
   TH1F*HMCTAUPT=getPlotHisto("HMCTAUPT");
   TH1F*HMCZTT=getZToTauTau();         HMCTAUPT->Add(HMCZTT);                delete HMCZTT; 
-  TH1F*HMCW=getWJetsNJetNoChNoMTCut();
+  TH1F*HMCW=getWJetsNJet(3);
   HMCTAUPT->Add(HMCW,FakesScaleFactor); 
   TH1F*HMCWRaw=getWNJetSumNoChNoMTCut(); //uncorrected yield needed for scaling later 
   TH1F*HMCZL=getZLInc();              HMCTAUPT->Add(HMCZL);                 delete HMCZL; //add ZL 

@@ -205,28 +205,6 @@ void TauEleFlatNtp::beginJob(){
    countermumatch_++;
 
    
-   //Tau E/P cut
-   tmpditaulist=diTauSelList_;
-   diTauSelList_.clear();
-   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-     if(cand->leg1().decayMode()==0&&cand->leg1().p()>0.)
-       if(cand->leg1().eOverP()<0.2)
-	 continue;
-     
-     diTauSelList_.push_back(*cand);
-   }
-   if(diTauSelList_.size()==0){
-     if(printSelectionPass_){
-       cout<<runnumber_<<":"<<eventid_<<" fail countertaueop"<<endl;
-       for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){
-	 printTauInfo(&(cand->leg1()));
-       }
-     }
-     return 0;
-   }
-   countertaueop_++;
-
-
    //tau vtx
    tmpditaulist=diTauSelList_;
    diTauSelList_.clear();

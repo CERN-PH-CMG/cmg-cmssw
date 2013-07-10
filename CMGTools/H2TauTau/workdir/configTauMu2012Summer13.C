@@ -99,6 +99,18 @@ TauMuPlotter * configTauMu2012Summer13(TString name, TString path){
   ZToLJet->setCrossection(ZToTauTau->getCrossection());
   analysis->addSample(ZToLJet);
 
+  for(long n=1;n<=4;n++){
+    Sample* ZNjet = new Sample(TString("Z")+n+"ToMuMu",path);
+    ZNjet->setDataType("MCCat");
+    ZNjet->setCrossection(ZToTauTau->getCrossection()*DYNJetFrac[n-1]);
+    analysis->addSample(ZNjet);
+  }
+  for(long n=1;n<=4;n++){
+    Sample* ZNjet = new Sample(TString("Z")+n+"ToLJet",path);
+    ZNjet->setDataType("MCCat");
+    ZNjet->setCrossection(ZToTauTau->getCrossection()*DYNJetFrac[n-1]);
+    analysis->addSample(ZNjet);
+  }
 
   //////////TTJets 
   float TTCrossectionScaleFactor=1.0;//apply this globally 

@@ -100,79 +100,66 @@ public:
   ///basic methods which can be used by all categories
   TH1F* getTotalData();
   TH1F* getTotalEmbedded();
-  TH1F* getTotalMC();//sum of all OS MCs 
+  TH1F* getTotalMC();//sum of all OS MCs
+  TH1F* getTotalMCSM();//sum of OS backgrounds execpt for the QCD
+ 
   TH1F* getSample(TString samplename,bool removeLumiNorm=0);//can be used to get histo for any MC or Data sample
-  TH1F* getDiBoson();
-  TH1F* getZToTauTau();//Z-->tau tau (either from MC or Embedded)
+  TH1F* getSampleVBFHCPShape(TString sample);//used for the methods below
+  TH1F* getSampleVBFHCPShape2(TString sample);//used for the methods below
+  TH1F* getSampleVBFHCP(TString sample,int type=0);//used for the methods below
+  TH1F* getZNJetSum(TString decay);
+
+  TH1F* getZToTauTau();
   TH1F* getZToTauTauVBF();
  
-  //Inclusive/SM0 methods
-  TH1F* getWJetsInc();
-  TH1F* getTTJetsInc();
-  TH1F* getZNJetSum(TString decay);
   TH1F* getZToLJetInc();
+  TH1F* getZToLJetVBFHCP();
+
   TH1F* getZLInc();
+  TH1F* getZLVBFHCP();
+  TH1F* getZLLVBFHCP();
+  TH1F* getZL2012(){return 0;}
+  TH1F* getZL2012Type2(){return 0;}
+  TH1F* getZLBoost(){return 0;}
+
   TH1F* getQCDInc(Int_t WType=0,bool cleanNegativeBins=1);
   TH1F* getQCDIncWNJet();
-  TH1F* getQCDIncLooseShape();
-  TH1F* getQCDIncWJetsShape();
-  bool plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, Int_t Chcat, Int_t Isocat, Int_t MTcat,TString extrasel="", TString blindsel = "",  Int_t QCDType=0, Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, int higgs=0,TString filetag="");
-
-
-  //Boosted/VBF methods
-  TH1F* getQCDMuIsoSM();//from muon isolation side-band
-  TH1F* getQCDMike();//values from Josh for 2012 analysis
-  TH1F* getQCDKeti();//values from Josh for 2012 analysis
-  TH1F* getQCDKetiHCP();//
+  TH1F* getQCDMuIso();
+  TH1F* getQCDMuIsoLooseTau();
+  TH1F* getQCDKetiHCP();
+  TH1F* getQCDVBFHCP();
+  TH1F* getQCDBoostTight();
+  TH1F* getQCDVBFLoose();
+  TH1F* getQCDVBFTight();
+  TH1F* getQCDIncLowPt();
+  TH1F* getQCDIncHighPt();
+  TH1F* getQCDVBFHCP2(){return 0;}
   TString qcdTauIsoRatioMuNonIso_;//formula for the ratio
   TString qcdMuIsoRatioTauNonIso_;//formula for the ratio
   TString qcdTauIsoRatio_;//formula for the ratio
   TString qcdMuIsoRatio_;//formula for the ratio
-  TH1F* getQCDIsoSM();//from anti-isolated taus or anti iso muons
 
+  TH1F* getWJetsInc();
   TH1F* getWNJetSum();
-  TH1F* getWJetsNJet();
-  TH1F* getWJetsIncShape();
-  TH1F* getW3Jets();
-  TH1F* getW3JetsVBF();
-  TH1F* getW2JetsBJet();
-
-  TString wjetsTauIsoRatio_;//formula for the ratio for W+jets 
-  TH1F* getWJetsTauIsoSM();//from anti-isolated taus
-  TString wjetsTauIsoRatioSS_;//formula for the ratio for W+jets 
-  TH1F* getTotalMCSM();//sum of OS backgrounds execpt for the QCD
-
-  //Methods for VBF category with loose shape selections
-  TH1F* getQCDVBFHCP();
-  TH1F* getSampleVBFHCPShape(TString sample);//used for the methods below
-  TH1F* getSampleVBFHCPShape2(TString sample);//used for the methods below
-  TH1F* getSampleVBFHCP(TString sample,int type=0);//used for the methods below
-  TH1F* getTTJetsVBFHCP();
-  TH1F* getZToLJetVBFHCP();
-  TH1F* getZLVBFHCP();
-  TH1F* getZLLVBFHCP();
-  TH1F* getDiBosonVBFHCP();
-
-  //new methods for Summer13
-  TH1F* getQCDBoostTight();
-  TH1F* getQCDVBFLoose();
-  TH1F* getQCDVBFTight();
-  TH1F* getWJetsNJetLooseTau();
+  TH1F* getWNJetSumLooseTau();
+  TH1F* getWNJetSumNoChCut();
+  TH1F* getWNJetSumNoChNoMTCut();
+  TH1F* getWJetsNJet(int shape=0);
   TH1F* getWJetsNJetVBFLoose();
   TH1F* getWJetsNJetVBFTight();
+  TString wjetsTauIsoRatio_;//formula for the ratio for W+jets 
+  TString wjetsTauIsoRatioSS_;//formula for the ratio for W+jets 
 
 
-  TH1F* getQCDIncLowPt();
-  TH1F* getQCDIncHighPt();
-  TH1F* getZL2012(){return 0;}
-  TH1F* getZL2012Type2(){return 0;}
-  TH1F* getQCDVBFHCP2(){return 0;}
-  TH1F* getZLBoost(){return 0;}
+  TH1F* getTTJetsInc();
+  TH1F* getTTJetsVBFHCP();
 
-  TH1F* getWNJetSumNoChCut();
-  TH1F* getWJetsNJetNoChCut();
-  TH1F* getWNJetSumNoChNoMTCut();
-  TH1F* getWJetsNJetNoChNoMTCut();
+  TH1F* getDiBoson();
+  TH1F* getDiBosonVBFHCP();
+
+
+  bool plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, Int_t Chcat, Int_t Isocat, Int_t MTcat,TString extrasel="", TString blindsel = "",  Int_t QCDType=0, Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, int higgs=0,TString filetag="");
+
   TH1F* computeTrigEff(TH1F* HPass, TH1F* HFail);
   void plotTauTrigger(Int_t Region, TString tag);
   void plotTauTriggerReal(Int_t Region, TString tag);
@@ -408,7 +395,7 @@ public:
 
 
   TString getSMCategory(Int_t sm){
-    if(sm<0||8<sm){
+    if(sm<0||12<sm){
       cout<<" Category : "<<sm<<" undefined "<<endl;
       return TString("0");
     }
@@ -420,17 +407,23 @@ public:
     TString notvbftightcut=TString("(!")+vbftightcut+")";
     TString vbfcut="(njet>=2&&njetingap==0&&nbjet==0&&diJetMass>500.&&abs(diJetDeltaEta)>3.5)";
     TString notvbfcut=TString("(!")+vbfcut+")";
+    TString btagcut="(nbjet>=1&&njet<2)";
+    TString notbtagcut=TString("(!")+btagcut+")";
 
-    TString SMcut[8];
+    TString SMcut[13];
     SMcut[0]=zerojetcut+"*"+"(20<taupt&&taupt<30)";
     SMcut[1]=zerojetcut+"*"+"(30<taupt&&taupt<45)";
     SMcut[2]=zerojetcut+"*"+"(45<taupt)";
-    SMcut[3]=notvbfcut+"*"+onejetcut+"*"+"(30<taupt&&taupt<45&&20<ditaumetpt)";
-    SMcut[4]=notvbfcut+"*"+onejetcut+"*"+"(45<taupt&&20<ditaumetpt&&ditaumetpt<100)";
+    SMcut[3]=notvbfcut+"*"+onejetcut+"*"+"(30<taupt&&taupt<45)";
+    SMcut[4]=notvbfcut+"*"+onejetcut+"*"+"(45<taupt&&ditaumetpt<100)";
     SMcut[5]=notvbfcut+"*"+onejetcut+"*"+"(45<taupt&&100<ditaumetpt)";
     SMcut[6]=notvbftightcut+"*"+vbfcut;
     SMcut[7]=vbftightcut;
-    SMcut[8]="1";//for inclusive
+    SMcut[8]="1";
+    SMcut[9]=btagcut;
+    SMcut[10]=notbtagcut;
+    SMcut[11]=btagcut;//for finebin 
+    SMcut[12]=notbtagcut;
     cout<<"Category selection : "<<SMcut[sm]<<endl;
     
     

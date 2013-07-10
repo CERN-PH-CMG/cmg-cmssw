@@ -210,23 +210,23 @@ TauMuPlotter * configTauMu2012Summer13ReReco(TString name, TString path){
 
 
 
-//   /////////////////SUSY Samples
-//   for(Int_t i=0;i<NSUSY;i++){
-//       sprintf(nam,"SUSYBB%d",SUSYMass[i]);
-//       Sample* SUSYBB = new Sample(nam,path);
-//       SUSYBB->setDataType("Signal");
-//       SUSYBB->setCrossection(1.);
-//       SUSYBB->setSignalMass(SUSYMass[i]);
-//       analysis->addSample(SUSYBB);    
+  /////////////////SUSY Samples
+  for(Int_t i=0;i<NSUSY;i++){
+      sprintf(nam,"SUSYBB%d",SUSYMass[i]);
+      Sample* SUSYBB = new Sample(nam,path);
+      SUSYBB->setDataType("Signal");
+      SUSYBB->setCrossection(1.);
+      SUSYBB->setSignalMass(SUSYMass[i]);
+      analysis->addSample(SUSYBB);    
 
-//       sprintf(nam,"SUSYGG%d",SUSYMass[i]);
-//       Sample* SUSYGG = new Sample(nam,path);
-//       SUSYGG->setDataType("Signal");
-//       SUSYGG->setCrossection(1.);
-//       SUSYGG->setSignalMass(SUSYMass[i]);
-//       analysis->addSample(SUSYGG);    
+      sprintf(nam,"SUSYGG%d",SUSYMass[i]);
+      Sample* SUSYGG = new Sample(nam,path);
+      SUSYGG->setDataType("Signal");
+      SUSYGG->setCrossection(1.);
+      SUSYGG->setSignalMass(SUSYMass[i]);
+      analysis->addSample(SUSYGG);    
 
-//   }
+  }
 
 
 

@@ -104,27 +104,29 @@ public:
   TH1F* getZLInc();
 
   TH1F* getTotalMCSM(Int_t WType=0);//sum of OS backgrounds execpt for the QCD
-  TH1F* getQCDInc(Int_t WType=0,bool cleanNegativeBins=1);
-  TH1F* getQCDIncWNJet();
 
-  TH1F* getWJetsInc();
-  TH1F* getWJetsNJet();
   TH1F* getWNJetSum();
+  TH1F* getWNJetSumLooseTau();
   TH1F* getWNJetSumNoChCut();
-  TH1F* getWJetsNJetNoChCut();
   TH1F* getWNJetSumNoChNoMTCut();
-  TH1F* getWJetsNJetNoChNoMTCut();
+  TH1F* getWJetsInc();
+  TH1F* getWJetsNJet(int shape=0);
   TH1F* getWJetsIncShape();
-  TH1F* getWJetsIncNoMTCut();
   TH1F* getW2JetsBJet();
   TH1F* getW3JetsVBF();
   TH1F* getWJetsNJetVBFHCP();
+  TH1F* getWJetsNJetVBFLoose();
+  TH1F* getWJetsNJetVBFTight();
 
-  TH1F* getQCDMuIsoSM();
+  TH1F* getQCDInc(Int_t WType=0,bool cleanNegativeBins=1);
+  TH1F* getQCDIncWNJet();
+  TH1F* getQCDMuIso();
+  TH1F* getQCDMuIsoLooseTau();
   TH1F* getQCDIncWJetsShape();
   TH1F* getQCDIncFit();
   TH1F* getQCDMike();
   TH1F* getQCDKeti();
+  TH1F* getQCDKetiHCP();//
   TH1F* getQCDIncLooseShape();
   TH1F* getQCDIncHighPt();
   TH1F* getQCDIncLowPt();
@@ -149,9 +151,6 @@ public:
   TH1F* getQCDBoostTight();
   TH1F* getQCDVBFLoose();
   TH1F* getQCDVBFTight();
-  TH1F* getWJetsNJetLooseTau();
-  TH1F* getWJetsNJetVBFLoose();
-  TH1F* getWJetsNJetVBFTight();
 
 
   ///
@@ -258,7 +257,7 @@ public:
   }
 
   TString getSMCategory(Int_t sm){
-    if(sm<0||8<sm){
+    if(sm<0||12<sm){
       cout<<" Category : "<<sm<<" undefined "<<endl;
       return TString("0");
     }
@@ -270,16 +269,24 @@ public:
     TString notvbftightcut=TString("(!")+vbftightcut+")";
     TString vbfcut="(njet>=2&&njetingap==0&&nbjet==0&&diJetMass>500.&&abs(diJetDeltaEta)>3.5)";
     TString notvbfcut=TString("(!")+vbfcut+")";
+    TString btagcut="(nbjet>=1&&njet<2)";
+    TString notbtagcut=TString("(!")+btagcut+")";
 
-    TString SMcut[8];
+
+    TString SMcut[13];
     SMcut[0]=zerojetcut+"*"+"(20<taupt&&taupt<30)";
     SMcut[1]=zerojetcut+"*"+"(30<taupt&&taupt<45)";
     SMcut[2]=zerojetcut+"*"+"(45<taupt)";
-    SMcut[3]=notvbfcut+"*"+onejetcut+"*"+"(30<taupt&&taupt<45&&20<ditaumetpt)"+"*"+metcut;
-    SMcut[4]=notvbfcut+"*"+onejetcut+"*"+"(45<taupt&&20<ditaumetpt&&ditaumetpt<100)"+"*"+metcut;
+    SMcut[3]=notvbfcut+"*"+onejetcut+"*"+"(30<taupt&&taupt<45)"+"*"+metcut;
+    SMcut[4]=notvbfcut+"*"+onejetcut+"*"+"(45<taupt&&ditaumetpt<100)"+"*"+metcut;
     SMcut[5]=notvbfcut+"*"+onejetcut+"*"+"(45<taupt&&100<ditaumetpt)"+"*"+metcut;
     SMcut[6]=notvbftightcut+"*"+vbfcut;
     SMcut[7]=vbftightcut;
+    SMcut[8]="1";
+    SMcut[9]=btagcut;
+    SMcut[10]=notbtagcut;
+    SMcut[11]=btagcut;//for finebin 
+    SMcut[12]=notbtagcut;
     cout<<"Category selection : "<<SMcut[sm]<<endl;
     
     

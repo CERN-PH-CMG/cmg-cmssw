@@ -12,7 +12,7 @@ TauMuPlotter * configTauMu2012Summer13ReRecoTrig(TString name, TString path){
   analysis->mTCut_=30;
   //analysis->eventWeight_="pupWeights2*triggerEffWeightsMu2*selectionEffWeightsId2*selectionEffWeightsIso2*(taupt>18)";//ABC
   //analysis->eventWeight_="pupWeights3*triggerEffWeightsMu3*selectionEffWeightsId3*selectionEffWeightsIso3*(taupt>18)";//D
-  analysis->eventWeight_="pupWeights4*triggerEffWeightsMu4*selectionEffWeightsId4*selectionEffWeightsIso4*(taupt>18)";//ABCD
+  analysis->eventWeight_="pupWeights4*triggerEffWeightsMu4*selectionEffWeightsId4*selectionEffWeightsIso4*(taupt>18)";//ABCD &&taudecaymode==0
   analysis->tauIsoCut_="(tauiso3hitraw<1.5)";
   analysis->tauIsoCutQCD_="(tauiso3hitraw<6.0)";
 
@@ -54,6 +54,21 @@ TauMuPlotter * configTauMu2012Summer13ReRecoTrig(TString name, TString path){
   ZToLJet->setDataType("MC");
   ZToLJet->setCrossection(ZToTauTau->getCrossection());
   analysis->addSample(ZToLJet);
+
+
+ for(long n=1;n<=4;n++){
+    Sample* ZNjet = new Sample(TString("Z")+n+"ToMuMu",path);
+    ZNjet->setDataType("MCCat");
+    ZNjet->setCrossection(ZToTauTau->getCrossection()*DYNJetFrac[n-1]);
+    analysis->addSample(ZNjet);
+  }
+  for(long n=1;n<=4;n++){
+    Sample* ZNjet = new Sample(TString("Z")+n+"ToLJet",path);
+    ZNjet->setDataType("MCCat");
+    ZNjet->setCrossection(ZToTauTau->getCrossection()*DYNJetFrac[n-1]);
+    analysis->addSample(ZNjet);
+  }
+
 
 
   //////////TTJets 

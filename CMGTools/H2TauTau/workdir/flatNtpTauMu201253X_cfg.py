@@ -137,13 +137,6 @@ process.cmgTauMu.cfg.leg1Collection = 'cmgTauScaler'
 process.cmgTauMu.cfg.metCollection = 'cmgPFMETRaw'
 process.analysis +=  process.cmgTauMu
 
-## event filter --------------------------------
-#process.load('CMGTools.Common.skims.cmgTauMuCount_cfi')
-#process.cmgTauMuCount.src = 'cmgTauMu'
-#process.cmgTauMuCount.minNumber = 1
-#process.analysis += process.cmgTauMuCount
-###No gain in speeed in Higgs signal sample: 1s/1000ev
-
 
 ###MVA MET
 
@@ -196,14 +189,3 @@ process.MessageLogger = cms.Service("MessageLogger",
     ),    
     )
 )
-
-#process.source.duplicateCheckMode = cms.untracked.string("noDuplicateCheck")
-#print process.dumpPython()
-#process.load('CMGTools.Common.skims.cmgTauMuSel_cfi')
-#process.cmgTauMuPreSel = process.cmgTauMuSel.clone()
-#process.cmgTauMuPreSel.cut = cms.string('')
-#process.cmgTauMuPreSel.cut = cms.string('pt()>0' )
-###I think the this code was removing some good candidates:
-#process.cmgTauMuPreSel.cut = cms.string('leg1().eta()!=leg2().eta() && leg1().pt()>20.0 && abs(leg1().eta())<2.3 && leg1().tauID("decayModeFinding")>0.5 && leg1().tauID("byRawIsoMVA")>-0.5 && leg2().pt()>20.0 && abs(leg2().eta())<2.1 && leg2().relIso(0.5,1)<0.5' )
-#process.cmgTauMuPreSel.cut = cms.string('leg1().pt()>=20.0 && abs(leg1().eta())<=2.3 && leg1().tauID("decayModeFinding")>0.5 && leg1().tauID("byRawIsoMVA")>-0.5 && leg2().pt()>=20.0 && abs(leg2().eta())<=2.1 && leg2().relIso(0.5,1)<0.5' )
-#process.analysis +=  process.cmgTauMuPreSel 

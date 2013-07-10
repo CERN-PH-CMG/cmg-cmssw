@@ -163,22 +163,28 @@ void runTriggerEffFits(){
 
   ///Summer13 ReReco mu-Tau
   //TString path="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/muTau";
-  //   TString path="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/muTauABC";
-  //  TString path="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/muTauD";
-  TString path="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/muTau_highTauPt";
-  plotTriggerEffFits(path+"/TauTriggerEfficiency_muTau_Barrel_Summer13ReReco_Data.root",18,150);
-  plotTriggerEffFits(path+"/TauTriggerEfficiency_muTau_EndCap_Summer13ReReco_Data.root",18,150);
-  plotTriggerEffFits(path+"/TauTriggerEfficiency_muTau_Barrel_Summer13ReReco_MC.root",18,150);
-  plotTriggerEffFits(path+"/TauTriggerEfficiency_muTau_EndCap_Summer13ReReco_MC.root",18,150);
+  //TString path="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/muTauABC";
+  //TString path="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/muTauD";
+  //TString path="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/muTau_highTauPt";
+  //TString path="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/muTauABCD_June28";
+  //TString path="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/muTauABCD_June30";
+  TString path="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/muTauABCD_June30_decaymode0";
+//   plotTriggerEffFits(path+"/TauTriggerEfficiency_muTau_Barrel_Summer13ReReco_Data.root",18,60);
+//   plotTriggerEffFits(path+"/TauTriggerEfficiency_muTau_EndCap_Summer13ReReco_Data.root",18,60);
+//   plotTriggerEffFits(path+"/TauTriggerEfficiency_muTau_Barrel_Summer13ReReco_MC.root",18,60);
+//   plotTriggerEffFits(path+"/TauTriggerEfficiency_muTau_EndCap_Summer13ReReco_MC.root",18,60);
 
   //TString pathETau="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/eTau_antiETight";
   //TString pathETau="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/eTau_antiEMedium";
   //TString pathETau="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/eTauABC_antiEMedium";
-//   TString pathETau="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/eTauD_antiEMedium";
-//   plotTriggerEffFits(pathETau+"/TauTriggerEfficiency_eTau_Barrel_Summer13ReReco_Data.root",18,50);
-//   plotTriggerEffFits(pathETau+"/TauTriggerEfficiency_eTau_EndCap_Summer13ReReco_Data.root",18,50);
-//   plotTriggerEffFits(pathETau+"/TauTriggerEfficiency_eTau_Barrel_Summer13ReReco_MC.root",18,50);
-//   plotTriggerEffFits(pathETau+"/TauTriggerEfficiency_eTau_EndCap_Summer13ReReco_MC.root",18,50);
+  //TString pathETau="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/eTauD_antiEMedium";
+  //TString pathETau="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/eTauABCD_June28";
+//   TString pathETau="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/eTauABCD_June30";
+  TString pathETau="/afs/cern.ch/user/b/benitezj/www/Summer13Studies/TauTrigger/eTauABCD_June30_decaymode0";
+//   plotTriggerEffFits(pathETau+"/TauTriggerEfficiency_eTau_Barrel_Summer13ReReco_Data.root",18,40);
+//   plotTriggerEffFits(pathETau+"/TauTriggerEfficiency_eTau_EndCap_Summer13ReReco_Data.root",18,40);
+//   plotTriggerEffFits(pathETau+"/TauTriggerEfficiency_eTau_Barrel_Summer13ReReco_MC.root",18,40);
+//   plotTriggerEffFits(pathETau+"/TauTriggerEfficiency_eTau_EndCap_Summer13ReReco_MC.root",18,40);
 
 
 

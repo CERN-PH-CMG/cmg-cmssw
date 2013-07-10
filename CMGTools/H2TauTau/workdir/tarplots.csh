@@ -28,7 +28,7 @@ export path="/data/benitezj/Samples"
 #export tag="eTau201253X_5140Apr14"
 #export tag="eTau2012_5140May27"
 #export tag="eTau2012_5160June10"
-export tag="eTau2012_5160June23"
+#export tag="eTau2012_5160June23"
 
 export dirname=Plots_${tag}_${1}
 echo $dirname
@@ -55,8 +55,6 @@ mv $path/$tag/*.root $dirname/root
 #
 #mkdir $dirname/C
 #mv $path/$tag/*.C $dirname/C
-#
-
 #
 #mkdir $dirname/ps
 #mv $path/$tag/*.ps $dirname/ps

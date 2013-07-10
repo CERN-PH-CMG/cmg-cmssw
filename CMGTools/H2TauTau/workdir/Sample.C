@@ -181,8 +181,9 @@ bool Sample::openNtpFile(){
   
 
   //Add additional root files
-  nonExistentCounter=0;
   for(Int_t n=0;n<nNames_;n++){
+    cout<<"Adding root files from : "<<addFileNames[n]<<endl;
+    nonExistentCounter=0;
     for(Int_t i=0;i<=NMAXFILES_ && nonExistentCounter<nMaxNonExistent ;i++){
       TString fname=TString(GetTitle())+"/"+addFileNames[n]+"/flatNtp_"+(long)i+".root";
       struct stat st;

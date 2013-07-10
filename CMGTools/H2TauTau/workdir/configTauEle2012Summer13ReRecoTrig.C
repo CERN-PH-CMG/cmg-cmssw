@@ -12,25 +12,26 @@ TauElePlotter * configTauEle2012Summer13ReRecoTrig(TString name, TString path){
   analysis->setZTTType(1);
   analysis->mTCut_=30;
   //analysis->eventWeight_="pupWeights2*triggerEffWeightsMu2*selectionEffWeightsId2*selectionEffWeightsIso2*(tauantiemva3new>=2&&mupt>27&&taupt>18)";//ABC
-  analysis->eventWeight_="pupWeights3*triggerEffWeightsMu3*selectionEffWeightsId3*selectionEffWeightsIso3*(tauantiemva3new>=2&&mupt>27&&taupt>18)";//D
-  //analysis->eventWeight_="pupWeights4*triggerEffWeightsMu4*selectionEffWeightsId4*selectionEffWeightsIso4*(tauantiemva3new>=2&&mupt>27&&taupt>18)";//ABCD
+  //analysis->eventWeight_="pupWeights3*triggerEffWeightsMu3*selectionEffWeightsId3*selectionEffWeightsIso3*(tauantiemva3new>=2&&mupt>27&&taupt>18)";//D
+  //analysis->eventWeight_="pupWeights4*triggerEffWeightsMu4*selectionEffWeightsId4*selectionEffWeightsIso4*(tauantiemva3new>=2&&mupt>27&&taupt>18)";//ABCD for usual procedure (fakes dont affect too much)
+  analysis->eventWeight_="pupWeights4*triggerEffWeightsMu4*selectionEffWeightsId4*selectionEffWeightsIso4*(tauantiemva3new>=2&&mupt>27&&taupt>18&&taudecaymode==0&&40<ditaumass&&ditaumass<80)";//ABCD (for one prong fakes affect high pT)
 
 
-//   //////Data
-//   Sample* SingleElectron2012A = new Sample("SingleElectron2012ReRecoA",path);
-//   SingleElectron2012A->setDataType("Data");
-//   SingleElectron2012A->setSampleLumi(96.4+396.9+395.99);
-//   analysis->addSample(SingleElectron2012A);
+  //////Data
+  Sample* SingleElectron2012A = new Sample("SingleElectron2012ReRecoA",path);
+  SingleElectron2012A->setDataType("Data");
+  SingleElectron2012A->setSampleLumi(96.4+396.9+395.99);
+  analysis->addSample(SingleElectron2012A);
 
-//   Sample* SingleElectron2012B = new Sample("SingleElectron2012ReRecoB",path);
-//   SingleElectron2012B->setDataType("Data");
-//   SingleElectron2012B->setSampleLumi(4429);
-//   analysis->addSample(SingleElectron2012B);
+  Sample* SingleElectron2012B = new Sample("SingleElectron2012ReRecoB",path);
+  SingleElectron2012B->setDataType("Data");
+  SingleElectron2012B->setSampleLumi(4429);
+  analysis->addSample(SingleElectron2012B);
 
-//   Sample* SingleElectron2012C = new Sample("SingleElectron2012ReRecoC",path);
-//   SingleElectron2012C->setDataType("Data");
-//   SingleElectron2012C->setSampleLumi(1783 + 5087 + 282.69);
-//   analysis->addSample(SingleElectron2012C);
+  Sample* SingleElectron2012C = new Sample("SingleElectron2012ReRecoC",path);
+  SingleElectron2012C->setDataType("Data");
+  SingleElectron2012C->setSampleLumi(1783 + 5087 + 282.69);
+  analysis->addSample(SingleElectron2012C);
 
   Sample* SingleElectron2012D = new Sample("SingleElectron2012ReRecoD",path);
   SingleElectron2012D->setDataType("Data");
@@ -54,6 +55,19 @@ TauElePlotter * configTauEle2012Summer13ReRecoTrig(TString name, TString path){
   ZToLJet->setDataType("MC");
   ZToLJet->setCrossection(ZToTauTau->getCrossection());
   analysis->addSample(ZToLJet);
+
+  for(long n=1;n<=4;n++){
+    Sample* ZNjet = new Sample(TString("Z")+n+"ToEE",path);
+    ZNjet->setDataType("MCCat");
+    ZNjet->setCrossection(ZToTauTau->getCrossection()*DYNJetFrac[n-1]);
+    analysis->addSample(ZNjet);
+  }
+  for(long n=1;n<=4;n++){
+    Sample* ZNjet = new Sample(TString("Z")+n+"ToLJet",path);
+    ZNjet->setDataType("MCCat");
+    ZNjet->setCrossection(ZToTauTau->getCrossection()*DYNJetFrac[n-1]);
+    analysis->addSample(ZNjet);
+  }
 
   /////////W+jets
   Sample * WJetsToLNu=new Sample("WJetsToLNu",path);

@@ -13,10 +13,6 @@ sampleName = os.environ['SAMPLENAME']
 sampleJobIdx = int(os.environ['SAMPLEJOBIDX'])
 sampleMergeFactor = int(os.environ['SAMPLEMERGEFACTOR'])
 
-#dataset_user  = 'benitezj'
-#sampleName = 'HiggsVBF125'
-#sampleJobIdx = 0
-#sampleMergeFactor = 200
 
 #########################
 process.analysis = cms.Path() 
@@ -125,12 +121,6 @@ process.cmgTauEle.cfg.metCollection = 'cmgPFMETRaw'
 process.analysis +=  process.cmgTauEle
 
 
-## event filter --------------------------------
-#process.load('CMGTools.Common.skims.cmgTauEleCount_cfi')
-#process.cmgTauEleCount.src = 'cmgTauEle'
-#process.cmgTauEleCount.minNumber = 1
-#process.analysis +=  process.cmgTauEleCount
-
 
 ##run the MVA MET 
 if process.flatNtp.metType == 2:
@@ -181,5 +171,3 @@ process.MessageLogger = cms.Service("MessageLogger",
     )
 )
 
-#process.source.duplicateCheckMode = cms.untracked.string("noDuplicateCheck")
-#print process.dumpPython()

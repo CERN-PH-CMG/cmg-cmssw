@@ -101,7 +101,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012A_13Jul2012_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
         module.dataType = 2
         module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON.txt'
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
                 
@@ -109,7 +109,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012A-recover_06Aug2012_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
         module.dataType = 2
         module.jsonfile = httjson_dir + 'Cert_190782-190949_8TeV_06Aug2012ReReco_Collisions12_JSON.txt'
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
         
@@ -117,7 +117,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012B_13Jul2012_v4_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
         module.dataType = 2
         module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON.txt'
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
         
@@ -125,7 +125,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012C_24Aug2012_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
         module.dataType = 2
         module.jsonfile = httjson_dir + 'Cert_198022-198523_8TeV_24Aug2012ReReco_Collisions12_JSON.txt'
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
         
@@ -133,7 +133,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012C_PromptReco_v2_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
         module.dataType = 2
         module.jsonfile = httjson_dir + 'Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt'  
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
         
@@ -141,7 +141,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.path = "/DoubleMu/StoreResults-DoubleMu_2012D_PromptReco_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
         module.dataType = 2
         module.jsonfile = json_dir + 'Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
 
@@ -181,7 +181,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.path = "/DoubleMu/StoreResults-Run2012A_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtagEmb)
         module.dataType = 2
         module.jsonfile = json_dir + 'Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
         module.embeddedWeightType = 2
@@ -197,7 +197,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.path = "/DoubleMuParked/StoreResults-Run2012B_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtagEmb)
         module.dataType = 2
         module.jsonfile = json_dir + 'Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
         module.embeddedWeightType = 2
@@ -213,7 +213,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.path = "/DoubleMuParked/StoreResults-Run2012C_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtagEmb)
         module.dataType = 2
         module.jsonfile = json_dir + 'Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
         module.embeddedWeightType = 2
@@ -229,7 +229,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.path = "/DoubleMuParked/StoreResults-Run2012D_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtagEmb)
         module.dataType = 2
         module.jsonfile = json_dir + 'Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
         module.embeddedWeightType = 2
@@ -251,7 +251,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.recoilCorrection = 1
         module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_zmm53X_20pv_njet.root'
         module.saveLHENUP = 1
-        module.correctTauES = 1
+        module.correctTauES = 0
 
     if sampleAlias == 'ZToMuMu'  or sampleAlias == 'Z1ToMuMu' or sampleAlias == 'Z2ToMuMu' or sampleAlias == 'Z3ToMuMu' or sampleAlias == 'Z4ToMuMu' : 
         module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/{0}".format(cmgtag)
@@ -426,7 +426,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
             module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") 
             module.recoilCorrection = 1
             module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root'
-            module.correctTauES = 1
+            module.correctTauES = 0
             module.signalWeightMass = "{0}_8TeV".format(HiggsMass[i])
             
 
@@ -446,7 +446,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
             module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") 
             module.recoilCorrection = 1
             module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root'
-            module.correctTauES = 1            
+            module.correctTauES = 0            
             
         if sampleAlias == "HiggsVH"+HiggsMass[i] :
             if Higgsmass[i] < 110 :
@@ -458,7 +458,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
             module.dataType = 0
             module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
             module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20")
-            module.correctTauES = 1
+            module.correctTauES = 0
 
 
     for i in range(0,21):
@@ -472,7 +472,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
             module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") 
             module.recoilCorrection = 1
             module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root'
-            module.correctTauES = 1
+            module.correctTauES = 0
             module.sampleGenMassMin = SUSYmass[i] * 0.7
             module.sampleGenMassMax = SUSYmass[i] * 1.3
 
@@ -483,7 +483,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
             module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") 
             module.recoilCorrection = 1
             module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root' 
-            module.correctTauES = 1
+            module.correctTauES = 0
             module.sampleGenMassMin = SUSYmass[i] * 0.7
             module.sampleGenMassMax = SUSYmass[i] * 1.3
 
@@ -552,6 +552,7 @@ def configureFlatNtpSampleTauMu2012Trig(module,sampleAlias):
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_eta2p1_L1ETM20_v5","","hltL3crIsoL1sMu12Eta2p1L1f0L2f12QL3f15QL3crIsoRhoFiltered0p15")
         module.trigPathTest1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20")
         module.saveLHENUP = 1
+        module.correctTauES = 0
         
     if sampleAlias == 'ZToLJet' :
         module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/{0}".format(cmgtag)
@@ -705,7 +706,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
         module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012A_13Jul2012_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
         module.dataType = 2
         module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON.txt'
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
         
@@ -713,7 +714,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
         module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012A-recover_06Aug2012_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
         module.dataType = 2
         module.jsonfile = httjson_dir + 'Cert_190782-190949_8TeV_06Aug2012ReReco_Collisions12_JSON.txt'
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
         
@@ -721,7 +722,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
         module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012B_13Jul2012_v4_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
         module.dataType = 2
         module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON.txt'
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.        
         
@@ -729,7 +730,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
         module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012C_24Aug2012_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
         module.dataType = 2
         module.jsonfile = httjson_dir + 'Cert_198022-198523_8TeV_24Aug2012ReReco_Collisions12_JSON.txt'
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
         
@@ -738,7 +739,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
         module.path = "/DoubleMu/StoreResults-Run2012C_PromptReco_v2_embedded_trans1_tau115_ptelec1_17had1_17_v2-5ef1c0fd428eb740081f19333520fdc8/USER/V5_B/{0}".format(cmgtag)
         module.dataType = 2
         module.jsonfile = httjson_dir + 'Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt'
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
         
@@ -746,7 +747,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
         module.path = "/DoubleMu/StoreResults-DoubleMu_2012D_PromptReco_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
         module.dataType = 2
         module.jsonfile = json_dir + 'Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
-        module.correctTauES = 1 
+        module.correctTauES = 0 
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
 
@@ -793,7 +794,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
         module.path = "/DoubleMu/StoreResults-Run2012A_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtagEmb)
         module.dataType = 2
         module.jsonfile = json_dir + 'Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
         module.embeddedWeightType = 2
@@ -810,7 +811,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
         module.path = "/DoubleMuParked/StoreResults-Run2012B_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtagEmb)
         module.dataType = 2
         module.jsonfile = json_dir + 'Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
         module.embeddedWeightType = 2
@@ -826,7 +827,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
         module.path = "/DoubleMuParked/StoreResults-Run2012C_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtagEmb)
         module.dataType = 2
         module.jsonfile = json_dir + 'Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
         module.embeddedWeightType = 2
@@ -842,7 +843,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
         module.path = "/DoubleMuParked/StoreResults-Run2012D_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtagEmb)
         module.dataType = 2
         module.jsonfile = json_dir + 'Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
-        module.correctTauES = 1
+        module.correctTauES = 0
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
         module.embeddedWeightType = 2
@@ -863,7 +864,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
         module.recoilCorrection = 1
         module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_zmm53X_20pv_njet.root'
         module.saveLHENUP = 1
-        module.correctTauES = 1
+        module.correctTauES = 0
         
     if sampleAlias == 'ZToEE'  or sampleAlias == 'Z1ToEE' or sampleAlias == 'Z2ToEE' or sampleAlias == 'Z3ToEE' or sampleAlias == 'Z4ToEE' : 
         module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/{0}".format(cmgtag)
@@ -1029,7 +1030,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
             module.trigPath1 = cms.InputTag("HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v2","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20")
             module.recoilCorrection = 1
             module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root'
-            module.correctTauES = 1
+            module.correctTauES = 0
             module.signalWeightMass = "{0}_8TeV".format(HiggsMass[i])
 
         if sampleAlias == "HiggsVBF"+HiggsMass[i] :
@@ -1046,7 +1047,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
             module.trigPath1 = cms.InputTag("HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v2","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20")
             module.recoilCorrection = 1
             module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root' 
-            module.correctTauES = 1
+            module.correctTauES = 0
             
         if sampleAlias == "HiggsVH"+HiggsMass[i] :
             if Higgsmass[i] < 110 :
@@ -1058,7 +1059,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
             module.dataType = 0
             module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
             module.trigPath1 = cms.InputTag("HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v2","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20")
-            module.correctTauES = 1
+            module.correctTauES = 0
 
 
     for i in range(0,21):
@@ -1072,7 +1073,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
             module.trigPath1 = cms.InputTag("HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v2","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20")
             module.recoilCorrection = 1
             module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root' 
-            module.correctTauES = 1
+            module.correctTauES = 0
             module.sampleGenMassMin = SUSYmass[i] * 0.7
             module.sampleGenMassMax = SUSYmass[i] * 1.3
 
@@ -1083,7 +1084,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
             module.trigPath1 = cms.InputTag("HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v2","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20")
             module.recoilCorrection = 1
             module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root' 
-            module.correctTauES = 1
+            module.correctTauES = 0
             module.sampleGenMassMin = SUSYmass[i] * 0.7
             module.sampleGenMassMax = SUSYmass[i] * 1.3
 
@@ -1160,6 +1161,7 @@ def configureFlatNtpSampleTauEle2012Trig(module,sampleAlias):
         module.recoilCorrection = 1
         module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_zmm53X_20pv_njet.root'
         module.saveLHENUP = 1
+        module.correctTauES = 0        
         
     if sampleAlias == 'ZToEE' : 
         module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/{0}".format(cmgtag)
