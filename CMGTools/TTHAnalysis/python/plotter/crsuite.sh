@@ -77,10 +77,18 @@ case $WHAT in
     echo "python ${RUN2XF/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/3j_pt2020_htllv100_failLepMVA/em_TTscaled $J3T $BINCL  "
     echo "python ${RUN2EF/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/3j_pt2020_htllv100_failLepMVA/ee_TTscaled $J3T $BINCL  --rebin 2 "
     echo "python ${RUN2MF/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/3j_pt2020_htllv100_failLepMVA/mumu_TTscaled $J3T $BINCL  "
+    ## ---- 3j fail MVA (b tight)
+    echo "python ${RUN2XF/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/3j_pt2020_htllv100_failLepMVA/btight/em_TTscaled   $J3T $BTIGHT  "
+    echo "python ${RUN2EF/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/3j_pt2020_htllv100_failLepMVA/btight/ee_TTscaled   $J3T $BTIGHT  --rebin 2 "
+    echo "python ${RUN2MF/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/3j_pt2020_htllv100_failLepMVA/btight/mumu_TTscaled $J3T $BTIGHT  "
     ## ---- 3j_pt2020_htllv100 pass MVA
     echo "python ${RUN2X/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/3j_pt2020_htllv100/em   $J3T $BINCL --rebin 4  "
     echo "python ${RUN2E/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/3j_pt2020_htllv100/ee   $J3T $BINCL --rebin 6  "
     echo "python ${RUN2M/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/3j_pt2020_htllv100/mumu $J3T $BINCL --rebin 4  "
+    ## ---- 3j_pt2020_htllv100 pass MVA
+    echo "python ${RUN2X/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/3j_pt2020_htllv100/btight/em   $J3T $BTIGHT --rebin 4  "
+    echo "python ${RUN2E/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/3j_pt2020_htllv100/btight/ee   $J3T $BTIGHT --rebin 6  "
+    echo "python ${RUN2M/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/3j_pt2020_htllv100/btight/mumu $J3T $BTIGHT --rebin 4  "
     ## ---- 4j exclusive
     echo "python ${RUN2X/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/4j_exclusive/bloose_exclusive/em   $J4E $BLOOSE --rebin 4   "
     echo "python ${RUN2E/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/4j_exclusive/bloose_exclusive/ee   $J4E $BLOOSE --rebin 6   "
@@ -182,6 +190,7 @@ case $WHAT in
     echo "python ${RUN3LF/PLOTS/mvaVars_3l} --pdir $ROOT/mvaVars/failLepMVA/withTopHad/TTscaled $SF0 $TOPHAD $BINCL --rebin 2" 
     ## ---- Invert Z veto ----
     echo "python ${RUN3L/PLOTS/mvaVars_3l} --pdir $ROOT/mvaVars/Zpeak $SF $BINCL -I 'Z veto' --rebin 5"
+    echo "python ${RUN3L/PLOTS/mvaVars_3l} --pdir $ROOT/mvaVars/Zpeak/btight $SF -I 'Z veto' --rebin 8"
     ## ---- 2 jet exclusive ----
     echo "python ${RUN3L/PLOTS/mvaVars_3l} --pdir $ROOT/mvaVars/2j_exclusive $SF $BINCL $J2  --rebin 5 "
     ## --- categorized MVA
@@ -207,17 +216,13 @@ case $WHAT in
 #    echo "python $RUN2L $SF --pdir $ROOT/ "
 #    echo "python ${RUN2L/mca-2l-data.txt/mca-2l-data-topPtW.txt} $SF --pdir $ROOT/topPtW/ "
 #;;
-ttZ_3l)
-    RUN3L="${CORE} mca-3l-data.txt bins/cr_ttz.txt bins/cr_ttz_plots.txt"
-    SF="-W 'puWeight*Eff_3lep*SF_btag*SF_LepMVALoose_3l'"
-    echo "python $RUN3L $SF --pdir $ROOT/ " 
-    echo "python $RUN3L $SF --pdir $ROOT/4j -A 1B 4j 'nJet25 >= 4' --rebin 2"
-;;
 ttZ_3l_tight)
     RUN3L="${CORE} mca-3l_tight-data.txt bins/cr_ttz_tight.txt bins/cr_ttz_plots.txt "
     SF="-W 'puWeight*Eff_3lep*SF_btag*SF_LepMVATight_3l'"
     echo "python $RUN3L $SF --pdir $ROOT/ " 
     echo "python $RUN3L $SF --pdir $ROOT/4j -A 1B 4j 'nJet25 >= 4' --rebin 2"
+    echo "python $RUN3L $SF --pdir $ROOT/bloose -A pt2010 4j 'nJet25 >= 2' --rebin 2 -X 1B -R 2b 2bl '(nBJetLoose25 >= 2 || nBJetMedium25 >= 1)'"
+    echo "python $RUN3L $SF --pdir $ROOT/bloose/4j -A pt2010 4j 'nJet25 >= 4' --rebin 2 -X 1B -R 2b 2bl '(nBJetLoose25 >= 2 || nBJetMedium25 >= 1)'"
 ;;
 zz_4l)
     CORE="${CORE/--doStatTest=chi2l/} "

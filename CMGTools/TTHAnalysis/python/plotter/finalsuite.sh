@@ -10,7 +10,7 @@ elif [[ "$HOSTNAME" == "olsnba03" ]]; then
     J=12;
 elif [[ "$HOSTNAME" == "lxbse14c09.cern.ch" ]]; then
     T="/var/ssdtest/gpetrucc/TREES_250513_HADD";
-    J=6;
+    J=16;
 else
     T="/afs/cern.ch/work/g/gpetrucc/TREES_250513_HADD";
     J=6;
@@ -18,7 +18,7 @@ fi
 CORE="mcPlots.py -P $T -j $J -f -l 19.6  "
 FSF=" --FM sf/t $T/0_SFs_v2/sfFriend_{cname}.root "
 
-ROOT="plots/250513/.unblinded/$WHAT"
+ROOT="plots/250513/merged-final/$WHAT"
 
 RUN2L="${CORE} mca-2lss-data.txt --showRatio --maxRatioRange 0 3.7 --poisson"
 RUN2E="${RUN2L} bins/2lss_ee_tight.txt   bins/mvaVars_2lss.txt  "
@@ -62,7 +62,7 @@ case $WHAT in
 
 ;;
 3l_tight)
-    RUN3L="${CORE} mca-3l_tight-data.txt bins/3l_tight.txt bins/mvaVars_3l.txt  --showRatio --maxRatioRange 0 3.7 "
+    RUN3L="${CORE} mca-3l_tight-data.txt bins/3l_tight.txt bins/mvaVars_3l.txt  --showRatio --maxRatioRange 0 3.7 --poisson"
     SF="$FSF -W 'puWeight*Eff_3lep*SF_btag*SF_LepMVATight_3l'"
     MVA="-F finalMVA/t $T/0_finalmva_3l/finalMVA_3L_{cname}.root"
     echo "python $RUN3L $SF $MVA --pdir $ROOT/        $BINCL  --rebin 5"
@@ -70,7 +70,7 @@ case $WHAT in
     echo "python $RUN3L $SF $MVA --pdir $ROOT/btight  $BTIGHT --rebin 5"
 ;;
 4l)
-    RUN4L="${CORE} mca-4l-ttscale.txt bins/4l.txt bins/mvaVars_4l.txt "
+    RUN4L="${CORE} mca-4l-ttscale.txt bins/4l.txt bins/mvaVars_4l.txt  --showRatio --maxRatioRange 0 3.7 --poisson "
     MVA="-F finalMVA/t $T/0_finalmva_4l/finalMVA_4L_{cname}.root"
     SF="$FSF -W 'puWeight*Eff_4lep*SF_btag*SF_LepMVALoose_4l'"
     echo "python $RUN4L $SF --pdir $ROOT/        $BINCL "
