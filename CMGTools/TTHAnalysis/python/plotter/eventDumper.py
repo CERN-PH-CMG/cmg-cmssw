@@ -111,12 +111,33 @@ class BaseDumper(Module):
         else:
             print "    vertices %d" % (ev.nVert)
         if self.options.moremc:
-            gleps = [g for f in Collection(ev,"GenLep") if g.pt > 0 ]
+            gleps = [g for g in Collection(ev,"GenLep") if g.pt > 0 ]
             for i,l in enumerate(gleps):
                 print "    gen lep %d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f sourceId %2d" % (i+1, l.pdgId,l.pt,l.eta,l.phi, l.sourceId)
-            gtaus = [g for f in Collection(ev,"GenLepFromTau","nGenLepsFromTau") if g.pt > 0 ]
+            gtaus = [g for g in Collection(ev,"GenLepFromTau","nGenLepsFromTau") if g.pt > 0 ]
             for i,l in enumerate(gtaus):
                 print "    gen lep %d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f sourceId %2d " % (i+1, l.pdgId,l.pt,l.eta,l.phi, l.sourceId)
+            gbq = Collection(ev,"GenBQuark","nGenBQuarks",2)
+            for i,l in enumerate([gbq[i] for i in 0,1]):
+                print "    gen bq  %d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f " % (i+1, l.pdgId,l.pt,l.eta,l.phi)
+            glq = Collection(ev,"GenQuark","nGenQuarks",6)
+            for i,l in enumerate([q for q in glq if q.pt > 0]):
+                print "    gen lq  %d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f sourceId %2d " % (i+1, l.pdgId,l.pt,l.eta,l.phi, l.sourceId)
+            for i,l in enumerate(self.lepsAny):
+                nq = None; nj = None
+                for q in [q for q in gbq if q.pt > 0] + [q for q in glq if q.pt > 0]:
+                    dr = deltaR(q,l)
+                    if nq == None or dr < deltaR(nq,l): nq = q
+                for q in self.jetsPtSorted:
+                    dr = deltaR(q,l)
+                    if nj == None or dr < deltaR(nj,l): nj = q
+                print "    lepton %d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f    MVA %+4.2f     mcMatch %+3d " % (
+                        i+1, l.pdgId,l.pt,l.eta,l.phi, l.mva,  (l.mcMatchId if l.mcMatchId > 0 else -l.mcMatchAny),  )
+                if nq != None:
+                    print "      nearest quark: id %+2d pt %5.1f eta %+4.2f phi %+4.2f   (deltaR %6.3f)" % (nq.pdgId,nq.pt,nq.eta,nq.phi, deltaR(nq,l))
+                if nj != None:
+                    print "      nearest jet: pt %5.1f eta %+4.2f phi %+4.2f btag %4.3f mcMatch %2d mcFlavour %d/%d   (deltaR %6.3f)" % (nj.pt,nj.eta,nj.phi, min(1.,max(0.,nj.btagCSV)), nj.mcMatchId, nj.mcMatchFlav, nj.mcFlavour, deltaR(nj,l))
+            
         print ""
         print ""
         print ""
