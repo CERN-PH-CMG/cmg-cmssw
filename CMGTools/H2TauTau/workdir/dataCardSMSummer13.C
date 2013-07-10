@@ -92,7 +92,10 @@ void dataCardSMSummer13(Int_t channel, Int_t cat, Int_t year, Int_t dataset, TSt
   for(long sm=0; sm<NCATSUMMER13; sm++){
     if(skipCategory(cat,sm))continue;
     
-    TDirectory* dir = output.mkdir(ChannelName+"_"+catdirnameSummer13[sm]);  
+    TDirectory* dir = 0;
+    if(sm!=11 && sm!=12 ) dir=output.mkdir(ChannelName+"_"+catdirnameSummer13[sm]);  
+    else dir=(TDirectory*)output.Get(ChannelName+"_"+catdirnameSummer13[sm]); 
+    if(!dir){cout<<" Directory not found "<<endl; return 0;}
     gROOT->cd();
 
     analysis->plotvar_=mass;
