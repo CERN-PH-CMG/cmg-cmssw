@@ -66,6 +66,38 @@ float fakeRateWeight_2lss(float l1pt, float l1eta, int l1pdgId, float l1mva,
         default: return 0;
     }
 }
+
+float fakeRateWeight_2lssCB(float l1pt, float l1eta, int l1pdgId, float l1relIso,
+                            float l2pt, float l2eta, int l2pdgId, float l2relIso, float WP) 
+{
+    int nfail = (l1relIso > WP)+(l2relIso > WP);
+    switch (nfail) {
+        case 1: {
+            double fpt,feta; int fid;
+            if (l1relIso > l2relIso) { fpt = l1pt; feta = std::abs(l1eta); fid = abs(l1pdgId); }
+            else                     { fpt = l2pt; feta = std::abs(l2eta); fid = abs(l2pdgId); }
+            TH2 *hist = (fid == 11 ? FR_el : FR_mu);
+            int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(fpt)));
+            int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(feta)));
+            double fr = hist->GetBinContent(ptbin,etabin);
+            return fr/(1-fr);
+        }
+        case 2: {
+            TH2 *hist1 = (abs(l1pdgId) == 11 ? FR_el : FR_mu);
+            int ptbin1  = std::max(1, std::min(hist1->GetNbinsX(), hist1->GetXaxis()->FindBin(l1pt)));
+            int etabin1 = std::max(1, std::min(hist1->GetNbinsY(), hist1->GetYaxis()->FindBin(std::abs(l1eta))));
+            double fr1 = hist1->GetBinContent(ptbin1,etabin1);
+            TH2 *hist2 = (abs(l2pdgId) == 11 ? FR_el : FR_mu);
+            int ptbin2  = std::max(1, std::min(hist2->GetNbinsX(), hist2->GetXaxis()->FindBin(l2pt)));
+            int etabin2 = std::max(1, std::min(hist2->GetNbinsY(), hist2->GetYaxis()->FindBin(std::abs(l2eta))));
+            double fr2 = hist2->GetBinContent(ptbin2,etabin2);
+            return -fr1*fr2/((1-fr1)*(1-fr2));
+        }
+        default: return 0;
+    }
+}
+
+
 float fakeRateWeight_2lssSyst(float l1pt, float l1eta, int l1pdgId, float l1mva,
                          float l2pt, float l2eta, int l2pdgId, float l2mva, float WP, 
                          float mu_barrel_lowpt, float mu_barrel_highpt, float mu_endcap_lowpt, float mu_endcap_highpt,
