@@ -43,6 +43,14 @@ class KD
     id.push_back(Z2_lept2Id);
 
     mem_->computeMEs(ps,id);
+
+    //Now the SuperKD part
+    pm4l_sig_=0.0;
+    pm4l_bkg_=0.0;
+    mem_->computePm4l(ps,id,kNone,pm4l_sig_,pm4l_bkg_);
+    
+
+
   }
 
 
@@ -51,6 +59,13 @@ class KD
     double KD,ME_ggHiggs,ME_qqZZ;
     mem_->computeKD(kSMHiggs, kJHUGen, kqqZZ, kMCFM, &MEMs::probRatio, KD, ME_ggHiggs, ME_qqZZ);
     return KD;
+  }
+
+  float getSuperKD() {
+    using namespace MEMNames;
+    double KD,ME_ggHiggs,ME_qqZZ;
+    mem_->computeKD(kSMHiggs, kJHUGen, kqqZZ, kMCFM, &MEMs::probRatio, KD, ME_ggHiggs, ME_qqZZ);
+    return pm4l_sig_/(pm4l_sig_+pm4l_bkg_*(1./KD-1));
   }
 
   float getGG0KD() {
@@ -93,6 +108,7 @@ class KD
   }
 
 
+
   float getInterferenceWeight() {
     return mem_->getMELAWeight();
   }
@@ -103,6 +119,8 @@ class KD
  private:
 
   MEMs * mem_;
+  double pm4l_sig_;
+  double pm4l_bkg_;
 
 
 

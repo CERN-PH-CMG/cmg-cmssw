@@ -167,6 +167,7 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_KD'.format(pName=pName))
         self.var('{pName}_GG0KD'.format(pName=pName))
         self.var('{pName}_GG0HKD'.format(pName=pName))
+        self.var('{pName}_SuperKD'.format(pName=pName))
         self.var('{pName}_QQ1MinusKD'.format(pName=pName))
         self.var('{pName}_QQ1PlusKD'.format(pName=pName))
         self.var('{pName}_GG2PlusKD'.format(pName=pName))
@@ -230,6 +231,8 @@ class TreeProducer( Analyzer ):
             self.fill('{pName}_QQ2PlusKD'.format(pName=pName), particle.qq2PlusKD )
         if hasattr(particle,'gg2PlusKD'):
             self.fill('{pName}_GG2PlusKD'.format(pName=pName), particle.gg2PlusKD )
+        if hasattr(particle,'SuperKD'):
+            self.fill('{pName}_SuperKD'.format(pName=pName), particle.SuperKD )
 
         if hasattr(particle,'weight'):
             self.fill('{pName}_Weight'.format(pName=pName), particle.weight )

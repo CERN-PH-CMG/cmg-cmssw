@@ -107,7 +107,7 @@ selectedComponents=mcSamples+dataSamples
 
 
 
-test =0
+test =1
 if test==1:
     dataset=mcSamples[0]
     selectedComponents=[dataset]

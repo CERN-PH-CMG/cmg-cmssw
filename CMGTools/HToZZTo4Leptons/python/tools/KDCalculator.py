@@ -61,6 +61,7 @@ class KDCalculator(object):
         FL.gg2PlusKD   = self.KD.getGG2PlusKD()
         FL.qq2PlusKD   = self.KD.getQQ2PlusKD()
         FL.weight      = self.KD.getInterferenceWeight()
+        FL.SuperKD     = self.KD.getSuperKD()
 
         
 
