@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetSubstructureAnalyzer.cc,v 1.23 2012/08/20 13:11:40 musella Exp $
+// $Id: JetSubstructureAnalyzer.cc,v 1.1 2012/08/28 12:34:53 pharris Exp $
 //
 //
 
@@ -26,7 +26,7 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
-
+#include "SimDataFormats/JetMatching/interface//JetFlavourMatching.h"
 #include "TROOT.h"
 
 //
@@ -39,9 +39,9 @@ JetSubstructureAnalyzer::JetSubstructureAnalyzer(const edm::ParameterSet& iConfi
   MCPileupTag_ = iConfig.getParameter<edm::InputTag>("MCPileupTag");
   PVTag_       = iConfig.getParameter<edm::InputTag>("PVTag");
   JetTag_      = iConfig.getParameter<edm::InputTag>("JetTag");
+  JetFlavTag_  = iConfig.getParameter<edm::InputTag>("JetFlavTag");
   GenJetTag_   = iConfig.getParameter<edm::InputTag>("GenJetTag");
   MuonTag_     = iConfig.getParameter<edm::InputTag>("MuonTag");
-
   applyJec_   = iConfig.getParameter<bool>("applyJec");
   jecTag_     = iConfig.getParameter<std::string>("jecTag");
   RhoTag_     = iConfig.getParameter<edm::InputTag>("RhoTag");
@@ -85,6 +85,9 @@ void JetSubstructureAnalyzer::bookTree()
 	  tree->Branch(IdTags_[itag].instance().c_str(),&ids_[itag], (IdTags_[itag].instance()+"/I").c_str());
   }
   
+  tree -> Branch ("run" ,&run, "run/I");
+  tree -> Branch ("lumi",&lumi, "lumi/I");
+
   tree -> Branch ("PUit_n",&PUit_n, "PUit_n/I");
   tree -> Branch ("PUit_nTrue",&PUit_nTrue, "PUit_nTrue/F");
   tree -> Branch ("PUoot_early_n",&PUoot_early_n, "PUoot_early_n/I");
@@ -100,8 +103,7 @@ void JetSubstructureAnalyzer::bookTree()
   tree -> Branch ("njets",&njets, "njets/I");
   tree -> Branch ("dimuonPt",&dimuonPt, "dimuonPt/F");
   tree -> Branch ("dphiZJet",&dphiZJet, "dphiZJet/F");
-
-
+  tree -> Branch ("zmass",&zmass, "zmass/F");
 }
 
 
@@ -113,7 +115,9 @@ void JetSubstructureAnalyzer::ResetTreeVariables()
   PUoot_early_nTrue = -999;
   PUoot_late_n     = -999;
   PUoot_late_nTrue = -999;
- 
+  
+  run        = -999;
+  lumi       = -999;
   nvtx       = -999;
   jetLooseID = false;
   isMatched  = false;
@@ -123,6 +127,7 @@ void JetSubstructureAnalyzer::ResetTreeVariables()
   njets      = -999;
   dimuonPt   = -999; 
   dphiZJet   = -999; 
+  zmass      = -999;
 }
 
 
@@ -163,7 +168,7 @@ JetSubstructureAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
   edm::Handle<reco::VertexCollection> vertexHandle;
   iEvent.getByLabel(PVTag_, vertexHandle);
   reco::VertexCollection vertexCollection = *(vertexHandle.product());
-  
+
   //-- primary vtx 
   //   require basic quality cuts on the vertexes
   reco::VertexCollection::const_iterator ivtx = vertexCollection.begin();
@@ -196,7 +201,10 @@ JetSubstructureAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
     iEvent.getByLabel(GenJetTag_, genJetHandle);
     genJets = *genJetHandle;
   }
-
+  // *** JET FLAVOUR
+  edm::Handle<reco::JetFlavourMatchingCollection> jetFlavourMatch;
+  iEvent.getByLabel(JetFlavTag_, jetFlavourMatch);
+ 
   bool selectEvent=true;
   int goodMuon1=-1, goodMuon2=-1;
   if( requireZ_ ) {
@@ -213,11 +221,13 @@ JetSubstructureAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
     const reco::PFJet patjet = jets.at(i);
     float jec = 1.;
     if( applyJec_ ) {
+     
       jecCor_->setJetPt(patjet.pt());
       jecCor_->setJetEta(patjet.eta());
       jecCor_->setJetA(patjet.jetArea());
       jecCor_->setRho(rho);
       float thejec = jecCor_->getCorrection();
+      //std::cout << " Correction : " << patjet.pt() << " -- " << patjet.eta() << " -- " << patjet.jetArea() << " -- " << rho << " -- " << thejec << std::endl;
       jec = thejec;// * patjet.correctedJet(0).energy() / patjet.energy() ;
       jecs.push_back(jec);
       ////// if( i < 2 ) { std::cout << "JEC " << patjet.correctedJet(0).pt() << " " << patjet.eta() << " " << patjet.jetArea() << " " 
@@ -259,8 +269,8 @@ JetSubstructureAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
 	    patjet.scaleEnergy(jec);
 	    jec = patjet.pt() / rawpt ;
     }
-    if ( patjet.pt() <  jetPtThreshold_ )  { continue; }
-  
+    if ( patjet.pt() <  jetPtThreshold_ || fabs(patjet.eta()) > 5.0)  { continue; }
+    //std::cout << "===> Jet:" << patjet.pt() << " -- " << patjet.eta() << std::endl;
     //-- remove muons from jets 
     if (selectEvent  && requireZ_) {
       float dr1 = deltaR( muons.at(goodMuon1).eta(),  muons.at(goodMuon1).phi(),  patjet.eta(),  patjet.phi());
@@ -271,15 +281,16 @@ JetSubstructureAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
       }
     }
     ++ijet;
-
-
+    edm::RefToBase<reco::Jet> jetRef = edm::RefToBase<reco::Jet>(jets.refAt(i));
+    
     //-- pu jet identifier
     PileupJetIdentifierSubstructure puIdentifier = puIdAlgo_->computeIdVariables(&patjet, jec, vtx, vertexCollection, computeTMVA_);
 
     // --- fill jet variables
     puIdAlgo_->setIJetIEvent(ijet,iEvent.id().event());
     if ( !dataFlag_ ){
-      //jetFlavour  = patjet.partonFlavour();
+      //edm::RefToBase<reco::Candidate> jetRef = patjet.masterClone();
+      jetFlavour  = (*jetFlavourMatch)[edm::RefToBase<reco::Jet>(jetRef)].getFlavour();//patjet.partonFlavour();
       if ( matchingToGenJet(patjet, genJets, jetGenPt, jetGenDr) ) isMatched = 1;
     }
     else {
@@ -307,12 +318,14 @@ JetSubstructureAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup
     PUoot_early_nTrue = PUoot_early_TrueNumInteractions;
     PUoot_late_n      = PUoot_late_NumInteractions;
     PUoot_late_nTrue  = PUoot_late_TrueNumInteractions;
-    if( requireZ_ ) { 
+   if( requireZ_ ) { 
 	    dimuonPt          = (muons.at(goodMuon1).p4()+muons.at(goodMuon2).p4()).Pt();
 	    dphiZJet          = deltaPhi( (muons.at(goodMuon1).p4()+muons.at(goodMuon2).p4()).Phi(),  patjet.phi()   );
+	    zmass             = (muons.at(goodMuon1).p4()+muons.at(goodMuon2).p4()).M();
     }
-    
-    tree->Fill();
+   run               = iEvent.id().run();    
+   lumi              = iEvent.luminosityBlock();
+   tree->Fill();
   
   }
 

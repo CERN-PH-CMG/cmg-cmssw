@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetSubstructureAnalyzer.h,v 1.11 2012/05/23 08:31:26 musella Exp $
+// $Id: JetSubstructureAnalyzer.h,v 1.1 2012/08/28 12:34:51 pharris Exp $
 //
 //
 
@@ -79,6 +79,7 @@ private:
   edm::InputTag MCPileupTag_;    
   edm::InputTag PVTag_;    
   edm::InputTag JetTag_;
+  edm::InputTag JetFlavTag_;
   edm::InputTag GenJetTag_;
   edm::InputTag MuonTag_; 
   std::vector<edm::InputTag> MvaTags_;
@@ -118,7 +119,8 @@ private:
   TTree *tree ;
   
   // tree var
-  
+  int run;
+  int lumi;
   int PUit_n ;
   float PUit_nTrue ;
   int PUoot_early_n ;
@@ -137,7 +139,7 @@ private:
 
   float dimuonPt;
   float dphiZJet;
-
+  float zmass;
   ////  float mva;
 
    

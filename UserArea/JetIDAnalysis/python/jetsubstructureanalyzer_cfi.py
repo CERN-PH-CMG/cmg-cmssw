@@ -1,13 +1,14 @@
 import FWCore.ParameterSet.Config as cms
 
 from PhysicsTools.SelectorUtils.pfJetIDSelector_cfi import pfJetIDSelector
-from CMGTools.External.puJetIDAlgo_cff import full_5x
+from CMGTools.External.puJetIDAlgo_cff import full_53x,full_53x_chs
 
 jetsubstructureanalyzer = cms.EDAnalyzer('JetSubstructureAnalyzer',
                              
                                          ## Loic's PATtuples 
                                          MCPileupTag = cms.InputTag("addPileupInfo",""),  
                                          JetTag      = cms.InputTag("ak5PFJets",""),
+                                         JetFlavTag  = cms.InputTag("AK5byValPhys",""),
                                          GenJetTag   = cms.InputTag("ak5GenJets",""),
                                          MuonTag     = cms.InputTag("muons",""),
                                          PVTag       = cms.InputTag("offlinePrimaryVertices",""),
@@ -20,22 +21,22 @@ jetsubstructureanalyzer = cms.EDAnalyzer('JetSubstructureAnalyzer',
                                          residualsFromTxt = cms.bool(False),
                                          residualsTxt     = cms.FileInPath("CMGTools/External/data/dummy.txt"),
                                          
-                                         puJetIDAlgo = full_5x,
+                                         puJetIDAlgo = full_53x,
                                          
                                          # loose jets
                                          pfjetIdLoose = pfJetIDSelector.clone(),                           
                                          
                                          # jet pt threshold
-                                         ## jetPtThreshold = cms.untracked.double(0.)                          
-                                         jetPtThreshold = cms.untracked.double(10.),                          
+                                         jetPtThreshold = cms.untracked.double(20.),                          
+                                         #jetPtThreshold = cms.untracked.double(10.),                          
                                          
                                          #PFtoPAT ntuple (Colin)
-                                         MvaTags = cms.untracked.VInputTag(cms.InputTag("puJetMva","simpleDiscriminant"),
-                                                                           cms.InputTag("puJetMva","fullDiscriminant"),
+                                         MvaTags = cms.untracked.VInputTag(#cms.InputTag("puJetMva","simpleDiscriminant"),
+                                                                           cms.InputTag("puJetMva","full53xDiscriminant"),
                                                                            cms.InputTag("puJetMva","cutbasedDiscriminant"),
                                                                            ),
-                                         IdTags = cms.untracked.VInputTag( cms.InputTag("puJetMva","simpleId"),
-                                                                           cms.InputTag("puJetMva","fullId"),
+                                         IdTags = cms.untracked.VInputTag( #cms.InputTag("puJetMva","simpleId"),
+                                                                           cms.InputTag("puJetMva","full53xId"),
                                                                            cms.InputTag("puJetMva","cutbasedId"),
                                                                            ),
                              

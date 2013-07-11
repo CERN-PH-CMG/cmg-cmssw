@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.cc,v 1.22 2012/08/20 13:09:03 musella Exp $
+// $Id: JetAnalyzer.cc,v 1.23 2012/08/20 13:11:40 musella Exp $
 //
 //
 
@@ -212,6 +212,8 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       jecCor_->setJetA(patjet.jetArea());
       jecCor_->setRho(rho);
       float thejec = jecCor_->getCorrection();
+      std::cout << " Correction : " << patjet.correctedJet(0).pt() << " -- " << patjet.eta() << " -- " << patjet.jetArea() << " -- " << rho << std::endl;
+
       jec = thejec * patjet.correctedJet(0).energy() / patjet.energy() ;
       jecs.push_back(jec);
       ////// if( i < 2 ) { std::cout << "JEC " << patjet.correctedJet(0).pt() << " " << patjet.eta() << " " << patjet.jetArea() << " " 
