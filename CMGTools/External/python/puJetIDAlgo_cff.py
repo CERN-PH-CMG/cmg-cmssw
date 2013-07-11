@@ -60,7 +60,7 @@ full_53x_chs = cms.PSet(
     "jetPhi"
     ),
  JetIdParams = full_53x_chs_wp,
- label = cms.string("full")
+ label = cms.string("full53xCHS")
  )
 ####################################################################################################################  
 met_53x = cms.PSet(
