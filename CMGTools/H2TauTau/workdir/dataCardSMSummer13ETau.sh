@@ -8,7 +8,7 @@
 export SAMPLEPATH=eTau2012_5160July1
 
 #################### Summer13  ################################
-cat=15
+cat=0
 var=svfitmass
 rm -f eleTau_SM${cat}_${var}_.root
 rm -f eleTau_SM${cat}_${var}_tUp.root

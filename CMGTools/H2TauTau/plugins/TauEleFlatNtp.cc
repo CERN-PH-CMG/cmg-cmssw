@@ -436,14 +436,16 @@ bool TauEleFlatNtp::fill(){
     ///trigger corrections
     if(dataPeriodFlag_==2011){
 
-      if(trigPaths_.size()>0){
+      if(dataType_==0){
         if( triggerEff_.effMediumIsoTau20MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())> 0.)
           triggerEffWeightsTau_[2] = triggerEff_.effTau2011AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
             /triggerEff_.effMediumIsoTau20MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+
         if(triggerEff_.effEle18MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta()) > 0.)
           triggerEffWeightsMu_[2] = triggerEff_.effEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
             /triggerEff_.effEle18MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-      }else{
+      }
+      if(dataType_==2){
         triggerEffWeightsTau_[2] = triggerEff_.effTau2011AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
         triggerEffWeightsMu_[2] = triggerEff_.effEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
       }
@@ -630,6 +632,7 @@ bool TauEleFlatNtp::fill(){
   
    fillDiTauMETVars();
 
+   runSVFit();
 
    //VBF 
    vbfmva_=0.;

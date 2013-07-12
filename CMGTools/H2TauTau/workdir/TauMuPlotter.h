@@ -107,6 +107,9 @@ public:
   TH1F* getSampleVBFHCPShape(TString sample);//used for the methods below
   TH1F* getSampleVBFHCPShape2(TString sample);//used for the methods below
   TH1F* getSampleVBFHCP(TString sample,int type=0);//used for the methods below
+  TH1F* getSampleVBFTightHCPShape(TString sample);//used for the methods below
+  TH1F* getSampleVBFTightHCP(TString sample);//used for the methods below
+
   TH1F* getZNJetSum(TString decay);
 
   TH1F* getZToTauTau();
@@ -114,7 +117,8 @@ public:
  
   TH1F* getZToLJetInc();
   TH1F* getZToLJetVBFHCP();
-
+  TH1F* getZToLJetVBFTightHCP();
+  
   TH1F* getZLInc();
   TH1F* getZLVBFHCP();
   TH1F* getZLLVBFHCP();
@@ -156,6 +160,7 @@ public:
 
   TH1F* getDiBoson();
   TH1F* getDiBosonVBFHCP();
+  TH1F* getDiBosonVBFTightHCP();
 
 
   bool plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, Int_t Chcat, Int_t Isocat, Int_t MTcat,TString extrasel="", TString blindsel = "",  Int_t QCDType=0, Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, int higgs=0,TString filetag="");

@@ -136,11 +136,15 @@ public:
   TH1F* getQCDVBFHCP2();
   TH1F* getSampleVBFHCPShape(TString sample);//used for the methods below
   TH1F* getSampleVBFHCP(TString sample);//used for the methods below
+  TH1F* getSampleVBFTightHCPShape(TString sample);//used for the methods below
+  TH1F* getSampleVBFTightHCP(TString sample);//used for the methods below
   TH1F* getTTJetsVBFHCP();
   TH1F* getZToLJetVBFHCP();
+  TH1F* getZToLJetVBFTightHCP();
   TH1F* getZLVBFHCP();
   TH1F* getZLLVBFHCP();
   TH1F* getDiBosonVBFHCP();
+  TH1F* getDiBosonVBFTightHCP();
   TH1F* getZToTauTauVBF();
   TH1F* getZL2012();
   TH1F* getZL2012Type1();

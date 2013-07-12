@@ -26,16 +26,16 @@ rootl dataCardSMSummer13.C\(1\,${cat}\,2012\,6\,\"${var}\"\,\"\/data\/benitezj\/
 rootl combineDataCardsSMSummer13.C\(1\,${cat}\,\"${var}\"\)
 mv muTau_SM${cat}_${var}.root htt_mt.inputs-sm-8TeV-summer13.root
 
-cat=0
-var=ditaumass
-rm -f muTau_SM${cat}_${var}_.root
-rm -f muTau_SM${cat}_${var}_tUp.root
-rm -f muTau_SM${cat}_${var}_tDown.root
-rootl dataCardSMSummer13.C\(1\,${cat}\,2012\,6\,\"${var}\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tUp\"\) &
-rootl dataCardSMSummer13.C\(1\,${cat}\,2012\,6\,\"${var}\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tDown\"\) &
-rootl dataCardSMSummer13.C\(1\,${cat}\,2012\,6\,\"${var}\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"\"\) 
-rootl combineDataCardsSMSummer13.C\(1\,${cat}\,\"${var}\"\)
-mv muTau_SM${cat}_${var}.root htt_mt.inputs-sm-8TeV-summer13-mvis.root
+#cat=0
+#var=ditaumass
+#rm -f muTau_SM${cat}_${var}_.root
+#rm -f muTau_SM${cat}_${var}_tUp.root
+#rm -f muTau_SM${cat}_${var}_tDown.root
+#rootl dataCardSMSummer13.C\(1\,${cat}\,2012\,6\,\"${var}\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tUp\"\) &
+#rootl dataCardSMSummer13.C\(1\,${cat}\,2012\,6\,\"${var}\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tDown\"\) &
+#rootl dataCardSMSummer13.C\(1\,${cat}\,2012\,6\,\"${var}\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"\"\) 
+#rootl combineDataCardsSMSummer13.C\(1\,${cat}\,\"${var}\"\)
+#mv muTau_SM${cat}_${var}.root htt_mt.inputs-sm-8TeV-summer13-mvis.root
 
 
 #####Vs decay mode (use vbf tight)

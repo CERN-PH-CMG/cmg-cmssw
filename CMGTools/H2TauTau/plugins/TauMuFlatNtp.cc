@@ -461,19 +461,20 @@ bool TauMuFlatNtp::fill(){
   if(dataType_==0 || dataType_==2){
     
     if(dataPeriodFlag_==2011){
-      if(trigPaths_.size()>0){
+      if(dataType_==0){
 	
       	if( triggerEff_.effLooseTau15MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())> 0.)
 	  triggerEffWeightsTau_[2] = triggerEff_.effTau2011AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
 	    /triggerEff_.effLooseTau15MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+
 	if(triggerEff_.effIsoMu15MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta()) > 0.)
 	  triggerEffWeightsMu_[2] = triggerEff_.effMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
 	    /triggerEff_.effIsoMu15MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 	
-      }else{
+      }
+      if(dataType_==2){
 	triggerEffWeightsTau_[2] = triggerEff_.effTau2011AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
 	triggerEffWeightsMu_[2] = triggerEff_.effMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-
       }
       
       selectionEffWeightsId_[2] = selectionEff_.effCorrMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
@@ -668,15 +669,23 @@ bool TauMuFlatNtp::fill(){
     diobjectindex_++;
   }
   fillMET();
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fillMET "<<endl;
 
   fillDiTauMETVars();
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fillDiTauMETVars "<<endl;
+
+  runSVFit();
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" runSVFit "<<endl;
+
 
   //VBF variables
   vbfmva_=0.;
   if(njet20_>=2) fillVBFMVA();
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fillVBFMVA "<<endl;
+
   vbfmva2012_=0.;
   if(njet20_>=2) fillVBFMVA2012();
-
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fillVBFMVA2012 "<<endl;
 
   if(printSelectionPass_){
     cout<<" Passed all selections : "<<endl;

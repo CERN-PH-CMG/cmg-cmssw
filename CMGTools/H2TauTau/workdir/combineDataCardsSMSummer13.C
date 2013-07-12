@@ -28,7 +28,10 @@ void combineDataCardsSMSummer13(Int_t channel, Int_t cat, TString mass){
     if(skipCategory(cat,sm))continue;
     cout<<catdirnameSummer13[sm]<<endl;
 
-    TDirectory* dir = output.mkdir(ChannelName+"_"+catdirnameSummer13[sm]);  
+    TDirectory* dir = 0;
+    if(sm!=11 && sm!=12 ) dir=output.mkdir(ChannelName+"_"+catdirnameSummer13[sm]);  
+    else dir=(TDirectory*)output.Get(ChannelName+"_"+catdirnameSummer13[sm]); 
+    if(!dir){cout<<" Directory not found "<<endl; return 0;}
     dir->cd();
 
     TString tag="";

@@ -5,7 +5,7 @@ process = cms.Process("FLATNTP")
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) ) 
 process.maxLuminosityBlocks = cms.untracked.PSet(input = cms.untracked.int32(-1))
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
-evReportFreq = 10
+evReportFreq = 1000
 
 #######Define the samples to process
 
@@ -36,7 +36,7 @@ from CMGTools.H2TauTau.tools.joseFlatNtpSample44X_cff import configureFlatNtpSam
 configureFlatNtpSampleTauMu2011(process.flatNtp,sampleName)
 process.flatNtp.metType = 2 #1 PFMET, 2 mva met, 3 mva met presel
 process.flatNtp.runSVFit = 1 #1 old #2 new
-process.flatNtp.recoilCorrection = 0 #0 no, 1 Z, 2 W
+#process.flatNtp.recoilCorrection = 0 #0 no, 1 Z, 2 W
 
 
 ### input files
@@ -81,7 +81,7 @@ process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 
 print process.source.fileNames
 #print process.source.eventsToProcess
-#process.flatNtp.printSelectionPass = 2
+#process.flatNtp.printSelectionPass = 1
 
 
 # set up JSON ---------------------------------------------------------------
@@ -108,6 +108,13 @@ process.analysis += process.goodOfflinePrimaryVertices
 ###Apply Tau ES corrections
 process.load('CMGTools.Utilities.tools.cmgTauESCorrector_cfi')
 process.analysis +=  process.cmgTauESCorrector
+if process.flatNtp.correctTauES != 1:
+   process.cmgTauESCorrector.cfg.OneProngNoPi0Correction = 1.000
+   process.cmgTauESCorrector.cfg.OneProng1Pi0Correction = 1.000
+   process.cmgTauESCorrector.cfg.OneProng1Pi0CorrectionPtSlope = 0.0
+   process.cmgTauESCorrector.cfg.ThreeProngCorrection = 1.000
+   process.cmgTauESCorrector.cfg.ThreeProngCorrectionPtSlope = 0.0
+
 
 ###apply Tau ES shifts
 process.load('CMGTools.Common.factories.cmgTauScaler_cfi')
@@ -122,13 +129,6 @@ process.load('CMGTools.Common.factories.cmgTauMu_cfi')
 process.cmgTauMu.cfg.leg1Collection = 'cmgTauScaler'
 process.cmgTauMu.cfg.metCollection = 'cmgPFMETRaw'
 process.analysis +=  process.cmgTauMu
-
-# event filter --------------------------------
-process.load('CMGTools.Common.skims.cmgTauMuCount_cfi')
-process.cmgTauMuCount.src = 'cmgTauMu'
-process.cmgTauMuCount.minNumber = 1
-process.analysis += process.cmgTauMuCount
-
 
 
 ###MVA MET
@@ -183,13 +183,3 @@ process.MessageLogger = cms.Service("MessageLogger",
     )
 )
 
-#process.source.duplicateCheckMode = cms.untracked.string("noDuplicateCheck")
-#print process.dumpPython()
-#process.load('CMGTools.Common.skims.cmgTauMuSel_cfi')
-#process.cmgTauMuPreSel = process.cmgTauMuSel.clone()
-#process.cmgTauMuPreSel.cut = cms.string('')
-#process.cmgTauMuPreSel.cut = cms.string('pt()>0' )
-###I think the this code was removing some good candidates:
-#process.cmgTauMuPreSel.cut = cms.string('leg1().eta()!=leg2().eta() && leg1().pt()>20.0 && abs(leg1().eta())<2.3 && leg1().tauID("decayModeFinding")>0.5 && leg1().tauID("byRawIsoMVA")>-0.5 && leg2().pt()>20.0 && abs(leg2().eta())<2.1 && leg2().relIso(0.5,1)<0.5' )
-#process.cmgTauMuPreSel.cut = cms.string('leg1().pt()>=20.0 && abs(leg1().eta())<=2.3 && leg1().tauID("decayModeFinding")>0.5 && leg1().tauID("byRawIsoMVA")>-0.5 && leg2().pt()>=20.0 && abs(leg2().eta())<=2.1 && leg2().relIso(0.5,1)<0.5' )
-#process.analysis +=  process.cmgTauMuPreSel 

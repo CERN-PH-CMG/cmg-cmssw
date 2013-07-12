@@ -25,8 +25,8 @@ process.flatNtp = process.flatNtpTauEle.clone()
 from CMGTools.H2TauTau.tools.joseFlatNtpSample44X_cff import configureFlatNtpSampleTauEle2011
 configureFlatNtpSampleTauEle2011(process.flatNtp,sampleName)
 process.flatNtp.metType = 2 #1 PFMET, 2 mva met, 3 mva met presel
-process.flatNtp.runSVFit = 1 #1 old #2 new
-process.flatNtp.recoilCorrection = 0 #0 no, 1 Z, 2 W
+process.flatNtp.runSVFit = 2 #1 old #2 new
+#process.flatNtp.recoilCorrection = 0 #0 no, 1 Z, 2 W
 
 
 ### input files
@@ -79,6 +79,12 @@ process.analysis += process.goodOfflinePrimaryVertices
 ###Apply Tau ES corrections
 process.load('CMGTools.Utilities.tools.cmgTauESCorrector_cfi')
 process.analysis +=  process.cmgTauESCorrector
+if process.flatNtp.correctTauES != 1:
+   process.cmgTauESCorrector.cfg.OneProngNoPi0Correction = 1.000
+   process.cmgTauESCorrector.cfg.OneProng1Pi0Correction = 1.000
+   process.cmgTauESCorrector.cfg.OneProng1Pi0CorrectionPtSlope = 0.0
+   process.cmgTauESCorrector.cfg.ThreeProngCorrection = 1.000
+   process.cmgTauESCorrector.cfg.ThreeProngCorrectionPtSlope = 0.0
 
 ###apply Tau ES shifts
 process.load('CMGTools.Common.factories.cmgTauScaler_cfi')

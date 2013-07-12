@@ -89,9 +89,10 @@ void plot0JetMed(TauMuPlotter* analysis){
 }
 void plot0JetHigh(TauMuPlotter* analysis){
   analysis->setVariableBinning(26,xbinsValues);
-  analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMCategory(2),"",2,2,"m_{vis}   (GeV)","",c,0,"mvis_0jethigh_mt_2012");
-  analysis->plotInc("transversemass",30,0,300,1,1,0,analysis->getSMCategory(2),"",1,5,"m_{T} ","",c,0,"mt_1_met_0jethigh_mt_2012");
-  analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMCategory(2),"",1,5,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_0jethigh_mt_2012");
+//   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMCategory(2),"",2,0,"m_{vis}   (GeV)","",c,0,"mvis_0jethigh_mt_2012");
+//   analysis->plotInc("transversemass",30,0,300,1,1,0,analysis->getSMCategory(2),"",1,0,"m_{T} ","",c,0,"mt_1_met_0jethigh_mt_2012");
+  //analysis->plotInc("svfitmass",35,0,350,2,0,1,analysis->getSMCategory(2)+"*(0.2<muiso&&muiso<0.5&&tauiso3hitraw<1.5)","",-1,0,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_0jethigh_SS_MuIsoSide_mt_2012");
+  analysis->plotInc("svfitmass",35,0,350,1,1,1,analysis->getSMCategory(2),"",1,0,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_0jethigh_mt_2012");
 }
 void plot1JetMed(TauMuPlotter* analysis){
   analysis->setVariableBinning(26,xbinsValues);
@@ -328,8 +329,8 @@ void plotTauMu2012(){
 //   plotBJet(analysis);
 //   plot0JetLow(analysis);
 //   plot0JetMed(analysis);
-//   plot0JetHigh(analysis);
-  plot1JetMed(analysis);
+  plot0JetHigh(analysis);
+//  plot1JetMed(analysis);
 //   plot1JetHighLow(analysis);
 //  plot1JetHighHigh(analysis);
 //   plotVBFLoose(analysis);

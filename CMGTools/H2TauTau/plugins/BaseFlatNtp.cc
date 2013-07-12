@@ -1145,8 +1145,6 @@ void BaseFlatNtp::fillDiTauMETVars(){
 
     ditaumetpt_=(mup4_+taup4_+metP4_).Pt();
     ditaumetphi_=(mup4_+taup4_+metP4_).Phi();
-    
-    runSVFit();
 }
 
 
@@ -1389,6 +1387,7 @@ void BaseFlatNtp::fillBTagWeight(){
 void BaseFlatNtp::runSVFit(){
     svfitmass_=0.;
     //check covariance matrix:
+    if(!metSig_){cout<<"Met covariance matrix is null"<<endl; exit(0);}
     float det=((*(metSig_->significance()))[0][0])*((*(metSig_->significance()))[1][1]) - ((*(metSig_->significance()))[1][0])*((*(metSig_->significance()))[0][1]);
     if(det<1e-8)return;
 

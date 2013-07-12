@@ -27,7 +27,7 @@
 
 bool skipCategory(int cat, int sm){
   if(cat==10 && !( sm==8 ) )return 1;//inclusive category
-  if(0<cat&&cat<10 && sm!=cat )return 1;
+  if(0<cat&&cat<10 && sm!=cat )return 1;//doesnt work for 0-jet low
   if(cat==13 && !(sm==0 || sm==1 || sm==2 || sm==3) )return 1;
   if(cat==14 && !(sm==0 || sm==1 || sm==2 || sm==4) )return 1;
   if(cat==15 && !(sm==0 || sm==1 || sm==2 || sm==5) )return 1;
@@ -172,7 +172,7 @@ void dataCardSMSummer13(Int_t channel, Int_t cat, Int_t year, Int_t dataset, TSt
     fix0Bins(W); 
 
     TH1F* QCD = 0;
-    if(sm==2) QCD=analysis->getQCDMuIsoLooseTau();
+    if(sm==2) QCD=analysis->getQCDMuIso();
     else if(sm==3) QCD=analysis->getQCDMuIso();
     else if(sm==4) QCD=analysis->getQCDMuIso();
     else if(sm==5) QCD=analysis->getQCDBoostTight();
@@ -211,15 +211,17 @@ void dataCardSMSummer13(Int_t channel, Int_t cat, Int_t year, Int_t dataset, TSt
     fix0Bins(ZL); 
   
     TH1F* ZJ = 0;
-    if(sm==6||sm==7)  ZJ=analysis->getZToLJetVBFHCP();                   
+    if(sm==6) ZJ=analysis->getZToLJetVBFHCP();                   
+    else if(sm==7)  ZJ=analysis->getZToLJetVBFTightHCP();                   
     else              ZJ=analysis->getZToLJetInc();
     if( sm==11 || sm==12 )     ZJ->SetName("ZJ_fine_binning");
     else     ZJ->SetName("ZJ");
     fix0Bins(ZJ); 
 
     TH1F* VV = 0;
-    if(sm==6||sm==7)  VV=analysis->getDiBosonVBFHCP();
-    else VV=analysis->getDiBoson();
+    if(sm==6)       VV=analysis->getDiBosonVBFHCP();
+    else if(sm==7)  VV=analysis->getDiBosonVBFTightHCP();
+    else            VV=analysis->getDiBoson();
     if( sm==11 || sm==12 )     VV->SetName("VV_fine_binning");
     else     VV->SetName("VV");
     fix0Bins(VV);

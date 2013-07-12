@@ -186,6 +186,8 @@ TH1F* TauMuPlotter::getTotalData(){
   TString sel=getCurrentSelection();
   if(blindsel_.CompareTo("1")!=0)sel += TString("*")+blindsel_;
   
+  //cout<<sel<<endl;
+  
   TH1F* h=getPlotHisto("hData");
 
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
@@ -283,6 +285,26 @@ TH1F* TauMuPlotter::getDiBosonVBFHCP(){
   return h;
 
 }
+
+TH1F* TauMuPlotter::getDiBosonVBFTightHCP(){
+  //cout<<"calling getDiBosonVBFHCP"<<endl;
+  TH1F* h=getPlotHisto("hVV");
+
+  TH1F* hWW2L2Nu=getSampleVBFTightHCP("WW2L2Nu"); if(!hWW2L2Nu)return 0;  h->Add(hWW2L2Nu);   delete hWW2L2Nu;
+  TH1F* hWZ3LNu=getSampleVBFTightHCP("WZ3LNu");   if(!hWZ3LNu)return 0;   h->Add(hWZ3LNu);   delete hWZ3LNu;
+  TH1F* hWZ2L2Q=getSampleVBFTightHCP("WZ2L2Q");   if(!hWZ2L2Q)return 0;   h->Add(hWZ2L2Q);  delete hWZ2L2Q;
+  TH1F* hZZ4L=getSampleVBFTightHCP("ZZ4L");       if(!hZZ4L)return 0;     h->Add(hZZ4L);  delete hZZ4L;
+  TH1F* hZZ2L2Nu=getSampleVBFTightHCP("ZZ2L2Nu"); if(!hZZ2L2Nu)return 0;  h->Add(hZZ2L2Nu);  delete hZZ2L2Nu;
+  TH1F* hZZ2L2Q=getSampleVBFTightHCP("ZZ2L2Q");   if(!hZZ2L2Q)return 0;   h->Add(hZZ2L2Q);  delete hZZ2L2Q;
+
+  TH1F* hTopTW=getSampleVBFTightHCP("TopTW");  if(!hTopTW)return 0;  h->Add(hTopTW);  delete hTopTW;
+  TH1F* hTopBTW=getSampleVBFTightHCP("TopBTW");  if(!hTopBTW)return 0;  h->Add(hTopBTW);  delete hTopBTW;
+
+  cout<<h->Integral()<<endl;
+  return h;
+
+}
+
 
 
 TH1F* TauMuPlotter::getZToTauTau(){  
@@ -680,6 +702,17 @@ TH1F* TauMuPlotter::getSampleVBFHCPShape(TString sample){
   extrasel_=tmpextrasel;
   return hShape;
 }
+
+TH1F* TauMuPlotter::getSampleVBFTightHCPShape(TString sample){
+  TString shapesel="(njet20>=2&&njetingap==0&&diJetMass>200&&abs(diJetDeltaEta)>2.0&&ditaumetpt>100)";
+  TString tmpextrasel=extrasel_;
+  extrasel_=shapesel;
+  TH1F*hShape=getSample(sample);
+  hShape->SetName(sample+"VBFHCPShape");
+  extrasel_=tmpextrasel;
+  return hShape;
+}
+
 TH1F* TauMuPlotter::getSampleVBFHCPShape2(TString sample){
   TString shapesel="(njet20>=2&&njetingap==0&&diJetMass>200&&abs(diJetDeltaEta)>2.0)";
   TString tmpextrasel=extrasel_;
@@ -701,6 +734,18 @@ TH1F* TauMuPlotter::getSampleVBFHCP(TString sample,int type){
   else hShape->Scale(0.);
   return hShape;
 }
+
+TH1F* TauMuPlotter::getSampleVBFTightHCP(TString sample){
+  TH1F*h=getSample(sample);
+  h->SetName(sample+"VBFHCP");
+  TH1F*hShape=0;
+  hShape=getSampleVBFTightHCPShape(sample);
+
+  if(hShape->Integral()>0.) hShape->Scale(h->Integral()/hShape->Integral());
+  else hShape->Scale(0.);
+  return hShape;
+}
+
 
 
 
@@ -739,6 +784,21 @@ TH1F* TauMuPlotter::getZToLJetVBFHCP(){
   return hShape;
 }
 
+TH1F* TauMuPlotter::getZToLJetVBFTightHCP(){
+  //cout<<"Calling getZToLJetVBFHCP"<<endl;
+  //TH1F*h=getSampleVBFHCP("ZToLJet");
+  
+
+  TString shapesel="(njet>=2&&njetingap==0&&diJetMass>200&&abs(diJetDeltaEta)>2.0&&ditaumetpt>100)";
+  TString tmpextrasel=extrasel_;
+  extrasel_=shapesel;
+  TH1F*h=getZNJetSum("LJet");
+  extrasel_=tmpextrasel;
+
+  h->SetName("getZToLJetVBFHCP");
+  return h;
+}
+
 
 //ZMuMu
 TH1F* TauMuPlotter::getZLInc(){
@@ -753,7 +813,7 @@ TH1F* TauMuPlotter::getZNJetSum(TString decay){
 
   TString tmpExtrasel=extrasel_;
   
-  TH1F* hShape=getPlotHisto("getZNJetSum");
+  TH1F* hShape=getPlotHisto(TString("getZNJetSum")+decay);
 
   TH1F* H1ShapeExc=getSample(TString("Z1To")+decay,1);
   TH1F* H2ShapeExc=getSample(TString("Z2To")+decay,1);
@@ -1004,22 +1064,25 @@ TH1F* TauMuPlotter::getQCDInc(Int_t WType,bool cleanNegativeBins){
 }
 
 TH1F* TauMuPlotter::getQCDIncWNJet(){
-  return getQCDInc(1);
+  return getQCDInc(1,1);//do clean negative bins as the shape will be used
 }
 
 
 TH1F* TauMuPlotter::getQCDMuIso(){
-  //cout<<"Calling method getQCDMuIso"<<endl;
-
+  
   TH1F* hNorm=getQCDInc(1,0);//dont clean up the negative bins in QCD otherwise norm is biased
 
   int ChcatTmp=Chcat_;
   Chcat_=2;
   int IsocatTmp=Isocat_;
   Isocat_=0;
+
   TString extraselTmp=extrasel_;
   extrasel_+="*(0.2<muiso&&muiso<0.5&&tauiso3hitraw<1.5)";
+
+  // cout<<"calling getQCDMuIso Shape"<<endl;
   TH1F* hShape=getTotalData();
+
   Chcat_=ChcatTmp;
   Isocat_=IsocatTmp;
   extrasel_=extraselTmp;
@@ -1430,20 +1493,21 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
    
 
   TH1F*hQCD = 0;
-  if(QCDType==1) hQCD=getQCDMuIso();
+  if(QCDType==0) hQCD=getQCDIncWNJet();
+  else if(QCDType==1) hQCD=getQCDMuIso();
   else if(QCDType==2) hQCD=getQCDMuIsoLooseTau();
   else if(QCDType==5) hQCD=getQCDVBFLoose();//option # 5 has to be VBF always since logic below relies on that
   else if(QCDType==6) hQCD=getQCDKetiHCP();
   else if(QCDType==7) hQCD=getQCDIncLowPt();
   else if(QCDType==8) hQCD=getQCDBoostTight();
   else if(QCDType==9) hQCD=getQCDVBFTight();
-  else hQCD=getQCDIncWNJet();
+  else {
+    cout<<"no QCD determined "<<endl;
+  }
   if(hQCD){
     hQCD->SetLineWidth(1);
     hQCD->SetLineColor(1);
     hQCD->SetFillColor(QCDColor_);
-  }else {
-    cout<<"no QCD determined "<<endl;
   }
   if(hQCD) hQCD->SetName("hQCDplotInc");
   if(hQCD) cout<<"QCD "<<hQCD->Integral()<<endl;
