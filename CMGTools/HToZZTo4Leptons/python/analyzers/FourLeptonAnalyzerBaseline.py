@@ -153,8 +153,6 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
         passed=cutFlow.applyCut(self.testFourLeptonMinOSMass,'4l QCD suppression',1,'fourLeptonsQCDSuppression')
         #Z -> 4 l phase space
         passed=cutFlow.applyCut(self.testFourLeptonMassZ,'4l Z phase space',1,'fourLeptonsZPhaseSpace')
-        #Z2 Mass Tight Cut
-        passed=cutFlow.applyCut(lambda x: x.leg2.mass()>12.,'4l Tight Mass2',1,'fourLeptonsTightZ2')
 
         if passed:
             event.higgsCand = cutFlow.obj1[0]
