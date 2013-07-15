@@ -171,6 +171,16 @@ bool passND_Tight(float l1pt, float l1eta, int l1pdgId, float relIso, float dxy,
     }
 }
 
+bool passEgammaTightMVA(float pt, float eta, float tightid) {
+    if (fabs(eta) > 0.8) {
+        return (pt > 20 ? (tightid > 0.94) : (tightid > 0.00));
+    } else if (fabs(eta) < 1.479) {
+        return (pt > 20 ? (tightid > 0.85) : (tightid > 0.10));
+    } else {
+        return (pt > 20 ? (tightid > 0.92) : (tightid > 0.062));
+    }
+}
+
 float fakeRateWeight_2lss_ND(float l1pt, float l1eta, int l1pdgId, float l1relIso, float l1dxy, float l1dz, float l1tightId,
                           float l2pt, float l2eta, int l2pdgId, float l2relIso, float l2dxy, float l2dz, float l2tightId, int WP) 
 {
