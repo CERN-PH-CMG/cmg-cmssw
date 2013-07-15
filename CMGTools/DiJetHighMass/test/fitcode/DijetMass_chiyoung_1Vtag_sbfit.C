@@ -530,6 +530,7 @@ void DijetMass_chiyoung_1Vtag_sbfit(){
     fit_window->FixParameter(2,8.4);
     fit_window->FixParameter(3,0.84);
 
+/*
     if(iWindow==1)
     {
     fit_window->SetParameter(0,1.73132e-05*47976/47331);
@@ -572,14 +573,14 @@ void DijetMass_chiyoung_1Vtag_sbfit(){
     fit_window->SetParameter(2,8.62);
     fit_window->SetParameter(3,0.88);
     }
-/*    if(iWindow==7)
-    {
-    fit_window->SetParameter(0,1.73132e-05*47927/47331);
-    fit_window->SetParameter(1,5.3);
-    fit_window->SetParameter(2,10.5);
-    fit_window->SetParameter(3,1.26);
-    }
-*/    if(iWindow==8)
+//    if(iWindow==7)
+//    {
+//    fit_window->SetParameter(0,1.73132e-05*47927/47331);
+//    fit_window->SetParameter(1,5.3);
+//    fit_window->SetParameter(2,10.5);
+//    fit_window->SetParameter(3,1.26);
+//    }
+    if(iWindow==8)
     {
     fit_window->SetParameter(0,1.73132e-05*47966/47331);
     fit_window->SetParameter(1,7.1);
@@ -592,6 +593,70 @@ void DijetMass_chiyoung_1Vtag_sbfit(){
     fit_window->SetParameter(1,7.49);
     fit_window->SetParameter(2,8.60);
     fit_window->SetParameter(3,0.872);
+    }
+*/
+    if(iWindow==1)
+    {
+    fit_window->SetParameter(0,1.73132e-05*47976/47331);
+    fit_window->SetParameter(1,7.4);
+    fit_window->SetParameter(2,8.64);
+    fit_window->SetParameter(3,0.88);
+    }
+    if(iWindow==2)
+    {
+    fit_window->SetParameter(0,1.73132e-05*47976/47331);
+    fit_window->SetParameter(1,7.46);
+    fit_window->SetParameter(2,8.61);
+    fit_window->SetParameter(3,0.876);
+    }
+    if(iWindow==3)
+    {
+    fit_window->SetParameter(0,1.73132e-05*47976/47331);
+    fit_window->SetParameter(1,7.4);
+    fit_window->SetParameter(2,8.63);
+    fit_window->SetParameter(3,0.88);
+    }
+    if(iWindow==4)
+    {
+    fit_window->SetParameter(0,1.73132e-05*47976/47331);
+    fit_window->SetParameter(1,7.46);
+    fit_window->SetParameter(2,8.62);
+    fit_window->SetParameter(3,0.88);
+    }
+    if(iWindow==5)
+    {
+    fit_window->SetParameter(0,1.73132e-05*47972/47331);
+    fit_window->SetParameter(1,7.6);
+    fit_window->SetParameter(2,8.7);
+    fit_window->SetParameter(3,0.89);
+    }
+    if(iWindow==6)
+    {
+    fit_window->SetParameter(0,1.73132e-05*47974/47331);
+    fit_window->SetParameter(1,7.5);
+    fit_window->SetParameter(2,8.6);
+    fit_window->SetParameter(3,0.88);
+    }
+    if(iWindow==7)
+    {
+    fit_window->SetParameter(0,1.73132e-05*47976/47331);
+    fit_window->SetParameter(1,7.44);
+    fit_window->SetParameter(2,8.63);
+    fit_window->SetParameter(3,0.878);
+    }
+    if(iWindow==8)
+    {
+    fit_window->SetParameter(0,1.73132e-05*47976/47331);
+    fit_window->SetParameter(1,7.4);
+    fit_window->SetParameter(2,8.64);
+    fit_window->SetParameter(3,0.88);
+    }
+    if(iWindow==9)
+    {
+    fit_window->SetParameter(0,1.73132e-05*47976/47331);
+    fit_window->SetParameter(1,7.40);
+    fit_window->SetParameter(2,8.66);
+    fit_window->SetParameter(3,0.88);
     }
 
     gWindow->Fit(Form("fit_window_%d",iWindow),"","",mMin,3300.0);

@@ -116,14 +116,14 @@ void DijetMass_chiyoung_1Vtag(){
   hPulls_add->Reset();
   
   // Pave text
-  TPaveText *pave_fit = new TPaveText(0.60,0.50,0.90,0.65,"NDC");
-  //  pave_fit->AddText("CMS Preliminary");
+  TPaveText *pave_fit = new TPaveText(0.60,0.42,0.90,0.65,"NDC");
+  pave_fit->AddText(Form("CMS (%.1f fb^{-1})", lumi/1000.));// Preliminary
 
   
   pave_fit->AddText(" #sqrt{s} = 7 TeV");
   pave_fit->AddText("|#eta| < 2.5, |#Delta#eta| < 1.3");
   //  pave_fit->AddText("M_{jj} > 890 GeV");
-  if (sReco.find("pf") != string::npos)   pave_fit->AddText("Anti-K_{T} R=0.5");
+  if (sReco.find("pf") != string::npos)   pave_fit->AddText("Anti-k_{T} R=0.5");
   else   pave_fit->AddText("Wide Jets");
 
   pave_fit->SetFillColor(0);
@@ -131,12 +131,12 @@ void DijetMass_chiyoung_1Vtag(){
   pave_fit->SetFillStyle(0);
   pave_fit->SetBorderSize(0);
   pave_fit->SetTextFont(42);
-  pave_fit->SetTextSize(0.04);
+  pave_fit->SetTextSize(0.05);
   pave_fit->SetTextAlign(12); 
   
-  TPaveText *pave = new TPaveText(0.55,0.72,0.9,0.9,"NDC");
+  TPaveText *pave = new TPaveText(0.55,0.68,0.9,0.9,"NDC");
   
-  //  pave->AddText("CMS Preliminary");
+  pave->AddText(Form("CMS (%.1f fb^{-1})", lumi/1000.));// Preliminary
   
 
   pave->AddText(Form("data (%.1f fb^{-1})", lumi/1000.)); 
@@ -151,7 +151,7 @@ void DijetMass_chiyoung_1Vtag(){
   pave->SetFillStyle(0);
   pave->SetBorderSize(0);
   pave->SetTextFont(42);
-  pave->SetTextSize(0.04);
+  pave->SetTextSize(0.05);
   pave->SetTextAlign(12); 
   
  
@@ -462,8 +462,8 @@ void DijetMass_chiyoung_1Vtag(){
         std::cout << "EigenVectors" << std::endl;
         for(Int_t k= 0; k < nPar; k++) {
      	  std::cout << k << ": ";
-     	  for(Int_t l= 0; l < nPar; l++) {
-     	    std::cout << eigenVectors[k][l] << " ";
+     	  for(Int_t ll= 0; ll < nPar; ll++) {
+     	    std::cout << eigenVectors[k][ll] << " ";
      	  }
      	  std::cout << std::endl;
         }
@@ -647,6 +647,7 @@ void DijetMass_chiyoung_1Vtag(){
   g->SetFillColor(1);
   g->SetMarkerColor(1);
   g->SetMarkerStyle(20);
+  g->SetMarkerSize(1.5);
   g->GetXaxis()->SetTitle("Dijet Mass (GeV)");
   g->GetYaxis()->SetTitle("d#sigma/dm (pb/GeV)");
   g->GetXaxis()->SetRangeUser(890,3300.0);
@@ -709,6 +710,7 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
     g->SetFillColor(1);
     g->SetMarkerColor(1);
     g->SetMarkerStyle(20);
+    g->SetMarkerSize(1.5);
     g->GetXaxis()->SetTitle("Dijet Mass (GeV)");
     g->GetYaxis()->SetTitle("d#sigma/dm (pb/GeV)");
     g->GetXaxis()->SetRangeUser(890,3300.0);
@@ -722,7 +724,7 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
     leg->SetLineStyle(1);
     leg->SetLineWidth(1);
     leg->SetFillColor(0);
-    leg->AddEntry(g,Form("Single W/Z-tag data (%.1f fb^{-1})", lumi/1000.),"PL"); 
+    leg->AddEntry(g,"Single W/Z-tag data","PL"); 
     leg->AddEntry(fit,"Fit","L");
     leg->Draw("same");
     pave_fit->Draw("same");
@@ -737,6 +739,7 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
     g2->SetFillColor(1);
     g2->SetMarkerColor(1);
     g2->SetMarkerStyle(20);
+    g2->SetMarkerSize(1.5);
     g2->SetTitle("");
     g2->GetXaxis()->SetTitle("Dijet Mass (GeV)");
     g2->GetYaxis()->SetTitle("d#sigma/dm (pb/GeV)");
@@ -756,7 +759,7 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
     leg->SetLineStyle(1);
     leg->SetLineWidth(1);
     leg->SetFillColor(0);
-    leg->AddEntry(g,Form("Single W/Z-tag data (%.1f fb^{-1})", lumi/1000.),"PL");
+    leg->AddEntry(g,"Single W/Z-tag data","PL");
     leg->AddEntry(fit,"Default Fit (4 Par.)","L");
     leg->AddEntry(fit_4par,"Alternate Fit A (4 Par.)","L");
     leg->AddEntry(fit_3par,"Alternate Fit B (3 Par.)","L");
@@ -1078,7 +1081,7 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
    pt_c5_wprime1->SetFillStyle(0);
    pt_c5_wprime1->SetBorderSize(0);
    pt_c5_wprime1->SetTextColor(ci_g);
-   pt_c5_wprime1->AddText("q*->qZ (1 TeV)");
+   pt_c5_wprime1->AddText("q* #rightarrow qZ (1 TeV)");
 
    TPaveText *pt_c5_wprime2 = new TPaveText(0.65,0.45,0.8,0.55,"NDC");
    pt_c5_wprime2->SetTextSize(0.04);
@@ -1086,7 +1089,7 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
    pt_c5_wprime2->SetFillStyle(0);
    pt_c5_wprime2->SetBorderSize(0);
    pt_c5_wprime2->SetTextColor(ci_g);
-   pt_c5_wprime2->AddText("q*->qZ (2 TeV)");
+   pt_c5_wprime2->AddText("q* #rightarrow qZ (2 TeV)");
 
    TPaveText *pt_c5_diquark1 = new TPaveText(0.18,0.35,0.33,0.45,"NDC");
    pt_c5_diquark1->SetTextSize(0.04);
@@ -1094,7 +1097,7 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
    pt_c5_diquark1->SetFillStyle(0);
    pt_c5_diquark1->SetBorderSize(0);
    pt_c5_diquark1->SetTextColor(2);
-   pt_c5_diquark1->AddText("q*->qW (1 TeV)");
+   pt_c5_diquark1->AddText("q* #rightarrow qW (1 TeV)");
 
    TPaveText *pt_c5_diquark2 = new TPaveText(0.32,0.25,0.47,0.35,"NDC");
    pt_c5_diquark2->SetTextSize(0.04);
@@ -1102,7 +1105,7 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
    pt_c5_diquark2->SetFillStyle(0);
    pt_c5_diquark2->SetBorderSize(0);
    pt_c5_diquark2->SetTextColor(2);
-   pt_c5_diquark2->AddText("q*->qW (2 TeV)");
+   pt_c5_diquark2->AddText("q* #rightarrow qW (2 TeV)");
 
    //pt_c5_wprime1->Draw("sames");
    //pt_c5_wprime2->Draw("sames");
@@ -1114,10 +1117,10 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
    leg2->SetBorderSize(0);
    leg2->SetFillColor(0);
    leg2->SetFillStyle(0);
-   leg2->AddEntry(g,Form("Single W/Z-tag data (%.1f fb^{-1})", lumi),"PL");
+   leg2->AddEntry(g,"Single W/Z-tag data","PL");
    leg2->AddEntry(fit,"Fit","L");
-   leg2->AddEntry(gr_diquark1,"q*->qW","L");
-   //leg2->AddEntry(gr_wprime1,"q*->qZ","L");
+   leg2->AddEntry(gr_diquark1,"q* #rightarrow qW","L");
+   //leg2->AddEntry(gr_wprime1,"q* #rightarrow qZ","L");
    leg2->Draw("same");
    pave_fit->Draw("same");
 
@@ -1198,6 +1201,7 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
    TGraphAsymmErrors *hratio = new TGraphAsymmErrors(i,vx,ratio,vexl,vexh,eyl_pulls,eyh_pulls);
 	
    hPulls_3par->SetMarkerStyle(26);
+   hPulls_3par->SetMarkerSize(1.5);
    hPulls_3par->SetMarkerColor(4);
    hPulls_3par->SetLineColor(4);
    hDiff_3par->SetMarkerStyle(26);
@@ -1205,6 +1209,7 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
    hDiff_3par->SetLineColor(4);
 
    hPulls_4par->SetMarkerStyle(25);
+   hPulls_4par->SetMarkerSize(1.5);
    hPulls_4par->SetMarkerColor(TColor::GetColor("#006600"));
    hPulls_4par->SetLineColor(TColor::GetColor("#006600"));
    hDiff_4par->SetMarkerStyle(25);
@@ -1212,13 +1217,16 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
    hDiff_4par->SetLineColor(TColor::GetColor("#006600"));
 
    hPulls->SetMarkerStyle(20);
+   hPulls->SetMarkerSize(1.5);
    hPulls->SetMarkerColor(1);
    hPulls->SetLineColor(1);
    hDiff->SetMarkerStyle(20);
+   hDiff->SetMarkerSize(1.5);
    hDiff->SetMarkerColor(1);
    hDiff->SetLineColor(1);
 	
    hratio->SetMarkerStyle(20);
+   hratio->SetMarkerSize(1.5);
    hratio->SetMarkerColor(1);
    hratio->SetLineColor(1);	
    c5->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithSignal.png");
@@ -1282,6 +1290,7 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
 
   c02->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFitRatio.png");
   c02->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFitRatio.pdf");
+  c02->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFitRatio.root");
 
 
 
@@ -1401,7 +1410,7 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
    hDiff_4par->Draw("pzsame");
    hDiff_3par->Draw("pzsame");
    l->Draw("same"); 
-   TLegend *leg = new TLegend(0.4,0.6,0.85,0.92);
+   TLegend *leg = new TLegend(0.25,0.6,0.85,0.92);
    leg->SetFillColor(0);
    leg->SetTextSize(0.04);
    leg->AddEntry(hPulls,"Default Fit (4 Par.)","PL");
@@ -1417,7 +1426,7 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
    hPulls_4par->Draw("epsame");
    hPulls_3par->Draw("epsame");
    l->Draw("same");	
-   TLegend *leg = new TLegend(0.65,0.7,0.92,0.92);
+   TLegend *leg = new TLegend(0.25,0.7,0.92,0.92);
    leg->SetFillColor(0);
    leg->SetTextSize(0.04);
    leg->AddEntry(hPulls,"Default Fit (4 Par.)","PL");
@@ -1436,6 +1445,7 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
    hratio->GetXaxis()->SetTitleSize(0.06);
    hratio->GetYaxis()->SetTitle("Data/Fit");
    hratio->SetMarkerStyle(20);
+   hratio->SetMarkerSize(1.5);
    hratio->GetXaxis()->SetRangeUser(890.,3300.);
    hratio->GetYaxis()->SetRangeUser(0.5,6.);
    hratio->Draw("APZ");
@@ -1484,8 +1494,10 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
    TH1F *vFrame = p11_1->DrawFrame(890.,0.0000001,3300.0,2.0);
    vFrame->SetTitle("");
    vFrame->SetXTitle("Dijet Mass (GeV)");
-   vFrame->GetXaxis()->SetTitleSize(0.06);
    vFrame->SetYTitle("d#sigma/dm (pb/GeV)");
+   vFrame->GetYaxis()->SetTitleSize(0.08);
+   vFrame->GetYaxis()->SetTitleOffset(0.9);
+   vFrame->GetYaxis()->SetLabelSize(0.05);
 
    //h->SetTitle("");
 
@@ -1501,17 +1513,17 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
    //f_qcd->Draw("same");
    g->Draw("sameP");
    TLegend *leg = new TLegend(0.28,0.70,0.49,0.93);
-   leg->SetTextSize(0.04);
+   leg->SetTextSize(0.05);
    leg->SetLineColor(1);
    leg->SetLineStyle(1);
    leg->SetLineWidth(1);
    leg->SetFillColor(0);
-   leg->AddEntry(g,Form("Single W/Z-tag data (%.1f fb^{-1})", lumi/1000.),"PL"); 
+   leg->AddEntry(g,"Single W/Z-tag data","PL"); 
    leg->AddEntry(fit,"Fit","L");
    //leg->AddEntry(f_qcd,"QCD Pythia","L");
    //leg->AddEntry(htmp,"JES Uncertainty","F");
-   leg->AddEntry(gr_diquark1,"q*->qW","L");
-   //leg->AddEntry(gr_wprime1,"q*->qZ","L");
+   leg->AddEntry(gr_diquark1,"q* #rightarrow qW","L");
+   //leg->AddEntry(gr_wprime1,"q* #rightarrow qZ","L");
    leg->Draw("same");
 
    pave_fit->Draw("same");
@@ -1522,36 +1534,36 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
    //   gr_wprime2->Draw("csame");
 
    TPaveText *pt_c11_wprime1 = new TPaveText(0.15,0.25,0.30,0.4,"NDC");
-   pt_c11_wprime1->SetTextSize(0.04);
+   pt_c11_wprime1->SetTextSize(0.05);
    pt_c11_wprime1->SetFillColor(0);
    pt_c11_wprime1->SetFillStyle(0);
    pt_c11_wprime1->SetBorderSize(0);
    pt_c11_wprime1->SetTextColor(TColor::GetColor("#006600"));
-   pt_c11_wprime1->AddText("q*->qZ (1 TeV)");
+   pt_c11_wprime1->AddText("q* #rightarrow qZ (1 TeV)");
 
    TPaveText *pt_c11_wprime2 = new TPaveText(0.60,0.45,0.75,0.55,"NDC");
-   pt_c11_wprime2->SetTextSize(0.04);
+   pt_c11_wprime2->SetTextSize(0.05);
    pt_c11_wprime2->SetFillColor(0);
    pt_c11_wprime2->SetFillStyle(0);
    pt_c11_wprime2->SetBorderSize(0);
    pt_c11_wprime2->SetTextColor(TColor::GetColor("#006600"));
-   pt_c11_wprime2->AddText("q*->qZ (2 TeV)");
+   pt_c11_wprime2->AddText("q* #rightarrow qZ (2 TeV)");
 
    TPaveText *pt_c11_diquark1 = new TPaveText(0.26,0.40,0.45,0.53,"NDC");
-   pt_c11_diquark1->SetTextSize(0.04);
+   pt_c11_diquark1->SetTextSize(0.05);
    pt_c11_diquark1->SetFillColor(0);
    pt_c11_diquark1->SetFillStyle(0);
    pt_c11_diquark1->SetBorderSize(0);
    pt_c11_diquark1->SetTextColor(2);
-   pt_c11_diquark1->AddText("q*->qW (1 TeV)");
+   pt_c11_diquark1->AddText("q* #rightarrow qW (1 TeV)");
 
-   TPaveText *pt_c11_diquark2 = new TPaveText(0.40,0.15,0.55,0.20,"NDC");
-   pt_c11_diquark2->SetTextSize(0.04);
+   TPaveText *pt_c11_diquark2 = new TPaveText(0.35,0.05,0.55,0.20,"NDC");
+   pt_c11_diquark2->SetTextSize(0.05);
    pt_c11_diquark2->SetFillColor(0);
    pt_c11_diquark2->SetFillStyle(0);
    pt_c11_diquark2->SetBorderSize(0);
    pt_c11_diquark2->SetTextColor(2);
-   pt_c11_diquark2->AddText("q*->qW (2 TeV)");
+   pt_c11_diquark2->AddText("q* #rightarrow qW (2 TeV)");
 
    //pt_c11_wprime1->Draw("sames");
    //pt_c11_wprime2->Draw("sames");
@@ -1561,23 +1573,23 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
    c11->cd(2);
    p11_2 = (TPad*)c11->GetPad(2);
    p11_2->SetPad(0.01,0.02,0.99,0.24);
-   p11_2->SetBottomMargin(0.35);
+   p11_2->SetBottomMargin(0.48);
    p11_2->SetRightMargin(0.05);
    p11_2->SetGridx();
-   c11_2->SetTickx(50);
+   c11->SetTickx(50);
 
 
-   TH1F *vFrame2 = p11_2->DrawFrame(890., -3.31, 3300.0, 3.31);
+   TH1F *vFrame2 = p11_2->DrawFrame(890., -3, 3300.0, 3);
    vFrame2->SetTitle("");
    vFrame2->SetXTitle("Dijet Mass (GeV)");
-   vFrame2->GetXaxis()->SetTitleSize(0.06);
-   vFrame2->SetYTitle("Significance");
-   vFrame2->GetYaxis()->SetTitleSize(0.12);
-   vFrame2->GetYaxis()->SetLabelSize(0.10);
-   vFrame2->GetYaxis()->SetTitleOffset(0.50);
-   vFrame2->GetXaxis()->SetTitleOffset(0.90);
-   vFrame2->GetXaxis()->SetTitleSize(0.18);
-   vFrame2->GetXaxis()->SetLabelSize(0.18);
+   vFrame2->SetYTitle("#frac{Data-Fit}{#sigma_{Data}}");
+   vFrame2->GetYaxis()->SetTitleSize(0.2);
+   vFrame2->GetYaxis()->SetLabelSize(0.16);
+   vFrame2->GetYaxis()->SetTitleOffset(0.3);
+   vFrame2->GetXaxis()->SetTitleOffset(0.95);
+   vFrame2->GetXaxis()->SetTitleSize(0.24);
+   vFrame2->GetXaxis()->SetLabelSize(0.20);
+   vFrame2->SetNdivisions(203,"Y");
 
 
     hPulls_add->SetLineWidth(0);
@@ -1589,9 +1601,9 @@ c01->SaveAs("Plots_1Vtag/DijetMassCrossSectionWithWindowFits.pdf");
    TLine *line = new TLine(890.,0,3300,0);
    line->Draw("");
    
-   c11->SaveAs("Plots_1Vtag/DefaultFitAndPull.png");
-   c11->SaveAs("Plots_1Vtag/DefaultFitAndPull.pdf");
-   //c11->SaveAs("Plots_1Vtag/DefaultFitAndPullNoStat.png");
-   //c11->SaveAs("Plots_1Vtag/DefaultFitAndPullNoStat.pdf");
+   //c11->SaveAs("Plots_1Vtag/DefaultFitAndPull.png");
+   //c11->SaveAs("Plots_1Vtag/DefaultFitAndPull.pdf");
+   c11->SaveAs("Plots_1Vtag/DefaultFitAndPullNoStat.png");
+   c11->SaveAs("Plots_1Vtag/DefaultFitAndPullNoStat.pdf");
 
 }
