@@ -2,6 +2,7 @@
 #include "RooGlobalFunc.h"
 #endif
 #include <sstream>
+
 #include "TFile.h"
 #include "TTree.h"
 #include "TCanvas.h"
@@ -86,21 +87,30 @@ void load(TTree *iTree, int type) {
   /*
     iTree->SetBranchAddress("eta_2" ,&fEta2);
     iTree->SetBranchAddress("phi_2" ,&fPhi2);
-    iTree->SetBranchAddress("taujetpt" ,&fPt2);
-  */
+    iTree->SetBranchAddress("taujetpt" ,&fPt2)
     iTree->SetBranchAddress("pt_vis"  ,&fPt1);
     iTree->SetBranchAddress("phi_vis" ,&fPhi1);
+  */
 
+  /*
+  // commented for now since is not good for later
   iTree->SetBranchAddress("MuNeg_eta" ,&fEta2);
   iTree->SetBranchAddress("MuNeg_phi" ,&fPhi2);
   iTree->SetBranchAddress("MuNeg_pt" ,&fPt2); 
+  */
+
+  /* 
+  iTree->SetBranchAddress("MuPos_pt"  ,&fPt1); 
+  iTree->SetBranchAddress("MuPos_phi" ,&fPhi1); // this maybe for the W
+  */
 
   /*
-  iTree->SetBranchAddress("MuPos_pt"  ,&fPt1); 
-  iTree->SetBranchAddress("MuPos_phi" ,&fPhi1); */ // this maybe for the W
+  iTree->SetBranchAddress("Z_pt"  ,&fPt1); // this is for the Z; this is not working because of renaming
+  iTree->SetBranchAddress("Z_phi" ,&fPhi1);
+  */
 
-  // iTree->SetBranchAddress("Z_pt"  ,&fPt1); //
-  // iTree->SetBranchAddress("Z_phi" ,&fPhi1);
+  iTree->SetBranchAddress("pt_vis"  ,&fPt1);
+  iTree->SetBranchAddress("phi_vis" ,&fPhi1);
 
   //iTree->SetBranchAddress("Weight",&fWeight); // this is set to 1 fot now
 
@@ -111,6 +121,8 @@ void load(TTree *iTree, int type) {
 
   if(!fData) iTree->SetBranchAddress("ZGen_pt" ,&fZPt);
   if(!fData) iTree->SetBranchAddress("ZGen_phi",&fZPhi);
+  //  if(!fData) iTree->SetBranchAddress("Z_pt" ,&fZPt);
+  //  if(!fData) iTree->SetBranchAddress("Z_phi",&fZPhi);
   if(fData)  iTree->SetBranchAddress("Z_pt" ,&fZPt);
   if(fData)  iTree->SetBranchAddress("Z_phi",&fZPhi);
 
@@ -198,12 +210,14 @@ bool runSelection() {
 
 }
 
-
 //void calculateU1U2(float &iPar,bool iType) {
 void calculateU1U2(double &iPar, bool iType) {
+
   double lUX  = fMet*cos(fMPhi) + fPt1*cos(fPhi1);
   double lUY  = fMet*sin(fMPhi) + fPt1*sin(fPhi1);
   double lU   = sqrt(lUX*lUX+lUY*lUY);
+
+  // rotate of -180 the X and Y component
   double lCos = - (lUX*cos(fZPhi) + lUY*sin(fZPhi))/lU;
   double lSin =   (lUX*sin(fZPhi) - lUY*cos(fZPhi))/lU;
   fU1 = lU*lCos;
@@ -211,11 +225,9 @@ void calculateU1U2(double &iPar, bool iType) {
   if(iType)  iPar = fU1;
   if(!iType) iPar = fU2;
 
-  /*
-    cout << "fU1: recomputed " << fU1 << " stored " << fPFU1 << endl;
-    cout << "fU2: recomputed " << fU2 << " stored " << fPFU2 << endl;
-  */
- 
+  //  cout << "fU1: recomputed " << fU1 << " stored " << fPFU1 << endl;
+  //  cout << "fU2: recomputed " << fU2 << " stored " << -fPFU2 << endl;
+
 }
 
 bool passMatching() { 
@@ -393,7 +405,6 @@ void fitCorr(bool iRMS,TTree *iTree,TCanvas *iC,double &lPar0,double &lPar1,
   std::vector<float> lXVals; std::vector<float> lY0Vals; std::vector<float> lY1Vals;
   std::vector<float> lXEVals; std::vector<float> lYEVals; 
 
-
   //  for(int i1 = 0; i1 <  iTree->GetEntries(); i1++) {
   for(int i1 = 0; i1 <  10000; i1++) {
     iTree->GetEntry(i1);
@@ -407,10 +418,7 @@ void fitCorr(bool iRMS,TTree *iTree,TCanvas *iC,double &lPar0,double &lPar1,
     //    if(fNJetSelect<2 && fNJet!=fNJetSelect && fNJetSelect != -1) continue;
     //    if(fNJetSelect==2 && fNJet<2) continue;
    
-    // MARIA add this 
-    testU1U2->Fill(lPar0);
-
-    double pVal0 = lPar0;
+     double pVal0 = lPar0;
     double pVal1 = lPar1;
     if(iMeanFit0 != 0 && iRMSFit0 != 0 )   pVal0 = (lPar0-iMeanFit0->Eval(fZPt))/iRMSFit0->Eval(fZPt);
     if(iMeanFit1 != 0 && iRMSFit1 != 0 )   pVal1 = (lPar1-iMeanFit1->Eval(fZPt))/iRMSFit1->Eval(fZPt);
@@ -427,13 +435,6 @@ void fitCorr(bool iRMS,TTree *iTree,TCanvas *iC,double &lPar0,double &lPar1,
     (!iRMS) ? lY1Vals.push_back(pVal1) : lY1Vals.push_back(pVal1);
     lYEVals.push_back(1./sqrt(pWeight));
   }
-
-///////////MARIA
-//   testU1U2->Draw("hist");
-//   TFile outfile("histos.root","RECREATE");
-//   testU1U2->Write();
-//   outfile.Write();
-//   outfile.Close();
 
   for(int i0 = 0; i0 < iNBins; i0++) lG0[i0] = makeGraph(iNBins,i0,lXVals,lY0Vals,lY1Vals,lXEVals,lYEVals);
   //for(int i0 = 2; i0 < 7; i0++) project(iNBins,i0,lXVals,lY0Vals,lY1Vals);
@@ -564,6 +565,24 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     lYTVals.push_back(pVal); lYEVals.push_back(1./sqrt(pWeight));
   }
 
+
+  // MARIA something to add to the plots
+  TString leg = "#sigma_{mean} = ";   
+  //  leg += lY0[i0];
+  
+  TLatex latexLabel;    
+  latexLabel.SetTextSize(0.04);
+  latexLabel.SetNDC();
+  //    latexLabel.DrawLatex(0.2, 0.7, leg);
+  
+  TString leg1 = "NVtx ";  
+  if(fId == 1) leg1 += " = 0-12"; 
+  if(fId == 2) leg1 += " = 0-5";
+  if(fId == 3) leg1 += " = 5-10";
+  if(fId == 4) leg1 += " = 10-15";
+  if(fId == 5) leg1 += " = 15-20";
+  if(fId == 6) leg1 += " > 20";
+  
   iC->cd();
   
   //Basic Fit
@@ -572,12 +591,38 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   std::string lType     = "pol3"; if(iPol1) lType = "pol2"; //pol1 -->higgs 
   if(iType == 1)  lType = "pol3"; 
 
+  //// THIS IS THE unbinned Fit
   TF1 *lFit = new TF1("test",lType.c_str()); //fZPtMax = 200;
-  //TFitResultPtr  lFitPtr = pGraphA->Fit(lFit,"SR","EXO",0,fZPtMax); //"EXO"
+  //  TFitResultPtr  lFitPtr = pGraphA->Fit(lFit,"SR","EXO",0,fZPtMax); //"EXO"
   TFitResultPtr  lFitPtr = pGraphA->Fit(lFit,"SR","",0,fZPtMax); //"EXO"
   computeFitErrors(iFit,lFitPtr,lFit,iRMS);
   pGraphA->Draw("ap");
   drawErrorBands(iFit,100);
+
+  if(lPar==fU1) pGraphA->GetYaxis()->SetTitle("U1"); 
+  if(lPar!=fU1) pGraphA->GetYaxis()->SetTitle("U2"); 
+  pGraphA->GetXaxis()->SetTitle("Z p_{T}"); 
+
+  latexLabel.DrawLatex(0.15, 0.8, leg1);
+
+  if(fData) {
+
+    if(fId ==1 && !iRMS && (lPar==fU1)) iC->SaveAs("DrawUnbinned_U1_mean_data.png");
+    if(fId ==1 && iRMS && (lPar==fU1)) iC->SaveAs("DrawUnbinned_U1_RMS_data.png");
+    
+    if(fId ==1 && !iRMS && (lPar!=fU1)) iC->SaveAs("DrawUnbinned_U2_mean_data.png");
+    if(fId ==1 && iRMS && (lPar!=fU1)) iC->SaveAs("DrawUnbinned_U2_RMS_data.png");
+
+  } else {
+    
+    if(fId ==1 && !iRMS && (lPar==fU1)) iC->SaveAs("DrawUnbinned_U1_mean_MC.png");
+    if(fId ==1 && iRMS && (lPar==fU1)) iC->SaveAs("DrawUnbinned_U1_RMS_MC.png");
+    
+    if(fId ==1 && !iRMS && (lPar!=fU1)) iC->SaveAs("DrawUnbinned_U2_mean_MC.png");
+    if(fId ==1 && iRMS && (lPar!=fU1)) iC->SaveAs("DrawUnbinned_U2_RMS_MC.png");
+    
+  }
+
 
   if(!iRMS) return;
 
@@ -606,23 +651,6 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   }
   RooFitResult *pFR = lGAdd.fitTo(lResidVals2D[0],Save(kTRUE),ConditionalObservables(lRPt),NumCPU(2),Minos());//,Minos());//,Minos()); //Double Gaussian fit
 
-  // MARIA something to add to the plots
-  TString leg = "#sigma_{mean} = ";   
-  //  leg += lY0[i0];
-  
-  TLatex latexLabel;    
-  latexLabel.SetTextSize(0.04);
-  latexLabel.SetNDC();
-  //    latexLabel.DrawLatex(0.2, 0.7, leg);
-  
-  TString leg1 = "NVtx ";  
-  if(fId == 1) leg1 += " = 0-12"; 
-  if(fId == 2) leg1 += " = 0-5";
-  if(fId == 3) leg1 += " = 5-10";
-  if(fId == 4) leg1 += " = 10-15";
-  if(fId == 5) leg1 += " = 15-20";
-  if(fId == 6) leg1 += " > 20";
-  
   //Plot it all
   lRXVar.setBins(100);
   double *lX   = new double[lNBins];
@@ -675,6 +703,26 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     latexLabel.DrawLatex(0.15, 0.7, leg2);
 
     stringstream pSS1; 
+    TString test="";
+
+    if(iFitS1==0) test += "mean_";
+    if(iFitS1!=0) test += "rms_";
+
+    if(lPar==fU1) test += "U1_";
+    if(lPar!=fU1) test += "U2_";
+
+    if(fData) test += "data_";
+    if(!fData) test += "MC_";
+
+    test += "_Zpt";
+    test += i0;
+    test += "_jets";
+    test += fNJetSelect;
+    test += "_vtx";
+    test += fId;
+    test += ".png";
+
+    /*
     if(lPar==fU1) {
       if(fData) pSS1 << "Canvas_U1_"<< i0 << "_data_" << fNJetSelect << "_"<< fId << ".png";
       if(!fData) pSS1 << "Canvas_U1_" << i0 << "_MC_" << fNJetSelect << "_"<< fId << ".png";
@@ -682,8 +730,9 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       if(fData) pSS1 << "Canvas_U2_"<< i0 << "_data_" << fNJetSelect << "_"<< fId << ".png";
       if(!fData) pSS1 << "Canvas_U2_" << i0 << "_MC_" << fNJetSelect << "_"<< fId << ".png";
     }
-
     iC->SaveAs(pSS1.str().c_str());
+    */
+    iC->SaveAs(test.Data());
 
   }
 
@@ -703,11 +752,16 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   lG1->GetXaxis()->SetTitle("Z p_{T}"); 
   lG2->GetXaxis()->SetTitle("Z p_{T}"); 
  
+  //////
+  //// cin.get();
+  //////
+
   iC->cd();
   TFitResultPtr  lFitPtr0 = lG0->Fit(lFit,"SR","EXO",0,fZPtMax); //"EXO"
-  computeFitErrors(iFitS1,lFitPtr0,lFit,iRMS);
+  TF1 *iFitPull  = new TF1("iFitPull",   "pol6");
+  computeFitErrors(iFitPull,lFitPtr0,lFit,iRMS);
   lG0->Draw("ape");
-  drawErrorBands(iFit,200);
+  drawErrorBands(iFitPull,100);
   lG0->Draw("pe");
   latexLabel.DrawLatex(0.15, 0.8, leg1);
   stringstream pSS0;
@@ -721,23 +775,16 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
   iC->SaveAs(pSS0.str().c_str());
 
-  //  iC->SaveAs("G0.png");
-  cin.get();
-  computeFitErrors(iFit,lFitPtr0,lFit,iRMS);
-  lG0->Draw("ape");
-  drawErrorBands(iFit,200);
-  lG0->Draw("pe");
-  latexLabel.DrawLatex(0.15, 0.8, leg1);
-
-  iC->SaveAs(pSS0.str().c_str());
-  //  iC->SaveAs("G0.png");
-  cin.get();
+  //////
+  //// cin.get();
+  //////
 
   iC->cd();
-  TFitResultPtr  lFitPtr1 = lG1->Fit(lFit,"SR","",0,fZPtMax); //"EXO"
+  //  TFitResultPtr  lFitPtr1 = lG1->Fit(lFit,"SR","",0,fZPtMax); 
+  TFitResultPtr  lFitPtr1 = lG1->Fit(lFit,"SR","EXO",0,fZPtMax); //"EXO"
   computeFitErrors(iFitS1,lFitPtr1,lFit,iRMS);
   lG1->Draw("ape");
-  drawErrorBands(iFitS1,200);
+  drawErrorBands(iFitS1,100);
   lG1->Draw("pe");
   latexLabel.DrawLatex(0.15, 0.8, leg1);
 
@@ -751,10 +798,14 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   }
     //  iC->SaveAs("G1.png");
   iC->SaveAs(pG1.str().c_str());
-  cin.get();
+
+  //////
+  //// cin.get();
+  //////
   
   iC->cd();
-  TFitResultPtr  lFitPtr2 = lG2->Fit(lFit,"SR","",0,fZPtMax); //"EXO"
+  //  TFitResultPtr  lFitPtr2 = lG2->Fit(lFit,"SR","",0,fZPtMax); 
+  TFitResultPtr  lFitPtr2 = lG2->Fit(lFit,"SR","EXO",0,fZPtMax); //"EXO"
   computeFitErrors(iFitS2,lFitPtr2,lFit,iRMS);
   lG2->Draw("ape");
   drawErrorBands(iFitS2,100);
@@ -773,7 +824,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   iC->SaveAs(pG2.str().c_str());
   cin.get();
   
-  return;
+  //  return;
 
   TMatrixDSym   lCov = pFR->covarianceMatrix();
     
@@ -837,6 +888,8 @@ void writeCorr(TF1 *iU1U2PFCorr, TF1 *iU1U2TKCorr, TF1 *iPFTKU1Corr, TF1 *iPFTKU
 void fitRecoilMET(TTree *iTree,std::string iName,int type) { 
   std::string lPrefix="PF"; if(type == 1) lPrefix = "TK";
   load(iTree,type);
+  //  fU2=fU2*(-1);
+
   TF1 *lU1Fit     = new TF1((lPrefix+"u1Mean_0").c_str(),   "pol6");
   TF1 *lU1MRMSFit = new TF1((lPrefix+"u1MeanRMS_0").c_str(),"pol6");
   TF1 *lU1RMS1Fit = new TF1((lPrefix+"u1RMS1_0").c_str(),   "pol6");
@@ -867,6 +920,7 @@ int readRecoil(std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,std::vect
   return 1;
 }
 */
+
 /*
 void makeCorr(TTree *iTree,std::string iName) { 
   TCanvas *lXC1 = new TCanvas("C1","C1",800,600); lXC1->cd(); 
@@ -900,7 +954,7 @@ void fitRecoil(TTree *iTree,std::string iName) {
   fitRecoilMET(iTree,iName,2);
   //  fitRecoilMET(iTree,iName,0);
   //fitRecoilMET(iTree,iName,1); 
-  //makeCorr(iTree,iName);
+  //  makeCorr(iTree,iName);
 }
 
 void runRecoilFit_v6(int MCtype) { 
@@ -911,19 +965,21 @@ void runRecoilFit_v6(int MCtype) {
   if(MCtype==1) {
 
     cout << "PROCESSING DY MC " << endl;
-    //  fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
+    //    fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
+    //    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
     fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
+
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = false; fId = 1;
     //    fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_Z_inc_1.root");
-    fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_genZ_inc_1.root");
+    fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_genZ_inc.root");
   }
 
   if(MCtype==2) {
 
     cout << "PROCESSING DY MC " << endl;
     //  fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
-    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = false; fId = 2;
     fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_Z_inc_2.root");
@@ -934,7 +990,7 @@ void runRecoilFit_v6(int MCtype) {
 
     cout << "PROCESSING DY MC " << endl;
     //  fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
-    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = false; fId = 3;
     fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_Z_inc_3.root");
@@ -945,7 +1001,7 @@ void runRecoilFit_v6(int MCtype) {
 
     cout << "PROCESSING DY MC " << endl;
     //  fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
-    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = false; fId = 4;
     fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_Z_inc_4.root");
@@ -955,7 +1011,7 @@ void runRecoilFit_v6(int MCtype) {
 
     cout << "PROCESSING DY MC " << endl;
     //  fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
-    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = false; fId = 5;
     fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_Z_inc_5.root");
@@ -965,7 +1021,7 @@ void runRecoilFit_v6(int MCtype) {
 
     cout << "PROCESSING DY MC " << endl;
     //  fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
-    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = false; fId = 6;
     fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_Z_inc_6.root");
@@ -976,14 +1032,16 @@ void runRecoilFit_v6(int MCtype) {
 
   if(MCtype==10) {
     cout << "PROCESSING DY DATA " << endl;
+    //    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DATA/ZTreeProducer_tree_RecoSkimmed.root");
     fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DATA/ZTreeProducer_tree_RecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = true; fId = 1;
-    fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_DATA.root");
+    fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_DATA_inc.root");
   }
 
   if(MCtype==12) {
     cout << "PROCESSING DY DATA " << endl;
+    //    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DATA/ZTreeProducer_tree_RecoSkimmed.root");
     fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DATA/ZTreeProducer_tree_RecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = true; fId = 2;
@@ -993,6 +1051,7 @@ void runRecoilFit_v6(int MCtype) {
 
   if(MCtype==13) {
     cout << "PROCESSING DY DATA " << endl;
+    //    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DATA/ZTreeProducer_tree_RecoSkimmed.root");
     fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DATA/ZTreeProducer_tree_RecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = true; fId = 3;
@@ -1002,6 +1061,7 @@ void runRecoilFit_v6(int MCtype) {
 
   if(MCtype==14) {
     cout << "PROCESSING DY DATA " << endl;
+    //    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DATA/ZTreeProducer_tree_RecoSkimmed.root");
     fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/DATA/ZTreeProducer_tree_RecoSkimmed.root");
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = true; fId = 4;
