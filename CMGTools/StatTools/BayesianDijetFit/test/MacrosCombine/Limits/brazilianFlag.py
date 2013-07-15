@@ -217,8 +217,8 @@ def Plot(files, label, obs):
 
     if obs: leg.AddEntry(grobs, "Observed", "L,P")
     leg.AddEntry(grmean, "Expected", "L")
-    leg.AddEntry(grgreen, "98%", "f")
-    leg.AddEntry(gryellow, "68%", "f")
+    leg.AddEntry(gryellow, "#pm 1 #sigma Expected", "f")
+    leg.AddEntry(grgreen, "#pm 2 #sigma Expected", "f")
     leg.AddEntry(gtheory, ltheory, "L")
     #leg.SetHeader("X #rightarrow %s" %label.split("_")[0])
 
