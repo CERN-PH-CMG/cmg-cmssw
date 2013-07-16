@@ -169,7 +169,7 @@ def Plot(files, label, obs):
     gtheory = rt.TGraphErrors(1)
     gtheory.SetLineColor(rt.kBlue)
     gtheory.SetLineWidth(3)
-    ftheory=open("efficiencies.txt")
+    ftheory=open("signalcrosssections.txt")
     j=0
     glogtheory = rt.TGraphErrors(1)
     for lines in ftheory.readlines():
@@ -224,9 +224,9 @@ def Plot(files, label, obs):
 
     leg.Draw()
 
-    banner = TLatex(0.27,0.93,"CMS Preliminary, 19.8 fb^{-1}, #sqrt{s} = 8TeV");
+    banner = TLatex(0.22,0.93,"CMS Preliminary, 19.8 fb^{-1}, #sqrt{s} = 8TeV");
     banner.SetNDC()
-    banner.SetTextSize(0.04)
+    banner.SetTextSize(0.045)
     banner.Draw();  
 
     if withAcceptance:

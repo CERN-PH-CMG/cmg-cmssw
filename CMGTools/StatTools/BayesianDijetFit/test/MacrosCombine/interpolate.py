@@ -38,6 +38,14 @@ if len(sys.argv)>3:
 else:
    suffix=""
 
+histnames= ["DijetMassHighPuriVV",
+            "DijetMassMediumPuriVV",
+            "DijetMassLowPuriVV",
+            "DijetMassHighPuriqV",
+            "DijetMassMediumPuriqV",
+            "DijetMassLowPuriqV",
+            ]
+
 ngenevents=[30000,30000,30000,30000,30000,30000,30000,30000]
 
 if "Qstar" in inputRoot:
@@ -95,6 +103,22 @@ elif "pythia" in inputRoot or "Wprime" in inputRoot:
   if outmjj >= 2500 and outmjj <= 3000 :
     mjjlow = 2500
     mjjhigh = 3000
+elif "HH" in inputRoot:
+  masses=[1000,1500,2000,2500,3000]
+  ngenevents=[20000,20000,20000,20000,20000]
+  histnames= ["DijetMassHighPuriHH"]
+  if outmjj >= 1000 and outmjj < 1500 :
+    mjjlow = 1000
+    mjjhigh = 1500
+  if outmjj >= 1500 and outmjj < 2000 :
+    mjjlow = 1500
+    mjjhigh = 2000
+  if outmjj >= 2000 and outmjj < 2500 :
+    mjjlow = 2000
+    mjjhigh = 2500
+  if outmjj >= 2500 and outmjj < 3000 :
+    mjjlow = 2500
+    mjjhigh = 3000
 else:
   masses=[1000,1500,2000,3000]
   if outmjj >= 1000 and outmjj < 1500 :
@@ -112,14 +136,6 @@ inputhigh = TFile( inputRoot + str(mjjhigh) + suffix +  '.root' )
 output = TFile( inputRoot +'OUT' + str(outmjj) + suffix + '.root', 'recreate')
 
 print sys.argv[1], outmjj, mjjlow, mjjhigh
-
-histnames= ["DijetMassHighPuriVV",
-            "DijetMassMediumPuriVV",
-            "DijetMassLowPuriVV",
-            "DijetMassHighPuriqV",
-            "DijetMassMediumPuriqV",
-            "DijetMassLowPuriqV",
-            ]
 
 hists=[]
 

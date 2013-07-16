@@ -114,7 +114,7 @@
 using namespace RooFit;
 using namespace RooStats ;
 
-static const Int_t NCAT = 6;
+static const Int_t NCAT = 2;
 Double_t MMIN = 890;
 Double_t MMAX = 5000;
 std::string filePOSTfix="";
@@ -136,13 +136,13 @@ RooArgSet* defineVariables()
   RooRealVar* mgg  = new RooRealVar("mgg","M(jet-jet)",MMIN,MMAX,"GeV");
   RooRealVar* evWeight   = new RooRealVar("evWeight","Reweightings",0,100,"");
   RooRealVar* normWeight  = new RooRealVar("normWeight","Additionnal Weight",0,10000000,"");
-  RooCategory* categories = new RooCategory("categories","event category 6") ;
+  RooCategory* categories = new RooCategory("categories","event category 2") ;
   categories->defineType("highPureVV",0);
   categories->defineType("mediumPureVV",1);
-  categories->defineType("lowPureVV",2);
-  categories->defineType("highPureqV",3);
-  categories->defineType("mediumPureqV",4);
-  categories->defineType("lowPureqV",5);
+  //categories->defineType("lowPureVV",2);
+  //categories->defineType("highPureqV",3);
+  //categories->defineType("mediumPureqV",4);
+  //categories->defineType("lowPureqV",5);
   RooArgSet* ntplVars = new RooArgSet(*mgg, *categories, *evWeight, *normWeight);
  
   return ntplVars;
@@ -150,7 +150,7 @@ RooArgSet* defineVariables()
 
 
 
-void runfits(const Float_t mass=2000, int ZZ_WW_WZ = 1, Bool_t dobands = false)
+void runfits(const Float_t mass=2000, int signal_number = 1, Bool_t dobands = false)
 {
 
 //******************************************************************//
@@ -165,23 +165,23 @@ void runfits(const Float_t mass=2000, int ZZ_WW_WZ = 1, Bool_t dobands = false)
 
 
   TString fileBaseName(TString::Format("Xvv.mX%.1f", mass));
-  TString signalname("ZZ");
-  if (ZZ_WW_WZ==1)
+  TString signalname("HH");
+  if (signal_number==1)
   { signalname="WW";
   }
-  if (ZZ_WW_WZ==2)
+  if (signal_number==2)
   { signalname="WZ";
   }
-  if (ZZ_WW_WZ==3)
+  if (signal_number==3)
   { signalname="qW";
   }
-  if (ZZ_WW_WZ==4)
+  if (signal_number==4)
   { signalname="qZ";
   }
 
 
-  TString fileBkgName(TString::Format("Xvv.inputbkg_8TeV", mass));
-  TString card_name("Xvv_models_Bkg_8TeV_test.rs");
+  TString fileBkgName(TString::Format("Xvv.inputbkg_HH_8TeV", mass));
+  TString card_name("Xvv_models_Bkg_8TeV_HH.rs");
   HLFactory hlf("HLFactory", card_name, false);
   RooWorkspace* w = hlf.GetWs();
   RooFitResult* fitresults;
@@ -190,7 +190,7 @@ void runfits(const Float_t mass=2000, int ZZ_WW_WZ = 1, Bool_t dobands = false)
   w->var("mgg")->setMax(MMAX);
 
 // Add data to the workspace
-  AddSigData(w, mass, ZZ_WW_WZ);
+  AddSigData(w, mass, signal_number);
   AddBkgData(w);
   
 // Add the signal and background models to the workspace.
@@ -207,7 +207,7 @@ void runfits(const Float_t mass=2000, int ZZ_WW_WZ = 1, Bool_t dobands = false)
   MakeBkgWS(w, fileBkgName);
 
   int ncat = NCAT;
-  for (int c = 0; c < ncat; c++) MakeDataCard_1Channel(w, fileBaseName, fileBkgName, c, signalname,ZZ_WW_WZ);
+  for (int c = 0; c < ncat; c++) MakeDataCard_1Channel(w, fileBaseName, fileBkgName, c, signalname,signal_number);
 
 
 // Make plots for data and fit results
@@ -223,7 +223,7 @@ void runfits(const Float_t mass=2000, int ZZ_WW_WZ = 1, Bool_t dobands = false)
 
 
 
-void AddSigData(RooWorkspace* w, Float_t mass, int ZZ_WW_WZ) {
+void AddSigData(RooWorkspace* w, Float_t mass, int signal_number) {
 
   Int_t ncat = NCAT;
   TString inDir   = "./MiniTrees/Signal_VV/";
@@ -280,20 +280,20 @@ void AddSigData(RooWorkspace* w, Float_t mass, int ZZ_WW_WZ) {
 
 //signal300_tree_radcut.root
   int iMass = abs(mass);       
-  TFile sigFile1(inDir+TString(Form("dijetWtag_Moriond_ZZHppOUT%d_miniTree.root", iMass)));  
-  if (ZZ_WW_WZ==1) {
+  TFile sigFile1(inDir+TString(Form("dijetHtag_RadionHHOUT%d_miniTree.root", iMass)));  
+  if (signal_number==1) {
     sigFile1.Close();
     TFile sigFile1(inDir+TString(Form("dijetWtag_Moriond_WWHppOUT%d_miniTree.root", iMass)));
   }
-  if (ZZ_WW_WZ==2) {
+  if (signal_number==2) {
     sigFile1.Close();
     TFile sigFile1(inDir+TString(Form("dijetWtag_Moriond_WZPy6OUT%d_miniTree.root", iMass)));
   }
-  if (ZZ_WW_WZ==3) {
+  if (signal_number==3) {
     sigFile1.Close();
     TFile sigFile1(inDir+TString(Form("dijetWtag_Moriond_QstarQWOUT%d_miniTree.root", iMass)));
   }
-  if (ZZ_WW_WZ==4) {
+  if (signal_number==4) {
     sigFile1.Close();
     TFile sigFile1(inDir+TString(Form("dijetWtag_Moriond_QstarQZOUT%d_miniTree.root", iMass)));
   }
@@ -396,7 +396,7 @@ void AddBkgData(RooWorkspace* w) {
 // retrieve the data tree;
 // no common preselection cut applied yet; 
 
-  TFile dataFile(inDir+"dijetWtag_Moriond_Mar6_miniTree.root");   
+  TFile dataFile(inDir+"dijetHtag_miniTree.root");   
   TTree* dataTree     = (TTree*) dataFile.Get("TCVARS");
 
   // Variables
@@ -903,10 +903,10 @@ void MakePlots(RooWorkspace* w, Float_t mass, RooFitResult* fitresults, TString 
     plotMggBkg[c]->SetAxisRange(0.1,plotMggBkg[c]->GetMaximum()*1.5,"Y");
   }
 
-  c4->SaveAs(TString::Format("plots/backgrounds_log.png",c));
-  c4->SaveAs(TString::Format("plots/backgrounds_log.pdf",c));
-  c4->SaveAs(TString::Format("plots/backgrounds_log.eps",c));
-  c4->SaveAs(TString::Format("plots/backgrounds_log.C",c));
+  c4->SaveAs(TString::Format("plots/backgroundsHH_log.png",c));
+  c4->SaveAs(TString::Format("plots/backgroundsHH_log.pdf",c));
+  c4->SaveAs(TString::Format("plots/backgroundsHH_log.eps",c));
+  c4->SaveAs(TString::Format("plots/backgroundsHH_log.C",c));
 
 
 
@@ -925,10 +925,10 @@ void MakePlots(RooWorkspace* w, Float_t mass, RooFitResult* fitresults, TString 
     plotMggBkg[c]->Draw();  
   }
 
-  c5->SaveAs(TString::Format("plots/backgrounds.png",c));
-  c5->SaveAs(TString::Format("plots/backgrounds.pdf",c));
-  c5->SaveAs(TString::Format("plots/backgrounds.eps",c));
-  c5->SaveAs(TString::Format("plots/backgrounds.C",c));
+  c5->SaveAs(TString::Format("plots/backgroundsHH.png",c));
+  c5->SaveAs(TString::Format("plots/backgroundsHH.pdf",c));
+  c5->SaveAs(TString::Format("plots/backgroundsHH.eps",c));
+  c5->SaveAs(TString::Format("plots/backgroundsHH.C",c));
 
 }
 
@@ -962,7 +962,7 @@ void MakeSigWS(RooWorkspace* w, const char* fileBaseName, TString signalname) {
   RooWorkspace *wAll = new RooWorkspace("w_all","w_all");
 
 
-  for (int c = 0; c < ncat; ++c) {
+  for (int c = 0; c < 6; ++c) {
     MggSigPdf[c] = (RooAbsPdf*)  w->pdf("MggSig"+signalname+TString::Format("_cat%d",c));
     wAll->import(*w->pdf("MggSig"+signalname+TString::Format("_cat%d",c)));
   }
@@ -1208,7 +1208,7 @@ Double_t effSigma(TH1 *hist) {
 
 
 
-void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char* fileBkgName, int iChan, TString signalname, int ZZ_WW_WZ) {
+void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char* fileBkgName, int iChan, TString signalname, int signal_number) {
 
   TString cardDir = "datacards/"+filePOSTfix;
   Int_t ncat = NCAT;
@@ -1221,7 +1221,7 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
 
   RooDataSet* data[6];
   RooDataSet* signal[6];
-  for (int c = 0; c < 6; ++c) {
+  for (int c = 0; c < ncat; ++c) {
     data[c]        = (RooDataSet*) w->data(TString::Format("Data_cat%d",c));
     signal[c]      = (RooDataSet*) w->data(TString::Format("SigWeight_cat%d",c));
   }
@@ -1261,8 +1261,8 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
   outFile << "#Run with: combine -d hgg.mH130.0.shapes-Unbinned.txt -U -m 130 -H ProfileLikelihood -M MarkovChainMC --rMin=0 --rMax=20.0  -b 3000 -i 50000 --optimizeSim=1 --tries 30" << endl;
   outFile << "# Lumi =  " << lumi->getVal() << " pb-1" << endl;
   outFile << "imax 1" << endl;
-  if(ZZ_WW_WZ<3){
-  outFile << "jmax 3" << endl;
+  if(signal_number<3){
+  outFile << "jmax 1" << endl;
   } else {
   outFile << "jmax 2" << endl;
   }
@@ -1272,10 +1272,8 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
   
   outFile << "shapes *      * " << wsDir+TString(fileBkgName)+".root" << " w_all:$PROCESS_$CHANNEL" << endl;
   outFile << "shapes MggBkg * "<<  wsDir+TString(fileBkgName)+".root" << " w_all:CMS_hgg_bkg_8TeV_$CHANNEL" << endl;
-  if(ZZ_WW_WZ<3){
-  outFile << "shapes MggSigWW * " << wsDir+TString(fileBaseName)+"_WW_8TeV"+".inputsig.root" << " w_all:CMS_hgg_WW_sig_$CHANNEL" << endl;
-  outFile << "shapes MggSigZZ * " << wsDir+TString(fileBaseName)+"_ZZ_8TeV.inputsig.root" << " w_all:CMS_hgg_ZZ_sig_$CHANNEL" << endl;
-  outFile << "shapes MggSigWZ * " << wsDir+TString(fileBaseName)+"_WZ_8TeV.inputsig.root" << " w_all:CMS_hgg_WZ_sig_$CHANNEL" << endl;
+  if(signal_number<3){
+  outFile << "shapes MggSigHH * " << wsDir+TString(fileBaseName)+"_HH_8TeV.inputsig.root" << " w_all:CMS_hgg_HH_sig_$CHANNEL" << endl;
   } else {
   outFile << "shapes MggSigqW * " << wsDir+TString(fileBaseName)+"_qW_8TeV"+".inputsig.root" << " w_all:CMS_hgg_qW_sig_$CHANNEL" << endl;
   outFile << "shapes MggSigqZ * " << wsDir+TString(fileBaseName)+"_qZ_8TeV.inputsig.root" << " w_all:CMS_hgg_qZ_sig_$CHANNEL" << endl;
@@ -1284,41 +1282,34 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
   outFile << Form("bin          cat%d", iChan) << endl;
   outFile <<  "observation   "  <<  Form("%.10lg",data[iChan]->sumEntries()) << endl;
   outFile << "------------------------------" << endl;
-  if(ZZ_WW_WZ<3){
-  outFile << "bin                      "<< Form("cat%d       cat%d      cat%d      cat%d      ", iChan, iChan, iChan, iChan) << endl;
-  outFile << "process                 MggSigWW MggSigZZ MggSigWZ     MggBkg     " << endl;
-  outFile << "process                 -2 -1 0        1          " << endl;
+  if(signal_number<3){
+  outFile << "bin                      "<< Form("cat%d      cat%d      ", iChan, iChan) << endl;
+  outFile << "process                 MggSigHH     MggBkg     " << endl;
+  outFile << "process                 0        1          " << endl;
   if(signalScaler==1.)
-      signalScaler=1./signal[2]->sumEntries()*20;
-  if(signalname=="ZZ")
-      outFile <<  "rate                      " 
-	  << "  0  " << signal[iChan]->sumEntries()*signalScaler << "  0  " << 1 << endl;
-  if(signalname=="WW")
-      outFile <<  "rate                      " 
-	  << "  " << signal[iChan]->sumEntries()*signalScaler << "  0  0  " << 1 << endl;
-  if(signalname=="WZ")
-      outFile <<  "rate                      " 
-	  << "  0  0  " << signal[iChan]->sumEntries()*signalScaler << "  " << 1 << endl;
+      signalScaler=1./signal[0]->sumEntries()*20;
+  outFile <<  "rate                      " 
+	  << signal[iChan]->sumEntries()*signalScaler << "   1" << endl;
   outFile << "--------------------------------" << endl;
   outFile << "# signal scaled by " << signalScaler << endl;
   
-  outFile << "lumi_8TeV       lnN  1.044  1.044  1.044    - " << endl;
+  outFile << "lumi_8TeV       lnN  1.044    - " << endl;
   if((iChan==0)||(iChan==3)){
-  outFile << "CMS_eff_vtau         lnN  1.122  1.126  1.124      - # tau21 efficiency" << endl;
+  outFile << "CMS_eff_vtau         lnN  1.122      - # tau21 efficiency" << endl;
   } else {
   // anti-correlated the high purity and medium purity categories
-  outFile << "CMS_eff_vtau         lnN  0.891  0.888  0.890      - # tau21 efficiency" << endl;
+  outFile << "CMS_eff_vtau         lnN  0.891      - # tau21 efficiency" << endl;
   }
-  outFile << "CMS_eff_vmass         lnN  1.185  1.197  1.191      - # jet mass efficiency" << endl;
-  outFile << "CMS_scale_j         lnN  1.120  1.120  1.120      - # jet energy scale" << endl;
-  outFile << "CMS_res_j         lnN  1.040  1.040  1.040      - # jet energy resolution" << endl;
-  outFile << "CMS_pu         lnN  1.030  1.030  1.030      - # pileup" << endl;
+  outFile << "CMS_eff_vmass         lnN  1.185      - # jet mass efficiency" << endl;
+  outFile << "CMS_scale_j         lnN  1.120      - # jet energy scale" << endl;
+  outFile << "CMS_res_j         lnN  1.040      - # jet energy resolution" << endl;
+  outFile << "CMS_pu         lnN  1.030      - # pileup" << endl;
   } else {
   outFile << "bin                      "<< Form("cat%d      cat%d      cat%d      ", iChan, iChan, iChan, iChan) << endl;
   outFile << "process                 MggSigqW MggSigqZ     MggBkg     " << endl;
   outFile << "process                 -1 0        1          " << endl;
   if(signalScaler==1.)
-      signalScaler=1./signal[2]->sumEntries()*20;
+      signalScaler=1./signal[0]->sumEntries()*20;
   if(signalname=="qZ")
       outFile <<  "rate                      " 
 	  << "  0  " << signal[iChan]->sumEntries()*signalScaler << "  " << 1 << endl;
@@ -1435,38 +1426,8 @@ Double_t effSigma(TH1 *hist) {
   return widmin;
 }
 
-void R2JJFitter(double mass, std::string postfix="", int VVqV=0)
+void R2JJFitterHH(double mass, std::string postfix="", int VVqV=0)
 {
     filePOSTfix=postfix;
-    if(VVqV==0)
-    {
-    if(postfix!="")
-    {
-      // for optimization studies
-      MMIN=1000;
-      if(mass==1000)
-         signalScaler=0.034246;
-      if((mass>1000)&&(mass<2000))
-         signalScaler=0.02469;
-      if(mass==2000)
-         signalScaler=2.0;
-    };
-    runfits(mass, 1);
-    if(postfix!="")
-    {
-      // for optimization studies
-      MMIN=1000;
-      if(mass==1000)
-         signalScaler=0.033500;
-      if((mass>1000)&&(mass<2000))
-         signalScaler=0.02016;
-      if(mass==2000)
-         signalScaler=2.22222;
-    };
     runfits(mass, 0);
-    runfits(mass, 2);
-    } else {
-    runfits(mass, 3);
-    runfits(mass, 4);
-    }
 }
