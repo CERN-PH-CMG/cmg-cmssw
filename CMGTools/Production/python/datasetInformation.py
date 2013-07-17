@@ -201,8 +201,8 @@ class DatasetInformation(object):
                 isCrab = isCrabFile( fileName )                          
                 instanceGroup['IsCrab']=isCrab                          
                 self.dataset_details['FileGroups'][name]=instanceGroup  
-        for file_group in self.dataset_details['FileGroups']:                   
-            self.dataset_details['FileGroups'][file_group]['Files'].sort(key=lambda x: int(getIndex(x)))    
+        for fg in self.dataset_details['FileGroups']:                   
+            self.dataset_details['FileGroups'][fg]['Files'].sort(key=lambda x: int(getIndex(x)))    
 
     def createFileGroupDetailString(self, group_name):
         """Build a string containing the important 
