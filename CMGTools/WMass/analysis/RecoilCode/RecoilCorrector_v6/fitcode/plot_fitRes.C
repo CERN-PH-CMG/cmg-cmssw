@@ -1,35 +1,52 @@
-void plot_fitRes(){
+TF1 * getFunction(TString fileName, TString histoName, int vtxBin, int color)
+
+{
+
+  histoName += vtxBin;
+
+  cout << "fileName " << fileName << " histoName " << histoName << endl;                                                  
+
+  TFile *file = new TFile(fileName);
+  TF1 *func = (TF1*) file->Get(histoName);
+  func->SetLineColor(color);
+
+  return func;
+
+}
+
+
+void plot_fitRes(int vtxBin=0.){
 
   gStyle->SetOptStat(000000000000);
   
-  TFile *fmc = new TFile("recoilfit_genZ_inc.root");
-  TFile *fdata = new TFile("recoilfit_DATA_inc.root");
+  TString mcFileName="/afs/cern.ch/user/d/dalfonso/scratch0/CMSSW_4_4_5_Wmass/src/CMGTools/WMass/analysis/RecoilCode/vtxBin4/recoilfit_genZ_inc.root";
+  TString dataFileName="/afs/cern.ch/user/d/dalfonso/scratch0/CMSSW_4_4_5_Wmass/src/CMGTools/WMass/analysis/RecoilCode/vtxBin4/recoilfit_DATA.root";
 
-  TF1 *mcPFu1Mean_0 = (TF1*) fmc->Get("PFu1Mean_0");
-  mcPFu1Mean_0->SetLineColor(2);
-  TF1 *mcPFu2Mean_0 = (TF1*) fmc->Get("PFu2Mean_0");
-  mcPFu2Mean_0->SetLineColor(2);
-  TF1 *mcPFu1MeanRMS_0 = (TF1*) fmc->Get("PFu1MeanRMS_0");
-  mcPFu1MeanRMS_0->SetLineColor(2);
-  TF1 *mcPFu1RMS1_0 = (TF1*) fmc->Get("PFu1RMS1_0");
-  mcPFu1RMS1_0->SetLineColor(2);
-  TF1 *mcPFu1RMS2_0 = (TF1*) fmc->Get("PFu1RMS2_0");
-  mcPFu1RMS2_0->SetLineColor(2);
-  TF1 *mcPFu2MeanRMS_0 = (TF1*) fmc->Get("PFu2MeanRMS_0");
-  mcPFu2MeanRMS_0->SetLineColor(2);
-  TF1 *mcPFu2RMS1_0 = (TF1*) fmc->Get("PFu2RMS1_0");
-  mcPFu2RMS1_0->SetLineColor(2);
-  TF1 *mcPFu2RMS2_0 = (TF1*) fmc->Get("PFu2RMS2_0");
-  mcPFu2RMS2_0->SetLineColor(2);
-  
-  TF1 *dataPFu1Mean_0 = (TF1*) fdata->Get("PFu1Mean_0");
-  TF1 *dataPFu2Mean_0 = (TF1*) fdata->Get("PFu2Mean_0");
-  TF1 *dataPFu1MeanRMS_0 = (TF1*) fdata->Get("PFu1MeanRMS_0");
-  TF1 *dataPFu1RMS1_0 = (TF1*) fdata->Get("PFu1RMS1_0");
-  TF1 *dataPFu1RMS2_0 = (TF1*) fdata->Get("PFu1RMS2_0");
-  TF1 *dataPFu2MeanRMS_0 = (TF1*) fdata->Get("PFu2MeanRMS_0");
-  TF1 *dataPFu2RMS1_0 = (TF1*) fdata->Get("PFu2RMS1_0");
-  TF1 *dataPFu2RMS2_0 = (TF1*) fdata->Get("PFu2RMS2_0");
+  //////
+
+  TF1 * mcPFu1Mean_0 = getFunction(mcFileName, "PFu1Mean_", vtxBin, kRed);
+  TF1 * mcPFu1MeanRMS_0 = getFunction(mcFileName, "PFu1MeanRMS_",vtxBin, kRed);
+  TF1 * mcPFu1RMS1_0 = getFunction(mcFileName, "PFu1RMS1_", vtxBin , kRed);
+  TF1 * mcPFu1RMS2_0 = getFunction(mcFileName, "PFu1RMS2_", vtxBin , kRed);
+
+  TF1 * mcPFu2Mean_0 = getFunction(mcFileName, "PFu1Mean_", vtxBin, kRed);
+  TF1 * mcPFu2MeanRMS_0 = getFunction(mcFileName, "PFu1MeanRMS_",vtxBin, kRed);
+  TF1 * mcPFu2RMS1_0 = getFunction(mcFileName, "PFu1RMS1_", vtxBin , kRed);
+  TF1 * mcPFu2RMS2_0 = getFunction(mcFileName, "PFu1RMS2_", vtxBin , kRed);
+
+  //////
+
+  TF1 * dataPFu1Mean_0 = getFunction(dataFileName, "PFu1Mean_", vtxBin, kBlack);
+  TF1 * dataPFu1MeanRMS_0 = getFunction(dataFileName, "PFu1MeanRMS_",vtxBin, kBlack);
+  TF1 * dataPFu1RMS1_0 = getFunction(dataFileName, "PFu1RMS1_", vtxBin , kBlack);
+  TF1 * dataPFu1RMS2_0 = getFunction(dataFileName, "PFu1RMS2_", vtxBin , kBlack);
+
+  TF1 * dataPFu2Mean_0 = getFunction(dataFileName, "PFu1Mean_", vtxBin, kBlack);
+  TF1 * dataPFu2MeanRMS_0 = getFunction(dataFileName, "PFu1MeanRMS_",vtxBin, kBlack);
+  TF1 * dataPFu2RMS1_0 = getFunction(dataFileName, "PFu1RMS1_", vtxBin , kBlack);
+  TF1 * dataPFu2RMS2_0 = getFunction(dataFileName, "PFu1RMS2_", vtxBin , kBlack);
+
+  //////
   
   TCanvas *cPFu1Mean_0 = new TCanvas("cPFu1Mean_0","cPFu1Mean_0");
   TH2D *hPFu1Mean_0 = new TH2D("hPFu1Mean_0","hPFu1Mean_0",50,0,50,70,-60,10);
