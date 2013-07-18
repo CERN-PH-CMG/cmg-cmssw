@@ -66,6 +66,11 @@ int fNBTag = 0; float fMJJ = 0; /*float fJPt1 = 0;*/ double fJPt1 = 0; float fDE
 double fZmass, fMuPos_eta, fMuPos_pt, fMuPos_charge, fMuPosReliso, fMuPos_dxy, fMuNeg_eta, fMuNeg_pt, fMuNeg_charge,fMuNeg_dxy, fMuNegReliso;
 int fMuPosTrg, fMuPosIsTightAndIso, fevtHasGoodVtx, fevtHasTrg, fMuNegIsTightAndIso;
 
+std::vector<std::vector<std::vector<float> > > lXVals_all;  std::vector<std::vector<std::vector<float> > > lYVals_all; std::vector<std::vector<std::vector<float> > > lYTVals_all;
+std::vector<std::vector<std::vector<float> > > lXEVals_all; std::vector<std::vector<std::vector<float> > > lYEVals_all; 
+
+float ***vlXVals_all,***vlXEVals_all,***vlYVals_all,***vlYTVals_all,***vlYEVals_all; //two * are needed because it is a pofloater to a pofloater
+
 void load(TTree *iTree, int type) { 
   fWeight = 1;
   iTree->ResetBranchAddresses();
@@ -134,7 +139,7 @@ void load(TTree *iTree, int type) {
   */
 
   // MARIA this is not there only the leading jet infos
-  iTree->SetBranchAddress("njet",&fNJet);
+  iTree->SetBranchAddress("njets",&fNJet);
 
   if(type==0) {
     //iTree->SetBranchAddress("u1x_mva"    ,&fU1);
@@ -522,49 +527,15 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   RooGaussian   lRGaus1("Rgaus1","Rgaus1",lRXVar,lR2Mean,lR1Sigma);
   RooGaussian   lRGaus2("Rgaus2","Rgaus2",lRXVar,lR2Mean,lR2Sigma);
   RooAddPdf     lRGAdd ("RAdd"  ,"RAdd",lRGaus1,lRGaus2,lR1Frac);
-  std::vector<float> lXVals;  std::vector<float> lYVals; std::vector<float> lYTVals;
-  std::vector<float> lXEVals; std::vector<float> lYEVals; 
-  //Fill values (if dealing with resolution we take difference from mean fit)
 
-  for(int i1 = 0; i1 <  iTree->GetEntries(); i1++) {
-  //    for(int i1 = 0; i1 <  1000; i1++) {
-    iTree->GetEntry(i1);
-
-    if(!runSelection()) continue;
-
-    if(!passId(fId)) continue;
-    //if(!passMatching()) continue;
-    //if(fPt2 > 30) fNJet++;
-    calculateU1U2(lPar,lPar==fU1);
-
-    /*
-    //MARIA cooment for now
-    ////    if(fNBTag > 0) continue;
-    if(iPol1 && fZPt > 50. && lPar == fU1 && lPar  > (47.5-0.95*fZPt) && iType == 0) continue; //Remove Diboson events at high pT
-    */
-
-    if(fZPt > fZPtMax) continue;
-    if(fMet > fMetMax) continue;
-    /* MARIA comment for now
-       if(fNJetSelect<2  && fNJet != fNJetSelect && fNJetSelect != -1) continue;
-       if(fNJetSelect==2 && fNJet<2) continue;
-    */
-    double pVal = lPar;
-    if(iRMS && iMeanFit != 0)   pVal = (lPar - iMeanFit->Eval(fZPt));
-    //if(iRMS && pVal > 0. && fU1 == lPar) {continue;}
-    if(fWeight == 0) continue;
-    lXVals.push_back(fZPt);  lXEVals.push_back(2.);
-    //if(iRMS && pVal < 0 && lPar == fU1) {
-    //  double lCorr = (lRand.Uniform(-1,1));
-    // lCorr = lCorr/fabs(lCorr);
-    //  pVal *= lCorr;
-    // }
-    double pWeight = fWeight;
-    if(fData) pWeight = 1;
-    (!iRMS) ? lYVals.push_back(pVal) : lYVals.push_back(fabs(pVal));
-    lYTVals.push_back(pVal); lYEVals.push_back(1./sqrt(pWeight));
+  if(iRMS && iMeanFit != 0){   
+    for(int iev=0; iev<lXVals_all.at(0).at(0).size(); iev++){
+      // pVal = (lPar - iMeanFit->Eval(fZPt));
+      double temp = vlYVals_all[lPar!=fU1][iRMS][iev] - iMeanFit->Eval(vlXVals_all[lPar!=fU1][iRMS][iev]);
+      vlYVals_all[lPar!=fU1][iRMS][iev] = abs(temp);
+      vlYTVals_all[lPar!=fU1][iRMS][iev] = temp; 
+    }
   }
-
 
   // MARIA something to add to the plots
   TString leg = "#sigma_{mean} = ";   
@@ -584,10 +555,15 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   if(fId == 6) leg1 += " > 20";
   
   iC->cd();
-  
   //Basic Fit
   //TGraphErrors *pGraphA = new TGraphErrors(lXVals.size(),(Float_t*)&(lXVals[0]),(Float_t*)&(lYVals[0]),(Float_t*)&(lXEVals[0]),(Float_t*)&(lYEVals[0]));
-  TGraph *pGraphA       = new TGraph      (lXVals.size(),(Float_t*)&(lXVals[0]),(Float_t*)&(lYVals[0]));
+  // TGraph *pGraphA       = new TGraph      (lXVals.size(),(Float_t*)&(lXVals[0]),(Float_t*)&(lYVals[0]));
+
+  TGraph *pGraphA       = new TGraph(lXVals_all.at(0).at(0).size(), 
+                                     vlXVals_all[0][0], 
+                                     vlYVals_all[lPar!=fU1][iRMS]
+                                     );
+
   std::string lType     = "pol3"; if(iPol1) lType = "pol2"; //pol1 -->higgs 
   if(iType == 1)  lType = "pol3"; 
 
@@ -623,7 +599,6 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     
   }
 
-
   if(!iRMS) return;
 
   //Build the double gaussian dataset
@@ -640,12 +615,12 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   std::vector<float> lX3SVals; std::vector<float> lXE3SVals; std::vector<float> lY3SVals; std::vector<float> lYE3SVals; //Events with sigma > 3
   std::vector<float> lX4SVals; std::vector<float> lXE4SVals; std::vector<float> lY4SVals; std::vector<float> lYE4SVals; //Events with sigma > 3
   
-  for(unsigned int i0 = 0; i0 < lXVals.size(); i0++) { 
-    double lYTest = lFit->Eval(lXVals[i0])*sqrt(2*3.14159265)/2.;
-    lRXVar.setVal(lYTVals[i0]/(lYTest));
-    lRPt.setVal(lXVals[i0]);
-    lRWeight.setVal(1./lYEVals[i0]/lYEVals[i0]);
-    int pId = int(lXVals[i0]/(fZPtMax/lNBins)); if(pId > lNBins-1) pId = lNBins-1; 
+  for(unsigned int i0 = 0; i0 < lXVals_all.at(0).at(0).size(); i0++) { 
+    double lYTest = lFit->Eval(vlXVals_all[lPar!=fU1][iRMS][i0])*sqrt(2*3.14159265)/2.;
+    lRXVar.setVal(vlYTVals_all[lPar!=fU1][iRMS][i0]/(lYTest));
+    lRPt.setVal(vlXVals_all[lPar!=fU1][iRMS][i0]);
+    lRWeight.setVal(1./vlYEVals_all[lPar!=fU1][iRMS][i0]/vlYEVals_all[lPar!=fU1][iRMS][i0]);
+    int pId = int(vlXVals_all[lPar!=fU1][iRMS][i0]/(fZPtMax/lNBins)); if(pId > lNBins-1) pId = lNBins-1; 
     lResidVals[pId].add(RooArgSet(lRXVar));//,lRWeight.getVal()); //Fill the Double Gaussian
     lResidVals2D[0].add(RooArgSet(lRXVar,lRPt));//,lRWeight.getVal()); //Fill the Double Gaussian
   }
@@ -822,7 +797,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   }
 
   iC->SaveAs(pG2.str().c_str());
-  cin.get();
+  // cin.get();
   
   //  return;
 
@@ -847,7 +822,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     iFitS2->SetParameter(3,lD2Sig.getVal()); iFitS2->SetParError(6,lD2Sig.getError()*lD2Sig.getError());
 }
 
-void fitRecoil(TTree * iTree, /*float &iVPar,*/ double &iVPar,
+void fitRecoil1(TTree * iTree, /*float &iVPar,*/ double &iVPar,
 	       TF1 *iMFit, TF1 *iMRMSFit, TF1 *iRMS1Fit, TF1 *iRMS2Fit,int iType) { 
   TCanvas *lXC1 = new TCanvas("C1","C1",800,600); lXC1->cd(); 
   fitGraph(iTree,fTTbar,lXC1,iVPar,iMFit   ,0       ,0       ,0    ,true ,false,iType);
@@ -884,10 +859,116 @@ void writeCorr(TF1 *iU1U2PFCorr, TF1 *iU1U2TKCorr, TF1 *iPFTKU1Corr, TF1 *iPFTKU
   delete lFile;
 }
 */
+void loopOverTree(TTree *iTree) {
+
+  for(int i1 = 0; i1 <  iTree->GetEntries(); i1++) {
+     // for(int i1 = 0; i1 <  1e6; i1++) {
+    iTree->GetEntry(i1);
+
+    if(!runSelection()) continue;
+
+    if(!passId(fId)) continue;
+    //if(!passMatching()) continue;
+    //if(fPt2 > 30) fNJet++;
+    
+    /*
+    //MARIA cooment for now
+    ////    if(fNBTag > 0) continue;
+    if(iPol1 && fZPt > 50. && lPar == fU1 && lPar  > (47.5-0.95*fZPt) && iType == 0) continue; //Remove Diboson events at high pT
+    */
+
+    if(fZPt > fZPtMax) continue;
+    if(fMet > fMetMax) continue;
+    /* MARIA comment for now
+       if(fNJetSelect<2  && fNJet != fNJetSelect && fNJetSelect != -1) continue;
+       if(fNJetSelect==2 && fNJet<2) continue;
+    */
+    double lPar;
+    // }
+    bool U1U2truefalse[2]={true,false};
+    bool MeanRMStruefalse[2]={false,true};
+    
+    for(int iU1U2=0; iU1U2<2; iU1U2++){
+        std::vector<std::vector<float> > dummy;
+        lXVals_all.push_back(dummy); lXEVals_all.push_back(dummy); lYVals_all.push_back(dummy); lYTVals_all.push_back(dummy); lYEVals_all.push_back(dummy);
+      
+      for(int iMeanRMS=0; iMeanRMS<2; iMeanRMS++){
+        std::vector<float> dummy1;
+        lXVals_all.at(iU1U2).push_back(dummy1); lXEVals_all.at(iU1U2).push_back(dummy1); 
+        lYVals_all.at(iU1U2).push_back(dummy1); lYTVals_all.at(iU1U2).push_back(dummy1); lYEVals_all.at(iU1U2).push_back(dummy1);
+        
+        bool fU1=U1U2truefalse[iU1U2],iRMS=MeanRMStruefalse[iMeanRMS];
+        
+        calculateU1U2(lPar,fU1);
+        double pVal = lPar;    
+        // if(iRMS && iMeanFit != 0)   pVal = (lPar - iMeanFit->Eval(fZPt));
+        if(fWeight == 0) continue;
+        lXVals_all.at(iU1U2).at(iMeanRMS).push_back(fZPt);  
+        lXEVals_all.at(iU1U2).at(iMeanRMS).push_back(2.);
+        double pWeight = fWeight;
+        if(fData) pWeight = 1;
+        // (!iRMS) ? lYVals_all.at(iU1U2).at(iMeanRMS).push_back(pVal) : lYVals_all.at(iU1U2).at(iMeanRMS).push_back(fabs(pVal));
+        lYVals_all.at(iU1U2).at(iMeanRMS).push_back(pVal);
+        lYTVals_all.at(iU1U2).at(iMeanRMS).push_back(pVal); 
+        lYEVals_all.at(iU1U2).at(iMeanRMS).push_back(1./sqrt(pWeight));
+      }
+    }
+  }
+
+  vlXVals_all=new float**[2]; //creates a new array of pofloaters to float objects
+  vlXEVals_all=new float**[2]; //creates a new array of pofloaters to float objects
+  vlYVals_all=new float**[2]; //creates a new array of pofloaters to float objects
+  vlYTVals_all=new float**[2]; //creates a new array of pofloaters to float objects
+  vlYEVals_all=new float**[2]; //creates a new array of pofloaters to float objects
+  
+  for(int iU1U2=0; iU1U2<2; ++iU1U2){
+    vlXVals_all[iU1U2]=new float*[2];
+    vlXEVals_all[iU1U2]=new float*[2];
+    vlYVals_all[iU1U2]=new float*[2];
+    vlYTVals_all[iU1U2]=new float*[2];
+    vlYEVals_all[iU1U2]=new float*[2];
+      for(int iMeanRMS=0; iMeanRMS<2; ++iMeanRMS){
+        vlXVals_all[iU1U2][iMeanRMS]=new float[lXVals_all.at(0).at(0).size()];
+        vlXEVals_all[iU1U2][iMeanRMS]=new float[lXVals_all.at(0).at(0).size()];
+        vlYVals_all[iU1U2][iMeanRMS]=new float[lXVals_all.at(0).at(0).size()];
+        vlYTVals_all[iU1U2][iMeanRMS]=new float[lXVals_all.at(0).at(0).size()];
+        vlYEVals_all[iU1U2][iMeanRMS]=new float[lXVals_all.at(0).at(0).size()];
+        for(int iev=0; iev<lXVals_all.at(0).at(0).size(); iev++){
+          vlXVals_all[iU1U2][iMeanRMS][iev]  = lXVals_all.at(iU1U2).at(iU1U2).at(iev);
+          // cout << "vlXVals_all["<<iU1U2<<"]["<<iMeanRMS<<"]["<<iev<<"] = "<<lXVals_all.at(iU1U2).at(iU1U2).at(iev)<<endl;
+          vlXEVals_all[iU1U2][iMeanRMS][iev] = lXEVals_all.at(iU1U2).at(iU1U2).at(iev);
+          // cout << "vlXEVals_all["<<iU1U2<<"]["<<iMeanRMS<<"]["<<iev<<"] = "<<lXVals_all.at(iU1U2).at(iU1U2).at(iev)<<endl;
+          vlYVals_all[iU1U2][iMeanRMS][iev]  = lYVals_all.at(iU1U2).at(iU1U2).at(iev);
+          // cout << "vlYVals_all["<<iU1U2<<"]["<<iMeanRMS<<"]["<<iev<<"] = "<<lXVals_all.at(iU1U2).at(iU1U2).at(iev)<<endl;
+          vlYTVals_all[iU1U2][iMeanRMS][iev] = lYTVals_all.at(iU1U2).at(iU1U2).at(iev);
+          // cout << "vlYTVals_all["<<iU1U2<<"]["<<iMeanRMS<<"]["<<iev<<"] = "<<lXVals_all.at(iU1U2).at(iU1U2).at(iev)<<endl;
+          vlYEVals_all[iU1U2][iMeanRMS][iev] = lYEVals_all.at(iU1U2).at(iU1U2).at(iev);
+          // cout << "vlYEVals_all["<<iU1U2<<"]["<<iMeanRMS<<"]["<<iev<<"] = "<<lXVals_all.at(iU1U2).at(iU1U2).at(iev)<<endl;
+        }
+      }
+  }
+  
+  // for(int iev=0; iev<lXVals_all.at(0).at(0).size(); iev++){
+    // cout << "iev= " << iev << endl;
+    // for(int iU1U2=0; iU1U2<2; iU1U2++){
+      // for(int iMeanRMS=0; iMeanRMS<2; iMeanRMS++){
+        // cout << "iU1U2=" << iU1U2 << " iMeanRMS= " << iMeanRMS << endl;
+        // cout << "lXVals_all= " << lXVals_all.at(iU1U2).at(iMeanRMS).at(iev)
+             // << " lXEVals_all= " << lXEVals_all.at(iU1U2).at(iMeanRMS).at(iev) 
+             // << " lYVals_all= " << lYVals_all.at(iU1U2).at(iMeanRMS).at(iev) 
+             // << " lYTVals_all= " << lYTVals_all.at(iU1U2).at(iMeanRMS).at(iev) 
+             // << " lYEVals_all= " << lYEVals_all.at(iU1U2).at(iMeanRMS).at(iev) 
+             // << endl;
+      // }
+    // }
+  // }
+
+}
 
 void fitRecoilMET(TTree *iTree,std::string iName,int type) { 
   std::string lPrefix="PF"; if(type == 1) lPrefix = "TK";
   load(iTree,type);
+  loopOverTree(iTree);
   //  fU2=fU2*(-1);
 
   TF1 *lU1Fit     = new TF1((lPrefix+"u1Mean_0").c_str(),   "pol6");
@@ -898,8 +979,8 @@ void fitRecoilMET(TTree *iTree,std::string iName,int type) {
   TF1 *lU2MRMSFit = new TF1((lPrefix+"u2MeanRMS_0").c_str(),"pol6");
   TF1 *lU2RMS1Fit = new TF1((lPrefix+"u2RMS1_0").c_str(),   "pol6");
   TF1 *lU2RMS2Fit = new TF1((lPrefix+"u2RMS2_0").c_str(),   "pol6");
-  fitRecoil(iTree,fU1,lU1Fit,lU1MRMSFit,lU1RMS1Fit,lU1RMS2Fit,type);
-  fitRecoil(iTree,fU2,lU2Fit,lU2MRMSFit,lU2RMS1Fit,lU2RMS2Fit,type);
+  fitRecoil1(iTree,fU1,lU1Fit,lU1MRMSFit,lU1RMS1Fit,lU1RMS2Fit,type);
+  fitRecoil1(iTree,fU2,lU2Fit,lU2MRMSFit,lU2RMS1Fit,lU2RMS2Fit,type);
   writeRecoil(lU1Fit,lU1MRMSFit,lU1RMS1Fit,lU1RMS2Fit,lU2Fit,lU2MRMSFit,lU2RMS1Fit,lU2RMS2Fit,iName);
 }
 
