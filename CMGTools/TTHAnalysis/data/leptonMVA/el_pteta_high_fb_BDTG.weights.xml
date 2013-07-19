@@ -47,11 +47,11 @@
     <Option name="MaxDepth" modified="Yes">8</Option>
   </Options>
   <Variables NVar="8">
-    <Variable VarIndex="0" Expression="relIso-chargedIso/pt" Label="neuRelIso" Title="neuRelIso" Unit="" Internal="neuRelIso" Type="D" Min="-1.48975e-08" Max="0.3986"/>
-    <Variable VarIndex="1" Expression="chargedIso/pt" Label="chRelIso" Title="chRelIso" Unit="" Internal="chRelIso" Type="D" Min="0" Max="0.399855"/>
-    <Variable VarIndex="2" Expression="min(dr_in,0.5)" Label="jetDR_in" Title="jetDR_in" Unit="" Internal="jetDR_in" Type="D" Min="0" Max="0.477005"/>
-    <Variable VarIndex="3" Expression="min(ptf_in,1.5)" Label="jetPtRatio_in" Title="jetPtRatio_in" Unit="" Internal="jetPtRatio_in" Type="D" Min="0.0353469" Max="1.5"/>
-    <Variable VarIndex="4" Expression="max(CSV_in,0)" Label="jetBTagCSV_in" Title="jetBTagCSV_in" Unit="" Internal="jetBTagCSV_in" Type="D" Min="0" Max="1"/>
+    <Variable VarIndex="0" Expression="neuRelIso" Label="neuRelIso" Title="neuRelIso" Unit="" Internal="neuRelIso" Type="D" Min="-1.48975e-08" Max="0.3986"/>
+    <Variable VarIndex="1" Expression="chRelIso" Label="chRelIso" Title="chRelIso" Unit="" Internal="chRelIso" Type="D" Min="0" Max="0.399855"/>
+    <Variable VarIndex="2" Expression="jetDR_in" Label="jetDR_in" Title="jetDR_in" Unit="" Internal="jetDR_in" Type="D" Min="0" Max="0.477005"/>
+    <Variable VarIndex="3" Expression="jetPtRatio_in" Label="jetPtRatio_in" Title="jetPtRatio_in" Unit="" Internal="jetPtRatio_in" Type="D" Min="0.0353469" Max="1.5"/>
+    <Variable VarIndex="4" Expression="jetBTagCSV_in" Label="jetBTagCSV_in" Title="jetBTagCSV_in" Unit="" Internal="jetBTagCSV_in" Type="D" Min="0" Max="1"/>
     <Variable VarIndex="5" Expression="sip3d" Label="sip3d" Title="sip3d" Unit="" Internal="sip3d" Type="D" Min="0.00319339" Max="13.6451"/>
     <Variable VarIndex="6" Expression="mvaId" Label="mvaId" Title="mvaId" Unit="" Internal="mvaId" Type="D" Min="0.120719" Max="0.999731"/>
     <Variable VarIndex="7" Expression="innerHits" Label="innerHits" Title="innerHits" Unit="" Internal="innerHits" Type="D" Min="0" Max="1"/>
