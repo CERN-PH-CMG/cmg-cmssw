@@ -18,8 +18,10 @@ class HiggsPtWeighter( GenParticleAnalyzer ):
         
         self.isGGH, self.higgsMass = self.isGGH(self.cfg_comp)
         if self.isGGH:
-            self.higgsPtWeightFile=TFile("$CMSSW_BASE/src/CMGTools/H2TauTau/data/weight_ptH_{mass}.root".format(mass=self.higgsMass))
-            self.higgsPtWeightHistogram=self.higgsPtWeightFile.Get("powheg_weight/weight_hqt_fehipro_fit_{mass}".format(mass=self.higgsMass))
+            self.higgsPtWeightFile=TFile("$CMSSW_BASE/src/CMGTools/H2TauTau/data/weight_ptH_{mass}_8TeV.root".format(mass=self.higgsMass))
+            self.higgsPtWeightHistogram = self.higgsPtWeightFile.Get("Nominal")
+            self.higgsPtWeightHistogramUp = self.higgsPtWeightFile.Get("Up")
+            self.higgsPtWeightHistogramDown = self.higgsPtWeightFile.Get("Down")
 
         
     def isGGH(self, component):

@@ -159,7 +159,7 @@ treeProducerXCheck = cfg.Analyzer(
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.run2012.tauEle_JanJun25 import *
+from CMGTools.H2TauTau.proto.samples.run2012.tauEle_JanJul15 import *
 
 #########################################################################################
 
@@ -242,7 +242,7 @@ if test==1:
     # comp.files = comp.files[:5]
     # comp = embed_Run2012D_22Jan
     selectedComponents = [comp]
-    comp.splitFactor = 10
+    comp.splitFactor = 1
 elif test==2:
     selectedComponents = copy.copy(data_list)
     selectedComponents.extend(embed_list)

@@ -34,6 +34,7 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
 
        # b jets
        var( tr, 'nBJets')
+       var(tr, 'nCSVLJets')
        bookJet(tr, 'bjet1')
 
        bookVBF( tr, 'VBF' )
@@ -107,6 +108,15 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        if nBJets>0:
            fillJet(tr, 'bjet1', event.cleanBJets[0] )           
        fill(tr, 'nBJets', nBJets)
+
+       # JAN - FIXME - temporarily directly count CSVL
+       # jets. Eventually apply SFs as for CSVM jets
+       # after rewriting BTagSF module
+       nCSVLJets = 0
+       for jet in event.cleanJets:
+          if jet.btag('combinedSecondaryVertexBJetTags') > 0.244:
+              nCSVLJets += 1
+       fill(tr, 'nCSVLJets', nCSVLJets)
 
        if hasattr( event, 'vbf'):
            fillVBF( tr, 'VBF', event.vbf )

@@ -40,6 +40,7 @@ def bookDiLepton(tree):
     var( tree, 'pZetaVis')
     var( tree, 'pZetaDisc')
     var( tree, 'mt')
+    var( tree, 'mtleg1')
     var( tree, 'met')
     var( tree, 'metphi')
     var( tree, 'pthiggs')
@@ -57,6 +58,7 @@ def fillDiLepton(tree, diLepton):
     fill(tree, 'pZetaVis', diLepton.pZetaVis())
     fill(tree, 'pZetaDisc', diLepton.pZetaDisc())
     fill(tree, 'mt', diLepton.mTLeg2())
+    fill(tree, 'mtleg1', diLepton.mTLeg1())
     fill(tree, 'met', diLepton.met().pt())
     fill(tree, 'metphi', diLepton.met().phi())
 
@@ -125,6 +127,9 @@ def bookEle( tree, pName ):
     var(tree, '{pName}_mvaNonTrigV0'.format(pName=pName))
     var(tree, '{pName}_looseId'.format(pName=pName))
     var(tree, '{pName}_tightId'.format(pName=pName))
+    var(tree, '{pName}_numberOfMissingHits'.format(pName=pName))
+    var(tree, '{pName}_passConversionVeto'.format(pName=pName))
+    
 
 def fillEle( tree, pName, ele ):
     fillLepton(tree, pName, ele)
@@ -133,7 +138,8 @@ def fillEle( tree, pName, ele ):
     fill(tree, '{pName}_mvaNonTrigV0'.format(pName=pName), ele.sourcePtr().electronID("mvaNonTrigV0") )
     fill(tree, '{pName}_looseId'.format(pName=pName), ele.looseIdForEleTau() )
     fill(tree, '{pName}_tightId'.format(pName=pName), ele.tightIdForEleTau() )
-
+    fill(tree, '{pName}_numberOfMissingHits'.format(pName=pName), ele.numberOfHits() )
+    fill(tree, '{pName}_passConversionVeto'.format(pName=pName), ele.passConversionVeto() )
 
 # tau 
 
@@ -154,6 +160,7 @@ def bookTau( tree, pName ):
     var(tree, '{pName}_againstElectronTightMVA3'.format(pName=pName))
     var(tree, '{pName}_againstElectronMedium'.format(pName=pName))
     var(tree, '{pName}_againstElectronMVA3Medium'.format(pName=pName))
+    var(tree, '{pName}_againstElectronMVA3raw'.format(pName=pName))
     
     var(tree, '{pName}_againstMuonLoose'.format(pName=pName))
     var(tree, '{pName}_againstMuonLoose2'.format(pName=pName))
@@ -168,6 +175,7 @@ def bookTau( tree, pName ):
     var(tree, '{pName}_EOverp'.format(pName=pName))
     var(tree, '{pName}_decayMode'.format(pName=pName))
     var(tree, '{pName}_mass'.format(pName=pName))
+    var(tree, '{pName}_zImpact'.format(pName=pName))
 
 def fillTau( tree, pName, tau ):
     fillLepton(tree, pName, tau)
@@ -199,6 +207,9 @@ def fillTau( tree, pName, tau ):
          tau.tauID("againstElectronMedium"))
     fill(tree, '{pName}_againstElectronMVA3Medium'.format(pName=pName),
          tau.electronMVA3Medium())
+    fill(tree, '{pName}_againstElectronMVA3raw'.format(pName=pName),
+         tau.tauID('againstElectronMVA3raw') )
+    
 
     fill(tree, '{pName}_againstMuonLoose'.format(pName=pName),
          tau.tauID("againstMuonLoose"))
@@ -225,7 +236,8 @@ def fillTau( tree, pName, tau ):
          tau.decayMode())
     fill(tree, '{pName}_mass'.format(pName=pName),
          tau.mass())
-
+    fill(tree, '{pName}_zImpact'.format(pName=pName),
+         tau.zImpact())
 
 # jet
 
@@ -244,7 +256,7 @@ def fillJet( tree, pName, jet ):
     fill(tree, '{pName}_puMvaFull'.format(pName=pName), jet.puMva('full') )
     fill(tree, '{pName}_puMvaSimple'.format(pName=pName), jet.puMva('simple'))
     fill(tree, '{pName}_puMvaCutBased'.format(pName=pName), jet.puMva('cut-based'))
-    fill(tree, '{pName}_looseJetId'.format(pName=pName), jet.getSelection('cuts_looseJetId'))
+    fill(tree, '{pName}_looseJetId'.format(pName=pName), jet.looseJetId())
     if hasattr(jet, 'genJet') and jet.genJet:
         fill(tree, '{pName}_genJetPt'.format(pName=pName), jet.genJet.pt())
 

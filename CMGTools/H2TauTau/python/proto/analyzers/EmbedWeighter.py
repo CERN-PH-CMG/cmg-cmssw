@@ -26,39 +26,42 @@ class EmbedWeighter( Analyzer ):
         super(EmbedWeighter,self).declareHandles()
         if self.cfg_comp.isEmbed:
             # import pdb; pdb.set_trace()
+            isRHEmbedded = False
             if cmsswIs52X():
                 self.embhandles['minVisPtFilter'] = AutoHandle(
                     ('generator', 'minVisPtFilter'),
                     'GenFilterInfo'
                     )
-                self.embhandles['TauSpinnerReco'] = AutoHandle(
-                    ('TauSpinnerReco', 'TauSpinnerWT'),
-                    'double'
-                    )
-                self.embhandles['ZmumuEvtSelEffCorrWeightProducer'] = AutoHandle(
-                    ('ZmumuEvtSelEffCorrWeightProducer', 'weight'),
-                    'double'
-                    )
-                self.embhandles['muonRadiationCorrWeightProducer'] = AutoHandle(
-                    ('muonRadiationCorrWeightProducer', 'weight'),
-                    'double'
-                    )
-                self.embhandles['genTau2PtVsGenTau1Pt'] = AutoHandle(
-                    ('embeddingKineReweightRECembedding', 'genTau2PtVsGenTau1Pt'),
-                    'double'
-                    )
-                self.embhandles['genTau2EtaVsGenTau1Eta'] = AutoHandle(
-                    ('embeddingKineReweightRECembedding', 'genTau2EtaVsGenTau1Eta'),
-                    'double'
-                    )
-                self.embhandles['genDiTauMassVsGenDiTauPt'] = AutoHandle(
-                    ('embeddingKineReweightRECembedding', 'genDiTauMassVsGenDiTauPt'),
-                    'double'
-                    )
                 self.embhandles['genpart'] =  AutoHandle(
-                    'genTausFromZsForEmbeddingKineReweight',
-                    'std::vector<reco::GenParticle>'
-                    )
+                        'genParticles',
+                        'std::vector<reco::GenParticle>'
+                        )
+                if isRHEmbedded:
+                    self.embhandles['TauSpinnerReco'] = AutoHandle(
+                        ('TauSpinnerReco', 'TauSpinnerWT'),
+                        'double'
+                        )
+                    self.embhandles['ZmumuEvtSelEffCorrWeightProducer'] = AutoHandle(
+                        ('ZmumuEvtSelEffCorrWeightProducer', 'weight'),
+                        'double'
+                        )
+                    self.embhandles['muonRadiationCorrWeightProducer'] = AutoHandle(
+                        ('muonRadiationCorrWeightProducer', 'weight'),
+                        'double'
+                        )
+                    self.embhandles['genTau2PtVsGenTau1Pt'] = AutoHandle(
+                        ('embeddingKineReweightRECembedding', 'genTau2PtVsGenTau1Pt'),
+                        'double'
+                        )
+                    self.embhandles['genTau2EtaVsGenTau1Eta'] = AutoHandle(
+                        ('embeddingKineReweightRECembedding', 'genTau2EtaVsGenTau1Eta'),
+                        'double'
+                        )
+                    self.embhandles['genDiTauMassVsGenDiTauPt'] = AutoHandle(
+                        ('embeddingKineReweightRECembedding', 'genDiTauMassVsGenDiTauPt'),
+                        'double'
+                        )
+                    
             else:
                 self.embhandles['minVisPtFilter'] = AutoHandle(
                     ('generator', 'weight'),
@@ -70,32 +73,37 @@ class EmbedWeighter( Analyzer ):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         self.weight = 1
-
+        isRHEmbedded = False
         if self.cfg_comp.isEmbed:
             try: 
                 genfilter = self.embhandles['minVisPtFilter'].product()
-                tauspin = self.embhandles['TauSpinnerReco'].product()
-                zmumusel = self.embhandles['ZmumuEvtSelEffCorrWeightProducer'].product()
-                muradcorr = self.embhandles['muonRadiationCorrWeightProducer'].product()
-                genTau2PtVsGenTau1Pt = self.embhandles['genTau2PtVsGenTau1Pt'].product()
-                genTau2EtaVsGenTau1Eta = self.embhandles['genTau2EtaVsGenTau1Eta'].product()
-                genDiTauMassVsGenDiTauPt = self.embhandles['genDiTauMassVsGenDiTauPt'].product()
+                if isRHEmbedded:
+                    tauspin = self.embhandles['TauSpinnerReco'].product()
+                    zmumusel = self.embhandles['ZmumuEvtSelEffCorrWeightProducer'].product()
+                    muradcorr = self.embhandles['muonRadiationCorrWeightProducer'].product()
+                    genTau2PtVsGenTau1Pt = self.embhandles['genTau2PtVsGenTau1Pt'].product()
+                    genTau2EtaVsGenTau1Eta = self.embhandles['genTau2EtaVsGenTau1Eta'].product()
+                    genDiTauMassVsGenDiTauPt = self.embhandles['genDiTauMassVsGenDiTauPt'].product()
             except RuntimeError:
                 print 'WARNING EmbedWeighter, cannot find the weight in the event'
                 return False
             if cmsswIs52X():
                 self.weight = genfilter.filterEfficiency()
-                self.weight *= tauspin[0]
-                self.weight *= zmumusel[0]
-                self.weight *= muradcorr[0]
-                self.weight *= genTau2PtVsGenTau1Pt[0]
-                self.weight *= genTau2EtaVsGenTau1Eta[0]
-                self.weight *= genDiTauMassVsGenDiTauPt[0]
+                if isRHEmbedded:
+                    self.weight *= tauspin[0]
+                    self.weight *= zmumusel[0]
+                    self.weight *= muradcorr[0]
+                    self.weight *= genTau2PtVsGenTau1Pt[0]
+                    self.weight *= genTau2EtaVsGenTau1Eta[0]
+                    self.weight *= genDiTauMassVsGenDiTauPt[0]
 
                 self.counters.counter('EmbedWeighter').inc('all events')
 
                 event.genParticles = map( GenParticle, self.embhandles['genpart'].product() )
-                genZMass = (event.genParticles[0].p4() + event.genParticles[1].p4()).mass()
+                genTaus = [p for p in event.genParticles if abs(p.pdgId()) == 15]
+                if len(genTaus) != 2:
+                    print 'WARNING EmbedWeighter, not 2 gen taus in the event'
+                genZMass = (genTaus[0].p4() + genTaus[1].p4()).mass()
                 # import pdb; pdb.set_trace()
                 
                 if genZMass < 50.:

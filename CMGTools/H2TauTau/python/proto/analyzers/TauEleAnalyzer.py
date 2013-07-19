@@ -39,6 +39,9 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                      'std::vector<reco::GenParticle>' )
 
+        self.relaxEleId = False
+        self.relaxTauId = False
+
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
@@ -136,9 +139,17 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             # it must have well id'ed and trig matched legs,
             # and di-lepton veto must pass
             # i.e. only the iso requirement is relaxed
+
+            # Also relax IDs for sideband studies without changing the 
+            # dilepton selectionSequence
+            self.relaxEleId = True
+            self.relaxTauId = True
             result = self.selectionSequence(event, fillCounter=False,
                                             leg1IsoCut = -9999,
                                             leg2IsoCut = 9999)
+            self.relaxEleId = False
+            self.relaxTauId = False
+
             if result is False:
                 # really no way to find a suitable di-lepton,
                 # even in the control region
@@ -169,15 +180,20 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
 
     def testLeg1ID(self, tau):
-
+        # import pdb; pdb.set_trace()
+        # Don't apply anti-e discriminator for relaxed tau ID
+        if self.relaxTauId:
+            return tau.tauID("againstMuonLoose")>0.5 and \
+               (tau.zImpact() > 0.5 or tau.zImpact() < -1.5) and\
+               self.testVertex( tau )    
         return tau.electronMVA3Medium() and \
                tau.tauID("againstMuonLoose")>0.5 and \
+               (tau.zImpact() > 0.5 or tau.zImpact() < -1.5) and\
                self.testVertex( tau )
 
                # tau.tauID("againstElectronTightMVA3") >0.5 and \
                # tau.tauID("againstElectronMVA") >0.5 and \ 
                # tau.tauID("againstElectronTightMVA2") >0.5 and \
-               # FIXME: ??? what is againstElectronMedium ???
                # tau.tauID("againstMuonLoose")>0.5 and \
 
 
@@ -209,6 +225,9 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         '''Tight muon selection, no isolation requirement'''
         #        print 'WARNING: USING SETUP FOR SYNC PURPOSES'
         #        return electron.looseIdForEleTau() and \
+        if self.relaxEleId:
+            return electron.relaxedIdForEleTau() and \
+               self.testVertex( electron )    
         return electron.tightIdForEleTau() and \
                self.testVertex( electron )
 
