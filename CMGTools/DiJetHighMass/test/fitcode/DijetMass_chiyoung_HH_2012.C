@@ -212,7 +212,7 @@ void DijetMass_chiyoung_HH_2012(){
 
 
   // QCD Fit -- fit to qcd
-  TF1 *f_qcd = new TF1("fit_qcd",fitQCD2, 943.0,4686.0,4); 
+  TF1 *f_qcd = new TF1("fit_qcd",fitQCD1, 943.0,4686.0,4); 
   gStyle->SetOptFit(1111); 
   f_qcd->SetParameter(0,6.15613e+18*2);
   f_qcd->SetParameter(1,-3.75321e+00);
@@ -227,7 +227,7 @@ void DijetMass_chiyoung_HH_2012(){
   cout << "Fit QCD Up" << endl << endl << endl;
 
   // QCD up Fit -- fit to JES plus
-  TF1 *f_qcd_up = new TF1("fit_qcd_up",fitQCD2,943.,4686.0,4); 
+  TF1 *f_qcd_up = new TF1("fit_qcd_up",fitQCD1,943.,4686.0,4); 
   gStyle->SetOptFit(1111); 
   f_qcd_up->SetParameter(0,1.47700e+19*2);
   f_qcd_up->SetParameter(1,-4.03984e+00);
@@ -240,7 +240,7 @@ void DijetMass_chiyoung_HH_2012(){
   cout << "Fit QCD Do" << endl << endl << endl;
 
   // QCD down Fit -- fit to JES minus
-  TF1 *f_qcd_down = new TF1("fit_qcd_down",fitQCD2,943.,4686.0,4); 
+  TF1 *f_qcd_down = new TF1("fit_qcd_down",fitQCD1,943.,4686.0,4); 
   gStyle->SetOptFit(1111); 
   f_qcd_down->SetParameter(0,2.12985e+19*2);
   f_qcd_down->SetParameter(1,-4.63606e+00);
@@ -316,7 +316,7 @@ void DijetMass_chiyoung_HH_2012(){
   // Fit to data anly at low mass    
 
 
-  TF1 *fit = new TF1("fit",fitQCD2,mMin,mMax,4); // 4 Par. Fit
+  TF1 *fit = new TF1("fit",fitQCD1,mMin,mMax,4); // 4 Par. Fit
   gStyle->SetOptFit(1111); 
   fit->SetParameter(0,1.99e-05);
   fit->SetParameter(1,5.689);
@@ -340,7 +340,8 @@ void DijetMass_chiyoung_HH_2012(){
 
 gStyle->SetOptFit(1111);
 
-
+ double chi2 = 0;
+ int ndf = 0;
 
   for(int i=0;i<hDijetMass->GetNbinsX();i++)
     {
@@ -356,12 +357,17 @@ gStyle->SetOptFit(1111);
 
 		
 		
-      if(error != 0. && m > mMin && m < 2659.0){
+      if(error != 0. && m > mMin && m < mMax){
 
+	ndf++;
 
+	double dPull = (data-fit_default)/error;
 
-	hPulls_add->SetBinContent(i+1,(data-fit_default)/error);
+	hPulls_add->SetBinContent(i+1,dPull);
 	hPulls_add->SetBinError(i+1,1.);
+
+	cout << " dPull*dPull = " <<  dPull*dPull << endl;
+	chi2 += dPull*dPull;
 
 
       } else {
@@ -371,7 +377,7 @@ gStyle->SetOptFit(1111);
     }
 
 
-
+  cout << "chi2 = " << chi2 << " ndf = " << ndf - 4<< endl; 
 
 
 
@@ -451,7 +457,7 @@ f_qcd->Draw("same");
 
  
 
-TF1 *fitFinal = new TF1("fitFinal",fitQCD2,mMin,mMax,4); // 4 Par. Fit
+TF1 *fitFinal = new TF1("fitFinal",fitQCD1,mMin,mMax,4); // 4 Par. Fit
 gStyle->SetOptFit(0000); 
 fitFinal->SetParameter(0,1.99e-05);
 fitFinal->SetParameter(1,5.689);
@@ -459,6 +465,8 @@ fitFinal->SetParameter(2,6.321);
 fitFinal->SetParameter(3,0.221);
 fitFinal->SetLineWidth(2);
 fitFinal->SetLineColor(4);
+gFinal->Fit("fitFinal","","",mMin, mMax);
+gFinal->Fit("fitFinal","","",mMin, mMax);
 gFinal->Fit("fitFinal","","",mMin, mMax);
 gFinal->Fit("fitFinal","","",mMin, mMax);
 gFinal->Fit("fitFinal","","",mMin, mMax);
@@ -511,7 +519,7 @@ p12_2->SetGridx();
 c12_2->SetTickx(50);
 
 
-TH1F *vFrame2 = p12_2->DrawFrame(838.0, -3.49, 2780., 3.49);
+TH1F *vFrame2 = p12_2->DrawFrame(838.0, -2.49, 2780., 2.49);
 vFrame2->SetTitle("");
 vFrame2->SetXTitle("Dijet Mass (GeV)");
 vFrame2->GetXaxis()->SetTitleSize(0.06);
