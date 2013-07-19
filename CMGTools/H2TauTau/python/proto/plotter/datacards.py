@@ -48,6 +48,8 @@ def datacards(plot, cutstring, shift, channel='muTau', prefix=None):
     category = 'Unknown'
     if cutstring.find('Xcat_IncX')!=-1:
         category = 'inclusive'
+
+    # Moriond categories
     if cutstring.find('Xcat_J1X')!=-1:
         category = 'boosted'
         if cutstring.find('l1_pt<40')!=-1:
@@ -62,6 +64,28 @@ def datacards(plot, cutstring, shift, channel='muTau', prefix=None):
             category = '0jet_high'
     if cutstring.find('Xcat_VBF')!=-1:
         category = 'vbf'
+
+    # Summer 13 categories
+    if cutstring.find('Xcat_J0_lowX')!=-1:
+        category = '0jet_low'
+    elif cutstring.find('Xcat_J0_mediumX')!=-1:
+        category = '0jet_medium'
+    elif cutstring.find('Xcat_J0_highX')!=-1:
+        category = '0jet_high'
+
+    if cutstring.find('Xcat_J1_high_mediumhiggsX')!=-1:
+        category = '1jet_high_mediumhiggs'
+    elif cutstring.find('Xcat_J1_high_lowhiggsX')!=-1:
+        category = '1jet_high_lowhiggs'
+    elif cutstring.find('Xcat_J1_mediumX')!=-1:
+        category = '1jet_medium'
+    
+    if cutstring.find('Xcat_VBF_tightX')!=-1:
+        category = 'vbf_tight'
+    elif cutstring.find('Xcat_VBF_looseX')!=-1:
+        category = 'vbf_loose'
+
+
     ext = None
     if shift:
         ch = 'mutau'
@@ -138,14 +162,16 @@ def merge( fileNames ):
             output.cd()
             obj = file.Get(key.GetName())
             if type(obj) is TDirectoryFile:
-                subdir = output.mkdir(key.GetName())
+                # subdir = output.mkdir(key.GetName())
+                subdir = output.mkdir(lastchan + '_' + key.GetName())
                 subdir.cd()
                 subobjs = getobjs( obj )
                 for subobj in subobjs:
                     subobj.Write()
             else:
                 if categdir is None:
-                    categdir = output.mkdir( categories[file.GetName()] )
+                    # categdir = output.mkdir( categories[file.GetName()] )
+                    categdir = output.mkdir(lastchan + '_' + categories[file.GetName()] )
                 categdir.cd()
                 obj.Write(key.GetName())
     output.Close()

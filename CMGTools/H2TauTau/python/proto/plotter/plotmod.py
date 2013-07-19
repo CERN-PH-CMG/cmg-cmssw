@@ -104,6 +104,8 @@ def getQCD( plotSS, plotOS, dataName, VVgroup=None, scale=1.06, subtractBGForSha
         qcdOS = copy.deepcopy( plotSSWithQCD.Hist('Data') )
         
     # qcdOS.RemoveNegativeValues()
+    print 'QCD yield', qcd_yield
+
     qcdOS.Scale( qcd_yield / qcdOS.Integral() )
 
     plotOSWithQCD.AddHistogram('QCD', qcdOS.weighted, 1030)

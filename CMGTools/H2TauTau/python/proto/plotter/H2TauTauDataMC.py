@@ -114,12 +114,13 @@ class H2TauTauDataMC( AnalysisDataMC ):
         # hack to account for the shift determined for HCP, see:
         # https://indico.cern.ch/getFile.py/access?contribId=38&resId=0&materialId=slides&confId=212612
 
-        if isNewerThan('CMSSW_5_2_0'):
-            # Andrew doesn't do the shift in 2011.
-            if compName == 'Ztt_ZL' and self.treeName.find('TauEle') != -1:
-                if varName == 'visMass' or varName == 'svfitMass':
-                    print 'Shifting visMass and svfitMass by 1.015 for', compName
-                    var = varName + '* 1.015'
+        # FIXME - no correction as of now (summer13)
+        # if isNewerThan('CMSSW_5_2_0'):
+        #     # Andrew doesn't do the shift in 2011.
+        #     if compName == 'Ztt_ZL' and self.treeName.find('TauEle') != -1:
+        #         if varName == 'visMass' or varName == 'svfitMass':
+        #             print 'Shifting visMass and svfitMass by 1.015 for', compName
+        #             var = varName + '* 1.015'
 ##         else:
 ##             if compName == 'Ztt_ZL':
 ##                 weight = weight + '/zllWeight'

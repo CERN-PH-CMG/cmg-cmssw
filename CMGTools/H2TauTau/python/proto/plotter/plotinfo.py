@@ -36,6 +36,7 @@ plots_All = {
     'nVert': PlotInfo('nVert', 51, -0.5, 50.5),
     'pthiggs': PlotInfo('pthiggs', 50, 0., 150.),
     'deltaEtaL1L2': PlotInfo('deltaEtaL1L2', 20, 0., 5.),
+    'deltaRL1L2': PlotInfo('deltaRL1L2', 20, 0., 5.),
     'abs_l1_eta_j1_eta': PlotInfo('abs_l1_eta_j1_eta', 20, 0., 5.),
     'abs_l2_eta_j1_eta': PlotInfo('abs_l2_eta_j1_eta', 20, 0., 5.),
     'deltaPhiL1L2' :

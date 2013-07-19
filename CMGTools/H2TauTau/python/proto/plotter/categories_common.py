@@ -1,8 +1,8 @@
 from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 
 cat_VBF = 'nJets>=2 && VBF_nCentral==0 && VBF_mjj > 500 && abs(VBF_deta) > 3.5'
-cat_VBF_Rel_30 = 'nJets>=2 && VBF_nCentral==0 && VBF_mjj>200 && abs(VBF_deta) > 2.'
-cat_VBF_Rel_20 = 'nJets20>=2 && VBF_nCentral==0 && VBF_mjj>200 && abs(VBF_deta) > 2.'
+cat_VBF_Rel_30 = 'nJets>=2 && nBJets==0 && VBF_nCentral==0 && VBF_mjj>200 && abs(VBF_deta) > 2.'
+cat_VBF_Rel_20 = 'nJets20>=2 && nBJets==0 && VBF_nCentral==0 && VBF_mjj>200 && abs(VBF_deta) > 2.'
 
 cat_J2 = 'nJets>=2'
 # cat_VH  = 'nJets>=2 && VBF_mjj>60 && VBF_mjj<120 && VBF_dijetpt>150 && VBF_mva<0.5 && nBJets==0'
@@ -14,8 +14,10 @@ cat_J0 = 'nJets==0 && nBJets==0' # Jose
 #                                                               J1=cat_J1,
 #                                                               J1B=cat_J1B)
 
+cat_J1B_Rel_CSVL = 'nCSVLJets>=1 && nJets<2'
+
 cat_1BInclusive = 'nBJets>=1'
-cat_0B = 'nBJets>=1'
+cat_0B = 'nBJets==0'
 
 cat_J0_high = cat_J0 + ' && l1_pt>45.'
 cat_J0_medium = cat_J0 + ' && l1_pt>30. && l1_pt<=45.'
@@ -62,4 +64,5 @@ categories_common = {
     'Xcat_J1_oldhighX':cat_J1_oldhigh,
     'Xcat_1BInclusiveX':cat_1BInclusive,
     'Xcat_0BX':cat_0B,
+    'Xcat_J1B_Rel_CSVLX':cat_J1B_Rel_CSVL
     }
