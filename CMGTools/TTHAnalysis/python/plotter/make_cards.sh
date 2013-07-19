@@ -62,10 +62,10 @@ if [[ "$1" == "" || "$1" == "3l_tight" ]]; then
     MVA_3L="-F finalMVA/t $T/0_finalmva_3l/finalMVA_3L_{cname}.root"
     POS=" -A pt2010 positive LepGood1_charge+LepGood2_charge+LepGood3_charge>0 "
     NEG=" -A pt2010 positive LepGood1_charge+LepGood2_charge+LepGood3_charge<0 "
-    python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'nJet25' '4,1.5,5.5' $SYSTS $OPT_3L -o 3l_nJet $BAny; 
+    #python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'nJet25' '4,1.5,5.5' $SYSTS $OPT_3L -o 3l_nJet $BAny; 
 
-    python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'nJet25' '4,1.5,5.5' $SYSTS $OPT_3L -o 3l_nJet_pos $POS $BAny; 
-    python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'nJet25' '4,1.5,5.5' $SYSTS $OPT_3L -o 3l_nJet_neg $NEG $BAny; 
+    #python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'nJet25' '4,1.5,5.5' $SYSTS $OPT_3L -o 3l_nJet_pos $POS $BAny; 
+    #python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'nJet25' '4,1.5,5.5' $SYSTS $OPT_3L -o 3l_nJet_neg $NEG $BAny; 
 
     #python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'nJet25' '4,1.5,5.5' $SYSTS $OPT_3L -o 3l_nJet_pos_bt $POS $BTight; 
     #python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'nJet25' '4,1.5,5.5' $SYSTS $OPT_3L -o 3l_nJet_neg_bt $NEG $BTight; 
@@ -74,11 +74,13 @@ if [[ "$1" == "" || "$1" == "3l_tight" ]]; then
     #python makeShapeCards.py mca-3l_tight-dataFRMC.txt bins/3l_tight.txt 'nJet25' '4,1.5,5.5' $SYSTS $OPT_3L -o 3l_nJet_pos_btFRMC $POS $BTight; 
     #python makeShapeCards.py mca-3l_tight-dataFRMC.txt bins/3l_tight.txt 'nJet25' '4,1.5,5.5' $SYSTS $OPT_3L -o 3l_nJet_neg_btFRMC $NEG $BTight; 
 
-    python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'FinalMVA_3L_BDTG' '6,-1.0,0.6' $SYSTS $OPT_3L -o 3l_MVA $MVA_3L $BAny;
+    #python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'FinalMVA_3L_BDTG' '6,-1.0,0.6' $SYSTS $OPT_3L -o 3l_MVA $MVA_3L $BAny;
 
-    python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'FinalMVA_3L_BDTG' '6,-1.0,0.6' $SYSTS $OPT_3L -o 3l_MVA_neg $MVA_3L $NEG $BAny;
-    python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'FinalMVA_3L_BDTG' '6,-1.0,0.6' $SYSTS $OPT_3L -o 3l_MVA_pos $MVA_3L $POS $BAny;
+    #python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'FinalMVA_3L_BDTG' '6,-1.0,0.6' $SYSTS $OPT_3L -o 3l_MVA_neg $MVA_3L $NEG $BAny;
+    #python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'FinalMVA_3L_BDTG' '6,-1.0,0.6' $SYSTS $OPT_3L -o 3l_MVA_pos $MVA_3L $POS $BAny;
 
+    python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'FinalMVA_3L_BDTG' '6,-1.0,0.6' $SYSTS $OPT_3L -o 3l_MVA_Zpeak_neg $MVA_3L $NEG $BAny -I 'Z veto';
+    python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'FinalMVA_3L_BDTG' '6,-1.0,0.6' $SYSTS $OPT_3L -o 3l_MVA_Zpeak_pos $MVA_3L $POS $BAny -I 'Z veto';
     #python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'FinalMVA_3L_BDTG' '4,-1.0,0.6' $SYSTS $OPT_3L -o 3l_MVA_pos_bt $MVA_3L $POS $BTight;
     #python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'FinalMVA_3L_BDTG' '4,-1.0,0.6' $SYSTS $OPT_3L -o 3l_MVA_neg_bt $MVA_3L $NEG $BTight;
     #python makeShapeCards.py mca-3l_tight-data.txt bins/3l_tight.txt 'FinalMVA_3L_BDTG' '6,-1.0,0.6' $SYSTS $OPT_3L -o 3l_MVA_neg_bl $MVA_3L $NEG $BLoose;
