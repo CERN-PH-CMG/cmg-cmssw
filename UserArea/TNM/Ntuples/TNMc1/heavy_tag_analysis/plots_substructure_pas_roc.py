@@ -3,21 +3,22 @@ import array
 from ROOT import * 
 from os import path
 
-gROOT.Reset()
-gROOT.SetStyle("Plain")
+#gROOT.Reset()
+#gROOT.SetStyle("Plain")
+gROOT.ProcessLine('.L tdrstyle.C')
 gStyle.SetOptStat(0)
 gStyle.SetOptFit(0)
-gStyle.SetTitleOffset(1.2,"Y")
+gStyle.SetTitleOffset(1.3,"Y")
 gStyle.SetPadLeftMargin(0.15)
 gStyle.SetPadBottomMargin(0.15)
 gStyle.SetPadTopMargin(0.08)
 gStyle.SetPadRightMargin(0.08)
 gStyle.SetMarkerSize(0.5)
 gStyle.SetHistLineWidth(1)
-gStyle.SetStatFontSize(0.020)
+#gStyle.SetStatFontSize(0.020)
 gStyle.SetTitleSize(0.06, "XYZ")
 gStyle.SetLabelSize(0.05, "XYZ")
-gStyle.SetNdivisions(510, "XYZ")
+gStyle.SetNdivisions(506, "XYZ")
 gStyle.SetLegendBorderSize(0)
 
 TGaxis.SetMaxDigits(3)
@@ -32,7 +33,7 @@ if __name__ == '__main__':
              "substructure_pas_WWPy61000.root",
             ]
 
- selection="(abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)"
+ selection="(abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600)"
  selection_mass="&&(Jet1Mass>60)&&(Jet1Mass<100)"
  plots=[("Jet1Nsub","#tau_{2}/#tau_{1}",-1,10,False),
         ("Jet1NsubPruned","pruned #tau_{2}/#tau_{1}",-1,10,False),
@@ -123,8 +124,8 @@ if __name__ == '__main__':
 
  mg.SetTitle("")
  mg.Draw("AP")
- mg.GetXaxis().SetTitle("Signal efficiency")
- mg.GetYaxis().SetTitle("Background rejection")
+ mg.GetXaxis().SetTitle("#epsilon_{sig}")
+ mg.GetYaxis().SetTitle("1 - #epsilon_{bkg}")
  mg.GetXaxis().SetRangeUser(0,1)
  mg.GetYaxis().SetRangeUser(0.9,1)
 
@@ -137,7 +138,7 @@ if __name__ == '__main__':
  legend4.SetFillStyle(0)
  legend4.Draw("same")
 
- legend2=TLegend(0.65,0.8,0.9,0.85,"500 < p_{T} < 750 GeV")
+ legend2=TLegend(0.65,0.8,0.9,0.85,"400 < p_{T} < 600 GeV")
  legend2.SetTextSize(0.03)
  legend2.SetFillStyle(0)
  legend2.Draw("same")
@@ -162,8 +163,8 @@ if __name__ == '__main__':
  canvas.SetLogy(False)
  mg2.SetTitle("")
  mg2.Draw("AP")
- mg2.GetXaxis().SetTitle("Signal efficiency")
- mg2.GetYaxis().SetTitle("Background rejection")
+ mg2.GetXaxis().SetTitle("#epsilon_{sig}")
+ mg2.GetYaxis().SetTitle("1 - #epsilon_{bkg}")
  mg2.GetXaxis().SetRangeUser(0,1)
  mg2.GetYaxis().SetRangeUser(0,1)
  legend.Draw("same")
