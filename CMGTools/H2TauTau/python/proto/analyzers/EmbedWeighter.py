@@ -24,9 +24,13 @@ class EmbedWeighter( Analyzer ):
 
     def declareHandles(self):
         super(EmbedWeighter,self).declareHandles()
+        import pdb ; pdb.set_trace()
         if self.cfg_comp.isEmbed:
-            # import pdb; pdb.set_trace()
-            isRHEmbedded = False
+            isRHEmbedded = self.cfg_ana.isRecHit
+            if 'PFembedded' in self.cfg_comp.name and isRHEmbedded :
+              'WARNING: in the cfg you set RecHit, but this appears to be PF embedded'
+            if 'RHembedded' in self.cfg_comp.name and not isRHEmbedded :
+              'WARNING: in the cfg you set PF, but this appears to be RecHit embedded'
             if cmsswIs52X():
                 self.embhandles['minVisPtFilter'] = AutoHandle(
                     ('generator', 'minVisPtFilter'),
@@ -74,15 +78,22 @@ class EmbedWeighter( Analyzer ):
         self.readCollections( iEvent )
         self.weight = 1
         isRHEmbedded = False
+        event.genfilter                = 1.
+        event.tauspin                  = 1.
+        event.zmumusel                 = 1.
+        event.muradcorr                = 1.
+        event.genTau2PtVsGenTau1Pt     = 1.
+        event.genTau2EtaVsGenTau1Eta   = 1.
+        event.genDiTauMassVsGenDiTauPt = 1.
         if self.cfg_comp.isEmbed:
             try: 
                 genfilter = self.embhandles['minVisPtFilter'].product()
                 if isRHEmbedded:
-                    tauspin = self.embhandles['TauSpinnerReco'].product()
-                    zmumusel = self.embhandles['ZmumuEvtSelEffCorrWeightProducer'].product()
-                    muradcorr = self.embhandles['muonRadiationCorrWeightProducer'].product()
-                    genTau2PtVsGenTau1Pt = self.embhandles['genTau2PtVsGenTau1Pt'].product()
-                    genTau2EtaVsGenTau1Eta = self.embhandles['genTau2EtaVsGenTau1Eta'].product()
+                    tauspin                  = self.embhandles['TauSpinnerReco'].product()
+                    zmumusel                 = self.embhandles['ZmumuEvtSelEffCorrWeightProducer'].product()
+                    muradcorr                = self.embhandles['muonRadiationCorrWeightProducer'].product()
+                    genTau2PtVsGenTau1Pt     = self.embhandles['genTau2PtVsGenTau1Pt'].product()
+                    genTau2EtaVsGenTau1Eta   = self.embhandles['genTau2EtaVsGenTau1Eta'].product()
                     genDiTauMassVsGenDiTauPt = self.embhandles['genDiTauMassVsGenDiTauPt'].product()
             except RuntimeError:
                 print 'WARNING EmbedWeighter, cannot find the weight in the event'
@@ -96,6 +107,16 @@ class EmbedWeighter( Analyzer ):
                     self.weight *= genTau2PtVsGenTau1Pt[0]
                     self.weight *= genTau2EtaVsGenTau1Eta[0]
                     self.weight *= genDiTauMassVsGenDiTauPt[0]
+
+                event.genfilter                = genfilter.filterEfficiency()
+            
+                if isRHEmbedded:
+                  event.tauspin                  = tauspin[0]
+                  event.zmumusel                 = zmumusel[0]
+                  event.muradcorr                = muradcorr[0]
+                  event.genTau2PtVsGenTau1Pt     = genTau2PtVsGenTau1Pt[0]
+                  event.genTau2EtaVsGenTau1Eta   = genTau2EtaVsGenTau1Eta[0]
+                  event.genDiTauMassVsGenDiTauPt = genDiTauMassVsGenDiTauPt[0]
 
                 self.counters.counter('EmbedWeighter').inc('all events')
 
