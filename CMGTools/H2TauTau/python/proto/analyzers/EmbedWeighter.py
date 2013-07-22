@@ -24,7 +24,7 @@ class EmbedWeighter( Analyzer ):
 
     def declareHandles(self):
         super(EmbedWeighter,self).declareHandles()
-        import pdb ; pdb.set_trace()
+        #import pdb ; pdb.set_trace()
         if self.cfg_comp.isEmbed:
             isRHEmbedded = self.cfg_ana.isRecHit
             if 'PFembedded' in self.cfg_comp.name and isRHEmbedded :
