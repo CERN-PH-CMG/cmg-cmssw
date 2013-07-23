@@ -53,6 +53,7 @@ class Zanalysis_controlplots {
   Int_t           lumi;
   Int_t           evt;
   Int_t           nvtx;
+  Int_t           njets;
   Int_t           npu;
   Int_t           evtHasGoodVtx;
   Int_t           evtHasTrg;
@@ -132,6 +133,7 @@ class Zanalysis_controlplots {
   TBranch        *b_lumi;   //!
   TBranch        *b_evt;   //!
   TBranch        *b_nvtx;   //!
+  TBranch        *b_njets; //!
   TBranch        *b_npu;   //!
   TBranch        *b_evtHasGoodVtx;   //!
   TBranch        *b_evtHasTrg;   //!
@@ -301,6 +303,7 @@ void Zanalysis_controlplots::Init(TTree *tree)
   fChain->SetBranchAddress("lumi", &lumi, &b_lumi);
   fChain->SetBranchAddress("evt", &evt, &b_evt);
   fChain->SetBranchAddress("nvtx", &nvtx, &b_nvtx);
+  fChain->SetBranchAddress("njets", &njets, &b_njets);
   fChain->SetBranchAddress("npu", &npu, &b_npu);
   fChain->SetBranchAddress("evtHasGoodVtx", &evtHasGoodVtx, &b_evtHasGoodVtx);
   fChain->SetBranchAddress("evtHasTrg", &evtHasTrg, &b_evtHasTrg);
@@ -327,8 +330,8 @@ void Zanalysis_controlplots::Init(TTree *tree)
   fChain->SetBranchAddress("Z_phi", &Z_phi, &b_Z_phi);
   fChain->SetBranchAddress("Z_mass", &Z_mass, &b_Z_mass);
   fChain->SetBranchAddress("Z_mt", &Z_mt, &b_Z_mt);
-  fChain->SetBranchAddress("u1", &u1, &b_u1);
-  fChain->SetBranchAddress("u2", &u2, &b_u2);
+  fChain->SetBranchAddress("u1corr", &u1, &b_u1);
+  fChain->SetBranchAddress("u2corr", &u2, &b_u2);
   fChain->SetBranchAddress("MuPos_pt", &MuPos_pt, &b_MuPos_pt);
   fChain->SetBranchAddress("MuPos_eta", &MuPos_eta, &b_MuPos_eta);
   fChain->SetBranchAddress("MuPos_phi", &MuPos_phi, &b_MuPos_phi);
@@ -511,10 +514,10 @@ pair<float,float> Zanalysis_controlplots::getPhiCorrMET( float met, float metphi
   float shifty = 0.;
 
   //use correction for data vs. mc                                                                                                                  // these numbers are documented in AN2012_333_v5
-  shiftx = ismc ? (0.1166 + 0.0200*nvtx)
-    : (0.2661 + 0.3217*nvtx);
-  shifty = ismc ? (0.2764 - 0.1280*nvtx)
-    : (-0.2251 - 0.1747*nvtx);
+  shiftx = ismc ? (-0.02245 - 0.0498*nvtx)
+    : (-0.1676 + 0.2509*nvtx);
+  shifty = ismc ? (0.1158 - 0.3201*nvtx)
+    : (-0.2244 - 0.4009*nvtx);
 
   metx -= shiftx;
   mety -= shifty;
