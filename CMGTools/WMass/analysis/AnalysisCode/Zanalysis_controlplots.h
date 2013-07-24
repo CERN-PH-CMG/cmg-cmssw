@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
 // This class has been automatically generated on
 // Sat Oct 13 13:57:16 2012 by ROOT version 5.27/06b
 // from TTree ZTreeProducer/ZTreeProducer
@@ -224,6 +224,8 @@ class Zanalysis_controlplots {
   virtual float getMT( float pt1 , float phi1 , float pt2 , float phi2 );
   virtual float getPseudoMET(double pfmet_corr, double pfmet_phi_corr, int type);
   virtual float getPseudoMT(double met, double metphi);
+
+  void calculateU1U2(double fmet , double fMPhi, double fPt1, double fPhi1, double & fU1, double & fU2);
 
   virtual pair<float,float> getPhiCorrMET( float met, float metphi, int nvtx, bool ismc );
 
@@ -525,5 +527,24 @@ pair<float,float> Zanalysis_controlplots::getPhiCorrMET( float met, float metphi
   pair<float, float> phicorrmet = make_pair( sqrt( metx*metx + mety*mety ), atan2( mety , metx ) );
   return phicorrmet;
 }
+
+void Zanalysis_controlplots::calculateU1U2(double fMet , double fMPhi, double fPt1, double fPhi1, double & fU1,double & fU2)
+{
+    double lUX  = fMet*cos(fMPhi) + fPt1*cos(fPhi1);
+    double lUY  = fMet*sin(fMPhi) + fPt1*sin(fPhi1);
+    double lU   = sqrt(lUX*lUX+lUY*lUY);
+
+    double fZPhi=fPhi1;
+    double fZPt=fPt1;
+
+    // rotate of -180 the X and Y component
+    double lCos = - (lUX*cos(fZPhi) + lUY*sin(fZPhi))/lU;
+    double lSin =   (lUX*sin(fZPhi) - lUY*cos(fZPhi))/lU;
+    fU1 = lU*lCos;
+    fU2 = lU*lSin;
+
+}
+
+
 
 #endif // #ifdef Zanalysis_controlplots_cxx
