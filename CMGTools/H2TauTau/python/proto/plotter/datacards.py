@@ -12,6 +12,10 @@ datacards_aliases = {
     #
     'Data':'data_obs',
     # VBF
+    'HiggsVBF90':'qqH90',
+    'HiggsVBF95':'qqH95',
+    'HiggsVBF100':'qqH100',
+    'HiggsVBF105':'qqH105',
     'HiggsVBF110':'qqH110',
     'HiggsVBF115':'qqH115',
     'HiggsVBF120':'qqH120',
@@ -20,7 +24,14 @@ datacards_aliases = {
     'HiggsVBF135':'qqH135',
     'HiggsVBF140':'qqH140',
     'HiggsVBF145':'qqH145',
+    'HiggsVBF150':'qqH150',
+    'HiggsVBF155':'qqH155',
+    'HiggsVBF160':'qqH160',
     # gluon fusion
+    'HiggsGGH90':'ggH90',
+    'HiggsGGH95':'ggH95',
+    'HiggsGGH100':'ggH100',
+    'HiggsGGH105':'ggH105',
     'HiggsGGH110':'ggH110',
     'HiggsGGH115':'ggH115',
     'HiggsGGH120':'ggH120',
@@ -29,7 +40,14 @@ datacards_aliases = {
     'HiggsGGH135':'ggH135',
     'HiggsGGH140':'ggH140',
     'HiggsGGH145':'ggH145',
+    'HiggsGGH150':'ggH150',
+    'HiggsGGH155':'ggH155',
+    'HiggsGGH160':'ggH160',
     # VH
+    'HiggsVH90':'VH90',
+    'HiggsVH95':'VH95',
+    'HiggsVH190':'VH100',
+    'HiggsVH195':'VH105',
     'HiggsVH110':'VH110',
     'HiggsVH115':'VH115',
     'HiggsVH120':'VH120',
@@ -38,12 +56,15 @@ datacards_aliases = {
     'HiggsVH135':'VH135',
     'HiggsVH140':'VH140',
     'HiggsVH145':'VH145',
+    'HiggsVH150':'VH150',
+    'HiggsVH155':'VH155',
+    'HiggsVH160':'VH160',
     }
 
 
 
 
-def datacards(plot, cutstring, shift, channel='muTau', prefix=None):
+def datacards(plot, cutstring, shift, channel='muTau', prefix=None, energy='8TeV'):
 
     category = 'Unknown'
     if cutstring.find('Xcat_IncX')!=-1:
@@ -85,17 +106,24 @@ def datacards(plot, cutstring, shift, channel='muTau', prefix=None):
     elif cutstring.find('Xcat_VBF_looseX')!=-1:
         category = 'vbf_loose'
 
+    if cutstring.find('Xcat_J1BX')!=-1:
+        category = 'mssm_1b'
+    elif cutstring.find('Xcat_0BX')!=-1:
+        category = 'mssm_0b'
 
     ext = None
-    if shift:
+    if shift == 'Up' or shift == 'Down':
         ch = 'mutau'
         if channel.lower()=='eletau':
             ch = 'etau'
         ext = 'CMS_scale_t_{chan}_{energy}{shift}'.format(
             chan=ch,
-            energy='7TeV',
+            energy=energy,
             shift=shift
             )
+    elif shift:
+        ext = shift
+
     fileName = '{channel}_{category}.root'.format(channel=channel,
                                                   category=category)
     if ext:

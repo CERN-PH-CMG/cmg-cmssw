@@ -187,7 +187,9 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
                         muon.isTrackerMuon() and
                         muon.sourcePtr().userFloat('isPFMuon') and
                         #COLIN Not sure this vertex cut is ok... check emu overlap
-                        self.testVertex(muon) and
+                        #self.testVertex(muon) and
+                        # JAN: no dxy cut
+                        abs(muon.dz()) < 0.2 and
                         self.testLeg2Iso(muon, 0.3)
                         ]
         isPlus = False

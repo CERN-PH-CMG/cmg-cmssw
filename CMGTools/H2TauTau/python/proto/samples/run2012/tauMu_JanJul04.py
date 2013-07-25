@@ -29,7 +29,10 @@ aliases = {
     '/W2Jets.*START53.*':'W2Jets',
     '/W3Jets.*START53.*':'W3Jets',
     '/W4Jets.*START53.*':'W4Jets',
-    '/TTJets.*START53.*':'TTJets',
+    '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV.*START53.*':'TTJets',
+    '/TTJets_FullLeptMGDecays_8TeV.*START53.*':'TTJetsFullLept',
+    '/TTJets_SemiLeptMGDecays_8TeV.*START53.*':'TTJetsSemiLept',
+    '/TTJets_HadronicMGDecays_8TeV.*START53.*':'TTJetsHadronic',
     '/TauPlusX/Run2012A-22Jan2013-v1.*':'data_Run2012A',
     '/TauPlusX/Run2012B-22Jan2013-v1.*':'data_Run2012B',
     '/TauPlusX/Run2012C-22Jan2013-v1.*':'data_Run2012C',
@@ -107,7 +110,7 @@ for data in data_list:
         # allsamples.append(data)
 for embed in embed_list:
     if len(embed.files):
-        embed.json = jsonPick( data.files[0], jsonMap)
+        embed.json = jsonPick( embed.files[0], jsonMap)
         embed.triggers = embed_triggers
         # No trigger requirements for embedded samples
 for c in allsamples:

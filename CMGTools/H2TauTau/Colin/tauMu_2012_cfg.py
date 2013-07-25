@@ -13,7 +13,8 @@ shift = None
 # 1.0, 1.03, 0.97
 tauScaleShift = 1.0
 syncntuple = True
-simulatedOnly = False
+simulatedOnly = False # Useful for systematic shifts on simulated samples, e.g. JEC
+doThePlot = True # Set to true for the plotting script
 
 puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
 
@@ -30,8 +31,8 @@ puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-06-13/MC_Summer12_
 puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-06-13/Data_Pileup_2012_ReReco-600bins.root'
 
 
-vertexFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012/Vertices'
-vertexFileData = '/'.join([vertexFileDir, 'vertices_data_2012A_2012B_start_195947.root'])
+# vertexFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012/Vertices'
+# vertexFileData = '/'.join([vertexFileDir, 'vertices_data_2012A_2012B_start_195947.root'])
 
 mc_vertexWeight = None
 
@@ -40,10 +41,10 @@ mc_vertexWeight = None
 # mc_tauEffWeight = 'effTau2012ABC'
 # mc_muEffWeight = 'effMu2012_Rebecca_TauMu_ABC'
 
-mc_tauEffWeight_mc = 'effTau_muTau_MC_2012ABCD'
+mc_tauEffWeight_mc = 'effTau_muTau_MC_2012ABCDSummer13'
 mc_muEffWeight_mc = 'effMu_muTau_MC_2012ABCD'
-mc_tauEffWeight = 'effTau_muTau_Data_2012ABCD'
-mc_muEffWeight = 'effMu_muTau_Data_2012ABCD'
+mc_tauEffWeight = 'effTau_muTau_Data_2012ABCDSummer13'
+mc_muEffWeight = 'effMu_muTau_Data_2012ABCDSummer13'
     
     
 eventSelector = cfg.Analyzer(
@@ -72,6 +73,7 @@ vertexAna = cfg.Analyzer(
 
 embedWeighter = cfg.Analyzer(
     'EmbedWeighter',
+    isRecHit = False,
     verbose = False
     )
 
@@ -112,12 +114,22 @@ WNJetsAna = cfg.Analyzer(
     verbose = False
     )
 
+NJetsAna = cfg.Analyzer(
+    'NJetsAnalyzer',
+    fillTree = True,
+    verbose = False
+    )
+
 WNJetsTreeAna = cfg.Analyzer(
     'WNJetsTreeAnalyzer'
     )
 
 higgsWeighter = cfg.Analyzer(
     'HiggsPtWeighter',
+    )
+
+tauDecayModeWeighter = cfg.Analyzer(
+    'TauDecayModeWeighter',
     )
 
 tauWeighter = cfg.Analyzer(
@@ -147,17 +159,6 @@ vbfKwargs = dict( Mjj = 500,
                   deltaEta = 3.5    
                   )
 
-# vbfAna = cfg.Analyzer(
-#     'VBFAnalyzer',
-#     jetCol = 'cmgPFJetSel',
-#     jetPt = 20.,
-#     jetEta = 4.7,
-#     cjvPtCut = 30.,
-#     btagSFseed = 123456,
-#     relaxJetId = False, # For jet ID studies
-#     jerCorr = False, # NEW!
-#     **vbfKwargs
-#     )
 
 jetAna = cfg.Analyzer(
     'JetAnalyzer',
@@ -166,13 +167,13 @@ jetAna = cfg.Analyzer(
     jetEta = 4.7,
     btagSFseed = 123456,
     relaxJetId = False, 
-    jerCorr = False, # NEW!
-    #jesCorr = 1., # NEW! Plus one sigma JES
+    jerCorr = False,
+    #jesCorr = 1.,
     )
 
 vbfSimpleAna = cfg.Analyzer(
     'VBFSimpleAnalyzer',
-    vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG_HCP_52X.weights.xml',
+    vbfMvaWeights = '',
     cjvPtCut = 30.,
     **vbfKwargs
     
@@ -196,7 +197,8 @@ treeProducerXCheck = cfg.Analyzer(
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_Colin import * 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanMay23 import * 
 # from CMGTools.H2TauTau.proto.samples.run2012.WJets_JanMay29 import * 
-from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanJun18 import * 
+#from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanJun18 import * 
+from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanJul04 import * 
 
 #########################################################################################
 
@@ -232,24 +234,48 @@ diboson_list = [    WWJetsTo2L2Nu,
 WJetsSoup = copy.copy(WJets)
 WJetsSoup.name = 'WJetsSoup'
 
+DYJetsSoup = copy.copy(DYJets)
+DYJetsSoup.name = 'DYJetsSoup'
+
 VVgroup = [comp.name for comp in diboson_list]
-VVgroup = None # This is currently needed for the plotting script
+if diboson_list == [] and doThePlot:
+    VVgroup = None # This is needed for the plotting script
 
 higgs = mc_higgs
 
-selectedComponents = [TTJets, DYJets, WJets,
+selectedComponents = [TTJetsFullLept,
+    TTJetsSemiLept,
+    TTJetsHadronic, 
+    DYJets, WJets,
     W1Jets, W2Jets, W3Jets, W4Jets,
+    DY1Jets, DY2Jets, DY3Jets, DY4Jets,
     ]
 
-# selectedComponents = [TTJets, DYJets, WJets,
-#     #WJetsSoup,
+# FOR PLOTTING:
+TTgroup = None
+if doThePlot:
+    selectedComponents = [TTJetsFullLept,
+    TTJetsSemiLept,
+    TTJetsHadronic, #DYJets, #WJets,
+        WJetsSoup,
+        DYJetsSoup
+        ]
+    TTgroup = [TTJetsFullLept.name,
+    TTJetsSemiLept.name,
+    TTJetsHadronic.name]
 
-#     ]
-selectedComponents.extend( higgs )
+if not doThePlot:
+    selectedComponents.extend( higgs )
+else:
+    # pass
+    selectedComponents.extend( higgs )
+
+selectedComponents.extend( diboson_list )
 
 if not simulatedOnly:
     selectedComponents.extend( data_list )
     selectedComponents.extend( embed_list )
+
 
 sequence = cfg.Sequence( [
     # eventSelector,
@@ -258,13 +284,15 @@ sequence = cfg.Sequence( [
     vertexAna, 
     TauMuAna,
     dyJetsFakeAna,
-    WNJetsAna,
-    WNJetsTreeAna,
+    # WNJetsAna,
+    # WNJetsTreeAna,
+    NJetsAna,
     higgsWeighter, 
     jetAna,
     vbfSimpleAna,
     pileUpAna,
-    embedWeighter, 
+    embedWeighter,
+    tauDecayModeWeighter,
     tauWeighter, 
     muonWeighter, 
     treeProducer,
@@ -278,8 +306,9 @@ selectedComponents = [comp for comp in selectedComponents if comp.dataset_entrie
 
 test = 0
 if test==1:
-    #comp = embed_2012D_PromptReco_v1
-    comp = HiggsVBF125
+    # comp = embed_Run2012A_22Jan
+    comp = DYJets
+    # comp = HiggsGGH125
     selectedComponents = [comp]
     comp.splitFactor = 1
     # comp.files = comp.files[:10]
@@ -290,10 +319,13 @@ elif test==2:
         comp.splitFactor = 1
         comp.files = comp.files[:5]
 elif test==3:
-    selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets]
-    for comp in selectedComponents:
-        comp.splitFactor = 20
-
+    # selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets]
+    selectedComponents = higgs
+    # for comp in selectedComponents:
+    #     comp.splitFactor = 20
+elif test==4:
+    selectedComponents = [c for c in selectedComponents if c.name in VVgroup]
+    
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )

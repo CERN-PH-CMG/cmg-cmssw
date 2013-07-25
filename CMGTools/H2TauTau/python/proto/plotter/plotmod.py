@@ -160,7 +160,7 @@ def w_lowHighMTRatio( var, anaDir,
 def plot_W(anaDir, comps, weights, 
            nbins, xmin, xmax,
            cut, weight,
-           embed, VVgroup = None, treeName=None):
+           embed, VVgroup=None, TTgroup=None, treeName=None):
 
     # get WJet scaling factor for same sign
     var = 'mt'
@@ -181,6 +181,10 @@ def plot_W(anaDir, comps, weights,
                            embed=embed, treeName=treeName)
     if VVgroup != None :
         mtOS.Group ('VV',VVgroup)
+    if TTgroup != None:
+        mtOS.Group('TTJets', TTgroup)
+
+    print TTgroup, mtOS
     
     data_OS, mc_OS = fW( mtOS, 'Data', xmin, xmax, VVgroup)
     fW_OS = data_OS / mc_OS
@@ -194,7 +198,9 @@ def plot_W(anaDir, comps, weights,
                           embed=embed, treeName=treeName)
     if VVgroup != None :
         mtSS.Group ('VV',VVgroup)
-        
+    if TTgroup != None:
+        mtSS.Group('TTJets', TTgroup)
+
     data_SS, mc_SS = fW( mtSS, 'Data', xmin, xmax, VVgroup)
     fW_SS = data_SS / mc_SS
 

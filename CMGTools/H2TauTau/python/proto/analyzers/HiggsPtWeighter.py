@@ -43,6 +43,8 @@ class HiggsPtWeighter( GenParticleAnalyzer ):
 
     def process(self, iEvent, event):
         event.higgsPtWeight = 1 
+        event.higgsPtWeightUp = 1 
+        event.higgsPtWeightDown = 1 
         if not self.isGGH:
             return True
         
@@ -55,6 +57,8 @@ class HiggsPtWeighter( GenParticleAnalyzer ):
         event.genHiggs = higgsBosons[0] 
         higgsPt = event.genHiggs.pt()
         event.higgsPtWeight = self.higgsPtWeightHistogram.GetBinContent(self.higgsPtWeightHistogram.FindBin(higgsPt))
+        event.higgsPtWeightUp = self.higgsPtWeightHistogramUp.GetBinContent(self.higgsPtWeightHistogramUp.FindBin(higgsPt))
+        event.higgsPtWeightDown = self.higgsPtWeightHistogramDown.GetBinContent(self.higgsPtWeightHistogramDown.FindBin(higgsPt))
 
         ### MULTIPLYING TO THE EVENT WEIGHT 
         event.eventWeight *= event.higgsPtWeight

@@ -274,7 +274,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['QCD'] = {'style':sHTT_QCD, 'layer':2, 'legend':None}
         self.histPref['WJets*'] = {'style':sHTT_WJets, 'layer':3, 'legend':None}  
         self.histPref['Ztt_ZJ'] = {'style':sHTT_ZL, 'layer':3.1, 'legend':None}
-        self.histPref['Ztt_ZL'] = {'style':sHTT_ZL, 'layer':3.2, 'legend':None}
+        self.histPref['Ztt_ZL'] = {'style':sHTT_ZL, 'layer':3.2, 'legend':'Z#rightarrow ll'}
         self.histPref['Higgs*'] = {'style':sHTT_Higgs, 'layer':1001, 'legend':None}
 
 

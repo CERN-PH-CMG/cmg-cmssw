@@ -4,6 +4,38 @@ import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.yellowreport.YRParser import yrparser8TeV
 # from CMGTools.H2TauTau.proto.samples.sampleShift import sampleShift
 
+HiggsVBF90 = cfg.MCComponent(
+    name = 'HiggsVBF90',
+    files = [],
+    xSection = None, 
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVBF95 = cfg.MCComponent(
+    name = 'HiggsVBF95',
+    files = [],
+    xSection = None, 
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVBF100 = cfg.MCComponent(
+    name = 'HiggsVBF100',
+    files = [],
+    xSection = None, 
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVBF105 = cfg.MCComponent(
+    name = 'HiggsVBF105',
+    files = [],
+    xSection = None, 
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
+
 HiggsVBF110 = cfg.MCComponent(
     name = 'HiggsVBF110',
     files = [],
@@ -76,8 +108,57 @@ HiggsVBF150 = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+HiggsVBF155 = cfg.MCComponent(
+    name = 'HiggsVBF155',
+    files = [],
+    xSection = None, 
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVBF160 = cfg.MCComponent(
+    name = 'HiggsVBF160',
+    files = [],
+    xSection = None, 
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
+
 
 ############# Gluon fusion ###############
+
+
+HiggsGGH90 = cfg.MCComponent(
+    name = 'HiggsGGH90',
+    files = [],
+    xSection = None, 
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsGGH95 = cfg.MCComponent(
+    name = 'HiggsGGH95',
+    files = [],
+    xSection = None, 
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsGGH100 = cfg.MCComponent(
+    name = 'HiggsGGH100',
+    files = [],
+    xSection = None, 
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsGGH105 = cfg.MCComponent(
+    name = 'HiggsGGH105',
+    files = [],
+    xSection = None, 
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
 
 HiggsGGH110 = cfg.MCComponent(
     name = 'HiggsGGH110',
@@ -151,8 +232,55 @@ HiggsGGH150 = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+HiggsGGH155 = cfg.MCComponent(
+    name = 'HiggsGGH155',
+    files = [],
+    xSection = None, 
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsGGH160 = cfg.MCComponent(
+    name = 'HiggsGGH160',
+    files = [],
+    xSection = None, 
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
 
 ############# VH  ###############
+
+HiggsVH90 = cfg.MCComponent(
+    name = 'HiggsVH90',
+    files = [],
+    xSection = None, 
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVH95 = cfg.MCComponent(
+    name = 'HiggsVH95',
+    files = [],
+    xSection = None, 
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVH100 = cfg.MCComponent(
+    name = 'HiggsVH100',
+    files = [],
+    xSection = None, 
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVH105 = cfg.MCComponent(
+    name = 'HiggsVH105',
+    files = [],
+    xSection = None, 
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
 
 HiggsVH110 = cfg.MCComponent(
     name = 'HiggsVH110',
@@ -226,11 +354,30 @@ HiggsVH150 = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+HiggsVH155 = cfg.MCComponent(
+    name = 'HiggsVH155',
+    files = [],
+    xSection = None, 
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVH160 = cfg.MCComponent(
+    name = 'HiggsVH160',
+    files = [],
+    xSection = None, 
+    nGenEvents = 0,
+    triggers = [],
+    effCorrFactor = 1 )
 
 
 #############
 
 mc_higgs_vbf = [
+    HiggsVBF90,
+    HiggsVBF95,
+    HiggsVBF100,
+    HiggsVBF105,
     HiggsVBF110,
     HiggsVBF115,
     HiggsVBF120,
@@ -239,10 +386,16 @@ mc_higgs_vbf = [
     HiggsVBF135,
     HiggsVBF140,
     HiggsVBF145,
-    #HiggsVBF150,
+    HiggsVBF150,
+    HiggsVBF155,
+    HiggsVBF160,
     ]
 
 mc_higgs_ggh = [
+    HiggsGGH90,
+    HiggsGGH95,
+    HiggsGGH100,
+    HiggsGGH105,
     HiggsGGH110,
     HiggsGGH115,
     HiggsGGH120,
@@ -251,10 +404,16 @@ mc_higgs_ggh = [
     HiggsGGH135,
     HiggsGGH140,
     HiggsGGH145,
-    #HiggsGGH150,
+    HiggsGGH150,
+    HiggsGGH155,
+    HiggsGGH160,
     ]
 
 mc_higgs_vh = [
+    HiggsVH90,
+    HiggsVH95,
+    HiggsVH100,
+    HiggsVH105,
     HiggsVH110,
     HiggsVH115,
     HiggsVH120,
@@ -263,7 +422,9 @@ mc_higgs_vh = [
     HiggsVH135,
     HiggsVH140,
     HiggsVH145,
-    #HiggsVH150,
+    HiggsVH150,
+    HiggsVH155,
+    HiggsVH160,
     ]
 
 

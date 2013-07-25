@@ -13,7 +13,7 @@ shift = None
 # 1.0, 1.03, 0.97
 tauScaleShift = 1.0
 syncntuple = True
-doThePlot = False
+doThePlot = True
 
 puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
 
@@ -191,20 +191,28 @@ DYJetsSoup.name = 'DYJetsSoup'
 
 VVgroup = [comp.name for comp in diboson_list]
 # higgs = [HiggsVBF125, HiggsGGH125, HiggsVH125]
+TTgroup = None
 
-selectedComponents = [
+selectedComponents = [TTJetsFullLept,
+    TTJetsSemiLept,
+    TTJetsHadronic, 
     WJets, W1Jets, W2Jets, W3Jets, W4Jets, 
-    TTJets, 
+    # TTJets, 
     DYJets, DY1Jets, DY2Jets, DY3Jets, DY4Jets,
     ]
 
+TTgroup = None
 if doThePlot:
     selectedComponents = [
     WJetsSoup,
-    TTJets, 
+    TTJetsFullLept,
+    TTJetsSemiLept,
+    TTJetsHadronic, 
     DYJetsSoup
     ]
-
+    TTgroup = [TTJetsFullLept.name,
+        TTJetsSemiLept.name,
+        TTJetsHadronic.name]
     VVgroup = None
 
 higgs = mc_higgs
@@ -250,6 +258,10 @@ elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
         comp.files = comp.files[:3]
+elif test==3:
+    selectedComponents = [TTJetsFullLept,
+        TTJetsSemiLept,
+        TTJetsHadronic]
 
 
 

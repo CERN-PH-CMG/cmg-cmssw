@@ -29,7 +29,10 @@ aliases = {
     '/W2Jets.*START53.*':'W2Jets',
     '/W3Jets.*START53.*':'W3Jets',
     '/W4Jets.*START53.*':'W4Jets',
-    '/TTJets.*START53.*':'TTJets',
+    '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV.*START53.*':'TTJets',
+    '/TTJets_FullLeptMGDecays_8TeV.*START53.*':'TTJetsFullLept',
+    '/TTJets_SemiLeptMGDecays_8TeV.*START53.*':'TTJetsSemiLept',
+    '/TTJets_HadronicMGDecays_8TeV.*START53.*':'TTJetsHadronic',
     '/TauPlusX/Run2012A-22Jan2013-v1.*':'data_Run2012A',
     '/TauPlusX/Run2012B-22Jan2013-v1.*':'data_Run2012B',
     '/TauPlusX/Run2012C-22Jan2013-v1.*':'data_Run2012C',
@@ -45,12 +48,20 @@ aliases = {
     '/ZZJetsTo2L2Nu.*START53.*':'ZZJetsTo2L2Nu',
     '/ZZJetsTo2L2Q.*START53.*':'ZZJetsTo2L2Q',
     '/ZZJetsTo4L.*START53.*':'ZZJetsTo4L',
-    '/DoubleMu/StoreResults-Run2012A_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1.*':'embed_Run2012A_22Jan',
-    '/DoubleMuParked/StoreResults-Run2012D_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1.*':'embed_Run2012B_22Jan',
-    '/DoubleMuParked/StoreResults-Run2012C_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1.*':'embed_Run2012C_22Jan',
-    '/DoubleMuParked/StoreResults-Run2012B_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1.*':'embed_Run2012D_22Jan',
+    '/DoubleMu/StoreResults-Run2012A_22Jan2013_v1_PFembedded_trans1_tau115_ptelec1_20had1_18_v1.*':'embed_Run2012A_22Jan',
+    '/DoubleMuParked/StoreResults-Run2012D_22Jan2013_v1_PFembedded_trans1_tau115_ptelec1_20had1_18_v1.*':'embed_Run2012B_22Jan',
+    '/DoubleMuParked/StoreResults-Run2012C_22Jan2013_v1_PFembedded_trans1_tau115_ptelec1_20had1_18_v1.*':'embed_Run2012C_22Jan',
+    '/DoubleMuParked/StoreResults-Run2012B_22Jan2013_v1_PFembedded_trans1_tau115_ptelec1_20had1_18_v1.*':'embed_Run2012D_22Jan',
+    # '/DoubleMu/StoreResults-Run2012A_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1.*':'embed_Run2012A_22Jan',
+    # '/DoubleMuParked/StoreResults-Run2012D_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1.*':'embed_Run2012B_22Jan',
+    # '/DoubleMuParked/StoreResults-Run2012C_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1.*':'embed_Run2012C_22Jan',
+    # '/DoubleMuParked/StoreResults-Run2012B_22Jan2013_v1_RHembedded_trans1_tau115_ptelec1_20had1_18_v1.*':'embed_Run2012D_22Jan',
     }
 
+
+mc_ewk = []
+mc_ewk += mc_dy
+mc_ewk += t_mc_ewk
 
 MC_list = copy.copy( mc_ewk )
 MC_list.extend( mc_higgs )
@@ -61,6 +72,11 @@ allsamples.extend( data_list )
 allsamples.extend( embed_list )
 
 connect( allsamples, '%TAUELE_SVFitNoES_Jul09%', 'tauEle.*root', aliases, cache=True, verbose=False)
+
+MC_list.extend(mc_w)
+allsamples.extend(mc_w)
+connect( mc_w, '%TAUELE_SVFitNoESFixedRecoil_Jul19_steggema', 'tauEle.*root', aliases, cache=True, verbose=False)
+
 
 
 # Attach number of generated events for stitching

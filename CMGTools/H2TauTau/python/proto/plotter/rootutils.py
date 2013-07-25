@@ -136,8 +136,11 @@ def datasetInfo(plot):
         energy = 8
     elif plot.dataComponents[0].find('2011')!=-1:
         year = '2011'
-        energy = 7       
-    lumi = plot.weights['TTJets'].intLumi/1e3
+        energy = 7
+    try:
+        lumi = plot.weights['TTJets'].intLumi/1e3
+    except KeyError:
+        lumi = plot.weights['TTJetsSemiLept'].intLumi/1e3
     return year, lumi, energy 
 
 
@@ -176,7 +179,7 @@ def draw(plot, doBlind=True, channel='TauMu', plotprefix = None, SetLogy = 0):
     Stack.STAT_ERRORS = True
     blindxmin = None
     blindxmax = None
-    doBlind = (plot.varName == 'svfitMass') and doBlind
+    doBlind = (plot.varName == 'svfitMass' or plot.varName == 'visMass') and doBlind
     if doBlind:
         blindxmin = 100
         blindxmax = 160

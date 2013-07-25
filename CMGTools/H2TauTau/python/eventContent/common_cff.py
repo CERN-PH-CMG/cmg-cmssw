@@ -16,6 +16,11 @@ common = [
     'keep patMuons_*_*_*',
     'drop cmgPFBaseJet*_*_*_*',
     'drop cmgTaus_*_*_*',
+    'drop cmgPFJets_cmgPFJetSelCHS_*_*', # no need for CHS
+    'drop cmgMuoncmgMuoncmgDiObjects_cmgDiMuonSel_*_*', # no need for dimuons
+    'drop cmgElectroncmgElectroncmgDiObjects_cmgDiElectronSel_*_*', # no need for dielectrons
+    'drop cmgPFJets_*JetId*_*_*',
+    'drop recoCaloMETs_*_*_*', # Can keep for MVA MET debugging
     'drop *_cmgPFJetForRecoil_*_*',
     'drop *_genWorZ_*_*',
     'keep recoPFMETs_*_*_*',
