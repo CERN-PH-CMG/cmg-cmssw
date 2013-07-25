@@ -14,7 +14,7 @@ from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
 from CMGTools.H2TauTau.proto.plotter.datacards import *
 from CMGTools.H2TauTau.proto.plotter.plotinfo import *
-from CMGTools.H2TauTau.proto.plotter.categories_TauEle import *
+from CMGTools.H2TauTau.proto.plotter.categories_TauMu import *
 from CMGTools.RootTools.Style import *
 from ROOT import kPink, TH1, TPaveText, TPad
 
@@ -135,10 +135,19 @@ if __name__ == '__main__':
                       dest="filter", 
                       help="Regexp filters to select components, separated by semicolons, e.g. Higgs;ZTT",
                       default=None)
+    parser.add_option("-w", "--weight", 
+                      dest="weight", 
+                      help='Weight expression',
+                      default='weight')
+    parser.add_option("-s", "--shift", 
+                      dest="shift", 
+                      help='Shift expression',
+                      default=None)
     
     (options,args) = parser.parse_args()
 
-        
+    weight = options.weight
+
     cutstring = options.cut
     isVBF = cutstring.find('Xcat_VBFX') != -1 
     options.cut = replaceCategories(options.cut, categories) 
@@ -161,15 +170,17 @@ if __name__ == '__main__':
 
     
     dataName = 'Data'
-    weight='weight'
     
     anaDir = args[0].rstrip('/')
     shift = None
-    if anaDir.endswith('_Down'):
+    if anaDir.endswith('Down'):
         shift = 'Down'
-    elif anaDir.endswith('_Up'):
+    elif anaDir.endswith('Up'):
         shift = 'Up'
-        
+    
+    if options.shift:
+        shift = options.shift
+
     cfgFileName = args[1]
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
@@ -189,10 +200,9 @@ if __name__ == '__main__':
                       options.cut, weight=weight, embed=options.embed,
                       shift=None, VVgroup=cfg.VVgroup, treeName=treeName);
     # drawOfficial(osign, options.blind)
-
     osign.Draw()
       
-    dcchan = None
+    dcchan = 'muTau'
     if options.channel == 'TauEle':
         dcchan = 'eleTau'
     datacards(osign, cutstring, shift, channel=dcchan, prefix=options.prefix)
