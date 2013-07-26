@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 import sys
 
 #in this file, we run the various filters and store the results
-# wreece - 01/08/12 - Checked against http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/RecoMET/METFilters/test/exampleICHEPrecommendation_cfg.py?revision=1.1&view=markup&pathrev=V00-00-07
+# lucie - 26 / 07 / 2013, checked against https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFilters rev 62
 
 ##
 # Non-MET related
@@ -122,5 +122,11 @@ if isNewerThan('CMSSW_5_3_0'):
     from RecoMET.METFilters.trackingPOGFilters_cfi import *
     trkPOGFiltersSequence = cms.Sequence(~manystripclus53X * ~toomanystripclus53X * ~logErrorTooManyClusters)
     trkPOGFiltersPath = cms.Path(trkPOGFiltersSequence)
+    #further cleaning of hcal laser events filtering based on txt file, since digi info not available in AOD (twiki confusing...)
+    from EventFilter.HcalRawToDigi.hcallasereventfilter2012_cfi import hcallasereventfilter2012 # for prompt reco
+    metNoiseCleaning += hcallasereventfilter2012
+    from EventFilter.HcalRawToDigi.hcallaserFilterFromTriggerResult_cff import hcalfilter # for re-reco and parked
+    metNoiseCleaning += hcalfilter
+    
 else:
     print >> sys.stderr, 'trkPOGFilters only available in releases >= 5.3'
