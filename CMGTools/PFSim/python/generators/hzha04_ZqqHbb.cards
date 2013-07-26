@@ -193,7 +193,7 @@ PRYN     1      0      0      0     0       0      0      0     0      0
 * ALL numbers MUST be INTEGER !      
 *                                    
 *     e   nue  mu  numu  tau nutau  d    u    s    c    b
-GZDC  1    1    1    1    1    1    1    1    1    1    1
+GZDC  0    0    0    0    0    0    1    1    1    1    1
 ***********************************************************************
 * Higgs decays
 *    CH         channel Id ( 1 --> 16, see below, 0 = all)
@@ -201,7 +201,7 @@ GZDC  1    1    1    1    1    1    1    1    1    1    1
 *       can be selected at once)
 *    IDBG       printout debug level (-1 to 10)
 *    CH  IDBG
-GHHG  0   0
+GHHG  5   0
 * GCH1 : steering card for H decays    (if SM = 0)
 * GCH2 : steering card for h decays
 * GCH3 : steering card for A decays    (if SM = 0)
