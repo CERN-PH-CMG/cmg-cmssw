@@ -14,9 +14,12 @@ reader = cfg.Analyzer(
     # electronCol = ('cmgElectronSel', 'vector<cmg::Electron>'),
     muonCol = None,
     electronCol = None,
+    # only if you have PFJets
+    # jetCol = None,
     jetCol = ('ak5PFJets', 'std::vector<reco::PFJet>'),
     simJetCol = ('jets', 'std::vector<reco::LeafCandidate>'),
     genJetCol = ('ak5GenJets', 'std::vector<reco::GenJet>'),
+    # genJetCol = ('genJets', 'std::vector<reco::LeafCandidate>'),
     genPartCol = ('genParticles', 'std::vector<reco::GenParticle>'),
     )
 

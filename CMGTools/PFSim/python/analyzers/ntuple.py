@@ -12,12 +12,16 @@ def bookParticle( tree, pName ):
     var(tree, '{pName}_pt'.format(pName=pName))
     var(tree, '{pName}_eta'.format(pName=pName))
     var(tree, '{pName}_phi'.format(pName=pName))
+    var(tree, '{pName}_dr'.format(pName=pName))
     
 def fillParticle( tree, pName, particle ):
     fill(tree, '{pName}_pt'.format(pName=pName), particle.pt() )
     fill(tree, '{pName}_eta'.format(pName=pName), particle.eta() )
     fill(tree, '{pName}_phi'.format(pName=pName), particle.phi() )
+    if hasattr( particle, 'dr'):
+        fill(tree, '{pName}_dr'.format(pName=pName), particle.dr )
 
+    
 def bookGenParticle(tree, pName):
     bookParticle(tree, pName)
     var(tree, '{pName}_pdgId'.format(pName=pName))
@@ -34,7 +38,7 @@ def bookGenJet(tree, pName):
         
 def fillGenJet( tree, pName, genjet ):
     fillParticle( tree, pName, genjet )
-    if genjet.rec:
+    if hasattr(genjet, 'rec') and genjet.rec:
         fillParticle(tree, '{pName}_rec'.format(pName=pName), genjet.rec )
     if genjet.sim:
         fillParticle(tree, '{pName}_sim'.format(pName=pName), genjet.sim )

@@ -80,7 +80,7 @@ void PFSimFastJetProducer::produce(Event& iEvent,
   fastjet::ClusterSequence clust_seq(input_particles, jet_def_);
 
   // extract the inclusive jets with pt over the threshold
-  double ptmin = jetPtThreshold_; //TODO parameter
+  double ptmin = jetPtThreshold_; 
   vector<fastjet::PseudoJet> jets = clust_seq.inclusive_jets(ptmin);
 
   if(verbose_)

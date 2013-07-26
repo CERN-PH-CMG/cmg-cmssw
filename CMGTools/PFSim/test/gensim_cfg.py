@@ -1,16 +1,15 @@
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process("Sim")
+process = cms.Process("GENSIM")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(10)
 
+process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(2000)
+    input = cms.untracked.int32(1000)
 )
-
-process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
 process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
     generator = cms.PSet(
@@ -20,53 +19,34 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 )
 
 
-from CMGTools.Production.datasetToSource import *
-process.source = datasetToSource(
-         'cmgtools_group',
-         '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B',
-         '.*root')
-process.source.fileNames = process.source.fileNames[:5]
-
-import pprint 
-pprint.pprint( process.source.fileNames ) 
-
+process.source = cms.Source("EmptySource")
+# process.load('CMGTools.PFSim.generators.ee_hzha')
+process.load('CMGTools.PFSim.generators.gun_cfi')
 process.load('CMGTools.PFSim.genJets_cff')
+process.load('CMGTools.PFSim.pfsim_cff')
 
-process.pfsim = cms.EDProducer(
-    'PFSimParticleProducer',
-    hepmcSrc = cms.InputTag('generator'),
-    verbose = cms.untracked.bool( False )
-    )
-
-process.jets = cms.EDProducer(
-    'PFSimFastJetProducer',
-    particleSrc = cms.InputTag('pfsim'),
-    jetPtThreshold = cms.double(5.),
-    )
-
+# process.generator.comEnergy = 91.
+# process.generator.CardsPath = cms.string("CMGTools/PFSim/python/generators/hzha04_ZqqHbb.cards")
 
 process.p = cms.Path(
-    process.genJetsSequence
-    + process.pfsim 
-    + process.jets
+    process.generator +
+    process.genJetsSequence +
+    process.pfsimSequence
     )
 
 
+# output definition
 
 process.out = cms.OutputModule(
     "PoolOutputModule",
     dataset = cms.untracked.PSet(
-    dataTier = cms.untracked.string('SIM')
+    dataTier = cms.untracked.string('GENSIM')
     ),
     fileName = cms.untracked.string('gensim.root'),
     outputCommands = cms.untracked.vstring('keep *')
 )
 
-
 process.outpath = cms.EndPath(process.out)
 
 
-test = False
-if test:
-    process.maxEvents.input = 10
-    process.pfsim.verbose = True
+process.genJets.verbose = False

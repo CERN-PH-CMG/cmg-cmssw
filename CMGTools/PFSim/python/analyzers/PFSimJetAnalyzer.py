@@ -47,7 +47,8 @@ class PFSimJetAnalyzer( Analyzer ):
             setattr(jet, name, bm)
     
         for jet in event.cleanGenJets:
-            match(jet, event.recJets, 'rec')
+            if hasattr(event, 'recJets'):
+                match(jet, event.recJets, 'rec')
             match(jet, event.simJets, 'sim')
             match(jet, event.genParticles3, 'genPtc3')
 

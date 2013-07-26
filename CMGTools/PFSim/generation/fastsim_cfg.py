@@ -35,7 +35,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.381.2.18 $'),
+    version = cms.untracked.string('$Revision: 1.1 $'),
     annotation = cms.untracked.string('bla bla'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -71,8 +71,9 @@ from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:startup_GRun', '')
 
 # process.load('CMGTools.PFSim.generators.ee_hzha')
+process.load('CMGTools.PFSim.generators.gun_cfi')
 # process.load('CMGTools.PFSim.generators.ee_zz')
-process.load('CMGTools.PFSim.generators.ee_qq')
+# process.load('CMGTools.PFSim.generators.ee_qq')
 
 # Path and EndPath definitions
 process.generation_step = cms.Path(process.pgen_genonly)

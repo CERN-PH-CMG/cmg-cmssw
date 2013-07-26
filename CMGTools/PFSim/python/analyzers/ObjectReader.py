@@ -30,7 +30,8 @@ class ObjectReader( Analyzer ):
             self.handles['muons'] = AutoHandle( *self.cfg_ana.muonCol )
         if self.cfg_ana.electronCol:
             self.handles['electrons'] = AutoHandle( *self.cfg_ana.electronCol )
-        self.handles['recJets'] = AutoHandle( *self.cfg_ana.jetCol )
+        if self.cfg_ana.jetCol:
+            self.handles['recJets'] = AutoHandle( *self.cfg_ana.jetCol )
         self.handles['genJets'] = AutoHandle( *self.cfg_ana.genJetCol )
         self.handles['simJets'] = AutoHandle( *self.cfg_ana.simJetCol )
         self.handles['genParticles'] = AutoHandle( *self.cfg_ana.genPartCol )
@@ -67,8 +68,8 @@ class ObjectReader( Analyzer ):
             event.muons = map(Muon,self.handles['muons'].product() )
         if self.cfg_ana.electronCol:
             event.electrons = map(Electron, self.handles['electrons'].product() )
-
-        event.recJets = map(PFJet, self.handles['recJets'].product() )
+        if self.cfg_ana.jetCol:
+            event.recJets = map(PFJet, self.handles['recJets'].product() )
         event.simJets = map(SimJet, self.handles['simJets'].product() )
 
         # random.shuffle(event.jets)

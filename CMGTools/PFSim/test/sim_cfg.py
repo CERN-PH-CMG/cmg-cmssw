@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process("Sim")
+process = cms.Process("SIM")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
@@ -22,7 +22,8 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 
 process.source = cms.Source(
     'PoolSource',
-    fileNames = cms.untracked.vstring( 'file:ee_qq.root' )
+#    fileNames = cms.untracked.vstring( 'file:hzha_ZqqHbb_fastsim.root' )
+    fileNames = cms.untracked.vstring( 'file:gun_gamma_fastsim.root' )
     )
 
 

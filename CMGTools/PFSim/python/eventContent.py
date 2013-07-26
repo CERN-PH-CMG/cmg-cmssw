@@ -12,7 +12,8 @@ reco = [
     ]
 
 sim = [
-    'keep *_*_*_Sim',
+    'keep recoLeafCandidates_pfsim_*_*',
+    'keep recoLeafCandidates_jets_*_*',
     ]
 
 
