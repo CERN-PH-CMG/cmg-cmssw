@@ -70,6 +70,7 @@ protected:
   void readRecoil(std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,
 		  std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,
 		  std::string iFName,std::string iPrefix); 
+
   void readCorr(std::string iName,//int iType=2,
 		std::vector<TF1*> &iF1U1U2Corr  ,std::vector<TF1*> &iF2U1U2Corr,std::vector<TF1*> &iF1F2U1Corr,std::vector<TF1*> &iF1F2U2Corr,
 		std::vector<TF1*> &iF1F2U1U2Corr,std::vector<TF1*> &iF1F2U2U1Corr,int iType=2);
@@ -118,8 +119,9 @@ protected:
 			    TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
 			    TF1 *iU2S1ZDatFit, TF1 *iU2S1ZMCFit,	   
 			    TF1 *iU2S2ZDatFit, TF1 *iU2S2ZMCFit,	   
-			    TF1 *iU1U2ZDatCorr,TF1 *iU1U2ZMCCorr,
+			    //			    TF1 *iU1U2ZDatCorr,TF1 *iU1U2ZMCCorr, // MARIA comment for now since not used
 			    double &iU1, double &iU2,double iFluc=0,double iScale=0);
+
   double diGausPVal    (double iVal, double iFrac,double iSimga1,double iSigma2);
   double diGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2);
   double calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2);
