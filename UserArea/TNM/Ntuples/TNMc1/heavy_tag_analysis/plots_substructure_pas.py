@@ -461,7 +461,7 @@ if __name__ == '__main__':
     if runSet==2:
       hist.GetXaxis().SetTitle("")
       hist.GetXaxis().SetLabelColor(0)
-      hist.GetYaxis().SetTitle("N")
+      hist.GetYaxis().SetTitle("Events")
     else:
       hist.GetXaxis().SetTitle(plot[2])
       hist.GetYaxis().SetTitle("Normalized distribution")

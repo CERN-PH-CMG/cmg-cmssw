@@ -268,6 +268,9 @@ namespace pat
         float daughter_0_jetCharge10() const { return getDaughter_0_jetCharge(1.0); };
         float daughter_1_jetCharge10() const { return getDaughter_1_jetCharge(1.0); };
 
+        float daughter_0_combinedSecondaryVertexBJetTags() const { return (object->numberOfDaughters()>0)?(dynamic_cast<const pat::Jet*>(object->daughter(0))->bDiscriminator("combinedSecondaryVertexBJetTags")):-999; }
+        float daughter_1_combinedSecondaryVertexBJetTags() const { return (object->numberOfDaughters()>1)?(dynamic_cast<const pat::Jet*>(object->daughter(1))->bDiscriminator("combinedSecondaryVertexBJetTags")):-999; }
+
   private:
     // -- User internals
         edm::Handle<edm::View<pat::Jet> > jets_;

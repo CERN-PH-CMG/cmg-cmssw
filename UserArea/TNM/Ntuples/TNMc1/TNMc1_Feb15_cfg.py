@@ -1,4 +1,4 @@
-#$Revision: 1.26 $
+#$Revision: 1.27 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -22,7 +22,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 # Run on MC or data
 
-runOnMC = False
+runOnMC = True
 runPATCMG = False
 recalibrateCMGJets = False
 runAK7jets = False
@@ -31,7 +31,7 @@ runCA8jets = True
 runAK5genjets = True
 runQJets = False
 runOnVVtuples = False
-runOnCMGp = True
+runOnCMGp = False
 
 if not runOnMC:
    runAK5genjets=False
@@ -39,8 +39,8 @@ if not runOnMC:
 # Input file
 
 dataset_user = 'cmgtools' 
-dataset_name = '/SingleMu/Run2012D-22Jan2013-v1/AOD/CMGPF_V5_16_0'
-#dataset_name = '/RSGravitonToWW_kMpl01_M-1000_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0'
+#dataset_name = '/SingleMu/Run2012D-22Jan2013-v1/AOD/CMGPF_V5_16_0'
+dataset_name = '/RSGravitonToWW_kMpl01_M-1000_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0'
 #dataset_name = '/QCD_HT-1000ToInf_TuneZ2star_8TeV-madgraph-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0'
 #dataset_name = '/QCD_Pt-15to3000_Tune4C_Flat_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_16_0'
 #dataset_name = '/MultiJet/Run2012A-13Jul2012-v1/AOD/PAT_CMG_V5_12_0'
@@ -50,9 +50,9 @@ else:
     dataset_files = 'patTuple.*root'
 
 if runPATCMG:
-    dataset_user = 'CMS' 
-    dataset_name = '/HT/Run2012A-13Jul2012-v1/AOD'
-    dataset_files = '*.root'
+    dataset_user = 'cmgtools_group' 
+    dataset_name = '/RSGravitonToWW_kMpl01_M-1000_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B'
+    dataset_files = '.*root'
 
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
@@ -168,7 +168,6 @@ process.selectedPatJetsCHS.cut = 'pt()>10'
 #### Adding AK7 jets
 
 process.load("Ntuples.TNMc1.PAT_ak7jets_cff")
-process.PATCMGSequence += process.PATCMGJetSequenceAK7CHS
 
 if not runOnMC:
     process.PATCMGJetSequenceAK7CHS.remove( process.jetMCSequenceAK7CHS )
@@ -179,10 +178,9 @@ if not runOnMC:
 #### Adding AK7 pruned jets
 
 process.load("CMGTools.Common.PAT.jetSubstructure_cff")
-process.PATCMGSequence.remove(process.PATCMGJetSequenceCHSpruned) # don't produce the AK5 pruned collections
+#process.PATCMGSequence.remove(process.PATCMGJetSequenceCHSpruned) # don't produce the AK5 pruned collections
 process.jetMCSequenceAK7CHSpruned.remove(process.ak7GenJetsNoNu) # don't cluster the ak7GenJetsNoNu twice
 process.selectedPatJetsAK7CHSpruned.cut = 'pt()>30'
-process.PATCMGSequence += process.PATCMGJetSequenceAK7CHSpruned
 
 if not runOnMC:
     process.PATCMGJetSequenceAK7CHSpruned.remove( process.jetMCSequenceAK7CHSpruned )
@@ -193,8 +191,16 @@ if not runOnMC:
 #### Adding CA8 jets and CA8 pruned jets
 
 process.load("Ntuples.TNMc1.PAT_ca8jets_cff")
-process.PATCMGSequence += process.PATCMGJetSequenceCA8CHS
-process.PATCMGSequence += process.PATCMGJetSequenceCA8CHSpruned
+if not runPATCMG:
+    process.patJetsCA8CHS.addBTagInfo=False
+    process.patJetsCA8CHS.addDiscriminators=False
+    process.PATCMGJetSequenceCA8CHS.remove(process.btaggingCA8CHS)
+    process.patJetsCA8CHSpruned.addBTagInfo=False
+    process.patJetsCA8CHSpruned.addDiscriminators=False
+    process.PATCMGJetSequenceCA8CHSpruned.remove(process.btaggingCA8CHSpruned)
+    process.patJetsCA8CHSprunedSubjets.addBTagInfo=False
+    process.patJetsCA8CHSprunedSubjets.addDiscriminators=False
+    process.PATCMGJetSequenceCA8CHSpruned.remove(process.btaggingCA8CHSprunedSubjets)
 if not runOnMC:
     process.PATCMGJetSequenceCA8CHS.remove( process.jetMCSequenceCA8CHS )
     process.patJetsCA8CHS.addGenJetMatch = False
@@ -211,8 +217,6 @@ process.selectedPatJetsAK7CHSwithNsub = cms.EDProducer("NjettinessAdder",
                               src=cms.InputTag("selectedPatJetsAK7CHS"),
                               cone=cms.double(0.7)
                               )
-process.PATCMGSequence += process.selectedPatJetsAK7CHSwithNsub
-process.PATCMGSequence += process.selectedPatJetsCA8CHSwithNsub
 
 #### Adding QJets
 
@@ -235,8 +239,6 @@ if not runQJets:
 else:    
     process.selectedPatJetsAK7CHSwithQjets.cutoff=400.0
     process.selectedPatJetsCA8CHSwithQjets.cutoff=400.0
-process.PATCMGSequence += process.selectedPatJetsAK7CHSwithQjets
-process.PATCMGSequence += process.selectedPatJetsCA8CHSwithQjets
 
 ######ADD PU JET ID
 
@@ -299,8 +301,14 @@ if runPATCMG:
     process.PATCMGSequence + 
     process.PATCMGJetCHSSequence 
   )
+  if runOnMC:
+    process.demo.buffers.remove('edmTriggerResultsHelper2')
+  if not runOnMC:
+    process.demo.buffers.remove('edmTriggerResultsHelper1')
   from CMGTools.Common.PAT.patCMGSchedule_cff import getSchedule
   process.schedule = getSchedule(process, runOnMC, False)
+  process.schedule.remove(process.trackIsolationMakerFilterPath)
+  del process.boolToIntSequence
 
 process.tnmc1 = cms.Sequence(process.goodOfflinePrimaryVertices)
 process.tnmc1 += process.razorMJObjectSequence

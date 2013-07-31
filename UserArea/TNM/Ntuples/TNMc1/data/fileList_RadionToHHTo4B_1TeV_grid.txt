@@ -1,1 +1,0 @@
-root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/RadionToHHTo4B_1TeV/ntuple.root

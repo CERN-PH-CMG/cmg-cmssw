@@ -170,10 +170,10 @@ float JetHelper::getTau(int num) const
           FJparticles.push_back( fastjet::PseudoJet( object->getPFConstituent(k)->px(), object->getPFConstituent(k)->py(), object->getPFConstituent(k)->pz(), object->getPFConstituent(k)->energy() ));
     } else {
        for (unsigned j = 0; j < object->numberOfDaughters(); j++){
-          reco::PFJet const *pfSubjet = dynamic_cast <const reco::PFJet *>(object->daughter(j));
+          reco::Jet const *pfSubjet = dynamic_cast <const reco::Jet *>(object->daughter(j));
           if (!pfSubjet) break;
-          for (unsigned k =0; k < pfSubjet->getPFConstituents().size(); k++)
-              FJparticles.push_back( fastjet::PseudoJet( pfSubjet->getPFConstituent(k)->px(), pfSubjet->getPFConstituent(k)->py(), pfSubjet->getPFConstituent(k)->pz(), pfSubjet->getPFConstituent(k)->energy() ));
+          for (unsigned k =0; k < pfSubjet->numberOfDaughters(); k++)
+              FJparticles.push_back( fastjet::PseudoJet( pfSubjet->daughter(k)->px(), pfSubjet->daughter(k)->py(), pfSubjet->daughter(k)->pz(), pfSubjet->daughter(k)->energy() ));
        }
     }
     NsubParameters paraNsub = NsubParameters(1.0, 0.8); //assume R=0.8 jet clusering used
@@ -270,10 +270,10 @@ float JetHelper::getC2beta(float beta) const
           FJparticles.push_back( fastjet::PseudoJet( object->getPFConstituent(k)->px(), object->getPFConstituent(k)->py(), object->getPFConstituent(k)->pz(), object->getPFConstituent(k)->energy() ));
     } else {
        for (unsigned j = 0; j < object->numberOfDaughters(); j++){
-          reco::PFJet const *pfSubjet = dynamic_cast <const reco::PFJet *>(object->daughter(j));
+          reco::Jet const *pfSubjet = dynamic_cast <const reco::Jet *>(object->daughter(j));
           if (!pfSubjet) break;
-          for (unsigned k =0; k < pfSubjet->getPFConstituents().size(); k++)
-              FJparticles.push_back( fastjet::PseudoJet( pfSubjet->getPFConstituent(k)->px(), pfSubjet->getPFConstituent(k)->py(), pfSubjet->getPFConstituent(k)->pz(), pfSubjet->getPFConstituent(k)->energy() ));
+          for (unsigned k =0; k < pfSubjet->numberOfDaughters(); k++)
+              FJparticles.push_back( fastjet::PseudoJet( pfSubjet->daughter(k)->px(), pfSubjet->daughter(k)->py(), pfSubjet->daughter(k)->pz(), pfSubjet->daughter(k)->energy() ));
        }
     }
     if(FJparticles.size()<2) return -1;
@@ -315,11 +315,11 @@ float JetHelper::getJetCharge(float kappa) const
        }
     } else {
        for (unsigned j = 0; j < object->numberOfDaughters(); j++){
-          reco::PFJet const *pfSubjet = dynamic_cast <const reco::PFJet *>(object->daughter(j));
+          reco::Jet const *pfSubjet = dynamic_cast <const reco::Jet *>(object->daughter(j));
           if (!pfSubjet) break;
-          for (unsigned k =0; k < pfSubjet->getPFConstituents().size(); k++)
+          for (unsigned k =0; k < pfSubjet->numberOfDaughters(); k++)
 	  {
-             const reco::PFCandidate* p=pfSubjet->getPFConstituent(k).get();
+             const reco::Candidate* p=pfSubjet->daughter(k);
              val += p->charge()*pow(p->pt(),kappa);
 	  }
        }
@@ -349,11 +349,11 @@ float JetHelper::getDaughter_0_jetCharge(float kappa) const
     float val=0;
     if(object->numberOfDaughters()>0)
     {
-       reco::PFJet const *pfSubjet = dynamic_cast <const reco::PFJet *>(object->daughter(0));
+       reco::Jet const *pfSubjet = dynamic_cast <const reco::Jet *>(object->daughter(0));
        if (pfSubjet){
-       for (unsigned k =0; k < pfSubjet->getPFConstituents().size(); k++)
+       for (unsigned k =0; k < pfSubjet->numberOfDaughters(); k++)
        {
-    	  const reco::PFCandidate* p=pfSubjet->getPFConstituent(k).get();
+    	  const reco::Candidate* p=pfSubjet->daughter(k);
     	  val += p->charge()*pow(p->pt(),kappa);
        }
        val/=pow(pfSubjet->pt(),kappa);
@@ -367,11 +367,11 @@ float JetHelper::getDaughter_1_jetCharge(float kappa) const
     float val=0;
     if(object->numberOfDaughters()>1)
     {
-       reco::PFJet const *pfSubjet = dynamic_cast <const reco::PFJet *>(object->daughter(1));
+       reco::Jet const *pfSubjet = dynamic_cast <const reco::Jet *>(object->daughter(1));
        if (pfSubjet){
-       for (unsigned k =0; k < pfSubjet->getPFConstituents().size(); k++)
+       for (unsigned k =0; k < pfSubjet->numberOfDaughters(); k++)
        {
-    	  const reco::PFCandidate* p=pfSubjet->getPFConstituent(k).get();
+    	  const reco::Candidate* p=pfSubjet->daughter(k);
     	  val += p->charge()*pow(p->pt(),kappa);
        }
        val/=pow(pfSubjet->pt(),kappa);

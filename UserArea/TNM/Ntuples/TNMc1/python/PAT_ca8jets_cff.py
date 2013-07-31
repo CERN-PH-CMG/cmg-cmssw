@@ -37,6 +37,19 @@ patJetPartonAssociationCA8CHS.jets = jetSource
 
 # pat jets
 
+from RecoJets.JetAssociationProducers.ak5JTA_cff import *
+ca8CHSJetTracksAssociatorAtVertex=ak5JetTracksAssociatorAtVertex.clone()
+ca8CHSJetTracksAssociatorAtVertex.jets=jetSource
+from RecoBTag.Configuration.RecoBTag_cff import * # btagging sequence
+impactParameterTagInfosCA8CHS=impactParameterTagInfos.clone()
+impactParameterTagInfosCA8CHS.jetTracks='ca8CHSJetTracksAssociatorAtVertex'
+secondaryVertexTagInfosCA8CHS=secondaryVertexTagInfos.clone()
+secondaryVertexTagInfosCA8CHS.trackIPTagInfos='impactParameterTagInfosCA8CHS'
+combinedSecondaryVertexBJetTagsCA8CHS=combinedSecondaryVertexBJetTags.clone()
+combinedSecondaryVertexBJetTagsCA8CHS.tagInfos = cms.VInputTag(cms.InputTag("impactParameterTagInfosCA8CHS"),
+    cms.InputTag("secondaryVertexTagInfosCA8CHS"))
+btaggingCA8CHS=cms.Sequence(ca8CHSJetTracksAssociatorAtVertex+impactParameterTagInfosCA8CHS+secondaryVertexTagInfosCA8CHS+combinedSecondaryVertexBJetTagsCA8CHS)
+
 from PhysicsTools.PatAlgos.producersLayer1.jetProducer_cfi import *
 patJetsCA8CHS = patJets.clone()
 patJetsCA8CHS.jetSource = jetSource
@@ -44,8 +57,11 @@ patJetsCA8CHS.addJetCharge = False
 patJetsCA8CHS.embedCaloTowers = False
 patJetsCA8CHS.embedPFCandidates = False
 patJetsCA8CHS.addAssociatedTracks = False
-patJetsCA8CHS.addBTagInfo = False
-patJetsCA8CHS.addDiscriminators = False
+patJetsCA8CHS.addBTagInfo = True
+patJetsCA8CHS.addDiscriminators = True
+patJetsCA8CHS.tagInfoSources = cms.VInputTag(cms.InputTag("secondaryVertexTagInfosCA8CHS"))
+patJetsCA8CHS.trackAssociationSource = cms.InputTag("ca8CHSJetTracksAssociatorAtVertex")
+patJetsCA8CHS.discriminatorSources = cms.VInputTag(cms.InputTag("combinedSecondaryVertexBJetTagsCA8CHS"))
 patJetsCA8CHS.getJetMCFlavour = False
 patJetsCA8CHS.jetCorrFactorsSource = cms.VInputTag(cms.InputTag('patJetCorrFactorsCA8CHS'))
 patJetsCA8CHS.genPartonMatch = cms.InputTag('patJetPartonMatchCA8CHS')
@@ -91,6 +107,7 @@ PATCMGJetSequenceCA8CHS = cms.Sequence(
     ca8PFJetsCHS +
     jetMCSequenceCA8CHS +
     patJetCorrFactorsCA8CHS +
+    btaggingCA8CHS + # needs generalTracks
     patJetsCA8CHS +
     selectedPatJetsCA8CHS
     )
@@ -132,22 +149,38 @@ patJetPartonAssociationCA8CHSpruned.jets = jetSource
 
 # pat jets
 
+from RecoJets.JetAssociationProducers.ak5JTA_cff import *
+ca8CHSprunedJetTracksAssociatorAtVertex=ak5JetTracksAssociatorAtVertex.clone()
+ca8CHSprunedJetTracksAssociatorAtVertex.jets=jetSource
+from RecoBTag.Configuration.RecoBTag_cff import * # btagging sequence
+impactParameterTagInfosCA8CHSpruned=impactParameterTagInfos.clone()
+impactParameterTagInfosCA8CHSpruned.jetTracks='ca8CHSprunedJetTracksAssociatorAtVertex'
+secondaryVertexTagInfosCA8CHSpruned=secondaryVertexTagInfos.clone()
+secondaryVertexTagInfosCA8CHSpruned.trackIPTagInfos='impactParameterTagInfosCA8CHSpruned'
+combinedSecondaryVertexBJetTagsCA8CHSpruned=combinedSecondaryVertexBJetTags.clone()
+combinedSecondaryVertexBJetTagsCA8CHSpruned.tagInfos = cms.VInputTag(cms.InputTag("impactParameterTagInfosCA8CHSpruned"),
+    cms.InputTag("secondaryVertexTagInfosCA8CHSpruned"))
+btaggingCA8CHSpruned=cms.Sequence(ca8CHSprunedJetTracksAssociatorAtVertex+impactParameterTagInfosCA8CHSpruned+secondaryVertexTagInfosCA8CHSpruned+combinedSecondaryVertexBJetTagsCA8CHSpruned)
+
 patJetsCA8CHSpruned = patJets.clone()
 patJetsCA8CHSpruned.jetSource = jetSource
 patJetsCA8CHSpruned.addJetCharge = False
 patJetsCA8CHSpruned.embedCaloTowers = False
 patJetsCA8CHSpruned.embedPFCandidates = False
 patJetsCA8CHSpruned.addAssociatedTracks = False
-patJetsCA8CHSpruned.addBTagInfo = False
-patJetsCA8CHSpruned.addDiscriminators = False
+patJetsCA8CHSpruned.addBTagInfo = True
+patJetsCA8CHSpruned.addDiscriminators = True
+patJetsCA8CHSpruned.tagInfoSources = cms.VInputTag(cms.InputTag("secondaryVertexTagInfosCA8CHSpruned"))
+patJetsCA8CHSpruned.trackAssociationSource = cms.InputTag("ca8CHSprunedJetTracksAssociatorAtVertex")
+patJetsCA8CHSpruned.discriminatorSources = cms.VInputTag(cms.InputTag("combinedSecondaryVertexBJetTagsCA8CHSpruned"))
 patJetsCA8CHSpruned.getJetMCFlavour = False
 patJetsCA8CHSpruned.jetCorrFactorsSource = cms.VInputTag(cms.InputTag('patJetCorrFactorsCA8CHSpruned'))
 patJetsCA8CHSpruned.genPartonMatch = cms.InputTag('patJetPartonMatchCA8CHSpruned')
 patJetsCA8CHSpruned.genJetMatch = cms.InputTag('patJetGenJetMatchCA8CHSpruned')
 
-selectedPatJetsCA8CHSpruned = selectedPatJets.clone()
-selectedPatJetsCA8CHSpruned.src = 'patJetsCA8CHSpruned'
-selectedPatJetsCA8CHSpruned.cut = 'pt()>30'
+selectedPatJetsCA8CHSprunedPre = selectedPatJets.clone()
+selectedPatJetsCA8CHSprunedPre.src = 'patJetsCA8CHSpruned'
+selectedPatJetsCA8CHSprunedPre.cut = 'pt()>30'
 
 ca8PrunedGenJetsNoNu = ak7GenJetsNoNu.clone()
 ca8PrunedGenJetsNoNu.rParam = 0.8
@@ -175,6 +208,42 @@ patGenJetsCA8CHSpruned.addDiscriminators = False
 patGenJetsCA8CHSpruned.getJetMCFlavour = False
 patGenJetsCA8CHSpruned.addJetCorrFactors = False
 
+#### Adding subjet b-tagging
+
+from RecoJets.JetAssociationProducers.ak5JTA_cff import *
+ca8CHSprunedSubjetsJetTracksAssociatorAtVertex=ak5JetTracksAssociatorAtVertex.clone()
+ca8CHSprunedSubjetsJetTracksAssociatorAtVertex.jets=cms.InputTag('ca8PFJetsCHSpruned','SubJets')
+from RecoBTag.Configuration.RecoBTag_cff import * # btagging sequence
+impactParameterTagInfosCA8CHSprunedSubjets=impactParameterTagInfos.clone()
+impactParameterTagInfosCA8CHSprunedSubjets.jetTracks='ca8CHSprunedSubjetsJetTracksAssociatorAtVertex'
+secondaryVertexTagInfosCA8CHSprunedSubjets=secondaryVertexTagInfos.clone()
+secondaryVertexTagInfosCA8CHSprunedSubjets.trackIPTagInfos='impactParameterTagInfosCA8CHSprunedSubjets'
+combinedSecondaryVertexBJetTagsCA8CHSprunedSubjets=combinedSecondaryVertexBJetTags.clone()
+combinedSecondaryVertexBJetTagsCA8CHSprunedSubjets.tagInfos = cms.VInputTag(cms.InputTag("impactParameterTagInfosCA8CHSprunedSubjets"),
+    cms.InputTag("secondaryVertexTagInfosCA8CHSprunedSubjets"))
+btaggingCA8CHSprunedSubjets=cms.Sequence(ca8CHSprunedSubjetsJetTracksAssociatorAtVertex+impactParameterTagInfosCA8CHSprunedSubjets+secondaryVertexTagInfosCA8CHSprunedSubjets+combinedSecondaryVertexBJetTagsCA8CHSprunedSubjets)
+
+patJetsCA8CHSprunedSubjets = patJets.clone()
+patJetsCA8CHSprunedSubjets.jetSource = cms.InputTag('ca8PFJetsCHSpruned','SubJets')
+patJetsCA8CHSprunedSubjets.addGenJetMatch = False
+patJetsCA8CHSprunedSubjets.addGenPartonMatch = False
+patJetsCA8CHSprunedSubjets.addJetCharge = False
+patJetsCA8CHSprunedSubjets.embedCaloTowers = False
+patJetsCA8CHSprunedSubjets.embedPFCandidates = False
+patJetsCA8CHSprunedSubjets.addAssociatedTracks = False
+patJetsCA8CHSprunedSubjets.addBTagInfo = True
+patJetsCA8CHSprunedSubjets.addDiscriminators = True
+patJetsCA8CHSprunedSubjets.tagInfoSources = cms.VInputTag(cms.InputTag("secondaryVertexTagInfosCA8CHSprunedSubjets"))
+patJetsCA8CHSprunedSubjets.trackAssociationSource = cms.InputTag("ca8CHSprunedSubjetsJetTracksAssociatorAtVertex")
+patJetsCA8CHSprunedSubjets.discriminatorSources = cms.VInputTag(cms.InputTag("combinedSecondaryVertexBJetTagsCA8CHSprunedSubjets"))
+patJetsCA8CHSprunedSubjets.getJetMCFlavour = False
+patJetsCA8CHSprunedSubjets.addJetCorrFactors = False
+
+selectedPatJetsCA8CHSpruned = cms.EDProducer("BoostedJetMerger",
+                                                      jetSrc=cms.InputTag("selectedPatJetsCA8CHSprunedPre"),
+                                                      subjetSrc=cms.InputTag("patJetsCA8CHSprunedSubjets")
+    )
+
 jetMCSequenceCA8CHSpruned = cms.Sequence(
     patJetPartonMatchCA8CHSpruned +
     genParticlesForJetsNoNu +
@@ -187,10 +256,13 @@ PATCMGJetSequenceCA8CHSpruned = cms.Sequence(
     ca8PFJetsCHSpruned +
     jetMCSequenceCA8CHSpruned +
     patJetCorrFactorsCA8CHSpruned +
+    btaggingCA8CHSpruned +
     patJetsCA8CHSpruned +
+    selectedPatJetsCA8CHSprunedPre +
+    btaggingCA8CHSprunedSubjets +
+    patJetsCA8CHSprunedSubjets +
     selectedPatJetsCA8CHSpruned
     )
-
 
 #### Adding Nsubjetiness
 

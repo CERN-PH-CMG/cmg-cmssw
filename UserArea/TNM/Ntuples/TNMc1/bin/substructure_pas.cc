@@ -526,6 +526,8 @@ int main(int argc, char** argv)
   int genWcharge=0;
   double costheta1=0;
   double costheta2=0;
+  double parton_dR_1=0;
+  double parton_dR_2=0;
   double Phi=0;
   double costhetastar=0;
   double Phi1=0;
@@ -557,6 +559,8 @@ int main(int argc, char** argv)
   dijetWtag->Branch("Jet1genWcharge",&genWcharge,"Jet1genWcharge/I");
   dijetWtag->Branch("costheta1",&costheta1,"costheta1/D");
   dijetWtag->Branch("costheta2",&costheta2,"costheta2/D");
+  dijetWtag->Branch("parton_dR_1",&parton_dR_1,"parton_dR_1/D");
+  dijetWtag->Branch("parton_dR_2",&parton_dR_2,"parton_dR_2/D");
   dijetWtag->Branch("Phi",&Phi,"Phi/D");
   dijetWtag->Branch("costhetastar",&costhetastar,"costhetastar/D");
   dijetWtag->Branch("Phi1",&Phi1,"Phi1/D");
@@ -650,7 +654,7 @@ int main(int argc, char** argv)
 	  
           for(int i=0;i<ngenparticlehelper;++i)
 	  {
-if((DeltaRfun(genparticlehelper_eta[i],jethelperCA8_eta[0],genparticlehelper_phi[i],jethelperCA8_phi[0])<0.2))
+//if((DeltaRfun(genparticlehelper_eta[i],jethelperCA8_eta[0],genparticlehelper_phi[i],jethelperCA8_phi[0])<0.2))
 //   std::cerr << genparticlehelper_pdgId[i] << "," << genparticlehelper_charge[i] << "," << DeltaRfun(genparticlehelper_eta[i],jethelperCA8_eta[0],genparticlehelper_phi[i],jethelperCA8_phi[0]) << std::endl;
 	      if((abs(genparticlehelper_pdgId[i])==24)&&(genparticlehelper_charge[i]<0)&&(DeltaRfun(genparticlehelper_eta[i],jethelperCA8_eta[0],genparticlehelper_phi[i],jethelperCA8_phi[0])<0.2))
                   genWcharge=-1;
@@ -661,13 +665,15 @@ if((abs(genparticlehelper_pdgId[i])==24)&&(genparticlehelper_charge[i]>0)&&(Delt
           TLorentzVector H,W1,W2,j11,j12,j21,j22;
           for(int i=0;i<ngenparticlehelper;++i)
 	  {    
-	      if((abs(genparticlehelper_pdgId[i])>=23)&&(abs(genparticlehelper_pdgId[i])<=25)&&(genparticlehelper_charge[i]<0))
+	      if((abs(genparticlehelper_pdgId[i])>=23)&&(abs(genparticlehelper_pdgId[i])<=25)&&(genparticlehelper_charge[i]<0)&&
+(genparticlehelper_firstDaughter[i]>=0)&&(genparticlehelper_lastDaughter[i]>=0)&&(genparticlehelper_firstDaughter[i]<ngenparticlehelper)&&(genparticlehelper_lastDaughter[i]<ngenparticlehelper))
 	      {
                   W1.SetPtEtaPhiM(genparticlehelper_pt[i],genparticlehelper_eta[i],genparticlehelper_phi[i],genparticlehelper_mass[i]);
                    j11.SetPtEtaPhiM(genparticlehelper_pt[genparticlehelper_firstDaughter[i]],genparticlehelper_eta[genparticlehelper_firstDaughter[i]],genparticlehelper_phi[genparticlehelper_firstDaughter[i]],genparticlehelper_mass[genparticlehelper_firstDaughter[i]]);
                    j12.SetPtEtaPhiM(genparticlehelper_pt[genparticlehelper_lastDaughter[i]],genparticlehelper_eta[genparticlehelper_lastDaughter[i]],genparticlehelper_phi[genparticlehelper_lastDaughter[i]],genparticlehelper_mass[genparticlehelper_lastDaughter[i]]);
               }
-	      if((abs(genparticlehelper_pdgId[i])>=23)&&(abs(genparticlehelper_pdgId[i])<=25)&&(genparticlehelper_charge[i]>0))
+	      if((abs(genparticlehelper_pdgId[i])>=23)&&(abs(genparticlehelper_pdgId[i])<=25)&&(genparticlehelper_charge[i]>0)&&
+(genparticlehelper_firstDaughter[i]>=0)&&(genparticlehelper_lastDaughter[i]>=0)&&(genparticlehelper_firstDaughter[i]<ngenparticlehelper)&&(genparticlehelper_lastDaughter[i]<ngenparticlehelper))
               {
 	          W2.SetPtEtaPhiM(genparticlehelper_pt[i],genparticlehelper_eta[i],genparticlehelper_phi[i],genparticlehelper_mass[i]);
                    j21.SetPtEtaPhiM(genparticlehelper_pt[genparticlehelper_firstDaughter[i]],genparticlehelper_eta[genparticlehelper_firstDaughter[i]],genparticlehelper_phi[genparticlehelper_firstDaughter[i]],genparticlehelper_mass[genparticlehelper_firstDaughter[i]]);
@@ -677,6 +683,9 @@ if((abs(genparticlehelper_pdgId[i])==24)&&(genparticlehelper_charge[i]>0)&&(Delt
           H=W1+W2;
 	  //std::cerr << H.Pt() << "," << W1.Pt() <<  "," << W2.Pt() <<  "," << j11.Pt() <<  "," << j12.Pt() <<  "," << j21.Pt() <<  "," << j22.Pt() <<  std::endl;
           computeAngles(H, W1, j11, j12, W2, j21, j22, costheta1, costheta2, Phi, costhetastar, Phi1);
+
+          parton_dR_1 = DeltaRfun(j11.Eta(),j12.Eta(),j11.Phi(),j12.Phi());
+          parton_dR_2 = DeltaRfun(j21.Eta(),j22.Eta(),j21.Phi(),j22.Phi());
 
           if (triggerresultshelper_hcallasereventfilter2012!=0)
 	     hcallasereventfilter2012active=true;
