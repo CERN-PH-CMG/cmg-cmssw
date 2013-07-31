@@ -30,15 +30,21 @@ void RecoilCorrector::addDataFile(std::string iNameData) {
   //readCorr(iNameData);
   fId++;   
 }
+
 void RecoilCorrector::addMCFile  (std::string iNameMC) { 
   fId++;
   readRecoil(fM1U1Fit,fM1U1RMSSMFit,fM1U1RMS1Fit,fM1U1RMS2Fit,fM1U2Fit,fM1U2RMSSMFit,fM1U2RMS1Fit,fM1U2RMS2Fit,iNameMC,"PF");
   readRecoil(fM2U1Fit,fM2U1RMSSMFit,fM2U1RMS1Fit,fM2U1RMS2Fit,fM2U2Fit,fM2U2RMSSMFit,fM2U2RMS1Fit,fM2U2RMS2Fit,iNameMC,"TK");
   readCorr  (iNameMC ,fM1U1U2Corr,fM2U1U2Corr,fM1M2U1Corr,fM1M2U2Corr,fM1M2U1U2Corr,fM1M2U2U1Corr);
 }
+
 void RecoilCorrector::CorrectAll(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,double iFluc,double iScale,int njet) {
-  fJet = njet; if(njet > 2) fJet = 2;  
-  if(fJet >= int(fF1U1Fit.size())) fJet = 0; 
+
+  fJet = njet; 
+  
+//  if(njet > 2) fJet = 2;  
+  if(fJet >= int(fF1U1Fit.size())) fJet = 1; 
+
   fRandom->SetSeed((int)((lGenPhi+4)*100000));
   metDistribution(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,fRandom,
 		  fF1U1Fit     [fJet],
@@ -52,9 +58,17 @@ void RecoilCorrector::CorrectAll(double &met, double &metphi, double lGenPt, dou
 		  iU1, iU2,iFluc,iScale
 		  );
 }
+
 void RecoilCorrector::CorrectType1(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,double iFluc,double iScale,int njet) {
-  fJet = njet; if(njet > 2) fJet = 2;  
-  if(fJet >= int(fF1U1Fit.size())) fJet = 0; 
+
+  //  cout << "TYPE1: nVTX " << njet << " function size "<< fF1U1Fit.size() << endl;
+
+  fJet = njet; 
+
+
+  //  if(njet > 2) fJet = 2;  
+  if(fJet >= int(fF1U1Fit.size())) fJet = 1; 
+
   fRandom->SetSeed((int)((lGenPhi+4)*100000));
   metDistributionType1(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,fRandom,
 		       fD1U1Fit     [fJet],fM1U1Fit     [fJet],
@@ -64,9 +78,16 @@ void RecoilCorrector::CorrectType1(double &met, double &metphi, double lGenPt, d
 		       iU1,iU2,iFluc,iScale
 		       );
 }
+
 void RecoilCorrector::CorrectType2(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,double iFluc,double iScale,int njet) {
-  fJet = njet; if(njet > 2) fJet = 2;  
-  if(fJet >= int(fF1U1Fit.size())) fJet = 0; 
+
+  //  cout << "TYPE2: nVTX " << njet << " function size "<< fD1U1Fit.size() << endl;
+
+  fJet = njet; 
+
+//  if(njet > 2) fJet = 2;  
+  if(fJet >= int(fF1U1Fit.size())) fJet = 1; 
+
   metDistributionType2(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,fF1U1Fit[fJet],
 		       fD1U1Fit     [fJet],fM1U1Fit     [fJet],
 		       fD1U1RMSSMFit[fJet],fM1U1RMSSMFit[fJet],
@@ -75,14 +96,17 @@ void RecoilCorrector::CorrectType2(double &met, double &metphi, double lGenPt, d
 		       fD1U2RMSSMFit[fJet],fM1U2RMSSMFit[fJet],
 		       fD1U2RMS1Fit [fJet],fM1U2RMS1Fit [fJet],
 		       fD1U2RMS2Fit [fJet],fM1U2RMS2Fit [fJet],
-		       fF1U1U2Corr  [fJet],fM1U1U2Corr  [fJet], 
+		       //		       fF1U1U2Corr  [fJet],fM1U1U2Corr  [fJet],  // MARIA comment for now since not used
 		       iU1,iU2,iFluc,iScale);
 }
 void RecoilCorrector::Correct(double &pfmet, double &pfmetphi, double &trkmet, double &trkmetphi, 
                               double lGenPt, double lGenPhi, double lepPt, double lepPhi,double iFluc,double iScale,int njet) {
   double lU1 = 0; double lU2 = 0;
-  fJet = njet; if(njet > 2) fJet = 2;  
-  if(fJet > int(fF1U1Fit.size())) fJet = 0; 
+  fJet = njet; 
+
+//    if(njet > 2) fJet = 2;  
+    if(fJet > int(fF1U1Fit.size())) fJet = 1; 
+
   fRandom->SetSeed((int)((lGenPhi+4)*100000));
   metDistribution(pfmet,pfmetphi,trkmet,trkmetphi,lGenPt,lGenPhi,lepPt,lepPhi,fRandom,
 		  fF1U1Fit     [fJet],fF2U1Fit     [fJet],
@@ -102,8 +126,11 @@ void RecoilCorrector::Correct(double &pfmet, double &pfmetphi, double &trkmet, d
 void RecoilCorrector::CorrectU1U2(double &iPFU1, double &iPFU2, double &iTKU1, double &iTKU2, 
 				  double lGenPt, double lGenPhi, double lepPt, double lepPhi,double iFluc,double iScale,int njet) {
   double pfmet = 0; double pfmetphi = 0; //double trkmet = 0; double trkmetphi = 0;
-  fJet = njet; if(njet > 2) fJet = 2;  
-  if(fJet > int(fF1U1Fit.size())) fJet = 0; 
+  fJet = njet; 
+
+//   if(njet > 2) fJet = 2;  
+    if(fJet > int(fF1U1Fit.size())) fJet = 1; 
+
   metDistribution(pfmet,pfmetphi,iTKU1,iTKU2,lGenPt,lGenPhi,lepPt,lepPhi,fRandom,
 		  fF1U1Fit     [fJet],fF2U1Fit     [fJet],
 		  fF1U1RMSSMFit[fJet],fF2U1RMSSMFit[fJet],
@@ -173,9 +200,14 @@ void RecoilCorrector::readRecoil(std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU
 //    assert(0);
 //  }
   TFile *lFile  = new TFile(iFName.c_str());
-  int lNJet = 0;
+
+  lFile->ls();
+
+  int lNJet = 1;
   std::stringstream lSS; lSS << iPrefix << "u1Mean_" << lNJet;
   while(lFile->FindObjectAny(lSS.str().c_str()) != 0) { lSS.str("");
+    cout << lNJet << endl;
+
     lSS << iPrefix << "u1Mean_"    << lNJet; iU1Fit.push_back    ( (TF1*) lFile->FindObjectAny(lSS.str().c_str())); lSS.str("");
     lSS << iPrefix << "u1MeanRMS_" << lNJet; iU1MRMSFit.push_back( (TF1*) lFile->FindObjectAny(lSS.str().c_str())); lSS.str(""); 
     lSS << iPrefix << "u1RMS1_"    << lNJet; iU1RMS1Fit.push_back( (TF1*) lFile->FindObjectAny(lSS.str().c_str())); lSS.str(""); 
@@ -186,7 +218,11 @@ void RecoilCorrector::readRecoil(std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU
     lSS << iPrefix << "u2RMS2_"    << lNJet; iU2RMS2Fit.push_back( (TF1*) lFile->FindObjectAny(lSS.str().c_str())); lSS.str("");
     lSS << iPrefix << "u2RMS2_"    << lNJet; iU2RMS2Fit.push_back( (TF1*) lFile->FindObjectAny(lSS.str().c_str())); lSS.str("");
     lNJet++; lSS << iPrefix << "u1Mean_" << lNJet;
+
+    //    cout << "Filename " << iFName.c_str() << " lNJet " << lNJet << endl;
+
   }
+
   lFile->Close();
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -285,6 +321,7 @@ void RecoilCorrector::metDistribution(double &iMet,double &iMPhi,double iGenPt,d
   iU2   = pU2;
   return;
 }
+
 void RecoilCorrector::metDistributionType1(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
 					   double iLepPt,double iLepPhi,TRandom1 *iRand,
 					   TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
@@ -292,7 +329,12 @@ void RecoilCorrector::metDistributionType1(double &iMet,double &iMPhi,double iGe
 					   TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit, 		   		   
 					   //TF1 *iU1U2ZDatCorr,TF1 *iU1U2ZMCCorr,
 					   double &iU1,double &iU2,double iFluc,double iScale) {
-  if(iLepPt < 4) return;
+
+  //  if(iLepPt > 50) return; 
+
+  // MARIA : commented this one
+  //  if(iLepPt < 4) return;
+
   double lRescale  = sqrt((TMath::Pi())/2.);		     
   double pU1       = iU1RZDatFit->Eval(iGenPt)/iU1RZMCFit->Eval(iGenPt);
   double pU2       = 0; //Right guys are for cumulants => code deleted
@@ -303,7 +345,7 @@ void RecoilCorrector::metDistributionType1(double &iMet,double &iMPhi,double iGe
   pFrac1 = sqrt(pFrac1)*lRescale;
   pFrac2 = sqrt(pFrac2)*lRescale;
  
-  //cout << "===> " << pU1 << " -- " << pFrac1 << " -- " << pFrac2 << " -- "  << iU1MSZDatFit->Eval(iGenPt) << " - " << iU1MSZMCFit->Eval(iGenPt) << endl;
+  //  cout << "===> " << pU1 << " -- " << pFrac1 << " -- " << pFrac2 << " -- "  << iU1MSZDatFit->Eval(iGenPt) << " - " << iU1MSZMCFit->Eval(iGenPt) << endl;
   
   //Uncertainty propagation
   if(iFluc != 0 || iScale != 0) { 
@@ -327,6 +369,7 @@ void RecoilCorrector::metDistributionType1(double &iMet,double &iMPhi,double iGe
   double pU   = sqrt(pUX*pUX+pUY*pUY);
   double pCos = - (pUX*cos(iGenPhi) + pUY*sin(iGenPhi))/pU;
   double pSin =   (pUX*sin(iGenPhi) - pUY*cos(iGenPhi))/pU;
+
   pU1   = pU*pCos*pU1;//*(pU1*(iGenPt > 10) + (iGenPt > 10)*((1.-iGenPt/10.)*(pU1-1.)+1.));
   pU2   = pU*pSin;
   pU1   = iRand->Gaus(pU1,pFrac1);
@@ -371,8 +414,12 @@ void RecoilCorrector::metDistributionType2(double &iMet,double &iMPhi,double iGe
 					   TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
 					   TF1 *iU2S1ZDatFit, TF1 *iU2S1ZMCFit,  		   		   
 					   TF1 *iU2S2ZDatFit, TF1 *iU2S2ZMCFit,  		   		   
-					   TF1 *iU1U2ZDatCorr,TF1 *iU1U2ZMCCorr,
+					   //					   TF1 *iU1U2ZDatCorr,TF1 *iU1U2ZMCCorr, // MARIA comment for now
 					   double &iU1,double &iU2,double iFluc,double iScale) {
+  //  cout << "inside metType2 " << endl;
+
+  //  if(iLepPt > 50) return; 
+
   double pDefU1    = iU1Default->Eval(iGenPt);
   double lRescale  = sqrt((TMath::Pi())/2.);		     
   double pDU1       = iU1RZDatFit ->Eval(iGenPt);
@@ -462,9 +509,11 @@ void RecoilCorrector::metDistributionType2(double &iMet,double &iMPhi,double iGe
   iU1   = pU1; 
   iU2   = pU2;
   return;
+  /*
   //Not Used Current
   iU1U2ZMCCorr ->Eval(iGenPt);
   iU1U2ZDatCorr->Eval(iGenPt);
+  */
 }
 
 void RecoilCorrector::metDistribution(double &iPFMet,double &iPFMPhi,double &iTKMet,double &iTKMPhi,
