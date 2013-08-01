@@ -133,3 +133,12 @@ substructure_pas data/fileList_QCD_Pt-1400to1800_Tune4C_8TeV_pythia8_Summer12_DR
 sleep 2
 substructure_pas data/fileList_QCD_Pt-1800_Tune4C_8TeV_pythia8_Summer12_DR53X-PU_S10_START53_V7A-v1_AODSIM_V5_B_CMGPF_V5_16_0_NTUPLE_Feb15_grid.txt substructure_pas_QCDPythia81800.root > substructure_pas_QCDPythia81800.log
 sleep 2
+
+substructure_pas data/fileList_BulkG_WW_jjjj_c0p2_M1000-JHU.txt substructure_pas_WWBulk1000.root > substructure_pas_WWBulk1000.log &
+sleep 2
+substructure_pas data/fileList_BulkG_WW_jjjj_c0p2_M1500-JHU.txt substructure_pas_WWBulk1500.root > substructure_pas_WWBulk1500.log &
+sleep 2
+substructure_pas data/fileList_BulkG_WW_jjjj_c0p2_M2000-JHU.txt substructure_pas_WWBulk2000.root > substructure_pas_WWBulk2000.log &
+sleep 2
+substructure_pas data/fileList_BulkG_WW_jjjj_c0p2_M2500-JHU.txt substructure_pas_WWBulk2500.root > substructure_pas_WWBulk2500.log &
+sleep 2

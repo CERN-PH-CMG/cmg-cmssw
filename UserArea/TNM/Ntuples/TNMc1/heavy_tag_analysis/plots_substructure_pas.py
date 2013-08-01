@@ -26,7 +26,7 @@ TGaxis.SetMaxDigits(3)
 if __name__ == '__main__':
 
  theory=False
- runSet=2
+ runSet=3
 
  names = ["npu",
            "npv",
@@ -87,7 +87,7 @@ if __name__ == '__main__':
  if runSet==1:
   samples = ["substructure_pas_QCD500.root",
              "substructure_pas_QCD1000.root",
-             "substructure_pas_WWPy61000.root",
+             "substructure_pas_WWBulk1000.root",
             ]
   colors=[1,1,1,2,2,2]
   styles=[2,3,1,2,3,1]
@@ -173,8 +173,8 @@ if __name__ == '__main__':
              "substructure_pas_QCD1000.root",
              "substructure_pas_QCD500.root",
              "substructure_pas_QCD1000.root",
-             "substructure_pas_WWPy61000.root",
-             "substructure_pas_WWPy63000.root",
+             "substructure_pas_WWBulk1000.root",
+             "substructure_pas_WWBulk2500.root",
              ]
   colors=[1,1,2,2]
   styles=[2,1,2,1]
@@ -186,8 +186,8 @@ if __name__ == '__main__':
              "substructure_pas_QCD1000.root",
              "substructure_pas_QCD500.root",
              "substructure_pas_QCD1000.root",
-             "substructure_pas_WWPy61000.root",
-             "substructure_pas_WWPy61000.root",
+             "substructure_pas_WWBulk1000.root",
+             "substructure_pas_WWBulk1000.root",
              ]
   colors=[1,1,2,2]
   styles=[2,1,2,1]
@@ -197,7 +197,7 @@ if __name__ == '__main__':
  if runSet==5:
   samples = ["substructure_pas_QCD500.root",
              "substructure_pas_QCD1000.root",
-             "substructure_pas_WWPy61000.root",
+             "substructure_pas_WWBulk1000.root",
             ]
   colors=[1,1,1,2,2,2]
   styles=[2,3,1,2,3,1]
@@ -218,14 +218,14 @@ if __name__ == '__main__':
              ]
   else:
    samples = ["substructure_pas_WWPy61000.root",
-             "substructure_pas_WWPy61000_12PU.root",
+             #"substructure_pas_WWPy61000_12PU.root",
              "substructure_pas_WWPy61000_22PU.root",
              "substructure_pas_WWPy61000.root",
              ]
-  colors=[1,7,2,7,2,4,4,4,4,2,4]
-  styles=[1,2,3,4,5,2,3,4,5,1,1]
-  widths=[2,2,2,2,2,2,2,2,2,1,1]
-  sets=["Gen","GenCHS","lowPU",""]#"GenPUcorrected","GenPUcorrectedCHS"
+  colors=[6,4,2,1]
+  styles=[4,3,2,1]
+  widths=[2,2,2,2]
+  sets=["Gen","GenCHS",""]#"lowPU","GenPUcorrected","GenPUcorrectedCHS"
 
   plots = [("Jet1Nsub","((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600))","#tau_{2}/#tau_{1}", ),
            ("Jet1C2beta17","((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600))","C_{2} (#beta=1.7)", ),
@@ -240,8 +240,8 @@ if __name__ == '__main__':
  if runSet==7:
   samples = ["substructure_pas_QCD500.root",
              "substructure_pas_QCD1000.root",
-             "substructure_pas_WWPy61000.root",
-             "substructure_pas_WWPy61000.root",
+             "substructure_pas_WWBulk1000.root",
+             "substructure_pas_WWBulk1000.root",
             ]
   colors=[1,1,2,2,4,4]
   styles=[2,1,2,1,2,1]
@@ -265,7 +265,7 @@ if __name__ == '__main__':
 	   ]
 
  if runSet==8:
-  samples = ["substructure_pas_WWPy61000.root",
+  samples = ["substructure_pas_WWBulk1000.root",
              "substructure_pas_WWHpp1000.root",
              ]
   colors=[1,1,2,2]
@@ -335,9 +335,9 @@ if __name__ == '__main__':
        continue
     if runSet==6 and not gen=="Gen" and s==1:
        continue
-    if runSet==6 and not "Gen" in gen and (s==2 or s==3):
+    if runSet==6 and not "Gen" in gen and (s==2):
        continue
-    if runSet==6 and "Gen" in gen and s==4:
+    if runSet==6 and "Gen" in gen and s==3:
        continue
     if runSet==6 and "PUcorrected" in gen and plot[0]!="Jet1Nsub":
        continue
@@ -425,7 +425,7 @@ if __name__ == '__main__':
     if gen=="lowPU":
         variable,cutstring=plot[0],plot[1]+"&&(nPU<17)"
     elif runSet==3 and (s==3 or s==4 or s==6):
-        variable,cutstring=plot[0],plot[1].replace("&&(Jet1pt>400)&&(Jet1pt<600)","&&(Jet1pt>1300)&&(Jet1pt<1700)")
+        variable,cutstring=plot[0],plot[1].replace("&&(Jet1pt>400)&&(Jet1pt<600)","&&(Jet1pt>1100)&&(Jet1pt<1400)")
     elif runSet==4 and (counter==1 or counter==3):
         variable,cutstring=plot[0],plot[1]+"&&(abs(Jet1eta)<1.0)"
     elif gen=="GenPt2":
@@ -538,7 +538,7 @@ if __name__ == '__main__':
     else:
       if "Run" in sample:
         hist.Draw("pesame")
-      elif "Gen" in gen:
+      elif "Gen" in gen and not runSet==6:
         hist.Draw("csame")
       else:
         hist.Draw("histsame")
@@ -587,67 +587,67 @@ if __name__ == '__main__':
       legend.AddEntry(hist,"data","ple")
     if "QCD1000" in sample:
       if gen=="Gen" or runSet==2 or ("pt" in names[plots.index(plot)] or "eta" in names[plots.index(plot)]):
-        legend.AddEntry(hist,"QCD Madgraph+Pythia6","l")
+        legend.AddEntry(hist,"QCD MG+Pythia6","l")
       elif runSet==3 and counter==0:
         legend.AddEntry(hist,"QCD 400 < p_{T} < 600 GeV","l")
       elif runSet==3 and counter==1:
-        legend.AddEntry(hist,"QCD 1.3 < p_{T} < 1.7 TeV","l")
+        legend.AddEntry(hist,"QCD 1.1 < p_{T} < 1.4 TeV","l")
       elif runSet==4 and counter==0:
         legend.AddEntry(hist,"QCD |#eta| < 2.4","l")
       elif runSet==4 and counter==1:
         legend.AddEntry(hist,"QCD |#eta| < 1.0","l")
       elif gen=="lowPU":
-        legend.AddEntry(hist," + <PU>=12 + simulation","l")
+        legend.AddEntry(hist," + <PU>=12 + sim.","l")
       elif gen=="GenPt2":
         legend.AddEntry(hist," with p_{T}^{particles}>2 GeV","l")
       else:
-        legend.AddEntry(hist," + <PU>=22 + simulation","l")
+        legend.AddEntry(hist," + <PU>=22 + sim.","l")
     if "QCDHerwig" in sample:
         legend.AddEntry(hist,"QCD Herwig++","l")
     if "QCDPythia8" in sample:
         legend.AddEntry(hist,"QCD Pythia8","l")
-    if "WWPy6" in sample:
+    if "WWBulk" in sample or "WWPy6" in sample:
       if runSet==3 and "1000" in sample:
-        legend.AddEntry(hist,"W 400 < p_{T} < 600 GeV","l")
-      elif runSet==3 and "3000" in sample:
-        legend.AddEntry(hist,"W 1.3 < p_{T} < 1.7 TeV","l")
+        legend.AddEntry(hist,"W_{L} 400 < p_{T} < 600 GeV","l")
+      elif runSet==3 and "2500" in sample:
+        legend.AddEntry(hist,"W_{L} 1.1 < p_{T} < 1.4 TeV","l")
       elif runSet==4 and counter==0:
-        legend.AddEntry(hist,"W |#eta| < 2.4","l")
+        legend.AddEntry(hist,"W_{L} |#eta| < 2.4","l")
       elif runSet==4 and counter==1:
-        legend.AddEntry(hist,"W |#eta| < 1.0","l")
-      elif runSet==6 and counter==1:
-        legend.AddEntry(hist," + <PU>=12","l")
-      elif runSet==6 and counter==2:
-        legend.AddEntry(hist," + <PU>=12 + CHS","l")
+        legend.AddEntry(hist,"W_{L} |#eta| < 1.0","l")
+      #elif runSet==6 and counter==1:
+      #  legend.AddEntry(hist," + <PU>=12","l")
+      #elif runSet==6 and counter==2:
+      #  legend.AddEntry(hist," + <PU>=12 + CHS","l")
       #elif runSet==6 and counter==3:
       #  legend.AddEntry(hist," + <PU>=12 + SC","l")
       #elif runSet==6 and counter==4:
       #  legend.AddEntry(hist," + <PU>=12 + CHS + SC","l")
-      elif runSet==6 and counter==3:
+      elif runSet==6 and counter==1:
         legend.AddEntry(hist," + <PU>=22","l")
-      elif runSet==6 and counter==4:
+      elif runSet==6 and counter==2:
         legend.AddEntry(hist," + <PU>=22 + CHS","l")
       #elif runSet==6 and counter==7:
       #  legend.AddEntry(hist," + <PU>=22 + SC","l")
       #elif runSet==6 and counter==8:
       #  legend.AddEntry(hist," + <PU>=22 + CHS + SC","l")
       elif gen=="lowPU":
-        legend.AddEntry(hist," + <PU>=12 + simulation","l")
+        legend.AddEntry(hist," + <PU>=12 + sim.","l")
       elif gen=="GenPt2":
         legend.AddEntry(hist," with p_{T}^{particles}>2 GeV","l")
       elif gen=="Gen" and runSet==7 and s==3:
-        legend.AddEntry(hist,"W^{+} (G_{RS}) Pythia6","l")
+        legend.AddEntry(hist,"W_{L}^{+} Pythia6","l")
       elif gen=="Gen" and runSet==7 and s==4:
-        legend.AddEntry(hist,"W^{-} (G_{RS}) Pythia6","l")
+        legend.AddEntry(hist,"W_{R}^{-} Pythia6","l")
       elif gen=="Gen" or runSet==2 or ("pt" in names[plots.index(plot)] or "eta" in names[plots.index(plot)]) or (runSet==8 and ("costheta" in names[plots.index(plot)] or "Phi" in names[plots.index(plot)] or "dR" in names[plots.index(plot)])):
-        legend.AddEntry(hist,"G_{RS} #rightarrow WW Pythia6","l")
+        legend.AddEntry(hist,"X #rightarrow W_{L}W_{L} Pythia6","l")
       else:
-        legend.AddEntry(hist," + <PU>=22 + simulation","l")
+        legend.AddEntry(hist," + <PU>=22 + sim.","l")
     if "WWHpp" in sample:
       if gen=="Gen" or runSet==2 or (runSet==8 and ("costheta" in names[plots.index(plot)] or "Phi" in names[plots.index(plot)] or "dR" in names[plots.index(plot)])):
-        legend.AddEntry(hist,"G_{RS} #rightarrow WW Herwig++","l")
+        legend.AddEntry(hist,"X #rightarrow W_{T}W_{T} Herwig++","l")
       else:
-        legend.AddEntry(hist," + <PU>=22 + simulation","l")
+        legend.AddEntry(hist," + <PU>=22 + sim.","l")
     counter+=1
 
   legend.SetTextSize(0.036)
@@ -681,7 +681,7 @@ if __name__ == '__main__':
   banner.Draw();  
 
   if "aftermass" in names[plots.index(plot)]:
-     legend3=TLegend(0.15,0.7,0.5,0.75,"60 < m_{j} < 100 GeV")
+     legend3=TLegend(0.17,0.7,0.5,0.75,"60 < m_{j} < 100 GeV")
      legend3.SetTextSize(0.03)
      legend3.SetFillStyle(0)
      legend3.Draw("same")

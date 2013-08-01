@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
  samples = ["substructure_pas_QCD500.root",
              "substructure_pas_QCD1000.root",
-             "substructure_pas_WWPy61000.root",
+             "substructure_pas_WWBulk1000.root",
             ]
 
  selection="(abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600)"
