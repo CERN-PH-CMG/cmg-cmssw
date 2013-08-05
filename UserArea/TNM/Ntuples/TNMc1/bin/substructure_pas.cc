@@ -524,6 +524,7 @@ int main(int argc, char** argv)
   double Gendeta=0;
   
   int genWcharge=0;
+  int Jet1quarkgluon=0;
   double costheta1=0;
   double costheta2=0;
   double parton_dR_1=0;
@@ -541,6 +542,7 @@ int main(int argc, char** argv)
   dijetWtag->Branch("Jet1eta",&jethelperCA8_eta[0],"Jet1eta/D");
   dijetWtag->Branch("Jet1phi",&jethelperCA8_phi[0],"Jet1phi/D");
   dijetWtag->Branch("Jet1Mass",&jethelperCA8pruned_mass[0],"Jet1Mass/D");
+  dijetWtag->Branch("Jet1UnGroomedMass",&jethelperCA8_mass[0],"Jet1UnGroomedMass/D");
   dijetWtag->Branch("Jet1MassDrop",&Jet1CA8MassDrop,"Jet1MassDrop/D");
   dijetWtag->Branch("Jet1Nsub",&Jet1CA8Nsub,"Jet1Nsub/D");
   dijetWtag->Branch("Jet1NsubPruned",&Jet1CA8NsubPruned,"Jet1NsubPruned/D");
@@ -557,6 +559,7 @@ int main(int argc, char** argv)
   dijetWtag->Branch("Jet1Pt2",&jethelperCA8_Pt2[0],"Jet1Pt2/D");
 
   dijetWtag->Branch("Jet1genWcharge",&genWcharge,"Jet1genWcharge/I");
+  dijetWtag->Branch("Jet1quarkgluon",&Jet1quarkgluon,"Jet1quarkgluon/I");
   dijetWtag->Branch("costheta1",&costheta1,"costheta1/D");
   dijetWtag->Branch("costheta2",&costheta2,"costheta2/D");
   dijetWtag->Branch("parton_dR_1",&parton_dR_1,"parton_dR_1/D");
@@ -572,6 +575,7 @@ int main(int argc, char** argv)
   dijetWtag->Branch("GenJet1eta",&jethelperGenCA8_eta[0],"GenJet1eta/D");
   dijetWtag->Branch("GenJet1phi",&jethelperGenCA8_phi[0],"GenJet1phi/D");
   dijetWtag->Branch("GenJet1Mass",&jethelperGenCA8pruned_mass[0],"GenJet1Mass/D");
+  dijetWtag->Branch("GenJet1UnGroomedMass",&jethelperGenCA8_mass[0],"GenJet1UnGroomedMass/D");
   dijetWtag->Branch("GenJet1MassDrop",&Jet1GenCA8MassDrop,"GenJet1MassDrop/D");
   dijetWtag->Branch("GenJet1Nsub",&Jet1GenCA8Nsub,"GenJet1Nsub/D");
   dijetWtag->Branch("GenJet1NsubPruned",&Jet1GenCA8NsubPruned,"GenJet1NsubPruned/D");
@@ -650,8 +654,19 @@ int main(int argc, char** argv)
           Jet1GenCA8NsubPruned = jethelperGenCA8pruned_tau2[0]/jethelperGenCA8pruned_tau1[0];
           Jet1GenCA8NsubPt2 = jethelperGenCA8_tau2Pt2[0]/jethelperGenCA8_tau1Pt2[0];
           Jet1GenCA8NsubCHS = jethelperGenCA8_tau2CHS[0]/jethelperGenCA8_tau1CHS[0];
-          }
 	  
+	  /*
+	  if(jethelperCA8_nConstituents[0]<5)
+          for(int i=0;i<ngenparticlehelper;++i)
+	  {
+	   if (DeltaRfun(genparticlehelper_eta[i],jethelperCA8_eta[0],genparticlehelper_phi[i],jethelperCA8_phi[0])<0.2)
+	    std::cerr << genparticlehelper_pdgId[i] << "," << genparticlehelper_charge[i] << "," << DeltaRfun(genparticlehelper_eta[i],jethelperCA8_eta[0],genparticlehelper_phi[i],jethelperCA8_phi[0]) << std::endl;
+	      if(i>100) break;
+	  }
+	  */
+	  
+	  genWcharge=0;
+	  Jet1quarkgluon=0;
           for(int i=0;i<ngenparticlehelper;++i)
 	  {
 //if((DeltaRfun(genparticlehelper_eta[i],jethelperCA8_eta[0],genparticlehelper_phi[i],jethelperCA8_phi[0])<0.2))
@@ -660,6 +675,13 @@ int main(int argc, char** argv)
                   genWcharge=-1;
 if((abs(genparticlehelper_pdgId[i])==24)&&(genparticlehelper_charge[i]>0)&&(DeltaRfun(genparticlehelper_eta[i],jethelperCA8_eta[0],genparticlehelper_phi[i],jethelperCA8_phi[0])<0.2))
                   genWcharge=1;
+if((abs(genparticlehelper_pdgId[i])<=6)&&(genparticlehelper_status[i]==3)&&(DeltaRfun(genparticlehelper_eta[i],jethelperCA8_eta[0],genparticlehelper_phi[i],jethelperCA8_phi[0])<0.2))
+                  Jet1quarkgluon=1;
+if(((abs(genparticlehelper_pdgId[i])==9)||(abs(genparticlehelper_pdgId[i])==21))&&(genparticlehelper_status[i]==3)&&(DeltaRfun(genparticlehelper_eta[i],jethelperCA8_eta[0],genparticlehelper_phi[i],jethelperCA8_phi[0])<0.2))
+                  Jet1quarkgluon=2;
+	      if(i>100) break;
+          }
+
           }
 
           TLorentzVector H,W1,W2,j11,j12,j21,j22;
@@ -679,13 +701,16 @@ if((abs(genparticlehelper_pdgId[i])==24)&&(genparticlehelper_charge[i]>0)&&(Delt
                    j21.SetPtEtaPhiM(genparticlehelper_pt[genparticlehelper_firstDaughter[i]],genparticlehelper_eta[genparticlehelper_firstDaughter[i]],genparticlehelper_phi[genparticlehelper_firstDaughter[i]],genparticlehelper_mass[genparticlehelper_firstDaughter[i]]);
                    j22.SetPtEtaPhiM(genparticlehelper_pt[genparticlehelper_lastDaughter[i]],genparticlehelper_eta[genparticlehelper_lastDaughter[i]],genparticlehelper_phi[genparticlehelper_lastDaughter[i]],genparticlehelper_mass[genparticlehelper_lastDaughter[i]]);
               }
+	      if((W1.Pt()>0)&&(W2.Pt()>0)) break;
+	      if(i>100) break;
           }
           H=W1+W2;
 	  //std::cerr << H.Pt() << "," << W1.Pt() <<  "," << W2.Pt() <<  "," << j11.Pt() <<  "," << j12.Pt() <<  "," << j21.Pt() <<  "," << j22.Pt() <<  std::endl;
-          computeAngles(H, W1, j11, j12, W2, j21, j22, costheta1, costheta2, Phi, costhetastar, Phi1);
-
-          parton_dR_1 = DeltaRfun(j11.Eta(),j12.Eta(),j11.Phi(),j12.Phi());
-          parton_dR_2 = DeltaRfun(j21.Eta(),j22.Eta(),j21.Phi(),j22.Phi());
+	  if(H.Pt()>0){
+             computeAngles(H, W1, j11, j12, W2, j21, j22, costheta1, costheta2, Phi, costhetastar, Phi1);
+             parton_dR_1 = DeltaRfun(j11.Eta(),j12.Eta(),j11.Phi(),j12.Phi());
+             parton_dR_2 = DeltaRfun(j21.Eta(),j22.Eta(),j21.Phi(),j22.Phi());
+          }
 
           if (triggerresultshelper_hcallasereventfilter2012!=0)
 	     hcallasereventfilter2012active=true;

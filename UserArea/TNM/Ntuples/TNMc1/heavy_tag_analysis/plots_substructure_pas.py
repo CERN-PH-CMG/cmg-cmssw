@@ -33,6 +33,7 @@ if __name__ == '__main__':
 	   "pt",
 	   "eta",
 	   "mass",
+	   "ungroomedmass",
 	   "massdrop",
 	   "massdrop_aftermass",
 	   "tau21",
@@ -61,6 +62,7 @@ if __name__ == '__main__':
            ("Jet1pt","((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600))","jet p_{T} (GeV)"),
            ("Jet1eta","((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600))","jet #eta"),
            ("Jet1Mass","((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600))","pruned jet mass (GeV)"),
+           ("Jet1UnGroomedMass","((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600))","jet mass (GeV)"),
            ("Jet1MassDrop","((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600))","mass drop"),
            ("Jet1MassDrop","((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600)&&(Jet1Mass>60)&&(Jet1Mass<100))","mass drop"),
            ("Jet1Nsub","((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600))","#tau_{2}/#tau_{1}", ),
@@ -119,6 +121,7 @@ if __name__ == '__main__':
 	   "pt",
 	   "eta",
 	   "mass",
+	   "ungroomedmass",
 	   "massdrop",
 	   "massdrop_aftermass",
 	   "tau21",
@@ -145,6 +148,7 @@ if __name__ == '__main__':
            ("Jet1pt","weight*vertexWeight*((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600))","jet p_{T} (GeV)"),
            ("Jet1eta","weight*vertexWeight*((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600))","jet #eta"),
            ("Jet1Mass","weight*vertexWeight*((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600))","pruned jet mass (GeV)"),
+           ("Jet1UnGroomedMass","weight*vertexWeight*((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600))","jet mass (GeV)"),
            ("Jet1MassDrop","weight*vertexWeight*((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600))","mass drop"),
            ("Jet1MassDrop","weight*vertexWeight*((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600)&&(Jet1Mass>60)&&(Jet1Mass<100))","mass drop"),
            ("Jet1Nsub","weight*vertexWeight*((abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600))","#tau_{2}/#tau_{1}", ),
@@ -176,10 +180,14 @@ if __name__ == '__main__':
              "substructure_pas_WWBulk1000.root",
              "substructure_pas_WWBulk2500.root",
              ]
-  colors=[1,1,2,2]
-  styles=[2,1,2,1]
-  widths=[1,2,1,2]
-  sets=[""]
+  #colors=[1,1,2,2]
+  #styles=[2,1,2,1]
+  #widths=[1,2,1,2]
+  #sets=[""]
+  colors=[1,1,4,4,2,2,6,6]
+  styles=[2,1,2,1,2,1,2,1]
+  widths=[1,1,2,2,1,1,2,2]
+  sets=["Gen",""]
 
  if runSet==4:
   samples = ["substructure_pas_QCD500.root",
@@ -290,6 +298,14 @@ if __name__ == '__main__':
 	   "costhetastar",
 	   "Phi1",
 	   ] + names
+
+ if runSet==9:
+  samples = ["substructure_pas_QCDHerwig.root",
+            ]
+  colors=[1,2]
+  styles=[2,3]
+  widths=[2,1]
+  sets=["gluon",""]
 
 
  results=[]
@@ -411,6 +427,9 @@ if __name__ == '__main__':
     if "pruned jet mass" in plot[2]:
        hist=TH1F(histname,histname,50,0,150);
        hist.GetYaxis().SetRangeUser(0,50000)
+    if plot[2]== "jet mass (GeV)":
+       hist=TH1F(histname,histname,100,0,300);
+       hist.GetYaxis().SetRangeUser(0,50000)
     if plot[2]=="mass drop":
        hist=TH1F(histname,histname,20,0,1);
        hist.GetYaxis().SetRangeUser(0,60000)
@@ -425,7 +444,7 @@ if __name__ == '__main__':
     if gen=="lowPU":
         variable,cutstring=plot[0],plot[1]+"&&(nPU<17)"
     elif runSet==3 and (s==3 or s==4 or s==6):
-        variable,cutstring=plot[0],plot[1].replace("&&(Jet1pt>400)&&(Jet1pt<600)","&&(Jet1pt>1100)&&(Jet1pt<1400)")
+        variable,cutstring=gen+plot[0],plot[1].replace("&&(Jet1pt>400)&&(Jet1pt<600)","&&(Jet1pt>1100)&&(Jet1pt<1400)")
     elif runSet==4 and (counter==1 or counter==3):
         variable,cutstring=plot[0],plot[1]+"&&(abs(Jet1eta)<1.0)"
     elif gen=="GenPt2":
@@ -449,7 +468,13 @@ if __name__ == '__main__':
     elif gen=="Gen":
         variable,cutstring=gen+plot[0],plot[1].replace("Jet",gen+"Jet").replace(gen+"Jet1genWcharge","Jet1genWcharge").replace("DijetMass","GenDijetMass").replace("deta","Gendeta")
     else:
-        variable,cutstring=gen+plot[0],plot[1].replace("Jet",gen+"Jet").replace(gen+"Jet1genWcharge","Jet1genWcharge")
+        variable,cutstring=plot[0],plot[1]
+    
+    if runSet==9 and gen=="gluon":
+        cutstring+="&&(Jet1quarkgluon==2)"
+    if runSet==9 and gen=="":
+        cutstring+="&&(Jet1quarkgluon==1)"
+
     print histname,variable,cutstring
     tree.Project(histname,variable,cutstring)
     if "QCD" in sample:
@@ -586,16 +611,20 @@ if __name__ == '__main__':
     if "Run" in sample and counter==0:
       legend.AddEntry(hist,"data","ple")
     if "QCD1000" in sample:
-      if gen=="Gen" or runSet==2 or ("pt" in names[plots.index(plot)] or "eta" in names[plots.index(plot)]):
-        legend.AddEntry(hist,"QCD MG+Pythia6","l")
-      elif runSet==3 and counter==0:
+      if runSet==3 and counter==0:
         legend.AddEntry(hist,"QCD 400 < p_{T} < 600 GeV","l")
-      elif runSet==3 and counter==1:
+      elif runSet==3 and counter==2:
         legend.AddEntry(hist,"QCD 1.1 < p_{T} < 1.4 TeV","l")
+      elif gen=="Gen" or runSet==2 or ("pt" in names[plots.index(plot)] or "eta" in names[plots.index(plot)]):
+        legend.AddEntry(hist,"QCD MG+Pythia6","l")
       elif runSet==4 and counter==0:
         legend.AddEntry(hist,"QCD |#eta| < 2.4","l")
       elif runSet==4 and counter==1:
         legend.AddEntry(hist,"QCD |#eta| < 1.0","l")
+      elif runSet==9 and counter==0:
+        legend.AddEntry(hist,"qluon","l")
+      elif runSet==9 and counter==1:
+        legend.AddEntry(hist,"quark","l")
       elif gen=="lowPU":
         legend.AddEntry(hist," + <PU>=12 + sim.","l")
       elif gen=="GenPt2":
@@ -603,13 +632,18 @@ if __name__ == '__main__':
       else:
         legend.AddEntry(hist," + <PU>=22 + sim.","l")
     if "QCDHerwig" in sample:
+      if runSet==9 and counter==0:
+        legend.AddEntry(hist,"qluon","l")
+      elif runSet==9 and counter==1:
+        legend.AddEntry(hist,"quark","l")
+      else:
         legend.AddEntry(hist,"QCD Herwig++","l")
     if "QCDPythia8" in sample:
         legend.AddEntry(hist,"QCD Pythia8","l")
     if "WWBulk" in sample or "WWPy6" in sample:
-      if runSet==3 and "1000" in sample:
+      if runSet==3 and counter==4:
         legend.AddEntry(hist,"W_{L} 400 < p_{T} < 600 GeV","l")
-      elif runSet==3 and "2500" in sample:
+      elif runSet==3 and counter==6:
         legend.AddEntry(hist,"W_{L} 1.1 < p_{T} < 1.4 TeV","l")
       elif runSet==4 and counter==0:
         legend.AddEntry(hist,"W_{L} |#eta| < 2.4","l")

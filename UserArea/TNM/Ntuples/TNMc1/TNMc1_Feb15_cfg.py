@@ -1,4 +1,4 @@
-#$Revision: 1.27 $
+#$Revision: 1.28 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -23,12 +23,13 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 # Run on MC or data
 
 runOnMC = True
-runPATCMG = False
+runPATCMG = True
 recalibrateCMGJets = False
 runAK7jets = False
 runPrunedAK7jets = False
 runCA8jets = True
 runAK5genjets = True
+runPrunedAK5jets = True
 runQJets = False
 runOnVVtuples = False
 runOnCMGp = False
@@ -164,6 +165,22 @@ replaceSrc( process.PATCMGJetCHSSequence, 'ak5PFJets', 'ak5PFJetsCHS')
 replaceSrc( process.PATCMGJetCHSSequence, 'particleFlow', 'pfNoPileUp')
 process.patJetCorrFactorsCHS.payload = 'AK5PFchs'
 process.selectedPatJetsCHS.cut = 'pt()>10'
+
+#### Adding AK5 pruned jets
+
+process.load("Ntuples.TNMc1.PAT_ak5jets_cff")
+if not runPATCMG:
+    process.patJetsCA8CHSpruned.addBTagInfo=False
+    process.patJetsCA8CHSpruned.addDiscriminators=False
+    process.PATCMGJetSequenceCA8CHSpruned.remove(process.btaggingCA8CHSpruned)
+    process.patJetsCA8CHSprunedSubjets.addBTagInfo=False
+    process.patJetsCA8CHSprunedSubjets.addDiscriminators=False
+    process.PATCMGJetSequenceCA8CHSpruned.remove(process.btaggingCA8CHSprunedSubjets)
+if not runOnMC:
+    process.PATCMGJetSequenceCA8CHSpruned.remove( process.jetMCSequenceCA8CHSpruned )
+    process.patJetsCA8CHSpruned.addGenJetMatch = False
+    process.patJetsCA8CHSpruned.addGenPartonMatch = False
+    process.patJetCorrFactorsCA8CHSpruned.levels.append('L2L3Residual')
 
 #### Adding AK7 jets
 
@@ -315,6 +332,8 @@ process.tnmc1 += process.razorMJObjectSequence
 if runOnMC==True:
     process.tnmc1 += process.susyGenSequence
     process.tnmc1 += process.vertexWeightSummer12MC53X2012ABCDData
+if runPrunedAK5jets:
+    process.tnmc1 += process.PATCMGJetSequenceAK5CHSpruned
 if runAK7jets:
     process.tnmc1 += process.PATCMGJetSequenceAK7CHS+process.selectedPatJetsAK7CHSwithNsub+process.selectedPatJetsAK7CHSwithQjets
 if runPrunedAK7jets:
