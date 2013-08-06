@@ -1,4 +1,4 @@
-#$Revision: 1.28 $
+#$Revision: 1.29 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -23,7 +23,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 # Run on MC or data
 
 runOnMC = True
-runPATCMG = True
+runPATCMG = False
 recalibrateCMGJets = False
 runAK7jets = False
 runPrunedAK7jets = False
@@ -51,8 +51,10 @@ else:
     dataset_files = 'patTuple.*root'
 
 if runPATCMG:
-    dataset_user = 'cmgtools_group' 
-    dataset_name = '/RSGravitonToWW_kMpl01_M-1000_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B'
+    #dataset_user = 'cmgtools_group' 
+    #dataset_name = '/RSGravitonToWW_kMpl01_M-1000_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B'
+    dataset_user = 'CMS' 
+    dataset_name = '/JetHT/Run2012D-22Jan2013-v1/AOD'
     dataset_files = '.*root'
 
 from CMGTools.Production.datasetToSource import *
@@ -170,17 +172,17 @@ process.selectedPatJetsCHS.cut = 'pt()>10'
 
 process.load("Ntuples.TNMc1.PAT_ak5jets_cff")
 if not runPATCMG:
-    process.patJetsCA8CHSpruned.addBTagInfo=False
-    process.patJetsCA8CHSpruned.addDiscriminators=False
-    process.PATCMGJetSequenceCA8CHSpruned.remove(process.btaggingCA8CHSpruned)
-    process.patJetsCA8CHSprunedSubjets.addBTagInfo=False
-    process.patJetsCA8CHSprunedSubjets.addDiscriminators=False
-    process.PATCMGJetSequenceCA8CHSpruned.remove(process.btaggingCA8CHSprunedSubjets)
+    process.patJetsAK5CHSpruned.addBTagInfo=False
+    process.patJetsAK5CHSpruned.addDiscriminators=False
+    process.PATCMGJetSequenceAK5CHSpruned.remove(process.btaggingAK5CHSpruned)
+    process.patJetsAK5CHSprunedSubjets.addBTagInfo=False
+    process.patJetsAK5CHSprunedSubjets.addDiscriminators=False
+    process.PATCMGJetSequenceAK5CHSpruned.remove(process.btaggingAK5CHSprunedSubjets)
 if not runOnMC:
-    process.PATCMGJetSequenceCA8CHSpruned.remove( process.jetMCSequenceCA8CHSpruned )
-    process.patJetsCA8CHSpruned.addGenJetMatch = False
-    process.patJetsCA8CHSpruned.addGenPartonMatch = False
-    process.patJetCorrFactorsCA8CHSpruned.levels.append('L2L3Residual')
+    process.PATCMGJetSequenceAK5CHSpruned.remove( process.jetMCSequenceAK5CHSpruned )
+    process.patJetsAK5CHSpruned.addGenJetMatch = False
+    process.patJetsAK5CHSpruned.addGenPartonMatch = False
+    process.patJetCorrFactorsAK5CHSpruned.levels.append('L2L3Residual')
 
 #### Adding AK7 jets
 

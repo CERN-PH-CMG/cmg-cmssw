@@ -710,10 +710,6 @@ int main(int argc, char** argv)
   bool datafiltersactive=false;
 
 
-  lepdecay0 = 0;
-  lepdecay1 = 0;
-  lepdecay2 = 0;
-
   for(int entry=0; entry < nevents; ++entry)
 	{
 	  // Read event into memory

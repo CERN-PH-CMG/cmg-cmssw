@@ -111,5 +111,7 @@
 
 <library name="Passed" file="Passed.cc">
 </library>
+<library name="BoostedJetMerger" file="BoostedJetMerger.cc">
+</library>
 <library name="Passed" file="HcalLaserEventFilter2012.cc">
 </library>
