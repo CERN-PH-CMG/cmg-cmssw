@@ -52,8 +52,13 @@ ZAna = cfg.Analyzer(
 ZtreeProducer = cfg.Analyzer(
     'ZTreeProducer'
     )
+genAna = cfg.Analyzer(
+    'GenParticleAnalyzerFSR',
+    src = 'genParticlesPruned'
+    )
 
 sequence = cfg.Sequence( [
+    genAna,
     jsonAna,
     triggerAna,
     vertexAna,

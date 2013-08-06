@@ -3,10 +3,8 @@ import os
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
 from CMGTools.WMass.triggerMap import pathsAndFilters
-#from CMGTools.WMass.analyzers.WAnalyzer import WAnalyzer
-#from CMGTools.WMass.analyzers.ZAnalyzer_notrig import ZAnalyzer_notrig
 import FWCore.ParameterSet.Config as cms
-
+import glob
 jsonAna = cfg.Analyzer(
     'JSONAnalyzer',
     )
@@ -56,22 +54,21 @@ ZtreeProducer = cfg.Analyzer(
     'ZTreeProducer'
     )
 
-
-fsrWeight = cms.EDProducer("FSRWeightProducer",
-
-      #help(cms.EDProducer),
-      #GenTag = cms.untracked.InputTag("genParticles"),
-)
+genAna = cfg.Analyzer(
+    'GenParticleAnalyzerFSR',
+    src = 'genParticlesPruned'
+    )
 
 
 sequence = cfg.Sequence( [
+
+    genAna,
     jsonAna,
     triggerAna,
     vertexAna,
     WAna,
    # WtreeProducer,
     ZAna,
-    fsrWeight,
     ZtreeProducer
    ] )
 
