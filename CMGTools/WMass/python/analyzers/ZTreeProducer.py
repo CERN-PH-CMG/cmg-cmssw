@@ -1,9 +1,12 @@
+import numpy as my_n
 import math
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.H2TauTau.proto.analyzers.ntuple import *
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton, Muon, Electron
 from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
 from CMGTools.RootTools.physicsobjects.PileUpSummaryInfo import PileUpSummaryInfo
+#from ZAnalyzer import testLegID
+
 
 def var( tree, varName, type=float ):
     tree.var(varName, type)
@@ -17,6 +20,57 @@ def bookParticle( tree, pName ):
     var(tree, '{pName}_phi'.format(pName=pName))
     var(tree, '{pName}_mass'.format(pName=pName))
     var(tree, '{pName}_charge'.format(pName=pName))
+
+def bookJetCollections( tree, pName ):
+    var(tree, '{pName}_number'.format(pName=pName),int)
+    tree.vars['{pName}_pt'.format(pName=pName)]= my_n.zeros(10, dtype=float)
+    tree.tree.Branch('{pName}_pt'.format(pName=pName),tree.vars['{pName}_pt'.format(pName=pName)] ,'{pName}_pt'.format(pName=pName)+'[10]/D' )
+    tree.vars['{pName}_eta'.format(pName=pName)]= my_n.zeros(10, dtype=float)
+    tree.tree.Branch('{pName}_eta'.format(pName=pName),tree.vars['{pName}_eta'.format(pName=pName)] ,'{pName}_eta'.format(pName=pName)+'[10]/D' )
+    tree.vars['{pName}_phi'.format(pName=pName)]= my_n.zeros(10, dtype=float)
+    tree.tree.Branch('{pName}_phi'.format(pName=pName),tree.vars['{pName}_phi'.format(pName=pName)] ,'{pName}_phi'.format(pName=pName)+'[10]/D' )
+
+def bookLeptonCollections( tree, pName ):
+    var(tree, '{pName}_number'.format(pName=pName),int)
+   
+    tree.vars['{pName}_charge'.format(pName=pName)]= my_n.zeros(10, dtype=float)
+    tree.tree.Branch('{pName}_charge'.format(pName=pName),tree.vars['{pName}_charge'.format(pName=pName)] ,'{pName}_charge'.format(pName=pName)+'[10]/D' )
+    tree.vars['{pName}_ID'.format(pName=pName)]= my_n.zeros(10, dtype=float)
+    tree.tree.Branch('{pName}_ID'.format(pName=pName),tree.vars['{pName}_ID'.format(pName=pName)] ,'{pName}_ID'.format(pName=pName)+'[10]/D' )
+    tree.vars['{pName}_Iso'.format(pName=pName)]= my_n.zeros(10, dtype=float)
+    tree.tree.Branch('{pName}_Iso'.format(pName=pName),tree.vars['{pName}_Iso'.format(pName=pName)] ,'{pName}_Iso'.format(pName=pName)+'[10]/D' )
+    tree.vars['{pName}_IsPromt'.format(pName=pName)]= my_n.zeros(10, dtype=float)
+    tree.tree.Branch('{pName}_IsPromt'.format(pName=pName),tree.vars['{pName}_IsPromt'.format(pName=pName)] ,'{pName}_IsPromt'.format(pName=pName)+'[10]/D' )
+    tree.vars['{pName}_IsTrig'.format(pName=pName)]= my_n.zeros(10, dtype=float)
+    tree.tree.Branch('{pName}_IsTrig'.format(pName=pName),tree.vars['{pName}_IsTrig'.format(pName=pName)] ,'{pName}_IsTrig'.format(pName=pName)+'[10]/D' )
+    tree.vars['{pName}_pt'.format(pName=pName)]= my_n.zeros(10, dtype=float)
+    tree.tree.Branch('{pName}_pt'.format(pName=pName),tree.vars['{pName}_pt'.format(pName=pName)] ,'{pName}_pt'.format(pName=pName)+'[10]/D' )
+    tree.vars['{pName}_eta'.format(pName=pName)]= my_n.zeros(10, dtype=float)
+    tree.tree.Branch('{pName}_eta'.format(pName=pName),tree.vars['{pName}_eta'.format(pName=pName)] ,'{pName}_eta'.format(pName=pName)+'[10]/D' )
+    tree.vars['{pName}_phi'.format(pName=pName)]= my_n.zeros(10, dtype=float)
+    tree.tree.Branch('{pName}_phi'.format(pName=pName),tree.vars['{pName}_phi'.format(pName=pName)] ,'{pName}_phi'.format(pName=pName)+'[10]/D' )
+    #  tree.vars['{pName}_Zmatch'.format(pName=pName)]= my_n.zeros(10, dtype=int)
+    #  tree.tree.Branch('{pName}_Zmatch'.format(pName=pName),tree.vars['{pName}_Zmatch'.format(pName=pName)] ,'{pName}_Zmatch'.format(pName=pName)+'[10]/I' )
+
+
+def bookElectrons( tree, pName ):
+    var(tree, '{pName}_number'.format(pName=pName),int)
+    tree.vars['{pName}_pt'.format(pName=pName)]= my_n.zeros(10, dtype=float)
+    tree.tree.Branch('{pName}_pt'.format(pName=pName),tree.vars['{pName}_pt'.format(pName=pName)] ,'{pName}_pt'.format(pName=pName)+'[10]/D' )
+    tree.vars['{pName}_eta'.format(pName=pName)]= my_n.zeros(10, dtype=float)
+    tree.tree.Branch('{pName}_eta'.format(pName=pName),tree.vars['{pName}_eta'.format(pName=pName)] ,'{pName}_eta'.format(pName=pName)+'[10]/D' )
+    tree.vars['{pName}_phi'.format(pName=pName)]= my_n.zeros(10, dtype=float)
+    tree.tree.Branch('{pName}_phi'.format(pName=pName),tree.vars['{pName}_number'.format(pName=pName)] ,'{pName}_phi'.format(pName=pName)+'[10]/D' )
+    tree.vars['{pName}_TightID'.format(pName=pName)]= my_n.zeros(10, dtype=float)
+    tree.tree.Branch('{pName}_TightID'.format(pName=pName),tree.vars['{pName}_TightID'.format(pName=pName)] ,'{pName}_TightID'.format(pName=pName)+'[10]/D' )
+    tree.vars['{pName}_TightIso'.format(pName=pName)]= my_n.zeros(10, dtype=float)
+    tree.tree.Branch('{pName}_TightIso'.format(pName=pName),tree.vars['{pName}_TightIso'.format(pName=pName)] ,'{pName}_TightIso'.format(pName=pName)+'[10]/D' )
+    tree.vars['{pName}_charge'.format(pName=pName)]= my_n.zeros(10, dtype=float)
+    tree.tree.Branch('{pName}_charge'.format(pName=pName),tree.vars['{pName}_charge'.format(pName=pName)] ,'{pName}_charge'.format(pName=pName)+'[10]/D' )
+    tree.vars['{pName}_IsPromt'.format(pName=pName)]= my_n.zeros(10, dtype=float)
+    tree.tree.Branch('{pName}_IsPromt'.format(pName=pName),tree.vars['{pName}_IsPromt'.format(pName=pName)] ,'{pName}_IsPromt'.format(pName=pName)+'[10]/D' )
+
+
 
 def bookW( tree, pName ):
     var(tree, '{pName}_pt'.format(pName=pName))
@@ -63,7 +117,44 @@ def fillJet( tree, pName, particle ):
     fill(tree, '{pName}_eta'.format(pName=pName), particle.eta() )
     fill(tree, '{pName}_phi'.format(pName=pName), particle.phi() )
 
+def fillJets( tree, pName, particles ):
+    fill(tree, '{pName}_number'.format(pName=pName),len(particles))
+    for i in range(0, min(len(particles),9)):
+        tree.vars['{pName}_pt'.format(pName=pName)][i] = particles[i].pt()
+        tree.vars['{pName}_eta'.format(pName=pName)][i] = particles[i].eta()
+        tree.vars['{pName}_phi'.format(pName=pName)][i] = particles[i].phi()
 
+def fillMuons( tree, pName, particles , event):
+    fill(tree, '{pName}_number'.format(pName=pName),len(particles))
+    for i in range(0, min(len(particles),9)):
+        
+        tree.vars['{pName}_pt'.format(pName=pName)][i] = particles[i].pt()
+        tree.vars['{pName}_eta'.format(pName=pName)][i] = particles[i].eta()
+        tree.vars['{pName}_phi'.format(pName=pName)][i] = particles[i].phi()
+        tree.vars['{pName}_charge'.format(pName=pName)][i] = float(particles[i].charge())
+        tree.vars['{pName}_ID'.format(pName=pName)][i] = event.ZallMuonsID[i]
+        tree.vars['{pName}_Iso'.format(pName=pName)][i] = particles[i].relIso(0.5)
+        tree.vars['{pName}_IsTrig'.format(pName=pName)][i] = int(event.ZallMuonsTrig[i])
+def fillMuonsGen( tree, pName, particles , event):
+    for i in range(0, min(len(particles),9)):
+        #print i, ' len ', len(particles)
+        tree.vars['{pName}_IsPromt'.format(pName=pName)][i] = event.ZallMuonsMatched[i]
+
+def fillElectrons( tree, pName, particles,event ):
+    fill(tree, '{pName}_number'.format(pName=pName),len(particles))
+    for i in range(0, min(len(particles),10)):
+        tree.vars['{pName}_pt'.format(pName=pName)][i] = particles[i].pt()
+        tree.vars['{pName}_eta'.format(pName=pName)][i] = particles[i].eta()
+        tree.vars['{pName}_phi'.format(pName=pName)][i] = particles[i].phi()
+        tree.vars['{pName}_TightID'.format(pName=pName)][i] = event.ZElTightID[i]
+        tree.vars['{pName}_TightIso'.format(pName=pName)][i] = event.ZElTightIso[i]
+        tree.vars['{pName}_charge'.format(pName=pName)][i] = particles[i].charge()
+
+
+
+def fillElectronsGen(tree, pName, particles,event ):
+    for i in range(0, min(len(particles),10)):
+        tree.vars['{pName}_IsPromt'.format(pName=pName)][i] = event.ZElIsPromt[i] 
 
 class ZTreeProducer( TreeAnalyzerNumpy ):
     
@@ -147,6 +238,8 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
       var(tr, 'MuPosTrg', int)
       var(tr, 'MuPosIsTightAndIso', int)
       var(tr, 'MuPosIsTight', int)
+      var(tr, 'MuPosMatchCMGmuon', int)
+      var(tr, 'MuPos_dz')
       bookParticle(tr, 'MuPosGen')
       bookParticle(tr, 'MuPosGenStatus1')
       # var(tr, 'MuPosGen_pdgId', int)
@@ -157,20 +250,55 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
       var(tr, 'MuNegTrg', int)
       var(tr, 'MuNegIsTightAndIso', int)
       var(tr, 'MuNegIsTight', int)
+      var(tr, 'MuNegMatchCMGmuon', int)
+      var(tr, 'MuNeg_dz')
+      var(tr, 'FSRWeight')
       bookParticle(tr, 'MuNegGen')
       bookParticle(tr, 'MuNegGenStatus1')
       # var(tr, 'MuNegGen_pdgId', int)
       var(tr, 'MuNegDRGenP')
       
       bookJet(tr, 'Jet_leading')
-       
+      #print 'booking stuff'
+      bookJetCollections(tr,'cmgjets' )
+      bookLeptonCollections(tr,'cmgmuons' )
+      bookElectrons(tr,'cmgelectrons' )
+     # print 'booked stuff'
+
     def process(self, iEvent, event):
 
         self.readCollections( iEvent )
         tr = self.tree
         tr.reset()
-                
+       # print 'ola'   
         # print 'event.savegenpZ= ',event.savegenpZ,' self.cfg_comp.isMC= ',self.cfg_comp.isMC,' event.ZGoodEvent= ',event.ZGoodEvent
+
+        fillMuons(tr, 'cmgmuons', event.ZallMuons, event)
+        fillElectrons( tr,'cmgelectrons' ,event.ZselElectrons ,event)
+        fillJets(tr, 'cmgjets', event.ZselJets)
+        fill( tr, 'run', event.run) 
+        fill( tr, 'lumi',event.lumi)
+        fill( tr, 'evt', event.eventId)
+        fill( tr, 'nvtx', len(self.handles['vertices'].product()))
+        
+        if (self.cfg_comp.isMC):
+            fill(tr, 'FSRWeight',event.fsrWeight)
+            event.pileUpInfo = map( PileUpSummaryInfo,
+                                    self.mchandles['pusi'].product() )
+            for puInfo in event.pileUpInfo:
+                if puInfo.getBunchCrossing()==0:
+                    fill( tr, 'npu', puInfo.nTrueInteractions())
+                # print 'puInfo.nTrueInteractions()= ',puInfo.nTrueInteractions()
+            event.generator = self.mchandles['generator'].product()
+            # print 'ZTreeProducer.py: ',event.generator.pdf().scalePDF,' ',event.generator.pdf().id.first,' ',event.generator.pdf().x.first,' ',event.generator.pdf().id.second,' ',event.generator.pdf().x.second
+            fill(tr, 'scalePDF',event.generator.pdf().scalePDF)
+            fill(tr, 'parton1_pdgId',event.generator.pdf().id.first)
+            fill(tr, 'parton1_x',event.generator.pdf().x.first)
+            fill(tr, 'parton2_pdgId',event.generator.pdf().id.second)
+            fill(tr, 'parton2_x',event.generator.pdf().x.second)
+            fillElectronsGen( tr,'cmgelectrons' ,event.ZselElectrons ,event) 
+            fillMuonsGen (tr, 'cmgmuons', event.ZallMuons, event)       
+        
         if (event.savegenpZ and self.cfg_comp.isMC):
                   
           fillZ(tr, 'ZGen', event.genZ[0].p4())
@@ -181,7 +309,7 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           fillParticle(tr, 'MuNegGen', event.genMuNeg[0])
           fillParticle(tr, 'MuNegGenStatus1', event.genMuNegStatus1[0])          
           fill(tr, 'MuNegDRGenP', event.muNegGenDeltaRgenP)
-          
+         
         if event.ZGoodEvent == True :
                                     
           fillZ(tr, 'Z', event.Z4V)
@@ -198,38 +326,29 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           fillParticle(tr, 'MuPos', event.BestZPosMuon)
           if ( event.BestZPosMuon.isGlobalMuon() or event.BestZPosMuon.isTrackerMuon() ) and event.passedVertexAnalyzer:
             fill(tr, 'MuPos_dxy', math.fabs(event.BestZPosMuon.dxy()))
+            fill(tr, 'MuPos_dz',event.BestZPosMuon.dz())
           fill(tr, 'MuPosRelIso', event.BestZPosMuon.relIso(0.5))
           fill(tr, 'MuPosTrg', event.BestZPosMuonHasTriggered)
           fill(tr, 'MuPosIsTightAndIso',event.BestZPosMuonIsTightAndIso)
           fill(tr, 'MuPosIsTight',event.BestZPosMuonIsTight)
+          fill(tr, 'MuPosMatchCMGmuon',event.BestZPosMatchIndex)
+
           fillParticle(tr, 'MuNeg', event.BestZNegMuon)
           if ( event.BestZNegMuon.isGlobalMuon() or event.BestZNegMuon.isTrackerMuon() ) and event.passedVertexAnalyzer:
             fill(tr, 'MuNeg_dxy', math.fabs(event.BestZNegMuon.dxy()))
+            fill(tr, 'MuNeg_dz',event.BestZNegMuon.dz())
           fill(tr, 'MuNegRelIso', event.BestZNegMuon.relIso(0.5))
           fill(tr, 'MuNegTrg', event.BestZNegMuonHasTriggered)
           fill(tr, 'MuNegIsTightAndIso',event.BestZNegMuonIsTightAndIso)
           fill(tr, 'MuNegIsTight',event.BestZNegMuonIsTight)
+          fill(tr, 'MuNegMatchCMGmuon',event.BestZNegMatchIndex)
+          
           
         if (event.savegenpZ and self.cfg_comp.isMC) or event.ZGoodEvent:
-          fill( tr, 'run', event.run) 
-          fill( tr, 'lumi',event.lumi)
-          fill( tr, 'evt', event.eventId)
-          fill( tr, 'nvtx', len(self.handles['vertices'].product()))
+       
+          
           fill( tr, 'njets', len(event.ZselJets))
-          if (self.cfg_comp.isMC) :
-            event.pileUpInfo = map( PileUpSummaryInfo,
-                                    self.mchandles['pusi'].product() )
-            for puInfo in event.pileUpInfo:
-              if puInfo.getBunchCrossing()==0:
-                fill( tr, 'npu', puInfo.nTrueInteractions())
-                # print 'puInfo.nTrueInteractions()= ',puInfo.nTrueInteractions()
-            event.generator = self.mchandles['generator'].product()
-            # print 'ZTreeProducer.py: ',event.generator.pdf().scalePDF,' ',event.generator.pdf().id.first,' ',event.generator.pdf().x.first,' ',event.generator.pdf().id.second,' ',event.generator.pdf().x.second
-            fill(tr, 'scalePDF',event.generator.pdf().scalePDF)
-            fill(tr, 'parton1_pdgId',event.generator.pdf().id.first)
-            fill(tr, 'parton1_x',event.generator.pdf().x.first)
-            fill(tr, 'parton2_pdgId',event.generator.pdf().id.second)
-            fill(tr, 'parton2_x',event.generator.pdf().x.second)
+         
                 
           fill( tr, 'nMuons', len(event.ZallMuons))
           fill( tr, 'nTrgMuons', len(event.ZselTriggeredMuons))
@@ -243,6 +362,6 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           fill(tr, 'pfmet_sumEt', event.pfmet.sumEt())
           if len(event.ZselJets)>0:
               fillJet(tr, 'Jet_leading', event.ZselJets[0])
-
-          self.tree.tree.Fill()
+        #print 'filling'  
+        self.tree.tree.Fill()
        
