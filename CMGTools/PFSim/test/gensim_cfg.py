@@ -20,8 +20,8 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 
 
 process.source = cms.Source("EmptySource")
-# process.load('CMGTools.PFSim.generators.ee_hzha')
-process.load('CMGTools.PFSim.generators.gun_cfi')
+process.load('CMGTools.PFSim.generators.ee_hzha')
+# process.load('CMGTools.PFSim.generators.gun_cfi')
 process.load('CMGTools.PFSim.genJets_cff')
 process.load('CMGTools.PFSim.pfsim_cff')
 

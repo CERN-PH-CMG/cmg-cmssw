@@ -59,7 +59,7 @@ TIME 30.
 * ALL numbers MUST be REAL !                 
 *                                            
 *    IKLEI IPROC XRAD  ECM  EMPIR  SM  ICAR  
-GENE   1.    1.   1.   240.  4.0    1.   2.  
+GENE   5.    1.   1.   350.  4.0    1.   2.  
 *
 ***********************************************************************
 * Standard Model Parameters
@@ -174,7 +174,7 @@ GGLU   800.
 * ALL numbers MUST be INTEGER !
 *                              
 *       hZ     HZ     hA     HA   WW->h   WW->H  ZZ->h  ZZ->H  H+H-  Hgamma
-PRYN     1      0      0      0     0       0      0      0     0      0
+PRYN     0      0      0      0     1       0      0      0     0      0
 ***********************************************************************
 * Z decays in e+e- --> hZ and HZ
 *    Channel #

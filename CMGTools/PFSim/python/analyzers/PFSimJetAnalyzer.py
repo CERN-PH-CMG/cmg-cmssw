@@ -49,9 +49,17 @@ class PFSimJetAnalyzer( Analyzer ):
         for jet in event.cleanGenJets:
             if hasattr(event, 'recJets'):
                 match(jet, event.recJets, 'rec')
+                response = jet.rec.pt()/jet.pt()
+                if response>0.98 and response<1.2:
+                    print '-'*50
+                    print jet.rec
+                    pfconstituents = jet.rec.getPFConstituents()
+                    for pfc in pfconstituents:
+                        print pfc.pt(), pfc.pdgId()
             match(jet, event.simJets, 'sim')
             match(jet, event.genParticles3, 'genPtc3')
-
+    
+        
         return True        
     
     def testJet( self, jet ):

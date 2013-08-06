@@ -11,7 +11,7 @@ from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
 from CMGTools.RootTools.utils.DeltaR import deltaR2
 
-from CMGTools.PFSim.particles import GenJet, Jet, SimJet, PFJet, Electron, Muon
+from CMGTools.PFSim.particles import GenJet, Jet, SimJet, PFJet, Electron, Muon, SimParticle
 from CMGTools.PFSim.detectors.models import CMS
 
 
@@ -35,6 +35,8 @@ class ObjectReader( Analyzer ):
         self.handles['genJets'] = AutoHandle( *self.cfg_ana.genJetCol )
         self.handles['simJets'] = AutoHandle( *self.cfg_ana.simJetCol )
         self.handles['genParticles'] = AutoHandle( *self.cfg_ana.genPartCol )
+        if self.cfg_ana.simPartCol:
+            self.handles['simParticles'] = AutoHandle( *self.cfg_ana.simPartCol )
 
     def beginLoop(self):
         super(ObjectReader,self).beginLoop()
@@ -71,7 +73,9 @@ class ObjectReader( Analyzer ):
         if self.cfg_ana.jetCol:
             event.recJets = map(PFJet, self.handles['recJets'].product() )
         event.simJets = map(SimJet, self.handles['simJets'].product() )
-
+        if self.cfg_ana.simPartCol:
+            event.simParticles = map(SimParticle, self.handles['simParticles'].product() )
+        
         # random.shuffle(event.jets)
  
         event.leptons = []

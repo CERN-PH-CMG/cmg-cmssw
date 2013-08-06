@@ -13,10 +13,17 @@ class ParticleWithP4(BaseParticle):
         self._p4 *= factor
 
 
+class SimParticle(ParticleWithP4):
+    def __init__(self, obj):
+        self.physObj = obj       
+        super(SimParticle,self).__init__(obj.p4(), obj.pdgId())
+##     def __getattr__(self, name):
+##         return getattr(self.physObj, name)
+        
+
 class GenJet(ParticleWithP4):
     def __init__(self, p4):
         super(GenJet,self).__init__(p4, 1)
-    
     
 
 class PFJet(ParticleWithP4):

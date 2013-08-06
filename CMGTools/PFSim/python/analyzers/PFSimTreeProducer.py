@@ -15,6 +15,8 @@ class PFSimTreeProducer( TreeAnalyzerNumpy ):
         tr = self.tree
 
         var( tr, 'nJets')
+        var( tr, 'simMissMass')
+        var( tr, 'simVisMass')
         bookGenJet(tr, 'jet1')
 
     def process(self, iEvent, event):
@@ -24,7 +26,10 @@ class PFSimTreeProducer( TreeAnalyzerNumpy ):
        
         nJets = len(event.cleanGenJets)
         fill(tr, 'nJets', len(event.cleanGenJets) )
-
+        if hasattr(event, 'simMissMass'):
+            fill(tr, 'simMissMass', event.simMissMass)
+            fill(tr, 'simVisMass', event.simVisMass)
+        
         if nJets>0:
             fillGenJet(tr, 'jet1', event.cleanGenJets[0] )
 

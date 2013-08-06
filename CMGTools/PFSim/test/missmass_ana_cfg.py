@@ -15,13 +15,13 @@ reader = cfg.Analyzer(
     muonCol = None,
     electronCol = None,
     # only if you have PFJets
-    # jetCol = None,
-    jetCol = ('ak5PFJets', 'std::vector<reco::PFJet>'),
+    jetCol = None,
+    # jetCol = ('ak5PFJets', 'std::vector<reco::PFJet>'),
     simJetCol = ('jets', 'std::vector<reco::LeafCandidate>'),
-    genJetCol = ('ak5GenJets', 'std::vector<reco::GenJet>'),
-    # genJetCol = ('genJets', 'std::vector<reco::LeafCandidate>'),
+    # genJetCol = ('ak5GenJets', 'std::vector<reco::GenJet>'),
+    genJetCol = ('genJets', 'std::vector<reco::LeafCandidate>'),
     genPartCol = ('genParticles', 'std::vector<reco::GenParticle>'),
-    simPartCol = None
+    simPartCol = ('pfsim', 'std::vector<reco::LeafCandidate>'),
     )
 
 
@@ -33,6 +33,10 @@ jetAna = cfg.Analyzer(
     relaxJetId = True, 
     )
 
+missMassAna = cfg.Analyzer(
+    'MissMassAnalyzer'
+    )
+
 treeProducer = cfg.Analyzer(
     'PFSimTreeProducer'
     )
@@ -40,22 +44,33 @@ treeProducer = cfg.Analyzer(
 
 ###############################################################################
 
-testComp = cfg.MCComponent(
-    name = 'Test',
-    files = ['sim.root'],
-    xSection = 1, 
-    nGenEvents = 1,
+# need cross-sections 
+
+ZH = cfg.MCComponent(
+    name = 'ZH',
+    files = ['zh_gensim.root'],
+    xSection = 0.131, 
+    nGenEvents = 20000,
     triggers = [],
     effCorrFactor = 1 )
-testComp.splitFactor = 1
+
+WWH = cfg.MCComponent(
+    name = 'WWH',
+    files = ['wwh_gensim.root'],
+    xSection = 0.0267, 
+    nGenEvents = 5000,
+    triggers = [],
+    effCorrFactor = 1 )
 
 
-selectedComponents = [testComp]  
+
+selectedComponents = [ZH]  
 
 sequence = cfg.Sequence( [
     # effAndSmear,
     reader,
     jetAna,
+    missMassAna,
     treeProducer
    ] )
 

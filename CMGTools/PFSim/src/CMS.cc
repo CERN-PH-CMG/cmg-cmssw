@@ -48,20 +48,26 @@ float PFSim::CMS::neutralHadronEfficiency(const HepMC::FourVector& mom) const {
   float energy = mom.e();
   float eta = mom.eta();
   float effvalue = 0.;
-  if (energy>5.0 && fabs(eta)<2.95)
+  if (energy>5.0 && fabs(eta)<5.0)
     effvalue = 1.0;
   return effvalue;
 }
 
 
 float PFSim::CMS::electronResolution(const HepMC::FourVector& mom) const {
-  float energy = mom.e();
-  return 0.03 / sqrt(energy);
+  // need to take into account the fact that the tracker is used to compute 
+  // the energy, thus improving resolution at low pT
+  // for now, same resolution for photons and electrons
+  return photonResolution( mom );
 }
 
 float PFSim::CMS::photonResolution(const HepMC::FourVector& mom) const {
   float energy = mom.e();
-  return 0.03 / sqrt(energy);
+  float stoch = 0.03 / sqrt(energy);
+  float noise = 0.12 / energy;
+  float constant = 0.003;
+  float relres = sqrt(stoch*stoch + noise*noise + constant*constant);
+  return stoch;
 }
 
 float PFSim::CMS::muonResolution(const HepMC::FourVector& mom) const {
@@ -69,7 +75,7 @@ float PFSim::CMS::muonResolution(const HepMC::FourVector& mom) const {
 }
 
 float PFSim::CMS::chargedHadronResolution(const HepMC::FourVector& mom) const {
-  return 0.01;
+  return 0.02;
 }
 
 float PFSim::CMS::neutralHadronResolution(const HepMC::FourVector& mom) const {
