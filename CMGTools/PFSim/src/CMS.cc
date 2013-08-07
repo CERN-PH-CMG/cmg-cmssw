@@ -67,7 +67,7 @@ float PFSim::CMS::photonResolution(const HepMC::FourVector& mom) const {
   float noise = 0.12 / energy;
   float constant = 0.003;
   float relres = sqrt(stoch*stoch + noise*noise + constant*constant);
-  return stoch;
+  return stoch; // only returning stochastic term for now, should return relres
 }
 
 float PFSim::CMS::muonResolution(const HepMC::FourVector& mom) const {
@@ -75,7 +75,7 @@ float PFSim::CMS::muonResolution(const HepMC::FourVector& mom) const {
 }
 
 float PFSim::CMS::chargedHadronResolution(const HepMC::FourVector& mom) const {
-  return 0.02;
+  return 0.013;
 }
 
 float PFSim::CMS::neutralHadronResolution(const HepMC::FourVector& mom) const {

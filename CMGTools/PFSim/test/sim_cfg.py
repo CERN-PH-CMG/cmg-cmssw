@@ -23,7 +23,7 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 process.source = cms.Source(
     'PoolSource',
 #    fileNames = cms.untracked.vstring( 'file:hzha_ZqqHbb_fastsim.root' )
-    fileNames = cms.untracked.vstring( 'file:gun_pip_fastsim_official.root' )
+    fileNames = cms.untracked.vstring( 'file:gun_gamma_fastsim_Aug7.root' )
     )
 
 
