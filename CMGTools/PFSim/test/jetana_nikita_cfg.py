@@ -15,13 +15,13 @@ reader = cfg.Analyzer(
     muonCol = None,
     electronCol = None,
     # only if you have PFJets
-    # jetCol = ('ak5PFJets', 'std::vector<reco::PFJet>'),
+    jetCol = ('ak5PFJets', 'std::vector<reco::PFJet>'),
     # comment above and uncomment below when doing gensim
-    jetCol = None,
+    # jetCol = None,
     simJetCol = ('jets', 'std::vector<reco::LeafCandidate>'),
-    # genJetCol = ('ak5GenJets', 'std::vector<reco::GenJet>'),
+    genJetCol = ('ak5GenJets', 'std::vector<reco::GenJet>'),
     # comment above and uncomment below when doing gensim
-    genJetCol = ('genJets', 'std::vector<reco::LeafCandidate>'),
+    # genJetCol = ('genJets', 'std::vector<reco::LeafCandidate>'),
     genPartCol = ('genParticles', 'std::vector<reco::GenParticle>'),
     simPartCol = ('pfsim', 'std::vector<reco::LeafCandidate>')
     )
@@ -43,7 +43,7 @@ treeProducer = cfg.Analyzer(
 
 testComp = cfg.MCComponent(
     name = 'Test',
-    files = ['gensim.root'],
+    files = ['sim.root'],
     xSection = 1, 
     nGenEvents = 1,
     triggers = [],

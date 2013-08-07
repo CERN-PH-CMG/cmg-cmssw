@@ -77,6 +77,7 @@ class ObjectReader( Analyzer ):
             event.simParticles = map(SimParticle, self.handles['simParticles'].product() )
 
         event.simMissMass = self.missingMass( event.simParticles )
+        event.simVisMass = -99
         # same for visible mass
         
         event.leptons = []

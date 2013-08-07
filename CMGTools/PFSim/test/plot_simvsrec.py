@@ -2,13 +2,13 @@ from CMGTools.RootTools.PyRoot import *
 from CMGTools.RootTools.HistComparator import HistComparator
 
 
-class ResolutionPlot(object):
-    def __init__(self, name, tree):
-        self.h2d = TH2F(name+'_h2d', '', 10, 20, 120, 20, 0, 2)
-        tree.Draw('jet1_pt/jet1gen_pt:jet1gen_pt>>'+self.h2d.GetName(),'abs(jet1gen_eta)<1.3','goff')
-        self.h2d.FitSlicesY()
-        self.hmean = gDirectory.Get(self.h2d.GetName()+'_1')
-        self.hsigma = gDirectory.Get(self.h2d.GetName()+'_2')
+## class ResolutionPlot(object):
+##     def __init__(self, name, tree):
+##         self.h2d = TH2F(name+'_h2d', '', 10, 20, 120, 20, 0, 2)
+##         tree.Draw('jet1_pt/jet1gen_pt:jet1gen_pt>>'+self.h2d.GetName(),'abs(jet1gen_eta)<1.3','goff')
+##         self.h2d.FitSlicesY()
+##         self.hmean = gDirectory.Get(self.h2d.GetName()+'_1')
+##         self.hsigma = gDirectory.Get(self.h2d.GetName()+'_2')
 
 
 class Comparison(HistComparator):
@@ -25,7 +25,7 @@ class Comparison(HistComparator):
 
     def buildHist(self, ext):
         hname = '_'.join([self.name,ext])
-        h = TH1F( hname, hname, 1000, 0.5, 1.5)
+        h = TH1F( hname, hname, 100, 0.5, 1.5)
         h.SetStats(0)
         h.SetXTitle('p_{T,rec}/p_{T,gen}')
         var = 'jet1_{ext}_pt/jet1_pt>>{hname}'.format(
@@ -33,6 +33,9 @@ class Comparison(HistComparator):
             )
         cut = 'abs(jet1_eta)<1. && jet1_pt>50'
         self.tree.Draw(var, cut,'goff')
+        h.Fit('gaus')
+        # need to fit in a given range around the main peak
+        # fun.SetLineColor( h.GetLineColor() ) 
         return h
 
 
@@ -43,3 +46,8 @@ chain = Chain(None, sys.argv[1])
 c1 = Comparison( 'c1', chain )
 c1.draw(simple=True)
 c1.save()
+
+fun = c1.hsim.GetFunction('gaus')
+amplitude = fun.GetParameter(0)
+mean = fun.GetParameter(1)
+sigma = fun.GetParameter(2)

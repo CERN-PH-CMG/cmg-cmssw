@@ -16,7 +16,7 @@ process.load("IOMC.RandomEngine.IOMC_cff")
 
 process.generator = cms.EDProducer("FlatRandomPtGunProducer",
     PGunParameters = cms.PSet(
-        MaxPt = cms.double(10.0),
+        MaxPt = cms.double(0),
         MinPt = cms.double(100.0),
         #NIKITA: see http://www.physics.ox.ac.uk/CDF/Mphys/old/notes/pythia_codeListing.html for pdgId listing. in particular:
         # 211: pi+
@@ -24,7 +24,7 @@ process.generator = cms.EDProducer("FlatRandomPtGunProducer",
         # 22: photon
         # 11: electron
         # 13: muon
-        PartID = cms.vint32(22),
+        PartID = cms.vint32(211),
         MaxEta = cms.double(1.0),
         MinEta = cms.double(-1.0),
         MaxPhi = cms.double(3.14159265359),
