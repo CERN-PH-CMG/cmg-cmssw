@@ -1,7 +1,6 @@
 from ROOT import TCanvas, TPad, TH1F, TLegend
 
 
-
 class HistComparator(object):
     '''Comparison of two histograms.
 
@@ -22,10 +21,19 @@ class HistComparator(object):
         name: will be used on the X axis.
         '''
         self.set(name, h1, h2, title1, title2)
-        self.can, self.pad_main, self.pad_ratio = self.buildCanvas()
+        # self.can, self.pad_main, self.pad_ratio = self.buildCanvas()
+        self.can = None
+        self.pad_main = None
+        self.pad_ratio = None
+        self.can_simple = None
+        self.simple_state = False
 
     def __del__(self):
+        self.closeCanvas()
+
+    def closeCanvas(self):
         self.can.Close()
+        self.can = None
         
     def set(self, name, h1, h2, title1=None, title2=None):
         '''Change the histograms, in case we want to keep the same canvas
@@ -46,39 +54,48 @@ class HistComparator(object):
         self.ratio = h1.Clone( '_'.join([name, 'ratio']))
         self.ratio.Divide(self.h2)
         self.ratio.SetStats(0)
-        
-    def draw(self):
+
+
+    def draw(self, simple=False):
         '''The canvas is created if needed.'''
+        # import pdb; pdb.set_trace()
+        if simple!=self.simple_state:
+             self.simple_state=simple
+             if self.can:
+                 self.closeCanvas()
         if type(self.can) is not TCanvas:
-            self.can, self.pad_main, self.pad_ratio = self.buildCanvas()
+            self.can, self.pad_main, self.pad_ratio = self.buildCanvas(simple)
         self.can.Draw()
-        self.pad_main.Draw()
-        self.pad_ratio.Draw()
-        self.pad_main.cd()
-        self.h2.Draw('e2')
+
+        if not simple:
+            self.pad_main.Draw()
+            self.pad_ratio.Draw()
+            self.pad_main.cd()
+        self.h2.Draw()
         self.h1.Draw('same')
         self.h2.GetYaxis().SetRangeUser(1e-3,
                                         self.ymax(self.h1, self.h2)*1.2)
         self.h2.GetYaxis().SetLabelSize(0.045)
         self.legend = TLegend(0.6, 0.7, 0.9, 0.9)
-        self.legend.AddEntry(self.h1, self.title1, 'lp')
+        self.legend.AddEntry(self.h1, self.title1, 'lpf')
         self.legend.AddEntry(self.h2, self.title2, 'lpf')
         self.legend.SetFillColor(0)
         self.legend.Draw('same')
-        self.pad_ratio.cd()
-        self.ratio.Draw()
-        self.ratio.GetYaxis().SetNdivisions(5)
-        self.ratio.GetYaxis().SetTitle('{t1}/{t2}'.format(t1=self.title1,
-                                                          t2=self.title2))
-        self.ratio.GetYaxis().SetTitleSize(0.1)
-        self.ratio.GetYaxis().SetTitleOffset(0.5)
-        self.ratio.GetXaxis().SetTitle('{xtitle}'.format(xtitle=self.name))
-        self.ratio.GetXaxis().SetTitleSize(0.13)
-        self.ratio.GetXaxis().SetTitleOffset(0.9)
-        rls = 0.075
-        self.ratio.GetYaxis().SetLabelSize(rls)
-        self.ratio.GetXaxis().SetLabelSize(rls)
-        self.ratio.GetYaxis().SetRangeUser(0.5, 1.5)
+        if not simple:
+            self.pad_ratio.cd()
+            self.ratio.Draw()
+            self.ratio.GetYaxis().SetNdivisions(5)
+            self.ratio.GetYaxis().SetTitle('{t1}/{t2}'.format(t1=self.title1,
+                                                              t2=self.title2))
+            self.ratio.GetYaxis().SetTitleSize(0.1)
+            self.ratio.GetYaxis().SetTitleOffset(0.5)
+            self.ratio.GetXaxis().SetTitle(self.h1.GetXaxis().GetTitle())
+            self.ratio.GetXaxis().SetTitleSize(0.13)
+            self.ratio.GetXaxis().SetTitleOffset(0.9)
+            rls = 0.075
+            self.ratio.GetYaxis().SetLabelSize(rls)
+            self.ratio.GetXaxis().SetLabelSize(rls)
+            self.ratio.GetYaxis().SetRangeUser(0.5, 1.5)
         self.can.Modified()
         self.can.Update()
         self.can.cd()
@@ -88,19 +105,22 @@ class HistComparator(object):
             fname = self.name
         self.can.SaveAs( self.name + '.png' )
 
-    def buildCanvas(self):
+    def buildCanvas(self, simple=False):
         can = TCanvas('can_{num}'.format(num=self.__class__.CAN_NUM),
                       self.name,600,600)
         self.__class__.CAN_NUM += 1
         can.cd()
         can.Draw()
-        sep = 0.35
-        pad = TPad('pad','',0.01,sep,0.99, 0.99)
-        pad.SetBottomMargin(0.04)
-        padr = TPad('padr','',0.01, 0.01, 0.99, sep+0.02)
-        padr.SetTopMargin(0.04)
-        padr.SetBottomMargin(0.3)
-        padr.SetGridy()
+        pad = None
+        padr = None
+        if not simple: 
+            sep = 0.35
+            pad = TPad('pad','',0.01,sep,0.99, 0.99)
+            pad.SetBottomMargin(0.04)
+            padr = TPad('padr','',0.01, 0.01, 0.99, sep+0.02)
+            padr.SetTopMargin(0.04)
+            padr.SetBottomMargin(0.3)
+            padr.SetGridy()
         return can, pad, padr
 
     def ymax(self, h1=None, h2=None):
