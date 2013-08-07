@@ -160,3 +160,29 @@ if not materialEffects:
     process.famosSimHits.MaterialEffects.NuclearInteraction = False
     process.famosSimHits.MaterialEffects.PairProduction = False
     process.famosSimHits.MaterialEffects.Bremsstrahlung = False
+    # I think we should keep dE/dx and multiple scattering
+
+
+## caloNoise = True
+## if not caloNoise:
+##     process.ecalRecHit.doMiscalib = True
+##     process.ecalRecHit.RecHitsFactory.ECALBarrel.Noise = cms.double(0)
+##     process.ecalRecHit.RecHitsFactory.ECALBarrel.Threshold = cms.double(0.001)
+##     process.ecalRecHit.RecHitsFactory.ECALBarrel.HighNoiseParameters = cms.vdouble()
+##     process.ecalRecHit.RecHitsFactory.ECALBarrel.SRThreshold = cms.double(0.0)
+
+##     process.ecalRecHit.RecHitsFactory.ECALEndcap.Noise = cms.double(0)
+##     process.ecalRecHit.RecHitsFactory.ECALEndcap.Threshold = cms.double(0.001)
+##     process.ecalRecHit.RecHitsFactory.ECALEndcap.SRThreshold = cms.double(0.0)
+##     process.ecalRecHit.RecHitsFactory.ECALEndcap.HighNoiseParameters = cms.vdouble()
+
+##     process.ecalPreshowerRecHit.RecHitsFactory.Noise = cms.double(0.000001)
+##     process.ecalPreshowerRecHit.RecHitsFactory.Threshold = cms.double(4.5e-10)
+
+##     process.hbhereco.doMiscalib = True
+##     process.horeco.doMiscalib = True
+##     process.hfreco.doMiscalib = True
+
+##     process.hbhereco.RecHitsFactory.HCAL.Noise = cms.vdouble(0, 0)
+##     process.horeco.RecHitsFactory.HCAL.Noise = cms.vdouble(0)
+##     process.hfreco.RecHitsFactory.HCAL.Noise = cms.vdouble(0)

@@ -21,9 +21,8 @@ reader = cfg.Analyzer(
     genJetCol = ('ak5GenJets', 'std::vector<reco::GenJet>'),
     # genJetCol = ('genJets', 'std::vector<reco::LeafCandidate>'),
     genPartCol = ('genParticles', 'std::vector<reco::GenParticle>'),
-    simPartCol = None
+    simPartCol = ('pfsim', 'std::vector<reco::LeafCandidate>')
     )
-
 
 jetAna = cfg.Analyzer(
     'PFSimJetAnalyzer',

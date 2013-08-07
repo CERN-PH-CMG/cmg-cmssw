@@ -75,10 +75,20 @@ class ObjectReader( Analyzer ):
         event.simJets = map(SimJet, self.handles['simJets'].product() )
         if self.cfg_ana.simPartCol:
             event.simParticles = map(SimParticle, self.handles['simParticles'].product() )
+
+        event.simMissMass = self.missingMass( event.simParticles )
+        # same for visible mass
         
-        # random.shuffle(event.jets)
- 
         event.leptons = []
         
         return True
-        
+
+
+    def missingMass(self, particles):
+        '''Here computing missing mass from the list of particles'''
+        pass
+
+    
+    def visibleMass(self, particles):
+        '''Here computing missing mass from the list of particles'''
+        pass
