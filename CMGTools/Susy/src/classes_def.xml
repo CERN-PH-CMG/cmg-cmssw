@@ -1,0 +1,9 @@
+<lcgdict>
+  <enum name="razor::Boxes"/>
+  
+  <class name="razor::RazorBox"/>
+  <class name="std::vector<razor::RazorBox>"/>
+  <class name="edm::Wrapper<razor::RazorBox>"/>
+  <class name="edm::Wrapper<std::vector<razor::RazorBox> >"/>
+  
+</lcgdict>

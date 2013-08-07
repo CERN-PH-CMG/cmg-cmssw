@@ -1,0 +1,23 @@
+cvs co -r V00-02-05     -d CMGTools/External  UserCode/CMG/CMGTools/External
+cvs co                  -d  CMGTools/HtoZZ2l2nu UserCode/CMG/CMGTools/HtoZZ2l2nu                             
+cvs co -r regression44x_Dec3 CondFormats/DataRecord                           
+cvs co -r V00-02-04      CondFormats/EgammaObjects                        
+cvs co -r V00-00-14      -d EGamma/EGammaAnalysisTools UserCode/EGamma/EGammaAnalysisTools
+cvs co -r V08-03-17      PhysicsTools/Utilities                           
+cvs co -r  regression_Dec3d RecoEgamma/EgammaTools                           
+cvs co -r V01-13-02 HiggsAnalysis/CombinedLimit
+cvs co -r simpleIVF_CMSSW533 RecoBTag/SecondaryVertex                         
+addpkg DataFormats/PatCandidates V06-05-01
+addpkg PhysicsTools/PatAlgos     V08-07-47
+addpkg PhysicsTools/PatUtils     V03-09-18-03
+addpkg CommonTools/ParticleFlow  V00-03-05-10
+cvs co -r V00-01 -d pharris/MVAMet UserCode/pharris/MVAMet
+cd pharris/MVAMet
+rm src/GBRTree.cxx
+rm src/GBRForest.cxx
+rm src/PHMetAnalysisLinkDef.h
+cd -
+
+
+cmsenv
+

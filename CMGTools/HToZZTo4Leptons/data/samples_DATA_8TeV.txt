@@ -1,0 +1,12 @@
+cmgtools%/DoubleElectron/Run2012A-22Jan2013-v1/AOD/PAT_CMG_V5_15_0
+cmgtools%/DoubleMu/Run2012A-22Jan2013-v1/AOD/PAT_CMG_V5_15_0
+cmgtools%/MuEG/Run2012A-22Jan2013-v1/AOD/PAT_CMG_V5_15_0
+cmgtools%/DoubleElectron/Run2012B-22Jan2013-v1/AOD/PAT_CMG_V5_15_0
+cmgtools%/DoubleMuParked/Run2012B-22Jan2013-v1/AOD/PAT_CMG_V5_15_0
+cmgtools%/MuEG/Run2012B-22Jan2013-v1/AOD/PAT_CMG_V5_15_0
+cmgtools%/DoubleElectron/Run2012C-22Jan2013-v1/AOD/PAT_CMG_V5_15_0
+cmgtools%/DoubleMuParked/Run2012C-22Jan2013-v1/AOD/PAT_CMG_V5_15_0
+cmgtools%/MuEG/Run2012C-22Jan2013-v1/AOD/PAT_CMG_V5_15_0
+cmgtools%/DoubleElectron/Run2012D-22Jan2013-v1/AOD/PAT_CMG_V5_15_0
+cmgtools%/DoubleMuParked/Run2012D-22Jan2013-v1/AOD/PAT_CMG_V5_15_0
+cmgtools%/MuEG/Run2012D-22Jan2013-v1/AOD/PAT_CMG_V5_15_0

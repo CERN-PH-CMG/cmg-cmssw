@@ -1,0 +1,5 @@
+20110214 JH
+The PYTHIA6_SUSY_LM*_sftsht_7TeV_cff.py files are all just copies of
+the official files in Configuration/GenProduction/python/. It's simply
+easier to have these files locally in the Susy package.
+

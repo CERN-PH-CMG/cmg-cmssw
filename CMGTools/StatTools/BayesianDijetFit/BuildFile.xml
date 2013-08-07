@@ -1,0 +1,14 @@
+<use   name="FWCore/Framework"/>
+<use   name="FWCore/Utilities"/>
+<use   name="FWCore/PluginManager"/>
+<use   name="FWCore/ParameterSet"/>
+<use   name="root"/>
+<use   name="rootrflx"/>
+<use   name="roofitcore"/>
+<use   name="roofit"/>
+<use   name="rootmath"/>
+<use   name="roostats"/>
+<export>
+  <use   name="root"/>
+  <lib   name="1"/>
+</export>

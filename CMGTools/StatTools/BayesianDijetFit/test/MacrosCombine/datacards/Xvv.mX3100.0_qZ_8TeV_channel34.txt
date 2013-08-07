@@ -1,0 +1,38 @@
+Combination of ch3=datacards/Xvv.mX3100.0_qZ_8TeV_channel3.txt, ch4=datacards/Xvv.mX3100.0_qZ_8TeV_channel4.txt
+imax 2 number of bins
+jmax 2 number of processes minus 1
+kmax 8 number of nuisance parameters
+----------------------------------------------------------------------------------------------------------------------------------
+shapes *         ch3       datacards/../workspaces/Xvv.inputbkg_8TeV.root w_all:$PROCESS_cat3
+shapes MggBkg    ch3       datacards/../workspaces/Xvv.inputbkg_8TeV.root w_all:CMS_hgg_bkg_8TeV_cat3
+shapes MggSigqW  ch3       datacards/../workspaces/Xvv.mX3100.0_qW_8TeV.inputsig.root w_all:CMS_hgg_qW_sig_cat3
+shapes MggSigqZ  ch3       datacards/../workspaces/Xvv.mX3100.0_qZ_8TeV.inputsig.root w_all:CMS_hgg_qZ_sig_cat3
+shapes *         ch4       datacards/../workspaces/Xvv.inputbkg_8TeV.root w_all:$PROCESS_cat4
+shapes MggBkg    ch4       datacards/../workspaces/Xvv.inputbkg_8TeV.root w_all:CMS_hgg_bkg_8TeV_cat4
+shapes MggSigqW  ch4       datacards/../workspaces/Xvv.mX3100.0_qW_8TeV.inputsig.root w_all:CMS_hgg_qW_sig_cat4
+shapes MggSigqZ  ch4       datacards/../workspaces/Xvv.mX3100.0_qZ_8TeV.inputsig.root w_all:CMS_hgg_qZ_sig_cat4
+----------------------------------------------------------------------------------------------------------------------------------
+bin          ch3       ch4     
+observation  333854.0  552334.0
+----------------------------------------------------------------------------------------------------------------------------------
+bin                              ch3       ch3       ch3       ch4       ch4       ch4     
+process                          MggSigqZ  MggSigqW  MggBkg    MggSigqZ  MggSigqW  MggBkg  
+process                          -1        0         1         -1        0         1       
+rate                             14.0950   0.0000    1.0000    9.0900    0.0000    1.0000  
+----------------------------------------------------------------------------------------------------------------------------------
+CMS_eff_vmass           lnN      1.099     1.093     -         1.099     1.093     -       
+CMS_eff_vtau            lnN      1.063     1.061     -         0.941     0.942     -       
+CMS_pu                  lnN      1.03      1.03      -         1.03      1.03      -       
+CMS_res_j               lnN      1.02      1.02      -         1.02      1.02      -       
+CMS_scale_j             lnN      1.06      1.06      -         1.06      1.06      -       
+lumi_8TeV               lnN      1.044     1.044     -         1.044     1.044     -       
+CMS_hgg_sig_sigmaScale  param  1 0.1
+CMS_hgg_sig_m0_absShift  param  1 0.022
+CMS_hgg_bkg_8TeV_slope2_cat3  flatParam
+CMS_hgg_bkg_8TeV_slope2_cat4  flatParam
+CMS_hgg_bkg_8TeV_cat3_norm  flatParam
+CMS_hgg_bkg_8TeV_slope3_cat4  flatParam
+CMS_hgg_bkg_8TeV_slope3_cat3  flatParam
+CMS_hgg_bkg_8TeV_cat4_norm  flatParam
+CMS_hgg_bkg_8TeV_slope1_cat4  flatParam
+CMS_hgg_bkg_8TeV_slope1_cat3  flatParam

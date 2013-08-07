@@ -1,0 +1,152 @@
+? EgammaAnalysis/ElectronTools/gio.patch
+? EgammaAnalysis/ElectronTools/interface/4913
+? EgammaAnalysis/ElectronTools/python/__init__.py
+Index: EgammaAnalysis/ElectronTools/interface/PatElectronEnergyCalibrator.h
+===================================================================
+RCS file: /local/reps/CMSSW/CMSSW/EgammaAnalysis/ElectronTools/interface/PatElectronEnergyCalibrator.h,v
+retrieving revision 1.6
+diff -u -r1.6 PatElectronEnergyCalibrator.h
+--- EgammaAnalysis/ElectronTools/interface/PatElectronEnergyCalibrator.h	25 Jan 2013 10:30:20 -0000	1.6
++++ EgammaAnalysis/ElectronTools/interface/PatElectronEnergyCalibrator.h	11 Mar 2013 13:42:32 -0000
+@@ -12,15 +12,23 @@
+ #include "Geometry/CaloTopology/interface/CaloTopology.h"
+ #include "FWCore/Framework/interface/ESHandle.h"
+ 
++class TRandom;
++
+ class ElectronEnergyCalibrator
+ {
+  public:
++  ElectronEnergyCalibrator() {} // dummy constructor needed for FWLite compatibility
++  ElectronEnergyCalibrator(std::string dataset, bool isAOD, bool isMC, bool updateEnergyError, int applyCorrections, double smearingRatio, bool verbose, bool synchronization, TRandom *standaloneRng=0) : dataset_(dataset),
++   isAOD_(isAOD), isMC_(isMC), updateEnergyError_(updateEnergyError), applyCorrections_(applyCorrections), smearingRatio_(smearingRatio), verbose_(verbose), synchronization_(synchronization),  standaloneRand_(standaloneRng) {}
++
++  /// Backwards-compatible
++  //  void correct(pat::Electron &, const edm::Event&, const edm::EventSetup&);
++  void correct(reco::GsfElectron &e, double r9,  const edm::Event& event, const edm::EventSetup& setup, double newRegEnergy = -9999. , double newRegEnergyError = -9999. ) {
++        correctLite(e, r9, event.run(), newRegEnergy, newRegEnergyError);
++  }
++  /// FWLite-compatible
++  void correctLite(reco::GsfElectron &, double r9,  unsigned int run, double newRegEnergy = -9999. , double newRegEnergyError = -9999. ) ;
+ 
+-  ElectronEnergyCalibrator(std::string dataset, bool isAOD, bool isMC, bool updateEnergyError, int applyCorrections, double smearingRatio, bool verbose, bool synchronization) : dataset_(dataset),
+-   isAOD_(isAOD), isMC_(isMC), updateEnergyError_(updateEnergyError), applyCorrections_(applyCorrections), smearingRatio_(smearingRatio), verbose_(verbose), synchronization_(synchronization) {}
+-
+-    //  void correct(pat::Electron &, const edm::Event&, const edm::EventSetup&);
+-  void correct(reco::GsfElectron &, double r9,  const edm::Event&, const edm::EventSetup&, double newRegEnergy = -9999. , double newRegEnergyError = -9999. );
+ 
+  private:
+ 
+@@ -46,7 +54,9 @@
+   double smearingRatio_;
+   bool verbose_;
+   bool synchronization_;
+-   
++  
++  TRandom* standaloneRand_;
++  double randGauss() ; 
+ };
+ 
+ #endif
+Index: EgammaAnalysis/ElectronTools/src/PatElectronEnergyCalibrator.cc
+===================================================================
+RCS file: /local/reps/CMSSW/CMSSW/EgammaAnalysis/ElectronTools/src/PatElectronEnergyCalibrator.cc,v
+retrieving revision 1.16
+diff -u -r1.16 PatElectronEnergyCalibrator.cc
+--- EgammaAnalysis/ElectronTools/src/PatElectronEnergyCalibrator.cc	25 Jan 2013 10:30:21 -0000	1.16
++++ EgammaAnalysis/ElectronTools/src/PatElectronEnergyCalibrator.cc	11 Mar 2013 13:42:32 -0000
+@@ -7,7 +7,7 @@
+ 
+ #include "EgammaAnalysis/ElectronTools/interface/PatElectronEnergyCalibrator.h"
+ 
+-
++#include <TRandom.h>
+ #include <CLHEP/Random/RandGaussQ.h>
+ #include <CLHEP/Random/RandFlat.h>
+ #include <CLHEP/Random/Random.h>
+@@ -29,8 +29,8 @@
+     correct(electron, electron.r9(), event , eventSetup, electron.ecalRegressionEnergy(), electron.ecalRegressionError());
+   }
+ */
+-void ElectronEnergyCalibrator::correct
+-( reco::GsfElectron & electron, double r9,  const edm::Event& event, const edm::EventSetup& eventSetup,double newEnergy, double newEnergyError) 
++void ElectronEnergyCalibrator::correctLite
++( reco::GsfElectron & electron, double r9, unsigned int run,  double newEnergy, double newEnergyError) 
+ 
+  {
+    newEnergy_ = newEnergy;
+@@ -59,7 +59,7 @@
+ 		//====================================================================================================
+ 		//TAKE THE SCALE CORRECTIONS FROM SHERVIN
+ 		//====================================================================================================
+-		  computeNewRegEnergy(electron, r9, event.run()) ;
++		  computeNewRegEnergy(electron, r9, run) ;
+ 		  // apply E-p combination
+ 		  computeEpCombination(electron) ;
+ 		  electron.correctMomentum(newMomentum_,errorTrackMomentum_,finalMomentumError_);
+@@ -109,7 +109,7 @@
+ 		  newEnergyError_ = electron.ecalEnergyError(); 
+ 		  
+ 		  // apply ECAL calibration scale and smearing factors depending on period and categories
+-		  computeNewEnergy(electron, r9, event.run()) ;
++		  computeNewEnergy(electron, r9, run) ;
+ 		  //electron.correctEcalEnergy(newEnergy_,newEnergyError_) ;
+                   
+ 		  // apply E-p combination
+@@ -133,6 +133,20 @@
+   }
+  }
+ 
++double ElectronEnergyCalibrator::randGauss() {
++   if (standaloneRand_) return standaloneRand_->Gaus(0.,1.);
++
++   edm::Service<edm::RandomNumberGenerator> rng;
++   if ( ! rng.isAvailable()) {
++     throw cms::Exception("Configuration")
++       << "XXXXXXX requires the RandomNumberGeneratorService\n"
++          "which is not present in the configuration file.  You must add the service\n"
++          "in the configuration file or remove the modules that require it.";
++   }
++   CLHEP::RandGaussQ gaussDistribution(rng->getEngine(), 0., 1.);
++   return gaussDistribution.fire();
++}
++ 
+ void ElectronEnergyCalibrator::computeNewRegEnergy
+  ( const reco::GsfElectron & electron, float r9, int run)
+ {
+@@ -439,8 +453,7 @@
+ 
+   if (!isMC_ ) newEnergy_ = newEnergy_*scale;
+   if (isMC_) {
+-    CLHEP::RandGaussQ gaussDistribution(rng->getEngine(), 1.,dsigMC);
+-    corrMC = gaussDistribution.fire();
++    corrMC = 1.0 + randGauss()*dsigMC;
+     if (verbose_) std::cout << "[ElectronEnergyCalibrator] unsmeared energy " << newEnergy_ << std::endl;
+     if (synchronization_) {newEnergy_ = newEnergy_*(1+dsigMC);} else {newEnergy_ = newEnergy_*corrMC; }
+     if (verbose_) std::cout << "[ElectronEnergyCalibrator] smeared energy " << newEnergy_ << std::endl;
+@@ -471,14 +484,7 @@
+   // Correction for the ReReco from R. paramatti et al. (private communication, AN in preparation)
+   // Corrections for PromptReco are run and R9 dependant, corrections for the ReReco are categories or EB+/EB-/EE+/EE- dependant
+   // Correction for MC is a gaussian smearing for the resolution, averaged from the results over the three periods
+-   edm::Service<edm::RandomNumberGenerator> rng;
+-   if ( ! rng.isAvailable()) {
+-     throw cms::Exception("Configuration")
+-       << "XXXXXXX requires the RandomNumberGeneratorService\n"
+-          "which is not present in the configuration file.  You must add the service\n"
+-          "in the configuration file or remove the modules that require it.";
+-   }
+-  
++ 
+   // data corrections 
+   if (!isMC_) {
+     // corrections for prompt
+@@ -964,8 +970,7 @@
+   if (!isMC_ && corr==0.) newEnergy_ = scEnergy*scale;
+   // smearing for MC
+   if (isMC_) {
+-    CLHEP::RandGaussQ gaussDistribution(rng->getEngine(), 1.,dsigMC);
+-    corrMC = gaussDistribution.fire();
++    corrMC = 1.0 + randGauss()*dsigMC;
+     if (verbose_) std::cout << "[ElectronEnergyCalibrator] unsmeared energy " << scEnergy << std::endl;
+     if (synchronization_) {newEnergy_ = newEnergy_*(1+dsigMC);} else {newEnergy_ = newEnergy_*corrMC; }
+     if (verbose_) std::cout << "[ElectronEnergyCalibrator] smeared energy " << newEnergy_ << std::endl;

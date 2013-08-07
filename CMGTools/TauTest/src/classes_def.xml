@@ -1,0 +1,11 @@
+<lcgdict>
+
+  <class name="TestPatTaus"/>
+  <class name="TestCMGTaus"/>
+  <class name="TestCMGElectrons"/>
+  <class name="TestCMGMuons"/>
+  <class name="TestTrig"/>
+  <class name="TestGenParticles"/>
+  <class name="TauEfficiencyPlot"/>
+
+</lcgdict>

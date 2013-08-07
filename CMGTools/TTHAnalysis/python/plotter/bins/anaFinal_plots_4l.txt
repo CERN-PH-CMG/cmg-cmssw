@@ -1,0 +1,65 @@
+minMllAFOS: minMllAFOS: 20,0,250 ; XTitle="min m(l^{+}l^{-}')  [GeV]"
+minMllAFSS: minMllAFSS: 40,0,400 ; XTitle="min m(l^{+/-}l^{+/-}')  [GeV]"
+maxMllAFOS: maxMllAFOS: 50,0,500 ; XTitle="max m(l^{+}l^{-}')  [GeV]"
+maxMllAFSS: maxMllAFSS: 50,0,500 ; XTitle="max m(l^{+/-}l^{+/-}')  [GeV]"
+
+minPtllAFOS: minPtllAFOS: 20,0,150 ; XTitle="min pT(l^{+}l^{-}')  [GeV]"
+minPtllAFSS: minPtllAFSS: 30,0,250 ; XTitle="min pT(l^{+/-}l^{+/-}')  [GeV]"
+maxPtllAFOS: maxPtllAFOS: 40,0,500 ; XTitle="min pT(l^{+}l^{-}')  [GeV]"
+maxPtllAFSS: maxPtllAFSS: 40,0,500 ; XTitle="min pT(l^{+/-}l^{+/-}')  [GeV]"
+
+minDrllAFOS: minDrllAFOS: 20,0,4 ; XTitle="min dR(l^{+}l^{-}')"
+minDrllAFSS: minDrllAFSS: 20,0,4 ; XTitle="min dR(l^{+/-}l^{+/-}')"
+maxDrllAFOS: maxDrllAFOS: 25,0,6 ; XTitle="max dR(l^{+}l^{-}')"
+maxDrllAFSS: maxDrllAFSS: 25,0,6 ; XTitle="max dR(l^{+/-}l^{+/-}')"
+
+nJet25 : nJet25 : [0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(jet\, p_{T} > 25)'
+m4l: m4l : 40,0,600; XTitle="m(l_{1}\,l_{2}\,l_{3}\,l_{4}) [GeV]",Logy, LegendCutoff=1e-3
+#m4l_log: m4l : 40,0,600; XTitle="m(l_{1}\,l_{2}\,l_{3}\,l_{4}) [GeV]"
+ht4l: ht4l : 40,0,600; XTitle="pT(l_{1}\,l_{2}\,l_{3}\,l_{4}) [GeV]"
+pt4l: pt4l : 30,0,400; XTitle="pT(l_{1}\,l_{2}\,l_{3}\,l_{4}) [GeV]"
+
+q4l: (LepGood1_charge + LepGood2_charge + LepGood3_charge + LepGood4_charge) : 7,-3,+3; XTitle="q(l_{1}\,l_{2}\,l_{3})",XNDiv=505
+mZ2: mZ2: 40,0,160 ; XTitle="second m(l^{+}l^{-})  [GeV]", Legend='TR'
+#mZ2_log: mZ2: 40,0,160 ; XTitle="second m(l^{+}l^{-})  [GeV]", Logy, LegendCutoff=1e-3
+
+#minMWjj_log: minMWjj: 50, 0, 500; XTitle="min m(Wjj) [GeV]",Logy, LegendCutoff=1e-3
+#minMWjjPt_log: minMWjjPt: 40, 0, 300; XTitle="min m(Wjj) pT [GeV]",Logy, LegendCutoff=1e-3
+
+#bestMWjj_log: bestMWjj: 40, 0, 200; XTitle="best m(Wjj) [GeV]",Logy, LegendCutoff=1e-3
+#bestMWjjPt_log: bestMWjjPt: 50, 0, 300; XTitle="best m(Wjj) pT [GeV]",Logy, LegendCutoff=1e-3
+
+#bestMTopHad_log: bestMTopHad: 60, 0, 500; XTitle="best m(TopHad) [GeV]",Logy,  LegendCutoff=1e-3
+#bestMTopHadPt_log: bestMTopHadPt: 60, 0, 500; XTitle="best m(TopHad) pT [GeV]",Logy, LegendCutoff=1e-3
+
+
+#minMWjj: minMWjj: 50, 0, 500; XTitle="min m(Wjj) [GeV]"
+#minMWjjPt: minMWjjPt: 40, 0, 300; XTitle="min m(Wjj) pT [GeV]"
+
+#bestMWjj: bestMWjj: 40, 0, 200; XTitle="best m(Wjj) [GeV]"
+#bestMWjjPt: bestMWjjPt: 50, 0, 300; XTitle="best m(Wjj) pT [GeV]"
+
+#bestMTopHad: bestMTopHad: 60, 0, 500; XTitle="best m(TopHad) [GeV]"
+#bestMTopHadPt: bestMTopHadPt: 60, 0, 500; XTitle="best m(TopHad) pT [GeV]"
+
+metLD: met*0.00397 + mhtJet25*0.00265 : 50,-0.1,1.4 ; XTitle="E_{T}^{miss} LD",  Legend='TR'
+#metLD_log: met*0.00397 + mhtJet25*0.00265 : 50,-0.1,1.4 ; XTitle="E_{T}^{miss} LD",Logy, LegendCutoff=1e-3,  Legend='TR'
+met: met: 40,0,300    ; XTitle="E_{T}^{miss}  [GeV]"
+#met_log: met: 40,0,300    ; XTitle="E_{T}^{miss}  [GeV]",Logy, LegendCutoff=1e-3
+
+#mcJetFlav: 6*( (abs(Jet1_mcFlavour)==5)*(abs(Jet2_mcFlavour)==5) ) +  \
+#           5*( (abs(Jet1_mcFlavour)==5)*(abs(Jet2_mcFlavour)==4) + (abs(Jet2_mcFlavour)==5)*(abs(Jet1_mcFlavour)==4) ) + \
+#           4*( (abs(Jet1_mcFlavour)==5)*(abs(Jet2_mcFlavour)!=5)*(abs(Jet2_mcFlavour)!=4) + (abs(Jet2_mcFlavour)==5)*(abs(Jet1_mcFlavour)!=5)*(abs(Jet1_mcFlavour)!=4) ) + \
+#           3*( (abs(Jet1_mcFlavour)==4)*(abs(Jet2_mcFlavour)==4) )+  \
+#           2*( (abs(Jet1_mcFlavour)==4)*(abs(Jet2_mcFlavour)!=5)*(abs(Jet2_mcFlavour)!=4) + (abs(Jet2_mcFlavour)==4)*(abs(Jet1_mcFlavour)!=5)*(abs(Jet1_mcFlavour)!=4) ) + \
+#           1*( (abs(Jet1_mcFlavour)!=4)*(abs(Jet1_mcFlavour)!=5)*(abs(Jet2_mcFlavour)!=5)*(abs(Jet2_mcFlavour)!=4) ) : [0.5,1.5,2.5,3.5,4.5,5.5,6.5]; XTitle="ll/cl/cc/bl/bc/bb"
+
+
+jet1pT: Jet1_pt : 50,20,300; XTitle="pT(Jet_{1}) [GeV]"
+jet2pT: Jet2_pt : 40,20,250; XTitle="pT(Jet_{2}) [GeV]"
+
+finalMVA: FinalMVA_4L_BDTG : 5,-1,1; XTitle="BDT output"
+#finalMVA_log: FinalMVA_4L_BDTG : 30, -1, 1; XTitle="BDT output",Logy, LegendCutoff=1e-3,  Legend='TR'
+
+#wzControlRegions: (nJet25 >= 2)*(nBJetLoose25 == 0)*(abs(mZ1-91.2) < 10) + 2*(nBJetLoose25 >= 2 || nBJetMedium25 >= 1)*(nJet25 >= 2)*(abs(mZ1-91.2) > 10): 3,-0.5,2.5; XTitle="unused/control/signal"
+#zzControlRegions: (nJet25 >= 1)*(nBJetLoose25 == 0)*(abs(mZ1-91.2) < 10) + 2*(nBJetLoose25 >= 2 || nBJetMedium25 >= 1)*(nJet25 >= 2)*(abs(mZ1-91.2) > 10): 3,-0.5,2.5; XTitle="unused/control/signal"

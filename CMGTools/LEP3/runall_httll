@@ -1,0 +1,9 @@
+# python -i ../RootTools/python/fwlite/MultiLoop.py httll analhttll_Hig125_cfg.py -N 10000 -p 0 -f
+# python -i ../RootTools/python/fwlite/MultiLoop.py httll analhttll_ZZ_cfg.py -N 10000 -p 0 -f
+# python -i ../RootTools/python/fwlite/MultiLoop.py httll analhttll_WW_cfg.py -N 10000 -p 0 -f
+# python -i ../RootTools/python/fwlite/MultiLoop.py httll analhttll_QQ_cfg.py -N 10000 -p 0 -f
+cmsenv
+python   ../RootTools/python/fwlite/MultiLoop.py httll analhttll_Hig125_cfg.py -N 10000000 -p 0 -f
+python   ../RootTools/python/fwlite/MultiLoop.py httll analhttll_ZZ_cfg.py -N 10000000 -p 0 -f
+python   ../RootTools/python/fwlite/MultiLoop.py httll analhttll_WW_cfg.py -N 10000000 -p 0 -f
+python   ../RootTools/python/fwlite/MultiLoop.py httll analhttll_QQ_cfg.py -N 10000000 -p 0 -f
