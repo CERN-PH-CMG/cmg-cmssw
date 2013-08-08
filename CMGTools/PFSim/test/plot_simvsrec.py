@@ -31,7 +31,8 @@ class Comparison(HistComparator):
         var = 'jet1_{ext}_pt/jet1_pt>>{hname}'.format(
             ext=ext, hname=hname
             )
-        cut = 'abs(jet1_eta)<1. && jet1_pt>50'
+        # cut = 'abs(jet1_eta)<1. && jet1_rec_n==1'
+        cut = 'abs(jet1_eta)<1. && jet1_rec_n==1'
         self.tree.Draw(var, cut,'goff')
         h.Fit('gaus')
         # need to fit in a given range around the main peak

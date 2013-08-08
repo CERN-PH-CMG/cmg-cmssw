@@ -13,29 +13,54 @@ process.DQMStore = cms.Service( "DQMStore")
 # Include the RandomNumberGeneratorService definition
 process.load("IOMC.RandomEngine.IOMC_cff")
 
+gen = 'pgun'
+# gen = 'jetgun'
 
-process.generator = cms.EDProducer("FlatRandomPtGunProducer",
-    PGunParameters = cms.PSet(
-        MaxPt = cms.double(0),
-        MinPt = cms.double(100.0),
-        #NIKITA: see http://www.physics.ox.ac.uk/CDF/Mphys/old/notes/pythia_codeListing.html for pdgId listing. in particular:
-        # 211: pi+
-        # 130: Kzero long (stable neutral hadron)
-        # 22: photon
-        # 11: electron
-        # 13: muon
-        PartID = cms.vint32(211),
-        MaxEta = cms.double(1.0),
-        MinEta = cms.double(-1.0),
-        MaxPhi = cms.double(3.14159265359),
-        MinPhi = cms.double(-3.14159265359)
-    ),
-    Verbosity = cms.untracked.int32(0),
-    AddAntiParticle = cms.bool(False),
-    firstRun = cms.untracked.uint32(1)
-)
+if gen == 'pgun':
+    process.generator = cms.EDProducer("FlatRandomPtGunProducer",
+        PGunParameters = cms.PSet(
+            MinPt = cms.double(0),
+            MaxPt = cms.double(100.0),
+            #NIKITA: see http://www.physics.ox.ac.uk/CDF/Mphys/old/notes/pythia_codeListing.html for pdgId listing. in particular:
+            # 211: pi+
+            # 130: Kzero long (stable neutral hadron)
+            # 22: photon
+            # 11: electron
+            # 13: muon
+            PartID = cms.vint32(211),
+            MaxEta = cms.double(1.0),
+            MinEta = cms.double(-1.0),
+            MaxPhi = cms.double(3.14159265359),
+            MinPhi = cms.double(-3.14159265359)
+        ),
+        Verbosity = cms.untracked.int32(0),
+        AddAntiParticle = cms.bool(False),
+        firstRun = cms.untracked.uint32(1)
+    )
+elif gen == 'jetgun':
+    process.generator = cms.EDProducer("Pythia6JetGun",
+        PGunParameters = cms.PSet(
+            ParticleID = cms.vint32(211, 22),
+            # this defines "absolute" energy spread of particles in the jet
+            MinE = cms.double(0.5),
+            MaxE = cms.double(2.0),
+            # the following params define the boost
+            MinP = cms.double(50.0),
+            MaxP = cms.double(50.0),
+            MinPhi = cms.double(-3.1415926535),
+            MaxPhi = cms.double(+3.1415926535),
+            MinEta = cms.double(-1.0),
+            MaxEta = cms.double(1.0)
+        ),
 
-
+        # no detailed pythia6 settings necessary    
+        PythiaParameters = cms.PSet(
+            parameterSets = cms.vstring()
+        )
+    )
+else:
+    print 'define a process.generator object.'
+    sys.exit(1)
 
 # --- This was for 2e30 :
 # process.load("Configuration.StandardSequences.L1TriggerDefaultMenu_cff")

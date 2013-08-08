@@ -13,6 +13,18 @@ class ParticleWithP4(BaseParticle):
         self._p4 *= factor
 
 
+class RecParticle(ParticleWithP4):
+    def __init__(self, obj):
+        self.physObj = obj       
+        super(RecParticle,self).__init__(obj.p4(), obj.pdgId())
+        
+
+class GenParticle(ParticleWithP4):
+    def __init__(self, obj):
+        self.physObj = obj       
+        super(GenParticle,self).__init__(obj.p4(), obj.pdgId())
+        
+
 class SimParticle(ParticleWithP4):
     def __init__(self, obj):
         self.physObj = obj       

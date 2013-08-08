@@ -18,6 +18,7 @@ class PFSimTreeProducer( TreeAnalyzerNumpy ):
         var( tr, 'simMissMass')
         var( tr, 'simVisMass')
         bookGenJet(tr, 'jet1')
+        bookGenParticle(tr, 'gen1')
 
     def process(self, iEvent, event):
         
@@ -33,6 +34,9 @@ class PFSimTreeProducer( TreeAnalyzerNumpy ):
         if nJets>0:
             fillGenJet(tr, 'jet1', event.cleanGenJets[0] )
 
+        nGen = len(event.genParticles)
+        if nGen>0:
+            fillGenParticle( tr, 'gen1', event.genParticles[0])
         
             
 # fill that with gen as a pivot. 

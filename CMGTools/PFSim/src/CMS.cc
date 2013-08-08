@@ -67,7 +67,9 @@ float PFSim::CMS::photonResolution(const HepMC::FourVector& mom) const {
   float noise = 0.12 / energy;
   float constant = 0.003;
   float relres = sqrt(stoch*stoch + noise*noise + constant*constant);
-  return stoch; // only returning stochastic term for now, should return relres
+
+  relres *= 4; // resolution ~ factor 4 worse in the fast sim... 
+  return relres; // only returning stochastic term for now, should return relres
 }
 
 float PFSim::CMS::muonResolution(const HepMC::FourVector& mom) const {

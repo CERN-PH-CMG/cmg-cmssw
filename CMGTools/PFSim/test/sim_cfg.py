@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+from CMGTools.Production.datasetToSource import datasetToSource
 
 process = cms.Process("SIM")
 
@@ -20,11 +21,21 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 )
 
 
-process.source = cms.Source(
-    'PoolSource',
-#    fileNames = cms.untracked.vstring( 'file:hzha_ZqqHbb_fastsim.root' )
-    fileNames = cms.untracked.vstring( 'file:test.root' )
-    )
+
+#NIKITA: to read a file locally
+## process.source = cms.Source(
+##     'PoolSource',
+##     fileNames = cms.untracked.vstring( 'file:gun_gamma_nomateff_fastsim_0to50_Aug8.root' )
+##     )
+
+# to read a file on eos (disk pool)
+# all done without material effects
+# FS211: charged hadrons
+# FS130: neutral hadrons
+# FS22: photons
+# PS12: neutrinos
+
+process.source = datasetToSource('cbern','/PFSim/FS211/Aug8_100k_pt0to100_MEoff','.*root')
 
 
 process.load('CMGTools.PFSim.pfsim_cff')

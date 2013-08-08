@@ -34,6 +34,10 @@ jetAna = cfg.Analyzer(
     relaxJetId = True, 
     )
 
+particleAna = cfg.Analyzer(
+    'ParticleAnalyzer'
+    )
+
 treeProducer = cfg.Analyzer(
     'PFSimTreeProducer'
     )
@@ -57,6 +61,7 @@ sequence = cfg.Sequence( [
     # effAndSmear,
     reader,
     jetAna,
+    particleAna,
     treeProducer
    ] )
 

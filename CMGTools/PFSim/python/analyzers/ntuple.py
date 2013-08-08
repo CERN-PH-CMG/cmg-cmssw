@@ -1,4 +1,6 @@
 #!/bin/env python
+from CMGTools.PFSim.analyzers.ParticleAnalyzer import pdgIds
+
 
 def var( tree, varName, type=float ):
     tree.var(varName, type)
@@ -21,25 +23,41 @@ def fillParticle( tree, pName, particle ):
     if hasattr( particle, 'dr'):
         fill(tree, '{pName}_dr'.format(pName=pName), particle.dr )
 
+def bookRecJet(tree, pName):
+    bookParticle(tree, pName)
+    var(tree, '{pName}_n'.format(pName=pName))
+    
+
+def fillRecJet( tree, pName, recjet):
+    fillParticle(tree, pName, recjet)
+    fill(tree, '{pName}_n'.format(pName=pName), recjet.nConstituents() )
     
 def bookGenParticle(tree, pName):
     bookParticle(tree, pName)
+    for id in pdgIds:
+        bookParticle(tree, '{pName}_sim{id}'.format(pName=pName,id=id))
     var(tree, '{pName}_pdgId'.format(pName=pName))
     
 def fillGenParticle( tree, pName, particle ):
     fillParticle( tree, pName, particle )
+    for id in pdgIds:
+        if hasattr(particle, 'sim{id}'.format(id=id)):
+            matched = getattr(particle, 'sim{id}'.format(id=id))
+            if matched:
+                fillParticle(tree, '{pName}_sim{id}'.format(pName=pName,
+                                                            id=id), matched) 
     fill(tree, '{pName}_pdgId'.format(pName=pName), particle.pdgId() )
 
 def bookGenJet(tree, pName):
     bookParticle(tree, pName)
-    bookParticle(tree, '{pName}_rec'.format(pName=pName))
+    bookRecJet(tree, '{pName}_rec'.format(pName=pName))
     bookParticle(tree, '{pName}_sim'.format(pName=pName))
     bookParticle(tree, '{pName}_genPtc3'.format(pName=pName))
         
 def fillGenJet( tree, pName, genjet ):
     fillParticle( tree, pName, genjet )
     if hasattr(genjet, 'rec') and genjet.rec:
-        fillParticle(tree, '{pName}_rec'.format(pName=pName), genjet.rec )
+        fillRecJet(tree, '{pName}_rec'.format(pName=pName), genjet.rec )
     if genjet.sim:
         fillParticle(tree, '{pName}_sim'.format(pName=pName), genjet.sim )
     if genjet.genPtc3:

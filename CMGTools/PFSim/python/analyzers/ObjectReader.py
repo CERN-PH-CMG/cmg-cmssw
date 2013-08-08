@@ -8,10 +8,10 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.LorentzVectors import LorentzVector
 from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
+# from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
 from CMGTools.RootTools.utils.DeltaR import deltaR2
 
-from CMGTools.PFSim.particles import GenJet, Jet, SimJet, PFJet, Electron, Muon, SimParticle
+from CMGTools.PFSim.particles import GenJet, Jet, SimJet, PFJet, Electron, Muon, SimParticle, GenParticle, RecParticle
 from CMGTools.PFSim.detectors.models import CMS
 
 
@@ -37,6 +37,9 @@ class ObjectReader( Analyzer ):
         self.handles['genParticles'] = AutoHandle( *self.cfg_ana.genPartCol )
         if self.cfg_ana.simPartCol:
             self.handles['simParticles'] = AutoHandle( *self.cfg_ana.simPartCol )
+        if self.cfg_ana.recPartCol:
+            self.handles['recParticles'] = AutoHandle( *self.cfg_ana.recPartCol )
+            
 
     def beginLoop(self):
         super(ObjectReader,self).beginLoop()
@@ -75,7 +78,9 @@ class ObjectReader( Analyzer ):
         event.simJets = map(SimJet, self.handles['simJets'].product() )
         if self.cfg_ana.simPartCol:
             event.simParticles = map(SimParticle, self.handles['simParticles'].product() )
-
+        if self.cfg_ana.recPartCol:
+            event.recParticles = map(RecParticle, self.handles['recParticles'].product() )
+            
         event.simMissMass = self.missingMass( event.simParticles )
         event.simVisMass = -99
         # same for visible mass
