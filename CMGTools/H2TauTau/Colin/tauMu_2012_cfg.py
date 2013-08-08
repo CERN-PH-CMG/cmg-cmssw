@@ -198,7 +198,8 @@ treeProducerXCheck = cfg.Analyzer(
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanMay23 import * 
 # from CMGTools.H2TauTau.proto.samples.run2012.WJets_JanMay29 import * 
 #from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanJun18 import * 
-from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanJul04 import * 
+# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanJul04 import * 
+from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanAug06 import * 
 
 #########################################################################################
 
@@ -321,10 +322,6 @@ elif test==2:
 elif test==3:
     # selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets]
     selectedComponents = higgs
-    # for comp in selectedComponents:
-    #     comp.splitFactor = 20
-elif test==4:
-    selectedComponents = [c for c in selectedComponents if c.name in VVgroup]
     
 
 config = cfg.Config( components = selectedComponents,

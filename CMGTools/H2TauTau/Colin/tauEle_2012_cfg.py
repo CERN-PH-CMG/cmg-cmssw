@@ -57,6 +57,7 @@ vertexAna = cfg.Analyzer(
 
 embedWeighter = cfg.Analyzer(
     'EmbedWeighter',
+    isRecHit = False,
     verbose = False
     )
 
@@ -83,17 +84,16 @@ tauEleAna = cfg.Analyzer(
     )
 
 dyJetsFakeAna = cfg.Analyzer(
-    'DYJetsFakeAnalyzer',
-    leptonType = 11
+    'DYJetsFakeAnalyzer'
     )
 
 dyLLReweighterTauEle = cfg.Analyzer(
     'DYLLReweighterTauEle',
     # 2012 
-    W1p0PB = 0.82, # weight for 1 prong 0 Pi Barrel
-    W1p0PE = 0.76,
-    W1p1PB = 1.65,
-    W1p1PE = 0.24,
+    W1p0PB = 1.37, # weight for 1 prong 0 Pi Barrel
+    W1p0PE = 1.11,
+    W1p1PB = 2.18,
+    W1p1PE = 0.47,
     verbose = False
     )
 
@@ -105,6 +105,11 @@ NJetsAna = cfg.Analyzer(
 
 higgsWeighter = cfg.Analyzer(
     'HiggsPtWeighter',
+    )
+
+tauDecayModeWeighter = cfg.Analyzer(
+    'TauDecayModeWeighter',
+    verbose = False,
     )
 
 tauWeighter = cfg.Analyzer(
@@ -213,12 +218,12 @@ if doThePlot:
     TTgroup = [TTJetsFullLept.name,
         TTJetsSemiLept.name,
         TTJetsHadronic.name]
-    VVgroup = None
+    # VVgroup = None
 
-higgs = mc_higgs
-if not doThePlot:
-    selectedComponents.extend( higgs )
-    selectedComponents.extend( diboson_list )
+higgs = [c for c in mc_higgs if c.getWeight().genNEvents]
+# if not doThePlot:
+selectedComponents.extend( higgs )
+selectedComponents.extend( diboson_list )
 selectedComponents.extend( data_list )
 selectedComponents.extend( embed_list )
 
@@ -235,6 +240,7 @@ sequence = cfg.Sequence( [
     vbfAna,
     pileUpAna,
     embedWeighter, 
+    tauDecayModeWeighter,
     tauWeighter, 
     eleWeighter, 
     treeProducer
@@ -247,6 +253,7 @@ if syncntuple:
 test = 0
 if test==1:
     comp = HiggsVBF125
+    comp = DYJets
     # comp.files = comp.files[:5]
     # comp = embed_Run2012D_22Jan
     selectedComponents = [comp]
@@ -259,10 +266,9 @@ elif test==2:
         comp.splitFactor = 1
         comp.files = comp.files[:3]
 elif test==3:
-    selectedComponents = [TTJetsFullLept,
-        TTJetsSemiLept,
-        TTJetsHadronic]
-
+    # selectedComponents = [s for s in selectedComponents if 'Higgs' in s.name and not '125' in s.name]
+    # selectedComponents = [h for h in higgs if 'GGH' in h.name]
+    selectedComponents = [DYJets, DY1Jets, DY2Jets, DY3Jets, DY4Jets]
 
 
 config = cfg.Config( components = selectedComponents,
