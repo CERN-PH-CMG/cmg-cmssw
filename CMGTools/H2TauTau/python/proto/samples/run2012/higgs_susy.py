@@ -95,7 +95,7 @@ HiggsSUSYBB300 = cfg.MCComponent(
     name = 'HiggsSUSYBB300',
     files = [],
     xSection = 1.0, 
-    nGenEvents = 999900*1.0,
+    nGenEvents = 1000000*1.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -324,6 +324,14 @@ HiggsSUSYGluGlu800 = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+HiggsSUSYGluGlu900 = cfg.MCComponent(
+    name = 'HiggsSUSYGluGlu900',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
 HiggsSUSYGluGlu1000 = cfg.MCComponent(
     name = 'HiggsSUSYGluGlu1000',
     files = [],
@@ -356,6 +364,7 @@ mc_higgs_SUSYBB = [
     HiggsSUSYBB600,
     HiggsSUSYBB700,
     HiggsSUSYBB800,
+    HiggsSUSYBB900,
     HiggsSUSYBB1000,
     ]
 
@@ -379,6 +388,7 @@ mc_higgs_SUSYGluGlu = [
     HiggsSUSYGluGlu600,
     HiggsSUSYGluGlu700,
     HiggsSUSYGluGlu800,
+    HiggsSUSYGluGlu900,
     HiggsSUSYGluGlu1000,
     ]
 
