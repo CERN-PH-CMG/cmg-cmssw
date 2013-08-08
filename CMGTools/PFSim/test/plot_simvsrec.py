@@ -25,7 +25,7 @@ class Comparison(HistComparator):
 
     def buildHist(self, ext):
         hname = '_'.join([self.name,ext])
-        h = TH1F( hname, hname, 20, 0.5, 1.5)
+        h = TH1F( hname, hname, 200, 0.5, 1.5)
         h.SetStats(0)
         h.SetXTitle('p_{T,rec}/p_{T,gen}')
         var = 'jet1_{ext}_pt/jet1_pt>>{hname}'.format(
