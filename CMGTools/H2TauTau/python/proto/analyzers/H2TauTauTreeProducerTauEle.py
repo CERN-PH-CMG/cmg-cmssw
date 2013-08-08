@@ -34,6 +34,7 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
 
        # b jets
        var( tr, 'nBJets')
+       var(tr, 'nCSVLJets')
        bookJet(tr, 'bjet1')
 
        bookVBF( tr, 'VBF' )
@@ -42,6 +43,8 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
        var( tr, 'vertexWeight')
        var( tr, 'embedWeight')
        var( tr, 'hqtWeight')
+       var( tr, 'hqtWeightUp')
+       var( tr, 'hqtWeightDown')
        var( tr, 'NJetWeight')
        var( tr, 'zllWeight')
        
@@ -106,12 +109,24 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
            fillJet(tr, 'bjet1', event.cleanBJets[0] )           
        fill(tr, 'nBJets', nBJets)
 
+       # JAN - FIXME - temporarily directly count CSVL
+       # jets. Eventually apply SFs as for CSVM jets
+       # after rewriting BTagSF module
+       nCSVLJets = 0
+       for jet in event.cleanJets:
+          if jet.btag('combinedSecondaryVertexBJetTags') > 0.244:
+              nCSVLJets += 1
+       fill(tr, 'nCSVLJets', nCSVLJets)
+
        if hasattr( event, 'vbf'):
            fillVBF( tr, 'VBF', event.vbf )
 
        fill(tr, 'weight', event.eventWeight)
        fill(tr, 'embedWeight', event.embedWeight)
        fill(tr, 'hqtWeight', event.higgsPtWeight)
+       fill(tr, 'hqtWeightUp', event.higgsPtWeightUp)
+       fill(tr, 'hqtWeightDown', event.higgsPtWeightDown)
+       
        if hasattr(event, 'NJetWeight'):
           fill(tr, 'NJetWeight', event.NJetWeight)
        fill(tr, 'zllWeight', event.zllWeight)

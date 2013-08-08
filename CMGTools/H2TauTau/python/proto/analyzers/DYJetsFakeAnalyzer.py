@@ -6,8 +6,9 @@ class DYJetsFakeAnalyzer( GenParticleAnalyzer ):
     '''Checks which kind of DYJet event this is.
     isFake gets written to the event.
     - Z->tau tau : isFake = 0
+    - Z->tau tau with matched rec hadr. tau->l: isFake = 3
     - Z->l l matched : isFake = 1
-    - other : isFake =2 
+    - other : isFake = 2 
 
     set the lepton type as leptonType in the configuration
     '''
@@ -30,21 +31,30 @@ class DYJetsFakeAnalyzer( GenParticleAnalyzer ):
             # print '-'*50
             # print map(str, taus)
             # print isZtautau
-            if isZtautau:
+
+            # Updated recipe Aug 2013: match both electrons and muons regardless of status 
+            # with pt > 8
+            genLeptons = filter(lambda x: x.pt() > 8. and (abs(x.pdgId()) == 11 or abs(x.pdgId()) == 13), event.genParticles)
+            # genLegs, dummy = bosonToX( event.genParticles, 23,
+                                       # self.cfg_ana.leptonType )
+            # import pdb; pdb.set_trace()
+            pairs = matchObjectCollection( [event.diLepton.leg1(),
+                                            event.diLepton.leg2()],
+                                           genLeptons, 0.5**2 )
+            # if pairs[event.diLepton.leg1()] and pairs[event.diLepton.leg2()]:
+
+            # Updated recipe: Only match tau leg, not lepton leg
+            # This assumes that leg 1 is the hadronic tau!
+            if isZtautau and not pairs[event.diLepton.leg1()]:
                 event.isFake = 0
-            else:
-                genLegs, dummy = bosonToX( event.genParticles, 23,
-                                           self.cfg_ana.leptonType )
+            elif isZtautau and pairs[event.diLepton.leg1()]:
+                event.isFake = 3
+            elif pairs[event.diLepton.leg1()]:
                 # import pdb; pdb.set_trace()
-                pairs = matchObjectCollection( [event.diLepton.leg1(),
-                                                event.diLepton.leg2()],
-                                               genLegs, 0.3**2 )
-                if pairs[event.diLepton.leg1()] and pairs[event.diLepton.leg2()]:
-                    # import pdb; pdb.set_trace()
-                    # print 'fake1',event.diLepton.leg1().pdgId(), event.diLepton.leg2().pdgId()
-                    event.isFake = 1
-                else:
-                    event.isFake = 2
+                # print 'fake1',event.diLepton.leg1().pdgId(), event.diLepton.leg2().pdgId()
+                event.isFake = 1
+            else:
+                event.isFake = 2
         if self.cfg_ana.verbose:
             # import pdb; pdb.set_trace()
             print event.diLepton

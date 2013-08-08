@@ -87,7 +87,7 @@ xtitles_TauEle = {
     'l1_EOverp'   :'#tau E/p',   
     'diTau_pt':'p_{T}_{e #tau}',
     'bjet1_pt':'p_{T}_{bjet 1}',
-    'deltaEtaL1L2':'#Delta#eta (e, #mu)',
+    'deltaEtaL1L2':'#Delta#eta (#tau, e)',
     'abs_l1_eta_j1_eta':'#Delta#eta (#tau, jet 1)',
     'abs_l2_eta_j1_eta':'#Delta#eta (e, jet 1)',
     'deltaPhiL1L2':'#Delta#Phi (#tau, e)',
@@ -183,6 +183,10 @@ def draw(plot, doBlind=True, channel='TauMu', plotprefix = None, SetLogy = 0):
     if doBlind:
         blindxmin = 100
         blindxmax = 160
+        if hasattr(plot, 'blindxmin'):
+            blindxmin = plot.blindxmin
+        if hasattr(plot, 'blindxmax'):
+            blindxmax = plot.blindxmax
         plot.Blind(blindxmin, blindxmax, False)
     titles = xtitles
     if channel=='TauEle':

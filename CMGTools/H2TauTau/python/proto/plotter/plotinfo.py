@@ -54,8 +54,42 @@ plots_All = {
     'deltaPhi_l2_j1' :
         PlotInfo('deltaPhi_l2_j1', 25, 0., 3.141593),
     'jet1_pt': PlotInfo('jet1_pt', 30, 0, 300),
+    'bjet1_pt': PlotInfo('bjet1_pt', 30, 0, 300),
     
     }
+
+plots_All_sorted_indices = ['l2_pt',
+    'l2_eta',
+    'l2_relIso05',
+    'l2_charge',
+    'l1_pt',
+    'l1_eta',
+    'l1_charge',
+    'l1_threeHitIso',
+    'l1_decayMode',
+    'l1_mass',
+    'mt',
+    'met',
+    'diTau_pt',
+    'pthiggs',
+    'visMass',
+    'svfitMass',
+    'svfitMassFewerBins',
+    'svfitMassFewBins',
+    'nJets',
+    'jet1_pt',
+    'bjet1_pt',
+    'nVert',
+    'deltaEtaL1L2',
+    'deltaRL1L2',
+    'abs_l1_eta_j1_eta',
+    'abs_l2_eta_j1_eta',
+    'deltaPhiL1L2' ,
+    'deltaPhiL1LMET',
+    'deltaPhiL2LMET' ,
+    'deltaRL1L2' ,
+    'deltaPhi_l1_j1',
+    'deltaPhi_l2_j1',]
 
 plots_J0 = {
     'l2_pt': PlotInfo('l2_pt', 100, 0, 200),

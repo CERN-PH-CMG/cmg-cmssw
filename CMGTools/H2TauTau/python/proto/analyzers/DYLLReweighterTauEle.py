@@ -13,7 +13,7 @@ class DYLLReweighterTauEle( Analyzer ):
             return True
 
         # do nothing in all cases, but the DY -> ll
-        if event.isFake != 1 or self.cfg_comp.name.find('DYJets') == -1 :
+        if event.isFake != 1 or self.cfg_comp.name.find('DY') == -1 :
             return True
             
         tau = event.diLepton.leg1()

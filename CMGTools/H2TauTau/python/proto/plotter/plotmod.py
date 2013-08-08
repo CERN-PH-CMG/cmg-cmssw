@@ -69,6 +69,7 @@ def addQCD( plot, dataName, VVgroup):
     plotWithQCD = copy.deepcopy( plot )
     qcd = copy.deepcopy(plotWithQCD.Hist(dataName))
     qcd.Add(plotWithQCD.Hist('Ztt'), -1)
+    qcd.Add(plotWithQCD.Hist('Ztt_TL'), -1)
     qcd.Add(plotWithQCD.Hist('Ztt_ZL'), -1)
     qcd.Add(plotWithQCD.Hist('Ztt_ZJ'), -1)  
     qcd.Add(plotWithQCD.Hist('TTJets'), -1)
@@ -122,6 +123,7 @@ def fW(mtplot, dataName, xmin, xmax, VVgroup=None, channel = 'TauMu'):
     wjet.Add(mtplot.Hist('Ztt'), -1)
     wjet.Add(mtplot.Hist('Ztt_ZL'), -1)
     wjet.Add(mtplot.Hist('Ztt_ZJ'), -1)
+    wjet.Add(mtplot.Hist('Ztt_TL'), -1)
     wjet.Add(mtplot.Hist('TTJets'), -1)
     if VVgroup:
         wjet.Add(mtplot.Hist('VV'), -1)

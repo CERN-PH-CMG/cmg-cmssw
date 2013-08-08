@@ -22,15 +22,20 @@ class TauDecayModeWeighter( Analyzer ):
         self.weight = 1
 
         # Not strictly correct, but this is agreed upon for Summer 2013:
-        if self.cfg_comp.isEmbed or 'Higgs' in self.cfg_comp.name or ('DYJets' in self.cfg_comp.name and event.isFake == 0):
+        if self.cfg_comp.isEmbed or 'Higgs' in self.cfg_comp.name or ('DY' in self.cfg_comp.name and event.isFake == 0):
             decayMode = event.diLepton.leg1().decayMode()
             if decayMode == 0:
                 self.weight = self.oneProngNoPiZeroWeight
 
             # print decayMode, self.weight, self.cfg_comp.name
 
+
         event.eventWeight *= self.weight
         event.tauESWeight = self.weight
+
+        if self.cfg_ana.verbose:
+            print 'TauDecayModeWeighter', event.diLepton.leg1().decayMode(), event.isFake, event.tauESWeight
+
         self.averages['weight'].add( self.weight )
         return True
                 

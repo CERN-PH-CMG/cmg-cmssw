@@ -107,9 +107,9 @@ def datacards(plot, cutstring, shift, channel='muTau', prefix=None, energy='8TeV
         category = 'vbf_loose'
 
     if cutstring.find('Xcat_J1BX')!=-1:
-        category = 'mssm_1b'
+        category = 'btag'
     elif cutstring.find('Xcat_0BX')!=-1:
-        category = 'mssm_0b'
+        category = 'nobtag'
 
     ext = None
     if shift == 'Up' or shift == 'Down':

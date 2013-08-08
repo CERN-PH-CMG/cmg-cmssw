@@ -175,6 +175,11 @@ class H2TauTauDataMC( AnalysisDataMC ):
                                      self.cut + ' && isFake==2', layer)
                 self.Hist(fakeCompName).realName =  comp.realName + '_ZJ'
                 self.weights[fakeCompName] = self.weights[compName]
+                fakeCompName = 'Ztt_TL'
+                self._BuildHistogram(tfile, comp, fakeCompName, self.varName,
+                                     self.cut + ' && isFake==3', layer)
+                self.Hist(fakeCompName).realName =  comp.realName + '_TL'
+                self.weights[fakeCompName] = self.weights[compName]
 
             else:
                 self._BuildHistogram(tfile, comp, compName, self.varName,
@@ -230,6 +235,9 @@ class H2TauTauDataMC( AnalysisDataMC ):
             print 'EMBEDDING: scale factor = ', embedFactor
             self.Hist(newName).Scale( embedFactor * self.weights['Ztt'].GetWeight() ) 
             self._ApplyPrefs()
+            print 'ADDING Ztt_TL to embedded sample'
+            self.Hist(newName).Add(self.Hist('Ztt_TL'))
+            self.Hist('Ztt_TL').Scale(0.) # FIXME: need better solution
 
 
     def groupDataComponents( self, dataComponents, name ):
@@ -275,6 +283,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['WJets*'] = {'style':sHTT_WJets, 'layer':3, 'legend':None}  
         self.histPref['Ztt_ZJ'] = {'style':sHTT_ZL, 'layer':3.1, 'legend':None}
         self.histPref['Ztt_ZL'] = {'style':sHTT_ZL, 'layer':3.2, 'legend':'Z#rightarrow ll'}
+        self.histPref['Ztt_TL'] = {'style':sViolet, 'layer':4.1, 'legend':None}
         self.histPref['Higgs*'] = {'style':sHTT_Higgs, 'layer':1001, 'legend':None}
 
 
