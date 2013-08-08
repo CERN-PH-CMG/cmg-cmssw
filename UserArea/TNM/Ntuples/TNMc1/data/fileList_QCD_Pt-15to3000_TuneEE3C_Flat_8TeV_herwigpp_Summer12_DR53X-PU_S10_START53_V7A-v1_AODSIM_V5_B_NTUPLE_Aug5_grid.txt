@@ -944,6 +944,7 @@ root://eoscms//eos/cms/store/cmst3/group/tnm/CMG/QCD_Pt-15to3000_TuneEE3C_Flat_8
 root://eoscms//eos/cms/store/cmst3/group/tnm/CMG/QCD_Pt-15to3000_TuneEE3C_Flat_8TeV_herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/NTUPLE_Aug5/ntuple_952.root
 root://eoscms//eos/cms/store/cmst3/group/tnm/CMG/QCD_Pt-15to3000_TuneEE3C_Flat_8TeV_herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/NTUPLE_Aug5/ntuple_953.root
 root://eoscms//eos/cms/store/cmst3/group/tnm/CMG/QCD_Pt-15to3000_TuneEE3C_Flat_8TeV_herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/NTUPLE_Aug5/ntuple_954.root
+root://eoscms//eos/cms/store/cmst3/group/tnm/CMG/QCD_Pt-15to3000_TuneEE3C_Flat_8TeV_herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/NTUPLE_Aug5/ntuple_955.root
 root://eoscms//eos/cms/store/cmst3/group/tnm/CMG/QCD_Pt-15to3000_TuneEE3C_Flat_8TeV_herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/NTUPLE_Aug5/ntuple_956.root
 root://eoscms//eos/cms/store/cmst3/group/tnm/CMG/QCD_Pt-15to3000_TuneEE3C_Flat_8TeV_herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/NTUPLE_Aug5/ntuple_957.root
 root://eoscms//eos/cms/store/cmst3/group/tnm/CMG/QCD_Pt-15to3000_TuneEE3C_Flat_8TeV_herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/NTUPLE_Aug5/ntuple_958.root
