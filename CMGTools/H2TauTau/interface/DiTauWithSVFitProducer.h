@@ -169,7 +169,8 @@ void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::
 	NSVfitStandaloneAlgorithm algo(measuredTauLeptons, met.p4().Vect(), *(tmsig), 0);
 	algo.addLogM(false);
 	//algo.integrate();
-        algo.integrateMarkovChain();
+        // algo.integrateMarkovChain();
+        algo.integrateVEGAS();
         massSVFit = algo.mass();
         diTau.setMassErrSVFit( algo.massUncert() );
         diTau.setPtSVFit( algo.pt() );
