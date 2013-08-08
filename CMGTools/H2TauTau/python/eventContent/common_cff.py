@@ -22,6 +22,13 @@ common = [
     'drop cmgPFJets_*JetId*_*_*',
     'drop recoCaloMETs_*_*_*', # Can keep for MVA MET debugging
     'drop *_cmgPFJetForRecoil_*_*',
+    'drop *_cmgPFJetForRecoilPresel_*_*',
+    'drop cmgTriggerObjects_cmgL1TriggerObjectSel__PAT',
+    'drop cmgBaseJets_cmgPFBaseJetLeadCHS__PAT',
+    'drop recoTrackJets_ak5SoftTrackJetsForVbfHbb__PAT',
+    'drop l1extra*_*_*_*',
+    'drop *_pcMet_*_*',
+    'drop *_tkMet_*_*',
     'drop *_genWorZ_*_*',
     'keep recoPFMETs_*_*_*',
     'keep cmgMETSignificance*_*_*_*',

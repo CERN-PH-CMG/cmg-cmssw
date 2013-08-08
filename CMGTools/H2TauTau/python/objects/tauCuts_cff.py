@@ -1,5 +1,17 @@
 import FWCore.ParameterSet.Config as cms
 
+cutsElectronMVA3Medium = [0.933,0.921,0.944,0.945,0.918,0.941,0.981,0.943,0.956,0.947,0.951,0.95,0.897,0.958,0.955,0.942]
+
+
+electronMVA3MediumString = ''
+for iCat, catCut in enumerate(cutsElectronMVA3Medium):
+    mvaCut = '({{leg}}().tauID("againstElectronMVA3category") == {cat} && {{leg}}().tauID("againstElectronMVA3raw") > {catCut})'.format(cat=iCat, catCut=catCut)
+    if iCat == 0:
+        electronMVA3MediumString = mvaCut
+    else:
+        electronMVA3MediumString = '||'.join([electronMVA3MediumString, mvaCut])
+electronMVA3MediumString += '|| {leg}().tauID("againstElectronMVA3category") > 15'
+
 def getTauCuts( leg, channel='tauMu'):
 
     ptCut = 15.
@@ -20,6 +32,9 @@ def getTauCuts( leg, channel='tauMu'):
     elif channel == 'tauEle':    
         id = cms.PSet(
             decay = cms.string('{leg}().tauID("decayModeFinding")'.format(leg=leg)),
+            eleRejection = cms.string(electronMVA3MediumString.format(leg=leg)),
+            muRejection2 = cms.string('{leg}().tauID("againstMuonLoose") > 0.5'.format(leg=leg))
+
             # As long as tau ID version is not finalised, cannot apply any of the following cuts at preselection level
             # eleRejection1 = cms.string('{leg}().tauID("againstElectronMVA") > 0.5'.format(leg=leg)),
             # eleRejection2 = cms.string('{leg}().tauID("againstElectronMedium") > 0.5'.format(leg=leg)),

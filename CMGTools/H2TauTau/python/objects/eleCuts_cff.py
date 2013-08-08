@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
+from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 
-#TODO implement real electron cuts
+is53X = isNewerThan('CMSSW_5_2_X')
 
 def getEleCuts(leg, channel='tauEle', skim=False):
 
@@ -13,6 +14,8 @@ def getEleCuts(leg, channel='tauEle', skim=False):
 #    isoCut = 100
     if channel == 'tauEle':
         ptCut = 20.
+        if is53X:
+            ptCut = 24.
         etaCut = 2.1
 #        lmvaID = 0.9
         lmvaID1 = 0.925
@@ -37,7 +40,6 @@ def getEleCuts(leg, channel='tauEle', skim=False):
             hitsnum = cms.string('{leg}().numberOfHits==0'.format(leg=leg)),
             convVeto = cms.string('{leg}().passConversionVeto()!=0'.format(leg=leg)),
             mvaID = cms.string('(abs({leg}().sourcePtr().superCluster().eta())<0.8 && {leg}().mvaNonTrigV0() > {lmvaID1}) || (abs({leg}().sourcePtr().superCluster().eta())>0.8 && abs({leg}().sourcePtr().superCluster().eta())<1.479 && {leg}().mvaNonTrigV0() > {lmvaID2}) || (abs({leg}().sourcePtr().superCluster().eta())>1.479 && {leg}().mvaNonTrigV0() > {lmvaID3})'.format(leg=leg, lmvaID1=lmvaID1, lmvaID2=lmvaID2, lmvaID3=lmvaID3))
-#            mvaID = cms.string('{leg}().mvaNonTrigV0()  > {lmvaID}'.format(leg=leg, lmvaID=lmvaID))
         ),
 #         iso = cms.PSet(
 #           #COLIN the iso elest be done on charged particles, not charged hadrons
