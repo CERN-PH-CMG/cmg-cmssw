@@ -8,7 +8,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
 
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(5000)
 )
 
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
@@ -22,10 +22,11 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 
 
 
+
 #NIKITA: to read a file locally
 ## process.source = cms.Source(
 ##     'PoolSource',
-##     fileNames = cms.untracked.vstring( 'file:gun_gamma_nomateff_fastsim_0to50_Aug8.root' )
+##     fileNames = cms.untracked.vstring( 'file:gun_jetA_mateff.root' )
 ##     )
 
 # to read a file on eos (disk pool)
@@ -35,7 +36,7 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 # FS22: photons
 # PS12: neutrinos
 
-process.source = datasetToSource('cbern','/PFSim/FS211/Aug8_100k_pt0to100_MEoff','.*root')
+process.source = datasetToSource('cbern','/PFSim/FS130/Aug8_100k_pt0to100_MEoff','.*root')
 
 
 process.load('CMGTools.PFSim.pfsim_cff')

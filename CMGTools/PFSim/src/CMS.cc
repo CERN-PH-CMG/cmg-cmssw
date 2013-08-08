@@ -68,7 +68,8 @@ float PFSim::CMS::photonResolution(const HepMC::FourVector& mom) const {
   float constant = 0.003;
   float relres = sqrt(stoch*stoch + noise*noise + constant*constant);
 
-  relres *= 4; // resolution ~ factor 4 worse in the fast sim... 
+  relres *= 3.5; // resolution worse in the fast sim
+  // maybe due to PFClusters? 
   return relres; // only returning stochastic term for now, should return relres
 }
 
@@ -82,5 +83,6 @@ float PFSim::CMS::chargedHadronResolution(const HepMC::FourVector& mom) const {
 
 float PFSim::CMS::neutralHadronResolution(const HepMC::FourVector& mom) const {
   float energy = mom.e();
-  return 1.2 / sqrt(energy);
+  float relres = 1.1 / sqrt(energy);
+  return relres;
 }

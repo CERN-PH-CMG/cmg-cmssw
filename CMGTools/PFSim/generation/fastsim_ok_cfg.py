@@ -4,7 +4,7 @@ process = cms.Process("HLT")
 
 # Number of events to be generated
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(2000)
+    input = cms.untracked.int32(1000)
 )
 
 # Include DQMStore, needed by the famosSimHits
@@ -13,8 +13,8 @@ process.DQMStore = cms.Service( "DQMStore")
 # Include the RandomNumberGeneratorService definition
 process.load("IOMC.RandomEngine.IOMC_cff")
 
-gen = 'pgun'
-# gen = 'jetgun'
+# gen = 'pgun'
+gen = 'jetgun'
 
 if gen == 'pgun':
     process.generator = cms.EDProducer("FlatRandomPtGunProducer",
@@ -38,15 +38,16 @@ if gen == 'pgun':
         firstRun = cms.untracked.uint32(1)
     )
 elif gen == 'jetgun':
+    jetA = cms.vint32(211, 211, -211, 22, 22, 130)
     process.generator = cms.EDProducer("Pythia6JetGun",
         PGunParameters = cms.PSet(
-            ParticleID = cms.vint32(211, 22),
+            ParticleID = jetA,
             # this defines "absolute" energy spread of particles in the jet
             MinE = cms.double(0.5),
             MaxE = cms.double(2.0),
             # the following params define the boost
-            MinP = cms.double(50.0),
-            MaxP = cms.double(50.0),
+            MinP = cms.double(30.0),
+            MaxP = cms.double(30.0),
             MinPhi = cms.double(-3.1415926535),
             MaxPhi = cms.double(+3.1415926535),
             MinEta = cms.double(-1.0),
@@ -180,7 +181,7 @@ process.options = cms.untracked.PSet( Rethrow = cms.untracked.vstring('ProductNo
 
 #NIKITA
 # remove material effects in the tracker?
-materialEffects = False
+materialEffects = True
 if not materialEffects:
     process.famosSimHits.MaterialEffects.NuclearInteraction = False
     process.famosSimHits.MaterialEffects.PairProduction = False

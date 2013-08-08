@@ -29,8 +29,8 @@ reader = cfg.Analyzer(
 
 jetAna = cfg.Analyzer(
     'PFSimJetAnalyzer',
-    jetPt = 10.,
-    jetEta = 5.0,
+    jetPt = 1.0,
+    jetEta = 2.0,
     btagSFseed = 123456,
     relaxJetId = True, 
     )
@@ -62,7 +62,7 @@ sequence = cfg.Sequence( [
     # effAndSmear,
     reader,
     jetAna,
-    particleAna,
+    #  particleAna,
     treeProducer
    ] )
 

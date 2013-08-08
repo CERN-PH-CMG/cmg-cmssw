@@ -25,14 +25,14 @@ class Comparison(HistComparator):
 
     def buildHist(self, ext):
         hname = '_'.join([self.name,ext])
-        h = TH1F( hname, hname, 100, 0.5, 1.5)
+        h = TH1F( hname, hname, 20, 0.5, 1.5)
         h.SetStats(0)
         h.SetXTitle('p_{T,rec}/p_{T,gen}')
         var = 'jet1_{ext}_pt/jet1_pt>>{hname}'.format(
             ext=ext, hname=hname
             )
         # cut = 'abs(jet1_eta)<1. && jet1_rec_n==1'
-        cut = 'abs(jet1_eta)<1. && jet1_rec_n==1'
+        cut = 'abs(jet1_eta)<1. && jet1_{ext}_pt>0'.format(ext=ext)
         self.tree.Draw(var, cut,'goff')
         h.Fit('gaus')
         # need to fit in a given range around the main peak
