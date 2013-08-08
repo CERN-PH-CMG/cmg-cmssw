@@ -62,6 +62,7 @@ aliases = {
 mc_ewk = []
 mc_ewk += mc_dy
 mc_ewk += t_mc_ewk
+# mc_ewk += mc_w
 
 MC_list = copy.copy( mc_ewk )
 
@@ -73,6 +74,7 @@ allsamples.extend( data_list )
 allsamples.extend( embed_list )
 
 connect( allsamples, '%TAUMU_SVFitNoES_Jul03_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
+# connect( allsamples, '%TAUMU_SVFitVEGAS_Jul29_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
 
 MC_list.extend(mc_w)
 allsamples.extend(mc_w)

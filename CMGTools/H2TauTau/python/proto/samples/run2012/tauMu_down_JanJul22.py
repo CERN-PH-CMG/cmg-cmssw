@@ -72,7 +72,7 @@ allsamples = copy.copy( MC_list )
 # allsamples.extend( data_list )
 allsamples.extend( embed_list )
 
-connect( allsamples, '%TAUMU_SVFitNoESTauESDown_Jul23_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
+connect( allsamples, '%TAUMU_SVFitVEGAS_TESDown_Aug02_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
 
 # Attach number of generated events for stitching
 dy_nevents = [ DYJets.nGenEvents,

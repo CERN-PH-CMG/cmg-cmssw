@@ -111,7 +111,7 @@ for data in data_list:
         # allsamples.append(data)
 for embed in embed_list:
     if len(embed.files):
-        embed.json = jsonPick( data.files[0], jsonMap)
+        embed.json = jsonPick( embed.files[0], jsonMap)
         embed.triggers = embed_triggers
         # No trigger requirements for embedded samples
 for c in allsamples:

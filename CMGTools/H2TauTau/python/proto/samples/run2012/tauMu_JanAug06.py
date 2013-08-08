@@ -61,18 +61,19 @@ aliases = {
 
 mc_ewk = []
 mc_ewk += mc_dy
-# mc_ewk += t_mc_ewk
+mc_ewk += t_mc_ewk
+mc_ewk += mc_w
 
 MC_list = copy.copy( mc_ewk )
 
 MC_list.extend( mc_higgs )
-# MC_list.extend( mc_diboson ) 
+MC_list.extend( mc_diboson ) 
     
 allsamples = copy.copy( MC_list )
-# allsamples.extend( data_list )
+allsamples.extend( data_list )
 allsamples.extend( embed_list )
 
-connect( allsamples, '%TAUMU_SVFitVEGAS_TESUp_Aug02_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
+connect( allsamples, '%TAUMU_SVFitVEGAS_Jul29_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
 
 # Attach number of generated events for stitching
 dy_nevents = [ DYJets.nGenEvents,
