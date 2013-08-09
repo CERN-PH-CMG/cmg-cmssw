@@ -76,7 +76,9 @@ void VbfHbbPFCandOutOfJets::produce(edm::Event& iEvent, const edm::EventSetup& i
        vector<reco::PFCandidatePtr> pfcands = pat_jets[j].getPFConstituents();
        //cout<<"Found "<<pfcands.size()<<" constituents in jet #"<<j<<endl;
        for(unsigned i=0; i<pfcands.size(); ++i) {
-         if (PFCandidate::ParticleType(pfcands[i]->particleId()) == PFCandidate::h) {  
+         if ((PFCandidate::ParticleType(pfcands[i]->particleId()) == PFCandidate::h) || 
+             (PFCandidate::ParticleType(pfcands[i]->particleId()) == PFCandidate::e) ||
+             (PFCandidate::ParticleType(pfcands[i]->particleId()) == PFCandidate::mu)) {  
            pfcandsin.push_back(pfcands[i]);
          }
        }
@@ -104,12 +106,17 @@ void VbfHbbPFCandOutOfJets::produce(edm::Event& iEvent, const edm::EventSetup& i
      }
      for(PFCandidateCollection::const_iterator ipf = pfcands->begin();ipf != pfcands->end(); ++ipf) {
        bool out(true);
-       if (PFCandidate::ParticleType(ipf->particleId()) == PFCandidate::h) {
+       if ((PFCandidate::ParticleType(ipf->particleId()) == PFCandidate::h) || 
+           (PFCandidate::ParticleType(ipf->particleId()) == PFCandidate::e) ||
+           (PFCandidate::ParticleType(ipf->particleId()) == PFCandidate::mu)) {
 	 for (unsigned i1 = 0; i1 != pfcandsin.size(); ++i1) {
 	   if (&*ipf == &*(pfcandsin[i1])) { 
              out = false;
            }
 	 }
+         if (ipf->trackRef()->pt() < 0.3) {
+           out = false;
+         }
 	 float dzPV0 = ipf->trackRef()->dz(vpoints[0]);
 	 float dzErr = ipf->trackRef()->dzError();
          float relErr(0.0);
