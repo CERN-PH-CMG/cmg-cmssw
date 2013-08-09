@@ -193,6 +193,14 @@ PATCMGMetRegressionSequence = cms.Sequence(
     MetRegressionSequence
     )
 
+# CMG CANDIDATES      ---------------------------
+
+from CMGTools.Common.cmgCandidates_cfi import *
+
+PATCMGCandidatesSequence = cms.Sequence(
+    cmgCandidates
+    )
+
 ####  FULL SEQUENCE  ####
 
 # NOTE: object sequences are defined so that they can be easily removed from the path
@@ -211,7 +219,8 @@ PATCMGSequence = cms.Sequence(
     PATCMGTauSequence +
     PATCMGMetSequence +
     MetSignificanceSequence +
-    PATCMGMetRegressionSequence
+    PATCMGMetRegressionSequence +
+    PATCMGCandidatesSequence
     )
 
 #if isNewerThan('CMSSW_5_2_0'):

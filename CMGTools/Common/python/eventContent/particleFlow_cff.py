@@ -68,7 +68,9 @@ particleFlowMisc = cms.untracked.vstring(
     'keep int_*Size_*_*',
     'keep double_vertexWeight*_*_*',
     #Jose: needed for tau embedded samples
-    'keep double_*_*_Embedded*'
+    'keep double_*_*_Embedded*',
+    #Andreas: small size PF candidates
+    'keep *_cmgCandidates__*',
     )
 
 particleFlow = particleFlowJets + particleFlowMET + particleFlowMuons + particleFlowTaus + particleFlowElectrons + particleFlowPhotons + particleFlowW + particleFlowHemispheres + particleFlowMisc
