@@ -360,7 +360,6 @@ class DatasetInformation(object):
         pcmgdbname = self.dataset_details['ParentCMGDBName']
         did=cmgdbAPI.getDatasetIDWithName(cmgdbname)
         pid=cmgdbAPI.getDatasetIDWithName(pcmgdbname)
-
         self.dataset_details['CMGDBID']=did
         self.dataset_details['ParentCMGDBID']=pid
 
@@ -441,7 +440,7 @@ class DatasetInformation(object):
                                                        self._username, 
                                                        self._password, 
                                                        True)
-        ptid = self.dataset_details['ParentTaskID']        
+        ptid = self.dataset_details['ParentTaskID']     
         if ptid is not None and len(ptid) > 0:
             if len(ptid)>1:
                 cmgdbname = self.dataset_details['CMGDBName']
@@ -450,7 +449,7 @@ class DatasetInformation(object):
 
             self.dataset_details['ParentSavannahString']="[https://savannah.cern.ch/task/?"+str(ptid[0])+" "+getNameWithID(ptid[0])+"]"
             self.dataset_details['ParentTaskID'] = ptid[0]
-            self.dataset_details['ParentCMGDBName'] = getNameWithID(ptid)
+            self.dataset_details['ParentCMGDBName'] = getNameWithID(ptid[0])
 
         # If Parent is a CMS dataset (i.e. not a CMG dataset)
         elif not re.search("--", pcmgdbname):

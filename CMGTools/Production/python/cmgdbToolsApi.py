@@ -714,6 +714,17 @@ class CmgdbToolsApi(CmgdbApi):
             		print "ERROR - Validation run id not found"
             		return None
         	return rootFileInfo
+
+        def setParentID( self, datasetID, parentID ):
+                """ re-set parent id when re-publishing """
+                try:
+			#Insert information into database (THIS IS THE LINE THAT WILL NEED TO CHANGE)
+			self.insertCur.execute("UPDATE " +self.schema_name+ ".dataset_details set parent_dataset_id='%d' WHERE dataset_id=%d" % (parentID, datasetID))
+			self.insertConn.commit()
+		except cx_Oracle.IntegrityError:
+			#If set doesn't exist print error message and ignore
+			print "Dataset doesn't exist on CMGDB archive\n"
+
             
 
         
