@@ -18,7 +18,7 @@ class IntegrityCheckError(Exception):
 
 class BaseDataset( object ):
     
-    def __init__(self, name, user, pattern='.*root', run_range = None):
+    def __init__(self, name, user, pattern='.*root', run_range=None):
         self.name = name
         self.user = user
         self.pattern = pattern
@@ -34,7 +34,8 @@ class BaseDataset( object ):
         self.files = []
 
     def extractFileSizes(self):
-        '''Get the file size for each file, from the eos ls -l command.'''
+        '''Get the file size for each file, 
+        from the eos ls -l command.'''
         self.filesAndSizes = {}
 
     def buildListOfBadFiles(self):
@@ -62,7 +63,7 @@ class BaseDataset( object ):
             if abspath == False:
                 fileNameToPrint = os.path.basename(file)
             if info:
-                size = self.filesAndSizes.get(file, 'UNKNOWN').rjust(10)
+                size=self.filesAndSizes.get(file,'UNKNOWN').rjust(10)
                 # if size is not None:
                 #     size = size.rjust(10)
                 print status.ljust(10), size, \
@@ -76,8 +77,9 @@ class BaseDataset( object ):
         return self.files
 
     def listOfGoodFiles(self):
-        '''Returns all files flagged as good in the integrity check text output,
-        or not present in this file, are considered as good.'''
+        '''Returns all files flagged as good in the integrity 
+        check text output, or not present in this file, are 
+        considered as good.'''
         self.good_files = []
         for file in self.files:            
             if not self.bad_files.has_key(file):
@@ -85,7 +87,9 @@ class BaseDataset( object ):
         return self.good_files
 
     def listOfGoodFilesWithPrescale(self, prescale):
-        """Takes the list of good files and selects a random sample from them according to the prescale factor. E.g. a prescale of 10 will select 1 in 10 files."""
+        """Takes the list of good files and selects a random sample 
+        from them according to the prescale factor. 
+        E.g. a prescale of 10 will select 1 in 10 files."""
 
         good_files = self.listOfGoodFiles()
         if prescale < 2:
@@ -107,10 +111,11 @@ class BaseDataset( object ):
             slen = len(subset)
             #add to the set
             subset.add(choice)
-            #if this was a unique file remove so we don't get very slow corner cases where prescale is small
+            #if this was a unique file remove so we don't get 
+            #very slow corner cases where prescale is small
             if len(subset) > slen:
                 good_files.remove(choice)
-        assert len(subset) == num_files, 'The number of files should matcht the expected'
+        assert len(subset)==num_files,'The number of files does not match'
 
         return [f for f in subset]
 
@@ -128,7 +133,7 @@ class CMSDataset( BaseDataset ):
                 query = "%s and run >= %i" % (query,self.run_range[0])
             if self.run_range[1] > 0:
                 query = "%s and run <= %i" % (query,self.run_range[1])
-        dbs = 'dbs search --query="find file where dataset like %s"' % query
+        dbs='dbs search --query="find file where dataset like %s"'%query
         if begin >= 0:
             dbs += ' --begin %d' % begin
         if end >= 0:
@@ -148,13 +153,17 @@ class CMSDataset( BaseDataset ):
         runs = (-1,-1)
         if self.run_range is not None:
             runs = self.run_range
-        num_files = self.findPrimaryDatasetNumFiles(self.name.rstrip('/'),runs[0],runs[1])
+        num_files=self.findPrimaryDatasetNumFiles(self.name.rstrip('/'),
+                                                  runs[0],runs[1])
         limit = 10000
         if num_files > limit:
             num_steps = int(num_files/limit)+1
             self.files = []
             for i in xrange(num_steps):
-                self.files.extend(self.buildListOfFilesDBS(pattern,i*limit,((i+1)*limit)-1))
+                DBSFiles=self.buildListOfFilesDBS(pattern,
+                                                  i*limit,
+                                                  ((i+1)*limit)-1)
+                self.files.extend(DBSFiles)
         else:
             self.files = self.buildListOfFilesDBS(pattern)
             
@@ -166,7 +175,7 @@ class CMSDataset( BaseDataset ):
             query = "%s and run >= %i" % (query,runmin)
         if runmax > 0:
             query = "%s and run <= %i" % (query,runmax)
-        dbs = 'dbs search --query="find sum(file.numevents) where dataset like %s"' % query
+        dbs='dbs search --query="find sum(file.numevents) where dataset like %s"'%query
         dbsOut = os.popen(dbs).readlines()
 
         entries = []
@@ -221,7 +230,8 @@ class LocalDataset( BaseDataset ):
     def buildListOfFiles(self, pattern='.*root'):
         pat = re.compile( pattern )
         sampleName = self.name.rstrip('/')
-        sampleDir = ''.join( [os.path.abspath(self.basedir), sampleName ] )
+        sampleDir = ''.join( [os.path.abspath(self.basedir), 
+                              sampleName ] )
         self.files = []
         for file in sorted(os.listdir( sampleDir )):
             if pat.match( file ) is not None:
@@ -261,9 +271,6 @@ class Dataset( BaseDataset ):
         When the integrity check file is not available,
         files are considered as good.'''
         mask = "IntegrityCheck"
-        #file_mask = castortools.matchingFiles(self.castorDir, '^%s_.*\.txt$' % mask)
-        #if not file_mask:
-           #os.system("/afs/cern.ch/user/a/anantoni/CMSSW_5_3_3_patch3/src/CMGTools/Production/scripts/edmIntegrityCheck.py " + self.name + " -u " + self.user )
            
         self.bad_files = {}
         self.good_files = []
@@ -312,7 +319,8 @@ class Dataset( BaseDataset ):
             return int(self.report.get('PrimaryDatasetEntries',-1))
         return -1
 
-def createDataset( user, dataset, pattern,  readcache=False, basedir=None, run_range = None):
+def createDataset( user, dataset, pattern,  readcache=False, 
+                   basedir=None, run_range = None):
     
     cachedir =  '/'.join( [os.environ['HOME'],'.cmgdataset'])
     
