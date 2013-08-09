@@ -88,6 +88,11 @@
   <class name="edm::Wrapper<cmg::SimpleParticle>"/>
   <class name="edm::Wrapper<std::vector<cmg::SimpleParticle> >"/>
 
+  <class name="cmg::Candidate"/>
+  <class name="std::vector<cmg::Candidate>"/>
+  <class name="edm::Wrapper<cmg::Candidate>"/>
+  <class name="edm::Wrapper<std::vector<cmg::Candidate> >"/>
+
   <class name="cmg::Tau"/>
   <class name="cmg::Lepton<pat::TauPtr>" />
   <class name="cmg::PhysicsObjectWithPtr<pat::TauPtr>" />
