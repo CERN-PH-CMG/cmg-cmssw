@@ -79,15 +79,14 @@ patJetsWithVar = cms.EDProducer('JetExtendedProducer',
     payload  = cms.string('AK5PF')
 )
 
-outTracks = cms.EDProducer('VbfHbbTracksOutOfJets',
-    jets    = cms.InputTag('patJetsWithVar'),
-    vtx     = cms.InputTag('goodOfflinePrimaryVertices'),
-    tracks  = cms.InputTag('generalTracks'),
-    btagger = cms.string('combinedSecondaryVertexBJetTags')
+outPFCand = cms.EDProducer('VbfHbbPFCandOutOfJets',
+    jets         = cms.InputTag('patJetsWithVar'),
+    vtx          = cms.InputTag('goodOfflinePrimaryVertices'),
+    pfcandidates = cms.InputTag('particleFlow'),
+    btagger      = cms.string('combinedSecondaryVertexBJetTags')
 )
-#from RecoJets.JetProducers.TrackJetParameters_cfi import *
-from RecoJets.JetProducers.ak5TrackJets_cfi import *
-ak5SoftTrackJetsForVbfHbb = ak5TrackJets.clone(src = 'outTracks',jetPtMin = 1.0)
+from RecoJets.JetProducers.ak5PFJets_cfi import *
+ak5SoftPFJetsForVbfHbb = ak5PFJets.clone(src = 'outPFCand',jetPtMin = 1.0)
 
 selectedPatJets.cut = ''
 
@@ -112,6 +111,6 @@ PATJetSequence = cms.Sequence(
     selectedPatJets +
     patJetsWithVar +
     puJetId +
-    outTracks +
-    ak5SoftTrackJetsForVbfHbb
+    outPFCand +
+    ak5SoftPFJetsForVbfHbb
     )

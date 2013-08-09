@@ -22,14 +22,14 @@ from CMGTools.Production.datasetToSource import *
 datasetInfo = (
     'cmgtools_group',
     '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B',
-   # 'CMS',
-   # '/DoubleMu/Run2012A-22Jan2013-v1/AOD',
+    # 'CMS',
+    # '/DoubleMu/Run2012A-22Jan2013-v1/AOD',
     '.*root')
 process.source = datasetToSource(
     *datasetInfo
     )
 
-#process.source.fileNames = process.source.fileNames[:20]
+process.source.fileNames = process.source.fileNames[:20]
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 ###ProductionTaskHook$$$
@@ -88,6 +88,7 @@ if runOnMC is False:
     #if isNewerThan('CMSSW_5_2_0'):
     #    process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
 
+
 #Jose: fix to muon isolation in case the pf muon is not within the 1e-5 veto cone w.r.t reco muon (Muon expert should fix somewhere else)
 process.muPFIsoDepositChargedAll.ExtractorPSet.DR_Veto = 1e-3
 
@@ -99,8 +100,8 @@ process.PATCMGJetCHSSequence.insert( 0, process.ak5PFJetsCHS )
 from CMGTools.Common.Tools.visitorUtils import replaceSrc
 replaceSrc( process.PATCMGJetCHSSequence, 'ak5PFJets', 'ak5PFJetsCHS')
 replaceSrc( process.PATCMGJetCHSSequence, 'particleFlow', 'pfNoPileUp')
-process.PATCMGJetCHSSequence.remove(process.outTracksCHS) # not needed for CHS jets
-process.PATCMGJetCHSSequence.remove(process.ak5SoftTrackJetsForVbfHbbCHS) # not needed for CHS jets
+process.PATCMGJetCHSSequence.remove(process.outPFCandCHS) # not needed for CHS jets
+process.PATCMGJetCHSSequence.remove(process.ak5SoftPFJetsForVbfHbbCHS) # not needed for CHS jets
 jecPayload = 'AK5PFchs'
 process.patJetsWithVarCHS.payload = jecPayload
 process.patJetCorrFactorsCHS.payload = jecPayload
@@ -122,11 +123,6 @@ process.p = cms.Path(
     process.PATCMGJetCHSSequence 
     )
 
-if 'Prompt' in datasetInfo[1] or runOnMC :
-    process.metNoiseCleaning.remove(process.hcalfilter)
-if ('Parked' in  datasetInfo[1] ) or ( '22Jan2013' in  datasetInfo[1] ) :
-    process.metNoiseCleaning.remove(process.hcallasereventfilter2012)
-  
 process.p += process.postPathCounter
 
 # For testing, you can remove some of the objects:
@@ -164,6 +160,7 @@ if runOnFastSim :
     process.vertexWeightSequence.remove(process.vertexWeight3DFall112invfb)
     process.vertexWeightSequence.remove(process.vertexWeight3DFall112011B)
     process.vertexWeightSequence.remove(process.vertexWeight3DFall112011AB)
+
 
 ########################################################
 ## PAT output definition

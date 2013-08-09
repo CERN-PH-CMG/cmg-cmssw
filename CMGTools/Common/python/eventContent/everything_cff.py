@@ -27,7 +27,7 @@ patObjects = cms.untracked.vstring(
     'keep recoPFMETs_pcMet__*',    
     'keep recoPFMETs_tkMet__*',
     'keep recoCaloMETs_*_*_*',
-    'keep *_ak5SoftTrackJetsForVbfHbb__*'
+    'keep *_ak5SoftPFJetsForVbfHbb__*' 
     )
 
 everything = particleFlow + traditional + patObjects + runInfoAccounting + trigger + gen + eventCleaning

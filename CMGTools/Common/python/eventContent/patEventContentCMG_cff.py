@@ -67,7 +67,7 @@ patEventContentCMG.extend([
     'drop *_selectedPatJetsCHS_*_*',
     # keep extended pat jets 
     'keep *_patJetsWithVar*_*_*',
-    'keep *_ak5SoftTrackJetsForVbfHbb__*' 
+    'keep *_ak5SoftPFJetsForVbfHbb__*' 
     ])
 
 patEventContentCMG.extend( everything )
