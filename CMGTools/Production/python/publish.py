@@ -78,8 +78,10 @@ def publish(sampleName,fileown,comment,test,user,password, force,
         # Get DS Information
         datasetDetails = DatasetInformation(sampleName, 
                                             fileown, 
-                                            comment, force,
-                                            test,primary, 
+                                            comment, 
+                                            force,
+                                            test,
+                                            primary, 
                                             user,
                                             password, 
                                             development)
