@@ -24,7 +24,6 @@ def findFirstAncestor(dataset_id, info):
                   'tauEle_fullsel_tree', 'diTau_fullsel_tree_CMG', 'diTau_fullsel_tree','cmgTuple', 'PFAOD'] 
         igroup = 0
         while 1:
-            #import pdb ; pdb.set_trace()
             ginfo = groupInfo(dataset_id, groups[igroup])
             if ginfo != None:
                 break
@@ -131,16 +130,36 @@ def processInfo(info):
             step = 'MERGE'
         else:
             step = 'Unknown'
-
-        try    :
-          nmiss + nbad 
-        except : 
-          njobs, nbad, nmiss = retrieveInfosFromBadPublished(ds)
+                
+        ## RIC: need to find a way to get the productions efficiency for the samples produced via GRID in 
+        ## PAT_CMG_V5_16_0 campaign. For these samples the Logger.tgz file is missing and njobs information is lost
         
-        if nmiss+nbad == 0:
-            job_eff = 1
+        ## RIC: if publish went fine nbad and nmiss should be well defined and >= 0
+        try    :
+          nmiss + nbad >= 0
+        ## RIC: if publish the dataset has been published with -f option, Logger.tgz is missing and these info are not available
+        except :           
+          print 'WARNING! publish informations are corrupted'
+          njobs = 0.
+          nbad  = 0.
+          nmiss = 0.
+          #njobs, nbad, nmiss = retrieveInfosFromBadPublished(ds) ## not really needed
+        
+        if nmiss+nbad == 0 and njobs>0 :
+            job_eff = 1.
         else:
-            job_eff = 1 - (nmiss + nbad)/float(njobs)
+            ## RIC: catch if the dataset has been skimmed or not. If it ends with PAT_CMG_V5_16_0 tier it has not been skimmed
+            ## therefore the production effiency is equal to dataset_fraction
+            if ds['path_name'].endswith('PAT_CMG_V5_16_0') :
+              job_eff = ds['dataset_fraction']
+            ## RIC: if the sample is skimmed en error is thrown here, as njobs is set to 0
+            else :
+              job_eff = 1. - (nmiss + nbad)/float(njobs)
+        
+        if job_eff > 1. :
+          print 'WARNING!: efficiency greater than one, set at 1. by hand, please CHECK!'
+          job_eff = 1.
+        
         # print 'job efficiency', job_eff
         if njobs and fraction :
             if job_eff - fraction > 0.1:
