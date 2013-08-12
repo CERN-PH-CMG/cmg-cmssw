@@ -1,4 +1,4 @@
-nJet25 : nJet25 : [1.5,2.5,3.5,4.5,5.5] ; XTitle='N(jet\, p_{T} > 25)', XNDiv=505
+nJet25 : nJet25 : [1.5,2.5,3.5,4.5,5.5] ; XTitle='N(jet', XNDiv=505, LegendCutoff=0.0001
 jet1pT: Jet1_pt : 40,20,300; XTitle="p_{T}(b_{1}) [GeV]"
 htJet25: htJet25 : 40,0,1000; XTitle='H_{T} [GeV]',XNDiv=505
 htJet25ratio1224Lep: (LepGood1_pt*(abs(LepGood1_eta)<1.2) + LepGood2_pt*(abs(LepGood2_eta)<1.2) + \
@@ -11,8 +11,5 @@ htJet25ratio1224Lep: (LepGood1_pt*(abs(LepGood1_eta)<1.2) + LepGood2_pt*(abs(Lep
 lepEta3: max(max(abs(LepGood1_eta),abs(LepGood2_eta)),abs(LepGood3_eta)) : 24,0,2.5; XTitle="Max lepton |#eta|",Legend='TL'
 minDrllAFOS: minDrllAFOS: 32,0,5 ; XTitle="min #DeltaR(l^{+}l^{-}')"
 bestMTopHad: bestMTopHad: 40, 50, 350; XTitle="best m(jjb) [GeV]"
-finalMVA: FinalMVA_3L_BDTG : 24,-1.0,0.6; XTitle="BDT output"
-#finalMVA_Cat: finalMVA_3LCat : 24,-1.0,0.6; XTitle="BDT output (categorized)"
-#finalMVA_Cat2: finalMVA_3LCat : 24,-1.0,0.6; XTitle="BDT output (categorized\, 2)"
-#finalMVA_2: finalMVA_3LMike : 24,-1.0,0.6; XTitle="BDT output (training 2)"
+finalMVA: FinalMVA_3L_BDTG : 24,-1.0,0.6; XTitle="BDT output", LegendCutoff=0.0001
 Qcat: LepGood1_charge+LepGood2_charge+LepGood3_charge: [-3,-2,0,2] ; XTitle='q(l_{1}+l_{2}+l_{3})',XNDiv=505
