@@ -23,6 +23,7 @@ class Event:
             self._tree.entry = self._entry
     def __getattr__(self,name):
         if name in self.__dict__: return self.__dict__[name]
+        if name == "metLD": return self._tree.met*0.00397 + self._tree.mhtJet25*0.00265
         self._sync()
         return getattr(self._tree,name)
     def __getitem__(self,attr):
@@ -51,7 +52,9 @@ class Object:
     def __getattr__(self,name):
         if name in self.__dict__: return self.__dict__[name]
         if name == "pdgLabel": return self.pdgLabel_()
-        return getattr(self._event,self._prefix+name)
+        val = getattr(self._event,self._prefix+name)
+        self.__dict__[name] = val ## cache
+        return val
     def __getitem__(self,attr):
         return self.__getattr__(attr)
     def pdgLabel_(self):
@@ -77,10 +80,14 @@ class Collection:
             self._len = None
         else:
             raise RuntimeError, "must provide either len or testVar"
+        self._cache = {}
     def __getitem__(self,index):
+        if type(index) == int and index in self._cache: return self._cache[index]
         if self._testVar != None and self._len == None: self._countMe()
-        if index >= self._len: raise IndexError
-        return Object(self._event,"%s%d" % (self._prefix,index+1))
+        if index >= self._len: raise IndexError, "Invalid index %r (len is %r) at %s" % (index,self._len,self._prefix)
+        ret = Object(self._event,"%s%d" % (self._prefix,index+1))
+        if type(index) == int: self._cache[index] = ret
+        return ret
     def __len__(self):
         if self._testVar != None and self._len == None: self._countMe()
         return self._len
@@ -90,7 +97,7 @@ class Collection:
             try:
                 val = getattr(self._event,"%s%d_%s" % (self._prefix,n+1,self._testVar))
                 ok = (val > -98) 
-                n += 1
+                if ok: n += 1
             except:
                 ok = False
         self._len = n
