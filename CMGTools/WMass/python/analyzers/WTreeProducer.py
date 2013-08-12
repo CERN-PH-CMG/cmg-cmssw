@@ -27,6 +27,10 @@ def bookMET( tree, pName ):
     var(tree, '{pName}_phi'.format(pName=pName))
     var(tree, '{pName}_sumEt'.format(pName=pName))
 
+def bookMET2( tree, pName ):
+    var(tree, '{pName}'.format(pName=pName))
+    var(tree, '{pName}_phi'.format(pName=pName))
+
 def bookJet( tree, pName ):
     var(tree, '{pName}_pt'.format(pName=pName))
     var(tree, '{pName}_eta'.format(pName=pName))
@@ -47,6 +51,10 @@ def fillMET( tree, pName, particle ):
     fill(tree, '{pName}'.format(pName=pName), particle.pt() )
     fill(tree, '{pName}_phi'.format(pName=pName), particle.phi() )
     fill(tree, '{pName}_sumEt'.format(pName=pName), particle.sumEt() )
+
+def fillMET2( tree, pName, particle ):
+    fill(tree, '{pName}'.format(pName=pName), particle.pt() )
+    fill(tree, '{pName}_phi'.format(pName=pName), particle.phi() )
     
 def fillJet( tree, pName, particle ):
     fill(tree, '{pName}_pt'.format(pName=pName), particle.pt() )
@@ -63,10 +71,15 @@ class WTreeProducer( TreeAnalyzerNumpy ):
     def declareHandles(self):
       super(WTreeProducer, self).declareHandles()
     
-      self.handles['pfmet'] = AutoHandle(
-        'cmgPFMET',
-        'std::vector<cmg::BaseMET>' 
-        )
+      self.handles['pfMet'] = AutoHandle('cmgPFMET','std::vector<cmg::BaseMET>')
+      self.handles['pfMetraw'] = AutoHandle('cmgPFMETRaw','std::vector<cmg::BaseMET>')
+      self.handles['pfMetSignificance'] = AutoHandle('pfMetSignificance','cmg::METSignificance')
+      self.handles['nopuMet'] = AutoHandle('nopuMet','std::vector<reco::PFMET>')
+      self.handles['pucMet'] = AutoHandle('pcMet','std::vector<reco::PFMET>')
+      self.handles['pfMetForRegression'] = AutoHandle('pfMetForRegression','std::vector<reco::PFMET>')
+      self.handles['puMet'] = AutoHandle('puMet','std::vector<reco::PFMET>')
+      self.handles['tkMet'] = AutoHandle('tkMet','std::vector<reco::PFMET>')
+      
       self.handles['muons'] = AutoHandle(
             'cmgMuonSel',
             'std::vector<cmg::Muon>'
@@ -105,7 +118,13 @@ class WTreeProducer( TreeAnalyzerNumpy ):
       var( tr, 'noTrgMuonsLeadingPt', int)
 
       bookMET( tr, 'pfmet')
-      
+      bookMET2(tr, 'pfmetraw')
+      bookMET2(tr, 'nopumet')
+      bookMET2(tr, 'pucmet')
+      bookMET2(tr, 'pfMetForRegression')
+      bookMET2(tr, 'pumet')
+      bookMET2(tr, 'tkmet')
+
       bookW( tr, 'W')
       var( tr, 'W_mt')
       bookW( tr, 'WGen')
@@ -185,6 +204,20 @@ class WTreeProducer( TreeAnalyzerNumpy ):
           fill( tr, 'evtHasTrg', event.passedTriggerAnalyzer)
           fill( tr, 'evtWSel', event.WGoodEvent)
           fillMET(tr, 'pfmet', event.pfmet)
+          event.pfmetraw = self.handles['pfMetraw'].product()[0]
+          event.pfMetSignificance = self.handles['pfMetSignificance'].product()
+          event.nopumet = self.handles['nopuMet'].product()[0]
+          event.pucmet = self.handles['pucMet'].product()[0]
+          event.pfMetForRegression = self.handles['pfMetForRegression'].product()[0]
+          event.pumet = self.handles['puMet'].product()[0]
+          event.tkmet = self.handles['tkMet'].product()[0]
+          fillMET2(tr, 'pfmetraw', event.pfmetraw.p4())
+          fillMET2(tr, 'nopumet', event.nopumet.p4())
+          fillMET2(tr, 'pucmet', event.pucmet.p4())
+          fillMET2(tr, 'pfMetForRegression', event.pfMetForRegression.p4())
+          fillMET2(tr, 'pumet', event.pumet.p4())
+          fillMET2(tr, 'tkmet', event.tkmet.p4())
+
           if len(event.selJets)>0:
             fillJet(tr, 'Jet_leading', event.selJets[0])
             

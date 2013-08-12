@@ -164,10 +164,15 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
     def declareHandles(self):
       super(ZTreeProducer, self).declareHandles()
     
-      self.handles['pfmet'] = AutoHandle(
-        'cmgPFMET',
-        'std::vector<cmg::BaseMET>' 
-        )
+      self.handles['pfMet'] = AutoHandle('cmgPFMET','std::vector<cmg::BaseMET>')
+      self.handles['pfMetraw'] = AutoHandle('cmgPFMETRaw','std::vector<cmg::BaseMET>')
+      self.handles['pfMetSignificance'] = AutoHandle('pfMetSignificance','cmg::METSignificance')
+      self.handles['nopuMet'] = AutoHandle('nopuMet','std::vector<reco::PFMET>')
+      self.handles['pucMet'] = AutoHandle('pcMet','std::vector<reco::PFMET>')
+      self.handles['pfMetForRegression'] = AutoHandle('pfMetForRegression','std::vector<reco::PFMET>')
+      self.handles['puMet'] = AutoHandle('puMet','std::vector<reco::PFMET>')
+      self.handles['tkMet'] = AutoHandle('tkMet','std::vector<reco::PFMET>')
+              
       self.handles['muons'] = AutoHandle(
             'cmgMuonSel',
             'std::vector<cmg::Muon>'
@@ -217,6 +222,13 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
       var( tr, 'noTrgExtraMuonsLeadingPt', int)
 
       bookMET(tr, 'pfmet')
+      # bookMET(tr, 'pfmet2')
+      bookMET(tr, 'pfmetraw')
+      bookMET(tr, 'nopumet')
+      bookMET(tr, 'pucmet')
+      bookMET(tr, 'pfMetForRegression')
+      bookMET(tr, 'pumet')
+      bookMET(tr, 'tkmet')
       var(tr, 'pfmet_sumEt')
       bookMET(tr, 'pfmetWlikeNeg')
       bookMET(tr, 'pfmetWlikePos')
@@ -358,8 +370,23 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           fill( tr, 'evtHasGoodVtx', event.passedVertexAnalyzer)
           fill( tr, 'evtHasTrg', event.passedTriggerAnalyzer)
           fill( tr, 'evtZSel', event.ZGoodEvent)
-          fillMET(tr, 'pfmet', event.ZpfmetNoMu)
           fill(tr, 'pfmet_sumEt', event.pfmet.sumEt())
+          fillMET(tr, 'pfmet', event.ZpfmetNoMu)
+          # event.pfmet2 = self.handles['pfMet'].product()[0]
+          event.pfmetraw = self.handles['pfMetraw'].product()[0]
+          event.pfMetSignificance = self.handles['pfMetSignificance'].product()
+          event.nopumet = self.handles['nopuMet'].product()[0]
+          event.pucmet = self.handles['pucMet'].product()[0]
+          event.pfMetForRegression = self.handles['pfMetForRegression'].product()[0]
+          event.pumet = self.handles['puMet'].product()[0]
+          event.tkmet = self.handles['tkMet'].product()[0]
+          # fillMET(tr, 'pfmet2', event.pfmet2.p4())
+          fillMET(tr, 'pfmetraw', event.pfmetraw.p4())
+          fillMET(tr, 'nopumet', event.nopumet.p4())
+          fillMET(tr, 'pucmet', event.pucmet.p4())
+          fillMET(tr, 'pfMetForRegression', event.pfMetForRegression.p4())
+          fillMET(tr, 'pumet', event.pumet.p4())
+          fillMET(tr, 'tkmet', event.tkmet.p4())
           if len(event.ZselJets)>0:
               fillJet(tr, 'Jet_leading', event.ZselJets[0])
         #print 'filling'  
