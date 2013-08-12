@@ -18,3 +18,5 @@ nJet25 : nJet25 : 8,-0.5,7.5 ; XTitle='N(jet\, p_{T} > 25)'
 nBJetLoose25 : nBJetLoose25 : 5,-0.5,4.5 ; XTitle='N(jet\, p_{T} > 25\, CVS Loose)',XNDiv=505
 nBJetMedium25 : nBJetMedium25 : 5,-0.5,4.5 ; XTitle='N(jet\, p_{T} > 25\, CVS Medium)',XNDiv=505
 nvtx: nVert: 30,0.5,40.5 ; XTitle="N(vertices)", Legend='TR'
+max_muon_sip: max( max((abs(LepGood1_pdgId)==13)*LepGood1_sip3d,(abs(LepGood2_pdgId)==13)*LepGood2_sip3d ), \
+                 (abs(LepGood3_pdgId)==13)*LepGood3_sip3d ) :  24,0.0,10. ; XTitle="Worst muon S_{IP3D}", Legend="TR"

@@ -10,6 +10,7 @@ elEta: if3(abs(LepGood1_pdgId)==11,abs(LepGood1_eta),abs(LepGood2_eta))*(abs(Lep
 #minmva: min(LepGood1_mva,LepGood2_mva): 20,-1,1; XTitle="min MVA"
 #maxmva: max(LepGood1_mva,LepGood2_mva): 20,-1,1; XTitle="max MVA"
 nTightMu: LepGood1_tightId + LepGood2_tightId: [-0.5,0.5,1.5,2.5] ; XTitle="Number of tight muons", XNDiv=505
+minTrkHits: min(LepGood1_innerHits,LepGood2_innerHits) : 15,0,30; XTitle="Number of hits on track", XNDiv=505
 
 ### DILEPTONS
 mll  : mass_2(LepGood1_pt,LepGood1_eta,LepGood1_phi,LepGood1_mass, LepGood2_pt,LepGood2_eta,LepGood2_phi,LepGood2_mass): 15,0,300; XTitle="m(ll) [GeV]"
@@ -39,10 +40,10 @@ minBJetPt: min(Jet1_pt,Jet2_pt) : 15,25,200; XTitle="Second b-jet p_{T} [GeV]"
 mjj12: mass_2(Jet1_pt,Jet1_eta,Jet1_phi,Jet1_mass,Jet2_pt,Jet2_eta,Jet2_phi,Jet2_mass) : 15,25,350; XTitle="m(b_{1}\,b_{2})  [GeV]"
 mjj23: mass_2(Jet3_pt,Jet3_eta,Jet3_phi,Jet3_mass,Jet2_pt,Jet2_eta,Jet2_phi,Jet2_mass) : 15,25,250; XTitle="m(j_{2}\,j_{3})  [GeV]"
 
-minMbbLoose: minMbbLoose: 12,0,200; XTitle="min m(bb\, CSV loose) [GeV]"
-minDrbbLoose: minDrbbLoose: 12,0,5; XTitle="min #DeltaR(bb\, CSV loose) [GeV]"
-minMbbMedium: minMbbMedium: 12,0,200; XTitle="min m(bb\, CSV medium) [GeV]"
-minDrbbMedium: minDrbbMedium: 12,0,5; XTitle="min #DeltaR(bb\, CSV medium) [GeV]"
+#minMbbLoose: minMbbLoose: 12,0,200; XTitle="min m(bb\, CSV loose) [GeV]"
+#minDrbbLoose: minDrbbLoose: 12,0,5; XTitle="min #DeltaR(bb\, CSV loose) [GeV]"
+#minMbbMedium: minMbbMedium: 12,0,200; XTitle="min m(bb\, CSV medium) [GeV]"
+#minDrbbMedium: minDrbbMedium: 12,0,5; XTitle="min #DeltaR(bb\, CSV medium) [GeV]"
 
 ### MET
 met: met: 15,0,300    ; XTitle="E_{T}^{miss}  [GeV]"
@@ -59,3 +60,36 @@ htllv:  LepGood1_pt+LepGood2_pt+met : 20,0,200; XTitle="p_{T}(l_{1})+p_{T}(l_{2}
 
 ### M(top)
 bestMTopHad: bestMTopHad: 20, 50, 350; XTitle="best m(t#rightarrowbjj) [GeV]" 
+
+### ID Vars
+bestMVA:  max(LepGood1_mva,LepGood2_mva): 24,0.7,1.0 ; XTitle="Best lepMVA", Legend="TL"
+worstMVA: min(LepGood1_mva,LepGood2_mva): 24,0.7,1.0 ; XTitle="Worst lepMVA", Legend="TL"
+bestRelIso:  min(LepGood1_relIso,LepGood2_relIso): 24,0.0,0.4 ; XTitle="Best lepRelIso", Legend="TR"
+worstRelIso: max(LepGood1_relIso,LepGood2_relIso): 24,0.0,0.4 ; XTitle="Worst lepRelIso", Legend="TR"
+bestSIP:  min(LepGood1_sip3d,LepGood2_sip3d): 24,0.0,10. ; XTitle="Best lep S_{IP3D}", Legend="TR"
+worstSIP: max(LepGood1_sip3d,LepGood2_sip3d): 24,0.0,10. ; XTitle="Worst lep S_{IP3D}", Legend="TR"
+worstDxy: max(abs(LepGood1_dxy),abs(LepGood2_dxy))*10000: 24,0.0,100. ; XTitle="Worst lep d_{xy} [#mum]", Legend="TR"
+worstDz: max(abs(LepGood1_dz),abs(LepGood2_dz))*10000:  24,0.0,600 ; XTitle="Worst lep d_{z} [#mum]", Legend="TR"
+bestBTag:  max(0,min(LepGood1_jetBTagCSV,LepGood2_jetBTagCSV)): 24,0.0,1. ; XTitle="Best lep b-tag", Legend="TR"
+worstBTag: max(0,max(LepGood1_jetBTagCSV,LepGood2_jetBTagCSV)): 24,0.0,1. ; XTitle="Worst lep b-tag", Legend="TR"
+bestJetPtF:  max(0,min(LepGood1_jetPtRatio,LepGood2_jetPtRatio)): 24,0.0,1.6 ; XTitle="Best lep p_{T}(l)/p_{T}(jet)", Legend="TR"
+worstJetPtF: max(0,max(LepGood1_jetPtRatio,LepGood2_jetPtRatio)): 24,0.0,1.6 ; XTitle="Worst lep p_{T}(l)/p_{T}(jet)", Legend="TR"
+bestJetDR:  max(0,min(LepGood1_jetDR,LepGood2_jetDR)): 24,0.0,0.3 ; XTitle="Best #DeltaR(l\,jet)", Legend="TR"
+worstJetDR: max(0,max(LepGood1_jetDR,LepGood2_jetDR)): 24,0.0,0.3 ; XTitle="Worst #DeltaR(l\,jet)", Legend="TR"
+
+tightId_worstSip: if3(LepGood1_sip3d > LepGood2_sip3d,LepGood1_tightId,LepGood2_tightId): [-0.5,0.5,1.5] ; XTitle="Pass POG Tight id", Legend="TL"
+relIso_worstSip: if3(LepGood1_sip3d > LepGood2_sip3d,LepGood1_relIso,LepGood2_relIso): 24,0.0,0.4; XTitle="RelIso", Legend="TL"
+mva_worstSip: if3(LepGood1_sip3d > LepGood2_sip3d,LepGood1_mva,LepGood2_mva): 24,0.7,1.0; XTitle="lepMVA", Legend="TL"
+jetBTag_worstSip: max(if3(LepGood1_sip3d > LepGood2_sip3d,LepGood1_jetBTagCSV,LepGood2_jetBTagCSV),0): 24,0.0,1.0; XTitle="jet b-tag", Legend="TL"
+jetDR_worstSip: if3(LepGood1_sip3d > LepGood2_sip3d,LepGood1_jetDR,LepGood2_jetDR): 24,0.0,0.3; XTitle="#DeltaR(l\,jet)", Legend="TL"
+jetPtF_worstSip: if3(LepGood1_sip3d > LepGood2_sip3d,LepGood1_jetPtRatio,LepGood2_jetPtRatio): 24,0.0,1.6; XTitle="p_{T}(l)/p_{T}(jet)", Legend="TL"
+dxy_worstSip: abs(if3(LepGood1_sip3d > LepGood2_sip3d,LepGood1_dxy,LepGood2_dxy))*10000: 24,0.0,500; XTitle="|d_{xy}| [#mum]", Legend="TR"
+dz_worstSip: abs(if3(LepGood1_sip3d > LepGood2_sip3d,LepGood1_dz,LepGood2_dz))*10000: 24,0.0,500; XTitle="|d_{z}| [#mum]", Legend="TR"
+
+muon_sip: if3(abs(LepGood1_pdgId)==13, LepGood1_sip3d, LepGood2_sip3d) :  24,0.0,10. ; XTitle="Muon S_{IP3D}", Legend="TR"
+
+nvtx: nVert: 24,0.5,40.5 ; XTitle="N(vertices)", Legend='TR'
+bestMWjj: bestMWjj: 24, 40, 240; XTitle="best m(Wjj) [GeV]"
+
+#n_mu_sip35_3l:  (abs(LepGood1_pdgId)==13)*(LepGood1_sip3d > 3.5) +  (abs(LepGood2_pdgId)==13)*(LepGood2_sip3d > 3.5) + (abs(LepGood3_pdgId)==13)*(LepGood3_sip3d > 3.5): [-0.5,0.5,1.5]; XTitle="N(#mu\, S_{IP3D} > 3.5)", Legend="TR"
+n_mu_sip35:  (abs(LepGood1_pdgId)==13)*(LepGood1_sip3d > 3.5) +  (abs(LepGood2_pdgId)==13)*(LepGood2_sip3d > 3.5): [-0.5,0.5,1.5,2.5]; XTitle="N(#mu\, S_{IP3D} > 3.5)", Legend="TR"
