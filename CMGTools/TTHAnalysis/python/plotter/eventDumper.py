@@ -15,6 +15,7 @@ parser.add_option("-T", "--type",  dest="type", default=None, type="string", hel
 parser.add_option("-F", "--fudge",   dest="fudge",  default=False, action="store_true",  help="print -999 for missing variables")
 parser.add_option("-m", "--mc",     dest="ismc",  default=False, action="store_true",  help="print MC match info")
 parser.add_option("--mm", "--more-mc",     dest="moremc",  default=False, action="store_true",  help="print more MC match info")
+parser.add_option("--tau", dest="tau",  default=False, action="store_true",  help="print Taus")
 parser.add_option("-j", "--json",   dest="json",  default=None, type="string", help="JSON file to apply")
 parser.add_option("-n", "--maxEvents",  dest="maxEvents", default=-1, type="int", help="Max events")
 parser.add_option("-f", "--format",   dest="fmt",  default=None, type="string",  help="Print this format string")
@@ -93,6 +94,15 @@ class BaseDumper(Module):
                 print "   mvaId %5.3f misHit %d conVeto %d tightCh %d mvaIdTrig %5.3f relIso03 %5.3f  pf pt %.1f" % (l.mvaId, l.innerHits, l.convVeto, l.tightCharge, l.tightId, l.relIso03/(l.pfpt if l.pfpt else l.pt), l.pfpt)
             else:
                 print "   tightId %d tkHit %2d tightCh %d" % (l.tightId, l.innerHits, l.tightCharge)
+        if self.options.tau: 
+            taus =  [g for g in Collection(ev,"Tau") if g.pt > 0 ]
+            for i,l in enumerate(taus):
+                print "    tau    %d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f    RawIMVA %+.3f  CI WP %d IMVA WP %d  dxy %+4.3f dz %+4.3f " % (
+                        i+1, l.pdgId,l.pt,l.eta,l.phi, l.byRawIMVA, l.byCI, l.byIMVA, 10*l.dxy, 10*l.dz),
+                if self.options.ismc:
+                    print "   mcMatch %+3d" % l.mcMatchId
+                else:
+                    print ""
         for i,j in enumerate(self.jetsPtSorted):
             if self.options.ismc:
                 print "    jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f mcMatch %2d mcFlavour %d/%d mcPt %5.1f" % (i, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)), j.mcMatchId, j.mcMatchFlav,j.mcFlavour, j.mcPt)
@@ -137,7 +147,6 @@ class BaseDumper(Module):
                     print "      nearest quark: id %+2d pt %5.1f eta %+4.2f phi %+4.2f   (deltaR %6.3f)" % (nq.pdgId,nq.pt,nq.eta,nq.phi, deltaR(nq,l))
                 if nj != None:
                     print "      nearest jet: pt %5.1f eta %+4.2f phi %+4.2f btag %4.3f mcMatch %2d mcFlavour %d/%d   (deltaR %6.3f)" % (nj.pt,nj.eta,nj.phi, min(1.,max(0.,nj.btagCSV)), nj.mcMatchId, nj.mcMatchFlav, nj.mcFlavour, deltaR(nj,l))
-            
         print ""
         print ""
         print ""
