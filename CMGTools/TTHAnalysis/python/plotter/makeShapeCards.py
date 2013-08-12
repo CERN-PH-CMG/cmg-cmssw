@@ -48,7 +48,7 @@ for sysfile in args[4:]:
             if re.match(binmap,binname) == None: continue
             if name not in systs: systs[name] = []
             systs[name].append((re.compile(procmap),amount))
-        elif field[4] in ["envelop","shapeOnly","templates"]:
+        elif field[4] in ["envelop","shapeOnly","templates","alternateShapeOnly"]:
             (name, procmap, binmap, amount) = field[:4]
             if re.match(binmap,binname) == None: continue
             if name not in systs: systsEnv[name] = []
@@ -76,7 +76,7 @@ for name in systsEnv.keys():
         effect0  = "-"
         effect12 = "-"
         for (procmap,amount,mode) in systsEnv[name]:
-            if re.match(procmap, p): effect = float(amount) if mode != "templates" else amount
+            if re.match(procmap, p): effect = float(amount) if mode not in ["templates","alternateShape", "alternateShapeOnly"] else amount
         if effect == "-" or effect == "0": 
             effmap0[p]  = "-" 
             effmap12[p] = "-" 
@@ -124,6 +124,33 @@ for name in systsEnv.keys():
             p0Dn.SetName("%s_%sDown" % (nominal.GetName(),name))
             report[p0Up.GetName()] = p0Up
             report[p0Dn.GetName()] = p0Dn
+            effect0  = "1"
+            effect12 = "-"
+        elif mode in ["alternateShape", "alternateShapeOnly"]:
+            nominal = report[p]
+            alternate = report[effect]
+            alternate.SetName("%s_%sUp" % (nominal.GetName(),name))
+            if mode == "alternateShapeOnly":
+                alternate.Scale(nominal.Integral()/alternate.Integral())
+            mirror = nominal.Clone("%s_%sDown" % (nominal.GetName(),name))
+            for b in xrange(1,nominal.GetNbinsX()+1):
+                y0 = nominal.GetBinContent(b)
+                yA = alternate.GetBinContent(b)
+                yM = y0
+                if (y0 > 0 and yA > 0):
+                    yM = y0*y0/yA
+                elif yA == 0:
+                    yM = 2*y0
+                mirror.SetBinContent(b, yM)
+            if mode == "alternateShapeOnly":
+                # keep same normalization
+                mirror.Scale(nominal.Integral()/mirror.Integral())
+            else:
+                # mirror normalization
+                mnorm = (nominal.Integral()**2)/alternate.Integral()
+                mirror.Scale(mnorm/alternate.Integral())
+            report[alternate.GetName()] = alternate
+            report[mirror.GetName()] = mirror
             effect0  = "1"
             effect12 = "-"
         effmap0[p]  = effect0 
