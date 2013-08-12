@@ -1,6 +1,7 @@
 import os
 from fnmatch import fnmatch
 import copy
+import re
 
 from ROOT import TFile, TH1F, TPaveText
 
@@ -13,7 +14,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
 
     def __init__(self, varName, directory, selComps, weights,
                  bins = None, xmin = None, xmax=None, cut = '',
-                 weight='weight', embed = False, photon = False, electron = True,  shift=None, treeName=None):
+                 weight='weight', embed = False, photon = False, electron = True,  shift=None, treeName=None, susy=False):
         '''Data/MC plotter adapted to the H->tau tau analysis.
         The plotter takes a collection of trees in input. The trees are found according
         to the dictionary of selected components selComps.
@@ -25,18 +26,18 @@ class H2TauTauDataMC( AnalysisDataMC ):
         '''
         if treeName is None:
             treeName = 'H2TauTauTreeProducerTauTau'
-        self.treeName = treeName
-        self.selComps = selComps
-        self.varName = varName
-        self.cut = cut
+        self.treeName    = treeName
+        self.selComps    = selComps
+        self.varName     = varName
+        self.cut         = cut
+        self.susy        = susy
         self.eventWeight = weight
-        # import pdb; pdb.set_trace()
-        self.bins = bins
-        self.xmin = xmin
-        self.xmax = xmax
-	self.photon = photon
-	self.electron = electron
-        self.keeper = []
+        self.bins        = bins
+        self.xmin        = xmin
+        self.xmax        = xmax
+	self.photon      = photon
+	self.electron    = electron
+        self.keeper      = []
         
         super(H2TauTauDataMC, self).__init__(varName, directory, weights)
         self.legendBorders = 0.55,0.65,0.85,0.88
@@ -65,6 +66,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
 	    varName="sqrt(l1E*l1E-l1Px*l1Px-l1Py*l1Py-l1Pz*l1Pz)"
 	if varName=="tau2Mass":
 	    varName="sqrt(l2E*l2E-l2Px*l2Px-l2Py*l2Py-l2Pz*l2Pz)"
+        
         tree.Project( histName, varName, '{weight}*({cut})'.format(cut=cut,weight=self.eventWeight) )
         hist.GetXaxis().SetTitle(varName)
         hist.SetTitle("")
@@ -79,42 +81,35 @@ class H2TauTauDataMC( AnalysisDataMC ):
     def _ReadHistograms(self, directory):
         '''Build histograms for all components.'''
         for layer, (compName, comp) in enumerate( self.selComps.iteritems() ) : 
-            fileName = '/'.join([ directory,
-                                  compName,
-                                  'H2TauTauTreeProducerTauTau',
-                                  'H2TauTauTreeProducerTauTau_tree.root'])
+            fileName = '/'.join([ directory, compName, 'H2TauTauTreeProducerTauTau', 'H2TauTauTreeProducerTauTau_tree.root'])
             file = TFile(fileName)
             self.keeper.append( file )
             tree = file.Get('H2TauTauTreeProducerTauTau')
-	    #print fileName, tree
             
+            my_cut = self.cut
+            
+            if 'HiggsSUSY' in compName :
+              mA = re.findall(r"\d{2,4}", compName)
+              gen_mass_cut = ' & genMass>{M}*0.7 & genMass<{M}*1.3 '.format(M=mA[0])
+              self.cut += gen_mass_cut
+                          
             if compName == 'DYJets':
-	        if self.photon:
-		    phot="&& isPhoton==0"
-	        elif self.electron:
-		    phot="&& isElectron==0"
-                else:
-		    phot=""
-                self._BuildHistogram(tree, comp, compName, self.varName,
-                                     self.cut + ' && isFake==0'+phot, layer)
-                fakeCompName = 'DYJets_Fakes'
-                self._BuildHistogram(tree, comp, fakeCompName, self.varName,
-                                     self.cut + ' && isFake'+phot, layer)
-                self.weights[fakeCompName] = self.weights[compName]
-		if self.photon:
-                    photonCompName = 'DYJets_Photon'
-                    self._BuildHistogram(tree, comp, photonCompName, self.varName,
-                                         self.cut + ' && isPhoton', layer)
-                    self.weights[photonCompName] = self.weights[compName]
-		if self.electron:
-                    electronCompName = 'DYJets_Electron'
-                    self._BuildHistogram(tree, comp, electronCompName, self.varName,
-                                         self.cut + ' && isElectron', layer)
-                    self.weights[electronCompName] = self.weights[compName]
+              self._BuildHistogram(tree, comp, compName   , self.varName, self.cut + ' & isZtt'           , layer)
+              self._BuildHistogram(tree, comp, 'DYJets_ZL', self.varName, self.cut + ' & (isZee || isZmm)', layer)
+              self._BuildHistogram(tree, comp, 'DYJets_ZJ', self.varName, self.cut + ' & isZj'            , layer)
+              self.weights['DYJets_ZL'] = self.weights[compName]
+              self.weights['DYJets_ZJ'] = self.weights[compName]            
+            elif 'HiggsGGH' in compName :
+              self._BuildHistogram(tree, comp, compName           , self.varName, self.cut + ' * higgsPtWeightNom  ', layer)
+              self._BuildHistogram(tree, comp, compName+'_pthUp'  , self.varName, self.cut + ' * higgsPtWeightUp   ', layer)
+              self._BuildHistogram(tree, comp, compName+'_pthDown', self.varName, self.cut + ' * higgsPtWeightDown ', layer)
+              self.weights[compName+'_pthUp']   = self.weights[compName]
+              self.weights[compName+'_pthDown'] = self.weights[compName]
             else:
-                self._BuildHistogram(tree, comp, compName, self.varName,
-                                     self.cut, layer )     
-
+              self._BuildHistogram(tree, comp, compName, self.varName, self.cut, layer )     
+            
+            self.cut = my_cut
+            
         self._ApplyWeights()
         self._ApplyPrefs()
         
@@ -182,6 +177,9 @@ class H2TauTauDataMC( AnalysisDataMC ):
             hist = self.Hist(component)
             hist.stack = False
             hist.on = False
+            ## remove part of 2012B data where diTau trigger wasn't present
+            if self.susy and '2012B' in component :
+              self.weights[component].intLumi = 4429 - 559.
             self.intLumi += self.weights[component].intLumi
             if data is None:
                 # keep first histogram
@@ -211,12 +209,14 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['DY*Jets']          = {'style':sHTT_DYJets, 'layer':4    , 'legend':'Z#rightarrow#tau#tau' }
         self.histPref['embed_*']          = {'style':sViolet    , 'layer':4.1  , 'legend':None                   }
         self.histPref['TTJets*']          = {'style':sHTT_TTJets, 'layer':1    , 'legend':'t#bar{t}'             } 
-        self.histPref['T*tW*']            = {'style':sHTT_TTJets, 'layer':1    , 'legend':'t#bar{t}'             } 
+        self.histPref['T*tW*']            = {'style':sHTT_TTJets, 'layer':1    , 'legend':'single top'           } 
         self.histPref['WW*']              = {'style':sBlue      , 'layer':0.9  , 'legend':None                   } 
         self.histPref['WZ*']              = {'style':sRed       , 'layer':0.8  , 'legend':None                   } 
         self.histPref['ZZ*']              = {'style':sGreen     , 'layer':0.7  , 'legend':None                   } 
         self.histPref['QCD']              = {'style':sHTT_QCD   , 'layer':2    , 'legend':None                   }
         self.histPref['WJets*']           = {'style':sHTT_WJets , 'layer':3    , 'legend':None                   }  
+        self.histPref['DYJets_ZL']        = {'style':sHTT_ZL    , 'layer':3.1  , 'legend':None                   }
+        self.histPref['DYJets_ZJ']        = {'style':sHTT_ZL    , 'layer':3.1  , 'legend':None                   }
         self.histPref['DYJets_Fakes']     = {'style':sHTT_ZL    , 'layer':3.1  , 'legend':None                   }
         self.histPref['DYJets_Electron']  = {'style':sHTT_ZL    , 'layer':3.2  , 'legend':None                   }
         self.histPref['Higgs*']           = {'style':sHTT_Higgs , 'layer':1001 , 'legend':None                   }
