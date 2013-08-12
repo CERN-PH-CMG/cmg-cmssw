@@ -1,15 +1,15 @@
 # --- ttH split by decay mode (with proper sigma*BR for 125.7)
-#ttH_htt+   : TTH : 0.1271 * 0.0620/0.0722: GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+10
-#ttH_hzz+   : TTH : 0.1271 * 0.0281/0.0276: GenHiggsDecayMode == 23 ; FillColor=ROOT.kOrange+10
-#ttH_hww+   : TTH : 0.1271 * 0.2262/0.2171: GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10
+ttH_htt+   : TTH : 0.1271 * 0.0620/0.0722: GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+10
+ttH_hzz+   : TTH : 0.1271 * 0.0281/0.0276: GenHiggsDecayMode == 23 ; FillColor=ROOT.kOrange+10
+ttH_hww+   : TTH : 0.1271 * 0.2262/0.2171: GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10
 # --- ttH inclusive
-ttH+     : TTH : 0.1271 * 0.0620/0.0722: GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+10
-ttH+     : TTH : 0.1271 * 0.0281/0.0276: GenHiggsDecayMode == 23 ; FillColor=ROOT.kOrange+10
-ttH+     : TTH : 0.1271 * 0.2262/0.2171: GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10
+#ttH+     : TTH : 0.1271 * 0.0620/0.0722: GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+10
+#ttH+     : TTH : 0.1271 * 0.0281/0.0276: GenHiggsDecayMode == 23 ; FillColor=ROOT.kOrange+10
+#ttH+     : TTH : 0.1271 * 0.2262/0.2171: GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10
 
 # --- TT+W/Z/WW (TTWW usually quite negligible)
-TTW 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5, NormSystematic=0.2
-TTZ 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2, NormSystematic=0.2
+TTW 	 : TTWJets:    0.208    ;  FillColor=ROOT.kGreen-5, NormSystematic=0.2
+TTZ 	 : TTZJets:    0.206    ;  FillColor=ROOT.kSpring+2, NormSystematic=0.2
 TTWW 	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9, NormSystematic=0.2
 # 
 # or also lumped together
@@ -44,6 +44,8 @@ ZZ	 : ZZTo4mu:    0.07691 * 1.21;  FillColor=ROOT.kAzure-9, NormSystematic=0.2
 ZZ       : ZZTo4e:     0.07691 * 1.21;  FillColor=ROOT.kAzure-9, NormSystematic=0.2
 ZZ       : ZZTo4tau:   0.07691 * 1.21;  FillColor=ROOT.kAzure-9, NormSystematic=0.2
 
+# --- Rare backgrounds
+TBZ:   TBZToLL : 0.0114; FillColor=ROOT.kSpring+8, Label="TBZ"
 
 data     : DoubleMuAB
 data     : DoubleMuC
@@ -103,6 +105,18 @@ WZ_JES_Up: WZJets_skim2j_JES_Up:       1.057*1.12    ;  FillColor=ROOT.kViolet-4
 WZ_JES_Dn: WZJets_skim2j_JES_Down:     1.057*1.09    ;  FillColor=ROOT.kViolet-4, SkipMe=True
 ZZ_JES_Up: ZZJets4L_skim3l1j_JES_Up:   0.157*1.19    ;  FillColor=ROOT.kAzure-9,  SkipMe=True
 ZZ_JES_Dn: ZZJets4L_skim3l1j_JES_Down: 0.157*1.22    ;  FillColor=ROOT.kAzure-9,  SkipMe=True
+
+# -- Reducible background: fakes from MC
+Fakes_MC: TTJetsLep:  25.77: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312) ;  FillColor=ROOT.kGray, NormSystematic=0.2, Label="Reducible", SkipMe=True
+Fakes_MC: TTJetsSem:  107.53: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312);  FillColor=ROOT.kGray, NormSystematic=0.2, Label="Reducible", SkipMe=True
+Fakes_MC: TtW:        11.73   ;  FillColor=ROOT.kGray, NormSystematic=0.2, Label="Reducible", SkipMe=True
+Fakes_MC: TbartW:     11.73   ;  FillColor=ROOT.kGray, NormSystematic=0.2, Label="Reducible", SkipMe=True
+Fakes_MC: DYJetsM10 : 915     ;  FillColor=ROOT.kGray, Label="Reducible", SkipMe=True
+Fakes_MC: DY1JetsM50: 666.3  ;  FillColor=ROOT.kGray, Label="Reducible", SkipMe=True
+Fakes_MC: DY2JetsM50: 215.0  ;  FillColor=ROOT.kGray, Label="Reducible", SkipMe=True
+Fakes_MC: DY3JetsM50:  60.7  ;  FillColor=ROOT.kGray, Label="Reducible", SkipMe=True
+Fakes_MC: DY4JetsM50:  27.4  ;  FillColor=ROOT.kGray, Label="Reducible", SkipMe=True
+
 
 
 # ---- All the fakerates you want ----

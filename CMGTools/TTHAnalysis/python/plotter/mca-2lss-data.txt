@@ -1,7 +1,7 @@
 # --- ttH split by decay mode (with proper sigma*BR for 125.7)
-ttH_htt+   : TTH : 0.1271 * 0.0620/0.0722: GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+10
-ttH_hzz+   : TTH : 0.1271 * 0.0281/0.0276: GenHiggsDecayMode == 23 ; FillColor=ROOT.kOrange+10
-ttH_hww+   : TTH : 0.1271 * 0.2262/0.2171: GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10
+ttH_hww+   : TTH : 0.1271 * 0.2262/0.2171: GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10, Label="ttH WW"
+ttH_hzz+   : TTH : 0.1271 * 0.0281/0.0276: GenHiggsDecayMode == 23 ; FillColor=ROOT.kPink+9, Label="ttH ZZ"
+ttH_htt+   : TTH : 0.1271 * 0.0620/0.0722: GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+4, Label="ttH \#tau\#tau"
 # --- ttH inclusive
 #ttH+     : TTH : 0.1271 * 0.0620/0.0722: GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+10
 #ttH+     : TTH : 0.1271 * 0.0281/0.0276: GenHiggsDecayMode == 23 ; FillColor=ROOT.kOrange+10
@@ -10,10 +10,11 @@ ttH_hww+   : TTH : 0.1271 * 0.2262/0.2171: GenHiggsDecayMode == 24 ; FillColor=R
 #ttH+     : TTH : 0.334*0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
 #ttH+     : TTH122 : 0.333*0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
 #ttH+     : TTH127 : 0.333*0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
+ttH      : TTH : 0.1271
 
 # --- TT+W/Z/WW (TTWW usually quite negligible)
-TTW 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5,  NormSystematic=0.2
-TTZ 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2, NormSystematic=0.2
+TTW 	 : TTWJets:    0.208    ;  FillColor=ROOT.kGreen-5,  NormSystematic=0.2
+TTZ 	 : TTZJets:    0.206    ;  FillColor=ROOT.kSpring+2, NormSystematic=0.2
 TTWW 	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9,   NormSystematic=0.2
 # 
 # or also lumped together
@@ -47,6 +48,11 @@ ZZ       : ZZJets4L:   0.157*1.21   ;  FillColor=ROOT.kAzure-9, NormSystematic=0
 #ZZ	 : ZZTo4mu:    0.07691  ;  FillColor=ROOT.kAzure-9   
 #ZZ      : ZZTo4e:     0.07691  ;  FillColor=ROOT.kAzure-9
 
+# --- Rare backgrounds
+TBZ:   TBZToLL : 0.0114; FillColor=ROOT.kSpring+8, Label="TBZ"
+WWqq:  WpWpqq  : 0.2482; FillColor=ROOT.kMagenta+2, Label="W^{\pm}W^{\pm}qq"
+WWqq:  WmWmqq  : 0.0889; FillColor=ROOT.kMagenta+2, Label="W^{\pm}W^{\pm}qq"
+WWDPI: WWDPI   : 0.5879; FillColor=ROOT.kViolet-6, Label="WW DPI"
 
 data     : DoubleMuAB
 data     : DoubleMuC
@@ -121,6 +127,37 @@ WZ_JES_Up: WZJets_skim2j_JES_Up:       1.057*1.12    ;  FillColor=ROOT.kViolet-4
 WZ_JES_Dn: WZJets_skim2j_JES_Down:     1.057*1.09    ;  FillColor=ROOT.kViolet-4, SkipMe=True
 #ZZ_JES_Up: ZZJets4L_skim3l1j_JES_Up:   0.157    ;  FillColor=ROOT.kAzure-9,  SkipMe=True
 #ZZ_JES_Dn: ZZJets4L_skim3l1j_JES_Down: 0.157    ;  FillColor=ROOT.kAzure-9,  SkipMe=True
+
+# -- Reducible background: charge-flip
+QFlip_MC  : TTJetsLep:      25.77*(1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)) : LepGood1_mcMatchId > 0 && LepGood2_mcMatchId > 0;  FillColor=ROOT.kGray, NormSystematic=0.2, SkipMe=True
+QFlip_MC  : TtW:        11.73   : (LepGood1_mcMatchId > 0 && LepGood2_mcMatchId > 0)  ;  FillColor=ROOT.kGray+2, NormSystematic=0.2, SkipMe=True
+QFlip_MC  : TbartW:     11.73   : (LepGood1_mcMatchId > 0 && LepGood2_mcMatchId > 0)  ;  FillColor=ROOT.kGray+2, NormSystematic=0.2, SkipMe=True
+QFlip_MC  : DYJetsM10 : 915     : (LepGood1_mcMatchId > 0 && LepGood2_mcMatchId > 0)  ;  FillColor=ROOT.kCyan, SkipMe=True
+QFlip_MC  : DY1JetsM50 : 666.3  : (LepGood1_mcMatchId > 0 && LepGood2_mcMatchId > 0)  ;  FillColor=ROOT.kViolet-4, SkipMe=True
+QFlip_MC  : DY2JetsM50 : 215.0  : (LepGood1_mcMatchId > 0 && LepGood2_mcMatchId > 0)  ;  FillColor=ROOT.kViolet-4, SkipMe=True
+QFlip_MC  : DY3JetsM50 :  60.7  : (LepGood1_mcMatchId > 0 && LepGood2_mcMatchId > 0)  ;  FillColor=ROOT.kViolet-4, SkipMe=True
+QFlip_MC  : DY4JetsM50 :  27.4  : (LepGood1_mcMatchId > 0 && LepGood2_mcMatchId > 0)  ;  FillColor=ROOT.kViolet-4, SkipMe=True
+QFlip_MC  : WWJets:     5.995   : (LepGood1_mcMatchId > 0 && LepGood2_mcMatchId > 0)  ;  FillColor=ROOT.kBlue-9, SkipMe=True
+
+
+# -- Reducible background: fakes
+Fakes_MC  : TTJetsLep:      25.77*(1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)) : (LepGood1_mcMatchId == 0 || LepGood2_mcMatchId == 0);  FillColor=ROOT.kGray, NormSystematic=0.2, SkipMe=True
+Fakes_MC  : TTJetsSem:	  107.53*(1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312));  FillColor=ROOT.kGray, NormSystematic=0.2, SkipMe=True
+Fakes_MC  : TTJetsHad:     112.16*(1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312));  FillColor=ROOT.kGray, NormSystematic=0.2, SkipMe=True
+Fakes_MC  : TtW:        11.73   : (LepGood1_mcMatchId == 0 || LepGood2_mcMatchId == 0)  ;  FillColor=ROOT.kGray+2, NormSystematic=0.2, SkipMe=True
+Fakes_MC  : TbartW:     11.73   : (LepGood1_mcMatchId == 0 || LepGood2_mcMatchId == 0)  ;  FillColor=ROOT.kGray+2, NormSystematic=0.2, SkipMe=True
+Fakes_MC  : Ttch:       56.4     ;  FillColor=28, SkipMe=True
+Fakes_MC  : Tbartch:    30.7     ;  FillColor=28, SkipMe=True
+Fakes_MC  : DYJetsM10 : 915     : (LepGood1_mcMatchId == 0 || LepGood2_mcMatchId == 0)  ;  FillColor=ROOT.kCyan, SkipMe=True
+Fakes_MC  : DY1JetsM50 : 666.3  : (LepGood1_mcMatchId == 0 || LepGood2_mcMatchId == 0)  ;  FillColor=ROOT.kViolet-4, SkipMe=True
+Fakes_MC  : DY2JetsM50 : 215.0  : (LepGood1_mcMatchId == 0 || LepGood2_mcMatchId == 0)  ;  FillColor=ROOT.kViolet-4, SkipMe=True
+Fakes_MC  : DY3JetsM50 :  60.7  : (LepGood1_mcMatchId == 0 || LepGood2_mcMatchId == 0)  ;  FillColor=ROOT.kViolet-4, SkipMe=True
+Fakes_MC  : DY4JetsM50 :  27.4  : (LepGood1_mcMatchId == 0 || LepGood2_mcMatchId == 0) ;  FillColor=ROOT.kViolet-4, SkipMe=True
+Fakes_MC  : W1Jets    : 6642.0   ;  FillColor=ROOT.kCyan+2, SkipMe=True
+Fakes_MC  : W2Jets    : 2152.0   ;  FillColor=ROOT.kCyan+2, SkipMe=True
+Fakes_MC  : W3Jets    : 638.4    ;  FillColor=ROOT.kCyan+2, SkipMe=True
+Fakes_MC  : W4Jets    : 263.2    ;  FillColor=ROOT.kCyan+2, SkipMe=True
+Fakes_MC  : WWJets:     5.995   : (LepGood1_mcMatchId == 0 || LepGood2_mcMatchId == 0)  ;  FillColor=ROOT.kBlue-9, SkipMe=True
 
 
 # ---- All the fakerates you want ----
