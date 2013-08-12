@@ -1,47 +1,55 @@
-# --- ttH split by decay mode
-#ttHWW+   : TTH : 0.1271 : GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10
-#ttHtt+   : TTH : 0.1271 : GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+10
-#ttHZZ+   : TTH : 0.1271 : GenHiggsDecayMode == 23 ; FillColor=ROOT.kOrange+10
+# --- ttH split by decay mode (with proper sigma*BR for 125.7)
+#ttH_htt+   : TTH : 0.1271 * 0.0620/0.0722: GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+10
+#ttH_hzz+   : TTH : 0.1271 * 0.0281/0.0276: GenHiggsDecayMode == 23 ; FillColor=ROOT.kOrange+10
+#ttH_hww+   : TTH : 0.1271 * 0.2262/0.2171: GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10
+ttH_hww+   : TTH : 0.1271 * 0.2262/0.2171: GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10, Label="ttH WW"
+ttH_hzz+   : TTH : 0.1271 * 0.0281/0.0276: GenHiggsDecayMode == 23 ; FillColor=ROOT.kPink+9, Label="ttH ZZ"
+ttH_htt+   : TTH : 0.1271 * 0.0620/0.0722: GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+4, Label="ttH \#tau\#tau"
 # --- ttH inclusive
-ttH+     : TTH : 0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
-# --- more statistics including also 122 and 127 GeV
-#ttH+     : TTH : 0.334*0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
-#ttH+     : TTH122 : 0.333*0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
-#ttH+     : TTH127 : 0.333*0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
+#ttH+     : TTH : 0.1271 * 0.0620/0.0722: GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+10
+#ttH+     : TTH : 0.1271 * 0.0281/0.0276: GenHiggsDecayMode == 23 ; FillColor=ROOT.kOrange+10
+#ttH+     : TTH : 0.1271 * 0.2262/0.2171: GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10
 
 # --- TT+W/Z/WW (TTWW usually quite negligible)
-TTW 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5
-TTZ 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2
-TTWW 	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9
+TTW 	 : TTWJets:    0.208    ;  FillColor=ROOT.kGreen-5,  NormSystematic=0.2
+TTZ 	 : TTZJets:    0.206    ;  FillColor=ROOT.kSpring+2, NormSystematic=0.2
+TTWW 	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9,   NormSystematic=0.2
 # 
 # or also lumped together
-#TTV 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5, NormSystematic=0.2
-#TTV 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2, NormSystematic=0.2
+#TTV 	 : TTWJets:    0.208    ;  FillColor=ROOT.kGreen-5, NormSystematic=0.2
+#TTV 	 : TTZJets:    0.206    ;  FillColor=ROOT.kSpring+2, NormSystematic=0.2
 #TTV	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9, NormSystematic=0.2
-
 # --- TT gamma*
-TTGStar	 : FastSim_TTGStarMM: 1.5*0.01233*0.141;  FillColor=ROOT.kCyan-3, Label="TT\#gamma*"
-TTGStar	 : FastSim_TTGStarEE: 1.5*0.02724*0.104;  FillColor=ROOT.kCyan-3, Label="TT\#gamma*"
-TTGStar	 : FastSim_TTGStarTT: 1.5*0.00133*0.038;  FillColor=ROOT.kCyan-3, Label="TT\#gamma*"
+TTGStar	 : FastSim_TTGStarMM: 1.5*0.01233*0.141;  FillColor=ROOT.kCyan-3, Label="TT\#gamma*", NormSystematic=0.5
+TTGStar	 : FastSim_TTGStarEE: 1.5*0.02724*0.104;  FillColor=ROOT.kCyan-3, Label="TT\#gamma*", NormSystematic=0.5
+TTGStar	 : FastSim_TTGStarTT: 1.5*0.00133*0.038;  FillColor=ROOT.kCyan-3, Label="TT\#gamma*", NormSystematic=0.5
 #TTGStarMM	 : FastSim_TTGStarMM: 1.5*0.01233*0.141;  FillColor=ROOT.kCyan-3, Label="TT\#gamma* \#mu\#mu"
 #TTGStarEE	 : FastSim_TTGStarEE: 1.5*0.02724*0.104;  FillColor=ROOT.kSpring+8, Label="TT\#gamma* ee"
 #TTGStarTT	 : FastSim_TTGStarTT: 1.5*0.00133*0.038;  FillColor=ROOT.kMagenta-10, Label="TT\#gamma* \#tau\#tau"
-#TTGStar	 : FastSim_TTGStar: 2.5*0.00195*0.3852;  FillColor=ROOT.kCyan-3, Label="TT\#gamma*"
+
+# --- TT gamma
+TTG      : TTG:        1.444*1.8    ;  FillColor=ROOT.kGray+3    
 
 # --- Multiboson
 VVV 	 : WWWJets:    0.08217  ;  FillColor=ROOT.kViolet
 VVV 	 : WWZJets:    0.0633   ;  FillColor=ROOT.kViolet
 WW 	 : WWJets:     5.995    ;  FillColor=ROOT.kBlue-9
-WZ 	 : WZJets:     1.057    ;  FillColor=ROOT.kViolet-4
-ZZ       : ZZJets4L:   0.157    ;  FillColor=ROOT.kAzure-9
+WZ 	 : WZJets:     1.057*1.10    ;  FillColor=ROOT.kViolet-4
+#ZZ       : ZZJets4L:   0.157    ;  FillColor=ROOT.kAzure-9
 # --- Powheg ZZ (for mll < 12, but less accurate in N(Jet))
-#ZZ	 : ZZ2e2mu:    0.1767   ;  FillColor=ROOT.kAzure-9
-#ZZ 	 : ZZ2e2tau:   0.1767   ;  FillColor=ROOT.kAzure-9
-#ZZ 	 : ZZ2mu2tau:  0.1767   ;  FillColor=ROOT.kAzure-9
-#ZZ	 : ZZTo4mu:    0.07691  ;  FillColor=ROOT.kAzure-9   
-#ZZ       : ZZTo4e:     0.07691  ;  FillColor=ROOT.kAzure-9
-#ZZ       : ZZTo4tau:   0.07691  ;  FillColor=ROOT.kAzure-9
+ZZ	 : ZZ2e2mu:    0.1767  *1.21;  FillColor=ROOT.kAzure-9
+ZZ 	 : ZZ2e2tau:   0.1767  *1.21;  FillColor=ROOT.kAzure-9
+ZZ 	 : ZZ2mu2tau:  0.1767  *1.21;  FillColor=ROOT.kAzure-9
+ZZ	 : ZZTo4mu:    0.07691 *1.21;  FillColor=ROOT.kAzure-9   
+ZZ       : ZZTo4e:     0.07691*1.21 ;  FillColor=ROOT.kAzure-9
+ZZ       : ZZTo4tau:   0.07691*1.21 ;  FillColor=ROOT.kAzure-9
 #ZZ   : FastSim_ZGStar4L : 28.76*0.0188*1.28 ;  FillColor=ROOT.kAzure-9
+
+# --- Rare backgrounds
+TBZ:   TBZToLL : 0.0114; FillColor=ROOT.kSpring+8, Label="TBZ"
+WWqq:  WpWpqq  : 0.2482; FillColor=ROOT.kMagenta+2, Label="W^{\pm}W^{\pm}qq"
+WWqq:  WmWmqq  : 0.0889; FillColor=ROOT.kMagenta+2, Label="W^{\pm}W^{\pm}qq"
+WWDPI: WWDPI   : 0.5879; FillColor=ROOT.kViolet-6, Label="WW DPI"
 
 # -- TTbar and single top
 #
@@ -57,9 +65,11 @@ TT 	 : TTJetsHad:     112.16: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2
 #TT 	 : TTJetsLep:  0.5*25.77    ;  FillColor=ROOT.kGray
 #
 # split into true leptons and fake leptons, if you need it
-#TTl      : TTLep:      25.77  : ((LepGood1_mcMatchId > 0) + (LepGood2_mcMatchId > 0) == 2)   ;  FillColor=ROOT.kGray, Label="TT ll"
+#TTl      : TTLep:      25.77  : ((LepGood1_mcMatchId > 0) + (LepGood2_mcMatchId > 0) == 2)   ;  FillColor=ROOT.kYellow-6, Label="TT ll"
 #TTf      : TTJetsSem:  107.53 : ((LepGood1_mcMatchId > 0) + (LepGood2_mcMatchId > 0) <= 1)  ;  FillColor=ROOT.kGray, Label="TT f"
 ##TTf     : TTJets:     245.49 : ((LepGood1_mcMatchId > 0) + (LepGood2_mcMatchId > 0) <= 1)  ;  FillColor=ROOT.kGray, Label="TT f"
+#TTbf      : TTJetsSem:  107.53 : ((LepGood1_mcMatchId == 0)*(LepGood1_mcMatchAny==2) + (LepGood2_mcMatchId == 0)*(LepGood2_mcMatchAny==2) == 1)  ;  FillColor=ROOT.kGreen-5, Label="TT b\#rightarrowl"
+#TTlf      : TTJetsSem:  107.53 : ((LepGood1_mcMatchId == 0)*(LepGood1_mcMatchAny<2) + (LepGood2_mcMatchId == 0)*(LepGood2_mcMatchAny<2) == 1)  ;  FillColor=ROOT.kGray, Label="TT j\#rightarrowl"
 #
 # Top+W associated prod.
 TW 	 : TtW:        11.73    ;  FillColor=ROOT.kGray+2, NormSystematic=0.2
