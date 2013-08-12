@@ -98,7 +98,21 @@ drl2j: mindr_lep2_jet  : 15,0,5; XTitle="min #DeltaR(l_{2}\,j)"
 #MVA_2LSS_4j_10var: MVA_2LSS_4j_10var : 10,-1,1 ; XTitle="MVA (#geq4j\, 10 vars)", Legend='TL'
 #MVA_2LSS_4j_15var: MVA_2LSS_4j_15var : 10,-1,1 ; XTitle="MVA (#geq4j\, 15 vars)", Legend='TL'
 #MVA_2LSS_4j_6var_cat:  MVA_2LSS_4j_6var_cat  : 10,-1,1 ; XTitle="MVA (#geq4j\, 6 vars)", Legend='TL'
-blind_nJet25 : nJet25 : [1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(jet\, p_{T} > 25)', XNDiv=505, Blinded='x > 4'
-blind_MVA_2LSS_23j_6var: MVA_2LSS_23j_6var : 12,-0.8,0.8 ; XTitle="BDT (#leq3j\, 6 vars)", Legend='TL', Blinded='x > +0.45', MoreY=1.6, LegendCutoff=0.02
-blind_MVA_2LSS_4j_6var:  MVA_2LSS_4j_6var  : 12,-0.8,0.8 ; XTitle="BDT (#geq4j\, 6 vars)", Legend='TR', Blinded='x > 0',     MoreY=1.6, LegendCutoff=0.02
-blind_nJet25_4 : nJet25 : [3.5,4.5,5.5,6.5] ; XTitle='N(jet\, p_{T} > 25)', XNDiv=505, Blinded='x > 4'
+
+#fakeMcMatchAny: (LepGood1_mcMatchId == 0)*LepGood1_mcMatchAny + \
+#                (LepGood2_mcMatchId == 0)*LepGood2_mcMatchAny : [-0.5,0.5,1.5,2.5] : XTitle="Fake lepton: unm/not b/b", XNDiv=505
+#
+#minDrlb : min(min(deltaR(LepGood1_eta,LepGood1_phi,Jet1_eta,Jet1_phi), \
+#                  deltaR(LepGood1_eta,LepGood1_phi,Jet2_eta,Jet2_phi)*(100-99*(Jet1_btagCSV>0.679))), \
+#              min(deltaR(LepGood2_eta,LepGood2_phi,Jet1_eta,Jet1_phi), \
+#                  deltaR(LepGood2_eta,LepGood2_phi,Jet2_eta,Jet2_phi)*(100-99*(Jet1_btagCSV>0.679)))) : 10,0,5 ; XTitle="min #DeltaR(l\,b)"
+#
+#gen_Drflb :  min(min(deltaR(LepGood1_eta,LepGood1_phi,GenBQuark1_eta,GenBQuark1_phi),  \
+#                     deltaR(LepGood1_eta,LepGood1_phi,GenBQuark2_eta,GenBQuark2_phi))*(100-99*(LepGood1_mcMatchId==0)), \
+#                 min(deltaR(LepGood2_eta,LepGood2_phi,GenBQuark1_eta,GenBQuark1_phi), \
+#                     deltaR(LepGood2_eta,LepGood2_phi,GenBQuark2_eta,GenBQuark2_phi))*(100-99*(LepGood2_mcMatchId==0))) : 30,0,3 ; XTitle="min #DeltaR(fake l\,gen b)"
+
+nTau: nTau: [-0.5,0.5,1.5,2.5,3.5,4.5]; XTitle="N(tau\, no cuts)"
+nTauL: (Tau1_byIMVA>0)+(Tau2_byIMVA>0)+(Tau3_byIMVA>0)+(Tau4_byIMVA>0): [-0.5,0.5,1.5,2.5,3.5]; XTitle="N(tau\, MVA L)"
+nTauM: (Tau1_byIMVA>1)+(Tau2_byIMVA>1)+(Tau3_byIMVA>1)+(Tau4_byIMVA>1): [-0.5,0.5,1.5,2.5,3.5]; XTitle="N(tau\, MVA M)"
+nTauT: (Tau1_byIMVA>2)+(Tau2_byIMVA>2)+(Tau3_byIMVA>2)+(Tau4_byIMVA>2): [-0.5,0.5,1.5,2.5,3.5]; XTitle="N(tau\, MVA T)"
