@@ -1,14 +1,17 @@
 #NOMINAL
 TTH+      : TTH : 0.1271 : GenHiggsDecayMode > 0   ; FillColor=1, Label="FullSim", LineWidth=4, LineStyle=7
-TTW+ 	 : TTWJets:    0.232    ;  FillColor=1,  Label="FullSim"
+TTW+ 	 : TTWJets:    0.232    ;  FillColor=1,  Label="Madgraph"
 TTZ+ 	 : TTZJets:    0.208    ;  FillColor=1, Label="ttZ"
 ## MC@NLO samples 
-#TTW_nlo       : TTWnlo:    0.232    ;  FillColor=222,  Label="ttW/H"
+TTW_nlo       : TTWnlo:    0.232    ;  FillColor=222,  Label="aMC@NLO"
+TTW_powhel    : FastSim_TTWp_Powhel:    (0.232/0.203)*0.1426*0.0495  ;  FillColor=209,  Label="Powhel"
+TTW_powhel    : FastSim_TTWm_Powhel:    (0.232/0.203)*0.0605*0.0510  ;  FillColor=209,  Label="Powhel"
+TTW_madgraph   : FastSim_TTWJets           : 0.232  * 0.0501  ; FillColor=1, Label="Madgraph"
 
-## FastSim samples, including gen-filter efficiency
-#TTH_nominal   : FastSim_TTHJets           : 0.1271 * 0.0219 : GenHiggsDecayMode > 0  ; FillColor=209, Label="ttH/0"
-#TTH_scaleDown : FastSim_TTHJets_scaleDown : 0.1271 * 0.0223 : GenHiggsDecayMode > 0  ; FillColor=61, Label="ttH/-"
-#TTH_scaleUp   : FastSim_TTHJets_scaleUp   : 0.1271 * 0.0211 : GenHiggsDecayMode > 0  ; FillColor=2,  Label="ttH/+"
+# FastSim samples, including gen-filter efficiency
+TTH_nominal   : FastSim_TTHJets           : 0.1271 * 0.0219 : GenHiggsDecayMode > 0  ; FillColor=209, Label="ttH/0"
+TTH_scaleDown : FastSim_TTHJets_scaleDown : 0.1271 * 0.0223 : GenHiggsDecayMode > 0  ; FillColor=61, Label="ttH/-"
+TTH_scaleUp   : FastSim_TTHJets_scaleUp   : 0.1271 * 0.0211 : GenHiggsDecayMode > 0  ; FillColor=2,  Label="ttH/+"
 
 TTW_nominal   : FastSim_TTWJets           : 0.232  * 0.0501  ; FillColor=209, Label="ttW/0"
 TTW_scaleDown : FastSim_TTWJets_scaleDown : 0.232  * 0.0491  ; FillColor=61, Label="ttW/-"
