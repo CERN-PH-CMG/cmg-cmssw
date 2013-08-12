@@ -50,6 +50,7 @@ def Plot(files, label, obs):
 
         for j in range(0,len(fChain)):
             chain = fChain[j]
+            print j, chain
             chain.SetBranchAddress("limit", rt.AddressOf(limit_branch,'limit'))
 
     rad = []
@@ -122,9 +123,9 @@ def Plot(files, label, obs):
     mg.Draw("AP")
     mg.GetXaxis().SetTitle("Resonance mass (TeV)")
     if withAcceptance:
-        mg.GetYaxis().SetTitle("#sigma #times BR(X #rightarrow "+label.split("_")[0]+") #times A (pb)")
+        mg.GetYaxis().SetTitle("#sigma #times BR(X #rightarrow "+label.split("_")[0]+" #rightarrow 4b) #times A (pb)")
     else:
-        mg.GetYaxis().SetTitle("#sigma #times BR(X #rightarrow "+label.split("_")[0]+") (pb)")
+        mg.GetYaxis().SetTitle("#sigma #times BR(X #rightarrow "+label.split("_")[0]+" #rightarrow 4b) (pb)")
     mg.GetYaxis().SetTitleSize(0.06)
     mg.GetXaxis().SetTitleSize(0.06)
     mg.GetXaxis().SetLabelSize(0.045)
@@ -166,40 +167,123 @@ def Plot(files, label, obs):
     grmean.Draw("L")
     if obs: grobs.Draw("L,P,E")
 
-    gtheory = rt.TGraphErrors(1)
-    gtheory.SetLineColor(rt.kBlue)
-    gtheory.SetLineWidth(3)
-    ftheory=open("signalcrosssections.txt")
+
+
+    gtheoryRadion = rt.TGraphErrors(1)
+    gtheoryRadion.SetLineColor(rt.kBlue)
+    gtheoryRadion.SetLineWidth(3)
+    ftheory=open("HH_crosssections.txt")
     j=0
-    glogtheory = rt.TGraphErrors(1)
+    glogtheoryRadion = rt.TGraphErrors(1)
     for lines in ftheory.readlines():
      for line in lines.split("\r"):
-      if label.split("_")[0] in line:
+      if "Radion" in line:
         split=line.split(":")
-        gtheory.SetPoint(j, float(split[0][-4:])/1000., float(split[1]))
-        glogtheory.SetPoint(j, float(split[0][-4:])/1000., log(float(split[1])))
+        print split[1]
+        gtheoryRadion.SetPoint(j, float(split[0][-4:])/1000., float(split[1]))
+        glogtheoryRadion.SetPoint(j, float(split[0][-4:])/1000., log(float(split[1])))
 	j+=1
-    mg.Add(gtheory,"L")
-    gtheory.Draw("L")
+    mg.Add(gtheoryRadion,"L")
+    gtheoryRadion.Draw("L")
     if "HH" in label.split("_")[0]:
-        ltheory="Radion #rightarrow HH"
+        ltheoryRadion="Radion #rightarrow HH"
     
     crossing=0
     for mass in range(int(radmasses[0]*1000.),int(radmasses[-1]*1000.)):
-        if exp(glogtheory.Eval(mass/1000.))>grmean.Eval(mass/1000.) and crossing>=0:
+        if exp(glogtheoryRadion.Eval(mass/1000.))>grmean.Eval(mass/1000.) and crossing>=0:
 	    print label,"exp crossing",mass
 	    crossing=-1
-        if exp(glogtheory.Eval(mass/1000.))<grmean.Eval(mass/1000.) and crossing<=0:
+        if exp(glogtheoryRadion.Eval(mass/1000.))<grmean.Eval(mass/1000.) and crossing<=0:
 	    print label,"exp crossing",mass
 	    crossing=1
     crossing=0
     for mass in range(int(radmasses[0]*1000.),int(radmasses[-1]*1000.)):
-        if exp(glogtheory.Eval(mass/1000.))>grobs.Eval(mass/1000.) and crossing>=0:
+        if exp(glogtheoryRadion.Eval(mass/1000.))>grobs.Eval(mass/1000.) and crossing>=0:
 	    print label,"obs crossing",mass
 	    crossing=-1
-        if exp(glogtheory.Eval(mass/1000.))<grobs.Eval(mass/1000.) and crossing<=0:
+        if exp(glogtheoryRadion.Eval(mass/1000.))<grobs.Eval(mass/1000.) and crossing<=0:
 	    print label,"obs crossing",mass
 	    crossing=1
+
+
+            
+
+    gtheoryRS1 = rt.TGraphErrors(1)
+    gtheoryRS1.SetLineColor(28)
+    gtheoryRS1.SetLineWidth(3)
+    ftheory=open("HH_crosssections.txt")
+    j=0
+    glogtheoryRS1 = rt.TGraphErrors(1)
+    for lines in ftheory.readlines():
+     for line in lines.split("\r"):
+      if "RS1Graviton" in line:
+        split=line.split(":")
+        print split[1]
+        gtheoryRS1.SetPoint(j, float(split[0][-4:])/1000., float(split[1]))
+        glogtheoryRS1.SetPoint(j, float(split[0][-4:])/1000., log(float(split[1])))
+	j+=1
+    mg.Add(gtheoryRS1,"L")
+    gtheoryRS1.Draw("L")
+    if "HH" in label.split("_")[0]:
+        ltheoryRS1="RS1 #rightarrow HH"
+    
+    crossing=0
+    for mass in range(int(radmasses[0]*1000.),int(radmasses[-1]*1000.)):
+        if exp(glogtheoryRS1.Eval(mass/1000.))>grmean.Eval(mass/1000.) and crossing>=0:
+	    print label,"exp crossing",mass
+	    crossing=-1
+        if exp(glogtheoryRS1.Eval(mass/1000.))<grmean.Eval(mass/1000.) and crossing<=0:
+	    print label,"exp crossing",mass
+	    crossing=1
+    crossing=0
+    for mass in range(int(radmasses[0]*1000.),int(radmasses[-1]*1000.)):
+        if exp(glogtheoryRS1.Eval(mass/1000.))>grobs.Eval(mass/1000.) and crossing>=0:
+	    print label,"obs crossing",mass
+	    crossing=-1
+        if exp(glogtheoryRS1.Eval(mass/1000.))<grobs.Eval(mass/1000.) and crossing<=0:
+	    print label,"obs crossing",mass
+	    crossing=1
+
+
+
+    gtheoryBulk = rt.TGraphErrors(1)
+    gtheoryBulk.SetLineColor(6)
+    gtheoryBulk.SetLineWidth(3)
+    ftheory=open("HH_crosssections.txt")
+    j=0
+    glogtheoryBulk = rt.TGraphErrors(1)
+    for lines in ftheory.readlines():
+     for line in lines.split("\r"):
+      if "BulkGraviton" in line:
+        split=line.split(":")
+        print split[1]
+        gtheoryBulk.SetPoint(j, float(split[0][-4:])/1000., float(split[1]))
+        glogtheoryBulk.SetPoint(j, float(split[0][-4:])/1000., log(float(split[1])))
+	j+=1
+    mg.Add(gtheoryBulk,"L")
+    gtheoryBulk.Draw("L")
+    if "HH" in label.split("_")[0]:
+        ltheoryBulk="Bulk #rightarrow HH"
+    
+    crossing=0
+    for mass in range(int(radmasses[0]*1000.),int(radmasses[-1]*1000.)):
+        if exp(glogtheoryBulk.Eval(mass/1000.))>grmean.Eval(mass/1000.) and crossing>=0:
+	    print label,"exp crossing",mass
+	    crossing=-1
+        if exp(glogtheoryBulk.Eval(mass/1000.))<grmean.Eval(mass/1000.) and crossing<=0:
+	    print label,"exp crossing",mass
+	    crossing=1
+    crossing=0
+    for mass in range(int(radmasses[0]*1000.),int(radmasses[-1]*1000.)):
+        if exp(glogtheoryBulk.Eval(mass/1000.))>grobs.Eval(mass/1000.) and crossing>=0:
+	    print label,"obs crossing",mass
+	    crossing=-1
+        if exp(glogtheoryBulk.Eval(mass/1000.))<grobs.Eval(mass/1000.) and crossing<=0:
+	    print label,"obs crossing",mass
+	    crossing=1
+
+
+            
     
     leg = rt.TLegend(0.60,0.65,0.95,0.89)
     leg.SetFillColor(rt.kWhite)
@@ -211,7 +295,9 @@ def Plot(files, label, obs):
     leg.AddEntry(grmean, "Expected", "L")
     leg.AddEntry(gryellow, "#pm 1 #sigma Expected", "f")
     leg.AddEntry(grgreen, "#pm 2 #sigma Expected", "f")
-    leg.AddEntry(gtheory, ltheory, "L")
+    leg.AddEntry(gtheoryRadion, ltheoryRadion, "L")
+    leg.AddEntry(gtheoryRS1, ltheoryRS1, "L")
+    leg.AddEntry(gtheoryBulk, ltheoryBulk, "L")
     #leg.SetHeader("X #rightarrow %s" %label.split("_")[0])
 
     leg.Draw()
@@ -230,9 +316,7 @@ def Plot(files, label, obs):
 
 
 if __name__ == '__main__':
-    Plot(["Xvv.mX1000.0_HH_Asymptotic_8TeV_channel0.root",
-          "Xvv.mX1100.0_HH_Asymptotic_8TeV_channel0.root",
-          "Xvv.mX1200.0_HH_Asymptotic_8TeV_channel0.root",
+    Plot(["Xvv.mX1200.0_HH_Asymptotic_8TeV_channel0.root", # 1000-1100 removed
           "Xvv.mX1300.0_HH_Asymptotic_8TeV_channel0.root",
           "Xvv.mX1400.0_HH_Asymptotic_8TeV_channel0.root",
           "Xvv.mX1500.0_HH_Asymptotic_8TeV_channel0.root",
@@ -245,53 +329,49 @@ if __name__ == '__main__':
           "Xvv.mX2200.0_HH_Asymptotic_8TeV_channel0.root",
           "Xvv.mX2300.0_HH_Asymptotic_8TeV_channel0.root",
           "Xvv.mX2400.0_HH_Asymptotic_8TeV_channel0.root",
-          "Xvv.mX2500.0_HH_Asymptotic_8TeV_channel0.root",
-          "Xvv.mX2600.0_HH_Asymptotic_8TeV_channel0.root",
-          "Xvv.mX2700.0_HH_Asymptotic_8TeV_channel0.root",
-          "Xvv.mX2800.0_HH_Asymptotic_8TeV_channel0.root",
-          "Xvv.mX2900.0_HH_Asymptotic_8TeV_channel0.root"],
+          "Xvv.mX2500.0_HH_Asymptotic_8TeV_channel0.root"], # 2600-2900 removed
           "HH_high_purity", unblind)
 
-    Plot(["Xvv.mX1000.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX1100.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX1200.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX1300.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX1400.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX1500.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX1600.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX1700.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX1800.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX1900.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX2000.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX2100.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX2200.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX2300.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX2400.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX2500.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX2600.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX2700.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX2800.0_HH_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX2900.0_HH_Asymptotic_8TeV_channel1.root"],
-          "HH_medium_purity", unblind)
+    #Plot(["Xvv.mX1000.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX1100.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX1200.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX1300.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX1400.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX1500.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX1600.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX1700.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX1800.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX1900.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX2000.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX2100.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX2200.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX2300.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX2400.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX2500.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX2600.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX2700.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX2800.0_HH_Asymptotic_8TeV_channel1.root",
+    #      "Xvv.mX2900.0_HH_Asymptotic_8TeV_channel1.root"],
+    #      "HH_medium_purity", unblind)
 
-    Plot(["Xvv.mX1000.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX1100.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX1200.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX1300.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX1400.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX1500.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX1600.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX1700.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX1800.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX1900.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX2000.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX2100.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX2200.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX2300.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX2400.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX2500.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX2600.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX2700.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX2800.0_HH_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX2900.0_HH_Asymptotic_8TeV_channel01.root"],
-          "HH_combined01", unblind)
+    #Plot(["Xvv.mX1000.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX1100.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX1200.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX1300.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX1400.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX1500.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX1600.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX1700.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX1800.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX1900.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX2000.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX2100.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX2200.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX2300.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX2400.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX2500.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX2600.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX2700.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX2800.0_HH_Asymptotic_8TeV_channel01.root",
+    #      "Xvv.mX2900.0_HH_Asymptotic_8TeV_channel01.root"],
+    #      "HH_combined01", unblind)

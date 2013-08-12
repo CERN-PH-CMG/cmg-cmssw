@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.14 2013/06/27 10:18:27 hinzmann Exp $
+ * $Id: R2JJFitterHH.cc,v 1.1 2013/07/16 16:11:02 hinzmann Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -115,8 +115,8 @@ using namespace RooFit;
 using namespace RooStats ;
 
 static const Int_t NCAT = 2;
-Double_t MMIN = 890;
-Double_t MMAX = 5000;
+Double_t MMIN = 1100;
+Double_t MMAX = 2600;
 std::string filePOSTfix="";
 double signalScaler=0.005;
 
