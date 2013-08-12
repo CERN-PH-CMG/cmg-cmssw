@@ -67,6 +67,7 @@ float fakeRateWeight_2lss(float l1pt, float l1eta, int l1pdgId, float l1mva,
     }
 }
 
+
 float fakeRateWeight_2lssCB(float l1pt, float l1eta, int l1pdgId, float l1relIso,
                             float l2pt, float l2eta, int l2pdgId, float l2relIso, float WP) 
 {
@@ -129,6 +130,83 @@ float fakeRateWeight_2lssSyst(float l1pt, float l1eta, int l1pdgId, float l1mva,
     if (ret == -1.0f) ret = 0.0f;
     return ret;
 
+}
+float fakeRateWeight_2lssBCat(float l1pt, float l1eta, int l1pdgId, float l1mva,
+                         float l2pt, float l2eta, int l2pdgId, float l2mva, float WP, 
+                         int nBJetMedium25, float scaleMuBL, float scaleMuBT, float scaleElBL, float scaleElBT)
+{
+    /// 2 pass: weight  0
+    /// 1 fail: weight +f/(1-f)
+    /// 2 fail: weight -f*f/(1-f)(1-f)
+    //  so, just multiply up factors of -f/(1-f) for each failure
+    float mvas[]={l1mva, l2mva};
+    float pts[]={l1pt, l2pt};
+    float etas[]={fabs(l1eta), fabs(l2eta)};
+    int pdgids[]={l1pdgId, l2pdgId};
+    float ret = -1.0f;
+    for (unsigned int i = 0; i < 2 ; ++i) {
+        if (mvas[i] < WP) {
+	    TH2 *hist = (abs(pdgids[i]) == 11 ? (nBJetMedium25 > 1 ? FR2_el : FR_el):
+                                                (nBJetMedium25 > 1 ? FR2_mu : FR_mu));
+            int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(pts[i])));
+            int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(etas[i])));
+            double fr = hist->GetBinContent(ptbin,etabin);
+            fr *= (nBJetMedium25 > 1 ? (abs(pdgids[i]) == 11 ? scaleElBT : scaleMuBT) : 
+                                       (abs(pdgids[i]) == 11 ? scaleElBL : scaleMuBL) );
+            ret *= -fr/(1.0f-fr);
+        }
+    }
+    if (ret == -1.0f) ret = 0.0f;
+    return ret;
+}
+
+float fakeRateWeight_2lssMuIDCat(float l1pt, float l1eta, int l1pdgId, float l1mva, float l1tightId,
+                         float l2pt, float l2eta, int l2pdgId, float l2mva, float l2tightId, float WP)
+{
+    /// 2 pass: weight  0
+    /// 1 fail: weight +f/(1-f)
+    /// 2 fail: weight -f*f/(1-f)(1-f)
+    //  so, just multiply up factors of -f/(1-f) for each failure
+    float mvas[]={l1mva, l2mva};
+    float pts[]={l1pt, l2pt};
+    float etas[]={fabs(l1eta), fabs(l2eta)};
+    float tightIds[]={l1tightId, l2tightId};
+    int pdgids[]={l1pdgId, l2pdgId};
+    float ret = -1.0f;
+    for (unsigned int i = 0; i < 2 ; ++i) {
+        if (mvas[i] < WP) {
+	    TH2 *hist = (abs(pdgids[i]) == 11 ? FR_el: (tightIds[i] > 0 ? FR_mu : FR2_mu));
+            int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(pts[i])));
+            int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(etas[i])));
+            double fr = hist->GetBinContent(ptbin,etabin);
+            ret *= -fr/(1.0f-fr);
+        }
+    }
+    if (ret == -1.0f) ret = 0.0f;
+    return ret;
+}
+
+float fakeRateWeight_3lMuIDCat(float l1pt, float l1eta, int l1pdgId, float l1mva, float l1tightId,
+                        float l2pt, float l2eta, int l2pdgId, float l2mva, float l2tightId,
+                        float l3pt, float l3eta, int l3pdgId, float l3mva, float l3tightId, float WP)
+{
+    float mvas[]={l1mva, l2mva, l3mva};
+    float pts[]={l1pt, l2pt, l3pt};
+    float etas[]={fabs(l1eta), fabs(l2eta), fabs(l3eta)};
+    int pdgids[]={l1pdgId, l2pdgId, l3pdgId};
+    float tightIds[]={l1tightId, l2tightId,l3tightId};
+    float ret = -1.0f;
+    for (unsigned int i = 0; i < 3 ; ++i) {
+        if (mvas[i] < WP) {
+	    TH2 *hist = (abs(pdgids[i]) == 11 ? FR_el: (tightIds[i] > 0 ? FR_mu : FR2_mu));
+            int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(pts[i])));
+            int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(etas[i])));
+            double fr = hist->GetBinContent(ptbin,etabin);
+            ret *= -fr/(1.0f-fr);
+        }
+    }
+    if (ret == -1.0f) ret = 0.0f;
+    return ret;
 }
 
 bool passND_LooseDen(float l1pt, float l1eta, int l1pdgId, float relIso, float dxy, float dz, float tightId) 
@@ -315,6 +393,63 @@ float fakeRateWeight_3l(float l1pt, float l1eta, int l1pdgId, float l1mva,
     if (ret == -1.0f) ret = 0.0f;
     return ret;
 }
+
+float fakeRateWeight_3lBCat(float l1pt, float l1eta, int l1pdgId, float l1mva,
+                        float l2pt, float l2eta, int l2pdgId, float l2mva,
+                        float l3pt, float l3eta, int l3pdgId, float l3mva,
+                        float WP, int nBJetMedium25, float scaleMuBL, float scaleMuBT, float scaleElBL, float scaleElBT)
+{
+    /// 3 pass: weight  0
+    /// 1 fail: weight +f/(1-f)
+    /// 2 fail: weight -f*f/(1-f)(1-f)
+    //  3 fail: weight +f*f*f/((1-f)(1-f)(1-f)
+    //  so, just multiply up factors of -f/(1-f) for each failure
+    float mvas[]={l1mva, l2mva, l3mva};
+    float pts[]={l1pt, l2pt, l3pt};
+    float etas[]={fabs(l1eta), fabs(l2eta), fabs(l3eta)};
+    int pdgids[]={l1pdgId, l2pdgId, l3pdgId};
+    float ret = -1.0f;
+    for (unsigned int i = 0; i < 3 ; ++i) {
+        if (mvas[i] < WP) {
+	    TH2 *hist = (abs(pdgids[i]) == 11 ? (nBJetMedium25 > 1 ? FR2_el : FR_el):
+                                                (nBJetMedium25 > 1 ? FR2_mu : FR_mu));
+            int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(pts[i])));
+            int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(etas[i])));
+            double fr = hist->GetBinContent(ptbin,etabin);
+            fr *= (nBJetMedium25 > 1 ? (abs(pdgids[i]) == 11 ? scaleElBT : scaleMuBT) : 
+                                       (abs(pdgids[i]) == 11 ? scaleElBL : scaleMuBL) );
+            ret *= -fr/(1.0f-fr);
+        }
+    }
+    if (ret == -1.0f) ret = 0.0f;
+    return ret;
+}
+
+float fakeRateWeight_3lCB(float l1pt, float l1eta, int l1pdgId, float l1relIso,
+                        float l2pt, float l2eta, int l2pdgId, float l2relIso,
+                        float l3pt, float l3eta, int l3pdgId, float l3relIso,
+                        float WP)
+{
+    float relIsos[]={l1relIso, l2relIso, l3relIso};
+    float pts[]={l1pt, l2pt, l3pt};
+    float etas[]={fabs(l1eta), fabs(l2eta), fabs(l3eta)};
+    int pdgids[]={l1pdgId, l2pdgId, l3pdgId};
+    float ret = -1.0f;
+    for (unsigned int i = 0; i < 3 ; ++i) {
+        if (relIsos[i] > WP) {
+	    TH2 *hist = (abs(pdgids[i]) == 11 ? FR_el : FR_mu);
+            int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(pts[i])));
+            int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(etas[i])));
+            double fr = hist->GetBinContent(ptbin,etabin);
+            ret *= -fr/(1.0f-fr);
+        }
+    }
+    if (ret == -1.0f) ret = 0.0f;
+    return ret;
+}
+
+
+
 
 float fakeRateWeight_4l_2wp(float l1pt, float l1eta, int l1pdgId, float l1mva,
                         float l2pt, float l2eta, int l2pdgId, float l2mva,
