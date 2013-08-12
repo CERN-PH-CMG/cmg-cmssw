@@ -132,9 +132,12 @@ extraMcSamples = mcSamples_4
 dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data"
 #lumi: 12.21+7.27+0.134 = 19.62 /fb @ 8TeV
 
-json='/afs/cern.ch/user/a/anlevin/public/moriond_2012_remove_pixel_ecal_recovered.txt'
-jsonBadSIP='/afs/cern.ch/user/a/anlevin/public/moriond_2012_remove_r12c_ecal_recovered.txt'
-jsonRecover='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_201191-201191_8TeV_11Dec2012ReReco-recover_Collisions12_JSON.txt'
+#json='/afs/cern.ch/user/a/anlevin/public/moriond_2012_remove_pixel_ecal_recovered.txt'
+#jsonBadSIP='/afs/cern.ch/user/a/anlevin/public/moriond_2012_remove_r12c_ecal_recovered.txt'
+#jsonRecover='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_201191-201191_8TeV_11Dec2012ReReco-recover_Collisions12_JSON.txt'
+json=dataDir+'/json/Cert_Run2012ABCD-NoRecov-NoBadSIP.json'
+jsonBadSIP=dataDir+'/json/Cert_Run2012D-BadSIP-16Jan2013.json'
+jsonRecover=dataDir+'/json/Cert_Run2012C-Recover-11Dec2012.json'
 
 
 DoubleMuAB = cfg.DataComponent(
@@ -351,7 +354,11 @@ dataSamples1Mu=[SingleMuAB,SingleMuC,SingleMuD,SingleMuRec]
 #-----------PRIVATE FAST SIM---------------
 
 madFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/fastSim-madgraph.txt" % os.environ['CMSSW_BASE'], "r") ]
+#ttgstarFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/fastSim-ttgstar.txt" % os.environ['CMSSW_BASE'], "r") ]
+lowmllFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/fastSim-lowmll.txt" % os.environ['CMSSW_BASE'], "r") ]
 pythiaFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/fastSim-pythia-2013-05-02.txt" % os.environ['CMSSW_BASE'], "r") ]
+powhelFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/fastSim-powhel.txt" % os.environ['CMSSW_BASE'], "r") ]
+rareFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/rareBg-caf.txt" % os.environ['CMSSW_BASE'], "r") ]
 def _grep(x,l): return [ i for i in l if x in i ]
 
 madgraphDate = "2013-05-23"
@@ -369,22 +376,42 @@ FastSim_TTHJets    = kreator.makePrivateMCComponent('FastSim_TTHJets',    '/stor
 FastSim_TTHJets_Up = kreator.makePrivateMCComponent('FastSim_TTHJets_scaleUp',    '/store/caf/user/gpetrucc/ttH/gen/'+madgraphDate+'/ttH_012jets_scaleUp',   _grep('ttH_012jets_scaleUp',   madFiles) )
 FastSim_TTHJets_Dn = kreator.makePrivateMCComponent('FastSim_TTHJets_scaleDown',  '/store/caf/user/gpetrucc/ttH/gen/'+madgraphDate+'/ttH_012jets_scaleDown', _grep('ttH_012jets_scaleDown', madFiles) )
 
+FastSim_TTZ_Powhel  = kreator.makePrivateMCComponent('FastSim_TTZ_Powhel',  '/store/caf/user/gpetrucc/ttH/gen/powhel/arxiv-1208.2665/ttz',   _grep('ttz-events',   powhelFiles) )
+FastSim_TTWp_Powhel = kreator.makePrivateMCComponent('FastSim_TTWp_Powhel', '/store/caf/user/gpetrucc/ttH/gen/powhel/arxiv-1208.2665/ttwp',  _grep('ttwp-events',  powhelFiles) )
+FastSim_TTWm_Powhel = kreator.makePrivateMCComponent('FastSim_TTWm_Powhel', '/store/caf/user/gpetrucc/ttH/gen/powhel/arxiv-1208.2665/ttwm',  _grep('ttwm-events',  powhelFiles) )
+
 FastSim_TTHJets_tuneZ2 = kreator.makePrivateMCComponent('FastSim_TTHJets_tuneZ2',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_scaleDown', _grep('ttH_pythia_Z2-', pythiaFiles) )
 FastSim_TTHJets_tuneZ2Star = kreator.makePrivateMCComponent('FastSim_TTHJets_tuneZ2Star',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_scaleDown', _grep('ttH_pythia_Z2Star-', pythiaFiles) )
 FastSim_TTHJets_tuneD6T = kreator.makePrivateMCComponent('FastSim_TTHJets_tuneD6T',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_scaleDown', _grep('ttH_pythia_D6T-', pythiaFiles) )
 FastSim_TTHJets_tuneProQ20 = kreator.makePrivateMCComponent('FastSim_TTHJets_tuneProQ20',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_scaleDown', _grep('ttH_pythia_ProQ20-', pythiaFiles) )
 FastSim_TTHJets_tuneP11 = kreator.makePrivateMCComponent('FastSim_TTHJets_tuneP11',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_scaleDown', _grep('ttH_pythia_P11-', pythiaFiles) )
 
+#FastSim_TTGStar = kreator.makePrivateMCComponent('FastSim_TTGStar',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-23/ttgstar_lo', _grep('ttgstar_lo', ttgstarFiles) )
+FastSim_TTGStarMM = kreator.makePrivateMCComponent('FastSim_TTGStarMM',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-23/ttgstar_lowmll_mumu_v2', _grep('ttgstar_lowmll_mumu_v2', lowmllFiles) )
+FastSim_TTGStarEE = kreator.makePrivateMCComponent('FastSim_TTGStarEE',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-23/ttgstar_lowmll_ee_v2', _grep('ttgstar_lowmll_ee_v2', lowmllFiles) )
+FastSim_TTGStarTT = kreator.makePrivateMCComponent('FastSim_TTGStarTT',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-23/ttgstar_lowmll_tautau', _grep('ttgstar_lowmll_tautau', lowmllFiles) )
+FastSim_ZGStar4L = kreator.makePrivateMCComponent('FastSim_ZGStar4L',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-23/zz_lowmll_v2', _grep('zz_lowmll_v2', lowmllFiles) )
+
 fastSimSamples = [ FastSim_TTZJets, FastSim_TTZJets_Up, FastSim_TTZJets_Dn, FastSim_TTZJets_MUp, FastSim_TTZJets_MDn,
                    FastSim_TTWJets, FastSim_TTWJets_Up, FastSim_TTWJets_Dn, FastSim_TTWJets_MUp, FastSim_TTWJets_MDn,
                    FastSim_TTHJets, FastSim_TTHJets_Up, FastSim_TTHJets_Dn,
-                   FastSim_TTHJets_tuneZ2,  FastSim_TTHJets_tuneZ2Star,  FastSim_TTHJets_tuneD6T,  FastSim_TTHJets_tuneProQ20,  FastSim_TTHJets_tuneP11,  ]
+                   FastSim_TTHJets_tuneZ2,  FastSim_TTHJets_tuneZ2Star,  FastSim_TTHJets_tuneD6T,  FastSim_TTHJets_tuneProQ20,  FastSim_TTHJets_tuneP11, 
+                   FastSim_TTGStarMM, FastSim_TTGStarEE, FastSim_TTGStarTT, FastSim_ZGStar4L,
+                   FastSim_TTZ_Powhel, FastSim_TTWp_Powhel, FastSim_TTWm_Powhel   ]
+
+
+TBZToLL = kreator.makePrivateMCComponent('TBZToLL', '/store/caf/user/gpetrucc/ttH/grid/CMG/TBZToLL_4F_TuneZ2star_8TeV-madgraph-tauola', _grep('TBZToLL_4F_TuneZ2star_8TeV-madgraph-tauola', rareFiles) )
+WpWpqq  = kreator.makePrivateMCComponent('WpWpqq',  '/store/caf/user/gpetrucc/ttH/grid/CMG/WpWpqq_8TeV-madgraph', _grep('WpWpqq_8TeV-madgraph', rareFiles) )
+WmWmqq  = kreator.makePrivateMCComponent('WmWmqq',  '/store/caf/user/gpetrucc/ttH/grid/CMG/WmWmqq_8TeV-madgraph', _grep('WmWmqq_8TeV-madgraph', rareFiles) )
+WWDPI   = kreator.makePrivateMCComponent('WWDPI',   '/store/caf/user/gpetrucc/ttH/grid/CMG/WW_DoubleScattering_8TeV-pythia8', _grep('WW_DoubleScattering_8TeV-pythia8', rareFiles) )
+
+rareSamples = [ TBZToLL, WpWpqq, WmWmqq, WWDPI ]
 
 from CMGTools.TTHAnalysis.setup.Efficiencies import *
 
 
 #Define splitting
-for comp in mcSamples + fastSimSamples + extraMcSamples:
+for comp in mcSamples + fastSimSamples + extraMcSamples + rareSamples:
     comp.isMC = True
     comp.isData = False
     comp.splitFactor = 250 if comp.name in [ "WJets", "DY3JetsM50", "DY4JetsM50","W1Jets","W2Jets","W3Jets","W4Jets","TTJetsHad" ] else 100
@@ -394,8 +421,9 @@ for comp in mcSamples + fastSimSamples + extraMcSamples:
 for C in [DY1JetsM50,DY2JetsM50,DYJetsM50,WJets,TTLep,TTJetsLep,TTJetsSem]:
     C.splitFactor = 500
 
-for comp in fastSimSamples:
+for comp in fastSimSamples + rareSamples:
     comp.splitFactor = 10
+FastSim_ZGStar4L.splitFactor = 40
 
 for comp in dataSamplesMu:
     comp.splitFactor = 800
