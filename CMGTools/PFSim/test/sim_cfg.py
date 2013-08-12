@@ -36,7 +36,7 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 # FS22: photons
 # PS12: neutrinos
 
-process.source = datasetToSource('cbern','/PFSim/FS130/Aug8_100k_pt0to100_MEoff','.*root')
+process.source = datasetToSource('cbern','/PFSim/FS211/Aug8_100k_pt0to100_MEoff','.*root')
 
 
 process.load('CMGTools.PFSim.pfsim_cff')

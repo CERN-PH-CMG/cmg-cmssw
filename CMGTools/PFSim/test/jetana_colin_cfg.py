@@ -48,7 +48,7 @@ treeProducer = cfg.Analyzer(
 
 testComp = cfg.MCComponent(
     name = 'Test',
-    files = glob.glob('Prod130/Job*/sim.root'),
+    files = glob.glob('Prod22/Job*/sim.root'),
     xSection = 1, 
     nGenEvents = 1,
     triggers = [],
@@ -62,7 +62,7 @@ sequence = cfg.Sequence( [
     # effAndSmear,
     reader,
     jetAna,
-    #  particleAna,
+    particleAna,
     treeProducer
    ] )
 

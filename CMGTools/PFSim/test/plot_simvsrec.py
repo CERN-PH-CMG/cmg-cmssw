@@ -25,7 +25,7 @@ class Comparison(HistComparator):
 
     def buildHist(self, ext):
         hname = '_'.join([self.name,ext])
-        h = TH1F( hname, hname, 200, 0.5, 1.5)
+        h = TH1F( hname, hname, 100, 0.5, 1.5)
         h.SetStats(0)
         h.SetXTitle('p_{T,rec}/p_{T,gen}')
         var = 'jet1_{ext}_pt/jet1_pt>>{hname}'.format(
@@ -40,6 +40,18 @@ class Comparison(HistComparator):
         return h
 
 
+class Fitter(object):
+    def __init__(self, name, tree, ext):
+        self.tree = tree
+        self.name = name
+        hname = 'h2d_' + name
+        self.h2d = TH2F(hname, hname ,20,20, 100, 20, 0., 2.)
+        chain.Draw('jet1_{ext}_pt/jet1_pt:jet1_pt>>{hname}'.format(ext=ext,hname=hname), 'jet1_{ext}_pt>0'.format(ext=ext), 'goff')
+        self.h2d.FitSlicesY()
+        self.hmean = gDirectory.Get(hname+'_1')
+        self.hsigma = gDirectory.Get(hname+'_2')
+
+
 
 import sys
 
@@ -52,3 +64,15 @@ fun = c1.hsim.GetFunction('gaus')
 amplitude = fun.GetParameter(0)
 mean = fun.GetParameter(1)
 sigma = fun.GetParameter(2)
+
+frec = Fitter('frec', chain, 'rec')
+fsim = Fitter('fsim', chain, 'sim')
+
+sBlue.formatHisto(frec.hmean)
+sBlack.formatHisto(fsim.hmean)
+sBlue.formatHisto(frec.hsigma)
+sBlack.formatHisto(fsim.hsigma)
+
+
+cmean = HistComparator('cmean', frec.hmean, fsim.hmean, title1='fast sim', title2='pf sim'); cmean.draw()
+csigma = HistComparator('csigma', frec.hsigma, fsim.hsigma, title1='fast sim', title2='pf sim'); csigma.draw()

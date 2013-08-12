@@ -12,12 +12,14 @@ def fill( tree, varName, value ):
 
 def bookParticle( tree, pName ):
     var(tree, '{pName}_pt'.format(pName=pName))
+    var(tree, '{pName}_energy'.format(pName=pName))
     var(tree, '{pName}_eta'.format(pName=pName))
     var(tree, '{pName}_phi'.format(pName=pName))
     var(tree, '{pName}_dr'.format(pName=pName))
     
 def fillParticle( tree, pName, particle ):
     fill(tree, '{pName}_pt'.format(pName=pName), particle.pt() )
+    fill(tree, '{pName}_energy'.format(pName=pName), particle.p4().energy() )
     fill(tree, '{pName}_eta'.format(pName=pName), particle.eta() )
     fill(tree, '{pName}_phi'.format(pName=pName), particle.phi() )
     if hasattr( particle, 'dr'):
