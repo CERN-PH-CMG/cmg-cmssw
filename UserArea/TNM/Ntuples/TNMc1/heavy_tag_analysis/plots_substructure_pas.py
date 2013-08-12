@@ -26,7 +26,7 @@ TGaxis.SetMaxDigits(3)
 if __name__ == '__main__':
 
  theory=False
- runSet=3
+ runSet=1
 
  names = ["npu",
            "npv",
@@ -87,8 +87,8 @@ if __name__ == '__main__':
            ]
 
  if runSet==1:
-  samples = ["substructure_pas_QCD500.root",
-             "substructure_pas_QCD1000.root",
+  samples = ["~/workspace/substructure/substructure_pas_QCD500.root",
+             "~/workspace/substructure/substructure_pas_QCD1000.root",
              "substructure_pas_WWBulk1000.root",
             ]
   colors=[1,1,1,2,2,2]
@@ -98,17 +98,17 @@ if __name__ == '__main__':
 
  if runSet==2:
   samples = ["substructure_pas_ReRun2012ABCD.root",
-             "substructure_pas_QCD500.root",
-             "substructure_pas_QCD1000.root",
-             "substructure_pas_QCDHerwig.root",
-             "substructure_pas_QCDPythia8170.root",
-             "substructure_pas_QCDPythia8300.root",
-             "substructure_pas_QCDPythia8470.root",
-             "substructure_pas_QCDPythia8600.root",
-             "substructure_pas_QCDPythia8800.root",
-             "substructure_pas_QCDPythia81000.root",
-             "substructure_pas_QCDPythia81400.root",
-             "substructure_pas_QCDPythia81800.root",
+             "~/workspace/substructure/substructure_pas_QCD500.root",
+             "~/workspace/substructure/substructure_pas_QCD1000.root",
+             "~/workspace/substructure/substructure_pas_QCDHerwig.root",
+             "~/workspace/substructure/substructure_pas_QCDPythia8170.root",
+             "~/workspace/substructure/substructure_pas_QCDPythia8300.root",
+             "~/workspace/substructure/substructure_pas_QCDPythia8470.root",
+             "~/workspace/substructure/substructure_pas_QCDPythia8600.root",
+             "~/workspace/substructure/substructure_pas_QCDPythia8800.root",
+             "~/workspace/substructure/substructure_pas_QCDPythia81000.root",
+             "~/workspace/substructure/substructure_pas_QCDPythia81400.root",
+             "~/workspace/substructure/substructure_pas_QCDPythia81800.root",
              "substructure_pas_ReRun2012ABCD.root",
             ]
   colors=[1,2,4,6,1]
@@ -173,10 +173,10 @@ if __name__ == '__main__':
            ]
 
  if runSet==3:
-  samples = ["substructure_pas_QCD500.root",
-             "substructure_pas_QCD1000.root",
-             "substructure_pas_QCD500.root",
-             "substructure_pas_QCD1000.root",
+  samples = ["~/workspace/substructure/substructure_pas_QCD500.root",
+             "~/workspace/substructure/substructure_pas_QCD1000.root",
+             "~/workspace/substructure/substructure_pas_QCD500.root",
+             "~/workspace/substructure/substructure_pas_QCD1000.root",
              "substructure_pas_WWBulk1000.root",
              "substructure_pas_WWBulk2500.root",
              ]
@@ -190,10 +190,10 @@ if __name__ == '__main__':
   sets=["Gen",""]
 
  if runSet==4:
-  samples = ["substructure_pas_QCD500.root",
-             "substructure_pas_QCD1000.root",
-             "substructure_pas_QCD500.root",
-             "substructure_pas_QCD1000.root",
+  samples = ["~/workspace/substructure/substructure_pas_QCD500.root",
+             "~/workspace/substructure/substructure_pas_QCD1000.root",
+             "~/workspace/substructure/substructure_pas_QCD500.root",
+             "~/workspace/substructure/substructure_pas_QCD1000.root",
              "substructure_pas_WWBulk1000.root",
              "substructure_pas_WWBulk1000.root",
              ]
@@ -203,8 +203,8 @@ if __name__ == '__main__':
   sets=[""]
 
  if runSet==5:
-  samples = ["substructure_pas_QCD500.root",
-             "substructure_pas_QCD1000.root",
+  samples = ["~/workspace/substructure/substructure_pas_QCD500.root",
+             "~/workspace/substructure/substructure_pas_QCD1000.root",
              "substructure_pas_WWBulk1000.root",
             ]
   colors=[1,1,1,2,2,2]
@@ -246,8 +246,8 @@ if __name__ == '__main__':
 	   ]
 
  if runSet==7:
-  samples = ["substructure_pas_QCD500.root",
-             "substructure_pas_QCD1000.root",
+  samples = ["~/workspace/substructure/substructure_pas_QCD500.root",
+             "~/workspace/substructure/substructure_pas_QCD1000.root",
              "substructure_pas_WWBulk1000.root",
              "substructure_pas_WWBulk1000.root",
             ]
@@ -300,7 +300,7 @@ if __name__ == '__main__':
 	   ] + names
 
  if runSet==9:
-  samples = ["substructure_pas_QCDHerwig.root",
+  samples = ["~/workspace/substructure/substructure_pas_QCDHerwig.root",
             ]
   colors=[1,2]
   styles=[2,3]
@@ -709,7 +709,7 @@ if __name__ == '__main__':
   elif runSet==6 and theory:
     banner = TLatex(0.32,0.93,"Pythia6, #sqrt{s} = 8 TeV, dijets");
   else:
-    banner = TLatex(0.3,0.93,"CMS Simulation, #sqrt{s} = 8 TeV, dijets");
+    banner = TLatex(0.24,0.93,"CMS Preliminary Simulation, #sqrt{s} = 8 TeV, dijets");
   banner.SetNDC()
   banner.SetTextSize(0.04)
   banner.Draw();  

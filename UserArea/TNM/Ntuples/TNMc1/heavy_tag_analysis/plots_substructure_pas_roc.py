@@ -28,8 +28,8 @@ if __name__ == '__main__':
  scenario="_lowPU"
  #scenario=""
 
- samples = ["substructure_pas_QCD500.root",
-             "substructure_pas_QCD1000.root",
+ samples = ["~/workspace/substructure/substructure_pas_QCD500.root",
+             "~/workspace/substructure/substructure_pas_QCD1000.root",
              "substructure_pas_WWBulk1000.root",
             ]
 
@@ -148,7 +148,7 @@ if __name__ == '__main__':
  legend2a.SetFillStyle(0)
  legend2a.Draw("same")
 
- banner = TLatex(0.3,0.93,"CMS Simulation, #sqrt{s} = 8 TeV, dijets");
+ banner = TLatex(0.24,0.93,"CMS Preliminary Simulation, #sqrt{s} = 8 TeV, dijets");
  banner.SetNDC()
  banner.SetTextSize(0.04)
  banner.Draw();  
