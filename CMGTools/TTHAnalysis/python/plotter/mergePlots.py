@@ -11,14 +11,19 @@ options = None
 if __name__ == "__main__":
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options] mca.txt dir file")
+    parser.add_option("--channels", dest="channels", type="string", default="ee,em,mumu", help="channels to merge")
+    parser.add_option("--useTotal", dest="useTotal", action="store_true", default=False, help="Use total from input")
+    parser.add_option("--postFit", dest="postFit", action="store_true", default=False, help="Use total from input")
     addPlotMakerOptions(parser)
     (options, args) = parser.parse_args()
     options.path = "/afs/cern.ch/work/g/gpetrucc/TREES_250513_HADD"
+    if options.postFit: options.useTotal = True
     mca  = MCAnalysis(args[0],options)
-    FS = [ "em", "ee", "mumu" ]
+    FS = options.channels.split(",")
     basedir = args[1];
     plots   = PlotFile(args[2],options)
     filename = basename(args[2]).replace(".txt",".root");
+    if options.postFit: filename = "postfit_"+filename
     files = dict([ (f,ROOT.TFile("%s/%s/%s" % (basedir,f,filename))) for f in FS])
     ROOT.gSystem.Exec("mkdir -p %s/merged/" % basedir)
     ROOT.gSystem.Exec("cp /afs/cern.ch/user/g/gpetrucc/php/index.php %s/merged/" % basedir)
@@ -27,8 +32,9 @@ if __name__ == "__main__":
     ROOT.gStyle.SetErrorX(0.5)
     ROOT.gStyle.SetOptStat(0)
     ROOT.gStyle.SetPaperSize(20.,25.)
-    itemlist = files["em"].GetListOfKeys()
+    itemlist = files[FS[0]].GetListOfKeys()
     processes = ['data'] + mca.listBackgrounds() + mca.listSignals()
+    if options.useTotal: processes += [ 'total' ] 
     for pspec in plots.plots():
         P = pspec.name
         plots = {}
@@ -42,22 +48,28 @@ if __name__ == "__main__":
                     hc = h.Clone()
                     hc.SetDirectory(None)
                     plots[p] = hc
+        print plots.keys()
         stack = ROOT.THStack()
+        if len(plots) == 0: continue
         tot = plots['data'].Clone(); tot.Reset() 
         totSyst = plots['data'].Clone(); totSyst.Reset() 
         data = plots['data']
+        if options.useTotal:
+            tot     = plots['total']
+            totSyst = plots['total']
         doRatio = True
         for p in mca.listBackgrounds() + mca.listSignals():
             if p not in plots: continue
             h = plots[p]
             stack.Add(h)
-            tot.Add(h)
-            totSyst.Add(h)
-            if mca.getProcessOption(p,'NormSystematic',0.0) > 0:
-                syst = mca.getProcessOption(p,'NormSystematic',0.0)
-                if "TH1" in h.ClassName():
-                    for b in xrange(1,h.GetNbinsX()+1):
-                        totSyst.SetBinError(b, hypot(totSyst.GetBinError(b), syst*h.GetBinContent(b)))
+            if not options.useTotal:
+                tot.Add(h)
+                totSyst.Add(h)
+                if mca.getProcessOption(p,'NormSystematic',0.0) > 0:
+                    syst = mca.getProcessOption(p,'NormSystematic',0.0)
+                    if "TH1" in h.ClassName():
+                        for b in xrange(1,h.GetNbinsX()+1):
+                            totSyst.SetBinError(b, hypot(totSyst.GetBinError(b), syst*h.GetBinContent(b)))
         tot.GetYaxis().SetRangeUser(0, 1.4*pspec.getOption('MoreY',1.0)*max(tot.GetMaximum(), data.GetMaximum()))
         ## Prepare split screen
         c1 = ROOT.TCanvas("c1", "c1", 600, 750); c1.Draw()
@@ -109,7 +121,7 @@ if __name__ == "__main__":
         #leg.AddEntry(bandS, "Shape",  "F")
         #leg.Draw()
         #c1.cd()
-        doCMSSpam("CMS Preliminary",textSize=0.035)
+        #doCMSSpam("CMS Preliminary",textSize=0.035)
         c1.Print("%s/merged/%s.png" % (basedir,P))
         c1.Print("%s/merged/%s.pdf" % (basedir,P))
         #del leg

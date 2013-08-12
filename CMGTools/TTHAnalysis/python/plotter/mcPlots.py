@@ -75,16 +75,17 @@ def doSpam(text,x1,y1,x2,y2,align=12,fill=False,textSize=0.033,_noDelete={}):
     _noDelete[text] = cmsprel; ## so it doesn't get deleted by PyROOT
     return cmsprel
 
-def doTinyCmsPrelim(textLeft="_default_",textRight="_default_",hasExpo=False,textSize=0.033):
+def doTinyCmsPrelim(textLeft="_default_",textRight="_default_",hasExpo=False,textSize=0.033,lumi=None, xoffs=0):
     global options
     if textLeft  == "_default_": textLeft  = options.lspam
     if textRight == "_default_": textRight = options.rspam
+    if lumi      == None       : lumi      = options.lumi
     if textLeft not in ['', None]:
-        doSpam(textLeft, .28 if hasExpo else .17, .955, .40, .995, align=12, textSize=textSize)
+        doSpam(textLeft, (.28 if hasExpo else .17)+xoffs, .955, .60+xoffs, .995, align=12, textSize=textSize)
     if textRight not in ['', None]:
         if "%(lumi)" in textRight: 
-            textRight = textRight % { 'lumi':options.lumi }
-        doSpam(textRight,.48, .955, .99, .995, align=32, textSize=textSize)
+            textRight = textRight % { 'lumi':lumi }
+        doSpam(textRight,.68+xoffs, .955, .99+xoffs, .995, align=32, textSize=textSize)
 
 def reMax(hist,hist2,islog,factorLin=1.3,factorLog=2.0):
     if  hist.ClassName() == 'THStack':
@@ -227,7 +228,7 @@ def doRatioHists(pspec,pmap,total,totalSyst,maxRange,fitRatio=False):
         unity.Draw("AXIS SAME");
         unity0.Draw("E2 SAME");
     else:
-        unity0.Draw("E2 SAME");
+        if total != totalSyst: unity0.Draw("E2 SAME");
     unity.GetYaxis().SetRangeUser(rmin,rmax);
     unity.GetXaxis().SetTitleSize(0.14)
     unity.GetYaxis().SetTitleSize(0.14)
@@ -291,7 +292,9 @@ def doLegend(pmap,mca,corner="TR",textSize=0.035,cutoff=1e-2,mcStyle="F"):
             if p in pmap and pmap[p].Integral() >= cutoff*total: 
                 lbl = mca.getProcessOption(p,'Label',p)
                 sigEntries.append( (pmap[p],lbl,mcStyle) )
-        for p in mca.listBackgrounds(allProcs=True):
+        backgrounds = mca.listBackgrounds(allProcs=True)
+        backgrounds.reverse()
+        for p in backgrounds:
             if p in pmap and pmap[p].Integral() >= cutoff*total: 
                 lbl = mca.getProcessOption(p,'Label',p)
                 bgEntries.append( (pmap[p],lbl,mcStyle) )

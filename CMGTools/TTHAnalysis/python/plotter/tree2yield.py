@@ -298,6 +298,7 @@ class TreeToYield:
             else:            cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, self.adaptExpr(cut,cut=True))
         if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
         histo = None
+        canKeys = False
         if ":" in expr.replace("::","--"):
             (nbx,xmin,xmax,nby,ymin,ymax) = bins.split(",")
             histo = ROOT.TH2F("dummy","dummy",int(nbx),float(xmin),float(xmax),int(nby),float(ymin),float(ymax))
@@ -308,8 +309,19 @@ class TreeToYield:
             else:
                 (nb,xmin,xmax) = bins.split(",")
                 histo = ROOT.TH1F("dummy","dummy",int(nb),float(xmin),float(xmax))
+                canKeys = True
         histo.Sumw2()
         self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummy"), cut, "goff")
+        if canKeys and histo.GetEntries() > 0 and histo.GetEntries() < 100 and not self._isdata and self.getOption("KeysPdf",False):
+            #print "Histogram for %s/%s has %d entries, so will use KeysPdf " % (self._cname, self._name, histo.GetEntries())
+            if "/TH1Keys_cc.so" not in ROOT.gSystem.GetLibraries(): 
+                ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/TTHAnalysis/python/plotter/TH1Keys.cc+" % os.environ['CMSSW_BASE']);
+            (nb,xmin,xmax) = bins.split(",")
+            histo = ROOT.TH1Keys("dummy","dummy",int(nb),float(xmin),float(xmax))
+            self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummy"), cut, "goff")
+            return histo.GetHisto().Clone(name)
+        #elif not self._isdata and self.getOption("KeysPdf",False):
+        #    print "Histogram for %s/%s has %d entries, so won't use KeysPdf " % (self._cname, self._name, histo.GetEntries())
         return histo.Clone(name)
     def __str__(self):
         mystr = ""
