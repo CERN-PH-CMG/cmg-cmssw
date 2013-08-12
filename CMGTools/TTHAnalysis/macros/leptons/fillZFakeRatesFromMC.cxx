@@ -36,6 +36,7 @@ void fillBaseWeights(TString hist, TString cut, TString pass, TString compName, 
 
 void fillZFakeRatesFromMC(int withb=0) {
     gROOT->ProcessLine(".L ../../python/plotter/functions.cc+");
+    gROOT->ProcessLine(".L ../../python/plotter/fakeRate.cc+");
 
     const int npt_mu = 7, npt_el = 5, neta_mu = 2, neta_el = 3;
     double ptbins_mu[npt_mu+1] = { 5.0, 6.0, 7.0, 8.5, 10, 15, 20, 30 };
@@ -51,22 +52,16 @@ void fillZFakeRatesFromMC(int withb=0) {
     for (int is = 0; is < nsels; ++is) {
         TH2F *FR_mu_den = new TH2F(Form("%s_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
         TH2F *FR_mu_num = new TH2F(Form("%s_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_el_den = new TH2F(Form("%s_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_el_num = new TH2F(Form("%s_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
         TH2F *FR_tight_mu_den = new TH2F(Form("%s_tight_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
         TH2F *FR_tight_mu_num = new TH2F(Form("%s_tight_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
         TH2F *FR_loose_mu_den = new TH2F(Form("%s_loose_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
         TH2F *FR_loose_mu_num = new TH2F(Form("%s_loose_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
-        TH2F *FR_el_den = new TH2F(Form("%s_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
-        TH2F *FR_el_num = new TH2F(Form("%s_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
         TH2F *FR_tight_el_den = new TH2F(Form("%s_tight_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
         TH2F *FR_tight_el_num = new TH2F(Form("%s_tight_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
-        TH2F *FR_tight2_el_den = new TH2F(Form("%s_tight2_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
-        TH2F *FR_tight2_el_num = new TH2F(Form("%s_tight2_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
         TH2F *FR_loose_el_den = new TH2F(Form("%s_loose_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
         TH2F *FR_loose_el_num = new TH2F(Form("%s_loose_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
-        TH2F *FR_tightiso_mu_den = new TH2F(Form("%s_tightiso_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
-        TH2F *FR_tightiso_mu_num = new TH2F(Form("%s_tightiso_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
-        TH2F *FR_tightiso_el_den = new TH2F(Form("%s_tightiso_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
-        TH2F *FR_tightiso_el_num = new TH2F(Form("%s_tightiso_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
     }
     //TH1 *w_el = new TH1F("W_btag_el", "CSV", 20, 0, 1);
     //TH1 *w_el = new TH1F("W_btag_mu", "CSV", 20, 0, 1);
@@ -85,7 +80,7 @@ void fillZFakeRatesFromMC(int withb=0) {
     baseCutT += "LepGood%d_innerHits*(abs(LepGood%d_pdgId) == 11) == 0 && "; // require to be zero if the lepton is an electron
     baseCutT += "(LepGood%d_convVeto==0)*(abs(LepGood%d_pdgId) == 11) == 0 && ";
     TString baseCutTC = baseCutT + " (LepGood%d_tightCharge > (abs(LepGood%d_pdgId) == 11)) && ";
-    TString baseCutTCB = baseCutTC+ " (LepGood%d_sip3d < 4) && (abs(LepGood%d_pdgId) == 11 || LepGood%d_tightId) && ";
+    TString baseCutTCB = baseCutTC+ " (LepGood%d_sip3d < 4) && (abs(LepGood%d_pdgId) == 11 || LepGood%d_tightId) && (abs(LepGood%d_pdgId) == 13 || passEgammaTightMVA(LepGood%d_pt,LepGood%d_eta,LepGood%d_tightId)) && ";
 
     TString sample = "";
     const char *samples[4] = { "DYJetsM50", "DY1JetsM50", "DY2JetsM50", "DY3JetsM50" };
@@ -95,15 +90,15 @@ void fillZFakeRatesFromMC(int withb=0) {
         //fillBaseWeights("W_btag_mu", baseCut + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_pt > 10 && LepGood%d_mva < 0.25", sample, 4);
 
         std::cout << "Processing MVA selection on " << sample << std::endl;
-        fillFR("FR_el", baseCut + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.35", sample, 3);
-        fillFR("FR_mu", baseCut + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.35", sample, 3);
-        fillFR("FR_tight_el", baseCutT + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.70", sample, 3);
-        fillFR("FR_tight_mu", baseCutT + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 3);
-        fillFR("FR_loose_el", baseCut  + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= -0.3", sample, 3);
-        fillFR("FR_loose_mu", baseCut  + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= -0.3", sample, 3);
-        fillFR("FR_tight2_el",baseCutTC+ "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.70", sample, 3);
-        fillFR("FR_loose_el", baseCutTCB + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_relIso < 0.12", sample, 3);
-        fillFR("FR_loose_mu", baseCutTCB + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_relIso < 0.12", sample, 3);
+        fillFR("FR_el", baseCutTC + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= -0.3", sample, 3);
+        fillFR("FR_mu", baseCutTC + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= -0.3", sample, 3);
+        fillFR("FR_tight_el", baseCutTC + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.70", sample, 3);
+        fillFR("FR_tight_mu", baseCutTC + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 3);
+        fillFR("FR_loose_el", baseCut   + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= -0.3", sample, 3);
+        fillFR("FR_loose_mu", baseCut   + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= -0.3", sample, 3);
+        //fillFR("FR_tight2_el",baseCutTC+ "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.70", sample, 3);
+        fillFR("FRC_tight_el", baseCutTCB + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_relIso < 0.12", sample, 3);
+        fillFR("FRC_tight_mu", baseCutTCB + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_relIso < 0.12", sample, 3);
 #if 0
         std::cout << "Processing cut-based selection on " << sample << std::endl;
         fillFR("FRC_el", baseCut + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11 && (abs(LepGood%d_eta)<1.4442 || abs(LepGood%d_eta)>1.5660)", "LepGood%d_relIso < 0.25 && LepGood%d_tightId > 0.0 && abs(LepGood%d_dxy) < 0.04 && abs(LepGood%d_innerHits) <= 0", sample, triggering ? 2 : 4);

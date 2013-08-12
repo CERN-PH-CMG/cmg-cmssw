@@ -35,55 +35,49 @@ void fillBaseWeights(TString hist, TString cut, TString pass, TString compName, 
 }
 
 void fillTrivialFakeRatesFromMC(int triggering=1) {
-#if 0
     const int npt_mu = 12, npt_el = 10, neta_mu = 2, neta_el = 3;
     double ptbins_mu[npt_mu+1] = { 5.0, 7.0, 8.5, 10, 12.5, 15, 17.5, 20, 25, 30, 40, 60, 80 };
     double ptbins_el[npt_el+1] = { 7, 8.5, 10, 12.5, 15, 20, 25, 30, 45, 60, 80 };
-#elif 0
-    const int npt_mu = 3, npt_el = 3, neta_mu = 2, neta_el = 3;
-    double ptbins_mu[npt_mu+1] = { 5.0, 10., 20, 80 };
-    double ptbins_el[npt_el+1] = { 7.0, 10., 20, 80 };
-#else
-    const int npt_mu = 6, npt_el = 5, neta_mu = 2, neta_el = 3;
-    double ptbins_mu[npt_mu+1] = { 5.0, 7.5, 10, 15, 20, 35, 80 };
-    double ptbins_el[npt_el+1] = {       7,  10, 15, 20, 35, 80 };
-#endif
-    //double etabins_mu[neta+1] = { 0.0, 0.7, 1.5,   2.0,  2.5 };
-    //double etabins_el[neta+1] = { 0.0, 0.7, 1.479, 2.0,  2.5 };
     double etabins_mu[neta_mu+1] = { 0.0, 1.5,   2.5 };
     double etabins_el[neta_el+1] = { 0.0, 0.8, 1.479, 2.5 };
+    const int npt2_mu = 5, npt2_el = 4;
+    double ptbins2_mu[npt2_mu+1] = { 5.0, 8.5, 15, 25, 45, 80 };
+    double ptbins2_el[npt2_el+1] = {        7, 10, 20, 35, 80 };
+
+
+    gROOT->ProcessLine(".L ../../python/plotter/fakeRate.cc+");
 
     TFile *fOut = TFile::Open(triggering ? "fakeRates_TTJets_MC.root" :  "fakeRates_TTJets_MC_NonTrig.root", "RECREATE");
     //TFile *fOut = TFile::Open("fakeRates_TTLep_MC.root", "RECREATE");
     const int  nsels = 3;
     const char *sels[nsels] = { "FR", "FRC", "FRH" };
     for (int is = 0; is < nsels; ++is) {
-        TH2F *FR_mu_den = new TH2F(Form("%s_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
-        TH2F *FR_mu_num = new TH2F(Form("%s_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        //TH2F *FR_mu_den = new TH2F(Form("%s_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        //TH2F *FR_mu_num = new TH2F(Form("%s_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
         TH2F *FR_tight_mu_den = new TH2F(Form("%s_tight_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
         TH2F *FR_tight_mu_num = new TH2F(Form("%s_tight_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
-        TH2F *FR_tight2_mu_den = new TH2F(Form("%s_tight2_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
-        TH2F *FR_tight2_mu_num = new TH2F(Form("%s_tight2_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
         TH2F *FR_loose_mu_num = new TH2F(Form("%s_loose_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
         TH2F *FR_loose_mu_den = new TH2F(Form("%s_loose_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
-        TH2F *FR_el_den = new TH2F(Form("%s_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
-        TH2F *FR_el_num = new TH2F(Form("%s_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        //TH2F *FR_el_den = new TH2F(Form("%s_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        //TH2F *FR_el_num = new TH2F(Form("%s_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
         TH2F *FR_tight_el_den = new TH2F(Form("%s_tight_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
         TH2F *FR_tight_el_num = new TH2F(Form("%s_tight_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
-        TH2F *FR_tight2_el_den = new TH2F(Form("%s_tight2_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
-        TH2F *FR_tight2_el_num = new TH2F(Form("%s_tight2_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
         TH2F *FR_loose_el_den = new TH2F(Form("%s_loose_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
         TH2F *FR_loose_el_num = new TH2F(Form("%s_loose_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
 
-        TH2F *FR_tight3_mu_num = new TH2F(Form("%s_tight3_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
-        TH2F *FR_tight3_mu_den = new TH2F(Form("%s_tight3_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
-        TH2F *FR_tight3_el_num = new TH2F(Form("%s_tight3_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
-        TH2F *FR_tight3_el_den = new TH2F(Form("%s_tight3_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_loose2_mu_den = new TH2F(Form("%s_loose2_mu_den",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_loose2_mu_num = new TH2F(Form("%s_loose2_mu_num",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_loose2_el_den = new TH2F(Form("%s_loose2_el_den",sels[is]),"",npt2_el,ptbins2_el,neta_el,etabins_el);
+        TH2F *FR_loose2_el_num = new TH2F(Form("%s_loose2_el_num",sels[is]),"",npt2_el,ptbins2_el,neta_el,etabins_el);
+        TH2F *FR_tight2_mu_den = new TH2F(Form("%s_tight2_mu_den",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_tight2_mu_num = new TH2F(Form("%s_tight2_mu_num",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_tight2_el_den = new TH2F(Form("%s_tight2_el_den",sels[is]),"",npt2_el,ptbins2_el,neta_el,etabins_el);
+        TH2F *FR_tight2_el_num = new TH2F(Form("%s_tight2_el_num",sels[is]),"",npt2_el,ptbins2_el,neta_el,etabins_el);
+#if 0
         TH2F *FR_tight4_mu_num = new TH2F(Form("%s_tight4_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
         TH2F *FR_tight4_mu_den = new TH2F(Form("%s_tight4_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
         TH2F *FR_tight4_el_num = new TH2F(Form("%s_tight4_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
         TH2F *FR_tight4_el_den = new TH2F(Form("%s_tight4_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
-#if 1
         TH2F *FR_tight5_mu_num = new TH2F(Form("%s_tight5_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
         TH2F *FR_tight5_mu_den = new TH2F(Form("%s_tight5_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
         TH2F *FR_tight5_el_num = new TH2F(Form("%s_tight5_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
@@ -92,23 +86,35 @@ void fillTrivialFakeRatesFromMC(int triggering=1) {
         TH2F *FR_tight6_mu_den = new TH2F(Form("%s_tight6_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
         TH2F *FR_tight6_el_num = new TH2F(Form("%s_tight6_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
         TH2F *FR_tight6_el_den = new TH2F(Form("%s_tight6_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
-#endif
-        TH2F *FR_tightA_mu_num = new TH2F(Form("%s_tightA_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
-        TH2F *FR_tightA_mu_den = new TH2F(Form("%s_tightA_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
         TH2F *FR_tightA_el_num = new TH2F(Form("%s_tightA_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
         TH2F *FR_tightA_el_den = new TH2F(Form("%s_tightA_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
-        TH2F *FR_tightB_mu_num = new TH2F(Form("%s_tightB_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
-        TH2F *FR_tightB_mu_den = new TH2F(Form("%s_tightB_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
-        TH2F *FR_tightB_el_num = new TH2F(Form("%s_tightB_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
-        TH2F *FR_tightB_el_den = new TH2F(Form("%s_tightB_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
-        TH2F *FR_tightA2_mu_num = new TH2F(Form("%s_tightA2_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
-        TH2F *FR_tightA2_mu_den = new TH2F(Form("%s_tightA2_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
-        TH2F *FR_tightA2_el_num = new TH2F(Form("%s_tightA2_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
-        TH2F *FR_tightA2_el_den = new TH2F(Form("%s_tightA2_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
-        TH2F *FR_tightB2_mu_num = new TH2F(Form("%s_tightB2_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
-        TH2F *FR_tightB2_mu_den = new TH2F(Form("%s_tightB2_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
-        TH2F *FR_tightB2_el_num = new TH2F(Form("%s_tightB2_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
-        TH2F *FR_tightB2_el_den = new TH2F(Form("%s_tightB2_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_tightA_el_num = new TH2F(Form("%s_tightA_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_tightA_el_den = new TH2F(Form("%s_tightA_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_tightA_mu_num = new TH2F(Form("%s_tightA_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_tightA_mu_den = new TH2F(Form("%s_tightA_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_tightB1_mu_den = new TH2F(Form("%s_tightB1_mu_den",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_tightB1_mu_num = new TH2F(Form("%s_tightB1_mu_num",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_tightB2_mu_den = new TH2F(Form("%s_tightB2_mu_den",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_tightB2_mu_num = new TH2F(Form("%s_tightB2_mu_num",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_tightA1_mu_den = new TH2F(Form("%s_tightA1_mu_den",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_tightA1_mu_num = new TH2F(Form("%s_tightA1_mu_num",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_tightA2_mu_den = new TH2F(Form("%s_tightA2_mu_den",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_tightA2_mu_num = new TH2F(Form("%s_tightA2_mu_num",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+#endif
+        // FR's with SIP < 4
+        TH2F *FR_tightSip4_mu_num = new TH2F(Form("%s_tightSip4_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_tightSip4_mu_den = new TH2F(Form("%s_tightSip4_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_tightSip42_mu_den = new TH2F(Form("%s_tightSip42_mu_den",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_tightSip42_mu_num = new TH2F(Form("%s_tightSip42_mu_num",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        // FR's for SUS13
+        TH2F *FR_tightSUS13_mu_num = new TH2F(Form("%s_tightSUS13_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_tightSUS13_mu_den = new TH2F(Form("%s_tightSUS13_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta_mu,etabins_mu);
+        TH2F *FR_tightSUS13_el_num = new TH2F(Form("%s_tightSUS13_el_num",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_tightSUS13_el_den = new TH2F(Form("%s_tightSUS13_el_den",sels[is]),"",npt_el,ptbins_el,neta_el,etabins_el);
+        TH2F *FR_tightSUS132_el_den = new TH2F(Form("%s_tightSUS132_el_den",sels[is]),"",npt2_el,ptbins2_el,neta_el,etabins_el);
+        TH2F *FR_tightSUS132_el_num = new TH2F(Form("%s_tightSUS132_el_num",sels[is]),"",npt2_el,ptbins2_el,neta_el,etabins_el);
+        TH2F *FR_tightSUS132_mu_den = new TH2F(Form("%s_tightSUS132_mu_den",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
+        TH2F *FR_tightSUS132_mu_num = new TH2F(Form("%s_tightSUS132_mu_num",sels[is]),"",npt2_mu,ptbins2_mu,neta_mu,etabins_mu);
     }
     //TH1 *w_el = new TH1F("W_btag_el", "CSV", 20, 0, 1);
     //TH1 *w_el = new TH1F("W_btag_mu", "CSV", 20, 0, 1);
@@ -129,30 +135,60 @@ void fillTrivialFakeRatesFromMC(int triggering=1) {
     //baseCutT += "(abs(LepGood%d_pdgId) == 11 || LepGood%d_tightId) && ";
     baseCutT += chargeCutT;
     TString moreCut2 = "nBJetMedium25 >= 2 &&";
-    TString moreCut3 = "nLepGood > 2 && (nBJetLoose25 >= 2 || nBJetMedium25 >= 1) && (nBJetMedium25 <= 1) && ";
-    TString moreCut4 = "nLepGood > 2 && (nBJetMedium25 >= 2) && ";
-    TString moreCut5 = chargeCutT + "nLepGood == 2 && nJet25 >= 3 && LepGood1_pdgId*LepGood2_pdgId > 0 && (nBJetLoose25 >= 2 || nBJetMedium25 >= 1)  && (nBJetMedium25 <= 1) && ";
-    TString moreCut6 = chargeCutT + "nLepGood == 2 && nJet25 >= 3 && LepGood1_pdgId*LepGood2_pdgId > 0 && (nBJetMedium25 >= 2) && ";
-
+    //TString moreCut3 = "nLepGood > 2 && (nBJetLoose25 >= 2 || nBJetMedium25 >= 1) && (nBJetMedium25 <= 1) && ";
+    //TString moreCut4 = "nLepGood > 2 && (nBJetMedium25 >= 2) && ";
+    //TString moreCut5 = chargeCutT + "nLepGood == 2 && nJet25 >= 3 && LepGood1_pdgId*LepGood2_pdgId > 0 && (nBJetLoose25 >= 2 || nBJetMedium25 >= 1)  && (nBJetMedium25 <= 1) && ";
+    //TString moreCut6 = chargeCutT + "nLepGood == 2 && nJet25 >= 3 && LepGood1_pdgId*LepGood2_pdgId > 0 && (nBJetMedium25 >= 2) && ";
+    //TString moreCutA = "LepGood%d_sip3d <  4 && ";
+    //TString moreCutA1 = "LepGood%d_sip3d <  3.5 && ";
+    //TString moreCutA2 = "LepGood%d_sip3d >= 3.5 && ";
+    //TString moreCutB1 = "LepGood%d_tightId == 1 && ";
+    //TString moreCutB2 = "LepGood%d_tightId == 0 && ";
+    TString sip4cut  = "LepGood%d_sip3d <  4 && ";
+    TString sus13_el = "passEgammaTightMVA(LepGood%d_pt,LepGood%d_eta,LepGood%d_tightId) && abs(LepGood%d_dxy) < 0.0100  && abs(LepGood%d_dz) < 0.1 && (abs(LepGood%d_eta) < 1.4442 || abs(LepGood%d_eta) > 1.566) && ";
+    TString sus13_mu = "LepGood%d_tightId && LepGood%d_tightCharge > 0  && abs(LepGood%d_dxy) < 0.0050 && abs(LepGood%d_dz) < 0.1 && ";
     TString sample = "TTJets";
     const char *samples[7] = { "TTJets", "TTLep", "TtW", "TbartW", "TTJetsLep", "TTJetsSem", "TTJetsHad" };
     for (int id = 0; id < 7; ++id) { 
         sample = TString(samples[id]);
-        //if (sample != "TTJetsSem") continue;
-        //fillBaseWeights("W_btag_el", baseCut + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_pt > 10 && LepGood%d_mva < 0.25", sample, 4);
-        //fillBaseWeights("W_btag_mu", baseCut + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_pt > 10 && LepGood%d_mva < 0.25", sample, 4);
+        //if (sample != "T?TJetsSem") continue;
+        //fillBaseWeights(?"W_btag_el", baseCut + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_pt > 10 && LepGood%d_mva < 0.25", sample, 4);
+        //fillBaseWeights(?"W_btag_mu", baseCut + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_pt > 10 && LepGood%d_mva < 0.25", sample, 4);
 
         std::cout << "Processing MVA selection on " << sample << std::endl;
-        //fillFR("FR_el", baseCut + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.35", sample, 3);
-        //fillFR("FR_mu", baseCut + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.35", sample, 3);
+#if 1
+        //fillFR("FR_el",       baseCutT + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= -0.3", sample, 3);
+        //fillFR("FR_mu",       baseCutT + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= -0.3", sample, 3);
         fillFR("FR_loose_el", baseCut + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= -0.30", sample, 4);
         fillFR("FR_loose_mu", baseCut + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= -0.30", sample, 4);
-        fillFR("FR_tight_mu",  baseCutT +            "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 3);
+        fillFR("FR_tight_mu",  baseCutT +             "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 3);
         fillFR("FR_tight_el",  baseCutT +            "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.70", sample, 3);
         fillFR("FR_tight2_el", baseCutT + moreCut2 + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.70", sample, 3);
         fillFR("FR_tight2_mu", baseCutT + moreCut2 + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 3);
+        fillFR("FR_loose2_el", baseCutT + moreCut2 + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= -0.3", sample, 3);
+        fillFR("FR_loose2_mu", baseCutT + moreCut2 + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= -0.3", sample, 3);
+#endif
+
+#if 1
+        fillFR("FR_tightSip4_mu",  baseCutT + sip4cut +            "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 3);
+        fillFR("FR_tightSip42_mu", baseCutT + sip4cut + moreCut2 + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 3);
+#endif
+#if 1
+        fillFR("FR_tightSUS13_mu",  baseCutT + sus13_mu +            "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_relIso < 0.1", sample, 3);
+        fillFR("FR_tightSUS13_el",  baseCutT + sus13_el +            "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_relIso < 0.1", sample, 3);
+        fillFR("FR_tightSUS132_el", baseCutT + sus13_mu + moreCut2 + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_relIso < 0.1", sample, 3);
+        fillFR("FR_tightSUS132_mu", baseCutT + sus13_el + moreCut2 + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_relIso < 0.1", sample, 3);
+#endif
 
 #if 0
+        //fillFR("FR_tightA_mu",  baseCutT + moreCutA +  "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 3);
+        //fillFR("FR_tight_el",   baseCutT +             "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.70", sample, 3);
+        //fillFR("FR_tightA_el",  baseCutT + moreCutA +  "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.70", sample, 3);
+        fillFR("FR_tightA1_mu",  baseCutT + moreCutA1 +  "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 3);
+        fillFR("FR_tightA2_mu",  baseCutT + moreCutA2 +  "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 3);
+        fillFR("FR_tightB1_mu",  baseCutT + moreCutB1 +  "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 3);
+        fillFR("FR_tightB2_mu",  baseCutT + moreCutB2 +  "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 3);
+
         if (sample == "TTJetsLep" || sample == "TTLep") {
             fillFR("FR_tight3_el", baseCutT + moreCut3 + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.70", sample, 3);
             fillFR("FR_tight3_mu", baseCutT + moreCut3 + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 3);
@@ -165,7 +201,6 @@ void fillTrivialFakeRatesFromMC(int triggering=1) {
             fillFR("FR_tight6_el", baseCutT + moreCut6 + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.70", sample, 2);
             fillFR("FR_tight6_mu", baseCutT + moreCut6 + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 2);
         }
-#endif
         fillFR("FR_tightA_el",  baseCutT + "(nLepGood > 2 || nJet25 >= 3) && LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mcMatchAny <  2 && LepGood%d_mva >= 0.70", sample, 3);
         fillFR("FR_tightB_el",  baseCutT + "(nLepGood > 2 || nJet25 >= 3) && LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mcMatchAny == 2 && LepGood%d_mva >= 0.70", sample, 3);
         fillFR("FR_tightA_mu",  baseCutT + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mcMatchAny <  2 && LepGood%d_mva >= 0.70", sample, 3);
@@ -174,11 +209,12 @@ void fillTrivialFakeRatesFromMC(int triggering=1) {
         fillFR("FR_tightA2_mu", baseCutT + moreCut2 + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mcMatchAny <  2 && LepGood%d_mva >= 0.70", sample, 3);
         fillFR("FR_tightB2_el", baseCutT + moreCut2 + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mcMatchAny == 2 && LepGood%d_mva >= 0.70", sample, 3);
         fillFR("FR_tightB2_mu", baseCutT + moreCut2 + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mcMatchAny == 2 && LepGood%d_mva >= 0.70", sample, 3);
+#endif
 
-#if 1
+#if 0
 
         TString tightCB = baseCutT + "LepGood%d_sip3d < 4 && LepGood%d_tightCharge > (abs(LepGood%d_pdgId) == 11) && ";
-        fillFR("FRC_tight_el",  tightCB + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11",                      "LepGood%d_relIso < 0.12",  sample, 3);
+        fillFR("FRC_tight_el",  tightCB + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11 && passEgammaTightMVA(LepGood%d_pt,LepGood%d_eta,LepGood%d_tightId)",                      "LepGood%d_relIso < 0.12",  sample, 3);
         fillFR("FRC_tight_mu",  tightCB + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13 && LepGood%d_tightId", "LepGood%d_relIso < 0.12 ", sample, 3);
 #endif
 
