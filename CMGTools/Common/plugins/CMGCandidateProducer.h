@@ -26,6 +26,7 @@ class CMGCandidateProducer : public edm::EDProducer {
  private:
 
   edm::InputTag  Cands_;
+  edm::InputTag  CandsFromPV_;
   
 };
 

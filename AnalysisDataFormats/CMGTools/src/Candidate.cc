@@ -51,6 +51,7 @@ size_t Candidate::numberOfMothers() const {
 
 bool Candidate::overlap( const reco::Candidate & o ) const { 
   return  p4() == o.p4() && vertex() == o.vertex() && charge() == o.charge();
+//  return  p4() == o.p4() && charge() == o.charge();
 }
 
 const Candidate * Candidate::daughter( size_type ) const {

@@ -25,21 +25,27 @@ namespace cmg {
 
     /// default constructor  
   Candidate()
-    : p4_(0,0,0,0), vertex_(0,0,0), pdgId_(0) { }                                                             
-    explicit Candidate( const reco::Candidate & c)
-      : p4_(c.p4().pt(), c.p4().eta(), c.p4().phi(), c.p4().mass()), vertex_(c.vertex()), pdgId_(c.pdgId()) {}
+    : p4_(0,0,0,0), vertex_(0,0,0), pdgId_(0), fromPV_(0) { }                                                             
+//    : p4_(0,0,0,0), pdgId_(0), fromPV_(0) { }                                                             
+    explicit Candidate( const reco::Candidate & c, bool fromPV)
+      : p4_(c.p4().pt(), c.p4().eta(), c.p4().phi(), c.p4().mass()), vertex_(c.vertex()), pdgId_(c.pdgId()), fromPV_(fromPV) { }
+//      : p4_(c.p4().pt(), c.p4().eta(), c.p4().phi(), c.p4().mass()), pdgId_(c.pdgId()), fromPV_(fromPV) { }
     /// constructor from values  
-  Candidate(float pt, float eta, float phi, float mass, Point vertex, int pdgId)
-    : p4_(pt, eta, phi, mass), vertex_(vertex), pdgId_(pdgId) { }
+  Candidate(float pt, float eta, float phi, float mass, Point vertex, int pdgId, bool fromPV)
+    : p4_(pt, eta, phi, mass), vertex_(vertex), pdgId_(pdgId), fromPV_(fromPV) { }
+//  Candidate(float pt, float eta, float phi, float mass, int pdgId, bool fromPV)
+//    : p4_(pt, eta, phi, mass), pdgId_(pdgId), fromPV_(fromPV) { }
     /// constructor from values
-  Candidate(float pt, float eta, float phi, float mass, float vx, float vy, float vz, int pdgId)
-    : p4_(pt, eta, phi, mass), vertex_(vx, vy, vz), pdgId_(pdgId) { }
+  Candidate(float pt, float eta, float phi, float mass, float vx, float vy, float vz, int pdgId, bool fromPV)
+    : p4_(pt, eta, phi, mass), vertex_(vx, vy, vz), pdgId_(pdgId), fromPV_(fromPV) { }
     /// constructor from values    
-  Candidate(PolarLorentzVector p4, Point vertex, int pdgId)
-    : p4_(p4), vertex_(vertex), pdgId_(pdgId) { }
+  Candidate(PolarLorentzVector p4, Point vertex, int pdgId, bool fromPV)
+    : p4_(p4), vertex_(vertex), pdgId_(pdgId), fromPV_(fromPV) { }
+//  Candidate(PolarLorentzVector p4, int pdgId, bool fromPV)
+//    : p4_(p4), pdgId_(pdgId), fromPV_(fromPV) { }
     /// constructor from values    
-  Candidate(PolarLorentzVector p4, float vx, float vy, float vz, int pdgId)
-    : p4_(p4), vertex_(vx, vy, vz), pdgId_(pdgId) { }
+  Candidate(PolarLorentzVector p4, float vx, float vy, float vz, int pdgId, bool fromPV)
+    : p4_(p4), vertex_(vx, vy, vz), pdgId_(pdgId), fromPV_(fromPV) { }
     
     
     /// destructor
@@ -150,16 +156,20 @@ namespace cmg {
       p4_ = PolarLorentzVector(p4.Pt(), p4.Eta(), p4.Phi(), p4.M());
     }
     /// vertex position
-    virtual const Point & vertex() const { return vertex_; }
+    virtual const Point & vertex() const { return vertex_; }//{ if (fromPV_) return Point(0,0,0); else return Point(0,0,100); }
     /// x coordinate of vertex position                                                   
-    virtual double vx() const  { return vertex_.X(); }
+    virtual double vx() const  { return vertex_.X(); }//{ return 0; }
     /// y coordinate of vertex position                                                   
-    virtual double vy() const  { return vertex_.Y(); }
+    virtual double vy() const  { return vertex_.Y(); }//{ return 0; }
     /// z coordinate of vertex position                                                   
-    virtual double vz() const  { return vertex_.Z(); }
+    virtual double vz() const  { return vertex_.Z(); }//{ if (fromPV_) return 0; else return 100; }
     /// set vertex                                                                        
-    virtual void setVertex( const Point & vertex )   { vertex_ = vertex; }
+    virtual void setVertex( const Point & vertex ) { vertex_ = vertex; }
 
+    virtual const bool & fromPV() const { return fromPV_; }
+    virtual void setFromPV( const bool fromPV )   { fromPV_ = fromPV; }
+
+    /// PDG identifier                                                                    
     /// PDG identifier                                                                    
     virtual int pdgId() const   { return pdgId_; }
     // set PDG identifier                                                                 
@@ -284,6 +294,7 @@ namespace cmg {
     Point vertex_;
     /// PDG identifier                                                                    
     int pdgId_;
+    bool fromPV_;
 
     /// check overlap with another Candidate                                              
     virtual bool overlap( const reco::Candidate & ) const;

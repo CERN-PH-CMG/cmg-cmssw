@@ -22,6 +22,7 @@ using namespace edm;
 CMGCandidateProducer::CMGCandidateProducer(const edm::ParameterSet& iConfig) {
   
   Cands_ = iConfig.getParameter<InputTag>("inputCollection");
+  CandsFromPV_ = iConfig.getParameter<InputTag>("inputCollectionFromPV");
   produces< std::vector<cmg::Candidate> > ();
 
 }
@@ -37,9 +38,22 @@ void CMGCandidateProducer::produce(Event& iEvent,
   iEvent.getByLabel( Cands_, cands );
   std::vector<reco::Candidate>::const_iterator cand;
 
+  edm::Handle<reco::PFCandidateCollection> candsFromPV;
+  iEvent.getByLabel( CandsFromPV_, candsFromPV );
+  std::vector<reco::Candidate>::const_iterator candFromPV;
+
   auto_ptr< std::vector<cmg::Candidate> > outPtr( new std::vector<cmg::Candidate> );
   for(unsigned int ic=0; ic<cands->size(); ic++) {
     const reco::Candidate &cand=(*cands)[ic];
+    bool fromPV=false;
+    for(unsigned int icFromPV=0; icFromPV<candsFromPV->size(); icFromPV++) {
+      const reco::Candidate &candFromPV=(*candsFromPV)[icFromPV];
+      if((cand.p4()==candFromPV.p4())&&(cand.pdgId()==candFromPV.pdgId()))
+      {
+          fromPV=true;
+	  break;
+      }
+    }
 
     math::XYZPoint vtx = cand.vertex();
     
@@ -48,7 +62,8 @@ void CMGCandidateProducer::produce(Event& iEvent,
 				      cand.p4().phi(),
 				      cand.p4().M(),
 				      vtx,
-				      cand.pdgId())
+				      cand.pdgId(),
+				      fromPV)
 		       );  
     }
   
