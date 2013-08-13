@@ -123,6 +123,11 @@ process.p = cms.Path(
     process.PATCMGJetCHSSequence 
     )
 
+if 'Prompt' in datasetInfo[1] or runOnMC:
+  process.metNoiseCleaning.remove(process.hcalfilter)
+if ('Parked' in datasetInfo[1]) or ('22Jan2013' in datasetInfo[1]):
+  process.metNoiseCleaning.remove(process.hcallasereventfilter2012)
+
 process.p += process.postPathCounter
 
 # For testing, you can remove some of the objects:
