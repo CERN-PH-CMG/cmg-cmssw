@@ -1,5 +1,5 @@
-#ifndef TH1Keys_h
-#define TH1Keys_h
+#ifndef TH1KeysNew_h
+#define TH1KeysNew_h
 
 #include <TH1.h>
 #include <RooRealVar.h>
@@ -7,14 +7,14 @@
 #include <RooDataSet.h>
 #include <RooNDKeysPdf.h>
 
-class TH1Keys : public TH1 {
+class TH1KeysNew : public TH1 {
     public:
-       TH1Keys();
-       TH1Keys(const char *name,const char *title,Int_t nbinsx,Double_t xlow,Double_t xup, TString options = "a", Double_t rho = 1.5);
-       TH1Keys(const char *name,const char *title,Int_t nbinsx,const Float_t  *xbins, TString options = "a", Double_t rho = 1.5) ;
-       TH1Keys(const char *name,const char *title,Int_t nbinsx,const Double_t *xbins, TString options = "a", Double_t rho = 1.5) ;
-       TH1Keys(const TH1Keys &other);
-       virtual ~TH1Keys();
+       TH1KeysNew();
+       TH1KeysNew(const char *name,const char *title,Int_t nbinsx,Double_t xlow,Double_t xup, TString options = "a", Double_t rho = 1.5);
+       TH1KeysNew(const char *name,const char *title,Int_t nbinsx,const Float_t  *xbins, TString options = "a", Double_t rho = 1.5) ;
+       TH1KeysNew(const char *name,const char *title,Int_t nbinsx,const Double_t *xbins, TString options = "a", Double_t rho = 1.5) ;
+       TH1KeysNew(const TH1KeysNew &other);
+       virtual ~TH1KeysNew();
 
        TH1 * GetHisto() { if (!isCacheGood_) FillH1(); return cache_; }
        const TH1 * GetHisto() const { if (!isCacheGood_) FillH1(); return cache_; }
@@ -48,7 +48,7 @@ class TH1Keys : public TH1 {
        virtual void     SetBinsLength(Int_t n=-1) { dont("SetBinLength"); }
        virtual void     Scale(Double_t c1=1, Option_t *option="");
 
-       ClassDef(TH1Keys,1)  //
+       ClassDef(TH1KeysNew,1)  //
 
     private:
         Double_t    min_, max_;
@@ -76,7 +76,7 @@ class TH1Keys : public TH1 {
 #include <stdexcept>
 #include <vector>
 
-TH1Keys::TH1Keys() :
+TH1KeysNew::TH1KeysNew() :
     x_(0),
     dataset_(0),
     underflow_(0.0), overflow_(0.0),
@@ -86,7 +86,7 @@ TH1Keys::TH1Keys() :
 {
 }
 
-TH1Keys::TH1Keys(const char *name,const char *title,Int_t nbinsx,Double_t xlow,Double_t xup, TString options, Double_t rho) :
+TH1KeysNew::TH1KeysNew(const char *name,const char *title,Int_t nbinsx,Double_t xlow,Double_t xup, TString options, Double_t rho) :
     TH1(name,title,nbinsx,xlow,xup),
     min_(xlow), max_(xup),
     x_(new RooRealVar("x", "x", min_, max_)),
@@ -105,7 +105,7 @@ TH1Keys::TH1Keys(const char *name,const char *title,Int_t nbinsx,Double_t xlow,D
     x_->setBins(nbinsx);
 }
 
-TH1Keys::TH1Keys(const char *name,const char *title,Int_t nbinsx,const Float_t  *xbins, TString options, Double_t rho) :
+TH1KeysNew::TH1KeysNew(const char *name,const char *title,Int_t nbinsx,const Float_t  *xbins, TString options, Double_t rho) :
     TH1(name,title,nbinsx,xbins),
     min_(xbins[0]), max_(xbins[nbinsx]),
     x_(new RooRealVar("x", "x", min_, max_)),
@@ -126,7 +126,7 @@ TH1Keys::TH1Keys(const char *name,const char *title,Int_t nbinsx,const Float_t  
     x_->setBinning(RooBinning(nbinsx, &boundaries[0]));
 }
 
-TH1Keys::TH1Keys(const char *name,const char *title,Int_t nbinsx,const Double_t *xbins, TString options, Double_t rho) :
+TH1KeysNew::TH1KeysNew(const char *name,const char *title,Int_t nbinsx,const Double_t *xbins, TString options, Double_t rho) :
     TH1(name,title,nbinsx,xbins),
     min_(xbins[0]), max_(xbins[nbinsx]),
     x_(new RooRealVar("x", "x", min_, max_)),
@@ -146,7 +146,7 @@ TH1Keys::TH1Keys(const char *name,const char *title,Int_t nbinsx,const Double_t 
 }
 
 
-TH1Keys::TH1Keys(const TH1Keys &other)  :
+TH1KeysNew::TH1KeysNew(const TH1KeysNew &other)  :
     TH1(other),
     min_(other.min_), max_(other.max_),
     x_(new RooRealVar("x", "x", min_, max_)),
@@ -165,14 +165,14 @@ TH1Keys::TH1Keys(const TH1Keys &other)  :
 }
 
 
-TH1Keys::~TH1Keys() 
+TH1KeysNew::~TH1KeysNew() 
 {
     delete cache_;
     delete dataset_;
     delete x_;
 }
 
-Int_t TH1Keys::Fill(Double_t x, Double_t w)
+Int_t TH1KeysNew::Fill(Double_t x, Double_t w)
 {
     isCacheGood_ = false;
     if (x >= max_) overflow_ += w;
@@ -185,7 +185,7 @@ Int_t TH1Keys::Fill(Double_t x, Double_t w)
     return -1;
 }
 
-void TH1Keys::FillN(Int_t ntimes, const Double_t *x, const Double_t *w, Int_t stride)
+void TH1KeysNew::FillN(Int_t ntimes, const Double_t *x, const Double_t *w, Int_t stride)
 {
     isCacheGood_ = false;
     for (Int_t i = 0; i < ntimes; i += stride) {
@@ -194,14 +194,14 @@ void TH1Keys::FillN(Int_t ntimes, const Double_t *x, const Double_t *w, Int_t st
 }
 
 #if ROOT_VERSION_CODE <  ROOT_VERSION(5,34,00)
-void TH1Keys::Add(const TH1 *h1, Double_t c1) 
+void TH1KeysNew::Add(const TH1 *h1, Double_t c1) 
 #else
-Bool_t TH1Keys::Add(const TH1 *h1, Double_t c1) 
+Bool_t TH1KeysNew::Add(const TH1 *h1, Double_t c1) 
 #endif
 {
     if (c1 != 1.0) dont("Add with constant != 1");
-    const TH1Keys *other = dynamic_cast<const TH1Keys *>(h1);
-    if (other == 0) dont("Add with a non TH1Keys");
+    const TH1KeysNew *other = dynamic_cast<const TH1KeysNew *>(h1);
+    if (other == 0) dont("Add with a non TH1KeysNew");
     dataset_->append(const_cast<RooDataSet&>(*other->dataset_));
     isCacheGood_ = false;
 #if ROOT_VERSION_CODE >=  ROOT_VERSION(5,34,00)
@@ -209,13 +209,13 @@ Bool_t TH1Keys::Add(const TH1 *h1, Double_t c1)
 #endif
 }
 
-void TH1Keys::Scale(Double_t c1, Option_t *option)
+void TH1KeysNew::Scale(Double_t c1, Option_t *option)
 {
     globalScale_ *= c1;
     if (cache_) cache_->Scale(c1);
 }
 
-void TH1Keys::Reset(Option_t *option) {
+void TH1KeysNew::Reset(Option_t *option) {
     dataset_->reset();
     overflow_ = underflow_ = 0.0;
     globalScale_ = 1.0;
@@ -225,7 +225,7 @@ void TH1Keys::Reset(Option_t *option) {
 
 // ------------------------------------------------------------
 
-void TH1Keys::FillH1() const
+void TH1KeysNew::FillH1() const
 {
     if (dataset_->numEntries() == 0) {
         cache_->Reset(); // make sure it's empty
@@ -236,15 +236,15 @@ void TH1Keys::FillH1() const
         RooNDKeysPdf pdf("","",*x_,*dataset_,options_,rho_);
         cache_ = pdf.createHistogram(GetName(), *x_);
         if (cache_->Integral()) cache_->Scale(1.0/cache_->Integral());
+        cache_->Scale(dataset_->sumEntries() * globalScale_);
         cache_->SetBinContent(0,                     underflow_);
         cache_->SetBinContent(cache_->GetNbinsX()+1, overflow_);
-        cache_->Scale(dataset_->sumEntries() * globalScale_);
         RooMsgService::instance().setGlobalKillBelow(gKill);
     }
     isCacheGood_ = true;
 }
 
-void TH1Keys::dont(const char *msg) const {
-    TObject::Error("TH1Keys",msg);
-    throw std::runtime_error(std::string("Error in TH1Keys: ")+msg);
+void TH1KeysNew::dont(const char *msg) const {
+    TObject::Error("TH1KeysNew",msg);
+    throw std::runtime_error(std::string("Error in TH1KeysNew: ")+msg);
 }

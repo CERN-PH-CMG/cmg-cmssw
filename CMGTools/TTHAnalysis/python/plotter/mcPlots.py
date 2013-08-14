@@ -379,7 +379,10 @@ class PlotMaker:
                 total = hists[0].Clone(pspec.name+"_total"); total.Reset()
                 totalSyst = hists[0].Clone(pspec.name+"_totalSyst"); totalSyst.Reset()
                 if self._options.plotmode == "norm": 
-                    total.GetYaxis().SetTitle("density/bin")
+                    if 'data' in pmap:
+                        total.GetYaxis().SetTitle(total.GetYaxis().GetTitle()+" (normalized)")
+                    else:
+                        total.GetYaxis().SetTitle("density/bin")
                     total.GetYaxis().SetDecimals(True)
                 if options.scaleSignalToData: doScaleSigNormData(pspec,pmap,mca)
                 for p in mca.listBackgrounds(allProcs=True) + mca.listSignals(allProcs=True):
@@ -401,7 +404,8 @@ class PlotMaker:
                             plot.SetLineWidth(3)
                             plot.SetFillStyle(0)
                             if self._options.plotmode == "norm":
-                                plot.Scale(1.0/plot.Integral())
+                                ref = pmap['data'].Integral() if 'data' in pmap else 1.0
+                                plot.Scale(ref/plot.Integral())
                             stack.Add(plot)
                             total.SetMaximum(max(total.GetMaximum(),1.3*plot.GetMaximum()))
                         plot.SetMarkerStyle(0)

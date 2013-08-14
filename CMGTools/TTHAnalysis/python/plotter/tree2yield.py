@@ -312,16 +312,17 @@ class TreeToYield:
                 canKeys = True
         histo.Sumw2()
         self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummy"), cut, "goff")
-        if canKeys and histo.GetEntries() > 0 and histo.GetEntries() < 100 and not self._isdata and self.getOption("KeysPdf",False):
+        if canKeys and histo.GetEntries() > 0 and histo.GetEntries() < self.getOption('KeysPdfMinN',100) and not self._isdata and self.getOption("KeysPdf",False):
             #print "Histogram for %s/%s has %d entries, so will use KeysPdf " % (self._cname, self._name, histo.GetEntries())
             if "/TH1Keys_cc.so" not in ROOT.gSystem.GetLibraries(): 
                 ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/TTHAnalysis/python/plotter/TH1Keys.cc+" % os.environ['CMSSW_BASE']);
             (nb,xmin,xmax) = bins.split(",")
-            histo = ROOT.TH1Keys("dummy","dummy",int(nb),float(xmin),float(xmax))
-            self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummy"), cut, "goff")
+            histo = ROOT.TH1KeysNew("dummyk","dummyk",int(nb),float(xmin),float(xmax))
+            self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummyk"), cut, "goff")
             return histo.GetHisto().Clone(name)
         #elif not self._isdata and self.getOption("KeysPdf",False):
-        #    print "Histogram for %s/%s has %d entries, so won't use KeysPdf " % (self._cname, self._name, histo.GetEntries())
+        #else:
+        #    print "Histogram for %s/%s has %d entries, so won't use KeysPdf (%s, %s) " % (self._cname, self._name, histo.GetEntries(), canKeys, self.getOption("KeysPdf",False))
         return histo.Clone(name)
     def __str__(self):
         mystr = ""
