@@ -112,43 +112,50 @@ void VbfHbbPFCandOutOfJets::produce(edm::Event& iEvent, const edm::EventSetup& i
 	 for (unsigned i1 = 0; i1 != pfcandsin.size(); ++i1) {
 	   if (&*ipf == &*(pfcandsin[i1])) { 
              out = false;
+             break;
            }
 	 }
-         if (ipf->trackRef()->pt() < 0.3) {
-           out = false;
-         }
-	 float dzPV0 = ipf->trackRef()->dz(vpoints[0]);
-	 float dzErr = ipf->trackRef()->dzError();
-         float relErr(0.0);
-         if (dzErr != 0) {
-           relErr = fabs(dzPV0/dzErr);
-         }
-	 // minimum z-distance of track to the first PV : 2mm && 3sigma
-	 if (fabs(dzPV0) > 0.2 || relErr > 3) {
-           out = false;
-         }
-	 // loop over secondary (softer) Primary Vertices and exclude tracks more compatible with those 
-	 for(unsigned iv = 1; iv < privtxs->size(); ++iv) {
-	   float dz = ipf->trackRef()->dz(vpoints[iv]);
-	   if (fabs(dz) < fabs(dzPV0)) {
+         
+         if (ipf->trackRef().isNonnull()) {
+           if (ipf->trackRef()->pt() < 0.3) {
              out = false;
            }
-	 }
-	 float dR0 = 0.5;
-	 // remove tracks in an ellipse area around the two b-jets
-	 float dRbb    = deltaR(*bjet0P4,*bjet1P4);
-	 float dRbjet0 = deltaR(ipf->p4(),*bjet0P4); 
-	 float dRbjet1 = deltaR(ipf->p4(),*bjet1P4); 
-	 if (dRbjet0 + dRbjet1 < dRbb + 2*dR0) {
+	   float dzPV0 = ipf->trackRef()->dz(vpoints[0]);
+	   float dzErr = ipf->trackRef()->dzError();
+           float relErr(0.0);
+           if (dzErr != 0) {
+             relErr = fabs(dzPV0/dzErr);
+           }
+	   // minimum z-distance of track to the first PV : 2mm && 3sigma
+	   if (fabs(dzPV0) > 0.2 || relErr > 3) {
+             out = false;
+           }
+	   // loop over secondary (softer) Primary Vertices and exclude tracks more compatible with those 
+	   for(unsigned iv = 1; iv < privtxs->size(); ++iv) {
+	     float dz = ipf->trackRef()->dz(vpoints[iv]);
+	     if (fabs(dz) < fabs(dzPV0)) {
+               out = false;
+             }
+	   }
+	   float dR0 = 0.5;
+	   // remove tracks in an ellipse area around the two b-jets
+	   float dRbb    = deltaR(*bjet0P4,*bjet1P4);
+	   float dRbjet0 = deltaR(ipf->p4(),*bjet0P4); 
+	   float dRbjet1 = deltaR(ipf->p4(),*bjet1P4); 
+	   if (dRbjet0 + dRbjet1 < dRbb + 2*dR0) {
+             out = false;
+           }
+         } // if trackRef is not null
+         else {
+           //cout<<"Found candidate with null track reference"<<endl; 
            out = false;
          }
 	 if (out) {
 	   outPFCand->push_back(*ipf);
 	 }
-       }// if charged hadron
+       }// if charged hadron or lepton
      }// pf cand loop
    }// if 4 jets and at least one vertex
-   //cout<<"Found "<<outPFCand->size()<<" charged hadrons"<<endl;
    iEvent.put(outPFCand);
 }
 
