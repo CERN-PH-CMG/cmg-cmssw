@@ -27,6 +27,7 @@ if __name__ == '__main__':
 
  scenario="_lowPU"
  #scenario=""
+ scenario="_Gen"
 
  samples = ["~/workspace/substructure/substructure_pas_QCD500.root",
              "~/workspace/substructure/substructure_pas_QCD1000.root",
@@ -39,6 +40,14 @@ if __name__ == '__main__':
         ("Jet1NsubPruned","pruned #tau_{2}/#tau_{1}",-1,10,False),
         ("Jet1MassDrop","mass drop",-1,10,False),
         ("Jet1C2beta17","C_{2} (#beta=1.7)",-1,10,False),
+        ]
+
+ if scenario=="_Gen":
+  selection="(abs(Jet1eta)<2.4)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>400)&&(Jet1pt<600)"
+  plots=[("GenJet1Nsub","#tau_{2}/#tau_{1}",-1,10,False),
+        ("GenJet1NsubPruned","pruned #tau_{2}/#tau_{1}",-1,10,False),
+        ("GenJet1MassDrop","mass drop",-1,10,False),
+        ("GenJet1C2beta17","C_{2} (#beta=1.7)",-1,10,False),
         ]
 
  if scenario=="_lowPU":

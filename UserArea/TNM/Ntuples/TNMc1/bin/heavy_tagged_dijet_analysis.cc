@@ -418,6 +418,8 @@ int main(int argc, char** argv)
 
   bool hcallasereventfilter2012active=false;
   bool datafiltersactive=false;
+  int accepted=0;
+  int accepted100=0;
 
   for(int entry=0; entry < nevents; ++entry)
 	{
@@ -564,6 +566,9 @@ int main(int argc, char** argv)
 
 	  if(!(noiseRemoval && Jets_Selection && centralitySelection)) continue;
 
+          accepted++;
+	  accepted100+=((jethelperCA8_pt[0]>100)&&(jethelperCA8_pt[1]>100));
+
 	  // ---------------------
 	  // -- fill histograms --
 	  // ---------------------	  
@@ -636,6 +641,10 @@ if((cmdline.outputfilename.find("Py6")!=std::string::npos)||(cmdline.outputfilen
 	}
   stream.close();
   ofile.close();
+
+              cout << "accepted " << accepted << endl;
+              cout << "accepted100 " << accepted100 << endl;
+ 
 
   return 0;
 }

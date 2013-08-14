@@ -26,7 +26,7 @@ TGaxis.SetMaxDigits(3)
 if __name__ == '__main__':
 
  theory=False
- runSet=1
+ runSet=3
 
  names = ["npu",
            "npv",
@@ -487,9 +487,11 @@ if __name__ == '__main__':
       hist.GetXaxis().SetTitle("")
       hist.GetXaxis().SetLabelColor(0)
       hist.GetYaxis().SetTitle("Events")
+      if "pruned jet mass" in plot[2]:
+          hist.GetYaxis().SetTitle("Events / (3 GeV)")
     else:
       hist.GetXaxis().SetTitle(plot[2])
-      hist.GetYaxis().SetTitle("Normalized distribution")
+      hist.GetYaxis().SetTitle("Normalized Distribution")
     if "Run" in sample:
         integral=hist.Integral()
     if hist.Integral()>0:
