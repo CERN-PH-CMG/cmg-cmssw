@@ -1,0 +1,9 @@
+nJet25 : nJet25 : 8,0,8 ; XTitle='N(jet\, p_{T} > 25)'
+nBJetLoose25 : nBJetLoose25 : 6,0,6  ; XTitle='N(b-jet\, p_{T} > 25\, CVS loose)'
+nBJetMedium25 : nBJetMedium25 : 6,0,6 ; XTitle='N(b-jet\, p_{T} > 25\, CVS medium)'
+met: met: 60,0,300    ; XTitle="E_{T}^{miss}  [GeV]"
+metLD: met*0.00397 + mhtJet25*0.00265 : 50,-0.1,1 ; XTitle="E_{T}^{miss} LD"
+mZ1: mZ1: 70,0,140 ; XTitle="best m(l^{+}l^{-})  [GeV]"
+minMllAFAS: minMllAFAS: 70,0,140; XTitle="m(l^{#pm}l^{#pm})  [GeV]"
+lepMVA3: min(LepGood1_mva,min(LepGood2_mva,LepGood3_mva)) : 50,-1,1; XTitle="Lepton MVA (l_{1}\,l_{2}\,l_{3})"
+lepMVA2: min(LepGood1_mva,LepGood2_mva) : 50,-1,1; XTitle="Lepton MVA (l_{1}\,l_{2})"

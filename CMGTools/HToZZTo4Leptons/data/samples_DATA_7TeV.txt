@@ -1,0 +1,6 @@
+cmgtools%/DoubleMu/Run2011A-16Jan2012-v1/AOD/V5/PAT_CMG_V5_15_0
+cmgtools%/DoubleMu/Run2011B-16Jan2012-v1/AOD/V5/PAT_CMG_V5_15_0
+cmgtools%/DoubleElectron/Run2011A-16Jan2012-v1/AOD/V5/PAT_CMG_V5_15_0
+cmgtools%/DoubleElectron/Run2011B-16Jan2012-v1/AOD/V5/PAT_CMG_V5_15_0
+cmgtools%/MuEG/Run2011A-13Dec2012-v1/RECO/PAT_CMG_V5_15_0
+cmgtools%/MuEG/Run2011B-13Dec2012-v1/RECO/PAT_CMG_V5_15_0

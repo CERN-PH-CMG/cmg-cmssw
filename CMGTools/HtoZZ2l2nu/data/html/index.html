@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+  <link href='http://fonts.googleapis.com/css?family=Voltaire' rel='stylesheet' type='text/css'/>
+  <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+
+  <style type="text/css">
+    body { font-family: ‘Voltaire’, Arial, serif; font-weight: 400; } 
+    select { font-family: ‘Voltaire’, Arial, serif; font-weight: 400; } 
+    table { font-family: ‘Voltaire’, Arial, serif; font-weight: 400; } 
+    div.title { border-width: 1px; border-style: solid; border-color: gray; }
+    div.image  { border-width: 1px; border-style: solid; border-color: rgb(240,240,240); }
+  </style>
+
+
+
+  <script>
+    $(document).ready(function() {
+ 
+    var url='plotter.json';
+
+    /*parse the josn*/
+    $.getJSON(url, function(data) {
+
+    $.each(data, function(key, val) {
+
+    /*create a selector for each new key except the source of the plots*/
+    if (key != "ploturl")
+    {
+    $('#fields').append('<th>'+key+'</th>')  
+    $('#options').append('<td><select id="' + key + '" multiple="multiple" size="5"></select></td>')
+    }
+    
+    /*create the options for the selector */
+    $.each(val, function(i,ival) {
+    $('#'+key).append('<option value="'+ival+'">'+ival+'</option>'); 
+    });                                                                                                                                                                                 
+    $('#'+key).append('<option/>');
+
+    /* bind a callback function for the selector*/
+    $("#"+key).change(function(){ 
+    cat = $("#"+key).val(); 
+    
+    /*check the plots selected*/
+    var plotsSel = []; 
+    $('#plots :selected').each(function(isel, selected){ 
+    plotsSel[isel] = $(selected).text(); 
+    });
+
+    var catsSel = []; 
+    $('#categories :selected').each(function(isel, selected){ 
+    catsSel[isel] = $(selected).text(); 
+    });
+
+    var subCatsSel = []; 
+    $('#subcategories :selected').each(function(isel, selected){ 
+    subCatsSel[isel] = $(selected).text(); 
+    });
+    if(subCatsSel.length==0) subCatsSel[0]=''
+
+    /*clear previous results*/
+    $('#results').html('');
+    var theBaseUrl=$('#ploturl').text()
+
+    /*display the plots each in a new row*/
+    $.each(plotsSel, function(iplot,iplotval) {
+    $('#results').append('<tr id="' + iplotval + '"></tr>');
+    });
+
+    $.each(catsSel, function(icat,icatval) {
+    $.each(subCatsSel, function(isubcat,isubcatval) {
+    $.each(plotsSel, function(iplot,iplotval) {
+    var baseplotname=icatval+isubcatval+'_'+iplotval;
+    var title = icatval + " - " + isubcatval + " - " + iplotval
+    baseplotname=baseplotname.replace('all_','');
+    var plotname=baseplotname;
+    if(theBaseUrl.length>0) plotname = theBaseUrl + '/' + baseplotname;
+    $('#'+iplotval).append('<td><div class="title" align="center"><b>'+title+'</b>: <a href="'+plotname+'.C">ROOT macro</a> / <a href="'+plotname+'.tex">TeX file</a></div><div class="image"><img width="500" src="'+plotname+'.png"/></div></td>');
+    });
+    });
+    });
+
+    });
+    
+    });
+
+    });
+    
+    });
+
+  </script>
+  
+</head>
+
+<body style="font-size:62.5%;">
+
+  <h2>Analysis browser</h2>
+  <table>
+    <tr id="fields">
+    </tr>
+    <tr id="options">
+    </tr>
+    <tr>
+      <th>Url:</th>
+      <td colspan="2"><div id="ploturl"></div></td>
+    </tr>
+  </table>
+  
+  <table id="results">
+  </table>
+
+</body>
+
+</html>

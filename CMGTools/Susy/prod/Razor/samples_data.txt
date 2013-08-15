@@ -1,0 +1,14 @@
+wreece%/ElectronHad/Run2011A-May10ReReco-v1/AOD/V2
+wreece%/ElectronHad/Run2011A-PromptReco-v4/AOD/V2
+wreece%/ElectronHad/Run2011A-05Aug2011-v1/AOD/V2
+wreece%/ElectronHad/Run2011A-PromptReco-v6/AOD/V2
+
+lucieg%/HT/Run2011A-May10ReReco-v1/AOD/V2
+wreece%/HT/Run2011A-PromptReco-v4/AOD/V2
+wreece%/HT/Run2011A-05Aug2011-v1/AOD/V2
+wreece%/HT/Run2011A-PromptReco-v6/AOD/V2
+
+wreece%/MuHad/Run2011A-May10ReReco-v1/AOD/V2
+wreece%/MuHad/Run2011A-PromptReco-v4/AOD/V2
+wreece%/MuHad/Run2011A-05Aug2011-v1/AOD/V2
+wreece%/MuHad/Run2011A-PromptReco-v6/AOD/V2

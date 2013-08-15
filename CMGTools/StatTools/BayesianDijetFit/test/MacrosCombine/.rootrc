@@ -1,0 +1,7 @@
+Rint.Root.MemStat:      1
+Rint.Load:              ~/tdrstyle.C
+Rint.Logon:             ~/rootlogon.C
+Rint.Logoff:            ~/rootlogoff.C
+Rint.Canvas.MoveOpaque: false
+Rint.Canvas.HighLightColor: 5
+Unix.rint.Root.DynamicPath: .:$ROOTSYS/lib

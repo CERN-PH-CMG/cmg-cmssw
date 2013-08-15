@@ -1,0 +1,36 @@
+<export>
+</export>
+<flags EDM_PLUGIN="1"/>
+<library   name="CMGToolsHtoZZ2l2nu_plugins" file="*.cc">
+  <use name="FWCore/Framework"/>
+  <use name="FWCore/ParameterSet"/>
+  <use name="FWCore/Utilities"/>
+  <use name="DataFormats/MuonReco"/>
+  <use name="DataFormats/Math"/>
+  <use name="DataFormats/TrackReco"/>
+  <use name="DataFormats/JetReco"/>
+  <use name="DataFormats/PatCandidates"/>
+  <use name="DataFormats/Common"/>
+  <use name="TrackingTools/TransientTrack"/>
+  <use name="TrackingTools/Records"/>
+  <use name="TrackingTools/IPTools"/>
+  <use name="FWCore/ServiceRegistry"/>
+  <use name="PhysicsTools/UtilAlgos"/>
+  <use name="CMGTools/HtoZZ2l2nu"/>
+  <use name="DataFormats/Luminosity"/>
+  <use name="FWCore/Services"/>
+  <use name="DQMServices/Core"/>
+  <use name="SimDataFormats/GeneratorProducts"/>
+  <use name="SimDataFormats/TrackingAnalysis"/>
+  <use name="DataFormats/ParticleFlowCandidate"/>
+  <use name="DataFormats/METReco"/>
+  <use name="RecoMET/METAlgorithms"/>
+  <use name="RecoJets/JetProducers"/>
+  <use name="RecoEgamma/EgammaTools"/>
+  <use name="HLTrigger/HLTcore"/>
+  <use name="pharris/MVAMet"/>
+  <use name="root"/>
+  <use name="roottmva"/>
+  <use name="rootrflx"/>
+  <use name="roofit"/>
+</library>

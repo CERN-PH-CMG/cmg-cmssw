@@ -1,0 +1,36 @@
+nJet25 : nJet25 : 8,-0.5,7.5 ; XTitle='N(jet\, p_{T} > 25)'
+nBJetLoose25 : nBJetLoose25 : 4,-0.5,3.5 ; XTitle='N(jet\, p_{T} > 25\, CVS Loose)',XNDiv=505, Logy
+#nBJetMedium25 : nBJetMedium25 : 3,-0.5,2.5 ; XTitle='N(jet\, p_{T} > 25\, CVS Medium)',XNDiv=505, Logy
+nvtx: nVert: 20,0.5,40.5 ; XTitle="N(vertices)", Legend='TR'
+met: met: 40,0,40    ; XTitle="E_{T}^{miss}  [GeV]"
+#mht: mhtJet25 : 30,0,60 ; XTitle="H_{T}^{miss} [GeV]"
+metLD: met*0.00397 + mhtJet25*0.00265 : 60,-0.1,0.5 ; XTitle="E_{T}^{miss} LD"
+mZ1: mZ1: 20,81.2,101.2 ; XTitle="best m(l^{+}l^{-})  [GeV]", Legend='TR'
+#mZ1_wide: mZ1:  70,40,120 ; XTitle="best m(l^{+}l^{-})  [GeV]", Legend='TR'
+m3l:      m3l:  45,70,180 ; XTitle="m(l^{+}l^{-} l)  [GeV]", Legend='TR'
+#minMllAFAS: minMllAFAS: 10,0,120 ; XTitle="min m(ll')  [GeV]", Legend='TR'
+#nExtraLep : nLepGood-2 : 4,-0.5,3.5 ; XTitle='N extra lep.',XNDiv=505
+#ZZCand: mZ2 > 0: 2,-0.5,1.5 ; XTitle="Has ZZ* cand", Legend='TL', XNDiv=202
+#lepMVA2: min(LepGood1_mva,LepGood2_mva) : 20,-1,1; XTitle="Lepton MVA(l_{1}\,l_{2})",Legend='TL'
+#lepMVA2: min(LepGood1_mva,LepGood2_mva) : 20,-1,1; XTitle="Lepton MVA(l_{1}\,l_{2})",Legend='TL'
+#l1Pt:  LepGood1_pt: 40,0,100; XTitle="Leading lepton p_{T}  [GeV]", Legend='TR'
+#l2Pt:  LepGood2_pt: 40,0,80; XTitle="Subleading lepton p_{T}  [GeV]", Legend='TR'
+#l3q:  LepGood3_charge: 5,-1.5,3.5; XTitle="Third lepton charge", Legend='TR', XNDiv=505
+l3Pt:  LepGood3_pt: 20,0,50; XTitle="Third lepton p_{T}  [GeV]", Legend='TR'
+l3MVA: LepGood3_mva : 20,-1,1; XTitle="Third lepton MVA",Legend='TR'
+l3MVA_log: LepGood3_mva : 20,-1,1; XTitle="Third lepton MVA",Legend='TR',Logy, LegendCutoff=1e-3
+l3chIso:  LepGood3_chargedIso/LepGood3_pt: 20,0,0.4; XTitle="leading lepton Iso/p_{T} (Ch Had)", Legend='TR', Logy, LegendCutoff=1e-3
+l3neIso:  LepGood3_relIso - LepGood3_chargedIso/LepGood3_pt: 20,0,0.4; XTitle="leading lepton Iso/p_{T} (Ne Had)", Legend='TR', Logy, LegendCutoff=1e-3
+l3jetDR:  LepGood3_jetDR: 20,0,0.5; XTitle="Third lepton #DeltaR(l\,jet)", Legend='TR'
+l3jetBTag:  max(LepGood3_jetBTagCSV,0):   20,0,1;  XTitle="Third lepton's jet b-tag disc.", Legend='TR'
+l3jetPtF:   min(LepGood3_jetPtRatio,1.5): 20,0,1.5; XTitle="Third lepton p_{T}(l)/p_{T}(jet)", Legend='TR'
+l3sip3d:   LepGood3_sip3d: 20,0,10; XTitle="Third lepton SIP_{3D}", Legend='TR'
+l3ldxy:  log(abs(LepGood3_dxy)): 24,-12,0; XTitle="Third lepton log(|dx|/1cm)", Legend='TL'
+l3ldz:   log(abs(LepGood3_dz)):  24,-12,0; XTitle="Third lepton log(|dz|/1cm)", Legend='TL'
+l3mvaId: LepGood3_mvaId : 50,-1,1; XTitle="Third electron ID MVA",Legend='TL'
+l3mvaId_zoom: LepGood3_mvaId : 30,0.4,1; XTitle="Third electron ID MVA",Legend='TL'
+l3mvaId_zoom2: LepGood3_mvaId : 40,0.9,1; XTitle="Third electron ID MVA",Legend='TL'
+l3innerHits: LepGood3_innerHits : 2,-0.5,1.5; XTitle="Third electron lost hits",Legend='TL'
+l3tkHits:  (abs(LepGood3_pdgId)==13)*LepGood3_innerHits : 15,0.5,30.5; XTitle="Third muon hits",Legend='TL'
+l3tightId: (abs(LepGood3_pdgId)==13)*LepGood3_tightId   :  2,-0.5,1.5; XTitle="Third muon tight id",Legend='TL'
+mtW: mtw_wz3l(LepGood1_pt,LepGood1_eta,LepGood1_phi,LepGood1_mass,LepGood2_pt,LepGood2_eta,LepGood2_phi,LepGood2_mass,LepGood3_pt,LepGood3_eta,LepGood3_phi,LepGood3_mass,mZ1,met,met_phi) : 36,0,180 ; XTitle="M_{T}(W#rightarrowlv)"

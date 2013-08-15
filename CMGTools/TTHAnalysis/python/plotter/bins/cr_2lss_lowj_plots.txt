@@ -1,0 +1,30 @@
+nJet25 : nJet25 : 8,-0.5,7.5 ; XTitle='N(jet\, p_{T} > 25)',Logy,LegendCutoff=1e-3 
+nBJetLoose25 : nBJetLoose25 : 4,-0.5,3.5 ; XTitle='N(jet\, p_{T} > 25\, CVS Loose)',XNDiv=505
+nBJetMedium25 : nBJetMedium25 : 4,-0.5,3.5 ; XTitle='N(jet\, p_{T} > 25\, CVS Medium)',XNDiv=505
+nBJetTight25 : (Jet1_btagCSV>0.898)+(Jet2_btagCSV>0.898)+(Jet3_btagCSV>0.898): 4,-0.5,3.5 ; XTitle='N(jet\, p_{T} > 25\, CVS Tight)',XNDiv=505
+met: met: 60,0,300    ; XTitle="E_{T}^{miss}  [GeV]"
+met_log: met: 60,0,300    ; XTitle="E_{T}^{miss}  [GeV]",Logy, YMin=30, YMax=1e4, LegendCutoff=1e-2
+metLD: met*0.00397 + mhtJet25*0.00265 : 50,-0.1,1.4 ; XTitle="E_{T}^{miss} LD"
+metLD_log: met*0.00397 + mhtJet25*0.00265 : 50,-0.1,1.4 ; XTitle="E_{T}^{miss} LD",Logy, YMin=30, YMax=1e4, LegendCutoff=1e-2
+#mhtJet25: mhtJet25: 60,0,300    ; XTitle="H_{T}^{miss}  [GeV]"
+mll: m2l: 60,0,300 ; XTitle="m(l^{+}l^{-}')  [GeV]", Legend='TR'
+ptll: pt2l: 60,0,300 ; XTitle="p_{T}(l^{+}l^{-}')  [GeV]", Legend='TR'
+drll : deltaR(LepGood1_eta,LepGood1_phi, LepGood2_eta,LepGood2_phi): 24,0,4; XTitle="#DeltaR(ll)", MoreY=1.3, Legend='TL'
+dphill : abs(deltaPhi(LepGood1_phi, LepGood2_phi)): 24,0,3.1416; XTitle="#Delta#phi(ll)", MoreY=1.5, Legend='TL'
+lepMVA2: min(LepGood1_mva,LepGood2_mva) : 50,-1,1; XTitle="Lepton MVA(l_{1}\,l_{2})",Legend='TL'
+maxLepPt:  LepGood1_pt: 80,0,200; XTitle="Leading lepton p_{T}  [GeV]", Legend='TR'
+minLepPt:  LepGood2_pt: 60,0,120; XTitle="Subleading lepton p_{T}  [GeV]", Legend='TR'
+maxBTag: min(max(Jet1_btagCSV,0),.99999) : 15,0,1.5; XTitle="First b-jet btag", Legend='TR'
+minBTag: min(max(Jet2_btagCSV,0),.99999) : 15,0,1.5; XTitle="Second b-jet btag", Legend='TR'
+maxBJetPt: max(Jet1_pt,Jet2_pt) : 20, 0,400; XTitle="First b-jet p_{T} [GeV]"
+minBJetPt: min(Jet1_pt,Jet2_pt) : 20, 0,200; XTitle="Second b-jet p_{T} [GeV]"
+bestRelIso: min(LepGood1_relIso,LepGood2_relIso): 40,0,0.4; XTitle="best relIso"
+worstRelIso: max(LepGood1_relIso,LepGood2_relIso): 40,0,0.4; XTitle="worst relIso"
+elRelIso: (abs(LepGood1_pdgId)==11)*LepGood1_relIso+(abs(LepGood2_pdgId)==11)*LepGood2_relIso: 40,0,0.4; XTitle="el relIso"
+muRelIso: (abs(LepGood1_pdgId)==13)*LepGood1_relIso+(abs(LepGood2_pdgId)==13)*LepGood2_relIso: 40,0,0.4; XTitle="mu relIso"
+dphi: abs(deltaPhi(LepGood1_phi,LepGood2_phi)) : 60,0,3.1416 ; XTitle="#Delta#phi (l^{+}\,l^{-}')  [rad]", Legend='TL'
+dR:   deltaR(LepGood1_eta,LepGood1_phi,LepGood2_eta,LepGood2_phi) : 60,0,6 ; XTitle="#DeltaR (l^{+}\,l^{-}')", Legend='TL'
+mtwBest: if3(LepGood1_relIso<LepGood2_relIso, mt_2(LepGood1_pt,LepGood1_phi,met,met_phi), mt_2(LepGood2_pt,LepGood3_phi,met,met_phi)) : 60, 0, 200;  XTitle="M_{T}(best l\,E_{T}^{miss})"
+bscore: 0.5*nBJetLoose25+0.5*nBJetMedium25 : [-0.25,0.25,0.75,1.25,1.75,2.25,2.75,3.25] ; XTitle='b score'
+mtW1:    mt_2(LepGood1_pt,LepGood1_phi,met,met_phi) : 48,0,240; XTitle="M_{T}(l_{1}\,E_{T}^{miss}) [GeV]"
+mtllv:  mt_llv(LepGood1_pt,LepGood1_phi,LepGood2_pt,LepGood2_phi,met,met_phi) : 60,0,300; XTitle="M_{T}(llE_{T}^{miss}) [GeV]"

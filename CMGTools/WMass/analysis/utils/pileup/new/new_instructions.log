@@ -1,0 +1,9 @@
+command (2011)
+
+pileupCalc.py -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-180252_7TeV_ReRecoNov08_Collisions11_JSON_v2.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/PileUp/pileup_2011_JSON_pixelLumi.txt --calcMode true --minBiasXsec 68000 --maxPileupBin 50 --numPileupBins 50 pileupTruth_Cert_160404-180252_7TeV_ReRecoNov08_Collisions11_JSON_v2.root
+
+=======================================================================================================================================
+
+and the command (2012)
+
+pileupCalc.py -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-201678_8TeV_PromptReco_Collisions12_JSON.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/PileUp/pileup_JSON_DCSONLY_190389-201678_corr.txt --calcMode true --minBiasXsec 69300 --maxPileupBin 50 --numPileupBins 50 pileupTruth_JSON_DCSONLY_190389-201678_corr.root

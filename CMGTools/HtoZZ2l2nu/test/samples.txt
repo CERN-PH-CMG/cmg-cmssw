@@ -1,0 +1,60 @@
+/DoubleElectron/Run2011A-May10ReReco-v1/AOD
+/DoubleMu/Run2011A-May10ReReco-v1/AOD
+/MuEG/Run2011A-May10ReReco-v1/AOD
+/SingleMu/Run2011A-May10ReReco-v1/AOD
+
+/DoubleElectron/Run2011A-PromptReco-v4/AOD
+/DoubleMu/Run2011A-PromptReco-v4/AOD
+/MuEG/Run2011A-PromptReco-v4/AOD
+/SingleMu/Run2011A-PromptReco-v4/AOD
+
+/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM
+
+/DYToEE_M-20_TuneZ2_7TeV-pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM
+/DYToMuMu_M-20_TuneZ2_7TeV-pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM
+/DYToTauTau_M-20_TuneZ2_7TeV-pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM
+
+/ZZTo2L2Nu_TuneZ2_7TeV_pythia6_tauola/Summer11-PU_S4_START42_V11-v1/AODSIM
+
+/TTJets_TuneZ2_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM
+
+/QCD_Pt-80to120_MuPt5Enriched_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
+/QCD_Pt-120to150_MuPt5Enriched_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
+/QCD_Pt-150_MuPt5Enriched_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
+
+/QCD_Pt-30to80_EMEnriched_TuneZ2_7TeV-pythia/Summer11-PU_S4_START42_V11-v1/AODSIM
+/QCD_Pt-80to170_EMEnriched_TuneZ2_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
+
+
+ /GluGluToHToZZTo2L2Nu_M-170_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
+ /GluGluToHToZZTo2L2Nu_M-180_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
+ /GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
+ /GluGluToHToZZTo2L2Nu_M-250_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
+ /GluGluToHToZZTo2L2Nu_M-300_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
+ /GluGluToHToZZTo2L2Q_M-300_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
+ /GluGluToHToZZTo2L2Nu_M-400_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
+ /GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
+ /GluGluToHToZZTo2L2Nu_M-600_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
+
+ /GluGluToHToWWTo2L2Nu_M-170_7TeV-powheg-pythia6/Summer11-PU_S3_START42_V11-v1/AODSIM
+ /GluGluToHToWWTo2Tau2Nu_M-170_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
+ /GluGluToHToWWToLNuTauNu_M-170_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM 
+ /GluGluToHToWWTo2L2Nu_M-180_7TeV-powheg-pythia6/Summer11-PU_S3_START42_V11-v1/AODSIM
+ /GluGluToHToWWTo2Tau2Nu_M-180_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
+ /GluGluToHToWWToLNuTauNu_M-180_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM 
+ /GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
+ /GluGluToHToWWToLNuTauNu_M-200_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM 
+ /GluGluToHToWWTo2Tau2Nu_M-200_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM
+ /GluGluToHToWWTo2L2Nu_M-250_7TeV-powheg-pythia6/Summer11-PU_S3_START42_V11-v1/AODSIM
+ /GluGluToHToWWTo2L2Nu_M-300_7TeV-powheg-pythia6/Summer11-PU_S3_START42_V11-v1/AODSIM
+ /GluGluToHToWWTo2L2Q_M-300_7TeV-powheg-pythia6/Summer11-PU_S3_START42_V11-v1/AODSIM
+ /GluGluToHToWWTo2L2Nu_M-400_7TeV-powheg-pythia6/Summer11-PU_S3_START42_V11-v1/AODSIM
+ /GluGluToHToWWTo2L2Nu_M-500_7TeV-powheg-pythia6/Summer11-PU_S3_START42_V11-v1/AODSIM
+ /GluGluToHToWWTo2L2Nu_M-600_7TeV-powheg-pythia6/Summer11-PU_S3_START42_V11-v1/AODSIM
+ 
+
+
+
+#missing
+WZ, ZZ->2l2jets, WW, SingleTop (s-,t-,tW-), w/z+jets (alpgen or madgraph)
+ 

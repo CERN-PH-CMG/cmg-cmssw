@@ -1,0 +1,7 @@
+<export></export>
+<library name="CMGToolsZmumuJetsTutorialPlugins" file="*.cc">
+  <use name="CMGTools/Common"/>
+  <use name="CMGTools/ZmumuJetsTutorial"/>
+  <use name="DQMServices/Core"/>
+  <flags   EDM_PLUGIN="1"/>
+</library>

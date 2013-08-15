@@ -1,0 +1,10 @@
+<lcgdict>
+
+ <class name="FourJetEpKinFitter"/>
+ <class name="FourJetEpMKinFitter"/>
+ <class name="DiJetMKinFitter"/>
+ <class name="std::pair<TLorentzVector,TLorentzVector>" />
+ <class name="std::vector<TLorentzVector>" />
+
+</lcgdict>
+

@@ -1,0 +1,27 @@
+cvs co -r V00-02-05 -d CMGTools/External UserCode/CMG/CMGTools/External                                
+cvs co -d CMGTools/HtoZZ2l2nu UserCode/CMG/CMGTools/HtoZZ2l2nu
+cvs co -r V00-03-16 CommonTools/ParticleFlow                         
+cvs co -r V00-03-23 CommonTools/RecoAlgos                            
+cvs co -r V00-00-12 CommonTools/RecoUtils                           
+cvs co -r V15-03-02 DataFormats/ParticleFlowCandidate                
+cvs co -r V10-02-02 DataFormats/TrackReco                            
+cvs co -r V02-00-04 DataFormats/VertexReco                           
+cvs co -r CutBasedId_V00-00-05 -d EGamma/EGammaAnalysisTools UserCode/EGamma/EGammaAnalysisTools                       
+cvs co HiggsAnalysis/CombinedLimit   
+cvs co -r V00-00-10 RecoMET/METFilters 
+cvs co -r V08-09-23 PhysicsTools/PatAlgos                            
+cvs co -r V03-09-23 PhysicsTools/PatUtils                            
+cvs co -r V15-01-11 RecoParticleFlow/PFProducer                      
+cvs co -r V02-02-01 RecoVertex/AdaptiveVertexFinder                  
+cvs co -r simpleIVF_CMSSW533 RecoBTag/SecondaryVertex 
+cvs co -r V00-01 -d pharris/MVAMet UserCode/pharris/MVAMet        
+cd EGamma/EGammaAnalysisTools/data
+cat download.url | xargs wget
+cd - 
+cd pharris/MVAMet
+rm src/GBRTree.cxx
+rm src/GBRForest.cxx
+rm src/PHMetAnalysisLinkDef.h
+echo "Thought you could do this with just one tag, eh?"
+cd -
+cmsenv
