@@ -178,8 +178,9 @@ class PublishController(object):
                                                                   datasetDetails['ParentCMGDBID'],
                                                                   self._username)
         else:
-            self._cmgdbAPI.setParentID(datasetDetails['CMGDBID'], 
-                                       datasetDetails['ParentCMGDBID'])
+            if datasetDetails['ParentCMGDBID'] is not None: 
+                self._cmgdbAPI.setParentID(datasetDetails['CMGDBID'], 
+                                           datasetDetails['ParentCMGDBID'])
         # Clear 4 tables relating to bad files & jobs, and missing & duplicate files
         self._cmgdbAPI.clearDatasetBadFiles(datasetDetails['CMGDBName'],
                                             datasetDetails['CMGDBID'])

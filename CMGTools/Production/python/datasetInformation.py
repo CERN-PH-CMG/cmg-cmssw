@@ -516,7 +516,6 @@ class DatasetInformation(object):
             self.dataset_details['TotalJobs'] = -1
         else:
             self.dataset_details['TotalJobs'] = nJobs
-
         for file_group in self.dataset_details['FileGroups']:  
             totalJobs = self.dataset_details['TotalJobs']
             self.dataset_details['FileGroups'][file_group]['TotalJobs']=totalJobs
@@ -601,7 +600,7 @@ class DatasetInformation(object):
                         start_index=1  
                     else:
                         start_index=0  
-
+                   
                     for file_name in file_list:  
                         numbers.append( getIndex(file_name) ) 
                         if start_index == 0:
@@ -616,7 +615,6 @@ class DatasetInformation(object):
                             missing_files.append(createFileName(fg, number, isCrab))
                 #Changed since 12-12-2012: both cmsBatch and crabfiles have indexing from 1 to n
                 else:  
-
                     for file_name in file_list:
                         numbers.append( getIndex( file_name ) )  
                     for number in range(1, self.dataset_details['FileGroups'][fg]['TotalJobs']+1):
