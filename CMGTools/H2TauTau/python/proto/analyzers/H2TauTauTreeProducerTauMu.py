@@ -55,6 +55,8 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        var( tr, 'leptonAccept')
        var( tr, 'thirdLeptonVeto')
 
+       var(tr, 'genMass')
+
        bookGenParticle(tr, 'genW')
        bookGenParticle(tr, 'genZ')
        bookGenParticle(tr, 'genWlep')
@@ -141,6 +143,12 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        fill(tr, 'isSignal', event.isSignal)
        fill(tr, 'leptonAccept',    event.leptonAccept)
        fill(tr, 'thirdLeptonVeto', event.thirdLeptonVeto)
+
+
+       for p in event.genParticles:
+          if p.pdgId() in [23, 25, 35, 36, 37]:
+            fill(tr, 'genMass', p.mass())
+            break
 
        if hasattr( event, 'genZs'):
            if len(event.genZs):

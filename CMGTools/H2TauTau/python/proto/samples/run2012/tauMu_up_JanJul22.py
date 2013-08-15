@@ -76,7 +76,7 @@ allsamples = copy.copy( MC_list )
 
 
 
-connect( allsamples, '%TAUMU_SVFitVEGAS_TESUp_Aug02_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
+connect( allsamples, '%TAUMU_SVFitVEGASTESUp_Aug14_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
 connect( embed_list, '%TAUMU_SVFitVEGASTESUp_Aug07_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
 # Import the non-shifted data such that the plotting scripts know the integrated luminosity
 connect( data_list, '%TAUMU_SVFitVEGAS_Jul29_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)

@@ -74,9 +74,14 @@ class NJetsAnalyzer( Analyzer ):
         if not self.applyWeight:
             return True
 
-        
-        self.readCollections( iEvent )
-        event.NUP = self.mchandles['source'].product().hepeup().NUP
+        # JAN: FIXME: No HEP event product in W+Jets extensions, but we now NUP
+        # from the file name
+        if 'ext' in self.cfg_comp.name:
+            event.NUP = int(self.cfg_comp.name[1]) + 5
+        else:
+            self.readCollections( iEvent )
+            event.NUP = self.mchandles['source'].product().hepeup().NUP
+
  
         # removing the 2 incoming partons, a boson,
         # and the 2 partons resulting from the decay of a boson

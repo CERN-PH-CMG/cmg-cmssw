@@ -49,9 +49,10 @@ class LeptonWeighter( Analyzer ):
         lep.triggerEffMC = 1 
         lep.recEffWeight = 1
         lep.idWeight = 1
-        lep.isoWeight = 1 
+        lep.isoWeight = 1
+
         if (self.cfg_comp.isMC or self.cfg_comp.isEmbed) and \
-           not ( hasattr(self.cfg_ana,'disable') and self.cfg_ana.disable is True ):
+           not ( hasattr(self.cfg_ana,'disable') and self.cfg_ana.disable is True ) and lep.pt() < 9999.:
             assert( self.trigEff is not None )
             lep.triggerEffData = self.trigEff.lepEff( lep.pt(),
                                                       lep.eta() )
