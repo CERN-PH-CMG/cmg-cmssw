@@ -133,16 +133,18 @@ def processInfo(info):
                 
         ## RIC: need to find a way to get the productions efficiency for the samples produced via GRID in 
         ## PAT_CMG_V5_16_0 campaign. For these samples the Logger.tgz file is missing and njobs information is lost
-        
+        ngood = 0
         ## RIC: if publish went fine nbad and nmiss should be well defined and >= 0
         try    :
           nmiss + nbad >= 0
+          ngood = njobs - nmiss - nbad
         ## RIC: if publish the dataset has been published with -f option, Logger.tgz is missing and these info are not available
         except :           
           print 'WARNING! publish informations are corrupted'
           njobs = 0.
           nbad  = 0.
           nmiss = 0.
+          
           #njobs, nbad, nmiss = retrieveInfosFromBadPublished(ds) ## not really needed
         
         if nmiss+nbad == 0 and njobs>0 :
@@ -176,7 +178,8 @@ def processInfo(info):
                              fraction  = fraction,
                              skim      = skim,
                              task_id   = task_id,
-                             pde       = pde
+                             pde       = pde,
+                             ngood     = ngood
                              )
                        )
         # pprint.pprint( dsInfo[-1] ) 
@@ -357,6 +360,14 @@ def connectSample(components, row, filePattern, aliases, cache, verbose):
     print 'LOADING:', comp.name, path_name, nEvents, globalEff, taskurl
     # print dsInfo
     comp.files = getFiles(path_name, file_owner, filePattern, cache)
+    if len(comp.files) != dsInfo[0]['ngood']:
+        print 'WARNING: Re-retrieving job list for sample', comp.name
+        print 'Good files', dsInfo[0]['ngood'], 'found files', len(comp.files)
+        comp.files = getFiles(path_name, file_owner, filePattern, False)
+        print 'UPDATE: Good files', dsInfo[0]['ngood'], 'found files', len(comp.files)
+        if len(comp.files) > dsInfo[0]['ngood']:
+            print 'N(files) > N(good files): You may need to republish the sample'
+
     if comp.name.startswith('data_'):
         if globalEff<0.99:
             print 'ARGH! data sample is not complete.', taskurl
