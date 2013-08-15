@@ -1,0 +1,11 @@
+<library   name="CMGToolsSusyJetMETPlugins" file="*.cc">
+  <use name="DataFormats/PatCandidates"/>
+  <use name="DataFormats/ParticleFlowCandidate"/>
+  <use name="DataFormats/METReco"/>
+  <use name="CMGTools/Common"/>
+  <use name="FWCore/Framework"/>
+  <use name="FWCore/ParameterSet"/>
+  <use name="RecoParticleFlow/PFProducer"/>
+  <flags   EDM_PLUGIN="1"/>
+</library>
+

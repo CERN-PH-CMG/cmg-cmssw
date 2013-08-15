@@ -1,0 +1,10 @@
+<lcgdict>
+    <class name="SignedImpactParameter" transient="true" />
+    <class name="PyTMVATool" transient="true" />
+    <class name="CMGMuonCleanerBySegmentsAlgo" transient="true" />
+    <class name="ElectronEnergyCalibrator" transient="true" />
+    <class name="DistributionRemapper" transient="true" />
+    <class name="PdfWeightProducerTool" transient="true" />
+    <class name="SetupIgProfDumpHook" transient="true" />
+    <class name="TriggerBitChecker" transient="true" />
+</lcgdict>

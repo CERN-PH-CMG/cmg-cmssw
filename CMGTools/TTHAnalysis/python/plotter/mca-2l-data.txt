@@ -1,0 +1,84 @@
+# --- ttH split by decay mode
+#ttHWW+   : TTH : 0.1271 : GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10
+#ttHtt+   : TTH : 0.1271 : GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+10
+#ttHZZ+   : TTH : 0.1271 : GenHiggsDecayMode == 23 ; FillColor=ROOT.kOrange+10
+# --- ttH inclusive
+#ttH+     : TTH : 0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
+
+# --- TT+W/Z/WW (TTWW usually quite negligible)
+#TTW 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5
+#TTZ 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2
+#TTWW 	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9
+# 
+# or also lumped together
+TTV 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5, NormSystematic=0.2
+TTV 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2, NormSystematic=0.2
+#TTV	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9, NormSystematic=0.2
+
+# --- Multiboson
+#VVV 	 : WWWJets:    0.08217  ;  FillColor=ROOT.kViolet
+#VVV 	 : WWZJets:    0.0633   ;  FillColor=ROOT.kViolet
+# WW 	 : WWJets:     5.995    ;  FillColor=ROOT.kBlue-9 ## missing
+WZ 	 : WZJets:     1.057    ;  FillColor=ROOT.kViolet-4
+ZZ	 : ZZ2e2mu:    0.1767   ;  FillColor=ROOT.kAzure-9
+ZZ 	 : ZZ2e2tau:   0.1767   ;  FillColor=ROOT.kAzure-9
+ZZ 	 : ZZ2mu2tau:  0.1767   ;  FillColor=ROOT.kAzure-9
+ZZ	 : ZZTo4mu:    0.07691  ;  FillColor=ROOT.kAzure-9   
+ZZ       : ZZTo4e:     0.07691  ;  FillColor=ROOT.kAzure-9
+ZZ       : ZZTo4tau:   0.07691  ;  FillColor=ROOT.kAzure-9
+
+
+# -- TTbar and single top
+#
+# leptonic and inclusive decays (use only one!)
+#TT 	 : TTJetsLep:     23.64    ;  FillColor=ROOT.kGray, NormSystematic=0.2
+#TT 	 : TTJetsSem:	  98.65     ;  FillColor=ROOT.kGray, NormSystematic=0.2
+#TT 	 : TTJetsHad:     102.9    ;  FillColor=ROOT.kGray, NormSystematic=0.2
+# --- older samples
+#TT 	 : TTLep:      23.64    ;  FillColor=ROOT.kGray
+TT+ 	 : TTJets:     225.2    ;  FillColor=ROOT.kGray, NormSystematic=0.2
+
+# Top+W associated prod.
+TW+ 	 : TtW:        11.73    ;  FillColor=ROOT.kGray+2, NormSystematic=0.2
+TW+ 	 : TbartW:     11.73    ;  FillColor=ROOT.kGray+2, NormSystematic=0.2
+#
+# TT+gamma
+#TTG      : TTG:        1.444    ;  FillColor=ROOT.kGray+3    
+
+# -- DY, usually to be used in jet bins
+DY       : DYJetsM10 : 915      ;  FillColor=ROOT.kCyan
+DY       : DYJetsM50 : 3503.7   ;  FillColor=ROOT.kCyan
+
+
+
+data     : DoubleMuAB
+data     : DoubleMuC
+data     : DoubleMuRec
+data     : DoubleMuD
+data     : DoubleMuBadSIP
+data     : DoubleElectronAB
+data     : DoubleElectronC
+data     : DoubleElectronRec
+data     : DoubleElectronD
+data     : DoubleElectronBadSIP
+data     : MuEGAB
+data     : MuEGC
+data     : MuEGRec
+data     : MuEGD
+data     : MuEGBadSIP
+
+FR_data  : DoubleMuAB;            FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes', NormSystematic=0.4
+FR_data  : DoubleMuC;             FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes', NormSystematic=0.4
+FR_data  : DoubleMuRec;           FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes', NormSystematic=0.4
+FR_data  : DoubleMuD;             FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes', NormSystematic=0.4
+FR_data  : DoubleMuBadSIP;        FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes', NormSystematic=0.4
+FR_data  : DoubleElectronAB;      FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes', NormSystematic=0.4
+FR_data  : DoubleElectronC;       FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes', NormSystematic=0.4
+FR_data  : DoubleElectronRec;     FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes', NormSystematic=0.4
+FR_data  : DoubleElectronD;       FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes', NormSystematic=0.4
+FR_data  : DoubleElectronBadSIP;  FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes', NormSystematic=0.4
+FR_data  : MuEGAB;                FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes', NormSystematic=0.4
+FR_data  : MuEGC;                 FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes', NormSystematic=0.4
+FR_data  : MuEGRec;               FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes', NormSystematic=0.4
+FR_data  : MuEGD;                 FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes', NormSystematic=0.4
+FR_data  : MuEGBadSIP;            FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes', NormSystematic=0.4

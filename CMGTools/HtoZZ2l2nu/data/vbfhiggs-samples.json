@@ -1,0 +1,72 @@
+{
+    "proc":[
+	{
+	"tag":"H(200)",
+        "isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"fill":0,
+	"marker":1,
+	"data":[
+	     {	
+		"dtag":"VBFtoH200toZZto2L2Nu",
+		"dset":" /VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
+		"patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/ZZ/HZZ/VBF_ToHToZZTo2L2NU_M-200_7TeV-powheg-pythia6"],
+		"xsec":0.6371,
+		"br":[0.256,0.0403896]
+	     }
+	  ]
+    	},
+        {
+        "tag":"H(210)",
+        "isdata":false,
+        "spimpose":true,
+        "color":"kBlue",
+        "fill":0,
+        "marker":1,
+        "data":[
+             {
+                "dtag":"VBFtoH210toZZto2L2Nu",
+                "dset":" /VBF_ToHToZZTo2L2NU_M-210_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
+                "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/ZZ/HZZ/VBF_ToHToZZTo2L2NU_M-210_7TeV-powheg-pythia6"],
+                "xsec":0.5869,
+                "br":[0.256,0.0403896]
+             }
+          ]
+        },
+        {
+        "tag":"H(220)",
+        "isdata":false,
+        "spimpose":true,
+        "color":"kGreen",
+        "fill":0,
+        "marker":1,
+        "data":[
+             {
+                "dtag":"VBFtoH220toZZto2L2Nu",
+                "dset":" /VBF_ToHToZZTo2L2NU_M-220_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
+                "patdir":["/castor/cern.ch/cms/store/cmst3/user/psilva/ZZ/HZZ/VBF_ToHToZZTo2L2NU_M-220_7TeV-powheg-pythia6"],
+                "xsec":0.5420,
+                "br":[0.256,0.0403896]
+             }
+          ]
+        },
+        {
+        "tag":"H(400)",
+        "isdata":false,
+        "spimpose":true,
+        "color":"kGray",
+        "fill":0,
+        "marker":1,
+        "data":[
+             {
+                "dtag":"VBFtoH400toZZto2L2Nu",
+                "dset":" /VBF_ToHToZZTo2L2NU_M-400_7TeV-powheg-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM",
+                "patdir":["/castor/cern.ch/cms/store/cmst3/user/querten/11_06_22_HtoZZ2l2n/qqHZZ/VBF_ToHToZZTo2L2NU_M-400_7TeV-powheg-pythia6"],
+                "xsec":0.1620,
+                "br":[0.256,0.0403896]
+             }
+          ]
+        }
+    ]	
+}

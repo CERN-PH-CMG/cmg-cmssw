@@ -1,0 +1,12 @@
+<use   name="root"/>
+<use   name="rootcore"/>
+<use   name="rootinteractive"/>
+<use   name="rootrflx"/>
+<use   name="FWCore/Framework"/>
+<use   name="FWCore/ParameterSet"/>
+<use   name="FWCore/Sources"/>
+<use   name="PhysicsTools/Utilities"/>
+<use   name="boost"/>
+<export>
+   <lib name="1"/>
+</export>

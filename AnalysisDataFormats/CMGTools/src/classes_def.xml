@@ -1,0 +1,265 @@
+<lcgdict>
+
+  <class name="cmg::METSignificance" />
+  <class name="edm::Wrapper<cmg::METSignificance>" />
+  <class name="std::vector<cmg::METSignificance>" />
+  <class name="edm::Wrapper<std::vector<cmg::METSignificance> >" />
+
+  <class name="TMatrixD" />
+  <class name="edm::Wrapper<TMatrixD>" />
+  
+  <class name="cmg::AbstractPhysicsObject" />
+  <class name="edm::Wrapper<cmg::AbstractPhysicsObject>" />
+  <class name="std::vector<cmg::AbstractPhysicsObject>" />
+  <class name="edm::Wrapper<std::vector<cmg::AbstractPhysicsObject> >" />
+  
+  <class name="cmg::NamedObject" />
+  <class name="edm::Wrapper<cmg::NamedObject>" />
+  <class name="std::vector<cmg::NamedObject>" />
+  <class name="edm::Wrapper<std::vector<cmg::NamedObject> >" />
+  
+  <class name="cmg::DiPFCandidate"/>
+  <class name="std::vector<cmg::DiPFCandidate>"/>
+  <class name="edm::Wrapper<cmg::DiPFCandidate>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiPFCandidate> >"/>
+  
+  <class name="cmg::DiHemisphere"/>
+  <class name="std::vector<cmg::DiHemisphere>"/>
+  <class name="edm::Wrapper<cmg::DiHemisphere>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiHemisphere> >"/>
+  
+  <class name="cmg::DiFatJet"/>
+  <class name="std::vector<cmg::DiFatJet>"/>
+  <class name="edm::Wrapper<cmg::DiFatJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiFatJet> >"/>
+
+  <class name="cmg::DiPhoton"/>
+  <class name="std::vector<cmg::DiPhoton>"/>
+  <class name="edm::Wrapper<cmg::DiPhoton>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiPhoton> >"/>
+  
+  <class name="cmg::DiElectron"/>
+  <class name="std::vector<cmg::DiElectron>"/>
+  <class name="edm::Wrapper<cmg::DiElectron>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiElectron> >"/>
+  
+  <class name="cmg::DiMuon"/>
+  <class name="std::vector<cmg::DiMuon>"/>
+  <class name="edm::Wrapper<cmg::DiMuon>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiMuon> >"/>
+  
+  <class name="cmg::DiJet"/>
+  <class name="std::vector<cmg::DiJet>"/>
+  <class name="edm::Wrapper<cmg::DiJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiJet> >"/>
+  
+  <class name="cmg::DiPFJet"/>
+  <class name="std::vector<cmg::DiPFJet>"/>
+  <class name="edm::Wrapper<cmg::DiPFJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiPFJet> >"/>	
+  
+  <class name="cmg::DiTau"/>
+  <class name="std::vector<cmg::DiTau>"/>
+  <class name="edm::Wrapper<cmg::DiTau>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiTau> >"/>
+
+  <class name="cmg::DiTauDiObject"/>
+  <class name="std::vector<cmg::DiTauDiObject>"/>
+  <class name="edm::Wrapper<cmg::DiTauDiObject>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiTauDiObject> >"/>
+
+  <class name="cmg::Electron"/>
+  <class name="cmg::Lepton<pat::ElectronPtr>" />
+  <class name="cmg::PhysicsObjectWithPtr<pat::ElectronPtr>" />
+  <class name="std::vector<cmg::Electron>"/>
+  <class name="edm::Wrapper<cmg::Electron>"/>
+  <class name="edm::Wrapper<std::vector<cmg::Electron> >"/>
+
+  <class name="cmg::Muon"/>
+  <class name="edm::Ptr< cmg::Muon > "/>
+  <class name="cmg::Lepton<pat::MuonPtr>" />
+  <class name="cmg::PhysicsObjectWithPtr<pat::MuonPtr>" />
+  <class name="std::vector<cmg::Muon>"/>
+  <class name="edm::Wrapper<cmg::Muon>"/>
+  <class name="edm::Wrapper<std::vector<cmg::Muon> >"/>
+  
+  <class name="cmg::SimpleParticle"/>
+  <class name="std::vector<cmg::SimpleParticle>"/>
+  <class name="edm::Wrapper<cmg::SimpleParticle>"/>
+  <class name="edm::Wrapper<std::vector<cmg::SimpleParticle> >"/>
+
+  <class name="cmg::Tau"/>
+  <class name="cmg::Lepton<pat::TauPtr>" />
+  <class name="cmg::PhysicsObjectWithPtr<pat::TauPtr>" />
+  <class name="std::vector<cmg::Tau>"/>
+  <class name="edm::Wrapper<cmg::Tau>"/>
+  <class name="edm::Wrapper<std::vector<cmg::Tau> >"/>
+  
+  <class name="cmg::BaseJet"/>
+  <class name="boost::array<double,16>" />
+  <class name="boost::array<std::basic_string<char>,16>" />
+  <class name="cmg::PhysicsObjectWithPtr<pat::JetPtr>" />
+  <class name="std::vector<cmg::BaseJet>"/>
+  <class name="edm::Wrapper<cmg::BaseJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::BaseJet> >"/>
+  
+  <class name="cmg::PFJet"/>
+  <class name="std::vector<cmg::PFJet>"/>
+  <class name="edm::Wrapper<cmg::PFJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::PFJet> >"/>
+  <class name="boost::array<int,10>" />
+  <class name="boost::array<float,10>" />
+  <class name="boost::array<std::string,10>" />
+
+  <class name="cmg::StructuredPFJet"/>
+  <class name="std::vector<cmg::StructuredPFJet>"/>
+  <class name="edm::Wrapper<cmg::StructuredPFJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::StructuredPFJet> >"/>
+
+  <class name="cmg::PFJetComponent"/>
+  <class name="std::vector<cmg::PFJetComponent>"/>
+  
+  <class name="cmg::QuadMuon"/>
+  <class name="std::vector<cmg::QuadMuon>"/>
+  <class name="edm::Wrapper<cmg::QuadMuon>"/>
+  <class name="edm::Wrapper<std::vector<cmg::QuadMuon> >"/>
+
+  <class name="cmg::QuadElectron"/>
+  <class name="std::vector<cmg::QuadElectron>"/>
+  <class name="edm::Wrapper<cmg::QuadElectron>"/>
+  <class name="edm::Wrapper<std::vector<cmg::QuadElectron> >"/>
+
+  <class name="cmg::DiMuonDiElectron"/>
+  <class name="std::vector<cmg::DiMuonDiElectron>"/>
+  <class name="edm::Wrapper<cmg::DiMuonDiElectron>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiMuonDiElectron> >"/>
+
+  <class name="cmg::TriMuonMET"/>
+  <class name="std::vector<cmg::TriMuonMET>"/>
+  <class name="edm::Wrapper<cmg::TriMuonMET>"/>
+  <class name="edm::Wrapper<std::vector<cmg::TriMuonMET> >"/>
+
+
+ 
+  <class name="cmg::BaseMET"/>
+  <class name="std::vector<cmg::BaseMET>"/>
+  <class name="edm::Wrapper<cmg::BaseMET>"/>
+  <class name="edm::Wrapper<std::vector<cmg::BaseMET> >"/>
+ 
+  <enum name="cmg::TriBool"/>
+  
+  <function name="cmg::unset" />
+  
+  <class name="pat::strbitset" />
+  <class name="std::map<std::basic_string<char>,unsigned int>" />
+  
+  <class name="cmg::PFCandidate"/>
+  <class name="std::vector<cmg::PFCandidate>"/>
+  <class name="edm::Wrapper<cmg::PFCandidate>"/>
+  <class name="edm::Wrapper<std::vector<cmg::PFCandidate> >"/>
+
+  <class name="cmg::GenParticle"/>
+  <class name="std::vector<cmg::GenParticle>"/>
+  <class name="edm::Wrapper<cmg::GenParticle>"/>
+  <class name="edm::Wrapper<std::vector<cmg::GenParticle> >"/>
+  
+  <class name="cmg::GenJet"/>
+  <class name="std::vector<cmg::GenJet>"/>
+  <class name="edm::Wrapper<cmg::GenJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::GenJet> >"/>
+
+  <class name="cmg::WENu"/>
+  <class name="std::vector<cmg::WENu>"/>
+  <class name="edm::Wrapper<cmg::WENu>"/>
+  <class name="edm::Wrapper<std::vector<cmg::WENu> >"/>
+  
+  <class name="cmg::WMuNu"/>
+  <class name="std::vector<cmg::WMuNu>"/>
+  <class name="edm::Wrapper<cmg::WMuNu>"/>
+  <class name="edm::Wrapper<std::vector<cmg::WMuNu> >"/>
+  
+  <class name="cmg::WTauNu"/>
+  <class name="std::vector<cmg::WTauNu>"/>
+  <class name="edm::Wrapper<cmg::WTauNu>"/>
+  <class name="edm::Wrapper<std::vector<cmg::WTauNu> >"/>
+
+  <class name="cmg::MultiObject"/>
+  <class name="std::vector<cmg::MultiObject>"/>
+  <class name="edm::Wrapper<cmg::MultiObject>"/>
+  <class name="edm::Wrapper<std::vector<cmg::MultiObject> >"/>
+
+  <class name="cmg::Hemisphere"/>
+  <class name="std::vector<cmg::Hemisphere>"/>
+  <class name="edm::Wrapper<cmg::Hemisphere>"/>
+  <class name="edm::Wrapper<std::vector<cmg::Hemisphere> >"/>
+
+  <class name="cmg::FatJet"/>
+  <class name="std::vector<cmg::FatJet>"/>
+  <class name="edm::Wrapper<cmg::FatJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::FatJet> >"/>
+
+  <class name="cmg::Photon"/>
+  <class name="std::vector<cmg::Photon>"/>
+  <class name="edm::Wrapper<cmg::Photon>"/>
+  <class name="edm::Wrapper<std::vector<cmg::Photon> >"/>
+  
+
+  <class name="cmg::TriggerObject"/>
+  <class name="cmg::TriggerObject::prescaleMap"/>
+  <class name="cmg::PhysicsObjectWithPtr<pat::TriggerObjectPtr>" />
+  <class name="std::vector<cmg::TriggerObject>"/>
+  <class name="edm::Wrapper<cmg::TriggerObject>"/>
+  <class name="edm::Wrapper<std::vector<cmg::TriggerObject> >"/>
+
+  <!-- create dictionaries for the composite candidates from PFAnalysis -->
+  <class name="PATMuPair"/>
+  <class name="std::vector<PATMuPair>"/>
+  <class name="edm::Wrapper<PATMuPair>"/>
+  <class name="edm::Wrapper<std::vector<PATMuPair> >"/>
+    
+  <class name="PATMuonNuPair"/>
+  <class name="std::vector<PATMuonNuPair>"/>
+  <class name="edm::Wrapper<PATMuonNuPair>"/>
+  <class name="edm::Wrapper<std::vector<PATMuonNuPair> >"/>
+
+
+  <class name="cmg::TauEle"/>
+  <class name="std::vector<cmg::TauEle>"/>
+  <class name="edm::Wrapper<cmg::TauEle>"/>
+  <class name="edm::Wrapper<std::vector<cmg::TauEle> >"/>
+
+  <class name="cmg::TauEleDiObject"/>
+  <class name="std::vector<cmg::TauEleDiObject>"/>
+  <class name="edm::Wrapper<cmg::TauEleDiObject>"/>
+  <class name="edm::Wrapper<std::vector<cmg::TauEleDiObject> >"/>
+
+  <class name="cmg::TauMu"/>
+  <class name="std::vector<cmg::TauMu>"/>
+  <class name="edm::Wrapper<cmg::TauMu>"/>
+  <class name="edm::Wrapper<std::vector<cmg::TauMu> >"/>
+
+  <class name="cmg::TauMuDiObject"/>
+  <class name="std::vector<cmg::TauMuDiObject>"/>
+  <class name="edm::Wrapper<cmg::TauMuDiObject>"/>
+  <class name="edm::Wrapper<std::vector<cmg::TauMuDiObject> >"/>
+
+  <class name="cmg::MuEle"/>
+  <class name="std::vector<cmg::MuEle>"/>
+  <class name="edm::Wrapper<cmg::MuEle>"/>
+  <class name="edm::Wrapper<std::vector<cmg::MuEle> >"/>
+
+  <class name="cmg::MuEleDiTau"/>
+  <class name="std::vector<cmg::MuEleDiTau>"/>
+  <class name="edm::Wrapper<cmg::MuEleDiTau>"/>
+  <class name="edm::Wrapper<std::vector<cmg::MuEleDiTau> >"/>
+  
+  <class name="std::vector<reco::Vertex>"/>
+  <class name="std::vector<edm::Ref<std::vector<reco::Vertex>,reco::Vertex,edm::refhelper::FindUsingAdvance<std::vector<reco::Vertex>,reco::Vertex> > >"/>
+  <class name="edm::ValueMap<edm::Ref<std::vector<reco::Vertex>,reco::Vertex,edm::refhelper::FindUsingAdvance<std::vector<reco::Vertex>,reco::Vertex> > >"/>
+  <class name="edm::Wrapper<edm::ValueMap<edm::Ref<std::vector<reco::Vertex>,reco::Vertex,edm::refhelper::FindUsingAdvance<std::vector<reco::Vertex>,reco::Vertex> > > >"/>
+  <class name="reco::VertexRefVector"/>
+  <class name="edm::ValueMap<reco::VertexRefVector>"/>
+  <class name="edm::Wrapper<edm::ValueMap<reco::VertexRefVector> >"/>;
+
+
+</lcgdict>

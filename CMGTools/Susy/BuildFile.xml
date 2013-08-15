@@ -1,0 +1,13 @@
+<use name="FWCore/Framework"/>
+<use name="FWCore/ParameterSet"/>
+<use name="FWCore/FWLite"/>
+
+<use name="AnalysisDataFormats/CMGTools"/>
+<use name="CMGTools/Common"/>
+<use name="CMGTools/RootTools"/>
+
+<use name="rootrflx"/>
+
+<export>
+  <lib   name="1"/>
+</export>

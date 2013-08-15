@@ -1,0 +1,7 @@
+<use name="AnalysisDataFormats/CMGTools"/>
+
+<export></export>
+<library name="CMGToolsTauTestPlugins" file="*.cc">
+  <use name="CMGTools/TauTest"/>
+  <flags   EDM_PLUGIN="1"/>
+</library>

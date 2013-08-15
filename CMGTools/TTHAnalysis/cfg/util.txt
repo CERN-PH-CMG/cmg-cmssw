@@ -1,0 +1,7 @@
+alias multiloop='python -i $CMSSW_BASE/src/CMGTools/RootTools/python/fwlite/MultiLoop.py'
+alias pyroot='python -i $CMSSW_BASE/src/CMGTools/RootTools/python/PyRoot.py'
+alias htmldir='python -i $CMSSW_BASE/src/CMGTools/RootTools/python/html/DirectoryTree.py'
+
+
+multiloop Trash run_ttHLep8TeV_cfg.py -N 1000 -f
+pybatch.py -o Output run_ttHLep8TeV_cfg.py -b 'bsub -q 8nh -J Prod < batchScript.sh'

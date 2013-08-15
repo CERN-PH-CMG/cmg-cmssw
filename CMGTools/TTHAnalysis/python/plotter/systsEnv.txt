@@ -1,0 +1,37 @@
+#
+# common theoretical uncertainties (fully correlated everywhere)
+QCDscale_ttH   : ttH : .* : 1.06
+QCDscale_ttW   : TTW : .* : 1.10
+QCDscale_ttZ   : TTZ : .* : 1.11
+pdf_gg         : ttH : .* : 1.08
+pdf_gg         : TTZ : .* : 1.088
+pdf_qqbar      : TTW : .* : 1.072
+#
+# shape theoretical uncertainties (private to this channel)
+CMS_ttHl_pdf_shape_ttH  : ttH : .* : 1.05: shapeOnly
+CMS_ttHl_thu_shape_ttH  : ttH : .* : 1.10: shapeOnly
+CMS_ttHl_pdf_shape_ttW  : TTW : .* : 1.05: shapeOnly
+CMS_ttHl_pdf_shape_ttZ  : TTZ : .* : 1.05: shapeOnly
+CMS_ttHl_thu_shape_ttW  : TTW : .* : 1.10: shapeOnly
+CMS_ttHl_thu_shape_ttZ  : TTZ : .* : 1.10: shapeOnly
+#
+# Fake rate uncertainties (private to this channel)
+#CMS_ttHl_FR     : FR_.*  : .* : 1.4  
+CMS_ttHl_FR     : FR_.*  : .* : 1.4: envelop
+#CMS_ttHl_FRe     : FR_.*  : .*2lss_e[em].* : 1.4 : envelop
+#CMS_ttHl_FRm     : FR_.*  : .*2lss_mu.* : 1.4 : envelop
+#CMS_ttHl_FR3l    : FR_.*  : .*3l.* : 1.4 : envelop
+#CMS_ttHl_FR4l    : TT     : .*4l.* : 1.4 : envelop
+#CMS_ttHl_FRe    : FR_.*  : .* : 1.4 : envelop
+#CMS_ttHl_FRe    : FR_.*  : .* : 1.4 : envelop
+#CMS_ttHl_FR     : FR_.*  : .* : 1.4 : envelop
+CMS_ttHl_QF     : QF_.*  : .* : 1.2 : envelop
+#
+# Diboson backgrounds except for PDFs and JES
+CMS_ttHl_WZ : WZ : .* : 1.16 
+CMS_ttHl_ZZ : ZZ : .* : 1.18 
+# Jet energy scale uncertainties
+CMS_p_scale_j : WZ|TT[WZ]$ :  .*      : JES : templates
+CMS_p_scale_j : ZZ         : [34]l_.* : JES : templates
+# FR template
+CMS_ttHl_FR_Mu : FR_data   : 2lss_mumu.* : FR_Mu : templates

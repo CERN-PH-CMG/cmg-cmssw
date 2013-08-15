@@ -1,0 +1,70 @@
+minMllAFOS: minMllAFOS: 20,0,250 ; XTitle="min m(l^{+}l^{-}')  [GeV]"
+#minMllAFSS: minMllAFSS: 50,0,400 ; XTitle="min m(l^{+/-}l^{+/-}')  [GeV]"
+maxMllAFOS: maxMllAFOS: 60,0,500 ; XTitle="max m(l^{+}l^{-}')  [GeV]"
+#maxMllAFSS: maxMllAFSS: 60,0,500 ; XTitle="max m(l^{+/-}l^{+/-}')  [GeV]"
+
+minPtllAFOS: minPtllAFOS: 30,0,150 ; XTitle="min pT(l^{+}l^{-}')  [GeV]"
+minPtllAFSS: minPtllAFSS: 40,0,250 ; XTitle="min pT(l^{+/-}l^{+/-}')  [GeV]"
+maxPtllAFOS: maxPtllAFOS: 60,0,500 ; XTitle="min pT(l^{+}l^{-}')  [GeV]"
+maxPtllAFSS: maxPtllAFSS: 60,0,500 ; XTitle="min pT(l^{+/-}l^{+/-}')  [GeV]"
+
+minDrllAFOS: minDrllAFOS: 25,0,6 ; XTitle="min dR(l^{+}l^{-}')"
+minDrllAFSS: minDrllAFSS: 25,0,6 ; XTitle="min dR(l^{+/-}l^{+/-}')"
+maxDrllAFOS: maxDrllAFOS: 25,0,6 ; XTitle="max dR(l^{+}l^{-}')"
+maxDrllAFSS: maxDrllAFSS: 25,0,6 ; XTitle="max dR(l^{+/-}l^{+/-}')"
+
+nJet25 : nJet25 : 8,-0.5,7.5 ; XTitle='N(jet\, p_{T} > 25)'
+m3l: m3l : 50,0,600; XTitle="m(l_{1}\,l_{2}\,l_{3}) [GeV]"
+ht3l: ht3l : 50,0,600; XTitle="pT(l_{1}\,l_{2}\,l_{3}) [GeV]"
+q3l: (LepGood1_charge + LepGood2_charge + LepGood3_charge) : [-3.5,-2.5,-1.5,-0.5,+0.5,+1.5,+2.5,+3.5]; XTitle="q(l_{1}\,l_{2}\,l_{3})",XNDiv=505
+qTimesNJ: (LepGood1_charge + LepGood2_charge + LepGood3_charge)*nJet25*(abs(LepGood1_charge + LepGood2_charge + LepGood3_charge) == 1) : [-8.5,-7.5,-6.5,-5.5,-4.5,-3.5,-2.5,-1.5,1.5,2.5,2.5,4.5,5.5,6.5,7.5,8.5] ; XTitle="q(3l)*N(jet\, p_{T} > 25)",XNDiv=505,Legend='TL'
+
+minMWjj_log: minMWjj: 50, 0, 500; XTitle="min m(Wjj) [GeV]",Logy, LegendCutoff=1e-2
+minMWjjPt_log: minMWjjPt: 40, 0, 300; XTitle="min m(Wjj) pT [GeV]",Logy, LegendCutoff=1e-2
+
+bestMWjj_log: bestMWjj: 40, 0, 200; XTitle="best m(Wjj) [GeV]",Logy, LegendCutoff=1e-2
+bestMWjjPt_log: bestMWjjPt: 50, 0, 300; XTitle="best m(Wjj) pT [GeV]",Logy, LegendCutoff=1e-2
+
+bestMTopHad_log: bestMTopHad: 60, 0, 500; XTitle="best m(TopHad) [GeV]",Logy,  LegendCutoff=1e-2
+bestMTopHadPt_log: bestMTopHadPt: 60, 0, 500; XTitle="best m(TopHad) pT [GeV]",Logy, LegendCutoff=1e-2
+
+
+minMWjj: minMWjj: 50, 0, 500; XTitle="min m(Wjj) [GeV]"
+minMWjjPt: minMWjjPt: 40, 0, 300; XTitle="min m(Wjj) pT [GeV]"
+
+bestMWjj: bestMWjj: 40, 0, 200; XTitle="best m(Wjj) [GeV]"
+bestMWjjPt: bestMWjjPt: 50, 0, 300; XTitle="best m(Wjj) pT [GeV]"
+
+bestMTopHad: bestMTopHad: 60, 0, 500; XTitle="best m(TopHad) [GeV]"
+bestMTopHadPt: bestMTopHadPt: 60, 0, 500; XTitle="best m(TopHad) pT [GeV]"
+
+
+lep1Pt:  LepGood1_pt       : 9,20,200; XTitle="Leading lepton p_{T} [GeV]"
+lep1Eta: abs(LepGood1_eta) : 10,0,2.5; XTitle="Leading lepton |#eta|"
+lep2Pt:  LepGood2_pt       : 10,0,100; XTitle="Second lepton p_{T} [GeV]"
+lep2Eta: abs(LepGood2_eta) : 10,0,2.5; XTitle="Second lepton |#eta|"
+lep3PT: LepGood3_pt : 10, 0, 100; XTitle="Trailing lepton p_{T} [GeV]"
+lep3Eta: abs(LepGood3_eta) : 10,0,2.5; XTitle="Trailing lepton |#eta|"
+jet1pT: Jet1_pt : 40,20,300; XTitle="pT(Jet_{1}) [GeV]"
+jet2pT: Jet2_pt : 40,20,300; XTitle="pT(Jet_{2}) [GeV]"
+lepEta3: max(max(abs(LepGood1_eta),abs(LepGood2_eta)),abs(LepGood3_eta)) : 25,0,2.5; XTitle="Max lepton eta(l_{1}\,l_{2}\,l_{3})"
+
+finalMVA: FinalMVA_3L_BDTG : 7, -1, 0.8; XTitle="BDT output"
+
+#mbb:  mass_2(Jet1_pt,Jet1_eta,Jet1_phi,Jet1_mass,Jet2_pt,Jet2_eta,Jet2_phi,Jet2_mass) : 20,0,300 ; XTitle="m(bb) [GeV]"
+#drbb: deltaR(Jet1_eta,Jet1_phi,Jet2_eta,Jet2_phi) : 20,0,5 ; XTitle="#DeltaR(bb) [GeV]"
+
+#mcJetFlav: 6*( (abs(Jet1_mcFlavour)==5)*(abs(Jet2_mcFlavour)==5) ) +  \
+#           5*( (abs(Jet1_mcFlavour)==5)*(abs(Jet2_mcFlavour)==4) + (abs(Jet2_mcFlavour)==5)*(abs(Jet1_mcFlavour)==4) ) + \
+#           4*( (abs(Jet1_mcFlavour)==5)*(abs(Jet2_mcFlavour)!=5)*(abs(Jet2_mcFlavour)!=4) + (abs(Jet2_mcFlavour)==5)*(abs(Jet1_mcFlavour)!=5)*(abs(Jet1_mcFlavour)!=4) ) + \
+#           3*( (abs(Jet1_mcFlavour)==4)*(abs(Jet2_mcFlavour)==4) )+  \
+#           2*( (abs(Jet1_mcFlavour)==4)*(abs(Jet2_mcFlavour)!=5)*(abs(Jet2_mcFlavour)!=4) + (abs(Jet2_mcFlavour)==4)*(abs(Jet1_mcFlavour)!=5)*(abs(Jet1_mcFlavour)!=4) ) + \
+#           1*( (abs(Jet1_mcFlavour)!=4)*(abs(Jet1_mcFlavour)!=5)*(abs(Jet2_mcFlavour)!=5)*(abs(Jet2_mcFlavour)!=4) ) : [0.5,1.5,2.5,3.5,4.5,5.5,6.5]; XTitle="ll/cl/cc/bl/bc/bb"
+nBJetMedium25 : nBJetMedium25 : [-0.5,0.5,1.5,2.5,3.5,4.5] ; XTitle='N(jet\, p_{T} > 25\, CSV Medium)'
+nBJetTight25 : (Jet1_btagCSV > 0.898)+(Jet2_btagCSV > 0.898)+(Jet3_btagCSV > 0.898) : [-0.5,0.5,1.5,2.5,3.5] ; XTitle='N(jet\, p_{T} > 25\, CSV Tight)'
+#passTwoBZVeto: (nBJetLoose25 >= 2)*(abs(mZ1-91.2) > 10): 2,-0.5,1.5; XTitle="2 loose b and no Z"
+#passTwoJetNoBZPeak: (nJet25 >= 2)*(nBJetLoose25 == 0)*(abs(mZ1-91.2) < 10): 2,-0.5,1.5; XTitle="2 jets\, no b and a Z"
+#wzControlRegions: (nJet25 >= 2)*(nBJetLoose25 == 0)*(abs(mZ1-91.2) < 10) + 2*(nBJetLoose25 >= 2)*(abs(mZ1-91.2) > 10): 3,-0.5,2.5; XTitle="unused/control/signal"
+
+blind_finalMVA: FinalMVA_3L_BDTG : 12,-1.0,0.6; XTitle="BDT output", Blinded='x > -0.3', MoreY=1.6, LegendCutoff=0.02
+blind_nJet25 : nJet25 : [1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(jet\, p_{T} > 25)', XNDiv=505, Blinded='x > 2'

@@ -1,0 +1,11 @@
+<export>
+</export>
+<library   name="CMGToolsPFSim_plugins" file="*.cc">
+  <use   name="AnalysisDataFormats/CMGTools"/>
+  <use   name="SimDataFormats/GeneratorProducts"/>
+  <use   name="FWCore/Framework"/>
+  <use   name="FWCore/MessageLogger"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="CMGTools/PFSim"/>
+  <use   name="fastjet"/>
+</library>

@@ -1,0 +1,1130 @@
+#ifndef __CINT__
+#include "RooGlobalFunc.h"
+#endif
+#include <sstream>
+#include "TFile.h"
+#include "TTree.h"
+#include "TCanvas.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TLegend.h"
+#include "TF1.h"
+#include "TStyle.h"
+#include "TMath.h"
+#include "TVirtualFitter.h"
+#include "TFitResult.h"
+#include "TFitResultPtr.h"
+#include "TRandom1.h"
+#include "TGraphErrors.h"
+#include "RooRealVar.h"
+#include "RooFormulaVar.h"
+#include "RooGaussian.h"
+#include "RooGenericPdf.h"
+#include "RooDataSet.h"
+#include "RooAbsPdf.h"
+#include "RooAddPdf.h"
+#include "RooProdPdf.h"
+#include "RooPlot.h"
+#include "RooFitResult.h"
+#include "RooDataHist.h"
+#include "RooHistPdf.h"
+///#include "/home/pharris/Analysis/W/condor/run/CMSSW_3_8_4/src/MitWlnu/NYStyle/test/NYStyle.h"
+#include "TLatex.h"
+
+#include <vector>
+
+using namespace RooFit;
+
+TFile *fDataFile = 0;
+TTree *fDataTree = 0; 
+
+TFile *fTTbarFile    = 0;
+TTree *fTTbar        = 0;
+
+bool  fData   = false;
+float fMetMax = 0; float fZPtMax = 0; int fNJetSelect = 0;      
+/*float   fNPV    = 0;*/ int   fNPV    = 0;
+/*float fU1 = 0; float fU2 = 0; */
+/*float fTKU1 = 0; float fTKU2 = 0;*/
+//float fPFU1 = 0;  float fPFU2   = 0; 
+
+double fPFU1 = 0;  double fPFU2   = 0;
+double fU1 = 0; double fU2 = 0;
+double fTKU1 = 0; double fTKU2 = 0;
+
+/*float fZPt = 0; float fZPhi = 0; float fPhi = 0; */ double fZPt = 0; double fZPhi = 0; double fPhi = 0;
+/*float fMet = 0;  float fMPhi = 0; */ double fMet = 0;  double fMPhi = 0;
+/*float fPt1 = 0; float fPhi1 = 0; float fPt2 = 0; float fEta2 = 0; float fPhi2 = 0; */
+double fPt1 = 0; double fPhi1 = 0; double fPt2 = 0; double fEta2 = 0; double fPhi2 = 0; 
+
+int fNJet = 0; float fWeight = 0;
+
+int fId1 = 0; int fId2 = 0; float fGPhi1 = 0; float fGPhi2 = 0; float fGEta1  = 0; float fGEta2 = 0;
+int fNBTag = 0; float fMJJ = 0; /*float fJPt1 = 0;*/ double fJPt1 = 0; float fDEta = 0; int fIS2011A = 0; int fId = -1; float fVPt = 0; float fVPhi = 0;
+
+double fZmass, fMuPos_eta, fMuPos_pt, fMuPos_charge, fMuPosReliso, fMuPos_dxy, fMuNeg_eta, fMuNeg_pt, fMuNeg_charge,fMuNeg_dxy, fMuNegReliso;
+int fMuPosTrg, fMuPosIsTightAndIso, fevtHasGoodVtx, fevtHasTrg, fMuNegIsTightAndIso;
+
+void load(TTree *iTree, int type) { 
+  fWeight = 1;
+  iTree->ResetBranchAddresses();
+  //iTree->SetBranchAddress("IS2011A",&fIS2011A);
+
+  // MARIA this is not there only the leading jet infos
+  iTree->SetBranchAddress("nbtag" ,&fNBTag); // this is not commented
+  //iTree->SetBranchAddress("mjj"   ,&fMJJ);
+
+  //iTree->SetBranchAddress("jdeta" ,&fDEta);
+  //iTree->SetBranchAddress("id1_l" ,&fId1);
+  //iTree->SetBranchAddress("id2_l" ,&fId2);
+  //iTree->SetBranchAddress("phi_z",&fVPhi);
+  //iTree->SetBranchAddress("pt_z" ,&fVPt);
+  //iTree->SetBranchAddress("phi1_l",&fGPhi1);
+  //iTree->SetBranchAddress("phi2_l",&fGPhi2);
+  //iTree->SetBranchAddress("eta1_l",&fGEta1);
+  //iTree->SetBranchAddress("eta2_l",&fGEta2);
+  /*
+    iTree->SetBranchAddress("eta_2" ,&fEta2);
+    iTree->SetBranchAddress("phi_2" ,&fPhi2);
+    iTree->SetBranchAddress("taujetpt" ,&fPt2);
+    iTree->SetBranchAddress("pt_vis"  ,&fPt1);
+    iTree->SetBranchAddress("phi_vis" ,&fPhi1);
+  */
+
+  iTree->SetBranchAddress("MuNeg_eta" ,&fEta2);
+  iTree->SetBranchAddress("MuNeg_phi" ,&fPhi2);
+  iTree->SetBranchAddress("MuNeg_pt" ,&fPt2); 
+
+  /*
+  iTree->SetBranchAddress("MuPos_pt"  ,&fPt1); 
+  iTree->SetBranchAddress("MuPos_phi" ,&fPhi1); */ // this maybe for the W
+
+  iTree->SetBranchAddress("Z_pt"  ,&fPt1); //
+  iTree->SetBranchAddress("Z_phi" ,&fPhi1);
+
+  //iTree->SetBranchAddress("Weight",&fWeight); // this is set to 1 fot now
+
+  iTree->SetBranchAddress("Jet_leading_pt"  ,&fJPt1);
+  //  iTree->SetBranchAddress("jetpt1"  ,&fJPt1);
+  iTree->SetBranchAddress("nvtx"   ,&fNPV);
+  //  iTree->SetBranchAddress("npv"   ,&fNPV);
+
+  if(!fData) iTree->SetBranchAddress("ZGen_pt" ,&fZPt);
+  if(!fData) iTree->SetBranchAddress("ZGen_phi",&fZPhi);
+  if(fData)  iTree->SetBranchAddress("Z_pt" ,&fZPt);
+  if(fData)  iTree->SetBranchAddress("Z_phi",&fZPhi);
+
+  /*
+    if(!fData) iTree->SetBranchAddress("pt_z" ,&fZPt);
+    if(!fData) iTree->SetBranchAddress("phi_z",&fZPhi);
+    if(fData)  iTree->SetBranchAddress("pt_z" ,&fZPt);
+    if(fData)  iTree->SetBranchAddress("phi_z",&fZPhi);
+  */
+
+  // MARIA this is not there only the leading jet infos
+  iTree->SetBranchAddress("njet",&fNJet);
+
+  if(type==0) {
+    //iTree->SetBranchAddress("u1x_mva"    ,&fU1);
+    //iTree->SetBranchAddress("u2x_mva"    ,&fU2);
+    //iTree->SetBranchAddress("metx_mva"   ,&fMet);
+    //iTree->SetBranchAddress("metphix_mva",&fMPhi);
+    iTree->SetBranchAddress("mvamet"   ,&fMet);
+    iTree->SetBranchAddress("mvametphi",&fMPhi);
+  } else if(type==1) {
+    iTree->SetBranchAddress("trku1" ,&fU1);
+    iTree->SetBranchAddress("trku2" ,&fU2);
+    iTree->SetBranchAddress("trkmet",&fMet); 
+  } else if(type==2) {
+    //iTree->SetBranchAddress("trku1" ,&fTKU1);
+    //iTree->SetBranchAddress("trku2" ,&fTKU2);
+    // MARIA: I'm using those now
+    iTree->SetBranchAddress("u1"  ,&fPFU1);
+    iTree->SetBranchAddress("u2"  ,&fPFU2);
+    //    iTree->SetBranchAddress("met",&fMet);
+    //    iTree->SetBranchAddress("metphi",&fMPhi);
+    iTree->SetBranchAddress("pfmet",&fMet);
+    iTree->SetBranchAddress("pfmet_phi",&fMPhi);
+  }
+
+  // these are needed for the selection
+  iTree->SetBranchAddress("Z_mass" ,&fZmass);
+  iTree->SetBranchAddress("MuPos_eta" ,&fMuPos_eta);
+  iTree->SetBranchAddress("MuPos_pt" ,&fMuPos_pt);
+  iTree->SetBranchAddress("MuPos_charge" ,&fMuPos_charge);
+  iTree->SetBranchAddress("MuPosRelIso" ,&fMuPosReliso);
+  iTree->SetBranchAddress("MuPos_dxy" ,&fMuPos_dxy);
+
+  iTree->SetBranchAddress("MuNeg_eta" ,&fMuNeg_eta);
+  iTree->SetBranchAddress("MuNeg_pt" ,&fMuNeg_pt);
+  iTree->SetBranchAddress("MuNeg_charge" ,&fMuNeg_charge);
+  iTree->SetBranchAddress("MuNegRelIso" ,&fMuNegReliso);
+  iTree->SetBranchAddress("MuNeg_dxy" ,&fMuNeg_dxy);
+
+  iTree->SetBranchAddress("MuPosTrg" ,&fMuPosTrg);
+  iTree->SetBranchAddress("MuPosIsTightAndIso" ,&fMuPosIsTightAndIso);
+  iTree->SetBranchAddress("MuNegIsTightAndIso" ,&fMuNegIsTightAndIso);
+
+  iTree->SetBranchAddress("evtHasGoodVtx" ,&fevtHasGoodVtx);
+  iTree->SetBranchAddress("evtHasTrg" ,&fevtHasTrg);
+
+}
+
+bool runSelection() {
+
+  if( fevtHasGoodVtx 
+      && fevtHasTrg
+      
+      && fZmass>70
+      && fZmass<110
+      && TMath::Abs(fMuPos_eta)<2.4 && fMuPos_pt>30 && fMuPosTrg
+      && TMath::Abs(fMuNeg_eta)<2.4 && fMuNeg_pt>10 
+      && (fMuNeg_charge != fMuPos_charge)
+      
+      && fMuPosIsTightAndIso
+      && fMuPosReliso<0.12 
+      && fMuPos_dxy<0.02
+
+      && fMuNegIsTightAndIso
+      && fMuNegReliso<0.12 
+      && fMuNeg_dxy<0.02
+      ) {
+    //    cout << "passed selection" << endl;
+    return true;
+  }
+
+  //  cout << "BAD selection" << endl;
+  return false;
+
+}
+
+
+//void calculateU1U2(float &iPar,bool iType) {
+void calculateU1U2(double &iPar, bool iType) {
+  double lUX  = fMet*cos(fMPhi) + fPt1*cos(fPhi1);
+  double lUY  = fMet*sin(fMPhi) + fPt1*sin(fPhi1);
+  double lU   = sqrt(lUX*lUX+lUY*lUY);
+  double lCos = - (lUX*cos(fZPhi) + lUY*sin(fZPhi))/lU;
+  double lSin =   (lUX*sin(fZPhi) - lUY*cos(fZPhi))/lU;
+  fU1 = lU*lCos;
+  fU2 = lU*lSin;
+  if(iType)  iPar = fU1;
+  if(!iType) iPar = fU2;
+
+  /*
+    cout << "fU1: recomputed " << fU1 << " stored " << fPFU1 << endl;
+    cout << "fU2: recomputed " << fU2 << " stored " << fPFU2 << endl;
+  */
+ 
+}
+
+bool passMatching() { 
+  double lDEta0  = fGEta1-fEta2;
+  double lDPhi0 = fabs(fGPhi1-fPhi2); if(lDPhi0 > 2.*TMath::Pi()-lDPhi0) lDPhi0 = 2.*TMath::Pi()-lDPhi0;
+  double lDR0 = sqrt(lDEta0*lDEta0+lDPhi0*lDPhi0);
+  double lDEta1  = fGEta2-fEta2;
+  double lDPhi1 = fabs(fGPhi2-fPhi2); if(lDPhi1 > 2.*TMath::Pi()-lDPhi1) lDPhi1 = 2.*TMath::Pi()-lDPhi1;
+  double lDR1 = sqrt(lDEta1*lDEta1+lDPhi1*lDPhi1);
+  return (lDR0 < 0.3 || lDR1 < 0.3);
+}
+
+double getCorError2(double iVal,TF1 *iFit) { 
+  double lE = sqrt(iFit->GetParError(0))  + iVal*sqrt(iFit->GetParError(2));
+  if(fabs(iFit->GetParError(4)) > 0) lE += iVal*iVal*sqrt(iFit->GetParError(4));
+  return lE*lE;
+}
+
+bool passId(int iId) { 
+
+  if(fId == 0) return true;
+  //if(iId  < 0) {if(!(fIS2011A == 0))                                {return false;}}
+  //if(iId  > 0) {if(!(fIS2011A == 1))                                {return false;}}
+  double lId = fabs(iId);
+  //if(lId == 2) {if(fNJet == 0 || (fNJet == 1 && fJPt1 < 150))    {return true;} else {return false;}}
+  //if(lId == 3) {if(fNJet == 1  && fJPt1 > 150)                   {return true;} else {return false;}}
+  //if(lId == 4) {if(fNJet == 2  && fMJJ > 400 && fabs(fDEta) > 4) {return true;} else {return false;}}
+  //if(lId == 5) {if(fNBTag >  0)                                  {return true;} else {return false;}}
+  //if(lId == 6) {if(fNBTag ==  0)                                 {return true;} else {return false;}}
+
+  if(lId == 1) {if(fNPV > 12              ) {return false; } {return true;}}
+
+  if(lId == 2) {if(fNPV > 5              ) {return false; } {return true;}}
+  if(lId == 3) {if(fNPV < 6 || fNPV  > 10) {return false; } {return true;}}
+  if(lId == 4) {if(fNPV < 11  || fNPV  > 15) {return false; } {return true;}}
+  if(lId == 5) {if(fNPV < 16  || fNPV  > 20) {return false; } {return true;}}
+  if(lId == 6) {if(fNPV < 21 ) {return false; } {return true;}}
+
+  /*
+    if(lId == 2) {if(fNPV > 5              ) {return false; } {return true;}}
+    if(lId == 3) {if(fNPV < 5  || fNPV  > 7) {return false; }{ return true;}}
+    if(lId == 4) {if(fNPV < 7  || fNPV  > 9) {return false; }{ return true;}}
+    if(lId == 5) {if(fNPV < 9  || fNPV  > 11){return false; }{ return true;}}
+    if(lId == 6) {if(fNPV < 11 || fNPV  > 13){return false; }{ return true;}}
+    if(lId == 7) {if(fNPV < 13 || fNPV  > 15){return false; }{ return true;}}
+    if(lId == 8) {if(fNPV < 15 || fNPV  > 19){return false; }{ return true;}}
+    if(lId == 9) {if(fNPV < 19 )             {return false; }{ return true;}}
+  */
+  //  cout << "NVertex " << fNPV << endl;
+  
+  return true;
+  
+}
+
+double getError2(double iVal,TF1 *iFit) { 
+  double lE2 = iFit->GetParError(0) + iVal*iFit->GetParError(1) + iVal*iVal*iFit->GetParError(2);
+  if(fabs(iFit->GetParError(3)) > 0) lE2 += iVal*iVal*iVal*     iFit->GetParError(3);
+  if(fabs(iFit->GetParError(4)) > 0) lE2 += iVal*iVal*iVal*iVal*iFit->GetParError(4);
+  if(fabs(iFit->GetParError(5)) > 0 && iFit->GetParameter(3) == 0) lE2 += iVal*iVal*               iFit->GetParError(5);
+  if(fabs(iFit->GetParError(5)) > 0 && iFit->GetParameter(3) != 0) lE2 += iVal*iVal*iVal*iVal*iVal*iFit->GetParError(5);
+  if(fabs(iFit->GetParError(6)) > 0) lE2 += iVal*iVal*iVal*iVal*iVal*iVal*iFit->GetParError(6);
+  return lE2;
+}
+
+double getError(double iVal,TF1 *iWFit,TF1 *iZDatFit,TF1 *iZMCFit,bool iRescale=true) {
+  double lEW2  = getError2(iVal,iWFit);
+  if(!iRescale) return sqrt(lEW2);
+  double lEZD2 = getError2(iVal,iZDatFit);
+  double lEZM2 = getError2(iVal,iZMCFit);
+  double lZDat = iZDatFit->Eval(iVal);
+  double lZMC  = iZMCFit->Eval(iVal);
+  double lWMC  = iWFit->Eval(iVal);
+  double lR    = lZDat/lZMC;
+  double lER   = lR*lR/lZDat/lZDat*lEZD2 + lR*lR/lZMC/lZMC*lEZM2;
+  double lVal  = lR*lR*lEW2 + lWMC*lWMC*lER;
+  return sqrt(lVal);//+(iZMCFit->Eval(iVal)-iWFit->Eval(iVal);
+}
+
+void computeFitErrors(TF1 *iFit,TFitResultPtr &iFPtr,TF1 *iTrueFit,bool iPol0=false) {  
+
+  bool lPol0 = iPol0;
+  bool lPol2 = (iTrueFit->GetParError(2) != 0);
+  bool lPol3 = (iTrueFit->GetParError(3) != 0);
+
+  TMatrixDSym lCov = iFPtr->GetCovarianceMatrix();  
+  double lE0 = (lCov)(0,0);
+  double lE1 = (lCov)(0,1) + (lCov)(1,0);
+  double lE2 = (lCov)(1,1);
+  cout << "================================== 0 - 0 " << lE0 << endl;
+  double lE5 = 0; if(lPol2) lE5 = 2*(lCov)(2,0);
+  double lE3 = 0; if(lPol2) lE3 = 2*(lCov)(1,2);
+  double lE4 = 0; if(lPol2) lE4 =  (lCov)(2,2);   //This scheme preserves the diagaonals
+  double lE6 = 0;
+  if(lPol3) { 
+    lE2 += 2*(lCov)(0,2);
+    lE3 += 2*(lCov)(0,3);
+    lE4 += 2*(lCov)(1,3);
+    lE5  = 2*(lCov)(2,3);
+    lE6  = (lCov)(3,3);
+  }
+  if(lPol0) {lE0 = iTrueFit->GetParError(0)*iTrueFit->GetParError(0); lE1 = 0; lE2 = 0; lE3=0;}
+  iFit->SetParameter(0,iTrueFit->GetParameter(0)); iFit->SetParError(0,lE0);
+  iFit->SetParameter(1,iTrueFit->GetParameter(1)); iFit->SetParError(1,lE1);
+  iFit->SetParameter(2,iTrueFit->GetParameter(2)); iFit->SetParError(2,lE2);
+  iFit->SetParameter(3,iTrueFit->GetParameter(3)); iFit->SetParError(3,lE3);
+  iFit->SetParameter(4,iTrueFit->GetParameter(4)); iFit->SetParError(4,lE4);
+  iFit->SetParError(5,lE5);
+  iFit->SetParError(6,lE6);
+}
+
+void drawErrorBands(TF1 *iFit,double iXMax) { 
+  int lN = int(iXMax*5.)*2;
+  TGraph *lG0 = new TGraph(lN-1);
+  TGraph *lG1 = new TGraph(lN-1);
+  for(int i0 = 0; i0 < lN/2; i0++) {
+    double pVal = i0*0.2;
+    lG0->SetPoint(i0,pVal,iFit->Eval(pVal)+sqrt(getError2(pVal,iFit)));      //Small Yellow Band
+    lG1->SetPoint(i0,pVal,iFit->Eval(pVal)+sqrt(getCorError2(pVal,iFit)));   //Large Redfi Band
+  }
+  for(int i0 = 0; i0 < lN/2; i0++) {
+    double pVal = lN/2*0.2-(i0+1)*0.2;
+    lG0->SetPoint(lN/2+i0,pVal,iFit->Eval(pVal)-sqrt(getError2(pVal,iFit)));
+    lG1->SetPoint(lN/2+i0,pVal,iFit->Eval(pVal)-sqrt(getCorError2(pVal,iFit)));
+  }
+  lG0->SetFillColor(kYellow);
+  lG1->SetFillColor(kRed);
+  lG1->Draw("F");
+  lG0->Draw("F");
+}
+double fCorrMax = 70;
+
+TGraphErrors* makeGraph(int iNBins,int iId,std::vector<float> &iXVals,std::vector<float> &iY0Vals,std::vector<float> &iY1Vals,
+			std::vector<float> &iXEVals,std::vector<float> &iYEVals) { 
+  std::vector<float> iPar0;    std::vector<float> iPar1;
+  std::vector<float> iEPar0;   std::vector<float> iEPar1;
+  for(unsigned int i0 = 0; i0 < iXVals.size(); i0++) { 
+    if(iXVals[i0] < iId*(int(fCorrMax/iNBins))) continue;
+    //if(iId != iNBins-1 && 
+    if(iXVals[i0] > (iId+1)*(int(fCorrMax/iNBins))) continue;
+    iPar0.push_back(iY0Vals[i0]); 
+    iPar1.push_back(iY1Vals[i0]); 
+    iEPar0.push_back(1);
+    iEPar1.push_back(iYEVals[i0]);
+  }
+  TGraphErrors *lF0 = new TGraphErrors(iPar1.size(),&iPar0[0],&iPar1[0],&iEPar0[0],&iEPar1[0]);
+  return lF0;
+}
+
+TH2F* makeHist(int iNBins,int iId,std::vector<float> &iXVals,std::vector<float> &iY0Vals,std::vector<float> &iY1Vals) { 
+  TH2F *lH0 = new TH2F("X","X",30,-5,0,30,-5,0);
+  for(unsigned int i0 = 0; i0 < iXVals.size(); i0++) { 
+    if(iXVals[i0] < iId*(int(fCorrMax/iNBins))) continue;
+    //if(iId != iNBins-1 && 
+    if(iXVals[i0] > (iId+1)*(int(fCorrMax/iNBins))) continue;
+    lH0->Fill(iY0Vals[i0],iY1Vals[i0]);
+  }
+  return lH0;
+}
+
+double angle(double lMX,double lMY) {
+  if(lMX > 0) {return atan(lMY/lMX);} 
+  return (fabs(lMY)/lMY)*3.14159265 + atan(lMY/lMX);
+}
+
+/*
+//void fitCorr(bool iRMS,TTree *iTree,TCanvas *iC,float &lPar0,float &lPar1,
+void fitCorr(bool iRMS,TTree *iTree,TCanvas *iC,double &lPar0,double &lPar1,
+	     TF1   *iMeanFit0=0,TF1   *iMeanFit1=0,
+	     TF1   *iRMSFit0 =0,TF1   *iRMSFit1 =0,
+             TF1   *iCorrFit=0) { 
+  iC->cd();
+  fCorrMax = 70;
+  const int iNBins = 7;
+  TGraphErrors  **lG0  = new TGraphErrors*[iNBins]; double *lXCorr = new double[iNBins]; double *lCorr = new double[iNBins];
+  std::vector<float> lXVals; std::vector<float> lY0Vals; std::vector<float> lY1Vals;
+  std::vector<float> lXEVals; std::vector<float> lYEVals; 
+
+
+  //  for(int i1 = 0; i1 <  iTree->GetEntries(); i1++) {
+  for(int i1 = 0; i1 <  10000; i1++) {
+    iTree->GetEntry(i1);
+    if(!passId(fId)) continue;
+    calculateU1U2(lPar0,true);
+    calculateU1U2(lPar1,false);
+    if(fZPt > fZPtMax) continue;
+    if(fMet > fMetMax) continue;
+    
+    /// MARIA comment this for now
+    //    if(fNJetSelect<2 && fNJet!=fNJetSelect && fNJetSelect != -1) continue;
+    //    if(fNJetSelect==2 && fNJet<2) continue;
+   
+    // MARIA add this 
+    testU1U2->Fill(lPar0);
+
+    double pVal0 = lPar0;
+    double pVal1 = lPar1;
+    if(iMeanFit0 != 0 && iRMSFit0 != 0 )   pVal0 = (lPar0-iMeanFit0->Eval(fZPt))/iRMSFit0->Eval(fZPt);
+    if(iMeanFit1 != 0 && iRMSFit1 != 0 )   pVal1 = (lPar1-iMeanFit1->Eval(fZPt))/iRMSFit1->Eval(fZPt);
+    //if( (pVal0 > 0 || pVal1 > 0)) continue;
+    if(fWeight == 0) continue;
+    double pWeight = fWeight;
+    if(fData) pWeight = 1;
+    //if(pVal1 > pVal0) continue;
+    //if(iRMS && pVal0 > 0. && ((fPFU1 == lPar0) || (fTKU1 == lPar0))) continue;
+    //if(iRMS && pVal1 > 0. && ((fPFU1 == lPar1) || (fTKU1 == lPar1))) continue;
+    //double pWeight = fWeight;
+    lXVals.push_back(fZPt); lXEVals.push_back(2.);
+    (!iRMS) ? lY0Vals.push_back(pVal0) : lY0Vals.push_back(pVal0);
+    (!iRMS) ? lY1Vals.push_back(pVal1) : lY1Vals.push_back(pVal1);
+    lYEVals.push_back(1./sqrt(pWeight));
+  }
+
+///////////MARIA
+//   testU1U2->Draw("hist");
+//   TFile outfile("histos.root","RECREATE");
+//   testU1U2->Write();
+//   outfile.Write();
+//   outfile.Close();
+
+  for(int i0 = 0; i0 < iNBins; i0++) lG0[i0] = makeGraph(iNBins,i0,lXVals,lY0Vals,lY1Vals,lXEVals,lYEVals);
+  //for(int i0 = 2; i0 < 7; i0++) project(iNBins,i0,lXVals,lY0Vals,lY1Vals);
+  for(int i0 = 0; i0 < iNBins; i0++) { 
+     //lG0[i0]->Fit("pol1");
+    //lG0[i0]->Draw("ap"); 
+    lXCorr[i0] = i0*(fCorrMax/iNBins) + (fCorrMax/iNBins/2.);
+    lG0[i0]->Fit("pol1","SR","EXO");
+    lCorr [i0] = lG0[i0]->GetFunction("pol1")->GetParameter(1);
+  }
+  TGraph *lFinalCorr = new TGraph(iNBins,lXCorr,lCorr);
+  std::string lType = "pol1";
+  TF1 *lFit = new TF1("test",lType.c_str());
+  TFitResultPtr  lFitPtr = lFinalCorr->Fit(lFit,"SR","",0,fCorrMax);
+  computeFitErrors(iCorrFit,lFitPtr,lFit,iRMS);
+  lFinalCorr->SetMarkerStyle(kFullCircle);
+  lFinalCorr->Draw("ap");
+  drawErrorBands(iCorrFit,100);
+  lFinalCorr->Draw("p");
+  iC->SaveAs("Crap.png");
+  cin.get();
+}
+*/
+
+/*
+void makePdf(TTree *iTree1,double iPtMin,double iPtMax,RooDataHist *iData,RooHistPdf *iPdf,RooRealVar &iVar,TF1 *iMeanFit,float &lPar) { 
+  float lPt   = 0; iTree1->SetBranchAddress("pt_z"   ,&lPt); 
+  float lU1   = 0; iTree1->SetBranchAddress("u1x_mva",&lU1); 
+  float lU2   = 0; iTree1->SetBranchAddress("u2x_mva",&lU2); 
+  float lNJet = 0; iTree1->SetBranchAddress("njet"   ,&lNJet); 
+  TH1F *lH0   = new TH1F("pH","pH",100,-100,100);
+  for(int i1 = 0; i1 <  iTree1->GetEntries(); i1++) {
+    iTree1->GetEntry(i1);
+    //if(!passId(fId)) continue;
+    if(lPt < iPtMin || lPt > iPtMax ) continue;
+
+    // MARIA comment this for now
+    //    if(fNJetSelect<2  && lNJet != fNJetSelect && fNJetSelect != -1) continue;
+    //    if(fNJetSelect==2 && lNJet<2) continue;
+    
+    double pVal = 0;
+    if(lPar == fU1) pVal = lU1;
+    if(lPar == fU2) pVal = lU2;
+    if(iMeanFit != 0)   pVal = (lPar - iMeanFit->Eval(fZPt));
+    lH0->Fill(pVal);
+  }
+  iData = new RooDataHist("Data","Data",RooArgList(iVar),lH0);
+  iPdf  = new RooHistPdf ("HPdf","HPdf",iVar,*iData,0);
+  delete lH0;
+}
+*/
+
+void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
+//	      float &lPar, TF1 *iFit, TF1 *iFitS1=0, TF1 *iFitS2=0, TF1* iMeanFit=0,
+	      double &lPar, TF1 *iFit, TF1 *iFitS1=0, TF1 *iFitS2=0, TF1* iMeanFit=0,
+	      bool iPol1 = false, 
+	      bool iRMS  = false, int iType = 0) { 
+  //RooFit Build a double Gaussian
+  TRandom lRand(0xDEADBEEF);
+  RooRealVar    lRWeight("weight","weight",0,10);
+  RooRealVar lRPt  ("pt","Z_{p_{T}}",10,1000);
+  RooRealVar    lA1Sig("a1sig","a1sig",0.8,0,1); 
+  RooRealVar    lB1Sig("b1sig","b1sig",0. ,-0.1,0.1); 
+  RooRealVar    lC1Sig("c1sig","c1sig",0. ,-0.1,0.1);  //lC1Sig.setConstant(kTRUE);
+  RooRealVar    lD1Sig("d1sig","d1sig",0. ,-0.1,0.1);  lD1Sig.setConstant(kTRUE);
+  RooRealVar    lA2Sig("a2sig","a2sig",1.4,1,3); 
+  RooRealVar    lB2Sig("b2sig","b2sig",0.0 ,-0.1,0.1); 
+  RooRealVar    lC2Sig("c2sig","c2sig",0.0 ,-0.1,0.1);  //lC2Sig.setConstant(kTRUE);
+  RooRealVar    lD2Sig("d2sig","d2sig",0.0 ,-0.1,0.1);  lD2Sig.setConstant(kTRUE);
+  RooFormulaVar l1Sigma("sigma1","@0+@1*@3+@2*@3*@3+@4*@3*@3*@3",RooArgSet(lA1Sig,lB1Sig,lC1Sig,lRPt,lD1Sig));
+  RooFormulaVar l2Sigma("sigma2","@0+@1*@3+@2*@3*@3+@4*@3*@3*@3",RooArgSet(lA2Sig,lB2Sig,lC2Sig,lRPt,lD2Sig));
+  RooFormulaVar lFrac  ("frac"  ,"(@1-1.)/(@1-@0)",RooArgSet(l1Sigma,l2Sigma));
+  RooRealVar lR1Mean("mean","mean",0,-10,10); lR1Mean.setConstant(kTRUE);
+  //RooRealVar lFrac  ("frac","frac",0.8,0.,1);
+  RooRealVar lRXVar("XVar","(U_{1}(Z_{p_{T}})-x_{i})/#sigma_{U1} (Z_{p_{T}})",0,-5,5);
+  if(lPar!=fU1) lRXVar.SetTitle("(U_{2}(Z_{p_{T}})-x_{i})/#sigma_{U2} (Z_{p_{T}})");
+
+  RooGaussian   lGaus1("gaus1","gaus1",lRXVar,lR1Mean,l1Sigma);
+  RooGaussian   lGaus2("gaus2","gaus2",lRXVar,lR1Mean,l2Sigma);
+  RooAddPdf     lGAdd("Add","Add",lGaus1,lGaus2,lFrac);
+  RooRealVar    lR1Sigma("Rsigma1","RSigma1",8. ,0,40);
+  RooRealVar    lR2Sigma("Rsigma2","RSigma2",12.,1,40);
+  RooRealVar    lR1Frac ("Rfrac"  ,"Rfrac"  ,0.5,0,1);
+  RooRealVar    lR2Mean("Rmean",      "Rmean",0,-80,80); 
+  RooGaussian   lRGaus1("Rgaus1","Rgaus1",lRXVar,lR2Mean,lR1Sigma);
+  RooGaussian   lRGaus2("Rgaus2","Rgaus2",lRXVar,lR2Mean,lR2Sigma);
+  RooAddPdf     lRGAdd ("RAdd"  ,"RAdd",lRGaus1,lRGaus2,lR1Frac);
+  std::vector<float> lXVals;  std::vector<float> lYVals; std::vector<float> lYTVals;
+  std::vector<float> lXEVals; std::vector<float> lYEVals; 
+  //Fill values (if dealing with resolution we take difference from mean fit)
+
+  for(int i1 = 0; i1 <  iTree->GetEntries(); i1++) {
+  //    for(int i1 = 0; i1 <  1000; i1++) {
+    iTree->GetEntry(i1);
+
+    if(!runSelection()) continue;
+
+    if(!passId(fId)) continue;
+    //if(!passMatching()) continue;
+    //if(fPt2 > 30) fNJet++;
+    calculateU1U2(lPar,lPar==fU1);
+
+    /*
+    //MARIA cooment for now
+    ////    if(fNBTag > 0) continue;
+    if(iPol1 && fZPt > 50. && lPar == fU1 && lPar  > (47.5-0.95*fZPt) && iType == 0) continue; //Remove Diboson events at high pT
+    */
+
+    if(fZPt > fZPtMax) continue;
+    if(fMet > fMetMax) continue;
+    /* MARIA comment for now
+       if(fNJetSelect<2  && fNJet != fNJetSelect && fNJetSelect != -1) continue;
+       if(fNJetSelect==2 && fNJet<2) continue;
+    */
+    double pVal = lPar;
+    if(iRMS && iMeanFit != 0)   pVal = (lPar - iMeanFit->Eval(fZPt));
+    //if(iRMS && pVal > 0. && fU1 == lPar) {continue;}
+    if(fWeight == 0) continue;
+    lXVals.push_back(fZPt);  lXEVals.push_back(2.);
+    //if(iRMS && pVal < 0 && lPar == fU1) {
+    //  double lCorr = (lRand.Uniform(-1,1));
+    // lCorr = lCorr/fabs(lCorr);
+    //  pVal *= lCorr;
+    // }
+    double pWeight = fWeight;
+    if(fData) pWeight = 1;
+    (!iRMS) ? lYVals.push_back(pVal) : lYVals.push_back(fabs(pVal));
+    lYTVals.push_back(pVal); lYEVals.push_back(1./sqrt(pWeight));
+  }
+
+  iC->cd();
+  
+  //Basic Fit
+  //TGraphErrors *pGraphA = new TGraphErrors(lXVals.size(),(Float_t*)&(lXVals[0]),(Float_t*)&(lYVals[0]),(Float_t*)&(lXEVals[0]),(Float_t*)&(lYEVals[0]));
+  TGraph *pGraphA       = new TGraph      (lXVals.size(),(Float_t*)&(lXVals[0]),(Float_t*)&(lYVals[0]));
+  std::string lType     = "pol3"; if(iPol1) lType = "pol2"; //pol1 -->higgs 
+  if(iType == 1)  lType = "pol3"; 
+
+  TF1 *lFit = new TF1("test",lType.c_str()); //fZPtMax = 200;
+  //TFitResultPtr  lFitPtr = pGraphA->Fit(lFit,"SR","EXO",0,fZPtMax); //"EXO"
+  TFitResultPtr  lFitPtr = pGraphA->Fit(lFit,"SR","",0,fZPtMax); //"EXO"
+  computeFitErrors(iFit,lFitPtr,lFit,iRMS);
+  pGraphA->Draw("ap");
+  drawErrorBands(iFit,100);
+
+  if(!iRMS) return;
+
+  //Build the double gaussian dataset
+  std::vector<RooDataSet> lResidVals; 
+  std::vector<RooDataHist> lResidVals2D; 
+  std::stringstream pSS; pSS << "Crapsky" << 0;
+  pSS << "2D"; RooDataHist lData2D(pSS.str().c_str(),pSS.str().c_str(),RooArgSet(lRXVar,lRPt));
+  int lNBins = 10;
+  for(int i0  = 0; i0 < lNBins; i0++) { 
+    RooDataSet lData(pSS.str().c_str(),pSS.str().c_str(),RooArgSet(lRXVar)); lRPt.setBins(500);
+    lResidVals.push_back(lData); 
+  }
+  lResidVals2D.push_back(lData2D);
+  std::vector<float> lX3SVals; std::vector<float> lXE3SVals; std::vector<float> lY3SVals; std::vector<float> lYE3SVals; //Events with sigma > 3
+  std::vector<float> lX4SVals; std::vector<float> lXE4SVals; std::vector<float> lY4SVals; std::vector<float> lYE4SVals; //Events with sigma > 3
+  
+  for(unsigned int i0 = 0; i0 < lXVals.size(); i0++) { 
+    double lYTest = lFit->Eval(lXVals[i0])*sqrt(2*3.14159265)/2.;
+    lRXVar.setVal(lYTVals[i0]/(lYTest));
+    lRPt.setVal(lXVals[i0]);
+    lRWeight.setVal(1./lYEVals[i0]/lYEVals[i0]);
+    int pId = int(lXVals[i0]/(fZPtMax/lNBins)); if(pId > lNBins-1) pId = lNBins-1; 
+    lResidVals[pId].add(RooArgSet(lRXVar));//,lRWeight.getVal()); //Fill the Double Gaussian
+    lResidVals2D[0].add(RooArgSet(lRXVar,lRPt));//,lRWeight.getVal()); //Fill the Double Gaussian
+  }
+  RooFitResult *pFR = lGAdd.fitTo(lResidVals2D[0],Save(kTRUE),ConditionalObservables(lRPt),NumCPU(2),Minos());//,Minos());//,Minos()); //Double Gaussian fit
+
+  // MARIA something to add to the plots
+  TString leg = "#sigma_{mean} = ";   
+  //  leg += lY0[i0];
+  
+  TLatex latexLabel;    
+  latexLabel.SetTextSize(0.04);
+  latexLabel.SetNDC();
+  //    latexLabel.DrawLatex(0.2, 0.7, leg);
+  
+  TString leg1 = "NVtx ";  
+  if(fId == 1) leg1 += " = 0-12"; 
+  if(fId == 2) leg1 += " = 0-5";
+  if(fId == 3) leg1 += " = 5-10";
+  if(fId == 4) leg1 += " = 10-15";
+  if(fId == 5) leg1 += " = 15-20";
+  if(fId == 6) leg1 += " > 20";
+  
+  //Plot it all
+  lRXVar.setBins(100);
+  double *lX   = new double[lNBins];
+  double *lY0  = new double[lNBins];
+  double *lY1  = new double[lNBins];
+  double *lY2  = new double[lNBins];
+  double *lEX  = new double[lNBins];
+  double *lEY0 = new double[lNBins];
+  double *lEY1 = new double[lNBins];
+  double *lEY2 = new double[lNBins];
+  for(int i0  = 0; i0 < lNBins; i0++) { 
+    lRGAdd.fitTo(lResidVals[i0],Save(kTRUE),NumCPU(2));//,Minos());//,Minos()); //Double Gaussian fit
+    lRPt.setRange(i0*10,i0*10+10);
+    RooPlot *lFrame1 = lRXVar.frame(Title("XXX")) ;
+    //lResidVals2D[0].plotOn(lFrame1);
+    lResidVals [i0].plotOn(lFrame1,RooFit::MarkerColor(kRed));
+    lRGAdd.plotOn(lFrame1);
+    lRGAdd.plotOn(lFrame1,RooFit::Components(lRGaus1),RooFit::LineStyle(kDashed),RooFit::LineColor(kRed));
+    lRGAdd.plotOn(lFrame1,RooFit::Components(lRGaus2),RooFit::LineStyle(kDashed),RooFit::LineColor(kViolet));
+    iC->cd(); lFrame1->Draw();
+
+    //cin.get();    
+    lX[i0] = (fZPtMax/lNBins)*i0;
+    lEX[i0] = (fZPtMax/lNBins)/10;
+    lY0[i0] = (lR1Frac .getVal()*lR1Sigma.getVal() + (1.-lR1Frac.getVal())*lR2Sigma.getVal())/sqrt(2*3.14159265)*2.;
+    lY1[i0] = lR1Sigma.getVal()/sqrt(2*3.14159265)*2.;
+    lY2[i0] = lR2Sigma.getVal()/sqrt(2*3.14159265)*2.;
+    lEY0[i0]  = lR1Frac .getError()*lR1Sigma.getVal()  * lR1Frac .getError()*lR1Sigma.getVal();
+    lEY0[i0] += lR1Frac .getVal()  *lR1Sigma.getError()* lR1Frac .getVal()  *lR1Sigma.getError();
+    lEY0[i0] += lR1Frac .getError()*lR2Sigma.getVal()  * lR1Frac .getError()*lR2Sigma.getVal();
+    lEY0[i0] += (1-lR1Frac .getVal())*lR2Sigma.getError()* (1-lR1Frac .getVal())  *lR2Sigma.getError();
+    lEY0[i0] = sqrt(lEY0[i0])/sqrt(2*3.14159265)*2.;
+    lEY1[i0] = lR1Sigma.getError()/sqrt(2*3.14159265)*2.;
+    lEY2[i0] = lR2Sigma.getError()/sqrt(2*3.14159265)*2.;
+
+    latexLabel.DrawLatex(0.15, 0.8, leg1);
+
+    TString leg2 = "Zpt = ";  
+    if(i0 == 0) leg2 += "0-10"; 
+    if(i0 == 1) leg2 += "10-20"; 
+    if(i0 == 2) leg2 += "20-30"; 
+    if(i0 == 3) leg2 += "30-40"; 
+    if(i0 == 4) leg2 += "40-50"; 
+    if(i0 == 5) leg2 += "50-60"; 
+    if(i0 == 6) leg2 += "60-70"; 
+    if(i0 == 7) leg2 += "70-80"; 
+    if(i0 == 8) leg2 += "80-90"; 
+    if(i0 == 9) leg2 += "90-100"; 
+
+    latexLabel.DrawLatex(0.15, 0.7, leg2);
+
+    stringstream pSS1; 
+    if(lPar==fU1) {
+      if(fData) pSS1 << "Canvas_U1_"<< i0 << "_data_" << fNJetSelect << "_"<< fId << ".png";
+      if(!fData) pSS1 << "Canvas_U1_" << i0 << "_MC_" << fNJetSelect << "_"<< fId << ".png";
+    } else {
+      if(fData) pSS1 << "Canvas_U2_"<< i0 << "_data_" << fNJetSelect << "_"<< fId << ".png";
+      if(!fData) pSS1 << "Canvas_U2_" << i0 << "_MC_" << fNJetSelect << "_"<< fId << ".png";
+    }
+
+    iC->SaveAs(pSS1.str().c_str());
+
+  }
+
+  TGraphErrors *lG0 = new TGraphErrors(lNBins,lX,lY0,lEX,lEY0); lG0->SetMarkerStyle(kFullCircle);
+  TGraphErrors *lG1 = new TGraphErrors(lNBins,lX,lY1,lEX,lEY1); lG1->SetMarkerStyle(kFullCircle);
+  TGraphErrors *lG2 = new TGraphErrors(lNBins,lX,lY2,lEX,lEY2); lG2->SetMarkerStyle(kFullCircle);
+ 
+  if(lPar==fU1) lG0->GetYaxis()->SetTitle("U1 #sigma_{mean}"); 
+  if(lPar!=fU1) lG0->GetYaxis()->SetTitle("U2 #sigma_{mean}"); 
+  lG0->GetYaxis()->SetRangeUser(0.5,1.1);
+  lG1->GetYaxis()->SetRangeUser(0.,2.0);
+  lG2->GetYaxis()->SetRangeUser(0.,2.0);
+  lG1->GetYaxis()->SetTitle("#sigma_{1}"); 
+  lG2->GetYaxis()->SetTitle("#sigma_{2}"); 
+
+  lG0->GetXaxis()->SetTitle("Z p_{T}"); 
+  lG1->GetXaxis()->SetTitle("Z p_{T}"); 
+  lG2->GetXaxis()->SetTitle("Z p_{T}"); 
+ 
+  iC->cd();
+  TFitResultPtr  lFitPtr0 = lG0->Fit(lFit,"SR","EXO",0,fZPtMax); //"EXO"
+  computeFitErrors(iFitS1,lFitPtr0,lFit,iRMS);
+  lG0->Draw("ape");
+  drawErrorBands(iFit,200);
+  lG0->Draw("pe");
+  latexLabel.DrawLatex(0.15, 0.8, leg1);
+  stringstream pSS0;
+  if(lPar==fU1) { 
+    if(fData) pSS0 << "G0_U1" << "_data_" << fNJetSelect << "_"<< fId << ".png";
+    if(!fData) pSS0 << "G0_U1" << "_MC_" << fNJetSelect << "_"<< fId << ".png";
+  } else {
+    if(fData) pSS0 << "G0_U2" << "_data_" << fNJetSelect << "_"<< fId << ".png";
+    if(!fData) pSS0 << "G0_U2" << "_MC_" << fNJetSelect << "_"<< fId << ".png";
+  }
+
+  iC->SaveAs(pSS0.str().c_str());
+
+  //  iC->SaveAs("G0.png");
+  cin.get();
+  computeFitErrors(iFit,lFitPtr0,lFit,iRMS);
+  lG0->Draw("ape");
+  drawErrorBands(iFit,200);
+  lG0->Draw("pe");
+  latexLabel.DrawLatex(0.15, 0.8, leg1);
+
+  iC->SaveAs(pSS0.str().c_str());
+  //  iC->SaveAs("G0.png");
+  cin.get();
+
+  iC->cd();
+  TFitResultPtr  lFitPtr1 = lG1->Fit(lFit,"SR","",0,fZPtMax); //"EXO"
+  computeFitErrors(iFitS1,lFitPtr1,lFit,iRMS);
+  lG1->Draw("ape");
+  drawErrorBands(iFitS1,200);
+  lG1->Draw("pe");
+  latexLabel.DrawLatex(0.15, 0.8, leg1);
+
+  stringstream pG1;
+  if(lPar==fU1) {  
+    if(fData) pG1 << "pG1_U1" << "_data_" << fNJetSelect << "_"<< fId << ".png";
+    if(!fData) pG1 << "pG1_U1" << "_MC_" << fNJetSelect << "_"<< fId << ".png";
+  } else {
+    if(fData) pG1 << "pG1_U2" << "_data_" << fNJetSelect << "_"<< fId << ".png";
+    if(!fData) pG1 << "pG1_U2" << "_MC_" << fNJetSelect << "_"<< fId << ".png";
+  }
+    //  iC->SaveAs("G1.png");
+  iC->SaveAs(pG1.str().c_str());
+  cin.get();
+  
+  iC->cd();
+  TFitResultPtr  lFitPtr2 = lG2->Fit(lFit,"SR","",0,fZPtMax); //"EXO"
+  computeFitErrors(iFitS2,lFitPtr2,lFit,iRMS);
+  lG2->Draw("ape");
+  drawErrorBands(iFitS2,100);
+  lG2->Draw("pe");
+  latexLabel.DrawLatex(0.15, 0.8, leg1);
+
+  stringstream pG2; 
+  if(lPar==fU1) {
+    if(fData) pG2 << "pG2_U1" << "_data_" << fNJetSelect << "_"<< fId << ".png";
+    if(!fData) pG2 << "pG2_U1" << "_MC_" << fNJetSelect << "_"<< fId << ".png";
+  } else {
+    if(fData) pG2 << "pG2_U2" << "_data_" << fNJetSelect << "_"<< fId << ".png";
+    if(!fData) pG2 << "pG2_U2" << "_MC_" << fNJetSelect << "_"<< fId << ".png";
+  }
+
+  iC->SaveAs(pG2.str().c_str());
+  cin.get();
+  
+  return;
+
+  TMatrixDSym   lCov = pFR->covarianceMatrix();
+    
+    //Now Store each sigma of the double gaussian in a fit function
+    //lFit = new TF1("test","pol2");
+    iFitS1->SetParameter(0,lA1Sig.getVal()); iFitS1->SetParError(0,lA1Sig.getError()*lA1Sig.getError());
+                                             iFitS1->SetParError(1,2*(lCov)(0,2));
+    iFitS1->SetParameter(1,lB1Sig.getVal()); iFitS1->SetParError(2,lB1Sig.getError()*lB1Sig.getError());
+                                             iFitS1->SetParError(3,2*(lCov)(2,4));
+    iFitS1->SetParameter(2,lC1Sig.getVal()); iFitS1->SetParError(4,lC1Sig.getError()*lC1Sig.getError());
+                                             iFitS1->SetParError(5,2*(lCov)(0,4));
+    iFitS1->SetParameter(3,lD1Sig.getVal()); iFitS1->SetParError(6,lD1Sig.getError()*lD1Sig.getError());
+      
+    iFitS2->SetParameter(0,lA2Sig.getVal()); iFitS2->SetParError(0,lA2Sig.getError()*lA2Sig.getError());
+                                             iFitS2->SetParError(1,2*(lCov)(1,3));
+    iFitS2->SetParameter(1,lB2Sig.getVal()); iFitS2->SetParError(2,lB2Sig.getError()*lB2Sig.getError());
+                                             iFitS2->SetParError(3,2*(lCov)(3,5));
+    iFitS2->SetParameter(2,lC2Sig.getVal()); iFitS2->SetParError(4,lC2Sig.getError()*lC2Sig.getError());
+                                             iFitS2->SetParError(5,2*(lCov)(1,5));
+    iFitS2->SetParameter(3,lD2Sig.getVal()); iFitS2->SetParError(6,lD2Sig.getError()*lD2Sig.getError());
+}
+
+void fitRecoil(TTree * iTree, /*float &iVPar,*/ double &iVPar,
+	       TF1 *iMFit, TF1 *iMRMSFit, TF1 *iRMS1Fit, TF1 *iRMS2Fit,int iType) { 
+  TCanvas *lXC1 = new TCanvas("C1","C1",800,600); lXC1->cd(); 
+  fitGraph(iTree,fTTbar,lXC1,iVPar,iMFit   ,0       ,0       ,0    ,true ,false,iType);
+  fitGraph(iTree,fTTbar,lXC1,iVPar,iMRMSFit,iRMS1Fit,iRMS2Fit,iMFit,false,true ,iType);
+}
+
+void writeRecoil(TF1 *iU1Fit, TF1 *iU1MRMSFit, TF1 *iU1RMS1Fit, TF1 *iU1RMS2Fit,
+		 TF1 *iU2Fit, TF1 *iU2MRMSFit, TF1 *iU2RMS1Fit, TF1 *iU2RMS2Fit,
+		 std::string iName="recoilfit.root") {
+  TFile *lFile = new TFile(iName.c_str(),"UPDATE");
+  assert(iU1Fit);     iU1Fit    ->Write();
+  assert(iU2Fit);     iU2Fit    ->Write();
+  assert(iU1MRMSFit); iU1MRMSFit->Write();
+  assert(iU1RMS1Fit); iU1RMS1Fit->Write();
+  assert(iU1RMS2Fit); iU1RMS2Fit->Write();
+  assert(iU2MRMSFit); iU2MRMSFit->Write();
+  assert(iU2RMS1Fit); iU2RMS1Fit->Write();
+  assert(iU2RMS2Fit); iU2RMS2Fit->Write();
+  lFile->Close();
+  delete lFile;
+}
+
+/*
+void writeCorr(TF1 *iU1U2PFCorr, TF1 *iU1U2TKCorr, TF1 *iPFTKU1Corr, TF1 *iPFTKU2Corr, TF1 *iPFTKUM1Corr, TF1 *iPFTKUM2Corr, 
+	       std::string iName) {
+  TFile *lFile = new TFile((iName).c_str(),"UPDATE");
+  assert(iU1U2PFCorr);     iU1U2PFCorr->Write();
+  //assert(iU1U2TKCorr);     iU1U2TKCorr->Write();
+  //assert(iU1U2PFCorr);     iPFTKU1Corr->Write();
+  //assert(iU1U2TKCorr);     iPFTKU2Corr->Write();
+  //assert(iU1U2PFCorr);     iPFTKUM1Corr->Write();
+  //assert(iU1U2TKCorr);     iPFTKUM2Corr->Write();
+  lFile->Close();
+  delete lFile;
+}
+*/
+
+void fitRecoilMET(TTree *iTree,std::string iName,int type) { 
+  std::string lPrefix="PF"; if(type == 1) lPrefix = "TK";
+  load(iTree,type);
+  TF1 *lU1Fit     = new TF1((lPrefix+"u1Mean_0").c_str(),   "pol6");
+  TF1 *lU1MRMSFit = new TF1((lPrefix+"u1MeanRMS_0").c_str(),"pol6");
+  TF1 *lU1RMS1Fit = new TF1((lPrefix+"u1RMS1_0").c_str(),   "pol6");
+  TF1 *lU1RMS2Fit = new TF1((lPrefix+"u1RMS2_0").c_str(),   "pol6");
+  TF1 *lU2Fit     = new TF1((lPrefix+"u2Mean_0").c_str(),   "pol6");  
+  TF1 *lU2MRMSFit = new TF1((lPrefix+"u2MeanRMS_0").c_str(),"pol6");
+  TF1 *lU2RMS1Fit = new TF1((lPrefix+"u2RMS1_0").c_str(),   "pol6");
+  TF1 *lU2RMS2Fit = new TF1((lPrefix+"u2RMS2_0").c_str(),   "pol6");
+  fitRecoil(iTree,fU1,lU1Fit,lU1MRMSFit,lU1RMS1Fit,lU1RMS2Fit,type);
+  fitRecoil(iTree,fU2,lU2Fit,lU2MRMSFit,lU2RMS1Fit,lU2RMS2Fit,type);
+  writeRecoil(lU1Fit,lU1MRMSFit,lU1RMS1Fit,lU1RMS2Fit,lU2Fit,lU2MRMSFit,lU2RMS1Fit,lU2RMS2Fit,iName);
+}
+
+/*
+int readRecoil(std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,
+	       std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,
+	       std::string iFName,std::string iPrefix) {
+  TFile *lFile  = new TFile(iFName.c_str());
+  iU1Fit.push_back    ( (TF1*) lFile->FindObjectAny((iPrefix+"u1Mean_0").c_str()));
+  iU1MRMSFit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+"u1MeanRMS_0").c_str()));
+  iU1RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+"u1RMS1_0").c_str()));
+  iU1RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+"u1RMS2_0").c_str()));
+  iU2Fit    .push_back( (TF1*) lFile->FindObjectAny((iPrefix+"u2Mean_0").c_str()));
+  iU2MRMSFit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+"u2MeanRMS_0").c_str()));
+  iU2RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+"u2RMS1_0").c_str()));
+  iU2RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+"u2RMS2_0").c_str()));
+  lFile->Close();
+  return 1;
+}
+*/
+/*
+void makeCorr(TTree *iTree,std::string iName) { 
+  TCanvas *lXC1 = new TCanvas("C1","C1",800,600); lXC1->cd(); 
+  TF1 *lU1U2PFCorr = new TF1("u1u2pfCorr_0","pol6");
+  TF1 *lU1U2TKCorr = new TF1("u1u2tkCorr_0","pol6");
+  TF1 *lPFTKU1Corr = new TF1("pftku1Corr_0","pol6");
+  TF1 *lPFTKU2Corr = new TF1("pftku2Corr_0","pol6");
+  TF1 *lPFTKUM1Corr = new TF1("pftkum1Corr_0","pol6");
+  TF1 *lPFTKUM2Corr = new TF1("pftkum2Corr_0","pol6");
+
+  vector<TF1*>   lPFU1Fit; vector<TF1*> lPFU1RMSSMFit; vector<TF1*> lPFU1RMS1Fit; vector<TF1*> lPFU1RMS2Fit; 
+  vector<TF1*>   lPFU2Fit; vector<TF1*> lPFU2RMSSMFit; vector<TF1*> lPFU2RMS1Fit; vector<TF1*> lPFU2RMS2Fit; 
+  vector<TF1*>   lTKU1Fit; vector<TF1*> lTKU1RMSSMFit; vector<TF1*> lTKU1RMS1Fit; vector<TF1*> lTKU1RMS2Fit; 
+  vector<TF1*>   lTKU2Fit; vector<TF1*> lTKU2RMSSMFit; vector<TF1*> lTKU2RMS1Fit; vector<TF1*> lTKU2RMS2Fit; 
+  readRecoil(lPFU1Fit,lPFU1RMSSMFit,lPFU1RMS1Fit,lPFU1RMS2Fit,
+	     lPFU2Fit,lPFU2RMSSMFit,lPFU2RMS1Fit,lPFU2RMS2Fit,iName,"PF");
+  readRecoil(lTKU1Fit,lTKU1RMSSMFit,lTKU1RMS1Fit,lTKU1RMS2Fit,  
+	     lTKU2Fit,lTKU2RMSSMFit,lTKU2RMS1Fit,lTKU2RMS2Fit,iName,"TK");
+  load(iTree,2);
+  fitCorr(false,iTree,lXC1,fPFU1,fPFU2,lPFU1Fit[0],lPFU2Fit[0],lPFU1RMSSMFit[0],lPFU2RMSSMFit[0],lU1U2PFCorr);
+  //fitCorr(false,iTree,lXC1,fTKU1,fTKU2,lTKU1Fit[0],lTKU2Fit[0],lTKU1RMSSMFit[0],lTKU2RMSSMFit[0],lU1U2TKCorr);
+  //fitCorr(false,iTree,lXC1,fPFU1,fTKU1,lPFU1Fit[0],lTKU1Fit[0],lPFU1RMSSMFit[0],lTKU1RMSSMFit[0],lPFTKU1Corr);
+  //fitCorr(false,iTree,lXC1,fPFU2,fTKU2,lPFU2Fit[0],lTKU2Fit[0],lPFU2RMSSMFit[0],lTKU2RMSSMFit[0],lPFTKU2Corr);
+  //fitCorr(false,iTree,lXC1,fPFU1,fTKU2,lPFU1Fit[0],lTKU2Fit[0],lPFU1RMSSMFit[0],lTKU2RMSSMFit[0],lPFTKUM1Corr);
+  //fitCorr(false,iTree,lXC1,fPFU2,fTKU1,lPFU2Fit[0],lTKU1Fit[0],lPFU2RMSSMFit[0],lTKU1RMSSMFit[0],lPFTKUM2Corr);
+  writeCorr(lU1U2PFCorr,lU1U2TKCorr,lPFTKU1Corr,lPFTKU2Corr,lPFTKUM1Corr,lPFTKUM2Corr,iName);
+}
+*/
+
+void fitRecoil(TTree *iTree,std::string iName) { 
+  fitRecoilMET(iTree,iName,2);
+  //  fitRecoilMET(iTree,iName,0);
+  //fitRecoilMET(iTree,iName,1); 
+  //makeCorr(iTree,iName);
+}
+
+void runRecoilFit_v6(int MCtype) { 
+  //  Prep();
+
+  gStyle->SetOptFit(111111);
+
+  if(MCtype==1) {
+
+    cout << "PROCESSING DY MC " << endl;
+    //  fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
+    fData = false; fId = 1;
+    //    fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_Z_inc_1.root");
+    fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_genZ_inc_1.root");
+  }
+
+  if(MCtype==2) {
+
+    cout << "PROCESSING DY MC " << endl;
+    //  fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
+    fData = false; fId = 2;
+    fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_Z_inc_2.root");
+  }
+
+
+  if(MCtype==3) {
+
+    cout << "PROCESSING DY MC " << endl;
+    //  fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
+    fData = false; fId = 3;
+    fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_Z_inc_3.root");
+  }
+
+
+  if(MCtype==4) {
+
+    cout << "PROCESSING DY MC " << endl;
+    //  fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
+    fData = false; fId = 4;
+    fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_Z_inc_4.root");
+  }
+
+  if(MCtype==5) {
+
+    cout << "PROCESSING DY MC " << endl;
+    //  fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
+    fData = false; fId = 5;
+    fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_Z_inc_5.root");
+  }
+
+  if(MCtype==6) {
+
+    cout << "PROCESSING DY MC " << endl;
+    //  fDataFile = new TFile("~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/WJets/WTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DYJets/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
+    fData = false; fId = 6;
+    fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_Z_inc_6.root");
+  }
+
+  ////////
+  ////////
+
+  if(MCtype==10) {
+    cout << "PROCESSING DY DATA " << endl;
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DATA/ZTreeProducer_tree_RecoSkimmed.root");
+    fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
+    fData = true; fId = 1;
+    fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_DATA.root");
+  }
+
+  if(MCtype==12) {
+    cout << "PROCESSING DY DATA " << endl;
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DATA/ZTreeProducer_tree_RecoSkimmed.root");
+    fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
+    fData = true; fId = 2;
+    fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_DATA_2.root");
+  }
+
+
+  if(MCtype==13) {
+    cout << "PROCESSING DY DATA " << endl;
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DATA/ZTreeProducer_tree_RecoSkimmed.root");
+    fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
+    fData = true; fId = 3;
+    fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_DATA_3.root");
+  }
+
+
+  if(MCtype==14) {
+    cout << "PROCESSING DY DATA " << endl;
+    fDataFile = TFile::Open("root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/DATA/ZTreeProducer_tree_RecoSkimmed.root");
+    fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
+    fData = true; fId = 4;
+    fNJetSelect = -1; fMetMax = 4000; fZPtMax = 100; fitRecoil(fDataTree,"recoilfits/recoilfit_DATA_4.root");
+  }
+
+  //fNJetSelect =  0; fMetMax = 4000; fZPtMax = 90;   fitRecoil(fDataTree,"recoilfits/recoilfit_zjets_ltau_0jet.root");
+  //fNJetSelect =  1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zjets_ltau_1jet.root");
+  //fNJetSelect =  2; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zjets_ltau_2jet.root");
+  //fId = 2; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_higgs_01jet.root");
+  //fId = 3; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_higgs_boost.root");
+  //fId = 4; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_higgs_vbf.root");
+  //fId = 5; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_higgs_btag.root");
+  //fId = 6; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_higgs_nbtag.root");
+  //delete fDataFile;
+  //return;
+
+  //fDataFile = new TFile("ZSummary/ZMMMC_v3.root"); fId = -1; 
+  //fDataTree = (TTree*) fDataFile->FindObjectAny("Flat");
+  //fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm42X_2011b_inc.root");
+  //fNJetSelect =  0; fMetMax = 4000; fZPtMax = 90;   fitRecoil(fDataTree,"recoilfits/recoilfit_zmm42X_2011b_0jet.root");
+  //fNJetSelect =  1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm42X_2011b_1jet.root");
+  //fNJetSelect =  2; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm42X_2011b_2jet.root");
+  //fId = -2; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm42X_2011b_01jet.root");
+  //fId = -3; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm42X_2011b_boost.root");
+  //fId = -4; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm42X_2011b_vbf.root");
+  //fId = -5; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm42X_2011b_btag.root");
+  //fId = -6; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm42X_2011b_nbtag.root");
+  //delete fDataFile;
+  //return;
+
+  //fDataFile = new TFile("ZSummary/ZMMMC_v3.root"); fId = 0; 
+  //fDataTree = (TTree*) fDataFile->FindObjectAny("Flat");
+  //fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm42X_inc.root");
+  //fNJetSelect =  0; fMetMax = 4000; fZPtMax = 90;   fitRecoil(fDataTree,"recoilfits/recoilfit_zmm42X_0jet.root");
+  //fNJetSelect =  1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm42X_1jet.root");
+  //fNJetSelect =  2; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm42X_2jet.root");
+  //fId = 2; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm42X_01jet.root");
+  //fId = 3; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm42X_boost.root");
+  //fId = 4; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm42X_vbf.root");
+  //fId = 5; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm42X_btag.root");
+  //fId = 6; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm42X_nbtag.root");
+  //delete fDataFile;
+  //return;
+
+  //fDataFile = new TFile("ZSummary/ZMM_A.root"); 
+  //fDataTree = (TTree*) fDataFile->FindObjectAny("Flat"); fData = true; fId = 0;
+  //fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_2011a_inc.root");
+  //fNJetSelect =  0; fMetMax = 4000; fZPtMax = 90;   fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_2011a_0jet.root");
+  //fNJetSelect =  1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_2011a_1jet.root");
+  //fNJetSelect =  2; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_2011a_2jet.root");  
+  //fId = 2; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_2011a_01jet.root");
+  //fId = 3; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_2011a_boost.root");
+  //fId = 4; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_2011a_vbf.root");
+  //fId = 5; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_2011a_btag.root");
+  //fId = 6; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_2011a_nbtag.root");
+  //delete fDataFile;
+  
+
+  //fDataFile = new TFile("ZSummary/ZMM_B.root");
+  //fDataTree = (TTree*) fDataFile->FindObjectAny("Flat"); fData = true; fId = 0;
+  //fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_2011b_inc.root");
+  //fNJetSelect =  0; fMetMax = 4000; fZPtMax = 90;   fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_2011b_0jet.root");
+  //fNJetSelect =  1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_2011b_1jet.root");
+  //fNJetSelect =  2; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_2011b_2jet.root");  
+  //fId = 2; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_2011b_01jet.root");
+  //fId = 3; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_2011b_boost.root");
+  //fId = 4; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_2011b_vbf.root");
+  //fId = 5; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_2011b_btag.root");
+  //fId = 6; fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_2011b_nbtag.root");
+  //delete fDataFile;
+  
+  //fTTbarFile = new TFile("../Training/FullTrain/s12-ttj_53_data_mc.root");
+  //fTTbar     = (TTree*) fTTbarFile->FindObjectAny("Flat"); 
+  //fDataFile = new TFile("../../Htt/Data/s12-wjets_v3_select.root");
+  //fDataTree = (TTree*) fDataFile->FindObjectAny("Flat"); fData = true; fId = 0;
+  //fId =  0; fNJetSelect =  0; fMetMax = 4000; fZPtMax =  70;  fitRecoil(fDataTree,"recoilfits/recoilfit_wjets53X_20pv_0jet.root");
+  //fId =  0; fNJetSelect =  1; fMetMax = 4000; fZPtMax = 200;  fitRecoil(fDataTree,"recoilfits/recoilfit_wjets53X_20pv_1jet.root");
+  //fId =  0; fNJetSelect =  2; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_wjets53X_20pv_2jet.root");
+  //delete fDataFile;
+
+  // fDataFile = new TFile("../../Htt/Data/s12-higgs_v5.root");
+  // fDataTree = (TTree*) fDataFile->FindObjectAny("Flat"); fData = true; fId = 0;
+  // fId =  0; fNJetSelect =  0; fMetMax = 4000; fZPtMax =  70;  fitRecoil(fDataTree,"recoilfits/recoilfit_higgs53X_20pv_0jet.root");
+  // fId =  0; fNJetSelect =  1; fMetMax = 4000; fZPtMax = 200;  fitRecoil(fDataTree,"recoilfits/recoilfit_higgs53X_20pv_1jet.root");
+  // fId =  0; fNJetSelect =  2; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_higgs53X_20pv_2jet.root");
+
+
+  //fDataFile = new TFile("../Training/FullTrain/s12-zjets_53_data_mc_full.root");
+  //fDataTree = (TTree*) fDataFile->FindObjectAny("Flat"); fData = true; fId = 0;
+  //fId =  0; fNJetSelect =  0; fMetMax = 4000; fZPtMax =  70;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm53X_20pv_0jet.root");
+  //fId =  0; fNJetSelect =  1; fMetMax = 4000; fZPtMax = 200;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm53X_20pv_1jet.root");
+  //fId =  0; fNJetSelect =  2; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_zmm53X_20pv_2jet.root");
+  //delete fDataFile;
+  
+  //fDataFile = new TFile("../Training/FullTrain/r12-dimu_53_data_mc_cov.root");
+  //fDataTree = (TTree*) fDataFile->FindObjectAny("Flat"); fData = true; fId = 0;
+  //fId =  0; fNJetSelect =  0; fMetMax = 4000; fZPtMax =  70;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm53X_20pv_0jett.root");
+  //fId =  0; fNJetSelect =  1; fMetMax = 4000; fZPtMax = 200;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm53X_20pv_1jet.root");
+  //fId =  0; fNJetSelect =  2; fMetMax = 4000; fZPtMax = 500;  fitRecoil(fDataTree,"recoilfits/recoilfit_datamm53X_20pv_2jet.root");
+  //delete fDataFile;
+  return;
+
+  //fDataFile = new TFile("../Valentina/l_tau/zjets_mtau.root");
+  //fDataTree = (TTree*) fDataFile->FindObjectAny("Flat");
+  ///fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500; fitRecoil(fDataTree,"recoilfits/recoilfit_zjets_inc.root");
+  //fNJetSelect = 0; fMetMax = 4000; fZPtMax = 90;  fitRecoil(fDataTree,"recoilfits/recoilfit_zjets_0jet.root");
+  //fNJetSelect = 1; fMetMax = 4000; fZPtMax = 500; fitRecoil(fDataTree,"recoilfits/recoilfit_zjets_1jet.root");
+  //fNJetSelect = 2; fMetMax = 4000; fZPtMax = 500; fitRecoil(fDataTree,"recoilfits/recoilfit_zjets_2jet.root");
+  //delete fDataFile;
+  //return;
+
+  fDataFile = new TFile("higgs_flat_v2.root");
+  fDataTree = (TTree*) fDataFile->FindObjectAny("Flat");
+  fNJetSelect = -1; fMetMax = 4000; fZPtMax = 500; fitRecoil(fDataTree,"recoilfits/recoilfit_higgs_inc.root");
+  fNJetSelect = 0; fMetMax = 4000; fZPtMax = 90;  fitRecoil(fDataTree,"recoilfits/recoilfit_higgs_0jet.root");
+  fNJetSelect = 1; fMetMax = 4000; fZPtMax = 500; fitRecoil(fDataTree,"recoilfits/recoilfit_higgs_1jet.root");
+  fNJetSelect = 2; fMetMax = 4000; fZPtMax = 500; fitRecoil(fDataTree,"recoilfits/recoilfit_higgs_2jet.root");
+  delete fDataFile;
+  return;
+
+  fDataFile = new TFile("ntuples/data_select.root");
+  fDataTree = (TTree*) fDataFile->FindObjectAny("Events");
+  fNJetSelect = -1; fMetMax = 4000; fZPtMax = 1000; fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_inc.root");
+  return;
+}

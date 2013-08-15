@@ -1,0 +1,8 @@
+<use name="rootcintex"/>
+<use name="rootrflx"/>
+<use name="roofitcore"/>
+<use name="PhysicsTools/KinFitter"/>
+<export>
+  <lib   name="1"/>
+</export>
+

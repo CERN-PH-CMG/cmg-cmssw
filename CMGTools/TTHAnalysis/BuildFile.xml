@@ -1,0 +1,13 @@
+<use name="AnalysisDataFormats/CMGTools"/>
+<use name="CommonTools/Utils"/>
+<use name="TrackingTools/IPTools"/>
+<use name="MagneticField/UniformEngine"/>
+<use name="EgammaAnalysis/ElectronTools"/>
+<use name="SimDataFormats/GeneratorProducts"/>
+<use name="rootrflx"/>
+<use name="roottmva"/>
+<use name="lhapdf"/>
+<flags LDFLAGS="$(CMSSW_RELEASE_BASE)/lib/slc5_amd64_gcc462/pluginMagneticFieldParametrizedEnginePlugins.so" />
+<export>
+  <lib   name="1"/>
+</export>
