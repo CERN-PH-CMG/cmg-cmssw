@@ -10,6 +10,7 @@ from CMGTools.H2TauTau.proto.samples.run2012.embed import *
 from CMGTools.H2TauTau.proto.samples.run2012.ewk import *
 from CMGTools.H2TauTau.proto.samples.run2012.diboson import *
 from CMGTools.H2TauTau.proto.samples.run2012.higgs import *
+from CMGTools.H2TauTau.proto.samples.run2012.higgs_susy import *
 
 from CMGTools.H2TauTau.proto.samples.run2012.triggers_tauMu import data_triggers, mc_triggers, embed_triggers
 
@@ -18,6 +19,8 @@ aliases = {
     '/VBFHToTauTau.*START53.*':'HiggsVBF',
     '/GluGluToHToTauTau.*START53.*':'HiggsGGH',
     '/WH_ZH_TTH_HToTauTau.*START53.*':'HiggsVH',
+    '/SUSYBB.*START53.*':'HiggsSUSYBB',
+    '/SUSYGluGluTo.*START53.*':'HiggsSUSYGluGlu',
     '/DYJets.*START53.*':'DYJets',
     '/DY1JetsToLL_M-50_TuneZ2Star_8TeV-madgraph.*START53.*':'DY1Jets',
     '/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph.*START53.*':'DY2Jets',
@@ -49,13 +52,9 @@ aliases = {
     '/ZZJetsTo2L2Q.*START53.*':'ZZJetsTo2L2Q',
     '/ZZJetsTo4L.*START53.*':'ZZJetsTo4L',
     '/DoubleMu/StoreResults-Run2012A_22Jan2013_v1_PFembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012A_22Jan',
-    '/DoubleMuParked/StoreResults-Run2012D_22Jan2013_v1_PFembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012B_22Jan',
+    '/DoubleMuParked/StoreResults-Run2012B_22Jan2013_v1_PFembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012B_22Jan',
     '/DoubleMuParked/StoreResults-Run2012C_22Jan2013_v1_PFembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012C_22Jan',
-    '/DoubleMuParked/StoreResults-Run2012B_22Jan2013_v1_PFembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012D_22Jan',
-    # '/DoubleMu/StoreResults-Run2012A_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012A_22Jan',
-    # '/DoubleMuParked/StoreResults-Run2012D_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012B_22Jan',
-    # '/DoubleMuParked/StoreResults-Run2012C_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012C_22Jan',
-    # '/DoubleMuParked/StoreResults-Run2012B_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012D_22Jan',
+    '/DoubleMuParked/StoreResults-Run2012D_22Jan2013_v1_PFembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012D_22Jan',
     }
 
 
@@ -66,13 +65,18 @@ mc_ewk += mc_dy
 MC_list = copy.copy( mc_ewk )
 
 MC_list.extend( mc_higgs )
+MC_list.extend( mc_higgs_susy )
 # MC_list.extend( mc_diboson ) 
     
 allsamples = copy.copy( MC_list )
-# allsamples.extend( data_list )
-allsamples.extend( embed_list )
 
 connect( allsamples, '%TAUMU_SVFitVEGAS_TESDown_Aug02_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
+connect( embed_list, '%TAUMU_SVFitVEGASTESDown_Aug07_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
+# Import the non-shifted data such that the plotting scripts know the integrated luminosity
+connect( data_list, '%TAUMU_SVFitVEGAS_Jul29_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
+
+allsamples.extend( embed_list )
+allsamples.extend( data_list )
 
 # Attach number of generated events for stitching
 dy_nevents = [ DYJets.nGenEvents,
@@ -94,8 +98,9 @@ w_nevents = [ WJets.nGenEvents,
 for w in mc_w:
     w.nevents = w_nevents
 
+print [(s.name, s.dataset_entries) for s in allsamples if s.dataset_entries]
+print [(s.name, s.dataset_entries) for s in allsamples if not s.dataset_entries]
 
-print [(s.name, s.dataset_entries) for s in allsamples]
 for mc in MC_list:
     mc.triggers = mc_triggers
     # allsamples.append(mc)

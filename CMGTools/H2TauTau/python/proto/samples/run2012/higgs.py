@@ -440,11 +440,20 @@ for h in mc_higgs:
     process = m.group(1)
     mass = float(m.group(2))
     xSection = 0.
-    if process=='VH':
-        xSection += yrparser8TeV.get(mass)['WH']['sigma']
-        xSection += yrparser8TeV.get(mass)['ZH']['sigma']
-    else:
-        xSection += yrparser8TeV.get(mass)[process]['sigma']
+    try:
+        if process=='VH':
+            xSection += yrparser8TeV.get(mass)['WH']['sigma']
+            xSection += yrparser8TeV.get(mass)['ZH']['sigma']
+        else:
+            xSection += yrparser8TeV.get(mass)[process]['sigma']
+    except KeyError:
+        print 'Higgs mass', mass, 'not found in cross section tables. Interpolating linearly at +- 1 GeV...'
+        if process=='VH':
+            xSection += 0.5 * (yrparser8TeV.get(mass-1.)['WH']['sigma'] + xSection + yrparser8TeV.get(mass+1.)['WH']['sigma'])
+            xSection += 0.5 * (yrparser8TeV.get(mass-1.)['ZH']['sigma'] + yrparser8TeV.get(mass+1.)['ZH']['sigma'])
+        else:
+            xSection += 0.5 * (yrparser8TeV.get(mass-1.)[process]['sigma'] + yrparser8TeV.get(mass+1.)[process]['sigma'])
+
     br = yrparser8TeV.get(mass)['H2F']['tautau']
     h.xSection = xSection*br
     h.branchingRatio = br

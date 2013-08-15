@@ -10,6 +10,7 @@ from CMGTools.H2TauTau.proto.samples.run2012.embed import *
 from CMGTools.H2TauTau.proto.samples.run2012.ewk import *
 from CMGTools.H2TauTau.proto.samples.run2012.diboson import *
 from CMGTools.H2TauTau.proto.samples.run2012.higgs import *
+from CMGTools.H2TauTau.proto.samples.run2012.higgs_susy import *
 
 from CMGTools.H2TauTau.proto.samples.run2012.triggers_tauEle import data_triggers, mc_triggers, embed_triggers
 
@@ -18,6 +19,8 @@ aliases = {
     '/VBFHToTauTau.*START53.*':'HiggsVBF',
     '/GluGluToHToTauTau.*START53.*':'HiggsGGH',
     '/WH_ZH_TTH_HToTauTau.*START53.*':'HiggsVH',
+    '/SUSYBB.*START53.*':'HiggsSUSYBB',
+    '/SUSYGluGluTo.*START53.*':'HiggsSUSYGluGlu',
     '/DYJets.*START53.*':'DYJets',
     '/DY1JetsToLL_M-50_TuneZ2Star_8TeV-madgraph.*START53.*':'DY1Jets',
     '/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph.*START53.*':'DY2Jets',
@@ -61,13 +64,15 @@ mc_ewk += mc_dy
 
 MC_list = copy.copy( mc_ewk )
 MC_list.extend( mc_higgs )
+MC_list.extend( mc_higgs_susy )
 # MC_list.extend( mc_diboson ) 
     
 allsamples = copy.copy( MC_list )
 # allsamples.extend( data_list )
+
 allsamples.extend( embed_list )
 
-connect( allsamples, '%TAUELE_SVFitNoESTauESDown_Jul25%', 'tauEle.*root', aliases, cache=True, verbose=False)
+connect( allsamples, '%TAUELE_SVFitVEGASTESDown_Aug12%', 'tauEle.*root', aliases, cache=True, verbose=False)
 
 
 

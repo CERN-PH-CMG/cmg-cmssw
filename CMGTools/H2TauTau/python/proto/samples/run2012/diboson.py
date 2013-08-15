@@ -103,9 +103,9 @@ mc_diboson = [
     ZZJetsTo2L2Nu,
     ZZJetsTo2L2Q,
     ZZJetsTo4L,
-    WW,
-    WZ,
-    ZZ
+    # WW,
+    # WZ,
+    # ZZ
     ]
 
 

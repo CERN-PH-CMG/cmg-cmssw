@@ -73,6 +73,30 @@ W3Jets = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+W1Jets_ext = cfg.MCComponent(
+    name = 'W1Jets_ext',
+    files = [],
+    xSection = 6440.4, #PG inclusive scaled according to LO XS
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
+W2Jets_ext = cfg.MCComponent(
+    name = 'W2Jets_ext',
+    files = [],
+    xSection = 2087.2, #PG inclusive scaled according to LO XS
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
+W3Jets_ext = cfg.MCComponent(
+    name = 'W3Jets_ext',
+    files = [],
+    xSection = 619.0, #PG inclusive scaled according to LO XS
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
 W4Jets = cfg.MCComponent(
     name = 'W4Jets',
     files = [],
@@ -147,8 +171,14 @@ mc_w = [
     W4Jets,
     ]
 
+mc_w_ext = [
+    W1Jets_ext,
+    W2Jets_ext,
+    W3Jets_ext,
+    ]
+
 t_mc_ewk = [
-    TTJets,
+    # TTJets,
     T_tW,
     Tbar_tW,
     TTJetsFullLept,
@@ -191,7 +221,6 @@ w_fractions = [ 0.74392452,
                 0.00692218
                 ]
 
-for w in mc_w:
+for w in mc_w + mc_w_ext:
     w.fractions = w_fractions
 
-#COLIN: need to do the same for WJets

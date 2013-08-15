@@ -10,6 +10,7 @@ from CMGTools.H2TauTau.proto.samples.run2012.embed import *
 from CMGTools.H2TauTau.proto.samples.run2012.ewk import *
 from CMGTools.H2TauTau.proto.samples.run2012.diboson import *
 from CMGTools.H2TauTau.proto.samples.run2012.higgs import *
+from CMGTools.H2TauTau.proto.samples.run2012.higgs_susy import *
 
 from CMGTools.H2TauTau.proto.samples.run2012.triggers_tauMu import data_triggers, mc_triggers, embed_triggers
 
@@ -18,17 +19,22 @@ aliases = {
     '/VBFHToTauTau.*START53.*':'HiggsVBF',
     '/GluGluToHToTauTau.*START53.*':'HiggsGGH',
     '/WH_ZH_TTH_HToTauTau.*START53.*':'HiggsVH',
+    '/SUSYBB.*START53.*':'HiggsSUSYBB',
+    '/SUSYGluGluTo.*START53.*':'HiggsSUSYGluGlu',
     '/DYJets.*START53.*':'DYJets',
     '/DY1JetsToLL_M-50_TuneZ2Star_8TeV-madgraph.*START53.*':'DY1Jets',
     '/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph.*START53.*':'DY2Jets',
     '/DY3JetsToLL_M-50_TuneZ2Star_8TeV-madgraph.*START53.*':'DY3Jets',
     '/DY4JetsToLL_M-50_TuneZ2Star_8TeV-madgraph.*START53.*':'DY4Jets',
     # '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START53_V9-v1.*':'WJets',
-    '/WJets.*START53.*':'WJets',
-    '/W1Jets.*START53.*':'W1Jets',
-    '/W2Jets.*START53.*':'W2Jets',
-    '/W3Jets.*START53.*':'W3Jets',
-    '/W4Jets.*START53.*':'W4Jets',
+    '/WJets.*START53_V7.*':'WJets',
+    '/W1Jets.*START53_V7.*':'W1Jets',
+    '/W2Jets.*START53_V7.*':'W2Jets',
+    '/W3Jets.*START53_V7.*':'W3Jets',
+    '/W4Jets.*START53_V7.*':'W4Jets',
+    '/W1Jets.*START53_V19.*':'W1Jets_ext',
+    '/W2Jets.*START53_V19.*':'W2Jets_ext',
+    '/W3Jets.*START53_V19.*':'W3Jets_ext',
     '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV.*START53.*':'TTJets',
     '/TTJets_FullLeptMGDecays_8TeV.*START53.*':'TTJetsFullLept',
     '/TTJets_SemiLeptMGDecays_8TeV.*START53.*':'TTJetsSemiLept',
@@ -49,9 +55,9 @@ aliases = {
     '/ZZJetsTo2L2Q.*START53.*':'ZZJetsTo2L2Q',
     '/ZZJetsTo4L.*START53.*':'ZZJetsTo4L',
     '/DoubleMu/StoreResults-Run2012A_22Jan2013_v1_PFembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012A_22Jan',
-    '/DoubleMuParked/StoreResults-Run2012D_22Jan2013_v1_PFembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012B_22Jan',
+    '/DoubleMuParked/StoreResults-Run2012B_22Jan2013_v1_PFembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012B_22Jan',
     '/DoubleMuParked/StoreResults-Run2012C_22Jan2013_v1_PFembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012C_22Jan',
-    '/DoubleMuParked/StoreResults-Run2012B_22Jan2013_v1_PFembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012D_22Jan',
+    '/DoubleMuParked/StoreResults-Run2012D_22Jan2013_v1_PFembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012D_22Jan',
     # '/DoubleMu/StoreResults-Run2012A_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012A_22Jan',
     # '/DoubleMuParked/StoreResults-Run2012D_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012B_22Jan',
     # '/DoubleMuParked/StoreResults-Run2012C_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1.*':'embed_Run2012C_22Jan',
@@ -63,17 +69,23 @@ mc_ewk = []
 mc_ewk += mc_dy
 mc_ewk += t_mc_ewk
 mc_ewk += mc_w
+mc_ewk += mc_w_ext
 
 MC_list = copy.copy( mc_ewk )
 
 MC_list.extend( mc_higgs )
+MC_list.extend( mc_higgs_susy )
 MC_list.extend( mc_diboson ) 
     
 allsamples = copy.copy( MC_list )
 allsamples.extend( data_list )
-allsamples.extend( embed_list )
+# allsamples.extend( embed_list )
 
 connect( allsamples, '%TAUMU_SVFitVEGAS_Jul29_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
+
+connect( embed_list, '%TAUMU_SVFitVEGAS_Aug07_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
+
+allsamples.extend( embed_list )
 
 # Attach number of generated events for stitching
 dy_nevents = [ DYJets.nGenEvents,
@@ -87,16 +99,17 @@ for dy in mc_dy:
 
 # Attach number of generated events for stitching
 w_nevents = [ WJets.nGenEvents,
-               W1Jets.nGenEvents,
-               W2Jets.nGenEvents,
-               W3Jets.nGenEvents,
+               W1Jets.nGenEvents+W1Jets_ext.nGenEvents,
+               W2Jets.nGenEvents+W2Jets_ext.nGenEvents,
+               W3Jets.nGenEvents+W3Jets_ext.nGenEvents,
                W4Jets.nGenEvents
                ]
-for w in mc_w:
+for w in mc_w+mc_w_ext:
     w.nevents = w_nevents
 
+print [(s.name, s.dataset_entries) for s in allsamples if s.dataset_entries]
+print [(s.name, s.dataset_entries) for s in allsamples if not s.dataset_entries]
 
-print [(s.name, s.dataset_entries) for s in allsamples]
 for mc in MC_list:
     mc.triggers = mc_triggers
     # allsamples.append(mc)
