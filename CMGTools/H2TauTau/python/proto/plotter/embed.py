@@ -1,10 +1,11 @@
 import copy
 
 from ROOT import TChain, TH1F
-from CMGTools.H2TauTau.proto.plotter.categories_TauMu import *
+from CMGTools.H2TauTau.proto.plotter.categories_TauMu import cat_Inc
+from CMGTools.H2TauTau.proto.plotter.categories_TauEle import cat_Inc as cat_Inc_Ele
 
 
-def embedScaleFactor(selComps):
+def embedScaleFactor(selComps, channel='TauMu'):
     embedChain = TChain()
     zttChain = None
     for comp in selComps.values():
@@ -17,7 +18,10 @@ def embedScaleFactor(selComps):
             embedChain.Add(comp.tree)
         elif comp.name=='Ztt':
             zttChain = comp.tree
-    cut = cat_Inc + ' && diTau_charge==0'
+    cut = cat_Inc 
+    if channel == 'TauEle':
+        cut = cat_Inc_Ele
+    cut += ' && diTau_charge==0'
     embcut = cut 
     zttcut = ' && '.join( [cut, 'isFake==0'] )
     eh = TH1F('eh','eh', 100, 0, 2000)
@@ -28,6 +32,9 @@ def embedScaleFactor(selComps):
     embedChain.Project('eh', 'visMass', '({cut})*weight'.format(cut=embcut))
     zttChain.Project('zh', 'visMass', '({cut})*weight'.format(cut=zttcut))
     factor = zh.Integral()/eh.Integral()
+
+    print 'Integral Z', zh.Integral()
+    print 'Integral emb', eh.Integral()
     return eh, zh, factor
 
 

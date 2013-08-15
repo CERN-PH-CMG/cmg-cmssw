@@ -58,7 +58,8 @@ plots_All = {
     
     }
 
-plots_All_sorted_indices = ['l2_pt',
+plots_All_sorted_indices = [
+    'l2_pt',
     'l2_eta',
     'l2_relIso05',
     'l2_charge',

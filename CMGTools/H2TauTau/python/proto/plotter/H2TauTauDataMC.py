@@ -1,6 +1,7 @@
 import os
 from fnmatch import fnmatch
 import copy
+import re
 
 from ROOT import TFile, TH1F, TPaveText
 
@@ -180,7 +181,12 @@ class H2TauTauDataMC( AnalysisDataMC ):
                                      self.cut + ' && isFake==3', layer)
                 self.Hist(fakeCompName).realName =  comp.realName + '_TL'
                 self.weights[fakeCompName] = self.weights[compName]
-
+            # Add gen mass cut a la full hadronic
+            elif 'HiggsSUSY' in compName :
+                mA = re.findall(r"\d{2,4}", compName)
+                gen_mass_cut = ' && genMass>{M}*0.7 && genMass<{M}*1.3 '.format(M=mA[0])
+                self._BuildHistogram(tfile, comp, compName, self.varName,
+                                     self.cut + gen_mass_cut, layer )
             else:
                 self._BuildHistogram(tfile, comp, compName, self.varName,
                                      self.cut, layer )     

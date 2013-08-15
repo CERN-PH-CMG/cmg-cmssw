@@ -8,7 +8,7 @@ from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC import H2TauTauDataMC
 from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents
 from CMGTools.H2TauTau.proto.plotter.rootutils import *
-from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass_finer, binning_svfitMass
+from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass_finer, binning_svfitMass, binning_svfitMass_mssm2013, binning_svfitMass_mssm, binning_svfitMass_mssm_nobtag
 from CMGTools.H2TauTau.proto.plotter.titles import xtitles
 from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
@@ -111,10 +111,6 @@ if __name__ == '__main__':
                       help="Set batch mode.",
                       action="store_true",
                       default=False)
-    parser.add_option("-p", "--prefix", 
-                      dest="prefix", 
-                      help="Prefix for the root files, eg. MC to get MC_eleTau_vbf.root",
-                      default=None)
     parser.add_option("-n", "--nbins", 
                       dest="nbins", 
                       help="Number of bins",
@@ -143,13 +139,23 @@ if __name__ == '__main__':
                       dest="shift", 
                       help='Shift expression',
                       default=None)
+    parser.add_option("-k", "--mssmBinning", 
+                      dest="mssmBinning", 
+                      help="Binning for MSSM: 'fine', '2013', 'default'",
+                      default='default')
+    parser.add_option("-p", "--prefix", 
+                      dest="prefix", 
+                      help="Prefix for datacards",
+                      default=None)
     
     (options,args) = parser.parse_args()
 
     weight = options.weight
 
     cutstring = options.cut
-    isVBF = cutstring.find('Xcat_VBFX') != -1 
+    isVBF = cutstring.find('Xcat_VBF')!=-1
+    isMSSM = cutstring.find('Xcat_J1BX')!=-1 or cutstring.find('Xcat_0BX')!=-1
+
     options.cut = replaceCategories(options.cut, categories) 
     
     if len(args) != 2:
@@ -159,10 +165,22 @@ if __name__ == '__main__':
         gROOT.SetBatch()
     if options.nbins is None:
         NBINS = binning_svfitMass_finer
-        if isVBF:
-            NBINS = binning_svfitMass
         XMIN = None
         XMAX = None
+
+        if isVBF:
+            NBINS = binning_svfitMass
+
+        if isMSSM:
+            NBINS = binning_svfitMass_mssm
+            if cutstring.find('Xcat_0BX')!=-1:
+                NBINS = binning_svfitMass_mssm_nobtag
+            if options.mssmBinning == '2013':
+                NBINS = binning_svfitMass_mssm2013
+            elif options.mssmBinning == 'fine':
+                NBINS = 400
+                XMIN = 0.
+                XMAX = 2000.
     else:
         NBINS = int(options.nbins)
         XMIN = float(options.xmin)
@@ -188,7 +206,7 @@ if __name__ == '__main__':
 
     aliases = None
     selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases, options.embed,
-                                                  channel=options.channel, higgsMass=options.higgs)
+                                                  channel=options.channel, higgsMass=options.higgs, isMSSM=isMSSM)
 
     filteredComps = filterComps(selComps, options.filter, options.embed)
     

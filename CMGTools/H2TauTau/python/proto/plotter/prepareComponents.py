@@ -6,7 +6,7 @@ import pickle
 keeper = []
 
 def prepareComponents(dir, config, aliases=None, embed=True,
-                      channel='TauMu', higgsMass=None, forcedLumi=None):
+                      channel='TauMu', higgsMass=None, forcedLumi=None, isMSSM=False):
     '''Selects all components in configuration file. computes the integrated lumi
     from data components, and set it on the MC components.
     '''
@@ -53,7 +53,10 @@ def prepareComponents(dir, config, aliases=None, embed=True,
         # existingComp = newSelComps.get(comp.name, None)
         # import pdb; pdb.set_trace()
         # if existingComp is None:
-        newSelComps[comp.name] = comp
+        if isMSSM and (not comp.name.startswith('Higgs') or 'SUSY' in comp.name or '125' in comp.name):
+            newSelComps[comp.name] = comp
+        elif not 'SUSY' in comp.name:
+            newSelComps[comp.name] = comp
         # else:
         #    import pdb; pdb.set_trace()
         #    newSelComps[comp.name] += comp
@@ -97,7 +100,7 @@ def prepareComponents(dir, config, aliases=None, embed=True,
 
     # compute the embedded sample weighting factor
     if embed and newSelComps.get('Ztt', False):
-        eh, zh, embedFactor = embedScaleFactor(newSelComps)
+        eh, zh, embedFactor = embedScaleFactor(newSelComps, channel)
         for comp in embedComps:
             # import pdb; pdb.set_trace()
             comp.embedFactor = embedFactor

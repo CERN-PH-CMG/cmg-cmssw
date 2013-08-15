@@ -4,6 +4,7 @@ import copy
 import time
 import re
 import os
+import string
 import ROOT
 
 from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
@@ -11,13 +12,13 @@ from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC import H2TauTauDataMC
 from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents
 from CMGTools.H2TauTau.proto.plotter.rootutils import *
 from CMGTools.H2TauTau.proto.plotter.categories_TauMu import *
-from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass_finer, binning_svfitMass, binning_svfitMass_mssm2013
+from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass_finer, binning_svfitMass, binning_svfitMass_mssm2013, binning_svfitMass_mssm, binning_svfitMass_mssm_nobtag
 from CMGTools.H2TauTau.proto.plotter.titles import xtitles
 from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
 from CMGTools.H2TauTau.proto.plotter.datacards import *
 from CMGTools.H2TauTau.proto.plotter.embed import setupEmbedding as setupEmbedding
-from CMGTools.H2TauTau.proto.plotter.plotinfo import plots_All as plots_All
+from CMGTools.H2TauTau.proto.plotter.plotinfo import plots_All, plots_All_sorted_indices
 # from CMGTools.RootTools.Style import *
 from ROOT import kPink, TH1, TPaveText, TPad
 
@@ -64,7 +65,7 @@ def replaceShapeInclusive(plot, var, anaDir,
     if cat_VBF_loose in cut:
         print 'VBF loose: Relaxing VBF selection for W shape'
         cut = cut.replace(cat_VBF, cat_VBF_Rel_30)
-    elif 'l1_pt>45. && pthiggs>100.' or cat_VBF_tight in cut:
+    elif 'l1_pt>45. && pthiggs>100.' in cut or cat_VBF_tight in cut:
         print '1 jet high medium higgs and VBF tight: Relax tau isolation for W shape'
         cut = cut.replace('l1_threeHitIso<1.5', 'l1_threeHitIso<10.0')
     
@@ -97,7 +98,7 @@ def makePlot( var, nbins, xmin, xmax,
               anaDir, selComps, weights, wInfo,
               cut='', weight='weight', embed=False, shift=None, replaceW=False,
               VVgroup=None, TTgroup=None, antiMuIsoForQCD=False, antiMuRlxTauIsoForQCD=False, 
-              subtractBGForQCDShape=False, embedForSS=False, relSelection={}, osForWExtrapolation=True, incQCDYield=99999., qcdYieldInclusiveExtrapolation=False):
+              subtractBGForQCDShape=False, embedForSS=False, relSelection={}, osForWExtrapolation=True, incQCDYield=99999., qcdYieldInclusiveExtrapolation=False, isOneJet=False, dataComps={}, cutName=''):
     
     print '\nMaking the plot:', var, 'cut', cut
 
@@ -127,7 +128,6 @@ def makePlot( var, nbins, xmin, xmax,
     for sample in relSelection:
         if sample != 'QCD':
             print 'Replace shape', sample
-            print 'strip', relSelection[sample].strip(cut)
             print 'Tight cut', cut
             print 'Relaxed cut', relSelection[sample]
             replaceShape(sample, relSelection[sample], osign, shapePlotInfo)
@@ -141,12 +141,12 @@ def makePlot( var, nbins, xmin, xmax,
                            cut=sscut, weight=weight, shift=shift,
                            embed=embedForSS)
     ssign.Hist(EWK).Scale( wJetScaleSS )
-    if cut.find('mt<')!=-1:
-        if w_mt_ratio_ss > 0.:
-            print 'correcting high->low mT extrapolation factor, SS', w_mt_ratio / w_mt_ratio_ss
-            ssign.Hist(EWK).Scale( w_mt_ratio / w_mt_ratio_ss  )
-        else:
-            print 'WARNING! Not correcting W mT ratio from SS to OS region: No events in SS high mT'
+    # if cut.find('mt<')!=-1:
+    #     if w_mt_ratio_ss > 0.:
+    #         print 'correcting high->low mT extrapolation factor, SS', w_mt_ratio / w_mt_ratio_ss
+    #         ssign.Hist(EWK).Scale( w_mt_ratio / w_mt_ratio_ss  )
+    #     else:
+    #         print 'WARNING! Not correcting W mT ratio from SS to OS region: No events in SS high mT'
 
     if replaceW:
         ssign = replaceShapeInclusive(ssign, var, anaDir,
@@ -228,6 +228,12 @@ def makePlot( var, nbins, xmin, xmax,
         osQCD.old_qcd_shape = copy.deepcopy(old_qcd_shape)
         osQCD.Replace('QCD', qcd_shape)
 
+    # Scale QCD yield in first three bins by factor 1.1 in one-jet categories unless tau iso is relaxed
+    if isOneJet and not antiMuRlxTauIsoForQCD:
+        for iBin in range(1, 7):
+            osQCD.Hist('QCD').weighted.SetBinContent(iBin, osQCD.Hist('QCD').weighted.GetBinContent(iBin) * 1.1)
+            osQCD.Hist('QCD').weighted.SetBinError(iBin, osQCD.Hist('QCD').weighted.GetBinError(iBin) * 1.1)
+
     # Extra sausage for ZL in VBF loose: Normalise yield to yield in 2 jet
     # plus extrapolation to VBF loose
     if cat_VBF_loose in cut:
@@ -260,38 +266,56 @@ def makePlot( var, nbins, xmin, xmax,
 
         osQCD.Hist('Ztt_ZL').Scale(zttYieldVBFloose/zttYield2Jet * zlYield2Jet/zlYieldVBFloose)
 
+    if cat_J1B in cut:
+        print 'INFO: Subtracting 1.5% of the Ztt yield from the ttbar yield in the 1 b-tag category'
+        scaleZtt = osQCD.Hist('Ztt').Integral()
+        osQCD.Hist('Ztt').Scale(0.985)
+        # scaleTT = osQCD.Hist('TTJets').Integral()
+        # scaleTTNew = scaleTT - scaleZtt * 0.015
+        # osQCD.Hist('TTJets').Scale(scaleTTNew/scaleTT)
 
-    osQCD.Group('electroweak', ['WJets', 'Ztt_ZL', 'Ztt_ZJ','VV'])
+    osQCD.Group('electroweak', ['WJets', 'Ztt_ZL', 'Ztt_ZJ','VV', 'Ztt_TL'])
     osQCD.Group('Higgs 125', ['HiggsVBF125', 'HiggsGGH125', 'HiggsVH125'])
     return ssign, osign, ssQCD, osQCD
 
 
-def drawAll(plots, outDir, blind, parameters):
+def drawAll(plots, outDir, blind, parameters, isMSSM=False):
     '''See plotinfo for more information'''
 
-    for name, plot in plots.items():
+    # for name, plot in plots.items():
+    for iName, name in enumerate(plots_All_sorted_indices):
+        plot = plots[name]
+
         print plot.var
         print '----------------', plot.xmin, plot.xmax, plot.nbins
         # print fwss, fwos
         ss, osign, ssQ, osQ = makePlot(plot.var, plot.nbins, plot.xmin, plot.xmax, **parameters)
 
-        varOutDir = outDir+options.cutName+'/'
+        if blind and isMSSM:
+            osQ.blindxmin = 100.
+            osQ.blindxmax = 1000.
+        elif blind and plot.var == 'visMass':
+            osQ.blindxmin = 60.
+            osQ.blindxmax = 120.
+
+        varOutDir = outDir+parameters['cutName']+'/'
         if not os.path.exists(varOutDir):
             os.makedirs(varOutDir)
+        varOutDir += 'v'+string.lowercase[iName] if iName < 26 else 'v'+str(iName)
         if name != plot.var:
             varOutDir += name + '_'
         # drawOfficial(osQ, blind, plotprefix=varOutDir)
         draw(osQ, blind, plotprefix=varOutDir)
-        osQ.ratioTotalHist.weighted.Fit('pol0', '', '', 0., 60.)
-        plot.ssign = cp(ss)
-        plot.osign = cp(osign)
-        plot.ssQCD = cp(ssQ)
-        plot.osQCD = cp(osQ)
+        # osQ.ratioTotalHist.weighted.Fit('pol0', '', '', 0., 60.)
+        # plot.ssign = cp(ss)
+        # plot.osign = cp(osign)
+        # plot.ssQCD = cp(ssQ)
+        # plot.osQCD = cp(osQ)
         # time.sleep(1)
 
 
 def handleW( anaDir, selComps, weights,
-             cut, relCut, weight, embed, VVgroup, TTgroup=None, nbins=50, highMTMin=70., highMTMax=1070,
+             cut, relCut, weight, embed, VVgroup, TTgroup=None, nbins=50, highMTMin=70., highMTMax=2070,
              lowMTMax=30.):
     print '\nHANDLING W'
     cut = cut.replace('mt<30', '1')
@@ -308,13 +332,23 @@ def handleW( anaDir, selComps, weights,
         weight=weight, embed=embed,
         VVgroup=VVgroup, TTgroup=TTgroup)
 
-    # Use relaxed cut for high-low ratio
-    if relCut != cut:
-        print 'Use relaxed cut for high-low MT ratio', relCut
 
     w_mt_ratio_ss = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, relCut, weight, lowMTMax, highMTMin, highMTMax, 'diTau_charge!=0')
     w_mt_ratio_os = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, relCut, weight, lowMTMax, highMTMin, highMTMax, 'diTau_charge==0')
     w_mt_ratio = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, relCut, weight, lowMTMax, highMTMin, highMTMax, '1')
+
+    # Use relaxed cut for high-low ratio
+    if relCut != cut:
+        print 'Use relaxed cut for high-low MT ratio', relCut
+        print 'Correct W high MT OS scale factor for relaxed high-low ratio'
+        w_mt_ratio_ss_tight = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, cut, weight, lowMTMax, highMTMin, highMTMax, 'diTau_charge!=0')
+        w_mt_ratio_os_tight = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, cut, weight, lowMTMax, highMTMin, highMTMax, 'diTau_charge==0')
+        w_mt_ratio_tight = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, cut, weight, lowMTMax, highMTMin, highMTMax, '1')
+
+        print 'Factor OS', w_mt_ratio_os/w_mt_ratio_os_tight
+        print 'W MT Ratios Tight (SS, OS, all)', w_mt_ratio_ss_tight, w_mt_ratio_os_tight, w_mt_ratio_tight
+        fwos *= w_mt_ratio_os/w_mt_ratio_os_tight
+
     # import pdb; pdb.set_trace()
     print 'FWSS, FWOS', fwss, fwos
     print 'W MT Ratios (SS, OS, all)', w_mt_ratio_ss, w_mt_ratio_os, w_mt_ratio
@@ -386,6 +420,14 @@ if __name__ == '__main__':
                       dest="higgs", 
                       help="Higgs mass: 125, 130,... or dummy",
                       default=None)
+    parser.add_option("-k", "--mssmBinning", 
+                      dest="mssmBinning", 
+                      help="Binning for MSSM: 'fine', '2013', 'default'",
+                      default='default')
+    parser.add_option("-p", "--prefix", 
+                      dest="prefix", 
+                      help="Prefix for datacards",
+                      default=None)
 
     
     (options,args) = parser.parse_args()
@@ -426,11 +468,20 @@ if __name__ == '__main__':
         NBINS = binning_svfitMass
 
     if options.nbins is None and isMSSM:
-        NBINS = binning_svfitMass_mssm2013
+        NBINS = binning_svfitMass_mssm
+        if not isBtag:
+            NBINS = binning_svfitMass_mssm_nobtag
+        if options.mssmBinning == '2013':
+            NBINS = binning_svfitMass_mssm2013
+        elif options.mssmBinning == 'fine':
+            NBINS = 400
+            XMIN = 0.
+            XMAX = 2000.
+        
 
     # QCD handling
-    antiMuIsoForQCD = isOneJet or isVBF or cutstring.find('Xcat_J0_mediumX')!=-1 or cutstring.find('Xcat_J0_highX')!=-1
-    antiMuRlxTauIsoForQCD = cutstring.find('Xcat_J1_high_mediumhiggsX')!=-1 
+    antiMuIsoForQCD = isOneJet or cutstring.find('Xcat_VBF_looseX')!=-1 or cutstring.find('Xcat_VBFX')!=-1  or cutstring.find('Xcat_J0_mediumX')!=-1 or cutstring.find('Xcat_J0_highX')!=-1
+    antiMuRlxTauIsoForQCD = cutstring.find('Xcat_J1_high_mediumhiggsX')!=-1 or cutstring.find('Xcat_VBF_tightX')!=-1 
 
     qcdYieldInclusiveExtrapolation = isVBF or cutstring.find('Xcat_J1_high_mediumhiggsX')!=-1 
 
@@ -494,7 +545,7 @@ if __name__ == '__main__':
     embed = options.embed
 
     aliases = None
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases, options.embed, 'TauMu', options.higgs)
+    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases, options.embed, 'TauMu', options.higgs, isMSSM=isMSSM)
 
     print 'SELECTED COMPONENTS', selComps
     print 'WEIGHTS', [weights[w].GetWeight() for w in weights]
@@ -511,7 +562,7 @@ if __name__ == '__main__':
 
     nbins = 50
     highMTMin = 70.
-    highMTMax = 1070.
+    highMTMax = 2070.
     if isVBF:
         nbins = 30
         highMTMin = 60.
@@ -527,11 +578,11 @@ if __name__ == '__main__':
     # Calculate externally, need to recalculate if samples change
     # NOTE: Recalculation requires full QCD estimation including 
     # BG subtraction and W estimation in SS region 
-    # > python -i plot_H2TauTauDataMC_TauMu_All.py /data/steggema/Jul04TauMu/ tauMu_2012_cfg.py -C 'Xcat_IncX && mt<30' -H svfitMass -b
+    # > python -i plot_H2TauTauDataMC_TauMu_All.py /data/steggema/Aug07MuTau/ tauMu_2012_cfg.py -C 'Xcat_IncX && mt<30' -H svfitMass -b
     # > print osQCD
     if isVBF:
-        print 'WARNING, taking QCD yield from external calculation'
-    incQCDYield = 18853.0
+        print 'WARNING, taking QCD yield from external calculation, Aug07MuTau'
+    incQCDYield = 18709.8
 
     # The following parameters are the same for a given set of samples + a cut (= category)
     parameters = {'cut':options.cut, 'anaDir':anaDir, 'selComps':selComps, 'weights':weights, 
@@ -539,13 +590,13 @@ if __name__ == '__main__':
       'antiMuIsoForQCD':antiMuIsoForQCD, 'antiMuRlxTauIsoForQCD':antiMuRlxTauIsoForQCD, 
       'subtractBGForQCDShape':subtractBGForQCDShape, 'embedForSS':embedForSS, 
       'embed':options.embed, 'wInfo':wInfo, 'relSelection':relSelection, 'osForWExtrapolation':osForWExtrapolation, 
-      'incQCDYield':incQCDYield, 'qcdYieldInclusiveExtrapolation':qcdYieldInclusiveExtrapolation} #'blind':options.blind, 
+      'incQCDYield':incQCDYield, 'qcdYieldInclusiveExtrapolation':qcdYieldInclusiveExtrapolation, 'isOneJet':isOneJet, 'dataComps':dataComps, 'cutName':options.cutName} #'blind':options.blind, 
 
     if options.allPlots:
-        drawAll(plots_All, 'Summer13StackPlotsJul19/', options.blind, parameters)
+        drawAll(plots_All, 'Summer13StackPlotsJul19/', options.blind, parameters, isMSSM)
     else:
         if makeQCDIsoPlots:
-            osQCD = qcdIsoPlots(options.hist, NBINS, XMIN, XMAX, parameters)
+            osQCD, osQCD2 = qcdIsoPlots(options.hist, NBINS, XMIN, XMAX, parameters)
 
         else:
             ssign, osign, ssQCD, osQCD = makePlot(options.hist, NBINS, XMIN, XMAX, **parameters)
@@ -554,8 +605,13 @@ if __name__ == '__main__':
         # drawOfficial(osQCD, options.blind)
 
         # With ratio
+        if blind and isMSSM:
+            osQCD.blindxmin = 100.
+            osQCD.blindxmax = 1000.
+
         draw(osQCD, options.blind)
-        datacards(osQCD, cutstring, shift)
+        datacards(osQCD, cutstring, shift, prefix=options.prefix)
+
         # printDataVsQCDInfo(osQCD, ssQCD)
         
         

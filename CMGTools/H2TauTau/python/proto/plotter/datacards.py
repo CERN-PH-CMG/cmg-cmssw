@@ -59,6 +59,46 @@ datacards_aliases = {
     'HiggsVH150':'VH150',
     'HiggsVH155':'VH155',
     'HiggsVH160':'VH160',
+    # MSSM GluGlu
+    'HiggsSUSYGluGlu100':'ggH100',
+    'HiggsSUSYGluGlu110':'ggH110',
+    'HiggsSUSYGluGlu120':'ggH120',
+    'HiggsSUSYGluGlu130':'ggH130',
+    'HiggsSUSYGluGlu140':'ggH140',
+    'HiggsSUSYGluGlu160':'ggH160',
+    'HiggsSUSYGluGlu180':'ggH180',
+    'HiggsSUSYGluGlu200':'ggH200',
+    'HiggsSUSYGluGlu250':'ggH250',
+    'HiggsSUSYGluGlu300':'ggH300',
+    'HiggsSUSYGluGlu350':'ggH350',
+    'HiggsSUSYGluGlu400':'ggH400',
+    'HiggsSUSYGluGlu450':'ggH450',
+    'HiggsSUSYGluGlu500':'ggH500',
+    'HiggsSUSYGluGlu600':'ggH600',
+    'HiggsSUSYGluGlu700':'ggH700',
+    'HiggsSUSYGluGlu800':'ggH800',
+    'HiggsSUSYGluGlu900':'ggH900',
+    'HiggsSUSYGluGlu1000':'ggH1000',
+    # MSSM GluGlu
+    'HiggsSUSYBB100':'bbH100',
+    'HiggsSUSYBB110':'bbH110',
+    'HiggsSUSYBB120':'bbH120',
+    'HiggsSUSYBB130':'bbH130',
+    'HiggsSUSYBB140':'bbH140',
+    'HiggsSUSYBB160':'bbH160',
+    'HiggsSUSYBB180':'bbH180',
+    'HiggsSUSYBB200':'bbH200',
+    'HiggsSUSYBB250':'bbH250',
+    'HiggsSUSYBB300':'bbH300',
+    'HiggsSUSYBB350':'bbH350',
+    'HiggsSUSYBB400':'bbH400',
+    'HiggsSUSYBB450':'bbH450',
+    'HiggsSUSYBB500':'bbH500',
+    'HiggsSUSYBB600':'bbH600',
+    'HiggsSUSYBB700':'bbH700',
+    'HiggsSUSYBB800':'bbH800',
+    'HiggsSUSYBB900':'bbH900',
+    'HiggsSUSYBB1000':'bbH1000',
     }
 
 
@@ -138,14 +178,27 @@ def datacards(plot, cutstring, shift, channel='muTau', prefix=None, energy='8TeV
     zttzl = None
     zttzj = None
     for myName, hist in sorted(plot.histosDict.iteritems()):
+
+        if 'btag' in category:
+            if not '125' in myName and ('HiggsVH' in myName or 'HiggsVBF' in myName or 'HiggsGGH' in myName):
+                continue
+        else:
+            if 'SUSY' in myName: continue
+        
         rogerName = datacards_aliases.get(myName, None)
+        if 'btag' in category and rogerName:
+            if '125' in myName:
+                rogerName = rogerName.replace('125', 'SM125')
         if rogerName is not None:
             theName = rogerName
-            if ext:
+            if ext or prefix=='fine':
                 if rogerName=='data_obs':
                     # data not written for shifted samples
                     continue
                 theName = '_'.join([rogerName,ext])
+            if prefix == 'fine':
+                theName += '_fine_binning'
+
             print 'writing', myName, 'as', theName
             hist.weighted.Write( theName )
             if myName == 'Ztt_ZL':
@@ -169,13 +222,16 @@ def getobjs( dir ):
         objs.append(obj)
     return objs
 
-def merge( fileNames ):
+def merge( fileNames, prefix=None ):
     lastchan = None
     files = []
     categories = {}
     for fnam in fileNames:
-        chan = fnam.split('_',1)[0]
-        categ = fnam.split('_',1)[1].split('.')[0]
+        name = fnam
+        if prefix:
+            name = name.split('_', 1)[1]
+        chan = name.split('_',1)[0]
+        categ = name.split('_',1)[1].split('.')[0]
         categories[fnam] = categ
         if lastchan is not None and chan!=lastchan:
             print lastchan, chan

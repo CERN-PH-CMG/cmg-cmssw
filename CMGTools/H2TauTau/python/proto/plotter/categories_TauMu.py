@@ -51,6 +51,7 @@ cat_Inc_AntiMuTauIso_B = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.2
 cat_Inc_AntiMuTauIsoJosh = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.7')
 cat_Inc_AntiMuIso = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.1')
 cat_Inc_AntiMuIsoJan = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5')
+cat_Inc_TightAntiMuIsoJan = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.1 && l2_relIso05<0.2')
 cat_Inc_AntiMuAntiTauIsoJan = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5').replace('l1_threeHitIso<1.5', 'l1_threeHitIso>1.5 && l1_threeHitIso<10.0')
 cat_Inc_AntiMuRlxTauIsoJan = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5').replace('l1_threeHitIso<1.5', 'l1_threeHitIso<10.0')
 #cat_Inc_AntiTauIso = str(inc_sig).replace('l1_looseMvaIso>0.5', 'l1_looseMvaIso<0.5')
@@ -70,6 +71,7 @@ categories = {
     'Xcat_Inc_AntiTauIsoX':cat_Inc_AntiTauIso,
     'Xcat_Inc_AntiTauIsoJanX':cat_Inc_AntiTauIsoJan,
     'Xcat_Inc_AntiMuIsoJanX':cat_Inc_AntiMuIsoJan,
+    'Xcat_Inc_TightAntiMuIsoJanX':cat_Inc_TightAntiMuIsoJan,
     'Xcat_Inc_AntiMuAntiTauIsoJanX':cat_Inc_AntiMuAntiTauIsoJan,
     'Xcat_Inc_AntiMuRlxTauIsoJanX':cat_Inc_AntiMuRlxTauIsoJan,
     'Xcatinc_sig_elelikeX':cat_Inc_elelike

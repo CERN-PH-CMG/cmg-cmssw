@@ -146,14 +146,30 @@ def w_lowHighMTRatio( var, anaDir,
                       comp, weights, 
                       cut, weight, lowMTMax, highMTMin, highMTMax, chargeRequirement, treeName = None):
     cutWithChargeReq = ' && '.join([cut, chargeRequirement]) 
-    max = 1000
+    max = 5000
     mt = shape(var, anaDir,
                comp, weights, max, 0, max,
                cutWithChargeReq, weight,
                None, None, treeName = treeName)
+
     mt_low = mt.Integral(True, 0, lowMTMax)
     mt_high = mt.Integral(True, highMTMin, highMTMax)
-    mt_ratio = mt_low / mt_high    
+    mt_ratio = mt_low / mt_high 
+
+    print 'W MT ratio, mt ranges', lowMTMax, highMTMin, highMTMax
+
+    error_low = Double(0.)
+    error_high = Double(0.)
+    mt_low_jan = mt.weighted.IntegralAndError(1, mt.weighted.FindBin(lowMTMax)-1, error_low)
+    mt_high_jan = mt.weighted.IntegralAndError(mt.weighted.FindBin(highMTMin), mt.weighted.FindBin(highMTMax), error_high)
+
+    print mt.weighted.FindBin(lowMTMax)-1, mt.weighted.FindBin(highMTMin), mt.weighted.FindBin(highMTMax)
+
+    print 'MT ratio', mt_ratio, '+-', math.sqrt(error_low**2/mt_low**2 + error_high**2/mt_high**2) * mt_ratio
+    print 'MT ratio', mt_low_jan/mt_high_jan, '+-', math.sqrt(error_low**2/mt_low**2 + error_high**2/mt_high**2) * mt_ratio
+    print 'Integrals: low', mt_low, '+-', error_low, 'high', mt_high, '+-', error_high
+    print 'Integrals: low', mt_low_jan, '+-', error_low, 'high', mt_high_jan, '+-', error_high
+    print 'Relative errors: low', error_low/mt_low, 'high', error_high/mt_high, '\n'
     return mt_ratio
     
     
