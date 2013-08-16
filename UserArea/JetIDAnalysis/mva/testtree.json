@@ -1,0 +1,4 @@
+{ 
+  "sigcut"  : "classID==0",
+  "bkgcut"  : "classID==1"
+}

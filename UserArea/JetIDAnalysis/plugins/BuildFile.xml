@@ -1,0 +1,17 @@
+<use name="FWCore/Framework"/>
+<use name="FWCore/PluginManager"/>
+<use name="FWCore/ParameterSet"/>
+
+<use name="CMGTools/External"/>
+<use name="CMG/JetIDAnalysis"/>
+
+<use name="PhysicsTools/UtilAlgos"/>
+
+<use name="DataFormats/PatCandidates"/>
+<use name="DataFormats/EgammaCandidates"/>
+
+
+<library   name="CMGJetIDAnalysisplugins" file="*.cc">
+  <use   name="CMG/JetIDAnalysis"/>
+  <flags   EDM_PLUGIN="1"/>
+</library>

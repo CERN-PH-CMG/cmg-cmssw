@@ -1,0 +1,53 @@
+
+import FWCore.ParameterSet.Config as cms
+
+source = cms.Source(
+	"PoolSource",
+
+	noEventSort = cms.untracked.bool(True),
+	duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
+	fileNames = cms.untracked.vstring()
+)
+source.fileNames.extend([
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_10_1_TN9.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_11_1_0OK.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_12_1_SgQ.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_13_1_UwN.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_14_1_12w.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_15_1_2FL.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_16_1_6l2.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_17_1_0wE.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_18_1_da6.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_19_1_3Cn.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_1_1_kqD.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_20_1_bz7.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_21_1_eEs.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_22_1_Rip.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_23_1_mdr.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_24_1_bhy.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_25_1_YxN.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_26_1_X2Z.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_27_1_5il.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_28_1_LTD.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_29_1_KTw.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_2_1_mns.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_30_1_NHS.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_31_1_ryB.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_32_1_AMH.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_33_1_4e7.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_34_1_noT.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_35_1_b9I.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_36_1_i6G.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_37_1_deS.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_38_1_85o.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_39_1_yRk.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_3_1_aiv.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_40_1_60G.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_41_1_CLU.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_4_1_h2K.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_5_1_SpX.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_6_1_Pyx.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_7_1_bIJ.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_8_1_yeM.root',
+		'/store/cmst3/user/cbern/RA2SusyJetMET/QCD_Pt_120to170_TuneZ2_7TeV_pythia6/Fall10-START38_V12-v1/GEN-SIM-RECO/susypat_RA2_9_1_JiK.root',
+])

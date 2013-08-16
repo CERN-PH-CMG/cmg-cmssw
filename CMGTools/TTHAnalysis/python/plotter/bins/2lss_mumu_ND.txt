@@ -1,0 +1,12 @@
+== 2 good leptons: nLepGood == 2 || LepGood3_mva < 0.35
+cleanup: minMllAFAS > 12
+mu mu:  abs(LepGood1_pdgId) == 13 && abs(LepGood2_pdgId) == 13
+same-sign: LepGood1_charge*LepGood2_charge > 0
+tight-charge: LepGood1_innerHits > 7 && LepGood2_innerHits > 7
+pt2010: LepGood1_pt > 20 && LepGood2_pt > 10
+2L: passND_Loose(LepGood1_pt,LepGood1_eta,LepGood1_pdgId,LepGood1_relIso,LepGood1_dxy,LepGood1_dz,LepGood1_tightId) && passND_Loose(LepGood2_pt,LepGood2_eta,LepGood2_pdgId,LepGood2_relIso,LepGood2_dxy,LepGood2_dz,LepGood2_tightId)
+1T: passND_Tight(LepGood1_pt,LepGood1_eta,LepGood1_pdgId,LepGood1_relIso,LepGood1_dxy,LepGood1_dz,LepGood1_tightId) || passND_Tight(LepGood2_pt,LepGood2_eta,LepGood2_pdgId,LepGood2_relIso,LepGood2_dxy,LepGood2_dz,LepGood2_tightId)
+#FT: passND_Tight(LepGood1_pt,LepGood1_eta,LepGood1_pdgId,LepGood1_relIso,LepGood1_dxy,LepGood1_dz,LepGood1_tightId)
+#2T: passND_Tight(LepGood1_pt,LepGood1_eta,LepGood1_pdgId,LepGood1_relIso,LepGood1_dxy,LepGood1_dz,LepGood1_tightId) && passND_Tight(LepGood2_pt,LepGood2_eta,LepGood2_pdgId,LepGood2_relIso,LepGood2_dxy,LepGood2_dz,LepGood2_tightId)
+2cb: ((Jet1_btagCSV > 0.244 && Jet1_pt > 30 && abs(Jet1_eta) < 2.4) + (Jet2_btagCSV > 0.244 && Jet2_pt > 30 && abs(Jet2_eta) < 2.4) + (Jet3_btagCSV > 0.244 && Jet3_pt > 30 && abs(Jet3_eta) < 2.4) + (Jet4_btagCSV > 0.244 && Jet4_pt > 30 && abs(Jet4_eta) < 2.4)) >= 2
+#4cj: ((Jet1_pt > 30 && abs(Jet1_eta) < 2.4) + (Jet2_pt > 30 && abs(Jet2_eta) < 2.4) + (Jet3_pt > 30 && abs(Jet3_eta) < 2.4) + (Jet4_pt > 30 && abs(Jet4_eta) < 2.4) + (Jet5_pt > 30 && abs(Jet5_eta)< 2.4) + (Jet6_pt > 30 && abs(Jet6_eta) < 2.4) + (Jet7_pt > 30 && abs(Jet7_eta) < 2.4) + (Jet8_pt > 30 && abs(Jet8_eta) < 2.4)) >= 4

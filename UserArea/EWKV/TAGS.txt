@@ -1,0 +1,35 @@
+cvs co -r V02-05-11      DataFormats/CaloRecHit                           
+cvs co -r V06-05-06-10   DataFormats/PatCandidates                        
+cvs co -r V00-02-14      DataFormats/StdDictionaries                      
+cvs co -r V00-00-02      EgammaAnalysis/ElectronTools
+cvs co -r V00-00-70      FWCore/GuiBrowsers                               
+cvs co -r V08-09-57      PhysicsTools/PatAlgos                            
+cvs co -r V03-09-28      PhysicsTools/PatUtils                            
+cvs co -r v1-2-3         -d QuarkGluonTagger/EightTeV UserCode/tomc/QuarkGluonTagger/EightTeV                       
+cvs co -r V00-07-03      RecoBTag/Configuration                           
+cvs co -r V01-04-09      RecoBTag/ImpactParameter                         
+cvs co                   RecoBTag/PerformanceMeasurements                 
+cvs co -r V01-10-02      RecoBTag/SecondaryVertex                         
+cvs co -r V05-09-02      RecoBTag/SoftLepton                              
+cvs co -r V02-03-00      RecoBTau/JetTagComputer                          
+cvs co -r V03-03-12-02   RecoMET/METProducers                             
+cvs co -r V00-00-13-01   RecoMET/METFilters
+cvs co -r V00-00-08      RecoMET/METAnalyzers
+cvs co -r V15-02-06      RecoParticleFlow/PFProducer                      
+cvs co -r V02-02-06      RecoVertex/AdaptiveVertexFinder                  
+cvs co                   -d bTag/CommissioningCommonSetup UserCode/bTag/CommissioningCommonSetup     
+cvs co			 -d UserCode/EWKV UserCode/CMG/UserArea/EWKV
+cvs co -r V00-03-01      -d CMGTools/External UserCode/CMG/CMGTools/External
+cvs co                   -d EGamma/EGammaAnalysisTools UserCode/EGamma/EGammaAnalysisTools                       
+cvs co -r V09-00-01      RecoEgamma/EgammaTools                           
+cvs co -r V00-03-23      CommonTools/RecoAlgos
+cvs co -r V01-00-11-01   DPGAnalysis/Skims
+cvs co -r V00-11-17      DPGAnalysis/SiStripTools
+cvs co -r V00-00-08      DataFormats/TrackerCommon
+cvs co -r V01-09-05      RecoLocalTracker/SubCollectionProducers
+cvs co -r V00-02-13-01   DataFormats/StdDictionaries
+cd EgammaAnalysis/ElectronTools/data
+cat download.url | xargs wget
+cd -
+echo "Thought you could do this with just one tag, eh?"
+

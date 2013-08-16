@@ -1,0 +1,4 @@
+python  ../RootTools/python/fwlite/MultiLoop.py test analhtt_Hig125_cfg.py -N 100000 -p 0 -f
+python  ../RootTools/python/fwlite/MultiLoop.py test analhtt_ZZ_cfg.py -N 100000 -p 0 -f
+python  ../RootTools/python/fwlite/MultiLoop.py test analhtt_WW_cfg.py -N 100000 -p 0 -f
+python  ../RootTools/python/fwlite/MultiLoop.py test analhtt_QQ_cfg.py -N 100000 -p 0 -f

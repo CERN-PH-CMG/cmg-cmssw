@@ -1,0 +1,18 @@
+{
+    "proc":[
+	{
+	 "tag":"Z#rightarrow ll",
+         "isdata":false,
+         "color":"831",
+	 "lcolor":1,
+	 "mctruthmode":1,
+         "data":[
+	      {
+               "dtag":"MC8TeV_DYToMuMu_M20",
+               "split":3,
+                "xsec":1510.0
+              }
+ 	  ]
+	}
+   ]
+}

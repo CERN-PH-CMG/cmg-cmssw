@@ -1,0 +1,14 @@
+lep2Pt:  LepGood2_pt       : 30,10,90; XTitle="Trailing lepton p_{T} [GeV]"
+lep2Eta: abs(LepGood2_eta) : 24,0,2.5; XTitle="Trailing lepton |#eta|",MoreY=1.4
+drl2j: mindr_lep2_jet  : 24,0,4; XTitle="min #DeltaR(l_{2}\,j)"
+mtW1: MT_met_lep1 : 30,0,200; XTitle="M_{T}(l_{1}\,E_{T}^{miss}) [GeV]",NXDiv=505
+htJet25: htJet25 : 30,0,1200; XTitle='H_{T} [GeV]',XNDiv=505
+mhtJet25: mhtJet25: 24,0,250 ; XTitle="H_{T}^{miss}  [GeV]"
+MVA_2LSS_4j_6var:  MVA_2LSS_4j_6var  : 12,-0.8,0.8 ; XTitle="BDT output", Legend='TL',MoreY=1.6, LegendCutoff=0.0001
+#nJet25 : nJet25 : [2.5,3.5,4.5,5.5,6.5,7.5] ; XTitle='N(jet\, p_{T} > 25)', XNDiv=505
+#nJet25 : nJet25 : [2.5,3.5,4.5,5.5,6.5] ; XTitle='N(jet\, p_{T} > 25)', XNDiv=505
+nJet25 : nJet25 : [3.5,4.5,5.5,6.5,7.5] ; XTitle='N(jet)', XNDiv=505, LegendCutoff=0.0001
+#nJet25 : nJet25 : [3.5,4.5,5.5,6.5] ; XTitle='N(jet)', XNDiv=505, LegendCutoff=0.0001
+#Qcat: LepGood1_charge: [-3,-2,0,2] ; XTitle='q(l_{1})',XNDiv=505
+#MVA_2LSS_2:  finalMVA_2LSS_2  : 12,0,1.0 ; XTitle="MVA 2", Legend='TL',MoreY=1.6, LegendCutoff=0.02
+#MVA_2LSS_3j_6var:  MVA_2LSS_23j_6var  : 12,-0.8,0.8 ; XTitle="BDT (#leq3j\, 6 vars)", Legend='TL',MoreY=1.6, LegendCutoff=0.02

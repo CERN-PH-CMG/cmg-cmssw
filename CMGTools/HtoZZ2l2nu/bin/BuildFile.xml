@@ -1,0 +1,33 @@
+<use name="CMGTools/HtoZZ2l2nu"/>
+<use name="SimDataFormats/GeneratorProducts"/>
+<use name="HiggsAnalysis/CombinedLimit"/>
+<use name="lhapdf"/>
+<environment>
+ <bin name="runGammaPlusJetsMETtemplates" file="runGammaPlusJetsMETtemplates.cc"></bin>
+ <bin name="runGammaPlusJetsMETtemplatesForVBFZ" file="runGammaPlusJetsMETtemplatesForVBFZ.cc"></bin>
+ <bin name="runPlotter" file="runPlotter.cc"></bin>
+ <bin name="runVBF" file="runVBF.cc"></bin>
+ <bin name="run2011Analysis" file="run2011Analysis.cc"></bin>
+ <bin name="runVBFZAnalysis" file="runVBFZAnalysis.cc"></bin>
+
+ <bin name="run2011ZZAnalysis" file="run2011ZZAnalysis.cc"></bin>
+ <bin name="computePDFvariations" file="computePDFvariations.cc"></bin>
+ <bin name="runLandS" file="runLandS.cc"></bin>
+ <bin name="runGenScanner" file="runGenScanner.cc"></bin>
+ <bin name="runPLRanalysis" file="runPLRanalysis.cc"></bin>
+ <bin name="makeEfficiencyPlot" file="makeEfficiencyPlot.cc"></bin>
+ <bin name="getXSec" file="getXSec.cc"></bin>
+ <bin name="runMVAtree" file="runMVAtree.cc"></bin>
+
+<!--
+<bin name="runZZAnalysis" file="runZZAnalysis.cc"></bin>
+<bin name="Cross_ZZ" file="Cross_ZZ.cc"></bin>
+<bin name="runGammaPlusJetsMETtemplatesForZZ" file="runGammaPlusJetsMETtemplatesForZZ.cc"></bin>
+<bin name="runOnEventSummary_ZZ" file="runOnEventSummary_ZZ.cc"></bin>
+<bin name="runMVAStudy" file="runMVAStudy.cc"></bin>
+<bin name="runMETStudy" file="runMETStudy.cc"></bin> 
+-->
+
+</environment>
+<Flags CXXFLAGS="-g -std=c++0x"/>
+

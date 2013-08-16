@@ -1,0 +1,1 @@
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/BulkG_WW_jjjj_c0p2_M2500-JHU_2.root

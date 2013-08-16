@@ -1,0 +1,9 @@
+<use name="UserCode/EWKV"/>
+<use name="lhapdf"/>
+<environment>
+  <bin name="runTopAnalysis"       file="runTopAnalysis.cc"></bin> 
+  <bin name="runVBFZAnalysis"      file="runVBFZAnalysis.cc"></bin> 
+  <bin name="runPlotter"           file="runPlotter.cc"></bin> 
+  <bin name="computePDFvariations" file="computePDFvariations.cc"></bin> 
+</environment>
+<Flags CXXFLAGS="-g"/>

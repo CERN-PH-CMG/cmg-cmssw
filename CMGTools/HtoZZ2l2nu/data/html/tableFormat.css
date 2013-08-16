@@ -1,0 +1,24 @@
+table.sample {
+    border-width: 0px;
+    border-spacing: ;
+    border-style: none;
+    border-color: gray;
+    border-collapse: separate;
+    }
+table.sample th {
+    border-width: 1px;
+    padding: 5px;
+    border-style: solid;
+    border-color: white;
+    background-color: white;
+    -moz-border-radius: ;
+    background-color: rgb(250, 240, 230);
+    }
+table.sample td {
+    border-width: 1px;
+    padding: 5px;
+    border-style: solid;
+    border-color: white;
+    background-color: white;
+    -moz-border-radius: ;
+    }

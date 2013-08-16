@@ -1,0 +1,2 @@
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/summer12_RSG_WW_lvjj_c0p05_M1000/ntuple_1.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/summer12_RSG_WW_lvjj_c0p05_M1000/ntuple_2.root

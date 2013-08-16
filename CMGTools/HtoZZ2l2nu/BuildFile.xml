@@ -1,0 +1,24 @@
+<use name="FWCore/Framework"/>
+<use name="FWCore/ParameterSet"/>
+<use name="FWCore/FWLite"/>
+<use name="FWCore/ServiceRegistry"/>
+<use name="FWCore/Services"/>
+<use name="DataFormats/VertexReco"/>
+<use name="DataFormats/BeamSpot"/>
+<use name="DataFormats/EgammaCandidates"/>
+<use name="DataFormats/PatCandidates"/>
+<use name="SimDataFormats/GeneratorProducts"/>
+<use name="CondFormats/JetMETObjects"/>
+<use name="RecoEcal/EgammaCoreTools"/>
+<use name="RecoEgamma/EgammaTools"/>
+<use name="EGamma/EGammaAnalysisTools"/>
+<use name="PhysicsTools/UtilAlgos"/>
+<use name="PhysicsTools/Utilities"/>
+<use name="CMGTools/External"/>
+<use name="roottmva"/>
+<use name="roofit"/>
+<use name="fastjet"/>
+<export>
+  <lib name="1"/>
+</export>
+<Flags CPPDEFINES="IS44x=0"/>

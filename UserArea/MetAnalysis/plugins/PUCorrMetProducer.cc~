@@ -1,0 +1,129 @@
+// system include files
+#include <memory>
+#include <cmath>
+#include <algorithm>
+
+#include "DataFormats/Common/interface/ValueMap.h"
+#include "DataFormats/RecoCandidate/interface/RecoCandidate.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/METReco/interface/CommonMETData.h"
+#include "DataFormats/METReco/interface/PFMETFwd.h"
+#include "DataFormats/METReco/interface/PFMETCollection.h"
+
+#include "RecoMET/METAlgorithms/interface/PFSpecificAlgo.h"
+#include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
+
+#include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
+#include "DataFormats/GsfTrackReco/interface/GsfTrackFwd.h"
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
+#include <DataFormats/MuonReco/interface/Muon.h>
+
+#include "FWCore/Utilities/interface/Exception.h"
+
+#include "CMG/MetAnalysis/plugins/NoPUMetProducer.h"
+#include "CMG/MetAnalysis/interface/MetUtilities.h"
+
+
+using namespace edm;
+using namespace std;
+using namespace reco;
+
+PUCorrMetProducer::PUCorrMetProducer(const edm::ParameterSet& iConfig) {
+  
+  produces<reco::PFMETCollection>();
+  MetUtilities utils(iConfig);
+
+  TString path(getenv("CMSSW_BASE"));
+  path += "/src/CMG/MetAnalysis/data/";  
+  std::vector<JetCorrectorParameters> correctionParameters;
+  correctionParameters.push_back(JetCorrectorParameters((path+"GR_R_42_V23_AK5PF_L1FastJet.txt").Data()));
+  correctionParameters.push_back(JetCorrectorParameters((path+"GR_R_42_V23_AK5PF_L2Relative.txt").Data()));
+  correctionParameters.push_back(JetCorrectorParameters((path+"GR_R_42_V23_AK5PF_L3Absolute.txt").Data()));
+  if(fData) correctionParameters.push_back(JetCorrectorParameters((path+"GR_R_42_V23_AK5PF_L2L3Residual.txt").Data()));
+  fJetCorrector = new FactorizedJetCorrector(correctionParameters);     
+}
+
+PUCorrMetProducer::~PUCorrMetProducer() { 
+   delete fJetCorrector;          // fixme
+}
+
+void NoPUMetProducer::beginJob() { }
+
+void NoPUMetProducer::endJob() { } 
+
+void NoPUMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
+
+   // PF candidates
+  edm::Handle< edm::View<reco::Candidate> > PFcandCollHandle;
+  try { iEvent.getByLabel("particleFlow", PFcandCollHandle); }
+  catch ( cms::Exception& ex ) { edm::LogWarning("NoPUMetProducer") << "Can't get candidate collection: particleFlow"; }
+  const edm::View<reco::Candidate> *PFcandColl = PFcandCollHandle.product();
+
+  // uncorrected PF jets
+  edm::Handle< edm::View<reco::Candidate> > uncorPFJetCollectionHandle;
+  try { iEvent.getByLabel("ak5PFJets",uncorPFJetCollectionHandle); }
+  catch ( cms::Exception& ex ) { edm::LogWarning("NoPUMetProducer") << "Can't get candidate collection: ak5PFJets"; }
+  const edm::View<reco::Candidate> *uncorPFJetColl = uncorPFJetCollectionHandle.product();
+  
+  // vertices                                                                                                             
+  edm::Handle<reco::VertexCollection> primaryVertex;
+  try { iEvent.getByLabel("offlinePrimaryVertices", primaryVertex); }
+  catch(cms::Exception& ex ) {edm::LogWarning("NoPUMetProducer") << "Can't get candidate collection: offlinePrimaryVertices"; }
+  
+  //Rho
+  edm::Handle<double> hRho;
+  event.getByLabel("kt6PFJetsForRhoComputationVoronoi",hRho);
+  catch(cms::Exception& ex ) {edm::LogWarning("NoPUMetProducer") << "Can't get candidate collection: rho"; }
+
+  //Fisrt the PV
+  VertexCollection::const_iterator vMax = primaryVertex->begin();
+  reco::Vertex pv;
+  if (primaryVertex->size()>0) pv = *vMax;
+
+  //Now the Met basics
+  Candidate::LorentzVector totalP4(0,0,0,0);
+  float sumet = 0.0;
+  
+  //Track MET
+  for(int index = 0; index < (int)PFcandColl->size(); index++) {
+    const PFCandidateRef pflowCandRef = PFcandColl->refAt(index).castTo<PFCandidateRef>();
+    if(primaryVertex->size()==0) continue;
+    double pDZ  = utils.pfCandDz(pflowCandRef,pv);
+    if(pDZ > fDZCut) continue;
+    totalP4 += pflowCandRef->p4();
+    sumet   += pflowCandRef->pt();
+  }
+  
+  for(int index = 0; index < (int)PFcandColl->size(); index++) {
+    const PFCandidateRef pflowCandRef = PFcandColl->refAt(index).castTo<PFCandidateRef>();
+    if(primaryVertex->size()==0) continue;
+    if(iPFCandRef->trackRef().isNonnull() || iPFCandRef->gsfTrackRef().isNonnull() || (iPFCandRef->muonRef().isNonnull() && iPFCandRef->muonRef()->innerTrack().isNonnull())) continue;
+    totalP4 += pflowCandRef->p4();
+    sumet   += pflowCandRef->pt();
+  }
+  //Remove Neutrals from the PU Jets
+  for(int index = 0; index < (int)uncorPFJetColl->size(); index++) {
+    const Candidate *cand   = &(uncorPFJetColl->at(index));
+    const PFJet     *pPFJet = dynamic_cast< const PFJet * > ( &(*cand) );    
+    if(utils.passJetId(pPFJet     ,pv  ,fJetCorrector,*hRho)) continue;
+    addNeut(pPFJet,totalP4,sumet,fJetCorrector,*hRho,-1);             
+  }
+
+  CommonMETData output;
+  output.mex = invertedP4.px();
+  output.mey = invertedP4.py();
+  output.mez = invertedP4.pz();
+  output.met = invertedP4.pt();
+  output.sumet = sumet;
+  output.phi = atan2(invertedP4.py(),invertedP4.px());
+  
+  PFSpecificAlgo pf;
+  std::auto_ptr<reco::PFMETCollection> pfmetcoll;
+  pfmetcoll.reset (new reco::PFMETCollection);
+  pfmetcoll->push_back( pf.addInfo(PFcandCollHandle, output) );
+
+  // and finally put it in the event
+  iEvent.put( pfmetcoll );
+}

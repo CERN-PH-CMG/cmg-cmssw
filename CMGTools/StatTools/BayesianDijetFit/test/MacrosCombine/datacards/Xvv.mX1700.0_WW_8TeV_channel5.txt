@@ -1,0 +1,35 @@
+#CMS-HGG DataCard for Unbinned Limit Setting, 19500 pb-1 
+#Run with: combine -d hgg.mH130.0.shapes-Unbinned.txt -U -m 130 -H ProfileLikelihood -M MarkovChainMC --rMin=0 --rMax=20.0  -b 3000 -i 50000 --optimizeSim=1 --tries 30
+# Lumi =  19500 pb-1
+imax 1
+jmax 3
+kmax *
+---------------
+shapes *      * ../workspaces/Xvv.inputbkg_8TeV.root w_all:$PROCESS_$CHANNEL
+shapes MggBkg * ../workspaces/Xvv.inputbkg_8TeV.root w_all:CMS_hgg_bkg_8TeV_$CHANNEL
+shapes MggSigWW * ../workspaces/Xvv.mX1700.0_WW_8TeV.inputsig.root w_all:CMS_hgg_WW_sig_$CHANNEL
+shapes MggSigZZ * ../workspaces/Xvv.mX1700.0_ZZ_8TeV.inputsig.root w_all:CMS_hgg_ZZ_sig_$CHANNEL
+shapes MggSigWZ * ../workspaces/Xvv.mX1700.0_WZ_8TeV.inputsig.root w_all:CMS_hgg_WZ_sig_$CHANNEL
+---------------
+bin          cat5
+observation   65914
+------------------------------
+bin                      cat5       cat5      cat5      cat5      
+process                 MggSigWW MggSigZZ MggSigWZ     MggBkg     
+process                 -2 -1 0        1          
+rate                        0  0  0  1
+--------------------------------
+# signal scaled by 0.005
+lumi_8TeV       lnN  1.044  1.044  1.044    - 
+CMS_eff_vtau         lnN  0.891  0.888  0.890      - # tau21 efficiency
+CMS_eff_vmass         lnN  1.185  1.197  1.191      - # jet mass efficiency
+CMS_scale_j         lnN  1.120  1.120  1.120      - # jet energy scale
+CMS_res_j         lnN  1.040  1.040  1.040      - # jet energy resolution
+CMS_pu         lnN  1.030  1.030  1.030      - # pileup
+# Parametric shape uncertainties, entered by hand.
+CMS_hgg_sig_m0_absShift    param   1   0.022   # dijet mass shift due to JES uncertainty
+CMS_hgg_sig_sigmaScale     param   1   0.1   # dijet mass resolution shift due to JER uncertainty
+CMS_hgg_bkg_8TeV_cat5_norm           flatParam  # Normalization uncertainty on background slope
+CMS_hgg_bkg_8TeV_slope1_cat5         flatParam  # Mean and absolute uncertainty on background slope
+CMS_hgg_bkg_8TeV_slope2_cat5         flatParam  # Mean and absolute uncertainty on background slope
+CMS_hgg_bkg_8TeV_slope3_cat5         flatParam  # Mean and absolute uncertainty on background slope

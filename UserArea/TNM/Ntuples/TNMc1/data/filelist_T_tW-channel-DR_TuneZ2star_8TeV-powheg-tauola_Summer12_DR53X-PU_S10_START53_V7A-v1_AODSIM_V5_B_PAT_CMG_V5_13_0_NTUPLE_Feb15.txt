@@ -1,0 +1,10 @@
+root://eoscms//eos/cms/store/cmst3/user/ssekmen/CMG//T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0/NTUPLE_Feb15ntuple_1.root
+root://eoscms//eos/cms/store/cmst3/user/ssekmen/CMG//T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0/NTUPLE_Feb15ntuple_10.root
+root://eoscms//eos/cms/store/cmst3/user/ssekmen/CMG//T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0/NTUPLE_Feb15ntuple_2.root
+root://eoscms//eos/cms/store/cmst3/user/ssekmen/CMG//T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0/NTUPLE_Feb15ntuple_3.root
+root://eoscms//eos/cms/store/cmst3/user/ssekmen/CMG//T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0/NTUPLE_Feb15ntuple_4.root
+root://eoscms//eos/cms/store/cmst3/user/ssekmen/CMG//T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0/NTUPLE_Feb15ntuple_5.root
+root://eoscms//eos/cms/store/cmst3/user/ssekmen/CMG//T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0/NTUPLE_Feb15ntuple_6.root
+root://eoscms//eos/cms/store/cmst3/user/ssekmen/CMG//T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0/NTUPLE_Feb15ntuple_7.root
+root://eoscms//eos/cms/store/cmst3/user/ssekmen/CMG//T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0/NTUPLE_Feb15ntuple_8.root
+root://eoscms//eos/cms/store/cmst3/user/ssekmen/CMG//T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0/NTUPLE_Feb15ntuple_9.root

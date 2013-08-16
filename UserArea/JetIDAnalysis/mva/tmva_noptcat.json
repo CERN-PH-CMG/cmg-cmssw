@@ -1,0 +1,10 @@
+{ 
+  "methods"    : [ "BDT" ],
+  "subcategories" : [ 
+	[  
+	[ "nvtx>1. && nvtx<10.  ","lowpu"],
+	[ "nvtx>=10. && nvtx<20.","midpu"],
+	[ "nvtx>=20. ","highpu"]
+        ]            
+        ]
+}
