@@ -1,16 +1,16 @@
 import FWCore.ParameterSet.Config as cms
 
-##CGIT from EGamma.EGammaAnalysisTools.electronIdMVAProducer_cfi import *
+from EgammaAnalysis.ElectronTools.electronIdMVAProducer_cfi import *
 
 from ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff import *
 
 from RecoEgamma.ElectronIdentification.cutsInCategoriesElectronIdentificationV06_DataTuning_cfi import *
 
 ##CGIT
-## mvaIDSequence = cms.Sequence(
-##     CGIT mvaTrigV0 +
-##     mvaNonTrigV0
-## )
+mvaIDSequence = cms.Sequence(
+     mvaTrigV0 +
+     mvaNonTrigV0
+     )
 
 electronIDSequence = cms.Sequence(
     eidVeryLoose + 
@@ -21,7 +21,7 @@ electronIDSequence = cms.Sequence(
      )
 
 patElectronIDSequence = cms.Sequence(
-    ##CGIT mvaIDSequence +
+    mvaIDSequence +
     simpleEleIdSequence + 
     electronIDSequence
     ) 
