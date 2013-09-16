@@ -1,0 +1,8 @@
+<use name="AnalysisDataFormats/CMGTools"/>
+<use name="CMGTools/RootTools"/>
+<use name="rootmath"/>
+<export></export>
+<library name="CMGToolsUtilitiesPlugins" file="*.cc">
+  <use name="CMGTools/Utilities"/>
+  <flags   EDM_PLUGIN="1"/>
+</library>
