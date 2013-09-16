@@ -226,8 +226,11 @@ process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
 ## Geometry and Detector Conditions (needed for a few patTuple production steps)
 
-from CMGTools.Common.PAT.patCMGSchedule_cff import getSchedule
-process.schedule = getSchedule(process, runOnMC, runOnFastSim)
+##CGIT
+## from CMGTools.Common.PAT.patCMGSchedule_cff import getSchedule
+## process.schedule = getSchedule(process, runOnMC, runOnFastSim)
+process.schedule = cms.Schedule( process.p)
+
 process.schedule.append( process.outpath )
 
 ## MessageLogger
