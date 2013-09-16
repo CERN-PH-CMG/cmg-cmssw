@@ -1,0 +1,12 @@
+<use name="AnalysisDataFormats/CMGTools"/>
+<use name="RecoMET/METAlgorithms"/>
+<use name="Muon/MuonAnalysisTools"/>
+<use name="EGamma/EGammaAnalysisTools"/>
+
+<export></export>
+<library name="CMGToolsCommonPlugins" file="*.cc">
+  <use name="CMGTools/Common"/>
+  <use name="DQMServices/Core"/>
+  <use name="JetMETCorrections/Modules"/>
+  <flags   EDM_PLUGIN="1"/>
+</library>
