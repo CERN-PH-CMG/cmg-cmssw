@@ -1,0 +1,5 @@
+cmgtools%/TauPlusX/Run2011A-03Oct2011-v1/AOD/V5/PAT_CMG_V5_6_0_B
+cmgtools%/TauPlusX/Run2011A-05Aug2011-v1/AOD/V5/PAT_CMG_V5_6_0_B
+cmgtools%/TauPlusX/Run2011A-May10ReReco-v1/AOD/V5/PAT_CMG_V5_6_0_B
+cmgtools%/TauPlusX/Run2011A-PromptReco-v4/AOD/V5/PAT_CMG_V5_6_0_B
+cmgtools%/TauPlusX/Run2011B-PromptReco-v1/AOD/V5/PAT_CMG_V5_6_0_B
