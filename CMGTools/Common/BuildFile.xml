@@ -1,0 +1,31 @@
+<use name="FWCore/Framework"/>
+<use name="FWCore/ParameterSet"/>
+<use name="FWCore/FWLite"/>
+
+<use name="CommonTools/UtilAlgos"/>
+
+<use name="DataFormats/PatCandidates"/>
+<use name="AnalysisDataFormats/CMGTools"/>
+<use name="CondFormats/JetMETObjects"/>
+<use name="MagneticField/Engine"/>
+
+<use name="PhysicsTools/JetMCUtils"/>
+<use name="DataFormats/HepMCCandidate"/>
+<use name="HLTrigger/HLTcore"/>
+
+<use name="PhysicsTools/Utilities"/>
+
+<use name="RecoEgamma/EgammaTools"/>
+<use name="RecoEcal/EgammaCoreTools"/>
+<use name="TrackingTools/IPTools"/>
+
+<use name="CMGTools/External"/>
+
+<use name="root"/>
+<use name="roottmva"/>
+<use name="rootrflx"/>
+<use name="roofitcore"/>
+
+<export>
+  <lib   name="1"/>
+</export>
