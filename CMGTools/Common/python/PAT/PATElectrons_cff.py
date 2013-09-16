@@ -106,7 +106,7 @@ patElectrons.embedTrack = True
 selectedPatElectrons.cut = 'pt()>0'
 
 from CMGTools.Common.PAT.patElectronsWithTrigger_cff import * 
-from CMGTools.Common.PAT.patElectronsWithMVA_cfi import * 
+# from CMGTools.Common.PAT.patElectronsWithMVA_cfi import * 
 from CMGTools.Common.PAT.patElectronsWithRegressionVars_cfi import * 
 from CMGTools.Common.PAT.patElectronsWithDirectionalIsolation_cfi import * 
 
@@ -119,7 +119,7 @@ PATElectronSequence = cms.Sequence(
     patElectronIDSequence + 
     makePatElectrons +
     selectedPatElectrons + 
-    patElectronsWithMVA +
+    # patElectronsWithMVA + # not used, and creates problem in git migration
     patElectronsWithDirectionalIsolation +
     patElectronsWithRegressionVars +
     patElectronsWithTriggerSequence +
