@@ -48,13 +48,12 @@ treeProducer = cfg.Analyzer(
 
 testComp = cfg.MCComponent(
     name = 'Test',
-    files = glob.glob('Prod22/Job*/sim.root'),
+    files = glob.glob('Prod_211/Job*/sim.root'),
     xSection = 1, 
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1 )
 testComp.splitFactor = len( testComp.files )
-
 
 selectedComponents = [testComp]  
 
