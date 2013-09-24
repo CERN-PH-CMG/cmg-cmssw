@@ -1,0 +1,13 @@
+<use   name="boost"/>
+<use   name="FWCore/Framework"/>
+<use   name="SimDataFormats/GeneratorProducts"/>
+<use   name="GeneratorInterface/Core"/>
+<use   name="clhep"/>
+<use   name="pythia6"/>
+<use   name="f77compiler"/>
+<Flags LDFLAGS="$(PYTHIA6_BASE)/lib/pydata.o -L/afs/cern.ch/sw/lcg/external/cernlib/2006b/x86_64-slc5-gcc43-opt/lib/ -lkernlib -lpacklib -lmathlib -lkernlib-shift"/>
+<Flags CppDefines="DEBUG=1"/>
+<export>
+  <lib   name="1"/>
+</export>
+
