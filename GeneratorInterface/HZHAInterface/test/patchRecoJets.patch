@@ -1,0 +1,152 @@
+diff -rupN JetProducers.orig/plugins/FastjetJetProducer.cc JetProducers/plugins/FastjetJetProducer.cc
+--- JetProducers.orig/plugins/FastjetJetProducer.cc	2012-04-23 22:39:44.000000000 +0200
++++ JetProducers/plugins/FastjetJetProducer.cc	2012-04-23 22:16:19.000000000 +0200
+@@ -275,7 +275,16 @@ void FastjetJetProducer::runAlgorithm( e
+     std::cout << i->px() << " " << i->py() << " " << i->pz() << " " << i->E() << '\n';
+     }
+   */
+-  fjJets_ = fastjet::sorted_by_pt(fjClusterSeq_->inclusive_jets(jetPtMin_));
++  //do Jade/Cambridge e+e- specific sturr if needed  
++  if (jetAlgorithm_ == "Jade"){
++    // if we ask for a given number of jets 
++    if (exclNJets_ != -1)
++      fjJets_ = fjClusterSeq_->exclusive_jets(exclNJets_);
++    // if we just set the ycut  
++    else   
++      fjJets_ = fjClusterSeq_->exclusive_jets_ycut(yCut_);
++  } else     
++    fjJets_ = fastjet::sorted_by_pt(fjClusterSeq_->inclusive_jets(jetPtMin_));
+ }
+ 
+ 
+diff -rupN JetProducers.orig/plugins/VirtualJetProducer.cc JetProducers/plugins/VirtualJetProducer.cc
+--- JetProducers.orig/plugins/VirtualJetProducer.cc	2012-04-23 22:39:44.000000000 +0200
++++ JetProducers/plugins/VirtualJetProducer.cc	2012-04-23 22:32:52.000000000 +0200
+@@ -38,6 +38,9 @@
+ #include "fastjet/CMSIterativeConePlugin.hh"
+ #include "fastjet/ATLASConePlugin.hh"
+ #include "fastjet/CDFMidPointPlugin.hh"
++#include "fastjet/JadePlugin.hh"
++#include "fastjet/EECambridgePlugin.hh"
++
+ 
+ #include <iostream>
+ #include <memory>
+@@ -130,6 +133,16 @@ VirtualJetProducer::VirtualJetProducer(c
+ {
+   anomalousTowerDef_ = std::auto_ptr<AnomalousTower>(new AnomalousTower(iConfig));
+ 
++  // in order not to break pp configs, I leave these two parameters for e+e- optional
++  if (iConfig.exists("yCut"))
++    yCut_ = iConfig.getParameter<double>("yCut");
++  else 
++    yCut_ = -1;
++  if (iConfig.exists("exclNJets"))
++    exclNJets_ = iConfig.getParameter<int>("exclNJets");
++  else 
++    exclNJets_ = -1;
++
+   //
+   // additional parameters to think about:
+   // - overlap threshold (set to 0.75 for the time being)
+@@ -163,6 +176,14 @@ VirtualJetProducer::VirtualJetProducer(c
+   else if (jetAlgorithm_=="GeneralizedKt")
+     fjJetDefinition_= JetDefPtr( new fastjet::JetDefinition(fastjet::genkt_algorithm,
+                                                             rParam_,-2) );
++  else if (jetAlgorithm_=="Jade"){
++    fjPlugin_ = PluginPtr(new fastjet::JadePlugin());
++    fjJetDefinition_= JetDefPtr(new fastjet::JetDefinition(&*fjPlugin_));
++  } 
++  else if (jetAlgorithm_=="Cambridge"){
++    fjPlugin_ = PluginPtr(new fastjet::EECambridgePlugin(yCut_));
++    fjJetDefinition_= JetDefPtr(new fastjet::JetDefinition(&*fjPlugin_));
++  }
+   else
+     throw cms::Exception("Invalid jetAlgorithm")
+       <<"Jet algorithm for VirtualJetProducer is invalid, Abort!\n";
+diff -rupN JetProducers.orig/plugins/VirtualJetProducer.h JetProducers/plugins/VirtualJetProducer.h
+--- JetProducers.orig/plugins/VirtualJetProducer.h	2012-04-23 22:39:44.000000000 +0200
++++ JetProducers/plugins/VirtualJetProducer.h	2012-04-22 12:41:59.000000000 +0200
+@@ -150,6 +150,8 @@ protected:
+   double                inputEtMin_;                // minimum et of input constituents
+   double                inputEMin_;                 // minimum e of input constituents
+   double                jetPtMin_;                  // minimum jet pt
++  double                yCut_;                      // ycut for e+e- algos
++  int                   exclNJets_;                  // specify the number of exclusive jets you want (-1 for inclusive algo)
+   bool                  doPVCorrection_;            // correct to primary vertex? 
+ 
+   // for restricting inputs due to processing time
+diff -rupN JetProducers.orig/python/ExclusiveNJadeGenJets_cfi.py JetProducers/python/ExclusiveNJadeGenJets_cfi.py
+--- JetProducers.orig/python/ExclusiveNJadeGenJets_cfi.py	1970-01-01 01:00:00.000000000 +0100
++++ JetProducers/python/ExclusiveNJadeGenJets_cfi.py	2012-04-23 22:32:07.000000000 +0200
+@@ -0,0 +1,15 @@
++import FWCore.ParameterSet.Config as cms
++
++from RecoJets.JetProducers.GenJetParameters_cfi import *
++from RecoJets.JetProducers.AnomalousCellParameters_cfi import *
++
++ExclusiveNJadeGenJets = cms.EDProducer(
++    "FastjetJetProducer",
++    GenJetParameters,
++    AnomalousCellParameters,
++    jetAlgorithm = cms.string("Jade"),
++    rParam     = cms.double(-1),
++    yCut       = cms.double(-1),
++    exclNJets  = cms.int32(2)
++    )
++
+diff -rupN JetProducers.orig/python/ExclusiveNJadePFJets_cfi.py JetProducers/python/ExclusiveNJadePFJets_cfi.py
+--- JetProducers.orig/python/ExclusiveNJadePFJets_cfi.py	1970-01-01 01:00:00.000000000 +0100
++++ JetProducers/python/ExclusiveNJadePFJets_cfi.py	2012-04-23 22:28:04.000000000 +0200
+@@ -0,0 +1,14 @@
++import FWCore.ParameterSet.Config as cms
++
++from RecoJets.JetProducers.PFJetParameters_cfi import *
++from RecoJets.JetProducers.AnomalousCellParameters_cfi import *
++
++ExclusiveNJadePFJets = cms.EDProducer(
++    "FastjetJetProducer",
++    PFJetParameters,
++    AnomalousCellParameters,
++    jetAlgorithm = cms.string("Jade"),
++    yCut       = cms.double(-1),
++    exclNJets  = cms.int32(2)
++    )
++
+diff -rupN JetProducers.orig/python/ExclusiveYcutJadeGenJets_cfi.py JetProducers/python/ExclusiveYcutJadeGenJets_cfi.py
+--- JetProducers.orig/python/ExclusiveYcutJadeGenJets_cfi.py	1970-01-01 01:00:00.000000000 +0100
++++ JetProducers/python/ExclusiveYcutJadeGenJets_cfi.py	2012-04-23 22:31:47.000000000 +0200
+@@ -0,0 +1,15 @@
++import FWCore.ParameterSet.Config as cms
++
++from RecoJets.JetProducers.GenJetParameters_cfi import *
++from RecoJets.JetProducers.AnomalousCellParameters_cfi import *
++
++ExclusiveYcutJadeGenJets = cms.EDProducer(
++    "FastjetJetProducer",
++    GenJetParameters,
++    AnomalousCellParameters,
++    jetAlgorithm = cms.string("Jade"),
++    rParam     = cms.double(-1),
++    yCut       = cms.double(0.5),
++    exclNJets  = cms.int32(-1)
++    )
++
+diff -rupN JetProducers.orig/python/ExclusiveYcutJadePFJets_cfi.py JetProducers/python/ExclusiveYcutJadePFJets_cfi.py
+--- JetProducers.orig/python/ExclusiveYcutJadePFJets_cfi.py	1970-01-01 01:00:00.000000000 +0100
++++ JetProducers/python/ExclusiveYcutJadePFJets_cfi.py	2012-04-23 22:28:38.000000000 +0200
+@@ -0,0 +1,14 @@
++import FWCore.ParameterSet.Config as cms
++
++from RecoJets.JetProducers.PFJetParameters_cfi import *
++from RecoJets.JetProducers.AnomalousCellParameters_cfi import *
++
++ExclusiveYcutJadePFJets  = cms.EDProducer(
++    "FastjetJetProducer",
++    PFJetParameters,
++    AnomalousCellParameters,
++    jetAlgorithm = cms.string("Jade"),
++    yCut       = cms.double(0.5),
++    exclNJets  = cms.int32(-1)
++    )
++
