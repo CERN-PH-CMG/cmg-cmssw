@@ -34,7 +34,7 @@ class Comparison(HistComparator):
         # cut = 'abs(jet1_eta)<1. && jet1_rec_n==1'
         cut = 'abs(jet1_eta)<1. && jet1_{ext}_pt>0'.format(ext=ext)
         self.tree.Draw(var, cut,'goff')
-        h.Fit('gaus')
+        # h.Fit('gaus')
         # need to fit in a given range around the main peak
         # fun.SetLineColor( h.GetLineColor() ) 
         return h
@@ -60,19 +60,19 @@ c1 = Comparison( 'c1', chain )
 c1.draw(simple=True)
 c1.save()
 
-fun = c1.hsim.GetFunction('gaus')
-amplitude = fun.GetParameter(0)
-mean = fun.GetParameter(1)
-sigma = fun.GetParameter(2)
+## fun = c1.hsim.GetFunction('gaus')
+## amplitude = fun.GetParameter(0)
+## mean = fun.GetParameter(1)
+## sigma = fun.GetParameter(2)
 
-frec = Fitter('frec', chain, 'rec')
-fsim = Fitter('fsim', chain, 'sim')
+## frec = Fitter('frec', chain, 'rec')
+## fsim = Fitter('fsim', chain, 'sim')
 
-sBlue.formatHisto(frec.hmean)
-sBlack.formatHisto(fsim.hmean)
-sBlue.formatHisto(frec.hsigma)
-sBlack.formatHisto(fsim.hsigma)
+## sBlue.formatHisto(frec.hmean)
+## sBlack.formatHisto(fsim.hmean)
+## sBlue.formatHisto(frec.hsigma)
+## sBlack.formatHisto(fsim.hsigma)
 
 
-cmean = HistComparator('cmean', frec.hmean, fsim.hmean, title1='fast sim', title2='pf sim'); cmean.draw()
-csigma = HistComparator('csigma', frec.hsigma, fsim.hsigma, title1='fast sim', title2='pf sim'); csigma.draw()
+## cmean = HistComparator('cmean', frec.hmean, fsim.hmean, title1='fast sim', title2='pf sim'); cmean.draw()
+## csigma = HistComparator('csigma', frec.hsigma, fsim.hsigma, title1='fast sim', title2='pf sim'); csigma.draw()
