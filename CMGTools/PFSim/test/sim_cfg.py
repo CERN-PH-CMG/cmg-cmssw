@@ -24,10 +24,10 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 
 
 #NIKITA: to read a file locally
-## process.source = cms.Source(
-##     'PoolSource',
-##     fileNames = cms.untracked.vstring( 'file:gun_jetA_mateff.root' )
-##     )
+# process.source = cms.Source(
+#    'PoolSource',
+#    fileNames = cms.untracked.vstring( 'file:gun_jetA_mateff.root' )
+#    )
 
 # to read a file on eos (disk pool)
 # all done without material effects
@@ -38,6 +38,7 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 
 process.source = datasetToSource('cbern','/PFSim/FS211/Aug8_100k_pt0to100_MEoff','.*root')
 
+print process.source.fileNames 
 
 process.load('CMGTools.PFSim.pfsim_cff')
 
