@@ -1,0 +1,4 @@
+A set of postprocessing tools for the particle flow: 
+- event filters to remove events with a problematic PF reconstruction
+- event filter to select events with a high PFMET and a low CaloMET
+- ...
