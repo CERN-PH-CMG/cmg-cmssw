@@ -1,0 +1,90 @@
+llrCorrections.root	
+-------------------
+
+Turn on curves from Lorenzo, information below: 
+
+Salut Colin,
+
+turnOnTauMuTauAll is the HLT effiency wrt offline seelection for all
+the tau triggers usedd in the analsyis weigthed by the luminosity
+collected
+by each trigger, so it can be applied to the MC that one wants to
+compare to the full 2011 data.
+If you want to apply a trigger in the MC, what I did for Summer11 was
+to require HLT_IsoMu12_LooseIsoPFTau10_v2 in the MC and apply
+ratioOnTauMuTauAll to account for data/MC difference. However, in the
+curve I sent you, ratioOnTauMuTauAll was done wrt Fall11 MC triggers.
+To adapt the turn-ons to my needs, I just used the trigger parameters
+listed in the AN and a macro that makes the curve out of them.
+In this way.
+In my experience, I would say that parametrizing the trigger as a
+weight, without requiring the bit in the MC, is perfectly ok! Could
+you try to see what you get by using turnOnTauMuTauAll as an event
+weight? Hopefully it will acoount for most of the discrepancy.
+
+Lorenzo
+
+
+double efficiency(double m, double m0, double sigma, double alpha,
+double n, double norm)
+{
+  const double sqrtPiOver2 = 1.2533141373;
+  const double sqrt2 = 1.4142135624;
+
+  double sig = fabs((double) sigma);
+
+  double t = (m - m0)/sig ;
+
+  if (alpha < 0)
+    t = -t;
+
+  double absAlpha = fabs(alpha / sig);
+  double a = TMath::Power(n/absAlpha,n)*exp(-0.5*absAlpha*absAlpha);
+  double b = absAlpha - n/absAlpha;
+
+  //   if (a>=std::numeric_limits<double>::max()) return -1. ;
+
+  double ApproxErf ;
+  double arg = absAlpha / sqrt2 ;
+  if (arg > 5.) ApproxErf = 1 ;
+  else if (arg < -5.) ApproxErf = -1 ;
+  else ApproxErf = TMath::Erf(arg) ;
+
+  double leftArea = (1 + ApproxErf) * sqrtPiOver2 ;
+  double rightArea = ( a * 1/TMath::Power(absAlpha - b,n-1)) / (n - 1);
+  double area = leftArea + rightArea;
+
+  if ( t <= absAlpha ){
+    arg = t / sqrt2 ;
+    if (arg > 5.) ApproxErf = 1 ;
+    else if (arg < -5.) ApproxErf = -1 ;
+    else ApproxErf = TMath::Erf(arg) ;
+    return norm * (1 + ApproxErf) * sqrtPiOver2 / area ;
+  }
+  else{
+    return norm * (leftArea +  a * (1/TMath::Power(t-b,n-1) -
+1/TMath::Power(absAlpha - b,n-1)) / (1 - n)) / area ;
+  }
+
+}
+
+
+2011/11/29 Colin Bernet <colin.bernet@cern.ch>:
+Thanks, but I don't quite understand how I'm supposed to use this curve :-)
+You told me that this curve was done w/r to a given trigger in the MC (?)
+Can you tell me more about that?
+
+Which selection do you apply in the MC?  (for the trigger)
+Then, how do you use turnOnTauMuTauAll?
+
+C
+
+On Nov 29, 2011, at 3:45 PM, Lorenzo Bianchini wrote:
+
+Salut Colin,
+
+I put in ~bianchi/public a file called llrCorrections.root
+You can use turnOnTauMuTauAll to have the turnOn as a function of tau pt.
+
+Lorenzo
+
