@@ -237,8 +237,9 @@ test = 1
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
-    comp = TTH
-    comp.files = comp.files[:2]
+    #comp = TTH
+    comp = DoubleMuD
+    comp.files = comp.files[:5]
     selectedComponents = [comp]
     comp.splitFactor = 1
     ## search for memory leaks
