@@ -71,13 +71,11 @@ ttHLepAna = cfg.Analyzer(
     electrons='cmgElectronSel',
     photons='cmgPhotonSel',
     isolationCut=0.4, 
-    sip3dCut=10,
-    sip3dCutVeryLoose=100,
     minGoodLeptons=2,
     minInclusiveLeptons=2,
     doSSLeptons=False,
     doRochesterCorrections=True,
-    doElectronScaleCorrections=False,
+    doElectronScaleCorrections=True,
     doRecomputeSIP3D=True,
     doSegmentBasedMuonCleaning=True,
     doEleMuCrossCleaning=True,
@@ -239,9 +237,9 @@ test = 1
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
-    comp = TTH
-    #comp = DoubleMuD
-    comp.files = comp.files[:1]
+    #comp = TTH
+    comp = DoubleMuD
+    comp.files = comp.files[:5]
     selectedComponents = [comp]
     comp.splitFactor = 1
     ## search for memory leaks
