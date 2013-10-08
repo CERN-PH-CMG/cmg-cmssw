@@ -2,6 +2,7 @@
 #define ElectronEnergyCalibrator_H
 
 #include "EgammaAnalysis/ElectronTools/interface/SimpleElectron.h"
+#include <TRandom.h>
 #include <string>
 #include <vector>
 #include <fstream>
@@ -43,6 +44,7 @@ struct linearityCorrectionValues
 class ElectronEnergyCalibrator
 {
     public:
+        ElectronEnergyCalibrator() { } // dummy, for root
         ElectronEnergyCalibrator( const std::string pathData, 
                                   const std::string pathLinData,
                                   const std::string dataset, 
@@ -52,7 +54,8 @@ class ElectronEnergyCalibrator
                                   bool isMC, 
                                   bool updateEnergyErrors, 
                                   bool verbose, 
-                                  bool synchronization
+                                  bool synchronization,
+                                  TRandom* standaloneRng = 0
                                 ) : 
                                   pathData_(pathData), 
                                   pathLinData_(pathLinData), 
@@ -63,7 +66,8 @@ class ElectronEnergyCalibrator
                                   isMC_(isMC), 
                                   updateEnergyErrors_(updateEnergyErrors), 
                                   verbose_(verbose), 
-                                  synchronization_(synchronization) 
+                                  synchronization_(synchronization),
+                                  standaloneRand_(standaloneRng)
 	    {
 		    init();
     	}
@@ -97,6 +101,10 @@ class ElectronEnergyCalibrator
         correctionValues corrValMC;
         linearityCorrectionValues linCorrValArray[100];
         int nCorrValRaw, nLinCorrValRaw;
+
+        TRandom* standaloneRand_; 
+        double randGauss() ; 
+        double randFlat() ; 
 };
 
 #endif

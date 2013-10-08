@@ -23,6 +23,7 @@ from ROOT import CMGMuonCleanerBySegmentsAlgo, TRandom3
 cmgMuonCleanerBySegments = CMGMuonCleanerBySegmentsAlgo()
 
 from CMGTools.TTHAnalysis.signedSip import *
+from CMGTools.TTHAnalysis.electronCalibrator import *
  
 class ttHLepAnalyzerBase( Analyzer ):
 
@@ -30,19 +31,8 @@ class ttHLepAnalyzerBase( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHLepAnalyzerBase,self).__init__(cfg_ana,cfg_comp,looperName)
 
-        #if self.cfg_ana.doElectronScaleCorrections:
-        #    tag = "Summer12_DR53X_HCP2012" if cfg_comp.isMC else "Moriond2013";
-        #    self.electronEnergyCalibrator = ElectronEnergyCalibrator(
-        #                                        tag,   ## dataset  
-        #                                        True, # isAOD
-        #                                        cfg_comp.isMC, # isMC
-        #                                        True, # updateEnergyError,
-        #                                        999,  # applyCorrections (999 = correct and/or smear for SC-based energy estimation)
-        #                                        0.607, # smearing ratio
-        #                                        False, False, #verbose, sync
-        #                                        TRandom3(0),) # random number generator
-                                                
-
+        if self.cfg_ana.doElectronScaleCorrections:
+            self.electronEnergyCalibrator = ElectronCalibrator(self,cfg_comp.isMC)
         if hasattr(cfg_comp,'efficiency'):
             self.efficiency= EfficiencyCorrector(cfg_comp.efficiency)
 
@@ -167,11 +157,9 @@ class ttHLepAnalyzerBase( Analyzer ):
           if (abs(SCEta) >= 2.3 and abs(SCEta) < 2.4 ) : ele.EffectiveArea = 0.110;
           if (abs(SCEta) >= 2.4) : ele.EffectiveArea = 0.138;
 
-        #if self.cfg_ana.doElectronScaleCorrections:
-        #    for ele in allelectrons:
-        #        calibratedPatEle = ele.sourcePtr().get()
-        #        self.electronEnergyCalibrator.correctLite(calibratedPatEle, calibratedPatEle.r9(), event.run)
-        #        ele.setP4(calibratedPatEle.p4(calibratedPatEle.P4_COMBINATION))
+        if self.cfg_ana.doElectronScaleCorrections:
+            for ele in allelectrons:
+                self.electronEnergyCalibrator.correct(ele, event.run)
 
         muForEleCrossCleaning = []
         if self.cfg_ana.doEleMuCrossCleaning:

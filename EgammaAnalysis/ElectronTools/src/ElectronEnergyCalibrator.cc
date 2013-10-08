@@ -167,6 +167,35 @@ double ElectronEnergyCalibrator::stringToDouble(const string &str)
 	return val;
 }
 
+double ElectronEnergyCalibrator::randGauss() {
+   if (standaloneRand_) return standaloneRand_->Gaus(0.,1.);
+
+   edm::Service<edm::RandomNumberGenerator> rng;
+   if ( ! rng.isAvailable()) {
+     throw cms::Exception("Configuration")
+       << "XXXXXXX requires the RandomNumberGeneratorService\n"
+          "which is not present in the configuration file.  You must add the service\n"
+          "in the configuration file or remove the modules that require it.";
+   }
+   CLHEP::RandGaussQ gaussDistribution(rng->getEngine(), 0., 1.);
+   return gaussDistribution.fire();
+}
+ 
+double ElectronEnergyCalibrator::randFlat() {
+   if (standaloneRand_) return standaloneRand_->Rndm();
+
+   edm::Service<edm::RandomNumberGenerator> rng;
+   if ( ! rng.isAvailable()) {
+     throw cms::Exception("Configuration")
+       << "XXXXXXX requires the RandomNumberGeneratorService\n"
+          "which is not present in the configuration file.  You must add the service\n"
+          "in the configuration file or remove the modules that require it.";
+   }
+   CLHEP::RandFlat flatRandom(rng->getEngine());	
+   return randFlat();
+}
+ 
+
 void ElectronEnergyCalibrator::calibrate(SimpleElectron &electron)
 {
     double scale = 1.0;
@@ -205,15 +234,7 @@ void ElectronEnergyCalibrator::calibrate(SimpleElectron &electron)
       	    break;
     }
 
-    edm::Service<edm::RandomNumberGenerator> rng;
-    if ( !rng.isAvailable() ) 
-    {
-        throw cms::Exception("Configuration")
-        << "XXXXXXX requires the RandomNumberGeneratorService\n"
-           "which is not present in the configuration file.  You must add the service\n"
-           "in the configuration file or remove the modules that require it.";
-    }
-    
+   
     if (!isMC_ )
     {
   	    for ( int i=0; i < nCorrValRaw; i++ )
@@ -299,8 +320,7 @@ void ElectronEnergyCalibrator::calibrate(SimpleElectron &electron)
                     }
                 } else 
                 {
-                    CLHEP::RandFlat flatRandom(rng->getEngine());	
-	                double rn = flatRandom.fire();
+	                double rn = randFlat();
                 	if ( rn > lumiRatio_ ) 
                     {
                         if ( isEB  && fabs(eta) <  1 && r9 <  0.94 ) dsigMC = 0.0109;
@@ -411,8 +431,7 @@ void ElectronEnergyCalibrator::calibrate(SimpleElectron &electron)
 
     if ( isMC_ ) 
     {
-        CLHEP::RandGaussQ gaussDistribution(rng->getEngine(), 1.,dsigMC);
-        corrMC = gaussDistribution.fire();
+        corrMC = 1  + dsigMC*randGauss();
         if ( verbose_ ) 
         {
             std::cout << "[ElectronEnergyCalibrator] unsmeared energy " << newEnergy_ << std::endl;
