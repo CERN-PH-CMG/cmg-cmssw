@@ -63,6 +63,10 @@ class Histogram( object ):
         '''Rebins by factor'''
         self.obj.Rebin( factor )
         self.weighted.Rebin(factor)
+
+    def Divide(self, other):
+        self.obj.Divide( other.obj)
+        self.weighted.Divide( other.weighted )
     
     def NormalizeToBinWidth(self):
         '''Divides each bin content and error by the bin size'''
