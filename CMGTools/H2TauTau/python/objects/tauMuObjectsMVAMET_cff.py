@@ -7,7 +7,7 @@ from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
 
 from CMGTools.Utilities.metRecoilCorrection.metRecoilCorrection_cff import *
 
-from CMGTools.Common.factories.cmgTauMuCor_cfi import cmgTauMuCor 
+from CMGTools.H2TauTau.objects.cmgTauMuCor_cfi import cmgTauMuCor 
 from CMGTools.H2TauTau.objects.tauMuSVFit_cfi import tauMuSVFit 
 from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
 
@@ -54,7 +54,7 @@ cmgTauMuMVAPreSel.cfg.diObjectCollection = 'cmgTauMuPreSel'
 
 # Correct tau pt (after MVA MET according to current baseline)
 
-from CMGTools.Common.factories.cmgTauMuCor_cfi import cmgTauMuCor
+from CMGTools.H2TauTau.objects.cmgTauMuCor_cfi import cmgTauMuCor
 cmgTauMuCor = cmgTauMuCor.clone()
 
 cmgTauMuCor.cfg.diObjectCollection = cms.InputTag('mvaMETTauMu')

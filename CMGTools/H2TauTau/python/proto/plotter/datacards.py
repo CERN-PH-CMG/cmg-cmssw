@@ -188,6 +188,9 @@ def datacards(plot, cutstring, shift, channel='muTau', prefix=None, energy='8TeV
                 continue
         else:
             if 'SUSY' in myName: continue
+
+        if shift and 'WShape' in shift and not 'WJets' in myName:
+            continue
         
         rogerName = datacards_aliases.get(myName, None)
         if 'btag' in category and rogerName:
