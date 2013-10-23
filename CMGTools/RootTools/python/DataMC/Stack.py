@@ -32,6 +32,10 @@ class Stack:
         # one MUST do a deepcopy here. 
         self.hists.append( copy.deepcopy(hist) )
         self.integral += hist.Yield( weighted=True )
+        if self.totalHist is None:
+            self.totalHist = copy.deepcopy( hist )
+        elif hist.layer<1000:
+            self.totalHist.Add( hist )
         
     def Draw(self, opt='',
              xmin=None, xmax=None, ymin = None, ymax=None):
@@ -57,11 +61,11 @@ class Stack:
         # hist = hists[0]
         hist = self.totalHist
         # hist.Draw('hist')
-        #hist.Draw(opt)  #### riccardo
+        hist.Draw(opt)  #### riccardo
         if self.ytitle is not None:
             hist.GetYaxis().SetTitle( self.ytitle )
-        #self.obj.Draw( opt+'same' )  ### riccardo
-        self.obj.Draw( opt )  ### riccardo
+        self.obj.Draw( opt+'same' )  ### riccardo
+        #self.obj.Draw( opt )  ### riccardo
         # need to redraw the axes, which are now "under"
         # the stacked histograms. 
         hist.Draw('axissame')

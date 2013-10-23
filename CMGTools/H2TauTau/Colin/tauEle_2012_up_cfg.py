@@ -15,10 +15,8 @@ tauScaleShift = 1.0
 syncntuple = True
 doThePlot = True
 
-puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
-
-puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-06-13/MC_Summer12_PU_S10-600bins.root'
-puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-06-13/Data_Pileup_2012_ReReco-600bins.root'
+puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/13-09-13/MC_Summer12_PU_S10-600bins.root'
+puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/13-09-13/Data_Pileup_2012_ReRecoPixel-600bins.root'
 
 # vertexFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012/Vertices'
 # vertexFileData = '/'.join([vertexFileDir, 'vertices_data_2012A_2012B_start_195947.root'])
@@ -257,7 +255,11 @@ elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
         comp.files = comp.files[:3]
-
+elif test==3:
+    # selectedComponents = mc_higgs_susy
+    # selectedComponents = [DYJets, DY1Jets, DY2Jets, DY3Jets, DY4Jets]
+    selectedComponents = embed_list
+    selectedComponents += [DYJets, DY1Jets, DY2Jets, DY3Jets, DY4Jets]
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )

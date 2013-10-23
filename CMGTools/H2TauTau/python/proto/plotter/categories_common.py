@@ -33,8 +33,9 @@ cat_J1_oldhigh = cat_J1 + ' && l1_pt>40.'
 cat_J0_oldlow = cat_J0 + ' && l1_pt<=40.'
 cat_J0_oldhigh = cat_J0 + ' && l1_pt>40.'
 
-cat_VBF_tight = 'nJets>=2 && nBJets==0 && VBF_nCentral==0 && VBF_mjj>700 && abs(VBF_deta)>4. && pthiggs>100.'
-cat_VBF_loose = cat_VBF + '&& nBJets==0 && !({VBF_tight})'.format(VBF_tight=cat_VBF_tight)
+cat_VBF_tight = 'nJets>=2 && l1_pt>30. && nBJets==0 && VBF_nCentral==0 && VBF_mjj>700 && abs(VBF_deta)>4. && pthiggs>100.'
+cat_VBF_loose = cat_VBF + ' && l1_pt>30. && nBJets==0 && !({VBF_tight})'.format(VBF_tight=cat_VBF_tight)
+cat_J2B0 = 'nJets>=2 && l1_pt>30. && nBJets==0'
 
 def replaceCategories(cutstr, categories):
     for catname, cat in categories.iteritems():
@@ -46,6 +47,7 @@ categories_common = {
     'Xcat_VBF_Rel_30X':cat_VBF_Rel_30,
     'Xcat_VBF_Rel_20X':cat_VBF_Rel_20,
     'Xcat_J2X':cat_J2,
+    'Xcat_J2B0X':cat_J2B0,
     'Xcat_J1X':cat_J1,
     'Xcat_J1BX':cat_J1B,
     'Xcat_J0X':cat_J0,

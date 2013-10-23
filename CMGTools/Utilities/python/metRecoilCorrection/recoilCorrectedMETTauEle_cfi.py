@@ -22,8 +22,8 @@ recoilCorrectedMETTauEle  = cms.EDProducer(
     correctionType = cms.int32(2),
     fileCorrectTo = cms.string(rootfile_dir + 'recoilfit_wjets53X_20pv_njet.root'),
     # you should not have to change the files below
-    fileZmmData = cms.string(rootfile_dir + 'recoilfit_datamm53X_20pv_njet.root'),
-    fileZmmMC = cms.string(rootfile_dir + 'recoilfit_zmm53X_20pv_njet.root'),
+    fileZmmData = cms.string(rootfile_dir + 'recoilfit_datamm53XRR_2012_njet.root'), # Phil's new re-reco corrections; whhy no 20pv
+    fileZmmMC = cms.string(rootfile_dir + 'recoilfit_zmm53XRR_2012_njet.root'), # Phil's new re-reco corrections
     enable = cms.bool(True),
     force = cms.bool(False),
     verbose = cms.untracked.bool( False )

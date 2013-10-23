@@ -47,6 +47,10 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
        var( tr, 'hqtWeightDown')
        var( tr, 'NJetWeight')
        var( tr, 'zllWeight')
+
+       var( tr, 'tauFakeRateWeight')
+       var( tr, 'tauFakeRateWeightUp')
+       var( tr, 'tauFakeRateWeightDown')
        
        var( tr, 'nVert')
        
@@ -129,6 +133,10 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
        fill(tr, 'hqtWeightUp', event.higgsPtWeightUp)
        fill(tr, 'hqtWeightDown', event.higgsPtWeightDown)
        
+       fill(tr, 'tauFakeRateWeightUp', event.tauFakeRateWeightUp)
+       fill(tr, 'tauFakeRateWeightDown', event.tauFakeRateWeightDown)
+       fill(tr, 'tauFakeRateWeight', event.tauFakeRateWeight)
+
        if hasattr(event, 'NJetWeight'):
           fill(tr, 'NJetWeight', event.NJetWeight)
        fill(tr, 'zllWeight', event.zllWeight)
@@ -142,10 +150,11 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
        fill(tr, 'leptonAccept',    event.leptonAccept)
        fill(tr, 'thirdLeptonVeto', event.thirdLeptonVeto)
 
-       for p in event.genParticles:
-          if p.pdgId() in [23, 25, 35, 36, 37]:
-            fill(tr, 'genMass', p.mass())
-            break
+       if hasattr(event, 'genParticles'):
+         for p in event.genParticles:
+            if p.pdgId() in [23, 25, 35, 36, 37]:
+              fill(tr, 'genMass', p.mass())
+              break
 
        if hasattr( event, 'genZs'):
            if len(event.genZs):

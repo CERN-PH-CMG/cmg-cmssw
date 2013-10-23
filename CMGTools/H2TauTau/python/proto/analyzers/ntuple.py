@@ -248,6 +248,8 @@ def bookJet( tree, pName ):
     var(tree, '{pName}_puMvaSimple'.format(pName=pName))
     var(tree, '{pName}_puMvaCutBased'.format(pName=pName))
     var(tree, '{pName}_looseJetId'.format(pName=pName))
+    var(tree, '{pName}_btagMVA'.format(pName=pName))
+    var(tree, '{pName}_area'.format(pName=pName))
     var(tree, '{pName}_genJetPt'.format(pName=pName))
 
 def fillJet( tree, pName, jet ):
@@ -257,6 +259,8 @@ def fillJet( tree, pName, jet ):
     fill(tree, '{pName}_puMvaSimple'.format(pName=pName), jet.puMva('simple'))
     fill(tree, '{pName}_puMvaCutBased'.format(pName=pName), jet.puMva('cut-based'))
     fill(tree, '{pName}_looseJetId'.format(pName=pName), jet.looseJetId())
+    fill(tree, '{pName}_btagMVA'.format(pName=pName), jet.btagMVA)
+    fill(tree, '{pName}_area'.format(pName=pName), jet.jetArea())
     if hasattr(jet, 'genJet') and jet.genJet:
         fill(tree, '{pName}_genJetPt'.format(pName=pName), jet.genJet.pt())
 
