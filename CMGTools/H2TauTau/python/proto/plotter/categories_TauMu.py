@@ -5,7 +5,7 @@ from CMGTools.H2TauTau.proto.plotter.cut import *
 
 from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
 
-pt1 = 20
+pt1 = 30
 pt2 = 17 # 2011
 if cmsswIs52X():
     pt2 = 20 # 2012, check that
@@ -55,8 +55,9 @@ cat_Inc_TightAntiMuIsoJan = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>
 cat_Inc_AntiMuAntiTauIsoJan = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5').replace('l1_threeHitIso<1.5', 'l1_threeHitIso>1.5 && l1_threeHitIso<10.0')
 cat_Inc_AntiMuRlxTauIsoJan = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5').replace('l1_threeHitIso<1.5', 'l1_threeHitIso<10.0')
 #cat_Inc_AntiTauIso = str(inc_sig).replace('l1_looseMvaIso>0.5', 'l1_looseMvaIso<0.5')
-cat_Inc_AntiTauIso = str(inc_sig).replace('l1_threeHitIso<1.5', 'l1_threeHitIso>1.5') # && l1_threeHitIso<10.0')
+# cat_Inc_AntiTauIso = str(inc_sig).replace('l1_threeHitIso<1.5', 'l1_threeHitIso>1.5') # && l1_threeHitIso<10.0')
 cat_Inc_AntiTauIsoJan = str(inc_sig).replace('l1_threeHitIso<1.5', 'l1_threeHitIso>1.5 && l1_threeHitIso<10.0')
+cat_Inc_AntiTauIso = str(inc_sig).replace('l1_threeHitIso<1.5', 'l1_threeHitIso>1.5 && l1_threeHitIso<5.0')
 
 cat_Inc_RlxMuTauIso_b = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05<0.5').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.5')
 cat_Inc = str(inc_sig)

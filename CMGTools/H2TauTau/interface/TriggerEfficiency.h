@@ -255,31 +255,39 @@ public:
 
   //COLIN: putting the junction at 1.4 as discussed with Josh
   double effIsoMu12(double pt, double eta){
-    if(fabs(eta)<1.4)
-      return 0.901; //Barrel
+    if(fabs(eta)<0.8)
+      return 0.920; //Barrel
+    else if (fabs(eta) < 1.2)
+      return 0.868;
     else 
-      return 0.863; //EndCap
+      return 0.845; //EndCap
   }
 
   double effIsoMu15(double pt, double eta){
-    if(fabs(eta)<1.4)
-      return 0.901; 
+    if(fabs(eta)<0.8)
+      return 0.917;
+    else if (fabs(eta) < 1.2)
+      return 0.871;
     else 
-      return 0.863;
+      return 0.864;
   }
 
   double effIsoMu15eta2p1(double pt, double eta){
-    if(fabs(eta)<1.4)
-      return efficiency(pt,15.06,0.55278,1.34236,1.003,3.36767);
+    if(fabs(eta)<0.8)
+      return efficiency(pt,15.9877,2.90938e-07,2.63922e-11,5.81194,0.906943);
+    else if(fabs(eta)<1.2)
+      return efficiency(pt,15.9995,1.35931e-07,7.88264e-11,4.60253,0.855461);
     else 
-      return efficiency(pt,15.03175,0.866114,1.25009,1.63711,0.844906);
+      return efficiency(pt,15.9084,2.27242e-12,8.77174e-14,1.00241,12.9909);
   }
 
   double effIsoMu15MC(double pt, double eta){//should correspond to Fall11 MC
-    if(fabs(eta)<1.4)
-      return 0.917;
-    else 
-      return 0.836;
+    if(fabs(eta)<0.8)
+      return 0.923;
+    else if (fabs(eta)<1.2)
+      return 0.879;
+    else
+      return 0.839;
   }
 
 

@@ -98,7 +98,8 @@ class Comparator(object):
         if title1 is None:
             title1 = self.info1.name
         if title2 is None:
-            title2 = self.info2.name            
+            title2 = self.info2.name
+        # import pdb; pdb.set_trace()
         if not self.hcomp:
             self.hcomp = HistComparator(h1name,h1, h2, title1, title2)
         else:

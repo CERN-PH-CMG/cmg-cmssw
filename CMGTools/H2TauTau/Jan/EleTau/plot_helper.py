@@ -11,10 +11,16 @@ def qcdIsoPlots(hist, NBINS, XMIN, XMAX, parameters):
 
     parameters['subtractBGForQCDShape'] = True
     parameters['antiEleIsoForQCD'] = False
+    # parameters['subtractBGForQCDShape'] = False
+    # parameters['antiEleIsoForQCD'] = True
+    parameters['antiEleRlxTauIsoForQCD'] = False
     ssignAM, osignAM, ssQCDAM, osQCDAM = makePlot( hist, NBINS, XMIN, XMAX, **parameters)
 
     parameters['subtractBGForQCDShape'] = False
     parameters['antiEleIsoForQCD'] = True
+    parameters['antiEleRlxTauIsoForQCD'] = False
+    # parameters['antiEleRlxTauIsoForQCD'] = True
+   
     ssignATM, osignATM, ssQCDATM, osQCDATM = makePlot( hist, NBINS, XMIN, XMAX, **parameters)
 
     # can = buildCanvasOfficial()
@@ -31,6 +37,7 @@ def qcdIsoPlots(hist, NBINS, XMIN, XMAX, parameters):
     # hQCDAM.SetTitle('QCD SS #mu')
     #
     hQCDAM = osQCDAM.Hist('QCD').weighted
+    # hQCDAM.SetTitle('SS anti-#mu iso')
     hQCDAM.SetTitle('SS BG-sub')
     hQCDAM.GetXaxis().SetTitle('m_{#tau #tau} [GeV]')
     hQCDAM.GetYaxis().SetTitle('Events')
@@ -41,6 +48,7 @@ def qcdIsoPlots(hist, NBINS, XMIN, XMAX, parameters):
     #
     hQCDATM = osQCDATM.Hist('QCD').weighted
     # hQCDATM.SetTitle('QCD SS #mu #tau')
+    hQCDATM.SetTitle('SS anti-#mu rel tau iso')
     hQCDATM.SetTitle('SS anti-#mu iso')
     # hQCDATM.SetTitle('QCD SS')
     hQCDATM.SetMarkerColor(2)

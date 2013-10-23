@@ -174,20 +174,21 @@ unitpat = re.compile('.*\((.*)\)\s*$')
 keeper = []
 
 
-def draw(plot, doBlind=True, channel='TauMu', plotprefix = None, SetLogy = 0):
+def draw(plot, doBlind=True, channel='TauMu', plotprefix = None, SetLogy = 0, mssm=False):
     print plot
     Stack.STAT_ERRORS = True
     blindxmin = None
     blindxmax = None
-    doBlind = (plot.varName == 'svfitMass' or plot.varName == 'visMass') and doBlind
     if doBlind:
-        blindxmin = 100
-        blindxmax = 160
-        if hasattr(plot, 'blindxmin'):
-            blindxmin = plot.blindxmin
-        if hasattr(plot, 'blindxmax'):
-            blindxmax = plot.blindxmax
-        plot.Blind(blindxmin, blindxmax, False)
+        if plot.varName == 'svfitMass':
+            blindxmin = 100
+            if mssm:
+                blindxmax = 1000.
+            else:
+                blindxmax = 160
+        elif plot.varName == 'visMass':
+            blindxmin = 70
+            blindxmax = 100
     titles = xtitles
     if channel=='TauEle':
         titles = xtitles_TauEle
@@ -202,8 +203,8 @@ def draw(plot, doBlind=True, channel='TauMu', plotprefix = None, SetLogy = 0):
     pad.SetLogy (SetLogy)
     plot.DrawStack('HIST')
     h = plot.supportHist
-    h.GetXaxis().SetLabelColor(0)
-    h.GetXaxis().SetLabelSize(0)
+    h.GetXaxis().SetLabelColor(1)
+    h.GetXaxis().SetLabelSize(1)
     gevperbin = h.GetXaxis().GetBinWidth(1)
     h.GetYaxis().SetTitle('Events')
     h.GetYaxis().SetTitleOffset(1.4)
@@ -212,27 +213,26 @@ def draw(plot, doBlind=True, channel='TauMu', plotprefix = None, SetLogy = 0):
     ratio.legendOn = False
     if doBlind:
         ratio.Blind(blindxmin, blindxmax, True)
-    ratio.DrawRatioStack('HIST', ymin=0.4, ymax=1.6)
-    hr = ratio.stack.totalHist
-    plot.ratioTotalHist = hr
-    # hr.weighted.Fit('pol1')
+        plot.Blind(blindxmin, blindxmax, False)
+    ratio.DrawDataOverMCMinus1(-0.2, 0.2)
+    hr = ratio.dataOverMCHist
     hr.GetYaxis().SetNdivisions(4)
-    hr.GetYaxis().SetTitle('Exp./Obs.')
     hr.GetYaxis().SetTitleSize(0.1)
-    hr.GetYaxis().SetTitleOffset(0.5)
+    hr.GetYaxis().SetTitleOffset(0.7)
     hr.GetXaxis().SetTitle('{xtitle}'.format(xtitle=xtitle))
     hr.GetXaxis().SetTitleSize(0.13)
     hr.GetXaxis().SetTitleOffset(0.9)
-    rls = 0.075
+    rls = 0.1
     hr.GetYaxis().SetLabelSize(rls)
     hr.GetXaxis().SetLabelSize(rls)
-    hr.GetYaxis().SetRangeUser(0.5, 1.5)
+    h.GetXaxis().SetLabelColor(0)
+    h.GetXaxis().SetLabelSize(0)
     padr.Update()    
     # blinding
-    if plot.blindminx:
+    if doBlind:
         pad.cd()
         max = plot.stack.totalHist.GetMaximum()
-        box = TBox( plot.blindminx, 0,  plot.blindmaxx, max )
+        box = TBox( blindxmin, 0,  blindxmax, max )
         box.SetFillColor(1)
         box.SetFillStyle(3004)
         box.Draw()
@@ -246,6 +246,7 @@ def draw(plot, doBlind=True, channel='TauMu', plotprefix = None, SetLogy = 0):
     else : plotname = plotprefix + '_' + plot.varName
     can.SaveAs( plotname + '.png')
     pad.SetLogy (0)
+    return ratio
 
 
 def buildCanvasOfficial():
@@ -263,10 +264,17 @@ def drawOfficial(plot, doBlind=False, channel='TauMu', plotprefix = None, ymin =
     Stack.STAT_ERRORS = False
     blindxmin = None
     blindxmax = None
-    doBlind = (plot.varName == 'svfitMass') and doBlind
     if doBlind:
-        blindxmin = 100
-        blindxmax = 160
+        if plot.varName == 'svfitMass':
+            blindxmin = 100
+            if mssm:
+                blindxmax = 1000.
+            else:
+                blindxmax = 160
+        elif plot.varName == 'visMass':
+            blindxmin = 70
+            blindxmax = 90
+            
         plot.Blind(blindxmin, blindxmax, False)
     titles = xtitles
     if channel=='TauEle':

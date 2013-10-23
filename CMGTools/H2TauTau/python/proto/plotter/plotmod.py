@@ -121,6 +121,7 @@ def fW(mtplot, dataName, xmin, xmax, VVgroup=None, channel = 'TauMu'):
 
     wjet = copy.deepcopy(mtplot.Hist(dataName))
     oldIntegral = wjet.Integral(True, xmin, xmax)
+    error_data = math.sqrt(oldIntegral)
     wjet.Add(mtplot.Hist('Ztt'), -1)
     wjet.Add(mtplot.Hist('Ztt_ZL'), -1)
     wjet.Add(mtplot.Hist('Ztt_ZJ'), -1)
@@ -131,8 +132,36 @@ def fW(mtplot, dataName, xmin, xmax, VVgroup=None, channel = 'TauMu'):
 
     subtrIntegral = wjet.Integral(True, xmin, xmax)
 
+    print 'Subtracted BG', oldIntegral - subtrIntegral
+
     relSysError = 0.1 * (oldIntegral - subtrIntegral)/subtrIntegral
     print 'W+Jets, high MT: Relative error due to BG subtraction', relSysError
+
+    relSysError = 0.05 * mtplot.Hist('Ztt').Integral(True, xmin, xmax)
+
+    # print 'Error due to Ztt subtraction', relSysError/subtrIntegral
+
+    relSysError = math.sqrt(relSysError**2 + 0.05*0.05*(mtplot.Hist('Ztt_ZJ').Integral(True, xmin, xmax)**2))
+
+    # print 'Plus ZJ subtraction', relSysError/subtrIntegral
+
+    relSysError = math.sqrt(relSysError**2 + 0.2*0.2*(mtplot.Hist('Ztt_ZL').Integral(True, xmin, xmax)**2))
+
+    # print 'Plus ZL subtraction', relSysError/subtrIntegral
+
+    relSysError = math.sqrt(relSysError**2 + 0.2*0.2*(mtplot.Hist('Ztt_TL').Integral(True, xmin, xmax)**2))
+
+    # print 'Plus TL subtraction', relSysError/subtrIntegral
+
+    relSysError = math.sqrt(relSysError**2 + 0.1*0.1 * (mtplot.Hist('TTJets').Integral(True, xmin, xmax)**2))
+    # print 'Plus TT subtraction', relSysError/subtrIntegral
+    if VVgroup:
+      relSysError = math.sqrt(relSysError**2 + 0.3*0.3*mtplot.Hist('VV').Integral(True, xmin, xmax)**2)
+      # print 'Plus VV subtraction', relSysError/subtrIntegral
+    print 'W+Jets, high MT: Absolute error due to BG subtraction with smaller DY uncertainties', relSysError
+    relSysError = relSysError/subtrIntegral
+    print 'W+Jets, high MT: Relative error due to BG subtraction with smaller DY uncertainties', relSysError
+    # print 'W+Jets, high MT: Contribution from ttbar', 0.1*mtplot.Hist('TTJets').Integral(True, xmin, xmax)/subtrIntegral
 
     mtplot.AddHistogram( 'Data-DY-TT-VV', wjet.weighted, 1010)
     mtplot.Hist('Data-DY-TT-VV').stack = False
@@ -143,9 +172,9 @@ def fW(mtplot, dataName, xmin, xmax, VVgroup=None, channel = 'TauMu'):
 
     data_integral = mtplot.Hist('Data-DY-TT-VV').Integral(True, xmin, xmax)
 
-    error_data = Double(0.)
+    error_tmp = Double(0.)
     error_mc = Double(0.)
-    data_integral_jan = mtplot.Hist('Data-DY-TT-VV').weighted.IntegralAndError(mtplot.Hist('Data-DY-TT-VV').weighted.FindFixBin(xmin), mtplot.Hist('Data-DY-TT-VV').weighted.FindFixBin(xmax)-1, error_data)
+    data_integral_jan = mtplot.Hist('Data-DY-TT-VV').weighted.IntegralAndError(mtplot.Hist('Data-DY-TT-VV').weighted.FindFixBin(xmin), mtplot.Hist('Data-DY-TT-VV').weighted.FindFixBin(xmax)-1, error_tmp)
 
     if data_integral_jan != data_integral:
         print 'WARNING, not the same integral in w+jets estimation'
@@ -183,12 +212,13 @@ def w_lowHighMTRatio( var, anaDir,
 
     print mt.weighted.FindBin(lowMTMax)-1, mt.weighted.FindBin(highMTMin), mt.weighted.FindBin(highMTMax)
 
-    print 'MT ratio', mt_ratio, '+-', math.sqrt(error_low**2/mt_low**2 + error_high**2/mt_high**2) * mt_ratio
-    # print 'MT ratio', mt_low_jan/mt_high_jan, '+-', math.sqrt(error_low**2/mt_low**2 + error_high**2/mt_high**2) * mt_ratio
-    print 'Integrals: low', mt_low, '+-', error_low, 'high', mt_high, '+-', error_high
-    # print 'Integrals: low', mt_low_jan, '+-', error_low, 'high', mt_high_jan, '+-', error_high
-    print 'Relative errors: low', error_low/mt_low, 'high', error_high/mt_high
-    print 'TOTAL RELATIVE ERROR:', math.sqrt(error_low**2/mt_low**2 + error_high**2/mt_high**2), '\n'
+    if mt_high > 0. and mt_low > 0.:
+        print 'MT ratio', mt_ratio, '+-', math.sqrt(error_low**2/mt_low**2 + error_high**2/mt_high**2) * mt_ratio
+        # print 'MT ratio', mt_low_jan/mt_high_jan, '+-', math.sqrt(error_low**2/mt_low**2 + error_high**2/mt_high**2) * mt_ratio
+        print 'Integrals: low', mt_low, '+-', error_low, 'high', mt_high, '+-', error_high
+        # print 'Integrals: low', mt_low_jan, '+-', error_low, 'high', mt_high_jan, '+-', error_high
+        print 'Relative errors: low', error_low/mt_low, 'high', error_high/mt_high
+        print 'TOTAL RELATIVE ERROR:', math.sqrt(error_low**2/mt_low**2 + error_high**2/mt_high**2), '\n'
     return mt_ratio
     
     
@@ -241,7 +271,8 @@ def plot_W(anaDir, comps, weights,
 
     print 'W SCALE FACTOR SS:'
     data_SS, mc_SS = fW( mtSS, 'Data', xmin, xmax, VVgroup)
-    fW_SS = data_SS / mc_SS
+
+    fW_SS = data_SS / mc_SS if mc_SS else -1.
 
     
     print 'fW_SS=',fW_SS,'fW_OS=',fW_OS

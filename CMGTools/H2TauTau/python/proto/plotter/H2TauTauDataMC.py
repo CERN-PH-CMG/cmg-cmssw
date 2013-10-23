@@ -95,37 +95,9 @@ class H2TauTauDataMC( AnalysisDataMC ):
                 if varName == 'visMass' or varName == 'svfitMass':
                     print 'Shifting visMass and svfitMass by sqrt(0.97) for', comp.name
                     var = varName + '* sqrt(0.97)'
-            else:
-                raise ValueError( self.shift + ' is not recognized. Use None, "Up" or "Down".')
+            # else:
+            #     raise ValueError( self.shift + ' is not recognized. Use None, "Up" or "Down".')
 
-
-        if varName == 'abs_l1_eta_l2_eta':
-            var = 'abs(l1_eta-l2_eta)'
-        elif varName == 'abs_l1_eta_j1_eta':
-            var = 'abs(l1_eta-jet1_eta)'
-        elif varName == 'abs_l2_eta_j1_eta':
-            var = 'abs(l2_eta-jet1_eta)'
-        elif varName == 'deltaPhi_l1_l2':
-            var = 'abs((l1_phi - l2_phi > TMath::Pi()) * (l1_phi - l2_phi - 2 * TMath::Pi()) + (l1_phi - l2_phi < - TMath::Pi()) * (l1_phi - l2_phi + 2 * TMath::Pi()) + (abs(l1_phi - l2_phi) <= TMath::Pi()) * (l1_phi - l2_phi))'
-        elif varName == 'deltaPhi_l1_j1':
-            var = 'abs((l1_phi - jet1_phi > TMath::Pi()) * (l1_phi - jet1_phi - 2 * TMath::Pi()) + (l1_phi - jet1_phi < - TMath::Pi()) * (l1_phi - jet1_phi + 2 * TMath::Pi()) + (abs(l1_phi - jet1_phi) <= TMath::Pi()) * (l1_phi - jet1_phi))'
-        elif varName == 'deltaPhi_l2_j1':
-            var = 'abs((l2_phi - jet1_phi > TMath::Pi()) * (l2_phi - jet1_phi - 2 * TMath::Pi()) + (l2_phi - jet1_phi < - TMath::Pi()) * (l2_phi - jet1_phi + 2 * TMath::Pi()) + (abs(l2_phi - jet1_phi) <= TMath::Pi()) * (l2_phi - jet1_phi))'
-
-        # hack to account for the shift determined for HCP, see:
-        # https://indico.cern.ch/getFile.py/access?contribId=38&resId=0&materialId=slides&confId=212612
-
-        # FIXME - no correction as of now (summer13)
-        # if isNewerThan('CMSSW_5_2_0'):
-        #     # Andrew doesn't do the shift in 2011.
-        #     if compName == 'Ztt_ZL' and self.treeName.find('TauEle') != -1:
-        #         if varName == 'visMass' or varName == 'svfitMass':
-        #             print 'Shifting visMass and svfitMass by 1.015 for', compName
-        #             var = varName + '* 1.015'
-##         else:
-##             if compName == 'Ztt_ZL':
-##                 weight = weight + '/zllWeight'
-##                 weight = weight + '*((l1_decayMode==1)*1.3 + (l1_decayMode!=1)*1.0)'
 
         tree.Project( histName, var, '{weight}*({cut})'.format(cut=cut,
                                                                weight=weight) )

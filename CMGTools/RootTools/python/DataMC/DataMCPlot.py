@@ -33,9 +33,9 @@ class DataMCPlot(object):
         self.stack = None
         self.legendOn = True
         self.legend = None
-        self.legendBorders = 0.13,0.46,0.44,0.89
-        self.lastDraw = None
-        self.lastDrawArgs = None
+        self.legendBorders = 0.17,0.46,0.44,0.89
+        # self.lastDraw = None
+        # self.lastDrawArgs = None
         self.stack = None
         self.nostack = None
         self.blindminx = None
@@ -60,7 +60,6 @@ class DataMCPlot(object):
         self.histos.append( tmp )
         self.histosDict[name] = tmp
         # tmp.AddEntry( self.legend, legendLine)
-
 
     def Group(self, groupName, namesToGroup, layer=None, style=None):
         '''Group all histos with names in namesToGroup into a single
@@ -148,8 +147,8 @@ class DataMCPlot(object):
         self.DrawLegend()
         if TPad.Pad():
             TPad.Pad().Update()
-        self.lastDraw = 'DrawNormalized'
-        self.lastDrawArgs = [ opt ]
+        # self.lastDraw = 'DrawNormalized'
+        # self.lastDrawArgs = [ opt ]
 
     def Draw(self, opt = ''):
         '''All histograms are drawn.'''
@@ -166,8 +165,8 @@ class DataMCPlot(object):
         self.DrawLegend()
         if TPad.Pad():
             TPad.Pad().Update()
-        self.lastDraw = 'Draw'
-        self.lastDrawArgs = [ opt ]
+        # self.lastDraw = 'Draw'
+        # self.lastDrawArgs = [ opt ]
 
 
     def CreateLegend(self, ratio=False):
@@ -214,9 +213,35 @@ class DataMCPlot(object):
         self.DrawLegend( ratio=True )
         if TPad.Pad():
             TPad.Pad().Update()
-        self.lastDraw = 'DrawRatio'
-        self.lastDrawArgs = [ opt ]
+        # self.lastDraw = 'DrawRatio'
+        # self.lastDrawArgs = [ opt ]
 
+
+    def DrawDataOverMCMinus1(self, ymin=-0.5, ymax=0.5):
+        stackedHists = []
+        dataHist = None
+        for hist in self._SortedHistograms():
+            if hist.stack is False:
+                dataHist = hist
+                continue
+            stackedHists.append( hist )
+        self._BuildStack( stackedHists, ytitle='Data/MC')
+        mcHist = self.stack.totalHist
+        self.dataOverMCHist = copy.deepcopy(dataHist)
+        self.dataOverMCHist.Add(mcHist, -1)
+        self.dataOverMCHist.Divide( mcHist )
+        self.dataOverMCHist.Draw()
+        yaxis = self.dataOverMCHist.GetYaxis()
+        yaxis.SetRangeUser(ymin, ymax)
+        yaxis.SetTitle('Data/MC - 1')
+        yaxis.SetNdivisions(5)
+        fraclines= 0.2
+        if ymax <= 0.2 or ymin>=-0.2:
+            fraclines = 0.1
+        self.DrawRatioLines(self.dataOverMCHist, fraclines, 0.)
+        if TPad.Pad():
+            TPad.Pad().Update()        
+        
 
     def DrawRatioStack(self,opt='',
                        xmin=None, xmax=None, ymin=None, ymax=None):
@@ -248,11 +273,10 @@ class DataMCPlot(object):
             ratio.obj.Draw('same')
             self.ratios.append( ratio )
         self.DrawLegend( ratio=True )
-        self.DrawRatioLines(denom, xmin, xmax)
+        self.DrawRatioLines(denom, 0.2, 1)
         if TPad.Pad():
             TPad.Pad().Update()
-        self.lastDraw = 'DrawRatioStack'
-        self.lastDrawArgs = [ opt, ymin, ymax]
+
                 
     def DrawNormalizedRatioStack(self,opt='',
                                  xmin=None, xmax=None,
@@ -287,25 +311,23 @@ class DataMCPlot(object):
             ratio.obj.Draw('same')
             self.ratios.append( ratio )        
         self.DrawLegend( ratio=True )
-        self.DrawRatioLines(denom, xmin,xmax)
+        self.DrawRatioLines(denom, 0.2, 1)
         if TPad.Pad():
             TPad.Pad().Update()
-        self.lastDraw = 'DrawNormalizedRatioStack'
-        self.lastDrawArgs = [ opt ]
+        # self.lastDraw = 'DrawNormalizedRatioStack'
+        # self.lastDrawArgs = [ opt ]
 
 
-    def DrawRatioLines(self, hist, xmin, xmax, frac=0.2):
+    def DrawRatioLines(self, hist, frac=0.2, y0=1.):
         '''Draw a line at y = 1, at 1+frac, and at 1-frac.
 
-        hist is used to get the y axis range.'''
-        if xmin is None:
-            xmin = hist.obj.GetXaxis().GetXmin()
-        if xmax is None:
-            xmax = hist.obj.GetXaxis().GetXmax()
+        hist is used to get the x axis range.'''
+        xmin = hist.obj.GetXaxis().GetXmin()
+        xmax = hist.obj.GetXaxis().GetXmax()
         line = TLine()
-        line.DrawLine(xmin, 1, xmax, 1)
-        line.DrawLine(xmin, 1+frac, xmax, 1+frac)
-        line.DrawLine(xmin, 1-frac, xmax, 1-frac)
+        line.DrawLine(xmin, y0, xmax, y0)
+        line.DrawLine(xmin, y0+frac, xmax, y0+frac)
+        line.DrawLine(xmin, y0-frac, xmax, y0-frac)
         
                 
     def DrawStack(self, opt='',
@@ -346,8 +368,8 @@ class DataMCPlot(object):
         self.DrawLegend()
         if TPad.Pad():
             TPad.Pad().Update()
-        self.lastDraw = 'DrawStack'
-        self.lastDrawArgs = [ opt ]
+        # self.lastDraw = 'DrawStack'
+        # self.lastDrawArgs = [ opt ]
 
 
     def DrawNormalizedStack(self, opt='',
@@ -365,8 +387,9 @@ class DataMCPlot(object):
         self.DrawLegend()
         if TPad.Pad():
             TPad.Pad().Update()
-        self.lastDraw = 'DrawNormalizedStack'
-        self.lastDrawArgs = [ opt ]
+        # self.lastDraw = 'DrawNormalizedStack'
+        # self.lastDrawArgs = [ opt ]
+
 
     def Rebin(self, factor):
         '''Rebin, and redraw.'''
@@ -376,24 +399,10 @@ class DataMCPlot(object):
         for hist in self.histos:
             hist.Rebin(factor)
         self.axisWasSet = False
-##         if self.lastDraw == 'DrawStack':
-##             self.DrawStack( *self.lastDrawArgs)
-##         elif self.lastDraw == 'DrawNormalizedStack':
-##             self.DrawNormalizedStack( *self.lastDrawArgs)
-##         elif self.lastDraw == 'DrawRatioStack':
-##             self.DrawRatioStack( *self.lastDrawArgs)
-##         elif self.lastDraw == 'DrawNormalizedRatioStack':
-##             self.DrawNormalizedRatioStack( *self.lastDrawArgs)
-##         elif self.lastDraw == 'Draw':
-##             self.Draw(*self.lastDrawArgs)
-##         elif self.lastDraw == 'DrawNormalized':
-##             self.DrawNormalized(*self.lastDrawArgs)
-##         elif self.lastDraw == 'DrawRatio':
-##             self.DrawRatio(*self.lastDrawArgs)
 
 
     def NormalizeToBinWidth(self):
-        '''Normalize each Histogram's bin to the bin width.'''
+        '''Normalize each Histograms bin to the bin width.'''
         for hist in self.histos:
             hist.NormalizeToBinWidth()
 
@@ -422,3 +431,58 @@ class DataMCPlot(object):
         tmp.append( 'Stack yield = {integ:7.1f}'.format( integ=self.stack.integral ) )
         return '\n'.join( tmp ) 
 
+
+if __name__ == '__main__':
+    
+    from ROOT import TH1F, TCanvas, gPad
+    from CMGTools.RootTools.Style import sBlue, sGreen, sRed, sData, formatPad
+
+    plot = DataMCPlot('plot')
+
+    mult = 10000
+    h1 = TH1F('h1','h1', 100,-5,5)
+    h1.FillRandom('gaus', 1*mult )
+    h2 = TH1F('h2','h2', 100,-5,5)
+    h2.FillRandom('pol0', 1*mult )
+    h3 = TH1F('h3','h3', 100,-5,5)
+    h3.FillRandom('pol0', 1*mult )    
+
+    sBlue.formatHisto(h1)
+    sGreen.formatHisto(h2)
+    sRed.formatHisto(h3)
+    
+    plot.AddHistogram('signal', h1)
+    plot.AddHistogram('bgd1', h2)
+    plot.AddHistogram('bgd2', h3)
+
+    plot.Hist('signal').layer = 4
+    plot.Hist('bgd1').layer = 1
+    plot.Hist('bgd2').layer = 2
+
+    
+    h4 = TH1F('h4','h4', 100,-5,5)
+    h4.Sumw2()
+    sData.formatHisto(h4)
+
+    plot._BuildStack(plot.histos)
+    dataModel = plot.stack.totalHist.obj
+    for i in range(0, int(dataModel.GetEntries())):
+        rnd = dataModel.GetRandom()
+        h4.Fill(rnd)
+
+    plot.AddHistogram('data', h4)
+    plot.Hist('data').stack=False
+
+    c1 = TCanvas('c1')
+    formatPad(c1)
+    plot.DrawStack('HIST')
+
+    c2 = TCanvas('c2')
+    formatPad(c2)
+    ratioplot = copy.copy(plot)
+    ratioplot.DrawRatioStack('HIST', ymin=0.6, ymax=1.5)
+
+    c3 = TCanvas('c3')
+    formatPad(c3)
+    ratio2  = copy.copy(plot)
+    ratio2.DrawDataOverMCMinus1()
