@@ -228,7 +228,7 @@ void RecoilCorrectedMETProducer<RecBosonType>::produce(edm::Event & iEvent, cons
     double met = uncMet; 
     double metphi = uncMetPhi;
 
-    jetMult = nJets( *jetH, recBoson, deltaRCut_ ); 
+    jetMult = nJets( *jetH, recBoson, deltaRCut_); 
 
     double zero = 0.;
 
@@ -283,8 +283,8 @@ template< typename RecBosonType >
 int  RecoilCorrectedMETProducer< RecBosonType >::nJets( const JetCollectionType& jets, 
 							const RecBosonType& boson, float deltaR) {
   
-  //COLIN : check that I should really remove jets matched to both legs
-  // when working with Ws.
+  // H->tau tau Summer 13 convention: Remove only lepton from jets, not tau,
+  // when working with Ws. Not clear what to do for fully-hadronic
   if(verbose_) {
     std::cout<<"\tMatching jets to boson legs"<<std::endl;
   }
@@ -294,9 +294,13 @@ int  RecoilCorrectedMETProducer< RecBosonType >::nJets( const JetCollectionType&
   for(unsigned iJet = 0; iJet<jets.size(); ++iJet ) {
     const JetType& jet = jets[iJet]; 
 
-    double dR2leg1 = reco::deltaR2( jet.eta(), jet.phi(), 
+    double dR2leg1 = 99.;
+    if (leptonLeg_ != 2)
+      dR2leg1 = reco::deltaR2( jet.eta(), jet.phi(), 
 				    boson.leg1().eta(), boson.leg1().phi() ) ;
-    double dR2leg2 = reco::deltaR2( jet.eta(), jet.phi(), 
+    double dR2leg2 = 99.;
+    if (leptonLeg_ != 1)
+      dR2leg2 = reco::deltaR2( jet.eta(), jet.phi(), 
 				    boson.leg2().eta(), boson.leg2().phi() ) ;
     
     if( dR2leg1 > deltaR2 && dR2leg2 > deltaR2) {

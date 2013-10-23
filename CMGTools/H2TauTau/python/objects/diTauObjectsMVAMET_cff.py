@@ -3,13 +3,12 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.Common.Tools.cmsswRelease                             import cmsswIs44X,cmsswIs52X
 from CMGTools.Common.diTau_cff                                      import *
 from CMGTools.H2TauTau.objects.diTauCuts_cff                        import * 
-from CMGTools.Common.factories.cmgDiTauCor_cfi                      import cmgDiTauCor 
+from CMGTools.H2TauTau.objects.cmgDiTauCor_cfi                      import cmgDiTauCor 
 from CMGTools.H2TauTau.objects.diTauSVFit_cfi                       import diTauSVFit 
 from CMGTools.Common.eventCleaning.goodPVFilter_cfi                 import goodPVFilter
 from CMGTools.Utilities.metRecoilCorrection.metRecoilCorrection_cff import *
 from CMGTools.Utilities.mvaMET.mvaMET_cff                           import *
 from CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi              import cmgBaseMETFromPFMET
-
 
 # build diTau ----------------------------------------------------------
 cmgDiTau.cuts = diTauCuts.clone()

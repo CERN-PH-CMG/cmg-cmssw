@@ -14,7 +14,7 @@ from CMGTools.H2TauTau.proto.samples.run2012.higgs import *
 from CMGTools.H2TauTau.proto.samples.run2012.triggers_tauMu import data_triggers, mc_triggers
 
 aliases = {
-
+    # '/WJets.*START53.*NewRecoil.*':'WJets',
     '/DYJets.*START53.*NewRecoil.*':'DYJets',
     '/DY1Jets.*START53.*NewRecoil.*':'DY1Jets',
     '/DY2Jets.*START53.*NewRecoil.*':'DY2Jets',
@@ -24,8 +24,8 @@ aliases = {
 
     '/TauPlusX/Run2012A-22Jan2013-v1.*':'data_Run2012A',
     '/TauPlusX/Run2012B-22Jan2013-v1.*':'data_Run2012B',
-    '/TauPlusX/Run2012C-22Jan2013-v1.*':'data_Run2012C_v2',
-    '/TauPlusX/Run2012D-22Jan2013-v1.*':'data_Run2012D_v1',
+    '/TauPlusX/Run2012C-22Jan2013-v1.*':'data_Run2012C',
+    '/TauPlusX/Run2012D-22Jan2013-v1.*':'data_Run2012D',
     }
 
 
@@ -38,8 +38,10 @@ allsamples.extend( data_list )
 allsamples.extend( embed_list )
 
 
-connect( allsamples, '/DY%Jets%TAUMU_MuRm_%Colin_%Jun13', 'tauMu.*root', aliases, cache=True, verbose=False)
+connect( allsamples, '%TAUMU_MuRm_%Colin_%Jun13', 'tauMu.*root', aliases, cache=True, verbose=False)
 
+connect( [WJets], '%TAUMU_NewRecoil_RelTauIso_Colin_1Jul13', 'tauMu.*root',
+         {'/WJets.*START53.*NewRecoil.*':'WJets'}, cache=True, verbose=False)
 
 dy_nevents = [ DYJets.nGenEvents,
                DY1Jets.nGenEvents,
@@ -72,5 +74,4 @@ for embed in embed_list:
 
 for c in allsamples:
     c.splitFactor = splitFactor(c, 5e4)
-
 

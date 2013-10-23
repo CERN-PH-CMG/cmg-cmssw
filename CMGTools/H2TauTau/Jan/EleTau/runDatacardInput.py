@@ -6,35 +6,35 @@ processes = set()
 max_processes = 4
 
 doSM = True
-doMSSM = True
+doMSSM = False
 
 catsSM = []
 catsMSSM = []
 
 if doSM:
-    catsSM = [
-    'Xcat_IncX && mt<30 && Xcat_J0_lowX && l1_decayMode==1',
-    'Xcat_IncX && mt<30 && Xcat_J0_mediumX && l1_decayMode==1',
-    'Xcat_IncX && mt<30 && Xcat_J0_highX && l1_decayMode==1',
-    'Xcat_IncX && mt<30 && Xcat_J1_mediumX && met>30 && l1_decayMode==1',
-    'Xcat_IncX && mt<30 && Xcat_J1_high_mediumhiggsX && met>30 && l1_decayMode==1',
-    'Xcat_IncX && mt<30 && Xcat_J1_high_lowhiggsX && met>30 && l1_decayMode==1',
-    'Xcat_IncX && mt<30 && Xcat_VBF_looseX && l1_decayMode==1',
-    'Xcat_IncX && mt<30 && Xcat_VBF_tightX && l1_decayMode==1',
-]
+    catsSM = {
+    'Xcat_IncX && mt<30 && Xcat_J0_lowX':'0jet_low',
+    'Xcat_IncX && mt<30 && Xcat_J0_mediumX':'0jet_medium',
+    'Xcat_IncX && mt<30 && Xcat_J0_highX':'0jet_high',
+    'Xcat_IncX && mt<30 && met>30 && Xcat_J1_mediumX':'1jet_medium',
+    'Xcat_IncX && mt<30 && met>30 && Xcat_J1_high_mediumhiggsX':'1jet_high_mediumhiggs',
+    'Xcat_IncX && mt<30 && met>30 && Xcat_J1_high_lowhiggsX':'1jet_high_lowhiggs',
+    'Xcat_IncX && mt<30 && Xcat_VBF_looseX':'vbf_loose',
+    'Xcat_IncX && mt<30 && Xcat_VBF_tightX':'vbf_tight',
+}
 
 if doMSSM:
-    catsMSSM = [
-    'Xcat_IncX && mt<30 && Xcat_J1BX',
-    'Xcat_IncX && mt<30 && Xcat_0BX'
-]
+    catsMSSM = {
+    'Xcat_IncX && mt<30 && Xcat_J1BX':'btag',
+    'Xcat_IncX && mt<30 && Xcat_0BX':'nobtag'
+}
 
 
-dirUp = '/data/steggema/Aug08TauEle_Up/' #NOTE: Must end with Up
-dirDown = '/data/steggema/Aug08TauEle_Down/' #NOTE: Must end with Down
-dirNom = '/data/steggema/Aug08TauEle/'
+dirUp = '/data/steggema/Sep19EleTau_Up/' #NOTE: Must end with Up
+dirDown = '/data/steggema/Sep19EleTau_Down/' #NOTE: Must end with Down
+dirNom = '/data/steggema/Sep19EleTau/'
 
-dirGGH = '/data/steggema/Aug08TauEle/'
+dirGGH = '/data/steggema/Sep19EleTau/'
 
 
 embedded = True
@@ -60,7 +60,13 @@ for cat in catsSM:
     argsZLUp = ['python', 'plot_H2TauTauMC.py', dirNom, 'tauEle_2012_cfg.py', '-C', cat, '-H', 'svfitMass*1.02', '-b', '-f', 'Ztt', '-s', 'CMS_htt_ZLScale_etau_8TeVUp', '-c', 'TauEle']
     argsZLDown = ['python', 'plot_H2TauTauMC.py', dirNom, 'tauEle_2012_cfg.py', '-C', cat, '-H', 'svfitMass*0.98', '-b', '-f', 'Ztt', '-s', 'CMS_htt_ZLScale_etau_8TeVDown', '-c', 'TauEle']
 
-    allArgs += [args, argsUp, argsDown, argsGGHUp, argsGGHDown, argsZLUp, argsZLDown]
+    argsZLSmeared = ['python', 'plot_H2TauTauMC.py', dirNom, 'tauEle_2012_cfg.py', '-C', cat, '-H', 'svfitMass.+l1_phi*1.9', '-b', '-f', 'Ztt', '-s', 'CMS_htt_ZLScale_etau_8TeVSmearedUp', '-c', 'TauEle']
+
+    argsWJetsUp = ['python', 'plot_H2TauTauDataMC_TauEle_All.py', dirNom, 'tauEle_2012_cfg.py', '-C', cat, '-H', 'svfitMass', '-b', '-s', 'CMS_htt_WShape_etau_{cat}_8TeVUp'.format(cat=catsSM[cat])]
+    argsWJetsDown = ['python', 'plot_H2TauTauDataMC_TauEle_All.py', dirNom, 'tauEle_2012_cfg.py', '-C', cat, '-H', 'svfitMass', '-b', '-s', 'CMS_htt_WShape_etau_{cat}_8TeVDown'.format(cat=catsSM[cat])]
+
+    # allArgs += [args, argsUp, argsDown, argsGGHUp, argsGGHDown, argsZLUp, argsZLDown, argsWJetsUp, argsWJetsDown]
+    allArgs += [argsZLSmeared]
 
 for cat in catsMSSM:
     for mssmBinning in mssmBinnings:
@@ -76,7 +82,10 @@ for cat in catsMSSM:
             argsZLUp = ['python', 'plot_H2TauTauMC.py', dirNom, 'tauEle_2012_cfg.py', '-C', cat, '-H', 'svfitMass*1.02', '-b', '-f', 'Ztt', '-s', 'CMS_htt_ZLScale_etau_8TeVUp', '-k', mssmBinning, '-p', mssmBinning, '-c', 'TauEle', '-g', '125']
             argsZLDown = ['python', 'plot_H2TauTauMC.py', dirNom, 'tauEle_2012_cfg.py', '-C', cat, '-H', 'svfitMass*0.98', '-b', '-f', 'Ztt', '-s', 'CMS_htt_ZLScale_etau_8TeVDown', '-k', mssmBinning, '-p', mssmBinning, '-c', 'TauEle', '-g', '125']
 
-            allArgs += [args, argsUp, argsDown, argsGGHUp, argsGGHDown, argsZLUp, argsZLDown]
+            argsWJetsUp = ['python', 'plot_H2TauTauDataMC_TauEle_All.py', dirNom, 'tauEle_2012_cfg.py', '-C', cat, '-H', 'svfitMass', '-b', '-s', 'CMS_htt_WShape_etau_{cat}_8TeVUp'.format(cat=catsMSSM[cat]), '-k', mssmBinning, '-p', mssmBinning, '-g', '125']
+            argsWJetsDown = ['python', 'plot_H2TauTauDataMC_TauEle_All.py', dirNom, 'tauEle_2012_cfg.py', '-C', cat, '-H', 'svfitMass', '-b', '-s', 'CMS_htt_WShape_etau_{cat}_8TeVDown'.format(cat=catsMSSM[cat]), '-k', mssmBinning, '-p', mssmBinning, '-g', '125']
+
+            allArgs += [args, argsUp, argsDown, argsGGHUp, argsGGHDown, argsZLUp, argsZLDown, argsWJetsUp, argsWJetsDown]
 
 
 for args in allArgs:

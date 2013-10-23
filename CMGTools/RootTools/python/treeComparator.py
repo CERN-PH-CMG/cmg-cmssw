@@ -50,7 +50,7 @@ def draw(var1=None, cut=1, t1=None, t2=None, w1='1', w2='1',
         h2.Scale( normalize )
     sBlue.markerStyle = 25
     sBlue.formatHisto(h2)
-    sBlack.formatHisto(h1)
+    sData.formatHisto(h1)
     h2.SetFillStyle(1001)
     h2.SetFillColor(5)
     h1.SetMarkerSize(0.8)
@@ -69,7 +69,7 @@ def draw(var1=None, cut=1, t1=None, t2=None, w1='1', w2='1',
     print 'number of selected rows:', t1.GetSelectedRows(), t2.GetSelectedRows()
 
     comparator = HistComparator(var1, h1, h2)
-    comparator.draw()
+    comparator.draw(opt2='e2')
     return comparator
 
 

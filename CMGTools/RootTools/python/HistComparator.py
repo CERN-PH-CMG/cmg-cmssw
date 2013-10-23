@@ -56,7 +56,7 @@ class HistComparator(object):
         self.ratio.SetStats(0)
 
 
-    def draw(self, simple=False):
+    def draw(self, simple=False, opt2='', opt1=''):
         '''The canvas is created if needed.'''
         # import pdb; pdb.set_trace()
         if simple!=self.simple_state:
@@ -71,8 +71,9 @@ class HistComparator(object):
             self.pad_main.Draw()
             self.pad_ratio.Draw()
             self.pad_main.cd()
-        self.h2.Draw()
-        self.h1.Draw('same')
+        self.h2.SetStats(0)
+        self.h2.Draw(opt2)
+        self.h1.Draw(opt1+'same')
         self.h2.GetYaxis().SetRangeUser(1e-3,
                                         self.ymax(self.h1, self.h2)*1.2)
         self.h2.GetYaxis().SetLabelSize(0.045)

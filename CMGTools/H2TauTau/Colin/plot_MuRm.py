@@ -1,9 +1,5 @@
 import math
 import os
-from CMGTools.RootTools.treeComparator import *
-from CMGTools.H2TauTau.proto.plotter.categories_TauMu import * 
-from CMGTools.RootTools.ReWeighter import ReWeighter
-from CMGTools.RootTools.statistics.Value import Value
 
 canvas = None
 pad = None
@@ -12,7 +8,8 @@ padr = None
 
 #TODO warning normalization
 def drawWithRatio(var, cut, t1, t2, w1, w2, nbins, xmin=0, xmax=200, var2=None):
-    comp = draw(var, cut, t1, t2, w1=w1, w2=w2, normalize=-1, nbins=nbins,xmin=xmin, xmax=xmax, var2=var2)
+    comp = draw(var, cut, t1, t2, w1=w1, w2=w2, normalize=-1,
+                nbins=nbins,xmin=xmin, xmax=xmax, var2=var2)
     return comp
     
 def addWeight(iwstr, wfnam):
@@ -26,7 +23,7 @@ def addWeight(iwstr, wfnam):
 def lowHighMTRatio(hist, lognam, msg, lowmax=None, highmin=None, highmax=None):    
     errlow = ROOT.Double()
     lowmin = 1
-    if lowmax is None: lowmax = 4
+    if lowmax is None: lowmax = 3
     low = hist.IntegralAndError(lowmin,lowmax,errlow)
     errhigh = ROOT.Double()
     if highmin is None: highmin = 8
@@ -65,48 +62,71 @@ def lowHighMTRatio(hist, lognam, msg, lowmax=None, highmin=None, highmax=None):
     return vratio
     
 
-def report( dirname, h1, h2, a1, a2, cut, highmin=None, highmax=None):
-    if dirname.find('Test')!=-1:
+def report( dirname, comp, a1, a2, cut, highmin=None, highmax=None, force=False):
+    if force:
         os.system('rm -r ' + dirname)
     oldpwd = os.getcwd()
     os.mkdir(dirname)
     os.chdir(dirname)
-    r1 = lowHighMTRatio(h1, a1, cut, highmin=highmin, highmax=highmax)
-    r2 = lowHighMTRatio(h2, a2, cut, highmin=highmin, highmax=highmax)
+    r1 = lowHighMTRatio(comp.h1, a1, cut, highmin=highmin, highmax=highmax)
+    r2 = lowHighMTRatio(comp.h2, a2, cut, highmin=highmin, highmax=highmax)
     
     slog = open('scaling.txt','w')
-    sstr = 'scaling   :  {val}\n'.format(val = r1/r2)
+    rFactor = r1/r2
+    sstr = 'scaling   :  {val}\n'.format(val = rFactor)
     print sstr
     slog.write( sstr )
     slog.close()
-    
-    can.SaveAs('plot.png')
+    comp.pad_main.cd()
+    latex = TLatex()
+    latex.SetNDC()
+    latex.DrawLatex(0.6, 0.6, 'R={val:3.2f} #pm {err:3.2f}'.format(val=rFactor.val, err=rFactor.err))
+    comp.can.SaveAs('plot.png')
     os.chdir(oldpwd)
 
 
 def systematicReport(basename):
     os.mkdir(basename)
+    # Moriond categories
+##     cuts = {
+##         'Inclusive':cat_Inc,
+##         '0jet_low':' && '.join( [cat_Inc, cat_J0, 'l1_pt<40'] ), 
+##         '0jet_high':' && '.join( [cat_Inc, cat_J0, 'l1_pt>40'] ), 
+##         '1jet_low':' && '.join( [cat_Inc, cat_J1, 'l1_pt<40'] ), 
+##         '1jet_high':' && '.join( [cat_Inc, cat_J1, 'l1_pt>40'] ), 
+##         '2jet':' && '.join( [cat_Inc, cat_J2] ), 
+##         }
+    # Summer 13 categories
     cuts = {
         'Inclusive':cat_Inc,
-        '0jet_low':' && '.join( [cat_Inc, cat_J0, 'l1_pt<40'] ), 
-        '0jet_high':' && '.join( [cat_Inc, cat_J0, 'l1_pt>40'] ), 
-        '1jet_low':' && '.join( [cat_Inc, cat_J1, 'l1_pt<40'] ), 
-        '1jet_high':' && '.join( [cat_Inc, cat_J1, 'l1_pt>40'] ), 
-        '2jet':' && '.join( [cat_Inc, cat_J2] ), 
+        '0jet_medium':' && '.join( [cat_Inc, cat_J0_medium, 'l1_pt>30'] ), 
+        '0jet_high':' && '.join( [cat_Inc, cat_J0_high, 'l1_pt>30'] ), 
+        '1jet_medium':' && '.join( [cat_Inc, cat_J1_medium, 'l1_pt>30'] ), 
+        '1jet_high_lowhiggs':' && '.join( [cat_Inc, cat_J1_high_lowhiggs, 'l1_pt>30'] ), 
+        '1jet_high_mediumhiggs':' && '.join( [cat_Inc, cat_J1_high_mediumhiggs, 'l1_pt>30'] ),
+        '1B':'&&'.join( [cat_Inc, cat_1BInclusive] ),
+        '0B':'&&'.join( [cat_Inc, cat_0B] )
+        # think about tau pT cut!!
+        #         'vbf_tight':' && '.join( [cat_Inc, cat_VBF_tight] ),
+        #         'vbf_loose':' && '.join( [cat_Inc, cat_VBF_loose] ),
         }
+    
     for cut in cuts:
-        cuts[cut] = cuts[cut].replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.5')
+        # cuts[cut] = cuts[cut].replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.5')
+        cuts[cut] = cuts[cut].replace('l1_threeHitIso<1.5', 'l1_threeHitIso<10')
+        if a1.find('WJets')!=-1:
+            cuts[cut] += '&& (abs(genWnu_eta)<2. || genWnu_eta<-90)'
 
-    # import pdb; pdb.set_trace()
     for cutname, cut in cuts.iteritems():
         highmin = 8
         highmax = None
-        if cutname=='2jet':
+        if cutname.startswith('vbf'):
             highmin = 7
             highmax = 12
         # import pdb; pdb.set_trace()
-        h1, h2, hr, leg = drawWithRatio(var, cut, trees[a1], trees[a2], w1=w1, w2=w2, nbins=20, xmin=0, xmax=200, var2=var2)
-        report('/'.join([basename, cutname]), h1, h2, a1, a2, cut,
+        # h1, h2, hr, leg = drawWithRatio(var, cut, trees[a1], trees[a2], w1=w1, w2=w2, nbins=20, xmin=0, xmax=200, var2=var2)
+        comp = drawWithRatio(var, cut, trees[a1], trees[a2], w1=w1, w2=w2, nbins=20, xmin=0, xmax=200, var2=var2)
+        report('/'.join([basename, cutname]), comp, a1, a2, cut,
                highmin=highmin, highmax=highmax)
     
 if __name__ == '__main__':
@@ -132,6 +152,19 @@ if __name__ == '__main__':
     (options,args) = parser.parse_args()
     if len(args) !=3 :
         print  'pattern1 pattern2 var'
+        sys.exit(1)
+
+    if options.report and os.path.isdir(options.report):
+        print options.report, ' already exists. quit'
+        sys.exit(2)
+
+    # importing after test of argument validity
+    # not to waste time loading fwlite.
+    from CMGTools.RootTools.treeComparator import *
+    from CMGTools.H2TauTau.proto.plotter.categories_TauMu import * 
+    from CMGTools.RootTools.ReWeighter import ReWeighter
+    from CMGTools.RootTools.statistics.Value import Value
+    from ROOT import TLatex
         
     p1 = args[0]
     p2 = args[1]
@@ -144,17 +177,21 @@ if __name__ == '__main__':
     trees[a2].SetTitle( a2 )
 
     # beware weight! 
-    cut = cat_Inc + ' && ' + cat_J1
+    # cut = ' && '.join( [cat_Inc] )
+    cut = ' && '.join( [cat_Inc, cat_VBF_Rel_20, 'l1_pt>30'] )
+    # + '&&' + cat_0B
+    # cut = cat_Inc
     if a1.find('WJets')!=-1:
-        cut += '&& (abs(genWnu_eta)<2.4 || genWnu_eta<-90)'
+        cut += '&& (abs(genWnu_eta)<2. || genWnu_eta<-90)'
 
     # dr = 'sqrt((l1_eta-l2_eta)^2 + (l1_phi-l2_phi)^2)>2
-    cut = cut.replace('l1_threeHitIso<1.5', 'l1_threeHitIso<999')
+    cut = cut.replace('l1_threeHitIso<1.5', 'l1_threeHitIso<10')
     # cut += ' && ' + dr
     w1 = '1'
-    if a1.find('WJets') != -1:
-        w1 = 'weight'
     w2 = 'weight'
+    if a1.find('WJets') != -1:
+        w1 = '1'
+        w2 = '1'
 
     var = args[2]
     var2 = options.var2
@@ -180,7 +217,8 @@ if __name__ == '__main__':
             w2 = addWeight( w2, wfnam )
             
     comp = drawWithRatio(var, cut, trees[a1], trees[a2], w1=w1, w2=w2, nbins=20, xmin=0, xmax=200, var2=var2)
-    
+    # report('Test', comp, a1, a2, cut, highmin=8)
+     
     
     if options.oweight:
         weightFile = shelve.open( options.oweight )
@@ -190,4 +228,8 @@ if __name__ == '__main__':
         
     
     if options.report:
-        report(options.report, h1, h2, a1, a2, cut)
+        report(options.report, comp, a1, a2, cut, highmin=8)
+    else:
+        dir = 'Tmp_plot_MuRm'
+        report(dir, comp, a1, a2, cut, highmin=8, force=True)
+        

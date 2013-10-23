@@ -16,7 +16,8 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        var( tr, 'lumi', int)
        var( tr, 'evt', int)
        var( tr, 'NUP', int)
-       
+       var( tr, 'rho')
+      
        bookDiLepton(tr)
        
        var( tr, 'pfmet')
@@ -47,6 +48,10 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        var( tr, 'hqtWeightUp')
        var( tr, 'hqtWeightDown')
        var( tr, 'NJetWeight')
+
+       var( tr, 'tauFakeRateWeight')
+       var( tr, 'tauFakeRateWeightUp')
+       var( tr, 'tauFakeRateWeightDown')
        
        var( tr, 'nVert')
        
@@ -84,6 +89,7 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        #C uncomment when reactivating WNJetsAnalyzer
        if hasattr(event, 'NUP'):
           fill( tr, 'NUP', event.NUP)
+       fill( tr, 'rho', event.rho)
 
        fillDiLepton( tr, event.diLepton )
 
@@ -135,6 +141,12 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        if hasattr( event, 'NJetWeight'):
           fill(tr, 'NJetWeight', event.NJetWeight)
 
+       fill(tr, 'tauFakeRateWeightUp', event.tauFakeRateWeightUp)
+       fill(tr, 'tauFakeRateWeightDown', event.tauFakeRateWeightDown)
+       fill(tr, 'tauFakeRateWeight', event.tauFakeRateWeight)
+       
+
+
        if hasattr( event, 'vertexWeight'): 
           fill(tr, 'vertexWeight', event.vertexWeight)
           fill(tr, 'nVert', len(event.vertices) ) 
@@ -145,10 +157,12 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        fill(tr, 'thirdLeptonVeto', event.thirdLeptonVeto)
 
 
-       for p in event.genParticles:
-          if p.pdgId() in [23, 25, 35, 36, 37]:
-            fill(tr, 'genMass', p.mass())
-            break
+
+       if hasattr(event, 'genParticles'):
+         for p in event.genParticles:
+            if p.pdgId() in [23, 25, 35, 36, 37]:
+              fill(tr, 'genMass', p.mass())
+              break
 
        if hasattr( event, 'genZs'):
            if len(event.genZs):

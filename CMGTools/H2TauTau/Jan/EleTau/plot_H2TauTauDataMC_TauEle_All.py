@@ -4,6 +4,7 @@ import copy
 import time
 import re
 import os
+import string
 import ROOT
 
 from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
@@ -111,6 +112,7 @@ def makePlot( var, nbins, xmin, xmax,
               subtractBGForQCDShape=False, embedForSS=False, relSelection={}, osForWExtrapolation=True, incQCDYield=99999., qcdYieldInclusiveExtrapolation=False, dataComps={}, cutName='', isZeroB=False, isOneJet=False):
     
     print '\nMaking the plot:', var, 'cut', cut
+    print 'QCD setup', antiEleIsoForQCD, antiEleRlxTauIsoForQCD, subtractBGForQCDShape
 
     wJetScaleSS, wJetScaleOS, w_mt_ratio_ss, w_mt_ratio_os, w_mt_ratio = wInfo
 
@@ -129,9 +131,15 @@ def makePlot( var, nbins, xmin, xmax,
         print 'correcting high->low mT extrapolation factor, OS', w_mt_ratio / w_mt_ratio_os
         osign.Hist(EWK).Scale( w_mt_ratio / w_mt_ratio_os )
     if replaceW:
+        wweight = weight
+        if shift and 'WShape' in shift:
+            if 'Up' in shift:
+                wweight = 'weight*tauFakeRateWeightUp/tauFakeRateWeight'
+            elif 'Down' in shift:
+                wweight = 'weight*tauFakeRateWeightDown/tauFakeRateWeight'
         osign = replaceShapeInclusive(osign, var, anaDir,
                                       selComps['WJets'], weights, 
-                                      oscut, weight,
+                                      oscut, wweight,
                                       embed, shift)
 
     print '\nINFO Replacing shapes'
@@ -312,9 +320,10 @@ def drawAll(plots, outDir, blind, parameters, isMSSM=False):
             osQ.blindxmin = 60.
             osQ.blindxmax = 120.
 
-        varOutDir = outDir+parameters['cutName']+'/p'+str(iName)
+        varOutDir = outDir+parameters['cutName']+'/'
         if not os.path.exists(varOutDir):
             os.makedirs(varOutDir)
+        varOutDir += 'v'+string.lowercase[iName] if iName < 26 else 'v'+str(iName)
         if name != plot.var:
             varOutDir += name + '_'
         # drawOfficial(osQ, blind, plotprefix=varOutDir)
@@ -334,7 +343,10 @@ def handleW( anaDir, selComps, weights,
     cut = cut.replace('mt<30', '1')
     cut = cut.replace('mt<20', '1')
     cut = cut.replace('mt<', 'mt<9999')
-    cut = cut.replace('mt>', 'mt>-0.00000')
+    # cut = cut.replace('mt>', 'mt>-0.00000')
+
+    if 'mt>' in cut:
+        lowMTMax = highMTMax
 
     relCut = relCut.replace('mt<30', '1')
     relCut = relCut.replace('mt<20', '1')
@@ -440,6 +452,10 @@ if __name__ == '__main__':
                       dest="prefix", 
                       help="Prefix for datacards",
                       default=None)
+    parser.add_option("-s", "--shift", 
+                      dest="shift", 
+                      help="Shift to apply specific systematics",
+                      default=None)
     
     (options,args) = parser.parse_args()
     if len(args) != 2:
@@ -464,7 +480,10 @@ if __name__ == '__main__':
         shift = 'Down'
     elif anaDir.endswith('_Up'):
         shift = 'Up'
-        
+    
+    if options.shift:
+        shift = options.shift
+
     cfgFileName = args[1]
     cfgFile = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, cfgFile)
@@ -491,8 +510,10 @@ if __name__ == '__main__':
             XMAX = 2000.
 
     # QCD handling
-    antiEleIsoForQCD = cutstring.find('Xcat_VBF_looseX')!=-1 or cutstring.find('Xcat_VBFX')!=-1  or cutstring.find('Xcat_J0_mediumX')!=-1 or cutstring.find('Xcat_J0_highX')!=-1 or cutstring.find('Xcat_VBF_tightX')!=-1 or isBtag # no isOneJet for electron!!
-    antiEleRlxTauIsoForQCD = cutstring.find('Xcat_J1_high_mediumhiggsX')!=-1 #or cutstring.find('Xcat_VBF_tightX')!=-1 
+    antiEleIsoForQCD = cutstring.find('Xcat_VBF_looseX')!=-1 or cutstring.find('Xcat_VBFX')!=-1 or cutstring.find('Xcat_J0_highX')!=-1  or isBtag #or cutstring.find('Xcat_VBF_tightX')!=-1 
+    antiEleRlxTauIsoForQCD = cutstring.find('Xcat_J1_high_mediumhiggsX')!=-1 or cutstring.find('Xcat_VBF_tightX')!=-1 or cutstring.find('Xcat_J1_mediumX')!=-1
+
+    print 'QCD SETUP', antiEleIsoForQCD, antiEleRlxTauIsoForQCD
 
     antiEleRlxTauIsoForQCDYield = cutstring.find('Xcat_J1_high_mediumhiggsX')!=-1 or cutstring.find('Xcat_VBF_tightX')!=-1 
 
@@ -551,6 +572,9 @@ if __name__ == '__main__':
     if isVBF or isOneJet or isBtag:
         replaceW = True
 
+    if options.shift and 'WShape' in options.shift:
+        replaceW = True
+
     # Use OS+SS for W extrapolation in VBF
     if isVBF:
         osForWExtrapolation = False
@@ -591,11 +615,12 @@ if __name__ == '__main__':
     # Calculate externally, need to recalculate if samples change
     # NOTE: Recalculation requires full QCD estimation including 
     # BG subtraction and W estimation in SS region 
-    # > python -i plot_H2TauTauDataMC_TauEle_All.py /data/steggema/Aug08TauEle/ tauEle_2012_cfg.py -C 'Xcat_IncX && mt<30' -H svfitMass -b
+    # > python -i plot_H2TauTauDataMC_TauEle_All.py /data/steggema/Sep19EleTau/ tauEle_2012_cfg.py -C 'Xcat_IncX && mt<30' -H svfitMass -b
     # > print osQCD
     if isVBF:
-        print 'WARNING, taking QCD yield from external calculation (Aug08TauEle)'
-    incQCDYield = 11251.0
+        print 'WARNING, taking QCD yield from external calculation (Sep19EleTau)'
+    # incQCDYield = 11251.0 (Aug06)
+    incQCDYield = 3398.5 # with tau pt > 30 (Sep19EleTau)
 
     # The following parameters are the same for a given set of samples + a cut (= category)
     parameters = {'cut':options.cut, 'anaDir':anaDir, 'selComps':selComps, 'weights':weights, 
@@ -608,11 +633,9 @@ if __name__ == '__main__':
     if options.allPlots:
         drawAll(plots_All, 'Summer13StackPlotsJul19/', options.blind, parameters, isMSSM)
     else:
+        ssign, osign, ssQCD, osQCD = makePlot(options.hist, NBINS, XMIN, XMAX, **parameters)
         if makeQCDIsoPlots:
             qcdIsoPlots(options.hist, NBINS, XMIN, XMAX, parameters)
-
-        ssign, osign, ssQCD, osQCD = makePlot(options.hist, NBINS, XMIN, XMAX, **parameters)
-
         if blind and isMSSM:
             osQCD.blindxmin = 100.
             osQCD.blindxmax = 1000.
@@ -624,5 +647,3 @@ if __name__ == '__main__':
         draw(osQCD, options.blind, channel='TauEle')
         datacards(osQCD, cutstring, shift, 'eleTau', prefix=options.prefix)
         # printDataVsQCDInfo(osQCD, ssQCD)
-        
-        

@@ -6,7 +6,7 @@ from CMGTools.H2TauTau.proto.plotter.cut import *
 from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
 from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 
-pt1 = 20
+pt1 = 30
 pt2 = 20 # 2011
 if isNewerThan('CMSSW_5_2_0'):
     pt2 = 24 #2012

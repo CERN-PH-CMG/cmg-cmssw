@@ -54,9 +54,9 @@ def formatPad( pad ):
 
 sBlack  = Style()
 sData   = Style(fillStyle=0, markerSize=1.3)
-sBlue   = Style(lineColor=4, markerColor=4)
-sGreen  = Style(lineColor=8, markerColor=8)
-sRed    = Style(lineColor=2, markerColor=2)
+sBlue   = Style(markerColor=4, fillColor=4)
+sGreen  = Style(markerColor=8, fillColor=8)
+sRed    = Style(markerColor=2, fillColor=2)
 sYellow = Style(lineColor=1, markerColor=5, fillColor=5)
 sViolet = Style(lineColor=1, markerColor=kViolet, fillColor=kViolet)
 

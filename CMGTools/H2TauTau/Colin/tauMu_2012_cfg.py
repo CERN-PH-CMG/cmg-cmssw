@@ -16,20 +16,10 @@ syncntuple = True
 simulatedOnly = False # Useful for systematic shifts on simulated samples, e.g. JEC
 doThePlot = True # Set to true for the plotting script
 
-puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
-
-# andrew HCP
-# puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/28-09-12/MC_Summer12_PU_S10-600bins.root'
-# puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/28-09-12/Data_Pileup_2012_HCP-600bins.root'
-
-# Andrew Moriond
-# puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/07-01-13/MC_Summer12_PU_S10-600bins.root'
-# puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/07-01-13/Data_Pileup_2012_Moriond-600bins.root'
 
 # Andrew Summer 13 (MC is identical to the previous one)
-puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-06-13/MC_Summer12_PU_S10-600bins.root'
-puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-06-13/Data_Pileup_2012_ReReco-600bins.root'
-
+puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/13-09-13/MC_Summer12_PU_S10-600bins.root'
+puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/13-09-13/Data_Pileup_2012_ReRecoPixel-600bins.root'
 
 # vertexFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012/Vertices'
 # vertexFileData = '/'.join([vertexFileDir, 'vertices_data_2012A_2012B_start_195947.root'])
@@ -132,6 +122,10 @@ higgsWeighter = cfg.Analyzer(
 
 tauDecayModeWeighter = cfg.Analyzer(
     'TauDecayModeWeighter',
+    )
+
+tauFakeRateWeighter = cfg.Analyzer(
+    'TauFakeRateWeighter'
     )
 
 tauWeighter = cfg.Analyzer(
@@ -299,6 +293,7 @@ sequence = cfg.Sequence( [
     pileUpAna,
     embedWeighter,
     tauDecayModeWeighter,
+    tauFakeRateWeighter,
     tauWeighter, 
     muonWeighter, 
     treeProducer,
@@ -317,6 +312,7 @@ if test==1:
     # comp = HiggsGGH125
     # comp = HiggsSUSYGluGlu1000
     comp = W1Jets_ext
+    # comp = data_Run2012A
     selectedComponents = [comp]
     comp.splitFactor = 1
     # comp.files = comp.files[:10]
@@ -329,10 +325,14 @@ elif test==2:
 elif test==3:
     # selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets]
     # selectedComponents = higgs
+    # selectedComponents = data_list
     # selectedComponents = embed_list
+    # selectedComponents += [DYJets, DY1Jets, DY2Jets, DY3Jets, DY4Jets]
     # selectedComponents = mc_higgs_susy
-    # selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets, W1Jets_ext, W2Jets_ext, W3Jets_ext]
-    selectedComponents = [W1Jets_ext, W2Jets_ext, W3Jets_ext]
+    selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets, W1Jets_ext, W2Jets_ext, W3Jets_ext]
+    # selectedComponents += higgs
+    # selectedComponents += mc_higgs_susy
+    # selectedComponents = [DYJets]
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )

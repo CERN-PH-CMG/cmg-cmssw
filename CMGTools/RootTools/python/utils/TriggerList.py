@@ -26,13 +26,15 @@ class TriggerList( object ):
             self.triggerList.append( trig )
         fileName = '/'.join( [os.environ['CMSSW_BASE'],
                               'src/CMGTools/RootTools/python/utils/triggerEvolution_all.txt'])
-        datasets = ['TauPlusX']
+        #datasets = ['TauPlusX']
+        # FIXME: This is tau-specific.
+        datasets = ['Tau','TauParked','DoubleMu','DoubleMuParked','TauPlusX','SingleMu']
         self.menus = Menus( fileName, datasets )
         self.run = -1
         self.triggerJSON = TriggerJSON()
         self.rltInfo = RLTInfo()
 
-    def restrictList(self, run, triggerList ):
+    def restrictList(self, run, triggerList, isData, isEmbed=False):
         '''Restrict the trigger list to the list of unprescaled triggers in this run.
 
         Seriously speeds up the code.'''
@@ -41,7 +43,23 @@ class TriggerList( object ):
         #    return triggerList
         if run != self.run:
             try:
-                selMenus = self.menus.findUnprescaledPaths(run, 'TauPlusX')
+                #import pdb ; pdb.set_trace()
+                if isData :
+                  selMenus  = self.menus.findUnprescaledPaths(run, 'Tau')
+                  try :
+                    selMenus  = self.menus.findUnprescaledPaths(run, 'TauPlusX')
+                    selMenus2 = self.menus.findUnprescaledPaths(run, 'TauParked')
+                    selMenus += selMenus2
+                  except :
+                    pass
+                if isEmbed :
+                  selMenus  = self.menus.findUnprescaledPaths(run, 'DoubleMu')
+                  try :
+                    selMenus2  = self.menus.findUnprescaledPaths(run, 'DoubleMuParked')
+                    selMenus += selMenus2
+                  except :
+                    pass 
+                #import pdb ; pdb.set_trace()
                 self.unprescaledPaths = set( path.name for path in selMenus )
                 self.restrictedTriggerList = [trigger \
                                               for trigger in triggerList \
@@ -55,19 +73,22 @@ class TriggerList( object ):
             if len( self.triggerList ) != 0:
                 print 'run', run, ': no path from the user list found in the list of unprescaled paths from the trigger DB. The latter could be wrong, using the user trigger list.'
             self.restrictedTriggerList = self.triggerList
+        #import pdb ; pdb.set_trace()
         return self.restrictedTriggerList
         
     def triggerPassed(self, triggerObject, run, lumi, 
-                      isData, usePrescaled=False):
+                      isData, isEmbed=False, usePrescaled=False):
         '''returns true if at least one of the triggers in the triggerlist passes.
 
         run is provided to call restrictList.
         if usePrescaled is False (DEFAULT), only the unprescaled triggers are considered.
         if triggerList is None (DEFAULT), oneself triggerlist is used. '''
-
+        
+        #import pdb ; pdb.set_trace()
+        
         triggerList = self.triggerList
-        if isData:
-            triggerList = self.restrictList( run, self.triggerList ) 
+        if isData or isEmbed:
+            triggerList = self.restrictList( run, self.triggerList, isData, isEmbed ) 
         if len(triggerList)==0:
             # no trigger specified, accepting all events
             return True, None
@@ -76,6 +97,7 @@ class TriggerList( object ):
         for trigger in triggerList:
             trigger.inc('events tested')
             # if triggerObject.getSelectionRegExp( trigger.name ):
+            #import pdb ; pdb.set_trace()
             passedName, prescaleFactor =  self.getSelectionRegExp( triggerObject, trigger.name )
             if passedName is not None:
                 # prescaleFactor = triggerObject.getPrescale( passedName )
@@ -87,6 +109,7 @@ class TriggerList( object ):
                         firstTrigger = trigger.name
                         self.triggerJSON.setdefault(trigger.name, set()).add( run )
                         self.rltInfo.add( trigger.name, run, lumi )
+
                 # don't break, need to test all triggers in the list
                 # break
         return passed, firstTrigger
