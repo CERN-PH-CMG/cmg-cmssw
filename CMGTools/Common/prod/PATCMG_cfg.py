@@ -14,14 +14,15 @@ print 'querying database for source files'
 
 
 runOnMC      = True
-runOnFastSim = False
+runOnFastSim = True
 
 from CMGTools.Production.datasetToSource import *
 ## This is used to get the correct global tag below, and to find the files
 ## It is *reset* automatically by ProductionTasks, so you can use it after the ProductionTasksHook
 datasetInfo = (
     'cmgtools_group',
-    '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B',
+#    '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B',
+    '/SMS-T2tt_mStop-675to800_mLSP-0to275_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/V5_B/',
     # 'CMS',
     # '/DoubleMu/Run2012A-22Jan2013-v1/AOD',
     '.*root')
@@ -116,18 +117,17 @@ process.selectedPatJetsCHS.cut = 'pt()>10'
 
 process.dump = cms.EDAnalyzer('EventContentAnalyzer')
 
-##CGIT process.load('CMGTools.Common.PAT.addFilterPaths_cff')
+process.load('CMGTools.Common.PAT.addFilterPaths_cff')
 process.p = cms.Path(
     process.prePathCounter + 
     process.PATCMGSequence +
     process.PATCMGJetCHSSequence 
     )
 
-##CGIT
-## if 'Prompt' in datasetInfo[1] or runOnMC :
-##    process.metNoiseCleaning.remove(process.hcalfilter)
-## if ('Parked' in datasetInfo[1]) or ('22Jan2013' in datasetInfo[1]) :
-##    process.metNoiseCleaning.remove(process.hcallasereventfilter2012)
+if 'Prompt' in datasetInfo[1] or runOnMC :
+    process.metNoiseCleaning.remove(process.hcalfilter)
+if ('Parked' in datasetInfo[1]) or ('22Jan2013' in datasetInfo[1]) :
+    process.metNoiseCleaning.remove(process.hcallasereventfilter2012)
 
 process.p += process.postPathCounter
 
@@ -149,24 +149,6 @@ process.p += process.postPathCounter
 # process.p.remove(process.MetSignificanceSequence)
 # process.p.remove(process.PATCMGMetRegressionSequence)
 # process.p.remove(process.PATCMGJetSequenceCHSpruned)
-
-if runOnFastSim :
-    process.vertexWeightSequence.remove(process.vertexWeight3DMay10ReReco)
-    process.vertexWeightSequence.remove(process.vertexWeight3DMay10ReReco)
-    process.vertexWeightSequence.remove(process.vertexWeight3DPromptRecov4)
-    process.vertexWeightSequence.remove(process.vertexWeight3D05AugReReco)
-    process.vertexWeightSequence.remove(process.vertexWeight3DPromptRecov6)
-    process.vertexWeightSequence.remove(process.vertexWeight3D2invfb)
-    process.vertexWeightSequence.remove(process.vertexWeight3D2011B)
-    process.vertexWeightSequence.remove(process.vertexWeight3D2011AB)
-    process.vertexWeightSequence.remove(process.vertexWeight3DFall11May10ReReco)
-    process.vertexWeightSequence.remove(process.vertexWeight3DFall11PromptRecov4)
-    process.vertexWeightSequence.remove(process.vertexWeight3DFall1105AugReReco)
-    process.vertexWeightSequence.remove(process.vertexWeight3DFall11PromptRecov6)
-    process.vertexWeightSequence.remove(process.vertexWeight3DFall112invfb)
-    process.vertexWeightSequence.remove(process.vertexWeight3DFall112011B)
-    process.vertexWeightSequence.remove(process.vertexWeight3DFall112011AB)
-
 
 ########################################################
 ## PAT output definition
@@ -225,11 +207,8 @@ process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
 
 ## Geometry and Detector Conditions (needed for a few patTuple production steps)
-
-##CGIT
-## from CMGTools.Common.PAT.patCMGSchedule_cff import getSchedule
-## process.schedule = getSchedule(process, runOnMC, runOnFastSim)
-process.schedule = cms.Schedule( process.p)
+from CMGTools.Common.PAT.patCMGSchedule_cff import getSchedule
+process.schedule = getSchedule(process, runOnMC, runOnFastSim, datasetInfo[1])
 
 process.schedule.append( process.outpath )
 
