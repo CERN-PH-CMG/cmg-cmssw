@@ -310,7 +310,6 @@ for mass in masses:
         datacard = open(myout+binname+".card.txt", "w"); 
         datacard.write("## Datacard for cut file %s\n"%args[1])
         datacard.write("shapes *        * %s.input.root x_$PROCESS x_$PROCESS_$SYSTEMATIC\n" % binname)
-    #datacard.write("shapes data_obs * %s.input.root x_data    \n" % binname)
     datacard.write('##----------------------------------\n')
     datacard.write('bin         %s\n' % binname)
     datacard.write('observation %s\n' % myyields['data_obs'])
@@ -334,8 +333,38 @@ for mass in masses:
         if mode in ["envelop", "shapeOnly"]:
             datacard.write(('%-10s shape' % (name+"1")) + " ".join([kpatt % effmap12[p] for p in procs]) +"\n")
             datacard.write(('%-10s shape' % (name+"2")) + " ".join([kpatt % effmap12[p] for p in procs]) +"\n")
-
-
+if len(masses) > 1:
+    myout = outdir
+    myyields = dict([(k,-1 if "ttH" in k else v) for (k,v) in allyields.iteritems()]) 
+    datacard = open(myout+binname+".card.txt", "w"); 
+    datacard.write("## Datacard for cut file %s (all massess, taking signal normalization from templates)\n")
+    datacard.write("shapes *        * common/%s.input.root x_$PROCESS x_$PROCESS_$SYSTEMATIC\n" % binname)
+    datacard.write("shapes ttH_hww  * common/%s.input.root x_$PROCESS$MASS x_$PROCESS$MASS_$SYSTEMATIC\n" % binname)
+    datacard.write("shapes ttH_hzz  * common/%s.input.root x_$PROCESS$MASS x_$PROCESS$MASS_$SYSTEMATIC\n" % binname)
+    datacard.write("shapes ttH_htt  * common/%s.input.root x_$PROCESS$MASS x_$PROCESS$MASS_$SYSTEMATIC\n" % binname)
+    datacard.write('##----------------------------------\n')
+    datacard.write('bin         %s\n' % binname)
+    datacard.write('observation %s\n' % myyields['data_obs'])
+    datacard.write('##----------------------------------\n')
+    klen = max([7, len(binname)]+[len(p) for p in procs])
+    kpatt = " %%%ds "  % klen
+    fpatt = " %%%d.%df " % (klen,3)
+    datacard.write('##----------------------------------\n')
+    datacard.write('bin             '+(" ".join([kpatt % binname  for p in procs]))+"\n")
+    datacard.write('process         '+(" ".join([kpatt % p        for p in procs]))+"\n")
+    datacard.write('process         '+(" ".join([kpatt % iproc[p] for p in procs]))+"\n")
+    datacard.write('rate            '+(" ".join([fpatt % myyields[p] for p in procs]))+"\n")
+    datacard.write('##----------------------------------\n')
+    for name,effmap in systs.iteritems():
+        datacard.write(('%-12s lnN' % name) + " ".join([kpatt % effmap[p]   for p in procs]) +"\n")
+    for name,(effmap0,effmap12,mode) in systsEnv.iteritems():
+        if mode == "templates":
+            datacard.write(('%-10s shape' % name) + " ".join([kpatt % effmap0[p]  for p in procs]) +"\n")
+        if mode == "envelop":
+            datacard.write(('%-10s shape' % (name+"0")) + " ".join([kpatt % effmap0[p]  for p in procs]) +"\n")
+        if mode in ["envelop", "shapeOnly"]:
+            datacard.write(('%-10s shape' % (name+"1")) + " ".join([kpatt % effmap12[p] for p in procs]) +"\n")
+            datacard.write(('%-10s shape' % (name+"2")) + " ".join([kpatt % effmap12[p] for p in procs]) +"\n")
     datacard.close()
     print "Wrote to ",myout+binname+".card.txt"
     if options.verbose:
