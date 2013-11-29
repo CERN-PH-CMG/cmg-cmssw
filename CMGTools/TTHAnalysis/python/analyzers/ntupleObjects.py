@@ -1,6 +1,4 @@
 #!/bin/env python
-from math import *
-from CMGTools.TTHAnalysis.signedSip import *
 
 class NTupleVariable:
     def __init__(self, name, function, type=float, help="", default=-99, mcOnly=False):
@@ -21,12 +19,11 @@ class NTupleVariable:
         treeNumpy.fill(self.name, self(object))
 
 class NTupleObjectType:
-    def __init__(self,name,baseObjectTypes=[],mcOnly=[],variables=[],help=""):
+    def __init__(self,name,baseObjectTypes=[],mcOnly=[],variables=[]):
         self.name = name
         self.baseObjectTypes = baseObjectTypes
         self.mcOnly = mcOnly
         self.variables = variables
-        self.help = ""
     def allVars(self,isMC):
         ret = []; names = {}
         if not isMC and self.mcOnly: return []
@@ -42,18 +39,26 @@ class NTupleObjectType:
             names[var.name] = self.name
             ret.append(var)
         return ret
+
+class NTupleObject:
+    def __init__(self, name, objectType, help="", mcOnly=False):
+        self.name = name
+        self.objectType = objectType
+        self.mcOnly = mcOnly
+        self.help = ""
     def makeBranches(self,treeNumpy,isMC):
         if not isMC and self.mcOnly: return
-        allvars = self.allVars(isMC)
+        allvars = self.objectType.allVars(isMC)
         for v in allvars:
             h = v.help
             if self.help: h = "%s for %s" % ( h if h else v.name, self.help )
             treeNumpy.var("%s_%s" % (self.name, v.name), type=v.type, default=v.default, title=h)
     def fillBranches(self,treeNumpy,object,isMC):
         if self.mcOnly and not isMC: return
-        allvars = self.allVars(isMC)
+        allvars = self.objectType.allVars(isMC)
         for v in allvars:
             treeNumpy.fill("%s_%s" % (self.name, v.name), v(object))
+
 
 class NTupleCollection:
     def __init__(self, name, objectType, maxlen, help="", mcOnly=False):
@@ -97,24 +102,3 @@ class NTupleCollection:
             treeNumpy.vfill("%s_%s" % (self.name, v.name), [ v(collection[i]) for i in xrange(num) ])
 
 
-fourVectorType = NTupleObjectType("fourVector", variables = [
-    NTupleVariable("pt",    lambda x : x.pt()),
-    NTupleVariable("eta",   lambda x : x.eta()),
-    NTupleVariable("phi",   lambda x : x.phi()),
-    NTupleVariable("mass",  lambda x : x.mass()),
-])
-particleType = NTupleObjectType("particle", baseObjectTypes = [ fourVectorType ], variables = [
-    NTupleVariable("pdgId",   lambda x : x.pdgId(), int),
-])
-leptonType = NTupleObjectType("lepton", baseObjectTypes = [ particleType ], variables = [
-    NTupleVariable("charge",   lambda x : x.charge(), int),
-    NTupleVariable("dxy",   lambda x : x.dxy(), help="d_{xy} with respect to PV, in cm (with sign)"),
-    NTupleVariable("dz",    lambda x : x.dz() , help="d_{z} with respect to PV, in cm (with sign)"),
-    NTupleVariable("ip3d",  lambda x : abs(signedIp3D(x)) , help="d_{3d} with respect to PV, in cm (absolute value)"),
-    NTupleVariable("sip3d",  lambda x : x.sip3D(), help="S_{ip3d} with respect to PV (absolute value)"),
-    NTupleVariable("relIso",  lambda x : x.relIso(dBetaFactor=0.5), help="PF Iso, R=0.4, with deltaBeta correction"),
-    NTupleVariable("mcMatchId",   lambda x : x.mcMatchId, int, mcOnly=True, help="Match to source from hard scatter (25 for H, 6 for t, 23/24 for W/Z)"),
-])
-
-        
-    

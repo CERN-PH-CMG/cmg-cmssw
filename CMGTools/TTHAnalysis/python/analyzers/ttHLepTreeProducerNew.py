@@ -1,5 +1,6 @@
 from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
 from CMGTools.TTHAnalysis.analyzers.ntupleObjects import *
+from CMGTools.TTHAnalysis.analyzers.ntupleTypes   import *
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.fwlite.Event import Event
 from ROOT import TriggerBitChecker
@@ -12,14 +13,19 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(ttHLepTreeProducerNew,self).__init__(cfg_ana, cfg_comp, looperName)
 
+        ## Declare how we store floats by default
+        self.tree.setDefaultFloatType("F"); # otherwise it's "D"
+
         ## Declare what we want to fill
         self.globalVariables = [ 
             NTupleVariable("nVert", lambda ev: len(ev.goodVertices), int, help="Number of good vertices"),
         ]
         self.globalObjects = {
+            "met" : NTupleObject("met", metType, help="PF E_{T}^{miss}, after type 1 corrections"),
         }
         self.collections = {
-            "selectedLeptons" : NTupleCollection("LepGood", leptonType, 8, help="Leptons after the preselection"),
+            "selectedLeptons" : NTupleCollection("LepGood", leptonTypeTTH, 8, help="Leptons after the preselection"),
+            "cleanJets"       : NTupleCollection("Jet",     jetType, 8, help="Cental jets after full selection and cleaning"),
         }
         self.scalar = not self.cfg_ana.vectorTree
 
