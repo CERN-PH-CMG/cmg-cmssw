@@ -6,13 +6,13 @@ import os.path
 MODULES = []
 
 from CMGTools.TTHAnalysis.tools.btagSFs_POG import bTagSFEvent3WPErrs as btagSFEvent
-#MODULES += [ ('btag', btagSFEvent) ]
+MODULES += [ ('btag', btagSFEvent) ]
 
 from CMGTools.TTHAnalysis.tools.lepMVA_SF import AllLepSFs
 MODULES += [ ('lep',AllLepSFs())  ]
 
 from CMGTools.TTHAnalysis.tools.lepTrigger_SF import LepTriggerSF_Event
-#MODULES += [ ('trig2l', LepTriggerSF_Event())  ]
+MODULES += [ ('trig2l', LepTriggerSF_Event())  ]
 
 from CMGTools.TTHAnalysis.tools.metLD_reshape import MetLDReshaper
 #MODULES += [ ('metLD', MetLDReshaper()) ]
@@ -60,6 +60,7 @@ parser.add_option("-N", "--events",  dest="chunkSize", type="int",    default=50
 parser.add_option("-j", "--jobs",    dest="jobs",      type="int",    default=1, help="Use N threads");
 parser.add_option("-p", "--pretend", dest="pretend",   action="store_true", default=False, help="Don't run anything");
 parser.add_option("-q", "--queue",   dest="queue",     type="string", default=None, help="Run jobs on lxbatch instead of locally");
+parser.add_option("-V", "--vector",  dest="vectorTree", action="store_true", default=False, help="Input tree is a vector")
 (options, args) = parser.parse_args()
 
 if len(args) != 2 or not os.path.isdir(args[0]) or not os.path.isdir(args[1]): 
@@ -71,7 +72,10 @@ if len(options.chunks) != 0 and len(options.datasets) != 1:
 
 jobs = []
 for D in glob(args[0]+"/*"):
-    fname = D+"/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root"
+    if options.vectorTree:
+        fname = D+"/ttHLepTreeProducerNew/ttHLepTreeProducerNew_tree.root"
+    else:
+        fname = D+"/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root"
     if os.path.exists(fname):
         short = os.path.basename(D)
         if options.datasets != []:
@@ -79,7 +83,7 @@ for D in glob(args[0]+"/*"):
         data = ("DoubleMu" in short or "MuEG" in short or "DoubleElectron" in short or "SingleMu" in short)
         if data: continue
         f = ROOT.TFile.Open(fname);
-        t = f.Get("ttHLepTreeProducerBase")
+        t = f.Get("ttHLepTreeProducerNew" if options.vectorTree else "ttHLepTreeProducerBase")
         entries = t.GetEntries()
         f.Close()
         chunk = options.chunkSize
@@ -103,6 +107,7 @@ if options.queue:
                 queue = options.queue, dir = os.getcwd(), cmssw = os.environ['CMSSW_BASE'], 
                 self=sys.argv[0], chunkSize=options.chunkSize, data=args[0], output=args[1]
             )
+    if options.vectorTree: basecmd += " --vector "
     # specify what to do
     for (name,fin,fout,data,range,chunk) in jobs:
         if chunk != -1:
@@ -116,7 +121,12 @@ def _runIt(myargs):
     (name,fin,fout,data,range,chunk) = myargs
     timer = ROOT.TStopwatch()
     fb = ROOT.TFile(fin)
-    tb = fb.Get("ttHLepTreeProducerBase")
+    if options.vectorTree:
+        tb = fb.Get("ttHLepTreeProducerNew")
+        tb.vectorTree = True
+    else:
+        tb = fb.Get("ttHLepTreeProducerBase")
+        tb.vectorTree = False
     nev = tb.GetEntries()
     if options.pretend:
         print "==== pretending to run %s (%d entries, %s) ====" % (name, nev, fout)
@@ -131,9 +141,12 @@ def _runIt(myargs):
     print "=== %s done (%d entries, %.0f s, %.0f e/s) ====" % ( name, nev, time,(nev/time) )
     return (name,(nev,time))
 
-from multiprocessing import Pool
-pool = Pool(options.jobs)
-ret  = dict(pool.map(_runIt, jobs))
+if options.jobs > 0:
+    from multiprocessing import Pool
+    pool = Pool(options.jobs)
+    ret  = dict(pool.map(_runIt, jobs))
+else:
+    ret = dict(map(_runIt, jobs))
 fulltime = maintimer.RealTime()
 totev   = sum([ev   for (ev,time) in ret.itervalues()])
 tottime = sum([time for (ev,time) in ret.itervalues()])
