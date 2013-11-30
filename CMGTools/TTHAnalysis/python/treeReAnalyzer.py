@@ -46,13 +46,16 @@ class Event:
             
 
 class Object:
-    def __init__(self,event,prefix):
+    def __init__(self,event,prefix,index=None):
         self._event = event
         self._prefix = prefix+"_"
+        self._index = index
     def __getattr__(self,name):
         if name in self.__dict__: return self.__dict__[name]
         if name == "pdgLabel": return self.pdgLabel_()
         val = getattr(self._event,self._prefix+name)
+        if self._index != None:
+            val = val[self._index]
         self.__dict__[name] = val ## cache
         return val
     def __getitem__(self,attr):
@@ -74,8 +77,13 @@ class Collection:
         self._event = event
         self._prefix = prefix
         self._testVar = testVar
+        self._vector = hasattr(event._tree, "vectorTree") and event._tree.vectorTree
         if len != None:
-            self._len = min(maxlen,getattr(event,len))
+            self._len = getattr(event,len)
+            if maxlen and self._len > maxlen: self._len = maxlen
+        elif self._vector:
+            self._len = getattr(event,"n"+prefix)
+            if maxlen and self._len > maxlen: self._len = maxlen
         elif testVar != None:
             self._len = None
         else:
@@ -85,7 +93,10 @@ class Collection:
         if type(index) == int and index in self._cache: return self._cache[index]
         if self._testVar != None and self._len == None: self._countMe()
         if index >= self._len: raise IndexError, "Invalid index %r (len is %r) at %s" % (index,self._len,self._prefix)
-        ret = Object(self._event,"%s%d" % (self._prefix,index+1))
+        if self._vector:
+            ret = Object(self._event,self._prefix,index=index)
+        else: 
+            ret = Object(self._event,"%s%d" % (self._prefix,index+1))
         if type(index) == int: self._cache[index] = ret
         return ret
     def __len__(self):
@@ -226,17 +237,22 @@ if __name__ == '__main__':
             self.maxEta = self.book("TH1F","maxEta","maxEta",20,0.,5.0)
             print "Booked histogram 'maxEta'"
         def analyze(self,event):
-            genB = Collection(event,"GenBQuark") #,"nGenBQuarks",2) 
-            #print "Number of generated b quarks: %d" % len(genB)
-            #for i in xrange(len(genB)):
-            #    print "eta of gen b #%d: %+5.3f" % (i+1, genB[i].eta)
-            #print ""
+            genB = Collection(event,"LepGood") #,"nGenBQuarks",2) 
+            print "Number of generated b quarks: %d" % len(genB)
             if not event.eval("nLepGood == 3"): return False
+            for i in xrange(len(genB)):
+                print "eta of gen b #%d: %+5.3f" % (i+1, genB[i].eta)
+            print ""
             maxEta = max([abs(gb.eta) for gb in genB])
             self.maxEta.Fill(maxEta)
     from sys import argv
     f = ROOT.TFile(argv[1])
-    t = f.Get("ttHLepTreeProducerBase")
+    if "ttHLepTreeProducerNew" in argv[1]: 
+        t = f.Get("ttHLepTreeProducerNew")
+        t.vectorTree = True
+    else:
+        t = f.Get("ttHLepTreeProducerBase")
+        t.vectorTree = False
     booker = Booker("test.root")
     el = EventLoop([DummyModule("dummy",booker)])
     el.loop(t,1000)
