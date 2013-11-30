@@ -18,7 +18,8 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
 
         ## Declare what we want to fill
         self.globalVariables = [ 
-            NTupleVariable("nVert", lambda ev: len(ev.goodVertices), int, help="Number of good vertices"),
+            NTupleVariable("nVert",  lambda ev: len(ev.goodVertices), int, help="Number of good vertices"),
+            NTupleVariable("nJet25", lambda ev: len(ev.cleanJets), int, help="Number of jets with pt > 25"),
         ]
         self.globalObjects = {
             "met" : NTupleObject("met", metType, help="PF E_{T}^{miss}, after type 1 corrections"),

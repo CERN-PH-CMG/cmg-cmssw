@@ -49,6 +49,7 @@ parser.add_option("-j", "--jobs",    dest="jobs",      type="int",    default=1,
 parser.add_option("-p", "--pretend", dest="pretend",   action="store_true", default=False, help="Don't run anything");
 parser.add_option("-t", "--tree-dir",   dest="treeDir",     type="string", default="sf", help="Directory of the friend tree in the file (default: 'sf')");
 parser.add_option("-q", "--queue",   dest="queue",     type="string", default=None, help="Run jobs on lxbatch instead of locally");
+parser.add_option("-V", "--vector",  dest="vectorTree", action="store_true", default=False, help="Input tree is a vector")
 parser.add_option("-F", "--add-friend",    dest="friendTrees",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename). Can use {name}, {cname} patterns in the treename") 
 parser.add_option("--FMC", "--add-friend-mc",    dest="friendTreesMC",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to MC only. Can use {name}, {cname} patterns in the treename") 
 parser.add_option("--FD", "--add-friend-data",    dest="friendTreesData",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to data trees only. Can use {name}, {cname} patterns in the treename") 
@@ -63,14 +64,17 @@ if len(options.chunks) != 0 and len(options.datasets) != 1:
 
 jobs = []
 for D in glob(args[0]+"/*"):
-    fname = D+"/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root"
+    if options.vectorTree:
+        fname = D+"/ttHLepTreeProducerNew/ttHLepTreeProducerNew_tree.root"
+    else:
+        fname = D+"/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root"
     if os.path.exists(fname):
         short = os.path.basename(D)
         if options.datasets != []:
             if short not in options.datasets: continue
         data = ("DoubleMu" in short or "MuEG" in short or "DoubleElectron" in short or "SingleMu" in short)
         f = ROOT.TFile.Open(fname);
-        t = f.Get("ttHLepTreeProducerBase")
+        t = f.Get("ttHLepTreeProducerNew" if options.vectorTree else "ttHLepTreeProducerBase")
         entries = t.GetEntries()
         f.Close()
         chunk = options.chunkSize
@@ -94,6 +98,7 @@ if options.queue:
                 queue = options.queue, dir = os.getcwd(), cmssw = os.environ['CMSSW_BASE'], 
                 self=sys.argv[0], chunkSize=options.chunkSize, tdir=options.treeDir, data=args[0], output=args[1]
             )
+    if options.vectorTree: basecmd += " --vector "
     friendPost =  "".join(["  -F  %s %s " % (fn,ft) for fn,ft in options.friendTrees])
     friendPost += "".join([" --FM %s %s " % (fn,ft) for fn,ft in options.friendTreesMC])
     friendPost += "".join([" --FD %s %s " % (fn,ft) for fn,ft in options.friendTreesData])
@@ -110,7 +115,12 @@ def _runIt(myargs):
     (name,fin,fout,data,range,chunk) = myargs
     timer = ROOT.TStopwatch()
     fb = ROOT.TFile(fin)
-    tb = fb.Get("ttHLepTreeProducerBase")
+    if options.vectorTree:
+        tb = fb.Get("ttHLepTreeProducerNew")
+        tb.vectorTree = True
+    else:
+        tb = fb.Get("ttHLepTreeProducerBase")
+        tb.vectorTree = False
     friends = options.friendTrees[:]
     friends += (options.friendTreesData if data else options.friendTreesMC)
     friends_ = [] # to make sure pyroot does not delete them
@@ -131,9 +141,12 @@ def _runIt(myargs):
     print "=== %s done (%d entries, %.0f s, %.0f e/s) ====" % ( name, nev, time,(nev/time) )
     return (name,(nev,time))
 
-from multiprocessing import Pool
-pool = Pool(options.jobs)
-ret  = dict(pool.map(_runIt, jobs)) if options.jobs > 0 else dict([_runIt(j) for j in jobs])
+if options.jobs > 0:
+    from multiprocessing import Pool
+    pool = Pool(options.jobs)
+    ret  = dict(pool.map(_runIt, jobs)) if options.jobs > 0 else dict([_runIt(j) for j in jobs])
+else:
+    ret = dict(map(_runIt, jobs))
 fulltime = maintimer.RealTime()
 totev   = sum([ev   for (ev,time) in ret.itervalues()])
 tottime = sum([time for (ev,time) in ret.itervalues()])
