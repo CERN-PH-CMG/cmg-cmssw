@@ -67,6 +67,8 @@ ttHLepAna = cfg.Analyzer(
     electrons='cmgElectronSel',
     photons='cmgPhotonSel',
     isolationCut=0.4, 
+    sip3dCut=10,
+    sip3dCutVeryLoose=100,
     minGoodLeptons=2,
     minInclusiveLeptons=2,
     doSSLeptons=False,
@@ -85,6 +87,9 @@ ttHLepMCAna = cfg.Analyzer(
 # Tau Analyzer
 ttHTauAna = cfg.Analyzer(
     'ttHTauAnalyzer',
+    ptMin = 20,
+    vetoLeptons = True,
+    leptonVetoDR = 0.5,
 )
 
 # Tau MC Matching
@@ -105,6 +110,7 @@ ttHJetAna = cfg.Analyzer(
     doPuId = True,
     recalibrateJets = True,
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
+    cleanJetsFromTaus = False,
     )
 
 ## MET Analyzer
@@ -131,7 +137,14 @@ from CMGTools.TTHAnalysis.samples.samples_8TeV import triggers_mumu, triggers_ee
 # Tree Producer
 treeProducer = cfg.Analyzer(
     'ttHLepTreeProducerNew',
-    vectorTree = True
+    vectorTree = True,
+    PDFWeights = PDFWeights,
+    triggerBits = {
+            'DoubleMu' : triggers_mumu,
+            'DoubleEl' : [ t for t in triggers_ee if "Ele15_Ele8_Ele5" not in t ],
+            'TripleEl' : [ t for t in triggers_ee if "Ele15_Ele8_Ele5"     in t ],
+            'MuEG'     : [ t for t in triggers_mue if "Mu" in t and "Ele" in t ]
+        }
     )
 
 
