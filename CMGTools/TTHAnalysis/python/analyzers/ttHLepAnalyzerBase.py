@@ -119,15 +119,17 @@ class ttHLepAnalyzerBase( Analyzer ):
                 #pid = mu.sourcePtr().originalObject().track().id()
                 #key = mu.sourcePtr().originalObject().track().key()
                 #mu.dEdX = self.handles['dEdX'].product().get(pid,key)
-                if mu.sourcePtr().userFloat("isPFMuon")>0.5 and (self.relaxId or mu.sip3D()<10) and mu.relIso(dBetaFactor=0.5)<self.cfg_ana.isolationCut:
+                if mu.sourcePtr().userFloat("isPFMuon")>0.5 and mu.sip3D() < self.cfg_ana.sip3dCut and mu.relIso(dBetaFactor=0.5)<self.cfg_ana.isolationCut:
                     event.selectedLeptons.append(mu)
                 else:
                     event.looseLeptons.append(mu)
-                if mu.sourcePtr().userFloat("isPFMuon")>0.5 and mu.sip3D() < 100:
+                if mu.sourcePtr().userFloat("isPFMuon")>0.5 and mu.sip3D() < self.cfg_ana.sip3dCutVeryLoose:
                     event.inclusiveLeptons.append(mu)
 
         #electrons        
         allelectrons = map( Electron, self.handles['electrons'].product() )
+
+        ## duplicate removal for fast sim (to be checked if still necessary in 5_3_12+)
         allelenodup = []
         for e in allelectrons:
             dup = False
@@ -146,6 +148,7 @@ class ttHLepAnalyzerBase( Analyzer ):
                     ## attach it to the object redefining the sip3D() method
                     ele.sip3D  = types.MethodType(lambda self : self._sip3d, ele, ele.__class__)
 
+        # fill EA for rho-corrected isolation
         for ele in allelectrons:
           ele.rho = float(self.handles['rhoEle'].product()[0])
           SCEta = abs(ele.sourcePtr().superCluster().eta())
@@ -174,11 +177,23 @@ class ttHLepAnalyzerBase( Analyzer ):
             if bestMatch(ele, muForEleCrossCleaning)[1] < 0.02: continue
             ## apply selection
             if ele.pt()>7 and abs(ele.eta())<2.5 and abs(ele.dxy())<0.5 and abs(ele.dz())<1. and ele.numberOfHits()<=1:
-                 if (self.relaxId or ele.mvaIDZZ() and ele.sip3D()<10) and ele.relIso(dBetaFactor=0.5)<self.cfg_ana.isolationCut:
+                 ## fill tightId:
+                 if (ele.pt() > 20):
+                    SCEta = abs(ele.sourcePtr().superCluster().eta())
+                    if   SCEta < 0.8:   ele.tightIdResult = (ele.mvaTrigV0() > 0.00)
+                    elif SCEta < 1.479: ele.tightIdResult = (ele.mvaTrigV0() > 0.10)
+                    else:               ele.tightIdResult = (ele.mvaTrigV0() > 0.62)
+                 elif (ele.pt() > 10):
+                    if   SCEta < 0.8:   ele.tightIdResult = (ele.mvaTrigV0() > 0.94)
+                    elif SCEta < 1.479: ele.tightIdResult = (ele.mvaTrigV0() > 0.85)
+                    else:               ele.tightIdResult = (ele.mvaTrigV0() > 0.92)
+                 else:
+                    ele.tightIdResult = False
+                 if (self.relaxId or ele.mvaIDZZ() and ele.sip3D() < self.cfg_ana.sip3dCut) and ele.relIso(dBetaFactor=0.5)<self.cfg_ana.isolationCut:
                     event.selectedLeptons.append(ele)
                  else:
                     event.looseLeptons.append(ele)
-                 if (self.relaxId or ele.mvaIDZZ()) and ele.sip3D() < 100:
+                 if (self.relaxId or ele.mvaIDZZ()) and ele.sip3D() < self.cfg_ana.sip3dCutVeryLoose:
                     event.inclusiveLeptons.append(ele)
                  
                     
