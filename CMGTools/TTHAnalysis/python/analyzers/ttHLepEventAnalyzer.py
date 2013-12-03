@@ -76,6 +76,8 @@ class ttHLepEventAnalyzer( Analyzer ):
         event.minMllAFOS = min(mllafos)
         event.minMllAFSS = min(mllafss)
         event.minMllAFAS = min(mllafas)
+        event.maxMllSFOS = max(mllsfos)
+        event.maxMllAFAS = max(mllafas)
         event.maxMllAFOS = max(mllafos)
         event.maxMllAFSS = max(mllafss)
         drllafos = self.drllValues(event,  lambda l1,l2 : l1.charge() == -l2.charge(),  maxLeps)
