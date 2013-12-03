@@ -79,6 +79,8 @@ class ttHJetAnalyzer( Analyzer ):
         
         ## Clean Jets from leptons
         leptons = event.selectedLeptons
+        if self.cfg_ana.cleanJetsFromTaus:
+            leptons = leptons[:] + event.selectedTaus
         #event.cleanJets, dummy = cleanObjectCollection( event.jets,
         #                                                masks = leptons,
         #                                                deltaRMin = 0.5 )
