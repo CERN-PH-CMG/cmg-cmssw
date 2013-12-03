@@ -68,10 +68,8 @@ class TreeNumpy(object):
     def vector(self, varName, lenvar, maxlen=None, type=float, default=-99, title=None, storageType="default" ):
         """either lenvar is a string, and maxlen an int (variable size array), or lenvar is an int and maxlen is not specified (fixed array)"""
         if __builtins__['type'](lenvar) == int:  # need the __builtins__ since 'type' is a variable here :-/
-            print "fixed size arrayi %s (of size %r)" % (varName, lenvar)
             self.branch_(self.vecvars, varName, type, lenvar, postfix="[%d]" % lenvar, title=title, storageType=storageType)
         else:
-            print "variable size array %s (of size %r)" % (varName, lenvar)
             if maxlen == None: RuntimeError, 'You must specify a maxlen if making a dynamic array';
             self.branch_(self.vecvars, varName, type, maxlen, postfix="[%s]" % lenvar, title=title, storageType=storageType)
         self.vecdefaults[varName] = default
