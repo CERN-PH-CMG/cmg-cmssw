@@ -136,7 +136,8 @@ ttHEventAna = cfg.Analyzer(
 from CMGTools.TTHAnalysis.samples.samples_8TeV import triggers_mumu, triggers_ee, triggers_mue
 # Tree Producer
 treeProducer = cfg.Analyzer(
-    'ttHLepTreeProducerNew',
+    #'ttHLepTreeProducerExample',
+    'ttHLepTreeProducerTTH',
     vectorTree = True,
     PDFWeights = PDFWeights,
     triggerBits = {
