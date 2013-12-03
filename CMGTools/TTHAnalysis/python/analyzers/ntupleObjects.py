@@ -61,12 +61,17 @@ class NTupleObject:
 
 
 class NTupleCollection:
-    def __init__(self, name, objectType, maxlen, help="", mcOnly=False):
+    def __init__(self, name, objectType, maxlen, help="", mcOnly=False, sortAscendingBy=None, sortDescendingBy=None, filter=None):
         self.name = name
         self.objectType = objectType
         self.maxlen = maxlen
         self.help = help
         self.mcOnly = mcOnly
+        if sortAscendingBy != None and sortDescendingBy != None:
+            raise RuntimeError, "Cannot specify two sort conditions"
+        self.filter = filter
+        self.sortAscendingBy  = sortAscendingBy
+        self.sortDescendingBy = sortDescendingBy
     def makeBranchesScalar(self,treeNumpy,isMC):
         if not isMC and self.objectType.mcOnly: return
         treeNumpy.var("n"+self.name, int)
@@ -86,6 +91,9 @@ class NTupleCollection:
             treeNumpy.vector("%s_%s" % (self.name, v.name), "n"+self.name, self.maxlen, type=v.type, default=v.default, title=h)
     def fillBranchesScalar(self,treeNumpy,collection,isMC):
         if not isMC and self.objectType.mcOnly: return
+        if self.filter != None: collection = [ o for o in collection if filter(o) ]
+        if self.sortAscendingBy != None: collection = sorted(collection, key=self.sortAscendingBy)
+        if self.sortDescendingBy != None: collection = sorted(collection, key=self.sortDescendingBy, reverse=True)
         num = min(self.maxlen,len(collection))
         treeNumpy.fill("n"+self.name, num)
         allvars = self.objectType.allVars(isMC)
