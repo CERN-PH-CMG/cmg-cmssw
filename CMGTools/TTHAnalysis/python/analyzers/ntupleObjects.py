@@ -92,7 +92,7 @@ class NTupleCollection:
     def fillBranchesScalar(self,treeNumpy,collection,isMC):
         if not isMC and self.objectType.mcOnly: return
         if self.filter != None: collection = [ o for o in collection if filter(o) ]
-        if self.sortAscendingBy != None: collection = sorted(collection, key=self.sortAscendingBy)
+        if self.sortAscendingBy != None: collection  = sorted(collection, key=self.sortAscendingBy)
         if self.sortDescendingBy != None: collection = sorted(collection, key=self.sortDescendingBy, reverse=True)
         num = min(self.maxlen,len(collection))
         treeNumpy.fill("n"+self.name, num)
@@ -103,6 +103,9 @@ class NTupleCollection:
                 treeNumpy.fill("%s%d_%s" % (self.name, i+1, v.name), v(o))
     def fillBranchesVector(self,treeNumpy,collection,isMC):
         if not isMC and self.objectType.mcOnly: return
+        if self.filter != None: collection = [ o for o in collection if filter(o) ]
+        if self.sortAscendingBy != None: collection  = sorted(collection, key=self.sortAscendingBy)
+        if self.sortDescendingBy != None: collection = sorted(collection, key=self.sortDescendingBy, reverse=True)
         num = min(self.maxlen,len(collection))
         treeNumpy.fill("n"+self.name, num)
         allvars = self.objectType.allVars(isMC)
