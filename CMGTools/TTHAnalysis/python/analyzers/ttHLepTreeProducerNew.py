@@ -56,7 +56,7 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
         self.collections = {
             "selectedLeptons" : NTupleCollection("LepGood", leptonTypeTTH, 8, help="Leptons after the preselection"),
             "selectedTaus"    : NTupleCollection("TauGood", tauTypeTTH, 3, help="Taus after the preselection"),
-            "cleanJets"       : NTupleCollection("Jet",     jetTypeTTH, 8, sortDescendingBy = lambda jet : j.btag('combinedSecondaryVertexBJetTags'), help="Cental jets after full selection and cleaning, sorted by b-tag"),
+            "cleanJets"       : NTupleCollection("Jet",     jetTypeTTH, 8, sortDescendingBy = lambda jet : jet.btag('combinedSecondaryVertexBJetTags'), help="Cental jets after full selection and cleaning, sorted by b-tag"),
             ##--------------------------------------------------
             "gentopquarks"    : NTupleCollection("GenTop",     genParticleType, 2, help="Generated top quarks from hard scattering"),
             "genbquarks"      : NTupleCollection("GenBQuark",  genParticleType, 2, help="Generated bottom quarks from top quark decays"),
