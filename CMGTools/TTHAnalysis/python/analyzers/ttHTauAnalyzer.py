@@ -44,21 +44,17 @@ class ttHTauAnalyzer( Analyzer ):
         for tau in alltaus:
             tau.associatedVertex = event.goodVertices[0]
             tau.lepVeto = False
-            for lep in event.selectedLeptons:
-                if deltaR(lep.eta(), lep.phi(), tau.eta(), tau.phi()) < 0.5:
-                    tau.lepVeto = True
-            if tau.lepVeto: continue
-            if tau.pt() < 20: continue
+            if self.cfg_ana.vetoLeptons:
+                for lep in event.selectedLeptons:
+                    if deltaR(lep.eta(), lep.phi(), tau.eta(), tau.phi()) < self.cfg_ana.leptonVetoDR:
+                        tau.lepVeto = True
+                if tau.lepVeto: continue
+            if tau.pt() < self.cfg_ana.ptMin: continue
             if abs(tau.dxy()) > 0.5 or abs(tau.dz()) > 1.0: continue
-            def id3(tau,X):
-                return tau.tauID(X%"Loose") + tau.tauID(X%"Medium") + tau.tauID(X%"Tight") + max(0,tau.tauID(X%"VLoose"))
-            tau.idCI   = id3(tau, "by%sCombinedIsolationDeltaBetaCorr")
-            tau.idIMVA = id3(tau, "by%sIsoMVA")
-            if tau.tauID("byRawIsoMVA") < 0 and tau.tauID("byVLooseCombinedIsolationDeltaBetaCorr") == 0: continue
+            ## FIXME: ID part to be done here
             event.selectedTaus.append(tau)
 
-        #event.selectedTaus.sort(key = lambda l : l.idCI+0.0001*l.pt(), reverse = True)
-        event.selectedTaus.sort(key = lambda l : l.tauID("byRawIsoMVA"), reverse = True)
+        event.selectedTaus.sort(key = lambda l : l.pt(), reverse = True)
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         self.makeTaus(event)
