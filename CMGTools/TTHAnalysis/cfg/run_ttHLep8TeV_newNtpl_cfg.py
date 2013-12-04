@@ -90,6 +90,8 @@ ttHTauAna = cfg.Analyzer(
     ptMin = 20,
     vetoLeptons = True,
     leptonVetoDR = 0.5,
+    tauID = "byMediumIsolationMVA2",
+    tauLooseID = "decayModeFinding",
 )
 
 # Tau MC Matching
