@@ -104,16 +104,20 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
         self.fillCoreVariables(self.tree, iEvent, event, isMC)
 
         for v in self.globalVariables:
+            if not isMC and v.mcOnly: continue
             v.fillBranch(self.tree, event, isMC)
 
         for on, o in self.globalObjects.iteritems(): 
+            if not isMC and o.mcOnly: continue
             o.fillBranches(self.tree, getattr(event, on), isMC)
 
         for cn, c in self.collections.iteritems():
             if type(c) == tuple and isinstance(c[0], AutoHandle):
+                if not isMC and c[-1].mcOnly: continue
                 objects = self.handles[cn].product()
                 setattr(event, cn, [objects[i] for i in xrange(objects.size())])
                 c = c[-1]
+            if not isMC and c.mcOnly: continue
             if self.scalar:
                 c.fillBranchesScalar(self.tree, getattr(event, cn), isMC)
             else:
