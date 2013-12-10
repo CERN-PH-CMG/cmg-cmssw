@@ -66,6 +66,9 @@ class NTupleCollection:
         self.objectType = objectType
         self.maxlen = maxlen
         self.help = help
+        if objectType.mcOnly and mcOnly == False: 
+            print "collection %s is set to mcOnly since the type %s is mcOnly" % (name, objectType.name)
+            mcOnly = True
         self.mcOnly = mcOnly
         if sortAscendingBy != None and sortDescendingBy != None:
             raise RuntimeError, "Cannot specify two sort conditions"
