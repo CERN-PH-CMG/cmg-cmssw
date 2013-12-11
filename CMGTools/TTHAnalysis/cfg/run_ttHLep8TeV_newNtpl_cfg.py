@@ -72,9 +72,10 @@ ttHLepAna = cfg.Analyzer(
     minGoodLeptons=2,
     minInclusiveLeptons=2,
     doSSLeptons=False,
-    doRochesterCorrections=True,
+    doMuScleFitCorrections="rereco",
+    doRochesterCorrections=False,
     doElectronScaleCorrections=False,
-    doRecomputeSIP3D=True,
+    doRecomputeSIP3D=False,
     doSegmentBasedMuonCleaning=True,
     doEleMuCrossCleaning=True,
     )
@@ -157,6 +158,15 @@ from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
 
 for mc in mcSamples+mcSamples+extraMcSamples+fastSimSamples:
     mc.triggers = triggersMC_mue
+for data in dataSamplesMu:
+    data.triggers = triggers_mumu
+for data in dataSamplesE:
+    data.triggers = triggers_ee
+    data.vetoTriggers = triggers_mumu
+for data in dataSamplesMuE:
+    data.triggers = triggers_mue
+    data.vetoTriggers=triggers_ee+triggers_mumu
+
 
 selectedComponents = dataSamplesAll
 
@@ -204,14 +214,14 @@ elif test==2:
         comp.files = comp.files[:1]
 elif test==3:
     # test two components, using many threads, to check if variables are ok
-    #comp = DoubleElectronC
-    #comp.files = comp.files[:20]
-    #comp.splitFactor = 5
-    #selectedComponents = [comp]
-    comp = DYJetsM50
+    comp = DoubleMuD
     comp.files = comp.files[:20]
     comp.splitFactor = 5
     selectedComponents = [comp]
+    comp = DYJetsM50
+    comp.files = comp.files[:20]
+    comp.splitFactor = 5
+    selectedComponents += [comp]
 elif test==7:    
     # test all components, 1/40 of the jobs, 1/10 of the files
     # important to make sure that your code runs on any kind of component

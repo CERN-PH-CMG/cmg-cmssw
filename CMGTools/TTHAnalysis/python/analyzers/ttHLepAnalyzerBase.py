@@ -30,7 +30,17 @@ class ttHLepAnalyzerBase( Analyzer ):
     
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHLepAnalyzerBase,self).__init__(cfg_ana,cfg_comp,looperName)
-
+        if self.cfg_ana.doMuScleFitCorrections and self.cfg_ana.doMuScleFitCorrections != "none":
+            if self.cfg_ana.doMuScleFitCorrections not in [ "none", "prompt", "prompt-sync", "rereco", "rereco-sync" ]:
+                raise RuntimeError, 'doMuScleFitCorrections must be one of "none", "prompt", "prompt-sync", "rereco", "rereco-sync"'
+            from CMGTools.TTHAnalysis.tools.muScleFitCorrector import MuScleFitCorr
+            rereco = ("prompt" not in self.cfg_ana.doMuScleFitCorrections)
+            sync   = ("sync"       in self.cfg_ana.doMuScleFitCorrections)
+            self.muscleCorr = MuScleFitCorr(cfg_comp.isMC, rereco, sync)
+            if hasattr(self.cfg_ana, "doRochesterCorrections") and self.cfg_ana.doRochesterCorrections:
+                raise RuntimeError, "You can't run both Rochester and MuScleFit corrections!"
+        else:
+            self.cfg_ana.doMuScleFitCorrections = False
         if self.cfg_ana.doElectronScaleCorrections:
             self.electronEnergyCalibrator = ElectronCalibrator(self,cfg_comp.isMC)
         if hasattr(cfg_comp,'efficiency'):
@@ -101,7 +111,10 @@ class ttHLepAnalyzerBase( Analyzer ):
                     ## attach it to the object redefining the sip3D() method
                     mu.sip3D  = types.MethodType(lambda self : self._sip3d, mu, mu.__class__)
 
-        if self.cfg_ana.doRochesterCorrections:
+        if self.cfg_ana.doMuScleFitCorrections:
+            for mu in allmuons:
+                self.muscleCorr.correct(mu, event.run)
+        elif self.cfg_ana.doRochesterCorrections:
             for mu in allmuons:
                 corp4 = rochcor.corrected_p4(mu, event.run) 
                 mu.setP4( corp4 )
