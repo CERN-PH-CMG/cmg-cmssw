@@ -19,6 +19,13 @@ class JetReCalibrator:
         #Step3 (Construct a FactorizedJetCorrector object) 
         self.JetCorrector = ROOT.FactorizedJetCorrector(self.vPar)
         self.JetUncertainty = ROOT.JetCorrectionUncertainty("%s/%s_Uncertainty_%s.txt" % (path,globalTag,jetFlavour));
+    def correctAll(self,jets,rho,delta=0,metShift=[0,0]):
+        badJets = []
+        for j in jets:
+            ok = self.correct(j,rho,delta,metShift)
+            if not ok: badJets.append(j)
+        for bj in badJets:
+            jets.remove(bj)
     def correct(self,jet,rho,delta=0,metShift=[0,0]):
         self.JetCorrector.setJetEta(jet.eta())
         self.JetCorrector.setJetPt(jet.pt() * jet.rawFactor())
@@ -36,6 +43,8 @@ class JetReCalibrator:
             #print "   jet with corr pt %6.2f has an uncertainty %.2f " % (jet.pt()*jet.rawFactor()*corr, jet.jetEnergyCorrUncertainty)
             corr *= max(0, 1+delta*jet.jetEnergyCorrUncertainty)
         #print "   jet with raw pt %6.2f eta %+5.3f phi %+5.3f: previous corr %.4f, my corr %.4f " % (jet.pt()*jet.rawFactor(), jet.eta(), jet.phi(), 1./jet.rawFactor(), corr)
+        if corr <= 0:
+            return False
         if jet.pt() > 10:
             metShift[0] += jet.px()
             metShift[1] += jet.py()
@@ -46,5 +55,6 @@ class JetReCalibrator:
         if jet.pt() > 10:
             metShift[0] -= jet.px()
             metShift[1] -= jet.py()
+        return True
         
 

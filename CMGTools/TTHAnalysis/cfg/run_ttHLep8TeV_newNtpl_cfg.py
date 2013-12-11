@@ -110,7 +110,7 @@ ttHJetAna = cfg.Analyzer(
     jetEtaCentral = 2.4,
     relaxJetId = False,  
     doPuId = True,
-    recalibrateJets = True,
+    recalibrateJets = False,
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     cleanJetsFromTaus = False,
     )
@@ -183,12 +183,12 @@ sequence = cfg.Sequence([
 
 
 #-------- HOW TO RUN
-test = 2
+test = 1
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
     #comp = TW
-    comp = DoubleMuD
+    comp = TTH
     comp.files = comp.files[:1]
     selectedComponents = [comp]
     comp.splitFactor = 1
