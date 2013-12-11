@@ -8,4 +8,5 @@
     <class name="SimpleElectron" transient="true" />
     <class name="ElectronEnergyCalibrator" transient="true" />
     <class name="ElectronEPcombinator" transient="true" />
+    <class name="MuScleFitCorrector" transient="true" />
 </lcgdict>
