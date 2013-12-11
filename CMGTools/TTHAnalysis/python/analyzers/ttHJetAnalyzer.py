@@ -24,17 +24,15 @@ class ttHJetAnalyzer( Analyzer ):
 
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(ttHJetAnalyzer,self).__init__(cfg_ana, cfg_comp, looperName)
-
-        if self.cfg_ana.recalibrateJets:
-            if self.cfg_comp.isMC:
-                self.jetReCalibrator    = JetReCalibrator("START53_V20","AK5PF",    False)
-                self.jetReCalibratorCHS = JetReCalibrator("START53_V20","AK5PFchs", False)
-            else:
-                self.jetReCalibrator    = JetReCalibrator("GR_P_V42_AN4","AK5PF",    True)
-                self.jetReCalibratorCHS = JetReCalibrator("GR_P_V42_AN4","AK5PFchs", True)
+        if self.cfg_comp.isMC:
+            self.jetReCalibrator    = JetReCalibrator("START53_V27","AK5PF",    False)
+            self.jetReCalibratorCHS = JetReCalibrator("START53_V27","AK5PFchs", False)
+        else:
+            self.jetReCalibrator    = JetReCalibrator("FT_53_V21_AN5","AK5PF",    True)
+            self.jetReCalibratorCHS = JetReCalibrator("FT_53_V21_AN5","AK5PFchs", True)
         self.doPuId = self.cfg_ana.doPuId if hasattr(self.cfg_ana, 'doPuId') else True
         self.shiftJEC = self.cfg_ana.shiftJEC if hasattr(self.cfg_ana, 'shiftJEC') else 0
-
+        self.doJEC = self.cfg_ana.recalibrateJets or (self.shiftJEC != 0)
     def declareHandles(self):
         super(ttHJetAnalyzer, self).declareHandles()
         self.handles['jets']     = AutoHandle( self.cfg_ana.jetCol, 'std::vector<cmg::PFJet>' )
@@ -47,23 +45,24 @@ class ttHJetAnalyzer( Analyzer ):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
-        ## Read jets, if necessary recalibrate
+        ## Read jets, if necessary recalibrate and shift MET
         allJets = map(Jet, self.handles['jets'].product()) 
-        if self.cfg_ana.recalibrateJets:
+        event.deltaMetFromJEC = [0.,0.]
+        if self.doJEC:
             #print "\nCalibrating jets %s for lumi %d, event %d" % (self.cfg_ana.jetCol, event.lumi, event.eventId)
             rho  = float(self.handles['rho'].product()[0])
             corr = self.jetReCalibratorCHS if 'CHS' in self.cfg_ana.jetCol else self.jetReCalibrator
-            for j in allJets: corr.correct(j, rho, delta=self.shiftJEC)
+            corr.correctAll(allJets, rho, delta=self.shiftJEC, metShift=event.deltaMetFromJEC)
        
         ## If using a different collection for MVA, set it up 
         allJets4MVA = []
         if self.cfg_ana.jetCol4MVA != self.cfg_ana.jetCol:
             allJets4MVA = map(Jet, self.handles['jets4MVA'].product())
-            if self.cfg_ana.recalibrateJets:
+            if self.doJEC:
                 #print "\nCalibrating jets %s for lumi %d, event %d" % (self.cfg_ana.jetCol4MVA, event.lumi, event.eventId)
                 rho  = float(self.handles['rho'].product()[0])
                 corr = self.jetReCalibratorCHS if 'CHS' in self.cfg_ana.jetCol4MVA else self.jetReCalibrator
-                for j in allJets4MVA: corr.correct(j, rho, delta=self.shiftJEC)
+                corr.correctAll(allJets4MVA, rho, delta=self.shiftJEC)
         else:
             allJets4MVA = allJets[:]
 
