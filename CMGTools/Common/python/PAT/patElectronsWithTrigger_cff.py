@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 eleTriggerMatchHLT = cms.EDProducer("PATTriggerMatcherDRDPtLessByR",
-   src     = cms.InputTag( "patElectronsWithRegressionVars" ),
+   src     = cms.InputTag( "patElectronsWithMomenta" ),
    matched = cms.InputTag( "patTrigger" ),
    andOr   = cms.bool( False ),
    matchedCuts = cms.string('dummy'),
@@ -26,7 +26,7 @@ eleTriggerMatchHLT10= eleTriggerMatchHLT.clone(matchedCuts = cms.string('coll("h
 
 ## ==== Embed ====
 patElectronsWithTrigger = cms.EDProducer( "PATTriggerMatchElectronEmbedder",
-    src     = cms.InputTag( "patElectronsWithRegressionVars" ),
+    src     = cms.InputTag( "patElectronsWithMomenta" ),
     matches = cms.VInputTag(  cms.InputTag('eleTriggerMatchHLT1'),
                               cms.InputTag('eleTriggerMatchHLT2'),
                               cms.InputTag('eleTriggerMatchHLT3'),

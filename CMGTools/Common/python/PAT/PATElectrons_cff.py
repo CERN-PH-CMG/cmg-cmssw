@@ -109,7 +109,12 @@ selectedPatElectrons.cut = 'pt()>0'
 from CMGTools.Common.PAT.patElectronsWithTrigger_cff import * 
 # from CMGTools.Common.PAT.patElectronsWithMVA_cfi import * 
 from CMGTools.Common.PAT.patElectronsWithRegressionVars_cfi import * 
+from CMGTools.Common.PAT.patElectronsWithRegression_cfi import * 
+from CMGTools.Common.PAT.patElectronsWithCalibrations_cfi import * 
+from CMGTools.Common.PAT.patElectronsWithMomenta_cfi import * 
 from CMGTools.Common.PAT.patElectronsWithDirectionalIsolation_cfi import * 
+
+
 
 # conversions
 from CMGTools.Common.PAT.patConversions_cfi import patConversions
@@ -123,6 +128,9 @@ PATElectronSequence = cms.Sequence(
     # patElectronsWithMVA + # not used, and creates problem in git migration
     patElectronsWithDirectionalIsolation +
     patElectronsWithRegressionVars +
+    patElectronsWithRegression +
+    patElectronsWithCalibrations +
+    patElectronsWithMomenta +
     patElectronsWithTriggerSequence +
     patConversions 
     )

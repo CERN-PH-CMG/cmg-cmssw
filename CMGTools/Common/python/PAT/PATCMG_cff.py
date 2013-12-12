@@ -10,6 +10,14 @@ from CMGTools.Common.analysis_cff import *
 # FIXME : adapt pile-up jet id to 44X
 
 
+# SERVICES         ---------------------------
+RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+        sourceSeed = cms.untracked.uint32(414000),
+        moduleSeeds = cms.PSet(
+            patElectronsWithCalibrations = cms.untracked.uint32(1041963),
+            )
+        )
+
 # GEN              ---------------------------
 
 from CMGTools.Common.PAT.PATGenJet_cff import * 

@@ -52,7 +52,10 @@ if runOnMC is False:
 
     process.patElectrons.addGenMatch = False
     process.makePatElectrons.remove( process.electronMatch )
-    
+   
+    process.patElectronsWithCalibrations.isMC = False
+    process.patElectronsWithCalibrations.inputDataset = "22Jan2013ReReco"
+ 
     process.patMuons.addGenMatch = False
     process.makePatMuons.remove( process.muonMatch )
     
