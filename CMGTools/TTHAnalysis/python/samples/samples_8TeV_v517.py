@@ -5,6 +5,7 @@ from copy import copy
 
 pat='PAT_CMG_V5_17_0'
 patOld='PAT_CMG_V5_16_0'
+pat15='PAT_CMG_V5_15_0'
 patPF='CMGPF_V5_16_0'
 skim=''
 filepattern = 'cmgTuple.*root'
@@ -118,7 +119,7 @@ Tsch      =kreator.makeMCComponent('Tsch','/T_s-channel_TuneZ2star_8TeV-powheg-t
 Tbarsch   =kreator.makeMCComponent('Tbarsch','/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/'+pat+'/'+skim,userName,filepattern)
 
 # ---- Z + JETS
-#DYJetsM10=kreator.makeMCComponent('DYJetsM10','/DYJetsToLL_M-10To50filter_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/'+pat+'/'+skim,userName,filepattern)
+DYJetsM10=kreator.makeMCComponent('DYJetsM10','/DYJetsToLL_M-10To50filter_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/'+pat15+'/'+skim,userName,filepattern)
 DYJetsM50=kreator.makeMCComponent('DYJetsM50','/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/'+pat+'/'+skim,userName,filepattern)
 #DY1JetsM50=kreator.makeMCComponent('DY1JetsM50','/DY1JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/'+pat+'/'+skim,userName,filepattern)
 #DY2JetsM50=kreator.makeMCComponent('DY2JetsM50','/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/'+pat+'/'+skim,userName,filepattern)
@@ -169,7 +170,7 @@ W4Jets   =kreator.makeMCComponent('W4Jets','/W4JetsToLNu_TuneZ2Star_8TeV-madgrap
 
 
 #   ## Critical samples (major signals and backgrounds, and a few small samples)
-mcSamples_1 = [ TTH,TTWJets,TTZJets,TTWWJets,WWWJets,WWZJets,TTG,DYJetsM50,TTJetsLep,TTJetsSem,TTJets,TtW,TbartW,WZJets,ZZJets4L,WWJets ]
+mcSamples_1 = [ TTH,TTWJets,TTZJets,TTWWJets,WWWJets,WWZJets,TTG,DYJetsM50,TTJetsLep,TTJetsSem,TTJets,TtW,TbartW,WZJets,ZZJets4L,WWJets,DYJetsM10 ]
 #   mcSamples_1 = [ TTH,TTWJets,TTZJets,TTWWJets,WWWJets,WWZJets,TTG,DYJetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,WZJets,ZZ2e2mu,ZZ2e2tau,ZZ2mu2tau,ZZTo4mu,ZZTo4e,ZZTo4tau,TtW,TbartW,TTJetsLep,TTJetsSem ]
 #   ## Minor samples and backgrounds 
 mcSamples_2 = [ Tsch,Tbarsch,Ttch,Tbartch,W1Jets,W2Jets,W3Jets,W4Jets,WZZJets,ZZZJets,WWGJets,TTJetsHad ]
@@ -240,30 +241,31 @@ DoubleElectronD = cfg.DataComponent(
     json = json
     )
 
-#   MuEGAB = cfg.DataComponent(
-#       name = 'MuEGAB',
-#       files = getFiles('/MuEG/Run2012A-22Jan2013-v1/AOD/'+patPF+'/'+skim,userName,filepattern)+ \
-#               getFiles('/MuEG/Run2012B-22Jan2013-v1/AOD/'+patPF+'/'+skim,userName,filepattern),
-#       intLumi = 1,
-#       triggers = [],
-#       json = json
-#       )
-#   
-#   MuEGC = cfg.DataComponent(
-#       name = 'MuEGC',
-#       files = getFiles('/MuEG/Run2012C-22Jan2013-v1/AOD/'+patPF+'/'+skim,userName,filepattern),
-#       intLumi = 1,
-#       triggers = [],
-#       json = json
-#       )
-#   
-#   MuEGD = cfg.DataComponent(
-#       name = 'MuEGD',
-#       files = getFiles('/MuEG/Run2012D-22Jan2013-v1/AOD/'+patPF+'/'+skim,userName,filepattern),
-#       intLumi = 1,
-#       triggers = [],
-#       json = json
-#       )
+MuEGAB = cfg.DataComponent(
+    name = 'MuEGAB',
+    files = getFiles('/MuEG/Run2012A-22Jan2013-v1/AOD/'+pat15+'/'+skim,userName,filepattern)+ \
+            getFiles('/MuEG/Run2012B-22Jan2013-v1/AOD/'+pat15+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
+MuEGC = cfg.DataComponent(
+    name = 'MuEGC',
+    files = getFiles('/MuEG/Run2012C-22Jan2013-v1/AOD/'+pat15+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
+MuEGD = cfg.DataComponent(
+    name = 'MuEGD',
+    files = getFiles('/MuEG/Run2012D-22Jan2013-v1/AOD/'+pat15+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
 SingleMuAB = cfg.DataComponent(
     name = 'SingleMuAB',
     files = getFiles('/SingleMu/Run2012A-22Jan2013-v1/AOD/'+patPF+'/'+skim,userName,filepattern)+ \
@@ -296,7 +298,7 @@ SingleMuD = cfg.DataComponent(
 #             
 dataSamplesMu=[DoubleMuAB,DoubleMuC,DoubleMuD]
 dataSamplesE=[DoubleElectronAB,DoubleElectronC,DoubleElectronD]
-dataSamplesMuE=[] #MuEGAB,MuEGC,MuEGD,MuEGRec,MuEGBadSIP]
+dataSamplesMuE=[MuEGAB,MuEGC,MuEGD]
 dataSamples1Mu=[SingleMuAB,SingleMuC,SingleMuD]
 dataSamplesAll = dataSamplesMu+dataSamplesE+dataSamplesMuE+dataSamples1Mu
 #   
@@ -370,8 +372,8 @@ for comp in mcSamples + fastSimSamples + extraMcSamples:
     comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
     comp.puFileData=dataDir+"/puProfile_Data12.root"
     comp.efficiency = eff2012
-#for C in [DY1JetsM50,DY2JetsM50,DYJetsM50,WJets,TTLep,TTJetsLep,TTJetsSem]:
-#    C.splitFactor = 500
+for C in [DYJetsM50,TTJetsLep,TTJetsSem]:
+    C.splitFactor = 500
 
 for comp in fastSimSamples:
     comp.splitFactor = 10
