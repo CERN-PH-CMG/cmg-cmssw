@@ -37,6 +37,7 @@ class ttHTauAnalyzer( Analyzer ):
         count.register('has >=1 tau at preselection')
         count.register('has >=1 selected taus')
         count.register('has >=1 loose taus')
+        count.register('has >=1 inclusive taus')
 
     #------------------
     # MAKE LEPTON LISTS
@@ -44,6 +45,7 @@ class ttHTauAnalyzer( Analyzer ):
     def makeTaus(self, event):
         event.selectedTaus = []
         event.looseTaus = []
+        event.inclusiveTaus = []
 
         #get all
         alltaus = map( Tau, self.handles['taus'].product() )
@@ -68,8 +70,10 @@ class ttHTauAnalyzer( Analyzer ):
             #print "Tau pt %5.1f: idMVA2 %d, idCI3hit %d, %s, %s" % (tau.pt(), tau.idMVA2, tau.idCI3hit, tau.tauID(self.cfg_ana.tauID), tau.tauID(self.cfg_ana.tauLooseID))
             if tau.tauID(self.cfg_ana.tauID):
                 event.selectedTaus.append(tau)
+                event.inclusiveTaus.append(tau)
             elif tau.tauID(self.cfg_ana.tauLooseID):
                 event.looseTaus.append(tau)
+                event.inclusiveTaus.append(tau)
 
         event.selectedTaus.sort(key = lambda l : l.pt(), reverse = True)
         event.looseTaus.sort(key = lambda l : l.pt(), reverse = True)
@@ -77,6 +81,7 @@ class ttHTauAnalyzer( Analyzer ):
         if foundTau: self.counters.counter('events').inc('has >=1 tau at preselection')
         if len(event.selectedTaus): self.counters.counter('events').inc('has >=1 selected taus')
         if len(event.looseTaus): self.counters.counter('events').inc('has >=1 loose taus')
+        if len(event.inclusiveTaus): self.counters.counter('events').inc('has >=1 inclusive taus')
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         self.makeTaus(event)

@@ -30,8 +30,8 @@ class ttHTauMCMatchAnalyzer( Analyzer ):
 
     def matchTaus(self, event):
         event.genTaus = [ x for x in event.genParticles if x.status() == 3 and abs(x.pdgId()) == 15 ]
-        match = matchObjectCollection3(event.selectedTaus, event.genTaus, deltaRMax = 0.5)
-        for lep in event.selectedTaus:
+        match = matchObjectCollection3(event.inclusiveTaus, event.genTaus, deltaRMax = 0.5)
+        for lep in event.inclusiveTaus:
             gen = match[lep]
             lep.mcMatchId = 1 if gen else 0
 
