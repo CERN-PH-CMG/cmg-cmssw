@@ -75,7 +75,8 @@ class ttHJetAnalyzer( Analyzer ):
                     event.jets.append(jet)
                 else:
                     event.jetsFailId.append(jet)
-        
+       
+
         ## Clean Jets from leptons
         leptons = event.selectedLeptons
         if self.cfg_ana.cleanJetsFromTaus:
@@ -102,7 +103,7 @@ class ttHJetAnalyzer( Analyzer ):
         
 
     def testJetID(self, jet):
-        jet.puJetIdPassed = jet.puJetId()
+        jet.puJetIdPassed = jet.puJetId53X()
         jet.pfJetIdPassed = jet.getSelection('cuts_looseJetId')
         if self.cfg_ana.relaxJetId:
             return True
