@@ -24,6 +24,8 @@ class JetReCalibrator:
         for j in jets:
             ok = self.correct(j,rho,delta,metShift)
             if not ok: badJets.append(j)
+        if len(badJets) > 0:
+            print "Warning: %d out of %d jets flagged bad by JEC." % (len(badJets), len(jets))
         for bj in badJets:
             jets.remove(bj)
     def correct(self,jet,rho,delta=0,metShift=[0,0]):
