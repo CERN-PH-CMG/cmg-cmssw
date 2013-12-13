@@ -26,6 +26,7 @@ leptonType = NTupleObjectType("lepton", baseObjectTypes = [ particleType ], vari
     NTupleVariable("chargedRelIso", lambda x : x.chargedHadronIso()/x.pt(), help="PF Iso from charged hadrons only, R=0.4"),
     NTupleVariable("tightId",     lambda x : x.tightId(), int, help="POG Tight ID (based on triggering MVA value for electrons, boolean for muons)"),
     NTupleVariable("convVeto",    lambda x : x.sourcePtr().passConversionVeto() if abs(x.pdgId())==11 else 1, int, help="Conversion veto (always true for muons)"),
+    NTupleVariable("lostHits",    lambda x : x.numberOfHits() if abs(x.pdgId())==11 else x.sourcePtr().innerTrack().trackerExpectedHitsInner().numberOfLostHits(), int, help="Number of lost hits on inner track")
 ])
 leptonTypeTTH = NTupleObjectType("leptonTTH", baseObjectTypes = [ leptonType ], variables = [
     NTupleVariable("tightCharge", lambda lepton : ( lepton.sourcePtr().isGsfCtfScPixChargeConsistent() + lepton.sourcePtr().isGsfScPixChargeConsistent() ) if abs(lepton.pdgId()) == 11 else 2*(lepton.sourcePtr().innerTrack().ptError()/lepton.sourcePtr().innerTrack().pt() < 0.2), int, help="Tight charge criteria"),
@@ -38,6 +39,7 @@ leptonTypeTTH = NTupleObjectType("leptonTTH", baseObjectTypes = [ leptonType ], 
     NTupleVariable("mcMatchId",  lambda x : x.mcMatchId, int, mcOnly=True, help="Match to source from hard scatter (25 for H, 6 for t, 23/24 for W/Z)"),
     NTupleVariable("mcMatchAny",  lambda x : x.mcMatchAny, int, mcOnly=True, help="Match to any final state leptons: -mcMatchId if prompt, 0 if unmatched, 1 if light flavour, 2 if heavy flavour (b)"),
     NTupleVariable("mcMatchTau",  lambda x : x.mcMatchTau, int, mcOnly=True, help="True if the leptons comes from a tau"),
+    NTupleVariable("convVetoFull", lambda x : (x.sourcePtr().passConversionVeto() and x.numberOfHits() == 0) if abs(x.pdgId())==11 else 1, int, help="Conv veto + no missing hits for electrons, always true for muons."),
 ])
 
 tauType = NTupleObjectType("tau",  baseObjectTypes = [ particleType ], variables = [
