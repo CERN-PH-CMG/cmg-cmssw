@@ -20,6 +20,13 @@ from CMGTools.TTHAnalysis.plotter.fakeRate import *
 if "/functions_cc.so" not in ROOT.gSystem.GetLibraries(): 
     ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/TTHAnalysis/python/plotter/functions.cc+" % os.environ['CMSSW_BASE']);
 
+def scalarToVector(x):
+    x0 = x
+    x = re.sub(r"(LepGood|Lep|JetFwd|Jet|GenTop)(\d)_(\w+)", lambda m : "%s_%s[%d]" % (m.group(1),m.group(3),int(m.group(2))-1), x)
+    x = re.sub(r"\bmet\b", "met_pt", x)
+    #print "[%s] -> [%s]\n" % (x0,x)
+    return x
+
 class CutsFile:
     def __init__(self,txtfileOrCuts,options=None):
         if type(txtfileOrCuts) == list:
@@ -249,12 +256,16 @@ class TreeToYield:
         if self._weight:
             if self._isdata: cut = "(%s)     *(%s)*(%s)" % (self._weightString,                    self._scaleFactor, self.adaptExpr(cut,cut=True))
             else:            cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, self.adaptExpr(cut,cut=True))
+            if self._options.doS2V:
+                cut  = scalarToVector(cut)
             ROOT.gROOT.cd()
             if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
             histo = ROOT.TH1F("dummy","dummy",1,0.0,1.0); histo.Sumw2()
             nev = tree.Draw("0.5>>dummy", cut, "goff")
             return [ histo.GetBinContent(1), histo.GetBinError(1) ]
         else: 
+            if self._options.doS2V:
+                cut  = scalarToVector(cut)
             npass = tree.Draw("1",self.adaptExpr(cut,cut=True),"goff");
             return [ npass, sqrt(npass) ]
     def _stylePlot(self,plot,spec):
@@ -294,10 +305,14 @@ class TreeToYield:
         self._stylePlot(ret,plotspec)
         return ret
     def getPlotRaw(self,name,expr,bins,cut,unbinnedData2D=False):
+        if self._options.doS2V:
+            expr = scalarToVector(expr)
         if not self._isInit: self._init()
         if self._weight:
             if self._isdata: cut = "(%s)     *(%s)*(%s)" % (self._weightString,                    self._scaleFactor, self.adaptExpr(cut,cut=True))
             else:            cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, self.adaptExpr(cut,cut=True))
+        if self._options.doS2V:
+            cut  = scalarToVector(cut)
         if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
         histo = None
         canKeys = False
@@ -341,7 +356,7 @@ class TreeToYield:
         return mystr
 
 def addTreeToYieldOptions(parser):
-    parser.add_option("-l", "--lumi",           dest="lumi",   type="float", default="19.6", help="Luminosity (in 1/fb)");
+    parser.add_option("-l", "--lumi",           dest="lumi",   type="float", default="19.7", help="Luminosity (in 1/fb)");
     parser.add_option("-u", "--unweight",       dest="weight",       action="store_false", default=True, help="Don't use weights (in MC events)");
     parser.add_option("-W", "--weightString",   dest="weightString", type="string", default="1", help="Use weight (in MC events)");
     parser.add_option("-f", "--final",  dest="final", action="store_true", help="Just compute final yield after all cuts");
@@ -353,12 +368,13 @@ def addTreeToYieldOptions(parser):
     parser.add_option("-R", "--replace-cut", dest="cutsToReplace", action="append", default=[], nargs=3, help="Cuts to invert (regexp of old cut name, new name, new cut); can specify multiple times.") 
     parser.add_option("-A", "--add-cut",     dest="cutsToAdd",     action="append", default=[], nargs=3, help="Cuts to insert (regexp of cut name after which this cut should go, new name, new cut); can specify multiple times.") 
     parser.add_option("-N", "--n-minus-one", dest="nMinusOne", action="store_true", help="Compute n-minus-one yields and plots")
-    parser.add_option("-t", "--tree",          dest="tree", default='ttHLepTreeProducerBase', help="Pattern for tree name");
+    parser.add_option("-t", "--tree",          dest="tree", default='ttHLepTreeProducerTTH', help="Pattern for tree name");
     parser.add_option("-G", "--no-fractions",  dest="fractions",action="store_false", default=True, help="Don't print the fractions");
     parser.add_option("-F", "--add-friend",    dest="friendTrees",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename). Can use {name}, {cname} patterns in the treename") 
     parser.add_option("--FMC", "--add-friend-mc",    dest="friendTreesMC",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to MC only. Can use {name}, {cname} patterns in the treename") 
     parser.add_option("--FD", "--add-friend-data",    dest="friendTreesData",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to data trees only. Can use {name}, {cname} patterns in the treename") 
     parser.add_option("--mcc", "--mc-corrections",    dest="mcCorrs",  action="append", default=[], nargs=1, help="Load the following file of mc to data corrections") 
+    parser.add_option("--s2v", "--scalar2vector",     dest="doS2V",    action="store_true", default="False", help="Do scalar to vector conversion") 
 
 def mergeReports(reports):
     import copy

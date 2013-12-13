@@ -66,10 +66,9 @@ class MCAnalysis:
                     for p in p0.split(","):
                         if re.match(p+"$", field[0]): signal = True
             ## endif
-            rootfile = options.path+"/%s/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root" % field[1].strip()
+            rootfile = "%s/%s/%s/%s_tree.root" % (options.path, field[1].strip(), options.tree, options.tree)
             if options.remotePath:
-                #rootfile = options.remotePath+"/%s/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root" % field[1].strip()
-                rootfile = "root:" + options.remotePath+"/%s/ttHLepTreeProducerBase_tree.root" % field[1].strip()
+                rootfile = "root:%s/%s/%s_tree.root" % (options.remotePath, field[1].strip(), options.tree)
             elif os.path.exists(rootfile+".url"): #(not os.path.exists(rootfile)) and :
                 rootfile = open(rootfile+".url","r").readline().strip()
             pckfile = options.path+"/%s/skimAnalyzerCount/SkimReport.pck" % field[1].strip()
