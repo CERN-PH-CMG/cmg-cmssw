@@ -39,9 +39,21 @@ class ttHLepTreeProducerTTH( ttHLepTreeProducerNew ):
             NTupleVariable("q3l", lambda ev: ev.q3l, int, help="q(3l)"),
             NTupleVariable("q4l", lambda ev: ev.q4l, int, help="q(4l)"),
             ##--------------------------------------------------
+            NTupleVariable("minMWjj", lambda ev: ev.minMWjj, int, help="minMWjj"),
+            NTupleVariable("minMWjjPt", lambda ev: ev.minMWjjPt, int, help="minMWjjPt"),
+            NTupleVariable("bestMWjj", lambda ev: ev.bestMWjj, int, help="bestMWjj"),
+            NTupleVariable("bestMWjjPt", lambda ev: ev.bestMWjjPt, int, help="bestMWjjPt"),
+            NTupleVariable("bestMTopHad", lambda ev: ev.bestMTopHad, int, help="bestMTopHad"),
+            NTupleVariable("bestMTopHadPt", lambda ev: ev.bestMTopHadPt, int, help="bestMTopHadPt"),
+            ##--------------------------------------------------
             NTupleVariable("GenHiggsDecayMode", lambda ev : ev.genHiggsDecayMode, int, mcOnly=True, help="H decay mode (15 = tau, 23/24 = W/Z)"),
             NTupleVariable("GenHeaviestQCDFlavour", lambda ev : ev.heaviestQCDFlavour, int, mcOnly=True, help="pdgId of heaviest parton in the event (after shower)"),
+            NTupleVariable("LepEff_1lep", lambda ev : ev.LepEff_1lep, mcOnly=True, help="Lepton preselection SF (1 lep)"),
+            NTupleVariable("LepEff_2lep", lambda ev : ev.LepEff_2lep, mcOnly=True, help="Lepton preselection SF (2 lep)"),
+            NTupleVariable("LepEff_3lep", lambda ev : ev.LepEff_3lep, mcOnly=True, help="Lepton preselection SF (3 lep)"),
+            NTupleVariable("LepEff_4lep", lambda ev : ev.LepEff_4lep, mcOnly=True, help="Lepton preselection SF (4 lep)"),
         ]
+
         self.globalObjects = {
             "met" : NTupleObject("met", metType, help="PF E_{T}^{miss}, after type 1 corrections"),
         }
@@ -49,6 +61,7 @@ class ttHLepTreeProducerTTH( ttHLepTreeProducerNew ):
             "selectedLeptons" : NTupleCollection("LepGood", leptonTypeTTH, 8, help="Leptons after the preselection"),
             "selectedTaus"    : NTupleCollection("TauGood", tauTypeTTH, 3, help="Taus after the preselection"),
             "cleanJets"       : NTupleCollection("Jet",     jetTypeTTH, 8, sortDescendingBy = lambda jet : jet.btag('combinedSecondaryVertexBJetTags'), help="Cental jets after full selection and cleaning, sorted by b-tag"),
+            "cleanJetsFwd"    : NTupleCollection("JetFwd",  jetTypeTTH, 4, help="Cental jets after full selection and cleaning, sorted by b-tag"),
             ##--------------------------------------------------
             "gentopquarks"    : NTupleCollection("GenTop",     genParticleType, 2, help="Generated top quarks from hard scattering"),
             "genbquarks"      : NTupleCollection("GenBQuark",  genParticleType, 2, help="Generated bottom quarks from top quark decays"),
@@ -56,6 +69,10 @@ class ttHLepTreeProducerTTH( ttHLepTreeProducerNew ):
             "genleps"         : NTupleCollection("GenLep",     genParticleWithSourceType, 6, help="Generated leptons from W/Z decays"),
             "gentauleps"      : NTupleCollection("GenLepFromTau", genParticleWithSourceType, 6, help="Generated leptons from decays of taus from W/Z/h decays"),
         }
+        if hasattr(self.cfg_ana, 'doInclusiveLeptons') and self.cfg_ana.doInclusiveLeptons:
+            self.collections["inclusiveLeptons"] = NTupleCollection("Lep", leptonTypeTTH, 8, help="Leptons without preselection"),
+        if hasattr(self.cfg_ana, 'doInclusiveTaus') and self.cfg_ana.doInclusiveTaus:
+            self.collections["inclusiveTaus"   ] = NTupleCollection("Tau", tauTypeTTH, 3, help="Taus after the loose preselection"),
 
         ## Now book the variables
         self.initDone = True
