@@ -140,6 +140,17 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
                 if bgen != None:
                     lep.mcDeltaRB = deltaR(bgen.eta(),bgen.phi(),lep.eta(),lep.phi())
 
+    def doLeptonSF(self, event):
+        eff, effUp, effDn = [1.],[1.],[1.]
+        for l in event.selectedLeptons:
+            eff.append(eff[-1]*l.eff)
+            effUp.append(effUp[-1]*l.effUp)
+            effDn.append(effDn[-1]*l.effDwn)
+        for i in 1,2,3,4:
+            setattr(event, 'LepEff_%dlep'%i,      eff[min(i,len(eff)-1)])
+            setattr(event, 'LepEffUp_%dlep'%i,  effUp[min(i,len(eff)-1)])
+            setattr(event, 'LepEffDn_%dlep'%i,  effDn[min(i,len(eff)-1)])
+
     def process(self, iEvent, event):
 
         # if not MC, nothing to do
@@ -149,5 +160,7 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
         self.matchLeptons(event)
 
         self.matchAnyLeptons(event)
+
+        self.doLeptonSF(event)
 
         return True
