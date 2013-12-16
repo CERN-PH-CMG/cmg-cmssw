@@ -14,6 +14,11 @@ baseJetFactory = cms.PSet(
                               'simpleSecondaryVertexHighPurBJetTags',#5
                               'combinedSecondaryVertexBJetTags',#6
                               'combinedSecondaryVertexMVABJetTags'#7
+                              'softPFMuonBJetTags', #8
+                              'softPFElectronBJetTags', #9
+                              'softPFElectronByIP3dBJetTags', #10
+                              'softPFElectronByPtBJetTags',   #11
+                              'softPFMuonByPtBJetTags',       #12
                               ),
        fillJec = cms.bool(True),
        fillJecUncertainty = cms.bool(False),
