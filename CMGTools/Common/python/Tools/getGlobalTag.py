@@ -27,13 +27,13 @@ def getGlobalTag(runOnMC, runOld5XGT):
                 GT = 'START53_V10::All' # for 53X MC in >= 533
                 # GT = 'START53_V7E::All' # for 53X MC in < 533
             else:
-                GT = 'START53_V15::All' # Moriond calibration
+                GT = 'START53_V27::All' # Moriond calibration
         else:
             if runOld5XGT:
                 GT = 'GR_P_V41_AN1::All' # for 53X data in >= 533
                 # GT = 'GR_P_V40_AN1::All' # for 53X data in < 533
             else:
-                GT = 'GR_P_V39_AN3::All' # Moriond calibration
+                GT = 'FT53_V21A_AN6::All' # Moriond calibration
     return GT
 
 def getGlobalTagByDataset(runOnMC, dataset):
@@ -48,14 +48,14 @@ def getGlobalTagByDataset(runOnMC, dataset):
         if cmsswIs44X():
             GT = 'START44_V13::All'
         elif 'START53' in dataset:
-            GT = 'START53_V23::All' 
+            GT = 'START53_V27::All' 
         elif 'START52' in dataset:
             GT = 'START52_V9F::All'
     else:
         if cmsswIs44X():
             GT = 'GR_R_44_V15::All'
         elif '22Jan2013' in dataset:
-            GT = 'FT_53_V21_AN4::All'    
+            GT = 'FT53_V21A_AN6::All' # the missing _ between FT and 53 is intentional, that's how it is called
         elif '13Jul2012' in dataset:
             GT = 'FT_53_V6C_AN4::All'
         elif '06Aug2012' in dataset:
