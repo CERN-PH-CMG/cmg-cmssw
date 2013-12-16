@@ -34,6 +34,7 @@
 #include "TMVA/Factory.h"
 #include "TMVA/Tools.h"
 #include "TMVA/Reader.h"
+#include "TMVA/MethodBase.h"
 
 class EGammaMvaEleEstimator{
   public:
@@ -245,6 +246,7 @@ class EGammaMvaEleEstimator{
   private:
 
     std::vector<TMVA::Reader*> fTMVAReader;
+    std::vector<TMVA::MethodBase*> fTMVAMethod;
     std::string                fMethodname;
     Bool_t                     fisInitialized;
     MVAType                    fMVAType;
