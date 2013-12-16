@@ -116,7 +116,7 @@ process.selectedPatJetsCHS.cut = 'pt()>10'
 
 process.dump = cms.EDAnalyzer('EventContentAnalyzer')
 
-##CGIT process.load('CMGTools.Common.PAT.addFilterPaths_cff')
+process.load('CMGTools.Common.PAT.addFilterPaths_cff')
 process.p = cms.Path(
     process.prePathCounter + 
     process.PATCMGSequence +
