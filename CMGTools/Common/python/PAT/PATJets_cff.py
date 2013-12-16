@@ -33,10 +33,30 @@ ak5JetTracksAssociatorAtVertex.jets = jetSource
 from RecoBTag.Configuration.RecoBTag_cff import * # btagging sequence
 softPFMuonsTagInfos.jets = jetSource
 softPFElectronsTagInfos.jets = jetSource
+btaggingExt = cms.Sequence(
+        btagging
+        + softPFElectronByIP3dBJetTags 
+        + softPFElectronByPtBJetTags  
+        + softPFMuonByPtBJetTags  
+)
 
-##CGIT: some taggers are missing in the btagging sequence.
-## so leaving only one tagger in for now.
-patJets.discriminatorSources = [cms.InputTag("combinedSecondaryVertexBJetTags")]
+patJets.discriminatorSources = [
+    cms.InputTag("combinedSecondaryVertexBJetTags"),
+    cms.InputTag("trackCountingHighEffBJetTags"),
+    cms.InputTag("trackCountingHighPurBJetTags"),
+    cms.InputTag("jetProbabilityBJetTags"),
+    cms.InputTag("jetBProbabilityBJetTags"),
+    cms.InputTag("simpleSecondaryVertexHighEffBJetTags"),
+    cms.InputTag("simpleSecondaryVertexHighPurBJetTags"),
+    cms.InputTag("combinedSecondaryVertexBJetTags"),
+    cms.InputTag("combinedSecondaryVertexMVABJetTags"),
+    cms.InputTag("ghostTrackBJetTags"),
+    cms.InputTag("softPFMuonBJetTags"),
+    cms.InputTag("softPFElectronBJetTags"),
+    cms.InputTag("softPFElectronByIP3dBJetTags"), 
+    cms.InputTag("softPFElectronByPtBJetTags"),  
+    cms.InputTag("softPFMuonByPtBJetTags"),  
+]
 
 from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 from CMGTools.Common.skims.cmgCandSel_cfi import cmgCandSel
@@ -103,11 +123,12 @@ jetMCSequence = cms.Sequence(
     patJetGenJetMatch
     )
 
+
 PATJetSequence = cms.Sequence(
     ak5PFJetsSel + 
     jetMCSequence +
     ak5JetTracksAssociatorAtVertex + 
-    btagging + 
+    btaggingExt + 
     patJetCorrFactors +
     patJetFlavourId +
     patJets +
