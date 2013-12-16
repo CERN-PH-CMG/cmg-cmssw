@@ -81,7 +81,7 @@ void PATElectronMomentumEmbedder::produce(edm::Event& iEvent, const edm::EventSe
         reco::CandidatePtr source = clone.originalObjectRef();
         for (int i = 0, n = modifiedElectrons_.size(); i < n; ++i) {
             for (const pat::Electron &mod : *handles[i]) {
-                if (clone.originalObjectRef() == source) {
+                if (mod.originalObjectRef() == source) {
                     double ecalEnergy      = mod.correctedEcalEnergy();
                     double ecalEnergyError = mod.correctedEcalEnergyError();
                     double p      = mod.p();
