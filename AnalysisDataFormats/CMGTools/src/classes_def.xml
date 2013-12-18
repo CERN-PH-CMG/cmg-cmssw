@@ -88,7 +88,10 @@
   <class name="edm::Wrapper<cmg::SimpleParticle>"/>
   <class name="edm::Wrapper<std::vector<cmg::SimpleParticle> >"/>
 
-  <class name="cmg::Candidate"/>
+  <class name="cmg::Candidate">
+    <field name="p4_" iotype="ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<Double32_t> >" />
+    <field name="vertex_" iotype="ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<Double32_t>,ROOT::Math::DefaultCoordinateSystemTag>" />
+  </class>
   <class name="std::vector<cmg::Candidate>"/>
   <class name="edm::Wrapper<cmg::Candidate>"/>
   <class name="edm::Wrapper<std::vector<cmg::Candidate> >"/>
