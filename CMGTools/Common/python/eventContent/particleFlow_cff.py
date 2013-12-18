@@ -26,7 +26,7 @@ particleFlowMHT = cms.untracked.vstring(
 particleFlowMuons = cms.untracked.vstring(
     # does not look like PF?     
     'keep *_cmgMuonSel*_*_*',
-    'keep *_cmgDiMuonSel*_*_*',
+    #'keep *_cmgDiMuonSel*_*_*',
     'drop *_cmg*Muon*AK5NoPUSub*_*_*'
     )
 
@@ -38,7 +38,7 @@ particleFlowTaus = cms.untracked.vstring(
 
 particleFlowElectrons = cms.untracked.vstring(
     'keep *_cmgElectronSel*_*_*',
-    'keep *_cmgDiElectronSel*_*_*',
+    #'keep *_cmgDiElectronSel*_*_*',
     'drop *_cmg*Electron*AK5NoPUSub*_*_*'
     )
 
@@ -70,7 +70,7 @@ particleFlowMisc = cms.untracked.vstring(
     #Jose: needed for tau embedded samples
     'keep double_*_*_Embedded*',
     #Andreas: small size PF candidates
-    'keep *_cmgCandidates__*',
+    'keep cmgCandidates_cmgCandidates__*',
     )
 
 particleFlow = particleFlowJets + particleFlowMET + particleFlowMuons + particleFlowTaus + particleFlowElectrons + particleFlowPhotons + particleFlowW + particleFlowHemispheres + particleFlowMisc
