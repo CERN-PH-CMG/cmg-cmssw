@@ -60,6 +60,13 @@ elPFIsoDepositNeutral.src = sourceElectrons
 elPFIsoDepositGamma.src = sourceElectrons
 elPFIsoDepositPU.src = sourceElectrons
 
+elPFIsoDepositCharged.ExtractorPSet.DR_Max = 0.5
+elPFIsoDepositChargedAll.ExtractorPSet.DR_Max = 0.5
+elPFIsoDepositNeutral.ExtractorPSet.DR_Max = 0.5
+elPFIsoDepositGamma.ExtractorPSet.DR_Max = 0.5
+elPFIsoDepositPU.ExtractorPSet.DR_Max = 0.5
+
+
 patElectrons.isoDeposits = cms.PSet(
     pfChargedHadrons = cms.InputTag("elPFIsoDepositCharged" ),
     pfChargedAll = cms.InputTag("elPFIsoDepositChargedAll" ),
