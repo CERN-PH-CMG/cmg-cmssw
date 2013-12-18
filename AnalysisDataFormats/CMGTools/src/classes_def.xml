@@ -96,6 +96,20 @@
   <class name="edm::Wrapper<cmg::Candidate>"/>
   <class name="edm::Wrapper<std::vector<cmg::Candidate> >"/>
 
+  <class name="cmg::PackedCandidate">
+    <field name="p4_" transient="true" />
+    <field name="p4c_" transient="true" />
+    <field name="vertex_" transient="true" />
+    <field name="unpacked_" transient="true" />
+  </class>
+  <ioread sourceClass="cmg::PackedCandidate"  version="[1-]" targetClass="cmg::PackedCandidate" source="" target="unpacked_">
+    <![CDATA[unpacked_ = false;
+    ]]>
+  </ioread>
+  <class name="std::vector<cmg::PackedCandidate>"/>
+  <class name="edm::Wrapper<cmg::PackedCandidate>"/>
+  <class name="edm::Wrapper<std::vector<cmg::PackedCandidate> >"/>
+
   <class name="cmg::Tau"/>
   <class name="cmg::Lepton<pat::TauPtr>" />
   <class name="cmg::PhysicsObjectWithPtr<pat::TauPtr>" />
