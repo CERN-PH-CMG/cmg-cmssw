@@ -24,6 +24,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/NamedObject.h"
 #include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
 #include "AnalysisDataFormats/CMGTools/interface/Candidate.h"
+#include "AnalysisDataFormats/CMGTools/interface/PackedCandidate.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/Common/interface/ValueMap.h"
 
@@ -122,6 +123,11 @@ namespace {
     std::vector<cmg::Candidate> ccv;    
     edm::Wrapper<cmg::Candidate> wcc;
     edm::Wrapper<std::vector<cmg::Candidate> > wvcc;
+    cmg::PackedCandidate pcc;
+    std::vector<cmg::PackedCandidate> pccv;    
+    edm::Wrapper<cmg::PackedCandidate> pwcc;
+    edm::Wrapper<std::vector<cmg::PackedCandidate> > pwvcc;
+ 
     
     cmg::Tau t;
     std::vector<cmg::Tau> tv;
