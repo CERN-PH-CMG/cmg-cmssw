@@ -31,6 +31,8 @@ process.source = datasetToSource(
 
 #process.source.fileNames = process.source.fileNames[:20]
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+#process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
+
 
 ###ProductionTaskHook$$$
 
@@ -209,6 +211,9 @@ process.outcmg = cms.OutputModule(
     )
 
 process.outpath += process.outcmg
+# you can uncomment this below to test the 16-bit-packed cmgCandidates
+# process.outcmg.outputCommands.append('keep cmgPackedCandidates_cmgCandidates_*_*') 
+# process.outcmg.outputCommands.append('drop cmgCandidates_cmgCandidates_*_*') 
 
 
 
