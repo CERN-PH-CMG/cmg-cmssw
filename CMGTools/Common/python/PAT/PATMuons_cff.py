@@ -9,6 +9,10 @@ from CMGTools.Common.PAT.patLeptModifiedIsoDeposit_cff import *
 patMuons.embedCaloMETMuonCorrs = False
 patMuons.embedTcMETMuonCorrs = False
 patMuons.embedTrack = True
+patMuons.embedDytMuon = False
+patMuons.embedTpfmsMuon = False
+patMuons.embedPickyMuon = False
+patMuons.embedMuonBestTrack = False
 
 # isolation (PF and custom detector based)
 
@@ -27,6 +31,13 @@ muPFIsoDepositChargedAll.src = sourceMuons
 muPFIsoDepositNeutral.src = sourceMuons
 muPFIsoDepositGamma.src = sourceMuons
 muPFIsoDepositPU.src = sourceMuons
+muPFIsoDepositCharged.ExtractorPSet.DR_Max = 0.5
+muPFIsoDepositChargedAll.ExtractorPSet.DR_Max = 0.5
+muPFIsoDepositNeutral.ExtractorPSet.DR_Max = 0.5
+muPFIsoDepositGamma.ExtractorPSet.DR_Max = 0.5
+muPFIsoDepositPU.ExtractorPSet.DR_Max = 0.5
+
+
 
 patMuons.isoDeposits = cms.PSet(
     pfChargedHadrons = cms.InputTag("muPFIsoDepositCharged" ),
