@@ -59,16 +59,12 @@ from CommonTools.RecoAlgos.HBHENoiseFilter_cfi import HBHENoiseFilter
 HBHENoiseFilterPath = cms.Path(HBHENoiseFilter)
 
 ## The CSC beam halo tight filter
-from RecoMET.METFilters.CSCTightHaloFilter_cfi import CSCTightHaloFilter
+from RecoMET.METAnalyzers.CSCHaloFilter_cfi import CSCTightHaloFilter
 CSCTightHaloFilterPath = cms.Path(CSCTightHaloFilter)
 
 ## The HCAL laser filter
-if isNewerThan('CMSSW_5_2_0'):
-    from EventFilter.HcalRawToDigi.hcallasereventfilter2012_cfi import hcallasereventfilter2012
-    hcalLaserEventFilterPath = cms.Path(hcallasereventfilter2012)
-else:
-    from RecoMET.METFilters.hcalLaserEventFilter_cfi import hcalLaserEventFilter
-    hcalLaserEventFilterPath = cms.Path(hcalLaserEventFilter)
+from EventFilter.HcalRawToDigi.hcallasereventfilter2012_cfi import hcallasereventfilter2012
+hcalLaserEventFilterPath = cms.Path(hcallasereventfilter2012)
 
 ## The ECAL dead cell trigger primitive filter
 from RecoMET.METFilters.EcalDeadCellTriggerPrimitiveFilter_cfi import EcalDeadCellTriggerPrimitiveFilter
@@ -99,7 +95,7 @@ metNoiseCleaning = cms.Sequence(primaryVertexFilter+
                                 noscraping+
                                 CSCTightHaloFilter+
                                 HBHENoiseFilter+
-                                (hcallasereventfilter2012 if isNewerThan('CMSSW_5_2_0') else hcalLaserEventFilter) +
+                                hcallasereventfilter2012 +
                                 EcalDeadCellTriggerPrimitiveFilter+
                                 trackingFailureSequence
                                 # eeBadScSequence+
@@ -128,6 +124,6 @@ if isNewerThan('CMSSW_5_3_0'):
     trkPOGFiltersPath = cms.Path(trkPOGFiltersSequence)
     from EventFilter.HcalRawToDigi.hcallaserFilterFromTriggerResult_cff import hcalfilter # for re-reco and parked
     metNoiseCleaning += hcalfilter
-    
+    hcalLaserEventFilterPath += hcalfilter
 else:
     print >> sys.stderr, 'trkPOGFilters only available in releases >= 5.3'
