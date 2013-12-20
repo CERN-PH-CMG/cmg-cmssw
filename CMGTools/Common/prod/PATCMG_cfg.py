@@ -128,6 +128,7 @@ process.p = cms.Path(
 
 if 'Prompt' in datasetInfo[1] or runOnMC :
     process.metNoiseCleaning.remove(process.hcalfilter)
+    process.hcalLaserEventFilterPath.remove(process.hcalfilter)
 if ('Parked' in datasetInfo[1]) or ('22Jan2013' in datasetInfo[1]) :
     process.metNoiseCleaning.remove(process.hcallasereventfilter2012)
 
@@ -213,14 +214,14 @@ process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
 ## Geometry and Detector Conditions (needed for a few patTuple production steps)
 from CMGTools.Common.PAT.patCMGSchedule_cff import getSchedule
-process.schedule = getSchedule(process, runOnMC, runOnFastSim, datasetInfo[1])
+process.schedule = getSchedule(process, runOnMC, runOnFastSim)
 
 process.schedule.append( process.outpath )
 
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
-process.MessageLogger.suppressWarning = cms.untracked.vstring('ecalLaserCorrFilter')
+process.MessageLogger.suppressWarning = cms.untracked.vstring('ecalLaserCorrFilter','manystripclus53X','toomanystripclus53X')
 ## Options and Output Report
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
