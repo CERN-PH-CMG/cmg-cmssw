@@ -25,6 +25,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
 #include "AnalysisDataFormats/CMGTools/interface/Candidate.h"
 #include "AnalysisDataFormats/CMGTools/interface/PackedCandidate.h"
+#include "AnalysisDataFormats/CMGTools/interface/TriggerPrescaleList.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/Common/interface/ValueMap.h"
 
@@ -244,6 +245,8 @@ namespace {
     edm::Ptr<pat::TriggerObject> ptopp_;
     edm::Ptr<cmg::TriggerObject> pptopp_;
     edm::Wrapper<std::vector<cmg::TriggerObject> > wvtopp_;
+
+    edm::Wrapper<cmg::TriggerPrescaleList> wtpl_;
         
     /// create dictionaries for the composite objects from PFAnalysis
     PATMuPair dummyPATMuPair_;
