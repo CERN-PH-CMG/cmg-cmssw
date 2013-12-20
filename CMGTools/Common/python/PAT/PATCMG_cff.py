@@ -209,6 +209,7 @@ PATCMGCandidatesSequence = cms.Sequence(
     cmgCandidates
     )
 
+from CMGTools.Common.miscProducers.slimmedPrimaryVertices_cfi import slimmedPrimaryVertices
 ####  FULL SEQUENCE  ####
 
 # NOTE: object sequences are defined so that they can be easily removed from the path
@@ -228,7 +229,8 @@ PATCMGSequence = cms.Sequence(
     PATCMGMetSequence +
     MetSignificanceSequence +
     PATCMGMetRegressionSequence +
-    PATCMGCandidatesSequence
+    PATCMGCandidatesSequence +
+    slimmedPrimaryVertices
     )
 
 #if isNewerThan('CMSSW_5_2_0'):
