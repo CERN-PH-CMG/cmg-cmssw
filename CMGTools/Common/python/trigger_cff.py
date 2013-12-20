@@ -5,6 +5,9 @@ from CMGTools.Common.factories.cmgTriggerObject_cfi import *
 from CMGTools.Common.skims.cmgTriggerObjectSel_cfi import *
 from CMGTools.Common.skims.cmgTriggerObjectCount_cfi import *
 
+##trigger prescale factors for each path, encoded in compact form
+from CMGTools.Common.factories.cmgTriggerPrescales_cfi import *
+
 ##single L1 trigger object (container) with all L1 seeds
 from CMGTools.Common.factories.cmgL1TriggerObject_cfi import *
 from CMGTools.Common.skims.cmgL1TriggerObjectSel_cfi import *
@@ -24,5 +27,6 @@ triggerSequence = cms.Sequence(
     cmgTriggerObjectCount*
     cmgTriggerObjectList*
     cmgTriggerObjectListSel*
-    cmgTriggerObjectListCount
+    cmgTriggerObjectListCount*
+    cmgTriggerPrescales
 )
