@@ -13,7 +13,7 @@
 #include "DataFormats/JetReco/interface/PFJet.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "RecoMET/METAlgorithms/interface/SignAlgoResolutions.h"
-#include "RecoMET/METAlgorithms/interface/SigInputObj.h"
+#include "DataFormats/METReco/interface/SigInputObj.h"
 #include "RecoMET/METAlgorithms/interface/significanceAlgo.h"
 
 #include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"

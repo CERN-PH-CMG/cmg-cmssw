@@ -122,8 +122,8 @@ protected:
   double diGausPVal    (double iVal, double iFrac,double iSimga1,double iSigma2);
   double diGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2);
   double calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2);
-  double getError(double iVal,TF1 *iZDatFit,Recoil iType);
-  double getError2(double iVal,TF1 *iFit);
+  double getError(double iVal, const TF1 *iZDatFit,Recoil iType);
+  double getError2(double iVal, const TF1 *iFit);
   double getCorError2(double iVal,TF1 *iFit);
   double mag(double iV0,double iV1,double iV2,double iV3);
   double correlatedSeed(double iVal, double iCorr1,double iCorr2,double iCorr3,double iSeed0,double iSeed1,double iSeed2,double iSeed3);

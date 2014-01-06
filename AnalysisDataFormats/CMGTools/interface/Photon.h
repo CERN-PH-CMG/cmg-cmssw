@@ -43,9 +43,9 @@ namespace cmg {
       return isFromMuon_;
     }
 
-    int charge() const{
-      return charge_;
-    }
+    // int charge() const{
+    //   return charge_;
+    // }
     
     /// charged hadron isolation    
     double chargedHadronIso() const{

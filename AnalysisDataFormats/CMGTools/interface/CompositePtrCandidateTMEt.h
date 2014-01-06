@@ -57,7 +57,7 @@ class CompositePtrCandidateTMEt : public reco::LeafCandidate
   }
 
   /// get transverse mass of visible decay products + missing transverse momentum
-  double mt() const { return mt_; }
+  double mtvismet() const { return mt_; }
 
   /// get acoplanarity angle (angle in transverse plane) between visible decay products 
   /// and missing transverse momentum 
