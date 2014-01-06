@@ -104,9 +104,9 @@ namespace cmg {
     /// transverse energy                                                                 
     virtual double et() const { if (!unpacked_) unpack(); return p4_.Et(); }
     /// mass                                                                              
-    virtual double mass() const { if (!unpacked_) unpack(); return p4_.M(); }
+    virtual float mass() const { if (!unpacked_) unpack(); return p4_.M(); }
     /// mass squared                                                                      
-    virtual double massSqr() const { if (!unpacked_) unpack(); return p4_.M()*p4_.M(); }
+    virtual float massSqr() const { if (!unpacked_) unpack(); return p4_.M()*p4_.M(); }
 
     /// transverse mass                                                                   
     virtual double mt() const { if (!unpacked_) unpack(); return p4_.Mt(); }
@@ -119,13 +119,13 @@ namespace cmg {
     /// z coordinate of momentum vector                                                   
     virtual double pz() const { if (!unpacked_) unpack(); return p4c_.Pz(); }
     /// transverse momentum                                                               
-    virtual double pt() const { if (!unpacked_) unpack(); return p4_.Pt();}
+    virtual float pt() const { if (!unpacked_) unpack(); return p4_.Pt();}
     /// momentum azimuthal angle                                                          
-    virtual double phi() const { if (!unpacked_) unpack(); return p4_.Phi(); }
+    virtual float phi() const { if (!unpacked_) unpack(); return p4_.Phi(); }
     /// momentum polar angle                                                              
     virtual double theta() const { if (!unpacked_) unpack(); return p4_.Theta(); }
     /// momentum pseudorapidity                                                           
-    virtual double eta() const { if (!unpacked_) unpack(); return p4_.Eta(); }
+    virtual float eta() const { if (!unpacked_) unpack(); return p4_.Eta(); }
     /// rapidity                                                                          
     virtual double rapidity() const { if (!unpacked_) unpack(); return p4_.Rapidity(); }
     /// rapidity                                                                          

@@ -42,9 +42,9 @@ class Lepton : public cmg::PhysicsObjectWithPtr< LeptonType >{
     
   virtual ~Lepton(){}
   
-  int charge() const{
-    return charge_;
-  }
+  // int charge() const{
+    // return charge_;
+  // }
                                 
   /// charged hadron isolation    
   double chargedHadronIso(double dr=-1.0) const; 

@@ -117,9 +117,9 @@ namespace cmg {
     /// transverse energy                                                                 
     virtual double et() const {return p4_.Et(); }
     /// mass                                                                              
-    virtual double mass() const { return p4_.M(); }
+    virtual float mass() const { return p4_.M(); }
     /// mass squared                                                                      
-    virtual double massSqr() const { return p4_.M()*p4_.M(); }
+    virtual float massSqr() const { return p4_.M()*p4_.M(); }
 
     /// transverse mass                                                                   
     virtual double mt() const {return p4_.Mt(); }
@@ -132,13 +132,13 @@ namespace cmg {
     /// z coordinate of momentum vector                                                   
     virtual double pz() const {return p4_.Pz(); }
     /// transverse momentum                                                               
-    virtual double pt() const { return p4_.Pt();}
+    virtual float pt() const { return p4_.Pt();}
     /// momentum azimuthal angle                                                          
-    virtual double phi() const { return p4_.Phi(); }
+    virtual float phi() const { return p4_.Phi(); }
     /// momentum polar angle                                                              
     virtual double theta() const {return p4_.Theta(); }
     /// momentum pseudorapidity                                                           
-    virtual double eta() const { return p4_.Eta(); }
+    virtual float eta() const { return p4_.Eta(); }
     /// rapidity                                                                          
     virtual double rapidity() const {return p4_.Rapidity(); }
     /// rapidity                                                                          

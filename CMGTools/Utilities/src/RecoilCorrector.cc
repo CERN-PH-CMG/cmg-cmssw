@@ -387,7 +387,7 @@ void RecoilCorrector::metDistributionType2(double &iMet,double &iMPhi,double iGe
   //double pDMean2    = pDFrac2;
  
   double pMU1       = iU1RZMCFit  ->Eval(iGenPt);
-  double pMU2       = 0; 
+  // double pMU2       = 0; 
   double pMFrac1    = iU1MSZMCFit ->Eval(iGenPt)*lRescale;
   double pMSigma1_1 = iU1S1ZMCFit ->Eval(iGenPt)*pMFrac1;
   double pMSigma1_2 = iU1S2ZMCFit ->Eval(iGenPt)*pMFrac1;
@@ -399,11 +399,11 @@ void RecoilCorrector::metDistributionType2(double &iMet,double &iMPhi,double iGe
   //Uncertainty propagation
   if(iFluc != 0 || iScale != 0) { 
     double lEUR1    = getError(iGenPt,iU1Default  ,PFU1);
-    double lEUS1_1  = getError(iGenPt,iU1S1ZDatFit,PFS1U1);
-    double lEUS1_2  = getError(iGenPt,iU1S2ZDatFit,PFS2U1);
+    // double lEUS1_1  = getError(iGenPt,iU1S1ZDatFit,PFS1U1);
+    // double lEUS1_2  = getError(iGenPt,iU1S2ZDatFit,PFS2U1);
     double lEU1Frac = getError(iGenPt,iU1MSZDatFit,PFMSU1);
-    double lEUS2_1  = getError(iGenPt,iU2S1ZDatFit,PFS1U2);
-    double lEUS2_2  = getError(iGenPt,iU2S2ZDatFit,PFS2U2);
+    // double lEUS2_1  = getError(iGenPt,iU2S1ZDatFit,PFS1U2);
+    // double lEUS2_2  = getError(iGenPt,iU2S2ZDatFit,PFS2U2);
     double lEU2Frac = getError(iGenPt,iU2MSZDatFit,PFMSU2);
 
     //cout << "Err u1    : " << lEU1Frac << " -- " << iFluc << " -- " << pDFrac1 << " -- " << iU1MSZDatFit->GetParError(0) << endl;
@@ -439,7 +439,7 @@ void RecoilCorrector::metDistributionType2(double &iMet,double &iMPhi,double iGe
 
   double p1Charge        = pU1Diff/fabs(pU1Diff);
   double p2Charge        = pU2Diff/fabs(pU2Diff);
-  double pTU1Diff        = pU1Diff;
+  // double pTU1Diff        = pU1Diff;
   // double lMU1U2  = iU1U2ZMCCorr->Eval(iGenPt);
   // pU1Diff                = deCorrelate(pMMean1,lMU1U2,0.,0.,pU1Diff/pMMean1,pU2Diff/pMMean1 ,0.,0.);
   //pU2Diff                = deCorrelate(pMMean2,lMU1U2,0.,0.,pU2Diff/pMMean2,pTU1Diff/pMMean2,0.,0.);
@@ -634,7 +634,7 @@ double RecoilCorrector::getCorError2(double iVal,TF1 *iFit) {
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector::getError2(double iVal,TF1 *iFit) { 
+double RecoilCorrector::getError2(double iVal, const TF1 *iFit) { 
   return iFit->GetParError(0);
   double lE2 = iFit->GetParError(0) + iVal*iFit->GetParError(1) + iVal*iVal*iFit->GetParError(2);
   if(fabs(iFit->GetParError(3)) > 0) lE2 += iVal*iVal*iVal*     iFit->GetParError(3);
@@ -646,7 +646,7 @@ double RecoilCorrector::getError2(double iVal,TF1 *iFit) {
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector::getError(double iVal,TF1 *iFit,Recoil iType) {
+double RecoilCorrector::getError(double iVal, const TF1 *iFit,Recoil iType) {
   if(fId == 0) return sqrt(getError2(iVal,iFit));
   if(fId != 2) return sqrt(getError2(iVal,iFit)); 
   double lEW2  = getError2(iVal,iFit);
