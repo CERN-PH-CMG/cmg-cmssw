@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from CMGTools.External.pujetidproducer_cfi import pileupJetIdProducer, stdalgos_4x, stdalgos_5x, stdalgos, cutbased, chsalgos_4x, chsalgos_5x, chsalgos
+# from RecoJets.JetProducers.PileupJetID_cfi import pileupJetIdProducer, _stdalgos_4x, _stdalgos_5x, _stdalgos, cutbased, _chsalgos_4x, _chsalgos_5x, _chsalgos
 
 #
 # Standard pfJets

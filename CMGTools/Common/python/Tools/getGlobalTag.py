@@ -51,6 +51,13 @@ def getGlobalTagByDataset(runOnMC, dataset):
             GT = 'START53_V27::All' 
         elif 'START52' in dataset:
             GT = 'START52_V9F::All'
+        elif 'POSTLS162_V2' in dataset:
+            GT = 'POSTLS162_V2::All'
+        elif 'POSTLS162_V1' in dataset:
+            GT = 'POSTLS162_V1::All'
+        elif 'POSTLS161' in dataset:
+            # GT = 'POSTLS161_V15::All'
+            GT = 'POSTLS162_V5::All'
     else:
         if cmsswIs44X():
             GT = 'GR_R_44_V15::All'

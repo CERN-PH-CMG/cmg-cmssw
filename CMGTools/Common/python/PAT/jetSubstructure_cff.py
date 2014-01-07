@@ -89,87 +89,87 @@ if isNewerThan('CMSSW_5_2_0'):
 
 
 
-    # JETS PRUNED AK7 ----------------------------
+    # JETS PRUNED AK8 ----------------------------
 
     from RecoJets.JetProducers.ak5PFJetsPruned_cfi import ak5PFJetsPruned
-    ak7PFJetsCHSpruned = ak5PFJetsPruned.clone(
+    ak8PFJetsCHSpruned = ak5PFJetsPruned.clone(
         src = 'pfNoPileUp',
         jetPtMin = cms.double(10.0),
         doAreaFastjet = cms.bool(True),
-	rParam = cms.double(0.7),
+	rParam = cms.double(0.8),
         )
 
-    jetSource = 'ak7PFJetsCHSpruned'
+    jetSource = 'ak8PFJetsCHSpruned'
 
     # corrections 
     from PhysicsTools.PatAlgos.recoLayer0.jetCorrFactors_cfi import *
-    patJetCorrFactorsAK7CHSpruned = patJetCorrFactors.clone()
-    patJetCorrFactorsAK7CHSpruned.src = jetSource
+    patJetCorrFactorsAK8CHSpruned = patJetCorrFactors.clone()
+    patJetCorrFactorsAK8CHSpruned.src = jetSource
     # will need to add L2L3 corrections in the cfg
-    patJetCorrFactorsAK7CHSpruned.levels = ['L1FastJet', 'L2Relative', 'L3Absolute']
-    patJetCorrFactorsAK7CHSpruned.payload = 'AK7PFchs'
-    patJetCorrFactorsAK7CHSpruned.useRho = True
+    patJetCorrFactorsAK8CHSpruned.levels = ['L1FastJet', 'L2Relative', 'L3Absolute']
+    patJetCorrFactorsAK8CHSpruned.payload = 'AK8PFchs'
+    patJetCorrFactorsAK8CHSpruned.useRho = True
 
     # parton and gen jet matching
 
     from PhysicsTools.PatAlgos.mcMatchLayer0.jetMatch_cfi import *
-    patJetPartonMatchAK7CHSpruned = patJetPartonMatch.clone()
-    patJetPartonMatchAK7CHSpruned.src = jetSource
-    patJetGenJetMatchAK7CHSpruned = patJetGenJetMatch.clone()
-    patJetGenJetMatchAK7CHSpruned.src = jetSource
-    patJetGenJetMatchAK7CHSpruned.matched = 'ak7GenJetsNoNu'
+    patJetPartonMatchAK8CHSpruned = patJetPartonMatch.clone()
+    patJetPartonMatchAK8CHSpruned.src = jetSource
+    patJetGenJetMatchAK8CHSpruned = patJetGenJetMatch.clone()
+    patJetGenJetMatchAK8CHSpruned.src = jetSource
+    patJetGenJetMatchAK8CHSpruned.matched = 'ak8GenJetsNoNu'
 
     from PhysicsTools.PatAlgos.mcMatchLayer0.jetFlavourId_cff import *
-    patJetPartonAssociationAK7CHSpruned = patJetPartonAssociation.clone()
-    patJetPartonAssociationAK7CHSpruned.jets = jetSource
+    patJetPartonAssociationAK8CHSpruned = patJetPartonAssociation.clone()
+    patJetPartonAssociationAK8CHSpruned.jets = jetSource
 
     # pat jets
 
     from PhysicsTools.PatAlgos.producersLayer1.jetProducer_cfi import *
-    patJetsAK7CHSpruned = patJets.clone()
-    patJetsAK7CHSpruned.jetSource = jetSource
-    patJetsAK7CHSpruned.addJetCharge = False
-    patJetsAK7CHSpruned.embedCaloTowers = False
-    patJetsAK7CHSpruned.embedPFCandidates = False
-    patJetsAK7CHSpruned.addAssociatedTracks = False
-    patJetsAK7CHSpruned.addBTagInfo = False
-    patJetsAK7CHSpruned.addDiscriminators = False
-    patJetsAK7CHSpruned.getJetMCFlavour = False
-    patJetsAK7CHSpruned.jetCorrFactorsSource = cms.VInputTag(cms.InputTag('patJetCorrFactorsAK7CHSpruned'))
-    patJetsAK7CHSpruned.genPartonMatch = cms.InputTag('patJetPartonMatchAK7CHSpruned')
-    patJetsAK7CHSpruned.genJetMatch = cms.InputTag('patJetGenJetMatchAK7CHSpruned')
+    patJetsAK8CHSpruned = patJets.clone()
+    patJetsAK8CHSpruned.jetSource = jetSource
+    patJetsAK8CHSpruned.addJetCharge = False
+    patJetsAK8CHSpruned.embedCaloTowers = False
+    patJetsAK8CHSpruned.embedPFCandidates = False
+    patJetsAK8CHSpruned.addAssociatedTracks = False
+    patJetsAK8CHSpruned.addBTagInfo = False
+    patJetsAK8CHSpruned.addDiscriminators = False
+    patJetsAK8CHSpruned.getJetMCFlavour = False
+    patJetsAK8CHSpruned.jetCorrFactorsSource = cms.VInputTag(cms.InputTag('patJetCorrFactorsAK8CHSpruned'))
+    patJetsAK8CHSpruned.genPartonMatch = cms.InputTag('patJetPartonMatchAK8CHSpruned')
+    patJetsAK8CHSpruned.genJetMatch = cms.InputTag('patJetGenJetMatchAK8CHSpruned')
 
     from PhysicsTools.PatAlgos.selectionLayer1.jetSelector_cfi import *
-    selectedPatJetsAK7CHSpruned = selectedPatJets.clone()
-    selectedPatJetsAK7CHSpruned.src = 'patJetsAK7CHSpruned'
-    selectedPatJetsAK7CHSpruned.cut = 'pt()>10'
+    selectedPatJetsAK8CHSpruned = selectedPatJets.clone()
+    selectedPatJetsAK8CHSpruned.src = 'patJetsAK8CHSpruned'
+    selectedPatJetsAK8CHSpruned.cut = 'pt()>10'
 
-    from RecoJets.Configuration.RecoGenJets_cff import ak7GenJetsNoNu
-    jetMCSequenceAK7CHSpruned = cms.Sequence(
-        patJetPartonMatchAK7CHSpruned +
-        ak7GenJetsNoNu +
-        patJetGenJetMatchAK7CHSpruned
+    from RecoJets.Configuration.RecoGenJets_cff import ak8GenJetsNoNu
+    jetMCSequenceAK8CHSpruned = cms.Sequence(
+        patJetPartonMatchAK8CHSpruned +
+        ak8GenJetsNoNu +
+        patJetGenJetMatchAK8CHSpruned
         )
 
     from CMGTools.Common.factories.cmgStructuredPFJet_cfi import cmgStructuredPFJet
     from CMGTools.Common.skims.cmgStructuredPFJetSel_cfi import cmgStructuredPFJetSel
 
-    cmgStructuredPFJetAK7 = cmgStructuredPFJet.clone()
-    cmgStructuredPFJetAK7.cfg.inputCollection = cms.InputTag("selectedPatJetsAK7CHSpruned")
-    cmgStructuredPFJetAK7.cfg.subjetCollection = cms.InputTag("ak7PFJetsCHSpruned:SubJets")
-    cmgStructuredPFJetAK7Sel = cmgStructuredPFJetSel.clone()
-    cmgStructuredPFJetAK7Sel.src = cms.InputTag("cmgStructuredPFJetAK7")
+    cmgStructuredPFJetAK8 = cmgStructuredPFJet.clone()
+    cmgStructuredPFJetAK8.cfg.inputCollection = cms.InputTag("selectedPatJetsAK8CHSpruned")
+    cmgStructuredPFJetAK8.cfg.subjetCollection = cms.InputTag("ak8PFJetsCHSpruned:SubJets")
+    cmgStructuredPFJetAK8Sel = cmgStructuredPFJetSel.clone()
+    cmgStructuredPFJetAK8Sel.src = cms.InputTag("cmgStructuredPFJetAK8")
 
-    pfStructuredJetAK7Sequence = cms.Sequence(
-        cmgStructuredPFJetAK7 + 
-        cmgStructuredPFJetAK7Sel
+    pfStructuredJetAK8Sequence = cms.Sequence(
+        cmgStructuredPFJetAK8 + 
+        cmgStructuredPFJetAK8Sel
     )
 
-    PATCMGJetSequenceAK7CHSpruned = cms.Sequence(
-        ak7PFJetsCHSpruned +
-        jetMCSequenceAK7CHSpruned +
-        patJetCorrFactorsAK7CHSpruned +
-        patJetsAK7CHSpruned +
-        selectedPatJetsAK7CHSpruned +
-	pfStructuredJetAK7Sequence
+    PATCMGJetSequenceAK8CHSpruned = cms.Sequence(
+        ak8PFJetsCHSpruned +
+        jetMCSequenceAK8CHSpruned +
+        patJetCorrFactorsAK8CHSpruned +
+        patJetsAK8CHSpruned +
+        selectedPatJetsAK8CHSpruned +
+	pfStructuredJetAK8Sequence
         )

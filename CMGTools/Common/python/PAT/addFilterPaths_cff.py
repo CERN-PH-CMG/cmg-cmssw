@@ -59,7 +59,7 @@ from CommonTools.RecoAlgos.HBHENoiseFilter_cfi import HBHENoiseFilter
 HBHENoiseFilterPath = cms.Path(HBHENoiseFilter)
 
 ## The CSC beam halo tight filter
-from RecoMET.METAnalyzers.CSCHaloFilter_cfi import CSCTightHaloFilter
+from RecoMET.METFilters.CSCTightHaloFilter_cfi import CSCTightHaloFilter
 CSCTightHaloFilterPath = cms.Path(CSCTightHaloFilter)
 
 ## The HCAL laser filter
