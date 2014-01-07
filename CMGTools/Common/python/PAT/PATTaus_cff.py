@@ -5,9 +5,6 @@ from PhysicsTools.PatAlgos.producersLayer1.tauProducer_cff import *
 from PhysicsTools.PatAlgos.selectionLayer1.tauSelector_cfi import selectedPatTaus
 
 from RecoTauTag.Configuration.RecoPFTauTag_cff import *
-PFTau.remove( recoTauClassicShrinkingConeSequence )
-PFTau.remove( recoTauClassicShrinkingConeMVASequence )
-PFTau.remove( recoTauHPSTancSequence )
 
 # will insert a jet selector before tau ID to speed up processing
 from CommonTools.ParticleFlow.ParticleSelectors.genericPFJetSelector_cfi import selectedPfJets

@@ -23,7 +23,7 @@ patJetCorrFactors.useRho = True
 
 patJets.jetSource = jetSource
 patJets.addJetCharge = False
-patJets.embedCaloTowers = False
+patJets.embedCaloTowers = cms.bool(False)
 patJets.embedPFCandidates = False
 patJets.addAssociatedTracks = False
 

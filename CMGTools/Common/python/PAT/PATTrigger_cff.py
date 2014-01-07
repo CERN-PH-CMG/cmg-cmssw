@@ -5,6 +5,6 @@ patTrigger.processName = cms.string('*')
 from CMGTools.Common.trigger_cff import *
 
 PATTriggerSequence = cms.Sequence(
-    # l1GtRecord + 
-    patTriggerDefaultSequence
-    )
+  patTrigger
+* patTriggerEvent
+)

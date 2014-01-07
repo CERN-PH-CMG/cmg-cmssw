@@ -60,7 +60,7 @@ PATCMGPileUpSubtractionSequence = cms.Sequence(
 # RHO's            ----------------------------
 
 from CMGTools.Common.PAT.rho_cff import *
-PATCMGRhoSequence = rhoSequence
+PATCMGRhoSequence = cms.Sequence(rhoSequence)
 
 
 # MUONS           ----------------------------

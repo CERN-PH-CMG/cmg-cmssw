@@ -4,14 +4,14 @@ from CMGTools.External.puJetIDAlgo_cff import *
 from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X, isNewerThan
 
 
-jetPtMin = 1.
-puJetIdAlgo = PhilV1
-wpId = 2 # see MetUtilies.cc
 if isNewerThan('CMSSW_5_3_0'):
     jetPtMin = 0.
-    puJetIdAlgo = met_53x
+    puJetIdAlgo = met_53x.clone()
     wpId = 3
-
+else:
+    jetPtMin = 1.
+    puJetIdAlgo = PhilV1.clone()
+    wpId = 2 # see MetUtilies.cc
 pfMetForRegression   = cms.EDProducer(
     "MetFlavorProducer",
     CorrJetName     = cms.InputTag("patJets"),
