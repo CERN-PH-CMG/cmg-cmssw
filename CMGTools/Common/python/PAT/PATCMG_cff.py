@@ -37,6 +37,9 @@ PATCMGTriggerSequence = cms.Sequence(
 from CMGTools.Common.PFVertexProducer_cfi import particleFlow
 PATCMGVertexSequence = cms.Sequence ( particleFlow )
 
+from RecoParticleFlow.PFProducer.pfLinker_cff import particleFlowPtrs
+
+PATCMGPFPtrSequence = cms.Sequence( particleFlowPtrs )
 
 # PU SUB AND PARTICLES FOR ISO ---------------
 
@@ -47,7 +50,8 @@ from CommonTools.ParticleFlow.pfParticleSelection_cff import *
 pfPileUp.checkClosestZVertex = False
 pfPileUp.Vertices = 'goodOfflinePrimaryVertices'
 pfPileUp.PFCandidates = 'particleFlow'
-pfNoPileUp.bottomCollection = 'particleFlow'
+# pfNoPileUp.bottomCollection = 'particleFlow'
+pfNoPileUp.bottomCollection = 'particleFlowPtrs'
 
 from CommonTools.ParticleFlow.goodOfflinePrimaryVertices_cfi import goodOfflinePrimaryVertices
 pfNoPileUpSequence.insert(0, goodOfflinePrimaryVertices)
@@ -209,6 +213,7 @@ PATCMGCandidatesSequence = cms.Sequence(
 PATCMGSequence = cms.Sequence(
     PATCMGGenSequence +
     PATCMGTriggerSequence +
+    PATCMGPFPtrSequence +
     PATCMGVertexSequence +
     PATCMGPileUpSubtractionSequence +
     PATCMGRhoSequence +

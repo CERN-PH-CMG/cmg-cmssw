@@ -33,7 +33,8 @@ private:
   void addPFMEtSignObjects(std::vector<metsig::SigInputObj>& metSignObjects, edm::Handle< std::vector< P > > & particles) const{     
     //code copied and modified from TauAnalysis package:
     //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/TauAnalysis/CandidateTools/src/PFMEtSignInterface.cc v1.4
-    for ( typename std::vector< P >::const_iterator particle = particles->begin(); particle != particles->end(); ++particle ) {
+    for ( typename std::vector< P >::const_iterator particleIt = particles->begin(); particleIt != particles->end(); ++particleIt ) {
+      const P& particle = *particleIt;
       double pt   = particle->pt();
       double eta  = particle->eta();
       double phi  = particle->phi();
@@ -105,26 +106,27 @@ void METSignificanceProducer::produce(edm::Event & iEvent, const edm::EventSetup
   std::vector<metsig::SigInputObj> pfMEtSignObjects;  
     
   if(inputPATMuons_.label()!=""){
-    edm::Handle< std::vector<pat::Muon> > patMuons;
+    edm::Handle< std::vector<edm::FwdPtr<pat::Muon> > > patMuons;
     iEvent.getByLabel(inputPATMuons_, patMuons);
-    addPFMEtSignObjects<pat::Muon>(pfMEtSignObjects,patMuons);
+    addPFMEtSignObjects<edm::FwdPtr<pat::Muon> >(pfMEtSignObjects,patMuons);
   }
 
   if(inputPATElectrons_.label()!=""){
-    edm::Handle< std::vector<pat::Electron> > patElectrons;
+    edm::Handle< std::vector<edm::FwdPtr<pat::Electron> > > patElectrons;
     iEvent.getByLabel(inputPATElectrons_, patElectrons);
-    addPFMEtSignObjects<pat::Electron>(pfMEtSignObjects,patElectrons);
+    addPFMEtSignObjects<edm::FwdPtr<pat::Electron> >(pfMEtSignObjects,patElectrons);
   }
   
   if(inputPFJets_.label()!=""){
-    edm::Handle<reco::PFJetCollection> pfJets;
+    edm::Handle<std::vector<edm::FwdPtr<reco::PFJet> > > pfJets;
     iEvent.getByLabel(inputPFJets_, pfJets);
-    addPFMEtSignObjects<reco::PFJet>(pfMEtSignObjects,pfJets);
+    addPFMEtSignObjects<edm::FwdPtr<reco::PFJet> >(pfMEtSignObjects,pfJets);
   }
 
-  edm::Handle<reco::PFCandidateCollection> pfCandidates;
+  // edm::Handle<reco::PFCandidateCollection> pfCandidates;
+  edm::Handle<std::vector<edm::FwdPtr<reco::PFCandidate> > > pfCandidates;
   iEvent.getByLabel(inputPFCandidates_, pfCandidates);//PFCands after removing muons,electrons, and jets
-  addPFMEtSignObjects<reco::PFCandidate>(pfMEtSignObjects,pfCandidates);
+  addPFMEtSignObjects<edm::FwdPtr<reco::PFCandidate> >(pfMEtSignObjects,pfCandidates);
   
   metsig::significanceAlgo pfMEtSignAlgorithm;
   pfMEtSignAlgorithm.addObjects(pfMEtSignObjects);

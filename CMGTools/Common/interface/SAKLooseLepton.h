@@ -10,14 +10,19 @@
 #include "TMath.h"
 #include "Math/VectorUtil.h"
 
-bool isLooseElectron   (const reco::GsfElectron & electron, const math::XYZPoint & primaryVertex, edm::Handle<reco::PFCandidateCollection> pfCandidates);
-bool isLooseElectron   (const reco::GsfElectron & electron, const math::XYZPoint & primaryVertex, const reco::PFCandidateCollection & pfCandidates);
+namespace reco {
+  typedef edm::Handle<std::vector<edm::FwdPtr<reco::PFCandidate> > > PFCandidateFwdPtrHandle;
+  typedef std::vector<edm::FwdPtr<reco::PFCandidate> > PFCandidateFwdPtrCollection;
+}
+
+bool isLooseElectron   (const reco::GsfElectron & electron, const math::XYZPoint & primaryVertex, reco::PFCandidateFwdPtrHandle pfCandidates);
+bool isLooseElectron   (const reco::GsfElectron & electron, const math::XYZPoint & primaryVertex, const reco::PFCandidateFwdPtrCollection& pfCandidates);
 bool isLooseElectronID (const reco::GsfElectron & electron, const math::XYZPoint & primaryVertex);
-bool isLooseElectronIso(const reco::GsfElectron & electron, const reco::PFCandidateCollection & pfCandidates);
-bool isLooseMuon   (const reco::Muon & muon, const math::XYZPoint & primaryVertex, edm::Handle<reco::PFCandidateCollection> pfCandidates);
-bool isLooseMuon   (const reco::Muon & muon, const math::XYZPoint & primaryVertex, const reco::PFCandidateCollection& pfCandidates);
+bool isLooseElectronIso(const reco::GsfElectron & electron, const reco::PFCandidateFwdPtrCollection & pfCandidates);
+bool isLooseMuon   (const reco::Muon & muon, const math::XYZPoint & primaryVertex, reco::PFCandidateFwdPtrHandle pfCandidates);
+bool isLooseMuon   (const reco::Muon & muon, const math::XYZPoint & primaryVertex, const reco::PFCandidateFwdPtrCollection& pfCandidates);
 bool isLooseMuonID (const reco::Muon & muon, const math::XYZPoint & primaryVertex);
-bool isLooseMuonIso(const reco::Muon & muon, const reco::PFCandidateCollection& pfCandidates);
+bool isLooseMuonIso(const reco::Muon & muon, const reco::PFCandidateFwdPtrCollection& pfCandidates);
 
 bool passCut(double parameter, double variable, bool discardAbove, int numBins, const double* parameterBins, const double* variableCuts);
 
@@ -42,38 +47,38 @@ static double customIsolation(reco::PFCandidate::ParticleType lepton, const Part
   std::vector<math::XYZVector> coneParticles;
   
   for (unsigned int iPtcl = 0; iPtcl < isoParticles.size(); ++iPtcl) {
-    if (lepton == reco::PFCandidate::mu && isoParticles[iPtcl].muonRef().isNonnull() && isoParticles[iPtcl].trackRef() == particle.track()) {
+    if (lepton == reco::PFCandidate::mu && (isoParticles[iPtcl])->muonRef().isNonnull() && (isoParticles[iPtcl])->trackRef() == particle.track()) {
        continue; }
-    if (lepton == reco::PFCandidate::e  && isoParticles[iPtcl].gsfTrackRef().isNonnull() && isoParticles[iPtcl].gsfTrackRef() == particle.gsfTrack()) {
+    if (lepton == reco::PFCandidate::e  && (isoParticles[iPtcl])->gsfTrackRef().isNonnull() && (isoParticles[iPtcl])->gsfTrackRef() == particle.gsfTrack()) {
        continue; }
     const IsoParticle&          isoParticle   = isoParticles[iPtcl];
-    if (isoParticle.pt() <= 0)  continue;     // Ignore weird stuff
+    if (isoParticle->pt() <= 0)  continue;     // Ignore weird stuff
     //.. Vetoes ...............................................................
-    if (isoParticle.charge()) {
+    if (isoParticle->charge()) {
       if (!includeCharged)                    continue;
     }
-    else if (isoParticle.particleId() == reco::PFCandidate::gamma) {
+    else if (isoParticle->particleId() == reco::PFCandidate::gamma) {
       if (!includePhoton)                     continue;
-      if (isoParticle.pt() < minNeutralPT)    continue;
+      if (isoParticle->pt() < minNeutralPT)    continue;
     }
-    else if (isoParticle.particleId() == reco::PFCandidate::h0) {
+    else if (isoParticle->particleId() == reco::PFCandidate::h0) {
       if (!includeNeutralHadron)              continue;
-      if (isoParticle.pt() < minNeutralPT)    continue;
+      if (isoParticle->pt() < minNeutralPT)    continue;
     }
     //.. Computation ..........................................................
-    const double                dR            = reco::deltaR(isoParticle, particle);
+    const double                dR            = reco::deltaR(*isoParticle, particle);
     if (dR > maxDR)             continue;
     const double                weight        = falloff
                                               ? TMath::Gaus(dR, 0, coneDR, true)
                                               : 1
                                               ;
     if (directional) {
-      math::XYZVector           transverse( isoParticle.eta() - particle.eta()
-                                          , reco::deltaPhi(isoParticle.phi(), particle.phi())
+      math::XYZVector           transverse( isoParticle->eta() - particle.eta()
+                                          , reco::deltaPhi(isoParticle->phi(), particle.phi())
                                           , 0);
       if (normalizeEtaPhi)
         transverse             /= transverse.rho();
-      transverse               *= weight * isoParticle.pt();
+      transverse               *= weight * isoParticle->pt();
       if (transverse.rho() > 0) {
         isoAngleSum            += transverse;
         coneParticles.push_back(transverse);
@@ -81,7 +86,7 @@ static double customIsolation(reco::PFCandidate::ParticleType lepton, const Part
         //                                                   << isoParticles[iPtcl].gsfTrackRef().id() << " " << particle.gsfTrack().id()
         //                                                   << " " << isoParticles[iPtcl].gsfTrackRef().key() << " " << particle.gsfTrack().key() << std::endl;
     } else { // if not directional
-      isoSum                   += weight * isoParticle.pt();
+      isoSum                   += weight * isoParticle->pt();
     }
   } // end loop over PF candidates
 

@@ -22,9 +22,11 @@ sourceMuons = 'muons'
 
 # the name of the track muon deposits changed
 from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X
-tkDeposits = cms.InputTag("muons","muIsoDepositTk")
-if cmsswIs44X():
-    tkDeposits = cms.InputTag("muIsoDepositTk")
+
+# FIXME: JAN: Are the tracker iso deposits still needed? Are not in AOD/RECO anymore
+# tkDeposits = cms.InputTag("muons","muIsoDepositTk")
+# if cmsswIs44X():
+#     tkDeposits = cms.InputTag("muIsoDepositTk")
 
 muPFIsoDepositCharged.src = sourceMuons
 muPFIsoDepositChargedAll.src = sourceMuons
@@ -45,19 +47,19 @@ patMuons.isoDeposits = cms.PSet(
     pfPUChargedHadrons = cms.InputTag("muPFIsoDepositPU" ),
     pfNeutralHadrons = cms.InputTag("muPFIsoDepositNeutral" ),
     pfPhotons = cms.InputTag("muPFIsoDepositGamma" ),
-    tracker = tkDeposits,
+    # tracker = tkDeposits,
     )
 
 # needed in 44X:
-muIsoFromDepsTkOptimized.deposits[0].src = tkDeposits
+# muIsoFromDepsTkOptimized.deposits[0].src = tkDeposits
 
 patMuons.isolationValues = cms.PSet(
     pfChargedHadrons = cms.InputTag("muPFIsoValueCharged04"),
     pfChargedAll = cms.InputTag("muPFIsoValueChargedAll04"),
     pfPUChargedHadrons = cms.InputTag("muPFIsoValuePU04" ),
     pfNeutralHadrons = cms.InputTag("muPFIsoValueNeutral04" ),
-    pfPhotons = cms.InputTag("muPFIsoValueGamma04" ),
-    user = cms.VInputTag( cms.InputTag("muIsoFromDepsTkOptimized") )
+    pfPhotons = cms.InputTag("muPFIsoValueGamma04" )#,
+    # user = cms.VInputTag( cms.InputTag("muIsoFromDepsTkOptimized") )
     )
 
 selectedPatMuons.cut = 'pt()>0'
@@ -69,7 +71,7 @@ from CMGTools.Common.PAT.patMuonsWithDirectionalIsolation_cfi import *
 
 PATMuonSequence = cms.Sequence(
     pfMuonIsolationSequence +
-    detMuonIsoDepositSequence + 
+    # detMuonIsoDepositSequence + 
     makePatMuons +
     selectedPatMuons +
     patMuonsWithPF +

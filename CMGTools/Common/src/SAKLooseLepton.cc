@@ -6,14 +6,14 @@
     const math::XYZPoint&               primaryVertex;  ///< First vertex in vertices list
     Handle<reco::PFCandidateCollection> pfCandidates;   ///< Particle flow candidates after PFchs
 */
-bool isLooseElectron(const reco::GsfElectron & electron, const math::XYZPoint & primaryVertex, edm::Handle<reco::PFCandidateCollection> pfCandidates)
+bool isLooseElectron(const reco::GsfElectron & electron, const math::XYZPoint & primaryVertex, reco::PFCandidateFwdPtrHandle pfCandidates)
 {
-  const reco::PFCandidateCollection & pfCands = *pfCandidates;
+  const reco::PFCandidateFwdPtrCollection & pfCands = *pfCandidates;
   return isLooseElectron(electron, primaryVertex, pfCands);
 }
 
 
-bool isLooseElectron(const reco::GsfElectron & electron, const math::XYZPoint & primaryVertex, const reco::PFCandidateCollection & pfCandidates)
+bool isLooseElectron(const reco::GsfElectron & electron, const math::XYZPoint & primaryVertex, const reco::PFCandidateFwdPtrCollection & pfCandidates)
 {
   return isLooseElectronID(electron, primaryVertex) && isLooseElectronIso(electron, pfCandidates);
 }
@@ -44,7 +44,7 @@ bool isLooseElectronID(const reco::GsfElectron & electron, const math::XYZPoint 
 }
 
 
-bool isLooseElectronIso(const reco::GsfElectron & electron, const reco::PFCandidateCollection & pfCandidates)
+bool isLooseElectronIso(const reco::GsfElectron & electron, const reco::PFCandidateFwdPtrCollection & pfCandidates)
 {
   static const int      numLeptonPTs                = 8;
   static const double   LEPTON_PTS[]                = {0, 5, 10, 15, 20, 40, 80, 140, 200};
@@ -73,14 +73,14 @@ bool isLooseElectronIso(const reco::GsfElectron & electron, const reco::PFCandid
     const math::XYZPoint&               primaryVertex;  ///< First vertex in vertices list
     Handle<reco::PFCandidateCollection> pfCandidates;   ///< Particle flow candidates after PFchs
 */
-bool isLooseMuon(const reco::Muon & muon, const math::XYZPoint & primaryVertex, edm::Handle<reco::PFCandidateCollection> pfCandidates)
+bool isLooseMuon(const reco::Muon & muon, const math::XYZPoint & primaryVertex, edm::Handle<reco::PFCandidateFwdPtrCollection> pfCandidates)
 {
-  const reco::PFCandidateCollection & pfCands = *pfCandidates;
+  const reco::PFCandidateFwdPtrCollection & pfCands = *pfCandidates;
   return isLooseMuon(muon, primaryVertex, pfCands);
 }
 
 
-bool isLooseMuon(const reco::Muon & muon, const math::XYZPoint & primaryVertex, const reco::PFCandidateCollection & pfCandidates)
+bool isLooseMuon(const reco::Muon & muon, const math::XYZPoint & primaryVertex, const reco::PFCandidateFwdPtrCollection & pfCandidates)
 {
   return isLooseMuonID(muon, primaryVertex) && isLooseMuonIso(muon, pfCandidates);
 }
@@ -114,7 +114,7 @@ bool isLooseMuonID(const reco::Muon & muon, const math::XYZPoint & primaryVertex
 }
 
 
-bool isLooseMuonIso(const reco::Muon & muon, const reco::PFCandidateCollection & pfCandidates)
+bool isLooseMuonIso(const reco::Muon & muon, const reco::PFCandidateFwdPtrCollection & pfCandidates)
 {
   static const int      numLeptonPTs            = 8;
   static const double   LEPTON_PTS[]            = {0, 5, 10, 15, 20, 40, 80, 140, 200};
