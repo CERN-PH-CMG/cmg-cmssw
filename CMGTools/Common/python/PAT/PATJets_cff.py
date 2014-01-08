@@ -13,6 +13,7 @@ ak5PFJetsSel = selectedPfJets.clone( src = 'ak5PFJets',
 
 jetSource = 'ak5PFJetsSel'
 
+
 # corrections 
 from PhysicsTools.PatAlgos.recoLayer0.jetCorrFactors_cfi import *
 patJetCorrFactors.src = jetSource
@@ -30,7 +31,9 @@ patJets.addAssociatedTracks = False
 # b tagging 
 from RecoJets.JetAssociationProducers.ak5JTA_cff import *
 ak5JetTracksAssociatorAtVertex.jets = jetSource
+
 from RecoBTag.Configuration.RecoBTag_cff import * # btagging sequence
+
 softPFMuonsTagInfos.jets = jetSource
 softPFElectronsTagInfos.jets = jetSource
 btaggingExt = cms.Sequence(
@@ -122,7 +125,6 @@ jetMCSequence = cms.Sequence(
     patJetPartonMatch +
     patJetGenJetMatch
     )
-
 
 PATJetSequence = cms.Sequence(
     ak5PFJetsSel + 

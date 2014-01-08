@@ -25,11 +25,17 @@
 
 #include "CMGTools/Common/interface/SAKLooseLepton.h"
 
+namespace reco{
+  typedef edm::Handle<std::vector<edm::FwdPtr<reco::PFCandidate> > > PFCandidateFwdPtrHandle;
+  typedef std::vector<edm::FwdPtr<reco::PFCandidate> > PFCandidateFwdPtrCollection;
+}
+
 template <class Lepton>
 class DirectionalIsolationProducer : public edm::EDProducer{
  public:
   
   typedef std::vector<Lepton> collection;
+
  
   DirectionalIsolationProducer(const edm::ParameterSet& ps):
   src_(ps.getParameter<edm::InputTag>("src")),
@@ -38,7 +44,7 @@ class DirectionalIsolationProducer : public edm::EDProducer{
     produces<collection>();
   }
 
-  bool isLooseLepton(const Lepton& lepton, const math::XYZPoint & primaryVertex, const reco::PFCandidateCollection & pfCandidates) const;
+  bool isLooseLepton(const Lepton& lepton, const math::XYZPoint & primaryVertex, const reco::PFCandidateFwdPtrCollection & pfCandidates) const;
 
   virtual void produce(edm::Event& iEvent, const edm::EventSetup&){
     
@@ -47,9 +53,9 @@ class DirectionalIsolationProducer : public edm::EDProducer{
     iEvent.getByLabel( src_, handle );
 
     //the pf candidates
-    edm::Handle<reco::PFCandidateCollection> pfhandle;
+    reco::PFCandidateFwdPtrHandle pfhandle;
     iEvent.getByLabel( pfCands_, pfhandle );
-    const reco::PFCandidateCollection* pf = pfhandle.product();
+    const reco::PFCandidateFwdPtrCollection* pf = pfhandle.product();
 
     //the vertex to use
     edm::Handle<reco::VertexCollection> vhandle;
@@ -83,12 +89,12 @@ class DirectionalIsolationProducer : public edm::EDProducer{
 };
 
 template <>
-bool DirectionalIsolationProducer<pat::Electron>::isLooseLepton(const pat::Electron& lepton, const math::XYZPoint& primaryVertex, const reco::PFCandidateCollection & pfCandidates) const{
+bool DirectionalIsolationProducer<pat::Electron>::isLooseLepton(const pat::Electron& lepton, const math::XYZPoint& primaryVertex, const reco::PFCandidateFwdPtrCollection & pfCandidates) const{
   return isLooseElectron(lepton, primaryVertex, pfCandidates);
 }
 
 template <>
-bool DirectionalIsolationProducer<pat::Muon>::isLooseLepton(const pat::Muon& lepton, const math::XYZPoint& primaryVertex, const reco::PFCandidateCollection & pfCandidates) const{
+bool DirectionalIsolationProducer<pat::Muon>::isLooseLepton(const pat::Muon& lepton, const math::XYZPoint& primaryVertex, const reco::PFCandidateFwdPtrCollection & pfCandidates) const{
   return isLooseMuon(lepton, primaryVertex, pfCandidates);
 }
 

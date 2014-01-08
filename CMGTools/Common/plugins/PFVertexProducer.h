@@ -23,6 +23,8 @@
 class PFVertexProducer : public edm::EDProducer {
  public:
 
+  typedef edm::Handle<std::vector<edm::FwdPtr<reco::PFCandidate> > > PFCandidateFwdPtrHandle;
+
   explicit PFVertexProducer(const edm::ParameterSet&);
 
   ~PFVertexProducer();

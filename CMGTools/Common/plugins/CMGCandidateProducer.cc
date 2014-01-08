@@ -44,9 +44,9 @@ void CMGCandidateProducer::produce(Event& iEvent,
   iEvent.getByLabel( Cands_, cands );
   std::vector<reco::Candidate>::const_iterator cand;
 
-  edm::Handle<reco::PFCandidateCollection> candsFromPV;
+  edm::Handle<std::vector<edm::FwdPtr<reco::PFCandidate> > > candsFromPV;
   iEvent.getByLabel( CandsFromPV_, candsFromPV );
-  std::vector<reco::Candidate>::const_iterator candFromPV;
+  // std::vector<edm::FwdPtr<reco::Candidate> >::const_iterator candFromPV; // not used and name even overwritten
 
   auto_ptr< std::vector<cmg::Candidate> > outPtr( new std::vector<cmg::Candidate> );
   auto_ptr< std::vector<cmg::PackedCandidate> > outPtrP( new std::vector<cmg::PackedCandidate> );
@@ -54,7 +54,7 @@ void CMGCandidateProducer::produce(Event& iEvent,
     const reco::Candidate &cand=(*cands)[ic];
     bool fromPV=false;
     for(unsigned int icFromPV=0; icFromPV<candsFromPV->size(); icFromPV++) {
-      const reco::Candidate &candFromPV=(*candsFromPV)[icFromPV];
+      const reco::Candidate &candFromPV= *((*candsFromPV)[icFromPV]);
       if((cand.p4()==candFromPV.p4())&&(cand.pdgId()==candFromPV.pdgId()))
       {
           fromPV=true;
