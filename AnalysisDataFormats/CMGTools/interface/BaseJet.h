@@ -57,6 +57,8 @@ namespace cmg {
     /// \return a correction factor that can be applied to the jet energy or pT to bring
     /// it back to the uncorrected value
     Float_t rawFactor() const {return rawFactor_;}
+    /// Set the raw factor for the jet, to allow JEC in python
+    void setRawFactor(Float_t factor) { rawFactor_ = factor; }
 
     /// Uncertainty on four vector energy scale.
     Float_t uncOnFourVectorScale() const {return uncOnFourVectorScale_;}
