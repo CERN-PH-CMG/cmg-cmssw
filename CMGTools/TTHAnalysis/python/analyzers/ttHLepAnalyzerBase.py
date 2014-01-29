@@ -18,12 +18,14 @@ from CMGTools.TTHAnalysis.tools.EfficiencyCorrector import EfficiencyCorrector
 
 from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch
 from CMGTools.RootTools.physicsobjects.RochesterCorrections import rochcor
+from CMGTools.RootTools.physicsobjects.MuScleFitCorrector   import MuScleFitCorr
+from CMGTools.RootTools.physicsobjects.ElectronCalibrator import EmbeddedElectronCalibrator
+from CMGTools.TTHAnalysis.electronCalibrator import * # load also older one
 
 from ROOT import CMGMuonCleanerBySegmentsAlgo, TRandom3
 cmgMuonCleanerBySegments = CMGMuonCleanerBySegmentsAlgo()
 
 from CMGTools.TTHAnalysis.signedSip import *
-from CMGTools.TTHAnalysis.electronCalibrator import *
  
 class ttHLepAnalyzerBase( Analyzer ):
 
@@ -33,7 +35,6 @@ class ttHLepAnalyzerBase( Analyzer ):
         if self.cfg_ana.doMuScleFitCorrections and self.cfg_ana.doMuScleFitCorrections != "none":
             if self.cfg_ana.doMuScleFitCorrections not in [ "none", "prompt", "prompt-sync", "rereco", "rereco-sync" ]:
                 raise RuntimeError, 'doMuScleFitCorrections must be one of "none", "prompt", "prompt-sync", "rereco", "rereco-sync"'
-            from CMGTools.TTHAnalysis.tools.muScleFitCorrector import MuScleFitCorr
             rereco = ("prompt" not in self.cfg_ana.doMuScleFitCorrections)
             sync   = ("sync"       in self.cfg_ana.doMuScleFitCorrections)
             self.muscleCorr = MuScleFitCorr(cfg_comp.isMC, rereco, sync)
@@ -41,8 +42,10 @@ class ttHLepAnalyzerBase( Analyzer ):
                 raise RuntimeError, "You can't run both Rochester and MuScleFit corrections!"
         else:
             self.cfg_ana.doMuScleFitCorrections = False
-        if self.cfg_ana.doElectronScaleCorrections:
-            self.electronEnergyCalibrator = ElectronCalibrator(self,cfg_comp.isMC)
+        if self.cfg_ana.doElectronScaleCorrections == "embedded":
+            self.electronEnergyCalibrator = EmbeddedElectronCalibrator()
+        else:
+            self.electronEnergyCalibrator = ElectronCalibrator(cfg_comp.isMC)
         if hasattr(cfg_comp,'efficiency'):
             self.efficiency= EfficiencyCorrector(cfg_comp.efficiency)
 
