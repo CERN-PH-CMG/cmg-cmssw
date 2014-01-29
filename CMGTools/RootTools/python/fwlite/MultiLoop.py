@@ -117,14 +117,14 @@ def main( options, args ):
     selComps = split(selComps)
     for comp in selComps:
         print comp
-    if len(selComps)>14:
-        raise ValueError('too many threads: {tnum}'.format(tnum=len(selComps)))
+    if len(selComps)>10:
+        print "WARNING: too many threads {tnum}, will just use a maximum of 10.".format(tnum=len(selComps))
     if not createOutputDir(outDir, selComps, options.force):
         print 'exiting'
         sys.exit(0)
     if len(selComps)>1:
         shutil.copy( cfgFileName, outDir )
-        pool = Pool(processes=len(selComps))
+        pool = Pool(processes=min(len(selComps),10))
         for comp in selComps:
             print 'submitting', comp.name
             pool.apply_async( runLoopAsync, [comp, outDir, cfg.config, options],

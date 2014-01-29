@@ -3,4 +3,7 @@
   <class name="RochCor"/>
   <class name="RochCor2012"/>
   <class name="FSRWeightAlgo"/>
+  <class name="MuScleFitCorrector" transient="true" />
+  <class name="TriggerBitChecker" transient="true" />
+  <class name="CMGMuonCleanerBySegmentsAlgo" transient="true" />
 </lcgdict>

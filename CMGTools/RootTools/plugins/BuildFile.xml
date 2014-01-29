@@ -3,5 +3,6 @@
 
 <library name="CMGToolsRootToolsPlugins" file="*.cc">
   <use name="CMGTools/RootTools"/>
+  <use name="AnalysisDataFormats/CMGTools"/>
   <flags   EDM_PLUGIN="1"/>
 </library>

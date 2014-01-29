@@ -233,6 +233,14 @@
   <class name="edm::Wrapper<cmg::TriggerObject>"/>
   <class name="edm::Wrapper<std::vector<cmg::TriggerObject> >"/>
 
+  <class name="cmg::TriggerPrescaleList">
+    <field name="triggerNames_" transient="true" />
+  </class>
+  <ioread sourceClass="cmg::TriggerPrescaleList"  version="[1-]" targetClass="cmg::TriggerPrescaleList" source="" target="triggerNames_">
+    <![CDATA[triggerNames_ = 0; ]]>
+  </ioread>
+  <class name="edm::Wrapper<cmg::TriggerPrescaleList>"/>
+
   <!-- create dictionaries for the composite candidates from PFAnalysis -->
   <class name="PATMuPair"/>
   <class name="std::vector<PATMuPair>"/>
