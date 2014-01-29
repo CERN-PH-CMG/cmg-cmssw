@@ -73,9 +73,9 @@ class BaseDumper(Module):
         jets = Collection(ev,"Jet")
         self.jetsPtSorted = [ jets[i] for i in xrange(min(8,ev.nJet25)) ]
         self.jetsPtSorted.sort(key = lambda j : -j.pt)
-        jetsBad = Collection(ev,"JetFailId")
-        self.jetsBadPtSorted = [ jetsBad[i] for i in xrange(len(jetsBad)) if jetsBad[i].pt > 0 ]
-        self.jetsBadPtSorted.sort(key = lambda j : -j.pt)
+        #jetsBad = Collection(ev,"JetFailId")
+        #self.jetsBadPtSorted = [ jetsBad[i] for i in xrange(len(jetsBad)) if jetsBad[i].pt > 0 ]
+        #self.jetsBadPtSorted.sort(key = lambda j : -j.pt)
     def analyze(self,ev):
         self.makeVars(ev)
         if self.options.fmt: 
@@ -91,31 +91,31 @@ class BaseDumper(Module):
                 if self.options.moremc:
                     print "   mcDRB %4.2f" % (l.mcDeltaRB if l.mcMatchAny == 2 and l.mcDeltaRB < 99 else 9.99),
             if abs(l.pdgId) == 11:
-                print "   mvaId %5.3f misHit %d conVeto %d tightCh %d mvaIdTrig %5.3f relIso03 %5.3f  pf pt %.1f" % (l.mvaId, l.innerHits, l.convVeto, l.tightCharge, l.tightId, l.relIso03/(l.pfpt if l.pfpt else l.pt), l.pfpt)
+                print "   tightId %d mvaId %5.3f misHit %d conVeto %d tightCh %d mvaIdTrig %5.3f" % (l.tightId, l.mvaId, l.lostHits, l.convVeto, l.tightCharge, l.mvaIdTrig) #, l.relIso03/(l.pfpt if l.pfpt else l.pt), l.pfpt)
             else:
-                print "   tightId %d tkHit %2d tightCh %d" % (l.tightId, l.innerHits, l.tightCharge)
+                print "   tightId %d lostHits %2d tightCh %d" % (l.tightId, l.lostHits, l.tightCharge)
         if self.options.tau: 
             taus =  [g for g in Collection(ev,"Tau") if g.pt > 0 ]
             for i,l in enumerate(taus):
-                print "    tau    %d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f    RawIMVA %+.3f  CI WP %d IMVA WP %d  dxy %+4.3f dz %+4.3f " % (
-                        i+1, l.pdgId,l.pt,l.eta,l.phi, l.byRawIMVA, l.byCI, l.byIMVA, 10*l.dxy, 10*l.dz),
+                print "    tau    %d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f    rawIMVA2 %+.3f  CI3hit WP %d IMVA2 WP %d  dxy %+4.3f dz %+4.3f " % (
+                        i+1, l.pdgId,l.pt,l.eta,l.phi, l.isoMVA2, l.idCI3hit, l.idMVA2, 10*l.dxy, 10*l.dz),
                 if self.options.ismc:
                     print "   mcMatch %+3d" % l.mcMatchId
                 else:
                     print ""
         for i,j in enumerate(self.jetsPtSorted):
             if self.options.ismc:
-                print "    jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f mcMatch %2d mcFlavour %d/%d mcPt %5.1f" % (i, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)), j.mcMatchId, j.mcMatchFlav,j.mcFlavour, j.mcPt)
+                print "    jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f mcMatch %2d mcFlavour %d mcPt %5.1f" % (i, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)), j.mcMatchId, j.mcFlavour, j.mcPt)
             else:
                 print "    jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f" % (i+1, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)))
-        for i,j in enumerate(self.jetsBadPtSorted):
-            if self.options.ismc:
-                print "    bad jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f mcMatch %2d mcFlavour %d/%d mcPt %5.1f  jetId %1d puId %1d" % (i, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)), j.mcMatchId, j.mcMatchFlav,j.mcFlavour, j.mcPt, j.looseJetId, j.puJetId)
-            else:
-                print "    bad jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f  jetId %1d puId %1d" % (i+1, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)), j.looseJetId, j.puJetId)
+        #for i,j in enumerate(self.jetsBadPtSorted):
+        #    if self.options.ismc:
+        #        print "    bad jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f mcMatch %2d mcFlavour %d/%d mcPt %5.1f  jetId %1d puId %1d" % (i, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)), j.mcMatchId, j.mcMatchFlav,j.mcFlavour, j.mcPt, j.looseJetId, j.puJetId)
+        #    else:
+        #        print "    bad jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f  jetId %1d puId %1d" % (i+1, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)), j.looseJetId, j.puJetId)
         
  
-        print "    met %6.2f (phi %+4.2f)     mht %6.2f (%6.2f w/ jet30)   met nopu  %6.2f (phi %+4.2f)" % (ev.met, ev.met_phi, ev.mhtJet25, ev.mhtJet30, ev.metNoPU, ev.metNoPU_phi)
+        print "    met %6.2f (phi %+4.2f)     mht %6.2f" % (ev.met_pt, ev.met_phi, ev.mhtJet25)
         if self.options.ismc:
             print "    vertices %d    pu weight %5.2f" % (ev.nVert, ev.puWeight)
         else:
@@ -159,8 +159,9 @@ elif options.cut:
     cut = options.cut
  
 file = ROOT.TFile.Open(args[0])
-treename = "ttHLepTreeProducerBase"
+treename = "ttHLepTreeProducerTTH"
 tree = file.Get(treename)
+tree.vectorTree = True
 el = EventLoop([BaseDumper("dump", options)])
 el.loop(tree,options.maxEvents,cut=cut)
 

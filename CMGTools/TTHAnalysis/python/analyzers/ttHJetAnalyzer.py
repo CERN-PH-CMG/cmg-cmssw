@@ -4,7 +4,7 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
 from CMGTools.RootTools.utils.DeltaR import deltaR2, matchObjectCollection
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.TTHAnalysis.jetReCalibrator import JetReCalibrator
+from CMGTools.RootTools.physicsobjects.JetReCalibrator import JetReCalibrator
 
 def cleanNearestJetOnly(jets,leptons,deltaR):
     dr2 = deltaR**2
