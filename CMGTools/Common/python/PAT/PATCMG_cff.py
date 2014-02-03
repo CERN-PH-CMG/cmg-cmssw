@@ -11,12 +11,11 @@ from CMGTools.Common.analysis_cff import *
 
 
 # SERVICES         ---------------------------
-RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
-        sourceSeed = cms.untracked.uint32(414000),
-        moduleSeeds = cms.PSet(
-            patElectronsWithCalibrations = cms.untracked.uint32(1041963),
-            )
-        )
+process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+    patElectronsWithCalibrations = cms.PSet(
+        initialSeed = cms.untracked.uint32( 1041963)
+    )
+)
 
 # GEN              ---------------------------
 
