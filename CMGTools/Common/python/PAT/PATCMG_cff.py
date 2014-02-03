@@ -10,6 +10,13 @@ from CMGTools.Common.analysis_cff import *
 # FIXME : adapt pile-up jet id to 44X
 
 
+# SERVICES         ---------------------------
+process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+    patElectronsWithCalibrations = cms.PSet(
+        initialSeed = cms.untracked.uint32( 1041963)
+    )
+)
+
 # GEN              ---------------------------
 
 from CMGTools.Common.PAT.PATGenJet_cff import * 
@@ -37,9 +44,6 @@ PATCMGTriggerSequence = cms.Sequence(
 from CMGTools.Common.PFVertexProducer_cfi import particleFlow
 PATCMGVertexSequence = cms.Sequence ( particleFlow )
 
-from RecoParticleFlow.PFProducer.pfLinker_cff import particleFlowPtrs
-
-PATCMGPFPtrSequence = cms.Sequence( particleFlowPtrs )
 
 # PU SUB AND PARTICLES FOR ISO ---------------
 
@@ -50,8 +54,7 @@ from CommonTools.ParticleFlow.pfParticleSelection_cff import *
 pfPileUp.checkClosestZVertex = False
 pfPileUp.Vertices = 'goodOfflinePrimaryVertices'
 pfPileUp.PFCandidates = 'particleFlow'
-# pfNoPileUp.bottomCollection = 'particleFlow'
-pfNoPileUp.bottomCollection = 'particleFlowPtrs'
+pfNoPileUp.bottomCollection = 'particleFlow'
 
 from CommonTools.ParticleFlow.goodOfflinePrimaryVertices_cfi import goodOfflinePrimaryVertices
 pfNoPileUpSequence.insert(0, goodOfflinePrimaryVertices)
@@ -64,7 +67,7 @@ PATCMGPileUpSubtractionSequence = cms.Sequence(
 # RHO's            ----------------------------
 
 from CMGTools.Common.PAT.rho_cff import *
-PATCMGRhoSequence = cms.Sequence(rhoSequence)
+PATCMGRhoSequence = rhoSequence
 
 
 # MUONS           ----------------------------
@@ -205,6 +208,7 @@ PATCMGCandidatesSequence = cms.Sequence(
     cmgCandidates
     )
 
+from CMGTools.Common.miscProducers.slimmedPrimaryVertices_cfi import slimmedPrimaryVertices
 ####  FULL SEQUENCE  ####
 
 # NOTE: object sequences are defined so that they can be easily removed from the path
@@ -213,7 +217,6 @@ PATCMGCandidatesSequence = cms.Sequence(
 PATCMGSequence = cms.Sequence(
     PATCMGGenSequence +
     PATCMGTriggerSequence +
-    PATCMGPFPtrSequence +
     PATCMGVertexSequence +
     PATCMGPileUpSubtractionSequence +
     PATCMGRhoSequence +
@@ -225,7 +228,8 @@ PATCMGSequence = cms.Sequence(
     PATCMGMetSequence +
     MetSignificanceSequence +
     PATCMGMetRegressionSequence +
-    PATCMGCandidatesSequence
+    PATCMGCandidatesSequence +
+    slimmedPrimaryVertices
     )
 
 #if isNewerThan('CMSSW_5_2_0'):
