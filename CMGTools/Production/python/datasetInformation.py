@@ -398,17 +398,22 @@ class DatasetInformation(object):
         #Sets tags and release
         #Get the release from the first line of showtags
         self.dataset_details['Release']=lines[0].split(":")[1].lstrip().rstrip()
-        # FIXME: get also the branch and store it somewhere
-        #tagPattern = re.compile('^\s*(\S+)\s+(\S+)\s*$')
-        #tags = []
-        #for line in lines:
-        #    m = tagPattern.match(line)
-        #    if m != None:
-        #        package = m.group(2)
-        #        tag = m.group(1)
-        #        if tag is not "NoCVS" and tag is not "NoTag":
-        #            tags.append({"package":package,"tag":tag})
-        #self.dataset_details['Tags'] = tags
+        
+        branchPattern = re.compile(r'^##\s+([A-Za-z0-9_-]+)(\.\.\.(\S+)(\s+\[\w+\s+\d+\])?)?\s*$')
+        tagPattern = re.compile(r'^(\S{40}) \d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d .\d\d\d\d (.*)$')
+        tags = []
+        for line in lines:
+            m = tagPattern.match(line)
+            if m != None:
+                package = m.group(2)[:399]
+                tag = m.group(1)
+                tags.append({"package":package,"tag":tag})
+            m = branchPattern.match(line)
+            if m != None:
+                tags.append({"package":m.group(1),                  "tag":"BRANCH"})
+                tags.append({"package":m.group(2).replace("...",""),"tag":"TRACKING"})
+            if len(tags) >= 32: break
+        self.dataset_details['Tags'] = tags
 
     def buildJobsReport(self):                                                                            
         """Stage the logger_jobs.txt file in Logger.tgz 
