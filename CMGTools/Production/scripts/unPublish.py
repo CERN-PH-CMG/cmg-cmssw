@@ -7,7 +7,6 @@ import os, getpass, sys, re, optparse
 from DBSAPI.dbsProcessedDataset import DbsProcessedDataset
 from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
 from datetime import *
-from CMGTools.Production.findDSOnSav import validLogin
 from CMGTools.Production.unPublish import unPublish
 from optparse import *
 
@@ -43,14 +42,6 @@ unPublish.py -F cbern /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-P
                       help="""Specify the username to access both the DBS and savannah servers. 
 Default is $USER.""",
                       default=os.environ['USER'] )
-    # If specified is used as password to DBS and savannah 
-    # If ommited the secure password prompt will appear
-    genGroup.add_option("-p", "--password",
-                      action = "store",
-                      dest="password",
-                      help="""Specify the password to access both the DBS and savannah servers.
-If not entered, secure password prompt will appear.""",
-                      default=None )
 
     # If user wants to add multiple datasets from file
     group.add_option("-M", "--multi",
@@ -63,7 +54,7 @@ If not entered, secure password prompt will appear.""",
 							E.g.
 							/MuHad/Run2011A-05Aug2011-v1/AOD/V2 cmgtools""",
                       default = False)
-    # If ommited the secure password prompt will appear
+
     genGroup.add_option("-d", "--dev",
                       action = "store_true",
                       dest="development",
@@ -80,19 +71,6 @@ If not entered, secure password prompt will appear.""",
         parser.print_help()
         sys.exit(1)
         
-    if options.password == None:
-        try:
-    	    password = getpass.getpass("Enter NICE Password: ")
-    	except KeyboardInterrupt:
-    	    print "Authentication Failed, exiting\n\n"
-    	    sys.exit(1)
-    	options.password = password
-    if not validLogin(options.username, password):
-    	print "Authentication Failed, exiting\n\n"
-    	sys.exit(1)
-    
-    
-    
     # For multiple file input
     if options.multi:
         file = open(args[0], 'r')
@@ -129,11 +107,11 @@ If not entered, secure password prompt will appear.""",
                 		fileown = options.fileown
                 	
                 dataset.rstrip("/")
-                unPublish(dataset,fileown,options.username,password,options.development)
+                unPublish(dataset,fileown,options.username,options.development)
             except NameError as err:
                 print err.args, "\nDataset not published"
     # For singular file input
     else:
         dataset = args[0].rstrip("/")
-        unPublish(dataset,options.fileown,options.username,password,options.development)
+        unPublish(dataset,options.fileown,options.username,options.development)
 

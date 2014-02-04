@@ -4,158 +4,28 @@
 ## September 27th 2011
 
 from CMGTools.Production.cmgdbToolsApi import CmgdbToolsApi
-from CMGTools.Production.savannahFormatter import SavannahFormatter
 from datetime import *
-import CMGTools.Production.findDSOnSav as findDSOnSav
 import sys, re
 
 
 class PublishController(object):
-    """This class controls the interactions between a user and the two
-    publishing platforms, Savannah and CMGDB"""
-    def __init__(self, username, password, development=False):
-        """Initialise CMGDB and set username and password
+    """This class controls the interactions between a user and the CMGDB
+    publishing platform"""
+    def __init__(self, username, development=False):
+        """Initialise CMGDB and set username of who is publishing
 
-        'username' takes the NICE username of the current user,
-        NOT the files owner on EOS
-        'password' takes the NICE password of the current user
         'force' takes a boolean value which determines whether
         a lack of log file can be ignored
         """
         self.development = development
+        self._username = username
         self._cmgdbAPI=CmgdbToolsApi(self.development)
         self._cmgdbAPI.connect()
-        self._username = username
-        self._password = password
 
     def cmgdbOnline(self):
         """Returns True if CMGDB is online and working"""
         if self._cmgdbAPI is not None: return True
         else: return False
-
-    def loginValid(self):
-        """Returns true, if the login values provided
-        by the user were a valid CMG NICE login"""
-        return findDSOnSav.validLogin(self._username,
-                                      self._password)
-
-    def savannahPublish(self, datasetDetails):
-        """Publish dataset details to savannah and return task ID
-
-        'datasetDetails' takes a dict object which contains all
-        of the datasets details.
-        This object is strictly definied.
-
-        The function sends the dataset information to a
-        SavannahFormatter SavannahFormatter object,
-        in the order of appearance in Savannah
-        """
-
-        # Initialise SavannahFormatter object and add the main attributes
-        self.savannah = SavannahFormatter(self._username,
-                                          self._password,
-                                          datasetDetails['TaskID'],
-                                          datasetDetails['SavannahOptions'])
-
-        #Append all the elements of the integrity check to the savannah output.
-        if datasetDetails['CMGDBName']is not None:
-            self.savannah.appendField("*CMGDB Name:* "+datasetDetails['CMGDBName'])
-        if datasetDetails['SampleName']is not None:
-            self.savannah.appendField("*Sample Name:* "+datasetDetails['SampleName'])
-        if datasetDetails['LFN']is not None:
-            self.savannah.appendField("*LFN:* "+datasetDetails['LFN'])
-        if datasetDetails['EOSPath']is not None:
-            self.savannah.appendField("*EOS Path:* "+datasetDetails['EOSPath'])
-        if datasetDetails['Comment']is not None:
-            self.savannah.appendField("*User Comment:* "+datasetDetails['Comment'])
-        if datasetDetails['ParentSavannahString']is not None:
-            self.savannah.appendField("*Parent:* "+datasetDetails['ParentSavannahString'])
-        elif datasetDetails['ParentSampleName'] is not None:
-            self.savannah.appendField("*Parent:* "+datasetDetails['ParentSampleName'])
-        if datasetDetails['DateCreated']is not None:
-            self.savannah.appendField("*Date Created:* "+date.fromtimestamp(int(datasetDetails['DateCreated'])).strftime('%d-%m-%Y'))
-        if datasetDetails['PhysicsGroup'] is not None:
-            self.savannah.appendField("*Physics Group:* "+datasetDetails['PhysicsGroup'])
-        if datasetDetails['PrimaryDataset'] is not None:
-            self.savannah.appendField("*Primary Dataset:* "+datasetDetails['PrimaryDataset'])
-        if datasetDetails['TierList'] is not None:
-            tiers = ""
-            for i in datasetDetails['TierList']:
-                tiers += "\t"+i+"\n"
-                self.savannah.appendField("*Tier List:* "+ tiers)
-        if datasetDetails["Status"] is not None:
-            self.savannah.appendField("*Status:* "+ datasetDetails["Status"])
-        if datasetDetails['FileOwner'] is not None:
-            self.savannah.appendField("*Created By:* "+ datasetDetails["FileOwner"])
-        if datasetDetails['Tags'] is not None:
-            detailString = ""
-            for row in datasetDetails['Tags']:
-                tag = row['tag']
-                package = row['package']
-                detailString +="_"+tag+"_ - "+package +"\n"
-            if detailString is not "":
-                self.savannah.appendField("\n*Tags:*\n"+detailString)
-
-        if datasetDetails['TotalJobs'] is not None:
-            self.savannah.appendField("*Total Jobs:* "+str(datasetDetails['TotalJobs']))
-        if datasetDetails['TotalFilesMissing'] is not None:
-            self.savannah.appendField("*Total Missing Files:* "+str(datasetDetails['TotalFilesMissing']))
-        if datasetDetails['TotalFilesGood'] is not None:
-            self.savannah.appendField("*Total Good Files:* "+str(datasetDetails['TotalFilesGood']))
-        if datasetDetails['TotalFilesBad'] is not None:
-            self.savannah.appendField("*Total Bad Files:* "+str(datasetDetails['TotalFilesBad']))
-        if datasetDetails['PrimaryDatasetEntries'] is not None:
-            self.savannah.appendField("*Primary Dataset Entries:* "+str(datasetDetails['PrimaryDatasetEntries']))
-        if datasetDetails['FileEntries'] is not None:
-            self.savannah.appendField("*Total entries in directory:* "+str(datasetDetails['FileEntries']))
-        if datasetDetails['DirectorySizeInTB'] is not None:
-            self.savannah.appendField("*Directory Size:* "+str(datasetDetails['DirectorySizeInTB'])+" TB")
-        if datasetDetails['BadJobs'] is not None:
-            jobs = "*Bad Jobs:* "
-            for job in datasetDetails['BadJobs']:
-                jobs += str(job)+", "
-            self.savannah.appendField(jobs)
-
-        if datasetDetails['FileGroups'] is not None:
-            for group_name in datasetDetails['FileGroups']:
-                self.savannah.appendField("*-----File Group:* "+group_name+"-----")
-                if datasetDetails['FileGroups'][group_name]["SizeInTB"] is not None:
-                    self.savannah.appendField("*Dataset Size:* "+str(datasetDetails['FileGroups'][group_name]["SizeInTB"]))
-                if datasetDetails['FileGroups'][group_name]["PrimaryDatasetFraction"] is not None:
-                    self.savannah.appendField("*Primary Dataset Fraction used:* "+str(datasetDetails['FileGroups'][group_name]["PrimaryDatasetFraction"]))
-                if datasetDetails['FileGroups'][group_name]["FileEntries"] is not None:
-                    self.savannah.appendField("*File Entries:* "+str(datasetDetails['FileGroups'][group_name]["FileEntries"]))
-                if datasetDetails['FileGroups'][group_name]['NumberMissingFiles'] is not None:
-                    self.savannah.appendField("*Total Good Files:* "+str(datasetDetails['TotalFilesGood']))
-                if datasetDetails['FileGroups'][group_name]['NumberBadFiles'] is not None:
-                    self.savannah.appendField("*Total Bad Files:* "+str(datasetDetails['TotalFilesBad']))
-
-                if datasetDetails['FileGroups'][group_name]["MissingFiles"] is not None:
-                    missingFiles ="*Missing Files:*\n"
-                    for missingFile in datasetDetails['FileGroups'][group_name]["MissingFiles"]:
-                        missingFiles+="* "+ missingFile+"\n"
-                    self.savannah.appendField(missingFiles)
-
-                if datasetDetails['FileGroups'][group_name]["BadFiles"] is not None:
-                    badFiles ="*Bad Files:*\n"
-                    for badFile in datasetDetails['FileGroups'][group_name]["BadFiles"]:
-                        badFiles+="* "+ badFile+"\n"
-                    self.savannah.appendField(badFiles)
-
-
-            # Publish to Savannah
-        newTask = self.savannah.publish()
-        if newTask is None:
-            print "Unable to publish Dataset to Savannah, an error occured"
-            return None, datasetDetails['ParentTaskID']
-        elif newTask is datasetDetails['TaskID']:
-            print "Comment added to Savannah"
-            print "URL: https://savannah.cern.ch/task/?"+newTask
-        else:
-            print "Dataset published to Savannah"
-            print "URL: https://savannah.cern.ch/task/?"+newTask
-            datasetDetails['TaskID']=newTask
-        return datasetDetails['TaskID'], datasetDetails['ParentTaskID']
 
     def cmgdbPublish(self, datasetDetails):
         """Publish dataset information to CMGDB, and return unique CMGDB dataset ID
@@ -255,11 +125,6 @@ class PublishController(object):
         if datasetDetails["DirectorySizeInTB"] is not None:
             self._cmgdbAPI.addDirectorySize(datasetDetails['CMGDBID'],
                                             datasetDetails["DirectorySizeInTB"])
-
-        # Add task id
-        self._cmgdbAPI.addTaskID(datasetDetails['CMGDBID'],
-                                 datasetDetails['TaskID'],
-                                 datasetDetails['Test'])
 
         # Add tags to CMGDB
         if datasetDetails['Tags'] is None or len(datasetDetails['Tags']) is 0:

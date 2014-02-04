@@ -191,10 +191,6 @@ class DBLogger:
         #if procs == 0 and dbsID != None:
             #self.dbAPI.addSetDetails(self.setName, dbsID)
 
-    #### not in use yet
-    #def addSavannah(self, dataset, savannah):
-        #self.dbAPI.addSavannahURL(dataset, savannah)
-
     # Checks contiguity of root files
     def checkRootType(self, name):
         suffix = []

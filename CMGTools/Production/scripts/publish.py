@@ -5,7 +5,6 @@
 
 import os, getpass, sys, re, optparse, copy
 from datetime import *
-from CMGTools.Production.findDSOnSav import validLogin
 from CMGTools.Production.nameOps import *
 from CMGTools.Production.publish import publish
 from CMGTools.Production.publishTask import PublishTask
@@ -57,7 +56,7 @@ if __name__ == '__main__':
 	parser.usage = """
 	%prog [options] <sampleName>
 		
-	Use this script to publish dataset details to CmgDB and savannah.
+	Use this script to publish dataset details to CmgDB.
 	Example:
 	publish.py -F cbern /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0_Test_v2
 	"""
@@ -69,21 +68,21 @@ if __name__ == '__main__':
 	group.add_option("--max-run", dest="max_run", default=-1, type=int, help='When querying DBS, require runs <= than this run')
 
 
-	# If specified is used to log in to savannah (only required if user that created the dataset,
+	# If specified is used to log in to DBS (only required if user that created the dataset,
 	# is different to user publishing it)
 	genGroup.add_option("-u", "--username",
 						action = "store",
 						dest="username",
-						help="""Specify the username to access both the DBS and savannah servers. 
+						help="""Specify the username to access the DBS servers. 
 						Default is $USER.""",
 						default=os.environ['USER'] )
-	# If specified is used as password to DBS and savannah 
+	# If specified is used as password to DBS
 	# If ommited the secure password prompt will appear
 	genGroup.add_option("-p", "--password",
 						action = "store",
 						dest="password",
-						help="""Specify the password to access both the DBS and savannah servers.
-	If not entered, secure password prompt will appear.""",
+						help="""Specify the password to access the DBS servers.
+	                                        If not entered, secure password prompt will appear.""",
 	                  default=None )
     
     	genGroup.add_option("-d", "--dev",
@@ -113,12 +112,12 @@ if __name__ == '__main__':
 		parser.print_help()
 		sys.exit(1)
 	
-	if options.password is None:
-		options.password = PublishTask.getPassword(options.username)
-	if options.password is None:
-		print "fail"
-		print "Authentication Failed, exiting\n\n"
-		sys.exit(1)
+	#if options.password is None:
+	#	options.password = PublishTask.getPassword(options.username)
+	#if options.password is None:
+        #	print "fail"
+	#	print "Authentication Failed, exiting\n\n"
+	#	sys.exit(1)
 		
 	
 	# For multiple file input

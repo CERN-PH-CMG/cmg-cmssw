@@ -19,7 +19,6 @@ import datetime
 from CMGTools.Production.edmIntegrityCheck import PublishToFileSystem
 from CMGTools.Production.edmIntegrityCheck import IntegrityCheck
 from CMGTools.Production.cmgdbToolsApi import CmgdbToolsApi
-from CMGTools.Production.findDSOnSav import *
 from CMGTools.Production.nameOps import *
 from CMGTools.Production.dataset import *
 from datetime import *
@@ -97,7 +96,7 @@ class DatasetInformation(object):
     dataset that are stored on disk"""
 
     def __init__(self, sampleName, fileOwner, comment, force, test, 
-                 primary, username, password, development=False):
+                 primary, development=False):
         """Initialises attributes of object, and validates existence of dataset
         'sampleName' takes the name of the dataset \
         e.g. /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/
@@ -106,9 +105,6 @@ class DatasetInformation(object):
         'force' takes True/False on whether the dataset should
         be considered valid if there is no logger file found
         'test' takes True/False on whether the sample is a test or not
-        'username' takes the username of the person submitting 
-        the sample
-        'password' takes that users password
         'development' takes True/False depending on whether 
         wants to publish on the official or the devdb11 database"""
 
@@ -117,8 +113,6 @@ class DatasetInformation(object):
         self._reportBuilt = False
         self._force = force
         self._primary = primary
-        self._username = username
-        self._password = password
         self._logger_file = None
         self._logger_tar_object = None
         self.development = development
@@ -144,7 +138,6 @@ class DatasetInformation(object):
                                 "CMGDBID":None,
                                 "ParentCMGDBID":None,
                                 "Test":test,
-                                "ParentSavannahString":None,
                                 "BadJobs":None,
                                 "FileEntries":None,
                                 "TotalJobs":None,
@@ -155,7 +148,6 @@ class DatasetInformation(object):
                                 "PrimaryDatasetEntries":None,
                                 "TotalFileEntries":None,
                                 "DirectorySizeInTB":None,
-                                "SavannahOptions":dict()
                                 }
         # Check if directory is valid
         self.checkDatasetDirectoryExists(sampleName, fileOwner)
@@ -337,8 +329,6 @@ class DatasetInformation(object):
 
     def buildAllReports(self):
         """Builds all of the optional reports in the class"""
-        # Get available info from Savannah
-        self.buildSavannahReport()
         # Get available info from CMGDB
         self.buildCMGDBReport()
         # Collect data from Logger file
@@ -390,81 +380,6 @@ class DatasetInformation(object):
         self.dataset_details['DateCreated']=dateCreated
         self.dataset_details['Status']="VALID"
 
-    def buildSavannahReport(self):
-        """Access Savannah and get all 
-        information relating to the dataset"""
-        
-        dtCreated = int(self.dataset_details['DateCreated'])
-        dt = date.fromtimestamp(dtCreated)
-        dayMonthYear = dt.strftime('%d-%B-%Y').split("-")
-
-        d=dayMonthYear[0].lstrip("0")
-        m=dayMonthYear[1]
-        y=dayMonthYear[2]
-
-        self.dataset_details['SavannahOptions']['planned_starting_date_dayfd']=d
-        self.dataset_details['SavannahOptions']['planned_starting_date_monthfd']=m
-        self.dataset_details['SavannahOptions']['planned_starting_date_yearfd']=y
-
-        # Create test category MAY BE REMOVED IF TEST NOT REQUIRED
-        if self.dataset_details['Test']:
-            category_id = '101'
-        else:
-            category_id = '103'
-
-        # More savannah opts
-        fowner=self.dataset_details['FileOwner']
-        cmgdbname=self.dataset_details['CMGDBName']
-        self.dataset_details['SavannahOptions']['assigned_to']=fowner
-        self.dataset_details['SavannahOptions']['summary']=cmgdbname
-        self.dataset_details['TaskID']=getTaskID(cmgdbname, 
-                                                 category_id, 
-                                                 self._username, 
-                                                 self._password, 
-                                                 False)
-
-        # If task already exists you NO NOT WANT TO CHANGE THE CATEGORY 
-        # so only add this field if it is a new DS
-        if self.dataset_details['TaskID'] is None: 
-            self.dataset_details['SavannahOptions']['category_id']=category_id
-
-        # If dataset is primary
-        if self._primary:
-            print "NOTE: Dataset is a primary dataset"
-            return None
-
-        # Check if parent exists
-        pcmgdbname = self.dataset_details['ParentCMGDBName']
-        self.dataset_details['ParentTaskID']=getTaskID(pcmgdbname, 
-                                                       category_id, 
-                                                       self._username, 
-                                                       self._password, 
-                                                       True)
-        ptid = self.dataset_details['ParentTaskID']     
-        if ptid is not None and len(ptid) > 0:
-            if len(ptid)>1:
-                cmgdbname = self.dataset_details['CMGDBName']
-                raise NameError("Multiple possible parents found for dataset: "\
-                                +cmgdbname+". Please find the duplicate and remove it" )
-
-            self.dataset_details['ParentSavannahString']="[https://savannah.cern.ch/task/?"+str(ptid[0])+" "+getNameWithID(ptid[0])+"]"
-            self.dataset_details['ParentTaskID'] = ptid[0]
-            self.dataset_details['ParentCMGDBName'] = getNameWithID(ptid[0])
-
-        # If Parent is a CMS dataset (i.e. not a CMG dataset)
-        elif not re.search("--", pcmgdbname):
-
-            self.dataset_details['ParentSavannahString']="[https://cmsweb.cern.ch/das/request?view=list&limit=10&instance=cms_dbs_prod_global&input=dataset%3D%2F"\
-                +pcmgdbname.lstrip("/").split("/")[0]+"%2F"+pcmgdbname.lstrip("/").split("/")[1]\
-                +"%2F"+pcmgdbname.lstrip("/").split("/")[2]+" "+pcmgdbname+"]"
-            self.dataset_details['ParentTaskID'] = None
-
-        else:
-            raise NameError("No Parent was found for Dataset: "+\
-                            cmgdbname+\
-                            " not publishing.",
-                            self.dataset_details['TaskID'])
-
     def buildShowtagsReport(self):
         """Stage the logger_showtags.txt file in Logger.tgz 
         and get a list of tags and the CMSSW version"""
@@ -480,9 +395,12 @@ class DatasetInformation(object):
         except:
             print "ERROR: No showtags file found in logger"
             return None
+        if len(lines) == 0 or ":" not in lines[0]: ## FIXME
+            self.dataset_details['Release']="CMSSW_UN_KNO_WN"
+        else:
+            self.dataset_details['Release']=lines[0].split(":")[1].lstrip().rstrip()
         #Sets tags and release
         #Get the release from the first line of showtags
-        self.dataset_details['Release']=lines[0].split(":")[1].lstrip().rstrip()
         tagPattern = re.compile('^\s*(\S+)\s+(\S+)\s*$')
         tags = []
 
@@ -669,11 +587,10 @@ if __name__ == '__main__':
     dataset = sys.argv[1]
     owner = sys.argv[2]
     user = os.environ['USER']
-    pw = getpass.getpass()
 
     #sampleName,fileOwner,comment, test, primary, username, password
     d = DatasetInformation(dataset, owner, 'This is a test', 
-                           True, False, user, pw)
+                           True, False)
     d.buildMissingFileReport()
     d.buildFileEntriesReport()
 
