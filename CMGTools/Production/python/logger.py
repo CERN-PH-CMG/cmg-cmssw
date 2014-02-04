@@ -9,7 +9,6 @@ class logger:
         
         self.dirLocal = None
         self.tgzDirOnCastor = None
-        self.tagPackage = True
         dirLocalOrTgzDirOnCastor = dirLocalOrTgzDirOnCastor.rstrip('/')
 
         if self.isDirLocal( dirLocalOrTgzDirOnCastor ):
@@ -56,12 +55,11 @@ class logger:
             os.system( 'cp %s %s' % (file, self.dirLocal) )
 
     def logCMSSW(self): 
-        self.logPackages()
         showtagsLog = 'logger_showtags.txt'
         diffLog = 'logger_diff.txt'
         # os.system('showtags > ' + showtagsLog)
         self.showtags(showtagsLog)
-        self.cvsdiff(diffLog)
+        self.gitdiff(diffLog)
         self.addFile(showtagsLog)
         self.addFile(diffLog) 
 
@@ -72,65 +70,10 @@ class logger:
         out.close()
         self.addFile(nJobs)
 
-    def logPackages(self):
-        # Records the working directory of the samples
-        oldPwd = os.getcwd()
-        # Changes the directory to the CMSSW base directory
-        os.chdir( os.getenv('CMSSW_BASE') + '/src/' )
-        # Opens file for recording 'showtags' and reads contents into $output
-        output = subprocess.Popen( 'showtags', stdout=subprocess.PIPE).communicate()[0]
-        # Gets current datetime
-        d = datetime.datetime.today()
-        # Creates tag name??? here i'm lost
-        tag = 'logger_' + os.getenv('USER') + '_' + d.strftime("%d%h%y-%Hh%Mm%Ss")
-        # Creates regexp to test incoming lines from 'showtags'
-        tagPattern = re.compile('^\s*(\S+)\s+(\S+)\s*$')
-        # For every line in showtags...
-        for line in output.split('\n'):
-            # Check if it is a tag
-            m = tagPattern.match(line)
-            # if line is a tag...
-            if m!=None:
-                # get package name
-                package = m.group(2)
-                # get tag name
-                curtag = m.group(1)
-                # updates package on CVS
-                self.logPackage( package, curtag, tag)
-        os.chdir( oldPwd )
-        
-    def logPackage(self, package, curtag, tag ):
-        print 'logging package', package
-        if curtag == 'NoTag':
-            print 'package has not been tagged'
-            if self.tagPackage==True:
-                self.cvstag( tag, package )
-                self.cvsupdate( tag, package )
-            else:
-                print 'No tagging requested'
-
-    def cvstag(self, tag, package):
+    def gitdiff(self, log):
         oldPwd = os.getcwd()
         os.chdir( os.getenv('CMSSW_BASE') + '/src/' )
-        # os.system( 'cvs tag ' + package )
-        # print os.getcwd()
-        tagCmd = 'cvs tag ' + tag + ' ' + package
-        print tagCmd
-        tag = subprocess.Popen( tagCmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE ).communicate()
-        os.chdir( oldPwd )
-
-    def cvsupdate(self, tag, package):
-        oldPwd = os.getcwd()
-        os.chdir( os.getenv('CMSSW_BASE') + '/src/' )
-        upCmd = 'cvs up -r ' + tag + ' ' + package
-        print upCmd
-        update = subprocess.Popen( upCmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE ).communicate()
-        os.chdir( oldPwd )
-       
-    def cvsdiff(self, log):
-        oldPwd = os.getcwd()
-        os.chdir( os.getenv('CMSSW_BASE') + '/src/' )
-        diffCmd = 'cvs diff > %s/%s 2> /dev/null' % (oldPwd, log)
+        diffCmd = 'git diff -p --stat --color=never > %s/%s 2> /dev/null' % (oldPwd, log)
         print diffCmd
         os.system( diffCmd )
         os.chdir( oldPwd )
@@ -138,8 +81,15 @@ class logger:
     def showtags(self, log):
         oldPwd = os.getcwd()
         os.chdir( os.getenv('CMSSW_BASE') + '/src/' )
-        cmd = 'showtags > %s/%s 2> /dev/null' % (oldPwd, log)
-        print cmd
+        cmd = 'echo "Test Release based on: $CMSSW_VERSION" >  %s/%s 2> /dev/null' % (oldPwd, log)
+        os.system( cmd )
+        cmd = 'echo "Base Release in: $CMSSW_RELEASE_BASE"  >> %s/%s 2> /dev/null' % (oldPwd, log)
+        os.system( cmd )
+        cmd = 'echo "Your Test release in: $CMSSW_BASE"     >> %s/%s 2> /dev/null' % (oldPwd, log)
+        os.system( cmd )
+        cmd = 'git status --porcelain -b | head -n 1 >> %s/%s 2> /dev/null' % (oldPwd, log)
+        os.system( cmd )
+        cmd = 'git log -n 100 --format="%%T %%ai %%s %%d" >> %s/%s 2> /dev/null' % (oldPwd, log)
         os.system( cmd )
         os.chdir( oldPwd )        
 

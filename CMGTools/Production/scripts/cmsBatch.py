@@ -345,10 +345,7 @@ os.chdir(batchManager.outputDir_)
 logDir = 'Logger'
 os.system( 'mkdir ' + logDir )
 log = logger( logDir )
-if doCVSTag==False:
-   print 'cmsBatch2L2Q will NOT tag CVS'
 
-log.tagPackage=doCVSTag
 log.logCMSSW()
 log.logJobs(nJobs)
 #COLIN not so elegant... but tar is behaving in a strange way.
