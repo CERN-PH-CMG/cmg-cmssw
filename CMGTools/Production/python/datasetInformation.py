@@ -554,72 +554,11 @@ class DatasetInformation(object):
                 file_list=self.dataset_details['FileGroups'][fg]['Files']
                 isCrab=self.dataset_details['FileGroups'][fg]['IsCrab']
 
-                os.chdir(os.environ['CMSSW_BASE'] + '/src/CMGTools/Production')
-                p = subprocess.Popen(['cvs','status','-v','scripts/cmsBatch.py'], 
-                                     stdout=subprocess.PIPE, 
-                                     stderr=subprocess.STDOUT)
-
-                #pattern matches       cbern_workflow_16Nov11           (revision: 1.6)
-                #and                   abis_cmgtools                    (branch: 1.6.2)
-                pattern = "\t(.*?)\s*?\t\((revision:|branch:) (.*?)\)"
-                regex = re.compile(pattern)
-                try:
-                    #create a list with lines of format abis_cmgtools   (branch: 1.6.2) after splitting the output
-                    revision_info=[item for item in p.communicate()[0].split("Existing Tags:")[1].split('\n') if item != '' ]
-                except:
-                    raise IOError("ERROR: Unexpected output\
-                    from 'cvs status scripts/cmsBatch'")
-
-                tag_to_revision = dict()
-                for item in revision_info:
-                    try:
-                        result = regex.match(item).groups()
-                    except AttributeError:
-                        raise IOError( "ERROR: Unexpected output from \
-                        'cvs status scripts/cmsBatch' execution" )
-                    tag_to_revision[result[0]] = result[2]  
-
-                #get the revision corresponding to the dataset's tag
-                for item in self.dataset_details['Tags']:
-                    if item['package'] == "CMGTools/Production":
-                        if item['tag'] == 'HEAD':
-                            revision = '1.17'
-                        else:
-                            revision = tag_to_revision[item['tag']]
-                        break
-                if revision is None:
-                    raise IOError( "ERROR: Unexpected output from\
-                    'cvs status scripts/cmsBatch' execution - \
-                    couldn't match tag with an existing revision" )
-                else:
-                    revision = revision.split('.')
-
-                if (int(revision[0]) <= 1 and int( revision[1] ) <= 16):
-
-                    if (isCrab):
-                        start_index=1  
-                    else:
-                        start_index=0  
-                   
-                    for file_name in file_list:  
-                        numbers.append( getIndex(file_name) ) 
-                        if start_index == 0:
-                            #e.g 22 jobs: range(0,22) = 0...21
-                            end_index=self.dataset_details['FileGroups'][fg]['TotalJobs'] 
-                        else:
-                            #e.g 22 jobs: range(1,23) = 1...22
-                            end_index=self.dataset_details['FileGroups'][fg]['TotalJobs']+1 
-
-                    for number in range( start_index, end_index ):
-                        if number not in numbers:                            
-                            missing_files.append(createFileName(fg, number, isCrab))
-                #Changed since 12-12-2012: both cmsBatch and crabfiles have indexing from 1 to n
-                else:  
-                    for file_name in file_list:
-                        numbers.append( getIndex( file_name ) )  
-                    for number in range(1, self.dataset_details['FileGroups'][fg]['TotalJobs']+1):
-                        if number not in numbers: 
-                            missing_files.append(createFileName(fg,number,isCrab))
+                for file_name in file_list:
+                    numbers.append( getIndex( file_name ) )  
+                for number in range(1, self.dataset_details['FileGroups'][fg]['TotalJobs']+1):
+                    if number not in numbers: 
+                        missing_files.append(createFileName(fg,number,isCrab))
 
                 if len( missing_files ) > 0:                                    
                     self.dataset_details['FileGroups'][fg]['MissingFiles']=missing_files             
