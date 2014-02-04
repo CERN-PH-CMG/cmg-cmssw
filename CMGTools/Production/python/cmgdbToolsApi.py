@@ -489,6 +489,7 @@ class CmgdbToolsApi(CmgdbApi):
 		if not found return None
 		### TODO: Colin, is test boolean needed? Seems obsolete now, could be removed to simplify code
 		"""
+                raise RuntimeError, "getDatasetIDWithTaskID called with %s" % [ taskID, test ]
 		taskType = "task_id"
 		# Insert information into database
 		if test == True: taskType = "test_task_id"
@@ -507,6 +508,7 @@ class CmgdbToolsApi(CmgdbApi):
 		'test' takes a boolean value of whether the task is a test task or not
 		### TEST FIELD MAY BE SUBJECT TO REMOVAL
 		"""
+                raise RuntimeError, "addTaskID Called with %s" % [ datasetID, taskID, test ]
 		try:
 			taskType = "task_id"
 			writtenType = "Task ID"
@@ -571,6 +573,7 @@ class CmgdbToolsApi(CmgdbApi):
 		Returns unique Savannah task ID as an int
 		### TEST FIELD MAY BE SUBJECT TO REMOVAL
 		"""
+                raise RuntimeError, "getTaskID called with %s" % [ datasetID, test ]
 		try:
 			taskType = "task_id"
 			# Insert information into database

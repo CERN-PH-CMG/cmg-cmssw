@@ -4,14 +4,12 @@
 ## April 4th 2012
 
 #from CMGTools.Production.castorToDbsFormatter import CastorToDbsFormatter
-from CMGTools.Production.savannahBrowser import SavannahBrowser
 from CMGTools.Production.cmgdbToolsApi import CmgdbToolsApi
 import os, getpass, sys, re
 from CMGTools.Production.nameOps import *
-from CMGTools.Production.findDSOnSav import *
 from CMGTools.Production.dataset import *
 
-def unPublish( dsName, fileown, user, password, development=False ):
+def unPublish( dsName, fileown, user, development=False ):
     
     if re.search("---",dsName):
         fileown = getDbsUser(dsName)
@@ -31,9 +29,6 @@ def unPublish( dsName, fileown, user, password, development=False ):
     
     taskID = None
     loginClear = False
-    if not validLogin(user, password):
-        print "Authentication Failed, exiting\n\n"
-        sys.exit(1)
 
     dataset = None
     try:
@@ -51,20 +46,7 @@ def unPublish( dsName, fileown, user, password, development=False ):
 #if it does cancel the unpublishing
         	exit( -1 ) 
     	
-    print "\n------Savanah------\n"
-    	
-    try:
-        if taskID is None: taskID = getTaskID( cmgdbName, opts['category_id'], user, password, False)
-    except:
-        taskID = getTaskID( cmgdbName, '103', user, password, False)
-    if taskID is not None:
-        browser = SavannahBrowser( user, password, taskID )
-        browser.closeTask()
-        print "Task closed on Savannah"
-        print "URL: https://savannah.cern.ch/task/?"+taskID
-    else:
-        print "No task was found, no closing neccesary"
-    	 
+   	 
     print "\n-------CMGDB-------\n"
     ID = None    
     cmgdbAPI=CmgdbToolsApi(development)
