@@ -11,7 +11,7 @@ class PublishTask(Task):
 
     @staticmethod
     def addOptionStatic(parser):
-        # This option will be used to find dataset on castor, and assign dataset on savannah
+        # This option will be used to find dataset on castor, and assign dataset
         parser.add_option("-F", "--fileown", 
                          dest="fileown",
                          help="User who is the files owner on EOS." ,
@@ -23,12 +23,7 @@ class PublishTask(Task):
                          dest="test",
                          help="Flag task as a test",
                          default=False )
-        parser.add_option("--ns", "--nosavannah",
-                         action = "store_false",
-                         dest="savannah",
-                         help="Do not publish to savannah",
-                         default=True )
-        # If user wants to add their own comments
+       # If user wants to add their own comments
         parser.add_option("-C", "--comment",
                          action = "store",
                          dest="commented",
@@ -57,33 +52,14 @@ class PublishTask(Task):
     def addOption(self,parser):
         self.addOptionStatic(parser)
 
-    @staticmethod
-    def getPassword(username, retries = 3):
-        import getpass
-        from CMGTools.Production.findDSOnSav import validLogin
-        
-        password = None
-        for i in xrange(retries):
-            pw = getpass.getpass("Enter NICE Password [%d/%d] for user '%s': " % (i+1,retries,username) )
-            if validLogin(username, pw):
-                password = pw
-                break
-            else:
-                print >> sys.stderr, 'Password incorrect. %d retries left...' % (retries-(i+1))
-        return password
-
     def run(self, input):
         username = os.getlogin()
-        if self.password is None:
-            self.password = self.getPassword()
         return publish(self.dataset,
                        self.options.fileown,
                        self.options.commented,
                        self.options.test,
                        username,
-                       self.password,
                        self.options.force,
-                       self.options.savannah,
                        self.options.primary,
                        (self.options.min_run, self.options.max_run), 
                        self.development )
