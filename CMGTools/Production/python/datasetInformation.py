@@ -395,23 +395,20 @@ class DatasetInformation(object):
         except:
             print "ERROR: No showtags file found in logger"
             return None
-        if len(lines) == 0 or ":" not in lines[0]: ## FIXME
-            self.dataset_details['Release']="CMSSW_UN_KNO_WN"
-        else:
-            self.dataset_details['Release']=lines[0].split(":")[1].lstrip().rstrip()
         #Sets tags and release
         #Get the release from the first line of showtags
-        tagPattern = re.compile('^\s*(\S+)\s+(\S+)\s*$')
-        tags = []
-
-        for line in lines:
-            m = tagPattern.match(line)
-            if m != None:
-                package = m.group(2)
-                tag = m.group(1)
-                if tag is not "NoCVS" and tag is not "NoTag":
-                    tags.append({"package":package,"tag":tag})
-        self.dataset_details['Tags'] = tags
+        self.dataset_details['Release']=lines[0].split(":")[1].lstrip().rstrip()
+        # FIXME: get also the branch and store it somewhere
+        #tagPattern = re.compile('^\s*(\S+)\s+(\S+)\s*$')
+        #tags = []
+        #for line in lines:
+        #    m = tagPattern.match(line)
+        #    if m != None:
+        #        package = m.group(2)
+        #        tag = m.group(1)
+        #        if tag is not "NoCVS" and tag is not "NoTag":
+        #            tags.append({"package":package,"tag":tag})
+        #self.dataset_details['Tags'] = tags
 
     def buildJobsReport(self):                                                                            
         """Stage the logger_jobs.txt file in Logger.tgz 
