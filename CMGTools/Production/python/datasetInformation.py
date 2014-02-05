@@ -411,7 +411,8 @@ class DatasetInformation(object):
             m = branchPattern.match(line)
             if m != None:
                 tags.append({"package":m.group(1),                  "tag":"BRANCH"})
-                tags.append({"package":m.group(2).replace("...",""),"tag":"TRACKING"})
+                if m.group(2):
+                    tags.append({"package":m.group(2).replace("...",""),"tag":"TRACKING"})
             if len(tags) >= 32: break
         self.dataset_details['Tags'] = tags
 
