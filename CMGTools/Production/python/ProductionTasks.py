@@ -874,15 +874,3 @@ class CleanJobFiles(Task):
         removed = clean.run(actions)
         return {'Cleaned':removed,'Compressed':compressed}
     
-class WriteSavannah(Task):
-    """Call the 'writeSavannah.py' script in order to log the sample"""    
-
-    def __init__(self, dataset, user, options):
-        Task.__init__(self,'WriteSavannah', dataset, user, options)
-    def addOption(self, parser):
-        parser.add_option("-s", "--savuser",action = "store",dest="savuser",
-                          help="If Savannah user is different to current user, enter Savannah username here",
-                          default=os.getlogin())        
-    def run(self, input):
-        #ret = os.system('writeSavannah.py -u %s -s %s -T %s' % (self.user,self.options.savuser,self.dataset))
-        return {'SavannahWritten':False}
