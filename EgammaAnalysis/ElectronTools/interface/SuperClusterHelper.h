@@ -8,13 +8,12 @@
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "RecoEgamma/EgammaTools/interface/EcalClusterLocal.h"
 #include "Geometry/CaloTopology/interface/CaloSubdetectorTopology.h"
-#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 
 
 class SuperClusterHelper {
  public:
-  SuperClusterHelper(const reco::GsfElectron * electron, const EcalRecHitCollection * rechits, const CaloTopology*, const CaloGeometry* );
-  SuperClusterHelper(const pat::Electron * electron, const EcalRecHitCollection * rechits, const CaloTopology*, const CaloGeometry* );
+  SuperClusterHelper(const reco::GsfElectron * electron, const EcalRecHitCollection * rechits, const CaloTopology*, const edm::EventSetup & setup);
+  SuperClusterHelper(const pat::Electron * electron, const EcalRecHitCollection * rechits, const CaloTopology*, const edm::EventSetup & setup );
   ~SuperClusterHelper(){};
   
   float rawEnergy() const {return theSuperCluster_->rawEnergy();}
@@ -78,8 +77,8 @@ class SuperClusterHelper {
   const reco::CaloCluster * seedCluster_;
   const EcalRecHitCollection * rechits_;
   const CaloTopology* topology_;
-  const CaloGeometry* geometry_;
-  EcalClusterLocal local_;
+  const edm::EventSetup* setup_;
+    EcalClusterLocal local_;
   bool barrel_;
 
   

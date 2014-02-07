@@ -4,7 +4,7 @@
 
 
 
-SuperClusterHelper::SuperClusterHelper(const reco::GsfElectron * electron, const EcalRecHitCollection * rechits, const CaloTopology * topo, const CaloGeometry* geom) {
+SuperClusterHelper::SuperClusterHelper(const reco::GsfElectron * electron, const EcalRecHitCollection * rechits, const CaloTopology * topo, const edm::EventSetup & setup) {
   theElectron_  = electron;
   rechits_ = rechits ;
   seedCluster_ = & (*(electron->superCluster()->seed()));
@@ -40,13 +40,13 @@ SuperClusterHelper::SuperClusterHelper(const reco::GsfElectron * electron, const
   nESClusters_ = theESClusters_.size();
 
   topology_ = topo;
-  geometry_ = geom;
+  setup_ = &setup;
   barrel_ = electron->isEB();
   covComputed_ = false;
   localCoordinatesComputed_ = false;
 }
 
-SuperClusterHelper::SuperClusterHelper(const pat::Electron * electron, const EcalRecHitCollection * rechits, const CaloTopology * topo, const CaloGeometry * geom) {
+SuperClusterHelper::SuperClusterHelper(const pat::Electron * electron, const EcalRecHitCollection * rechits, const CaloTopology * topo, const edm::EventSetup & setup) {
   theElectron_  = (const reco::GsfElectron*)electron;
   rechits_ = rechits ;
 //  for(unsigned ir=0; ir<rechits_->size();++ir) {
@@ -91,7 +91,7 @@ SuperClusterHelper::SuperClusterHelper(const pat::Electron * electron, const Eca
 //    std::cout << " Basic cluster " << id.rawId() << std::endl;
 //  }
   topology_ = topo;
-  geometry_ = geom;
+  setup_ = &setup;
   barrel_ = electron->isEB();
   covComputed_ = false;
   localCoordinatesComputed_ = false; 
@@ -129,9 +129,9 @@ void SuperClusterHelper::localCoordinates() {
   if (localCoordinatesComputed_) return;
 
   if (barrel_) {
-    local_.localCoordsEB(*seedCluster_, *geometry_, etaCrySeed_ , phiCrySeed_ ,ietaSeed_ , iphiSeed_ , thetaTilt_ , phiTilt_);
+    local_.localCoordsEB(*seedCluster_, *setup_, etaCrySeed_ , phiCrySeed_ ,ietaSeed_ , iphiSeed_ , thetaTilt_ , phiTilt_);
   } else {
-    local_.localCoordsEE(*seedCluster_, *geometry_, etaCrySeed_ , phiCrySeed_ ,ietaSeed_ , iphiSeed_ , thetaTilt_ , phiTilt_);
+    local_.localCoordsEE(*seedCluster_, *setup_, etaCrySeed_ , phiCrySeed_ ,ietaSeed_ , iphiSeed_ , thetaTilt_ , phiTilt_);
   }
     localCoordinatesComputed_ = true;
 }

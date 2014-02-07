@@ -178,7 +178,7 @@ bool ElectronRegressionEnergyProducer::filter(edm::Event& iEvent, const edm::Eve
     else 
         recHits = pEERecHits.product();
 
-    SuperClusterHelper mySCHelper(&(*egIter),recHits,ecalTopology_,caloGeometry_);
+    SuperClusterHelper mySCHelper(&(*egIter),recHits,ecalTopology_,iSetup);
 
     double energy=regressionEvaluator->calculateRegressionEnergy(&(*egIter),
                                                           mySCHelper,

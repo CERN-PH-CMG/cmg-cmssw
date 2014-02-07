@@ -167,7 +167,10 @@ void CalibratedElectronProducer::produce( edm::Event & event, const edm::EventSe
         edm::ESHandle<CaloTopology> theCaloTopology;
         setup.get<CaloTopologyRecord>().get(theCaloTopology);
         ecalTopology_ = & (*theCaloTopology);
-        
+
+
+        //FIXME - JAN - Should get rid of this as it's now taken
+        // from the EventSetup
         edm::ESHandle<CaloGeometry> theCaloGeometry;
         setup.get<CaloGeometryRecord>().get(theCaloGeometry); 
         caloGeometry_ = & (*theCaloGeometry);
@@ -230,7 +233,7 @@ void CalibratedElectronProducer::produce( edm::Event & event, const edm::EventSe
                 recHits = pEBRecHits.product();
             } else recHits = pEERecHits.product();
 
-            SuperClusterHelper mySCHelper( &(ele), recHits, ecalTopology_, caloGeometry_ );
+            SuperClusterHelper mySCHelper( &(ele), recHits, ecalTopology_, setup );
 
             int elClass = -1;
             int run = event.run(); 

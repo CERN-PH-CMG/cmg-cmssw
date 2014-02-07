@@ -198,9 +198,9 @@ void RegressionEnergyPatElectronProducer::produce( edm::Event & event, const edm
 
     SuperClusterHelper * mySCHelper = 0 ;
     if ( inputCollectionType_ == 0 ) { 
-      mySCHelper = new SuperClusterHelper(&(*ele),recHits,ecalTopology_,caloGeometry_);
+      mySCHelper = new SuperClusterHelper(&(*ele),recHits,ecalTopology_,setup);
     } else if ( inputCollectionType_ == 1) {
-      mySCHelper = new SuperClusterHelper( &(*patCollectionH)[iele], recHits,ecalTopology_,caloGeometry_);
+      mySCHelper = new SuperClusterHelper( &(*patCollectionH)[iele], recHits,ecalTopology_,setup);
     }
    
     // apply regression energy
