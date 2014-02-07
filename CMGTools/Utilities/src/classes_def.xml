@@ -1,0 +1,5 @@
+<lcgdict>
+  <class name="MVAMetPyWrapper"/>
+  <class name="MVAMet"/>
+  <class name="MetUtilities::JetInfo"/>
+</lcgdict>

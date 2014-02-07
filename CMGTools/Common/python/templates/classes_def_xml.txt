@@ -1,0 +1,5 @@
+<lcgdict>
+  
+  %(lcgdict)s
+ 
+</lcgdict>

@@ -1,0 +1,278 @@
+*     First event    Last event    to be generated  (INTEGER)  
+TRIG      1           100000         
+*     First event    Last event to debug            (INTEGER) 
+ DEBU        1         1  
+*  Keep some time at end of job                     (REAL)     
+TIME 30. 
+*
+***********************************************************************
+* Generator parameters ( ---> = preferred value )
+*    IKLEI   :  h Z simulation
+*        = 0 : e+e- --> h Z (on shell approximation + width)
+*  -->   = 1 : e+e- --> h ffbar (full calculation)
+*    IPROC   :  process to be simulated
+*    (This is superseded by the card PRYN where several processes
+*     can be simulated at once.)
+*        = 1 :  e+e- --> h Z or h Z*
+*        = 2 :  e+e- --> H Z or H Z*
+*        = 3 :  e+e- --> h A
+*        = 4 :  e+e- --> H A
+*        = 5 :  W+W- --> h (final state : nu nbar h)
+*        = 6 :  W+W- --> H (final state : nu nbar H)
+*        = 7 :  Z Z  --> h (final state : e+ e-   h)
+*        = 8 :  Z Z  --> H (final state : e+ e-   H)
+*        = 9 :  e+e- --> H+H-
+*        =-5 :  nu nbar h final state (=1+5+interference)
+*        =-6 :  nu nbar H final state (=2+6+interference)
+*        =-7 :  e+ e-   h final state (=1+7+interference)
+*        =-8 :  e+ e-   H final state (=2+8+interference)
+*        = 0 :  All + interferences, i.e., 1,2,3,4,-5,-6,-7,-8,9,10
+*    XRAD    :  determine the ISR spectrum
+*  --->  = 1.0 for Bremsstrahlung
+*        > 1.0 for beamstrahlung
+*        < 1.0 is a non sense (not protected against)
+*        = 0.0 for no initial state radiation
+*    The spectrum is x**(1.-beta*xrad)
+*    ECM     :  center-of-mass energy (GeV)              [190]
+*    EMPIR   : Maximum weight in Kleiss' generation      [4.0]
+*    SM      : = 0 for the MSSM
+*              = 1 for the SM
+*              =-1 for generic two-doublet model         [ 1 ]
+*    ICAR    : = 0 to compute MSSM Higgs masses in the EPA approxi-
+*                  mation (ERZ) improved by the running top mass.
+*            : = 1 to compute MSSM pole Higgs masses with the
+*                  improved renormalization group equations and 
+*                  effective potential
+*                  (Carena et al.)
+*  --->      : = 2 to compute MSSM pole Higgs masses with the
+*                  improved renormalization group equations and 
+*                  effective potential, plus top threshold and
+*                  genuine two-loop gluino corrections.
+*                  (Carena et al.)
+*            : = 3 to compute MSSM pole Higgs masses with the
+*                  improved renormalization group equations and
+*                  effective potential
+*                  (Haber et  al.)                       [ 2 ]  
+*            (ICAR has no effect if SM = 1, of course)
+*
+*                                            
+* ALL numbers MUST be REAL !                 
+*                                            
+*    IKLEI IPROC XRAD  ECM  EMPIR  SM  ICAR  
+GENE   1.    1.   1.   240.  4.0    1.   2.  
+*
+***********************************************************************
+* Standard Model Parameters
+*    MZ      :  Z mass  (GeV/c**2)                     [91.189]
+*    GZ      :  Z width (GeV)                          [2.497]
+*    GF      :  Fermi constant (GeV**-2)               [1/166392E-5]
+*    MTOP    :  Top mass (GeV/c**2)                    [174]
+*    MH      :  Higgs mass  (GeV) if SM=1 (SM)         [60]
+*    QCD5    :  value, in GeV, of Lambda_QCD(nf=5), to compute
+*               the running strong coupling constant.
+*     --->      alpha_s(mZ) = 0.118 with QCD5 = 0.208 GeV
+*                             0.120 with QCD5 = 0.233 GeV
+*                             0.121 with QCD5 = 0.246 GeV
+*                             0.123 with QCD5 = 0.273 GeV
+*                             0.124 with QCD5 = 0.287 GeV
+*               Note alpha_s(mZ) = 0.121 +- 0.003 in ALEPH.
+*                    alpha_s(mZ) = 0.118 +- 0.005 World average
+*                                                        
+*                                                        
+* ALL numbers MUST be REAL !                             
+*                                                        
+*         MZ      GZ        GF       MTOP   MH    QCD5  
+GSMO   91.1876  2.4952  1.16637E-5   172.5  125.  0.213 
+*                                                        
+***********************************************************************
+* Anomalous coupling (only if ISM = 1)
+*     fBB    : f_BB / /\**2  in 1/TeV**2 
+*     fWW    : f_WW / /\**2  in 1/TeV**2 
+*     fB     : f_B  / /\**2  in 1/TeV**2 
+*     fW     : f_W  / /\**2  in 1/TeV**2 
+* Note: in the scenario where f_BB = f_WW = f_B = f_W = f, the 
+* anomalous couplings parametrize as a function of Delta_Kappa_gamma:
+*             Delta_Kappa_gamma = f mw**2 / /\**2
+*                                                        
+*                                                        
+* ALL numbers MUST be REAL !                             
+*                                                        
+*       fBB  fWW   fB   fW
+GFBW     0.   0.   0.   0.
+*
+***********************************************************************
+* SUSY parameters
+*    MA      :  Running A mass  (GeV)
+*    TANB    :  Tan(beta) = v2/v1, vev ratio
+*    M2      :  Soft breaking gaugino mass term           (GeV)
+*    MU      :  Higgs   mixing term (mu H1.H2)            (GeV)
+*    At      :  Stop    mixing term                       (GeV)
+*    Ab      :  Sbottom mixing term                       (GeV)
+*    SMQ     :  Soft breaking left squark mass term       (GeV)
+*    SMU     :  Soft breaking right up  -squark mass term (GeV)
+*    SMD     :  Soft breaking right down-squark mass term (GeV)
+*    SML     :  Soft breaking left  slepton mass term     (GeV)
+*    SME     :  Soft breaking right slepton mass term     (GeV)
+* Note : The first two squark generations are assumed to have
+*        mU = mD = mQ = SMQ. The SMU and SMD parameters hold
+*        only for the stops and the sbottoms.
+* Note : Unification in the gaugino sector is assumed
+*                                                        
+* ALL numbers MUST be REAL !                             
+*                                                        
+*     MA   TANB   M2    MU    At    Ab    SMQ   SMU   SMD   SML   SME
+*GSUS  90.  10.   200. -100.  2440. 2440. 1000. 1000. 1000. 1000. 1000.
+GSUS  100.  1.8   200. -100.  2440. 2440. 1000. 1000. 1000. 1000. 1000.
+*
+* Unification of gluino masses can be broken by assigning a mass to 
+* them via GGLU (either no card or a negative number preserves unifi-
+* cation)
+*      MGLU (REAL)
+GGLU   800.
+*
+***********************************************************************
+* SUSY parameters determined in SUGRA scheme 
+* (enabled only if GSUS either is commented out or does not exist)
+*    MA      :  Running A mass  (GeV)
+*    TANB    :  Tan(beta) = v2/v1, vev ratio
+*    m0      :  Universal scalar mass at the GUT scale    (GeV)
+*    m1/2    :  Universal gaugino mass at the GUT scale   (GeV)
+*    MU      :  Higgs   mixing term (mu H1.H2)            (GeV)
+*    At      :  Stop    mixing term                       (GeV)
+*    Ab      :  Sbottom mixing term                       (GeV)
+*                                             
+* ALL numbers MUST be REAL !     
+*                                
+*       MA   TANB   m0    m1/2    MU    At    Ab 
+* GSGU    90.  10.  1000.  1000.  -100. 2440. 2440. 
+*
+***********************************************************************
+* Production : Channels requested
+* 1 if requested, 0 otherwise.
+*
+* For processes 5,6,7,8 only:
+* 0 = not requested
+* 1 = only boson fusion
+* 2 = complete matrix element squared including the interference 
+*     with hZ -> h nu_e nu_e(bar), h e+e- and/or 
+*     with HZ -> H nu_e nu_e(bar), H e+e-.
+* (Requesting hZ and HZ won't cause double counting in the latter case.)
+*
+*    Process #
+*        1 :  e+e- --> h Z or h Z*
+*        2 :  e+e- --> H Z or H Z*                     (If SM = 0)
+*        3 :  e+e- --> h A                             (If SM = 0)
+*        4 :  e+e- --> H A                             (If SM = 0)
+*        5 :  W+W- --> h (final state : nu nbar h)
+*        6 :  W+W- --> H (final state : nu nbar H)     (If SM = 0)
+*        7 :  Z Z  --> h (final state : e+ e-   h)
+*        8 :  Z Z  --> H (final state : e+ e-   H)     (If SM = 0)
+*        9 :  e+e- --> H+H-                            (If SM < 0)
+*       10 :  e+e- --> H gamnma - anomalous couplings  (If SM = 1)
+*
+*                              
+* ALL numbers MUST be INTEGER !
+*                              
+*       hZ     HZ     hA     HA   WW->h   WW->H  ZZ->h  ZZ->H  H+H-  Hgamma
+PRYN     1      0      0      0     1       0      1      0     0      0
+***********************************************************************
+* Z decays in e+e- --> hZ and HZ
+*    Channel #
+*        1 :  e+e-
+*        2 :  nu_e nu_e~bar
+*        3 :  mu+mu-
+*        4 :  nu_mu nu_mu~bar
+*        5 :  tau+tau-
+*        6 :  nu_tau nu_tau~bar
+*        7 :  d d~bar
+*        8 :  u u~bar
+*        9 :  s s~bar
+*       10 :  c c~bar
+*       11 :  b b~bar
+*                                    
+* ALL numbers MUST be INTEGER !      
+*                                    
+*     e   nue  mu  numu  tau nutau  d    u    s    c    b
+GZDC  1    1    1    1    1    1    1    1    1    1    1
+***********************************************************************
+* Higgs decays
+*    CH         channel Id ( 1 --> 16, see below, 0 = all)
+*       (Superseded by GCH1, GCH2, GCH3, where several channels
+*       can be selected at once)
+*    IDBG       printout debug level (-1 to 10)
+*    CH  IDBG
+GHHG  0   0
+* GCH1 : steering card for H decays    (if SM = 0)
+* GCH2 : steering card for h decays
+* GCH3 : steering card for A decays    (if SM = 0)
+*       1 if requested, 0 otherwise.
+*    Channel #
+*        1 :  gamma gamma          2 :  gluon gluon
+*        3 :  tau+  tau-           4 :  c     c~bar
+*        5 :  b     b~bar          6 :  t     t~bar
+*        7 :  W+    W-             8 :  Z     Z
+*        9 :  h,H --> AA, A --> Zh 10 :  H,A --> hh
+*       11 :  gamma Z              12 :  e+    e-
+*       13 :  mu+   mu-            14 :  s     s~bar
+*       15 :  chi   chi           (Even if SM = 1 --> invisible decay)
+*       16 :  chi+  chi-          (If SM = 0)
+*
+*                                             
+* ALL numbers MUST be INTEGER !               
+*                                             
+*    ga gl to cq bq tq WW ZZ AA/Zh hh Zg  e mu sq ki ch
+GCH1  1  1  1  1  1  1  1  1   1    1  1  1  1  1  1  1
+GCH2  1  1  1  1  1  1  1  1   1    1  1  1  1  1  1  1
+GCH3  1  1  1  1  1  1  1  1   1    1  1  1  1  1  1  1
+*
+* Important note : The Higgs decays for a Higgs mass between
+*                  2 m_pi and a few GeV proceed essentially
+*                  via non-pertubative QCD. A realistic trea-
+*                  tment, developed in HIGG03 in 1989, for the
+*                  decays into pi pi, rho rho, K K, etc is
+*                  missing here (because of the exclusion of
+*                  this mass range at LEP I). Please refrain
+*                  from using HZHA02 for Higgs masses between
+*                  2 m_pi and 1 or 2 GeV.
+*
+***********************************************************************
+*  CHARGED Higgs parameters
+*
+*       idc1 :  decay channel of one of the two H+-  (see below)
+*       idc2 :  decay channel of the other one       (see below)
+*       if SM = -1 ( type II two-Higgs-doublets models ) then
+*         m_H  : mass of H   ( heaviest neutral scalar )
+*         m_h  : mass of h   ( lightest neutral scalar )
+*         m_A  : mass of A   ( pseudoscalar )
+*         m_H+ : mass of H+-
+*         v2/v1 : vev's ratio ( tan beta )
+*         alpha : mixing angle in the neutral scalar sector
+*         (when SM =0 or =1 the last 6 card values are ignored)
+*                                                         
+* ALL numbers MUST be REAL !                              
+* 
+*       idc1  idc2   m_H    m_h    m_A     m_H+   v2/v1    alpha
+GHCC      0.    0.   100.   20.    140.    85.     20.       .7
+*
+* H+ decay channels
+*   0 : accordingly to BR (for channels switched ON with the GCHC card )
+*   1 : nu e+       10 : W+ b d bar     19 : chi0 chi+
+*   2 : nu mu+      11 : W+ b s bar
+*   3 : nu tau+     12 : W+ b b bar
+*   4 : u d bar     13 : h l+ nu
+*   5 : u s bar     14 : h q q' bar
+*   6 : u b bar     15 : A l+ nu
+*   7 : c d bar     16 : A q q' bar
+*   8 : c s bar     17 : H l+ nu
+*   9 : c b bar     18 : H q q' bar
+*
+*  WARNING: channels 10-12 and 19 are not implemented YET: if you
+*           ask for them you will get the program execution stopped
+*
+*  CARD to switch ON/OFF (0/1) channels
+*                                    
+* ALL numbers MUST be INTEGER !      
+*                                    
+*     ne nm nt ud us ub cd cs cb Wbd Wbs Wbb hln hqq Aln Aqq Hln Hqq c0c+
+GCHC   1  1  1  1  1  1  1  1  1  0   0   0   1   1   1   1   1   1   0
+*
