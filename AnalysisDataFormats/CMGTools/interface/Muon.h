@@ -138,6 +138,13 @@ class MuonFactory;
 
     AlgebraicSymMatrix66 covarianceMatrix() { return covarianceMatrix_; }
 
+
+    enum MuonID { POG_ID_Loose, POG_ID_Soft, POG_ID_Tight, POG_ID_HighPt, POG_PFIso_Loose, POG_PFIso_Tight };
+    bool muonID(MuonID id, const reco::Vertex *vtx = 0) const ;
+    bool muonID(const std::string &id, const reco::Vertex *vtx = 0) const ;
+    bool muonID(const char        *id, const reco::Vertex *vtx = 0) const ;
+    // this is needed to make sure we can redefine muonID in python but still be able to call back the C++ one
+    bool muonID_cpp_(const std::string &id, const reco::Vertex *vtx = 0) const { return muonID(id,vtx); }
 	
     friend class cmg::MuonFactory;
 	
