@@ -1,4 +1,4 @@
-from CMGTools.RootTools.physicsobjects.Lepton import *
+from CMGTools.RootTools.physicsobjects.Lepton import Lepton
 
 class Electron( Lepton ):
 
@@ -8,6 +8,11 @@ class Electron( Lepton ):
         function.'''
         super(Electron, self).__init__(*args, **kwargs)
         self.tightIdResult = None
+
+    def electronID( self, id, vertex=None, rho=None ):
+        if vertex == None and hasattr(self,'associatedVertex') and self.associatedVertex != None: vertex = self.associatedVertex
+        if rho == None and hasattr(self,'rho') and self.rho != None: rho = self.rho
+        return self.electronID_cpp_(id,vertex,rho) if rho != None else self.electronID_cpp_(id,vertex);
 
     def absEffAreaIso(self,rho,effectiveAreas):
         '''MIKE, missing doc.

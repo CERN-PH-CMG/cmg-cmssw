@@ -1,6 +1,10 @@
-from CMGTools.RootTools.physicsobjects.Lepton import *
+from CMGTools.RootTools.physicsobjects.Lepton import Lepton
 
 class Muon( Lepton ):
+
+    def muonID( self, id, vertex=None ):
+        if vertex == None and hasattr(self,'associatedVertex') and self.associatedVertex != None: vertex = self.associatedVertex
+        return self.muonID_cpp_(id,vertex)
 
     def looseId( self ):
         '''Loose ID as recommended by mu POG.'''

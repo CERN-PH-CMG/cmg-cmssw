@@ -110,7 +110,29 @@ class Electron : public cmg::Lepton<pat::ElectronPtr>{
     reco::isodeposit::AbsVetos neutralHadronVetos() const;
     /// photon vetoes
     reco::isodeposit::AbsVetos photonVetos() const;
-    
+
+    /// The POG_xx_ID_yy are only the ID part, not including isolation, impact parameter and conv veto
+    ///     POG_xx_Full_yy include also the isolation, impact parameter and conv. veto
+    ///     POG_ConvVeto_Loose = (missing hits <= 1)
+    ///     POG_ConvVeto_Tight = (missing hits == 1 && vertex-based conversion)
+    enum ElectronID { POG_Cuts_ID_Veto,   POG_Cuts_Full_Veto,
+                      POG_Cuts_ID_Loose,  POG_Cuts_Full_Loose,
+                      POG_Cuts_ID_Medium, POG_Cuts_Full_Medium, 
+                      POG_Cuts_ID_Tight,  POG_Cuts_Full_Tight, 
+                      POG_TriggerPreselection,
+                      POG_ConvVeto_Loose, POG_ConvVeto_Tight,
+                      POG_MVA_ID_NonTrig, POG_MVA_Full_NonTrig,
+                      POG_MVA_ID_Trig,    POG_MVA_Full_Trig,
+                      HZZ4L_ID// == POG_MVA_ID_NonTrig 
+                    };
+    bool electronID(ElectronID id, const reco::Vertex *vtx = 0, double rho=UnSet(double)) const ;
+    bool electronID(const std::string &id, const reco::Vertex *vtx = 0, double rho=UnSet(double)) const ;
+    bool electronID(const char        *id, const reco::Vertex *vtx = 0, double rho=UnSet(double)) const ;
+    /// provide a copy of it so that we can override electronID in python and still be able to call the C++
+    bool electronID_cpp_(const std::string &id, const reco::Vertex *vtx = 0, double rho=UnSet(double)) const { return electronID(id,vtx,rho); }
+
+    static void SetEffectiveAreaForRhoCorrections(int year=2012, bool data=1);
+
 private:
     
     // That's the PF mva
@@ -132,7 +154,6 @@ private:
     bool passConversionVeto_;
           
     friend class cmg::ElectronFactory;    
-
 };
 
 }

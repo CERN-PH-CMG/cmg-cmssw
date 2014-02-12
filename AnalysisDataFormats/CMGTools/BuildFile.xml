@@ -4,6 +4,7 @@
 <use name="FWCore/ParameterSet"/>
 <use name="FWCore/FWLite"/>
 <use name="PhysicsTools/SelectorUtils"/>
+<use name="EgammaAnalysis/ElectronTools"/>
 
 <use name="rootrflx"/>
 
