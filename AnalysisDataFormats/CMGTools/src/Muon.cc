@@ -34,7 +34,9 @@ bool cmg::Muon::muonID(MuonID id, const reco::Vertex *vtx) const
                 return muon::isTightMuon(mu, *vtx);
         case POG_ID_HighPt: 
                 if (vtx == 0) throw cms::Exception("InvalidArgument", "POG_ID_HighPt requires a vertex");
-                return muon::isHighPtMuon(mu, *vtx, reco::improvedTuneP);
+                throw cms::Exception("NotImplemented", "Improved tune P not yet implemented for 626");
+                return false;
+                // return muon::isHighPtMuon(mu, *vtx, reco::improvedTuneP);
         case POG_PFIso_Loose:
                 return (mu.pfIsolationR04().sumChargedHadronPt + std::max(mu.pfIsolationR04().sumNeutralHadronEt + mu.pfIsolationR04().sumPhotonEt - 0.5*mu.pfIsolationR04().sumPUPt,0.0)) < 0.20 * mu.pt();
         case POG_PFIso_Tight:
