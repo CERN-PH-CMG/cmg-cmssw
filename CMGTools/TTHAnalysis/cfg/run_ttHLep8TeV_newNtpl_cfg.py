@@ -58,6 +58,10 @@ ttHGenAna = cfg.Analyzer(
     PDFWeights = [ pdf for pdf,num in PDFWeights ]
     )
 
+susyScanAna = cfg.Analyzer(
+    'susyParameterScanAnalyzer',
+    )
+
 # Lepton Analyzer
 ttHLepAna = cfg.Analyzer(
     'ttHLepAnalyzerBase',
@@ -179,6 +183,7 @@ sequence = cfg.Sequence([
     triggerAna,
     pileUpAna,
     ttHGenAna,
+    susyScanAna,
     ttHVertexAna,
     ttHLepAna,
     ttHLepMCAna,
