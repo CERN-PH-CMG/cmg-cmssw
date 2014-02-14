@@ -333,7 +333,7 @@ def doRatioHists(pspec,pmap,total,totalSyst,maxRange,fitRatio=False):
     unity.GetYaxis().SetLabelSize(0.11)
     unity.GetYaxis().SetNdivisions(505)
     unity.GetYaxis().SetDecimals(True)
-    unity.GetYaxis().SetTitle("Data/Sim.")
+    unity.GetYaxis().SetTitle("Data/Pred.")
     unity.GetYaxis().SetTitleOffset(0.52);
     total.GetXaxis().SetLabelOffset(999) ## send them away
     total.GetXaxis().SetTitleOffset(999) ## in outer space
@@ -581,8 +581,8 @@ class PlotMaker:
                 if self._options.plotmode == "norm": legendCutoff = 0 
                 doLegend(pmap,mca,corner=pspec.getOption('Legend','TR'),
                                   cutoff=legendCutoff, mcStyle=("F" if self._options.plotmode == "stack" else "L"),
-                                  textSize=(0.039 if doRatio else 0.035))
-                doTinyCmsPrelim(hasExpo = total.GetMaximum() > 9e4 and not c1.GetLogy(),textSize=(0.036 if doRatio else 0.033))
+                                  textSize=(0.045 if doRatio else 0.035))
+                doTinyCmsPrelim(hasExpo = total.GetMaximum() > 9e4 and not c1.GetLogy(),textSize=(0.045 if doRatio else 0.033))
                 signorm = None; datnorm = None; sfitnorm = None
                 if options.showSigShape: 
                     signorm = doStackSignalNorm(pspec,pmap)
