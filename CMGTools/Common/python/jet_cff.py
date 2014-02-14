@@ -28,8 +28,8 @@ pfJetSequence = cms.Sequence(
     cmgPUJetMva +
     cmgPFJet +
     cmgPFJetSel +
-    cmgPFJetType1MET +
-    jetIdSequence  
+    cmgPFJetType1MET #+
+    #jetIdSequence  
     )
 
 

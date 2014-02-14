@@ -182,7 +182,7 @@ class ttHLepEventAnalyzer( Analyzer ):
         #print "PrMETJet 2S:", event.projMetJets2S
 
     def makeHadTopDecays(self, event):
-        event.lightJets = [ j for j in event.cleanJets if not j.getSelection("cuts_csv_medium") ]
+        event.lightJets = [ j for j in event.cleanJets if not j.btagWP("CSVM") ]
         event.minMWjj   = 999
         event.minMWjjPt = 0
         event.bestMWjj   = 0
@@ -219,8 +219,8 @@ class ttHLepEventAnalyzer( Analyzer ):
 
         eventNumber = iEvent.eventAuxiliary().id().event()
 
-        event.bjetsLoose  = [ j for j in event.cleanJets if j.getSelection("cuts_csv_loose")  ]
-        event.bjetsMedium = [ j for j in event.cleanJets if j.getSelection("cuts_csv_medium") ]
+        event.bjetsLoose  = [ j for j in event.cleanJets if j.btagWP("CSVL") ]
+        event.bjetsMedium = [ j for j in event.cleanJets if j.btagWP("CSVM") ]
 
         objects25 = [ j for j in event.cleanJets if j.pt() > 25 ] + event.selectedLeptons
         objects30 = [ j for j in event.cleanJets if j.pt() > 30 ] + event.selectedLeptons
