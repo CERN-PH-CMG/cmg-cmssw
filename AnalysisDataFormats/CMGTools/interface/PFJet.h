@@ -113,6 +113,14 @@ namespace cmg {
       return PileupJetIdentifier::passJetId( puId("full"), PileupJetIdentifier::kLoose ); 
     }
 
+    enum JetID { POG_PFID_Loose, POG_PFID_Medium, POG_PFID_Tight,
+                 VBFHBB_PFID_Loose, VBFHBB_PFID_Medium, VBFHBB_PFID_Tight };
+    bool jetID(JetID id) const ;
+    bool jetID(const std::string &id) const ;
+    bool jetID(const char *id) const ;
+    bool jetID_cpp_(const std::string &id) const { return jetID(id); }
+    
+
     friend class PFJetFactory;
     
   private:

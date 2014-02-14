@@ -19,22 +19,8 @@ loose_53X_WP = [
 class Jet(PhysicsObject):
 
     def looseJetId(self):
-        '''PF Jet ID
-        '''
-        pfJetIdPassed = ( abs(self.eta()) <= 2.4                                             and 
-                              (self.component(1).fraction()                                > 0    and
-                               self.component(2).fraction()                                < 0.99 and 
-                               self.component(4).fraction()                                < 0.99 and 
-                               self.component(5).fraction() < 0.99 and 
-                               self.component(1).number()                                  > 0    and
-                               self.nConstituents()                                        > 1   )or
-                              abs(self.eta()) > 2.4                                               and
-                              (self.component(4).fraction()                                < 0.99 and 
-                               self.component(5).fraction() < 0.99 and 
-                               self.nConstituents()                                        > 1    ) 
-                            ) 
-        #return self.getSelection('cuts_looseJetId') 
-        return pfJetIdPassed 
+        '''PF Jet ID (loose operation point) [method provided for convenience only]'''
+        return self.jetID("POG_PFID_Loose")
 
     def puJetId(self, wp53x=False):
         '''Full mva PU jet id (default: old loose working point used by Josh)'''

@@ -210,11 +210,8 @@ class JetAnalyzer( Analyzer ):
         jet.scaleEnergy(totalScale)
 
     def testJetID(self, jet):
-        if self.is2012:
-            jet.puJetIdPassed = jet.puJetId(wp53x=True)
-        else:
-            jet.puJetIdPassed = jet.puJetId(wp53x=False, use2011=True)
-        jet.pfJetIdPassed = jet.looseJetId()
+        jet.puJetIdPassed = jet.puJetId(wp53x=True)
+        jet.pfJetIdPassed = jet.jetID("POG_PFID_Loose")
 
         if self.cfg_ana.relaxJetId:
             return True
