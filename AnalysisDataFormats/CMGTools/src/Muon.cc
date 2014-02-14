@@ -15,6 +15,7 @@ namespace {
             _muon_id_map["POG_ID_HighPt"] = cmg::Muon::POG_ID_HighPt;
             _muon_id_map["POG_PFIso_Loose"] = cmg::Muon::POG_PFIso_Loose;
             _muon_id_map["POG_PFIso_Tight"] = cmg::Muon::POG_PFIso_Tight;
+            _muon_id_map["POG_ID_TightNoVtx"] = cmg::Muon::POG_ID_TightNoVtx;
         }
         return _muon_id_map;
     }
@@ -32,6 +33,10 @@ bool cmg::Muon::muonID(MuonID id, const reco::Vertex *vtx) const
         case POG_ID_Tight:  
                 if (vtx == 0) throw cms::Exception("InvalidArgument", "POG_ID_Tight requires a vertex");
                 return muon::isTightMuon(mu, *vtx);
+        case POG_ID_TightNoVtx:  
+                return mu.isGlobalMuon() && mu.numberOfMatchedStations() > 1 && mu.isPFMuon() && 
+                       mu.globalTrack()->normalizedChi2() < 10. && mu.globalTrack()->hitPattern().numberOfValidMuonHits() > 0 &&
+                       mu.track()->hitPattern().trackerLayersWithMeasurement() > 5 && mu.track()->hitPattern().numberOfValidPixelHits() > 0;
         case POG_ID_HighPt: 
                 if (vtx == 0) throw cms::Exception("InvalidArgument", "POG_ID_HighPt requires a vertex");
                 throw cms::Exception("NotImplemented", "Improved tune P not yet implemented for 626");
