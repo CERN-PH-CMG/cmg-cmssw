@@ -34,6 +34,11 @@ process.source = datasetToSource(
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 #process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
+process.source.dropDescendantsOfDroppedBranches = cms.untracked.bool(False)
+process.source.inputCommands = cms.untracked.vstring(
+        'keep *',
+        'drop recoPFTaus_*_*_*'                      
+    )
 
 ###ProductionTaskHook$$$
 

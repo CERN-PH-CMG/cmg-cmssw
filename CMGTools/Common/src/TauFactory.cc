@@ -25,7 +25,7 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
   leptonFactory_.set(input,output,iEvent,iSetup);
 
 
-  reco::PFCandidateRef leadChargedHadrCand=input->leadPFChargedHadrCand();
+  reco::PFCandidatePtr leadChargedHadrCand=input->leadPFChargedHadrCand();
   if(leadChargedHadrCand.isNonnull()){
     const reco::PFCandidate& cand = *(input->leadPFChargedHadrCand().get());
     output->leadPFChargedHadrCand_ = cmg::Tau::Constituent( cand.pdgId(), 
@@ -54,7 +54,7 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
 
 
   //neutral related
-  reco::PFCandidateRef leadNeutralCand=input->leadPFNeutralCand();
+  reco::PFCandidatePtr leadNeutralCand=input->leadPFNeutralCand();
   if(leadNeutralCand.isNonnull()){
     output->leadNeutralCandPt_ = leadNeutralCand->pt();
     output->leadNeutralCandEcalEnergy_ = leadNeutralCand->ecalEnergy();
