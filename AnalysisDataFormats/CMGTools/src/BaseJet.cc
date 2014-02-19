@@ -36,12 +36,12 @@ bool cmg::BaseJet::btagWP(BTagWP wp) const {
         case TCHEL: return bDiscriminator("trackCountingHighEffBJetTags") > 1.7;
         case TCHEM: return bDiscriminator("trackCountingHighEffBJetTags") > 3.3;
         case TCHPT: return bDiscriminator("trackCountingHighPurBJetTags") > 3.41;
-        case JPL: return bDiscriminator("jetProbabilityBJetTags") > 0.244;
-        case JPM: return bDiscriminator("jetProbabilityBJetTags") > 0.679;
-        case JPT: return bDiscriminator("jetProbabilityBJetTags") > 0.898;
-        case CSVL: return bDiscriminator("combinedSecondaryVertexBJetTags") > 0.275;
-        case CSVM: return bDiscriminator("combinedSecondaryVertexBJetTags") > 0.545;
-        case CSVT: return bDiscriminator("combinedSecondaryVertexBJetTags") > 0.790;
+        case JPL: return bDiscriminator("jetProbabilityBJetTags") > 0.275;
+        case JPM: return bDiscriminator("jetProbabilityBJetTags") > 0.545;
+        case JPT: return bDiscriminator("jetProbabilityBJetTags") > 0.790;
+        case CSVL: return bDiscriminator("combinedSecondaryVertexBJetTags") > 0.244;
+        case CSVM: return bDiscriminator("combinedSecondaryVertexBJetTags") > 0.679;
+        case CSVT: return bDiscriminator("combinedSecondaryVertexBJetTags") > 0.898;
     }
     throw cms::Exception("InvalidArgument", "Unrecognized BTag WP choice");
 }
