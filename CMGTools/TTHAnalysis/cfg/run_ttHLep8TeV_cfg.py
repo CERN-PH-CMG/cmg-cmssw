@@ -17,13 +17,9 @@ eventSelector = cfg.Analyzer(
     'EventSelector',
     toSelect = [
     # here put the event numbers (actual event numbers from CMSSW)
-331699,
-335106,
-360448,
-352189,
     ]
     )
-
+    
 jsonAna = cfg.Analyzer(
     'JSONAnalyzer',
     )
@@ -62,6 +58,10 @@ ttHGenAna = cfg.Analyzer(
     PDFWeights = [ pdf for pdf,num in PDFWeights ]
     )
 
+susyScanAna = cfg.Analyzer(
+    'susyParameterScanAnalyzer',
+    )
+
 # Lepton Analyzer
 ttHLepAna = cfg.Analyzer(
     'ttHLepAnalyzerBase',
@@ -76,6 +76,7 @@ ttHLepAna = cfg.Analyzer(
     minGoodLeptons=2,
     minInclusiveLeptons=2,
     doSSLeptons=False,
+    doMuScleFitCorrections=False,
     doRochesterCorrections=True,
     doElectronScaleCorrections=False,
     doRecomputeSIP3D=True,
@@ -83,14 +84,21 @@ ttHLepAna = cfg.Analyzer(
     doEleMuCrossCleaning=True,
     )
 
+
 # Lepton MC Matching (must happen earlier to allow for MVA corrections)
 ttHLepMCAna = cfg.Analyzer(
     'ttHLepMCMatchAnalyzer',
     )
 
+
 # Tau Analyzer
 ttHTauAna = cfg.Analyzer(
     'ttHTauAnalyzer',
+    ptMin = 20,
+    vetoLeptons = True,
+    leptonVetoDR = 0.5,
+    tauID = "byMediumIsolationMVA2",
+    tauLooseID = "decayModeFinding",
 )
 
 # Tau MC Matching
@@ -109,9 +117,11 @@ ttHJetAna = cfg.Analyzer(
     jetEtaCentral = 2.4,
     relaxJetId = False,  
     doPuId = True,
-    recalibrateJets = True,
+    recalibrateJets = False,
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
+    cleanJetsFromTaus = False,
     )
+
 
 ## MET Analyzer
 #ttHMETAna = cfg.Analyzer(
@@ -139,7 +149,7 @@ treeProducer = cfg.Analyzer(
     'ttHLepTreeProducerBase',
     doLooseLeptons = False,
     doInclusiveLeptons = False,
-    doTaus = True,
+    doTaus = False,
     doJetsFailId = False,
     PDFWeights = PDFWeights,
     triggerBits = {
@@ -173,23 +183,6 @@ for data in dataSamplesMuE:
 
 selectedComponents=mcSamples+dataSamplesMu+dataSamplesE+dataSamplesMuE
 
-isSingleMu = False
-if isSingleMu:
-    ttHLepAna.minGoodLeptons=1
-    ttHLepAna.maxGoodLeptons=1
-    ttHEventAna.minJets25 = 3
-    mcSamples = [ TTJets, W2Jets,W3Jets,W4Jets, TtW,TbartW, Ttch,Tbartch,Tsch,Tbarsch, QCDMuPt15, DY2JetsM50,DY3JetsM50,DY4JetsM50 ]
-    for mc in mcSamples+fastSimSamples:
-        mc.triggers = triggersMC_1mu
-    for data in dataSamples1Mu:
-        data.triggers = triggers_1mu
-    selectedComponents = dataSamples1Mu+mcSamples
-    TTJets.splitFactor = 250
-    for X in [W2Jets,W3Jets,W4Jets]: X.splitFactor = 250
-    for X in [DY2JetsM50,DY3JetsM50,DY4JetsM50]: X.splitFactor = 400
-    SingleMuC.splitFactor = 1500
-    SingleMuD.splitFactor = 1500
-    QCDMuPt15.splitFactor = 250
 
 
 #-------- SEQUENCE
@@ -201,6 +194,7 @@ sequence = cfg.Sequence([
     triggerAna,
     pileUpAna,
     ttHGenAna,
+    #susyScanAna, #not working on V5_10_0 samples
     ttHVertexAna,
     ttHLepAna,
     ttHLepMCAna,
@@ -211,30 +205,12 @@ sequence = cfg.Sequence([
     ttHJetMCAna,
     ttHEventAna,
     treeProducer,
-    
     ])
 
 
+
+
 #-------- HOW TO RUN
-
-# selectedComponents = [ FastSim_TTWJets, FastSim_TTWJets_MUp, FastSim_TTWJets_MDn ]
-# set test = 0 to run all jobs, in case you are using pybatch.py
-#selectedComponents = mcSamples_1+dataSamplesE+dataSamplesMu+dataSamplesMuE+mcSamples_2
-#selectedComponents =  [ WZJets ]
-#WZJets.splitFactor = 100
-#ZZJets4L.splitFactor = 100 
-#ttHEventAna.minJets25 = 2
-#ttHLepAna.minGoodLeptons = 2
-
-selectedComponents = [ DoubleMuC ]
-#for c in selectedComponents: c.triggers = []
-#selectedComponents=[ TTWJets,TTZJets,TTH ]
-    
-#ttHLepAna.minGoodLeptons=0
-#ttHLepAna.minInclusiveLeptons=0
-#treeProducer.doInclusiveLeptons = True
-#TTH.triggers = []
-
 test = 1
 if test==1:
     # test a single component, using a single thread.
@@ -276,13 +252,6 @@ elif test==4:
     ttHLepAna.minGoodLeptons = 2
     #treeProducer.doJetsFailId = True
     #ttHJetAna.jetCol = 'cmgPFJetSel'
-elif test==5:
-    # Ad-hoc MC fastsim sample
-    comp = TTJetsSem
-    comp.name = 'TTJetsSem_Filtered'
-    comp.files = [ '/afs/cern.ch/user/g/gpetrucc/ttH/CMGTools/CMSSW_5_3_5/src/CMGTools/Common/prod/patAODSIM-TTJetsSem.root' ]
-    selectedComponents = [comp]
-    comp.splitFactor = 1
 elif test==6:
     # Ad-hoc Data sample
     comp = DoubleMuD
@@ -295,8 +264,6 @@ elif test==6:
     selectedComponents = [comp]
     comp.splitFactor = 1
 elif test==7:    
-    # test all components (1 thread per component.
-    # important to make sure that your code runs on any kind of component
     for comp in selectedComponents:
         comp.splitFactor = comp.splitFactor / 40
         comp.files = [ f for (i,f) in enumerate(comp.files) if i % 20 == 19 ]
