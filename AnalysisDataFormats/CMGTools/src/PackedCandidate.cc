@@ -14,13 +14,13 @@ void cmg::PackedCandidate::pack() {
 
 void cmg::PackedCandidate::unpack() const {
     p4_ = PolarLorentzVector(MiniFloatConverter::float16to32(packedPt_),
-                             packedEta_*6.0f/std::numeric_limits<int16_t>::max(),
-                             packedPhi_*3.2f/std::numeric_limits<int16_t>::max(),
+                             int16_t(packedEta_)*6.0f/std::numeric_limits<int16_t>::max(),
+                             int16_t(packedPhi_)*3.2f/std::numeric_limits<int16_t>::max(),
                              MiniFloatConverter::float16to32(packedM_));
     p4c_ = p4_;
-    vertex_ = Point(packedX_*5.0f/std::numeric_limits<int16_t>::max(),
-                    packedY_*5.0f/std::numeric_limits<int16_t>::max(),
-                    packedZ_*40.f/std::numeric_limits<int16_t>::max());
+    vertex_ = Point(int16_t(packedX_)*5.0f/std::numeric_limits<int16_t>::max(),
+                    int16_t(packedY_)*5.0f/std::numeric_limits<int16_t>::max(),
+                    int16_t(packedZ_)*40.f/std::numeric_limits<int16_t>::max());
     unpacked_ = true;
 }
 
