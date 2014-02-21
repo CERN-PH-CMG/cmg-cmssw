@@ -43,6 +43,11 @@ namespace cmg {
     double btag(const char* s) const;
     double bDiscriminator(const char* s) const{ return btag(s); }
 
+    enum BTagWP { TCHEL, TCHEM, TCHPT, JPL, JPM, JPT, CSVL, CSVM, CSVT };
+    bool btagWP(BTagWP wp) const ;
+    bool btagWP(const std::string &wp) const ;
+    bool btagWP(const char *wp) const ;
+
     /// \return secondary vertex b-tagging information
     Float_t secvtxMass() const { return secvtxMass_ ; }
     Float_t Lxy() const { return Lxy_ ; }

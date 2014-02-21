@@ -139,7 +139,8 @@ class MuonFactory;
     AlgebraicSymMatrix66 covarianceMatrix() { return covarianceMatrix_; }
 
 
-    enum MuonID { POG_ID_Loose, POG_ID_Soft, POG_ID_Tight, POG_ID_HighPt, POG_PFIso_Loose, POG_PFIso_Tight };
+    enum MuonID { POG_ID_Loose, POG_ID_Soft, POG_ID_Tight, POG_ID_HighPt, POG_PFIso_Loose, POG_PFIso_Tight,
+                  POG_ID_TightNoVtx };
     bool muonID(MuonID id, const reco::Vertex *vtx = 0) const ;
     bool muonID(const std::string &id, const reco::Vertex *vtx = 0) const ;
     bool muonID(const char        *id, const reco::Vertex *vtx = 0) const ;
