@@ -46,20 +46,25 @@ ttHLepAna = cfg.Analyzer(
     electrons='cmgElectronSel',
     photons='cmgPhotonSel',
     isolationCut=0.4, 
+    sip3dCut=10,
+    sip3dCutVeryLoose=100,
     minGoodLeptons=1,
+    minInclusiveLeptons=1,
     doSSLeptons=False,
+    doMuScleFitCorrections=False,
     doRochesterCorrections=True,
-    doElectronScaleCorrections=True,
+    doElectronScaleCorrections=False,
     doRecomputeSIP3D=True,
     doSegmentBasedMuonCleaning=True,
     doEleMuCrossCleaning=True,
     )
 
+
+
 # Lepton MC Matching (must happen earlier to allow for MVA corrections)
 ttHLepMCAna = cfg.Analyzer(
     'ttHLepMCMatchAnalyzer',
     )
-
 
 # Jets Analyzer 
 ttHJetAna = cfg.Analyzer(
@@ -71,9 +76,11 @@ ttHJetAna = cfg.Analyzer(
     jetEtaCentral = 2.4,
     relaxJetId = False,  
     doPuId = True,
-    recalibrateJets = True,
+    recalibrateJets = False,
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
+    cleanJetsFromTaus = False,
     )
+
 
 ## MET Analyzer
 #ttHMETAna = cfg.Analyzer(
@@ -155,11 +162,11 @@ selectedComponents.remove(DYJetsM50)
 selectedComponents.remove(WJets)
 #selectedComponents.remove(TTJets)
 
-test = 0
+test = 1
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
-    comp = selectedComponents[0]
+    comp = QCDMuPt15
     comp.files = comp.files[:1]
     selectedComponents = [comp]
     comp.splitFactor = 1
