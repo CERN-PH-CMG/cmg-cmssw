@@ -34,6 +34,11 @@ process.source = datasetToSource(
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 #process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
+process.source.dropDescendantsOfDroppedBranches = cms.untracked.bool(False)
+process.source.inputCommands = cms.untracked.vstring(
+        'keep *',
+        'drop recoPFTaus_*_*_*'                      
+    )
 
 ###ProductionTaskHook$$$
 
@@ -228,6 +233,8 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) 
 
 if not runOnMC and isNewerThan('CMSSW_5_2_0'):
     process.pfJetMETcorr.jetCorrLabel = cms.string("ak5PFL1FastL2L3Residual")
+if runOnFastSim:
+    process.patElectronsWithRegression.rhoCollection = cms.InputTag("kt6PFJets","rho","HLT")
 
 
 ## Last minute fixes
