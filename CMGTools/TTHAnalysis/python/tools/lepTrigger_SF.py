@@ -3,8 +3,8 @@ from CMGTools.TTHAnalysis.treeReAnalyzer import *
 import re,os
 
 class LepTriggerSF_Event:
-    def __init__(self):
-        tfile = ROOT.TFile("%s/src/CMGTools/TTHAnalysis/data/NotreDame_lepton_SFs.root" % os.environ['CMSSW_BASE'])
+    def __init__(self,file="NotreDame_lepton_SFs.root"):
+        tfile = ROOT.TFile("%s/src/CMGTools/TTHAnalysis/data/%s" % (os.environ['CMSSW_BASE'],file))
         self.hmm = tfile.Get("TwoMuonTriggerSF").Clone("LepTriggerSF_TwoMuonTriggerSF")
         self.hee = tfile.Get("TwoEleTriggerSF").Clone("LepTriggerSF_TwoEleTriggerSF")
         self.hme = tfile.Get("MuonEleTriggerSF").Clone("LepTriggerSF_MuonEleTriggerSF")
