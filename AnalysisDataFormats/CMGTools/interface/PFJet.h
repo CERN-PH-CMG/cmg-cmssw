@@ -10,6 +10,7 @@
 
 #include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJetComponent.h"
+#include "AnalysisDataFormats/CMGTools/interface/QGTag.h"
 
 #include <vector>
 
@@ -77,6 +78,10 @@ namespace cmg {
     float ptdQC()         const {return ptd_qc_;}
     float girth()         const {return girth_;}
     float girth_charged() const {return girth_charged_;}
+    float ptdPOGQGL()     const {return pog_qgl_ptd_;}
+    float axis2POGQGL()   const {return pog_qgl_axis2_;}
+    float multPOGQGL()    const {return pog_qgl_mult_;}
+    float ldPOGQGL()      const {return pog_qgl_ld_;}
 
     /// \return the ptd variable, for quark-gluon jet discrimination 
     /// \sum pt^2 / (\sum pt)^2
@@ -120,6 +125,10 @@ namespace cmg {
     bool jetID(const char *id) const ;
     bool jetID_cpp_(const std::string &id) const { return jetID(id); }
     
+    double quarkGluonID(double rho, QGTag::QG_Training training, QGTag::QG_Correction corr) const ;
+    double quarkGluonID(double rho, const std::string &training, const std::string & correction) const ;
+    double quarkGluonID(double rho, const char *training, const char * correction) const ;
+    double quarkGluonID_cpp_(double rho, const std::string &training, const std::string & correction) const { return quarkGluonID(rho, training, correction); }
 
     friend class PFJetFactory;
     
@@ -180,6 +189,9 @@ namespace cmg {
     //variables for QGdiscrimination
     float girth_;
     float girth_charged_;
+
+    //variables for QGL (reference POG implementation)
+    float pog_qgl_ptd_, pog_qgl_axis2_, pog_qgl_mult_, pog_qgl_ld_;
 
   };
 }
