@@ -26,6 +26,7 @@ if __name__ == "__main__":
     addPlotMakerOptions(parser)
     (options, args) = parser.parse_args()
     options.path = "/afs/cern.ch/work/g/gpetrucc/TREES_250513_HADD"
+    options.lumi = 19.5
     mcap = MCAnalysis(args[0],options)
     mca  = MCAnalysis(args[1],options)
     basedir = dirname(args[2]);
@@ -115,8 +116,18 @@ if __name__ == "__main__":
       else:
         hdata.Draw("E SAME")
       htot.Draw("AXIS SAME")
-      doLegend(plots,mcap,corner=('TL' if '2LSS' in var or "/4l" in args[2] else 'TR'),textSize=0.037,cutoff=0.0001)
-      lspam = options.lspam
+      hSigOutline = plots["ttH"].Clone()
+      hSigOutline.SetLineWidth(5)
+      hSigOutline.SetLineStyle(7)
+      hSigOutline.SetLineColor(205)
+      hSigOutline.SetFillColor(0)
+      hSigOutline.SetFillStyle(1)
+      hSigOutline.Scale(5)
+      hSigOutline.Draw("HIST SAME")
+      #doLegend(plots,mcap,corner=('TL' if '2LSS' in var or "/4l" in args[2] else 'TR'),textSize=0.037,cutoff=0.0001)
+      leg = doLegend(plots,mcap,corner=('TL' if '2LSS' in var or "/4l" in args[2] else 'TR'),textSize=0.045,cutoff=0.0001)
+      leg.AddEntry(hSigOutline, "ttH x 5", "L")
+      lspam = "CMS ttH" #, options.lspam
       if "2lss" in args[2] and "/em/" in args[2]:
             lspam += r", e^{#pm}#mu^{#pm} channel"
       if "2lss" in args[2] and "/ee/" in args[2]:
@@ -127,7 +138,7 @@ if __name__ == "__main__":
             lspam += ", 3l channel"
       if "/4l" in args[2]:
             lspam += ", 4l channel"
-      doTinyCmsPrelim(hasExpo = False,textSize=(0.037 if doRatio else 0.033), xoffs=-0.03,
+      doTinyCmsPrelim(hasExpo = False,textSize=(0.045 if doRatio else 0.033), xoffs=-0.03,
                       textLeft = lspam, textRight = options.rspam, lumi = options.lumi)
       ## Draw relaive prediction in the bottom frame
       p2.cd() 

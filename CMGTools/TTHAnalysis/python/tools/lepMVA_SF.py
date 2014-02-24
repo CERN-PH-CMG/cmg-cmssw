@@ -89,20 +89,20 @@ class AllLepSFs:
         self.f_el.Close()
         self.f_mu.Close()
     def listBranches(self):
-        #return [ 'LepMVALoose_2l', 'LepMVALoose_3l', 'LepMVALoose_4l', 'LepMVATight_2l', 'LepMVATight_3l', 'LepTightCharge_2l', 'LepTightCharge_3l' ]
-        return [ 'LepMVALooseI_2l','LepMVALooseX_2l','LepMVATightI_2l' ]
+        return [ 'LepMVALoose_2l', 'LepMVALoose_3l', 'LepMVALoose_4l', 'LepMVATight_2l', 'LepMVATight_3l', 'LepTightCharge_2l', 'LepTightCharge_3l' ]
+        #return [ 'LepMVALooseI_2l','LepMVALooseX_2l','LepMVATightI_2l' ]
     def __call__(self,event):
         return {
-            #'LepMVALoose_2l' : self.sf_mvaLoose(event,2), 
-            #'LepMVALoose_3l' : self.sf_mvaLoose(event,3), 
-            #'LepMVALoose_4l' : self.sf_mvaLoose(event,4), 
-            #'LepMVATight_2l' : self.sf_mvaTight(event,2), 
-            #'LepMVATight_3l' : self.sf_mvaTight(event,2), 
-            #'LepTightCharge_2l' : self.sf_tightCharge(event,2),
-            #'LepTightCharge_3l' : self.sf_tightCharge(event,2),
-            'LepMVALooseI_2l' : self.sf_mvaLooseI(event,2), 
-            'LepMVALooseX_2l' : self.sf_mvaLooseX(event,2), 
-            'LepMVATightI_2l' : self.sf_mvaTightI(event,2), 
+            'LepMVALoose_2l' : self.sf_mvaLoose(event,2), 
+            'LepMVALoose_3l' : self.sf_mvaLoose(event,3), 
+            'LepMVALoose_4l' : self.sf_mvaLoose(event,4), 
+            'LepMVATight_2l' : self.sf_mvaTight(event,2), 
+            'LepMVATight_3l' : self.sf_mvaTight(event,3), 
+            'LepTightCharge_2l' : self.sf_tightCharge(event,2),
+            'LepTightCharge_3l' : self.sf_tightCharge(event,3),
+            #'LepMVALooseI_2l' : self.sf_mvaLooseI(event,2), 
+            #'LepMVALooseX_2l' : self.sf_mvaLooseX(event,2), 
+            #'LepMVATightI_2l' : self.sf_mvaTightI(event,2), 
         }
 
 if __name__ == '__main__':

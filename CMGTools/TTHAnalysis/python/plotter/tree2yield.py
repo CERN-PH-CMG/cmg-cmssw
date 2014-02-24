@@ -24,7 +24,6 @@ def scalarToVector(x):
     x0 = x
     x = re.sub(r"(LepGood|Lep|JetFwd|Jet|GenTop)(\d)_(\w+)", lambda m : "%s_%s[%d]" % (m.group(1),m.group(3),int(m.group(2))-1), x)
     x = re.sub(r"\bmet\b", "met_pt", x)
-    #print "[%s] -> [%s]\n" % (x0,x)
     return x
 
 class CutsFile:

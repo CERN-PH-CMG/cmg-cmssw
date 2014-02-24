@@ -39,13 +39,13 @@ while True:
     if prefit and norm_p:
         norms[bin][m.group(2)] = [ norm_p.getVal(), norm_p.getError(), norm_s.getVal(), norm_s.getError(), norm_b.getVal(), norm_b.getError() ]
 
-def pp(bin,samples,index=0):
+def pp(bin,samples,index=4):
     global norms,errors
     tot, tote = 0, 0
     for s in samples.split():
         if s not in norms[bin]: continue
-        tot  += norms[bin][s][0]
-        tote += norms[bin][s][1]**2 if "ttH" not in samples else norms[bin][s][1]
+        tot  += norms[bin][s][index+0]
+        tote += norms[bin][s][index+1]**2 if "ttH" not in samples else norms[bin][s][1]
     if tot == 0:
         return "-"
     if "ttH" in samples: tote = tote**2
@@ -58,7 +58,7 @@ def pp(bin,samples,index=0):
         return "%4.1f " % (tot)
 
 def doLine(x,p,hline=False): 
-    bins = [ "2lss_mumu", "2lss_ee", "2lss_em", "tl", "ql" ]
+    bins = [ "ttH_2lss_mumu", "ttH_2lss_ee", "ttH_2lss_em", "tl", "ql" ]
     print "%-30s " % x,
     print " ".join(["& %-18s " % pp(b,p) for b in bins]),
     print r" \\ \hline" if hline else r" \\"
