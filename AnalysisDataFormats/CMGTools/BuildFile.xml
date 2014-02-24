@@ -5,6 +5,7 @@
 <use name="FWCore/FWLite"/>
 <use name="PhysicsTools/SelectorUtils"/>
 <use name="EgammaAnalysis/ElectronTools"/>
+<use name="QuarkGluonTagger/EightTeV"/>
 
 <use name="rootrflx"/>
 
