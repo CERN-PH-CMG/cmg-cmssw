@@ -41,7 +41,7 @@ class JetExtendedProducer : public edm::EDProducer {
       virtual void endJob() ;
 
       // ----------member data --------------------------
-      edm::InputTag src_,vtx_;
+      edm::InputTag src_,vtx_, srcQGTagPOG_;
       std::string payload_;
       bool isJecUncSet_,debug_;
       JetCorrectionUncertainty *jecUnc_;
@@ -53,6 +53,7 @@ JetExtendedProducer::JetExtendedProducer(const edm::ParameterSet& iConfig)
   vtx_     = iConfig.getParameter<edm::InputTag> ("vertices");
   payload_ = iConfig.getParameter<std::string>   ("payload");
   debug_   = iConfig.getUntrackedParameter<bool> ("debug",false);
+  srcQGTagPOG_ = iConfig.getParameter<edm::InputTag> ("qgtagPOG");
 
   produces<pat::JetCollection>();
   isJecUncSet_ = false;
@@ -80,6 +81,13 @@ void JetExtendedProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
   //-------------- Vertex Info -----------------------------------
   Handle<reco::VertexCollection> recVtxs;
   iEvent.getByLabel(vtx_,recVtxs);
+
+  //-------------- Quark Gluon Tagger Info -----------------------------------
+  std::vector<std::string> QGvars{ "qg", "axis2","mult","ptD" };
+  std::vector<edm::Handle<edm::ValueMap<float>>> QGhandles(QGvars.size());
+  for (unsigned int i = 0, n = QGvars.size(); i < n; ++i) {
+      iEvent.getByLabel(edm::InputTag(srcQGTagPOG_.label(), QGvars[i]+"Likelihood", srcQGTagPOG_.process()), QGhandles[i]);
+  }
 
   //-------------- Set the JEC uncertainty object ----------------
   if (!isJecUncSet_ && payload_ != "") {
@@ -388,6 +396,11 @@ void JetExtendedProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     extendedJet.addUserFloat("vtxPt",vtxPt);
     extendedJet.addUserInt("vtxNTracks",vtxNTracks);
     extendedJet.addUserInt("nConstituents",nConstituents);
+
+    edm::Ptr<pat::Jet> jetPtr(pat_jets.ptrAt(jetIdx));
+    for (unsigned int i = 0, n = QGvars.size(); i < n; ++i) {
+        extendedJet.addUserFloat("POG_QGL_"+QGvars[i], (*QGhandles[i])[jetPtr]);
+    }
 
     if (debug_) {
       std::cout<<"pt = "<<extendedJet.pt()<<", eta = "<<extendedJet.eta()<<", beta = "<<beta<<", ptMax = "<<jetPtMax<<", ptD = "<<ptD<<", axis1 = "<<axis1<<", axis2 = "<<axis2<<", tana = "<<tana<<", ttheta = "<<Ttheta<<std::endl;

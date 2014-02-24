@@ -67,7 +67,8 @@ PATCMGPileUpSubtractionSequence = cms.Sequence(
 # RHO's            ----------------------------
 
 from CMGTools.Common.PAT.rho_cff import *
-PATCMGRhoSequence = rhoSequence
+from QuarkGluonTagger.EightTeV.QGTagger_RecoJets_cff import kt6PFJetsIsoQG 
+PATCMGRhoSequence = rhoSequence + kt6PFJetsIsoQG
 
 
 # MUONS           ----------------------------

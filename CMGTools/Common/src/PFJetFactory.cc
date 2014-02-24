@@ -293,4 +293,8 @@ void cmg::PFJetFactory::setPFproperties(const pat::Jet& jet, cmg::PFJet* cmgjet,
     cmgjet->n_charged_ptcut_qc_ = jet.userInt("nChg_ptCut_QC");
     cmgjet->n_neutral_          = jet.userInt("nNeutral");
     cmgjet->n_neutral_ptcut_    = jet.userInt("nNeutral_ptCut");      
+    cmgjet->pog_qgl_ld_         = jet.userFloat("POG_QGL_qg");
+    cmgjet->pog_qgl_axis2_      = jet.userFloat("POG_QGL_axis2"); 
+    cmgjet->pog_qgl_mult_       = jet.userFloat("POG_QGL_mult"); 
+    cmgjet->pog_qgl_ptd_        = jet.userFloat("POG_QGL_ptD"); 
 }
