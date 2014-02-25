@@ -11,11 +11,11 @@ QGSyst::QGSyst()
 //-------- Destructor -------
 QGSyst::~QGSyst()
 {
-	if(database_.is_open()) database_.close();
 }
 //----------Read Database ----------
 void QGSyst::ReadDatabase(std::string fileName)
 {
+        std::ifstream database_;
 	database_.open(fileName.c_str(),std::ios::in);
 	if( !database_.is_open() ) { std::cerr<<"ERROR: File "<<fileName<<" not open"<<std::endl; return;}
 	std::string line;
@@ -44,6 +44,7 @@ void QGSyst::ReadDatabase(std::string fileName)
 
 void QGSyst::ReadDatabaseDoubleMin(std::string fileName)
 {
+        std::ifstream database_;
 	database_.open(fileName.c_str(),std::ios::in);
 	if( !database_.is_open() ) { std::cerr<<"ERROR: File "<<fileName<<" not open"<<std::endl; return;}
 	std::string line;
