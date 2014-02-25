@@ -49,8 +49,6 @@ public:
 	void ReadDatabaseDoubleMin(std::string fileName);
 private:
 	std::string tagger_;
-	//FILE *database_;
-	std::ifstream database_;
 	std::map<QGSystBin,QGSystParameters> corrections_;
 	std::map<QGSystBin,QGSystParameters> corrections_quark_;
 	std::map<QGSystBin,QGSystParameters> corrections_gluon_;
