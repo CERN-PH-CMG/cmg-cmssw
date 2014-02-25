@@ -53,8 +53,12 @@ namespace cmg {
     Float_t Lxy() const { return Lxy_ ; }
     Float_t LxyErr() const { return LxyErr_; }
    
-    /// \return the matched MC parton flavour
+    /// \return the matched MC parton flavour (from the shower, used e.g. for b-tagging)
     Int_t partonFlavour() const{ return partonFlavour_;}
+   
+    /// \return the pdgId of the matched MC parton from hard scattering (i.e. the closest quark or gluon of status == 3)
+    Int_t partonPdgId() const{ return partonPdgId_;}
+
     
     /// \return the jet area 
     float jetArea() const {return jetArea_;} 
@@ -90,6 +94,7 @@ namespace cmg {
 
     //parton flavour
     Int_t partonFlavour_;
+    Int_t partonPdgId_;
 
     /// jet area
     float  jetArea_;
