@@ -7,10 +7,11 @@ class AutoHandle( Handle, object ):
 
     handles = {}
     
-    def __init__(self, label, type):
+    def __init__(self, label, type, mayFail=False):
         '''Note: label can be a tuple : (module_label, collection_label, process)'''
         self.label = label
         self.type = type
+        self.mayFail = mayFail
         Handle.__init__(self, self.type)
 
     def Load(self, event):
@@ -25,5 +26,6 @@ class AutoHandle( Handle, object ):
             type = {type}
             label = {label}
             '''.format(type = self.type, label = self.label)
-            raise ValueError(errstr)
+            if not self.mayFail:
+                raise ValueError(errstr)
             
