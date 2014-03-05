@@ -35,7 +35,7 @@ class susyParameterScanAnalyzer( Analyzer ):
         #mc information
         self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                      'std::vector<reco::GenParticle>' )
-        self.mchandles['lhe'] = AutoHandle( 'source', 'LHEEventProduct' )
+        self.mchandles['lhe'] = AutoHandle( 'source', 'LHEEventProduct', mayFail = True )
         
     def beginLoop(self):
         super(susyParameterScanAnalyzer,self).beginLoop()
@@ -60,6 +60,11 @@ class susyParameterScanAnalyzer( Analyzer ):
             setattr(event, "genSusyM"+p, avgmass)
 
     def readLHE(self,event):
+        if not self.mchandles['lhe'].isValid():
+            if not hasattr(self,"warned_already"):
+                print "ERROR: Missing LHE header in file"
+                self.warned_already = True
+            return
         lheprod = self.mchandles['lhe'].product()
         scanline = re.compile(r"#\s*model\s+([A-Za-z0-9]+)_((\d+\.?\d*)(_\d+\.?\d*)*)\s+(\d+\.?\d*)\s*")
         for i in xrange(lheprod.comments_size()):
