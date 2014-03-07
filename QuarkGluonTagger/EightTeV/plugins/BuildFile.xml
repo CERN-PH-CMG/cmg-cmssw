@@ -1,0 +1,9 @@
+<use name="QuarkGluonTagger/EightTeV"/>
+<use name="FWCore/Framework"/>
+<use name="FWCore/PluginManager"/>
+<use name="FWCore/ParameterSet"/>
+<use name="FWCore/MessageLogger"/>
+<use name="root"/>
+<use name="roottmva"/>
+<use name="clhepheader"/>
+<flags EDM_PLUGIN="1"/>

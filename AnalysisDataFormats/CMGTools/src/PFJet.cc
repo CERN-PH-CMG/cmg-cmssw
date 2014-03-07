@@ -82,5 +82,26 @@ bool cmg::PFJet::jetID(const char *id) const
 {
     return jetID(std::string(id));
 }
+double cmg::PFJet::quarkGluonID(double rho, QGTag::QG_Training training, QGTag::QG_Correction corr) const {
+    return QGTag::getLD(*this, rho, training, corr);
+}
+double cmg::PFJet::quarkGluonID(double rho, const std::string &training, const std::string & correction) const {
+    QGTag::QG_Training train; QGTag::QG_Correction corr;
+    if (training == "LD") train = QGTag::LD;
+    else if (training == "LD_CHS") train = QGTag::LD_CHS;
+    else if (training == "LD_CMGVARS") train = QGTag::LD_CMGVARS;
+    else if (training == "LD_CHS_CMGVARS") train = QGTag::LD_CHS_CMGVARS;
+    else if (training == "VBFHBB") train = QGTag::VBFHBB;
+    else throw cms::Exception("Training not implemented", training);
+    
+    if (correction == "None") corr = QGTag::None;
+    else if (correction == "Data") corr = QGTag::Data;
+    else if (correction == "Pythia") corr = QGTag::Pythia;
+    else if (correction == "Herwig") corr = QGTag::Herwig;
+    else throw cms::Exception("Correction not implemented", correction);
 
-
+    return quarkGluonID(rho, train, corr);
+}
+double cmg::PFJet::quarkGluonID(double rho, const char *training, const char * correction) const {
+    return quarkGluonID(rho, std::string(training), std::string(correction));
+}

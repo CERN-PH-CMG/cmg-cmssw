@@ -96,12 +96,22 @@ jetsPtGt1 = cmgCandSel.clone( src = 'patJets', cut = jetsPtGt1Cut )
 from CMGTools.Common.miscProducers.collectionSize.candidateSize_cfi import candidateSize
 nJetsPtGt1 = candidateSize.clone( src = 'jetsPtGt1' )
 
+# QG Tagger
+QGTagger = cms.EDProducer('QGTagger',
+  srcJets   = cms.InputTag('selectedPatJets'),
+  isPatJet  = cms.untracked.bool(True),
+  useCHS    = cms.untracked.bool(False),
+  srcRho    = cms.InputTag('kt6PFJets','rho'),
+  srcRhoIso = cms.InputTag('kt6PFJetsIsoQG','rho'),
+)
+
 # jet extender
 patJetsWithVar = cms.EDProducer('JetExtendedProducer',
     jets     = cms.InputTag('selectedPatJets'),
     vertices = cms.InputTag('goodOfflinePrimaryVertices'),
     #debug   = cms.untracked.bool(True),
-    payload  = cms.string('AK5PF')
+    payload  = cms.string('AK5PF'),
+    qgtagPOG = cms.InputTag('QGTagger'),    
 )
 
 outPFCand = cms.EDProducer('VbfHbbPFCandOutOfJets',
@@ -135,6 +145,7 @@ PATJetSequence = cms.Sequence(
     jetsPtGt1 +
     nJetsPtGt1 + 
     selectedPatJets +
+    QGTagger +
     patJetsWithVar +
     puJetId +
     outPFCand +

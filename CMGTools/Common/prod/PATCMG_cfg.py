@@ -114,6 +114,7 @@ process.patJetCorrFactorsCHS.payload = jecPayload
 process.puJetIdCHS.jec = jecPayload
 process.cmgPUJetMvaCHS.jec = jecPayload
 process.selectedPatJetsCHS.cut = 'pt()>10'
+process.QGTaggerCHS.useCHS = True
 
 
 ########################################################

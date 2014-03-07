@@ -76,6 +76,7 @@ void cmg::BaseJetFactory::set(const pat::JetPtr& input,
     if( input->hasUserFloat("LxyErr") ) output->LxyErr_ = input->userFloat("LxyErr"); 
 
     output->partonFlavour_ = input->partonFlavour();
+    output->partonPdgId_ = input->genParton() ? input->genParton()->pdgId() : 0;
     
     output->jetArea_ = input->jetArea();
 
