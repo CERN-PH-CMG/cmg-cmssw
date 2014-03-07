@@ -195,12 +195,16 @@ process.outcmg = cms.OutputModule(
     )
 
 process.outpath += process.outcmg
-# you can uncomment this below to test the 16-bit-packed cmgCandidates
-# process.outcmg.outputCommands.append('keep cmgPackedCandidates_cmgCandidates_*_*') 
-# process.outcmg.outputCommands.append('drop cmgCandidates_cmgCandidates_*_*') 
-
-
-
+# These commands below will select the 'light' version of the CMG tuple:
+#  - 16bit PF Candidates
+#  - TriggerPrescales instead of fat single TriggerObject
+#  - slimmed PVs (without track references)
+process.outcmg.outputCommands.append('keep cmgPackedCandidates_cmgCandidates_*_*') 
+process.outcmg.outputCommands.append('drop cmgCandidates_cmgCandidates_*_*') 
+process.outcmg.outputCommands.append('keep *_cmgTriggerPrescales_*_*') 
+process.outcmg.outputCommands.append('drop *_cmgTriggerObjectSel_*_*') 
+process.outcmg.outputCommands.append('drop *_offlinePrimaryVertices_*_*') 
+process.outcmg.outputCommands.append('keep *_slimmedPrimaryVertices_*_*') 
 
 ########################################################
 ## Conditions 
