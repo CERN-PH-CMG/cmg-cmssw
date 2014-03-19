@@ -79,7 +79,7 @@ class BaseDumper(Module):
     def analyze(self,ev):
         self.makeVars(ev)
         if self.options.fmt: 
-            print string.Formatter().vformat(options.fmt,[],ev)
+            print string.Formatter().vformat(options.fmt.replace("\\t","\t"),[],ev)
             return True
         print "run %6d lumi %4d event %11d : leptons %d (MVA loose %d, MVA tight %d), jets %d (CSV loose %d, CSV medium %d)" % (
                 ev.run, ev.lumi, ev.evt, ev.nLepGood, len(self.lepsMVAL), len(self.lepsMVAT), ev.nJet25, ev.nBJetLoose25, ev.nBJetMedium25)
