@@ -316,9 +316,15 @@ class TreeToYield:
         histo = None
         canKeys = False
         if ":" in expr.replace("::","--"):
-            (nbx,xmin,xmax,nby,ymin,ymax) = bins.split(",")
-            histo = ROOT.TH2F("dummy","dummy",int(nbx),float(xmin),float(xmax),int(nby),float(ymin),float(ymax))
-            unbinnedData2D = (self._name == "data") and unbinnedData2D
+            if bins[0] == "[":
+                xbins, ybins = bins.split("*")
+                xedges = [ float(f) for f in xbins[1:-1].split(",") ]
+                yedges = [ float(f) for f in ybins[1:-1].split(",") ]
+                histo = ROOT.TH2F("dummy","dummy",len(xedges)-1,array('f',xedges),len(yedges)-1,array('f',yedges))
+            else:
+                (nbx,xmin,xmax,nby,ymin,ymax) = bins.split(",")
+                histo = ROOT.TH2F("dummy","dummy",int(nbx),float(xmin),float(xmax),int(nby),float(ymin),float(ymax))
+                unbinnedData2D = (self._name == "data") and unbinnedData2D
         else:
             if bins[0] == "[":
                 edges = [ float(f) for f in bins[1:-1].split(",") ]
