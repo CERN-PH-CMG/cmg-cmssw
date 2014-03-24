@@ -129,8 +129,11 @@ class CMSDataset( BaseDataset ):
         sampleName = self.name.rstrip('/')
         query = sampleName
         if self.run_range is not None and self.run_range != (-1,-1):
-            print self.run_range
-            raise RuntimeError, "Run ranges not supported at the moment with das_client"
+            if self.run_range[0] == self.run_range[1]:
+                query += "   run=%s" % self.run_range[0]
+            else:
+                print "WARNING: queries with run ranges are slow in DAS"
+                query += "   run between [%s,%s]" % ( self.run_range[0],self.run_range[1] )
         dbs='das_client.py --query="file dataset=%s"'%query
         if begin >= 0:
             dbs += ' --index %d' % begin
@@ -171,12 +174,12 @@ class CMSDataset( BaseDataset ):
     def findPrimaryDatasetEntries(dataset, runmin, runmax):
 
         query = dataset
-        if runmin > 0:
-            raise RuntimeError, "Run ranges not supported at the moment with das_client"
-            query = "%s and run >= %i" % (query,runmin)
-        if runmax > 0:
-            raise RuntimeError, "Run ranges not supported at the moment with das_client"
-            query = "%s and run <= %i" % (query,runmax)
+        if runmin >0 or runmax > 0:
+            if runmin == runmax:
+                query = "%s run=%d" % (query,runmin)
+            else:
+                print "WARNING: queries with run ranges are slow in DAS"
+                query = "%s run between [%d, %d]" % (query,runmin if runmin > 0 else 1, runmax if runmax > 0 else 999999)
         dbs='das_client.py --query="summary dataset=%s"'%query
         dbsOut = os.popen(dbs).readlines()
 
@@ -193,12 +196,12 @@ class CMSDataset( BaseDataset ):
     def findPrimaryDatasetNumFiles(dataset, runmin, runmax):
 
         query = dataset
-        if runmin > 0:
-            raise RuntimeError, "Run ranges not supported at the moment with das_client"
-            query = "%s and run >= %i" % (query,runmin)
-        if runmax > 0:
-            raise RuntimeError, "Run ranges not supported at the moment with das_client"
-            query = "%s and run <= %i" % (query,runmax)
+        if runmin >0 or runmax > 0:
+            if runmin == runmax:
+                query = "%s run=%d" % (query,runmin)
+            else:
+                print "WARNING: queries with run ranges are slow in DAS"
+                query = "%s run between [%d, %d]" % (query,runmin if runmin > 0 else 1, runmax if runmax > 0 else 999999)
         dbs='das_client.py --query="summary dataset=%s"'%query
         dbsOut = os.popen(dbs).readlines()
 
