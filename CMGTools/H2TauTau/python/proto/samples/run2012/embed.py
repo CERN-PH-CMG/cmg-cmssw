@@ -1,7 +1,6 @@
 import copy
 import os
 import CMGTools.RootTools.fwlite.Config as cfg
-from   CMGTools.H2TauTau.proto.samples.getFiles import getFiles
 
 vertexFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012/Vertices'
 
