@@ -16,19 +16,12 @@ aug6_2012 = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8T
 aug24_2012 = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_198022-198523_8TeV_24Aug2012ReReco_Collisions12_JSON.txt'
 jul13_2012 = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON_v2.txt'
 
+jan22_2013 = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
+
 
 jsonMap = {
     #
-    # 2011. not sure the prompt reco json should be used in this case
-    #
-    '/DoubleMu/Run2011A-16Jan2012-v1/AOD':pr2011,
-    '/DoubleMu/Run2011B-16Jan2012-v1/AOD':pr2011,
-    #
     # 2012
     #
-    '/DoubleMu/Run2012A-13Jul2012-v1/AOD':jul13_2012,
-    '/DoubleMu/Run2012A-recover-06Aug2012-v1':aug6_2012,
-    '/DoubleMu/Run2012B-13Jul2012-v4/AOD':jul13_2012,
-    '/DoubleMu/Run2012C-24Aug2012-v1':aug24_2012,
-    '/DoubleMu/Run2012C-PromptReco-v2/AOD':pr2012C,
+    '.*22Jan2013-v1.*':jan22_2013,
     }
