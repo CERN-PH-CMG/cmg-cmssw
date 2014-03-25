@@ -24,11 +24,10 @@ aliases = {
     '/WW_TuneZ2star_8TeV.*':'WW',
     '/WZ_TuneZ2star_8TeV.*':'WZ',
     '/ZZ_TuneZ2star_8TeV.*':'ZZ',
-    '/DoubleMu/Run2012A-13Jul2012-v1':'data_Run2012A',
-    '/DoubleMu/Run2012A-recover-06Aug2012-v1':'data_Run2012A_aug6',
-    '/DoubleMu/Run2012B-13Jul2012-v4':'data_Run2012B',
-    '/DoubleMu/Run2012C-24Aug2012-v1':'data_Run2012C_v1',
-    '/DoubleMu/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_10_0_runrange_start-203002':'data_Run2012C_v2',
+    '/DoubleMu/Run2012A-22Jan2013-v1':'data_Run2012A',
+    '/DoubleMuParked/Run2012B-22Jan2013-v1':'data_Run2012B',
+    '/DoubleMuParked/Run2012C-22Jan2013-v1':'data_Run2012C',
+    '/DoubleMuParked/Run2012D-22Jan2013-v1':'data_Run2012D',
     }
 
 
@@ -43,7 +42,7 @@ allsamples.extend( data_list )
 # % represents the wildcard.
 # this pattern allows to select a whole group of samples.
 
-connect( allsamples, '%PAT_CMG_V5_14_0', 'cmgTuple.*root', aliases, cache=True, verbose=False)
+connect( allsamples, '%CMGPF_V5_16_0', 'cmgTuple.*root', aliases, cache=True, verbose=False)
 
 
 
