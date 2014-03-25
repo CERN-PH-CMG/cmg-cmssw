@@ -86,9 +86,9 @@ jetAna = cfg.Analyzer(
 ##     cjvPtCut = 30.,
 ##     )
 
-## treeProducer = cfg.Analyzer(
-##     'ZJetsTreeProducer'
-##     )
+treeProducer = cfg.Analyzer(
+     'PFTreeProducer'
+     )
 
 
 ###############################################################################
@@ -138,7 +138,7 @@ sequence = cfg.Sequence( [
     # ZMuMuRochCor, 
     jetAna,
     # vbfAna,
-    # treeProducer
+    treeProducer
    ] )
 
 
