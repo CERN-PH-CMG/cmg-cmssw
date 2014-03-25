@@ -6,13 +6,16 @@ import re
 
 def lfnToDataset( lfn ):
     '''If lfn contains A/CMG/B, returns /B. Otherwise, returns lfn.'''
-    pattern = re.compile( '.*/CMG(\S+)' )
+    # The CMG that we capture in the regexp below corresponds to the
+    # CMG directory that every user should have. The group space is supported
+    pattern = re.compile( '.*/cmst3/+[^/]+/+[^/]+/+CMG(\S+)' )
     match = pattern.match( lfn )
     if match is not None:
         dataset = match.group(1)
         # print dataset
         return dataset
     return lfn
+
 
 def jsonPick( dataset, jsonMap):
     """
@@ -38,7 +41,7 @@ def jsonPick( dataset, jsonMap):
     This map will e.g. give the dcs2011 json for all datasets containing Run2011
     in their name. 
     """
-
+    
     dataset = lfnToDataset(dataset)
 
     # stripping out the last part of the dataset name
@@ -55,7 +58,7 @@ def jsonPick( dataset, jsonMap):
         if pat.match(baseDataSet):
             jsonFiles.append(value)
     if len(jsonFiles)==0:
-        raise ValueError('No json file found')
+        raise ValueError('No json file found for ' + dataset)
     elif len(jsonFiles)>1:
         raise ValueError('Too many json files found')
     else:
@@ -86,6 +89,7 @@ if __name__ == '__main__':
 
                '/DoubleMu/StoreResults-DoubleMu_Run2012B_13Jul2012_v4_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/blah',
                '/store/cmst3/user/cmgtools/CMG/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_4_0/tree_CMG_648.root',
+               'root://eoscms//eos/cms/store/cmst3/user/cmgtools/CMG/DoubleMu/Run2012A-22Jan2013-v1/AOD/CMGPF_V5_16_0/cmgTuple_1.root',
                'should_fail_for_this_sample_name'
                ]
 
