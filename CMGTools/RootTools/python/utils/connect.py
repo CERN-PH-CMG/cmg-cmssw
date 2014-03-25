@@ -7,7 +7,7 @@ import subprocess
 import re
 
 from CMGTools.Production.cmgdbApi import CmgdbApi
-from CMGTools.RootTools.utils.getFiles import getFiles
+from CMGTools.H2TauTau.proto.samples.getFiles import getFiles
 
 db = CmgdbApi()
 db.connect()
@@ -24,6 +24,7 @@ def findFirstAncestor(dataset_id, info):
                   'tauEle_fullsel_tree', 'diTau_fullsel_tree_CMG', 'diTau_fullsel_tree','cmgTuple', 'PFAOD'] 
         igroup = 0
         while 1:
+            #import pdb ; pdb.set_trace()
             ginfo = groupInfo(dataset_id, groups[igroup])
             if ginfo != None:
                 break
@@ -130,42 +131,16 @@ def processInfo(info):
             step = 'MERGE'
         else:
             step = 'Unknown'
-                
-        ## RIC: need to find a way to get the productions efficiency for the samples produced via GRID in 
-        ## PAT_CMG_V5_16_0 campaign. For these samples the Logger.tgz file is missing and njobs information is lost
-        ngood = 0
-        ## RIC: if publish went fine nbad and nmiss should be well defined and >= 0
-        try    :
-          nmiss + nbad >= 0
-          ngood = njobs - nmiss - nbad
-        ## RIC: if publish the dataset has been published with -f option, Logger.tgz is missing and these info are not available
-        except :           
-          print 'WARNING! publish informations are corrupted'
-          njobs = 0.
-          nbad  = 0.
-          nmiss = 0.
-          
-          #njobs, nbad, nmiss = retrieveInfosFromBadPublished(ds) ## not really needed
-        
-        if nmiss+nbad == 0 and njobs>0 :
-            job_eff = 1.
-        else:
-            ## RIC: catch if the dataset has been skimmed or not. If it ends with PAT_CMG_V5_16_0 tier it has not been skimmed
-            ## therefore the production effiency is equal to dataset_fraction
-            if ds['path_name'].endswith('PAT_CMG_V5_16_0') :
-              job_eff = ds['dataset_fraction']
-            ## RIC: if the sample is skimmed en error is thrown here, as njobs is set to 0
-            else :
-              job_eff = 1. - (nmiss + nbad)/float(njobs)
-        
-        if job_eff > 1. :
-          print 'WARNING!: efficiency greater than one, set at 1. by hand, please CHECK!'
-          job_eff = 1.
-        
-        if fraction > 1.:
-          print 'WARNING!: fraction greater than one,', fraction, ', set to 1. by hand, please CHECK!'
-          fraction = 1.
 
+        try    :
+          nmiss + nbad 
+        except : 
+          njobs, nbad, nmiss = retrieveInfosFromBadPublished(ds)
+        
+        if nmiss+nbad == 0:
+            job_eff = 1
+        else:
+            job_eff = 1 - (nmiss + nbad)/float(njobs)
         # print 'job efficiency', job_eff
         if njobs and fraction :
             if job_eff - fraction > 0.1:
@@ -182,8 +157,7 @@ def processInfo(info):
                              fraction  = fraction,
                              skim      = skim,
                              task_id   = task_id,
-                             pde       = pde,
-                             ngood     = ngood
+                             pde       = pde
                              )
                        )
         # pprint.pprint( dsInfo[-1] ) 
@@ -330,7 +304,6 @@ def connectSample(components, row, filePattern, aliases, cache, verbose):
             eff = 1.0 # not to double count with PATCMG
         else:
             eff = step['jobeff']
-
         if eff is None:
             print 'WARNING: efficiency not determined for',compName
             eff = 0.0
@@ -365,14 +338,6 @@ def connectSample(components, row, filePattern, aliases, cache, verbose):
     print 'LOADING:', comp.name, path_name, nEvents, globalEff, taskurl
     # print dsInfo
     comp.files = getFiles(path_name, file_owner, filePattern, cache)
-    if len(comp.files) != dsInfo[0]['ngood']:
-        print 'WARNING: Re-retrieving job list for sample', comp.name
-        print 'Good files', dsInfo[0]['ngood'], 'found files', len(comp.files)
-        comp.files = getFiles(path_name, file_owner, filePattern, False)
-        print 'UPDATE: Good files', dsInfo[0]['ngood'], 'found files', len(comp.files)
-        if len(comp.files) > dsInfo[0]['ngood']:
-            print 'N(files) > N(good files): You may need to republish the sample'
-
     if comp.name.startswith('data_'):
         if globalEff<0.99:
             print 'ARGH! data sample is not complete.', taskurl

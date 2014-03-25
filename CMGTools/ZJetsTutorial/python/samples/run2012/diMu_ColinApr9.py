@@ -42,6 +42,7 @@ allsamples.extend( data_list )
 # the pattern provided to this function is a SQL pattern.
 # % represents the wildcard.
 # this pattern allows to select a whole group of samples.
+
 connect( allsamples, '%PAT_CMG_V5_14_0', 'cmgTuple.*root', aliases, cache=True, verbose=False)
 
 
