@@ -97,7 +97,7 @@ jetAna = cfg.Analyzer(
 from CMGTools.ZJetsTutorial.samples.run2012.ewk import DYJets
 from CMGTools.RootTools.utils.getFiles import getFiles
 
-DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_16_0', 'cmgtools', '*.root')
+DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_16_0', 'cmgtools', '.*root')
 
 ###############################################################################
 
