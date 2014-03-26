@@ -39,8 +39,7 @@ data_Run2012C = cfg.DataComponent(
 data_Run2012D = cfg.DataComponent(
     name = 'data_Run2012D',
     files = [],
-    # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2 |      51089 | 4.428(/fb) | 4.428(/fb) |
-    intLumi = 4420., # 4420. from Colin
+    intLumi = 1., # I don't know the lumi 
     triggers = [],
     json = None
     )
