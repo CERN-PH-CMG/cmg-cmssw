@@ -93,7 +93,7 @@ treeProducer = cfg.Analyzer(
 ###############################################################################
 
 
-from CMGTools.ZJetsTutorial.samples.run2012.diMu_ColinApr9 import *
+from CMGTools.ZJetsTutorial.samples.run2012.diMu_26March2014 import *
 
 ###############################################################################
 
@@ -144,19 +144,20 @@ sequence = cfg.Sequence( [
 
 
 # set test = 0 to run all jobs, in case you are using pybatch.py
-test = 1
+test = 0
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
     comp = DYJets
-    comp.files = comp.files[:10]
+    comp.files = comp.files[:20]
     selectedComponents = [comp]
-    comp.splitFactor = 1
+    comp.splitFactor = 6
 elif test==2:    
     # test all components (1 thread per component.
     # important to make sure that your code runs on any kind of component
+    selectedComponents = data_list
     for comp in selectedComponents:
-        comp.splitFactor = 1
+        comp.splitFactor = 3
         comp.files = comp.files[:3]
 
 # creation of the processing configuration.
