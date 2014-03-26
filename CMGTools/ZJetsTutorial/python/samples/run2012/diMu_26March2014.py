@@ -45,7 +45,6 @@ allsamples.extend( data_list )
 connect( allsamples, '%CMGPF_V5_16_0', 'cmgTuple.*root', aliases, cache=True, verbose=False)
 
 
-
 # guessing the best split factor for each component,
 # to get about the same number of events in each job
 for c in allsamples:
@@ -57,6 +56,6 @@ for data in data_list:
         data.json = jsonPick( data.files[0], jsonMap )
 
 
-
-
-
+if __name__ == '__main__':
+    from CMGTools.RootTools.fwlite.Config import printComps
+    printComps(allsamples, True)
