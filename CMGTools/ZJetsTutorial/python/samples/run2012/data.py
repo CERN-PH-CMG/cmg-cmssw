@@ -9,10 +9,7 @@ import copy
 data_Run2012A = cfg.DataComponent(
     name = 'data_Run2012A',
     files = [],
-    # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4 |       2809 |  96.404(/pb) |  96.404(/pb) |
-    # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v5 |       5258 | 316.016(/pb) | 316.016(/pb) |
-    # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v6 |       6514 | 395.991(/pb) | 395.991(/pb) |
-    intLumi = 806.194, # 806.194 from Colin
+    intLumi = 890., # 806.194 from Colin
     triggers = [],
     json = None
     )
@@ -21,8 +18,7 @@ data_Run2012A = cfg.DataComponent(
 data_Run2012B = cfg.DataComponent(
     name = 'data_Run2012B',
     files = [],
-    # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2 |      51089 | 4.428(/fb) | 4.428(/fb) |
-    intLumi = 4420., # 4420. from Colin
+    intLumi = 4429.,
     triggers = [],
     json = None
     )
@@ -31,7 +27,7 @@ data_Run2012C = cfg.DataComponent(
     name = 'data_Run2012C',
     files = [],
     # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3 |       6719 | 495.003(/pb) | 495.003(/pb) |
-    intLumi = 493.975, # 493.975 from Colin
+    intLumi = 7153.,
     triggers = [],
     json = None
     )
@@ -39,7 +35,7 @@ data_Run2012C = cfg.DataComponent(
 data_Run2012D = cfg.DataComponent(
     name = 'data_Run2012D',
     files = [],
-    intLumi = 1., # I don't know the lumi 
+    intLumi = 7318., # I don't know the lumi 
     triggers = [],
     json = None
     )

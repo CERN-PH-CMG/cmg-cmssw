@@ -144,14 +144,14 @@ sequence = cfg.Sequence( [
 
 
 # set test = 0 to run all jobs, in case you are using pybatch.py
-test = 0
+test = 1
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
     comp = DYJets
-    comp.files = comp.files[:20]
+    comp.files = comp.files[:5]
     selectedComponents = [comp]
-    comp.splitFactor = 6
+    comp.splitFactor = 1
 elif test==2:    
     # test all components (1 thread per component.
     # important to make sure that your code runs on any kind of component
