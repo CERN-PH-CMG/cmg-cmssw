@@ -2,7 +2,7 @@ import copy
 import os 
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
-from   CMGTools.H2TauTau.proto.samples.getFiles import getFiles
+from   CMGTools.RootTools.utils.getFiles import getFiles
 
 
 from CMGTools.RootTools.RootTools import * 

@@ -1,7 +1,6 @@
 import copy
 import os
 import CMGTools.RootTools.fwlite.Config as cfg
-from   CMGTools.H2TauTau.proto.samples.getFiles import getFiles
 
 #COLIN: I'm not completely sure we should use the jsons in our package.
 # what about using the official ones? At least, one should check if it makes any difference

@@ -13,6 +13,7 @@ def printComps(comps, details=False):
     for c in comps:
         if not hasattr(c, 'splitFactor'):
             c.splitFactor = 1
+        print 
         print c.name, c.splitFactor, len(c.files)
         if len(c.files)==0:
             continue
