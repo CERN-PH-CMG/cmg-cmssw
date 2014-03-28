@@ -32,13 +32,18 @@ class BTag_SFb:
                 self._SFbErrs[tagger] = []
                 #print "Found tagger",tagger,": SFb = ",m.group(1)
             if re.match("\s*SFb_error\[\]\s*=\s*\{",line):
-                for b in self._ptbins:
+                for ib,b in enumerate(self._ptbins):
                     errline = file.next()
                     m =  re.match(r"\s*(\d+\.\d+)\s*(,|\}).*", errline)
                     if not m: raise RuntimeError, "Missing uncertainty for pt bin %s for tagger %s" % (b,tagger)
                     self._SFbErrs[tagger].append(float(m.group(1)))
                     if (b == self._ptbins[-1]) != ("}" == m.group(2)):
-                        raise RuntimeError, "Mismatching uncertainties for tagger %s at line %x" % (tagger,errline)
+                        if "CSVSLV1" in tagger and "}" == m.group(2):
+                            for b2 in self._ptbins[ib+1:]:
+                                self._SFbErrs[tagger].append(2*float(m.group(1)))
+                            break
+                        else:
+                            raise RuntimeError, "Mismatching uncertainties for tagger %s at line %s" % (tagger,errline)
     def __call__(self,tagger,jet,syst=0):
         ret = self._SFb[tagger](jet.pt)
         if len(self._SFbErrs[tagger]) != len(self._ptbins):
@@ -145,8 +150,10 @@ class BTagSFEventErrs:
         }
 
 bTagSFEvent3WP = BTagSFEvent(
-    BTag_SFb("%s/src/CMGTools/TTHAnalysis/data/btag/SFb-pt_payload_Moriond13.txt" % os.environ['CMSSW_BASE']),
-    BTag_SFLight("%s/src/CMGTools/TTHAnalysis/data/btag/SFLightFuncs_Moriond2013_ABCD.txt" % os.environ['CMSSW_BASE']),
+    #BTag_SFb("%s/src/CMGTools/TTHAnalysis/data/btag/SFb-pt_payload_Moriond13.txt" % os.environ['CMSSW_BASE']),
+    #BTag_SFLight("%s/src/CMGTools/TTHAnalysis/data/btag/SFLightFuncs_Moriond2013_ABCD.txt" % os.environ['CMSSW_BASE']),
+    BTag_SFb("%s/src/CMGTools/TTHAnalysis/data/btag/SFb-pt_WITHttbar_payload_EPS13.txt" % os.environ['CMSSW_BASE']),
+    BTag_SFLight("%s/src/CMGTools/TTHAnalysis/data/btag/SFlightFuncs_EPS2013.C.txt" % os.environ['CMSSW_BASE']),
     "%s/src/CMGTools/TTHAnalysis/data/btag/bTagEff_TTMC.root" % os.environ['CMSSW_BASE'],
     WPs=[('CSVT',0.898), ('CSVM',0.679), ('CSVL',0.244) ]
 )
@@ -155,7 +162,8 @@ bTagSFEvent3WPErrs = BTagSFEventErrs(bTagSFEvent3WP)
 if __name__ == '__main__':
     from sys import argv
     file = ROOT.TFile(argv[1])
-    tree = file.Get("ttHLepTreeProducerBase")
+    tree = file.Get("ttHLepTreeProducerTTH")
+    tree.vectorTree = True
     class Tester(Module):
         def __init__(self, name, sfe1,sfe2,sfe3):
             Module.__init__(self,name,None)
