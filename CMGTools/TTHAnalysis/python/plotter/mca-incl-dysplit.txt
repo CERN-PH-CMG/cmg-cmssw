@@ -19,7 +19,9 @@ ZZ       : ZZTo4e:     0.07691  ;  FillColor=ROOT.kAzure-9
 ZZ       : ZZTo4tau:   0.07691  ;  FillColor=ROOT.kAzure-9
 #ZZ       : ZZJets4L:   0.157    ;  FillColor=ROOT.kAzure-9
 #TT 	 : TTLep:      23.64    ;  FillColor=ROOT.kGray
-TT 	 : TTJets:     225.2    ;  FillColor=ROOT.kGray
+TT 	 : TTJetsLep:     25.77: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)    ;  FillColor=ROOT.kGray, NormSystematic=0.2, Label="top"
+TT 	 : TTJetsSem:	  107.53: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)     ; 
+TT 	 : TTJetsHad:     112.16: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)    ; 
 TW 	 : TtW:        11.73    ;  FillColor=ROOT.kGray+2
 TW 	 : TbartW:     11.73    ;  FillColor=ROOT.kGray+2
 DYjets   : DYJetsM10 : 915      : LepGood3_mcMatchAny <= 1;  FillColor=ROOT.kCyan, Label="Z + j\#rightarrowl"
@@ -44,16 +46,10 @@ WJets   : WJets    : 37509.0   ;  FillColor=ROOT.kCyan+2
 #WJets    : W4Jets    : 263.2    ;  FillColor=ROOT.kCyan+2
 data     : DoubleMuAB
 data     : DoubleMuC
-data     : DoubleMuRec
 data     : DoubleMuD
-data     : DoubleMuBadSIP
 data     : DoubleElectronAB
 data     : DoubleElectronC
-data     : DoubleElectronRec
 data     : DoubleElectronD
-data     : DoubleElectronBadSIP
 data     : MuEGAB
 data     : MuEGC
-data     : MuEGRec
 data     : MuEGD
-data     : MuEGBadSIP
