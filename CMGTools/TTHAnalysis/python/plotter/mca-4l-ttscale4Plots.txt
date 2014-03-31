@@ -36,19 +36,13 @@ RARE 	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9
 # --- DATA
 data     : DoubleMuAB
 data     : DoubleMuC
-data     : DoubleMuRec
 data     : DoubleMuD
-data     : DoubleMuBadSIP
 data     : DoubleElectronAB
 data     : DoubleElectronC
-data     : DoubleElectronRec
 data     : DoubleElectronD
-data     : DoubleElectronBadSIP
 data     : MuEGAB
 data     : MuEGC
-data     : MuEGRec
 data     : MuEGD
-data     : MuEGBadSIP
 
 # ---- These below are only for systematics and datacards, and won't be included in the plots ----
 ttH_htt_JES_Up   : TTH_JES_Up  : 0.1271 * 0.0620/0.0722: GenHiggsDecayMode == 15; FillColor=206,  Label="ttH JES Up", SkipMe=True 

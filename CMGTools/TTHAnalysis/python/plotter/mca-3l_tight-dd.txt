@@ -30,19 +30,13 @@ ZZ       : ZZTo4tau:   0.07691  ;  FillColor=ROOT.kAzure-9
 
 data     : DoubleMuAB
 data     : DoubleMuC
-data     : DoubleMuRec
 data     : DoubleMuD
-data     : DoubleMuBadSIP
 data     : DoubleElectronAB
 data     : DoubleElectronC
-data     : DoubleElectronRec
 data     : DoubleElectronD
-data     : DoubleElectronBadSIP
 data     : MuEGAB
 data     : MuEGC
-data     : MuEGRec
 data     : MuEGD
-data     : MuEGBadSIP
 
 FR_tt : TTJetsLep:  25.77: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)  ;  FillColor=ROOT.kGray, FakeRate='fakeRate_3l_tight_MC.txt', Label='Top FR'
 FR_tt : TtW      : 11.73    ;  FillColor=ROOT.kGray, FakeRate='fakeRate_3l_tight_MC.txt', Label='Top FR'

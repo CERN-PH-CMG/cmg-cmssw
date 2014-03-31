@@ -58,32 +58,20 @@ DY       : DYJetsM50 : 3503.7   ;  FillColor=ROOT.kCyan
 
 data     : DoubleMuAB
 data     : DoubleMuC
-data     : DoubleMuRec
 data     : DoubleMuD
-data     : DoubleMuBadSIP
 data     : DoubleElectronAB
 data     : DoubleElectronC
-data     : DoubleElectronRec
 data     : DoubleElectronD
-data     : DoubleElectronBadSIP
 data     : MuEGAB
 data     : MuEGC
-data     : MuEGRec
 data     : MuEGD
-data     : MuEGBadSIP
 
 FR_data  : DoubleMuAB;            FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes'
 FR_data  : DoubleMuC;             FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes'
-FR_data  : DoubleMuRec;           FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes'
 FR_data  : DoubleMuD;             FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes'
-FR_data  : DoubleMuBadSIP;        FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes'
 FR_data  : DoubleElectronAB;      FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes'
 FR_data  : DoubleElectronC;       FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes'
-FR_data  : DoubleElectronRec;     FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes'
 FR_data  : DoubleElectronD;       FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes'
-FR_data  : DoubleElectronBadSIP;  FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes'
 FR_data  : MuEGAB;                FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes'
 FR_data  : MuEGC;                 FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes'
-FR_data  : MuEGRec;               FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes'
 FR_data  : MuEGD;                 FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes'
-FR_data  : MuEGBadSIP;            FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='Fakes'

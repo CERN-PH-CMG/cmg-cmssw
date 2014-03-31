@@ -35,19 +35,13 @@ TT 	 : TTLep:        7*0.5*25.77: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt
 # --- DATA
 data     : DoubleMuAB
 data     : DoubleMuC
-data     : DoubleMuRec
 data     : DoubleMuD
-data     : DoubleMuBadSIP
 data     : DoubleElectronAB
 data     : DoubleElectronC
-data     : DoubleElectronRec
 data     : DoubleElectronD
-data     : DoubleElectronBadSIP
 data     : MuEGAB
 data     : MuEGC
-data     : MuEGRec
 data     : MuEGD
-data     : MuEGBadSIP
 
 # ---- These below are only for systematics and datacards, and won't be included in the plots ----
 ttH_htt_JES_Up   : TTH_JES_Up  : 0.1271 * 0.0620/0.0722: GenHiggsDecayMode == 15; FillColor=206,  Label="ttH JES Up", SkipMe=True 

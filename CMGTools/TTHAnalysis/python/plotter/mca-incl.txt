@@ -17,6 +17,7 @@ VV 	 : ZZ2mu2tau:  0.1767   ;  FillColor=ROOT.kAzure-9, Label="VV"
 VV	 : ZZTo4mu:    0.07691  ;  FillColor=ROOT.kAzure-9   , Label="VV"
 VV       : ZZTo4e:     0.07691  ;  FillColor=ROOT.kAzure-9, Label="VV"
 VV       : ZZTo4tau:   0.07691  ;  FillColor=ROOT.kAzure-9, Label="VV"
+#VV       : ZZJets4L:   0.157*1.21   ;  FillColor=ROOT.kAzure-9, NormSystematic=0.2
 #ZZ   : FastSim_ZGStar4L : 28.76*0.0188*1.28 ;  FillColor=ROOT.kAzure-9
 TT 	 : TTJetsLep:     25.77: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)    ;  FillColor=ROOT.kGray, NormSystematic=0.2, Label="top"
 TT 	 : TTJetsSem:	  107.53: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)     ; 
@@ -44,16 +45,10 @@ WJets   : WJets    : 37509.0   ;  FillColor=ROOT.kCyan+2, Label="W+jets", KeysPd
 
 data     : DoubleMuAB
 data     : DoubleMuC
-data     : DoubleMuRec
 data     : DoubleMuD
-data     : DoubleMuBadSIP
 data     : DoubleElectronAB
 data     : DoubleElectronC
-data     : DoubleElectronRec
 data     : DoubleElectronD
-data     : DoubleElectronBadSIP
 data     : MuEGAB
 data     : MuEGC
-data     : MuEGRec
 data     : MuEGD
-data     : MuEGBadSIP

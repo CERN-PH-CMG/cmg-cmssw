@@ -34,35 +34,23 @@ ZZ       : ZZJets4L:   0.157    ;  FillColor=ROOT.kAzure-9
 
 data     : DoubleMuAB
 data     : DoubleMuC
-data     : DoubleMuRec
 data     : DoubleMuD
-data     : DoubleMuBadSIP
 data     : DoubleElectronAB
 data     : DoubleElectronC
-data     : DoubleElectronRec
 data     : DoubleElectronD
-data     : DoubleElectronBadSIP
 data     : MuEGAB
 data     : MuEGC
-data     : MuEGRec
 data     : MuEGD
-data     : MuEGBadSIP
 
 FR_data  : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='fakeRate_4l.txt', Label='Fakes', NormSystematic=0.4
 FR_data  : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='fakeRate_4l.txt', Label='Fakes', NormSystematic=0.4
-FR_data  : DoubleMuRec;           FillColor=ROOT.kGray, FakeRate='fakeRate_4l.txt', Label='Fakes', NormSystematic=0.4
 FR_data  : DoubleMuD;             FillColor=ROOT.kGray, FakeRate='fakeRate_4l.txt', Label='Fakes', NormSystematic=0.4
-FR_data  : DoubleMuBadSIP;        FillColor=ROOT.kGray, FakeRate='fakeRate_4l.txt', Label='Fakes', NormSystematic=0.4
 FR_data  : DoubleElectronAB;      FillColor=ROOT.kGray, FakeRate='fakeRate_4l.txt', Label='Fakes', NormSystematic=0.4
 FR_data  : DoubleElectronC;       FillColor=ROOT.kGray, FakeRate='fakeRate_4l.txt', Label='Fakes', NormSystematic=0.4
-FR_data  : DoubleElectronRec;     FillColor=ROOT.kGray, FakeRate='fakeRate_4l.txt', Label='Fakes', NormSystematic=0.4
 FR_data  : DoubleElectronD;       FillColor=ROOT.kGray, FakeRate='fakeRate_4l.txt', Label='Fakes', NormSystematic=0.4
-FR_data  : DoubleElectronBadSIP;  FillColor=ROOT.kGray, FakeRate='fakeRate_4l.txt', Label='Fakes', NormSystematic=0.4
 FR_data  : MuEGAB;                FillColor=ROOT.kGray, FakeRate='fakeRate_4l.txt', Label='Fakes', NormSystematic=0.4
 FR_data  : MuEGC;                 FillColor=ROOT.kGray, FakeRate='fakeRate_4l.txt', Label='Fakes', NormSystematic=0.4
-FR_data  : MuEGRec;               FillColor=ROOT.kGray, FakeRate='fakeRate_4l.txt', Label='Fakes', NormSystematic=0.4
 FR_data  : MuEGD;                 FillColor=ROOT.kGray, FakeRate='fakeRate_4l.txt', Label='Fakes', NormSystematic=0.4
-FR_data  : MuEGBadSIP;            FillColor=ROOT.kGray, FakeRate='fakeRate_4l.txt', Label='Fakes', NormSystematic=0.4
 
 # ---- These below are only for systematics and datacards, and won't be included in the plots ----
 ttH_JES_Up : TTH_JES_Up   : 0.1271 : GenHiggsDecayMode > 0  ; FillColor=206,  Label="ttH JES Up", SkipMe=True
