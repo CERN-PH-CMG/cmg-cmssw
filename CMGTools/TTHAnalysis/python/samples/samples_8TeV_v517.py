@@ -142,6 +142,11 @@ W4Jets   =kreator.makeMCComponent('W4Jets','/W4JetsToLNu_TuneZ2Star_8TeV-madgrap
 #QCDElPt30To80=kreator.makeMCComponent('QCDElPt30To80','//QCD_Pt_30_80_BCtoE_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/'+pat+'/'+skim,userName,filepattern)
 #QCDElPt80To170=kreator.makeMCComponent('QCDElPt80To170','//QCD_Pt_80_170_BCtoE_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/'+pat+'/'+skim,userName,filepattern)
 
+# ------ RARE PROCESSES -----
+TBZToLL =kreator.makeMCComponent('TBZToLL', '/TBZToLL_4F_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7C-v1/AODSIM/V5/'+patNew+'/'+skim,userName,filepattern)
+WmWmqq  =kreator.makeMCComponent('WmWmqq',  '/WmWmqq_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5/'+patNew+'/'+skim,userName,filepattern)
+WpWpqq  =kreator.makeMCComponent('WpWpqq',  '/WpWpqq_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5/'+patNew+'/'+skim,userName,filepattern)
+
 # ------ MORE SAMPLES FROM SEZEN (patPF) ----
 #/Jet/Run2012A-22Jan2013-v1/AOD/CMGPF_V5_16_0
 #/HT/Run2012A-22Jan2013-v1/AOD/CMGPF_V5_16_0
@@ -189,7 +194,7 @@ T5VV_2J_7 = kreator.makeMCComponent('T5VV_2J_7', '/SMS-T5VV_2J_mGo-1150to1400_mL
 mcSamples_1 = [ TTH,TTWJets,TTZJets,TTWWJets,WWWJets,WWZJets,TTG,DYJetsM50,TTJetsLep,TTJetsSem,TTJets,TtW,TbartW,WZJets,ZZJets4L,WWJets,DYJetsM10, ZZ2e2mu,ZZ2e2tau,ZZ2mu2tau,ZZTo4mu,ZZTo4e,ZZTo4tau ]
 #   mcSamples_1 = [ TTH,TTWJets,TTZJets,TTWWJets,WWWJets,WWZJets,TTG,DYJetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,WZJets,ZZ2e2mu,ZZ2e2tau,ZZ2mu2tau,ZZTo4mu,ZZTo4e,ZZTo4tau,TtW,TbartW,TTJetsLep,TTJetsSem ]
 #   ## Minor samples and backgrounds 
-mcSamples_2 = [ Tsch,Tbarsch,Ttch,Tbartch,W1Jets,W2Jets,W3Jets,W4Jets,WZZJets,ZZZJets,WWGJets,TTJetsHad ]
+mcSamples_2 = [ Tsch,Tbarsch,Ttch,Tbartch,W1Jets,W2Jets,W3Jets,W4Jets,WZZJets,ZZZJets,WWGJets,TTJetsHad, TBZToLL,WmWmqq,WpWpqq ]
 #   mcSamples_2 = [ TTH122,TTH127,DYJetsM10,TTLep,WWJets,TTJets,Tsch,Tbarsch,Ttch,Tbartch,W1Jets,W2Jets,W3Jets,W4Jets,TTJetsHad,DY1JetsM50, ]
 #   ## Cross-check samples, ... 
 mcSamples_3 = [ TTWnlo,TTZnlo,WJets ]
