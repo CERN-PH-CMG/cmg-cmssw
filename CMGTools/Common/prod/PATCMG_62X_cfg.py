@@ -34,7 +34,8 @@ datasetInfo = (
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-    'file:/afs/cern.ch/work/s/steggema/FCE1353C-6E70-E311-A1CB-008CFA000F5C.root'
+    # No Fall13 AODSIM at CERN, using a local copy for testing
+    'file:/data1/steggema/FCE1353C-6E70-E311-A1CB-008CFA000F5C.root'
     )
 )
 
@@ -199,11 +200,17 @@ process.outcmg = cms.OutputModule(
     )
 
 process.outpath += process.outcmg
-# you can uncomment this below to test the 16-bit-packed cmgCandidates
-# process.outcmg.outputCommands.append('keep cmgPackedCandidates_cmgCandidates_*_*') 
-# process.outcmg.outputCommands.append('drop cmgCandidates_cmgCandidates_*_*') 
 
-
+# These commands below will select the 'light' version of the CMG tuple:
+#  - 16bit PF Candidates
+#  - TriggerPrescales instead of fat single TriggerObject
+#  - slimmed PVs (without track references)
+process.outcmg.outputCommands.append('keep cmgPackedCandidates_cmgCandidates_*_*') 
+process.outcmg.outputCommands.append('drop cmgCandidates_cmgCandidates_*_*') 
+process.outcmg.outputCommands.append('keep *_cmgTriggerPrescales_*_*') 
+process.outcmg.outputCommands.append('drop *_cmgTriggerObjectSel_*_*') 
+process.outcmg.outputCommands.append('drop *_offlinePrimaryVertices_*_*') 
+process.outcmg.outputCommands.append('keep *_slimmedPrimaryVertices_*_*') 
 
 
 ########################################################
