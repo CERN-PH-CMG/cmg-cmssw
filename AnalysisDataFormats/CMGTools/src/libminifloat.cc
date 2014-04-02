@@ -38,12 +38,12 @@ void MiniFloatConverter::filltables() {
     exponenttable[0] = 0;
     for (unsigned int i = 1; i <= 30; ++i) exponenttable[i] = i<<23;
     exponenttable[31] = 0x47800000;
-    exponenttable[32] = 0;
-    for (unsigned int i = 33; i <= 62; ++i) exponenttable[i] = 0x80000000u | (i-32)<<23;
+    exponenttable[32] = 0x80000000u;
+    for (unsigned int i = 33; i <= 62; ++i) exponenttable[i] = 0x80000000u | ((i-32)<<23);
     exponenttable[63] = 0xC7800000;
 
     // ==== offsettable ====
-    for (unsigned int i = 0; i <= 63; ++i) offsettable[i] = (i == 0 || i == 32 ? 0 : 1024);
+    for (unsigned int i = 0; i <= 63; ++i) offsettable[i] = ((i == 0 || i == 32) ? 0 : 1024);
 
     // ==== basetable, shifttable ===
     for (unsigned i=0; i<256; ++i){

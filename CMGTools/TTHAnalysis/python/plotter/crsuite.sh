@@ -24,7 +24,7 @@ MVA_2L="-F sf/t   $T/2_finalmva_2lss_v2/evVarFriend_{cname}.root "
 MVA_3L="-F finalMVA/t $T/0_finalmva_3l/finalMVA_3L_{cname}.root"
 MVA_3LC="-F sf/t $T/0_finalmva_3lcat/evVarFriend_{cname}.root "
 
-ROOT="plots/250513/v4.2_cr/$WHAT"
+ROOT="plots/250513/v5_cr/$WHAT"
 
 
 RUN2L="${CORE} mca-2lss-data.txt $MVA_2L"
@@ -44,16 +44,16 @@ case $WHAT in
     SF="-W 'puWeight*Eff_2lep*SF_btag*SF_LepMVATight_2l*SF_LepTightCharge_2l*SF_trig2l'"
     SF0="-W 'puWeight*Eff_2lep*SF_btag*SF_LepTightCharge_2l*SF_trig2l'"
     MVA1F=" -R MVA 1-1 '(LepGood1_mva>0.7)+(LepGood2_mva>0.7)==1' "
-    RUN2MF="${RUN2M/mca-2lss-data/mca4fit4plots}  --fitData $MVA1F "
-    RUN2EF="${RUN2E/mca-2lss-data/mca4fit4plots}  --fitData $MVA1F "
-    RUN2XF="${RUN2X/mca-2lss-data/mca4fit4plots}  --fitData $MVA1F "
+    RUN2MF="${RUN2M/mca-2lss-data/mca4failMVAplots}  --fitData $MVA1F "
+    RUN2EF="${RUN2E/mca-2lss-data/mca4failMVAplots}  --fitData $MVA1F "
+    RUN2XF="${RUN2X/mca-2lss-data/mca4failMVAplots}  --fitData $MVA1F "
     #############################################################################
     ## ---- 4j fail MVA
-    echo "python ${RUN2XF/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/failLepMVA/em_TTscaled        $BINCL             "
+    echo "python ${RUN2XF/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/failLepMVA/em_TTscaled        $BINCL            --lspam 'CMS ttH, e^{#pm}#mu^{#pm} channel' "
     #echo "python ${RUN2XF/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/failLepMVA/btight/em_TTscaled $BTIGHT --rebin 4  "
-    echo "python ${RUN2EF/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/failLepMVA/ee_TTscaled        $BINCL  --rebin 2  "
+    echo "python ${RUN2EF/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/failLepMVA/ee_TTscaled        $BINCL  --rebin 2 --lspam 'CMS ttH, e^{#pm}e^{#pm} channel'  "
     #echo "python ${RUN2EF/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/failLepMVA/btight/ee_TTscaled $BTIGHT --rebin 6  "
-    echo "python ${RUN2MF/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/failLepMVA/mumu_TTscaled        $BINCL             "
+    echo "python ${RUN2MF/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/failLepMVA/mumu_TTscaled        $BINCL           --lspam 'CMS ttH, #mu^{#pm}#mu^{#pm} channel'   "
     #echo "python ${RUN2MF/cr_2lss_lowj_plots/mvaVars_2lss} $SF0 --pdir $ROOT/mvaVars/failLepMVA/btight/mumu_TTscaled $BTIGHT --rebin 4  "
 ;;
 2lss_3j)
@@ -188,8 +188,8 @@ case $WHAT in
     ## ---- Fail lepton MVA ----
     SF0="-W 'puWeight*Eff_3lep*SF_btag' "
     MVA2F=" -R MVA 2-1 '(LepGood1_mva>0.7)+(LepGood2_mva>0.7)+(LepGood3_mva>0.7)==2' "
-    RUN3LF="${RUN3L/mca-3l_tight-data/mca4fit4plots} --fitData $MVA2F "
-    echo "python ${RUN3LF/PLOTS/mvaVars_3l} --pdir $ROOT/mvaVars/failLepMVA $SF0 $BINCL --rebin 2"
+    RUN3LF="${RUN3L/mca-3l_tight-data/mca4failMVAplots} --fitData $MVA2F "
+    echo "python ${RUN3LF/PLOTS/mvaVars_3l} --pdir $ROOT/mvaVars/failLepMVA $SF0 $BINCL --rebin 2  --lspam 'CMS ttH, 3l channel' "
     #echo "python ${RUN3LF/PLOTS/mvaVars_3l} --pdir $ROOT/mvaVars/failLepMVA/btight/TTscaled $SF0 $BTIGHT --rebin 5"
     #echo "python ${RUN3LF/PLOTS/mvaVars_3l} --pdir $ROOT/mvaVars/failLepMVA/withTopHad/TTscaled $SF0 $TOPHAD $BINCL --rebin 2" 
     ## ---- Invert Z veto ----

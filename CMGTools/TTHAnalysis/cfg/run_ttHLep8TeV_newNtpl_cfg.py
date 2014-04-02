@@ -34,6 +34,8 @@ triggerAna = cfg.Analyzer(
 ttHVertexAna = cfg.Analyzer(
     'VertexAnalyzer',
     goodVertices = 'offlinePrimaryVertices',
+    #goodVertices = 'slimmedPrimaryVertices',
+    #allVertices = 'slimmedPrimaryVertices',
     vertexWeight = None,
     fixedWeight = 1,
     verbose = False
@@ -45,6 +47,7 @@ pileUpAna = cfg.Analyzer(
     "PileUpAnalyzer",
     # build unweighted pu distribution using number of pile up interactions if False
     # otherwise, use fill the distribution using number of true interactions
+    #allVertices = 'slimmedPrimaryVertices',
     true = True,
     makeHists=False
     )
@@ -56,6 +59,10 @@ ttHGenAna = cfg.Analyzer(
     filterHiggsDecays = [0, 15, 23, 24],
     verbose = False,
     PDFWeights = [ pdf for pdf,num in PDFWeights ]
+    )
+
+susyScanAna = cfg.Analyzer(
+    'susyParameterScanAnalyzer',
     )
 
 # Lepton Analyzer
@@ -179,6 +186,7 @@ sequence = cfg.Sequence([
     triggerAna,
     pileUpAna,
     ttHGenAna,
+    susyScanAna,
     ttHVertexAna,
     ttHLepAna,
     ttHLepMCAna,

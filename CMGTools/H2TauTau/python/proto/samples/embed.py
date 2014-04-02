@@ -1,7 +1,6 @@
 import copy
 import os
 import CMGTools.RootTools.fwlite.Config as cfg
-from   CMGTools.H2TauTau.proto.samples.getFiles import getFiles
 
 jsondir = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV'
 promptjson  =  '/'.join([jsondir, 'Prompt/Cert_160404-180252_7TeV_PromptReco_Collisions11_JSON.txt'])

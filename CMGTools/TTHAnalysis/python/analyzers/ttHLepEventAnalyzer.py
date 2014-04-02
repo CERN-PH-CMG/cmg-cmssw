@@ -182,7 +182,7 @@ class ttHLepEventAnalyzer( Analyzer ):
         #print "PrMETJet 2S:", event.projMetJets2S
 
     def makeHadTopDecays(self, event):
-        event.lightJets = [ j for j in event.cleanJets if not j.getSelection("cuts_csv_medium") ]
+        event.lightJets = [ j for j in event.cleanJets if not j.btagWP("CSVM") ]
         event.minMWjj   = 999
         event.minMWjjPt = 0
         event.bestMWjj   = 0
@@ -219,15 +219,20 @@ class ttHLepEventAnalyzer( Analyzer ):
 
         eventNumber = iEvent.eventAuxiliary().id().event()
 
-        event.bjetsLoose  = [ j for j in event.cleanJets if j.getSelection("cuts_csv_loose")  ]
-        event.bjetsMedium = [ j for j in event.cleanJets if j.getSelection("cuts_csv_medium") ]
+        event.bjetsLoose  = [ j for j in event.cleanJets if j.btagWP("CSVL") ]
+        event.bjetsMedium = [ j for j in event.cleanJets if j.btagWP("CSVM") ]
 
         objects25 = [ j for j in event.cleanJets if j.pt() > 25 ] + event.selectedLeptons
         objects30 = [ j for j in event.cleanJets if j.pt() > 30 ] + event.selectedLeptons
+        objects40j = [ j for j in event.cleanJets if j.pt() > 40 ] 
+        objects40  = [ j for j in event.cleanJets if j.pt() > 40 ] + event.selectedLeptons
         event.htJet25 = sum([x.pt() for x in objects25])
         event.mhtJet25 = hypot(sum([x.px() for x in objects25]), sum([x.py() for x in objects25]))
         event.htJet30 = sum([x.pt() for x in objects30])
         event.mhtJet30 = hypot(sum([x.px() for x in objects30]), sum([x.py() for x in objects30]))
+        event.htJet40 = sum([x.pt() for x in objects40])
+        event.htJet40j = sum([x.pt() for x in objects40j])
+        event.mhtJet40 = hypot(sum([x.px() for x in objects40]), sum([x.py() for x in objects40]))
         ## same but with all eta range
         objects25a = [ j for j in event.cleanJetsAll if j.pt() > 25 ] + event.selectedLeptons
         objects30a = [ j for j in event.cleanJetsAll if j.pt() > 30 ] + event.selectedLeptons

@@ -24,7 +24,6 @@ def scalarToVector(x):
     x0 = x
     x = re.sub(r"(LepGood|Lep|JetFwd|Jet|GenTop)(\d)_(\w+)", lambda m : "%s_%s[%d]" % (m.group(1),m.group(3),int(m.group(2))-1), x)
     x = re.sub(r"\bmet\b", "met_pt", x)
-    #print "[%s] -> [%s]\n" % (x0,x)
     return x
 
 class CutsFile:
@@ -374,7 +373,7 @@ def addTreeToYieldOptions(parser):
     parser.add_option("--FMC", "--add-friend-mc",    dest="friendTreesMC",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to MC only. Can use {name}, {cname} patterns in the treename") 
     parser.add_option("--FD", "--add-friend-data",    dest="friendTreesData",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to data trees only. Can use {name}, {cname} patterns in the treename") 
     parser.add_option("--mcc", "--mc-corrections",    dest="mcCorrs",  action="append", default=[], nargs=1, help="Load the following file of mc to data corrections") 
-    parser.add_option("--s2v", "--scalar2vector",     dest="doS2V",    action="store_true", default="False", help="Do scalar to vector conversion") 
+    parser.add_option("--s2v", "--scalar2vector",     dest="doS2V",    action="store_true", default=False, help="Do scalar to vector conversion") 
 
 def mergeReports(reports):
     import copy

@@ -51,11 +51,12 @@ class VertexAnalyzer( Analyzer ):
             self.pileup = VertexHistograms('/'.join([self.dirName,
                                                      'pileup.root']))
         
+        self.allVertices = self.cfg_ana.allVertices if (hasattr(self.cfg_ana,'allVertices')) else "offlinePrimaryVertices"
 
     def declareHandles(self):
         super(VertexAnalyzer, self).declareHandles()
         self.handles['vertices'] =  AutoHandle(
-            'offlinePrimaryVertices',
+            self.allVertices,
             'std::vector<reco::Vertex>'
             )
         self.fixedWeight = None
