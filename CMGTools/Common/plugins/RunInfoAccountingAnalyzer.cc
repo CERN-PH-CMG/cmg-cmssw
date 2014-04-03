@@ -10,7 +10,7 @@ using namespace std;
 
 cmg::RunInfoAccountingAnalyzer::RunInfoAccountingAnalyzer(const edm::ParameterSet& ps) : 
   name_( ps.getUntrackedParameter<std::string>("name","RunInfoAccounting")),
-  runInfoAccounting_( *fs_, name_ ), runNumber_(-1), 
+  runInfoAccounting_( fs_->tFileDirectory(), name_ ), runNumber_(-1), 
   fileChanged_(false), currentRun_(0), nTotal_(0), nPassed_(0), nGenTotal_(0), nGenPassed_(0),
   genFilterInfoSrc_(ps.getParameter<edm::InputTag>("genFilterInfoSrc") ),
   filterInfoSrc_(ps.getParameter<edm::InputTag>("filterInfoSrc") ),

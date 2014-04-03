@@ -36,7 +36,7 @@ namespace cmg{
       }
 
       void init(){
-        AnalysisHistograms::init( fs_.operator->() );
+        AnalysisHistograms::init( &fs_->tFileDirectory() );
       }
 
       // Fill the histograms after getting a collection from the event.

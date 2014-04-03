@@ -97,7 +97,7 @@ void cmg::GenericHistograms<T>::defineHistograms()
                         HistogramAxis axis = it->second.at(0);
                         this->add1DHistogram(it->first,it->first,
                                        axis.nbins_,axis.low_,axis.high_,
-                                       cmg::HistogramCreator<T>::fs_.operator->());
+                                       &cmg::HistogramCreator<T>::fs_->tFileDirectory());
 
                         this->get1DHistogram(it->first)->GetXaxis()->SetTitle(axis.title_.c_str());
                         break;
@@ -109,7 +109,7 @@ void cmg::GenericHistograms<T>::defineHistograms()
                         this->add2DHistogram(it->first,it->first,
                                        axisX.nbins_,axisX.low_,axisX.high_,
                                        axisY.nbins_,axisY.low_,axisY.high_,
-                                       cmg::HistogramCreator<T>::fs_.operator->());
+                                       &cmg::HistogramCreator<T>::fs_->tFileDirectory());
 
                         this->get2DHistogram(it->first)->GetXaxis()->SetTitle(axisX.title_.c_str());
                         this->get2DHistogram(it->first)->GetYaxis()->SetTitle(axisY.title_.c_str());
@@ -125,7 +125,7 @@ void cmg::GenericHistograms<T>::defineHistograms()
                                        axisX.nbins_,axisX.low_,axisX.high_,
                                        axisY.nbins_,axisY.low_,axisY.high_,
                                        axisZ.nbins_,axisZ.low_,axisZ.high_,
-                                       cmg::HistogramCreator<T>::fs_.operator->());
+                                       &cmg::HistogramCreator<T>::fs_->tFileDirectory());
 
                         this->get3DHistogram(it->first)->GetXaxis()->SetTitle(axisX.title_.c_str());
                         this->get3DHistogram(it->first)->GetYaxis()->SetTitle(axisY.title_.c_str());

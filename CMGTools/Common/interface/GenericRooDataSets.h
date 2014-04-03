@@ -85,7 +85,7 @@ namespace cmg{
                 initArgSet(ps.getUntrackedParameter<edm::ParameterSet>("argset",edm::ParameterSet()));
                 initCategories(ps.getUntrackedParameter<edm::ParameterSet>("categories",edm::ParameterSet()));
                 std::auto_ptr<RooArgSet> args = argSet();
-                const TFileDirectory* myDir = cmg::HistogramCreator<T>::fs_.operator->();
+                const TFileDirectory* myDir = &cmg::HistogramCreator<T>::fs_->tFileDirectory();
                 dataset_ = myDir->make<RooDataSet>("GenericDataSet","GenericDataSet",*args);
         }
         

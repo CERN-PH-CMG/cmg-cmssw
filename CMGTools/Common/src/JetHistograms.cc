@@ -8,13 +8,13 @@ cmg::JetHistograms::JetHistograms(const edm::ParameterSet& ps) :
   cmg::HistogramCreator<type>::HistogramCreator(ps) {
 
   
-  cHists_.push_back( JetComponentHistograms(fs_.operator->(), "ChargedHadrons") );
-  cHists_.push_back( JetComponentHistograms(fs_.operator->(), "Electrons") );
-  cHists_.push_back( JetComponentHistograms(fs_.operator->(), "Muons") );
-  cHists_.push_back( JetComponentHistograms(fs_.operator->(), "Photons") );
-  cHists_.push_back( JetComponentHistograms(fs_.operator->(), "NeutralHadrons") );
-  cHists_.push_back( JetComponentHistograms(fs_.operator->(), "HFHAD") );
-  cHists_.push_back( JetComponentHistograms(fs_.operator->(), "HFEM") );
+  cHists_.push_back( JetComponentHistograms(&fs_->tFileDirectory(), "ChargedHadrons") );
+  cHists_.push_back( JetComponentHistograms(&fs_->tFileDirectory(), "Electrons") );
+  cHists_.push_back( JetComponentHistograms(&fs_->tFileDirectory(), "Muons") );
+  cHists_.push_back( JetComponentHistograms(&fs_->tFileDirectory(), "Photons") );
+  cHists_.push_back( JetComponentHistograms(&fs_->tFileDirectory(), "NeutralHadrons") );
+  cHists_.push_back( JetComponentHistograms(&fs_->tFileDirectory(), "HFHAD") );
+  cHists_.push_back( JetComponentHistograms(&fs_->tFileDirectory(), "HFEM") );
 }
 
 

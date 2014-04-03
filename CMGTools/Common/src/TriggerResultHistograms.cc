@@ -85,22 +85,22 @@ void cmg::TriggerResultHistograms::defineHistograms(const std::vector<std::strin
     add1DHistogram(
         "passedTriggers","passedTriggers",
         nPaths,0,nPaths,
-        cmg::HistogramCreator<type>::fs_.operator->());
+        &cmg::HistogramCreator<type>::fs_->tFileDirectory());
     add1DHistogram(
         "failedTriggers","failedTriggers",
         nPaths,0,nPaths,
-        cmg::HistogramCreator<type>::fs_.operator->());
+        &cmg::HistogramCreator<type>::fs_->tFileDirectory());
     add1DHistogram(
         "runTriggers","runTriggers",
         nPaths,0,nPaths,
-        cmg::HistogramCreator<type>::fs_.operator->());
+        &cmg::HistogramCreator<type>::fs_->tFileDirectory());
 
     //correlation plot
     add2DHistogram(
         "triggerCorrelation","triggerCorrelation",
         nPaths,0,nPaths,
         nPaths,0,nPaths,
-        cmg::HistogramCreator<type>::fs_.operator->());
+        &cmg::HistogramCreator<type>::fs_->tFileDirectory());
 
     TAxis* x = get2DHistogram("triggerCorrelation")->GetXaxis();
     TAxis* y = get2DHistogram("triggerCorrelation")->GetYaxis();
