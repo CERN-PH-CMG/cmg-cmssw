@@ -39,8 +39,9 @@ namespace cmg {
 
     const container& selected() const {return selected_;}
 
-    GenericPhysicsObjectSelectorDefinition ( const edm::ParameterSet & cfg ) :
-      selector_( cfg.getParameter< std::string >( "cut" ) ) { }
+    GenericPhysicsObjectSelectorDefinition ( const edm::ParameterSet & cfg, edm::ConsumesCollector && iC) :
+      // selector_( cfg, iC ) { }//cfg.getParameter< std::string >( "cut" )
+    selector_(cfg.getParameter< std::string >( "cut" )) { }
     
     void select( const HandleToCollection & hc, 
 		 const edm::Event & e,

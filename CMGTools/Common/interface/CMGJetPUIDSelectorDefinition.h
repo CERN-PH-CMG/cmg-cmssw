@@ -11,7 +11,7 @@ namespace cmg {
     class CMGJetPUIDSelectorDefinition : public GenericPhysicsObjectSelectorDefinition<cmg::PFJet>
     {
     public:
-        CMGJetPUIDSelectorDefinition ( const edm::ParameterSet & cfg ) :
+        CMGJetPUIDSelectorDefinition ( const edm::ParameterSet & cfg, edm::ConsumesCollector && cc ) :
             GenericPhysicsObjectSelectorDefinition (cfg),
             idName_(cfg.getParameter<std::string>("puIDName"))
             {
