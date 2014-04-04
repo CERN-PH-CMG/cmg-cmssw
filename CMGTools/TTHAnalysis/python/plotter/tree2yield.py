@@ -280,7 +280,7 @@ class TreeToYield:
         plot.SetMarkerStyle(self.getOption('MarkerStyle',20))
         plot.SetMarkerSize(self.getOption('MarkerSize',1.6))
         ## Plot specific-options, from spec
-        plot.GetYaxis().SetTitle(spec.getOption('YTitle',"Events"))
+        plot.GetYaxis().SetTitle(spec.getOption('YTitle',spec.getOption("YTitle","Events")))
         plot.GetXaxis().SetTitle(spec.getOption('XTitle',spec.name))
         plot.GetXaxis().SetNdivisions(spec.getOption('XNDiv',510))
     def getPlot(self,plotspec,cut):
