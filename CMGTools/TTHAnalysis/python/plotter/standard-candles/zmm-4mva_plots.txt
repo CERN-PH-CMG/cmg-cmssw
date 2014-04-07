@@ -1,0 +1,18 @@
+mll: mZ1: 80,70,110 ; XTitle="best m(l^{+}l^{-}')  [GeV]", Legend='TR'
+mll_log: mZ1: 180,60,120 ; XTitle="best m(l^{+}l^{-}')  [GeV]", Legend='TR', Logy
+nvtx: nVert: 40,0.5,40.5 ; XTitle="N(vertices)", Legend='TR'
+lep2MVA: LepGood2_mva: 40,-1.0,1.0; XTitle="Second lepton MVA", Legend='TL'
+lep2pt:   LepGood2_pt:  100,0,100; XTitle="Second lepton p_{T}  [GeV]", Legend='TR'
+lep2eta:  LepGood2_eta: 50,-2.5,2.5; XTitle="Second lepton #eta ", Legend='TR'
+lep2chIso:  LepGood2_chargedIso/LepGood2_pt: 40,0,0.4; XTitle="leading lepton Iso/p_{T} (Ch Had)", Legend='TR',Logy
+lep2neIso:  LepGood2_relIso - LepGood2_chargedIso/LepGood2_pt: 40,0,0.4; XTitle="leading lepton Iso/p_{T} (Ne Had)", Legend='TR',Logy
+lep2jetDR:  LepGood2_jetDR: 50,0,0.25; XTitle="Second lepton #DeltaR(l\,jet)", Legend='TR'
+lep2jetBTag:  max(LepGood2_jetBTagCSV,0):   20,0,1;  XTitle="Second lepton's jet b-tag disc.", Legend='TR'
+lep2jetPtF:   min(LepGood2_jetPtRatio,1.5): 50,0,1.5; XTitle="Second lepton p_{T}(l)/p_{T}(jet)", Legend='TR'
+lep2sip3d:   LepGood2_sip3d: 50,0,5; XTitle="Second lepton SIP_{3D}", Legend='TR'
+lep2ldxy:  log(abs(LepGood2_dxy)): 50,-15,0; XTitle="Second lepton log(|dx|/1cm)", Legend='TR'
+lep2ldz:   log(abs(LepGood2_dz)):  50,-15,0; XTitle="Second lepton log(|dz|/1cm)", Legend='TR'
+lep2mvaId: LepGood2_mvaId : 50,-1,1; XTitle="Second electron ID MVA",Legend='TL'
+lep2mvaId_zoom: LepGood2_mvaId : 30,0.4,1; XTitle="Second electron ID MVA",Legend='TL'
+lep2mvaId_zoom2: LepGood2_mvaId : 40,0.9,1; XTitle="Second electron ID MVA",Legend='TL'
+lep2innerHits: LepGood2_innerHits : 2,-0.5,1.5; XTitle="Second electron lost hits hits",Legend='TR'

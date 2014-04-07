@@ -1,0 +1,14 @@
+*     First event    Last event    to be generated  (INTEGER)  
+TRIG      1           10000         
+*     First event    Last event to debug            (INTEGER)  
+DEBU        1         1  
+*  Keep some time at end of job                     (REAL)     
+TIME 30. 
+* Generator parameters                                                  
+*    ECM     :  center-of-mass energy (GeV)                             
+*    MZ      :  Z mass  (GeV)                                           
+*    GZ      :  Z width (GeV)                                           
+*    SW2     :  sin**2(theta_w)                                         
+*     ECM      MZ      GZ    SW2                                        
+GENE  240.   91.188  2.497  0.2317                                      
+*
