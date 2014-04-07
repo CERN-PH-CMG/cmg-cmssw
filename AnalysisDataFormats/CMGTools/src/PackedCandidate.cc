@@ -1,5 +1,5 @@
 #include "AnalysisDataFormats/CMGTools/interface/PackedCandidate.h"
-#include "AnalysisDataFormats/CMGTools/interface/libminifloat.h"
+#include "DataFormats/PatCandidates/interface/libminifloat.h"
 
 void cmg::PackedCandidate::pack() {
     packedPt_  =  MiniFloatConverter::float32to16(p4_.Pt());
