@@ -39,7 +39,7 @@ def batchScriptCERN( index, remoteDir=''):
 echo 'environment:'
 echo
 env
-ulimit -v 3000000
+# ulimit -v 3000000 # NO
 echo 'copying job dir to worker'
 cd $CMSSW_BASE/src
 eval `scramv1 ru -sh`
