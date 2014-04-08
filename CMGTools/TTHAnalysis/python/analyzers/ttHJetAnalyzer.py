@@ -104,7 +104,7 @@ class ttHJetAnalyzer( Analyzer ):
 
     def testJetID(self, jet):
         jet.puJetIdPassed = True # jet.puJetId53X() # FIXME
-        jet.pfJetIdPassed = True # jet.jetID('POG_PFID_Loose') # FIXME
+        jet.pfJetIdPassed = jet.jetID('POG_PFID_Loose') 
         if self.cfg_ana.relaxJetId:
             return True
         else:
