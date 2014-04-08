@@ -45,6 +45,7 @@ class ttHLepTreeProducerTTH( ttHLepTreeProducerNew ):
             NTupleVariable("ht4l", lambda ev: ev.ht4l, help="H_{T}(4l)"),
             NTupleVariable("q3l", lambda ev: ev.q3l, int, help="q(3l)"),
             NTupleVariable("q4l", lambda ev: ev.q4l, int, help="q(4l)"),
+            NTupleVariable("metSignificance", lambda ev: ev.metSignificance, int, help="E_{T}^{miss} significance"),
             ##--------------------------------------------------
             NTupleVariable("minMWjj", lambda ev: ev.minMWjj, int, help="minMWjj"),
             NTupleVariable("minMWjjPt", lambda ev: ev.minMWjjPt, int, help="minMWjjPt"),

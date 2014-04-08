@@ -83,7 +83,7 @@ ttHLepAna = cfg.Analyzer(
     doRochesterCorrections=False,
     doElectronScaleCorrections=False,
     doRecomputeSIP3D=False,
-    doSegmentBasedMuonCleaning=False, #FIXME
+    doSegmentBasedMuonCleaning=True,
     doEleMuCrossCleaning=True,
     )
 

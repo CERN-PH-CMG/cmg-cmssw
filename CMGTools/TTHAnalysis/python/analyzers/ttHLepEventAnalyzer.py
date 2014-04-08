@@ -30,8 +30,6 @@ class ttHLepEventAnalyzer( Analyzer ):
         super(ttHLepEventAnalyzer, self).declareHandles()
         self.handles['met'] = AutoHandle( 'slimmedMETs', 'std::vector<pat::MET>' )
         self.handles['nopumet'] = AutoHandle( 'slimmedMETs', 'std::vector<pat::MET>' ) # FIXME
-        #self.handles['nopumet'] = AutoHandle( 'nopuMet', 'std::vector<reco::PFMET>' )
-        # self.handles['metSignificance'] = AutoHandle( 'pfMetSignificance', 'cmg::METSignificance' ) # FIXME
 
     def beginLoop(self):
         super(ttHLepEventAnalyzer,self).beginLoop()
@@ -165,11 +163,7 @@ class ttHLepEventAnalyzer( Analyzer ):
             #px,py = event.metNoPU.px()+event.deltaMetFromJEC[0], event.metNoPU.py()+event.deltaMetFromJEC[1]
             #event.metNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
 
-        #metMatrix = self.handles['metSignificance'].product().significance()
-        #metMatrix.Invert();
-        #import array
-        #metVector = TVectorD(2,array.array('d',[event.met.px(), event.met.py()]))
-        #event.metSignificance = metMatrix.Similarity(metVector) 
+        event.metSignificance = event.met.significance()
         event.projMetAll1S  = self.jetProjectedMET(event.met, event.jets,True)
         event.projMetAll2S  = self.jetProjectedMET(event.met, event.jets,False)
         event.projMetJets1S = self.jetProjectedMET(event.met, event.cleanJets,True)
