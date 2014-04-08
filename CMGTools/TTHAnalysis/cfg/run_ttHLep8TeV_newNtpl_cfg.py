@@ -10,7 +10,8 @@ PDFWeights = []
 
 # this analyzer finds the initial events before the skim
 skimAnalyzer = cfg.Analyzer(
-    'skimAnalyzerCount'
+    'skimAnalyzerCount',
+    useLumiBlocks = False, # since we run on a non-CMG dataset, there's no info on lumi blocks, and this way we use less memory
     )
 
 eventSelector = cfg.Analyzer(
@@ -180,7 +181,7 @@ selectedComponents = dataSamplesAll
 #-------- SEQUENCE
 
 sequence = cfg.Sequence([
-    #skimAnalyzer,
+    skimAnalyzer,
     #eventSelector,
     jsonAna,
     triggerAna,
