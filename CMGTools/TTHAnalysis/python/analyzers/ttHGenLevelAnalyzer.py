@@ -54,7 +54,7 @@ class ttHGenLevelAnalyzer( Analyzer ):
         super(ttHGenLevelAnalyzer, self).declareHandles()
 
         #mc information
-        self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
+        self.mchandles['genParticles'] = AutoHandle( 'prunedGenParticles',
                                                      'std::vector<reco::GenParticle>' )
         if self.doPDFWeights:
             self.mchandles['pdfstuff'] = AutoHandle( 'generator', 'GenEventInfoProduct' )

@@ -81,7 +81,7 @@ class ttHLepTreeProducerTTH( ttHLepTreeProducerNew ):
 
         self.globalObjects = {
             "met" : NTupleObject("met", metType, help="PF E_{T}^{miss}, after type 1 corrections"),
-            "metNoPU" : NTupleObject("metNoPU", fourVectorType, help="PF noPU E_{T}^{miss}"),
+            # "metNoPU" : NTupleObject("metNoPU", fourVectorType, help="PF noPU E_{T}^{miss}"), # FIXME
         }
         self.collections = {
             "selectedLeptons" : NTupleCollection("LepGood", leptonTypeTTH, 8, help="Leptons after the preselection"),

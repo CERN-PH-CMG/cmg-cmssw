@@ -32,7 +32,7 @@ class Tau( Lepton ):
     def dxy(self, vertex=None):
         if vertex is None:
             vertex = self.associatedVertex
-        vtx = self.leadChargedHadrVertex();   
+        vtx = self.vertex();  # FIXME 
         p4 = self.p4();
         return ( - (vtx.x()-vertex.position().x()) *  p4.y()
                  + (vtx.y()-vertex.position().y()) *  p4.x() ) /  p4.pt();    
@@ -40,7 +40,7 @@ class Tau( Lepton ):
     def dz(self, vertex=None):
         if vertex is None:
             vertex = self.associatedVertex
-        vtx = self.leadChargedHadrVertex();   
+        vtx = self.vertex();  # FIXME 
         p4 = self.p4();        
         return  (vtx.z()-vertex.position().z()) - ((vtx.x()-vertex.position().x())*p4.x()+(vtx.y()-vertex.position().y())*p4.y())/ p4.pt() *  p4.z()/ p4.pt();
     

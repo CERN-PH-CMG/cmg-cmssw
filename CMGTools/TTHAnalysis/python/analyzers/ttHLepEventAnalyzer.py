@@ -28,9 +28,10 @@ class ttHLepEventAnalyzer( Analyzer ):
         self.leptonMVA = LeptonMVA("%s/src/CMGTools/TTHAnalysis/data/leptonMVA/%%s_BDTG.weights.xml" % os.environ['CMSSW_BASE'], self.cfg_comp.isMC)
     def declareHandles(self):
         super(ttHLepEventAnalyzer, self).declareHandles()
-        self.handles['met'] = AutoHandle( 'cmgPFMET', 'std::vector<cmg::BaseMET>' )
-        self.handles['nopumet'] = AutoHandle( 'nopuMet', 'std::vector<reco::PFMET>' )
-        self.handles['metSignificance'] = AutoHandle( 'pfMetSignificance', 'cmg::METSignificance' )
+        self.handles['met'] = AutoHandle( 'slimmedMETs', 'std::vector<pat::MET>' )
+        self.handles['nopumet'] = AutoHandle( 'slimmedMETs', 'std::vector<pat::MET>' ) # FIXME
+        #self.handles['nopumet'] = AutoHandle( 'nopuMet', 'std::vector<reco::PFMET>' )
+        # self.handles['metSignificance'] = AutoHandle( 'pfMetSignificance', 'cmg::METSignificance' ) # FIXME
 
     def beginLoop(self):
         super(ttHLepEventAnalyzer,self).beginLoop()
@@ -150,25 +151,25 @@ class ttHLepEventAnalyzer( Analyzer ):
 
     def makeMETs(self, event):
         event.met = self.handles['met'].product()[0]
-        event.metNoPU = self.handles['nopumet'].product()[0]
+        #event.metNoPU = self.handles['nopumet'].product()[0]
         if hasattr(event, 'deltaMetFromJetSmearing'):
             import ROOT
             px,py = event.met.px()+event.deltaMetFromJetSmearing[0], event.met.py()+event.deltaMetFromJetSmearing[1]
             event.met.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
-            px,py = event.metNoPU.px()+event.deltaMetFromJetSmearing[0], event.metNoPU.py()+event.deltaMetFromJetSmearing[1]
-            event.metNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
+            #px,py = event.metNoPU.px()+event.deltaMetFromJetSmearing[0], event.metNoPU.py()+event.deltaMetFromJetSmearing[1]
+            #event.metNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
         if hasattr(event, 'deltaMetFromJEC') and event.deltaMetFromJEC[0] != 0 and event.deltaMetFromJEC[1] != 0:
             import ROOT
             px,py = event.met.px()+event.deltaMetFromJEC[0], event.met.py()+event.deltaMetFromJEC[1]
             event.met.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
-            px,py = event.metNoPU.px()+event.deltaMetFromJEC[0], event.metNoPU.py()+event.deltaMetFromJEC[1]
-            event.metNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
+            #px,py = event.metNoPU.px()+event.deltaMetFromJEC[0], event.metNoPU.py()+event.deltaMetFromJEC[1]
+            #event.metNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
 
-        metMatrix = self.handles['metSignificance'].product().significance()
-        metMatrix.Invert();
-        import array
-        metVector = TVectorD(2,array.array('d',[event.met.px(), event.met.py()]))
-        event.metSignificance = metMatrix.Similarity(metVector) 
+        #metMatrix = self.handles['metSignificance'].product().significance()
+        #metMatrix.Invert();
+        #import array
+        #metVector = TVectorD(2,array.array('d',[event.met.px(), event.met.py()]))
+        #event.metSignificance = metMatrix.Similarity(metVector) 
         event.projMetAll1S  = self.jetProjectedMET(event.met, event.jets,True)
         event.projMetAll2S  = self.jetProjectedMET(event.met, event.jets,False)
         event.projMetJets1S = self.jetProjectedMET(event.met, event.cleanJets,True)

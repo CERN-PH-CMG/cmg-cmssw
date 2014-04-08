@@ -33,7 +33,7 @@ class susyParameterScanAnalyzer( Analyzer ):
         super(susyParameterScanAnalyzer, self).declareHandles()
 
         #mc information
-        self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
+        self.mchandles['genParticles'] = AutoHandle( 'prunedGenParticles',
                                                      'std::vector<reco::GenParticle>' )
         self.mchandles['lhe'] = AutoHandle( 'source', 'LHEEventProduct', mayFail = True )
         

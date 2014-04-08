@@ -9,28 +9,33 @@ class Electron( Lepton ):
         super(Electron, self).__init__(*args, **kwargs)
         self.tightIdResult = None
 
-    def electronID( self, id, vertex=None, rho=None ):
-        if vertex == None and hasattr(self,'associatedVertex') and self.associatedVertex != None: vertex = self.associatedVertex
-        if rho == None and hasattr(self,'rho') and self.rho != None: rho = self.rho
-        return self.electronID_cpp_(id,vertex,rho) if rho != None else self.electronID_cpp_(id,vertex);
+    #def electronID( self, id, vertex=None, rho=None ):
+    #    if vertex == None and hasattr(self,'associatedVertex') and self.associatedVertex != None: vertex = self.associatedVertex
+    #    if rho == None and hasattr(self,'rho') and self.rho != None: rho = self.rho
+    #    return self.electronID_cpp_(id,vertex,rho) if rho != None else self.electronID_cpp_(id,vertex);
 
     def absEffAreaIso(self,rho,effectiveAreas):
         '''MIKE, missing doc.
         Should have the same name as the function in the mother class.
         Can call the mother class function with super.
         '''
-        return self.absIsoFromEA(rho,self.sourcePtr().superCluster().eta(),effectiveAreas.eGamma)
+        return self.absIsoFromEA(rho,self.superCluster().eta(),effectiveAreas.eGamma)
 
     def mvaIso( self ):
-        return self.sourcePtr().userFloat('mvaIsoRings')
+        return self.userFloat('mvaIsoRings')
 
     def mvaId( self ):
         return self.mvaNonTrigV0()
-        #return self.sourcePtr().userFloat('mvaNonTrigV0')
+        #return self.userFloat('mvaNonTrigV0')
         
     def tightId( self ):
         return self.tightIdResult
-        
+    
+    def mvaNonTrigV0( self ):
+        return 1 # FIXME 
+    def mvaTrigV0( self ):
+        return 1 # FIXME 
+
     def mvaIDZZ(self):
         '''missing doc, who is using this function?.'''
         mvaRegions = [{'ptMin':0,'ptMax':10, 'etaMin':0.0, 'etaMax':0.8,'mva':0.47},\
@@ -43,12 +48,12 @@ class Electron( Lepton ):
         for element in mvaRegions:
             if self.pt()>= element['ptMin'] and \
                self.pt()< element['ptMax'] and \
-               abs(self.sourcePtr().superCluster().eta())>=element['etaMin'] and \
-               abs(self.sourcePtr().superCluster().eta())<element['etaMax'] and \
+               abs(self.superCluster().eta())>=element['etaMin'] and \
+               abs(self.superCluster().eta())<element['etaMax'] and \
                self.mvaNonTrigV0()> element['mva']: 
                 ID=True
 
-        return ID and (self.numberOfHits()<=1)
+        return ID and (self.gsfTrack().trackerExpectedHitsInner().numberOfLostHits()<=1)
 
     def chargedAllIso(self):
         '''This function is used in the isolation, see Lepton class.
@@ -63,8 +68,11 @@ class Electron( Lepton ):
         '''
         if vertex is None:
             vertex = self.associatedVertex
-        return self.sourcePtr().gsfTrack().dxy( vertex.position() )
+        return self.gsfTrack().dxy( vertex.position() )
  
+
+    def p4(self,kind=None):
+        return self.physObj.p4(self.physObj.candidateP4Kind() if kind == None else kind)
 
     def dz(self, vertex=None):
         '''Returns dz.
@@ -73,6 +81,6 @@ class Electron( Lepton ):
         '''
         if vertex is None:
             vertex = self.associatedVertex
-        return self.sourcePtr().gsfTrack().dz( vertex.position() )
+        return self.gsfTrack().dz( vertex.position() )
 
 

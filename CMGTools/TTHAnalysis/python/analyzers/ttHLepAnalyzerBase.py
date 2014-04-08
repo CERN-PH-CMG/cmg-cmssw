@@ -60,19 +60,19 @@ class ttHLepAnalyzerBase( Analyzer ):
         super(ttHLepAnalyzerBase, self).declareHandles()
 
         #leptons
-        self.handles['muons'] = AutoHandle(self.cfg_ana.muons,"std::vector<cmg::Muon>")            
-        self.handles['electrons'] = AutoHandle(self.cfg_ana.electrons,"std::vector<cmg::Electron>")            
+        self.handles['muons'] = AutoHandle(self.cfg_ana.muons,"std::vector<pat::Muon>")            
+        self.handles['electrons'] = AutoHandle(self.cfg_ana.electrons,"std::vector<pat::Electron>")            
     
         
         #rho for muons
-        self.handles['rhoMu'] = AutoHandle( (self.cfg_ana.rhoMuon, 'rho'),
+        self.handles['rhoMu'] = AutoHandle( (self.cfg_ana.rhoMuon, ''),
                                           'double')
         #rho for electrons
-        self.handles['rhoEle'] = AutoHandle( (self.cfg_ana.rhoElectron, 'rho'),
+        self.handles['rhoEle'] = AutoHandle( (self.cfg_ana.rhoElectron, ''),
                                           'double')
 
         #photons (a la hzz4l definition)
-        self.handles['photons'] = AutoHandle( ('cmgPhotonSel',''),'std::vector<cmg::Photon>')
+        self.handles['photons'] = AutoHandle( self.cfg_ana.photons, 'std::vector<pat::Photon>')
 
         ## dEdX
         #self.handles['dEdX'] = AutoHandle( ('dedxHarmonic2','','RECO'), 'edm::ValueMap<reco::DeDxData>' )
@@ -90,13 +90,6 @@ class ttHLepAnalyzerBase( Analyzer ):
     #------------------
 
     
-    # the muons are already corrected with Rochester corrections, are already cleaned with the ghost cleaning
-    # the electrons have already the electron energy regression and calibration applied
-    # the V5_10_0 cmgTuple, have been corrected with Mike's patch for the SIP computation -> cmgMuons have been remade ->
-    # (cvs up -r michalis_sipPatchBranch  CMGTools/Common/src/MuonFactory.cc) 
-    # nb: the event vertex needs to be defined first -> using the vertex analyzer
-    # nb: in the following dxy and dz are computed with respect to the PV good vertex, sip with respect to the PV
-
     def makeLeptons(self, event):
         
         event.looseLeptons = []
@@ -108,7 +101,7 @@ class ttHLepAnalyzerBase( Analyzer ):
 
         if self.cfg_ana.doRecomputeSIP3D:
             for mu in allmuons:
-                if mu.sourcePtr().innerTrack().isNonnull():
+                if mu.innerTrack().isNonnull():
                     ## compute the variable and set it
                     mu._sip3d = abs(signedSip3D(mu, event.goodVertices[0]))
                     ## attach it to the object redefining the sip3D() method
@@ -131,15 +124,15 @@ class ttHLepAnalyzerBase( Analyzer ):
 
         for mu in allmuons:
             mu.associatedVertex = event.goodVertices[0]
-            if (mu.isGlobal() or mu.isTracker() and mu.numberOfMatches()>0) and mu.pt()>5 and abs(mu.eta())<2.4 and abs(mu.dxy())<0.5 and abs(mu.dz())<1.:
-                #pid = mu.sourcePtr().originalObject().track().id()
-                #key = mu.sourcePtr().originalObject().track().key()
+            if (mu.isGlobalMuon() or mu.isTrackerMuon() and mu.numberOfMatches()>0) and mu.pt()>5 and abs(mu.eta())<2.4 and abs(mu.dxy())<0.5 and abs(mu.dz())<1.:
+                #pid = mu.originalObject().track().id()
+                #key = mu.originalObject().track().key()
                 #mu.dEdX = self.handles['dEdX'].product().get(pid,key)
-                if mu.sourcePtr().userFloat("isPFMuon")>0.5 and mu.sip3D() < self.cfg_ana.sip3dCut and mu.relIso(dBetaFactor=0.5)<self.cfg_ana.isolationCut:
+                if mu.isPFMuon() and mu.sip3D() < self.cfg_ana.sip3dCut and mu.relIso(dBetaFactor=0.5)<self.cfg_ana.isolationCut:
                     event.selectedLeptons.append(mu)
                 else:
                     event.looseLeptons.append(mu)
-                if mu.sourcePtr().userFloat("isPFMuon")>0.5 and mu.sip3D() < self.cfg_ana.sip3dCutVeryLoose:
+                if mu.isPFMuon() and mu.sip3D() < self.cfg_ana.sip3dCutVeryLoose:
                     event.inclusiveLeptons.append(mu)
 
         #electrons        
@@ -158,7 +151,7 @@ class ttHLepAnalyzerBase( Analyzer ):
 
         if self.cfg_ana.doRecomputeSIP3D:
             for ele in allelectrons:
-                if ele.sourcePtr().gsfTrack().isNonnull():
+                if ele.gsfTrack().isNonnull():
                     ## compute the variable and set it
                     ele._sip3d = abs(signedSip3D(ele, event.goodVertices[0]))
                     ## attach it to the object redefining the sip3D() method
@@ -167,7 +160,7 @@ class ttHLepAnalyzerBase( Analyzer ):
         # fill EA for rho-corrected isolation
         for ele in allelectrons:
           ele.rho = float(self.handles['rhoEle'].product()[0])
-          SCEta = abs(ele.sourcePtr().superCluster().eta())
+          SCEta = abs(ele.superCluster().eta())
           if (abs(SCEta) >= 0.0 and abs(SCEta) < 1.0 ) : ele.EffectiveArea = 0.130;
           if (abs(SCEta) >= 1.0 and abs(SCEta) < 1.479 ) : ele.EffectiveArea = 0.137;
           if (abs(SCEta) >= 1.479 and abs(SCEta) < 2.0 ) : ele.EffectiveArea = 0.067;
@@ -183,7 +176,7 @@ class ttHLepAnalyzerBase( Analyzer ):
         muForEleCrossCleaning = []
         if self.cfg_ana.doEleMuCrossCleaning:
             for mu in event.selectedLeptons + event.looseLeptons:
-                if abs(mu.pdgId()) == 13 and (mu.isGlobal() or mu.sourcePtr().userFloat("isPFMuon")>0.5):
+                if abs(mu.pdgId()) == 13 and (mu.isGlobalMuon() or mu.isPFMuon()):
                     muForEleCrossCleaning.append(mu)
 
 
@@ -192,10 +185,10 @@ class ttHLepAnalyzerBase( Analyzer ):
             ## remove muons if muForEleCrossCleaning is not empty
             if bestMatch(ele, muForEleCrossCleaning)[1] < 0.02: continue
             ## apply selection
-            if ele.pt()>7 and abs(ele.eta())<2.5 and abs(ele.dxy())<0.5 and abs(ele.dz())<1. and ele.numberOfHits()<=1:
+            if ele.pt()>7 and abs(ele.eta())<2.5 and abs(ele.dxy())<0.5 and abs(ele.dz())<1. and ele.gsfTrack().trackerExpectedHitsInner().numberOfLostHits()<=1:
                  ## fill tightId:
                  if (ele.pt() > 20):
-                    SCEta = abs(ele.sourcePtr().superCluster().eta())
+                    SCEta = abs(ele.superCluster().eta())
                     if   SCEta < 0.8:   ele.tightIdResult = (ele.mvaTrigV0() > 0.00)
                     elif SCEta < 1.479: ele.tightIdResult = (ele.mvaTrigV0() > 0.10)
                     else:               ele.tightIdResult = (ele.mvaTrigV0() > 0.62)

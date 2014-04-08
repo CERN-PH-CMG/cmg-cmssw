@@ -18,18 +18,18 @@ leptonType = NTupleObjectType("lepton", baseObjectTypes = [ particleType ], vari
     NTupleVariable("charge",   lambda x : x.charge(), int),
     NTupleVariable("dxy",   lambda x : x.dxy(), help="d_{xy} with respect to PV, in cm (with sign)"),
     NTupleVariable("dz",    lambda x : x.dz() , help="d_{z} with respect to PV, in cm (with sign)"),
-    NTupleVariable("edxy",  lambda x : x.sourcePtr().edB(), help="#sigma(d_{xy}) with respect to PV, in cm"),
-    NTupleVariable("edz",   lambda x : x.sourcePtr().gsfTrack().dzError() if abs(x.pdgId())==11 else x.sourcePtr().innerTrack().dzError() , help="#sigma(d_{z}) with respect to PV, in cm"),
+    NTupleVariable("edxy",  lambda x : x.edB(), help="#sigma(d_{xy}) with respect to PV, in cm"),
+    NTupleVariable("edz",   lambda x : x.gsfTrack().dzError() if abs(x.pdgId())==11 else x.innerTrack().dzError() , help="#sigma(d_{z}) with respect to PV, in cm"),
     NTupleVariable("ip3d",  lambda x : abs(signedIp3D(x)) , help="d_{3d} with respect to PV, in cm (absolute value)"),
     NTupleVariable("sip3d",  lambda x : x.sip3D(), help="S_{ip3d} with respect to PV (absolute value)"),
     NTupleVariable("relIso",  lambda x : x.relIso(dBetaFactor=0.5), help="PF Iso, R=0.4, with deltaBeta correction"),
     NTupleVariable("chargedRelIso", lambda x : x.chargedHadronIso()/x.pt(), help="PF Iso from charged hadrons only, R=0.4"),
     NTupleVariable("tightId",     lambda x : x.tightId(), int, help="POG Tight ID (based on triggering MVA value for electrons, boolean for muons)"),
-    NTupleVariable("convVeto",    lambda x : x.sourcePtr().passConversionVeto() if abs(x.pdgId())==11 else 1, int, help="Conversion veto (always true for muons)"),
-    NTupleVariable("lostHits",    lambda x : x.numberOfHits() if abs(x.pdgId())==11 else x.sourcePtr().innerTrack().trackerExpectedHitsInner().numberOfLostHits(), int, help="Number of lost hits on inner track")
+    NTupleVariable("convVeto",    lambda x : x.passConversionVeto() if abs(x.pdgId())==11 else 1, int, help="Conversion veto (always true for muons)"),
+    NTupleVariable("lostHits",    lambda x : x.gsfTrack().trackerExpectedHitsInner().numberOfLostHits() if abs(x.pdgId())==11 else x.innerTrack().trackerExpectedHitsInner().numberOfLostHits(), int, help="Number of lost hits on inner track")
 ])
 leptonTypeTTH = NTupleObjectType("leptonTTH", baseObjectTypes = [ leptonType ], variables = [
-    NTupleVariable("tightCharge", lambda lepton : ( lepton.sourcePtr().isGsfCtfScPixChargeConsistent() + lepton.sourcePtr().isGsfScPixChargeConsistent() ) if abs(lepton.pdgId()) == 11 else 2*(lepton.sourcePtr().innerTrack().ptError()/lepton.sourcePtr().innerTrack().pt() < 0.2), int, help="Tight charge criteria"),
+    NTupleVariable("tightCharge", lambda lepton : ( lepton.isGsfCtfScPixChargeConsistent() + lepton.isGsfScPixChargeConsistent() ) if abs(lepton.pdgId()) == 11 else 2*(lepton.innerTrack().ptError()/lepton.innerTrack().pt() < 0.2), int, help="Tight charge criteria"),
     NTupleVariable("mvaId",      lambda lepton : lepton.mvaNonTrigV0() if abs(lepton.pdgId()) == 11 else 1, help="EGamma POG MVA ID for non-triggering electrons (as HZZ); 1 for muons"),
     NTupleVariable("mvaIdTrig",  lambda lepton : lepton.mvaTrigV0()    if abs(lepton.pdgId()) == 11 else 1, help="EGamma POG MVA ID for triggering electrons; 1 for muons"),
     NTupleVariable("mva",        lambda lepton : lepton.mvaValue, help="Lepton MVA (ttH version)"),
@@ -39,16 +39,17 @@ leptonTypeTTH = NTupleObjectType("leptonTTH", baseObjectTypes = [ leptonType ], 
     NTupleVariable("mcMatchId",  lambda x : x.mcMatchId, int, mcOnly=True, help="Match to source from hard scatter (25 for H, 6 for t, 23/24 for W/Z)"),
     NTupleVariable("mcMatchAny",  lambda x : x.mcMatchAny, int, mcOnly=True, help="Match to any final state leptons: -mcMatchId if prompt, 0 if unmatched, 1 if light flavour, 2 if heavy flavour (b)"),
     NTupleVariable("mcMatchTau",  lambda x : x.mcMatchTau, int, mcOnly=True, help="True if the leptons comes from a tau"),
-    NTupleVariable("convVetoFull", lambda x : (x.sourcePtr().passConversionVeto() and x.numberOfHits() == 0) if abs(x.pdgId())==11 else 1, int, help="Conv veto + no missing hits for electrons, always true for muons."),
+    NTupleVariable("convVetoFull", lambda x : (x.passConversionVeto() and x.gsfTrack().trackerExpectedHitsInner().numberOfLostHits() == 0) if abs(x.pdgId())==11 else 1, int, help="Conv veto + no missing hits for electrons, always true for muons."),
 ])
 
 tauType = NTupleObjectType("tau",  baseObjectTypes = [ particleType ], variables = [
     NTupleVariable("charge",   lambda x : x.charge(), int),
-    NTupleVariable("dxy",   lambda x : x.dxy(), help="d_{xy} of lead track with respect to PV, in cm (with sign)"),
-    NTupleVariable("dz",    lambda x : x.dz() , help="d_{z} of lead track with respect to PV, in cm (with sign)"),
-    NTupleVariable("idMVA2", lambda x : x.idMVA2, int, help="1,2,3 if the tau passes the loose, medium, tight WP of the By<X>IsolationMVA2 discriminator"),
+    #NTupleVariable("dxy",   lambda x : x.dxy(), help="d_{xy} of lead track with respect to PV, in cm (with sign)"),
+    #NTupleVariable("dz",    lambda x : x.dz() , help="d_{z} of lead track with respect to PV, in cm (with sign)"),
+    #NTupleVariable("idMVA2", lambda x : x.idMVA2, int, help="1,2,3 if the tau passes the loose, medium, tight WP of the By<X>IsolationMVA2 discriminator"),
     NTupleVariable("idCI3hit", lambda x : x.idCI3hit, int, help="1,2,3 if the tau passes the loose, medium, tight WP of the By<X>CombinedIsolationDBSumPtCorr3Hits discriminator"),
-    NTupleVariable("isoMVA2",  lambda x : x.tauID("byIsolationMVA2raw"), help="ByIsolationMVA2 raw output discriminator"),
+    #NTupleVariable("isoMVA2",  lambda x : x.tauID("byIsolationMVA2raw"), help="ByIsolationMVA2 raw output discriminator"),
+    NTupleVariable("isoRaw",  lambda x : x.tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits"), help="byCombinedIsolationDeltaBetaCorrRaw3Hits raw output discriminator"),
 ])
 tauTypeTTH = NTupleObjectType("tauTTH", baseObjectTypes = [ tauType ], variables = [
     NTupleVariable("mcMatchId",  lambda x : x.mcMatchId, int, mcOnly=True, help="Match to source from hard scatter (25 for H, 6 for t, 23/24 for W/Z)"),

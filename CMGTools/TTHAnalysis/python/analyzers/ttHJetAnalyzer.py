@@ -35,9 +35,9 @@ class ttHJetAnalyzer( Analyzer ):
         self.doJEC = self.cfg_ana.recalibrateJets or (self.shiftJEC != 0)
     def declareHandles(self):
         super(ttHJetAnalyzer, self).declareHandles()
-        self.handles['jets']     = AutoHandle( self.cfg_ana.jetCol, 'std::vector<cmg::PFJet>' )
-        self.handles['jets4MVA'] = AutoHandle( self.cfg_ana.jetCol4MVA, 'std::vector<cmg::PFJet>' )
-        self.handles['rho'] = AutoHandle( ('kt6PFJets','rho',''), 'double' )
+        self.handles['jets']     = AutoHandle( self.cfg_ana.jetCol, 'std::vector<pat::Jet>' )
+        self.handles['jets4MVA'] = AutoHandle( self.cfg_ana.jetCol4MVA, 'std::vector<pat::Jet>' )
+        self.handles['rho'] = AutoHandle( ('fixedGridRhoFastjetAll','',''), 'double' )
     
     def beginLoop(self):
         super(ttHJetAnalyzer,self).beginLoop()
@@ -103,8 +103,8 @@ class ttHJetAnalyzer( Analyzer ):
         
 
     def testJetID(self, jet):
-        jet.puJetIdPassed = jet.puJetId53X()
-        jet.pfJetIdPassed = jet.jetID('POG_PFID_Loose')
+        jet.puJetIdPassed = True # jet.puJetId53X() # FIXME
+        jet.pfJetIdPassed = True # jet.jetID('POG_PFID_Loose') # FIXME
         if self.cfg_ana.relaxJetId:
             return True
         else:

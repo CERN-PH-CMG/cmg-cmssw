@@ -65,7 +65,7 @@ _MuonVars = [
 
 _ElectronVars = [
     MVAVar("mvaId",lambda x: x.mvaNonTrigV0()),
-    MVAVar("innerHits",lambda x: x.numberOfHits()),
+    MVAVar("innerHits",lambda x: x.gsfTrack().trackerExpectedHitsInner().numberOfLostHits()),
 ]
 
 

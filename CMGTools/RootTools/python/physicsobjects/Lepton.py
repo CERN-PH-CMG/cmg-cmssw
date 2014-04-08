@@ -3,8 +3,7 @@ from CMGTools.RootTools.physicsobjects.PhysicsObject import *
 class Lepton( PhysicsObject):
     def sip3D(self):
         '''3D impact parameter, for H to ZZ to 4l analysis.'''
-        patLepton = self.physObj.sourcePtr()
-        return abs(self.dB3D() / self.edB3D())
+        return abs(self.dB(self.PV3D) / self.edB(self.PV3D))
 
     def absIsoFromEA(self,rho,eta,effectiveArea1 = None,effectiveArea2 = None):
         '''

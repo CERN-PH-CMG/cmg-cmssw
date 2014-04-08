@@ -25,7 +25,7 @@ class ttHJetMCMatchAnalyzer( Analyzer ):
 
     def declareHandles(self):
         super(ttHJetMCMatchAnalyzer, self).declareHandles()
-        self.handles['genJet'] = AutoHandle( 'genJetSel', 'vector<cmg::PhysicsObjectWithPtr<edm::Ptr<reco::GenJet> > >' )
+        self.handles['genJet'] = AutoHandle( 'slimmedGenJets', 'vector<reco::GenJet>' )
         self.shiftJER = self.cfg_ana.shiftJER if hasattr(self.cfg_ana, 'shiftJER') else 0
 
     def beginLoop(self):

@@ -15,6 +15,17 @@ loose_53X_WP = [
     (3.0, 5.0, -0.45),
     ]
 
+_btagWPs = {
+    "TCHEL": ("trackCountingHighEffBJetTags", 1.7),
+    "TCHEM": ("trackCountingHighEffBJetTags", 3.3),
+    "TCHPT": ("trackCountingHighPurBJetTags", 3.41),
+    "JPL": ("jetProbabilityBJetTags", 0.275),
+    "JPM": ("jetProbabilityBJetTags", 0.545),
+    "JPT": ("jetProbabilityBJetTags", 0.790),
+    "CSVL": ("combinedSecondaryVertexBJetTags", 0.244),
+    "CSVM": ("combinedSecondaryVertexBJetTags", 0.679),
+    "CSVT": ("combinedSecondaryVertexBJetTags", 0.898),
+}
 
 class Jet(PhysicsObject):
 
@@ -42,6 +53,17 @@ class Jet(PhysicsObject):
         '''53X full mva PU jet id with new working point by Phil (2 May 2013)'''
         return self.puJetId(wp53x=True)
 
+    def rawFactor(self):
+        return self.jecFactor('Uncorrected')
+
+    def btag(self,name):
+        return self.bDiscriminator(name) 
+ 
+    def btagWP(self,name):
+        global _btagWPs
+        (disc,val) = _btagWPs[name]
+        return self.bDiscriminator(disc) > val
+        
 
 class GenJet( PhysicsObject):
     pass

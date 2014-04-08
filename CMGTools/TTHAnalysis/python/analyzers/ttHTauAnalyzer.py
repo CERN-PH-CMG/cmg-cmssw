@@ -26,7 +26,7 @@ class ttHTauAnalyzer( Analyzer ):
     #----------------------------------------
     def declareHandles(self):
         super(ttHTauAnalyzer, self).declareHandles()
-        self.handles['taus'] = AutoHandle( ('cmgTauSel',''),'std::vector<cmg::Tau>')
+        self.handles['taus'] = AutoHandle( ('slimmedTaus',''),'std::vector<pat::Tau>')
 
 
     def beginLoop(self):
@@ -65,7 +65,7 @@ class ttHTauAnalyzer( Analyzer ):
             def id3(tau,X):
                 """Create an integer equal to 1-2-3 for (loose,medium,tight)"""
                 return tau.tauID(X%"Loose") + tau.tauID(X%"Medium") + tau.tauID(X%"Tight")
-            tau.idMVA2   = id3(tau, "by%sIsolationMVA2")
+            #tau.idMVA2   = id3(tau, "by%sIsolationMVA2")
             tau.idCI3hit = id3(tau, "by%sCombinedIsolationDeltaBetaCorr3Hits")
             #print "Tau pt %5.1f: idMVA2 %d, idCI3hit %d, %s, %s" % (tau.pt(), tau.idMVA2, tau.idCI3hit, tau.tauID(self.cfg_ana.tauID), tau.tauID(self.cfg_ana.tauLooseID))
             if tau.tauID(self.cfg_ana.tauID):
