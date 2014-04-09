@@ -11,6 +11,11 @@
 
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "CommonTools/Utils/interface/StringCutObjectSelector.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Framework/interface/ConsumesCollector.h"
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/EventSetup.h"
+
 #include "boost/iterator/transform_iterator.hpp"
 #include <functional>
 
