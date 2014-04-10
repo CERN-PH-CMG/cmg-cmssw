@@ -4,7 +4,7 @@
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 
-#include "CMGTools/External/interface/PileupJetIdentifier.h"
+#include "DataFormats/JetReco/interface/PileupJetIdentifier.h"
 #include "AnalysisDataFormats/CMGTools/interface/TriBool.h"
 #include "AnalysisDataFormats/CMGTools/interface/UnSet.h"
 

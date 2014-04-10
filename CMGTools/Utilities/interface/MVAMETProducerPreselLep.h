@@ -19,7 +19,7 @@
 
 #include "CMGTools/Utilities/interface/MVAMet.h"
 #include "CMGTools/Common/interface/MetUtilities.h"
-#include "CMGTools/External/interface/PileupJetIdentifier.h"
+#include "DataFormats/JetReco/interface/PileupJetIdentifier.h"
 
 #include <sstream>
 
