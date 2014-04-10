@@ -1,4 +1,6 @@
 from CMGTools.RootTools.physicsobjects.Lepton import Lepton
+from CMGTools.RootTools.physicsobjects.ElectronMVAID import ElectronMVAID_Trig, ElectronMVAID_NonTrig, ElectronMVAID_TrigNoIP
+
 
 class Electron( Lepton ):
 
@@ -8,6 +10,11 @@ class Electron( Lepton ):
         function.'''
         super(Electron, self).__init__(*args, **kwargs)
         self.tightIdResult = None
+        self.associatedVertex = None
+        self.rho              = None
+        self._mvaNonTrigV0  = None
+        self._mvaTrigV0     = None
+        self._mvaTrigNoIPV0 = None
 
     #def electronID( self, id, vertex=None, rho=None ):
     #    if vertex == None and hasattr(self,'associatedVertex') and self.associatedVertex != None: vertex = self.associatedVertex
@@ -31,10 +38,28 @@ class Electron( Lepton ):
     def tightId( self ):
         return self.tightIdResult
     
-    def mvaNonTrigV0( self ):
-        return 1 # FIXME 
-    def mvaTrigV0( self ):
-        return 1 # FIXME 
+    def mvaNonTrigV0( self, debug = False ):
+        if self._mvaNonTrigV0 == None:
+            if self.associatedVertex == None: raise RuntimeError, "You need to set electron.associatedVertex before calling any MVA"
+            if self.rho              == None: raise RuntimeError, "You need to set electron.rho before calling any MVA"
+            self._mvaNonTrigV0 = ElectronMVAID_NonTrig(self.physObj, self.associatedVertex, self.rho, debug)
+        return self._mvaNonTrigV0 
+
+    def mvaTrigV0( self, debug = False ):
+        if self._mvaTrigV0 == None:
+            if self.associatedVertex == None: raise RuntimeError, "You need to set electron.associatedVertex before calling any MVA"
+            if self.rho              == None: raise RuntimeError, "You need to set electron.rho before calling any MVA"
+            self._mvaTrigV0 = ElectronMVAID_Trig(self.physObj, self.associatedVertex, self.rho, debug)
+        return self._mvaTrigV0 
+
+    def mvaTrigNoIPV0( self, debug = False ):
+        if self._mvaTrigNoIPV0 == None:
+            if self.associatedVertex == None: raise RuntimeError, "You need to set electron.associatedVertex before calling any MVA"
+            if self.rho              == None: raise RuntimeError, "You need to set electron.rho before calling any MVA"
+            self._mvaTrigNoIPV0 = ElectronMVAID_TrigNoIP(self.physObj, self.associatedVertex, self.rho, debug)
+        return self._mvaTrigNoIPV0 
+
+
 
     def mvaIDZZ(self):
         '''missing doc, who is using this function?.'''

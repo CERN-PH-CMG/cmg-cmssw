@@ -6,4 +6,5 @@
   <class name="MuScleFitCorrector" transient="true" />
   <class name="TriggerBitChecker" transient="true" />
   <class name="CMGMuonCleanerBySegmentsAlgo" transient="true" />
+  <class name="EGammaMvaEleEstimatorFWLite" transient="true" />
 </lcgdict>

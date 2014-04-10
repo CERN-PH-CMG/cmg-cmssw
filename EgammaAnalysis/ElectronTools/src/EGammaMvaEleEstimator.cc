@@ -388,6 +388,7 @@ void EGammaMvaEleEstimator::initialize( std::string methodName,
         }
         if (gzclose(file) != Z_OK) { std::cout  << "Error closing gzip file associated to " << weightsfiles[i] << std::endl; }
         free(buff);
+        data.push_back('\0'); // IMPORTANT
         fTMVAMethod.push_back(dynamic_cast<TMVA::MethodBase*>(tmpTMVAReader->BookMVA(TMVA::Types::kBDT, &data[0])));
     } else {
         fTMVAMethod.push_back(dynamic_cast<TMVA::MethodBase*>(tmpTMVAReader->BookMVA(fMethodname , weightsfiles[i])));
@@ -1308,7 +1309,7 @@ Double_t EGammaMvaEleEstimator::mvaValue(const pat::Electron& ele,
     if (ele.gsfTrack().isNonnull()) {
       const double gsfsign   = ( (-ele.gsfTrack()->dxy(vertex.position()))   >=0 ) ? 1. : -1.;
 
-      std::cout << "Warning : if usePV = false when pat-electrons were produced, dB() was calculated with respect to beamspot while original mva uses primary vertex" << std::endl;
+      //std::cout << "Warning : if usePV = false when pat-electrons were produced, dB() was calculated with respect to beamspot while original mva uses primary vertex" << std::endl;
       double ip3d = gsfsign*ele.dB();
       double ip3derr = ele.edB();
       fMVAVar_ip3d = ip3d;

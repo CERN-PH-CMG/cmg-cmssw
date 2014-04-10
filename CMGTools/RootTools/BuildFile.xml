@@ -12,6 +12,7 @@
 <use   name="CommonTools/Utils"/>
 <use   name="AnalysisDataFormats/CMGTools"/>
 <use   name="DataFormats/HepMCCandidate"/>
+<use   name="EgammaAnalysis/ElectronTools"/>
 <use   name="boost"/>
 <export>
    <lib name="1"/>

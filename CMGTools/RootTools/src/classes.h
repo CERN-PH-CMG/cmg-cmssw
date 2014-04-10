@@ -5,6 +5,7 @@
 #include "CMGTools/RootTools/interface/CMGMuonCleanerBySegmentsAlgo.h"
 #include "CMGTools/RootTools/interface/TriggerBitChecker.h"
 #include "CMGTools/RootTools/interface/MuScleFitCorrector.h"
+#include "CMGTools/RootTools/interface/EGammaMvaEleEstimatorFWLite.h"
 
 namespace {
   namespace {
@@ -14,5 +15,6 @@ namespace {
     FSRWeightAlgo walgo_;
     TriggerBitChecker checker;
     CMGMuonCleanerBySegmentsAlgo cmgMuonCleanerBySegmentsAlgo;
+    EGammaMvaEleEstimatorFWLite egMVA;
   }
 }
