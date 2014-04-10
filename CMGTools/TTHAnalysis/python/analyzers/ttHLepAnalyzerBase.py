@@ -151,6 +151,7 @@ class ttHLepAnalyzerBase( Analyzer ):
 
         if self.cfg_ana.doRecomputeSIP3D:
             for ele in allelectrons:
+                if ele.pt() < 5: continue # we don't even have any info for these
                 if ele.gsfTrack().isNonnull():
                     ## compute the variable and set it
                     ele._sip3d = abs(signedSip3D(ele, event.goodVertices[0]))
@@ -160,6 +161,7 @@ class ttHLepAnalyzerBase( Analyzer ):
         # fill EA for rho-corrected isolation
         for ele in allelectrons:
           ele.rho = float(self.handles['rhoEle'].product()[0])
+          if ele.pt() < 5: continue # we don't even have any info for these
           SCEta = abs(ele.superCluster().eta())
           if (abs(SCEta) >= 0.0 and abs(SCEta) < 1.0 ) : ele.EffectiveArea = 0.130;
           if (abs(SCEta) >= 1.0 and abs(SCEta) < 1.479 ) : ele.EffectiveArea = 0.137;

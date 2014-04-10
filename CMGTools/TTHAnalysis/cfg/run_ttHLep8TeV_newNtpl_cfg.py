@@ -118,7 +118,7 @@ ttHJetAna = cfg.Analyzer(
     jetEta = 4.7,
     jetEtaCentral = 2.4,
     relaxJetId = False,  
-    doPuId = False, # FIXME
+    doPuId = True, # FIXME
     recalibrateJets = False,
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     cleanJetsFromTaus = False,
@@ -208,7 +208,7 @@ if test==1:
     # necessary to debug the code, until it doesn't crash anymore
     #comp = TW
     comp = TTH
-    comp.files = [ 'file:/afs/cern.ch/work/g/gpetrucc/micro/cmg/CMSSW_7_0_2/src/PhysicsTools/PatAlgos/test/miniAOD/patTuple_mini_TTJets.root' ]
+    comp.files = [ 'root://eoscms//eos/cms/store/cmst3/user/gpetrucc/miniAOD/TTJets.root' ]
     selectedComponents = [comp]
     comp.splitFactor = 1
     ## search for memory leaks

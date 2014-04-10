@@ -53,26 +53,21 @@ class Jet(PhysicsObject):
         '''PF Jet ID (loose operation point) [method provided for convenience only]'''
         return self.jetID("POG_PFID_Loose")
 
-    def puJetId(self, wp53x=False):
-        '''Full mva PU jet id (default: old loose working point used by Josh)'''
+    def puMva(self):
+        return self.userFloat("pileupJetId:fullDiscriminant")
 
-        puMva = self.puMva('full53x')
+    def puJetId(self):
+        '''Full mva PU jet id'''
+
+        puMva = self.puMva()
         wp = loose_53X_WP
         eta = abs(self.eta())
         
-        if not wp53x:
-            puMva = self.puMva('full')
-            wp = loose_WP
-
         for etamin, etamax, cut in wp:
             if not(eta>=etamin and eta<etamax):
                 continue
             return puMva>cut
         
-    def puJetId53X(self):
-        '''53X full mva PU jet id with new working point by Phil (2 May 2013)'''
-        return self.puJetId(wp53x=True)
-
     def rawFactor(self):
         return self.jecFactor('Uncorrected')
 
