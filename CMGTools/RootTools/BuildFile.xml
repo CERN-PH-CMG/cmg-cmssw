@@ -10,7 +10,6 @@
 <use   name="DataFormats/Candidate"/>
 <use   name="DataFormats/PatCandidates"/>
 <use   name="CommonTools/Utils"/>
-<use   name="AnalysisDataFormats/CMGTools"/>
 <use   name="DataFormats/HepMCCandidate"/>
 <use   name="EgammaAnalysis/ElectronTools"/>
 <use   name="boost"/>

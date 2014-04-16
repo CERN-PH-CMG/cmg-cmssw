@@ -4,49 +4,6 @@
 CMGMuonCleanerBySegmentsAlgo::~CMGMuonCleanerBySegmentsAlgo() {
 }
 
-int
-CMGMuonCleanerBySegmentsAlgo::sharedSegments(const cmg::Muon &cmgmu1, const cmg::Muon &cmgmu2) const {
-    const pat::Muon &mu1    = **cmgmu1.sourcePtr();
-    const pat::Muon &mu2    = **cmgmu2.sourcePtr();
-    return muon::sharedSegments(mu1,mu2);
-}
-
-std::vector<bool> 
-CMGMuonCleanerBySegmentsAlgo::clean(const std::vector<cmg::Muon> &src) const {
-    unsigned int nsrc = src.size();
-    std::vector<bool> good(nsrc, true);
-    for (unsigned int i = 0; i < nsrc; ++i) {
-        const cmg::Muon &cmgmu1 = src[i];
-        const pat::Muon &mu1    = **cmgmu1.sourcePtr();
-        if (!preselection_(mu1)) good[i] = false; 
-        if (!good[i]) continue;
-        int  nSegments1 = mu1.numberOfMatches(reco::Muon::SegmentArbitration);
-        for (unsigned int j = i+1; j < nsrc; ++j) {
-            const cmg::Muon &cmgmu2 = src[j];
-            const pat::Muon &mu2    = **cmgmu2.sourcePtr();
-            if (isSameMuon(mu1,mu2)) continue;
-            if (!good[j] || !preselection_(mu2)) continue;
-            int nSegments2 = mu2.numberOfMatches(reco::Muon::SegmentArbitration);
-            if (nSegments2 == 0 || nSegments1 == 0) continue;
-            double sf = muon::sharedSegments(mu1,mu2)/std::min<double>(nSegments1,nSegments2);
-            if (sf > sharedFraction_) {
-                if (isBetterMuon(mu1,cmgmu1.isPF(),mu2,cmgmu2.isPF())) {
-                    good[j] = false;
-                } else {
-                    good[i] = false;
-                }
-            }
-        }
-    }
-
-    for (unsigned int i = 0; i < nsrc; ++i) {
-        const cmg::Muon &cmgmu1 = src[i];
-        const pat::Muon &mu1    = **cmgmu1.sourcePtr();
-        if (passthrough_(mu1)) good[i] = true;
-    }
-
-    return good;
-}
 std::vector<bool> 
 CMGMuonCleanerBySegmentsAlgo::clean(const std::vector<pat::Muon> &src) const {
     unsigned int nsrc = src.size();
@@ -64,7 +21,7 @@ CMGMuonCleanerBySegmentsAlgo::clean(const std::vector<pat::Muon> &src) const {
             if (nSegments2 == 0 || nSegments1 == 0) continue;
             double sf = muon::sharedSegments(mu1,mu2)/std::min<double>(nSegments1,nSegments2);
             if (sf > sharedFraction_) {
-                if (isBetterMuon(mu1,mu1.userFloat("isPFMuon")>0.5,mu2,mu2.userFloat("isPFMuon")>0.5)) {
+                if (isBetterMuon(mu1,mu1.isPFMuon(),mu2,mu2.isPFMuon())) {
                     good[j] = false;
                 } else {
                     good[i] = false;
