@@ -52,12 +52,13 @@ class Tau( Lepton ):
 
     def __str__(self):
         lep = super(Tau, self).__str__()
-        spec = '\t\tTau: decay = {decMode:<15}, eOverP = {eOverP:4.2f}, isoMVALoose = {isoMVALoose}'.format(
-            decMode = tauDecayModes.intToName( self.decayMode() ),
-            eOverP = self.calcEOverP(),
-            isoMVALoose = self.tauID('byLooseIsoMVA')
-            )
-        return '\n'.join([lep, spec])
+        return lep
+        #spec = '\t\tTau: decay = {decMode:<15}, eOverP = {eOverP:4.2f}, isoMVALoose = {isoMVALoose}'.format(
+        #    decMode = tauDecayModes.intToName( self.decayMode() ),
+        #    eOverP = self.calcEOverP(),
+        #    isoMVALoose = self.tauID('byLooseIsoMVA')
+        #    )
+        #return '\n'.join([lep, spec])
 
     def electronMVA3Medium(self):
         '''Custom electron MVA 3 medium WP used for H->tau tau'''
