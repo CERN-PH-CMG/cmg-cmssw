@@ -1,7 +1,7 @@
 #ifndef CMGTOOLS_COMMON_GENERICROODATASETS_H_
 #define CMGTOOLS_COMMON_GENERICROODATASETS_H_
 
-#include "AnalysisDataFormats/CMGTools/interface/UnSet.h"
+#include "CMGTools/Common/interface/UnSet.h"
 #include "CommonTools/Utils/interface/StringObjectFunction.h"
 #include "CommonTools/Utils/interface/StringCutObjectSelector.h"
 #include "CMGTools/Common/interface/GenericHistograms.h"
@@ -24,7 +24,7 @@ namespace cmg{
   class GenericRooDataSets : public cmg::GenericHistograms<T>{
     protected:
         
-        typedef StringObjectFunction<T> function;
+        typedef StringObjectFunction<T,true> function;
         struct RealVar{
             public:
                 /// used to parse the expression and get the value
@@ -60,7 +60,7 @@ namespace cmg{
         };
         typedef std::list<RealVar> RealVars;
         
-        typedef StringCutObjectSelector<T> selector;
+        typedef StringCutObjectSelector<T,true> selector;
         struct Category{
           public:
             /// selector used to decide cat

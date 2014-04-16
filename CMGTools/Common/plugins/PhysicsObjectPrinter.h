@@ -6,8 +6,6 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
-#include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
-
 #include <iostream>
 #include <map>
 #include <memory>

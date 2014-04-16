@@ -8,8 +8,7 @@ Used e.g. to make the famous fraction vs eta plot
 \author Colin
 */
 
-#include "AnalysisDataFormats/CMGTools/interface/PFJetComponent.h"
-#include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "CMGTools/Common/interface/AnalysisHistograms.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 
@@ -23,7 +22,7 @@ class JetComponentHistograms: public AnalysisHistograms {
 
   virtual ~JetComponentHistograms();
 
-  void fill(const cmg::PFJetComponent& component, const cmg::PFJet& jet);
+  void fill(const reco::PFCandidate::ParticleType& component, const pat::Jet& jet);
 
   virtual void defineHistograms();
 

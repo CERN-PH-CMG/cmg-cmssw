@@ -1,4 +1,3 @@
-<use name="AnalysisDataFormats/CMGTools"/>
 <use name="RecoMET/METAlgorithms"/>
 <use name="Muon/MuonAnalysisTools"/>
 

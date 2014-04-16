@@ -28,7 +28,7 @@ void cmg::JetComponentHistograms::defineHistograms(){
    
     add1DHistogram( "R", ";fraction", 100, 0., 1.1, file_);
     add1DHistogram( "E", ";E (GeV)", 100, 0., 100, file_);
-    add1DHistogram( "PT", ";p_{T} (GeV/c)", 100, 0., 100, file_);
+    //add1DHistogram( "PT", ";p_{T} (GeV/c)", 100, 0., 100, file_);
     add1DHistogram( "N", ";number", 21, -0.5, 20.5, file_);
 
     addProfile( "RvsEta", ";#eta;fraction", 20, -5, 5, file_ );
@@ -45,27 +45,68 @@ void cmg::JetComponentHistograms::defineHistograms(){
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 
-void cmg::JetComponentHistograms::fill( const cmg::PFJetComponent& comp,
-				   const cmg::PFJet& jet) {
+void cmg::JetComponentHistograms::fill( const reco::PFCandidate::ParticleType& component,
+				   const pat::Jet& jet) {
   
-  fill1DHistogram( "R", comp.fraction() );
-  fill1DHistogram( "E", comp.energy() );
-  fill1DHistogram( "PT", comp.pt());
-  fill1DHistogram( "N", comp.number() );
-  fillProfile( "RvsEta", jet.eta(), comp.fraction() );
+  float fraction, energy, number;
+  switch(component) {
+      case reco::PFCandidate::h:
+          fraction = jet.chargedHadronEnergyFraction();
+          energy = jet.chargedHadronEnergy();
+          number = jet.chargedHadronMultiplicity();
+          break;
+      case reco::PFCandidate::e:
+          fraction = jet.electronEnergyFraction();
+          energy = jet.electronEnergy();
+          number = jet.electronMultiplicity();
+          break;
+      case reco::PFCandidate::mu:
+          fraction = jet.muonEnergyFraction();
+          energy = jet.muonEnergy();
+          number = jet.muonMultiplicity();
+          break;
+      case reco::PFCandidate::gamma:
+          fraction = jet.photonEnergyFraction();
+          energy = jet.photonEnergy();
+          number = jet.photonMultiplicity();
+          break;
+      case reco::PFCandidate::h0:
+          fraction = jet.neutralHadronEnergyFraction();
+          energy = jet.neutralHadronEnergy();
+          number = jet.neutralHadronMultiplicity();
+          break;
+      case reco::PFCandidate::h_HF:
+          fraction = jet.HFHadronEnergyFraction();
+          energy = jet.HFHadronEnergy();
+          number = jet.HFHadronMultiplicity();
+          break;
+      case reco::PFCandidate::egamma_HF:
+          fraction = jet.HFEMEnergyFraction();
+          energy = jet.HFEMEnergy();
+          number = jet.HFEMMultiplicity();
+          break;
+      default:
+          throw cms::Exception("LogicError", "Filling for a component that is not foreseen\n");
+  };
+  
+  fill1DHistogram( "R", fraction );
+  fill1DHistogram( "E", energy );
+  //fill1DHistogram( "PT", comp.pt());
+  fill1DHistogram( "N", number );
+  fillProfile( "RvsEta", jet.eta(), fraction );
 
   
   if( fabs(jet.eta()) < 1.5 ) {
-    fillProfile( "RvsPt_barrel", jet.pt(), comp.fraction() );
-    fillProfile( "RvsPhi_barrel", jet.phi(), comp.fraction() );
+    fillProfile( "RvsPt_barrel", jet.pt(), fraction );
+    fillProfile( "RvsPhi_barrel", jet.phi(), fraction );
   }
   if( fabs(jet.eta()) > 1.5 && fabs(jet.eta())<3 ) {
-    fillProfile( "RvsPt_endcaps", jet.pt(), comp.fraction() );
-    fillProfile( "RvsPhi_endcaps", jet.phi(), comp.fraction() );
+    fillProfile( "RvsPt_endcaps", jet.pt(), fraction );
+    fillProfile( "RvsPhi_endcaps", jet.phi(), fraction );
   }
   else if( fabs(jet.eta())>3 ) {
-    fillProfile( "RvsPt_HF", jet.pt(), comp.fraction() );
-    fillProfile( "RvsPhi_HF", jet.phi(), comp.fraction() );
+    fillProfile( "RvsPt_HF", jet.pt(), fraction );
+    fillProfile( "RvsPhi_HF", jet.phi(), fraction );
   }
 
 }

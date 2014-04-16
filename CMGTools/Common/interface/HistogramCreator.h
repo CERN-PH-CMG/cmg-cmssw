@@ -55,9 +55,8 @@ namespace cmg{
           size_t sizeX = candsX->size();
           size_t sizeY = candsY->size();
           size_t sizeMin = std::min(sizeX, sizeY);
-          T dummy;
           for (size_t i = 0; i != sizeMin; ++i) {
-            fill(candsX->at(i), candsY->at(i), dummy);
+            fill(candsX->at(i), candsY->at(i), candsX->at(i));
           }
         } else {
           // All three input collections given.

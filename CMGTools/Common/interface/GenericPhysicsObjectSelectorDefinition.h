@@ -66,7 +66,7 @@ namespace cmg {
     }
     
     private:
-    StringCutObjectSelector<T> selector_;
+    StringCutObjectSelector<T,true> selector_;
   protected:
     container selected_;
 

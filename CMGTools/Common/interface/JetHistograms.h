@@ -7,7 +7,6 @@
 \author Colin
 */
 
-#include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
 #include "CMGTools/Common/interface/HistogramCreator.h"
 #include "CMGTools/Common/interface/JetComponentHistograms.h"
 
@@ -15,7 +14,7 @@
 
 namespace cmg {
 
-class JetHistograms: public cmg::HistogramCreator<cmg::PFJet> {
+class JetHistograms: public cmg::HistogramCreator<pat::Jet> {
  public:
 
   JetHistograms(const edm::ParameterSet& ps);

@@ -5,7 +5,6 @@
 <use name="CommonTools/UtilAlgos"/>
 
 <use name="DataFormats/PatCandidates"/>
-<use name="AnalysisDataFormats/CMGTools"/>
 <use name="CondFormats/JetMETObjects"/>
 <use name="MagneticField/Engine"/>
 

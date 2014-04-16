@@ -144,19 +144,19 @@ void cmg::DeltaRVetoProducer<T>::produce(edm::Event & iEvent, const edm::EventSe
 #endif
 
 /* #include "FWCore/Framework/interface/MakerMacros.h" */
-/* #include "AnalysisDataFormats/CMGTools/interface/BaseJet.h" */
-/* #include "AnalysisDataFormats/CMGTools/interface/PFJet.h" */
-/* #include "AnalysisDataFormats/CMGTools/interface/Electron.h" */
-/* #include "AnalysisDataFormats/CMGTools/interface/Muon.h" */
-/* #include "AnalysisDataFormats/CMGTools/interface/Tau.h" */
-/* typedef cmg::DeltaRVetoProducer<cmg::BaseJet> DeltaRVetoProducerBaseJet; */
-/* typedef cmg::DeltaRVetoProducer<cmg::PFJet> DeltaRVetoProducerPFJet; */
-/* typedef cmg::DeltaRVetoProducer<cmg::Electron> DeltaRVetoProducerElectron; */
-/* typedef cmg::DeltaRVetoProducer<cmg::Muon> DeltaRVetoProducerMuon; */
-/* typedef cmg::DeltaRVetoProducer<cmg::Tau> DeltaRVetoProducerTau; */
+/* #include "DataFormats/PatCandidates/interface/Jet.h" */
+/* #include "DataFormats/PatCandidates/interface/Electron.h" */
+/* #include "DataFormats/PatCandidates/interface/Muon.h" */
+/* #include "DataFormats/PatCandidates/interface/Tau.h" */
+/* #include "DataFormats/PatCandidates/interface/Photon.h" */
+/* typedef cmg::DeltaRVetoProducer<pat::Jet> DeltaRVetoProducerJet; */
+/* typedef cmg::DeltaRVetoProducer<pat::Electron> DeltaRVetoProducerElectron; */
+/* typedef cmg::DeltaRVetoProducer<pat::Muon> DeltaRVetoProducerMuon; */
+/* typedef cmg::DeltaRVetoProducer<pat::Tau> DeltaRVetoProducerTau; */
+/* typedef cmg::DeltaRVetoProducer<pat::Photon> DeltaRVetoProducerPhoton; */
 
-/* DEFINE_FWK_MODULE(DeltaRVetoProducerBaseJet); */
-/* DEFINE_FWK_MODULE(DeltaRVetoProducerPFJet); */
+/* DEFINE_FWK_MODULE(DeltaRVetoProducerJet); */
 /* DEFINE_FWK_MODULE(DeltaRVetoProducerElectron); */
 /* DEFINE_FWK_MODULE(DeltaRVetoProducerMuon); */
 /* DEFINE_FWK_MODULE(DeltaRVetoProducerTau); */
+/* DEFINE_FWK_MODULE(DeltaRVetoProducerPhoton); */

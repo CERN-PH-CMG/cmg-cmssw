@@ -17,7 +17,7 @@ namespace cmg {
   class GenericHistograms : public cmg::HistogramCreator<T> {
     protected:
 
-        typedef StringObjectFunction<T> function;
+        typedef StringObjectFunction<T,true> function;
         struct HistogramAxis {
             public:
                 function fn_;

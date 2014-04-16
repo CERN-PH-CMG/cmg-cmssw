@@ -16,8 +16,7 @@
 #include "DataFormats/METReco/interface/SigInputObj.h"
 #include "RecoMET/METAlgorithms/interface/significanceAlgo.h"
 
-#include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
-//#include <TMatrixD.h>
+#include "DataFormats/Math/interface/Error.h"
 
 class METSignificanceProducer : public edm::EDProducer {
 
@@ -96,7 +95,7 @@ METSignificanceProducer::METSignificanceProducer(const edm::ParameterSet & iConf
   inputPFCandidates_(iConfig.getParameter<edm::InputTag>("inputPFCandidates")),
   verbose_(iConfig.getUntrackedParameter<bool>("verbose", false ))
 {
-  produces< cmg::METSignificance >();
+  produces< math::Error<2>::type >();
 }
 
 
@@ -131,7 +130,12 @@ void METSignificanceProducer::produce(edm::Event & iEvent, const edm::EventSetup
   metsig::significanceAlgo pfMEtSignAlgorithm;
   pfMEtSignAlgorithm.addObjects(pfMEtSignObjects);
 
-  std::auto_ptr< cmg::METSignificance > pOut( new cmg::METSignificance(pfMEtSignAlgorithm.getSignifMatrix()) );
+  std::auto_ptr< math::Error<2>::type > pOut( new  math::Error<2>::type() );
+  const TMatrixD &sig = pfMEtSignAlgorithm.getSignifMatrix();
+  (*pOut)(0,0) = sig(0,0);
+  (*pOut)(0,1) = sig(0,1);
+  (*pOut)(1,1) = sig(1,1);
+  (*pOut)(1,0) = sig(1,0); // useless I think
 
   iEvent.put( pOut ); 
 }

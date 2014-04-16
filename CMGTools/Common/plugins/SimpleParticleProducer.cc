@@ -3,14 +3,13 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Candidate/interface/LeafCandidate.h"
-#include "AnalysisDataFormats/CMGTools/interface/SimpleParticle.h"
 
 #include <iostream>
 
 class SimpleParticleProducer : public edm::EDProducer{
  public:
 
-  typedef std::vector<cmg::SimpleParticle> OutType;
+  typedef std::vector<reco::LeafCandidate> OutType;
 
   SimpleParticleProducer(const edm::ParameterSet& ps):
     src_(ps.getParameter<edm::InputTag>("src")) {
@@ -26,14 +25,14 @@ class SimpleParticleProducer : public edm::EDProducer{
 
 void SimpleParticleProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup){
 
-  edm::Handle< edm::View< reco::LeafCandidate > >  handle; 
+  edm::Handle< edm::View< reco::Candidate > >  handle; 
   iEvent.getByLabel( src_, handle );
   
   std::auto_ptr< OutType > output( new OutType(handle->size()) ); 
   
   for(unsigned i=0; i<handle->size(); ++i) {
-    const reco::LeafCandidate& cand = handle->at(i);
-    output->push_back( cmg::SimpleParticle(cand.pdgId(), cand.pt(), cand.eta(), cand.phi(), cand.mass()) );
+    const reco::Candidate& cand = handle->at(i);
+    output->push_back( reco::LeafCandidate(cand) );
   }
 
   iEvent.put( output );
