@@ -7,7 +7,6 @@
   \brief    Matcher of reconstructed objects to L1 Muons 
             
   \author   Giovanni Petrucciani
-  \version  $Id: PATJetSlimmer.cc,v 1.1 2011/03/24 18:45:45 mwlebour Exp $
 */
 
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
@@ -19,9 +18,7 @@
 #include "DataFormats/Common/interface/RefToPtr.h"
 #include "CommonTools/UtilAlgos/interface/StringCutObjectSelector.h"
 
-#define protected public
 #include "DataFormats/PatCandidates/interface/Jet.h"
-#undef protected
 
 namespace pat {
 
