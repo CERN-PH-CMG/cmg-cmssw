@@ -2,32 +2,36 @@ from CMGTools.RootTools.physicsobjects.Lepton import Lepton
 
 class Muon( Lepton ):
 
-    #def muonID( self, id, vertex=None ):
-    #    if vertex == None and hasattr(self,'associatedVertex') and self.associatedVertex != None: vertex = self.associatedVertex
-    #    return self.muonID_cpp_(id,vertex)
-
     def looseId( self ):
         '''Loose ID as recommended by mu POG.'''
-        return self.userFloat('isPFMuon') and \
-               ( self.isGlobalMuon() or self.isTrackerMuon() )
+        return self.physObj.isLooseMuon()
 
     def tightId( self ):
         '''Tight ID as recommended by mu POG.'''
-        return self.looseId() and \
-               self.isGlobalMuon() and \
-               self.globalTrack().normalizedChi2() < 10 and \
-               self.globalTrack().hitPattern().numberOfValidMuonHits() > 0 and \
-               self.numberOfMatchedStations()>1 and \
-               self.innerTrack().hitPattern().numberOfValidPixelHits()>0 and \
-               self.innerTrack().hitPattern().trackerLayersWithMeasurement() > 5 
+        return self.muonID("POG_Tight")
 
+    def muonID(self, name, vertex=None):
+        if name.startswith("POG_"):
+            if name == "POG_Loose": return self.physObj.isLooseMuon()
+            if vertex is None:
+                vertex = self.associatedVertex
+            if name == "POG_Tight":  return self.physObj.isTightMuon(vertex)
+            if name == "POG_HighPt": return self.physObj.isHighPtMuon(vertex)
+            if name == "POG_Soft":   return self.physObj.isSoftMuon(vertex)
+            if name == "POG_TightNoVtx":  return self.looseId() and \
+                                                 self.isGlobalMuon() and \
+                                                 self.globalTrack().normalizedChi2() < 10 and \
+                                                 self.globalTrack().hitPattern().numberOfValidMuonHits() > 0 and \
+                                                 self.numberOfMatchedStations()>1 and \
+                                                 self.innerTrack().hitPattern().numberOfValidPixelHits()>0 and \
+                                                 self.innerTrack().hitPattern().trackerLayersWithMeasurement() > 5
+        return self.physObj.muonID(name)
+            
     def mvaId(self):
         '''For a transparent treatment of electrons and muons. Returns -99'''
         return -99
     
-    def mvaIso( self ):
-        return self.userFloat('mvaIsoRings')
-    
+   
     def detIso( self, rho ):
         '''Rho corrected detector-based isolation, for the H->ZZ->4l baseline analysis'''
         isoEcal = self.ecalIso()

@@ -28,12 +28,8 @@ class Electron( Lepton ):
         '''
         return self.absIsoFromEA(rho,self.superCluster().eta(),effectiveAreas.eGamma)
 
-    def mvaIso( self ):
-        return self.userFloat('mvaIsoRings')
-
     def mvaId( self ):
         return self.mvaNonTrigV0()
-        #return self.userFloat('mvaNonTrigV0')
         
     def tightId( self ):
         return self.tightIdResult
