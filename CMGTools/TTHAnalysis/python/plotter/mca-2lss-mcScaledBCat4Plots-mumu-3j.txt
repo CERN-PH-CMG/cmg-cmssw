@@ -28,19 +28,13 @@ RARE: WWDPI   : 1.56/1.55* 0.5879;
 
 data     : DoubleMuAB
 data     : DoubleMuC
-data     : DoubleMuRec
 data     : DoubleMuD
-data     : DoubleMuBadSIP
 data     : DoubleElectronAB
 data     : DoubleElectronC
-data     : DoubleElectronRec
 data     : DoubleElectronD
-data     : DoubleElectronBadSIP
 data     : MuEGAB
 data     : MuEGC
-data     : MuEGRec
 data     : MuEGD
-data     : MuEGBadSIP
 
 
 # -- Reducible background: fakes

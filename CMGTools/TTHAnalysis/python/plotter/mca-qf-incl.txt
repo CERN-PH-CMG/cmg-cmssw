@@ -46,16 +46,10 @@ WJets   : WJets    : 37509.0   ;  FillColor=ROOT.kCyan+2
 
 data     : DoubleMuAB
 data     : DoubleMuC
-data     : DoubleMuRec
 data     : DoubleMuD
-data     : DoubleMuBadSIP
 data     : DoubleElectronAB
 data     : DoubleElectronC
-data     : DoubleElectronRec
 data     : DoubleElectronD
-data     : DoubleElectronBadSIP
 data     : MuEGAB
 data     : MuEGC
-data     : MuEGRec
 data     : MuEGD
-data     : MuEGBadSIP

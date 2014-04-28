@@ -34,19 +34,13 @@ ZZ       : ZZJets4L:   0.157    ;  FillColor=ROOT.kAzure-9
 
 data     : DoubleMuAB
 data     : DoubleMuC
-data     : DoubleMuRec
 data     : DoubleMuD
-data     : DoubleMuBadSIP
 data     : DoubleElectronAB
 data     : DoubleElectronC
-data     : DoubleElectronRec
 data     : DoubleElectronD
-data     : DoubleElectronBadSIP
 data     : MuEGAB
 data     : MuEGC
-data     : MuEGRec
 data     : MuEGD
-data     : MuEGBadSIP
 
 FR_wz  : WZJets  : 1.057   ;  FillColor=ROOT.kViolet-4, FakeRate='fakeRate_4l_MC.txt', Label='WZ FR'
 FR_ttW : TTWJets : 0.208   ;  FillColor=ROOT.kSpring+2, FakeRate='fakeRate_4l_MC.txt', Label='TTW FR'
