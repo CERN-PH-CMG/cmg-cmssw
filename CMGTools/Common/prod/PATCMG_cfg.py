@@ -15,6 +15,7 @@ print 'querying database for source files'
 
 runOnMC      = True
 runOnFastSim = False
+useMoriondGTs = False
 
 from CMGTools.Production.datasetToSource import *
 ## This is used to get the correct global tag below, and to find the files
@@ -253,8 +254,11 @@ v = SeqVisitor('FastjetJetProducer')
 process.p.visit(v)
 
 ### Set the global tag from the dataset name
-from CMGTools.Common.Tools.getGlobalTag import getGlobalTagByDataset
-process.GlobalTag.globaltag = getGlobalTagByDataset( runOnMC, datasetInfo[1])
+if useMoriondGTs:
+    process.GlobalTag.globaltag = "START53_V20::All" if runOnMC else "GR_P_V42_AN4::All" 
+else:
+    from CMGTools.Common.Tools.getGlobalTag import getGlobalTagByDataset
+    process.GlobalTag.globaltag = getGlobalTagByDataset( runOnMC, datasetInfo[1])
 print 'Global tag       : ', process.GlobalTag.globaltag
 ###
 
