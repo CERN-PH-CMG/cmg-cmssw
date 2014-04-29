@@ -594,6 +594,20 @@ float fakeRate_flavour_2l_19_lead(float l1pt, float l1eta, int l1pdgId,
 }
 
 
-
-
+float fakeRateBin_Muons(float pt, float eta) { // 0 .. 49
+    if (pt >= 50) pt = 49.9;
+    eta = fabs(eta); if (eta >= 2.5) eta = 2.499;
+    int ieta = floor(eta/0.5); // 0 .. 4;
+    int ipt  = floor(pt/5.0); // 0 .. 9;
+    if (ipt == 8) ipt = 7; // now merge the 40-45 into the 35-40;
+    return ipt*5 + ieta + 0.5; // make sure we end in the bin center
+}
+float fakeRateBin_Muons_eta(float bin) {
+    int ibin = floor(bin);
+    return (ibin % 5)*0.5 + 0.25;
+}
+float fakeRateBin_Muons_pt(float bin) {
+    int ibin = floor(bin);
+    return (ibin/5)*5.0 + 2.5;
+}
 void fakeRate() {}
