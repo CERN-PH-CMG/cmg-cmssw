@@ -2,7 +2,7 @@ import random
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
-from CMGTools.RootTools.utils.DeltaR import deltaR2, matchObjectCollection
+from CMGTools.RootTools.utils.DeltaR import * 
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.physicsobjects.JetReCalibrator import JetReCalibrator
 
@@ -21,15 +21,16 @@ def cleanNearestJetOnly(jets,leptons,deltaR):
 
 class ttHJetAnalyzer( Analyzer ):
     """Taken from RootTools.JetAnalyzer, simplified, modified, added corrections    """
-
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(ttHJetAnalyzer,self).__init__(cfg_ana, cfg_comp, looperName)
+        mcGT   = cfg_ana.mcGT   if hasattr(cfg_ana,'mcGT') else "START53_V27"
+        dataGT = cfg_ana.dataGT if hasattr(cfg_ana,'dataGT') else "FT_53_V21_AN5"
         if self.cfg_comp.isMC:
-            self.jetReCalibrator    = JetReCalibrator("START53_V27","AK5PF",    False)
-            self.jetReCalibratorCHS = JetReCalibrator("START53_V27","AK5PFchs", False)
+            self.jetReCalibrator    = JetReCalibrator(mcGT,"AK5PF",    False)
+            self.jetReCalibratorCHS = JetReCalibrator(mcGT,"AK5PFchs", False)
         else:
-            self.jetReCalibrator    = JetReCalibrator("FT_53_V21_AN5","AK5PF",    True)
-            self.jetReCalibratorCHS = JetReCalibrator("FT_53_V21_AN5","AK5PFchs", True)
+            self.jetReCalibrator    = JetReCalibrator(dataGT,"AK5PF",    True)
+            self.jetReCalibratorCHS = JetReCalibrator(dataGT,"AK5PFchs", True)
         self.doPuId = self.cfg_ana.doPuId if hasattr(self.cfg_ana, 'doPuId') else True
         self.shiftJEC = self.cfg_ana.shiftJEC if hasattr(self.cfg_ana, 'shiftJEC') else 0
         self.doJEC = self.cfg_ana.recalibrateJets or (self.shiftJEC != 0)
@@ -53,6 +54,7 @@ class ttHJetAnalyzer( Analyzer ):
             rho  = float(self.handles['rho'].product()[0])
             corr = self.jetReCalibratorCHS if 'CHS' in self.cfg_ana.jetCol else self.jetReCalibrator
             corr.correctAll(allJets, rho, delta=self.shiftJEC, metShift=event.deltaMetFromJEC)
+        event.allJetsUsedForMET = allJets
        
         ## If using a different collection for MVA, set it up 
         allJets4MVA = []

@@ -1,7 +1,17 @@
-oneLep: nLepFRLoose == 1
+#### Cuts for old trees
+# oneLep: nLepFRLoose == 1
+# pt20: Probe_pt > 20
+# Mu17: Trig_Event_Mu17
+# jet: nJet >= 1 && Jet1_pt > 40
+# met: met_t1 < 20
+# mtw: mtw_probe_t1 < 20
+# tight: Probe_tightFakeId
+
+### Cuts for new trees
+oneLep: 1
 pt20: Probe_pt > 20
-Mu17: Trig_Event_Mu17
-jet: nJet >= 1 && Jet_pt > 40
-met: met_t1 < 20
-mtw: mtw_probe_t1 < 20
+Mu17: HLT_Mu17
+jet: Jet1_pt > 40
+met: metT1_pt < 20
+mtw: mtwT1 < 20
 tight: Probe_tightFakeId
