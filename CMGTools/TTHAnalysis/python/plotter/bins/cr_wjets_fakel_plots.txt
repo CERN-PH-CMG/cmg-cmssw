@@ -1,8 +1,9 @@
 ### LEPTONS
 lep1Pt:  LepGood1_pt       : 20,20,120; XTitle="Leading lepton p_{T} [GeV]"
-lep1Eta: abs(LepGood1_eta) : 10,0,2.5; XTitle="Leading lepton |#eta|", MoreY=1.5
+#lep1Eta: abs(LepGood1_eta) : 10,0,2.5; XTitle="Leading lepton |#eta|", MoreY=1.5
 lep1MVA:  LepGood1_mva       : 10,0.7,1; XTitle="Leading lepton MVA", Legend='TL'
-lep2Pt:  LepGood2_pt       : 10,0,100; XTitle="Trailing lepton p_{T} [GeV]"
+lep2Pt:  LepGood2_pt       : 40,0,100; XTitle="Trailing lepton p_{T} [GeV]"
+lep2Pt_log:  LepGood2_pt   : 40,0,100; XTitle="Trailing lepton p_{T} [GeV]", Logy
 lep2Eta: abs(LepGood2_eta) : 10,0,2.5; XTitle="Trailing lepton |#eta|", MoreY=1.5
 lep2MVA:  LepGood2_mva       : 10,-1,1; XTitle="Trailing lepton MVA"
 
