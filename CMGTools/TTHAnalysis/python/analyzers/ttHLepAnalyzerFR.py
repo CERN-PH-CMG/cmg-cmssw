@@ -1,28 +1,19 @@
-import operator 
-import itertools
-import copy
 import types
 
-from ROOT import TLorentzVector
-
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.Event import Event
-from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.Lepton import Lepton
 from CMGTools.RootTools.physicsobjects.Photon import Photon
 from CMGTools.RootTools.physicsobjects.Electron import Electron
 from CMGTools.RootTools.physicsobjects.Muon import Muon
-from CMGTools.RootTools.physicsobjects.Jet import Jet
 from CMGTools.TTHAnalysis.tools.EfficiencyCorrector import EfficiencyCorrector
 
-from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch
+from CMGTools.RootTools.utils.DeltaR import bestMatch
 from CMGTools.RootTools.physicsobjects.RochesterCorrections import rochcor
 from CMGTools.RootTools.physicsobjects.MuScleFitCorrector   import MuScleFitCorr
 from CMGTools.RootTools.physicsobjects.ElectronCalibrator import EmbeddedElectronCalibrator
 from CMGTools.TTHAnalysis.electronCalibrator import * # load also older one
 
-from ROOT import CMGMuonCleanerBySegmentsAlgo, TRandom3
+from ROOT import CMGMuonCleanerBySegmentsAlgo
 cmgMuonCleanerBySegments = CMGMuonCleanerBySegmentsAlgo()
 
 from CMGTools.TTHAnalysis.signedSip import *
@@ -194,7 +185,8 @@ class ttHLepAnalyzerFR( Analyzer ):
             ele.associatedVertex = event.goodVertices[0]
             ## remove muons if muForEleCrossCleaning is not empty
             if bestMatch(ele, muForEleCrossCleaning)[1] < 0.02: continue
-            ## apply selection
+            ## fill POG MVA tight Id
+            ele.tightIdResult = False
             if ele.pt()>7 and abs(ele.eta())<2.5 and abs(ele.dxy())<0.5 and abs(ele.dz())<1. and ele.numberOfHits()<=1:
                  ## fill tightId:
                  if (ele.pt() > 20):
@@ -206,14 +198,29 @@ class ttHLepAnalyzerFR( Analyzer ):
                     if   SCEta < 0.8:   ele.tightIdResult = (ele.mvaTrigV0() > 0.94)
                     elif SCEta < 1.479: ele.tightIdResult = (ele.mvaTrigV0() > 0.85)
                     else:               ele.tightIdResult = (ele.mvaTrigV0() > 0.92)
-                 else:
-                    ele.tightIdResult = False
-                 #if (self.relaxId or ele.mvaIDZZ() and ele.sip3D() < self.cfg_ana.sip3dCut) and ele.relIso(dBetaFactor=0.5)<self.cfg_ana.isolationCut:
-                 #   event.selectedLeptons.append(ele)
-                 #else:
-                 #   event.looseLeptons.append(ele)
-                 #if (self.relaxId or ele.mvaIDZZ()) and ele.sip3D() < self.cfg_ana.sip3dCutVeryLoose:
-                 #   event.inclusiveLeptons.append(ele)
+            # Compute isolation
+            pfiso = ele.sourcePtr().pfIsolationVariables()
+            ele.relIso03 = (pfiso.chargedHadronIso + max(0, pfiso.neutralHadronIso + pfiso.photonIso - ele.rho*ele.EffectiveArea))/ele.pt()
+            # Compute electron id
+            dEtaIn = abs(ele.sourcePtr().deltaEtaSuperClusterTrackAtVtx());
+            dPhiIn = abs(ele.sourcePtr().deltaPhiSuperClusterTrackAtVtx());
+            sigmaIEtaIEta = abs(ele.sourcePtr().sigmaIetaIeta());
+            hoe = abs(ele.sourcePtr().hadronicOverEm());
+            ooemoop = abs(1.0/ele.sourcePtr().ecalEnergy() - ele.sourcePtr().eSuperClusterOverP()/ele.sourcePtr().ecalEnergy());
+            vtxFitConversion = ele.passConversionVeto();
+            mHits = e.numberOfHits();
+            # Set tight and loose flags
+            if abs(ele.sourcePtr().superCluster().eta()) < 1.479:
+                ele.looseFakeId = dEtaIn < 0.004 and dPhiIn < 0.06 and sigmaIEtaIEta < 0.01 and hoe < 0.12 and ooemoop < 0.05
+            else:
+                ele.looseFakeId = dEtaIn < 0.007 and dPhiIn < 0.03 and sigmaIEtaIEta < 0.03 and hoe < 0.10 and ooemoop < 0.05
+            ele.looseFakeId = ele.looseFakeId and vtxFitConversion and mHits <= 1 and abs(ele.dxy()) < 0.2 and abs(ele.dz()) < 0.2 and ele.relIso03 < 1.0
+            ele.tightFakeId = ele.looseFakeId and abs(ele.dxy()) < 0.01 and ele.relIso03 < 0.1 
+            # add to the list if needed
+            if ele.pt()>7 and abs(ele.eta())<2.5:
+                if ele.looseFakeId:
+                    event.inclusiveLeptons.append(ele)
+                    event.selectedLeptons.append(ele)
                  
                     
         event.looseLeptons.sort(key = lambda l : l.pt(), reverse = True)

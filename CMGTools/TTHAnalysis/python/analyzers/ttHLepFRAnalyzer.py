@@ -87,7 +87,7 @@ class ttHLepFRAnalyzer( ttHLepTreeProducerNew ):
             
         self.counters.counter('pairs').inc('all events')
 
-        if len(event.selectedLeptons)==1: 
+        if len([l for l in event.selectedLeptons if l.pt() > 10])==1: 
             self.counters.counter('pairs').inc('one lepton')
             for lep in event.selectedLeptons:
                 lep.mvaValue = -99.0
