@@ -195,7 +195,7 @@ sequence = cfg.Sequence([
 # selectedComponents.remove(WJets)
 # #selectedComponents.remove(TTJets)
 
-test = 7
+test = 10
 
 if test==1:
     # test a single component, using a single thread.
@@ -211,7 +211,6 @@ elif test==2:
     printComps(selectedComponents, True)
     for comp in selectedComponents:
         comp.splitFactor = 1
-    ttHJetAna.recalibrateJets = True
 elif test==3:
     # test two components, using many threads, to check if variables are ok
     comp = SingleMuD
@@ -233,7 +232,6 @@ elif test==5:
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.triggers = [] 
-    ttHJetAna.recalibrateJets = True
 elif test==6:
     # MC sync sample
     comp = selectedComponents[0]
@@ -258,7 +256,6 @@ elif test==7:
     selectedComponents = [comp]
     comp.triggers = [] 
     comp.json = '/afs/cern.ch/user/g/gpetrucc/scratch0/cmgprod/CMSSW_5_3_14/src/CMGTools/TTHAnalysis/data/json/sync-Run2012D-Prompt.json'
-    ttHJetAna.recalibrateJets = True
 elif test==8:
     # Data sync sample, processed with V5_10
     comp = DoubleMuD
@@ -268,8 +265,24 @@ elif test==8:
     comp.splitFactor = len(comp.files)
     selectedComponents = [comp]
     comp.triggers = [] 
-    ttHJetAna.recalibrateJets = True
     comp.json = '/afs/cern.ch/user/g/gpetrucc/scratch0/cmgprod/CMSSW_5_3_14/src/CMGTools/TTHAnalysis/data/json/sync-Run2012D-Prompt.json'
+elif test==9:
+    # MC sync sample for electrons
+    comp = QCDMuPt15
+    comp.files = ['root://eoscms//eos/cms/store/cmst3/user/gpetrucc/SusyFakes/cmgTuple_sync_electrons_MC.root']
+    selectedComponents = [comp]
+    comp.splitFactor = 1
+    comp.triggers = [] 
+elif test==10:
+    # Data sync sample for electrons
+    comp = DoubleElectronD
+    comp.files = ['root://eoscms//eos/cms/store/cmst3/user/gpetrucc/SusyFakes/cmgTuple_sync_electrons_data.root']
+    selectedComponents = [comp]
+    comp.splitFactor = 1
+    comp.triggers = [] 
+    comp.json = '/afs/cern.ch/user/g/gpetrucc/scratch0/cmgprod/CMSSW_5_3_14/src/CMGTools/TTHAnalysis/data/json/sync-Run2012D-Prompt.json'
+
+
 
 
 
