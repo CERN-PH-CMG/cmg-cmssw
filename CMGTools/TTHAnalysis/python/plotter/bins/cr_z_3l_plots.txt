@@ -17,6 +17,7 @@ m3l:      m3l:  45,70,180 ; XTitle="m(l^{+}l^{-} l)  [GeV]", Legend='TR'
 #l2Pt:  LepGood2_pt: 40,0,80; XTitle="Subleading lepton p_{T}  [GeV]", Legend='TR'
 #l3q:  LepGood3_charge: 5,-1.5,3.5; XTitle="Third lepton charge", Legend='TR', XNDiv=505
 l3Pt:  LepGood3_pt: 20,0,50; XTitle="Third lepton p_{T}  [GeV]", Legend='TR'
+l3Pt_log:  LepGood3_pt: 20,0,50; XTitle="Third lepton p_{T}  [GeV]", Legend='TR', Logy
 l3MVA: LepGood3_mva : 20,-1,1; XTitle="Third lepton MVA",Legend='TR'
 l3MVA_log: LepGood3_mva : 20,-1,1; XTitle="Third lepton MVA",Legend='TR',Logy, LegendCutoff=1e-3
 l3chIso:  LepGood3_chargedRelIso: 20,0,0.4; XTitle="Third lepton Iso/p_{T} (charged)", Legend='TR',Logy, LegendCutoff=0.003

@@ -2,29 +2,23 @@
 
 WHAT=$1; if [[ "$1" == "" ]]; then echo "frsuite.sh <what>"; exit 1; fi
 
-if [[ "$HOSTNAME" == "cmsphys05" ]]; then
-    T="/data/b/botta/TTHAnalysis/trees/TREES_250513_HADD";
-    J=7;
-elif [[ "$HOSTNAME" == "olsnba03" ]]; then
-    T="/data/gpetrucc/TREES_250513_HADD";
-    J=12;
-elif [[ "$HOSTNAME" == "lxbse14c09.cern.ch" ]]; then
-    T="/var/ssdtest/gpetrucc/TREES_250513_HADD";
-    J=16;
+if [[ "$HOSTNAME" == "cmsphys10" ]]; then
+    T="/data/g/gpetrucc/TREES_270314_HADD";
+    J=8;
 else
-    T="/afs/cern.ch/user/g/gpetrucc/w/TREES_250513_HADD";
-    #T="/afs/cern.ch/user/g/gpetrucc/ttH/TREES_250513_LITE";
+    T="/afs/cern.ch/user/g/gpetrucc/w/TREES_270314_HADD";
+    #T="/afs/cern.ch/user/g/gpetrucc/ttH/TREES_270314_LITE";
     J=5;
 fi
 
-CORE="mcPlots.py -P $T -j $J -l 19.6 --showRatio --maxRatioRange 0 3.7 -f --poisson "
-CORE="${CORE} --FM sf/t $T/0_SFs_v2/sfFriend_{cname}.root "
+CORE="mcPlots.py -P $T -j $J -l 19.6 --showRatio --maxRatioRange 0 3.7 -f --poisson --s2v --tree ttHLepTreeProducerTTH"
+#CORE="${CORE} --FM sf/t $T/0_SFs_v2/sfFriend_{cname}.root "
 
 MVA_2L="-F sf/t   $T/2_finalmva_2lss_v2/evVarFriend_{cname}.root "
 MVA_3L="-F finalMVA/t $T/0_finalmva_3l/finalMVA_3L_{cname}.root"
 MVA_3LC="-F sf/t $T/0_finalmva_3lcat/evVarFriend_{cname}.root "
 
-ROOT="plots/250513/v5_cr/$WHAT"
+ROOT="plots/270314/$WHAT"
 
 
 RUN2L="${CORE} mca-2lss-data.txt $MVA_2L"
@@ -284,16 +278,33 @@ z_3l)
     CORE="${CORE/--doStatTest=chi2l/} "
     RUN="${CORE} mca-incl-dysplit.txt bins/cr_z_3l.txt bins/cr_z_3l_plots.txt  --scaleSigToData  --sp 'DY.*' "
     RNR="${RUN/--showRatio/} "
-    SF="-W 'puWeight*Eff_3lep*SF_btag*SF_LepMVATight_2l' --mcc mcCorrections.txt";
+    #SF="-W 'puWeight*Eff_3lep*SF_btag*SF_LepMVATight_2l' --mcc mcCorrections.txt";
+    SF="-W 'puWeight' --mcc mcCorrections.txt";
     EL=" -A Z12 ele 'abs(LepGood3_pdgId) == 11' --sP 'l3.*' "
     MU=" -A Z12 ele 'abs(LepGood3_pdgId) == 13' --sP 'l3.*' "
     echo "python $RUN $SF --pdir $ROOT/ " 
     echo "python $RNR $SF --pdir $ROOT/noratio/ " 
     #echo "python $RUN $SF --pdir $ROOT/el/ $EL " 
-    #echo "python $RNR $SF --pdir $ROOT/el/noratio/ $EL " 
+    echo "python $RNR $SF --pdir $ROOT/el/noratio/ $EL " 
     #echo "python $RUN $SF --pdir $ROOT/mu/ $MU " 
-    #echo "python $RNR $SF --pdir $ROOT/mu/noratio/ $MU " 
+    echo "python $RNR $SF --pdir $ROOT/mu/noratio/ $MU " 
 ;;
+w_l_fakel)
+    CORE="${CORE/--doStatTest=chi2l/} "
+    RUN="${CORE} mca-incl-wjsplit.txt bins/cr_wjets_fakel.txt bins/cr_wjets_fakel_plots.txt   --sp 'W[jb].*' --scaleSigToData"
+    RNR="${RUN/--showRatio/} "
+    #SF="-W 'puWeight*Eff_3lep*SF_btag*SF_LepMVATight_2l' --mcc mcCorrections.txt";
+    SF="-W 'puWeight' --mcc mcCorrections.txt";
+    EL=" -A pt25 ele 'abs(LepGood2_pdgId) == 11'  "
+    MU=" -A pt25 mu  'abs(LepGood2_pdgId) == 13'  "
+    echo "python $RUN $SF --pdir $ROOT/ " 
+    echo "python $RNR $SF --pdir $ROOT/noratio/ " 
+    #echo "python $RUN $SF --pdir $ROOT/el/ $EL " 
+    echo "python $RNR $SF --pdir $ROOT/el/noratio/ $EL " 
+    #echo "python $RUN $SF --pdir $ROOT/mu/ $MU " 
+    echo "python $RNR $SF --pdir $ROOT/mu/noratio/ $MU " 
+;;
+
 tt_3l)
     CORE="${CORE/--doStatTest=chi2l/} "
     RUN="${CORE} mca-ttsplit.txt bins/cr_tt_3l.txt bins/cr_tt_3l_plots.txt  --scaleSigToData  --sp 'TT[lb]' --poisson "

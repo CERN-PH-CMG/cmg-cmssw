@@ -162,13 +162,13 @@ class ttHLepAnalyzerFR( Analyzer ):
         for ele in allelectrons:
           ele.rho = float(self.handles['rhoEle'].product()[0])
           SCEta = abs(ele.sourcePtr().superCluster().eta())
-          if (abs(SCEta) >= 0.0 and abs(SCEta) < 1.0 ) : ele.EffectiveArea = 0.130;
-          if (abs(SCEta) >= 1.0 and abs(SCEta) < 1.479 ) : ele.EffectiveArea = 0.137;
-          if (abs(SCEta) >= 1.479 and abs(SCEta) < 2.0 ) : ele.EffectiveArea = 0.067;
-          if (abs(SCEta) >= 2.0 and abs(SCEta) < 2.2 ) : ele.EffectiveArea = 0.089;
-          if (abs(SCEta) >= 2.2 and abs(SCEta) < 2.3 ) : ele.EffectiveArea = 0.107;
-          if (abs(SCEta) >= 2.3 and abs(SCEta) < 2.4 ) : ele.EffectiveArea = 0.110;
-          if (abs(SCEta) >= 2.4) : ele.EffectiveArea = 0.138;
+          if (abs(SCEta) >= 0.0   and abs(SCEta) < 1.0   ) : ele.EffectiveArea = 0.13 # 0.130;
+          if (abs(SCEta) >= 1.0   and abs(SCEta) < 1.479 ) : ele.EffectiveArea = 0.14 # 0.137;
+          if (abs(SCEta) >= 1.479 and abs(SCEta) < 2.0   ) : ele.EffectiveArea = 0.07 # 0.067;
+          if (abs(SCEta) >= 2.0   and abs(SCEta) < 2.2   ) : ele.EffectiveArea = 0.09 # 0.089;
+          if (abs(SCEta) >= 2.2   and abs(SCEta) < 2.3   ) : ele.EffectiveArea = 0.11 # 0.107;
+          if (abs(SCEta) >= 2.3   and abs(SCEta) < 2.4   ) : ele.EffectiveArea = 0.11 # 0.110;
+          if (abs(SCEta) >= 2.4)                           : ele.EffectiveArea = 0.14 # 0.138;
 
         if self.cfg_ana.doElectronScaleCorrections:
             for ele in allelectrons:
@@ -199,8 +199,7 @@ class ttHLepAnalyzerFR( Analyzer ):
                     elif SCEta < 1.479: ele.tightIdResult = (ele.mvaTrigV0() > 0.85)
                     else:               ele.tightIdResult = (ele.mvaTrigV0() > 0.92)
             # Compute isolation
-            pfiso = ele.sourcePtr().pfIsolationVariables()
-            ele.relIso03 = (pfiso.chargedHadronIso + max(0, pfiso.neutralHadronIso + pfiso.photonIso - ele.rho*ele.EffectiveArea))/ele.pt()
+            ele.relIso03 = (ele.chargedHadronIso(0.3) + max(ele.neutralHadronIso(0.3)+ele.photonIso(0.3)-ele.rho*ele.EffectiveArea,0))/ele.pt()
             # Compute electron id
             dEtaIn = abs(ele.sourcePtr().deltaEtaSuperClusterTrackAtVtx());
             dPhiIn = abs(ele.sourcePtr().deltaPhiSuperClusterTrackAtVtx());
@@ -208,14 +207,15 @@ class ttHLepAnalyzerFR( Analyzer ):
             hoe = abs(ele.sourcePtr().hadronicOverEm());
             ooemoop = abs(1.0/ele.sourcePtr().ecalEnergy() - ele.sourcePtr().eSuperClusterOverP()/ele.sourcePtr().ecalEnergy());
             vtxFitConversion = ele.passConversionVeto();
-            mHits = e.numberOfHits();
+            mHits = ele.numberOfHits();
             # Set tight and loose flags
             if abs(ele.sourcePtr().superCluster().eta()) < 1.479:
                 ele.looseFakeId = dEtaIn < 0.004 and dPhiIn < 0.06 and sigmaIEtaIEta < 0.01 and hoe < 0.12 and ooemoop < 0.05
             else:
                 ele.looseFakeId = dEtaIn < 0.007 and dPhiIn < 0.03 and sigmaIEtaIEta < 0.03 and hoe < 0.10 and ooemoop < 0.05
-            ele.looseFakeId = ele.looseFakeId and vtxFitConversion and mHits <= 1 and abs(ele.dxy()) < 0.2 and abs(ele.dz()) < 0.2 and ele.relIso03 < 1.0
-            ele.tightFakeId = ele.looseFakeId and abs(ele.dxy()) < 0.01 and ele.relIso03 < 0.1 
+            ele.looseFakeId = ele.looseFakeId and vtxFitConversion and mHits <= 1 and abs(ele.dz()) < 0.1 and ele.relIso03 < 0.6
+            ele.tightFakeId = ele.looseFakeId and abs(ele.dxy()) < 0.02 and ele.relIso03 < 0.15
+            #print "ele pt = %.3f  eta = %.3f sceta = %.3f detaIn = %.4f dphiIn = %.4f  sieie = %.4f  h/e = %.4f  1/e-1/p = %.4f  dxy = %.4f  dz = %.4f  losthits = %d conveto = %d relIso = %.4f     loose id = %d   tight id = %d" % ( ele.pt(),ele.eta(),ele.sourcePtr().superCluster().eta(),dEtaIn,dPhiIn,sigmaIEtaIEta,hoe,ooemoop,abs(ele.dxy()),abs(ele.dz()),mHits,vtxFitConversion,ele.relIso03, ele.looseFakeId, ele.tightFakeId)
             # add to the list if needed
             if ele.pt()>7 and abs(ele.eta())<2.5:
                 if ele.looseFakeId:
