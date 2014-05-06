@@ -11,7 +11,7 @@ skimAnalyzer = cfg.Analyzer(
 
 eventSelector = cfg.Analyzer(
     'EventSelector',
-    toSelect = [ ]
+    toSelect = [ 277791107 ]
     )
 
 
@@ -27,7 +27,9 @@ triggerAna = cfg.Analyzer(
 # this analyzer is just there to select a list of good primary vertices.
 ttHVertexAna = cfg.Analyzer(
     'VertexAnalyzer',
-    goodVertices = 'offlinePrimaryVertices',
+    goodVertices = 'offlinePrimaryVertices', # <= V5_17
+    #goodVertices = 'slimmedPrimaryVertices',  # >= V5_18
+    #allVertices = 'slimmedPrimaryVertices',
     vertexWeight = None,
     fixedWeight = 1,
     verbose = False
@@ -37,6 +39,7 @@ ttHVertexAna = cfg.Analyzer(
 # this analyzer actually does the pile-up reweighting.
 pileUpAna = cfg.Analyzer(
     "PileUpAnalyzer",
+    #allVertices = 'slimmedPrimaryVertices', # >= V5_18
     true = True, # use  number of true interactions
     makeHists=False
     )
@@ -54,7 +57,7 @@ ttHGenAna = cfg.Analyzer(
 ttHLepAna = cfg.Analyzer(
     'ttHLepAnalyzerFR',
     rhoMuon= 'kt6PFJetsCentralNeutral',
-    rhoElectron = 'kt6PFJets',
+    rhoElectron = 'kt6PFJets', #ForIsoSUSY',
     muons='cmgMuonSel',
     electrons='cmgElectronSel',
     photons='cmgPhotonSel',
@@ -269,14 +272,14 @@ elif test==8:
 elif test==9:
     # MC sync sample for electrons
     comp = QCDMuPt15
-    comp.files = ['root://eoscms//eos/cms/store/cmst3/user/gpetrucc/SusyFakes/cmgTuple_sync_electrons_MC.root']
+    comp.files = ['root://eoscms//eos/cms/store/cmst3/user/gpetrucc/SusyFakes/cmgTuple_sync_electrons_MC.v2.root']
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.triggers = [] 
 elif test==10:
     # Data sync sample for electrons
     comp = DoubleElectronD
-    comp.files = ['root://eoscms//eos/cms/store/cmst3/user/gpetrucc/SusyFakes/cmgTuple_sync_electrons_data.root']
+    comp.files = ['root://eoscms//eos/cms/store/cmst3/user/gpetrucc/SusyFakes/cmgTuple_sync_electrons_data.v2.root']
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.triggers = [] 
