@@ -25,8 +25,7 @@ class ttHIsoTrackAnalyzer( Analyzer ):
     #----------------------------------------
     def declareHandles(self):
         super(ttHIsoTrackAnalyzer, self).declareHandles()
-#        self.handles['cmgCandidates'] = AutoHandle('cmgCandidates','std::vector<cmg::Candidate>')
-        self.handles['cmgCand'] = AutoHandle('cmgCandidates','std::vector<cmg::Candidate>') 
+        self.handles['cmgCand'] = AutoHandle(self.cfg_ana.candidates,'std::vector<cmg::Candidate>') 
 
     def beginLoop(self):
         super(ttHIsoTrackAnalyzer,self).beginLoop()
@@ -101,8 +100,7 @@ class ttHIsoTrackAnalyzer( Analyzer ):
             event.iso=minIsoSum
             event.dzIsoTrack=abs(dz(event.selectedIsoTrack[0]))
 
-
-    def printInfo(event):
+    def printInfo(self, event):
         print 'event to Veto'
         print '----------------'
 
@@ -130,11 +128,11 @@ class ttHIsoTrackAnalyzer( Analyzer ):
         if len(event.selectedIsoTrack)==0 : return True
         
         if (self.cfg_ana.doSecondVeto and (event.selectedIsoTrack[0].pdgId()!=11) and (event.selectedIsoTrack[0].pdgId()!=12) and event.iso < self.cfg_ana.MaxIsoSum ) :
-#            printInfo(event)
+#            self.printInfo(event)
             return False
 
         if ((self.cfg_ana.doSecondVeto and event.selectedIsoTrack[0].pdgId()==11 or event.selectedIsoTrack[0].pdgId()==12) and event.iso < self.cfg_ana.MaxIsoSumEMU ) :
-#            printInfo(event)
+#            self.printInfo(event)
             return False
 
         return True
