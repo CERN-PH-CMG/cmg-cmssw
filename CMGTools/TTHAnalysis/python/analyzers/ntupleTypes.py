@@ -41,6 +41,16 @@ leptonTypeTTH = NTupleObjectType("leptonTTH", baseObjectTypes = [ leptonType ], 
     NTupleVariable("mcMatchTau",  lambda x : x.mcMatchTau, int, mcOnly=True, help="True if the leptons comes from a tau"),
     NTupleVariable("convVetoFull", lambda x : (x.sourcePtr().passConversionVeto() and x.numberOfHits() == 0) if abs(x.pdgId())==11 else 1, int, help="Conv veto + no missing hits for electrons, always true for muons."),
 ])
+leptonTypeSusyFR = NTupleObjectType("leptonSusyFR", baseObjectTypes = [ leptonTypeTTH ], variables = [
+    NTupleVariable("relIso03",  lambda x : x.relIso03, help="PF Rel Iso, R, with deltaBeta correction"),
+    NTupleVariable("looseFakeId", lambda x : x.looseFakeId, int, help="Loose ID for Susy Fake Rate exercise"),
+    NTupleVariable("tightFakeId", lambda x : x.tightFakeId, int, help="Tight ID for Susy Fake Rate exercise"),
+    #NTupleVariable("rho",  lambda x : x.rho if hasattr(x, 'rho') else -99.0, help="PF Rel Iso, R, with deltaBeta correction"),
+    #NTupleVariable("EA",  lambda x : x.EffectiveArea if hasattr(x, 'EffectiveArea') else -99.0, help="PF Rel Iso, R, with deltaBeta correction"),
+    #NTupleVariable("relIso03_ch",  lambda x : x.chargedHadronIso(0.3) if abs(x.pdgId())==11 else 0, help="PF Rel Iso, R, with deltaBeta correction"),
+    #NTupleVariable("relIso03_nh",  lambda x : x.neutralHadronIso(0.3) if abs(x.pdgId())==11 else 0, help="PF Rel Iso, R, with deltaBeta correction"),
+    #NTupleVariable("relIso03_ph",  lambda x : x.photonIso(0.3)        if abs(x.pdgId())==11 else 0, help="PF Rel Iso, R, with deltaBeta correction"),
+])
 
 tauType = NTupleObjectType("tau",  baseObjectTypes = [ particleType ], variables = [
     NTupleVariable("charge",   lambda x : x.charge(), int),

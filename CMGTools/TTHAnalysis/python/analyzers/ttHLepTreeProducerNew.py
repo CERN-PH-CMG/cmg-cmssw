@@ -98,9 +98,12 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
+        self.fillTree(iEvent, event)
          
+    def fillTree(self, iEvent, event, resetFirst=True):
         isMC = self.cfg_comp.isMC 
-        self.tree.reset()
+        if resetFirst: self.tree.reset()
+
         self.fillCoreVariables(self.tree, iEvent, event, isMC)
 
         for v in self.globalVariables:
