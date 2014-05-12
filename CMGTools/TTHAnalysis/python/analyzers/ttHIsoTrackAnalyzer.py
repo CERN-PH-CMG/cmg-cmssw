@@ -25,7 +25,7 @@ class ttHIsoTrackAnalyzer( Analyzer ):
     #----------------------------------------
     def declareHandles(self):
         super(ttHIsoTrackAnalyzer, self).declareHandles()
-        self.handles['cmgCand'] = AutoHandle(self.cfg_ana.candidates,'std::vector<cmg::Candidate>') 
+        self.handles['cmgCand'] = AutoHandle(self.cfg_ana.candidates,self.cfg_ana.candidatesTypes) 
 
     def beginLoop(self):
         super(ttHIsoTrackAnalyzer,self).beginLoop()
