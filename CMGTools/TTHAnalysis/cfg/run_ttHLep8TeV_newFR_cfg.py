@@ -272,14 +272,14 @@ elif test==8:
 elif test==9:
     # MC sync sample for electrons
     comp = QCDMuPt15
-    comp.files = ['root://eoscms//eos/cms/store/cmst3/user/gpetrucc/SusyFakes/cmgTuple_sync_electrons_MC.v2.root']
+    comp.files = ['root://eoscms//eos/cms/store/cmst3/user/gpetrucc/SusyFakes/cmgTuple_sync_electrons_MC.root']
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.triggers = [] 
 elif test==10:
     # Data sync sample for electrons
     comp = DoubleElectronD
-    comp.files = ['root://eoscms//eos/cms/store/cmst3/user/gpetrucc/SusyFakes/cmgTuple_sync_electrons_data.v2.root']
+    comp.files = ['root://eoscms//eos/cms/store/cmst3/user/gpetrucc/SusyFakes/cmgTuple_sync_electrons_data.root']
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.triggers = [] 

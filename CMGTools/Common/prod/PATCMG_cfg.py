@@ -131,7 +131,7 @@ process.p = cms.Path(
     process.PATCMGJetCHSSequence 
     )
 
-if 'Prompt' in datasetInfo[1] or runOnMC :
+if 'Prompt' in datasetInfo[1] or runOnMC or useMoriondGTs:
     process.metNoiseCleaning.remove(process.hcalfilter)
     process.hcalLaserEventFilterPath.remove(process.hcalfilter)
 if ('Parked' in datasetInfo[1]) or ('22Jan2013' in datasetInfo[1]) :
