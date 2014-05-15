@@ -1,0 +1,147 @@
+=============================================
+Author: Philip Coleman Harris [pcharris@MIT.EDU]
+=============================================
+
+The recoil code can be found here:
+http://web.mit.edu/%7Epcharris/www/RecoilCorrector_v6.tgz
+
+The concept is straight forward:
+1. Fit the Z=>mumu data
+         a. Using the fitcode in fitcode/runRecoilFit_v6.C
+2. Fit the Z=>mumu MC
+         a. Again same fit code
+3. Fit the Process MC
+         a. This can be whatever MC you need to correct (ie WW/W+Jets/....)
+
+To use the fit code you need to take runRecoilFit_v6.C and point it to the
+ntuple and the right variable names . The important variables are:
+1. njets (currently the fit is done binned in jets (you will seee in the code)
+2. Visible pT (this is the visible decay componennts ie the lepton for W events or the 2 leptons for Z=>ll events and so on)
+3. MET
+4. Generator pT (improtant when the full pT is not reconstructed with leptons ie W boson but no the Z)
+
+The code calculates U1(u parallel) and U2 (u perp) using the method void calculateU1U2(float &iPar,bool iType)
+
+You can see how the inputs need to be set, so that the code runs correctly.
+
+The core of the fit code is performed in the method
+
+void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
+               float &lPar, TF1 *iFit, TF1 *iFitS1=0, TF1 *iFitS2=0,
+               TF1* iMeanFit=0,
+               bool iPol1 = false,
+               bool iRMS  = false, int iType = 0)
+
+I let you walk through, but what you will see 3 steps
+
+1. The filling of a weighted array + a graph
+2. A polynomial fit of the graph (this gets the mean resolution)
+3. A 2D fit to the full shape (this gets the full recoil shape)
+
+To get the recoil fits to work there are various arrangements of
+changing
+the polynomial orders of the 2D fit and the polynomial fit to best
+match
+the current MET. Currently what is set there should be optimal.
+
+Now for teh application the code is teh RecoilCorrector. To run it you
+need to
+1. load it with the process fit file
+         a.RecoilCorrector RC("processfile.root");
+2. Add teh Z=>mm data and MC fits
+         a. RC.addDataFile("zmmdatafile.root")
+         b. RC.addMCFile  ("zmmmcfile.root")
+3. Call the correction
+         CorrectType1(double &pfmet, double &pfmetphi,double
+                      iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,
+                      double iFluc,double iScale=0,int njet=0);
+
+You will need to give teh met,metphi + Boson pT,Phi (iGenPt,iGenPhi),
+the visible componeonts (iLepPt,iLepPhi), pointers to some doubles (iU1,iU2),
+options for uncertainties, and njets (njet)
+
+The met and metphi are then corrected the pointers to the doubles will be
+filled with the new recoil values. The uncertainties are split into scale
+uncertainties on the response and resolution
+         iScale ( acts as +/- iScale* 1 Sigma scale unc.)
+         iFluc  ( acts as +/- iFluc * 1 sigma res unc.)
+
+These will be propagated to the corrected MET depending on the values you give them.
+
+Finally there are 3 types of corrections, each which use different info
+from teh fit functions
+
+1. CorrectAll
+         a. Rescamples the recoil and computes a new MET
+2. CorrectType1
+         a. Smears teh recoil by gaussians (does not use teh full recoil shape)
+3. CorrectType2
+         a. Deterministic shift of the current recoil corresponding to the data/MC shift in recoil
+
+I can explain more, but the code is the best source of info.
+
+Currently I would recommend just using CorrectType1, with more confidence
+you can try correctType2. CorrectAll I would avoid because it destroys correlatiosn in the MC.
+
+Ok, I think that about sums up enough to get you started.
+
+Good luck,
+Phil
+
+
+
+=============================================
+Questions and Answers:
+=============================================
+
+
+in RecoilCorrector_v6/fitcode/runRecoilFit_v6.C where should I point the ntuples?
+Is it very at the end of the code? like here:
+  fDataFile = new TFile("ntuples/data_select.root");
+  fDataTree = (TTree*) fDataFile->FindObjectAny("Events");
+  fNJetSelect = -1; fMetMax = 4000; fZPtMax = 1000;
+fitRecoil(fDataTree,"recoilfits/recoilfit_datamm_inc.root");
+  return;
+}
+
+>>>> Yes,  The ntuples are right at the end. Make sure that all the
+>>>> appropriate variables to calculate U1 (U parallel) and U2(U perp) are set
+>>>> (this is done at the top). This is the tricky part, once you have the right
+>>>> variables set, the fit will calculate everything.
+
+------------------------------------------------------
+
+I was trying to run the code and then i got some errors messages. And
+you are the best person to ask, sorry for bugging you...
+
+root [0] .x runRecoilFit_v6.C
+Error: cannot open file "RooRealVar.h"  runRecoilFit_v6.C:19:
+*** Interpreter error recovered ***
+
+Should I run it using root? Or i did it wrong?
+
+>>> You must have roofit installed to the run the code. The error here is
+>>> because roofit is not  installed and/or linked.
+
+
+------------------------------------------------------
+
+
+roofit is already linked.
+When i try to run the code, i get an error like:
+
+" Warning: Unknown type 'std::vector<TF1*>' in function argument handled
+as int runRecoilFit_v6.C:578 "
+
+the error is at this part of the code:
+int readRecoil(std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,
+               std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,
+           std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,
+               std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,
+           std::string iFName,std::string iPrefix)
+
+how i can fix it?
+
+>> It looks like you are not compiliing the macro. Try compiling and it
+>> should run.
+>>  .X runRecoilFit_v6.C+
