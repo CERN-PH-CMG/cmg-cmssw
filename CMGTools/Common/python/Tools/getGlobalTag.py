@@ -47,6 +47,8 @@ def getGlobalTagByDataset(runOnMC, dataset):
     if runOnMC:
         if cmsswIs44X():
             GT = 'START44_V13::All'
+        elif 'START53_LV6' in dataset:
+            GT = 'START53_LV6::All' 
         elif 'START53' in dataset:
             GT = 'START53_V27::All' 
         elif 'START52' in dataset:
@@ -54,6 +56,8 @@ def getGlobalTagByDataset(runOnMC, dataset):
     else:
         if cmsswIs44X():
             GT = 'GR_R_44_V15::All'
+        elif '12Oct2013' in dataset:
+            GT = 'FT_R_53_LV5::All' # the missing _ between FT and 53 is intentional, that's how it is called
         elif '22Jan2013' in dataset:
             GT = 'FT53_V21A_AN6::All' # the missing _ between FT and 53 is intentional, that's how it is called
         elif '13Jul2012' in dataset:
