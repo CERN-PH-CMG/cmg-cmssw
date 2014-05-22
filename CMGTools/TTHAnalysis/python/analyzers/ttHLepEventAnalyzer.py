@@ -148,66 +148,6 @@ class ttHLepEventAnalyzer( Analyzer ):
             if projfactor > proj: projfactor = proj
         return met.pt()*projfactor
 
-    def makeMETs(self, event):
-        event.met = self.handles['met'].product()[0]
-        event.metNoPU = self.handles['nopumet'].product()[0]
-        if hasattr(event, 'deltaMetFromJetSmearing'):
-            import ROOT
-            px,py = event.met.px()+event.deltaMetFromJetSmearing[0], event.met.py()+event.deltaMetFromJetSmearing[1]
-            event.met.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
-            px,py = event.metNoPU.px()+event.deltaMetFromJetSmearing[0], event.metNoPU.py()+event.deltaMetFromJetSmearing[1]
-            event.metNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
-        if hasattr(event, 'deltaMetFromJEC') and event.deltaMetFromJEC[0] != 0 and event.deltaMetFromJEC[1] != 0:
-            import ROOT
-            px,py = event.met.px()+event.deltaMetFromJEC[0], event.met.py()+event.deltaMetFromJEC[1]
-            event.met.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
-            px,py = event.metNoPU.px()+event.deltaMetFromJEC[0], event.metNoPU.py()+event.deltaMetFromJEC[1]
-            event.metNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
-
-        metMatrix = self.handles['metSignificance'].product().significance()
-        metMatrix.Invert();
-        import array
-        metVector = TVectorD(2,array.array('d',[event.met.px(), event.met.py()]))
-        event.metSignificance = metMatrix.Similarity(metVector) 
-        event.projMetAll1S  = self.jetProjectedMET(event.met, event.jets,True)
-        event.projMetAll2S  = self.jetProjectedMET(event.met, event.jets,False)
-        event.projMetJets1S = self.jetProjectedMET(event.met, event.cleanJets,True)
-        event.projMetJets2S = self.jetProjectedMET(event.met, event.cleanJets,False)
-        #print "MET value:  ", event.met.pt()
-        #print "MET sumET:  ", event.met.sumEt()
-        #print "MET signif: ", event.metSignificance
-        #print "PrMETAll 1S:", event.projMetAll1S 
-        #print "PrMETAll 2S:", event.projMetAll2S 
-        #print "PrMETJet 1S:", event.projMetJets1S 
-        #print "PrMETJet 2S:", event.projMetJets2S
-
-    def makeHadTopDecays(self, event):
-        event.lightJets = [ j for j in event.cleanJets if not j.btagWP("CSVM") ]
-        event.minMWjj   = 999
-        event.minMWjjPt = 0
-        event.bestMWjj   = 0
-        event.bestMWjjPt = 0
-        event.bestMTopHad   = 0
-        event.bestMTopHadPt = 0
-        for i1,j1 in enumerate(event.lightJets):
-            for i2 in xrange(i1+1,len(event.lightJets)):
-                j2 = event.lightJets[i2]
-                jjp4 = j1.p4() + j2.p4()
-                mjj  = jjp4.M()
-                if mjj > 30 and mjj < event.minMWjj:
-                    event.minMWjj = mjj
-                    event.minMWjjPt = jjp4.Pt()
-                if abs(mjj-80.4) < abs(event.bestMWjj-80.4):
-                    event.bestMWjj = mjj
-                    event.bestMWjjPt = jjp4.Pt()
-                    for bj in event.bjetsLoose:
-                        if deltaR(bj.eta(),bj.phi(),j1.eta(),j1.phi()) < 0.1 or deltaR(bj.eta(),bj.phi(),j2.eta(),j2.phi()) < 0.1: continue
-                        tp4 = jjp4 + bj.p4()
-                        mtop = tp4.M()
-                        if abs(mtop-172) < abs(event.bestMTopHad - 172):
-                            event.bestMTopHad = mtop
-                            event.bestMTopHadPt = tp4.Pt()
-
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         self.counters.counter('events').inc('all events')
@@ -241,11 +181,11 @@ class ttHLepEventAnalyzer( Analyzer ):
         event.htJet30a = sum([x.pt() for x in objects30a])
         event.mhtJet30a = hypot(sum([x.px() for x in objects30a]), sum([x.py() for x in objects30a]))
 
-        self.makeMETs(event);
+##        self.makeMETs(event);
         self.makeZs(event, self.maxLeps)
         self.makeMlls(event, self.maxLeps)
 
-        self.makeHadTopDecays(event)
+##        self.makeHadTopDecays(event)
         for lep in event.selectedLeptons:
             self.leptonMVA.addMVA(lep)
         for lep in event.inclusiveLeptons:

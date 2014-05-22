@@ -70,13 +70,25 @@ class ttHJetAnalyzer( Analyzer ):
         event.jets = []
         event.jetsFailId = []
         for jet in allJets:
+
+            rho  = float(self.handles['rho'].product()[0])
+            if self.jetReCalibratorCHS:
+                jet.QG = jet.quarkGluonID(rho, "LD_CHS_CMGVARS","Pythia")
+                #    if(jet.pt()>50):
+                #        print 'QG: ',jet.quarkGluonID(rho, "LD_CHS_CMGVARS","Pythia")
+                
+            else:
+                #    if(jet.pt()>50):
+                #        print 'QG: ',jet.quarkGluonID(rho, "LD_CMGVARS","Pythia")
+                jet.QG = jet.quarkGluonID(rho, "LD_CMGVARS","Pythia")
+                                                                                                               
+
             if self.testJetNoID( jet ): 
                 if self.testJetID (jet ):
                     event.jets.append(jet)
                 else:
                     event.jetsFailId.append(jet)
        
-
         ## Clean Jets from leptons
         leptons = event.selectedLeptons
         if self.cfg_ana.cleanJetsFromTaus:
