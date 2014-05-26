@@ -512,7 +512,12 @@ class PlotMaker:
                                 plot.Scale(ref/plot.Integral())
                             stack.Add(plot)
                             total.SetMaximum(max(total.GetMaximum(),1.3*plot.GetMaximum()))
-                        plot.SetMarkerStyle(0)
+                        if self._options.errors and self._options.plotmode != "stack":
+                            plot.SetMarkerColor(plot.GetFillColor())
+                            plot.SetMarkerStyle(21)
+                            plot.SetMarkerSize(1.5)
+                        else:
+                            plot.SetMarkerStyle(0)
                 stack.Draw("GOFF")
                 stack.GetYaxis().SetTitle(pspec.getOption('YTitle',"Events"))
                 stack.GetXaxis().SetTitle(pspec.getOption('XTitle',pspec.name))
@@ -520,7 +525,7 @@ class PlotMaker:
                 dir.WriteTObject(stack)
                 # 
                 if not makeCanvas and not self._options.printPlots: continue
-                doRatio = self._options.showRatio and 'data' in pmap
+                doRatio = self._options.showRatio and 'data' in pmap and ("TH2" not in total.ClassName())
                 islog = pspec.hasOption('Logy'); 
                 # define aspect ratio
                 if doRatio: ROOT.gStyle.SetPaperSize(20.,25.)
@@ -530,7 +535,7 @@ class PlotMaker:
                 c1.Draw()
                 p1, p2 = c1, None # high and low panes
                 # set borders, if necessary create subpads
-                if doRatio: 
+                if doRatio:
                     c1.SetWindowSize(600 + (600 - c1.GetWw()), (750 + (750 - c1.GetWh())));
                     p1 = ROOT.TPad("pad1","pad1",0,0.31,1,1);
                     p1.SetBottomMargin(0);
@@ -556,7 +561,11 @@ class PlotMaker:
                     stack.Draw("SAME HIST")
                     total.Draw("AXIS SAME")
                 else: 
-                    stack.Draw("SAME HIST NOSTACK")
+                    if self._options.errors:
+                        ROOT.gStyle.SetErrorX(0.5)
+                        stack.Draw("SAME E NOSTACK")
+                    else:
+                        stack.Draw("SAME HIST NOSTACK")
                 if pspec.getOption('MoreY',1.0) > 1.0:
                     total.SetMaximum(pspec.getOption('MoreY',1.0)*total.GetMaximum())
                 if 'data' in pmap: 
@@ -631,7 +640,14 @@ class PlotMaker:
                                 dump.write(("%%%ds %%7.0f\n" % (maxlen+1)) % ('DATA', pmap['data'].Integral()))
                             dump.close()
                         else:
-                            c1.Print("%s/%s.%s" % (fdir, pspec.name, ext))
+                            if "TH2" in total.ClassName():
+                                for p in mca.listSignals(allProcs=True) + mca.listBackgrounds(allProcs=True) + ["signal", "background"]:
+                                    if p not in pmap: continue
+                                    plot = pmap[p]
+                                    plot.Draw("COLZ")
+                                    c1.Print("%s/%s_%s.%s" % (fdir, pspec.name, p, ext))
+                            else:
+                                c1.Print("%s/%s.%s" % (fdir, pspec.name, ext))
                 c1.Close()
 def addPlotMakerOptions(parser):
     addMCAnalysisOptions(parser)
