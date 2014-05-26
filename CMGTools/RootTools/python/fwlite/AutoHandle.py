@@ -7,9 +7,10 @@ class AutoHandle( Handle, object ):
 
     handles = {}
     
-    def __init__(self, label, type, mayFail=False):
+    def __init__(self, label, type, mayFail=False, fallbackLabel=None):
         '''Note: label can be a tuple : (module_label, collection_label, process)'''
         self.label = label
+        self.fallbackLabel = fallbackLabel
         self.type = type
         self.mayFail = mayFail
         Handle.__init__(self, self.type)
@@ -26,6 +27,18 @@ class AutoHandle( Handle, object ):
             type = {type}
             label = {label}
             '''.format(type = self.type, label = self.label)
-            if not self.mayFail:
+            if not self.mayFail and self.fallbackLabel == None:
                 raise ValueError(errstr)
-            
+            if self.fallbackLabel != None:
+                try:
+                    event.getByLabel( self.fallbackLabel, self)
+                except ValueError:
+                    errstr = '''
+                    Cannot find collection with:
+                    type = {type}
+                    label = {label} or {lab2}
+                    '''.format(type = self.type, label = self.label, lab2 = self.fallbackLabel)
+                    if not self.mayFail:
+                        raise ValueError(errstr)
+
+
