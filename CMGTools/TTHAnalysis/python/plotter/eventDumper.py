@@ -2,7 +2,7 @@
 from math import *
 import re, string
 from CMGTools.TTHAnalysis.treeReAnalyzer import *
-from CMGTools.TTHAnalysis.plotter.tree2yield import CutsFile
+from CMGTools.TTHAnalysis.plotter.tree2yield import CutsFile, scalarToVector
 
 from optparse import OptionParser
 import json
@@ -28,6 +28,7 @@ parser.add_option("-X", "--exclude-cut", dest="cutsToExclude", action="append", 
 parser.add_option("-I", "--invert-cut",  dest="cutsToInvert",  action="append", default=[], help="Cuts to invert (regexp matching cut name), can specify multiple times.") 
 parser.add_option("-R", "--replace-cut", dest="cutsToReplace", action="append", default=[], nargs=3, help="Cuts to invert (regexp of old cut name, new name, new cut); can specify multiple times.") 
 parser.add_option("-A", "--add-cut",     dest="cutsToAdd",     action="append", default=[], nargs=3, help="Cuts to insert (regexp of cut name after which this cut should go, new name, new cut); can specify multiple times.") 
+parser.add_option("--s2v", "--scalar2vector",     dest="doS2V",    action="store_true", default=False, help="Do scalar to vector conversion") 
  
 (options, args) = parser.parse_args()
 what = args[1] if len(args) > 1 else "signal"
@@ -158,6 +159,8 @@ if options.cutfile:
     cut = CutsFile(options.cutfile,options).allCuts()
 elif options.cut:
     cut = options.cut
+if options.doS2V:
+    cut = scalarToVector(cut)
  
 file = ROOT.TFile.Open(args[0])
 treename = options.tree
