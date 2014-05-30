@@ -46,7 +46,6 @@ pat::PATJetSlimmer::PATJetSlimmer(const edm::ParameterSet & iConfig) :
     dropTrackRefs_(iConfig.getParameter<std::string>("dropTrackRefs")),
     dropSpecific_(iConfig.getParameter<std::string>("dropSpecific")),
     dropTagInfos_(iConfig.getParameter<std::string>("dropTagInfos"))
-
 {
     produces<std::vector<pat::Jet> >();
 }
