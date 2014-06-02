@@ -23,14 +23,21 @@ if __name__ == '__main__':
     parser.add_option("-c","--clean", dest="clean",
                       default=False,action="store_true",
                       help="move chunks to Chunks/ after processing.")
+    parser.add_option("-o","--outputdir", dest="outputdir",
+                      default=False,action="store_true",
+                      help="define output folder (default is inside same directory).")
 
     (options,args) = parser.parse_args()
 
-    if len(args)!=1:
-        print 'provide exactly one directory in argument.'
+    if len(args)>2:
+        print 'provide at most 2 directory as arguments: first the source, then the destination (optional)'
         sys.exit(1)
 
     dir = args[0]
+    if(len(args)>1):
+      odir = args[1]
+    else:
+      odir='./'
 
-    haddChunks(dir, options.remove, options.clean)
+    haddChunks(dir, options.remove, options.clean, options.outputdir, odir)
 
