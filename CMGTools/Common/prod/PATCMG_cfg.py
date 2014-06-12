@@ -38,7 +38,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source.dropDescendantsOfDroppedBranches = cms.untracked.bool(False)
 process.source.inputCommands = cms.untracked.vstring(
         'keep *',
-        'drop recoPFTaus_*_*_*'                      
+        'drop recoPFTaus_*_*_*'
     )
 
 ###ProductionTaskHook$$$
@@ -46,7 +46,7 @@ process.source.inputCommands = cms.untracked.vstring(
 
 print sep_line
 print process.source.fileNames
-print sep_line 
+print sep_line
 
 ## Maximal Number of Events
 
@@ -61,13 +61,13 @@ if runOnMC is False:
 
     process.patElectrons.addGenMatch = False
     process.makePatElectrons.remove( process.electronMatch )
-   
+
     process.patElectronsWithCalibrations.isMC = False
     process.patElectronsWithCalibrations.inputDataset = "22Jan2013ReReco"
- 
+
     process.patMuons.addGenMatch = False
     process.makePatMuons.remove( process.muonMatch )
-    
+
     process.PATCMGSequence.remove( process.PATCMGGenSequence )
     process.PATCMGJetSequence.remove( process.jetMCSequence )
     process.PATCMGJetSequence.remove( process.patJetFlavourId )
@@ -86,8 +86,8 @@ if runOnMC is False:
     process.patTaus.addGenJetMatch = False
     process.patTaus.addGenMatch = False
 
-    process.patMETs.addGenMET = False 
-    process.patMETsRaw.addGenMET = False 
+    process.patMETs.addGenMET = False
+    process.patMETsRaw.addGenMET = False
 
     # setting up JSON file
     # json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/DCSOnly/json_DCSONLY.txt'
@@ -131,9 +131,9 @@ process.dump = cms.EDAnalyzer('EventContentAnalyzer')
 
 process.load('CMGTools.Common.PAT.addFilterPaths_cff')
 process.p = cms.Path(
-    process.prePathCounter + 
+    process.prePathCounter +
     process.PATCMGSequence +
-    process.PATCMGJetCHSSequence 
+    process.PATCMGJetCHSSequence
     )
 
 if 'Prompt' in datasetInfo[1] or runOnMC or useMoriondGTs:
@@ -205,15 +205,15 @@ process.outpath += process.outcmg
 #  - 16bit PF Candidates
 #  - TriggerPrescales instead of fat single TriggerObject
 #  - slimmed PVs (without track references)
-process.outcmg.outputCommands.append('keep cmgPackedCandidates_cmgCandidates_*_*') 
-process.outcmg.outputCommands.append('drop cmgCandidates_cmgCandidates_*_*') 
-process.outcmg.outputCommands.append('keep *_cmgTriggerPrescales_*_*') 
-process.outcmg.outputCommands.append('drop *_cmgTriggerObjectSel_*_*') 
-process.outcmg.outputCommands.append('drop *_offlinePrimaryVertices_*_*') 
-process.outcmg.outputCommands.append('keep *_slimmedPrimaryVertices_*_*') 
+process.outcmg.outputCommands.append('keep cmgPackedCandidates_cmgCandidates_*_*')
+process.outcmg.outputCommands.append('drop cmgCandidates_cmgCandidates_*_*')
+process.outcmg.outputCommands.append('keep *_cmgTriggerPrescales_*_*')
+process.outcmg.outputCommands.append('drop *_cmgTriggerObjectSel_*_*')
+process.outcmg.outputCommands.append('drop *_offlinePrimaryVertices_*_*')
+process.outcmg.outputCommands.append('keep *_slimmedPrimaryVertices_*_*')
 
 ########################################################
-## Conditions 
+## Conditions
 ########################################################
 
 process.load("Configuration.StandardSequences.GeometryDB_cff")
@@ -260,7 +260,7 @@ process.p.visit(v)
 
 ### Set the global tag from the dataset name
 if useMoriondGTs:
-    process.GlobalTag.globaltag = "START53_V20::All" if runOnMC else "GR_P_V42_AN4::All" 
+    process.GlobalTag.globaltag = "START53_V20::All" if runOnMC else "GR_P_V42_AN4::All"
 else:
     from CMGTools.Common.Tools.getGlobalTag import getGlobalTagByDataset
     process.GlobalTag.globaltag = getGlobalTagByDataset( runOnMC, datasetInfo[1])
