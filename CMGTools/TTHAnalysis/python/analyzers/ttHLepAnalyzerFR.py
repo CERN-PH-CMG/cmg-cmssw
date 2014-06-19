@@ -214,6 +214,7 @@ class ttHLepAnalyzerFR( Analyzer ):
             else:
                 ele.looseFakeId = dEtaIn < 0.007 and dPhiIn < 0.03 and sigmaIEtaIEta < 0.03 and hoe < 0.10 and ooemoop < 0.05
             ele.looseFakeId = ele.looseFakeId and vtxFitConversion and mHits <= 1 and abs(ele.dz()) < 0.1 and ele.relIso03 < 0.6
+            ele.looseFakeId = ele.looseFakeId and mHits <= 1 and ele.sourcePtr().isGsfCtfScPixChargeConsistent()
             ele.tightFakeId = ele.looseFakeId and abs(ele.dxy()) < 0.02 and ele.relIso03 < 0.15
             #print "ele pt = %.3f  eta = %.3f sceta = %.3f detaIn = %.4f dphiIn = %.4f  sieie = %.4f  h/e = %.4f  1/e-1/p = %.4f  dxy = %.4f  dz = %.4f  losthits = %d conveto = %d relIso = %.4f     loose id = %d   tight id = %d" % ( ele.pt(),ele.eta(),ele.sourcePtr().superCluster().eta(),dEtaIn,dPhiIn,sigmaIEtaIEta,hoe,ooemoop,abs(ele.dxy()),abs(ele.dz()),mHits,vtxFitConversion,ele.relIso03, ele.looseFakeId, ele.tightFakeId)
             # add to the list if needed
