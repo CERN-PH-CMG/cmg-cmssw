@@ -11,6 +11,8 @@ class Muon( Lepton ):
         return self.muonID("POG_Tight")
 
     def muonID(self, name, vertex=None):
+        if name == "" or name is None: 
+            return True
         if name.startswith("POG_"):
             if name == "POG_Loose": return self.physObj.isLooseMuon()
             if vertex is None:

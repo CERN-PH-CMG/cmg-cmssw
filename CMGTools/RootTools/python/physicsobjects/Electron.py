@@ -16,10 +16,13 @@ class Electron( Lepton ):
         self._mvaTrigV0     = None
         self._mvaTrigNoIPV0 = None
 
-    #def electronID( self, id, vertex=None, rho=None ):
-    #    if vertex == None and hasattr(self,'associatedVertex') and self.associatedVertex != None: vertex = self.associatedVertex
-    #    if rho == None and hasattr(self,'rho') and self.rho != None: rho = self.rho
-    #    return self.electronID_cpp_(id,vertex,rho) if rho != None else self.electronID_cpp_(id,vertex);
+    def electronID( self, id, vertex=None, rho=None ):
+        if id is None or id == "": return True
+        if vertex == None and hasattr(self,'associatedVertex') and self.associatedVertex != None: vertex = self.associatedVertex
+        if rho == None and hasattr(self,'rho') and self.rho != None: rho = self.rho
+        if name == "POG_MVA_ID_NonTrig":
+            return self.mvaIDZZ(onlyMVA=True)
+        raise RuntimeError, "Electron id '%s' not yet implemented in Electron.py" % id
 
     def absEffAreaIso(self,rho,effectiveAreas):
         '''MIKE, missing doc.
@@ -57,8 +60,7 @@ class Electron( Lepton ):
 
 
 
-    def mvaIDZZ(self):
-        '''missing doc, who is using this function?.'''
+    def mvaIDZZ(self,onlyMVA=False):
         mvaRegions = [{'ptMin':0,'ptMax':10, 'etaMin':0.0, 'etaMax':0.8,'mva':0.47},\
                       {'ptMin':0,'ptMax':10, 'etaMin':0.8 ,'etaMax':1.479,'mva':0.004},\
                       {'ptMin':0,'ptMax':10, 'etaMin':1.479, 'etaMax':3.0,'mva':0.295},\
@@ -73,8 +75,10 @@ class Electron( Lepton ):
                abs(self.superCluster().eta())<element['etaMax'] and \
                self.mvaNonTrigV0()> element['mva']: 
                 ID=True
-
-        return ID and (self.gsfTrack().trackerExpectedHitsInner().numberOfLostHits()<=1)
+        if onlyMVA: 
+            return ID
+        else:
+            return ID and (self.gsfTrack().trackerExpectedHitsInner().numberOfLostHits()<=1)
 
     def chargedAllIso(self):
         '''This function is used in the isolation, see Lepton class.
