@@ -34,6 +34,7 @@ class ttHJetAnalyzer( Analyzer ):
         self.doPuId = self.cfg_ana.doPuId if hasattr(self.cfg_ana, 'doPuId') else True
         self.shiftJEC = self.cfg_ana.shiftJEC if hasattr(self.cfg_ana, 'shiftJEC') else 0
         self.doJEC = self.cfg_ana.recalibrateJets or (self.shiftJEC != 0)
+        self.jetLepDR = self.cfg_ana.jetLepDR  if hasattr(self.cfg_ana, 'jetLepDR') else 0.5
     def declareHandles(self):
         super(ttHJetAnalyzer, self).declareHandles()
         self.handles['jets']     = AutoHandle( self.cfg_ana.jetCol, 'std::vector<cmg::PFJet>' )
@@ -85,15 +86,15 @@ class ttHJetAnalyzer( Analyzer ):
             leptons = leptons[:] + event.selectedTaus
         #event.cleanJets, dummy = cleanObjectCollection( event.jets,
         #                                                masks = leptons,
-        #                                                deltaRMin = 0.5 )
-        event.cleanJetsAll = cleanNearestJetOnly(event.jets, leptons, 0.5)
+        #                                                deltaRMin = self.jetLepDR )
+        event.cleanJetsAll = cleanNearestJetOnly(event.jets, leptons, self.jetLepDR)
         event.cleanJets    = [j for j in event.cleanJetsAll if abs(j.eta()) <  self.cfg_ana.jetEtaCentral ]
         event.cleanJetsFwd = [j for j in event.cleanJetsAll if abs(j.eta()) >= self.cfg_ana.jetEtaCentral ]
 
         ## Associate jets to leptons
         leptons = event.inclusiveLeptons if hasattr(event, 'inclusiveLeptons') else event.selectedLeptons
-        #jlpairs = matchObjectCollection( event.inclusiveLeptons, allJets4MVA, 0.5*0.5)
-        jlpairs = matchObjectCollection( leptons, allJets4MVA, 0.5*0.5)
+        #jlpairs = matchObjectCollection( event.inclusiveLeptons, allJets4MVA, self.jetLepDR**2)
+        jlpairs = matchObjectCollection( leptons, allJets4MVA, self.jetLepDR**2)
         for lep in leptons:
             jet = jlpairs[lep]
             if jet is None:
