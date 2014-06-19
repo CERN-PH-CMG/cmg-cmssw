@@ -21,24 +21,30 @@ class AutoHandle( Handle, object ):
         Call this function, and then just call self.product() to get the collection'''
         try:
             event.getByLabel( self.label, self)
-        except ValueError:
+            if not self.isValid(): raise RuntimeError    
+        except RuntimeError:
+            Handle.__init__(self, self.type) # must re-init, since otherwise after a failure it becomes unusable
             errstr = '''
             Cannot find collection with:
             type = {type}
             label = {label}
             '''.format(type = self.type, label = self.label)
             if not self.mayFail and self.fallbackLabel == None:
-                raise ValueError(errstr)
+                raise Exception(errstr)
             if self.fallbackLabel != None:
                 try:
                     event.getByLabel( self.fallbackLabel, self)
-                except ValueError:
+                    if not self.isValid(): raise RuntimeError
+                    ## if I succeeded, swap default and fallback assuming that the next event will be like this one
+                    self.fallbackLabel, self.label = self.label, self.fallbackLabel
+                except RuntimeError:
+                    Handle.__init__(self, self.type) # must re-init, since otherwise after a failure it becomes unusable
                     errstr = '''
                     Cannot find collection with:
                     type = {type}
                     label = {label} or {lab2}
                     '''.format(type = self.type, label = self.label, lab2 = self.fallbackLabel)
                     if not self.mayFail:
-                        raise ValueError(errstr)
+                        raise Exception(errstr)
 
 
