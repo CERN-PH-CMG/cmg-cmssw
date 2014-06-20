@@ -78,10 +78,13 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
             if min(rec.pt(),gen.pt())/max(rec.pt(),gen.pt()) < 0.3: return False
             return True
 
-        match = matchObjectCollection3(event.selectedLeptons, 
+        leps = event.selectedLeptons[:]
+        if hasattr(self.cfg_ana,'matchAllInclusiveLeptons') and self.cfg_ana.matchAllInclusiveLeptons:
+            leps = event.inclusiveLeptons[:]
+        match = matchObjectCollection3(leps, 
                                        event.genleps + event.gentauleps, 
                                        deltaRMax = 1.2, filter = plausible)
-        for lep in event.selectedLeptons:
+        for lep in leps:
             gen = match[lep]
             lep.mcMatchId = (gen.sourceId if gen != None else 0)
             lep.mcMatchTau = (gen.isTau if gen != None else -99)

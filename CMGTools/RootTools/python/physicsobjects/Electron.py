@@ -20,7 +20,7 @@ class Electron( Lepton ):
         if id is None or id == "": return True
         if vertex == None and hasattr(self,'associatedVertex') and self.associatedVertex != None: vertex = self.associatedVertex
         if rho == None and hasattr(self,'rho') and self.rho != None: rho = self.rho
-        if name == "POG_MVA_ID_NonTrig":
+        if id == "POG_MVA_ID_NonTrig":
             return self.mvaIDZZ(onlyMVA=True)
         raise RuntimeError, "Electron id '%s' not yet implemented in Electron.py" % id
 
@@ -79,6 +79,33 @@ class Electron( Lepton ):
             return ID
         else:
             return ID and (self.gsfTrack().trackerExpectedHitsInner().numberOfLostHits()<=1)
+
+    def chargedHadronIso(self,R=0.4):
+        if   R == 0.3: return self.physObj.pfIsolationVariables().sumChargedHadronPt 
+        elif R == 0.4: return self.physObj.chargedHadronIso()
+        raise RuntimeError, "Electron chargedHadronIso missing for R=%s" % R
+
+    def neutralHadronIso(self,R=0.4):
+        if   R == 0.3: return self.physObj.pfIsolationVariables().sumNeutralHadronEt 
+        elif R == 0.4: return self.physObj.neutralHadronIso()
+        raise RuntimeError, "Electron neutralHadronIso missing for R=%s" % R
+
+    def photonIso(self,R=0.4):
+        if   R == 0.3: return self.physObj.pfIsolationVariables().sumPhotonEt 
+        elif R == 0.4: return self.physObj.photonIso()
+        raise RuntimeError, "Electron photonIso missing for R=%s" % R
+
+    def chargedAllIso(self,R=0.4):
+        if   R == 0.3: return self.physObj.pfIsolationVariables().sumChargedParticlePt 
+        raise RuntimeError, "Electron chargedAllIso missing for R=%s" % R
+
+    def puChargedHadronIso(self,R=0.4):
+        if   R == 0.3: return self.physObj.pfIsolationVariables().sumPUPt 
+        elif R == 0.4: return self.physObj.puChargedHadronIso()
+        raise RuntimeError, "Electron chargedHadronIso missing for R=%s" % R
+
+
+
 
     def chargedAllIso(self):
         '''This function is used in the isolation, see Lepton class.
