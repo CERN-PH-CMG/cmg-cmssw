@@ -284,9 +284,9 @@ class TreeToYield:
         plot.GetXaxis().SetTitle(spec.getOption('XTitle',spec.name))
         plot.GetXaxis().SetNdivisions(spec.getOption('XNDiv',510))
     def getPlot(self,plotspec,cut):
-        ret = self.getPlotRaw(plotspec.name, plotspec.expr, plotspec.bins, cut, unbinnedData2D=plotspec.getOption('UnbinnedData2D',False))
+        ret = self.getPlotRaw(plotspec.name, plotspec.expr, plotspec.bins, cut, plotspec)
         # fold overflow
-        if "TH1" in ret.ClassName() :
+        if ret.ClassName() in [ "TH1F", "TH1D", "TProfile" ] :
             n = ret.GetNbinsX()
             if plotspec.getOption('IncludeOverflows',True):
                 ret.SetBinContent(1,ret.GetBinContent(0)+ret.GetBinContent(1))
@@ -303,7 +303,9 @@ class TreeToYield:
                     ret.SetBinError(   b, ret.GetBinError(b) / ret.GetXaxis().GetBinWidth(b) )
         self._stylePlot(ret,plotspec)
         return ret
-    def getPlotRaw(self,name,expr,bins,cut,unbinnedData2D=False):
+    def getPlotRaw(self,name,expr,bins,cut,plotspec):
+        unbinnedData2D = plotspec.getOption('UnbinnedData2D',False) if plotspec != None else False
+        profile1D      = plotspec.getOption('Profile1D',False) if plotspec != None else False
         if self._options.doS2V:
             expr = scalarToVector(expr)
         if not self._isInit: self._init()
@@ -315,7 +317,7 @@ class TreeToYield:
         if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
         histo = None
         canKeys = False
-        if ":" in expr.replace("::","--"):
+        if ":" in expr.replace("::","--") and not profile1D:
             if bins[0] == "[":
                 xbins, ybins = bins.split("*")
                 xedges = [ float(f) for f in xbins[1:-1].split(",") ]
@@ -328,18 +330,26 @@ class TreeToYield:
         else:
             if bins[0] == "[":
                 edges = [ float(f) for f in bins[1:-1].split(",") ]
-                histo = ROOT.TH1F("dummy","dummy",len(edges)-1,array('f',edges))
+                if profile1D: 
+                    histo = ROOT.TProfile("dummy","dummy",len(edges)-1,array('f',edges))
+                else:
+                    histo = ROOT.TH1F("dummy","dummy",len(edges)-1,array('f',edges))
             else:
                 (nb,xmin,xmax) = bins.split(",")
-                histo = ROOT.TH1F("dummy","dummy",int(nb),float(xmin),float(xmax))
-                canKeys = True
+                if profile1D:
+                    histo = ROOT.TProfile("dummy","dummy",int(nb),float(xmin),float(xmax))
+                else:
+                    histo = ROOT.TH1F("dummy","dummy",int(nb),float(xmin),float(xmax))
+                    canKeys = True
             unbinnedData2D = False
         histo.Sumw2()
         if unbinnedData2D:
             self._tree.Draw("%s" % (self.adaptExpr(expr)), cut)
             graph = ROOT.gROOT.FindObject("Graph").Clone(name)
             return graph
-        self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummy"), cut, "goff")
+        drawOpt = "goff"
+        if profile1D: drawOpt += " PROF";
+        self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummy"), cut, drawOpt)
         if canKeys and histo.GetEntries() > 0 and histo.GetEntries() < self.getOption('KeysPdfMinN',100) and not self._isdata and self.getOption("KeysPdf",False):
             #print "Histogram for %s/%s has %d entries, so will use KeysPdf " % (self._cname, self._name, histo.GetEntries())
             if "/TH1Keys_cc.so" not in ROOT.gSystem.GetLibraries(): 
@@ -366,6 +376,7 @@ def addTreeToYieldOptions(parser):
     parser.add_option("-W", "--weightString",   dest="weightString", type="string", default="1", help="Use weight (in MC events)");
     parser.add_option("-f", "--final",  dest="final", action="store_true", help="Just compute final yield after all cuts");
     parser.add_option("-e", "--errors",  dest="errors", action="store_true", help="Include uncertainties in the reports");
+    parser.add_option("--tf", "--text-format",   dest="txtfmt", type="string", default="text", help="Output format: text, html");
     parser.add_option("-S", "--start-at-cut",   dest="startCut",   type="string", help="Run selection starting at the cut matched by this regexp, included.") 
     parser.add_option("-U", "--up-to-cut",      dest="upToCut",   type="string", help="Run selection only up to the cut matched by this regexp, included.") 
     parser.add_option("-X", "--exclude-cut", dest="cutsToExclude", action="append", default=[], help="Cuts to exclude (regexp matching cut name), can specify multiple times.") 
