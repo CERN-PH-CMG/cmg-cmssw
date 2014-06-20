@@ -21,6 +21,54 @@ def H1DToH2D(h1d,h2d,func):
            h2d.SetBinContent(bx, by, h1d.GetBinContent(ib))
            h2d.SetBinError(bx, by, h1d.GetBinError(ib))
 
+class MCFakeRate:
+    def __init__(self,plotFileName, denDir, numDir, options):
+        self._plotFileName = plotFileName
+        self._denDir = denDir
+        self._numDir = numDir
+        self._plots = PlotFile(plotFileName,options)
+        self._numFile = ROOT.TFile.Open(self._numDir+"/"+basename(self._plotFileName.replace(".txt",".root")))
+        self._denFile = ROOT.TFile.Open(self._denDir+"/"+basename(self._plotFileName.replace(".txt",".root")))
+        self._options = options
+        self._outfile = ROOT.TFile.Open(self._denDir+"/"+options.out, "RECREATE")
+    def makePlotsBySource(self,mca):
+        for p in self._plots.plots():
+            asig = (mca.listSignals()+mca.listBackgrounds())[0]
+            sig  = [self._numFile.Get(p.name + "_"+asig).Clone("snum"), self._denFile.Get(p.name + "_"+asig).Clone("sden")]
+            for i in 0,1: sig[i].Reset(); 
+            for proc in mca.listSignals()+mca.listBackgrounds():
+                if self._numFile.Get(p.name + "_" + proc):
+                    sig[0].Add(self._numFile.Get(p.name + "_" + proc))
+                    sig[1].Add(self._denFile.Get(p.name + "_" + proc))
+            if "TH1" in sig[0].ClassName():
+                    h = sig
+                    text = "    Fake rate vs %s\n" % (p.name)
+                    text += "%3s   %8s  %8s    %6s +/- %6s\n" % ("bin", "xmin ", "xmax ", "value", "error ")
+                    text += "%3s   %8s  %8s    %6s-----%6s\n" % ("---", "------", "------", "------", "------")
+                    for b in xrange(1,h[0].GetNbinsX()+1):
+                        n,d = h[0].GetBinContent(b), h[1].GetBinContent(b)
+                        f = n/float(d) if d > 0 else 0; 
+                        wavg = (h[0].GetBinError(b)**2) /h[0].GetBinError(b) if h[0].GetBinError(b) else 1
+                        df = sqrt(f*(1-f)/(d/wavg)) if wavg > 0 and (d/wavg) > 0  and f > 0 and f <  1 else 0
+                        text += "%3d   % 8.3f  % 8.3f    %.4f +/- %.4f\n" % (b, h[0].GetXaxis().GetBinLowEdge(b),h[0].GetXaxis().GetBinUpEdge(b), f,df)
+                        h[0].SetBinContent(b, f) 
+                        h[0].SetBinError(b, df)
+                    c1 = ROOT.TCanvas("FR_"+p.name, p.name, 600, 400)
+                    h[0].GetYaxis().SetTitle("Fake rate");
+                    h[0].GetYaxis().SetRangeUser(0.0,0.4 if self._options.maxRatioRange[1] > 1 else self._options.maxRatioRange[1])
+                    h[0].SetLineColor(ROOT.kRed)
+                    h[0].SetMarkerColor(ROOT.kRed)
+                    h[0].SetLineWidth(2)
+                    h[0].Draw("E1")
+                    ROOT.gStyle.SetErrorX(0.5)
+                    for ext in self._options.printPlots.split(","):
+                        if ext == "txt": 
+                            dump = open("%s/FR_%s.%s" % (self._denDir, p.name, ext), "w")
+                            dump.write(text)
+                        else:
+                            c1.Print("%s/FR_%s.%s" % (self._denDir, p.name, ext))
+                    h[0].SetName("FR_%s" % (p.name)); self._outfile.WriteTObject(h[0]);
+
 class FakeRateSimple:
     def __init__(self,plotFileName, denDir, numDir, options):
         self._plotFileName = plotFileName
@@ -30,14 +78,15 @@ class FakeRateSimple:
         self._numFile = ROOT.TFile.Open(self._numDir+"/"+basename(self._plotFileName.replace(".txt",".root")))
         self._denFile = ROOT.TFile.Open(self._denDir+"/"+basename(self._plotFileName.replace(".txt",".root")))
         self._options = options
+        self._outfile = ROOT.TFile.Open(self._denDir+"/"+options.out, "RECREATE")
     def makePlotsBySource(self,mca):
         for p in self._plots.plots():
             asig = mca.listSignals()[0]
             abkg = mca.listBackgrounds()[0]
             data = [self._numFile.Get(p.name + "_data"), self._denFile.Get(p.name + "_data")]
-            if not data[0]: continue
             sig  = [self._numFile.Get(p.name + "_"+asig).Clone("snum"), self._denFile.Get(p.name + "_"+asig).Clone("sden")]
             bkg  = [self._numFile.Get(p.name + "_"+abkg).Clone("bnum"), self._denFile.Get(p.name + "_"+abkg).Clone("bden")]
+            if not data[0]: continue
             for i in 0,1:
                 sig[i].Reset(); bkg[i].Reset();
             for proc in mca.listSignals():
@@ -84,6 +133,7 @@ class FakeRateSimple:
                             dump.write(text)
                         else:
                             c1.Print("%s/FR_%s_%s.%s" % (self._denDir, p.name, l, ext))
+                    h[0].SetName("FR_%s_%s" % (p.name,l)); self._outfile.WriteTObject(h[0]);
                 c1 = ROOT.TCanvas("FR_"+p.name+"_stack", p.name, 600, 400)
                 sig[0].Draw("E1")
                 mc[0].Draw("E1 SAME")
@@ -127,6 +177,7 @@ class FakeRateSimple:
                             dump.write(text)
                         else:
                             c1.Print("%s/FR_%s_%s.%s" % (self._denDir, p.name, l, ext))
+                    h[0].SetName("FR_%s_%s" % (p.name,l)); self._outfile.WriteTObject(h[0]);
             else:
                 raise RuntimeError, "No idea how to handle a " + data[0].ClassName()
 
@@ -621,21 +672,31 @@ if __name__ == "__main__":
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options] mc.txt cuts.txt plots.txt")
     addPlotMakerOptions(parser)
+    parser.add_option("-o", "--out", dest="out", default=None, help="Output file name.");
     (options, args) = parser.parse_args()
     ROOT.gROOT.ProcessLine(".x tdrstyle.cc")
     ROOT.gStyle.SetOptStat(0)
     ROOT.gStyle.SetOptTitle(0)
     mca  = MCAnalysis(args[0],options)
     if len(args) == 5 and args[4] == "MET1Bin":
+        if options.out == None: options.out = "FR_MET1Bin_"+basename(args[1]).replace(".txt","")+".root"
         FR = FakeRateMET1Bin(args[1], args[2], args[3], options) 
         FR.makePlotsBySource(mca)
     elif len(args) == 5 and args[4] == "MET1D":
+        if options.out == None: options.out = "FR_MET1D_"+basename(args[1]).replace(".txt","")+".root"
         FR = FakeRateMET1D(args[1], args[2], args[3], options) 
         FR.makePlotsBySource(mca)
     elif len(args) == 6 and args[4] == "UCx":
+        if options.out == None: options.out = "FR_UCx_"+basename(args[1]).replace(".txt","")+".root"
         FR = FakeRateUCx1D(args[1], args[2], args[3], args[5], options) 
         FR.makePlotsBySource(mca)
+    elif len(args) == 5 and args[4] == "MC":
+        print "MC"
+        if options.out == None: options.out = "FR_MC_"+basename(args[1]).replace(".txt","")+".root"
+        FR = MCFakeRate(args[1], args[2], args[3], options) 
+        FR.makePlotsBySource(mca)
     else:
+        if options.out == None: options.out = "FR_"+basename(args[1]).replace(".txt","")+".root"
         FR = FakeRateSimple(args[1], args[2], args[3], options) 
         FR.makePlotsBySource(mca)
 
