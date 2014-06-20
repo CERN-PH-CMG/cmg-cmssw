@@ -85,7 +85,7 @@ class PileUpAnalyzer( Analyzer ):
             'std::vector<PileupSummaryInfo>' 
             ) 
         if self.allVertices == '_AUTO_':
-            self.handles['vertices'] =  AutoHandle( "slimmedPrimaryVertices", 'std::vector<reco::Vertex>', fallbackLabel="offlinePrimaryVertices" ) 
+            self.handles['vertices'] =  AutoHandle( "offlineSlimmedPrimaryVertices", 'std::vector<reco::Vertex>', fallbackLabel="offlinePrimaryVertices" ) 
         else:
             self.handles['vertices'] =  AutoHandle( self.allVertices, 'std::vector<reco::Vertex>' ) 
 

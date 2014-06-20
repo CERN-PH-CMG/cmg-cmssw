@@ -34,8 +34,6 @@ triggerAna = cfg.Analyzer(
 # this analyzer is just there to select a list of good primary vertices.
 ttHVertexAna = cfg.Analyzer(
     'VertexAnalyzer',
-    goodVertices = 'offlineSlimmedPrimaryVertices',
-    allVertices = 'offlineSlimmedPrimaryVertices',
     vertexWeight = None,
     fixedWeight = 1,
     verbose = False
@@ -47,7 +45,6 @@ pileUpAna = cfg.Analyzer(
     "PileUpAnalyzer",
     # build unweighted pu distribution using number of pile up interactions if False
     # otherwise, use fill the distribution using number of true interactions
-    allVertices = 'offlineSlimmedPrimaryVertices',
     true = True,
     makeHists=False
     )

@@ -56,7 +56,7 @@ class VertexAnalyzer( Analyzer ):
     def declareHandles(self):
         super(VertexAnalyzer, self).declareHandles()
         if self.allVertices == '_AUTO_':
-          self.handles['vertices'] =  AutoHandle( "slimmedPrimaryVertices", 'std::vector<reco::Vertex>', fallbackLabel="offlinePrimaryVertices" )
+          self.handles['vertices'] =  AutoHandle( "offlineSlimmedPrimaryVertices", 'std::vector<reco::Vertex>', fallbackLabel="offlinePrimaryVertices" )
         else:
           self.handles['vertices'] =  AutoHandle( self.allVertices, 'std::vector<reco::Vertex>' )
         self.fixedWeight = None
