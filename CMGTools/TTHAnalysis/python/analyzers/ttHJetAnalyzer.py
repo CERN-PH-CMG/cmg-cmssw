@@ -35,6 +35,7 @@ class ttHJetAnalyzer( Analyzer ):
         self.shiftJEC = self.cfg_ana.shiftJEC if hasattr(self.cfg_ana, 'shiftJEC') else 0
         self.doJEC = self.cfg_ana.recalibrateJets or (self.shiftJEC != 0)
         self.jetLepDR = self.cfg_ana.jetLepDR  if hasattr(self.cfg_ana, 'jetLepDR') else 0.5
+        self.lepPtMin = self.cfg_ana.minLepPt  if hasattr(self.cfg_ana, 'minLepPt') else -1
     def declareHandles(self):
         super(ttHJetAnalyzer, self).declareHandles()
         self.handles['jets']     = AutoHandle( self.cfg_ana.jetCol, 'std::vector<cmg::PFJet>' )
@@ -81,7 +82,7 @@ class ttHJetAnalyzer( Analyzer ):
        
 
         ## Clean Jets from leptons
-        leptons = event.selectedLeptons
+        leptons = [ l for l in event.selectedLeptons if l.pt() > self.lepPtMin ]
         if self.cfg_ana.cleanJetsFromTaus:
             leptons = leptons[:] + event.selectedTaus
         #event.cleanJets, dummy = cleanObjectCollection( event.jets,

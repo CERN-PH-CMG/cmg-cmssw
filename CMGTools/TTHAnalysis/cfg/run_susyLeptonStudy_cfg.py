@@ -64,7 +64,7 @@ ttHLepAna = cfg.Analyzer(
     doElectronScaleCorrections=False, # "embedded" in 5.18 for regression
     doSegmentBasedMuonCleaning=False,
     # inclusive very loose muon selection
-    inclusive_muon_id  = "POG_ID_Loose",
+    inclusive_muon_id  = "",
     inclusive_muon_pt  = 3,
     inclusive_muon_eta = 2.4,
     inclusive_muon_dxy = 0.5,
@@ -101,6 +101,31 @@ ttHLepMCAna = cfg.Analyzer(
     matchAllInclusiveLeptons = True, # match to status 3 also the inclusive ones
     )
 
+
+# Jets Analyzer (for jet/lepton variables)
+ttHJetAna = cfg.Analyzer(
+    'ttHJetAnalyzer',
+    jetCol = 'cmgPFJetSelCHS',
+    jetCol4MVA = 'cmgPFJetSel',
+    jetPt = 25.,
+    jetEta = 4.7,
+    jetEtaCentral = 2.4,
+    jetLepDR = 0.4,
+    relaxJetId = False,  
+    doPuId = True,
+    recalibrateJets = False,
+    shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
+    cleanJetsFromTaus = False,
+    )
+
+# Jet MC Match Analyzer (for jet/lepton variables)
+ttHJetMCAna = cfg.Analyzer(
+    'ttHJetMCMatchAnalyzer',
+    smearJets = True,
+    shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts
+    )
+
+
 # Tree Producer
 treeProducer = cfg.Analyzer(
     'ttHLepStudyTreeProducer',
@@ -126,6 +151,8 @@ sequence = cfg.Sequence([
     ttHVertexAna,
     ttHLepAna,
     ttHLepMCAna,
+    ttHJetAna,
+    ttHJetMCAna,
     treeProducer,
     ])
 
