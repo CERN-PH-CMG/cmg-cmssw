@@ -1,0 +1,11 @@
+l3Pt:  if3(LepGood1_tightFakeId==0,LepGood1_pt,LepGood2_pt): 20,0,100; XTitle="Failing lepton p_{T}  [GeV]", Legend='TR'
+l3relIso03:  if3(LepGood1_tightFakeId==0,LepGood1_relIso03,LepGood2_relIso03): 20,0,1.0; XTitle="Failing lepton Iso/p_{T} (charged)", Legend='TR'
+l3relIso:  if3(LepGood1_tightFakeId==0,LepGood1_relIso,LepGood2_relIso): 20,0,1.0; XTitle="Failing lepton Iso/p_{T} (charged)", Legend='TR'
+#l3chIso:  if3(LepGood1_tightFakeId==0,LepGood1_chargedRelIso,LepGood2_chargedRelIso): 20,0,0.4; XTitle="Failing lepton Iso/p_{T} (charged)", Legend='TR',Logy, LegendCutoff=0.003
+#l3neIso:  if3(LepGood1_tightFakeId==0,LepGood1_relIso,LepGood2_relIso) - if3(LepGood1_tightFakeId==0,LepGood1_chargedRelIso,LepGood2_chargedRelIso): 20,0,0.4; XTitle="Failing lepton Iso/p_{T} (neutral)", Legend='TR',Logy, LegendCutoff=0.003
+#l3jetDR:  if3(LepGood1_tightFakeId==0,LepGood1_jetDR,LepGood2_jetDR): 20,0,0.5; XTitle="Failing lepton #DeltaR(l\,jet)", Legend='TR'
+#l3jetBTag:  max(if3(LepGood1_tightFakeId==0,LepGood1_jetBTagCSV,LepGood2_jetBTagCSV),0):   20,0,1;  XTitle="Failing lepton's jet b-tag disc.", Legend='TR'
+l3jetPtF:   min(if3(LepGood1_tightFakeId==0,LepGood1_jetPtRatio,LepGood2_jetPtRatio),1.5): 20,0,1.5; XTitle="Failing lepton p_{T}(l)/p_{T}(jet)", Legend='TR'
+l3sip3d:   if3(LepGood1_tightFakeId==0,LepGood1_sip3d,LepGood2_sip3d): 20,0,10; XTitle="Failing lepton SIP_{3D}", Legend='TR'
+l3dxy:  abs(if3(LepGood1_tightFakeId==0,LepGood1_dxy,LepGood2_dxy)): 20,0,0.1; XTitle="Failing lepton |dxy|/1cm", Legend='TL'
+l3dz:   abs(if3(LepGood1_tightFakeId==0,LepGood1_dz,LepGood2_dz)):  20,0,1.0; XTitle="Failing lepton |dz|/1cm", Legend='TL'
