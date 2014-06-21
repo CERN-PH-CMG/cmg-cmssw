@@ -144,6 +144,7 @@ ttHJetAna = cfg.Analyzer(
     jetEta = 4.7,
     jetEtaCentral = 2.4,
     jetLepDR = 0.4,
+    minLepPt = 10,
     relaxJetId = False,  
     doPuId = True,
     recalibrateJets = False,

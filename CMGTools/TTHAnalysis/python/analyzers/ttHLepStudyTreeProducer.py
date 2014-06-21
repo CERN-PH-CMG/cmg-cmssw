@@ -1,10 +1,14 @@
 from math import *
+import os
 
 from CMGTools.TTHAnalysis.analyzers.ttHLepTreeProducerNew import *
+from CMGTools.TTHAnalysis.leptonMVA import LeptonMVA
 
 class ttHLepStudyTreeProducer( ttHLepTreeProducerNew ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHLepStudyTreeProducer,self).__init__(cfg_ana,cfg_comp,looperName) 
+
+        self.leptonMVA = LeptonMVA("%s/src/CMGTools/TTHAnalysis/data/leptonMVA/%%s_BDTG.weights.xml" % os.environ['CMSSW_BASE'], self.cfg_comp.isMC)
 
         self.globalVariables = [ 
             NTupleVariable("nVert",  lambda ev: len(ev.goodVertices), int, help="Number of good vertices"),
@@ -37,6 +41,8 @@ class ttHLepStudyTreeProducer( ttHLepTreeProducerNew ):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         for lep in event.inclusiveLeptons:
+            ## compute lepton MVA
+            self.leptonMVA.addMVA(lep)
             ## increment counters
             name = "muon" if abs(lep.pdgId()) == 13 else "electron"
             self.counters.counter('leptons').inc(name)

@@ -79,7 +79,7 @@ class ttHLepAnalyzerSusy( Analyzer ):
 
         for mu in allmuons:
             # inclusive, very loose, selection
-            if (mu.muonID(self.cfg_ana.inclusive_muon_id) and 
+            if (mu.sourcePtr().track().isNonnull() and mu.muonID(self.cfg_ana.inclusive_muon_id) and 
                     mu.pt()>self.cfg_ana.inclusive_muon_pt and abs(mu.eta())<self.cfg_ana.inclusive_muon_eta and 
                     abs(mu.dxy())<self.cfg_ana.inclusive_muon_dxy and abs(mu.dz())<self.cfg_ana.inclusive_muon_dz):
                 event.inclusiveLeptons.append(mu)
