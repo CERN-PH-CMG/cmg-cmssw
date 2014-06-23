@@ -335,11 +335,11 @@ dataSamplesAll = dataSamplesMu+dataSamplesE+dataSamplesMuE+dataSamples1Mu
 #   
 #   madFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/fastSim-madgraph.txt" % os.environ['CMSSW_BASE'], "r") ]
 #   #ttgstarFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/fastSim-ttgstar.txt" % os.environ['CMSSW_BASE'], "r") ]
-#   lowmllFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/fastSim-lowmll.txt" % os.environ['CMSSW_BASE'], "r") ]
+lowmllFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/fastSim-lowmll.txt" % os.environ['CMSSW_BASE'], "r") if "cmgTuple_518" in f ]
 #   pythiaFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/fastSim-pythia-2013-05-02.txt" % os.environ['CMSSW_BASE'], "r") ]
 #   powhelFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/fastSim-powhel.txt" % os.environ['CMSSW_BASE'], "r") ]
 #   rareFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/rareBg-caf.txt" % os.environ['CMSSW_BASE'], "r") ]
-#   def _grep(x,l): return [ i for i in l if x in i ]
+def _grep(x,l): return [ i for i in l if x in i ]
 #   
 #   madgraphDate = "2013-05-23"
 #   FastSim_TTZJets    = kreator.makePrivateMCComponent('FastSim_TTZJets',    '/store/caf/user/gpetrucc/ttH/gen/'+madgraphDate+'/ttZ_01jets_nominal',   _grep('ttZ_01jets_nominal',   madFiles) )
@@ -367,9 +367,9 @@ dataSamplesAll = dataSamplesMu+dataSamplesE+dataSamplesMuE+dataSamples1Mu
 #   FastSim_TTHJets_tuneP11 = kreator.makePrivateMCComponent('FastSim_TTHJets_tuneP11',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_scaleDown', _grep('ttH_pythia_P11-', pythiaFiles) )
 #   
 #   #FastSim_TTGStar = kreator.makePrivateMCComponent('FastSim_TTGStar',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-23/ttgstar_lo', _grep('ttgstar_lo', ttgstarFiles) )
-#   FastSim_TTGStarMM = kreator.makePrivateMCComponent('FastSim_TTGStarMM',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-23/ttgstar_lowmll_mumu_v2', _grep('ttgstar_lowmll_mumu_v2', lowmllFiles) )
-#   FastSim_TTGStarEE = kreator.makePrivateMCComponent('FastSim_TTGStarEE',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-23/ttgstar_lowmll_ee_v2', _grep('ttgstar_lowmll_ee_v2', lowmllFiles) )
-#   FastSim_TTGStarTT = kreator.makePrivateMCComponent('FastSim_TTGStarTT',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-23/ttgstar_lowmll_tautau', _grep('ttgstar_lowmll_tautau', lowmllFiles) )
+FastSim_TTGStarMM = kreator.makePrivateMCComponent('FastSim_TTGStarMM',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-23/ttgstar_lowmll_mumu_v2', _grep('ttgstar_lowmll_mumu_v2', lowmllFiles) )
+FastSim_TTGStarEE = kreator.makePrivateMCComponent('FastSim_TTGStarEE',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-23/ttgstar_lowmll_ee_v2', _grep('ttgstar_lowmll_ee_v2', lowmllFiles) )
+FastSim_TTGStarTT = kreator.makePrivateMCComponent('FastSim_TTGStarTT',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-23/ttgstar_lowmll_tautau', _grep('ttgstar_lowmll_tautau', lowmllFiles) )
 #   FastSim_ZGStar4L = kreator.makePrivateMCComponent('FastSim_ZGStar4L',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-23/zz_lowmll_v2', _grep('zz_lowmll_v2', lowmllFiles) )
 #   
 #   fastSimSamples = [ FastSim_TTZJets, FastSim_TTZJets_Up, FastSim_TTZJets_Dn, FastSim_TTZJets_MUp, FastSim_TTZJets_MDn,
@@ -379,7 +379,7 @@ dataSamplesAll = dataSamplesMu+dataSamplesE+dataSamplesMuE+dataSamples1Mu
 #                      FastSim_TTGStarMM, FastSim_TTGStarEE, FastSim_TTGStarTT, FastSim_ZGStar4L,
 #                      FastSim_TTZ_Powhel, FastSim_TTWp_Powhel, FastSim_TTWm_Powhel   ]
 
-fastSimSamples = []
+fastSimSamples = [ FastSim_TTGStarMM, FastSim_TTGStarEE, FastSim_TTGStarTT ]
 
 #   
 #   TBZToLL = kreator.makePrivateMCComponent('TBZToLL', '/store/caf/user/gpetrucc/ttH/grid/CMG/TBZToLL_4F_TuneZ2star_8TeV-madgraph-tauola', _grep('TBZToLL_4F_TuneZ2star_8TeV-madgraph-tauola', rareFiles) )
