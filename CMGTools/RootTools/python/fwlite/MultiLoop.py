@@ -7,6 +7,14 @@ import copy
 from multiprocessing import Pool
 from pprint import pprint
 
+# import root in batch mode if "-i" is not among the options
+if "-i" not in sys.argv:
+    oldv = sys.argv[:]
+    sys.argv = [ "-b-"]
+    import ROOT
+    ROOT.gROOT.SetBatch(True)
+    sys.argv = oldv
+
 from CMGTools.RootTools.fwlite.Looper import Looper
 from CMGTools.RootTools.fwlite.PythonPath import pythonpath
 
@@ -157,7 +165,7 @@ if __name__ == '__main__':
                       dest="nprint", 
                       help="number of events to print at the beginning",
                       default=5)
-    parser.add_option("-i", "--iEvent", 
+    parser.add_option("-e", "--iEvent", 
                       dest="iEvent", 
                       help="jump to a given event. ignored in multiprocessing.",
                       default=None)
@@ -166,7 +174,17 @@ if __name__ == '__main__':
                       action='store_true',
                       help="don't ask questions in case output directory already exists.",
                       default=False)
+    parser.add_option("-i", "--interactive", 
+                      dest="interactive",
+                      action='store_true',
+                      help="stay in the command line prompt instead of exiting",
+                      default=False)
+
+
 
     (options,args) = parser.parse_args()
 
+
     main(options, args)
+    if not options.interactive:
+        exit() 
