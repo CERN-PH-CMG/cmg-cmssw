@@ -347,7 +347,7 @@ def createDataset( user, dataset, pattern,  readcache=False,
         cachename = cacheFileName(data, user, pattern)
         pckfile = open( cachename)
         dataset = pickle.load(pckfile)      
-        print 'reading cache'
+        #print 'reading cache'
         return dataset
 
     if readcache:
