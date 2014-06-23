@@ -162,21 +162,9 @@ treeProducer = cfg.Analyzer(
 
 
 #-------- SAMPLES
-from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import * 
+from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14 import * 
 
-for mc in mcSamples+mcSamples+extraMcSamples+fastSimSamples:
-    mc.triggers = triggersMC_mue
-for data in dataSamplesMu:
-    data.triggers = triggers_mumu
-for data in dataSamplesE:
-    data.triggers = triggers_ee
-    data.vetoTriggers = triggers_mumu
-for data in dataSamplesMuE:
-    data.triggers = triggers_mue
-    data.vetoTriggers=triggers_ee+triggers_mumu
-
-
-selectedComponents = dataSamplesAll
+selectedComponents = [ SingleMu, DoubleElectron, TTHToWW_PUS14, DYJetsM50_PU20bx25, TTJets_PUS14 ]
 
 #-------- SEQUENCE
 
@@ -207,8 +195,7 @@ if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
     #comp = TW
-    comp = TTH
-    comp.files = [ 'root://eoscms//eos/cms/store/cmst3/user/gpetrucc/miniAOD/TTJets.root' ]
+    comp = TTHToWW_PUS14
     selectedComponents = [comp]
     comp.splitFactor = 1
     ## search for memory leaks
@@ -221,23 +208,7 @@ elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
         comp.files = comp.files[:1]
-elif test==3:
-    # test two components, using many threads, to check if variables are ok
-    comp = DoubleMuD
-    comp.files = comp.files[:20]
-    comp.splitFactor = 5
-    selectedComponents = [comp]
-    comp = DYJetsM50
-    comp.files = comp.files[:20]
-    comp.splitFactor = 5
-    selectedComponents += [comp]
-elif test==7:    
-    # test all components, 1/40 of the jobs, 1/10 of the files
-    # important to make sure that your code runs on any kind of component
-    for comp in selectedComponents:
-        comp.splitFactor = comp.splitFactor / 40
-        comp.files = [ f for (i,f) in enumerate(comp.files) if i % 20 == 19 ]
- 
+
      
 
 # creation of the processing configuration.
