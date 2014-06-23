@@ -46,7 +46,9 @@ class MatrixReader(object):
                              'relval_production': 'prod-'  ,
                              'relval_ged': 'ged-',
                              'relval_upgrade':'upg-',
-                             'relval_identity':'id-'
+                             'relval_identity':'id-',
+                             'relval_premix' : 'pmx-' ,
+                             'relval_miniaod' : 'miniaod-' ,
                              }
 
         self.files = ['relval_standard' ,
@@ -56,7 +58,9 @@ class MatrixReader(object):
                       'relval_production',
                       'relval_ged',
                       'relval_upgrade',
-                      'relval_identity'                      
+                      'relval_identity',
+                      'relval_premix',
+                      'relval_miniaod'
                       ]
 
         self.relvalModule = None
