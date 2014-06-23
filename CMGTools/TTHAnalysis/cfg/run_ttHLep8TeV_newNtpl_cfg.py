@@ -119,23 +119,24 @@ ttHJetAna = cfg.Analyzer(
     cleanJetsFromTaus = False,
     )
 
-## MET Analyzer
-#ttHMETAna = cfg.Analyzer(
-#    'ttHMETAnalyzer',
-#    )
-
-# Jet MC Match Analyzer
+# Jet MC Match Analyzer (generic)
 ttHJetMCAna = cfg.Analyzer(
     'ttHJetMCMatchAnalyzer',
     smearJets = True,
     shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts
     )
 
+# Core Event Analyzer (computes basic quantities like HT, dilepton masses)
+ttHCoreEventAna = cfg.Analyzer(
+    'ttHCoreEventAnalyzer',
+    maxLeps = 4, ## leptons to consider
+    )
+
+
+
 # Event Analyzer
 ttHEventAna = cfg.Analyzer(
     'ttHLepEventAnalyzer',
-    maxLeps = 4, ## leptons to use
-    verbose = False,
     minJets25 = 0,
     )
 
@@ -189,8 +190,8 @@ sequence = cfg.Sequence([
     ttHTauAna,
     ttHTauMCAna,
     ttHJetAna,
-    #ttHMETAna,
     ttHJetMCAna,
+    ttHCoreEventAna,
     ttHEventAna,
     treeProducer,
     ])

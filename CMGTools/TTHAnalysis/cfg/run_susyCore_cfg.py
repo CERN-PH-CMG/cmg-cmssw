@@ -107,7 +107,7 @@ ttHLepAna = cfg.Analyzer(
 # Skim (generic, but requirements depend on the final state)
 ttHLepSkim = cfg.Analyzer(
     'ttHLepSkimmer',
-    minLeptons = 2,
+    minLeptons = 0,
     maxLeptons = 999,
     #idCut  = "lepton.relIso03 < 0.2" # can give a cut
     #ptCuts = [20,10],                # can give a set of pt cuts on the leptons
@@ -166,17 +166,10 @@ ttHCoreEventAna = cfg.Analyzer(
     )
 
 
-# Event Analyzer (susy multi-lepton; at the moment, it's the TTH one)
-ttHEventAna = cfg.Analyzer(
-    'ttHLepEventAnalyzer',
-    minJets25 = 0,
-    )
-
-
 from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_mumu, triggers_ee, triggers_mue, triggers_1mu
 # Tree Producer
 treeProducer = cfg.Analyzer(
-    'treeProducerSusyMultilepton',
+    'treeProducerSusyCore',
     vectorTree = True,
     PDFWeights = PDFWeights,
     triggerBits = {
@@ -225,7 +218,6 @@ sequence = cfg.Sequence([
     ttHJetAna,
     ttHJetMCAna,
     ttHCoreEventAna,
-    ttHEventAna,
     treeProducer,
     ])
 
