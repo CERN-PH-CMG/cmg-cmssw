@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-ipython $CMSSW_BASE/src/CMGTools/RootTools/python/fwlite/MultiLoop.py "$@"
+ipython -- $CMSSW_BASE/src/CMGTools/RootTools/python/fwlite/MultiLoop.py "$@" 

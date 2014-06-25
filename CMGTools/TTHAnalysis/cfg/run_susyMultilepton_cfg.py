@@ -1,36 +1,34 @@
-import copy
-import os 
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
 from CMGTools.RootTools.RootTools import *
 
 PDFWeights = []
 #PDFWeights = [ ("CT10",53), ("MSTW2008lo68cl",41), ("NNPDF21_100",101) ]
-#PDFWeights = [ ("cteq61",41) ]
 
-# this analyzer finds the initial events before the skim
+# Find the initial events before the skim
 skimAnalyzer = cfg.Analyzer(
     'skimAnalyzerCount'
     )
 
+# Pick individual events (normally not in the path)
 eventSelector = cfg.Analyzer(
     'EventSelector',
-    toSelect = [
-    # here put the event numbers (actual event numbers from CMSSW)
-    ]
+    toSelect = []  # here put the event numbers (actual event numbers from CMSSW)
     )
 
+# Apply json file (if the dataset has one)
 jsonAna = cfg.Analyzer(
     'JSONAnalyzer',
     )
 
+# Filter using the 'triggers' and 'vetoTriggers' specified in the dataset
 triggerAna = cfg.Analyzer(
     #'TriggerAnalyzer',
     'triggerBitFilter',
     )
 
 
-# this analyzer is just there to select a list of good primary vertices.
+# Select a list of good primary vertices (generic)
 ttHVertexAna = cfg.Analyzer(
     'VertexAnalyzer',
     vertexWeight = None,
@@ -39,17 +37,15 @@ ttHVertexAna = cfg.Analyzer(
     )
 
 
-# this analyzer actually does the pile-up reweighting.
+# This analyzer actually does the pile-up reweighting (generic)
 pileUpAna = cfg.Analyzer(
     "PileUpAnalyzer",
-    # build unweighted pu distribution using number of pile up interactions if False
-    # otherwise, use fill the distribution using number of true interactions
-    true = True,
+    true = True,  # use number of true interactions for reweighting
     makeHists=False
     )
 
 
-# Gen Info Analyzer
+# Gen Info Analyzer (generic, but should be revised)
 ttHGenAna = cfg.Analyzer(
     'ttHGenLevelAnalyzer',
     filterHiggsDecays = [0, 15, 23, 24],
@@ -57,54 +53,89 @@ ttHGenAna = cfg.Analyzer(
     PDFWeights = [ pdf for pdf,num in PDFWeights ]
     )
 
+# Lepton Analyzer (generic)
 susyScanAna = cfg.Analyzer(
     'susyParameterScanAnalyzer',
     )
 
-# Lepton Analyzer
+# Lepton Analyzer (generic)
 ttHLepAna = cfg.Analyzer(
-    'ttHLepAnalyzerBase',
-    rhoMuon= 'kt6PFJetsCentralNeutral',
-    rhoElectron = 'kt6PFJets',
+    'ttHLepAnalyzerSusy',
+    # input collections
     muons='cmgMuonSel',
     electrons='cmgElectronSel',
+    rhoMuon= 'kt6PFJetsCentralNeutral',
+    rhoElectron = 'kt6PFJets',
     photons='cmgPhotonSel',
-    isolationCut=0.4, 
-    sip3dCut=10,
-    sip3dCutVeryLoose=100,
-    minGoodLeptons=2,
-    minInclusiveLeptons=2,
-    doSSLeptons=False,
-    doMuScleFitCorrections="rereco",
+    # energy scale corrections and ghost muon suppression (off by default)
+    doMuScleFitCorrections=False, # "rereco"
     doRochesterCorrections=False,
-    doElectronScaleCorrections=False,
-    doRecomputeSIP3D=False,
-    doSegmentBasedMuonCleaning=True,
-    doEleMuCrossCleaning=True,
+    doElectronScaleCorrections=False, # "embedded" in 5.18 for regression
+    doSegmentBasedMuonCleaning=False,
+    # inclusive very loose muon selection
+    inclusive_muon_id  = "POG_ID_Loose",
+    inclusive_muon_pt  = 3,
+    inclusive_muon_eta = 2.4,
+    inclusive_muon_dxy = 0.5,
+    inclusive_muon_dz  = 1.0,
+    # loose muon selection
+    loose_muon_id     = "POG_ID_Loose",
+    loose_muon_pt     = 5,
+    loose_muon_eta    = 2.4,
+    loose_muon_dxy    = 0.05,
+    loose_muon_dz     = 0.2,
+    loose_muon_relIso = 0.4,
+    # inclusive very loose electron selection
+    inclusive_electron_id  = "",
+    inclusive_electron_pt  = 5,
+    inclusive_electron_eta = 2.5,
+    inclusive_electron_dxy = 0.5,
+    inclusive_electron_dz  = 1.0,
+    inclusive_electron_lostHits = 1.0,
+    # loose electron selection
+    loose_electron_id     = "POG_MVA_ID_NonTrig",
+    loose_electron_pt     = 7,
+    loose_electron_eta    = 2.4,
+    loose_electron_dxy    = 0.05,
+    loose_electron_dz     = 0.2,
+    loose_electron_relIso = 0.4,
+    loose_electron_lostHits = 1.0,
+    # minimum deltaR between a loose electron and a loose muon (on overlaps, discard the electron)
+    min_dr_electron_muon = 0.02
     )
 
-# Lepton MC Matching (must happen earlier to allow for MVA corrections)
+# Skim (generic, but requirements depend on the final state)
+ttHLepSkim = cfg.Analyzer(
+    'ttHLepSkimmer',
+    minLeptons = 2,
+    maxLeptons = 999,
+    #idCut  = "lepton.relIso03 < 0.2" # can give a cut
+    #ptCuts = [20,10],                # can give a set of pt cuts on the leptons
+    )
+
+# Lepton MC Matching (generic, must happen early to allow for MVA corrections)
 ttHLepMCAna = cfg.Analyzer(
     'ttHLepMCMatchAnalyzer',
+    matchAllInclusiveLeptons = False,
     )
 
-# Tau Analyzer
+# Tau Analyzer (generic)
 ttHTauAna = cfg.Analyzer(
     'ttHTauAnalyzer',
     ptMin = 20,
     vetoLeptons = True,
-    leptonVetoDR = 0.5,
+    leptonVetoDR = 0.4,
     tauID = "byMediumIsolationMVA2",
     tauLooseID = "decayModeFinding",
 )
 
-# Tau MC Matching
+# Tau MC Matching (generic)
 ttHTauMCAna = cfg.Analyzer(
     'ttHTauMCMatchAnalyzer',
 )
 
 
-# Jets Analyzer 
+# Jets Analyzer (generic)
 ttHJetAna = cfg.Analyzer(
     'ttHJetAnalyzer',
     jetCol = 'cmgPFJetSelCHS',
@@ -112,6 +143,8 @@ ttHJetAna = cfg.Analyzer(
     jetPt = 25.,
     jetEta = 4.7,
     jetEtaCentral = 2.4,
+    jetLepDR = 0.4,
+    minLepPt = 10,
     relaxJetId = False,  
     doPuId = True,
     recalibrateJets = False,
@@ -133,18 +166,17 @@ ttHCoreEventAna = cfg.Analyzer(
     )
 
 
-
-# Event Analyzer
+# Event Analyzer (susy multi-lepton; at the moment, it's the TTH one)
 ttHEventAna = cfg.Analyzer(
     'ttHLepEventAnalyzer',
     minJets25 = 0,
     )
 
+
 from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_mumu, triggers_ee, triggers_mue, triggers_1mu
 # Tree Producer
 treeProducer = cfg.Analyzer(
-    #'ttHLepTreeProducerExample',
-    'ttHLepTreeProducerTTH',
+    'treeProducerSusyMultilepton',
     vectorTree = True,
     PDFWeights = PDFWeights,
     triggerBits = {
@@ -157,7 +189,7 @@ treeProducer = cfg.Analyzer(
     )
 
 
-#-------- SAMPLES
+#-------- SAMPLES AND TRIGGERS -----------
 from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import * 
 
 for mc in mcSamples+mcSamples+extraMcSamples+fastSimSamples:
@@ -172,13 +204,13 @@ for data in dataSamplesMuE:
     data.vetoTriggers=triggers_ee+triggers_mumu
 
 
-selectedComponents = dataSamplesAll
+selectedComponents = [ DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,TTH122,TTH127,TTJetsSem1,TTJetsSem2 ] 
 
 #-------- SEQUENCE
 
 sequence = cfg.Sequence([
     skimAnalyzer,
-    #eventSelector,
+   #eventSelector,
     jsonAna,
     triggerAna,
     pileUpAna,
@@ -186,6 +218,7 @@ sequence = cfg.Sequence([
     susyScanAna,
     ttHVertexAna,
     ttHLepAna,
+    ttHLepSkim,
     ttHLepMCAna,
     ttHTauAna,
     ttHTauMCAna,
@@ -201,44 +234,18 @@ sequence = cfg.Sequence([
 test = 1
 if test==1:
     # test a single component, using a single thread.
-    # necessary to debug the code, until it doesn't crash anymore
-    #comp = TW
-    comp = TTH
+    comp = TTJets
     comp.files = comp.files[:1]
     selectedComponents = [comp]
     comp.splitFactor = 1
-    ## search for memory leaks
-    #import ROOT;
-    #hook = ROOT.SetupIgProfDumpHook()
-    #hook.start()
 elif test==2:    
     # test all components (1 thread per component).
-    # important to make sure that your code runs on any kind of component
     for comp in selectedComponents:
         comp.splitFactor = 1
         comp.files = comp.files[:1]
-elif test==3:
-    # test two components, using many threads, to check if variables are ok
-    comp = DoubleMuD
-    comp.files = comp.files[:20]
-    comp.splitFactor = 5
-    selectedComponents = [comp]
-    comp = DYJetsM50
-    comp.files = comp.files[:20]
-    comp.splitFactor = 5
-    selectedComponents += [comp]
-elif test==7:    
-    # test all components, 1/40 of the jobs, 1/10 of the files
-    # important to make sure that your code runs on any kind of component
-    for comp in selectedComponents:
-        comp.splitFactor = comp.splitFactor / 40
-        comp.files = [ f for (i,f) in enumerate(comp.files) if i % 20 == 19 ]
- 
-     
 
-# creation of the processing configuration.
-# we define here on which components to run, and
-# what is the sequence of analyzers to run on each event. 
+
+
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
 

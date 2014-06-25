@@ -104,8 +104,12 @@ WJets    =kreator.makeMCComponent('WJets','/WJetsToLNu_TuneZ2Star_8TeV-madgraph-
 #WJets_HT300To400=kreator.makeMCComponent('WJets_HT300To400','/WJetsToLNu_HT-300To400_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 #WJets_HT400ToInf=kreator.makeMCComponent('WJets_HT400ToInf','/WJetsToLNu_HT-400ToInf_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 QCDMuPt15=kreator.makeMCComponent('QCDMuPt15','/QCD_Pt_20_MuEnrichedPt_15_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v3/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
-QCDElPt30To80=kreator.makeMCComponent('QCDElPt30To80','//QCD_Pt_30_80_BCtoE_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
-QCDElPt80To170=kreator.makeMCComponent('QCDElPt80To170','//QCD_Pt_80_170_BCtoE_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+QCDElPt20To30=kreator.makeMCComponent('QCDElPt20To30','/QCD_Pt_20_30_BCtoE_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+QCDElPt30To80=kreator.makeMCComponent('QCDElPt30To80','/QCD_Pt_30_80_BCtoE_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+QCDElPt80To170=kreator.makeMCComponent('QCDElPt80To170','/QCD_Pt_80_170_BCtoE_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+QCDEMElPt20To30=kreator.makeMCComponent('QCDEMElPt20To30','/QCD_Pt_20_30_EMEnriched_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+QCDEMElPt30To80=kreator.makeMCComponent('QCDEMElPt30To80','/QCD_Pt_30_80_EMEnriched_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+QCDEMElPt80To170=kreator.makeMCComponent('QCDEMElPt80To170','/QCD_Pt_80_170_EMEnriched_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 
 TTH110_NoBB = kreator.makeMCComponent('TTH110_NoBB','/TTH_Inclusive_M-110_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5/PAT_CMG_'+pat+'/'+skim,"gpetrucc",filepattern)
 TTH115_NoBB = kreator.makeMCComponent('TTH115_NoBB','/TTH_Inclusive_M-115_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5/PAT_CMG_'+pat+'/'+skim,"gpetrucc",filepattern)
@@ -121,7 +125,7 @@ mcSamples_2 = [ TTH122,TTH127,DYJetsM10,TTLep,WWJets,TTJets,Tsch,Tbarsch,Ttch,Tb
 ## Cross-check samples, ... 
 mcSamples_3 = [ TTWnlo,WJets,ZZJets4L, TTH110_NoBB,TTH115_NoBB,TTH120_NoBB,TTH130_NoBB,TTH135_NoBB,TTH140_NoBB ]
 ## Samples we don't use
-mcSamples_4 = [ QCDMuPt15,WGs2MU,WGs2E,WGs2Tau,WGToLNuG,ZG,QCDElPt30To80,QCDElPt80To170 ]
+mcSamples_4 = [ QCDMuPt15,WGs2MU,WGs2E,WGs2Tau,WGToLNuG,ZG,QCDElPt20To30,QCDElPt30To80,QCDElPt80To170,QCDEMElPt20To30,QCDEMElPt30To80,QCDEMElPt80To170 ]
 
 mcSamples=mcSamples_1+mcSamples_2+mcSamples_3
 

@@ -1,5 +1,3 @@
-import copy
-import os 
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
 from CMGTools.RootTools.RootTools import *
@@ -23,12 +21,6 @@ eventSelector = cfg.Analyzer(
 jsonAna = cfg.Analyzer(
     'JSONAnalyzer',
     )
-
-triggerAna = cfg.Analyzer(
-    #'TriggerAnalyzer',
-    'triggerBitFilter',
-    )
-
 
 # this analyzer is just there to select a list of good primary vertices.
 ttHVertexAna = cfg.Analyzer(
@@ -57,54 +49,60 @@ ttHGenAna = cfg.Analyzer(
     PDFWeights = [ pdf for pdf,num in PDFWeights ]
     )
 
-susyScanAna = cfg.Analyzer(
-    'susyParameterScanAnalyzer',
-    )
-
 # Lepton Analyzer
 ttHLepAna = cfg.Analyzer(
-    'ttHLepAnalyzerBase',
-    rhoMuon= 'kt6PFJetsCentralNeutral',
-    rhoElectron = 'kt6PFJets',
+    'ttHLepAnalyzerSusy',
+    # input collections
     muons='cmgMuonSel',
     electrons='cmgElectronSel',
+    rhoMuon= 'kt6PFJetsCentralNeutral',
+    rhoElectron = 'kt6PFJets',
     photons='cmgPhotonSel',
-    isolationCut=0.4, 
-    sip3dCut=10,
-    sip3dCutVeryLoose=100,
-    minGoodLeptons=2,
-    minInclusiveLeptons=2,
-    doSSLeptons=False,
-    doMuScleFitCorrections="rereco",
+    # energy scale corrections and ghost muon suppression (off by default)
+    doMuScleFitCorrections=False, # "rereco"
     doRochesterCorrections=False,
-    doElectronScaleCorrections=False,
-    doRecomputeSIP3D=False,
-    doSegmentBasedMuonCleaning=True,
-    doEleMuCrossCleaning=True,
+    doElectronScaleCorrections=False, # "embedded" in 5.18 for regression
+    doSegmentBasedMuonCleaning=False,
+    # inclusive very loose muon selection
+    inclusive_muon_id  = "",
+    inclusive_muon_pt  = 3,
+    inclusive_muon_eta = 2.4,
+    inclusive_muon_dxy = 0.5,
+    inclusive_muon_dz  = 1.0,
+    # loose muon selection
+    loose_muon_id     = "POG_ID_Loose",
+    loose_muon_pt     = 5,
+    loose_muon_eta    = 2.4,
+    loose_muon_dxy    = 0.2,
+    loose_muon_dz     = 0.5,
+    loose_muon_relIso = 0.5,
+    # inclusive very loose electron selection
+    inclusive_electron_id  = "",
+    inclusive_electron_pt  = 5,
+    inclusive_electron_eta = 2.5,
+    inclusive_electron_dxy = 0.5,
+    inclusive_electron_dz  = 1.0,
+    inclusive_electron_lostHits = 999.0,
+    # loose electron selection
+    loose_electron_id     = "POG_MVA_ID_NonTrig",
+    loose_electron_pt     = 7,
+    loose_electron_eta    = 2.4,
+    loose_electron_dxy    = 0.2,
+    loose_electron_dz     = 0.5,
+    loose_electron_relIso = 0.5,
+    loose_electron_lostHits = 1.0,
+    # minimum deltaR between a loose electron and a loose muon (discard electron if not satisfied)
+    min_dr_electron_muon = 0.02
     )
 
-# Lepton MC Matching (must happen earlier to allow for MVA corrections)
+# Lepton MC Matching 
 ttHLepMCAna = cfg.Analyzer(
     'ttHLepMCMatchAnalyzer',
+    matchAllInclusiveLeptons = True, # match to status 3 also the inclusive ones
     )
 
-# Tau Analyzer
-ttHTauAna = cfg.Analyzer(
-    'ttHTauAnalyzer',
-    ptMin = 20,
-    vetoLeptons = True,
-    leptonVetoDR = 0.5,
-    tauID = "byMediumIsolationMVA2",
-    tauLooseID = "decayModeFinding",
-)
 
-# Tau MC Matching
-ttHTauMCAna = cfg.Analyzer(
-    'ttHTauMCMatchAnalyzer',
-)
-
-
-# Jets Analyzer 
+# Jets Analyzer (for jet/lepton variables)
 ttHJetAna = cfg.Analyzer(
     'ttHJetAnalyzer',
     jetCol = 'cmgPFJetSelCHS',
@@ -112,6 +110,7 @@ ttHJetAna = cfg.Analyzer(
     jetPt = 25.,
     jetEta = 4.7,
     jetEtaCentral = 2.4,
+    jetLepDR = 0.4,
     relaxJetId = False,  
     doPuId = True,
     recalibrateJets = False,
@@ -119,60 +118,27 @@ ttHJetAna = cfg.Analyzer(
     cleanJetsFromTaus = False,
     )
 
-# Jet MC Match Analyzer (generic)
+# Jet MC Match Analyzer (for jet/lepton variables)
 ttHJetMCAna = cfg.Analyzer(
     'ttHJetMCMatchAnalyzer',
     smearJets = True,
     shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts
     )
 
-# Core Event Analyzer (computes basic quantities like HT, dilepton masses)
-ttHCoreEventAna = cfg.Analyzer(
-    'ttHCoreEventAnalyzer',
-    maxLeps = 4, ## leptons to consider
-    )
 
-
-
-# Event Analyzer
-ttHEventAna = cfg.Analyzer(
-    'ttHLepEventAnalyzer',
-    minJets25 = 0,
-    )
-
-from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_mumu, triggers_ee, triggers_mue, triggers_1mu
 # Tree Producer
 treeProducer = cfg.Analyzer(
-    #'ttHLepTreeProducerExample',
-    'ttHLepTreeProducerTTH',
+    'ttHLepStudyTreeProducer',
     vectorTree = True,
-    PDFWeights = PDFWeights,
-    triggerBits = {
-            'SingleMu' : triggers_1mu,
-            'DoubleMu' : triggers_mumu,
-            'DoubleEl' : [ t for t in triggers_ee if "Ele15_Ele8_Ele5" not in t ],
-            'TripleEl' : [ t for t in triggers_ee if "Ele15_Ele8_Ele5"     in t ],
-            'MuEG'     : [ t for t in triggers_mue if "Mu" in t and "Ele" in t ]
-        }
+    PDFWeights = [],
+    triggerBits = {},
     )
 
 
 #-------- SAMPLES
 from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import * 
 
-for mc in mcSamples+mcSamples+extraMcSamples+fastSimSamples:
-    mc.triggers = triggersMC_mue
-for data in dataSamplesMu:
-    data.triggers = triggers_mumu
-for data in dataSamplesE:
-    data.triggers = triggers_ee
-    data.vetoTriggers = triggers_mumu
-for data in dataSamplesMuE:
-    data.triggers = triggers_mue
-    data.vetoTriggers=triggers_ee+triggers_mumu
-
-
-selectedComponents = dataSamplesAll
+selectedComponents = [ TTJets ] 
 
 #-------- SEQUENCE
 
@@ -180,30 +146,23 @@ sequence = cfg.Sequence([
     skimAnalyzer,
     #eventSelector,
     jsonAna,
-    triggerAna,
     pileUpAna,
     ttHGenAna,
-    susyScanAna,
     ttHVertexAna,
     ttHLepAna,
     ttHLepMCAna,
-    ttHTauAna,
-    ttHTauMCAna,
     ttHJetAna,
     ttHJetMCAna,
-    ttHCoreEventAna,
-    ttHEventAna,
     treeProducer,
     ])
 
 
 #-------- HOW TO RUN
-test = 1
+test = 3
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
-    #comp = TW
-    comp = TTH
+    comp = TTJets
     comp.files = comp.files[:1]
     selectedComponents = [comp]
     comp.splitFactor = 1
@@ -218,23 +177,11 @@ elif test==2:
         comp.splitFactor = 1
         comp.files = comp.files[:1]
 elif test==3:
-    # test two components, using many threads, to check if variables are ok
-    comp = DoubleMuD
-    comp.files = comp.files[:20]
-    comp.splitFactor = 5
+    comp = TTJets
+    comp.files = comp.files[:40]
     selectedComponents = [comp]
-    comp = DYJetsM50
-    comp.files = comp.files[:20]
     comp.splitFactor = 5
-    selectedComponents += [comp]
-elif test==7:    
-    # test all components, 1/40 of the jobs, 1/10 of the files
-    # important to make sure that your code runs on any kind of component
-    for comp in selectedComponents:
-        comp.splitFactor = comp.splitFactor / 40
-        comp.files = [ f for (i,f) in enumerate(comp.files) if i % 20 == 19 ]
- 
-     
+
 
 # creation of the processing configuration.
 # we define here on which components to run, and
