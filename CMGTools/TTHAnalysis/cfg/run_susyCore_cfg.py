@@ -58,6 +58,11 @@ susyScanAna = cfg.Analyzer(
     'susyParameterScanAnalyzer',
     )
 
+# gen particles in Pythia 6
+SUSYPythia6Gen  = cfg.Analyzer(
+    'SUSYGenStatusThree'
+    )
+
 # Lepton Analyzer (generic)
 ttHLepAna = cfg.Analyzer(
     'ttHLepAnalyzerSusy',
@@ -209,6 +214,7 @@ sequence = cfg.Sequence([
     pileUpAna,
     ttHGenAna,
     susyScanAna,
+    SUSYPythia6Gen,
     ttHVertexAna,
     ttHLepAna,
     ttHLepSkim,
