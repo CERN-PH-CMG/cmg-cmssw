@@ -51,9 +51,9 @@ class SUSYGenStatusThree( Analyzer ):
 
     def makeMCInfo(self, event):
         event.genParticles = map( GenParticle, self.mchandles['genParticles'].product() )
-        event.genstatusthree  = [p for p in event.genParticles if (p.status() == 3)]
+        event.genStatusThree  = [p for p in event.genParticles if (p.status() == 3)]
         # add the ID of the mother to be able to recreate last decay chains, use sourceId variable as used in ntupleTypes
-        for p in event.genstatusthree:
+        for p in event.genStatusThree:
             if(p.numberOfMothers()==0 ):
                 p.sourceId = 0
             elif (p.numberOfMothers()==1):
