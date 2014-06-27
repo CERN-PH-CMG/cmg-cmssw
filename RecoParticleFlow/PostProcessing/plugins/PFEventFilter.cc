@@ -411,12 +411,12 @@ PFEventFilter::postMuonCleaning( reco::PFCandidateCollection *pfCandidates_,
     // check if the muons has already been taken
     bool used = false;
     bool hadron = false;
-    unsigned iHad = 1E9;
+    //    unsigned iHad = 1E9;
     for(unsigned i=0; i<pfCandidates_->size(); i++) {
       const reco::PFCandidate& pfc = (*pfCandidates_)[i];
       if ( pfc.trackRef().isNonnull() && pfc.trackRef() == trackerMu ) { 
 	hadron = true;
-	iHad = i;
+        //	iHad = i;
       }
       if ( !pfc.muonRef().isNonnull() || pfc.muonRef() != muonRef ) continue;
       used = true;
