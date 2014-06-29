@@ -452,10 +452,9 @@ template<class T, class U>
        pt1 = sqrt( output_[sel1].px()*output_[sel1].px() + output_[sel1].py()*output_[sel1].py() );
        for(it = 0; it < output_.size(); it++){
 	 if(it != sel1){
-	   double px,py,pz,pt;
+	   double px,py,pt;
 	   px = output_[it].px();
 	   py = output_[it].py();
-	   pz = output_[it].pz();
 	   pt = sqrt(px*px+py*py);
 	   double phi = output_[it].phi();
 	   double eta = output_[it].eta();
@@ -604,10 +603,10 @@ template<class T, class U>
        pt1 = sqrt( output_[sel1].px()*output_[sel1].px() + output_[sel1].py()*output_[sel1].py() );
        for(it = 0; it < output_.size(); it++){
 	 if(it != sel1){
-	   double px,py,pz,pt;
+	   double px,py,pt;
 	   px = output_[it].px();
 	   py = output_[it].py();
-	   pz = output_[it].pz();
+	   /* pz = output_[it].pz(); */
 	   pt = sqrt(px*px+py*py);
 	   double phi = output_[it].phi();
 	   double eta = output_[it].eta();

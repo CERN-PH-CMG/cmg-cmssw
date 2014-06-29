@@ -95,24 +95,24 @@ void cmg::GenericHistograms<T>::defineHistograms()
                 case 1:
                     {
                         HistogramAxis axis = it->second.at(0);
-                        add1DHistogram(it->first,it->first,
-                                       axis.nbins_,axis.low_,axis.high_,
-                                       cmg::HistogramCreator<T>::fs_.operator->());
-
-                        get1DHistogram(it->first)->GetXaxis()->SetTitle(axis.title_.c_str());
+                        this->add1DHistogram(it->first,it->first,
+                                             axis.nbins_,axis.low_,axis.high_,
+                                             cmg::HistogramCreator<T>::fs_.operator->());
+                        
+                        this->get1DHistogram(it->first)->GetXaxis()->SetTitle(axis.title_.c_str());
                         break;
                     }
                 case 2:
                     {
                         HistogramAxis axisX = it->second.at(0);
                         HistogramAxis axisY = it->second.at(1);
-                        add2DHistogram(it->first,it->first,
-                                       axisX.nbins_,axisX.low_,axisX.high_,
-                                       axisY.nbins_,axisY.low_,axisY.high_,
-                                       cmg::HistogramCreator<T>::fs_.operator->());
+                        this->add2DHistogram(it->first,it->first,
+                                             axisX.nbins_,axisX.low_,axisX.high_,
+                                             axisY.nbins_,axisY.low_,axisY.high_,
+                                             cmg::HistogramCreator<T>::fs_.operator->());
 
-                        get2DHistogram(it->first)->GetXaxis()->SetTitle(axisX.title_.c_str());
-                        get2DHistogram(it->first)->GetYaxis()->SetTitle(axisY.title_.c_str());
+                        this->get2DHistogram(it->first)->GetXaxis()->SetTitle(axisX.title_.c_str());
+                        this->get2DHistogram(it->first)->GetYaxis()->SetTitle(axisY.title_.c_str());
                         break;
                     }
                 case 3:
@@ -121,15 +121,15 @@ void cmg::GenericHistograms<T>::defineHistograms()
                         HistogramAxis axisY = it->second.at(1);
                         HistogramAxis axisZ = it->second.at(2);
 
-                        add3DHistogram(it->first,it->first,
-                                       axisX.nbins_,axisX.low_,axisX.high_,
-                                       axisY.nbins_,axisY.low_,axisY.high_,
-                                       axisZ.nbins_,axisZ.low_,axisZ.high_,
-                                       cmg::HistogramCreator<T>::fs_.operator->());
+                        this->add3DHistogram(it->first,it->first,
+                                             axisX.nbins_,axisX.low_,axisX.high_,
+                                             axisY.nbins_,axisY.low_,axisY.high_,
+                                             axisZ.nbins_,axisZ.low_,axisZ.high_,
+                                             cmg::HistogramCreator<T>::fs_.operator->());
 
-                        get3DHistogram(it->first)->GetXaxis()->SetTitle(axisX.title_.c_str());
-                        get3DHistogram(it->first)->GetYaxis()->SetTitle(axisY.title_.c_str());
-                        get3DHistogram(it->first)->GetZaxis()->SetTitle(axisZ.title_.c_str());
+                        this->get3DHistogram(it->first)->GetXaxis()->SetTitle(axisX.title_.c_str());
+                        this->get3DHistogram(it->first)->GetYaxis()->SetTitle(axisY.title_.c_str());
+                        this->get3DHistogram(it->first)->GetZaxis()->SetTitle(axisZ.title_.c_str());
                         break;
                     }
                 default:
@@ -147,20 +147,20 @@ void cmg::GenericHistograms<T>::fill(const T& cand0, const T& cand1, const T& ca
     switch(size) {
     case 1: {
       HistogramAxis axis = it->second.at(0);
-      fill1DHistogram(it->first, axis.fn_(cand0));
+      this->fill1DHistogram(it->first, axis.fn_(cand0));
       break;
     }
     case 2: {
       HistogramAxis axisX = it->second.at(0);
       HistogramAxis axisY = it->second.at(1);
-      fill2DHistogram(it->first, axisX.fn_(cand0), axisY.fn_(cand1));
+      this->fill2DHistogram(it->first, axisX.fn_(cand0), axisY.fn_(cand1));
       break;
     }
     case 3: {
       HistogramAxis axisX = it->second.at(0);
       HistogramAxis axisY = it->second.at(1);
       HistogramAxis axisZ = it->second.at(2);
-      fill3DHistogram(it->first, axisX.fn_(cand0), axisY.fn_(cand1), axisZ.fn_(cand2));
+      this->fill3DHistogram(it->first, axisX.fn_(cand0), axisY.fn_(cand1), axisZ.fn_(cand2));
       break;
     }
     default:

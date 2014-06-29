@@ -290,12 +290,16 @@ int Davismt2::nsols_massless(double Dsq){
 	A1 = (2*b*b2+2*e2)/(Easq*Ea);
 	A0 = (a2*b*b+2*b*d2+f2)/(Easq*Easq);
 
-	long  double A0sq, A1sq, A2sq, A3sq, A4sq;
+        long double A3sq;
+        A3sq = A3*A3;
+        /*	
+        long  double A0sq, A1sq, A2sq, A3sq, A4sq;
 	A0sq = A0*A0;
 	A1sq = A1*A1;
 	A2sq = A2*A2;
 	A3sq = A3*A3;
 	A4sq = A4*A4;
+        */
 
 	long double B3, B2, B1, B0;
 	B3 = 4*A4;
@@ -522,7 +526,7 @@ int Davismt2::scan_high(double & Deltasq_high){
 	int nsols_high;
 
 
-	double Deltasq_low;
+        //        double Deltasq_low;
 	double tempmass, maxmass;
 	tempmass = mn + ma;
 	maxmass  = sqrt(mnsq + Deltasq_high);
@@ -534,7 +538,7 @@ int Davismt2::scan_high(double & Deltasq_high){
 
 		if( nsols_high > 0)
 		{
-			Deltasq_low = (mass-SCANSTEP)*(mass-SCANSTEP) - mnsq;
+                  // Deltasq_low = (mass-SCANSTEP)*(mass-SCANSTEP) - mnsq;
 			foundhigh   = 1;
 			break;
 		}
@@ -588,12 +592,15 @@ int Davismt2::nsols(double Dsq){
 		4*a2*d1*d1*f2 - 4*a1*d1*d2*f2 - 2*a1*a2*f1*f2 + 
 		a1*a1*f2*f2)/(Easq*Easq);
 
+        long double A3sq;
+        /*
 	long  double A0sq, A1sq, A2sq, A3sq, A4sq;
 	A0sq = A0*A0;
 	A1sq = A1*A1;
 	A2sq = A2*A2;
-	A3sq = A3*A3;
 	A4sq = A4*A4;
+        */
+	A3sq = A3*A3;
 
 	long double B3, B2, B1, B0;
 	B3 = 4*A4;
