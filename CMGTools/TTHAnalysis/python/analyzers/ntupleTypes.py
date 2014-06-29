@@ -138,4 +138,7 @@ genParticleType = NTupleObjectType("genParticle", baseObjectTypes = [ particleTy
 genParticleWithSourceType = NTupleObjectType("genParticleWithSource", baseObjectTypes = [ genParticleType ], mcOnly=True, variables = [
     NTupleVariable("sourceId", lambda x : x.sourceId, int, help="origin of the particle: 6=t, 25=h, 23/24=W/Z")
 ])
+genParticleWithMotherId = NTupleObjectType("genParticleWithMotherId", baseObjectTypes = [ genParticleType ], mcOnly=True, variables = [
+    NTupleVariable("motherId", lambda x : x.motherId, int, help="pdgId of the mother of the particle")
+])
 
