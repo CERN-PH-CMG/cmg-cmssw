@@ -3,7 +3,8 @@ from CMGTools.TTHAnalysis.analyzers.ttHLepTreeProducerNew import *
 class treeProducerSusyCore( ttHLepTreeProducerNew ):
 
     #-----------------------------------
-    # TREE PRODUCER FOR THE TTH ANALYSIS
+    # CORE TREE PRODUCER FOR THE SUSY ANALYSES
+    # defines the core variables that will be present in the trees of all final states
     #-----------------------------------
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(treeProducerSusyCore,self).__init__(cfg_ana, cfg_comp, looperName)
@@ -75,9 +76,10 @@ class treeProducerSusyCore( ttHLepTreeProducerNew ):
             "genwzquarks"     : NTupleCollection("GenQuark",   genParticleWithSourceType, 6, help="Generated quarks from W/Z decays"),
             "genleps"         : NTupleCollection("GenLep",     genParticleWithSourceType, 6, help="Generated leptons from W/Z decays"),
             "gentauleps"      : NTupleCollection("GenLepFromTau", genParticleWithSourceType, 6, help="Generated leptons from decays of taus from W/Z/h decays"),
-            "genStatusThree"   : NTupleCollection("GenP6StatusThree", genParticleWithSourceType, 100 , help="Pythia6 status three particles"),
+            "genStatusThree"   : NTupleCollection("GenP6StatusThree", genParticleWithMotherId, 100 , help="Pythia6 status three particles"),
             }
 
-        ## Now book the variables
-        self.initDone = True
-        self.declareVariables()
+        ## Book the variables, but only if we're called explicitly and not through a base class
+        if cfg_ana.name == "treeProducerSusyCore":
+            self.initDone = True
+            self.declareVariables()
