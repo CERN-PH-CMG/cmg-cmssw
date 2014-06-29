@@ -75,7 +75,8 @@ class treeProducerSusyCore( ttHLepTreeProducerNew ):
             "genwzquarks"     : NTupleCollection("GenQuark",   genParticleWithSourceType, 6, help="Generated quarks from W/Z decays"),
             "genleps"         : NTupleCollection("GenLep",     genParticleWithSourceType, 6, help="Generated leptons from W/Z decays"),
             "gentauleps"      : NTupleCollection("GenLepFromTau", genParticleWithSourceType, 6, help="Generated leptons from decays of taus from W/Z/h decays"),
-        }
+            "genStatusThree"   : NTupleCollection("GenP6StatusThree", genParticleWithSourceType, 100 , help="Pythia6 status three particles"),
+            }
 
         ## Now book the variables
         self.initDone = True
