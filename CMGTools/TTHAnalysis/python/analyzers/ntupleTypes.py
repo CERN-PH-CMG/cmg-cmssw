@@ -110,6 +110,7 @@ jetType = NTupleObjectType("jet",  baseObjectTypes = [ fourVectorType ], variabl
     NTupleVariable("rawPt",     lambda x : x.pt() * x.rawFactor(), help="p_{T} before JEC"),
     NTupleVariable("mcPt",      lambda x : x.mcJet.pt() if x.mcJet else 0., mcOnly=True, help="p_{T} of associated gen jet"),
     NTupleVariable("mcFlavour", lambda x : abs(x.partonFlavour()), int,     mcOnly=True, help="parton flavour (physics definition, i.e. including b's from shower)"),
+    NTupleVariable("quarkGluonID", lambda x : x.QG,  mcOnly=False),
 ])
 jetTypeTTH = NTupleObjectType("jetTTH",  baseObjectTypes = [ jetType ], variables = [
     NTupleVariable("mcMatchId",    lambda x : x.mcMatchId,   int, mcOnly=True, help="Match to source from hard scatter (25 for H, 6 for t, 23/24 for W/Z)"),
@@ -118,6 +119,9 @@ jetTypeTTH = NTupleObjectType("jetTTH",  baseObjectTypes = [ jetType ], variable
 jetTypeSusy = NTupleObjectType("jetSusy",  baseObjectTypes = [ jetType ], variables = [
     NTupleVariable("mcMatchId",    lambda x : x.mcMatchId,   int, mcOnly=True, help="Match to source from hard scatter (25 for H, 6 for t, 23/24 for W/Z)"),
     NTupleVariable("mcMatchFlav",  lambda x : x.mcMatchFlav, int, mcOnly=True, help="Flavour of associated parton from hard scatter (if any)"),
+    NTupleVariable("PuJetId_full", lambda x : x.puId("full"), int,     mcOnly=False, help="puId full: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
+    NTupleVariable("PuJetId_simple", lambda x : x.puId("simple"), int,    mcOnly=False, help="puId simple: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
+    NTupleVariable("PuJetId_cut_based", lambda x : x.puId("cut-based"), int,    mcOnly=False, help="puId cut-based: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
 ])
 
         
