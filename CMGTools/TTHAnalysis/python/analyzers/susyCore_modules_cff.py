@@ -63,7 +63,7 @@ susyScanAna = cfg.Analyzer(
 
 # gen particles in Pythia 6
 susyPythia6Gen  = cfg.Analyzer(
-    'SUSYGenStatusThree'
+    'susyGenStatusThree'
     )
 
 # Lepton Analyzer (generic)
