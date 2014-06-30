@@ -112,7 +112,7 @@ ttHLepAna = cfg.Analyzer(
     min_dr_electron_muon = 0.02
     )
 
-# Skim (generic, but requirements depend on the final state)
+# Lepton-based Skim (generic, but requirements depend on the final state)
 ttHLepSkim = cfg.Analyzer(
     'ttHLepSkimmer',
     minLeptons = 0,
@@ -173,6 +173,19 @@ ttHCoreEventAna = cfg.Analyzer(
     maxLeps = 4, ## leptons to consider
     )
 
+# Jet-MET based Skim (generic, but requirements depend on the final state)
+ttHJetMETSkim = cfg.Analyzer(
+    'ttHJetMETSkimmer',
+    jets      = "cleanJets", # jet collection to use
+    jetPtCuts = [],  # e.g. [60,40,30,20] to require at least four jets with pt > 60,40,30,20
+    jetVetoPt =  0,  # if non-zero, veto additional jets with pt > veto beyond the ones in jetPtCuts
+    metCut    =  0,  # MET cut
+    htCut     = ('htJet40j', 0), # cut on HT defined with only jets and pt cut 40, at zero; i.e. no cut
+                                 # see ttHCoreEventAnalyzer for alternative definitions
+    mhtCut    = ('mhtJet40', 0), # cut on MHT defined with all leptons, and jets with pt > 40.
+    nBJet     = ('CSVM', 0, "jet.pt() > 30"),     # require at least 0 jets passing CSVM and pt > 30
+    )
+
 
 # Core sequence of all common modules
 susyCoreSequence = [
@@ -193,5 +206,5 @@ susyCoreSequence = [
     ttHJetAna,
     ttHJetMCAna,
     ttHCoreEventAna,
-
+    ttHJetMETSkim
 ]
