@@ -68,8 +68,8 @@ class ttHTopoVarAnalyzer( Analyzer ):
             event.mtwTau = mtw(myTau, event.met)
             foundTau = True
 
-#        for myTrack in event.selectedIsoTrack:
-#            event.mtwIsoTrack = mtw(myTrack, event.met)
+        for myTrack in event.selectedIsoTrack:
+            event.mtwIsoTrack = mtw(myTrack, event.met)
 
     def printMT2(self, event):
 #        print '==> INSIDE THE PRINT MT2'
@@ -116,14 +116,14 @@ class ttHTopoVarAnalyzer( Analyzer ):
         self.readCollections( iEvent )
         event.mtw=-999
         event.mtwTau=-999
+        event.mtwIsoTrack=-999
         event.mt2=-999
         event.mt2w=-999
 
         self.printMT(event)
         self.printMT2(event)
 
-        print 'variables computed: MT=',event.mtw,'MT2=',event.mt2,'MT2W=',event.mt2w
-
+#        print 'variables computed: MT=',event.mtw,'MT2=',event.mt2,'MT2W=',event.mt2w
 
 #        self.printMT2(event)
         return True

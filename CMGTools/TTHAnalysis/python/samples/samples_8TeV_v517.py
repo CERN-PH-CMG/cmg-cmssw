@@ -50,6 +50,9 @@ triggersFR_1e   = [ 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*', 'HLT_Ele1
 triggersFR_mue  = triggers_mue[:]
 triggersFR_MC = triggersFR_1mu + triggersFR_mumu + triggersFR_1e + triggersFR_mue
 
+triggers_HT = ["HLT_PFHT*_v*","HLT_PFNoPUHT*_v*"]
+triggers_MET = ["HLT_PFMET*"]
+triggers_HTMET = ["HLT_PFHT*_PFMET*","HLT_PFNoPUHT*_PFMET*_v*"]
 
 #####COMPONENT CREATOR
 
@@ -138,6 +141,10 @@ W4Jets   =kreator.makeMCComponent('W4Jets','/W4JetsToLNu_TuneZ2Star_8TeV-madgrap
 WJets_HT250To300=kreator.makeMCComponent('WJets_HT250To300','/WJetsToLNu_HT-250To300_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/'+patPF+'/'+skim,userName,filepattern)
 WJets_HT300To400=kreator.makeMCComponent('WJets_HT300To400','/WJetsToLNu_HT-300To400_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/'+patPF+'/'+skim,userName,filepattern)
 WJets_HT400ToInf=kreator.makeMCComponent('WJets_HT400ToInf','/WJetsToLNu_HT-400Toinf_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/'+patPF+'/'+skim,userName,filepattern)
+WJetsPtW50To70 =kreator.makeMCComponent('WJets_PtW-50To70','/WJetsToLNu_PtW-50To70_TuneZ2star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/'+pat+'/'+skim,userName,filepattern)
+WJetsPtW70To100=kreator.makeMCComponent('WJets_PtW-70To100','/WJetsToLNu_PtW-70To100_TuneZ2star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/'+pat+'/'+skim,userName,filepattern)
+WJetsPtW100    =kreator.makeMCComponent('PtW-100','/WJetsToLNu_PtW-100_TuneZ2star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/'+pat+'/'+skim,userName,filepattern)
+
 
 # ---- QCD
 #QCDMuPt15=kreator.makeMCComponent('QCDMuPt15','/QCD_Pt_20_MuEnrichedPt_15_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v3/AODSIM/V5_B/'+pat+'/'+skim,userName,filepattern)
@@ -197,7 +204,7 @@ mcSamples_1 = [ TTH,TTWJets,TTZJets,TTWWJets,WWWJets,WWZJets,TTG,DYJetsM50,TTJet
                 W1Jets,W2Jets,W3Jets,W4Jets,WJets_HT250To300,WJets_HT300To400,WJets_HT400ToInf,DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,TTJetsSem1,TTJetsSem2 ]
 #   mcSamples_1 = [ TTH,TTWJets,TTZJets,TTWWJets,WWWJets,WWZJets,TTG,DYJetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,WZJets,ZZ2e2mu,ZZ2e2tau,ZZ2mu2tau,ZZTo4mu,ZZTo4e,ZZTo4tau,TtW,TbartW,TTJetsLep,TTJetsSem ]
 #   ## Minor samples and backgrounds 
-mcSamples_2 = [ Tsch,Tbarsch,Ttch,Tbartch,W1Jets,W2Jets,W3Jets,W4Jets,WZZJets,ZZZJets,WWGJets,TTJetsHad, TBZToLL,WmWmqq,WpWpqq,TTH122,TTH127 ]
+mcSamples_2 = [ Tsch,Tbarsch,Ttch,Tbartch,W1Jets,W2Jets,W3Jets,W4Jets,WZZJets,ZZZJets,WWGJets,TTJetsHad, TBZToLL,WmWmqq,WpWpqq,TTH122,TTH127,WJetsPtW50To70,WJetsPtW70To100,WJetsPtW100]
 #   mcSamples_2 = [ TTH122,TTH127,DYJetsM10,TTLep,WWJets,TTJets,Tsch,Tbarsch,Ttch,Tbartch,W1Jets,W2Jets,W3Jets,W4Jets,TTJetsHad,DY1JetsM50, ]
 #   ## Cross-check samples, ... 
 mcSamples_3 = [ TTWnlo,TTZnlo,WJets ]
