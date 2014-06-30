@@ -31,8 +31,9 @@ class ttHIsoTrackAnalyzer( Analyzer ):
         super(ttHIsoTrackAnalyzer,self).beginLoop()
         self.counters.addCounter('events')
         count = self.counters.counter('events')
-#        count.register('all events')
-#        count.register('has >=1 selected Iso Track')
+        count.register('all events')
+        count.register('has >=1 selected Track')
+        count.register('has >=1 selected Iso Track')
 
     #------------------
     # MAKE LIST
@@ -40,8 +41,10 @@ class ttHIsoTrackAnalyzer( Analyzer ):
     def makeIsoTrack(self, event):
         event.selectedIsoTrack = []
         event.preIsoTrack = []
-        event.iso=-1
+        event.typeIsoTrack=-99999
+        event.isoIsoTrack=-1
         event.dzIsoTrack=-1
+        event.ptIsoTrack=-1
         
         foundIsoTrack = False
         minIsoSum=99999999
@@ -97,18 +100,24 @@ class ttHIsoTrackAnalyzer( Analyzer ):
 
         if(foundIsoTrack):
             event.selectedIsoTrack.append(event.preIsoTrack[indexIsoSum])
-            event.iso=minIsoSum
+            event.typeIsoTrack=event.selectedIsoTrack[0].pdgId()
+            event.isoIsoTrack=minIsoSum
             event.dzIsoTrack=abs(dz(event.selectedIsoTrack[0]))
+            event.ptIsoTrack=event.selectedIsoTrack[0].pt()
+
+        self.counters.counter('events').inc('all events')
+        if(len(event.preIsoTrack)): self.counters.counter('events').inc('has >=1 selected Track') 
+        if foundIsoTrack: self.counters.counter('events').inc('has >=1 selected Iso Track')
 
     def printInfo(self, event):
         print 'event to Veto'
         print '----------------'
 
         if len(event.selectedIsoTrack)>0:
-            print 'track candidate type: ',event.selectedIsoTrack[0].pdgId()
-            print 'pt: ',event.selectedIsoTrack[0].pt()
+            print 'track candidate type: ',event.typeIsoTrack
+            print 'pt: ',event.ptIsoTrack
             print 'dz: ',event.dzIsoTrack
-            print 'iso: ',event.iso
+            print 'iso: ',event.isoIsoTrack
                 
         for lepton in event.selectedLeptons:
             print 'good lepton type: ',lepton.pdgId()
@@ -127,11 +136,11 @@ class ttHIsoTrackAnalyzer( Analyzer ):
 
         if len(event.selectedIsoTrack)==0 : return True
         
-        if (self.cfg_ana.doSecondVeto and (event.selectedIsoTrack[0].pdgId()!=11) and (event.selectedIsoTrack[0].pdgId()!=12) and event.iso < self.cfg_ana.MaxIsoSum ) :
+        if (self.cfg_ana.doSecondVeto and (event.selectedIsoTrack[0].pdgId()!=11) and (event.selectedIsoTrack[0].pdgId()!=12) and event.isoIsoTrack < self.cfg_ana.MaxIsoSum ) :
 #            self.printInfo(event)
             return False
 
-        if ((self.cfg_ana.doSecondVeto and event.selectedIsoTrack[0].pdgId()==11 or event.selectedIsoTrack[0].pdgId()==12) and event.iso < self.cfg_ana.MaxIsoSumEMU ) :
+        if ((self.cfg_ana.doSecondVeto and event.selectedIsoTrack[0].pdgId()==11 or event.selectedIsoTrack[0].pdgId()==12) and event.isoIsoTrack < self.cfg_ana.MaxIsoSumEMU ) :
 #            self.printInfo(event)
             return False
 
