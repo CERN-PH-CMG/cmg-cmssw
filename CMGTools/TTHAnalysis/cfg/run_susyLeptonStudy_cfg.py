@@ -1,3 +1,9 @@
+##########################################################
+##      SUSY CONFIGURATION FOR LEPTON ID STUDIES        ##
+## makes trees with one entry per lepton, not per event ##
+##########################################################
+
+
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
 from CMGTools.RootTools.RootTools import *

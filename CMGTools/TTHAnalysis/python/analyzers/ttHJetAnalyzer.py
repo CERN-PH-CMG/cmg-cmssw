@@ -47,13 +47,13 @@ class ttHJetAnalyzer( Analyzer ):
         
     def process(self, iEvent, event):
         self.readCollections( iEvent )
+        rho  = float(self.handles['rho'].product()[0])
 
         ## Read jets, if necessary recalibrate and shift MET
         allJets = map(Jet, self.handles['jets'].product()) 
         event.deltaMetFromJEC = [0.,0.]
         if self.doJEC:
             #print "\nCalibrating jets %s for lumi %d, event %d" % (self.cfg_ana.jetCol, event.lumi, event.eventId)
-            rho  = float(self.handles['rho'].product()[0])
             corr = self.jetReCalibratorCHS if 'CHS' in self.cfg_ana.jetCol else self.jetReCalibrator
             corr.correctAll(allJets, rho, delta=self.shiftJEC, metShift=event.deltaMetFromJEC)
         event.allJetsUsedForMET = allJets
@@ -64,12 +64,17 @@ class ttHJetAnalyzer( Analyzer ):
             allJets4MVA = map(Jet, self.handles['jets4MVA'].product())
             if self.doJEC:
                 #print "\nCalibrating jets %s for lumi %d, event %d" % (self.cfg_ana.jetCol4MVA, event.lumi, event.eventId)
-                rho  = float(self.handles['rho'].product()[0])
                 corr = self.jetReCalibratorCHS if 'CHS' in self.cfg_ana.jetCol4MVA else self.jetReCalibrator
                 corr.correctAll(allJets4MVA, rho, delta=self.shiftJEC)
         else:
             allJets4MVA = allJets[:]
 
+        ## QG Likelihood
+        QGAlgo = "LD_CHS_CMGVARS" if ("CHS" in self.cfg_ana.jetCol) else "LD_CMGVARS";
+        QGCorr = "Pythia" if self.cfg_comp.isMC else "Data" # FIXME: what about herwig??
+        for jet in allJets:
+            jet.QG = jet.quarkGluonID(rho, QGAlgo, QGCorr) 
+        
         ## Apply jet selection
         event.jets = []
         event.jetsFailId = []
