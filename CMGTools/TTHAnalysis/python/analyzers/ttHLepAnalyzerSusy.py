@@ -87,7 +87,8 @@ class ttHLepAnalyzerSusy( Analyzer ):
                 if (mu.muonID(self.cfg_ana.loose_muon_id) and 
                         mu.pt() > self.cfg_ana.loose_muon_pt and abs(mu.eta()) < self.cfg_ana.loose_muon_eta and 
                         abs(mu.dxy()) < self.cfg_ana.loose_muon_dxy and abs(mu.dz()) < self.cfg_ana.loose_muon_dz and
-                    mu.relIso03 < self.cfg_ana.loose_muon_relIso ):
+                        mu.relIso03 < self.cfg_ana.loose_muon_relIso and 
+                        mu.absIso03 < (self.cfg_ana.loose_muon_absIso if hasattr(self.cfg_ana,'loose_muon_absIso') else 9e99)):
                     mu.looseIdSusy = True
                     event.selectedLeptons.append(mu)
                 else:
@@ -111,6 +112,7 @@ class ttHLepAnalyzerSusy( Analyzer ):
                          ele.pt()>self.cfg_ana.loose_electron_pt and abs(ele.eta())<self.cfg_ana.loose_electron_eta and 
                          abs(ele.dxy()) < self.cfg_ana.loose_electron_dxy and abs(ele.dz())<self.cfg_ana.loose_electron_dz and 
                          ele.relIso03 <= self.cfg_ana.loose_electron_relIso and
+                         ele.absIso03 < (self.cfg_ana.loose_electron_absIso if hasattr(self.cfg_ana,'loose_electron_absIso') else 9e99) and
                          ele.numberOfHits() <= self.cfg_ana.loose_electron_lostHits and
                          bestMatch(ele, looseMuons)[1] > self.cfg_ana.min_dr_electron_muon ):
                     event.selectedLeptons.append(ele)
@@ -161,8 +163,10 @@ class ttHLepAnalyzerSusy( Analyzer ):
 
         # Compute relIso in 0.3 and 0.4 cones
         for mu in allmuons:
-            mu.relIso03 = (mu.sourcePtr().pfIsolationR03().sumChargedHadronPt + max( mu.sourcePtr().pfIsolationR03().sumNeutralHadronEt +  mu.sourcePtr().pfIsolationR03().sumPhotonEt -  mu.sourcePtr().pfIsolationR03().sumPUPt/2,0.0))/mu.pt()
-            mu.relIso04 = (mu.sourcePtr().pfIsolationR04().sumChargedHadronPt + max( mu.sourcePtr().pfIsolationR04().sumNeutralHadronEt +  mu.sourcePtr().pfIsolationR04().sumPhotonEt -  mu.sourcePtr().pfIsolationR04().sumPUPt/2,0.0))/mu.pt()
+            mu.absIso03 = (mu.sourcePtr().pfIsolationR03().sumChargedHadronPt + max( mu.sourcePtr().pfIsolationR03().sumNeutralHadronEt +  mu.sourcePtr().pfIsolationR03().sumPhotonEt -  mu.sourcePtr().pfIsolationR03().sumPUPt/2,0.0))
+            mu.absIso04 = (mu.sourcePtr().pfIsolationR04().sumChargedHadronPt + max( mu.sourcePtr().pfIsolationR04().sumNeutralHadronEt +  mu.sourcePtr().pfIsolationR04().sumPhotonEt -  mu.sourcePtr().pfIsolationR04().sumPUPt/2,0.0))
+            mu.relIso03 = mu.absIso03/mu.pt()
+            mu.relIso04 = mu.absIso04/mu.pt()
  
         return allmuons
 
@@ -206,8 +210,10 @@ class ttHLepAnalyzerSusy( Analyzer ):
 
         # Compute relIso with R=0.3 and R=0.4 cones
         for ele in allelectrons:
-            ele.relIso03 = (ele.chargedHadronIso(0.3) + max(ele.neutralHadronIso(0.3)+ele.photonIso(0.3)-ele.rho*ele.EffectiveArea,0))/ele.pt()
-            ele.relIso04 = (ele.chargedHadronIso(0.4) + max(ele.neutralHadronIso(0.4)+ele.photonIso(0.4)-ele.rho*ele.EffectiveArea,0))/ele.pt()
+            ele.absIso03 = (ele.chargedHadronIso(0.3) + max(ele.neutralHadronIso(0.3)+ele.photonIso(0.3)-ele.rho*ele.EffectiveArea,0))
+            ele.absIso04 = (ele.chargedHadronIso(0.4) + max(ele.neutralHadronIso(0.4)+ele.photonIso(0.4)-ele.rho*ele.EffectiveArea,0))
+            ele.relIso03 = ele.absIso03/ele.pt()
+            ele.relIso04 = ele.absIso04/ele.pt()
 
         # Set tight MVA id
         for ele in allelectrons:
