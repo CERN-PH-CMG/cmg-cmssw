@@ -7,10 +7,10 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 class ttHLepSkimmer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHLepSkimmer,self).__init__(cfg_ana,cfg_comp,looperName)
-        self.ptCuts = cfg_comp.ptCuts if hasattr(cfg_comp, 'ptCuts') else []
+        self.ptCuts = cfg_ana.ptCuts if hasattr(cfg_ana, 'ptCuts') else []
         self.ptCuts += 10*[-1.]
 
-        self.idCut = cfg_comp.idCut if hasattr(cfg_comp, 'idCut') else "True"
+        self.idCut = cfg_ana.idCut if hasattr(cfg_ana, 'idCut') else "True"
         self.idFunc = eval("lambda lepton : "+self.idCut);
 
     def declareHandles(self):
