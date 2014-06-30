@@ -42,18 +42,6 @@ ttHTopoJetAna = cfg.Analyzer(
             jetCol = 'cmgPFJetSelCHS'
             )
 
-# Core Event Analyzer (computes basic quantities like HT, dilepton masses)
-ttHCoreEventAna = cfg.Analyzer(
-        'ttHCoreEventAnalyzer',
-        maxLeps = 4, ## leptons to consider
-        )
-
-## Event Analyzer for susy multi-lepton (at the moment, it's the TTH one)
-#ttHEventAna = cfg.Analyzer(
-#        'ttHLepEventAnalyzer',
-#            minJets25 = 0,
-#  )
-
 
 ##------------------------------------------
 ##  PRODUCER
@@ -79,12 +67,12 @@ treeProducer = cfg.Analyzer(
 #-------- SAMPLES AND TRIGGERS -----------
 from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
 
-#for mc in mcSamples+mcSamples+extraMcSamples+fastSimSamples:
+#for mc in mcSamplesAll:
 #    mc.triggers = triggers_HT+triggers_MET+triggers_HTMET
 #for data in dataSamples:
 #    data.triggers = triggers_HT
 
-selectedComponents = [ DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,TTH122,TTH127,TTJetsSem1,TTJetsSem2 ]
+selectedComponents = mcSamplesAll + dataSamplesAll
 
 #-------- SEQUENCE
 
