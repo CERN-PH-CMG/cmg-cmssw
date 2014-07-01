@@ -160,7 +160,7 @@ treeProducer = cfg.Analyzer(
 #-------- SAMPLES
 from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import * 
 
-for mc in mcSamples+mcSamples+extraMcSamples+fastSimSamples:
+for mc in mcSamplesAll:
     mc.triggers = triggersMC_mue
 for data in dataSamplesMu:
     data.triggers = triggers_mumu
@@ -172,7 +172,7 @@ for data in dataSamplesMuE:
     data.vetoTriggers=triggers_ee+triggers_mumu
 
 
-selectedComponents = dataSamplesAll
+selectedComponents = fastSimSamples
 
 #-------- SEQUENCE
 
