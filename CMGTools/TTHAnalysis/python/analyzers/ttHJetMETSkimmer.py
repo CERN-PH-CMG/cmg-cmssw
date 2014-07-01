@@ -36,22 +36,22 @@ class ttHJetMETSkimmer( Analyzer ):
                 return False
         self.counters.counter('events').inc('pass jetPtCuts')
         
-        if self.cfg_ana.jetVetoPt > 0:
+        if float(self.cfg_ana.jetVetoPt) > 0:
             if len(jets) > len(self.cfg_ana.jetPtCuts):
                 for j in jets[len(self.cfg_ana.jetPtCuts):]:
                     if j.pt() > self.cfg_ana.jetVetoPt:
                         return False
         self.counters.counter('events').inc('pass jetVeto')
 
-        if self.cfg_ana.metCut > 0 and event.met.pt() <= self.cfg_ana.metCut:
+        if float(self.cfg_ana.metCut) > 0 and event.met.pt() <= self.cfg_ana.metCut:
             return False
         self.counters.counter('events').inc('pass met')
 
-        if self.cfg_ana.htCut[1] > 0 and getattr(event, self.cfg_ana.htCut[0]) <=  self.cfg_ana.htCut[1]:
+        if float(self.cfg_ana.htCut[1]) > 0 and getattr(event, self.cfg_ana.htCut[0]) <=  self.cfg_ana.htCut[1]:
             return False
         self.counters.counter('events').inc('pass HT')
 
-        if self.cfg_ana.mhtCut[1] > 0 and getattr(event, self.cfg_ana.mhtCut[0]) <=  self.cfg_ana.mhtCut[1]:
+        if float(self.cfg_ana.mhtCut[1]) > 0 and getattr(event, self.cfg_ana.mhtCut[0]) <=  self.cfg_ana.mhtCut[1]:
             return False
         self.counters.counter('events').inc('pass MHT')
 
@@ -59,7 +59,7 @@ class ttHJetMETSkimmer( Analyzer ):
         for j in jets:
             if j.btagWP(self.cfg_ana.nBJet[0]) and self.bjetCut(j):
                 nB += 1;
-        if nB < self.cfg_ana.nBJet[1]: 
+        if nB < int(self.cfg_ana.nBJet[1]): 
             return False
         self.counters.counter('events').inc('pass nBJet')
 
