@@ -34,9 +34,9 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
     def declareCoreVariables(self, tr, isMC):
         """Here we declare the variables that we always want and that are hard-coded"""
             
-        tr.var('run', int)
-        tr.var('lumi', int)
-        tr.var('evt', int)
+        tr.var('run', int, storageType="i")
+        tr.var('lumi', int, storageType="i")
+        tr.var('evt', int, storageType="i")
         tr.var('isData', int)
 
         self.triggerBitCheckers = []
