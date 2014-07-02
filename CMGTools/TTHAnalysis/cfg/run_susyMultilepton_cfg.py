@@ -31,6 +31,7 @@ from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_mumu, trigge
 treeProducer = cfg.Analyzer(
     'treeProducerSusyMultilepton',
     vectorTree = True,
+    saveTLorentzVectors = False,  # can set to True to get also the TLorentzVectors, but trees will be bigger
     PDFWeights = PDFWeights,
     triggerBits = {
             'SingleMu' : triggers_1mu,
