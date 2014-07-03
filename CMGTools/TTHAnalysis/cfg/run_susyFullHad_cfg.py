@@ -5,12 +5,19 @@ from CMGTools.RootTools.RootTools import *
 #Load all analyzers
 from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
 
+##------------------------------------------
+## Redefine what I need
+##------------------------------------------
+
+# JET (do not apply the jetID and PUID yet)
+ttHJetAna.relaxJetId = True
+ttHJetAna.doPuId = False
 
 ##------------------------------------------
-##  MET, JETS, TOLOLOGIAL VARIABLES: MT, MT2
+##  ISOLATED TRACK
 ##------------------------------------------
 
-## those are the cuts for the nonEMu
+# those are the cuts for the nonEMu
 ttHIsoTrackAna = cfg.Analyzer(
             'ttHIsoTrackAnalyzer',
             candidates='cmgCandidates',
@@ -48,31 +55,30 @@ ttHTopoJetAna = cfg.Analyzer(
 ##------------------------------------------
 
 ####from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_mumu, triggers_ee, triggers_mue, triggers_1mu,
-from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_HT, triggers_MET, triggers_HTMET
+from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_HT650, triggers_MET150, triggers_HTMET
 
 # Tree Producer
 treeProducer = cfg.Analyzer(
         'treeProducerSusyFullHad',
         vectorTree = True,
         PDFWeights = PDFWeights,
-        triggerBits = { }
-        #    triggerBits = {
-        #            'HT' : triggers_HT,
-        #            'MET' : triggers_MET,
-        #            'HTMET' : triggers_HTMET
-        #        }
+##        triggerBits = { }
+        triggerBits = {
+            'HT650' : triggers_HT650,
+            'MET150' : triggers_MET150,
+            'ht350met100' : triggers_HTMET
+            }
         )
 
-
-#-------- SAMPLES AND TRIGGERS -----------
+#-------- SAMPLES AND TRIGGERS (to skim) -----------
 from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
 
 #for mc in mcSamplesAll:
-#    mc.triggers = triggers_HT+triggers_MET+triggers_HTMET
+#    mc.triggers = triggers_HT650+triggers_MET150+triggers_HTMET
 #for data in dataSamples:
 #    data.triggers = triggers_HT
 
-selectedComponents = mcSamplesAll + dataSamplesAll
+##selectedComponents = mcSamplesAll + dataSamplesAll
 
 #-------- SEQUENCE
 
@@ -86,7 +92,7 @@ sequence = cfg.Sequence(susyCoreSequence+[
 test = 1
 if test==1:
     # test a single component, using a single thread.
-    ##    comp = TTJets
+###    comp = TTJets
     comp=WJetsPtW100
     comp.files = comp.files[:1]
     selectedComponents = [comp]

@@ -4,6 +4,10 @@ from CMGTools.TTHAnalysis.signedSip import *
 from CMGTools.TTHAnalysis.analyzers.ntupleObjects import *
 from CMGTools.RootTools.utils.DeltaR import deltaR
 
+twoVectorType = NTupleObjectType("twoVector", variables = [
+    NTupleVariable("pt",    lambda x : x.pt()),
+    NTupleVariable("phi",   lambda x : x.phi()),
+])
 
 fourVectorType = NTupleObjectType("fourVector", variables = [
     NTupleVariable("pt",    lambda x : x.pt()),
@@ -121,9 +125,10 @@ jetTypeTTH = NTupleObjectType("jetTTH",  baseObjectTypes = [ jetType ], variable
 jetTypeSusy = NTupleObjectType("jetSusy",  baseObjectTypes = [ jetType ], variables = [
     NTupleVariable("mcMatchId",    lambda x : x.mcMatchId,   int, mcOnly=True, help="Match to source from hard scatter (25 for H, 6 for t, 23/24 for W/Z)"),
     NTupleVariable("mcMatchFlav",  lambda x : x.mcMatchFlav, int, mcOnly=True, help="Flavour of associated parton from hard scatter (if any)"),
-    NTupleVariable("PuJetId_full", lambda x : x.puId("full"), int,     mcOnly=False, help="puId full: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
-    NTupleVariable("PuJetId_simple", lambda x : x.puId("simple"), int,    mcOnly=False, help="puId simple: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
-    NTupleVariable("PuJetId_cut_based", lambda x : x.puId("cut-based"), int,    mcOnly=False, help="puId cut-based: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
+    NTupleVariable("PuId_full", lambda x : x.puId("full"), int,     mcOnly=False, help="puId full: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
+    NTupleVariable("PuId_simple", lambda x : x.puId("simple"), int,    mcOnly=False, help="puId simple: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
+    NTupleVariable("PuId_cut_based", lambda x : x.puId("cut-based"), int,    mcOnly=False, help="puId cut-based: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
+    NTupleVariable("Id",    lambda x : x.jetID("POG_PFID_Loose") , int, mcOnly=False,help="POG Loose jet ID"),
 ])
 
         
@@ -132,7 +137,7 @@ metType = NTupleObjectType("met", baseObjectTypes = [ fourVectorType ], variable
     NTupleVariable("genPt",  lambda x : x.genMET().pt() , mcOnly=True ),
     NTupleVariable("genPhi", lambda x : x.genMET().phi(), mcOnly=True ),
     NTupleVariable("genEta", lambda x : x.genMET().eta(), mcOnly=True ),
-])    
+])
 
 genParticleType = NTupleObjectType("genParticle", baseObjectTypes = [ particleType ], mcOnly=True, variables = [
     NTupleVariable("charge",   lambda x : x.threeCharge()/3.0, float),
