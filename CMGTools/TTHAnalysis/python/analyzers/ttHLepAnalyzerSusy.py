@@ -48,9 +48,9 @@ class ttHLepAnalyzerSusy( Analyzer ):
         self.handles['electrons'] = AutoHandle(self.cfg_ana.electrons,"std::vector<pat::Electron>")            
     
         #rho for muons
-        self.handles['rhoMu'] = AutoHandle( (self.cfg_ana.rhoMuon, 'rho'), 'double')
+        self.handles['rhoMu'] = AutoHandle( self.cfg_ana.rhoMuon, 'double')
         #rho for electrons
-        self.handles['rhoEle'] = AutoHandle( (self.cfg_ana.rhoElectron, 'rho'), 'double')
+        self.handles['rhoEle'] = AutoHandle( self.cfg_ana.rhoElectron, 'double')
 
         #photons
         self.handles['photons'] = AutoHandle( self.cfg_ana.photons,'std::vector<pat::Photon>')
@@ -79,7 +79,7 @@ class ttHLepAnalyzerSusy( Analyzer ):
 
         for mu in allmuons:
             # inclusive, very loose, selection
-            if (mu.sourcePtr().track().isNonnull() and mu.muonID(self.cfg_ana.inclusive_muon_id) and 
+            if (mu.track().isNonnull() and mu.muonID(self.cfg_ana.inclusive_muon_id) and 
                     mu.pt()>self.cfg_ana.inclusive_muon_pt and abs(mu.eta())<self.cfg_ana.inclusive_muon_eta and 
                     abs(mu.dxy())<self.cfg_ana.inclusive_muon_dxy and abs(mu.dz())<self.cfg_ana.inclusive_muon_dz):
                 event.inclusiveLeptons.append(mu)
@@ -105,7 +105,7 @@ class ttHLepAnalyzerSusy( Analyzer ):
             if ( ele.electronID(self.cfg_ana.inclusive_electron_id) and
                     ele.pt()>self.cfg_ana.inclusive_electron_pt and abs(ele.eta())<self.cfg_ana.inclusive_electron_eta and 
                     abs(ele.dxy())<self.cfg_ana.inclusive_electron_dxy and abs(ele.dz())<self.cfg_ana.inclusive_electron_dz and 
-                    ele.numberOfHits()<=self.cfg_ana.inclusive_electron_lostHits ):
+                    ele.gsfTrack().trackerExpectedHitsInner().numberOfLostHits()<=self.cfg_ana.inclusive_electron_lostHits ):
                 event.inclusiveLeptons.append(ele)
                 # basic selection
                 if (ele.electronID(self.cfg_ana.loose_electron_id) and
@@ -113,7 +113,7 @@ class ttHLepAnalyzerSusy( Analyzer ):
                          abs(ele.dxy()) < self.cfg_ana.loose_electron_dxy and abs(ele.dz())<self.cfg_ana.loose_electron_dz and 
                          ele.relIso03 <= self.cfg_ana.loose_electron_relIso and
                          ele.absIso03 < (self.cfg_ana.loose_electron_absIso if hasattr(self.cfg_ana,'loose_electron_absIso') else 9e99) and
-                         ele.numberOfHits() <= self.cfg_ana.loose_electron_lostHits and
+                         ele.gsfTrack().trackerExpectedHitsInner().numberOfLostHits() <= self.cfg_ana.loose_electron_lostHits and
                          bestMatch(ele, looseMuons)[1] > self.cfg_ana.min_dr_electron_muon ):
                     event.selectedLeptons.append(ele)
                     ele.looseIdSusy = True
@@ -163,8 +163,8 @@ class ttHLepAnalyzerSusy( Analyzer ):
 
         # Compute relIso in 0.3 and 0.4 cones
         for mu in allmuons:
-            mu.absIso03 = (mu.sourcePtr().pfIsolationR03().sumChargedHadronPt + max( mu.sourcePtr().pfIsolationR03().sumNeutralHadronEt +  mu.sourcePtr().pfIsolationR03().sumPhotonEt -  mu.sourcePtr().pfIsolationR03().sumPUPt/2,0.0))
-            mu.absIso04 = (mu.sourcePtr().pfIsolationR04().sumChargedHadronPt + max( mu.sourcePtr().pfIsolationR04().sumNeutralHadronEt +  mu.sourcePtr().pfIsolationR04().sumPhotonEt -  mu.sourcePtr().pfIsolationR04().sumPUPt/2,0.0))
+            mu.absIso03 = (mu.pfIsolationR03().sumChargedHadronPt + max( mu.pfIsolationR03().sumNeutralHadronEt +  mu.pfIsolationR03().sumPhotonEt -  mu.pfIsolationR03().sumPUPt/2,0.0))
+            mu.absIso04 = (mu.pfIsolationR04().sumChargedHadronPt + max( mu.pfIsolationR04().sumNeutralHadronEt +  mu.pfIsolationR04().sumPhotonEt -  mu.pfIsolationR04().sumPUPt/2,0.0))
             mu.relIso03 = mu.absIso03/mu.pt()
             mu.relIso04 = mu.absIso04/mu.pt()
  
@@ -190,7 +190,7 @@ class ttHLepAnalyzerSusy( Analyzer ):
         # fill EA for rho-corrected isolation
         for ele in allelectrons:
           ele.rho = float(self.handles['rhoEle'].product()[0])
-          SCEta = abs(ele.sourcePtr().superCluster().eta())
+          SCEta = abs(ele.superCluster().eta())
           if (abs(SCEta) >= 0.0   and abs(SCEta) < 1.0   ) : ele.EffectiveArea = 0.13 # 0.130;
           if (abs(SCEta) >= 1.0   and abs(SCEta) < 1.479 ) : ele.EffectiveArea = 0.14 # 0.137;
           if (abs(SCEta) >= 1.479 and abs(SCEta) < 2.0   ) : ele.EffectiveArea = 0.07 # 0.067;

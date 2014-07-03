@@ -102,7 +102,7 @@ class ttHLepAnalyzerFR( Analyzer ):
         
         if self.cfg_ana.doRecomputeSIP3D:
             for mu in allmuons:
-                if mu.sourcePtr().innerTrack().isNonnull():
+                if mu.innerTrack().isNonnull():
                     ## compute the variable and set it
                     mu._sip3d = abs(signedSip3D(mu, event.goodVertices[0]))
                     ## attach it to the object redefining the sip3D() method
@@ -125,10 +125,10 @@ class ttHLepAnalyzerFR( Analyzer ):
 
         for mu in allmuons:
             mu.associatedVertex = event.goodVertices[0]
-            mu.relIso03= (mu.sourcePtr().pfIsolationR03().sumChargedHadronPt + max( mu.sourcePtr().pfIsolationR03().sumNeutralHadronEt +  mu.sourcePtr().pfIsolationR03().sumPhotonEt -  mu.sourcePtr().pfIsolationR03().sumPUPt/2,0.0))/mu.pt()
+            mu.relIso03= (mu.pfIsolationR03().sumChargedHadronPt + max( mu.pfIsolationR03().sumNeutralHadronEt +  mu.pfIsolationR03().sumPhotonEt -  mu.pfIsolationR03().sumPUPt/2,0.0))/mu.pt()
             
-            mu.looseFakeId = ((mu.isGlobal() or mu.isTracker() and mu.numberOfMatches()>0) and mu.sourcePtr().userFloat("isPFMuon")>0.5 and mu.pt()>10 and abs(mu.eta())<2.4 and mu.tightId()>0.5 and abs(mu.dxy())<0.2 and abs(mu.dz())<0.2 and mu.relIso03<1.0)
-            mu.tightFakeId = ((mu.isGlobal() or mu.isTracker() and mu.numberOfMatches()>0) and mu.sourcePtr().userFloat("isPFMuon")>0.5 and mu.pt()>10 and abs(mu.eta())<2.4 and mu.tightId()>0.5 and abs(mu.dxy())<0.01 and abs(mu.dz())<0.2 and mu.relIso03<0.1)
+            mu.looseFakeId = ((mu.isGlobal() or mu.isTracker() and mu.numberOfMatches()>0) and mu.userFloat("isPFMuon")>0.5 and mu.pt()>10 and abs(mu.eta())<2.4 and mu.tightId()>0.5 and abs(mu.dxy())<0.2 and abs(mu.dz())<0.2 and mu.relIso03<1.0)
+            mu.tightFakeId = ((mu.isGlobal() or mu.isTracker() and mu.numberOfMatches()>0) and mu.userFloat("isPFMuon")>0.5 and mu.pt()>10 and abs(mu.eta())<2.4 and mu.tightId()>0.5 and abs(mu.dxy())<0.01 and abs(mu.dz())<0.2 and mu.relIso03<0.1)
 
             if mu.pt()>5 and abs(mu.eta())<2.4:
                 if mu.looseFakeId:
@@ -152,7 +152,7 @@ class ttHLepAnalyzerFR( Analyzer ):
 
         if self.cfg_ana.doRecomputeSIP3D:
             for ele in allelectrons:
-                if ele.sourcePtr().gsfTrack().isNonnull():
+                if ele.gsfTrack().isNonnull():
                     ## compute the variable and set it
                     ele._sip3d = abs(signedSip3D(ele, event.goodVertices[0]))
                     ## attach it to the object redefining the sip3D() method
@@ -161,7 +161,7 @@ class ttHLepAnalyzerFR( Analyzer ):
         # fill EA for rho-corrected isolation
         for ele in allelectrons:
           ele.rho = float(self.handles['rhoEle'].product()[0])
-          SCEta = abs(ele.sourcePtr().superCluster().eta())
+          SCEta = abs(ele.superCluster().eta())
           if (abs(SCEta) >= 0.0   and abs(SCEta) < 1.0   ) : ele.EffectiveArea = 0.13 # 0.130;
           if (abs(SCEta) >= 1.0   and abs(SCEta) < 1.479 ) : ele.EffectiveArea = 0.14 # 0.137;
           if (abs(SCEta) >= 1.479 and abs(SCEta) < 2.0   ) : ele.EffectiveArea = 0.07 # 0.067;
@@ -177,7 +177,7 @@ class ttHLepAnalyzerFR( Analyzer ):
         muForEleCrossCleaning = []
         if self.cfg_ana.doEleMuCrossCleaning:
             for mu in event.selectedLeptons + event.looseLeptons:
-                if abs(mu.pdgId()) == 13 and (mu.isGlobal() or mu.sourcePtr().userFloat("isPFMuon")>0.5):
+                if abs(mu.pdgId()) == 13 and (mu.isGlobal() or mu.userFloat("isPFMuon")>0.5):
                     muForEleCrossCleaning.append(mu)
 
 
@@ -190,7 +190,7 @@ class ttHLepAnalyzerFR( Analyzer ):
             if ele.pt()>7 and abs(ele.eta())<2.5 and abs(ele.dxy())<0.5 and abs(ele.dz())<1. and ele.numberOfHits()<=1:
                  ## fill tightId:
                  if (ele.pt() > 20):
-                    SCEta = abs(ele.sourcePtr().superCluster().eta())
+                    SCEta = abs(ele.superCluster().eta())
                     if   SCEta < 0.8:   ele.tightIdResult = (ele.mvaTrigV0() > 0.00)
                     elif SCEta < 1.479: ele.tightIdResult = (ele.mvaTrigV0() > 0.10)
                     else:               ele.tightIdResult = (ele.mvaTrigV0() > 0.62)
@@ -201,22 +201,22 @@ class ttHLepAnalyzerFR( Analyzer ):
             # Compute isolation
             ele.relIso03 = (ele.chargedHadronIso(0.3) + max(ele.neutralHadronIso(0.3)+ele.photonIso(0.3)-ele.rho*ele.EffectiveArea,0))/ele.pt()
             # Compute electron id
-            dEtaIn = abs(ele.sourcePtr().deltaEtaSuperClusterTrackAtVtx());
-            dPhiIn = abs(ele.sourcePtr().deltaPhiSuperClusterTrackAtVtx());
-            sigmaIEtaIEta = abs(ele.sourcePtr().sigmaIetaIeta());
-            hoe = abs(ele.sourcePtr().hadronicOverEm());
-            ooemoop = abs(1.0/ele.sourcePtr().ecalEnergy() - ele.sourcePtr().eSuperClusterOverP()/ele.sourcePtr().ecalEnergy());
+            dEtaIn = abs(ele.deltaEtaSuperClusterTrackAtVtx());
+            dPhiIn = abs(ele.deltaPhiSuperClusterTrackAtVtx());
+            sigmaIEtaIEta = abs(ele.sigmaIetaIeta());
+            hoe = abs(ele.hadronicOverEm());
+            ooemoop = abs(1.0/ele.ecalEnergy() - ele.eSuperClusterOverP()/ele.ecalEnergy());
             vtxFitConversion = ele.passConversionVeto();
             mHits = ele.numberOfHits();
             # Set tight and loose flags
-            if abs(ele.sourcePtr().superCluster().eta()) < 1.479:
+            if abs(ele.superCluster().eta()) < 1.479:
                 ele.looseFakeId = dEtaIn < 0.004 and dPhiIn < 0.06 and sigmaIEtaIEta < 0.01 and hoe < 0.12 and ooemoop < 0.05
             else:
                 ele.looseFakeId = dEtaIn < 0.007 and dPhiIn < 0.03 and sigmaIEtaIEta < 0.03 and hoe < 0.10 and ooemoop < 0.05
             ele.looseFakeId = ele.looseFakeId and vtxFitConversion and mHits <= 1 and abs(ele.dz()) < 0.1 and ele.relIso03 < 0.6
-            ele.looseFakeId = ele.looseFakeId and mHits <= 1 and ele.sourcePtr().isGsfCtfScPixChargeConsistent()
+            ele.looseFakeId = ele.looseFakeId and mHits <= 1 and ele.isGsfCtfScPixChargeConsistent()
             ele.tightFakeId = ele.looseFakeId and abs(ele.dxy()) < 0.02 and ele.relIso03 < 0.15
-            #print "ele pt = %.3f  eta = %.3f sceta = %.3f detaIn = %.4f dphiIn = %.4f  sieie = %.4f  h/e = %.4f  1/e-1/p = %.4f  dxy = %.4f  dz = %.4f  losthits = %d conveto = %d relIso = %.4f     loose id = %d   tight id = %d" % ( ele.pt(),ele.eta(),ele.sourcePtr().superCluster().eta(),dEtaIn,dPhiIn,sigmaIEtaIEta,hoe,ooemoop,abs(ele.dxy()),abs(ele.dz()),mHits,vtxFitConversion,ele.relIso03, ele.looseFakeId, ele.tightFakeId)
+            #print "ele pt = %.3f  eta = %.3f sceta = %.3f detaIn = %.4f dphiIn = %.4f  sieie = %.4f  h/e = %.4f  1/e-1/p = %.4f  dxy = %.4f  dz = %.4f  losthits = %d conveto = %d relIso = %.4f     loose id = %d   tight id = %d" % ( ele.pt(),ele.eta(),ele.superCluster().eta(),dEtaIn,dPhiIn,sigmaIEtaIEta,hoe,ooemoop,abs(ele.dxy()),abs(ele.dz()),mHits,vtxFitConversion,ele.relIso03, ele.looseFakeId, ele.tightFakeId)
             # add to the list if needed
             if ele.pt()>7 and abs(ele.eta())<2.5:
                 if ele.looseFakeId:

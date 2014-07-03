@@ -52,8 +52,8 @@ leptonTypeSusy = NTupleObjectType("leptonSusy", baseObjectTypes = [ leptonType ]
     NTupleVariable("chargedHadRelIso03",  lambda x : x.chargedHadronIso(0.3)/x.pt(), help="PF Rel Iso, R=0.3, charged hadrons only"),
     NTupleVariable("chargedHadRelIso04",  lambda x : x.chargedHadronIso(0.4)/x.pt(), help="PF Rel Iso, R=0.4, charged hadrons only"),
     # Extra electron id variables
-    NTupleVariable("convVetoFull", lambda x : (x.passConversionVeto() and x.numberOfHits() == 0) if abs(x.pdgId())==11 else 1, int, help="Conv veto + no missing hits for electrons, always true for muons."),
-    NTupleVariable("eleCutId",     lambda x : (1*x.electronID("POG_Cuts_ID_Veto") + 1*x.electronID("POG_Cuts_ID_Loose") + 1*x.electronID("POG_Cuts_ID_Medium") + 1*x.electronID("POG_Cuts_ID_Tight")) if abs(x.pdgId()) == 11 else -1, int, help="Electron cut-based id: 0=none, 1=veto, 2=loose, 3=medium, 4=tight"),
+    NTupleVariable("convVetoFull", lambda x : (x.passConversionVeto() and x.gsfTrack().trackerExpectedHitsInner().numberOfLostHits() == 0) if abs(x.pdgId())==11 else 1, int, help="Conv veto + no missing hits for electrons, always true for muons."),
+    #NTupleVariable("eleCutId",     lambda x : (1*x.electronID("POG_Cuts_ID_Veto") + 1*x.electronID("POG_Cuts_ID_Loose") + 1*x.electronID("POG_Cuts_ID_Medium") + 1*x.electronID("POG_Cuts_ID_Tight")) if abs(x.pdgId()) == 11 else -1, int, help="Electron cut-based id: 0=none, 1=veto, 2=loose, 3=medium, 4=tight"),
     NTupleVariable("eleMVAId",     lambda x : (x.electronID("POG_MVA_ID_NonTrig") + 2*x.electronID("POG_MVA_ID_Trig")) if abs(x.pdgId()) == 11 else -1, int, help="Electron mva id working point: 0=none, 1=non-trig, 2=trig, 3=both"),
     NTupleVariable("tightCharge",  lambda lepton : ( lepton.isGsfCtfScPixChargeConsistent() + lepton.isGsfScPixChargeConsistent() ) if abs(lepton.pdgId()) == 11 else 2*(lepton.innerTrack().ptError()/lepton.innerTrack().pt() < 0.2), int, help="Tight charge criteria"),
     NTupleVariable("mvaId",        lambda lepton : lepton.mvaNonTrigV0() if abs(lepton.pdgId()) == 11 else 1, help="EGamma POG MVA ID for non-triggering electrons (as HZZ); 1 for muons"),
