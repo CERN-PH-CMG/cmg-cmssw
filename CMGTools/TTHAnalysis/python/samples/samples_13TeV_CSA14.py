@@ -2,13 +2,6 @@ from CMGTools.TTHAnalysis.samples.getFiles import getFiles
 import CMGTools.RootTools.fwlite.Config as cfg
 import os
 
-pat='PAT_CMG_V5_17_0'
-patOld='PAT_CMG_V5_16_0'
-pat15='PAT_CMG_V5_15_0'
-patPF='CMGPF_V5_16_0'
-skim=''
-filepattern = 'cmgTuple.*root'
-userName='cmgtools'
 
 
 
@@ -53,20 +46,27 @@ triggersFR_MC = triggersFR_1mu + triggersFR_mumu + triggersFR_1e + triggersFR_mu
 
 from CMGTools.TTHAnalysis.samples.ComponentCreator import ComponentCreator
 kreator = ComponentCreator()
+
+## CENTRALLY PRODUCED MINIAODs (from global DBS)
+TTJets = kreator.makeMCComponent("TTJets",    "/RelValTTbar_13/CMSSW_7_0_6-PU50ns_PLS170_V6AN1-v1/MINIAODSIM", "CMS", "*.root")
+
+## CENTRALLY PRODUCED, PRIVATELY COPIED
+TTJets_PU20bx25 = kreator.makePrivateMCComponent("TTJets_PU20bx25", "/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM/", [ "/store/cmst3/user/gpetrucc/miniAOD/v1/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola_PU20bx25.1.root","/store/cmst3/user/gpetrucc/miniAOD/v1/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola_PU20bx25.2.root"])
+
+##  SOME  PRIVATELY PRODUCED TEST SAMPLES 
 DYJetsM50_Flat20to50 = kreator.makePrivateMCComponent("DYJetsM50_Flat20to50","/DYJetsToLL_M-50_13TeV-madgraph-pythia8/Spring14dr-Flat20to50_POSTLS170_V5-v1/AODSIM", [ "/store/cmst3/user/gpetrucc/miniAOD/v1/DYJetsToLL_M-50_13TeV-madgraph-pythia8_Flat20to50_PAT_big.root" ])
 DYJetsM50_PU20bx25   = kreator.makePrivateMCComponent("DYJetsM50_PU20bx25",  "/DYJetsToLL_M-50_13TeV-madgraph-pythia8/Spring14dr-PU20bx25_POSTLS170_V5-v1/AODSIM",   [ "/store/cmst3/user/gpetrucc/miniAOD/v1/DYJetsToLL_M-50_13TeV-madgraph-pythia8_PU20bx25_PAT_big.root" ])
 GluGluToHToZZTo4L_PUS14  = kreator.makePrivateMCComponent("GluGluToHToZZTo4L_PUS14",  "/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM", ["/store/cmst3/user/gpetrucc/miniAOD/v1/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6_PU_S14_PAT_big.root" ])
 GluGluToHToZZTo4L_PU20bx25  = kreator.makePrivateMCComponent("GluGluToHToZZTo4L_PU20bx25",  "/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6/Spring14dr-Flat20to50_POSTLS170_V5-v1/AODSIM", ["/store/cmst3/user/gpetrucc/miniAOD/v1/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6_PU20bx25_PAT.root" ])
 GluGluToHToGG_Flat20to50 = kreator.makePrivateMCComponent("GluGluToHToGG_Flat20to50", "/GluGluToHToGG_M-125_13TeV-powheg-pythia6/Spring14dr-Flat20to50_POSTLS170_V5-v1/AODSIM", [ "/store/cmst3/user/gpetrucc/miniAOD/v1/GluGluToHToGG_M-125_13TeV-powheg-pythia6_Flat20to50_PAT_big.root" ])
-TTJets_PUS14 = kreator.makePrivateMCComponent("TTJets_PUS14", "/TT_Tune4C_13TeV-pythia8-tauola/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM", ["/store/cmst3/user/gpetrucc/miniAOD/v1/TT_Tune4C_13TeV-pythia8-tauola_PU_S14_PAT_big.root"])
-TTJets_PU20bx25 = kreator.makePrivateMCComponent("TTJets_PU20bx25", "/TT_Tune4C_13TeV-pythia8-tauola/Spring14dr-PU20bx25_POSTLS170_V5-v1/AODSIM",   [ "/store/cmst3/user/gpetrucc/miniAOD/v1/TT_Tune4C_13TeV-pythia8-tauola_PU20bx25_PAT_big.root" ])
+TTJets_PUS14 = kreator.makePrivateMCComponent("TTJets_PUS14", "/TT_Tune4C_13TeV-pythia8-tauola/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM", ["/store/cmst3/user/gpetrucc/miniAOD/v1/TT_Tune4C_13TeV-pythia8-tauola_PU_S14_PAT.root"])
 VBFHTauTau_PU20bx25 = kreator.makePrivateMCComponent("VBFHTauTau_PU20bx25", "/VBF_HToTauTau_M-125_13TeV-powheg-pythia6/Spring14dr-PU20bx25_POSTLS170_V5-v1/AODSIM",   [ "/store/cmst3/user/gpetrucc/miniAOD/v1/VBF_HToTauTau_M-125_13TeV-powheg-pythia6_PU20bx25_PAT.root" ])
 VBFHTauTau_PUS14    = kreator.makePrivateMCComponent("VBFHTauTau_PUS14",    "/VBF_HToTauTau_M-125_13TeV-powheg-pythia6/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM", ["/store/cmst3/user/gpetrucc/miniAOD/v1/VBF_HToTauTau_M-125_13TeV-powheg-pythia6_PU_S14_PAT.root" ])
 WHZHToZZ4LFilter_PU20bx25 = kreator.makePrivateMCComponent("WHZHToZZ4LFilter_PU20bx25", "/WH_ZH_HToZZ_4LFilter_M-125_13TeV_pythia6/Spring14dr-PU20bx25_POSTLS170_V5-v1/AODSIM",   [ "/store/cmst3/user/gpetrucc/miniAOD/v1/WH_ZH_HToZZ_4LFilter_M-125_13TeV_pythia6_PAT.root" ])
 TTHToWW_PUS14 = kreator.makePrivateMCComponent("TTHToWW_PUS14", "/TTbarH_HToWWTo2LAndTauNu_M-125_13TeV_pythia6/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM",   [ "/store/cmst3/user/gpetrucc/miniAOD/v1/TTbarH_HToWWTo2LAndTauNu_M-125_13TeV_pythia6_PU_S14_PAT.root" ])
 
 
-mcSamples = [ DYJetsM50_Flat20to50, DYJetsM50_PU20bx25, GluGluToHToZZTo4L_PUS14, GluGluToHToZZTo4L_PU20bx25, GluGluToHToGG_Flat20to50, TTJets_PUS14, TTJets_PU20bx25, VBFHTauTau_PU20bx25, VBFHTauTau_PUS14, WHZHToZZ4LFilter_PU20bx25, TTHToWW_PUS14 ]
+mcSamples = [ TTJets, DYJetsM50_Flat20to50, DYJetsM50_PU20bx25, GluGluToHToZZTo4L_PUS14, GluGluToHToZZTo4L_PU20bx25, GluGluToHToGG_Flat20to50, TTJets_PUS14, TTJets_PU20bx25, VBFHTauTau_PU20bx25, VBFHTauTau_PUS14, WHZHToZZ4LFilter_PU20bx25, TTHToWW_PUS14 ]
 
 #-----------DATA---------------
 

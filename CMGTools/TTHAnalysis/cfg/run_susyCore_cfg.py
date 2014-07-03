@@ -30,19 +30,9 @@ treeProducer = cfg.Analyzer(
 
 
 #-------- SAMPLES AND TRIGGERS -----------
-from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import * 
+from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14 import * 
 
-for data in dataSamplesMu:
-    data.triggers = triggers_mumu
-for data in dataSamplesE:
-    data.triggers = triggers_ee
-    data.vetoTriggers = triggers_mumu
-for data in dataSamplesMuE:
-    data.triggers = triggers_mue
-    data.vetoTriggers=triggers_ee+triggers_mumu
-
-
-selectedComponents = mcSamplesAll + dataSamplesAll
+selectedComponents = [ SingleMu, DoubleElectron, TTHToWW_PUS14, DYJetsM50_PU20bx25, TTJets_PUS14 ]
 
 #-------- SEQUENCE
 

@@ -59,11 +59,11 @@ ttHGenAna = cfg.Analyzer(
 ttHLepAna = cfg.Analyzer(
     'ttHLepAnalyzerSusy',
     # input collections
-    muons='cmgMuonSel',
-    electrons='cmgElectronSel',
-    rhoMuon= 'kt6PFJetsCentralNeutral',
-    rhoElectron = 'kt6PFJets',
-    photons='cmgPhotonSel',
+    muons='slimmedMuons',
+    electrons='slimmedElectrons',
+    rhoMuon= 'fixedGridRhoFastjetAll',
+    rhoElectron = 'fixedGridRhoFastjetAll',
+    photons='slimmedPhotons',
     # energy scale corrections and ghost muon suppression (off by default)
     doMuScleFitCorrections=False, # "rereco"
     doRochesterCorrections=False,
@@ -111,8 +111,8 @@ ttHLepMCAna = cfg.Analyzer(
 # Jets Analyzer (for jet/lepton variables)
 ttHJetAna = cfg.Analyzer(
     'ttHJetAnalyzer',
-    jetCol = 'cmgPFJetSelCHS',
-    jetCol4MVA = 'cmgPFJetSel',
+    jetCol = 'slimmedJets',
+    jetCol4MVA = 'slimmedJets',
     jetPt = 25.,
     jetEta = 4.7,
     jetEtaCentral = 2.4,
@@ -142,9 +142,9 @@ treeProducer = cfg.Analyzer(
 
 
 #-------- SAMPLES
-from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import * 
+from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14 import * 
 
-selectedComponents = [ TTJets ] 
+selectedComponents = [ TTJets_PU20bx25 ]
 
 #-------- SEQUENCE
 
@@ -168,7 +168,7 @@ test = 1
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
-    comp = TTJets
+    comp = TTJets_PU20bx25
     comp.files = comp.files[:1]
     selectedComponents = [comp]
     comp.splitFactor = 1
@@ -183,7 +183,7 @@ elif test==2:
         comp.splitFactor = 1
         comp.files = comp.files[:1]
 elif test==3:
-    comp = TTJets
+    comp = TTJets_PU20bx25
     comp.files = comp.files[:40]
     selectedComponents = [comp]
     comp.splitFactor = 5
