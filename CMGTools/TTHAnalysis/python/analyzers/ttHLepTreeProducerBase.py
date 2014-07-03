@@ -30,6 +30,7 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         var( tr, 'run', int)
         var( tr, 'lumi', int)
         var( tr, 'evt', int)
+        var( tr, 'isData', int)        
         var( tr, 'nVert')
         
         ## --- LEPTONS ---
@@ -164,7 +165,8 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
 
         fill( tr, 'run', event.run) 
         fill( tr, 'lumi',event.lumi)
-        fill( tr, 'evt', event.eventId)    
+        fill( tr, 'evt', event.eventId)
+        fill( tr, 'isData', self.cfg_comp.isMC)            
         fill( tr, 'nVert', len(event.goodVertices) )
 
         ## --- TRIGGER ---

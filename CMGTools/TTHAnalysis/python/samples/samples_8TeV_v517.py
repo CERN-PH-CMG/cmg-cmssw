@@ -46,9 +46,9 @@ triggersFR_1e   = [ 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*', 'HLT_Ele1
 triggersFR_mue  = triggers_mue[:]
 triggersFR_MC = triggersFR_1mu + triggersFR_mumu + triggersFR_1e + triggersFR_mue
 
-triggers_HT = ["HLT_PFHT*_v*","HLT_PFNoPUHT*_v*"]
-triggers_MET = ["HLT_PFMET*"]
-triggers_HTMET = ["HLT_PFHT*_PFMET*","HLT_PFNoPUHT*_PFMET*_v*"]
+triggers_HT650 = ["HLT_PFHT650_v*","HLT_PFNoPUHT650_v*"]
+triggers_MET150 = ["HLT_PFMET150_v*"]
+triggers_HTMET = ["HLT_PFHT350_PFMET100_v*","HLT_PFNoPUHT350_PFMET100_v*"]
 
 #####COMPONENT CREATOR
 

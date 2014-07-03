@@ -31,7 +31,7 @@ class ttHGenLevelAnalyzer( Analyzer ):
 
           event.genleps    = [ status 3 gen electrons and muons not from tau decays ]
           event.gentauleps = [ gen electrons and muons from decays of status 3 taus ]
-          event.genbquarks  = [ gen b quarks (status = 3) from to quark decays ]
+          event.genbquarks  = [ gen b quarks (status = 3) from top quark decays ]
           event.genwzquarks = [ gen quarks from hadronic W,Z decays ]
 
        If filterHiggsDecays is set to a list of Higgs decay modes,
