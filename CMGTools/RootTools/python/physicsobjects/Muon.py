@@ -8,19 +8,19 @@ class Muon( Lepton ):
 
     def tightId( self ):
         '''Tight ID as recommended by mu POG.'''
-        return self.muonID("POG_Tight")
+        return self.muonID("POG_ID_Tight")
 
     def muonID(self, name, vertex=None):
         if name == "" or name is None: 
             return True
         if name.startswith("POG_"):
-            if name == "POG_Loose": return self.physObj.isLooseMuon()
+            if name == "POG_ID_Loose": return self.physObj.isLooseMuon()
             if vertex is None:
-                vertex = self.associatedVertex
-            if name == "POG_Tight":  return self.physObj.isTightMuon(vertex)
-            if name == "POG_HighPt": return self.physObj.isHighPtMuon(vertex)
-            if name == "POG_Soft":   return self.physObj.isSoftMuon(vertex)
-            if name == "POG_TightNoVtx":  return self.looseId() and \
+                vertex = getattr(self, 'associatedVertex', None)
+            if name == "POG_ID_Tight":  return self.physObj.isTightMuon(vertex)
+            if name == "POG_ID_HighPt": return self.physObj.isHighPtMuon(vertex)
+            if name == "POG_ID_Soft":   return self.physObj.isSoftMuon(vertex)
+            if name == "POG_ID_TightNoVtx":  return self.looseId() and \
                                                  self.isGlobalMuon() and \
                                                  self.globalTrack().normalizedChi2() < 10 and \
                                                  self.globalTrack().hitPattern().numberOfValidMuonHits() > 0 and \

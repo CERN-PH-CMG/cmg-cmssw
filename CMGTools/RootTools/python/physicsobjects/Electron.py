@@ -20,8 +20,8 @@ class Electron( Lepton ):
         if id is None or id == "": return True
         if vertex == None and hasattr(self,'associatedVertex') and self.associatedVertex != None: vertex = self.associatedVertex
         if rho == None and hasattr(self,'rho') and self.rho != None: rho = self.rho
-        if id == "POG_MVA_ID_NonTrig":
-            return self.mvaIDZZ(onlyMVA=True)
+        if   id == "POG_MVA_ID_NonTrig":  return self.mvaIDLoose()
+        elif id == "POG_MVA_ID_Trig":     return self.mvaIDTight()
         raise RuntimeError, "Electron id '%s' not yet implemented in Electron.py" % id
 
     def absEffAreaIso(self,rho,effectiveAreas):
@@ -59,26 +59,30 @@ class Electron( Lepton ):
         return self._mvaTrigNoIPV0 
 
 
+    def mvaIDTight(self):
+            eta = abs(self.superCluster().eta())
+            if self.pt() < 20:
+                if   (eta < 0.8)  : return self.mvaTrigV0() > +0.00;
+                elif (eta < 1.479): return self.mvaTrigV0() > +0.10;
+                else              : return self.mvaTrigV0() > +0.62;
+            else:
+                if   (eta < 0.8)  : return self.mvaTrigV0() > +0.94;
+                elif (eta < 1.479): return self.mvaTrigV0() > +0.85;
+                else              : return self.mvaTrigV0() > +0.92;
 
-    def mvaIDZZ(self,onlyMVA=False):
-        mvaRegions = [{'ptMin':0,'ptMax':10, 'etaMin':0.0, 'etaMax':0.8,'mva':0.47},\
-                      {'ptMin':0,'ptMax':10, 'etaMin':0.8 ,'etaMax':1.479,'mva':0.004},\
-                      {'ptMin':0,'ptMax':10, 'etaMin':1.479, 'etaMax':3.0,'mva':0.295},\
-                      {'ptMin':10,'ptMax':99999999, 'etaMin':0.0, 'etaMax':0.8,'mva':-0.34},\
-                      {'ptMin':10,'ptMax':99999999, 'etaMin':0.8, 'etaMax':1.479,'mva':-0.65},\
-                      {'ptMin':10,'ptMax':99999999, 'etaMin':1.479, 'etaMax':3.0,'mva':0.6}]
-        ID=False 
-        for element in mvaRegions:
-            if self.pt()>= element['ptMin'] and \
-               self.pt()< element['ptMax'] and \
-               abs(self.superCluster().eta())>=element['etaMin'] and \
-               abs(self.superCluster().eta())<element['etaMax'] and \
-               self.mvaNonTrigV0()> element['mva']: 
-                ID=True
-        if onlyMVA: 
-            return ID
-        else:
-            return ID and (self.gsfTrack().trackerExpectedHitsInner().numberOfLostHits()<=1)
+    def mvaIDLoose(self):
+            eta = abs(self.superCluster().eta())
+            if self.pt() < 10:
+                if   (eta < 0.8)  : return self.mvaNonTrigV0() > +0.47;
+                elif (eta < 1.479): return self.mvaNonTrigV0() > +0.004;
+                else              : return self.mvaNonTrigV0() > +0.295;
+            else:
+                if   (eta < 0.8)  : return self.mvaNonTrigV0() > -0.34;
+                elif (eta < 1.479): return self.mvaNonTrigV0() > -0.65;
+                else              : return self.mvaNonTrigV0() > +0.60;
+
+    def mvaIDZZ(self):
+        return self.mvaIDLoose() and (self.gsfTrack().trackerExpectedHitsInner().numberOfLostHits()<=1)
 
     def chargedHadronIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationVariables().sumChargedHadronPt 
