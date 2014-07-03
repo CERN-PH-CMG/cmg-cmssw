@@ -31,6 +31,7 @@ class ttHCoreEventAnalyzer( Analyzer ):
         self.handles['met'] = AutoHandle( 'cmgPFMET', 'std::vector<cmg::BaseMET>' )
         self.handles['nopumet'] = AutoHandle( 'nopuMet', 'std::vector<reco::PFMET>' )
         self.handles['metSignificance'] = AutoHandle( 'pfMetSignificance', 'cmg::METSignificance' )
+        self.handles['rho']    = AutoHandle( ('kt6PFJets','rho',''), 'double' )
 
     def beginLoop(self):
         super(ttHCoreEventAnalyzer,self).beginLoop()
@@ -159,35 +160,64 @@ class ttHCoreEventAnalyzer( Analyzer ):
         self.readCollections( iEvent )
         self.counters.counter('events').inc('all events')
 
+        event.rho = self.handles['rho'] .product()[0]
         event.bjetsLoose  = [ j for j in event.cleanJets if j.btagWP("CSVL") ]
         event.bjetsMedium = [ j for j in event.cleanJets if j.btagWP("CSVM") ]
 
+        import ROOT
+
         objects25 = [ j for j in event.cleanJets if j.pt() > 25 ] + event.selectedLeptons
         objects30 = [ j for j in event.cleanJets if j.pt() > 30 ] + event.selectedLeptons
-        objects40j = [ j for j in event.cleanJets if j.pt() > 40 ] 
         objects40  = [ j for j in event.cleanJets if j.pt() > 40 ] + event.selectedLeptons
+        objects40j = [ j for j in event.cleanJets if j.pt() > 40 ] 
+
         event.htJet25 = sum([x.pt() for x in objects25])
-        event.mhtJet25 = hypot(sum([x.px() for x in objects25]), sum([x.py() for x in objects25]))
+        event.mhtJet25vec = ROOT.reco.Particle.LorentzVector(sum([x.px() for x in objects25]) , sum([x.py() for x in objects25]), 0, 0 )     
+        event.mhtPhiJet25 = event.mhtJet25vec.phi()
+        event.mhtJet25 = event.mhtJet25vec.pt()
+
         event.htJet30 = sum([x.pt() for x in objects30])
-        event.mhtJet30 = hypot(sum([x.px() for x in objects30]), sum([x.py() for x in objects30]))
+        event.mhtJet30vec = ROOT.reco.Particle.LorentzVector(sum([x.px() for x in objects30]) , sum([x.py() for x in objects30]), 0, 0 )             
+        event.mhtJet30 = event.mhtJet30vec.pt()
+        event.mhtPhiJet30 = event.mhtJet30vec.phi()
+
         event.htJet40 = sum([x.pt() for x in objects40])
+        event.mhtJet40vec = ROOT.reco.Particle.LorentzVector(sum([x.px() for x in objects40]) , sum([x.py() for x in objects40]), 0, 0 )             
+        event.mhtJet40 = event.mhtJet40vec.pt()
+        event.mhtPhiJet40 = event.mhtJet40vec.phi()
+
         event.htJet40j = sum([x.pt() for x in objects40j])
-        event.mhtJet40 = hypot(sum([x.px() for x in objects40]), sum([x.py() for x in objects40]))
-        event.mhtJet40j = hypot(sum([x.px() for x in objects40j]), sum([x.py() for x in objects40j]))
+        event.mhtJet40jvec = ROOT.reco.Particle.LorentzVector(sum([x.px() for x in objects40j]) , sum([x.py() for x in objects40j]), 0, 0 )                     
+        event.mhtJet40j = event.mhtJet40jvec.pt()
+        event.mhtPhiJet40j = event.mhtJet40jvec.phi()        
+
         ## same but with all eta range
         objects25a  = [ j for j in event.cleanJetsAll if j.pt() > 25 ] + event.selectedLeptons
         objects30a  = [ j for j in event.cleanJetsAll if j.pt() > 30 ] + event.selectedLeptons
-        objects40ja = [ j for j in event.cleanJetsAll if j.pt() > 40 ] 
         objects40a  = [ j for j in event.cleanJetsAll if j.pt() > 40 ] + event.selectedLeptons
-        event.htJet25a = sum([x.pt() for x in objects25a])
-        event.mhtJet25a = hypot(sum([x.px() for x in objects25a]), sum([x.py() for x in objects25a]))
-        event.htJet30a = sum([x.pt() for x in objects30a])
-        event.mhtJet30a = hypot(sum([x.px() for x in objects30a]), sum([x.py() for x in objects30a]))
-        event.htJet40a = sum([x.pt() for x in objects40a])
-        event.htJet40ja = sum([x.pt() for x in objects40ja])
-        event.mhtJet40a = hypot(sum([x.px() for x in objects40a]), sum([x.py() for x in objects40a]))
-        event.mhtJet40ja = hypot(sum([x.px() for x in objects40ja]), sum([x.py() for x in objects40ja]))
+        objects40ja = [ j for j in event.cleanJetsAll if j.pt() > 40 ] 
 
+        event.htJet25a = sum([x.pt() for x in objects25a])
+        event.mhtJet25veca = ROOT.reco.Particle.LorentzVector(sum([x.px() for x in objects25a]) , sum([x.py() for x in objects25a]), 0, 0 )     
+        event.mhtPhiJet25a = event.mhtJet25veca.phi()
+        event.mhtJet25a = event.mhtJet25veca.pt()
+
+        event.htJet30a = sum([x.pt() for x in objects30a])
+        event.mhtJet30veca = ROOT.reco.Particle.LorentzVector(sum([x.px() for x in objects30a]) , sum([x.py() for x in objects30a]), 0, 0 )             
+        event.mhtJet30a = event.mhtJet30veca.pt()
+        event.mhtPhiJet30a = event.mhtJet30veca.phi()
+
+        event.htJet40a = sum([x.pt() for x in objects40a])
+        event.mhtJet40veca = ROOT.reco.Particle.LorentzVector(sum([x.px() for x in objects40a]) , sum([x.py() for x in objects40a]), 0, 0 )             
+        event.mhtJet40a = event.mhtJet40veca.pt()
+        event.mhtPhiJet40a = event.mhtJet40veca.phi()
+
+        event.htJet40ja = sum([x.pt() for x in objects40ja])
+        event.mhtJet40jveca = ROOT.reco.Particle.LorentzVector(sum([x.px() for x in objects40ja]) , sum([x.py() for x in objects40ja]), 0, 0 )                     
+        event.mhtJet40ja = event.mhtJet40jveca.pt()
+        event.mhtPhiJet40ja = event.mhtJet40jveca.phi()        
+
+        
         self.makeMETs(event);
         self.makeZs(event, self.maxLeps)
         self.makeMlls(event, self.maxLeps)
