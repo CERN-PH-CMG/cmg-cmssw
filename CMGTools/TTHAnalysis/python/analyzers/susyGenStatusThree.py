@@ -24,7 +24,7 @@ class susyGenStatusThree( Analyzer ):
         super(susyGenStatusThree, self).declareHandles()
 
         #mc information
-        self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
+        self.mchandles['genParticles'] = AutoHandle( 'prunedGenParticles',
                                                      'std::vector<reco::GenParticle>' )
     def beginLoop(self):
         super(susyGenStatusThree,self).beginLoop()
