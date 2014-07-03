@@ -70,11 +70,11 @@ susyPythia6Gen  = cfg.Analyzer(
 ttHLepAna = cfg.Analyzer(
     'ttHLepAnalyzerSusy',
     # input collections
-    muons='cmgMuonSel',
-    electrons='cmgElectronSel',
-    rhoMuon= 'kt6PFJetsCentralNeutral',
-    rhoElectron = 'kt6PFJets',
-    photons='cmgPhotonSel',
+    muons='slimmedMuons',
+    electrons='slimmedElectrons',
+    rhoMuon= 'fixedGridRhoFastjetAll',
+    rhoElectron = 'fixedGridRhoFastjetAll',
+    photons='slimmedPhotons',
     # energy scale corrections and ghost muon suppression (off by default)
     doMuScleFitCorrections=False, # "rereco"
     doRochesterCorrections=False,
@@ -133,7 +133,7 @@ ttHTauAna = cfg.Analyzer(
     ptMin = 20,
     vetoLeptons = True,
     leptonVetoDR = 0.4,
-    tauID = "byMediumIsolationMVA2",
+    tauID = "byLooseCombinedIsolationDeltaBetaCorr3Hits",
     tauLooseID = "decayModeFinding",
 )
 
@@ -146,15 +146,15 @@ ttHTauMCAna = cfg.Analyzer(
 # Jets Analyzer (generic)
 ttHJetAna = cfg.Analyzer(
     'ttHJetAnalyzer',
-    jetCol = 'cmgPFJetSelCHS',
-    jetCol4MVA = 'cmgPFJetSel',
+    jetCol = 'slimmedJets',
+    jetCol4MVA = 'slimmedJets',
     jetPt = 25.,
     jetEta = 4.7,
     jetEtaCentral = 2.4,
     jetLepDR = 0.4,
     minLepPt = 10,
     relaxJetId = False,  
-    doPuId = True,
+    doPuId = False, # Not commissioned in 7.0.X
     recalibrateJets = False,
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     cleanJetsFromTaus = False,

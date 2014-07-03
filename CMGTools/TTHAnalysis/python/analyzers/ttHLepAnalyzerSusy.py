@@ -44,16 +44,16 @@ class ttHLepAnalyzerSusy( Analyzer ):
         super(ttHLepAnalyzerSusy, self).declareHandles()
 
         #leptons
-        self.handles['muons'] = AutoHandle(self.cfg_ana.muons,"std::vector<cmg::Muon>")            
-        self.handles['electrons'] = AutoHandle(self.cfg_ana.electrons,"std::vector<cmg::Electron>")            
+        self.handles['muons'] = AutoHandle(self.cfg_ana.muons,"std::vector<pat::Muon>")            
+        self.handles['electrons'] = AutoHandle(self.cfg_ana.electrons,"std::vector<pat::Electron>")            
     
         #rho for muons
         self.handles['rhoMu'] = AutoHandle( (self.cfg_ana.rhoMuon, 'rho'), 'double')
         #rho for electrons
         self.handles['rhoEle'] = AutoHandle( (self.cfg_ana.rhoElectron, 'rho'), 'double')
 
-        #photons (a la hzz4l definition)
-        self.handles['photons'] = AutoHandle( self.cfg_ana.photons,'std::vector<cmg::Photon>')
+        #photons
+        self.handles['photons'] = AutoHandle( self.cfg_ana.photons,'std::vector<pat::Photon>')
 
     def beginLoop(self):
         super(ttHLepAnalyzerSusy,self).beginLoop()
