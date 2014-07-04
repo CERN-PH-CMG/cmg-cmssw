@@ -46,6 +46,28 @@ triggersFR_1e   = [ 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*', 'HLT_Ele1
 triggersFR_mue  = triggers_mue[:]
 triggersFR_MC = triggersFR_1mu + triggersFR_mumu + triggersFR_1e + triggersFR_mue
 
+
+### ----> for the SUS-13-007
+
+triggers_1muHT = ["HLT_PFHT350_Mu15_PFMET45_v*","HLT_PFHT350_Mu15_PFMET50_v*",
+                  "HLT_PFNoPUHT350_Mu15_PFMET_45_v*","HLT_PFHT350_Mu15_PFMET50_v*",
+                  "HLT_PFHT400_Mu5_PFMET45_v*","HLT_PFHT400_Mu5_PFMET50_v*",
+                  "HLT_PFNoPUHT400_Mu5_PFMET45_v*","HLT_PFNoPUHT400_Mu5_PFMET50_v*",
+                  "HLT_Mu40_PFHT350_v*","HLT_Mu60_PFHT350_v*",
+                  "HLT_Mu40_PFNoPUHT350_v*","HLT_Mu60_PFNoPUHT350_v*"
+                  ]
+
+triggers_1eleHT = ["HLT_CleanPFHT350_Ele5_CaloIdT_CaloIsoVL_TrkIdT_TrkIsoVL_PFMET45_v*","HLT_CleanPFHT350_Ele5_CaloIdT_CaloIsoVL_TrkIdT_TrkIsoVL_PFMET50_v*",
+                   "HLT_CleanPFNoPUHT350_Ele5_CaloIdT_CaloIsoVL_TrkIdT_TrkIsoVL_PFMET45_v*","HLT_CleanPFNoPUHT350_Ele5_CaloIdT_CaloIsoVL_TrkIdT_TrkIsoVL_PFMET50_v*",
+                   "HLT_CleanPFHT300_Ele15_CaloIdT_CaloIsoVL_TrkIdT_TrkIsoVL_PFMET45_v*","HLT_CleanPFHT300_Ele15_CaloIdT_CaloIsoVL_TrkIdT_TrkIsoVL_PFMET60_v*",
+                   "HLT_CleanPFNoPUHT300_Ele15_CaloIdT_CaloIsoVL_TrkIdT_TrkIsoVL_PFMET45_v*","HLT_CleanPFNoPUHT300_Ele15_CaloIdT_CaloIsoVL_TrkIdT_TrkIsoVL_PFMET60_v*",
+                   "HLT_CleanPFHT300_Ele40_CaloIdVT_CaloIsoVL_TrkIdT_v*","HLT_CleanPFHT300_Ele60_CaloIdVT_CaloIsoVL_TrkIdT_v*",                   
+                   "HLT_CleanPFNoPUHT300_Ele40_CaloIdVT_CaloIsoVL_TrkIdT_ v*","HLT_CleanPFNoPUHT300_Ele60_CaloIdVT_CaloIsoVL_TrkIdT_ v*"
+                   ]
+
+
+### ----> for the SUS-13-019
+
 triggers_HT650 = ["HLT_PFHT650_v*","HLT_PFNoPUHT650_v*"]
 triggers_MET150 = ["HLT_PFMET150_v*"]
 triggers_HTMET = ["HLT_PFHT350_PFMET100_v*","HLT_PFNoPUHT350_PFMET100_v*"]
