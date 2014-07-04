@@ -16,10 +16,13 @@ class Electron( Lepton ):
         self._mvaTrigV0     = None
         self._mvaTrigNoIPV0 = None
 
-    #def electronID( self, id, vertex=None, rho=None ):
-    #    if vertex == None and hasattr(self,'associatedVertex') and self.associatedVertex != None: vertex = self.associatedVertex
-    #    if rho == None and hasattr(self,'rho') and self.rho != None: rho = self.rho
-    #    return self.electronID_cpp_(id,vertex,rho) if rho != None else self.electronID_cpp_(id,vertex);
+    def electronID( self, id, vertex=None, rho=None ):
+        if id is None or id == "": return True
+        if vertex == None and hasattr(self,'associatedVertex') and self.associatedVertex != None: vertex = self.associatedVertex
+        if rho == None and hasattr(self,'rho') and self.rho != None: rho = self.rho
+        if   id == "POG_MVA_ID_NonTrig":  return self.mvaIDLoose()
+        elif id == "POG_MVA_ID_Trig":     return self.mvaIDTight()
+        raise RuntimeError, "Electron id '%s' not yet implemented in Electron.py" % id
 
     def absEffAreaIso(self,rho,effectiveAreas):
         '''MIKE, missing doc.
@@ -56,25 +59,57 @@ class Electron( Lepton ):
         return self._mvaTrigNoIPV0 
 
 
+    def mvaIDTight(self):
+            eta = abs(self.superCluster().eta())
+            if self.pt() < 20:
+                if   (eta < 0.8)  : return self.mvaTrigV0() > +0.00;
+                elif (eta < 1.479): return self.mvaTrigV0() > +0.10;
+                else              : return self.mvaTrigV0() > +0.62;
+            else:
+                if   (eta < 0.8)  : return self.mvaTrigV0() > +0.94;
+                elif (eta < 1.479): return self.mvaTrigV0() > +0.85;
+                else              : return self.mvaTrigV0() > +0.92;
+
+    def mvaIDLoose(self):
+            eta = abs(self.superCluster().eta())
+            if self.pt() < 10:
+                if   (eta < 0.8)  : return self.mvaNonTrigV0() > +0.47;
+                elif (eta < 1.479): return self.mvaNonTrigV0() > +0.004;
+                else              : return self.mvaNonTrigV0() > +0.295;
+            else:
+                if   (eta < 0.8)  : return self.mvaNonTrigV0() > -0.34;
+                elif (eta < 1.479): return self.mvaNonTrigV0() > -0.65;
+                else              : return self.mvaNonTrigV0() > +0.60;
 
     def mvaIDZZ(self):
-        '''missing doc, who is using this function?.'''
-        mvaRegions = [{'ptMin':0,'ptMax':10, 'etaMin':0.0, 'etaMax':0.8,'mva':0.47},\
-                      {'ptMin':0,'ptMax':10, 'etaMin':0.8 ,'etaMax':1.479,'mva':0.004},\
-                      {'ptMin':0,'ptMax':10, 'etaMin':1.479, 'etaMax':3.0,'mva':0.295},\
-                      {'ptMin':10,'ptMax':99999999, 'etaMin':0.0, 'etaMax':0.8,'mva':-0.34},\
-                      {'ptMin':10,'ptMax':99999999, 'etaMin':0.8, 'etaMax':1.479,'mva':-0.65},\
-                      {'ptMin':10,'ptMax':99999999, 'etaMin':1.479, 'etaMax':3.0,'mva':0.6}]
-        ID=False 
-        for element in mvaRegions:
-            if self.pt()>= element['ptMin'] and \
-               self.pt()< element['ptMax'] and \
-               abs(self.superCluster().eta())>=element['etaMin'] and \
-               abs(self.superCluster().eta())<element['etaMax'] and \
-               self.mvaNonTrigV0()> element['mva']: 
-                ID=True
+        return self.mvaIDLoose() and (self.gsfTrack().trackerExpectedHitsInner().numberOfLostHits()<=1)
 
-        return ID and (self.gsfTrack().trackerExpectedHitsInner().numberOfLostHits()<=1)
+    def chargedHadronIso(self,R=0.4):
+        if   R == 0.3: return self.physObj.pfIsolationVariables().sumChargedHadronPt 
+        elif R == 0.4: return self.physObj.chargedHadronIso()
+        raise RuntimeError, "Electron chargedHadronIso missing for R=%s" % R
+
+    def neutralHadronIso(self,R=0.4):
+        if   R == 0.3: return self.physObj.pfIsolationVariables().sumNeutralHadronEt 
+        elif R == 0.4: return self.physObj.neutralHadronIso()
+        raise RuntimeError, "Electron neutralHadronIso missing for R=%s" % R
+
+    def photonIso(self,R=0.4):
+        if   R == 0.3: return self.physObj.pfIsolationVariables().sumPhotonEt 
+        elif R == 0.4: return self.physObj.photonIso()
+        raise RuntimeError, "Electron photonIso missing for R=%s" % R
+
+    def chargedAllIso(self,R=0.4):
+        if   R == 0.3: return self.physObj.pfIsolationVariables().sumChargedParticlePt 
+        raise RuntimeError, "Electron chargedAllIso missing for R=%s" % R
+
+    def puChargedHadronIso(self,R=0.4):
+        if   R == 0.3: return self.physObj.pfIsolationVariables().sumPUPt 
+        elif R == 0.4: return self.physObj.puChargedHadronIso()
+        raise RuntimeError, "Electron chargedHadronIso missing for R=%s" % R
+
+
+
 
     def chargedAllIso(self):
         '''This function is used in the isolation, see Lepton class.

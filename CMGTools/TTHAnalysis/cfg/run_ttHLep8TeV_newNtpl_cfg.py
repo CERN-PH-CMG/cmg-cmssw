@@ -34,8 +34,6 @@ triggerAna = cfg.Analyzer(
 # this analyzer is just there to select a list of good primary vertices.
 ttHVertexAna = cfg.Analyzer(
     'VertexAnalyzer',
-    goodVertices = 'offlineSlimmedPrimaryVertices',
-    allVertices = 'offlineSlimmedPrimaryVertices',
     vertexWeight = None,
     fixedWeight = 1,
     verbose = False
@@ -47,7 +45,6 @@ pileUpAna = cfg.Analyzer(
     "PileUpAnalyzer",
     # build unweighted pu distribution using number of pile up interactions if False
     # otherwise, use fill the distribution using number of true interactions
-    allVertices = 'offlineSlimmedPrimaryVertices',
     true = True,
     makeHists=False
     )
@@ -124,23 +121,24 @@ ttHJetAna = cfg.Analyzer(
     cleanJetsFromTaus = False,
     )
 
-## MET Analyzer
-#ttHMETAna = cfg.Analyzer(
-#    'ttHMETAnalyzer',
-#    )
-
-# Jet MC Match Analyzer
+# Jet MC Match Analyzer (generic)
 ttHJetMCAna = cfg.Analyzer(
     'ttHJetMCMatchAnalyzer',
     smearJets = True,
     shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts
     )
 
+# Core Event Analyzer (computes basic quantities like HT, dilepton masses)
+ttHCoreEventAna = cfg.Analyzer(
+    'ttHCoreEventAnalyzer',
+    maxLeps = 4, ## leptons to consider
+    )
+
+
+
 # Event Analyzer
 ttHEventAna = cfg.Analyzer(
     'ttHLepEventAnalyzer',
-    maxLeps = 4, ## leptons to use
-    verbose = False,
     minJets25 = 0,
     )
 
@@ -182,8 +180,8 @@ sequence = cfg.Sequence([
     ttHTauAna,
     ttHTauMCAna,
     ttHJetAna,
-    #ttHMETAna,
     ttHJetMCAna,
+    ttHCoreEventAna,
     ttHEventAna,
     treeProducer,
     ])

@@ -17,6 +17,7 @@ class Event:
         self._tree = tree
         self._entry = entry
         self._sync()
+        self._isEval = False
     def _sync(self):
         if self._tree.entry != self._entry:
             self._tree.GetEntry(self._entry)
@@ -25,6 +26,17 @@ class Event:
         if name in self.__dict__: return self.__dict__[name]
         if name == "metLD": return self._tree.met*0.00397 + self._tree.mhtJet25*0.00265
         self._sync()
+        if "(" in name:
+            self._isEval = True
+            ret = eval(name, globals(), self)
+            self._isEval = False
+            return ret
+        if self._isEval:
+            import math
+            if hasattr(self._tree,name): return getattr(self._tree,name)
+            if hasattr(math, name): return getattr(math,name)
+            if hasattr(__builtins__,name): return getattr(__builtins__,name)
+            return getattr(ROOT,name)
         return getattr(self._tree,name)
     def __getitem__(self,attr):
         return self.__getattr__(attr)

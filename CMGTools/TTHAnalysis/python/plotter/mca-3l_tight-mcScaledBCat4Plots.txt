@@ -34,19 +34,13 @@ RARE     : ZZTo4tau:   1.64/1.55 * 0.07691 * 1.21;  FillColor=ROOT.kAzure-9, Nor
 
 data     : DoubleMuAB
 data     : DoubleMuC
-data     : DoubleMuRec
 data     : DoubleMuD
-data     : DoubleMuBadSIP
 data     : DoubleElectronAB
 data     : DoubleElectronC
-data     : DoubleElectronRec
 data     : DoubleElectronD
-data     : DoubleElectronBadSIP
 data     : MuEGAB
 data     : MuEGC
-data     : MuEGRec
 data     : MuEGD
-data     : MuEGBadSIP
 
 # -- Reducible background: fakes from MC
 Fakes_MC: TTJetsLep:  31.61/12.48 * 25.77: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312) ;  FillColor=ROOT.kGray, NormSystematic=0.2, Label="Fakes"

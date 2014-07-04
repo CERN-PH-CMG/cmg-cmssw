@@ -53,19 +53,13 @@ RBG_MC 	 : TTJetsSem_Filtered: 107.53*(3.38*(abs(LepGood1_pdgId+LepGood2_pdgId)=
 
 data     : DoubleMuAB
 data     : DoubleMuC
-data     : DoubleMuRec
 data     : DoubleMuD
-data     : DoubleMuBadSIP
 data     : DoubleElectronAB
 data     : DoubleElectronC
-data     : DoubleElectronRec
 data     : DoubleElectronD
-data     : DoubleElectronBadSIP
 data     : MuEGAB
 data     : MuEGC
-data     : MuEGRec
 data     : MuEGD
-data     : MuEGBadSIP
 
 RBG_data  : DoubleMuAB;            FillColor=ROOT.kGray, FakeRate='fakeRate_2lss.txt', Label='Fakes', NormSystematic=0.4, SkipMe=True
 RBG_data  : DoubleMuC;             FillColor=ROOT.kGray, FakeRate='fakeRate_2lss.txt', Label='Fakes', NormSystematic=0.4, SkipMe=True

@@ -16,9 +16,13 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
         ## Read whether we want vectors or flat trees
         self.scalar = not self.cfg_ana.vectorTree
 
+        ## Read whether we want 4-vectors 
+        if not getattr(self.cfg_ana, 'saveTLorentzVectors', False):
+            fourVectorType.removeVariable("p4")
+
         ## Declare how we store floats by default
         self.tree.setDefaultFloatType("F"); # otherwise it's "D"
-
+        
 
     def declareHandles(self):
         super(ttHLepTreeProducerNew, self).declareHandles()
@@ -98,9 +102,12 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
+        self.fillTree(iEvent, event)
          
+    def fillTree(self, iEvent, event, resetFirst=True):
         isMC = self.cfg_comp.isMC 
-        self.tree.reset()
+        if resetFirst: self.tree.reset()
+
         self.fillCoreVariables(self.tree, iEvent, event, isMC)
 
         for v in self.globalVariables:

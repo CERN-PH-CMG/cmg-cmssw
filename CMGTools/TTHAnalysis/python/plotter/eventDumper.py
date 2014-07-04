@@ -2,7 +2,7 @@
 from math import *
 import re, string
 from CMGTools.TTHAnalysis.treeReAnalyzer import *
-from CMGTools.TTHAnalysis.plotter.tree2yield import CutsFile
+from CMGTools.TTHAnalysis.plotter.tree2yield import CutsFile, scalarToVector
 
 from optparse import OptionParser
 import json
@@ -19,6 +19,7 @@ parser.add_option("--tau", dest="tau",  default=False, action="store_true",  hel
 parser.add_option("-j", "--json",   dest="json",  default=None, type="string", help="JSON file to apply")
 parser.add_option("-n", "--maxEvents",  dest="maxEvents", default=-1, type="int", help="Max events")
 parser.add_option("-f", "--format",   dest="fmt",  default=None, type="string",  help="Print this format string")
+parser.add_option("-t", "--tree",          dest="tree", default='ttHLepTreeProducerTTH', help="Pattern for tree name");
 
 ### CUT-file options
 parser.add_option("-S", "--start-at-cut",   dest="startCut",   type="string", help="Run selection starting at the cut matched by this regexp, included.") 
@@ -27,6 +28,7 @@ parser.add_option("-X", "--exclude-cut", dest="cutsToExclude", action="append", 
 parser.add_option("-I", "--invert-cut",  dest="cutsToInvert",  action="append", default=[], help="Cuts to invert (regexp matching cut name), can specify multiple times.") 
 parser.add_option("-R", "--replace-cut", dest="cutsToReplace", action="append", default=[], nargs=3, help="Cuts to invert (regexp of old cut name, new name, new cut); can specify multiple times.") 
 parser.add_option("-A", "--add-cut",     dest="cutsToAdd",     action="append", default=[], nargs=3, help="Cuts to insert (regexp of cut name after which this cut should go, new name, new cut); can specify multiple times.") 
+parser.add_option("--s2v", "--scalar2vector",     dest="doS2V",    action="store_true", default=False, help="Do scalar to vector conversion") 
  
 (options, args) = parser.parse_args()
 what = args[1] if len(args) > 1 else "signal"
@@ -77,9 +79,9 @@ class BaseDumper(Module):
         #self.jetsBadPtSorted = [ jetsBad[i] for i in xrange(len(jetsBad)) if jetsBad[i].pt > 0 ]
         #self.jetsBadPtSorted.sort(key = lambda j : -j.pt)
     def analyze(self,ev):
-        self.makeVars(ev)
+        if self.options.tree in ["ttHLepTreeProducerBase", "ttHLepTreeProducerTTH"]: self.makeVars(ev)
         if self.options.fmt: 
-            print string.Formatter().vformat(options.fmt,[],ev)
+            print string.Formatter().vformat(options.fmt.replace("\\t","\t"),[],ev)
             return True
         print "run %6d lumi %4d event %11d : leptons %d (MVA loose %d, MVA tight %d), jets %d (CSV loose %d, CSV medium %d)" % (
                 ev.run, ev.lumi, ev.evt, ev.nLepGood, len(self.lepsMVAL), len(self.lepsMVAT), ev.nJet25, ev.nBJetLoose25, ev.nBJetMedium25)
@@ -157,11 +159,13 @@ if options.cutfile:
     cut = CutsFile(options.cutfile,options).allCuts()
 elif options.cut:
     cut = options.cut
+if options.doS2V:
+    cut = scalarToVector(cut)
  
 file = ROOT.TFile.Open(args[0])
-treename = "ttHLepTreeProducerTTH"
+treename = options.tree
 tree = file.Get(treename)
-tree.vectorTree = True
+tree.vectorTree = (options.tree == 'ttHLepTreeProducerTTH')
 el = EventLoop([BaseDumper("dump", options)])
 el.loop(tree,options.maxEvents,cut=cut)
 

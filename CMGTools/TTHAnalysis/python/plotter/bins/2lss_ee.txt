@@ -6,7 +6,7 @@ lep MVA: min(LepGood1_mva,LepGood2_mva)> 0.7
 el el:  abs(LepGood1_pdgId) == 11 && abs(LepGood2_pdgId) == 11
 same-sign: LepGood1_charge*LepGood2_charge > 0
 tight-charge: LepGood1_tightCharge > 1 && LepGood2_tightCharge > 1
-conv veto:LepGood1_convVeto>0 && LepGood2_convVeto>0 && LepGood1_innerHits == 0 && LepGood2_innerHits == 0
+conv veto:LepGood1_convVeto>0 && LepGood2_convVeto>0 && LepGood1_lostHits == 0 && LepGood2_lostHits == 0
 Z veto: abs(minMllAFAS-91.2) > 10
 met LD: met*0.00397 + mhtJet25*0.00265 > 0.2
 4j: nJet25>=4

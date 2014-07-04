@@ -7,8 +7,8 @@ mumu: abs(LepGood2_pdgId) == 13 && abs(LepGood3_pdgId) == 13 && \
 quarkonia: abs(minMllSFOS-3.1)>0.2 && !(9 <= minMllSFOS && minMllSFOS <= 11)
 lep MVA 1: LepGood1_mva > 0.7
 lep MVA 23: min(LepGood2_mva,LepGood3_mva) > -0.3
-conv veto 12: (abs(LepGood1_pdgId) == 13 || (LepGood1_convVeto > 0 && LepGood1_innerHits == 0))
-# && (abs(LepGood2_pdgId) == 13 || (LepGood2_convVeto > 0 && LepGood2_innerHits == 0))
+conv veto 12: (abs(LepGood1_pdgId) == 13 || (LepGood1_convVeto > 0 && LepGood1_lostHits == 0))
+# && (abs(LepGood2_pdgId) == 13 || (LepGood2_convVeto > 0 && LepGood2_lostHits == 0))
 #mc truth: LepGood3_mcMatchId > 0 && LepGood4_mcMatchId > 0
 #Z peak: abs(mZ1-91.2) < 10
 #met LD: met*0.00397 + mhtJet25*0.00265 > 0.2

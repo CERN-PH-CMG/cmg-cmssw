@@ -10,7 +10,7 @@ lep2Eta: abs(LepGood2_eta) : 6,0,2.5; XTitle="Trailing lepton |#eta|"
 #minmva: min(LepGood1_mva,LepGood2_mva): 20,-1,1; XTitle="min MVA"
 #maxmva: max(LepGood1_mva,LepGood2_mva): 20,-1,1; XTitle="max MVA"
 #nTightMu: LepGood1_tightId + LepGood2_tightId: [-0.5,0.5,1.5,2.5] ; XTitle="Number of tight muons", XNDiv=505
-#minTrkHits: min(LepGood1_innerHits,LepGood2_innerHits) : 15,0,30; XTitle="Number of hits on track", XNDiv=505
+#minTrkHits: min(LepGood1_lostHits,LepGood2_lostHits) : 15,0,30; XTitle="Number of hits on track", XNDiv=505
 
 ### DILEPTONS
 mll  : mass_2(LepGood1_pt,LepGood1_eta,LepGood1_phi,LepGood1_mass, LepGood2_pt,LepGood2_eta,LepGood2_phi,LepGood2_mass): 15,0,300; XTitle="m(ll) [GeV]"
