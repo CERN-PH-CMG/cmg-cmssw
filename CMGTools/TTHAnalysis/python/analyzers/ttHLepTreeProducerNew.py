@@ -34,9 +34,10 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
     def declareCoreVariables(self, tr, isMC):
         """Here we declare the variables that we always want and that are hard-coded"""
             
-        tr.var('run', int)
-        tr.var('lumi', int)
-        tr.var('evt', int)
+        tr.var('run', int, storageType="i")
+        tr.var('lumi', int, storageType="i")
+        tr.var('evt', int, storageType="i")
+        tr.var('isData', int)
 
         self.triggerBitCheckers = []
         if hasattr(self.cfg_ana, 'triggerBits'):
@@ -82,6 +83,7 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
         tr.fill('run', event.run) 
         tr.fill('lumi',event.lumi)
         tr.fill('evt', event.eventId)    
+        tr.fill('isData', 0 if isMC else 1)
 
         triggerResults = self.handles['TriggerResults'].product()
         for T,TC in self.triggerBitCheckers:

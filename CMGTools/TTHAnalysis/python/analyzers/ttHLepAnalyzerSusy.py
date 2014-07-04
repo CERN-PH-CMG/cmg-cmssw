@@ -72,6 +72,8 @@ class ttHLepAnalyzerSusy( Analyzer ):
         ### selected leptons = subset of inclusive leptons passing some basic id definition and pt requirement
         ### other    leptons = subset of inclusive leptons failing some basic id definition and pt requirement
         event.selectedLeptons = []
+        event.selectedMuons = []
+        event.selectedElectrons = []
         event.otherLeptons = []
 
         #muons
@@ -91,6 +93,7 @@ class ttHLepAnalyzerSusy( Analyzer ):
                         mu.absIso03 < (self.cfg_ana.loose_muon_absIso if hasattr(self.cfg_ana,'loose_muon_absIso') else 9e99)):
                     mu.looseIdSusy = True
                     event.selectedLeptons.append(mu)
+                    event.selectedMuons.append(mu)
                 else:
                     mu.looseIdSusy = False
                     event.otherLeptons.append(mu)
@@ -116,6 +119,7 @@ class ttHLepAnalyzerSusy( Analyzer ):
                          ele.gsfTrack().trackerExpectedHitsInner().numberOfLostHits() <= self.cfg_ana.loose_electron_lostHits and
                          bestMatch(ele, looseMuons)[1] > self.cfg_ana.min_dr_electron_muon ):
                     event.selectedLeptons.append(ele)
+                    event.selectedElectrons.append(ele)
                     ele.looseIdSusy = True
                 else:
                     event.otherLeptons.append(ele)
@@ -123,6 +127,8 @@ class ttHLepAnalyzerSusy( Analyzer ):
 
         event.otherLeptons.sort(key = lambda l : l.pt(), reverse = True)
         event.selectedLeptons.sort(key = lambda l : l.pt(), reverse = True)
+        event.selectedMuons.sort(key = lambda l : l.pt(), reverse = True)
+        event.selectedElectrons.sort(key = lambda l : l.pt(), reverse = True)
         event.inclusiveLeptons.sort(key = lambda l : l.pt(), reverse = True)
 
         for lepton in event.selectedLeptons:
