@@ -4,6 +4,7 @@
   <class name="RochCor2012"/>
   <class name="FSRWeightAlgo"/>
   <class name="Davismt2" transient="true" />
+  <class name="Hemisphere"/>
   <class name="mt2w_bisect::mt2w"  transient="true" />
   <class name="MuScleFitCorrector" transient="true" />
   <class name="TriggerBitChecker" transient="true" />
