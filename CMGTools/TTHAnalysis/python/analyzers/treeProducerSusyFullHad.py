@@ -20,14 +20,14 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             ##--------------------------------------------------
             NTupleVariable("mtw", lambda ev: ev.mtw, int, help="mt(l,met)"),
             NTupleVariable("mtwTau", lambda ev: ev.mtwTau, int, help="mt(tau,met)"),
-            NTupleVariable("IsoTrackmtw", lambda ev: ev.mtwIsoTrack, int, help="mt(isoTrack,met)"),
-            NTupleVariable("IsoTrackPt", lambda ev: ev.ptIsoTrack, int, help="pt(most isolated Track)"),
-            NTupleVariable("IsoTrackRelIso", lambda ev: ev.isoIsoTrack, int, help="relIso (iso isolated Track)"),
-            NTupleVariable("IsoTrackDz", lambda ev: ev.dzIsoTrack, int, help="relIso (iso isolated Track)"),
-            NTupleVariable("IsoTrackType", lambda ev: ev.typeIsoTrack, int, help="relIso (iso isolated Track)"),
+#            NTupleVariable("IsoTrack_mtw", lambda ev: ev.mtwIsoTrack, int, help="mt(isoTrack,met)"),
+            NTupleVariable("IsoTrack_pt", lambda ev: ev.ptIsoTrack, int, help="pt(most isolated Track)"),
+            NTupleVariable("IsoTrack_relIso", lambda ev: ev.isoIsoTrack, int, help="relIso (iso isolated Track)"),
+            NTupleVariable("IsoTrack_dz", lambda ev: ev.dzIsoTrack, int, help="dz(iso isolated Track, PV)"),
+            NTupleVariable("IsoTrack_pdgId", lambda ev: ev.typeIsoTrack, int, help="PFID (iso isolated Track)"),
             ##--------------------------------------------------
             NTupleVariable("mt2", lambda ev: ev.mt2, float, help="mt2(l,met)"),
-            NTupleVariable("mt2w", lambda ev: ev.mt2w, float, help="mt2w(l,b,met)"),
+            #            NTupleVariable("mt2w", lambda ev: ev.mt2w, float, help="mt2w(l,b,met)"),
             ##--------------------------------------------------
             #            NTupleVariable("minMWjj", lambda ev: ev.minMWjj, int, help="minMWjj"),
             #            NTupleVariable("minMWjjPt", lambda ev: ev.minMWjjPt, int, help="minMWjjPt"),
@@ -40,6 +40,9 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
         
         self.globalObjects.update({
             # put more here
+            "pseudojet1"       : NTupleObject("pseudojet1",     fourVectorType, help="pseudojet1 for hemishphere"),
+            "pseudojet2"       : NTupleObject("pseudojet2",     fourVectorType, help="pseudojet2 for hemishphere"),
+
             })
         self.collections.update({
             # put more here

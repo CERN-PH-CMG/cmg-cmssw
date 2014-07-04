@@ -12,6 +12,7 @@ from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
 # JET (do not apply the jetID and PUID yet)
 ttHJetAna.relaxJetId = True
 ttHJetAna.doPuId = False
+ttHJetAna.jetEtaCentral = 2.5
 
 ##------------------------------------------
 ##  ISOLATED TRACK

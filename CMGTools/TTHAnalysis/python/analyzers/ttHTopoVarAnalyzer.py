@@ -21,6 +21,7 @@ from CMGTools.RootTools.utils.DeltaR import *
 from CMGTools.TTHAnalysis.analyzers.ntuple import *
 
 
+from ROOT import Hemisphere
 
 from ROOT import Davismt2
 davismt2 = Davismt2()
@@ -80,6 +81,40 @@ class ttHTopoVarAnalyzer( Analyzer ):
         import array
         import numpy
 
+## ===> hadronic MT2 (as used in the SUS-13-019) below place holder
+
+        pxvec  = []
+        pyvec  = []
+        pzvec  = []
+        Evec  = []
+        
+        for jet in event.cleanJetsAll:
+            pxvec.append(jet.px())
+            pyvec.append(jet.py())
+            pzvec.append(jet.pz())
+            Evec.append(jet.energy())
+
+#        hemisphere = Hemisphere(pxvec, pyvec, pzvec, Evec, 2, 2)
+#        grouping=hemisphere.getGrouping()
+#        print 'grouping ',len(grouping)
+
+#        event.pseudojet1 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+#        event.pseudojet2 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+
+        metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
+        metVector =numpy.asarray(metVector,dtype='double')
+        jetVector1 = TVectorD(3,array.array('d',[0.,event.pseudojet1.px(), event.pseudojet1.py()]))
+        jetVector1 =numpy.asarray(jetVector1,dtype='double')
+        jetVector2 = TVectorD(3,array.array('d',[0.,event.pseudojet2.px(), event.pseudojet2.py()]))        
+        jetVector2 =numpy.asarray(jetVector2,dtype='double')
+        
+        davismt2.set_momenta(jetVector1,jetVector2,metVector);
+        davismt2.set_mn(100);
+        
+        event.mt2 = davismt2.get_mt2()  
+
+## ===> leptonic MT2 (as used in the SUS-13-025 ) below just a placeHolder
+
         if len(event.selectedLeptons)>=2:
 
             metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
@@ -95,6 +130,8 @@ class ttHTopoVarAnalyzer( Analyzer ):
             
             event.mt2 = davismt2.get_mt2()  
 
+
+## ===> hadronic MT2w (as used in the SUS-13-011) below just a placeHolder
         if len(event.selectedLeptons)>=1:
 
             metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
@@ -118,7 +155,11 @@ class ttHTopoVarAnalyzer( Analyzer ):
         event.mtwTau=-999
         event.mtwIsoTrack=-999
         event.mt2=-999
+
+        event.mt2lept=-999        
         event.mt2w=-999
+        event.pseudojet1 = ROOT.reco.Particle.LorentzVector( -999, -999, -999, -999 )
+        event.pseudojet2 = ROOT.reco.Particle.LorentzVector( -999, -999, -999, -999 )
 
         self.printMT(event)
         self.printMT2(event)
