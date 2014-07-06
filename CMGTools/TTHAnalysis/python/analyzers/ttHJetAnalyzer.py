@@ -48,6 +48,7 @@ class ttHJetAnalyzer( Analyzer ):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         rho  = float(self.handles['rho'].product()[0])
+        event.rho=rho
 
         ## Read jets, if necessary recalibrate and shift MET
         allJets = map(Jet, self.handles['jets'].product()) 

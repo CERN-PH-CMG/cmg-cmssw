@@ -18,8 +18,8 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             NTupleVariable("nMuons10", lambda ev: sum([l.pt() > 10 for l in ev.selectedMuons]), int, help="Number of muons with pt > 10"),
             NTupleVariable("nElectrons10", lambda ev: sum([l.pt() > 10 for l in ev.selectedElectrons]), int, help="Number of electrons with pt > 10"),
             ##--------------------------------------------------
-            NTupleVariable("mtw", lambda ev: ev.mtw, int, help="mt(l,met)"),
-            NTupleVariable("mtwTau", lambda ev: ev.mtwTau, int, help="mt(tau,met)"),
+#            NTupleVariable("mtw", lambda ev: ev.mtw, int, help="mt(l,met)"),
+#            NTupleVariable("mtwTau", lambda ev: ev.mtwTau, int, help="mt(tau,met)"),
 #            NTupleVariable("IsoTrack_mtw", lambda ev: ev.mtwIsoTrack, int, help="mt(isoTrack,met)"),
             NTupleVariable("IsoTrack_pt", lambda ev: ev.ptIsoTrack, int, help="pt(most isolated Track)"),
             NTupleVariable("IsoTrack_relIso", lambda ev: ev.isoIsoTrack, int, help="relIso (iso isolated Track)"),
