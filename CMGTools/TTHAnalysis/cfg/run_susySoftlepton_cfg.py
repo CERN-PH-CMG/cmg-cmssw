@@ -58,6 +58,8 @@ treeProducer = cfg.Analyzer(
             'MET15'    : triggers_MET150,
             'HT650'    : triggers_HT650,
             'triggers_HTMET' : triggers_HTMET,
+            'MetTrigger' : triggers_MET,
+            'MetTriggerParked' : triggers_METParked 
         }
     )
 
