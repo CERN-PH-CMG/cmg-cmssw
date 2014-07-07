@@ -38,7 +38,7 @@ class treeProducerSusySingleLepton( treeProducerSusyCore ):
             # put more here
             "otherLeptons"    : NTupleCollection("LepOther", leptonTypeSusy, 8, help="Leptons after the preselection"),
             ##------------------------------------------------
-            "cleanJetsAll"       : NTupleCollection("Jet",     jetTypeSusy, 8, help="Cental jets after full selection and cleaning, sorted by pt"),
+            "cleanJetsAll"       : NTupleCollection("Jet",     jetTypeSusy, 8, help="Jets after full selection and cleaning, sorted by pt"),
         })
 
         ## Book the variables, but only if we're called explicitly and not through a base class

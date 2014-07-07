@@ -18,8 +18,7 @@ from CMGTools.RootTools.physicsobjects.Jet import Jet
 
 from CMGTools.RootTools.utils.DeltaR import * 
 
-from CMGTools.TTHAnalysis.analyzers.ntuple import *
-
+import ROOT
 
 from ROOT import Hemisphere
 
@@ -37,16 +36,9 @@ def mtw(x1,x2):
 class ttHTopoVarAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHTopoVarAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName) 
-        import ROOT
 
     def declareHandles(self):
         super(ttHTopoVarAnalyzer, self).declareHandles()
-        self.handles['met'] = AutoHandle( 'cmgPFMET', 'std::vector<cmg::BaseMET>' )
-        self.handles['nopumet'] = AutoHandle( 'nopuMet', 'std::vector<reco::PFMET>' )
-#        self.handles['muons'] = AutoHandle(self.cfg_ana.muons,"std::vector<cmg::Muon>")
-#        self.handles['electrons'] = AutoHandle( self.cfg_ana.electrons,"std::vector<cmg::Electron>")
-#        self.handles['taus'] = AutoHandle( self.cfg_ana.taus,'std::vector<cmg::Tau>')
-        self.handles['jets'] = AutoHandle( self.cfg_ana.jetCol, 'std::vector<cmg::PFJet>' )
 
     def beginLoop(self):
         super(ttHTopoVarAnalyzer,self).beginLoop()
@@ -56,10 +48,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
         
     def printMT(self, event):
 #        print '==> INSIDE THE PRINT MT'
-        event.met = self.handles['met'].product()[0]
-        event.metNoPU = self.handles['nopumet'].product()[0]
 #        print 'MET=',event.met.pt() 
-
 
         for lepton in event.selectedLeptons:
             event.mtw = mtw(lepton, event.met)
@@ -74,8 +63,6 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
     def printMT2(self, event):
 #        print '==> INSIDE THE PRINT MT2'
-        event.met = self.handles['met'].product()[0]
-        event.metNoPU = self.handles['nopumet'].product()[0]
 #        print 'MET=',event.met.pt() 
 
         import array

@@ -46,7 +46,7 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             })
         self.collections.update({
             # put more here
-            "cleanJetsAll"       : NTupleCollection("Jet",     jetTypeSusy, 8, help="Cental jets after full selection and cleaning, sorted by pt"),
+            "cleanJetsAll"       : NTupleCollection("Jet",     jetTypeSusy, 8, help="Jets after full selection and cleaning, sorted by pt"),
             })
         
         ## Book the variables, but only if we're called explicitly and not through a base class

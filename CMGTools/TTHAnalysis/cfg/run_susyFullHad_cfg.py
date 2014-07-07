@@ -22,7 +22,7 @@ ttHJetAna.jetEtaCentral = 2.5
 ttHIsoTrackAna = cfg.Analyzer(
             'ttHIsoTrackAnalyzer',
             candidates='cmgCandidates',
-            candidatesTypes='std::vector<cmg::Candidate>',
+            candidatesTypes='std::vector<cmg::PackedCandidate>',
             ptMin = 10,
             ptMinEMU = 5,
             dzMax = 0.1,
@@ -79,7 +79,8 @@ from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
 #for data in dataSamples:
 #    data.triggers = triggers_HT
 
-##selectedComponents = mcSamplesAll + dataSamplesAll
+mcSamples_mainFullHad = [ TTJetsSem,TTJetsLep ]
+selectedComponents = mcSamples_mainFullHad 
 
 #-------- SEQUENCE
 
@@ -90,11 +91,13 @@ sequence = cfg.Sequence(susyCoreSequence+[
     ])
 
 #-------- HOW TO RUN
+
 test = 1
 if test==1:
     # test a single component, using a single thread.
-###    comp = TTJets
-    comp=WJetsPtW100
+    comp = TTJetsSem
+##    comp = TTJetslep
+##    comp=WJetsPtW100
     comp.files = comp.files[:1]
     selectedComponents = [comp]
     comp.splitFactor = 1
@@ -103,7 +106,6 @@ elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
         comp.files = comp.files[:1]
-        
         
         
 config = cfg.Config( components = selectedComponents,
