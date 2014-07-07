@@ -72,6 +72,11 @@ triggers_HT650 = ["HLT_PFHT650_v*","HLT_PFNoPUHT650_v*"]
 triggers_MET150 = ["HLT_PFMET150_v*"]
 triggers_HTMET = ["HLT_PFHT350_PFMET100_v*","HLT_PFNoPUHT350_PFMET100_v*"]
 
+###  -----> for soft leptons:
+triggers_MET : ["HLT_PFMET150_v*"],
+triggers_METParked : ["HLT_MET80_Parked_v*"]
+
+
 #####COMPONENT CREATOR
 
 from CMGTools.TTHAnalysis.samples.ComponentCreator import ComponentCreator
