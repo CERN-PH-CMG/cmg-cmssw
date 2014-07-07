@@ -21,8 +21,10 @@ ttHJetAna.jetEtaCentral = 2.5
 # those are the cuts for the nonEMu
 ttHIsoTrackAna = cfg.Analyzer(
             'ttHIsoTrackAnalyzer',
-            candidates='cmgCandidates',
-            candidatesTypes='std::vector<cmg::Candidate>',
+#            candidates='cmgCandidates',
+#            candidatesTypes='std::vector<cmg::Candidate>',
+            candidates='packedPFCandidates',
+            candidatesTypes='std::vector<pat::PackedCandidate>',
             ptMin = 10,
             ptMinEMU = 5,
             dzMax = 0.1,
