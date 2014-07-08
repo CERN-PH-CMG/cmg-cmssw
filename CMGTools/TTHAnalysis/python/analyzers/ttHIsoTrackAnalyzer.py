@@ -11,6 +11,7 @@ from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.Lepton import Lepton
 from CMGTools.RootTools.physicsobjects.Tau import Tau
+from CMGTools.TTHAnalysis.analyzers.ttHLepMCMatchAnalyzer import matchObjectCollection3
 
 from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch
 
@@ -34,6 +35,7 @@ class ttHIsoTrackAnalyzer( Analyzer ):
         count.register('all events')
         count.register('has >=1 selected Track')
         count.register('has >=1 selected Iso Track')
+
 
     #------------------
     # MAKE LIST
@@ -109,6 +111,17 @@ class ttHIsoTrackAnalyzer( Analyzer ):
         if(len(event.preIsoTrack)): self.counters.counter('events').inc('has >=1 selected Track') 
         if foundIsoTrack: self.counters.counter('events').inc('has >=1 selected Iso Track')
 
+    def matchIsoTrack(self, event):
+        event.genTaus = [ x for x in event.genParticles if x.status() == 3 and abs(x.pdgId()) == 15 ]
+#        event.genMuons = [ x for x in event.genParticles if x.status() == 3 and abs(x.pdgId()) == 13 ]
+#        event.genElectrons = [ x for x in event.genParticles if x.status() == 3 and abs(x.pdgId()) == 11 ]
+        matchTau = matchObjectCollection3(event.selectedIsoTrack, event.genTaus, deltaRMax = 0.5)
+#        matchMuon = matchObjectCollection3(event.selectedIsoTrack, event.genMuons, deltaRMax = 0.5)
+#        matchEletron = matchObjectCollection3(event.selectedIsoTrack, event.genElectrons, deltaRMax = 0.5)
+        for lep in event.selectedIsoTrack:
+            gen = matchTau[lep]
+            lep.mcMatchId = 1 if gen else 0
+
     def printInfo(self, event):
         print 'event to Veto'
         print '----------------'
@@ -135,7 +148,16 @@ class ttHIsoTrackAnalyzer( Analyzer ):
         self.makeIsoTrack(event)
 
         if len(event.selectedIsoTrack)==0 : return True
+
+## ===> do matching
         
+        if not self.cfg_comp.isMC:
+            return True
+        
+        self.matchIsoTrack(event)        
+
+## ===> do veto if needed
+
         if (self.cfg_ana.doSecondVeto and (event.selectedIsoTrack[0].pdgId()!=11) and (event.selectedIsoTrack[0].pdgId()!=12) and event.isoIsoTrack < self.cfg_ana.MaxIsoSum ) :
 #            self.printInfo(event)
             return False
@@ -143,5 +165,6 @@ class ttHIsoTrackAnalyzer( Analyzer ):
         if ((self.cfg_ana.doSecondVeto and event.selectedIsoTrack[0].pdgId()==11 or event.selectedIsoTrack[0].pdgId()==12) and event.isoIsoTrack < self.cfg_ana.MaxIsoSumEMU ) :
 #            self.printInfo(event)
             return False
+
 
         return True

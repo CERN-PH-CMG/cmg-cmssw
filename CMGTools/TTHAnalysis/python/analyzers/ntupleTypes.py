@@ -111,6 +111,9 @@ tauTypeSusy = NTupleObjectType("tauSusy", baseObjectTypes = [ tauType ], variabl
     NTupleVariable("mcMatchId",  lambda x : x.mcMatchId, int, mcOnly=True, help="Match to source from hard scatter (25 for H, 6 for t, 23/24 for W/Z)"),
 ])
 
+photonTypeSusy = NTupleObjectType("photon", baseObjectTypes = [ particleType ], variables = [
+    NTupleVariable("mcMatchId",  lambda x : x.mcMatchId, int, mcOnly=True, help="Match to source from hard scatter (25 for H, 6 for t, 23/24 for W/Z)"),
+])
 
 jetType = NTupleObjectType("jet",  baseObjectTypes = [ fourVectorType ], variables = [
     NTupleVariable("btagCSV",   lambda x : x.btag('combinedSecondaryVertexBJetTags'), help="CSV discriminator"),
@@ -139,6 +142,7 @@ metType = NTupleObjectType("met", baseObjectTypes = [ fourVectorType ], variable
     NTupleVariable("genPt",  lambda x : x.genMET().pt() , mcOnly=True ),
     NTupleVariable("genPhi", lambda x : x.genMET().phi(), mcOnly=True ),
     NTupleVariable("genEta", lambda x : x.genMET().eta(), mcOnly=True ),
+
 ])
 
 genParticleType = NTupleObjectType("genParticle", baseObjectTypes = [ particleType ], mcOnly=True, variables = [
