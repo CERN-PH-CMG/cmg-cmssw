@@ -53,7 +53,7 @@ bool cmg::Electron::electronID(ElectronID id, const reco::Vertex *vtx, double rh
     if (id == POG_Cuts_Full_Veto || id == POG_Cuts_Full_Loose || id == POG_Cuts_Full_Medium || id == POG_Cuts_Full_Tight) {
         if (vtx == 0)     throw cms::Exception("InvalidArgument", "POG_Cuts_Full_XXX ids require a vertex");
         d0vtx = ele.gsfTrack()->dxy(vtx->position());
-        dzvtx = ele.gsfTrack()->dxy(vtx->position());
+        dzvtx = ele.gsfTrack()->dz(vtx->position());
     } 
     // isolation
     float iso_ch = 0.0, iso_em = 0.0, iso_nh = 0.0;
