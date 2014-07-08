@@ -133,10 +133,12 @@ def main( options, args ):
     if len(selComps)>1:
         shutil.copy( cfgFileName, outDir )
         pool = Pool(processes=min(len(selComps),10))
+        ## workaround for a scoping problem in ipython+multiprocessing
+        import CMGTools.RootTools.fwlite.MultiLoop as ML 
         for comp in selComps:
             print 'submitting', comp.name
-            pool.apply_async( runLoopAsync, [comp, outDir, cfg.config, options],
-                              callback=callBack)     
+            pool.apply_async( ML.runLoopAsync, [comp, outDir, cfg.config, options],
+                              callback=ML.callBack)     
         pool.close()
         pool.join()
     else:
