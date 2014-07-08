@@ -74,7 +74,7 @@ ttHLepAna = cfg.Analyzer(
     electrons='slimmedElectrons',
     rhoMuon= 'fixedGridRhoFastjetAll',
     rhoElectron = 'fixedGridRhoFastjetAll',
-    photons='slimmedPhotons',
+##    photons='slimmedPhotons',
     # energy scale corrections and ghost muon suppression (off by default)
     doMuScleFitCorrections=False, # "rereco"
     doRochesterCorrections=False,
@@ -126,6 +126,13 @@ ttHLepMCAna = cfg.Analyzer(
     'ttHLepMCMatchAnalyzer',
     matchAllInclusiveLeptons = False,
     )
+
+# Tau Analyzer (generic)
+ttHPhoAna = cfg.Analyzer(
+    'ttHPhotonAnalyzerSusy',
+    photons='slimmedPhotons',
+    ptMin = 20,
+)
 
 # Tau Analyzer (generic)
 ttHTauAna = cfg.Analyzer(
@@ -201,6 +208,7 @@ susyCoreSequence = [
     ttHLepAna,
     ttHLepSkim,
     ttHLepMCAna,
+    ttHPhoAna,
     ttHTauAna,
     ttHTauMCAna,
     ttHJetAna,

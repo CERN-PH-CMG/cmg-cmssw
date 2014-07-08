@@ -85,14 +85,14 @@ class ttHTopoVarAnalyzer( Analyzer ):
 #        grouping=hemisphere.getGrouping()
 #        print 'grouping ',len(grouping)
 
-#        event.pseudojet1 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
-#        event.pseudojet2 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+#        event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+#        event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
 
         metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
         metVector =numpy.asarray(metVector,dtype='double')
-        jetVector1 = TVectorD(3,array.array('d',[0.,event.pseudojet1.px(), event.pseudojet1.py()]))
+        jetVector1 = TVectorD(3,array.array('d',[0.,event.pseudoJet1.px(), event.pseudoJet1.py()]))
         jetVector1 =numpy.asarray(jetVector1,dtype='double')
-        jetVector2 = TVectorD(3,array.array('d',[0.,event.pseudojet2.px(), event.pseudojet2.py()]))        
+        jetVector2 = TVectorD(3,array.array('d',[0.,event.pseudoJet2.px(), event.pseudoJet2.py()]))        
         jetVector2 =numpy.asarray(jetVector2,dtype='double')
         
         davismt2.set_momenta(jetVector1,jetVector2,metVector);
@@ -145,8 +145,8 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
         event.mt2lept=-999        
         event.mt2w=-999
-        event.pseudojet1 = ROOT.reco.Particle.LorentzVector( -999, -999, -999, -999 )
-        event.pseudojet2 = ROOT.reco.Particle.LorentzVector( -999, -999, -999, -999 )
+        event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( -999, -999, -999, -999 )
+        event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( -999, -999, -999, -999 )
 
         self.printMT(event)
         self.printMT2(event)

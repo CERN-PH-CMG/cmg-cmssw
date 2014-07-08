@@ -2,7 +2,6 @@ from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.Electron import Electron
 from CMGTools.RootTools.physicsobjects.Muon import Muon
-from CMGTools.RootTools.physicsobjects.Photon import Photon
 from CMGTools.TTHAnalysis.tools.EfficiencyCorrector import EfficiencyCorrector
 
 from CMGTools.RootTools.utils.DeltaR import bestMatch
@@ -51,9 +50,6 @@ class ttHLepAnalyzerSusy( Analyzer ):
         self.handles['rhoMu'] = AutoHandle( self.cfg_ana.rhoMuon, 'double')
         #rho for electrons
         self.handles['rhoEle'] = AutoHandle( self.cfg_ana.rhoElectron, 'double')
-
-        #photons
-        self.handles['photons'] = AutoHandle( self.cfg_ana.photons,'std::vector<pat::Photon>')
 
     def beginLoop(self):
         super(ttHLepAnalyzerSusy,self).beginLoop()
@@ -135,10 +131,6 @@ class ttHLepAnalyzerSusy( Analyzer ):
             if hasattr(self,'efficiency'):
                 self.efficiency.attachToObject(lepton)
 
-    def makePhotons(self, event):
-        event.allphotons = map( Photon, self.handles['photons'].product() )
-        event.allphotons.sort(key = lambda l : l.pt(), reverse = True)
-       
     def makeAllMuons(self, event):
         """
                make a list of all muons, and apply basic corrections to them
@@ -231,8 +223,7 @@ class ttHLepAnalyzerSusy( Analyzer ):
         self.readCollections( iEvent )
         self.counters.counter('events').inc('all events')
 
-        #call the leptons/photons functions
+        #call the leptons functions
         self.makeLeptons(event)
-        self.makePhotons(event)
 
         return True

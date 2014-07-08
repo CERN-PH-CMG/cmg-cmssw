@@ -17,14 +17,16 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             ##--------------------------------------------------
             NTupleVariable("nMuons10", lambda ev: sum([l.pt() > 10 for l in ev.selectedMuons]), int, help="Number of muons with pt > 10"),
             NTupleVariable("nElectrons10", lambda ev: sum([l.pt() > 10 for l in ev.selectedElectrons]), int, help="Number of electrons with pt > 10"),
+            NTupleVariable("nTaus20", lambda ev: sum([l.pt() > 20 for l in ev.selectedTaus]), int, help="Number of taus with pt > 20"),
+            NTupleVariable("nGammas20", lambda ev: sum([l.pt() > 20 for l in ev.selectedPhotons]), int, help="Number of photons with pt > 20"),
             ##--------------------------------------------------
 #            NTupleVariable("mtw", lambda ev: ev.mtw, int, help="mt(l,met)"),
 #            NTupleVariable("mtwTau", lambda ev: ev.mtwTau, int, help="mt(tau,met)"),
 #            NTupleVariable("IsoTrack_mtw", lambda ev: ev.mtwIsoTrack, int, help="mt(isoTrack,met)"),
-            NTupleVariable("IsoTrack_pt", lambda ev: ev.ptIsoTrack, int, help="pt(most isolated Track)"),
-            NTupleVariable("IsoTrack_relIso", lambda ev: ev.isoIsoTrack, int, help="relIso (iso isolated Track)"),
-            NTupleVariable("IsoTrack_dz", lambda ev: ev.dzIsoTrack, int, help="dz(iso isolated Track, PV)"),
-            NTupleVariable("IsoTrack_pdgId", lambda ev: ev.typeIsoTrack, int, help="PFID (iso isolated Track)"),
+            NTupleVariable("isoTrack_pt", lambda ev: ev.ptIsoTrack, int, help="pt(most isolated Track)"),
+            NTupleVariable("isoTrack_relIso", lambda ev: ev.isoIsoTrack, int, help="relIso (iso isolated Track)"),
+            NTupleVariable("isoTrack_dz", lambda ev: ev.dzIsoTrack, int, help="dz(iso isolated Track, PV)"),
+            NTupleVariable("isoTrack_pdgId", lambda ev: ev.typeIsoTrack, int, help="PFID (iso isolated Track)"),
             ##--------------------------------------------------
             NTupleVariable("mt2", lambda ev: ev.mt2, float, help="mt2(l,met)"),
             #            NTupleVariable("mt2w", lambda ev: ev.mt2w, float, help="mt2w(l,b,met)"),
@@ -40,13 +42,14 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
         
         self.globalObjects.update({
             # put more here
-            "pseudojet1"       : NTupleObject("pseudojet1",     fourVectorType, help="pseudojet1 for hemishphere"),
-            "pseudojet2"       : NTupleObject("pseudojet2",     fourVectorType, help="pseudojet2 for hemishphere"),
+            "pseudoJet1"       : NTupleObject("pseudoJet1",     fourVectorType, help="pseudoJet1 for hemishphere"),
+            "pseudoJet2"       : NTupleObject("pseudoJet2",     fourVectorType, help="pseudoJet2 for hemishphere"),
 
             })
         self.collections.update({
             # put more here
-            "cleanJetsAll"       : NTupleCollection("Jet",     jetTypeSusy, 8, help="Cental jets after full selection and cleaning, sorted by pt"),
+            "cleanJetsAll"       : NTupleCollection("jet",     jetTypeSusy, 8, help="all jets after full selection and cleaning, sorted by pt"),
+            "allphotons" : NTupleCollection("gamma", photonTypeSusy, 5, help="all photons"),
             })
         
         ## Book the variables, but only if we're called explicitly and not through a base class
