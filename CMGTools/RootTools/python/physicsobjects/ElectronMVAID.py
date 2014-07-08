@@ -12,11 +12,11 @@ class ElectronMVAID:
         if type == "TrigNoIP": self.etype = self.estimator.kTrigNoIP;
         if self.etype == -1: raise RuntimeError, "Unknown type %s" % type
         self._init = False
-    def __call__(self,ele,vtx,rho,debug=False):
+    def __call__(self,ele,vtx,rho,full5x5=False,debug=False):
         if not self._init:
             self.estimator.initialize(self.name,self.etype,True,self.sxmls)
             self._init = True
-        return self.estimator.mvaValue(ele,vtx,rho,debug)
+        return self.estimator.mvaValue(ele,vtx,rho,full5x5,debug)
 
 ElectronMVAID_Trig = ElectronMVAID("BDT", "Trig", 
         "EgammaAnalysis/ElectronTools/data/Electrons_BDTG_TrigV0_Cat1.weights.xml.gz",

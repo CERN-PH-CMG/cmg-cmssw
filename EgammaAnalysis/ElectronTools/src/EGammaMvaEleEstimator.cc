@@ -1244,6 +1244,7 @@ Double_t EGammaMvaEleEstimator::mvaValue(const reco::GsfElectron& ele,
 Double_t EGammaMvaEleEstimator::mvaValue(const pat::Electron& ele,
                                          const reco::Vertex& vertex,
                                          double rho,
+                                         bool useFull5x5,
                                          bool printDebug) {
 
   if (!fisInitialized) {
@@ -1269,17 +1270,17 @@ Double_t EGammaMvaEleEstimator::mvaValue(const pat::Electron& ele,
   fMVAVar_detacalo        =  ele.deltaEtaSeedClusterTrackAtCalo();
 
   // Pure ECAL -> shower shapes
-  fMVAVar_see             =  ele.sigmaIetaIeta();    //EleSigmaIEtaIEta
-
-  fMVAVar_spp             =  ele.sigmaIphiIphi();
+  fMVAVar_see             =  useFull5x5 ? ele.full5x5_sigmaIetaIeta() : ele.sigmaIetaIeta();    //EleSigmaIEtaIEta
+  fMVAVar_spp             =  useFull5x5 ? ele.full5x5_sigmaIphiIphi() : ele.sigmaIphiIphi();    //EleSigmaIEtaIEta
 
   fMVAVar_etawidth        =  ele.superCluster()->etaWidth();
   fMVAVar_phiwidth        =  ele.superCluster()->phiWidth();
-  fMVAVar_OneMinusE1x5E5x5       =  (ele.e5x5()) !=0. ? 1.-(ele.e1x5()/ele.e5x5()) : -1. ;
-  fMVAVar_R9              =  ele.r9();
+  fMVAVar_OneMinusE1x5E5x5  = useFull5x5 ? ( (ele.full5x5_e5x5()) !=0. ? 1.-(ele.full5x5_e1x5()/ele.full5x5_e5x5()) : -1. ) 
+                                         : ( (ele.e5x5()        ) !=0. ? 1.-(ele.e1x5()        /ele.e5x5()        ) : -1. ) ;
+  fMVAVar_R9                =  useFull5x5 ? ele.full5x5_r9() : ele.r9();
 
   // Energy matching
-  fMVAVar_HoE             =  ele.hadronicOverEm();
+  fMVAVar_HoE             =  ele.hadronicOverEm(); // this is identical for both
   fMVAVar_EoP             =  ele.eSuperClusterOverP();
 
   // unify this in the future?

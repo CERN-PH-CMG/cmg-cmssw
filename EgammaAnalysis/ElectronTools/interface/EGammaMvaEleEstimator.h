@@ -87,6 +87,7 @@ class EGammaMvaEleEstimator{
     Double_t mvaValue(const pat::Electron& ele,
 		      const reco::Vertex& vertex,
 		      double rho,
+                      bool useFull5x5 = kFALSE,
 		      bool printDebug = kFALSE);
     
     Double_t isoMvaValue(const reco::GsfElectron& ele, 

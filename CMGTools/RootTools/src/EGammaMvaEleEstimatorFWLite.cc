@@ -37,8 +37,9 @@ void EGammaMvaEleEstimatorFWLite::initialize( std::string methodName,
 float EGammaMvaEleEstimatorFWLite::mvaValue(const pat::Electron& ele,
                 const reco::Vertex& vertex,
                 double rho,
+                bool full5x5,
                 bool printDebug)
 {
-    return estimator_->mvaValue(ele,vertex,rho,printDebug);
+    return estimator_->mvaValue(ele,vertex,rho,full5x5,printDebug);
 }
 

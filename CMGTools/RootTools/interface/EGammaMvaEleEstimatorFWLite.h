@@ -26,6 +26,7 @@ class EGammaMvaEleEstimatorFWLite {
         float mvaValue(const pat::Electron& ele,
                 const reco::Vertex& vertex,
                 double rho,
+                bool full5x5,
                 bool printDebug = false);
     private:
         EGammaMvaEleEstimator *estimator_;
