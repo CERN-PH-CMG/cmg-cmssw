@@ -215,7 +215,7 @@ class ttHLepAnalyzerSusy( Analyzer ):
 
         # Set tight MVA id
         for ele in allelectrons:
-            ele.tightIdResult = ele.electronID("POG_MVA_ID_Trig")
+            ele.tightIdResult = ele.electronID("POG_MVA_ID_Trig_full5x5")
         
         return allelectrons 
 
