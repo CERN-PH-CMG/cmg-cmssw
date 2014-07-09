@@ -12,9 +12,9 @@ class Electron( Lepton ):
         self.tightIdResult = None
         self.associatedVertex = None
         self.rho              = None
-        self._mvaNonTrigV0  = None
-        self._mvaTrigV0     = None
-        self._mvaTrigNoIPV0 = None
+        self._mvaNonTrigV0  = {True:None, False:None}
+        self._mvaTrigV0     = {True:None, False:None}
+        self._mvaTrigNoIPV0 = {True:None, False:None}
 
     def electronID( self, id, vertex=None, rho=None ):
         if id is None or id == "": return True
@@ -28,12 +28,12 @@ class Electron( Lepton ):
                 return self.cutBasedId(id.replace("POG_Cuts_ID_","POG_")) 
         raise RuntimeError, "Electron id '%s' not yet implemented in Electron.py" % id
 
-    def cutBasedId(self, wp, showerShapes="full5x5"):
+    def cutBasedId(self, wp, showerShapes="auto"):
         if "_full5x5" in wp:
             showerShapes = "full5x5"
             wp = wp.replace("_full5x5","")
         elif showerShapes == "auto":
-            if "POG_CSA14_25ns_v1" in wp or "POG_CSA14_50ns_v1" in id:
+            if "POG_CSA14_25ns_v1" in wp or "POG_CSA14_50ns_v1" in wp:
                 showerShapes = "full5x5"
         vars = {
             'dEtaIn' : abs(self.physObj.deltaEtaSuperClusterTrackAtVtx()),
@@ -79,25 +79,25 @@ class Electron( Lepton ):
         return self.tightIdResult
     
     def mvaNonTrigV0( self, full5x5=False, debug = False ):
-        if self._mvaNonTrigV0 == None:
+        if self._mvaNonTrigV0[full5x5] == None:
             if self.associatedVertex == None: raise RuntimeError, "You need to set electron.associatedVertex before calling any MVA"
             if self.rho              == None: raise RuntimeError, "You need to set electron.rho before calling any MVA"
-            self._mvaNonTrigV0 = ElectronMVAID_NonTrig(self.physObj, self.associatedVertex, self.rho, full5x5, debug)
-        return self._mvaNonTrigV0 
+            self._mvaNonTrigV0[full5x5] = ElectronMVAID_NonTrig(self.physObj, self.associatedVertex, self.rho, full5x5, debug)
+        return self._mvaNonTrigV0[full5x5] 
 
     def mvaTrigV0( self, full5x5=False, debug = False ):
-        if self._mvaTrigV0 == None:
+        if self._mvaTrigV0[full5x5] == None:
             if self.associatedVertex == None: raise RuntimeError, "You need to set electron.associatedVertex before calling any MVA"
             if self.rho              == None: raise RuntimeError, "You need to set electron.rho before calling any MVA"
-            self._mvaTrigV0 = ElectronMVAID_Trig(self.physObj, self.associatedVertex, self.rho, full5x5, debug)
-        return self._mvaTrigV0 
+            self._mvaTrigV0[full5x5] = ElectronMVAID_Trig(self.physObj, self.associatedVertex, self.rho, full5x5, debug)
+        return self._mvaTrigV0[full5x5] 
 
     def mvaTrigNoIPV0( self, full5x5=False, debug = False ):
-        if self._mvaTrigNoIPV0 == None:
+        if self._mvaTrigNoIPV0[full5x5] == None:
             if self.associatedVertex == None: raise RuntimeError, "You need to set electron.associatedVertex before calling any MVA"
             if self.rho              == None: raise RuntimeError, "You need to set electron.rho before calling any MVA"
-            self._mvaTrigNoIPV0 = ElectronMVAID_TrigNoIP(self.physObj, self.associatedVertex, self.rho, full5x5, debug)
-        return self._mvaTrigNoIPV0 
+            self._mvaTrigNoIPV0[full5x5] = ElectronMVAID_TrigNoIP(self.physObj, self.associatedVertex, self.rho, full5x5, debug)
+        return self._mvaTrigNoIPV0[full5x5] 
 
 
     def mvaIDTight(self, full5x5=False):
