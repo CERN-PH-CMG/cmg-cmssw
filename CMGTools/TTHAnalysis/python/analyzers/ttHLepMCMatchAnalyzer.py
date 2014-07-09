@@ -16,6 +16,7 @@ from CMGTools.RootTools.physicsobjects.Muon import Muon
 from CMGTools.RootTools.physicsobjects.Jet import Jet
 
 from CMGTools.RootTools.utils.DeltaR import *
+from CMGTools.RootTools.physicsobjects.genutils import *
 
 def matchObjectCollection3 ( objects, matchCollection, deltaRMax = 0.3, filter = lambda x,y : True ):
     '''Univoque association of an element from matchCollection to an element of objects.
@@ -89,32 +90,20 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
             lep.mcMatchId = (gen.sourceId if gen != None else 0)
             lep.mcMatchTau = (gen.isTau if gen != None else -99)
 
-    def isFromB(self,particle,bid=5):
+    def isFromB(self,particle,bid=5, done={}):
         for i in xrange( particle.numberOfMothers() ): 
             mom  = particle.mother(i)
             momid = abs(mom.pdgId())
             if momid / 1000 == bid or momid / 100 == bid or momid == bid: 
                 return True
-            elif mom.status() == 2 and self.isFromB(mom):
-                return True
-        return False
-
-    def isFromHard(self,particle):
-        for i in xrange( particle.numberOfMothers() ): 
-            mom  = particle.mother(i)
-            momid = abs(mom.pdgId())
-            if mom.status() == 3 and momid >= 11 and momid <= 25 and momid != 21: 
-                return True
-            elif momid > 25 or momid == 21: # hadrons or gluons
-                return False
-            if self.isFromHard(mom):
+            elif mom.status() == 2 and self.isFromB(mom, done=done):
                 return True
         return False
 
     def sourceBQuark(self,particle,event):
         for i in xrange( particle.numberOfMothers() ):
             mom  = particle.mother(i)
-            if mom.status() == 3 and abs(mom.pdgId()) == 5:
+            if mom.status() >= 3 and abs(mom.pdgId()) == 5:
                 return mom
             elif mom.status() == 2:
                 momB = self.sourceBQuark(mom,event)
@@ -133,7 +122,7 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
             else:
                 lep.mcMatchAny2 = (5 if lep.mcMatchAny == 2 else lep.mcMatchAny)
             if gen != None and hasattr(lep,'mcMatchId') and lep.mcMatchId == 0:
-                if self.isFromHard(gen): lep.mcMatchId = 100
+                if isPromptLepton(gen, False): lep.mcMatchId = 100
             elif not hasattr(lep,'mcMatchId'):
                 lep.mcMatchId = 0
             if not hasattr(lep,'mcMatchTau'): lep.mcMatchTau = 0

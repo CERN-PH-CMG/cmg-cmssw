@@ -39,3 +39,27 @@ def bosonToX(particles, bosonType, xType):
     xDaus = filter(lambda x: x.status()==3 and abs(x.pdgId())==xType, daus)
     # print printOut(xDaus)
     return xDaus, True 
+
+def isNotHadronicId(pdgId,includeSMLeptons=True):
+    if abs(pdgId) in [11,12,13,14,15,16]:
+        return includeSMLeptons
+    i = (abs(pdgId) % 1000)
+    return i > 10 and i != 21 and i < 100
+
+def isPromptLepton(lepton, beforeFSR, includeMotherless=True, includeTauDecays=False):
+    if abs(lepton.pdgId()) not in [11,13,15]:
+        return False
+    if lepton.numberOfMothers() == 0:
+        return includeMotherless;
+    mom = lepton.mother()
+    if mom.pdgId() == lepton.pdgId():
+        if beforeFSR: return False
+        return isPromptLepton(mom, beforeFSR, includeMotherless, includeTauDecays)
+    elif abs(mom.pdgId()) == 15:
+        if not includeTauDecays: return False
+        return isPromptLepton(mom, beforeFSR, includeMotherless, includeTauDecays)
+    else:
+        return isNotHadronicId(mom.pdgId(), includeSMLeptons=False)
+
+
+
