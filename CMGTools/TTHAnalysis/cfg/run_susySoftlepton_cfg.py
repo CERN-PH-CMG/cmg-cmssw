@@ -55,10 +55,9 @@ treeProducer = cfg.Analyzer(
             'DoubleEl' : [ t for t in triggers_ee if "Ele15_Ele8_Ele5" not in t ],
             'TripleEl' : [ t for t in triggers_ee if "Ele15_Ele8_Ele5"     in t ],
             'MuEG'     : [ t for t in triggers_mue if "Mu" in t and "Ele" in t ],
-            'MET15'    : triggers_MET150,
+            'MET150'    : triggers_MET150,
             'HT650'    : triggers_HT650,
             'triggers_HTMET' : triggers_HTMET,
-            'MetTrigger' : triggers_MET,
             'MetTriggerParked' : triggers_METParked 
         }
     )
@@ -73,7 +72,8 @@ from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
 
 
 #selectedComponents = [ DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,TTH122,TTH127,TTJetsSem1,TTJetsSem2 ] 
-selectedComponents = [ T2DegenerateStop_2J_4 ]
+#selectedComponents = [ T2DegenerateStop_2J_4 ]
+selectedComponents = [WJetsPtW100]
 
 #-------- SEQUENCE
 
@@ -88,7 +88,7 @@ test = 1
 if test==1:
     # test a single component, using a single thread.
     comp = selectedComponents[0]
-    comp.files = comp.files[:4]
+    comp.files =  comp.files[:1]
     selectedComponents = [comp]
     comp.splitFactor = 1
 elif test==2:    
