@@ -20,22 +20,21 @@ ttHJetAna.jetEtaCentral = 2.5
 
 # those are the cuts for the nonEMu
 ttHIsoTrackAna = cfg.Analyzer(
-            'ttHIsoTrackAnalyzer',
-            candidates='cmgCandidates',
-            candidatesTypes='std::vector<cmg::PackedCandidate>',
-            ptMin = 10,
-            ptMinEMU = 5,
-            dzMax = 0.1,
-            #####
-            isoDR = 0.3,
-            ptPartMin = 0,
-            dzPartMax = 0.1,
-            #####
-            MaxIsoSum = 0.1,
-            MaxIsoSumEMU = 0.2,
-            doSecondVeto = True
-            )
-
+                'ttHIsoTrackAnalyzer',
+                candidates='cmgCandidates',
+                candidatesTypes='std::vector<cmg::PackedCandidate>',
+                ptMin = 5, # for pion
+                ptMinEMU = 5, # for EMU
+                dzMax = 0.1,
+                #####
+                isoDR = 0.3,
+                ptPartMin = 0,
+                dzPartMax = 0.1,
+                #####
+                MaxIsoSum = 0.1, ### unused
+                MaxIsoSumEMU = 0.2, ### unused
+                doSecondVeto = False
+                )
 
 ##------------------------------------------
 ##  TOLOLOGIAL VARIABLES: MT, MT2
