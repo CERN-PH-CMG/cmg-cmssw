@@ -14,6 +14,13 @@ ttHJetAna.relaxJetId = True
 ttHJetAna.doPuId = False
 ttHJetAna.jetEtaCentral = 2.5
 
+# TAU 
+ttHTauAna.etaMax = 2.3
+ttHTauAna.dxyMax = 99999.
+ttHTauAna.dzMax = 99999.
+ttHTauAna.vetoLeptons = False
+ttHTauAna.vetoLeptonsPOG = True
+
 ##------------------------------------------
 ##  ISOLATED TRACK
 ##------------------------------------------
@@ -25,17 +32,17 @@ ttHIsoTrackAna = cfg.Analyzer(
 #            candidatesTypes='std::vector<cmg::Candidate>',
             candidates='packedPFCandidates',
             candidatesTypes='std::vector<pat::PackedCandidate>',
-            ptMin = 10,
-            ptMinEMU = 5,
+            ptMin = 5, # for pion 
+            ptMinEMU = 5, # for EMU
             dzMax = 0.1,
             #####
             isoDR = 0.3,
             ptPartMin = 0,
             dzPartMax = 0.1,
             #####
-            MaxIsoSum = 0.1,
-            MaxIsoSumEMU = 0.2,
-            doSecondVeto = True
+            MaxIsoSum = 0.1, ### unused
+            MaxIsoSumEMU = 0.2, ### unused
+            doSecondVeto = False
             )
 
 

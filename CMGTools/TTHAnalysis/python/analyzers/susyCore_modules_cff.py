@@ -127,7 +127,7 @@ ttHLepMCAna = cfg.Analyzer(
     matchAllInclusiveLeptons = False,
     )
 
-# Tau Analyzer (generic)
+# Photon Analyzer (generic)
 ttHPhoAna = cfg.Analyzer(
     'ttHPhotonAnalyzerSusy',
     photons='slimmedPhotons',
@@ -138,8 +138,12 @@ ttHPhoAna = cfg.Analyzer(
 ttHTauAna = cfg.Analyzer(
     'ttHTauAnalyzer',
     ptMin = 20,
+    etaMax = 9999,
+    dxyMax = 0.5,
+    dzMax = 1.0,
     vetoLeptons = True,
     leptonVetoDR = 0.4,
+    vetoLeptonsPOG = False,
     tauID = "byLooseCombinedIsolationDeltaBetaCorr3Hits",
     tauLooseID = "decayModeFinding",
 )

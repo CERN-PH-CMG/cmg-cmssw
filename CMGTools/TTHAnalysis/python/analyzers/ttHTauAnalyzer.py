@@ -59,8 +59,16 @@ class ttHTauAnalyzer( Analyzer ):
                     if deltaR(lep.eta(), lep.phi(), tau.eta(), tau.phi()) < self.cfg_ana.leptonVetoDR:
                         tau.lepVeto = True
                 if tau.lepVeto: continue
+            if self.cfg_ana.vetoLeptonsPOG:
+                if not tau.tauID("againstMuonTight"):
+                        tau.lepVeto = True
+                if not tau.tauID("againstElectronLoose"):
+                        tau.lepVeto = True
+                if tau.lepVeto: continue
             if tau.pt() < self.cfg_ana.ptMin: continue
-            if abs(tau.dxy()) > 0.5 or abs(tau.dz()) > 1.0: continue
+            if abs(tau.eta()) > self.cfg_ana.etaMax: continue
+###            tau.dxy and tau.dz are zero
+###            if abs(tau.dxy()) > self.cfg_ana.dxyMax or abs(tau.dz()) > self.cfg_ana.dzMax: continue
             foundTau = True
             def id3(tau,X):
                 """Create an integer equal to 1-2-3 for (loose,medium,tight)"""
