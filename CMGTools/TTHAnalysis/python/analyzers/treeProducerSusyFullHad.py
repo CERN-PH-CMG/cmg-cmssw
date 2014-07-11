@@ -23,10 +23,6 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
 #            NTupleVariable("mtw", lambda ev: ev.mtw, int, help="mt(l,met)"),
 #            NTupleVariable("mtwTau", lambda ev: ev.mtwTau, int, help="mt(tau,met)"),
 #            NTupleVariable("IsoTrack_mtw", lambda ev: ev.mtwIsoTrack, int, help="mt(isoTrack,met)"),
-            NTupleVariable("isoTrack_pt", lambda ev: ev.ptIsoTrack, int, help="pt(most isolated Track)"),
-            NTupleVariable("isoTrack_relIso", lambda ev: ev.isoIsoTrack, int, help="relIso (iso isolated Track)"),
-            NTupleVariable("isoTrack_dz", lambda ev: ev.dzIsoTrack, int, help="dz(iso isolated Track, PV)"),
-            NTupleVariable("isoTrack_pdgId", lambda ev: ev.typeIsoTrack, int, help="PFID (iso isolated Track)"),
             ##--------------------------------------------------
             NTupleVariable("mt2", lambda ev: ev.mt2, float, help="mt2(l,met)"),
             #            NTupleVariable("mt2w", lambda ev: ev.mt2w, float, help="mt2w(l,b,met)"),
@@ -44,12 +40,12 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             # put more here
             "pseudoJet1"       : NTupleObject("pseudoJet1",     fourVectorType, help="pseudoJet1 for hemishphere"),
             "pseudoJet2"       : NTupleObject("pseudoJet2",     fourVectorType, help="pseudoJet2 for hemishphere"),
-
             })
         self.collections.update({
             # put more here
             "cleanJetsAll"       : NTupleCollection("jet",     jetTypeSusy, 8, help="all jets after full selection and cleaning, sorted by pt"),
             "allphotons" : NTupleCollection("gamma", photonTypeSusy, 5, help="all photons"),
+            "selectedIsoTrack"    : NTupleCollection("isoTrack", isoTrackType, 3, help="isoTrack, sorted by pt"),
             })
         
         ## Book the variables, but only if we're called explicitly and not through a base class
