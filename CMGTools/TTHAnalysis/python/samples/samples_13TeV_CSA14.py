@@ -48,7 +48,7 @@ from CMGTools.TTHAnalysis.samples.ComponentCreator import ComponentCreator
 kreator = ComponentCreator()
 
 ## CENTRALLY PRODUCED MINIAODs (from global DBS)
-TTJets = kreator.makeMCComponent("TTJets",    "/RelValTTbar_13/CMSSW_7_0_6-PU50ns_PLS170_V6AN1-v1/MINIAODSIM", "CMS", "*.root")
+TTJets = kreator.makeMCComponent("TTJets",    "/RelValTTbar_13/CMSSW_7_0_6-PU50ns_PLS170_V6AN1-v1/MINIAODSIM", "CMS", ".*root")
 
 ## CENTRALLY PRODUCED, PRIVATELY COPIED
 TTJets_PU20bx25 = kreator.makePrivateMCComponent("TTJets_PU20bx25", "/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM/", [ "/store/cmst3/user/gpetrucc/miniAOD/v1/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola_PU20bx25.1.root","/store/cmst3/user/gpetrucc/miniAOD/v1/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola_PU20bx25.2.root"])
