@@ -217,10 +217,22 @@ class ttHCoreEventAnalyzer( Analyzer ):
         self.makeMlls(event, self.maxLeps)
         self.makeLepPtRel(event)
 
+        # look for minimal deltaPhi between MET and four leading jets with pt>40 and eta<2.4
+        event.deltaPhiMin = 999.
+        for n,j in enumerate(event.cleanJets):
+            if n>3:  break
+            thisDeltaPhi = abs( deltaPhi( j.phi(), event.met.phi() ) )
+            if thisDeltaPhi < event.deltaPhiMin : event.deltaPhiMin = thisDeltaPhi
+
         for lep in event.selectedLeptons:
             self.leptonMVA.addMVA(lep)
         for lep in event.inclusiveLeptons:
             if lep not in event.selectedLeptons:
                 self.leptonMVA.addMVA(lep)
+
+
+        # absolute value of the vectorial difference between met and mht
+        diffMetMht_vec = ROOT.reco.Particle.LorentzVector(event.mhtJet40jvec.px()-event.met.px(), event.mhtJet40jvec.py()-event.met.py(), 0, 0 )                     
+        event.diffMetMht = sqrt( diffMetMht_vec.px()*diffMetMht_vec.px() + diffMetMht_vec.py()*diffMetMht_vec.py() )
 
         return True
