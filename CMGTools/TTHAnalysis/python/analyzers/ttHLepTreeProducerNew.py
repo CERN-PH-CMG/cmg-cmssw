@@ -51,6 +51,8 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
         if isMC:
             ## PU weights
             tr.var("puWeight")
+            ## number of true interactions
+            tr.var("nTrueInt")
             ## PDF weights
             self.pdfWeights = []
             if hasattr(self.cfg_ana, "PDFWeights") and len(self.cfg_ana.PDFWeights) > 0:
@@ -91,6 +93,7 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
 
         if isMC:
             ## PU weights
+            tr.fill("nTrueInt", event.nPU)
             tr.fill("puWeight", event.eventWeight)
             ## PDF weights
             for (pdf,nvals) in self.pdfWeights:
