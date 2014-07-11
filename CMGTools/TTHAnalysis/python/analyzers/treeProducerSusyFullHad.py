@@ -13,7 +13,7 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
 
             #NTupleVariable("crossSection", lambda ev : ev.crossSection, help="process cross section in pb"),
 
-            NTupleVariable("nBJetLoose40", lambda ev: sum([j.btagWP("CSVM") for j in ev.cleanJets if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CSV medium"),
+            NTupleVariable("nBJetLoose40", lambda ev: sum([j.btagWP("CSVL") for j in ev.cleanJets if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CSV medium"),
 
             NTupleVariable("ht", lambda ev : ev.htJet40j, help="H_{T} computed from only jets (with |eta|<2.4, pt > 40 GeV)"),
 
@@ -57,6 +57,7 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
         self.collections.update({
             # put more here
             "inclusiveLeptons" : NTupleCollection("lep", leptonTypeSusy, 8, help="Leptons after the preselection", filter=lambda l : l.pt()>10 ),
+            #"inclusiveLeptonsCuts" : NTupleCollection("lep", leptonTypeSusy, 8, help="Leptons after the preselection", filter=lambda l : l.pt()>10 ),
             "cleanJetsAll"       : NTupleCollection("jet",     jetTypeSusy, 8, help="all jets after full selection and cleaning, sorted by pt"),
             "allphotons" : NTupleCollection("gamma", photonTypeSusy, 5, help="all photons"),
             })
