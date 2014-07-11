@@ -11,12 +11,20 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
         ## Declare what we want to fill (in addition to susy core ones)
         self.globalVariables += [
 
+            #NTupleVariable("crossSection", lambda ev : ev.crossSection, help="process cross section in pb"),
+
+            NTupleVariable("nBJetLoose40", lambda ev: sum([j.btagWP("CSVM") for j in ev.cleanJets if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CSV medium"),
+
             NTupleVariable("ht", lambda ev : ev.htJet40j, help="H_{T} computed from only jets (with |eta|<2.4, pt > 40 GeV)"),
+
+            NTupleVariable("deltaPhiMin", lambda ev : ev.deltaPhiMin, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4"),
+            NTupleVariable("diffMetMht", lambda ev : ev.diffMetMht, help="abs( vec(mht) - vec(met) )"),
+
             NTupleVariable("mht_pt", lambda ev : ev.mhtJet40j, help="H_{T}^{miss} computed from only jets (with |eta|<2.4, pt > 40 GeV)"),
             NTupleVariable("mht_phi", lambda ev : ev.mhtPhiJet40j, help="H_{T}^{miss} #phi computed from onlyy jets (with |eta|<2.4, pt > 40 GeV)"),
             ##--------------------------------------------------
-            NTupleVariable("nMuons10", lambda ev: sum([l.pt() > 10 for l in ev.selectedMuons]), int, help="Number of muons with pt > 10"),
-            NTupleVariable("nElectrons10", lambda ev: sum([l.pt() > 10 for l in ev.selectedElectrons]), int, help="Number of electrons with pt > 10"),
+            NTupleVariable("nMuons10", lambda ev: sum([l.pt() > 10 and abs(l.pdgId()) == 13 for l in ev.inclusiveLeptons]), int, help="Number of muons with pt > 10"),
+            NTupleVariable("nElectrons10", lambda ev: sum([l.pt() > 10 and abs(l.pdgId()) == 11 for l in ev.inclusiveLeptons]), int, help="Number of electrons with pt > 10"),
             NTupleVariable("nTaus20", lambda ev: sum([l.pt() > 20 for l in ev.selectedTaus]), int, help="Number of taus with pt > 20"),
             NTupleVariable("nGammas20", lambda ev: sum([l.pt() > 20 for l in ev.selectedPhotons]), int, help="Number of photons with pt > 20"),
             ##--------------------------------------------------
@@ -48,6 +56,7 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             })
         self.collections.update({
             # put more here
+            "inclusiveLeptons" : NTupleCollection("lep", leptonTypeSusy, 8, help="Leptons after the preselection", filter=lambda l : l.pt()>10 ),
             "cleanJetsAll"       : NTupleCollection("jet",     jetTypeSusy, 8, help="all jets after full selection and cleaning, sorted by pt"),
             "allphotons" : NTupleCollection("gamma", photonTypeSusy, 5, help="all photons"),
             })
