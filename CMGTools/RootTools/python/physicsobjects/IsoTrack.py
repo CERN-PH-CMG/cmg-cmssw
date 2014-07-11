@@ -22,18 +22,17 @@ class IsoTrack( Lepton ):
     def dxy(self, vertex=None):
         if vertex is None:
             vertex = self.associatedVertex
-        vtx = self.vertex();  # FIXME 
         p4 = self.p4();
-        return ( - (vtx.x()-vertex.position().x()) *  p4.y()
-                 + (vtx.y()-vertex.position().y()) *  p4.x() ) /  p4.pt();    
-
+        return ( - (self.vx()-vertex.position().x()) *  self.py() + (self.vy()-vertex.position().y()) *  self.px() ) /  self.pt();
+#        return ( - (vtx.x()-vertex.position().x()) *  p4.y() + (vtx.y()-vertex.position().y()) *  p4.x() ) /  p4.pt();
+        
     def dz(self, vertex=None):
         if vertex is None:
             vertex = self.associatedVertex
-        vtx = self.vertex();  # FIXME 
-        p4 = self.p4();        
-        return  (vtx.z()-vertex.position().z()) - ((vtx.x()-vertex.position().x())*p4.x()+(vtx.y()-vertex.position().y())*p4.y())/ p4.pt() *  p4.z()/ p4.pt();
-
+        p4 = self.p4();
+        return  (self.vz()-vertex.position().z()) - ((self.vx()-vertex.position().x())*self.px()+(self.vy()-vertex.position().y())*self.py())/ self.pt() *  self.pz()/ self.pt();
+#        return  (vtx.z()-vertex.position().z()) - ((vtx.x()-vertex.position().x())*p4.x()+(vtx.y()-vertex.position().y())*p4.y())/ p4.pt() *  p4.z()/ p4.pt();
+        
     def __str__(self):
         lep = super(IsoTrack, self).__str__()
         return lep
