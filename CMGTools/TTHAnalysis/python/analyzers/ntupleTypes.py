@@ -20,6 +20,11 @@ fourVectorType = NTupleObjectType("fourVector", variables = [
 particleType = NTupleObjectType("particle", baseObjectTypes = [ fourVectorType ], variables = [
     NTupleVariable("pdgId",   lambda x : x.pdgId(), int),
 ])
+
+##------------------------------------------  
+## LEPTON
+##------------------------------------------  
+
 leptonType = NTupleObjectType("lepton", baseObjectTypes = [ particleType ], variables = [
     NTupleVariable("charge",   lambda x : x.charge(), int),
     NTupleVariable("dxy",   lambda x : x.dxy(), help="d_{xy} with respect to PV, in cm (with sign)"),
@@ -95,6 +100,10 @@ leptonTypeFull = NTupleObjectType("leptonFull", baseObjectTypes = [ leptonTypeSu
 ])
  
 
+##------------------------------------------  
+## TAU
+##------------------------------------------  
+
 tauType = NTupleObjectType("tau",  baseObjectTypes = [ particleType ], variables = [
     NTupleVariable("charge",   lambda x : x.charge(), int),
     NTupleVariable("dxy",   lambda x : x.dxy(), help="d_{xy} of lead track with respect to PV, in cm (with sign)"),
@@ -111,6 +120,10 @@ tauTypeSusy = NTupleObjectType("tauSusy", baseObjectTypes = [ tauType ], variabl
     NTupleVariable("mcMatchId",  lambda x : x.mcMatchId, int, mcOnly=True, help="Match to source from hard scatter (25 for H, 6 for t, 23/24 for W/Z)"),
 ])
 
+##------------------------------------------  
+##  ISOTRACK
+##------------------------------------------  
+
 isoTrackType = NTupleObjectType("isoTrack",  baseObjectTypes = [ particleType ], variables = [
     NTupleVariable("charge",   lambda x : x.charge(), int),
     NTupleVariable("dz",    lambda x : x.dz() , help="d_{z} of lead track with respect to PV, in cm (with sign)"),
@@ -119,9 +132,24 @@ isoTrackType = NTupleObjectType("isoTrack",  baseObjectTypes = [ particleType ],
 ])
 
 
-photonTypeSusy = NTupleObjectType("photon", baseObjectTypes = [ particleType ], variables = [
+##------------------------------------------  
+## PHOTON
+##------------------------------------------  
+
+photonTypeSusy = NTupleObjectType("gamma", baseObjectTypes = [ particleType ], variables = [
+    NTupleVariable("idCutBased", lambda x : x.idCutBased, int, help="1,2,3 if the gamma passes the loose, medium, tight WP of PhotonCutBasedID"),
+    NTupleVariable("hOverE",  lambda x : x.hOVERe(), float, help="hoverE for photons"),
+    NTupleVariable("r9",  lambda x : x.r9(), float, help="r9 for photons"),
+    NTupleVariable("sigmaIetaIeta",  lambda x : x.sigmaIetaIeta(), float, help="sigmaIetaIeta for photons"),
+    NTupleVariable("chHadIso",  lambda x : x.chargedHadronIso(), float, help="chargedHadronIsolation for photons"),
+    NTupleVariable("neuHadIso",  lambda x : x.neutralHadronIso(), float, help="neutralHadronIsolation for photons"),
+    NTupleVariable("phIso",  lambda x : x.photonIso(), float, help="gammaIsolation for photons"),
     NTupleVariable("mcMatchId",  lambda x : x.mcMatchId, int, mcOnly=True, help="Match to source from hard scatter (25 for H, 6 for t, 23/24 for W/Z)"),
 ])
+
+##------------------------------------------  
+## JET
+##------------------------------------------  
 
 jetType = NTupleObjectType("jet",  baseObjectTypes = [ fourVectorType ], variables = [
     NTupleVariable("btagCSV",   lambda x : x.btag('combinedSecondaryVertexBJetTags'), help="CSV discriminator"),
@@ -144,14 +172,21 @@ jetTypeSusy = NTupleObjectType("jetSusy",  baseObjectTypes = [ jetType ], variab
     NTupleVariable("Id",    lambda x : x.jetID("POG_PFID_Loose") , int, mcOnly=False,help="POG Loose jet ID"),
 ])
 
-        
+      
+##------------------------------------------  
+## MET
+##------------------------------------------  
+  
 metType = NTupleObjectType("met", baseObjectTypes = [ fourVectorType ], variables = [
     NTupleVariable("sumEt", lambda x : x.sumEt() ),
     NTupleVariable("genPt",  lambda x : x.genMET().pt() , mcOnly=True ),
     NTupleVariable("genPhi", lambda x : x.genMET().phi(), mcOnly=True ),
     NTupleVariable("genEta", lambda x : x.genMET().eta(), mcOnly=True ),
-
 ])
+
+##------------------------------------------  
+## GENPARTICLE
+##------------------------------------------  
 
 genParticleType = NTupleObjectType("genParticle", baseObjectTypes = [ particleType ], mcOnly=True, variables = [
     NTupleVariable("charge",   lambda x : x.threeCharge()/3.0, float),

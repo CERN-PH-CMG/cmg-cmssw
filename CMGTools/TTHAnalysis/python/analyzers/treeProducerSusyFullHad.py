@@ -44,7 +44,7 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
         self.collections.update({
             # put more here
             "cleanJetsAll"       : NTupleCollection("jet",     jetTypeSusy, 8, help="all jets after full selection and cleaning, sorted by pt"),
-            "allphotons" : NTupleCollection("gamma", photonTypeSusy, 5, help="all photons"),
+            "selectedPhotons"    : NTupleCollection("gamma", photonTypeSusy, 5, help="photons with pt>20 and loose cut based ID"),
             "selectedIsoTrack"    : NTupleCollection("isoTrack", isoTrackType, 3, help="isoTrack, sorted by pt"),
             })
         
