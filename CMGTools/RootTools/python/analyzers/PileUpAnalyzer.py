@@ -101,7 +101,7 @@ class PileUpAnalyzer( Analyzer ):
           return True
 
         event.vertexWeight = 1
-        nPU = None
+        event.nPU = None
         if self.cfg_comp.isMC:
             event.pileUpInfo = map( PileUpSummaryInfo,
                                     self.mchandles['pusi'].product() )
@@ -109,23 +109,23 @@ class PileUpAnalyzer( Analyzer ):
                 if puInfo.getBunchCrossing()==0:
                     # import pdb; pdb.set_trace()
                     if self.cfg_ana.true is False:
-                        nPU = puInfo.nPU()
+                        event.nPU = puInfo.nPU()
                     else:
-                        nPU = puInfo.nTrueInteractions()
+                        event.nPU = puInfo.nTrueInteractions()
 
                     if self.doHists:
-                        self.rawmcpileup.hist.Fill( nPU )
+                        self.rawmcpileup.hist.Fill( event.nPU )
 
-            if nPU is None:
+            if event.nPU is None:
                 raise ValueError('nPU cannot be None! means that no pu info has been found for bunch crossing 0.')
         elif self.cfg_comp.isEmbed:
             vertices = self.handles['vertices'].product()
-            nPU = len(vertices)
+            event.nPU = len(vertices)
         else:
             return True
 
         if self.enable:
-            bin = self.datahist.FindBin(nPU)
+            bin = self.datahist.FindBin(event.nPU)
             if bin<1 or bin>self.datahist.GetNbinsX():
                 event.vertexWeight = 0
             else:
