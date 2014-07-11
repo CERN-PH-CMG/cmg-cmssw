@@ -46,7 +46,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
         count = self.counters.counter('pairs')
         count.register('all events')
         
-    def printMT(self, event):
+    def makeMT(self, event):
 #        print '==> INSIDE THE PRINT MT'
 #        print 'MET=',event.met.pt() 
 
@@ -61,7 +61,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
         for myTrack in event.selectedIsoTrack:
             event.mtwIsoTrack = mtw(myTrack, event.met)
 
-    def printMT2(self, event):
+    def makeMT2(self, event):
 #        print '==> INSIDE THE PRINT MT2'
 #        print 'MET=',event.met.pt() 
 
@@ -70,37 +70,62 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
 ## ===> hadronic MT2 (as used in the SUS-13-019) below place holder
 
-        pxvec  = []
-        pyvec  = []
-        pzvec  = []
-        Evec  = []
-        
-        for jet in event.cleanJetsAll:
-            pxvec.append(jet.px())
-            pyvec.append(jet.py())
-            pzvec.append(jet.pz())
-            Evec.append(jet.energy())
+        if len(event.cleanJetsAll)>=2:
 
-#        hemisphere = Hemisphere(pxvec, pyvec, pzvec, Evec, 2, 2)
-#        grouping=hemisphere.getGrouping()
-#        print 'grouping ',len(grouping)
+            pxvec  = ROOT.std.vector(float)()
+            pyvec  = ROOT.std.vector(float)()
+            pzvec  = ROOT.std.vector(float)()
+            Evec  = ROOT.std.vector(float)()
+            grouping  = ROOT.std.vector(int)()
+            
+            for jet in event.cleanJetsAll:
+                pxvec.push_back(jet.px())
+                pyvec.push_back(jet.py())
+                pzvec.push_back(jet.pz())
+                Evec.push_back(jet.energy())
 
-#        event.pseudojet1 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
-#        event.pseudojet2 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+            hemisphere = Hemisphere(pxvec, pyvec, pzvec, Evec, 2, 2)
+            grouping=hemisphere.getGrouping()
+##            print 'grouping ',len(grouping)
 
-        metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
-        metVector =numpy.asarray(metVector,dtype='double')
-        jetVector1 = TVectorD(3,array.array('d',[0.,event.pseudojet1.px(), event.pseudojet1.py()]))
-        jetVector1 =numpy.asarray(jetVector1,dtype='double')
-        jetVector2 = TVectorD(3,array.array('d',[0.,event.pseudojet2.px(), event.pseudojet2.py()]))        
-        jetVector2 =numpy.asarray(jetVector2,dtype='double')
-        
-        davismt2.set_momenta(jetVector1,jetVector2,metVector);
-        davismt2.set_mn(100);
-        
-        event.mt2 = davismt2.get_mt2()  
+            pseudoJet1px = 0 
+            pseudoJet1py = 0 
+            pseudoJet1pz = 0
+            pseudoJet1energy = 0 
 
-## ===> leptonic MT2 (as used in the SUS-13-025 ) below just a placeHolder
+            pseudoJet2px = 0 
+            pseudoJet2py = 0 
+            pseudoJet2pz = 0
+            pseudoJet2energy = 0 
+                
+            for index in range(0, len(pxvec)):
+                if(grouping[index])==1:
+                    pseudoJet1px += pxvec[index]
+                    pseudoJet1py += pyvec[index]
+                    pseudoJet1pz += pzvec[index]
+                    pseudoJet1energy += Evec[index]
+                if(grouping[index])==2:
+                    pseudoJet2px += pxvec[index]
+                    pseudoJet2py += pyvec[index]
+                    pseudoJet2pz += pzvec[index]
+                    pseudoJet2energy += Evec[index]                    
+
+            event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+            event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+
+            metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
+            metVector =numpy.asarray(metVector,dtype='double')
+            jetVector1 = TVectorD(3,array.array('d',[0.,event.pseudoJet1.px(), event.pseudoJet1.py()]))
+            jetVector1 =numpy.asarray(jetVector1,dtype='double')
+            jetVector2 = TVectorD(3,array.array('d',[0.,event.pseudoJet2.px(), event.pseudoJet2.py()]))        
+            jetVector2 =numpy.asarray(jetVector2,dtype='double')
+            
+            davismt2.set_momenta(jetVector1,jetVector2,metVector);
+            davismt2.set_mn(100);
+            
+            event.mt2 = davismt2.get_mt2()  
+            
+## ===> leptonic MT2 (as used in the SUS-13-025 )
 
         if len(event.selectedLeptons)>=2:
 
@@ -115,10 +140,11 @@ class ttHTopoVarAnalyzer( Analyzer ):
             davismt2.set_momenta(visaVector,visbVector,metVector);
             davismt2.set_mn(100);
             
-            event.mt2 = davismt2.get_mt2()  
+            event.mt2lep = davismt2.get_mt2()  
 
 
-## ===> hadronic MT2w (as used in the SUS-13-011) below just a placeHolder
+## ===> hadronic MT2w (as used in the SUS-13-011) below just a placeHolder to be coded properly
+
         if len(event.selectedLeptons)>=1:
 
             metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
@@ -141,17 +167,18 @@ class ttHTopoVarAnalyzer( Analyzer ):
         event.mtw=-999
         event.mtwTau=-999
         event.mtwIsoTrack=-999
-        event.mt2=-999
 
+        event.mt2=-999
         event.mt2lept=-999        
         event.mt2w=-999
-        event.pseudojet1 = ROOT.reco.Particle.LorentzVector( -999, -999, -999, -999 )
-        event.pseudojet2 = ROOT.reco.Particle.LorentzVector( -999, -999, -999, -999 )
+        event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( -999, -999, -999, -999 )
+        event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( -999, -999, -999, -999 )
 
-        self.printMT(event)
-        self.printMT2(event)
+        self.makeMT(event)
+        self.makeMT2(event)
 
 #        print 'variables computed: MT=',event.mtw,'MT2=',event.mt2,'MT2W=',event.mt2w
+#        print 'pseudoJet1 px=',event.pseudoJet1.px(),' py=',event.pseudoJet1.py(),' pz=',event.pseudoJet1.pz()
+#        print 'pseudoJet2 px=',event.pseudoJet2.px(),' py=',event.pseudoJet2.py(),' pz=',event.pseudoJet2.pz()   
 
-#        self.printMT2(event)
         return True
