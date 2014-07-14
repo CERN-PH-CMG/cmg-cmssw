@@ -84,7 +84,8 @@ class ttHTopoVarAnalyzer( Analyzer ):
                 pzvec.push_back(jet.pz())
                 Evec.push_back(jet.energy())
 
-            hemisphere = Hemisphere(pxvec, pyvec, pzvec, Evec, 2, 2)
+#### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
+            hemisphere = Hemisphere(pxvec, pyvec, pzvec, Evec, 2, 3)
             grouping=hemisphere.getGrouping()
 ##            print 'grouping ',len(grouping)
 
@@ -99,12 +100,12 @@ class ttHTopoVarAnalyzer( Analyzer ):
             pseudoJet2energy = 0 
                 
             for index in range(0, len(pxvec)):
-                if(grouping[index])==1:
+                if(grouping[index]==1):
                     pseudoJet1px += pxvec[index]
                     pseudoJet1py += pyvec[index]
                     pseudoJet1pz += pzvec[index]
                     pseudoJet1energy += Evec[index]
-                if(grouping[index])==2:
+                if(grouping[index]==2):
                     pseudoJet2px += pxvec[index]
                     pseudoJet2py += pyvec[index]
                     pseudoJet2pz += pzvec[index]
@@ -121,7 +122,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
             jetVector2 =numpy.asarray(jetVector2,dtype='double')
             
             davismt2.set_momenta(jetVector1,jetVector2,metVector);
-            davismt2.set_mn(100);
+            davismt2.set_mn(0);
             
             event.mt2 = davismt2.get_mt2()  
             
@@ -138,7 +139,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
             visbVector =numpy.asarray(visbVector,dtype='double')
             
             davismt2.set_momenta(visaVector,visbVector,metVector);
-            davismt2.set_mn(100);
+            davismt2.set_mn(0);
             
             event.mt2lep = davismt2.get_mt2()  
 
