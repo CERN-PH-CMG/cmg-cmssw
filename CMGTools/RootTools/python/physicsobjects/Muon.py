@@ -73,3 +73,12 @@ class Muon( Lepton ):
             vertex = self.associatedVertex
         return self.sourcePtr().innerTrack().dz( vertex.position() )
 
+    def SoftMuonID(self, vertex=None):
+        '''either pass the vertex, or set associatedVertex before calling the function.
+        note: the function does not work with standalone muons as innerTrack
+        is not available.
+        '''
+        if vertex is None:
+            vertex = self.associatedVertex
+        return self.sourcePtr().isSoftMuon(vertex)
+
