@@ -139,7 +139,7 @@ jetTypeSusy = NTupleObjectType("jetSusy",  baseObjectTypes = [ jetType ], variab
     #NTupleVariable("PuId_full", lambda x : x.puId("full"), int,     mcOnly=False, help="puId full: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
     #NTupleVariable("PuId_simple", lambda x : x.puId("simple"), int,    mcOnly=False, help="puId simple: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
     #NTupleVariable("PuId_cut_based", lambda x : x.puId("cut-based"), int,    mcOnly=False, help="puId cut-based: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
-    NTupleVariable("id",    lambda x : x.jetID() , int, mcOnly=False,help="POG Loose jet ID"),
+    NTupleVariable("id",    lambda x : x.jetID("POG_PFID") , int, mcOnly=False,help="POG Loose jet ID"),
 ])
 
         

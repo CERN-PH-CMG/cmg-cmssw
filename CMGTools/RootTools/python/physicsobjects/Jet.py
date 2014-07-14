@@ -41,7 +41,7 @@ class Jet(PhysicsObject):
         npr = self.chargedMultiplicity() + self.neutralMultiplicity();
         #if npr != self.nConstituents():
         #    import pdb; pdb.set_trace()
-        if name == "":  
+        if name == "POG_PFID":  
             if   self.jetID("POG_PFID_Tight")  : return 3;
             elif self.jetID("POG_PFID_Medium") : return 2;
             elif self.jetID("POG_PFID_Loose")  : return 1;
