@@ -54,7 +54,7 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             "inclusiveLeptons" : NTupleCollection("lep", leptonTypeSusy, 8, help="Leptons after the preselection", filter=lambda l : l.pt()>10 ),
             #"inclusiveLeptonsCuts" : NTupleCollection("lep", leptonTypeSusy, 8, help="Leptons after the preselection", filter=lambda l : l.pt()>10 ),
             "cleanJetsAll"       : NTupleCollection("jet",     jetTypeSusy, 8, help="all jets after full selection and cleaning, sorted by pt"),
-            "allphotons" : NTupleCollection("gamma", photonTypeSusy, 5, help="all photons"),
+            "selectedPhotons"    : NTupleCollection("gamma", photonTypeSusy, 5, help="photons with pt>20 and loose cut based ID"),
             "selectedIsoTrack"    : NTupleCollection("isoTrack", isoTrackType, 3, help="isoTrack, sorted by pt"),
             })
         

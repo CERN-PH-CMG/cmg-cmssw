@@ -132,6 +132,8 @@ ttHPhoAna = cfg.Analyzer(
     'ttHPhotonAnalyzerSusy',
     photons='slimmedPhotons',
     ptMin = 20,
+    etaMax = 2.5,
+    gammaID = "PhotonCutBasedIDLoose",
 )
 
 # Tau Analyzer (generic)
