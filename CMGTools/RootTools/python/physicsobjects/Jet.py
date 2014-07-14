@@ -18,6 +18,13 @@ loose_53X_WP = [
 
 class Jet(PhysicsObject):
 
+    def jetID(self,name=""):
+        if name == "POG_PFID":
+            if   self.jetID("POG_PFID_Tight")  : return 3;
+            elif self.jetID("POG_PFID_Medium") : return 2;
+            elif self.jetID("POG_PFID_Loose")  : return 1;
+            else                               : return 0;
+
     def looseJetId(self):
         '''PF Jet ID (loose operation point) [method provided for convenience only]'''
         return self.jetID("POG_PFID_Loose")
