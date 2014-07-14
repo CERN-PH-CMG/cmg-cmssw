@@ -114,8 +114,15 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
     def sourceBQuark(self,particle,event):
         for i in xrange( particle.numberOfMothers() ):
             mom  = particle.mother(i)
-            if mom.status() == 3 and abs(mom.pdgId()) == 5:
-                return mom
+            if abs(mom.pdgId()) == 5:
+                if mom.status() == 3: 
+                    return mom
+                else:
+                    # if it's b -> b -> x, go back
+                    for j in xrange(mom.numberOfMothers()):
+                        if abs(mom.mother(j).pdgId()) == 5:
+                            return self.sourceBQuark(mom,event)
+                    return mom
             elif mom.status() == 2:
                 momB = self.sourceBQuark(mom,event)
                 if momB != None: return momB
@@ -142,6 +149,7 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
                 bgen = self.sourceBQuark(gen,event)
                 if bgen != None:
                     lep.mcDeltaRB = deltaR(bgen.eta(),bgen.phi(),lep.eta(),lep.phi())
+                    lep.mcBPartonPt = bgen.pt()
 
     def doLeptonSF(self, event):
         eff, effUp, effDn = [1.],[1.],[1.]

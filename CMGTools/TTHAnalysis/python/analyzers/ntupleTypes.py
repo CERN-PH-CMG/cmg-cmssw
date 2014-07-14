@@ -90,6 +90,7 @@ leptonTypeSusyFR = NTupleObjectType("leptonSusyFR", baseObjectTypes = [ leptonTy
     #NTupleVariable("relIso03_ch",  lambda x : x.chargedHadronIso(0.3) if abs(x.pdgId())==11 else 0, help="PF Rel Iso, R, with deltaBeta correction"),
     #NTupleVariable("relIso03_nh",  lambda x : x.neutralHadronIso(0.3) if abs(x.pdgId())==11 else 0, help="PF Rel Iso, R, with deltaBeta correction"),
     #NTupleVariable("relIso03_ph",  lambda x : x.photonIso(0.3)        if abs(x.pdgId())==11 else 0, help="PF Rel Iso, R, with deltaBeta correction"),
+    NTupleVariable("mcBPartonPt",  lambda x : getattr(x, 'mcBPartonPt', 0.0), mcOnly=True, help="pT of the associated b parton"),
 ])
 leptonTypeFull = NTupleObjectType("leptonFull", baseObjectTypes = [ leptonTypeSusy ], variables = [
     NTupleVariable("pfMuonId",    lambda x : x.muonID("POG_ID_Loose") if abs(x.pdgId())==13 else 1, int, help="Muon POG Loose id"),

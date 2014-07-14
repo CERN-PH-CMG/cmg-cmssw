@@ -1,0 +1,16 @@
+TT        : TTJets:     245.59   ;  FillColor=ROOT.kGray, NormSystematic=0.2
+WJets     : WJets    : 37509.0   ;  FillColor=ROOT.kGray+2, Label="Incl"
+WNJets    : W1Jets    : 6642.0   ;  FillColor=ROOT.kCyan+2, Label="NJet"
+WNJets    : W2Jets    : 2152.0   ;  FillColor=ROOT.kCyan+2, Label="NJet"
+WNJets    : W3Jets    : 638.4    ;  FillColor=ROOT.kCyan+2, Label="NJet"
+WNJets    : W4Jets    : 263.2    ;  FillColor=ROOT.kCyan+2, Label="NJet"
+WHJets    : WJets_HT250To300 : 59.0;  FillColor=ROOT.kMagenta-6, Label="HT"
+WHJets    : WJets_HT300To400 : 47.1;  FillColor=ROOT.kMagenta-6, Label="HT"
+WHJets    : WJets_HT400ToInf : 31.02; FillColor=ROOT.kMagenta-6, Label="HT"
+
+
+
+# --- DATA
+data     : DoubleMuD
+data     : DoubleElectronD
+data     : MuEGD

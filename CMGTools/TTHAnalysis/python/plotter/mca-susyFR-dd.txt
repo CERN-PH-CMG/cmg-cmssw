@@ -1,0 +1,42 @@
+TT       : TTJets:     245.59   ;  FillColor=ROOT.kGray, NormSystematic=0.2
+#TT5       : TTJets510:     245.59   ;  FillColor=ROOT.kGray, NormSystematic=0.2
+#WJets   : WJets    : 37509.0   ;  FillColor=ROOT.kCyan+2
+WJets    : W1Jets    : 6642.0   ;  FillColor=ROOT.kCyan+2, Label="WJets"
+WJets    : W2Jets    : 2152.0   ;  FillColor=ROOT.kCyan+2, Label="WJets"
+WJets    : W3Jets    : 638.4    ;  FillColor=ROOT.kCyan+2, Label="WJets"
+WJets    : W4Jets    : 263.2    ;  FillColor=ROOT.kCyan+2, Label="WJets"
+
+
+FR_TT    : TTJets: 245.59   ;  FillColor=ROOT.kGray, NormSystematic=0.2, FakeRate='fakeRate_susyFR_2lss.txt', Label="FR TT" 
+FR_TT_El : TTJets: 245.59   ;  FillColor=ROOT.kGray, NormSystematic=0.2, FakeRate='fakeRate_susyFR_2lss_fakeEl.txt', Label="FR TT \#mu" 
+FR_TT_Mu : TTJets: 245.59   ;  FillColor=ROOT.kGray, NormSystematic=0.2, FakeRate='fakeRate_susyFR_2lss_fakeMu.txt', Label="FR TT e" 
+TL_TT_El : TTJets: 245.59   ;  FillColor=ROOT.kGray, NormSystematic=0.2, FakeRate='fakeRate_susyFR_2lss_fakeEl_dummy.txt', Label="TL TT \#mu" 
+TL_TT_Mu : TTJets: 245.59   ;  FillColor=ROOT.kGray, NormSystematic=0.2, FakeRate='fakeRate_susyFR_2lss_fakeMu_dummy.txt', Label="TL TT e" 
+#FR_TT5    : TTJets510: 245.59   ;  FillColor=ROOT.kGray, NormSystematic=0.2, FakeRate='fakeRate_susyFR_2lss.txt', Label="TT FR" 
+#FR_WJets : WJets    : 37509.0   ;  FillColor=ROOT.kCyan+2, FakeRate='fakeRate_susyFR_2lss.txt', Label="TT FR" 
+
+FR_WJets_Mu    : W1Jets    : 6642.0   ; FakeRate='fakeRate_susyFR_2lss_fakeMu.txt', FillColor=ROOT.kCyan+2, Label="FR W \#mu"
+FR_WJets_Mu    : W2Jets    : 2152.0   ; FakeRate='fakeRate_susyFR_2lss_fakeMu.txt', FillColor=ROOT.kCyan+2, Label="FR W \#mu"
+FR_WJets_Mu    : W3Jets    : 638.4    ; FakeRate='fakeRate_susyFR_2lss_fakeMu.txt', FillColor=ROOT.kCyan+2, Label="FR W \#mu"
+FR_WJets_Mu    : W4Jets    : 263.2    ; FakeRate='fakeRate_susyFR_2lss_fakeMu.txt', FillColor=ROOT.kCyan+2, Label="FR W \#mu"
+FR_WJets_El    : W1Jets    : 6642.0   ; FakeRate='fakeRate_susyFR_2lss_fakeEl.txt', FillColor=ROOT.kCyan+2, Label="FR W e"
+FR_WJets_El    : W2Jets    : 2152.0   ; FakeRate='fakeRate_susyFR_2lss_fakeEl.txt', FillColor=ROOT.kCyan+2, Label="FR W e"
+FR_WJets_El    : W3Jets    : 638.4    ; FakeRate='fakeRate_susyFR_2lss_fakeEl.txt', FillColor=ROOT.kCyan+2, Label="FR W e"
+FR_WJets_El    : W4Jets    : 263.2    ; FakeRate='fakeRate_susyFR_2lss_fakeEl.txt', FillColor=ROOT.kCyan+2, Label="FR W e"
+
+TL_WJets_Mu    : W1Jets    : 6642.0   ; FakeRate='fakeRate_susyFR_2lss_fakeMu_dummy.txt', FillColor=ROOT.kCyan+2, Label="TL W \#mu"
+TL_WJets_Mu    : W2Jets    : 2152.0   ; FakeRate='fakeRate_susyFR_2lss_fakeMu_dummy.txt', FillColor=ROOT.kCyan+2, Label="TL W \#mu"
+TL_WJets_Mu    : W3Jets    : 638.4    ; FakeRate='fakeRate_susyFR_2lss_fakeMu_dummy.txt', FillColor=ROOT.kCyan+2, Label="TL W \#mu"
+TL_WJets_Mu    : W4Jets    : 263.2    ; FakeRate='fakeRate_susyFR_2lss_fakeMu_dummy.txt', FillColor=ROOT.kCyan+2, Label="TL W \#mu"
+TL_WJets_El    : W1Jets    : 6642.0   ; FakeRate='fakeRate_susyFR_2lss_fakeEl_dummy.txt', FillColor=ROOT.kCyan+2, Label="TL W e"
+TL_WJets_El    : W2Jets    : 2152.0   ; FakeRate='fakeRate_susyFR_2lss_fakeEl_dummy.txt', FillColor=ROOT.kCyan+2, Label="TL W e"
+TL_WJets_El    : W3Jets    : 638.4    ; FakeRate='fakeRate_susyFR_2lss_fakeEl_dummy.txt', FillColor=ROOT.kCyan+2, Label="TL W e"
+TL_WJets_El    : W4Jets    : 263.2    ; FakeRate='fakeRate_susyFR_2lss_fakeEl_dummy.txt', FillColor=ROOT.kCyan+2, Label="TL W e"
+
+
+
+
+# --- DATA
+data     : DoubleMuD
+data     : DoubleElectronD
+data     : MuEGD
