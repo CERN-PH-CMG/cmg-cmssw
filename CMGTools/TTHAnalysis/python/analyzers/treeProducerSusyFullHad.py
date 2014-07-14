@@ -11,20 +11,21 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
         ## Declare what we want to fill (in addition to susy core ones)
         self.globalVariables += [
 
+            NTupleVariable("nBJetLoose40", lambda ev: sum([j.btagWP("CSVL") for j in ev.cleanJets if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CSV loose"),
+            ##--------------------------------------------------
             NTupleVariable("ht", lambda ev : ev.htJet40j, help="H_{T} computed from only jets (with |eta|<2.4, pt > 40 GeV)"),
             NTupleVariable("mht_pt", lambda ev : ev.mhtJet40j, help="H_{T}^{miss} computed from only jets (with |eta|<2.4, pt > 40 GeV)"),
             NTupleVariable("mht_phi", lambda ev : ev.mhtPhiJet40j, help="H_{T}^{miss} #phi computed from onlyy jets (with |eta|<2.4, pt > 40 GeV)"),
             ##--------------------------------------------------
-            NTupleVariable("nMuons10", lambda ev: sum([l.pt() > 10 for l in ev.selectedMuons]), int, help="Number of muons with pt > 10"),
-            NTupleVariable("nElectrons10", lambda ev: sum([l.pt() > 10 for l in ev.selectedElectrons]), int, help="Number of electrons with pt > 10"),
+            NTupleVariable("deltaPhiMin", lambda ev : ev.deltaPhiMin, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4"),
+            NTupleVariable("diffMetMht", lambda ev : ev.diffMetMht, help="abs( vec(mht) - vec(met) )"),
+            ##--------------------------------------------------
+            NTupleVariable("nMuons10", lambda ev: sum([l.pt() > 10 and abs(l.pdgId()) == 13 for l in ev.inclusiveLeptons]), int, help="Number of muons with pt > 10"),
+            NTupleVariable("nElectrons10", lambda ev: sum([l.pt() > 10 and abs(l.pdgId()) == 11 for l in ev.inclusiveLeptons]), int, help="Number of electrons with pt > 10"),
             ##--------------------------------------------------
             NTupleVariable("mtw", lambda ev: ev.mtw, int, help="mt(l,met)"),
             NTupleVariable("mtwTau", lambda ev: ev.mtwTau, int, help="mt(tau,met)"),
 #            NTupleVariable("IsoTrack_mtw", lambda ev: ev.mtwIsoTrack, int, help="mt(isoTrack,met)"),
-            NTupleVariable("IsoTrack_pt", lambda ev: ev.ptIsoTrack, int, help="pt(most isolated Track)"),
-            NTupleVariable("IsoTrack_relIso", lambda ev: ev.isoIsoTrack, int, help="relIso (iso isolated Track)"),
-            NTupleVariable("IsoTrack_dz", lambda ev: ev.dzIsoTrack, int, help="dz(iso isolated Track, PV)"),
-            NTupleVariable("IsoTrack_pdgId", lambda ev: ev.typeIsoTrack, int, help="PFID (iso isolated Track)"),
             ##--------------------------------------------------
             NTupleVariable("mt2", lambda ev: ev.mt2, float, help="mt2(l,met)"),
             #            NTupleVariable("mt2w", lambda ev: ev.mt2w, float, help="mt2w(l,b,met)"),
@@ -40,13 +41,15 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
         
         self.globalObjects.update({
             # put more here
-            "pseudojet1"       : NTupleObject("pseudojet1",     fourVectorType, help="pseudojet1 for hemishphere"),
-            "pseudojet2"       : NTupleObject("pseudojet2",     fourVectorType, help="pseudojet2 for hemishphere"),
+            "pseudoJet1"       : NTupleObject("pseudoJet1",     fourVectorType, help="pseudoJet1 for hemishphere"),
+            "pseudoJet2"       : NTupleObject("pseudoJet2",     fourVectorType, help="pseudoJet2 for hemishphere"),
 
             })
         self.collections.update({
             # put more here
+            "inclusiveLeptons" : NTupleCollection("lep", leptonTypeSusy, 8, help="Leptons after the preselection", filter=lambda l : l.pt()>10 ),
             "cleanJetsAll"       : NTupleCollection("Jet",     jetTypeSusy, 8, help="Jets after full selection and cleaning, sorted by pt"),
+            "selectedIsoTrack"    : NTupleCollection("isoTrack", isoTrackType, 3, help="isoTrack, sorted by pt"),
             })
         
         ## Book the variables, but only if we're called explicitly and not through a base class

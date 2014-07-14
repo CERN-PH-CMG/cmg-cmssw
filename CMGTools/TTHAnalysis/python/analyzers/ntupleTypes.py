@@ -103,6 +103,7 @@ tauType = NTupleObjectType("tau",  baseObjectTypes = [ particleType ], variables
     NTupleVariable("idCI3hit", lambda x : x.idCI3hit, int, help="1,2,3 if the tau passes the loose, medium, tight WP of the By<X>CombinedIsolationDBSumPtCorr3Hits discriminator"),
     NTupleVariable("isoMVA2",  lambda x : x.tauID("byIsolationMVA2raw"), help="ByIsolationMVA2 raw output discriminator"),
 ])
+
 tauTypeTTH = NTupleObjectType("tauTTH", baseObjectTypes = [ tauType ], variables = [
     NTupleVariable("mcMatchId",  lambda x : x.mcMatchId, int, mcOnly=True, help="Match to source from hard scatter (25 for H, 6 for t, 23/24 for W/Z)"),
 ])
@@ -110,6 +111,12 @@ tauTypeSusy = NTupleObjectType("tauSusy", baseObjectTypes = [ tauType ], variabl
     NTupleVariable("mcMatchId",  lambda x : x.mcMatchId, int, mcOnly=True, help="Match to source from hard scatter (25 for H, 6 for t, 23/24 for W/Z)"),
 ])
 
+isoTrackType = NTupleObjectType("isoTrack",  baseObjectTypes = [ particleType ], variables = [
+    NTupleVariable("charge",   lambda x : x.charge(), int),
+    NTupleVariable("dz",    lambda x : x.dz() , help="d_{z} of lead track with respect to PV, in cm (with sign)"),
+    NTupleVariable("absIso",  lambda x : x.absIso, float, mcOnly=False, help="abs charged iso with condition for isolation such that Min(0.2*pt, 8 GeV)"),
+    NTupleVariable("mcMatchId",  lambda x : x.mcMatchId, int, mcOnly=True, help="Match to source from hard scatter (25 for H, 6 for t, 23/24 for W/Z)"),
+])
 
 jetType = NTupleObjectType("jet",  baseObjectTypes = [ fourVectorType ], variables = [
     NTupleVariable("btagCSV",   lambda x : x.btag('combinedSecondaryVertexBJetTags'), help="CSV discriminator"),
@@ -125,10 +132,12 @@ jetTypeTTH = NTupleObjectType("jetTTH",  baseObjectTypes = [ jetType ], variable
 jetTypeSusy = NTupleObjectType("jetSusy",  baseObjectTypes = [ jetType ], variables = [
     NTupleVariable("mcMatchId",    lambda x : x.mcMatchId,   int, mcOnly=True, help="Match to source from hard scatter (25 for H, 6 for t, 23/24 for W/Z)"),
     NTupleVariable("mcMatchFlav",  lambda x : x.mcMatchFlav, int, mcOnly=True, help="Flavour of associated parton from hard scatter (if any)"),
-    NTupleVariable("PuId_full", lambda x : x.puId("full"), int,     mcOnly=False, help="puId full: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
-    NTupleVariable("PuId_simple", lambda x : x.puId("simple"), int,    mcOnly=False, help="puId simple: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
-    NTupleVariable("PuId_cut_based", lambda x : x.puId("cut-based"), int,    mcOnly=False, help="puId cut-based: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
-    NTupleVariable("Id",    lambda x : x.jetID("POG_PFID_Loose") , int, mcOnly=False,help="POG Loose jet ID"),
+    NTupleVariable("puId", lambda x : x.puJetIdPassed, int,     mcOnly=False, help="puId (full MVA, loose WP, 5.3.X training on AK5PFchs: the only thing that is available now)"),
+    NTupleVariable("area",   lambda x : x.jetArea(), help="Catchment area of jet"),
+#    NTupleVariable("PuId_full", lambda x : x.puId("full"), int,     mcOnly=False, help="puId full: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
+#    NTupleVariable("PuId_simple", lambda x : x.puId("simple"), int,    mcOnly=False, help="puId simple: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
+#    NTupleVariable("PuId_cut_based", lambda x : x.puId("cut-based"), int,    mcOnly=False, help="puId cut-based: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
+    NTupleVariable("id",    lambda x : x.jetID("POG_PFID") , int, mcOnly=False,help="POG jet ID. return 1=loose, 2=medium, 3=tight"),
 ])
 
         
