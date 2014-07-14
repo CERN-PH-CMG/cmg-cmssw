@@ -28,7 +28,7 @@ _btagWPs = {
 }
 
 class Jet(PhysicsObject):   
-    def jetID(self,name):
+    def jetID(self,name=""):
         if not self.isPFJet():
             raise RuntimeError, "jetID implemented only for PF Jets"
         eta = abs(self.eta());
@@ -41,6 +41,12 @@ class Jet(PhysicsObject):
         npr = self.chargedMultiplicity() + self.neutralMultiplicity();
         #if npr != self.nConstituents():
         #    import pdb; pdb.set_trace()
+        if name == "POG_PFID":  
+            if   self.jetID("POG_PFID_Tight")  : return 3;
+            elif self.jetID("POG_PFID_Medium") : return 2;
+            elif self.jetID("POG_PFID_Loose")  : return 1;
+            else                               : return 0;
+        
         if name == "POG_PFID_Loose":    return (npr>1 and phf<0.99 and nhf<0.99) and (eta>2.4 or (elf<0.99 and chf>0 and chm>0));
         if name == "POG_PFID_Medium":   return (npr>1 and phf<0.95 and nhf<0.95) and (eta>2.4 or (elf<0.99 and chf>0 and chm>0));
         if name == "POG_PFID_Tight":    return (npr>1 and phf<0.90 and nhf<0.90) and (eta>2.4 or (elf<0.99 and chf>0 and chm>0));
