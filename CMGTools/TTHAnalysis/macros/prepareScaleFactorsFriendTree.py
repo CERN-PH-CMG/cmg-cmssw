@@ -102,9 +102,9 @@ print "I have %d taks to process" % len(jobs)
 
 if options.queue:
     import os, sys
-    basecmd = "bsub -q {queue} {dir}/lxbatch_runner.sh {dir} {cmssw} python {self} -N {chunkSize} {data} {output}".format(
+    basecmd = "bsub -q {queue} {dir}/lxbatch_runner.sh {dir} {cmssw} python {self} -N {chunkSize} -t {tree} {data} {output}".format(
                 queue = options.queue, dir = os.getcwd(), cmssw = os.environ['CMSSW_BASE'], 
-                self=sys.argv[0], chunkSize=options.chunkSize, data=args[0], output=args[1]
+                self=sys.argv[0], chunkSize=options.chunkSize, tree=options.tree, data=args[0], output=args[1]
             )
     if options.vectorTree: basecmd += " --vector "
     # specify what to do
