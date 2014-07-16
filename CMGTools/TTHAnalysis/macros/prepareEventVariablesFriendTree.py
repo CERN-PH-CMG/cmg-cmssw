@@ -47,9 +47,10 @@ parser.add_option("-c", "--chunk",   dest="chunks",    type="int",    default=[]
 parser.add_option("-N", "--events",  dest="chunkSize", type="int",    default=500000, help="Default chunk size when splitting trees");
 parser.add_option("-j", "--jobs",    dest="jobs",      type="int",    default=1, help="Use N threads");
 parser.add_option("-p", "--pretend", dest="pretend",   action="store_true", default=False, help="Don't run anything");
-parser.add_option("-t", "--tree-dir",   dest="treeDir",     type="string", default="sf", help="Directory of the friend tree in the file (default: 'sf')");
+parser.add_option("-T", "--tree-dir",   dest="treeDir",     type="string", default="sf", help="Directory of the friend tree in the file (default: 'sf')");
 parser.add_option("-q", "--queue",   dest="queue",     type="string", default=None, help="Run jobs on lxbatch instead of locally");
-parser.add_option("-V", "--vector",  dest="vectorTree", action="store_true", default=False, help="Input tree is a vector")
+parser.add_option("-t", "--tree",    dest="tree",      default='ttHLepTreeProducerTTH', help="Pattern for tree name");
+parser.add_option("-V", "--vector",  dest="vectorTree", action="store_true", default=True, help="Input tree is a vector");
 parser.add_option("-F", "--add-friend",    dest="friendTrees",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename). Can use {name}, {cname} patterns in the treename") 
 parser.add_option("--FMC", "--add-friend-mc",    dest="friendTreesMC",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to MC only. Can use {name}, {cname} patterns in the treename") 
 parser.add_option("--FD", "--add-friend-data",    dest="friendTreesData",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to data trees only. Can use {name}, {cname} patterns in the treename") 
@@ -64,17 +65,14 @@ if len(options.chunks) != 0 and len(options.datasets) != 1:
 
 jobs = []
 for D in glob(args[0]+"/*"):
-    if options.vectorTree:
-        fname = D+"/ttHLepTreeProducerNew/ttHLepTreeProducerNew_tree.root"
-    else:
-        fname = D+"/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root"
+    fname = D+"/"+options.tree+"/"+options.tree+"_tree.root"
     if os.path.exists(fname):
         short = os.path.basename(D)
         if options.datasets != []:
             if short not in options.datasets: continue
         data = ("DoubleMu" in short or "MuEG" in short or "DoubleElectron" in short or "SingleMu" in short)
         f = ROOT.TFile.Open(fname);
-        t = f.Get("ttHLepTreeProducerNew" if options.vectorTree else "ttHLepTreeProducerBase")
+        t = f.Get(options.tree)
         entries = t.GetEntries()
         f.Close()
         chunk = options.chunkSize
@@ -115,11 +113,10 @@ def _runIt(myargs):
     (name,fin,fout,data,range,chunk) = myargs
     timer = ROOT.TStopwatch()
     fb = ROOT.TFile(fin)
+    tb = fb.Get(options.tree)
     if options.vectorTree:
-        tb = fb.Get("ttHLepTreeProducerNew")
         tb.vectorTree = True
     else:
-        tb = fb.Get("ttHLepTreeProducerBase")
         tb.vectorTree = False
     friends = options.friendTrees[:]
     friends += (options.friendTreesData if data else options.friendTreesMC)

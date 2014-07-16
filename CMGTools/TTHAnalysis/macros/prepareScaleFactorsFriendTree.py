@@ -6,13 +6,13 @@ import os.path
 MODULES = []
 
 from CMGTools.TTHAnalysis.tools.btagSFs_POG import bTagSFEvent3WPErrs as btagSFEvent
-MODULES += [ ('btag', btagSFEvent) ]
+#MODULES += [ ('btag', btagSFEvent) ]
 
 from CMGTools.TTHAnalysis.tools.lepMVA_SF import AllLepSFs
 MODULES += [ ('lep',AllLepSFs())  ]
 
 from CMGTools.TTHAnalysis.tools.lepTrigger_SF import LepTriggerSF_Event
-MODULES += [ ('trig2l', LepTriggerSF_Event())  ]
+#MODULES += [ ('trig2l', LepTriggerSF_Event())  ]
 
 from CMGTools.TTHAnalysis.tools.metLD_reshape import MetLDReshaper
 #MODULES += [ ('metLD', MetLDReshaper()) ]
@@ -60,7 +60,8 @@ parser.add_option("-N", "--events",  dest="chunkSize", type="int",    default=50
 parser.add_option("-j", "--jobs",    dest="jobs",      type="int",    default=1, help="Use N threads");
 parser.add_option("-p", "--pretend", dest="pretend",   action="store_true", default=False, help="Don't run anything");
 parser.add_option("-q", "--queue",   dest="queue",     type="string", default=None, help="Run jobs on lxbatch instead of locally");
-parser.add_option("-V", "--vector",  dest="vectorTree", action="store_true", default=False, help="Input tree is a vector")
+parser.add_option("-t", "--tree",    dest="tree",      default='ttHLepTreeProducerTTH', help="Pattern for tree name");
+parser.add_option("-V", "--vector",  dest="vectorTree",action="store_true", default=True, help="Input tree is a vector")
 (options, args) = parser.parse_args()
 
 if len(args) != 2 or not os.path.isdir(args[0]) or not os.path.isdir(args[1]): 
@@ -72,10 +73,7 @@ if len(options.chunks) != 0 and len(options.datasets) != 1:
 
 jobs = []
 for D in glob(args[0]+"/*"):
-    if options.vectorTree:
-        fname = D+"/ttHLepTreeProducerNew/ttHLepTreeProducerNew_tree.root"
-    else:
-        fname = D+"/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root"
+    fname = D+"/"+options.tree+"/"+options.tree+"_tree.root"
     if os.path.exists(fname):
         short = os.path.basename(D)
         if options.datasets != []:
@@ -83,7 +81,8 @@ for D in glob(args[0]+"/*"):
         data = ("DoubleMu" in short or "MuEG" in short or "DoubleElectron" in short or "SingleMu" in short)
         if data: continue
         f = ROOT.TFile.Open(fname);
-        t = f.Get("ttHLepTreeProducerNew" if options.vectorTree else "ttHLepTreeProducerBase")
+        #t = f.Get("ttHLepTreeProducerTTH" if options.vectorTree else "ttHLepTreeProducerBase")
+        t = f.Get(options.tree)
         entries = t.GetEntries()
         f.Close()
         chunk = options.chunkSize
@@ -121,11 +120,10 @@ def _runIt(myargs):
     (name,fin,fout,data,range,chunk) = myargs
     timer = ROOT.TStopwatch()
     fb = ROOT.TFile(fin)
+    tb = fb.Get(options.tree)
     if options.vectorTree:
-        tb = fb.Get("ttHLepTreeProducerNew")
         tb.vectorTree = True
     else:
-        tb = fb.Get("ttHLepTreeProducerBase")
         tb.vectorTree = False
     nev = tb.GetEntries()
     if options.pretend:
