@@ -24,6 +24,8 @@ class Jet(PhysicsObject):
             elif self.jetID("POG_PFID_Medium") : return 2;
             elif self.jetID("POG_PFID_Loose")  : return 1;
             else                               : return 0;
+        else:
+            return self.physObj.jetID(name)
 
     def looseJetId(self):
         '''PF Jet ID (loose operation point) [method provided for convenience only]'''
