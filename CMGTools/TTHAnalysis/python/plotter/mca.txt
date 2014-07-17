@@ -55,7 +55,8 @@ WWDPI: WWDPI   : 0.5879; FillColor=ROOT.kViolet-6, Label="WW DPI"
 #
 # leptonic and inclusive decays (NNLO+NNLL cross sections)
 TT 	 : TTJetsLep:     25.77: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)    ;  FillColor=ROOT.kGray, NormSystematic=0.2
-TT 	 : TTJetsSem:	  107.53: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)     ;  FillColor=ROOT.kGray, NormSystematic=0.2
+TT 	 : TTJetsSem:	  107.53/2: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)     ;  FillColor=ROOT.kGray, NormSystematic=0.2
+TT 	 : TTJetsSem2:	  107.53/2: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)     ;  FillColor=ROOT.kGray, NormSystematic=0.2
 TT 	 : TTJetsHad:     112.16: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)    ;  FillColor=ROOT.kGray, NormSystematic=0.2
 # --- older samples
 #TT 	 : TTLep:      25.77    ;  FillColor=ROOT.kGray
