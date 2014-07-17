@@ -1,0 +1,4 @@
+## Let the first and second lepton always pass the MVA cuts (set the value to 1)
+cut-change: (LepGood[12])_tightFakeId: 1
+## define the FR weight
+weight: (LepGood1_tightFakeId==0 && LepGood2_tightFakeId==1 && abs(LepGood1_pdgId) == 11 || LepGood1_tightFakeId==1 && LepGood2_tightFakeId==0 &&  abs(LepGood2_pdgId) == 11) 

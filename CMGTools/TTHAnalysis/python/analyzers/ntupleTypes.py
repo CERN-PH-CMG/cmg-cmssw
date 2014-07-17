@@ -65,6 +65,8 @@ leptonTypeSusy = NTupleObjectType("leptonSusy", baseObjectTypes = [ leptonType ]
     # Muon-speficic info
     NTupleVariable("nStations",    lambda lepton : lepton.sourcePtr().numberOfMatchedStations() if abs(lepton.pdgId()) == 13 else 4, help="Number of matched muons stations (4 for electrons)"),
     NTupleVariable("trkKink",      lambda lepton : lepton.sourcePtr().combinedQuality().trkKink if abs(lepton.pdgId()) == 13 else 0, help="Tracker kink-finder"), 
+    NTupleVariable("caloCompatibility",      lambda lepton : lepton.sourcePtr().caloCompatibility() if abs(lepton.pdgId()) == 13 else 0, help="Calorimetric compatibility"), 
+    NTupleVariable("globalTrackChi2",      lambda lepton : lepton.sourcePtr().globalTrack().normalizedChi2() if abs(lepton.pdgId()) == 13 and lepton.sourcePtr().globalTrack().isNonnull() else 0, help="Tracker kink-finder"), 
     # Extra tracker-related id variables
     NTupleVariable("trackerLayers", lambda x : (x.sourcePtr().track() if abs(x.pdgId())==13 else x.sourcePtr().gsfTrack()).hitPattern().trackerLayersWithMeasurement(), int, help="Tracker Layers"),
     NTupleVariable("pixelLayers", lambda x : (x.sourcePtr().track() if abs(x.pdgId())==13 else x.sourcePtr().gsfTrack()).hitPattern().pixelLayersWithMeasurement(), int, help="Pixel Layers"),
@@ -88,6 +90,9 @@ leptonTypeSusyFR = NTupleObjectType("leptonSusyFR", baseObjectTypes = [ leptonTy
     #NTupleVariable("relIso03_ch",  lambda x : x.chargedHadronIso(0.3) if abs(x.pdgId())==11 else 0, help="PF Rel Iso, R, with deltaBeta correction"),
     #NTupleVariable("relIso03_nh",  lambda x : x.neutralHadronIso(0.3) if abs(x.pdgId())==11 else 0, help="PF Rel Iso, R, with deltaBeta correction"),
     #NTupleVariable("relIso03_ph",  lambda x : x.photonIso(0.3)        if abs(x.pdgId())==11 else 0, help="PF Rel Iso, R, with deltaBeta correction"),
+    NTupleVariable("mcBPartonPt",  lambda x : getattr(x, 'mcBPartonPt', 0.0), mcOnly=True, help="pT of the associated b parton"),
+    NTupleVariable("mcBHadronPt",  lambda x : getattr(x, 'mcBHadronPt', 0.0), mcOnly=True, help="pT of the associated b parton"),
+    NTupleVariable("mcBGenJetPt",  lambda x : getattr(x, 'mcBGenJetPt', 0.0), mcOnly=True, help="pT of the associated b parton"),
 ])
 leptonTypeFull = NTupleObjectType("leptonFull", baseObjectTypes = [ leptonTypeSusy ], variables = [
     NTupleVariable("pfMuonId",    lambda x : x.muonID("POG_ID_Loose") if abs(x.pdgId())==13 else 1, int, help="Muon POG Loose id"),

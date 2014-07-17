@@ -63,6 +63,7 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
 
     def declareHandles(self):
         super(ttHLepMCMatchAnalyzer, self).declareHandles()
+        self.handles['genJet'] = AutoHandle( 'genJetSel', 'vector<cmg::PhysicsObjectWithPtr<edm::Ptr<reco::GenJet> > >' )
 
     def beginLoop(self):
         super(ttHLepMCMatchAnalyzer,self).beginLoop()
@@ -114,12 +115,34 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
     def sourceBQuark(self,particle,event):
         for i in xrange( particle.numberOfMothers() ):
             mom  = particle.mother(i)
-            if mom.status() == 3 and abs(mom.pdgId()) == 5:
-                return mom
+            if abs(mom.pdgId()) == 5:
+                if mom.status() == 3: 
+                    return mom
+                else:
+                    # if it's b -> b -> x, go back
+                    for j in xrange(mom.numberOfMothers()):
+                        if abs(mom.mother(j).pdgId()) == 5:
+                            return self.sourceBQuark(mom,event)
+                    return mom
             elif mom.status() == 2:
                 momB = self.sourceBQuark(mom,event)
                 if momB != None: return momB
         return None
+
+    def sourceBHadron(self,particle,event):
+        for i in xrange( particle.numberOfMothers() ):
+            mom  = particle.mother(i)
+            id   = abs(mom.pdgId())% 10000
+            if id > 100:
+                if id > 4999:
+                    return mom
+                elif id < 1000 and id > 499:
+                    return mom
+            if mom.status() == 2:
+                momB = self.sourceBHadron(mom,event)
+                if momB != None: return momB
+        return None
+         
                 
     def matchAnyLeptons(self, event): 
         event.anyLeptons = [ x for x in event.genParticles if x.status() == 1 and abs(x.pdgId()) in [11,13] ]
@@ -142,7 +165,16 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
                 bgen = self.sourceBQuark(gen,event)
                 if bgen != None:
                     lep.mcDeltaRB = deltaR(bgen.eta(),bgen.phi(),lep.eta(),lep.phi())
-
+                    lep.mcBPartonPt = bgen.pt()
+                bhad = self.sourceBHadron(gen,event)
+                if bhad != None:
+                    lep.mcBHadronPt = bhad.pt()
+                    best = None
+                    for gen in self.handles['genJet'].product():
+                        if best == None or deltaR(bhad.eta(),bhad.phi(),gen.eta(),gen.phi())<deltaR(bhad.eta(),bhad.phi(),best.eta(),best.phi()):
+                            best = gen
+                    if best != None and deltaR(bhad.eta(),bhad.phi(),best.eta(),best.phi())<0.3:
+                        lep.mcBGenJetPt = best.pt()
     def doLeptonSF(self, event):
         eff, effUp, effDn = [1.],[1.],[1.]
         for l in event.selectedLeptons:
@@ -155,6 +187,7 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
             setattr(event, 'LepEffDn_%dlep'%i,  effDn[min(i,len(eff)-1)])
 
     def process(self, iEvent, event):
+        self.readCollections( iEvent )
 
         # if not MC, nothing to do
         if not self.cfg_comp.isMC: 

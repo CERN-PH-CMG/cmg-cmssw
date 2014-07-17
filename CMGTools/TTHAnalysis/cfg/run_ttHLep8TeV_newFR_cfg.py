@@ -130,16 +130,15 @@ treeProducer = cfg.Analyzer(
 
 
 #-------- SAMPLES
+from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
+mcSamples = [QCDMuPt15,WJets,DYJetsM50,DYJetsM10,W1Jets,W2Jets,W3Jets,DY1JetsM50,DY2JetsM50]
 
-from CMGTools.TTHAnalysis.samples.samples_8TeV import * 
-
-for mc in mcSamples+[QCDMuPt15,QCDElPt30To80,QCDElPt80To170]:
+for mc in mcSamples:
     mc.triggers = triggersFR_MC
 #selectedComponents=mcSamples
 #selectedComponents=[TTH,DYJetsM10,DYJetsM50,TTLep]
 #selectedComponents=[DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,W2Jets,WGToLNuG,WJets_HT250To300,WJets_HT300To400,WJets_HT400ToInf]
 #selectedComponents=[W1Jets,W2Jets,WGToLNuG]
-mcSamples = [QCDMuPt15,QCDElPt30To80,QCDElPt80To170,WJets,DYJetsM50,DYJetsM10,W1Jets,W2Jets,W3Jets,DY1JetsM50,DY2JetsM50]
 
 for data in dataSamples1Mu:
     data.triggers = triggersFR_1mu
@@ -153,9 +152,9 @@ for data in dataSamplesMu:
 for data in dataSamplesMuE:
     data.triggers = triggersFR_mue
     data.vetoTriggers = []
-JetMonABCD.triggers = [ 'HLT_PFJet40_v*' ]
-JetMonABCD.splitFactor = 500
-selectedComponents=mcSamples+dataSamples1Mu+dataSamplesMu+dataSamplesE+dataSamplesMuE+[JetMonABCD]
+#JetMonABCD.triggers = [ 'HLT_PFJet40_v*' ]
+#JetMonABCD.splitFactor = 500
+#selectedComponents=mcSamples+dataSamples1Mu+dataSamplesMu+dataSamplesE+dataSamplesMuE+[JetMonABCD]
 SingleMuD.splitFactor = 1200
 SingleMuC.splitFactor = 1200
 
@@ -166,6 +165,7 @@ DYJetsM50.splitFactor = 1000
 DYJetsM10.splitFactor = 250
 
 #selectedComponents = [TTJets, QCDMuPt15, WJets, DYJetsM50]
+selectedComponents = [QCDMuPt15]
 #selectedComponents = [ DYJetsM10 ]
 
 for comp in [DoubleMuD]:
@@ -198,7 +198,7 @@ sequence = cfg.Sequence([
 # selectedComponents.remove(WJets)
 # #selectedComponents.remove(TTJets)
 
-test = 10
+test = 0
 
 if test==1:
     # test a single component, using a single thread.
