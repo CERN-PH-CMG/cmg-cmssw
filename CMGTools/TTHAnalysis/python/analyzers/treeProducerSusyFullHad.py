@@ -15,13 +15,13 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
 
             NTupleVariable("nBJetLoose40", lambda ev: sum([j.btagWP("CSVL") for j in ev.cleanJets if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CSV medium"),
 
-            NTupleVariable("ht", lambda ev : ev.htJet40j, help="H_{T} computed from only jets (with |eta|<2.4, pt > 40 GeV)"),
+            NTupleVariable("ht", lambda ev : ev.htJet40jc, help="H_{T} computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
 
             NTupleVariable("deltaPhiMin", lambda ev : ev.deltaPhiMin, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4"),
             NTupleVariable("diffMetMht", lambda ev : ev.diffMetMht, help="abs( vec(mht) - vec(met) )"),
 
-            NTupleVariable("mht_pt", lambda ev : ev.mhtJet40j, help="H_{T}^{miss} computed from only jets (with |eta|<2.4, pt > 40 GeV)"),
-            NTupleVariable("mht_phi", lambda ev : ev.mhtPhiJet40j, help="H_{T}^{miss} #phi computed from onlyy jets (with |eta|<2.4, pt > 40 GeV)"),
+            NTupleVariable("mht_pt", lambda ev : ev.mhtJet40jc, help="H_{T}^{miss} computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
+            NTupleVariable("mht_phi", lambda ev : ev.mhtPhiJet40jc, help="H_{T}^{miss} #phi computed from onlyy jets (with |eta|<2.5, pt > 40 GeV)"),
             ##--------------------------------------------------
             NTupleVariable("nMuons10", lambda ev: sum([l.pt() > 10 and abs(l.pdgId()) == 13 for l in ev.inclusiveLeptons]), int, help="Number of muons with pt > 10"),
             NTupleVariable("nElectrons10", lambda ev: sum([l.pt() > 10 and abs(l.pdgId()) == 11 for l in ev.inclusiveLeptons]), int, help="Number of electrons with pt > 10"),
@@ -56,10 +56,11 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             })
         self.collections.update({
             # put more here
-            "inclusiveLeptons" : NTupleCollection("lep", leptonTypeSusy, 8, help="Leptons after the preselection", filter=lambda l : l.pt()>10 ),
-            #"inclusiveLeptonsCuts" : NTupleCollection("lep", leptonTypeSusy, 8, help="Leptons after the preselection", filter=lambda l : l.pt()>10 ),
-            "cleanJetsAll"       : NTupleCollection("jet",     jetTypeSusy, 8, help="all jets after full selection and cleaning, sorted by pt"),
-            "allphotons" : NTupleCollection("gamma", photonTypeSusy, 5, help="all photons"),
+            #"inclusiveLeptons" : NTupleCollection("lep", leptonTypeSusy, 8, help="Leptons after the preselection", filter=lambda l : l.pt()>10 ),
+            "selectedLeptons" : NTupleCollection("lep", leptonTypeSusy, 50, help="Leptons after the preselection", filter=lambda l : l.pt()>10 ),
+            "cleanJetsAll"       : NTupleCollection("jet",     jetTypeSusy, 150, help="all jets after full selection and cleaning, sorted by pt", filter=lambda j : j.jetID("POG_PFID")>0),
+            "allphotons" : NTupleCollection("gamma", photonTypeSusy, 50, help="all photons"),
+            "genParticles" : NTupleCollection("genPart", genParticleWithMotherId, 200, help="all pruned genparticles"),
             })
         
         ## Book the variables, but only if we're called explicitly and not through a base class
