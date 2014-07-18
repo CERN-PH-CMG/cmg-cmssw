@@ -1,0 +1,17 @@
+MVA:    min(LepGood1_mva,LepGood2_mva):         1000,-1,1; LineColor=213, Title="Lepton MVA2 "
+#MVA2D: min(LepGood1_tightId,LepGood2_tightId)\: max(LepGood1_relIso,LepGood2_relIso):1000,0.,1.,1000,0,0.4; MarkerColor=25, MarkerSyle=7
+
+MVAL1: min(LepGood1_mva,LepGood2_mva) >=  -0.3: 2,-0.5,1.5; MarkerColor=215, MarkerSize=1.5, Title="MVA2 #geq -0.3 WP" 
+MVAL3: min(LepGood1_mva,LepGood2_mva) >=  0.7: 2,-0.5,1.5; MarkerColor=7, MarkerSize=1.5, Title="MVA2 #geq 0.7 WP" 
+
+relIso: max(LepGood1_relIso,LepGood2_relIso): 1000,0,0.4; LineColor=100, Title="PF Rel Iso cut"
+sip3D:  max(LepGood1_sip3d,LepGood2_sip3d): 1000,0,10; LineColor=222, Title="SIP_{3D} cut"
+CWP1: LepGood1_tightId>0.0&&LepGood2_tightId>0.0 && max(LepGood1_relIso,LepGood2_relIso)<0.20&&max(LepGood1_sip3d,LepGood2_sip3d)<4: 2,-0.5,1.5; MarkerColor=206, MarkerSize=1.5, Title="Tight ID\, Iso < 0.20\, SIP_{3D} < 4", MarkerStyle=20
+CWP2: LepGood1_tightId>0.0&&LepGood2_tightId>0.0 && max(LepGood1_relIso,LepGood2_relIso)<0.12&&max(LepGood1_sip3d,LepGood2_sip3d)<4: 2,-0.5,1.5; MarkerColor=206, MarkerSize=1.4, Title="Tight ID\, Iso < 0.12\, SIP_{3D} < 4", MarkerStyle=21
+CWP3:  LepGood1_tightId>0.0&&LepGood2_tightId>0.0 && max(LepGood1_relIso,LepGood2_relIso)<0.12&&max(LepGood1_sip3d,LepGood2_sip3d)<3: 2,-0.5,1.5; MarkerColor=206, MarkerSize=1.7, Title="Tight ID\, Iso < 0.12\, SIP_{3D} < 3", MarkerStyle=34
+
+
+
+
+
+
