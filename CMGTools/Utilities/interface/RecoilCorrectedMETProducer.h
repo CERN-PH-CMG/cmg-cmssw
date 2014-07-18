@@ -9,10 +9,12 @@
 #include "DataFormats/Candidate/interface/LeafCandidate.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/JetReco/interface/PFJet.h"
+#include "DataFormats/METReco/interface/PFMET.h"
 
 // #include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
-#include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
-#include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
+// #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
+// #include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
 
 #include "CMGTools/Utilities/interface/RecoilCorrector.h"
 #include "CMGTools/H2TauTau/interface/DiTauObjectFactory.h"
@@ -27,7 +29,7 @@ public:
   typedef typename RecBosonType::type1 Leg1Type;
   typedef typename RecBosonType::type2 Leg2Type;
   typedef reco::PFMET MetType ;
-  typedef cmg::PFJet   JetType;
+  typedef reco::PFJet   JetType;
   typedef edm::View<JetType>           JetCollectionType;
 
   explicit RecoilCorrectedMETProducer(const edm::ParameterSet & iConfig);

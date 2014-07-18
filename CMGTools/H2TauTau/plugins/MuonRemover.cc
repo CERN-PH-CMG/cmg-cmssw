@@ -7,7 +7,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "DataFormats/Math/interface/LorentzVector.h"
-#include "AnalysisDataFormats/CMGTools/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
 
 #include <sstream>
 #include <algorithm>
@@ -21,7 +21,7 @@ class MuonRemover : public edm::EDFilter {
 
 public:
   // will template the filterr later
-  typedef cmg::Muon  Lepton;
+  typedef pat::Muon  Lepton;
   typedef std::vector< Lepton > LeptonCollection;
 
   explicit MuonRemover(const edm::ParameterSet & iConfig);

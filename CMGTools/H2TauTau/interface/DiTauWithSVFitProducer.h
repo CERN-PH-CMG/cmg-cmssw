@@ -6,10 +6,7 @@
 #include "FWCore/Utilities/interface/Exception.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-#include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
-
-#include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
-#include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
+#include "CMGTools/H2TauTau/interface/METSignificance.h"
 #include "TauAnalysis/SVFitStandAlone/interface/NSVfitStandaloneAlgorithm2011.h"
 
 ///New SVFit

@@ -1,18 +1,16 @@
 #include "CMGTools/H2TauTau/interface/DiTauWithSVFitProducer.h"
-#include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
 
 #include "CMGTools/H2TauTau/interface/DiObjectUpdateFactory.h"
 #include "CMGTools/H2TauTau/interface/DiTauObjectFactory.h"
-#include "CMGTools/Common/plugins/PhysicsObjectProducer.h"
 
 
 namespace cmg {
 
-typedef DiTauObjectFactory< cmg::DiTau::type1, cmg::DiTau::type2 > DiTauFactory;
-typedef DiTauObjectFactory< cmg::TauEle::type1, cmg::TauEle::type2 > TauEleFactory;
+typedef DiTauObjectFactory< reco::PFTau, reco::PFTau > DiTauFactory;
+typedef DiTauObjectFactory< reco::PFTau, pat::Electron > TauEleFactory;
 //typedef DiObjectFactory< cmg::TauMu::type1, cmg::TauMu::type2 > TauMuFactory;
-typedef DiTauObjectFactory< cmg::TauMu::type1, cmg::TauMu::type2 > TauMuFactory;
-typedef DiTauObjectFactory< cmg::MuEle::type1, cmg::MuEle::type2 > MuEleFactory;
+typedef DiTauObjectFactory< reco::PFTau, pat::Muon > TauMuFactory;
+typedef DiTauObjectFactory< pat::Muon, pat::Electron > MuEleFactory;
 
 typedef DiObjectUpdateFactory< cmg::TauMu > TauMuUpdateFactory;
 typedef DiObjectUpdateFactory< cmg::TauEle > TauEleUpdateFactory;
