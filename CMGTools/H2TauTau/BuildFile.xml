@@ -1,9 +1,7 @@
-
 <use name="boost"/>
 <use name="rootcintex"/>
 <use name="rootrflx"/>
 <use name="roofitcore"/>
-
 <use name="FWCore/Framework"/>
 <use name="FWCore/ParameterSet"/>
 <use name="FWCore/FWLite"/>

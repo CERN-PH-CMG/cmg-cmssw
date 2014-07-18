@@ -7,9 +7,12 @@
 
 namespace cmg{
 
-  // T is for example a di-object<U, S>
-  template< typename T>
-  class DiObjectUpdateFactory : public cmg::Factory< T > {
+  typedef reco::CompositeCandidate DiTauObject;
+
+  template< typename T, typename U>
+  class DiObjectUpdateFactory : public edm::EDProducer  {
+
+  typedef std::vector<DiTauObject> collection;
 
   public:
     
@@ -26,11 +29,11 @@ namespace cmg{
       ptDependence3Prong_(ps.getParameter<double>("ptDependence3Prong")),
       shiftMet_          (ps.getParameter<bool>("shiftMet")),
       shiftTaus_         (ps.getParameter<bool>("shiftTaus"))
-      {}
+      {
+        produces<collection>();
+      }
 
-    //need to override from Factory to insert "typename"
-    typedef typename cmg::Factory< T >::event_ptr event_ptr;
-    virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
+    void produce(edm::Event&, const edm::EventSetup&);
     
   private:
 
@@ -51,54 +54,52 @@ namespace cmg{
 } // namespace cmg
 
 
-template< typename T >
-typename cmg::DiObjectUpdateFactory<T>::event_ptr cmg::DiObjectUpdateFactory<T>::create(const edm::Event& iEvent, const edm::EventSetup&){
+template< typename T, typename U >
+void cmg::DiObjectUpdateFactory<T, U>::produce(edm::Event& iEvent, const edm::EventSetup&){
     
-  typedef std::vector< T > collection;
-  
   edm::Handle<collection> diObjects;
   iEvent.getByLabel(diObjectLabel_,diObjects);
 
   edm::Handle< std::vector<reco::GenParticle> > genparticles;
-  iEvent.getByLabel("genParticlesPruned",genparticles);
+  // JAN - this may not work from MiniAOD; make it configurable?
+  iEvent.getByLabel("genParticlesPruned", genparticles);
    
-  typename cmg::DiObjectUpdateFactory<T>::event_ptr result(new collection);
+  std::auto_ptr<collection> result(new collection);
   
   unsigned index = 0;
   for(typename collection::const_iterator it = diObjects->begin(); it != diObjects->end(); ++it, ++index ){
-    const T& diObject = *it;
+    const DiTauObject& diObject = *it;
     // assert( index < metCands->size() );
-    typename T::type1 leg1(diObject.leg1());
-    typename T::type2 leg2(diObject.leg2());
-    // reco::LeafCandidate met = reco::LeafCandidate( metCands->at(index) );
-    reco::LeafCandidate met = diObject.met();
+    T leg1(*dynamic_cast<const T*>(diObject.daughter(0)));
+    U leg2(*dynamic_cast<const U*>(diObject.daughter(1)));
+    reco::LeafCandidate met(*dynamic_cast<const reco::LeafCandidate*>(diObject.daughter(2)));
 
     float shift1 = 0.;
     float shift2 = 0.;
-    if(typeid(typename T::type1)==typeid(cmg::Tau))
+    if(typeid(T)==typeid(reco::PFTau))
     {
      	shift1 = (nSigma_ * uncertainty_);
-      const cmg::Tau& tau1 = dynamic_cast<const cmg::Tau&>(diObject.leg1());
+      const reco::PFTau& tau1 = dynamic_cast<const reco::PFTau&>(*diObject.daughter(0));
      	if((tau1.decayMode()==0)&&(shift1ProngNoPi0_!=0))
      	    shift1+=shift1ProngNoPi0_;
         //Also allow decay mode 2 according to synchronisation twiki
      	if((tau1.decayMode()==1 || tau1.decayMode()==2)&&(shift1Prong1Pi0_!=0))
-     	    shift1+=shift1Prong1Pi0_+ptDependence1Pi0_*TMath::Min(TMath::Max(diObject.leg1().pt()-45.,0.),10.);
+     	    shift1+=shift1Prong1Pi0_+ptDependence1Pi0_*TMath::Min(TMath::Max(diObject.daughter(0)->pt()-45.,0.),10.);
      	if((tau1.decayMode()==10)&&(shift3Prong_!=0))
-     	    shift1+=shift3Prong_+ptDependence3Prong_*TMath::Min(TMath::Max(diObject.leg1().pt()-32.,0.),18.);
+     	    shift1+=shift3Prong_+ptDependence3Prong_*TMath::Min(TMath::Max(diObject.daughter(0)->pt()-32.,0.),18.);
     }
 
-    if(typeid(typename T::type2)==typeid(cmg::Tau))
+    if(typeid(U)==typeid(reco::PFTau))
     {
      	shift2 = (nSigma_ * uncertainty_);
-      const cmg::Tau& tau2 = dynamic_cast<const cmg::Tau&>(diObject.leg2());
+      const reco::PFTau& tau2 = dynamic_cast<const reco::PFTau&>(*diObject.daughter(1));
      	if((tau2.decayMode()==0)&&(shift1ProngNoPi0_!=0))
      	    shift2+=shift1ProngNoPi0_;
         //Also allow decay mode 2 according to synchronisation twiki
      	if((tau2.decayMode()==1 || tau2.decayMode()==2)&&(shift1Prong1Pi0_!=0))
-     	    shift2+=shift1Prong1Pi0_+ptDependence1Pi0_*TMath::Min(TMath::Max(diObject.leg2().pt()-45.,0.),10.);
+     	    shift2+=shift1Prong1Pi0_+ptDependence1Pi0_*TMath::Min(TMath::Max(diObject.daughter(1)->pt()-45.,0.),10.);
      	if((tau2.decayMode()==10)&&(shift3Prong_!=0))
-     	    shift2+=shift3Prong_+ptDependence3Prong_*TMath::Min(TMath::Max(diObject.leg2().pt()-32.,0.),18.);
+     	    shift2+=shift3Prong_+ptDependence3Prong_*TMath::Min(TMath::Max(diObject.daughter(1)->pt()-32.,0.),18.);
     }
 
     // the tauES shift must be applied to *real* taus only
@@ -118,16 +119,16 @@ typename cmg::DiObjectUpdateFactory<T>::event_ptr cmg::DiObjectUpdateFactory<T>:
       // PDG Id: e 11, mu 13, tau 15, Z 23, h 25, H 35, A 35  
       if ( status == 3 && abs(id) == 15 && (motherId == 23 || motherId == 25 || motherId == 35 || motherId == 36 )){
         // match leg 1
-        if(typeid(typename T::type1)==typeid(cmg::Tau)){
-          const cmg::Tau& tau1 = dynamic_cast<const cmg::Tau&>(diObject.leg1());
+        if(typeid(T)==typeid(reco::PFTau)){
+          const reco::PFTau& tau1 = dynamic_cast<const reco::PFTau&>(*diObject.daughter(0));
           if (deltaR(tau1.eta(),tau1.phi(),p.eta(),p.phi())<0.3) {
             l1genMatched = true ;
             //std::cout << __LINE__ << "]\tleg1 matched to a tau" << std::endl ;
           }
         }
         // match leg 2
-        if(typeid(typename T::type2)==typeid(cmg::Tau)){
-          const cmg::Tau& tau2 = dynamic_cast<const cmg::Tau&>(diObject.leg2());
+        if(typeid(U)==typeid(reco::PFTau)){
+          const reco::PFTau& tau2 = dynamic_cast<const reco::PFTau&>(*diObject.daughter(1));
           if (deltaR(tau2.eta(),tau2.phi(),p.eta(),p.phi())<0.3) {
             l2genMatched = true ;
             //std::cout << __LINE__ << "]\tleg2 matched to a tau" << std::endl ;
@@ -136,8 +137,8 @@ typename cmg::DiObjectUpdateFactory<T>::event_ptr cmg::DiObjectUpdateFactory<T>:
       }
     }
 
-    reco::Candidate::LorentzVector leg1Vec = diObject.leg1().p4();
-    reco::Candidate::LorentzVector leg2Vec = diObject.leg2().p4();
+    reco::Candidate::LorentzVector leg1Vec = diObject.daughter(0)->p4();
+    reco::Candidate::LorentzVector leg2Vec = diObject.daughter(1)->p4();
     reco::Candidate::LorentzVector metVec = met.p4();
 
     float dpx = 0.;
@@ -163,13 +164,13 @@ typename cmg::DiObjectUpdateFactory<T>::event_ptr cmg::DiObjectUpdateFactory<T>:
     if (shiftMet_  ){ met.setP4(reco::Candidate::LorentzVector(metVecNew.Px(),metVecNew.Py(),metVecNew.Pz(),metVecNew.E())); }
 
     // T diObjectNew = T(leg1,leg2);
-    result->push_back(T(diObject));
+    result->push_back(diObject);
 
     // diObjectFactory_.set( std::make_pair(leg1, leg2), met, & result->back() );
-    DiTauObjectFactory< typename T::type1, typename T::type2 >::set( std::make_pair(leg1, leg2), met, &result->back() );
+    DiTauObjectFactory<T, U>::set( std::make_pair(leg1, leg2), met, result->back() );
   }
   
-  return result;
+  iEvent.put(result);
 }
 
 

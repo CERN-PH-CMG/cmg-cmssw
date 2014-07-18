@@ -16,9 +16,10 @@ namespace {
     VBFMVA2012        vbfMva2012 ;
     BTagEfficiency    btageff;
     BTagWeight        btagw;
-  };
-}
 
-namespace cmg {
-    METSignificance metsig;
+    cmg::METSignificance metsig_;
+    edm::Wrapper<cmg::METSignificance> metsige_;
+    std::vector<cmg::METSignificance> metsigv_;
+    edm::Wrapper<std::vector<cmg::METSignificance> > metsigve_;
+  };
 }

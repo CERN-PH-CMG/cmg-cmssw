@@ -10,14 +10,14 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include "CMGTools/H2TauTau/interface/METSignificance.h"
-#include "DataFormats/Candidate/interface/CompositePtrCandidate.h"
+#include "DataFormats/Candidate/interface/CompositeCandidate.h"
 
 #include <algorithm>
 #include <set>
 
 namespace cmg{
 
-typedef reco::CompositePtrCandidate DiTauObject;
+typedef reco::CompositeCandidate DiTauObject;
 
 template<typename T, typename U>
 class DiTauObjectFactory : public edm::EDProducer 
@@ -50,8 +50,8 @@ class DiTauObjectFactory : public edm::EDProducer
 template< typename T, typename U >
 cmg::DiTauObject makeDiTau(const T& l1, const U& l2){
     cmg::DiTauObject diTauObj = cmg::DiTauObject();
-    diTauObj.addDaughter(edm::Ptr<T>(l1));
-    diTauObj.addDaughter(edm::Ptr<U>(l2));
+    diTauObj.addDaughter(l1);
+    diTauObj.addDaughter(l2);
     return diTauObj;
 }
 
@@ -60,12 +60,12 @@ cmg::DiTauObject makeDiTau(const T& l1, const U& l2){
 template<typename T>
 cmg::DiTauObject makeDiTau(const T& l1, const T& l2){
     cmg::DiTauObject diTauObj = cmg::DiTauObject();
-    if(l1 >= l2){
-        diTauObj.addDaughter(edm::Ptr<T>(l1));
-        diTauObj.addDaughter(edm::Ptr<T>(l2));
+    if(l1.pt() >= l2.pt()){
+        diTauObj.addDaughter(l1);
+        diTauObj.addDaughter(l2);
     }else{
-        diTauObj.addDaughter(edm::Ptr<T>(l2));
-        diTauObj.addDaughter(edm::Ptr<T>(l1));
+        diTauObj.addDaughter(l2);
+        diTauObj.addDaughter(l1);
     }
     return diTauObj;
 }
@@ -76,17 +76,17 @@ void cmg::DiTauObjectFactory<T, U>::set(const std::pair<T, U>& pair, const reco:
 
 
   T first = pair.first;
-  T second = pair.second;
+  U second = pair.second;
 
   // reset daughters
   obj.clearDaughters();
 
-  obj.addDaughter(edm::Ptr<T>(first));
-  obj.addDaughter(edm::Ptr<U>(second));
+  obj.addDaughter(first);
+  obj.addDaughter(second);
   
   obj.setP4(first.p4() + second.p4());
   obj.setCharge(first.charge() + second.charge());
-  obj.addDaughter(edm::Ptr<reco::LeafCandidate>(met));
+  obj.addDaughter(met);
 
 
   // JAN: Let's see where we set all this stuff,
@@ -156,25 +156,27 @@ void cmg::DiTauObjectFactory<T, U>::produce(edm::Event& iEvent, const edm::Event
 
 
     const bool sameCollection = (leg1Cands.id () == leg2Cands.id());
-    for(typename collection1::const_iterator it = leg1Cands->begin(); it != leg1Cands->end(); ++it){
-        for(typename collection2::const_iterator jt = leg2Cands->begin(); jt != leg2Cands->end(); ++jt){
+    // for(typename collection1::const_iterator it = leg1Cands->begin(); it != leg1Cands->end(); ++it){
+    //     for(typename collection2::const_iterator jt = leg2Cands->begin(); jt != leg2Cands->end(); ++jt){
+       for (size_t i1 = 0; i1 < leg1Cands->size(); ++i1) {
+         for (size_t i2 = 0; i2 < leg2Cands->size(); ++i2) {
             //we skip if its the same object
-            if( sameCollection && (*it == *jt) ) continue;
+            if( sameCollection && (i1 == i2) ) continue;
             
             //enable sorting only if we are using the same collection - see Savannah #20217
-            cmg::DiTauObject cmgTmp = sameCollection ? cmg::makeDiTau(*it, *jt) : cmg::DiTauObject(*it, *jt); 
+            cmg::DiTauObject cmgTmp = sameCollection ? cmg::makeDiTau<T>((*leg1Cands)[i1], (*leg2Cands)[i2]) : cmg::makeDiTau<T, U>((*leg1Cands)[i1], (*leg2Cands)[i2]); 
             
             if(metAvailable && ! metCands->empty() ) 
             {
-                T* first = dynamic_cast<T>(cmgTmp.daughter(0));
-                U* second = dynamic_cast<T>(cmgTmp.daughter(0));
+                T* first = dynamic_cast<T*>(cmgTmp.daughter(0));
+                U* second = dynamic_cast<U*>(cmgTmp.daughter(0));
                 if (metSigAvailable && !metSigCands->empty()) {
 
 
-                    cmg::DiTauObjectFactory<T, U>::set(std::make_pair(*first, *second), metCands->at(0), metSigCands->at(0), &cmgTmp);
+                    cmg::DiTauObjectFactory<T, U>::set(std::make_pair(*first, *second), metCands->at(0), metSigCands->at(0), cmgTmp);
                 }
                 else
-                    cmg::DiTauObjectFactory<T, U>::set(std::make_pair(*first, *second), metCands->at(0), &cmgTmp);
+                    cmg::DiTauObjectFactory<T, U>::set(std::make_pair(*first, *second), metCands->at(0), cmgTmp);
                 result->push_back(cmgTmp);
             }
         }

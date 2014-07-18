@@ -7,6 +7,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "CMGTools/H2TauTau/interface/METSignificance.h"
+#include "DataFormats/Candidate/interface/CompositeCandidate.h"
 #include "TauAnalysis/SVFitStandAlone/interface/NSVfitStandaloneAlgorithm2011.h"
 
 ///New SVFit
@@ -14,12 +15,14 @@
 
 #include <sstream>
 
-template< typename DiTauType>
+template< typename T, typename U>
 class DiTauWithSVFitProducer : public edm::EDProducer {
+
+typedef reco::CompositeCandidate DiTauObject;
 
 public:
   // will template the producer later
-  typedef std::vector< DiTauType > DiTauCollection;
+  typedef std::vector< DiTauObject > DiTauCollection;
 
   explicit DiTauWithSVFitProducer(const edm::ParameterSet & iConfig);
   virtual ~DiTauWithSVFitProducer() {}
@@ -31,7 +34,7 @@ private:
   
   /// source diobject inputtag
   edm::InputTag diTauSrc_;
-  // edm::InputTag metsigSrc_;
+  edm::InputTag metsigSrc_;
 
   unsigned warningNumbers_;
   bool verbose_;
@@ -39,26 +42,29 @@ private:
 };
 
 
-template< typename DiTauType >
-DiTauWithSVFitProducer<DiTauType>::DiTauWithSVFitProducer(const edm::ParameterSet & iConfig) : 
+template< typename T, typename U >
+DiTauWithSVFitProducer<T, U>::DiTauWithSVFitProducer(const edm::ParameterSet & iConfig) : 
   diTauSrc_( iConfig.getParameter<edm::InputTag>("diTauSrc") ),
   //   metSrc_( iConfig.getParameter<edm::InputTag>("metSrc") ),
-  // metsigSrc_( iConfig.getParameter<edm::InputTag>("metsigSrc") ),
+  metsigSrc_( iConfig.getParameter<edm::InputTag>("metsigSrc") ),
   warningNumbers_(0),
   verbose_( iConfig.getUntrackedParameter<bool>("verbose", false ) ),
   SVFitVersion_( iConfig.getParameter<int>("SVFitVersion") ) {
 
   // will produce a collection containing a copy of each di-object in input, 
   // with the SVFit mass set. 
-  produces< std::vector< DiTauType > >();
+  produces< std::vector< DiTauObject > >();
 }
 
 
-template< typename DiTauType >
-void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
+template< typename T, typename U >
+void DiTauWithSVFitProducer<T, U>::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
 
   edm::Handle< DiTauCollection > diTauH;
   iEvent.getByLabel(diTauSrc_, diTauH);
+
+  edm::Handle< std::vector<cmg::METSignificance> > metSigH;
+  iEvent.getByLabel(metsigSrc_, metSigH);
 
   if(verbose_ && !diTauH->empty() ) {
     std::cout<<"DiTauWithSVFitProducer"<<std::endl;
@@ -89,7 +95,7 @@ void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::
 
   NSVfitStandalone::kDecayType leg1type, leg2type;
   NSVfitStandalone2011::kDecayType leg1type2011, leg2type2011;
-  if(typeid(typename DiTauType::type1)==typeid(cmg::Tau)) {
+  if(typeid(T)==typeid(reco::PFTau)) {
       leg1type=NSVfitStandalone::kHadDecay;
       leg1type2011=NSVfitStandalone2011::kHadDecay;
       warningMessage += " - first leg is hadronic tau";
@@ -98,7 +104,7 @@ void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::
       leg1type2011=NSVfitStandalone2011::kLepDecay;
       warningMessage += " - first leg is leptonic tau";
   }
-  if(typeid(typename DiTauType::type2)==typeid(cmg::Tau)) {
+  if(typeid(U)==typeid(reco::PFTau)) {
       leg2type=NSVfitStandalone::kHadDecay;
       leg2type2011=NSVfitStandalone2011::kHadDecay;
       warningMessage += " - second leg is hadronic tau";
@@ -127,19 +133,16 @@ void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::
   }
 
   for( unsigned i=0; i<diTauH->size(); ++i) {
-    DiTauType diTau(diTauH->at(i));
-    const reco::LeafCandidate met = diTau.met();
-    //cmg::METSignificance& metsig = metsigs[0];
-    const cmg::METSignificance& metsig = diTau.metSig();
-    const TMatrixD* tmsig = metsig.significance();
-    // if(vectorMetsigs)
-    //   metsig = metsigs[i];
+    DiTauObject diTau(diTauH->at(i));
+    const cmg::METSignificance& metsig = metSigH->at(i);
+    const reco::LeafCandidate met(dynamic_cast<const reco::LeafCandidate&>(*diTau.daughter(2)));
+    const TMatrixD* tmsig = &metsig.significance();
 
     if(verbose_) {
       std::cout<<"  ---------------- "<<std::endl;
       std::cout<<"\trec boson: "<<diTau<<std::endl;
-      std::cout<<"\t\tleg1: "<<diTau.leg1()<<std::endl;
-      std::cout<<"\t\tleg2: "<<diTau.leg2()<<std::endl;
+      std::cout<<"\t\tleg1: "<<diTau.daughter(0)<<std::endl;
+      std::cout<<"\t\tleg2: "<<diTau.daughter(1)<<std::endl;
       std::cout<<"\t\tMET = "<<met.et()<<", phi_MET = "<<met.phi()<<std::endl;      
     }
 
@@ -150,8 +153,8 @@ void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::
 	//Note that this works only for di-objects where the tau is the leg1 and mu is leg2
 	NSVfitStandalone2011::Vector measuredMET( met.p4().x(), met.p4().y(), 0);
 	std::vector<NSVfitStandalone2011::MeasuredTauLepton2011> measuredTauLeptons;
-	NSVfitStandalone2011::LorentzVector p1(diTau.leg1().p4());
-	NSVfitStandalone2011::LorentzVector p2(diTau.leg2().p4());
+	NSVfitStandalone2011::LorentzVector p1(diTau.daughter(0)->p4());
+	NSVfitStandalone2011::LorentzVector p2(diTau.daughter(1)->p4());
 	measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(leg2type2011,p2));
 	measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(leg1type2011,p1));    
 	NSVfitStandaloneAlgorithm2011 algo(measuredTauLeptons,measuredMET, tmsig, 0);
@@ -161,22 +164,23 @@ void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::
       }else if(SVFitVersion_==2){
 	//Note that this works only for di-objects where the tau is the leg1 and mu is leg2
 	std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
-	measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(leg2type, diTau.leg2().p4()));
-	measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(leg1type, diTau.leg1().p4()));
+	measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(leg2type, diTau.daughter(1)->p4()));
+	measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(leg1type, diTau.daughter(0)->p4()));
 	NSVfitStandaloneAlgorithm algo(measuredTauLeptons, met.p4().Vect(), *(tmsig), 0);
 	algo.addLogM(false);
 	//algo.integrate();
         // algo.integrateMarkovChain();
         algo.integrateVEGAS();
         massSVFit = algo.mass();
-        diTau.setMassErrSVFit( algo.massUncert() );
-        diTau.setPtSVFit( algo.pt() );
-        diTau.setPtErrSVFit( algo.ptUncert() );
+        // JAN - FIXME - either create exgtra class or add vector<float> for the svfit observables!
+        // diTau.setMassErrSVFit( algo.massUncert() );
+        // diTau.setPtSVFit( algo.pt() );
+        // diTau.setPtErrSVFit( algo.ptUncert() );
       }else {
 	std::cout<<" Unrecognized SVFitVersion !!!!!!!!!!!!"<<std::endl;    
       }
     }
-    diTau.setMassSVFit( massSVFit );
+    diTau.setMass( massSVFit );
 
     pOut->push_back( diTau );
 
