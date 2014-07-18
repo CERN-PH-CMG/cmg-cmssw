@@ -8,9 +8,10 @@
 // DEFINE_FWK_MODULE(RecoilCorrectedMETProducerMuEle); 
 // DEFINE_FWK_MODULE(RecoilCorrectedMETProducerDiTau); 
 
-// DEFINE_FWK_MODULE(MVAMETProducerTauMu);
-// DEFINE_FWK_MODULE(MVAMETProducerTauEle);
-// DEFINE_FWK_MODULE(MVAMETProducerDiTau);
+DEFINE_FWK_MODULE(MVAMETProducerTauMu);
+DEFINE_FWK_MODULE(MVAMETProducerTauEle);
+DEFINE_FWK_MODULE(MVAMETProducerMuEle);
+DEFINE_FWK_MODULE(MVAMETProducerDiTau);
 
 DEFINE_FWK_MODULE(MVAMETProducerPreselectedLeptons);
 

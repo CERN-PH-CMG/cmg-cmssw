@@ -11,6 +11,7 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/JetReco/interface/PFJet.h"
 #include "DataFormats/METReco/interface/PFMET.h"
+#include "DataFormats/Candidate/interface/CompositeCandidate.h"
 
 // #include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
 // #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
@@ -21,13 +22,13 @@
 
 #include <sstream>
 
-template< typename RecBosonType >
+template< typename T, typename U >
 class RecoilCorrectedMETProducer : public edm::EDProducer {
 
 public:
-  // typedef cmg::TauMu RecBosonType;
-  typedef typename RecBosonType::type1 Leg1Type;
-  typedef typename RecBosonType::type2 Leg2Type;
+  typedef reco::CompositeCandidate RecBosonType;
+  typedef T Leg1Type;
+  typedef U Leg2Type;
   typedef reco::PFMET MetType ;
   typedef reco::PFJet   JetType;
   typedef edm::View<JetType>           JetCollectionType;
@@ -77,8 +78,8 @@ private:
 };
 
 
-template< typename RecBosonType >
-RecoilCorrectedMETProducer< RecBosonType >::RecoilCorrectedMETProducer(const edm::ParameterSet & iConfig) : 
+template< typename T, typename U >
+RecoilCorrectedMETProducer< T, U >::RecoilCorrectedMETProducer(const edm::ParameterSet & iConfig) : 
   genBosonSrc_( iConfig.getParameter<edm::InputTag>("genBosonSrc") ),
   recBosonSrc_( iConfig.getParameter<edm::InputTag>("recBosonSrc") ),
   jetSrc_( iConfig.getParameter<edm::InputTag>("jetSrc") ),
@@ -109,13 +110,12 @@ RecoilCorrectedMETProducer< RecBosonType >::RecoilCorrectedMETProducer(const edm
 }
 
 
-template< typename RecBosonType >
-void RecoilCorrectedMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
+template< typename T, typename U >
+void RecoilCorrectedMETProducer<T, U>::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
 
 
   edm::Handle< std::vector<RecBosonType> > recBosonH;
   iEvent.getByLabel(recBosonSrc_, recBosonH);
-
 
   if( ! enable_) {
 
@@ -191,7 +191,7 @@ void RecoilCorrectedMETProducer<RecBosonType>::produce(edm::Event & iEvent, cons
     
     //MetType metObj;
     reco::LeafCandidate metObj;
-    metObj = recBoson.met();
+    metObj = *(dynamic_cast<const reco::LeafCandidate*>(recBoson.daughter(2)));
 
     // if (!useRecBosonMet && metH->size() == 1)
     //   metObj = (*metH)[0];
@@ -204,22 +204,21 @@ void RecoilCorrectedMETProducer<RecBosonType>::produce(edm::Event & iEvent, cons
     if(verbose_) {
       std::cout<<"  ---------------- "<<std::endl;
       std::cout<<"\told MET (et,phi): "<<uncMet<<","<<uncMetPhi<<std::endl;
-      std::cout<<"\trec boson: "<<recBoson<<std::endl;
-      std::cout<<"\t\tleg1: "<<recBoson.leg1()<<std::endl;
-      std::cout<<"\t\tleg2: "<<recBoson.leg2()<<std::endl;
-      std::cout<<"\t\tpassing baseline? "<<recBoson.getSelection("cuts_baseline")<<std::endl;
+      std::cout<<"\trec boson: "<<recBoson.pt()<<std::endl;
+      std::cout<<"\t\tleg1: "<<recBoson.daughter(0)<<std::endl;
+      std::cout<<"\t\tleg2: "<<recBoson.daughter(1)<<std::endl;
     }
 
     reco::Candidate::PolarLorentzVector lepton;
     if(leptonLeg_==1) {
-      lepton = recBoson.leg1().p4();
+      lepton = recBoson.daughter(0)->p4();
     }
     else if(leptonLeg_==2) {
-      lepton = recBoson.leg2().p4();
+      lepton = recBoson.daughter(1)->p4();
     }
     else {
-      lepton = recBoson.leg1().p4();
-      lepton += recBoson.leg2().p4();
+      lepton = recBoson.daughter(0)->p4();
+      lepton += recBoson.daughter(1)->p4();
     }
     double lepPt = lepton.pt();
     double lepPhi = lepton.phi();
@@ -267,7 +266,7 @@ void RecoilCorrectedMETProducer<RecBosonType>::produce(edm::Event & iEvent, cons
     metObj.setP4( newMETP4 );
     pOutRecBoson->push_back(RecBosonType(recBoson));
     // Create new rec boson; also recalculates mT1/mT2 etc
-    cmg::DiTauObjectFactory<Leg1Type, Leg2Type>::set(std::make_pair(recBoson.leg1(), recBoson.leg2()), metObj, recBoson.metSig(), &pOutRecBoson->back());
+    cmg::DiTauObjectFactory<Leg1Type, Leg2Type>::set(std::make_pair(recBoson.daughter(0), recBoson.daughter(1)), metObj, &pOutRecBoson->back());
   }
   
   // iEvent.put( pOut ); 
@@ -281,8 +280,8 @@ void RecoilCorrectedMETProducer<RecBosonType>::produce(edm::Event & iEvent, cons
 
 
 
-template< typename RecBosonType >
-int  RecoilCorrectedMETProducer< RecBosonType >::nJets( const JetCollectionType& jets, 
+template< typename T, typename U >
+int  RecoilCorrectedMETProducer< T, U >::nJets( const JetCollectionType& jets, 
 							const RecBosonType& boson, float deltaR) {
   
   // H->tau tau Summer 13 convention: Remove only lepton from jets, not tau,
@@ -299,11 +298,11 @@ int  RecoilCorrectedMETProducer< RecBosonType >::nJets( const JetCollectionType&
     double dR2leg1 = 99.;
     if (leptonLeg_ != 2)
       dR2leg1 = reco::deltaR2( jet.eta(), jet.phi(), 
-				    boson.leg1().eta(), boson.leg1().phi() ) ;
+				    boson.daughter(0)->eta(), boson.daughter(0)->phi() ) ;
     double dR2leg2 = 99.;
     if (leptonLeg_ != 1)
       dR2leg2 = reco::deltaR2( jet.eta(), jet.phi(), 
-				    boson.leg2().eta(), boson.leg2().phi() ) ;
+				    boson.daughter(1)->eta(), boson.daughter(1)->phi() ) ;
     
     if( dR2leg1 > deltaR2 && dR2leg2 > deltaR2) {
       // this jet is far enough from both boson legs, and counted as such

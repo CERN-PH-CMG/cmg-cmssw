@@ -25,22 +25,22 @@
 #include "CMGTools/Utilities/interface/MVAMet.h"
 #include "CMGTools/Common/interface/MetUtilities.h"
 #include "DataFormats/JetReco/interface/PileupJetIdentifier.h"
+#include "DataFormats/Candidate/interface/CompositeCandidate.h"
 
 #include "CMGTools/H2TauTau/interface/DiTauObjectFactory.h"
 
 #include <sstream>
 
-template< typename RecBosonType >
+template< typename T, typename U >
 class MVAMETProducer : public edm::EDProducer {
 
 public:
-  // typedef reco::PFTauMu RecBosonType;
-  typedef typename RecBosonType::type1 Leg1Type;
-  typedef typename RecBosonType::type2 Leg2Type;
-/*   typedef cmg::BaseMET MetType;  */
+  typedef reco::CompositeCandidate RecBosonType;
+  typedef T Leg1Type;
+  typedef U Leg2Type;
   typedef reco::PFMET MetType;
   // typedef reco::PFJet   JetType;
-  typedef pat::Jet   JetType;
+  typedef pat::Jet  JetType;
   typedef std::vector<JetType>           JetCollectionType;
   typedef math::XYZTLorentzVector LorentzVector;
 
@@ -89,8 +89,8 @@ private:
 
 
 
-template< typename RecBosonType >
-MVAMETProducer< RecBosonType >::MVAMETProducer(const edm::ParameterSet & iConfig) : 
+template< typename T, typename U >
+MVAMETProducer< T, U >::MVAMETProducer(const edm::ParameterSet & iConfig) : 
   pfmetSrc_( iConfig.getParameter<edm::InputTag>("pfmetSrc") ), 
   tkmetSrc_( iConfig.getParameter<edm::InputTag>("tkmetSrc") ), 
   nopumetSrc_( iConfig.getParameter<edm::InputTag>("nopumetSrc") ), 
@@ -148,10 +148,8 @@ float signalChargedFractionpT(const reco::PFTau& tau) {
 }
 
 
-template< typename RecBosonType >
-void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
-
-  typedef std::auto_ptr< std::vector< MetType > >  OutPtr;
+template< typename T, typename U >
+void MVAMETProducer<T, U>::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
 
   edm::Handle< std::vector<MetType> > pfmetH;
   iEvent.getByLabel(pfmetSrc_, pfmetH);
@@ -306,10 +304,10 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
 			     cleanpucmetsumet, cleanpucmetp4, dummyVertex);
 
     LorentzVector tau1Chargedp4 = recBoson.daughter(0)->p4();
-    if(typeid(recBoson.leg1())==typeid(reco::PFTau))
+    if(typeid(T)==typeid(reco::PFTau))
         tau1Chargedp4 *= signalChargedFractionpT(*dynamic_cast<const reco::PFTau*>(recBoson.daughter(0)));
     LorentzVector tau2Chargedp4 = recBoson.daughter(1)->p4();
-    if(typeid(recBoson.leg2())==typeid(reco::PFTau))
+    if(typeid(T)==typeid(reco::PFTau))
         tau2Chargedp4 *= signalChargedFractionpT(*dynamic_cast<const reco::PFTau*>(recBoson.daughter(1)));
     
     LorentzVector cleantkmetp4 = tkmet->p4();
@@ -370,13 +368,13 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
 
     // JAN - add rec boson
     pOutRecBoson->push_back(RecBosonType(recBoson));
-    cmg::DiTauObjectFactory<Leg1Type, Leg2Type>::set(std::make_pair(recBoson.leg1(), recBoson.leg2()), met, metSig, &pOutRecBoson->back());
+    cmg::DiTauObjectFactory<Leg1Type, Leg2Type>::set(std::make_pair(*(dynamic_cast<const T*>(recBoson.daughter(0))), *(dynamic_cast<const U*>(recBoson.daughter(1)))), met, metSig, pOutRecBoson->back());
 
     if(verbose_) {
       std::cout<<"  ---------------- "<<std::endl;
       std::cout<<"\trec boson: "<<recBoson<<std::endl;
-      std::cout<<"\t\tleg1: "<<recBoson.leg1()<<std::endl;
-      std::cout<<"\t\tleg2: "<<recBoson.leg2()<<std::endl;
+      std::cout<<"\t\tleg1: "<<recBoson.daughter(0)<<std::endl;
+      std::cout<<"\t\tleg2: "<<recBoson.daughter(1)<<std::endl;
       std::cout<<"\t\tNEW MET: "<<lMVAMetInfo.first.Pt()<<"   "<<lMVAMetInfo.first.Phi()<<std::endl;
       std::cout<<""<<endl;
     }
@@ -393,8 +391,8 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
   }
 }
 
-template< typename RecBosonType >
-void MVAMETProducer< RecBosonType >::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,
+template< typename T, typename U >
+void MVAMETProducer< T, U >::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,
 					      const std::vector<JetType>& iCJets,
 					      const reco::VertexCollection &iVertices,double iRho) const { 
   for(int i1 = 0; i1 < (int) iCJets .size(); i1++) {   // corrected jets collection                                         

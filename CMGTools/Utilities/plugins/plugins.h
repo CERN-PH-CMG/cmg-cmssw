@@ -2,8 +2,15 @@
 #include "CMGTools/Utilities/interface/MVAMETProducer.h"
 #include "CMGTools/Utilities/interface/MVAMETProducerPreselLep.h"
 
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
+
 #include "CMGTools/Utilities/interface/TauESCorrector.h"
 
+typedef MVAMETProducer<reco::PFTau, pat::Muon> MVAMETProducerTauMu;
+typedef MVAMETProducer<reco::PFTau, pat::Electron> MVAMETProducerTauEle;
+typedef MVAMETProducer<pat::Muon, pat::Electron> MVAMETProducerMuEle;
+typedef MVAMETProducer<reco::PFTau, reco::PFTau> MVAMETProducerDiTau;
 
 // JAN: Re-add these typedefs once we have defined a di-object data format
 

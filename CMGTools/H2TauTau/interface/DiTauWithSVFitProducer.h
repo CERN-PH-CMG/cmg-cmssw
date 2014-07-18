@@ -15,6 +15,8 @@
 
 #include <sstream>
 
+// JAN - why not in namespace cmg??
+
 template< typename T, typename U>
 class DiTauWithSVFitProducer : public edm::EDProducer {
 
