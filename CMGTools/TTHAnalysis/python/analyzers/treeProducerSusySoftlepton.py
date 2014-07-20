@@ -46,7 +46,9 @@ class treeProducerSusySoftlepton( treeProducerSusyCore ):
         })
         self.collections.update({
             # put more here
+            "selectedLeptons" : NTupleCollection("LepGood", leptonTypeSusy, 8, help="Leptons after the preselection"),
             "otherLeptons"    : NTupleCollection("LepOther", leptonTypeSusy, 8, help="Leptons after the preselection"),
+            "selectedTaus"    : NTupleCollection("TauGood", tauTypeSusy, 3, help="Taus after the preselection"),
             ##------------------------------------------------
             "cleanJetsAll"    : NTupleCollection("Jet",     jetTypeSusy, 8, help="Cental jets after full selection and cleaning, sorted by pt"),
         })

@@ -9,10 +9,27 @@ from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
 ## Redefine what I need
 ##------------------------------------------
 
+#Lepton
+ttHLepAna.loose_muon_dxy = 0.5
+ttHLepAna.loose_muon_dz  = 1.0
+ttHLepAna.loose_muon_relIso  = 0.15
+ttHLepAna.loose_electron_id  = "POG_Cuts_ID_2012_Veto"
+ttHLepAna.loose_electron_pt  = 5
+ttHLepAna.loose_electron_eta    = 2.4
+ttHLepAna.loose_electron_dxy    = 0.04
+ttHLepAna.loose_electron_dz     = 0.2
+ttHLepAna.loose_electron_relIso = 0.15
+ttHLepAna.loose_electron_lostHits = 999 # no cut
+
+
 # JET (do not apply the jetID and PUID yet)
 ttHJetAna.relaxJetId = True
 ttHJetAna.doPuId = False
-ttHJetAna.jetEtaCentral = 2.5
+ttHJetAna.jetEtaCentral = 5.2
+ttHJetAna.jetPt = 10.
+ttHJetAna.recalibrateJets = False
+ttHJetAna.jetLepDR = 0.4
+ttHJetMCAna.smearJets = False
 
 # TAU 
 ttHTauAna.etaMax = 2.3
@@ -52,11 +69,7 @@ ttHIsoTrackAna = cfg.Analyzer(
 
 # Tree Producer
 ttHTopoJetAna = cfg.Analyzer(
-            'ttHTopoVarAnalyzer',
-            muons='cmgMuonSel',
-            electrons='cmgElectronSel',
-            taus='cmgTauSel',
-            jetCol = 'cmgPFJetSelCHS'
+            'ttHTopoVarAnalyzer'
             )
 
 
@@ -107,9 +120,7 @@ elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
         comp.files = comp.files[:1]
-        
-        
-        
+
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
 

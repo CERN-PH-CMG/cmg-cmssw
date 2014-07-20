@@ -57,7 +57,7 @@ class ttHJetMCMatchAnalyzer( Analyzer ):
     def matchJets(self, event):
         match = matchObjectCollection2(event.cleanJetsAll,
                                        event.genbquarks + event.genwzquarks,
-                                       deltaRMax = 0.5)
+                                       deltaRMax = 0.3)
         for jet in event.cleanJetsAll:
             gen = match[jet]
             jet.mcParton    = gen
@@ -66,7 +66,7 @@ class ttHJetMCMatchAnalyzer( Analyzer ):
 
         match = matchObjectCollection2(event.cleanJetsAll,
                                        event.genJets,
-                                       deltaRMax = 0.5)
+                                       deltaRMax = 0.3)
         for jet in event.cleanJetsAll:
             jet.mcJet = match[jet]
  
