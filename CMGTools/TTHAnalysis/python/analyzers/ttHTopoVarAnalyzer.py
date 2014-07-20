@@ -68,9 +68,11 @@ class ttHTopoVarAnalyzer( Analyzer ):
         import array
         import numpy
 
-## ===> hadronic MT2 (as used in the SUS-13-019) below place holder
+## ===> hadronic MT2 (as used in the SUS-13-019)
 
-        if len(event.cleanJetsAll)>=2:
+        objects40jc = [ j for j in event.cleanJets if j.pt() > 40 and abs(j.eta())<2.5 ]
+
+        if len(objects40jc)>=2:
 
             pxvec  = ROOT.std.vector(float)()
             pyvec  = ROOT.std.vector(float)()
@@ -78,7 +80,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
             Evec  = ROOT.std.vector(float)()
             grouping  = ROOT.std.vector(int)()
             
-            for jet in event.cleanJetsAll:
+            for jet in objects40jc:
                 pxvec.push_back(jet.px())
                 pyvec.push_back(jet.py())
                 pzvec.push_back(jet.pz())

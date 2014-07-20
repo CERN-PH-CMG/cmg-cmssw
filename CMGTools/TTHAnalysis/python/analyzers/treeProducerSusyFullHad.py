@@ -11,11 +11,11 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
         ## Declare what we want to fill (in addition to susy core ones)
         self.globalVariables += [
 
-            NTupleVariable("nBJetLoose40", lambda ev: sum([j.btagWP("CSVL") for j in ev.cleanJets if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CSV loose"),
+            NTupleVariable("nBJet40", lambda ev: sum([j.btagWP("CSVM") for j in ev.cleanJets if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CSV medium"),
             ##--------------------------------------------------
-            NTupleVariable("ht", lambda ev : ev.htJet40j, help="H_{T} computed from only jets (with |eta|<2.4, pt > 40 GeV)"),
-            NTupleVariable("mht_pt", lambda ev : ev.mhtJet40j, help="H_{T}^{miss} computed from only jets (with |eta|<2.4, pt > 40 GeV)"),
-            NTupleVariable("mht_phi", lambda ev : ev.mhtPhiJet40j, help="H_{T}^{miss} #phi computed from onlyy jets (with |eta|<2.4, pt > 40 GeV)"),
+            NTupleVariable("ht", lambda ev : ev.htJet40jc, help="H_{T} computed from only jets (with |eta|<2.4, pt > 40 GeV)"),
+            NTupleVariable("mht_pt", lambda ev : ev.mhtJet40jc, help="H_{T}^{miss} computed from only jets (with |eta|<2.4, pt > 40 GeV)"),
+            NTupleVariable("mht_phi", lambda ev : ev.mhtPhiJet40jc, help="H_{T}^{miss} #phi computed from onlyy jets (with |eta|<2.4, pt > 40 GeV)"),
             ##--------------------------------------------------
             NTupleVariable("deltaPhiMin", lambda ev : ev.deltaPhiMin, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4"),
             NTupleVariable("diffMetMht", lambda ev : ev.diffMetMht, help="abs( vec(mht) - vec(met) )"),
@@ -27,7 +27,8 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             NTupleVariable("mtwTau", lambda ev: ev.mtwTau, int, help="mt(tau,met)"),
 #            NTupleVariable("IsoTrack_mtw", lambda ev: ev.mtwIsoTrack, int, help="mt(isoTrack,met)"),
             ##--------------------------------------------------
-            NTupleVariable("mt2", lambda ev: ev.mt2, float, help="mt2(l,met)"),
+            NTupleVariable("mt2", lambda ev: ev.mt2, float, help="mt2(j1,j2,,met)"),
+            #            NTupleVariable("mt2_gen", lambda ev: ev.mt2_gen, float, help="mt2(j1,j2,,met) with genInfo"),
             #            NTupleVariable("mt2w", lambda ev: ev.mt2w, float, help="mt2w(l,b,met)"),
             ##--------------------------------------------------
             #            NTupleVariable("minMWjj", lambda ev: ev.minMWjj, int, help="minMWjj"),
