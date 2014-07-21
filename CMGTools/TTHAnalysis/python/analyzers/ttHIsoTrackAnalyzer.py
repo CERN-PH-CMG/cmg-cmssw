@@ -10,7 +10,7 @@ from CMGTools.RootTools.fwlite.Event import Event
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.Lepton import Lepton
-from CMGTools.RootTools.physicsobjects.Tau import Tau
+##from CMGTools.RootTools.physicsobjects.Tau import Tau
 from CMGTools.RootTools.physicsobjects.IsoTrack import IsoTrack
 from CMGTools.TTHAnalysis.analyzers.ttHLepMCMatchAnalyzer import matchObjectCollection3
 
@@ -44,23 +44,29 @@ class ttHIsoTrackAnalyzer( Analyzer ):
         event.selectedIsoTrack = []
         event.preIsoTrack = []
 
-        ## get all
-        alltrack = map( IsoTrack, self.handles['cmgCand'].product() )
+        charged = []
+        pfcands = self.handles['cmgCand'].product()
+        for i in xrange(pfcands.size()):
+            if (pfcands.at(i).charge()!=0):
+                charged.append(pfcands.at(i))
+
+##        alltrack = map( IsoTrack, self.handles['cmgCand'].product() )
+        alltrack = map( IsoTrack, charged )
 
         for track in alltrack:
-            track.associatedVertex = event.goodVertices[0]
 
             foundIsoTrack = False
 
 ## ===> require Track Candidate above some pt and charged
-            if track.charge()==0  : continue
-            if ( (track.pdgId()!=11) and (track.pdgId()!=12) and (track.pt() < self.cfg_ana.ptMin) ): continue
+            if ( (track.pdgId()!=11) and (track.pdgId()!=13) and (track.pt() < self.cfg_ana.ptMin) ): continue
             if ( track.pt() < self.cfg_ana.ptMinEMU ): continue
+
+            track.associatedVertex = event.goodVertices[0]
 
 ## ===> require is not the leading lepton and opposite to the leading lepton 
             if( (self.cfg_ana.doSecondVeto) and len(event.selectedLeptons)>0) : 
                if( deltaR(event.selectedLeptons[0].eta(), event.selectedLeptons[0].phi(), track.eta(), track.phi()) <0.01) : continue
-               if ( (track.pdgId()!=11) and (track.pdgId()!=12) and (track.charge()*event.selectedLeptons[0].charge()) ): continue
+               if ( (track.pdgId()!=11) and (track.pdgId()!=13) and (track.charge()*event.selectedLeptons[0].charge()) ): continue
 
 ## ===> require the Track Candidate with a  minimum dz
             if abs(track.dz())>self.cfg_ana.dzMax : continue 
@@ -68,17 +74,15 @@ class ttHIsoTrackAnalyzer( Analyzer ):
 ## ===> compute the isolation and find the most isolated track
             isoSum=0
 
-            allpart = map( IsoTrack, self.handles['cmgCand'].product() )
+            allpart = alltrack
             for part in allpart:
-                part.associatedVertex = event.goodVertices[0]
-                ### ===> skip pfcands neutral
-                if part.charge()==0  : continue 
-                ### ===> skip pfcands outside the cone (this should be 0.3)
-                if deltaR(part.eta(), part.phi(), track.eta(), track.phi()) > self.cfg_ana.isoDR : continue
                 ### ===> skip pfcands with a pt min (this should be 0)
                 if part.pt()<self.cfg_ana.ptPartMin : continue
                 ### ===> skip pfcands with a dz (this should be 0.1)
+                part.associatedVertex = event.goodVertices[0]
                 if abs(part.dz())>self.cfg_ana.dzPartMax : continue
+                ### ===> skip pfcands outside the cone (this should be 0.3)
+                if deltaR(part.eta(), part.phi(), track.eta(), track.phi()) > self.cfg_ana.isoDR : continue
                 isoSum += part.pt()
 
             ### ===> the sum should not contain the track candidate
