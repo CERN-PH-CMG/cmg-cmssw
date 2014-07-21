@@ -25,7 +25,8 @@ ttHLepAna.loose_electron_lostHits = 999 # no cut
 # JET (do not apply the jetID and PUID yet)
 ttHJetAna.relaxJetId = True
 ttHJetAna.doPuId = False
-ttHJetAna.jetEtaCentral = 5.2
+ttHJetAna.jetEta = 5.0
+ttHJetAna.jetEtaCentral = 2.5
 ttHJetAna.jetPt = 10.
 ttHJetAna.recalibrateJets = False
 ttHJetAna.jetLepDR = 0.4
@@ -112,7 +113,7 @@ test = 1
 if test==1:
     # test a single component, using a single thread.
     comp=TTJets_PU20bx25
-    comp.files = comp.files[:1]
+    comp.files = comp.files[:2]
     selectedComponents = [comp]
     comp.splitFactor = 1
 elif test==2:
