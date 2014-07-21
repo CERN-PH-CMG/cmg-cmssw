@@ -40,7 +40,7 @@ class ttHJetAnalyzer( Analyzer ):
         super(ttHJetAnalyzer, self).declareHandles()
         self.handles['jets']     = AutoHandle( self.cfg_ana.jetCol, 'std::vector<pat::Jet>' )
         self.handles['jets4MVA'] = AutoHandle( self.cfg_ana.jetCol4MVA, 'std::vector<pat::Jet>' )
-        self.handles['rho'] = AutoHandle( ('fixedGridRhoFastjetAll','',''), 'double' )
+        self.handles['rho'] = AutoHandle( ('fixedGridRhoAll','',''), 'double' )
     
     def beginLoop(self):
         super(ttHJetAnalyzer,self).beginLoop()
