@@ -20,6 +20,7 @@ ttHLepAna.loose_electron_dxy    = 0.04
 ttHLepAna.loose_electron_dz     = 0.2
 ttHLepAna.loose_electron_relIso = 0.15
 ttHLepAna.loose_electron_lostHits = 999 # no cut
+ttHLepAna.ele_isoCorr = "deltaBeta"
 
 
 # JET (do not apply the jetID and PUID yet)
