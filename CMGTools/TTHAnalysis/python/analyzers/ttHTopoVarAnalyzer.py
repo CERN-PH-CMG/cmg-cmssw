@@ -53,17 +53,19 @@ class ttHTopoVarAnalyzer( Analyzer ):
 #        print '==> INSIDE THE PRINT MT'
 #        print 'MET=',event.met.pt() 
 
-        for lepton in event.selectedLeptons:
-            event.mtw = mtw(lepton, event.met)
+        if len(event.selectedLeptons)>0:
+            for lepton in event.selectedLeptons:
+                event.mtw = mtw(lepton, event.met)
 
-#        for myTau in self.handles['taus'].product():
-        for myTau in event.selectedTaus:
-            event.mtwTau = mtw(myTau, event.met)
-            foundTau = True
-
-        for myTrack in event.selectedIsoTrack:
-            event.mtwIsoTrack = mtw(myTrack, event.met)
-
+        if len(event.selectedTaus)>0:
+            for myTau in event.selectedTaus:
+                event.mtwTau = mtw(myTau, event.met)
+                foundTau = True
+                
+        if len(event.selectedIsoTrack)>0:
+            for myTrack in event.selectedIsoTrack:
+                event.mtwIsoTrack = mtw(myTrack, event.met)
+                
     def makeMT2(self, event):
 #        print '==> INSIDE THE PRINT MT2'
 #        print 'MET=',event.met.pt() 
@@ -181,14 +183,14 @@ class ttHTopoVarAnalyzer( Analyzer ):
             pseudoGenJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
             pseudoGenJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
 
-            metVector = TVectorD(3,array.array('d',[0.,event.met.genMET().px(), event.met.genMET().py()]))
-            metVector =numpy.asarray(metVector,dtype='double')
-            jetVector1 = TVectorD(3,array.array('d',[0.,pseudoGenJet1.px(), pseudoGenJet1.py()]))
-            jetVector1 =numpy.asarray(jetVector1,dtype='double')
-            jetVector2 = TVectorD(3,array.array('d',[0.,pseudoGenJet2.px(), pseudoGenJet2.py()]))        
-            jetVector2 =numpy.asarray(jetVector2,dtype='double')
+            metGenVector = TVectorD(3,array.array('d',[0.,event.met.genMET().px(), event.met.genMET().py()]))
+            metGenVector =numpy.asarray(metGenVector,dtype='double')
+            jetGenVector1 = TVectorD(3,array.array('d',[0.,pseudoGenJet1.px(), pseudoGenJet1.py()]))
+            jetGenVector1 =numpy.asarray(jetGenVector1,dtype='double')
+            jetGenVector2 = TVectorD(3,array.array('d',[0.,pseudoGenJet2.px(), pseudoGenJet2.py()]))        
+            jetGenVector2 =numpy.asarray(jetGenVector2,dtype='double')
             
-            davismt2.set_momenta(jetVector1,jetVector2,metVector);
+            davismt2.set_momenta(jetGenVector1,jetGenVector2,metGenVector);
             davismt2.set_mn(0);
             
             event.mt2_gen = davismt2.get_mt2()  
@@ -241,8 +243,8 @@ class ttHTopoVarAnalyzer( Analyzer ):
         event.mt2=-999
         event.mt2lept=-999        
         event.mt2w=-999
-        event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( -999, -999, -999, -999 )
-        event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( -999, -999, -999, -999 )
+        event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+        event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
 
         self.makeMT(event)
         self.makeMT2(event)
