@@ -7,7 +7,7 @@ use_PForNoPUorTKmet=( 2 ) # 0:PF, 1:NOPU, 2:TK
 momcorr_scale_variations=( 0 )
 
 # RECOIL CORRECTION VARIATIONS
-useRecoilCorr=( 1 ) # 1: YES, 0: NO
+useRecoilCorr=( 0 ) # 1: YES, 0: NO
 # Recoil_U1resol_variations=( 0 )
 # Recoil_U1scale_variations=( 1 -1 )
 Recoil_U1scale_variations=( 0 )
@@ -22,6 +22,7 @@ infile_run='launch_analysis_testSplit_bash.py'
 
 # echo ${#Recoil_U1resol_variations[@]}
 
+usebatch=1 #  use batch submission for W/Z ANALYSIS
 run_all_or_just_fit=1 #  2 = W/Z ANALYSIS, 1 = RUN ALL,  0 = RUN FIT ONLY, 3 = W/Z ANALYSIS + QCD FIT
 run_W_or_Z=2 #  0 = W,  1 = Z,  2 = both (W and Z)
 fit_W_or_Z="W,Z" # "W" or "Z" or "W,Z"
@@ -79,6 +80,8 @@ for ((j=0; j < ${#use_PForNoPUorTKmet[@]} ; j++));
               sed -i "s/.*RecoilCorrResolutionNSigmaU2 =.*/RecoilCorrResolutionNSigmaU2 = \"${Recoil_U2resol_variations[${iu2}]}\";/" $infile_run
               sed -i "s/.*RecoilCorrScaleNSigmaU1 =.*/RecoilCorrScaleNSigmaU1 = \"${Recoil_U1scale_variations[${iu2}]}\";/" $infile_run
               sed -i "s/.*GlobalSmearingRochCorrNsigma =.*/GlobalSmearingRochCorrNsigma = ${momcorr_scale_variations[${h}]};/" $infile_run
+              sed -i "s/.*useBatch =.*/useBatch = ${usebatch};/" $infile_run
+              
               grep Recoil_U2resol_variations\ = $infile_run
               grep RecoilCorrResolutionNSigmaU1\ = $infile_run
               grep RecoilCorrScaleNSigmaU1\ = $infile_run
@@ -116,18 +119,27 @@ for ((j=0; j < ${#use_PForNoPUorTKmet[@]} ; j++));
               ##############################################################
               still_running=1
               while [ $still_running -eq 1 ]; do
-                line=$(ps aux | grep perrozzi | grep analysis |grep root)
-                # echo $line
-                if [[ ! ${line} =~ "runWanalysis" ]]; then
-                  if [[ ! ${line} =~ "runZanalysis" ]]; then
-                    still_running=0
-                # if still_running==1: print 'runWanalysis or runZanalysis still running'
-                # else: print 'runWanalysis and runZanalysis not running anymore'
+                if [[ $useBatch == 0 ]]; then
+                  line=$(ps aux | grep perrozzi | grep analysis |grep root)
+                  # echo $line
+                  if [[ ! ${line} =~ "runWanalysis" ]]; then
+                    if [[ ! ${line} =~ "runZanalysis" ]]; then
+                      still_running=0
+                  # if still_running==1: print 'runWanalysis or runZanalysis still running'
+                  # else: print 'runWanalysis and runZanalysis not running anymore'
+                    fi
+                  else
+                  # else: 
+                    sleep 10
+                    # print 'runWanalysis or runZanalysis still running',line
                   fi
                 else
-                # else: 
-                  sleep 10
-                  # print 'runWanalysis or runZanalysis still running',line
+                  line=$(bjobs | grep analysis |wc -l)
+                  if [[ ${line} -eq 0 ]]; then
+                    still_running=0
+                  else
+                    sleep 5
+                  fi
                 fi
               done
 
