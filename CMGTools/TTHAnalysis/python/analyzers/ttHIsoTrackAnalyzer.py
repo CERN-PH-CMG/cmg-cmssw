@@ -57,6 +57,7 @@ class ttHIsoTrackAnalyzer( Analyzer ):
 
         for track in alltrack:
 
+            foundNonIsoTrack = False
             foundIsoTrack = False
 
 ## ===> require Track Candidate above some pt and charged
@@ -74,22 +75,36 @@ class ttHIsoTrackAnalyzer( Analyzer ):
             if abs(track.dz())>self.cfg_ana.dzMax : continue 
 
 ## ===> compute the isolation and find the most isolated track
-            isoSum=0
 
             allpart = alltrack
+
+            preIsoSum=0
+            isoSum=0
             for part in allpart:
                 ### ===> skip pfcands with a pt min (this should be 0)
                 if part.pt()<self.cfg_ana.ptPartMin : continue
-                ### ===> Redundant:: skip pfcands with a dz (this should be 0.1)
-                part.associatedVertex = event.goodVertices[0]
-                if abs(part.dz())>self.cfg_ana.dzPartMax : continue
                 ### ===> skip pfcands outside the cone (this should be 0.3)
                 if deltaR(part.eta(), part.phi(), track.eta(), track.phi()) > self.cfg_ana.isoDR : continue
+                preIsoSum += part.pt()
                 isoSum += part.pt()
+                ### break the loop to save time
+                if(preIsoSum > (self.cfg_ana.maxAbsIso + track.pt())):
+                    foundNonIsoTrack = True
+                    break
 
-            ### ===> the sum should not contain the track candidate
-            isoSum -= track.pt()
-###            isoSum = isoSum/track.pt()  ## <--- this is for relIso
+            if not foundNonIsoTrack :
+                # reset
+                isoSum=0
+                for part in allpart :
+                ### ===> skip pfcands with a pt min (this should be 0)
+                    if part.pt()<self.cfg_ana.ptPartMin : continue
+                ### ===> skip pfcands outside the cone (this should be 0.3)
+                    if deltaR(part.eta(), part.phi(), track.eta(), track.phi()) > self.cfg_ana.isoDR : continue
+                    isoSum += part.pt()
+
+                ### ===> the sum should not contain the track candidate
+                isoSum -= track.pt()
+                ###            isoSum = isoSum/track.pt()  ## <--- this is for relIso
 
             track.absIso = isoSum
 
@@ -97,7 +112,7 @@ class ttHIsoTrackAnalyzer( Analyzer ):
             event.preIsoTrack.append(track)
             
 #            if (isoSum < minIsoSum ) :
-            if(track.absIso < min(0.2*track.pt(), 8.)): 
+            if(track.absIso < min(0.2*track.pt(), self.cfg_ana.maxAbsIso)): 
                 foundIsoTrack = True
 
             if(foundIsoTrack):
