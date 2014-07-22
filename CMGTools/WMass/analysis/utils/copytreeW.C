@@ -1,10 +1,12 @@
 void copytreeW() {
 
   // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/";
-  TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_10_15/";
+  // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_10_15/";
+  TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
+  
   TString fWana_str[7] = {
-    "root://eoscms//"+root_folder+"WJets/WTreeProducer_tree.root",
-    "root://eoscms//"+root_folder+"DYJetsLL/WTreeProducer_tree.root",
+    "root://eoscms//"+root_folder+"WJetsLL/WTreeProducer_tree.root",
+    "root://eoscms//"+root_folder+"DYJetsMM/WTreeProducer_tree.root",
     "root://eoscms//"+root_folder+"TTJets/WTreeProducer_tree.root",
     "root://eoscms//"+root_folder+"VVJets/ZZ/WTreeProducer_tree.root",
     "root://eoscms//"+root_folder+"VVJets/WWJetsTo2L2Nu/WTreeProducer_tree.root",
@@ -12,8 +14,8 @@ void copytreeW() {
     "root://eoscms//"+root_folder+"DATA/WTreeProducer_tree.root"
   };  
   TString fWana_RecoSkimmed_str[7] = {
-    root_folder+"WJets/WTreeProducer_tree_RecoSkimmed.root",
-    root_folder+"DYJetsLL/WTreeProducer_tree_RecoSkimmed.root",
+    root_folder+"WJetsLL/WTreeProducer_tree_RecoSkimmed.root",
+    root_folder+"DYJetsMM/WTreeProducer_tree_RecoSkimmed.root",
     root_folder+"TTJets/WTreeProducer_tree_RecoSkimmed.root",
     root_folder+"VVJets/ZZ/WTreeProducer_tree_RecoSkimmed.root",
     root_folder+"VVJets/WWJetsTo2L2Nu/WTreeProducer_tree_RecoSkimmed.root",
@@ -27,7 +29,12 @@ void copytreeW() {
   // for(int sample=5; sample<6; sample++){
 
     // if(sample!=1) continue;
-    if(!fWana_RecoSkimmed_str[sample].Contains("TTJets")) continue;
+    if(
+       // !fWana_RecoSkimmed_str[sample].Contains("WJetsLL")
+       // && 
+       !fWana_RecoSkimmed_str[sample].Contains("DYJetsMM")
+       // && !fWana_RecoSkimmed_str[sample].Contains("DATA")
+       ) continue;
     // if(sample==0 || sample==6) continue;
     // cout << fZana_str[sample]<< endl;
     // cout << fZana_RecoSkimmed_str[sample]<< endl;
