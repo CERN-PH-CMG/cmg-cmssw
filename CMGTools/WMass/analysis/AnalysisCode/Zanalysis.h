@@ -108,7 +108,7 @@ class Zanalysis {
   Double_t        Jet_leading_eta;
   Double_t        Jet_leading_phi;
   Double_t        FSRWeight;
-  Double_t        LHE_weight[200];
+  Double_t        LHE_weight[465];
   Double_t        LHE_ren[200];
   Double_t        LHE_fac[200];
   Double_t        LHE_pdf[200];
@@ -211,7 +211,7 @@ class Zanalysis {
   virtual Long64_t LoadTree(Long64_t entry);
   virtual Long64_t NumEntries();
   virtual void     Init(TTree *tree);
-  virtual void     Loop(int chunk=0, int Entry_ini=0, int Entry_fin=0, int IS_MC_CLOSURE_TEST=0, int isMCorDATA=0, TString outputdir=0, int buildTemplates=0, int useMomentumCorr=0, int smearRochCorrByNsigma=0, int useEffSF=0, int usePtSF=0, int useVtxSF=0, int controlplots=0, TString sampleName="", int generated_PDF_set=-1, int generated_PDF_member=-1, int contains_PDF_reweight=-1, int usePhiMETCorr=0, int useRecoilCorr=0, int RecoilCorrResolutionNSigmaU1=0, int RecoilCorrScaleNSigmaU1=0, int RecoilCorrResolutionNSigmaU2=0, int use_PForNoPUorTKmet=0, int use_syst_ewk_Alcaraz=0);
+  virtual void     Loop(int chunk=0, int Entry_ini=0, int Entry_fin=0, int IS_MC_CLOSURE_TEST=0, int isMCorDATA=0, TString outputdir=0, int buildTemplates=0, int useMomentumCorr=0, int smearRochCorrByNsigma=0, int useEffSF=0, int usePtSF=0, int useVtxSF=0, int controlplots=0, TString sampleName="", int generated_PDF_set=-1, int generated_PDF_member=-1, int contains_PDF_reweight=-1, int usePhiMETCorr=0, int useRecoilCorr=0, int RecoilCorrResolutionNSigmaU1=0, int RecoilCorrScaleNSigmaU1=0, int RecoilCorrResolutionNSigmaU2=0, int use_PForNoPUorTKmet=0, int use_syst_ewk_Alcaraz=0, int gen_mass_value_MeV=0, int contains_LHE_weights=0);
   virtual Bool_t   Notify();
   virtual void     Show(Long64_t entry = -1);
   
@@ -267,6 +267,7 @@ Long64_t Zanalysis::LoadTree(Long64_t entry)
 }
 Long64_t Zanalysis::NumEntries(){
 
+  if (!fChain) return 0;
   return fChain->GetEntries();
 };
 
@@ -353,11 +354,7 @@ void Zanalysis::Init(TTree *tree)
   fChain->SetBranchAddress("Jet_leading_eta", &Jet_leading_eta, &b_Jet_leading_eta);
   fChain->SetBranchAddress("Jet_leading_phi", &Jet_leading_phi, &b_Jet_leading_phi);
   fChain->SetBranchAddress("FSRWeight", &FSRWeight, &b_FSRWeight);
-  fChain->SetBranchAddress("LHE_weight", LHE_weight, &b_LHE_weight);
-  fChain->SetBranchAddress("LHE_ren", LHE_ren, &b_LHE_ren);
-  fChain->SetBranchAddress("LHE_fac", LHE_fac, &b_LHE_fac);
-  fChain->SetBranchAddress("LHE_pdf", LHE_pdf, &b_LHE_pdf);
-  
+ 
   if(useGenVar){
     fChain->SetBranchAddress("ZGen_mass", &ZGen_mass, &b_ZGen_mass);
     fChain->SetBranchAddress("ZGen_pt", &ZGen_pt, &b_ZGen_pt);
@@ -376,7 +373,11 @@ void Zanalysis::Init(TTree *tree)
     fChain->SetBranchAddress("MuNegGen_mass", &MuNegGen_mass, &b_MuNegGen_mass);
     fChain->SetBranchAddress("MuNegGen_charge", &MuNegGen_charge, &b_MuNegGen_charge);
     fChain->SetBranchAddress("MuNegDRGenP", &MuNegDRGenP, &b_MuNegDRGenP);
-  }
+    fChain->SetBranchAddress("LHE_weight", LHE_weight, &b_LHE_weight);
+    // fChain->SetBranchAddress("LHE_ren", LHE_ren, &b_LHE_ren);
+    // fChain->SetBranchAddress("LHE_fac", LHE_fac, &b_LHE_fac);
+    // fChain->SetBranchAddress("LHE_pdf", LHE_pdf, &b_LHE_pdf);
+ }
   Notify();
 }
 
