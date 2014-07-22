@@ -10,6 +10,7 @@ from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, Jet, GenParti
 from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 from CMGTools.RootTools.utils.DeltaR import bestMatch, deltaR, deltaR2
 from CMGTools.WMass.analyzers.common_functions import *
+from ROOT import TriggerBitChecker
 
  
 # FROM Z 
@@ -139,27 +140,32 @@ def mT(self, leg1, leg2):
         return 0
 
         
-def trigMatched(self, event, leg):
+def trigMatched(self, event, leg, trig_label):
     '''Returns true if the leg is matched to a trigger object as defined in the
     triggerMap parameter'''
-    # print 'inside trigMatched'
-    if not event.passedTriggerAnalyzer:
-        # print 'not event.passedTriggerAnalyzer'
-        return False
-    if not hasattr( self.cfg_ana, 'triggerMap'):
-        # print 'not hasattr( self.cfg_ana, \'triggerMap\')'
-        return True
-    path = event.hltPath
-    # print 'path ', path
-    triggerObjects = event.triggerObjects
-    # print 'triggerObjects ',triggerObjects
-    filters = self.cfg_ana.triggerMap[ path ]
-    # print 'filters ',filters
-    # the dR2Max value is 0.1^2
-    # print 'triggerMatched ',triggerMatched(leg, triggerObjects, path, filters,dR2Max=0.01,pdgIds=None )
-    return triggerMatched(leg, triggerObjects, path, filters,
-                          dR2Max=0.01,
-                          pdgIds=None )
+    for t in trig_label:
+        # print t,'tri_match:',leg.sourcePtr().triggerObjectMatchesByPath('%s' % t, 1, 0).size()
+        if leg.sourcePtr().triggerObjectMatchesByPath('%s' % t, 1, 0).size() > 0: return True
+    return False
+
+    # # print 'inside trigMatched'
+    # # if not event.passedTriggerAnalyzer:
+        # # # print 'not event.passedTriggerAnalyzer'
+        # # return False
+    # if not hasattr( self.cfg_ana, 'triggerMap'):
+        # # print 'not hasattr( self.cfg_ana, \'triggerMap\')'
+        # return True
+    # path = event.hltPath
+    # # print 'path ', path
+    # triggerObjects = event.triggerObjects
+    # # print 'triggerObjects ',triggerObjects
+    # filters = self.cfg_ana.triggerMap[ path ]
+    # # print 'filters ',filters
+    # # the dR2Max value is 0.1^2
+    # # print 'triggerMatched ',triggerMatched(leg, triggerObjects, path, filters,dR2Max=0.01,pdgIds=None )
+    # return triggerMatched(leg, triggerObjects, path, filters,
+                          # dR2Max=0.01,
+                          # pdgIds=None )
                           
 # def trigMatched(self, event, leg):
     # '''Returns true if the leg is matched to a trigger object as defined in the
