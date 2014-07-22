@@ -409,8 +409,8 @@ void Zanalysis_controlplots::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TStrin
         // gen stuff to be used only when required
         if(useGenVar){
           if(ZGen_mass>0){
-            // double MuPosGen_pt_jacobian = 2*MuPosGen_pt/WMass::ZMass;
-            double MuPosGen_var_jacobian[3] = {2*MuPosGen_pt/WMass::ZMass,ZGen_mt/iWmass,2*MuNegGen_pt/iWmass,};
+            // double MuPosGen_pt_jacobian = 2*MuPosGen_pt/WMass::ZMassCentral_MeV;
+            double MuPosGen_var_jacobian[3] = {2*MuPosGen_pt/WMass::ZMassCentral_MeV,ZGen_mt/iWmass,2*MuNegGen_pt/iWmass,};
             // LUCA ADD TO AVOID OVERFLOW
             for(int k=0;k<3;k++)
               if(MuPosGen_var_jacobian[k]>=xmax) MuPosGen_var_jacobian[k]=xmax-binsize2/2;
@@ -470,7 +470,7 @@ void Zanalysis_controlplots::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TStrin
               WlikePos_nu = muNegCorr + WlikePos_met;
               WlikePos = muPosCorr + WlikePos_nu;
 
-              double MuPos_var_jacobian[3] = {2*muPosCorr.Pt()/WMass::ZMass,WlikePos.Mt()/WMass::ZMass,2*WlikePos_nu.Pt()/WMass::ZMass};
+              double MuPos_var_jacobian[3] = {2*muPosCorr.Pt()/WMass::ZMassCentral_MeV,WlikePos.Mt()/WMass::ZMassCentral_MeV,2*WlikePos_nu.Pt()/WMass::ZMassCentral_MeV};
               double MuPos_var_NotScaled[3] = {muPosCorr.Pt(),WlikePos.Mt(),WlikePos_nu.Pt()};
               // LUCA ADD TO AVOID OVERFLOW
               for(int k=0;k<3;k++)
@@ -480,7 +480,7 @@ void Zanalysis_controlplots::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TStrin
               
               // good pair within acceptance cuts for both muons
               if(Zcorr.M()>50
-		 && TMath::Abs(muPosCorr.Eta())<WMass::etaMaxMuons[i] && muPosCorr.Pt()>30*WMass::ZMass/iWmass && MuPosTrg
+		 && TMath::Abs(muPosCorr.Eta())<WMass::etaMaxMuons[i] && muPosCorr.Pt()>30*WMass::ZMassCentral_MeV/iWmass && MuPosTrg
 		 && TMath::Abs(muNegCorr.Eta())<2.4 && muNegCorr.Pt()>10 && MuPos_charge != MuNeg_charge
 		 && noTrgExtraMuonsLeadingPt<10
 		 ){
@@ -531,11 +531,11 @@ void Zanalysis_controlplots::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TStrin
                   for(int k=0;k<3;k++)
                     if(m==0) hWlikePos_VarScaled_5_RecoCut[k][i][j]->Fill(MuPos_var_jacobian[k],evt_weight*MuPos_tight_muon_SF);
 
-                  if(pfmetWlikePos>25*WMass::ZMass/iWmass){
+                  if(pfmetWlikePos>25*WMass::ZMassCentral_MeV/iWmass){
                     for(int k=0;k<3;k++)
                       if(m==0) hWlikePos_VarScaled_6_METCut[k][i][j]->Fill(MuPos_var_jacobian[k],evt_weight*MuPos_tight_muon_SF);
                     
-                    if(WlikePos_pt<20*WMass::ZMass/iWmass){
+                    if(WlikePos_pt<20*WMass::ZMassCentral_MeV/iWmass){
                       for(int k=0;k<3;k++)
                         if(m==0) hWlikePos_VarScaled_7_RecoilCut[k][i][j]->Fill(MuPos_var_jacobian[k],evt_weight*MuPos_tight_muon_SF);
                       
@@ -580,8 +580,8 @@ void Zanalysis_controlplots::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TStrin
                           }
                           for(int k=0;k<3;k++){
                             hWlikePos_VarScaled_8_JetCut[m][h][k][i][j]->Fill(MuPos_var_jacobian[k],evt_weight*MuPos_tight_muon_SF);
-                            // cout << ((muPosCorr.Pt()*iWmass/WMass::ZMass)<xmax*80/2 ? muPosCorr.Pt()*iWmass/WMass::ZMass : (xmax-binsize2/2)*80/2) << endl;
-                            hWlikePos_VarNonScaled_8_JetCut[m][h][k][i][j]->Fill( (MuPos_var_NotScaled[k]*iWmass/WMass::ZMass)<xmax*80/(k==1 ? 1 : 2) ? MuPos_var_NotScaled[k]*iWmass/WMass::ZMass : (xmax-binsize2/2)*80/(k==1 ? 1 : 2) ,evt_weight*MuPos_tight_muon_SF);
+                            // cout << ((muPosCorr.Pt()*iWmass/WMass::ZMassCentral_MeV)<xmax*80/2 ? muPosCorr.Pt()*iWmass/WMass::ZMassCentral_MeV : (xmax-binsize2/2)*80/2) << endl;
+                            hWlikePos_VarNonScaled_8_JetCut[m][h][k][i][j]->Fill( (MuPos_var_NotScaled[k]*iWmass/WMass::ZMassCentral_MeV)<xmax*80/(k==1 ? 1 : 2) ? MuPos_var_NotScaled[k]*iWmass/WMass::ZMassCentral_MeV : (xmax-binsize2/2)*80/(k==1 ? 1 : 2) ,evt_weight*MuPos_tight_muon_SF);
                           }
                         
                         }
@@ -661,7 +661,7 @@ void Zanalysis_controlplots::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TStrin
                   if(
                     MuPosRelIso>0.12 // single muon cuts (inverted iso (is <0.5 for signal) , no tight requirement)
                     && MuPos_dxy>0.02 // single muon cuts (MuPosIsTightAndIso contains dxy < 0.2 cut)
-                    && WlikePos_pt<20*WMass::ZMass/iWmass 
+                    && WlikePos_pt<20*WMass::ZMassCentral_MeV/iWmass 
                     ){
 
                     for(int k=0;k<3;k++)
