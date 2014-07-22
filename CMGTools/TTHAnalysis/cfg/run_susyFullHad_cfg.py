@@ -26,7 +26,7 @@ ttHLepAna.ele_isoCorr = "deltaBeta"
 # JET (do not apply the jetID and PUID yet)
 ttHJetAna.relaxJetId = True
 ttHJetAna.doPuId = False
-ttHJetAna.jetEta = 5.0
+ttHJetAna.jetEta = 5.2
 ttHJetAna.jetEtaCentral = 2.5
 ttHJetAna.jetPt = 10.
 ttHJetAna.recalibrateJets = False
