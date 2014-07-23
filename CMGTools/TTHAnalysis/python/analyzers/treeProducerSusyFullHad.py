@@ -20,8 +20,8 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             NTupleVariable("deltaPhiMin", lambda ev : ev.deltaPhiMin, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4"),
             NTupleVariable("diffMetMht", lambda ev : ev.diffMetMht, help="abs( vec(mht) - vec(met) )"),
             ##--------------------------------------------------
-            NTupleVariable("nMuons10", lambda ev: sum([l.pt() > 10 and abs(l.pdgId()) == 13 for l in ev.inclusiveLeptons]), int, help="Number of muons with pt > 10"),
-            NTupleVariable("nElectrons10", lambda ev: sum([l.pt() > 10 and abs(l.pdgId()) == 11 for l in ev.inclusiveLeptons]), int, help="Number of electrons with pt > 10"),
+            NTupleVariable("nMuons10", lambda ev: sum([l.pt() > 10 and abs(l.pdgId()) == 13 for l in ev.selectedLeptons]), int, help="Number of muons with pt > 10"),
+            NTupleVariable("nElectrons10", lambda ev: sum([l.pt() > 10 and abs(l.pdgId()) == 11 for l in ev.selectedLeptons]), int, help="Number of electrons with pt > 10"),
             ##--------------------------------------------------
             NTupleVariable("mtw", lambda ev: ev.mtw, int, help="mt(l,met)"),
             NTupleVariable("mtwTau", lambda ev: ev.mtwTau, int, help="mt(tau,met)"),
