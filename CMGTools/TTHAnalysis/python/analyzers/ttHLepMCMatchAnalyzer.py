@@ -187,11 +187,12 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
             setattr(event, 'LepEffDn_%dlep'%i,  effDn[min(i,len(eff)-1)])
 
     def process(self, iEvent, event):
-        self.readCollections( iEvent )
-
+        
         # if not MC, nothing to do
         if not self.cfg_comp.isMC: 
             return True
+
+        self.readCollections( iEvent )
 
         self.matchLeptons(event)
 
