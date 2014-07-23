@@ -21,6 +21,7 @@ ttHLepAna.loose_electron_dz     = 0.2
 ttHLepAna.loose_electron_relIso = 0.15
 ttHLepAna.loose_electron_lostHits = 999 # no cut
 ttHLepAna.ele_isoCorr = "deltaBeta"
+ttHLepAna.ele_tightId = "cuts"
 
 
 # JET (do not apply the jetID and PUID yet)
