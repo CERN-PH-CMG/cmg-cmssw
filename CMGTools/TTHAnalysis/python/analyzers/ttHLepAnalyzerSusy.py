@@ -221,7 +221,13 @@ class ttHLepAnalyzerSusy( Analyzer ):
 
         # Set tight MVA id
         for ele in allelectrons:
-            ele.tightIdResult = ele.electronID("POG_MVA_ID_Trig_full5x5")
+            if self.cfg_ana.ele_tightId=="MVA" :
+                 ele.tightIdResult = ele.electronID("POG_MVA_ID_Trig_full5x5")
+            elif self.cfg_ana.ele_tightId=="cuts" :
+                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_2012_Veto") + 1*ele.electronID("POG_Cuts_ID_2012_Loose") + 1*ele.electronID("POG_Cuts_ID_2012_Medium") + 1*ele.electronID("POG_Cuts_ID_2012_Tight")
+            else :
+                 raise RuntimeError, "Unsupported ele_tightId name '" + str(self.cfg_ana.ele_tightId) +  "'! For now only 'MVA' and 'cuts' are supported."
+
         
         return allelectrons 
 

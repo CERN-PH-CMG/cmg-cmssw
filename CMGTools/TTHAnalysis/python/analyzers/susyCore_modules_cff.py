@@ -110,6 +110,7 @@ ttHLepAna = cfg.Analyzer(
     loose_electron_lostHits = 1.0,
     # electron isolation correction method (can be "rhoArea" or "deltaBeta")
     ele_isoCorr = "rhoArea" ,
+    ele_tightId = "MVA" ,
     # minimum deltaR between a loose electron and a loose muon (on overlaps, discard the electron)
     min_dr_electron_muon = 0.02
     )
