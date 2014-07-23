@@ -98,7 +98,7 @@ from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
 #for data in dataSamples:
 #    data.triggers = triggers_HT
 
-mcSamples_mainFullHad = [ TTJetsSem,TTJetsLep ]
+mcSamples_mainFullHad = [ T2qq_2J, T2bb_2J , TTJetsSem, TTJetsLep ]
 selectedComponents = mcSamples_mainFullHad 
 
 #-------- SEQUENCE
@@ -114,6 +114,7 @@ sequence = cfg.Sequence(susyCoreSequence+[
 test = 1
 if test==1:
     # test a single component, using a single thread.
+##    comp = T2qq_2J_1
     comp = TTJetsSem
 ##    comp = TTJetslep
     comp.files = comp.files[:1]
