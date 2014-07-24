@@ -20,6 +20,7 @@ ttHLepAna.loose_electron_dxy    = 0.04
 ttHLepAna.loose_electron_dz     = 0.2
 ttHLepAna.loose_electron_relIso = 0.15
 ttHLepAna.loose_electron_lostHits = 999 # no cut
+ttHLepAna.inclusive_electron_lostHits = 999 # no cut
 ttHLepAna.ele_isoCorr = "deltaBeta"
 ttHLepAna.ele_tightId = "cuts"
 
@@ -115,6 +116,7 @@ test = 1
 if test==1:
     # test a single component, using a single thread.
     comp=TTJets_PU20bx25
+    #comp.files = ['/afs/cern.ch/work/p/pandolf/CMSSW_7_0_6_patch1_2/src/CMGTools/TTHAnalysis/cfg/pickevents.root']
     comp.files = comp.files[:2]
     selectedComponents = [comp]
     comp.splitFactor = 1
