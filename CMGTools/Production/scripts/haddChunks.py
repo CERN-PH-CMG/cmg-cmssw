@@ -23,9 +23,6 @@ if __name__ == '__main__':
     parser.add_option("-c","--clean", dest="clean",
                       default=False,action="store_true",
                       help="move chunks to Chunks/ after processing.")
-    parser.add_option("-o","--outputdir", dest="outputdir",
-                      default=False,action="store_true",
-                      help="define output folder (default is inside same directory).")
 
     (options,args) = parser.parse_args()
 
@@ -39,5 +36,5 @@ if __name__ == '__main__':
     else:
       odir='./'
 
-    haddChunks(dir, options.remove, options.clean, options.outputdir, odir)
+    haddChunks(dir, options.remove, options.clean, odir)
 
