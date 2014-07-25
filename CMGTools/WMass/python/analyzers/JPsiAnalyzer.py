@@ -33,23 +33,6 @@ class JPsiAnalyzer( Analyzer ):
         count.register('Z pt<20*MZ/MW')
         count.register('Z Jet_leading_pt<30')
 
-        # self.mvamet = MVAMet() # SHOULD BE MVAMet(0.1)
-
-        # void    Initialize(const edm::ParameterSet &iConfig, 
-        # TString iU1Weights      ="$CMSSW_BASE/src/pharris/data/gbrmet_52.root",
-        # TString iPhiWeights     ="$CMSSW_BASE/src/pharris/data/gbrmetphi_52.root",
-        # TString iCovU1Weights   ="$CMSSW_BASE/src/pharris/data/gbrcovu1_52.root",
-        # TString iCovU2Weights   ="$CMSSW_BASE/src/pharris/data/gbrcovu2_52.root",
-        # MVAMet::MVAType  iType=kBaseline);
-
-        # self.mvamet.Initialize(0,
-                          # os.environ['CMSSW_BASE'] + '/src/CMGTools/Utilities/data/mvaMET/gbrmet_42.root',
-                          # os.environ['CMSSW_BASE'] + '/src/CMGTools/Utilities/data/mvaMET/gbrmetphi_42.root',
-                          # os.environ['CMSSW_BASE'] + '/src/CMGTools/Utilities/data/mvaMET/gbrmetu1cov_42.root',
-                          # os.environ['CMSSW_BASE'] + '/src/CMGTools/Utilities/data/mvaMET/gbrmetu2cov_42.root',
-                          # 0
-                          # )
-        
     def buildLeptons(self, cmgMuons, event):
         '''Creates python Leptons from the muons read from the disk.
         to be overloaded if needed.'''
@@ -159,15 +142,17 @@ class JPsiAnalyzer( Analyzer ):
         event.ZallMuonsSelMatched = []
         if len(event.ZallMuons)>0:
             for i in range(0, min(len(event.ZallMuons),9)):
-                #print self.cfg_comp.triggers
-                if(event.passedTriggerAnalyzer):
-                    # print 'trigMatched(self,event,event.ZallMuons[',i,'])',trigMatched(self,event,event.ZallMuons[i])
-                    if(trigMatched(self,event,event.ZallMuons[i])):
-                        event.ZallMuonsTrig[i]=1.
-                    else:
-                        event.ZallMuonsTrig[i]=0.
-                else:
-                    event.ZallMuonsTrig[i]=0.
+            #print self.cfg_comp.triggers
+            # if(event.passedTriggerAnalyzer):
+                # print 'trigMatched(self,event,event.ZallMuons[',i,'])',trigMatched(self,event,event.ZallMuons[i])
+                event.ZallMuonsTrig[i]=0.
+                for T, TL in self.cfg_ana.triggerBits.iteritems():
+                  # muon object trigger matching
+                  if(trigMatched(self, event, event.ZallMuons[i], TL)):
+                # if(trigMatched(self,event,event.ZallMuons[i])):
+                    event.ZallMuonsTrig[i]=1.
+            # else:
+                # event.ZallMuonsTrig[i]=0.
                 if((event.ZallMuons[i].isGlobalMuon() or event.ZallMuons[i].isTrackerMuon()) and len(event.goodVertices)>0):
                     event.ZallMuons[i].associatedVertex = event.goodVertices[0]
                     if testLegID(self, event.ZallMuons[i]):
@@ -302,18 +287,25 @@ class JPsiAnalyzer( Analyzer ):
         
         # check if the event is triggered according to cfg_ana
         # store separately muons that fired the trigger
-        if len(self.cfg_comp.triggers)>0:
-            # muon object trigger matching
-            event.ZselTriggeredMuons = [lep for lep in event.ZallMuons if \
-                           trigMatched(self,event, lep)]
+        # if len(self.cfg_comp.triggers)>0:
+            # # muon object trigger matching
+            # event.ZselTriggeredMuons = [lep for lep in event.ZallMuons if \
+                           # trigMatched(self,event, lep)]
+        if hasattr(self.cfg_ana, 'triggerBits'):
+            for lep in event.ZallMuons:
+              for T, TL in self.cfg_ana.triggerBits.iteritems():
+                  # muon object trigger matching
+                  if(trigMatched(self, event, lep, TL)):
+                    event.ZselTriggeredMuons.append(lep)
+                    continue                           
            # if len(event.ZselTriggeredMuons) == 0 :
                # return True, 'trigger matching failed'
            # else:
                # if fillCounter : self.counters.counter('JPsiAna').inc('Z at least 1 lep trig matched')
 
         # store muons that did not fire the trigger
-        event.ZselNoTriggeredMuons = [lep for lep in event.ZallMuons if \
-                        not trigMatched(self,event, lep)]
+        # event.ZselNoTriggeredMuons = [lep for lep in event.ZallMuons if \
+                        # not trigMatched(self,event, lep)]
         
         # check wether there are muons that did not fire the trigger, if so print some info
         # if len(event.ZselNoTriggeredMuons)>0:
@@ -336,47 +328,6 @@ class JPsiAnalyzer( Analyzer ):
         else:
             if fillCounter : self.counters.counter('JPsiAna').inc('Z good muon pair found')          
         
-        if hasattr(self.cfg_ana,'computeMVAmet'):
-          # Initialize MVAMet and retrieve it
-          
-          iLeadJet = 0
-          i2ndJet = 0
-          if(len(event.ZselJets)>0): iLeadJet = event.ZselJets[0].p4()
-          # if(len(event.ZselJets)>0): i2ndJet = event.ZselJets[0].p4()
-          if(len(event.ZselJets)>1): i2ndJet = event.ZselJets[1].p4()
-          # print 'iLeadJet= ',iLeadJet, ' i2ndJet=',i2ndJet 
-          self.mvamet.addVisObject(event.BestZMuonPairList[0].p4())
-          visObjectP4s_array = [event.BestZMuonPairList[0].p4(),event.BestZMuonPairList[0].p4()]
-          iJets_p4 = []
-          iJets_mva = []
-          iJets_neutFrac = []
-          for jet in event.ZselJets:
-              iJets_p4.append(jet.p4())
-              iJets_mva.append(float(0))
-              iJets_neutFrac.append(float(0.5))
-              
-          self.mvamet.getMet(
-                             # event.pfmet, #iPFMet,
-                             event.pfMetForRegression, #iPFMet,
-                             event.tkmet, #iTKMet,
-                             event.nopumet, #iNoPUMet,
-                             event.pumet, #iPUMet,
-                             event.pucmet, #iPUCMet,
-                             iLeadJet, #event.ZselJets[0], #iLeadJet,
-                             i2ndJet, #event.ZselJets[1], #i2ndJet,
-                             len(event.ZselJets), #iNJetsGt30,
-                             len(event.allJets), #iNJetsGt1,
-                             len(self.handles['vertices'].product()), #iNGoodVtx,
-                             iJets_p4, #iJets,
-                             iJets_mva, #iJets,
-                             iJets_neutFrac, #iJets,
-                             False, #iPrintDebug,
-                             visObjectP4s_array #visObjectP4s
-                            )
-                            
-          GetMet_first = self.mvamet.GetMet_first();
-          GetMet_second = self.mvamet.GetMet_second();
-              
         # associate properly positive and negative muons
         if(event.BestZMuonPairList[1].charge()>0):
           event.BestZPosMuon = event.BestZMuonPairList[1]  
@@ -384,13 +335,32 @@ class JPsiAnalyzer( Analyzer ):
         else:
           event.BestZPosMuon = event.BestZMuonPairList[2]
           event.BestZNegMuon = event.BestZMuonPairList[1]
+        
+        event.BestZNegMuonHasTriggered = 0
+        event.BestZPosMuonHasTriggered = 0
+        
           # check the triggers 
-        if(trigMatched(self,event,event.BestZPosMuon)):
-            event.BestZPosMuonHasTriggered = 1
+        # if(trigMatched(self,event,event.BestZPosMuon)):
+            # event.BestZPosMuonHasTriggered = 1
+        # else:
+            # event.BestZPosMuonHasTriggered = 0
+        # if(trigMatched(self,event,event.BestZNegMuon)):
+            # event.BestZNegMuonHasTriggered = 1
+        # else:
+            # event.BestZNegMuonHasTriggered = 0
+        if hasattr(self.cfg_ana, 'triggerBits'):
+            for T, TL in self.cfg_ana.triggerBits.iteritems():
+              if(trigMatched(self, event, event.BestZPosMuon, TL)):
+                event.BestZPosMuonHasTriggered = 1
+                break
         else:
             event.BestZPosMuonHasTriggered = 0
-        if(trigMatched(self,event,event.BestZNegMuon)):
-            event.BestZNegMuonHasTriggered = 1
+        
+        if hasattr(self.cfg_ana, 'triggerBits'):
+            for T, TL in self.cfg_ana.triggerBits.iteritems():
+              if(trigMatched(self, event, event.BestZNegMuon, TL)):
+                event.BestZNegMuonHasTriggered = 1
+                break
         else:
             event.BestZNegMuonHasTriggered = 0
 
@@ -474,29 +444,6 @@ class JPsiAnalyzer( Analyzer ):
         event.Zu1 = u1
         event.Zu2 = u2
         
-        # test
-        # recoilVect_test = - event.ZpfmetNoMu.Vect() - event.Z4V.Vect
-        # recoilVect_test.SetZ(0.)
-        # event.Zu1_test = recoilVect_test.Dot()
-
-        # # Code to study the WPos-like recoil
-        # metVectWlikePos = event.ZpfmetWpos.Vect()
-        # metVectWlikePos.SetZ(0.) # use only transverse info
-        # MuPosVect = event.BestZPosMuon.p4().Vect()
-        # MuPosVect.SetZ(0.) # use only transverse info
-        # recoilMuPosVect = copy.deepcopy(metVectWlikePos)
-        # recoilMuPosVect -= MuPosVect
-        
-        # uMuPosVect = MuPosVect.Unit()
-        # zAxis = type(MuPosVect)(0,0,1)
-        # uMuPosVectPerp = MuPosVect.Cross(zAxis).Unit()
-
-        # u1WPos = - recoilMuPosVect.Dot(uMuPosVect) # recoil parallel to WlikePos lepton pt
-        # u2WPos = recoilMuPosVect.Dot(uMuPosVectPerp) # recoil perpendicular to WlikePos lepton pt
-
-        # event.Zu1WPos = u1WPos
-        # event.Zu2WPos = u2WPos
-
         if fillCounter:
           if event.Wpos4VfromZ.M() > 2.8 and event.Wpos4VfromZ.M() > 3.35: 
             self.counters.counter('JPsiAna').inc('Z Inv Mass>50')
@@ -523,12 +470,16 @@ class JPsiAnalyzer( Analyzer ):
         
         if hasattr(self.cfg_ana,'keepFailingEvents') and not self.cfg_ana.keepFailingEvents:
           if( \
-            not event.passedVertexAnalyzer or not event.passedTriggerAnalyzer or not event.Z4V.M()>2.8 or not event.Z4V.M()<3.35 \
+            not event.passedVertexAnalyzer 
+            # or not event.passedTriggerAnalyzer 
+            or not ((event.Z4V.M()>2.8 and event.Z4V.M()<3.35) 
+            # or (event.Z4V.M()>8.5 and event.Z4V.M()<11.5)
+            ) \
             or not event.BestZPosMuon.charge() != event.BestZNegMuon.charge() \
             or not event.BestZPosMuonIsTight == 1 or not event.BestZNegMuonIsTight == 1 \
             or not event.BestZPosMuon.pt() > 4 or not math.fabs(event.BestZNegMuon.pt()) > 4 \
             # or not event.BestZPosMuon.relIso(0.5) < 0.5 or not event.BestZNegMuon.relIso(0.5) < 0.5 \
-            or not math.fabs(event.BestZPosMuon.eta()) < 2.1 or not math.fabs(event.BestZNegMuon.eta()) < 2.1 \
+            or not math.fabs(event.BestZPosMuon.eta()) < 2.4 or not math.fabs(event.BestZNegMuon.eta()) < 2.4 \
             or not math.fabs(event.BestZPosMuon.dxy()) < 0.2 or not math.fabs(event.BestZNegMuon.dxy()) < 0.2 \
             or not math.fabs(event.BestZPosMuon.dz()) < 0.5 or not math.fabs(event.BestZNegMuon.dz()) < 0.5 \
           ):
@@ -615,7 +566,7 @@ class JPsiAnalyzer( Analyzer ):
         
     def declareHandles(self):        
         super(JPsiAnalyzer, self).declareHandles()
-        self.handles['cmgTriggerObjectSel'] =  AutoHandle('cmgTriggerObjectSel','std::vector<cmg::TriggerObject>')
+        # self.handles['cmgTriggerObjectSel'] =  AutoHandle('cmgTriggerObjectSel','std::vector<cmg::TriggerObject>')
         self.handles['Zmuons'] = AutoHandle('cmgMuonSel','std::vector<cmg::Muon>')
         self.handles['Zjets'] = AutoHandle('cmgPFJetSel','std::vector<cmg::PFJet>')
         # self.handles['kt6PFJets'] = AutoHandle('kt6PFJets','std::vector<reco::PFJet>')

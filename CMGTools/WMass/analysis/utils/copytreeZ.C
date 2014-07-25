@@ -1,10 +1,12 @@
 void copytreeZ() {
 
   // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/";
-  TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_10_15/";
+  // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_10_15/";
+  TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
+  
   TString fZana_str[7] = {
-    "root://eoscms//"+root_folder+"WJets/ZTreeProducer_tree.root",
-    "root://eoscms//"+root_folder+"DYJetsTT/ZTreeProducer_tree.root",
+    "root://eoscms//"+root_folder+"WJetsLL/ZTreeProducer_tree.root",
+    "root://eoscms//"+root_folder+"DYJetsMM/ZTreeProducer_tree.root",
     "root://eoscms//"+root_folder+"TTJets/ZTreeProducer_tree.root",
     "root://eoscms//"+root_folder+"VVJets/ZZ/ZTreeProducer_tree.root",
     "root://eoscms//"+root_folder+"VVJets/WW/ZTreeProducer_tree.root",
@@ -12,8 +14,8 @@ void copytreeZ() {
     "root://eoscms//"+root_folder+"DATA/ZTreeProducer_tree.root"
   };  
   TString fZana_RecoSkimmed_str[7] = {
-    root_folder+"WJets/ZTreeProducer_tree_RecoSkimmed.root",
-    root_folder+"DYJetsTT/ZTreeProducer_tree_RecoSkimmed.root",
+    root_folder+"WJetsLL/ZTreeProducer_tree_RecoSkimmed.root",
+    root_folder+"DYJetsMM/ZTreeProducer_tree_RecoSkimmed.root",
     root_folder+"TTJets/ZTreeProducer_tree_RecoSkimmed.root",
     root_folder+"VVJets/ZZ/ZTreeProducer_tree_RecoSkimmed.root",
     root_folder+"VVJets/WW/ZTreeProducer_tree_RecoSkimmed.root",
@@ -29,7 +31,14 @@ void copytreeZ() {
     // if(sample!=6) continue;
     // if(sample==1 || sample==6) continue;
     // cout << fZana_str[sample]<< endl;
-    if(!fZana_RecoSkimmed_str[sample].Contains("TTJets")) continue;
+    // if(!fZana_RecoSkimmed_str[sample].Contains("TTJets")) continue;
+    if(
+      // !fZana_RecoSkimmed_str[sample].Contains("WJetsLL")
+       // && 
+       !fZana_RecoSkimmed_str[sample].Contains("DYJetsMM")
+       // && 
+       // !fZana_RecoSkimmed_str[sample].Contains("DATA")
+       ) continue;
     // cout << fZana_RecoSkimmed_str[sample]<< endl;
     // continue;
       

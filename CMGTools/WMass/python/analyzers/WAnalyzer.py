@@ -8,8 +8,6 @@ from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, Jet, GenParti
 from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 from CMGTools.RootTools.utils.DeltaR import bestMatch, deltaR, deltaR2
 from CMGTools.WMass.analyzers.common_functions import *
-# from CMGTools.Utilities.mvaMET.mvaMet import MVAMet, PFMET
-# from WMass.analyzers.GetMVAMET import GetMVAMET
 
 class WAnalyzer( Analyzer ):
 
@@ -31,30 +29,6 @@ class WAnalyzer( Analyzer ):
         count.register('W pt<20')
         count.register('W Jet_leading_pt<30')
         
-        # self.mvamet = MVAMet() # SHOULD BE MVAMet(0.1)
-
-        # void    Initialize(const edm::ParameterSet &iConfig, 
-        # TString iU1Weights      ="$CMSSW_BASE/src/pharris/data/gbrmet_52.root",
-        # TString iPhiWeights     ="$CMSSW_BASE/src/pharris/data/gbrmetphi_52.root",
-        # TString iCovU1Weights   ="$CMSSW_BASE/src/pharris/data/gbrcovu1_52.root",
-        # TString iCovU2Weights   ="$CMSSW_BASE/src/pharris/data/gbrcovu2_52.root",
-        # MVAMet::MVAType  iType=kBaseline);
-
-        # basePath = os.environ['CMSSW_BASE']+"/src/CMGTools/Utilities/data/mvaMET/";
-        # print  ("Inputs are",
-                          # basePath+'gbrmet_42.root',
-                          # basePath+'gbrmetphi_42.root',
-                          # basePath+'gbru1cov_42.root',
-                          # basePath+'gbru2cov_42.root',
-                # )
-        # self.mvamet.Initialize(0,
-                          # basePath+'gbrmet_42.root',
-                          # basePath+'gbrmetphi_42.root',
-                          # basePath+'gbrmetu1cov_42.root',
-                          # basePath+'gbrmetu2cov_42.root',
-                          # 0 # useless
-                          # )
-
     def buildLeptons(self, cmgMuons, event):
         '''Creates python Leptons from the muons read from the disk.
         to be overloaded if needed.'''
@@ -90,7 +64,8 @@ class WAnalyzer( Analyzer ):
         event.LHE_weights = []
         if self.cfg_comp.isMC :
           event.genParticles = self.buildGenParticles( self.mchandles['genpart'].product(), event )        
-          event.LHEweights = self.mchandles['LHEweights'].product()
+          event.LHEweights = []
+          # event.LHEweights = self.mchandles['LHEweights'].product()
         # define good event bool
         event.WGoodEvent = False
         # select event
@@ -112,61 +87,72 @@ class WAnalyzer( Analyzer ):
         
         # print len(event.LHE_weights)
             
-        
+        event.allMuonsTrgBit=[]
         # retrieve collections of interest (muons and jets)
         event.allMuons = copy.copy(event.muons)
-        event.selMuons = copy.copy(event.muons)
+        for i in range(0,len(event.allMuons)):
+          event.allMuonsTrgBit.append(0)
+
+        event.selMuons = []
         event.NoTriggeredMuonsLeadingPt = copy.copy(event.muons)
         event.allJets = copy.copy(event.jets)
         event.selJets = copy.copy(event.jets)
 
         # check if the event is MC and if genp must be saved
         event.savegenpW=False
-        # event.savegenpW=True
-        # if not (self.cfg_ana.savegenp and self.cfg_comp.isMC):
-          # event.savegenpW=False
-        # print 'event.savegenpW 1 ',event.savegenpW
+        
+        # for genp in event.genParticles:
+          # if math.fabs(genp.pdgId())==24 and genp.numberOfDaughters()>1:
+            # print 'genp.pdgId()=',genp.pdgId(), 'genp.status()=',genp.status(), 'genp.numberOfDaughters()=',genp.numberOfDaughters()
+            # if(genp.numberOfDaughters()>0):
+              # print 'genp.daughter(0)',genp.daughter(0).pdgId(),'status',genp.daughter(0).status()
+              # if(genp.numberOfDaughters()>1):
+                # print 'genp.daughter(1)',genp.daughter(1).pdgId(),'status',genp.daughter(1).status()
+        
+        # return False
         
         # save genp only for signal events
         # i.e. only one W is present and daughters are muon plus neutrino
         genW_dummy = [ genp for genp in event.genParticles if \
-                       math.fabs(genp.pdgId())==24 if \
-                       ( \
+                       (math.fabs(genp.pdgId())==24 and genp.status()==62)if \
+                       ((  genp.numberOfDaughters()>1 and (\
                          math.fabs(genp.daughter(0).pdgId())==11 or 
                          math.fabs(genp.daughter(1).pdgId())==11 or 
                          math.fabs(genp.daughter(0).pdgId())==13 or 
                          math.fabs(genp.daughter(1).pdgId())==13 or 
                          math.fabs(genp.daughter(0).pdgId())==15 or 
                          math.fabs(genp.daughter(1).pdgId())==15
-                         ) ]
+                         ) ) or (genp.numberOfDaughters()==1 and \
+                         math.fabs(genp.daughter(0).pdgId())==13
+                         ) ) ]
 
-#        if len(genW_dummy)>0:
           # if the genp event is selected, associate gen muon and neutrino
         event.genMu = []
         event.genMuStatus1 = []
         event.genNu = []
+        event.genNu_p4 = []
         event.genWLept = []
 
         if self.cfg_ana.savegenp and self.cfg_comp.isMC:
         
           if len(genW_dummy)==1:
-  #        if len(genW_dummy)>0:
             event.genW = [ genp for genp in genW_dummy if \
                                  ( \
                                   ( math.fabs(genW_dummy[0].daughter(0).pdgId())==13 ) or \
-                                  ( math.fabs(genW_dummy[0].daughter(1).pdgId())==13 ) \
+                                  ( genW_dummy[0].numberOfDaughters()>1 and math.fabs(genW_dummy[0].daughter(1).pdgId())==13 ) \
                                   ) ]
             if len(event.genW)==1:
 
               event.savegenpW=True
-              event.genW_mt = mT(self,event.genW[0].daughter(0).p4() , event.genW[0].daughter(1).p4())
-              event.muGenDeltaRgenP=1e6
-
+              event.genNu_p4 = genW_dummy[0].p4() - event.genW[0].daughter(0).p4()
+              
               event.genWLept.append(event.genW[0])
+
               if [ math.fabs(event.genW[0].daughter(0).pdgId())==13 ]:
                 event.genMu.append(event.genW[0].daughter(0))
-                event.genNu.append(event.genW[0].daughter(1))
-              else:
+                if event.genW[0].numberOfDaughters()>1:
+                  event.genNu.append(event.genW[0].daughter(1))
+              elif event.genW[0].numberOfDaughters()>1:
                 event.genMu.append(event.genW[0].daughter(1))
                 event.genNu.append(event.genW[0].daughter(0))
               
@@ -176,81 +162,86 @@ class WAnalyzer( Analyzer ):
                 else:
                   event.genMuStatus1.append(event.genMu[0])
 
+              if event.genW[0].numberOfDaughters()>1:
+                event.genW_mt = mT(self,event.genW[0].daughter(0).p4() , event.genW[0].daughter(1).p4())
+              else: 
+                event.genW_mt = mT(self,event.genW[0].daughter(0).p4() , event.genNu_p4)
+              event.muGenDeltaRgenP=1e6
 
-          if len(genW_dummy)>1:
-            event.genW = [ genp for genp in genW_dummy if \
-                                 ( \
-                                  ( math.fabs(genW_dummy[0].daughter(0).pdgId())==11 ) or \
-                                  ( math.fabs(genW_dummy[0].daughter(1).pdgId())==11 ) or \
-                                  ( math.fabs(genW_dummy[0].daughter(0).pdgId())==13 ) or \
-                                  ( math.fabs(genW_dummy[0].daughter(1).pdgId())==13 ) or \
-                                  ( math.fabs(genW_dummy[0].daughter(0).pdgId())==15 ) or \
-                                  ( math.fabs(genW_dummy[0].daughter(1).pdgId())==15 ) or \
-                                  ( math.fabs(genW_dummy[1].daughter(0).pdgId())==11 ) or \
-                                  ( math.fabs(genW_dummy[1].daughter(1).pdgId())==11 ) or \
-                                  ( math.fabs(genW_dummy[1].daughter(0).pdgId())==13 ) or \
-                                  ( math.fabs(genW_dummy[1].daughter(1).pdgId())==13 ) or \
-                                  ( math.fabs(genW_dummy[1].daughter(0).pdgId())==15 ) or \
-                                  ( math.fabs(genW_dummy[1].daughter(1).pdgId())==15 ) \
-                                  ) ]
+          # if len(genW_dummy)>1:
+            # event.genW = [ genp for genp in genW_dummy if \
+                                 # ( \
+                                  # ( math.fabs(genW_dummy[0].daughter(0).pdgId())==11 ) or \
+                                  # ( math.fabs(genW_dummy[0].daughter(1).pdgId())==11 ) or \
+                                  # ( math.fabs(genW_dummy[0].daughter(0).pdgId())==13 ) or \
+                                  # ( math.fabs(genW_dummy[0].daughter(1).pdgId())==13 ) or \
+                                  # ( math.fabs(genW_dummy[0].daughter(0).pdgId())==15 ) or \
+                                  # ( math.fabs(genW_dummy[0].daughter(1).pdgId())==15 ) or \
+                                  # ( math.fabs(genW_dummy[1].daughter(0).pdgId())==11 ) or \
+                                  # ( math.fabs(genW_dummy[1].daughter(1).pdgId())==11 ) or \
+                                  # ( math.fabs(genW_dummy[1].daughter(0).pdgId())==13 ) or \
+                                  # ( math.fabs(genW_dummy[1].daughter(1).pdgId())==13 ) or \
+                                  # ( math.fabs(genW_dummy[1].daughter(0).pdgId())==15 ) or \
+                                  # ( math.fabs(genW_dummy[1].daughter(1).pdgId())==15 ) \
+                                  # ) ]
 
-            if len(event.genW)==2:
-              if ( math.fabs(event.genW[0].daughter(0).pdgId())==13. or math.fabs(event.genW[0].daughter(0).pdgId())==15. or math.fabs(event.genW[0].daughter(0).pdgId())==11. ):
-                  # print 'event.savegenpW 2 ',event.savegenpW
-                  event.savegenpW=False
-  #                print 'found leptonic W0 a'
-                  event.genWLept.append(event.genW[0])
-                  if ( math.fabs(event.genW[0].daughter(0).pdgId())==13 ):
-                      event.genMu.append(event.genW[0].daughter(0))
-                      event.genNu.append(event.genW[0].daughter(1))
-                      event.genW_mt = mT(self,event.genMu[0].p4() , event.genNu[0].p4())
-                      event.muGenDeltaRgenP=1e6
-                      if(len(event.genMu) >0):
-                          event.genMuStatus1.append(returnMuonDaughterStatus1(self,event.genMu[0]))
-                      event.savegenpW=True
+            # if len(event.genW)==2:
+              # if ( math.fabs(event.genW[0].daughter(0).pdgId())==13. or math.fabs(event.genW[0].daughter(0).pdgId())==15. or math.fabs(event.genW[0].daughter(0).pdgId())==11. ):
+                  # # print 'event.savegenpW 2 ',event.savegenpW
+                  # event.savegenpW=False
+  # #                print 'found leptonic W0 a'
+                  # event.genWLept.append(event.genW[0])
+                  # if ( math.fabs(event.genW[0].daughter(0).pdgId())==13 ):
+                      # event.genMu.append(event.genW[0].daughter(0))
+                      # event.genNu.append(event.genW[0].daughter(1))
+                      # event.genW_mt = mT(self,event.genMu[0].p4() , event.genNu[0].p4())
+                      # event.muGenDeltaRgenP=1e6
+                      # if(len(event.genMu) >0):
+                          # event.genMuStatus1.append(returnMuonDaughterStatus1(self,event.genMu[0]))
+                      # event.savegenpW=True
 
-              if ( math.fabs(event.genW[0].daughter(1).pdgId())==13. or math.fabs(event.genW[0].daughter(1).pdgId())==15. or math.fabs(event.genW[0].daughter(1).pdgId())==11. ):
-                  # print 'event.savegenpW 3 ',event.savegenpW
-                  event.savegenpW=False
-  #                print 'found leptonic W0 b'
-                  event.genWLept.append(event.genW[0])
-                  if ( math.fabs(event.genW[0].daughter(1).pdgId())==13 ):
-                      event.genMu.append(event.genW[0].daughter(1))
-                      event.genNu.append(event.genW[0].daughter(0))
-                      event.genW_mt = mT(self,event.genMu[0].p4() , event.genNu[0].p4())
-                      event.muGenDeltaRgenP=1e6
-                      if(len(event.genMu) >0):
-                          event.genMuStatus1.append(returnMuonDaughterStatus1(self,event.genMu[0]))
-                      # print 'event.savegenpW 4 ',event.savegenpW
-                      event.savegenpW=True
+              # if ( math.fabs(event.genW[0].daughter(1).pdgId())==13. or math.fabs(event.genW[0].daughter(1).pdgId())==15. or math.fabs(event.genW[0].daughter(1).pdgId())==11. ):
+                  # # print 'event.savegenpW 3 ',event.savegenpW
+                  # event.savegenpW=False
+  # #                print 'found leptonic W0 b'
+                  # event.genWLept.append(event.genW[0])
+                  # if ( math.fabs(event.genW[0].daughter(1).pdgId())==13 ):
+                      # event.genMu.append(event.genW[0].daughter(1))
+                      # event.genNu.append(event.genW[0].daughter(0))
+                      # event.genW_mt = mT(self,event.genMu[0].p4() , event.genNu[0].p4())
+                      # event.muGenDeltaRgenP=1e6
+                      # if(len(event.genMu) >0):
+                          # event.genMuStatus1.append(returnMuonDaughterStatus1(self,event.genMu[0]))
+                      # # print 'event.savegenpW 4 ',event.savegenpW
+                      # event.savegenpW=True
                       
-              if ( math.fabs(event.genW[1].daughter(0).pdgId())==13. or math.fabs(event.genW[1].daughter(0).pdgId())==15. or math.fabs(event.genW[1].daughter(0).pdgId())==11. ):
-                  # print 'event.savegenpW 5 ',event.savegenpW
-                  event.savegenpW=False
-  #                print 'found leptonic W1 c'
-                  event.genWLept.append(event.genW[1])
-                  if ( math.fabs(event.genW[1].daughter(0).pdgId())==13 ):
-                      event.genMu.append(event.genW[1].daughter(0))
-                      event.genNu.append(event.genW[1].daughter(1))
-                      event.genW_mt = mT(self,event.genMu[0].p4() , event.genNu[0].p4())                
-                      event.muGenDeltaRgenP=1e6
-                      if(len(event.genMu) >0):
-                          event.genMuStatus1.append(returnMuonDaughterStatus1(self,event.genMu[0]))
-                      event.savegenpW=True
+              # if ( math.fabs(event.genW[1].daughter(0).pdgId())==13. or math.fabs(event.genW[1].daughter(0).pdgId())==15. or math.fabs(event.genW[1].daughter(0).pdgId())==11. ):
+                  # # print 'event.savegenpW 5 ',event.savegenpW
+                  # event.savegenpW=False
+  # #                print 'found leptonic W1 c'
+                  # event.genWLept.append(event.genW[1])
+                  # if ( math.fabs(event.genW[1].daughter(0).pdgId())==13 ):
+                      # event.genMu.append(event.genW[1].daughter(0))
+                      # event.genNu.append(event.genW[1].daughter(1))
+                      # event.genW_mt = mT(self,event.genMu[0].p4() , event.genNu[0].p4())                
+                      # event.muGenDeltaRgenP=1e6
+                      # if(len(event.genMu) >0):
+                          # event.genMuStatus1.append(returnMuonDaughterStatus1(self,event.genMu[0]))
+                      # event.savegenpW=True
                       
-              if ( math.fabs(event.genW[1].daughter(1).pdgId())==13. or math.fabs(event.genW[1].daughter(1).pdgId())==15. or math.fabs(event.genW[1].daughter(1).pdgId())==11. ):
-                  # print 'event.savegenpW 6 ',event.savegenpW
-                  event.savegenpW=False
-  #                print 'found leptonic W1 d'
-                  event.genWLept.append(event.genW[1])
-                  if ( math.fabs(event.genW[1].daughter(1).pdgId())==13 ):
-                      event.genMu.append(event.genW[1].daughter(1))
-                      event.genNu.append(event.genW[1].daughter(0))
-                      event.genW_mt = mT(self,event.genMu[0].p4() , event.genNu[0].p4())                
-                      event.muGenDeltaRgenP=1e6
-                      if(len(event.genMu) >0):
-                          event.genMuStatus1.append(returnMuonDaughterStatus1(self,event.genMu[0]))
-                      event.savegenpW=True
+              # if ( math.fabs(event.genW[1].daughter(1).pdgId())==13. or math.fabs(event.genW[1].daughter(1).pdgId())==15. or math.fabs(event.genW[1].daughter(1).pdgId())==11. ):
+                  # # print 'event.savegenpW 6 ',event.savegenpW
+                  # event.savegenpW=False
+  # #                print 'found leptonic W1 d'
+                  # event.genWLept.append(event.genW[1])
+                  # if ( math.fabs(event.genW[1].daughter(1).pdgId())==13 ):
+                      # event.genMu.append(event.genW[1].daughter(1))
+                      # event.genNu.append(event.genW[1].daughter(0))
+                      # event.genW_mt = mT(self,event.genMu[0].p4() , event.genNu[0].p4())                
+                      # event.muGenDeltaRgenP=1e6
+                      # if(len(event.genMu) >0):
+                          # event.genMuStatus1.append(returnMuonDaughterStatus1(self,event.genMu[0]))
+                      # event.savegenpW=True
                       
               # if the genp is not signal, don't save genp but do not exit 
               # -----> events which will pass the reconstruction but are not signal
@@ -266,38 +257,49 @@ class WAnalyzer( Analyzer ):
 
         # store event number of muons, MET and jets in all gen events (necessary to make cuts in genp studies...)
         # total number of reco muons
-        event.nMuons=len(event.selMuons)
+        event.nMuons=len(event.muons)
         # clean jets by removing muons
         event.selJets = [ jet for jet in event.allJets if ( \
-                                        not (bestMatch( jet , event.selMuons ))[1] <0.5 \
+                                        not (bestMatch( jet , event.muons ))[1] <0.5 \
                                         and jet.looseJetId() and jet.pt()>30 \
                                         )
                         ]
         keepFailingEvents = True
-        if hasattr(self.cfg_ana,'keepFailingEvents') and not self.cfg_ana.keepFailingEvents:
-            # print 'hasattr(self.cfg_ana,\'keepFailingEvents\') and not self.cfg_ana.keepFailingEvents'
+        if not hasattr(self.cfg_ana,'keepFailingEvents') \
+            or (hasattr(self.cfg_ana,'keepFailingEvents') and not self.cfg_ana.keepFailingEvents):
             keepFailingEvents = False
         # print 'keepFailingEvents',keepFailingEvents
-        
-            
         # reco events must have good reco vertex and trigger fired...
-        if not (event.passedVertexAnalyzer and event.passedTriggerAnalyzer):
+        # if not (event.passedVertexAnalyzer and event.passedTriggerAnalyzer):
+        if not (event.passedVertexAnalyzer):
           return keepFailingEvents
         # ...and at lest one reco muon...
-        if len(event.selMuons) == 0:
+        if len(event.muons) == 0:
             return keepFailingEvents
         if fillCounter: self.counters.counter('WAna').inc('W ev trig, good vertex and >= 1 lepton')
         
         #check if the event is triggered according to cfg_ana
-        if len(self.cfg_comp.triggers)>0:
-            # muon object trigger matching
-            event.selMuons = [lep for lep in event.allMuons if \
-                            trigMatched(self, event, lep)]
-            # exit if there are no triggered muons
-            if len(event.selMuons) == 0:
-                return keepFailingEvents, 'trigger matching failed'
-            else:
-                if fillCounter: self.counters.counter('WAna').inc('W at least 1 lep trig matched')
+        if hasattr(self.cfg_ana, 'triggerBits'):
+          for imu in range(0,len(event.allMuons)):
+            for T, TL in self.cfg_ana.triggerBits.iteritems():
+                # muon object trigger matching
+                if trigMatched(self, event, event.allMuons[imu], TL):
+                  # print event.allMuons[imu].pt(), event.allMuons[imu].eta(), TL
+                  event.allMuonsTrgBit[imu]=1
+                  # continue
+            if(event.allMuonsTrgBit[imu]==1): event.selMuons.append(event.allMuons[imu])
+            # for T, TL in self.cfg_ana.triggerBits.iteritems():
+                # # muon object trigger matching
+                # event.selMuons = [lep for lep in event.allMuons if \
+                                # trigMatched(self, event, lep, TL)]
+          # print 'len(event.selMuons) = ',len(event.selMuons)
+          # for i in range(0,len(event.selMuons)):
+            # print i,event.selMuons[i].pt(), event.selMuons[i].eta()
+                # exit if there are no triggered muons
+          if len(event.selMuons) == 0:
+              return keepFailingEvents, 'trigger matching failed'
+          else:
+              if fillCounter: self.counters.counter('WAna').inc('W at least 1 lep trig matched')
                 
         # to select W impose only 1 triggering lepton in the event:
         # the number of triggering lepton is checked on the whole lepton collection
@@ -308,12 +310,16 @@ class WAnalyzer( Analyzer ):
         else:
             if fillCounter: self.counters.counter('WAna').inc('W only 1 lep trig matched')
 
-        # print 'len(event.selMuons) = ',len(event.selMuons)
-        # if len(event.selMuons)!= 1: print 'BUT CONTINUING!'
+        if len(event.selMuons)!= 1: print 'BUT CONTINUING!'
+        
+        # print len(event.selMuons), event.selMuons[0].pt()
         
         # store muons that did not fire the trigger
-        event.NoTriggeredMuonsLeadingPt = [lep for lep in event.allMuons if \
-                        not trigMatched(self, event, lep) ]
+        if hasattr(self.cfg_ana, 'triggerBits'):
+            for T, TL in self.cfg_ana.triggerBits.iteritems():
+                event.NoTriggeredMuonsLeadingPt = [lep for lep in event.allMuons if \
+                                                    (not trigMatched(self, event, lep, TL) \
+                                                    and lep.pt()>10)]
         
         # print "len(event.NoTriggeredMuonsLeadingPt)= ",len(event.NoTriggeredMuonsLeadingPt)
         # if len(event.NoTriggeredMuonsLeadingPt)>0 : print "event.NoTriggeredMuonsLeadingPt[0].pt() = ",event.NoTriggeredMuonsLeadingPt[0].pt()
@@ -339,61 +345,6 @@ class WAnalyzer( Analyzer ):
         event.selMuonIsTightAndIso = testLeg(self, event.selMuons[0] ) 
         event.selMuonIsTight = testLegID( self,event.selMuons[0] ) 
           
-        # START RETRIEVING MVAMET
-        
-        # INPUT DEFINITIONS AS OF HTT
-                # mvaMETTauMu = cms.EDProducer(
-                  # "MVAMETProducerTauMu",
-                  # pfmetSrc = cms.InputTag('pfMetForRegression'),
-                  # tkmetSrc = cms.InputTag('tkMet'),
-                  # nopumetSrc = cms.InputTag('nopuMet'),
-                  # pucmetSrc = cms.InputTag('pcMet'),
-                  # pumetSrc = cms.InputTag('puMet'),
-                  # recBosonSrc = cms.InputTag('cmgTauMuSel'),
-                  # jetSrc = cms.InputTag('cmgPFJetSel'),
-                  # leadJetSrc = cms.InputTag('cmgPFBaseJetLead'),
-                  # vertexSrc = cms.InputTag('goodPVFilter'),
-                  # nJetsPtGt1Src = cms.InputTag('nJetsPtGt1'),
-                  # rhoSrc = cms.InputTag('kt6PFJets','rho'),
-                  # enable = cms.bool(True),
-                  # verbose = cms.untracked.bool( False ),
-                  # weights_gbrmet = cms.string(weights_gbrmet),
-                  # weights_gbrmetphi = cms.string(weights_gbrmetphi),
-                  # weights_gbrmetu1cov = cms.string(weights_gbrmetu1cov),
-                  # weights_gbrmetu2cov = cms.string(weights_gbrmetu2cov),
-                  
-                  # #COLIN: make delta R a parameter
-                  # )
-
-        # self.prepareObjectsForMVAMET(event)
-        
-        # self.mvamet.getMet(
-                           # event.cleanpfmetForRegression, #iPFMet,
-                           # event.cleantkmet, #iTKMet,
-                           # event.cleannopumet, #iNoPUMet,
-                           # event.pumet, #iPUMet,
-                           # event.cleanpucmet, #iPUCMet,
-                           # event.iLeadJet, #event.iLeadJet,
-                           # event.i2ndJet,  #event.i2ndJet,
-                           # event.NJetsGt30, #iNJetsGt30,
-                           # event.nJetsPtGt1Clean, #iNJetsGt1,
-                           # len(event.goodVertices), #iNGoodVtx,
-                           # event.iJets_p4, #iJets,
-                           # event.iJets_mva, #iJets,
-                           # event.iJets_neutFrac, #iJets,
-                           # False, #iPrintDebug,
-                           # event.visObjectP4s_array #visObjectP4s
-                          # )
-                          
-        # event.mvamet = self.mvamet.GetMet_first();
-        # event.GetMVAMet_second = self.mvamet.GetMet_second();
-        
-        # print 'AFTER MVAmet_test'
-        # print 'event.pfmet.pt() ', event.pfmet.pt()
-        # print 'event.selMuons[0].pt() ',event.selMuons[0].pt(),' event.mvamet.Pt() ',event.mvamet.Pt()
-        # print ''
-        # print 'event.GetMVAMet_second ',event.GetMVAMet_second,' event.GetMVAMet_second.significance() ',event.GetMVAMet_second.significance().Print()
-        
         # define a W from lepton and MET
         event.W4V = event.selMuons[0].p4() + event.pfmet.p4()
         event.W4V_mt = mT(self,event.selMuons[0].p4() , event.pfmet.p4())        
@@ -446,7 +397,6 @@ class WAnalyzer( Analyzer ):
 
     def declareHandles(self):        
         super(WAnalyzer, self).declareHandles()
-        self.handles['cmgTriggerObjectSel'] =  AutoHandle('cmgTriggerObjectSel','std::vector<cmg::TriggerObject>')
         self.handles['muons'] = AutoHandle('cmgMuonSel','std::vector<cmg::Muon>')
         self.handles['jets'] = AutoHandle('cmgPFJetSel','std::vector<cmg::PFJet>')
         self.handles['jetLead'] = AutoHandle('cmgPFBaseJetLead','vector<cmg::BaseJet>')
@@ -457,12 +407,12 @@ class WAnalyzer( Analyzer ):
         self.handles['pumet'] = AutoHandle('puMet','std::vector<reco::PFMET>' )
         self.handles['pucmet'] = AutoHandle('pcMet','std::vector<reco::PFMET>' )
         self.mchandles['genpart'] =  AutoHandle('genParticlesPruned','std::vector<reco::GenParticle>')
-        self.handles['vertices'] =  AutoHandle('offlinePrimaryVertices','std::vector<reco::Vertex>')
+        self.handles['vertices'] =  AutoHandle('slimmedPrimaryVertices','std::vector<reco::Vertex>')
         self.handles['nJetsPtGt1'] =  AutoHandle('nJetsPtGt1','int')
-        self.handles['cmgTriggerObjectSel'] =  AutoHandle('cmgTriggerObjectSel','std::vector<cmg::TriggerObject>')
+        self.handles['TriggerResults'] = AutoHandle( ('TriggerResults','','HLT'), 'edm::TriggerResults' )
         self.handles['muons'] = AutoHandle('cmgMuonSel','std::vector<cmg::Muon>')
         self.handles['jets'] = AutoHandle('cmgPFJetSel','std::vector<cmg::PFJet>')
         self.handles['pfmet'] = AutoHandle('cmgPFMET','std::vector<cmg::BaseMET>' )
         self.mchandles['genpart'] =  AutoHandle('genParticlesPruned','std::vector<reco::GenParticle>')
-        self.mchandles['LHEweights'] =  AutoHandle('source','LHEEventProduct')
+        # self.mchandles['LHEweights'] =  AutoHandle('externalLHEProducer','LHEEventProduct')
 

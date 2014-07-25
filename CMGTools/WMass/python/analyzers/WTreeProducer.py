@@ -38,12 +38,14 @@ def bookJet( tree, pName ):
     var(tree, '{pName}_phi'.format(pName=pName))
 
 def bookLHE_weight( tree, pName ):
-    tree.vars['{pName}_weight'.format(pName=pName)]= my_n.zeros(400, dtype=float)
-    tree.tree.Branch('{pName}_weight'.format(pName=pName),tree.vars['{pName}_weight'.format(pName=pName)] ,'{pName}_weight'.format(pName=pName)+'[400]/D' )
+    # tree.vars['{pName}_weight'.format(pName=pName)]= my_n.zeros(400, dtype=float)
+    # tree.tree.Branch('{pName}_weight'.format(pName=pName),tree.vars['{pName}_weight'.format(pName=pName)] ,'{pName}_weight'.format(pName=pName)+'[400]/D' )
+    tree.vector('{pName}_weight'.format(pName=pName), 466)
     
 def bookMuonCovMatrix( tree, pName ):
-    tree.vars['{pName}CovMatrix'.format(pName=pName)]= my_n.zeros(9, dtype=float)
-    tree.tree.Branch('{pName}CovMatrix'.format(pName=pName),tree.vars['{pName}CovMatrix'.format(pName=pName)] ,'{pName}CovMatrix'.format(pName=pName)+'[9]/D' )
+    # tree.vars['{pName}CovMatrix'.format(pName=pName)]= my_n.zeros(9, dtype=float)
+    # tree.tree.Branch('{pName}CovMatrix'.format(pName=pName),tree.vars['{pName}CovMatrix'.format(pName=pName)] ,'{pName}CovMatrix'.format(pName=pName)+'[9]/D' )
+    tree.vector('{pName}CovMatrix'.format(pName=pName), 9)
 
 def fillParticle( tree, pName, particle ):
     fill(tree, '{pName}_pt'.format(pName=pName), particle.pt() )
@@ -70,14 +72,28 @@ def fillJet( tree, pName, particle ):
     fill(tree, '{pName}_eta'.format(pName=pName), particle.eta() )
     fill(tree, '{pName}_phi'.format(pName=pName), particle.phi() )
 
+# def fillMuonCovMatrix( tree, pName, covMatrix,event ):
+    # for i in range(0,9):
+        # # tree.vars['{pName}CovMatrix'.format(pName=pName)][i] = covMatrix[i]
+        # # if self.scalar:
+            # # for i,w in enumerate(event.pdfWeights[pdf]):
+                # # tr.fill('pdfWeight_%s_%d' % (pdf,i), w)
+                # tree.fill('{pName}CovMatrix'.format(pName=pName), covMatrix[i])
+        # # else:
+            # # tr.vfill('pdfWeight_%s' % pdf, event.pdfWeights[pdf])
 def fillMuonCovMatrix( tree, pName, covMatrix,event ):
-    for i in range(0,9):
-        tree.vars['{pName}CovMatrix'.format(pName=pName)][i] = covMatrix[i]
+    # vcovMatrix=[]
+    # for i in range(0,9):
+        # # tree.vars['{pName}CovMatrix'.format(pName=pName)][i] = covMatrix[i]
+      # vcovMatrix.append(covMatrix[i])
+    tree.vfill('{pName}CovMatrix'.format(pName=pName), covMatrix)
+
 
 def fillLHE_weight( tree, pName, LHE_weight,event ):
-    for i in range(0,min(len(LHE_weight),400)):
-        # print 'filling ',i,'with ',LHE_weight[i]
-        tree.vars['{pName}_weight'.format(pName=pName)][i] = LHE_weight[i]
+    # for i in range(0,min(len(LHE_weight),400)):
+        # # print 'filling ',i,'with ',LHE_weight[i]
+        # tree.vars['{pName}_weight'.format(pName=pName)][i] = LHE_weight[i]
+    tree.vfill('{pName}_weight'.format(pName=pName), LHE_weight)
 
 
 
@@ -110,7 +126,8 @@ class WTreeProducer( TreeAnalyzerNumpy ):
             'std::vector<reco::GenParticle>' )
     
       self.handles['vertices'] =  AutoHandle(
-          'offlinePrimaryVertices',
+          # 'offlinePrimaryVertices',
+          'slimmedPrimaryVertices',
           'std::vector<reco::Vertex>'
           )
       self.mchandles['pusi'] =  AutoHandle(
@@ -123,12 +140,13 @@ class WTreeProducer( TreeAnalyzerNumpy ):
     
     def declareVariables(self):
       tr = self.tree
-
-      var(tr, 'scalePDF')
-      var(tr, 'parton1_pdgId')
-      var(tr, 'parton1_x')
-      var(tr, 'parton2_pdgId')
-      var(tr, 'parton2_x')
+      
+      if (self.cfg_comp.isMC):
+        var(tr, 'scalePDF')
+        var(tr, 'parton1_pdgId')
+        var(tr, 'parton1_x')
+        var(tr, 'parton2_pdgId')
+        var(tr, 'parton2_x')
 
       var( tr, 'run', int)
       var( tr, 'lumi', int)
@@ -154,19 +172,25 @@ class WTreeProducer( TreeAnalyzerNumpy ):
       bookMET( tr, 'pfMetForRegression')
       bookMET( tr, 'pfmetraw')
 
-      var( tr, 'pfmetcov00')
-      var( tr, 'pfmetcov01')
-      var( tr, 'pfmetcov10')
-      var( tr, 'pfmetcov11')
+      # var( tr, 'pfmetcov00')
+      # var( tr, 'pfmetcov01')
+      # var( tr, 'pfmetcov10')
+      # var( tr, 'pfmetcov11')
 
       bookW( tr, 'W')
       var( tr, 'W_mt')
-      bookW( tr, 'WGen')
-      var( tr, 'WGen_rap')
-      var( tr, 'WGen_m')
-      var( tr, 'WGen_mt')
-      var( tr, 'u1')
-      var( tr, 'u2')
+      if (self.cfg_comp.isMC):
+        bookW( tr, 'WGen')
+        var( tr, 'WGen_rap')
+        var( tr, 'WGen_m')
+        var( tr, 'WGen_mt')
+        var( tr, 'NuGen_pt')
+        var( tr, 'NuGen_eta')
+        var( tr, 'NuGen_phi')
+        var( tr, 'NuGen_mass')
+          
+      # var( tr, 'u1')
+      # var( tr, 'u2')
 
       bookParticle(tr, 'Mu')
       var(tr, 'Mu_dxy')
@@ -176,22 +200,24 @@ class WTreeProducer( TreeAnalyzerNumpy ):
       var(tr, 'MuRelIso')
       var(tr, 'pt_vis')
       var(tr, 'phi_vis')
-      bookParticle(tr, 'MuGen')
-      bookParticle(tr, 'MuGenStatus1')
-      var(tr, 'MuDRGenP')
+      if (self.cfg_comp.isMC):
+        bookParticle(tr, 'MuGen')
+        bookParticle(tr, 'MuGenStatus1')
+        var(tr, 'MuDRGenP')
+        bookParticle(tr, 'NuGen')
+        var(tr, 'FSRWeight')
+        if (hasattr(self.cfg_ana,'storeLHE_weight') and self.cfg_ana.storeLHE_weight):
+          # print "booking tree"
+          bookLHE_weight(tr,'LHE' )
       
-      bookParticle(tr, 'NuGen')
-      var(tr, 'FSRWeight')
+      
       
       bookMuonCovMatrix(tr,'Mu' )
       
-      if (hasattr(self.cfg_ana,'storeLHE_weight') and self.cfg_ana.storeLHE_weight):
-        # print "booking tree"
-        bookLHE_weight(tr,'LHE' )
-      
       bookJet(tr, 'Jet_leading')
-
-      var(tr, 'genWLept')
+      
+      if (self.cfg_comp.isMC):
+        var(tr, 'genWLept')
        
     def process(self, iEvent, event):
         
@@ -212,7 +238,11 @@ class WTreeProducer( TreeAnalyzerNumpy ):
           fillParticle(tr, 'MuGen',event.genMu[0])
           fillParticle(tr, 'MuGenStatus1', event.genMuStatus1[0])      
           fill(tr, 'MuDRGenP',event.muGenDeltaRgenP)
-          fillParticle(tr, 'NuGen', event.genNu[0])
+          # fillParticle(tr, 'NuGen', event.genNu[0])
+          fill(tr, 'NuGen_pt', event.genNu_p4.Pt())
+          fill(tr, 'NuGen_eta', event.genNu_p4.Eta())
+          fill(tr, 'NuGen_phi', event.genNu_p4.Phi())
+          fill(tr, 'NuGen_mass', event.genNu_p4.M())
           
           if (hasattr(self.cfg_ana,'storeLHE_weight') and self.cfg_ana.storeLHE_weight):
             # print "filling tree"
@@ -224,8 +254,8 @@ class WTreeProducer( TreeAnalyzerNumpy ):
                       
           fillW( tr, 'W',event.W4V)
           fill(tr, 'W_mt', event.W4V_mt)
-          fill(tr, 'u1', event.u1)
-          fill(tr, 'u2', event.u2)
+          # fill(tr, 'u1', event.u1)
+          # fill(tr, 'u2', event.u2)
 
           fillParticle(tr, 'Mu', event.selMuons[0])
           if ( event.selMuons[0].isGlobalMuon() or event.selMuons[0].isTrackerMuon() ) and event.passedVertexAnalyzer:
@@ -271,14 +301,15 @@ class WTreeProducer( TreeAnalyzerNumpy ):
           fill( tr, 'evtHasGoodVtx', event.passedVertexAnalyzer)
           fill( tr, 'Vtx_ndof', event.goodVertices[0].ndof())
           # fill( tr, 'firstVtxIsGood', event.firstVtxIsGoodVertices) # REQUIRES DEFINITION IN CMGTools/RootTools/python/analyzers/VertexAnalyzer.py
-          fill( tr, 'evtHasTrg', event.passedTriggerAnalyzer)
+          # fill( tr, 'evtHasTrg', event.passedTriggerAnalyzer)
+          fill( tr, 'evtHasTrg', True)
           fill( tr, 'evtWSel', event.WGoodEvent)
           fillMET(tr, 'pfmet', event.pfmet)
           pfMetSignificance = self.handles['pfMetSignificance'].product().significance()
-          fill( tr, 'pfmetcov00', pfMetSignificance(0,0))
-          fill( tr, 'pfmetcov01', pfMetSignificance(0,1))
-          fill( tr, 'pfmetcov10', pfMetSignificance(1,0))
-          fill( tr, 'pfmetcov11', pfMetSignificance(1,1))
+          # fill( tr, 'pfmetcov00', pfMetSignificance(0,0))
+          # fill( tr, 'pfmetcov01', pfMetSignificance(0,1))
+          # fill( tr, 'pfmetcov10', pfMetSignificance(1,0))
+          # fill( tr, 'pfmetcov11', pfMetSignificance(1,1))
 
           event.pfmetraw = self.handles['pfMetraw'].product()[0]
           event.nopumet = self.handles['nopuMet'].product()[0]

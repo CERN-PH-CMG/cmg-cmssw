@@ -2,21 +2,25 @@ import copy
 import os 
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
-from CMGTools.WMass.triggerMap import pathsAndFilters
+from CMGTools.WMass.triggerMap import triggers_mu
 
 jsonAna = cfg.Analyzer(
     'JSONAnalyzer',
     )
 
 triggerAna = cfg.Analyzer(
-    'TriggerAnalyzer',
-     keepFailingEvents = False
+     'triggerBitFilter',
+     # verbose = True,
     )
 
 vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
-    fixedWeight = 1.,
-    keepFailingEvents = False
+    allVertices = 'offlinePrimaryVertices',
+    goodVertices = 'offlinePrimaryVertices',
+    vertexWeight = None,
+    fixedWeight = 1,
+    verbose = False,
+    keepFailingEvents = False,
     )
 
 WAna = cfg.Analyzer(
@@ -29,7 +33,7 @@ WAna = cfg.Analyzer(
     iso = 0.5,
     savegenp = True,
     verbose = True,
-    triggerMap = pathsAndFilters,
+    triggerBits = {'SingleMu' : triggers_mu},
     keepFailingEvents = False
     )
 
@@ -47,12 +51,14 @@ ZAna = cfg.Analyzer(
     iso = 0.5,
     savegenp = True,
     verbose = True,
-    triggerMap = pathsAndFilters,
+    triggerBits = {'SingleMu' : triggers_mu},
     keepFailingEvents = False
     )
 
 ZtreeProducer = cfg.Analyzer(
-    'ZTreeProducer'
+    'ZTreeProducer',
+    storeNeutralCMGcandidates = False,
+    # storeCMGcandidates = True,
     )
 
 genAna = cfg.Analyzer(
@@ -65,26 +71,37 @@ sequence = cfg.Sequence( [
     jsonAna,
     triggerAna,
     vertexAna,
-    WAna,
-    WtreeProducer,
+    # WAna,
+    # WtreeProducer,
     ZAna,
-    ZtreeProducer
+    ZtreeProducer,
    ] )
 
 from CMGTools.H2TauTau.proto.samples.ewk import DYJets
 from CMGTools.H2TauTau.proto.samples.getFiles import getFiles
 
 # DYJets.files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B', 'cmgtools', '.*root')
-DYJets.files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START44_V9B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B', 'cmgtools', '.*root')
-DYJets.triggers = ["HLT_IsoMu24_v1","HLT_IsoMu24_v2","HLT_IsoMu24_v3","HLT_IsoMu24_v4","HLT_IsoMu24_v5","HLT_IsoMu24_v6","HLT_IsoMu24_v7",\
-                   "HLT_IsoMu24_v8","HLT_IsoMu24_v9","HLT_IsoMu24_v10","HLT_IsoMu24_v11","HLT_IsoMu24_v12","HLT_IsoMu24_v13","HLT_IsoMu24_v14",\
-                   "HLT_IsoMu24_eta2p1_v1","HLT_IsoMu24_eta2p1_v2","HLT_IsoMu24_eta2p1_v3","HLT_IsoMu24_eta2p1_v4","HLT_IsoMu24_eta2p1_v5",\
-                   "HLT_IsoMu24_eta2p1_v6","HLT_IsoMu24_eta2p1_v7","HLT_IsoMu24_eta2p1_v8"
-                   ]
+DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_17_0', 'cmgtools', '.*root')
+DYJets.triggers = triggers_mu
 
-selectedComponents = [DYJets]
 
 DYJets.splitFactor = 750
+
+DYJets2 = copy.deepcopy(DYJets)
+
+# selectedComponents = [DYJets,DYJets2]
+# DYJets.files = DYJets.files[:1250]
+# DYJets2.files = DYJets2.files[1250:]
+
+# ONE AT THE TIME
+selectedComponents = [DYJets]
+# selectedComponents = [DYJets2]
+
+# # TEST
+# selectedComponents = [DYJets]
+# DYJets.files = DYJets.files[:10]
+# DYJets.splitFactor = 1
+
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )

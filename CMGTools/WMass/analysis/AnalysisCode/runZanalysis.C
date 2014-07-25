@@ -10,7 +10,7 @@ using namespace std;
 int main(int argc, char ** argv) 
 {
 
-  const int Nvars=27;
+  const int Nvars=29;
   TString original, tokenized[Nvars];
   original = Form("%s",argv[1]);
       
@@ -75,6 +75,10 @@ int main(int argc, char ** argv)
   if(GetEntriesOrNchunck>-1) cout << " use_PForNoPUorTKmet= " << use_PForNoPUorTKmet;
   int use_syst_ewk_Alcaraz=tokenized[26].Atof();
   if(GetEntriesOrNchunck>-1) cout << " use_syst_ewk_Alcaraz= " << use_syst_ewk_Alcaraz;
+  int gen_mass_value_MeV=tokenized[27].Atof();
+  if(GetEntriesOrNchunck>-1) cout << " gen_mass_value_MeV= " << gen_mass_value_MeV;
+  int contains_LHE_weights=tokenized[28].Atof();
+  if(GetEntriesOrNchunck>-1) cout << " contains_LHE_weights= " << contains_LHE_weights;
   if(GetEntriesOrNchunck>-1) cout << endl;
   
 //////////////  
@@ -84,10 +88,10 @@ int main(int argc, char ** argv)
   // zDATA.Loop(IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),run_BuildEvByEvTemplates,useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight);
 
 //////////////
-  if(GetEntriesOrNchunck>-1) cout << "processing line "<< Form("Zanalysis zDATA(\"%s\",%f,%d)",ZfileDATA.Data(),ZfileDATA_lumi_SF,sample.Contains("DYJetsSig")?useAlsoGenPforSig:0) << endl;
-  Zanalysis zDATA(ZfileDATA.Data(),ZfileDATA_lumi_SF,sample.Contains("DYJetsSig")?useAlsoGenPforSig:0);
+  if(GetEntriesOrNchunck>-1) cout << "processing line "<< Form("Zanalysis zDATA(\"%s\",%f,%d)",ZfileDATA.Data(),ZfileDATA_lumi_SF,(sample.Contains("DYJetsPow") || sample.Contains("DYJetsMadSig"))?useAlsoGenPforSig:0) << endl;
+  Zanalysis zDATA(ZfileDATA.Data(),ZfileDATA_lumi_SF,(sample.Contains("DYJetsPow") || sample.Contains("DYJetsMadSig"))?useAlsoGenPforSig:0);
                              
-  if(GetEntriesOrNchunck>-1) cout << "processing line "<< Form("zDATA.Loop(%d,%d,\"../%s\",%d,%d,%d,%d,%d,%d,\"%s\",%d,%d,%d,%d,%d,%d,%d)",IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight,usePhiMETCorr,useRecoilCorr,RecoilCorrResolutionNSigmaU1,RecoilCorrScaleNSigmaU1,RecoilCorrResolutionNSigmaU2,use_PForNoPUorTKmet,use_syst_ewk_Alcaraz) << endl;
+  if(GetEntriesOrNchunck>-1) cout << "processing line "<< Form("zDATA.Loop(%d,%d,\"../%s\",%d,%d,%d,%d,%d,%d,\"%s\",%d,%d,%d,%d,%d,%d,%d)",IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight,usePhiMETCorr,useRecoilCorr,RecoilCorrResolutionNSigmaU1,RecoilCorrScaleNSigmaU1,RecoilCorrResolutionNSigmaU2,use_PForNoPUorTKmet,use_syst_ewk_Alcaraz,gen_mass_value_MeV,contains_LHE_weights) << endl;
   int nEntries;
   if(GetEntriesOrNchunck==-1){
     nEntries = zDATA.NumEntries();
@@ -96,7 +100,7 @@ int main(int argc, char ** argv)
   }
   
   cout<< "chunk " << GetEntriesOrNchunck << " Entry_ini= " << Entry_ini << " Entry_fin= " << Entry_fin << endl;
-  zDATA.Loop(GetEntriesOrNchunck,Entry_ini,Entry_fin,IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),run_BuildEvByEvTemplates,useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight,usePhiMETCorr,useRecoilCorr,RecoilCorrResolutionNSigmaU1,RecoilCorrScaleNSigmaU1,RecoilCorrResolutionNSigmaU2,use_PForNoPUorTKmet,use_syst_ewk_Alcaraz);
+  zDATA.Loop(GetEntriesOrNchunck,Entry_ini,Entry_fin,IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),run_BuildEvByEvTemplates,useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight,usePhiMETCorr,useRecoilCorr,RecoilCorrResolutionNSigmaU1,RecoilCorrScaleNSigmaU1,RecoilCorrResolutionNSigmaU2,use_PForNoPUorTKmet,use_syst_ewk_Alcaraz,gen_mass_value_MeV,contains_LHE_weights);
   TString chunk_str = GetEntriesOrNchunck>0? Form("_chunk%d",GetEntriesOrNchunck) : "";
   TString outputfilename = run_BuildEvByEvTemplates ? "WEvByEvTemplates" : "ZanalysisOnDATA";
   if(GetEntriesOrNchunck==0)
@@ -106,43 +110,3 @@ int main(int argc, char ** argv)
   
 }
 
-
-// void runZanalysis(TString ZfileDATA, double ZfileDATA_lumi_SF, TString sample, int useAlsoGenPforSig, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString filename_outputdir, int useMomentumCorr, int smearRochCorrByNsigma, int useEffSF, int usePileupSF, int run_BuildEvByEvTemplates, int controlplots)
-// {
-
-  // // gSystem->CompileMacro("MuScleFitCorrector.cc");
-  // // gSystem->CompileMacro("rochcor_44X_v3.C");
-  // // gSystem->CompileMacro("rochcor_42X.C");
-  // // gSystem->CompileMacro("Zanalysis.C","kO-");
-  // gROOT->ProcessLine(".L rochcor_44X_v3.C+");
-  // gROOT->ProcessLine(".L Zanalysis.C+");
-  // cout << "processing line "<< Form("Zanalysis zDATA(\"%s\",%f,%d)",ZfileDATA.Data(),ZfileDATA_lumi_SF,sample.Contains("DYJetsSig")?useAlsoGenPforSig:0) << endl;
-  // gROOT->ProcessLine(Form("Zanalysis zDATA(\"%s\",%f,%d)",ZfileDATA.Data(),ZfileDATA_lumi_SF,sample.Contains("DYJetsSig")?useAlsoGenPforSig:0));
-  // cout << Form("zDATA.Loop(%d,%d,\"../%s\",%d,%d,%d,%d,%d,%d,\"%s\")",IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),run_BuildEvByEvTemplates,useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePileupSF,controlplots,sample.Data()) << endl;
-  // gROOT->ProcessLine(Form("zDATA.Loop(%d,%d,\"../%s\",%d,%d,%d,%d,%d,%d,\"%s\")",IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),run_BuildEvByEvTemplates,useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePileupSF,controlplots,sample.Data()));
-
-  // TString outputfilename = run_BuildEvByEvTemplates ? "WEvByEvTemplates" : "ZanalysisOnDATA";
-  // gROOT->ProcessLine(Form(".! mv ../%s/Zanalysis.root ../%s/%s.root",filename_outputdir.Data(),filename_outputdir.Data(),outputfilename.Data()));
-  // gROOT->ProcessLine(Form(".! cp Zanalysis.\* ../%s/",filename_outputdir.Data()));
-  // // // if(IS_MC_CLOSURE_TEST and sample.contains("DYJetsSig")){
-    // // // cout << Form("making direcory ../JobOutputs/%s/%s",foldername.Data(),Form("test_numbers_%s",sample[DATA].Data())) << endl;
-    // // // gSystem->MakeDirectory(Form("../JobOutputs/%s/%s",foldername.Data(),Form("test_numbers_%s",sample[DATA].Data())));
-    // // // TString filename_outputdir2 = Form("JobOutputs/%s/%s",foldername.Data(),Form("test_numbers_%s",sample[DATA].Data()));
-    // // // cout << Form("zDATA.Loop(%d,%d,\"../%s\",0,%d,%d,%d,%d,\"%s\")",IS_MC_CLOSURE_TEST,1,filename_outputdir2.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePileupSF,sample[DATA].Data()) << endl;
-    // // // gROOT->ProcessLine(Form("zDATA.Loop(%d,%d,\"../%s\",0,%d,%d,%d,%d,\"%s\")",IS_MC_CLOSURE_TEST,1,filename_outputdir2.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePileupSF,sample[DATA].Data()));
-    // // // gROOT->ProcessLine(Form(".! mv ../%s/Zanalysis.root ../%s/ZanalysisOnDATA.root",filename_outputdir2.Data(),filename_outputdir2.Data()));
-  // // // }
-
-
-
-
-  // // gSystem->CompileMacro("Zanalysis.C");
-  // // cout << "processing line "<< Form("Zanalysis zDATA(\"%s\",%f,%d)",WfileDATA.Data(),WfileDATA_lumi_SF,sample.Contains("WJetsSig")?useAlsoGenPforSig:0) << endl;
-  // // // gROOT->ProcessLine(Form("Zanalysis zDATA(\"%s\",%f,%d); zDATA.Loop(%d,%d,\"../%s\",%d,%d,%d,%d,\"%s\")",WfileDATA.Data(),WfileDATA_lumi_SF,sample.Contains("WJetsSig")?useAlsoGenPforSig:0,IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePileupSF,sample.Data()));
-  // // gROOT->ProcessLine(Form("Zanalysis zDATA(\"%s\",%f,%d)",WfileDATA.Data(),WfileDATA_lumi_SF,sample.Contains("WJetsSig")?useAlsoGenPforSig:0));
-  // // cout << "processing line "<< Form("zDATA.Loop(%d,%d,\"../%s\",%d,%d,%d,%d,\"%s\")",IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePileupSF,sample.Data()) << endl;
-  // // gROOT->ProcessLine(Form("zDATA.Loop(%d,%d,\"../%s\",%d,%d,%d,%d,\"%s\")",IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePileupSF,sample.Data()));
-  // // gROOT->ProcessLine(Form(".! mv ../%s/Zanalysis.root ../%s/WanalysisOnDATA.root",filename_outputdir.Data(),filename_outputdir.Data()));
-  // // gROOT->ProcessLine(Form(".! cp Zanalysis.\* ../JobOutputs/%s/",filename_outputdir.Data()));
-
-// }

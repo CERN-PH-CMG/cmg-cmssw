@@ -26,11 +26,15 @@ if __name__ == '__main__':
 
     (options,args) = parser.parse_args()
 
-    if len(args)!=1:
-        print 'provide exactly one directory in argument.'
+    if len(args)>2:
+        print 'provide at most 2 directory as arguments: first the source, then the destination (optional)'
         sys.exit(1)
 
     dir = args[0]
+    if(len(args)>1):
+      odir = args[1]
+    else:
+      odir='./'
 
-    haddChunks(dir, options.remove, options.clean)
+    haddChunks(dir, options.remove, options.clean, odir)
 

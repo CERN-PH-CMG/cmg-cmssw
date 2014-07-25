@@ -10,7 +10,7 @@ using namespace std;
 int main(int argc, char ** argv) 
 {
 
-  const int Nvars=26;
+  const int Nvars=28;
   TString original, tokenized[Nvars];
   original = Form("%s",argv[1]);
       
@@ -73,11 +73,15 @@ int main(int argc, char ** argv)
   if(GetEntriesOrNchunck>-1) cout << " use_PForNoPUorTKmet= " << use_PForNoPUorTKmet;
   int use_syst_ewk_Alcaraz=tokenized[25].Atof();
   if(GetEntriesOrNchunck>-1) cout << " use_syst_ewk_Alcaraz= " << use_syst_ewk_Alcaraz;
+  int gen_mass_value_MeV=tokenized[26].Atof();
+  if(GetEntriesOrNchunck>-1) cout << " gen_mass_value_MeV= " << gen_mass_value_MeV;
+  int contains_LHE_weights=tokenized[27].Atof();
+  if(GetEntriesOrNchunck>-1) cout << " contains_LHE_weights= " << contains_LHE_weights;
   if(GetEntriesOrNchunck>-1) cout << endl;
   
-  if(GetEntriesOrNchunck>-1) cout << "processing line "<< Form("Wanalysis wDATA(\"%s\",%f,%d)",WfileDATA.Data(),WfileDATA_lumi_SF,sample.Contains("WJetsSig")?useAlsoGenPforSig:0) << endl;
-  Wanalysis wDATA(WfileDATA.Data(),WfileDATA_lumi_SF,sample.Contains("WJetsSig")?useAlsoGenPforSig:0);
-  if(GetEntriesOrNchunck>-1) cout << "processing line "<< Form("wDATA.Loop(%d,%d,\"../%s\",%d,%d,%d,%d,%d,%d,\"%s\",%d,%d,%d,%d,%d)",IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight,usePhiMETCorr,useRecoilCorr,RecoilCorrResolutionNSigmaU1,RecoilCorrScaleNSigmaU1,RecoilCorrResolutionNSigmaU2,use_PForNoPUorTKmet,use_syst_ewk_Alcaraz) << endl;
+  if(GetEntriesOrNchunck>-1) cout << "processing line "<< Form("Wanalysis wDATA(\"%s\",%f,%d)",WfileDATA.Data(),WfileDATA_lumi_SF,sample.Contains("WJets") && !sample.Contains("Fake")?useAlsoGenPforSig:0) << endl;
+  Wanalysis wDATA(WfileDATA.Data(),WfileDATA_lumi_SF,sample.Contains("WJets") && !sample.Contains("Fake")?useAlsoGenPforSig:0);
+  if(GetEntriesOrNchunck>-1) cout << "processing line "<< Form("wDATA.Loop(%d,%d,\"../%s\",%d,%d,%d,%d,%d,%d,\"%s\",%d,%d,%d,%d,%d)",IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight,usePhiMETCorr,useRecoilCorr,RecoilCorrResolutionNSigmaU1,RecoilCorrScaleNSigmaU1,RecoilCorrResolutionNSigmaU2,use_PForNoPUorTKmet,use_syst_ewk_Alcaraz,gen_mass_value_MeV,contains_LHE_weights) << endl;
   int nEntries;
   if(GetEntriesOrNchunck==-1){
     nEntries = wDATA.NumEntries();
@@ -86,35 +90,10 @@ int main(int argc, char ** argv)
   }
   
   cout<< "chunk " << GetEntriesOrNchunck << " Entry_ini= " << Entry_ini << " Entry_fin= " << Entry_fin << endl;
-  wDATA.Loop(GetEntriesOrNchunck,Entry_ini,Entry_fin,IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight,usePhiMETCorr,useRecoilCorr,RecoilCorrResolutionNSigmaU1,RecoilCorrScaleNSigmaU1,RecoilCorrResolutionNSigmaU2,use_PForNoPUorTKmet,use_syst_ewk_Alcaraz);
+  wDATA.Loop(GetEntriesOrNchunck,Entry_ini,Entry_fin,IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight,usePhiMETCorr,useRecoilCorr,RecoilCorrResolutionNSigmaU1,RecoilCorrScaleNSigmaU1,RecoilCorrResolutionNSigmaU2,use_PForNoPUorTKmet,use_syst_ewk_Alcaraz,gen_mass_value_MeV,contains_LHE_weights);
   TString chunk_str = GetEntriesOrNchunck>0? Form("_chunk%d",GetEntriesOrNchunck) : "";
   if(GetEntriesOrNchunck==0)
     gROOT->ProcessLine(Form(".! mv ../%s/Wanalysis%s.root ../%s/WanalysisOnDATA.root",filename_outputdir.Data(),chunk_str.Data(),filename_outputdir.Data()));
   gROOT->ProcessLine(Form(".! cp Wanalysis.* ../%s/",filename_outputdir.Data()));
 
 }
-
-// void runWanalysis(TString WfileDATA, double WfileDATA_lumi_SF, TString sample, int useAlsoGenPforSig, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString filename_outputdir, int useMomentumCorr, int smearRochCorrByNsigma, int useEffSF, int usePileupSF, int controlplots)
-// {
-
-  // // gSystem->CompileMacro("MuScleFitCorrector.cc");
-  // gSystem->CompileMacro("rochcor_44X_v3.C");
-  // // gSystem->CompileMacro("rochcor_42X.C");
-  // gSystem->CompileMacro("Wanalysis.C");
-  // cout << "processing line "<< Form("Wanalysis wDATA(\"%s\",%f,%d)",WfileDATA.Data(),WfileDATA_lumi_SF,sample.Contains("WJetsSig")?useAlsoGenPforSig:0) << endl;
-  // // gROOT->ProcessLine(Form("Wanalysis wDATA(\"%s\",%f,%d); wDATA.Loop(%d,%d,\"../%s\",%d,%d,%d,%d,\"%s\")",WfileDATA.Data(),WfileDATA_lumi_SF,sample.Contains("WJetsSig")?useAlsoGenPforSig:0,IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePileupSF,sample.Data()));
-  // gROOT->ProcessLine(Form("Wanalysis wDATA(\"%s\",%f,%d)",WfileDATA.Data(),WfileDATA_lumi_SF,sample.Contains("WJetsSig")?useAlsoGenPforSig:0));
-  // cout << "processing line "<< Form("wDATA.Loop(%d,%d,\"../%s\",%d,%d,%d,%d,%d,\"%s\")",IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePileupSF,controlplots,sample.Data()) << endl;
-  // gROOT->ProcessLine(Form("wDATA.Loop(%d,%d,\"../%s\",%d,%d,%d,%d,%d,\"%s\")",IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePileupSF,controlplots,sample.Data()));
-  // gROOT->ProcessLine(Form(".! mv ../%s/Wanalysis.root ../%s/WanalysisOnDATA.root",filename_outputdir.Data(),filename_outputdir.Data()));
-  // gROOT->ProcessLine(Form(".! cp Wanalysis.\* ../%s/",filename_outputdir.Data()));
-  // // if(IS_MC_CLOSURE_TEST && sample.Contains("WJetsSig")){
-    // // cout << Form("making direcory ../JobOutputs/%s/%s",foldername.Data(),Form("test_numbers_%s",sample[DATA].Data())) << endl;
-    // // gSystem->MakeDirectory(Form("../JobOutputs/%s/%s",foldername.Data(),Form("test_numbers_%s",sample[DATA].Data())));
-    // // TString filename_outputdir2 = Form("JobOutputs/%s/%s",foldername.Data(),Form("test_numbers_%s",sample[DATA].Data()));
-    // // cout << Form("wDATA.Loop(%d,%d,\"../%s\",%d,%d,%d,%d,\"%s\")",IS_MC_CLOSURE_TEST,1,filename_outputdir2.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePileupSF,sample[DATA].Data()) << endl;
-    // // gROOT->ProcessLine(Form("wDATA.Loop(%d,%d,\"../%s\",%d,%d,%d,%d,\"%s\")",IS_MC_CLOSURE_TEST,1,filename_outputdir2.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePileupSF,sample[DATA].Data()));
-    // // gROOT->ProcessLine(Form(".! mv ../%s/Wanalysis.root ../%s/WanalysisOnDATA.root",filename_outputdir2.Data(),filename_outputdir2.Data()));
-  // // }
-
-// }

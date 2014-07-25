@@ -235,7 +235,7 @@ void common_stuff::makeRatioHisto1D(std::string title1, std::string title2, std:
 ///////////////////////////////////////////////////////////////
 
 
-void common_stuff::plotAndSaveHisto1D_stack(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEWK, TFile*fMCTT, TFile*fMCQCD, TFile*fDATA, TString HistoName_st, int logx, int logy, int logz, int scaleMCtoDATA, TString title,double xmin, double xmax, int rebinfactor, int PullOrRatio=0){
+void common_stuff::plotAndSaveHisto1D_stack(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEWK, TFile*fMCTT, TFile*fMCQCD, TFile*fDATA, TString HistoName_st, int logx, int logy, int logz, int scaleMCtoDATA, TString title,double xmin, double xmax, int rebinfactor, int PullOrRatio){
 
   std::cout << "retrieving hMCsig= " << HistoName_st.Data() << std::endl;
   TH1D*hMCsig=(TH1D*)fMCsig->Get(HistoName_st.Data());
