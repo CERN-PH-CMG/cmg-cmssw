@@ -346,13 +346,16 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               //------------------------------------------------------------------------------------------------
               // Apply recoil corrections
               //------------------------------------------------------------------------------------------------
-              int vtxBin=nvtx;
-              if(nvtx==0) vtxBin=1;
-              if(nvtx>20) vtxBin=20;
-              if(nvtx>18 && runopt==0) vtxBin=18;
-              // if(j==0 && runopt==0 && nvtx>17) cout << "runopt= " << runopt << " nvtx= " << nvtx << " vtxBin= " << vtxBin << endl;
-              // continue;
-              if(use_InclusiveNVTX_RecoilCorr && use_PForNoPUorTKmet==2) vtxBin=0;
+              int rapBin=1;
+              if(fabs(WGen_rap)<1) rapBin=1;
+              if(fabs(WGen_rap)>=1 && fabs(WGen_rap)<=1.25) rapBin=125;
+              if(fabs(WGen_rap)>=1.25 && fabs(WGen_rap)<=1.5) rapBin=150;
+              if(fabs(WGen_rap)>=1.5 && fabs(WGen_rap)<=1.75) rapBin=175;
+              if(fabs(WGen_rap)>=1.75 && fabs(WGen_rap)<=2.0) rapBin=200;
+              if(fabs(WGen_rap)>2.0) rapBin=201;
+
+              int vtxBin=rapBin;
+
               
               double pfmet_bla,pfmetphi_bla,pfmet_blaCentralCorr,pfmetphi_blaCentralCorr;
               if(use_PForNoPUorTKmet==0){
@@ -413,6 +416,10 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 pfmetphi_bla = pfmet_phicorr.second;
               }
               
+	      //------------------------------------------------------------------------------------------------
+              // Apply muon corrections
+	      //------------------------------------------------------------------------------------------------
+
               //use rochester correction if required
               if(useMomentumCorr==1){ // use Rochester Momentum scale corrections if required
                 if(IS_MC_CLOSURE_TEST || isMCorDATA==0){
@@ -453,6 +460,11 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               
               int wmass1 = iWmass*1e3;
 
+
+              //------------------------------------------------------------------------------------------------
+              // APPLY SELECTION 
+              //------------------------------------------------------------------------------------------------ 
+
               // good event with mu from W candidate within acceptance
               if( /* Z_mass>50  not possible to apply something similar to Z mass cut*/
                   TMath::Abs(muCentralCorr.Eta())<WMass::etaMaxMuons[i] && muCentralCorr.Pt()>WMass::sel_xmin[0]
@@ -473,20 +485,24 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
                   for(int k=0;k<3;k++)
                     if(m==0 && WMass::PDF_members<2) common_stuff::plot1D(Form("hW%s_%sNonScaled_5_RecoCut_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass),
-                                    Mu_var_NotScaled[k], evt_weight*Mu_tight_muon_SF, h_1d, 50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
-
-                    // PLOT OF MET WITHIN THE WHOLE RANGE
-                    if(WCentralCorr.Pt()<WMass::WpTcut && m==0 && j==WMass::WMassNSteps && WMass::PDF_members<2){
-                      if(
-                        Mu_var_NotScaledCentralCorr[0] > WMass::sel_xmin[0] && Mu_var_NotScaledCentralCorr[0] < WMass::sel_xmax[0]
-                        && Mu_var_NotScaledCentralCorr[1] > WMass::sel_xmin[1] && Mu_var_NotScaledCentralCorr[1] < WMass::sel_xmax[1]
-                        // && Mu_var_NotScaled[2] > WMass::sel_xmin[2] && Mu_var_NotScaled[2] < WMass::sel_xmax[2]
+									  Mu_var_NotScaled[k], evt_weight*Mu_tight_muon_SF, h_1d, 50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
+		  
+		  // PLOT OF MET WITHIN THE WHOLE RANGE
+		  if(WCentralCorr.Pt()<WMass::WpTcut && m==0 && j==WMass::WMassNSteps && WMass::PDF_members<2){
+		    if(
+		       Mu_var_NotScaledCentralCorr[0] > WMass::sel_xmin[0] && Mu_var_NotScaledCentralCorr[0] < WMass::sel_xmax[0]
+		       && Mu_var_NotScaledCentralCorr[1] > WMass::sel_xmin[1] && Mu_var_NotScaledCentralCorr[1] < WMass::sel_xmax[1]
+		       // && Mu_var_NotScaled[2] > WMass::sel_xmin[2] && Mu_var_NotScaled[2] < WMass::sel_xmax[2]
                        )
-                        common_stuff::plot1D(Form("hW%s_%sNonScaled_SelRange_8_JetCut_pdf%d-0%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,toys_str.Data(),eta_str.Data(),jWmass),
-                          Mu_var_NotScaled[2] ,evt_weight*Mu_tight_muon_SF, h_1d, 
-                          50*(WMass::sel_xmax[2]-WMass::sel_xmin[2])/(WMass::fit_xmax[2]-WMass::fit_xmin[2]), WMass::sel_xmin[2],WMass::sel_xmax[2] );
-                    }
-
+		      common_stuff::plot1D(Form("hW%s_%sNonScaled_SelRange_8_JetCut_pdf%d-0%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,toys_str.Data(),eta_str.Data(),jWmass),
+					   Mu_var_NotScaled[2] ,evt_weight*Mu_tight_muon_SF, h_1d, 
+					   50*(WMass::sel_xmax[2]-WMass::sel_xmin[2])/(WMass::fit_xmax[2]-WMass::fit_xmin[2]), WMass::sel_xmin[2],WMass::sel_xmax[2] );
+		  }
+		  
+		  //------------------------------------------------------------------------------------------------
+		  // APPLY MET CUT
+		  //------------------------------------------------------------------------------------------------
+		  
                   if(pfmet_blaCentralCorr>WMass::sel_xmin[2]/* WMass::fit_xmin[2] *//* 25 */){
                   
                     if(controlplots && m==0 && i==0 && j==0 && WMass::PDF_members<2){
@@ -499,13 +515,25 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                       if(m==0 && WMass::PDF_members<2) common_stuff::plot1D(Form("hW%s_%sNonScaled_6_METCut_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass),
                                     Mu_var_NotScaled[k], evt_weight*Mu_tight_muon_SF, h_1d, 50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
                     
+		    //------------------------------------------------------------------------------------------------
+ 		    // APPLY RECOIL CUT: 
+ 		    //------------------------------------------------------------------------------------------------
+ 
                     if(WCentralCorr.Pt()<WMass::WpTcut){ // DEFAULT IS WMass::WpTcut
                       for(int k=0;k<3;k++)
                         if(m==0 && WMass::PDF_members<2) common_stuff::plot1D(Form("hW%s_%sNonScaled_7_RecoilCut_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass),
-                                    Mu_var_NotScaled[k], evt_weight*Mu_tight_muon_SF, h_1d, 50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
+									      Mu_var_NotScaled[k], evt_weight*Mu_tight_muon_SF, h_1d, 50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
                       
-                      
-                      // PLOTS OF FIT VARIABLES WITHIN THE WHOLE RANGE
+		      if(controlplots && m==0 && i==0 && j==0 && WMass::PDF_members<2){
+			common_stuff::plot1D("hnvtx_7_RecoilCut", nvtx, evt_weight, h_1d, 50,0,50 );
+			if(IS_MC_CLOSURE_TEST || isMCorDATA==0)
+			  common_stuff::plot1D("hPileUp_Fall11_7_RecoilCut", npu, evt_weight, h_1d, 50,0,50 );
+		      }
+
+                      //------------------------------------------------------------------------------------------------
+		      //  PLOTS OF FIT VARIABLES WITHIN THE WHOLE RANGE
+		      //------------------------------------------------------------------------------------------------
+ 
                       if(m==0 && j==WMass::WMassNSteps && WMass::PDF_members<2){
                         if(
                             // Mu_var_NotScaled[0] > WMass::sel_xmin[0] && Mu_var_NotScaled[0] < WMass::sel_xmax[0] && 
@@ -525,20 +553,26 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               50*(WMass::sel_xmax[1]-WMass::sel_xmin[1])/(WMass::fit_xmax[1]-WMass::fit_xmin[1]), WMass::sel_xmin[1],WMass::sel_xmax[1] );
                       }
                       
-                      // if(true){ // no jet pt cut at the moment
+                      //------------------------------------------------------------------------------------------------
+                      // APPLY FIT RANGE BOX -- based on central correction 
+                      //------------------------------------------------------------------------------------------------ 
+
                       if(
-                          Mu_var_NotScaledCentralCorr[0] > WMass::sel_xmin[0] && Mu_var_NotScaledCentralCorr[0] < WMass::sel_xmax[0]
-                          && Mu_var_NotScaledCentralCorr[1] > WMass::sel_xmin[1] && Mu_var_NotScaledCentralCorr[1] < WMass::sel_xmax[1]
-                          && Mu_var_NotScaledCentralCorr[2] > WMass::sel_xmin[2] && Mu_var_NotScaledCentralCorr[2] < WMass::sel_xmax[2]
-                         ){
-                      // if(Jet_leading_pt<30){
+			 Mu_var_NotScaledCentralCorr[0] > WMass::sel_xmin[0] && Mu_var_NotScaledCentralCorr[0] < WMass::sel_xmax[0]
+			 && Mu_var_NotScaledCentralCorr[1] > WMass::sel_xmin[1] && Mu_var_NotScaledCentralCorr[1] < WMass::sel_xmax[1]
+			 && Mu_var_NotScaledCentralCorr[2] > WMass::sel_xmin[2] && Mu_var_NotScaledCentralCorr[2] < WMass::sel_xmax[2]
+			 ){
                         
-                        if(controlplots && m==0 && i==0 && j==0 && WMass::PDF_members<2){
-                          common_stuff::plot1D("hnvtx_7_RecoilCut", nvtx, evt_weight, h_1d, 50,0,50 );
-                          if(IS_MC_CLOSURE_TEST || isMCorDATA==0)
-                            common_stuff::plot1D("hPileUp_Fall11_7_RecoilCut", npu, evt_weight, h_1d, 50,0,50 );
-                        }
-                        
+			if(controlplots && m==0 && i==0 && j==0 && WMass::PDF_members<2){
+			  common_stuff::plot1D("hnvtx_8_JetCut", nvtx, evt_weight, h_1d, 50,0,50 );
+			  if(IS_MC_CLOSURE_TEST || isMCorDATA==0)
+			    common_stuff::plot1D("hPileUp_Fall11_8_JetCut", npu, evt_weight, h_1d, 50,0,50 );
+			}
+
+			//------------------------------------------------------------------------------------------------
+                        // SET THE PDF WEIGHT
+                        //------------------------------------------------------------------------------------------------     
+			
                         // std::cout << "event= " << jentry << " mw0= " << mw0 << " iWmass= " << iWmass << " WGen_m= " << WGen_m << " weight_i= " << weight_i << std::endl;
                         double lha_weight = 1;
                         // double lha_weight = LHAPDF::xfx(0,x1,Q,fl1)*LHAPDF::xfx(0,x2,Q,fl2) / (LHAPDF::xfx(1,x1,Q,fl1)*LHAPDF::xfx(1,x2,Q,fl2));
@@ -579,12 +613,44 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                           }else if(contains_LHE_weights){
                             lha_weight = LHE_weight[PDF_reweighting_central_Index+h];
                           }
+
+                          //------------------------------------------------------------------------------------------------
+                          // END SET PDF WEIGHT and THOSE SHOULD BE THE FINAL HISTOGRAMS TO FIT 
+                          //------------------------------------------------------------------------------------------------
+
                           for(int k=0;k<3;k++){
                             common_stuff::plot1D(Form("hW%s_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass),
                                     Mu_var_NotScaled[k] ,evt_weight*Mu_tight_muon_SF*lha_weight, h_1d, 
                                     50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
                           }
-                            
+
+
+                          //------------------------------------------------------------------------------------------------
+                          // PLOTS FOR GIGI's TEST
+                          //------------------------------------------------------------------------------------------------
+
+			  common_stuff::plot1D(Form("deltaMT_W%s_8_JetCut_pdf%d-%d%s_eta%s",MuCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data()),
+					       W.Mt()-WCentralCorr.Mt(),
+					       evt_weight*Mu_tight_muon_SF*lha_weight, h_1d,
+					       200,-0.1,0.1 );
+			  
+			  common_stuff::plot1D(Form("deltaMET_W%s_8_JetCut_pdf%d-%d%s_eta%s",MuCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data()),
+					       nu.Pt() - nuCentralCorr.Pt() ,
+					       evt_weight*Mu_tight_muon_SF*lha_weight, h_1d,
+					       200,-0.1,0.1 );
+			  
+			  common_stuff::plot2D(Form("deltaMT2D_W%s_8_JetCut_pdf%d-%d%s_eta%s",MuCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data()),
+					       WCentralCorr.Mt(), W.Mt()-WCentralCorr.Mt(),
+					       evt_weight*Mu_tight_muon_SF*lha_weight, h_2d,
+					       50, WMass::sel_xmin[1],WMass::sel_xmax[1],
+					       500,-2.5,2.5 );
+			  
+			  common_stuff::plot2D(Form("deltaMET2D_W%s_8_JetCut_pdf%d-%d%s_eta%s",MuCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data()),
+					       nu.Pt(),  nu.Pt() - nuCentralCorr.Pt(),
+					       evt_weight*Mu_tight_muon_SF*lha_weight, h_2d, 
+					       50, WMass::sel_xmin[2],WMass::sel_xmax[2],
+					       500,-2.5,2.5 );
+			  
                           // common_stuff::plot1D(Form("hW%s_GenMass_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass),
                                   // WGen_m ,evt_weight*Mu_tight_muon_SF*lha_weight, h_1d, 
                                   // 100, 50,250 );
@@ -593,12 +659,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                   // W.Pt() ,evt_weight*Mu_tight_muon_SF*lha_weight, h_1d, 
                                   // 50, 0, 25 );
 
-                          if(controlplots && m==0 && i==0 && j==0 && WMass::PDF_members<2){
-                            common_stuff::plot1D("hnvtx_8_JetCut", nvtx, evt_weight, h_1d, 50,0,50 );
-                            if(IS_MC_CLOSURE_TEST || isMCorDATA==0)
-                              common_stuff::plot1D("hPileUp_Fall11_8_JetCut", npu, evt_weight, h_1d, 50,0,50 );
-                          }
-                          
+
                           // // 2D CORRELATION HISTOS
                           // common_stuff::plot2D(Form("hW%s_%sVs%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass),
                                   // Mu_var_NotScaled[0],Mu_var_NotScaled[1],evt_weight*Mu_tight_muon_SF*lha_weight, h_2d, 
