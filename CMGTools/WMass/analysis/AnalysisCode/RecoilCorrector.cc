@@ -209,8 +209,8 @@ void RecoilCorrector::readRecoil(std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU
   cout << "reading file "<< iFName.c_str() << endl; 
   // lFile->ls();
 
-  // int lNJet = 1; // this is for the nvtx binned
-   int lNJet = -1; // this is for inclusive nvtx 
+  int lNJet = 1; // this is for the nvtx or rapidity binned
+  //   int lNJet = -1; // this is for inclusive nvtx 
   std::stringstream lSS; lSS << iPrefix << "u1Mean_" << lNJet;
   while(lFile->FindObjectAny(lSS.str().c_str()) != 0) { lSS.str("");
     //     cout << lNJet << endl;
@@ -324,6 +324,7 @@ void RecoilCorrector::metDistribution(double &iMet,double &iMPhi,double iGenPt,d
   //pU2   = (lVal1 < pFrac2)*iRand->Gaus(pU2,pSigma2_1)+(lVal1 > pFrac2)*iRand->Gaus(pU2,pSigma2_2);
   iMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
   iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
+
   iU1   = pU1; 
   iU2   = pU2;
   return;
@@ -406,12 +407,6 @@ void RecoilCorrector::metDistributionType1(double &iMet,double &iMPhi,double iGe
   double pCos = - (pUX*cos(iGenPhi) + pUY*sin(iGenPhi))/pU;
   double pSin =   (pUX*sin(iGenPhi) - pUY*cos(iGenPhi))/pU;
 
-  /*
-  // Radoslav
-  double pCos = - (pUX*cos(iLepPhi) + pUY*sin(iLepPhi))/pU;
-  double pSin =   (pUX*sin(iLepPhi) - pUY*cos(iLepPhi))/pU;
-  */
-
   pU1   = pU*pCos*pU1;//*(pU1*(iGenPt > 10) + (iGenPt > 10)*((1.-iGenPt/10.)*(pU1-1.)+1.));
   pU2   = pU*pSin;
   pU1   = iRand->Gaus(pU1,pFrac1);
@@ -422,8 +417,135 @@ void RecoilCorrector::metDistributionType1(double &iMet,double &iMPhi,double iGe
   iU2   = pU2;
   return;
 }
+
+void RecoilCorrector::metDistributionType2CorrU(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
+						double iLepPt,double iLepPhi,
+						TF1 *iU1Default,
+						TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
+						TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit, 
+						TF1 *iU1S1ZDatFit, TF1 *iU1S1ZMCFit, 
+						TF1 *iU1S2ZDatFit, TF1 *iU1S2ZMCFit, 
+						TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
+						TF1 *iU2S1ZDatFit, TF1 *iU2S1ZMCFit,  		   		   
+						TF1 *iU2S2ZDatFit, TF1 *iU2S2ZMCFit,  		   		   
+						//					   TF1 *iU1U2ZDatCorr,TF1 *iU1U2ZMCCorr, // MARIA comment for now
+						double &iU1,double &iU2,double iFlucU2, double iFlucU1, double iScale,
+						bool doSingleGauss) {
+  
+  double pDefU1    = iU1Default->Eval(iGenPt);
+  double lRescale  = sqrt((TMath::Pi())/2.);
+  double pDU1       = iU1RZDatFit ->Eval(iGenPt);
+  //double pDU2       = 0; sPM                                                                                                                                                         
+  double pDFrac1    = iU1MSZDatFit->Eval(iGenPt)*lRescale;
+  double pDSigma1_1 = iU1S1ZDatFit->Eval(iGenPt)*pDFrac1;
+  double pDSigma1_2 = iU1S2ZDatFit->Eval(iGenPt)*pDFrac1;
+
+  double pDFrac2    = iU2MSZDatFit->Eval(iGenPt)*lRescale;
+  double pDSigma2_1 = iU2S1ZDatFit->Eval(iGenPt)*pDFrac2;
+  double pDSigma2_2 = iU2S2ZDatFit->Eval(iGenPt)*pDFrac2;
+  //double pDMean1    = pDFrac1;                                                                                                                                                       
+  //double pDMean2    = pDFrac2;                                                                                                                                                       
+
+  double pMU1       = iU1RZMCFit  ->Eval(iGenPt);
+  //  double pMU2       = 0;                                                                                                                                                           
+  double pMFrac1    = iU1MSZMCFit ->Eval(iGenPt)*lRescale;
+  double pMSigma1_1 = iU1S1ZMCFit ->Eval(iGenPt)*pMFrac1;
+  double pMSigma1_2 = iU1S2ZMCFit ->Eval(iGenPt)*pMFrac1;
+
+  double pMFrac2    = iU2MSZMCFit ->Eval(iGenPt)*lRescale;
+  double pMSigma2_1 = iU2S1ZMCFit ->Eval(iGenPt)*pMFrac2;
+  double pMSigma2_2 = iU2S2ZMCFit ->Eval(iGenPt)*pMFrac2;
+
+  //double pMMean1    = pMFrac1;                                                                                                                                                       
+  //double pMMean2    = pMFrac2;                                
+
+  //double pMMean1    = pMFrac1;                                                                                                                                                       
+  //double pMMean2    = pMFrac2;                                                                                                                                                       
+  //Uncertainty propagation                                                                                                                                                            
+  pDFrac1     = (pDFrac1-pDSigma1_2)/(pDSigma1_1-pDSigma1_2);
+  pDFrac2     = (pDFrac2-pDSigma2_2)/(pDSigma2_1-pDSigma2_2);
+  pMFrac1     = (pMFrac1-pMSigma1_2)/(pMSigma1_1-pMSigma1_2);
+  pMFrac2     = (pMFrac2-pMSigma2_2)/(pMSigma2_1-pMSigma2_2);
+
+  /////                                                                                                                                                                                
+  /////                                                                                                                                                                                
+  /////                                                                                                                                                                                
+
+  double pUX   = iMet*cos(iMPhi) + iLepPt*cos(iLepPhi);
+  double pUY   = iMet*sin(iMPhi) + iLepPt*sin(iLepPhi);
+  double pU    = sqrt(pUX*pUX+pUY*pUY);
+
+  double pCos  = - (pUX*cos(iGenPhi) + pUY*sin(iGenPhi))/pU;
+  double pSin  =   (pUX*sin(iGenPhi) - pUY*cos(iGenPhi))/pU;
+
+  double offset = iU1RZMCFit->Eval(iGenPt);
+
+  bool scaleU2=true;
+
+  double normSigmaM = iU2MSZMCFit ->Eval(iGenPt)/iU1MSZMCFit ->Eval(iGenPt);
+  if(!scaleU2) normSigmaM = iU1MSZMCFit ->Eval(iGenPt)/iU2MSZMCFit ->Eval(iGenPt);
+  double normSigmaD = iU2MSZDatFit ->Eval(iGenPt)/iU1MSZDatFit ->Eval(iGenPt);
+  if(!scaleU2) normSigmaD = iU1MSZDatFit ->Eval(iGenPt)/iU2MSZDatFit ->Eval(iGenPt);
+
+  double pU1   = pU*pCos;
+  double pU2   = pU*pSin;
+  double pU1Diff  = pU1-offset; // pU1 of the event ; pDefU1 is the scale iU1RZDatFit ->Eval(iGenPt);                                                                                  
+  double pU2Diff  = pU2;
+
+  pU1Diff*=normSigmaM; 
+
+  double recoil = sqrt(pU1Diff*pU1Diff+pU2Diff*pU2Diff); 
+
+  double pU1ValM = 0;
+  double pU2ValM = 0 ;
+  double pU1ValD = 0 ;
+  double pU2ValD = 0;
+  double pUValM = 0;
+  double pUValD = 0 ;
+
+  if(doSingleGauss) {
+
+    if(scaleU2) pUValM         = diGausPVal(fabs(recoil),1,iU2MSZMCFit ->Eval(iGenPt)*lRescale,0);
+    if(scaleU2) pUValD         = oneGausPInverse(pUValM ,1,iU2MSZDatFit->Eval(iGenPt)*lRescale,0);
+
+    if(!scaleU2) pUValM         = diGausPVal(fabs(recoil),1,iU1MSZMCFit ->Eval(iGenPt)*lRescale,0);
+    if(!scaleU2) pUValD         = oneGausPInverse(pUValM ,1,iU1MSZDatFit->Eval(iGenPt)*lRescale,0);
+
+  } else {
+
+    if(scaleU2) pUValM         = diGausPVal(fabs(recoil),pMFrac2,pMSigma2_1,pMSigma2_2);
+    if(scaleU2) pUValD         = diGausPInverse(pUValM  ,pDFrac2,pDSigma2_1,pDSigma2_2);
+
+    if(!scaleU2) pUValM         = diGausPVal(fabs(recoil),pMFrac1,pMSigma1_1,pMSigma1_2);
+    if(!scaleU2) pUValD         = diGausPInverse(pUValM  ,pDFrac1,pDSigma1_1,pDSigma1_2);
+
+  }
+
+  if(pUValM==fabs(recoil)) pUValD=fabs(recoil); // in those cases do nothing  since Erf is zero  
+
+  pU1ValD=pUValD*(pU1Diff/recoil)*(1/normSigmaD);
+  pU2ValD=pUValD*(pU2Diff/recoil);
+  pDefU1 *= (pDU1/pMU1);
+
+
+  pU1   = pDefU1       +       pU1ValD;
+  pU2   =                      pU2ValD;
+  iMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
+  iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
+  iU1   = pU1;                                                                                                                                                                     
+  iU2   = pU2;                                                                                                                                                                     
+
+  return;
+
+}
+
 double RecoilCorrector::diGausPVal(double iVal,double iFrac,double iSigma1,double iSigma2) { 
-  return iFrac*TMath::Erf(iVal/iSigma1) + (1-iFrac)*TMath::Erf(iVal/iSigma2);
+
+  double lVal=iFrac*TMath::Erf(iVal/iSigma1) + (1-iFrac)*TMath::Erf(iVal/iSigma2);
+  if(TMath::ErfInverse(lVal)==0) return iVal;
+  return lVal;
+
+
 }
 double RecoilCorrector::diGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2) { 
   double lVal = TMath::ErfInverse(iPVal);
@@ -432,7 +554,8 @@ double RecoilCorrector::diGausPInverse(double iPVal,double iFrac,double iSigma1,
   //  cout << "-- Min - " << lMin <<  " -> " << lMax << " -- " << iSigma1 << " -- " << iSigma2 << endl;
   double lDiff = (lMax-lMin);
   //Iterative procedure to invert a double gaussian given a PVal
-  int lId = 0; int lN1 = 4;  int lN2 = 10; 
+  //  int lId = 0; int lN1 = 4;  int lN2 = 10; 
+  int lId = 0; int lN1 = 10;  int lN2 = 100; 
   for(int i0 = 0; i0 < lN1; i0++) { 
     if(i0 != 0) lMin = lMin + (lId-1)*lDiff/lN2;
     if(i0 != 0) lDiff/=lN2;
@@ -537,11 +660,8 @@ void RecoilCorrector::metDistributionType2(double &iMet,double &iMPhi,double iGe
 
   double pCos  = - (pUX*cos(iGenPhi) + pUY*sin(iGenPhi))/pU;
   double pSin  =   (pUX*sin(iGenPhi) - pUY*cos(iGenPhi))/pU;
-  
-  /*
-    double pCos  = - (pUX*cos(iLepPhi) + pUY*sin(iLepPhi))/pU;
-    double pSin  =   (pUX*sin(iLepPhi) - pUY*cos(iLepPhi))/pU;
-  */
+
+  /////
   
   double pU1   = pU*pCos;
   double pU2   = pU*pSin;
@@ -551,6 +671,8 @@ void RecoilCorrector::metDistributionType2(double &iMet,double &iMPhi,double iGe
   double p1Charge        = pU1Diff/fabs(pU1Diff);
   double p2Charge        = pU2Diff/fabs(pU2Diff);
   double pTU1Diff        = pU1Diff;
+
+  /*
   // double lMU1U2  = iU1U2ZMCCorr->Eval(iGenPt);
   // pU1Diff                = deCorrelate(pMMean1,lMU1U2,0.,0.,pU1Diff/pMMean1,pU2Diff/pMMean1 ,0.,0.);
   //pU2Diff                = deCorrelate(pMMean2,lMU1U2,0.,0.,pU2Diff/pMMean2,pTU1Diff/pMMean2,0.,0.);
@@ -558,26 +680,33 @@ void RecoilCorrector::metDistributionType2(double &iMet,double &iMPhi,double iGe
   double pU2ValM         = diGausPVal(fabs(pU2Diff),pMFrac2,pMSigma2_1,pMSigma2_2);
   double pU1ValD         = diGausPInverse(pU1ValM  ,pDFrac1,pDSigma1_1,pDSigma1_2);
   double pU2ValD         = diGausPInverse(pU2ValM  ,pDFrac2,pDSigma2_1,pDSigma2_2);
-  
+  */
+
+  double pU1ValM = 0;
+  double pU2ValM = 0 ;
+  double pU1ValD = 0 ;
+  double pU2ValD = 0;
+
   if(doSingleGauss) {
 
-    pU1ValM         = diGausPVal(fabs(pU1Diff),1,iU1MSZMCFit ->Eval(iGenPt)*lRescale,0); // when is singleGauss pMFrac1=1 pMSigma1_1=fullRMS pMSigma1_2=0                                         
+    pU1ValM         = diGausPVal(fabs(pU1Diff),1,iU1MSZMCFit ->Eval(iGenPt)*lRescale,0); // when is singleGauss pMFrac1=1 pMSigma1_1=fullRMS pMSigma1_2=0                                   
     pU2ValM         = diGausPVal(fabs(pU2Diff),1,iU2MSZMCFit ->Eval(iGenPt)*lRescale,0);
     pU1ValD         = oneGausPInverse(pU1ValM  ,1,iU1MSZDatFit->Eval(iGenPt)*lRescale,0);
     pU2ValD         = oneGausPInverse(pU2ValM  ,1,iU2MSZDatFit->Eval(iGenPt)*lRescale,0);
 
   } else {
 
-    pU1ValM         = diGausPVal(fabs(pU1Diff),pMFrac1,pMSigma1_1,pMSigma1_2); // when is singleGauss pMFrac1=1 pMSigma1_1=fullRMS pMSigma1_2=0                                                   
+    pU1ValM         = diGausPVal(fabs(pU1Diff),pMFrac1,pMSigma1_1,pMSigma1_2); // when is singleGauss pMFrac1=1 pMSigma1_1=fullRMS pMSigma1_2=0                                             
     pU2ValM         = diGausPVal(fabs(pU2Diff),pMFrac2,pMSigma2_1,pMSigma2_2);
     pU1ValD         = diGausPInverse(pU1ValM  ,pDFrac1,pDSigma1_1,pDSigma1_2);
     pU2ValD         = diGausPInverse(pU2ValM  ,pDFrac2,pDSigma2_1,pDSigma2_2);
 
   }
 
-  //double lDU1U2  = 0;//iU1U2ZDatCorr->Eval(iGenPt);
-  //pU1ValD        = correlatedSeed(pDMean1,lDU1U2,0.,0.,pU1ValD/pDMean1,pU2ValD/pDMean1,0.,0.);
-  //pU2ValD        = correlatedSeed(pDMean2,lDU1U2,0.,0.,pU2ValD/pDMean2,pU1ValD/pDMean2,0.,0.);
+  if(pU1ValM==fabs(pU1Diff)) pU1ValD=fabs(pU1Diff); // in those cases do nothing  since Erf is zero                                                                                       
+  if(pU2ValM==fabs(pU2Diff)) pU2ValD=fabs(pU2Diff); // in those cases do nothing  since Erf is zero                                                                                       
+
+
   pU1ValD*=p1Charge;
   pU2ValD*=p2Charge;
   pDefU1 *= (pDU1/pMU1);
@@ -587,9 +716,9 @@ void RecoilCorrector::metDistributionType2(double &iMet,double &iMPhi,double iGe
   pU2   =                      pU2ValD;
   iMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
   iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
-  iU1   = pU1; 
-  iU2   = pU2;
 
+  iU1   = pU1;
+  iU2   = pU2;
   return;
 
   /*
