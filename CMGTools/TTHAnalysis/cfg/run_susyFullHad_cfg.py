@@ -22,7 +22,7 @@ ttHLepAna.loose_electron_relIso = 0.15
 ttHLepAna.loose_electron_lostHits = 999 # no cut
 ttHLepAna.inclusive_electron_lostHits = 999 # no cut
 ttHLepAna.ele_isoCorr = "deltaBeta"
-ttHLepAna.ele_tightId = "cuts"
+ttHLepAna.ele_tightId = "Cuts_2012"
 
 # JET (for event variables do apply the jetID and not PUID yet)
 ttHJetAna.relaxJetId = False

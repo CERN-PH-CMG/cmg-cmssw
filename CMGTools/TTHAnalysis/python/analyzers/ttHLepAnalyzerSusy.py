@@ -223,10 +223,10 @@ class ttHLepAnalyzerSusy( Analyzer ):
         for ele in allelectrons:
             if self.cfg_ana.ele_tightId=="MVA" :
                  ele.tightIdResult = ele.electronID("POG_MVA_ID_Trig_full5x5")
-            elif self.cfg_ana.ele_tightId=="cuts" :
+            elif self.cfg_ana.ele_tightId=="Cuts_2012" :
                  ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_2012_Veto") + 1*ele.electronID("POG_Cuts_ID_2012_Loose") + 1*ele.electronID("POG_Cuts_ID_2012_Medium") + 1*ele.electronID("POG_Cuts_ID_2012_Tight")
             else :
-                 raise RuntimeError, "Unsupported ele_tightId name '" + str(self.cfg_ana.ele_tightId) +  "'! For now only 'MVA' and 'cuts' are supported."
+                 raise RuntimeError, "Unsupported ele_tightId name '" + str(self.cfg_ana.ele_tightId) +  "'! For now only 'MVA' and 'Cuts_2012' are supported."
 
         
         return allelectrons 
