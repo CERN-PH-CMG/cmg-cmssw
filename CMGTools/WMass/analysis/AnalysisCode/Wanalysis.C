@@ -170,8 +170,12 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   }
   
   //////////////
-  ////////   Initialize recoil corrections
   ////////
+  ////////
+
+  //------------------------------------------------------------------------------------------------
+  //    Initialize recoil corrections
+  //------------------------------------------------------------------------------------------------
   
   // int use_PForNoPUorTKmet = 2; // 0:PF, 1:NOPU, 2:TK // TO BE CHANGED BY HAND FOR THE MOMENT!!!
   bool use_InclusiveAB_RecoilCorr = true; // TO BE CHANGED BY HAND FOR THE MOMENT!!!
@@ -183,14 +187,23 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   if(use_PForNoPUorTKmet==2) metSuffix="_tkmet";
   if(use_PForNoPUorTKmet==0) metSuffix="_pfmet";
    
-  /// TKMET type2
-  std::string fileCorrectToPos = Form("../RecoilCode/recoilfit_Wpos%s_inclusiveNvtx_eta11_pol3_type2_oneGauss_x2Stat_ErrorFix_madgraph.root",metSuffix.Data());
-  std::string fileCorrectToNeg = Form("../RecoilCode/recoilfit_Wneg%s_inclusiveNvtx_eta11_pol3_type2_oneGauss_x2Stat_ErrorFix_madgraph.root",metSuffix.Data());
-  std::string fileZmmMC = Form("../RecoilCode/recoilfit_genZ%s_inclusiveNvtx_eta11_pol3_type2_oneGauss_x2Stat_ErrorFix_madgraph.root",metSuffix.Data());
-  std::string fileZmmData = Form("../RecoilCode/recoilfit_DATA%s_inclusiveNvtx_eta11_pol3_type2_oneGauss_x2Stat_ErrorFix.root",metSuffix.Data());
+  std::string fileCorrectToPos = Form("../RecoilCode/recoilfit_JUL27_Wpos%s_eta21_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root",metSuffix.Data());
+  std::string fileCorrectToNeg = Form("../RecoilCode/recoilfit_JUL27_Wneg%s_eta21_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root",metSuffix.Data());
+  std::string fileZmmMC = Form("../RecoilCode/recoilfit_JUL27_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root",metSuffix.Data());
+  std::string fileZmmData = Form("../RecoilCode/recoilfit_JUL27_DATA%s_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_53X.root",metSuffix.Data());
+  std::string fileZmmMCMIX = Form("../RecoilCode/recoilfit_.root",metSuffix.Data());
 
-  RecoilCorrector*  correctorRecoil_W_Pos_; // TYPE2
-  RecoilCorrector*  correctorRecoil_W_Neg_; // TYPE2
+  /*
+  RecoilCorrector::RecoilCorrector*  correctorRecoil_W_Pos_;
+  RecoilCorrector::RecoilCorrector*  correctorRecoil_W_Neg_;
+
+  RecoilCorrector::RecoilCorrector*  correctorRecoil_W_Pos_MIX_;
+  RecoilCorrector::RecoilCorrector*  correctorRecoil_W_Neg_MIX_;
+  */
+  RecoilCorrector*  correctorRecoil_W_Pos_;  
+  RecoilCorrector*  correctorRecoil_W_Neg_;
+  RecoilCorrector*  correctorRecoil_W_Pos_MIX_; 
+  RecoilCorrector*  correctorRecoil_W_Neg_MIX_;    
 
   correctorRecoil_W_Neg_ = new RecoilCorrector(fileCorrectToNeg.c_str(),123456);
   correctorRecoil_W_Neg_->addDataFile(fileZmmData.c_str());
@@ -200,9 +213,22 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   correctorRecoil_W_Pos_->addDataFile(fileZmmData.c_str());
   correctorRecoil_W_Pos_->addMCFile(fileZmmMC.c_str());
 
+  correctorRecoil_W_Neg_MIX_ = new RecoilCorrector(fileCorrectToNeg.c_str(),123456);
+  correctorRecoil_W_Neg_MIX_->addDataFile(fileZmmData.c_str());
+  correctorRecoil_W_Neg_MIX_->addMCFile(fileZmmMCMIX.c_str());
+
+  correctorRecoil_W_Pos_MIX_ = new RecoilCorrector(fileCorrectToPos.c_str(),123456);
+  correctorRecoil_W_Pos_MIX_->addDataFile(fileZmmData.c_str());
+  correctorRecoil_W_Pos_MIX_->addMCFile(fileZmmMCMIX.c_str());
+
+  cout << "RecoilCorrResolutionNSigmaU2 " << RecoilCorrResolutionNSigmaU2
+       << "RecoilCorrResolutionNSigmaU1 " << RecoilCorrResolutionNSigmaU1
+       << "RecoilCorrScaleNSigmaU1 " << RecoilCorrScaleNSigmaU1 << endl;
+
   bool doSingleGauss=false;
-    
-    
+
+  ///////
+
   // the following variables are dummy, but necessary to call the RecoilCorrector.
   double u1_dummy = 0;
   double u2_dummy = 0;
