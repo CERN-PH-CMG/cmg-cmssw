@@ -50,7 +50,7 @@ class ttHPhotonAnalyzerSusy( Analyzer ):
         foundPhoton = False
         for gamma in event.allphotons:
             if gamma.pt() < self.cfg_ana.ptMin: continue
-            if gamma.eta() > self.cfg_ana.etaMax: continue
+            if abs(gamma.eta()) > self.cfg_ana.etaMax: continue
             foundPhoton = True
 
             def idWP(gamma,X):
