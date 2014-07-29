@@ -22,7 +22,7 @@ infile_run='launch_analysis_testSplit_bash.py'
 
 # echo ${#Recoil_U1resol_variations[@]}
 
-usebatch=1 #  use batch submission for W/Z ANALYSIS
+usebatch=0 #  use batch submission for W/Z ANALYSIS
 run_all_or_just_fit=1 #  2 = W/Z ANALYSIS, 1 = RUN ALL,  0 = RUN FIT ONLY, 3 = W/Z ANALYSIS + QCD FIT
 run_W_or_Z=2 #  0 = W,  1 = Z,  2 = both (W and Z)
 fit_W_or_Z="W,Z" # "W" or "Z" or "W,Z"
