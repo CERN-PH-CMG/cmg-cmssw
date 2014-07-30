@@ -119,8 +119,8 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
     def declareHandles(self):
         super(H2TauTauSyncTree, self).declareHandles()
         self.handles['pfmetraw'] = AutoHandle(
-            'cmgPFMETRaw',
-            'std::vector<cmg::BaseMET>' 
+            'slimmedMETs',
+            'std::vector<pat::MET>' 
             )        
         # self.handles['pfmetsig'] = AutoHandle(
         #     'pfMetSignificance',
@@ -168,7 +168,7 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
             fill( tr, 'embeddedWeight', event.embedWeight ) 
         
         fill( tr, 'mvis', event.diLepton.mass() ) 
-        fill( tr, 'm_sv', event.diLepton.massSVFit() ) 
+        fill( tr, 'm_sv', event.diLepton.svfitMass() ) 
         fill( tr, 'm_sv_Up', -1) #? tau up 3%
         fill( tr, 'm_sv_Down', -1) #? tau down 3%
         

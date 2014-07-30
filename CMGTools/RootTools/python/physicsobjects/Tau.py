@@ -11,6 +11,7 @@ class Tau( Lepton ):
         super(Tau, self).__init__(tau)
         self.eOverP = None
 
+    # JAN FIXME - check what's available in miniAOD and if we need this at all
     def calcEOverP(self):
         if self.eOverP is not None:
             return self.eOverP
@@ -75,7 +76,9 @@ class Tau( Lepton ):
 def isTau(leg):
     '''Duck-typing a tau'''
     try:
-        leg.leadChargedHadrPt()
+        # Taken from BaseTau to work for both PFTaus and PAT Taus
+        # (can maybe find a less expensive method)
+        leg.leadTrack()
     except AttributeError:
         return False
     return True

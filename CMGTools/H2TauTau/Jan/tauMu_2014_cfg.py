@@ -12,7 +12,7 @@ from CMGTools.RootTools.RootTools import *
 shift = None
 # 1.0, 1.03, 0.97
 tauScaleShift = 1.0
-syncntuple = True
+syncntuple = False
 simulatedOnly = False # Useful for systematic shifts on simulated samples, e.g. JEC
 doThePlot = True # Set to true for the plotting script
 
@@ -89,7 +89,7 @@ TauMuAna = cfg.Analyzer(
     m_min = 10,
     m_max = 99999,
     dR_min = 0.5,
-    triggerMap = pathsAndFilters,
+    # triggerMap = pathsAndFilters,
     mvametsigs = 'mvaMETTauMu',
     verbose = False
     )
@@ -97,7 +97,7 @@ TauMuAna = cfg.Analyzer(
 dyJetsFakeAna = cfg.Analyzer(
     'DYJetsFakeAnalyzer',
     leptonType = 13,
-    src = 'genParticlesPruned',
+    src = 'packedGenParticles',
     )
 
 WNJetsAna = cfg.Analyzer(
@@ -158,7 +158,7 @@ vbfKwargs = dict( Mjj = 500,
 
 jetAna = cfg.Analyzer(
     'JetAnalyzer',
-    jetCol = 'cmgPFJetSel',
+    jetCol = 'slimmedJets',
     jetPt = 20.,
     jetEta = 4.7,
     btagSFseed = 123456,
@@ -198,6 +198,8 @@ treeProducerXCheck = cfg.Analyzer(
 from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanAug06 import * 
 
 #########################################################################################
+
+HiggsVBF125.files.append('file:/afs/cern.ch/user/s/steggema/work/CMSSW_7_0_6_patch1/src/CMGTools/H2TauTau/prod/tauMu_fullsel_tree_CMG.root')
 
 for mc in MC_list:
     mc.puFileMC = puFileMC
@@ -280,7 +282,7 @@ if not simulatedOnly:
 sequence = cfg.Sequence( [
     # eventSelector,
     jsonAna, 
-    triggerAna,
+    # triggerAna,
     vertexAna, 
     TauMuAna,
     dyJetsFakeAna,
@@ -305,13 +307,13 @@ if syncntuple:
 
 selectedComponents = [comp for comp in selectedComponents if comp.dataset_entries > 0]
 
-test = 0
+test = 1
 if test==1:
     # comp = embed_Run2012C_22Jan
     # comp = DYJets
     # comp = HiggsGGH125
     # comp = HiggsSUSYGluGlu1000
-    comp = W1Jets_ext
+    comp = HiggsVBF125
     # comp = data_Run2012A
     selectedComponents = [comp]
     comp.splitFactor = 1

@@ -73,8 +73,8 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
     def declareHandles(self):
         super(H2TauTauTreeProducerTauMu, self).declareHandles()
         self.handles['pfmetraw'] = AutoHandle(
-            'cmgPFMETRaw',
-            'std::vector<cmg::BaseMET>' 
+            'slimmedMETs',
+            'std::vector<pat::MET>' 
             )
         
     def process(self, iEvent, event):

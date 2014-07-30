@@ -14,63 +14,66 @@ class DiObject( object ):
         self.leg1DeltaR = -1
         self.leg2DeltaR = -1
 
-    def sumPt(self):
-        '''pt_leg1 + pt_leg2. used for finding the best DiTau.'''
-        return self.leg1().pt() + self.leg2().pt()
+    def leg1(self):
+        return self.daughter(0)
+
+    def leg2(self):
+        return self.daughter(1)
 
     def __getattr__(self, name):
         '''all accessors  from cmg::DiObject are transferred to this class.'''
         return getattr(self.diobject, name)
 
     def __str__(self):
-        header = 'DiObject: mvis=%3.2f, mT=%3.2f, pZeta=%3.2f, sumpT=%3.2f' \
-                 % (self.diobject.mass(),
-                    self.diobject.mTLeg2(),
-                    self.diobject.pZeta(),
-                    self.sumPt() )
-        return '\n'.join( [header] )
+        header = '{cls}: mvis={mvis}, mT={mt}, sumpT={sumpt}'.format(
+            cls = self.__class__.__name__,
+            mvis = self.diobject.mass(),
+            mt = self.diobject.mTLeg2(),
+            sumpt = self.sumPt() )
+        return '\n'.join( [header,
+                           '\t'+str(self.leg1()),
+                           '\t'+str(self.leg2())] )
 
 
 
-class DiMuon( DiObject ):
-
+class DiTau( DiObject ):
     def __init__(self, diobject):
-        super(DiMuon, self).__init__(diobject)
-        self.mu1 = Muon( diobject.leg1() )
-        self.mu2 = Muon( diobject.leg2() )
+        super(DiTau, self).__init__(diobject)
+    
+    def met(self):
+        return self.daughter(2)
 
-    def __str__(self):
-        header = 'DiMuon: mvis=%3.2f, sumpT=%3.2f' \
-                 % (self.diobject.mass(),
-                    self.sumPt() )
-        return '\n'.join( [header] )
+    def sumPt(self):
+        '''pt_leg1 + pt_leg2. used for finding the best DiTau.'''
+        return self.leg1().pt() + self.leg2().pt()
 
+    def svfitMass(self):
+        return self.userFloat('mass')
 
+    def svfitMassError(self):
+        return self.userFloat('massUncert')
 
-class TauMuon( DiObject ):
-    def __init__(self, diobject):
-        super(TauMuon, self).__init__(diobject)
-        self.tau = Tau( diobject.leg1() )
-        self.mu = Muon( diobject.leg2() )
-        #COLIN some of the matching stuff could go up 
-        self.leg1Gen = None
-        self.leg2Gen = None
-        self.leg1DeltaR = -1
-        self.leg2DeltaR = -1
+    def svfitPt(self):
+        return self.userFloat('pt')
 
-    def leg1(self):
-        return self.tau
+    def svfitPtError(self):
+        return self.userFloat('ptUncert')
 
-    def leg2(self):
-        return self.mu
+    def pZeta(self):
+        raise RuntimeError('pZeta - NOT IMPLEMENTED')
+
+    def mt(self):
+        raise RuntimeError('mt - NOT IMPLEMENTED')
 
     def match(self, genParticles):
+        #TODO review matching algorithm
+        #TODO move matching stuff even higher?
         # print self
         genTaus = []
-        ZorPhoton = [22, 23]
+        ZorPhotonorHiggs = [22, 23, 25, 35, 36, 37]
         for gen in genParticles:
             # print '\t', gen
-            if abs(gen.pdgId())==15 and gen.mother().pdgId() in ZorPhoton:
+            if abs(gen.pdgId())==15 and gen.mother().pdgId() in ZorPhotonorHiggs:
                 genTaus.append( gen )
         # print 'Gen taus: '
         # print '\n'.join( map( str, genTaus ) )
@@ -94,35 +97,37 @@ class TauMuon( DiObject ):
             # print self.leg2Gen
             self.leg1DeltaR = math.sqrt( dR2leg1Min )
             self.leg2DeltaR = math.sqrt( dR2leg2Min )
-            return (self.leg1DeltaR, self.leg2DeltaR)        
+            return (self.leg1DeltaR, self.leg2DeltaR) 
 
-    def matchW(self, genParticles):
-        # print self
-        genTaus = []
-        for gen in genParticles:
-            # print '\t', gen
-            if abs(gen.pdgId())==15 and gen.mother().pdgId()==24: # W -> tau nu_tau
-                genTaus.append( gen )
-        # print 'Gen taus: '
-        # print '\n'.join( map( str, genTaus ) )
-        if len(genTaus)!=1:
-            #COLIN what about WW, ZZ? 
-            return (-1, -1)
-        else:
-            dR2leg1Min, self.leg1Gen = ( float('inf'), None)
-            dR2leg2Min, self.leg2Gen = ( float('inf'), None) 
-            for genTau in genTaus:
-                dR2leg1 = deltaR2(self.leg1().eta(), self.leg1().phi(),
-                                  genTau.eta(), genTau.phi() )
-                dR2leg2 = deltaR2(self.leg2().eta(), self.leg2().phi(),
-                                  genTau.eta(), genTau.phi() )
-                if dR2leg1 <  dR2leg1Min:
-                    dR2leg1Min, self.leg1Gen = (dR2leg1, genTau)
-                if dR2leg2 <  dR2leg2Min:
-                    dR2leg2Min, self.leg2Gen = (dR2leg2, genTau)
-            # print dR2leg1Min, dR2leg2Min
-            # print self.leg1Gen
-            # print self.leg2Gen
-            self.leg1DeltaR = math.sqrt( dR2leg1Min )
-            self.leg2DeltaR = math.sqrt( dR2leg2Min )
-            return (self.leg1DeltaR, self.leg2DeltaR)        
+class DiMuon( DiTau ):
+
+    def __init__(self, diobject):
+        super(DiMuon, self).__init__(diobject)
+        self.mu1 = Muon( diobject.leg1() )
+        self.mu2 = Muon( diobject.leg2() )
+
+    def __str__(self):
+        header = 'DiMuon: mvis=%3.2f, sumpT=%3.2f' \
+                 % (self.diobject.mass(),
+                    self.sumPt() )
+        return '\n'.join( [header] )
+
+
+
+class TauMuon( DiTau ):
+    def __init__(self, diobject):
+        super(TauMuon, self).__init__(diobject)
+        self.tau = Tau( super(TauMuon, self).leg1() )
+        self.mu = Muon( super(TauMuon, self).leg2() )
+        #COLIN some of the matching stuff could go up 
+        self.leg1Gen = None
+        self.leg2Gen = None
+        self.leg1DeltaR = -1
+        self.leg2DeltaR = -1
+
+    def leg1(self):
+        return self.tau
+
+    def leg2(self):
+        return self.mu
+     

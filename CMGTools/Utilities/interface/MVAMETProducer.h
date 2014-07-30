@@ -429,7 +429,15 @@ void MVAMETProducer< T, U >::makeJets(std::vector<MetUtilities::JetInfo> &iJetIn
 
     // FIXME - JAN - ADD cut on PU jet ID
     double lMVA = pCJet->userFloat(puJetIdLabel_.c_str());
- 
+
+    // Check available PU jet IDs with the following; need consultation to 
+    // check what's planned for miniAOD
+
+    // const auto& names = pCJet->userFloatNames();
+
+    // for (const auto& name : names)
+    //   std::cout << "Jet UF: " << name << std::endl;
+
     double lNeuFrac = 1.;
     if (fabs(pCJet->eta())<2.5)
       lNeuFrac = pCJet->photonEnergyFraction() + pCJet->neutralHadronEnergyFraction();

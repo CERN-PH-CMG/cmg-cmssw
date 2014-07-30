@@ -86,10 +86,10 @@ mc_repro += mc_dy
 mc_repro += mc_higgs
 mc_repro += mc_higgs_susy
 
-connect( allsamples, '%TAUMU_SVFitVEGAS_Jul29_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
+#connect( allsamples, '%TAUMU_SVFitVEGAS_Jul29_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
 
-connect( embed_list, '%TAUMU_SVFitVEGAS_Aug07_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
-connect( mc_repro, '%TAUMU_SVFitVEGAS_Aug26_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
+#connect( embed_list, '%TAUMU_SVFitVEGAS_Aug07_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
+#connect( mc_repro, '%TAUMU_SVFitVEGAS_Aug26_steggema', 'tauMu.*root', aliases, cache=True, verbose=False)
 
 allsamples.extend( embed_list )
 allsamples.extend( mc_repro )

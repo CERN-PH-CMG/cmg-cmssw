@@ -45,15 +45,13 @@ class JetAnalyzer( Analyzer ):
         super(JetAnalyzer, self).declareHandles()
 
         self.handles['jets'] = AutoHandle( self.cfg_ana.jetCol,
-                                           'std::vector<cmg::PFJet>' )
+                                           'std::vector<pat::Jet>' )
         if self.cfg_comp.isMC:
             # and ("BB" in self.cfg_comp.name):
-            self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
-                                                         'std::vector<reco::GenParticle>' )
-            self.mchandles['genJets'] = AutoHandle('genJetSel',
-                                                   'std::vector<cmg::PhysicsObjectWithPtr< edm::Ptr<reco::GenJet> > >')
-##             self.mchandles['genJetsP'] = AutoHandle('ak5GenJetsNoNu',
-##                                                     'std::vector< reco::GenJet >')
+            self.mchandles['genParticles'] = AutoHandle( 'packedGenParticles',
+                                                         'std::vector<pat::PackedGenParticle>' )
+            self.mchandles['genJets'] = AutoHandle('slimmedGenJets',
+                                                   'std::vector<reco::GenJet>')
 
     def beginLoop(self):
         super(JetAnalyzer,self).beginLoop()
@@ -210,7 +208,7 @@ class JetAnalyzer( Analyzer ):
         jet.scaleEnergy(totalScale)
 
     def testJetID(self, jet):
-        jet.puJetIdPassed = jet.puJetId(wp53x=True)
+        jet.puJetIdPassed = jet.puJetId()
         jet.pfJetIdPassed = jet.jetID("POG_PFID_Loose")
 
         if self.cfg_ana.relaxJetId:

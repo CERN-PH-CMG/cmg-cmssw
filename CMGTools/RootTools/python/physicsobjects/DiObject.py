@@ -118,8 +118,8 @@ class TauMuon( DiTau ):
     '''Holds a CMG TauMuon, and the 2 legs as a python Tau and Muon'''
     def __init__(self, diobject):
         super(TauMuon, self).__init__(diobject)
-        self.tau = Tau( diobject.leg1() )
-        self.mu = Muon( diobject.leg2() )
+        self.tau = Tau( self.leg1() )
+        self.mu = Muon( self.leg2() )
 
     def leg1(self):
         return self.tau
