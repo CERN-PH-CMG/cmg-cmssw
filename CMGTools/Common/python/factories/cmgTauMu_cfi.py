@@ -7,8 +7,8 @@ tauMuFactory = diObjectFactory.clone(
        metCollection = cms.InputTag('cmgPFMET')       
 )
 
-cmgTauMu = cms.EDFilter(
+cmgTauMu = cms.EDProducer(
     "TauMuPOProducer",
-    cfg = tauMuFactory.clone(),
-    cuts = cms.PSet(),
+    # cfg = tauMuFactory.clone(),
+    # cuts = cms.PSet(),
     )

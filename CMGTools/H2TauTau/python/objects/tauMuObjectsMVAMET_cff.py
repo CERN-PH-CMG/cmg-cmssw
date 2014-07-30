@@ -12,27 +12,37 @@ from CMGTools.H2TauTau.objects.tauMuSVFit_cfi import tauMuSVFit
 from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
 
 
+# JAN - replay the counting of all jets
+
+jetsPtGt1Cut = '(neutralHadronEnergy())/(correctedJet(0).pt()/pt()*energy())  < 0.99 && (neutralEmEnergy()/(correctedJet(0).pt()/pt()*energy())) < 0.99 && (nConstituents()) > 1    && ((abs(eta())  < 2.4  && chargedHadronEnergy()/(correctedJet(0).pt()/pt()*energy()) > 0 && chargedEmEnergy()      /(correctedJet(0).pt()/pt()*energy()) < 0.99 && chargedMultiplicity() > 0)   ||  abs(eta())  > 2.4) '
+
+
+from CMGTools.Common.miscProducers.collectionSize.candidateSize_cfi import candidateSize
+nJetsPtGt1 = candidateSize.clone( src = 'jetsPtGt1' )
 
 # no correction, no svfit ---------------------------------------------------
 
 # attaching the cuts defined in this module
 # to the di-tau factory
 
-cmgTauMu.cuts = tauMuCuts.clone()
-cmgTauMu.cfg.leg1Collection = 'cmgTauSel'
-cmgTauMu.cfg.metsigCollection = cms.InputTag('')
+# cmgTauMu.cuts = tauMuCuts.clone()
+cmgTauMu.leg1Collection = cms.InputTag('slimmedTaus')
+cmgTauMu.leg2Collection = cms.InputTag('slimmedMuons')
+cmgTauMu.metsigCollection = cms.InputTag('')
+cmgTauMu.metCollection = cms.InputTag('slimmedMETs')
 
 # preselection 
-cmgTauMuPreSel = cmgTauMuSel.clone(
-    # cut = ''
-    #WARNING
-    cut = 'getSelection("cuts_baseline")'
-    )
+# cmgTauMuPreSel = cmgTauMuSel.clone(
+#     # cut = ''
+#     #WARNING
+#     cut = 'getSelection("cuts_baseline")'
+    # )
 
 # creates a tau-mu pair and applies loose preselection cuts
 tauMuStdSequence = cms.Sequence(
-    cmgTauMu +
-    cmgTauMuPreSel
+    cmgTauMu 
+    # +
+    # cmgTauMuPreSel
     )
 
 
@@ -46,10 +56,9 @@ from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
 
 from CMGTools.Utilities.mvaMET.mvaMET_cff import *
 from CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi import cmgBaseMETFromPFMET
-mvaMETTauMu.recBosonSrc = 'cmgTauMuPreSel'
 
 cmgTauMuMVAPreSel = cmgTauMuCor.clone()
-cmgTauMuMVAPreSel.cfg.diObjectCollection = 'cmgTauMuPreSel'
+cmgTauMuMVAPreSel.diObjectCollection = 'cmgTauMu'
 
 
 # Correct tau pt (after MVA MET according to current baseline)
@@ -57,7 +66,7 @@ cmgTauMuMVAPreSel.cfg.diObjectCollection = 'cmgTauMuPreSel'
 from CMGTools.H2TauTau.objects.cmgTauMuCor_cfi import cmgTauMuCor
 cmgTauMuCor = cmgTauMuCor.clone()
 
-cmgTauMuCor.cfg.diObjectCollection = cms.InputTag('mvaMETTauMu')
+cmgTauMuCor.diObjectCollection = cms.InputTag('mvaMETTauMu')
 
 # JAN: It's debatable whether this should be applied after MVA MET
 # and before the recoil correction instead of at the very beginning
@@ -65,9 +74,9 @@ cmgTauMuCor.cfg.diObjectCollection = cms.InputTag('mvaMETTauMu')
 
 # This selector goes after the tau pt correction
 cmgTauMuTauPtSel = cms.EDFilter(
-    "CmgTauMuSelector",
+    "PATCompositeCandidateSelector",
     src = cms.InputTag( "cmgTauMuCor" ),
-    cut = cms.string( "leg1().pt()>18." )
+    cut = cms.string( "daughter(0).pt()>18." )
     )
 
 cmgTauMuTauPtSel = cmgTauMuTauPtSel.clone()
@@ -111,4 +120,5 @@ tauMuCorSVFitSequence = cms.Sequence( #
 tauMuSequence = cms.Sequence( tauMuStdSequence +
                               tauMuCorSVFitSequence
                               )
+
 

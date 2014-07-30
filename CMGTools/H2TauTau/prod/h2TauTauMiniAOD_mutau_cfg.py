@@ -303,8 +303,8 @@ else:
 # process.tauMu_fullsel_tree_CMG.SelectEvents = cms.untracked.PSet()
 
 # process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byRawIsoMVA") > 0.5')
-process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byRawIsoMVA") > -9999')
-process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") < 10.')
-if 'Higgs' in dataset_name or 'HToTauTau' in dataset_name or isEmbedded:
-    process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") < 1.5')
-process.cmgTauMu.cuts.baseline.tauLeg.kinematics.pt = cms.string('leg1().pt() > 10.')
+# process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byRawIsoMVA") > -9999')
+# process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") < 10.')
+# if 'Higgs' in dataset_name or 'HToTauTau' in dataset_name or isEmbedded:
+#     process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") < 1.5')
+# process.cmgTauMu.cuts.baseline.tauLeg.kinematics.pt = cms.string('leg1().pt() > 10.')
