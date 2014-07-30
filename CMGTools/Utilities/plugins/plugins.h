@@ -7,17 +7,17 @@
 
 #include "CMGTools/Utilities/interface/TauESCorrector.h"
 
-typedef MVAMETProducer<reco::PFTau, pat::Muon> MVAMETProducerTauMu;
-typedef MVAMETProducer<reco::PFTau, pat::Electron> MVAMETProducerTauEle;
+typedef MVAMETProducer<pat::Tau, pat::Muon> MVAMETProducerTauMu;
+typedef MVAMETProducer<pat::Tau, pat::Electron> MVAMETProducerTauEle;
 typedef MVAMETProducer<pat::Muon, pat::Electron> MVAMETProducerMuEle;
-typedef MVAMETProducer<reco::PFTau, reco::PFTau> MVAMETProducerDiTau;
+typedef MVAMETProducer<pat::Tau, pat::Tau> MVAMETProducerDiTau;
 
 // JAN: Re-add these typedefs once we have defined a di-object data format
 
-// typedef RecoilCorrectedMETProducer<cmg::TauMu> RecoilCorrectedMETProducerTauMu; 
-// typedef RecoilCorrectedMETProducer<cmg::TauEle> RecoilCorrectedMETProducerTauEle; 
-// typedef RecoilCorrectedMETProducer<cmg::MuEleDiTau> RecoilCorrectedMETProducerMuEle; 
-// typedef RecoilCorrectedMETProducer<cmg::DiTau> RecoilCorrectedMETProducerDiTau; 
+typedef RecoilCorrectedMETProducer<pat::Tau, pat::Muon> RecoilCorrectedMETProducerTauMu; 
+typedef RecoilCorrectedMETProducer<pat::Tau, pat::Electron> RecoilCorrectedMETProducerTauEle; 
+typedef RecoilCorrectedMETProducer<pat::Muon, pat::Electron> RecoilCorrectedMETProducerMuEle; 
+typedef RecoilCorrectedMETProducer<pat::Tau, pat::Tau> RecoilCorrectedMETProducerDiTau; 
 
 // typedef MVAMETProducer<cmg::TauMu>    MVAMETProducerTauMu; 
 // typedef MVAMETProducer<cmg::TauEle>    MVAMETProducerTauEle; 

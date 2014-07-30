@@ -139,7 +139,7 @@ void MVAMETProducerPreselLep::produce(edm::Event & iEvent, const edm::EventSetup
   edm::Handle< std::vector<pat::Electron> > preselElectronList_;
   iEvent.getByLabel(preselElectronListTag_, preselElectronList_);
 
-  edm::Handle< std::vector<reco::PFTau> > preselTauList_;
+  edm::Handle< std::vector<pat::Tau> > preselTauList_;
   iEvent.getByLabel(preselTauListTag_, preselTauList_);
 
   
@@ -203,7 +203,7 @@ void MVAMETProducerPreselLep::produce(edm::Event & iEvent, const edm::EventSetup
 
   std::vector<const reco::Muon * >  cleanMuonList_;
   std::vector<const pat::Electron *>  cleanElectronList_;
-  std::vector<const reco::PFTau * >  cleanTauList_;
+  std::vector<const pat::Tau * >  cleanTauList_;
   
   //clean the muons from electrons based on pT
   for(std::vector<reco::Muon>::const_iterator candM=preselMuonList_->begin(); candM!=preselMuonList_->end(); ++candM){
@@ -220,7 +220,7 @@ void MVAMETProducerPreselLep::produce(edm::Event & iEvent, const edm::EventSetup
     if(pass)cleanElectronList_.push_back(&(*candE));
   }   
   //clean the taus from muons and electrons
-  for(std::vector<reco::PFTau>::const_iterator candT=preselTauList_->begin(); candT!=preselTauList_->end(); ++candT){
+  for(std::vector<pat::Tau>::const_iterator candT=preselTauList_->begin(); candT!=preselTauList_->end(); ++candT){
     bool pass=1;
     for(std::vector<reco::Muon>::const_iterator candM=preselMuonList_->begin(); candM!=preselMuonList_->end(); ++candM)
       if(deltaR(candT->p4(),candM->p4())<0.5)pass=0;

@@ -15,7 +15,7 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
-#include "DataFormats/TauReco/interface/PFTau.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
 
 // #include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
 // #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
@@ -61,6 +61,8 @@ private:
 		const std::vector<JetType>& iCJets,
 		const reco::VertexCollection &iVertices,double iRho) const;
 
+  bool passJetID(const JetType& jet);
+
   edm::InputTag pfmetSrc_;
   edm::InputTag tkmetSrc_;
   edm::InputTag nopumetSrc_;
@@ -70,11 +72,13 @@ private:
   edm::InputTag recBosonSrc_;
   edm::InputTag jetSrc_;
   std::string puJetIdLabel_;
-  edm::InputTag leadJetSrc_;
+  
+  double minJetPt_;
+  double maxJetEta_;
 
   edm::InputTag vertexSrc_;
 
-  edm::InputTag nJetsPtGt1Src_;
+  // edm::InputTag nJetsPtGt1Src_;
 
   edm::InputTag rhoSrc_;
 
@@ -99,9 +103,10 @@ MVAMETProducer< T, U >::MVAMETProducer(const edm::ParameterSet & iConfig) :
   recBosonSrc_( iConfig.getParameter<edm::InputTag>("recBosonSrc") ),
   jetSrc_( iConfig.getParameter<edm::InputTag>("jetSrc") ),
   puJetIdLabel_( iConfig.getParameter<std::string>("puJetIdLabel") ),
-  leadJetSrc_( iConfig.getParameter<edm::InputTag>("leadJetSrc") ),
+  minJetPt_( iConfig.getParameter<double>("minJetPt")),
+  maxJetEta_( iConfig.getParameter<double>("maxJetEta")),
   vertexSrc_( iConfig.getParameter<edm::InputTag>("vertexSrc") ),
-  nJetsPtGt1Src_( iConfig.getParameter<edm::InputTag>("nJetsPtGt1Src") ),
+  // nJetsPtGt1Src_( iConfig.getParameter<edm::InputTag>("nJetsPtGt1Src") ),
   rhoSrc_( iConfig.getParameter<edm::InputTag>("rhoSrc") ),
   deltaRCut_(0.5),
   enable_( iConfig.getParameter<bool>("enable") ),
@@ -130,16 +135,27 @@ MVAMETProducer< T, U >::MVAMETProducer(const edm::ParameterSet & iConfig) :
 }
 
 // JAN - should go to external file (e.g. tools) but leave it here for now
-float signalChargedFractionpT(const reco::PFTau& tau) {
+float signalChargedFractionpT(const pat::Tau& tau) {
   
   float sumE = 0;
   float sumECharged = 0;
-  const std::vector<reco::PFCandidatePtr>& signals = tau.signalPFCands();
-  for( unsigned i=0; i<signals.size(); ++i) {
-    float energy = signals[i]->pt();
+  
+  const reco::CandidatePtrVector& photons = tau.signalGammaCands();
+  const reco::CandidatePtrVector& neutrals = tau.signalNeutrHadrCands();
+  const reco::CandidatePtrVector& charged = tau.signalChargedHadrCands();
+  
+  for( unsigned i=0; i<charged.size(); ++i) {
+    float energy = charged[i]->pt();
     sumE += energy;
-    if( fabs(signals[i]->charge())>1e-9 )
-      sumECharged += energy;
+    sumECharged += energy;
+  }
+
+  for( unsigned i=0; i<photons.size(); ++i) {
+    sumE += photons[i]->pt();
+  }
+
+  for( unsigned i=0; i<neutrals.size(); ++i) {
+    sumE += neutrals[i]->pt();
   }
 
   assert(sumE>0);
@@ -209,23 +225,28 @@ void MVAMETProducer<T, U>::produce(edm::Event & iEvent, const edm::EventSetup & 
   edm::Handle< std::vector<JetType> > jetH;
   iEvent.getByLabel(jetSrc_, jetH);
 
-  edm::Handle< std::vector<JetType> > leadJetH;
-  iEvent.getByLabel(leadJetSrc_, leadJetH);
 
   //assert( leadJetH->size() > 1 );
   const LorentzVector *leadJet   =0; 
   const LorentzVector *leadJet2 = 0; 
-  if(leadJetH->size() > 0 ) leadJet  = &(*leadJetH)[0].p4();
-  if(leadJetH->size() > 1 ) leadJet2 = &(*leadJetH)[1].p4();
+  if(jetH->size() > 0 ) leadJet  = &(*jetH)[0].p4();
+  if(jetH->size() > 1 ) leadJet2 = &(*jetH)[1].p4();
 
   edm::Handle< reco::VertexCollection > vertexH;
   iEvent.getByLabel(vertexSrc_, vertexH);
 
   unsigned nGoodVtx = vertexH->size();
 
-  edm::Handle< int > nJetsPtGt1H;
-  iEvent.getByLabel(nJetsPtGt1Src_, nJetsPtGt1H);
-  int nJetsPtGt1 = *nJetsPtGt1H;
+  // edm::Handle< int > nJetsPtGt1H;
+  // iEvent.getByLabel(nJetsPtGt1Src_, nJetsPtGt1H);
+  int nJetsPtGt1 = 0; //*nJetsPtGt1H;
+
+  for (const auto& jet : *jetH) {
+    if (passJetID(jet))
+      nJetsPtGt1++;
+  }
+
+
   //cout<<" nJetsPtGt1 "<<nJetsPtGt1<<endl;
 
   edm::Handle< double > rhoH;
@@ -277,10 +298,10 @@ void MVAMETProducer<T, U>::produce(edm::Event & iEvent, const edm::EventSetup & 
       if(i0 == 1 && deltaR(*cleanLeadJet2,recBoson.daughter(1)->p4()) < 0.5) pClean = true;
       if(pClean) { 
 	lIndex++;
-	if(i0 == 0 && int(leadJetH->size())  > lIndex   ) cleanLeadJet  = &(*leadJetH)[lIndex].p4();
-	if(           int(leadJetH->size())  > lIndex+1 ) cleanLeadJet2 = &(*leadJetH)[lIndex+1].p4();
-	if(i0 == 0 && int(leadJetH->size())  < lIndex+1 ) cleanLeadJet  = 0;
-	if(           int(leadJetH->size())  < lIndex+2 ) cleanLeadJet2 = 0;
+	if(i0 == 0 && int(jetH->size())  > lIndex   ) cleanLeadJet  = &(*jetH)[lIndex].p4();
+	if(           int(jetH->size())  > lIndex+1 ) cleanLeadJet2 = &(*jetH)[lIndex+1].p4();
+	if(i0 == 0 && int(jetH->size())  < lIndex+1 ) cleanLeadJet  = 0;
+	if(           int(jetH->size())  < lIndex+2 ) cleanLeadJet2 = 0;
 	i0--; 
       }
     }
@@ -304,11 +325,11 @@ void MVAMETProducer<T, U>::produce(edm::Event & iEvent, const edm::EventSetup & 
 			     cleanpucmetsumet, cleanpucmetp4, dummyVertex);
 
     LorentzVector tau1Chargedp4 = recBoson.daughter(0)->p4();
-    if(typeid(T)==typeid(reco::PFTau))
-        tau1Chargedp4 *= signalChargedFractionpT(*dynamic_cast<const reco::PFTau*>(recBoson.daughter(0)));
+    if(typeid(T)==typeid(pat::Tau))
+        tau1Chargedp4 *= signalChargedFractionpT(*dynamic_cast<const pat::Tau*>(recBoson.daughter(0)));
     LorentzVector tau2Chargedp4 = recBoson.daughter(1)->p4();
-    if(typeid(T)==typeid(reco::PFTau))
-        tau2Chargedp4 *= signalChargedFractionpT(*dynamic_cast<const reco::PFTau*>(recBoson.daughter(1)));
+    if(typeid(T)==typeid(pat::Tau))
+        tau2Chargedp4 *= signalChargedFractionpT(*dynamic_cast<const pat::Tau*>(recBoson.daughter(1)));
     
     LorentzVector cleantkmetp4 = tkmet->p4();
     cleantkmetp4 += tau1Chargedp4;
@@ -360,7 +381,7 @@ void MVAMETProducer<T, U>::produce(edm::Event & iEvent, const edm::EventSetup & 
 
     // if I do that, sumEt is incorrect...
     // pOut->push_back( met );
-    // pOutSig->push_back( lMVAMetInfo.second );
+    pOutSig->push_back( lMVAMetInfo.second );
     //pOut->back().setP4( lMVAMetInfo.first ); 
 
     cmg::METSignificance metSig(lMVAMetInfo.second);
@@ -382,7 +403,7 @@ void MVAMETProducer<T, U>::produce(edm::Event & iEvent, const edm::EventSetup & 
   }
   
   // iEvent.put( pOut ); 
-  // iEvent.put( pOutSig ); 
+  iEvent.put( pOutSig ); 
   iEvent.put( pOutRecBoson );
 
   if(verbose_) {
@@ -397,25 +418,6 @@ void MVAMETProducer< T, U >::makeJets(std::vector<MetUtilities::JetInfo> &iJetIn
 					      const reco::VertexCollection &iVertices,double iRho) const { 
   for(int i1 = 0; i1 < (int) iCJets .size(); i1++) {   // corrected jets collection                                         
     const JetType     *pCJet  = &(iCJets.at(i1));
-/*     if( !passPFLooseId(pCJet) ) continue; */
-/*     double lJec = 0; */
-/*     double lMVA = jetMVA(pCJet,lJec,iVertices[0],iVertices,false); */
-/*     double lNeuFrac = (pCJet->neutralEmEnergy()/pCJet->energy() + pCJet->neutralHadronEnergy()/pCJet->energy()); */
-
-//     // FIXME choose the correct mva
-//     if( ! pCJet->getSelection("cuts_looseJetId") ) continue;
-//     //double lMVA = pCJet->passPuJetId("full", PileupJetIdentifier::kMedium );
-//     double lMVA = pCJet->puMva("met_53x");//, PileupJetIdentifier::kMedium );
-//     // FIXME compute properly, according to what Phil does
-//     //COLIN 53 
-//     double lNeuFrac = 1.;
-//     if (fabs(pCJet->eta())<2.5)
-//       lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction() + pCJet->component( reco::PFCandidate::egamma_HF ).fraction();
-//     //COLIN old 52 recipe:
-//     // double lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction() + pCJet->component( reco::PFCandidate::egamma_HF ).fraction();
-
-
-    ///Jose: fix for summer 13,  PF id, and neutral fraction need to be consistent with one used in CMGTools/Coomon/plugins/MetFlavorProducer.h
 
     if(fabs(pCJet->eta()) <= 2.4){
       if(!(pCJet->neutralHadronEnergyFraction() < 0.99
@@ -432,6 +434,12 @@ void MVAMETProducer< T, U >::makeJets(std::vector<MetUtilities::JetInfo> &iJetIn
          ) continue;
     }
 
+    if (pCJet->pt() < minJetPt_)
+      continue;
+    if (std::abs(pCJet->eta()) > maxJetEta_)
+      continue;
+
+    // FIXME - JAN - ADD cut on PU jet ID
     double lMVA = pCJet->userFloat(puJetIdLabel_.c_str());
  
     double lNeuFrac = 1.;
@@ -448,4 +456,22 @@ void MVAMETProducer< T, U >::makeJets(std::vector<MetUtilities::JetInfo> &iJetIn
 
     iJetInfo.push_back(pJetObject);
   }
+}
+template< typename T, typename U >
+bool MVAMETProducer<T, U>::passJetID(const MVAMETProducer::JetType& jet){
+      if(fabs(jet.eta()) <= 2.4){
+      if(!(jet.neutralHadronEnergyFraction() < 0.99
+           &&jet.photonEnergyFraction() < 0.99
+           &&jet.nConstituents() > 1
+           &&jet.chargedHadronEnergyFraction() > 0
+           &&jet.chargedHadronMultiplicity() > 0
+           &&jet. electronEnergyFraction () < 0.99) 
+         ) return false ;
+    } else {
+      if(!(jet.neutralHadronEnergyFraction() < 0.99
+           &&jet.photonEnergyFraction() < 0.99
+           &&jet.nConstituents() > 1)
+         ) return false;
+    }
+  return true;
 }

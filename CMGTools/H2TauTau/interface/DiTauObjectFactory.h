@@ -143,12 +143,15 @@ void cmg::DiTauObjectFactory<T, U>::produce(edm::Event& iEvent, const edm::Event
       iEvent.getByLabel(this->metSigLabel_, metSigCands);
     }
     
+    std::cout << "GOT ALL CANDIDATES" << std::endl;
+
     std::auto_ptr<std::vector<DiTauObject>> result(new std::vector<DiTauObject>);
     std::auto_ptr<std::vector<METSignificance>> resultMETSig(new std::vector<METSignificance>);
 
 
     // Necessary?
     if( !leg1Cands->size() || !leg2Cands->size() ){
+        std::cout << "NO TAUS OR NO MUONS" << std::endl;
         iEvent.put<std::vector<DiTauObject>>(result);
         iEvent.put<std::vector<METSignificance>>(resultMETSig); 
         return;
@@ -164,12 +167,14 @@ void cmg::DiTauObjectFactory<T, U>::produce(edm::Event& iEvent, const edm::Event
             if( sameCollection && (i1 == i2) ) continue;
             
             //enable sorting only if we are using the same collection - see Savannah #20217
+            std::cout << "MAKING DI-TAU" << std::endl;
             cmg::DiTauObject cmgTmp = sameCollection ? cmg::makeDiTau<T>((*leg1Cands)[i1], (*leg2Cands)[i2]) : cmg::makeDiTau<T, U>((*leg1Cands)[i1], (*leg2Cands)[i2]); 
             
             if(metAvailable && ! metCands->empty() ) 
             {
                 T* first = dynamic_cast<T*>(cmgTmp.daughter(0));
-                U* second = dynamic_cast<U*>(cmgTmp.daughter(0));
+                U* second = dynamic_cast<U*>(cmgTmp.daughter(1));
+                std::cout << "SETTING DI-TAU" << std::endl;
                 if (metSigAvailable && !metSigCands->empty()) {
 
 
@@ -177,12 +182,15 @@ void cmg::DiTauObjectFactory<T, U>::produce(edm::Event& iEvent, const edm::Event
                 }
                 else
                     cmg::DiTauObjectFactory<T, U>::set(std::make_pair(*first, *second), metCands->at(0), cmgTmp);
+                std::cout << "PUSH BACK" << std::endl;
                 result->push_back(cmgTmp);
             }
         }
 
     }
 
+
+  std::cout << "DONE CONSTRUCTING" << std::endl;
 
     // JAN - check if this duplicate removal is really necessary
 

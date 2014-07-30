@@ -76,10 +76,10 @@ void cmg::DiObjectUpdateFactory<T, U>::produce(edm::Event& iEvent, const edm::Ev
 
     float shift1 = 0.;
     float shift2 = 0.;
-    if(typeid(T)==typeid(reco::PFTau))
+    if(typeid(T)==typeid(pat::Tau))
     {
      	shift1 = (nSigma_ * uncertainty_);
-      const reco::PFTau& tau1 = dynamic_cast<const reco::PFTau&>(*diObject.daughter(0));
+      const pat::Tau& tau1 = dynamic_cast<const pat::Tau&>(*diObject.daughter(0));
      	if((tau1.decayMode()==0)&&(shift1ProngNoPi0_!=0))
      	    shift1+=shift1ProngNoPi0_;
         //Also allow decay mode 2 according to synchronisation twiki
@@ -89,10 +89,10 @@ void cmg::DiObjectUpdateFactory<T, U>::produce(edm::Event& iEvent, const edm::Ev
      	    shift1+=shift3Prong_+ptDependence3Prong_*TMath::Min(TMath::Max(diObject.daughter(0)->pt()-32.,0.),18.);
     }
 
-    if(typeid(U)==typeid(reco::PFTau))
+    if(typeid(U)==typeid(pat::Tau))
     {
      	shift2 = (nSigma_ * uncertainty_);
-      const reco::PFTau& tau2 = dynamic_cast<const reco::PFTau&>(*diObject.daughter(1));
+      const pat::Tau& tau2 = dynamic_cast<const pat::Tau&>(*diObject.daughter(1));
      	if((tau2.decayMode()==0)&&(shift1ProngNoPi0_!=0))
      	    shift2+=shift1ProngNoPi0_;
         //Also allow decay mode 2 according to synchronisation twiki
@@ -119,16 +119,16 @@ void cmg::DiObjectUpdateFactory<T, U>::produce(edm::Event& iEvent, const edm::Ev
       // PDG Id: e 11, mu 13, tau 15, Z 23, h 25, H 35, A 35  
       if ( status == 3 && abs(id) == 15 && (motherId == 23 || motherId == 25 || motherId == 35 || motherId == 36 )){
         // match leg 1
-        if(typeid(T)==typeid(reco::PFTau)){
-          const reco::PFTau& tau1 = dynamic_cast<const reco::PFTau&>(*diObject.daughter(0));
+        if(typeid(T)==typeid(pat::Tau)){
+          const pat::Tau& tau1 = dynamic_cast<const pat::Tau&>(*diObject.daughter(0));
           if (deltaR(tau1.eta(),tau1.phi(),p.eta(),p.phi())<0.3) {
             l1genMatched = true ;
             //std::cout << __LINE__ << "]\tleg1 matched to a tau" << std::endl ;
           }
         }
         // match leg 2
-        if(typeid(U)==typeid(reco::PFTau)){
-          const reco::PFTau& tau2 = dynamic_cast<const reco::PFTau&>(*diObject.daughter(1));
+        if(typeid(U)==typeid(pat::Tau)){
+          const pat::Tau& tau2 = dynamic_cast<const pat::Tau&>(*diObject.daughter(1));
           if (deltaR(tau2.eta(),tau2.phi(),p.eta(),p.phi())<0.3) {
             l2genMatched = true ;
             //std::cout << __LINE__ << "]\tleg2 matched to a tau" << std::endl ;

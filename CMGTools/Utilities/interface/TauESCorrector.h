@@ -19,7 +19,7 @@ namespace cmg{
 
 class TauESCorrector : public edm::EDProducer {
 
-typedef std::vector<reco::PFTau> collection;
+typedef std::vector<pat::Tau> collection;
 
 public:
   TauESCorrector(const edm::ParameterSet& ps);
@@ -67,7 +67,7 @@ void cmg::TauESCorrector::produce(edm::Event& iEvent,const edm::EventSetup&)
       mi != candCands->end(); ++mi, ++index) {
 
     edm::Ref<collection> candPtr(candCands, index);
-    reco::PFTau cand(*candPtr);
+    pat::Tau cand(*candPtr);
 
     reco::Candidate::LorentzVector fourVec = cand.p4();
 

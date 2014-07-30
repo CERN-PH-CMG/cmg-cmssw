@@ -12,6 +12,7 @@
 #include "DataFormats/JetReco/interface/PFJet.h"
 #include "DataFormats/METReco/interface/PFMET.h"
 #include "DataFormats/Candidate/interface/CompositeCandidate.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
 
 // #include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
 // #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
@@ -30,7 +31,7 @@ public:
   typedef T Leg1Type;
   typedef U Leg2Type;
   typedef reco::PFMET MetType ;
-  typedef reco::PFJet   JetType;
+  typedef reco::PFJet JetType;
   typedef edm::View<JetType>           JetCollectionType;
 
   explicit RecoilCorrectedMETProducer(const edm::ParameterSet & iConfig);
@@ -266,7 +267,7 @@ void RecoilCorrectedMETProducer<T, U>::produce(edm::Event & iEvent, const edm::E
     metObj.setP4( newMETP4 );
     pOutRecBoson->push_back(RecBosonType(recBoson));
     // Create new rec boson; also recalculates mT1/mT2 etc
-    cmg::DiTauObjectFactory<Leg1Type, Leg2Type>::set(std::make_pair(recBoson.daughter(0), recBoson.daughter(1)), metObj, &pOutRecBoson->back());
+    cmg::DiTauObjectFactory<Leg1Type, Leg2Type>::set(std::make_pair(*dynamic_cast<const T*>(recBoson.daughter(0)), *dynamic_cast<const U*>(recBoson.daughter(1))), metObj, pOutRecBoson->back());
   }
   
   // iEvent.put( pOut ); 

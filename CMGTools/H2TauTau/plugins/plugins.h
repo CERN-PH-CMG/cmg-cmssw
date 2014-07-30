@@ -3,17 +3,17 @@
 #include "CMGTools/H2TauTau/interface/DiObjectUpdateFactory.h"
 
 
-typedef cmg::DiTauObjectFactory<reco::PFTau, pat::Muon> TauMuPOProducer;
-typedef cmg::DiTauObjectFactory<reco::PFTau, pat::Electron> TauElePOProducer;
-typedef cmg::DiTauObjectFactory<reco::PFTau, pat::Muon> MuElePOProducer;
-typedef cmg::DiTauObjectFactory<reco::PFTau, reco::PFTau> DiTauPOProducer;
+typedef cmg::DiTauObjectFactory<pat::Tau, pat::Muon> TauMuPOProducer;
+typedef cmg::DiTauObjectFactory<pat::Tau, pat::Electron> TauElePOProducer;
+typedef cmg::DiTauObjectFactory<pat::Tau, pat::Muon> MuElePOProducer;
+typedef cmg::DiTauObjectFactory<pat::Tau, pat::Tau> DiTauPOProducer;
 
-typedef DiTauWithSVFitProducer<reco::PFTau, pat::Muon> TauMuSVFitProducer;
-typedef DiTauWithSVFitProducer<reco::PFTau, pat::Electron> TauEleSVFitProducer;
-typedef DiTauWithSVFitProducer<reco::PFTau, pat::Muon> MuEleSVFitProducer;
-typedef DiTauWithSVFitProducer<reco::PFTau, reco::PFTau> DiTauSVFitProducer;
+typedef DiTauWithSVFitProducer<pat::Tau, pat::Muon> TauMuSVFitProducer;
+typedef DiTauWithSVFitProducer<pat::Tau, pat::Electron> TauEleSVFitProducer;
+typedef DiTauWithSVFitProducer<pat::Tau, pat::Muon> MuEleSVFitProducer;
+typedef DiTauWithSVFitProducer<pat::Tau, pat::Tau> DiTauSVFitProducer;
 
-typedef cmg::DiObjectUpdateFactory<reco::PFTau, pat::Muon> TauMuUpdateProducer;
-typedef cmg::DiObjectUpdateFactory<reco::PFTau, pat::Electron> TauEleUpdateProducer;
-typedef cmg::DiObjectUpdateFactory<reco::PFTau, pat::Muon> MuEleUpdateProducer;
-typedef cmg::DiObjectUpdateFactory<reco::PFTau, reco::PFTau> DiTauUpdateProducer;
+typedef cmg::DiObjectUpdateFactory<pat::Tau, pat::Muon> TauMuUpdateProducer;
+typedef cmg::DiObjectUpdateFactory<pat::Tau, pat::Electron> TauEleUpdateProducer;
+typedef cmg::DiObjectUpdateFactory<pat::Tau, pat::Muon> MuEleUpdateProducer;
+typedef cmg::DiObjectUpdateFactory<pat::Tau, pat::Tau> DiTauUpdateProducer;

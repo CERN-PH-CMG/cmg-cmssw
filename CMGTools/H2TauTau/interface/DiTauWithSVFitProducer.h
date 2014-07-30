@@ -97,7 +97,7 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event & iEvent, const edm::Event
 
   NSVfitStandalone::kDecayType leg1type, leg2type;
   NSVfitStandalone2011::kDecayType leg1type2011, leg2type2011;
-  if(typeid(T)==typeid(reco::PFTau)) {
+  if(typeid(T)==typeid(pat::Tau)) {
       leg1type=NSVfitStandalone::kHadDecay;
       leg1type2011=NSVfitStandalone2011::kHadDecay;
       warningMessage += " - first leg is hadronic tau";
@@ -106,7 +106,7 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event & iEvent, const edm::Event
       leg1type2011=NSVfitStandalone2011::kLepDecay;
       warningMessage += " - first leg is leptonic tau";
   }
-  if(typeid(U)==typeid(reco::PFTau)) {
+  if(typeid(U)==typeid(pat::Tau)) {
       leg2type=NSVfitStandalone::kHadDecay;
       leg2type2011=NSVfitStandalone2011::kHadDecay;
       warningMessage += " - second leg is hadronic tau";
