@@ -7,6 +7,7 @@ cmgTauMuCor = cms.EDProducer(
     leg2Collection      = cms.InputTag(''),
     #metCollection       = cms.InputTag('recoilCorrectedMET'),
     diObjectCollection  = cms.InputTag('cmgTauMuSel'),
+    genCollection = cms.InputTag('packedGenParticles'),
     nSigma              = cms.double(0),
     uncertainty         = cms.double(0.03),
     shift1ProngNoPi0    = cms.double(0.),

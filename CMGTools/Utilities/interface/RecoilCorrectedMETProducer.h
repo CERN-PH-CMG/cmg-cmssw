@@ -11,7 +11,7 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/JetReco/interface/PFJet.h"
 #include "DataFormats/METReco/interface/PFMET.h"
-#include "DataFormats/Candidate/interface/CompositeCandidate.h"
+#include "DataFormats/PatCandidates/interface/CompositeCandidate.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
 // #include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
@@ -27,7 +27,7 @@ template< typename T, typename U >
 class RecoilCorrectedMETProducer : public edm::EDProducer {
 
 public:
-  typedef reco::CompositeCandidate RecBosonType;
+  typedef pat::CompositeCandidate RecBosonType;
   typedef T Leg1Type;
   typedef U Leg2Type;
   typedef reco::PFMET MetType ;

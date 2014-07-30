@@ -5,9 +5,11 @@
 #include "TLorentzVector.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
+#include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
+
 namespace cmg{
 
-  typedef reco::CompositeCandidate DiTauObject;
+  typedef pat::CompositeCandidate DiTauObject;
 
   template< typename T, typename U>
   class DiObjectUpdateFactory : public edm::EDProducer  {
@@ -19,6 +21,7 @@ namespace cmg{
     DiObjectUpdateFactory(const edm::ParameterSet& ps):
       // diObjectFactory_( ps ),
       diObjectLabel_     (ps.getParameter<edm::InputTag>("diObjectCollection")),
+      genParticleLabel_     (ps.getParameter<edm::InputTag>("genCollection")),
       //metLabel_        (ps.getParameter<edm::InputTag>("metCollection")),
       nSigma_            (ps.getParameter<double>("nSigma")),
       uncertainty_       (ps.getParameter<double>("uncertainty")),
@@ -39,6 +42,7 @@ namespace cmg{
 
     // const DiObjectFactory< typename T::type1, typename T::type2 > diObjectFactory_;
     const edm::InputTag diObjectLabel_;
+    const edm::InputTag genParticleLabel_;
     // const edm::InputTag metLabel_;
     double nSigma_;
     double uncertainty_; 
@@ -60,9 +64,9 @@ void cmg::DiObjectUpdateFactory<T, U>::produce(edm::Event& iEvent, const edm::Ev
   edm::Handle<collection> diObjects;
   iEvent.getByLabel(diObjectLabel_,diObjects);
 
-  edm::Handle< std::vector<reco::GenParticle> > genparticles;
+  edm::Handle< std::vector<pat::PackedGenParticle> > genparticles;
   // JAN - this may not work from MiniAOD; make it configurable?
-  iEvent.getByLabel("genParticlesPruned", genparticles);
+  iEvent.getByLabel(genParticleLabel_, genparticles);
    
   std::auto_ptr<collection> result(new collection);
   
@@ -108,13 +112,13 @@ void cmg::DiObjectUpdateFactory<T, U>::produce(edm::Event& iEvent, const edm::Ev
     
     for ( size_t i=0; i< genparticles->size(); ++i) 
     {
-      const reco::GenParticle &p = (*genparticles)[i];
+      const pat::PackedGenParticle &p = (*genparticles)[i];
       int id       = p.pdgId()           ;
       int status   = p.status()          ;
       int motherId = 0                   ; 
       if ( p.numberOfMothers()>0 ) {
         //std::cout << __LINE__ << "]\tnum of mothers " << p.numberOfMothers() << "\tmy mom " << p.mother()->pdgId() << std::endl ;
-        motherId = p.mother()->pdgId() ;
+        motherId = p.mother(0)->pdgId() ;
       }
       // PDG Id: e 11, mu 13, tau 15, Z 23, h 25, H 35, A 35  
       if ( status == 3 && abs(id) == 15 && (motherId == 23 || motherId == 25 || motherId == 35 || motherId == 36 )){

@@ -10,21 +10,19 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include "CMGTools/H2TauTau/interface/METSignificance.h"
-#include "DataFormats/Candidate/interface/CompositeCandidate.h"
+#include "DataFormats/PatCandidates/interface/CompositeCandidate.h"
 
 #include <algorithm>
 #include <set>
 
-namespace cmg{
+namespace cmg {
 
-typedef reco::CompositeCandidate DiTauObject;
+typedef pat::CompositeCandidate DiTauObject;
 
 template<typename T, typename U>
 class DiTauObjectFactory : public edm::EDProducer 
 {
-
     public:
-
         DiTauObjectFactory(const edm::ParameterSet& ps) :             
             leg1Label_(ps.getParameter<edm::InputTag>("leg1Collection")),
             leg2Label_(ps.getParameter<edm::InputTag>("leg2Collection")),
@@ -32,6 +30,7 @@ class DiTauObjectFactory : public edm::EDProducer
             metSigLabel_(ps.getParameter<edm::InputTag>("metsigCollection"))
         {
           produces<std::vector<DiTauObject>>();
+          // JAN - do we still need to produce the MET significance?
           produces<std::vector<METSignificance>>();
         }
 
@@ -72,8 +71,7 @@ cmg::DiTauObject makeDiTau(const T& l1, const T& l2){
 
 
 template<typename T, typename U>
-void cmg::DiTauObjectFactory<T, U>::set(const std::pair<T, U>& pair, const reco::LeafCandidate& met, cmg::DiTauObject& obj){
-
+void cmg::DiTauObjectFactory<T, U>::set(const std::pair<T, U>& pair, const reco::LeafCandidate& met, cmg::DiTauObject& obj) {
 
   T first = pair.first;
   U second = pair.second;
@@ -88,9 +86,9 @@ void cmg::DiTauObjectFactory<T, U>::set(const std::pair<T, U>& pair, const reco:
   obj.setCharge(first.charge() + second.charge());
   obj.addDaughter(met);
 
-
   // JAN: Let's see where we set all this stuff,
   // maybe only in python!
+  // It could also be set as user floats
 
   // obj->mT_ = cmg::DiObjectFactory<T, U>::mT(pair.first, pair.second);
   // if (pair.first.isElectron() || pair.first.isMuon())
@@ -116,108 +114,71 @@ void cmg::DiTauObjectFactory<T, U>::set(const std::pair<T, U>& pair, const reco:
 
 template< typename T, typename U>
 void cmg::DiTauObjectFactory<T, U>::produce(edm::Event& iEvent, const edm::EventSetup&){
-    
-    typedef edm::View<T> collection1;
-    typedef edm::View<U> collection2;
-    typedef edm::View<reco::LeafCandidate> met_collection;
-    typedef edm::View<cmg::METSignificance> metSig_collection;
-    
-    edm::Handle<collection1> leg1Cands;
-    iEvent.getByLabel(this->leg1Label_, leg1Cands);
-    
-    edm::Handle<collection2> leg2Cands;
-    iEvent.getByLabel(this->leg2Label_, leg2Cands);
-    
-    edm::Handle<met_collection> metCands;
-    bool metAvailable = false;
-    if( !(this->metLabel_ == edm::InputTag()) ) {
-      metAvailable = true; 
-      iEvent.getByLabel(this->metLabel_, metCands);
-    }
+  
+  typedef edm::View<T> collection1;
+  typedef edm::View<U> collection2;
+  typedef edm::View<reco::LeafCandidate> met_collection;
+  typedef edm::View<cmg::METSignificance> metSig_collection;
+  
+  edm::Handle<collection1> leg1Cands;
+  iEvent.getByLabel(this->leg1Label_, leg1Cands);
+  
+  edm::Handle<collection2> leg2Cands;
+  iEvent.getByLabel(this->leg2Label_, leg2Cands);
+  
+  edm::Handle<met_collection> metCands;
+  bool metAvailable = false;
+  if (!(metLabel_ == edm::InputTag())) {
+    metAvailable = true; 
+    iEvent.getByLabel(this->metLabel_, metCands);
+  }
 
-    edm::Handle<metSig_collection> metSigCands;
+  edm::Handle<metSig_collection> metSigCands;
 
-    bool metSigAvailable = false;
-    if( !(this->metSigLabel_ == edm::InputTag()) ) {
-      metSigAvailable = true; 
-      iEvent.getByLabel(this->metSigLabel_, metSigCands);
-    }
-    
-    std::cout << "GOT ALL CANDIDATES" << std::endl;
+  bool metSigAvailable = false;
+  if (!(metSigLabel_ == edm::InputTag())) {
+    metSigAvailable = true; 
+    iEvent.getByLabel(this->metSigLabel_, metSigCands);
+  }
+  
+  std::auto_ptr<std::vector<DiTauObject>> result(new std::vector<DiTauObject>);
+  std::auto_ptr<std::vector<METSignificance>> resultMETSig(new std::vector<METSignificance>);
 
-    std::auto_ptr<std::vector<DiTauObject>> result(new std::vector<DiTauObject>);
-    std::auto_ptr<std::vector<METSignificance>> resultMETSig(new std::vector<METSignificance>);
+  // Necessary?
+  if( !leg1Cands->size() || !leg2Cands->size() ){
+      iEvent.put<std::vector<DiTauObject>>(result);
+      iEvent.put<std::vector<METSignificance>>(resultMETSig); 
+      return;
+  }
 
-
-    // Necessary?
-    if( !leg1Cands->size() || !leg2Cands->size() ){
-        std::cout << "NO TAUS OR NO MUONS" << std::endl;
-        iEvent.put<std::vector<DiTauObject>>(result);
-        iEvent.put<std::vector<METSignificance>>(resultMETSig); 
-        return;
-    }
-
-
-    const bool sameCollection = (leg1Cands.id () == leg2Cands.id());
-    // for(typename collection1::const_iterator it = leg1Cands->begin(); it != leg1Cands->end(); ++it){
-    //     for(typename collection2::const_iterator jt = leg2Cands->begin(); jt != leg2Cands->end(); ++jt){
-       for (size_t i1 = 0; i1 < leg1Cands->size(); ++i1) {
-         for (size_t i2 = 0; i2 < leg2Cands->size(); ++i2) {
-            //we skip if its the same object
-            if( sameCollection && (i1 == i2) ) continue;
-            
-            //enable sorting only if we are using the same collection - see Savannah #20217
-            std::cout << "MAKING DI-TAU" << std::endl;
-            cmg::DiTauObject cmgTmp = sameCollection ? cmg::makeDiTau<T>((*leg1Cands)[i1], (*leg2Cands)[i2]) : cmg::makeDiTau<T, U>((*leg1Cands)[i1], (*leg2Cands)[i2]); 
-            
-            if(metAvailable && ! metCands->empty() ) 
-            {
-                T* first = dynamic_cast<T*>(cmgTmp.daughter(0));
-                U* second = dynamic_cast<U*>(cmgTmp.daughter(1));
-                std::cout << "SETTING DI-TAU" << std::endl;
-                if (metSigAvailable && !metSigCands->empty()) {
-
-
-                    cmg::DiTauObjectFactory<T, U>::set(std::make_pair(*first, *second), metCands->at(0), metSigCands->at(0), cmgTmp);
-                }
-                else
-                    cmg::DiTauObjectFactory<T, U>::set(std::make_pair(*first, *second), metCands->at(0), cmgTmp);
-                std::cout << "PUSH BACK" << std::endl;
-                result->push_back(cmgTmp);
-            }
-        }
-
-    }
-
-
-  std::cout << "DONE CONSTRUCTING" << std::endl;
-
-    // JAN - check if this duplicate removal is really necessary
-
-   //  //finally, remove duplicates while preserving order
-   //  if(sameCollection){
-   //    //Jose: code below removes some good mu-tau pairs because of the way 
-   //    // two cmg objects are declared to be equal in  AnalysisDataFormats/CMGTools/src/AbstractPhysicsObject.cc
-   //    // therefore this cleaning should only be done for 2 identical collections.
-   //    // In case one builds di-objects from two collections of same kind of objects but where one of these collections is 
-   //    // modified (by skiming for example) the "sameCollection" flag may not be set correctly, then one must do the cleaning 
-   //    // by hand later.
+  const bool sameCollection = (leg1Cands.id () == leg2Cands.id());
+  for (size_t i1 = 0; i1 < leg1Cands->size(); ++i1) {
+    for (size_t i2 = 0; i2 < leg2Cands->size(); ++i2) {
+      // if the same collection, only produce each possible pair once
+      if (sameCollection && (i1 >= i2)) 
+        continue;
       
-   //    set diObjects;
-   //    for(typename collection::iterator it = result->begin(); it != result->end(); ++it){
-   //      std::pair<typename set::iterator,bool> set_it = diObjects.insert(*it);
-   //      if(!set_it.second){
-	  // it = result->erase(it);
-	  // --it;   
-   //      }
-   //    } 
-   //  }
+      //enable sorting only if we are using the same collection - see Savannah #20217
+      cmg::DiTauObject cmgTmp = sameCollection ? cmg::makeDiTau<T>((*leg1Cands)[i1], (*leg2Cands)[i2]) : cmg::makeDiTau<T, U>((*leg1Cands)[i1], (*leg2Cands)[i2]); 
+      
+      if (metAvailable && ! metCands->empty()) {
+          T* first = dynamic_cast<T*>(cmgTmp.daughter(0));
+          U* second = dynamic_cast<U*>(cmgTmp.daughter(1));
+          if (metSigAvailable && !metSigCands->empty()) {
+              cmg::DiTauObjectFactory<T, U>::set(std::make_pair(*first, *second), metCands->at(0), metSigCands->at(0), cmgTmp);
+          }
+          else
+              cmg::DiTauObjectFactory<T, U>::set(std::make_pair(*first, *second), metCands->at(0), cmgTmp);
+          result->push_back(cmgTmp);
+      }
+    }
+  }
 
-    iEvent.put(result); 
-    iEvent.put(resultMETSig); 
+  iEvent.put(result); 
+  iEvent.put(resultMETSig); 
 }
 
-}
+} // namespace cmg
 
 
 #endif /*DITAUOBJECTFACTORY_H_*/

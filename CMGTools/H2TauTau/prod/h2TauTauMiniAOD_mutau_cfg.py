@@ -1,11 +1,11 @@
 import FWCore.ParameterSet.Config as cms
-from CMGTools.Common.Tools.cmsswRelease import isNewerThan, cmsswIs44X,cmsswIs52X
+from CMGTools.Common.Tools.cmsswRelease import isNewerThan, cmsswIs44X
 
 sep_line = '-'*70
 
 process = cms.Process("H2TAUTAU")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -14,12 +14,12 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
 numberOfFilesToProcess = 1
 debugEventContent = False
 
-#tau-mu, tau-ele, di-tau, all
+# tau-mu, tau-ele, di-tau, all
 channel = 'tau-mu' # 'tau-mu' #'di-tau' 'all' 'tau-ele'
 jetRecalib = False
 useCHS = False
 
-#newSVFit enables the svfit mass reconstruction used for the H->tau tau analysis.
+# newSVFit enables the svfit mass reconstruction used for the H->tau tau analysis.
 # if false, much faster processing but mass is wrong. 
 newSVFit = True
 tauScaling = 0
@@ -36,13 +36,13 @@ print 'useCHS', useCHS
 print 'newSVFit', newSVFit
 print 'tau scaling =', tauScaling
 
-# Input  & JSON             -------------------------------------------------
+# Input & JSON             -------------------------------------------------
 
 dataset_user = 'htautau_group' 
 dataset_name = '/VBF_HToTauTau_M-125_13TeV-powheg-pythia6/Spring14dr-PU20bx25_POSTLS170_V5-v1/AODSIM/SS14/'
 dataset_files = 'miniAOD-prod_PAT_.*root'
 
-from CMGTools.Production.datasetToSource import *
+from CMGTools.Production.datasetToSource import datasetToSource
 process.source = datasetToSource(
     dataset_user,
     dataset_name,
@@ -75,45 +75,9 @@ recoilEnabled = False
 setupRecoilCorrection( process, runOnMC,
                        enable=recoilEnabled, is53X=isNewerThan('CMSSW_5_2_X'))
 
+from CMGTools.H2TauTau.tools.setupEmbedding import setupEmbedding
 
-# Kinematic reweighting for the embedded samples from here https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonTauReplacementRecHit
-# Can also put this into a separate file under tools
-
-isEmbedded = process.source.fileNames[0].find('embedded') != -1
-isRHEmbedded = process.source.fileNames[0].find('RHembedded') != -1
-
-if isEmbedded and isRHEmbedded:
-    process.load('TauAnalysis.MCEmbeddingTools.embeddingKineReweight_cff')
-
-    if channel == 'all':
-        print 'ERROR: not possible to run all the channels for the embedded samples right now'
-
-    # for "standard" e+tau channel
-    if channel == 'tau-ele':
-        process.embeddingKineReweightRECembedding.inputFileName = cms.FileInPath("TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_ePtGt20tauPtGt18_recEmbedded.root")
-        process.tauElePath.insert(-1, process.embeddingKineReweightSequenceRECembedding)
-
-    # for e+tau channel of "soft lepton" analysis
-    #embeddingKineReweightRECembedding.inputFileName = cms.FileInPath("TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_ePt9to30tauPtGt18_recEmbedded.root")
-
-    # for "standard" mu+tau channel
-    if channel == 'tau-mu':
-        process.embeddingKineReweightRECembedding.inputFileName = cms.FileInPath("TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_muPtGt16tauPtGt18_recEmbedded.root")
-        process.tauMuPath.insert(-1, process.embeddingKineReweightSequenceRECembedding)
-
-    # for mu+tau channel of "soft lepton" analysis
-    #embeddingKineReweightRECembedding.inputFileName = cms.FileInPath("TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_muPt7to25tauPtGt18_recEmbedded.root")
-
-    # for tautau channel
-    if channel == 'di-tau':
-        process.embeddingKineReweightRECembedding.inputFileName = cms.FileInPath("TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_tautau_recEmbedded.root")
-        process.diTauPath.insert(-1, process.embeddingKineReweightSequenceRECembedding)
-
-    print "Embedded samples; using kinematic reweighting file:", process.embeddingKineReweightRECembedding.inputFileName
-
-    # for emu, mumu and ee channels
-    #embeddingKineReweightRECembedding.inputFileName = cms.FileInPath("TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_recEmbedding_emu.root")
-
+isEmbedded = setupEmbedding(process, channel)
 
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()
@@ -147,25 +111,8 @@ if not runOnMC:
     process.diTauPath.remove( process.genSequence )
 
 
-
-# For ad-hoc solution
-
-#process.tauMuPath.remove()
-#process.tauMuPath.remove(process.genSequence)
 process.tauMuPath.remove(process.cmgPFJetForRecoilPresel)
 process.tauMuPath.remove(process.cmgPFJetForRecoil)
-# process.tauMuPath.remove(process.recoilCorMETTauMu)
-# process.tauMuPath.remove(process.cmgTauMuCorSVFitPreSel)
-# process.tauMuPath.remove(process.cmgTauMuCorSVFitFullSel)
-# process.tauMuPath.remove(process.mvaMETTauMu)
-
-# process.tauMuPath.remove(process.cmgTauMu)
-# process.tauMuPath.remove(process.cmgTauMuPreSel)
-# process.tauMuPath.remove(process.goodPVFilter)
-# process.tauMuPath.remove(process.mvaMETTauMu)
-# process.tauMuPath.remove(process.cmgTauMuCor)
-# process.tauMuPath.remove(process.cmgTauMuTauPtSel)
-# process.tauMuPath.remove(process.tauMuFullSelCount)
 
 #import pdb; pdb.set_trace()
 
@@ -197,7 +144,6 @@ else:
     raise ValueError('unrecognized channel')    
 
 
-
 print sep_line
 print 'INPUT:'
 print sep_line
@@ -212,7 +158,7 @@ print sep_line
 print 'runOnMC:', runOnMC
 print 
 print sep_line
-print 'OUPUT:'
+print 'OUTPUT:'
 print sep_line
 justn = 30 
 # print 'baseline selection EDM output'.ljust(justn), baselineName
@@ -220,7 +166,7 @@ justn = 30
 # print 'histograms output'.ljust(justn), histName 
 # print 'Debug event content'.ljust(justn), debugEventContent
 
-# you can enable printouts of most modules like this:
+### Enable printouts like this:
 # process.cmgTauMuCorSVFitPreSel.verbose = True
 # process.mvaMETTauMu.verbose = True
 # process.recoilCorMETTauMu.verbose= True
@@ -228,7 +174,7 @@ justn = 30
 # systematic shift on tau energy scale 
 # process.cmgTauScaler.cfg.nSigma = tauScaling
 
-from CMGTools.H2TauTau.tools.setupOutput import *
+from CMGTools.H2TauTau.tools.setupOutput import addTauMuOutput, addTauEleOutput, addDiTauOutput
 if channel=='tau-mu' or channel=='all':
     addTauMuOutput( process, debugEventContent, addPreSel=False)
 if channel=='tau-ele' or channel=='all':
@@ -239,8 +185,6 @@ if channel=='di-tau' or channel=='all':
     addDiTauOutput( process, debugEventContent, addPreSel=False)
 
 
-
-
 # Message logger setup.
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = reportInterval
@@ -248,7 +192,6 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 
 # Jet recalibration
-
 if jetRecalib: 
     process.load('Configuration.StandardSequences.Services_cff')
     process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
@@ -300,11 +243,3 @@ else:
     process.cmgTauEleCorSVFitPreSel.SVFitVersion = 1
     process.cmgDiTauCorSVFitPreSel.SVFitVersion = 1
 
-# process.tauMu_fullsel_tree_CMG.SelectEvents = cms.untracked.PSet()
-
-# process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byRawIsoMVA") > 0.5')
-# process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byRawIsoMVA") > -9999')
-# process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") < 10.')
-# if 'Higgs' in dataset_name or 'HToTauTau' in dataset_name or isEmbedded:
-#     process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") < 1.5')
-# process.cmgTauMu.cuts.baseline.tauLeg.kinematics.pt = cms.string('leg1().pt() > 10.')
