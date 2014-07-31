@@ -1,3 +1,4 @@
+
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
 from CMGTools.RootTools.RootTools import *
@@ -21,9 +22,10 @@ ttHLepAna.loose_electron_relIso = 0.15
 ttHLepAna.loose_electron_lostHits = 999 # no cut
 
 # JET (do not apply the jetID and PUID yet)
-ttHJetAna.relaxJetId = True
+ttHJetAna.relaxJetId = False
 ttHJetAna.doPuId = False
-ttHJetAna.jetEtaCentral = 5.2
+ttHJetAna.jetEta = 5.2
+ttHJetAna.jetEtaCentral = 2.5
 ttHJetAna.jetPt = 10.
 ttHJetAna.recalibrateJets = False
 ttHJetAna.jetLepDR = 0.4
