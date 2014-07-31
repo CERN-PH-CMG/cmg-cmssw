@@ -97,7 +97,7 @@ TauMuAna = cfg.Analyzer(
 dyJetsFakeAna = cfg.Analyzer(
     'DYJetsFakeAnalyzer',
     leptonType = 13,
-    src = 'packedGenParticles',
+    src = 'prunedGenParticles',
     )
 
 WNJetsAna = cfg.Analyzer(

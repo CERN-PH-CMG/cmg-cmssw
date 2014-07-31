@@ -37,8 +37,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             )
         
         # FIXME reading the genparticlespruned collection. problem elsewhere?
-        self.mchandles['genParticles'] = AutoHandle( 'packedGenParticles',
-                                                     'std::vector<pat::PackedGenParticle>' )
+        self.mchandles['genParticles'] = AutoHandle( 'prunedGenParticles',
+                                                     'std::vector<reco::GenParticle>' )
 
     def buildDiLeptons(self, cmgDiLeptons, event):
         '''Build di-leptons, associate best vertex to both legs,

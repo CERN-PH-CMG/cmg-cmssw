@@ -5,13 +5,13 @@ sep_line = '-'*70
 
 process = cms.Process("H2TAUTAU")
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
     )
 
-numberOfFilesToProcess = 1
+numberOfFilesToProcess = 10
 debugEventContent = False
 
 # tau-mu, tau-ele, di-tau, all

@@ -159,6 +159,7 @@ def bookTau( tree, pName ):
 
 def fillTau( tree, pName, tau ):
     fillLepton(tree, pName, tau)
+    import pdb; pdb.set_trace()
     for tauID in tauIDs:
         fill(tree, '{pName}_{tauID}'.format(pName=pName, tauID=tauID),
             tau.tauID(tauID))
@@ -190,8 +191,8 @@ def fillJet( tree, pName, jet ):
     fill(tree, '{pName}_looseJetId'.format(pName=pName), jet.looseJetId())
     fill(tree, '{pName}_btagMVA'.format(pName=pName), jet.btagMVA)
     fill(tree, '{pName}_area'.format(pName=pName), jet.jetArea())
-    if hasattr(jet, 'genJet') and jet.genJet:
-        fill(tree, '{pName}_genJetPt'.format(pName=pName), jet.genJet.pt())
+    if hasattr(jet, 'matchedGenJet') and jet.matchedGenJet:
+        fill(tree, '{pName}_genJetPt'.format(pName=pName), jet.matchedGenJet.pt())
 
 # vbf
 

@@ -5,7 +5,7 @@
 #include "TLorentzVector.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
-#include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 namespace cmg{
 
@@ -64,7 +64,7 @@ void cmg::DiObjectUpdateFactory<T, U>::produce(edm::Event& iEvent, const edm::Ev
   edm::Handle<collection> diObjects;
   iEvent.getByLabel(diObjectLabel_,diObjects);
 
-  edm::Handle< std::vector<pat::PackedGenParticle> > genparticles;
+  edm::Handle< std::vector<reco::GenParticle> > genparticles;
   // JAN - this may not work from MiniAOD; make it configurable?
   iEvent.getByLabel(genParticleLabel_, genparticles);
    
@@ -112,7 +112,7 @@ void cmg::DiObjectUpdateFactory<T, U>::produce(edm::Event& iEvent, const edm::Ev
     
     for ( size_t i=0; i< genparticles->size(); ++i) 
     {
-      const pat::PackedGenParticle &p = (*genparticles)[i];
+      const reco::GenParticle &p = (*genparticles)[i];
       int id       = p.pdgId()           ;
       int status   = p.status()          ;
       int motherId = 0                   ; 
