@@ -6,16 +6,15 @@
 
 namespace cmg {
 
-typedef DiTauObjectFactory< pat::Tau, pat::Tau > DiTauFactory;
-typedef DiTauObjectFactory< pat::Tau, pat::Electron > TauEleFactory;
-//typedef DiObjectFactory< cmg::TauMu::type1, cmg::TauMu::type2 > TauMuFactory;
-typedef DiTauObjectFactory< pat::Tau, pat::Muon > TauMuFactory;
-typedef DiTauObjectFactory< pat::Muon, pat::Electron > MuEleFactory;
+typedef DiTauObjectFactory< pat::Tau, pat::Tau > DiTauPOProducer;
+typedef DiTauObjectFactory< pat::Tau, pat::Electron > TauElePOProducer;
+typedef DiTauObjectFactory< pat::Tau, pat::Muon > TauMuPOProducer;
+typedef DiTauObjectFactory< pat::Muon, pat::Electron > MuElePOProducer;
 
-typedef DiObjectUpdateFactory< pat::Tau, pat::Muon > TauMuUpdateFactory;
-typedef DiObjectUpdateFactory< pat::Tau, pat::Electron > TauEleUpdateFactory;
-typedef DiObjectUpdateFactory< pat::Muon, pat::Electron  > MuEleUpdateFactory;
-typedef DiObjectUpdateFactory< pat::Tau, pat::Tau> DiTauUpdateFactory;
+typedef DiObjectUpdateFactory< pat::Tau, pat::Muon > TauMuUpdateProducer;
+typedef DiObjectUpdateFactory< pat::Tau, pat::Electron > TauEleUpdateProducer;
+typedef DiObjectUpdateFactory< pat::Muon, pat::Electron  > MuEleUpdateProducer;
+typedef DiObjectUpdateFactory< pat::Tau, pat::Tau> DiTauUpdateProducer;
 
 }
 
