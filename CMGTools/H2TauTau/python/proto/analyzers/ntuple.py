@@ -57,12 +57,11 @@ def bookDiLepton(tree):
 def fillDiLepton(tree, diLepton):
     fill(tree, 'visMass', diLepton.mass())
     fill(tree, 'svfitMass', diLepton.svfitMass())
-    # JAN FIXME - re-add these variables, in particular MT
-    # fill(tree, 'pZetaMET', diLepton.pZetaMET())
-    # fill(tree, 'pZetaVis', diLepton.pZetaVis())
-    # fill(tree, 'pZetaDisc', diLepton.pZetaDisc())
-    # fill(tree, 'mt', diLepton.mTLeg2())
-    # fill(tree, 'mtleg1', diLepton.mTLeg1())
+    fill(tree, 'pZetaMET', diLepton.pZetaMET())
+    fill(tree, 'pZetaVis', diLepton.pZetaVis())
+    fill(tree, 'pZetaDisc', diLepton.pZetaDisc())
+    fill(tree, 'mt', diLepton.mTLeg2())
+    fill(tree, 'mtleg1', diLepton.mTLeg1())
     fill(tree, 'met', diLepton.met().pt())
     fill(tree, 'metphi', diLepton.met().phi())
 

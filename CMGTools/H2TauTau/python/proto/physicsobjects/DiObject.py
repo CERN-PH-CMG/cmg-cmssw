@@ -1,7 +1,9 @@
 import math
 
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, Tau
+from CMGTools.RootTools.physicsobjects.HTauTauElectron import HTauTauElectron
 from CMGTools.RootTools.utils.DeltaR import deltaR2
+from ROOT import TVector3
 
 class DiObject( object ):
     
@@ -35,7 +37,6 @@ class DiObject( object ):
                            '\t'+str(self.leg2())] )
 
 
-
 class DiTau( DiObject ):
     def __init__(self, diobject):
         super(DiTau, self).__init__(diobject)
@@ -60,10 +61,61 @@ class DiTau( DiObject ):
         return self.userFloat('ptUncert')
 
     def pZeta(self):
-        raise RuntimeError('pZeta - NOT IMPLEMENTED')
+        if not hasattr(self, 'pZetaVis_'):
+            self.calcPZeta()
+        return self.pZetaVis_ + self.pZetaMET_
 
+    def pZetaVis(self):
+        if not hasattr(self, 'pZetaVis_'):
+            self.calcPZeta()
+        return self.pZetaVis_
+
+    def pZetaMET(self):
+        if not hasattr(self, 'pZetaMET_'):
+            self.calcPZeta()
+        return self.pZetaMET_
+
+    def pZetaDisc(self):
+        if not hasattr(self, 'pZetaVis_'):
+            self.calcPZeta()
+        return self.pZetaMET_ - 0.5*self.pZetaVis_
+
+    # Calculate the pzeta variables with the same algorithm
+    # as previously in the C++ DiObject class
+    def calcPZeta(self):
+        tau1PT = TVector3(self.leg1().p4().x(), self.leg1().p4().y(), 0.)
+        tau2PT = TVector3(self.leg2().p4().x(), self.leg2().p4().y(), 0.)
+        metPT = TVector3(self.met().p4().x(), self.met().p4().y(), 0.)
+        zetaAxis = (tau1PT.Unit() + tau2PT.Unit()).Unit()
+        self.pZetaVis_ = tau1PT*zetaAxis + tau2PT*zetaAxis
+        self.pZetaMET_ = metPT*zetaAxis
+
+    def mTLeg1(self):
+        if hasattr(self, 'mt1'):
+            return self.mt1
+        else:
+            self.mt1 = self.calcMT(self.leg1(), self.met())
+            return self.mt1
+
+    def mTLeg2(self):
+        if hasattr(self, 'mt2'):
+            return self.mt2
+        else:
+            self.mt2 = self.calcMT(self.leg2(), self.met())
+            return self.mt2
+
+    # This is the default transverse mass by convention
     def mt(self):
-        raise RuntimeError('mt - NOT IMPLEMENTED')
+        return self.mTLeg2()
+
+    # Calculate the transverse mass with the same algorithm
+    # as previously in the C++ DiObject class
+    @staticmethod
+    def calcMT(cand1, cand2):
+        pt = cand1.pt() + cand2.pt()
+        px = cand1.px() + cand2.px()
+        py = cand1.py() + cand2.py()
+        return math.sqrt( pt*pt - px*px - py*py)
 
     def match(self, genParticles):
         #TODO review matching algorithm
@@ -100,11 +152,10 @@ class DiTau( DiObject ):
             return (self.leg1DeltaR, self.leg2DeltaR) 
 
 class DiMuon( DiTau ):
-
     def __init__(self, diobject):
         super(DiMuon, self).__init__(diobject)
-        self.mu1 = Muon( diobject.leg1() )
-        self.mu2 = Muon( diobject.leg2() )
+        self.mu1 = Muon( super(DiMuon, self).leg1() )
+        self.mu2 = Muon( super(DiMuon, self).leg2() )
 
     def __str__(self):
         header = 'DiMuon: mvis=%3.2f, sumpT=%3.2f' \
@@ -113,17 +164,11 @@ class DiMuon( DiTau ):
         return '\n'.join( [header] )
 
 
-
 class TauMuon( DiTau ):
     def __init__(self, diobject):
         super(TauMuon, self).__init__(diobject)
         self.tau = Tau( super(TauMuon, self).leg1() )
         self.mu = Muon( super(TauMuon, self).leg2() )
-        #COLIN some of the matching stuff could go up 
-        self.leg1Gen = None
-        self.leg2Gen = None
-        self.leg1DeltaR = -1
-        self.leg2DeltaR = -1
 
     def leg1(self):
         return self.tau
@@ -131,3 +176,26 @@ class TauMuon( DiTau ):
     def leg2(self):
         return self.mu
      
+class TauElectron( DiTau ):
+    def __init__(self, diobject):
+        super(TauElectron, self).__init__(diobject)
+        self.tau = Tau( super(TauElectron, self).leg1() )
+        self.ele = HTauTauElectron( super(TauElectron, self).leg1() )
+
+    def leg1(self):
+        return self.tau
+
+    def leg2(self):
+        return self.ele
+
+class MuonElectron( DiTau ):
+    def __init__(self, diobject):
+        super(MuonElectron, self).__init__(diobject)
+        self.mu = Muon( super(MuonElectron, self).leg1() )
+        self.ele = HTauTauElectron( super(MuonElectron, self).leg2() )
+
+    def leg1(self):
+        return self.mu
+
+    def leg2(self):
+        return self.ele
