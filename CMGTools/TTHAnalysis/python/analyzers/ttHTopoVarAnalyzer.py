@@ -53,7 +53,6 @@ class ttHTopoVarAnalyzer( Analyzer ):
         for lepton in event.selectedLeptons:
             event.mtw = mtw(lepton, event.met)
 
-#        for myTau in self.handles['taus'].product():
         for myTau in event.selectedTaus:
             event.mtwTau = mtw(myTau, event.met)
             foundTau = True
@@ -174,8 +173,8 @@ class ttHTopoVarAnalyzer( Analyzer ):
         event.mt2=-999
         event.mt2lept=-999        
         event.mt2w=-999
-        event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( -999, -999, -999, -999 )
-        event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( -999, -999, -999, -999 )
+        event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+        event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
 
         self.makeMT(event)
         self.makeMT2(event)
