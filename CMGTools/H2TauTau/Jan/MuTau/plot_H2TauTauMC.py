@@ -4,7 +4,6 @@ import copy
 import time
 import re
 
-from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC import H2TauTauDataMC
 from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents
 from CMGTools.H2TauTau.proto.plotter.rootutils import *

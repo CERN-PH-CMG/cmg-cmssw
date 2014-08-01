@@ -1,26 +1,18 @@
 import imp
-import math
 import copy
-import time
-import re
 import os
 import string
-import ROOT
 
-from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC import H2TauTauDataMC
 from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents
 from CMGTools.H2TauTau.proto.plotter.rootutils import *
 from CMGTools.H2TauTau.proto.plotter.categories_TauMu import *
 from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass_finer, binning_svfitMass, binning_svfitMass_mssm2013, binning_svfitMass_mssm, binning_svfitMass_mssm_nobtag
-from CMGTools.H2TauTau.proto.plotter.titles import xtitles
 from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
 from CMGTools.H2TauTau.proto.plotter.datacards import *
-from CMGTools.H2TauTau.proto.plotter.embed import setupEmbedding as setupEmbedding
 from CMGTools.H2TauTau.proto.plotter.plotinfo import plots_All, plots_All_sorted_indices
 # from CMGTools.RootTools.Style import *
-from ROOT import kPink, TH1, TPaveText, TPad
 
 from plot_helper import *
 
