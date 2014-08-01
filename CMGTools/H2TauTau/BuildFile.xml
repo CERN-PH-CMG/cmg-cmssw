@@ -1,9 +1,7 @@
-
 <use name="boost"/>
 <use name="rootcintex"/>
 <use name="rootrflx"/>
 <use name="roofitcore"/>
-
 <use name="FWCore/Framework"/>
 <use name="FWCore/ParameterSet"/>
 <use name="FWCore/FWLite"/>
@@ -16,7 +14,6 @@
 <use name="PhysicsTools/PatUtils"/>
 <use name="PhysicsTools/PatExamples"/>
 <use name="PhysicsTools/SelectorUtils"/>
-<use name="AnalysisDataFormats/CMGTools"/>
 <use name="TauAnalysis/SVFitStandAlone"/>
 <use name="TauAnalysis/CandidateTools"/>
 <use name="CMGTools/Common"/>

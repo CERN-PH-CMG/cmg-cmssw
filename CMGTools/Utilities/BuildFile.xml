@@ -17,8 +17,6 @@
 <use name="PhysicsTools/PatExamples"/>
 <use name="PhysicsTools/SelectorUtils"/>
 
-<use name="AnalysisDataFormats/CMGTools"/>
-
 <use name="TauAnalysis/SVFitStandAlone"/>
 <use name="TauAnalysis/CandidateTools"/>
 

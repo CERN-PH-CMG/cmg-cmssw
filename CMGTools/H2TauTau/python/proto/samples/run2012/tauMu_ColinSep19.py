@@ -1,6 +1,6 @@
 import itertools
 from CMGTools.RootTools.fwlite.Config import printComps
-from CMGTools.H2TauTau.proto.samples.connect import connect
+from CMGTools.RootTools.utils.connect import connect
 
 from CMGTools.H2TauTau.proto.samples.run2012.data import *
 from CMGTools.H2TauTau.proto.samples.run2012.embed import *

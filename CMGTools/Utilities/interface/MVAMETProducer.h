@@ -11,31 +11,36 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
 
-// #include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
-#include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
-#include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
-#include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
+#include "CMGTools/H2TauTau/interface/METSignificance.h"
 
 #include "CMGTools/Utilities/interface/MVAMet.h"
 #include "CMGTools/Common/interface/MetUtilities.h"
 #include "DataFormats/JetReco/interface/PileupJetIdentifier.h"
+#include "DataFormats/PatCandidates/interface/CompositeCandidate.h"
 
 #include "CMGTools/H2TauTau/interface/DiTauObjectFactory.h"
 
 #include <sstream>
 
-template< typename RecBosonType >
+/// This calculates the MVA MET as for the 2012 analysis.
+/// The class should be updated once a proper JetMET recipe based on
+/// miniAOD is available.
+
+template< typename T, typename U >
 class MVAMETProducer : public edm::EDProducer {
 
 public:
-  // typedef cmg::TauMu RecBosonType;
-  typedef typename RecBosonType::type1 Leg1Type;
-  typedef typename RecBosonType::type2 Leg2Type;
-/*   typedef cmg::BaseMET MetType;  */
+  typedef pat::CompositeCandidate RecBosonType;
+  typedef T Leg1Type;
+  typedef U Leg2Type;
   typedef reco::PFMET MetType;
-  typedef cmg::PFJet   JetType;
-  typedef std::vector<JetType>           JetCollectionType;
+  typedef pat::Jet JetType;
+  typedef std::vector<JetType> JetCollectionType;
   typedef math::XYZTLorentzVector LorentzVector;
 
   explicit MVAMETProducer(const edm::ParameterSet & iConfig);
@@ -46,14 +51,11 @@ private:
 
   void produce(edm::Event & iEvent, const edm::EventSetup & iSetup);
   
-  /// return the number of jets that do not match the legs of the boson 
-  /// within deltaR
-/*   int  nJets( const JetCollectionType& jets,  */
-/* 	      const RecBosonType& boson, float deltaR); */
-
   void makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,
 		const std::vector<JetType>& iCJets,
 		const reco::VertexCollection &iVertices,double iRho) const;
+
+  bool passJetID(const JetType& jet);
 
   edm::InputTag pfmetSrc_;
   edm::InputTag tkmetSrc_;
@@ -64,11 +66,13 @@ private:
   edm::InputTag recBosonSrc_;
   edm::InputTag jetSrc_;
   std::string puJetIdLabel_;
-  edm::InputTag leadJetSrc_;
+  
+  double minJetPt_;
+  double maxJetEta_;
 
   edm::InputTag vertexSrc_;
 
-  edm::InputTag nJetsPtGt1Src_;
+  // edm::InputTag nJetsPtGt1Src_;
 
   edm::InputTag rhoSrc_;
 
@@ -83,8 +87,8 @@ private:
 
 
 
-template< typename RecBosonType >
-MVAMETProducer< RecBosonType >::MVAMETProducer(const edm::ParameterSet & iConfig) : 
+template< typename T, typename U >
+MVAMETProducer< T, U >::MVAMETProducer(const edm::ParameterSet & iConfig) : 
   pfmetSrc_( iConfig.getParameter<edm::InputTag>("pfmetSrc") ), 
   tkmetSrc_( iConfig.getParameter<edm::InputTag>("tkmetSrc") ), 
   nopumetSrc_( iConfig.getParameter<edm::InputTag>("nopumetSrc") ), 
@@ -93,14 +97,16 @@ MVAMETProducer< RecBosonType >::MVAMETProducer(const edm::ParameterSet & iConfig
   recBosonSrc_( iConfig.getParameter<edm::InputTag>("recBosonSrc") ),
   jetSrc_( iConfig.getParameter<edm::InputTag>("jetSrc") ),
   puJetIdLabel_( iConfig.getParameter<std::string>("puJetIdLabel") ),
-  leadJetSrc_( iConfig.getParameter<edm::InputTag>("leadJetSrc") ),
+  minJetPt_( iConfig.getParameter<double>("minJetPt")),
+  maxJetEta_( iConfig.getParameter<double>("maxJetEta")),
   vertexSrc_( iConfig.getParameter<edm::InputTag>("vertexSrc") ),
-  nJetsPtGt1Src_( iConfig.getParameter<edm::InputTag>("nJetsPtGt1Src") ),
+  // nJetsPtGt1Src_( iConfig.getParameter<edm::InputTag>("nJetsPtGt1Src") ),
   rhoSrc_( iConfig.getParameter<edm::InputTag>("rhoSrc") ),
   deltaRCut_(0.5),
   enable_( iConfig.getParameter<bool>("enable") ),
   verbose_( iConfig.getUntrackedParameter<bool>("verbose", false ) ) {
     
+  // JAN - This was never deleted?
   mvaMet_ = new MVAMet(0.1);
 
   mvaMet_->Initialize(iConfig,
@@ -115,18 +121,42 @@ MVAMETProducer< RecBosonType >::MVAMETProducer(const edm::ParameterSet & iConfig
 //   cout<<iConfig.getParameter<std::string>("weights_gbrmetu1cov")<<endl;
 //   cout<<iConfig.getParameter<std::string>("weights_gbrmetu2cov")<<endl;
      
-   
-  // will produce one BaseMET for each recBoson 
-  // produces< std::vector<MetType> >();
-  // produces< std::vector<cmg::METSignificance> >();
   produces< std::vector<RecBosonType> >();
+  produces< std::vector<cmg::METSignificance> >();
+}
+
+// JAN - should go to external file (e.g. tools) but leave it here for now
+float signalChargedFractionpT(const pat::Tau& tau) {
+  float sumE = 0;
+  float sumECharged = 0;
+  
+  const reco::CandidatePtrVector& charged = tau.signalChargedHadrCands();
+  const reco::CandidatePtrVector& photons = tau.signalGammaCands();
+  const reco::CandidatePtrVector& neutrals = tau.signalNeutrHadrCands();
+  
+
+  for( unsigned i=0; i<charged.size(); ++i) {
+    float energy = charged[i]->pt();
+    sumE += energy;
+    sumECharged += energy;
+  }
+
+  for( unsigned i=0; i<photons.size(); ++i) {
+    sumE += photons[i]->pt();
+  }
+
+  for( unsigned i=0; i<neutrals.size(); ++i) {
+    sumE += neutrals[i]->pt();
+  }
+
+  assert(sumE>0);
+
+  return sumECharged / sumE;
 }
 
 
-template< typename RecBosonType >
-void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
-
-  typedef std::auto_ptr< std::vector< MetType > >  OutPtr;
+template< typename T, typename U >
+void MVAMETProducer<T, U>::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
 
   edm::Handle< std::vector<MetType> > pfmetH;
   iEvent.getByLabel(pfmetSrc_, pfmetH);
@@ -186,23 +216,28 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
   edm::Handle< std::vector<JetType> > jetH;
   iEvent.getByLabel(jetSrc_, jetH);
 
-  edm::Handle< std::vector<cmg::BaseJet> > leadJetH;
-  iEvent.getByLabel(leadJetSrc_, leadJetH);
 
   //assert( leadJetH->size() > 1 );
   const LorentzVector *leadJet   =0; 
   const LorentzVector *leadJet2 = 0; 
-  if(leadJetH->size() > 0 ) leadJet  = &(*leadJetH)[0].p4();
-  if(leadJetH->size() > 1 ) leadJet2 = &(*leadJetH)[1].p4();
+  if(jetH->size() > 0 ) leadJet  = &(*jetH)[0].p4();
+  if(jetH->size() > 1 ) leadJet2 = &(*jetH)[1].p4();
 
   edm::Handle< reco::VertexCollection > vertexH;
   iEvent.getByLabel(vertexSrc_, vertexH);
 
   unsigned nGoodVtx = vertexH->size();
 
-  edm::Handle< int > nJetsPtGt1H;
-  iEvent.getByLabel(nJetsPtGt1Src_, nJetsPtGt1H);
-  int nJetsPtGt1 = *nJetsPtGt1H;
+  // edm::Handle< int > nJetsPtGt1H;
+  // iEvent.getByLabel(nJetsPtGt1Src_, nJetsPtGt1H);
+  int nJetsPtGt1 = 0; //*nJetsPtGt1H;
+
+  for (const auto& jet : *jetH) {
+    if (passJetID(jet))
+      nJetsPtGt1++;
+  }
+
+
   //cout<<" nJetsPtGt1 "<<nJetsPtGt1<<endl;
 
   edm::Handle< double > rhoH;
@@ -216,7 +251,7 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
   // std::auto_ptr< std::vector<cmg::METSignificance> > pOutSig( new std::vector<cmg::METSignificance>() );
 
   std::auto_ptr< std::vector<RecBosonType> > pOutRecBoson( new std::vector<RecBosonType>() );
-
+  std::auto_ptr< std::vector<cmg::METSignificance> > pOutSig( new std::vector<cmg::METSignificance>() );
 
   for( unsigned i=0; i<recBosonH->size(); ++i) {
     const RecBosonType& recBoson = recBosonH->at(i);
@@ -226,16 +261,16 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
     for( unsigned i=0; i<jetH->size(); ++i) {
       //cout<<"input jets "<<jetH->at(i).pt()<<" "<<jetH->at(i).eta()<<" "<<jetH->at(i).phi()<<endl;
       if( jetH->at(i).pt() < 1 ) continue; 
-      if(deltaR(jetH->at(i).p4(),recBoson.leg1().p4()) < 0.5) {nJetsPtGt1Clean--; continue;}
-      if(deltaR(jetH->at(i).p4(),recBoson.leg2().p4()) < 0.5) {nJetsPtGt1Clean--; continue;}
+      if(deltaR(jetH->at(i).p4(),recBoson.daughter(0)->p4()) < 0.5) {nJetsPtGt1Clean--; continue;}
+      if(deltaR(jetH->at(i).p4(),recBoson.daughter(1)->p4()) < 0.5) {nJetsPtGt1Clean--; continue;}
       //cout<<"cleaned jets "<<jetH->at(i).pt()<<" "<<jetH->at(i).eta()<<" "<<jetH->at(i).phi()<<endl;
       if( jetH->at(i).pt() < 30 ) continue;
       nJetsPtGt30++; 
     }
     if(nJetsPtGt1Clean<0) nJetsPtGt1Clean=0;
        
-    LorentzVector lCand0 = recBoson.leg1().p4();
-    LorentzVector lCand1 = recBoson.leg2().p4();
+    LorentzVector lCand0 = recBoson.daughter(0)->p4();
+    LorentzVector lCand1 = recBoson.daughter(1)->p4();
     std::vector<LorentzVector> lVisible;
     lVisible.push_back(lCand0);
     lVisible.push_back(lCand1);
@@ -248,44 +283,44 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
       if(cleanLeadJet  == 0)            continue;
       if(cleanLeadJet2 == 0 && i0 == 1) continue;
       bool pClean = false;
-      if(i0 == 0 && deltaR(*cleanLeadJet,recBoson.leg1().p4()) < 0.5) pClean = true;
-      if(i0 == 0 && deltaR(*cleanLeadJet,recBoson.leg2().p4()) < 0.5) pClean = true;
-      if(i0 == 1 && deltaR(*cleanLeadJet2,recBoson.leg1().p4()) < 0.5) pClean = true;
-      if(i0 == 1 && deltaR(*cleanLeadJet2,recBoson.leg2().p4()) < 0.5) pClean = true;
+      if(i0 == 0 && deltaR(*cleanLeadJet,recBoson.daughter(0)->p4()) < 0.5) pClean = true;
+      if(i0 == 0 && deltaR(*cleanLeadJet,recBoson.daughter(1)->p4()) < 0.5) pClean = true;
+      if(i0 == 1 && deltaR(*cleanLeadJet2,recBoson.daughter(0)->p4()) < 0.5) pClean = true;
+      if(i0 == 1 && deltaR(*cleanLeadJet2,recBoson.daughter(1)->p4()) < 0.5) pClean = true;
       if(pClean) { 
 	lIndex++;
-	if(i0 == 0 && int(leadJetH->size())  > lIndex   ) cleanLeadJet  = &(*leadJetH)[lIndex].p4();
-	if(           int(leadJetH->size())  > lIndex+1 ) cleanLeadJet2 = &(*leadJetH)[lIndex+1].p4();
-	if(i0 == 0 && int(leadJetH->size())  < lIndex+1 ) cleanLeadJet  = 0;
-	if(           int(leadJetH->size())  < lIndex+2 ) cleanLeadJet2 = 0;
+	if(i0 == 0 && int(jetH->size())  > lIndex   ) cleanLeadJet  = &(*jetH)[lIndex].p4();
+	if(           int(jetH->size())  > lIndex+1 ) cleanLeadJet2 = &(*jetH)[lIndex+1].p4();
+	if(i0 == 0 && int(jetH->size())  < lIndex+1 ) cleanLeadJet  = 0;
+	if(           int(jetH->size())  < lIndex+2 ) cleanLeadJet2 = 0;
 	i0--; 
       }
     }
 
     math::XYZPoint dummyVertex;
 
-
     // need to clean up the MET from di-lepton legs. 
     LorentzVector cleanpfmetp4 = pfmet->p4();
-    cleanpfmetp4 += recBoson.leg1().p4();
-    cleanpfmetp4 += recBoson.leg2().p4();
-    double cleanpfmetsumet = pfmet->sumEt() - recBoson.leg1().pt() - recBoson.leg2().pt();
+    cleanpfmetp4 += recBoson.daughter(0)->p4();
+    cleanpfmetp4 += recBoson.daughter(1)->p4();
+    double cleanpfmetsumet = pfmet->sumEt() - recBoson.daughter(0)->pt() - recBoson.daughter(1)->pt();
     reco::PFMET cleanpfmet( pfmet->getSpecific(),
 			    cleanpfmetsumet, cleanpfmetp4, dummyVertex);
 
     LorentzVector cleanpucmetp4 = pucmet->p4();
-    cleanpucmetp4 += recBoson.leg1().p4();
-    cleanpucmetp4 += recBoson.leg2().p4();
-    double cleanpucmetsumet = pucmet->sumEt() - recBoson.leg1().pt() - recBoson.leg2().pt();    
+    cleanpucmetp4 += recBoson.daughter(0)->p4();
+    cleanpucmetp4 += recBoson.daughter(1)->p4();
+    double cleanpucmetsumet = pucmet->sumEt() - recBoson.daughter(0)->pt() - recBoson.daughter(1)->pt();    
     reco::PFMET cleanpucmet( pucmet->getSpecific(),
 			     cleanpucmetsumet, cleanpucmetp4, dummyVertex);
 
-    LorentzVector tau1Chargedp4 = recBoson.leg1().p4();
-    if(typeid(recBoson.leg1())==typeid(cmg::Tau))
-        tau1Chargedp4 *= dynamic_cast<const cmg::Tau&>(recBoson.leg1()).signalChargedFractionpT();
-    LorentzVector tau2Chargedp4 = recBoson.leg2().p4();
-    if(typeid(recBoson.leg2())==typeid(cmg::Tau))
-        tau2Chargedp4 *= dynamic_cast<const cmg::Tau&>(recBoson.leg2()).signalChargedFractionpT();
+    LorentzVector tau1Chargedp4 = recBoson.daughter(0)->p4();
+    if (typeid(T) == typeid(pat::Tau)) {
+        tau1Chargedp4 *= signalChargedFractionpT(*dynamic_cast<const pat::Tau*>(recBoson.daughter(0)));
+    }
+    LorentzVector tau2Chargedp4 = recBoson.daughter(1)->p4();
+    if (typeid(U) == typeid(pat::Tau))
+        tau2Chargedp4 *= signalChargedFractionpT(*dynamic_cast<const pat::Tau*>(recBoson.daughter(1)));
     
     LorentzVector cleantkmetp4 = tkmet->p4();
     cleantkmetp4 += tau1Chargedp4;
@@ -335,31 +370,28 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
 			 jetInfo, 
 			 verbose_ );
 
-    // if I do that, sumEt is incorrect...
-    // pOut->push_back( met );
-    // pOutSig->push_back( lMVAMetInfo.second );
-    //pOut->back().setP4( lMVAMetInfo.first ); 
+
+    pOutSig->push_back( lMVAMetInfo.second );
 
     cmg::METSignificance metSig(lMVAMetInfo.second);
     met.setP4(lMVAMetInfo.first);
 
-    // JAN - add rec boson
+    // The MET is saved in the di-tau object as it depends on the event
+    // interpretation
     pOutRecBoson->push_back(RecBosonType(recBoson));
-    cmg::DiTauObjectFactory<Leg1Type, Leg2Type>::set(std::make_pair(recBoson.leg1(), recBoson.leg2()), met, metSig, &pOutRecBoson->back());
+    cmg::DiTauObjectFactory<Leg1Type, Leg2Type>::set(std::make_pair(*(dynamic_cast<const T*>(recBoson.daughter(0))), *(dynamic_cast<const U*>(recBoson.daughter(1)))), met, metSig, pOutRecBoson->back());
 
     if(verbose_) {
       std::cout<<"  ---------------- "<<std::endl;
       std::cout<<"\trec boson: "<<recBoson<<std::endl;
-      std::cout<<"\t\tleg1: "<<recBoson.leg1()<<std::endl;
-      std::cout<<"\t\tleg2: "<<recBoson.leg2()<<std::endl;
+      std::cout<<"\t\tleg1: "<<recBoson.daughter(0)<<std::endl;
+      std::cout<<"\t\tleg2: "<<recBoson.daughter(1)<<std::endl;
       std::cout<<"\t\tNEW MET: "<<lMVAMetInfo.first.Pt()<<"   "<<lMVAMetInfo.first.Phi()<<std::endl;
       std::cout<<""<<endl;
     }
-    // FIXME add matrix
   }
   
-  // iEvent.put( pOut ); 
-  // iEvent.put( pOutSig ); 
+  iEvent.put( pOutSig ); 
   iEvent.put( pOutRecBoson );
 
   if(verbose_) {
@@ -368,51 +400,47 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
   }
 }
 
-template< typename RecBosonType >
-void MVAMETProducer< RecBosonType >::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,
+template< typename T, typename U >
+void MVAMETProducer< T, U >::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,
 					      const std::vector<JetType>& iCJets,
 					      const reco::VertexCollection &iVertices,double iRho) const { 
   for(int i1 = 0; i1 < (int) iCJets .size(); i1++) {   // corrected jets collection                                         
     const JetType     *pCJet  = &(iCJets.at(i1));
-/*     if( !passPFLooseId(pCJet) ) continue; */
-/*     double lJec = 0; */
-/*     double lMVA = jetMVA(pCJet,lJec,iVertices[0],iVertices,false); */
-/*     double lNeuFrac = (pCJet->neutralEmEnergy()/pCJet->energy() + pCJet->neutralHadronEnergy()/pCJet->energy()); */
 
-//     // FIXME choose the correct mva
-//     if( ! pCJet->getSelection("cuts_looseJetId") ) continue;
-//     //double lMVA = pCJet->passPuJetId("full", PileupJetIdentifier::kMedium );
-//     double lMVA = pCJet->puMva("met_53x");//, PileupJetIdentifier::kMedium );
-//     // FIXME compute properly, according to what Phil does
-//     //COLIN 53 
-//     double lNeuFrac = 1.;
-//     if (fabs(pCJet->eta())<2.5)
-//       lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction() + pCJet->component( reco::PFCandidate::egamma_HF ).fraction();
-//     //COLIN old 52 recipe:
-//     // double lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction() + pCJet->component( reco::PFCandidate::egamma_HF ).fraction();
-
-
-    ///Jose: fix for summer 13,  PF id, and neutral fraction need to be consistent with one used in CMGTools/Coomon/plugins/MetFlavorProducer.h
     if(fabs(pCJet->eta()) <= 2.4){
-      if(!(pCJet->component(5).fraction() < 0.99
-	   &&pCJet->component(4).fraction() < 0.99
-	   &&pCJet->nConstituents() > 1
-	   &&pCJet->component(1).fraction() > 0
-	   &&pCJet->component(1).number() > 0
-	   &&pCJet->component(2).fraction() < 0.99) 
+      if(!(pCJet->neutralHadronEnergyFraction() < 0.99
+           &&pCJet->photonEnergyFraction() < 0.99
+           &&pCJet->nConstituents() > 1
+           &&pCJet->chargedHadronEnergyFraction() > 0
+           &&pCJet->chargedHadronMultiplicity() > 0
+           &&pCJet-> electronEnergyFraction () < 0.99) 
          ) continue ;
     } else {
-      if(!(pCJet->component(5).fraction() < 0.99
-	   &&pCJet->component(4).fraction() < 0.99
-	   &&pCJet->nConstituents() > 1)
-	 ) continue;
+      if(!(pCJet->neutralHadronEnergyFraction() < 0.99
+           &&pCJet->photonEnergyFraction() < 0.99
+           &&pCJet->nConstituents() > 1)
+         ) continue;
     }
 
-    double lMVA = pCJet->puMva(puJetIdLabel_.c_str());
- 
+    if (pCJet->pt() < minJetPt_)
+      continue;
+    if (std::abs(pCJet->eta()) > maxJetEta_)
+      continue;
+
+    // FIXME - JAN - ADD cut on PU jet ID
+    double lMVA = pCJet->userFloat(puJetIdLabel_.c_str());
+
+    // Check available PU jet IDs with the following; need consultation to 
+    // check what's planned for miniAOD
+
+    // const auto& names = pCJet->userFloatNames();
+
+    // for (const auto& name : names)
+    //   std::cout << "Jet UF: " << name << std::endl;
+
     double lNeuFrac = 1.;
     if (fabs(pCJet->eta())<2.5)
-      lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction();
+      lNeuFrac = pCJet->photonEnergyFraction() + pCJet->neutralHadronEnergyFraction();
 
 
     MetUtilities::JetInfo pJetObject; 
@@ -420,8 +448,26 @@ void MVAMETProducer< RecBosonType >::makeJets(std::vector<MetUtilities::JetInfo>
     pJetObject.mva      = lMVA;
     pJetObject.neutFrac = lNeuFrac;
 
-    //std::cout<<" MVAMETProducer::makeJets  final:  "<<i1<<"  "<<pJetObject.p4.pt()<<" "<<pJetObject.mva<<" "<<pJetObject.neutFrac<<std::endl;
-
     iJetInfo.push_back(pJetObject);
   }
+}
+
+// JAN - this is error-prone - apply jet ID in fewer places
+template< typename T, typename U >
+bool MVAMETProducer<T, U>::passJetID(const MVAMETProducer::JetType& jet){
+      if(fabs(jet.eta()) <= 2.4){
+      if(!(jet.neutralHadronEnergyFraction() < 0.99
+           &&jet.photonEnergyFraction() < 0.99
+           &&jet.nConstituents() > 1
+           &&jet.chargedHadronEnergyFraction() > 0
+           &&jet.chargedHadronMultiplicity() > 0
+           &&jet. electronEnergyFraction () < 0.99) 
+         ) return false ;
+    } else {
+      if(!(jet.neutralHadronEnergyFraction() < 0.99
+           &&jet.photonEnergyFraction() < 0.99
+           &&jet.nConstituents() > 1)
+         ) return false;
+    }
+  return true;
 }

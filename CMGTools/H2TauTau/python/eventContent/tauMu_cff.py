@@ -4,17 +4,13 @@ import copy
 from CMGTools.H2TauTau.eventContent.common_cff import * 
 
 tauMuSpecific = [
-    'drop cmgTaucmgMuoncmgDiObjects_*_*_*',
-    'keep *_cmgTauMuCorSVFitFullSel_*_*',
+    # 'drop cmgTaucmgMuoncmgDiObjects_*_*_*',
     ]
 
 tauMuSpecificDebug = copy.deepcopy( tauMuSpecific)
 tauMuSpecificDebug.extend( [
-    'keep *_cmgTauMu_*_*',
-    'keep *_cmgTauMuPreSel_*_*',
-    'keep *_cmgTauMuFullSel_*_*',
-    'keep *_recoilCorMETTauMu_*_*',
-    'keep *_cmgTauMuCorPreSel_*_*',    
+    # 'drop *_cmgTauMu_*_*',
+ 
     ] )
 
 tauMu = copy.deepcopy( common )

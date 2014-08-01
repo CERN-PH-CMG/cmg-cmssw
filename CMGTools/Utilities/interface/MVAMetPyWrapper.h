@@ -2,7 +2,7 @@
 #define __CMGTools_Utilities_MVAMetPyWrapper__
 
 #include "CMGTools/Utilities/interface/MVAMet.h"
-#include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
+#include "CMGTools/H2TauTau/interface/METSignificance.h"
 
 class MVAMetPyWrapper : public MVAMet {
   

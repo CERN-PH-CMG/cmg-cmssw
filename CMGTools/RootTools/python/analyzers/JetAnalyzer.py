@@ -45,15 +45,13 @@ class JetAnalyzer( Analyzer ):
         super(JetAnalyzer, self).declareHandles()
 
         self.handles['jets'] = AutoHandle( self.cfg_ana.jetCol,
-                                           'std::vector<cmg::PFJet>' )
+                                           'std::vector<pat::Jet>' )
         if self.cfg_comp.isMC:
             # and ("BB" in self.cfg_comp.name):
-            self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
-                                                         'std::vector<reco::GenParticle>' )
-            self.mchandles['genJets'] = AutoHandle('genJetSel',
-                                                   'std::vector<cmg::PhysicsObjectWithPtr< edm::Ptr<reco::GenJet> > >')
-##             self.mchandles['genJetsP'] = AutoHandle('ak5GenJetsNoNu',
-##                                                     'std::vector< reco::GenJet >')
+            self.mchandles['genParticles'] = AutoHandle( 'packedGenParticles',
+                                                         'std::vector<pat::PackedGenParticle>' )
+            self.mchandles['genJets'] = AutoHandle('slimmedGenJets',
+                                                   'std::vector<reco::GenJet>')
 
     def beginLoop(self):
         super(JetAnalyzer,self).beginLoop()
@@ -95,10 +93,8 @@ class JetAnalyzer( Analyzer ):
                 pairs = matchObjectCollection( [jet], genJets, 0.25*0.25)
                 if pairs[jet] is None:
                     pass
-                    #jet.genJet = None
                 else:
-                    jet.genJet = pairs[jet] 
-                # print jet, jet.genJet
+                    jet.matchedGenJet = pairs[jet] 
 
             #Add JER correction for MC jets. Requires gen-jet matching. 
             if self.cfg_comp.isMC and hasattr(self.cfg_ana, 'jerCorr') and self.cfg_ana.jerCorr:
@@ -175,7 +171,7 @@ class JetAnalyzer( Analyzer ):
 
         Requires some attention when genJet matching fails.
         '''
-        if not hasattr(jet, 'genJet'):
+        if not hasattr(jet, 'matchedGenJet'):
             return
 
         #import pdb; pdb.set_trace()
@@ -186,7 +182,7 @@ class JetAnalyzer( Analyzer ):
         for i, maxEta in enumerate(maxEtas):
             if eta < maxEta:
                 pt = jet.pt()
-                deltaPt = (pt - jet.genJet.pt()) * corrections[i]
+                deltaPt = (pt - jet.matchedGenJet.pt()) * corrections[i]
                 totalScale = (pt + deltaPt) / pt
 
                 if totalScale < 0.:
@@ -210,7 +206,7 @@ class JetAnalyzer( Analyzer ):
         jet.scaleEnergy(totalScale)
 
     def testJetID(self, jet):
-        jet.puJetIdPassed = jet.puJetId(wp53x=True)
+        jet.puJetIdPassed = jet.puJetId()
         jet.pfJetIdPassed = jet.jetID("POG_PFID_Loose")
 
         if self.cfg_ana.relaxJetId:

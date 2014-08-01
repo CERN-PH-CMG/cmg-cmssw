@@ -14,10 +14,10 @@ else:
     wpId = 2 # see MetUtilies.cc
 pfMetForRegression   = cms.EDProducer(
     "MetFlavorProducer",
-    CorrJetName     = cms.InputTag("patJets"),
-    PFCandidateName = cms.InputTag("particleFlow"),
-    VertexName      = cms.InputTag("offlinePrimaryVertices"),
-    RhoName         = cms.InputTag('kt6PFJets','rho'),
+    CorrJetName     = cms.InputTag("slimmedJets"),
+    PFCandidateName = cms.InputTag("packedPFCandidates"),
+    VertexName      = cms.InputTag("offlineSlimmedPrimaryVertices"),
+    RhoName         = cms.InputTag('fixedGridRhoFastjetAll'),
     JetPtMin        = cms.double(jetPtMin), # should be 0 for 5X and 1 for 4X
     dZMin           = cms.double(0.1),
     MetFlavor       = cms.int32(0),  # 0 PF  1 TK  2 No PU 3 PU  4 PUC

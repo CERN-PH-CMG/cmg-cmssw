@@ -99,9 +99,8 @@ class VBFAnalyzer( Analyzer ):
                 pairs = matchObjectCollection( [jet], genJets, 0.25*0.25)
                 if pairs[jet] is None:
                     pass
-                    #jet.genJet = None
                 else:
-                    jet.genJet = pairs[jet] 
+                    jet.matchedGenJet = pairs[jet] 
 
             #Add JER correction for MC jets. Requires gen-jet matching
             if self.cfg_comp.isMC and hasattr(self.cfg_ana, 'jerCorr') and self.cfg_ana.jerCorr:
@@ -185,7 +184,7 @@ class VBFAnalyzer( Analyzer ):
 
         Requires some attention when genJet matching fails.
         '''
-        if not hasattr(jet, 'genJet'):
+        if not hasattr(jet, 'matchedGenJet'):
             return
 
         corrections = [0.052, 0.057, 0.096, 0.134, 0.288]
@@ -195,7 +194,7 @@ class VBFAnalyzer( Analyzer ):
         for i, maxEta in enumerate(maxEtas):
             if eta < maxEta:
                 pt = jet.pt()
-                deltaPt = (pt - jet.genJet.pt()) * corrections[i]
+                deltaPt = (pt - jet.matchedGenJet.pt()) * corrections[i]
                 totalScale = (pt + deltaPt) / pt
                 if totalScale < 0.:
                     totalScale = 0.

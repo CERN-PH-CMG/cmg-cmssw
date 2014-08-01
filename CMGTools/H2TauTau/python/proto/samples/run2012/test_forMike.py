@@ -2,8 +2,8 @@ import CMGTools.RootTools.fwlite.Config as cfg
 import copy
 import itertools
 from CMGTools.RootTools.fwlite.Config import printComps
-from CMGTools.H2TauTau.proto.samples.connect import connect
-from CMGTools.H2TauTau.proto.samples.splitFactor import splitFactor
+from CMGTools.RootTools.utils.connect import connect
+from CMGTools.RootTools.utils.splitFactor import splitFactor
 from CMGTools.RootTools.json.jsonPick import jsonPick
 from CMGTools.H2TauTau.officialJSONS import jsonMap
 

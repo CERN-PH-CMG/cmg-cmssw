@@ -11,11 +11,11 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
-
-// #include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
-#include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
-#include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
-#include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
+// #include "DataFormats/JetReco/interface/PFJet.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
 
 #include "CMGTools/Utilities/interface/MVAMet.h"
 #include "CMGTools/Common/interface/MetUtilities.h"
@@ -28,7 +28,8 @@ class MVAMETProducerPreselLep : public edm::EDProducer {
 
 public:
   typedef reco::PFMET MetType;
-  typedef cmg::PFJet   JetType;
+  // typedef reco::PFJet   JetType;
+  typedef pat::Jet   JetType;
   typedef std::vector<JetType>           JetCollectionType;
   typedef math::XYZTLorentzVector LorentzVector;
 
@@ -132,13 +133,13 @@ void MVAMETProducerPreselLep::produce(edm::Event & iEvent, const edm::EventSetup
   iEvent.getByLabel(pumetSrc_, pumetH);
 
 
-  edm::Handle< std::vector<cmg::Muon> > preselMuonList_;
+  edm::Handle< std::vector<reco::Muon> > preselMuonList_;
   iEvent.getByLabel(preselMuonListTag_, preselMuonList_);
 
-  edm::Handle< std::vector<cmg::Electron> > preselElectronList_;
+  edm::Handle< std::vector<pat::Electron> > preselElectronList_;
   iEvent.getByLabel(preselElectronListTag_, preselElectronList_);
 
-  edm::Handle< std::vector<cmg::Tau> > preselTauList_;
+  edm::Handle< std::vector<pat::Tau> > preselTauList_;
   iEvent.getByLabel(preselTauListTag_, preselTauList_);
 
   
@@ -170,7 +171,7 @@ void MVAMETProducerPreselLep::produce(edm::Event & iEvent, const edm::EventSetup
   edm::Handle< std::vector<JetType> > jetH;
   iEvent.getByLabel(jetSrc_, jetH);
 
-  edm::Handle< std::vector<cmg::BaseJet> > leadJetH;
+  edm::Handle< std::vector<JetType> > leadJetH;
   iEvent.getByLabel(leadJetSrc_, leadJetH);
 
   //assert( leadJetH->size() > 1 );
@@ -200,30 +201,30 @@ void MVAMETProducerPreselLep::produce(edm::Event & iEvent, const edm::EventSetup
   std::auto_ptr< std::vector<cmg::METSignificance> > pOutSig( new std::vector<cmg::METSignificance>() );
 
 
-  std::vector<const cmg::Muon * >  cleanMuonList_;
-  std::vector<const cmg::Electron *>  cleanElectronList_;
-  std::vector<const cmg::Tau * >  cleanTauList_;
+  std::vector<const reco::Muon * >  cleanMuonList_;
+  std::vector<const pat::Electron *>  cleanElectronList_;
+  std::vector<const pat::Tau * >  cleanTauList_;
   
   //clean the muons from electrons based on pT
-  for(std::vector<cmg::Muon>::const_iterator candM=preselMuonList_->begin(); candM!=preselMuonList_->end(); ++candM){
+  for(std::vector<reco::Muon>::const_iterator candM=preselMuonList_->begin(); candM!=preselMuonList_->end(); ++candM){
     bool pass=1;
-    for(std::vector<cmg::Electron>::const_iterator candE=preselElectronList_->begin(); candE!=preselElectronList_->end(); ++candE)
+    for(std::vector<pat::Electron>::const_iterator candE=preselElectronList_->begin(); candE!=preselElectronList_->end(); ++candE)
       if( deltaR(candM->p4(),candE->p4())<0.5 && candM->pt()<candE->pt() )pass=0;
     if(pass)cleanMuonList_.push_back(&(*candM));
   }   
   //clean the electrons from muons based on pT
-  for(std::vector<cmg::Electron>::const_iterator candE=preselElectronList_->begin(); candE!=preselElectronList_->end(); ++candE){
+  for(std::vector<pat::Electron>::const_iterator candE=preselElectronList_->begin(); candE!=preselElectronList_->end(); ++candE){
     bool pass=1;
-    for(std::vector<cmg::Muon>::const_iterator candM=preselMuonList_->begin(); candM!=preselMuonList_->end(); ++candM)
+    for(std::vector<reco::Muon>::const_iterator candM=preselMuonList_->begin(); candM!=preselMuonList_->end(); ++candM)
       if(deltaR(candE->p4(),candM->p4())<0.5 && candE->pt()<candM->pt())pass=0;
     if(pass)cleanElectronList_.push_back(&(*candE));
   }   
   //clean the taus from muons and electrons
-  for(std::vector<cmg::Tau>::const_iterator candT=preselTauList_->begin(); candT!=preselTauList_->end(); ++candT){
+  for(std::vector<pat::Tau>::const_iterator candT=preselTauList_->begin(); candT!=preselTauList_->end(); ++candT){
     bool pass=1;
-    for(std::vector<cmg::Muon>::const_iterator candM=preselMuonList_->begin(); candM!=preselMuonList_->end(); ++candM)
+    for(std::vector<reco::Muon>::const_iterator candM=preselMuonList_->begin(); candM!=preselMuonList_->end(); ++candM)
       if(deltaR(candT->p4(),candM->p4())<0.5)pass=0;
-    for(std::vector<cmg::Electron>::const_iterator candE=preselElectronList_->begin(); candE!=preselElectronList_->end(); ++candE)
+    for(std::vector<pat::Electron>::const_iterator candE=preselElectronList_->begin(); candE!=preselElectronList_->end(); ++candE)
       if(deltaR(candT->p4(),candE->p4())<0.5)pass=0;
     if(pass)cleanTauList_.push_back(&(*candT));
   }   
@@ -391,14 +392,16 @@ void MVAMETProducerPreselLep::produce(edm::Event & iEvent, const edm::EventSetup
   for( unsigned l=0; l<cleanElectronList_.size(); ++l)
     cleantkmetp4 += cleanElectronList_.at(l)->p4();
   for( unsigned l=0; l<cleanTauList_.size(); ++l)
-    cleantkmetp4 += cleanTauList_.at(l)->p4() * cleanTauList_.at(l)->signalChargedFraction();
+    //  JAN - this is now >pT< as in MVAMet, so not backwards compatible
+    cleantkmetp4 += cleanTauList_.at(l)->p4() * signalChargedFractionpT(*cleanTauList_.at(l));
   double cleantkmetsumet = tkmet->sumEt();
   for( unsigned l=0; l<cleanMuonList_.size(); ++l)
     cleantkmetsumet -= cleanMuonList_.at(l)->pt();
   for( unsigned l=0; l<cleanElectronList_.size(); ++l)
     cleantkmetsumet -= cleanElectronList_.at(l)->pt();
   for( unsigned l=0; l<cleanTauList_.size(); ++l)
-    cleantkmetsumet -= cleanTauList_.at(l)->pt()* cleanTauList_.at(l)->signalChargedFraction();
+    //  JAN - this is now >pT< as in MVAMet, so not backwards compatible
+    cleantkmetsumet -= cleanTauList_.at(l)->pt()* signalChargedFractionpT(*cleanTauList_.at(l));
   reco::PFMET cleantkmet( tkmet->getSpecific(), cleantkmetsumet, cleantkmetp4, dummyVertex);
 
   ///////No PU MET
@@ -408,14 +411,14 @@ void MVAMETProducerPreselLep::produce(edm::Event & iEvent, const edm::EventSetup
   for( unsigned l=0; l<cleanElectronList_.size(); ++l)
     cleannopumetp4 += cleanElectronList_.at(l)->p4();
   for( unsigned l=0; l<cleanTauList_.size(); ++l)
-    cleannopumetp4 += cleanTauList_.at(l)->p4() * cleanTauList_.at(l)->signalChargedFraction();
+    cleannopumetp4 += cleanTauList_.at(l)->p4() * signalChargedFractionpT(*cleanTauList_.at(l));
   double cleannopumetsumet = nopumet->sumEt();
   for( unsigned l=0; l<cleanMuonList_.size(); ++l)
     cleannopumetsumet -= cleanMuonList_.at(l)->pt();
   for( unsigned l=0; l<cleanElectronList_.size(); ++l)
     cleannopumetsumet -= cleanElectronList_.at(l)->pt();
   for( unsigned l=0; l<cleanTauList_.size(); ++l)
-    cleannopumetsumet -= cleanTauList_.at(l)->pt() * cleanTauList_.at(l)->signalChargedFraction();
+    cleannopumetsumet -= cleanTauList_.at(l)->pt() * signalChargedFractionpT(*cleanTauList_.at(l));
   reco::PFMET cleannopumet( nopumet->getSpecific(), cleannopumetsumet, cleannopumetp4, dummyVertex);
   ////////////////////////////////////////////////////////////////////////////////
 
@@ -487,24 +490,24 @@ void MVAMETProducerPreselLep::makeJets(std::vector<MetUtilities::JetInfo> &iJetI
     
     //PF jet id 
     if(fabs(pCJet->eta()) <= 2.4){
-      if(!(pCJet->component(5).fraction() < 0.99
-           &&pCJet->component(4).fraction() < 0.99
+      if(!(pCJet->neutralHadronEnergyFraction() < 0.99
+           &&pCJet->photonEnergyFraction() < 0.99
            &&pCJet->nConstituents() > 1
-           &&pCJet->component(1).fraction() > 0
-           &&pCJet->component(1).number() > 0
-           &&pCJet->component(2).fraction() < 0.99) 
+           &&pCJet->chargedHadronEnergyFraction() > 0
+           &&pCJet->chargedHadronMultiplicity() > 0
+           &&pCJet-> electronEnergyFraction () < 0.99) 
          ) continue ;
     } else {
-      if(!(pCJet->component(5).fraction() < 0.99
-           &&pCJet->component(4).fraction() < 0.99
+      if(!(pCJet->neutralHadronEnergyFraction() < 0.99
+           &&pCJet->photonEnergyFraction() < 0.99
            &&pCJet->nConstituents() > 1)
          ) continue;
     }
 
-    double lMVA = pCJet->puMva("met53x"); 
+    double lMVA = pCJet->userFloat("pileupJetId:fullDiscriminant"); 
     double lNeuFrac = 1.;
     if (fabs(pCJet->eta())<2.5)
-      lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction();
+      lNeuFrac = pCJet->photonEnergyFraction() + pCJet->neutralHadronEnergyFraction();
 
 
     MetUtilities::JetInfo pJetObject; 

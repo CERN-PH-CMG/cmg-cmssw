@@ -7,7 +7,7 @@ import subprocess
 import re
 
 from CMGTools.Production.cmgdbApi import CmgdbApi
-from CMGTools.H2TauTau.proto.samples.getFiles import getFiles
+from CMGTools.RootTools.utils.getFiles import getFiles
 
 db = CmgdbApi()
 db.connect()

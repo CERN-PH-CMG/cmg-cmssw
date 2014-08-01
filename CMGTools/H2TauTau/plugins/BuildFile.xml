@@ -1,4 +1,3 @@
-<use name="AnalysisDataFormats/CMGTools"/>
 <use name="CMGTools/RootTools"/>
 <use name="rootmath"/>
 <export></export>

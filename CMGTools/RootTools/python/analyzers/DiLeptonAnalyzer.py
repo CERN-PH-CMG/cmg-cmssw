@@ -214,10 +214,10 @@ class DiLeptonAnalyzer( Analyzer ):
 
     def declareHandles(self):        
         super(DiLeptonAnalyzer, self).declareHandles()
-        self.handles['cmgTriggerObjectSel'] =  AutoHandle(
-            'cmgTriggerObjectSel',
-            'std::vector<cmg::TriggerObject>'
-            )
+        # self.handles['cmgTriggerObjectSel'] =  AutoHandle(
+        #     'cmgTriggerObjectSel',
+        #     'std::vector<cmg::TriggerObject>'
+        #     )
     
     def leptonAccept(self, leptons):
         '''Should implement a default version running on event.leptons.'''
