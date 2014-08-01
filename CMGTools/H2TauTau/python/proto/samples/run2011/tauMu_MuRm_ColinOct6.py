@@ -2,12 +2,12 @@ import itertools
 import copy
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
-from CMGTools.H2TauTau.proto.samples.connect import connect
+from CMGTools.RootTools.utils.connect import connect
 from CMGTools.H2TauTau.tools.jsonPick import jsonPick
-from CMGTools.H2TauTau.proto.samples.triggers_tauMu import data_triggers_2011A, data_triggers_2011B, mc_triggers
+from CMGTools.H2TauTau.proto.samples.run2011.triggers_tauMu import data_triggers_2011A, data_triggers_2011B, mc_triggers
 
-from CMGTools.H2TauTau.proto.samples.ewk import DYJets as DYJetsMuRm
-from CMGTools.H2TauTau.proto.samples.ewk import WJets 
+from CMGTools.H2TauTau.proto.samples.run2011.ewk import DYJets as DYJetsMuRm
+from CMGTools.H2TauTau.proto.samples.run2011.ewk import WJets 
 
 
 DYJetsMuRm.name = 'DYJetsMuRm'

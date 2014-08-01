@@ -3,13 +3,13 @@ import copy
 from CMGTools.Production.getFiles import getFiles
 from CMGTools.RootTools.fwlite.Config import printComps
 
-from CMGTools.H2TauTau.proto.samples.data import *
-from CMGTools.H2TauTau.proto.samples.embed import *
-# from CMGTools.H2TauTau.proto.samples.ewk import *
-# from CMGTools.H2TauTau.proto.samples.diboson import *
-from CMGTools.H2TauTau.proto.samples.higgs import *
+from CMGTools.H2TauTau.proto.samples.run2011.data import *
+from CMGTools.H2TauTau.proto.samples.run2011.embed import *
+# from CMGTools.H2TauTau.proto.samples.run2011.ewk import *
+# from CMGTools.H2TauTau.proto.samples.run2011.diboson import *
+from CMGTools.H2TauTau.proto.samples.run2011.higgs import *
 
-from CMGTools.H2TauTau.proto.samples.triggers_tauMu import mc_triggers
+from CMGTools.H2TauTau.proto.samples.run2011.triggers_tauMu import mc_triggers
 
 MC = copy.copy( mc_higgs )
 HiggsVBF125Small = copy.deepcopy( HiggsVBF125 )

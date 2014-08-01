@@ -1,8 +1,8 @@
-from CMGTools.H2TauTau.proto.samples.data import *
-from CMGTools.H2TauTau.proto.samples.embed import *
-from CMGTools.H2TauTau.proto.samples.mc_fall11 import *
-from CMGTools.H2TauTau.proto.samples.higgs import *
-from CMGTools.H2TauTau.proto.samples.triggers_tauMu import data_triggers_2011A, data_triggers_2011B, mc_triggers_fall11
+from CMGTools.H2TauTau.proto.samples.run2011.data import *
+from CMGTools.H2TauTau.proto.samples.run2011.embed import *
+from CMGTools.H2TauTau.proto.samples.run2011.mc_fall11 import *
+from CMGTools.H2TauTau.proto.samples.run2011.higgs import *
+from CMGTools.H2TauTau.proto.samples.run2011.triggers_tauMu import data_triggers_2011A, data_triggers_2011B, mc_triggers_fall11
 
 aod = 'V3'
 pat = 'PAT_CMG_TestMVAs'

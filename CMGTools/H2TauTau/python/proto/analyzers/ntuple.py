@@ -159,7 +159,6 @@ def bookTau( tree, pName ):
 
 def fillTau( tree, pName, tau ):
     fillLepton(tree, pName, tau)
-    import pdb; pdb.set_trace()
     for tauID in tauIDs:
         fill(tree, '{pName}_{tauID}'.format(pName=pName, tauID=tauID),
             tau.tauID(tauID))

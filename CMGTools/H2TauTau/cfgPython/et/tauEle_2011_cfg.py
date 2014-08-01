@@ -146,14 +146,14 @@ treeProducerXCheck = cfg.Analyzer(
 #########################################################################################
 
 # from CMGTools.H2TauTau.proto.samples.run2011.tauMu_ColinJun25 import * 
-# from CMGTools.H2TauTau.proto.samples.tauMu_ColinJul4 import * 
-# from CMGTools.H2TauTau.proto.samples.tauMu_Sync_ColinAug30 import *
+# from CMGTools.H2TauTau.proto.samples.run2011.tauMu_ColinJul4 import * 
+# from CMGTools.H2TauTau.proto.samples.run2011.tauMu_Sync_ColinAug30 import *
 
-# from CMGTools.H2TauTau.proto.samples.tauMu_ColinSep20 import *
+# from CMGTools.H2TauTau.proto.samples.run2011.tauMu_ColinSep20 import *
 
-# from CMGTools.H2TauTau.proto.samples.tauEle_Up_ColinOct31 import *
-# from CMGTools.H2TauTau.proto.samples.tauEle_Down_ColinOct31 import *
-from CMGTools.H2TauTau.proto.samples.tauEle_Sync_Colin import *
+# from CMGTools.H2TauTau.proto.samples.run2011.tauEle_Up_ColinOct31 import *
+# from CMGTools.H2TauTau.proto.samples.run2011.tauEle_Down_ColinOct31 import *
+from CMGTools.H2TauTau.proto.samples.run2011.tauEle_Sync_Colin import *
 
 #########################################################################################
 

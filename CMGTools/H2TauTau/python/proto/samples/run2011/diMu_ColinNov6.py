@@ -1,13 +1,13 @@
 import itertools
 import copy
 from CMGTools.RootTools.fwlite.Config import printComps
-from CMGTools.H2TauTau.proto.samples.connect import connect
-from CMGTools.H2TauTau.proto.samples.splitFactor import splitFactor
+from CMGTools.RootTools.utils.connect import connect
+from CMGTools.RootTools.utils.splitFactor import splitFactor
 from CMGTools.H2TauTau.tools.jsonPick import jsonPick
 
-from CMGTools.H2TauTau.proto.samples.data_dimuon import *
-from CMGTools.H2TauTau.proto.samples.ewk import *
-from CMGTools.H2TauTau.proto.samples.diboson import *
+from CMGTools.H2TauTau.proto.samples.run2011.data_dimuon import *
+from CMGTools.H2TauTau.proto.samples.run2011.ewk import *
+from CMGTools.H2TauTau.proto.samples.run2011.diboson import *
 
 aliases = {
     '/DYJetsToLL_TuneZ2_M-50_7TeV.*START42.*/VertexWeight':'DYJets',

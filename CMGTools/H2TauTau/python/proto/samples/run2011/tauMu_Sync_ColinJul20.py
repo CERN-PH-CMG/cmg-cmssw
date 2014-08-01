@@ -1,10 +1,10 @@
 import itertools
 from CMGTools.RootTools.fwlite.Config import printComps
-from CMGTools.H2TauTau.proto.samples.connect import connect
-from CMGTools.H2TauTau.proto.samples.triggers_tauMu import data_triggers_2011A, data_triggers_2011B, mc_triggers_fall11
+from CMGTools.RootTools.utils.connect import connect
+from CMGTools.H2TauTau.proto.samples.run2011.triggers_tauMu import data_triggers_2011A, data_triggers_2011B, mc_triggers_fall11
 from CMGTools.Production.getFiles import getFiles
 
-from CMGTools.H2TauTau.proto.samples.higgs import *
+from CMGTools.H2TauTau.proto.samples.run2011.higgs import *
 
 MC = copy.copy( mc_higgs )
 for sam in MC:

@@ -86,7 +86,7 @@ treeProducer = cfg.Analyzer(
 #########################################################################################
 
 
-from CMGTools.H2TauTau.proto.samples.diMu_ColinNov6 import *
+from CMGTools.H2TauTau.proto.samples.run2011.diMu_ColinNov6 import *
 
 #########################################################################################
 

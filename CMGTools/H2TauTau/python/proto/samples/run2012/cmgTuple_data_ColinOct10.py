@@ -1,7 +1,7 @@
 import copy
 from CMGTools.RootTools.fwlite.Config import printComps
-from CMGTools.H2TauTau.proto.samples.connect import connect
-from CMGTools.H2TauTau.proto.samples.splitFactor import splitFactor
+from CMGTools.RootTools.utils.connect import connect
+from CMGTools.RootTools.utils.splitFactor import splitFactor
 from CMGTools.H2TauTau.proto.samples.computeLumi import computeLumi
 from CMGTools.H2TauTau.tools.jsonPick import jsonPick
 

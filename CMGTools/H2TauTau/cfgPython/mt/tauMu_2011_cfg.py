@@ -182,7 +182,7 @@ treeProducerXCheck = cfg.Analyzer(
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.tauMu_Sync_Colin import * 
+from CMGTools.H2TauTau.proto.samples.run2011.tauMu_Sync_Colin import * 
 
 #########################################################################################
 

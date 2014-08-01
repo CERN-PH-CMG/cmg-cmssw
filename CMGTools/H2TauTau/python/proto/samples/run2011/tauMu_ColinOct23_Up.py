@@ -1,16 +1,16 @@
 import itertools
 import copy
 from CMGTools.RootTools.fwlite.Config import printComps
-from CMGTools.H2TauTau.proto.samples.connect import connect
-from CMGTools.H2TauTau.proto.samples.splitFactor import splitFactor
+from CMGTools.RootTools.utils.connect import connect
+from CMGTools.RootTools.utils.splitFactor import splitFactor
 
-from CMGTools.H2TauTau.proto.samples.data import *
-from CMGTools.H2TauTau.proto.samples.embed import *
-from CMGTools.H2TauTau.proto.samples.ewk import *
-from CMGTools.H2TauTau.proto.samples.diboson import *
-from CMGTools.H2TauTau.proto.samples.higgs import *
+from CMGTools.H2TauTau.proto.samples.run2011.data import *
+from CMGTools.H2TauTau.proto.samples.run2011.embed import *
+from CMGTools.H2TauTau.proto.samples.run2011.ewk import *
+from CMGTools.H2TauTau.proto.samples.run2011.diboson import *
+from CMGTools.H2TauTau.proto.samples.run2011.higgs import *
 
-from CMGTools.H2TauTau.proto.samples.triggers_tauMu import data_triggers_2011A, data_triggers_2011B, mc_triggers
+from CMGTools.H2TauTau.proto.samples.run2011.triggers_tauMu import data_triggers_2011A, data_triggers_2011B, mc_triggers
 
 aliases = {
     '/VBF_HToTauTau.*START42.*':'HiggsVBF',

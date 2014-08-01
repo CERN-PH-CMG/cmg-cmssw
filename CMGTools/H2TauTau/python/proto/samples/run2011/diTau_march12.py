@@ -1,4 +1,4 @@
-from CMGTools.H2TauTau.proto.samples.data import *
+from CMGTools.H2TauTau.proto.samples.run2011.data import *
 
 aod = 'V3'
 pat = 'PAT_CMG_TestMVAs'
