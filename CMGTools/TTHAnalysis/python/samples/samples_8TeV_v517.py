@@ -245,7 +245,7 @@ T1tttt_2J = [ T1tttt_2J_1,T1tttt_2J_2,T1tttt_2J_3,T1tttt_2J_4,T1tttt_2J_5,T1tttt
 T5VV_2J = [ T5VV_2J_1,T5VV_2J_2,T5VV_2J_3,T5VV_2J_4,T5VV_2J_5,T5VV_2J_6,T5VV_2J_7 ]
 T2DegenerateStop_2J = [ T2DegenerateStop_2J_1, T2DegenerateStop_2J_2, T2DegenerateStop_2J_3, T2DegenerateStop_2J_4 ]
 T2qq_2J = [ T2qq_2J_1, T2qq_2J_2, T2qq_2J_3, T2qq_2J_4 ]
-T2bb_2J = [ T2qq_2J_1, T2qq_2J_2 ]
+T2bb_2J = [ T2bb_2J_1, T2bb_2J_2 ]
 
 susySamples = T1tttt_2J + T5VV_2J + T2DegenerateStop_2J + T2qq_2J + T2bb_2J
 
