@@ -188,6 +188,23 @@ class ttHTopoVarAnalyzer( Analyzer ):
             
             event.mt2_gen = davismt2.get_mt2()
             
+#### do the mt2 with two b jets
+
+        if len(event.bjetsMedium)>=2:
+
+            metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
+            visaVector = TVectorD(3,array.array('d',[0.,event.bjetsMedium[0].px(), event.bjetsMedium[0].py()]))
+            visbVector = TVectorD(3,array.array('d',[0.,event.bjetsMedium[1].px(), event.bjetsMedium[1].py()]))
+            
+            metVector =numpy.asarray(metVector,dtype='double')
+            visaVector =numpy.asarray(visaVector,dtype='double')
+            visbVector =numpy.asarray(visbVector,dtype='double')
+            
+            davismt2.set_momenta(visaVector,visbVector,metVector);
+            davismt2.set_mn(0);
+            
+            event.mt2bb = davismt2.get_mt2()  
+
         
 ## ===> leptonic MT2 (as used in the SUS-13-025 )
 
@@ -234,7 +251,8 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
         event.mt2_gen=-999
         event.mt2=-999
-        event.mt2lept=-999        
+        event.mt2lept=-999
+        event.mt2bb=-999        
         event.mt2w=-999
         event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
         event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )

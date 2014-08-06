@@ -29,6 +29,7 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             ##--------------------------------------------------
             NTupleVariable("mt2", lambda ev: ev.mt2, float, help="mt2(j1,j2,,met)"),
             NTupleVariable("mt2_gen", lambda ev: ev.mt2_gen, float, help="mt2(j1,j2,,met) with genInfo"),
+            NTupleVariable("mt2_bb", lambda ev: ev.mt2bb, float, help="mt2(b1,b2,,met) with medium b jets"),
             #            NTupleVariable("mt2w", lambda ev: ev.mt2w, float, help="mt2w(l,b,met)"),
             ##--------------------------------------------------
             #            NTupleVariable("minMWjj", lambda ev: ev.minMWjj, int, help="minMWjj"),
