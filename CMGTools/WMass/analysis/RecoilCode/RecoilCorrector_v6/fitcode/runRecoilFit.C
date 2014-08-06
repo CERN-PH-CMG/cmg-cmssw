@@ -111,6 +111,7 @@ int VTXbin=-1;
 
 /////
 
+bool do8TeV = false;
 bool doMad = false;
 
 bool doSecondStep = false; // un-needed
@@ -3370,7 +3371,9 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
 
   gStyle->SetOptFit(111111);
 
+  //  TString name="recoilfits/recoilfit_AUG6";
   TString name="recoilfits/recoilfit_AUG6";
+  if(do8TeV) name +="_8TeV";
 
   /// SETTING
   /// MARIA Zpt TEST RANGE
@@ -3415,10 +3418,12 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     if(doMad)  fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");  
     if(!doMad) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root");  
 
+    // this is the 8 TeV, just a placeholder for now
+    if(doMad && do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL_8TeV/ZTreeProducer_tree.root");
+
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = false; 
 
-    if(fData)  name+="_DATA";
     if(!fData) name+="_genZ";
 
     if(doIterativeMet) {
