@@ -907,8 +907,8 @@ int mycase=-1;
    //  std::string iDir = "/afs/cern.ch/user/d/dalfonso/scratch0/CMSSW_4_4_5_Wmass/src/CMGTools/WMass/analysis/RecoilCode/RecoilCorrector_v6/fitcode/recoilfits/recoilfit_MAY14";
    //   std::string iDir = "/afs/cern.ch/user/d/dalfonso/scratch0/CMSSW_4_4_5_Wmass/src/CMGTools/WMass/analysis/RecoilCode/RecoilCorrector_v6/fitcode/recoilfits/recoilfit_MAY23";
    //   std::string iDir = "/afs/cern.ch/user/d/dalfonso/scratch0/CMSSW_4_4_5_Wmass/src/CMGTools/WMass/analysis/RecoilCode/RecoilCorrector_v6/fitcode/recoilfits/recoilfit_MAY31";
-   std::string iDir = "/afs/cern.ch/work/d/dalfonso/CMSSW_5_3_19_Wmass/src/CMGTools/WMass/analysis/RecoilCode/RecoilCorrector_v6/fitcode/recoilfits/recoilfit_JUL27";
-   std::string iDir_bis = "/afs/cern.ch/work/d/dalfonso/CMSSW_5_3_19_Wmass/src/CMGTools/WMass/analysis/RecoilCode/RecoilCorrector_v6/fitcode/recoilfits/recoilfit_JUL27";
+   std::string iDir = "/afs/cern.ch/work/d/dalfonso/CMSSW_5_3_19_Wmass/src/CMGTools/WMass/analysis/RecoilCode/RecoilCorrector_v6/fitcode/recoilfits/recoilfit_AUG6";
+   std::string iDir_bis = "/afs/cern.ch/work/d/dalfonso/CMSSW_5_3_19_Wmass/src/CMGTools/WMass/analysis/RecoilCode/RecoilCorrector_v6/fitcode/recoilfits/recoilfit_AUG6";
 
    std::string iNameZDat = "";
    std::string iNameZMC = "";
@@ -922,10 +922,10 @@ int mycase=-1;
    if(doIterClosure) {
 
        iNameZDat.append(iDir);  iNameZDat.append("_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat"); 
-       iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_noCorrelation");
+       iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat");
        
        iNameZDat1.append(iDir);  iNameZDat1.append("_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat"); 
-       iNameZMC1.append(iDir_bis);   iNameZMC1.append("_genZ_ITERATIVE_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_noCorrelation");
+       iNameZMC1.append(iDir_bis);   iNameZMC1.append("_genZ_ITERATIVE_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat");
 
      if(doMad) {
        iNameZDat.append("_53X.root"); 
@@ -1055,10 +1055,10 @@ int mycase=-1;
       //  Wpos / Z
       if(doPol2) {
 	iNameZDat.append(iDir);  iNameZDat.append("_Wpos_tkmet_eta21_PDF-1_pol2_type2_doubleGauss_x2Stat");
-	iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol2_type2_doubleGauss_x2Stat_noCorrelation"); 
+	iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol2_type2_doubleGauss_x2Stat"); 
       } else {
 	iNameZDat.append(iDir);  iNameZDat.append("_Wpos_tkmet_eta21_PDF-1_pol3_type2_doubleGauss_x2Stat");
-	iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_noCorrelation"); 
+	iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat"); 
       }
 
     }
@@ -1067,10 +1067,10 @@ int mycase=-1;
       //  Wneg / Z
       if(doPol2) {
 	iNameZDat.append(iDir);  iNameZDat.append("_Wneg_tkmet_eta21_PDF-1_pol2_type2_doubleGauss_x2Stat");
-	iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol2_type2_doubleGauss_x2Stat_noCorrelation"); 
+	iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol2_type2_doubleGauss_x2Stat"); 
       } else {
 	iNameZDat.append(iDir);  iNameZDat.append("_Wneg_tkmet_eta21_PDF-1_pol3_type2_doubleGauss_x2Stat");
-	iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_noCorrelation"); 
+	iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat"); 
       }
     }
 
@@ -1118,11 +1118,11 @@ int mycase=-1;
 
       howManyToPlot=2;
 
-      iNameZDat.append(iDir);  iNameZDat.append("_Wpos_tkmet_eta21_PDF0_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root");
-      iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF0_pol3_type2_doubleGauss_x2Stat_noCorrelation_ROCHcorr_53X_madgraph.root");
+      iNameZDat.append(iDir);  iNameZDat.append("_Wpos_tkmet_eta21_PDF0_pol3_type2_doubleGauss_x2Stat");
+      iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF0_pol3_type2_doubleGauss_x2Stat");
 
-      iNameZDat1.append(iDir);  iNameZDat1.append("_Wneg_tkmet_eta21_PDF0_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root");
-      iNameZMC1.append(iDir);   iNameZMC1.append("_genZ_tkmet_eta21_MZ81101_PDF0_pol3_type2_doubleGauss_x2Stat_noCorrelation_ROCHcorr_53X_madgraph.root");
+      iNameZDat1.append(iDir);  iNameZDat1.append("_Wneg_tkmet_eta21_PDF0_pol3_type2_doubleGauss_x2Stat");
+      iNameZMC1.append(iDir);   iNameZMC1.append("_genZ_tkmet_eta21_MZ81101_PDF0_pol3_type2_doubleGauss_x2Stat");
 
     }
 
@@ -1130,11 +1130,11 @@ int mycase=-1;
 
       howManyToPlot=2;
 
-      iNameZDat.append(iDir);  iNameZDat.append("_Wpos_tkmet_eta21_PDF1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root");
-      iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF2_pol3_type2_doubleGauss_x2Stat_noCorrelation_ROCHcorr_53X_madgraph.root");
+      iNameZDat.append(iDir);  iNameZDat.append("_Wpos_tkmet_eta21_PDF1_pol3_type2_doubleGauss_x2Stat");
+      iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF2_pol3_type2_doubleGauss_x2Stat");
 
-      iNameZDat1.append(iDir);  iNameZDat1.append("_Wneg_tkmet_eta21_PDF1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root");
-      iNameZMC1.append(iDir);   iNameZMC1.append("_genZ_tkmet_eta21_MZ81101_PDF2_pol3_type2_doubleGauss_x2Stat_noCorrelation_ROCHcorr_53X_madgraph.root");
+      iNameZDat1.append(iDir);  iNameZDat1.append("_Wneg_tkmet_eta21_PDF1_pol3_type2_doubleGauss_x2Stat");
+      iNameZMC1.append(iDir);   iNameZMC1.append("_genZ_tkmet_eta21_MZ81101_PDF2_pol3_type2_doubleGauss_x2Stat");
 
 
     }
@@ -1143,21 +1143,21 @@ int mycase=-1;
 
       howManyToPlot=3;
 
-      iNameZDat.append(iDir);   iNameZDat.append("_genZ_tkmet_eta21_MZ81101_PDF1_pol3_type2_doubleGauss_x2Stat_noCorrelation_ROCHcorr_53X_madgraph.root");
-      iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF2_pol3_type2_doubleGauss_x2Stat_noCorrelation_ROCHcorr_53X_madgraph.root");
+      iNameZDat.append(iDir);   iNameZDat.append("_genZ_tkmet_eta21_MZ81101_PDF1_pol3_type2_doubleGauss_x2Stat");
+      iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF2_pol3_type2_doubleGauss_x2Stat");
 
-      iNameZDat1.append(iDir);   iNameZDat1.append("_genZ_tkmet_eta21_MZ81101_PDF3_pol3_type2_doubleGauss_x2Stat_noCorrelation_ROCHcorr_53X_madgraph.root");
-      iNameZMC1.append(iDir);   iNameZMC1.append("_genZ_tkmet_eta21_MZ81101_PDF2_pol3_type2_doubleGauss_x2Stat_noCorrelation_ROCHcorr_53X_madgraph.root");
+      iNameZDat1.append(iDir);   iNameZDat1.append("_genZ_tkmet_eta21_MZ81101_PDF3_pol3_type2_doubleGauss_x2Stat");
+      iNameZMC1.append(iDir);   iNameZMC1.append("_genZ_tkmet_eta21_MZ81101_PDF2_pol3_type2_doubleGauss_x2Stat");
 
-      iNameZDat2.append(iDir);   iNameZDat2.append("_genZ_tkmet_eta21_MZ81101_PDF4_pol3_type2_doubleGauss_x2Stat_noCorrelation_ROCHcorr_53X_madgraph.root");
-      iNameZMC2.append(iDir);   iNameZMC2.append("_genZ_tkmet_eta21_MZ81101_PDF2_pol3_type2_doubleGauss_x2Stat_noCorrelation_ROCHcorr_53X_madgraph.root");
+      iNameZDat2.append(iDir);   iNameZDat2.append("_genZ_tkmet_eta21_MZ81101_PDF4_pol3_type2_doubleGauss_x2Stat");
+      iNameZMC2.append(iDir);   iNameZMC2.append("_genZ_tkmet_eta21_MZ81101_PDF2_pol3_type2_doubleGauss_x2Stat");
 
     }
 
     if(mycase==3) {
 
-      iNameZDat.append(iDir);   iNameZDat.append("_Wpos_tkmet_eta21_PDF2_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root");
-      iNameZMC.append(iDir);   iNameZMC.append("_Wpos_tkmet_eta21_PDF1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root");
+      iNameZDat.append(iDir);   iNameZDat.append("_Wpos_tkmet_eta21_PDF2_pol3_type2_doubleGauss_x2Stat");
+      iNameZMC.append(iDir);   iNameZMC.append("_Wpos_tkmet_eta21_PDF1_pol3_type2_doubleGauss_x2Stat");
 
       howManyToPlot=1;
 
@@ -1165,12 +1165,32 @@ int mycase=-1;
 
     if(mycase==4) {
 
-      iNameZDat.append(iDir);   iNameZDat.append("_Wneg_tkmet_eta21_PDF2_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root");
-      iNameZMC.append(iDir);   iNameZMC.append("_Wneg_tkmet_eta21_PDF1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root");
+      iNameZDat.append(iDir);   iNameZDat.append("_Wneg_tkmet_eta21_PDF2_pol3_type2_doubleGauss_x2Stat");
+      iNameZMC.append(iDir);   iNameZMC.append("_Wneg_tkmet_eta21_PDF1_pol3_type2_doubleGauss_x2Stat");
 
       howManyToPlot=1;
 
     }
+
+    std::string MCtypeMad = "_53X_madgraph.root";
+    std::string MCtypePow = "_53X_powheg.root";
+
+
+     if(doMad) {
+       iNameZDat.append(MCtypeMad); 
+       iNameZMC.append(MCtypeMad); 
+       iNameZDat1.append(MCtypeMad); 
+       iNameZMC1.append(MCtypeMad); 
+       iNameZDat2.append(MCtypeMad); 
+       iNameZMC2.append(MCtypeMad); 
+     } else {
+       iNameZDat.append(MCtypePow); 
+       iNameZMC.append(MCtypePow); 
+       iNameZDat1.append(MCtypePow); 
+       iNameZMC1.append(MCtypePow); 
+       iNameZDat2.append(MCtypePow); 
+       iNameZMC2.append(MCtypePow); 
+     }
     
   }
 
