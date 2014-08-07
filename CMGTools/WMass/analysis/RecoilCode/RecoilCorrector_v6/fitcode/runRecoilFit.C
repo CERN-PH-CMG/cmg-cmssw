@@ -1,3 +1,4 @@
+
 #ifndef __CINT__
 #include "RooGlobalFunc.h"
 #endif
@@ -86,6 +87,10 @@ TH2D histoCorrU2("hCorrU2","",10,0,10, 10,0,10);
 
 TH2D histoU1vsMuPt("histoU1vsMuPt","",100,0,100, 100,-50,50);
 TH2D histoU2vsMuPt("histoU2vsMuPt","",100,0,100, 100,-50,50);
+
+TH1D histoPhiStar("hPhiStar","histo PhiStar",1000,-10,10);
+TH1D histoThetaStar("hThetaStar","histo ThetaStar",1000,-10,10);
+TH2D histoPhiStarvsZpt("histoPhiStarvsZpt","histo PhiStar vs Zpt",100,0,20,100,-10,10);
 
 /////
 
@@ -1036,30 +1041,76 @@ void calculateU1U2(double &iPar, bool iType) {
   fU2 = lU*lSin;
   if(iType)  iPar = fU1;
   if(!iType) iPar = fU2;
-
+  
   /*
-  cout << "----------------" << endl;
-  cout << "fU1: recomputed " << fU1 << " stored " << fPFU1 << endl;
-  cout << "fU2: recomputed " << fU2 << " stored " << fPFU2 << endl;
+    cout << "----------------" << endl;
+    cout << "fU1: recomputed " << fU1 << " stored " << fPFU1 << endl;
+    cout << "fU2: recomputed " << fU2 << " stored " << fPFU2 << endl;
   */
-
+  
 }
 
 bool checkOdd() {
-
+  
   if(fData) return true;
-
+  
   if(!fData && fEvent % 2) {
     // check the odd events for the closure test
     return true;
   }
-
+  
   return false;
+  
+}
+
+double getPtMuonCorrrection(double pt, double eta, double phi, double charge) {
+
+  if(pt>80) return pt;
+
+  TFile *kalmanfile_ = TFile::Open("../../../utils/kalmanCalibration_data.root");
+  TFile *bfile_ = TFile::Open("../../../utils/mapCalibration.root");
+
+  TH1D * h_ = (TH1D*) bfile_->Get("mapCorrection");
+  TH1D * hA = (TH1D*) kalmanfile_->Get("A_0");
+  TH1D * hM = (TH1D*) kalmanfile_->Get("M_0");
+  TH1D * hB = (TH1D*) kalmanfile_->Get("B_0");
+
+  int mag_bin = h_->GetBin(h_->GetXaxis()->FindBin(phi),h_->GetYaxis()->FindBin(eta));
+  double newCurv = h_->GetBinContent(mag_bin)/pt;
+
+  int kalman_bin = hA->GetBinContent(hA->GetXaxis()->FindBin(newCurv),hA->GetYaxis()->FindBin(eta),hA->GetZaxis()->FindBin(phi));
+
+  double A = hA->GetBinContent(kalman_bin);
+  double M = hM->GetBinContent(kalman_bin);
+  double B = hB->GetBinContent(kalman_bin);
+
+  newCurv = (A-1)*newCurv + newCurv/(1+M*newCurv) + charge*B; 
+
+  return 1.0/newCurv;
 
 }
 
-bool runSelection() {
 
+double calculateSinThetaStar(double eta1, double eta2) {
+  return TMath::Sqrt(1-TMath::Power(TMath::TanH((eta1-eta2)/2),2));
+}
+
+double calculateCosThetaStar(double eta1, double eta2) {
+  return TMath::TanH((eta1-eta2)/2);
+}
+
+double calculatePhiStar(double SinThetaStar, double fMuPos_eta, double fMuNeg_eta, double fMuPos_phi, double fMuNeg_phi){
+  double PhiStar;
+  double Phi_acop;
+
+  if((fMuPos_phi-fMuNeg_phi)<TMath::Pi()) Phi_acop=TMath::Pi()-fMuPos_phi-fMuNeg_phi;
+  else Phi_acop=TMath::Pi()-fMuNeg_phi-fMuPos_phi;
+
+  return PhiStar=(TMath::Tan(Phi_acop/2))*SinThetaStar;
+}
+
+bool runSelection() {
+  
   //  cout << "inside Z selction " << etaMuonSel << endl;  
   //   double etaMuon=0.6;  
   
@@ -1134,8 +1185,16 @@ bool runSelection() {
       histoU1diff.Fill(fU1+fZPt);
       histoU2.Fill(fU2);
    
-      return true;
 
+      double SinThetaStar=calculateSinThetaStar(fMuPos_eta, fMuNeg_eta);
+      double CosThetaStar=calculateCosThetaStar(fMuPos_eta, fMuNeg_eta);
+
+      double PhiStar=calculatePhiStar(SinThetaStar, fMuPos_eta, fMuNeg_eta, fMuPos_phi, fMuNeg_phi);
+      histoPhiStarvsZpt.Fill(fZPt,PhiStar);
+      histoPhiStar.Fill(PhiStar);
+      histoThetaStar.Fill(CosThetaStar);
+
+      return true;
 
     }
   
@@ -1224,7 +1283,6 @@ bool runSelection() {
    return false;
    
  }         
-
 
 bool passMatching() { 
 
@@ -2893,6 +2951,8 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
     //  for(int i1 = 0; i1 <  1e6; i1++) {
     iTree->GetEntry(i1);
 
+    if(i1%100000==0) cout <<"Analyzed entry "<< i1 <<"/"<< nEntries <<endl;
+
     ////////    cout << "RUN " << fRun << " LUMI " << fLumi << " EVENT " << fEvent << endl;
 
     if(doRoch_corr) {
@@ -3203,6 +3263,7 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
           // cout << "vlYTVals_all["<<iU1U2<<"]["<<iMeanRMS<<"]["<<iev<<"] = "<<lXVals_all.at(iU1U2).at(iU1U2).at(iev)<<endl;
           vlYEVals_all[iU1U2][iMeanRMS][iev] = lYEVals_all.at(iU1U2).at(iU1U2).at(iev);
           // cout << "vlYEVals_all["<<iU1U2<<"]["<<iMeanRMS<<"]["<<iev<<"] = "<<lXVals_all.at(iU1U2).at(iU1U2).at(iev)<<endl;
+
         }
       }
   }
@@ -3597,6 +3658,9 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     histoU1diffvsZpt.Write();
     histoU1scalevsZpt.Write();
     histoU1scalevsZptscale.Write();
+    histoPhiStar.Write();
+    histoThetaStar.Write();
+    histoPhiStarvsZpt.Write();
     
     f3.Write();
     f3.Close();
