@@ -123,6 +123,20 @@ protected:
 			    double &iU1, double &iU2,double iFlucU2=0,double iFlucU1=0,double iScale=0,
 			    bool doSingleGauss=false);
 
+  void metDistributionType2CorrU(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
+				 double iLepPt,double iLepPhi,
+				 TF1 *iU1Default,
+				 TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
+				 TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
+				 TF1 *iU1S1ZDatFit, TF1 *iU1S1ZMCFit,
+				 TF1 *iU1S2ZDatFit, TF1 *iU1S2ZMCFit,
+				 TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
+				 TF1 *iU2S1ZDatFit, TF1 *iU2S1ZMCFit,
+				 TF1 *iU2S2ZDatFit, TF1 *iU2S2ZMCFit,
+				 //                                         TF1 *iU1U2ZDatCorr,TF1 *iU1U2ZMCCorr, // MARIA comment for now                              
+				 double &iU1,double &iU2,double iFlucU2, double iFlucU1, double iScale,
+				 bool doSingleGauss);
+
   double diGausPVal    (double iVal, double iFrac,double iSimga1,double iSigma2);
   double diGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2);
   double oneGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2);

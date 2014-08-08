@@ -8,7 +8,7 @@ import urllib, urlparse, string, time, os, shutil, sys, math
 
 useLHAPDF = False
 
-foldername = "test_53X_lhe2";
+foldername = "test";
 foldername_orig=foldername
 
 ntuple_folder = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
@@ -20,7 +20,7 @@ ntuple_folder = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntup
 lhapdf_folder="/afs/cern.ch/work/p/perrozzi/private/WMassMC/lhapdf/"
 
 use_PForNoPUorTKmet = 2; # 0:PF, 1:NOPU, 2:TK 
-use_LHE_weights = 1; # 0=no, 1=yes
+use_LHE_weights = 0; # 0=no, 1=yes
 usePileupSF = 1; # 0=no, 1=yes
 useEffSF = 2; # 0=no, 1=MuonPOG, 2=Heiner
 usePtSF = 0; # Boson pT reweighting: 0=no, 1=yes
@@ -60,18 +60,18 @@ etaMaxMuons = "1.1"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
 parallelize = 0;
 # resumbit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
-resumbit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
+resumbit_sample = "DATA" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 
 runWanalysis = 0;
 runZanalysis = 1;
-useBatch = 1
-batchQueue = "1nh"
+useBatch = 0;
+batchQueue = "1nh";
 controlplots = 0;
 
 mergeSigEWKbkg = 0;
 
 ## PERFORM W or Z MASS FIT
-fit_W_or_Z = "Z" # "W,Z" or "W" or "Z"
+fit_W_or_Z = "W,Z" # "W,Z" or "W" or "Z"
 
 usePowOrMadForSig = "POWHEG"; # use "POWHEG" or use "MADGRAPH"
 runPrepareDataCardsFast = 0; # ALTERNATIVE FAST WAY: TEMPLATES ARE IN THE SYsT FOLDER, PSEUDO-DATA IN THE LOCAL FOLDER
@@ -257,8 +257,8 @@ Nevts[DYJetsPow] /= 2
 
 fWana_str = [
   ntuple_folder+"DATA/WTreeProducer_tree_RecoSkimmed.root",
-  ntuple_folder+"WJetsMM/Plus/WTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_folder+"WJetsMM/Minus/WTreeProducer_tree_SignalRecoSkimmed.root",
+  ntuple_folder+"WPlusPOWHEG/WTreeProducer_tree.root",
+  ntuple_folder+"WMinusPOWHEG/WTreeProducer_tree.root",
   ntuple_folder+"WJetsLL/WTreeProducer_tree_SignalRecoSkimmed.root",
   ntuple_folder+"WJetsLL/WTreeProducer_tree_FakeRecoSkimmed.root",
   ntuple_folder+"DYJetsMM/WTreeProducer_tree_SignalRecoSkimmed.root",
@@ -279,13 +279,12 @@ fWana_str = [
   
 fZana_str = [
   ntuple_folder+"DATA/ZTreeProducer_tree_RecoSkimmed.root",
-  ntuple_folder+"WJetsMM/Plus/ZTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_folder+"WJetsMM/Minus/ZTreeProducer_tree_SignalRecoSkimmed.root",
+  ntuple_folder+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
+  ntuple_folder+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
   ntuple_folder+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
   ntuple_folder+"WJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",
-  # ntuple_folder+"DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root",
+  ntuple_folder+"DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root",
   # ntuple_folder+"DYJetsMM/InclWeights/ZTreeProducer_tree.root",
-  "/afs/cern.ch/work/p/perrozzi/private/git/v5_18_0/CMSSW_5_3_14/src/CMGTools/WMass/cfg/test/Trash/DYJets1_newWeights_2/ZTreeProducer/ZTreeProducer_tree.root",
   ntuple_folder+"DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
   ntuple_folder+"DYJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",
   ntuple_folder+"TTJets/ZTreeProducer_tree.root",

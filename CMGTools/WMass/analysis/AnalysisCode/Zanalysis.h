@@ -14,6 +14,10 @@
 #include <iostream>
 #include <TSystem.h>
 
+#include <TLorentzVector.h>
+
+#include "common_stuff.h"
+
 using namespace std;
 
 class Zanalysis {
@@ -215,6 +219,12 @@ class Zanalysis {
   virtual Bool_t   Notify();
   virtual void     Show(Long64_t entry = -1);
   
+  virtual void plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorentzVector Z, double u1_scale, string leptCharge, string cut , bool doCut, bool doneu, std::map<std::string, TH\
+1D*> &h_1d, std::map<std::string, TH2D*> &h_2d,double weight);
+
+  virtual void     calculateU1U2( double fMet , double fMPhi,double fZPt, double fZPhi, double fPt1, double fPhi1, double & fU1,double & fU2 );
+
+
 };
 
 #endif
@@ -406,6 +416,69 @@ Int_t Zanalysis::Cut(Long64_t entry)
   // returns -1 otherwise.
   return 1;
 }
+
+
+void Zanalysis::calculateU1U2(double fMet , double fMPhi, double fZPt, double fZPhi, double fPt1, double fPhi1, double & fU1,double & fU2)
+{
+  double lUX  = fMet*cos(fMPhi) + fPt1*cos(fPhi1);
+  double lUY  = fMet*sin(fMPhi) + fPt1*sin(fPhi1);
+  double lU   = sqrt(lUX*lUX+lUY*lUY);
+
+  //    double fZPhi=fPhi1;
+  //    double fZPt=fPt1;
+
+  // rotate of -180 the X and Y component 
+
+  double lCos = - (lUX*cos(fZPhi) + lUY*sin(fZPhi))/lU;
+  double lSin =   (lUX*sin(fZPhi) - lUY*cos(fZPhi))/lU;
+  fU1 = lU*lCos;
+  fU2 = lU*lSin;
+
+}
+
+void Zanalysis::plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorentzVector Z, double u1_scale, string leptCharge, string cut , bool doCut, bool doneu, std::map<std::string, T\
+H1D*> &h_1d, std::map<std::string, TH2D*> &h_2d,double weight)
+{
+
+
+  double u_parall=-999;
+  double u_perp=-999;
+
+  if(doneu) met=met-Z;
+  calculateU1U2( met.Pt(), met.Phi(),  ptVis.Pt(), ptVis.Phi() , Z.Pt(), Z.Phi(), u_parall, u_perp );
+
+  double u = fabs(sqrt( u_perp*u_perp + u_parall*u_parall ));
+  double unorm = fabs(sqrt( u_perp*u_perp + u_parall*u_parall ))/ptVis.Pt();
+  double uPhi=TMath::ATan2(u_perp,-u_parall);
+
+  common_stuff::plot2D("u1_vs_u2"+leptCharge+cut ,  u_perp, u_parall+ptVis.Pt(),   weight, h_2d, 100, -50., 50. , 100, -50., 50.);
+  common_stuff::plot2D("u1_vs_u2_scale"+leptCharge+cut ,  u_perp, u_parall+u1_scale,   weight, h_2d, 100, -50., 50. , 100, -50., 50.);
+  common_stuff::plot2D("u_vs_Angle"+leptCharge+cut ,  unorm, uPhi ,   weight, h_2d, 100, 0., 10. , 100, -TMath::Pi(), TMath::Pi());
+
+
+  TString test = cut.c_str();
+
+  if(met.Pt()>0) {
+
+    common_stuff::plot1D("h_met"+leptCharge+cut, met.Pt() ,                 weight, h_1d, 100, 0, 100);
+    common_stuff::plot1D("h_metphi"+leptCharge+cut, met.Phi() ,             weight, h_1d, 100, -3.15, 3.15);
+
+    common_stuff::plot1D("h_u"+leptCharge+cut  , u   ,                      weight, h_1d, 100, 0., 20.);
+    common_stuff::plot1D("h_u2"+leptCharge+cut  , u_perp   ,                weight, h_1d, 200, -100., 100.);
+
+
+    common_stuff::plot1D("h_u1_Residual"+leptCharge+cut  , u_parall+ptVis.Pt(), weight, h_1d, 200, -100., 100.);
+    common_stuff::plot1D("h_u1_Pull"+leptCharge+cut  , (u_parall+Z.Pt())/Z.Pt(),  weight, h_1d, 200, -100., 100.);
+    common_stuff::plot1D("h_u1"+leptCharge+cut, u_parall ,                weight, h_1d, 200, -100., 100.);
+
+    common_stuff::plot1D("h_met_pull_Z"+leptCharge+cut, met.Pt()-Z.Pt() ,   weight, h_1d, 200, -100, 100);
+
+  }
+
+}
+
+
+
 
 
 #endif // #ifdef Zanalysis_cxx
