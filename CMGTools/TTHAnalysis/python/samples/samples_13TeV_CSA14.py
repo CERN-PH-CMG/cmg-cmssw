@@ -130,10 +130,19 @@ mcSamplesTest = [ DYJetsM50_Flat20to50, GluGluToHToZZTo4L_PUS14, GluGluToHToGG_F
 
 
 ## SOME PRIVATELY PRODUCED 50ns SAMPLES
-DYJetsM50_HT400to600_PU_S14_POSTLS170_dbs = kreator.makeMyPrivateMCComponent("DYJetsM50_HT400to600_PU_S14_POSTLS170_dbs", "/DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV-madgraph-tauola/phys_susy-miniAODcopy_DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV-madgraph-tauola_lhx-Spring14dr-PU_S14_POSTLS170-af38aa319b7b7c91a6797b31c3be19b7/USER", "phys03")
+DYJetsM50_HT100to200_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("DYJetsM50_HT100to200_PU_S14_POSTLS170", "/DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV-madgraph-tauola/sisagir-Spring14dr-PU_S14_POSTLS170_V6AN1-miniAOD706p1-814812ec83fce2f620905d2bb30e9100/USER", "phys03")
+DYJetsM50_HT200to400_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("DYJetsM50_HT200to400_PU_S14_POSTLS170", "/DYJetsToLL_M-50_HT-200to400_Tune4C_13TeV-madgraph-tauola/duanders-Spring14dr-PU_S14_POSTLS170_V6AN1-miniAOD706p1-814812ec83fce2f620905d2bb30e9100/USER", "phys03")
+DYJetsM50_HT400to600_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("DYJetsM50_HT400to600_PU_S14_POSTLS170", "/DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV-madgraph-tauola/phys_susy-miniAODcopy_DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV-madgraph-tauola_lhx-Spring14dr-PU_S14_POSTLS170-af38aa319b7b7c91a6797b31c3be19b7/USER", "phys03")
+DYJetsM50_HT600toInf_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("DYJetsM50_HT600toInf_PU_S14_POSTLS170", "/DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV-madgraph-tauola/lhx-Spring14dr-PU_S14_POSTLS170_V6AN1-miniAOD706p1-814812ec83fce2f620905d2bb30e9100/USER", "phys03")
+
+GJets_HT-100to200_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("GJets_HT-100to200_PU_S14_POSTLS170", "/GJets_HT-100to200_Tune4C_13TeV-madgraph-tauola/StoreResults-Spring14dr_PU_S14_POSTLS170_V6AN1_miniAOD706p1_814812ec83fce2f620905d2bb30e9100-v1/USER", "phys03")
+GJets_HT-200to400_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("GJets_HT-200to400_PU_S14_POSTLS170", "/GJets_HT-200to400_Tune4C_13TeV-madgraph-tauola/duanders-Spring14dr-PU_S14_POSTLS170_V6AN1-miniAOD706p1-814812ec83fce2f620905d2bb30e9100/USER", "phys03")
+GJets_HT-400to600_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("GJets_HT-400to600_PU_S14_POSTLS170", "/GJets_HT-400to600_Tune4C_13TeV-madgraph-tauola/duanders-Spring14dr-PU_S14_POSTLS170_V6AN1-miniAOD706p1-814812ec83fce2f620905d2bb30e9100/USER", "phys03")
+
+# = kreator.makeMyPrivateMCComponent("", "", "phys03")
 
 
-mcSamplesCSA14_PU40bx50 = [ DYJetsM50_HT400to600_PU_S14_POSTLS170_dbs ]
+mcSamplesCSA14_PU40bx50 = [ DYJetsM50_HT400to600_PU_S14_POSTLS170 ]
 
 
 mcSamples = mcSamplesCSA14_PU20bx25 + mcSamplesTest + mcSamplesCSA14_PU40bx50
