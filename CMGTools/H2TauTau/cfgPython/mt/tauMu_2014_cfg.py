@@ -3,6 +3,8 @@ import os
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
 
+from CMGTools.Production.getFiles import getFiles
+
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
 from CMGTools.H2TauTau.proto.weights.weighttable import mu_id_taumu_2012, mu_iso_taumu_2012
 from CMGTools.H2TauTau.proto.samples.sampleShift import selectShift
@@ -187,97 +189,61 @@ treeProducerXCheck = cfg.Analyzer(
 
 #########################################################################################
 
-
-# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_MuRm_ColinOct9 import * 
-# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinOct10 import * 
-# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_Colin import * 
-# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanMay23 import * 
-# from CMGTools.H2TauTau.proto.samples.run2012.WJets_JanMay29 import * 
-#from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanJun18 import * 
-# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanJul04 import * 
-from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanAug06 import * 
+from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_Colin import * 
 
 #########################################################################################
 
 HiggsVBF125.files.append('file:/afs/cern.ch/user/s/steggema/work/CMSSW_7_0_6_patch1/src/CMGTools/H2TauTau/prod/tauMu_fullsel_tree_CMG.root')
 
+pat = '/VBF_HToTauTau_M-125_13TeV-powheg-pythia6/Spring14dr-PU20bx25_POSTLS170_V5-v1/AODSIM/SS14/TAUMU_MINIAODTEST_NOSVFIT_steggema'
+
+HiggsVBF125.files = getFiles(pat,
+                             'steggema', '.*root')
+
+HiggsVBF125.splitFactor = 14
+
 for mc in MC_list:
     mc.puFileMC = puFileMC
     mc.puFileData = puFileData
 
-for emb in embed_list:
-    emb.puFileData = None
-    emb.puFileMC = None
+# for emb in embed_list:
+#     emb.puFileData = None
+#     emb.puFileMC = None
 
-WNJetsAna.nevents = [ WJets.nGenEvents,
-                      W1Jets.nGenEvents,
-                      W2Jets.nGenEvents,
-                      W3Jets.nGenEvents,
-                      W4Jets.nGenEvents
-                      ]
+# WNJetsAna.nevents = [ WJets.nGenEvents,
+#                       W1Jets.nGenEvents,
+#                       W2Jets.nGenEvents,
+#                       W3Jets.nGenEvents,
+#                       W4Jets.nGenEvents
+#                       ]
 
-# Fractions temporarily taken from Jose (29 May 2013):
-WNJetsAna.fractions = [0.74392452, 0.175999, 0.0562617, 0.0168926, 0.00692218]
+# # Fractions temporarily taken from Jose (29 May 2013):
+# WNJetsAna.fractions = [0.74392452, 0.175999, 0.0562617, 0.0168926, 0.00692218]
 
-# selectedComponents = allsamples
-diboson_list = [    WWJetsTo2L2Nu,
-                    WZJetsTo2L2Q,
-                    WZJetsTo3LNu,
-                    ZZJetsTo2L2Nu,
-                    ZZJetsTo2L2Q,
-                    ZZJetsTo4L,
-                    T_tW,
-                    Tbar_tW
-                    ]
+# # selectedComponents = allsamples
+# diboson_list = [    WWJetsTo2L2Nu,
+#                     WZJetsTo2L2Q,
+#                     WZJetsTo3LNu,
+#                     ZZJetsTo2L2Nu,
+#                     ZZJetsTo2L2Q,
+#                     ZZJetsTo4L,
+#                     T_tW,
+#                     Tbar_tW
+#                     ]
 
-WJetsSoup = copy.copy(WJets)
-WJetsSoup.name = 'WJetsSoup'
+# WJetsSoup = copy.copy(WJets)
+# WJetsSoup.name = 'WJetsSoup'
 
-DYJetsSoup = copy.copy(DYJets)
-DYJetsSoup.name = 'DYJetsSoup'
+# DYJetsSoup = copy.copy(DYJets)
+# DYJetsSoup.name = 'DYJetsSoup'
 
-VVgroup = [comp.name for comp in diboson_list]
-if diboson_list == [] and doThePlot:
-    VVgroup = None # This is needed for the plotting script
+# VVgroup = [comp.name for comp in diboson_list]
+# if diboson_list == [] and doThePlot:
+#     VVgroup = None # This is needed for the plotting script
 
 higgs = mc_higgs
 
-selectedComponents = [TTJetsFullLept,
-    TTJetsSemiLept,
-    TTJetsHadronic, 
-    DYJets, WJets,
-    W1Jets, W2Jets, W3Jets, W4Jets,
-    W1Jets_ext, W2Jets_ext, W3Jets_ext,
-    DY1Jets, DY2Jets, DY3Jets, DY4Jets,
-    ]
-
-# FOR PLOTTING:
-TTgroup = None
-if doThePlot:
-    selectedComponents = [TTJetsFullLept,
-    TTJetsSemiLept,
-    TTJetsHadronic, #DYJets, #WJets,
-        WJetsSoup,
-        DYJetsSoup
-        ]
-    TTgroup = [TTJetsFullLept.name,
-    TTJetsSemiLept.name,
-    TTJetsHadronic.name]
-
-if not doThePlot:
-    selectedComponents.extend( higgs )
-    selectedComponents.extend( mc_higgs_susy )
-else:
-    # pass
-    selectedComponents.extend( higgs )
-    selectedComponents.extend( mc_higgs_susy )
-
-selectedComponents.extend( diboson_list )
-
-if not simulatedOnly:
-    selectedComponents.extend( data_list )
-    selectedComponents.extend( embed_list )
-
+selectedComponents = [HiggsVBF125]
 
 sequence = cfg.Sequence( [
     # eventSelector,
@@ -305,7 +271,7 @@ sequence = cfg.Sequence( [
 if syncntuple:
     sequence.append( treeProducerXCheck) #Yes!
 
-selectedComponents = [comp for comp in selectedComponents if comp.dataset_entries > 0]
+# selectedComponents = [comp for comp in selectedComponents if comp.dataset_entries > 0]
 
 test = 1
 if test==1:

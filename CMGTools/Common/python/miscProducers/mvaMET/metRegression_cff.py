@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from CMGTools.External.puJetIDAlgo_cff import *
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X, isNewerThan
+from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 
 
 if isNewerThan('CMSSW_5_3_0'):
@@ -12,6 +12,7 @@ else:
     jetPtMin = 1.
     puJetIdAlgo = PhilV1.clone()
     wpId = 2 # see MetUtilies.cc
+
 pfMetForRegression   = cms.EDProducer(
     "MetFlavorProducer",
     CorrJetName     = cms.InputTag("slimmedJets"),

@@ -70,24 +70,30 @@ void MetFlavorProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   // Handle<PFCandidateCollection> lHCands;
   Handle<std::vector<pat::PackedCandidate>> lHCands;
   iEvent.getByLabel(fPFCandName   , lHCands);
-  const std::vector<pat::PackedCandidate>&         lCands = *lHCands;
+  const std::vector<pat::PackedCandidate>& lCands = *lHCands;
 
   // vertices    
   Handle<reco::VertexCollection> lHVertices;
   iEvent.getByLabel(fVertexName      , lHVertices); 
   const VertexCollection& lVertices = *lHVertices;
-  const Vertex *lPV = 0; if(lVertices.size() > 0) lPV = &lVertices[0]; 
+  const Vertex *lPV = 0; 
+  if(lVertices.size() > 0) 
+    lPV = &lVertices[0]; 
 
   //Get Rho
-  Handle<double>                                        lHRho;
-  iEvent.getByLabel(fRhoName                          , lHRho);
+  Handle<double> lHRho;
+  iEvent.getByLabel(fRhoName, lHRho);
   double lRho = *lHRho;
   
   //Make Generic Objects
-  std::vector<LorentzVector >                                     lVisible;
-  std::vector<std::pair<LorentzVector,double> >         lPFInfo;  makeCandidates(lPFInfo, lCands,lPV);
-  std::vector<MetUtilities::JetInfo>                              lJetInfo; makeJets      (lJetInfo, lCJets,lVertices,lRho);
-  std::vector<Vector>                                             lVtxInfo; makeVertices  (lVtxInfo,lVertices);
+  std::vector<std::pair<LorentzVector,double> > lPFInfo;
+  makeCandidates(lPFInfo, lCands,lPV);
+
+  std::vector<MetUtilities::JetInfo> lJetInfo; 
+  makeJets(lJetInfo, lCJets, lVertices, lRho);
+
+  std::vector<Vector> lVtxInfo;
+  makeVertices(lVtxInfo, lVertices);
  
   //Calculate the Met
   std::pair<LorentzVector,double> lMetInfo; //MET, SumEt
@@ -99,12 +105,12 @@ void MetFlavorProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
   //Add a PF Met object and put it in the event
   PFMET lDummy;
-  PFMET lMet(lDummy.getSpecific(),lMetInfo.second,lMetInfo.first,lPV->position()); //Use PFMET sum Et
+  PFMET lMet(lDummy.getSpecific(), lMetInfo.second, lMetInfo.first, lPV->position()); //Use PFMET sum Et
 
   std::auto_ptr<reco::PFMETCollection> lPFMetColl;
-  lPFMetColl.reset     ( new reco::PFMETCollection);
-  lPFMetColl->push_back( lMet);
-  iEvent.put( lPFMetColl );
+  lPFMetColl.reset(new reco::PFMETCollection);
+  lPFMetColl->push_back(lMet);
+  iEvent.put(lPFMetColl);
 }
 
 void MetFlavorProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,
@@ -112,7 +118,7 @@ void MetFlavorProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,
 				 const VertexCollection &iVertices,double iRho) { 
   
   for(int i1 = 0; i1 < (int) iCJets .size(); i1++) {   // corrected jets collection                                         
-    const pat::Jet     *pCJet  = &(iCJets.at(i1));
+    const pat::Jet* pCJet = &(iCJets.at(i1));
 
     //std::cout<<" MetFlavorProducer::makeJets  input :  "<<i1<<"  "<<pCJet->pt()<<" "<<pCJet->eta()<<" "<<pCJet->correctedJet(0).pt()<<" "<<pCJet->neutralEmEnergy()<<" "<<pCJet->neutralHadronEnergy()<<std::endl;
     
@@ -180,14 +186,13 @@ bool MetFlavorProducer::passPFLooseId(const pat::Jet *iJet) {
 }
 double MetFlavorProducer::pfCandDz(const pat::PackedCandidate* iPFCand, const Vertex *iPV) { 
   double lDz = -999;
-  // if(iPFCand->trackRef().isNonnull())    lDz = fabs(iPFCand->   trackRef()->dz(iPV->position()));
-  // FIXME - JAN - understand what the pseudoTrack gives
-  lDz = fabs(iPFCand->pseudoTrack().dz(iPV->position()));
-  // else if(iPFCand->gsfTrackRef().isNonnull()) lDz = fabs(iPFCand->gsfTrackRef()->dz(iPV->position()));
+  // FIXME - JAN - does pseudoTrack give something different from 
+  // PackedCandidate::dz(..) ?
+  lDz = fabs(iPFCand->dz(iPV->position()));
   return lDz;
 }
 double MetFlavorProducer::jetMVA (const pat::Jet *iCorrJet,double iJec, const Vertex& iPV, const reco::VertexCollection &iAllvtx, bool iPrintDebug) { 
-
+  // JAN - this returns the pre-computed PU jet ID present in miniAOD
   return iCorrJet->userFloat("pileupJetId:fullDiscriminant");
   // std::cout << "jet " << iCorrJet << std::endl;
   // std::cout << "iJec " << iJec << std::endl;

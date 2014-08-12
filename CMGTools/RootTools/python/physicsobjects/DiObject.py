@@ -18,15 +18,21 @@ class DiObject( PhysicsObject ):
         self.leg2DeltaR = -1
         super(DiObject, self).__init__(diobject)
 
+    def leg1(self):
+        return ''
+
+    def leg2(self):
+        return ''
+
     def sumPt(self):
         '''pt_leg1 + pt_leg2, e.g. used for finding the best DiTau.'''
         return self.leg1().pt() + self.leg2().pt()
 
     def __str__(self):
-        header = '{cls}: mvis={mvis}, mT={mt}, sumpT={sumpt}'.format(
+        header = '{cls}: mvis={mvis}, sumpT={sumpt}'.format(
             cls = self.__class__.__name__,
             mvis = self.diobject.mass(),
-            mt = self.diobject.mTLeg2(),
+            # mt = self.diobject.mTLeg2(),
             sumpt = self.sumPt() )
         return '\n'.join( [header,
                            '\t'+str(self.leg1()),

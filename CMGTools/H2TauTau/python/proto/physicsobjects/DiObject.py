@@ -27,10 +27,9 @@ class DiObject( object ):
         return getattr(self.diobject, name)
 
     def __str__(self):
-        header = '{cls}: mvis={mvis}, mT={mt}, sumpT={sumpt}'.format(
+        header = '{cls}: mvis={mvis}, sumpT={sumpt}'.format(
             cls = self.__class__.__name__,
             mvis = self.diobject.mass(),
-            mt = self.diobject.mTLeg2(),
             sumpt = self.sumPt() )
         return '\n'.join( [header,
                            '\t'+str(self.leg1()),
