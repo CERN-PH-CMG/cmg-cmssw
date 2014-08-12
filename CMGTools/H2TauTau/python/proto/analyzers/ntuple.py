@@ -180,6 +180,7 @@ def bookJet( tree, pName ):
     var(tree, '{pName}_btagMVA'.format(pName=pName))
     var(tree, '{pName}_area'.format(pName=pName))
     var(tree, '{pName}_genJetPt'.format(pName=pName))
+    var(tree, '{pName}_partonFlavour'.format(pName=pName))
 
 def fillJet( tree, pName, jet ):
     fillParticle(tree, pName, jet )
@@ -192,6 +193,7 @@ def fillJet( tree, pName, jet ):
     fill(tree, '{pName}_area'.format(pName=pName), jet.jetArea())
     if hasattr(jet, 'matchedGenJet') and jet.matchedGenJet:
         fill(tree, '{pName}_genJetPt'.format(pName=pName), jet.matchedGenJet.pt())
+    fill(tree, '{pName}_partonFlavour'.format(pName=pName), jet.partonFlavour())
 
 # vbf
 
