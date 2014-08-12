@@ -47,7 +47,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
         count.register('all events')
         
     def makeMT(self, event):
-#        print '==> INSIDE THE PRINT MT'
+#        printMT2 '==> INSIDE THE PRINT MT'
 #        print 'MET=',event.met.pt() 
 
         for lepton in event.selectedLeptons:
@@ -88,7 +88,6 @@ class ttHTopoVarAnalyzer( Analyzer ):
 #### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
             hemisphere = Hemisphere(pxvec, pyvec, pzvec, Evec, 2, 3)
             grouping=hemisphere.getGrouping()
-##            print 'grouping ',len(grouping)
 
             pseudoJet1px = 0 
             pseudoJet1py = 0 
@@ -99,18 +98,20 @@ class ttHTopoVarAnalyzer( Analyzer ):
             pseudoJet2py = 0 
             pseudoJet2pz = 0
             pseudoJet2energy = 0 
-                
+            
             for index in range(0, len(pxvec)):
                 if(grouping[index]==1):
                     pseudoJet1px += pxvec[index]
                     pseudoJet1py += pyvec[index]
                     pseudoJet1pz += pzvec[index]
                     pseudoJet1energy += Evec[index]
+                    event.multPseudoJet1 += 1
                 if(grouping[index]==2):
                     pseudoJet2px += pxvec[index]
                     pseudoJet2py += pyvec[index]
                     pseudoJet2pz += pzvec[index]
                     pseudoJet2energy += Evec[index]                    
+                    event.multPseudoJet2 += 1
 
             event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
             event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
@@ -188,7 +189,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
             
             event.mt2_gen = davismt2.get_mt2()
             
-#### do the mt2 with two b jets
+#### do the mt2 with one or two b jets (medium CSV)
 
         if len(event.bjetsMedium)>=2:
 
@@ -204,7 +205,31 @@ class ttHTopoVarAnalyzer( Analyzer ):
             davismt2.set_mn(0);
             
             event.mt2bb = davismt2.get_mt2()  
+#            print 'MT2bb(2b)',event.mt2bb
+            
+        if len(event.bjetsMedium)==1:
 
+            objects40jcCSV = [ j for j in event.cleanJets if j.pt() > 40 and abs(j.eta())<2.5 and j.p4()!=event.bjetsMedium[0].p4() ]
+            objects40jcCSV.sort(key = lambda l : l.btag('combinedSecondaryVertexBJetTags'), reverse = True)
+
+            if len(objects40jcCSV)>0:
+#                for index in range(0, len(objects40jcCSV)):
+#                    print 'CSV ',objects40jcCSV[index].btag('combinedSecondaryVertexBJetTags')
+
+                metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
+                visaVector = TVectorD(3,array.array('d',[0.,event.bjetsMedium[0].px(), event.bjetsMedium[0].py()]))
+                visbVector = TVectorD(3,array.array('d',[0.,objects40jcCSV[0].px(), objects40jcCSV[0].py()]))
+                
+                metVector =numpy.asarray(metVector,dtype='double')
+                visaVector =numpy.asarray(visaVector,dtype='double')
+                visbVector =numpy.asarray(visbVector,dtype='double')
+                
+                davismt2.set_momenta(visaVector,visbVector,metVector);
+                davismt2.set_mn(0);
+                
+                event.mt2bb = davismt2.get_mt2()
+#                print 'MT2bb(1b)',event.mt2bb
+                
         
 ## ===> leptonic MT2 (as used in the SUS-13-025 )
 
@@ -254,6 +279,8 @@ class ttHTopoVarAnalyzer( Analyzer ):
         event.mt2lept=-999
         event.mt2bb=-999        
         event.mt2w=-999
+        event.multPseudoJet1=0
+        event.multPseudoJet2=0
         event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
         event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
 
