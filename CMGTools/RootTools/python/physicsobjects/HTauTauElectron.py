@@ -12,38 +12,47 @@ class HTauTauElectron( Electron ):
         super(HTauTauElectron, self).__init__(*args, **kwargs)
         self.photonIsoCache = None
         self.chargedAllIsoCache = None
-        
-    def photonIso(self):
-        if self.photonIsoCache is None:
-            myVetoes = reco.IsoDeposit.Vetos()
-            pfGammaIsoType = 6
-            iso = self.sourcePtr().isoDeposit(pfGammaIsoType).depositWithin(0.4,myVetoes,True)
-            iso_veto = self.sourcePtr().isoDeposit(pfGammaIsoType).depositWithin(0.08,myVetoes,True)
-            iso -= iso_veto
-            self.photonIsoCache = iso
-        return self.photonIsoCache
 
+    # JAN FIXME - replace our old tau-tau-specific vetoes
+    # I hope they are not needed anymore!
+ 
+    # def photonIso(self):
+    #     if self.photonIsoCache is None:
+    #         myVetoes = reco.IsoDeposit.Vetos()
+    #         pfGammaIsoType = 6
+    #         iso = self.sourcePtr().isoDeposit(pfGammaIsoType).depositWithin(0.4,myVetoes,True)
+    #         iso_veto = self.sourcePtr().isoDeposit(pfGammaIsoType).depositWithin(0.08,myVetoes,True)
+    #         iso -= iso_veto
+    #         self.photonIsoCache = iso
+    #     return self.photonIsoCache
+
+    def photonIso(self):
+        return super(HTauTauElectron, self).photonIso(0.3)
+
+    # JAN FIXME - replace our old tau-tau-specific vetoes
+    # I hope they are not needed anymore!
+    # def chargedAllIso(self):
+    #     if self.chargedAllIsoCache is None:
+    #         # chargedAllIsoType = 13
+    #         # myVetoes = reco.IsoDeposit.Vetos()
+    #         # iso = self.sourcePtr().isoDeposit(chargedAllIsoType).depositWithin(0.4,
+    #         #                                                                    myVetoes,True)
+    #         # vetoSize = 0.01
+    #         # if self.sourcePtr().isEE():
+    #         #     vetoSize = 0.015
+    #         # iso_veto = self.sourcePtr().isoDeposit(chargedAllIsoType).depositWithin(vetoSize,
+    #         #                                                                         myVetoes,True)
+    #         # iso -= iso_veto
+    #         # self.chargedAllIsoCache = iso
+    #     return self.chargedAllIsoCache
 
     def chargedAllIso(self):
-        if self.chargedAllIsoCache is None:
-            chargedAllIsoType = 13
-            myVetoes = reco.IsoDeposit.Vetos()
-            iso = self.sourcePtr().isoDeposit(chargedAllIsoType).depositWithin(0.4,
-                                                                               myVetoes,True)
-            vetoSize = 0.01
-            if self.sourcePtr().isEE():
-                vetoSize = 0.015
-            iso_veto = self.sourcePtr().isoDeposit(chargedAllIsoType).depositWithin(vetoSize,
-                                                                                    myVetoes,True)
-            iso -= iso_veto
-            self.chargedAllIsoCache = iso
-        return self.chargedAllIsoCache
-
+        return self.physObj.pfIsolationVariables().sumChargedParticlePt 
     
     def relaxedIdForEleTau(self):
         """Relaxing conversion cuts for sideband studies
         """
-        eta = abs( self.sourcePtr().superCluster().eta() )
+        eta = abs( self.superCluster().eta() )
         if   eta<0.8:   lmvaID = 0.925
         elif eta<1.479: lmvaID = 0.975
         else :          lmvaID = 0.985
@@ -51,14 +60,15 @@ class HTauTauElectron( Electron ):
         return result
 
     def tightIdForEleTau(self):
-        """reference numbers form the Htautau twiki
+        """reference numbers from the Htautau twiki
 
         https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#2012_Baseline_Selection
         """
         
-        if self.numberOfHits() != 0: return False
+        # JAN FIXME - do we need this cut?
+        # if self.numberOfHits() != 0: return False
         if not self.passConversionVeto(): return False        
-        eta = abs( self.sourcePtr().superCluster().eta() )
+        eta = abs( self.superCluster().eta() )
 
         # Update Jan: Deleted the old numbers which are for e-mu, the ones below
         # are for e-tau starting from pt>20
@@ -75,9 +85,10 @@ class HTauTauElectron( Electron ):
         '''To be used in the tri-lepton veto for both the etau and mutau channels.
         Agreed at the CMS center with Josh, Andrew, Valentina, Jose on the 22nd of October
         '''
-        if self.numberOfHits() != 0: return False
+        # JAN FIXME - do we need this cut?
+        # if self.numberOfHits() != 0: return False
         if not self.passConversionVeto(): return False
-        eta = abs( self.sourcePtr().superCluster().eta() )
+        eta = abs( self.superCluster().eta() )
         #Colin no eta cut should be done here.
         #        if eta > 2.1 : return False
         lmvaID = -99999 # identification
@@ -115,12 +126,12 @@ class HTauTauElectron( Electron ):
         dphi = abs(self.deltaPhiSuperClusterTrackAtVtx())
         sihih = self.sigmaIetaIeta()
         # print sihih
-        if self.sourcePtr().isEB() :
+        if self.isEB() :
             if sihih >= 0.010     : return False
             if dphi  >= 0.80      : return False 
             if deta  >= 0.007     : return False
             if hoe   >= 0.15      : return False
-        elif self.sourcePtr().isEE() :
+        elif self.isEE() :
             if sihih >= 0.030     : return False
             if dphi  >= 0.70      : return False 
             if deta  >= 0.010     : return False
@@ -132,8 +143,8 @@ class HTauTauElectron( Electron ):
         base = [super(HTauTauElectron, self).__str__()]
         spec = [
             'vertex    : dxy = {dxy}, dz = {dz}'.format(dxy=self.dxy(), dz=self.dz()),
-            'mva       = {mva}'.format(mva=self.mvaNonTrigV0()),
-            'nmisshits = {nhits}'.format(nhits=self.numberOfHits()),
+            # 'mva       = {mva}'.format(mva=self.mvaNonTrigV0()),
+            # 'nmisshits = {nhits}'.format(nhits=self.numberOfHits()),
             'conv veto = {conv}'.format(conv=self.passConversionVeto()),
             'tight ID  = {id}'.format(id=self.tightId()),
             '3-veto ID = {id}'.format(id=self.looseIdForTriLeptonVeto()),

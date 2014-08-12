@@ -12,6 +12,7 @@
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/JetReco/interface/PFJet.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 #include "RecoJets/JetProducers/interface/PileupJetIdAlgo.h"
 
 #include "CMGTools/Common/interface/MetUtilities.h"
@@ -56,7 +57,7 @@ class MetFlavorProducer : public edm::EDProducer {
   int                     fMetFlavor;
 
   void makeCandidates(std::vector<std::pair<LorentzVector,double> >         &iPFInfo,
-		      const PFCandidateCollection &iCands,const Vertex *iPV);
+		      const std::vector<pat::PackedCandidate> &iCands,const Vertex *iPV);
   void makeVertices  (std::vector<Vector>& iPVInfo,
 		      const VertexCollection &iVertices);
 
@@ -65,6 +66,6 @@ class MetFlavorProducer : public edm::EDProducer {
 		      const VertexCollection& iVertices,double iRho); 
 
   bool   passPFLooseId(const pat::Jet *iJet);
-  double pfCandDz(const PFCandidate* iPFCand, const Vertex *iPV) ;
-  double jetMVA  (const Jet *iuncorrJet,double iJec, const Vertex iPV, const reco::VertexCollection &iAllvtx,bool iPrintDebug=false);
+  double pfCandDz(const pat::PackedCandidate* iPFCand, const Vertex *iPV) ;
+  double jetMVA  (const pat::Jet *iuncorrJet,double iJec, const Vertex& iPV, const reco::VertexCollection &iAllvtx,bool iPrintDebug=false);
 };

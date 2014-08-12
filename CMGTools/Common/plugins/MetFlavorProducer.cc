@@ -67,9 +67,10 @@ void MetFlavorProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   //PFJetCollection               lCJets = *lHCJets;
 
   //Get pfCandidates
-  Handle<PFCandidateCollection> lHCands;
+  // Handle<PFCandidateCollection> lHCands;
+  Handle<std::vector<pat::PackedCandidate>> lHCands;
   iEvent.getByLabel(fPFCandName   , lHCands);
-  const PFCandidateCollection&         lCands = *lHCands;
+  const std::vector<pat::PackedCandidate>&         lCands = *lHCands;
 
   // vertices    
   Handle<reco::VertexCollection> lHVertices;
@@ -139,9 +140,9 @@ void MetFlavorProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,
   }
 }
 
-void MetFlavorProducer::makeCandidates(std::vector<std::pair<LorentzVector,double> > &iPFInfo,const PFCandidateCollection &iCands,const Vertex *iPV) { 
+void MetFlavorProducer::makeCandidates(std::vector<std::pair<LorentzVector,double> > &iPFInfo,const std::vector<pat::PackedCandidate> &iCands,const Vertex *iPV) { 
   for(int i0 = 0; i0 < (int)iCands.size(); i0++) {
-    const PFCandidate*  pflowCand = &(iCands.at(i0));
+    const pat::PackedCandidate*  pflowCand = &(iCands.at(i0));
     double pDZ = -999;
     if(iPV != 0) pDZ  = pfCandDz(pflowCand,iPV); //If there is no track return negative number -999
     //LorentzVector pVec; pVec.SetCoordinates(pflowCand->pt(),pflowCand->eta(),pflowCand->phi(),pflowCand->mass());
@@ -177,41 +178,53 @@ bool MetFlavorProducer::passPFLooseId(const pat::Jet *iJet) {
   if(iJet->chargedMultiplicity()            < 1      && fabs(iJet->eta()) < 2.4 ) return false;
   return true;
 }
-double MetFlavorProducer::pfCandDz(const PFCandidate* iPFCand, const Vertex *iPV) { 
+double MetFlavorProducer::pfCandDz(const pat::PackedCandidate* iPFCand, const Vertex *iPV) { 
   double lDz = -999;
-  if(iPFCand->trackRef().isNonnull())    lDz = fabs(iPFCand->   trackRef()->dz(iPV->position()));
-  else if(iPFCand->gsfTrackRef().isNonnull()) lDz = fabs(iPFCand->gsfTrackRef()->dz(iPV->position()));
+  // if(iPFCand->trackRef().isNonnull())    lDz = fabs(iPFCand->   trackRef()->dz(iPV->position()));
+  // FIXME - JAN - understand what the pseudoTrack gives
+  lDz = fabs(iPFCand->pseudoTrack().dz(iPV->position()));
+  // else if(iPFCand->gsfTrackRef().isNonnull()) lDz = fabs(iPFCand->gsfTrackRef()->dz(iPV->position()));
   return lDz;
 }
-double MetFlavorProducer::jetMVA (const Jet *iCorrJet,double iJec, const Vertex iPV, const reco::VertexCollection &iAllvtx,bool iPrintDebug) { 
-  PileupJetIdentifier lPUJetId     =  fPUJetIdAlgo->computeIdVariables(iCorrJet,iJec,&iPV,iAllvtx,true);
-  // PileupJetIdentifier *lPUJetIdRef =  &lPUJetId;
-  if(iCorrJet->pt() < 10) {
-    PileupJetIdentifier pPUJetId   =  fPUJetIdAlgoLowPt->computeIdVariables(iCorrJet,iJec,&iPV,iAllvtx,true);
-    // lPUJetIdRef = &pPUJetId;
-  }
-  if(iPrintDebug) { std::cout << "Debug Jet MVA: "
-			      << lPUJetId.nvtx()      << " "
-			      << iCorrJet->pt()       << " "
-			      << lPUJetId.jetEta()    << " "
-			      << lPUJetId.jetPhi()    << " "
-			      << lPUJetId.d0()        << " "
-			      << lPUJetId.dZ()        << " "
-			      << lPUJetId.beta()      << " "
-			      << lPUJetId.betaStar()  << " "
-			      << lPUJetId.nCharged()  << " "
-			      << lPUJetId.nNeutrals() << " "
-			      << lPUJetId.dRMean()    << " "
-			      << lPUJetId.frac01()    << " "
-			      << lPUJetId.frac02()    << " "
-			      << lPUJetId.frac03()    << " "
-			      << lPUJetId.frac04()    << " "
-			      << lPUJetId.frac05()
-			      << " === : === "
-			      << lPUJetId.mva() << " " << endl;
-  }
+double MetFlavorProducer::jetMVA (const pat::Jet *iCorrJet,double iJec, const Vertex& iPV, const reco::VertexCollection &iAllvtx, bool iPrintDebug) { 
 
-  return lPUJetId.mva();
+  return iCorrJet->userFloat("pileupJetId:fullDiscriminant");
+  // std::cout << "jet " << iCorrJet << std::endl;
+  // std::cout << "iJec " << iJec << std::endl;
+  // std::cout << "vertex x " << iPV.x() << std::endl;
+  // std::cout << "vertex coll size " << iAllvtx.size() << std::endl;
+
+
+  // std::cout << "Is a PF jet? " << (dynamic_cast<const pat::Jet*>(iCorrJet))->isPFJet() << std::endl;
+
+  // PileupJetIdentifier lPUJetId     =  fPUJetIdAlgo->computeIdVariables(iCorrJet,iJec,&iPV,iAllvtx,true);
+  // // PileupJetIdentifier *lPUJetIdRef =  &lPUJetId;
+  // if(iCorrJet->pt() < 10) {
+  //   PileupJetIdentifier pPUJetId   =  fPUJetIdAlgoLowPt->computeIdVariables(iCorrJet,iJec,&iPV,iAllvtx,true);
+  //   // lPUJetIdRef = &pPUJetId;
+  // }
+  // if(iPrintDebug) { std::cout << "Debug Jet MVA: "
+		// 	      << lPUJetId.nvtx()      << " "
+		// 	      << iCorrJet->pt()       << " "
+		// 	      << lPUJetId.jetEta()    << " "
+		// 	      << lPUJetId.jetPhi()    << " "
+		// 	      << lPUJetId.d0()        << " "
+		// 	      << lPUJetId.dZ()        << " "
+		// 	      << lPUJetId.beta()      << " "
+		// 	      << lPUJetId.betaStar()  << " "
+		// 	      << lPUJetId.nCharged()  << " "
+		// 	      << lPUJetId.nNeutrals() << " "
+		// 	      << lPUJetId.dRMean()    << " "
+		// 	      << lPUJetId.frac01()    << " "
+		// 	      << lPUJetId.frac02()    << " "
+		// 	      << lPUJetId.frac03()    << " "
+		// 	      << lPUJetId.frac04()    << " "
+		// 	      << lPUJetId.frac05()
+		// 	      << " === : === "
+		// 	      << lPUJetId.mva() << " " << endl;
+  // }
+
+  // return lPUJetId.mva();
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

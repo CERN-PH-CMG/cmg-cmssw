@@ -40,7 +40,9 @@ class DYJetsFakeAnalyzer( GenParticleAnalyzer ):
         event.isFake = 0
         if not self.cfg_comp.isMC:
             return True
-        result = super(DYJetsFakeAnalyzer, self).process(iEvent, event)
+        
+        self.readCollections( iEvent )
+        event.genParticles = self.buildGenParticles( self.mchandles['genpart'].product(), event )
         
         # check if it is a Z->tau tau event.
         tauDaus, bosonPresent = bosonToX( event.genParticles, 23, 15)

@@ -1,11 +1,14 @@
 import FWCore.ParameterSet.Config as cms
 
-cmgTauMuCorFactory = cms.PSet(
+cmgTauMuCor = cms.EDProducer(
+    "TauMuUpdateProducer",
     # leg1 and leg2 are dummy collections here
     leg1Collection      = cms.InputTag(''),
     leg2Collection      = cms.InputTag(''),
     #metCollection       = cms.InputTag('recoilCorrectedMET'),
     diObjectCollection  = cms.InputTag('cmgTauMuSel'),
+    # Read the pruned particles containing the leptons
+    genCollection = cms.InputTag('prunedGenParticles'),
     nSigma              = cms.double(0),
     uncertainty         = cms.double(0.03),
     shift1ProngNoPi0    = cms.double(0.),
@@ -19,8 +22,8 @@ cmgTauMuCorFactory = cms.PSet(
     shiftTaus = cms.bool(True)
 )
 
-cmgTauMuCor = cms.EDFilter(
-    "TauMuUpdatePOProducer",
-    cfg  = cmgTauMuCorFactory.clone(),
-    cuts = cms.PSet()
-    )
+# cmgTauMuCor = cms.EDProducer(
+#     "TauMuUpdateProducer",
+#     cfg  = cmgTauMuCorFactory.clone(),
+#     cuts = cms.PSet()
+#     )

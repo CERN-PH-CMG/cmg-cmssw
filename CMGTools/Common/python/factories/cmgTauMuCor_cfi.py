@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
-cmgTauMuCorFactory = cms.PSet(
+cmgTauMuCor = cms.PSet(
+     "TauMuUpdateProducer",
     # leg1 and leg2 are dummy collections here
     leg1Collection      = cms.InputTag(''),
     leg2Collection      = cms.InputTag(''),
@@ -17,8 +18,8 @@ cmgTauMuCorFactory = cms.PSet(
     shiftTaus           = cms.bool(True)
 )
 
-cmgTauMuCor = cms.EDFilter(
-    "TauMuUpdatePOProducer",
-    cfg  = cmgTauMuCorFactory.clone(),
-    cuts = cms.PSet()
-    )
+# cmgTauMuCor = cms.EDFilter(
+#     "TauMuUpdateProducer",
+#     cfg  = cmgTauMuCorFactory.clone(),
+#     cuts = cms.PSet()
+#     )

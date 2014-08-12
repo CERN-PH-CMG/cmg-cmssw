@@ -2,7 +2,7 @@ import copy
 
 from CMGTools.Production.getFiles import getFiles
 from CMGTools.RootTools.fwlite.Config import printComps
-from CMGTools.H2TauTau.proto.samples.splitFactor import splitFactor
+from CMGTools.RootTools.utils.splitFactor import splitFactor
 
 from CMGTools.H2TauTau.proto.samples.run2012.data import *
 from CMGTools.H2TauTau.proto.samples.run2012.embed import *

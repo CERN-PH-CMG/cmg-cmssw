@@ -3,25 +3,28 @@
 
 #include <iomanip>
 
+
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "DataFormats/Common/interface/Ref.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
-#include "CMGTools/Common/interface/Factory.h"
-#include "AnalysisDataFormats/CMGTools/interface/Tau.h"
+#include "DataFormats/TauReco/interface/PFTau.h"
 
 
 namespace cmg{
 
-class TauESCorrector : public Factory<cmg::Tau> {
+class TauESCorrector : public edm::EDProducer {
+
+typedef std::vector<pat::Tau> collection;
 
 public:
   TauESCorrector(const edm::ParameterSet& ps);
   virtual ~TauESCorrector() {};
-  typedef cmg::Factory<cmg::Tau>::event_ptr event_ptr;
-  virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
+  void produce(edm::Event&, const edm::EventSetup&);
 
 private:
   const edm::InputTag candLabel_;
@@ -49,13 +52,14 @@ cmg::TauESCorrector::TauESCorrector(const edm::ParameterSet& ps):
   std::cout<< "Scaling OneProng1Pi0 pT Slope cands by " << OneProng1Pi0CorrectionPtSlope_<< std::endl;
   std::cout<< "Scaling ThreeProng cands by " << ThreeProngCorrection_<< std::endl;
   std::cout<< "Scaling ThreeProng pT Slope cands by " << ThreeProngCorrectionPtSlope_<< std::endl;
+
+  produces<collection>();
 }
 
-cmg::TauESCorrector::event_ptr cmg::TauESCorrector::create(const edm::Event& iEvent,const edm::EventSetup&)
+void cmg::TauESCorrector::produce(edm::Event& iEvent,const edm::EventSetup&)
 {
-  typedef std::vector<cmg::Tau> collection;
   edm::Handle<collection> candCands;
-  cmg::TauESCorrector::event_ptr result(new collection);
+  std::auto_ptr<collection> result(new collection);
   iEvent.getByLabel(candLabel_, candCands);
 
   size_t index = 0;
@@ -63,7 +67,7 @@ cmg::TauESCorrector::event_ptr cmg::TauESCorrector::create(const edm::Event& iEv
       mi != candCands->end(); ++mi, ++index) {
 
     edm::Ref<collection> candPtr(candCands, index);
-    cmg::Tau cand(*candPtr);
+    pat::Tau cand(*candPtr);
 
     reco::Candidate::LorentzVector fourVec = cand.p4();
 
@@ -77,7 +81,7 @@ cmg::TauESCorrector::event_ptr cmg::TauESCorrector::create(const edm::Event& iEv
 
     result->push_back(cand);
   }
-  return result;
+  iEvent.put(result);
 }
 
 //#include "FWCore/Framework/interface/MakerMacros.h"

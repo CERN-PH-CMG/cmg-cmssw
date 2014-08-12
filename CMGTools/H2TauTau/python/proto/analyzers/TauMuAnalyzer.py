@@ -1,7 +1,7 @@
 import operator
 from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.DiObject import TauMuon
+from CMGTools.H2TauTau.proto.physicsobjects.DiObject import TauMuon
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, GenParticle
 from CMGTools.RootTools.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
 
@@ -17,27 +17,27 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             'cmgTauMuCorSVFitFullSel', # FIXME!!
             # 'cmgTauMu',
             #'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>'
-            'std::vector<cmg::DiTauObject<cmg::Tau,cmg::Muon>>'
+            # 'std::vector<cmg::DiTauObject<cmg::Tau,cmg::Muon>>'
+            'std::vector<pat::CompositeCandidate>'
             )
 
-        # if hasattr(self.cfg_ana, 'mvametsigs'):
-        #     self.handles['mvametsigs'] = AutoHandle(
-        #         self.cfg_ana.mvametsigs, # 'mvaMETTauMu'
-        #         'std::vector<cmg::METSignificance>'
-        #         )
+        self.handles['mvametsigs'] = AutoHandle(
+            'mvaMETTauMu',
+            'std::vector<cmg::METSignificance>'
+            )
 
         self.handles['otherLeptons'] = AutoHandle(
-            'cmgElectronSel',
-            'std::vector<cmg::Electron>'
+            'slimmedElectrons',
+            'std::vector<pat::Electron>'
             )
         
         self.handles['leptons'] = AutoHandle(
-            'cmgMuonSel',
-            'std::vector<cmg::Muon>'
+            'slimmedMuons',
+            'std::vector<pat::Muon>'
             )
         
         # FIXME reading the genparticlespruned collection. problem elsewhere?
-        self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
+        self.mchandles['genParticles'] = AutoHandle( 'prunedGenParticles',
                                                      'std::vector<reco::GenParticle>' )
 
     def buildDiLeptons(self, cmgDiLeptons, event):
@@ -53,9 +53,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             pydil.leg2().associatedVertex = event.goodVertices[0]
             if not self.testLeg2( pydil.leg2(), 99999 ):
                 continue
-            #if hasattr(self.cfg_ana, 'mvametsigs'):
-            #    pydil.mvaMetSig = mvaMetSig = self.handles['mvametsigs'].product()[index]
-            pydil.mvaMetSig = mvaMetSig = dil.metSig()
+            pydil.mvaMetSig = self.handles['mvametsigs'].product()[index]
+            # pydil.mvaMetSig = dil.metSig()
             diLeptons.append( pydil )
         return diLeptons
 
@@ -78,6 +77,9 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         for index, lep in enumerate(cmgOtherLeptons):
             pyl = self.__class__.OtherLeptonClass(lep)
             pyl.associatedVertex = event.goodVertices[0]
+            # JAN FIXME: Check if the overall rho is needed (from the
+            # VertexAnalyzer)
+            pyl.rho = event.rho
             otherLeptons.append( pyl )
         return otherLeptons
 
@@ -137,7 +139,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         if isocut is None:
             return tau.tauID('byCombinedIsolationDeltaBetaCorrRaw3Hits') < 1.5
         else:
-            return tau.tauID("byRawIsoMVA")>isocut
+            # JAN FIXME - placeholder, as of now only used to define passing cuts
+            return tau.tauID("byIsolationMVA3newDMwLTraw")>isocut
 
 
     def testVertex(self, lepton):
@@ -185,7 +188,7 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
                         self.testLegKine(muon, ptcut=15, etacut=2.4) and
                         muon.isGlobalMuon() and
                         muon.isTrackerMuon() and
-                        muon.sourcePtr().userFloat('isPFMuon') and
+                        muon.userFloat('isPFMuon') and
                         #COLIN Not sure this vertex cut is ok... check emu overlap
                         #self.testVertex(muon) and
                         # JAN: no dxy cut

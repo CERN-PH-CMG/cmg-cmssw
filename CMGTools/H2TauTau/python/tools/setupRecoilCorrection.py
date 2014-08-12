@@ -1,5 +1,4 @@
 from CMGTools.Utilities.metRecoilCorrection.rootfile_dir import rootfile_dir
-import copy
 
 def lookup( fileName, stringToFind ):
     '''predicate for identifying samples. could be more solid'''
@@ -28,7 +27,6 @@ recoilfits_leptonic_4X = dict(
     )
 
 recoilfits_hadronic_4X = recoilfits_leptonic_4X 
-
 
 
 

@@ -11,6 +11,7 @@ class Tau( Lepton ):
         super(Tau, self).__init__(tau)
         self.eOverP = None
 
+    # JAN FIXME - check what's available in miniAOD and if we need this at all
     def calcEOverP(self):
         if self.eOverP is not None:
             return self.eOverP
@@ -32,17 +33,17 @@ class Tau( Lepton ):
     def dxy(self, vertex=None):
         if vertex is None:
             vertex = self.associatedVertex
-        vtx = self.vertex();  # FIXME 
-        p4 = self.p4();
+        vtx = self.vertex() # FIXME 
+        p4 = self.p4()
         return ( - (vtx.x()-vertex.position().x()) *  p4.y()
-                 + (vtx.y()-vertex.position().y()) *  p4.x() ) /  p4.pt();    
+                 + (vtx.y()-vertex.position().y()) *  p4.x() ) /  p4.pt()
 
     def dz(self, vertex=None):
         if vertex is None:
             vertex = self.associatedVertex
-        vtx = self.vertex();  # FIXME 
-        p4 = self.p4();        
-        return  (vtx.z()-vertex.position().z()) - ((vtx.x()-vertex.position().x())*p4.x()+(vtx.y()-vertex.position().y())*p4.y())/ p4.pt() *  p4.z()/ p4.pt();
+        vtx = self.vertex()  # FIXME 
+        p4 = self.p4()
+        return  (vtx.z()-vertex.position().z()) - ((vtx.x()-vertex.position().x())*p4.x()+(vtx.y()-vertex.position().y())*p4.y())/ p4.pt() *  p4.z()/ p4.pt()
     
     def zImpact(self, vertex=None):
         '''z impact at ECAL surface'''
@@ -75,7 +76,9 @@ class Tau( Lepton ):
 def isTau(leg):
     '''Duck-typing a tau'''
     try:
-        leg.leadChargedHadrPt()
+        # Taken from BaseTau to work for both PFTaus and PAT Taus
+        # (can maybe find a less expensive method)
+        leg.leadTrack()
     except AttributeError:
         return False
     return True

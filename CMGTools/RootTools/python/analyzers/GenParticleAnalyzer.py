@@ -18,7 +18,8 @@ class GenParticleAnalyzer( Analyzer ):
         super(GenParticleAnalyzer, self).declareHandles()
         self.mchandles['genpart'] =  AutoHandle(
             self.cfg_ana.src,
-            'std::vector<reco::GenParticle>'
+            'std::vector<pat::PackedGenParticle>' if 'packed' in 
+                self.cfg_ana.src else 'std::vector<reco::GenParticle>'
             )
 
     def beginLoop(self):
