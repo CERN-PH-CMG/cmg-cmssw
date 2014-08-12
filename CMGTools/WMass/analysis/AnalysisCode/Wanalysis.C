@@ -110,7 +110,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     // hEffSF_HLT_eta_2011=(TGraphAsymmErrors*)finEffSF->Get("SF_HLT_MuIso24_2011_eta__pt>30");
   
   }else{
-    cout << "NOT APPLYING EFFICIENCIES"<< endl;
+    cout << "NOT APPLYING EFFICIENCIES SF (not requested or analyzing data)"<< endl;
   }
   //------------------------------------------------------
   // retrieve pileup SF

@@ -120,7 +120,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     SF_ISO05_PT10=(TH3F*)finEffSF->Get("SF_2011_ISO05_PT10_ETA2P4_Tid_iso_trg_CosThetaStar_PhiStarAbs_pair_pt_PLOT");
     
   }else{
-    cout << "NOT APPLYING EFFICIENCIES"<< endl;
+    cout << "NOT APPLYING EFFICIENCIES SF (not requested or analyzing data)"<< endl;
   }
   //------------------------------------------------------
   // retrieve pileup SF
@@ -266,8 +266,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // start the event loop
   //------------------------------------------------------
   Long64_t nbytes = 0, nb = 0;
-  // for(Long64_t jentry=first_entry; jentry<nentries;jentry++) {
-    for (Long64_t jentry=0; jentry<1e5;jentry++) { // TEMP !!!
+  for(Long64_t jentry=first_entry; jentry<nentries;jentry++) {
+    // for (Long64_t jentry=0; jentry<1e5;jentry++) { // TEMP !!!
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;
