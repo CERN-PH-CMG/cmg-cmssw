@@ -125,9 +125,19 @@ GluGluToHToGG_Flat20to50 = kreator.makePrivateMCComponent("GluGluToHToGG_Flat20t
 VBFHTauTau_PUS14    = kreator.makePrivateMCComponent("VBFHTauTau_PUS14",    "/VBF_HToTauTau_M-125_13TeV-powheg-pythia6/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM", ["/store/cmst3/user/gpetrucc/miniAOD/v1/VBF_HToTauTau_M-125_13TeV-powheg-pythia6_PU_S14_PAT.root" ])
 TTHToWW_PUS14 = kreator.makePrivateMCComponent("TTHToWW_PUS14", "/TTbarH_HToWWTo2LAndTauNu_M-125_13TeV_pythia6/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM",   [ "/store/cmst3/user/gpetrucc/miniAOD/v1/TTbarH_HToWWTo2LAndTauNu_M-125_13TeV_pythia6_PU_S14_PAT.root" ])
 
+
 mcSamplesTest = [ DYJetsM50_Flat20to50, GluGluToHToZZTo4L_PUS14, GluGluToHToGG_Flat20to50, VBFHTauTau_PUS14, TTHToWW_PUS14 ]
 
-mcSamples = mcSamplesCSA14_PU20bx25 +mcSamplesTest  
+
+## SOME PRIVATELY PRODUCED 50ns SAMPLES
+DYJetsM50_HT400to600_PU_S14_POSTLS170_dbs = kreator.makeMyPrivateMCComponent("DYJetsM50_HT400to600_PU_S14_POSTLS170_dbs", "/DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV-madgraph-tauola/phys_susy-miniAODcopy_DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV-madgraph-tauola_lhx-Spring14dr-PU_S14_POSTLS170-af38aa319b7b7c91a6797b31c3be19b7/USER", "phys03")
+
+
+mcSamplesCSA14_PU40bx50 = [ DYJetsM50_HT400to600_PU_S14_POSTLS170_dbs ]
+
+
+mcSamples = mcSamplesCSA14_PU20bx25 + mcSamplesTest + mcSamplesCSA14_PU40bx50
+
 
 #-----------DATA---------------
 
