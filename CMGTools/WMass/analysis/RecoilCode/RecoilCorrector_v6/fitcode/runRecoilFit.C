@@ -65,8 +65,6 @@ TH2D histoU1vsU2corrUnorm("hu1vsu2corrUnorm","histo U1 vs U2 after corrU",100,-1
 TH2D histoRecoil("hrecoil"," recoil vs recoilCorr",100,-20,20,100,-20,20);
 TH2D histoU1vsU2_520("hu1vsu2520","",100,-10,10,100,-10,10);
 
-TH1D histoDelta("hdelta","histo ",100,-95,5);
-
 TH2D histoU1vsU2_02("hu1vsu2_02","",100,-10,10, 100,-10,10);
 TH2D histoU1vsU2_24("hu1vsu2_24","",100,-10,10, 100,-10,10);
 TH2D histoU1vsU2_46("hu1vsu2_46","",100,-10,10, 100,-10,10);
@@ -88,9 +86,39 @@ TH2D histoCorrU2("hCorrU2","",10,0,10, 10,0,10);
 TH2D histoU1vsMuPt("histoU1vsMuPt","",100,0,100, 100,-50,50);
 TH2D histoU2vsMuPt("histoU2vsMuPt","",100,0,100, 100,-50,50);
 
-TH1D histoPhiStar("hPhiStar","histo PhiStar",1000,-10,10);
-TH1D histoThetaStar("hThetaStar","histo ThetaStar",1000,-10,10);
-TH2D histoPhiStarvsZpt("histoPhiStarvsZpt","histo PhiStar vs Zpt",100,0,20,100,-10,10);
+TH1D histoDelta("hdelta","histo ",100,-95,5);
+
+//## needed for the boson PDF check check of the application of the recoilCorr
+TH1D Vpt0("Vpt0","gluon",100,0,50);
+TH1D Vpt1("Vpt1","quark1",100,0,50);
+TH1D Vpt2("Vpt2","quark2",100,0,50);
+TH1D Vpt3("Vpt3","quark3",100,0,50);
+TH1D Vpt4("Vpt4","quark4",100,0,50);
+TH1D Vpt5("Vpt5","quark5",100,0,50);
+TH1D Vpt10("Vpt10","quark10",100,0,50);
+
+TH1D Vy0("Vy0","gluon",200,-3.,3.);
+TH1D Vy1("Vy1","quark1",200,-3.,3.);
+TH1D Vy2("Vy2","quark2",200,-3.,3.);
+TH1D Vy3("Vy3","quark3",200,-3.,3.);
+TH1D Vy4("Vy4","quark4",200,-3.,3.);
+TH1D Vy5("Vy5","quark5",200,-3.,3.);
+TH1D Vy10("Vy10","quark10",200,-3.,3.);
+
+TH1D xPDF0("xPDF0","xPDF0",200,-5.,0.);
+TH1D xPDF1("xPDF1","xPDF1",200,-5.,0.);
+TH1D xPDFm2("xPDFm2","xPDFm2",200,-5.,0.);
+TH1D xPDFm1("xPDFm1","xPDFm1",200,-5.,0.);
+TH1D xPDF2("xPDF2","xPDF2",200,-5.,0.);
+TH1D xPDF3("xPDF3","xPDF3",200,-5.,0.);
+TH1D xPDF4("xPDF4","xPDF4",200,-5.,0.);
+TH1D xPDF5("xPDF5","xPDF5",200,-5.,0.);
+
+//## PhiStar plot
+TH1D histoPhiStar("hPhiStar","histo PhiStar",1000,-1.,1.);
+TH1D histoThetaStar("hThetaStar","histo ThetaStar",1000,-5.,5.);
+TH2D histoPhiStarvsZpt("histoPhiStarvsZpt","histo PhiStar vs Zpt",100,0,20,100,0.,0.5);
+TH2D histoPhiStarvsgenZpt("histoPhiStarvsgenZpt","histo PhiStar vs genZpt",100,0,20,100,0.,0.5);
 
 /////
 
@@ -180,6 +208,7 @@ int fId1 = 0; int fId2 = 0; float fGPhi1 = 0; float fGPhi2 = 0; float fGEta1  = 
 int fNBTag = 0; float fMJJ = 0; /*float fJPt1 = 0;*/ double fJPt1 = 0; float fDEta = 0; int fIS2011A = 0; int fId = -1; float fVPt = 0; float fVPhi = 0;
 
 double fpdgId1, fpdgId2;
+double fx1, fx2;
 
 double fZmass;
 double fMuPos_phi, fMuPos_eta, fMuPos_pt, fMuPos_charge, fMuPosReliso, fMuPos_dxy, fMuPos_dz;
@@ -543,8 +572,8 @@ void applyType2CorrU(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   //  double pU2ValM = 0 ;
   double pU1ValD = 0 ;
   double pU2ValD = 0;
-  double pUValM = 0;
   double pUValMtest = 0;
+  double pUValM = 0;
   double pUValD = 0 ;
 
   if(doSingleGauss) {
@@ -702,6 +731,8 @@ void applyType2CorrMET(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   //  cout << "diGAUSS "<< endl;
   //  cout << "  pU1ValM " << pU1ValM  << " pU1ValD " << pU1ValD  <<endl;
   //  cout << "  pU2ValM " << pU2ValM  << " pU2ValD " << pU2ValD  <<endl;
+  double pU1ValMtest = 0;
+  double pU2ValMtest = 0;
 
   double pU1ValM = 0;
   double pU2ValM = 0 ;
@@ -755,6 +786,12 @@ void applyType2CorrMET(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
       pU1ValD         = diGausPInverse(pU1ValM  ,pMFrac1,pMSigma1_1,pMSigma1_2);
       pU2ValD         = diGausPInverse(pU2ValM  ,pDFrac2,pDSigma2_1,pDSigma2_2);
     }
+
+    pU1ValMtest     = diGausPInverse(pU1ValM, pMFrac1, pMSigma1_1, pMSigma1_2);
+    pU2ValMtest     = diGausPInverse(pU2ValM, pMFrac2, pMSigma2_1, pMSigma2_2);
+    //    if(pU1ValM==fabs(pU1Diff)) pU1ValMtest=fabs(recoil); // in those cases do nothing                                                                                       
+    histoDelta.Fill(pU1ValMtest-fabs(pU1Diff));
+    histoDelta.Fill(pU2ValMtest-fabs(pU2Diff));
 
     if(pU1ValM==fabs(pU1Diff)) pU1ValD=fabs(pU1Diff); // in those cases do nothing
     if(pU2ValM==fabs(pU2Diff)) pU1ValD=fabs(pU1Diff); // in those cases do nothing
@@ -1021,6 +1058,9 @@ void load(TTree *iTree, int type) {
 
   iTree->SetBranchAddress("parton1_pdgId" ,&fpdgId1);
   iTree->SetBranchAddress("parton2_pdgId" ,&fpdgId2);
+
+  iTree->SetBranchAddress("parton1_x" ,&fx1);
+  iTree->SetBranchAddress("parton2_x" ,&fx2);
   
 }
 
@@ -1099,14 +1139,18 @@ double calculateCosThetaStar(double eta1, double eta2) {
   return TMath::TanH((eta1-eta2)/2);
 }
 
-double calculatePhiStar(double SinThetaStar, double fMuPos_eta, double fMuNeg_eta, double fMuPos_phi, double fMuNeg_phi){
-  double PhiStar;
-  double Phi_acop;
+double calculatePhiStar(double eta1, double eta2, double phi1, double phi2){
 
-  if((fMuPos_phi-fMuNeg_phi)<TMath::Pi()) Phi_acop=TMath::Pi()-fMuPos_phi-fMuNeg_phi;
-  else Phi_acop=TMath::Pi()-fMuNeg_phi-fMuPos_phi;
+  float dphi = fabs( phi1 - phi2 );
+  if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
+  double Phi_acop=TMath::Pi()-dphi;
 
-  return PhiStar=(TMath::Tan(Phi_acop/2))*SinThetaStar;
+  double SinThetaStar=calculateSinThetaStar(eta1,eta2);
+
+  double PhiStar=(TMath::Tan(Phi_acop/2))*SinThetaStar;
+
+  return PhiStar;
+
 }
 
 bool runSelection() {
@@ -1185,11 +1229,11 @@ bool runSelection() {
       histoU1diff.Fill(fU1+fZPt);
       histoU2.Fill(fU2);
    
-
-      double SinThetaStar=calculateSinThetaStar(fMuPos_eta, fMuNeg_eta);
+      //      double SinThetaStar=calculateSinThetaStar(fMuPos_eta, fMuNeg_eta);
       double CosThetaStar=calculateCosThetaStar(fMuPos_eta, fMuNeg_eta);
 
-      double PhiStar=calculatePhiStar(SinThetaStar, fMuPos_eta, fMuNeg_eta, fMuPos_phi, fMuNeg_phi);
+      double PhiStar=calculatePhiStar(fMuPos_eta, fMuNeg_eta, fMuPos_phi, fMuNeg_phi);
+      histoPhiStarvsgenZpt.Fill(fPt1,PhiStar);
       histoPhiStarvsZpt.Fill(fZPt,PhiStar);
       histoPhiStar.Fill(PhiStar);
       histoThetaStar.Fill(CosThetaStar);
@@ -1304,58 +1348,108 @@ double getCorError2(double iVal,TF1 *iFit) {
 
 }
 
+
+void fillXPDF() { 
+
+      if(fpdgId1==1) xPDF1.Fill(log(fx1)); // valence u + sea u 
+      if(fpdgId2==1) xPDF1.Fill(log(fx2));
+
+      if(fpdgId1==2) xPDF2.Fill(log(fx1)); // valence d  + sea d 
+      if(fpdgId2==2) xPDF2.Fill(log(fx2));
+
+      if(fpdgId1==-1) xPDFm1.Fill(log(fx1)); // sea ubar
+      if(fpdgId2==-1) xPDFm1.Fill(log(fx2));
+
+      if(fpdgId1==-2) xPDFm2.Fill(log(fx1)); // sea ubar
+      if(fpdgId2==-2) xPDFm2.Fill(log(fx2));
+
+      if(abs(fpdgId1)==3) xPDF3.Fill(log(fx1)); // PDF quark and antiquark from sea are the same
+      if(abs(fpdgId2)==3) xPDF3.Fill(log(fx2));
+      if(abs(fpdgId1)==4) xPDF4.Fill(log(fx1)); 
+      if(abs(fpdgId2)==4) xPDF4.Fill(log(fx2)); 
+
+}
+
 bool checkPDF(int typeBoson, bool doPlot) { 
 
-  // THOSE are for the Z
+  // cout << "====================" << endl;
+  // cout << "== THOSE are for the Z 
+  // cout << "====================" << endl;
+
   if(typeBoson==23) {
+
+    fillXPDF();
+
     if((fpdgId1+fpdgId2)==0) {
-      if( pType==1 && abs(fpdgId1)==1 && abs(fpdgId2)==1 ) return true; // cout << " d dbar " << endl;
-      if( pType==2 && abs(fpdgId1)==2 && abs(fpdgId2)==2 ) return true; // cout << " u ubar " << endl;
-      if( pType==3 && abs(fpdgId1)==3 && abs(fpdgId2)==3 ) return true; // cout << " s sbar " << endl;
-	if( pType==4 && abs(fpdgId1)==4 && abs(fpdgId2)==4 ) return true; // cout << " c cbar " << endl;
-	if( pType==5 && abs(fpdgId1)==5 && abs(fpdgId2)==5 ) return true; // cout << " b bbar " << endl;
+      if( pType==1 && abs(fpdgId1)==1 && abs(fpdgId2)==1 ) { Vpt1.Fill(fZPt); Vy1.Fill(fZRap); return true; } // cout << " d dbar " << endl;
+      if( pType==2 && abs(fpdgId1)==2 && abs(fpdgId2)==2 ) { Vpt2.Fill(fZPt); Vy2.Fill(fZRap); return true; } // cout << " u ubar " << endl;
+      if( pType==3 && abs(fpdgId1)==3 && abs(fpdgId2)==3 ) { Vpt3.Fill(fZPt); Vy3.Fill(fZRap); return true; } // cout << " s sbar " << endl;
+      if( pType==4 && abs(fpdgId1)==4 && abs(fpdgId2)==4 ) { Vpt4.Fill(fZPt); Vy4.Fill(fZRap); return true; } // cout << " c cbar " << endl;
+      if( pType==5 && abs(fpdgId1)==5 && abs(fpdgId2)==5 ) { Vpt5.Fill(fZPt); Vy5.Fill(fZRap); return true; } // cout << " b bbar " << endl;
+
     } else if( pType==0 && (abs(fpdgId1)==0 || abs(fpdgId2)==0) ) {
-      return true; //cout << " gluon + X  " << endl;
+      if(abs(fpdgId1)==0) xPDF0.Fill(log(fx1)); if(abs(fpdgId2)==0) xPDF0.Fill(log(fx2));
+      Vpt0.Fill(fZPt); Vy0.Fill(fZRap); return true; //   cout << " gluon + X  " << endl;
     } else {
-      //      cout << " UNKNOWN "<< endl;
+      Vpt10.Fill(fZPt); Vy10.Fill(fZRap); return false; //cout << " UNKNOWN "<< endl;
     }
   }
-  
+
+  // cout << "====================" << endl;
+  // cout << "== THOSE are for the W +" << endl;  
+  // cout << "====================" << endl;
+
   if(typeBoson==24) {
 
-    //    cout << "typeBoson " << typeBoson << " doPosW " << doPosW << endl;
-    //    cout << "pType " << " fpdgId1 " << fpdgId1 <<  " fpdgId2 " << fpdgId2 << endl;
+    fillXPDF();
 
-    // THOSE are for the W+
-    if( pType==1 && ((fpdgId1==2 && fpdgId2==-1) || (fpdgId1==-1 && fpdgId2==2))) return true; //cout << " u dbar " << endl;
-    if( pType==2 && (
-	((fpdgId1==2 && fpdgId2==-3) || (fpdgId1==-3 && fpdgId2==2)) ||
-	((fpdgId1==2 && fpdgId2==-5) || (fpdgId1==-5 && fpdgId2==2)) ||
-	((fpdgId1==4 && fpdgId2==-1) || (fpdgId1==-1 && fpdgId2==4)) ||
-	((fpdgId1==4 && fpdgId2==-3) || (fpdgId1==-3 && fpdgId2==4)) ||
-	((fpdgId1==4 && fpdgId2==-5) || (fpdgId1==-5 && fpdgId2==4))
-	)) return true; //cout << " u sbar " << endl;
-    /*
-    if( pType==3 && ((fpdgId1==2 && fpdgId2==-5) || (fpdgId1==-5 && fpdgId2==2))) return true; //cout << " u bbar " << endl;
-    if( pType==4 && ((fpdgId1==4 && fpdgId2==-1) || (fpdgId1==-1 && fpdgId2==4))) return true; //cout << " c dbar " << endl;
-    if( pType==5 && ((fpdgId1==4 && fpdgId2==-3) || (fpdgId1==-3 && fpdgId2==4))) return true; //cout << " c sbar " << endl;
-    if( pType==6 && ((fpdgId1==4 && fpdgId2==-5) || (fpdgId1==-5 && fpdgId2==4))) return true; //cout << " c bbar " << endl;
-    */
-    if( pType==0 && (fpdgId1==0 || fpdgId2==0) ) return true; //cout << "gluon + X "<< endl;
-
+    // cout << "== typeBoson " << typeBoson << " doPosW " << doPosW << endl;
+    // cout << "== pType " << " fpdgId1 " << fpdgId1 <<  " fpdgId2 " << fpdgId2 << endl;
+    
+    if( pType==1 && ((fpdgId1==2 && fpdgId2==-1) || (fpdgId1==-1 && fpdgId2==2))) {
+      Vpt1.Fill(fZPt); Vy1.Fill(fZRap); return true; //cout << " u dbar " << endl;
+    } else if( pType==2 && (
+			    ((fpdgId1==2 && fpdgId2==-3) || (fpdgId1==-3 && fpdgId2==2)) ||  //cout << " u sbar " << endl;   
+			    ((fpdgId1==2 && fpdgId2==-5) || (fpdgId1==-5 && fpdgId2==2)) ||  //cout << " u bbar " << endl; 
+			    ((fpdgId1==4 && fpdgId2==-1) || (fpdgId1==-1 && fpdgId2==4)) ||  //cout << " c dbar " << endl; 
+			    ((fpdgId1==4 && fpdgId2==-3) || (fpdgId1==-3 && fpdgId2==4)) ||  //cout << " c sbar " << endl; 
+			    ((fpdgId1==4 && fpdgId2==-5) || (fpdgId1==-5 && fpdgId2==4))     //cout << " c bbar " << endl;  
+			    )
+	       ) { Vpt2.Fill(fZPt); Vy2.Fill(fZRap); return true; 
+    } else if( pType==0 && (fpdgId1==0 || fpdgId2==0) ) {
+      if(abs(fpdgId1)==0) xPDF0.Fill(log(fx1)); if(abs(fpdgId2)==0) xPDF0.Fill(log(fx2));
+      Vpt0.Fill(fZPt); Vy0.Fill(fZRap); return true; //cout << "gluon + X "<< endl;
+    } else {  
+      Vpt10.Fill(fZPt); Vy10.Fill(fZRap); return false; //   cout << " UNKNOWN "<< endl;
+    }
   }
-  
+
+  // cout << "====================" << endl;
+  // cout << "== THOSE are for the W -" << endl;  
+  // cout << "====================" << endl;
+
   if(typeBoson==(-24)) {
-    // THOSE are for the W-
-    if( pType==1 && ((fpdgId1==1 && fpdgId2==-2) || (fpdgId1==-2 && fpdgId2==1))) return true; //cout << " d ubar " << endl;
+
+    fillXPDF();
+
+    if( pType==1 && ((fpdgId1==1 && fpdgId2==-2) || (fpdgId1==-2 && fpdgId2==1))) {
+      Vpt1.Fill(fZPt); Vy1.Fill(fZRap); return true; //cout << " d ubar " << endl;
+    }
     if( pType==2 && (
-	((fpdgId1==1 && fpdgId2==-4) || (fpdgId1==-4 && fpdgId2==1)) ||
-	((fpdgId1==3 && fpdgId2==-2) || (fpdgId1==-2 && fpdgId2==3)) || 
-	((fpdgId1==3 && fpdgId2==-4) || (fpdgId1==-4 && fpdgId2==3)) ||
-        ((fpdgId1==5 && fpdgId2==-2) || (fpdgId1==-2 && fpdgId2==5)) ||
-        ((fpdgId1==5 && fpdgId2==-4) || (fpdgId1==-4 && fpdgId2==5))
-	)) return true; //cout << " b cbar " << endl;
-    if( pType==0 && (fpdgId1==0 || fpdgId2==0))  return true; // cout << "gluon + X "<< endl; return true;
+		     ((fpdgId1==1 && fpdgId2==-4) || (fpdgId1==-4 && fpdgId2==1)) || //cout << " d cbar " << endl;
+		     ((fpdgId1==3 && fpdgId2==-2) || (fpdgId1==-2 && fpdgId2==3)) || //cout << " s ubar " << endl; 
+		     ((fpdgId1==3 && fpdgId2==-4) || (fpdgId1==-4 && fpdgId2==3)) || //cout << " s cbar " << endl;
+		     ((fpdgId1==5 && fpdgId2==-2) || (fpdgId1==-2 && fpdgId2==5)) || //cout << " b ubar " << endl;  
+		     ((fpdgId1==5 && fpdgId2==-4) || (fpdgId1==-4 && fpdgId2==5)) //cout << " b cbar " << endl;   
+		     )
+	) { 
+      Vpt2.Fill(fZPt); Vy2.Fill(fZRap); return true;
+    } else if( pType==0 && (fpdgId1==0 || fpdgId2==0))  {
+      if(abs(fpdgId1)==0) xPDF0.Fill(log(fx1)); if(abs(fpdgId2)==0) xPDF0.Fill(log(fx2));
+      Vpt0.Fill(fZPt); Vy0.Fill(fZRap); return true; //cout << "gluon + X "<< endl;
+    } else {
+      Vpt10.Fill(fZPt); Vy10.Fill(fZRap); return false; //   cout << " UNKNOWN "<< endl;
+    }
   }
     
   return false;
@@ -3432,7 +3526,6 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
 
   gStyle->SetOptFit(111111);
 
-  //  TString name="recoilfits/recoilfit_AUG6";
   TString name="recoilfits/recoilfit_AUG6";
   if(do8TeV) name +="_8TeV";
 
@@ -3476,8 +3569,8 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     // 44X
     //    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");
     // 53X
-    if(doMad)  fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");  
-    if(!doMad) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root");  
+    if(doMad && !do8TeV )  fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");  
+    if(!doMad && !do8TeV ) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root");  
 
     // this is the 8 TeV, just a placeholder for now
     if(doMad && do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL_8TeV/ZTreeProducer_tree.root");
@@ -3488,13 +3581,12 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     if(!fData) name+="_genZ";
 
     if(doIterativeMet) {
-      
+
       if(!doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_AUG6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
       if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_AUG6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
       readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_AUG6_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_53X.root" ,"PF",fId);
-      
+	
     }
-    
     
   }
   
@@ -3626,6 +3718,8 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     if(!doMad && !fData) fileName += "_POWHEG";
     if(!usePol3) fileName += "_pol2";
     if(usePol3) fileName += "_pol3";
+    if(!fData) fileName+="_PDF";
+    if(!fData) fileName += pType;
     if(doYbinning) fileName += "_rapBin";
     if(doYbinning) fileName += fId;
     
@@ -3658,10 +3752,36 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     histoU1diffvsZpt.Write();
     histoU1scalevsZpt.Write();
     histoU1scalevsZptscale.Write();
+    histoDelta.Write();
+    //###
     histoPhiStar.Write();
     histoThetaStar.Write();
     histoPhiStarvsZpt.Write();
-    
+    histoPhiStarvsgenZpt.Write();
+    //###
+    Vpt0.Write();
+    Vpt1.Write();
+    Vpt2.Write();
+    Vpt3.Write();
+    Vpt4.Write();
+    Vpt5.Write();
+    Vpt10.Write();
+    Vy0.Write();
+    Vy1.Write();
+    Vy2.Write();
+    Vy3.Write();
+    Vy4.Write();
+    Vy5.Write();
+    Vy10.Write();
+    xPDF0.Write();
+    xPDF1.Write();
+    xPDF2.Write();
+    xPDFm1.Write();
+    xPDFm2.Write();
+    xPDF3.Write();
+    xPDF4.Write();
+    xPDF5.Write();
+
     f3.Write();
     f3.Close();
     
