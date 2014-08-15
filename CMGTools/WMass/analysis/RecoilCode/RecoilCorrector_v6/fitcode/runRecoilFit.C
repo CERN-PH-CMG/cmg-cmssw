@@ -1,4 +1,3 @@
-
 #ifndef __CINT__
 #include "RooGlobalFunc.h"
 #endif
@@ -143,6 +142,8 @@ bool doOnlyU2 = false;
 int VTXbin=-1;
 
 /////
+
+bool doPhiStar=false;
 
 bool do8TeV = false;
 bool doMad = false;
@@ -1792,8 +1793,18 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   //RooFit Build a double Gaussian
   TRandom lRand(0xDEADBEEF);
   RooRealVar    lRWeight("weight","weight",0,10);
-  ////  RooRealVar lRPt  ("pt","Z_{p_{T}}",10,1000);                                                                                                      
-  RooRealVar lRPt  ("pt","Z_{p_{T}}",fZPtMin,fZPtMax);
+
+  float binSize=1.; // this is 1 GeV for Zpt
+  double range_min = fZPtMin+binSize;
+  double range_max = fZPtMax-binSize;
+  if(doPhiStar) {
+    binSize=1./100.; 
+    range_min=0.+binSize;
+    range_max=0.4-binSize;
+  }
+
+  RooRealVar lRPt  ("pt","Z_{p_{T}}",range_min,range_max);
+  if(doPhiStar) lRPt.SetTitle("\phi^{*}");
 
   // this is the range of th X axis
   //  double minRangeSigma=-10.; double maxRangeSigma=10.;
@@ -2002,7 +2013,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   //  if(!iRMS && lPar==fU1) lFit->SetParLimits(0, -0.5, 1.0); // first parameter between 0 and 1.0
 
   //  TFitResultPtr  lFitPtr = pGraphA->Fit(lFit,"SR","EXO",fZPtMin,fZPtMax); //"EXO"
-  TFitResultPtr  lFitPtr = pGraphA->Fit(lFit,"SRE","",fZPtMin,fZPtMax); 
+  //  TFitResultPtr  lFitPtr = pGraphA->Fit(lFit,"SRE","",fZPtMin,fZPtMax); 
+  TFitResultPtr  lFitPtr = pGraphA->Fit(lFit,"SRE","",range_min,range_max);
 
   //  only once
   computeFitErrors(iFit,lFitPtr,lFit,iRMS);
@@ -2115,8 +2127,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   //  int lNBins = 10;
   //  int lNBins = 25;
   ///////  int lNBins = 50;
-  int lNBins = fZPtMax;
-  //  int lNBins = fZPtMax-fZPtMin; // since the unbnned fit is done up to fZPtMax we can also do the binedFit up to fZPtMax and such that we have one bin for each GeV
+  int lNBins = (range_max-range_min)/binSize;
   for(int i0  = 0; i0 < lNBins; i0++) { 
     RooDataSet lData(pSS.str().c_str(),pSS.str().c_str(),RooArgSet(lRXVar)); 
     //    lRPt.setBins(500);
@@ -2142,7 +2153,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     if(doAbsolute) lRXVar.setVal(vlYTVals_all[lPar!=fU1][iRMS][i0]/(sqrt(2*3.14159265)/2.));  // residual  for the fit in GeV 
     lRPt.setVal(vlXVals_all[lPar!=fU1][iRMS][i0]);     // Zpt
     lRWeight.setVal(1./vlYEVals_all[lPar!=fU1][iRMS][i0]/vlYEVals_all[lPar!=fU1][iRMS][i0]);
-    int pId = int(vlXVals_all[lPar!=fU1][iRMS][i0]/(fZPtMax/lNBins)); if(pId > lNBins-1) pId = lNBins-1; 
+    int pId = int(vlXVals_all[lPar!=fU1][iRMS][i0]/((range_max-range_min)/lNBins)); if(pId > lNBins-1) pId = lNBins-1;
     // MARIA: USED for the 1D fit (binned/uncorrelated in Zpt and binned in residuals )  
     lResidVals[pId].add(RooArgSet(lRXVar));//,lRWeight.getVal()); //Fill the Double Gaussian
     // MARIA: USED for the 2D fit (binned/correlated in Zpt and unbinned in Residauls )   
@@ -2162,6 +2173,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   // http://root.cern.ch/root/html/RooAbsPdf.html#RooAbsPdf:fitTo
   ////  options Extended(kTRUE) doens't work
   lGAdd.mustBeExtended();
+  //  RooFitResult *pFR = lGAdd.fitTo(lResidVals2D[0],Constrained(),Warnings(kTRUE),Save(kTRUE),ConditionalObservables(lRPt),Range(range_min, range_max),NumCPU(2),/*Minimizer("Minuit2","migrad"),*/Strategy(2),Minos());//,Minos()); //Double Gaussian fit
   RooFitResult *pFR = lGAdd.fitTo(lResidVals2D[0],Constrained(),Warnings(kTRUE),Save(kTRUE),ConditionalObservables(lRPt),NumCPU(2),/*Minimizer("Minuit2","migrad"),*/Strategy(2),Minos());//,Minos()); //Double Gaussian fit
 
 
@@ -2387,8 +2399,11 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       //	lchi2[i0]=chi21D;
       // comments errors
 
-      lX[i0] = (fZPtMax/lNBins)*i0;
-      lEX[i0] = (fZPtMax/lNBins)/10;
+      lX[i0] = range_min+((range_max-range_min)/lNBins)*i0;
+      //      lEX[i0] = range_min+((range_max-range_min)/lNBins)/1000;
+      lEX[i0] = 0;
+
+
       // normalization too much
       //      lY0[i0] = (lR1Frac .getVal()*lR1Sigma.getVal() + (1.-lR1Frac.getVal())*lR2Sigma.getVal())/sqrt(2*3.14159265)*2.;
 
@@ -2430,9 +2445,9 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       // recompute the Fraction to get the same definition of the 2D fit
       myFrac1D[i0] = ((lY2[i0]-1.)/(lY2[i0]-lY1[i0]));
 
-      myMean2D[i0]=lA1Mean.getVal()+lA2Mean.getVal()*i0+lA3Mean.getVal()*i0*i0;
-      lY12D[i0] = (lA1Sig.getVal() + lB1Sig.getVal()*i0 + lC1Sig.getVal()*i0*i0);///sqrt(2*3.14159265)*2.;
-      lY22D[i0] = (lA2Sig.getVal() + lB2Sig.getVal()*i0 + lC2Sig.getVal()*i0*i0);///sqrt(2*3.14159265)*2.;
+      myMean2D[i0]=lA1Mean.getVal()+lA2Mean.getVal()*(i0*binSize)+lA3Mean.getVal()*(i0*binSize)*(i0*binSize);
+      lY12D[i0] = lA1Sig.getVal() + lB1Sig.getVal()*(i0*binSize) + lC1Sig.getVal()*(i0*binSize)*(i0*binSize);///sqrt(2*3.14159265)*2.;
+      lY22D[i0] = lA2Sig.getVal() + lB2Sig.getVal()*(i0*binSize) + lC2Sig.getVal()*(i0*binSize)*(i0*binSize);///sqrt(2*3.14159265)*2.;
 
       double tmpFrac2D=((lY22D[i0]-1.)/(lY22D[i0]-lY12D[i0]));
       lY02D[i0] = (tmpFrac2D*lY12D[i0] + (1.-tmpFrac2D)*lY22D[i0]);
@@ -2511,13 +2526,13 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     //////
     //// cin.get();
     //////
-    
+
     //  if(doPrintAll) {
     
     iC->cd();
     TF1 *lFitPull  = new TF1("lFitPull",   "pol2");
     TF1 *iFitPull  = new TF1("iFitPull",   "pol10"); // this need to be large to store the errors from the computeFitErrors
-    TFitResultPtr  lFitPtr0 = lG0->Fit(lFitPull,"SRE","", fZPtMin, fZPtMax); //"EXO"                                                                       
+    TFitResultPtr  lFitPtr0 = lG0->Fit(lFitPull,"SRE","", range_min , range_max); //"EXO"                                                                       
     computeFitErrors(iFitPull,lFitPtr0,lFitPull,iRMS);
     lG0->Draw("ape");
     drawErrorBands(iFitPull,fZPtMax);
@@ -2602,7 +2617,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
     TF1 *lFitPullMean  = new TF1("lFitPullMean",   "pol2");
     TF1 *iFitPullMean  = new TF1("iFitPullMean",   "pol10"); // this need to be large to store the errors from the computeFitErrors
-    TFitResultPtr  lFitPtrM0 = lM0->Fit(lFitPullMean,"SRE","", fZPtMin, fZPtMax); //"EXO"                                                                  
+    TFitResultPtr  lFitPtrM0 = lM0->Fit(lFitPullMean,"SRE","", range_min , range_max); //"EXO"                                                                  
     computeFitErrors(iFitPullMean,lFitPtrM0,lFitPullMean,iRMS);
     lM0->Draw("ape");
     drawErrorBands(iFitPullMean,fZPtMax);
@@ -2659,7 +2674,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     //  TFitResultPtr  lFitPtr1 = lG1->Fit(lFit,"SR","",0,fZPtMax); 
     //    TFitResultPtr  lFitPtr1 = lG1->Fit(lFit,"SR","EXO",0,fZPtMax); //"EXO"
     TF1 *lFitS1  = new TF1("lFitS1",   "pol2");
-    TFitResultPtr  lFitPtr1 = lG1->Fit(lFitS1,"SRE","", fZPtMin, fZPtMax); //"EXO"
+    TFitResultPtr  lFitPtr1 = lG1->Fit(lFitS1,"SRE","", range_min , range_max); //"EXO"
     computeFitErrors(iFitS1,lFitPtr1,lFitS1,iRMS);
 
     //    lG1->GetYaxis()->SetRangeUser(0.,5.);
@@ -2669,6 +2684,10 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     lG1->Draw("pe");
     lG1_2d->Draw("pe");
 
+    if(pFR) latexLabel.DrawLatex(0.25, 0.95, Form("status = %d", pFR->status()));
+    latexLabel.DrawLatex(0.25, 0.9, Form("A1Sig = %f", lA1Sig.getVal()));
+    latexLabel.DrawLatex(0.25, 0.85, Form("B1Sig = %f", lB1Sig.getVal()));
+    latexLabel.DrawLatex(0.25, 0.8, Form("C1Sig = %f", lC1Sig.getVal()));
 
     latexLabel.DrawLatex(0.25, 0.75, leg1);
     if(doVTXbinning) latexLabel.DrawLatex(0.25, 0.7, leg3);
@@ -2676,18 +2695,28 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     latexLabel.DrawLatex(0.25, 0.25, legDATA);
     latexLabel.DrawLatex(0.25, 0.3, legU1U2);      
 
+
+
     if(!doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.8, "powheg");
     if(doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.8, "madgraph");
 
-    TLine *lineSS1_min = new TLine(fZPtMin,minSigma1,fZPtMax,minSigma1);
-    TLine *lineSS1_cen = new TLine(fZPtMin,startSigma1,fZPtMax,startSigma1);
-    TLine *lineSS1_max = new TLine(fZPtMin,maxSigma1,fZPtMax,maxSigma1);
+    TLine *lineMin = new TLine(range_min, 0,   range_min, 5);
+    TLine *lineMax = new TLine(range_max, 0.,   range_max, 5.);
+    lineMin->SetLineColor(11);
+    lineMax->SetLineColor(11);
+
+    TLine *lineSS1_min = new TLine(range_min,minSigma1,range_max,minSigma1);
+    TLine *lineSS1_cen = new TLine(range_min,startSigma1,range_max,startSigma1);
+    TLine *lineSS1_max = new TLine(range_min,maxSigma1,range_max,maxSigma1);
     lineSS1_min->SetLineColor(11);
     lineSS1_cen->SetLineColor(13);
     lineSS1_max->SetLineColor(11);
     lineSS1_min->Draw("same");
     lineSS1_cen->Draw("same");
     lineSS1_max->Draw("same");
+    lineMin->Draw("same");
+    lineMax->Draw("same");
+
 
     TString pSS1="PLOTNOTE/pG1";
     
@@ -2745,7 +2774,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     //  TFitResultPtr  lFitPtr2 = lG2->Fit(lFit,"SR","",0,fZPtMax); 
     //    TFitResultPtr  lFitPtr2 = lG2->Fit(lFit,"SR","EXO",0,fZPtMax); //"EXO"
     TF1 *lFitS2  = new TF1("lFitS2",   "pol2");
-    TFitResultPtr  lFitPtr2 = lG2->Fit(lFitS2,"SRE","", fZPtMin, fZPtMax); 
+    TFitResultPtr  lFitPtr2 = lG2->Fit(lFitS2,"SRE","", range_min , range_max); 
     computeFitErrors(iFitS2,lFitPtr2,lFitS2,iRMS);
 
     //    lG2->GetYaxis()->SetRangeUser(0.,5.);
@@ -2755,6 +2784,12 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     lG2->Draw("pe");
     lG2_2d->Draw("pe"); 
 
+    if(pFR) latexLabel.DrawLatex(0.25, 0.95, Form("status = %d", pFR->status()));
+    latexLabel.DrawLatex(0.25, 0.9, Form("A2Sig = %f", lA2Sig.getVal()));
+    latexLabel.DrawLatex(0.25, 0.85, Form("B2Sig = %f", lB2Sig.getVal()));
+    latexLabel.DrawLatex(0.25, 0.8, Form("C2Sig = %f", lC2Sig.getVal()));
+
+
     latexLabel.DrawLatex(0.25, 0.75, leg1);
     if(doVTXbinning) latexLabel.DrawLatex(0.25, 0.7, leg3);
     latexLabel.DrawLatex(0.25, 0.25, legDATA);
@@ -2763,15 +2798,19 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     if(!doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.8, "powheg");
     if(doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.8, "madgraph");
 
-    TLine *lineSS2_min = new TLine(fZPtMin, minSigma2,   fZPtMax, minSigma2);
-    TLine *lineSS2_cen = new TLine(fZPtMin, startSigma2, fZPtMax, startSigma2);
-    TLine *lineSS2_max = new TLine(fZPtMin, maxSigma2,   fZPtMax, maxSigma2);
+
+
+    TLine *lineSS2_min = new TLine(range_min, minSigma2,   range_max, minSigma2);
+    TLine *lineSS2_cen = new TLine(range_min, startSigma2, range_max, startSigma2);
+    TLine *lineSS2_max = new TLine(range_min, maxSigma2,   range_max, maxSigma2);
     lineSS2_min->SetLineColor(11);
     lineSS2_cen->SetLineColor(13);
     lineSS2_max->SetLineColor(11);
     lineSS2_min->Draw("same");
     lineSS2_cen->Draw("same");
     lineSS2_max->Draw("same");
+    lineMin->Draw("same");
+    lineMax->Draw("same");
 
     TString pSS2="PLOTNOTE/pG2";
     
@@ -2850,6 +2889,9 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
     if(!doMad && (!fData)) latexLabel.DrawLatex(0.65, 0.45, "powheg");
     if(doMad && (!fData)) latexLabel.DrawLatex(0.65, 0.45, "madgraph");
+
+    lineMin->Draw("same");
+    lineMax->Draw("same");
 
     TString pSS4="PLOTNOTE/pFrac";
     
@@ -3313,7 +3355,10 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
         double pVal = lPar;    
         // if(iRMS && iMeanFit != 0)   pVal = (lPar - iMeanFit->Eval(fZPt));
         if(fWeight == 0) continue;
-        lXVals_all.at(iU1U2).at(iMeanRMS).push_back(fZPt);  
+
+	double PhiStar=calculatePhiStar(fMuPos_eta, fMuNeg_eta, fMuPos_phi, fMuNeg_phi);
+	if(doPhiStar) lXVals_all.at(iU1U2).at(iMeanRMS).push_back(PhiStar);
+	else lXVals_all.at(iU1U2).at(iMeanRMS).push_back(fZPt);
 
 	lXEVals_all.at(iU1U2).at(iMeanRMS).push_back(2.);
 
@@ -3646,6 +3691,7 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
   //// COMPLETE NAMING
   //////     
 
+  if(doPhiStar) name+="_phiStar";
   if(doIterativeMet) name+="_ITERATIVE";
 
   if(doChargedMet)  name+="_tkmet";
