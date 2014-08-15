@@ -1,30 +1,5 @@
-import numpy as my_n
-import math
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.H2TauTau.proto.analyzers.ntuple import *
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton, Muon, Electron
-from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
-from CMGTools.RootTools.physicsobjects.PileUpSummaryInfo import PileUpSummaryInfo
+from CMGTools.WMass.analyzers.CoreTreeProducer import *
 #from ZAnalyzer import testLegID
-
-
-def var( tree, varName, type=float ):
-    tree.var(varName, type)
-
-def fill( tree, varName, value ):
-    tree.fill( varName, value )
-
-def bookParticle( tree, pName ):
-    var(tree, '{pName}_pt'.format(pName=pName))
-    var(tree, '{pName}_eta'.format(pName=pName))
-    var(tree, '{pName}_phi'.format(pName=pName))
-    var(tree, '{pName}_mass'.format(pName=pName))
-    var(tree, '{pName}_charge'.format(pName=pName))
-
-def bookLHE_weight( tree, pName ):
-    # tree.vars['{pName}_weight'.format(pName=pName)]= my_n.zeros(400, dtype=float)
-    # tree.tree.Branch('{pName}_weight'.format(pName=pName),tree.vars['{pName}_weight'.format(pName=pName)] ,'{pName}_weight'.format(pName=pName)+'[400]/D' )
-    tree.vector('{pName}_weight'.format(pName=pName), 466)
 
 # def bookJetCollections( tree, pName ):
     # var(tree, '{pName}_number'.format(pName=pName),int)
@@ -107,73 +82,6 @@ def bookLHE_weight( tree, pName ):
     # # tree.vars['{pName}_dZfromPV'.format(pName=pName)]= my_n.zeros(100, dtype=float)
     # # tree.tree.Branch('{pName}_dZfromPV'.format(pName=pName),tree.vars['{pName}_dZfromPV'.format(pName=pName)] ,'{pName}_dZfromPV'.format(pName=pName)+'[100]/D' )
 
-def bookMuonCovMatrix( tree, pName ):
-    # tree.vars['{pName}CovMatrix'.format(pName=pName)]= my_n.zeros(9, dtype=float)
-    # tree.tree.Branch('{pName}CovMatrix'.format(pName=pName),tree.vars['{pName}CovMatrix'.format(pName=pName)] ,'{pName}CovMatrix'.format(pName=pName)+'[9]/D' )
-    tree.vector('{pName}CovMatrix'.format(pName=pName), 9)
-
-
-def bookW( tree, pName ):
-    var(tree, '{pName}_pt'.format(pName=pName))
-    var(tree, '{pName}_phi'.format(pName=pName))
-
-def bookZ( tree, pName ):
-    var(tree, '{pName}_pt'.format(pName=pName))
-    var(tree, '{pName}_rap'.format(pName=pName))
-    var(tree, '{pName}_phi'.format(pName=pName))
-    var(tree, '{pName}_mass'.format(pName=pName))
-
-def bookMET( tree, pName ):
-    var(tree, '{pName}'.format(pName=pName))
-    var(tree, '{pName}_phi'.format(pName=pName))
-
-def bookCustomMET( tree, pName ):
-    var(tree, '{pName}'.format(pName=pName))
-    var(tree, '{pName}_phi'.format(pName=pName))
-    var(tree, '{pName}_sumEt'.format(pName=pName))
-
-def bookJet( tree, pName ):
-    var(tree, '{pName}_pt'.format(pName=pName))
-    var(tree, '{pName}_eta'.format(pName=pName))
-    var(tree, '{pName}_phi'.format(pName=pName))
-
-def fillParticle( tree, pName, particle ):
-    fill(tree, '{pName}_pt'.format(pName=pName), particle.pt() )
-    fill(tree, '{pName}_eta'.format(pName=pName), particle.eta() )
-    fill(tree, '{pName}_phi'.format(pName=pName), particle.phi() )
-    fill(tree, '{pName}_mass'.format(pName=pName), particle.mass() )
-    fill(tree, '{pName}_charge'.format(pName=pName), particle.charge() )
-
-def fillW( tree, pName, particle ):
-    fill(tree, '{pName}_pt'.format(pName=pName), particle.Pt() )
-    fill(tree, '{pName}_phi'.format(pName=pName), particle.Phi() )
-
-def fillZ( tree, pName, particle ):
-    fill(tree, '{pName}_pt'.format(pName=pName), particle.Pt() )
-    fill(tree, '{pName}_rap'.format(pName=pName), particle.Rapidity() )
-    fill(tree, '{pName}_phi'.format(pName=pName), particle.Phi() )
-    fill(tree, '{pName}_mass'.format(pName=pName), particle.M() )
-
-def fillMET( tree, pName, particle ):
-    fill(tree, '{pName}'.format(pName=pName), particle.pt() )
-    fill(tree, '{pName}_phi'.format(pName=pName), particle.phi() )
-
-def fillCustomMET( tree, pName, particle ):
-    fill(tree, '{pName}'.format(pName=pName), particle[0].Pt() )
-    fill(tree, '{pName}_phi'.format(pName=pName), particle[0].Phi() )
-    fill(tree, '{pName}_sumEt'.format(pName=pName), particle[1] )
-
-def fillJet( tree, pName, particle ):
-    fill(tree, '{pName}_pt'.format(pName=pName), particle.pt() )
-    fill(tree, '{pName}_eta'.format(pName=pName), particle.eta() )
-    fill(tree, '{pName}_phi'.format(pName=pName), particle.phi() )
-    
-def fillLHE_weight( tree, pName, LHE_weight,event ):
-    # for i in range(0,min(len(LHE_weight),400)):
-        # # print 'filling ',i,'with ',LHE_weight[i]
-        # tree.vars['{pName}_weight'.format(pName=pName)][i] = LHE_weight[i]
-    tree.vfill('{pName}_weight'.format(pName=pName), LHE_weight)
-
 # def fillJets( tree, pName, particles ):
     # fill(tree, '{pName}_number'.format(pName=pName),len(particles))
     # for i in range(0, min(len(particles),10)):
@@ -255,13 +163,6 @@ def fillLHE_weight( tree, pName, LHE_weight,event ):
     
     # fill(tree, '{pName}_number'.format(pName=pName),jneu)
         
-def fillMuonCovMatrix( tree, pName, covMatrix,event ):
-    # vcovMatrix=[]
-    # for i in range(0,9):
-        # # tree.vars['{pName}CovMatrix'.format(pName=pName)][i] = covMatrix[i]
-      # vcovMatrix.append(covMatrix[i])
-    tree.vfill('{pName}CovMatrix'.format(pName=pName), covMatrix)
-
 # def fillElectronsGen(tree, pName, particles,event ):
     # for i in range(0, min(len(particles),10)):
         # tree.vars['{pName}_IsPromt'.format(pName=pName)][i] = event.ZElIsPromt[i] 
@@ -387,7 +288,7 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
               bookMET(tr, 'my%sPFmetPt%sEtaMin%sEtaMax%s'%(customMetFlavor_str[particleId],customMetPtBinEdge_str[PtBinEdge],customMetEtaBinEdge_str[EtaBinEdge],customMetEtaBinEdge_str[EtaBinEdge+1]) )
               var(tr, 'my%sPFmetPt%sEtaMin%sEtaMax%s_sumEt'%(customMetFlavor_str[particleId],customMetPtBinEdge_str[PtBinEdge],customMetEtaBinEdge_str[EtaBinEdge],customMetEtaBinEdge_str[EtaBinEdge+1]) )
             
-      bookMET(tr, 'pfmet')
+      bookCustomMET(tr, 'pfmet')
       # bookMET(tr, 'pfmet2')
       # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
         # bookMET(tr, 'pfmetraw')
@@ -395,14 +296,12 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
       # bookMET(tr, 'pucmet')
       # bookMET(tr, 'pfMetForRegression')
       # bookMET(tr, 'pumet')
-      bookMET(tr, 'tkmet')
-      var(tr, 'pfmet_sumEt')
+      bookCustomMET(tr, 'tkmet')
       # var(tr, 'pfmetraw_sumEt')
       # var(tr, 'nopumet_sumEt')
       # var(tr, 'pucmet_sumEt')
       # var(tr, 'pfMetForRegression_sumEt')
       # var(tr, 'pumet_sumEt')
-      var(tr, 'tkmet_sumEt')
 
       # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
         # var( tr, 'pfmetcov00')
@@ -431,30 +330,28 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
         # var( tr, 'u1')
         # var( tr, 'u2')
       
-      bookParticle(tr, 'MuPos')
+      bookMuon(tr, 'MuPos')
       var(tr, 'MuPos_dxy')
-      var(tr, 'MuPosRelIso')
+      var(tr, 'MuPos_dz')
       var(tr, 'MuPosTrg', int)
       # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
         # var(tr, 'MuPosIsTightAndIso', int)
       var(tr, 'MuPosIsTight', int)
       # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
         # var(tr, 'MuPosMatchCMGmuon', int)
-      var(tr, 'MuPos_dz')
       if (self.cfg_comp.isMC):
         bookParticle(tr, 'MuPosGen')
         bookParticle(tr, 'MuPosGenStatus1')
       # var(tr, 'MuPosGen_pdgId', int)
-      bookParticle(tr, 'MuNeg')
+      bookMuon(tr, 'MuNeg')
       var(tr, 'MuNeg_dxy')
-      var(tr, 'MuNegRelIso')
+      var(tr, 'MuNeg_dz')
       var(tr, 'MuNegTrg', int)
       # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
         # var(tr, 'MuNegIsTightAndIso', int)
       var(tr, 'MuNegIsTight', int)
       # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
         # var(tr, 'MuNegMatchCMGmuon', int)
-      var(tr, 'MuNeg_dz')
       if (self.cfg_comp.isMC):
         bookParticle(tr, 'MuNegGen')
         bookParticle(tr, 'MuNegGenStatus1')
@@ -496,7 +393,7 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
         # fill( tr, 'evtHasTrg', event.passedTriggerAnalyzer)
         fill( tr, 'evtHasTrg', True)
 
-        
+
         if (self.cfg_comp.isMC and event.savegenpZ) and not hasattr(self.cfg_ana,'storeSlimGenInfo'):
             fill(tr, 'FSRWeight',event.fsrWeight)
           
@@ -517,7 +414,7 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
             fill(tr, 'parton1_x',event.generator.pdf().x.first)
             fill(tr, 'parton2_pdgId',event.generator.pdf().id.second)
             fill(tr, 'parton2_x',event.generator.pdf().x.second)
-        
+
         # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
           # fillElectronsGen( tr,'cmgelectrons' ,event.ZElIsPromt ,event) 
           # fillMuonsGen (tr, 'cmgmuons', event.ZallMuonsMatched, event)       
@@ -559,11 +456,10 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
             # fill(tr,  'WlikeNeg_mt', event.Wneg4VfromZ_mt)
             # fillMET(tr, 'pfmetWlikeNeg', event.ZpfmetWneg)
           
-          fillParticle(tr, 'MuPos', event.BestZPosMuon)
+          fillMuon(tr, 'MuPos', event.BestZPosMuon)
           if ( event.BestZPosMuon.isGlobalMuon() or event.BestZPosMuon.isTrackerMuon() ) and event.passedVertexAnalyzer:
             fill(tr, 'MuPos_dxy', math.fabs(event.BestZPosMuon.dxy()))
             fill(tr, 'MuPos_dz',math.fabs(event.BestZPosMuon.dz()))
-          fill(tr, 'MuPosRelIso', event.BestZPosMuon.relIso(0.5))
           fill(tr, 'MuPosTrg', event.BestZPosMuonHasTriggered)
           # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
             # fill(tr, 'MuPosIsTightAndIso',event.BestZPosMuonIsTightAndIso)
@@ -571,11 +467,10 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
             # fill(tr, 'MuPosMatchCMGmuon',event.BestZPosMatchIndex)
 
-          fillParticle(tr, 'MuNeg', event.BestZNegMuon)
+          fillMuon(tr, 'MuNeg', event.BestZNegMuon)
           if ( event.BestZNegMuon.isGlobalMuon() or event.BestZNegMuon.isTrackerMuon() ) and event.passedVertexAnalyzer:
             fill(tr, 'MuNeg_dxy', math.fabs(event.BestZNegMuon.dxy()))
             fill(tr, 'MuNeg_dz',math.fabs(event.BestZNegMuon.dz()))
-          fill(tr, 'MuNegRelIso', event.BestZNegMuon.relIso(0.5))
           fill(tr, 'MuNegTrg', event.BestZNegMuonHasTriggered)
           # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
             # fill(tr, 'MuNegIsTightAndIso',event.BestZNegMuonIsTightAndIso)
@@ -585,7 +480,8 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           
           fillMuonCovMatrix( tr,'MuPos' ,event.covMatrixPosMuon ,event)
           fillMuonCovMatrix( tr,'MuNeg' ,event.covMatrixNegMuon ,event)
-          
+
+
         if (event.savegenpZ and self.cfg_comp.isMC) or event.ZGoodEvent:
           
           fill( tr, 'njets', len(event.ZselJets))
@@ -609,6 +505,7 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
             # fill( tr, 'pfmetcov01', pfMetSignificance(0,1))
             # fill( tr, 'pfmetcov10', pfMetSignificance(1,0))
             # fill( tr, 'pfmetcov11', pfMetSignificance(1,1))
+
 
           event.nopumet = self.handles['nopuMet'].product()[0]
           event.pucmet = self.handles['pucMet'].product()[0]
