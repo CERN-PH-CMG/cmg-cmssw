@@ -60,6 +60,10 @@ class WTreeProducer( TreeAnalyzerNumpy ):
         var(tr, 'parton1_x')
         var(tr, 'parton2_pdgId')
         var(tr, 'parton2_x')
+        if (hasattr(self.cfg_ana,'storeLHE_weight') and self.cfg_ana.storeLHE_weight):
+          # print "booking tree"
+          bookLHE_weight(tr,'LHE' )
+    
 
       var( tr, 'run', int)
       var( tr, 'lumi', int)
@@ -77,6 +81,8 @@ class WTreeProducer( TreeAnalyzerNumpy ):
       var( tr, 'nTrgMuons', int)
       var( tr, 'noTrgMuonsLeadingPt', int)
 
+      ###--------------------------- BOOK MET infos ------------------------------      
+
       bookCustomMET( tr, 'pfmet')
       bookCustomMET( tr, 'nopumet')
       bookCustomMET( tr, 'tkmet')
@@ -90,6 +96,8 @@ class WTreeProducer( TreeAnalyzerNumpy ):
       # var( tr, 'pfmetcov10')
       # var( tr, 'pfmetcov11')
 
+      ###--------------------------- BOOK W and muon infos ------------------------------
+      
       bookW( tr, 'W')
       var( tr, 'W_mt')
       if (self.cfg_comp.isMC):
@@ -113,12 +121,6 @@ class WTreeProducer( TreeAnalyzerNumpy ):
         var(tr, 'MuDRGenP')
         bookParticle(tr, 'NuGen')
         var(tr, 'FSRWeight')
-        if (hasattr(self.cfg_ana,'storeLHE_weight') and self.cfg_ana.storeLHE_weight):
-          # print "booking tree"
-          bookLHE_weight(tr,'LHE' )
-    
-
-      
       bookMuonCovMatrix(tr,'Mu' )
 
       bookJet(tr, 'Jet_leading')
@@ -131,6 +133,43 @@ class WTreeProducer( TreeAnalyzerNumpy ):
         self.readCollections( iEvent )
         tr = self.tree
         tr.reset()
+
+
+        fill( tr, 'run', event.run) 
+        fill( tr, 'lumi',event.lumi)
+        fill( tr, 'evt', event.eventId)
+        fill( tr, 'nvtx', len(self.handles['vertices'].product()))          
+        fill( tr, 'evtHasGoodVtx', event.passedVertexAnalyzer)
+        fill( tr, 'Vtx_ndof', event.goodVertices[0].ndof())
+        # fill( tr, 'firstVtxIsGood', event.firstVtxIsGoodVertices) # REQUIRES DEFINITION IN CMGTools/RootTools/python/analyzers/VertexAnalyzer.py
+        # fill( tr, 'evtHasTrg', event.passedTriggerAnalyzer)
+        fill( tr, 'evtHasTrg', True)
+        
+        ###------------------------------- FILL event MC weights ------------------------------
+        if (self.cfg_comp.isMC) :
+
+            if (hasattr(self.cfg_ana,'storeLHE_weight') and self.cfg_ana.storeLHE_weight):
+                # print "filling tree"
+                fillLHE_weight( tr,'LHE' ,event.LHE_weights ,event)
+                
+            event.pileUpInfo = map( PileUpSummaryInfo,
+                                    self.mchandles['pusi'].product() )
+            for puInfo in event.pileUpInfo:
+                if puInfo.getBunchCrossing()==0:
+                    fill( tr, 'npu', puInfo.nTrueInteractions())
+                # print 'puInfo.nTrueInteractions()= ',puInfo.nTrueInteractions()
+                # else:
+                # print 'NO INFO FOR puInfo.getBunchCrossing()==0 !!!!'
+
+            event.generator = self.mchandles['generator'].product()
+            # print 'WTreeProducer.py: ',event.generator.pdf().scalePDF,' ',event.generator.pdf().id.first,' ',event.generator.pdf().x.first,' ',event.generator.pdf().id.second,' ',event.generator.pdf().x.second
+            fill(tr, 'scalePDF',float(event.generator.pdf().scalePDF))
+            fill(tr, 'parton1_pdgId',float(event.generator.pdf().id.first))
+            fill(tr, 'parton1_x',float(event.generator.pdf().x.first))
+            fill(tr, 'parton2_pdgId',float(event.generator.pdf().id.second))
+            fill(tr, 'parton2_x',float(event.generator.pdf().x.second))
+
+        ###--------------------------- FILL W and muon infos ------------------------------
 
         if (self.cfg_comp.isMC):
           fill(tr, 'genWLept', len(event.genWLept))
@@ -145,13 +184,9 @@ class WTreeProducer( TreeAnalyzerNumpy ):
           fill(tr, 'MuDRGenP',event.muGenDeltaRgenP)
           fillFourVector(tr, 'NuGen', event.genNu_p4)
           
-          if (hasattr(self.cfg_ana,'storeLHE_weight') and self.cfg_ana.storeLHE_weight):
-            # print "filling tree"
-            fillLHE_weight( tr,'LHE' ,event.LHE_weights ,event)
-              
 
         if event.WGoodEvent == True :
-                      
+            
           fillW( tr, 'W',event.W4V)
           fill(tr, 'W_mt', event.W4V_mt)
           # fill(tr, 'u1', event.u1)
@@ -168,44 +203,20 @@ class WTreeProducer( TreeAnalyzerNumpy ):
           
           fillMuonCovMatrix( tr,'Mu' ,event.covMatrixMuon ,event)
 
-                    
-        if (event.savegenpW and self.cfg_comp.isMC) or event.WGoodEvent:
-          fill( tr, 'run', event.run) 
-          fill( tr, 'lumi',event.lumi)
-          fill( tr, 'evt', event.eventId)
-          fill( tr, 'nvtx', len(self.handles['vertices'].product()))          
-          fill( tr, 'njets', len(event.selJets))
-          
-          if (self.cfg_comp.isMC) :
+        ###--------------------------- FILL extra infos  ------------------------------
 
-            event.pileUpInfo = map( PileUpSummaryInfo,
-                                    self.mchandles['pusi'].product() )
-            for puInfo in event.pileUpInfo:
-              if puInfo.getBunchCrossing()==0:
-                fill( tr, 'npu', puInfo.nTrueInteractions())
-                # print 'puInfo.nTrueInteractions()= ',puInfo.nTrueInteractions()
-              # else:
-                # print 'NO INFO FOR puInfo.getBunchCrossing()==0 !!!!'
-          if (self.cfg_comp.isMC) :
-              event.generator = self.mchandles['generator'].product()
-              # print 'WTreeProducer.py: ',event.generator.pdf().scalePDF,' ',event.generator.pdf().id.first,' ',event.generator.pdf().x.first,' ',event.generator.pdf().id.second,' ',event.generator.pdf().x.second
-              fill(tr, 'scalePDF',float(event.generator.pdf().scalePDF))
-              fill(tr, 'parton1_pdgId',float(event.generator.pdf().id.first))
-              fill(tr, 'parton1_x',float(event.generator.pdf().x.first))
-              fill(tr, 'parton2_pdgId',float(event.generator.pdf().id.second))
-              fill(tr, 'parton2_x',float(event.generator.pdf().x.second))
+        if (event.savegenpW and self.cfg_comp.isMC) or event.WGoodEvent:
 
           fill( tr, 'nMuons', event.nMuons)
           fill( tr, 'nTrgMuons', len(event.selMuons))
           # if len(event.selMuons): print 'len(event.selMuons) ?!?!?'
           if len(event.NoTriggeredMuonsLeadingPt) > 0 :
             fill( tr, 'noTrgMuonsLeadingPt', event.NoTriggeredMuonsLeadingPt[0].pt())
-          fill( tr, 'evtHasGoodVtx', event.passedVertexAnalyzer)
-          fill( tr, 'Vtx_ndof', event.goodVertices[0].ndof())
-          # fill( tr, 'firstVtxIsGood', event.firstVtxIsGoodVertices) # REQUIRES DEFINITION IN CMGTools/RootTools/python/analyzers/VertexAnalyzer.py
-          # fill( tr, 'evtHasTrg', event.passedTriggerAnalyzer)
-          fill( tr, 'evtHasTrg', True)
+
           fill( tr, 'evtWSel', event.WGoodEvent)
+
+          ###--------------------------- FILL  MET ------------------------------
+              
           fillCustomMET(tr, 'pfmet', event.pfmet)
           pfMetSignificance = self.handles['pfMetSignificance'].product().significance()
           # fill( tr, 'pfmetcov00', pfMetSignificance(0,0))
@@ -226,8 +237,10 @@ class WTreeProducer( TreeAnalyzerNumpy ):
           fillCustomMET(tr, 'pfMetForRegression', event.pfMetForRegression)
           fillCustomMET(tr, 'pfmetraw', event.pfmetraw)
 
+          fill( tr, 'njets', len(event.selJets))
           if len(event.selJets)>0:
             fillJet(tr, 'Jet_leading', event.selJets[0])
+
             
           self.tree.tree.Fill()
        

@@ -236,7 +236,6 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
         var(tr, 'parton1_x')
         var(tr, 'parton2_pdgId')
         var(tr, 'parton2_x')
-        var(tr, 'FSRWeight')
         if (hasattr(self.cfg_ana,'storeLHE_weight') and self.cfg_ana.storeLHE_weight):
           # print "booking tree"
           bookLHE_weight(tr,'LHE' )
@@ -258,6 +257,8 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
       # var( tr, 'nNoTrgMuons', int)
       var( tr, 'noTrgExtraMuonsLeadingPt', int)
 
+     ###--------------------------- BOOK MET infos ------------------------------
+      
       # # customMetFlavor_str =    [ 'h' ,  'h0','gamma','hf' ,'ele','mu']
       # # customMetPtMin_str = ['0p0','0p5','1p0','1p5','2p0']
       # # customMetEtaMin_str = ['0p0','1p4','2p1','2p5','3p0']
@@ -316,6 +317,8 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
         # var(tr, 'WlikePos_mt')
         # bookW(tr, 'WlikeNeg')
         # var(tr, 'WlikeNeg_mt')
+
+      ###--------------------------- BOOK Z and muon infos ------------------------------
         
       bookZ(tr, 'Z')
       var(tr, 'Z_mt')
@@ -342,6 +345,8 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
       if (self.cfg_comp.isMC):
         bookParticle(tr, 'MuPosGen')
         bookParticle(tr, 'MuPosGenStatus1')
+        var(tr, 'FSRWeight')
+
       # var(tr, 'MuPosGen_pdgId', int)
       bookMuon(tr, 'MuNeg')
       var(tr, 'MuNeg_dxy')
@@ -361,6 +366,7 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           var(tr, 'MuNegDRGenP')
       bookMuonCovMatrix(tr,'MuPos' )
       bookMuonCovMatrix(tr,'MuNeg' )
+
       bookJet(tr, 'Jet_leading')
       # #print 'booking stuff'
       # # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
@@ -392,11 +398,14 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
         fill( tr, 'evtHasGoodVtx', event.passedVertexAnalyzer)
         # fill( tr, 'evtHasTrg', event.passedTriggerAnalyzer)
         fill( tr, 'evtHasTrg', True)
-
-
+        fill( tr, 'njets', len(event.ZselJets))
+        if(event.passedVertexAnalyzer):
+            fill( tr, 'Vtx_ndof', event.goodVertices[0].ndof())
+            # fill( tr, 'firstVtxIsGood', event.firstVtxIsGoodVertices) # REQUIRES DEFINITION IN CMGTools/RootTools/python/analyzers/VertexAnalyzer.py
+            
+        ###--------------------------- FILL event MC weights ------------------------------
+        
         if (self.cfg_comp.isMC and event.savegenpZ) and not hasattr(self.cfg_ana,'storeSlimGenInfo'):
-            fill(tr, 'FSRWeight',event.fsrWeight)
-          
             if (hasattr(self.cfg_ana,'storeLHE_weight') and self.cfg_ana.storeLHE_weight):
               # print "filling tree"
               fillLHE_weight( tr,'LHE' ,event.LHE_weights ,event)
@@ -415,11 +424,15 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
             fill(tr, 'parton2_pdgId',event.generator.pdf().id.second)
             fill(tr, 'parton2_x',event.generator.pdf().x.second)
 
+        ###--------------------------- FILL Z and muon infos ------------------------------
+            
         # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
           # fillElectronsGen( tr,'cmgelectrons' ,event.ZElIsPromt ,event) 
           # fillMuonsGen (tr, 'cmgmuons', event.ZallMuonsMatched, event)       
         
         if (event.savegenpZ and self.cfg_comp.isMC):
+
+          fill(tr, 'FSRWeight',event.fsrWeight)
           fillZ(tr, 'ZGen_PostFSR', event.genZ_PostFSR)
           fill(tr, 'ZGen_mt', event.genZ_mt)
           fillParticle(tr, 'MuPosGenStatus1', event.genMuPosStatus1[0])      
@@ -481,13 +494,9 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           fillMuonCovMatrix( tr,'MuPos' ,event.covMatrixPosMuon ,event)
           fillMuonCovMatrix( tr,'MuNeg' ,event.covMatrixNegMuon ,event)
 
-
+        ###--------------------------- FILL extra infos ------------------------------
         if (event.savegenpZ and self.cfg_comp.isMC) or event.ZGoodEvent:
           
-          fill( tr, 'njets', len(event.ZselJets))
-          if(event.passedVertexAnalyzer):
-            fill( tr, 'Vtx_ndof', event.goodVertices[0].ndof())
-          # fill( tr, 'firstVtxIsGood', event.firstVtxIsGoodVertices) # REQUIRES DEFINITION IN CMGTools/RootTools/python/analyzers/VertexAnalyzer.py
           fill( tr, 'nMuons', len(event.ZallMuons))
           fill( tr, 'nTrgMuons', len(event.ZselTriggeredMuons))
           # fill( tr, 'nNoTrgMuons', len(event.ZselNoTriggeredMuons))
@@ -495,8 +504,10 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
             fill( tr, 'noTrgExtraMuonsLeadingPt', event.ZselNoTriggeredExtraMuonsLeadingPt[0].pt())
  
           fill( tr, 'evtZSel', event.ZGoodEvent)
-          fill(tr, 'pfmet_sumEt', event.pfmet.sumEt())
-          fillMET(tr, 'pfmet', event.ZpfmetNoMu)
+
+          ###--------------------------- FILL  MET ------------------------------
+
+          fillCustomMET(tr, 'pfmet', event.pfmet)
           # event.pfmet2 = self.handles['pfMet'].product()[0]
           # event.pfmetraw = self.handles['pfMetraw'].product()[0]
           # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
