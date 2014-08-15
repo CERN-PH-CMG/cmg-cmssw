@@ -90,7 +90,8 @@ class WTreeProducer( TreeAnalyzerNumpy ):
       bookCustomMET( tr, 'pucmet')
       bookCustomMET( tr, 'pfMetForRegression')
       bookCustomMET( tr, 'pfmetraw')
-
+      bookMET(tr, 'tkmetgen')
+      var(tr, 'tkmetgen_sumEt')
       # var( tr, 'pfmetcov00')
       # var( tr, 'pfmetcov01')
       # var( tr, 'pfmetcov10')
@@ -237,6 +238,10 @@ class WTreeProducer( TreeAnalyzerNumpy ):
           fillCustomMET(tr, 'pfMetForRegression', event.pfMetForRegression)
           fillCustomMET(tr, 'pfmetraw', event.pfmetraw)
 
+          if (self.cfg_comp.isMC) :
+              fillMET(tr, 'tkmetgen', event.genTkMet)          
+              fill( tr, 'tkmetgen_sumEt', event.genTkSumEt)
+          
           fill( tr, 'njets', len(event.selJets))
           if len(event.selJets)>0:
             fillJet(tr, 'Jet_leading', event.selJets[0])

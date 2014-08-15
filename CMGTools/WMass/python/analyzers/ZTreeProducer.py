@@ -303,6 +303,8 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
       # var(tr, 'pucmet_sumEt')
       # var(tr, 'pfMetForRegression_sumEt')
       # var(tr, 'pumet_sumEt')
+      bookMET(tr, 'tkmetgen') 
+      var(tr, 'tkmetgen_sumEt') 
 
       # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
         # var( tr, 'pfmetcov00')
@@ -535,8 +537,13 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           # fill(tr, 'pfMetForRegression_sumEt', event.pfMetForRegression.sumEt())
           # fillMET(tr, 'pumet', event.pumet.p4())
           # fill(tr, 'pumet_sumEt', event.pumet.sumEt())
-          fillMET(tr, 'tkmet', event.tkmet.p4())
-          fill(tr, 'tkmet_sumEt', event.tkmet.sumEt())
+          # fillMET(tr, 'tkmet', event.tkmet.p4())
+          # fill(tr, 'tkmet_sumEt', event.tkmet.sumEt())
+          fillCustomMET(tr, 'tkmet', event.tkmet)
+
+          if (self.cfg_comp.isMC) :
+              fillMET(tr, 'tkmetgen', event.genTkMet)
+              fill( tr, 'tkmetgen_sumEt', event.genTkSumEt)
           
           customMetFlavor_str = [ 'tkmethemu' , 'h0','gamma','hegammaHF' ]
           customMetEtaBinEdge_str = ['m5p0','m3p0','m2p4','m2p1','m1p4','1p4','2p1','2p4','3p0','5p0']

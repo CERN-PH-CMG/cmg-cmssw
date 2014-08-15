@@ -45,9 +45,9 @@ class WAnalyzer( Analyzer ):
         return map( GenParticle, cmgGenParticles )
 
         
-    def declareVariables(self):
-        tr = self.tree
-        var( tr, 'pfmet')
+#    def declareVariables(self):
+#        tr = self.tree
+#        var( tr, 'pfmet')
     
     def process(self, iEvent, event):
         # access event
@@ -64,6 +64,10 @@ class WAnalyzer( Analyzer ):
         event.LHE_weights = []
         if self.cfg_comp.isMC :
           event.genParticles = self.buildGenParticles( self.mchandles['genpart'].product(), event )        
+          import ROOT
+          objects = [ j for j in event.genParticles if j.charge()!=0 and j.status()==1 ]
+          event.genTkSumEt = sum([x.pt() for x in objects])
+          event.genTkMet = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects])) , -1.*(sum([x.py() for x in objects])), 0, 0 )
           event.LHEweights = []
           # event.LHEweights = self.mchandles['LHEweights'].product()
         # define good event bool
