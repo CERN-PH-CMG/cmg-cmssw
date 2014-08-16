@@ -139,9 +139,12 @@ class WTreeProducer( TreeAnalyzerNumpy ):
         fill( tr, 'run', event.run) 
         fill( tr, 'lumi',event.lumi)
         fill( tr, 'evt', event.eventId)
-        fill( tr, 'nvtx', len(self.handles['vertices'].product()))          
         fill( tr, 'evtHasGoodVtx', event.passedVertexAnalyzer)
-        fill( tr, 'Vtx_ndof', event.goodVertices[0].ndof())
+        fill( tr, 'nvtx', len(event.goodVertices))
+        if(event.passedVertexAnalyzer):
+            fill( tr, 'Vtx_ndof', event.goodVertices[0].ndof())
+
+        # print 'Size goodVertices:',len(event.goodVertices),' allVertices',len(self.handles['vertices'].product())
         # fill( tr, 'firstVtxIsGood', event.firstVtxIsGoodVertices) # REQUIRES DEFINITION IN CMGTools/RootTools/python/analyzers/VertexAnalyzer.py
         # fill( tr, 'evtHasTrg', event.passedTriggerAnalyzer)
         fill( tr, 'evtHasTrg', True)

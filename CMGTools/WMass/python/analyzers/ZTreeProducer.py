@@ -396,14 +396,14 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
         fill( tr, 'run', event.run) 
         fill( tr, 'lumi',event.lumi)
         fill( tr, 'evt', event.eventId)
-        fill( tr, 'nvtx', len(self.handles['vertices'].product()))
         fill( tr, 'evtHasGoodVtx', event.passedVertexAnalyzer)
-        # fill( tr, 'evtHasTrg', event.passedTriggerAnalyzer)
-        fill( tr, 'evtHasTrg', True)
-        fill( tr, 'njets', len(event.ZselJets))
+        fill( tr, 'nvtx', len(event.goodVertices))
         if(event.passedVertexAnalyzer):
             fill( tr, 'Vtx_ndof', event.goodVertices[0].ndof())
             # fill( tr, 'firstVtxIsGood', event.firstVtxIsGoodVertices) # REQUIRES DEFINITION IN CMGTools/RootTools/python/analyzers/VertexAnalyzer.py
+        fill( tr, 'evtHasTrg', True)
+        fill( tr, 'njets', len(event.ZselJets))
+
             
         ###--------------------------- FILL event MC weights ------------------------------
         
