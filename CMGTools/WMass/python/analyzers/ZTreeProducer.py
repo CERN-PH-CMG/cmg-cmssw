@@ -1,3 +1,4 @@
+
 from CMGTools.WMass.analyzers.CoreTreeProducer import *
 #from ZAnalyzer import testLegID
 
@@ -167,22 +168,14 @@ from CMGTools.WMass.analyzers.CoreTreeProducer import *
     # for i in range(0, min(len(particles),10)):
         # tree.vars['{pName}_IsPromt'.format(pName=pName)][i] = event.ZElIsPromt[i] 
 
-class ZTreeProducer( TreeAnalyzerNumpy ):
+class ZTreeProducer( CoreTreeProducer ):
     
     MuonClass = Muon 
         
     def declareHandles(self):
       super(ZTreeProducer, self).declareHandles()
+      self.declareCoreHandles()
     
-      self.handles['pfMet'] = AutoHandle('cmgPFMET','std::vector<cmg::BaseMET>')
-      self.handles['pfMetraw'] = AutoHandle('cmgPFMETRaw','std::vector<cmg::BaseMET>')
-      self.handles['pfMetSignificance'] = AutoHandle('pfMetSignificance','cmg::METSignificance')
-      self.handles['nopuMet'] = AutoHandle('nopuMet','std::vector<reco::PFMET>')
-      self.handles['pucMet'] = AutoHandle('pcMet','std::vector<reco::PFMET>')
-      self.handles['pfMetForRegression'] = AutoHandle('pfMetForRegression','std::vector<reco::PFMET>')
-      self.handles['puMet'] = AutoHandle('puMet','std::vector<reco::PFMET>')
-      self.handles['tkMet'] = AutoHandle('tkMet','std::vector<reco::PFMET>')
-
       customMetFlavor_str = [ 'tkmethemu' , 'h0','gamma','hegammaHF' ]
       customMetEtaBinEdge_str = ['m5p0','m3p0','m2p4','m2p1','m1p4','1p4','2p1','2p4','3p0','5p0']
       customMetPtBinEdge_str = ['0p0','0p5','1p0','1p5','2p0','3p0','5p0','10p0']
@@ -202,53 +195,12 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
         # self.handles['cmgCandidates'] = AutoHandle('cmgCandidates','std::vector<cmg::Candidate>')
         # # self.handles['kt6PFJets'] = AutoHandle('kt6PFJets','std::vector<reco::PFJet>')
               
-      self.handles['muons'] = AutoHandle(
-            'cmgMuonSel',
-            'std::vector<cmg::Muon>'
-            )
-      self.handles['electrons'] = AutoHandle(
-            'cmgElectronSel',
-            'std::vector<cmg::Electron>'
-            )
-      self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
-            'std::vector<reco::GenParticle>' )
-
-      self.handles['vertices'] =  AutoHandle(
-          # 'offlinePrimaryVertices', # earlier than PATCMG_v5_18_0
-          'slimmedPrimaryVertices', # later than PATCMG_v5_18_0
-          'std::vector<reco::Vertex>'
-          )
-      self.mchandles['pusi'] =  AutoHandle(
-          'addPileupInfo',
-          'std::vector<PileupSummaryInfo>' 
-          ) 
-      self.mchandles['generator'] = AutoHandle(
-          'generator','GenEventInfoProduct' 
-          )
-
-    
     def declareVariables(self):
       tr = self.tree
 
-      if (self.cfg_comp.isMC and not hasattr(self.cfg_ana,'storeSlimGenInfo')):
-        var(tr, 'scalePDF')
-        var(tr, 'parton1_pdgId')
-        var(tr, 'parton1_x')
-        var(tr, 'parton2_pdgId')
-        var(tr, 'parton2_x')
-        if (hasattr(self.cfg_ana,'storeLHE_weight') and self.cfg_ana.storeLHE_weight):
-          # print "booking tree"
-          bookLHE_weight(tr,'LHE' )
-
-      var( tr, 'run', int)
-      var( tr, 'lumi', int)
-      var( tr, 'evt', int)
-      var( tr, 'nvtx', int)
+      self.declareCoreVariables(self.cfg_comp.isMC)
+     
       var( tr, 'njets', int)
-      var( tr, 'npu', int)
-      var( tr, 'evtHasGoodVtx', int)
-      var( tr, 'Vtx_ndof', int)
-      # var( tr, 'firstVtxIsGood', int)
       var( tr, 'evtHasTrg', int)
       var( tr, 'evtZSel', int)
       
@@ -257,7 +209,7 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
       # var( tr, 'nNoTrgMuons', int)
       var( tr, 'noTrgExtraMuonsLeadingPt', int)
 
-     ###--------------------------- BOOK MET infos ------------------------------
+     ###--------------------------- BOOK OTHER MET infos ------------------------------
       
       # # customMetFlavor_str =    [ 'h' ,  'h0','gamma','hf' ,'ele','mu']
       # # customMetPtMin_str = ['0p0','0p5','1p0','1p5','2p0']
@@ -289,37 +241,6 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
               bookMET(tr, 'my%sPFmetPt%sEtaMin%sEtaMax%s'%(customMetFlavor_str[particleId],customMetPtBinEdge_str[PtBinEdge],customMetEtaBinEdge_str[EtaBinEdge],customMetEtaBinEdge_str[EtaBinEdge+1]) )
               var(tr, 'my%sPFmetPt%sEtaMin%sEtaMax%s_sumEt'%(customMetFlavor_str[particleId],customMetPtBinEdge_str[PtBinEdge],customMetEtaBinEdge_str[EtaBinEdge],customMetEtaBinEdge_str[EtaBinEdge+1]) )
             
-      bookCustomMET(tr, 'pfmet')
-      # bookMET(tr, 'pfmet2')
-      # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
-        # bookMET(tr, 'pfmetraw')
-      # bookMET(tr, 'nopumet')
-      # bookMET(tr, 'pucmet')
-      # bookMET(tr, 'pfMetForRegression')
-      # bookMET(tr, 'pumet')
-      bookCustomMET(tr, 'tkmet')
-      # var(tr, 'pfmetraw_sumEt')
-      # var(tr, 'nopumet_sumEt')
-      # var(tr, 'pucmet_sumEt')
-      # var(tr, 'pfMetForRegression_sumEt')
-      # var(tr, 'pumet_sumEt')
-      bookMET(tr, 'tkmetgen') 
-      var(tr, 'tkmetgen_sumEt') 
-
-      # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
-        # var( tr, 'pfmetcov00')
-        # var( tr, 'pfmetcov01')
-        # var( tr, 'pfmetcov10')
-        # var( tr, 'pfmetcov11')
-
-      # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
-        # bookMET(tr, 'pfmetWlikeNeg')
-        # bookMET(tr, 'pfmetWlikePos')
-        # bookW(tr, 'WlikePos')
-        # var(tr, 'WlikePos_mt')
-        # bookW(tr, 'WlikeNeg')
-        # var(tr, 'WlikeNeg_mt')
-
       ###--------------------------- BOOK Z and muon infos ------------------------------
         
       bookZ(tr, 'Z')
@@ -381,59 +302,31 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
      # # print 'booked stuff'
 
     def process(self, iEvent, event):
-
+ 
         self.readCollections( iEvent )
         tr = self.tree
         tr.reset()
        # print 'ola'   
         # print 'event.savegenpZ= ',event.savegenpZ,' self.cfg_comp.isMC= ',self.cfg_comp.isMC,' event.ZGoodEvent= ',event.ZGoodEvent
-
-        # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
-          # fillMuons(tr, 'cmgmuons', event.ZallMuons, event)
-          # fillElectrons( tr,'cmgelectrons' ,event.ZselElectrons ,event)
-          # fillJets(tr, 'cmgjets', event.ZselJets)
         
-        fill( tr, 'run', event.run) 
-        fill( tr, 'lumi',event.lumi)
-        fill( tr, 'evt', event.eventId)
-        fill( tr, 'evtHasGoodVtx', event.passedVertexAnalyzer)
-        fill( tr, 'nvtx', len(event.goodVertices))
-        if(event.passedVertexAnalyzer):
-            fill( tr, 'Vtx_ndof', event.goodVertices[0].ndof())
-            # fill( tr, 'firstVtxIsGood', event.firstVtxIsGoodVertices) # REQUIRES DEFINITION IN CMGTools/RootTools/python/analyzers/VertexAnalyzer.py
+        # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
+        # fillMuons(tr, 'cmgmuons', event.ZallMuons, event)
+        # fillElectrons( tr,'cmgelectrons' ,event.ZselElectrons ,event)
+        # fillJets(tr, 'cmgjets', event.ZselJets)
+        
+        self.fillCoreVariables(tr, iEvent, event, self.cfg_comp.isMC)
+        
         fill( tr, 'evtHasTrg', True)
         fill( tr, 'njets', len(event.ZselJets))
-
-            
-        ###--------------------------- FILL event MC weights ------------------------------
-        
-        if (self.cfg_comp.isMC and event.savegenpZ) and not hasattr(self.cfg_ana,'storeSlimGenInfo'):
-            if (hasattr(self.cfg_ana,'storeLHE_weight') and self.cfg_ana.storeLHE_weight):
-              # print "filling tree"
-              fillLHE_weight( tr,'LHE' ,event.LHE_weights ,event)
-            
-            event.pileUpInfo = map( PileUpSummaryInfo,
-                                    self.mchandles['pusi'].product() )
-            for puInfo in event.pileUpInfo:
-                if puInfo.getBunchCrossing()==0:
-                    fill( tr, 'npu', puInfo.nTrueInteractions())
-                # print 'puInfo.nTrueInteractions()= ',puInfo.nTrueInteractions()
-            event.generator = self.mchandles['generator'].product()
-            # print 'ZTreeProducer.py: ',event.generator.pdf().scalePDF,' ',event.generator.pdf().id.first,' ',event.generator.pdf().x.first,' ',event.generator.pdf().id.second,' ',event.generator.pdf().x.second
-            fill(tr, 'scalePDF',event.generator.pdf().scalePDF)
-            fill(tr, 'parton1_pdgId',event.generator.pdf().id.first)
-            fill(tr, 'parton1_x',event.generator.pdf().x.first)
-            fill(tr, 'parton2_pdgId',event.generator.pdf().id.second)
-            fill(tr, 'parton2_x',event.generator.pdf().x.second)
-
+         
         ###--------------------------- FILL Z and muon infos ------------------------------
-            
+         
         # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
           # fillElectronsGen( tr,'cmgelectrons' ,event.ZElIsPromt ,event) 
           # fillMuonsGen (tr, 'cmgmuons', event.ZallMuonsMatched, event)       
-        
+         
         if (event.savegenpZ and self.cfg_comp.isMC):
-
+             
           fill(tr, 'FSRWeight',event.fsrWeight)
           fillZ(tr, 'ZGen_PostFSR', event.genZ_PostFSR)
           fill(tr, 'ZGen_mt', event.genZ_mt)
@@ -445,7 +338,7 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
             fillParticle(tr, 'MuNegGen', event.genMuNeg[0])
             fill(tr, 'MuPosDRGenP', event.muPosGenDeltaRgenP)              
             fill(tr, 'MuNegDRGenP', event.muNegGenDeltaRgenP)
-         
+                 
         if event.ZGoodEvent == True :
                                 
           # if hasattr(self.cfg_ana,'storeNeutralCMGcandidates') or hasattr(self.cfg_ana,'storeCMGcandidates'):
@@ -507,44 +400,8 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
  
           fill( tr, 'evtZSel', event.ZGoodEvent)
 
-          ###--------------------------- FILL  MET ------------------------------
+          ###--------------------------- FILL OTHER MET ------------------------------
 
-          fillCustomMET(tr, 'pfmet', event.pfmet)
-          # event.pfmet2 = self.handles['pfMet'].product()[0]
-          # event.pfmetraw = self.handles['pfMetraw'].product()[0]
-          # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
-            # pfMetSignificance = self.handles['pfMetSignificance'].product().significance()
-            # fill( tr, 'pfmetcov00', pfMetSignificance(0,0))
-            # fill( tr, 'pfmetcov01', pfMetSignificance(0,1))
-            # fill( tr, 'pfmetcov10', pfMetSignificance(1,0))
-            # fill( tr, 'pfmetcov11', pfMetSignificance(1,1))
-
-
-          event.nopumet = self.handles['nopuMet'].product()[0]
-          event.pucmet = self.handles['pucMet'].product()[0]
-          event.pfMetForRegression = self.handles['pfMetForRegression'].product()[0]
-          event.pumet = self.handles['puMet'].product()[0]
-          event.tkmet = self.handles['tkMet'].product()[0]
-          # fillMET(tr, 'pfmet2', event.pfmet2.p4())
-          # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
-            # fillMET(tr, 'pfmetraw', event.pfmetraw.p4())
-            # fill(tr, 'pfmetraw_sumEt', event.pfmetraw.sumEt())
-          # fillMET(tr, 'nopumet', event.nopumet.p4())
-          # fill(tr, 'nopumet_sumEt', event.nopumet.sumEt())
-          # fillMET(tr, 'pucmet', event.pucmet.p4())
-          # fill(tr, 'pucmet_sumEt', event.pucmet.sumEt())
-          # fillMET(tr, 'pfMetForRegression', event.pfMetForRegression.p4())
-          # fill(tr, 'pfMetForRegression_sumEt', event.pfMetForRegression.sumEt())
-          # fillMET(tr, 'pumet', event.pumet.p4())
-          # fill(tr, 'pumet_sumEt', event.pumet.sumEt())
-          # fillMET(tr, 'tkmet', event.tkmet.p4())
-          # fill(tr, 'tkmet_sumEt', event.tkmet.sumEt())
-          fillCustomMET(tr, 'tkmet', event.tkmet)
-
-          if (self.cfg_comp.isMC) :
-              fillMET(tr, 'tkmetgen', event.genTkMet)
-              fill( tr, 'tkmetgen_sumEt', event.genTkSumEt)
-          
           customMetFlavor_str = [ 'tkmethemu' , 'h0','gamma','hegammaHF' ]
           customMetEtaBinEdge_str = ['m5p0','m3p0','m2p4','m2p1','m1p4','1p4','2p1','2p4','3p0','5p0']
           customMetPtBinEdge_str = ['0p0','0p5','1p0','1p5','2p0','3p0','5p0','10p0']
