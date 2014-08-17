@@ -316,9 +316,15 @@ class ZTreeProducer( CoreTreeProducer ):
         
         self.fillCoreVariables(tr, iEvent, event, self.cfg_comp.isMC)
         
+        # this contain at least 1VTX, 2 muons, trigger
+        fill( tr, 'evtZSel', event.ZGoodEvent)
+ 
         fill( tr, 'evtHasTrg', True)
         fill( tr, 'njets', len(event.ZselJets))
+        if len(event.ZselJets)>0:
+            fillJet(tr, 'Jet_leading', event.ZselJets[0])
          
+
         ###--------------------------- FILL Z and muon infos ------------------------------
          
         # if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):
@@ -397,8 +403,6 @@ class ZTreeProducer( CoreTreeProducer ):
           # fill( tr, 'nNoTrgMuons', len(event.ZselNoTriggeredMuons))
           if(len(event.ZselNoTriggeredExtraMuonsLeadingPt)>0):
             fill( tr, 'noTrgExtraMuonsLeadingPt', event.ZselNoTriggeredExtraMuonsLeadingPt[0].pt())
- 
-          fill( tr, 'evtZSel', event.ZGoodEvent)
 
           ###--------------------------- FILL OTHER MET ------------------------------
 
@@ -452,8 +456,6 @@ class ZTreeProducer( CoreTreeProducer ):
           # mygammaPFmetPt0p0EtaMin1p4EtaMax2p1
                 
             
-          if len(event.ZselJets)>0:
-              fillJet(tr, 'Jet_leading', event.ZselJets[0])
         #print 'filling'  
         self.tree.tree.Fill()
        

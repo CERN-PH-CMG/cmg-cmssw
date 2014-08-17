@@ -73,6 +73,9 @@ class WTreeProducer( CoreTreeProducer ):
 
         self.fillCoreVariables(tr, iEvent, event, self.cfg_comp.isMC)
 
+        # this contain at least 1VTX, 1 muons, trigger 
+        fill( tr, 'evtWSel', event.WGoodEvent)
+
         # fill( tr, 'evtHasTrg', event.passedTriggerAnalyzer)
         fill( tr, 'evtHasTrg', True)
         
@@ -114,13 +117,11 @@ class WTreeProducer( CoreTreeProducer ):
 
         if (event.savegenpW and self.cfg_comp.isMC) or event.WGoodEvent:
 
-          fill( tr, 'nMuons', event.nMuons)
+          fill( tr, 'nMuons', len(event.muons))
           fill( tr, 'nTrgMuons', len(event.selMuons))
           # if len(event.selMuons): print 'len(event.selMuons) ?!?!?'
           if len(event.NoTriggeredMuonsLeadingPt) > 0 :
             fill( tr, 'noTrgMuonsLeadingPt', event.NoTriggeredMuonsLeadingPt[0].pt())
-
-          fill( tr, 'evtWSel', event.WGoodEvent)
 
           fill( tr, 'njets', len(event.selJets))
           if len(event.selJets)>0:
