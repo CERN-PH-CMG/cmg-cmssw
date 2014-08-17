@@ -66,7 +66,7 @@ class WAnalyzer( Analyzer ):
         if self.cfg_comp.isMC :
           event.genParticles = self.buildGenParticles( self.mchandles['genpart'].product(), event )        
           import ROOT
-          objects = [ j for j in event.genParticles if j.charge()!=0 and j.status()==1 ]
+          objects = [ j for j in event.genParticles if (j.charge()!=0 and j.status()==1 and math.fabs(j.eta())<2.5)]
           event.genTkSumEt = sum([x.pt() for x in objects])
           event.genTkMet = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects])) , -1.*(sum([x.py() for x in objects])), 0, 0 )
           event.LHEweights = []
