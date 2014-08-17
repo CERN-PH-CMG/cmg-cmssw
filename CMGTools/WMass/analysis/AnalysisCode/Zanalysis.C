@@ -245,10 +245,13 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   if(use_PForNoPUorTKmet==2) metSuffix="_tkmet";
   if(use_PForNoPUorTKmet==0) metSuffix="_pfmet";
   
+  TString generatorSuffix="_powheg";
+  //  if(use_madgraph) generatorSuffix="_madgraph";
+
   /// TKMET type2
-  std::string fileCorrectTo = Form("../RecoilCode/recoilfit_JUL27_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root",metSuffix.Data());
-  std::string fileZmmMC = Form("../RecoilCode/recoilfit_JUL27_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root",metSuffix.Data());
-  std::string fileZmmData = Form("../RecoilCode/recoilfit_JUL27_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_53X.root",metSuffix.Data());
+  std::string fileCorrectTo = Form("../RecoilCode/recoilfit_AUG6_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
+  std::string fileZmmMC = Form("../RecoilCode/recoilfit_AUG6_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
+  std::string fileZmmData = Form("../RecoilCode/recoilfit_AUG6_DATA%s_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_53X.root",metSuffix.Data());
 
   RecoilCorrector*  correctorRecoil_Z; // TYPE2
 
@@ -560,7 +563,79 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                    ){
                   for(int k=0;k<3;k++)
                     if(m==0 && WMass::WMassNSteps==j) common_stuff::plot1D(Form("hWlikePos_%sNonScaled_5_RecoCut_eta%s_%d",WMass::FitVar_str[k].Data(),eta_str.Data(),jZmass_MeV),
-                                          MuPos_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
+									   MuPos_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
+		  
+		  
+			  
+		  //------------------------------------------------------------------------------------------------
+		  // BELOW PLOTS for CLOSURE TEST
+		  //------------------------------------------------------------------------------------------------ 
+		  
+		  if(WlikePos_met.Pt()>0 && m==0 && controlplots && WMass::WMassNSteps==j) {
+
+		    string tag_zPtcut;
+		    if ( Zcorr.Pt()<2 ) tag_zPtcut = "_Zpt02";
+		    else if  ( Zcorr.Pt()>=2 && Zcorr.Pt()<4 ) tag_zPtcut = "_Zpt24";
+		    else if  ( Zcorr.Pt()>=4 && Zcorr.Pt()<6 ) tag_zPtcut = "_Zpt46";
+		    else if  ( Zcorr.Pt()>=6 && Zcorr.Pt()<8 ) tag_zPtcut = "_Zpt68";
+		    else if  ( Zcorr.Pt()>=8 && Zcorr.Pt()<10 ) tag_zPtcut = "_Zpt810";
+		    else if  ( Zcorr.Pt()>=10 && Zcorr.Pt()<12 ) tag_zPtcut = "_Zpt1012";
+		    else if  ( Zcorr.Pt()>=12 && Zcorr.Pt()<14 ) tag_zPtcut = "_Zpt1214";
+		    else if  ( Zcorr.Pt()>=14 && Zcorr.Pt()<16 ) tag_zPtcut = "_Zpt1416";
+		    else if  ( Zcorr.Pt()>=16 && Zcorr.Pt()<18 ) tag_zPtcut = "_Zpt1618";
+		    else if  ( Zcorr.Pt()>=18 && Zcorr.Pt()<20 ) tag_zPtcut = "_Zpt1820";
+		    else if  ( Zcorr.Pt()>=20 && Zcorr.Pt()<30 ) tag_zPtcut = "_Zpt2030";
+		    else if  ( Zcorr.Pt()>=30 && Zcorr.Pt()<50 ) tag_zPtcut = "_Zpt3050";
+		    else if  ( Zcorr.Pt()>=50 ) tag_zPtcut = "_Zpt50";
+		    else tag_zPtcut = "_ignore";
+                    
+		    double Zy=Zcorr.Rapidity();
+		    string tag_y;
+		    if ( Zy>=0 && Zy<0.5 ) tag_y = "_Zy0005";
+		    else if  ( Zy>=0.5 && Zy<1.0 ) tag_y = "_Zy0510";
+		    else if  ( Zy>=1.0 && Zy<1.5 ) tag_y = "_Zy1015";
+		    else if  ( Zy>=1.5 && Zy<2.0 ) tag_y = "_Zy1520";
+		    else if  ( Zy>=2.0 ) tag_y = "_Zy20inf";
+		    else if  ( Zy>=(-0.5) && Zy<0.0 ) tag_y = "_Zy0500";
+		    else if  ( Zy>=(-1.0) && Zy<(-0.5) ) tag_y = "_Zy1005";
+		    else if  ( Zy>=(-1.5) && Zy<(-1.0) ) tag_y = "_Zy1510";
+		    else if  ( Zy>=(-2.0) && Zy<(-1.5) ) tag_y = "_Zy2015";
+		    else if  ( Zy<(-2.0) ) tag_y = "_Zyinf20";
+		    else tag_y = "_ignore";
+		    
+		    string tag_VTX="";
+		    if(nvtx==1 || nvtx==0) tag_VTX="_VTX1";
+		    if(nvtx==2) tag_VTX="_VTX2";
+		    if(nvtx==3) tag_VTX="_VTX3";
+		    if(nvtx==4) tag_VTX="_VTX4";
+		    if(nvtx==5) tag_VTX="_VTX5";
+		    if(nvtx==6) tag_VTX="_VTX6";
+		    if(nvtx==7) tag_VTX="_VTX7";
+		    if(nvtx==8) tag_VTX="_VTX8";
+		    if(nvtx==9) tag_VTX="_VTX9";
+		    if(nvtx==10) tag_VTX="_VTX10";
+		    if(nvtx==11) tag_VTX="_VTX11";
+		    if(nvtx==12) tag_VTX="_VTX12";
+		    if(nvtx==13) tag_VTX="_VTX13";
+		    if(nvtx==14) tag_VTX="_VTX14";
+		    if(nvtx==15) tag_VTX="_VTX15";
+		    if(nvtx==16) tag_VTX="_VTX16";
+		    if(nvtx==17) tag_VTX="_VTX17";
+		    if(nvtx==18) tag_VTX="_VTX18";
+		    if(nvtx==19) tag_VTX="_VTX19";
+		    if(nvtx>=20) tag_VTX="_VTX20";
+		    
+                    
+		    TLorentzVector VisPt;
+		    VisPt.SetPtEtaPhiM(Zcorr.Pt(),0,Zcorr.Phi(),0);
+                    
+		    string mettype="_tk";
+                    
+		    double u1_scale=0;
+		    plotVariables( Z_met, VisPt,  Zcorr, u1_scale, tag_zPtcut.c_str(), mettype.c_str() , false, false, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF);
+		    plotVariables( Z_met, VisPt,  Zcorr, u1_scale, tag_VTX.c_str(), mettype.c_str() , false, false, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF);
+		    plotVariables( Z_met, VisPt,  Zcorr, u1_scale, tag_y.c_str(), mettype.c_str() , false, false, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF);
+		  }
 
                   //------------------------------------------------------
                   // cut on MET
@@ -627,75 +702,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                             // h_2d, 200,0.9,1.1,200,0.9,1.1);
                             
                             lha_weight = LHE_weight[PDF_reweighting_central_Index+h];
-                          }
-			  
-                          //------------------------------------------------------------------------------------------------
-                          // END PDF WEIGHT  --- BELOW PLOTS for CLOSURE TEST
-                          //------------------------------------------------------------------------------------------------ 
-                          
-                          if(WlikePos_met.Pt()>0 && m==0 && controlplots && WMass::WMassNSteps==j) {
-                            string tag_zPtcut;
-                            if ( Zcorr.Pt()<2 ) tag_zPtcut = "_Zpt02";
-                            else if  ( Zcorr.Pt()>=2 && Zcorr.Pt()<4 ) tag_zPtcut = "_Zpt24";
-                            else if  ( Zcorr.Pt()>=4 && Zcorr.Pt()<6 ) tag_zPtcut = "_Zpt46";
-                            else if  ( Zcorr.Pt()>=6 && Zcorr.Pt()<8 ) tag_zPtcut = "_Zpt68";
-                            else if  ( Zcorr.Pt()>=8 && Zcorr.Pt()<10 ) tag_zPtcut = "_Zpt810";
-                            else if  ( Zcorr.Pt()>=10 && Zcorr.Pt()<12 ) tag_zPtcut = "_Zpt1012";
-                            else if  ( Zcorr.Pt()>=12 && Zcorr.Pt()<14 ) tag_zPtcut = "_Zpt1214";
-                            else if  ( Zcorr.Pt()>=14 && Zcorr.Pt()<16 ) tag_zPtcut = "_Zpt1416";
-                            else if  ( Zcorr.Pt()>=16 && Zcorr.Pt()<18 ) tag_zPtcut = "_Zpt1618";
-                            else if  ( Zcorr.Pt()>=18 && Zcorr.Pt()<20 ) tag_zPtcut = "_Zpt1820";
-                            else if  ( Zcorr.Pt()>=20 && Zcorr.Pt()<30 ) tag_zPtcut = "_Zpt2030";
-                            else if  ( Zcorr.Pt()>=30 && Zcorr.Pt()<50 ) tag_zPtcut = "_Zpt3050";
-                            else if  ( Zcorr.Pt()>=50 ) tag_zPtcut = "_Zpt50";
-                            else tag_zPtcut = "_ignore";
-                            
-                            double Zy=Zcorr.Rapidity();
-                            string tag_y;
-                            if ( Zy>=0 && Zy<0.5 ) tag_y = "_Zy0005";
-                            else if  ( Zy>=0.5 && Zy<1.0 ) tag_y = "_Zy0510";
-                            else if  ( Zy>=1.0 && Zy<1.5 ) tag_y = "_Zy1015";
-                            else if  ( Zy>=1.5 && Zy<2.0 ) tag_y = "_Zy1520";
-                            else if  ( Zy>=2.0 ) tag_y = "_Zy20inf";
-                            else if  ( Zy>=(-0.5) && Zy<0.0 ) tag_y = "_Zy0500";
-                            else if  ( Zy>=(-1.0) && Zy<(-0.5) ) tag_y = "_Zy1005";
-                            else if  ( Zy>=(-1.5) && Zy<(-1.0) ) tag_y = "_Zy1510";
-                            else if  ( Zy>=(-2.0) && Zy<(-1.5) ) tag_y = "_Zy2015";
-                            else if  ( Zy<(-2.0) ) tag_y = "_Zyinf20";
-                            else tag_y = "_ignore";
-
-                            string tag_VTX="";
-                            if(nvtx==1 || nvtx==0) tag_VTX="_VTX1";
-                            if(nvtx==2) tag_VTX="_VTX2";
-                            if(nvtx==3) tag_VTX="_VTX3";
-                            if(nvtx==4) tag_VTX="_VTX4";
-                            if(nvtx==5) tag_VTX="_VTX5";
-                            if(nvtx==6) tag_VTX="_VTX6";
-                            if(nvtx==7) tag_VTX="_VTX7";
-                            if(nvtx==8) tag_VTX="_VTX8";
-                            if(nvtx==9) tag_VTX="_VTX9";
-                            if(nvtx==10) tag_VTX="_VTX10";
-                            if(nvtx==11) tag_VTX="_VTX11";
-                            if(nvtx==12) tag_VTX="_VTX12";
-                            if(nvtx==13) tag_VTX="_VTX13";
-                            if(nvtx==14) tag_VTX="_VTX14";
-                            if(nvtx==15) tag_VTX="_VTX15";
-                            if(nvtx==16) tag_VTX="_VTX16";
-                            if(nvtx==17) tag_VTX="_VTX17";
-                            if(nvtx==18) tag_VTX="_VTX18";
-                            if(nvtx==19) tag_VTX="_VTX19";
-                            if(nvtx>=20) tag_VTX="_VTX20";
-                            
-                            
-                            TLorentzVector VisPt;
-                            VisPt.SetPtEtaPhiM(Zcorr.Pt(),0,Zcorr.Phi(),0);
-                            
-                            string mettype="_tk";
-                            
-                            double u1_scale=0;
-                            plotVariables( Z_met, VisPt,  Zcorr, u1_scale, tag_zPtcut.c_str(), mettype.c_str() , false, false, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF);
-                            plotVariables( Z_met, VisPt,  Zcorr, u1_scale, tag_VTX.c_str(), mettype.c_str() , false, false, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF);
-                            plotVariables( Z_met, VisPt,  Zcorr, u1_scale, tag_y.c_str(), mettype.c_str() , false, false, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF);
                           }
                           
                           
