@@ -62,7 +62,9 @@ class ZAnalyzer( Analyzer ):
         event.Zjets = self.buildJets( self.handles['Zjets'].product(), event )
         # access MET
         event.pfmet = self.handles['pfmet'].product()[0]
-        event.ZElectrons = self.buildLeptons( self.handles['ZElectrons'].product(), event )
+        event.tkmet = self.handles['tkmet'].product()[0]
+        ## UNUSED
+        #event.ZElectrons = self.buildLeptons( self.handles['ZElectrons'].product(), event )
 
         if hasattr(self.cfg_ana,'storeNeutralCMGcandidates') or hasattr(self.cfg_ana,'storeCMGcandidates'):
           event.cmgPFcands = self.handles['cmgCandidates'].product()
@@ -127,6 +129,8 @@ class ZAnalyzer( Analyzer ):
             # for i in range(0,len(event.LHE_weights_str)):
               # print i, event.LHE_weights_str[i].split()[0], float(event.LHE_weights_str[i].split()[1])/float(event.LHEweights.getComment(206).split()[1]), '--->', event.LHE_weights[i], event.LHE_weights_str[i].split()[2], event.LHE_weights_str[i].split()[3], event.LHE_weights_str[i].split()[4], event.LHE_weights_str[i].split()[5], event.LHE_weights_str[i].split()[6]
             
+
+        ##------------------------  Initial declaration of vectors --------------------------------------
           
         event.BestZPosMuonHasTriggered = 0
         event.BestZNegMuonHasTriggered = 0
@@ -173,7 +177,15 @@ class ZAnalyzer( Analyzer ):
         event.ZselNoTriggeredExtraMuonsLeadingPt = []
         event.ZallJets = copy.copy(event.Zjets)
         event.ZselJets = []
+          
+        # store event MET and jets in all gen events (necessary to make cuts in genp studies...)
+        # event.ZpfmetNoMu = event.pfmet.p4() # not needed
+        # clean jets by removing muons
+        event.ZselJets = [ jet for jet in event.ZallJets if ( jet.looseJetId() and jet.pt()>10 ) ]
+        
                                                      
+        ##------------------------  HERE MC related stuff --------------------------------------
+        
         # check if the event is MC and if genp must be saved
         event.savegenpZ=True
         if not (self.cfg_ana.savegenp and self.cfg_comp.isMC):
@@ -248,10 +260,7 @@ class ZAnalyzer( Analyzer ):
         else:
           event.savegenpZ=False
 
-        # store event MET and jets in all gen events (necessary to make cuts in genp studies...)
-        event.ZpfmetNoMu = event.pfmet.p4()
-        # clean jets by removing muons
-        event.ZselJets = [ jet for jet in event.ZallJets if ( jet.looseJetId() and jet.pt()>10 ) ]
+        ##------------------------ HERE THERE is the selection --------------------------------------  
         
         # reco events must have good reco vertex and trigger fired...                          
         if not (event.passedVertexAnalyzer):
@@ -312,6 +321,8 @@ class ZAnalyzer( Analyzer ):
             return True, 'good muon pair not found'
         else:
             if fillCounter : self.counters.counter('ZAna').inc('Z good muon pair found')          
+
+        ##------------------------  MAKE THE MUONS  -------------------------------------- 
         
         # associate properly positive and negative muons
         if(event.BestZMuonPairList[1].charge()>0):
@@ -374,7 +385,9 @@ class ZAnalyzer( Analyzer ):
         RetrieveMuonMatrixIntoVector(self,event.BestZPosMuon,event.covMatrixPosMuon)
         event.covMatrixNegMuon = []
         RetrieveMuonMatrixIntoVector(self,event.BestZNegMuon,event.covMatrixNegMuon)
-        
+
+        ##------------------------  MAKE THE RECOIL variables  -------------------------------------- 
+
         # print event.BestZPosMuon.covarianceMatrix().Print("")
         # print event.covMatrixPosMuon
         # print event.BestZNegMuon.covarianceMatrix().Print("")
@@ -383,9 +396,9 @@ class ZAnalyzer( Analyzer ):
         event.BestZNegMatchIndex = matchCMGmuon(self,event,event.BestZNegMuon)
         event.BestZPosMatchIndex = matchCMGmuon(self,event,event.BestZPosMuon)
         # assign negative lepton to MET to build W+
-        event.ZpfmetWpos = event.ZpfmetNoMu + event.BestZNegMuon.p4()
+        event.ZpfmetWpos = event.pfmet.p4() + event.BestZNegMuon.p4()
         # assign positive lepton to MET to build W-
-        event.ZpfmetWneg = event.ZpfmetNoMu + event.BestZPosMuon.p4()        
+        event.ZpfmetWneg = event.pfmet.p4() + event.BestZPosMuon.p4()        
 
         # define a positive W from positive lepton and MET
         event.Wpos4VfromZ = event.BestZPosMuon.p4() + event.ZpfmetWpos
@@ -398,7 +411,7 @@ class ZAnalyzer( Analyzer ):
         event.Z4V_mt = mT(self,event.BestZPosMuon.p4() , event.BestZNegMuon.p4())
         
         # Code to study the Z recoil
-        metVect = event.ZpfmetNoMu.Vect()
+        metVect = event.pfmet.p4().Vect()
         metVect.SetZ(0.) # use only transverse info
         ZVect = event.Z4V.Vect()
         ZVect.SetZ(0.) # use only transverse info
@@ -414,6 +427,8 @@ class ZAnalyzer( Analyzer ):
 
         event.Zu1 = u1
         event.Zu2 = u2
+
+        ##------------------------  FINAL COUNTERS  --------------------------------------  
         
         if fillCounter:
           if event.Wpos4VfromZ.M() > 50: 
@@ -437,6 +452,8 @@ class ZAnalyzer( Analyzer ):
         
         # event is fully considered as good
         event.ZGoodEvent = True
+
+        ##------------------------  EXTRA  --------------------------------------  
         
         if not hasattr(self.cfg_ana,'keepFailingEvents') or (hasattr(self.cfg_ana,'keepFailingEvents') and not self.cfg_ana.keepFailingEvents):
           if( \
@@ -469,13 +486,14 @@ class ZAnalyzer( Analyzer ):
         
     def declareHandles(self):        
         super(ZAnalyzer, self).declareHandles()
-        self.handles['TriggerResults'] = AutoHandle( ('TriggerResults','','HLT'), 'edm::TriggerResults' )
+##        self.handles['TriggerResults'] = AutoHandle( ('TriggerResults','','HLT'), 'edm::TriggerResults' )
+##        self.handles['ZElectrons'] = AutoHandle('cmgElectronSel','std::vector<cmg::Electron>')
         self.handles['Zmuons'] = AutoHandle('cmgMuonSel','std::vector<cmg::Muon>')
         self.handles['Zjets'] = AutoHandle('cmgPFJetSel','std::vector<cmg::PFJet>')
         if hasattr(self.cfg_ana,'storeNeutralCMGcandidates') or hasattr(self.cfg_ana,'storeCMGcandidates'):
           self.handles['cmgCandidates'] = AutoHandle('cmgCandidates','std::vector<cmg::Candidate>')
         self.handles['pfmet'] = AutoHandle('cmgPFMET','std::vector<cmg::BaseMET>' )
-        self.handles['ZElectrons'] = AutoHandle('cmgElectronSel','std::vector<cmg::Electron>')
+        self.handles['tkmet'] = AutoHandle('tkMet','std::vector<reco::PFMET>' )
         self.mchandles['genpart'] =  AutoHandle('genParticlesPruned','std::vector<reco::GenParticle>')
         if self.cfg_comp.isMC :
           if (hasattr(self.cfg_ana,'storeLHE_weight') and self.cfg_ana.storeLHE_weight):
@@ -484,3 +502,4 @@ class ZAnalyzer( Analyzer ):
             self.mchandles['MyLHEProducer'] =  AutoHandle('MyLHEProducer','std::vector<std::string>')
 
 
+                                        

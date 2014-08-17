@@ -58,6 +58,7 @@ class WAnalyzer( Analyzer ):
         event.jets = self.buildJets( self.handles['jets'].product(), event )
         # access MET
         event.pfmet = self.handles['pfmet'].product()[0]
+        event.tkmet = self.handles['tkmet'].product()[0]
         # access genP
         event.genParticles = []
         event.LHEweights = []
@@ -90,6 +91,8 @@ class WAnalyzer( Analyzer ):
                 # print len(event.LHE_weights)-1, event.LHEweights.getComment(i).split()[0], float(event.LHEweights.getComment(i).split()[1])/float(event.LHEweights.getComment(206).split()[1]), event.LHEweights.getComment(i).split()[2], event.LHEweights.getComment(i).split()[3], event.LHEweights.getComment(i).split()[4], event.LHEweights.getComment(i).split()[5]
         
         # print len(event.LHE_weights)
+
+        ##------------------------  Initial declaration of vectors --------------------------------------  
             
         event.allMuonsTrgBit=[]
         # retrieve collections of interest (muons and jets)
@@ -101,6 +104,14 @@ class WAnalyzer( Analyzer ):
         event.NoTriggeredMuonsLeadingPt = copy.copy(event.muons)
         event.allJets = copy.copy(event.jets)
         event.selJets = copy.copy(event.jets)
+
+        event.selJets = [ jet for jet in event.allJets if ( \
+                                        not (bestMatch( jet , event.muons ))[1] <0.5 \
+                                        and jet.looseJetId() and jet.pt()>30 \
+                                        )
+                        ]
+
+        ##------------------------  HERE MC related stuff --------------------------------------
 
         # check if the event is MC and if genp must be saved
         event.savegenpW=False
@@ -259,29 +270,24 @@ class WAnalyzer( Analyzer ):
 #        print 'genW found ', len(genW_dummy)
 #        print 'genWLeptonic found ', len(event.genWLept)
 
-        # store event number of muons, MET and jets in all gen events (necessary to make cuts in genp studies...)
-        # total number of reco muons
-        event.nMuons=len(event.muons)
-        # clean jets by removing muons
-        event.selJets = [ jet for jet in event.allJets if ( \
-                                        not (bestMatch( jet , event.muons ))[1] <0.5 \
-                                        and jet.looseJetId() and jet.pt()>30 \
-                                        )
-                        ]
+        ##------------------------  HERE THERE is the selection --------------------------------------
+        
         keepFailingEvents = True
         if not hasattr(self.cfg_ana,'keepFailingEvents') \
             or (hasattr(self.cfg_ana,'keepFailingEvents') and not self.cfg_ana.keepFailingEvents):
             keepFailingEvents = False
         # print 'keepFailingEvents',keepFailingEvents
-        # reco events must have good reco vertex and trigger fired...
         # if not (event.passedVertexAnalyzer and event.passedTriggerAnalyzer):
+        ##------------
+        # reco events must have good reco vertex
         if not (event.passedVertexAnalyzer):
           return keepFailingEvents
+        ##------------
         # ...and at lest one reco muon...
         if len(event.muons) == 0:
             return keepFailingEvents
         if fillCounter: self.counters.counter('WAna').inc('W ev trig, good vertex and >= 1 lepton')
-        
+
         #check if the event is triggered according to cfg_ana
         if hasattr(self.cfg_ana, 'triggerBits'):
           for imu in range(0,len(event.allMuons)):
@@ -300,16 +306,18 @@ class WAnalyzer( Analyzer ):
           # for i in range(0,len(event.selMuons)):
             # print i,event.selMuons[i].pt(), event.selMuons[i].eta()
                 # exit if there are no triggered muons
+          ##------------
+          # reco events must have trigger fired...
           if len(event.selMuons) == 0:
               return keepFailingEvents, 'trigger matching failed'
           else:
               if fillCounter: self.counters.counter('WAna').inc('W at least 1 lep trig matched')
                 
+        ##------------
         # to select W impose only 1 triggering lepton in the event:
         # the number of triggering lepton is checked on the whole lepton collection
         # before any cut, otherwise could be a Z!!!
         if len(event.selMuons) != 1:
-          # print 'len(event.selMuons) != 1, returning ', keepFailingEvents
           return keepFailingEvents, 'more than 1 lep trig matched'
         else:
             if fillCounter: self.counters.counter('WAna').inc('W only 1 lep trig matched')
@@ -337,7 +345,9 @@ class WAnalyzer( Analyzer ):
         else:
             if fillCounter: self.counters.counter('WAna').inc('W non trg leading lepton pT < 10 GeV')
 
-        
+
+        ##------------------------  MAKE THE MUON  --------------------------------------
+            
         # if the genp are saved, compute dR between gen and reco muon 
         if (event.savegenpW and len(event.genW)==1):
           event.muGenDeltaRgenP = deltaR( event.selMuons[0].eta(), event.selMuons[0].phi(), event.genMu[0].eta(), event.genMu[0].phi() ) 
@@ -356,6 +366,8 @@ class WAnalyzer( Analyzer ):
         event.covMatrixMuon = []
         RetrieveMuonMatrixIntoVector(self,event.selMuons[0],event.covMatrixMuon)
         # print event.covMatrixMuon
+
+        ##------------------------  MAKE THE JETS and RECOIL variables  --------------------------------------
 
         # Code to study the recoil (not very useful for W...)
         metVect = event.pfmet.p4().Vect()
@@ -377,6 +389,8 @@ class WAnalyzer( Analyzer ):
 
         event.u1 = u1
         event.u2 = u2
+
+        ##------------------------  FINAL COUNTERS  --------------------------------------       
         
         if fillCounter:
           if event.selMuonIsTightAndIso : 
@@ -403,20 +417,18 @@ class WAnalyzer( Analyzer ):
         super(WAnalyzer, self).declareHandles()
         self.handles['muons'] = AutoHandle('cmgMuonSel','std::vector<cmg::Muon>')
         self.handles['jets'] = AutoHandle('cmgPFJetSel','std::vector<cmg::PFJet>')
-        self.handles['jetLead'] = AutoHandle('cmgPFBaseJetLead','vector<cmg::BaseJet>')
         self.handles['pfmet'] = AutoHandle('cmgPFMET','std::vector<cmg::BaseMET>' )
-        self.handles['pfMetForRegression'] = AutoHandle('pfMetForRegression','std::vector<reco::PFMET>' )
         self.handles['tkmet'] = AutoHandle('tkMet','std::vector<reco::PFMET>' )
-        self.handles['nopumet'] = AutoHandle('nopuMet','std::vector<reco::PFMET>' )
-        self.handles['pumet'] = AutoHandle('puMet','std::vector<reco::PFMET>' )
-        self.handles['pucmet'] = AutoHandle('pcMet','std::vector<reco::PFMET>' )
-        self.mchandles['genpart'] =  AutoHandle('genParticlesPruned','std::vector<reco::GenParticle>')
-        self.handles['vertices'] =  AutoHandle('slimmedPrimaryVertices','std::vector<reco::Vertex>')
-        self.handles['nJetsPtGt1'] =  AutoHandle('nJetsPtGt1','int')
-        self.handles['TriggerResults'] = AutoHandle( ('TriggerResults','','HLT'), 'edm::TriggerResults' )
-        self.handles['muons'] = AutoHandle('cmgMuonSel','std::vector<cmg::Muon>')
-        self.handles['jets'] = AutoHandle('cmgPFJetSel','std::vector<cmg::PFJet>')
-        self.handles['pfmet'] = AutoHandle('cmgPFMET','std::vector<cmg::BaseMET>' )
         self.mchandles['genpart'] =  AutoHandle('genParticlesPruned','std::vector<reco::GenParticle>')
         # self.mchandles['LHEweights'] =  AutoHandle('externalLHEProducer','LHEEventProduct')
+
+## UNUSED
+#        self.handles['jetLead'] = AutoHandle('cmgPFBaseJetLead','vector<cmg::BaseJet>')
+#        self.handles['nJetsPtGt1'] =  AutoHandle('nJetsPtGt1','int')
+#        self.handles['pfMetForRegression'] = AutoHandle('pfMetForRegression','std::vector<reco::PFMET>' )
+#        self.handles['pucmet'] = AutoHandle('pcMet','std::vector<reco::PFMET>' )
+#        self.handles['nopumet'] = AutoHandle('nopuMet','std::vector<reco::PFMET>' )
+#        self.handles['pumet'] = AutoHandle('puMet','std::vector<reco::PFMET>' )
+#        self.handles['TriggerResults'] = AutoHandle( ('TriggerResults','','HLT'), 'edm::TriggerResults' )
+#        self.handles['vertices'] =  AutoHandle('slimmedPrimaryVertices','std::vector<reco::Vertex>')
 
