@@ -1,4 +1,3 @@
-
 #ifndef __CINT__
 #include "RooGlobalFunc.h"
 #endif
@@ -65,8 +64,6 @@ TH2D histoU1vsU2corrUnorm("hu1vsu2corrUnorm","histo U1 vs U2 after corrU",100,-1
 TH2D histoRecoil("hrecoil"," recoil vs recoilCorr",100,-20,20,100,-20,20);
 TH2D histoU1vsU2_520("hu1vsu2520","",100,-10,10,100,-10,10);
 
-TH1D histoDelta("hdelta","histo ",100,-95,5);
-
 TH2D histoU1vsU2_02("hu1vsu2_02","",100,-10,10, 100,-10,10);
 TH2D histoU1vsU2_24("hu1vsu2_24","",100,-10,10, 100,-10,10);
 TH2D histoU1vsU2_46("hu1vsu2_46","",100,-10,10, 100,-10,10);
@@ -88,9 +85,39 @@ TH2D histoCorrU2("hCorrU2","",10,0,10, 10,0,10);
 TH2D histoU1vsMuPt("histoU1vsMuPt","",100,0,100, 100,-50,50);
 TH2D histoU2vsMuPt("histoU2vsMuPt","",100,0,100, 100,-50,50);
 
-TH1D histoPhiStar("hPhiStar","histo PhiStar",1000,-10,10);
-TH1D histoThetaStar("hThetaStar","histo ThetaStar",1000,-10,10);
-TH2D histoPhiStarvsZpt("histoPhiStarvsZpt","histo PhiStar vs Zpt",100,0,20,100,-10,10);
+TH1D histoDelta("hdelta","histo ",100,-95,5);
+
+//## needed for the boson PDF check check of the application of the recoilCorr
+TH1D Vpt0("Vpt0","gluon",100,0,50);
+TH1D Vpt1("Vpt1","quark1",100,0,50);
+TH1D Vpt2("Vpt2","quark2",100,0,50);
+TH1D Vpt3("Vpt3","quark3",100,0,50);
+TH1D Vpt4("Vpt4","quark4",100,0,50);
+TH1D Vpt5("Vpt5","quark5",100,0,50);
+TH1D Vpt10("Vpt10","quark10",100,0,50);
+
+TH1D Vy0("Vy0","gluon",200,-3.,3.);
+TH1D Vy1("Vy1","quark1",200,-3.,3.);
+TH1D Vy2("Vy2","quark2",200,-3.,3.);
+TH1D Vy3("Vy3","quark3",200,-3.,3.);
+TH1D Vy4("Vy4","quark4",200,-3.,3.);
+TH1D Vy5("Vy5","quark5",200,-3.,3.);
+TH1D Vy10("Vy10","quark10",200,-3.,3.);
+
+TH1D xPDF0("xPDF0","xPDF0",200,-5.,0.);
+TH1D xPDF1("xPDF1","xPDF1",200,-5.,0.);
+TH1D xPDFm2("xPDFm2","xPDFm2",200,-5.,0.);
+TH1D xPDFm1("xPDFm1","xPDFm1",200,-5.,0.);
+TH1D xPDF2("xPDF2","xPDF2",200,-5.,0.);
+TH1D xPDF3("xPDF3","xPDF3",200,-5.,0.);
+TH1D xPDF4("xPDF4","xPDF4",200,-5.,0.);
+TH1D xPDF5("xPDF5","xPDF5",200,-5.,0.);
+
+//## PhiStar plot
+TH1D histoPhiStar("hPhiStar","histo PhiStar",1000,-1.,1.);
+TH1D histoThetaStar("hThetaStar","histo ThetaStar",1000,-5.,5.);
+TH2D histoPhiStarvsZpt("histoPhiStarvsZpt","histo PhiStar vs Zpt",100,0,20,100,0.,0.5);
+TH2D histoPhiStarvsgenZpt("histoPhiStarvsgenZpt","histo PhiStar vs genZpt",100,0,20,100,0.,0.5);
 
 /////
 
@@ -115,6 +142,8 @@ bool doOnlyU2 = false;
 int VTXbin=-1;
 
 /////
+
+bool doPhiStar=false;
 
 bool do8TeV = false;
 bool doMad = false;
@@ -180,6 +209,7 @@ int fId1 = 0; int fId2 = 0; float fGPhi1 = 0; float fGPhi2 = 0; float fGEta1  = 
 int fNBTag = 0; float fMJJ = 0; /*float fJPt1 = 0;*/ double fJPt1 = 0; float fDEta = 0; int fIS2011A = 0; int fId = -1; float fVPt = 0; float fVPhi = 0;
 
 double fpdgId1, fpdgId2;
+double fx1, fx2;
 
 double fZmass;
 double fMuPos_phi, fMuPos_eta, fMuPos_pt, fMuPos_charge, fMuPosReliso, fMuPos_dxy, fMuPos_dz;
@@ -543,8 +573,8 @@ void applyType2CorrU(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   //  double pU2ValM = 0 ;
   double pU1ValD = 0 ;
   double pU2ValD = 0;
-  double pUValM = 0;
   double pUValMtest = 0;
+  double pUValM = 0;
   double pUValD = 0 ;
 
   if(doSingleGauss) {
@@ -702,6 +732,8 @@ void applyType2CorrMET(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   //  cout << "diGAUSS "<< endl;
   //  cout << "  pU1ValM " << pU1ValM  << " pU1ValD " << pU1ValD  <<endl;
   //  cout << "  pU2ValM " << pU2ValM  << " pU2ValD " << pU2ValD  <<endl;
+  double pU1ValMtest = 0;
+  double pU2ValMtest = 0;
 
   double pU1ValM = 0;
   double pU2ValM = 0 ;
@@ -755,6 +787,12 @@ void applyType2CorrMET(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
       pU1ValD         = diGausPInverse(pU1ValM  ,pMFrac1,pMSigma1_1,pMSigma1_2);
       pU2ValD         = diGausPInverse(pU2ValM  ,pDFrac2,pDSigma2_1,pDSigma2_2);
     }
+
+    pU1ValMtest     = diGausPInverse(pU1ValM, pMFrac1, pMSigma1_1, pMSigma1_2);
+    pU2ValMtest     = diGausPInverse(pU2ValM, pMFrac2, pMSigma2_1, pMSigma2_2);
+    //    if(pU1ValM==fabs(pU1Diff)) pU1ValMtest=fabs(recoil); // in those cases do nothing                                                                                       
+    histoDelta.Fill(pU1ValMtest-fabs(pU1Diff));
+    histoDelta.Fill(pU2ValMtest-fabs(pU2Diff));
 
     if(pU1ValM==fabs(pU1Diff)) pU1ValD=fabs(pU1Diff); // in those cases do nothing
     if(pU2ValM==fabs(pU2Diff)) pU1ValD=fabs(pU1Diff); // in those cases do nothing
@@ -1021,6 +1059,9 @@ void load(TTree *iTree, int type) {
 
   iTree->SetBranchAddress("parton1_pdgId" ,&fpdgId1);
   iTree->SetBranchAddress("parton2_pdgId" ,&fpdgId2);
+
+  iTree->SetBranchAddress("parton1_x" ,&fx1);
+  iTree->SetBranchAddress("parton2_x" ,&fx2);
   
 }
 
@@ -1099,14 +1140,18 @@ double calculateCosThetaStar(double eta1, double eta2) {
   return TMath::TanH((eta1-eta2)/2);
 }
 
-double calculatePhiStar(double SinThetaStar, double fMuPos_eta, double fMuNeg_eta, double fMuPos_phi, double fMuNeg_phi){
-  double PhiStar;
-  double Phi_acop;
+double calculatePhiStar(double eta1, double eta2, double phi1, double phi2){
 
-  if((fMuPos_phi-fMuNeg_phi)<TMath::Pi()) Phi_acop=TMath::Pi()-fMuPos_phi-fMuNeg_phi;
-  else Phi_acop=TMath::Pi()-fMuNeg_phi-fMuPos_phi;
+  float dphi = fabs( phi1 - phi2 );
+  if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
+  double Phi_acop=TMath::Pi()-dphi;
 
-  return PhiStar=(TMath::Tan(Phi_acop/2))*SinThetaStar;
+  double SinThetaStar=calculateSinThetaStar(eta1,eta2);
+
+  double PhiStar=(TMath::Tan(Phi_acop/2))*SinThetaStar;
+
+  return PhiStar;
+
 }
 
 bool runSelection() {
@@ -1185,11 +1230,11 @@ bool runSelection() {
       histoU1diff.Fill(fU1+fZPt);
       histoU2.Fill(fU2);
    
-
-      double SinThetaStar=calculateSinThetaStar(fMuPos_eta, fMuNeg_eta);
+      //      double SinThetaStar=calculateSinThetaStar(fMuPos_eta, fMuNeg_eta);
       double CosThetaStar=calculateCosThetaStar(fMuPos_eta, fMuNeg_eta);
 
-      double PhiStar=calculatePhiStar(SinThetaStar, fMuPos_eta, fMuNeg_eta, fMuPos_phi, fMuNeg_phi);
+      double PhiStar=calculatePhiStar(fMuPos_eta, fMuNeg_eta, fMuPos_phi, fMuNeg_phi);
+      histoPhiStarvsgenZpt.Fill(fPt1,PhiStar);
       histoPhiStarvsZpt.Fill(fZPt,PhiStar);
       histoPhiStar.Fill(PhiStar);
       histoThetaStar.Fill(CosThetaStar);
@@ -1304,58 +1349,108 @@ double getCorError2(double iVal,TF1 *iFit) {
 
 }
 
+
+void fillXPDF() { 
+
+      if(fpdgId1==1) xPDF1.Fill(log(fx1)); // valence u + sea u 
+      if(fpdgId2==1) xPDF1.Fill(log(fx2));
+
+      if(fpdgId1==2) xPDF2.Fill(log(fx1)); // valence d  + sea d 
+      if(fpdgId2==2) xPDF2.Fill(log(fx2));
+
+      if(fpdgId1==-1) xPDFm1.Fill(log(fx1)); // sea ubar
+      if(fpdgId2==-1) xPDFm1.Fill(log(fx2));
+
+      if(fpdgId1==-2) xPDFm2.Fill(log(fx1)); // sea ubar
+      if(fpdgId2==-2) xPDFm2.Fill(log(fx2));
+
+      if(abs(fpdgId1)==3) xPDF3.Fill(log(fx1)); // PDF quark and antiquark from sea are the same
+      if(abs(fpdgId2)==3) xPDF3.Fill(log(fx2));
+      if(abs(fpdgId1)==4) xPDF4.Fill(log(fx1)); 
+      if(abs(fpdgId2)==4) xPDF4.Fill(log(fx2)); 
+
+}
+
 bool checkPDF(int typeBoson, bool doPlot) { 
 
-  // THOSE are for the Z
+  // cout << "====================" << endl;
+  // cout << "== THOSE are for the Z 
+  // cout << "====================" << endl;
+
   if(typeBoson==23) {
+
+    fillXPDF();
+
     if((fpdgId1+fpdgId2)==0) {
-      if( pType==1 && abs(fpdgId1)==1 && abs(fpdgId2)==1 ) return true; // cout << " d dbar " << endl;
-      if( pType==2 && abs(fpdgId1)==2 && abs(fpdgId2)==2 ) return true; // cout << " u ubar " << endl;
-      if( pType==3 && abs(fpdgId1)==3 && abs(fpdgId2)==3 ) return true; // cout << " s sbar " << endl;
-	if( pType==4 && abs(fpdgId1)==4 && abs(fpdgId2)==4 ) return true; // cout << " c cbar " << endl;
-	if( pType==5 && abs(fpdgId1)==5 && abs(fpdgId2)==5 ) return true; // cout << " b bbar " << endl;
+      if( pType==1 && abs(fpdgId1)==1 && abs(fpdgId2)==1 ) { Vpt1.Fill(fZPt); Vy1.Fill(fZRap); return true; } // cout << " d dbar " << endl;
+      if( pType==2 && abs(fpdgId1)==2 && abs(fpdgId2)==2 ) { Vpt2.Fill(fZPt); Vy2.Fill(fZRap); return true; } // cout << " u ubar " << endl;
+      if( pType==3 && abs(fpdgId1)==3 && abs(fpdgId2)==3 ) { Vpt3.Fill(fZPt); Vy3.Fill(fZRap); return true; } // cout << " s sbar " << endl;
+      if( pType==4 && abs(fpdgId1)==4 && abs(fpdgId2)==4 ) { Vpt4.Fill(fZPt); Vy4.Fill(fZRap); return true; } // cout << " c cbar " << endl;
+      if( pType==5 && abs(fpdgId1)==5 && abs(fpdgId2)==5 ) { Vpt5.Fill(fZPt); Vy5.Fill(fZRap); return true; } // cout << " b bbar " << endl;
+
     } else if( pType==0 && (abs(fpdgId1)==0 || abs(fpdgId2)==0) ) {
-      return true; //cout << " gluon + X  " << endl;
+      if(abs(fpdgId1)==0) xPDF0.Fill(log(fx1)); if(abs(fpdgId2)==0) xPDF0.Fill(log(fx2));
+      Vpt0.Fill(fZPt); Vy0.Fill(fZRap); return true; //   cout << " gluon + X  " << endl;
     } else {
-      //      cout << " UNKNOWN "<< endl;
+      Vpt10.Fill(fZPt); Vy10.Fill(fZRap); return false; //cout << " UNKNOWN "<< endl;
     }
   }
-  
+
+  // cout << "====================" << endl;
+  // cout << "== THOSE are for the W +" << endl;  
+  // cout << "====================" << endl;
+
   if(typeBoson==24) {
 
-    //    cout << "typeBoson " << typeBoson << " doPosW " << doPosW << endl;
-    //    cout << "pType " << " fpdgId1 " << fpdgId1 <<  " fpdgId2 " << fpdgId2 << endl;
+    fillXPDF();
 
-    // THOSE are for the W+
-    if( pType==1 && ((fpdgId1==2 && fpdgId2==-1) || (fpdgId1==-1 && fpdgId2==2))) return true; //cout << " u dbar " << endl;
-    if( pType==2 && (
-	((fpdgId1==2 && fpdgId2==-3) || (fpdgId1==-3 && fpdgId2==2)) ||
-	((fpdgId1==2 && fpdgId2==-5) || (fpdgId1==-5 && fpdgId2==2)) ||
-	((fpdgId1==4 && fpdgId2==-1) || (fpdgId1==-1 && fpdgId2==4)) ||
-	((fpdgId1==4 && fpdgId2==-3) || (fpdgId1==-3 && fpdgId2==4)) ||
-	((fpdgId1==4 && fpdgId2==-5) || (fpdgId1==-5 && fpdgId2==4))
-	)) return true; //cout << " u sbar " << endl;
-    /*
-    if( pType==3 && ((fpdgId1==2 && fpdgId2==-5) || (fpdgId1==-5 && fpdgId2==2))) return true; //cout << " u bbar " << endl;
-    if( pType==4 && ((fpdgId1==4 && fpdgId2==-1) || (fpdgId1==-1 && fpdgId2==4))) return true; //cout << " c dbar " << endl;
-    if( pType==5 && ((fpdgId1==4 && fpdgId2==-3) || (fpdgId1==-3 && fpdgId2==4))) return true; //cout << " c sbar " << endl;
-    if( pType==6 && ((fpdgId1==4 && fpdgId2==-5) || (fpdgId1==-5 && fpdgId2==4))) return true; //cout << " c bbar " << endl;
-    */
-    if( pType==0 && (fpdgId1==0 || fpdgId2==0) ) return true; //cout << "gluon + X "<< endl;
-
+    // cout << "== typeBoson " << typeBoson << " doPosW " << doPosW << endl;
+    // cout << "== pType " << " fpdgId1 " << fpdgId1 <<  " fpdgId2 " << fpdgId2 << endl;
+    
+    if( pType==1 && ((fpdgId1==2 && fpdgId2==-1) || (fpdgId1==-1 && fpdgId2==2))) {
+      Vpt1.Fill(fZPt); Vy1.Fill(fZRap); return true; //cout << " u dbar " << endl;
+    } else if( pType==2 && (
+			    ((fpdgId1==2 && fpdgId2==-3) || (fpdgId1==-3 && fpdgId2==2)) ||  //cout << " u sbar " << endl;   
+			    ((fpdgId1==2 && fpdgId2==-5) || (fpdgId1==-5 && fpdgId2==2)) ||  //cout << " u bbar " << endl; 
+			    ((fpdgId1==4 && fpdgId2==-1) || (fpdgId1==-1 && fpdgId2==4)) ||  //cout << " c dbar " << endl; 
+			    ((fpdgId1==4 && fpdgId2==-3) || (fpdgId1==-3 && fpdgId2==4)) ||  //cout << " c sbar " << endl; 
+			    ((fpdgId1==4 && fpdgId2==-5) || (fpdgId1==-5 && fpdgId2==4))     //cout << " c bbar " << endl;  
+			    )
+	       ) { Vpt2.Fill(fZPt); Vy2.Fill(fZRap); return true; 
+    } else if( pType==0 && (fpdgId1==0 || fpdgId2==0) ) {
+      if(abs(fpdgId1)==0) xPDF0.Fill(log(fx1)); if(abs(fpdgId2)==0) xPDF0.Fill(log(fx2));
+      Vpt0.Fill(fZPt); Vy0.Fill(fZRap); return true; //cout << "gluon + X "<< endl;
+    } else {  
+      Vpt10.Fill(fZPt); Vy10.Fill(fZRap); return false; //   cout << " UNKNOWN "<< endl;
+    }
   }
-  
+
+  // cout << "====================" << endl;
+  // cout << "== THOSE are for the W -" << endl;  
+  // cout << "====================" << endl;
+
   if(typeBoson==(-24)) {
-    // THOSE are for the W-
-    if( pType==1 && ((fpdgId1==1 && fpdgId2==-2) || (fpdgId1==-2 && fpdgId2==1))) return true; //cout << " d ubar " << endl;
+
+    fillXPDF();
+
+    if( pType==1 && ((fpdgId1==1 && fpdgId2==-2) || (fpdgId1==-2 && fpdgId2==1))) {
+      Vpt1.Fill(fZPt); Vy1.Fill(fZRap); return true; //cout << " d ubar " << endl;
+    }
     if( pType==2 && (
-	((fpdgId1==1 && fpdgId2==-4) || (fpdgId1==-4 && fpdgId2==1)) ||
-	((fpdgId1==3 && fpdgId2==-2) || (fpdgId1==-2 && fpdgId2==3)) || 
-	((fpdgId1==3 && fpdgId2==-4) || (fpdgId1==-4 && fpdgId2==3)) ||
-        ((fpdgId1==5 && fpdgId2==-2) || (fpdgId1==-2 && fpdgId2==5)) ||
-        ((fpdgId1==5 && fpdgId2==-4) || (fpdgId1==-4 && fpdgId2==5))
-	)) return true; //cout << " b cbar " << endl;
-    if( pType==0 && (fpdgId1==0 || fpdgId2==0))  return true; // cout << "gluon + X "<< endl; return true;
+		     ((fpdgId1==1 && fpdgId2==-4) || (fpdgId1==-4 && fpdgId2==1)) || //cout << " d cbar " << endl;
+		     ((fpdgId1==3 && fpdgId2==-2) || (fpdgId1==-2 && fpdgId2==3)) || //cout << " s ubar " << endl; 
+		     ((fpdgId1==3 && fpdgId2==-4) || (fpdgId1==-4 && fpdgId2==3)) || //cout << " s cbar " << endl;
+		     ((fpdgId1==5 && fpdgId2==-2) || (fpdgId1==-2 && fpdgId2==5)) || //cout << " b ubar " << endl;  
+		     ((fpdgId1==5 && fpdgId2==-4) || (fpdgId1==-4 && fpdgId2==5)) //cout << " b cbar " << endl;   
+		     )
+	) { 
+      Vpt2.Fill(fZPt); Vy2.Fill(fZRap); return true;
+    } else if( pType==0 && (fpdgId1==0 || fpdgId2==0))  {
+      if(abs(fpdgId1)==0) xPDF0.Fill(log(fx1)); if(abs(fpdgId2)==0) xPDF0.Fill(log(fx2));
+      Vpt0.Fill(fZPt); Vy0.Fill(fZRap); return true; //cout << "gluon + X "<< endl;
+    } else {
+      Vpt10.Fill(fZPt); Vy10.Fill(fZRap); return false; //   cout << " UNKNOWN "<< endl;
+    }
   }
     
   return false;
@@ -1698,8 +1793,18 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   //RooFit Build a double Gaussian
   TRandom lRand(0xDEADBEEF);
   RooRealVar    lRWeight("weight","weight",0,10);
-  ////  RooRealVar lRPt  ("pt","Z_{p_{T}}",10,1000);                                                                                                      
-  RooRealVar lRPt  ("pt","Z_{p_{T}}",fZPtMin,fZPtMax);
+
+  float binSize=1.; // this is 1 GeV for Zpt
+  double range_min = fZPtMin+binSize;
+  double range_max = fZPtMax-binSize;
+  if(doPhiStar) {
+    binSize=1./100.; 
+    range_min=0.+binSize;
+    range_max=0.4-binSize;
+  }
+
+  RooRealVar lRPt  ("pt","Z_{p_{T}}",range_min,range_max);
+  if(doPhiStar) lRPt.SetTitle("\phi^{*}");
 
   // this is the range of th X axis
   //  double minRangeSigma=-10.; double maxRangeSigma=10.;
@@ -1908,7 +2013,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   //  if(!iRMS && lPar==fU1) lFit->SetParLimits(0, -0.5, 1.0); // first parameter between 0 and 1.0
 
   //  TFitResultPtr  lFitPtr = pGraphA->Fit(lFit,"SR","EXO",fZPtMin,fZPtMax); //"EXO"
-  TFitResultPtr  lFitPtr = pGraphA->Fit(lFit,"SRE","",fZPtMin,fZPtMax); 
+  //  TFitResultPtr  lFitPtr = pGraphA->Fit(lFit,"SRE","",fZPtMin,fZPtMax); 
+  TFitResultPtr  lFitPtr = pGraphA->Fit(lFit,"SRE","",range_min,range_max);
 
   //  only once
   computeFitErrors(iFit,lFitPtr,lFit,iRMS);
@@ -2021,8 +2127,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   //  int lNBins = 10;
   //  int lNBins = 25;
   ///////  int lNBins = 50;
-  int lNBins = fZPtMax;
-  //  int lNBins = fZPtMax-fZPtMin; // since the unbnned fit is done up to fZPtMax we can also do the binedFit up to fZPtMax and such that we have one bin for each GeV
+  int lNBins = (range_max-range_min)/binSize;
   for(int i0  = 0; i0 < lNBins; i0++) { 
     RooDataSet lData(pSS.str().c_str(),pSS.str().c_str(),RooArgSet(lRXVar)); 
     //    lRPt.setBins(500);
@@ -2048,7 +2153,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     if(doAbsolute) lRXVar.setVal(vlYTVals_all[lPar!=fU1][iRMS][i0]/(sqrt(2*3.14159265)/2.));  // residual  for the fit in GeV 
     lRPt.setVal(vlXVals_all[lPar!=fU1][iRMS][i0]);     // Zpt
     lRWeight.setVal(1./vlYEVals_all[lPar!=fU1][iRMS][i0]/vlYEVals_all[lPar!=fU1][iRMS][i0]);
-    int pId = int(vlXVals_all[lPar!=fU1][iRMS][i0]/(fZPtMax/lNBins)); if(pId > lNBins-1) pId = lNBins-1; 
+    int pId = int(vlXVals_all[lPar!=fU1][iRMS][i0]/((range_max-range_min)/lNBins)); if(pId > lNBins-1) pId = lNBins-1;
     // MARIA: USED for the 1D fit (binned/uncorrelated in Zpt and binned in residuals )  
     lResidVals[pId].add(RooArgSet(lRXVar));//,lRWeight.getVal()); //Fill the Double Gaussian
     // MARIA: USED for the 2D fit (binned/correlated in Zpt and unbinned in Residauls )   
@@ -2068,6 +2173,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   // http://root.cern.ch/root/html/RooAbsPdf.html#RooAbsPdf:fitTo
   ////  options Extended(kTRUE) doens't work
   lGAdd.mustBeExtended();
+  //  RooFitResult *pFR = lGAdd.fitTo(lResidVals2D[0],Constrained(),Warnings(kTRUE),Save(kTRUE),ConditionalObservables(lRPt),Range(range_min, range_max),NumCPU(2),/*Minimizer("Minuit2","migrad"),*/Strategy(2),Minos());//,Minos()); //Double Gaussian fit
   RooFitResult *pFR = lGAdd.fitTo(lResidVals2D[0],Constrained(),Warnings(kTRUE),Save(kTRUE),ConditionalObservables(lRPt),NumCPU(2),/*Minimizer("Minuit2","migrad"),*/Strategy(2),Minos());//,Minos()); //Double Gaussian fit
 
 
@@ -2293,8 +2399,11 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       //	lchi2[i0]=chi21D;
       // comments errors
 
-      lX[i0] = (fZPtMax/lNBins)*i0;
-      lEX[i0] = (fZPtMax/lNBins)/10;
+      lX[i0] = range_min+((range_max-range_min)/lNBins)*i0;
+      //      lEX[i0] = range_min+((range_max-range_min)/lNBins)/1000;
+      lEX[i0] = 0;
+
+
       // normalization too much
       //      lY0[i0] = (lR1Frac .getVal()*lR1Sigma.getVal() + (1.-lR1Frac.getVal())*lR2Sigma.getVal())/sqrt(2*3.14159265)*2.;
 
@@ -2336,9 +2445,9 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       // recompute the Fraction to get the same definition of the 2D fit
       myFrac1D[i0] = ((lY2[i0]-1.)/(lY2[i0]-lY1[i0]));
 
-      myMean2D[i0]=lA1Mean.getVal()+lA2Mean.getVal()*i0+lA3Mean.getVal()*i0*i0;
-      lY12D[i0] = (lA1Sig.getVal() + lB1Sig.getVal()*i0 + lC1Sig.getVal()*i0*i0);///sqrt(2*3.14159265)*2.;
-      lY22D[i0] = (lA2Sig.getVal() + lB2Sig.getVal()*i0 + lC2Sig.getVal()*i0*i0);///sqrt(2*3.14159265)*2.;
+      myMean2D[i0]=lA1Mean.getVal()+lA2Mean.getVal()*(i0*binSize)+lA3Mean.getVal()*(i0*binSize)*(i0*binSize);
+      lY12D[i0] = lA1Sig.getVal() + lB1Sig.getVal()*(i0*binSize) + lC1Sig.getVal()*(i0*binSize)*(i0*binSize);///sqrt(2*3.14159265)*2.;
+      lY22D[i0] = lA2Sig.getVal() + lB2Sig.getVal()*(i0*binSize) + lC2Sig.getVal()*(i0*binSize)*(i0*binSize);///sqrt(2*3.14159265)*2.;
 
       double tmpFrac2D=((lY22D[i0]-1.)/(lY22D[i0]-lY12D[i0]));
       lY02D[i0] = (tmpFrac2D*lY12D[i0] + (1.-tmpFrac2D)*lY22D[i0]);
@@ -2417,13 +2526,13 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     //////
     //// cin.get();
     //////
-    
+
     //  if(doPrintAll) {
     
     iC->cd();
     TF1 *lFitPull  = new TF1("lFitPull",   "pol2");
     TF1 *iFitPull  = new TF1("iFitPull",   "pol10"); // this need to be large to store the errors from the computeFitErrors
-    TFitResultPtr  lFitPtr0 = lG0->Fit(lFitPull,"SRE","", fZPtMin, fZPtMax); //"EXO"                                                                       
+    TFitResultPtr  lFitPtr0 = lG0->Fit(lFitPull,"SRE","", range_min , range_max); //"EXO"                                                                       
     computeFitErrors(iFitPull,lFitPtr0,lFitPull,iRMS);
     lG0->Draw("ape");
     drawErrorBands(iFitPull,fZPtMax);
@@ -2508,7 +2617,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
     TF1 *lFitPullMean  = new TF1("lFitPullMean",   "pol2");
     TF1 *iFitPullMean  = new TF1("iFitPullMean",   "pol10"); // this need to be large to store the errors from the computeFitErrors
-    TFitResultPtr  lFitPtrM0 = lM0->Fit(lFitPullMean,"SRE","", fZPtMin, fZPtMax); //"EXO"                                                                  
+    TFitResultPtr  lFitPtrM0 = lM0->Fit(lFitPullMean,"SRE","", range_min , range_max); //"EXO"                                                                  
     computeFitErrors(iFitPullMean,lFitPtrM0,lFitPullMean,iRMS);
     lM0->Draw("ape");
     drawErrorBands(iFitPullMean,fZPtMax);
@@ -2565,7 +2674,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     //  TFitResultPtr  lFitPtr1 = lG1->Fit(lFit,"SR","",0,fZPtMax); 
     //    TFitResultPtr  lFitPtr1 = lG1->Fit(lFit,"SR","EXO",0,fZPtMax); //"EXO"
     TF1 *lFitS1  = new TF1("lFitS1",   "pol2");
-    TFitResultPtr  lFitPtr1 = lG1->Fit(lFitS1,"SRE","", fZPtMin, fZPtMax); //"EXO"
+    TFitResultPtr  lFitPtr1 = lG1->Fit(lFitS1,"SRE","", range_min , range_max); //"EXO"
     computeFitErrors(iFitS1,lFitPtr1,lFitS1,iRMS);
 
     //    lG1->GetYaxis()->SetRangeUser(0.,5.);
@@ -2575,6 +2684,10 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     lG1->Draw("pe");
     lG1_2d->Draw("pe");
 
+    if(pFR) latexLabel.DrawLatex(0.25, 0.95, Form("status = %d", pFR->status()));
+    latexLabel.DrawLatex(0.25, 0.9, Form("A1Sig = %f", lA1Sig.getVal()));
+    latexLabel.DrawLatex(0.25, 0.85, Form("B1Sig = %f", lB1Sig.getVal()));
+    latexLabel.DrawLatex(0.25, 0.8, Form("C1Sig = %f", lC1Sig.getVal()));
 
     latexLabel.DrawLatex(0.25, 0.75, leg1);
     if(doVTXbinning) latexLabel.DrawLatex(0.25, 0.7, leg3);
@@ -2582,18 +2695,28 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     latexLabel.DrawLatex(0.25, 0.25, legDATA);
     latexLabel.DrawLatex(0.25, 0.3, legU1U2);      
 
+
+
     if(!doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.8, "powheg");
     if(doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.8, "madgraph");
 
-    TLine *lineSS1_min = new TLine(fZPtMin,minSigma1,fZPtMax,minSigma1);
-    TLine *lineSS1_cen = new TLine(fZPtMin,startSigma1,fZPtMax,startSigma1);
-    TLine *lineSS1_max = new TLine(fZPtMin,maxSigma1,fZPtMax,maxSigma1);
+    TLine *lineMin = new TLine(range_min, 0,   range_min, 5);
+    TLine *lineMax = new TLine(range_max, 0.,   range_max, 5.);
+    lineMin->SetLineColor(11);
+    lineMax->SetLineColor(11);
+
+    TLine *lineSS1_min = new TLine(range_min,minSigma1,range_max,minSigma1);
+    TLine *lineSS1_cen = new TLine(range_min,startSigma1,range_max,startSigma1);
+    TLine *lineSS1_max = new TLine(range_min,maxSigma1,range_max,maxSigma1);
     lineSS1_min->SetLineColor(11);
     lineSS1_cen->SetLineColor(13);
     lineSS1_max->SetLineColor(11);
     lineSS1_min->Draw("same");
     lineSS1_cen->Draw("same");
     lineSS1_max->Draw("same");
+    lineMin->Draw("same");
+    lineMax->Draw("same");
+
 
     TString pSS1="PLOTNOTE/pG1";
     
@@ -2651,7 +2774,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     //  TFitResultPtr  lFitPtr2 = lG2->Fit(lFit,"SR","",0,fZPtMax); 
     //    TFitResultPtr  lFitPtr2 = lG2->Fit(lFit,"SR","EXO",0,fZPtMax); //"EXO"
     TF1 *lFitS2  = new TF1("lFitS2",   "pol2");
-    TFitResultPtr  lFitPtr2 = lG2->Fit(lFitS2,"SRE","", fZPtMin, fZPtMax); 
+    TFitResultPtr  lFitPtr2 = lG2->Fit(lFitS2,"SRE","", range_min , range_max); 
     computeFitErrors(iFitS2,lFitPtr2,lFitS2,iRMS);
 
     //    lG2->GetYaxis()->SetRangeUser(0.,5.);
@@ -2661,6 +2784,12 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     lG2->Draw("pe");
     lG2_2d->Draw("pe"); 
 
+    if(pFR) latexLabel.DrawLatex(0.25, 0.95, Form("status = %d", pFR->status()));
+    latexLabel.DrawLatex(0.25, 0.9, Form("A2Sig = %f", lA2Sig.getVal()));
+    latexLabel.DrawLatex(0.25, 0.85, Form("B2Sig = %f", lB2Sig.getVal()));
+    latexLabel.DrawLatex(0.25, 0.8, Form("C2Sig = %f", lC2Sig.getVal()));
+
+
     latexLabel.DrawLatex(0.25, 0.75, leg1);
     if(doVTXbinning) latexLabel.DrawLatex(0.25, 0.7, leg3);
     latexLabel.DrawLatex(0.25, 0.25, legDATA);
@@ -2669,15 +2798,19 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     if(!doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.8, "powheg");
     if(doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.8, "madgraph");
 
-    TLine *lineSS2_min = new TLine(fZPtMin, minSigma2,   fZPtMax, minSigma2);
-    TLine *lineSS2_cen = new TLine(fZPtMin, startSigma2, fZPtMax, startSigma2);
-    TLine *lineSS2_max = new TLine(fZPtMin, maxSigma2,   fZPtMax, maxSigma2);
+
+
+    TLine *lineSS2_min = new TLine(range_min, minSigma2,   range_max, minSigma2);
+    TLine *lineSS2_cen = new TLine(range_min, startSigma2, range_max, startSigma2);
+    TLine *lineSS2_max = new TLine(range_min, maxSigma2,   range_max, maxSigma2);
     lineSS2_min->SetLineColor(11);
     lineSS2_cen->SetLineColor(13);
     lineSS2_max->SetLineColor(11);
     lineSS2_min->Draw("same");
     lineSS2_cen->Draw("same");
     lineSS2_max->Draw("same");
+    lineMin->Draw("same");
+    lineMax->Draw("same");
 
     TString pSS2="PLOTNOTE/pG2";
     
@@ -2756,6 +2889,9 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
     if(!doMad && (!fData)) latexLabel.DrawLatex(0.65, 0.45, "powheg");
     if(doMad && (!fData)) latexLabel.DrawLatex(0.65, 0.45, "madgraph");
+
+    lineMin->Draw("same");
+    lineMax->Draw("same");
 
     TString pSS4="PLOTNOTE/pFrac";
     
@@ -3219,7 +3355,10 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
         double pVal = lPar;    
         // if(iRMS && iMeanFit != 0)   pVal = (lPar - iMeanFit->Eval(fZPt));
         if(fWeight == 0) continue;
-        lXVals_all.at(iU1U2).at(iMeanRMS).push_back(fZPt);  
+
+	double PhiStar=calculatePhiStar(fMuPos_eta, fMuNeg_eta, fMuPos_phi, fMuNeg_phi);
+	if(doPhiStar) lXVals_all.at(iU1U2).at(iMeanRMS).push_back(PhiStar);
+	else lXVals_all.at(iU1U2).at(iMeanRMS).push_back(fZPt);
 
 	lXEVals_all.at(iU1U2).at(iMeanRMS).push_back(2.);
 
@@ -3432,7 +3571,6 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
 
   gStyle->SetOptFit(111111);
 
-  //  TString name="recoilfits/recoilfit_AUG6";
   TString name="recoilfits/recoilfit_AUG6";
   if(do8TeV) name +="_8TeV";
 
@@ -3476,8 +3614,8 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     // 44X
     //    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");
     // 53X
-    if(doMad)  fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");  
-    if(!doMad) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root");  
+    if(doMad && !do8TeV )  fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");  
+    if(!doMad && !do8TeV ) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root");  
 
     // this is the 8 TeV, just a placeholder for now
     if(doMad && do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL_8TeV/ZTreeProducer_tree.root");
@@ -3488,13 +3626,12 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     if(!fData) name+="_genZ";
 
     if(doIterativeMet) {
-      
+
       if(!doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_AUG6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
       if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_AUG6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
       readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_AUG6_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_53X.root" ,"PF",fId);
-      
+	
     }
-    
     
   }
   
@@ -3554,6 +3691,7 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
   //// COMPLETE NAMING
   //////     
 
+  if(doPhiStar) name+="_phiStar";
   if(doIterativeMet) name+="_ITERATIVE";
 
   if(doChargedMet)  name+="_tkmet";
@@ -3626,6 +3764,8 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     if(!doMad && !fData) fileName += "_POWHEG";
     if(!usePol3) fileName += "_pol2";
     if(usePol3) fileName += "_pol3";
+    if(!fData) fileName+="_PDF";
+    if(!fData) fileName += pType;
     if(doYbinning) fileName += "_rapBin";
     if(doYbinning) fileName += fId;
     
@@ -3658,10 +3798,36 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     histoU1diffvsZpt.Write();
     histoU1scalevsZpt.Write();
     histoU1scalevsZptscale.Write();
+    histoDelta.Write();
+    //###
     histoPhiStar.Write();
     histoThetaStar.Write();
     histoPhiStarvsZpt.Write();
-    
+    histoPhiStarvsgenZpt.Write();
+    //###
+    Vpt0.Write();
+    Vpt1.Write();
+    Vpt2.Write();
+    Vpt3.Write();
+    Vpt4.Write();
+    Vpt5.Write();
+    Vpt10.Write();
+    Vy0.Write();
+    Vy1.Write();
+    Vy2.Write();
+    Vy3.Write();
+    Vy4.Write();
+    Vy5.Write();
+    Vy10.Write();
+    xPDF0.Write();
+    xPDF1.Write();
+    xPDF2.Write();
+    xPDFm1.Write();
+    xPDFm2.Write();
+    xPDF3.Write();
+    xPDF4.Write();
+    xPDF5.Write();
+
     f3.Write();
     f3.Close();
     
