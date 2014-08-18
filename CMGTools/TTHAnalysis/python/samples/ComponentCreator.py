@@ -1,6 +1,5 @@
 import CMGTools.RootTools.fwlite.Config as cfg
-from CMGTools.Production.dataset import getListOfFilesDBS
-from CMGTools.Production.datasetToSource import datasetToSource
+from CMGTools.Production.datasetToSource import datasetToSource, myDatasetToSource
 from CMGTools.Production.datasetInformation import DatasetInformation
 
 class ComponentCreator(object):
@@ -40,11 +39,12 @@ class ComponentCreator(object):
          return component
     
     ### MM
-    def makeMyPrivateMCComponent(self,name,dataset,dbsInstance):
+    def makeMyPrivateMCComponent(self,name,dataset,user,pattern,dbsInstance):
+
         #entries = findMyPrimaryDatasetNumFiles(dataset, -1, -1)
         #dbs = 'das_client.py --query="file dataset=%s instance=prod/phys03"' % dataset
         #dbsOut = os.popen(dbs)
-        files = []
+        #files = []
         #filesDBS = []
         #for line in dbsOut:
         #    if line.find('/store')==-1:
@@ -52,12 +52,14 @@ class ComponentCreator(object):
         #    line = line.rstrip()
         #     # print 'line',line
         #    filesDBS.append(line)
+
         component = cfg.MCComponent(
             dataset=dataset,
             name = name,
-            #files = ['root://eoscms//eos/cms%s' % f for f in filesDBS],
-            #files = self.getListOfFilesDBS(dataset, dbsInstance),
-            files = getListOfFilesDBS(dataset, dbsInstance),
+            ##files = ['root://eoscms//eos/cms%s' % f for f in filesDBS],
+            ##files = self.getListOfFilesDBS(dataset, dbsInstance),
+            #files = getListOfFilesDBS(dataset, dbsInstance),
+            files = self.getMyFiles(dataset, user, pattern, dbsInstance),
             xSection = 1,
             nGenEvents = 1,
             triggers = [],
@@ -85,12 +87,19 @@ class ComponentCreator(object):
          return component
 
 
-    def getFiles(self,dataset, user, pattern):
+    def getFiles(self, dataset, user, pattern):
         # print 'getting files for', dataset,user,pattern
         ds = datasetToSource( user, dataset, pattern, True )
         files = ds.fileNames
         return ['root://eoscms//eos/cms%s' % f for f in files]
-    
+
+    ### MM
+    def getMyFiles(self, dataset, user, pattern, dbsInstance):
+        # print 'getting files for', dataset,user,pattern
+        ds = myDatasetToSource( user, dataset, pattern, dbsInstance, True )
+        files = ds.fileNames
+        return ['root://eoscms//eos/cms%s' % f for f in files]
+    ### MM
 
     def getSkimEfficiency(self,dataset,user):
         info=DatasetInformation(dataset,user,'',False,False,'','','')
