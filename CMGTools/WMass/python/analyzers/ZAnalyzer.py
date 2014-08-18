@@ -460,7 +460,8 @@ class ZAnalyzer( Analyzer ):
             not event.passedVertexAnalyzer \
             # or not event.passedTriggerAnalyzer
             or not event.Z4V.M()>70 or not event.Z4V.M()<110 \
-            or not event.Z4V.Pt()<50 \
+            ## commented Zpt 
+            ##or not event.Z4V.Pt()<50 \
             or not event.BestZPosMuon.charge() != event.BestZNegMuon.charge() \
             or not event.BestZPosMuonIsTight == 1 or not event.BestZNegMuonIsTight == 1 \
             
