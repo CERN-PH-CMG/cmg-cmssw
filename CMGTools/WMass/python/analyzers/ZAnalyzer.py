@@ -77,9 +77,15 @@ class ZAnalyzer( Analyzer ):
         if self.cfg_comp.isMC and self.cfg_ana.savegenp :
           event.genParticles = self.buildGenParticles( self.mchandles['genpart'].product(), event )
           import ROOT
-          objects = [ j for j in event.genParticles if (j.charge()!=0 and j.status()==1 and math.fabs(j.eta())<2.5) ]
-          event.genTkSumEt = sum([x.pt() for x in objects])
-          event.genTkMet = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects])) , -1.*(sum([x.py() for x in objects])), 0, 0 )
+          objectsPF = [ j for j in event.genParticles if (j.status()==1 and math.fabs(j.pdgId())!=12 and math.fabs(j.pdgId())!=14 and math.fabs(j.pdgId())!=16) ]
+          objectsTK = [ j for j in event.genParticles if (j.charge()!=0 and j.status()==1 and math.fabs(j.eta())<2.5) ]
+         # for i in objectsPF:
+         #     print 'charge=',i.charge(),' status',i.status(),' pt',i.pt(),' pdg',i.pdgId() 
+          event.genTkSumEt = sum([x.pt() for x in objectsTK])
+          event.genTkMet = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objectsTK])) , -1.*(sum([x.py() for x in objectsTK])), 0, math.hypot(-1.*sum([x.px() for x in objectsTK]),-1.*sum([x.py() for x in objectsTK])))
+          event.genPfSumEt = sum([x.pt() for x in objectsPF])
+          event.genPfMet = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objectsPF])) , -1.*(sum([x.py() for x in objectsPF])), 0, math.hypot(-1.*sum([x.px() for x in objectsPF]),-1.*sum([x.py() for x in objectsPF])))
+         # print 'genTkMet=',event.genTkMet.pt(),' genPfMet=',event.genPfMet.pt()
           if (hasattr(self.cfg_ana,'storeLHE_weight') and self.cfg_ana.storeLHE_weight):
             event.LHEweights = self.mchandles['LHEweights'].product()
             event.LHEweights_str = []
@@ -219,9 +225,14 @@ class ZAnalyzer( Analyzer ):
               # print 'genp.daughter(0)',genp.daughter(0).pdgId(),'status',genp.daughter(0).status()
               # if(genp.numberOfDaughters()>1):
                 # print 'genp.daughter(1)',genp.daughter(1).pdgId(),'status',genp.daughter(1).status()
-            
+
+
+        statusV=62
+        if self.cfg_ana.doMad :
+            statusV=2
+        
         genZ_dummy = [ genp for genp in event.genParticles if \
-                             math.fabs(genp.pdgId())==23 and genp.status()==62
+                             math.fabs(genp.pdgId())==23 and genp.status()==statusV
                              ]
         if len(genZ_dummy)==1:
           event.genZ = [ genp for genp in genZ_dummy if \

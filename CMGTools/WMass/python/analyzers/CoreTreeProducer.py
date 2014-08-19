@@ -218,6 +218,8 @@ class CoreTreeProducer( TreeAnalyzerNumpy ):
         if ( isMC ):
             bookMET(tr, 'tkmetgen')
             var(tr, 'tkmetgen_sumEt')
+            bookMET(tr, 'pfmetgen')
+            var(tr, 'pfmetgen_sumEt')            
 
         bookCustomMET( tr, 'nopumet')
         bookCustomMET( tr, 'pumet')
@@ -312,6 +314,8 @@ class CoreTreeProducer( TreeAnalyzerNumpy ):
         if (isMC) :
             fillMET(tr, 'tkmetgen', event.genTkMet)          
             fill( tr, 'tkmetgen_sumEt', event.genTkSumEt)
+            fillMET(tr, 'pfmetgen', event.genPfMet)          
+            fill( tr, 'pfmetgen_sumEt', event.genPfSumEt)            
             
 def process(self, iEvent, event):
 

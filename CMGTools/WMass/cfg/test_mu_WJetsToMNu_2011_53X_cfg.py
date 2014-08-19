@@ -1,6 +1,7 @@
 #Load all analyzers
 from CMGTools.WMass.analyzers.CoreModule_53X_cff import * 
 
+WAna.doMad = False
 sequence = cfg.Sequence(CoreWsequence)
 
 

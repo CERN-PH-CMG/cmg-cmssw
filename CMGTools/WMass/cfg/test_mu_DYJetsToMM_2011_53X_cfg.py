@@ -2,6 +2,7 @@
 from CMGTools.WMass.analyzers.CoreModule_53X_cff import *
 
 ZtreeProducer.storeLHE_weight = True
+ZAna.doMad = False
 sequence = cfg.Sequence(CoreZsequence)
 
 from CMGTools.H2TauTau.proto.samples.ewk import DYJets

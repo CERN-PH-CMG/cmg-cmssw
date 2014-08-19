@@ -34,7 +34,8 @@ WAna = cfg.Analyzer(
     savegenp = True,
     verbose = True,
     triggerBits = {'SingleMu' : triggers_mu},
-    keepFailingEvents = False
+    keepFailingEvents = False,
+    doMad = True,
     )
 
 WtreeProducer = cfg.Analyzer(
@@ -56,6 +57,7 @@ ZAna = cfg.Analyzer(
     keepFailingEvents = False,
     # storeLHE_weight = True,
     # use_newWeights = True,
+    doMad = True,
     )
 
 ZtreeProducer = cfg.Analyzer(
