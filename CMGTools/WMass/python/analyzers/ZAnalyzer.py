@@ -226,13 +226,8 @@ class ZAnalyzer( Analyzer ):
               # if(genp.numberOfDaughters()>1):
                 # print 'genp.daughter(1)',genp.daughter(1).pdgId(),'status',genp.daughter(1).status()
 
-
-        statusV=62
-        if self.cfg_ana.doMad :
-            statusV=2
-        
         genZ_dummy = [ genp for genp in event.genParticles if \
-                             math.fabs(genp.pdgId())==23 and genp.status()==statusV
+                             math.fabs(genp.pdgId())==23 and (self.cfg_ana.doMad or genp.status()==62 ) 
                              ]
         if len(genZ_dummy)==1:
           event.genZ = [ genp for genp in genZ_dummy if \

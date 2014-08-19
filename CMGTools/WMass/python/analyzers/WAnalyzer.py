@@ -132,14 +132,10 @@ class WAnalyzer( Analyzer ):
         
         # return False
         
-        statusV=62
-        if self.cfg_ana.doMad :
-            statusV=2
-            
         # save genp only for signal events
         # i.e. only one W is present and daughters are muon plus neutrino
         genW_dummy = [ genp for genp in event.genParticles if \
-                       (math.fabs(genp.pdgId())==24 and genp.status()==statusV)if \
+                       (math.fabs(genp.pdgId())==24 and (self.cfg_ana.doMad or genp.status()==62))if \
                        ((  genp.numberOfDaughters()>1 and (\
                          math.fabs(genp.daughter(0).pdgId())==11 or 
                          math.fabs(genp.daughter(1).pdgId())==11 or 
