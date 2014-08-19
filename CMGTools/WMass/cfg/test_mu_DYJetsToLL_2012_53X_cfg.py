@@ -1,8 +1,8 @@
 #Load all analyzers
 from CMGTools.WMass.analyzers.CoreModule_53X_cff import *
 
-##vertexAna.allVertices = 'offlinePrimaryVertices'
-##vertexAna.goodVertices = 'offlinePrimaryVertices'
+vertexAna.allVertices = 'offlinePrimaryVertices'
+vertexAna.goodVertices = 'offlinePrimaryVertices'
 
 sequence = cfg.Sequence(CoreZsequence)
 
@@ -13,8 +13,13 @@ from CMGTools.H2TauTau.proto.samples.getFiles import getFiles
 DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_17_0', 'cmgtools', '.*root')
 DYJets.triggers = triggers_mu
 
-
 DYJets.splitFactor = 750
+
+## TEST
+#DYJets.splitFactor = 1
+#DYJets.files = DYJets.files[0:5]
+
+
 
 DYJets2 = copy.deepcopy(DYJets)
 
