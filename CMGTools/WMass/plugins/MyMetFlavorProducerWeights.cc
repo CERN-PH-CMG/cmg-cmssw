@@ -84,6 +84,9 @@ void MyMetFlavorProducerWeights::produce(edm::Event& iEvent, const edm::EventSet
   iEvent.getByLabel ("particleFlow", pfCandidates);
 
   for(reco::PFCandidateCollection::const_iterator  itCand =  pfCandidates->begin(); itCand != pfCandidates->end(); itCand++){
+    
+    TrackRef PFChargedHadrCand_track=itCand->trackRef();
+    if (!PFChargedHadrCand_track)continue;
 
     const math::XYZPointD &  myVertex = itCand->vertex();
     double dz=fabs(DZ(itCand->p4(),myVertex,myPosition));
@@ -95,7 +98,7 @@ void MyMetFlavorProducerWeights::produce(edm::Event& iEvent, const edm::EventSet
     if(  itCand->charge() && itCand->pt() > fChargedCandPtMin ){
       pfTKMET-=p3; pfTKMET_sumEt+=p3.pt();
       if(dz<fDZMin){                           pfTKMET_dz_01-=p3; pfTKMET_dz_01_sumEt+=p3.pt(); }
-      if(dz<0.05){                              pfTKMET_dz_005-=p3; pfTKMET_dz_005_sumEt+=p3.pt(); }
+      if(dz<0.05){                             pfTKMET_dz_005-=p3; pfTKMET_dz_005_sumEt+=p3.pt(); }
       if(dz<0.01){                             pfTKMET_dz_001-=p3; pfTKMET_dz_001_sumEt+=p3.pt(); }
       if(trackWeight>weightMin_ && dz<fDZMin){ pfTKMET_dz_01_weight-=p3;pfTKMET_dz_01_weight_sumEt+=p3.pt(); }
       if(trackWeight>weightMin_){              pfTKMET_weight-=p3; pfTKMET_weight_sumEt+=p3.pt(); }
@@ -108,6 +111,7 @@ void MyMetFlavorProducerWeights::produce(edm::Event& iEvent, const edm::EventSet
   //double uPhi=TMath::ATan2(u_perp,-u_parall);
   
   PFMET lDummy;
+  // DEFAULT IS pfTKMET_strangetk (metflavor 2)
   double sumEt = pfTKMET_strangetk_sumEt;
   math::XYZTLorentzVector vMET = pfTKMET_strangetk;
   
@@ -117,6 +121,12 @@ void MyMetFlavorProducerWeights::produce(edm::Event& iEvent, const edm::EventSet
   }else if(isMC_ && fMetFlavor == 1 ){
     sumEt = 0; //genTkMET_sumEt;
     vMET  = genTkMET;
+  }else if(fMetFlavor == 3 ){
+    sumEt = pfTKMET_weight_sumEt;
+    vMET  = pfTKMET_weight;
+  }else if(fMetFlavor == 4 ){
+    sumEt = pfTKMET_dz_01_sumEt;
+    vMET  = pfTKMET_dz_01;
   }
   
   PFMET lMet(lDummy.getSpecific(),sumEt,vMET,myPosition); 
