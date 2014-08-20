@@ -56,7 +56,7 @@ class WTreeProducer( CoreTreeProducer ):
         bookParticle(tr, 'MuGen')
         bookParticle(tr, 'MuGenStatus1')
         var(tr, 'MuDRGenP')
-        bookParticle(tr, 'NuGen')
+        # bookParticle(tr, 'NuGen')
         var(tr, 'FSRWeight')
       bookMuonCovMatrix(tr,'Mu' )
 
