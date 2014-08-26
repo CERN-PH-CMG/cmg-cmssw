@@ -30,6 +30,7 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             NTupleVariable("mt2", lambda ev: ev.mt2, float, help="mt2(j1,j2,,met)"),
             NTupleVariable("mt2_gen", lambda ev: ev.mt2_gen, float, help="mt2(j1,j2,,met) with genInfo"),
             NTupleVariable("mt2_bb", lambda ev: ev.mt2bb, float, help="mt2(b1,b2,,met) with medium b jets"),
+            NTupleVariable("mt2_minmass", lambda ev: ev.mt2minmass, float, help="mt2(j1,j2,met) with minmass association"),
             #            NTupleVariable("mt2w", lambda ev: ev.mt2w, float, help="mt2w(l,b,met)"),
             NTupleVariable("multPseudoJet1", lambda ev: ev.multPseudoJet1, float, help="multiplicity Pseudo Jet1"),
             NTupleVariable("multPseudoJet2", lambda ev: ev.multPseudoJet2, float, help="multiplicity Pseudo Jet2"),
@@ -45,9 +46,10 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
         
         self.globalObjects.update({
             # put more here
-            "pseudoJet1"       : NTupleObject("pseudoJet1",     fourVectorType, help="pseudoJet1 for hemishphere"),
-            "pseudoJet2"       : NTupleObject("pseudoJet2",     fourVectorType, help="pseudoJet2 for hemishphere"),
-
+            "pseudoJet1"       : NTupleObject("pseudoJet1",     fourVectorType, help="pseudoJet1 for hemishphere with lund"),
+            "pseudoJet2"       : NTupleObject("pseudoJet2",     fourVectorType, help="pseudoJet2 for hemishphere with lund"),
+            "pseudoJet1minmass"       : NTupleObject("pseudoJet1minmass",     fourVectorType, help="pseudoJet1 for hemishphere with minmass algo"),
+            "pseudoJet2minmass"       : NTupleObject("pseudoJet2minmass",     fourVectorType, help="pseudoJet2 for hemishphere with minmass algo"),            
             })
         self.collections.update({
             # put more here

@@ -59,13 +59,30 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
         for myTrack in event.selectedIsoTrack:
             event.mtwIsoTrack = mtw(myTrack, event.met)
+            
+    def computeMT2(self, visaVec, visbVec, metVec):
+
+        import array
+        import numpy
+
+        metVector = TVectorD(3,array.array('d',[0.,metVec.px(), metVec.py()]))
+        visaVector = TVectorD(3,array.array('d',[0.,visaVec.px(), visaVec.py()]))
+        visbVector = TVectorD(3,array.array('d',[0.,visbVec.px(), visbVec.py()]))
+        
+        metVector =numpy.asarray(metVector,dtype='double')
+        visaVector =numpy.asarray(visaVector,dtype='double')
+        visbVector =numpy.asarray(visbVector,dtype='double')
+        
+        davismt2.set_momenta(visaVector,visbVector,metVector);
+        davismt2.set_mn(0);
+        
+        return davismt2.get_mt2()  
+                    
 
     def makeMT2(self, event):
 #        print '==> INSIDE THE PRINT MT2'
 #        print 'MET=',event.met.pt() 
 
-        import array
-        import numpy
 
 ## ===> hadronic MT2 (as used in the SUS-13-019)
 
@@ -116,18 +133,40 @@ class ttHTopoVarAnalyzer( Analyzer ):
             event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
             event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
 
-            metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
-            metVector =numpy.asarray(metVector,dtype='double')
-            jetVector1 = TVectorD(3,array.array('d',[0.,event.pseudoJet1.px(), event.pseudoJet1.py()]))
-            jetVector1 =numpy.asarray(jetVector1,dtype='double')
-            jetVector2 = TVectorD(3,array.array('d',[0.,event.pseudoJet2.px(), event.pseudoJet2.py()]))        
-            jetVector2 =numpy.asarray(jetVector2,dtype='double')
-            
-            davismt2.set_momenta(jetVector1,jetVector2,metVector);
-            davismt2.set_mn(0);
-            
-            event.mt2 = davismt2.get_mt2()  
+            event.mt2 = self.computeMT2(event.pseudoJet1, event.pseudoJet2, event.met)
 
+
+#### get hemispheres alternatice: 3: two objects who give maximal transverse mass 2: minimal mass squared sum of the hemispheres
+            hemisphere32 = Hemisphere(pxvec, pyvec, pzvec, Evec, 3, 2)
+            grouping32=hemisphere32.getGrouping()
+
+            pseudoJet1px = 0 
+            pseudoJet1py = 0 
+            pseudoJet1pz = 0
+            pseudoJet1energy = 0 
+
+            pseudoJet2px = 0 
+            pseudoJet2py = 0 
+            pseudoJet2pz = 0
+            pseudoJet2energy = 0 
+            
+            for index in range(0, len(pxvec)):
+                if(grouping32[index]==1):
+                    pseudoJet1px += pxvec[index]
+                    pseudoJet1py += pyvec[index]
+                    pseudoJet1pz += pzvec[index]
+                    pseudoJet1energy += Evec[index]
+                if(grouping32[index]==2):
+                    pseudoJet2px += pxvec[index]
+                    pseudoJet2py += pyvec[index]
+                    pseudoJet2pz += pzvec[index]
+                    pseudoJet2energy += Evec[index]                    
+
+            event.pseudoJet1minmass = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+            event.pseudoJet2minmass = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+
+            event.mt2minmass = self.computeMT2(event.pseudoJet1minmass, event.pseudoJet2minmass, event.met)
+            
 #### do same things for GEN
             
 ##        allGenJets = map( Jet, event.genJetsself.handles['genJets'].product() )
@@ -176,35 +215,15 @@ class ttHTopoVarAnalyzer( Analyzer ):
                     
             pseudoGenJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
             pseudoGenJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+
+            event.mt2_gen = self.computeMT2(pseudoGenJet1, pseudoGenJet2, event.met.genMET())
             
-            metGenVector = TVectorD(3,array.array('d',[0.,event.met.genMET().px(), event.met.genMET().py()]))
-            metGenVector =numpy.asarray(metGenVector,dtype='double')
-            jetGenVector1 = TVectorD(3,array.array('d',[0.,pseudoGenJet1.px(), pseudoGenJet1.py()]))
-            jetGenVector1 =numpy.asarray(jetGenVector1,dtype='double')
-            jetGenVector2 = TVectorD(3,array.array('d',[0.,pseudoGenJet2.px(), pseudoGenJet2.py()]))
-            jetGenVector2 =numpy.asarray(jetGenVector2,dtype='double')
-            
-            davismt2.set_momenta(jetGenVector1,jetGenVector2,metGenVector);
-            davismt2.set_mn(0);
-            
-            event.mt2_gen = davismt2.get_mt2()
             
 #### do the mt2 with one or two b jets (medium CSV)
 
         if len(event.bjetsMedium)>=2:
 
-            metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
-            visaVector = TVectorD(3,array.array('d',[0.,event.bjetsMedium[0].px(), event.bjetsMedium[0].py()]))
-            visbVector = TVectorD(3,array.array('d',[0.,event.bjetsMedium[1].px(), event.bjetsMedium[1].py()]))
-            
-            metVector =numpy.asarray(metVector,dtype='double')
-            visaVector =numpy.asarray(visaVector,dtype='double')
-            visbVector =numpy.asarray(visbVector,dtype='double')
-            
-            davismt2.set_momenta(visaVector,visbVector,metVector);
-            davismt2.set_mn(0);
-            
-            event.mt2bb = davismt2.get_mt2()  
+           event.mt2bb = self.computeMT2(event.bjetsMedium[0], event.bjetsMedium[1], event.met)
 #            print 'MT2bb(2b)',event.mt2bb
             
         if len(event.bjetsMedium)==1:
@@ -216,43 +235,21 @@ class ttHTopoVarAnalyzer( Analyzer ):
 #                for index in range(0, len(objects40jcCSV)):
 #                    print 'CSV ',objects40jcCSV[index].btag('combinedSecondaryVertexBJetTags')
 
-                metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
-                visaVector = TVectorD(3,array.array('d',[0.,event.bjetsMedium[0].px(), event.bjetsMedium[0].py()]))
-                visbVector = TVectorD(3,array.array('d',[0.,objects40jcCSV[0].px(), objects40jcCSV[0].py()]))
-                
-                metVector =numpy.asarray(metVector,dtype='double')
-                visaVector =numpy.asarray(visaVector,dtype='double')
-                visbVector =numpy.asarray(visbVector,dtype='double')
-                
-                davismt2.set_momenta(visaVector,visbVector,metVector);
-                davismt2.set_mn(0);
-                
-                event.mt2bb = davismt2.get_mt2()
-#                print 'MT2bb(1b)',event.mt2bb
+                event.mt2bb = self.computeMT2(event.bjetsMedium[0], objects40jcCSV[0], event.met)
+##                print 'MT2bb(1b)',event.mt2bb
                 
         
 ## ===> leptonic MT2 (as used in the SUS-13-025 )
 
         if len(event.selectedLeptons)>=2:
-
-            metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
-            visaVector = TVectorD(3,array.array('d',[0.,event.selectedLeptons[0].px(), event.selectedLeptons[0].py()]))
-            visbVector = TVectorD(3,array.array('d',[0.,event.selectedLeptons[1].px(), event.selectedLeptons[1].py()]))
-            
-            metVector =numpy.asarray(metVector,dtype='double')
-            visaVector =numpy.asarray(visaVector,dtype='double')
-            visbVector =numpy.asarray(visbVector,dtype='double')
-            
-            davismt2.set_momenta(visaVector,visbVector,metVector);
-            davismt2.set_mn(0);
-            
-            event.mt2lep = davismt2.get_mt2()  
-
+            event.mt2lep = self.computeMT2(event.selectedLeptons[0], event.selectedLeptons[1], event.met)            
 
 ## ===> hadronic MT2w (as used in the SUS-13-011) below just a placeHolder to be coded properly
 
         if len(event.selectedLeptons)>=1:
 
+            import array
+            import numpy
             metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
             lVector = TVectorD(3,array.array('d',[0.,event.selectedLeptons[0].px(), event.selectedLeptons[0].py()]))
             #placeholder for visaVector and visbVector  need to get the jets
@@ -274,6 +271,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
         event.mtwTau=-999
         event.mtwIsoTrack=-999
 
+        event.mt2minmass=-999
         event.mt2_gen=-999
         event.mt2=-999
         event.mt2lept=-999
@@ -283,6 +281,9 @@ class ttHTopoVarAnalyzer( Analyzer ):
         event.multPseudoJet2=0
         event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
         event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+
+        event.pseudoJet1minmass = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+        event.pseudoJet2minmass = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )        
 
         self.makeMT(event)
         self.makeMT2(event)
