@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.External.puJetIDAlgo_cff import *
+from CMGTools.External.puJetIDAlgo_cff import met_53x, PhilV1
 from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 
 
@@ -15,7 +15,7 @@ else:
 
 pfMetForRegression   = cms.EDProducer(
     "MetFlavorProducer",
-    CorrJetName     = cms.InputTag("slimmedJets"),
+    CorrJetName     = cms.InputTag("patJetsAK4PF"),
     PFCandidateName = cms.InputTag("packedPFCandidates"),
     VertexName      = cms.InputTag("offlineSlimmedPrimaryVertices"),
     RhoName         = cms.InputTag('fixedGridRhoFastjetAll'),
@@ -34,7 +34,7 @@ puMet     =  pfMetForRegression.clone(MetFlavor = cms.int32(3),
 pcMet     =  pfMetForRegression.clone(MetFlavor = cms.int32(4))
 
                           
-MetRegressionSequence  = cms.Sequence (
+metRegressionSequence  = cms.Sequence (
     pfMetForRegression + 
     nopuMet +
     puMet + 
