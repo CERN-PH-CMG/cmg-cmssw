@@ -208,14 +208,26 @@ class ttHLepAnalyzerSusy( Analyzer ):
 
         # Compute relIso with R=0.3 and R=0.4 cones
         for ele in allelectrons:
-            ele.absIso03 = (ele.chargedHadronIso(0.3) + max(ele.neutralHadronIso(0.3)+ele.photonIso(0.3)-ele.rho*ele.EffectiveArea,0))
-            ele.absIso04 = (ele.chargedHadronIso(0.4) + max(ele.neutralHadronIso(0.4)+ele.photonIso(0.4)-ele.rho*ele.EffectiveArea,0))
+            if self.cfg_ana.ele_isoCorr=="rhoArea" :
+                 ele.absIso03 = (ele.chargedHadronIso(0.3) + max(ele.neutralHadronIso(0.3)+ele.photonIso(0.3)-ele.rho*ele.EffectiveArea,0))
+                 ele.absIso04 = (ele.chargedHadronIso(0.4) + max(ele.neutralHadronIso(0.4)+ele.photonIso(0.4)-ele.rho*ele.EffectiveArea,0))
+            elif self.cfg_ana.ele_isoCorr=="deltaBeta" :
+                 ele.absIso03 = (ele.pfIsolationVariables().sumChargedHadronPt + max( ele.pfIsolationVariables().sumNeutralHadronEt + ele.pfIsolationVariables().sumPhotonEt - ele.pfIsolationVariables().sumPUPt/2,0.0))
+                 ele.absIso04 = 0.
+            else :
+                 raise RuntimeError, "Unsupported ele_isoCorr name '" + str(self.cfg_ana.ele_isoCorr) +  "'! For now only 'rhoArea' and 'deltaBeta' are supported."
             ele.relIso03 = ele.absIso03/ele.pt()
             ele.relIso04 = ele.absIso04/ele.pt()
 
         # Set tight MVA id
         for ele in allelectrons:
-            ele.tightIdResult = ele.electronID("POG_MVA_ID_Trig_full5x5")
+            if self.cfg_ana.ele_tightId=="MVA" :
+                 ele.tightIdResult = ele.electronID("POG_MVA_ID_Trig_full5x5")
+            elif self.cfg_ana.ele_tightId=="Cuts_2012" :
+                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_2012_Veto") + 1*ele.electronID("POG_Cuts_ID_2012_Loose") + 1*ele.electronID("POG_Cuts_ID_2012_Medium") + 1*ele.electronID("POG_Cuts_ID_2012_Tight")
+            else :
+                 raise RuntimeError, "Unsupported ele_tightId name '" + str(self.cfg_ana.ele_tightId) +  "'! For now only 'MVA' and 'Cuts_2012' are supported."
+
         
         return allelectrons 
 

@@ -9,10 +9,30 @@ from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
 ## Redefine what I need
 ##------------------------------------------
 
-# JET (do not apply the jetID and PUID yet)
-ttHJetAna.relaxJetId = True
+#Lepton
+ttHLepAna.loose_muon_dxy = 0.5
+ttHLepAna.loose_muon_dz  = 1.0
+ttHLepAna.loose_muon_relIso  = 0.15
+ttHLepAna.loose_electron_id  = "POG_Cuts_ID_2012_Veto"
+ttHLepAna.loose_electron_pt  = 5
+ttHLepAna.loose_electron_eta    = 2.4
+ttHLepAna.loose_electron_dxy    = 0.04
+ttHLepAna.loose_electron_dz     = 0.2
+ttHLepAna.loose_electron_relIso = 0.15
+ttHLepAna.loose_electron_lostHits = 999 # no cut
+ttHLepAna.inclusive_electron_lostHits = 999 # no cut
+ttHLepAna.ele_isoCorr = "deltaBeta"
+ttHLepAna.ele_tightId = "Cuts_2012"
+
+# JET (for event variables do apply the jetID and not PUID yet)
+ttHJetAna.relaxJetId = False
 ttHJetAna.doPuId = False
+ttHJetAna.jetEta = 5.2
 ttHJetAna.jetEtaCentral = 2.5
+ttHJetAna.jetPt = 10.
+ttHJetAna.recalibrateJets = False
+ttHJetAna.jetLepDR = 0.4
+ttHJetMCAna.smearJets = False
 
 # TAU 
 ttHTauAna.etaMax = 2.3
@@ -39,6 +59,7 @@ ttHIsoTrackAna = cfg.Analyzer(
             isoDR = 0.3,
             ptPartMin = 0,
             dzPartMax = 0.1,
+            maxAbsIso = 8,
             #####
             MaxIsoSum = 0.1, ### unused
             MaxIsoSumEMU = 0.2, ### unused
@@ -52,11 +73,7 @@ ttHIsoTrackAna = cfg.Analyzer(
 
 # Tree Producer
 ttHTopoJetAna = cfg.Analyzer(
-            'ttHTopoVarAnalyzer',
-            muons='cmgMuonSel',
-            electrons='cmgElectronSel',
-            taus='cmgTauSel',
-            jetCol = 'cmgPFJetSelCHS'
+            'ttHTopoVarAnalyzer'
             )
 
 
@@ -99,7 +116,8 @@ test = 1
 if test==1:
     # test a single component, using a single thread.
     comp=TTJets_PU20bx25
-    comp.files = comp.files[:1]
+    #comp.files = ['/afs/cern.ch/work/p/pandolf/CMSSW_7_0_6_patch1_2/src/CMGTools/TTHAnalysis/cfg/pickevents.root']
+    comp.files = comp.files[:2]
     selectedComponents = [comp]
     comp.splitFactor = 1
 elif test==2:
@@ -107,9 +125,7 @@ elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
         comp.files = comp.files[:1]
-        
-        
-        
+
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
 

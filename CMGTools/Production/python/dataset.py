@@ -127,14 +127,15 @@ class CMSDataset( BaseDataset ):
     def buildListOfFilesDBS(self, pattern, begin=-1, end=-1):
         print 'buildListOfFilesDBS',begin,end
         sampleName = self.name.rstrip('/')
-        query = sampleName
+        query, qwhat = sampleName, "dataset"
+        if "#" in sampleName: qwhat = "block"
         if self.run_range is not None and self.run_range != (-1,-1):
             if self.run_range[0] == self.run_range[1]:
                 query += "   run=%s" % self.run_range[0]
             else:
                 print "WARNING: queries with run ranges are slow in DAS"
                 query += "   run between [%s,%s]" % ( self.run_range[0],self.run_range[1] )
-        dbs='das_client.py --query="file dataset=%s"'%query
+        dbs='das_client.py --query="file %s=%s"'%(qwhat,query)
         if begin >= 0:
             dbs += ' --index %d' % begin
         if end >= 0:
@@ -173,14 +174,15 @@ class CMSDataset( BaseDataset ):
     @staticmethod
     def findPrimaryDatasetEntries(dataset, runmin, runmax):
 
-        query = dataset
+        query, qwhat = dataset, "dataset"
+        if "#" in dataset: qwhat = "block"
         if runmin >0 or runmax > 0:
             if runmin == runmax:
                 query = "%s run=%d" % (query,runmin)
             else:
                 print "WARNING: queries with run ranges are slow in DAS"
                 query = "%s run between [%d, %d]" % (query,runmin if runmin > 0 else 1, runmax if runmax > 0 else 999999)
-        dbs='das_client.py --query="summary dataset=%s"'%query
+        dbs='das_client.py --query="summary %s=%s"'%(qwhat,query)
         dbsOut = os.popen(dbs).readlines()
 
         entries = []
@@ -195,14 +197,15 @@ class CMSDataset( BaseDataset ):
     @staticmethod
     def findPrimaryDatasetNumFiles(dataset, runmin, runmax):
 
-        query = dataset
+        query, qwhat = dataset, "dataset"
+        if "#" in dataset: qwhat = "block"
         if runmin >0 or runmax > 0:
             if runmin == runmax:
                 query = "%s run=%d" % (query,runmin)
             else:
                 print "WARNING: queries with run ranges are slow in DAS"
                 query = "%s run between [%d, %d]" % (query,runmin if runmin > 0 else 1, runmax if runmax > 0 else 999999)
-        dbs='das_client.py --query="summary dataset=%s"'%query
+        dbs='das_client.py --query="summary %s=%s"'%(qwhat,query)
         dbsOut = os.popen(dbs).readlines()
 
         entries = []

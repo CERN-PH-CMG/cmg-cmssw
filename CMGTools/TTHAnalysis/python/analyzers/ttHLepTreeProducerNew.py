@@ -52,7 +52,7 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
             ## PU weights
             tr.var("puWeight")
             ## number of true interactions
-            tr.var("nTrueInt")
+            tr.var("nTrueInt",int)
             ## PDF weights
             self.pdfWeights = []
             if hasattr(self.cfg_ana, "PDFWeights") and len(self.cfg_ana.PDFWeights) > 0:

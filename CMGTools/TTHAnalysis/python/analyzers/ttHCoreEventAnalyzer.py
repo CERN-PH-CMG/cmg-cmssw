@@ -160,28 +160,29 @@ class ttHCoreEventAnalyzer( Analyzer ):
 
         import ROOT
 
+        ## with Central Jets
         objects25 = [ j for j in event.cleanJets if j.pt() > 25 ] + event.selectedLeptons
         objects30 = [ j for j in event.cleanJets if j.pt() > 30 ] + event.selectedLeptons
         objects40  = [ j for j in event.cleanJets if j.pt() > 40 ] + event.selectedLeptons
         objects40j = [ j for j in event.cleanJets if j.pt() > 40 ] 
 
         event.htJet25 = sum([x.pt() for x in objects25])
-        event.mhtJet25vec = ROOT.reco.Particle.LorentzVector(sum([x.px() for x in objects25]) , sum([x.py() for x in objects25]), 0, 0 )     
+        event.mhtJet25vec = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects25])) , -1.*(sum([x.py() for x in objects25])), 0, 0 )     
         event.mhtPhiJet25 = event.mhtJet25vec.phi()
         event.mhtJet25 = event.mhtJet25vec.pt()
 
         event.htJet30 = sum([x.pt() for x in objects30])
-        event.mhtJet30vec = ROOT.reco.Particle.LorentzVector(sum([x.px() for x in objects30]) , sum([x.py() for x in objects30]), 0, 0 )             
+        event.mhtJet30vec = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects30])) , -1.*(sum([x.py() for x in objects30])), 0, 0 )             
         event.mhtJet30 = event.mhtJet30vec.pt()
         event.mhtPhiJet30 = event.mhtJet30vec.phi()
 
         event.htJet40 = sum([x.pt() for x in objects40])
-        event.mhtJet40vec = ROOT.reco.Particle.LorentzVector(sum([x.px() for x in objects40]) , sum([x.py() for x in objects40]), 0, 0 )             
+        event.mhtJet40vec = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects40])) , -1.*(sum([x.py() for x in objects40])), 0, 0 )             
         event.mhtJet40 = event.mhtJet40vec.pt()
         event.mhtPhiJet40 = event.mhtJet40vec.phi()
 
         event.htJet40j = sum([x.pt() for x in objects40j])
-        event.mhtJet40jvec = ROOT.reco.Particle.LorentzVector(sum([x.px() for x in objects40j]) , sum([x.py() for x in objects40j]), 0, 0 )                     
+        event.mhtJet40jvec = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects40j])) , -1.*(sum([x.py() for x in objects40j])), 0, 0 )                     
         event.mhtJet40j = event.mhtJet40jvec.pt()
         event.mhtPhiJet40j = event.mhtJet40jvec.phi()        
 
@@ -192,22 +193,22 @@ class ttHCoreEventAnalyzer( Analyzer ):
         objects40ja = [ j for j in event.cleanJetsAll if j.pt() > 40 ] 
 
         event.htJet25a = sum([x.pt() for x in objects25a])
-        event.mhtJet25veca = ROOT.reco.Particle.LorentzVector(sum([x.px() for x in objects25a]) , sum([x.py() for x in objects25a]), 0, 0 )     
+        event.mhtJet25veca = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects25a])) , -1.*(sum([x.py() for x in objects25a])), 0, 0 )     
         event.mhtPhiJet25a = event.mhtJet25veca.phi()
         event.mhtJet25a = event.mhtJet25veca.pt()
 
         event.htJet30a = sum([x.pt() for x in objects30a])
-        event.mhtJet30veca = ROOT.reco.Particle.LorentzVector(sum([x.px() for x in objects30a]) , sum([x.py() for x in objects30a]), 0, 0 )             
+        event.mhtJet30veca = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects30a])) , -1.*(sum([x.py() for x in objects30a])), 0, 0 )             
         event.mhtJet30a = event.mhtJet30veca.pt()
         event.mhtPhiJet30a = event.mhtJet30veca.phi()
 
         event.htJet40a = sum([x.pt() for x in objects40a])
-        event.mhtJet40veca = ROOT.reco.Particle.LorentzVector(sum([x.px() for x in objects40a]) , sum([x.py() for x in objects40a]), 0, 0 )             
+        event.mhtJet40veca = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects40a])) , -1.*(sum([x.py() for x in objects40a])), 0, 0 )             
         event.mhtJet40a = event.mhtJet40veca.pt()
         event.mhtPhiJet40a = event.mhtJet40veca.phi()
 
         event.htJet40ja = sum([x.pt() for x in objects40ja])
-        event.mhtJet40jveca = ROOT.reco.Particle.LorentzVector(sum([x.px() for x in objects40ja]) , sum([x.py() for x in objects40ja]), 0, 0 )                     
+        event.mhtJet40jveca = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects40ja])) , -1.*(sum([x.py() for x in objects40ja])), 0, 0 )                     
         event.mhtJet40ja = event.mhtJet40jveca.pt()
         event.mhtPhiJet40ja = event.mhtJet40jveca.phi()        
 
@@ -219,7 +220,7 @@ class ttHCoreEventAnalyzer( Analyzer ):
 
         # look for minimal deltaPhi between MET and four leading jets with pt>40 and eta<2.4
         event.deltaPhiMin = 999.
-        for n,j in enumerate(event.cleanJets):
+        for n,j in enumerate(objects40j):
             if n>3:  break
             thisDeltaPhi = abs( deltaPhi( j.phi(), event.met.phi() ) )
             if thisDeltaPhi < event.deltaPhiMin : event.deltaPhiMin = thisDeltaPhi
