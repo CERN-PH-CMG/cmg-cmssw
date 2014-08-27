@@ -187,7 +187,7 @@ def fillJet( tree, pName, jet ):
     # JAN - only one PU mva working point, but we may want to add more
     # run in our skimming step
     # (for which Jet.py would have to be touched again)
-    fill(tree, '{pName}_puMva'.format(pName=pName), jet.puMva() )
+    fill(tree, '{pName}_puMva'.format(pName=pName), jet.puMva('pileupJetIdFull:full53xDiscriminant') )
     fill(tree, '{pName}_looseJetId'.format(pName=pName), jet.looseJetId())
     fill(tree, '{pName}_btagMVA'.format(pName=pName), jet.btagMVA)
     fill(tree, '{pName}_area'.format(pName=pName), jet.jetArea())

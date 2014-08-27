@@ -73,7 +73,7 @@ class VertexAnalyzer( Analyzer ):
             )        
 
         self.handles['rho'] =  AutoHandle(
-            ('fixedGridRhoFastjetAll',''),
+            ('fixedGridRhoFastjetAll', ''),
             'double' 
             )        
 

@@ -59,13 +59,13 @@ class Jet(PhysicsObject):
         '''PF Jet ID (loose operation point) [method provided for convenience only]'''
         return self.jetID("POG_PFID_Loose")
 
-    def puMva(self):
-        return self.userFloat("pileupJetId:fullDiscriminant")
+    def puMva(self, label="pileupJetId:fullDiscriminant"):
+        return self.userFloat(label)
 
-    def puJetId(self):
+    def puJetId(self, label="pileupJetId:fullDiscriminant"):
         '''Full mva PU jet id'''
 
-        puMva = self.puMva()
+        puMva = self.puMva(label)
         wp = loose_53X_WP
         eta = abs(self.eta())
         

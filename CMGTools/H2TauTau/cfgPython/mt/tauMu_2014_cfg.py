@@ -14,29 +14,28 @@ from CMGTools.RootTools.RootTools import *
 shift = None
 # 1.0, 1.03, 0.97
 tauScaleShift = 1.0
+
 syncntuple = False
 simulatedOnly = False # Useful for systematic shifts on simulated samples, e.g. JEC
-doThePlot = True # Set to true for the plotting script
+doThePlot = False # Set to true for the plotting script
 
 
 # Andrew Summer 13 (MC is identical to the previous one)
 puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/13-09-13/MC_Summer12_PU_S10-600bins.root'
 puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/13-09-13/Data_Pileup_2012_ReRecoPixel-600bins.root'
 
-# vertexFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012/Vertices'
-# vertexFileData = '/'.join([vertexFileDir, 'vertices_data_2012A_2012B_start_195947.root'])
+puFileMC = None
+puFileData = None
 
-mc_vertexWeight = None
+# mc_tauEffWeight_mc = 'effTau_muTau_MC_2012ABCDSummer13'
+# mc_muEffWeight_mc = 'effMu_muTau_MC_2012ABCD'
+# mc_tauEffWeight = 'effTau_muTau_Data_2012ABCDSummer13'
+# mc_muEffWeight = 'effMu_muTau_Data_2012ABCDSummer13'
 
-# mc_tauEffWeight_mc = 'effTau2012MC53X'
-# mc_muEffWeight_mc = 'eff_2012_Rebecca_TauMu_IsoMu1753XMC'
-# mc_tauEffWeight = 'effTau2012ABC'
-# mc_muEffWeight = 'effMu2012_Rebecca_TauMu_ABC'
-
-mc_tauEffWeight_mc = 'effTau_muTau_MC_2012ABCDSummer13'
-mc_muEffWeight_mc = 'effMu_muTau_MC_2012ABCD'
-mc_tauEffWeight = 'effTau_muTau_Data_2012ABCDSummer13'
-mc_muEffWeight = 'effMu_muTau_Data_2012ABCDSummer13'
+mc_tauEffWeight_mc = None
+mc_muEffWeight_mc = None
+mc_tauEffWeight = None
+mc_muEffWeight = None
     
     
 eventSelector = cfg.Analyzer(
@@ -58,7 +57,7 @@ triggerAna = cfg.Analyzer(
 vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
     goodVertices = 'goodPVFilter',
-    vertexWeight = mc_vertexWeight,
+    vertexWeight = None,
     fixedWeight = 1,
     verbose = False,
     )
@@ -132,40 +131,35 @@ tauFakeRateWeighter = cfg.Analyzer(
 
 tauWeighter = cfg.Analyzer(
     'LeptonWeighter_tau',
-    effWeight = mc_tauEffWeight,
-    effWeightMC = mc_tauEffWeight_mc,
+    effWeight = None,
+    effWeightMC = None,
     lepton = 'leg1',
     verbose = False,
-    disable = False,
+    disable = True,
     )
 
 muonWeighter = cfg.Analyzer(
     'LeptonWeighter_mu',
-    effWeight = mc_muEffWeight,
-    effWeightMC = mc_muEffWeight_mc,
+    effWeight = None,
+    effWeightMC = None,
     lepton = 'leg2',
     verbose = False,
-    disable = False,
-    idWeight = mu_id_taumu_2012,
-    isoWeight = mu_iso_taumu_2012    
+    disable = True,
+    idWeight = None,
+    isoWeight = None    
     )
-
-
-
-# defined for vbfAna and eventSorter
-vbfKwargs = dict( Mjj = 500,
-                  deltaEta = 3.5    
-                  )
 
 
 jetAna = cfg.Analyzer(
     'JetAnalyzer',
-    jetCol = 'slimmedJets',
+    # jetCol = 'slimmedJets', # <- These are CHS jets
+    jetCol = 'patJetsAK4PF',
     jetPt = 20.,
     jetEta = 4.7,
     btagSFseed = 123456,
     relaxJetId = False, 
     jerCorr = False,
+    puJetIDDisc = 'pileupJetIdFull:full53xDiscriminant'
     #jesCorr = 1.,
     )
 
@@ -173,10 +167,9 @@ vbfSimpleAna = cfg.Analyzer(
     'VBFSimpleAnalyzer',
     vbfMvaWeights = '',
     cjvPtCut = 30.,
-    **vbfKwargs
-    
+    Mjj = 500.,
+    deltaEta = 3.5
     )
-
 
 treeProducer = cfg.Analyzer(
     'H2TauTauTreeProducerTauMu'
@@ -193,14 +186,14 @@ from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_Colin import *
 
 #########################################################################################
 
-HiggsVBF125.files.append('file:/afs/cern.ch/user/s/steggema/work/CMSSW_7_0_6_patch1/src/CMGTools/H2TauTau/prod/tauMu_fullsel_tree_CMG.root')
+HiggsVBF125.files = ['file:/afs/cern.ch/user/s/steggema/work/CMSSW_7_0_6_patch1/src/CMGTools/H2TauTau/prod/tauMu_fullsel_tree_CMG.root']
+HiggsVBF125.splitFactor = 1
 
 pat = '/VBF_HToTauTau_M-125_13TeV-powheg-pythia6/Spring14dr-PU20bx25_POSTLS170_V5-v1/AODSIM/SS14/TAUMU_MINIAODTEST_NOSVFIT_steggema'
 
-HiggsVBF125.files = getFiles(pat,
-                             'steggema', '.*root')
+# HiggsVBF125.files = getFiles(pat, 'steggema', '.*root')
 
-HiggsVBF125.splitFactor = 14
+# HiggsVBF125.splitFactor = 14
 
 for mc in MC_list:
     mc.puFileMC = puFileMC
