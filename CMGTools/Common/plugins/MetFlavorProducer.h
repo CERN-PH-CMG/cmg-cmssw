@@ -13,12 +13,9 @@
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/JetReco/interface/PFJet.h"
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
-#include "RecoJets/JetProducers/interface/PileupJetIdAlgo.h"
 
 #include "CMGTools/Common/interface/MetUtilities.h"
 
-//COLIN don't do that!!
-using namespace reco;
 
 namespace pat {
   class Jet;
@@ -49,23 +46,24 @@ class MetFlavorProducer : public edm::EDProducer {
   edm::InputTag fVertexName; 
   edm::InputTag fRhoName; 
 
+  std::string fPUJetIDName;
+  std::string fPUJetIDNameLowPt;
+
   double                  fJetPtMin;
   double                  fDZMin;
-  PileupJetIdAlgo        *fPUJetIdAlgo;
-  PileupJetIdAlgo        *fPUJetIdAlgoLowPt;
   MetUtilities           *fUtils;
   int                     fMetFlavor;
 
   void makeCandidates(std::vector<std::pair<LorentzVector,double> >         &iPFInfo,
-		      const std::vector<pat::PackedCandidate> &iCands,const Vertex *iPV);
+		      const std::vector<pat::PackedCandidate> &iCands,const reco::Vertex *iPV);
   void makeVertices  (std::vector<Vector>& iPVInfo,
-		      const VertexCollection &iVertices);
+		      const reco:: VertexCollection &iVertices);
 
   void makeJets      (std::vector<MetUtilities::JetInfo> &iJetInfo,
 		      const std::vector<pat::Jet>&  CJets,
-		      const VertexCollection& iVertices,double iRho); 
+		      const reco::VertexCollection& iVertices,double iRho); 
 
   bool   passPFLooseId(const pat::Jet *iJet);
-  double pfCandDz(const pat::PackedCandidate* iPFCand, const Vertex *iPV) ;
-  double jetMVA  (const pat::Jet *iuncorrJet,double iJec, const Vertex& iPV, const reco::VertexCollection &iAllvtx,bool iPrintDebug=false);
+  double pfCandDz(const pat::PackedCandidate* iPFCand, const reco::Vertex *iPV) ;
+  double jetMVA (const pat::Jet *iuncorrJet);
 };
