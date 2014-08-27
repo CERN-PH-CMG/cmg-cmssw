@@ -30,7 +30,6 @@ tauMuStdSequence = cms.Sequence(
 from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
 
 from CMGTools.Utilities.mvaMET.mvaMET_cff import *
-from CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi import cmgBaseMETFromPFMET
 
 cmgTauMuMVAPreSel = cmgTauMuCor.clone()
 cmgTauMuMVAPreSel.diObjectCollection = 'cmgTauMu'

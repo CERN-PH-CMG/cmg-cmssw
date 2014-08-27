@@ -1,17 +1,5 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.External.puJetIDAlgo_cff import met_53x, PhilV1
-from CMGTools.Common.Tools.cmsswRelease import isNewerThan
-
-
-if isNewerThan('CMSSW_5_3_0'):
-    jetPtMin = 0.
-    puJetIdAlgo = met_53x.clone()
-    wpId = 3
-else:
-    jetPtMin = 1.
-    puJetIdAlgo = PhilV1.clone()
-    wpId = 2 # see MetUtilies.cc
 
 pfMetForRegression   = cms.EDProducer(
     "MetFlavorProducer",
@@ -19,12 +7,12 @@ pfMetForRegression   = cms.EDProducer(
     PFCandidateName = cms.InputTag("packedPFCandidates"),
     VertexName      = cms.InputTag("offlineSlimmedPrimaryVertices"),
     RhoName         = cms.InputTag('fixedGridRhoFastjetAll'),
-    JetPtMin        = cms.double(jetPtMin), # should be 0 for 5X and 1 for 4X
+    JetPtMin        = cms.double(0.), # should be 0 for 5X and 1 for 4X
     dZMin           = cms.double(0.1),
     MetFlavor       = cms.int32(0),  # 0 PF  1 TK  2 No PU 3 PU  4 PUC
-    WorkingPointId  = cms.uint32(wpId),
-    PUJetId         = puJetIdAlgo,
-    PUJetIdLowPt    = puJetIdAlgo,
+    WorkingPointId  = cms.uint32(3), # 3 for 5X and higher
+    puJetIDName     = cms.string('pileupJetIdMET:met53xDiscriminant'),
+    puJetIDNameLowPt = cms.string('pileupJetIdMET:met53xDiscriminant')
     )
    
 tkMet     =  pfMetForRegression.clone(MetFlavor = cms.int32(1))
