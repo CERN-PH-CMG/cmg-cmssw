@@ -83,38 +83,34 @@ void EGammaMvaEleEstimatorCSA14::initialize( std::string methodName,
   
     if (type == kTrig) {
       // Pure tracking variables
-      tmpTMVAReader->AddVariable("kfchi2",          &fMVAVar_kfchi2);
-      tmpTMVAReader->AddVariable("gsfChi2",         &fMVAVar_gsfchi2);
-      tmpTMVAReader->AddVariable("fBrem",           &fMVAVar_fbrem);
-        tmpTMVAReader->AddVariable("detacalo",        &fMVAVar_detacalo);
+        // Pure tracking variables
+        tmpTMVAReader->AddVariable("fBrem",           &fMVAVar_fbrem);
+        tmpTMVAReader->AddVariable("kfchi2",          &fMVAVar_kfchi2);
+        tmpTMVAReader->AddVariable("kfhits",          &fMVAVar_kfhits);
+        tmpTMVAReader->AddVariable("gsfChi2",         &fMVAVar_gsfchi2);
+        
+        // Geometrical matchings
         tmpTMVAReader->AddVariable("eledeta",            &fMVAVar_deta);
         tmpTMVAReader->AddVariable("eledphi",            &fMVAVar_dphi);
+        tmpTMVAReader->AddVariable("detacalo",        &fMVAVar_detacalo);
+        
+        // Pure ECAL -> shower shapes
+        tmpTMVAReader->AddVariable("noZSsee",             &fMVAVar_see);
+        tmpTMVAReader->AddVariable("noZSspp",             &fMVAVar_spp);
+        tmpTMVAReader->AddVariable("etawidth",        &fMVAVar_etawidth);
+        tmpTMVAReader->AddVariable("phiwidth",        &fMVAVar_phiwidth);
+        tmpTMVAReader->AddVariable("noZSe1x5e5x5",        &fMVAVar_OneMinusE1x5E5x5);
+        tmpTMVAReader->AddVariable("noZSr9",              &fMVAVar_R9);
+        
+        // Energy matching
+        tmpTMVAReader->AddVariable("HtoE",             &fMVAVar_HoE);
         tmpTMVAReader->AddVariable("EoP",             &fMVAVar_EoP);
+        tmpTMVAReader->AddVariable("IoEmIoP",         &fMVAVar_IoEmIoP);
         tmpTMVAReader->AddVariable("EEleoPout",       &fMVAVar_eleEoPout);
         if(i == 1 ) tmpTMVAReader->AddVariable("PreShowerOverRaw",&fMVAVar_PreShowerOverRaw);
-        tmpTMVAReader->AddVariable("HtoE",             &fMVAVar_HoE);
 
-
-      // Geometrical matchings
-
-    
-      // Pure ECAL -> shower shapes
-      tmpTMVAReader->AddVariable("noZSsee",             &fMVAVar_see);
-      tmpTMVAReader->AddVariable("noZSspp",             &fMVAVar_spp);
-      tmpTMVAReader->AddVariable("etawidth",        &fMVAVar_etawidth);
-      tmpTMVAReader->AddVariable("phiwidth",        &fMVAVar_phiwidth);
-      tmpTMVAReader->AddVariable("noZSe1x5e5x5",        &fMVAVar_OneMinusE1x5E5x5);
-      tmpTMVAReader->AddVariable("noZSr9",              &fMVAVar_R9);
-
-      // Energy matching
-        tmpTMVAReader->AddVariable("kfhits",          &fMVAVar_kfhits);
-
-
-      
         tmpTMVAReader->AddSpectator("pt",             &fMVAVar_pt);
-
-    
-      tmpTMVAReader->AddSpectator("absEta",            &fMVAVar_abseta);
+        tmpTMVAReader->AddSpectator("absEta",            &fMVAVar_abseta);
     }
   
   
