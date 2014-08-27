@@ -7,6 +7,8 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 #include "CommonTools/Utils/interface/TMVAZipReader.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 
 #include "TMatrixDSym.h"
 #include "TMatrixDSymEigen.h"
@@ -290,27 +292,33 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 							const reco::VertexCollection & allvtx,
 							bool calculateMva) 
 {
+	// JAN - note - modified this function to cover four cases:
+	// PF jets or PAT jets based on PackedCandidates or PFCandidates
+
 	static std::atomic<int> printWarning{10};
-	typedef std::vector <reco::PFCandidatePtr> constituents_type;
-	typedef std::vector <reco::PFCandidatePtr>::iterator constituents_iterator;
+	typedef reco::CandidatePtr constituent_type;
+	typedef std::vector <reco::CandidatePtr> constituents_type;
+	typedef std::vector <reco::CandidatePtr>::iterator constituents_iterator;
 
 	// initialize all variables to 0
 	resetVariables();
-	
+
 	// loop over constituents, accumulate sums and find leading candidates
-	//const pat::Jet * patjet = dynamic_cast<const pat::Jet *>(jet);
+	const pat::Jet * patjet = dynamic_cast<const pat::Jet *>(jet);
 	const reco::PFJet * pfjet = dynamic_cast<const reco::PFJet *>(jet);
+
 	//assert( patjet != 0 || pfjet != 0 );
-	//if( patjet != 0 && jec == 0. ) { // if this is a pat jet and no jec has been passed take the jec from the object
-	//jec = patjet->pt()/patjet->correctedJet(0).pt();
-	//}
+	if( patjet != 0 && jec == 0. ) // if this is a pat jet and no jec has been passed take the jec from the object
+		jec = patjet->pt()/patjet->correctedJet(0).pt();
+
 	if( jec < 0. ) {
 		jec = 1.;
 	}
 	//constituents_type constituents = pfjet ? pfjet->getPFConstituents() : patjet->getPFConstituents();
-	constituents_type constituents = pfjet->getPFConstituents();
-	
-	reco::PFCandidatePtr lLead, lSecond, lLeadNeut, lLeadEm, lLeadCh, lTrail;
+	// constituents_type constituents = pfjet->getPFConstituents();
+	constituents_type constituents = jet->daughterPtrVector();
+
+	constituent_type lLead, lSecond, lLeadNeut, lLeadEm, lLeadCh, lTrail;
 	std::vector<float> frac, fracCh, fracEm, fracNeut;
 	float cones[] = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7 };
 	size_t ncones = sizeof(cones)/sizeof(float);
@@ -323,16 +331,16 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 	float * coneChFracs[]   = { &internalId_.chFrac01_, &internalId_.chFrac02_, &internalId_.chFrac03_, &internalId_.chFrac04_, 
 				    &internalId_.chFrac05_, &internalId_.chFrac06_, &internalId_.chFrac07_ }; 
 	TMatrixDSym covMatrix(2); covMatrix = 0.;
-	
+
 	reco::TrackRef impactTrack;
 	float jetPt = jet->pt() / jec; // use uncorrected pt for shape variables
 	float sumPt = 0., sumPt2 = 0., sumTkPt = 0.,sumPtCh=0,sumPtNe = 0;
-	setPtEtaPhi(*jet,internalId_.jetPt_,internalId_.jetEta_,internalId_.jetPhi_); // use corrected pt for jet kinematics
+	setPtEtaPhi(*jet, internalId_.jetPt_, internalId_.jetEta_, internalId_.jetPhi_); // use corrected pt for jet kinematics
 	internalId_.jetM_ = jet->mass(); 
 	internalId_.nvtx_ = allvtx.size();
 	
 	for(constituents_iterator it=constituents.begin(); it!=constituents.end(); ++it) {
-		reco::PFCandidatePtr & icand = *it;
+		constituent_type & icand = *it;
 		float candPt = icand->pt();
 		float candPtFrac = candPt/jetPt;
 		float candDr   = reco::deltaR(**it,*jet);
@@ -364,7 +372,8 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 		if( icone < ncones ) { *coneFracs[icone] += candPt; }
 		
 		// neutrals
-		if( icand->particleId() == reco::PFCandidate::h0 ) {
+		// if( icand->particleId() == reco::PFCandidate::h0 ) {
+		if( abs(icand->pdgId()) == 211 ) {
 			if (lLeadNeut.isNull() || candPt > lLeadNeut->pt()) { lLeadNeut = icand; }
 			internalId_.dRMeanNeut_ += candPtDr;
 			fracNeut.push_back(candPtFrac);
@@ -373,7 +382,8 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 			sumPtNe               += candPt;
 		}
 		// EM candidated
-		if( icand->particleId() == reco::PFCandidate::gamma ) {
+		// if( icand->particleId() == reco::PFCandidate::gamma ) {
+		if( abs(icand->pdgId()) == 22 ) {
 			if(lLeadEm.isNull() || candPt > lLeadEm->pt())  { lLeadEm = icand; }
 			internalId_.dRMeanEm_ += candPtDr;
 			fracEm.push_back(candPtFrac);
@@ -382,7 +392,8 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 			sumPtNe               += candPt;
 		}
 		// Charged  particles
-		if(  icand->trackRef().isNonnull() && icand->trackRef().isAvailable() ) {
+		// if(  icand->trackRef().isNonnull() && icand->trackRef().isAvailable() ) {
+		if(  icand->charge() ) {
 			if (lLeadCh.isNull() || candPt > lLeadCh->pt()) { lLeadCh = icand; }
 			internalId_.dRMeanCh_  += candPtDr;
 			internalId_.ptDCh_     += candPt*candPt;
@@ -390,28 +401,55 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 			if( icone < ncones ) { *coneChFracs[icone] += candPt; }
 			sumPtCh                += candPt;
 		}
-		// beta and betastar		
-		if(  icand->trackRef().isNonnull() && icand->trackRef().isAvailable() ) {
+		// beta and betastar	
+		const pat::PackedCandidate* packedCand = dynamic_cast<const pat::PackedCandidate*>(&*icand);
+		const reco::PFCandidate* pfCand = dynamic_cast<const reco::PFCandidate*>(&*icand);
+		reco::Track itrack;
+		if (packedCand && icand->charge())
+			itrack = packedCand->pseudoTrack();
+		else if (pfCand && pfCand->trackRef().isNonnull() && pfCand->trackRef().isAvailable()) 
+				itrack = *pfCand->trackRef();
+
+		if(  icand->charge() ) {
 			try { 
-				float tkpt = icand->trackRef()->pt(); 
+				float tkpt = itrack.pt(); 
 				sumTkPt += tkpt;
 				// 'classic' beta definition based on track-vertex association
-				bool inVtx0 = find( vtx->tracks_begin(), vtx->tracks_end(), reco::TrackBaseRef(icand->trackRef()) ) != vtx->tracks_end();
+				bool inVtx0 = false;
+				double dZ0 = 0.;
+				if (pfCand) {
+					inVtx0 = find( vtx->tracks_begin(), vtx->tracks_end(), reco::TrackBaseRef(pfCand->trackRef()) ) != vtx->tracks_end();
+					dZ0 = fabs(itrack.dz(vtx->position()));
+				}
+				else if (packedCand) {
+					inVtx0 = packedCand->fromPV() == pat::PackedCandidate::PVUsedInFit;
+					dZ0 = packedCand->dz(vtx->position());
+				}
 				bool inAnyOther = false;
 				// alternative beta definition based on track-vertex distance of closest approach
-				double dZ0 = fabs(icand->trackRef()->dz(vtx->position()));
 				double dZ = dZ0;
 				for(reco::VertexCollection::const_iterator  vi=allvtx.begin(); vi!=allvtx.end(); ++vi ) {
 					const reco::Vertex & iv = *vi;
 					if( iv.isFake() || iv.ndof() < 4 ) { continue; }
+
 					// the primary vertex may have been copied by the user: check identity by position
 					bool isVtx0  = (iv.position() - vtx->position()).r() < 0.02;
+
 					// 'classic' beta definition: check if the track is associated with any vertex other than the primary one
 					if( ! isVtx0 && ! inAnyOther ) {
-						inAnyOther = find( iv.tracks_begin(), iv.tracks_end(), reco::TrackBaseRef(icand->trackRef()) ) != iv.tracks_end();
+						if (pfCand)
+							inAnyOther = find( iv.tracks_begin(), iv.tracks_end(), reco::TrackBaseRef(pfCand->trackRef()) ) != iv.tracks_end();
+						else if (packedCand) {
+							inAnyOther = packedCand->fromPV() == pat::PackedCandidate::NoPV;
+						}
 					}
 					// alternative beta: find closest vertex to the track
-					dZ = std::min(dZ,fabs(icand->trackRef()->dz(iv.position())));
+					double dZVtx = 0.;
+					if (packedCand)
+						dZVtx = fabs(packedCand->dz(iv.position()));
+					else
+						dZVtx = fabs(itrack.dz(iv.position()));
+					dZ = std::min(dZ, dZVtx);
 				}
 				// classic beta/betaStar
 				if( inVtx0 && ! inAnyOther ) {
@@ -442,20 +480,38 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 	if ( lLeadNeut.isNull() ) { lLeadNeut = lTrail; }
 	if ( lLeadEm.isNull() )   { lLeadEm   = lTrail; }
 	if ( lLeadCh.isNull() )   { lLeadCh   = lTrail; }
-	impactTrack = lLeadCh->trackRef();
 	
-	internalId_.nCharged_    = pfjet->chargedMultiplicity();
-	internalId_.nNeutrals_   = pfjet->neutralMultiplicity();
-	internalId_.chgEMfrac_   = pfjet->chargedEmEnergy()    /jet->energy();
-	internalId_.neuEMfrac_   = pfjet->neutralEmEnergy()    /jet->energy();
-	internalId_.chgHadrfrac_ = pfjet->chargedHadronEnergy()/jet->energy();
-	internalId_.neuHadrfrac_ = pfjet->neutralHadronEnergy()/jet->energy();
-	
-	if( impactTrack.isNonnull() && impactTrack.isAvailable() ) {
-		internalId_.d0_ = fabs(impactTrack->dxy(vtx->position()));
-		internalId_.dZ_ = fabs(impactTrack->dz(vtx->position()));
-	} else {
-		if(printWarning-- > 0) { std::cerr << "WARNING : did not find any valid track reference attached to the jet " << std::endl; }
+	if (patjet) {
+		internalId_.nCharged_    = patjet->chargedMultiplicity();
+		internalId_.nNeutrals_   = patjet->neutralMultiplicity();
+		internalId_.chgEMfrac_   = patjet->chargedEmEnergy()    /jet->energy();
+		internalId_.neuEMfrac_   = patjet->neutralEmEnergy()    /jet->energy();
+		internalId_.chgHadrfrac_ = patjet->chargedHadronEnergy()/jet->energy();
+		internalId_.neuHadrfrac_ = patjet->neutralHadronEnergy()/jet->energy();
+	} else if (pfjet) {
+		internalId_.nCharged_    = pfjet->chargedMultiplicity();
+		internalId_.nNeutrals_   = pfjet->neutralMultiplicity();
+		internalId_.chgEMfrac_   = pfjet->chargedEmEnergy()    /jet->energy();
+		internalId_.neuEMfrac_   = pfjet->neutralEmEnergy()    /jet->energy();
+		internalId_.chgHadrfrac_ = pfjet->chargedHadronEnergy()/jet->energy();
+		internalId_.neuHadrfrac_ = pfjet->neutralHadronEnergy()/jet->energy();
+	}
+
+	const reco::PFCandidate* leadChPF = dynamic_cast<const reco::PFCandidate*>(&*lLeadCh);
+	const pat::PackedCandidate* leadChPacked = dynamic_cast<const pat::PackedCandidate*>(&*lLeadCh);
+	if (leadChPF) {
+		impactTrack = leadChPF->trackRef();	
+
+		if( impactTrack.isNonnull() && impactTrack.isAvailable() ) {
+			internalId_.d0_ = fabs(impactTrack->dxy(vtx->position()));
+			internalId_.dZ_ = fabs(impactTrack->dz(vtx->position()));
+		} else {
+			if(printWarning-- > 0) { std::cerr << "WARNING : did not find any valid track reference attached to the jet " << std::endl; }
+		}
+	}
+	else if (leadChPacked) {
+		internalId_.d0_ = fabs(leadChPacked->dxy(vtx->position()));
+		internalId_.dZ_ = fabs(leadChPacked->dz(vtx->position()));
 	}
 	internalId_.nParticles_ = constituents.size(); 
 
