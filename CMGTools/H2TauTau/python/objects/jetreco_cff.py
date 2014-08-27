@@ -3,23 +3,23 @@ import FWCore.ParameterSet.Config as cms
 from RecoJets.JetProducers.ak4PFJets_cfi import ak4PFJets as ak4PF
 from CMGTools.External.puJetIDAlgo_cff import met_53x, full_53x
 
-pileupJetIdCalculatorMET = cms.EDProducer(
+pileupJetIdMET = cms.EDProducer(
     'PileupJetIdProducer',
     produceJetIds = cms.bool(True),
     jetids = cms.InputTag(""),
-    runMvas = cms.bool(False),
-    jets = cms.InputTag("patJetsAK4PF"),
+    runMvas = cms.bool(True),
+    jets = cms.InputTag("ak4PFJets"),
     vertexes = cms.InputTag("offlineSlimmedPrimaryVertices"),
     algos = cms.VPSet(cms.VPSet(met_53x)),
-    rho     = cms.InputTag("kt6PFJets","rho"),
+    rho     = cms.InputTag("fixedGridRhoFastjetAll"),
     jec     = cms.string("AK5PF"),
-    applyJec = cms.bool(False),
-    inputIsCorrected = cms.bool(True),
+    applyJec = cms.bool(True),
+    inputIsCorrected = cms.bool(False),
     residualsFromTxt = cms.bool(False),
     residualsTxt = cms.FileInPath("RecoJets/JetProducers/data/download.url")
 )
 
-pileupJetIdCalculatorFull = pileupJetIdCalculatorMET.clone(algos = cms.VPSet(cms.VPSet(full_53x)))
+pileupJetIdFull = pileupJetIdMET.clone(algos = cms.VPSet(cms.VPSet(full_53x)))
 
 
 from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
@@ -49,15 +49,18 @@ def addAK4Jets(process):
     # process.combinedSecondaryVertexBJetTagsAK4PF.trackMultiplicityMin = 1
     process.jetTracksAssociatorAtVertexAK4PF.tracks = cms.InputTag("unpackedTracksAndVertices")
 
-    process.pileupJetIdCalculatorMET = pileupJetIdCalculatorMET.clone()
-    process.pileupJetIdCalculatorFull = pileupJetIdCalculatorFull.clone()
+    process.pileupJetIdMET = pileupJetIdMET.clone()
+    process.pileupJetIdFull = pileupJetIdFull.clone()
 
+    process.patJetsAK4PF.userData.userFloats.src = [ cms.InputTag("pileupJetIdMET:met53xDiscriminant"), cms.InputTag("pileupJetIdFull:full53xDiscriminant")]
 
     process.jetSequenceAK4 = cms.Sequence(
         process.ak4PFJets + 
         process.unpackedTracksAndVertices + 
         process.jetTracksAssociatorAtVertexAK4PF +
         process.patJetCorrFactorsAK4PF +
+        process.pileupJetIdMET + 
+        process.pileupJetIdFull +
         process.patJetChargeAK4PF + 
         process.patJetPartons +
         process.patJetPartonMatchAK4PF +
@@ -70,8 +73,6 @@ def addAK4Jets(process):
         process.impactParameterTagInfosAK4PF + 
         process.secondaryVertexTagInfosAK4PF + 
         process.combinedSecondaryVertexBJetTagsAK4PF +
-        process.patJetsAK4PF +
-        process.pileupJetIdCalculatorMET + 
-        process.pileupJetIdCalculatorFull
+        process.patJetsAK4PF
         )
     return process.jetSequenceAK4

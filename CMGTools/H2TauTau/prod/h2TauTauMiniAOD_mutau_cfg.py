@@ -123,9 +123,6 @@ else:
 process.tauMuPath.remove(process.cmgPFJetForRecoilPresel)
 process.tauMuPath.remove(process.cmgPFJetForRecoil)
 
-#import pdb; pdb.set_trace()
-
-#Jose: process.schedule doesn't have a += operator?
 if channel=='all':
     process.schedule = cms.Schedule(
         process.tauMuPath,
