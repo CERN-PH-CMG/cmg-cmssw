@@ -17,7 +17,7 @@ useCHS = False
 
 # newSVFit enables the svfit mass reconstruction used for the H->tau tau analysis.
 # if false, much faster processing but mass is wrong. 
-newSVFit = False
+newSVFit = True
 tauScaling = 0
 applyESCorr = True
 

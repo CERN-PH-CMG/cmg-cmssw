@@ -466,8 +466,6 @@ mc_higgs.extend( mc_higgs_vh )
 
 pattern = re.compile('Higgs(\D+)(\d+)')
 for h in mc_higgs:
-    # import pdb ; pdb.set_trace()
-    # import pdb; pdb.set_trace()
     m = pattern.match( h.name )
     process = m.group(1)
     if 'toWW' in process :
