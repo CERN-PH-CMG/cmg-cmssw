@@ -45,7 +45,10 @@ class ttHPhotonAnalyzerSusy( Analyzer ):
         event.allphotons.sort(key = lambda l : l.pt(), reverse = True)
 
         event.selectedPhotons = []
-        event.loosePhotons = []
+        ### MM
+        #event.loosePhotons = []
+        event.loosePhotonsCentral = []
+        ###
 
         foundPhoton = False
         for gamma in event.allphotons:
@@ -71,8 +74,14 @@ class ttHPhotonAnalyzerSusy( Analyzer ):
             if gamma.photonID(self.cfg_ana.gammaID):
                 event.selectedPhotons.append(gamma)
 ##            event.selectedPhotons.append(gamma)        
+            
+            ### MM
+            if gamma.photonID(self.cfg_ana.gammaID) and abs(gamma.eta()) < self.cfg_ana.etaCentral:
+                event.loosePhotonsCentral.append(gamma)
+            ###
 
         event.selectedPhotons.sort(key = lambda l : l.pt(), reverse = True)
+        event.loosePhotonsCentral.sort(key = lambda l : l.pt(), reverse = True)
 
         self.counters.counter('events').inc('all events')
         if foundPhoton: self.counters.counter('events').inc('has >=1 gamma at preselection')
@@ -99,14 +108,13 @@ class ttHPhotonAnalyzerSusy( Analyzer ):
             print 'gamma candidate had iso: ',event.selectedPhotons[0].chargedHadronIso()
             print 'gamma candidate neu iso: ',event.selectedPhotons[0].neutralHadronIso()
             print 'gamma candidate gamma iso: ',event.selectedPhotons[0].photonIso()
-            print 'gamma idCutBased',event.selectedPhotons[0].idCutBased
-
+            print 'gamma idCutBased',event.selectedPhotons[0].idCutBased    
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         #call the photons functions
         self.makePhotons(event)
-
+        
 #        self.printInfo(event)   
 
 ## ===> do matching                                                                                                                                                                                                     
