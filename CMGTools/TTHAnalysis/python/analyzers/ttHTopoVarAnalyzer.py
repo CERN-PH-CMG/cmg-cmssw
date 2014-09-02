@@ -356,7 +356,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
             event.mt2w = mt2wSNT.get_mt2w() 
 ### MM
 
-## ===> hadronic gamma_MT2 (as used in the SUS-13-019)
+## ===> full gamma_MT2 (as used in the SUS-13-019)
 
         gamma_objects40jc = [ j for j in event.gamma_cleanJets if j.pt() > 40 and abs(j.eta())<2.5 ]
         gamma_leptons_fullmt2 = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta())<2.5 ]
@@ -371,11 +371,11 @@ class ttHTopoVarAnalyzer( Analyzer ):
             Evec  = ROOT.std.vector(float)()
             grouping  = ROOT.std.vector(int)()
 
-            for jet in gamma_objects_fullmt2:
-                pxvec.push_back(jet.px())
-                pyvec.push_back(jet.py())
-                pzvec.push_back(jet.pz())
-                Evec.push_back(jet.energy())
+            for obj in gamma_objects_fullmt2:
+                pxvec.push_back(obj.px())
+                pyvec.push_back(obj.py())
+                pzvec.push_back(obj.pz())
+                Evec.push_back(obj.energy())
 
 #### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
 
