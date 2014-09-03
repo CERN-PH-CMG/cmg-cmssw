@@ -171,7 +171,14 @@ ZJetsToNuNu_HT200to400_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("ZJet
 
 mcSamplesCSA14_PU40bx50 = [ DYJetsM50_HT400to600_PU_S14_POSTLS170 ]
 
-mcSamples = mcSamplesCSA14_PU20bx25 + mcSamplesTest + mcSamplesCSA14_PU40bx50
+### MORE private samples on EOS
+TTHWWnlo_S14 = kreator.makeMCComponentFromEOS('TTHWWnlo_S14', '/TTbarH_HToWWTo2L2Nu_M-125_13TeV_amcatnlo-pythia8-tauola/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM', '/store/cmst3/user/gpetrucc/%s/miniAODTest_CMSSW708_PR5037')
+TTHWWpy6_S14 = kreator.makeMCComponentFromEOS('TTHWWpy6_S14', '/TTbarH_HToWWTo2LAndTauNu_M-125_13TeV_pythia6/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM', '/store/cmst3/user/gpetrucc/%s/miniAODTest_CMSSW708_PR5037')
+#TTHTTnlo_S14 = kreator.makeMCComponentFromEOS('TTHTTnlo_S14', '/TTbarH_HToTauTau_M-125_13TeV_amcatnlo-pythia8-tauola/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM', '/store/cmst3/user/gpetrucc/%s/miniAODTest_CMSSW708_PR5037')
+TTHTTpy6_S14 = kreator.makeMCComponentFromEOS('TTHTTpy6_S14', '/TTbarH_HToTauTau_M-125_13TeV_pythia6/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM', '/store/cmst3/user/gpetrucc/%s/miniAODTest_CMSSW708_PR5037')
+TTHs_S14 = [ TTHWWnlo_S14, TTHWWpy6_S14, TTHTTpy6_S14 ] #, TTHTTnlo_S14 ]
+
+mcSamples = mcSamplesCSA14_PU20bx25 + mcSamplesTest + mcSamplesCSA14_PU40bx50 + TTHs_S14
 
 
 #-----------DATA---------------
