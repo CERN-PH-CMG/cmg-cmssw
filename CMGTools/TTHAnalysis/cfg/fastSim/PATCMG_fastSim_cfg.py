@@ -10,18 +10,41 @@ print sep_line
 process = cms.Process("PAT")
 
 
-runOnMC      = True
-runOld5XGT = False
-runOnFastSim = True
+print 'querying database for source files'
 
-process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-        'file:/data/gpetrucc/8TeV/ttH/ttZ_01jets_LO_TuneZ2star_8TeV_madgraph_tauola.root',
+
+runOnMC      = True
+runOnFastSim = True
+useMoriondGTs = False
+
+from CMGTools.Production.datasetToSource import *
+## This is used to get the correct global tag below, and to find the files
+## It is *reset* automatically by ProductionTasks, so you can use it after the ProductionTasksHook
+datasetInfo = (
+    'cmgtools_group',
+    '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B',
+    #FASTSIM'/SMS-T2tt_mStop-675to800_mLSP-0to275_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/V5_B/',
+    # 'CMS',
+    # '/DoubleMu/Run2012A-22Jan2013-v1/AOD',
+    '.*root')
+process.source = datasetToSource(
+    *datasetInfo
     )
-)
+
+#process.source.fileNames = process.source.fileNames[:20]
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+#process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
+
+
+###ProductionTaskHook$$$
+
+
+print sep_line
+print process.source.fileNames
+print sep_line 
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(4000) )
+
 
 print 'loading the main CMG sequence'
 
@@ -33,7 +56,10 @@ if runOnMC is False:
 
     process.patElectrons.addGenMatch = False
     process.makePatElectrons.remove( process.electronMatch )
-    
+   
+    process.patElectronsWithCalibrations.isMC = False
+    process.patElectronsWithCalibrations.inputDataset = "22Jan2013ReReco"
+ 
     process.patMuons.addGenMatch = False
     process.makePatMuons.remove( process.muonMatch )
     
@@ -43,10 +69,10 @@ if runOnMC is False:
     process.patJets.addGenJetMatch = False
     process.patJets.addGenPartonMatch = False
 
-    if isNewerThan('CMSSW_5_2_0'):
-        process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
-        process.patJetsCHSpruned.addGenJetMatch = False
-        process.patJetsCHSpruned.addGenPartonMatch = False
+    #if isNewerThan('CMSSW_5_2_0'):
+    #    process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
+    #    process.patJetsCHSpruned.addGenJetMatch = False
+    #    process.patJetsCHSpruned.addGenPartonMatch = False
 
     process.PATCMGTauSequence.remove( process.tauGenJets )
     process.PATCMGTauSequence.remove( process.tauGenJetsSelectorAllHadrons )
@@ -66,9 +92,12 @@ if runOnMC is False:
 
     # adding L2L3Residual corrections
     process.patJetCorrFactors.levels.append('L2L3Residual')
-    if isNewerThan('CMSSW_5_2_0'):
-        process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
+    #if isNewerThan('CMSSW_5_2_0'):
+    #    process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
 
+
+#Jose: fix to muon isolation in case the pf muon is not within the 1e-5 veto cone w.r.t reco muon (Muon expert should fix somewhere else)
+process.muPFIsoDepositChargedAll.ExtractorPSet.DR_Veto = 1e-3
 
 print 'cloning the jet sequence to build PU chs jets'
 
@@ -78,8 +107,15 @@ process.PATCMGJetCHSSequence.insert( 0, process.ak5PFJetsCHS )
 from CMGTools.Common.Tools.visitorUtils import replaceSrc
 replaceSrc( process.PATCMGJetCHSSequence, 'ak5PFJets', 'ak5PFJetsCHS')
 replaceSrc( process.PATCMGJetCHSSequence, 'particleFlow', 'pfNoPileUp')
-process.patJetCorrFactorsCHS.payload = 'AK5PFchs'
+process.PATCMGJetCHSSequence.remove(process.outPFCandCHS) # not needed for CHS jets
+process.PATCMGJetCHSSequence.remove(process.ak5SoftPFJetsForVbfHbbCHS) # not needed for CHS jets
+jecPayload = 'AK5PFchs'
+process.patJetsWithVarCHS.payload = jecPayload
+process.patJetCorrFactorsCHS.payload = jecPayload
+process.puJetIdCHS.jec = jecPayload
+process.cmgPUJetMvaCHS.jec = jecPayload
 process.selectedPatJetsCHS.cut = 'pt()>10'
+process.QGTaggerCHS.useCHS = True
 
 
 ########################################################
@@ -94,6 +130,12 @@ process.p = cms.Path(
     process.PATCMGSequence +
     process.PATCMGJetCHSSequence 
     )
+
+if 'Prompt' in datasetInfo[1] or runOnMC or useMoriondGTs:
+    process.metNoiseCleaning.remove(process.hcalfilter)
+    process.hcalLaserEventFilterPath.remove(process.hcalfilter)
+if ('Parked' in datasetInfo[1]) or ('22Jan2013' in datasetInfo[1]) :
+    process.metNoiseCleaning.remove(process.hcallasereventfilter2012)
 
 process.p += process.postPathCounter
 
@@ -116,24 +158,6 @@ process.p += process.postPathCounter
 # process.p.remove(process.PATCMGMetRegressionSequence)
 # process.p.remove(process.PATCMGJetSequenceCHSpruned)
 
-if runOnFastSim :
-    process.vertexWeightSequence.remove(process.vertexWeight3DMay10ReReco)
-    process.vertexWeightSequence.remove(process.vertexWeight3DMay10ReReco)
-    process.vertexWeightSequence.remove(process.vertexWeight3DPromptRecov4)
-    process.vertexWeightSequence.remove(process.vertexWeight3D05AugReReco)
-    process.vertexWeightSequence.remove(process.vertexWeight3DPromptRecov6)
-    process.vertexWeightSequence.remove(process.vertexWeight3D2invfb)
-    process.vertexWeightSequence.remove(process.vertexWeight3D2011B)
-    process.vertexWeightSequence.remove(process.vertexWeight3D2011AB)
-    process.vertexWeightSequence.remove(process.vertexWeight3DFall11May10ReReco)
-    process.vertexWeightSequence.remove(process.vertexWeight3DFall11PromptRecov4)
-    process.vertexWeightSequence.remove(process.vertexWeight3DFall1105AugReReco)
-    process.vertexWeightSequence.remove(process.vertexWeight3DFall11PromptRecov6)
-    process.vertexWeightSequence.remove(process.vertexWeight3DFall112invfb)
-    process.vertexWeightSequence.remove(process.vertexWeight3DFall112011B)
-    process.vertexWeightSequence.remove(process.vertexWeight3DFall112011AB)
-
-
 ########################################################
 ## PAT output definition
 ########################################################
@@ -154,9 +178,9 @@ process.out.outputCommands.append('keep patTaus_selectedPatTaus_*_*')
 #FIXME now keeping the whole event content...
 # process.out.outputCommands.append('keep *_*_*_*')
 
-#process.outpath = cms.EndPath(
-#    process.out
-#    )
+process.outpath = cms.EndPath(
+    # process.out
+    )
 
 ########################################################
 ## CMG output definition
@@ -171,8 +195,17 @@ process.outcmg = cms.OutputModule(
     dropMetaData = cms.untracked.string('PRIOR')
     )
 
-process.outpath = cms.EndPath(process.outcmg)
-
+process.outpath += process.outcmg
+# These commands below will select the 'light' version of the CMG tuple:
+#  - 16bit PF Candidates
+#  - TriggerPrescales instead of fat single TriggerObject
+#  - slimmed PVs (without track references)
+process.outcmg.outputCommands.append('keep cmgPackedCandidates_cmgCandidates_*_*') 
+process.outcmg.outputCommands.append('drop cmgCandidates_cmgCandidates_*_*') 
+process.outcmg.outputCommands.append('keep *_cmgTriggerPrescales_*_*') 
+process.outcmg.outputCommands.append('drop *_cmgTriggerObjectSel_*_*') 
+process.outcmg.outputCommands.append('drop *_offlinePrimaryVertices_*_*') 
+process.outcmg.outputCommands.append('keep *_slimmedPrimaryVertices_*_*') 
 
 ########################################################
 ## Conditions 
@@ -182,11 +215,6 @@ process.load("Configuration.StandardSequences.GeometryDB_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
-from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
-
-process.GlobalTag.globaltag = getGlobalTag( runOnMC, runOld5XGT )
-print 'Global tag       : ', process.GlobalTag.globaltag
-
 ########################################################
 ## Below, stuff that you probably don't want to modify
 ########################################################
@@ -194,17 +222,29 @@ print 'Global tag       : ', process.GlobalTag.globaltag
 
 
 ## Geometry and Detector Conditions (needed for a few patTuple production steps)
-
 from CMGTools.Common.PAT.patCMGSchedule_cff import getSchedule
 process.schedule = getSchedule(process, runOnMC, runOnFastSim)
-process.schedule.extend([process.outpath])
+
+process.schedule.append( process.outpath )
 
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
-
+process.MessageLogger.suppressWarning = cms.untracked.vstring('ecalLaserCorrFilter','manystripclus53X','toomanystripclus53X')
 ## Options and Output Report
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
+
+
+if not runOnMC and isNewerThan('CMSSW_5_2_0'):
+    process.pfJetMETcorr.jetCorrLabel = cms.string("ak5PFL1FastL2L3Residual")
+if runOnFastSim:
+    process.patElectronsWithRegression.rhoCollection = cms.InputTag("kt6PFJets","rho","HLT")
+
+
+## Last minute fixes
+# process.PATJetSequenceCHS.remove(process.outTracksCHS)
+# process.PATJetSequenceCHS.remove(process.ak5SoftTrackJetsForVbfHbbCHS)
+
 
 print sep_line
 
@@ -213,9 +253,16 @@ from CMGTools.Common.Tools.visitorUtils import SeqVisitor
 v = SeqVisitor('FastjetJetProducer')
 process.p.visit(v)
 
+### Set the global tag from the dataset name
+if useMoriondGTs:
+    process.GlobalTag.globaltag = "START53_V20::All" if runOnMC else "GR_P_V42_AN4::All" 
+else:
+    from CMGTools.Common.Tools.getGlobalTag import getGlobalTagByDataset
+    process.GlobalTag.globaltag = getGlobalTagByDataset( runOnMC, datasetInfo[1])
+print 'Global tag       : ', process.GlobalTag.globaltag
+###
+
 print sep_line
 
 print 'starting CMSSW'
 
-if not runOnMC and isNewerThan('CMSSW_5_2_0'):
-    process.pfJetMETcorr.jetCorrLabel = cms.string("ak5PFL1FastL2L3Residual")
