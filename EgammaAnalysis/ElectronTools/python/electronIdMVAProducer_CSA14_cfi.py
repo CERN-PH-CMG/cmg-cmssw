@@ -31,3 +31,34 @@ mvaTrigV025nsCSA14 = cms.EDFilter("ElectronIdMVAProducerCSA14",
                                    )
 
 
+mvaNonTrigV050nsCSA14 = cms.EDFilter("ElectronIdMVAProducerCSA14",
+                            verbose = cms.untracked.bool(False),
+                            vertexTag = cms.InputTag('offlinePrimaryVertices'),
+                            electronTag = cms.InputTag('gedGsfElectrons'),
+                            reducedEBRecHitCollection = cms.InputTag('reducedEcalRecHitsEB'),
+                            reducedEERecHitCollection = cms.InputTag('reducedEcalRecHitsEE'),
+                            method = cms.string("BDT"),
+                            mvaWeightFile = cms.vstring(
+                                                        "EgammaAnalysis/ElectronTools/data/CSA14/EIDmva_EB_5_50ns_BDT.weights.xml",
+                                                        "EgammaAnalysis/ElectronTools/data/CSA14/EIDmva_EE_5_50ns_BDT.weights.xml",
+                                                        "EgammaAnalysis/ElectronTools/data/CSA14/EIDmva_EB_10_50ns_BDT.weights.xml",
+                                                        "EgammaAnalysis/ElectronTools/data/CSA14/EIDmva_EE_10_50ns_BDT.weights.xml",
+                                  ),
+                            Trig = cms.bool(False),
+)
+
+mvaNonTrigV025nsCSA14 = cms.EDFilter("ElectronIdMVAProducerCSA14",
+                                     verbose = cms.untracked.bool(False),
+                                     vertexTag = cms.InputTag('offlinePrimaryVertices'),
+                                     electronTag = cms.InputTag('gedGsfElectrons'),
+                                     reducedEBRecHitCollection = cms.InputTag('reducedEcalRecHitsEB'),
+                                     reducedEERecHitCollection = cms.InputTag('reducedEcalRecHitsEE'),
+                                     method = cms.string("BDT"),
+                                     mvaWeightFile = cms.vstring(
+                                                                 "EgammaAnalysis/ElectronTools/data/CSA14/EIDmva_EB_5_25ns_BDT.weights.xml",
+                                                                 "EgammaAnalysis/ElectronTools/data/CSA14/EIDmva_EE_5_25ns_BDT.weights.xml",
+                                                                 "EgammaAnalysis/ElectronTools/data/CSA14/EIDmva_EB_10_25ns_BDT.weights.xml",
+                                                                 "EgammaAnalysis/ElectronTools/data/CSA14/EIDmva_EE_10_25ns_BDT.weights.xml",
+                                                                 ),
+                                     Trig = cms.bool(False),
+                                     )

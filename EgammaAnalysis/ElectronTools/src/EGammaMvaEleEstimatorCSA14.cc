@@ -117,31 +117,31 @@ void EGammaMvaEleEstimatorCSA14::initialize( std::string methodName,
     if (type == kNonTrig) {
         
         tmpTMVAReader->AddVariable("ele_kfhits",          &fMVAVar_kfhits);
+        // Pure ECAL -> shower shapes
         tmpTMVAReader->AddVariable("ele_oldsigmaietaieta",             &fMVAVar_see);
         tmpTMVAReader->AddVariable("ele_oldsigmaiphiiphi",             &fMVAVar_spp);
         tmpTMVAReader->AddVariable("ele_oldcircularity",        &fMVAVar_OneMinusE1x5E5x5);
         tmpTMVAReader->AddVariable("ele_oldr9",              &fMVAVar_R9);
         tmpTMVAReader->AddVariable("ele_scletawidth",        &fMVAVar_etawidth);
         tmpTMVAReader->AddVariable("ele_sclphiwidth",        &fMVAVar_phiwidth);
-        tmpTMVAReader->AddVariable("ele_heo",             &fMVAVar_HoE);
+        tmpTMVAReader->AddVariable("ele_he",             &fMVAVar_HoE);
         if(i == 1 || i == 3) tmpTMVAReader->AddVariable("ele_psEoverEraw",&fMVAVar_PreShowerOverRaw);
+        
+        
+        //Pure tracking variables
         tmpTMVAReader->AddVariable("ele_kfchi2",          &fMVAVar_kfchi2);
         tmpTMVAReader->AddVariable("ele_chi2_hits",         &fMVAVar_gsfchi2);
+        // Energy matching
         tmpTMVAReader->AddVariable("ele_fbrem",           &fMVAVar_fbrem);
         tmpTMVAReader->AddVariable("ele_ep",             &fMVAVar_EoP);
         tmpTMVAReader->AddVariable("ele_eelepout",       &fMVAVar_eleEoPout);
         tmpTMVAReader->AddVariable("ele_IoEmIop",         &fMVAVar_IoEmIoP);
         
-
-
-      // Geometrical matchings
-      tmpTMVAReader->AddVariable("ele_deltaetain",            &fMVAVar_deta);
-      tmpTMVAReader->AddVariable("ele_deltaphiin",            &fMVAVar_dphi);
-      tmpTMVAReader->AddVariable("ele_deltaetaseed",        &fMVAVar_detacalo);
+        // Geometrical matchings
+        tmpTMVAReader->AddVariable("ele_deltaetain",            &fMVAVar_deta);
+        tmpTMVAReader->AddVariable("ele_deltaphiin",            &fMVAVar_dphi);
+        tmpTMVAReader->AddVariable("ele_deltaetaseed",        &fMVAVar_detacalo);
     
-      // Pure ECAL -> shower shapes
-
-      // Energy matching
 
 
         tmpTMVAReader->AddSpectator("ele_pT",             &fMVAVar_pt);
