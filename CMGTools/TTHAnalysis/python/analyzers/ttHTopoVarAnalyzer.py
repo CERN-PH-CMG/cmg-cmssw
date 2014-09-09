@@ -57,7 +57,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
         ## with Central Jets                                                                                                                                                                                                                                       
         gamma_objects25 = [ j for j in event.gamma_cleanJets if j.pt() > 25 ] + event.selectedLeptons
         gamma_objects30 = [ j for j in event.gamma_cleanJets if j.pt() > 30 ] + event.selectedLeptons
-        gamma_objects40  = [ j for j in event.gamma_cleanJets if j.pt() > 40 ] + event.selectedLeptons
+        gamma_objects40  = [ j for j in event.gamma_cleanJetsAll if j.pt() > 40 and abs(j.eta()) < 2.5 ] + [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta()) < 2.5 ]
         gamma_objects40j = [ j for j in event.gamma_cleanJets if j.pt() > 40 ]
 
         event.gamma_htJet25 = sum([x.pt() for x in gamma_objects25])
@@ -72,21 +72,19 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
         event.gamma_htJet40 = sum([x.pt() for x in gamma_objects40])
         event.gamma_mhtJet40vec = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in gamma_objects40])) , -1.*(sum([x.py() for x in gamma_objects40])), 0, 0 )
-        event.gamma_mhtJet40 = event.mhtJet40vec.pt()
-        event.gamma_mhtPhiJet40 = event.mhtJet40vec.phi()
+        event.gamma_mhtJet40 = event.gamma_mhtJet40vec.pt()
+        event.gamma_mhtPhiJet40 = event.gamma_mhtJet40vec.phi()
 
         event.gamma_htJet40j = sum([x.pt() for x in gamma_objects40j])
         event.gamma_mhtJet40jvec = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in gamma_objects40j])) , -1.*(sum([x.py() for x in gamma_objects40j])), 0, 0 )
-        event.gamma_mhtJet40j = event.mhtJet40jvec.pt()
-        event.gamma_mhtPhiJet40j = event.mhtJet40jvec.phi()
+        event.gamma_mhtJet40j = event.gamma_mhtJet40jvec.pt()
+        event.gamma_mhtPhiJet40j = event.gamma_mhtJet40jvec.phi()
 
         # MET + photon
         event.gamma_met = ROOT.reco.Particle.LorentzVector( event.met.px(), event.met.py(), 0, 0 )
-        for gamma in event.loosePhotonsCentral:
-            event.gamma_met = ROOT.reco.Particle.LorentzVector( event.gamma_met.px() + gamma.px(), event.gamma_met.py() + gamma.py() , 0, 0 )
-
         event.gamma_metNoPU = ROOT.reco.Particle.LorentzVector( event.metNoPU.px(), event.metNoPU.py(), 0, 0 )
         for gamma in event.loosePhotonsCentral:
+            event.gamma_met = ROOT.reco.Particle.LorentzVector( event.gamma_met.px() + gamma.px(), event.gamma_met.py() + gamma.py() , 0, 0 )
             event.gamma_metNoPU = ROOT.reco.Particle.LorentzVector( event.gamma_metNoPU.px() + gamma.px(), event.gamma_metNoPU.py() + gamma.py() , 0, 0 )
 
         # look for minimal deltaPhi between MET and four leading jets with pt>40 and eta<2.4
@@ -176,8 +174,18 @@ class ttHTopoVarAnalyzer( Analyzer ):
                     pseudoJet2pz += pzvec[index]
                     pseudoJet2energy += Evec[index]                    
 
-            event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
-            event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+            ### MM
+            # Ordering pseudoJets in pT 
+                    
+            pseudoJet1pt2 = pseudoJet1px*pseudoJet1px + pseudoJet1py*pseudoJet1py
+            pseudoJet2pt2 = pseudoJet2px*pseudoJet2px + pseudoJet2py*pseudoJet2py
+
+            if pseudoJet1pt2 >= pseudoJet2pt2:
+                event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+                event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+            else:
+                event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+                event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
 
             metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
             metVector =numpy.asarray(metVector,dtype='double')
@@ -257,7 +265,11 @@ class ttHTopoVarAnalyzer( Analyzer ):
 ## ===> full MT2 (jets + leptons)                                                                                                                                                                                             
 
         leptons_fullmt2 = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta())<2.5 ]
+
         objects_fullmt2 = objects40jc + leptons_fullmt2
+        #objects_fullmt2 = leptons_fullmt2 + objects40jc
+
+        objects_fullmt2.sort(key = lambda obj : obj.pt(), reverse = True)
 
         if len(objects_fullmt2)>=2:
 
@@ -272,6 +284,9 @@ class ttHTopoVarAnalyzer( Analyzer ):
                 pyvec.push_back(obj.py())
                 pzvec.push_back(obj.pz())
                 Evec.push_back(obj.energy())
+
+            #for obj in objects_fullmt2:
+            #    print "pt: ", obj.pt(), ", eta: ", obj.eta(), ", phi: ", obj.phi(), ", mass: ", obj.mass()
 
 #### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
 
@@ -301,8 +316,23 @@ class ttHTopoVarAnalyzer( Analyzer ):
                     pseudoJet2pz += pzvec[index]
                     pseudoJet2energy += Evec[index]
 
-            event.full_pseudoJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
-            event.full_pseudoJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+            #event.full_pseudoJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+            #event.full_pseudoJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+            
+            ### MM
+            # Ordering pseudoJets in pT
+
+            pseudoJet1pt2 = pseudoJet1px*pseudoJet1px + pseudoJet1py*pseudoJet1py
+            pseudoJet2pt2 = pseudoJet2px*pseudoJet2px + pseudoJet2py*pseudoJet2py
+
+            if pseudoJet1pt2 >= pseudoJet2pt2:
+                event.full_pseudoJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+                event.full_pseudoJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+            else:
+                event.full_pseudoJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+                event.full_pseudoJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+
+            ###
 
             full_metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
             full_metVector =numpy.asarray(full_metVector,dtype='double')
@@ -363,6 +393,8 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
         gamma_objects_fullmt2 = gamma_objects40jc + gamma_leptons_fullmt2
     
+        gamma_objects_fullmt2.sort(key = lambda obj : obj.pt(), reverse = True)
+
         if len(gamma_objects_fullmt2)>=2:
 
             pxvec  = ROOT.std.vector(float)()
