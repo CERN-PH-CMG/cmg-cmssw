@@ -9,6 +9,7 @@
 #include "CMGTools/RootTools/interface/Davismt2.h"
 #include "CMGTools/RootTools/interface/mt2w_bisect.h"
 #include "CMGTools/RootTools/interface/Hemisphere.h"
+#include "CMGTools/RootTools/interface/AlphaT.h"
 
 namespace {
   namespace {
@@ -22,5 +23,6 @@ namespace {
     Hemisphere hemisphere(vector<float> px, vector<float> py, vector<float> pz, vector<float> E, int hemi_seed, int hemi_association);
     Davismt2 mt2;
     mt2w_bisect::mt2w mt2wlept;
+    AlphaT alphaT;
   }
 }
