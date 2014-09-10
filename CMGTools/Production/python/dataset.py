@@ -408,36 +408,31 @@ class PrivateDataset ( BaseDataset ):
         return self.findPrimaryDatasetEntries(self.name, self.dbsInstance, runmin, runmax)
 ### MM
 
+def getDatasetFromCache( cachename ) :
+    cachedir =  '/'.join( [os.environ['HOME'],'.cmgdataset'])
+    pckfile = open( cachedir + "/" + cachename )
+    dataset = pickle.load(pckfile)      
+    return dataset
+
+def writeDatasetToCache( cachename, dataset ):
+    cachedir =  '/'.join( [os.environ['HOME'],'.cmgdataset'])
+    if not os.path.exists(cachedir):
+        os.mkdir(cachedir)
+    pckfile = open( cachedir + "/" + cachename, 'w')
+    pickle.dump(dataset, pckfile)
 
 def createDataset( user, dataset, pattern, readcache=False, 
                    basedir = None, run_range = None):
     
-    cachedir =  '/'.join( [os.environ['HOME'],'.cmgdataset'])
     
     def cacheFileName(data, user, pattern):
-        cf =  data.replace('/','_')
-        name = '{dir}/{user}%{name}%{pattern}.pck'.format(
-            dir = cachedir,
-            user = user,
-            name = cf,
-            pattern = pattern)
-        return name
+        return '{user}%{name}%{pattern}.pck'.format( user = user, name = data.replace('/','_'), pattern = pattern)
 
     def writeCache(dataset):
-        if not os.path.exists(cachedir):
-            os.mkdir(cachedir)
-        cachename = cacheFileName(dataset.name,
-                                  dataset.user,
-                                  dataset.pattern)
-        pckfile = open( cachename, 'w')
-        pickle.dump(dataset, pckfile)
+        writeDatasetToCache( cacheFileName(dataset.name, dataset.user, dataset.pattern), dataset )
 
     def readCache(data, user, pattern):
-        cachename = cacheFileName(data, user, pattern)
-        pckfile = open( cachename)
-        dataset = pickle.load(pckfile)      
-        #print 'reading cache'
-        return dataset
+        return getDatasetFromCache( cacheFileName(data, user, pattern) )
 
     if readcache:
         try:
