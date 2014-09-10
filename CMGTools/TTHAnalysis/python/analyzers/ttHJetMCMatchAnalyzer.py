@@ -86,7 +86,8 @@ class ttHJetMCMatchAnalyzer( Analyzer ):
                #print "get with pt %.1f (gen pt %.1f, ptscale = %.3f)" % (jetpt,genpt,ptscale)
                event.deltaMetFromJetSmearing[0] -= (ptscale-1)*jet.rawFactor()*jet.px()
                event.deltaMetFromJetSmearing[1] -= (ptscale-1)*jet.rawFactor()*jet.py()
-               jet.setP4(jet.p4()*ptscale)
+               if ptscale != 0:
+                  jet.setP4(jet.p4()*ptscale)
                # leave the uncorrected unchanged for sync
                jet._rawFactor = jet.rawFactor()/ptscale if ptscale != 0 else 0
                jet.rawFactor = types.MethodType(lambda self : self._rawFactor, jet, jet.__class__)
