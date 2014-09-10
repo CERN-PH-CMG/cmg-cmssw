@@ -77,20 +77,22 @@ def haddRec(odir, idirs):
         for file in files:
             hadd('/'.join([root, file]), odir, idirs)
 
-def haddChunks(idir, removeDestDir, cleanUp=False, ignoreDirs=[]):
+
+def haddChunks(idir, removeDestDir, cleanUp=False, ignoreDirs=None):
+
     chunks = {}
-    compsToSpare = []
+    compsToSpare = set()
+    if ignoreDirs == None: ignoreDirs = set()
+
     for file in sorted(os.listdir(idir)):
         filepath = '/'.join( [idir, file] )
         # print filepath
         if os.path.isdir(filepath):
             compdir = file
             skipDir = False
-            for dir in ignoreDirs:
-              if compdir == dir:
-                ignoreDirs.remove(dir) 
-                skipDir = True
-                break
+            if compdir in ignoreDirs:
+              ignoreDirs.remove(compdir) 
+              skipDir = True
             try:
                 prefix,num = compdir.split('_Chunk')
             except ValueError:
@@ -98,7 +100,7 @@ def haddChunks(idir, removeDestDir, cleanUp=False, ignoreDirs=[]):
                 continue
             #print prefix, num
             if skipDir: 
-              compsToSpare.append(prefix)
+              compsToSpare.add(prefix)
               continue
             chunks.setdefault( prefix, list() ).append(filepath)
     if len(chunks)==0:
@@ -119,11 +121,9 @@ def haddChunks(idir, removeDestDir, cleanUp=False, ignoreDirs=[]):
         print chunks
         for comp, chunks in chunks.iteritems():
             cleanIt = True
-            for safe in compsToSpare :
-              if comp==safe:
-                cleanIt = False
-                compsToSpare.remove(safe)
-                break
+            if comp in compsToSpare :
+              cleanIt = False
+              compsToSpare.remove(comp)
             if cleanIt :
               for chunk in chunks:
                   shutil.move(chunk, chunkDir)
