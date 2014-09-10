@@ -93,13 +93,13 @@ if __name__ == '__main__':
     print checkOutput
 
     checkOutput_lines = checkOutput.split("\n")
-    badFiles = []
+    badFiles = set()
     for aline in checkOutput_lines:
       if aline.startswith("['") :
         thisBadFile = aline.split("['")[1].split("']")[0].split(dir)[1]
         while thisBadFile.startswith("/"):
           thisBadFile = thisBadFile.split("/")[1]
-        badFiles.append(thisBadFile)
+        badFiles.add(thisBadFile)
 
 
     haddChunks(dir, options.remove, options.clean, badFiles)
