@@ -7,15 +7,6 @@ import numpy
 
 
 
-class DatasetInfo:
-  def __init__(self):
-    self.input;
-    self.output;
-    self.filter;
-    self.kfactor;
-    self.xsec;
-    self.id;
-
 
 class EventKey:
   def __init__(self, r, l, e):
@@ -24,27 +15,19 @@ class EventKey:
     self.evt=e;
 
 
-def postProcessBaby( dir, dataset ) :
+def removeDuplicatesBaby( dir, dataset ) :
+
+   print "-> Removing duplicates from dataset: " + dataset
 
    oldFileName = dir + str("/") + dataset + str("/treeProducerSusyFullHad/treeProducerSusyFullHad_tree.root")
-   newFileName = dir + str("/") + dataset + str("/") + dataset + str(".root")
-
    oldfile = TFile(oldFileName)
    oldtree = oldfile.Get("treeProducerSusyFullHad")
 
-   #newtree = ROOT.TTree("mt2", "post processed baby tree for mt2 analysis")
-   newfile = TFile("prova.root", "recreate")
+   newFileName = dir + str("/") + dataset + str(".root")
+   newfile = TFile(newFileName, "recreate")
    newtree = oldtree.CloneTree(0)
    newtree.SetName("mt2")
 
-   evt_scale1fb = numpy.zeros(1, dtype=float)
-   newtree.Branch("evt_scale1fb", evt_scale1fb, "evt_scale1fb/D");
-   #newtree.Branch("evt_scale1fb", AddressOf(evt_scale1fb, 'evt_scale1fb/F'), "evt_scale1fb/F");
-   #newtree.Branch("evt_xsec", AddressOf(xsec, "evt_xsec/F"), "evt_xsec/F");
-   #newtree.Branch("evt_kfactor", AddressOf(kfactor, "evt_kfactor/F"), "evt_kfactor/F");
-   #newtree.Branch("evt_filter", AddressOf(filter, "evt_filter/F"), "evt_filter/F");
-   #newtree.Branch("evt_nEvts", AddressOf(events, "evt_nEvts/I"), "evt_nEvts/I");
-   #newtree.Branch("evt_id", AddressOf(id, "evt_id/I"), "evt_id/I");
 
 
    evlist = set()
@@ -53,8 +36,6 @@ def postProcessBaby( dir, dataset ) :
 
      ek = EventKey(i.run, i.lumi, i.evt)
 
-     evt_scale1fb[0] = -13.
-
      if ek not in evlist :
        evlist.add(ek)
        newtree.Fill()
@@ -62,58 +43,17 @@ def postProcessBaby( dir, dataset ) :
    newfile.Write()
    newfile.Close()
 
-#   return
-#
-##//Get input tree
-##TFile *oldfile = new TFile(inputFile.c_str());
-##TTree *oldtree = (TTree*)oldfile->Get(treeName.c_str());
-##Long64_t nentries = oldtree->GetEntries();
-##cout << "In input tree, nentries = " << nentries << endl;
-##int run,lumi,evt;
-##oldtree->SetBranchAddress("run",&run);
-##oldtree->SetBranchAddress("lumi",&lumi);
-##oldtree->SetBranchAddress("evt",&evt);
-##//Create a new file + a clone of old tree in new file
-##TFile *newfile = new TFile(outputFile.c_str(),"recreate");
-##TTree *newtree = oldtree->CloneTree(0);
-##//Create set where we store list of event keys
-##std::set<EventKey> previousEvents;
-##for (Long64_t i=0;i<nentries; i++) {
-##//for (Long64_t i=0;i<1000; i++) {
-##oldtree->GetEntry(i);
-##EventKey newEvent(run,lumi,evt);
-##bool isDuplicate = !previousEvents.insert(newEvent).second;
-##if(i%100000==0) {
-##time_t t = time(0); // get time now
-##tm * now = localtime( & t );
-##cout << "Processing event: " << i << " at time "
-##<< now->tm_hour << ":"
-##<< now->tm_min << ":"
-##<< now->tm_sec
-##<< endl;
-##}
-##if(!isDuplicate) {
-##if(fillNewTree) newtree->Fill();
-##}else{
-##cout << "Found duplicate! run,lumi,evt: "
-##<< run << " , " << lumi << " , " << evt <<endl;
-##}
-##}
-##//newtree->Print();
-##newtree->AutoSave();
-##delete oldfile;
-##delete newfile;
 
 
 
-def postProcessBabies( dir ) :
+def removeDuplicates( dir ) :
 
   for file in sorted(os.listdir(dir)):
       filepath = '/'.join( [dir, file] )
       if os.path.isdir(filepath):
           dataset = file
           if "_Chunk" in dataset: continue
-          postProcessBaby( dir, dataset )
+          removeDuplicatesBaby( dir, dataset )
     
 
 
@@ -164,7 +104,7 @@ if __name__ == '__main__':
 
     haddChunks(dir, options.remove, options.clean, badFiles)
 
-    postProcessBabies( dir )
+    removeDuplicates( dir )
 
 
 
