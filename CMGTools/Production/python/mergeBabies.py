@@ -2,7 +2,7 @@
 
 from CMGTools.Production.hadd import haddChunks
 #import ROOT 
-from ROOT import TTree, TFile, AddressOf, gROOT
+from ROOT import TTree, TFile
 import numpy
 
 
@@ -101,6 +101,9 @@ if __name__ == '__main__':
           thisBadFile = thisBadFile.split("/")[1]
         badFiles.add(thisBadFile)
 
+    if len(badFiles) > 0 :
+      print "-> Found the following incomplete Chunks: "
+      print badFiles
 
     haddChunks(dir, options.remove, options.clean, badFiles)
 
