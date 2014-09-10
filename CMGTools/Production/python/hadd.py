@@ -77,19 +77,29 @@ def haddRec(odir, idirs):
         for file in files:
             hadd('/'.join([root, file]), odir, idirs)
 
-def haddChunks(idir, removeDestDir, cleanUp=False):
+def haddChunks(idir, removeDestDir, cleanUp=False, ignoreDirs=[]):
     chunks = {}
+    compsToSpare = []
     for file in sorted(os.listdir(idir)):
         filepath = '/'.join( [idir, file] )
         # print filepath
         if os.path.isdir(filepath):
             compdir = file
+            skipDir = False
+            for dir in ignoreDirs:
+              if compdir == dir:
+                ignoreDirs.remove(dir) 
+                skipDir = True
+                break
             try:
                 prefix,num = compdir.split('_Chunk')
             except ValueError:
                 # ok, not a chunk
                 continue
-            # print prefix, num
+            #print prefix, num
+            if skipDir: 
+              compsToSpare.append(prefix)
+              continue
             chunks.setdefault( prefix, list() ).append(filepath)
     if len(chunks)==0:
         print 'warning: no chunk found.'
@@ -108,8 +118,19 @@ def haddChunks(idir, removeDestDir, cleanUp=False):
         os.mkdir(chunkDir)
         print chunks
         for comp, chunks in chunks.iteritems():
-            for chunk in chunks:
-                shutil.move(chunk, chunkDir)
+            cleanIt = True
+            for safe in compsToSpare :
+              if comp==safe:
+                cleanIt = False
+                compsToSpare.remove(safe)
+                break
+            if cleanIt :
+              for chunk in chunks:
+                  shutil.move(chunk, chunkDir)
+
+
+
+
         
 if __name__ == '__main__':
     import sys
