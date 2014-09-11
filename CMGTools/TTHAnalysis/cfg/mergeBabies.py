@@ -4,6 +4,11 @@ from CMGTools.Production.hadd import haddChunks
 #import ROOT 
 from ROOT import TTree, TFile, AddressOf, gROOT
 import numpy
+from datasetInfo import Dataset, DatasetDict
+
+
+
+dd = DatasetDict()
 
 
 
@@ -15,9 +20,13 @@ class EventKey:
     self.evt=e;
 
 
-def removeDuplicatesBaby( dir, dataset ) :
 
-   print "-> Removing duplicates from dataset: " + dataset
+
+
+
+def postProcessBaby( dir, dataset ) :
+
+   print "-> Post-processing dataset: " + dataset
 
    oldFileName = dir + str("/") + dataset + str("/treeProducerSusyFullHad/treeProducerSusyFullHad_tree.root")
    oldfile = TFile(oldFileName)
@@ -27,6 +36,43 @@ def removeDuplicatesBaby( dir, dataset ) :
    newfile = TFile(newFileName, "recreate")
    newtree = oldtree.CloneTree(0)
    newtree.SetName("mt2")
+
+
+   oldtree.SetBranchStatus("*", 0) # disable all branches (faster)
+   oldtree.SetBranchStatus("run", 1) # enable only useful ones
+   oldtree.SetBranchStatus("lumi", 1) # enable only useful ones
+   oldtree.SetBranchStatus("evt", 1) # enable only useful ones
+
+
+
+   scale1fb = numpy.zeros(1, dtype=float)
+   xsec     = numpy.zeros(1, dtype=float)
+   kfactor  = numpy.zeros(1, dtype=float)
+   filter   = numpy.zeros(1, dtype=float)
+   nEvts    = numpy.zeros(1, dtype=int)
+   id       = numpy.zeros(1, dtype=int)
+
+   newtree.Branch("evt_scale1fb", scale1fb, "evt_scale1fb/D");
+   newtree.Branch("evt_xsec",     xsec,     "evt_xsec/D");
+   newtree.Branch("evt_kfactor",  kfactor,  "evt_kfactor/D");
+   newtree.Branch("evt_filter",   filter,   "evt_filter/D");
+   newtree.Branch("evt_nEvts",    nEvts,    "evt_nEvts/I");
+   newtree.Branch("evt_id",       id,       "evt_id/I");
+
+
+   events = oldtree.GetEntries()
+
+   process = dataset.split("_PU")[0]
+   d = dd[process]
+
+
+   scale1fb[0] = d.scale1fb(events)
+   xsec    [0] = d.xsection
+   kfactor [0] = d.kfactor 
+   filter  [0] = d.filter  
+   nEvts   [0] = events
+   id      [0] = d.id      
+
 
 
 
@@ -43,17 +89,18 @@ def removeDuplicatesBaby( dir, dataset ) :
    newfile.Write()
    newfile.Close()
 
+   print "-> Saved post-processed babytree in : " + str(newfile.GetName())
 
 
 
-def removeDuplicates( dir ) :
+def postProcess( dir ) :
 
   for file in sorted(os.listdir(dir)):
       filepath = '/'.join( [dir, file] )
       if os.path.isdir(filepath):
           dataset = file
           if "_Chunk" in dataset: continue
-          removeDuplicatesBaby( dir, dataset )
+          postProcessBaby( dir, dataset )
     
 
 
@@ -104,7 +151,7 @@ if __name__ == '__main__':
 
     haddChunks(dir, options.remove, options.clean, badFiles)
 
-    removeDuplicates( dir )
+    postProcess( dir )
 
 
 
