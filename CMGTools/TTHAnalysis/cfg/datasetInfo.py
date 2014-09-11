@@ -10,10 +10,10 @@ class Dataset:
     self.kfactor=kfact;
     self.filter=filt;
 
-  def scale1fb(events):
+  def scale1fb(self, events):
     if self.id>100: # mc
       return self.xsection*self.kfactor*1000.*self.filter/events;
-    else # data
+    else: # data
       return 1.
 
 
@@ -59,7 +59,7 @@ class DatasetDict(dict):
         self.addDataset( Dataset("GJets_HT-200to400"         ,  202,          489.9000,         1.,        1.) )
         self.addDataset( Dataset("GJets_HT-400to600"         ,  203,           62.0500,         1.,        1.) )
 
-        self.addDataset( Dataset("TTJets_MSDecaysCKM"        ,  300,          424.5000,         1.,        1.) )
+        self.addDataset( Dataset("TTJets_MSDecaysCKM_central",  300,          424.5000,         1.,        1.) )
 
         self.addDataset( Dataset("WJetsToLNu_HT100to200"     ,  501,         1817.0000,         1.,        1.) )
         self.addDataset( Dataset("WJetsToLNu_HT200to400"     ,  502,          471.6000,         1.,        1.) )
