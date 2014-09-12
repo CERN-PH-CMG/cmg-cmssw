@@ -151,6 +151,13 @@ if __name__ == '__main__':
 
     haddChunks(dir, options.remove, options.clean, badFiles)
 
+    # before post-processing, check if samples file is here:
+    samplesFileName = "samples_50ns_miniaod.txt"
+    if not os.path.isfile(samplesFileName):
+      os.system("wget https://mangano.web.cern.ch/mangano/public/MECCA/" + samplesFileName)
+
+    dd.addDatasetsFromFile(samplesFileName)
+
     postProcess( dir )
 
 
