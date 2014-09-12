@@ -1,5 +1,6 @@
 #!/bin/env python
 
+import os
 
 
 class Dataset:
@@ -52,7 +53,11 @@ class DatasetDict(dict):
 
     def addDatasetsFromFile( self, filename ):
 
+      if not os.path.isfile(filename):
+        os.system("wget https://mangano.web.cern.ch/mangano/public/MECCA/" + filename)
+
       file = open(filename, "r") 
+
       print "[DatasetDict] :: Adding samples from file: " + filename
    
       for line in file:
@@ -64,5 +69,6 @@ class DatasetDict(dict):
         self.addDataset( Dataset( name, int(args[0]), float(args[2]), float(args[3]), float(args[4]) ) )
 
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, filename="samples_50ns_miniaod.txt", *args, **kwargs):
         self.update(*args, **kwargs)
+        self.addDatasetsFromFile(filename)
