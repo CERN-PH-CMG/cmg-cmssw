@@ -35,9 +35,12 @@ class DatasetDict(dict):
         return dict.__setitem__(self, self.__keytransform__(key), value)
 
     def addDataset( self, d ):
+        # giovanni's convention: remove all hyphens:
         d.name = d.name.replace('-', '')
+        # add twice, so that both the dataset name AND the sample ID can be used as keys:
         dict.__setitem__(self, self.__keytransform__(d.id),   d)
         dict.__setitem__(self, self.__keytransform__(d.name), d)
+
         print "[DatasetDict] :: Added dataset :"
         print "         " + d.name
         print "         id: " + str(d.id) 
