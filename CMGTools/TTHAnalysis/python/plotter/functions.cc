@@ -76,6 +76,14 @@ float mt_llv(float ptl1, float phil1, float ptl2, float phil2, float ptv, float 
     return std::sqrt(std::max(0.f, ht*ht - px*px - py*py));
 }
 
+float mt_lllv(float ptl1, float phil1, float ptl2, float phil2, float ptl3, float phil3, float ptv, float phiv) {
+    float px = ptl1*std::cos(phil1) + ptl2*std::cos(phil2) + ptl3*std::cos(phil3) + ptv*std::cos(phiv);
+    float py = ptl1*std::sin(phil1) + ptl2*std::sin(phil2) + ptl3*std::sin(phil3) + ptv*std::sin(phiv);
+    float ht = ptl1+ptl2+ptl3+ptv;
+    return std::sqrt(std::max(0.f, ht*ht - px*px - py*py));
+}
+
+
 float mtw_wz3l(float pt1, float eta1, float phi1, float m1, float pt2, float eta2, float phi2, float m2, float pt3, float eta3, float phi3, float m3, float mZ1, float met, float metphi) 
 {
     if (abs(mZ1 - mass_2(pt1,eta1,phi1,m1,pt2,eta2,phi2,m2)) < 0.01) return mt_2(pt3,phi3,met,metphi);
