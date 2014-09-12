@@ -24,7 +24,7 @@ class EventKey:
 
 
 
-def postProcessBaby( dir, dataset ) :
+def postProcessBaby( dir, dataset, fast ) :
 
    print "-> Post-processing dataset: " + dataset
 
@@ -39,9 +39,10 @@ def postProcessBaby( dir, dataset ) :
 
 
    oldtree.SetBranchStatus("*", 0) # disable all branches (faster)
-   oldtree.SetBranchStatus("run", 1) # enable only useful ones
-   oldtree.SetBranchStatus("lumi", 1) # enable only useful ones
-   oldtree.SetBranchStatus("evt", 1) # enable only useful ones
+   if not fast:
+     oldtree.SetBranchStatus("run", 1) # enable only useful ones
+     oldtree.SetBranchStatus("lumi", 1) # enable only useful ones
+     oldtree.SetBranchStatus("evt", 1) # enable only useful ones
 
 
 
@@ -80,10 +81,13 @@ def postProcessBaby( dir, dataset ) :
 
    for i in oldtree :
 
-     ek = EventKey(i.run, i.lumi, i.evt)
+     if not fast:
+       ek = EventKey(i.run, i.lumi, i.evt)
 
-     if ek not in evlist :
-       evlist.add(ek)
+       if ek not in evlist :
+         evlist.add(ek)
+         newtree.Fill()
+     else:
        newtree.Fill()
 
    newfile.Write()
@@ -93,14 +97,14 @@ def postProcessBaby( dir, dataset ) :
 
 
 
-def postProcess( dir ) :
+def postProcess( dir, fast ) :
 
   for file in sorted(os.listdir(dir)):
       filepath = '/'.join( [dir, file] )
       if os.path.isdir(filepath):
           dataset = file
           if "_Chunk" in dataset: continue
-          postProcessBaby( dir, dataset )
+          postProcessBaby( dir, dataset, fast )
     
 
 
@@ -126,6 +130,9 @@ if __name__ == '__main__':
     parser.add_option("-c","--clean", dest="clean",
                       default=False,action="store_true",
                       help="move chunks to Chunks/ after processing.")
+    parser.add_option("-f","--fast", dest="fast",
+                      default=False,action="store_true",
+                      help="don't check for duplicates")
 
     (options,args) = parser.parse_args()
 
@@ -151,14 +158,5 @@ if __name__ == '__main__':
 
     haddChunks(dir, options.remove, options.clean, badFiles)
 
-    # before post-processing, check if samples file is here:
-    samplesFileName = "samples_50ns_miniaod.txt"
-    if not os.path.isfile(samplesFileName):
-      os.system("wget https://mangano.web.cern.ch/mangano/public/MECCA/" + samplesFileName)
-
-    dd.addDatasetsFromFile(samplesFileName)
-
-    postProcess( dir )
-
-
+    postProcess( dir, options.fast )
 
