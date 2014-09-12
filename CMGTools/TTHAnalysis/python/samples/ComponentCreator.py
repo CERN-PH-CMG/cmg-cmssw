@@ -1,6 +1,8 @@
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.Production.datasetToSource import datasetToSource, myDatasetToSource
 from CMGTools.Production.datasetInformation import DatasetInformation
+from CMGTools.Production import eostools
+import re
 
 class ComponentCreator(object):
     def makeMCComponent(self,name,dataset,user,pattern):
@@ -41,24 +43,9 @@ class ComponentCreator(object):
     ### MM
     def makeMyPrivateMCComponent(self,name,dataset,user,pattern,dbsInstance):
 
-        #entries = findMyPrimaryDatasetNumFiles(dataset, -1, -1)
-        #dbs = 'das_client.py --query="file dataset=%s instance=prod/phys03"' % dataset
-        #dbsOut = os.popen(dbs)
-        #files = []
-        #filesDBS = []
-        #for line in dbsOut:
-        #    if line.find('/store')==-1:
-        #        continue
-        #    line = line.rstrip()
-        #     # print 'line',line
-        #    filesDBS.append(line)
-
         component = cfg.MCComponent(
             dataset=dataset,
             name = name,
-            ##files = ['root://eoscms//eos/cms%s' % f for f in filesDBS],
-            ##files = self.getListOfFilesDBS(dataset, dbsInstance),
-            #files = getListOfFilesDBS(dataset, dbsInstance),
             files = self.getMyFiles(dataset, user, pattern, dbsInstance),
             xSection = 1,
             nGenEvents = 1,
@@ -68,6 +55,30 @@ class ComponentCreator(object):
 
         return component
     ### MM
+
+    def makeMCComponentFromEOS(self,name,dataset,path,pattern=".*root"):
+        from CMGTools.Production.dataset import getDatasetFromCache, writeDatasetToCache
+        if "%" in path: path = path % dataset;
+        print path
+        try:
+            files = getDatasetFromCache('EOS%{path}%{pattern}.pck'.format(path = path.replace('/','_'), pattern = pattern))
+        except IOError:
+            files = [ 'root://eoscms/'+x for x in eostools.listFiles('/eos/cms'+path) if re.match(pattern,x) ] 
+            if len(files) == 0:
+                raise RuntimeError, "ERROR making component %s: no files found under %s matching '%s'" % (name,path,pattern)
+            writeDatasetToCache('EOS%{path}%{pattern}.pck'.format(path = path.replace('/','_'), pattern = pattern), files)
+        component = cfg.MCComponent(
+            dataset=dataset,
+            name = name,
+            files = files,
+            xSection = 1,
+            nGenEvents = 1,
+            triggers = [],
+            effCorrFactor = 1,
+        )
+        return component
+
+
 
     def makeDataComponent(self,name,datasets,user,pattern):
          files=[]
@@ -108,43 +119,3 @@ class ComponentCreator(object):
             print 'ERROR FRACTION IS ONLY ',fraction
         return fraction 
         
-
-#### MM
-#    ### Function to get files on DBS prod/phys03
-#    def getListOfFilesDBS(self, dataset, dbsInstance):
-#        entries = findMyPrimaryDatasetNumFiles(dataset, dbsInstance, -1, -1)
-#        #print entries
-#        filesDBS = []
-#        dbs = 'das_client.py --query="file dataset=%s instance=prod/%s" --limit=%s' % (dataset, dbsInstance, entries)
-#        dbsOut = os.popen(dbs)
-#        for line in dbsOut:
-#            if line.find('/store')==-1:
-#                continue
-#            line = line.rstrip()
-#            # print 'line',line
-#            filesDBS.append(line)
-#        return ['root://eoscms//eos/cms%s' % f for f in filesDBS]
-#    
-#
-#def findMyPrimaryDatasetNumFiles(dataset, dbsInstance, runmin, runmax):
-#    
-#    query, qwhat = dataset, "dataset"
-#    if "#" in dataset: qwhat = "block"
-#    if runmin >0 or runmax > 0:
-#        if runmin == runmax:
-#            query = "%s run=%d" % (query,runmin)
-#        else:
-#            print "WARNING: queries with run ranges are slow in DAS"
-#            query = "%s run between [%d, %d]" % (query,runmin if runmin > 0 else 1, runmax if runmax > 0 else 999999)
-#    dbs='das_client.py --query="summary %s=%s instance=prod/%s"'%(qwhat, query, dbsInstance)
-#    dbsOut = os.popen(dbs).readlines()
-#    entries = []
-#    for line in dbsOut:
-#        line = line.replace('\n','')
-#        if "nfiles" in line:
-#            entries.append(int(line.split(":")[1]))
-#    if entries:
-#        return sum(entries)
-#    return -1
-#### MM
-
