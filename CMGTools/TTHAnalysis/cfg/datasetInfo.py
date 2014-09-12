@@ -12,7 +12,7 @@ class Dataset:
 
   def scale1fb(self, events):
     if self.id>100: # mc
-      return self.xsection*self.kfactor*1000.*self.filter/events;
+      return self.xsection*self.kfactor*1000.*self.filter/events
     else: # data
       return 1.
 
@@ -24,12 +24,18 @@ class DatasetDict(dict):
         return key
 
     def __getitem__(self, key):
+        try:
+          key.split()
+          key = key.replace("-", "")
+        except:
+          pass
         return dict.__getitem__(self, self.__keytransform__(key))
 
     def __setitem__(self, key, value):
         return dict.__setitem__(self, self.__keytransform__(key), value)
 
     def addDataset( self, d ):
+        d.name = d.name.replace('-', '')
         dict.__setitem__(self, self.__keytransform__(d.id),   d)
         dict.__setitem__(self, self.__keytransform__(d.name), d)
         print "[DatasetDict] :: Added dataset :"
@@ -52,7 +58,7 @@ class DatasetDict(dict):
         if len(args)<5: continue
         name = args[1].split("_Tune")[0]
         while name.startswith("/"): name = name.split("/")[1]
-        self.addDataset( Dataset( name, args[0], args[2], args[3], args[4]) )
+        self.addDataset( Dataset( name, int(args[0]), float(args[2]), float(args[3]), float(args[4]) ) )
 
 
     def __init__(self, *args, **kwargs):
