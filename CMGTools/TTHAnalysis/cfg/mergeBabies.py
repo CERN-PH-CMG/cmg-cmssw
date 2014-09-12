@@ -34,15 +34,18 @@ def postProcessBaby( dir, dataset, fast ) :
 
    newFileName = dir + str("/") + dataset + str(".root")
    newfile = TFile(newFileName, "recreate")
-   newtree = oldtree.CloneTree(0)
+   if fast:
+     newtree = oldtree.CloneTree(-1, "fast")
+   else:
+     newtree = oldtree.CloneTree(0)
    newtree.SetName("mt2")
 
 
-   oldtree.SetBranchStatus("*", 0) # disable all branches (faster)
-   if not fast:
-     oldtree.SetBranchStatus("run", 1) # enable only useful ones
-     oldtree.SetBranchStatus("lumi", 1) # enable only useful ones
-     oldtree.SetBranchStatus("evt", 1) # enable only useful ones
+   #oldtree.SetBranchStatus("*", 0) # disable all branches (faster)
+   #if not fast:
+   #  oldtree.SetBranchStatus("run" , 1) # enable only useful ones
+   #  oldtree.SetBranchStatus("lumi", 1) # enable only useful ones
+   #  oldtree.SetBranchStatus("evt" , 1) # enable only useful ones
 
 
 
@@ -53,12 +56,12 @@ def postProcessBaby( dir, dataset, fast ) :
    nEvts    = numpy.zeros(1, dtype=int)
    id       = numpy.zeros(1, dtype=int)
 
-   newtree.Branch("evt_scale1fb", scale1fb, "evt_scale1fb/D");
-   newtree.Branch("evt_xsec",     xsec,     "evt_xsec/D");
-   newtree.Branch("evt_kfactor",  kfactor,  "evt_kfactor/D");
-   newtree.Branch("evt_filter",   filter,   "evt_filter/D");
-   newtree.Branch("evt_nEvts",    nEvts,    "evt_nEvts/I");
-   newtree.Branch("evt_id",       id,       "evt_id/I");
+   b_scale1fb = newtree.Branch("evt_scale1fb", scale1fb, "evt_scale1fb/D");
+   b_xsec     = newtree.Branch("evt_xsec",     xsec,     "evt_xsec/D");
+   b_kfactor  = newtree.Branch("evt_kfactor",  kfactor,  "evt_kfactor/D");
+   b_filter   = newtree.Branch("evt_filter",   filter,   "evt_filter/D");
+   b_nEvts    = newtree.Branch("evt_nEvts",    nEvts,    "evt_nEvts/I");
+   b_id       = newtree.Branch("evt_id",       id,       "evt_id/I");
 
 
    events = oldtree.GetEntries()
@@ -79,16 +82,23 @@ def postProcessBaby( dir, dataset, fast ) :
 
    evlist = set()
 
-   for i in oldtree :
+   #for i in oldtree :
+   for i in range(0,events) :
 
-     if not fast:
+     if fast:
+       b_scale1fb.Fill()
+       b_xsec    .Fill()
+       b_kfactor .Fill()
+       b_filter  .Fill()
+       b_nEvts   .Fill()
+       b_id      .Fill()
+     else:
+       oldtree.GetEntry(i)
        ek = EventKey(i.run, i.lumi, i.evt)
 
        if ek not in evlist :
          evlist.add(ek)
          newtree.Fill()
-     else:
-       newtree.Fill()
 
    newfile.Write()
    newfile.Close()
