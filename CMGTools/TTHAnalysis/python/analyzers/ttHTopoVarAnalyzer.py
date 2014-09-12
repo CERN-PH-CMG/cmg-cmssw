@@ -130,7 +130,6 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
             # look for minimal deltaPhi between MET and four leading jets with pt>40 and |eta|<2.4
             event.zll_deltaPhiMin = 999.
-         
             objects40jc = [ j for j in event.cleanJets if j.pt() > 40 and abs(j.eta())<2.5 ]
             for n,j in enumerate(objects40jc):
                 if n>3:  break
