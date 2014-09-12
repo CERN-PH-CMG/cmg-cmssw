@@ -100,6 +100,54 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
         gamma_diffMetMht_vec = ROOT.reco.Particle.LorentzVector(event.gamma_mhtJet40vec.px()-event.gamma_met.px(), event.gamma_mhtJet40vec.py()-event.gamma_met.py(), 0, 0 )
         event.gamma_diffMetMht = sqrt( gamma_diffMetMht_vec.px()*gamma_diffMetMht_vec.px() + gamma_diffMetMht_vec.py()*gamma_diffMetMht_vec.py() )
+
+    def makeZllObjects(self, event):
+
+        import ROOT
+
+        vetoLeptons = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta()) < 2.5 ]
+
+        # MET + zll
+        event.zll_deltaPhiMin = -999.
+        event.zll_met_pt = -999.
+        event.zll_met_phi = -999.
+        event.zll_diffMetMht = -999.
+        event.zll_mhtJet40j = -999.
+        event.zll_mhtPhiJet40j = -999.
+        event.zll_invmass = -999.
+
+        if len(vetoLeptons)==2:
+            event.zll_met = ROOT.reco.Particle.LorentzVector( event.met.px(), event.met.py(), 0, 0 )
+            for l in vetoLeptons:
+                event.zll_met = ROOT.reco.Particle.LorentzVector( event.zll_met.px() + l.px(), event.zll_met.py() + l.py() , 0, 0 )
+    
+            event.zll_met_pt = event.zll_met.pt()
+            event.zll_met_phi = event.zll_met.phi()
+
+            # defining mht as hadronic mht
+            event.zll_mhtJet40j = event.mhtJet40j
+            event.zll_mhtPhiJet40j = event.mhtPhiJet40j
+
+            # look for minimal deltaPhi between MET and four leading jets with pt>40 and |eta|<2.4
+            event.zll_deltaPhiMin = 999.
+         
+            objects40jc = [ j for j in event.cleanJets if j.pt() > 40 and abs(j.eta())<2.5 ]
+            for n,j in enumerate(objects40jc):
+                if n>3:  break
+                thisDeltaPhi = abs( deltaPhi( j.phi(), event.zll_met.phi() ) )
+                if thisDeltaPhi < event.zll_deltaPhiMin : event.zll_deltaPhiMin = thisDeltaPhi
+
+            # absolute value of the vectorial difference between met and mht
+            zll_diffMetMht_vec = ROOT.reco.Particle.LorentzVector(event.mhtJet40jvec.px()-event.zll_met.px(), event.mhtJet40jvec.py()-event.zll_met.py(), 0, 0 )
+            event.zll_diffMetMht = sqrt( zll_diffMetMht_vec.px()*zll_diffMetMht_vec.px() + zll_diffMetMht_vec.py()*zll_diffMetMht_vec.py() )
+
+            # di-lepton invariant mass
+            zll_p4 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+            for l in vetoLeptons:
+                zll_p4 += l.p4() 
+                
+            event.zll_invmass = zll_p4.M()
+
     ###
 
         
@@ -386,7 +434,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
             event.mt2w = mt2wSNT.get_mt2w() 
 ### MM
 
-## ===> full gamma_MT2 (as used in the SUS-13-019)
+## ===> full gamma_MT2
 
         gamma_objects40jc = [ j for j in event.gamma_cleanJets if j.pt() > 40 and abs(j.eta())<2.5 ]
         gamma_leptons_fullmt2 = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta())<2.5 ]
@@ -452,6 +500,70 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
             event.gamma_mt2 = davismt2.get_mt2()
 
+
+## ===> zll_MT2
+        
+        vetoLeptons = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta()) < 2.5 ]
+            
+        if len(vetoLeptons)==2:
+
+            pxvec  = ROOT.std.vector(float)()
+            pyvec  = ROOT.std.vector(float)()
+            pzvec  = ROOT.std.vector(float)()
+            Evec  = ROOT.std.vector(float)()
+            grouping  = ROOT.std.vector(int)()
+
+            for obj in objects40jc:
+                pxvec.push_back(obj.px())
+                pyvec.push_back(obj.py())
+                pzvec.push_back(obj.pz())
+                Evec.push_back(obj.energy())
+
+#### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
+
+            hemisphere = Hemisphere(pxvec, pyvec, pzvec, Evec, 2, 3)
+            grouping=hemisphere.getGrouping()
+##            print 'grouping ',len(grouping)
+
+            pseudoJet1px = 0
+            pseudoJet1py = 0
+            pseudoJet1pz = 0
+            pseudoJet1energy = 0
+
+            pseudoJet2px = 0
+            pseudoJet2py = 0
+            pseudoJet2pz = 0
+            pseudoJet2energy = 0
+
+            for index in range(0, len(pxvec)):
+                if(grouping[index]==1):
+                    pseudoJet1px += pxvec[index]
+                    pseudoJet1py += pyvec[index]
+                    pseudoJet1pz += pzvec[index]
+                    pseudoJet1energy += Evec[index]
+                if(grouping[index]==2):
+                    pseudoJet2px += pxvec[index]
+                    pseudoJet2py += pyvec[index]
+                    pseudoJet2pz += pzvec[index]
+                    pseudoJet2energy += Evec[index]
+
+            event.zll_pseudoJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+            event.zll_pseudoJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+
+            zll_metVector = TVectorD(3,array.array('d',[0.,event.zll_met.px(), event.zll_met.py()]))
+            zll_metVector = numpy.asarray(zll_metVector,dtype='double')
+            zll_jetVector1 = TVectorD(3,array.array('d',[0.,event.zll_pseudoJet1.px(), event.zll_pseudoJet1.py()]))
+            zll_jetVector1 =numpy.asarray(zll_jetVector1,dtype='double')
+            zll_jetVector2 = TVectorD(3,array.array('d',[0.,event.zll_pseudoJet2.px(), event.zll_pseudoJet2.py()]))
+            zll_jetVector2 =numpy.asarray(zll_jetVector2,dtype='double')
+
+            davismt2.set_momenta(zll_jetVector1,zll_jetVector2,zll_metVector);
+            davismt2.set_mn(0);
+
+            event.zll_mt2 = davismt2.get_mt2()
+
+        else:
+            event.zll_mt2 = -999.
 ###
 
     def process(self, iEvent, event):
@@ -479,10 +591,16 @@ class ttHTopoVarAnalyzer( Analyzer ):
         event.gamma_mt2=-999
         event.gamma_pseudoJet1 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
         event.gamma_pseudoJet2 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+
+        event.zll_mt2=-999
+        event.zll_pseudoJet1 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+        event.zll_pseudoJet2 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+
         ###
         
         ### MM
         self.makeGammaObjects(event)
+        self.makeZllObjects(event)
         ###
 
         self.makeMT(event)

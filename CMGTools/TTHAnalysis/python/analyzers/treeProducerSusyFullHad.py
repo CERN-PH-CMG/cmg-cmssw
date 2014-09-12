@@ -45,6 +45,8 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             ### MM
             NTupleVariable("mt2", lambda ev: ev.fullmt2, float, help="mt2(j1,j2,,met) with leptons"),
             NTupleVariable("gamma_mt2", lambda ev: ev.gamma_mt2, float, help="mt2(j1,j2,,met) with photons added to met"),
+            NTupleVariable("zll_mt2", lambda ev: ev.zll_mt2, float, help="mt2(j1,j2,,met) with zll added to met, only hadrons"),
+            NTupleVariable("zll_deltaPhiMin", lambda ev : ev.zll_deltaPhiMin, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4"),
             ###
             #            NTupleVariable("mt2w", lambda ev: ev.mt2w, float, help="mt2w(l,b,met)"),
             ##--------------------------------------------------
@@ -56,6 +58,7 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             #            NTupleVariable("bestMTopHadPt", lambda ev: ev.bestMTopHadPt, int, help="bestMTopHadPt"),
             ##--------------------------------------------------
             ### MM
+            # Gamma variables
             NTupleVariable("gamma_nJet40", lambda ev: sum([j.pt() > 40 for j in ev.gamma_cleanJets]), int, help="Number of jets after photon-cleaning with pt > 40, |eta|<2.4"),
             NTupleVariable("gamma_nBJet40", lambda ev: sum([j.btagWP("CSVM") for j in ev.gamma_cleanJets if j.pt() > 40]), int, help="Number jets after photon-cleaning  with pt > 40 passing CSV medium"),
             NTupleVariable("gamma_ht", lambda ev : ev.gamma_htJet40j, help="H_{T} computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
@@ -66,8 +69,17 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             NTupleVariable("gamma_diffMetMht_had", lambda ev : ev.gamma_diffMetMht_had, help="abs( vec(mht) - vec(met) ) - only jets"),
             NTupleVariable("gamma_mht_had_pt", lambda ev : ev.gamma_mhtJet40j, help="H_{T}^{miss} computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
             NTupleVariable("gamma_mht_had_phi", lambda ev : ev.gamma_mhtPhiJet40j, help="H_{T}^{miss} #phi computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
+            # Zll variables
+            NTupleVariable("zll_deltaPhiMin", lambda ev : ev.zll_deltaPhiMin, help="minimal deltaPhi between the zll MET and the four leading jets with pt>40 and eta<2.4"),
+            NTupleVariable("zll_diffMetMht", lambda ev : ev.zll_diffMetMht, help="abs( vec(mht) - vec(met) ) - only jets for mht, jets plus 2 leptons for met"),
+            NTupleVariable("zll_mht_pt", lambda ev : ev.zll_mhtJet40j, help="H_{T}^{miss} computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
+            NTupleVariable("zll_mht_phi", lambda ev : ev.zll_mhtPhiJet40j, help="H_{T}^{miss} #phi computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
+            NTupleVariable("zll_met_pt", lambda ev : ev.zll_met_pt, help="E_{T}^{miss} computed from jets (with |eta|<2.5, pt > 40 GeV) + 2 leptons"),
+            NTupleVariable("zll_met_phi", lambda ev : ev.zll_met_phi, help="E_{T}^{miss} #phi computed from jets (with |eta|<2.5, pt > 40 GeV) + 2 leptons"),
+            NTupleVariable("zll_invmass", lambda ev : ev.zll_invmass, help="Invariant mass of di-lepton system"),
             ###
             ]
+
         
         self.globalObjects.update({
             # put more here
