@@ -504,7 +504,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
         
         vetoLeptons = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta()) < 2.5 ]
             
-        if len(vetoLeptons)==2:
+        if len(vetoLeptons)==2 and len(objects40jc)>=2:
 
             pxvec  = ROOT.std.vector(float)()
             pyvec  = ROOT.std.vector(float)()
