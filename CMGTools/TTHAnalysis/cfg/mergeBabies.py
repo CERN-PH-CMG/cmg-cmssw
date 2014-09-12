@@ -82,7 +82,8 @@ def postProcessBaby( dir, dataset, fast ) :
 
    evlist = set()
 
-   for i in oldtree :
+   #for i in oldtree :
+   for i in range(0,events) :
 
      if fast:
        b_scale1fb.Fill()
@@ -92,6 +93,7 @@ def postProcessBaby( dir, dataset, fast ) :
        b_nEvts   .Fill()
        b_id      .Fill()
      else:
+       oldtree.GetEntry(i)
        ek = EventKey(i.run, i.lumi, i.evt)
 
        if ek not in evlist :
