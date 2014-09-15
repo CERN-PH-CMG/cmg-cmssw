@@ -2,6 +2,7 @@
 #include "DataFormats/Math/interface/deltaPhi.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
+
 using namespace std;
 
 using std::vector;
@@ -184,10 +185,8 @@ int Hemisphere::Reconstruct(){
 
 	// take as second seed the object with largest DR*P w.r.t. the first seed
 		for (int i = 0; i < vsize; ++i){
-		  //			float DeltaR = sqrt((Object_Eta[i] - Object_Eta[I_Max])*(Object_Eta[i] - Object_Eta[I_Max])
-		  //				+ (Util::DeltaPhi(Object_Phi[i], Object_Phi[I_Max]))*(Util::DeltaPhi(Object_Phi[i], Object_Phi[I_Max]))  );
 			float DeltaR = sqrt((Object_Eta[i] - Object_Eta[I_Max])*(Object_Eta[i] - Object_Eta[I_Max])
-				+ (deltaPhi(Object_Phi[i], Object_Phi[I_Max]))*(deltaPhi(Object_Phi[i], Object_Phi[I_Max]))  );
+				+ ( deltaPhi(Object_Phi[i], Object_Phi[I_Max]))*( deltaPhi(Object_Phi[i], Object_Phi[I_Max]))  );
 			if (Object_Noseed[i] == 0 && DeltaR > dRminSeed1) {
 				float DeltaRP = DeltaR * Object_P[i];
 				if (DeltaRP > DeltaRP_Max){
@@ -288,7 +287,6 @@ int Hemisphere::Reconstruct(){
 	// take second largest Pt object as second seed, but require dR(seed1, seed2) > dRminSeed1 
 		for (int i = 0; i < vsize; ++i){
 			if( i == I_Max) continue;
-			//			float DeltaR = Util::GetDeltaR(Object_Eta[i], Object_Eta[I_Max], Object_Phi[i], Object_Phi[I_Max]); 
 			float DeltaR = deltaR(Object_Eta[i], Object_Eta[I_Max], Object_Phi[i], Object_Phi[I_Max]); 
 			if (Object_Noseed[i] == 0 && P_Max2 < Object_Pt[i] && DeltaR > dRminSeed1){
 				P_Max2 = Object_Pt[i];
@@ -449,7 +447,8 @@ int Hemisphere::Reconstruct(){
 							}
 			// and associate the object to the best hemisphere and add it to the sum
 							if (mass1 < mass2) {
-								if (Object_Group[i] != 1){
+//								if (Object_Group[i] != 1){
+								if (Object_Group[i] != 1 && Object_Group[i] != 0){ 
 									I_Move = true;
 								}
 								Object_Group[i] = 1;
@@ -458,7 +457,8 @@ int Hemisphere::Reconstruct(){
 								Sum1_Pz += Object_Pz[i];
 								Sum1_E += Object_E[i];
 							} else {
-								if (Object_Group[i] != 2){
+//								if (Object_Group[i] != 2){
+								if (Object_Group[i] != 2 && Object_Group[i] != 0){ 
 									I_Move = true;
 								}
 								Object_Group[i] = 2;
@@ -519,7 +519,7 @@ int Hemisphere::Reconstruct(){
 			}
 			cout << endl;
 		}
-
+        if (numLoop <= 1) I_Move = true;
 	} // end of iteration
 
 	// associate all objects to hemispheres for method 8
@@ -616,11 +616,11 @@ int Hemisphere::RejectISR(){
 		float newAxis1_Px = Axis1[0] * Axis1[3];
 		float newAxis1_Py = Axis1[1] * Axis1[3];
 		float newAxis1_Pz = Axis1[2] * Axis1[3];
-		//float newAxis1_E = Axis1[4];
+		float newAxis1_E = Axis1[4];
 		float newAxis2_Px = Axis2[0] * Axis2[3];
 		float newAxis2_Py = Axis2[1] * Axis2[3];
 		float newAxis2_Pz = Axis2[2] * Axis2[3];
-		//float newAxis2_E = Axis2[4];
+		float newAxis2_E = Axis2[4];
 
 	// loop over all objects associated to a hemisphere
 		int vsize = (int) Object_Px.size();
@@ -632,17 +632,17 @@ int Hemisphere::RejectISR(){
 				float newPx = 0.;
 				float newPy = 0.;
 				float newPz = 0.;
-				//float newE = 0.;
+				//				float newE = 0.;
 				if (Object_Group[i] == 1){
 					newPx = newAxis1_Px;
 					newPy = newAxis1_Py;
 					newPz = newAxis1_Pz;
-					//newE = newAxis1_E;
+					//					newE = newAxis1_E;
 				} else if (Object_Group[i] == 2) {
 					newPx = newAxis2_Px;
 					newPy = newAxis2_Py;
 					newPz = newAxis2_Pz;
-					//newE = newAxis2_E;
+					//					newE = newAxis2_E;
 				}
 
 		// compute the quantities to test whether the object is ISR
@@ -672,10 +672,8 @@ int Hemisphere::RejectISR(){
 						if (theta < 0.) {theta = theta + 3.141592654;}
 						hemiEta = -log(tan(0.5*theta));
 						hemiPhi = atan2(newPy, newPx);
-						//						float DeltaR = sqrt((Object_Eta[i] - hemiEta)*(Object_Eta[i] - hemiEta)
-						//							+ (Util::DeltaPhi(Object_Phi[i], hemiPhi))*(Util::DeltaPhi(Object_Phi[i], hemiPhi)) );
 						float DeltaR = sqrt((Object_Eta[i] - hemiEta)*(Object_Eta[i] - hemiEta)
-							+ (deltaPhi(Object_Phi[i], hemiPhi))*(deltaPhi(Object_Phi[i], hemiPhi)) );
+							+ ( deltaPhi(Object_Phi[i], hemiPhi))*( deltaPhi(Object_Phi[i], hemiPhi)) );
 //             cout << "  Object = " << i << ", DeltaR = " << DeltaR << endl;
 						if (DeltaR > valmax) {
 							valmax = DeltaR;
