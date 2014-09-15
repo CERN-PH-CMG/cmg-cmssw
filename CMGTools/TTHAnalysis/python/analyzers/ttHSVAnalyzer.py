@@ -2,7 +2,7 @@ from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.TTHAnalysis.signedSip import SignedImpactParameterComputer
 
-from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch
+from CMGTools.RootTools.utils.DeltaR import deltaR
 
 class ttHSVAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
@@ -33,7 +33,8 @@ class ttHSVAnalyzer( Analyzer ):
         event.ivf = allivf
 
         if self.cfg_comp.isMC:
-            packedGen = [ p for p in self.mchandles['packedGen'].product() if p.charge() != 0 and abs(p.eta()) < 2.7 ]
+            packedGen = [ (p.eta(),p.phi(),p) for p in self.mchandles['packedGen'].product() if p.charge() != 0 and abs(p.eta()) < 2.7 ]
+            packedGen.sort(key = lambda (e,p,x) : e)
             for s in event.ivf:
                 #print "SV with %d tracks, mass %5.2f, pt %5.2f, eta %+4.2f, phi %+4.2f: " % (s.numberOfDaughters(), s.mass(), s.pt(), s.eta(), s.phi())
                 mctracks, matchable, matched = 0, 0, 0
@@ -42,13 +43,27 @@ class ttHSVAnalyzer( Analyzer ):
                     dau = s.daughter(id)
                     #print "  daughter track with pt %6.3f, eta %+5.3f, phi %+5.3f, dxy %+6.4f, dz %+6.4f" % (dau.pt(), dau.eta(), dau.phi(), dau.dxy(), dau.dz())
                     dau.match = ( None, 0.05, 2 )
-                    for pg in packedGen:
-                        dr  = deltaR(dau.eta(),dau.phi(),pg.eta(),pg.phi())
+                    myeta, myphi = dau.eta(), dau.phi()
+                    # now, we don't loop over all the packed gen candidates, but rather do fast bisection to find the rightmost with eta > dau.eta() - 0.05
+                    etacut = myeta - dau.match[1]
+                    ileft, iright = 0, len(packedGen)
+                    while iright - ileft > 1:
+                        imid = (iright + ileft)/2
+                        if packedGen[imid][0] > etacut:
+                            iright = imid
+                        else:
+                            ileft = imid
+                    # now scan from imid to the end (but stop much earlier)
+                    etacut = myeta +  dau.match[1]
+                    for i in xrange(ileft,len(packedGen)):
+                        (eta,phi,pg) = packedGen[i]
+                        if eta > etacut: break
+                        dr  = deltaR(myeta,myphi,eta,phi)
+                        if dr > dau.match[1]: continue
+                        if pg.charge() != dau.charge(): continue
                         dpt = abs(dau.pt() - pg.pt())/(dau.pt()+pg.pt())
                         if pg.pt() > 10: dpt /= 2; # scale down 
-                        if pg.charge() != dau.charge(): 
-                            continue
-                        if dpt < 0.1 and dr < dau.match[1]:
+                        if dpt < 0.1:
                             dau.match = ( pg, dr, dpt )
                     if dau.match[0]: 
                         mctracks += 1
