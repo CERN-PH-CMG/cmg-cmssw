@@ -183,6 +183,11 @@ ttHJetMCAna = cfg.Analyzer(
     shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts
     )
 
+# Secondary vertex analyzer
+ttHSVAnalyzer = cfg.Analyzer(
+    'ttHSVAnalyzer'
+)
+
 # Core Event Analyzer (computes basic quantities like HT, dilepton masses)
 ttHCoreEventAna = cfg.Analyzer(
     'ttHCoreEventAnalyzer',
@@ -222,6 +227,7 @@ susyCoreSequence = [
     ttHTauMCAna,
     ttHJetAna,
     ttHJetMCAna,
+    #ttHSVAnalyzer, # out of core sequence for now
     ttHCoreEventAna,
     ttHJetMETSkim
 ]

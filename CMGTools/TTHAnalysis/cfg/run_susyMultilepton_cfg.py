@@ -25,6 +25,10 @@ ttHEventAna = cfg.Analyzer(
     minJets25 = 0,
     )
 
+# Insert the SV analyzer in the sequence
+susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
+                        ttHSVAnalyzer)
+
 
 from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_mumu, triggers_ee, triggers_mue, triggers_1mu
 # Tree Producer
