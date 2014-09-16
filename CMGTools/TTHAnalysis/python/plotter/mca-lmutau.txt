@@ -1,0 +1,99 @@
+S3m_m100_g050+ : S3m_m100_g050:       0.003570641 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m105_g052+ : S3m_m105_g052:       0.003275563 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m110_g055+ : S3m_m110_g055:       0.0030488977 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=False
+S3m_m115_g057+ : S3m_m115_g057:       0.002832893 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m120_g060+ : S3m_m120_g060:       0.002697981 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m125_g062+ : S3m_m125_g062:       0.002497703 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m130_g065+ : S3m_m130_g065:       0.0023276229 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m140_g070+ : S3m_m140_g070:       0.002195427 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m150_g075+ : S3m_m150_g075:       0.0019171516 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m160_g080+ : S3m_m160_g080:       0.001815288 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m170_g085+ : S3m_m170_g085:       0.0016484323 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m180_g090+ : S3m_m180_g090:       0.001575353 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m190_g095+ : S3m_m190_g095:       0.0014644981 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m200_g100+ : S3m_m200_g100:       0.0013655475 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m225_g112+ : S3m_m225_g112:       0.00122795 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m250_g125+ : S3m_m250_g125:       0.001148011 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m275_g137+ : S3m_m275_g137:       0.00104547745 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m300_g150+ : S3m_m300_g150:       0.0010045126 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m325_g162+ : S3m_m325_g162:       0.00095926 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m350_g175+ : S3m_m350_g175:       0.00091488 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m50_g025+ : S3m_m50_g025:       0.091471 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m55_g027+ : S3m_m55_g027:       0.048486 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m60_g030+ : S3m_m60_g030:       0.024299 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m65_g032+ : S3m_m65_g032:       0.0128713 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m70_g035+ : S3m_m70_g035:       0.0082438 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m75_g037+ : S3m_m75_g037:       0.0064274 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m80_g040+ : S3m_m80_g040:       0.005390523 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m85_g042+ : S3m_m85_g042:       0.004756957211 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m90_g045+ : S3m_m90_g045:       0.0041868045123 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S3m_m95_g047+ : S3m_m95_g047:       0.00386594913646 ; FillColor=ROOT.kOrange+10, Label="Sig 3\#mu", SkipMe=True
+S4m_m100_g050+ : S4m_m100_g050:       0.0010462700887 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m105_g052+ : S4m_m105_g052:       0.00095968737803 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m110_g055+ : S4m_m110_g055:       0.00088166802097 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=False
+S4m_m115_g057+ : S4m_m115_g057:       0.000802452000232 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m120_g060+ : S4m_m120_g060:       0.00074364 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m125_g062+ : S4m_m125_g062:       0.00070266 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m130_g065+ : S4m_m130_g065:       0.0006367295 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m140_g070+ : S4m_m140_g070:       0.0005595809 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m150_g075+ : S4m_m150_g075:       0.0004965302 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m160_g080+ : S4m_m160_g080:       0.000442473 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m170_g085+ : S4m_m170_g085:       0.000407029 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m180_g090+ : S4m_m180_g090:       0.0003565356 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m190_g095+ : S4m_m190_g095:       0.0003282774 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m200_g100+ : S4m_m200_g100:       0.0002976578 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m225_g112+ : S4m_m225_g112:       0.0002444146 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m250_g125+ : S4m_m250_g125:       0.000203847812656 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m275_g137+ : S4m_m275_g137:       0.00017786247 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m300_g150+ : S4m_m300_g150:       0.0001575222 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m325_g162+ : S4m_m325_g162:       0.000141093 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m350_g175+ : S4m_m350_g175:       0.000127819 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m50_g025+ : S4m_m50_g025:       0.0216644 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m55_g027+ : S4m_m55_g027:       0.0138951 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m60_g030+ : S4m_m60_g030:       0.0085246 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m65_g032+ : S4m_m65_g032:       0.0051186 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m70_g035+ : S4m_m70_g035:       0.00316594 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m75_g037+ : S4m_m75_g037:       0.00214234 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m80_g040+ : S4m_m80_g040:       0.00166855 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m85_g042+ : S4m_m85_g042:       0.00142965 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m90_g045+ : S4m_m90_g045:       0.00123530096 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+S4m_m95_g047+ : S4m_m95_g047:       0.001115992928 ; FillColor=ROOT.kOrange+10, Label="Sig 4\#mu", SkipMe=True
+
+GEN_WZ3mu_ascms    : GEN_WZ3mu_ascms    : 0.214378666641;  FillColor=ROOT.kViolet-4, Label="3\#mu Wll", TreeName="treeProducerSusyGenLevelOnly"
+GEN_WZ3mu_offshell : GEN_WZ3mu_offshell : 0.090629617363 ;  FillColor=ROOT.kBlue-9, Label="3\#mu All", TreeName="treeProducerSusyGenLevelOnly"
+
+#TTW 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5
+#TTZ 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2
+TTV 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5
+TTV 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2
+#TTWW 	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9
+VVV 	 : WWWJets:    0.08217  ;  FillColor=ROOT.kViolet, Label="VVV"
+VVV 	 : WWZJets:    0.0633   ;  FillColor=ROOT.kViolet, Label="VVV"
+WW 	 : WWJets:     5.995    ;  FillColor=ROOT.kBlue-9, Label="WW"
+WZ 	 : WZJets:     1.057    ;  FillColor=ROOT.kViolet-4, Label="WZ"
+ZZ	 : ZZ2e2mu:    0.1767   ;  FillColor=ROOT.kAzure-9, Label="ZZ"
+ZZ 	 : ZZ2e2tau:   0.1767   ;  FillColor=ROOT.kAzure-9, Label="ZZ"
+ZZ 	 : ZZ2mu2tau:  0.1767   ;  FillColor=ROOT.kAzure-9, Label="ZZ"
+ZZ	 : ZZTo4mu:    0.07691  ;  FillColor=ROOT.kAzure-9, Label="ZZ"
+ZZ       : ZZTo4e:     0.07691  ;  FillColor=ROOT.kAzure-9, Label="ZZ"
+ZZ       : ZZTo4tau:   0.07691  ;  FillColor=ROOT.kAzure-9, Label="ZZ"
+TT 	 : TTJetsLep:     25.77: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)    ;  FillColor=ROOT.kGray, NormSystematic=0.2, Label="top"
+#TT 	 : TTJetsSem:	  107.53: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)     ; 
+#TT 	 : TTJetsHad:     112.16: 1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)    ; 
+TT 	 : TtW:        11.73    ;  FillColor=ROOT.kGray, KeysPdf=True, Label="top"
+TT 	 : TbartW:     11.73    ;  FillColor=ROOT.kGray, , KeysPdf=True, Label="top"
+#DY       : DYJetsM10 : 915      ;  FillColor=ROOT.kCyan
+#DY       : DYJetsM50 : 3503.7   ;  FillColor=ROOT.kCyan
+DY       : DYJetsM10 : 915      ;  FillColor=ROOT.kCyan, KeysPdf=True, KeysPdfMinN=10000
+DY       : DYJetsM50 : 3503.7   ;  FillColor=ROOT.kCyan, KeysPdf=True, KeysPdfMinN=10000
+WJets   : WJets    : 37509.0   ;  FillColor=ROOT.kCyan+2, Label="W+jets", KeysPdf=True, KeysPdfMinN=10000
+
+data     : DoubleMuAB
+data     : DoubleMuC
+data     : DoubleMuD
+data     : DoubleElectronAB
+data     : DoubleElectronC
+data     : DoubleElectronD
+data     : MuEGAB
+data     : MuEGC
+data     : MuEGD

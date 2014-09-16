@@ -1,0 +1,18 @@
+4 good leptons: nLepGood >= 4 
+4 mu:  abs(LepGood1_pdgId) == 13 && abs(LepGood2_pdgId) == 13 && abs(LepGood3_pdgId) == 13 && abs(LepGood4_pdgId) == 13 
+zero charge: abs(LepGood1_pdgId+LepGood2_pdgId+LepGood3_pdgId+LepGood4_pdgId) == 0
+pt2010: LepGood1_pt > 20 && LepGood2_pt > 10
+#pt4020: LepGood1_pt > 40 && LepGood2_pt > 20 && LepGood3_pt > 15 && LepGood4_pt > 10
+#mu iso: max(max(LepGood1_relIso,LepGood2_relIso),LepGood3_relIso) < 0.2
+#mu MVA: min(min(LepGood1_mva,LepGood2_mva),LepGood3_mva) > 0.7
+mu id: LepGood1_tightId && LepGood2_tightId && LepGood3_tightId && LepGood4_tightId 
+minMll > 12: minMllAFAS > 12
+#met LD > 0.3: met_pt*0.00397 + mhtJet25*0.00265 > 0.3
+#met > 40: met_pt > 40
+b veto: nBJetMedium25 == 0
+j veto: nJet25 <= 1
+#Z peak: abs(mZ1-91.2) 
+#minMll > 80: minMllSFOS > 80
+mZ1: mZ1>100
+mZ2: mZ2>100
+

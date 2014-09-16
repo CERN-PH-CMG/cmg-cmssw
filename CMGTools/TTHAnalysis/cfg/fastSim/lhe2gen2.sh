@@ -1,10 +1,10 @@
 #!/bin/bash
 TMPDIR=$PWD
 #### ENV
-cd /afs/cern.ch/user/g/gpetrucc/w/GENS/CMSSW_5_3_5/src
+cd /afs/cern.ch/user/g/gpetrucc/scratch0/cmgprod/CMSSW_5_3_14/src
 export SCRAM_ARCH=slc5_amd64_gcc462
 eval $(scramv1 runtime -sh)
-SRC=/afs/cern.ch/user/g/gpetrucc/ttH/CMGTools/CMSSW_5_3_5/src/CMGTools/TTHAnalysis/cfg/fastSim;
+SRC=/afs/cern.ch/user/g/gpetrucc/scratch0/cmgprod/CMSSW_5_3_14/src/CMGTools/TTHAnalysis/cfg/fastSim
 #### CREATE CFG
 M="default"; if [[ "$1" == "--up" || "$1" == "--down" || "$1" == "--nojets" || "$1" == "--xqtup" || "$1" == "--xqtdown"  ]]; then M="$1"; shift; fi;
 EVENTS=""
@@ -24,7 +24,7 @@ while [[ "$1" != "" ]]; do
     if echo $INFILE | grep -q -v ^/store/; then
         if echo $INFILE | grep -q lhe.gz; then  
             echo "Unzipping $INFILE in $TMPDIR/events.$COUNTER.lhe"
-            zcat $INFILE > $TMPDIR/events.$COUNTER.lhe
+            zcat $INFILE | perl $SRC/lhe3to1.pl >  $TMPDIR/events.$COUNTER.lhe
             INFILE="file:$TMPDIR/events.$COUNTER.lhe";
             COUNTER=$(($COUNTER+1))
         else
@@ -40,7 +40,8 @@ done
 
 cd $TMPDIR;
 
-cat $SRC/Hadronizer_MgmMatchTuneZ2star_8TeV_madgraph_tauola_cff_py_noCMS_GEN.py > $OUTBASE.cfg.py
+#cat $SRC/Hadronizer_MgmMatchTuneZ2star_8TeV_madgraph_tauola_cff_py_noCMS_GEN.py > $OUTBASE.cfg.py
+cat $SRC/Hadronizer_MgmMatchTuneZ2star_8TeV_madgraph_tauola_cff_py_noCMS_noFilter_GEN.py > $OUTBASE.cfg.py
 echo "process.source.fileNames = [ $INFILES ]"                   >> $OUTBASE.cfg.py
 echo "process.AODSIMoutput.fileName = '$TMPDIR/$OUTBASE.root'"   >> $OUTBASE.cfg.py
 NJETS=99
@@ -76,6 +77,6 @@ for X in process.RandomNumberGeneratorService.parameterNames_():
    if X != 'saveFileName': getattr(process.RandomNumberGeneratorService,X).initialSeed = rnd.randint(1,99999999)
 _EOF_
 cmsRun $OUTBASE.cfg.py 2>&1 | tee $OUTBASE.log
-#test -f $TMPDIR/$OUTBASE.root && cmsStageIn $TMPDIR/$OUTBASE.root $OUTFILE
-#~/sh/skimreport $OUTBASE.log > $SRC/jobs/$OUTBASE.skimreport
-#gzip $OUTBASE.log && cp -v $OUTBASE.log.gz $SRC/jobs/
+test -f $TMPDIR/$OUTBASE.root && cmsStageIn $TMPDIR/$OUTBASE.root $OUTFILE
+~/sh/skimreport $OUTBASE.log > $SRC/jobs/$OUTBASE.skimreport
+gzip $OUTBASE.log && cp -v $OUTBASE.log.gz $SRC/jobs/

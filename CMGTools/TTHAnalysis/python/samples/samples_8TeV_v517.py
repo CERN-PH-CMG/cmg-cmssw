@@ -247,7 +247,71 @@ FastSim_TTGStarMM = kreator.makePrivateMCComponent('FastSim_TTGStarMM',  '/store
 FastSim_TTGStarEE = kreator.makePrivateMCComponent('FastSim_TTGStarEE',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-23/ttgstar_lowmll_ee_v2', _grep('ttgstar_lowmll_ee_v2', lowmllFiles) )
 FastSim_TTGStarTT = kreator.makePrivateMCComponent('FastSim_TTGStarTT',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-23/ttgstar_lowmll_tautau', _grep('ttgstar_lowmll_tautau', lowmllFiles) )
 
-fastSimSamples = [ FastSim_TTGStarMM, FastSim_TTGStarEE, FastSim_TTGStarTT ]
+lmutauFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/fastSim-lmutau.txt" % os.environ['CMSSW_BASE'], "r") if "cmgTuple" in f ]
+S3m_m100_g050 = kreator.makePrivateMCComponent('S3m_m100_g050', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m100_g050', _grep('S3m_m100_g050', lmutauFiles))
+S3m_m105_g052 = kreator.makePrivateMCComponent('S3m_m105_g052', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m105_g052', _grep('S3m_m105_g052', lmutauFiles))
+S3m_m110_g055 = kreator.makePrivateMCComponent('S3m_m110_g055', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m110_g055', _grep('S3m_m110_g055', lmutauFiles))
+S3m_m115_g057 = kreator.makePrivateMCComponent('S3m_m115_g057', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m115_g057', _grep('S3m_m115_g057', lmutauFiles))
+S3m_m120_g060 = kreator.makePrivateMCComponent('S3m_m120_g060', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m120_g060', _grep('S3m_m120_g060', lmutauFiles))
+S3m_m125_g062 = kreator.makePrivateMCComponent('S3m_m125_g062', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m125_g062', _grep('S3m_m125_g062', lmutauFiles))
+S3m_m130_g065 = kreator.makePrivateMCComponent('S3m_m130_g065', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m130_g065', _grep('S3m_m130_g065', lmutauFiles))
+S3m_m140_g070 = kreator.makePrivateMCComponent('S3m_m140_g070', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m140_g070', _grep('S3m_m140_g070', lmutauFiles))
+S3m_m150_g075 = kreator.makePrivateMCComponent('S3m_m150_g075', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m150_g075', _grep('S3m_m150_g075', lmutauFiles))
+S3m_m160_g080 = kreator.makePrivateMCComponent('S3m_m160_g080', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m160_g080', _grep('S3m_m160_g080', lmutauFiles))
+S3m_m170_g085 = kreator.makePrivateMCComponent('S3m_m170_g085', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m170_g085', _grep('S3m_m170_g085', lmutauFiles))
+S3m_m180_g090 = kreator.makePrivateMCComponent('S3m_m180_g090', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m180_g090', _grep('S3m_m180_g090', lmutauFiles))
+S3m_m190_g095 = kreator.makePrivateMCComponent('S3m_m190_g095', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m190_g095', _grep('S3m_m190_g095', lmutauFiles))
+S3m_m200_g100 = kreator.makePrivateMCComponent('S3m_m200_g100', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m200_g100', _grep('S3m_m200_g100', lmutauFiles))
+S3m_m225_g112 = kreator.makePrivateMCComponent('S3m_m225_g112', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m225_g112', _grep('S3m_m225_g112', lmutauFiles))
+S3m_m250_g125 = kreator.makePrivateMCComponent('S3m_m250_g125', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m250_g125', _grep('S3m_m250_g125', lmutauFiles))
+S3m_m275_g137 = kreator.makePrivateMCComponent('S3m_m275_g137', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m275_g137', _grep('S3m_m275_g137', lmutauFiles))
+S3m_m300_g150 = kreator.makePrivateMCComponent('S3m_m300_g150', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m300_g150', _grep('S3m_m300_g150', lmutauFiles))
+S3m_m325_g162 = kreator.makePrivateMCComponent('S3m_m325_g162', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m325_g162', _grep('S3m_m325_g162', lmutauFiles))
+S3m_m350_g175 = kreator.makePrivateMCComponent('S3m_m350_g175', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m350_g175', _grep('S3m_m350_g175', lmutauFiles))
+S3m_m50_g025 = kreator.makePrivateMCComponent('S3m_m50_g025', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m50_g025', _grep('S3m_m50_g025', lmutauFiles))
+S3m_m55_g027 = kreator.makePrivateMCComponent('S3m_m55_g027', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m55_g027', _grep('S3m_m55_g027', lmutauFiles))
+S3m_m60_g030 = kreator.makePrivateMCComponent('S3m_m60_g030', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m60_g030', _grep('S3m_m60_g030', lmutauFiles))
+S3m_m65_g032 = kreator.makePrivateMCComponent('S3m_m65_g032', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m65_g032', _grep('S3m_m65_g032', lmutauFiles))
+S3m_m70_g035 = kreator.makePrivateMCComponent('S3m_m70_g035', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m70_g035', _grep('S3m_m70_g035', lmutauFiles))
+S3m_m75_g037 = kreator.makePrivateMCComponent('S3m_m75_g037', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m75_g037', _grep('S3m_m75_g037', lmutauFiles))
+S3m_m80_g040 = kreator.makePrivateMCComponent('S3m_m80_g040', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m80_g040', _grep('S3m_m80_g040', lmutauFiles))
+S3m_m85_g042 = kreator.makePrivateMCComponent('S3m_m85_g042', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m85_g042', _grep('S3m_m85_g042', lmutauFiles))
+S3m_m90_g045 = kreator.makePrivateMCComponent('S3m_m90_g045', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m90_g045', _grep('S3m_m90_g045', lmutauFiles))
+S3m_m95_g047 = kreator.makePrivateMCComponent('S3m_m95_g047', '/store/cmst3/user/gpetrucc/lmutau/v1/S3m_m95_g047', _grep('S3m_m95_g047', lmutauFiles))
+S4m_m100_g050 = kreator.makePrivateMCComponent('S4m_m100_g050', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m100_g050', _grep('S4m_m100_g050', lmutauFiles))
+S4m_m105_g052 = kreator.makePrivateMCComponent('S4m_m105_g052', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m105_g052', _grep('S4m_m105_g052', lmutauFiles))
+S4m_m110_g055 = kreator.makePrivateMCComponent('S4m_m110_g055', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m110_g055', _grep('S4m_m110_g055', lmutauFiles))
+S4m_m115_g057 = kreator.makePrivateMCComponent('S4m_m115_g057', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m115_g057', _grep('S4m_m115_g057', lmutauFiles))
+S4m_m120_g060 = kreator.makePrivateMCComponent('S4m_m120_g060', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m120_g060', _grep('S4m_m120_g060', lmutauFiles))
+S4m_m125_g062 = kreator.makePrivateMCComponent('S4m_m125_g062', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m125_g062', _grep('S4m_m125_g062', lmutauFiles))
+S4m_m130_g065 = kreator.makePrivateMCComponent('S4m_m130_g065', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m130_g065', _grep('S4m_m130_g065', lmutauFiles))
+S4m_m140_g070 = kreator.makePrivateMCComponent('S4m_m140_g070', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m140_g070', _grep('S4m_m140_g070', lmutauFiles))
+S4m_m150_g075 = kreator.makePrivateMCComponent('S4m_m150_g075', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m150_g075', _grep('S4m_m150_g075', lmutauFiles))
+S4m_m160_g080 = kreator.makePrivateMCComponent('S4m_m160_g080', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m160_g080', _grep('S4m_m160_g080', lmutauFiles))
+S4m_m170_g085 = kreator.makePrivateMCComponent('S4m_m170_g085', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m170_g085', _grep('S4m_m170_g085', lmutauFiles))
+S4m_m180_g090 = kreator.makePrivateMCComponent('S4m_m180_g090', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m180_g090', _grep('S4m_m180_g090', lmutauFiles))
+S4m_m190_g095 = kreator.makePrivateMCComponent('S4m_m190_g095', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m190_g095', _grep('S4m_m190_g095', lmutauFiles))
+S4m_m200_g100 = kreator.makePrivateMCComponent('S4m_m200_g100', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m200_g100', _grep('S4m_m200_g100', lmutauFiles))
+S4m_m225_g112 = kreator.makePrivateMCComponent('S4m_m225_g112', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m225_g112', _grep('S4m_m225_g112', lmutauFiles))
+S4m_m250_g125 = kreator.makePrivateMCComponent('S4m_m250_g125', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m250_g125', _grep('S4m_m250_g125', lmutauFiles))
+S4m_m275_g137 = kreator.makePrivateMCComponent('S4m_m275_g137', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m275_g137', _grep('S4m_m275_g137', lmutauFiles))
+S4m_m300_g150 = kreator.makePrivateMCComponent('S4m_m300_g150', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m300_g150', _grep('S4m_m300_g150', lmutauFiles))
+S4m_m325_g162 = kreator.makePrivateMCComponent('S4m_m325_g162', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m325_g162', _grep('S4m_m325_g162', lmutauFiles))
+S4m_m350_g175 = kreator.makePrivateMCComponent('S4m_m350_g175', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m350_g175', _grep('S4m_m350_g175', lmutauFiles))
+S4m_m50_g025 = kreator.makePrivateMCComponent('S4m_m50_g025', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m50_g025', _grep('S4m_m50_g025', lmutauFiles))
+S4m_m55_g027 = kreator.makePrivateMCComponent('S4m_m55_g027', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m55_g027', _grep('S4m_m55_g027', lmutauFiles))
+S4m_m60_g030 = kreator.makePrivateMCComponent('S4m_m60_g030', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m60_g030', _grep('S4m_m60_g030', lmutauFiles))
+S4m_m65_g032 = kreator.makePrivateMCComponent('S4m_m65_g032', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m65_g032', _grep('S4m_m65_g032', lmutauFiles))
+S4m_m70_g035 = kreator.makePrivateMCComponent('S4m_m70_g035', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m70_g035', _grep('S4m_m70_g035', lmutauFiles))
+S4m_m75_g037 = kreator.makePrivateMCComponent('S4m_m75_g037', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m75_g037', _grep('S4m_m75_g037', lmutauFiles))
+S4m_m80_g040 = kreator.makePrivateMCComponent('S4m_m80_g040', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m80_g040', _grep('S4m_m80_g040', lmutauFiles))
+S4m_m85_g042 = kreator.makePrivateMCComponent('S4m_m85_g042', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m85_g042', _grep('S4m_m85_g042', lmutauFiles))
+S4m_m90_g045 = kreator.makePrivateMCComponent('S4m_m90_g045', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m90_g045', _grep('S4m_m90_g045', lmutauFiles))
+S4m_m95_g047 = kreator.makePrivateMCComponent('S4m_m95_g047', '/store/cmst3/user/gpetrucc/lmutau/v1/S4m_m95_g047', _grep('S4m_m95_g047', lmutauFiles))
+LMuTau = [ S3m_m100_g050, S3m_m105_g052, S3m_m110_g055, S3m_m115_g057, S3m_m120_g060, S3m_m125_g062, S3m_m130_g065, S3m_m140_g070, S3m_m150_g075, S3m_m160_g080, S3m_m170_g085, S3m_m180_g090, S3m_m190_g095, S3m_m200_g100, S3m_m225_g112, S3m_m250_g125, S3m_m275_g137, S3m_m300_g150, S3m_m325_g162, S3m_m350_g175, S3m_m50_g025, S3m_m55_g027, S3m_m60_g030, S3m_m65_g032, S3m_m70_g035, S3m_m75_g037, S3m_m80_g040, S3m_m85_g042, S3m_m90_g045, S3m_m95_g047, S4m_m100_g050, S4m_m105_g052, S4m_m110_g055, S4m_m115_g057, S4m_m120_g060, S4m_m125_g062, S4m_m130_g065, S4m_m140_g070, S4m_m150_g075, S4m_m160_g080, S4m_m170_g085, S4m_m180_g090, S4m_m190_g095, S4m_m200_g100, S4m_m225_g112, S4m_m250_g125, S4m_m275_g137, S4m_m300_g150, S4m_m325_g162, S4m_m350_g175, S4m_m50_g025, S4m_m55_g027, S4m_m60_g030, S4m_m65_g032, S4m_m70_g035, S4m_m75_g037, S4m_m80_g040, S4m_m85_g042, S4m_m90_g045, S4m_m95_g047 ]
+
+
+fastSimSamples = [ FastSim_TTGStarMM, FastSim_TTGStarEE, FastSim_TTGStarTT ] + LMuTau
 
 
 mcSamples=mcSamples_1+mcSamples_2+mcSamples_3 
@@ -416,6 +480,8 @@ for C in [DYJetsM50,TTJetsLep,TTJetsSem,TTJetsSem2,TTLep,DY1JetsM50]:
     C.splitFactor = 500
 for comp in fastSimSamples:
     comp.splitFactor = 10
+for comp in LMuTau:
+    comp.splitFactor = 2
 
 for comp in dataSamplesMu:
     comp.splitFactor = 800
