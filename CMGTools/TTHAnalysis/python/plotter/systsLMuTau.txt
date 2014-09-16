@@ -1,0 +1,10 @@
+# luminosity
+#lumi_8TeV      : .* : .* : 1.026
+
+# lepton efficiencies
+LepEff  : S3m.*|[WZ]Z : .*3mu.* : 1.10
+
+
+# shape theoretical uncertainties (private to this channel)
+bkg_WZ  : WZ : .* : 1.05  
+bkg_ZZ  : ZZ : .* : 1.05  
