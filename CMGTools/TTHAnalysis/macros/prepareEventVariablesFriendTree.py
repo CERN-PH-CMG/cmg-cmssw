@@ -34,7 +34,7 @@ class VariableProducer(Module):
             for B in mod.listBranches():
                 # don't add the same branch twice
                 if B in self.branches: 
-                    print "Will not add branch %s twice" % B
+                    print "Will not add branch %s twice" % (B,)
                     continue
                 self.branches[B] = True
                 if type(B) == tuple:

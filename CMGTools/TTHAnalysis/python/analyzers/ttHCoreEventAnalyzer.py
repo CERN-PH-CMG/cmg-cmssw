@@ -17,7 +17,7 @@ from CMGTools.RootTools.physicsobjects.Jet import Jet
 
 from CMGTools.RootTools.utils.DeltaR import * 
 from CMGTools.TTHAnalysis.leptonMVA import LeptonMVA
-from CMGTools.TTHAnalysis.signedSip import twoTrackChi2
+from CMGTools.TTHAnalysis.signedSip import *
 import os
         
 class ttHCoreEventAnalyzer( Analyzer ):
@@ -210,7 +210,40 @@ class ttHCoreEventAnalyzer( Analyzer ):
         event.htJet40ja = sum([x.pt() for x in objects40ja])
         event.mhtJet40jveca = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects40ja])) , -1.*(sum([x.py() for x in objects40ja])), 0, 0 )                     
         event.mhtJet40ja = event.mhtJet40jveca.pt()
-        event.mhtPhiJet40ja = event.mhtJet40jveca.phi()        
+        event.mhtPhiJet40ja = event.mhtJet40jveca.phi()
+
+        #For the vertex related variables 
+        #A = selectedLeptons[0], B = selectedLeptons[1], C = selectedLeptons[2], D = selectedLeptons[3] 
+        nlep = len(event.selectedLeptons)
+        
+        ##Variables related to IP
+        #Of one lepton w.r.t. the PV of the event
+        event.absIP3DA = absIP3D(event.selectedLeptons[0],event.goodVertices[0]) if nlep > 0 else (-1,-1)  
+        event.absIP3DB = absIP3D(event.selectedLeptons[1],event.goodVertices[0]) if nlep > 1 else (-1,-1)    
+ 
+        event.absIP3DC = absIP3D(event.selectedLeptons[2],event.goodVertices[0]) if nlep > 2 else (-1,-1)
+ 
+        event.absIP3DD = absIP3D(event.selectedLeptons[3],event.goodVertices[0]) if nlep > 3 else (-1,-1)
+        #Of one lepton w.r.t. the PV of the PV of the other leptons only
+        event.absIP3DApvBC = absIP3Dtrkpvtrks(event.selectedLeptons[0],event.selectedLeptons[1],event.selectedLeptons[2],event.selectedLeptons[0],3,0) if nlep > 2 else (-1,-1)
+        event.absIP3DBpvAC = absIP3Dtrkpvtrks(event.selectedLeptons[0],event.selectedLeptons[1],event.selectedLeptons[2],event.selectedLeptons[0],3,1) if nlep > 2 else (-1,-1)
+        event.absIP3DCpvAB = absIP3Dtrkpvtrks(event.selectedLeptons[0],event.selectedLeptons[1],event.selectedLeptons[2],event.selectedLeptons[0],3,2) if nlep > 2 else (-1,-1)
+ 
+        event.absIP3DApvBCD = absIP3Dtrkpvtrks(event.selectedLeptons[0],event.selectedLeptons[1],event.selectedLeptons[2],event.selectedLeptons[3],4,0) if nlep > 3 else (-1,-1)
+        event.absIP3DBpvACD = absIP3Dtrkpvtrks(event.selectedLeptons[0],event.selectedLeptons[1],event.selectedLeptons[2],event.selectedLeptons[3],4,1) if nlep > 3 else (-1,-1)
+        event.absIP3DCpvABD = absIP3Dtrkpvtrks(event.selectedLeptons[0],event.selectedLeptons[1],event.selectedLeptons[2],event.selectedLeptons[3],4,2) if nlep > 3 else (-1,-1)
+        event.absIP3DDpvABC = absIP3Dtrkpvtrks(event.selectedLeptons[0],event.selectedLeptons[1],event.selectedLeptons[2],event.selectedLeptons[3],4,3) if nlep > 3 else (-1,-1)
+        
+        ##Variables related to chi2
+        #Chi2 of all the good leptons of the event but one lepton
+        event.chi2pvtrksBCbutA = chi2pvtrks(event.selectedLeptons[1],event.selectedLeptons[2],event.selectedLeptons[1],event.selectedLeptons[1],2) if nlep > 2 else (-1,-1)
+        event.chi2pvtrksACbutB = chi2pvtrks(event.selectedLeptons[0],event.selectedLeptons[2],event.selectedLeptons[0],event.selectedLeptons[0],2) if nlep > 2 else (-1,-1)
+        event.chi2pvtrksABbutC = chi2pvtrks(event.selectedLeptons[0],event.selectedLeptons[1],event.selectedLeptons[0],event.selectedLeptons[0],2) if nlep > 2 else (-1,-1)
+
+        event.chi2pvtrksBCDbutA = chi2pvtrks(event.selectedLeptons[1],event.selectedLeptons[2],event.selectedLeptons[3],event.selectedLeptons[1],3) if nlep > 3 else (-1,-1)
+        event.chi2pvtrksACDbutB = chi2pvtrks(event.selectedLeptons[0],event.selectedLeptons[2],event.selectedLeptons[3],event.selectedLeptons[0],3) if nlep > 3 else (-1,-1)
+        event.chi2pvtrksABDbutC = chi2pvtrks(event.selectedLeptons[0],event.selectedLeptons[1],event.selectedLeptons[3],event.selectedLeptons[0],3) if nlep > 3 else (-1,-1)
+        event.chi2pvtrksABCbutD = chi2pvtrks(event.selectedLeptons[0],event.selectedLeptons[1],event.selectedLeptons[2],event.selectedLeptons[0],3) if nlep > 3 else (-1,-1)
 
         
         self.makeMETs(event);
