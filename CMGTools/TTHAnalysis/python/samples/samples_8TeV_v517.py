@@ -241,13 +241,24 @@ T2qq_2J_4 = kreator.makeMCComponent('T2qq_2J_4', '/SMS-T2qq_2J_mSquark-1050to120
 T2bb_2J_1 = kreator.makeMCComponent('T2bb_2J_1', '/SMS-T2bb_2J_mSbottom-100to475_mLSP-1to465_TuneZ2star_8TeV-madgraph-tauola/Summer12-START53_V7C_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
 T2bb_2J_2 = kreator.makeMCComponent('T2bb_2J_2', '/SMS-T2bb_2J_mSbottom-500to800_mLSP-1to790_TuneZ2star_8TeV-madgraph-tauola/Summer12-START53_V7C_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
 
+T2tt_2J_1 = kreator.makeMCComponent('T2tt_2J_1', '/SMS-T2tt_mStop-150to350_mLSP-0to250_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+T2tt_2J_2 = kreator.makeMCComponent('T2tt_2J_2', '/SMS-T2tt_mStop-375to475_mLSP-0to375_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+T2tt_2J_3 = kreator.makeMCComponent('T2tt_2J_3', '/SMS-T2tt_mStop-500to650_mLSP-0to225_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+T2tt_2J_4 = kreator.makeMCComponent('T2tt_2J_4', '/SMS-T2tt_mStop-500to650_mLSP-250to550_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+T2tt_2J_5 = kreator.makeMCComponent('T2tt_2J_5', '/SMS-T2tt_mStop-675to800_mLSP-300to700_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+T2tt_2J_6 = kreator.makeMCComponent('T2tt_2J_6', '/SMS-8TeV-Pythia6Z_T2tt_mStop-500to800_mLSP-1/Summer12-START52_V9_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+T2tt_2J_7 = kreator.makeMCComponent('T2tt_2J_7', '/SMS-8TeV-Pythia6Z_T2tt_mStop-150to475_mLSP-1/Summer12-START52_V9_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+
+
+
 T1tttt_2J = [ T1tttt_2J_1,T1tttt_2J_2,T1tttt_2J_3,T1tttt_2J_4,T1tttt_2J_5,T1tttt_2J_6,T1tttt_2J_7,T1tttt_2J_8 ]
 T5VV_2J = [ T5VV_2J_1,T5VV_2J_2,T5VV_2J_3,T5VV_2J_4,T5VV_2J_5,T5VV_2J_6,T5VV_2J_7 ]
 T2DegenerateStop_2J = [ T2DegenerateStop_2J_1, T2DegenerateStop_2J_2, T2DegenerateStop_2J_3, T2DegenerateStop_2J_4 ]
 T2qq_2J = [ T2qq_2J_1, T2qq_2J_2, T2qq_2J_3, T2qq_2J_4 ]
 T2bb_2J = [ T2bb_2J_1, T2bb_2J_2 ]
+T2tt_2J = [ T2tt_2J_1, T2tt_2J_2, T2tt_2J_3, T2tt_2J_4, T2tt_2J_5, T2tt_2J_6, T2tt_2J_7 ]
 
-susySamples = T1tttt_2J + T5VV_2J + T2DegenerateStop_2J + T2qq_2J + T2bb_2J
+susySamples = T1tttt_2J + T5VV_2J + T2DegenerateStop_2J + T2qq_2J + T2bb_2J + T2tt_2J
 
 ####################################################################################################################
 #-----------PRIVATE FAST SIM---------------
