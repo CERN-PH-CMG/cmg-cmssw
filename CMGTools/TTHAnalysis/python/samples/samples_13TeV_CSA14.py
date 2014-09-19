@@ -125,9 +125,9 @@ GluGluToHToZZTo4L_PUS14  = kreator.makePrivateMCComponent("GluGluToHToZZTo4L_PUS
 GluGluToHToGG_Flat20to50 = kreator.makePrivateMCComponent("GluGluToHToGG_Flat20to50", "/GluGluToHToGG_M-125_13TeV-powheg-pythia6/Spring14dr-Flat20to50_POSTLS170_V5-v1/AODSIM", [ "/store/cmst3/user/gpetrucc/miniAOD/v1/GluGluToHToGG_M-125_13TeV-powheg-pythia6_Flat20to50_PAT_big.root" ])
 VBFHTauTau_PUS14    = kreator.makePrivateMCComponent("VBFHTauTau_PUS14",    "/VBF_HToTauTau_M-125_13TeV-powheg-pythia6/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM", ["/store/cmst3/user/gpetrucc/miniAOD/v1/VBF_HToTauTau_M-125_13TeV-powheg-pythia6_PU_S14_PAT.root" ])
 TTHToWW_PUS14 = kreator.makePrivateMCComponent("TTHToWW_PUS14", "/TTbarH_HToWWTo2LAndTauNu_M-125_13TeV_pythia6/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM",   [ "/store/cmst3/user/gpetrucc/miniAOD/v1/TTbarH_HToWWTo2LAndTauNu_M-125_13TeV_pythia6_PU_S14_PAT.root" ])
+TTHnlo_S14 = kreator.makeMCComponentFromEOS('TTHnlo_S14', '/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM', '/store/cmst3/user/gpetrucc/%s/miniAODTest_CMSSW708_PR5037') 
 
-
-mcSamplesTest = [ DYJetsM50_Flat20to50, GluGluToHToZZTo4L_PUS14, GluGluToHToGG_Flat20to50, VBFHTauTau_PUS14, TTHToWW_PUS14 ]
+mcSamplesTest = [ DYJetsM50_Flat20to50, GluGluToHToZZTo4L_PUS14, GluGluToHToGG_Flat20to50, VBFHTauTau_PUS14, TTHToWW_PUS14, TTHnlo_S14]
 
 
 ## SOME PRIVATELY PRODUCED 50ns SAMPLES
@@ -167,11 +167,21 @@ WJetsToLNu_HT600toInf_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("WJets
 ZJetsToNuNu_HT200to400_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("ZJetsToNuNu_HT200to400_PU_S14_POSTLS170", "/ZJetsToNuNu_HT-200to400_Tune4C_13TeV-madgraph-tauola/phys_susy-miniAODforSusy_ZJetsToNuNu_HT-200to400_Tune4C_13TeV-madgraph-tauola_Spring14dr-PU_S14_POSTLS170-af38aa319b7b7c91a6797b31c3be19b7/USER", "PRIVATE", ".*root", "phys03")
 
 
-#mcSamplesCSA14_PU40bx50 = [ DYJetsM50_HT100to200_PU_S14_POSTLS170, DYJetsM50_HT200to400_PU_S14_POSTLS170, DYJetsM50_HT400to600_PU_S14_POSTLS170, DYJetsM50_HT600toInf_PU_S14_POSTLS170, GJets_HT100to200_PU_S14_POSTLS170, GJets_HT200to400_PU_S14_POSTLS170, GJets_HT400to600_PU_S14_POSTLS170, QCD_Pt1000to1400_PU_S14_POSTLS170, QCD_Pt10to15_PU_S14_POSTLS170, QCD_Pt120to170_PU_S14_POSTLS170, QCD_Pt1400to1800_PU_S14_POSTLS170, QCD_Pt1800_PU_S14_POSTLS170, QCD_Pt300to470_PU_S14_POSTLS170, QCD_Pt30to50_PU_S14_POSTLS170, QCD_Pt470to600_PU_S14_POSTLS170, QCD_Pt50to80_PU_S14_POSTLS170, QCD_Pt5to10_PU_S14_POSTLS170, QCD_Pt600to800_PU_S14_POSTLS170, QCD_Pt800to1000_PU_S14_POSTLS170, QCD_Pt80to120_PU_S14_POSTLS170, TTJets_MSDecaysCKM_central_PU_S14_POSTLS170, WJetsToLNu_HT100to200_PU_S14_POSTLS170, WJetsToLNu_HT200to400_PU_S14_POSTLS170, WJetsToLNu_HT400to600_PU_S14_POSTLS170, WJetsToLNu_HT600toInf_PU_S14_POSTLS170, ZJetsToNuNu_HT200to400_PU_S14_POSTLS170 ]
+T1tttt2J_6_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("T1tttt2J_6_PU_S14_POSTLS170","/SMS-T1tttt_2J_mGl-1500_mLSP-100_Tune4C_13TeV-madgraph-tauola/phys_susy-miniAODforSusy_SMS-T1tttt_2J_mGl-1500_mLSP-100_Tune4C_13TeV-madgraph-tauola_PU_S14_POSTLS170-af38aa319b7b7c91a6797b31c3be19b7/USER", "PRIVATE", ".*root", "phys03")
+T1tttt2J_7_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("T1tttt2J_7_PU_S14_POSTLS170","/SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola/phys_susy-miniAODforSusy_SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola_PU_S14_POSTLS170-af38aa319b7b7c91a6797b31c3be19b7/USER", "PRIVATE", ".*root", "phys03")
 
-mcSamplesCSA14_PU40bx50 = [ DYJetsM50_HT400to600_PU_S14_POSTLS170 ]
+mcSamplesCSA14_PU40bx50 = [DYJetsM50_HT100to200_PU_S14_POSTLS170, DYJetsM50_HT200to400_PU_S14_POSTLS170, DYJetsM50_HT400to600_PU_S14_POSTLS170, DYJetsM50_HT600toInf_PU_S14_POSTLS170, GJets_HT100to200_PU_S14_POSTLS170, GJets_HT200to400_PU_S14_POSTLS170, GJets_HT400to600_PU_S14_POSTLS170, QCD_Pt1000to1400_PU_S14_POSTLS170, QCD_Pt10to15_PU_S14_POSTLS170, QCD_Pt120to170_PU_S14_POSTLS170, QCD_Pt1400to1800_PU_S14_POSTLS170, QCD_Pt1800_PU_S14_POSTLS170, QCD_Pt300to470_PU_S14_POSTLS170, QCD_Pt30to50_PU_S14_POSTLS170, QCD_Pt470to600_PU_S14_POSTLS170, QCD_Pt50to80_PU_S14_POSTLS170, QCD_Pt5to10_PU_S14_POSTLS170, QCD_Pt600to800_PU_S14_POSTLS170, QCD_Pt800to1000_PU_S14_POSTLS170, QCD_Pt80to120_PU_S14_POSTLS170, TTJets_MSDecaysCKM_central_PU_S14_POSTLS170, WJetsToLNu_HT100to200_PU_S14_POSTLS170, WJetsToLNu_HT200to400_PU_S14_POSTLS170, WJetsToLNu_HT400to600_PU_S14_POSTLS170, WJetsToLNu_HT600toInf_PU_S14_POSTLS170, ZJetsToNuNu_HT200to400_PU_S14_POSTLS170, T1tttt2J_6_PU_S14_POSTLS170, T1tttt2J_7_PU_S14_POSTLS170]
 
-mcSamples = mcSamplesCSA14_PU20bx25 + mcSamplesTest + mcSamplesCSA14_PU40bx50
+
+
+### MORE private samples on EOS
+TTHWWnlo_S14 = kreator.makeMCComponentFromEOS('TTHWWnlo_S14', '/TTbarH_HToWWTo2L2Nu_M-125_13TeV_amcatnlo-pythia8-tauola/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM', '/store/cmst3/user/gpetrucc/%s/miniAODTest_CMSSW708_PR5037')
+TTHWWpy6_S14 = kreator.makeMCComponentFromEOS('TTHWWpy6_S14', '/TTbarH_HToWWTo2LAndTauNu_M-125_13TeV_pythia6/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM', '/store/cmst3/user/gpetrucc/%s/miniAODTest_CMSSW708_PR5037')
+TTHTTnlo_S14 = kreator.makeMCComponentFromEOS('TTHTTnlo_S14', '/TTbarH_HToTauTau_M-125_13TeV_amcatnlo-pythia8-tauola/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM', '/store/cmst3/user/gpetrucc/%s/miniAODTest_CMSSW708_PR5037')
+TTHTTpy6_S14 = kreator.makeMCComponentFromEOS('TTHTTpy6_S14', '/TTbarH_HToTauTau_M-125_13TeV_pythia6/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM', '/store/cmst3/user/gpetrucc/%s/miniAODTest_CMSSW708_PR5037')
+TTHs_S14 = [ TTHWWnlo_S14, TTHWWpy6_S14, TTHTTpy6_S14, TTHTTnlo_S14 ]
+
+mcSamples = mcSamplesCSA14_PU20bx25 + mcSamplesTest + mcSamplesCSA14_PU40bx50 + TTHs_S14
 
 
 #-----------DATA---------------
@@ -211,7 +221,7 @@ from CMGTools.TTHAnalysis.setup.Efficiencies import *
 for comp in mcSamples:
     comp.isMC = True
     comp.isData = False
-    comp.splitFactor = 1 #  if comp.name in [ "WJets", "DY3JetsM50", "DY4JetsM50","W1Jets","W2Jets","W3Jets","W4Jets","TTJetsHad" ] else 100
+    comp.splitFactor = 250 #  if comp.name in [ "WJets", "DY3JetsM50", "DY4JetsM50","W1Jets","W2Jets","W3Jets","W4Jets","TTJetsHad" ] else 100
     comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
     comp.puFileData=dataDir+"/puProfile_Data12.root"
     comp.efficiency = eff2012

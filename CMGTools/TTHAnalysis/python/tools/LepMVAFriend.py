@@ -81,96 +81,35 @@ class LeptonMVA:
         elif abs(lep.pdgId) == 13: return self.mu(lep,ncorr)
         else: return -99
 
-class LepMVATreeProducer(Module):
-    def __init__(self,name,booker,path,data,fast=False):
-        Module.__init__(self,name,booker)
+class LepMVAFriend:
+    def __init__(self,path,fast=True):
+        print path
         self.mva = LeptonMVA(path+"/weights/%s_BDTG.weights.xml")
-        self.data = data
         self.fast = fast
-    def beginJob(self):
-        self.t = PyTree(self.book("TTree","t","t"))
-        for i in range(8):
-            self.t.branch("LepGood%d_mvaNew" % (i+1),"F")
-            #if not self.data and not self.fast:
-            #    self.t.branch("LepGood%d_mvaNewUncorr"     % (i+1),"F")
-            #    self.t.branch("LepGood%d_mvaNewDoubleCorr" % (i+1),"F")
-    def analyze(self,event):
+    def listBranches(self):
+        return [ ("nLepGood","I"), ("LepGood_mvaNew","F",8,"nLepGood") ]
+    def __call__(self,event):
         lep = Collection(event,"LepGood","nLepGood",8)
-        for i,l in enumerate(lep):
-            if self.data:
-                setattr(self.t, "LepGood%d_mvaNew" % (i+1), self.mva(l,ncorr=0))
-            else: 
-                setattr(self.t, "LepGood%d_mvaNew" % (i+1), self.mva(l,ncorr=0))
-                #if not self.fast:
-                #    setattr(self.t, "LepGood%d_mvaNewUncorr"     % (i+1), self.mva(l,ncorr=0))
-                #    setattr(self.t, "LepGood%d_mvaNewDoubleCorr" % (i+1), self.mva(l,ncorr=2))
-        for i in xrange(len(lep),8):
-            setattr(self.t, "LepGood%d_mvaNew" % (i+1), -99.)
-            #if not self.data and not self.fast:
-            #    setattr(self.t, "LepGood%d_mvaNewUncorr"     % (i+1), -99.)
-            #    setattr(self.t, "LepGood%d_mvaNewDoubleCorr" % (i+1), -99.)
-        self.t.fill()
+        ret = { 'nLepGood' : event.nLepGood }
+        if event.run >= 1: # DATA
+            ret['LepGood_mvaNew'] = [ self.mva(l, ncorr=0) for l in lep ] 
+        else:              # MC
+            ret['LepGood_mvaNew'] = [ self.mva(l, ncorr=0) for l in lep ] 
+        return ret
 
-import os, itertools
-from sys import argv
-if len(argv) < 3: print "Usage: %s [-e] <TREE_DIR> <TRAINING>" % argv[0]
-jobs = []
-if argv[1] == "-e": # use existing training
-    argv = [argv[0]] + argv[2:]
-else: # new, make directory training
-    if not os.path.exists(argv[2]):            os.mkdir(argv[2])
-    if not os.path.exists(argv[2]+"/weights"): os.mkdir(argv[2]+"/weights")
-    if not os.path.exists(argv[2]+"/trainings"): os.mkdir(argv[2]+"/trainings")
-    for X,Y in itertools.product(["high","low"],["b","e"]):
-        os.system("cp weights/mu_pteta_%s_%s_BDTG.weights.xml %s/weights -v" % (X,Y,argv[2]))
-        os.system("cp mu_pteta_%s_%s.root %s/trainings -v" % (X,Y,argv[2]))
-    for X,Y in itertools.product(["high","low"],["cb","fb","ec"]):
-        os.system("cp weights/el_pteta_%s_%s_BDTG.weights.xml %s/weights -v" % (X,Y,argv[2]))
-        os.system("cp el_pteta_%s_%s.root %s/trainings -v" % (X,Y,argv[2]))
-for D in glob(argv[1]+"/*"):
-    fname = D+"/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root"
-    if os.path.exists(fname):
-        short = os.path.basename(D)
-        data = ("DoubleMu" in short or "MuEG" in short or "DoubleElectron" in short)
-        f = ROOT.TFile.Open(fname);
-        t = f.Get("ttHLepTreeProducerBase")
-        entries = t.GetEntries()
-        f.Close()
-        chunk = 500000.
-        if entries < chunk:
-            print "  ",os.path.basename(D),("  DATA" if data else "  MC")," single chunk"
-            jobs.append((short,fname,"%s/lepMVAFriend_%s.root" % (argv[2],short),data,xrange(entries)))
-        else:
-            nchunk = int(ceil(entries/chunk))
-            print "  ",os.path.basename(D),("  DATA" if data else "  MC")," %d chunks" % nchunk
-            for i in xrange(nchunk):
-                r = xrange(int(i*chunk),min(int((i+1)*chunk),entries))
-                jobs.append((short,fname,"%s/lepMVAFriend_%s.chunk%d.root" % (argv[2],short,i),data,r))
-print 4*"\n"
-print "I have %d taks to process" % len(jobs)
+if __name__ == '__main__':
+    from sys import argv
+    file = ROOT.TFile(argv[1])
+    tree = file.Get("treeProducerSusyMultilepton")
+    tree.vectorTree = True
+    class Tester(Module):
+        def __init__(self, name):
+            Module.__init__(self,name,None)
+            self.sf = LepMVAFriend("/afs/cern.ch/user/b/botta/CMGToolsGit/newRecipe/CMSSW_5_3_19/src/CMGTools/TTHAnalysis/macros/leptons")
+        def analyze(self,ev):
+            print "\nrun %6d lumi %4d event %d: leps %d" % (ev.run, ev.lumi, ev.evt, ev.nLepGood)
+            print self.sf(ev)
+    el = EventLoop([ Tester("tester") ])
+    el.loop([tree], maxEvents = 50)
 
-maintimer = ROOT.TStopwatch()
-def _runIt(args):
-    (name,fin,fout,data,range) = args
-    timer = ROOT.TStopwatch()
-    fb = ROOT.TFile(fin)
-    tb = fb.Get("ttHLepTreeProducerBase")
-    nev = tb.GetEntries()
-    print "==== %s starting (%d entries) ====" % (name, nev)
-    booker = Booker(fout)
-    el = EventLoop([ LepMVATreeProducer("newMVA",booker,argv[2],data,fast=True), ])
-    el.loop([tb], eventRange=range)
-    booker.done()
-    fb.Close()
-    time = timer.RealTime()
-    print "=== %s done (%d entries, %.0f s, %.0f e/s) ====" % ( name, nev, time,(nev/time) )
-    return (name,(nev,time))
-
-from multiprocessing import Pool
-pool = Pool(8)
-ret  = dict(pool.map(_runIt, jobs))
-fulltime = maintimer.RealTime()
-totev   = sum([ev   for (ev,time) in ret.itervalues()])
-tottime = sum([time for (ev,time) in ret.itervalues()])
-print "Done %d tasks in %.1f min (%d entries, %.1f min)" % (len(jobs),fulltime/60.,totev,tottime/60.)
-
+        
