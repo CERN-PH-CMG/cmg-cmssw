@@ -27,7 +27,7 @@ class ComponentCreator(object):
          component = cfg.MCComponent(
              dataset=dataset,
              name = name,
-             files = ['root://eoscms//eos/cms%s%s' % (dprefix,f) for f in files],
+             files = ['root://eoscms.cern.ch//eos/cms%s%s' % (dprefix,f) for f in files],
              xSection = 1,
              nGenEvents = 1,
              triggers = [],
@@ -60,7 +60,7 @@ class ComponentCreator(object):
         # print 'getting files for', dataset,user,pattern
         ds = datasetToSource( user, dataset, pattern, True )
         files = ds.fileNames
-        return ['root://eoscms//eos/cms%s' % f for f in files]
+        return ['root://eoscms.cern.ch//eos/cms%s' % f for f in files]
 
 
     def getSkimEfficiency(self,dataset,user):

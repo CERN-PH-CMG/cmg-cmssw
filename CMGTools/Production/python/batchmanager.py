@@ -47,11 +47,13 @@ class BatchManager:
                                 default="bsub -q 8nh < ./batchScript.sh")
 
         
-    def ParseOptions(self):       
+    def ParseOptions(self):     
         (self.options_,self.args_) = self.parser_.parse_args()
         if self.options_.remoteCopy == None:
             self.remoteOutputDir_ = ""
-        else:
+        else: 
+            # tier3 srmmkdir (or the new gfal tools ) for remoteDir needs to be implemented below
+            # https://wiki.chipp.ch/twiki/bin/view/CmsTier3/HowToAccessSe#gfal_tools
             # removing possible trailing slash
             self.remoteOutputDir_ = self.options_.remoteCopy.rstrip('/')
             if not castortools.isLFN( self.remoteOutputDir_ ):
@@ -138,6 +140,7 @@ class BatchManager:
         jobDir = '/'.join( [self.outputDir_, dname])
         print '\t',jobDir 
         self.mkdir( jobDir )
+        # needs to be implemented: if --remote-copy need to make dir in remote location to keep hierarchy (so haddChunks.py works?)
         self.listOfJobs_.append( jobDir )
         self.PrepareJobUser( jobDir, value )
         
@@ -211,15 +214,17 @@ class BatchManager:
        
 
     def RunningMode(self, batch):
-        '''Returns "LXPLUS", "LOCAL" or None,
+        '''Returns "LXPLUS", "PSI", "LOCAL", or None,
         
         "LXPLUS" : batch command is bsub, and logged on lxplus
-        "LOCAL" : batch command is nohup.
+        "PSI"    : batch command is qsub, and logged to t3uiXX
+        "LOCAL"  : batch command is nohup.
         In all other cases, a CmsBatchException is raised
         '''
         
         hostName = os.environ['HOSTNAME']
-        onLxplus =  hostName.startswith('lxplus')
+        onLxplus = hostName.startswith('lxplus')
+        onPSI    = hostName.startswith('t3ui'  )
         batchCmd = batch.split()[0]
         
         if batchCmd == 'bsub':
@@ -229,6 +234,13 @@ class BatchManager:
             else:
                 print 'running on LSF : %s from %s' % (batchCmd, hostName)
                 return 'LXPLUS'
+        elif batchCmd == "qsub":
+            if not onPSI:
+                err = 'Cannot run %s on %s' % (batchCmd, hostName)
+                raise ValueError( err )
+            else:
+                print 'running on SGE : %s from %s' % (batchCmd, hostName)
+                return 'PSI'
         elif batchCmd == 'nohup' or batchCmd == './batchScript.sh':
             print 'running locally : %s on %s' % (batchCmd, hostName)
             return 'LOCAL'

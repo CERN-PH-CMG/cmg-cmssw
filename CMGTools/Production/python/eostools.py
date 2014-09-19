@@ -23,10 +23,12 @@ def runXRDCommand(path, cmd, *args):
     ??? At some point, should return a list of lines instead of a string."""
     
     lfn = eosToLFN(path)
+    #print "lfn:", lfn, cmd
     tokens = cmsIO.splitPFN(lfnToPFN(lfn))
     
     command = ['xrd', tokens[1], cmd, tokens[2]]
     command.extend(args)
+    print "the command is: ", command
     runner = cmsIO.cmsFileManip()
     # print ' '.join(command)
     return runner.runCommand(command)
@@ -80,6 +82,10 @@ def lfnToPFN( path, tfcProt = 'rfio'):
     Otherwise, is uses the default one. 
     
     ??? what is tfcprot? """
+
+    if path.startswith("/store/cmst3/"):
+        path = path.replace("/store/cmst3/","root://eoscms.cern.ch//store/cmst3/")
+    #print "path to cmsFile():", path
     entity = cmsIO.cmsFile( path, tfcProt )
 #    tokens = cmsIO.splitPFN(entity.pfn)
     pfn = '%s://%s//%s/' % (entity.protocol,entity.host,entity.path)
@@ -390,6 +396,7 @@ def cat(path):
     """cat, works on EOS and locally"""
     path = lfnToEOS(path)
     if isEOS(path):
+        #print "the file to cat is:", path
         out, err, _ = runXRDCommand(path,'cat') 
         lines = []
         if out:
@@ -508,7 +515,8 @@ def matchingFiles( path, regexp):
 
     # print path, regexp
     pattern = re.compile( regexp )
-    files = ls_EOS(path)
+    #files = ls_EOS(path)
+    files = ls(path)
     # print files
     return [f for f in files if pattern.match(os.path.basename(f)) is not None]
 
