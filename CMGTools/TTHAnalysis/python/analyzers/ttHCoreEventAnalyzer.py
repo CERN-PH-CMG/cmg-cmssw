@@ -163,7 +163,7 @@ class ttHCoreEventAnalyzer( Analyzer ):
         ## with Central Jets
         objects25 = [ j for j in event.cleanJets if j.pt() > 25 ] + event.selectedLeptons
         objects30 = [ j for j in event.cleanJets if j.pt() > 30 ] + event.selectedLeptons
-        objects40  = [ j for j in event.cleanJets if j.pt() > 40 ] + event.selectedLeptons
+        objects40 = [ j for j in event.cleanJets if j.pt() > 40 ] + [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta()) < 2.5 ]
         objects40j = [ j for j in event.cleanJets if j.pt() > 40 ] 
 
         event.htJet25 = sum([x.pt() for x in objects25])
@@ -182,7 +182,7 @@ class ttHCoreEventAnalyzer( Analyzer ):
         event.mhtPhiJet40 = event.mhtJet40vec.phi()
 
         event.htJet40j = sum([x.pt() for x in objects40j])
-        event.mhtJet40jvec = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects40j])) , -1.*(sum([x.py() for x in objects40j])), 0, 0 )                     
+        event.mhtJet40jvec = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects40j])) , -1.*(sum([x.py() for x in objects40j])), 0, 0 )               
         event.mhtJet40j = event.mhtJet40jvec.pt()
         event.mhtPhiJet40j = event.mhtJet40jvec.phi()        
 
@@ -212,6 +212,7 @@ class ttHCoreEventAnalyzer( Analyzer ):
         event.mhtJet40ja = event.mhtJet40jveca.pt()
         event.mhtPhiJet40ja = event.mhtJet40jveca.phi()        
 
+        ###event.weirdAssVar = sum([x.eta() for x in objects40a])
         
         self.makeMETs(event);
         self.makeZs(event, self.maxLeps)
@@ -233,7 +234,12 @@ class ttHCoreEventAnalyzer( Analyzer ):
 
 
         # absolute value of the vectorial difference between met and mht
-        diffMetMht_vec = ROOT.reco.Particle.LorentzVector(event.mhtJet40jvec.px()-event.met.px(), event.mhtJet40jvec.py()-event.met.py(), 0, 0 )                     
+        ### MM
+        #diffMetMht_vec = ROOT.reco.Particle.LorentzVector(event.mhtJet40jvec.px()-event.met.px(), event.mhtJet40jvec.py()-event.met.py(), 0, 0 )                     
+        #event.diffMetMht = sqrt( diffMetMht_vec.px()*diffMetMht_vec.px() + diffMetMht_vec.py()*diffMetMht_vec.py() )
+        diffMetMht_had_vec = ROOT.reco.Particle.LorentzVector(event.mhtJet40jvec.px()-event.met.px(), event.mhtJet40jvec.py()-event.met.py(), 0, 0 )
+        event.diffMetMht_had = sqrt( diffMetMht_had_vec.px()*diffMetMht_had_vec.px() + diffMetMht_had_vec.py()*diffMetMht_had_vec.py() )
+        diffMetMht_vec = ROOT.reco.Particle.LorentzVector(event.mhtJet40vec.px()-event.met.px(), event.mhtJet40vec.py()-event.met.py(), 0, 0 )
         event.diffMetMht = sqrt( diffMetMht_vec.px()*diffMetMht_vec.px() + diffMetMht_vec.py()*diffMetMht_vec.py() )
-
+        ###
         return True
