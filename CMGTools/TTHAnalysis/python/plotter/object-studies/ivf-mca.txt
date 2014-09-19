@@ -1,0 +1,10 @@
+T1ttt+: T1tttt_PU20bx25: 1 ; FillColor=ROOT.kOrange+10
+DY : DYJetsM50_HT200to400_PU_S14_POSTLS170 : 1 ; FillColor=ROOT.kCyan
+TT: TTJets_PUS14: 1 ; FillColor=ROOT.kGray+1
+WJets : WJetsToLNu_HT400to600_PU_S14_POSTLS170 : 1 ; FillColor=ROOT.kCyan+2
+
+T1ttt_true+: T1tttt_PU20bx25: 1 : SV_mcMatchFraction > 0.66 ; FillColor=ROOT.kOrange+10, Label="SUSY" 
+TT_true: TTJets_PUS14: 1: SV_mcMatchFraction > 0.66 ; FillColor=ROOT.kGray+1, Label="Top"
+DY_fake    : DYJetsM50_HT200to400_PU_S14_POSTLS170  : 1 : SV_mcMatchFraction < 0.5; FillColor=ROOT.kCyan, Label="Fake DY"
+WJets_fake : WJetsToLNu_HT400to600_PU_S14_POSTLS170 : 1 : SV_mcMatchFraction < 0.5; FillColor=ROOT.kCyan+2, Label="Fake Wj"
+
