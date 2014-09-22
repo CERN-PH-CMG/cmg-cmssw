@@ -196,6 +196,8 @@ metType = NTupleObjectType("met", baseObjectTypes = [ fourVectorType ], variable
 
 genParticleType = NTupleObjectType("genParticle", baseObjectTypes = [ particleType ], mcOnly=True, variables = [
     NTupleVariable("charge",   lambda x : x.threeCharge()/3.0, float),
+    NTupleVariable("status",   lambda x : x.status(),int),
+
 ])
 genParticleWithSourceType = NTupleObjectType("genParticleWithSource", baseObjectTypes = [ genParticleType ], mcOnly=True, variables = [
     NTupleVariable("sourceId", lambda x : x.sourceId, int, help="origin of the particle: 6=t, 25=h, 23/24=W/Z")
