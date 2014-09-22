@@ -42,8 +42,7 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             ##--------------------------------------------------
             NTupleVariable("mt2_had", lambda ev: ev.mt2, float, help="mt2(j1,j2,,met)"),
             NTupleVariable("mt2_gen", lambda ev: ev.mt2_gen, float, help="mt2(j1,j2,,met) with genInfo"),
-            ### MM
-            NTupleVariable("mt2", lambda ev: ev.fullmt2, float, help="mt2(j1,j2,,met) with leptons"),
+            NTupleVariable("mt2", lambda ev: ev.mt2_full, float, help="mt2(j1,j2,,met) with jets and leptons"),
             NTupleVariable("gamma_mt2", lambda ev: ev.gamma_mt2, float, help="mt2(j1,j2,,met) with photons added to met"),
             NTupleVariable("zll_mt2", lambda ev: ev.zll_mt2, float, help="mt2(j1,j2,,met) with zll added to met, only hadrons"),
             ###
