@@ -231,61 +231,11 @@ class ttHLepAnalyzerSusy( Analyzer ):
         
         return allelectrons 
 
-### MM
-    def makeZllObjects(self, event):
-
-        import ROOT
-
-        vetoLeptons = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta()) < 2.5 ]
-
-        # MET + zll
-        event.zll_deltaPhiMin = -999.
-        event.zll_met_pt = -999.
-        event.zll_met_phi = -999.
-        event.zll_diffMetMht = -999.
-        event.zll_mhtJet40j = -999.
-        event.zll_mhtPhiJet40j = -999.
-        event.zll_invmass = -999.
-
-        if len(vetoLeptons)==2:
-            event.zll_met = ROOT.reco.Particle.LorentzVector( event.met.px(), event.met.py(), 0, 0 )
-            for l in vetoLeptons:
-                event.zll_met = ROOT.reco.Particle.LorentzVector( event.zll_met.px() + l.px(), event.zll_met.py() + l.py() , 0, 0 )
-
-            event.zll_met_pt = event.zll_met.pt()
-            event.zll_met_phi = event.zll_met.phi()
-
-            # defining mht as hadronic mht
-            event.zll_mhtJet40j = event.mhtJet40j
-            event.zll_mhtPhiJet40j = event.mhtPhiJet40j
-
-            # look for minimal deltaPhi between MET and four leading jets with pt>40 and |eta|<2.4
-            event.zll_deltaPhiMin = 999.
-            objects40jc = [ j for j in event.cleanJets if j.pt() > 40 and abs(j.eta())<2.5 ]
-            for n,j in enumerate(objects40jc):
-                if n>3:  break
-                thisDeltaPhi = abs( deltaPhi( j.phi(), event.zll_met.phi() ) )
-                if thisDeltaPhi < event.zll_deltaPhiMin : event.zll_deltaPhiMin = thisDeltaPhi
-
-            # absolute value of the vectorial difference between met and mht
-            zll_diffMetMht_vec = ROOT.reco.Particle.LorentzVector(event.mhtJet40jvec.px()-event.zll_met.px(), event.mhtJet40jvec.py()-event.zll_met.py(), 0, 0 )
-            event.zll_diffMetMht = sqrt( zll_diffMetMht_vec.px()*zll_diffMetMht_vec.px() + zll_diffMetMht_vec.py()*zll_diffMetMht_vec.py() )
-
-            # di-lepton invariant mass
-            zll_p4 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
-            for l in vetoLeptons:
-                zll_p4 += l.p4()
-
-            event.zll_invmass = zll_p4.M()
-###
-
-
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         self.counters.counter('events').inc('all events')
 
         #call the leptons functions
         self.makeLeptons(event)
-        self.makeZllObjects(event)
 
         return True
