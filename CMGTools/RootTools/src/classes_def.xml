@@ -10,4 +10,5 @@
   <class name="TriggerBitChecker" transient="true" />
   <class name="CMGMuonCleanerBySegmentsAlgo" transient="true" />
   <class name="EGammaMvaEleEstimatorFWLite" transient="true" />
+  <class name="AlphaT" transient="true" />
 </lcgdict>
