@@ -76,7 +76,7 @@ leptonTypeSusy = NTupleObjectType("leptonSusy", baseObjectTypes = [ leptonType ]
     NTupleVariable("nStations",    lambda lepton : lepton.numberOfMatchedStations() if abs(lepton.pdgId()) == 13 else 4, help="Number of matched muons stations (4 for electrons)"),
     NTupleVariable("trkKink",      lambda lepton : lepton.combinedQuality().trkKink if abs(lepton.pdgId()) == 13 else 0, help="Tracker kink-finder"), 
     NTupleVariable("caloCompatibility",      lambda lepton : lepton.caloCompatibility() if abs(lepton.pdgId()) == 13 else 0, help="Calorimetric compatibility"), 
-    NTupleVariable("globalTrackChi2",      lambda lepton : lepton.globalTrack().normalizedChi2() if abs(lepton.pdgId()) == 13 and lepton.globalTrack().isNonnull() else 0, help="Tracker kink-finder"), 
+    NTupleVariable("globalTrackChi2",      lambda lepton : lepton.globalTrack().normalizedChi2() if abs(lepton.pdgId()) == 13 and lepton.globalTrack().isNonnull() else 0, help="Global track normalized chi2"), 
     # Extra tracker-related id variables
     NTupleVariable("trackerLayers", lambda x : (x.track() if abs(x.pdgId())==13 else x.gsfTrack()).hitPattern().trackerLayersWithMeasurement(), int, help="Tracker Layers"),
     NTupleVariable("pixelLayers", lambda x : (x.track() if abs(x.pdgId())==13 else x.gsfTrack()).hitPattern().pixelLayersWithMeasurement(), int, help="Pixel Layers"),
@@ -104,6 +104,21 @@ leptonTypeSusyExtra = NTupleObjectType("leptonSusyExtra", baseObjectTypes = [ le
     NTupleVariable("svM", lambda x : x.ivf.mass() if getattr(x,'ivf',None) != None else -99, help="mass of associated SV"),
     NTupleVariable("svPt", lambda x : x.ivf.pt() if getattr(x,'ivf',None) != None else -99, help="pt of associated SV"),
     NTupleVariable("svMCMatchFraction", lambda x : x.ivf.mcMatchFraction if getattr(x,'ivf',None) != None else -99, mcOnly=True, help="Fraction of mc-matched tracks from b/c matched to a single hadron (if >= 2 tracks found), for associated SV"),
+    # MVA muon ID variables
+    NTupleVariable("segmentCompatibility",      lambda lepton : lepton.segmentCompatibility() if abs(lepton.pdgId()) == 13 else 0, help="Segment-based compatibility"), 
+    NTupleVariable("innerTrackValidHitFraction",      lambda lepton : lepton.innerTrack().validFraction() if abs(lepton.pdgId()) == 13 else 0, help="Calorimetric compatibility"), 
+    NTupleVariable("chi2LocalPosition",      lambda lepton : lepton.combinedQuality().chi2LocalPosition if abs(lepton.pdgId()) == 13 else 0, help="Calorimetric compatibility"), 
+    NTupleVariable("chi2LocalMomentum",      lambda lepton : lepton.combinedQuality().chi2LocalMomentum if abs(lepton.pdgId()) == 13 else 0, help="Calorimetric compatibility"), 
+    NTupleVariable("glbTrackProbability",      lambda lepton : lepton.combinedQuality().glbTrackProbability if abs(lepton.pdgId()) == 13 else 0, help="Calorimetric compatibility"), 
+    NTupleVariable("trackerHits", lambda x : (x.track() if abs(x.pdgId())==13 else x.gsfTrack()).hitPattern().numberOfValidTrackerHits(), int, help="Tracker hits"),
+    NTupleVariable("lostOuterHits",    lambda x : x.gsfTrack().trackerExpectedHitsOuter().numberOfLostHits() if abs(x.pdgId())==11 else x.innerTrack().trackerExpectedHitsOuter().numberOfLostHits(), int, help="Number of lost hits on inner track"),
+    # extra muon variables not used in MVA ID
+    NTupleVariable("caloEMEnergy",      lambda lepton : lepton.calEnergy().em if abs(lepton.pdgId()) == 13 else 0, help="Calorimetric compatibility"), 
+    NTupleVariable("caloHadEnergy",      lambda lepton : lepton.calEnergy().had if abs(lepton.pdgId()) == 13 else 0, help="Calorimetric compatibility"), 
+    NTupleVariable("innerTrackChi2",      lambda lepton : lepton.innerTrack().normalizedChi2() if abs(lepton.pdgId()) == 13 and lepton.innerTrack().isNonnull() else 0, help="Inner track normalized chi2"), 
+    NTupleVariable("stationsWithAnyHits",      lambda lepton : lepton.outerTrack().hitPattern().muonStationsWithAnyHits() if abs(lepton.pdgId()) == 13 and lepton.outerTrack().isNonnull() else 0, help="Outer track stations with any hits"), 
+    NTupleVariable("stationsWithValidHits",      lambda lepton : lepton.outerTrack().hitPattern().muonStationsWithValidHits() if abs(lepton.pdgId()) == 13 and lepton.outerTrack().isNonnull() else 0, help="Outer track stations with valid hits"), 
+    NTupleVariable("stationsWithValidHitsGlbTrack",      lambda lepton : lepton.globalTrack().hitPattern().muonStationsWithValidHits() if abs(lepton.pdgId()) == 13 and lepton.globalTrack().isNonnull() else 0, help="Global track stations with valid hits"), 
 ])
 
 leptonTypeSusyFR = NTupleObjectType("leptonSusyFR", baseObjectTypes = [ leptonTypeTTH ], variables = [
