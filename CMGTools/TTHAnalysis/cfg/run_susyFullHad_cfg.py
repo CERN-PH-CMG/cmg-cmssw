@@ -75,9 +75,17 @@ ttHIsoTrackAna = cfg.Analyzer(
             doSecondVeto = False
             )
 
+##------------------------------------------ 
+##  CONTROL VARIABLES
+##------------------------------------------ 
+
+ttHMT2Control = cfg.Analyzer(
+            'ttHMT2Control',
+            )
+
 
 ##------------------------------------------
-##  TOLOLOGIAL VARIABLES: MT, MT2
+##  TOPOLOGIAL VARIABLES: MT, MT2
 ##------------------------------------------
 
 # Tree Producer
@@ -136,12 +144,13 @@ selectedComponents = [ SMS_T1qqqq_2J_mGl1000_mLSP800_PU_S14_POSTLS170 ]
 
 sequence = cfg.Sequence(susyCoreSequence+[
     ttHIsoTrackAna,
+    ttHMT2Control,
     ttHTopoJetAna,
     treeProducer,
     ])
 
 #-------- HOW TO RUN
-test = 2
+test = 1
 if test==1:
     # test a single component, using a single thread.
     comp=TTJets_PU20bx25
