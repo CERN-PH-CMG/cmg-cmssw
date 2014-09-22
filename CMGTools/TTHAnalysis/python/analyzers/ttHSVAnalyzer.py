@@ -93,6 +93,7 @@ class ttHSVAnalyzer( Analyzer ):
                 s.mcMatchFraction  = -1.0
                 s.mcFlavFirst      = 0
                 s.mcFlavHeaviest   = 0
+                s.mcHadron         = None
                 if matchable:
                     maxhits  = max([h for (p,h,d,f) in ancestors.itervalues() ])
                     mindepth = min([d for (p,h,d,f) in ancestors.itervalues() if h == maxhits])
@@ -101,8 +102,89 @@ class ttHSVAnalyzer( Analyzer ):
                     for (mom,hits,depth,flav) in ancestors.itervalues():
                         if hits != maxhits: continue
                         if depth == mindepth:
+                            s.mcHadron    = mom
                             s.mcFlavFirst = flav
                         s.mcFlavHeaviest = max(flav, s.mcFlavHeaviest)
                         #print " \==> ancestor  pdgId %+6d with %d/%d hits at depth %d at %s" % (mom.pdgId(), hits, matchable, depth, hash(mom))
                         #if hits == maxhits and depth == mindepth: print "           ^^^^^--- this is our best match"
+
+        # Attach SVs to Jets 
+        daumap = {}
+        for s in event.ivf:
+            s.jet = None
+            for i in xrange(s.numberOfDaughters()):
+                daumap[s.daughterPtr(i).key()] = s
+        for j in event.jetsIdOnly:
+            jdaus = [j.daughterPtr(i).key() for i in xrange(j.numberOfDaughters())]
+            j.svs = []
+            for jdau in jdaus:
+                if jdau in daumap:
+                    j.svs.append(daumap[jdau])
+                    daumap[jdau].jet = j
+
+        #Attach SVs to leptons
+        #print "\n\nNew event: "
+        for l in event.selectedLeptons:
+            #print "Lepton pdgId %+2d pt %5.2f, eta %+4.2f, phi %+4.2f, sip3d %5.2f, mcMatchAny %d, mcMatchId %d: " % (l.pdgId(), l.pt(), l.eta(), l.phi(), l.sip3D(), getattr(l,'mcMatchAny',-37), getattr(l,'mcMatchId',-37))
+            track = l.gsfTrack() if abs(l.pdgId()) == 11  else l.track()
+            l.ivfAssoc = None
+            l.ivf      = None
+            l.ivfSip3d = 0 # sip wrt SV
+            l.ivfRedPt = 0 # pt of SV (without lepton)
+            l.ivfRedM  = 0 # mass of SV (without lepton)
+            for s in event.ivf:
+                #dr = deltaR(l.eta(), l.phi(), s.eta(), s.phi())
+                #mindr = min([deltaR(s.daughter(i).eta(),s.daughter(i).phi(),l.eta(),l.phi()) for i in xrange(s.numberOfDaughters())])
+                sip3d = SignedImpactParameterComputer.signedIP3D(track.get(), s, s.momentum()).significance()
+                byref = False
+                daus = [s.daughterPtr(i).key() for i in xrange(s.numberOfDaughters())]
+                for i in xrange(l.numberOfSourceCandidatePtrs()):
+                    src = l.sourceCandidatePtr(i)
+                    if src.isNonnull() and src.isAvailable():
+                        if src.key() in daus:
+                            byref = True
+                invmass  = (l.p4() + s.p4()).mass() if not byref else s.mass() 
+                #go = False
+                if byref:
+                    l.ivfAssoc = "byref"
+                    l.ivf      = s
+                    l.ivfSip3d = sip3d
+                    l.ivfRedM  = (s.p4() - l.p4()).mass()
+                    l.ivfRedPt = (s.p4() - l.p4()).Pt()
+                    #go = True
+                    break
+                elif l.ivfAssoc != "byref" and invmass < 6:
+                    if l.ivfAssoc == None or (l.ivfAssoc[0] == "bymass" and l.ivfAssoc[1] > invmass):
+                        l.ivfAssoc = ("bymass",invmass)
+                        l.ivf      = s
+                        l.ivfSip3d = sip3d
+                        l.ivfRedM  = s.mass()
+                        l.ivfRedPt = s.pt()
+                        #go = True
+                #bymc = False
+                #if self.cfg_comp.isMC and l.mcMatchAny == 2 and s.mcHadron != None and l.mcMatchAny_gp != None:
+                #    hadmothers = []
+                #    mom = s.mcHadron.motherRef()
+                #    while mom != None and mom.isNonnull() and mom.isAvailable():
+                #        if mom.status() != 2 or abs(mom.pdgId()) < 100: break
+                #        hadmothers.append(mom.key())
+                #        mom = mom.motherRef() if mom.numberOfMothers() > 0 else None
+                #    # now I need also to invent a ref to mom itself (won't be needed in new MiniAODs for which the packedGenParticles will have a motherRef and not just a mother)
+                #    mom = s.mcHadron.motherRef()
+                #    if mom.isNonnull() and mom.isAvailable():
+                #        for i in xrange(mom.numberOfDaughters()):
+                #            dau = mom.daughterRef(i)
+                #            if dau.pdgId() == s.mcHadron.pdgId() and dau.status() == s.mcHadron.status() and abs(dau.pt()-s.mcHadron.pt()) < 1e-5 and abs(dau.eta()-s.mcHadron.eta()) < 1e-5:
+                #                hadmothers.append(dau.key())
+                #                break
+                #    mom = l.mcMatchAny_gp.motherRef()
+                #    while mom != None and mom.isNonnull() and mom.isAvailable(): # no idea why the isAvailable is needed
+                #        if mom.status() != 2 or (abs(mom.pdgId()) < 100 and abs(mom.pdgId()) != 15): break
+                #        if mom.key() in hadmothers:
+                #            bymc = True
+                #            break
+                #        mom = mom.motherRef() if mom.numberOfMothers() > 0 else None 
+                #if go or bymc:
+                #    print "   SV with %d tracks, mass %5.2f, pt %5.2f, eta %+4.2f, phi %+4.2f, mc %s (ntkHF %d, frac %.2f): " % (s.numberOfDaughters(), s.mass(), s.pt(), s.eta(), s.phi(), s.mcHadron != None, s.mcMatchNTracksHF, s.mcMatchFraction)
+                #    print "          dr = %.4f, mindr = %.4f, mass = %6.2f, sip3d %+5.2f, byref = %s, bymc = %s " % (dr, mindr, invmass, sip3d, byref, bymc)
         return True

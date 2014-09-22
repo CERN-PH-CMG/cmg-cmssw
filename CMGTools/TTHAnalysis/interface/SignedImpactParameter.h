@@ -19,6 +19,7 @@ class SignedImpactParameter {
         ~SignedImpactParameter() ;
 
         Measurement1D signedIP3D(const reco::Track &tk, const reco::Vertex &vtx, const reco::Track::Vector jetdir) const ;
+        Measurement1D signedIP3D(const reco::Track &tk, const reco::VertexCompositePtrCandidate &vtx, const reco::Track::Vector jetdir) const ;
         std::pair<double,double> twoTrackChi2(const reco::Track &tk1, const reco::Track &tk2) const ;
 
         //For the vertex related variables

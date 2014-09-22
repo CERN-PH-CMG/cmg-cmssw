@@ -26,6 +26,15 @@ SignedImpactParameter::signedIP3D(const reco::Track &tk, const reco::Vertex &vtx
     return IPTools::signedImpactParameter3D(ttk, GlobalVector(jetdir.X(),jetdir.Y(),jetdir.Z()), vtx).second;
 }
 
+Measurement1D 
+SignedImpactParameter::signedIP3D(const reco::Track &tk, const reco::VertexCompositePtrCandidate &sv, const reco::Track::Vector jetdir) const {
+    reco::Vertex::CovarianceMatrix csv; sv.fillVertexCovariance(csv);
+    reco::Vertex svtx(sv.vertex(), csv);
+    return signedIP3D(tk, svtx, jetdir);
+}
+
+
+
 std::pair<double,double>
 SignedImpactParameter::twoTrackChi2(const reco::Track &tk1, const reco::Track &tk2) const {
     if (paramField_ == 0) paramField_ = new OAEParametrizedMagneticField("3_8T");
