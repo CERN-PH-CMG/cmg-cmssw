@@ -129,6 +129,8 @@ TH2D histoPhiStarvsgenZpt("histoPhiStarvsgenZpt","histo PhiStar vs genZpt",100,0
 
 /////
 
+bool doGigiRescaling = false;
+
 bool do3Sigma=true;
 
 bool usePol3 = true;
@@ -137,10 +139,9 @@ bool dodebug = false;
 bool doType2 = true; //false for the fit to the scale and the rms only
 bool doSingleGauss = false;
 
-bool doPrint = false;
-bool doPrintAll = true; // when this is set to true, do the binned
+bool doPrint = false; // save the unbinned Mean Scale and RMS ; the results of rootFit unbinned fit; the extra plots
+bool doPrintAll = false; // when this is set to true, do the binned
 
-bool doBinned = false; // this is for the MET
 bool doIterativeMet = false;
 
 bool doApplyCorr = false; // apply correlation
@@ -148,6 +149,9 @@ bool doAbsolute = false;
 
 bool doOnlyU1 = false;
 bool doOnlyU2 = false;
+
+bool do8TeV = false;
+bool doMad = false;
 
 int VTXbin=-1;
 
@@ -157,13 +161,11 @@ bool doWeight=false;
 
 bool doPhiStar=false;
 
-bool do8TeV = false;
-bool doMad = false;
-
-bool doSecondStep = false; // un-needed
 bool doOnlyU = false; // un-needed
 
 bool doRoch_corr = false;
+
+bool doBinnedVTX = false;
 
 bool doNeutralMet=false;
 bool doChargedMet=true;
@@ -224,8 +226,8 @@ double fpdgId1, fpdgId2;
 double fx1, fx2;
 
 double fZmass;
-double fMuPos_phi, fMuPos_eta, fMuPos_pt, fMuPos_charge, fMuPosReliso, fMuPos_dxy, fMuPos_dz;
-double fMuNeg_phi, fMuNeg_eta, fMuNeg_pt, fMuNeg_charge,fMuNeg_dxy, fMuNeg_dz, fMuNegReliso;
+double fMuPos_phi, fMuPos_eta, fMuPos_pt, fMuPos_mass, fMuPos_charge, fMuPosReliso, fMuPos_dxy, fMuPos_dz;
+double fMuNeg_phi, fMuNeg_eta, fMuNeg_pt, fMuNeg_mass, fMuNeg_charge, fMuNeg_dxy, fMuNeg_dz, fMuNegReliso;
 int fMuPosTrg, fMuPosIsTightAndIso, fevtHasGoodVtx, fevtHasTrg, fMuNegIsTightAndIso, fMuNegTrg;
 int fMuPosIsTight, fMuNegIsTight;
 
@@ -1029,6 +1031,7 @@ void load(TTree *iTree, int type) {
     iTree->SetBranchAddress("MuPos_eta" ,&fMuPos_eta);
     iTree->SetBranchAddress("MuPos_pt" ,&fMuPos_pt);
     iTree->SetBranchAddress("MuPos_phi" ,&fMuPos_phi);
+    iTree->SetBranchAddress("MuPos_mass" ,&fMuPos_mass);
     iTree->SetBranchAddress("MuPos_charge" ,&fMuPos_charge);
     iTree->SetBranchAddress("MuPosRelIso" ,&fMuPosReliso);
     iTree->SetBranchAddress("MuPos_dxy" ,&fMuPos_dxy);
@@ -1036,14 +1039,15 @@ void load(TTree *iTree, int type) {
     iTree->SetBranchAddress("MuNeg_eta" ,&fMuNeg_eta);
     iTree->SetBranchAddress("MuNeg_pt" ,&fMuNeg_pt);
     iTree->SetBranchAddress("MuNeg_phi" ,&fMuNeg_phi);
+    iTree->SetBranchAddress("MuNeg_mass" ,&fMuNeg_mass);
     iTree->SetBranchAddress("MuNeg_charge" ,&fMuNeg_charge);
     iTree->SetBranchAddress("MuNegRelIso" ,&fMuNegReliso);
     iTree->SetBranchAddress("MuNeg_dxy" ,&fMuNeg_dxy);
     
     iTree->SetBranchAddress("MuPosTrg" ,&fMuPosTrg);
     iTree->SetBranchAddress("MuNegTrg" ,&fMuNegTrg);
-    iTree->SetBranchAddress("MuPosIsTightAndIso" ,&fMuPosIsTightAndIso);
-    iTree->SetBranchAddress("MuNegIsTightAndIso" ,&fMuNegIsTightAndIso);
+    //    iTree->SetBranchAddress("MuPosIsTightAndIso" ,&fMuPosIsTightAndIso);
+    //    iTree->SetBranchAddress("MuNegIsTightAndIso" ,&fMuNegIsTightAndIso);
 
     iTree->SetBranchAddress("MuPosIsTight" ,&fMuPosIsTight);
     iTree->SetBranchAddress("MuNegIsTight" ,&fMuNegIsTight);
@@ -1145,6 +1149,38 @@ double getPtMuonCorrrection(double pt, double eta, double phi, double charge) {
   newCurv = (A-1)*newCurv + newCurv/(1+M*newCurv) + charge*B; 
 
   return 1.0/newCurv;
+
+}
+
+void applyGigiRescaling() {
+
+      TLorentzVector Z;
+      
+      //Z.SetPxPyPzE(fZrecoPt*cos(fZPhi), fZrecoPt*sin(fZPhi), fZ_mt*TMath::SinH(fZRap), TMath::Sqrt(fZrecoPt*cos(fZPhi)*fZrecoPt*cos(fZPhi)+fZrecoPt*sin(fZPhi)*fZrecoPt*sin(fZPhi)+fZ_mt*TMath::SinH(fZRap)*fZ_mt*TMath::SinH(fZRap)+fZmass*fZmass));
+      
+      TLorentzVector PosMuon, NegMuon;
+      PosMuon.SetPtEtaPhiM(fMuPos_pt, fMuPos_eta, fMuPos_phi, fMuPos_mass);
+      NegMuon.SetPtEtaPhiM(fMuNeg_pt, fMuNeg_eta, fMuNeg_phi, fMuNeg_mass);
+      
+      
+      double x=90.9376/(TMath::Sqrt(2*(1-cos(PosMuon.Angle( NegMuon.Vect() )))));
+      double y=TMath::Sqrt(PosMuon.P()/NegMuon.P());
+
+      PosMuon.SetRho(x*y);
+      NegMuon.SetRho(x/y);
+      
+      Z=PosMuon+NegMuon;
+      
+      fMuPos_pt = PosMuon.Pt();
+      fMuNeg_pt = NegMuon.Pt();
+      //      cout << "fZmass " << fZmass << " Z.M() " << Z.M() << endl; 
+
+      fZmass = Z.M();
+
+      // those only on DATA since for the MC are used the Gen 
+      if(fData) fZPt = Z.Pt();
+      if(fData) fZPhi = Z.Phi();
+      if(fData) fZRap = Z.Rapidity(); 
 
 }
 
@@ -1520,7 +1556,7 @@ bool passId(int iId) {
 
   double lId = fabs(iId);
 
-  if(doBinned) {
+  if(doBinnedVTX) {
 
     if(lId == 1) {if(fNPV > 5              ) {return false; } {return true;}}
     if(lId == 2) {if(fNPV < 6 || fNPV  > 10) {return false; } {return true;}}
@@ -1613,9 +1649,14 @@ void computeFitErrors(TF1 *iFit,TFitResultPtr &iFPtr,TF1 *iTrueFit,bool iPol0=fa
     err33=iFPtr->UpperError(3)*iFPtr->UpperError(3);
   }
   
-  /*
-    TMatrixDSym lCov = iFPtr->GetCovarianceMatrix();
-    
+  cout << "UpperError(0) " << iFPtr->UpperError(0) << " LowerError(0) " << iFPtr->LowerError(0) << endl;
+  cout << "UpperError(1) " << iFPtr->UpperError(1) << " LowerError(0) " << iFPtr->LowerError(1) << endl;
+  cout << "UpperError(2) " << iFPtr->UpperError(2) << " LowerError(0) " << iFPtr->LowerError(2) << endl;
+
+  TMatrixDSym lCov = iFPtr->GetCovarianceMatrix();
+  lCov.Print();  
+
+  /*  
     double err00=(lCov)(0,0); double err01=(lCov)(0,1); double err10=(lCov)(1,0); double err11=(lCov)(1,1);
     double err02=(lCov)(0,2); double err12=(lCov)(1,2); double err22=(lCov)(2,2);
     double err03=(lCov)(0,3); double err13=(lCov)(1,3); double err23=(lCov)(2,3); double err33=(lCov)(3,3);
@@ -1955,8 +1996,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   // 1Dparam: lR1Frac, lR1Mean, lR1sigma, lR2sigma  
   RooRealVar    lR1Sigma("Rsigma1","RSigma1",startSigma1, minSigma1, maxSigma1 );
   RooRealVar    lR2Sigma("Rsigma2","RSigma2",startSigma2, minSigma2, maxSigma2 );
-  RooFormulaVar lR1Frac  ("Rfrac"  ,"(@1-1.)/(@1-@0)",RooArgSet(lR1Sigma,lR2Sigma));
-  //  RooRealVar    lR1Frac ("Rfrac"  ,"Rfrac"  , 0.6 ,0, 1.); // free parameter
+  RooFormulaVar lR1Frac  ("Rfrac"  ,"(@1-1.)/(@1-@0)",RooArgSet(lR1Sigma,lR2Sigma)); //this only for the pull ; for abolute keep independent
+  //  RooRealVar    lR1Frac ("Rfrac"  ,"Rfrac"  , 0.6 ,0, 1.); // free parameter for the doAbsolute=true
   RooRealVar    lR1Mean ("Rmean",  "Rmean",0,minMean,maxMean); // lR1Mean.setConstant(kTRUE); 
   
   // ===> This is the model for the 1D  
@@ -2179,7 +2220,6 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
   if(!doType2) return;
   if(!iRMS) return;
-  if(doIterativeMet) return;
 
   if(do3Sigma) {
 
@@ -2276,6 +2316,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     }
 
   }
+
   //  lRPt.setBins(lNBins*50);
   lRPt.setBins(10000);
   if(doWeight) {
@@ -2301,12 +2342,15 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     if(!doAbsolute) lRXVar.setVal(vlYTVals_all[lPar!=fU1][iRMS][i0]/(lYTest)); // residual  for the Pull
     if(doAbsolute) lRXVar.setVal(vlYTVals_all[lPar!=fU1][iRMS][i0]/(sqrt(2*3.14159265)/2.));  // residual  for the fit in GeV 
     lRPt.setVal(vlXVals_all[lPar!=fU1][iRMS][i0]);     // Zpt
-    //    lRWeight.setVal(1./vlYEVals_all[lPar!=fU1][iRMS][i0]/vlYEVals_all[lPar!=fU1][iRMS][i0]);
-    int pId = int(vlXVals_all[lPar!=fU1][iRMS][i0]/((range_max-range_min)/lNBins)); if(pId > lNBins-1) pId = lNBins-1;
-    // MARIA: USED for the 1D fit (binned/uncorrelated in Zpt and binned in residuals )  
-    lResidVals[pId].add(RooArgSet(lRXVar),lRWeight.getVal()); //Fill the Double Gaussian
-    // MARIA: USED for the 2D fit (binned/correlated in Zpt and unbinned in Residauls )   
-    lResidVals2D[0].add(RooArgSet(lRXVar,lRPt),lRWeight.getVal()); //Fill the Double Gaussian
+
+    if(vlXVals_all[lPar!=fU1][iRMS][i0]>range_min && vlXVals_all[lPar!=fU1][iRMS][i0]<range_max) {
+      //    lRWeight.setVal(1./vlYEVals_all[lPar!=fU1][iRMS][i0]/vlYEVals_all[lPar!=fU1][iRMS][i0]);
+      int pId = int(vlXVals_all[lPar!=fU1][iRMS][i0]/((range_max-range_min)/lNBins)); if(pId > lNBins-1) pId = lNBins-1;
+      // MARIA: USED for the 1D fit (binned/uncorrelated in Zpt and binned in residuals )  
+      lResidVals[pId].add(RooArgSet(lRXVar),lRWeight.getVal()); //Fill the Double Gaussian
+      // MARIA: USED for the 2D fit (binned/correlated in Zpt and unbinned in Residauls )   
+      lResidVals2D[0].add(RooArgSet(lRXVar,lRPt),lRWeight.getVal()); //Fill the Double Gaussian
+    }
   }
 
   cout << "============" << endl;
@@ -2348,7 +2392,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   //  TH1* hh_ = lGAdd.createHistogram(nameHistoFit,lRPt,Binning(100),YVar(lRXVar,Binning(100)));
   TH1* hh1_ = lGaus1.createHistogram(nameHistoFitG1,lRPt,Binning(1000),YVar(lRXVar,Binning(100)));
   TH1* hh2_ = lGaus2.createHistogram(nameHistoFitG2,lRPt,Binning(1000),YVar(lRXVar,Binning(100)));
-  if(hh1_ && hh2_) cout << " ===>>>>> CREATED HISTOGRAM FILE from fited PDF" << hh1_ << " " << hh2_ << endl;
+  if(hh1_ && hh2_) cout << " ===>>>>> CREATED HISTOGRAM FILE from fitted PDF" << hh1_ << " " << hh2_ << endl;
 
   if(doPrint) {
 
@@ -2360,6 +2404,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     if(!fData) fileName2DFIT += "MC"; 
     if(doMad && !fData) fileName2DFIT += "_MADGRAPH";
     if(!doMad && !fData) fileName2DFIT += "_POWHEG";
+    if(doIterativeMet) fileName2DFIT += "_ITERATIVE";
     fileName2DFIT += ".root";
     
     TFile f4(fileName2DFIT.Data(),"UPDATE");
@@ -2394,8 +2439,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   cout << "============" << endl;
 
   //// AFTER here set up for the 1D fit                                                                                                                    
-  if(doPrintAll) {
-
+  if(doPrintAll && !doIterativeMet) {
 
     //////
     //////
@@ -2523,12 +2567,19 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       if(!doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.2, "powheg");   
       if(doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.2, "madgraph");   
 
+      TLine *lineZero = new TLine(0, 0,  0, 50000);
+      lineZero->SetLineColor(11);
+      lineZero->Draw("same");
+
       TString test="";
       
       if(iFitS1==0) test += "PLOT/mean";
       if(iFitS1!=0 && !doAbsolute) test += "PLOT/pull";
       if(iFitS1!=0 && doAbsolute) test += "PLOT/rms";
       
+      test += "_Zpt";
+      test += i0;
+
       test += labeling.Data();
 
       TString testPDF=test.Data();
@@ -2945,17 +2996,16 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
 
   return;
-  } // end print
+  } //  END //  if(doPrintAll && !doIterativeMet)
 
   bool doPol1=false;
 
-  // MARIA comment for now
   TMatrixDSym   lCov = pFR->covarianceMatrix();
 
   cout << "covariance matrix " << endl;
   pFR->covarianceMatrix().Print();
   
-  //Now Store each sigma of the double gaussian in a fit function
+  //Now Store each sigma of the double gaussian in a fit function from the Unbinned FIT
   iFitS1->SetParameter(0,lA1Sig.getVal()); 
   iFitS1->SetParameter(1,lB1Sig.getVal()); 
   if(!doPol1) iFitS1->SetParameter(2,lC1Sig.getVal());
@@ -2982,7 +3032,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
   iFitS2->SetParameter(0,lA2Sig.getVal()); 
   iFitS2->SetParameter(1,lB2Sig.getVal()); 
-  iFitS2->SetParameter(2,lC2Sig.getVal());
+  if(!doPol1) iFitS2->SetParameter(2,lC2Sig.getVal());
 
   double E0S2=lA2Sig.getError()*lA2Sig.getError();
   double E1S2=2*(lCov)(1,3);
@@ -3080,6 +3130,8 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
 
     ////////    cout << "RUN " << fRun << " LUMI " << fLumi << " EVENT " << fEvent << endl;
 
+    if(doGigiRescaling) applyGigiRescaling();
+
     /*
     if(doRoch_corr) {
       
@@ -3146,6 +3198,25 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
     if(fZPt<0) continue;
     if(fZPt > fZPtMax) continue;
 
+    ////
+    ////
+
+    if(doMetPhiCorr) {
+      fMet  = getPhiCorrMET(1);
+      fMPhi = getPhiCorrMET(2);
+    }
+
+    if(doNeutralMet) {
+      fMet  = getNeuMET(1);
+      fMPhi = getNeuMET(2);
+    }
+
+    if(doChargedMet) {
+      fMet = ftkMet;
+      fMPhi = ftkMPhi;
+    }
+
+
     // THIS WAS FOR THE VTX selection
     if(doVTXbinning && !passId(VTXbin)) continue;
     //    if(doVTXbinning && !passId(fId)) continue;
@@ -3171,23 +3242,8 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
       if((doNegW) && !checkPDF(-24,true)) continue; 
     }
 
-    ////
-    ////
-
-    if(doMetPhiCorr) {
-      fMet  = getPhiCorrMET(1);
-      fMPhi = getPhiCorrMET(2);
-    }
-
-    if(doNeutralMet) {
-      fMet  = getNeuMET(1);
-      fMPhi = getNeuMET(2);
-    }
-
-    if(doChargedMet) {
-      fMet = ftkMet;
-      fMPhi = ftkMPhi;
-    }
+    /////
+    /////
 
     if(doIterativeMet && doType2) {
 
@@ -3247,26 +3303,6 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
       //////
       //////
       //////
-
-      /*
-      if(doSecondStep) {
-
-	applyType2CorrMET(fMet,fMPhi,
-			  fZPt,fZPhi,
-			  fPt1,fPhi1,
-			  lZMU1Fit_second[0],
-			  lZDU1Fit[0], lZMU1Fit_second[0], // SCALE
-			  lZDU1RMSSMFit[0], lZMU1RMSSMFit_second[0], // RMS
-			  lZDU1RMS1Fit[0], lZMU1RMS1Fit_second[0], 
-			  lZDU1RMS2Fit[0], lZMU1RMS2Fit_second[0], 
-			  lZDU2RMSSMFit[0], lZMU2RMSSMFit_second[0], // RMS 
-			  lZDU2RMS1Fit[0], lZMU2RMS1Fit_second[0], 
-			  lZDU2RMS2Fit[0], lZMU2RMS2Fit_second[0] 
-			  );
-	//	if(dodebug) 	cout << " MET after second smearing " << fMet << endl; 
-
-      }
-      */
 
     }
 
@@ -3334,9 +3370,9 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
         lXVals_3S.push_back(dummy); lYVals_3S.push_back(dummy);      
 
       for(int iMeanRMS=0; iMeanRMS<2; iMeanRMS++){
-        std::vector<float> dummy1;
-        lXVals_all.at(iU1U2).push_back(dummy1); lXEVals_all.at(iU1U2).push_back(dummy1); 
-        lYVals_all.at(iU1U2).push_back(dummy1); lYTVals_all.at(iU1U2).push_back(dummy1); lYEVals_all.at(iU1U2).push_back(dummy1);
+	std::vector<float> dummy1;
+	lXVals_all.at(iU1U2).push_back(dummy1); lXEVals_all.at(iU1U2).push_back(dummy1); 
+	lYVals_all.at(iU1U2).push_back(dummy1); lYTVals_all.at(iU1U2).push_back(dummy1); lYEVals_all.at(iU1U2).push_back(dummy1);
 	lXVals_3S.at(iU1U2).push_back(dummy1);
 	lYVals_3S.at(iU1U2).push_back(dummy1);        
 
@@ -3573,7 +3609,7 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
 
   gStyle->SetOptFit(111111);
 
-  TString name="recoilfits/recoilfit_AUG6";
+  TString name="recoilfits/recoilfit_SEP22";
   if(do8TeV) name +="_8TeV";
 
   /// SETTING
@@ -3619,8 +3655,8 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     if(doMad && !do8TeV )  fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");  
     if(!doMad && !do8TeV ) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root");  
 
-    // this is the 8 TeV, just a placeholder for now
-    if(doMad && do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL_8TeV/ZTreeProducer_tree.root");
+    // this is the 8 TeV (contains the other MET variables) 
+    if(doMad && do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DYJetsLL_8TeV/ZTreeProducer_tree.root");
 
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = false; 
@@ -3629,9 +3665,15 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
 
     if(doIterativeMet) {
 
-      if(!doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_AUG6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
-      if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_AUG6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
-      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_AUG6_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_53X.root" ,"PF",fId);
+      if(!doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_SEP22_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
+      if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_SEP22_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
+
+      ////// DATA closure
+      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_SEP22_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_53X.root" ,"PF",fId);
+
+      ////// MC closure
+      //      if(!doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_SEP22_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
+      //      if(doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_SEP22_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
 	
     }
     
@@ -3642,11 +3684,17 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     cout << "PROCESSING DY DATA -- inclusive Nvertex -- charged only " << endl;
     //    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/DATA/ZTreeProducer_tree_RecoSkimmed.root"); // this is 44X
     fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DATA/ZTreeProducer_tree.root"); 
+    //    if(doMad && !do8TeV )  fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");  
+    //    if(!doMad && !do8TeV ) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root");  
     
+    // this is the 8TeV, is the runD, it contains the other METs, obtained from the Z skims
+    if(doMad && do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DATA_Run2012D/DYJetsLL_8TeV/ZTreeProducer_tree.root");
+
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = true; 
 
     name+="_DATA";
+    //    name+="_MClikeDATA";
 
   }
 
@@ -3724,18 +3772,19 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
   
   name+="_x2Stat";
   if(doAbsolute) name+="_absolute";
-  //    if(doSecondStep) name+="_second";
   if(doApplyCorr) name+="_Correlation";
   
   if(doIterativeMet && !doOnlyU1 && doOnlyU2) name+="_applyOnlyU2";
   if(doIterativeMet && doOnlyU1 && !doOnlyU2) name+="_applyOnlyU1";
     
+  if(doGigiRescaling) name+="_GigiRescale";
   if(doRoch_corr) name+="_ROCHcorr";
   if(doPrintAll) name+="_UNBINNED";
   
   if(doVTXbinning) name+="_VTX";
   if(doVTXbinning) name+=VTXbin;
-  
+
+
   name+="_53X";
   
   if(fData)  name+=".root";
