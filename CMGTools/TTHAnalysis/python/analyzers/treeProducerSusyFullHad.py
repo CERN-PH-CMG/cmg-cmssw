@@ -46,7 +46,6 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             NTupleVariable("mt2", lambda ev: ev.fullmt2, float, help="mt2(j1,j2,,met) with leptons"),
             NTupleVariable("gamma_mt2", lambda ev: ev.gamma_mt2, float, help="mt2(j1,j2,,met) with photons added to met"),
             NTupleVariable("zll_mt2", lambda ev: ev.zll_mt2, float, help="mt2(j1,j2,,met) with zll added to met, only hadrons"),
-            NTupleVariable("zll_deltaPhiMin", lambda ev : ev.zll_deltaPhiMin, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4"),
             ###
             #            NTupleVariable("mt2w", lambda ev: ev.mt2w, float, help="mt2w(l,b,met)"),
             ##--------------------------------------------------

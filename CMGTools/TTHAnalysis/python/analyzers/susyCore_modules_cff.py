@@ -137,9 +137,9 @@ ttHPhoAna = cfg.Analyzer(
     ptMin = 20,
     etaMax = 2.5,
     gammaID = "PhotonCutBasedIDLoose",
-    ### MM
-    etaCentral = 2.4
-    ###
+    #### MM
+    #etaCentral = 2.4
+    ####
 )
 
 # Tau Analyzer (generic)
@@ -177,11 +177,11 @@ ttHJetAna = cfg.Analyzer(
     recalibrateJets = False,
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     cleanJetsFromTaus = False,
-    ###MM
-    jetGammaDR = 0.4,
-    minGammaPt = 20,
-    gammaEtaCentral = 2.4,
-    ###
+    ####MM
+    #jetGammaDR = 0.4,
+    #minGammaPt = 20,
+    #gammaEtaCentral = 2.4,
+    ####
     )
 
 # Jet MC Match Analyzer (generic)
