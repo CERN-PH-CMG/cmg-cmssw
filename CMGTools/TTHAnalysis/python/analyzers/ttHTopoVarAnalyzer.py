@@ -275,7 +275,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
             ###
 
-            ev.mt2_full = self.computeMT2(event.pseudoJet1_full, event.pseudoJet1_full, event.met)
+            event.mt2_full = self.computeMT2(event.pseudoJet1_full, event.pseudoJet1_full, event.met)
 
 
 ## ===> full gamma_MT2
@@ -383,7 +383,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
             zll_pseudoJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
             zll_pseudoJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
 
-            event.zll_mt2 = self.computeMT2(zll_jetVector1, zll_jetVector2, event.zll_met)
+            event.zll_mt2 = self.computeMT2(zll_pseudoJet1, zll_pseudoJet2, event.zll_met)
 
 
 #### do the mt2 with one or two b jets (medium CSV)                                                                                                                                                                                                         
