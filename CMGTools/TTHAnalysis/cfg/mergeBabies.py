@@ -41,13 +41,6 @@ def postProcessBaby( dir, dataset, fast ) :
    newtree.SetName("mt2")
 
 
-   #oldtree.SetBranchStatus("*", 0) # disable all branches (faster)
-   #if not fast:
-   #  oldtree.SetBranchStatus("run" , 1) # enable only useful ones
-   #  oldtree.SetBranchStatus("lumi", 1) # enable only useful ones
-   #  oldtree.SetBranchStatus("evt" , 1) # enable only useful ones
-
-
 
    scale1fb = numpy.zeros(1, dtype=float)
    xsec     = numpy.zeros(1, dtype=float)
@@ -79,26 +72,26 @@ def postProcessBaby( dir, dataset, fast ) :
 
 
 
+   if fast:
+     for i in range(0,events) :
+        if i % 100000 == 0: print "  Entry: " + str(i) + " / " + str(events)
 
-   evlist = set()
+        b_scale1fb.Fill()
+        b_xsec    .Fill()
+        b_kfactor .Fill()
+        b_filter  .Fill()
+        b_nEvts   .Fill()
+        b_id      .Fill()
 
-   #for i in oldtree :
-   for i in range(0,events) :
+   else:
+     evlist = set()
+     for i in oldtree :
 
-     if fast:
-       b_scale1fb.Fill()
-       b_xsec    .Fill()
-       b_kfactor .Fill()
-       b_filter  .Fill()
-       b_nEvts   .Fill()
-       b_id      .Fill()
-     else:
-       oldtree.GetEntry(i)
-       ek = EventKey(i.run, i.lumi, i.evt)
+         ek = EventKey(i.run, i.lumi, i.evt)
 
-       if ek not in evlist :
-         evlist.add(ek)
-         newtree.Fill()
+         if ek not in evlist :
+           evlist.add(ek)
+           newtree.Fill()
 
    newfile.Write()
    newfile.Close()
@@ -166,7 +159,11 @@ if __name__ == '__main__':
         badFiles.add(thisBadFile)
 
 
-    haddChunks(dir, options.remove, options.clean, badFiles)
+    try:
+      haddChunks(dir, options.remove, options.clean, badFiles)
+    except OSError:
+      print "-> Looks like there's an hadded file in the way. Will proceed with post-processing only."
+      print "  (If you want to re-do the hadd, please remove the file or run with -r)"
 
     postProcess( dir, options.fast )
 
