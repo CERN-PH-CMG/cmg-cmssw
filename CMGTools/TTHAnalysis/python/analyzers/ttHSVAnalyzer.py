@@ -108,14 +108,18 @@ class ttHSVAnalyzer( Analyzer ):
                         #print " \==> ancestor  pdgId %+6d with %d/%d hits at depth %d at %s" % (mom.pdgId(), hits, matchable, depth, hash(mom))
                         #if hits == maxhits and depth == mindepth: print "           ^^^^^--- this is our best match"
 
+        # get the full id from a ref
+        def ref2id(ref):
+            return (ref.id().processIndex(), ref.id().productIndex(), ref.key())
+
         # Attach SVs to Jets 
         daumap = {}
         for s in event.ivf:
             s.jet = None
             for i in xrange(s.numberOfDaughters()):
-                daumap[s.daughterPtr(i).key()] = s
+                daumap[ref2id(s.daughterPtr(i))] = s
         for j in event.jetsIdOnly:
-            jdaus = [j.daughterPtr(i).key() for i in xrange(j.numberOfDaughters())]
+            jdaus = [ref2id(j.daughterPtr(i)) for i in xrange(j.numberOfDaughters())]
             j.svs = []
             for jdau in jdaus:
                 if jdau in daumap:
@@ -137,11 +141,11 @@ class ttHSVAnalyzer( Analyzer ):
                 #mindr = min([deltaR(s.daughter(i).eta(),s.daughter(i).phi(),l.eta(),l.phi()) for i in xrange(s.numberOfDaughters())])
                 sip3d = SignedImpactParameterComputer.signedIP3D(track.get(), s, s.momentum()).significance()
                 byref = False
-                daus = [s.daughterPtr(i).key() for i in xrange(s.numberOfDaughters())]
+                daus = [ref2id(s.daughterPtr(i)) for i in xrange(s.numberOfDaughters())]
                 for i in xrange(l.numberOfSourceCandidatePtrs()):
                     src = l.sourceCandidatePtr(i)
                     if src.isNonnull() and src.isAvailable():
-                        if src.key() in daus:
+                        if ref2id(src) in daus:
                             byref = True
                 invmass  = (l.p4() + s.p4()).mass() if not byref else s.mass() 
                 #go = False
