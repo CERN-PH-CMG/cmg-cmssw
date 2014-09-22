@@ -34,6 +34,9 @@ ttHJetAna.jetPt = 10.
 ttHJetAna.recalibrateJets = False
 ttHJetAna.jetLepDR = 0.4
 ttHJetMCAna.smearJets = False
+ttHJetAna.jetGammaDR = 0.4
+ttHJetAna.minGammaPt = 20,
+ttHJetAna.gammaEtaCentral = 2.4
 
 # TAU 
 ttHTauAna.etaMax = 2.3
@@ -41,6 +44,11 @@ ttHTauAna.dxyMax = 99999.
 ttHTauAna.dzMax = 99999.
 ttHTauAna.vetoLeptons = False
 ttHTauAna.vetoLeptonsPOG = True
+
+# Photon
+ttHPhoAna.etaCentral = 2.4
+
+
 
 ##------------------------------------------
 ##  ISOLATED TRACK
