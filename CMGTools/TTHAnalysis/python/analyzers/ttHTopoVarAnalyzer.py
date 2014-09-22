@@ -596,10 +596,10 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
         ###
         
-        ### MM
-        self.makeGammaObjects(event)
-        self.makeZllObjects(event)
-        ###
+        #### MM
+        #self.makeGammaObjects(event)
+        #self.makeZllObjects(event)
+        ####
 
         self.makeMT(event)
         self.makeMT2(event)
