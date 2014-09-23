@@ -13,7 +13,11 @@ class TreeAnalyzerNumpy( Analyzer ):
         super(TreeAnalyzerNumpy,self).__init__(cfg_ana, cfg_comp, looperName)
         fileName = '/'.join([self.dirName,
                              self.name+'_tree.root'])
-        self.file = TFile( fileName, 'recreate' )
+
+        isCompressed = self.cfg_ana.isCompressed if hasattr(cfg_ana,'isCompressed') else 1
+        print 'Compression', isCompressed
+
+        self.file = TFile( fileName, 'recreate', '', isCompressed )
         self.tree = Tree(self.name,self.name)
         self.declareVariables()
         
