@@ -71,8 +71,11 @@ class ttHGenLevelAnalyzer( Analyzer ):
             dau.isTau = isTau
             id = abs(dau.pdgId())
             if id in [11,13]:
-                if isTau: event.gentauleps.append(dau)
-                else:     event.genleps.append(dau)
+                if dau.numberOfDaughters()==0:
+                    if isTau: event.gentauleps.append(dau)
+                    else:     event.genleps.append(dau)
+                else:
+                    self.fillGenLeptons(event, dau, False, sourceId)
             elif id == 15:
                 self.fillGenLeptons(event, dau, True, sourceId)
             elif id in [22,23,24]:
