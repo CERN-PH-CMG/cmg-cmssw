@@ -111,7 +111,7 @@ if __name__ == "__main__":
     for i,plot in enumerate(plots.plots()):
         pmap = mca.getPlots(plot,cut,makeSummary=True)
         roc = makeROC(pmap,mca)
-        if roc.GetN() > 1 and roc.dim == 1:
+        if roc.GetN() > 1 and roc.dim == 1 and not plot.getOption("Discrete",False):
             roc.SetLineColor(plot.getOption("LineColor",i+1))
             roc.SetMarkerColor(plot.getOption("LineColor",i+1))
             roc.SetLineWidth(2)
