@@ -28,7 +28,6 @@ def runXRDCommand(path, cmd, *args):
     
     command = ['xrd', tokens[1], cmd, tokens[2]]
     command.extend(args)
-    print "the command is: ", command
     runner = cmsIO.cmsFileManip()
     # print ' '.join(command)
     return runner.runCommand(command)
