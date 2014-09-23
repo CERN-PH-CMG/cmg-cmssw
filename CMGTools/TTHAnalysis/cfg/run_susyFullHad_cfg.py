@@ -35,7 +35,7 @@ ttHJetAna.recalibrateJets = False
 ttHJetAna.jetLepDR = 0.4
 ttHJetMCAna.smearJets = False
 ttHJetAna.jetGammaDR = 0.4
-ttHJetAna.minGammaPt = 20,
+ttHJetAna.minGammaPt = 20
 ttHJetAna.gammaEtaCentral = 2.4
 
 # TAU 
@@ -88,7 +88,6 @@ ttHMT2Control = cfg.Analyzer(
 ##  TOPOLOGIAL VARIABLES: MT, MT2
 ##------------------------------------------
 
-# Tree Producer
 ttHTopoJetAna = cfg.Analyzer(
             'ttHTopoVarAnalyzer'
             )
@@ -111,8 +110,10 @@ treeProducer = cfg.Analyzer(
             'HT650' : triggers_HT650,
             'MET150' : triggers_MET150,
             'ht350met100' : triggers_HTMET
-            }
+            },
         )
+
+treeProducer.isCompressed = 0
 
 
 #-------- SAMPLES AND TRIGGERS -----------
