@@ -3,7 +3,7 @@ import itertools
 import copy
 from math import *
 
-from ROOT import TLorentzVector, TVectorD
+from ROOT import TVectorD, TLorentzVector
 
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.Event import Event
@@ -21,6 +21,7 @@ from CMGTools.RootTools.utils.DeltaR import *
 import ROOT
 
 from ROOT import Hemisphere
+from ROOT import HemisphereViaKt
 
 from ROOT import Davismt2
 davismt2 = Davismt2()
@@ -59,9 +60,9 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
         for myTrack in event.selectedIsoTrack:
             event.mtwIsoTrack = mtw(myTrack, event.met)
-            
-    def computeMT2(self, visaVec, visbVec, metVec):
 
+    def computeMT2(self, visaVec, visbVec, metVec):
+		
         import array
         import numpy
 
@@ -95,12 +96,75 @@ class ttHTopoVarAnalyzer( Analyzer ):
             pzvec  = ROOT.std.vector(float)()
             Evec  = ROOT.std.vector(float)()
             grouping  = ROOT.std.vector(int)()
+            groupingViaKt  = ROOT.std.vector(ROOT.std.vector(float))()
             
             for jet in objects40jc:
                 pxvec.push_back(jet.px())
                 pyvec.push_back(jet.py())
                 pzvec.push_back(jet.pz())
                 Evec.push_back(jet.energy())
+                
+#### get hemispheres via AntiKT -1 antikt, 1 kt, 0 CA
+            hemisphereViaAKt = HemisphereViaKt(pxvec, pyvec, pzvec, Evec, -1.) 
+            groupingViaAKt=hemisphereViaAKt.getGrouping()
+
+            pseudoJet1px = 0 
+            pseudoJet1py = 0 
+            pseudoJet1pz = 0
+            pseudoJet1energy = 0 
+
+            pseudoJet2px = 0 
+            pseudoJet2py = 0 
+            pseudoJet2pz = 0
+            pseudoJet2energy = 0 
+
+            for index in range(0, len(groupingViaAKt[0])):
+                if(index==0):
+                    pseudoJet1px = groupingViaAKt[0][index]
+                    pseudoJet1py = groupingViaAKt[1][index]
+                    pseudoJet1pz = groupingViaAKt[2][index]
+                    pseudoJet1energy = groupingViaAKt[3][index]
+                if(index==1):
+                    pseudoJet2px = groupingViaAKt[0][index]
+                    pseudoJet2py = groupingViaAKt[1][index]
+                    pseudoJet2pz = groupingViaAKt[2][index]
+                    pseudoJet2energy = groupingViaAKt[3][index]                    
+
+            event.pseudoViaAKtJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+            event.pseudoViaAKtJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+
+            event.mt2ViaAKt = self.computeMT2(event.pseudoViaAKtJet1, event.pseudoViaAKtJet2, event.met)
+
+#### get hemispheres via AntiKT -1 antikt, 1 kt, 0 CA
+            hemisphereViaKt = HemisphereViaKt(pxvec, pyvec, pzvec, Evec, 1.) 
+            groupingViaKt=hemisphereViaKt.getGrouping()
+
+            pseudoJet1px = 0 
+            pseudoJet1py = 0 
+            pseudoJet1pz = 0
+            pseudoJet1energy = 0 
+
+            pseudoJet2px = 0 
+            pseudoJet2py = 0 
+            pseudoJet2pz = 0
+            pseudoJet2energy = 0 
+
+            for index in range(0, len(groupingViaKt[0])):
+                if(index==0):
+                    pseudoJet1px = groupingViaKt[0][index]
+                    pseudoJet1py = groupingViaKt[1][index]
+                    pseudoJet1pz = groupingViaKt[2][index]
+                    pseudoJet1energy = groupingViaKt[3][index]
+                if(index==1):
+                    pseudoJet2px = groupingViaKt[0][index]
+                    pseudoJet2py = groupingViaKt[1][index]
+                    pseudoJet2pz = groupingViaKt[2][index]
+                    pseudoJet2energy = groupingViaKt[3][index]                    
+
+            event.pseudoViaKtJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+            event.pseudoViaKtJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+
+            event.mt2ViaKt = self.computeMT2(event.pseudoViaKtJet1, event.pseudoViaKtJet2, event.met)            
 
 #### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
             hemisphere = Hemisphere(pxvec, pyvec, pzvec, Evec, 2, 3)
@@ -283,12 +347,20 @@ class ttHTopoVarAnalyzer( Analyzer ):
         event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
 
         event.pseudoJet1minmass = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
-        event.pseudoJet2minmass = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )        
+        event.pseudoJet2minmass = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+
+        event.mt2ViaKt=-999
+        event.mt2ViaAKt=-999
+        event.pseudoViaKtJet1 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+        event.pseudoViaKtJet2 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )                
+        event.pseudoViaAKtJet1 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+        event.pseudoViaAKtJet2 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
 
         self.makeMT(event)
         self.makeMT2(event)
 
 #        print 'variables computed: MT=',event.mtw,'MT2=',event.mt2,'MT2W=',event.mt2w
+#        print 'mt2=',event.mt2, 'mt2(kt)',event.mt2ViaKt, 'mt2(akt)',event.mt2ViaAKt
 #        print 'pseudoJet1 px=',event.pseudoJet1.px(),' py=',event.pseudoJet1.py(),' pz=',event.pseudoJet1.pz()
 #        print 'pseudoJet2 px=',event.pseudoJet2.px(),' py=',event.pseudoJet2.py(),' pz=',event.pseudoJet2.pz()   
 

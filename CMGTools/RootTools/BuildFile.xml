@@ -12,6 +12,8 @@
 <use   name="CommonTools/Utils"/>
 <use   name="AnalysisDataFormats/CMGTools"/>
 <use   name="DataFormats/HepMCCandidate"/>
+<use   name="fastjet"/>
+<use   name="ktjet"/>
 <use   name="boost"/>
 <export>
    <lib name="1"/>
