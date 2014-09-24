@@ -138,10 +138,10 @@ class ttHTopoVarAnalyzer( Analyzer ):
                     pseudoJet2pz = groupingViaAKt[2][index]
                     pseudoJet2energy = groupingViaAKt[3][index]
 
-            event.pseudoViaAKtJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
-            event.pseudoViaAKtJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+            event.pseudoViaAKtJet1_had = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+            event.pseudoViaAKtJet2_had = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
 
-            event.mt2ViaAKt = self.computeMT2(event.pseudoViaAKtJet1, event.pseudoViaAKtJet2, event.met)
+            event.mt2ViaAKt_had = self.computeMT2(event.pseudoViaAKtJet1_had, event.pseudoViaAKtJet2_had, event.met)
 
 #### get hemispheres via AntiKT -1 antikt, 1 kt, 0 CA
                                                                                                                                     
@@ -170,10 +170,10 @@ class ttHTopoVarAnalyzer( Analyzer ):
                     pseudoJet2pz = groupingViaKt[2][index]
                     pseudoJet2energy = groupingViaKt[3][index]
 
-            event.pseudoViaKtJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
-            event.pseudoViaKtJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+            event.pseudoViaKtJet1_had = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+            event.pseudoViaKtJet2_had = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
 
-            event.mt2ViaKt = self.computeMT2(event.pseudoViaKtJet1, event.pseudoViaKtJet2, event.met)
+            event.mt2ViaKt_had = self.computeMT2(event.pseudoViaKtJet1_had, event.pseudoViaKtJet2_had, event.met)
 
 #### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
 
@@ -211,17 +211,17 @@ class ttHTopoVarAnalyzer( Analyzer ):
             pseudoJet2pt2 = pseudoJet2px*pseudoJet2px + pseudoJet2py*pseudoJet2py
 
             if pseudoJet1pt2 >= pseudoJet2pt2:
-                event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
-                event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
-                event.multPseudoJet1 = multPSJ1
-                event.multPseudoJet2 = multPSJ2
+                event.pseudoJet1_had = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+                event.pseudoJet2_had = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+                event.multPseudoJet1_had = multPSJ1
+                event.multPseudoJet2_had = multPSJ2
             else:
-                event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
-                event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
-                event.multPseudoJet1 = multPSJ2
-                event.multPseudoJet2 = multPSJ1
+                event.pseudoJet2_had = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+                event.pseudoJet1_had = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+                event.multPseudoJet1_had = multPSJ2
+                event.multPseudoJet2_had = multPSJ1
 
-            event.mt2 = self.computeMT2(event.pseudoJet1, event.pseudoJet2, event.met)
+            event.mt2_had = self.computeMT2(event.pseudoJet1_had, event.pseudoJet2_had, event.met)
 
 #### do same things for GEN
 
@@ -331,15 +331,15 @@ class ttHTopoVarAnalyzer( Analyzer ):
             pseudoJet2pt2 = pseudoJet2px*pseudoJet2px + pseudoJet2py*pseudoJet2py
 
             if pseudoJet1pt2 >= pseudoJet2pt2:
-                event.pseudoJet1_full = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
-                event.pseudoJet2_full = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+                event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+                event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
             else:
-                event.pseudoJet2_full = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
-                event.pseudoJet1_full = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+                event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+                event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
 
             ###
 
-            event.mt2_full = self.computeMT2(event.pseudoJet1_full, event.pseudoJet2_full, event.met)
+            event.mt2 = self.computeMT2(event.pseudoJet1, event.pseudoJet2, event.met)
 
 
 ## ===> full gamma_MT2
@@ -501,15 +501,15 @@ class ttHTopoVarAnalyzer( Analyzer ):
         event.mt2lept=-999        
         event.mt2w=-999
 
+        event.mt2_had=-999
+        event.pseudoJet1_had = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+        event.pseudoJet2_had = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+        event.multPseudoJet1_had=0
+        event.multPseudoJet2_had=0
+        
         event.mt2=-999
         event.pseudoJet1 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
         event.pseudoJet2 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
-        event.multPseudoJet1=0
-        event.multPseudoJet2=0
-        
-        event.mt2_full=-999
-        event.pseudoJet1_full = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
-        event.pseudoJet2_full = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
 
         event.gamma_mt2=-999
         event.gamma_pseudoJet1  = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
@@ -517,12 +517,12 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
         event.zll_mt2=-999
 
-        event.mt2ViaKt=-999
-        event.mt2ViaAKt=-999
-        event.pseudoViaKtJet1 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
-        event.pseudoViaKtJet2 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
-        event.pseudoViaAKtJet1 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
-        event.pseudoViaAKtJet2 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+        event.mt2ViaKt_had=-999
+        event.mt2ViaAKt_had=-999
+        event.pseudoViaKtJet1_had = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+        event.pseudoViaKtJet2_had = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+        event.pseudoViaAKtJet1_had = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+        event.pseudoViaAKtJet2_had = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
 
         ###
 

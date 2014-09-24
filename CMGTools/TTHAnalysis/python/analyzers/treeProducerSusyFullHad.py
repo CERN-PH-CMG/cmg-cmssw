@@ -40,9 +40,9 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
 #            NTupleVariable("mtwTau", lambda ev: ev.mtwTau, int, help="mt(tau,met)"),
 #            NTupleVariable("IsoTrack_mtw", lambda ev: ev.mtwIsoTrack, int, help="mt(isoTrack,met)"),
             ##--------------------------------------------------
-            NTupleVariable("mt2_had", lambda ev: ev.mt2, float, help="mt2(j1,j2,met)"),
-            NTupleVariable("mt2_gen", lambda ev: ev.mt2_gen, float, help="mt2(j1,j2,met) with genInfo"),
-            NTupleVariable("mt2", lambda ev: ev.mt2_full, float, help="mt2(j1,j2,met) with jets and leptons"),
+            NTupleVariable("mt2_had", lambda ev: ev.mt2_had, float, help="mt2(j1,j2,met) with jets "),
+            NTupleVariable("mt2_gen", lambda ev: ev.mt2_gen, float, help="mt2(j1,j2,met) with jets at genInfo"),
+            NTupleVariable("mt2", lambda ev: ev.mt2, float, help="mt2(j1,j2,met) with jets and leptons"),
             NTupleVariable("gamma_mt2", lambda ev: ev.gamma_mt2, float, help="mt2(j1,j2,met) with photons added to met"),
             NTupleVariable("zll_mt2", lambda ev: ev.zll_mt2, float, help="mt2(j1,j2,met) with zll added to met, only hadrons"),
             ###
@@ -55,7 +55,6 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             #            NTupleVariable("bestMTopHad", lambda ev: ev.bestMTopHad, int, help="bestMTopHad"),
             #            NTupleVariable("bestMTopHadPt", lambda ev: ev.bestMTopHadPt, int, help="bestMTopHadPt"),
             ##--------------------------------------------------
-            ### MM
             # Gamma variables
             NTupleVariable("gamma_nJet40", lambda ev: sum([j.pt() > 40 for j in ev.gamma_cleanJets]), int, help="Number of jets after photon-cleaning with pt > 40, |eta|<2.4"),
             NTupleVariable("gamma_nBJet40", lambda ev: sum([j.btagWP("CSVM") for j in ev.gamma_cleanJets if j.pt() > 40]), int, help="Number jets after photon-cleaning  with pt > 40 passing CSV medium"),
@@ -81,11 +80,11 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
         
         self.globalObjects.update({
             # put more here
-            "pseudoJet1"       : NTupleObject("pseudoJet1_had",     fourVectorType, help="full pseudoJet1 for hemishphere, including leptons"),
-            "pseudoJet2"       : NTupleObject("pseudoJet2_had",     fourVectorType, help="full pseudoJet2 for hemishphere, including leptons"),
+            "pseudoJet1_had"       : NTupleObject("pseudoJet1_had",     fourVectorType, help="full pseudoJet1 for hemishphere"),
+            "pseudoJet2_had"       : NTupleObject("pseudoJet2_had",     fourVectorType, help="full pseudoJet2 for hemishphere"),
             #
-            "pseudoJet1_full"       : NTupleObject("pseudoJet1",     fourVectorType, help="pseudoJet1 for hemishphere"),
-            "pseudoJet1_full"       : NTupleObject("pseudoJet2",     fourVectorType, help="pseudoJet2 for hemishphere"),
+            "pseudoJet1"       : NTupleObject("pseudoJet1",     fourVectorType, help="pseudoJet1 for hemishphere, including leptons"),
+            "pseudoJet2"       : NTupleObject("pseudoJet2",     fourVectorType, help="pseudoJet2 for hemishphere, including leptons"),
             #
             "gamma_met" : NTupleObject("gamma_met", fourVectorType, help="PF E_{T}^{miss}, plus photon, after type 1 corrections"), 
             "gamma_metNoPU" : NTupleObject("gamma_metNoPU", fourVectorType, help="PF noPU E_{T}^{miss}, plus photon"),
