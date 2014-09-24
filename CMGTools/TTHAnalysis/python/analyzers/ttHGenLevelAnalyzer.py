@@ -29,8 +29,9 @@ class ttHGenLevelAnalyzer( Analyzer ):
                                  24  for H -> W W
                                  xx  for H -> xx yy zzz 
 
+          event.gentauleps = [ gen electrons and muons from hard scattering not from tau decays ]
+          event.gentaus    = [ gen taus from from hard scattering ]
           event.genleps    = [ gen electrons and muons from hard scattering not from tau decays ]
-          event.gentauleps = [ gen electrons and muons from decays of taus from hard scattering ]
           event.genbquarks  = [ gen b quarks from top quark decays ]
           event.genwzquarks = [ gen quarks from hadronic W,Z decays ]
 
@@ -77,6 +78,7 @@ class ttHGenLevelAnalyzer( Analyzer ):
                 else:
                     self.fillGenLeptons(event, dau, False, sourceId)
             elif id == 15:
+                event.gentaus.append(dau)
                 self.fillGenLeptons(event, dau, True, sourceId)
             elif id in [22,23,24]:
                 self.fillGenLeptons(event, dau, False, sourceId)
@@ -131,6 +133,7 @@ class ttHGenLevelAnalyzer( Analyzer ):
         event.genHiggsBoson = None
         event.genleps    = []
         event.gentauleps = []
+        event.gentaus    = []
         event.genbquarks  = []
         event.genwzquarks = []
         event.gentopquarks  = []
@@ -179,6 +182,7 @@ class ttHGenLevelAnalyzer( Analyzer ):
                 print "Higgs boson decay mode: ", event.genHiggsDecayMode
                 print "Generator level prompt light leptons:\n", "\n".join(["\t%s" % p for p in event.genleps])
                 print "Generator level light leptons from taus:\n", "\n".join(["\t%s" % p for p in event.gentauleps])
+                print "Generator level prompt tau leptons:\n", "\n".join(["\t%s" % p for p in event.gentaus])
                 print "Generator level b quarks from top:\n", "\n".join(["\t%s" % p for p in event.genbquarks])
                 print "Generator level quarks from W, Z decays:\n", "\n".join(["\t%s" % p for p in event.genwzquarks])
         # make sure prompt leptons have a non-zero sourceId
