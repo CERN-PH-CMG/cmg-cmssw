@@ -188,6 +188,12 @@ ttHSVAnalyzer = cfg.Analyzer(
     'ttHSVAnalyzer'
 )
 
+# Secondary vertex analyzer
+ttHHeavyFlavourHadronAnalyzer = cfg.Analyzer(
+    'ttHHeavyFlavourHadronAnalyzer'
+)
+
+
 # Core Event Analyzer (computes basic quantities like HT, dilepton masses)
 ttHCoreEventAna = cfg.Analyzer(
     'ttHCoreEventAnalyzer',

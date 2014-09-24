@@ -4,6 +4,33 @@ from CMGTools.TTHAnalysis.signedSip import SignedImpactParameterComputer
 
 from CMGTools.RootTools.utils.DeltaR import deltaR
 
+
+def matchToGenHadron(particle, event, minDR=0.05, minDpt=0.1):
+        match = ( None, minDR, 2 )
+        myeta, myphi = particle.eta(), particle.phi()
+        # now, we don't loop over all the packed gen candidates, but rather do fast bisection to find the rightmost with eta > particle.eta() - 0.05
+        etacut = myeta - match[1]
+        ileft, iright = 0, len(event.packedGenForHadMatch)
+        while iright - ileft > 1:
+            imid = (iright + ileft)/2
+            if event.packedGenForHadMatch[imid][0] > etacut:
+                iright = imid
+            else:
+                ileft = imid
+        # now scan from imid to the end (but stop much earlier)
+        etacut = myeta +  match[1]
+        for i in xrange(ileft,len(event.packedGenForHadMatch)):
+            (eta,phi,pg) = event.packedGenForHadMatch[i]
+            if eta > etacut: break
+            dr  = deltaR(myeta,myphi,eta,phi)
+            if dr > match[1]: continue
+            if pg.charge() != particle.charge(): continue
+            dpt = abs(particle.pt() - pg.pt())/(particle.pt()+pg.pt())
+            if pg.pt() > 10: dpt /= 2; # scale down 
+            if dpt < minDpt:
+                match = ( pg, dr, dpt )
+        return match 
+
 class ttHSVAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHSVAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
@@ -33,39 +60,19 @@ class ttHSVAnalyzer( Analyzer ):
         event.ivf = allivf
 
         if self.cfg_comp.isMC:
-            packedGen = [ (p.eta(),p.phi(),p) for p in self.mchandles['packedGen'].product() if p.charge() != 0 and abs(p.eta()) < 2.7 ]
-            packedGen.sort(key = lambda (e,p,x) : e)
+            event.packedGenForHadMatch = [ (p.eta(),p.phi(),p) for p in self.mchandles['packedGen'].product() if p.charge() != 0 and abs(p.eta()) < 2.7 ]
+            event.packedGenForHadMatch.sort(key = lambda (e,p,x) : e)
             for s in event.ivf:
                 #print "SV with %d tracks, mass %5.2f, pt %5.2f, eta %+4.2f, phi %+4.2f: " % (s.numberOfDaughters(), s.mass(), s.pt(), s.eta(), s.phi())
                 mctracks, matchable, matched = 0, 0, 0
+                s.mctracks = []
                 ancestors = {}
                 for id in xrange(s.numberOfDaughters()):
                     dau = s.daughter(id)
                     #print "  daughter track with pt %6.3f, eta %+5.3f, phi %+5.3f, dxy %+6.4f, dz %+6.4f" % (dau.pt(), dau.eta(), dau.phi(), dau.dxy(), dau.dz())
-                    dau.match = ( None, 0.05, 2 )
-                    myeta, myphi = dau.eta(), dau.phi()
-                    # now, we don't loop over all the packed gen candidates, but rather do fast bisection to find the rightmost with eta > dau.eta() - 0.05
-                    etacut = myeta - dau.match[1]
-                    ileft, iright = 0, len(packedGen)
-                    while iright - ileft > 1:
-                        imid = (iright + ileft)/2
-                        if packedGen[imid][0] > etacut:
-                            iright = imid
-                        else:
-                            ileft = imid
-                    # now scan from imid to the end (but stop much earlier)
-                    etacut = myeta +  dau.match[1]
-                    for i in xrange(ileft,len(packedGen)):
-                        (eta,phi,pg) = packedGen[i]
-                        if eta > etacut: break
-                        dr  = deltaR(myeta,myphi,eta,phi)
-                        if dr > dau.match[1]: continue
-                        if pg.charge() != dau.charge(): continue
-                        dpt = abs(dau.pt() - pg.pt())/(dau.pt()+pg.pt())
-                        if pg.pt() > 10: dpt /= 2; # scale down 
-                        if dpt < 0.1:
-                            dau.match = ( pg, dr, dpt )
+                    dau.match = matchToGenHadron(dau, event, minDR=0.05, minDpt=0.1)
                     if dau.match[0]: 
+                        s.mctracks.append(dau.match[0])
                         mctracks += 1
                         # print "     \--> gen cand pdgId %+6d with pt %6.3f, eta %+5.3f, phi %+5.3f: dr = %.3f, dptrel = %.4f" % (dau.match[0].pdgId(), dau.match[0].pt(), dau.match[0].eta(), dau.match[0].phi(), dau.match[1], dau.match[2])
                         # ancestry

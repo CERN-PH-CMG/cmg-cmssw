@@ -118,6 +118,8 @@ class treeProducerSusyMultilepton( treeProducerSusyCore ):
             "cleanJetsFwd"    : NTupleCollection("JetFwd",  jetTypeSusy, 4, help="Forward jets after full selection and cleaning, sorted by pt"),            
             ##------------------------------------------------
             "ivf"       : NTupleCollection("SV",     svType, 20, help="SVs from IVF"),
+            "genBHadrons"  : NTupleCollection("GenBHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level B hadrons"),
+            "genDHadrons"  : NTupleCollection("GenDHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level D hadrons"),
         })
 
         ## Book the variables, but only if we're called explicitly and not through a base class
