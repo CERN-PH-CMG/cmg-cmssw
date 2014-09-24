@@ -80,12 +80,12 @@ ttHIsoTrackAna = cfg.Analyzer(
 ##------------------------------------------ 
 
 ttHMT2Control = cfg.Analyzer(
-            'ttHMT2Control',
+            'ttHMT2Control'
             )
 
 
 ##------------------------------------------
-##  TOPOLOGIAL VARIABLES: MT, MT2
+##  TOLOLOGIAL VARIABLES: MT, MT2
 ##------------------------------------------
 
 ttHTopoJetAna = cfg.Analyzer(
@@ -98,7 +98,7 @@ ttHTopoJetAna = cfg.Analyzer(
 ##------------------------------------------
 
 ####from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_mumu, triggers_ee, triggers_mue, triggers_1mu,
-from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_HT650, triggers_MET150, triggers_HTMET
+from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_HT650, triggers_MET150, triggers_HTMET, triggers_mumu, triggers_ee, triggers_mue, triggers_1mu, triggers_RA1_Photon
 
 # Tree Producer
 treeProducer = cfg.Analyzer(
@@ -109,7 +109,13 @@ treeProducer = cfg.Analyzer(
         triggerBits = {
             'HT650' : triggers_HT650,
             'MET150' : triggers_MET150,
-            'ht350met100' : triggers_HTMET
+            'ht350met100' : triggers_HTMET,
+            'SingleMu' : triggers_1mu,
+            'DoubleMu' : triggers_mumu,
+            'DoubleEl' : triggers_ee,
+            'MuEG'     : triggers_mue,
+            'Photons'  : triggers_RA1_Photon,
+            'htXprescale' : triggers_HTMET
             },
         )
 
@@ -137,9 +143,9 @@ from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14 import *
 #selectedComponents = [ GJets_HT600toInf_PU_S14_POSTLS170 ]
 #, ZJetsToNuNu_HT100to200_PU_S14_POSTLS170 ]
 
-#selectedComponents = [ TTJets_PU20bx25, TTJets_premix_PU20bx25 ]
+selectedComponents = [ TTJets_PU20bx25 ]
 
-selectedComponents = [ SMS_T1qqqq_2J_mGl1000_mLSP800_PU_S14_POSTLS170 ]
+#selectedComponents = [ SMS_T1qqqq_2J_mGl1000_mLSP800_PU_S14_POSTLS170 ]
 
 #-------- SEQUENCE
 
