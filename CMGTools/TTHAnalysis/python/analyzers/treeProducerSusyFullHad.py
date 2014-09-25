@@ -15,7 +15,7 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             #NTupleVariable("crossSection", lambda ev : ev.crossSection, help="process cross section in pb"),
             NTupleVariable("nBJet40", lambda ev: sum([j.btagWP("CSVM") for j in ev.cleanJets if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CSV medium"),
             NTupleVariable("ht_had", lambda ev : ev.htJet40j, help="H_{T} computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
-            NTupleVariable("ht", lambda ev : ev.htJet40j40l, help="H_{T} computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons and muons with |eta|<2.5, pt > 40 GeV)"),
+            NTupleVariable("ht", lambda ev : ev.htJet40j10l, help="H_{T} computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons and muons with |eta|<2.5, pt > 10 GeV)"),
             ### for now store the hadronic only
             NTupleVariable("deltaPhiMin", lambda ev : ev.deltaPhiMin_had, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4"),
             #
@@ -24,8 +24,8 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             NTupleVariable("mht_had_had", lambda ev : ev.mhtPhiJet40j, help="H_{T}^{miss} #phi computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
             #
             NTupleVariable("diffMetMht", lambda ev : ev.diffMetMht, help="abs( vec(mht) - vec(met) ) - with jets and leptons"),
-            NTupleVariable("mht_pt", lambda ev : ev.mhtJet40, help="H_{T}^{miss} computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 40 GeV)"),
-            NTupleVariable("mht_phi", lambda ev : ev.mhtPhiJet40, help="H_{T}^{miss} #phi computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 40 GeV)"),
+            NTupleVariable("mht_pt", lambda ev : ev.mhtJet40, help="H_{T}^{miss} computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
+            NTupleVariable("mht_phi", lambda ev : ev.mhtPhiJet40, help="H_{T}^{miss} #phi computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
             ###
             ###NTupleVariable("sumEta", lambda ev : ev.weirdAssVar, help="absurd eta sum"),
             ##--------------------------------------------------
