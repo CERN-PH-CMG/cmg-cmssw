@@ -165,13 +165,16 @@ class PyTree:
     def __init__(self,tree):
         self.tree = tree
         self._branches = {} ## must be the last line
-    def branch(self,name,type,n=1):
+    def branch(self,name,type,n=1,lenVar=None):
         arr = array(type.lower(), n*[0 if type in 'iI' else 0.]) 
         self._branches[name] = arr
         if n == 1:
             self.tree.Branch(name, arr, name+"/"+type.upper())
         else:
-            self.tree.Branch(name, arr, "%s[%d]/%s" % (name,n,type.upper()))
+            if lenVar != None:
+                self.tree.Branch(name, arr, "%s[%s]/%s" % (name,lenVar,type.upper()))
+            else:
+                self.tree.Branch(name, arr, "%s[%d]/%s" % (name,n,type.upper()))
     def __setattr__(self,name,val):
         if hasattr(self,'_branches'):
             arr = self._branches[name]

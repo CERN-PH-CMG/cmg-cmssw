@@ -2,8 +2,13 @@
 
 from CMGTools.Production.hadd import haddChunks
 #import ROOT 
-from ROOT import TTree, TFile
+from ROOT import TTree, TFile, AddressOf, gROOT
 import numpy
+from datasetInfo import Dataset, DatasetDict
+
+
+
+dd = DatasetDict()
 
 
 
@@ -15,9 +20,13 @@ class EventKey:
     self.evt=e;
 
 
-def removeDuplicatesBaby( dir, dataset ) :
 
-   print "-> Removing duplicates from dataset: " + dataset
+
+
+
+def postProcessBaby( dir, dataset, fast ) :
+
+   print "-> Post-processing dataset: " + dataset
 
    oldFileName = dir + str("/") + dataset + str("/treeProducerSusyFullHad/treeProducerSusyFullHad_tree.root")
    oldfile = TFile(oldFileName)
@@ -29,31 +38,73 @@ def removeDuplicatesBaby( dir, dataset ) :
    newtree.SetName("mt2")
 
 
+   oldtree.SetBranchStatus("*", 0) # disable all branches (faster)
+   if not fast:
+     oldtree.SetBranchStatus("run", 1) # enable only useful ones
+     oldtree.SetBranchStatus("lumi", 1) # enable only useful ones
+     oldtree.SetBranchStatus("evt", 1) # enable only useful ones
+
+
+
+   scale1fb = numpy.zeros(1, dtype=float)
+   xsec     = numpy.zeros(1, dtype=float)
+   kfactor  = numpy.zeros(1, dtype=float)
+   filter   = numpy.zeros(1, dtype=float)
+   nEvts    = numpy.zeros(1, dtype=int)
+   id       = numpy.zeros(1, dtype=int)
+
+   newtree.Branch("evt_scale1fb", scale1fb, "evt_scale1fb/D");
+   newtree.Branch("evt_xsec",     xsec,     "evt_xsec/D");
+   newtree.Branch("evt_kfactor",  kfactor,  "evt_kfactor/D");
+   newtree.Branch("evt_filter",   filter,   "evt_filter/D");
+   newtree.Branch("evt_nEvts",    nEvts,    "evt_nEvts/I");
+   newtree.Branch("evt_id",       id,       "evt_id/I");
+
+
+   events = oldtree.GetEntries()
+
+   process = dataset.split("_PU")[0]
+   d = dd[process]
+
+
+   scale1fb[0] = d.scale1fb(events)
+   xsec    [0] = d.xsection
+   kfactor [0] = d.kfactor 
+   filter  [0] = d.filter  
+   nEvts   [0] = events
+   id      [0] = d.id      
+
+
+
 
    evlist = set()
 
    for i in oldtree :
 
-     ek = EventKey(i.run, i.lumi, i.evt)
+     if not fast:
+       ek = EventKey(i.run, i.lumi, i.evt)
 
-     if ek not in evlist :
-       evlist.add(ek)
+       if ek not in evlist :
+         evlist.add(ek)
+         newtree.Fill()
+     else:
        newtree.Fill()
 
    newfile.Write()
    newfile.Close()
 
+   print "-> Saved post-processed babytree in : " + str(newfile.GetName())
 
 
 
-def removeDuplicates( dir ) :
+def postProcess( dir, fast ) :
 
   for file in sorted(os.listdir(dir)):
       filepath = '/'.join( [dir, file] )
       if os.path.isdir(filepath):
           dataset = file
           if "_Chunk" in dataset: continue
-          removeDuplicatesBaby( dir, dataset )
+          postProcessBaby( dir, dataset, fast )
     
 
 
@@ -79,6 +130,9 @@ if __name__ == '__main__':
     parser.add_option("-c","--clean", dest="clean",
                       default=False,action="store_true",
                       help="move chunks to Chunks/ after processing.")
+    parser.add_option("-f","--fast", dest="fast",
+                      default=False,action="store_true",
+                      help="don't check for duplicates")
 
     (options,args) = parser.parse_args()
 
@@ -101,13 +155,8 @@ if __name__ == '__main__':
           thisBadFile = thisBadFile.split("/")[1]
         badFiles.add(thisBadFile)
 
-    if len(badFiles) > 0 :
-      print "-> Found the following incomplete Chunks: "
-      print badFiles
 
     haddChunks(dir, options.remove, options.clean, badFiles)
 
-    removeDuplicates( dir )
-
-
+    postProcess( dir, options.fast )
 

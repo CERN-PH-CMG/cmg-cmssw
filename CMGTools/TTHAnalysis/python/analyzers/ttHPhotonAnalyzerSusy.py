@@ -19,6 +19,7 @@ class ttHPhotonAnalyzerSusy( Analyzer ):
     
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHPhotonAnalyzerSusy,self).__init__(cfg_ana,cfg_comp,looperName)
+        self.etaCentral = self.cfg_ana.etaCentral  if hasattr(self.cfg_ana, 'etaCentral') else 9999
 
     def declareHandles(self):
         super(ttHPhotonAnalyzerSusy, self).declareHandles()
@@ -45,10 +46,7 @@ class ttHPhotonAnalyzerSusy( Analyzer ):
         event.allphotons.sort(key = lambda l : l.pt(), reverse = True)
 
         event.selectedPhotons = []
-        ### MM
-        #event.loosePhotons = []
-        event.loosePhotonsCentral = []
-        ###
+        event.selectedPhotonsCentral = []
 
         foundPhoton = False
         for gamma in event.allphotons:
@@ -73,15 +71,12 @@ class ttHPhotonAnalyzerSusy( Analyzer ):
 
             if gamma.photonID(self.cfg_ana.gammaID):
                 event.selectedPhotons.append(gamma)
-##            event.selectedPhotons.append(gamma)        
             
-            ### MM
-            if gamma.photonID(self.cfg_ana.gammaID) and abs(gamma.eta()) < self.cfg_ana.etaCentral:
-                event.loosePhotonsCentral.append(gamma)
-            ###
+            if gamma.photonID(self.cfg_ana.gammaID) and abs(gamma.eta()) < self.etaCentral:
+                event.selectedPhotonsCentral.append(gamma)
 
         event.selectedPhotons.sort(key = lambda l : l.pt(), reverse = True)
-        event.loosePhotonsCentral.sort(key = lambda l : l.pt(), reverse = True)
+        event.selectedPhotonsCentral.sort(key = lambda l : l.pt(), reverse = True)
 
         self.counters.counter('events').inc('all events')
         if foundPhoton: self.counters.counter('events').inc('has >=1 gamma at preselection')
@@ -108,7 +103,8 @@ class ttHPhotonAnalyzerSusy( Analyzer ):
             print 'gamma candidate had iso: ',event.selectedPhotons[0].chargedHadronIso()
             print 'gamma candidate neu iso: ',event.selectedPhotons[0].neutralHadronIso()
             print 'gamma candidate gamma iso: ',event.selectedPhotons[0].photonIso()
-            print 'gamma idCutBased',event.selectedPhotons[0].idCutBased    
+            print 'gamma idCutBased',event.selectedPhotons[0].idCutBased
+
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
