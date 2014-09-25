@@ -101,7 +101,6 @@ treeProducer = cfg.Analyzer(
 
 #-------- SAMPLES AND TRIGGERS -----------
 from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14 import * 
-#from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14 import TTJets_PU20bx25
 
 #selectedComponents = [ SingleMu, DoubleElectron, TTHToWW_PUS14, DYJetsM50_PU20bx25, TTJets_PUS14 ]
 
@@ -124,7 +123,6 @@ sequence = cfg.Sequence(susyCoreSequence+[
 test = 1
 if test==1:
     # test a single component, using a single thread.
-    comp=TTJets_PU20bx25
     #comp=TTJets_forSynch
     #comp.files = ['/afs/cern.ch/work/p/pandolf/CMSSW_7_0_6_patch1_2/src/CMGTools/TTHAnalysis/cfg/pickevents.root']
     comp.files = ['/afs/cern.ch/user//m/mmasciov/public/TTJets_forSynch_1.root']
