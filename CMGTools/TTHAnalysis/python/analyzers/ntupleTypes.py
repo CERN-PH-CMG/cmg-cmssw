@@ -265,8 +265,8 @@ svType = NTupleObjectType("sv", baseObjectTypes = [ fourVectorType ], variables 
 heavyFlavourHadronType = NTupleObjectType("heavyFlavourHadron", baseObjectTypes = [ genParticleType ], variables = [
     NTupleVariable("flav", lambda x : x.flav, int, mcOnly=True, help="Flavour"),
     NTupleVariable("sourceId", lambda x : x.sourceId, int, mcOnly=True, help="pdgId of heaviest mother particle (stopping at the first one heaviest than 175 GeV)"),
-    NTupleVariable("svMass",   lambda x : x.sv.pt() if x.sv else 0, help="SV: mass"),
-    NTupleVariable("svPt",   lambda x : x.sv.mass() if x.sv else 0, help="SV: pt"),
+    NTupleVariable("svMass",   lambda x : x.sv.mass() if x.sv else 0, help="SV: mass"),
+    NTupleVariable("svPt",   lambda x : x.sv.pt() if x.sv else 0, help="SV: pt"),
     NTupleVariable("svCharge",   lambda x : x.sv.charge() if x.sv else -99., int, help="SV: charge"),
     NTupleVariable("svNtracks", lambda x : x.sv.numberOfDaughters() if x.sv else 0, int, help="SV: Number of tracks (with weight > 0.5)"),
     NTupleVariable("svChi2", lambda x : x.sv.vertexChi2() if x.sv else -99., help="SV: Chi2 of the vertex fit"),
