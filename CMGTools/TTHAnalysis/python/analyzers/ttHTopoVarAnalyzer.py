@@ -277,12 +277,12 @@ class ttHTopoVarAnalyzer( Analyzer ):
             
 ## ===> full MT2 (jets + leptons)                                                                                                                                                                                             
 
-        leptons_fullmt2 = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta())<2.5 ]
-        objects_fullmt2 = objects40jc + leptons_fullmt2
+        objects40lc = [ l for l in event.selectedLeptons if l.pt() > 40 and abs(l.eta())<2.5 ]
+        objects40j40lc = objects40jc + objects40lc
 
-        objects_fullmt2.sort(key = lambda obj : obj.pt(), reverse = True)
+        objects40j40lc.sort(key = lambda obj : obj.pt(), reverse = True)
 
-        if len(objects_fullmt2)>=2:
+        if len(objects40j40lc)>=2:
 
             pxvec  = ROOT.std.vector(float)()
             pyvec  = ROOT.std.vector(float)()
@@ -290,7 +290,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
             Evec  = ROOT.std.vector(float)()
             grouping  = ROOT.std.vector(int)()
 
-            for obj in objects_fullmt2:
+            for obj in objects40j40lc:
                 pxvec.push_back(obj.px())
                 pyvec.push_back(obj.py())
                 pzvec.push_back(obj.pz())
@@ -345,13 +345,12 @@ class ttHTopoVarAnalyzer( Analyzer ):
 ## ===> full gamma_MT2
 
         gamma_objects40jc = [ j for j in event.gamma_cleanJets if j.pt() > 40 and abs(j.eta())<2.5 ]
-        gamma_leptons_fullmt2 = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta())<2.5 ]
 
-        gamma_objects_fullmt2 = gamma_objects40jc + gamma_leptons_fullmt2
+        gamma_objects40j40lc = gamma_objects40jc + objects40lc
     
-        gamma_objects_fullmt2.sort(key = lambda obj : obj.pt(), reverse = True)
+        gamma_objects40j40lc.sort(key = lambda obj : obj.pt(), reverse = True)
 
-        if len(gamma_objects_fullmt2)>=2:
+        if len(gamma_objects40j40lc)>=2:
 
             pxvec  = ROOT.std.vector(float)()
             pyvec  = ROOT.std.vector(float)()
@@ -359,7 +358,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
             Evec  = ROOT.std.vector(float)()
             grouping  = ROOT.std.vector(int)()
 
-            for obj in gamma_objects_fullmt2:
+            for obj in objects40j40lc:
                 pxvec.push_back(obj.px())
                 pyvec.push_back(obj.py())
                 pzvec.push_back(obj.pz())
@@ -400,9 +399,9 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
 ## ===> zll_MT2
         
-        vetoLeptons = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta()) < 2.5 ]
+        csLeptons = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta()) < 2.5 ]
             
-        if len(vetoLeptons)==2 and len(objects40jc)>=2:
+        if len(csLeptons)==2 and len(objects40jc)>=2:
 
             pxvec  = ROOT.std.vector(float)()
             pyvec  = ROOT.std.vector(float)()
