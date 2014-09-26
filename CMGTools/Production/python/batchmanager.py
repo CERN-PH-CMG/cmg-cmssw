@@ -33,7 +33,7 @@ class BatchManager:
                           help="Name of the local output directory for your jobs. This directory will be created automatically.",
                           default=None)
         self.parser_.add_option("-r", "--remote-copy", dest="remoteCopy",
-                          help="remote output directory for your jobs. Example: /store/cmst3/user/cbern/CMG/HT/Run2011A-PromptReco-v1/AOD/PAT_CMG/RA2. This directory *must* be provided as a logical file name (LFN). When this option is used, all root files produced by a job are copied to the remote directory, and the job index is appended to the root file name. The Logger directory is tarred and compressed into Logger.tgz, and sent to the remote output directory as well. Afterwards, use logger.py to access the information contained in Logger.tgz.",
+                          help="remote output directory for your jobs. Example: /store/cmst3/user/cbern/CMG/HT/Run2011A-PromptReco-v1/AOD/PAT_CMG/RA2. This directory *must* be provided as a logical file name (LFN). When this option is used, all root files produced by a job are copied to the remote directory, and the job index is appended to the root file name. The Logger directory is tarred and compressed into Logger.tgz, and sent to the remote output directory as well. Afterwards, use logger.py to access the information contained in Logger.tgz. For remote copy to PSI specify path like: '/pnfs/psi.ch/...'. Logs will be sent back to the submision directory.",
                           default=None)
         self.parser_.add_option("-f", "--force", action="store_true",
                                 dest="force", default=False,
@@ -52,32 +52,45 @@ class BatchManager:
         if self.options_.remoteCopy == None:
             self.remoteOutputDir_ = ""
         else: 
-            # tier3 srmmkdir (or the new gfal tools ) for remoteDir needs to be implemented below
-            # https://wiki.chipp.ch/twiki/bin/view/CmsTier3/HowToAccessSe#gfal_tools
             # removing possible trailing slash
             self.remoteOutputDir_ = self.options_.remoteCopy.rstrip('/')
-            if not castortools.isLFN( self.remoteOutputDir_ ):
-                print 'When providing an output directory, you must give its LFN, starting by /store. You gave:'
-                print self.remoteOutputDir_
-                sys.exit(1)          
-            self.remoteOutputDir_ = castortools.lfnToEOS( self.remoteOutputDir_ )
-            dirExist = castortools.isDirectory( self.remoteOutputDir_ )           
-            # nsls = 'nsls %s > /dev/null' % self.remoteOutputDir_
-            # dirExist = os.system( nsls )
-            if dirExist is False:
-                print 'creating ', self.remoteOutputDir_
-                if castortools.isEOSFile( self.remoteOutputDir_ ):
-                    # the output directory is currently a file..
-                    # need to remove it.
-                    castortools.rm( self.remoteOutputDir_ )
-                castortools.createEOSDir( self.remoteOutputDir_ )
-            else:
-                # directory exists.
-                if self.options_.negate is False and self.options_.force is False:
-                    #COLIN need to reimplement protectedRemove in eostools
-                    raise ValueError(  ' '.join(['directory ', self.remoteOutputDir_, ' already exists.']))
-                    # if not castortools.protectedRemove( self.remoteOutputDir_, '.*root'):
-                    # the user does not want to delete the root files                          
+    
+            if "pnfs" in self.remoteOutputDir_: # T3 @ PSI:
+                if self.remoteOutputDir_.startswith("/pnfs"):
+                    os.system("gfal-mkdir srm://t3se01.psi.ch/"+self.remoteOutputDir_)
+                    outputDir = self.options_.outputDir
+                    if outputDir==None:
+                        today = datetime.today()
+                        outputDir = 'OutCmsBatch_%s' % today.strftime("%d%h%y_%H%M")
+                    self.remoteOutputDir_+="/"+outputDir
+                    os.system("gfal-mkdir srm://t3se01.psi.ch/"+self.remoteOutputDir_)
+                else:
+                    print "remote directory must start with /pnfs to send to the tier3 at PSI"
+                    print self.remoteOutputDir_, "not valid"
+                    sys.exit(1)
+            else: # assume EOS
+                if not castortools.isLFN( self.remoteOutputDir_ ):
+                    print 'When providing an output directory, you must give its LFN, starting by /store. You gave:'
+                    print self.remoteOutputDir_
+                    sys.exit(1)          
+                self.remoteOutputDir_ = castortools.lfnToEOS( self.remoteOutputDir_ )
+                dirExist = castortools.isDirectory( self.remoteOutputDir_ )           
+                # nsls = 'nsls %s > /dev/null' % self.remoteOutputDir_
+                # dirExist = os.system( nsls )
+                if dirExist is False:
+                    print 'creating ', self.remoteOutputDir_
+                    if castortools.isEOSFile( self.remoteOutputDir_ ):
+                        # the output directory is currently a file..
+                        # need to remove it.
+                        castortools.rm( self.remoteOutputDir_ )
+                    castortools.createEOSDir( self.remoteOutputDir_ )
+                else:
+                    # directory exists.
+                    if self.options_.negate is False and self.options_.force is False:
+                        #COLIN need to reimplement protectedRemove in eostools
+                        raise ValueError(  ' '.join(['directory ', self.remoteOutputDir_, ' already exists.']))
+                        # if not castortools.protectedRemove( self.remoteOutputDir_, '.*root'):
+                        # the user does not want to delete the root files                          
         self.remoteOutputFile_ = ""
         self.ManageOutputDir()
         return (self.options_, self.args_)
@@ -140,7 +153,6 @@ class BatchManager:
         jobDir = '/'.join( [self.outputDir_, dname])
         print '\t',jobDir 
         self.mkdir( jobDir )
-        # needs to be implemented: if --remote-copy need to make dir in remote location to keep hierarchy (so haddChunks.py works?)
         self.listOfJobs_.append( jobDir )
         self.PrepareJobUser( jobDir, value )
         

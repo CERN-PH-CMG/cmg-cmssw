@@ -58,16 +58,39 @@ cp -r Loop/* $LS_SUBCWD
    return script
 
 
-def batchScriptPSI( index, jobDir, remoteDir=''):  # remote dir not implemented, index not used
+def batchScriptPSI( index, jobDir, remoteDir=''):
    '''prepare the SGE version of the batch script, to run on the PSI tier3 batch system'''
 
    cmssw_release = os.environ['CMSSW_BASE']
-   VO_CMS_SW_DIR = "/swshare/cms"  # doesn't seem to work in the new SL6 t3wn
+   VO_CMS_SW_DIR = "/swshare/cms"  # $VO_CMS_SW_DIR doesn't seem to work in the new SL6 t3wn
+
+   if remoteDir=='':
+       cpCmd="""echo 'sending the job directory back'
+cp -r Loop/* $SUBMISIONDIR"""
+   elif remoteDir.startswith("/pnfs/"):
+       cpCmd="""echo 'sending root files to remote dir'
+export LD_LIBRARY_PATH=/usr/lib64/:$LD_LIBRARY_PATH # Fabio's workaround to fix gfal-tools
+for f in Loop/treeProducerSusyFullHad/*.root
+do
+echo $f
+ff=`basename $f | cut -d . -f 1`
+echo $ff
+gfal-mkdir {srm}
+echo "gfal-copy file:///`pwd`/Loop/treeProducerSusyFullHad/$file.root {srm}/${{ff}}_{idx}.root"
+gfal-copy file:///`pwd`/Loop/treeProducerSusyFullHad/$ff.root {srm}/${{ff}}_{idx}.root
+done
+rm Loop/treeProducerSusyFullHad/*.root
+echo 'sending the logs back'
+cp -r Loop/* $SUBMISIONDIR""".format(idx=index, srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")])
+   else:
+       print "remote directory not supported yet: ", remoteDir
+       sys.exit(1)
+
 
    script = """#!/bin/bash
 shopt expand_aliases
 ##### MONITORING/DEBUG INFORMATION ###############################
-DATE_START=`date +%%s`
+DATE_START=`date +%s`
 echo "Job started at " `date`
 cat <<EOF
 ################################################################
@@ -87,7 +110,7 @@ echo "################################################################"
 TOPWORKDIR=/scratch/`whoami`
 JOBDIR=sgejob-$JOB_ID
 WORKDIR=$TOPWORKDIR/$JOBDIR
-SUBMISIONDIR=%s
+SUBMISIONDIR={jdir}
 if test -e "$WORKDIR"; then
    echo "ERROR: WORKDIR ($WORKDIR) already exists! Aborting..." >&2
    exit 1
@@ -99,10 +122,10 @@ if test ! -d "$WORKDIR"; then
 fi
 
 #source $VO_CMS_SW_DIR/cmsset_default.sh
-source %s/cmsset_default.sh
+source {vo}/cmsset_default.sh
 export SCRAM_ARCH=slc6_amd64_gcc481
 #cd $CMSSW_BASE/src
-cd %s/src
+cd {cmssw}/src
 shopt -s expand_aliases
 cmsenv
 cd $WORKDIR
@@ -111,20 +134,17 @@ ls
 cd `find . -type d | grep /`
 echo 'running'
 #python $CMSSW_BASE/src/CMGTools/RootTools/python/fwlite/Looper.py config.pck
-python %s/src/CMGTools/RootTools/python/fwlite/Looper.py config.pck
+python {cmssw}/src/CMGTools/RootTools/python/fwlite/Looper.py config.pck
 echo
-echo 'sending the job directory back'
-# srmcp root file to remoteDirectory if necessary  (needs to be implemented)
-# https://wiki.chipp.ch/twiki/bin/view/CmsTier3/HowToAccessSe#gfal_tools
-cp -r Loop/* $SUBMISIONDIR    # should copy all except root files if remoteDir option (needs to be implemented)
+{copy}
 ###########################################################################
-DATE_END=`date +%%s`
+DATE_END=`date +%s`
 RUNTIME=$((DATE_END-DATE_START))
 echo "################################################################"
 echo "Job finished at " `date`
 echo "Wallclock running time: $RUNTIME s"
 exit 0
-""" % (jobDir, VO_CMS_SW_DIR,cmssw_release,cmssw_release)
+""".format(jdir=jobDir, vo=VO_CMS_SW_DIR,cmssw=cmssw_release, copy=cpCmd)
 
    return script
 
