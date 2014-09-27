@@ -99,7 +99,7 @@ ttHTopoJetAna = cfg.Analyzer(
 ##------------------------------------------
 
 ####from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_mumu, triggers_ee, triggers_mue, triggers_1mu,
-from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_HT650, triggers_MET150, triggers_HTMET, triggers_mumu, triggers_ee, triggers_mue, triggers_1mu, triggers_RA1_Photon
+from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_HT650, triggers_MET150, triggers_HTMET, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_mue, triggers_1mu, triggers_RA1_Photon
 
 # Tree Producer
 treeProducer = cfg.Analyzer(
@@ -112,9 +112,9 @@ treeProducer = cfg.Analyzer(
             'MET150' : triggers_MET150,
             'ht350met100' : triggers_HTMET,
             'SingleMu' : triggers_1mu,
-            'DoubleMu' : triggers_mumu,
-            'DoubleEl' : triggers_ee,
-            'MuEG'     : triggers_mue,
+            'DoubleMu' : triggers_MT2_mumu,
+            'DoubleEl' : triggers_MT2_ee,
+            'MuEG'     : triggers_MT2_mue,
             'Photons'  : triggers_RA1_Photon,
             'htXprescale' : triggers_HTMET
             },
