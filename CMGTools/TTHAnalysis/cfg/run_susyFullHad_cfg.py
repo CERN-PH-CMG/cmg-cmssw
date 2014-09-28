@@ -161,12 +161,12 @@ sequence = cfg.Sequence(susyCoreSequence+[
 test = 1
 if test==1:
     # test a single component, using a single thread.
-    #comp=TTJets_PU20bx25 #TTJets_forSynch
+    comp=TTJets_PU20bx25 #TTJets_forSynch
     #comp=SMS_T1qqqq_2J_mGl1400_mLSP100_PU_S14_POSTLS170 # small files for testing
-    comp=SMS_T1bbbb_2J_mGl1000_mLSP900_PU_S14_POSTLS170
+    #comp=SMS_T1bbbb_2J_mGl1000_mLSP900_PU_S14_POSTLS170
     #comp.files = ['/afs/cern.ch/work/p/pandolf/CMSSW_7_0_6_patch1_2/src/CMGTools/TTHAnalysis/cfg/pickevents.root']
-    #comp.files = ['/afs/cern.ch/user//m/mmasciov/public/TTJets_forSynch_1.root']
-    comp.files = comp.files[:10]
+    comp.files = ['/afs/cern.ch/user//m/mmasciov/public/TTJets_forSynch_1.root']
+    comp.files = comp.files[:1]
     selectedComponents = [comp]
     comp.splitFactor = 10
 elif test==2:
