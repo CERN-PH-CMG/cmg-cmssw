@@ -6,10 +6,10 @@ def mt(*x):
     return sqrt(max(ht*ht-pt*pt,0))
 def solveWlv(lW,met,metphi):
     MW=80.4
-    a = (1 - (lW.p4().Z()/lW.energy)**2)
-    ppe    = met * lW.pt * cos(lW.phi - metphi)/lW.energy
-    brk    = MW**2 / (2*lW.energy) + ppe
-    b      = (lW.p4().Z()/lW.energy) * brk
+    a = (1 - (lW.p4().Z()/lW.p4().E())**2)
+    ppe    = met * lW.pt * cos(lW.phi - metphi)/lW.p4().E()
+    brk    = MW**2 / (2*lW.p4().E()) + ppe
+    b      = (lW.p4().Z()/lW.p4().E()) * brk
     c      = met**2 - brk**2
     delta   = b**2 - a*c
     sqdelta = sqrt(delta)    if delta    > 0 else 0
@@ -47,11 +47,11 @@ class TTEventReco_MC:
         jets = [j for j in Collection(event,"Jet","nJet25",8)]
         bjets = [ j for j in jets if j.btagCSV > 0.679 ]
         if len(bjets) == 0: bjets.append(jets[0])
-        (met, metphi)  = event.met, event.met_phi
+        (met, metphi)  = event.met_pt, event.met_phi
         metp4 = ROOT.TLorentzVector()
         metp4.SetPtEtaPhiM(met,0,metphi,0)
         njet = len(jets); nb = len(bjets); nlep = len(leps)
-        bquarks = [j for j in Collection(event,"GenBQuark","nGenBQuarks",2)]
+        bquarks = [j for j in Collection(event,"GenBQuark","nGenBQuark")]
         tquarks = [j for j in Collection(event,"GenTop")]
         if len(tquarks) != 2: return ret0
         lquarks = [j for j in Collection(event,"GenQuark")]
@@ -375,9 +375,8 @@ class TTEventReco:
         self.sorters = [
                          #("BestByWt",BestByCascade((lambda c : -abs(c.mtWlv-80.4)))),
                          #("BestByWlt",BestByCascade((lambda c : -TTLikelihood_MC('mc_mt_Wlv',c.mtWlv)))),
-                         #("BestByWtBTag",BestByCascade((lambda c : -abs(c.mtWlv-80.4)),(lambda c : c.bj.btagCSV))),
-                         #("BestByWtBTag",BestByCascade((lambda c : -abs(c.mtWlv-80.4)),(lambda c : c.bj.btagCSV))),
-                         #("BestByWtBPt", BestByCascade((lambda c : -abs(c.mtWlv-80.4)),(lambda c : c.bj.pt))),
+                         ("BestByWtBTag",BestByCascade((lambda c : -abs(c.mtWlv-80.4)),(lambda c : c.bj.btagCSV))),
+                         ("BestByWtBPt", BestByCascade((lambda c : -abs(c.mtWlv-80.4)),(lambda c : c.bj.pt))),
                          #("BestByWtMlvb",BestByCascade((lambda c : -abs(c.mtWlv-80.4)),(lambda c : -999*c.tjjb-abs(c.p4tlvb.M()-172.5)))),
                          #("BestByMjj",    BestByCascade((lambda c : -abs(c.p4wjj.M()-80.4)))),
                          #("BestByMjjNoB", BestByCascade((lambda c : max(c.j1.btagCSV,c.j2.btagCSV) < 0.676), (lambda c : -abs(c.p4wjj.M()-80.4)))),
@@ -390,7 +389,7 @@ class TTEventReco:
                          #("BestByMjjLNobbNoBT", BestByCascade((lambda c : min(c.j1.btagCSV,c.j2.btagCSV) < 0.244), (lambda c : min(c.j1.btagCSV,c.j2.btagCSV) < 0.898),
                          #                                       (lambda c : -TTLikelihood_MC('mc_m_Wjj',c.p4wjj.M())))),
                          ("BestGuess", BestByCascade((lambda c : -999*c.tjjb), ## no tjjb
-                                                      (lambda c : min(c.j1.btagCSV,c.j2.btagCSV) < 0.244), (lambda c : min(c.j1.btagCSV,c.j2.btagCSV) < 0.898), # No W->bb, W->Bx
+                                                      (lambda c : min(c.j1.btagCSV,c.j2.btagCSV) < 0.244), (lambda c : max(c.j1.btagCSV,c.j2.btagCSV) < 0.898), # No W->bb, W->Bx
                                                       (lambda c : -abs(c.mtWlv-80.4)), # Best W->lv by MT
                                                       (lambda c : -abs(c.p4wjj.M()-80.4)), # Best W->jj by M
                                                       (lambda c : c.bj.pt), # Best b-jet by pt
@@ -425,7 +424,7 @@ class TTEventReco:
                          #                                ), 
                          #                              )),
                         ("ByGuessLL2B", BestByCascade((lambda c : -999*c.tjjb), ## no tjjb
-                                                      (lambda c : min(c.j1.btagCSV,c.j2.btagCSV) < 0.244), (lambda c : min(c.j1.btagCSV,c.j2.btagCSV) < 0.898), # No W->bb, W->Bx
+                                                      (lambda c : min(c.j1.btagCSV,c.j2.btagCSV) < 0.244), (lambda c : max(c.j1.btagCSV,c.j2.btagCSV) < 0.898), # No W->bb, W->Bx
                                                       (lambda c : c.bj.pt), # Best b-jet by pt
                                                       (lambda c : -TTLikelihood_MC('mc_pt_Wjj',c.p4wjj.Pt()) 
                                                                   -TTLikelihood_MC('mc_m_Wjj', c.p4wjj.M())
@@ -436,9 +435,9 @@ class TTEventReco:
                                                       )),
                          #("BestByWtWjjBTagMlvb",BestByWtWjjBTagMlvb()),
                          #("BestByTopTop",BestBySingleFunc(lambda c : -abs(c.p4tlvb.M()-172.5)-abs(c.p4tjjb.M()-172.5))),
-                         #("BestBySum4",BestBySingleFunc(lambda c : 
-                         #   -abs((c.p4wjj.M()-80.4)/15) -abs((c.mtWlv-80.4)/20)
-                         #   -abs((c.p4tlvb.M()-172.5)/30) -abs((c.p4tjjb.M()-172.5)/30) ) ),
+                         ("BestBySum4",BestBySingleFunc(lambda c : 
+                            -abs((c.p4wjj.M()-80.4)/15) -abs((c.mtWlv-80.4)/20)
+                            -abs((c.p4tlvb.M()-172.5)/30) -abs((c.p4tjjb.M()-172.5)/30) ) ),
                          #("BestBySum4NoTJJb",BestBySingleFunc(lambda c : 
                          #   -999*c.tjjb
                          #   -abs((c.p4wjj.M()-80.4)/15) -abs((c.mtWlv-80.4)/20)
@@ -461,12 +460,15 @@ class TTEventReco:
         njet = len(jets); nlep = len(leps)
         if njet < 3 or nlep < 2: return ret
         bjets = [ j for j in jets if j.btagCSV > 0.679 ]
-        if len(bjets) == 0: bjets.append(jets[0])
+        if len(bjets) == 0: 
+            jsorted = jets[:]
+            jsorted.sort(key=lambda j:j.tagCSV) 
+            bjets.append(jsorted[-1])
         nb = len(bjets)
-        (met, metphi)  = event.met, event.met_phi
+        (met, metphi)  = event.met_pt, event.met_phi
         metp4 = ROOT.TLorentzVector()
         metp4.SetPtEtaPhiM(met,0,metphi,0)
-        bquarks = [j for j in Collection(event,"GenBQuark","nGenBQuarks",2)] if isMC else []
+        bquarks = [j for j in Collection(event,"GenBQuark","nGenBQuark")] if isMC else []
         tquarks = [j for j in Collection(event,"GenTop")]   if isMC else []
         lquarks = [j for j in Collection(event,"GenQuark")] if isMC else []
         # --------------------------------------------------------------------------
@@ -494,7 +496,8 @@ class TTEventReco:
                                     info["good_tlvb"]  = event.mc_has_tlvb  and info["good_b" ] and info["good_Wlv"] and not tjjb
                                     info["good_tlvlb"] = event.mc_has_tlvlb and info["good_lb"] and info["good_Wlv"] and tjjb
                                     bingo = info["good_b"] and info["good_Wlv"] and info["good_Wjj"] and (info["good_tjjb"] or info["good_tjjlb"]) and (info["good_tlvb"] or info["good_tlvlb"])
-                                    #bingo = info["good_Wjj"]
+                                    #bingo = info["good_Wlv"] and (info["good_tlvb"] or info["good_tlvlb"])
+                                    #bingo = info["good_Wjj"]  and (info["good_tjjb"] or info["good_tjjlb"])
                                     if bingo: ibingo.append(info["n_cands"])
                                     YN={ True:"Y", False:"n" }
                                     if self._debug: print "candidate %3d:  ib %d (%.3f, %1s) ilW %d (%1s) tjjb %1s   m(Wjj%d%d) =%6.1f (%5.1f, %1s)    mT(Wlv) =%6.1f (%5.1f, %1s)   m(tjjb) =%6.1f (%5.1f, %1s)   m(tlvb) =%6.1f (%5.1f, %1s) %s " % ( info["n_cands"],
@@ -549,10 +552,14 @@ class TTEventReco:
         return ret 
 
 
+
+
+
 if __name__ == '__main__':
     from sys import argv
     file = ROOT.TFile(argv[1])
-    tree = file.Get("ttHLepTreeProducerBase")
+    tree = file.Get("treeProducerSusyMultilepton")
+    tree.vectorTree = True
     class Tester(Module):
         def __init__(self, name):
             Module.__init__(self,name,None)
@@ -560,7 +567,7 @@ if __name__ == '__main__':
             self.r  = TTEventReco(debug=True)
             self._acc = [0,0,0,0]
         def analyze(self,ev):
-            if ev.nJet25 not in [3,4] or ev.nBJetMedium25 < 1 or ev.nLepGood > 2 or ev.LepGood1_charge*ev.LepGood2_charge < 0:
+            if ev.nJet25 not in [3,4] or ev.nBJetMedium25 < 1 or ev.nLepGood10 != 2 or ev.LepGood_charge[0]*ev.LepGood_charge[1] < 0:
             #if ev.nJet25 <= 3 or ev.nBJetMedium25 != 1 or ev.nLepGood > 2 or abs(ev.LepGood1_pdgId+ev.LepGood2_pdgId) < 26:
                 return False
             ret = self.mc(ev)
@@ -575,10 +582,10 @@ if __name__ == '__main__':
             print self._acc
             #return False
             #if not ret["mc_has_Wjj"]: return False
-            #if not ret["mc_has_Wlv"]: return False
+            if not ret["mc_has_Wlv"]: return False
             #if ret["mc_mt_Wlv"] < 40: return False
-            if not ret["mc_has_tjjlb"]: return False
-            if not ret["mc_has_tlvb"]: return False
+            #if not ret["mc_has_tjjlb"]: return False
+            #if not ret["mc_has_tlvb"]: return False
             for k,v in ret.iteritems(): setattr(ev,k,v)
             if self._acc[0] < 200:
                 print "\nrun %6d lumi %4d event %d: leps %d, bjets %d, jets %d" % (ev.run, ev.lumi, ev.evt, ev.nLepGood, ev.nBJetMedium25, ev.nJet25)
@@ -590,7 +597,7 @@ if __name__ == '__main__':
                     print "\t%-20s: %9.3f" % (k,float(ret[k]))
     test = Tester("tester")              
     el = EventLoop([ test ])
-    el.loop([tree], maxEvents = 200)
+    el.loop([tree], maxEvents = 100000)
     for k,v in test.r.scores.iteritems():
         print "%-20s: %7d" % (k,v) 
         
