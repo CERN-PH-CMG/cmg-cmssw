@@ -56,25 +56,49 @@ _CommonVars = [
     MVAVar("dxy := log(abs(dxy))",lambda x: log(abs(x.dxy)), corrfunc=ROOT.scaleDxyMC),
     MVAVar("dz  := log(abs(dz))", lambda x: log(abs(x.dz)), corrfunc=ROOT.scaleDzMC),
 ]
+
 _ElectronVars = [
     MVAVar("mvaId",lambda x: x.mvaId)
 ]
+_SVVars = [
+    MVAVar("hasSV", lambda x: x.hasSV),
+    MVAVar("svRedPt := min(max( svRedPt, -10),100)", lambda x : min(max( x.svRedPt, -10),100)),
+    MVAVar("svRedM := min(max( svRedM, -1),6)", lambda x : min(max( x.svRedM, -1),6)),
+    MVAVar("svM := min(max( svM, -1),6)", lambda x : min(max( x.svM, -1),6)),
+    MVAVar("svPt := min(max( svPt, -10),100)", lambda x : min(max( x.svPt, -10),100)),
+    MVAVar("svSip3d := min(max( svSip3d, -10),100)", lambda x : min(max( x.svSip3d, -10),100)),
+    MVAVar("svLepSip3d := min(max( svLepSip3d, -10),5)", lambda x : min(max( x.svLepSip3d, -10),5)),
+    MVAVar("svNTracks := min(max( svNTracks, -1),10)", lambda x : min(max( x.svNTracks, -1),10)),
+    MVAVar("svChi2n := min(max( svChi2n, -1),10)", lambda x : min(max( x.svChi2n, -1),10)),
+    MVAVar("svDxy := min(max( svDxy, 0),4)", lambda x : min(max( x.svDxy, 0),4)),
+]
 class LeptonMVA:
-    def __init__(self,basepath):
-        global _CommonVars, _CommonSpect, _ElectronVars
+    def __init__(self,basepath,training="susyBase"):
+        global _CommonVars, _CommonSpect, _ElectronVars, _SVVars
+        if type(basepath) == tuple: basepathmu, basepathel  = basepath
+        else:                       basepathmu, basepathel  = basepath, basepath
+        if training == "muMVAId":
+            muVars = _CommonVars[:] + [ MVAVar("mvaId",lambda x: x.muonMVAIdFull) ]
+            elVars = _CommonVars[:] + _ElectronVars[:]
+        elif training == "muMVAId_SV":
+            muVars = _CommonVars[:] + [ MVAVar("mvaId",lambda x: x.muonMVAIdFull) ] + _SVVars
+            elVars = _CommonVars[:] + _ElectronVars[:] + _SVVars
+        else:
+            muVars = _CommonVars[:]
+            elVars = _CommonVars[:] + _ElectronVars[:]
         self.mu = CategorizedMVA([
-            ( lambda x: x.pt <= 15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_low_b", _CommonSpect,_CommonVars) ),
-            ( lambda x: x.pt <= 15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_low_e", _CommonSpect,_CommonVars) ),
-            ( lambda x: x.pt >  15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_high_b",_CommonSpect,_CommonVars) ),
-            ( lambda x: x.pt >  15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_high_e",_CommonSpect,_CommonVars) ),
+            ( lambda x: x.pt <= 15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepathmu%"mu_pteta_low_b", _CommonSpect,muVars) ),
+            ( lambda x: x.pt <= 15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepathmu%"mu_pteta_low_e", _CommonSpect,muVars) ),
+            ( lambda x: x.pt >  15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepathmu%"mu_pteta_high_b",_CommonSpect,muVars) ),
+            ( lambda x: x.pt >  15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepathmu%"mu_pteta_high_e",_CommonSpect,muVars) ),
         ])
         self.el = CategorizedMVA([
-            ( lambda x: x.pt <= 10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_low_cb", _CommonSpect,_CommonVars+_ElectronVars) ),
-            ( lambda x: x.pt <= 10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_low_fb", _CommonSpect,_CommonVars+_ElectronVars) ),
-            ( lambda x: x.pt <= 10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_low_ec", _CommonSpect,_CommonVars+_ElectronVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_high_cb",_CommonSpect,_CommonVars+_ElectronVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_high_fb",_CommonSpect,_CommonVars+_ElectronVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_high_ec",_CommonSpect,_CommonVars+_ElectronVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepathel%"el_pteta_low_cb", _CommonSpect,elVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepathel%"el_pteta_low_fb", _CommonSpect,elVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepathel%"el_pteta_low_ec", _CommonSpect,elVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepathel%"el_pteta_high_cb",_CommonSpect,elVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepathel%"el_pteta_high_fb",_CommonSpect,elVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepathel%"el_pteta_high_ec",_CommonSpect,elVars) ),
         ])
     def __call__(self,lep,ncorr=0):
         if   abs(lep.pdgId) == 11: return self.el(lep,ncorr)
@@ -82,33 +106,41 @@ class LeptonMVA:
         else: return -99
 
 class LepMVAFriend:
-    def __init__(self,path,fast=True):
-        print path
-        self.mva = LeptonMVA(path+"/weights/%s_BDTG.weights.xml")
+    def __init__(self,path,training="susyBase",label="",fast=True):
+        self.mva = LeptonMVA(path+"/weights/%s_BDTG.weights.xml" if type(path) == str else path, training=training)
         self.fast = fast
+        self.label = label
     def listBranches(self):
-        return [ ("nLepGood","I"), ("LepGood_mvaNew","F",8,"nLepGood") ]
+        return [ ("nLepGood","I"), ("LepGood_mvaNew"+self.label,"F",8,"nLepGood") ]
     def __call__(self,event):
         lep = Collection(event,"LepGood","nLepGood",8)
         ret = { 'nLepGood' : event.nLepGood }
         if event.run >= 1: # DATA
-            ret['LepGood_mvaNew'] = [ self.mva(l, ncorr=0) for l in lep ] 
+            ret['LepGood_mvaNew'+self.label] = [ self.mva(l, ncorr=0) for l in lep ] 
         else:              # MC
-            ret['LepGood_mvaNew'] = [ self.mva(l, ncorr=0) for l in lep ] 
+            ret['LepGood_mvaNew'+self.label] = [ self.mva(l, ncorr=0) for l in lep ] 
         return ret
 
 if __name__ == '__main__':
     from sys import argv
     file = ROOT.TFile(argv[1])
     tree = file.Get("treeProducerSusyMultilepton")
+    if len(argv) > 2: tree.AddFriend("sf/t",argv[2])
     tree.vectorTree = True
     class Tester(Module):
         def __init__(self, name):
             Module.__init__(self,name,None)
-            self.sf = LepMVAFriend("/afs/cern.ch/user/b/botta/CMGToolsGit/newRecipe/CMSSW_5_3_19/src/CMGTools/TTHAnalysis/macros/leptons")
+            ## Vanilla training (weights originally from /afs/cern.ch/user/b/botta/CMGToolsGit/newRecipe70/CMSSW_7_0_6_patch1/src/CMGTools/TTHAnalysis/macros/leptons/weights_SUSY_presel 
+            self.sf0  = LepMVAFriend(("/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/%s_BDTG.weights.xml",
+                                      "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/%s_BDTG.weights.xml",))
+            ## Trial training with MVA Muon ID and SV variables
+            self.sf2  = LepMVAFriend(("/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/SV_%s_BDTG.weights.xml",
+                                      "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/SV_%s_BDTG.weights.xml",),
+                                     training="muMVAId_SV", label="SV")
         def analyze(self,ev):
             print "\nrun %6d lumi %4d event %d: leps %d" % (ev.run, ev.lumi, ev.evt, ev.nLepGood)
-            print self.sf(ev)
+            print self.sf0(ev)
+            print self.sf2(ev)
     el = EventLoop([ Tester("tester") ])
     el.loop([tree], maxEvents = 50)
 

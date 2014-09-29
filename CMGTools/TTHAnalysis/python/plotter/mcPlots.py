@@ -29,6 +29,12 @@ class PlotFile:
                     for p in p0.split(","):
                         if re.match(p+"$", field[0]): skipMe = False
                 if skipMe: continue
+            if len(options.plotexclude):
+                skipMe = False
+                for p0 in options.plotexclude:
+                    for p in p0.split(","):
+                        if re.match(p+"$", field[0]): skipMe = True
+                if skipMe: continue
             if options.globalRebin: extra['rebinFactor'] = options.globalRebin
             self._plots.append(PlotSpec(field[0],field[1],field[2],extra))
     def plots(self):
@@ -671,6 +677,7 @@ def addPlotMakerOptions(parser):
     parser.add_option("--rebin", dest="globalRebin", type="int", default="0", help="Rebin all plots by this factor")
     parser.add_option("--poisson", dest="poisson", action="store_true", default=False, help="Draw Poisson error bars")
     parser.add_option("--select-plot", "--sP", dest="plotselect", action="append", default=[], help="Select only these plots out of the full file")
+    parser.add_option("--exclude-plot", "--xP", dest="plotexclude", action="append", default=[], help="Exclude these plots from the full file")
 
 if __name__ == "__main__":
     from optparse import OptionParser

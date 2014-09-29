@@ -10,6 +10,7 @@ void trainMuonMVA(TString name, TString train="GoodvsBad") {
     if (!name.Contains("pt_")) {
         factory->AddSpectator("pt := LepGood_pt", 'D');
     }
+    factory->AddSpectator("tightId := LepGood_tightId", 'D'); 
 
     TString allvars = ""; 
     //common variables
@@ -23,17 +24,23 @@ void trainMuonMVA(TString name, TString train="GoodvsBad") {
     factory->AddVariable("glbTrackProbability := log(LepGood_glbTrackProbability)", 'D'); allvars += ":glbTrackProbability";
     factory->AddVariable("trackerHits := LepGood_trackerHits", 'D'); allvars += ":trackerHits";
 
+    if (name.Contains("Calo") || name.Contains("Full")) {
+        factory->AddVariable("caloCompatibility := LepGood_caloCompatibility", 'D'); allvars += ":caloCompatibility";
+        factory->AddVariable("caloEMEnergy := min(LepGood_caloEMEnergy,20)", 'D'); allvars += ":caloEMEnergy";
+        factory->AddVariable("caloHadEnergy := min(LepGood_caloHadEnergy,30)", 'D'); allvars += ":caloHadEnergy";
+    }
+
+    if (name.Contains("Trk") || name.Contains("Full")) {
+        factory->AddVariable("lostHits := LepGood_lostHits", 'D'); allvars += ":lostHits";
+        factory->AddVariable("trkKink := min(100,LepGood_trkKink)", 'D'); allvars += ":trkKink";
+        factory->AddVariable("trackerLayers := LepGood_trackerLayers", 'D'); allvars += ":trackerLayers";
+        factory->AddVariable("pixelLayers := LepGood_pixelLayers", 'D'); allvars += ":pixelLayers";
+        factory->AddVariable("innerTrackChi2 := LepGood_innerTrackChi2", 'D'); allvars += ":innerTrackChi2";
+    }
+
     /*
-    factory->AddVariable("lostHits := LepGood_lostHits", 'D'); allvars += ":lostHits";
     factory->AddVariable("tightId := LepGood_tightId", 'D'); allvars += ":tightId";
     factory->AddVariable("nStations := LepGood_nStations", 'D'); allvars += ":nStations";
-    factory->AddVariable("trkKink := min(100,LepGood_trkKink)", 'D'); allvars += ":trkKink";
-    factory->AddVariable("caloCompatibility := LepGood_caloCompatibility", 'D'); allvars += ":caloCompatibility";
-    factory->AddVariable("trackerLayers := LepGood_trackerLayers", 'D'); allvars += ":trackerLayers";
-    factory->AddVariable("pixelLayers := LepGood_pixelLayers", 'D'); allvars += ":pixelLayers";
-    factory->AddVariable("caloEMEnergy := min(LepGood_caloEMEnergy,20)", 'D'); allvars += ":caloEMEnergy";
-    factory->AddVariable("caloHadEnergy := min(LepGood_caloHadEnergy,30)", 'D'); allvars += ":caloHadEnergy";
-    factory->AddVariable("innerTrackChi2 := LepGood_innerTrackChi2", 'D'); allvars += ":innerTrackChi2";
     factory->AddVariable("stationsWithAnyHits := LepGood_stationsWithAnyHits", 'D'); allvars += ":stationsWithAnyHits";
     factory->AddVariable("stationsWithValidHits := LepGood_stationsWithValidHits", 'D'); allvars += ":stationsWithValidHits";
     factory->AddVariable("stationsWithValidHitsGlbTrack := LepGood_stationsWithValidHitsGlbTrack", 'D'); allvars += ":stationsWithValidHitsGlbTrack";
@@ -55,7 +62,7 @@ void trainMuonMVA(TString name, TString train="GoodvsBad") {
     factory->SetWeightExpression("");
 
     if (train=="GoodvsBad") {
-        factory->PrepareTrainingAndTestTree( lepton+" LepGood_mcMatchId > 0", lepton+" LepGood_mcMatchId <= 0 && LepGood_mcMatchAny == 0", "nTrain_Signal=50000:nTrain_Background=250:nTest_Signal=50000:nTest_Background=250" );
+        factory->PrepareTrainingAndTestTree( lepton+" LepGood_mcMatchId > 0", lepton+" LepGood_mcMatchId <= 0 && LepGood_mcMatchAny == 0", "nTrain_Signal=50000:nTrain_Background=10000:nTest_Signal=50000:nTest_Background=10000" );
     }  else { 
         std::cerr << "ERROR: No idea of what training you want." << std::endl; return; 
     }
@@ -64,7 +71,7 @@ void trainMuonMVA(TString name, TString train="GoodvsBad") {
     factory->BookMethod( TMVA::Types::kLD, "LD", "!H:!V:VarTransform=None" );
     
     // Boosted Decision Trees with gradient boosting
-    TString BDTGopt = "!H:!V:NTrees=500:BoostType=Grad:Shrinkage=0.10:!UseBaggedGrad:nCuts=2000:nEventsMin=100:NNodesMax=9:UseNvars=9:PruneStrength=5:PruneMethod=CostComplexity:MaxDepth=8";
+    TString BDTGopt = "!H:!V:NTrees=400:BoostType=Grad:Shrinkage=0.10:!UseBaggedGrad:nCuts=2000:nEventsMin=200:NNodesMax=9:UseNvars=9:PruneStrength=5:PruneMethod=CostComplexity:MaxDepth=8";
 
     BDTGopt += ":CreateMVAPdfs"; // Create Rarity distribution
     factory->BookMethod( TMVA::Types::kBDT, "BDTG", BDTGopt);

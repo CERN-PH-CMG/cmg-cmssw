@@ -27,9 +27,8 @@ void trainLeptonID(TString name, TString train="GoodvsBad") {
     }
 
     if (name.Contains("mu")) {
-      //muons variables
         if (!name.Contains("NoID")) {
-            //factory->AddVariable("tightId",'D');    allvars += ":tightId";
+            factory->AddVariable("mvaId",'D');    allvars += ":mvaId";
             
         }
     } else if (name.Contains("el")) {
@@ -39,6 +38,19 @@ void trainLeptonID(TString name, TString train="GoodvsBad") {
             
         }
     } else { std::cerr << "ERROR: must either be electron or muon." << std::endl; return; }
+
+    if (name.Contains("SV")) {
+        factory->AddVariable("hasSV", 'D');   allvars += ":hasSV";
+        factory->AddVariable("svRedPt := min(max( svRedPt, -10),100)", 'D');   allvars += ":svRedPt";
+        factory->AddVariable("svRedM := min(max( svRedM, -1),6)", 'D');   allvars += ":svRedM";
+        factory->AddVariable("svM := min(max( svM, -1),6)", 'D');   allvars += ":svM";
+        factory->AddVariable("svPt := min(max( svPt, -10),100)", 'D');   allvars += ":svPt";
+        factory->AddVariable("svSip3d := min(max( svSip3d, -10),100)", 'D');   allvars += ":svSip3d";
+        factory->AddVariable("svLepSip3d := min(max( svLepSip3d, -10),5)", 'D');   allvars += ":svLepSip3d";
+        factory->AddVariable("svNTracks := min(max( svNTracks, -1),10)", 'D');   allvars += ":svNTracks";
+        factory->AddVariable("svChi2n := min(max( svChi2n, -1),10)", 'D');   allvars += ":svChi2n";
+        factory->AddVariable("svDxy := min(max( svDxy, 0),4)", 'D');   allvars += ":svDxy";
+    }
    
 
     TCut lepton = (name.Contains("mu") ? "abs(pdgId) == 13" : "abs(pdgId) == 11");

@@ -74,6 +74,7 @@ def makeROC(plotmap,mca):
 def addROCMakerOptions(parser):
     addMCAnalysisOptions(parser)
     parser.add_option("--select-plot", "--sP", dest="plotselect", action="append", default=[], help="Select only these plots out of the full file")
+    parser.add_option("--exclude-plot", "--xP", dest="plotexclude", action="append", default=[], help="Exclude these plots from the full file")
 
 def doLegend(rocs,textSize=0.035):
         (x1,y1,x2,y2) = (.6, .30 + textSize*max(len(rocs)-3,0), .93, .18)

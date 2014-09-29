@@ -1,0 +1,14 @@
+T1ttt_true+: T1tttt2J_7_PU_S14_POSTLS170 : 1 : LepGood_mcMatchId > 0 ; FillColor=ROOT.kOrange+10, Label="Prompt S" 
+TT_true:  TTJets_MSDecaysCKM_central_PU_S14_POSTLS170: 1: LepGood_mcMatchId > 0 ; FillColor=ROOT.kGreen+2, Label="Prompt t"
+TT_bjets: TTJets_MSDecaysCKM_central_PU_S14_POSTLS170: 1: LepGood_mcMatchAny == 2 ; FillColor=ROOT.kGray+1, Label="BJet t"
+TT_fake: TTJets_MSDecaysCKM_central_PU_S14_POSTLS170: 1: LepGood_mcMatchAny == 0 ; FillColor=ROOT.kGray+3, Label="Fake t"
+DY_fake    : DYJetsM50_HT200to400_PU_S14_POSTLS170  : 1 : LepGood_mcMatchAny == 0; FillColor=ROOT.kCyan, Label="Fake DY"
+WJets_fake : WJetsToLNu_HT400to600_PU_S14_POSTLS170 : 1 : LepGood_mcMatchAny == 0; FillColor=ROOT.kCyan+2, Label="Fake Wj"
+fake: TTJets_MSDecaysCKM_central_PU_S14_POSTLS170: 1: LepGood_mcMatchAny == 0 ; FillColor=ROOT.kCyan+2, Label="Fake"
+fake    : DYJetsM50_HT200to400_PU_S14_POSTLS170  : 1 : LepGood_mcMatchAny == 0; FillColor=ROOT.kCyan+2, Label="Fake"
+fake : WJetsToLNu_HT400to600_PU_S14_POSTLS170 : 1 : LepGood_mcMatchAny == 0; FillColor=ROOT.kCyan+2, Label="Fake"
+
+
+53X_TT_true:  53X_TTJetsSem: 1: LepGood_mcMatchId > 0   ; FillColor=ROOT.kSpring+9, Label="53X Prompt t", SkipMe=True
+53X_TT_bjets: 53X_TTJetsSem: 1: LepGood_mcMatchAny == 2 ; FillColor=ROOT.kOrange+1, Label="53X BJet t", SkipMe=True
+53X_TT_fake:  53X_TTJetsSem: 1: LepGood_mcMatchAny == 0 ; FillColor=ROOT.kPink+3, Label="53X Fake t", SkipMe=True
