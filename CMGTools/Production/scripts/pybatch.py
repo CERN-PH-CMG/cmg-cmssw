@@ -67,9 +67,9 @@ def batchScriptPSI( index, jobDir, remoteDir=''):
    if remoteDir=='':
        cpCmd="""echo 'sending the job directory back'
 cp -r Loop/* $SUBMISIONDIR"""
-   elif remoteDir.startswith("/pnfs/"):
+   elif remoteDir.startswith("/pnfs/psi.ch"):
        cpCmd="""echo 'sending root files to remote dir'
-export LD_LIBRARY_PATH=/usr/lib64/:$LD_LIBRARY_PATH # Fabio's workaround to fix gfal-tools
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/dcap/ # Fabio's workaround to fix gfal-tools
 for f in Loop/treeProducerSusyFullHad/*.root
 do
 echo $f
@@ -84,6 +84,7 @@ echo 'sending the logs back'
 cp -r Loop/* $SUBMISIONDIR""".format(idx=index, srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")])
    else:
        print "remote directory not supported yet: ", remoteDir
+       print 'path must start with "/pnfs/psi.ch"'
        sys.exit(1)
 
 

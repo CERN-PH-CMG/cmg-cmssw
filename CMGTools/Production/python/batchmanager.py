@@ -55,8 +55,9 @@ class BatchManager:
             # removing possible trailing slash
             self.remoteOutputDir_ = self.options_.remoteCopy.rstrip('/')
     
-            if "pnfs" in self.remoteOutputDir_: # T3 @ PSI:
-                if self.remoteOutputDir_.startswith("/pnfs"):
+            if "psi.ch" in self.remoteOutputDir_: # T3 @ PSI:
+                # overwriting protection to be improved
+                if self.remoteOutputDir_.startswith("/pnfs/psi.ch"):
                     os.system("gfal-mkdir srm://t3se01.psi.ch/"+self.remoteOutputDir_)
                     outputDir = self.options_.outputDir
                     if outputDir==None:
@@ -65,7 +66,7 @@ class BatchManager:
                     self.remoteOutputDir_+="/"+outputDir
                     os.system("gfal-mkdir srm://t3se01.psi.ch/"+self.remoteOutputDir_)
                 else:
-                    print "remote directory must start with /pnfs to send to the tier3 at PSI"
+                    print "remote directory must start with /pnfs/psi.ch to send to the tier3 at PSI"
                     print self.remoteOutputDir_, "not valid"
                     sys.exit(1)
             else: # assume EOS
