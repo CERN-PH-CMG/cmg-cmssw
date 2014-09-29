@@ -33,6 +33,7 @@
 #include "RooDataHist.h"
 #include "RooHistPdf.h"
 #include "Math/MinimizerOptions.h"
+#include "Math/Minimizer.h"
 //#include "../../../AnalysisCode/rochcor_44X_v3.C"
 
 ///#include "/home/pharris/Analysis/W/condor/run/CMSSW_3_8_4/src/MitWlnu/NYStyle/test/NYStyle.h"
@@ -134,6 +135,7 @@ bool doGigiRescaling = false;
 bool do3Sigma=true;
 
 bool usePol3 = true;
+bool useErfPol2ScaleU1 = false;
 bool dodebug = false; 
 
 bool doType2 = true; //false for the fit to the scale and the rms only
@@ -227,7 +229,7 @@ double fx1, fx2;
 
 double fZmass;
 double fMuPos_phi, fMuPos_eta, fMuPos_pt, fMuPos_mass, fMuPos_charge, fMuPosReliso, fMuPos_dxy, fMuPos_dz;
-double fMuNeg_phi, fMuNeg_eta, fMuNeg_pt, fMuNeg_mass, fMuNeg_charge, fMuNeg_dxy, fMuNeg_dz, fMuNegReliso;
+double fMuNeg_phi, fMuNeg_eta, fMuNeg_pt, fMuNeg_mass, fMuNeg_charge, fMuNegReliso, fMuNeg_dxy, fMuNeg_dz;
 int fMuPosTrg, fMuPosIsTightAndIso, fevtHasGoodVtx, fevtHasTrg, fMuNegIsTightAndIso, fMuNegTrg;
 int fMuPosIsTight, fMuNegIsTight;
 
@@ -1601,8 +1603,6 @@ double getError2(double iVal,TF1 *iFit) {
   if(iFit->GetParError(3)!=0) lE2 += iVal*iVal*iVal*     iFit->GetParError(3);
   if(iFit->GetParError(4)!=0) lE2 += iVal*iVal*iVal*iVal*iFit->GetParError(4);
   if(iFit->GetParError(5)!=0) lE2 += iVal*iVal*iVal*iVal*iVal*iFit->GetParError(5);
-  //  if(fabs(iFit->GetParError(5)) > 0 && iFit->GetParameter(3) == 0) lE2 += iVal*iVal*               iFit->GetParError(5);
-  //  if(fabs(iFit->GetParError(5)) > 0 && iFit->GetParameter(3) != 0) lE2 += iVal*iVal*iVal*iVal*iVal*iFit->GetParError(5);
   if(iFit->GetParError(6)!=0) lE2 += iVal*iVal*iVal*iVal*iVal*iVal*iFit->GetParError(6);
   return lE2;
 }
@@ -1627,6 +1627,7 @@ void computeFitErrors(TF1 *iFit,TFitResultPtr &iFPtr,TF1 *iTrueFit,bool iPol0=fa
   bool lPol2 = (iTrueFit->GetParError(2) != 0);
   bool lPol3 = (iTrueFit->GetParError(3) != 0);
   
+  /*
   // those are for MINOS
   double err00=iFPtr->UpperError(0)*iFPtr->UpperError(0);
   double err10=iFPtr->UpperError(1)*iFPtr->UpperError(0);
@@ -1648,20 +1649,18 @@ void computeFitErrors(TF1 *iFit,TFitResultPtr &iFPtr,TF1 *iTrueFit,bool iPol0=fa
     err23=iFPtr->UpperError(2)*iFPtr->UpperError(3);
     err33=iFPtr->UpperError(3)*iFPtr->UpperError(3);
   }
-  
+
   cout << "UpperError(0) " << iFPtr->UpperError(0) << " LowerError(0) " << iFPtr->LowerError(0) << endl;
   cout << "UpperError(1) " << iFPtr->UpperError(1) << " LowerError(0) " << iFPtr->LowerError(1) << endl;
   cout << "UpperError(2) " << iFPtr->UpperError(2) << " LowerError(0) " << iFPtr->LowerError(2) << endl;
+  */
 
   TMatrixDSym lCov = iFPtr->GetCovarianceMatrix();
   lCov.Print();  
 
-  /*  
-    double err00=(lCov)(0,0); double err01=(lCov)(0,1); double err10=(lCov)(1,0); double err11=(lCov)(1,1);
-    double err02=(lCov)(0,2); double err12=(lCov)(1,2); double err22=(lCov)(2,2);
-    double err03=(lCov)(0,3); double err13=(lCov)(1,3); double err23=(lCov)(2,3); double err33=(lCov)(3,3);
-  */
-  
+  double err00=(lCov)(0,0); double err01=(lCov)(0,1); double err10=(lCov)(1,0); double err11=(lCov)(1,1);
+  double err02=(lCov)(0,2); double err12=(lCov)(1,2); double err22=(lCov)(2,2);
+  double err03=(lCov)(0,3); double err13=(lCov)(1,3); double err23=(lCov)(2,3); double err33=(lCov)(3,3);
 
   double lE0 = err00;
   double lE1 = err01 + err10;
@@ -1709,6 +1708,48 @@ void computeFitErrors(TF1 *iFit,TFitResultPtr &iFPtr,TF1 *iTrueFit,bool iPol0=fa
     cout << "===> BELOW ARE THE EIGEN-VEC "<< endl; 
     eigenvec.Print();                 
   */
+
+}
+
+
+
+void computeFitErrorsERF(TF1 *iFit,TFitResultPtr &iFPtr,TF1 *iTrueFit,bool iPol0=false) {
+
+  //   bool lPol0 = iPol0;                                                                                                                                                           
+  bool lPol2 = (iTrueFit->GetParError(2) != 0);
+  bool lPol3 = (iTrueFit->GetParError(3) != 0);
+ 
+  TMatrixDSym lCov = iFPtr->GetCovarianceMatrix();
+
+  double err00=(lCov)(0,0); double err01=(lCov)(0,1); double err10=(lCov)(1,0); double err11=(lCov)(1,1);
+  double err02=(lCov)(0,2); double err12=(lCov)(1,2); double err22=(lCov)(2,2);
+  double err03=(lCov)(0,3); double err13=(lCov)(1,3); double err23=(lCov)(2,3); double err33=(lCov)(3,3);
+
+  iFit->SetParameter(0,iTrueFit->GetParameter(0));
+  iFit->SetParameter(1,iTrueFit->GetParameter(1));
+  iFit->SetParameter(2,iTrueFit->GetParameter(2));
+  iFit->SetParameter(3,iTrueFit->GetParameter(3));
+  iFit->SetParameter(4,iTrueFit->GetParameter(4));
+  iFit->SetParameter(5,iTrueFit->GetParameter(5));
+
+  iFit->SetParError(0,err00);
+  iFit->SetParError(1,err11);
+  iFit->SetParError(2,err22);
+  iFit->SetParError(3,err33);
+  iFit->SetParError(5,err01);
+  iFit->SetParError(6,err02);
+  iFit->SetParError(7,err03);
+  iFit->SetParError(9,err12);
+  iFit->SetParError(10,err13);
+  iFit->SetParError(12,err23);
+  if(!fData||!doIterativeMet){
+    double err44=(lCov)(4,4); double err34=(lCov)(3,4); double err04=(lCov)(0,4); double err14=(lCov)(1,4); double err24=(lCov)(2,4);
+    iFit->SetParError(4,err44);
+    iFit->SetParError(8,err04);
+    iFit->SetParError(11,err14);
+    iFit->SetParError(13,err24);
+    iFit->SetParError(14,err34);
+  }
 
 }
 
@@ -2015,7 +2056,11 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   string type = ROOT::Math::MinimizerOptions::DefaultMinimizerType();
   int strategy= ROOT::Math::MinimizerOptions::DefaultStrategy();
   
-  cout << "DEFAULTS: algo " << algo.c_str() << " type " << type.c_str() << " tolerance " << tolerance << " strategy " << strategy << endl;
+  int precision= ROOT::Math::MinimizerOptions::DefaultPrecision();
+  int MaxFunctionCalls= ROOT::Math::MinimizerOptions::DefaultMaxFunctionCalls();
+  int MaxIterations= ROOT::Math::MinimizerOptions::DefaultMaxIterations();
+
+  cout << "DEFAULTS: algo " << algo.c_str() << " type " << type.c_str() << " tolerance " << tolerance << " strategy " << strategy << " precision " << precision << " MaxIterations " << MaxIterations << " MaxFunctionCalls " << MaxFunctionCalls << endl;
     
   string minimizerType = "Minuit2";
   ROOT::Math::MinimizerOptions::SetDefaultMinimizer(minimizerType.c_str());
@@ -2098,7 +2143,6 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     for(int iev=0; iev<lXVals_all.at(0).at(0).size(); iev++){
       // pVal = (lPar - iMeanFit->Eval(fZPt));
       double temp = vlYVals_all[lPar!=fU1][iRMS][iev];
-      //      if(iMeanFit != 0) temp = vlYVals_all[lPar!=fU1][iRMS][iev] - iMeanFit->Eval(vlXVals_all[lPar!=fU1][iRMS][iev]);
       if(iMeanFit != 0) temp = vlYVals_all[lPar!=fU1][iRMS][iev] - iMeanFit->Eval(vlXVals_all[lPar!=fU1][iRMS][iev]);
       vlYVals_all[lPar!=fU1][iRMS][iev] = abs(temp); // for the fit of the main RMS
       vlYTVals_all[lPar!=fU1][iRMS][iev] = temp; // used for the fit to the pull
@@ -2119,6 +2163,13 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
   lType     = "pol2";
   if(usePol3) lType     = "pol3";
+  if(useErfPol2ScaleU1 && lPar==fU1 && !iRMS) {
+    lType     = "(TMath::Erf(x*[0])-TMath::Erf(x*[1]))*pol2(2)"; // MC 2 Erf
+    //    lType     = "TMath::Erf(x*[0])*pol2(1)";
+    //    if(!doMad) lType     = "TMath::Erf(x*[0])*pol2(1)"; // MC 1 Erf 
+    if(fData || doIterativeMet)  lType     = "TMath::Erf(x*[0])*pol2(1)"; // data 1 Erf
+  }
+
   //http://root.cern.ch/root/html/TGraph.html
   //"EX0" When fitting a TGraphErrors or TGraphAsymErrors do not consider errors in the coordinate
   //"R"   Use the Range specified in the function range
@@ -2127,7 +2178,53 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   
   //// THIS IS THE unbinned Fit
   TF1 *lFit = new TF1("test",lType.c_str()); //fZPtMax = 200;                                                                                                                               
-  if(!iRMS && lPar==fU1) lFit->FixParameter(0,0);
+
+
+  // cout << "====================" << endl;
+  // cout << "== Setting the initial values for U1 scale " << endl;
+  // cout << "====================" << endl;
+
+  // pol3 -- set to a constant the first param
+  if(!iRMS && lPar==fU1 && !useErfPol2ScaleU1) lFit->FixParameter(0,0);
+
+  // erf MC
+  if(!iRMS && lPar==fU1 && useErfPol2ScaleU1) {
+
+    cout << lType.c_str() << endl;
+
+    if(!fData && !doIterativeMet){
+
+      lFit->SetParameter(0,4.65859e-02);
+      lFit->SetParameter(1,-2.26153e-02);
+      //lFit->FixParameter(1,1);
+      lFit->SetParameter(2,-3.33465e+00);
+      //lFit->SetParLimits(2, 0, 3.);
+      lFit->SetParameter(3, -1.48770e-01);
+      //lFit->SetParLimits(3,-1,1.);
+      lFit->SetParameter(4, -1.04105e-03);
+    }
+    
+  // erf DATA
+    if( fData || doIterativeMet) {
+      lFit->SetParameter(0,-0.05);
+      lFit->SetParLimits(0,-2, 2);
+
+      lFit->SetParameter(1, 2.0);
+      lFit->SetParLimits(1,-4,4);
+
+      lFit->SetParameter(2, 0.15);
+      lFit->SetParLimits(2,-1, 1);
+
+      lFit->SetParameter(3, 0.005);
+      lFit->SetParLimits(3,-1,1);
+      //f1->SetParameter(4,  2.15617e-02);
+      //f1->SetParLimits(4, -1, 1);
+      //f1->SetParameter(4,    -1.91054e-04); 
+      //f1->SetParLimits(4, -1, 1); 
+      //f1->SetParameter(5,   -6.87765e-05); 
+    }
+  }
+
   //  if(!iRMS && lPar==fU1) lFit->SetParLimits(0, 0.0, 1.0); // first parameter between 0 and 1.0
   //  if(!iRMS && lPar==fU1) lFit->SetParLimits(0, -0.5, 1.0); // first parameter between 0 and 1.0
 
@@ -2135,22 +2232,39 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   //  TFitResultPtr  lFitPtr = pGraphA->Fit(lFit,"SRE","",fZPtMin,fZPtMax); 
   TFitResultPtr  lFitPtr = pGraphA->Fit(lFit,"SRE","",range_min,range_max);
 
-  //  only once
-  computeFitErrors(iFit,lFitPtr,lFit,iRMS);
+  //  cout<<"lFit1   "<< lFit->GetExpFormula()<<endl;
 
-
-  /*
-  // twice only for the U1scale
-  TF1 *lFit2 = new TF1("test",lType.c_str()); //fZPtMax = 200;                                                                                                                               
-  if(!iRMS && lPar==fU1) {
-    lFit2->SetParameter(1,lFit->GetParameter(1));
-    if(usePol3) lFit2->SetParameter(2,lFit->GetParameter(2));
-    if(usePol3) lFit2->SetParameter(3,lFit->GetParameter(3));
-    TFitResultPtr  lFitPtr2 = pGraphA->Fit(lFit2,"SRE","",fZPtMin,fZPtMax); 
-    computeFitErrors(iFit,lFitPtr2,lFit2,iRMS);
+  // only once
+  if(useErfPol2ScaleU1 && !iRMS && lPar==fU1) {
+    computeFitErrorsERF(iFit,lFitPtr,lFit,iRMS);
   } else {
     computeFitErrors(iFit,lFitPtr,lFit,iRMS);
   }
+
+  /*
+  // twice only for the U1scale                                                                                                                                                
+  if(!iRMS && lPar==fU1) {
+    TF1 *lFit2 = new TF1("test2",lType.c_str());
+    lFit2->SetParameter(0,lFit->GetParameter(0));
+    lFit2->SetParameter(1,lFit->GetParameter(1));
+    
+    if(usePol3 || useErfPol2ScaleU1) {
+      lFit2->SetParameter(2,lFit->GetParameter(2));
+      lFit2->SetParameter(3,lFit->GetParameter(3)); 
+    }
+    if(useErfPol2ScaleU1 && !fData && !doIterativeMet) {
+      lFit2->SetParameter(4,lFit->GetParameter(4));
+      lFit2->SetParameter(5,lFit->GetParameter(5));
+    }    
+    TFitResultPtr  lFitPtr2 = pGraphA->Fit(lFit2,"SRE","",range_min,range_max);
+
+    if(useErfPol2ScaleU1) computeFitErrorsERF(iFit,lFitPtr2,lFit2,iRMS);
+    if(!useErfPol2ScaleU1) computeFitErrors(iFit,lFitPtr2,lFit2,iRMS); 
+
+  } else {
+
+    computeFitErrors(iFit,lFitPtr,lFit,iRMS);
+  } 
   */
 
   cout << "============"<< endl;
@@ -2702,7 +2816,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     
     double SFabs=1;
     if(doAbsolute) SFabs=10;
-    lM0->GetYaxis()->SetRangeUser(-1.,1.);
+    //    lM0->GetYaxis()->SetRangeUser(-1.,1.);
+    lM0->GetYaxis()->SetRangeUser(-0.5,0.5);
     lG0->GetYaxis()->SetRangeUser(0.,2.*SFabs);
     lG1->GetYaxis()->SetRangeUser(0.,1.5*SFabs);
     lG2->GetYaxis()->SetRangeUser(0.,5.*SFabs);
@@ -2808,9 +2923,9 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     lG1_2d->Draw("pe");
 
     if(pFR) latexLabel.DrawLatex(0.25, 0.95, Form("status = %d", pFR->status()));
-    latexLabel.DrawLatex(0.25, 0.9, Form("A1Sig = %f", lA1Sig.getVal()));
-    latexLabel.DrawLatex(0.25, 0.85, Form("B1Sig = %f", lB1Sig.getVal()));
-    latexLabel.DrawLatex(0.25, 0.8, Form("C1Sig = %f", lC1Sig.getVal()));
+    if(pFR) latexLabel.DrawLatex(0.25, 0.9, Form("A1Sig = %f", lA1Sig.getVal()));
+    if(pFR) latexLabel.DrawLatex(0.25, 0.85, Form("B1Sig = %f", lB1Sig.getVal()));
+    if(pFR) latexLabel.DrawLatex(0.25, 0.8, Form("C1Sig = %f", lC1Sig.getVal()));
 
     latexLabel.DrawLatex(0.25, 0.7, leg1); // Y bins
     if(doVTXbinning) latexLabel.DrawLatex(0.25, 0.7, leg3);
@@ -2873,9 +2988,9 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     lG2_2d->Draw("pe"); 
 
     if(pFR) latexLabel.DrawLatex(0.25, 0.95, Form("status = %d", pFR->status()));
-    latexLabel.DrawLatex(0.25, 0.9, Form("A2Sig = %f", lA2Sig.getVal()));
-    latexLabel.DrawLatex(0.25, 0.85, Form("B2Sig = %f", lB2Sig.getVal()));
-    latexLabel.DrawLatex(0.25, 0.8, Form("C2Sig = %f", lC2Sig.getVal()));
+    if(pFR) latexLabel.DrawLatex(0.25, 0.9, Form("A2Sig = %f", lA2Sig.getVal()));
+    if(pFR) latexLabel.DrawLatex(0.25, 0.85, Form("B2Sig = %f", lB2Sig.getVal()));
+    if(pFR) latexLabel.DrawLatex(0.25, 0.8, Form("C2Sig = %f", lC2Sig.getVal()));
 
 
     latexLabel.DrawLatex(0.25, 0.7, leg1); // Y bin
@@ -3078,7 +3193,9 @@ void fitRecoil1(TTree * iTree, /*float &iVPar,*/ double &iVPar,
 	       TF1 *iMFit, TF1 *iMRMSFit, TF1 *iRMS1Fit, TF1 *iRMS2Fit,int iType) { 
   TCanvas *lXC1 = new TCanvas("C1","C1",800,600); lXC1->cd(); 
 
+  // doing SCALE
   fitGraph(iTree,fTTbarTree,lXC1,iVPar,iMFit   ,0       ,0       ,0    ,true ,false,iType);
+  // doing RMS
   fitGraph(iTree,fTTbarTree,lXC1,iVPar,iMRMSFit,iRMS1Fit,iRMS2Fit,iMFit,false,true ,iType);
 
 }
@@ -3476,7 +3593,11 @@ void fitRecoilMET(TTree *iTree,std::string iName,int type, int lfId) {
   /// of the ComputerErrors for pol2/pol3 fits
   /// Made as pol10 to be safe 
 
-  TF1 *lU1Fit     = new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "pol10");
+  TF1 *lU1Fit;
+  if(!useErfPol2ScaleU1) lU1Fit= new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "pol10");
+  if(useErfPol2ScaleU1 && !fData && !doIterativeMet) lU1Fit= new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "(TMath::Erf(x*[0])-TMath::Erf(x*[1]))*pol2(2)");
+  if(useErfPol2ScaleU1 && (fData || doIterativeMet))  lU1Fit= new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "TMath::Erf(x*[0])*pol2(1)"); 
+  //  TF1 *lU1Fit     = new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "pol10");
   TF1 *lU1MRMSFit = new TF1((lPrefix+"u1MeanRMS_"+PUstring.str()).c_str(),"pol10");
   TF1 *lU1RMS1Fit = new TF1((lPrefix+"u1RMS1_"+PUstring.str()).c_str(),   "pol10");
   TF1 *lU1RMS2Fit = new TF1((lPrefix+"u1RMS2_"+PUstring.str()).c_str(),   "pol10");
@@ -3609,7 +3730,7 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
 
   gStyle->SetOptFit(111111);
 
-  TString name="recoilfits/recoilfit_SEP22";
+  TString name="recoilfits/recoilfit_SEP28";
   if(do8TeV) name +="_8TeV";
 
   /// SETTING
@@ -3665,15 +3786,15 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
 
     if(doIterativeMet) {
 
-      if(!doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_SEP22_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
-      if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_SEP22_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
+      if(!doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_SEP28_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
+      if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_SEP28_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
 
       ////// DATA closure
-      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_SEP22_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_53X.root" ,"PF",fId);
+      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_SEP28_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_53X.root" ,"PF",fId);
 
       ////// MC closure
-      //      if(!doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_SEP22_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
-      //      if(doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_SEP22_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
+      //      if(!doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_SEP28_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
+      //      if(doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_SEP28_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
 	
     }
     
