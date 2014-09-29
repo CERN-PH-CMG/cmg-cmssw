@@ -10,3 +10,4 @@ ip3d_log: SV_ip3d : 25,0,10; XTitle="IP_{3D} [cm]", Logy
 ip2d: abs(SV_dxy) : 25,0,10; XTitle="IP_{2D} [cm]"
 ip2d_log: abs(SV_dxy) : 25,0,10; XTitle="IP_{2D} [cm]", Logy
 theta: acos(SV_cosTheta): 25,0,0.25; XTitle="p-r angle [rad]"
+mva: SV_mva: 20, 0, 1; XTitle="SV mva"
