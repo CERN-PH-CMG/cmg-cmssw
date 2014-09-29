@@ -277,12 +277,12 @@ class ttHTopoVarAnalyzer( Analyzer ):
             
 ## ===> full MT2 (jets + leptons)                                                                                                                                                                                             
 
-        objects40lc = [ l for l in event.selectedLeptons if l.pt() > 40 and abs(l.eta())<2.5 ]
-        objects40j40lc = objects40jc + objects40lc
+        objects10lc = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta())<2.5 ]
+        objects40j10lc = objects40jc + objects10lc
 
-        objects40j40lc.sort(key = lambda obj : obj.pt(), reverse = True)
+        objects40j10lc.sort(key = lambda obj : obj.pt(), reverse = True)
 
-        if len(objects40j40lc)>=2:
+        if len(objects40j10lc)>=2:
 
             pxvec  = ROOT.std.vector(float)()
             pyvec  = ROOT.std.vector(float)()
@@ -290,7 +290,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
             Evec  = ROOT.std.vector(float)()
             grouping  = ROOT.std.vector(int)()
 
-            for obj in objects40j40lc:
+            for obj in objects40j10lc:
                 pxvec.push_back(obj.px())
                 pyvec.push_back(obj.py())
                 pzvec.push_back(obj.pz())
@@ -346,11 +346,11 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
         gamma_objects40jc = [ j for j in event.gamma_cleanJets if j.pt() > 40 and abs(j.eta())<2.5 ]
 
-        gamma_objects40j40lc = gamma_objects40jc + objects40lc
+        gamma_objects40j10lc = gamma_objects40jc + objects10lc
     
-        gamma_objects40j40lc.sort(key = lambda obj : obj.pt(), reverse = True)
+        gamma_objects40j10lc.sort(key = lambda obj : obj.pt(), reverse = True)
 
-        if len(gamma_objects40j40lc)>=2:
+        if len(gamma_objects40j10lc)>=2:
 
             pxvec  = ROOT.std.vector(float)()
             pyvec  = ROOT.std.vector(float)()
@@ -358,7 +358,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
             Evec  = ROOT.std.vector(float)()
             grouping  = ROOT.std.vector(int)()
 
-            for obj in objects40j40lc:
+            for obj in objects40j10lc:
                 pxvec.push_back(obj.px())
                 pyvec.push_back(obj.py())
                 pzvec.push_back(obj.pz())

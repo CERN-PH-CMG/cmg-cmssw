@@ -16,6 +16,7 @@ from CMGTools.TTHAnalysis.analyzers.ttHLepMCMatchAnalyzer import matchObjectColl
 
 from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch
 
+
  
 class ttHIsoTrackAnalyzer( Analyzer ):
 
@@ -125,8 +126,7 @@ class ttHIsoTrackAnalyzer( Analyzer ):
         if(len(event.selectedIsoTrack)): self.counters.counter('events').inc('has >=1 selected Iso Track')
 
     def matchIsoTrack(self, event):
-        event.genTaus = [ x for x in event.genParticles if x.status() == 3 and abs(x.pdgId()) == 15 ]
-        matchTau = matchObjectCollection3(event.selectedIsoTrack, event.genTaus + event.gentauleps + event.genleps, deltaRMax = 0.5)
+        matchTau = matchObjectCollection3(event.selectedIsoTrack, event.gentaus + event.gentauleps + event.genleps, deltaRMax = 0.5)
         for lep in event.selectedIsoTrack:
             gen = matchTau[lep]
             lep.mcMatchId = 1 if gen else 0

@@ -99,7 +99,7 @@ ttHTopoJetAna = cfg.Analyzer(
 ##------------------------------------------
 
 ####from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_mumu, triggers_ee, triggers_mue, triggers_1mu,
-from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_HT650, triggers_MET150, triggers_HTMET, triggers_mumu, triggers_ee, triggers_mue, triggers_1mu, triggers_RA1_Photon
+from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_HT650, triggers_MET150, triggers_HTMET, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_mue, triggers_1mu, triggers_RA1_Photon
 
 # Tree Producer
 treeProducer = cfg.Analyzer(
@@ -112,9 +112,9 @@ treeProducer = cfg.Analyzer(
             'MET150' : triggers_MET150,
             'ht350met100' : triggers_HTMET,
             'SingleMu' : triggers_1mu,
-            'DoubleMu' : triggers_mumu,
-            'DoubleEl' : triggers_ee,
-            'MuEG'     : triggers_mue,
+            'DoubleMu' : triggers_MT2_mumu,
+            'DoubleEl' : triggers_MT2_ee,
+            'MuEG'     : triggers_MT2_mue,
             'Photons'  : triggers_RA1_Photon,
             'htXprescale' : triggers_HTMET
             },
@@ -161,12 +161,12 @@ sequence = cfg.Sequence(susyCoreSequence+[
 test = 1
 if test==1:
     # test a single component, using a single thread.
-    #comp=TTJets_PU20bx25 #TTJets_forSynch
+    comp=TTJets_PU20bx25 #TTJets_forSynch
     #comp=SMS_T1qqqq_2J_mGl1400_mLSP100_PU_S14_POSTLS170 # small files for testing
-    comp=SMS_T1bbbb_2J_mGl1000_mLSP900_PU_S14_POSTLS170
+    #comp=SMS_T1bbbb_2J_mGl1000_mLSP900_PU_S14_POSTLS170
     #comp.files = ['/afs/cern.ch/work/p/pandolf/CMSSW_7_0_6_patch1_2/src/CMGTools/TTHAnalysis/cfg/pickevents.root']
-    #comp.files = ['/afs/cern.ch/user//m/mmasciov/public/TTJets_forSynch_1.root']
-    comp.files = comp.files[:10]
+    comp.files = ['/afs/cern.ch/user//m/mmasciov/public/TTJets_forSynch_1.root']
+    comp.files = comp.files[:1]
     selectedComponents = [comp]
     comp.splitFactor = 10
 elif test==2:

@@ -72,6 +72,14 @@ triggers_HT650 = ["HLT_PFHT650_v*","HLT_PFNoPUHT650_v*"]
 triggers_MET150 = ["HLT_PFMET150_v*"]
 triggers_HTMET = ["HLT_PFHT350_PFMET100_v*","HLT_PFNoPUHT350_PFMET100_v*"]
 
+triggers_MT2_mumu = ["HLT_Mu17_Mu8_v*","HLT_Mu17_TkMu8_v*"]
+triggers_MT2_ee   = ["HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*",
+                     "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*"]
+
+triggers_MT2_mue = ["HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*",
+                    "HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*"
+                    ]
+
 
 ### ----> RA1 2012 triggers
 
