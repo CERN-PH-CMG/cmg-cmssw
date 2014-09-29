@@ -1,3 +1,4 @@
+
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
 from CMGTools.RootTools.RootTools import *
@@ -21,9 +22,10 @@ ttHLepAna.loose_electron_relIso = 0.15
 ttHLepAna.loose_electron_lostHits = 999 # no cut
 
 # JET (do not apply the jetID and PUID yet)
-ttHJetAna.relaxJetId = True
+ttHJetAna.relaxJetId = False
 ttHJetAna.doPuId = False
-ttHJetAna.jetEtaCentral = 5.2
+ttHJetAna.jetEta = 5.2
+ttHJetAna.jetEtaCentral = 2.5
 ttHJetAna.jetPt = 10.
 ttHJetAna.recalibrateJets = False
 ttHJetAna.jetLepDR = 0.4
@@ -53,6 +55,7 @@ ttHIsoTrackAna = cfg.Analyzer(
                 isoDR = 0.3,
                 ptPartMin = 0,
                 dzPartMax = 0.1,
+                maxAbsIso = 8,
                 #####
                 MaxIsoSum = 0.1, ### unused
                 MaxIsoSumEMU = 0.2, ### unused
@@ -97,7 +100,8 @@ from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
 #for data in dataSamples:
 #    data.triggers = triggers_HT
 
-mcSamples_mainFullHad = [ TTJetsSem,TTJetsLep ]
+mcSamples_mainFullHad = [ T2qq_2J, T2bb_2J , TTJetsSem, TTJetsLep ,ZNuNu50HT100 , ZNuNu100HT200, ZNuNu200HT400, ZNuNu400 ]
+
 selectedComponents = mcSamples_mainFullHad 
 
 #-------- SEQUENCE
@@ -113,7 +117,9 @@ sequence = cfg.Sequence(susyCoreSequence+[
 test = 1
 if test==1:
     # test a single component, using a single thread.
-    comp = TTJetsSem
+    comp = ZNuNu50HT100
+##    comp = T2qq_2J_1
+##    comp = TTJetsSem
 ##    comp = TTJetslep
     comp.files = comp.files[:1]
     selectedComponents = [comp]

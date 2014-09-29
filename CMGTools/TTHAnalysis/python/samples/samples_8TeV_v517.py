@@ -161,6 +161,12 @@ WJetsPtW50To70 =kreator.makeMCComponent('WJets_PtW-50To70','/WJetsToLNu_PtW-50To
 WJetsPtW70To100=kreator.makeMCComponent('WJets_PtW-70To100','/WJetsToLNu_PtW-70To100_TuneZ2star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/'+pat,userName,filepattern)
 WJetsPtW100    =kreator.makeMCComponent('WJets_PtW-100','/WJetsToLNu_PtW-100_TuneZ2star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/'+pat,userName,filepattern)
 
+# ---- Z inv + JETS
+ZNuNu50HT100=kreator.makeMCComponent('ZJetsToNuNu50HT100','/ZJetsToNuNu_50_HT_100_TuneZ2Star_8TeV_madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5/'+patNew,userName,filepattern)
+ZNuNu100HT200=kreator.makeMCComponent('ZJetsToNuNu100HT200','/ZJetsToNuNu_100_HT_200_TuneZ2Star_8TeV_madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5/'+patNew,userName,filepattern)
+ZNuNu200HT400=kreator.makeMCComponent('ZJetsToNuNu200HT400','/ZJetsToNuNu_200_HT_400_TuneZ2Star_8TeV_madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5/'+patNew,userName,filepattern)
+ZNuNu400=kreator.makeMCComponent('ZJetsToJetsToNuNu400','/ZJetsToNuNu_400_HT_inf_TuneZ2Star_8TeV_madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5/'+patNew,userName,filepattern)
+
 # ---- QCD
 QCDMuPt15=kreator.makeMCComponent('QCDMuPt15','/QCD_Pt_20_MuEnrichedPt_15_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v3/AODSIM/V5/'+patNew,userName,filepattern)
 #QCDElPt30To80=kreator.makeMCComponent('QCDElPt30To80','//QCD_Pt_30_80_BCtoE_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/'+pat,userName,filepattern)
@@ -181,10 +187,6 @@ WpWpqq  =kreator.makeMCComponent('WpWpqq',  '/WpWpqq_8TeV-madgraph/Summer12_DR53
 #/QCD_HT-250To500_TuneZ2star_8TeV-madgraph-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0
 #/QCD_HT-500To1000_TuneZ2star_8TeV-madgraph-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0
 #/QCD_HT-1000ToInf_TuneZ2star_8TeV-madgraph-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/CMGPF_V5_16_0
-#/ZJetsToNuNu_50_HT_100_TuneZ2Star_8TeV_madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/CMGPF_V5_16_0
-#/ZJetsToNuNu_100_HT_200_TuneZ2Star_8TeV_madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/CMGPF_V5_16_0
-#/ZJetsToNuNu_200_HT_400_TuneZ2Star_8TeV_madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/CMGPF_V5_16_0
-#/ZJetsToNuNu_400_HT_inf_TuneZ2Star_8TeV_madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/CMGPF_V5_16_0
 # ----- MORE FRMO MARKUS -------------
 # /DYJetsToLL_PtZ-50To70_TuneZ2star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_17_0
 # /DYJetsToLL_PtZ-70To100_TuneZ2star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM/V5_B/PAT_CMG_V5_17_0
@@ -198,7 +200,7 @@ WpWpqq  =kreator.makeMCComponent('WpWpqq',  '/WpWpqq_8TeV-madgraph/Summer12_DR53
 # ----- FINAL LISTS OF BACKGROUNDS ------
 #   ## Critical samples (major signals and backgrounds, and a few small samples)
 mcSamples_1 = [ TTH,TTWJets,TTZJets,TTWWJets,WWWJets,WWZJets,TTG,DYJetsM50,TTJetsLep,TTJetsSem,TTJets,TtW,TbartW,WZJets,ZZJets4L,WWJets,DYJetsM10, ZZ2e2mu,ZZ2e2tau,ZZ2mu2tau,ZZTo4mu,ZZTo4e,ZZTo4tau,
-                W1Jets,W2Jets,W3Jets,W4Jets,WJets_HT250To300,WJets_HT300To400,WJets_HT400ToInf,DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,TTJetsSem ]
+                W1Jets,W2Jets,W3Jets,W4Jets,WJets_HT250To300,WJets_HT300To400,WJets_HT400ToInf,DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,TTJetsSem,ZNuNu50HT100,ZNuNu100HT200,ZNuNu200HT400,ZNuNu400 ]
 #   ## Minor samples and backgrounds 
 mcSamples_2 = [ Tsch,Tbarsch,Ttch,Tbartch,WZZJets,ZZZJets,WWGJets,TTLep,TTJetsSem2,TTJetsHad, TBZToLL,WmWmqq,WpWpqq,TTH122,TTH127,WJetsPtW50To70,WJetsPtW70To100,WJetsPtW100]
 #   mcSamples_2 = [ TTH122,TTH127,DYJetsM10,TTLep,WWJets,TTJets,Tsch,Tbarsch,Ttch,Tbartch,W1Jets,W2Jets,W3Jets,W4Jets,TTJetsHad,DY1JetsM50, ]
@@ -206,7 +208,6 @@ mcSamples_2 = [ Tsch,Tbarsch,Ttch,Tbartch,WZZJets,ZZZJets,WWGJets,TTLep,TTJetsSe
 mcSamples_3 = [ TTWnlo,TTZnlo,WJets,QCDMuPt15 ]
 #   ## Samples we don't use
 mcSamples_4 = [ WW,WZ,ZZ ]
-
 
 
 # ------- SUSY SIGNAL SAMPLES ------
@@ -231,12 +232,33 @@ T2DegenerateStop_2J_1 = kreator.makeMCComponent('T2DegenerateStop_2J_1', '/SMS-T
 T2DegenerateStop_2J_2 = kreator.makeMCComponent('T2DegenerateStop_2J_2', '/SMS-T2DegenerateStop_2J_mStop-175to225_mLSP-95to215_TuneZ2star_8TeV-madgraph-tauolapp/Summer12-START53_V19_FSIM_PU_S12-v1/AODSIM/V5/'+patNew,userName,filepattern)
 T2DegenerateStop_2J_3 = kreator.makeMCComponent('T2DegenerateStop_2J_3', '/SMS-T2DegenerateStop_2J_mStop-250to300_mLSP-170to290_TuneZ2star_8TeV-madgraph-tauolapp/Summer12-START53_V19_FSIM_PU_S12-v1/AODSIM/V5/'+patNew,userName,filepattern)
 T2DegenerateStop_2J_4 = kreator.makeMCComponent('T2DegenerateStop_2J_4', '/SMS-T2DegenerateStop_2J_mStop-325to375_mLSP-245to365_TuneZ2star_8TeV-madgraph-tauolapp/Summer12-START53_V19_FSIM_PU_S12-v1/AODSIM/V5/'+patNew,userName,filepattern)
- 
+
+T2qq_2J_1 = kreator.makeMCComponent('T2qq_2J_1', '/SMS-T2qq_2J_mSquark-300to450_mLSP-1to400_TuneZ2star_8TeV-madgraph-tauola/Summer12-START53_V7C_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+T2qq_2J_2 = kreator.makeMCComponent('T2qq_2J_2', '/SMS-T2qq_2J_mSquark-500to750_mLSP-1to700_TuneZ2star_8TeV-madgraph-tauola/Summer12-START53_V7C_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+T2qq_2J_3 = kreator.makeMCComponent('T2qq_2J_3', '/SMS-T2qq_2J_mSquark-800to1000_mLSP-1to950_TuneZ2star_8TeV-madgraph-tauola/Summer12-START53_V7C_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+T2qq_2J_4 = kreator.makeMCComponent('T2qq_2J_4', '/SMS-T2qq_2J_mSquark-1050to1200_mLSP-1to1150_TuneZ2star_8TeV-madgraph-tauola/Summer12-START53_V7C_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+
+T2bb_2J_1 = kreator.makeMCComponent('T2bb_2J_1', '/SMS-T2bb_2J_mSbottom-100to475_mLSP-1to465_TuneZ2star_8TeV-madgraph-tauola/Summer12-START53_V7C_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+T2bb_2J_2 = kreator.makeMCComponent('T2bb_2J_2', '/SMS-T2bb_2J_mSbottom-500to800_mLSP-1to790_TuneZ2star_8TeV-madgraph-tauola/Summer12-START53_V7C_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+
+T2tt_2J_1 = kreator.makeMCComponent('T2tt_2J_1', '/SMS-T2tt_mStop-150to350_mLSP-0to250_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+T2tt_2J_2 = kreator.makeMCComponent('T2tt_2J_2', '/SMS-T2tt_mStop-375to475_mLSP-0to375_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+T2tt_2J_3 = kreator.makeMCComponent('T2tt_2J_3', '/SMS-T2tt_mStop-500to650_mLSP-0to225_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+T2tt_2J_4 = kreator.makeMCComponent('T2tt_2J_4', '/SMS-T2tt_mStop-500to650_mLSP-250to550_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+T2tt_2J_5 = kreator.makeMCComponent('T2tt_2J_5', '/SMS-T2tt_mStop-675to800_mLSP-300to700_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+T2tt_2J_6 = kreator.makeMCComponent('T2tt_2J_6', '/SMS-8TeV-Pythia6Z_T2tt_mStop-500to800_mLSP-1/Summer12-START52_V9_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+T2tt_2J_7 = kreator.makeMCComponent('T2tt_2J_7', '/SMS-8TeV-Pythia6Z_T2tt_mStop-150to475_mLSP-1/Summer12-START52_V9_FSIM-v1/AODSIM/V5/'+patNew,userName,filepattern)
+
+
 
 T1tttt_2J = [ T1tttt_2J_1,T1tttt_2J_2,T1tttt_2J_3,T1tttt_2J_4,T1tttt_2J_5,T1tttt_2J_6,T1tttt_2J_7,T1tttt_2J_8 ]
 T5VV_2J = [ T5VV_2J_1,T5VV_2J_2,T5VV_2J_3,T5VV_2J_4,T5VV_2J_5,T5VV_2J_6,T5VV_2J_7 ]
 T2DegenerateStop_2J = [ T2DegenerateStop_2J_1, T2DegenerateStop_2J_2, T2DegenerateStop_2J_3, T2DegenerateStop_2J_4 ]
-susySamples = T1tttt_2J + T5VV_2J + T2DegenerateStop_2J
+T2qq_2J = [ T2qq_2J_1, T2qq_2J_2, T2qq_2J_3, T2qq_2J_4 ]
+T2bb_2J = [ T2bb_2J_1, T2bb_2J_2 ]
+T2tt_2J = [ T2tt_2J_1, T2tt_2J_2, T2tt_2J_3, T2tt_2J_4, T2tt_2J_5, T2tt_2J_6, T2tt_2J_7 ]
+
+susySamples = T1tttt_2J + T5VV_2J + T2DegenerateStop_2J + T2qq_2J + T2bb_2J + T2tt_2J
 
 ####################################################################################################################
 #-----------PRIVATE FAST SIM---------------
