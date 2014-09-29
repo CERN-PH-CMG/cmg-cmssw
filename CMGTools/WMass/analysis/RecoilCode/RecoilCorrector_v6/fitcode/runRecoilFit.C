@@ -1729,8 +1729,11 @@ void computeFitErrorsERF(TF1 *iFit,TFitResultPtr &iFPtr,TF1 *iTrueFit,bool iPol0
   iFit->SetParameter(1,iTrueFit->GetParameter(1));
   iFit->SetParameter(2,iTrueFit->GetParameter(2));
   iFit->SetParameter(3,iTrueFit->GetParameter(3));
-  iFit->SetParameter(4,iTrueFit->GetParameter(4));
-  iFit->SetParameter(5,iTrueFit->GetParameter(5));
+
+  if(!fData && !doIterativeMet){
+    iFit->SetParameter(4,iTrueFit->GetParameter(4));
+    iFit->SetParameter(5,iTrueFit->GetParameter(5));
+  }
 
   iFit->SetParError(0,err00);
   iFit->SetParError(1,err11);
@@ -1742,7 +1745,8 @@ void computeFitErrorsERF(TF1 *iFit,TFitResultPtr &iFPtr,TF1 *iTrueFit,bool iPol0
   iFit->SetParError(9,err12);
   iFit->SetParError(10,err13);
   iFit->SetParError(12,err23);
-  if(!fData||!doIterativeMet){
+
+  if(!fData && !doIterativeMet){
     double err44=(lCov)(4,4); double err34=(lCov)(3,4); double err04=(lCov)(0,4); double err14=(lCov)(1,4); double err24=(lCov)(2,4);
     iFit->SetParError(4,err44);
     iFit->SetParError(8,err04);
@@ -2817,7 +2821,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     double SFabs=1;
     if(doAbsolute) SFabs=10;
     //    lM0->GetYaxis()->SetRangeUser(-1.,1.);
-    lM0->GetYaxis()->SetRangeUser(-0.5,0.5);
+    lM0->GetYaxis()->SetRangeUser(-0.25,0.25);
     lG0->GetYaxis()->SetRangeUser(0.,2.*SFabs);
     lG1->GetYaxis()->SetRangeUser(0.,1.5*SFabs);
     lG2->GetYaxis()->SetRangeUser(0.,5.*SFabs);
@@ -3595,8 +3599,8 @@ void fitRecoilMET(TTree *iTree,std::string iName,int type, int lfId) {
 
   TF1 *lU1Fit;
   if(!useErfPol2ScaleU1) lU1Fit= new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "pol10");
-  if(useErfPol2ScaleU1 && !fData && !doIterativeMet) lU1Fit= new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "(TMath::Erf(x*[0])-TMath::Erf(x*[1]))*pol2(2)");
-  if(useErfPol2ScaleU1 && (fData || doIterativeMet))  lU1Fit= new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "TMath::Erf(x*[0])*pol2(1)"); 
+  if(useErfPol2ScaleU1 && !fData && !doIterativeMet) lU1Fit= new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "(TMath::Erf(x*[0])-TMath::Erf(x*[1]))*pol12(2)");
+  if(useErfPol2ScaleU1 && (fData || doIterativeMet))  lU1Fit= new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "TMath::Erf(x*[0])*pol12(1)"); 
   //  TF1 *lU1Fit     = new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "pol10");
   TF1 *lU1MRMSFit = new TF1((lPrefix+"u1MeanRMS_"+PUstring.str()).c_str(),"pol10");
   TF1 *lU1RMS1Fit = new TF1((lPrefix+"u1RMS1_"+PUstring.str()).c_str(),   "pol10");
@@ -3730,7 +3734,7 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
 
   gStyle->SetOptFit(111111);
 
-  TString name="recoilfits/recoilfit_SEP28";
+  TString name="recoilfits/recoilfit_SEP29";
   if(do8TeV) name +="_8TeV";
 
   /// SETTING
@@ -3786,11 +3790,11 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
 
     if(doIterativeMet) {
 
-      if(!doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_SEP28_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
-      if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_SEP28_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
+      if(!doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_SEP29_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
+      if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_SEP29_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
 
       ////// DATA closure
-      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_SEP28_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_53X.root" ,"PF",fId);
+      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_SEP29_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_53X.root" ,"PF",fId);
 
       ////// MC closure
       //      if(!doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_SEP28_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
@@ -3884,7 +3888,8 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
 
   if(!usePol3) name += "_pol2";
   if(usePol3) name += "_pol3";
-  
+  if(useErfPol2ScaleU1) name += "_U1scaleErf";
+
   if(doType2)  name += "_type2";
   if(!doType2) name += "_type1";
 
