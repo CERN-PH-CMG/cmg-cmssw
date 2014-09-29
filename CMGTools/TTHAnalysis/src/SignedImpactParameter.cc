@@ -5,6 +5,8 @@
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "TrackingTools/IPTools/interface/IPTools.h"
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
+#include "RecoVertex/VertexTools/interface/VertexDistance3D.h"
+#include "RecoVertex/VertexTools/interface/VertexDistanceXY.h"
 #include <vector>
 #include <TMath.h>
 #include <Math/SVector.h>
@@ -23,6 +25,15 @@ SignedImpactParameter::signedIP3D(const reco::Track &tk, const reco::Vertex &vtx
     reco::TransientTrack ttk(tk,paramField_);
     return IPTools::signedImpactParameter3D(ttk, GlobalVector(jetdir.X(),jetdir.Y(),jetdir.Z()), vtx).second;
 }
+
+Measurement1D 
+SignedImpactParameter::signedIP3D(const reco::Track &tk, const reco::VertexCompositePtrCandidate &sv, const reco::Track::Vector jetdir) const {
+    reco::Vertex::CovarianceMatrix csv; sv.fillVertexCovariance(csv);
+    reco::Vertex svtx(sv.vertex(), csv);
+    return signedIP3D(tk, svtx, jetdir);
+}
+
+
 
 std::pair<double,double>
 SignedImpactParameter::twoTrackChi2(const reco::Track &tk1, const reco::Track &tk2) const {
@@ -146,4 +157,26 @@ std::pair<double,double> SignedImpactParameter::chi2pvtrks(const reco::Track &tr
  TransientVertex trkspv = vtxFitter.vertex(ttrks);
  //Take interested values
  return std::make_pair(trkspv.totalChiSquared(),trkspv.degreesOfFreedom());  
+}
+
+Measurement1D
+SignedImpactParameter::vertexD3d(const reco::VertexCompositePtrCandidate &svcand, const reco::Vertex &pv) const {
+    VertexDistance3D dist;
+    reco::Vertex::CovarianceMatrix csv; svcand.fillVertexCovariance(csv);
+    reco::Vertex svtx(svcand.vertex(), csv);
+    return dist.distance(svtx, pv);
+}
+
+Measurement1D
+SignedImpactParameter::vertexDxy(const reco::VertexCompositePtrCandidate &svcand, const reco::Vertex &pv) const {
+    VertexDistanceXY dist;
+    reco::Vertex::CovarianceMatrix csv; svcand.fillVertexCovariance(csv);
+    reco::Vertex svtx(svcand.vertex(), csv);
+    return dist.distance(svtx, pv);
+}
+
+float SignedImpactParameter::vertexDdotP(const reco::VertexCompositePtrCandidate &sv, const reco::Vertex &pv) const {
+    reco::Candidate::Vector p = sv.momentum();
+    reco::Candidate::Vector d(sv.vx() - pv.x(), sv.vy() - pv.y(), sv.vz() - pv.z());
+    return p.Unit().Dot(d.Unit());
 }

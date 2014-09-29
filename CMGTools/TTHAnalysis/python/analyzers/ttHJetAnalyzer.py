@@ -84,13 +84,17 @@ class ttHJetAnalyzer( Analyzer ):
         event.jets = []
         event.jetsFailId = []
         event.jetsAllNoID = []
+        event.jetsIdOnly = []
         for jet in allJets:
             if self.testJetNoID( jet ): 
                 event.jetsAllNoID.append(jet) 
                 if self.testJetID (jet ):
                     event.jets.append(jet)
+                    event.jetsIdOnly.append(jet)
                 else:
                     event.jetsFailId.append(jet)
+            elif self.testJetID (jet ):
+                event.jetsIdOnly.append(jet)
 
         ## Clean Jets from leptons
         leptons = [ l for l in event.selectedLeptons if l.pt() > self.lepPtMin ]

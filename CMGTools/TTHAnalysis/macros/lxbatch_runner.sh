@@ -1,5 +1,5 @@
 #!/bin/bash
-export SCRAM_ARCH=slc5_amd64_gcc462
+export SCRAM_ARCH=slc6_amd64_gcc481
 WORK=$1; shift
 SRC=$1; shift
 cd $SRC; 

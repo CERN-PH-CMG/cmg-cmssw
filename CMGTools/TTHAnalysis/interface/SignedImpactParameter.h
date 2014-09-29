@@ -1,6 +1,7 @@
 #ifndef SignedImpactParmeter_h
 #define SignedImpactParmeter_h
 
+#include "DataFormats/Candidate/interface/VertexCompositePtrCandidate.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/GeometryCommonDetAlgo/interface/Measurement1D.h"
@@ -18,7 +19,9 @@ class SignedImpactParameter {
         ~SignedImpactParameter() ;
 
         Measurement1D signedIP3D(const reco::Track &tk, const reco::Vertex &vtx, const reco::Track::Vector jetdir) const ;
+        Measurement1D signedIP3D(const reco::Track &tk, const reco::VertexCompositePtrCandidate &vtx, const reco::Track::Vector jetdir) const ;
         std::pair<double,double> twoTrackChi2(const reco::Track &tk1, const reco::Track &tk2) const ;
+
         //For the vertex related variables
         //A = selectedLeptons[0], B = selectedLeptons[1], C = selectedLeptons[2], D = selectedLeptons[3]
        
@@ -37,7 +40,9 @@ class SignedImpactParameter {
        //Variables related to chi2
        std::pair<double,double> chi2pvtrks(const reco::Track &trkA, const reco::Track &trkB, const reco::Track &trkC, const reco::Track &trkD, int nlep) const;
 
-
+        Measurement1D vertexD3d(const reco::VertexCompositePtrCandidate &sv, const reco::Vertex &pv) const ;
+        Measurement1D vertexDxy(const reco::VertexCompositePtrCandidate &sv, const reco::Vertex &pv) const ;
+        float vertexDdotP(const reco::VertexCompositePtrCandidate &sv, const reco::Vertex &pv) const ;
     private:
         //MagneticField *bfield_;
         static MagneticField *paramField_;

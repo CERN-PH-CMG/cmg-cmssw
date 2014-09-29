@@ -18,16 +18,19 @@ class MVAVar:
         self.var[0] = self.func(ev)
 
 class MVATool:
-    def __init__(self,name,xml,vars,rarity=False):
+    def __init__(self,name,xml,vars,rarity=False,specs=[]):
         self.name = name
         self.reader = ROOT.TMVA.Reader("Silent")
         self.vars  = vars
+        self.specs = specs
+        for s in specs: self.reader.AddSpectator(s.name,s.var)
         for v in vars:  self.reader.AddVariable(v.name,v.var)
         #print "Would like to load %s from %s! " % (name,xml)
         self.reader.BookMVA(name,xml)
         self.rarity = rarity
     def __call__(self,ev): 
         for s in self.vars:  s.set(ev)
+        for s in self.specs: s.set(ev)
         return self.reader.EvaluateMVA(self.name) if not self.rarity else self.reader.GetRarity(self.name)  
 
 class CategorizedMVA:

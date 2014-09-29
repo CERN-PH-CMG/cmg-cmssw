@@ -29,6 +29,12 @@ class PlotFile:
                     for p in p0.split(","):
                         if re.match(p+"$", field[0]): skipMe = False
                 if skipMe: continue
+            if len(options.plotexclude):
+                skipMe = False
+                for p0 in options.plotexclude:
+                    for p in p0.split(","):
+                        if re.match(p+"$", field[0]): skipMe = True
+                if skipMe: continue
             if options.globalRebin: extra['rebinFactor'] = options.globalRebin
             self._plots.append(PlotSpec(field[0],field[1],field[2],extra))
     def plots(self):
@@ -654,7 +660,7 @@ def addPlotMakerOptions(parser):
     parser.add_option("--ss",  "--scale-signal", dest="signalPlotScale", default=1.0, help="scale the signal in the plots by this amount");
     #parser.add_option("--lspam", dest="lspam",   type="string", default="CMS Simulation", help="Spam text on the right hand side");
     parser.add_option("--lspam", dest="lspam",   type="string", default="CMS Preliminary", help="Spam text on the right hand side");
-    parser.add_option("--rspam", dest="rspam",   type="string", default="#sqrt{s} = 8 TeV, L = %(lumi).1f fb^{-1}", help="Spam text on the right hand side");
+    parser.add_option("--rspam", dest="rspam",   type="string", default="#sqrt{s} = 13 TeV, L = %(lumi).1f fb^{-1}", help="Spam text on the right hand side");
     parser.add_option("--print", dest="printPlots", type="string", default="png,pdf,txt", help="print out plots in this format or formats (e.g. 'png,pdf,txt')");
     parser.add_option("--pdir", "--print-dir", dest="printDir", type="string", default="plots", help="print out plots in this directory");
     parser.add_option("--showSigShape", dest="showSigShape", action="store_true", default=False, help="Stack a normalized signal shape")
@@ -671,6 +677,7 @@ def addPlotMakerOptions(parser):
     parser.add_option("--rebin", dest="globalRebin", type="int", default="0", help="Rebin all plots by this factor")
     parser.add_option("--poisson", dest="poisson", action="store_true", default=False, help="Draw Poisson error bars")
     parser.add_option("--select-plot", "--sP", dest="plotselect", action="append", default=[], help="Select only these plots out of the full file")
+    parser.add_option("--exclude-plot", "--xP", dest="plotexclude", action="append", default=[], help="Exclude these plots from the full file")
 
 if __name__ == "__main__":
     from optparse import OptionParser
@@ -688,6 +695,12 @@ if __name__ == "__main__":
         os.system("mkdir -p "+os.path.dirname(outname))
         if os.path.exists("/afs/cern.ch"): os.system("cp /afs/cern.ch/user/g/gpetrucc/php/index.php "+os.path.dirname(outname))
     print "Will save plots to ",outname
+    fcut = open(re.sub("\.root$","",outname)+"_cuts.txt","w")
+    fcut.write("%s\n" % cuts); fcut.close()
+    os.system("cp %s %s " % (args[2], re.sub("\.root$","",outname)+"_plots.txt"))
+    os.system("cp %s %s " % (args[0], re.sub("\.root$","",outname)+"_mca.txt"))
+    #fcut = open(re.sub("\.root$","",outname)+"_cuts.txt")
+    #fcut.write(cuts); fcut.write("\n"); fcut.close()
     outfile  = ROOT.TFile(outname,"RECREATE")
     plotter = PlotMaker(outfile)
     plotter.run(mca,cuts,plots)
