@@ -35,7 +35,7 @@ void trainIVF(TString name, TString train="GoodvsBad") {
     factory->SetWeightExpression("");
 
     if (train=="GoodvsBad") {
-        factory->PrepareTrainingAndTestTree( lepton+" SV_mcMatchFraction > 0.66", lepton+" SV_mcMatchFraction < 0.5", "nTrain_Signal=50000:nTrain_Background=50000:nTest_Signal=50000:nTest_Background=50000" );
+        factory->PrepareTrainingAndTestTree( lepton+" SV_mcMatchFraction > 0.66", lepton+" SV_mcMatchFraction < 0.5", "" );
     }  else { 
         std::cerr << "ERROR: No idea of what training you want." << std::endl; return; 
     }
