@@ -19,8 +19,8 @@ class treeProducerSusyAlphaT( treeProducerSusyCore ):
             #----------------------------------------
 
             NTupleVariable("ht",           lambda ev : ev.htJet40j,    help="H_{T} computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
-            NTupleVariable("deltaPhiMin",  lambda ev : ev.deltaPhiMin, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4"),
-            NTupleVariable("diffMetMht",   lambda ev : ev.diffMetMht,   help="abs( vec(mht) - vec(met) )"),
+            NTupleVariable("deltaPhiMin",  lambda ev : ev.deltaPhiMin_had, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4"),
+            NTupleVariable("diffMetMht",   lambda ev : ev.diffMetMht_had,   help="abs( vec(mht) - vec(met) )"),
             NTupleVariable("mht_pt",       lambda ev : ev.mhtJet40j,    help="H_{T}^{miss} computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
             NTupleVariable("mht_phi",      lambda ev : ev.mhtPhiJet40j, help="H_{T}^{miss} #phi computed from onlyy jets (with |eta|<2.5, pt > 40 GeV)"),
             ##--------------------------------------------------
