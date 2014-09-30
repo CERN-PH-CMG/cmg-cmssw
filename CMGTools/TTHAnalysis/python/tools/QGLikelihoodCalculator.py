@@ -108,7 +108,7 @@ class QGLikelihoodCalculator:
 
     for i in vars :
 
-      print self.varNames[i] + ": " + str(vars[i])
+      #print self.varNames[i] + ": " + str(vars[i])
       # quarks = 0
       qgEntry = self.findEntry(jet.eta(), jet.pt(), rho, 0, i)
 
