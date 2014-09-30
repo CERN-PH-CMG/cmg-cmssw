@@ -19,7 +19,7 @@ def castorBaseDir( user=os.environ['USER'], area = None):
     if area is None:
         user, area = getUserAndArea(user)
     
-    d = '/store/cmst3/%s/%s/CMG' % (area,user)
+    d = 'root://eoscms.cern.ch//eos/cms/store/cmst3/%s/%s/CMG' % (area,user)
     exists = castortools.isDirectory( castortools.lfnToCastor(d) )
     if exists:
         return d

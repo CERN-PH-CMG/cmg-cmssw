@@ -29,7 +29,7 @@ class ComponentCreator(object):
          component = cfg.MCComponent(
              dataset=dataset,
              name = name,
-             files = ['root://eoscms//eos/cms%s%s' % (dprefix,f) for f in files],
+             files = ['root://eoscms.cern.ch//eos/cms%s%s' % (dprefix,f) for f in files],
              xSection = 1,
              nGenEvents = 1,
              triggers = [],
@@ -59,11 +59,10 @@ class ComponentCreator(object):
     def makeMCComponentFromEOS(self,name,dataset,path,pattern=".*root"):
         from CMGTools.Production.dataset import getDatasetFromCache, writeDatasetToCache
         if "%" in path: path = path % dataset;
-        print path
         try:
             files = getDatasetFromCache('EOS%{path}%{pattern}.pck'.format(path = path.replace('/','_'), pattern = pattern))
         except IOError:
-            files = [ 'root://eoscms/'+x for x in eostools.listFiles('/eos/cms'+path) if re.match(pattern,x) ] 
+            files = [ 'root://eoscms.cern.ch/'+x for x in eostools.listFiles('/eos/cms'+path) if re.match(pattern,x) ] 
             if len(files) == 0:
                 raise RuntimeError, "ERROR making component %s: no files found under %s matching '%s'" % (name,path,pattern)
             writeDatasetToCache('EOS%{path}%{pattern}.pck'.format(path = path.replace('/','_'), pattern = pattern), files)
@@ -102,14 +101,14 @@ class ComponentCreator(object):
         # print 'getting files for', dataset,user,pattern
         ds = datasetToSource( user, dataset, pattern, True )
         files = ds.fileNames
-        return ['root://eoscms//eos/cms%s' % f for f in files]
+        return ['root://eoscms.cern.ch//eos/cms%s' % f for f in files]
 
     ### MM
     def getMyFiles(self, dataset, user, pattern, dbsInstance):
         # print 'getting files for', dataset,user,pattern
         ds = myDatasetToSource( user, dataset, pattern, dbsInstance, True )
         files = ds.fileNames
-        return ['root://eoscms//eos/cms%s' % f for f in files]
+        return ['root://eoscms.cern.ch//eos/cms%s' % f for f in files]
     ### MM
 
     def getSkimEfficiency(self,dataset,user):

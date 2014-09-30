@@ -74,6 +74,7 @@ def makeROC(plotmap,mca):
 def addROCMakerOptions(parser):
     addMCAnalysisOptions(parser)
     parser.add_option("--select-plot", "--sP", dest="plotselect", action="append", default=[], help="Select only these plots out of the full file")
+    parser.add_option("--exclude-plot", "--xP", dest="plotexclude", action="append", default=[], help="Exclude these plots from the full file")
 
 def doLegend(rocs,textSize=0.035):
         (x1,y1,x2,y2) = (.6, .30 + textSize*max(len(rocs)-3,0), .93, .18)
@@ -111,7 +112,7 @@ if __name__ == "__main__":
     for i,plot in enumerate(plots.plots()):
         pmap = mca.getPlots(plot,cut,makeSummary=True)
         roc = makeROC(pmap,mca)
-        if roc.GetN() > 1 and roc.dim == 1:
+        if roc.GetN() > 1 and roc.dim == 1 and not plot.getOption("Discrete",False):
             roc.SetLineColor(plot.getOption("LineColor",i+1))
             roc.SetMarkerColor(plot.getOption("LineColor",i+1))
             roc.SetLineWidth(2)

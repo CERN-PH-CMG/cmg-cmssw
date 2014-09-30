@@ -89,6 +89,7 @@ class ttHJetAnalyzer( Analyzer ):
         event.jets = []
         event.jetsFailId = []
         event.jetsAllNoID = []
+        event.jetsIdOnly = []
         for jet in allJets:
             if self.testJetNoID( jet ): 
                 event.jetsAllNoID.append(jet) 
@@ -96,8 +97,11 @@ class ttHJetAnalyzer( Analyzer ):
                     self.computeQGvars(jet)
                     jet.qgl = self.qglcalc.computeQGLikelihood(jet, rho)
                     event.jets.append(jet)
+                    event.jetsIdOnly.append(jet)
                 else:
                     event.jetsFailId.append(jet)
+            elif self.testJetID (jet ):
+                event.jetsIdOnly.append(jet)
 
         ## Clean Jets from leptons
         leptons = [ l for l in event.selectedLeptons if l.pt() > self.lepPtMin ]

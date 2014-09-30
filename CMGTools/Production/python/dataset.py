@@ -305,16 +305,28 @@ class Dataset( BaseDataset ):
 
     def extractFileSizes(self):
         '''Get the file size for each file, from the eos ls -l command.'''
-        lsout = castortools.runEOSCommand(self.castorDir, 'ls','-l')[0]
+        #lsout = castortools.runEOSCommand(self.castorDir, 'ls','-l')[0]
+        #lsout = lsout.split('\n')
+        #self.filesAndSizes = {}
+        #for entry in lsout:
+        #    values = entry.split()
+        #    if( len(values) != 9):
+        #        continue
+        #    # using full abs path as a key.
+        #    file = '/'.join([self.lfnDir, values[8]])
+        #    size = values[4]
+        #    self.filesAndSizes[file] = size 
+        # EOS command does not work in tier3
+        lsout = castortools.runXRDCommand(self.castorDir,'dirlist')[0]
         lsout = lsout.split('\n')
         self.filesAndSizes = {}
         for entry in lsout:
             values = entry.split()
-            if( len(values) != 9):
+            if( len(values) != 5):
                 continue
             # using full abs path as a key.
-            file = '/'.join([self.lfnDir, values[8]])
-            size = values[4]
+            file = '/'.join([self.lfnDir, values[4].split("/")[-1]])
+            size = values[1]
             self.filesAndSizes[file] = size 
          
     def printInfo(self):

@@ -72,6 +72,46 @@ triggers_HT650 = ["HLT_PFHT650_v*","HLT_PFNoPUHT650_v*"]
 triggers_MET150 = ["HLT_PFMET150_v*"]
 triggers_HTMET = ["HLT_PFHT350_PFMET100_v*","HLT_PFNoPUHT350_PFMET100_v*"]
 
+triggers_MT2_mumu = ["HLT_Mu17_Mu8_v*","HLT_Mu17_TkMu8_v*"]
+triggers_MT2_ee   = ["HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*",
+                     "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*"]
+
+triggers_MT2_mue = ["HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*",
+                    "HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*"
+                    ]
+
+
+### ----> RA1 2012 triggers
+
+triggers_RA1_Bulk = [
+    "HLT_HT200_v*",
+    "HLT_HT250_v*",
+    "HLT_HT300_v*",
+    "HLT_HT350_v*",
+    "HLT_HT450_v*",
+    "HLT_HT550_v*",
+    "HLT_HT650_v*",
+    "HLT_HT750_v*",
+    ]
+triggers_RA1_Parked = [
+    "HLT_HT200_AlphaT0p57_v*",
+    "HLT_HT300_AlphaT0p53_v*",
+    "HLT_HT350_AlphaT0p52_v*",
+    "HLT_HT400_AlphaT0p51_v*",
+    ]
+triggers_RA1_Prompt = [
+    "HLT_HT250_AlphaT0p55_v*",
+    "HLT_HT300_AlphaT0p53_v*",
+    "HLT_HT350_AlphaT0p52_v*",
+    "HLT_HT400_AlphaT0p51_v*",
+    "HLT_HT350_AlphaT0p52_v*",
+    ]
+triggers_RA1_Single_Mu = ["HLT_IsoMu24_eta2p1_v*"]
+triggers_RA1_Photon    = ["HLT_Photon150_v%d"%i for i in range(1,20)] + ["HLT_Photon160_v%d"%i for i in range(1,20)]
+triggers_RA1_Muon      = ["HLT_IsoMu24_eta2p1_v%d"%i for i in range(1,20)]
+
+
+
 #####COMPONENT CREATOR
 
 from CMGTools.TTHAnalysis.samples.ComponentCreator import ComponentCreator

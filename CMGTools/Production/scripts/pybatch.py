@@ -58,6 +58,98 @@ cp -r Loop/* $LS_SUBCWD
    return script
 
 
+def batchScriptPSI( index, jobDir, remoteDir=''):
+   '''prepare the SGE version of the batch script, to run on the PSI tier3 batch system'''
+
+   cmssw_release = os.environ['CMSSW_BASE']
+   VO_CMS_SW_DIR = "/swshare/cms"  # $VO_CMS_SW_DIR doesn't seem to work in the new SL6 t3wn
+
+   if remoteDir=='':
+       cpCmd="""echo 'sending the job directory back'
+cp -r Loop/* $SUBMISIONDIR"""
+   elif remoteDir.startswith("/pnfs/psi.ch"):
+       cpCmd="""echo 'sending root files to remote dir'
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/dcap/ # Fabio's workaround to fix gfal-tools
+for f in Loop/treeProducerSusyFullHad/*.root
+do
+echo $f
+ff=`basename $f | cut -d . -f 1`
+echo $ff
+gfal-mkdir {srm}
+echo "gfal-copy file:///`pwd`/Loop/treeProducerSusyFullHad/$file.root {srm}/${{ff}}_{idx}.root"
+gfal-copy file:///`pwd`/Loop/treeProducerSusyFullHad/$ff.root {srm}/${{ff}}_{idx}.root
+done
+rm Loop/treeProducerSusyFullHad/*.root
+echo 'sending the logs back'
+cp -r Loop/* $SUBMISIONDIR""".format(idx=index, srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")])
+   else:
+       print "remote directory not supported yet: ", remoteDir
+       print 'path must start with "/pnfs/psi.ch"'
+       sys.exit(1)
+
+
+   script = """#!/bin/bash
+shopt expand_aliases
+##### MONITORING/DEBUG INFORMATION ###############################
+DATE_START=`date +%s`
+echo "Job started at " `date`
+cat <<EOF
+################################################################
+## QUEUEING SYSTEM SETTINGS:
+HOME=$HOME
+USER=$USER
+JOB_ID=$JOB_ID
+JOB_NAME=$JOB_NAME
+HOSTNAME=$HOSTNAME
+TASK_ID=$TASK_ID
+QUEUE=$QUEUE
+
+EOF
+echo "######## Environment Variables ##########"
+env
+echo "################################################################"
+TOPWORKDIR=/scratch/`whoami`
+JOBDIR=sgejob-$JOB_ID
+WORKDIR=$TOPWORKDIR/$JOBDIR
+SUBMISIONDIR={jdir}
+if test -e "$WORKDIR"; then
+   echo "ERROR: WORKDIR ($WORKDIR) already exists! Aborting..." >&2
+   exit 1
+fi
+mkdir -p $WORKDIR
+if test ! -d "$WORKDIR"; then
+   echo "ERROR: Failed to create workdir ($WORKDIR)! Aborting..." >&2
+   exit 1
+fi
+
+#source $VO_CMS_SW_DIR/cmsset_default.sh
+source {vo}/cmsset_default.sh
+export SCRAM_ARCH=slc6_amd64_gcc481
+#cd $CMSSW_BASE/src
+cd {cmssw}/src
+shopt -s expand_aliases
+cmsenv
+cd $WORKDIR
+cp -rf $SUBMISIONDIR .
+ls
+cd `find . -type d | grep /`
+echo 'running'
+#python $CMSSW_BASE/src/CMGTools/RootTools/python/fwlite/Looper.py config.pck
+python {cmssw}/src/CMGTools/RootTools/python/fwlite/Looper.py config.pck
+echo
+{copy}
+###########################################################################
+DATE_END=`date +%s`
+RUNTIME=$((DATE_END-DATE_START))
+echo "################################################################"
+echo "Job finished at " `date`
+echo "Wallclock running time: $RUNTIME s"
+exit 0
+""".format(jdir=jobDir, vo=VO_CMS_SW_DIR,cmssw=cmssw_release, copy=cpCmd)
+
+   return script
+
+
 def batchScriptLocal(  remoteDir, index ):
    '''prepare a local version of the batch script, to run using nohup'''
 
@@ -86,9 +178,11 @@ class MyBatchManager( BatchManager ):
        storeDir = self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
        mode = self.RunningMode(options.batch)
        if mode == 'LXPLUS':
-           scriptFile.write( batchScriptCERN( storeDir, value) )
+           scriptFile.write( batchScriptCERN( storeDir, value) ) # watch out arguments are swapped (although not used)
+       elif mode == 'PSI':
+           scriptFile.write( batchScriptPSI ( value, jobDir, storeDir ) ) # storeDir not implemented at the moment
        elif mode == 'LOCAL':
-           scriptFile.write( batchScriptLocal( storeDir, value) ) 
+           scriptFile.write( batchScriptLocal( storeDir, value) )  # watch out arguments are swapped (although not used)
        scriptFile.close()
        os.system('chmod +x %s' % scriptFileName)
        

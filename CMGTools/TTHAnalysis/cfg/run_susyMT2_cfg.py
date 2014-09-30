@@ -24,6 +24,7 @@ ttHLepAna.loose_electron_lostHits = 999 # no cut
 ttHLepAna.inclusive_electron_lostHits = 999 # no cut
 ttHLepAna.ele_isoCorr = "deltaBeta"
 ttHLepAna.ele_tightId = "Cuts_2012"
+ttHLepAna.notCleaningElectrons = True
 
 # JET (for event variables do apply the jetID and not PUID yet)
 ttHJetAna.relaxJetId = False
@@ -80,12 +81,12 @@ ttHIsoTrackAna = cfg.Analyzer(
 ##------------------------------------------ 
 
 ttHMT2Control = cfg.Analyzer(
-            'ttHMT2Control',
+            'ttHMT2Control'
             )
 
 
 ##------------------------------------------
-##  TOPOLOGIAL VARIABLES: MT, MT2
+##  TOLOLOGIAL VARIABLES: MT, MT2
 ##------------------------------------------
 
 ttHTopoJetAna = cfg.Analyzer(
@@ -98,7 +99,7 @@ ttHTopoJetAna = cfg.Analyzer(
 ##------------------------------------------
 
 ####from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_mumu, triggers_ee, triggers_mue, triggers_1mu,
-from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_HT650, triggers_MET150, triggers_HTMET
+from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_HT650, triggers_MET150, triggers_HTMET, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_mue, triggers_1mu, triggers_RA1_Photon
 
 # Tree Producer
 treeProducer = cfg.Analyzer(
@@ -109,7 +110,13 @@ treeProducer = cfg.Analyzer(
         triggerBits = {
             'HT650' : triggers_HT650,
             'MET150' : triggers_MET150,
-            'ht350met100' : triggers_HTMET
+            'ht350met100' : triggers_HTMET,
+            'SingleMu' : triggers_1mu,
+            'DoubleMu' : triggers_MT2_mumu,
+            'DoubleEl' : triggers_MT2_ee,
+            'MuEG'     : triggers_MT2_mue,
+            'Photons'  : triggers_RA1_Photon,
+            'htXprescale' : triggers_HTMET
             },
         )
 
@@ -154,14 +161,16 @@ sequence = cfg.Sequence(susyCoreSequence+[
 test = 1
 if test==1:
     # test a single component, using a single thread.
-    comp=TTJets_PU20bx25
-    #comp=TTJets_forSynch
+    comp=TTJets_PU20bx25 #TTJets_forSynch
+    #comp=SMS_T1qqqq_2J_mGl1400_mLSP100_PU_S14_POSTLS170 # small files for testing
+    #comp=SMS_T1bbbb_2J_mGl1000_mLSP900_PU_S14_POSTLS170
     #comp.files = ['/afs/cern.ch/work/p/pandolf/CMSSW_7_0_6_patch1_2/src/CMGTools/TTHAnalysis/cfg/pickevents.root']
     comp.files = ['/afs/cern.ch/user//m/mmasciov/public/TTJets_forSynch_1.root']
-    #comp.files = comp.files[:]
+    comp.files = comp.files[:1]
     selectedComponents = [comp]
-    comp.splitFactor = 1
+    comp.splitFactor = 10
 elif test==2:
+    selectedComponents = [ SingleMu, DoubleElectron, TTHToWW_PUS14, DYJetsM50_PU20bx25, TTJets_PUS14 ]
     # test all components (1 thread per component).
     for comp in selectedComponents:
         comp.splitFactor = 251

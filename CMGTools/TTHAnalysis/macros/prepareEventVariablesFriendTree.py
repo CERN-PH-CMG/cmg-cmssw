@@ -11,25 +11,47 @@ MODULES = []
 #MODULES.append( ('2lss_mva', FinalMVA_2LSS()) )
 #from CMGTools.TTHAnalysis.tools.finalMVA_3l import FinalMVA_3L
 #MODULES.append( ('3l_mva', FinalMVA_3L()) )
-from CMGTools.TTHAnalysis.tools.bbvars import bbVars
-MODULES.append( ('bbvars', bbVars()) )
-#from CMGTools.TTHAnalysis.tools.finalMVA_2lss_2 import FinalMVA_2LSS_2
-#MODULES.append( ('finalMVA_2lss_2', FinalMVA_2LSS_2()) )
+#from CMGTools.TTHAnalysis.tools.bbvars import bbVars
+#MODULES.append( ('bbvars', bbVars()) )
+#from CMGTools.TTHAnalysis.tools.finalMVA_susy_2lss import FinalMVA_SUSY_2LSS
+#MODULES.append( ('finalMVA_susy_2lss', FinalMVA_SUSY_2LSS()) )
 #from CMGTools.TTHAnalysis.tools.ttbarEventReco_2lss import TTEventReco_MC
 #MODULES.append( ('ttreco_mc', TTEventReco_MC()) )
 #from CMGTools.TTHAnalysis.tools.ttbarEventReco_2lss import TTEventReco
 #MODULES.append( ('ttreco', TTEventReco(sortersToUse={"BestGuess":"", "BestBySum4NoTJJb":"_bySum4"})) )
 #MODULES.append( ('ttreco', TTEventReco(sortersToUse={"BestGuess":"","ByGuessLL2B":"_byLL"})) )
-
+#from CMGTools.TTHAnalysis.tools.MuonMVAFriend import MuonMVAFriend
+#MODULES.append( ('', MuonMVAFriend("BPH",     "/afs/cern.ch/work/g/gpetrucc/micro/cmg/CMSSW_7_0_9/src/CMGTools/TTHAnalysis/macros/leptons/train70XBPH_BDTG.weights.xml", label="BPH")) )
+#MODULES.append( ('', MuonMVAFriend("BPHCalo", "/afs/cern.ch/work/g/gpetrucc/micro/cmg/CMSSW_7_0_9/src/CMGTools/TTHAnalysis/macros/leptons/train70XBPHCalo_BDTG.weights.xml", label="BPHCalo")) )
+#MODULES.append( ('', MuonMVAFriend("Full",    "/afs/cern.ch/work/g/gpetrucc/micro/cmg/CMSSW_7_0_9/src/CMGTools/TTHAnalysis/macros/leptons/train70XFull_BDTG.weights.xml", label="Full")) )
+from CMGTools.TTHAnalysis.tools.LepMVAFriend import LepMVAFriend
+MODULES.append( ('LepMVAFriend', LepMVAFriend(("/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/%s_BDTG.weights.xml",
+                                               "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/%s_BDTG.weights.xml"))) )
+MODULES.append( ('LepMVAFriend', LepMVAFriend(("/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/SV_%s_BDTG.weights.xml",
+                                               "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/SV_%s_BDTG.weights.xml",),
+                                               training="muMVAId_SV", label="SV")) )
+ 
 class VariableProducer(Module):
     def __init__(self,name,booker,modules):
         Module.__init__(self,name,booker)
         self._modules = modules
     def beginJob(self):
         self.t = PyTree(self.book("TTree","t","t"))
+        self.branches = {}
         for name,mod in self._modules:
             for B in mod.listBranches():
-                self.t.branch(B ,"F")
+                # don't add the same branch twice
+                if B in self.branches: 
+                    print "Will not add branch %s twice" % (B,)
+                    continue
+                self.branches[B] = True
+                if type(B) == tuple:
+                    if len(B) == 2:
+                        self.t.branch(B[0],B[1])
+                    elif len(B) == 4:
+                        self.t.branch(B[0],B[1],n=B[2],lenVar=B[3])
+                else:
+                    self.t.branch(B ,"F")
     def analyze(self,event):
         for name,mod in self._modules:
             keyvals = mod(event)

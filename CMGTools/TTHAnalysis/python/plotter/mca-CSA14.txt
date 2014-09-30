@@ -1,0 +1,64 @@
+
+# --- 50 ns ---------------
+
+# --- ttH inclusive
+#ttH_hww+   : TTHnlo_S14 : 1 : GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10, Label="ttH WW"
+#ttH_hzz+   : TTHnlo_S14 : 1 : GenHiggsDecayMode == 23 ; FillColor=ROOT.kPink+9, Label="ttH ZZ"
+#ttH_htt+   : TTHnlo_S14 : 1 : GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+4, Label="ttH \#tau\#tau"
+ttH+     : TTHnlo_S14 : 0.5085 : GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+10
+ttH+     : TTHnlo_S14 : 0.5085 : GenHiggsDecayMode == 23 ; FillColor=ROOT.kOrange+10
+ttH+     : TTHnlo_S14 : 0.5085 : GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10
+ttHWW+   : TTHWWpy6_S14 : 1 : GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10
+
+
+# -- Backgrounds
+#TT 	 : TTJets_PUS14: 1 ; FillColor=ROOT.kGray
+TT 	 : TTJets_MSDecaysCKM_central_PU_S14_POSTLS170 : 809.1 ; FillColor=ROOT.kGray+1
+DY       : DYJetsM50_HT200to400_PU_S14_POSTLS170 : 1 ; FillColor=ROOT.kViolet-4
+#WJets    : WJetsToLNu_HT400to600_PU_S14_POSTLS170 : 1 ; FillColor=ROOT.kCyan+2
+# cross sections for WJets taken directly from the files, probably this is LO
+WJets    : WJetsToLNu_HT100to200_PU_S14_POSTLS170 : 1806.359310  ; FillColor=ROOT.kCyan+2
+WJets    : WJetsToLNu_HT200to400_PU_S14_POSTLS170 :  615.079981  ; FillColor=ROOT.kCyan+2
+WJets    : WJetsToLNu_HT400to600_PU_S14_POSTLS170 :  58.171079   ; FillColor=ROOT.kCyan+2
+WJets    : WJetsToLNu_HT600toInf_PU_S14_POSTLS170 :  15.566345   ; FillColor=ROOT.kCyan+2
+
+
+# -- SUSY
+T1tttt_HL : T1tttt2J_6_PU_S14_POSTLS170 : 0.0141903 ; FillColor=ROOT.kAzure+8,   Label="t^{4} 1.5/0.1" 
+T1tttt_HM : T1tttt2J_7_PU_S14_POSTLS170 : 0.0856418 ; FillColor=ROOT.kAzure+0,  Label="t^{4} 1.2/0.8" 
+T2tt : T2tt_S14 : 1.31169 ; FillColor=ROOT.kAzure-1, Label="T2tt 0.4/0.3" 
+
+
+# --- 25 ns ---------------
+
+
+# --- ttH inclusive
+##ttH_hww+   : TTHnlo_PU20bx25 : 1: GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10, Label="ttH WW"
+##ttH_hzz+   : TTHnlo_PU20bx25 : 1: GenHiggsDecayMode == 23 ; FillColor=ROOT.kPink+9, Label="ttH ZZ"
+##ttH_htt+   : TTHnlo_PU20bx25 : 1: GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+4, Label="ttH \#tau\#tau"
+#ttH+     : TTHnlo_PU20bx25 : 0.5085 : GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+10
+#ttH+     : TTHnlo_PU20bx25 : 0.5085 : GenHiggsDecayMode == 23 ; FillColor=ROOT.kOrange+10
+#ttH+     : TTHnlo_PU20bx25 : 0.5085 : GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10
+
+# -- Backgrounds
+#TT 	 : TTJets_PU20bx25 : 809.1 ; FillColor=ROOT.kGray
+#DY       : DYJetsM50_HT200to400_PU20bx25 : 1 ; FillColor=ROOT.kViolet-4
+#WJets    : WJets_PU20bx25 : 1 ; FillColor=ROOT.kCyan+2
+
+# -- SUSY
+#T1tttt_HM : T1tttt_PU20bx25 :  0.0856418 ; FillColor=ROOT.kAzure+1,   Label="t^{4} 1.2/0.8" 
+#T2tt : T2tt_PU20bx25 : 1.31169 ; FillColor=ROOT.kAzure-1, Label="T2tt 0.4/0.3" 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
