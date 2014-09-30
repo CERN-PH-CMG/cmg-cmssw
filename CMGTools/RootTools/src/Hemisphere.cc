@@ -616,11 +616,11 @@ int Hemisphere::RejectISR(){
 		float newAxis1_Px = Axis1[0] * Axis1[3];
 		float newAxis1_Py = Axis1[1] * Axis1[3];
 		float newAxis1_Pz = Axis1[2] * Axis1[3];
-		float newAxis1_E = Axis1[4];
+		// float newAxis1_E = Axis1[4];
 		float newAxis2_Px = Axis2[0] * Axis2[3];
 		float newAxis2_Py = Axis2[1] * Axis2[3];
 		float newAxis2_Pz = Axis2[2] * Axis2[3];
-		float newAxis2_E = Axis2[4];
+		// float newAxis2_E = Axis2[4];
 
 	// loop over all objects associated to a hemisphere
 		int vsize = (int) Object_Px.size();
