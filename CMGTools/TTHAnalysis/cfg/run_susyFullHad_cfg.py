@@ -137,9 +137,9 @@ from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14 import *
 #selectedComponents = [ GJets_HT600toInf_PU_S14_POSTLS170 ]
 #, ZJetsToNuNu_HT100to200_PU_S14_POSTLS170 ]
 
-#selectedComponents = [ TTJets_PU20bx25, TTJets_premix_PU20bx25 ]
+selectedComponents = [ TTJets_PU20bx25 ]
 
-selectedComponents = [ SMS_T1qqqq_2J_mGl1000_mLSP800_PU_S14_POSTLS170 ]
+#selectedComponents = [ SMS_T1qqqq_2J_mGl1000_mLSP800_PU_S14_POSTLS170 ]
 
 #-------- SEQUENCE
 
