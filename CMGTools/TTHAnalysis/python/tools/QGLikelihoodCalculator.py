@@ -18,15 +18,14 @@ def getBinNumber( bins, value ) :
 class QGLikelihoodCalculator:
 
   def __init__(self, filename) :
-    self.pdfs = dict()
+    self.pdfs = {}
     self.etaBins = []
     self.ptBinsC = []
     self.ptBinsF = []
     self.rhoBins = []
-    self.varNames = { 0:'mult', 1:'ptd', 2:'axis2' }
-    self.qgNames = { 0:'gluon', 1:'quark' }
+    self.varNames = { 0:'mult', 1:'ptD', 2:'axis2' }
+    self.qgNames = { 0:'quark', 1:'gluon' }
     self.init(filename)
-
 
   def init(self, filename) :
 
@@ -49,7 +48,9 @@ class QGLikelihoodCalculator:
       if key.IsFolder() == False: continue
       hists = key.ReadObj().GetListOfKeys()
       for hist in hists :
-        self.pdfs[hist.GetName()] = hist.ReadObj()
+        histogram = hist.ReadObj()
+        histogram.SetDirectory(0)
+        self.pdfs[hist.GetName()] = histogram
 
     print "[QGLikelihoodCalculator]: pdfs initialized..."
 
@@ -64,8 +65,8 @@ class QGLikelihoodCalculator:
     if pt > self.ptBinsC[len(self.ptBinsC)-1]: return False
     if rho < self.rhoBins[0]: return False
     if rho > self.rhoBins[len(self.rhoBins)-1]: return False
-    if fabs(eta) < self.etaBins[0]: return False
-    if fabs(eta) > self.etaBins[len(self.etaBins)-1]: return False
+    if math.fabs(eta) < self.etaBins[0]: return False
+    if math.fabs(eta) > self.etaBins[len(self.etaBins)-1]: return False
     return True
 
 
@@ -101,14 +102,20 @@ class QGLikelihoodCalculator:
     Q=1.
     G=1.
 
+    #print "----------------------"
+    #print "pt: " + str(jet.pt()) + " eta: " + str(jet.eta()) + " rho: " + str(rho)
+    #print "multi: " + str(jet.mult) + " ptd: " + str(jet.ptd) + "axis2: " + str(jet.axis2)
+
     for i in vars :
 
+      print self.varNames[i] + ": " + str(vars[i])
       # quarks = 0
       qgEntry = self.findEntry(jet.eta(), jet.pt(), rho, 0, i)
 
       if qgEntry == None:  return -1
       Qi = qgEntry.GetBinContent(qgEntry.FindBin(vars[i]))
       mQ = qgEntry.GetMean()
+      #print "Qi: " + str(Qi)
 
       # gluons = 1
       qgEntry = self.findEntry(jet.eta(), jet.pt(), rho, 1, i)
@@ -116,9 +123,7 @@ class QGLikelihoodCalculator:
       if qgEntry == None: return -1
       Gi = qgEntry.GetBinContent(qgEntry.FindBin(vars[i]))
       mG = qgEntry.GetMean()
-
-      Q*=Qi
-      G*=Gi
+      #print "Gi: " + str(Gi)
 
       epsilon=0.
       delta=0.000001
@@ -137,8 +142,13 @@ class QGLikelihoodCalculator:
           elif vars[i]>mG :
              Qi = delta
              Gi = 1.-delta
+
+      Q*=Qi
+      G*=Gi
      
 
+    #print "Q: " + str(Q)
+    #print "G: " + str(G)
     if Q==0. : return 0.
     else : return Q/(Q+G)
 
