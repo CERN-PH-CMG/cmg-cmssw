@@ -462,7 +462,7 @@ class TTEventReco:
         bjets = [ j for j in jets if j.btagCSV > 0.679 ]
         if len(bjets) == 0: 
             jsorted = jets[:]
-            jsorted.sort(key=lambda j:j.tagCSV) 
+            jsorted.sort(key=lambda j:j.btagCSV) 
             bjets.append(jsorted[-1])
         nb = len(bjets)
         (met, metphi)  = event.met_pt, event.met_phi
