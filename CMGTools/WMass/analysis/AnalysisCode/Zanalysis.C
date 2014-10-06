@@ -1,5 +1,5 @@
 // UNCOMMENT TO USE PDF REWEIGHTING
-//#define LHAPDF_ON
+#define LHAPDF_ON
 
 #ifdef LHAPDF_ON
   #include "LHAPDF/LHAPDF.h"
@@ -125,7 +125,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   //------------------------------------------------------
   // retrieve pileup SF
   //------------------------------------------------------    
-  if(useVtxSF==2 && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
+  if(useVtxSF && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
     TString vtx_str = sampleName; vtx_str.ReplaceAll("Sig",""); vtx_str.ReplaceAll("Fake","");
     // finPileupSF = new TFile(Form("../utils/pileup_reweighting_%s.root",vtx_str.Data())); // used only to build templates
     finPileupSF = new TFile(Form("../utils/pileup/pileup_reweighting_Fall11.root")); // used only to build templates
@@ -261,7 +261,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
   bool doSingleGauss=false;
 
-  double ZWmassRatio = WMass::ZMassCentral_MeV/WMass::WMassCentral_MeV;
+  double ZWmassRatio = ((float)WMass::ZMassCentral_MeV)/((float)WMass::WMassCentral_MeV);
   
   GoToHXframe = new HTransformToHelicityFrame();
   
@@ -538,10 +538,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               //------------------------------------------------------
               double MuPos_var_jacobian[3] = {2*muPosCorr.Pt()/WMass::ZMassCentral_MeV*1e3,WlikePos.Mt()/WMass::ZMassCentral_MeV*1e3,2*WlikePos_met.Pt()/WMass::ZMassCentral_MeV*1e3};
               double MuPos_var_NotScaled[3] = {muPosCorr.Pt(),WlikePos.Mt()/* Zcorr.Mt() */,WlikePos_met.Pt()}; // Zcorr would be TEMP !!!!
+              // double MuPos_var_NotScaled[3] = {muPosCorr.Pt(),Zcorr.M() ,WlikePos_met.Pt()}; // Zcorr would be TEMP !!!!
               //------------------------------------------------------
               // Variables to define the box cut (pT, mT, MET)
               //------------------------------------------------------
-              double MuPos_var_NotScaledCentral[3] = {muPosCorrCentral.Pt(),WlikePosCentral.Mt()/* ZcorrCentral.Mt() */,WlikePos_metCentral.Pt()}; // Zcorr would be TEMP !!!!
+              // double MuPos_var_NotScaledCentral[3] = {muPosCorrCentral.Pt(),WlikePosCentral.Mt()/* ZcorrCentral.Mt() */,WlikePos_metCentral.Pt()}; // Zcorr would be TEMP !!!!
+              double MuPos_var_NotScaledCentral[3] = {muPosCorrCentral.Pt(),ZcorrCentral.M() ,WlikePos_metCentral.Pt()}; // Zcorr would be TEMP !!!!
               // LUCA ADD TO AVOID OVERFLOW
               for(int k=0;k<3;k++)
                 if(MuPos_var_jacobian[k]>=xmax) MuPos_var_jacobian[k]=xmax-binsize2/2;
@@ -711,6 +713,53 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                           for(int k=0;k<3;k++){
                             common_stuff::plot1D(Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jZmass_MeV),
                                                   MuPos_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
+                          }
+                          
+                          if(
+                          controlplots && 
+                          m==0 && WMass::WMassNSteps==j){
+                            double fMet;fMet=pfmet_bla;
+                            double fMPhi;fMPhi=pfmetphi_bla;
+                            double fU1;
+                            double fU2;
+                            double fZPt;fZPt=ZGen_pt;
+                            double fZPhi;fZPhi=ZGen_phi;
+                            double fPtVisual;fPtVisual=ZGen_pt;
+                            double fPhiVisual;fPhiVisual=ZGen_phi;
+                            common_stuff::calculateU1U2( fMet,  
+                                                         fMPhi,  
+                                                         fZPt,  
+                                                         fZPhi,  
+                                                         fPtVisual,  
+                                                         fPhiVisual,  
+                                                         fU1, 
+                                                         fU2
+                                                        );
+                            common_stuff::plot2D(Form("U1_vs_Zpt_gen_eta%s_%d",eta_str.Data(),jZmass_MeV),
+                                          fZPt,fU1, evt_weight*TRG_TIGHT_ISO_muons_SF, 
+                                          h_2d, 100,0,20,100,-10,10 );
+                            common_stuff::plot2D(Form("U2_vs_Zpt_gen_eta%s_%d",eta_str.Data(),jZmass_MeV),
+                                          fZPt,fU2, evt_weight*TRG_TIGHT_ISO_muons_SF, 
+                                          h_2d, 100,0,20,100,-10,10 );
+                            fZPt=Z_pt;
+                            fZPhi=Z_phi;
+                            fPtVisual=Z_pt;
+                            fPhiVisual=Z_phi;
+                            common_stuff::calculateU1U2( fMet,  
+                                                         fMPhi,  
+                                                         fZPt,  
+                                                         fZPhi,  
+                                                         fPtVisual,  
+                                                         fPhiVisual,  
+                                                         fU1, 
+                                                         fU2
+                                                        );
+                            common_stuff::plot2D(Form("U1_vs_Zpt_reco_eta%s_%d",eta_str.Data(),jZmass_MeV),
+                                          fZPt,fU1, evt_weight*TRG_TIGHT_ISO_muons_SF, 
+                                          h_2d, 100,0,20,100,-10,10 );
+                            common_stuff::plot2D(Form("U2_vs_Zpt_reco_eta%s_%d",eta_str.Data(),jZmass_MeV),
+                                          fZPt,fU2, evt_weight*TRG_TIGHT_ISO_muons_SF, 
+                                          h_2d, 100,0,20,100,-10,10 );
                           }
                                             
                           //------------------------------------------------------------------------------------------------
@@ -1058,10 +1107,10 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 TString toys_str = "";
                 if(WMass::NtoysMomCorr>1) toys_str = Form("_MomCorrToy%d",m);
                 
-                common_stuff::cloneHisto1D(Form("hWlikePos_%sScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),WMass::WMassCentral_MeV), 
+                common_stuff::cloneHisto1D(Form("hWlikePos_%sScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV), 
                                             Form("hWlikePos_%sScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jZmass_MeV), 
                                             h_1d);
-                common_stuff::cloneHisto1D(Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),WMass::WMassCentral_MeV), 
+                common_stuff::cloneHisto1D(Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV), 
                                             Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jZmass_MeV), 
                                             h_1d);
               }

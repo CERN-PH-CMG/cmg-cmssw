@@ -220,10 +220,7 @@ class Zanalysis {
   virtual void     Show(Long64_t entry = -1);
   void ComputeHXVarAndPhiStarEta();
 
-  virtual void plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorentzVector Z, double u1_scale, string leptCharge, string cut , bool doCut, bool doneu, std::map<std::string, TH\
-1D*> &h_1d, std::map<std::string, TH2D*> &h_2d,double weight);
-
-  virtual void     calculateU1U2( double fMet , double fMPhi,double fZPt, double fZPhi, double fPt1, double fPhi1, double & fU1,double & fU2 );
+  virtual void plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorentzVector Z, double u1_scale, string leptCharge, string cut , bool doCut, bool doneu, std::map<std::string, TH1D*> &h_1d, std::map<std::string, TH2D*> &h_2d,double weight);
 
 
 };
@@ -419,26 +416,7 @@ Int_t Zanalysis::Cut(Long64_t entry)
 }
 
 
-void Zanalysis::calculateU1U2(double fMet , double fMPhi, double fZPt, double fZPhi, double fPt1, double fPhi1, double & fU1,double & fU2)
-{
-  double lUX  = fMet*cos(fMPhi) + fPt1*cos(fPhi1);
-  double lUY  = fMet*sin(fMPhi) + fPt1*sin(fPhi1);
-  double lU   = sqrt(lUX*lUX+lUY*lUY);
-
-  //    double fZPhi=fPhi1;
-  //    double fZPt=fPt1;
-
-  // rotate of -180 the X and Y component 
-
-  double lCos = - (lUX*cos(fZPhi) + lUY*sin(fZPhi))/lU;
-  double lSin =   (lUX*sin(fZPhi) - lUY*cos(fZPhi))/lU;
-  fU1 = lU*lCos;
-  fU2 = lU*lSin;
-
-}
-
-void Zanalysis::plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorentzVector Z, double u1_scale, string leptCharge, string cut , bool doCut, bool doneu, std::map<std::string, T\
-H1D*> &h_1d, std::map<std::string, TH2D*> &h_2d,double weight)
+void Zanalysis::plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorentzVector Z, double u1_scale, string leptCharge, string cut , bool doCut, bool doneu, std::map<std::string, TH1D*> &h_1d, std::map<std::string, TH2D*> &h_2d,double weight)
 {
 
 
@@ -446,7 +424,7 @@ H1D*> &h_1d, std::map<std::string, TH2D*> &h_2d,double weight)
   double u_perp=-999;
 
   if(doneu) met=met-Z;
-  calculateU1U2( met.Pt(), met.Phi(),  ptVis.Pt(), ptVis.Phi() , Z.Pt(), Z.Phi(), u_parall, u_perp );
+  common_stuff::calculateU1U2( met.Pt(), met.Phi(),  ptVis.Pt(), ptVis.Phi() , Z.Pt(), Z.Phi(), u_parall, u_perp );
 
   double u = fabs(sqrt( u_perp*u_perp + u_parall*u_parall ));
   double unorm = fabs(sqrt( u_perp*u_perp + u_parall*u_parall ))/ptVis.Pt();

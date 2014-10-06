@@ -304,9 +304,11 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       // start loop on mass hypotheses
       //------------------------------------------------------
       for(int j=0; j<2*WMass::WMassNSteps+1; j++){
-        int jWmass = (WMass::WMassCentral_MeV-(WMass::WMassNSteps-j)*WMass::WMassSkipNSteps);
+        // int jWmass_MeV = (WMass::WMassCentral_MeV-(WMass::WMassNSteps-j)*WMass::WMassSkipNSteps);
+        int jWmass_MeV = WMass::Wmass_values_array[j];
         if(!(sampleName.Contains("WJets") && !sampleName.Contains("Fake")) && WMass::WMassNSteps!=j) continue;
-        double iWmass = (WMass::WMassCentral_MeV-(WMass::WMassNSteps-j)*WMass::WMassSkipNSteps)/1e3;
+        // double iWmass_GeV = (WMass::WMassCentral_MeV-(WMass::WMassNSteps-j)*WMass::WMassSkipNSteps)/1e3;
+        double iWmass_GeV = jWmass_MeV/1e3;
         
         //------------------------------------------------------
         // compute weight for mass hypotheses wiht Breit-Wigner reweighting or LHE
@@ -318,7 +320,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             shat=WGen_m*WGen_m;
             // mw0=WMass::WMassCentral_MeV/1e3;
             mw0=gen_mass_value_MeV/1e3;
-            mw_i=iWmass;
+            mw_i=iWmass_GeV;
             // ((shat - mw0^2)^2 + gamma^2 mw0^2) / ((shat - mw_i^2)^2 + gamma^2 mw_i^2)
             weight_i=(TMath::Power(shat - mw0*mw0,2) + TMath::Power(gamma*mw0,2)) / (TMath::Power(shat - mw_i*mw_i,2) + TMath::Power(gamma*mw_i,2));
             // cout << "WGen_m = " << WGen_m << " mw0= " << mw0 << " mw_i= " << mw_i << " weight_i= " << weight_i << endl;
@@ -333,10 +335,10 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         // retrieve and use gen-level info
         //------------------------------------------------------
         if(useGenVar){
-          if(WGen_m>0){ // only for signal event
+          if(WGen_m>0  && WMass::WMassNSteps==j ){ // only for signal event
             TString MuGenCharge_str = MuGen_charge>0? "Pos" : "Neg"; 
             
-            double MuGen_var_jacobian[3] = {2*MuGen_pt/iWmass,WGen_mt/iWmass,2*NuGen_pt/iWmass};
+            double MuGen_var_jacobian[3] = {2*MuGen_pt/iWmass_GeV,WGen_mt/iWmass_GeV,2*NuGen_pt/iWmass_GeV};
             double MuGen_var_NotScaled[3] = {MuGen_pt,WGen_mt,NuGen_pt};
             // AVOID OVERFLOW BIN TO BE FILLED
             for(int k=0;k<3;k++)
@@ -344,20 +346,20 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             
             if(WMass::PDF_members<2){
               for(int k=0;k<3;k++){
-                common_stuff::plot1D(Form("hW%s_%sNonScaled_1_Gen_eta%s_%d",MuGenCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass),
+                common_stuff::plot1D(Form("hW%s_%sNonScaled_1_Gen_eta%s_%d",MuGenCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass_MeV),
                                     MuGen_var_NotScaled[k], evt_weight, h_1d, 50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
                 // mass cut not meaningful for W case
-                common_stuff::plot1D(Form("hW%s_%sNonScaled_2_ZGenMassCut_eta%s_%d",MuGenCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass),
+                common_stuff::plot1D(Form("hW%s_%sNonScaled_2_ZGenMassCut_eta%s_%d",MuGenCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass_MeV),
                                     MuGen_var_NotScaled[k], evt_weight, h_1d, 50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
               }
                 
               if(TMath::Abs(MuGen_eta)<WMass::etaMaxMuons[i]){
                 for(int k=0;k<3;k++){
-                  common_stuff::plot1D(Form("hW%s_%sNonScaled_3_Mu1GenCut_eta%s_%d",MuGenCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass),
+                  common_stuff::plot1D(Form("hW%s_%sNonScaled_3_Mu1GenCut_eta%s_%d",MuGenCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass_MeV),
                                   MuGen_var_NotScaled[k], evt_weight, h_1d, 50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
                   // second lepton (i.e. neutrino) not detected
                   // if(TMath::Abs(MuNegGen_eta)<2.4){
-                    common_stuff::plot1D(Form("hW%s_%sNonScaled_4_Mu2GenCut_eta%s_%d",MuGenCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass),
+                    common_stuff::plot1D(Form("hW%s_%sNonScaled_4_Mu2GenCut_eta%s_%d",MuGenCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass_MeV),
                                   MuGen_var_NotScaled[k], evt_weight, h_1d, 50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
                   // }
                 }
@@ -492,7 +494,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               WCentralCorr = mublaCentralCorr + nuCentralCorr;
               // W = mu + nu;      // <<<<<<------ LUCA BUGGY FOR TEST
 
-              double Mu_var_jacobian[3] = {2*mu.Pt()/iWmass,W.Mt()/iWmass,2*nu.Pt()/iWmass}; // SCALED VARIABLE
+              double Mu_var_jacobian[3] = {2*mu.Pt()/iWmass_GeV,W.Mt()/iWmass_GeV,2*nu.Pt()/iWmass_GeV}; // SCALED VARIABLE
               double Mu_var_NotScaled[3] = {mu.Pt(),W.Mt(),nu.Pt()}; // SCALED VARIABLE 
               double Mu_var_NotScaledCentralCorr[3] = {muCentralCorr.Pt(),WCentralCorr.Mt(),nuCentralCorr.Pt()}; // SCALED VARIABLE 
               // double Mu_var_NotScaled[3] = {mu.Pt(),W.Mt()*W.Mt(),nu.Pt()}; // SCALED VARIABLE LUCA TEMP!!!
@@ -504,7 +506,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               for(int k=0;k<3;k++)
                 if(Mu_var_jacobian[k]>=xmax) Mu_var_jacobian[k]=xmax-binsize2/2;
               
-              int wmass1 = iWmass*1e3;
+              int wmass1 = iWmass_GeV*1e3;
 
               //------------------------------------------------------
               // good event with mu from W candidate within acceptance
@@ -520,14 +522,14 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 && noTrgMuonsLeadingPt<10
                 ){
                   
-                  if(controlplots && m==0 && i==0 && j==0 && WMass::PDF_members<2){
+                  if(controlplots && m==0 && i==0 && j==0 && WMass::PDF_members<2 && WMass::WMassNSteps==j ){
                     common_stuff::plot1D("hnvtx_5_RecoCut", nvtx, evt_weight, h_1d, 50,0,50 );
                     if(IS_MC_CLOSURE_TEST || isMCorDATA==0) 
                       common_stuff::plot1D("hPileUp_Fall11_5_RecoCut", npu, evt_weight, h_1d, 50,0,50 );
                   }
 
                   for(int k=0;k<3;k++)
-                    if(m==0 && WMass::PDF_members<2) common_stuff::plot1D(Form("hW%s_%sNonScaled_5_RecoCut_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass),
+                    if(m==0 && WMass::PDF_members<2) common_stuff::plot1D(Form("hW%s_%sNonScaled_5_RecoCut_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass_MeV),
 									  Mu_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
 		  
                   //------------------------------------------------------
@@ -539,7 +541,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                        && Mu_var_NotScaledCentralCorr[1] > WMass::sel_xmin[1] && Mu_var_NotScaledCentralCorr[1] < WMass::sel_xmax[1]
                        // && Mu_var_NotScaled[2] > WMass::sel_xmin[2] && Mu_var_NotScaled[2] < WMass::sel_xmax[2]
                                    )
-                      common_stuff::plot1D(Form("hW%s_%sNonScaled_SelRange_8_JetCut_pdf%d-0%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,toys_str.Data(),eta_str.Data(),jWmass),
+                      common_stuff::plot1D(Form("hW%s_%sNonScaled_SelRange_8_JetCut_pdf%d-0%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,toys_str.Data(),eta_str.Data(),jWmass_MeV),
                          Mu_var_NotScaled[2] ,evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 
                          50*(WMass::sel_xmax[2]-WMass::sel_xmin[2])/(WMass::fit_xmax[2]-WMass::fit_xmin[2]), WMass::sel_xmin[2],WMass::sel_xmax[2] );
                   }
@@ -549,14 +551,14 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   //------------------------------------------------------------------------------------------------
                   if(pfmet_blaCentralCorr>WMass::sel_xmin[2]/* WMass::fit_xmin[2] *//* 25 */){
                   
-                    if(controlplots && m==0 && i==0 && j==0 && WMass::PDF_members<2){
+                    if(controlplots && m==0 && i==0 && j==0 && WMass::PDF_members<2  && WMass::WMassNSteps==j ){
                       common_stuff::plot1D("hnvtx_6_METCut", nvtx, evt_weight, h_1d, 50,0,50 );
                       if(IS_MC_CLOSURE_TEST || isMCorDATA==0)
                         common_stuff::plot1D("hPileUp_Fall11_6_METCut", npu, evt_weight, h_1d, 50,0,50 );
                     }
 
                     for(int k=0;k<3;k++)
-                      if(m==0 && WMass::PDF_members<2) common_stuff::plot1D(Form("hW%s_%sNonScaled_6_METCut_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass),
+                      if(m==0 && WMass::PDF_members<2) common_stuff::plot1D(Form("hW%s_%sNonScaled_6_METCut_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass_MeV),
                                     Mu_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
                     
                     //------------------------------------------------------
@@ -564,7 +566,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                     //------------------------------------------------------
                     if(WCentralCorr.Pt()<WMass::WpTcut){ // DEFAULT IS WMass::WpTcut
                       for(int k=0;k<3;k++)
-                        if(m==0 && WMass::PDF_members<2) common_stuff::plot1D(Form("hW%s_%sNonScaled_7_RecoilCut_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass),
+                        if(m==0 && WMass::PDF_members<2 && WMass::WMassNSteps==j ) common_stuff::plot1D(Form("hW%s_%sNonScaled_7_RecoilCut_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass_MeV),
 									      Mu_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
                       
                       if(controlplots && m==0 && i==0 && j==0 && WMass::PDF_members<2){
@@ -582,7 +584,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             Mu_var_NotScaledCentralCorr[1] > WMass::sel_xmin[1] && Mu_var_NotScaledCentralCorr[1] < WMass::sel_xmax[1]
                             && Mu_var_NotScaledCentralCorr[2] > WMass::sel_xmin[2] && Mu_var_NotScaledCentralCorr[2] < WMass::sel_xmax[2]
                            )
-                          common_stuff::plot1D(Form("hW%s_%sNonScaled_SelRange_8_JetCut_pdf%d-0%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,toys_str.Data(),eta_str.Data(),jWmass),
+                          common_stuff::plot1D(Form("hW%s_%sNonScaled_SelRange_8_JetCut_pdf%d-0%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,toys_str.Data(),eta_str.Data(),jWmass_MeV),
                               Mu_var_NotScaled[0] ,evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 
                               50*(WMass::sel_xmax[0]-WMass::sel_xmin[0])/(WMass::fit_xmax[0]-WMass::fit_xmin[0]), WMass::sel_xmin[0],WMass::sel_xmax[0] );
                         if(
@@ -590,9 +592,57 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             // && Mu_var_NotScaled[1] > WMass::sel_xmin[1] && Mu_var_NotScaled[1] < WMass::sel_xmax[1]
                             && Mu_var_NotScaledCentralCorr[2] > WMass::sel_xmin[2] && Mu_var_NotScaledCentralCorr[2] < WMass::sel_xmax[2]
                            )
-                          common_stuff::plot1D(Form("hW%s_%sNonScaled_SelRange_8_JetCut_pdf%d-0%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,toys_str.Data(),eta_str.Data(),jWmass),
+                          common_stuff::plot1D(Form("hW%s_%sNonScaled_SelRange_8_JetCut_pdf%d-0%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,toys_str.Data(),eta_str.Data(),jWmass_MeV),
                               Mu_var_NotScaled[1] ,evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 
                               50*(WMass::sel_xmax[1]-WMass::sel_xmin[1])/(WMass::fit_xmax[1]-WMass::fit_xmin[1]), WMass::sel_xmin[1],WMass::sel_xmax[1] );
+                      
+                        if(
+                            controlplots && 
+                            m==0 && WMass::WMassNSteps==j){
+                            double fMet;fMet=pfmet_bla;
+                            double fMPhi;fMPhi=pfmetphi_bla;
+                            double fU1;
+                            double fU2;
+                            double fWPt;fWPt=WGen_pt;
+                            double fWPhi;fWPhi=WGen_phi;
+                            double fPtVisual;fPtVisual=MuGen_pt;
+                            double fPhiVisual;fPhiVisual=MuGen_phi;
+                            common_stuff::calculateU1U2( fMet,  
+                                                         fMPhi,  
+                                                         fWPt,  
+                                                         fWPhi,  
+                                                         fPtVisual,  
+                                                         fPhiVisual,  
+                                                         fU1, 
+                                                         fU2
+                                                        );
+                            common_stuff::plot2D(Form("U1_vs_Wpt_gen_eta%s_%d",eta_str.Data(),jWmass_MeV),
+                                          fWPt,fU1, evt_weight*TRG_TIGHT_ISO_muons_SF, 
+                                          h_2d, 100,0,20,100,-10,10 );
+                            common_stuff::plot2D(Form("U2_vs_Wpt_gen_eta%s_%d",eta_str.Data(),jWmass_MeV),
+                                          fWPt,fU2, evt_weight*TRG_TIGHT_ISO_muons_SF, 
+                                          h_2d, 100,0,20,100,-10,10 );
+                            fWPt=WGen_pt;
+                            fWPhi=WGen_phi;
+                            fPtVisual=Mu_pt;
+                            fPhiVisual=Mu_phi;
+                            common_stuff::calculateU1U2( fMet,  
+                                                         fMPhi,  
+                                                         fWPt,  
+                                                         fWPhi,  
+                                                         fPtVisual,  
+                                                         fPhiVisual,  
+                                                         fU1, 
+                                                         fU2
+                                                        );
+                            common_stuff::plot2D(Form("U1_vs_Wpt_reco_eta%s_%d",eta_str.Data(),jWmass_MeV),
+                                          fWPt,fU1, evt_weight*TRG_TIGHT_ISO_muons_SF, 
+                                          h_2d, 100,0,20,100,-10,10 );
+                            common_stuff::plot2D(Form("U2_vs_Wpt_reco_eta%s_%d",eta_str.Data(),jWmass_MeV),
+                                          fWPt,fU2, evt_weight*TRG_TIGHT_ISO_muons_SF, 
+                                          h_2d, 100,0,20,100,-10,10 );
+                      
+                        }
                       }
                       
                       //------------------------------------------------------------------------------------------------
@@ -615,7 +665,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                         // SET THE PDF WEIGHT
                         //------------------------------------------------------------------------------------------------     
 			
-                        // std::cout << "event= " << jentry << " mw0= " << mw0 << " iWmass= " << iWmass << " WGen_m= " << WGen_m << " weight_i= " << weight_i << std::endl;
+                        // std::cout << "event= " << jentry << " mw0= " << mw0 << " iWmass_GeV= " << iWmass_GeV << " WGen_m= " << WGen_m << " weight_i= " << weight_i << std::endl;
                         double lha_weight = 1;
                         // double lha_weight = LHAPDF::xfx(0,x1,Q,fl1)*LHAPDF::xfx(0,x2,Q,fl2) / (LHAPDF::xfx(1,x1,Q,fl1)*LHAPDF::xfx(1,x2,Q,fl2));
                         double weight_old = 1;
@@ -661,7 +711,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                           // PLOTS OF FIT VARIABLES WITHIN THE FIT RANGE
                           //------------------------------------------------------
                           for(int k=0;k<3;k++){
-                            common_stuff::plot1D(Form("hW%s_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass),
+                            common_stuff::plot1D(Form("hW%s_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass_MeV),
                                     Mu_var_NotScaled[k] ,evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 
                                     50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
                           }
@@ -693,25 +743,25 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                      50, WMass::sel_xmin[2],WMass::sel_xmax[2],
                                      500,-2.5,2.5 );
           
-                            // common_stuff::plot1D(Form("hW%s_GenMass_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass),
+                            // common_stuff::plot1D(Form("hW%s_GenMass_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass_MeV),
                                     // WGen_m ,evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 
                                     // 100, 50,250 );
                                     
-                            // common_stuff::plot1D(Form("hW%s_Recoil_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass),
+                            // common_stuff::plot1D(Form("hW%s_Recoil_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass_MeV),
                                     // W.Pt() ,evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 
                                     // 50, 0, 25 );
                           }
 
                           // // 2D CORRELATION HISTOS
-                          // common_stuff::plot2D(Form("hW%s_%sVs%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass),
+                          // common_stuff::plot2D(Form("hW%s_%sVs%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass_MeV),
                                   // Mu_var_NotScaled[0],Mu_var_NotScaled[1],evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_2d, 
                                   // // nbins, bins_Notscaled[0], nbins, bins_Notscaled[1]  );
                                   // 50, WMass::fit_xmin[0], WMass::fit_xmax[0], 50, WMass::fit_xmin[1], WMass::fit_xmax[1] );
-                          // common_stuff::plot2D(Form("hW%s_%sVs%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[2].Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass),
+                          // common_stuff::plot2D(Form("hW%s_%sVs%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[2].Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass_MeV),
                                   // Mu_var_NotScaled[0], Mu_var_NotScaled[2],evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_2d, 
                                   // // nbins, bins_Notscaled[0], nbins, bins_Notscaled[2]  );
                                   // 50, WMass::fit_xmin[0], WMass::fit_xmax[0], 50, WMass::fit_xmin[2], WMass::fit_xmax[2] );
-                          // common_stuff::plot2D(Form("hW%s_%sVs%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[2].Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass),
+                          // common_stuff::plot2D(Form("hW%s_%sVs%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[2].Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass_MeV),
                                   // Mu_var_NotScaled[1],Mu_var_NotScaled[2],evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_2d, 
                                   // // nbins, bins_Notscaled[1], nbins, bins_Notscaled[2]  );
                                   // 50, WMass::fit_xmin[1], WMass::fit_xmax[1], 50, WMass::fit_xmin[2], WMass::fit_xmax[2] );
@@ -738,7 +788,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                       && Mu_var_NotScaledCentralCorr[1] > WMass::sel_xmin[1] && Mu_var_NotScaledCentralCorr[1] < WMass::sel_xmax[1]
                       // && Mu_var_NotScaled[2] > WMass::sel_xmin[2] && Mu_var_NotScaled[2] < WMass::sel_xmax[2]
                      )
-                      common_stuff::plot1D(Form("hW%s_%sNonScaled_SelRangeQCD_8_JetCut_pdf%d-0%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,toys_str.Data(),eta_str.Data(),jWmass),
+                      common_stuff::plot1D(Form("hW%s_%sNonScaled_SelRangeQCD_8_JetCut_pdf%d-0%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,toys_str.Data(),eta_str.Data(),jWmass_MeV),
                         Mu_var_NotScaled[2] ,evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 
                         50*(WMass::sel_xmax[2]-WMass::sel_xmin[2])/(WMass::fit_xmax[2]-WMass::fit_xmin[2]), WMass::sel_xmin[2],WMass::sel_xmax[2] );
                   
@@ -747,7 +797,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                         Mu_var_NotScaledCentralCorr[1] > WMass::sel_xmin[1] && Mu_var_NotScaledCentralCorr[1] < WMass::sel_xmax[1]
                         && Mu_var_NotScaledCentralCorr[2] > WMass::sel_xmin[2] && Mu_var_NotScaledCentralCorr[2] < WMass::sel_xmax[2]
                        )
-                      common_stuff::plot1D(Form("hW%s_%sNonScaled_SelRangeQCD_8_JetCut_pdf%d-0%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,toys_str.Data(),eta_str.Data(),jWmass),
+                      common_stuff::plot1D(Form("hW%s_%sNonScaled_SelRangeQCD_8_JetCut_pdf%d-0%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,toys_str.Data(),eta_str.Data(),jWmass_MeV),
                           Mu_var_NotScaled[0] ,evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 
                           50*(WMass::sel_xmax[0]-WMass::sel_xmin[0])/(WMass::fit_xmax[0]-WMass::fit_xmin[0]), WMass::sel_xmin[0],WMass::sel_xmax[0] );
                     if(
@@ -755,7 +805,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                         // && Mu_var_NotScaled[1] > WMass::sel_xmin[1] && Mu_var_NotScaled[1] < WMass::sel_xmax[1]
                         && Mu_var_NotScaledCentralCorr[2] > WMass::sel_xmin[2] && Mu_var_NotScaledCentralCorr[2] < WMass::sel_xmax[2]
                        )
-                      common_stuff::plot1D(Form("hW%s_%sNonScaled_SelRangeQCD_8_JetCut_pdf%d-0%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,toys_str.Data(),eta_str.Data(),jWmass),
+                      common_stuff::plot1D(Form("hW%s_%sNonScaled_SelRangeQCD_8_JetCut_pdf%d-0%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,toys_str.Data(),eta_str.Data(),jWmass_MeV),
                           Mu_var_NotScaled[1] ,evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 
                           50*(WMass::sel_xmax[1]-WMass::sel_xmin[1])/(WMass::fit_xmax[1]-WMass::fit_xmin[1]), WMass::sel_xmin[1],WMass::sel_xmax[1] );
                   }
@@ -777,7 +827,8 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     for(int i=0; i<WMass::etaMuonNSteps; i++){
       TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
       for(int j=0; j<2*WMass::WMassNSteps+1; j++){
-        int jWmass = (WMass::WMassCentral_MeV-(WMass::WMassNSteps-j)*WMass::WMassSkipNSteps);
+        // int jWmass_MeV = (WMass::WMassCentral_MeV-(WMass::WMassNSteps-j)*WMass::WMassSkipNSteps);
+        int jWmass_MeV = WMass::Wmass_values_array[j];
         for(int k=0;k<3;k++){
           for(int h=0; h<WMass::PDF_members; h++){
             for(int m=0; m<WMass::NtoysMomCorr; m++){
@@ -786,11 +837,11 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               TString MuCharge_str[]={"Pos","Neg"};
               for(int MuCharge = 0; MuCharge < 2; MuCharge++){
                 common_stuff::cloneHisto1D(Form("hW%s_%sScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str[MuCharge].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),WMass::WMassCentral_MeV), 
-                                          Form("hW%s_%sScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str[MuCharge].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass), 
+                                          Form("hW%s_%sScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str[MuCharge].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass_MeV), 
                                           h_1d);
                 
                 common_stuff::cloneHisto1D(Form("hW%s_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str[MuCharge].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),WMass::WMassCentral_MeV), 
-                                          Form("hW%s_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str[MuCharge].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass), 
+                                          Form("hW%s_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str[MuCharge].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass_MeV), 
                                           h_1d);
               }
             }
