@@ -35,11 +35,15 @@ WAna = cfg.Analyzer(
     verbose = True,
     triggerBits = {'SingleMu' : triggers_mu},
     keepFailingEvents = False,
+    storeLHE_weight = False,
     doMad = True,
     )
 
 WtreeProducer = cfg.Analyzer(
-    'WTreeProducer'
+    'WTreeProducer',
+    storeLHE_weight = False,
+    additionalTKMet = False,
+    superslimNtuples = False,
     )
 
 ZAna = cfg.Analyzer(
@@ -55,7 +59,7 @@ ZAna = cfg.Analyzer(
     triggerBits = {'SingleMu' : triggers_mu},
     # keepFailingEvents = True,
     keepFailingEvents = False,
-    # storeLHE_weight = True,
+    storeLHE_weight = False,
     # use_newWeights = True,
     doMad = True,
     )
@@ -64,7 +68,8 @@ ZtreeProducer = cfg.Analyzer(
     'ZTreeProducer',
     storeNeutralCMGcandidates = False,
     # storeCMGcandidates = True,
-    storeLHE_weight = False
+    storeLHE_weight = False,
+    additionalTKMet = False,
     )
 
 genAna = cfg.Analyzer(
@@ -111,6 +116,16 @@ CoreDATAsequence = cfg.Sequence( [
     vertexAna,
     WAna,
     WtreeProducer,
+    ZAna,
+    ZtreeProducer
+    ] )
+
+CoreDATAZsequence = cfg.Sequence( [
+    jsonAna,
+    triggerAna,
+    vertexAna,
+    # WAna,
+    # WtreeProducer,
     ZAna,
     ZtreeProducer
     ] )

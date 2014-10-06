@@ -16,18 +16,18 @@ DYJets.splitFactor = 750
 
 DYJets2 = copy.deepcopy(DYJets)
 
-selectedComponents = [DYJets,DYJets2]
-DYJets.files = DYJets.files[:3750]
-DYJets2.files = DYJets2.files[3750:]
+# selectedComponents = [DYJets,DYJets2]
+# DYJets.files = DYJets.files[:3750]
+# DYJets2.files = DYJets2.files[3750:]
 
 # ONE AT THE TIME
-# selectedComponents = [DYJets]
-selectedComponents = [DYJets2]
-
-# TEST
 selectedComponents = [DYJets]
-DYJets.files = DYJets.files[:10]
-DYJets.splitFactor = 1
+# selectedComponents = [DYJets2]
+
+# # TEST
+# selectedComponents = [DYJets]
+# DYJets.files = DYJets.files[:10]
+# DYJets.splitFactor = 1
 
 
 config = cfg.Config( components = selectedComponents,

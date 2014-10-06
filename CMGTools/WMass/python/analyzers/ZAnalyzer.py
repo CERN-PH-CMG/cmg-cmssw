@@ -76,16 +76,16 @@ class ZAnalyzer( Analyzer ):
         event.newLHE_weights = []
         if self.cfg_comp.isMC and self.cfg_ana.savegenp :
           event.genParticles = self.buildGenParticles( self.mchandles['genpart'].product(), event )
-          import ROOT
-          objectsPF = [ j for j in event.genParticles if (j.status()==1 and math.fabs(j.pdgId())!=12 and math.fabs(j.pdgId())!=14 and math.fabs(j.pdgId())!=16) ]
-          objectsTK = [ j for j in event.genParticles if (j.charge()!=0 and j.status()==1 and math.fabs(j.eta())<2.5) ]
-         # for i in objectsPF:
-         #     print 'charge=',i.charge(),' status',i.status(),' pt',i.pt(),' pdg',i.pdgId() 
-          event.genTkSumEt = sum([x.pt() for x in objectsTK])
-          event.genTkMet = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objectsTK])) , -1.*(sum([x.py() for x in objectsTK])), 0, math.hypot(-1.*sum([x.px() for x in objectsTK]),-1.*sum([x.py() for x in objectsTK])))
-          event.genPfSumEt = sum([x.pt() for x in objectsPF])
-          event.genPfMet = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objectsPF])) , -1.*(sum([x.py() for x in objectsPF])), 0, math.hypot(-1.*sum([x.px() for x in objectsPF]),-1.*sum([x.py() for x in objectsPF])))
-         # print 'genTkMet=',event.genTkMet.pt(),' genPfMet=',event.genPfMet.pt()
+          # import ROOT
+          # objectsPF = [ j for j in event.genParticles if (j.status()==1 and math.fabs(j.pdgId())!=12 and math.fabs(j.pdgId())!=14 and math.fabs(j.pdgId())!=16) ]
+          # objectsTK = [ j for j in event.genParticles if (j.charge()!=0 and j.status()==1 and math.fabs(j.eta())<2.5) ]
+         # # for i in objectsPF:
+         # #     print 'charge=',i.charge(),' status',i.status(),' pt',i.pt(),' pdg',i.pdgId() 
+          # event.genTkSumEt = sum([x.pt() for x in objectsTK])
+          # event.genTkMet = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objectsTK])) , -1.*(sum([x.py() for x in objectsTK])), 0, math.hypot(-1.*sum([x.px() for x in objectsTK]),-1.*sum([x.py() for x in objectsTK])))
+          # event.genPfSumEt = sum([x.pt() for x in objectsPF])
+          # event.genPfMet = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objectsPF])) , -1.*(sum([x.py() for x in objectsPF])), 0, math.hypot(-1.*sum([x.px() for x in objectsPF]),-1.*sum([x.py() for x in objectsPF])))
+         # # print 'genTkMet=',event.genTkMet.pt(),' genPfMet=',event.genPfMet.pt()
           if (hasattr(self.cfg_ana,'storeLHE_weight') and self.cfg_ana.storeLHE_weight):
             event.LHEweights = self.mchandles['LHEweights'].product()
             event.LHEweights_str = []
@@ -115,25 +115,26 @@ class ZAnalyzer( Analyzer ):
             # print 'standard weights'
             # for i in range(0,len(event.LHE_weights_str)):
               # print i, event.LHE_weights_str[i].split()[0], float(event.LHE_weights_str[i].split()[1])/float(event.LHEweights.getComment(206).split()[1]), event.LHE_weights_str[i].split()[2], event.LHE_weights_str[i].split()[3], event.LHE_weights_str[i].split()[4], event.LHE_weights_str[i].split()[5], event.LHE_weights_str[i].split()[6]
-        
-            # print 'new weights'
-            for i in range(0,event.newLHEweights_str.size()):
-              if not "rwgt" in event.newLHEweights_str[i].split()[0]:
-                event.newLHE_weights.append(float(event.newLHEweights_str[i].split()[1])/float(event.LHEweights.getComment(206).split()[1])) # CHECK THE 216 FOR THE SAMPLE IN USE !!!
-                # print len(event.newLHE_weights)-1, event.newLHEweights_str[i].split()[0], float(event.newLHEweights_str[i].split()[1])/float(event.LHEweights.getComment(206).split()[1]), event.newLHEweights_str[i].split()[2], event.newLHEweights_str[i].split()[3], event.newLHEweights_str[i].split()[4], event.newLHEweights_str[i].split()[5], event.newLHEweights_str[i].split()[6]
             
-            start_transplant_index = 0
-            for i in range(0,len(event.newLHEweights_str)):
-              if(event.LHE_weights_str[i].split()[6] == event.newLHEweights_str[0].split()[6]): 
-                # print 'i',i,'event.LHE_weights_str[i].split()[6]',event.LHE_weights_str[i].split()[6],'event.newLHEweights_str[0].split()[6]',event.newLHEweights_str[0].split()[6]
-                start_transplant_index = i
-            # print 'start_transplant_index',start_transplant_index, 'event.LHEweights.getComment(206)',event.LHEweights.getComment(206)
-            for i in range(0,len(event.newLHEweights_str)):
-              event.LHE_weights[i+start_transplant_index] = float(event.newLHEweights_str[i].split()[1])/float(event.LHEweights.getComment(206).split()[1])
-            
-            # print 'standard weights after transplant'
-            # for i in range(0,len(event.LHE_weights_str)):
-              # print i, event.LHE_weights_str[i].split()[0], float(event.LHE_weights_str[i].split()[1])/float(event.LHEweights.getComment(206).split()[1]), '--->', event.LHE_weights[i], event.LHE_weights_str[i].split()[2], event.LHE_weights_str[i].split()[3], event.LHE_weights_str[i].split()[4], event.LHE_weights_str[i].split()[5], event.LHE_weights_str[i].split()[6]
+            if (hasattr(self.cfg_ana,'use_newWeights') and self.cfg_ana.use_newWeights):
+              # print 'new weights'
+              for i in range(0,event.newLHEweights_str.size()):
+                if not "rwgt" in event.newLHEweights_str[i].split()[0]:
+                  event.newLHE_weights.append(float(event.newLHEweights_str[i].split()[1])/float(event.LHEweights.getComment(206).split()[1])) # CHECK THE 216 FOR THE SAMPLE IN USE !!!
+                  # print len(event.newLHE_weights)-1, event.newLHEweights_str[i].split()[0], float(event.newLHEweights_str[i].split()[1])/float(event.LHEweights.getComment(206).split()[1]), event.newLHEweights_str[i].split()[2], event.newLHEweights_str[i].split()[3], event.newLHEweights_str[i].split()[4], event.newLHEweights_str[i].split()[5], event.newLHEweights_str[i].split()[6]
+              
+              start_transplant_index = 0
+              for i in range(0,len(event.newLHEweights_str)):
+                if(event.LHE_weights_str[i].split()[6] == event.newLHEweights_str[0].split()[6]): 
+                  # print 'i',i,'event.LHE_weights_str[i].split()[6]',event.LHE_weights_str[i].split()[6],'event.newLHEweights_str[0].split()[6]',event.newLHEweights_str[0].split()[6]
+                  start_transplant_index = i
+              # print 'start_transplant_index',start_transplant_index, 'event.LHEweights.getComment(206)',event.LHEweights.getComment(206)
+              for i in range(0,len(event.newLHEweights_str)):
+                event.LHE_weights[i+start_transplant_index] = float(event.newLHEweights_str[i].split()[1])/float(event.LHEweights.getComment(206).split()[1])
+              
+              # print 'standard weights after transplant'
+              # for i in range(0,len(event.LHE_weights_str)):
+                # print i, event.LHE_weights_str[i].split()[0], float(event.LHE_weights_str[i].split()[1])/float(event.LHEweights.getComment(206).split()[1]), '--->', event.LHE_weights[i], event.LHE_weights_str[i].split()[2], event.LHE_weights_str[i].split()[3], event.LHE_weights_str[i].split()[4], event.LHE_weights_str[i].split()[5], event.LHE_weights_str[i].split()[6]
             
 
         ##------------------------  Initial declaration of vectors --------------------------------------

@@ -26,12 +26,13 @@ class WTreeProducer( CoreTreeProducer ):
 
       var( tr, 'evtHasTrg', int)
 
-      var( tr, 'njets', int)
-      var( tr, 'evtWSel', int)
+      if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+        var( tr, 'njets', int)
+        var( tr, 'evtWSel', int)
       
-      var( tr, 'nMuons', int)
-      var( tr, 'nTrgMuons', int)
-      var( tr, 'noTrgMuonsLeadingPt', int)
+        var( tr, 'nMuons', int)
+        var( tr, 'nTrgMuons', int)
+        var( tr, 'noTrgMuonsLeadingPt', int)
 
       ###--------------------------- BOOK W and muon infos ------------------------------
       
@@ -50,20 +51,23 @@ class WTreeProducer( CoreTreeProducer ):
       var(tr, 'Mu_dz')
       var(tr, 'MuIsTightAndIso', int)
       var(tr, 'MuIsTight', int)
-      var(tr, 'pt_vis')
-      var(tr, 'phi_vis')
+      if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+        var(tr, 'pt_vis')
+        var(tr, 'phi_vis')
       if (self.cfg_comp.isMC):
         bookParticle(tr, 'MuGen')
         bookParticle(tr, 'MuGenStatus1')
-        var(tr, 'MuDRGenP')
+        if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+          var(tr, 'MuDRGenP')
         # bookParticle(tr, 'NuGen')
         var(tr, 'FSRWeight')
-      bookMuonCovMatrix(tr,'Mu' )
-
-      bookJet(tr, 'Jet_leading')
+      if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+        bookMuonCovMatrix(tr,'Mu' )
+        bookJet(tr, 'Jet_leading')
       
-      if (self.cfg_comp.isMC):
-        var(tr, 'genWLept')
+      if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+        if (self.cfg_comp.isMC):
+          var(tr, 'genWLept')
        
     def process(self, iEvent, event):
         
@@ -74,15 +78,17 @@ class WTreeProducer( CoreTreeProducer ):
         self.fillCoreVariables(tr, iEvent, event, self.cfg_comp.isMC)
 
         # this contain at least 1VTX, 1 muons, trigger 
-        fill( tr, 'evtWSel', event.WGoodEvent)
+        if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+          fill( tr, 'evtWSel', event.WGoodEvent)
 
-        # fill( tr, 'evtHasTrg', event.passedTriggerAnalyzer)
-        fill( tr, 'evtHasTrg', True)
+          # fill( tr, 'evtHasTrg', event.passedTriggerAnalyzer)
+          fill( tr, 'evtHasTrg', True)
         
         ###--------------------------- FILL W and muon infos ------------------------------
 
-        if (self.cfg_comp.isMC):
-          fill(tr, 'genWLept', len(event.genWLept))
+        if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+          if (self.cfg_comp.isMC):
+            fill(tr, 'genWLept', len(event.genWLept))
 
         if (event.savegenpW and self.cfg_comp.isMC):
           
@@ -91,8 +97,9 @@ class WTreeProducer( CoreTreeProducer ):
           fill(tr, 'WGen_mt', event.genW_mt)
           fillParticle(tr, 'MuGen',event.genMu[0])
           fillParticle(tr, 'MuGenStatus1', event.genMuStatus1[0])      
-          fill(tr, 'MuDRGenP',event.muGenDeltaRgenP)
           fillFourVector(tr, 'NuGen', event.genNu_p4)
+          if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+            fill(tr, 'MuDRGenP',event.muGenDeltaRgenP)
           
 
         if event.WGoodEvent == True :
@@ -108,24 +115,26 @@ class WTreeProducer( CoreTreeProducer ):
             fill(tr, 'Mu_dz', math.fabs(event.selMuons[0].dz()))
           fill(tr, 'MuIsTightAndIso', event.selMuonIsTightAndIso)
           fill(tr, 'MuIsTight', event.selMuonIsTight)
-          fill(tr, 'pt_vis', event.selMuons[0].pt())
-          fill(tr, 'phi_vis', event.selMuons[0].phi())
+          if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+            fill(tr, 'pt_vis', event.selMuons[0].pt())
+            fill(tr, 'phi_vis', event.selMuons[0].phi())
           
-          fillMuonCovMatrix( tr,'Mu' ,event.covMatrixMuon ,event)
+            fillMuonCovMatrix( tr,'Mu' ,event.covMatrixMuon ,event)
 
         ###--------------------------- FILL extra infos  ------------------------------
 
         if (event.savegenpW and self.cfg_comp.isMC) or event.WGoodEvent:
 
-          fill( tr, 'nMuons', len(event.muons))
-          fill( tr, 'nTrgMuons', len(event.selMuons))
-          # if len(event.selMuons): print 'len(event.selMuons) ?!?!?'
-          if len(event.NoTriggeredMuonsLeadingPt) > 0 :
-            fill( tr, 'noTrgMuonsLeadingPt', event.NoTriggeredMuonsLeadingPt[0].pt())
+          if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+            fill( tr, 'nMuons', len(event.muons))
+            fill( tr, 'nTrgMuons', len(event.selMuons))
+            # if len(event.selMuons): print 'len(event.selMuons) ?!?!?'
+            if len(event.NoTriggeredMuonsLeadingPt) > 0 :
+              fill( tr, 'noTrgMuonsLeadingPt', event.NoTriggeredMuonsLeadingPt[0].pt())
 
-          fill( tr, 'njets', len(event.selJets))
-          if len(event.selJets)>0:
-            fillJet(tr, 'Jet_leading', event.selJets[0])
+            fill( tr, 'njets', len(event.selJets))
+            if len(event.selJets)>0:
+              fillJet(tr, 'Jet_leading', event.selJets[0])
 
             
           self.tree.tree.Fill()

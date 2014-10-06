@@ -65,17 +65,20 @@ class WAnalyzer( Analyzer ):
         event.LHE_weights = []
         if self.cfg_comp.isMC :
           event.genParticles = self.buildGenParticles( self.mchandles['genpart'].product(), event )        
-          import ROOT
-          objectsPF = [ j for j in event.genParticles if (j.status()==1 and math.fabs(j.pdgId())!=12 and math.fabs(j.pdgId())!=14 and math.fabs(j.pdgId())!=16) ]
-          objectsTK = [ j for j in event.genParticles if (j.charge()!=0 and j.status()==1 and math.fabs(j.eta())<2.5) ]
-          #for i in objectsPF:
-          #    print 'charge=',i.charge(),' status',i.status(),' pt',i.pt(),' pdg',i.pdgId()
-          event.genTkSumEt = sum([x.pt() for x in objectsTK])
-          event.genTkMet = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objectsTK])) , -1.*(sum([x.py() for x in objectsTK])), 0, math.hypot(-1.*sum([x.px() for x in objectsTK]),-1.*sum([x.py() for x in objectsTK])))
-          event.genPfSumEt = sum([x.pt() for x in objectsPF])
-          event.genPfMet = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objectsPF])) , -1.*(sum([x.py() for x in objectsPF])), 0, math.hypot(-1.*sum([x.px() for x in objectsPF]),-1.*sum([x.py() for x in objectsPF])))
-          #print 'genTkMet=',event.genTkMet.pt(),' genPfMet=',event.genPfMet.pt()
+          # import ROOT
+          # objectsPF = [ j for j in event.genParticles if (j.status()==1 and math.fabs(j.pdgId())!=12 and math.fabs(j.pdgId())!=14 and math.fabs(j.pdgId())!=16) ]
+          # objectsTK = [ j for j in event.genParticles if (j.charge()!=0 and j.status()==1 and math.fabs(j.eta())<2.5) ]
+          # #for i in objectsPF:
+          # #    print 'charge=',i.charge(),' status',i.status(),' pt',i.pt(),' pdg',i.pdgId()
+          # event.genTkSumEt = sum([x.pt() for x in objectsTK])
+          # event.genTkMet = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objectsTK])) , -1.*(sum([x.py() for x in objectsTK])), 0, math.hypot(-1.*sum([x.px() for x in objectsTK]),-1.*sum([x.py() for x in objectsTK])))
+          # event.genPfSumEt = sum([x.pt() for x in objectsPF])
+          # event.genPfMet = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objectsPF])) , -1.*(sum([x.py() for x in objectsPF])), 0, math.hypot(-1.*sum([x.px() for x in objectsPF]),-1.*sum([x.py() for x in objectsPF])))
+          # #print 'genTkMet=',event.genTkMet.pt(),' genPfMet=',event.genPfMet.pt()
           event.LHEweights = []
+          if (hasattr(self.cfg_ana,'storeLHE_weight') and self.cfg_ana.storeLHE_weight):
+            event.LHEweights = self.mchandles['LHEweights'].product()
+            event.LHEweights_str = []
           # event.LHEweights = self.mchandles['LHEweights'].product()
         # define good event bool
         event.WGoodEvent = False
@@ -331,6 +334,7 @@ class WAnalyzer( Analyzer ):
         if len(event.selMuons)!= 1: print 'BUT CONTINUING!'
         
         # print len(event.selMuons), event.selMuons[0].pt()
+        if not (event.selMuons[0].pt()>0): return keepFailingEvents
         
         # store muons that did not fire the trigger
         if hasattr(self.cfg_ana, 'triggerBits'):
@@ -416,7 +420,7 @@ class WAnalyzer( Analyzer ):
         # event is fully considered as good
         # if fillCounter: self.counters.counter('WAna').inc('W pass')
         event.WGoodEvent = True
-        return True
+        return (event.WGoodEvent or keepFailingEvents)
 
 
     def declareHandles(self):        
@@ -426,7 +430,9 @@ class WAnalyzer( Analyzer ):
         self.handles['pfmet'] = AutoHandle('cmgPFMET','std::vector<cmg::BaseMET>' )
         self.handles['tkmet'] = AutoHandle('tkMet','std::vector<reco::PFMET>' )
         self.mchandles['genpart'] =  AutoHandle('genParticlesPruned','std::vector<reco::GenParticle>')
-        # self.mchandles['LHEweights'] =  AutoHandle('externalLHEProducer','LHEEventProduct')
+        if self.cfg_comp.isMC :
+          if (hasattr(self.cfg_ana,'storeLHE_weight') and self.cfg_ana.storeLHE_weight):
+            self.mchandles['LHEweights'] =  AutoHandle('source','LHEEventProduct')
 
 ## UNUSED
 #        self.handles['jetLead'] = AutoHandle('cmgPFBaseJetLead','vector<cmg::BaseJet>')

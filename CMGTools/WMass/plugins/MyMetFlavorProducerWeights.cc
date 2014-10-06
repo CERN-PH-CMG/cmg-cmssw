@@ -31,8 +31,8 @@ void MyMetFlavorProducerWeights::produce(edm::Event& iEvent, const edm::EventSet
   //-----------------------------------------------------------------------
   // GENERATOR LEVEL - retrieve the genTrackMET
   //-----------------------------------------------------------------------
-  math::XYZTLorentzVector genTkMET;
-  math::XYZTLorentzVector genPFMET;
+  math::XYZTLorentzVector genTkMET(0,0,0,0), genPFMET(0,0,0,0);
+  double genTkMET_sumEt=0, genPFMET_sumEt=0;
 
   if( isMC_ && (fMetFlavor == 0 || fMetFlavor ==1) ){
     Handle<reco::GenParticleCollection> GenParticleCandidate;
@@ -61,12 +61,14 @@ void MyMetFlavorProducerWeights::produce(edm::Event& iEvent, const edm::EventSet
 
       math::XYZTLorentzVector p3(genp->px(),genp->py(),genp->pz(),genp->energy());
       genPFMET-=p3;
+      genPFMET_sumEt+=p3.pt();
 
       if(genp->charge()==0) continue;
       if(genp->status()!=1) continue;
       if(fabs(genp->eta())>2.5) continue;
 
       genTkMET-=p3;
+      genTkMET_sumEt+=p3.pt();
 
     }
   }
@@ -116,10 +118,10 @@ void MyMetFlavorProducerWeights::produce(edm::Event& iEvent, const edm::EventSet
   math::XYZTLorentzVector vMET = pfTKMET_strangetk;
   
   if(isMC_ && fMetFlavor == 0 ){
-    sumEt = 0; // genPFMET_sumEt;
+    sumEt = genPFMET_sumEt;
     vMET  = genPFMET;
   }else if(isMC_ && fMetFlavor == 1 ){
-    sumEt = 0; //genTkMET_sumEt;
+    sumEt = genTkMET_sumEt;
     vMET  = genTkMET;
   }else if(fMetFlavor == 3 ){
     sumEt = pfTKMET_weight_sumEt;

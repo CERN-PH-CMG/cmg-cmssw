@@ -146,14 +146,25 @@ class CoreTreeProducer( TreeAnalyzerNumpy ):
     def declareCoreHandles(self):
 
       self.handles['pfMet'] = AutoHandle('cmgPFMET','std::vector<cmg::BaseMET>')
-      self.handles['pfMetraw'] = AutoHandle('cmgPFMETRaw','std::vector<cmg::BaseMET>')
+      # self.handles['pfMetraw'] = AutoHandle('cmgPFMETRaw','std::vector<cmg::BaseMET>')
       self.handles['pfMetSignificance'] = AutoHandle('pfMetSignificance','cmg::METSignificance')
       self.handles['nopuMet'] = AutoHandle('nopuMet','std::vector<reco::PFMET>')
       self.handles['pucMet'] = AutoHandle('pcMet','std::vector<reco::PFMET>')
       self.handles['pfMetForRegression'] = AutoHandle('pfMetForRegression','std::vector<reco::PFMET>')
       self.handles['puMet'] = AutoHandle('puMet','std::vector<reco::PFMET>')
       self.handles['tkMet'] = AutoHandle('tkMet','std::vector<reco::PFMET>')
-
+      if( hasattr(self.cfg_ana,'additionalTKMet') and self.cfg_ana.additionalTKMet ):
+        self.handles['tkmetABC'] = AutoHandle('tkmetABC','std::vector<reco::PFMET>')
+        self.handles['tkmetABC050'] = AutoHandle('tkmetABC050','std::vector<reco::PFMET>')
+        self.handles['tkmet050'] = AutoHandle('tkmet050','std::vector<reco::PFMET>')
+        self.handles['tkmet075'] = AutoHandle('tkmet075','std::vector<reco::PFMET>')
+        self.handles['tkmet100'] = AutoHandle('tkmet100','std::vector<reco::PFMET>')
+        self.handles['tkmetAB'] = AutoHandle('tkmetAB','std::vector<reco::PFMET>')
+        self.handles['tkmetAB050'] = AutoHandle('tkmetAB050','std::vector<reco::PFMET>')
+        if(self.cfg_comp.isMC ):
+          self.handles['gentkmet'] = AutoHandle('gentkmet','std::vector<reco::PFMET>')
+          self.handles['genpfmet'] = AutoHandle('genpfmet','std::vector<reco::PFMET>')
+        
       self.handles['muons'] = AutoHandle(
             'cmgMuonSel',
             'std::vector<cmg::Muon>'
@@ -187,14 +198,16 @@ class CoreTreeProducer( TreeAnalyzerNumpy ):
     def declareCoreVariables(self, isMC):
         tr = self.tree
 
-        var( tr, 'run', int)
-        var( tr, 'lumi', int)
-        var( tr, 'evt', int)
+        if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+          var( tr, 'run', int)
+          var( tr, 'lumi', int)
+          var( tr, 'evt', int)
 
         var( tr, 'nvtx', int)
-        var( tr, 'evtHasGoodVtx', int)
-        var( tr, 'Vtx_ndof', int)
-        # var( tr, 'firstVtxIsGood', int)
+        if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+          var( tr, 'evtHasGoodVtx', int)
+          var( tr, 'Vtx_ndof', int)
+          # var( tr, 'firstVtxIsGood', int)
 
         ###--------------------------- BOOK MC infos ------------------------------
         
@@ -213,21 +226,31 @@ class CoreTreeProducer( TreeAnalyzerNumpy ):
 
         ###--------------------------- BOOK MET infos ------------------------------
 
-        bookCustomMET( tr, 'pfmet')
+        if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+          bookCustomMET( tr, 'pfmet')
         bookCustomMET( tr, 'tkmet')
+        if(hasattr(self.cfg_ana,'additionalTKMet') and self.cfg_ana.additionalTKMet ):
+          bookCustomMET( tr, 'tkmetABC')
+          bookCustomMET( tr, 'tkmetABC050')
+          bookCustomMET( tr, 'tkmet050')
+          bookCustomMET( tr, 'tkmet075')
+          bookCustomMET( tr, 'tkmet100')
+          bookCustomMET( tr, 'tkmetAB')
+          bookCustomMET( tr, 'tkmetAB050')
         if ( isMC ):
-            bookMET(tr, 'tkmetgen')
-            var(tr, 'tkmetgen_sumEt')
-            bookMET(tr, 'pfmetgen')
-            var(tr, 'pfmetgen_sumEt')            
+            bookCustomMET(tr, 'gentkmet')
+            # var(tr, 'gentkmet_sumEt')
+            bookCustomMET(tr, 'genpfmet')
+            # var(tr, 'genpfmet_sumEt')            
 
-        bookCustomMET( tr, 'nopumet')
-        bookCustomMET( tr, 'pumet')
-        bookCustomMET( tr, 'pucmet')
-        bookCustomMET( tr, 'pfMetForRegression')
+        if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+          bookCustomMET( tr, 'nopumet')
+          bookCustomMET( tr, 'pumet')
+          bookCustomMET( tr, 'pucmet')
+          bookCustomMET( tr, 'pfMetForRegression')
 
-        if ( not hasattr(self.cfg_ana,'storeSlimGenInfo') ):
-            bookCustomMET( tr, 'pfmetraw')
+        # if ( not hasattr(self.cfg_ana,'storeSlimGenInfo') ):
+            # bookCustomMET( tr, 'pfmetraw')
 
 #        if ( not hasattr(self.cfg_ana,'storeSlimGenInfo') ):        
 #            var( tr, 'pfmetcov00')
@@ -246,10 +269,11 @@ class CoreTreeProducer( TreeAnalyzerNumpy ):
         fill( tr, 'lumi',event.lumi)
         fill( tr, 'evt', event.eventId)
 
-        fill( tr, 'evtHasGoodVtx', event.passedVertexAnalyzer)
         fill( tr, 'nvtx', len(event.goodVertices))
-        if(event.passedVertexAnalyzer):
-            fill( tr, 'Vtx_ndof', event.goodVertices[0].ndof())
+        if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+          fill( tr, 'evtHasGoodVtx', event.passedVertexAnalyzer)
+          if(event.passedVertexAnalyzer):
+              fill( tr, 'Vtx_ndof', event.goodVertices[0].ndof())
             # print 'Size goodVertices:',len(event.goodVertices),' allVertices',len(self.handles['vertices'].product())
             # fill( tr, 'firstVtxIsGood', event.firstVtxIsGoodVertices) # REQUIRES DEFINITION IN CMGTools/RootTools/python/analyzers/VertexAnalyzer.py
 
@@ -288,9 +312,33 @@ class CoreTreeProducer( TreeAnalyzerNumpy ):
 ## if (event.savegenpZ and self.cfg_comp.isMC) or event.ZGoodEvent:
 ## for now filling for all the events
             
-        fillCustomMET(tr, 'pfmet', event.pfmet)
+        if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+          fillCustomMET(tr, 'pfmet', event.pfmet)
+          if(hasattr(self.cfg_ana,'additionalTKMet') and self.cfg_ana.additionalTKMet ):
+            event.tkmet = self.handles['tkmetABC'].product()[0]
+            fillCustomMET(tr, 'tkmetABC', event.tkmet)
+            event.tkmet = self.handles['tkmetABC050'].product()[0]
+            fillCustomMET(tr, 'tkmetABC050', event.tkmet)
+            event.tkmet = self.handles['tkmet050'].product()[0]
+            fillCustomMET(tr, 'tkmet050', event.tkmet)
+            event.tkmet = self.handles['tkmet075'].product()[0]
+            fillCustomMET(tr, 'tkmet075', event.tkmet)
+            event.tkmet = self.handles['tkmet100'].product()[0]
+            fillCustomMET(tr, 'tkmet100', event.tkmet)
+            event.tkmet = self.handles['tkmetAB'].product()[0]
+            fillCustomMET(tr, 'tkmetAB', event.tkmet)
+            event.tkmet = self.handles['tkmetAB050'].product()[0]
+            fillCustomMET(tr, 'tkmetAB050', event.tkmet)
+            if (isMC) :
+                event.tkmet = self.handles['gentkmet'].product()[0]
+                fillCustomMET(tr, 'gentkmet', event.tkmet)
+                # fill( tr, 'gentkmet_sumEt', event.genTkSumEt)
+                event.tkmet = self.handles['genpfmet'].product()[0]
+                fillCustomMET(tr, 'genpfmet', event.tkmet)
+                # fill( tr, 'genpfmet_sumEt', event.genPfSumEt)            
         event.tkmet = self.handles['tkMet'].product()[0]
         fillCustomMET(tr, 'tkmet', event.tkmet)
+
 
 #        if not hasattr(self.cfg_ana,'storeSlimRecoInfo'):        
 #            pfMetSignificance = self.handles['pfMetSignificance'].product().significance()
@@ -302,20 +350,16 @@ class CoreTreeProducer( TreeAnalyzerNumpy ):
 #            event.pfmetraw = self.handles['pfMetraw'].product()[0]
 #            fillCustomMET(tr, 'pfmetraw', event.pfmetraw)
             
-        event.nopumet = self.handles['nopuMet'].product()[0]
-        event.pucmet = self.handles['pucMet'].product()[0]
-        event.pfMetForRegression = self.handles['pfMetForRegression'].product()[0]
-        event.pumet = self.handles['puMet'].product()[0]
-        fillCustomMET(tr, 'nopumet', event.nopumet)
-        fillCustomMET(tr, 'pucmet', event.pucmet)
-        fillCustomMET(tr, 'pumet', event.pumet)
-        fillCustomMET(tr, 'pfMetForRegression', event.pfMetForRegression)
+        if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+          event.nopumet = self.handles['nopuMet'].product()[0]
+          event.pucmet = self.handles['pucMet'].product()[0]
+          event.pfMetForRegression = self.handles['pfMetForRegression'].product()[0]
+          event.pumet = self.handles['puMet'].product()[0]
+          fillCustomMET(tr, 'nopumet', event.nopumet)
+          fillCustomMET(tr, 'pucmet', event.pucmet)
+          fillCustomMET(tr, 'pumet', event.pumet)
+          fillCustomMET(tr, 'pfMetForRegression', event.pfMetForRegression)
         
-        if (isMC) :
-            fillMET(tr, 'tkmetgen', event.genTkMet)          
-            fill( tr, 'tkmetgen_sumEt', event.genTkSumEt)
-            fillMET(tr, 'pfmetgen', event.genPfMet)          
-            fill( tr, 'pfmetgen_sumEt', event.genPfSumEt)            
             
 def process(self, iEvent, event):
 

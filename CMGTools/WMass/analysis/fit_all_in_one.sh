@@ -22,10 +22,10 @@ infile_run='launch_analysis_testSplit_bash.py'
 
 # echo ${#Recoil_U1resol_variations[@]}
 
-usebatch=0 #  use batch submission for W/Z ANALYSIS
+usebatch=1 #  use batch submission for W/Z ANALYSIS
 run_all_or_just_fit=1 #  2 = W/Z ANALYSIS, 1 = RUN ALL,  0 = RUN FIT ONLY, 3 = W/Z ANALYSIS + QCD FIT
-run_W_or_Z=2 #  0 = W,  1 = Z,  2 = both (W and Z)
-fit_W_or_Z="W,Z" # "W" or "Z" or "W,Z"
+run_W_or_Z=1 #  0 = W,  1 = Z,  2 = both (W and Z)
+fit_W_or_Z="Z" # "W" or "Z" or "W,Z"
 
 for ((j=0; j < ${#use_PForNoPUorTKmet[@]} ; j++));
     do
@@ -135,10 +135,12 @@ for ((j=0; j < ${#use_PForNoPUorTKmet[@]} ; j++));
                   fi
                 else
                   line=$(bjobs | grep analysis |wc -l)
+                  line2=$(bjobs | grep analysis |grep RUN|wc -l)
                   if [[ ${line} -eq 0 ]]; then
                     still_running=0
                   else
-                    sleep 5
+                    echo ${line}' jobs still pending, '${line2}' in RUN state'
+                    sleep 20
                   fi
                 fi
               done

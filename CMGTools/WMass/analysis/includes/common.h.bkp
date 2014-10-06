@@ -8,7 +8,7 @@
 
 namespace WMass{
 
-  static const double ZMassCentral_MeV = PAR_ZMASS_CENTRAL;
+  static const int ZMassCentral_MeV = PAR_ZMASS_CENTRAL;
   static const int WMassCentral_MeV = PAR_WMASS_CENTRAL;
   
   static const int WMassSkipNSteps = PAR_WMASS_STEP;
