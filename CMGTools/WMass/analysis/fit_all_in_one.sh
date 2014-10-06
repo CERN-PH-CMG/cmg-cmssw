@@ -20,7 +20,7 @@ Recoil_U2resol_variations=( 0 )
 # useRecoilCorr=( 1 ) # 1: YES, 0: NO
 
 # infile_run='launch_analysis.py'
-infile_run_input='launch_analysis_testSplit_bash.py'
+infile_run_input='launch_analysis_testSplit_bkp_bash.py'
 
 # echo ${#Recoil_U1resol_variations[@]}
 

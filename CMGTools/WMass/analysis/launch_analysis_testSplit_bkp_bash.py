@@ -76,7 +76,7 @@ mergeSigEWKbkg = 0;
 ## PERFORM W or Z MASS FIT
 fit_W_or_Z = "Z" # "W,Z" or "W" or "Z"
 
-usePowOrMadForSig = "POWHEG"; # use "POWHEG" or use "MADGRAPH"
+usePowOrMadForSig = "MADGRAPH"; # use "POWHEG" or use "MADGRAPH"
 runPrepareDataCardsFast = 0; # ALTERNATIVE FAST WAY: TEMPLATES ARE IN THE SYsT FOLDER, PSEUDO-DATA IN THE LOCAL FOLDER
 DataCards_systFromFolder="" # evaluate systematics wrt folder (or leave it empty)
 
