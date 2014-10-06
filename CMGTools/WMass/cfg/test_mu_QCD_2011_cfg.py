@@ -1,75 +1,7 @@
-import copy
-import os 
-import CMGTools.RootTools.fwlite.Config as cfg
-from CMGTools.RootTools.fwlite.Config import printComps
-from CMGTools.WMass.triggerMap import triggers_mu
+#Load all analyzers
+from CMGTools.WMass.analyzers.CoreModule_53X_cff import *
 
-jsonAna = cfg.Analyzer(
-    'JSONAnalyzer',
-    )
-
-triggerAna = cfg.Analyzer(
-     'triggerBitFilter',
-     # keepFailingEvents = False        
-    )
-
-vertexAna = cfg.Analyzer(
-    'VertexAnalyzer',
-    allVertices = 'slimmedPrimaryVertices',
-    goodVertices = 'slimmedPrimaryVertices',
-    vertexWeight = None,
-    fixedWeight = 1,
-    verbose = False,
-    )
-
-WAna = cfg.Analyzer(
-    'WAnalyzer',
-    recoilcut = 1000,
-    pfmetcut = 0,
-    jetptcut = 1000,
-    pt = 30,
-    eta = 2.1,
-    iso = 0.5,
-    savegenp = False,
-    verbose = True,
-    triggerBits = {'SingleMu' : triggers_mu},
-    )
-
-WtreeProducer = cfg.Analyzer(
-    'WTreeProducer'
-    )
-
-ZAna = cfg.Analyzer(
-    'ZAnalyzer',
-    recoilcut = 1000,
-    pfmetcut = 0,
-    jetptcut = 1000,
-    pt = 30,
-    eta = 2.1,
-    iso = 0.5,
-    savegenp = False,
-    verbose = True,
-    triggerBits = {'SingleMu' : triggers_mu},
-    )
-
-ZtreeProducer = cfg.Analyzer(
-    'ZTreeProducer'
-    )
-genAna = cfg.Analyzer(
-    'GenParticleAnalyzerFSR',
-    src = 'genParticlesPruned'
-    )
-
-sequence = cfg.Sequence( [
-    genAna,
-    jsonAna,
-    triggerAna,
-    vertexAna,
-    WAna,
-    WtreeProducer,
-    ZAna,
-    ZtreeProducer
-   ] )
+sequence = cfg.Sequence(CoreWZsequence)
 
 
 from CMGTools.H2TauTau.proto.samples.qcd import QCD15, QCD30, QCD50, QCD80
