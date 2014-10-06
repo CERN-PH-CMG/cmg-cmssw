@@ -1959,7 +1959,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   double minSigma1=0.2; double maxSigma1=1.2;
   if(fId==201) maxSigma1=1.5;
   double startSigma2=1.5; 
-  double minSigma2=1.2; double maxSigma2=5.;
+  double minSigma2=1.2; double maxSigma2=8.;
   if(doAbsolute) { startSigma1=3*0.5;  startSigma2=3*1.2; }
   if(doAbsolute) { minSigma1=0.;  maxSigma1=10.;}
   if(doAbsolute) { minSigma2=3.;  maxSigma2=40.;}
@@ -1999,8 +1999,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   RooRealVar    lD1Sig("d1sig","d1sig",0. , -0.1*SF, 0.1*SF);  lD1Sig.setConstant(kTRUE);
 
   RooRealVar    lA2Sig("a2sig","a2sig", startSigma2, minSigma2, maxSigma2 );
-  RooRealVar    lB2Sig("b2sig","b2sig", B2init ,-0.1*SF, 0.1*SF);
-  RooRealVar    lC2Sig("c2sig","c2sig", C2init ,-0.01*SF, 0.01*SF);  
+  RooRealVar    lB2Sig("b2sig","b2sig", B2init ,-0.5*SF, 0.5*SF);
+  RooRealVar    lC2Sig("c2sig","c2sig", C2init ,-0.05*SF, 0.05*SF);  
   if(!doMad && !fData && lPar!=fU1) lC2Sig.setConstant(kTRUE);  // POWHEG guessed from Z
   RooRealVar    lD2Sig("d2sig","d2sig",0.0 ,-0.1*SF, 0.1*SF);  lD2Sig.setConstant(kTRUE);
 
