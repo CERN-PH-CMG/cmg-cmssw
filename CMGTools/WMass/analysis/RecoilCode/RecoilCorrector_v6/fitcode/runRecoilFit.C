@@ -1,3 +1,56 @@
+/*
+//how to run on the Z all Y binning 
+//(for DATA replace the first argument with 2
+//(for Wpos replace the first argument with 3
+//(for Wneg replace the first argument with 4
+
+nohup root.exe -b -x -q runRecoilFit.C+\(1,1,-1\) &
+sleep 20
+nohup root.exe -b -x -q runRecoilFit.C+\(1,125,-1\) &
+sleep 20
+nohup root.exe -b -x -q runRecoilFit.C+\(1,150,-1\) &
+sleep 20
+nohup root.exe -b -x -q runRecoilFit.C+\(1,175,-1\) &
+sleep 20
+nohup root.exe -b -x -q runRecoilFit.C+\(1,200,-1\) &
+sleep 20
+nohup root.exe -b -x -q runRecoilFit.C+\(1,201,-1\) &
+
+//for PDF see settings
+
+### gluon
+nohup root.exe -b -x -q runRecoilFit.C+\(1,1,0\) &
+sleep 20
+nohup root.exe -b -x -q runRecoilFit.C+\(3,1,0\) &
+sleep 20
+nohup root.exe -b -x -q runRecoilFit.C+\(4,1,0\) &
+
+### quarks
+nohup root.exe -b -x -q runRecoilFit.C+\(1,1,1\) &
+sleep 20
+nohup root.exe -b -x -q runRecoilFit.C+\(3,1,1\) &
+sleep 20
+nohup root.exe -b -x -q runRecoilFit.C+\(4,1,1\) &
+sleep 20
+nohup root.exe -b -x -q runRecoilFit.C+\(1,1,2\) &
+sleep 20
+
+nohup root.exe -b -x -q runRecoilFit.C+\(1,1,3\) &
+sleep 20
+nohup root.exe -b -x -q runRecoilFit.C+\(1,1,4\) &
+sleep 20
+
+nohup root.exe -b -x -q runRecoilFit.C+\(3,1,2\) &
+sleep 20
+nohup root.exe -b -x -q runRecoilFit.C+\(4,1,2\) &
+sleep 20
+
+
+*/
+
+
+
+
 #ifndef __CINT__
 #include "RooGlobalFunc.h"
 #endif
@@ -2375,7 +2428,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     vlXVals_3S[lPar!=fU1][iRMS]=new float[lXVals_3S.at(lPar!=fU1).at(iRMS).size()];
     vlYVals_3S[lPar!=fU1][iRMS]=new float[lYVals_3S.at(lPar!=fU1).at(iRMS).size()];
 
-    for(int iev=0; iev<lXVals_3S.at(lPar!=fU1).at(iRMS).size(); iev++){
+    for(unsigned int iev=0; iev<lXVals_3S.at(lPar!=fU1).at(iRMS).size(); iev++){
 
       vlXVals_3S[lPar!=fU1][iRMS][iev]=lXVals_3S[lPar!=fU1][iRMS][iev];
       vlYVals_3S[lPar!=fU1][iRMS][iev]=lYVals_3S[lPar!=fU1][iRMS][iev]; // this check the residuals
