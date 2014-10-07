@@ -206,6 +206,8 @@ bool doOnlyU1 = false;
 bool doOnlyU2 = false;
 
 bool do8TeV = false;
+bool doABC = false;
+
 bool doMad = false;
 
 int VTXbin=-1;
@@ -3822,6 +3824,7 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
 
   TString name="recoilfits/recoilfit_OCT6";
   if(do8TeV) name +="_8TeV";
+  if(doABC) name +="_ABC";
 
   /// SETTING
   /// MARIA Zpt TEST RANGE
@@ -3899,7 +3902,10 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     //    if(!doMad && !do8TeV ) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root");  
     
     // this is the 8TeV, is the runD, it contains the other METs, obtained from the Z skims
-    if(doMad && do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DATA_Run2012D/DYJetsLL_8TeV/ZTreeProducer_tree.root");
+    //    if(doABC || do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DATA_Run2012A/ZTreeProducer_tree.root");
+    //    if(doABC || do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DATA_Run2012B/ZTreeProducer_tree.root");
+    //    if(doMad || do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DATA_Run2012C/ZTreeProducer_tree.root");
+    if(doMad || do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DATA_Run2012D/ZTreeProducer_tree.root");
 
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = true; 
