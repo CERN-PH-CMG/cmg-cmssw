@@ -18,6 +18,10 @@ event.
 
 The recoil system is difficult to model from first principles; unlike the decay lepton, it is a complicated
 quantity involving many particles, as well as effects related to accelerator and detector operation.
+Developing a parameterized model based upon first-principles is difficult and time-consuming and for this reason,
+we have used a data-driven, heuristic approach to modeling the recoil.
+It requires no a priori understanding of the hadronic energy content of W events, and has no adjustable parameters.
+
 $\vec{U}$ receives contributions from different sources: first the so called W recoil i.e. the particles arising from initial state QCD radiation from the partons that produce the hard scattering and a second contributions from the spectator quarks remnants and additional minimum bias events which occur in the same crossing ({\it in-time pile up}) or from a previous or next bunch crossing ({\it out-of-time pile up}) as the hard scattering. 
 This second contribution is generally referred to as the underlying event / pile up contribution. 
 Experimentally these two contributions cannot be distinguished and cannot be modelled independently.
@@ -36,14 +40,15 @@ for a perfectly measured event.
 The detector response and resolution functions for the W recoil and underlying event products are determined by experiment using Z events.
 The W recoil products are typically produced opposite to the direction of the vector boson $p_{T}$ and the underlying event products are produced uniformly in azimuth. Thus the response and resolution functions must be determined separately in two projections parallel and perpendicular to the $p_{T}$ of the W. Typically one finds that the resolution along the W $p_{T}$ is poorer due to the presence of jets from initial state QCD radiation. In the perpendicular projection the resolution function closely matches that expected from pure minimum bias events.
 
-Z~$\rightarrow$~$\mu$~$\mu$ events provide an ideal control sample to study the MET resolution. First,
-Z~$\rightarrow$~$\mu$~$\mu$ events contain no intrinsic MET: any MET reconstructed is purely due to resolution effects.
-Second, background contributions to Z~$\rightarrow$~$\mu$~$\mu$ event samples are very low, facilitating the data to
-Monte Carlo comparison and reducing systematic uncertainties.
-Third, the momenta of muons originating from Z decays are reconstructed with very good resolutions and the MET is dominated by the resolutions with which the hadronic activity in the event, the hadronic recoil of the Z–boson, gets reconstructed.
-
-Z~$\rightarrow$~$\mu$~$\mu$ is the closest proxy to the W~$\rightarrow$~$\mu$~$\nu$.
-{\color{magenta}{HERE SAY THAT THE MASS TOPOLOGY IS SIMILAR and ALSO THE SCALE,For example, the uparall and uperp can be clearly defined in both topology.}}
+Z~$\rightarrow$~$\mu$~$\mu$ events provide an ideal control sample to study the MET resolution. 
+First, Z~$\rightarrow$~$\mu$~$\mu$ events contain no intrinsic MET: any MET reconstructed is purely due to resolution effects with which the hadronic activity in the event, the hadronic recoil of the Z–boson, gets reconstructed.
+Second, background contributions to Z~$\rightarrow$~$\mu$~$\mu$ event samples are very low, facilitating the data to Monte Carlo comparison and reducing systematic uncertainties.
+Third, the Z boson decay channels can be fully reconstructed and the momenta of muons originating from Z decays are reconstructed with very good resolutions. This allow us to get precise candle for the $\pt^{Z})$ and $m^{Z}$.
+Forth, the Z~$\rightarrow$~$\mu$~$\mu$ is the closest proxy to the W~$\rightarrow$~$\mu$~$\nu$.
+The accurate simulation of Z boson decays in these two channels requires many elements similar to the simulation of leptonic W boson decays.
+Z boson production has similar vector boson production kinematics to W boson and the Z decay channels also produce leptons of a comparable energy to leptonic W boson decays.
+{\color{magenta}{HERE SAY ON THE MASS The boson are also comparable and make the energy of the recoil similar with similar scale (For example, with massless photon is more of a mess).}}
+The direction of the boson in both cases ganantee the same axes for the recoil description (For example, the uparall and uperp can be clearly defined in both topology).
 
 \newpage 
 
@@ -69,8 +74,8 @@ In Figure~\ref{fig:PFMETvsTKMET} it is shown the MT for comparison for different
 This is shown for MC powheg $W^{+}$ events reconstructed with the 53X release and latest global tag.
 MET can be calculated as the negative vectorial sum of : 
 \begin{description} 
-\item[``genPFmet'] all the generated particles' (black), 
-\item[``genTKmet''] all charged generated  particles  (red), 
+\item[``genPFmet']  generated particles with $\eta<5.2$ (black), 
+\item[``genTKmet''] charged generated  particles with $\eta<2.5$ (red), 
 \item[``PFmet''] all reconstructed pf particles   (blue) 
 \item[``TKmetAll''] all reconstructed charged particles (green).
 \item[``TKmet''] reconstructed charged particles with dz compatibility (magenta).
@@ -78,7 +83,7 @@ MET can be calculated as the negative vectorial sum of :
 
 The ``genPFmet'' (black) show the characteristic jacobian peak for W events.
 The ``PFmet'' (blue) built with all the reconstructed particles suffers from the smearing due to the reconstruction efficiency and resolution and also due to the contamination of particles from pileUp. (The blue curve is indeed very different then the black)
-The ``genTKmet'' (red) use the generated charged particles only so only 60\% of the particle flow and the effect is a smearing of the jacobian peak. 
+The ``genTKmet'' (red) use the generated charged particles. Particles are detected in the tracker only up to $|\eta|$~$<$~2.5. Due to the hadronization the charged component correspons only to and average of 60\% of the total particles. Both those have the effect to smear the W jacobian peak. 
 The ``TKmetAll'' (green) considers only the met with the reconstructed charged particles. 
 In order to subtract the PU on an event by event basis each particle is required to be consistent with the PV requirig the $d_{Z}$~$<$~0.1~cm and this is shown with the ``TKmet'' (magenta). 
 We can make two considerations: first the``TKmet'' (magenta) with a simple dz requirement approach the ideal situation represented by the red curve; second the MT shape with the ``TKmet'' (magenta) is not drammatically different from the MT distribution reconstructed with all the PF particles ``PFmet'' (blue), thus we expect the same discrimination power in light of the Wmass extraction.
@@ -98,7 +103,9 @@ In Figure~\ref{fig:PFMETvsTKMETresVTX} it is shown the resolution of the MET alo
 
 \subsection{DATA-MC agreement}
 
-One of the important characteristics of the Wmass analysis is the need to good DATA-MC agreement in terms of response and resolution.
+One of the important characteristics of the Wmass analysis is the need of a good DATA-MC agreement in terms of response and resolution.
+This is to avoid to have any features that are difficult to simulate and which might bias the measurement such as the extra particles from the underlingn events ans pileup, detector holes.
+
 
 \subsection{MET-phi asymmery}
 Studies of the MET reconstruction in 2011 data found an asymmetry in azimuthal angle of the

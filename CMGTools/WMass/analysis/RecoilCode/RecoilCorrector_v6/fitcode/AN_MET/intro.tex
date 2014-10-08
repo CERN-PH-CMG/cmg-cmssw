@@ -1,0 +1,181 @@
+\section{Wmass measurement: goals, strategy and challenges}
+\label{sec:WMstrategy}
+
+Generally, precision measurements can be used firstly to confirm the validity of the SM and then, 
+once a sufficient level of accuracy has been
+achieved, to search for minor deviations from the SM that might indicate new physics
+that is explicitly manifest at higher energy scales than have so far been probed. The
+motivations for precision measurements of the W boson mass is mainly due to the relation 
+of the Higgs, W and top mass in the SM which makes specific predictions for parameter of the electroweak interaction.
+As important to any precision measurement as the measured value of the parameter
+itself is the uncertainty on that value. Thus it is vital to the W mass analysis to evaluate
+possible systematic uncertainties on the fitted mass. 
+High precision measurements of the W mass have been made by the experiments at LEP and Tevatron.
+The aim of the a measurement at LHC is to have an impact on the world average mW.
+{\color{magenta}{Are there systematics that can be lowered in the combination (?)}}.
+
+To measure theW mass we use the following three kinematic variables: the W transverse mass ($m_{T}$), the muon transverse
+momentum ($p_{T}^{\mu}$), and the neutrino transverse momentum (MET).
+The $m_{T}$ and $p_{T}^{\mu}$ measurements provide a powerful cross-check because of their complementary
+systematic uncertainties. The shape of the $m_{T}$ distribution is dominated by the
+detector resolution (mainly the resolution due to the recoil system energy measurement),
+while the $p_{T}^{\mu}$ spectrum is affected by the transverse momentum of the W boson, and hence
+the recoil system and initial-state radiation.
+The MET measurement is sensitive to the same systematic uncertainties as both $m_{T}$ and $p_{T}^{\mu}$ 
+and has significantly poorer experimental resolution, but this measurement is still useful
+for a cross-check. Moreover, since the correlations among these three measurements
+are not 100\%, we can combine these results.
+
+The measurement of MW is obtained by a comparison of the spectra of the three different measurement variables with
+templates generated from Monte Carlo simulation with varied W masses.  
+A binned likelihood comparing collider data and simulated events (a template) is computed
+for each of the $m_{T}$, $p_{T}^{\mu}$ and MET distributions. 
+Templates are generated from different hypothetical W boson mass values.
+Templates are corrected for calibration obtained on the muon momentum scale and for the MET recoil obtained from the
+Z~$\rightarrow$~$\mu$~$\mu$ events.
+
+The measured MW is the one of the template that maximizes the agreement with the data.
+
+If we aim at measuring MW with 10-15 MeV of error, we need to be able to control the shape of the distributions at the few per mille level.
+{\color{magenta}{Add the plot of the ratio of the MT template with two different mass hyphothesis}}
+It’s a precision measurement: many theoretical + experimental aspects need to be sorted out and we need to push to the extreme. 
+
+The measurement focus on the MW measurement for the 7 TeV LHC collision to profit for the low PU scenario.
+The measurement is meant to be repeated with the 8TeV and 13 TeV data to lower the statistical errors and systematics (i.e. PDF) errors.
+
+\section{Note content}
+
+This note focus on the work done to calibrate the MET.
+The hadronic recoil plays a direct role in the calculation of two of the primary observables in the W mass measurement: the MT and the MET. 
+It also figures indirectly in the muon pT measurement through a kinematic requirement on our data the pT(W)~$<$~15 GeV.
+
+In this first chapter, Section~\ref{sec:sample} describe the dataset and MC sample used. In Section~\ref{sec:Sel} we outline the requirements to select the Z and W events.
+
+The second chapter discuss the methods developed to derive and apply the correction to the MET.
+In Section~\ref{sec:defRecoil} the definition of the recoil and the decomposition into U1 and U2 is introduced.
+In Section~\ref{sec:METDEF} the choice of the MET definition based on the charged tracks only is justified.
+In Section~\ref{sec:ParamRecoil} the modelling of the recoil for the Z~$\rightarrow$~$\mu$~$\mu$ is discussed.
+In Section~\ref{sec:AppRecoil} the application to the MC of the recoil correction is presented.
+In Section~\ref{sec:RecoilValidation} the validation studies of the recoil model are finally discussed.
+In Section~\ref{sec:Ztails} the impact of the background to the dimuon selection is investigated.
+
+The third chapter focus on how to port the calibration from the Z to the W.
+In the forth chapter we discuss the impact on the Wmass measurement.
+
+\section{References}
+\begin{description}
+\item CMS AN-2010-332: MIT note
+\item CMS AN-2011-459: Veelken, C.
+\end{description}
+
+
+\section{Samples}
+\label{sec:sample}
+
+We use data collected by CMS at LHC collisions at 7TeV which correspond to an integrated luminosity of 4.7 $fb^{-1}$.
+We selected events with a Z~$\rightarrow$~$\mu$~$\mu$ and W~$\rightarrow$~$\mu$~$\nu$.
+Events are triggered with the single muon channel for the W~$\rightarrow$~$\mu$~$\nu$ and Z events.
+The data samples were filtered using official JSON files. 
+
+Both data and MC are reconstructed with the CMS software
+version $CMSSW\_5\_3\_X$ with Legacy global Tag ($Summer11LegDR-PU\_S13\_START53\_LV6$) for the description of the alignement and calibration conditions.
+All generated events are passed through the CMS detector simulation using GEANT4 
+and then processed using a reconstruction sequence identical to that used for data.
+For the data used in this analysis, there are an average of about 8 reconstructed primary
+interaction vertices for each beam crossing. The MC simulation is generated with a different
+PU distribution: pile up scenario described by the "S13".
+
+The Z~$\rightarrow$~$\mu$~$\mu$ and W~$\rightarrow$~$\mu$~$\nu$ signals are generated by POWHEG.
+The POWHEG generator is chosen since contains the NLO EWK + QCD corrections that are needed to keep low the theoretical systematics on the final Wmass measurement.
+Alternative MadGraph samples are available for the Z~$\rightarrow$~$\mu$~$\mu$ and W~$\rightarrow$~$\mu$~$\nu$ sample.
+The nominal POWHEG sample is showered with PHYTIA8 while the MADGRAPH smple is showered with PHYTIA6.
+Differences in the nominal and alternative V+jets samples arrise also in the tuning "TuneZ2" for the madgraph sample and "4C" for the madgraph sample.
+
+The data are compared to Monte Carlo simulations in the diMuon channel.
+
+Even though the background contributions are expected to be low in the dimuon selection, they can still be
+significant in the tails of MET distributions. Background processes considered comprise 
+QCD multi–jet, top-antitop pair, V+jets with W~$\rightarrow$~$\tau$~$\nu$ or Z~$\rightarrow$~$\tau$~$\tau$ and and di–bosons (WW, WZ, ZZ) production. 
+The $\tau$ lepton decay in the W~$\rightarrow$~$\tau$~$\nu$ and Z~$\rightarrow$~$\tau$~$\tau$  processes is simulated by the TAUOLA MC package.
+%QCD multi–jet background events are generated by PYTHIA [7], 
+top-antitop and di–boson samples are generated with MadGraph [5]. 
+Generated events are normalized to the Z production cross–section XXXXX,
+top-antitop events are normalized to the cross–section YYYYY, di–boson events to the NLO cross-section ZZZZZ.
+
+
+%Minimum bias events generated by PYTHIA are added to all generated Monte Carlo sample
+% according to the distribution described in [10]. Simulated events are reweighted in order to
+%match the number of pile–up interactions expected in the nominal, the previous and the sub37
+%sequent bunch–crossing (“3d” pile–up reweighting [10]) in run periods A and B, respectively.
+%The recent TOTEMmeasurement of 73.5 mb [11] is used for the pp inelastic cross–section 1. 
+%All generated events are passed through the full Geant [12] based simulation of the CMS apparatus and are reconstructed using release 4 2 3 of the CMS event reconstruction software.
+
+Generated events are normalized to the Z production crosssection XXXXX, top-antitop events are normalized to
+the crosssection YYYYY, diboson events to the NLO cross-section ZZZZZ.
+
+In table~\ref{tab:DatasetsData} and table~\ref{tab:DatasetsMC} the data and MC samples used are listed.
+
+\begin{table}[!ht]
+\begin{center}
+\begin{tabular}{l|r}
+\hline
+Dataset Name & run range \\
+\hline
+\hline
+
+  /SingleMu/Run2011A-12Oct2013-v1/AOD & -  \\
+  /SingleMu/Run2011B-12Oct2013-v1/AOD & -  \\
+  /DoubleMu/Run2011A-ZMu-12Oct2013-v1/RAW-RECO & -  \\
+  /DoubleMu/Run2011B-ZMu-12Oct2013-v1/RAW-RECO & -  \\
+
+\hline
+\end{tabular}
+\caption{Summary of data datasets used.\label{tab:DatasetsData}}
+\end{center}
+%\end{table}
+%\begin{table}[!ht]
+\begin{center}
+{\footnotesize
+\begin{tabular}{l|l|c|c|c|}
+\hline
+\multicolumn{3}{c}{With Pileup: Processed dataset name is} \\
+\multicolumn{3}{c}{(53) Summer11LegDR-PU\_S13\_START53\_LV6-v*/AODSIM} \\
+\hline
+ Description                     &   Primary Dataset Name   & Tune & PDF & cross-section [pb]\\
+\hline
+$ DY \rightarrow \ell \ell$  & DYJetsToLL\_M-50\_7TeV-madgraph-pythia6-tauola & Z2 & cteq6L or CT10 &  \\
+$ W \rightarrow \ell \nu$ & WJetsToLNu\_TuneZ2\_7TeV-madgraph-tauola & Z2 & cteq6L or CT10 &  \\
+$ DY \rightarrow \mu \mu$  &  DYToMuMu\_M-50To250\_ew-BMNNP\_7TeV-powheg-pythia8 & 4C & NNPDF2.3 &  \\
+$ W^{+} \rightarrow \mu^{+} \nu$ &  WplusToMuNu\_M-50To250\_ew-BMNNP\_7TeV-powheg-pytha8 & 4C & NNPDF2.3 & \\
+$ W^{-} \rightarrow \mu^{-} \nu$ & WminusToMuNu\_M-50To250\_ew-BMNNP\_7TeV-powheg-pytha8 & 4C & NNPDF2.3 & \\
+%$ t\bar{t}$ & TTJets_TuneZ2_7TeV-madgraph-tauola &  \\
+\hline
+\end{tabular}
+}
+\caption{Summary of Monte Carlo datasets used.
+\label{tab:DatasetsMC}}
+\end{center}
+\end{table}
+
+\section{Selection}
+\label{sec:Sel}
+
+The CMS experiment has utilized a particle flow algorithm in event reconstruction. The selection criteria for muon reconstruction and identication are de-
+scribed in detail in XXXXX.
+The aim of event selection is to :
+a) maximise the number of W decay events selected from the available data sample while minimising the fraction
+of background events selected (for example recoil cut to suppress top, met cut
+to suppress QCD, Z veto, second lepton to reduce the Z and top dilepton);
+b) maximimize the data mc agreement to limit the sources of feature that are difficult to simulate (trkmet, eta of the muon);
+The Z event selection for the recoil calibration is as close as possible the W event selection to avoid to introduce biases. Each Z decay is reconstructed
+from two muons of opposite sign and with an invariant mass window of 10 GeV around the 91 GeV.
+
+The CMS experiment has utilized a particle-flow algorithm in event reconstruction.
+The selection criteria for muon reconstruction and identification are described in detail in XXXXX.
+
+The aim of event selection is to :
+a) maximise the number of W decay events selected from the available data sample while minimising the fraction of background events selected (for example recoil cut to suppress top, met cut to suppress QCD, Z veto, second lepton to reduce the Z and top dilepton);
+b) maximimize the data mc agreement to limit the sources of feature that are difficult to simulate (trkmet, eta of the muon);
+
+The Z event selection for the recoil calibration is as close as possible the W event selection to avoid to introduce biases.
+Each Z decay is reconstructed from two muons of opposite sign and with an invariant mass window of 10 GeV around the 91 GeV.
