@@ -57,12 +57,12 @@ WMassCentral_MeV = "80398"; # 80385
 WMassSkipNSteps = "5"; # 15
 WMassNSteps = "5"; # 60
 # WMassNSteps = "0"; # 60
-etaMuonNSteps = "3"; # 5
+etaMuonNSteps = "1"; # 5
 etaMaxMuons = "1.6"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
 parallelize = 1;
-# resumbit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
-resumbit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
+# DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
+resumbit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" 
 # resumbit_sample = "DYJetsPow,DYJetsMadSig" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 
 runWanalysis = 1;
@@ -77,7 +77,7 @@ mergeSigEWKbkg = 0;
 ## PERFORM W or Z MASS FIT
 fit_W_or_Z = "Z" # "W,Z" or "W" or "Z"
 
-usePowOrMadForSig = "MADGRAPH"; # use "POWHEG" or use "MADGRAPH"
+usePowOrMadForSig = "POWHEG"; # use "POWHEG" or use "MADGRAPH"
 runPrepareDataCardsFast = 0; # ALTERNATIVE FAST WAY: TEMPLATES ARE IN THE SYsT FOLDER, PSEUDO-DATA IN THE LOCAL FOLDER
 DataCards_systFromFolder="" # evaluate systematics wrt folder (or leave it empty)
 
