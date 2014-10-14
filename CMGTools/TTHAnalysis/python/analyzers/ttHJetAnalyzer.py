@@ -91,26 +91,26 @@ class ttHJetAnalyzer( Analyzer ):
                     self.computeQGvars(jet)
                     jet.qgl = self.qglcalc.computeQGLikelihood(jet, rho)
 
-                    #manually match to genparticle
-                    deltaRmin = 999.
-                    foundPartonId = 0
-                    foundPartonMomId = 0
-                    for ipart in event.genParticles:
-                      if ipart.status() != 23: continue
-                      if ipart.pt() < 1.: continue
-                      if abs(ipart.eta()) > 10: continue
-                      if abs(ipart.pdgId())>5 and ipart.pdgId()!=21: continue
-                      thisDeltaR = deltaR( ipart.eta(), ipart.phi(), jet.eta(), jet.phi() )
-                      if thisDeltaR < deltaRmin:
-                        deltaRmin=thisDeltaR
-                        foundPartonId=ipart.pdgId()
-                        if( ipart.numberOfMothers()>0 ):
-                          foundPartonMomId=ipart.mother(0).pdgId()
-                    jet.partonId = 0
-                    jet.partonMotherId = 0
-                    if deltaRmin<0.4:
-                      jet.partonId=foundPartonId
-                      jet.partonMotherId=foundPartonMomId
+                    ##manually match to genparticle
+                    #deltaRmin = 999.
+                    #foundPartonId = 0
+                    #foundPartonMomId = 0
+                    #for ipart in event.genParticles:
+                    #  if ipart.status() != 23 and ipart.status() != 3: continue
+                    #  if ipart.pt() < 1.: continue
+                    #  if abs(ipart.eta()) > 10: continue
+                    #  if abs(ipart.pdgId())>5 and ipart.pdgId()!=21: continue
+                    #  thisDeltaR = deltaR( ipart.eta(), ipart.phi(), jet.eta(), jet.phi() )
+                    #  if thisDeltaR < deltaRmin:
+                    #    deltaRmin=thisDeltaR
+                    #    foundPartonId=ipart.pdgId()
+                    #    if( ipart.numberOfMothers()>0 ):
+                    #      foundPartonMomId=ipart.mother(0).pdgId()
+                    #jet.partonId = 0
+                    #jet.partonMotherId = 0
+                    #if deltaRmin<0.4:
+                    #  jet.partonId=foundPartonId
+                    #  jet.partonMotherId=foundPartonMomId
 
                     event.jets.append(jet)
                     event.jetsIdOnly.append(jet)
