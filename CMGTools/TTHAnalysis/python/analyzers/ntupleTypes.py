@@ -193,7 +193,6 @@ jetType = NTupleObjectType("jet",  baseObjectTypes = [ fourVectorType ], variabl
     NTupleVariable("rawPt",     lambda x : x.pt() * x.rawFactor(), help="p_{T} before JEC"),
     NTupleVariable("mcPt",      lambda x : x.mcJet.pt() if x.mcJet else 0., mcOnly=True, help="p_{T} of associated gen jet"),
     NTupleVariable("mcFlavour", lambda x : x.partonFlavour(), int,     mcOnly=True, help="parton flavour (physics definition, i.e. including b's from shower)"),
-    #NTupleVariable("quarkGluonID", lambda x : x.QG,  mcOnly=False),
 ])
 jetTypeTTH = NTupleObjectType("jetTTH",  baseObjectTypes = [ jetType ], variables = [
     NTupleVariable("mcMatchId",    lambda x : x.mcMatchId,   int, mcOnly=True, help="Match to source from hard scatter (25 for H, 6 for t, 23/24 for W/Z)"),
@@ -211,8 +210,10 @@ jetTypeSusy = NTupleObjectType("jetSusy",  baseObjectTypes = [ jetType ], variab
     # QG variables:
     NTupleVariable("ptd",   lambda x : x.ptd, float, mcOnly=False,help="QG input variable: ptD"),
     NTupleVariable("axis2",   lambda x : x.axis2 , float, mcOnly=False,help="QG input variable: axis2"),
-    NTupleVariable("mult",   lambda x : x.mult , float, mcOnly=False,help="QG input variable: total multiplicity"),
+    NTupleVariable("mult",   lambda x : x.mult , int, mcOnly=False,help="QG input variable: total multiplicity"),
     NTupleVariable("qgl",   lambda x : x.qgl , float, mcOnly=False,help="QG Likelihood"),
+    NTupleVariable("partonId", lambda x : x.partonId, int,     mcOnly=True, help="parton flavour (manually matching to status 23 particles)"),
+    NTupleVariable("partonMotherId", lambda x : x.partonMotherId, int,     mcOnly=True, help="parton flavour (manually matching to status 23 particles)"),
 ])
 
       
