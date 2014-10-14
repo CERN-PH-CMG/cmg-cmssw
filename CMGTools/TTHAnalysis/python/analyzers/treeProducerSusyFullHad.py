@@ -86,12 +86,15 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
 
         
         self.globalObjects.update({
-            # put more here
+            # put more here
             "pseudoJet1_had"       : NTupleObject("pseudoJet1_had",     fourVectorType, help="full pseudoJet1 for hemishphere"),
             "pseudoJet2_had"       : NTupleObject("pseudoJet2_had",     fourVectorType, help="full pseudoJet2 for hemishphere"),
             #
             "pseudoJet1"       : NTupleObject("pseudoJet1",     fourVectorType, help="pseudoJet1 for hemishphere, including leptons"),
             "pseudoJet2"       : NTupleObject("pseudoJet2",     fourVectorType, help="pseudoJet2 for hemishphere, including leptons"),
+            #
+            "pseudoViaKtJet1_had"       : NTupleObject("pseudoViaKtJet1_had",     fourVectorType, help="full pseudoJet1 for hemishphere via KT"),
+            "pseudoViaKtJet2_had"       : NTupleObject("pseudoViaKtJet2_had",     fourVectorType, help="full pseudoJet2 for hemishphere via KT"),
             #
             "gamma_met" : NTupleObject("gamma_met", fourVectorType, help="PF E_{T}^{miss}, plus photon, after type 1 corrections"), 
             "gamma_metNoPU" : NTupleObject("gamma_metNoPU", fourVectorType, help="PF noPU E_{T}^{miss}, plus photon"),
