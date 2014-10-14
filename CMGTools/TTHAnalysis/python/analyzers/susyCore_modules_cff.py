@@ -194,6 +194,14 @@ ttHHeavyFlavourHadronAnalyzer = cfg.Analyzer(
 )
 
 
+ttHMetAna = cfg.Analyzer(
+    'ttHMetEventAnalyzer',
+    doTkMet = True,
+    candidates='packedPFCandidates',
+    candidatesTypes='std::vector<pat::PackedCandidate>',
+    dzMax = 0.1,
+    )
+
 # Core Event Analyzer (computes basic quantities like HT, dilepton masses)
 ttHCoreEventAna = cfg.Analyzer(
     'ttHCoreEventAnalyzer',
@@ -234,6 +242,7 @@ susyCoreSequence = [
     ttHJetAna,
     ttHJetMCAna,
     #ttHSVAnalyzer, # out of core sequence for now
+    ttHMetAna,
     ttHCoreEventAna,
     ttHJetMETSkim
 ]
