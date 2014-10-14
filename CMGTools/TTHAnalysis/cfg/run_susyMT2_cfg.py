@@ -90,7 +90,8 @@ ttHMT2Control = cfg.Analyzer(
 ##------------------------------------------
 
 ttHTopoJetAna = cfg.Analyzer(
-            'ttHTopoVarAnalyzer'
+            'ttHTopoVarAnalyzer',
+            doOnlyDefault = True
             )
 
 
