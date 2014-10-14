@@ -103,8 +103,12 @@ class QGLikelihoodCalculator:
     G=1.
 
     #print "----------------------"
+    #if jet.partonFlavour()==21 :
+    #  print "this jet is a GLUON"
+    #elif math.fabs(jet.partonFlavour())<4 and jet.partonFlavour()!=0:
+    #  print "this jet is a QUARK"
     #print "pt: " + str(jet.pt()) + " eta: " + str(jet.eta()) + " rho: " + str(rho)
-    #print "multi: " + str(jet.mult) + " ptd: " + str(jet.ptd) + "axis2: " + str(jet.axis2)
+    #print "multi: " + str(jet.mult) + " ptd: " + str(jet.ptd) + " axis2: " + str(jet.axis2)
 
     for i in vars :
 
