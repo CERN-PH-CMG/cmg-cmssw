@@ -74,7 +74,7 @@ class ttHIsoTrackAnalyzer( Analyzer ):
 
 ## ===> compute the isolation and find the most isolated track
 
-            othertracks = [ p for p in charged if( deltaR(p.eta(), p.phi(), track.eta(), track.phi()) < self.cfg_ana.isoDR and deltaR(p.eta(), p.phi(), track.eta(), track.phi()) > 0.001 and p.pt()>self.cfg_ana.ptPartMin ) ]
+            othertracks = [ p for p in charged if( deltaR(p.eta(), p.phi(), track.eta(), track.phi()) < self.cfg_ana.isoDR and p.pt()>self.cfg_ana.ptPartMin ) ]
             #othertracks = alltrack
 
             isoSum=0
@@ -104,7 +104,7 @@ class ttHIsoTrackAnalyzer( Analyzer ):
 
             ### ===> the sum should not contain the track candidate
 
-            track.absIso = isoSum 
+            track.absIso = isoSum - track.pt()
 
             #### store a preIso track
             #event.preIsoTrack.append(track)
