@@ -43,8 +43,7 @@ class ttHJetMCMatchAnalyzer( Analyzer ):
         event.bqObjects = [ p for p in event.genParticles if (p.status() == 2 and isFlavour(p,5)) ]
         event.cqObjects = [ p for p in event.genParticles if (p.status() == 2 and isFlavour(p,4)) ]
 
-        isParton = isFlavour(p,1) or isFlavour(p,2) or isFlavour(p,3) or isFlavour(p,4) or isFlavour(p,5) or isFlavour(p,21)
-        event.partons   = [ p for p in event.genParticles if ((p.status() == 23 or p.status() == 3) and abs(p.pdgId())>0 and isParton ) ]
+        event.partons   = [ p for p in event.genParticles if ((p.status() == 23 or p.status() == 3) and abs(p.pdgId())>0 and (abs(p.pdgId()) in [1,2,3,4,5,21]) ) ]
         match = matchObjectCollection2(event.cleanJetsAll,
                                        event.partons,
                                        deltaRMax = 0.3)
