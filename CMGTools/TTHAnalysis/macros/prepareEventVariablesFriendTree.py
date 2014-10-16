@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from CMGTools.TTHAnalysis.treeReAnalyzer import *
 from glob import glob
-import os.path
+import os.path, re
 
 MODULES = []
 
@@ -13,17 +13,17 @@ MODULES = []
 #MODULES.append( ('3l_mva', FinalMVA_3L()) )
 #from CMGTools.TTHAnalysis.tools.bbvars import bbVars
 #MODULES.append( ('bbvars', bbVars()) )
-#from CMGTools.TTHAnalysis.tools.finalMVA_susy_2lss import FinalMVA_SUSY_2LSS
-#MODULES.append( ('finalMVA_susy_2lss', FinalMVA_SUSY_2LSS()) )
+from CMGTools.TTHAnalysis.tools.finalMVA_susy_2lss import FinalMVA_SUSY_2LSS
+MODULES.append( ('finalMVA_susy_2lss', FinalMVA_SUSY_2LSS()) )
 #from CMGTools.TTHAnalysis.tools.ttbarEventReco_2lss import TTEventReco_MC
 #MODULES.append( ('ttreco_mc', TTEventReco_MC()) )
 #from CMGTools.TTHAnalysis.tools.ttbarEventReco_2lss import TTEventReco
 #MODULES.append( ('ttreco', TTEventReco(sortersToUse={"BestGuess":"", "BestBySum4NoTJJb":"_bySum4"})) )
 #MODULES.append( ('ttreco', TTEventReco(sortersToUse={"BestGuess":"","ByGuessLL2B":"_byLL"})) )
-#from CMGTools.TTHAnalysis.tools.MuonMVAFriend import MuonMVAFriend
-#MODULES.append( ('', MuonMVAFriend("BPH",     "/afs/cern.ch/work/g/gpetrucc/micro/cmg/CMSSW_7_0_9/src/CMGTools/TTHAnalysis/macros/leptons/train70XBPH_BDTG.weights.xml", label="BPH")) )
-#MODULES.append( ('', MuonMVAFriend("BPHCalo", "/afs/cern.ch/work/g/gpetrucc/micro/cmg/CMSSW_7_0_9/src/CMGTools/TTHAnalysis/macros/leptons/train70XBPHCalo_BDTG.weights.xml", label="BPHCalo")) )
-#MODULES.append( ('', MuonMVAFriend("Full",    "/afs/cern.ch/work/g/gpetrucc/micro/cmg/CMSSW_7_0_9/src/CMGTools/TTHAnalysis/macros/leptons/train70XFull_BDTG.weights.xml", label="Full")) )
+from CMGTools.TTHAnalysis.tools.MuonMVAFriend import MuonMVAFriend
+MODULES.append( ('MuMVAId', MuonMVAFriend("BPH",     "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_muMVAId_v1/train70XBPH_BDTG.weights.xml", label="BPH")) )
+MODULES.append( ('MuMVAId', MuonMVAFriend("BPHCalo", "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_muMVAId_v1/train70XBPHCalo_BDTG.weights.xml", label="BPHCalo")) )
+MODULES.append( ('MuMVAId', MuonMVAFriend("Full",    "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_muMVAId_v1/train70XFull_BDTG.weights.xml", label="Full")) )
 from CMGTools.TTHAnalysis.tools.LepMVAFriend import LepMVAFriend
 MODULES.append( ('LepMVAFriend', LepMVAFriend(("/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/%s_BDTG.weights.xml",
                                                "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/%s_BDTG.weights.xml"))) )
@@ -64,7 +64,9 @@ import os, itertools
 
 from optparse import OptionParser
 parser = OptionParser(usage="%prog [options] <TREE_DIR> <OUT>")
+parser.add_option("-m", "--modules", dest="modules",  type="string", default=[], action="append", help="Run these modules");
 parser.add_option("-d", "--dataset", dest="datasets",  type="string", default=[], action="append", help="Process only this dataset (or dataset if specified multiple times)");
+parser.add_option("-D", "--dm", "--dataset-match", dest="datasetMatches",  type="string", default=[], action="append", help="Process only this dataset (or dataset if specified multiple times): REGEXP");
 parser.add_option("-c", "--chunk",   dest="chunks",    type="int",    default=[], action="append", help="Process only these chunks (works only if a single dataset is selected with -d)");
 parser.add_option("-N", "--events",  dest="chunkSize", type="int",    default=500000, help="Default chunk size when splitting trees");
 parser.add_option("-j", "--jobs",    dest="jobs",      type="int",    default=1, help="Use N threads");
@@ -92,6 +94,11 @@ for D in glob(args[0]+"/*"):
         short = os.path.basename(D)
         if options.datasets != []:
             if short not in options.datasets: continue
+        if options.datasetMatches != []:
+            found = False
+            for dm in  options.datasetMatches:
+                if re.match(dm,short): found = True
+            if not found: continue
         data = ("DoubleMu" in short or "MuEG" in short or "DoubleElectron" in short or "SingleMu" in short)
         f = ROOT.TFile.Open(fname);
         t = f.Get(options.tree)
@@ -122,6 +129,7 @@ if options.queue:
     friendPost =  "".join(["  -F  %s %s " % (fn,ft) for fn,ft in options.friendTrees])
     friendPost += "".join([" --FM %s %s " % (fn,ft) for fn,ft in options.friendTreesMC])
     friendPost += "".join([" --FD %s %s " % (fn,ft) for fn,ft in options.friendTreesData])
+    friendPost += "".join(["  -m  '%s'  " % m for m in options.modules])
     for (name,fin,fout,data,range,chunk) in jobs:
         if chunk != -1:
             print "{base} -d {data} -c {chunk} {post}".format(base=basecmd, data=name, chunk=chunk, post=friendPost)
@@ -152,6 +160,14 @@ def _runIt(myargs):
         return (name,(nev,0))
     print "==== %s starting (%d entries) ====" % (name, nev)
     booker = Booker(fout)
+    modulesToRun = MODULES
+    if options.modules != []:
+        toRun = {}
+        for m,v in MODULES:
+            for pat in options.modules:
+                if re.match(pat,m):
+                    toRun[m] = True 
+        modulesToRun = [ (m,v) for (m,v) in MODULES if m in toRun ]
     el = EventLoop([ VariableProducer(options.treeDir,booker,MODULES), ])
     el.loop([tb], eventRange=range)
     booker.done()

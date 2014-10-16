@@ -52,7 +52,6 @@ class MuonMVA:
 
 class MuonMVAFriend:
     def __init__(self,name,path,label=""):
-        print path
         self.mva = MuonMVA(name,path) 
         self.label = label
     def listBranches(self):
