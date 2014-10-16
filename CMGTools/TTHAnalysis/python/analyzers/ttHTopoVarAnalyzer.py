@@ -112,39 +112,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
                 pzvec.push_back(jet.pz())
                 Evec.push_back(jet.energy())
 
-#### get hemispheres via AntiKT -1 antikt, 1 kt, 0 CA                                                                                                                                    
-            hemisphereViaAKt = HemisphereViaKt(pxvec, pyvec, pzvec, Evec, -1.)
-            groupingViaAKt=hemisphereViaAKt.getGrouping()
-
-            pseudoJet1px = 0
-            pseudoJet1py = 0
-            pseudoJet1pz = 0
-            pseudoJet1energy = 0
-
-            pseudoJet2px = 0
-            pseudoJet2py = 0
-            pseudoJet2pz = 0
-            pseudoJet2energy = 0
-
-            for index in range(0, len(groupingViaAKt[0])):
-                if(index==0):
-                    pseudoJet1px = groupingViaAKt[0][index]
-                    pseudoJet1py = groupingViaAKt[1][index]
-                    pseudoJet1pz = groupingViaAKt[2][index]
-                    pseudoJet1energy = groupingViaAKt[3][index]
-                if(index==1):
-                    pseudoJet2px = groupingViaAKt[0][index]
-                    pseudoJet2py = groupingViaAKt[1][index]
-                    pseudoJet2pz = groupingViaAKt[2][index]
-                    pseudoJet2energy = groupingViaAKt[3][index]
-
-            event.pseudoViaAKtJet1_had = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
-            event.pseudoViaAKtJet2_had = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
-
-            event.mt2ViaAKt_had = self.computeMT2(event.pseudoViaAKtJet1_had, event.pseudoViaAKtJet2_had, event.met)
-
 #### get hemispheres via AntiKT -1 antikt, 1 kt, 0 CA
-                                                                                                                                    
             hemisphereViaKt = HemisphereViaKt(pxvec, pyvec, pzvec, Evec, 1.)
             groupingViaKt=hemisphereViaKt.getGrouping()
 
@@ -174,6 +142,39 @@ class ttHTopoVarAnalyzer( Analyzer ):
             event.pseudoViaKtJet2_had = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
 
             event.mt2ViaKt_had = self.computeMT2(event.pseudoViaKtJet1_had, event.pseudoViaKtJet2_had, event.met)
+
+
+            if not self.cfg_ana.doOnlyDefault:
+#### get hemispheres via AntiKT -1 antikt, 1 kt, 0 CA                                                                                                                                    
+                hemisphereViaAKt = HemisphereViaKt(pxvec, pyvec, pzvec, Evec, -1.)
+                groupingViaAKt=hemisphereViaAKt.getGrouping()
+
+                pseudoJet1px = 0
+                pseudoJet1py = 0
+                pseudoJet1pz = 0
+                pseudoJet1energy = 0
+
+                pseudoJet2px = 0
+                pseudoJet2py = 0
+                pseudoJet2pz = 0
+                pseudoJet2energy = 0
+
+                for index in range(0, len(groupingViaAKt[0])):
+                    if(index==0):
+                        pseudoJet1px = groupingViaAKt[0][index]
+                        pseudoJet1py = groupingViaAKt[1][index]
+                        pseudoJet1pz = groupingViaAKt[2][index]
+                        pseudoJet1energy = groupingViaAKt[3][index]
+                    if(index==1):
+                        pseudoJet2px = groupingViaAKt[0][index]
+                        pseudoJet2py = groupingViaAKt[1][index]
+                        pseudoJet2pz = groupingViaAKt[2][index]
+                        pseudoJet2energy = groupingViaAKt[3][index]
+
+                event.pseudoViaAKtJet1_had = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+                event.pseudoViaAKtJet2_had = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+                        
+                event.mt2ViaAKt_had = self.computeMT2(event.pseudoViaAKtJet1_had, event.pseudoViaAKtJet2_had, event.met)
 
 #### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
 

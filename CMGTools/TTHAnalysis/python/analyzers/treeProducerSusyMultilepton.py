@@ -109,15 +109,12 @@ class treeProducerSusyMultilepton( treeProducerSusyCore ):
             # put more here
         })
 
-        self.collections = {
-            ##--------------------------------------------------                                                                                                                                   
+        self.collections.update({
+            # put more here
             "gentopquarks"    : NTupleCollection("GenTop",     genParticleType, 2, help="Generated top quarks from hard scattering"),
             "genbquarks"      : NTupleCollection("GenBQuark",  genParticleType, 2, help="Generated bottom quarks from top quark decays"),
             "genwzquarks"     : NTupleCollection("GenQuark",   genParticleWithSourceType, 6, help="Generated quarks from W/Z decays"),
-            }
-
-        self.collections.update({
-            # put more here
+            ##--------------------------------------------------                                                                                                                                   
             "selectedTaus"    : NTupleCollection("TauGood", tauTypeSusy, 3, help="Taus after the preselection"),
             "otherLeptons"    : NTupleCollection("LepOther", leptonTypeSusyExtra, 8, help="Leptons after the preselection"),
             "selectedLeptons" : NTupleCollection("LepGood", leptonTypeSusyExtra, 8, help="Leptons after the preselection"),

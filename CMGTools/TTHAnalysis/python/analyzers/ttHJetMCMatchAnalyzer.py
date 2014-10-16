@@ -38,16 +38,28 @@ class ttHJetMCMatchAnalyzer( Analyzer ):
             if id >  99: return  (id/100)%10 == f
             return id % 100 == f
 
+
+
         event.bqObjects = [ p for p in event.genParticles if (p.status() == 2 and isFlavour(p,5)) ]
         event.cqObjects = [ p for p in event.genParticles if (p.status() == 2 and isFlavour(p,4)) ]
+
+        event.partons   = [ p for p in event.genParticles if ((p.status() == 23 or p.status() == 3) and abs(p.pdgId())>0 and (abs(p.pdgId()) in [1,2,3,4,5,21]) ) ]
+        match = matchObjectCollection2(event.cleanJetsAll,
+                                       event.partons,
+                                       deltaRMax = 0.3)
+
+        for jet in event.cleanJetsAll:
+            parton = match[jet]
+            jet.partonId = (parton.pdgId() if parton != None else 0)
+            jet.partonMotherId = (parton.mother(0).pdgId() if parton != None and parton.numberOfMothers()>0 else 0)
         
         for jet in event.jets:
            (bmatch, dr) = bestMatch(jet, event.bqObjects)
-           if dr < 0.5:
+           if dr < 0.4:
                jet.mcFlavour = 5
            else:
                (cmatch, dr) = bestMatch(jet, event.cqObjects) 
-               if dr < 0.5:
+               if dr < 0.4:
                    jet.mcFlavour = 4
                else:
                    jet.mcFlavour = 0
@@ -69,6 +81,8 @@ class ttHJetMCMatchAnalyzer( Analyzer ):
                                        deltaRMax = 0.3)
         for jet in event.cleanJetsAll:
             jet.mcJet = match[jet]
+
+
  
     def smearJets(self, event):
         # https://twiki.cern.ch/twiki/bin/viewauth/CMS/TWikiTopRefSyst#Jet_energy_resolution

@@ -15,7 +15,7 @@ HemisphereViaKt::HemisphereViaKt(vector<float> Px_vector, vector<float> Py_vecto
 
 HemisphereViaKt::HemisphereViaKt(vector<float> Px_vector, vector<float> Py_vector, vector<float> Pz_vector,
 				 vector<float> E_vector, double ktpower) : Object_Px(Px_vector),
-									Object_Py(Py_vector), Object_Pz(Pz_vector), Object_E(E_vector), ktpower_(ktpower), rparam_(1.0), status(0), dbg(1) {
+									Object_Py(Py_vector), Object_Pz(Pz_vector), Object_E(E_vector), ktpower_(ktpower), rparam_(50.0), status(0), dbg(1) {
   numLoop =0;
 }
 

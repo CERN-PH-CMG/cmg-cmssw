@@ -90,7 +90,8 @@ ttHMT2Control = cfg.Analyzer(
 ##------------------------------------------
 
 ttHTopoJetAna = cfg.Analyzer(
-            'ttHTopoVarAnalyzer'
+            'ttHTopoVarAnalyzer',
+            doOnlyDefault = True
             )
 
 
@@ -120,7 +121,8 @@ treeProducer = cfg.Analyzer(
             },
         )
 
-treeProducer.isCompressed = 0
+###---- to switch off the comptrssion
+#treeProducer.isCompressed = 0
 
 
 #-------- SAMPLES AND TRIGGERS -----------
