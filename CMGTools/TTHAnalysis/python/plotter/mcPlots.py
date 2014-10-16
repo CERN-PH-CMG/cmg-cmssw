@@ -278,6 +278,11 @@ def doRatioHists(pspec,pmap,total,totalSyst,maxRange,fitRatio=False):
     numkey = "data" 
     if "data" not in pmap: 
         if len(pmap) == 4 and 'signal' in pmap and 'background' in pmap:
+            # do this first
+            total.GetXaxis().SetLabelOffset(999) ## send them away
+            total.GetXaxis().SetTitleOffset(999) ## in outer space
+            total.GetYaxis().SetLabelSize(0.05)
+            # then we can overwrite total with background
             numkey = 'signal'
             total     = pmap['background']
             totalSyst = pmap['background']
@@ -621,6 +626,16 @@ class PlotMaker:
                     if sfitnorm != None:
                         sfitnorm.SetDirectory(dir); dir.WriteTObject(sfitnorm)
                         reMax(total,sfitnorm,islog)
+                if options.flagDifferences and len(pmap) == 4:
+                    new = pmap['signal']
+                    ref = pmap['background']
+                    if "TH1" in new.ClassName():
+                        for b in xrange(1,new.GetNbinsX()+1):
+                            if new.GetBinContent(b) != ref.GetBinContent(b):
+                                print "Plot: difference found in %s, bin %d" % (pspec.name, b)
+                                p1.SetFillColor(ROOT.kYellow-10)
+                                if p2: p2.SetFillColor(ROOT.kYellow-10)
+                                break
                 if makeCanvas: dir.WriteTObject(c1)
                 rdata,rnorm,rnorm2,rline = (None,None,None,None)
                 if doRatio:
@@ -685,6 +700,7 @@ def addPlotMakerOptions(parser):
     parser.add_option("--poisson", dest="poisson", action="store_true", default=False, help="Draw Poisson error bars")
     parser.add_option("--select-plot", "--sP", dest="plotselect", action="append", default=[], help="Select only these plots out of the full file")
     parser.add_option("--exclude-plot", "--xP", dest="plotexclude", action="append", default=[], help="Exclude these plots from the full file")
+    parser.add_option("--flagDifferences", dest="flagDifferences", action="store_true", default=False, help="Flag plots that are different (when using only two processes, and plotmode nostack")
 
 if __name__ == "__main__":
     from optparse import OptionParser
