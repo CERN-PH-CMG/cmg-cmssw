@@ -275,10 +275,22 @@ def doNormFit(pspec,pmap,mca):
                         htot.SetBinError(b, hypot(htot.GetBinError(b), pmap[p].GetBinContent(b)*syst))
 
 def doRatioHists(pspec,pmap,total,totalSyst,maxRange,fitRatio=False):
-    if "data" not in pmap: return (None,None,None,None)
+    numkey = "data" 
+    if "data" not in pmap: 
+        if len(pmap) == 4 and 'signal' in pmap and 'background' in pmap:
+            # do this first
+            total.GetXaxis().SetLabelOffset(999) ## send them away
+            total.GetXaxis().SetTitleOffset(999) ## in outer space
+            total.GetYaxis().SetLabelSize(0.05)
+            # then we can overwrite total with background
+            numkey = 'signal'
+            total     = pmap['background']
+            totalSyst = pmap['background']
+        else:    
+            return (None,None,None,None)
     ratio = None
-    if hasattr(pmap['data'], 'poissonGraph'):
-        ratio = pmap["data"].poissonGraph.Clone("data_div"); 
+    if hasattr(pmap[numkey], 'poissonGraph'):
+        ratio = pmap[numkey].poissonGraph.Clone("data_div"); 
         for i in xrange(ratio.GetN()):
             x    = ratio.GetX()[i]
             div  = total.GetBinContent(total.GetXaxis().FindBin(x))
@@ -287,7 +299,7 @@ def doRatioHists(pspec,pmap,total,totalSyst,maxRange,fitRatio=False):
                                    ratio.GetErrorYlow(i)/div  if div > 0 else 0, 
                                    ratio.GetErrorYhigh(i)/div if div > 0 else 0) 
     else:
-        ratio = pmap["data"].Clone("data_div"); 
+        ratio = pmap[numkey].Clone("data_div"); 
         ratio.Divide(total)
     unity  = totalSyst.Clone("sim_div");
     unity0 = total.Clone("sim_div");
@@ -531,7 +543,7 @@ class PlotMaker:
                 dir.WriteTObject(stack)
                 # 
                 if not makeCanvas and not self._options.printPlots: continue
-                doRatio = self._options.showRatio and 'data' in pmap and ("TH2" not in total.ClassName())
+                doRatio = self._options.showRatio and ('data' in pmap or (self._options.plotmode != "stack" and len(pmap) == 4)) and ("TH2" not in total.ClassName())
                 islog = pspec.hasOption('Logy'); 
                 # define aspect ratio
                 if doRatio: ROOT.gStyle.SetPaperSize(20.,25.)
@@ -614,6 +626,16 @@ class PlotMaker:
                     if sfitnorm != None:
                         sfitnorm.SetDirectory(dir); dir.WriteTObject(sfitnorm)
                         reMax(total,sfitnorm,islog)
+                if options.flagDifferences and len(pmap) == 4:
+                    new = pmap['signal']
+                    ref = pmap['background']
+                    if "TH1" in new.ClassName():
+                        for b in xrange(1,new.GetNbinsX()+1):
+                            if new.GetBinContent(b) != ref.GetBinContent(b):
+                                print "Plot: difference found in %s, bin %d" % (pspec.name, b)
+                                p1.SetFillColor(ROOT.kYellow-10)
+                                if p2: p2.SetFillColor(ROOT.kYellow-10)
+                                break
                 if makeCanvas: dir.WriteTObject(c1)
                 rdata,rnorm,rnorm2,rline = (None,None,None,None)
                 if doRatio:
@@ -678,6 +700,7 @@ def addPlotMakerOptions(parser):
     parser.add_option("--poisson", dest="poisson", action="store_true", default=False, help="Draw Poisson error bars")
     parser.add_option("--select-plot", "--sP", dest="plotselect", action="append", default=[], help="Select only these plots out of the full file")
     parser.add_option("--exclude-plot", "--xP", dest="plotexclude", action="append", default=[], help="Exclude these plots from the full file")
+    parser.add_option("--flagDifferences", dest="flagDifferences", action="store_true", default=False, help="Flag plots that are different (when using only two processes, and plotmode nostack")
 
 if __name__ == "__main__":
     from optparse import OptionParser
