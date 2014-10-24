@@ -11,7 +11,7 @@ from CMGTools.RootTools.RootTools import *
 from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import * 
 
 # --- LEPTON SKIMMING ---
-ttHLepSkim.minLeptons = 2
+ttHLepSkim.minLeptons = 0
 ttHLepSkim.maxLeptons = 999
 
 ttHGenLevel = cfg.Analyzer(
@@ -37,7 +37,20 @@ WZ3l_ascms = kreator.makePrivateMCComponent('WZ3l_ascms', '/store/cmst3/user/gpe
 WZ3mu_ascms = kreator.makePrivateMCComponent('WZ3mu_ascms', '/store/cmst3/user/gpetrucc/maiani/tests', ['xs_wz_3mu_ascms.GEN.root'])
 WZ3mu_offshell = kreator.makePrivateMCComponent('WZ3mu_offshell', '/store/cmst3/user/gpetrucc/maiani/tests', ['xs_wz_3mu_offshell.GEN.root'])
 
-selectedComponents = [ WZ3l_ascms ]
+GEN_S3m_lo = kreator.makePrivateMCComponent('GEN_S3m_lo', '/store/cmst3/user/gpetrucc/lmutau/madtests/', [ 'lmutau_lo_test.GEN.root' ])
+GEN_S3m_lo_012j = kreator.makePrivateMCComponent('GEN_S3m_lo_012j', '/store/cmst3/user/gpetrucc/lmutau/madtests/', [ 'lmutau_lo_012j_test.GEN.root' ])
+GEN_S3m_lo_01j = kreator.makePrivateMCComponent('GEN_S3m_lo_01j', '/store/cmst3/user/gpetrucc/lmutau/madtests/', [ 'lmutau_lo_01j_test.GEN.root' ])
+GEN_S3m_nlo = kreator.makePrivateMCComponent('GEN_S3m_nlo', '/store/cmst3/user/gpetrucc/lmutau/madtests/', [ 'lmutau_nlo_test.GEN.root' ])
+GEN_S3m_nlo_01j = kreator.makePrivateMCComponent('GEN_S3m_nlo_01j', '/store/cmst3/user/gpetrucc/lmutau/madtests/', [ 'lmutau_nlo_01j_test.GEN.root', 'lmutau_nlo_01j_test.2.GEN.root' ])
+GEN_S3m_lo_direct = kreator.makePrivateMCComponent('GEN_S3m_lo_direct', '/store/cmst3/user/gpetrucc/lmutau/madtests/', [ 'lmutau_lo_direct_test.GEN.root' ])
+
+GEN_T2tt_py8had = kreator.makePrivateMCComponent('GEN_T2tt_py8had', '/store/cmst3/user/gpetrucc/SUSY/TestProd/T2tt/', [ 'T2tt_onshell_pyt8had.root' ])
+GEN_T2tt_py8dec_py8had = kreator.makePrivateMCComponent('GEN_T2tt_py8dec_py8had', '/store/cmst3/user/gpetrucc/SUSY/TestProd/T2tt/', [ 'T2tt_onshell_py8decay_pyt8had.root' ])
+GEN_T2tt_mgdec_py8had  = kreator.makePrivateMCComponent('GEN_T2tt_mgdec_py8had',  '/store/cmst3/user/gpetrucc/SUSY/TestProd/T2tt/', [ 'T2tt_decayed_pyt8had.root' ])
+
+#selectedComponents = [ GEN_S3m_lo, GEN_S3m_lo_012j, GEN_S3m_lo_01j, GEN_S3m_nlo, GEN_S3m_nlo_01j, GEN_S3m_lo_direct ]
+selectedComponents = [ GEN_T2tt_py8had, GEN_T2tt_py8dec_py8had, GEN_T2tt_mgdec_py8had ]
+
 #-------- SEQUENCE
 
 sequence = cfg.Sequence([
@@ -52,7 +65,7 @@ sequence = cfg.Sequence([
 test = 0
 if test==1:
     # test a single component, using a single thread.
-    comp = Test
+    comp = GEN_S3m_nlo_01j
     comp.files = comp.files[:1]
     selectedComponents = [comp]
     comp.splitFactor = 1

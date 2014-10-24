@@ -31,6 +31,8 @@ class JetFromGen:
         self.btag = False
     def btagCSV(self,tag):
         return self.btag
+    def btagWP(self,tag):
+        return self.btag
     def __getattr__(self, attr):
         if hasattr(self.physObj, attr):
             return getattr(self.physObj, attr)
@@ -66,21 +68,21 @@ class ttHGenLevelOnlyStudy( Analyzer ):
             for x in xrange(l.numberOfMothers()):
                 mom = l.mother(x)
                 if mom.status() > 2: return True
-                id = abs(mom.pdgId())
+                id = abs(mom.pdgId()) % 1000000
                 if id > 100: return False
                 if id <   6: return False
                 if id == 21: return False
                 if id in [11,13,15]: return isPrompt(mom)
-                if id in [ 22,23,24,25,32 ]: return True
+                if id in [ 22,23,24,25,32,6 ]: return True
             return True
             
         event.selectedLeptons = []
         for l in event.genParticles: 
             if abs(l.pdgId()) not in [11,13] or l.status() != 1: continue
             if abs(l.pdgId()) == 13:
-                if l.pt() <= 5 or abs(l.eta()) > 2.4: continue
+                if l.pt() <= 3 or abs(l.eta()) > 2.4: continue
             if abs(l.pdgId()) == 11:
-                if l.pt() <= 7 or abs(l.eta()) > 2.5: continue
+                if l.pt() <= 5 or abs(l.eta()) > 2.5: continue
             if not isPrompt(l):
                 continue
             event.selectedLeptons.append(LeptonFromGen(l))
@@ -90,14 +92,21 @@ class ttHGenLevelOnlyStudy( Analyzer ):
         event.cleanJetsFwd = []
         event.cleanJets = []
         for j in self.mchandles['jets'].product(): 
-            if j.pt() < 25: continue
+            visfrac = 1.0 - j.invisibleEnergy()/j.energy()
+            if j.pt()*visfrac < 25: continue
+            #print "mc jet with pt %.1f, eta %.1f, vis %.1f, invis %.1f" % (j.pt(), j.eta(), j.emEnergy()+j.hadEnergy(), j.invisibleEnergy())
+            islepton = False
             for l in event.selectedLeptons:
                 if l.pt() > 10 and deltaR(l.eta(),l.phi(),j.eta(),j.phi()) < 0.5:
-                    continue
+                    #print " ---> it's a lepton"
+                    islepton = True
+                    break
+            if islepton: continue
+            j.setP4(j.p4()*visfrac)
             jo = JetFromGen(j)
             event.cleanJetsAll.append(jo)
             if abs(j.eta()) < 2.4:
-                event.cleanJetsAll.append(jo)
+                event.cleanJets.append(jo)
             else:
                 event.cleanJetsFwd.append(jo)
     def doBTag(self,iEvent,event):
