@@ -1,0 +1,6 @@
+Dominick skim: ht>450 && nJet40>=2 && mt2>50
+
+#count Leptonic: ngenLep>0 && ngenTau==0
+#count hadronicTaus: ngenLep==0 && ngenLepFromTau==0 && ngenTau>0
+#count LeptonicTaus: ngenLep==0 && ngenLepFromTau>0 && ngenTau>0
+

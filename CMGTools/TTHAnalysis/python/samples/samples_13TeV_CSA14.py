@@ -179,6 +179,11 @@ SMS_T1qqqq_2J_mGl1400_mLSP100_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponen
 SMS_T1tttt_2J_mGl1200_mLSP800_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("SMS_T1tttt_2J_mGl1200_mLSP800_PU_S14_POSTLS170", "/SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola/phys_susy-miniAODforSusy_SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola_PU_S14_POSTLS170-af38aa319b7b7c91a6797b31c3be19b7/USER", "PRIVATE", ".*root", "phys03")
 SMS_T1tttt_2J_mGl1500_mLSP100_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("SMS_T1tttt_2J_mGl1500_mLSP100_PU_S14_POSTLS170", "/SMS-T1tttt_2J_mGl-1500_mLSP-100_Tune4C_13TeV-madgraph-tauola/phys_susy-miniAODforSusy_SMS-T1tttt_2J_mGl-1500_mLSP-100_Tune4C_13TeV-madgraph-tauola_PU_S14_POSTLS170-af38aa319b7b7c91a6797b31c3be19b7/USER", "PRIVATE", ".*root", "phys03")
 
+SMS_T2tt_2J_mStop425_mLSP325_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("SMS_T2tt_2J_mStop425_mLSP325_PU_S14_POSTLS170", "SMS-T2tt_2J_mStop-425_mLSP-325_Tune4C_13TeV-madgraph-tauola/cerati-Spring14dr-PU_S14_POSTLS170_V6AN1-miniAOD706p1-814812ec83fce2f620905d2bb30e9100/USER", "PRIVATE", ".*root", "phys03")
+SMS_T2tt_2J_mStop500_mLSP325_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("SMS_T2tt_2J_mStop500_mLSP325_PU_S14_POSTLS170", "/SMS-T2tt_2J_mStop-500_mLSP-325_Tune4C_13TeV-madgraph-tauola/cerati-Spring14dr-PU_S14_POSTLS170_V6AN1-miniAOD706p1-814812ec83fce2f620905d2bb30e9100/USER", "PRIVATE", ".*root", "phys03")
+SMS_T2tt_2J_mStop650_mLSP325_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("SMS_T2tt_2J_mStop650_mLSP325_PU_S14_POSTLS170", "/SMS-T2tt_2J_mStop-650_mLSP-325_Tune4C_13TeV-madgraph-tauola/cerati-Spring14dr-PU_S14_POSTLS170_V6AN1-miniAOD706p1-814812ec83fce2f620905d2bb30e9100/USER", "PRIVATE", ".*root", "phys03")
+SMS_T2tt_2J_mStop850_mLSP100_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("SMS_T2tt_2J_mStop850_mLSP100_PU_S14_POSTLS170", "/SMS-T2tt_2J_mStop-850_mLSP-100_Tune4C_13TeV-madgraph-tauola/cerati-Spring14dr-PU_S14_POSTLS170_V6AN1-miniAOD706p1-814812ec83fce2f620905d2bb30e9100/USER", "PRIVATE", ".*root", "phys03")
+
 ### OFFICIAL SMS samples
 
 T2tt_PU20bx25_mStop_425_mLSP_325 = kreator.makeMCComponent("T2tt_mStop_425_mLSP_325","/SMS-T2tt_2J_mStop-425_mLSP-325_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root")
