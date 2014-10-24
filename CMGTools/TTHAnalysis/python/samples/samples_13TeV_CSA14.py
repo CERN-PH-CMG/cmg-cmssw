@@ -198,8 +198,9 @@ TTHnlo_PU20bx25 = kreator.makeMCComponentFromEOS('TTHnlo_PU20bx25', '/TTbarH_M-1
 T2tt_S14 = kreator.makeMCComponentFromEOS('T2tt_S14', '/SMS-T2tt_2J_mStop-425_mLSP-325_Tune4C_13TeV-madgraph-tauola/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM', '/store/cmst3/user/gpetrucc/%s/miniAODTest_CMSSW708_PR5037') 
 T2tt_PU20bx25 = kreator.makeMCComponentFromEOS('T2tt_PU20bx25', '/SMS-T2tt_2J_mStop-425_mLSP-325_Tune4C_13TeV-madgraph-tauola/Spring14dr-PU20bx25_POSTLS170_V5-v1/AODSIM', '/store/cmst3/user/gpetrucc/%s/miniAODTest_CMSSW708_PR5037') 
 TTZJets_S14 = kreator.makeMCComponentFromEOS('TTZJets_S14', '/TTZJets_Tune4C_13TeV-madgraph-tauola/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM', '/store/cmst3/user/gpetrucc/%s/miniAODTest_CMSSW708_PR5037') 
+TTWJets_S14 = kreator.makeMCComponentFromEOS('TTWJets_S14', '/TTWJets_Tune4C_13TeV-madgraph-tauola/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM', '/store/cmst3/user/gpetrucc/%s/miniAODTest_CMSSW708_PR5037') 
 TTZJets_PU20bx25 = kreator.makeMCComponentFromEOS('TTZJets_PU20bx25', '/TTZJets_Tune4C_13TeV-madgraph-tauola/Spring14dr-PU20bx25_POSTLS170_V5-v1/AODSIM', '/store/cmst3/user/gpetrucc/%s/miniAODTest_CMSSW708_PR5037') 
-GPSamples = [ TTHWWnlo_S14, TTHWWpy6_S14, TTHTTpy6_S14, TTHTTnlo_S14, TTHnlo_S14, TTHnlo_PU20bx25, T2tt_S14, T2tt_PU20bx25, TTZJets_S14, TTZJets_PU20bx25 ]
+GPSamples = [ TTHWWnlo_S14, TTHWWpy6_S14, TTHTTpy6_S14, TTHTTnlo_S14, TTHnlo_S14, TTHnlo_PU20bx25, T2tt_S14, T2tt_PU20bx25, TTZJets_S14, TTZJets_PU20bx25, TTWJets_S14 ]
 
 mcSamples = mcSamplesCSA14_PU20bx25 + mcSamplesTest + mcSamplesCSA14_PU40bx50 + GPSamples
 
