@@ -26,6 +26,7 @@ patJets.addJetCharge = False
 patJets.embedCaloTowers = False
 patJets.embedPFCandidates = False
 patJets.addAssociatedTracks = False
+patJets.useLegacyJetMCFlavour = True
 
 # b tagging 
 from RecoJets.JetAssociationProducers.ak5JTA_cff import *
@@ -85,7 +86,7 @@ patJetGenJetMatch.src = jetSource
 patJetGenJetMatch.matched = 'ak5GenJetsNoNu'
 
 from PhysicsTools.PatAlgos.mcMatchLayer0.jetFlavourId_cff import *
-patJetPartonAssociation.jets = jetSource
+patJetPartonAssociationLegacy.jets = jetSource
 
 jetsPtGt1Cut = '(neutralHadronEnergy())/(correctedJet(0).pt()/pt()*energy())  < 0.99 && (neutralEmEnergy()/(correctedJet(0).pt()/pt()*energy())) < 0.99 && (nConstituents()) > 1    && ((abs(eta())  < 2.4  && chargedHadronEnergy()/(correctedJet(0).pt()/pt()*energy()) > 0 && chargedEmEnergy()      /(correctedJet(0).pt()/pt()*energy()) < 0.99 && chargedMultiplicity() > 0)   ||  abs(eta())  > 2.4) '
 if not isNewerThan('CMSSW_5_2_0'):
@@ -140,7 +141,7 @@ PATJetSequence = cms.Sequence(
     ak5JetTracksAssociatorAtVertex + 
     btaggingExt + 
     patJetCorrFactors +
-    patJetFlavourId +
+    patJetFlavourIdLegacy +
     patJets +
     jetsPtGt1 +
     nJetsPtGt1 + 

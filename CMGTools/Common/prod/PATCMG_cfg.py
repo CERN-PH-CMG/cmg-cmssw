@@ -65,7 +65,7 @@ if runOnMC is False:
     
     process.PATCMGSequence.remove( process.PATCMGGenSequence )
     process.PATCMGJetSequence.remove( process.jetMCSequence )
-    process.PATCMGJetSequence.remove( process.patJetFlavourId )
+    process.PATCMGJetSequence.remove( process.patJetFlavourIdLegacy )
     process.patJets.addGenJetMatch = False
     process.patJets.addGenPartonMatch = False
 

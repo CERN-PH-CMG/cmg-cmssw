@@ -41,7 +41,7 @@ if isNewerThan('CMSSW_5_2_0'):
     patJetGenJetMatchCHSpruned.matched = 'ak5GenJetsNoNu'
 
     from PhysicsTools.PatAlgos.mcMatchLayer0.jetFlavourId_cff import *
-    patJetPartonAssociationCHSpruned = patJetPartonAssociation.clone()
+    patJetPartonAssociationCHSpruned = patJetPartonAssociationLegacy.clone()
     patJetPartonAssociationCHSpruned.jets = jetSource
 
     # pat jets
@@ -120,7 +120,7 @@ if isNewerThan('CMSSW_5_2_0'):
     patJetGenJetMatchAK7CHSpruned.matched = 'ak7GenJetsNoNu'
 
     from PhysicsTools.PatAlgos.mcMatchLayer0.jetFlavourId_cff import *
-    patJetPartonAssociationAK7CHSpruned = patJetPartonAssociation.clone()
+    patJetPartonAssociationAK7CHSpruned = patJetPartonAssociationLegacy.clone()
     patJetPartonAssociationAK7CHSpruned.jets = jetSource
 
     # pat jets
