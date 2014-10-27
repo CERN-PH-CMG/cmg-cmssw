@@ -68,21 +68,21 @@ bool cmg::Electron::electronID(ElectronID id, const reco::Vertex *vtx, double rh
     }
     switch(id) {
         case POG_Cuts_ID_Veto:
-            return EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::VETO,   isEB, pt, eta, dEtaIn, dPhiIn, sigmaIEtaIEta, hoe, ooemoop, 0.0,   0.0,   0.0,    0.0,    0.0,    0,                0,     0.0);
+            return EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::VETO,   isEB, pt, eta, dEtaIn, dPhiIn, sigmaIEtaIEta, hoe, ooemoop, 0.0,   0.0,   0.0,    0.0,    0.0,    0,                0,     0.0, _electron_EA);
         case POG_Cuts_ID_Loose:
-            return EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::LOOSE,  isEB, pt, eta, dEtaIn, dPhiIn, sigmaIEtaIEta, hoe, ooemoop, 0.0,   0.0,   0.0,    0.0,    0.0,    0,                0,     0.0);
+            return EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::LOOSE,  isEB, pt, eta, dEtaIn, dPhiIn, sigmaIEtaIEta, hoe, ooemoop, 0.0,   0.0,   0.0,    0.0,    0.0,    0,                0,     0.0, _electron_EA);
         case POG_Cuts_ID_Medium:
-            return EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::MEDIUM, isEB, pt, eta, dEtaIn, dPhiIn, sigmaIEtaIEta, hoe, ooemoop, 0.0,   0.0,   0.0,    0.0,    0.0,    0,                0,     0.0);
+            return EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::MEDIUM, isEB, pt, eta, dEtaIn, dPhiIn, sigmaIEtaIEta, hoe, ooemoop, 0.0,   0.0,   0.0,    0.0,    0.0,    0,                0,     0.0, _electron_EA);
         case POG_Cuts_ID_Tight:
-            return EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::TIGHT,  isEB, pt, eta, dEtaIn, dPhiIn, sigmaIEtaIEta, hoe, ooemoop, 0.0,   0.0,   0.0,    0.0,    0.0,    0,                0,     0.0);
+            return EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::TIGHT,  isEB, pt, eta, dEtaIn, dPhiIn, sigmaIEtaIEta, hoe, ooemoop, 0.0,   0.0,   0.0,    0.0,    0.0,    0,                0,     0.0, _electron_EA);
         case POG_Cuts_Full_Veto:
-            return EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::VETO,   isEB, pt, eta, dEtaIn, dPhiIn, sigmaIEtaIEta, hoe, ooemoop, d0vtx, dzvtx, iso_ch, iso_em, iso_nh, vtxFitConversion, mHits, rho);
+            return EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::VETO,   isEB, pt, eta, dEtaIn, dPhiIn, sigmaIEtaIEta, hoe, ooemoop, d0vtx, dzvtx, iso_ch, iso_em, iso_nh, vtxFitConversion, mHits, rho, _electron_EA);
         case POG_Cuts_Full_Loose:
-            return EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::LOOSE,  isEB, pt, eta, dEtaIn, dPhiIn, sigmaIEtaIEta, hoe, ooemoop, d0vtx, dzvtx, iso_ch, iso_em, iso_nh, vtxFitConversion, mHits, rho);
+            return EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::LOOSE,  isEB, pt, eta, dEtaIn, dPhiIn, sigmaIEtaIEta, hoe, ooemoop, d0vtx, dzvtx, iso_ch, iso_em, iso_nh, vtxFitConversion, mHits, rho, _electron_EA);
         case POG_Cuts_Full_Medium:
-            return EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::MEDIUM, isEB, pt, eta, dEtaIn, dPhiIn, sigmaIEtaIEta, hoe, ooemoop, d0vtx, dzvtx, iso_ch, iso_em, iso_nh, vtxFitConversion, mHits, rho);
+            return EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::MEDIUM, isEB, pt, eta, dEtaIn, dPhiIn, sigmaIEtaIEta, hoe, ooemoop, d0vtx, dzvtx, iso_ch, iso_em, iso_nh, vtxFitConversion, mHits, rho, _electron_EA);
         case POG_Cuts_Full_Tight:
-            return EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::TIGHT,  isEB, pt, eta, dEtaIn, dPhiIn, sigmaIEtaIEta, hoe, ooemoop, d0vtx, dzvtx, iso_ch, iso_em, iso_nh, vtxFitConversion, mHits, rho);
+            return EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::TIGHT,  isEB, pt, eta, dEtaIn, dPhiIn, sigmaIEtaIEta, hoe, ooemoop, d0vtx, dzvtx, iso_ch, iso_em, iso_nh, vtxFitConversion, mHits, rho, _electron_EA);
         case POG_TriggerPreselection:
             return EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGERTIGHT, ele);
         case POG_ConvVeto_Loose:
@@ -160,7 +160,7 @@ void cmg::Electron::SetEffectiveAreaForRhoCorrections(int year, bool data) {
         if (data == 1) ::_electron_EA = ElectronEffectiveArea::kEleEAData2011;
         else           ::_electron_EA = ElectronEffectiveArea::kEleEAFall11MC;
     } else if (year == 2012) {
-        if (data == 1) ::_electron_EA = ElectronEffectiveArea::kEleEAData2011;
+        if (data == 1) ::_electron_EA = ElectronEffectiveArea::kEleEAData2012;
         else throw cms::Exception("InvalidArgument", "2012 Electron effective areas are available only for data, use those for MC as well.\n");
     } else {
         throw cms::Exception("InvalidArgument", "Electron effective areas are available only for 2012 (data) and 2011 (data, mc)\n");

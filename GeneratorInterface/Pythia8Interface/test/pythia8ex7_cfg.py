@@ -16,8 +16,16 @@ process.generator = cms.EDFilter("Pythia8HadronizerFilter",
     filterEfficiency = cms.untracked.double(1.0),
     pythiaHepMCVerbosity = cms.untracked.bool(False),
     comEnergy = cms.double(7000.),
-    emissionVeto = cms.untracked.PSet(),
-    #EV_CheckHard = cms.bool(True),
+    #emissionVeto = cms.untracked.PSet(),
+    emissionVeto1 = cms.untracked.PSet(),
+    EV1_nFinal = cms.int32(2),
+    EV1_vetoOn = cms.bool(True),
+    EV1_maxVetoCount = cms.int32(10000),
+    EV1_pThardMode = cms.int32(1),
+    EV1_pTempMode = cms.int32(0),
+    EV1_emittedMode = cms.int32(0),
+    EV1_pTdefMode = cms.int32(1),
+    EV1_MPIvetoOn = cms.bool(False),
     PythiaParameters = cms.PSet(
         pythia8_example07 = cms.vstring('SpaceShower:pTmaxMatch = 2',
                                         'TimeShower:pTmaxMatch  = 2'),
@@ -25,21 +33,22 @@ process.generator = cms.EDFilter("Pythia8HadronizerFilter",
     )
 )
 
+#if emissionVeto1 && MPIvetoMode > 0 add 'MultipartonInteractions:pTmaxMatch = 2'
+
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger = cms.Service("MessageLogger",
     cout = cms.untracked.PSet(
         default = cms.untracked.PSet(
-            limit = cms.untracked.int32(0)
+            limit = cms.untracked.int32(2)
         )
     ),
     destinations = cms.untracked.vstring('cout')
 )
 
 process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
-    moduleSeeds = cms.PSet(
-        generator = cms.untracked.uint32(123456),
-        g4SimHits = cms.untracked.uint32(123456788),
-        VtxSmeared = cms.untracked.uint32(123456789)
-    ),
+    generator = cms.PSet(
+        initialSeed = cms.untracked.uint32(123456789),
+    )
 )
 
 process.maxEvents = cms.untracked.PSet(

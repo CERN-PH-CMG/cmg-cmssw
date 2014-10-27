@@ -67,7 +67,9 @@ class MatrixInjector(object):
             print '\n\tFound wmclient\n'
             
         self.defaultChain={
-            "RequestType" :   "TaskChain",                    #this is how we handle relvals
+            "RequestType" :    "TaskChain",                    #this is how we handle relvals
+            "SubRequestType" : "RelVal",                       #this is how we handle relvals, now that TaskChain is also used for central MC production
+            "RequestPriority": 999999,
             "Requestor": self.user,                           #Person responsible
             "Group": self.group,                              #group for the request
             "CMSSWVersion": os.getenv('CMSSW_VERSION'),       #CMSSW Version (used for all tasks in chain)
@@ -76,11 +78,9 @@ class MatrixInjector(object):
             "ProcessingVersion": self.version,                #Processing Version (used for all tasks in chain)
             "GlobalTag": None,                                #Global Tag (overridden per task)
             "CouchURL": self.couch,                           #URL of CouchDB containing Config Cache
-            "ConfigCacheURL": self.couch,                           #URL of CouchDB containing Config Cache
-            "DbsUrl": "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-            #"CouchDBName": self.couchDB,                      #Name of Couch Database containing config cache
-            #- Will contain all configs for all Tasks
-            "SiteWhitelist" : ["T2_CH_CERN", "T1_US_FNAL"],   #Site whitelist
+            "ConfigCacheURL": self.couch,                     #URL of CouchDB containing Config Cache
+            "DbsUrl": "https://cmsweb.cern.ch/dbs/prod/global/DBSReader",
+            #"SiteWhitelist" : ["T2_CH_CERN", "T1_US_FNAL"],   #Site whitelist
             "TaskChain" : None,                                  #Define number of tasks in chain.
             "nowmTasklist" : [],  #a list of tasks as we put them in
             "unmergedLFNBase" : "/store/unmerged",
@@ -221,7 +221,7 @@ class MatrixInjector(object):
                                     chainDict['nowmTasklist'][-1]['LumisPerJob']=splitForThisWf
                                 if step in wmsplit:
                                     chainDict['nowmTasklist'][-1]['LumisPerJob']=wmsplit[step]
-
+                                chainDict['nowmTasklist'][-1]['PrimaryDataset']='RelVal'+s[1].split('+')[0]
                             #print step
                             chainDict['nowmTasklist'][-1]['TaskName']=step
                             chainDict['nowmTasklist'][-1]['ConfigCacheID']='%s/%s.py'%(dir,step)

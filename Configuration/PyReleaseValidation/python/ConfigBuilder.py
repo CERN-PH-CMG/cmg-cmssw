@@ -32,7 +32,7 @@ defaultOptions.arguments = ""
 defaultOptions.name = "NO NAME GIVEN"
 defaultOptions.evt_type = ""
 defaultOptions.filein = ""
-defaultOptions.dbsquery=""
+defaultOptions.dasquery=""
 defaultOptions.secondfilein = ""
 defaultOptions.customisation_file = ""
 defaultOptions.customise_commands = ""
@@ -69,7 +69,7 @@ defaultOptions.io=None
 defaultOptions.lumiToProcess=None
 defaultOptions.runsAndWeightsForMC = None
 defaultOptions.runsScenarioForMC = None
-
+ 
 # some helper routines
 def dumpPython(process,name):
         theObject = getattr(process,name)
@@ -111,13 +111,13 @@ def filesFromList(fileName,s=None):
 		print "found parent files:",sec
 	return (prim,sec)
 	
-def filesFromDBSQuery(query,s=None):
+def filesFromDASQuery(query,s=None):
 	import os
 	import FWCore.ParameterSet.Config as cms
 	prim=[]
 	sec=[]
 	print "the query is",query
-	for line in os.popen('dbs search --query "%s"'%(query)):
+	for line in os.popen('das_client.py --query "%s"'%(query)):
 		if line.count(".root")>=2:
 			#two files solution...
 			entries=line.replace("\n","").split()
@@ -217,6 +217,7 @@ class ConfigBuilder(object):
         self.productionFilterSequence = None
 	self.nextScheduleIsConditional=False
 	self.conditionalPaths=[]
+	self.excludedPaths=[]
 
     def profileOptions(self):
 	    """
@@ -324,8 +325,8 @@ class ConfigBuilder(object):
 			print "entry",entry
 			if entry.startswith("filelist:"):
 				filesFromList(entry[9:],self.process.source)
-			elif entry.startswith("dbs:"):
-				filesFromDBSQuery('find file where dataset = %s'%(entry[4:]),self.process.source)
+			elif entry.startswith("dbs:") or entry.startswith("das:"):
+				filesFromDASQuery('file dataset = %s'%(entry[4:]),self.process.source)
 			else:
 				self.process.source.fileNames.append(self._options.dirin+entry)
 		if self._options.secondfilein:
@@ -335,12 +336,12 @@ class ConfigBuilder(object):
 				print "entry",entry
 				if entry.startswith("filelist:"):
 					self.process.source.secondaryFileNames.extend((filesFromList(entry[9:]))[0])
-				elif entry.startswith("dbs:"):
-					self.process.source.secondaryFileNames.extend((filesFromDBSQuery('find file where dataset = %s'%(entry[4:])))[0])
+				elif entry.startswith("dbs:") or entry.startswith("das:"):
+					self.process.source.secondaryFileNames.extend((filesFromDASQuery('file dataset = %s'%(entry[4:])))[0])
 				else:
 					self.process.source.secondaryFileNames.append(self._options.dirin+entry)
 
-        if self._options.filein or self._options.dbsquery:
+        if self._options.filein or self._options.dasquery:
 	   if self._options.filetype == "EDM":
 		   self.process.source=cms.Source("PoolSource",
 						  fileNames = cms.untracked.vstring(),
@@ -376,9 +377,9 @@ class ConfigBuilder(object):
            if ('HARVESTING' in self.stepMap.keys() or 'ALCAHARVEST' in self.stepMap.keys()) and (not self._options.filetype == "DQM"):
                self.process.source.processingMode = cms.untracked.string("RunsAndLumis")
 
-	if self._options.dbsquery!='':
+	if self._options.dasquery!='':
                self.process.source=cms.Source("PoolSource", fileNames = cms.untracked.vstring(),secondaryFileNames = cms.untracked.vstring())
-	       filesFromDBSQuery(self._options.dbsquery,self.process.source)
+	       filesFromDASQuery(self._options.dasquery,self.process.source)
 	       
 	if self._options.inputCommands:
 		if not hasattr(self.process.source,'inputCommands'): self.process.source.inputCommands=cms.untracked.vstring()
@@ -502,7 +503,7 @@ class ConfigBuilder(object):
 				                     dataTier = cms.untracked.string(theTier),
 						     filterName = cms.untracked.string(theFilterName))
 						  )
-			if not theSelectEvent and hasattr(self.process,'generation_step'):
+			if not theSelectEvent and hasattr(self.process,'generation_step') and theStreamType!='LHE':
 				output.SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('generation_step'))
 			if not theSelectEvent and hasattr(self.process,'filtering_step'):
 				output.SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('filtering_step'))
@@ -563,7 +564,7 @@ class ConfigBuilder(object):
                                                                        filterName = cms.untracked.string(theFilterName)
                                                                        )
                                           )
-                if hasattr(self.process,"generation_step"):
+                if hasattr(self.process,"generation_step") and streamType!='LHE':
                         output.SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('generation_step'))
 		if hasattr(self.process,"filtering_step"):
 			output.SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('filtering_step'))
@@ -616,8 +617,8 @@ class ConfigBuilder(object):
 
 		mixingDict.pop('file')
 		if self._options.pileup_input:
-			if self._options.pileup_input.startswith('dbs'):
-				mixingDict['F']=filesFromDBSQuery('find file where dataset = %s'%(self._options.pileup_input[4:],))[0]
+			if self._options.pileup_input.startswith('dbs:') or self._options.pileup_input.startswith('das:'):
+				mixingDict['F']=filesFromDASQuery('file dataset = %s'%(self._options.pileup_input[4:],))[0]
 			else:
 				mixingDict['F']=self._options.pileup_input.split(',')
 		specialization=defineMixing(mixingDict,'FASTSIM' in self.stepMap)
@@ -916,17 +917,14 @@ class ConfigBuilder(object):
             self.DQMDefaultSeq='DQMOfflineCosmics'
 
         if self._options.himix:
-                print "From the presence of the himix option, we have determined that this is heavy ions and will use '--scenario HeavyIons'."
-                self._options.scenario='HeavyIons'
-
+                print "From the presence of the himix option, we have determined that this production should use the HeavyIon EventContent"
+		self.EVTCONTDefaultCFF="Configuration/EventContent/EventContentHeavyIons_cff"
+	    
         if self._options.scenario=='HeavyIons':
 	    if not self._options.beamspot:
 		    self._options.beamspot=VtxSmearedHIDefaultKey
             self.HLTDefaultSeq = 'HIon'
-            if not self._options.himix:
-                    self.GENDefaultSeq='pgen_hi'
-            else:
-                    self.GENDefaultSeq='pgen_himix'
+	    self.GENDefaultSeq='pgen_hi'
             self.VALIDATIONDefaultCFF="Configuration/StandardSequences/ValidationHeavyIons_cff"
             self.VALIDATIONDefaultSeq=''
             self.EVTCONTDefaultCFF="Configuration/EventContent/EventContentHeavyIons_cff"
@@ -1216,6 +1214,7 @@ class ConfigBuilder(object):
 	    
 	    #schedule it
 	    self.process.lhe_step = cms.Path( getattr( self.process,sequence)  )
+	    self.excludedPaths.append("lhe_step")
 	    self.schedule.append( self.process.lhe_step )
 
     def prepare_GEN(self, sequence = None):
@@ -1236,12 +1235,17 @@ class ConfigBuilder(object):
 	except:
 		loadFailure=True
 		#if self.process.source and self.process.source.type_()=='EmptySource':
-		if not (self._options.filein or self._options.dbsquery):
+		if not (self._options.filein or self._options.dasquery):
 			raise Exception("Neither gen fragment of input files provided: this is an inconsistent GEN step configuration")
 			
 	if not loadFailure:
 		generatorModule=sys.modules[loadFragment]
 		genModules=generatorModule.__dict__
+                #remove lhe producer module since this should have been
+                #imported instead in the LHE step
+                if self.LHEDefaultSeq in genModules:
+                        del genModules[self.LHEDefaultSeq]
+
 		if self._options.hideGen:
 			self.loadAndRemember(loadFragment)
 		else:
@@ -1316,9 +1320,9 @@ class ConfigBuilder(object):
         if self._options.gflash==True:
                 self.loadAndRemember("Configuration/StandardSequences/GFlashDIGI_cff")
 
-        if self._options.himix==True:
-            self.loadAndRemember("SimGeneral/MixingModule/himixDIGI_cff")
-
+	if self._options.himix==True:
+		self.loadAndRemember("Configuration/StandardSequences/DigiHiMix_cff")
+			  
 	if self._options.restoreRNDSeeds:
 		self.executeAndRemember("process.mix.playback = True")
 
@@ -1989,10 +1993,13 @@ class ConfigBuilder(object):
                 self.pythonCfgCode +='for path in process.paths:\n'
 		if len(self.conditionalPaths):
 			self.pythonCfgCode +='\tif not path in %s: continue\n'%str(self.conditionalPaths)
+                if len(self.excludedPaths):
+                        self.pythonCfgCode +='\tif path in %s: continue\n'%str(self.excludedPaths)
                 self.pythonCfgCode +='\tgetattr(process,path)._seq = process.%s * getattr(process,path)._seq \n'%(self.productionFilterSequence,)
 		pfs = getattr(self.process,self.productionFilterSequence)
 		for path in self.process.paths:
 			if not path in self.conditionalPaths: continue
+                        if path in self.excludedPaths: continue
 			getattr(self.process,path)._seq = pfs * getattr(self.process,path)._seq
 
         # dump customise fragment

@@ -234,6 +234,7 @@ class MatrixReader(object):
                         cmd +=' '+self.addCommand
                     if self.wm:
                         cmd=cmd.replace('DQMROOT','DQM')
+                        cmd=cmd.replace('--filetype DQM','')
                 commands.append(cmd)
                 ranStepList.append(stepName)
                 stepIndex+=1
@@ -332,7 +333,7 @@ class MatrixReader(object):
             for (index,s) in enumerate(indexAndSteps):
                 for (stepName,cmd) in s:
                     stepIndex=index+1
-                    if 'dbsquery.log' in cmd: continue
+                    if 'dasquery.log' in cmd: continue
                     line = 'STEP%d ++ '%(stepIndex,) +stepName + ' @@@ '+cmd
                     line=line.replace('DQMROOT','DQM')
                     outFile.write(line+'\n')

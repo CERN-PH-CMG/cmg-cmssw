@@ -120,6 +120,7 @@ class PFMuonSelector : public Selector<pat::Muon> {
     ret.set(false);
     
 
+
     bool isGlobal  = muon.isGlobalMuon();
     bool isTracker = muon.isTrackerMuon();
 
@@ -144,8 +145,10 @@ class PFMuonSelector : public Selector<pat::Muon> {
     double chIso = muon.userIsolation(pat::PfChargedHadronIso);
     double nhIso = muon.userIsolation(pat::PfNeutralHadronIso);
     double gIso  = muon.userIsolation(pat::PfGammaIso);
+    double puIso = muon.userIsolation(pat::PfPUChargedHadronIso);
     double pt    = muon.pt() ;
-    double pfIso = (chIso + nhIso + gIso) / pt;
+
+    double pfIso = ( chIso + std::max( 0.0, nhIso + gIso - 0.5 * puIso) ) / pt;
 
 
     if ( isGlobal  || ignoreCut("GlobalMuon")  )  passCut(ret, "GlobalMuon" );

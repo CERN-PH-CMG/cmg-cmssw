@@ -46,6 +46,7 @@ from RecoMET.Configuration.GenMETParticles_cff import *
 #   }
 # }
 VertexSmearing = cms.Sequence(cms.SequencePlaceholder("VtxSmeared"))
+AfterBurner = cms.Sequence(cms.SequencePlaceholder("AftBurner"))
 GeneInfo = cms.Sequence(genParticles)
 genJetMET = cms.Sequence(genJetParticles*recoGenJets+genMETParticles*recoGenMET)
 pgen = cms.Sequence(cms.SequencePlaceholder("randomEngineStateProducer")+VertexSmearing+GeneInfo+genJetMET)
@@ -63,10 +64,6 @@ hiGenJets = cms.Sequence(hiGenParticlesForJets*hiRecoGenJets)
 from PhysicsTools.HepMCCandAlgos.HiGenParticles_cfi import *
 
 pgen_hi = cms.Sequence(cms.SequencePlaceholder("randomEngineStateProducer")+VertexSmearing+hiGenParticles+hiGenJets)
-
-from SimGeneral.MixingModule.MatchVtx_cfi import *
-
-pgen_himix = cms.Sequence(cms.SequencePlaceholder("randomEngineStateProducer")+matchVtx+hiGenParticles+hiGenJets)
 
 fixGenInfo = cms.Sequence(GeneInfo * genJetMET)
 

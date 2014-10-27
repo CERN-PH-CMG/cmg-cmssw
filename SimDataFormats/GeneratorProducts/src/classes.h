@@ -15,7 +15,7 @@
 #include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenFilterInfo.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
-
+#include "SimDataFormats/GeneratorProducts/interface/GenLumiInfoProduct.h"
 #include <HepMC/GenRanges.h>
 
 namespace {
@@ -55,10 +55,12 @@ namespace {
 		edm::Wrapper<GenRunInfoProduct> wgenruninfo;
 		edm::Wrapper<GenFilterInfo> wgenfilterinfo;
 		edm::Wrapper<GenEventInfoProduct> wgeneventinfo;
-
+		edm::Wrapper<GenLumiInfoProduct> wgenlumiinfo;
 		// LHE products
 
 		edm::Wrapper<LHERunInfoProduct>	wcommon;
+	        gen::WeightsInfo wwgtinfo;
+	        std::vector<gen::WeightsInfo> wvwgtinfo;
 		edm::Wrapper<LHEEventProduct>	wevent;
                 edm::Wrapper<LHEXMLStringProduct> wstring;
 	};

@@ -450,14 +450,14 @@ def switchToPFJets(process, input=cms.InputTag('pfNoTau'), algo='AK5', postfix =
     print "************************ "
     print "input collection: ", input
 
-    if( algo == 'IC5' ):
-        genJetCollection = cms.InputTag('iterativeCone5GenJetsNoNu')
-    elif algo == 'AK5':
+    if algo == 'AK5':
         genJetCollection = cms.InputTag('ak5GenJetsNoNu')
+        rParam=0.5
     elif algo == 'AK7':
         genJetCollection = cms.InputTag('ak7GenJetsNoNu')
+        rParam=0.7
     else:
-        print 'bad jet algorithm:', algo, '! for now, only IC5, AK5 and AK7 are allowed. If you need other algorithms, please contact Colin'
+        print 'bad jet algorithm:', algo, '! for now, only AK5 and AK7 are allowed. If you need other algorithms, please contact Colin'
         sys.exit(1)
 
     # changing the jet collection in PF2PAT:
@@ -469,13 +469,14 @@ def switchToPFJets(process, input=cms.InputTag('pfNoTau'), algo='AK5', postfix =
     switchJetCollection(process,
                         input,
                         jetIdLabel = algo,
+                        rParam=rParam,
                         doJTA=True,
                         doBTagging=True,
                         jetCorrLabel=inputJetCorrLabel,
                         doType1MET=type1,
                         genJetCollection = genJetCollection,
                         doJetID = True,
-			postfix = postfix,
+                        postfix = postfix,
                         outputModules = outputModules
                         )
     # check whether L1FastJet is in the list of correction levels or not
@@ -512,38 +513,24 @@ def removeMCMatchingPF2PAT( process, postfix="", outputModules=['out'] ):
     removeMCMatching(process, names=['All'], postfix=postfix, outputModules=outputModules)
 
 
-def adaptPVs(process, pvCollection=cms.InputTag('offlinePrimaryVertices'), postfix=''):
+def adaptPVs(process, pvCollection=cms.InputTag('offlinePrimaryVertices'), postfix='', sequence='patPF2PATSequence'):
 
     print "Switching PV collection for PF2PAT:", pvCollection
     print "***********************************"
 
     # PV sources to be exchanged:
-    pvExchange = ['Vertices','vertices','pvSrc','primaryVertices','srcPVs']
+    pvExchange = ['Vertices','vertices','pvSrc','primaryVertices','srcPVs','primaryVertex']
     # PV sources NOT to be exchanged:
-    #noPvExchange = ['src','PVProducer','primaryVertexSrc','vertexSrc','primaryVertex']
-
-    # find out all added jet collections (they don't belong to PF2PAT)
-    interPostfixes = []
-    for m in getattr(process,'patPF2PATSequence'+postfix).moduleNames():
-        if m.startswith('patJets') and m.endswith(postfix) and not len(m)==len('patJets')+len(postfix):
-            interPostfix = m.replace('patJets','')
-            interPostfix = interPostfix.replace(postfix,'')
-            interPostfixes.append(interPostfix)
+    #noPvExchange = ['src','PVProducer','primaryVertexSrc','vertexSrc']
 
     # exchange the primary vertex source of all relevant modules
-    for m in getattr(process,'patPF2PATSequence'+postfix).moduleNames():
+    for m in getattr(process,sequence+postfix).moduleNames():
         modName = m.replace(postfix,'')
         # only if the module has a source with a relevant name
         for namePvSrc in pvExchange:
             if hasattr(getattr(process,m),namePvSrc):
-                # only if the module is not coming from an added jet collection
-                interPostFixFlag = False
-                for pfix in interPostfixes:
-                    if modName.endswith(pfix):
-                        interPostFixFlag = True
-                        break
-                if not interPostFixFlag:
-                    setattr(getattr(process,m),namePvSrc,deepcopy(pvCollection))
+                #print m
+                setattr(getattr(process,m),namePvSrc,deepcopy(pvCollection))
 
 
 def usePF2PAT(process, runPF2PAT=True, jetAlgo='AK5', runOnMC=True, postfix="", jetCorrections=('AK5PFchs', ['L1FastJet','L2Relative','L3Absolute']), pvCollection=cms.InputTag('offlinePrimaryVertices'), typeIMetCorrections=False, outputModules=['out']):

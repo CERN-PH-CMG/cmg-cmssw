@@ -158,9 +158,20 @@ ExternalLHEProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   if (!partonLevel)
     return;
 
-  std::auto_ptr<LHEEventProduct> product(new LHEEventProduct(*partonLevel->getHEPEUP()));
-  if (partonLevel->getPDF())
+  std::auto_ptr<LHEEventProduct> product(
+	       new LHEEventProduct(*partonLevel->getHEPEUP(),
+				   partonLevel->originalXWGTUP())
+	       );
+  if (partonLevel->getPDF()) {
     product->setPDF(*partonLevel->getPDF());
+  }
+  std::for_each(partonLevel->weights().begin(),
+                partonLevel->weights().end(),
+                boost::bind(&LHEEventProduct::addWeight,
+                            product.get(), _1));
+  product->setScales(partonLevel->scales());
+  product->setNpLO(partonLevel->npLO());
+  product->setNpNLO(partonLevel->npNLO());
   std::for_each(partonLevel->getComments().begin(),
                 partonLevel->getComments().end(),
                 boost::bind(&LHEEventProduct::addComment,
