@@ -450,6 +450,7 @@ class PlotMaker:
                 #
                 # blinding policy
                 blind = pspec.getOption('Blinded','None') if 'data' in pmap else 'None'
+                if options.unblind == True: blind = 'None'
                 xblind = [9e99,-9e99]
                 if re.match(r'(bin|x)\s*([<>]?)\s*(\+|-)?\d+(\.\d+)?|(\+|-)?\d+(\.\d+)?\s*<\s*(bin|x)\s*<\s*(\+|-)?\d+(\.\d+)?', blind):
                     xfunc = (lambda h,b: b)             if 'bin' in blind else (lambda h,b : h.GetXaxis().GetBinCenter(b));
@@ -670,6 +671,7 @@ def addPlotMakerOptions(parser):
     parser.add_option("--plotmode", dest="plotmode", type="string", default="stack", help="Show as stacked plot (stack), a non-stacked comparison (nostack) and a non-stacked comparison of normalized shapes (norm)")
     parser.add_option("--rebin", dest="globalRebin", type="int", default="0", help="Rebin all plots by this factor")
     parser.add_option("--poisson", dest="poisson", action="store_true", default=False, help="Draw Poisson error bars")
+    parser.add_option("--unblind", dest="unblind", action="store_true", default=False, help="Unblind plots irrespectively of plot file")
     parser.add_option("--select-plot", "--sP", dest="plotselect", action="append", default=[], help="Select only these plots out of the full file")
 
 if __name__ == "__main__":
