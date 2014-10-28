@@ -72,13 +72,9 @@ class ttHTopoVarAnalyzer( Analyzer ):
         import array
         import numpy
 
-        metVector = TVectorD(3,array.array('d',[0.,metVec.px(), metVec.py()]))
-        visaVector = TVectorD(3,array.array('d',[0.,visaVec.px(), visaVec.py()]))
-        visbVector = TVectorD(3,array.array('d',[0.,visbVec.px(), visbVec.py()]))
-
-        metVector =numpy.asarray(metVector,dtype='double')
-        visaVector =numpy.asarray(visaVector,dtype='double')
-        visbVector =numpy.asarray(visbVector,dtype='double')
+        metVector = array.array('d',[0.,metVec.px(), metVec.py()])
+        visaVector = array.array('d',[0.,visaVec.px(), visaVec.py()])
+        visbVector = array.array('d',[0.,visbVec.px(), visbVec.py()])
 
         davismt2.set_momenta(visaVector,visbVector,metVector);
         davismt2.set_mn(0);
