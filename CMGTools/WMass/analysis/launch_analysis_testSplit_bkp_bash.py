@@ -8,10 +8,12 @@ import urllib, urlparse, string, time, os, shutil, sys, math
 
 useLHAPDF = False
 
+# foldername = "test2_zm_pdf";
 foldername = "test";
 foldername_orig=foldername
 
 ntuple_folder = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
+ntuple_folder_8TeV_ABC = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/";
 # ntuple_folder = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/";
 # ntuple_folder = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_10_15/";
 # ntuple_folder = "root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/";
@@ -56,22 +58,24 @@ WMassSkipNSteps = "5"; # 15
 WMassNSteps = "5"; # 60
 # WMassNSteps = "0"; # 60
 etaMuonNSteps = "1"; # 5
-etaMaxMuons = "1.1"; # 0.6, 0.8, 1.2, 1.6, 2.1
+etaMaxMuons = "1.6"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
-parallelize = 0;
-# resumbit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
-resumbit_sample = "DATA" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
+parallelize = 1;
+# DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
+resumbit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" 
+# resumbit_sample = "DYJetsPow,DYJetsMadSig" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 
-runWanalysis = 0;
+runWanalysis = 1;
 runZanalysis = 1;
-useBatch = 0;
+useBatch = 1;
 batchQueue = "1nh";
 controlplots = 0;
+resubmit = 0;
 
 mergeSigEWKbkg = 0;
 
 ## PERFORM W or Z MASS FIT
-fit_W_or_Z = "W,Z" # "W,Z" or "W" or "Z"
+fit_W_or_Z = "Z" # "W,Z" or "W" or "Z"
 
 usePowOrMadForSig = "POWHEG"; # use "POWHEG" or use "MADGRAPH"
 runPrepareDataCardsFast = 0; # ALTERNATIVE FAST WAY: TEMPLATES ARE IN THE SYsT FOLDER, PSEUDO-DATA IN THE LOCAL FOLDER
@@ -278,13 +282,15 @@ fWana_str = [
 ];  
   
 fZana_str = [
+##  ntuple_folder_8TeV_ABC+"DATA_Run2012ABCD/ZTreeProducer_tree.root", # this is the 8TeV data contain also the tkmetABC
   ntuple_folder+"DATA/ZTreeProducer_tree_RecoSkimmed.root",
   ntuple_folder+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
   ntuple_folder+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
   ntuple_folder+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
   ntuple_folder+"WJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",
-  ntuple_folder+"DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root",
-  # ntuple_folder+"DYJetsMM/InclWeights/ZTreeProducer_tree.root",
+  # ntuple_folder+"DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root",
+  ntuple_folder+"DYJetsMM/InclWeights/ZTreeProducer_tree.root",
+##  ntuple_folder_8TeV_ABC+"ZTreeProducer_tree_tkmetABC.root",  # this is the 8TeV DYJetsLL contains also the tkmetABC  
   ntuple_folder+"DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
   ntuple_folder+"DYJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",
   ntuple_folder+"TTJets/ZTreeProducer_tree.root",
@@ -464,16 +470,19 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
                     else:
                       start_dir = os.getcwd()
                       os.chdir(os.getcwd()+"/../"+filename_outputdir)
-                      text_file = open("runWanalysis_"+sample[i]+"_"+str(x)+".sh", "w")
-                      text_file.write("cd /afs/cern.ch/work/p/perrozzi/private/git/CMSSW_5_3_19/src/\n")
-                      text_file.write("eval `scramv1 runtime -sh`\n")
-                      text_file.write("cd "+start_dir+"\n")
-                      text_file.write("./runWanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+wstring)
-                      text_file.close()
-                      # print 'file created, launching bsub'
-                      print ("bsub  -q "+batchQueue+" -J runWanalysis runWanalysis_"+sample[i]+"_"+str(x)+".sh")
-                      os.system("chmod 755 runWanalysis_"+sample[i]+"_"+str(x)+".sh")
-                      os.system("bsub -u pippo123 -o ./ -q "+batchQueue+" -J runWanalysis runWanalysis_"+sample[i]+"_"+str(x)+".sh")
+                      if not resubmit:
+                        text_file = open("runWanalysis_"+sample[i]+"_"+str(x)+".sh", "w")
+                        text_file.write("cd "+os.getcwd()+"\n")
+                        text_file.write("eval `scramv1 runtime -sh`\n")
+                        text_file.write("source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh \n")
+                        text_file.write("cd "+start_dir+"\n")
+                        text_file.write("./runWanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+wstring)
+                        text_file.close()
+                        # print 'file created, launching bsub'
+                        os.system("chmod 755 runWanalysis_"+sample[i]+"_"+str(x)+".sh")
+                      if not resubmit or not os.path.isfile("Wanalysis_chunk"+str(x)+".root"):
+                        print ("bsub  -q "+batchQueue+" -J runWanalysis runWanalysis_"+sample[i]+"_"+str(x)+".sh")
+                        # os.system("bsub -u pippo123 -o ./ -q "+batchQueue+" -J runWanalysis runWanalysis_"+sample[i]+"_"+str(x)+".sh")
                       os.chdir(start_dir)
                       
                     if(WMassNSteps=="0" and not useBatch): os.system("sleep 1");
@@ -531,16 +540,20 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
                     else:
                       start_dir = os.getcwd()
                       os.chdir(os.getcwd()+"/../"+filename_outputdir)
-                      text_file = open("runZanalysis_"+sample[i]+"_"+str(x)+".sh", "w")
-                      text_file.write("cd /afs/cern.ch/work/p/perrozzi/private/git/CMSSW_5_3_19/src/\n")
-                      text_file.write("eval `scramv1 runtime -sh`\n")
-                      text_file.write("cd "+start_dir+"\n")
-                      text_file.write("./runZanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+zstring)
-                      text_file.close()
-                      # print 'file created, launching bsub'
-                      print ("bsub  -q "+batchQueue+" -J runZanalysis runZanalysis_"+sample[i]+"_"+str(x)+".sh")
-                      os.system("chmod 755 runZanalysis_"+sample[i]+"_"+str(x)+".sh")
-                      os.system("bsub -u pippo123 -o ./ -q "+batchQueue+" -J runZanalysis runZanalysis_"+sample[i]+"_"+str(x)+".sh")
+                      if not resubmit:
+                        text_file = open("runZanalysis_"+sample[i]+"_"+str(x)+".sh", "w")
+                        text_file.write("cd /afs/cern.ch/work/p/perrozzi/private/git/CMSSW_5_3_19/src/\n")
+                        text_file.write("eval `scramv1 runtime -sh`\n")
+                        text_file.write("source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh \n")
+                        text_file.write("cd "+start_dir+"\n")
+                        text_file.write("./runZanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+zstring)
+                        text_file.close()
+                        # print 'file created, launching bsub'
+                        os.system("chmod 755 runZanalysis_"+sample[i]+"_"+str(x)+".sh")
+                      # print 'checking file',"Zanalysis_chunk"+str(x)+".root",'path is',os.getcwd(),'check is',os.path.isfile("Zanalysis_chunk"+str(x)+".root")
+                      if not resubmit or not os.path.isfile("Zanalysis_chunk"+str(x)+".root"):
+                        print ("bsub  -q "+batchQueue+" -J runZanalysis runZanalysis_"+sample[i]+"_"+str(x)+".sh")
+                        os.system("bsub -u pippo123 -o ./ -q "+batchQueue+" -J runZanalysis runZanalysis_"+sample[i]+"_"+str(x)+".sh")
                       os.chdir(start_dir)
                     
                     if(WMassNSteps=="0" and not useBatch): os.system("sleep 1");
@@ -659,7 +672,7 @@ if(runClosureTestLikeLihoodRatioAnsMergeResults):
     shutil.copyfile("AnalysisCode/ClosureTest_fits_likelihoodratio.C","JobOutputs/"+foldername+"/DataCards/ClosureTest_fits.C");
     os.chdir("JobOutputs/"+foldername+"/DataCards");
     print os.getcwd()
-    os.system("cd /afs/cern.ch/work/p/perrozzi/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;eval `scramv1 runtime -sh`; cd -; root -l -b -q \'ClosureTest_fits.C(1,0,\""+str(fit_W_or_Z)+"\")\'")
+    os.system("cd /afs/cern.ch/work/p/perrozzi/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;eval `scramv1 runtime -sh`; cd -; source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh; root -l -b -q \'ClosureTest_fits.C+(1,0,\""+str(fit_W_or_Z)+"\")\'")
     os.chdir("../../../");
 
 if(runClosureTestLikeLihoodRatioAnsMergeResults or mergeResults):

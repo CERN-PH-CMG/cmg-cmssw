@@ -3,6 +3,7 @@ triggers_mu = ["HLT_IsoMu24_v*","HLT_IsoMu24_eta2p1_v*"]
 triggers_jpsi = ["HLT_Dimuon10_Jpsi_Barrel_v*"]
 triggers_jpsi_nobarrelcuts = ["DoubleMu3_Jpsi_v*","DoubleMu3_Jpsi_v*","Dimuon6p5_Jpsi_v*"]
 triggers_upsilon = ["HLT_Dimuon5_Upsilon_Barrel_v*","HLT_Dimuon7_Upsilon_Barrel_v*","HLT_Dimuon9_Upsilon_Barrel_v*"]
+triggers_2upsilon = ["HLT_Dimuon0_Upsilon_Muon_v*","HLT_Dimuon0_Jpsi_Muon_v*"]
 
 pathsAndFilters = {
     # 2011 Mu Iso24

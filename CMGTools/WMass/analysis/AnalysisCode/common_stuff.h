@@ -42,7 +42,8 @@ class common_stuff {
   static void plotAndSaveHisto1D_stack(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEWK, TFile*fMCTT, TFile*fMCQCD, TFile*fDATA, TString HistoName_st, int logx, int logy, int logz, int scaleMCtoDATA, TString title,double xmin, double xmax, int rebinfactor, int PullOrRatio);
   // static const double fit_xmin[];
   // static const double fit_xmax[];
-
+  
+  static void calculateU1U2( double fMet , double fMPhi,double fZPt, double fZPhi, double fPt1, double fPhi1, double & fU1,double & fU2 );
   
  private:
   

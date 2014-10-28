@@ -1,78 +1,8 @@
-import copy
-import os 
-import CMGTools.RootTools.fwlite.Config as cfg
-from CMGTools.RootTools.fwlite.Config import printComps
-from CMGTools.WMass.triggerMap import triggers_mu
+#Load all analyzers
+from CMGTools.WMass.analyzers.CoreModule_53X_cff import *
 
-jsonAna = cfg.Analyzer(
-    'JSONAnalyzer',
-    )
+sequence = cfg.Sequence(CoreWZsequence)
 
-triggerAna = cfg.Analyzer(
-     'triggerBitFilter',
-     # keepFailingEvents = False    
-    )
-
-vertexAna = cfg.Analyzer(
-    'VertexAnalyzer',
-    allVertices = 'slimmedPrimaryVertices',
-    goodVertices = 'slimmedPrimaryVertices',
-    vertexWeight = None,
-    fixedWeight = 1,
-    verbose = False,
-    )
-
-WAna = cfg.Analyzer(
-    'WAnalyzer',
-    recoilcut = 1000,
-    pfmetcut = 0,
-    jetptcut = 1000,
-    pt = 30,
-    eta = 2.1,
-    iso = 0.5,
-    savegenp = False,
-    verbose = True,
-    triggerBits = {'SingleMu' : triggers_mu},
-    keepFailingEvents = False
-    )
-
-WtreeProducer = cfg.Analyzer(
-    'WTreeProducer'
-    )
-
-ZAna = cfg.Analyzer(
-    'ZAnalyzer',
-    recoilcut = 1000,
-    pfmetcut = 0,
-    jetptcut = 1000,
-    pt = 30,
-    eta = 2.1,
-    iso = 0.5,
-    savegenp = False,
-    verbose = True,
-    triggerBits = {'SingleMu' : triggers_mu},
-    keepFailingEvents = False
-    )
-
-ZtreeProducer = cfg.Analyzer(
-    'ZTreeProducer'
-    )
-
-genAna = cfg.Analyzer(
-    'GenParticleAnalyzerFSR',
-    src = 'genParticlesPruned'
-    )
-
-sequence = cfg.Sequence( [
-    genAna,
-    jsonAna,
-    triggerAna,
-    vertexAna,
-    WAna,
-    WtreeProducer,
-    ZAna,
-    ZtreeProducer
-   ] )
 
 from CMGTools.H2TauTau.proto.samples.ewk import TTJets
 from CMGTools.H2TauTau.proto.samples.getFiles import getFiles
@@ -90,8 +20,8 @@ selectedComponents = [TTJets]
 TTJets.splitFactor = 750
 
 # TEST
-# TTJets.splitFactor = 1
-# TTJets.files = TTJets.files[0:2]
+#TTJets.splitFactor = 1
+#TTJets.files = TTJets.files[0:2]
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
