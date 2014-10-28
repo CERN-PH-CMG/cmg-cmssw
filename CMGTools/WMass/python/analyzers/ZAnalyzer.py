@@ -218,6 +218,28 @@ class ZAnalyzer( Analyzer ):
         # save genp only for signal events
         # i.e. only one Z is present and daughters are muons
         
+        if False:
+            print "============", event.eventId,"==========================="
+            for i,p in enumerate(event.genParticles):
+                # print "\n :  %5d: pdgId %+5d status %3d  pt %6.1f  " % (i, p.pdgId(),p.status(),p.pt()),
+                if abs(p.pdgId())==13:
+                    print "\n muons:  %5d: pdgId %+5d status %3d  pt %6.1f  " % (i, p.pdgId(),p.status(),p.pt()),
+                if abs(p.pdgId())==23:
+                    print "\n Z: %5d: pdgId %+5d status %3d  pt %6.1f  " % (i, p.pdgId(),p.status(),p.pt()),
+                if abs(p.pdgId())==13 or abs(p.pdgId())==23:
+                    if p.numberOfMothers() > 0:
+                        imom, mom = p.motherRef().key(), p.mother()
+                        print " | mother %5d pdgId %+5d status %3d  pt %6.1f  " % (imom, mom.pdgId(),mom.status(),mom.pt()),
+                    else:
+                        print " | no mother particle                              ",
+
+                        for j in xrange(min(3, p.numberOfDaughters())):
+                            idau, dau = p.daughterRef(j).key(), p.daughter(j)
+                            print " | dau[%d] %5d pdgId %+5d status %3d  pt %6.1f  " % (j,idau,dau.pdgId(),dau.status(),dau.pt()),
+                            print ""
+                            print "\n"
+            print "\n ========================================================="
+
         # for genp in event.genParticles:
           # if math.fabs(genp.pdgId())==23:
             # print 'genp.pdgId()=',genp.pdgId(), 'genp.status()=',genp.status(), 'genp.numberOfDaughters()=',genp.numberOfDaughters()
