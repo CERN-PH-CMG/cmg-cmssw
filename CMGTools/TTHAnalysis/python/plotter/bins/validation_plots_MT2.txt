@@ -9,8 +9,8 @@ genmet_phi:   met_genPhi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
 mht:   mht_pt: 16,0,800    ; XTitle="H_{T}^{miss}  [GeV]"
 mht_phi:   mht_phi: 8,-3.15,3.15    ; XTitle="phi of H_{T}^{miss}"
 
-deltaPhiMin: deltaPhiMin: 70,0,6.28    ; XTitle="dphi_{min}(jet\,E_{T}^{miss})"
-diffMetMht: diffMetMht: 70,0,6.28    ; XTitle="|MET-MHT|"
+deltaPhiMin: deltaPhiMin: 70,0,3.15    ; XTitle="dphi_{min}(jet\,E_{T}^{miss})"
+diffMetMht: diffMetMht: 100,0,500    ; XTitle="|MET-MHT|"
 
 ht: ht:  16,0,800    ; XTitle="H_{T}  [GeV]"
 
@@ -75,28 +75,6 @@ jet_id: jet_id: [-0.5,0.5,1.5,2.5,3.5] ; XTitle="jet id"
 jet_puId: jet_puId: [-0.5,0.5,1.5] ; XTitle="jet PU id"
 
 
-##### LEPTON (to add)
-
-lep_nlep : nlep : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5] ; XTitle='N(lep\, p_{T} > 10\, |#eta| < 2.4 )'
-lep_pt: lep_pt: 16,0,800    ; XTitle="lep p_{T}  [GeV]"
-lep_phi: lep_phi: 8,-3.15,3.15    ; XTitle="lep phi"
-lep_eta: lep_eta: 10,-5.,5.    ; XTitle="lep eta"
-lep_mass: lep_mass: 16,0,800.    ; XTitle="lep mass [GeV]"
-
-lep_pdgId : lep_pdgId : [10.5,11.5,12.5,13.5,14.5,15.5,16.5] ; XTitle='PDG_ID'
-
-lep_dxy: lep_dxy: 100,0,0.5    ; XTitle="lep dxy  [cm]"
-lep_dz: lep_dz: 100,0,0.5    ; XTitle="lep dz  [cm]"
-
-lep_relIso03:  lep_relIso03: 15,0,.5;  Legend='TR'
-lep_relIso04:  lep_relIso04: 15,0,.5;  Legend='TR'
-lep_mcMatchId:  lep_mcMatchId: 28,-1.5,26.5;  Legend='TR'
-lep_tightId:  lep_tightId: [-0.5,0.5,1.5];  Legend='TL'
-
-lep_lostHits:  lep_lostHits: [-0.5,0.5,1.5,2.5,3.5,4.5,5.5];  Legend='TL'
-lep_convVeto:  lep_convVeto: 10,0.,5.;  Legend='TL'
-lep_tightCharge:  lep_tightCharge: [-1.5,-0.5,0.5,1.5];  Legend='TL'
-
 ##### ISO TRACK 
 
 isoTrack_nisoTrack : nisoTrack : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5] ; XTitle='N(isotrack)'
@@ -157,4 +135,27 @@ genLepFromTau_pdgId : genLepFromTau_pdgId : [10.5,11.5,12.5,13.5,14.5,15.5,16.5]
 
 ngenTau : ngenTau : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5] ; XTitle='N(ngenTau)'
 genTau_pdgId : genTau_pdgId : [10.5,11.5,12.5,13.5,14.5,15.5,16.5] ; XTitle='PDG_ID genTau'
+
+
+##### LEPTON (to add)
+
+lep_nlep : nlep : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5] ; XTitle='N(lep\, p_{T} > 10\, |#eta| < 2.4 )'
+lep_pt: lep_pt: 16,0,800    ; XTitle="lep p_{T}  [GeV]"
+lep_phi: lep_phi: 8,-3.15,3.15    ; XTitle="lep phi"
+lep_eta: lep_eta: 10,-5.,5.    ; XTitle="lep eta"
+lep_mass: lep_mass: 16,0,800.    ; XTitle="lep mass [GeV]"
+
+lep_pdgId : lep_pdgId : [10.5,11.5,12.5,13.5,14.5,15.5,16.5] ; XTitle='PDG_ID'
+
+lep_dxy: lep_dxy: 100,0,0.5    ; XTitle="lep dxy  [cm]"
+lep_dz: lep_dz: 100,0,0.5    ; XTitle="lep dz  [cm]"
+
+lep_relIso03:  lep_relIso03: 15,0,.5;  Legend='TR'
+lep_relIso04:  lep_relIso04: 15,0,.5;  Legend='TR'
+lep_mcMatchId:  lep_mcMatchId: 28,-1.5,26.5;  Legend='TR'
+lep_tightId:  lep_tightId: [-0.5,0.5,1.5];  Legend='TL'
+
+lep_lostHits:  lep_lostHits: [-0.5,0.5,1.5,2.5,3.5,4.5,5.5];  Legend='TL'
+lep_convVeto:  lep_convVeto: 10,0.,5.;  Legend='TL'
+lep_tightCharge:  lep_tightCharge: [-1.5,-0.5,0.5,1.5];  Legend='TL'
 
