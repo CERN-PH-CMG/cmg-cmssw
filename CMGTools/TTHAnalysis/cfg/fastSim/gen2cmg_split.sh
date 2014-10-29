@@ -1,7 +1,7 @@
 #!/bin/bash
 TMPDIR=$PWD
 #### ENV
-AREA=/afs/cern.ch/user/g/gpetrucc/ttH/CMGTools/CMSSW_5_3_5/src/CMGTools/TTHAnalysis/cfg/fastSim
+AREA=/afs/cern.ch/user/g/gpetrucc/scratch0/cmgprod/CMSSW_5_3_22/src/CMGTools/TTHAnalysis/cfg/fastSim
 cd $AREA
 export SCRAM_ARCH=slc5_amd64_gcc462
 eval $(scramv1 runtime -sh)

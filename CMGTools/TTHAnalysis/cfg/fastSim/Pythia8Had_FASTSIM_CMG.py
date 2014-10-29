@@ -23,12 +23,30 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 # Input source
-process.source = cms.Source("PoolSource",
-    #fileNames = cms.untracked.vstring('file:/data/gpetrucc/8TeV/ttH/ttZ_01jets_LO_TuneZ2star_8TeV_madgraph_tauola.GEN.root')
-    fileNames = cms.untracked.vstring('/store/caf/user/gpetrucc/ttH/gen/TTZJets_gio_scaleUp/TTZJets_gio_scaleUp.root.root')
+process.source = cms.Source("LHESource",
+    fileNames = cms.untracked.vstring('file:/afs/cern.ch/user/g/gpetrucc/public/DYLL_trivial.lhe')
 )
 
 process.options = cms.untracked.PSet(
+    wantSummary = cms.untracked.bool(True)
+)
+
+from Configuration.Generator.Pythia8CommonSettings_cfi import *
+from Configuration.Generator.Pythia8CUEP8M1Settings_cfi import *
+process.generator = cms.EDFilter("Pythia8HadronizerFilter",
+    maxEventsToPrint = cms.untracked.int32(1),
+    pythiaPylistVerbosity = cms.untracked.int32(1),
+    filterEfficiency = cms.untracked.double(1.0),
+    pythiaHepMCVerbosity = cms.untracked.bool(False),
+    comEnergy = cms.double(8000.),
+    PythiaParameters = cms.PSet(
+        pythia8CommonSettingsBlock,
+        pythia8CUEP8M1SettingsBlock,
+        processParameters = cms.vstring(),
+        parameterSets = cms.vstring('pythia8CommonSettings',
+            'pythia8CUEP8M1Settings',
+        )
+    )
 )
 
 # Output definition
@@ -45,9 +63,10 @@ process.options = cms.untracked.PSet(
 # Additional output definition
 
 # Other statements
+process.genstepfilter.triggerConditions=cms.vstring("generation_step")
 process.famosSimHits.SimulateCalorimetry = True
 process.famosSimHits.SimulateTracking = True
-process.simulation = cms.Sequence(process.simulationWithFamos)
+process.simulation = cms.Sequence(process.generator+process.simulationWithFamos)
 process.HLTEndSequence = cms.Sequence(process.reconstructionWithFamos)
 process.Realistic8TeVCollisionVtxSmearingParameters.type = cms.string("BetaFunc")
 process.famosSimHits.VertexGenerator = process.Realistic8TeVCollisionVtxSmearingParameters
@@ -56,12 +75,13 @@ from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'START53_V7C::All', '')
 
 # Path and EndPath definitions
-process.reconstruction = cms.Path(process.reconstructionWithFamos)
-#process.genfiltersummary_step = cms.EndPath(process.genFilterSummary)
+process.generation_step = cms.Path(process.generator+process.pgen_genonly)
+process.reconstruction = cms.Path(process.generator+process.reconstructionWithFamos)
+process.genfiltersummary_step = cms.EndPath(process.genFilterSummary)
 #process.AODSIMoutput_step = cms.EndPath(process.AODSIMoutput)
 
 # Schedule definition
-process.schedule = cms.Schedule()
+process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step)
 process.schedule.extend(process.HLTSchedule)
 #process.schedule.extend([process.reconstruction,process.AODSIMoutput_step])
 process.schedule.extend([process.reconstruction])
@@ -111,7 +131,11 @@ del process.source
 ###=================================================================================================================
 
 #### =========== SET THIS AS SUBPROCESS ================
-MAIN_PROCESS.subProcess = cms.SubProcess(process)
+MAIN_PROCESS.subProcess = cms.SubProcess(process,
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('generation_step')
+    )
+)
 
 #### =========== AND PUT BACK THE MAIN AS PROCESS ======
 process = MAIN_PROCESS
