@@ -9,8 +9,8 @@ genmet_phi:   met_genPhi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
 mht:   mht_pt: 16,0,800    ; XTitle="H_{T}^{miss}  [GeV]"
 mht_phi:   mht_phi: 8,-3.15,3.15    ; XTitle="phi of H_{T}^{miss}"
 
-deltaPhiMin: deltaPhiMin: 8,0,6.28    ; XTitle="dphi Min"
-diffMetMht: diffMetMht: 8,0,6.28    ; XTitle="dphi Min"
+deltaPhiMin: deltaPhiMin: 70,0,6.28    ; XTitle="dphi_{min}(jet\,E_{T}^{miss})"
+diffMetMht: diffMetMht: 70,0,6.28    ; XTitle="|MET-MHT|"
 
 ht: ht:  16,0,800    ; XTitle="H_{T}  [GeV]"
 
@@ -120,7 +120,7 @@ tau_eta: tau_eta: 10,-5.,5.    ; XTitle="tau eta"
 tau_mass: tau_mass: 16,0,800.    ; XTitle="tau mass"
 
 tau_Charge:  tau_charge: [-1.5,-0.5,0.5,1.5];  Legend='TL'
-tau_MatchId:  tau_mcMatchId: 28,-1.5,26.5;  Legend='TR'
+tau_mcMatchId:  tau_mcMatchId: 28,-1.5,26.5;  Legend='TR'
 
 tau_dxy: tau_dxy: 100,0,0.5    ; XTitle="tau dxy  [cm]"
 tau_dz: tau_dz: 100,0,0.5    ; XTitle="tau dz  [cm]"
@@ -144,7 +144,7 @@ gamma_sigmaIetaIeta: gamma_sigmaIetaIeta: 100,0,5.    ; XTitle="gamma sigmaIetaI
 gamma_r9: gamma_r9: 100,0,5.    ; XTitle="gamma r9"
 gamma_hOverE: gamma_hOverE: 100,0,5.    ; XTitle="gamma hOverE"
 gamma_idCutBased: gamma_idCutBased: 10,0,10.    ; XTitle="gamma ID Cut based"
-gamma_MatchId:  gamma_mcMatchId: 28,-1.5,26.5;  Legend='TR'
+gamma_mcMatchId:  gamma_mcMatchId: 28,-1.5,26.5;  Legend='TR'
 
 
 ##### genCounting
