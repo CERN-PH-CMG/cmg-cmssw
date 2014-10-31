@@ -309,11 +309,13 @@ double MyMetFlavorProducer::pfCandDz(const cmg::Candidate* iPFCand, const Vertex
 }
 double MyMetFlavorProducer::jetMVA (const Jet *iCorrJet,double iJec, const Vertex iPV, const reco::VertexCollection &iAllvtx,bool iPrintDebug) { 
   PileupJetIdentifier lPUJetId     =  fPUJetIdAlgo->computeIdVariables(iCorrJet,iJec,&iPV,iAllvtx,true);
+  /*
   PileupJetIdentifier *lPUJetIdRef =  &lPUJetId;
   if(iCorrJet->pt() < 10) {
     PileupJetIdentifier pPUJetId   =  fPUJetIdAlgoLowPt->computeIdVariables(iCorrJet,iJec,&iPV,iAllvtx,true);
     lPUJetIdRef = &pPUJetId;
   }
+  */
   if(iPrintDebug) { std::cout << "Debug Jet MVA: "
 			      << lPUJetId.nvtx()      << " "
 			      << iCorrJet->pt()       << " "

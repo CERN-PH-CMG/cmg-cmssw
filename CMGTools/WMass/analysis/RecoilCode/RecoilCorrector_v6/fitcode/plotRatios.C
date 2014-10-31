@@ -30,41 +30,47 @@ exit
 */ 
 
 #include <sstream>
- #include "TLine.h"
- #include "TFile.h"
- #include "TCanvas.h"
- #include "TH1F.h"
- #include "TLegend.h"
- #include "TF1.h"
- #include "TLatex.h"
- #include "TMath.h"
- #include "TGraph.h"
- #include "TGraphErrors.h"
- #include "TStyle.h"
+#include "TLine.h"
+#include "TFile.h"
+#include "TCanvas.h"
+#include "TH1F.h"
+#include "TLegend.h"
+#include "TF1.h"
+#include "TLatex.h"
+#include "TMath.h"
+#include "TGraph.h"
+#include "TGraphErrors.h"
+#include "TStyle.h"
 
- //#include <vector>
- //#include "TLorentzVector.h"
+//#include <vector>
+//#include "TLorentzVector.h"
 
- //#include "../../NYStyle/test/NYStyle.h"
- //#include "/home/pharris/Analysis/W/condor/run/CMSSW_3_9_4/src/MitWlnu/NYStyle/test/NYStyle.h"
+//#include "../../NYStyle/test/NYStyle.h"
+//#include "/home/pharris/Analysis/W/condor/run/CMSSW_3_9_4/src/MitWlnu/NYStyle/test/NYStyle.h"
 
- using namespace std;
+using namespace std;
 
 bool doPol2=false;
-bool doMad=false;
- int vtxBin = -1;
- int howManyToPlot = -1; 
- bool doIterClosure = false;
+bool doPhiStar=false;
+bool doMad=true;
+int vtxBin = -1;
+int howManyToPlot = -1; 
+bool doIterClosure = false;
+bool doMCvsMC=false;
 
- bool doMuonCheck = false;
+bool doMuonCheck = false;
 
- bool doSingleDouble = false;
- bool doSinglePtStudy = false;
- bool doCorrelationB = false;
- bool doCorrelationA = false;
- bool doCorrelation = false;
- bool doRapStudies = false;
- bool doPDF = false;
+bool doMadPowClosure = false;
+
+bool doSingleDouble = false;
+bool doSinglePtStudy = false;
+bool doCorrelationB = false;
+bool doCorrelationA = false;
+bool doCorrelation = false;
+bool doRapStudies = false;
+bool doPDF = false;
+
+bool doErf=false;
 
 int mycase=-1;
 
@@ -80,45 +86,46 @@ int mycase=-1;
 // int mycase=3; // ratio flavor Wpos
 // int mycase=4; // ratio flavor Wpos
 
- const int readRecoil(std::vector<double> &iSumEt,
-		      std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,std::vector<TF1*> &iU1Sig3Fit,
-		      std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2Sig3Fit,
-		      std::string iFName = "recoilfit.root",std::string iPrefix="") { 
-   TFile *lFile  = new TFile(iFName.c_str());
-   lFile->ls();
+const int readRecoil(std::vector<double> &iSumEt,
+		     std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,std::vector<TF1*> &iU1Sig3Fit,
+		     std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2Sig3Fit,
+		     std::string iFName = "recoilfit.root",std::string iPrefix="") { 
+  TFile *lFile  = new TFile(iFName.c_str());
+  lFile->ls();
+  
+  //TGraph *lGraph = (TGraph *) lFile->FindObjectAny("sumet");
+  const int lNBins = 201;//lGraph->GetN();
 
-   //TGraph *lGraph = (TGraph *) lFile->FindObjectAny("sumet");
-   const int lNBins = 201;//lGraph->GetN();
+  int init = -1;
+  for(int i0 = init; i0 <= lNBins; i0++) {
+    if(!doRapStudies && i0!=vtxBin) continue;
+    if(( (doRapStudies) && ((i0==1) || (i0==125) || (i0==150) || (i0==175) || (i0==200) || (i0==201) )) || (!doRapStudies) ) {
+      cout << i0 << endl;
+      
+      std::string lStr = iPrefix;
+      //iSumEt.push_back(lGraph->GetY()[i0]);
+      std::stringstream pSS1,pSS2,pSS3,pSS4,pSS5,pSS6,pSS7,pSS8,pSS9,pSS10;
+      pSS1  << lStr << "u1Mean_"    << i0;  iU1Fit.push_back    ( (TF1*) lFile->FindObjectAny((pSS1.str()).c_str())); //iU1Fit[i0]->SetDirectory(0);
+      pSS2  << lStr << "u1MeanRMS_" << i0;  iU1MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS2.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);
+      pSS3  << lStr << "u1RMS1_"    << i0;  iU1RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS3.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);
+      pSS4  << lStr << "u1RMS2_"    << i0;  iU1RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS4.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);
+      //pSS5  << "u1Sig3_"    << i0;  iU1Sig3Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+pSS5.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);
+      pSS6  << lStr << "u2Mean_"    << i0;  iU2Fit    .push_back( (TF1*) lFile->FindObjectAny((pSS6.str()).c_str())); //iU2Fit[i0]->SetDirectory(0);
+      pSS7  << lStr << "u2MeanRMS_" << i0;  iU2MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS7.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);
+      pSS8  << lStr << "u2RMS1_"    << i0;  iU2RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS8.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);
+      pSS9  << lStr << "u2RMS2_"    << i0;  iU2RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS9.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);
+      //pSS10 << "u2Sig3_"    << i0;  iU2Sig3Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+pSS10.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);
 
-   int init = -1;
-   for(int i0 = init; i0 <= lNBins; i0++) {
-     if(!doRapStudies && i0!=vtxBin) continue;
-       if(( (doRapStudies) && ((i0==1) || (i0==125) || (i0==150) || (i0==175) || (i0==200) || (i0==201) )) || (!doRapStudies) ) {
-	 cout << i0 << endl;
+    }
+  }
+  
+  cout << "SIZE " << iU1Fit.size() << endl;
 
-	 std::string lStr = iPrefix;
-	 //iSumEt.push_back(lGraph->GetY()[i0]);
-	 std::stringstream pSS1,pSS2,pSS3,pSS4,pSS5,pSS6,pSS7,pSS8,pSS9,pSS10;
-	 pSS1  << lStr << "u1Mean_"    << i0;  iU1Fit.push_back    ( (TF1*) lFile->FindObjectAny((pSS1.str()).c_str())); //iU1Fit[i0]->SetDirectory(0);
-	 pSS2  << lStr << "u1MeanRMS_" << i0;  iU1MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS2.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);
-	 //	pSS3  << lStr << "u1RMS1_"    << i0;  iU1RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS3.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);
-	 //	pSS4  << lStr << "u1RMS2_"    << i0;  iU1RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS4.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);
-	 //pSS5  << "u1Sig3_"    << i0;  iU1Sig3Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+pSS5.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);
-	 pSS6  << lStr << "u2Mean_"    << i0;  iU2Fit    .push_back( (TF1*) lFile->FindObjectAny((pSS6.str()).c_str())); //iU2Fit[i0]->SetDirectory(0);
-	 pSS7  << lStr << "u2MeanRMS_" << i0;  iU2MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS7.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);
-	 //	pSS8  << lStr << "u2RMS1_"    << i0;  iU2RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS8.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);
-	 //	pSS9  << lStr << "u2RMS2_"    << i0;  iU2RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS9.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);
-	 //pSS10 << "u2Sig3_"    << i0;  iU2Sig3Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+pSS10.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);
-
-       }
-   }
-
-   cout << "SIZE " << iU1Fit.size() << endl;
-
-   lFile->Close();
+  lFile->Close();
    iSumEt.push_back(1000);  
    return lNBins;
  }
+
  double getCorError2(double iVal,TF1 *iFit) { 
    double lE = sqrt(iFit->GetParError(0))  + iVal*sqrt(iFit->GetParError(2));
    if(fabs(iFit->GetParError(4)) > 0) lE += iVal*iVal*sqrt(iFit->GetParError(4));
@@ -148,6 +155,85 @@ int mycase=-1;
 
 
  }
+
+double getErrorErf(double iVal,TF1 *iFit) {
+
+  double par0=iFit->GetParameter(0);
+  double par1=iFit->GetParameter(1);
+  double err00=iFit->GetParError(0);
+  double err11=iFit->GetParError(1);
+  double err22=iFit->GetParError(2);
+  double err33=iFit->GetParError(3);
+  double err01=iFit->GetParError(5);
+  double err02=iFit->GetParError(6);
+  double err03=iFit->GetParError(7);
+  double err12=iFit->GetParError(9);
+  double err13=iFit->GetParError(10);
+  double err23=iFit->GetParError(12);
+  double err44=iFit->GetParError(4);
+  double err04=iFit->GetParError(8);
+  double err14=iFit->GetParError(11);
+  double err24=iFit->GetParError(13);
+  double err34=iFit->GetParError(14);
+
+  double lE2 = err22 + iVal*2*(err23+2/(TMath::Sqrt(TMath::Pi()))*(err02*TMath::Exp(-(par0*par0*iVal*iVal))+(err12*TMath::Exp(-(par1*par1*iVal*iVal)))));
+
+  lE2 += iVal*iVal*((4/(TMath::Pi())*(TMath::Exp(-(par0*par0*iVal*iVal))*TMath::Exp(-(par0*par0*iVal*iVal))*err00+TMath::Exp(-(par1*par1*iVal*iVal))*TMath::Exp(-(par1*par1*iVal*iVal))*err11))+2*(err01*4/(TMath::Pi())*TMath::Exp(-(par0*par0*iVal*iVal))*TMath::Exp(-(par1*par1*iVal*iVal))+err24+err03*2/(TMath::Sqrt(TMath::Pi()))*TMath::Exp(-(par0*par0*iVal*iVal))+err13*2/(TMath::Sqrt(TMath::Pi()))*TMath::Exp(-(par1*par1*iVal*iVal)))+err33);
+  lE2 += iVal*iVal*iVal*2*(err34+err04*2/(TMath::Sqrt(TMath::Pi()))*TMath::Exp(-(par0*par0*iVal*iVal))+err14*2/(TMath::Sqrt(TMath::Pi()))*TMath::Exp(-(par1*par1*iVal*iVal)));
+  lE2 += iVal*iVal*iVal*iVal*err44;
+
+  if(lE2<0) {
+    cout << "Negative Error will cause nan at iVal " << iVal << endl;
+    cout << "  iFit->GetParError(0) " <<  iFit->GetParError(0) << endl;
+    cout << "  iFit->GetParError(1) " <<  iFit->GetParError(1) << endl;
+    cout << "  iFit->GetParError(2) " <<  iFit->GetParError(2) << endl;
+    cout << "  iFit->GetParError(3) " <<  iFit->GetParError(3) << endl;
+    cout << "  iFit->GetParError(4) " <<  iFit->GetParError(4) << endl;
+    cout << "  iFit->GetParError(5) " <<  iFit->GetParError(5) << endl;
+    cout << "  iFit->GetParError(6) " <<  iFit->GetParError(6) << endl;
+
+  }
+  return lE2;
+
+
+}
+
+
+double getErrorErfDATA(double iVal,TF1 *iFit) {
+
+  double par0=iFit->GetParameter(0);
+  double err00=iFit->GetParError(0);
+  double err11=iFit->GetParError(1);
+  double err22=iFit->GetParError(2);
+  double err33=iFit->GetParError(3);
+  double err01=iFit->GetParError(5);
+  double err02=iFit->GetParError(6);
+  double err03=iFit->GetParError(7);
+  double err12=iFit->GetParError(9);
+  double err13=iFit->GetParError(10);
+  double err23=iFit->GetParError(12);
+
+  double lE2 = err11 + iVal*2*(err12+2/(TMath::Sqrt(TMath::Pi()))*(err01*TMath::Exp(-(par0*par0*iVal*iVal))));
+  lE2 += iVal*iVal*(4/(TMath::Pi())*(TMath::Exp(-(par0*par0*iVal*iVal))*TMath::Exp(-(par0*par0*iVal*iVal))*err00)+err22+2*err13+2*err02*TMath::Exp(-(par0*par0*iVal*iVal))*2/(TMath::Sqrt(TMath::Pi())));
+  lE2 += iVal*iVal*iVal*2*(err23+err03*2/(TMath::Sqrt(TMath::Pi()))*TMath::Exp(-(par0*par0*iVal*iVal)));
+  lE2 += iVal*iVal*iVal*iVal*err33;
+  
+  if(lE2<0) {
+    cout << "Negative Error will cause nan at iVal " << iVal << endl;
+    cout << "  iFit->GetParError(0) " <<  iFit->GetParError(0) << endl;
+    cout << "  iFit->GetParError(1) " <<  iFit->GetParError(1) << endl;
+    cout << "  iFit->GetParError(2) " <<  iFit->GetParError(2) << endl;
+    cout << "  iFit->GetParError(3) " <<  iFit->GetParError(3) << endl;
+    cout << "  iFit->GetParError(4) " <<  iFit->GetParError(4) << endl;
+    cout << "  iFit->GetParError(5) " <<  iFit->GetParError(5) << endl;
+    cout << "  iFit->GetParError(6) " <<  iFit->GetParError(6) << endl;
+
+  }
+
+  return lE2;
+
+}
+
  double getError(double iVal,TF1 *iZDatFit,TF1 *iZMCFit) {
    double lEZD2 = getError2(iVal,iZDatFit);
    double lEZM2 = getError2(iVal,iZMCFit);
@@ -157,6 +243,32 @@ int mycase=-1;
    double lER   = lR*lR/lZDat/lZDat*lEZD2 + lR*lR/lZMC/lZMC*lEZM2;
    return sqrt(lER);
  }
+
+double getErrorU1Response2Erf1Erf(double iVal,TF1 *iZDatFit,TF1 *iZMCFit) {
+        // Propaga l'errore sul rapporto delle funzioni 
+                                                                                                                                                                   
+        double lEZD2 = getErrorErfDATA(iVal,iZDatFit);
+        double lEZM2 = getErrorErf(iVal,iZMCFit);
+        double lZDat = iZDatFit->Eval(iVal);
+        double lZMC  = iZMCFit->Eval(iVal);
+        double lR    = lZDat/lZMC;
+        double lER   = lR*lR/lZDat/lZDat*lEZD2 + lR*lR/lZMC/lZMC*lEZM2;
+        return sqrt(lER);
+}
+
+double getErrorU1Response1Erf1Erf(double iVal,TF1 *iZDatFit,TF1 *iZMCFit) {
+        // Propaga l'errore sul rapporto delle funzioni 
+                                                                                                                                                                   
+        double lEZD2 = getErrorErfDATA(iVal,iZDatFit);
+        double lEZM2 = getErrorErfDATA(iVal,iZMCFit);
+        double lZDat = iZDatFit->Eval(iVal);
+        double lZMC  = iZMCFit->Eval(iVal);
+        double lR    = lZDat/lZMC;
+        double lER   = lR*lR/lZDat/lZDat*lEZD2 + lR*lR/lZMC/lZMC*lEZM2;
+        return sqrt(lER);
+}
+
+
  double getError(double iVal,TF1 *iWFit,TF1 *iZDatFit,TF1 *iZMCFit,bool iRescale=true) {
    double lEW2  = getError2(iVal,iWFit);
    if(!iRescale) return sqrt(lEW2);
@@ -170,6 +282,8 @@ int mycase=-1;
    double lVal  = lR*lR*lEW2 + lWMC*lWMC*lER;
    return sqrt(lVal);
  }
+
+
  void draw(string iName,string iYName,double iYMin,double iYMax,double iTMax,
 	   vector<TF1*> &iWFit,vector<TF1*> &iZDFit,vector<TF1*> &iZMFit,vector<TF1*> &iWCFit
 	   ) { 
@@ -346,7 +460,7 @@ int mycase=-1;
    //  lG2->GetXaxis()->SetRangeUser(0,lNTot/2-1);
    //  lG0->GetXaxis()->SetRangeUser(0,50);
    lG0->GetYaxis()->SetTitle(iYName.c_str());//"U_{1} Response (GeV)");
-   //  lG2->GetYaxis()->SetRangeUser(iYMin,iYMax);
+   //   lG2->GetYaxis()->SetRangeUser(iYMin,iYMax);
    lG2->GetYaxis()->SetRangeUser(0.,1.);
    lG0->GetYaxis()->SetRangeUser(0.,1.);
    TCanvas *lC0 = new TCanvas(iName.c_str(),iName.c_str(),800,600); lC0->cd();
@@ -376,12 +490,12 @@ int mycase=-1;
 
  }
 
- void drawRatios(string iName,string iYName,double iYMin,double iYMax,double iTMax,
-		 vector<TF1*> &iZDFit,vector<TF1*> &iZMFit,
-		 vector<TF1*> &iZD1Fit,vector<TF1*> &iZM1Fit ,
-		 vector<TF1*> &iZD2Fit,vector<TF1*> &iZM2Fit,
-		 vector<TF1*> &iZD3Fit,vector<TF1*> &iZM3Fit
-		 ) { 
+void drawRatios(string iName,string iYName,double iXMin, double iXMax, double iYMin,double iYMax,double iTMax,
+		vector<TF1*> &iZDFit,vector<TF1*> &iZMFit,
+		vector<TF1*> &iZD1Fit,vector<TF1*> &iZM1Fit ,
+		vector<TF1*> &iZD2Fit,vector<TF1*> &iZM2Fit,
+		vector<TF1*> &iZD3Fit,vector<TF1*> &iZM3Fit
+		) { 
 
    cout << "iZDFit  " << iZDFit.size() << endl;
    cout << "iZD1Fit " << iZD1Fit.size() << endl;
@@ -395,7 +509,14 @@ int mycase=-1;
 
    gStyle->SetHatchesLineWidth(3);
 
-   const int lNTot = 50;
+   const int lNTot = (iXMax-iXMin)*2;
+   float binSize=1.;
+
+   //   if(doPhiStar) {
+   //   float binSize=1./100.;
+   //   const int lNTot = 1/binSize;
+   //   }
+
    double lXVals0[lNTot];
    double lGVals0[lNTot]; 
    double lGVals1[lNTot];
@@ -404,75 +525,102 @@ int mycase=-1;
    double lGVals4[lNTot];
    double lGVals5[lNTot];
 
-   for(int index=0; index<iZDFit.size(); index++) {
-   //  for(int index=0; index<1; index++) {
+   for(unsigned int index=0; index<iZDFit.size(); index++) {
+
+   cout << "Ui DATA (iter0)" 
+	<< " par0=" << iZDFit[index]->GetParameter(0) 
+	<< " par1=" << iZDFit[index]->GetParameter(1)
+	<< " par2=" << iZDFit[index]->GetParameter(2) << endl;
+   
+   cout << "Ui MC (iter0)" 
+	<< " par0=" << iZMFit[index]->GetParameter(0) 
+	<< " par1=" << iZMFit[index]->GetParameter(1)
+	<< " par2=" << iZMFit[index]->GetParameter(2) << endl;
+
+   if(doIterClosure) {
+     cout << "Ui DATA (iter1)" 
+   	  << " par0=" << iZD1Fit[index]->GetParameter(0) 
+   	  << " par1=" << iZD1Fit[index]->GetParameter(1)
+   	  << " par2=" << iZD1Fit[index]->GetParameter(2) << endl;
+   }
+
      for(int i0 = 0; i0 < lNTot/2; i0++) { 
        // this is going forward
        lXVals0[i0] =  i0;
        //    cout << " lXVals0 1nd  "  << lXVals0[i0] << endl;
        double lE0; double lE1; double lE2; double lE3;
        if(!doRapStudies) {
-	 lE0 = TMath::Max(getError(i0,iZDFit[index] ,iZMFit[index]) ,iTMax);
-	 if(howManyToPlot>1) lE1 = TMath::Max(getError(i0,iZD1Fit[index],iZM1Fit[index]),iTMax);
-	 if(howManyToPlot>2) lE2 = TMath::Max(getError(i0,iZD2Fit[index],iZM2Fit[index]),iTMax);
-	 if(howManyToPlot>3) lE3 = TMath::Max(getError(i0,iZD3Fit[index],iZM2Fit[index]),iTMax);
-	 if(iZMFit[index]->Eval(i0)==0) cout << "not defined function iZMFit " << i0 << endl;
-	 if(howManyToPlot>1 && iZM1Fit[index]->Eval(i0)==0) cout << "not defined function iZM1Fit " << i0 << endl;
-	 if(howManyToPlot>2 && iZM2Fit[index]->Eval(i0)==0) cout << "not defined function iZM2Fit " << i0 << endl;
-	 if(howManyToPlot>3 && iZM3Fit[index]->Eval(i0)==0) cout << "not defined function iZM3Fit " << i0 << endl;
 
-	 if(iZMFit[index]->Eval(i0)!=0) lGVals0[i0] =  iZDFit[index]->Eval(i0) /iZMFit[index]->Eval(i0)   + lE0;
-	 if(howManyToPlot>1 && iZM1Fit[index]->Eval(i0)!=0) lGVals1[i0] =  iZD1Fit[index]->Eval(i0)/iZM1Fit[index]->Eval(i0)  + lE1;
-	 if(howManyToPlot>2 && iZM2Fit[index]->Eval(i0)!=0) lGVals2[i0] =  iZD2Fit[index]->Eval(i0)/iZM2Fit[index]->Eval(i0)  + lE2;
-	 if(howManyToPlot>3 && iZM3Fit[index]->Eval(i0)!=0) lGVals3[i0] =  iZD3Fit[index]->Eval(i0)/iZM3Fit[index]->Eval(i0)  + lE3;
+	 if(!doErf) {
+	   lE0 = TMath::Max(getError(i0*binSize,iZDFit[index] ,iZMFit[index]) ,iTMax);
+	   if(howManyToPlot>1) lE1 = TMath::Max(getError(i0*binSize,iZD1Fit[index],iZM1Fit[index]),iTMax);
+	   if(howManyToPlot>2) lE2 = TMath::Max(getError(i0*binSize,iZD2Fit[index],iZM2Fit[index]),iTMax);
+	   if(howManyToPlot>3) lE3 = TMath::Max(getError(i0*binSize,iZD3Fit[index],iZM2Fit[index]),iTMax);
+	 }
+
+	 if(doErf) {
+	   lE0 = TMath::Max(getErrorU1Response1Erf1Erf(i0*binSize,iZDFit[index] ,iZMFit[index]) ,iTMax);
+	   if(howManyToPlot>1) lE1 = TMath::Max(getErrorU1Response1Erf1Erf(i0*binSize,iZD1Fit[index],iZM1Fit[index]),iTMax);
+	   if(howManyToPlot>2) lE2 = TMath::Max(getErrorU1Response1Erf1Erf(i0*binSize,iZD2Fit[index],iZM2Fit[index]),iTMax);
+	   if(howManyToPlot>3) lE3 = TMath::Max(getErrorU1Response1Erf1Erf(i0*binSize,iZD3Fit[index],iZM2Fit[index]),iTMax);
+	 }
+
+	 if(iZMFit[index]->Eval(i0*binSize)==0) cout << "not defined function iZMFit " << i0 << endl;
+	 if(howManyToPlot>1 && iZM1Fit[index]->Eval(i0*binSize)==0) cout << "not defined function iZM1Fit " << i0 << endl;
+	 if(howManyToPlot>2 && iZM2Fit[index]->Eval(i0*binSize)==0) cout << "not defined function iZM2Fit " << i0 << endl;
+	 if(howManyToPlot>3 && iZM3Fit[index]->Eval(i0*binSize)==0) cout << "not defined function iZM3Fit " << i0 << endl;
+
+	 if(iZMFit[index]->Eval(i0*binSize)!=0) lGVals0[i0] =  iZDFit[index]->Eval(i0*binSize) /iZMFit[index]->Eval(i0*binSize)   + lE0;
+	 if(howManyToPlot>1 && iZM1Fit[index]->Eval(i0*binSize)!=0) lGVals1[i0] =  iZD1Fit[index]->Eval(i0*binSize)/iZM1Fit[index]->Eval(i0*binSize)  + lE1;
+	 if(howManyToPlot>2 && iZM2Fit[index]->Eval(i0*binSize)!=0) lGVals2[i0] =  iZD2Fit[index]->Eval(i0*binSize)/iZM2Fit[index]->Eval(i0*binSize)  + lE2;
+	 if(howManyToPlot>3 && iZM3Fit[index]->Eval(i0*binSize)!=0) lGVals3[i0] =  iZD3Fit[index]->Eval(i0*binSize)/iZM3Fit[index]->Eval(i0*binSize)  + lE3;
        }
        if(doRapStudies) {
-	 if(index==0 && iZMFit[index]->Eval(i0)!=0) {  lE0 = TMath::Max(getError(i0,iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals0[i0] =  iZDFit[index]->Eval(i0) /iZMFit[index]->Eval(i0)   + lE0; }
-	 if(index==1 && iZMFit[index]->Eval(i0)!=0) {  lE0 = TMath::Max(getError(i0,iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals1[i0] =  iZDFit[index]->Eval(i0) /iZMFit[index]->Eval(i0)   + lE0; }
-	 if(index==2 && iZMFit[index]->Eval(i0)!=0) {  lE0 = TMath::Max(getError(i0,iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals2[i0] =  iZDFit[index]->Eval(i0) /iZMFit[index]->Eval(i0)   + lE0; }
-	 if(index==3 && iZMFit[index]->Eval(i0)!=0) {  lE0 = TMath::Max(getError(i0,iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals3[i0] =  iZDFit[index]->Eval(i0) /iZMFit[index]->Eval(i0)   + lE0; }
-	 if(index==4 && iZMFit[index]->Eval(i0)!=0) {  lE0 = TMath::Max(getError(i0,iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals4[i0] =  iZDFit[index]->Eval(i0) /iZMFit[index]->Eval(i0)   + lE0; }
-	 if(index==5 && iZMFit[index]->Eval(i0)!=0) {  lE0 = TMath::Max(getError(i0,iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals5[i0] =  iZDFit[index]->Eval(i0) /iZMFit[index]->Eval(i0)   + lE0; }
+	 if(index==0 && iZMFit[index]->Eval(i0*binSize)!=0) {  lE0 = TMath::Max(getError(i0*binSize,iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals0[i0] =  iZDFit[index]->Eval(i0*binSize) /iZMFit[index]->Eval(i0*binSize)   + lE0; }
+	 if(index==1 && iZMFit[index]->Eval(i0*binSize)!=0) {  lE0 = TMath::Max(getError(i0*binSize,iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals1[i0] =  iZDFit[index]->Eval(i0*binSize) /iZMFit[index]->Eval(i0*binSize)   + lE0; }
+	 if(index==2 && iZMFit[index]->Eval(i0*binSize)!=0) {  lE0 = TMath::Max(getError(i0*binSize,iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals2[i0] =  iZDFit[index]->Eval(i0*binSize) /iZMFit[index]->Eval(i0*binSize)   + lE0; }
+	 if(index==3 && iZMFit[index]->Eval(i0*binSize)!=0) {  lE0 = TMath::Max(getError(i0*binSize,iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals3[i0] =  iZDFit[index]->Eval(i0*binSize) /iZMFit[index]->Eval(i0*binSize)   + lE0; }
+	 if(index==4 && iZMFit[index]->Eval(i0*binSize)!=0) {  lE0 = TMath::Max(getError(i0*binSize,iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals4[i0] =  iZDFit[index]->Eval(i0*binSize) /iZMFit[index]->Eval(i0*binSize)   + lE0; }
+	 if(index==5 && iZMFit[index]->Eval(i0*binSize)!=0) {  lE0 = TMath::Max(getError(i0*binSize,iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals5[i0] =  iZDFit[index]->Eval(i0*binSize) /iZMFit[index]->Eval(i0*binSize)   + lE0; }
        }
 
      }
    }
 
-   for(int index=0; index<iZDFit.size(); index++) {
+   for(unsigned int index=0; index<iZDFit.size(); index++) {
    //   for(int index=0; index<1; index++) {
      for(int i0 = 0; i0 < lNTot/2; i0++) { 
        // this is going backwards
-       lXVals0[i0+lNTot/2] =  lNTot/2-1-i0;
+       lXVals0[i0+lNTot/2] =  (lNTot/2-1-i0)*binSize;
        //    cout << " lXVals0 2nd "  << lXVals0[i0+lNTot/2] << endl;
        double lE0; double lE1; double lE2; double lE3;
        if(!doRapStudies) {
-	 lE0 = TMath::Max(getError(lNTot/2-1-i0,iZDFit[index] ,iZMFit[index]) ,iTMax);
-	 if(howManyToPlot>1) lE1 = TMath::Max(getError(lNTot/2-1-i0,iZD1Fit[index],iZM1Fit[index]),iTMax);
-	 if(howManyToPlot>2) lE2 = TMath::Max(getError(lNTot/2-1-i0,iZD2Fit[index],iZM2Fit[index]),iTMax);
-	 if(howManyToPlot>3) lE3 = TMath::Max(getError(lNTot/2-1-i0,iZD3Fit[index],iZM3Fit[index]),iTMax);
+	 lE0 = TMath::Max(getError((lNTot/2-1-i0)*binSize,iZDFit[index] ,iZMFit[index]) ,iTMax);
+	 if(howManyToPlot>1) lE1 = TMath::Max(getError((lNTot/2-1-i0)*binSize,iZD1Fit[index],iZM1Fit[index]),iTMax);
+	 if(howManyToPlot>2) lE2 = TMath::Max(getError((lNTot/2-1-i0)*binSize,iZD2Fit[index],iZM2Fit[index]),iTMax);
+	 if(howManyToPlot>3) lE3 = TMath::Max(getError((lNTot/2-1-i0)*binSize,iZD3Fit[index],iZM3Fit[index]),iTMax);
 
-	 if(iZMFit[index]->Eval(i0)==0) cout << "not defined function iZMFit " << i0 << endl;
-	 if(howManyToPlot>1 && iZM1Fit[index]->Eval(i0)==0) cout << "not defined function iZM1Fit " << i0 << endl;
-	 if(howManyToPlot>2 && iZM2Fit[index]->Eval(i0)==0) cout << "not defined function iZM2Fit " << i0 << endl;
-	 if(howManyToPlot>3 && iZM3Fit[index]->Eval(i0)==0) cout << "not defined function iZM3Fit " << i0 << endl;
+	 if(iZMFit[index]->Eval((lNTot/2-1-i0)*binSize)==0) cout << "not defined function iZMFit " << i0 << endl;
+	 if(howManyToPlot>1 && iZM1Fit[index]->Eval((lNTot/2-1-i0)*binSize)==0) cout << "not defined function iZM1Fit " << i0 << endl;
+	 if(howManyToPlot>2 && iZM2Fit[index]->Eval((lNTot/2-1-i0)*binSize)==0) cout << "not defined function iZM2Fit " << i0 << endl;
+	 if(howManyToPlot>3 && iZM3Fit[index]->Eval((lNTot/2-1-i0)*binSize)==0) cout << "not defined function iZM3Fit " << i0 << endl;
 
-	 if(iZMFit[index]->Eval(lNTot/2-1-i0)!=0) lGVals0[i0+lNTot/2] =  iZDFit[index] ->Eval(lNTot/2-1-i0) /iZMFit[0]->Eval(lNTot/2-1-i0)  - lE0;
-	 if(howManyToPlot>1 && iZM1Fit[index]->Eval(lNTot/2-1-i0)!=0) lGVals1[i0+lNTot/2] =  iZD1Fit[index]->Eval(lNTot/2-1-i0)/iZM1Fit[0]->Eval(lNTot/2-1-i0)  - lE1;
-	 if(howManyToPlot>2 && iZM2Fit[index]->Eval(lNTot/2-1-i0)!=0) lGVals2[i0+lNTot/2] =  iZD2Fit[index]->Eval(lNTot/2-1-i0)/iZM2Fit[index]->Eval(lNTot/2-1-i0)  - lE2;
-	 if(howManyToPlot>3 && iZM3Fit[index]->Eval(lNTot/2-1-i0)!=0) lGVals3[i0+lNTot/2] =  iZD3Fit[index]->Eval(lNTot/2-1-i0)/iZM3Fit[index]->Eval(lNTot/2-1-i0)  - lE3;
+	 if(iZMFit[index]->Eval((lNTot/2-1-i0)*binSize)!=0) lGVals0[i0+lNTot/2] =  iZDFit[index] ->Eval((lNTot/2-1-i0)*binSize) /iZMFit[0]->Eval((lNTot/2-1-i0)*binSize)  - lE0;
+	 if(howManyToPlot>1 && iZM1Fit[index]->Eval((lNTot/2-1-i0)*binSize)!=0) lGVals1[i0+lNTot/2] =  iZD1Fit[index]->Eval((lNTot/2-1-i0)*binSize)/iZM1Fit[0]->Eval((lNTot/2-1-i0)*binSize)  - lE1;
+	 if(howManyToPlot>2 && iZM2Fit[index]->Eval((lNTot/2-1-i0)*binSize)!=0) lGVals2[i0+lNTot/2] =  iZD2Fit[index]->Eval((lNTot/2-1-i0)*binSize)/iZM2Fit[index]->Eval((lNTot/2-1-i0)*binSize)  - lE2;
+	 if(howManyToPlot>3 && iZM3Fit[index]->Eval((lNTot/2-1-i0)*binSize)!=0) lGVals3[i0+lNTot/2] =  iZD3Fit[index]->Eval((lNTot/2-1-i0)*binSize)/iZM3Fit[index]->Eval((lNTot/2-1-i0)*binSize)  - lE3;
        }
 
        if(doRapStudies) {
 
-	 if(index==0 && iZMFit[index]->Eval(lNTot/2-1-i0)!=0) { lE0 = TMath::Max(getError(lNTot/2-1-i0, iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals0[i0+lNTot/2] =  iZDFit[index]->Eval(lNTot/2-1-i0) /iZMFit[index]->Eval(lNTot/2-1-i0)   - lE0; }
-	 if(index==1 && iZMFit[index]->Eval(lNTot/2-1-i0)!=0) { lE0 = TMath::Max(getError(lNTot/2-1-i0, iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals1[i0+lNTot/2] =  iZDFit[index]->Eval(lNTot/2-1-i0) /iZMFit[index]->Eval(lNTot/2-1-i0)   - lE0; }
-	 if(index==2 && iZMFit[index]->Eval(lNTot/2-1-i0)!=0) { lE0 = TMath::Max(getError(lNTot/2-1-i0, iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals2[i0+lNTot/2] =  iZDFit[index]->Eval(lNTot/2-1-i0) /iZMFit[index]->Eval(lNTot/2-1-i0)   - lE0; }
-	 if(index==3 && iZMFit[index]->Eval(lNTot/2-1-i0)!=0) { lE0 = TMath::Max(getError(lNTot/2-1-i0, iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals3[i0+lNTot/2] =  iZDFit[index]->Eval(lNTot/2-1-i0) /iZMFit[index]->Eval(lNTot/2-1-i0)   - lE0; }
-	 if(index==4 && iZMFit[index]->Eval(lNTot/2-1-i0)!=0) { lE0 = TMath::Max(getError(lNTot/2-1-i0, iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals4[i0+lNTot/2] =  iZDFit[index]->Eval(lNTot/2-1-i0) /iZMFit[index]->Eval(lNTot/2-1-i0)   - lE0; }
-	 if(index==5 && iZMFit[index]->Eval(lNTot/2-1-i0)!=0) { lE0 = TMath::Max(getError(lNTot/2-1-i0, iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals5[i0+lNTot/2] =  iZDFit[index]->Eval(lNTot/2-1-i0) /iZMFit[index]->Eval(lNTot/2-1-i0)   - lE0; }
+	 if(index==0 && iZMFit[index]->Eval((lNTot/2-1-i0)*binSize)!=0) { lE0 = TMath::Max(getError((lNTot/2-1-i0)*binSize, iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals0[i0+lNTot/2] =  iZDFit[index]->Eval((lNTot/2-1-i0)*binSize) /iZMFit[index]->Eval((lNTot/2-1-i0)*binSize)   - lE0; }
+	 if(index==1 && iZMFit[index]->Eval((lNTot/2-1-i0)*binSize)!=0) { lE0 = TMath::Max(getError((lNTot/2-1-i0)*binSize, iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals1[i0+lNTot/2] =  iZDFit[index]->Eval((lNTot/2-1-i0)*binSize) /iZMFit[index]->Eval((lNTot/2-1-i0)*binSize)   - lE0; }
+	 if(index==2 && iZMFit[index]->Eval((lNTot/2-1-i0)*binSize)!=0) { lE0 = TMath::Max(getError((lNTot/2-1-i0)*binSize, iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals2[i0+lNTot/2] =  iZDFit[index]->Eval((lNTot/2-1-i0)*binSize) /iZMFit[index]->Eval((lNTot/2-1-i0)*binSize)   - lE0; }
+	 if(index==3 && iZMFit[index]->Eval((lNTot/2-1-i0)*binSize)!=0) { lE0 = TMath::Max(getError((lNTot/2-1-i0)*binSize, iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals3[i0+lNTot/2] =  iZDFit[index]->Eval((lNTot/2-1-i0)*binSize) /iZMFit[index]->Eval((lNTot/2-1-i0)*binSize)   - lE0; }
+	 if(index==4 && iZMFit[index]->Eval((lNTot/2-1-i0)*binSize)!=0) { lE0 = TMath::Max(getError((lNTot/2-1-i0)*binSize, iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals4[i0+lNTot/2] =  iZDFit[index]->Eval((lNTot/2-1-i0)*binSize) /iZMFit[index]->Eval((lNTot/2-1-i0)*binSize)   - lE0; }
+	 if(index==5 && iZMFit[index]->Eval((lNTot/2-1-i0)*binSize)!=0) { lE0 = TMath::Max(getError((lNTot/2-1-i0)*binSize, iZDFit[index] ,iZMFit[index]) ,iTMax); lGVals5[i0+lNTot/2] =  iZDFit[index]->Eval((lNTot/2-1-i0)*binSize) /iZMFit[index]->Eval((lNTot/2-1-i0)*binSize)   - lE0; }
 
        }
-
 
      }
    }
@@ -487,8 +635,9 @@ int mycase=-1;
    TGraph *lG5 = new TGraph(lNTot,lXVals0,lGVals5); lG5->SetFillColor(kMagenta); lG5->SetLineColor(kMagenta); lG5->SetLineWidth(10);
 
    lG0->GetXaxis()->SetTitle("Z_{p_{T}} (GeV)");
+   if(doPhiStar) lG0->GetXaxis()->SetTitle("#phi^{*}");
    lG0->SetTitle("");
-   lG0->GetXaxis()->SetRangeUser(0,50);
+   lG0->GetXaxis()->SetRangeUser(iXMin,iXMax);
    lG0->GetYaxis()->SetTitle(iYName.c_str());
    lG0->GetYaxis()->SetRangeUser(iYMin,iYMax);
 
@@ -504,15 +653,19 @@ int mycase=-1;
    //  TLegend *lL = new TLegend(0.3,0.65,0.95,0.9); lL->SetFillColor(0); lL->SetBorderSize(0);
    lL->SetTextSize(0.04);
 
+   if(doMadPowClosure) lL->AddEntry(lG0,"powheg/madgprah","lf");
+
    if(doIterClosure) {
      lL->AddEntry(lG0,"iter0","lf");
      lL->AddEntry(lG1,"iter1","lf");
    }
 
    if(doMuonCheck) {
-     lL->AddEntry(lG0,"genZpt","lf");
-     lL->AddEntry(lG1,"recoZpt","lf");
-     lL->AddEntry(lG2,"MC ZptGen/ZrecoCorr","lf");
+     lL->AddEntry(lG0,"MC no calibration","lf");
+     lL->AddEntry(lG1,"MC w/ Z mass constraint","lf");
+     if(howManyToPlot>2) lL->AddEntry(lG2,"DATA/MC no calibration","lf");
+     if(howManyToPlot>3) lL->AddEntry(lG3,"DATA/MC w/ Z mass constraint","lf");
+
    }
 
    if(doSingleDouble) {
@@ -565,13 +718,14 @@ int mycase=-1;
        lL->AddEntry(lG0,"ddar/uubar","lf");
        if(howManyToPlot>1) lL->AddEntry(lG1,"ssbar/uubar","lf");
        if(howManyToPlot>2) lL->AddEntry(lG2,"ccbar/uubar","lf");
+       if(howManyToPlot>3) lL->AddEntry(lG3,"gluon+X/uubar","lf");
      }
      if(mycase==3) {
-       lL->AddEntry(lG0,"u-sbar/udbar","lf");
+       lL->AddEntry(lG0,"(u-sbar + c-dbar + c-sbar)/udbar","lf");
        if(howManyToPlot>1) lL->AddEntry(lG1,"cdbar/udbar","lf");
      }
      if(mycase==4) {
-       lL->AddEntry(lG0,"u-sbar/udbar","lf");
+       lL->AddEntry(lG0,"(d-cbar + s-ubar + s-cbar)/dubar","lf");
        if(howManyToPlot>1) lL->AddEntry(lG1,"cdbar/udbar","lf");
      }
 
@@ -581,7 +735,7 @@ int mycase=-1;
    //  if(howManyToPlot>2) lL->AddEntry(lG2,"(DY+TOP)/DY |MZ|<91-10 1<|yZ|<2","lf");
    //  if(howManyToPlot>3) lL->AddEntry(lG3,"(DY+TOP)/DY |MZ|<91-10 1<|yZ|<2","lf");
 
-   TLine   *lLine = new TLine(1.,1.,25.,1.);
+   TLine   *lLine = new TLine(iXMin,1.,iXMax,1.);
    TCanvas *lC0 = new TCanvas(iName.c_str(),iName.c_str(),800,600); lC0->cd();
    lG0->Draw("alf");
    if(howManyToPlot>1) lG1->Draw("lf"); 
@@ -687,6 +841,7 @@ int mycase=-1;
 
    leg10 = "powheg";
    if(doMad) leg10 = "madgraph";
+   if(doMadPowClosure) leg10 = "powheg/madgraph";
 
    TString leg1 = "";
    if(!doRapStudies) {
@@ -729,12 +884,25 @@ int mycase=-1;
    if(!doSingleDouble && !doSinglePtStudy ) leg4 += " di-Gauss";
    if(doSinglePtStudy) leg4 += " one-Gauss";
 
+   TLatex latexLabel;
+   latexLabel.SetTextSize(0.05);
+   latexLabel.SetNDC();
+   latexLabel.DrawLatex(0.2, 0.85, leg10);
+   latexLabel.DrawLatex(0.2, 0.75, leg4);
+   latexLabel.DrawLatex(0.2, 0.7, leg1);
+   if(doPDF) latexLabel.DrawLatex(0.2, 0.65, leg5);
+
+   latexLabel.DrawLatex(0.6, 0.2, leg2); 
+   latexLabel.DrawLatex(0.6, 0.25, leg3);
+
+
 
    TString text2 = "CLOSURE/RapBin_";
    if(doMad) text2 +=  "madgraph_";
    if(!doMad) text2 +=  "powheg_";
    if(doIterClosure) text2 +=  "diGauss_";
    if(doMuonCheck) text2 +=  "recoMuonCheck_";
+   if(doMadPowClosure) text2 +=  "madPowRatio_";
    if(doSingleDouble) text2 +=  "diOnegauss_";
    if(doCorrelation) text2 +=  "Correlation_";
    if(doCorrelationA) text2 +=  "spot_";
@@ -752,6 +920,7 @@ int mycase=-1;
    if(doMad) text3 +=  "madgraph_";
    if(!doMad) text3 +=  "powheg_";
    if(doIterClosure) text3 +=  "diGauss_";
+   if(doMadPowClosure) text3 +=  "madPowRatio_";
    if(doMuonCheck) text3 +=  "recoMuonCheck_";
    if(doSingleDouble) text3 +=  "diOnegauss_";
    if(doCorrelation) text3 +=  "Correlation_";
@@ -765,19 +934,6 @@ int mycase=-1;
    text3 += "_";
    text3 += iName;
    text3 += ".pdf";
-
-   TLatex latexLabel;
-   latexLabel.SetTextSize(0.05);
-   latexLabel.SetNDC();
-   latexLabel.DrawLatex(0.2, 0.8, leg10);
-   latexLabel.DrawLatex(0.2, 0.65, leg1);
-   if(doPDF) latexLabel.DrawLatex(0.2, 0.6, leg5);
-
-   //  latexLabel.DrawLatex(0.7, 0.15, leg2a);
-   //  latexLabel.DrawLatex(0.7, 0.1, leg2b);
-   latexLabel.DrawLatex(0.6, 0.2, leg2);
-   latexLabel.DrawLatex(0.6, 0.25, leg3);
-   latexLabel.DrawLatex(0.2, 0.7, leg4);
 
    lC0->SaveAs(text2.Data());
    lC0->SaveAs(text3.Data());
@@ -908,6 +1064,7 @@ int mycase=-1;
    //   std::string iDir = "/afs/cern.ch/user/d/dalfonso/scratch0/CMSSW_4_4_5_Wmass/src/CMGTools/WMass/analysis/RecoilCode/RecoilCorrector_v6/fitcode/recoilfits/recoilfit_MAY23";
    //   std::string iDir = "/afs/cern.ch/user/d/dalfonso/scratch0/CMSSW_4_4_5_Wmass/src/CMGTools/WMass/analysis/RecoilCode/RecoilCorrector_v6/fitcode/recoilfits/recoilfit_MAY31";
    std::string iDir = "/afs/cern.ch/work/d/dalfonso/CMSSW_5_3_19_Wmass/src/CMGTools/WMass/analysis/RecoilCode/RecoilCorrector_v6/fitcode/recoilfits/recoilfit_AUG6";
+   //   std::string iDir_bis = "/afs/cern.ch/work/d/dalfonso/CMSSW_5_3_19_Wmass/src/CMGTools/WMass/analysis/RecoilCode/RecoilCorrector_v6/fitcode/recoilfits/recoilfit_SEP23";
    std::string iDir_bis = "/afs/cern.ch/work/d/dalfonso/CMSSW_5_3_19_Wmass/src/CMGTools/WMass/analysis/RecoilCode/RecoilCorrector_v6/fitcode/recoilfits/recoilfit_AUG6";
 
    std::string iNameZDat = "";
@@ -919,23 +1076,55 @@ int mycase=-1;
    std::string iNameZDat3 = "";
    std::string iNameZMC3 = "";
 
-   if(doIterClosure) {
+   if(doMadPowClosure) {
 
-       iNameZDat.append(iDir);  iNameZDat.append("_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat"); 
-       iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat");
+     iNameZDat.append(iDir);  iNameZDat.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root"); 
+     iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root");
+     
+     howManyToPlot=1;
+
+  }
+
+   if(doIterClosure) {
+     
+     if(doErf) { 
+
+       iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_U1scaleErf_type2_doubleGauss_x2Stat"); 
+       iNameZDat.append(iDir);  iNameZDat.append("_DATA_tkmet_eta21_MZ81101_pol3_U1scaleErf_type2_doubleGauss_x2Stat"); 
+       iNameZMC1.append(iDir);   iNameZMC1.append("_genZ_ITERATIVE_tkmet_eta21_MZ81101_PDF-1_pol3_U1scaleErf_type2_doubleGauss_x2Stat");  
+       iNameZDat1.append(iDir);  iNameZDat1.append("_DATA_tkmet_eta21_MZ81101_pol3_U1scaleErf_type2_doubleGauss_x2Stat");  
+
+       iNameZMC.append("_UNBINNED");
+       iNameZDat.append("_UNBINNED");
+       iNameZMC1.append("_UNBINNED");
+       iNameZDat1.append("_UNBINNED");
        
-       iNameZDat1.append(iDir);  iNameZDat1.append("_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat"); 
-       iNameZMC1.append(iDir_bis);   iNameZMC1.append("_genZ_ITERATIVE_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat");
+     } else {
+
+       iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat");
+     
+       if(!doMCvsMC) { iNameZDat.append(iDir);  iNameZDat.append("_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat"); }
+       if(!doMCvsMC) { iNameZMC1.append(iDir);   iNameZMC1.append("_genZ_ITERATIVE_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat"); } 
+       if(!doMCvsMC) { iNameZDat1.append(iDir);  iNameZDat1.append("_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat"); } 
+       
+       if(doMCvsMC)  { iNameZDat.append(iDir);  iNameZDat.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat"); }
+       if(doMCvsMC)  { iNameZMC1.append(iDir_bis);   iNameZMC1.append("_genZ_ITERATIVE_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat"); } 
+       if(doMCvsMC)  { iNameZDat1.append(iDir);  iNameZDat1.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat"); }
+
+     }
+
+     if(!doMCvsMC)  iNameZDat.append("_53X.root"); 
+     if(!doMCvsMC)  iNameZDat1.append("_53X.root"); 
 
      if(doMad) {
-       iNameZDat.append("_53X.root"); 
+       if(doMCvsMC)   iNameZDat.append("_53X_madgraph.root"); 
+       if(doMCvsMC)   iNameZDat1.append("_53X_madgraph.root"); 
        iNameZMC.append("_53X_madgraph.root"); 
-       iNameZDat1.append("_53X.root"); 
        iNameZMC1.append("_53X_madgraph.root"); 
      } else {
-       iNameZDat.append("_53X.root"); 
+       if(doMCvsMC)   iNameZDat.append("_53X_powheg.root"); 
+       if(doMCvsMC)   iNameZDat1.append("_53X_powheg.root"); 
        iNameZMC.append("_53X_powheg.root"); 
-       iNameZDat1.append("_53X.root"); 
        iNameZMC1.append("_53X_powheg.root"); 
      }
 
@@ -947,17 +1136,44 @@ int mycase=-1;
 
     //////
 
-    iNameZDat.append(iDir);  iNameZDat.append("_MAY22__DATA_tkmet_eta21_MZ81101_pol3_type1_doubleGauss_x2Stat_ROCHcorr.root");
-    iNameZMC.append(iDir);   iNameZMC.append("_MAY22__genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type1_doubleGauss_x2Stat_madgraph.root");
+    // MC reco vs MC gen
+    iNameZDat.append(iDir_bis);  iNameZDat.append("_MClikeDATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat");
+    iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat");
 
-    iNameZDat1.append(iDir);  iNameZDat1.append("_MAY22__DATA_tkmet_eta21_MZ81101_pol3_type1_doubleGauss_x2Stat_ROCHcorr.root");
-    iNameZMC1.append(iDir);   iNameZMC1.append("_MAY22__genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type1_doubleGauss_x2Stat_ROCHcorr_madgraph.root");
+    // MC reco vs MC gen w/ rescaling
+    iNameZDat1.append(iDir_bis);  iNameZDat1.append("_MClikeDATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_GigiRescale");
+    iNameZMC1.append(iDir_bis);   iNameZMC1.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_GigiRescale");
+
+    iNameZDat2.append(iDir);  iNameZDat2.append("_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat"); 
+    iNameZMC2.append(iDir);   iNameZMC2.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat");
+
+    // MC gen  vs DATA reco w/ rescaling
+    iNameZDat3.append(iDir_bis);  iNameZDat3.append("_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_GigiRescale");
+    iNameZMC3.append(iDir_bis);   iNameZMC3.append("_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_GigiRescale");
 
     //////
-    iNameZDat2.append(iDir);  iNameZDat2.append("_MAY22__genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type1_doubleGauss_x2Stat_ROCHcorr_madgraph.root");
-    iNameZMC2.append(iDir);   iNameZMC2.append("_MAY22__genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type1_doubleGauss_x2Stat_madgraph.root");
 
-    howManyToPlot=3;
+    if(doMad) {
+      iNameZDat.append("_53X.root"); 
+       iNameZMC.append("_53X_madgraph.root"); 
+       iNameZDat1.append("_53X.root"); 
+       iNameZMC1.append("_53X_madgraph.root"); 
+       iNameZDat2.append("_53X.root"); 
+       iNameZMC2.append("_53X_madgraph.root"); 
+       iNameZDat3.append("_53X.root"); 
+       iNameZMC3.append("_53X_madgraph.root"); 
+    } else {
+      iNameZDat.append("_53X.root"); 
+      iNameZMC.append("_53X_powheg.root"); 
+      iNameZDat1.append("_53X.root"); 
+      iNameZMC1.append("_53X_powheg.root"); 
+      iNameZDat2.append("_53X.root"); 
+      iNameZMC2.append("_53X_powheg.root"); 
+      iNameZDat3.append("_53X.root"); 
+      iNameZMC3.append("_53X_powheg.root"); 
+    }
+    
+    howManyToPlot=2;
 
   }
 
@@ -1141,7 +1357,7 @@ int mycase=-1;
 
     if(mycase==2) {
 
-      howManyToPlot=3;
+      howManyToPlot=4;
 
       iNameZDat.append(iDir);   iNameZDat.append("_genZ_tkmet_eta21_MZ81101_PDF1_pol3_type2_doubleGauss_x2Stat");
       iNameZMC.append(iDir);   iNameZMC.append("_genZ_tkmet_eta21_MZ81101_PDF2_pol3_type2_doubleGauss_x2Stat");
@@ -1151,6 +1367,9 @@ int mycase=-1;
 
       iNameZDat2.append(iDir);   iNameZDat2.append("_genZ_tkmet_eta21_MZ81101_PDF4_pol3_type2_doubleGauss_x2Stat");
       iNameZMC2.append(iDir);   iNameZMC2.append("_genZ_tkmet_eta21_MZ81101_PDF2_pol3_type2_doubleGauss_x2Stat");
+
+      iNameZDat3.append(iDir);   iNameZDat3.append("_genZ_tkmet_eta21_MZ81101_PDF0_pol3_type2_doubleGauss_x2Stat");
+      iNameZMC3.append(iDir);   iNameZMC3.append("_genZ_tkmet_eta21_MZ81101_PDF2_pol3_type2_doubleGauss_x2Stat");
 
     }
 
@@ -1183,6 +1402,8 @@ int mycase=-1;
        iNameZMC1.append(MCtypeMad); 
        iNameZDat2.append(MCtypeMad); 
        iNameZMC2.append(MCtypeMad); 
+       iNameZDat3.append(MCtypeMad); 
+       iNameZMC3.append(MCtypeMad); 
      } else {
        iNameZDat.append(MCtypePow); 
        iNameZMC.append(MCtypePow); 
@@ -1190,6 +1411,8 @@ int mycase=-1;
        iNameZMC1.append(MCtypePow); 
        iNameZDat2.append(MCtypePow); 
        iNameZMC2.append(MCtypePow); 
+       iNameZDat3.append(MCtypePow); 
+       iNameZMC3.append(MCtypePow); 
      }
     
   }
@@ -1244,37 +1467,53 @@ int mycase=-1;
   //correct(lZD1U1RMS1Fit,lZDU1RMSSMFit); correct(lZM1U1RMS1Fit,lZMU1RMSSMFit);  correct(lZD1U1RMS2Fit,lZD1U1RMSSMFit); correct(lZM1U1RMS2Fit,lZM1U1RMSSMFit);
   //correct(lZD1U2RMS1Fit,lZDU2RMSSMFit); correct(lZM1U2RMS1Fit,lZMU2RMSSMFit);  correct(lZD1U2RMS2Fit,lZD1U2RMSSMFit); correct(lZM1U2RMS2Fit,lZM1U2RMSSMFit);
 
-  if(doIterClosure || doSingleDouble || doCorrelation || doSinglePtStudy || doMuonCheck) {
-    // good for data/MC correction
-    drawRatios("Ru1" ,"U_{1} Response DATA/MC"        ,   0.85, 1.2,0.01,lZDU1Fit     ,lZMU1Fit     ,/**/ lZD1U1Fit     ,lZM1U1Fit     ,/**/ lZD2U1Fit     ,lZM2U1Fit     ,/**/ lZD3U1Fit     ,lZM3U1Fit);
+  double xMin=0.;
+  double xMax=25.;
+  if(doPhiStar) xMax=0.5;
 
-    drawRatios("Ru1MR" ,"U_{1} Mean Resolution DATA/MC"  , 0.9, 1.3,0.01,lZDU1RMSSMFit,lZMU1RMSSMFit,/**/ lZD1U1RMSSMFit,lZM1U1RMSSMFit,/**/ lZD2U1RMSSMFit,lZM2U1RMSSMFit,/**/ lZD3U1RMSSMFit,lZM3U1RMSSMFit);
-    drawRatios("Ru2MR" ,"U_{2} Mean Resolution DATA/MC"  , 0.9, 1.3,0.01,lZDU2RMSSMFit,lZMU2RMSSMFit,/**/ lZD1U2RMSSMFit,lZM1U2RMSSMFit,/**/ lZD2U2RMSSMFit,lZM2U2RMSSMFit,/**/ lZD3U2RMSSMFit,lZM3U2RMSSMFit);
+  double offset=0.;
+
+  if(doIterClosure || doSingleDouble || doCorrelation || doSinglePtStudy|| doMadPowClosure) {
+    // good for data/MC correction
+
+    drawRatios("Ru1" ,"U_{1} Response DATA/MC"        ,  xMin, xMax, 0.85-offset, 1.2+offset,0.001,lZDU1Fit     ,lZMU1Fit     ,/**/ lZD1U1Fit     ,lZM1U1Fit     ,/**/ lZD2U1Fit     ,lZM2U1Fit     ,/**/ lZD3U1Fit     ,lZM3U1Fit);
+    if(doErf) doErf=false; // Erf used only in the Scale
+    drawRatios("Ru1MR" ,"U_{1} Mean Resolution DATA/MC"  , xMin, xMax, 0.9-offset, 1.3+offset,0.001,lZDU1RMSSMFit,lZMU1RMSSMFit,/**/ lZD1U1RMSSMFit,lZM1U1RMSSMFit,/**/ lZD2U1RMSSMFit,lZM2U1RMSSMFit,/**/ lZD3U1RMSSMFit,lZM3U1RMSSMFit);
+    drawRatios("Ru2MR" ,"U_{2} Mean Resolution DATA/MC"  , xMin, xMax, 0.9-offset, 1.3+offset,0.001,lZDU2RMSSMFit,lZMU2RMSSMFit,/**/ lZD1U2RMSSMFit,lZM1U2RMSSMFit,/**/ lZD2U2RMSSMFit,lZM2U2RMSSMFit,/**/ lZD3U2RMSSMFit,lZM3U2RMSSMFit);
+
 
     if(doIterClosure) {
 
       //    cout << "not defined function Ru1R1 " << endl;
-      drawRatios("Ru1R1" ,"U_{1} Resolution 1 "  ,      0.9,1.2,0.01,lZDU1RMS1Fit ,lZMU1RMS1Fit ,/**/ lZD1U1RMS1Fit ,lZM1U1RMS1Fit ,/**/ lZD2U1RMS1Fit ,lZM2U1RMS1Fit, /**/lZD3U1RMS1Fit ,lZM3U1RMS1Fit);
+      drawRatios("Ru1R1" ,"U_{1} Resolution 1 "  ,      xMin, xMax, 0.9-offset,1.2+offset,0.001,lZDU1RMS1Fit ,lZMU1RMS1Fit ,/**/ lZD1U1RMS1Fit ,lZM1U1RMS1Fit ,/**/ lZD2U1RMS1Fit ,lZM2U1RMS1Fit, /**/lZD3U1RMS1Fit ,lZM3U1RMS1Fit);
       //    cout << "not defined function Ru1R2 " << endl;
-      drawRatios("Ru1R2" ,"U_{1} Resolution 2 "  ,      0.9,1.2,0.01,lZDU1RMS2Fit ,lZMU1RMS2Fit ,/**/ lZD1U1RMS2Fit ,lZM1U1RMS2Fit ,/**/ lZD2U1RMS2Fit ,lZM2U1RMS2Fit, /**/lZD3U1RMS2Fit ,lZM3U1RMS2Fit);
+      drawRatios("Ru1R2" ,"U_{1} Resolution 2 "  ,      xMin, xMax, 0.9-offset,1.2+offset,0.001,lZDU1RMS2Fit ,lZMU1RMS2Fit ,/**/ lZD1U1RMS2Fit ,lZM1U1RMS2Fit ,/**/ lZD2U1RMS2Fit ,lZM2U1RMS2Fit, /**/lZD3U1RMS2Fit ,lZM3U1RMS2Fit);
       //    cout << "not defined function Ru2R1 " << endl;
-      drawRatios("Ru2R1" ,"U_{2} Resolution 1 "  ,     0.9,1.2,0.01,lZDU2RMS1Fit ,lZMU2RMS1Fit ,/**/ lZD1U2RMS1Fit ,lZM1U2RMS1Fit ,/**/ lZD2U2RMS1Fit ,lZM2U2RMS1Fit, /**/lZD3U2RMS1Fit ,lZM3U2RMS1Fit);
+      drawRatios("Ru2R1" ,"U_{2} Resolution 1 "  ,      xMin, xMax, 0.9-offset,1.2+offset,0.001,lZDU2RMS1Fit ,lZMU2RMS1Fit ,/**/ lZD1U2RMS1Fit ,lZM1U2RMS1Fit ,/**/ lZD2U2RMS1Fit ,lZM2U2RMS1Fit, /**/lZD3U2RMS1Fit ,lZM3U2RMS1Fit);
       //    cout << "not defined function Ru2R2 " << endl;
-      drawRatios("Ru2R2" ,"U_{2} Resolution 2 "  ,     0.9,1.2,0.01,lZDU2RMS2Fit ,lZMU2RMS2Fit ,/**/ lZD1U2RMS2Fit ,lZM1U2RMS2Fit ,/**/ lZD2U2RMS2Fit ,lZM2U2RMS2Fit, /**/lZD3U2RMS2Fit ,lZM3U2RMS2Fit);
+      drawRatios("Ru2R2" ,"U_{2} Resolution 2 "  ,      xMin, xMax, 0.9-offset,1.2+offset,0.001,lZDU2RMS2Fit ,lZMU2RMS2Fit ,/**/ lZD1U2RMS2Fit ,lZM1U2RMS2Fit ,/**/ lZD2U2RMS2Fit ,lZM2U2RMS2Fit, /**/lZD3U2RMS2Fit ,lZM3U2RMS2Fit);
 
     }
   }
 
+  if(doMuonCheck) {
+
+    drawRatios("Ru1" ,"U_{1} Response (RecoPt/GenPt)"        ,  xMin, xMax, 0.95, 1.05,0.001,lZDU1Fit     ,lZMU1Fit     ,/**/ lZD1U1Fit     ,lZM1U1Fit     ,/**/ lZD2U1Fit     ,lZM2U1Fit     ,/**/ lZD3U1Fit     ,lZM3U1Fit);
+    drawRatios("Ru1MR" ,"U_{1} Mean Resolution (RecoPt/GenPt)"  , xMin, xMax, 0.95, 1.05,0.001,lZDU1RMSSMFit,lZMU1RMSSMFit,/**/ lZD1U1RMSSMFit,lZM1U1RMSSMFit,/**/ lZD2U1RMSSMFit,lZM2U1RMSSMFit,/**/ lZD3U1RMSSMFit,lZM3U1RMSSMFit);
+    drawRatios("Ru2MR" ,"U_{2} Mean Resolution (RecoPt/GenPt)"  , xMin, xMax, 0.95, 1.05,0.001,lZDU2RMSSMFit,lZMU2RMSSMFit,/**/ lZD1U2RMSSMFit,lZM1U2RMSSMFit,/**/ lZD2U2RMSSMFit,lZM2U2RMSSMFit,/**/ lZD3U2RMSSMFit,lZM3U2RMSSMFit);
+
+  }
+
   if(doPDF) {
-    drawRatios("Ru1" ,"U_{1} Response MC"        ,   0.75, 1.5,0.01,lZDU1Fit     ,lZMU1Fit     ,/**/ lZD1U1Fit     ,lZM1U1Fit     ,/**/ lZD2U1Fit     ,lZM2U1Fit     ,/**/ lZD3U1Fit     ,lZM3U1Fit);
-    drawRatios("Ru1MR" ,"U_{1} Mean Resolution MC"  , 0.75, 1.5,0.01,lZDU1RMSSMFit,lZMU1RMSSMFit,/**/ lZD1U1RMSSMFit,lZM1U1RMSSMFit,/**/ lZD2U1RMSSMFit,lZM2U1RMSSMFit,/**/ lZD3U1RMSSMFit,lZM3U1RMSSMFit);
-    drawRatios("Ru2MR" ,"U_{2} Mean Resolution MC"  , 0.75, 1.5,0.01,lZDU2RMSSMFit,lZMU2RMSSMFit,/**/ lZD1U2RMSSMFit,lZM1U2RMSSMFit,/**/ lZD2U2RMSSMFit,lZM2U2RMSSMFit,/**/ lZD3U2RMSSMFit,lZM3U2RMSSMFit);
+    drawRatios("Ru1" ,"U_{1} Response MC"        ,    xMin, xMax, 0.75, 1.5,0.001,lZDU1Fit     ,lZMU1Fit     ,/**/ lZD1U1Fit     ,lZM1U1Fit     ,/**/ lZD2U1Fit     ,lZM2U1Fit     ,/**/ lZD3U1Fit     ,lZM3U1Fit);
+    drawRatios("Ru1MR" ,"U_{1} Mean Resolution MC"  , xMin, xMax, 0.75, 1.5,0.001,lZDU1RMSSMFit,lZMU1RMSSMFit,/**/ lZD1U1RMSSMFit,lZM1U1RMSSMFit,/**/ lZD2U1RMSSMFit,lZM2U1RMSSMFit,/**/ lZD3U1RMSSMFit,lZM3U1RMSSMFit);
+    drawRatios("Ru2MR" ,"U_{2} Mean Resolution MC"  , xMin, xMax, 0.75, 1.5,0.001,lZDU2RMSSMFit,lZMU2RMSSMFit,/**/ lZD1U2RMSSMFit,lZM1U2RMSSMFit,/**/ lZD2U2RMSSMFit,lZM2U2RMSSMFit,/**/ lZD3U2RMSSMFit,lZM3U2RMSSMFit);
   }
 
   if(doRapStudies) {
-    drawRatios("Ru1" ,"U_{1} Response MC"        ,   0.9, 1.1,0.01,lZDU1Fit     ,lZMU1Fit     ,/**/ lZD1U1Fit     ,lZM1U1Fit     ,/**/ lZD2U1Fit     ,lZM2U1Fit     ,/**/ lZD3U1Fit     ,lZM3U1Fit);
-    drawRatios("Ru1MR" ,"U_{1} Mean Resolution MC"  , 0.9, 1.2,0.01,lZDU1RMSSMFit,lZMU1RMSSMFit,/**/ lZD1U1RMSSMFit,lZM1U1RMSSMFit,/**/ lZD2U1RMSSMFit,lZM2U1RMSSMFit,/**/ lZD3U1RMSSMFit,lZM3U1RMSSMFit);
-    drawRatios("Ru2MR" ,"U_{2} Mean Resolution MC"  , 0.9, 1.2,0.01,lZDU2RMSSMFit,lZMU2RMSSMFit,/**/ lZD1U2RMSSMFit,lZM1U2RMSSMFit,/**/ lZD2U2RMSSMFit,lZM2U2RMSSMFit,/**/ lZD3U2RMSSMFit,lZM3U2RMSSMFit);
+    drawRatios("Ru1" ,"U_{1} Response MC"        ,    xMin, xMax, 0.9, 1.1,0.001,lZDU1Fit     ,lZMU1Fit     ,/**/ lZD1U1Fit     ,lZM1U1Fit     ,/**/ lZD2U1Fit     ,lZM2U1Fit     ,/**/ lZD3U1Fit     ,lZM3U1Fit);
+    drawRatios("Ru1MR" ,"U_{1} Mean Resolution MC"  , xMin, xMax, 0.9, 1.2,0.001,lZDU1RMSSMFit,lZMU1RMSSMFit,/**/ lZD1U1RMSSMFit,lZM1U1RMSSMFit,/**/ lZD2U1RMSSMFit,lZM2U1RMSSMFit,/**/ lZD3U1RMSSMFit,lZM3U1RMSSMFit);
+    drawRatios("Ru2MR" ,"U_{2} Mean Resolution MC"  , xMin, xMax, 0.9, 1.2,0.001,lZDU2RMSSMFit,lZMU2RMSSMFit,/**/ lZD1U2RMSSMFit,lZM1U2RMSSMFit,/**/ lZD2U2RMSSMFit,lZM2U2RMSSMFit,/**/ lZD3U2RMSSMFit,lZM3U2RMSSMFit);
   }
 
   /*

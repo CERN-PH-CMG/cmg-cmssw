@@ -10,6 +10,26 @@
 
 ///////////////////////////////////////////////////////////////
 
+void common_stuff::calculateU1U2(double fMet , double fMPhi, double fZPt, double fZPhi, double fPtVisual, double fPhiVisual, double & fU1,double & fU2)
+{
+  double lUX  = fMet*cos(fMPhi) + fPtVisual*cos(fPhiVisual);
+  double lUY  = fMet*sin(fMPhi) + fPtVisual*sin(fPhiVisual);
+  double lU   = sqrt(lUX*lUX+lUY*lUY);
+
+  //    double fZPhi=fPhiVisual;
+  //    double fZPt=fPtVisual;
+
+  // rotate of -180 the X and Y component 
+
+  double lCos = - (lUX*cos(fZPhi) + lUY*sin(fZPhi))/lU;
+  double lSin =   (lUX*sin(fZPhi) - lUY*cos(fZPhi))/lU;
+  fU1 = lU*lCos;
+  fU2 = lU*lSin;
+
+}
+
+///////////////////////////////////////////////////////////////
+
 // TO LET SPECIFY ALSO THE AXIS TITLES IN THE STRING AND THEN KEEP THE HISTO NAME AND TITLE WITHOUT THEM
 TString common_stuff::getCompleteTitleReturnName(std::string title){
 

@@ -8,23 +8,23 @@
 
 namespace WMass{
 
-  static const double ZMassCentral_MeV = 91188;
+  static const int ZMassCentral_MeV = 91188;
   static const int WMassCentral_MeV = 80398;
   
   static const int WMassSkipNSteps = 5;
-  static const int WMassNSteps = 5;
+  static const int WMassNSteps = 0;
   
-  static const int Wmass_values_array[2*WMassNSteps+1] = {80348,80358,80368,80378,80388,80398,80408,80418,80428,80438,80448};
-  static const int Zmass_values_array[2*WMassNSteps+1] = {91138,91148,91158,91168,91178,91188,91198,91208,91218,91228,91238};
+  static const int Wmass_values_array[2*WMassNSteps+1] = {80398};
+  static const int Zmass_values_array[2*WMassNSteps+1] = {91188};
   
-  static const int etaMuonNSteps = 1;
-  static const float etaMaxMuons[etaMuonNSteps] = { 1.1 };
+  static const int etaMuonNSteps = 3;
+  static const float etaMaxMuons[etaMuonNSteps] = { 1.1,1.6,2.1 };
   static const int nSigOrQCD = 2;
   TString nSigOrQCD_str[nSigOrQCD] = {"Sig","QCD"};
   static const int NFitVar = 3;
   TString FitVar_str[NFitVar] = {"Pt","Mt","MET"};
   static const int PDF_sets = 229800;
-  static const int PDF_members = 1;
+  static const int PDF_members = 100;
   static const int NtoysMomCorr = 1;
   
   static const int WpTcut = 15;

@@ -1,0 +1,1095 @@
+%%%%\documentclass{article}
+\documentclass[41pt,a4paper,oneside]{report}
+\usepackage{feynmp}
+\usepackage{color}
+\usepackage{epsfig}
+\usepackage{rotating}
+\usepackage{amsmath,amssymb}
+\usepackage{enumerate}
+\usepackage[pdftex]{graphicx}
+\usepackage{amsmath}
+
+\makeindex
+
+\begin{document}
+
+%==============================================================================
+% title page for few authors
+
+\begin{titlepage}
+
+%%\date{last update: 19 Apr 2010, comment to dalfonso@cern.ch}
+\end{titlepage}
+\author{Mariarosaria D'Alfonso}
+
+\maketitle
+\tableofcontents 
+
+%==============================================================================
+
+
+\chapter{Introduction}
+
+\include{intro}
+
+\chapter{Recoil correction: definition, parametrization,application}
+
+\include{METdef}
+
+\newpage
+
+\section{Recoil Parametrization}
+
+\label{sec:ParamRecoil}
+This section discusses the modelling of the recoil for the Z~$\rightarrow$~$\mu$~$\mu$. 
+In particular, in~\ref{sec:Fits} the fits to the scale and resolution of U1 and U2 are presented and in Section~\ref{sec:DoubleGauss} the modelling of the tails are discussed.
+In Section~\ref{sec:PtParam} we want to validate our assumptions on the Z $p_{T}$ functional forms.
+
+\subsection{Response and resolution fits}
+\label{sec:Fits}
+We fit the distribution of Ui with a Gaussian and we parametrize the recoil components as functions of Z$p_{T}$ following a multi-step process :
+\begin{itemize}
+\item Fit a polynomial $f_{i}(p^{Z}_{T})$ to the 2D distribution of the $U_{i}$ vs Z$p{T}$. This produces a response curve.
+\item Fit a polynomial $f_{i}(p^{Z}_{T})$ to the 2D distribution of the residual vs Z$p{T}$. This produces a resolution curve.~\footnote{
+In practice, assuming the resolution is distributed as a Gaussian, we fit the absolute value of the difference $|Ui − Ui−mean|$ versus boson $p_{T}$ , 
+where Ui−mean is the fitted response.
+The mean of this distribution is the resolution $\sigma$ multiplied by $\frac{2}{\sqrt{2\pi}}$. If we fit a polynomial to this plot we can extract 
+the resolution as function of boson $p_{T}$ by scaling the resulting fit by $\frac{2}{\sqrt{2\pi}}$. This will be referred in the text as $\sigma_{mean}$.
+}
+\end{itemize}
+This is done in bin of rapidity of the Z boson as will be discussed in Section~\ref{sec:WvsZ}
+
+We expect a distinction in the response curves for the two recoil components. In the case of U1, the evolution of
+the Gaussian mean should closely track the boson $p_{T}$. By design, U2 should be largely independent of the boson $p_{T}$. 
+The resolution receives contributions from two components. The first contribution comes from the underlying event
+and is independent of boson $p_{T}$ and the second component is due to the hadronic recoil of the hard scattering. 
+For U1 we expect both components to contribute. Naively, U2 resolution should depend only on the underlying event and pile-up. 
+However, soft transverse radiation from the hadronic products recoiling against the Z do not fully align in the direction of U1 
+and the U2 shows a minor dependence on the boson $p_{T}$ too.
+We expect that the resolution increases as function of the Z$p_{T}$ since the number of particle produced increase with the Z$p_{T}$.
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.315\textwidth]{PLOTAUG5/mean_U1data_y1.png}
+    \includegraphics[width=.315\textwidth]{PLOTAUG5/rms_U1data_y1.png}
+    \includegraphics[width=.315\textwidth]{PLOTAUG5/rms_U2data_y1.png}
+    \caption{U1 (left) and residual U1 (middle) and residual U2 (right) as function of the boson $p_{T}$, in the Boson rapidity bin $|Y|<1$.{\color{blue}{plot oder than OCT6}}}
+    \label{fig:UNBINNEDdata}
+  \end{center}
+\end{figure}
+
+
+\paragraph{U1 scale}
+In Figure~\ref{fig:UNBINNEDdata} (left) we show the distribution U1 as function of Z$p_{T}$ in data.
+We observe that approximately U1 is a constant fraction of the total boson $p_{T}$.
+In Figure~\ref{fig:UNBINNEDdata} (left) we show also the results of a fit to U1 with 
+a cubic function of $p^{V}_{T}$: 
+\begin{equation}
+response(U1) = p0 + p1 * p^{V}_{T} + p2 * p^{V}_{T} * p^{V}_{T} + p3 * p^{V}_{T} * p^{V}_{T} * p^{V}_{T}.
+\end{equation}
+For low $p^{V}_{T}$, the recoil is dominated by low energy particles that are not well reconstructed.
+This leads to a slight, non-linear turn-on in the response curve before the curve assumes a constant slope.
+The choise of model for the U1 scale is discussed in detail in Section~\ref{label:U1scale}. 
+
+\paragraph{U2 scale}
+The mean of U2 is expected to be zero, independent of $p^{V}_{T}$. We verify this by alternatively fitting with a linear
+function. 
+%Figure~\ref{fig:2a} shows the result of the linear fit to U2. As can be seen from the error bands, U2 is consistent with zero in both data and MC. 
+
+\paragraph{U1 resolution $\sigma_{mean}$(U1)}
+The evolution of the resolution as function of Z$p_{T}$ is modeled with a cubic model. 
+Figure~\ref{fig:UNBINNEDdata} (middle) presents the results of the fit to the residuals in data.
+We see that the cubic function describes both data and MC well. 
+%We tried adding an additional, cubic term to the resolution function and find that its coefficient is 
+%consistent with zero2/NDF for the fit also increases when a cubic term is added. We conclude that a
+% quadratic model is sufficient description of U1 resolution in both data and MC.
+
+\paragraph{U2 resolution $\sigma_{mean}$(U2)}
+As with U1, we assume a cubic model for the resolution of U2. We expect softer Z$p_{T}$ dependence for U2 relative to U1,
+which our observations in data and MC confirm.
+Figure~\ref{fig:UNBINNEDdata} (right) plots the results of the U2 resolution fits in data. 
+
+
+%{\color{magenta}{The chi2/ndof do not change too much for different order of polinomium.}}
+Comparing the value at zero $p_{T}$  of the resolution function in data between U1 and U2 in Figure~\ref{fig:UNBINNEDdata}, the values are found to be within one half standard deviation of each other.
+
+\paragraph{Summary}
+
+\begin{table*}[tH]
+\begin{center}
+\caption{Summary of the parameters for the scale ad RMS on the unbinned fit.{\color{magenta}{add data and split the data as runA and runB}}
+Those are obtained in the MC.}
+\begin{tabular}{l | c c c c | c c c c}
+\hline
+ &  & scale  &  &  &  & RMS &  & \\
+\hline
+         & p0 & p1 & p2 & p3 & p0 & p1 & p2 & p3\\
+\hline
+U1 &  &  &  & &  &  &  & \\
+\hline
+U2 &  &  &  &  &  &  &  &\\
+\hline
+\hline
+\end{tabular}
+    \label{tab:ScaleRMS}
+\end{center}
+\end{table*}
+
+In Table~\ref{tab:ScaleRMS} the Coefficients of resolution and response functions determined as function of Z$p_{T}$
+parameter are summarized.
+%%Coefficients are determined separately for run A and run B data and are compared to Monte Carlo expectations.
+
+\subsection{U1 scale}
+\label{sec:U1scale}
+{\color{magenta}{Need to add the plot on the iter0 - iter1 closure with the errors}}
+
+Different functional forms for the response (U1 scale) modelling have been studied.
+In Figure~\ref{fig:BIASpull} we examine the mean of the pull distributions of the $U_{1}$ (i.e. $( U-U1_{fit} )/\sigma_{fit}U1$ ) in bins of $p^{V}_{T}$
+to check if the model under study gives an unbiased pull distribution.
+Results are shown for the MAGRAPH MC (top raw), POWHEG MC (middle raw) and DATA (bottom raw).
+
+First the response function is fitted with a  third degree polynomial: 
+the cubic function is preferred to the quadratic function since it gives a less biased pull distribution. 
+%This is observed both in data and MC. 
+In Figure~\ref{fig:BIASpull} left, we force the (p0) at zero while in the Figure~\ref{fig:BIASpull} central we fit a second time with a pol3 with the starting parameters from the first fit.
+We see that in both cases, for boson $p^{V}_{T}$~$<$~10 GeV, the pull is not centered to zero. 
+
+As as second test, in Figure~\ref{fig:BIASpull} right, the response is fitted with a combination of a polinomium of second order for the high $p^{V}_{T}$ and the Erf function for the low $p^{V}_{T}$.
+\begin{equation}
+response (MC) =(TMath::Erf(x*[0]) - TMath::Erf(x*[1]) )*(p0 + p1 * p^{V}_{T} + p2 * p^{V}_{T} * p^{V}_{T})
+\end{equation}
+\begin{equation}
+response (DATA) =TMath::Erf(x*[0])*(p0 + p1 * p^{V}_{T} + p2 * p^{V}_{T} * p^{V}_{T})
+\end{equation}
+{\color{magenta}{Need to add some explanation on the difference in the DATA and MC Erf.}}
+
+\begin{figure}[h!]
+  \begin{center}
+
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/M0_pol3_FixPar0_U1_MC_madgraph_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/M0_pol3_twice_U1_MC_madgraph_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/M0_Erftwice_U1_MC_madgraph_pull_-1_1_vtx-1.pdf}\\
+
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/M0_pol3_FixPar0_U1_MC_powheg_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/M0_pol3_twice_U1_MC_powheg_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/M0_Erftwice_U1_MC_powheg_pull_-1_1_vtx-1.pdf}\\
+
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/M0_pol3_FixPar0_U1_data_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/M0_pol3_twice_U1_data_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/M0_Erftwice_U1_data_pull_-1_1_vtx-1.pdf}\\
+
+    \caption{Mean of the pull distribution for different model used for the fit of the response U1 as function of the boson $p_{T}$, in the Boson rapidity bin $|Y|<1$.
+ The fits to the response are done with a cubic model and par0 fixed to 0 (left) with a cubic model with refit with initial value the value from the first fist (central) and combination of an Erf function.Results are shown for the MAGRAPH MC (top raw), POWHEG MC (middle raw) and DATA (bottom raw).
+{\color{magenta}{Plot on the right with one ERF for both data and powheg and madgraph, for powheg the second time fit failed.}}
+}
+    \label{fig:BIASpull}
+  \end{center}
+\end{figure}
+
+
+%%=======================
+%%========ERF once DATA
+%****************************************
+%Minimizer is Minuit2 / Migrad  
+%Chi2                      =  2.29354e+07
+%NDf                       =       518592
+%Edm                       =    0.0018196
+%NCalls                    =          208
+%p0                        =   -0.0496963   +/-   0.00318856      (limited)
+%p1                        =      4.40172   +/-   0.375135        (limited)
+%p2                        =     0.158877   +/-   0.00650682      (limited)
+%p3                        =   0.00450935   +/-   0.000250189     (limited)
+%****************************************
+%Minimizer is Minuit2 / Migrad
+%Chi2                      =  2.29354e+07
+%NDf                       =       518592
+%Edm                       =  4.82859e-05
+%NCalls                    =          115
+%p0                        =    -0.049686   +/-   0.00306719
+%p1                        =      4.40287   +/-   0.360492
+%p2                        =     0.158881   +/-   0.00651505
+%p3                        =   0.00450861   +/-   0.000245115
+
+%%=======================
+%%========ERF once MC madgraph
+%****************************************
+%Minimizer is Minuit2 / Migrad   
+%Chi2                      =  5.26476e+07
+%NDf                       =      1254900
+%Edm                       =   0.00151719
+%NCalls                    =          280
+%p0                        =   -0.0506497   +/-   0.00164891      (limited)
+%p1                        =      4.48973   +/-   0.207235        (limited)
+%p2                        =     0.203935   +/-   0.00399533      (limited)
+%p3                        =   0.00407567   +/-   0.000136389     (limited)
+%****************************************
+%Minimizer is Minuit2 / Migrad
+%Chi2                      =  5.26476e+07
+%NDf                       =      1254900
+%Edm                       =  1.88048e-05
+%NCalls                    =          126
+%p0                        =   -0.0506437   +/-   0.0016089
+%p1                        =      4.49048   +/-   0.202044
+%p2                        =      0.20393   +/-   0.00399822
+%p3                        =   0.00407538   +/-   0.000134997
+
+%%=======================
+%%========ERF once MC powheg
+%****************************************
+%Minimizer is Minuit2 / Migrad
+%Chi2                      =   1.9203e+08
+%NDf                       =      4892039
+%Edm                       =   0.00520702
+%NCalls                    =          203
+%p0                        =   -0.0554794   +/-   0.000790377     (limited)
+%p1                        =      4.23323   +/-   0.0925606       (limited)
+%p2                        =     0.184415   +/-   0.00229664      (limited)
+%p3                        =   0.00451605   +/-   4.38766e-05     (limited)
+%Info in <Minuit2>: Minuit2Minimizer::Minimize : Minimization did NOT converge, Edm is above max
+%Warning in <Fit>: Abnormal termination of minimization.
+%
+%****************************************
+%            Invalid FitResult
+%****************************************
+%Minimizer is Minuit2 / Migrad
+%Chi2                      =   1.9203e+08
+%NDf                       =      4892039
+%Edm                       =  0.000491583
+%NCalls                    =          176
+%p0                        =   -0.0554749   +/-   0.000766289
+%p1                        =      4.23372   +/-   0.0896647
+%p2                        =      0.18441   +/-   0.0022615
+%p3                        =   0.00451589   +/-   4.37652e-05
+
+
+\subsection{Double gaussian}
+\label{sec:DoubleGauss}
+
+\begin{table*}[bH]
+\begin{center}
+\caption{Parameter of the fits to the pull}
+\begin{tabular}{l | c c c c }
+\hline
+         & mean & sigma1 & sigma 2 & fraction \\
+\hline
+unbinned &  constrained & free & free & constrained  \\
+binned   &  free &  free  & free &  constrained \\
+\hline
+\hline
+\end{tabular}
+    \label{tab:ParamDoubleGFit}
+\end{center}
+\end{table*}
+%\begin{table}
+%\begin{center}
+%\caption{Summary of the parameters or small and large gaussian for the double gaussian of the pull unbinned fit. 
+%Those are obtained in the MC.}
+%\begin{tabular}{l c c c c c c c c }
+%\hline
+%& A1 & A2 & $asig_{1}$ & $asig_{2}$ & $bsig_{1}$ & $bsig_{2}$ & $csig_{1}$ & $csig_{2}$ \\
+%\hline
+%U1  &  &  &  &  \\
+%%U2  &  &  &  &  \\
+%\hline
+%\hline
+%%\end{tabular}
+%    \label{tab:PullDiGauss}
+%\end{center}
+%\end{table*}
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pull_Zpt5_U1_MC_powheg_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pull_Zpt10_U1_MC_powheg_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pull_Zpt15_U1_MC_powheg_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pull_Zpt5_U2_MC_powheg_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pull_Zpt10_U2_MC_powheg_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pull_Zpt15_U2_MC_powheg_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/rms_Zpt5_U2_MC_powheg_absolute_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/rms_Zpt10_U2_MC_powheg_absolute_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/rms_Zpt15_U2_MC_powheg_absolute_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pull_Zpt5_U1_MC_powheg_Wpos_pull_-1_1_vtx-1.pdf}     
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pull_Zpt10_U1_MC_powheg_Wpos_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pull_Zpt15_U1_MC_powheg_Wpos_pull_-1_1_vtx-1.pdf}
+    \caption{POWHEG MC: Fit with a double gaussian of the pull distributions for U1 (top raw) U2 (second raw) in the Boson rapidity bin $|Y|<1$ and Z$p_{T}$=5 GeV (left) Z$p_{T}$=10 GeV (middle) and Z$p_{T}$=15 GeV(right). Fit of the absolute distributions for U2 (third raw). Fit for U1 in the $W^{-}$ events (forth raw). In red shown the gaussian with smaller width, in violet the gaussian with larger width and in blue the convolution of the two.}
+    \label{fig:PullPOW}
+  \end{center}
+\end{figure}
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pull_Zpt5_U1_data_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pull_Zpt10_U1_data_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pull_Zpt15_U1_data_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pull_Zpt5_U2_data_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pull_Zpt10_U2_data_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pull_Zpt15_U2_data_pull_-1_1_vtx-1.pdf}
+    \caption{DATA: Fit with a double gaussian of the pull distributions for U1 (top raw) U2 (middle raw) in the Boson rapidity bin $|Y|<1$ and Z$p_{T}$=5 GeV (left) Z$p_{T}$=10 GeV (middle) and Z$p_{T}$=15 GeV(right). In red shown the gaussian with smaller width, in violet the gaussian with larger width and in blue the convolution of the two.}
+    \label{fig:PullData}
+  \end{center}
+\end{figure}
+
+The assumption that the resolution for U1 and U2 is described well by a Gaussian is not a valid description of the resolution over the V$p_{T}$ whole range.
+ A significant deviation of the gaussian resolution model is visible in the data and MC especially at low boson $p_{T}$.
+Examining the pull distributions of the $U_{i}$ (i.e. $( U-Ui_{fit} )/\sigma_{fit}U_{i}$ ) in bins of Z$p_{T}$,  we find that a double gaussian model fit better.
+For the fit, we used a double gaussian model with three free parameters: the width of the two gaussians and the common mean of the two gaussians.
+Those two gaussians are constrained to satisfy the following relations on the relative fraction $\frac{sigma_{1}-1}{sigma_{1}-sigma_{2}}$ such that the pull distribution has mean=0 and RMS=1.
+
+In Figure~\ref{fig:PullPOW}, we shows the results the double gaussian fits in three bins of boson $p_{T}$ for U1 and U2 for the Z madgraph MC. 
+For validation purpose of the double gaussian fit of pull distribution, in Figure~\ref{fig:PullPOW} (third raw) we show the residual distribution $(U-Ui_{fit})$ too. In this case there is no constraints on the fractions of the two gaussian and we observed that the fit to the pull or to the residuals converged to the same $\sigma_{1}$ and $\sigma_{2}$ relative fraction.
+The fit to the W MC is shown in the bottom raw. 
+%%%%%In Figure~\ref{fig:diGaussRMS}, we plot the gaussian and double gaussian fits to the residual (x−xi)  for three binns of boson $p_{T}$.
+%%%We consider modelling the residual distributions by a double gaussian. 
+%%%Both gaussians are centered at the same position and
+%%%The mean is taken as a function of Z$p_{T}$ (mean=A1+A2*V$p_{T}$). (non faccio qui questo)
+%%%In Figure~\ref{fig:PullMAD} the fit are presented for the Z madgraph MC.
+
+In Figure~\ref{fig:PullData} we present the results for the Z data.
+
+To take into account properly the trend in Z$p_{T}$ we perform an unbinned fit.
+This results in a fit with a similar mean to the binned fit with reduced uncertainties and without bias from the choice of binning.
+To describe the behavior of the resolutions in the unbinned method, we utilize a polynomial models.
+The free parameters in this case are the width of the two gaussians.
+The width of the two gaussians are taken to be a second order polinomium of V$p_{T}$.
+($sigma_{1,2} = asig_{1,2} + bsig_{1,2}*Vp_{T} + csig_{1,2}*Vp_{T}*Vp_{T}$). 
+
+In the unbinned fit, the mean of two gaussians is chosen to be constant and set to zero.
+The fit range is chosen like -15,15 for the pull distribution and to the -50,50 for the fit of the absolute rms. This will allow to fit for more than 5 sigma for the full Zpt range considered.
+
+The error on the parameters are calculated with Minos. 
+The uncertainites on the U1, U2 component are propagated with the full error matrix of the fitted parameters and are taken a fully uncorrelated.
+
+
+The 1 sigma band is displayed in the double gaussian unbinned fit in Figures~\ref{fig:PullPOW},~\ref{fig:PullData}.
+
+%%In Table~\ref{tab:ParamDoubleGFit} the sets of parameters left floating in the two type of fits are summarized.
+%%In Figure~\ref{fig:CorrCoeff} the correlation coefficients of the MC are shown for U1 and U2 and madgraph and powheg.
+
+%CHECK THE CENTER OF THE double gaussian as function of Z PT
+%In Table~\ref{tab:PullDiGauss} the coefficients of the Z$p_{T}$ functional form of the small and large gaussian, are summarized.
+
+In Section~\ref{sec:PtParam} the results of the unbinned fit are compared with the binned fit.
+The unbinned fit is used to for the recoil correction and the binned fit is used as validation purpose.
+In Section~\ref{sec:MadComp} the results of the alternative MC madgraph samples are shown in comparison with the nominal MC powehg.
+In Section~\ref{sec:VTXComp} the results are presented in bins of VTX multiplicity.
+
+%  \begin{center}
+%    \includegraphics[width=.315\textwidth]{TESTfit/rms_U1_data_Zpt5_y1.pdf}
+%    \includegraphics[width=.315\textwidth]{TESTfit/rms_U1_data_Zpt10_y1.pdf}
+%    \includegraphics[width=.315\textwidth]{TESTfit/rms_U1_data_Zpt15_y1.pdf}
+%    \caption{Residual distributions for U1 and Z$p_{T}$=5 GeV (left) Z$p_{T}$=10 GeV (middle) and Z$p_{T}$=15 GeV(right) for data in the Boson rapidity bin $|Y|<1$.
+%      Fitted with a double gaussian. In red shown the gaussian with smaller width, in biolet the gaussian with larger width and in blue the convolutioin of the two.}
+%    \label{fig:diGaussRMS}
+%  \end{center}
+
+
+\subsection{Pt parametrization validation}
+\label{sec:PtParam}
+
+In this section we want to validate our assumptions on the Z$p_{T}$ functional forms. We can compare the results of the unbinned fit with a separate fit obtained in bin of Z$p_{T}$. 
+The parameters used in those fits are summarized in Table~\ref{tab:ParamDoubleGFit}.
+
+%In Figure~\ref{fig:PullMeanRMSMAD} the mean and the RMS of the pull distributions are reported as function of Z$p_{T}$.
+%This plot is meant to validate the fit to the scale and resolution out of which the pull is built.
+%The binned fit shows a bit of bias for the U1. the unbinned fit has pullMean=0 and pullRMS=1 by construction.
+ 
+Figures~\ref{fig:SmallLargeU1DATA} and ~\ref{fig:SmallLargeU2DATA} we plot the width of the Small and Large gaussian as function of Z$p_{T}$ and the their relative fraction for the DATA sample.
+Let us consider the typical values in the double gaussian assumption. The small gaussian width $\sigma_{1}$ is on the order of 0.7-0.9 $\sigma_{mean}$. 
+The width of the larger gaussian $\sigma_{2}$ typically is on the order of 1.5-2.5 $\sigma_{mean}$.
+The small gaussian typically accounts for 70−90\% of the total double gaussian distribution in case of the U2 component and it account for 100\% in case of U1 for Boson $p_{T} >30$.
+
+Figures~\ref{fig:SmallLargeU1POW},~\ref{fig:SmallLargeU2POW},~\ref{fig:SmallLargeU1POWneg},~\ref{fig:SmallLargeU2POWneg},~\ref{fig:SmallLargeU1POWpos} and ~\ref{fig:SmallLargeU2POWpos} show similar things but for the Powheg Z/$W^{+}$/$W^{-}$ samples.
+
+{\color{magenta}{Need to possibly constraint the sign of the DATA parameters with the parameters determined from the fit to MC.}}
+%Both show a linear rise in resolution as a function of pZT and a small convex term, consistent with the chosen resolution model. 
+%In the future, we will consider constraining the signs of the parameters used in the resolution model for data to those determined 
+%from the fit to MC.
+
+\subsection{POWHEG-MADGRAPH comparison}
+\label{sec:MadComp}
+
+Figures~\ref{fig:SmallLargeMAD} show the width of the Small and Large gaussian as function of Z$p_{T}$  for the madgraph sample.
+This need to be compared with the POWHEG MC that is shown in Figures~\ref{fig:SmallLargeU1POW},~\ref{fig:SmallLargeU2POW}.
+As remind the differences between the samples are also in the PHYTIA version used for showering and TUNE.
+When comparing the recoil resolution, the width of the RMS of recoil components is comparable between the two MC sample at very low boson pt pointing to an equivalent description of the underlying event from the tunes. At larger boson pt, the different behaviour arise and in particular in the Madgraph MC the resolution of the U2 increase as function of pt.
+This is expected since in the madgrah sample we have emission of up 4 hardest jets while in powheg no.
+
+When comparing with the data (Figures~\ref{fig:SmallLargeU1DATA},~\ref{fig:SmallLargeU2DATA}), the madgraph MC has better data MC agreement out of the box.
+
+\subsection{ISR/FSR studies}
+\label{sec:ISR/FSR}
+
+\subsection{VTX comparison}
+\label{sec:VTXComp}
+Figures~\ref{fig:SmallLargeDATAVTX} shows the width of the Small and Large gaussian as function of Z$p_{T}$ and the their relative fraction in different VTX bins.
+
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_data_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_data_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_data_pull_-1_1_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_data_pull_-1_125_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_data_pull_-1_125_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_data_pull_-1_125_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_data_pull_-1_150_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_data_pull_-1_150_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_data_pull_-1_150_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_data_pull_-1_175_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_data_pull_-1_175_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_data_pull_-1_175_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_data_pull_-1_200_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_data_pull_-1_200_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_data_pull_-1_200_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_data_pull_-1_201_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_data_pull_-1_201_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_data_pull_-1_201_vtx-1.pdf} 
+    \caption{DATA: Z$p_{T}$ dependency of width of the Small (left) and Large (cental) gaussian and the relative fraction (right) for U1 for MC for different Boson rapidity bin. Full Circle indicate the results of the binned fit, while the open square indicate the result of the unbinned fit. The fit to the binned results are displayed with red line and yellow band.
+\newline
+}
+    \label{fig:SmallLargeU1DATA}
+  \end{center}
+\end{figure}
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_data_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_data_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_data_pull_-1_1_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_data_pull_-1_125_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_data_pull_-1_125_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_data_pull_-1_125_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_data_pull_-1_150_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_data_pull_-1_150_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_data_pull_-1_150_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_data_pull_-1_175_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_data_pull_-1_175_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_data_pull_-1_175_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_data_pull_-1_200_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_data_pull_-1_200_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_data_pull_-1_200_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_data_pull_-1_201_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_data_pull_-1_201_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_data_pull_-1_201_vtx-1.pdf} 
+    \caption{DATA: Z$p_{T}$ dependency of width of the Small (left) and Large (cental) gaussian and the relative fraction (right) for U2 for MC for different Boson rapidity bin. Full Circle indicate the results of the binned fit, while the open square indicate the result of the unbinned fit. The fit to the binned results are displayed with red line and yellow band. 
+\newline
+}
+    \label{fig:SmallLargeU2DATA}
+  \end{center}
+\end{figure}
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_MC_powheg_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_MC_powheg_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_MC_powheg_pull_-1_1_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_MC_powheg_pull_-1_125_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_MC_powheg_pull_-1_125_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_MC_powheg_pull_-1_125_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_MC_powheg_pull_-1_150_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_MC_powheg_pull_-1_150_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_MC_powheg_pull_-1_150_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_MC_powheg_pull_-1_175_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_MC_powheg_pull_-1_175_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_MC_powheg_pull_-1_175_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_MC_powheg_pull_-1_200_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_MC_powheg_pull_-1_200_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_MC_powheg_pull_-1_200_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_MC_powheg_pull_-1_201_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_MC_powheg_pull_-1_201_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_MC_powheg_pull_-1_201_vtx-1.pdf} 
+    \caption{POWHEG: Z$p_{T}$ dependency of width of the Small (left) and Large (cental) gaussian and the relative fraction (right) for U1 for MC for different Boson rapidity bin. Full Circle indicate the results of the binned fit, while the open square indicate the result of the unbinned fit. The fit to the binned results are displayed with red line and yellow band.
+\newline
+}
+    \label{fig:SmallLargeU1POW}
+  \end{center}
+\end{figure}
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_MC_powheg_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_MC_powheg_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_MC_powheg_pull_-1_1_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_MC_powheg_pull_-1_125_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_MC_powheg_pull_-1_125_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_MC_powheg_pull_-1_125_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_MC_powheg_pull_-1_150_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_MC_powheg_pull_-1_150_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_MC_powheg_pull_-1_150_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_MC_powheg_pull_-1_175_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_MC_powheg_pull_-1_175_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_MC_powheg_pull_-1_175_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_MC_powheg_pull_-1_200_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_MC_powheg_pull_-1_200_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_MC_powheg_pull_-1_200_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_MC_powheg_pull_-1_201_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_MC_powheg_pull_-1_201_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_MC_powheg_pull_-1_201_vtx-1.pdf} 
+    \caption{POWHEG: Z$p_{T}$ dependency of width of the Small (left) and Large (cental) gaussian and the relative fraction (right) for U2 for MC for different Boson rapidity bin. Full Circle indicate the results of the binned fit, while the open square indicate the result of the unbinned fit. The fit to the binned results are displayed with red line and yellow band.
+\newline
+}
+    \label{fig:SmallLargeU2POW}
+  \end{center}
+\end{figure}
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_MC_powheg_Wneg_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_MC_powheg_Wneg_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_MC_powheg_Wneg_pull_-1_1_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_MC_powheg_Wneg_pull_-1_125_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_MC_powheg_Wneg_pull_-1_125_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_MC_powheg_Wneg_pull_-1_125_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_MC_powheg_Wneg_pull_-1_150_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_MC_powheg_Wneg_pull_-1_150_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_MC_powheg_Wneg_pull_-1_150_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_MC_powheg_Wneg_pull_-1_175_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_MC_powheg_Wneg_pull_-1_175_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_MC_powheg_Wneg_pull_-1_175_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_MC_powheg_Wneg_pull_-1_200_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_MC_powheg_Wneg_pull_-1_200_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_MC_powheg_Wneg_pull_-1_200_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_MC_powheg_Wneg_pull_-1_201_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_MC_powheg_Wneg_pull_-1_201_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_MC_powheg_Wneg_pull_-1_201_vtx-1.pdf} 
+    \caption{POWHEG Wneg: W$p_{T}$ dependency of width of the Small (left) and Large (cental) gaussian and the relative fraction (right) for U1 for MC for different Boson rapidity bin. Full Circle indicate the results of the binned fit, while the open square indicate the result of the unbinned fit. The fit to the binned results are displayed with red line and yellow band. {\color{blue}{plot oder than OCT6}}
+\newline
+}
+    \label{fig:SmallLargeU1POWneg}
+  \end{center}
+\end{figure}
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_MC_powheg_Wneg_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_MC_powheg_Wneg_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_MC_powheg_Wneg_pull_-1_1_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_MC_powheg_Wneg_pull_-1_125_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_MC_powheg_Wneg_pull_-1_125_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_MC_powheg_Wneg_pull_-1_125_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_MC_powheg_Wneg_pull_-1_150_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_MC_powheg_Wneg_pull_-1_150_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_MC_powheg_Wneg_pull_-1_150_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_MC_powheg_Wneg_pull_-1_175_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_MC_powheg_Wneg_pull_-1_175_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_MC_powheg_Wneg_pull_-1_175_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_MC_powheg_Wneg_pull_-1_200_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_MC_powheg_Wneg_pull_-1_200_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_MC_powheg_Wneg_pull_-1_200_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_MC_powheg_Wneg_pull_-1_201_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_MC_powheg_Wneg_pull_-1_201_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_MC_powheg_Wneg_pull_-1_201_vtx-1.pdf} 
+    \caption{POWHEG Wneg: W$p_{T}$ dependency of width of the Small (left) and Large (cental) gaussian and the relative fraction (right) for U2 for MC for different Boson rapidity bin. Full Circle indicate the results of the binned fit, while the open square indicate the result of the unbinned fit. The fit to the binned results are displayed with red line and yellow band. {\color{blue}{plot oder than OCT6}}
+\newline
+}
+    \label{fig:SmallLargeU2POWneg}
+  \end{center}
+\end{figure}
+
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_MC_powheg_Wpos_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_MC_powheg_Wpos_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_MC_powheg_Wpos_pull_-1_1_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_MC_powheg_Wpos_pull_-1_125_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_MC_powheg_Wpos_pull_-1_125_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_MC_powheg_Wpos_pull_-1_125_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_MC_powheg_Wpos_pull_-1_150_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_MC_powheg_Wpos_pull_-1_150_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_MC_powheg_Wpos_pull_-1_150_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_MC_powheg_Wpos_pull_-1_175_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_MC_powheg_Wpos_pull_-1_175_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_MC_powheg_Wpos_pull_-1_175_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_MC_powheg_Wpos_pull_-1_200_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_MC_powheg_Wpos_pull_-1_200_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_MC_powheg_Wpos_pull_-1_200_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U1_MC_powheg_Wpos_pull_-1_201_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U1_MC_powheg_Wpos_pull_-1_201_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U1_MC_powheg_Wpos_pull_-1_201_vtx-1.pdf} 
+    \caption{POWHEG Wpos: W$p_{T}$ dependency of width of the Small (left) and Large (cental) gaussian and the relative fraction (right) for U1 for MC for different Boson rapidity bin. Full Circle indicate the results of the binned fit, while the open square indicate the result of the unbinned fit. The fit to the binned results are displayed with red line and yellow band. {\color{blue}{plot oder than OCT6}}
+\newline
+}
+    \label{fig:SmallLargeU1POWpos}
+  \end{center}
+\end{figure}
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_MC_powheg_Wpos_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_MC_powheg_Wpos_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_MC_powheg_Wpos_pull_-1_1_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_MC_powheg_Wpos_pull_-1_125_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_MC_powheg_Wpos_pull_-1_125_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_MC_powheg_Wpos_pull_-1_125_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_MC_powheg_Wpos_pull_-1_150_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_MC_powheg_Wpos_pull_-1_150_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_MC_powheg_Wpos_pull_-1_150_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_MC_powheg_Wpos_pull_-1_175_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_MC_powheg_Wpos_pull_-1_175_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_MC_powheg_Wpos_pull_-1_175_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_MC_powheg_Wpos_pull_-1_200_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_MC_powheg_Wpos_pull_-1_200_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_MC_powheg_Wpos_pull_-1_200_vtx-1.pdf} 
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG1_U2_MC_powheg_Wpos_pull_-1_201_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pG2_U2_MC_powheg_Wpos_pull_-1_201_vtx-1.pdf}
+    \includegraphics[width=.315\textwidth]{PLOTOCT6/pFrac_U2_MC_powheg_Wpos_pull_-1_201_vtx-1.pdf} 
+    \caption{POWHEG Wpos: W$p_{T}$ dependency of width of the Small (left) and Large (cental) gaussian and the relative fraction (right) for U2 for MC for different Boson rapidity bin. Full Circle indicate the results of the binned fit, while the open square indicate the result of the unbinned fit. The fit to the binned results are displayed with red line and yellow band. {\color{blue}{plot oder than OCT6}}
+\newline
+}
+    \label{fig:SmallLargeU2POWpos}
+  \end{center}
+\end{figure}
+
+
+%%%%%%%%
+%%%%%%%%
+%%%%%%%%
+%%%%%%%%
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.3\textwidth]{PLOTOCT6/pG1_U1_MC_madgraph_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.3\textwidth]{PLOTOCT6/pG2_U1_MC_madgraph_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.3\textwidth]{PLOTOCT6/pFrac_U1_MC_madgraph_pull_-1_1_vtx-1.pdf} 
+    \includegraphics[width=.3\textwidth]{PLOTOCT6/pG1_U2_MC_madgraph_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.3\textwidth]{PLOTOCT6/pG2_U2_MC_madgraph_pull_-1_1_vtx-1.pdf}
+    \includegraphics[width=.3\textwidth]{PLOTOCT6/pFrac_U2_MC_madgraph_pull_-1_1_vtx-1.pdf} 
+    \caption{MADGRAPH: Z$p_{T}$ dependency of width of the Small (left) and Large (cental) gaussian and the relative fraction (right) for U1 (top) and U2 (bottom) for MC in the Boson rapidity bin $|Y|<1$. Full Circle indicate the results of the binned fit, while the open square indicate the result of the unbinned fit. In the case of the fraction for the unbinned fit are reported the results of the fitted parameters (black) and the one obtained with the relation beetween the two gaussians widths (blue). The fit to the binned results are displayed with red line and yellow band.}
+    \label{fig:SmallLargeMAD}
+  \end{center}
+%\end{figure}
+%\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.3\textwidth]{XXXXXX/pG1_U2_data_pull_-1_1_vtx1.pdf}
+    \includegraphics[width=.3\textwidth]{XXXXXX/pG2_U2_data_pull_-1_1_vtx1.pdf}
+    \includegraphics[width=.3\textwidth]{XXXXXX/pFrac_U2_data_pull_-1_1_vtx1.pdf} 
+    \includegraphics[width=.3\textwidth]{XXXXXX/pG1_U2_data_pull_-1_1_vtx2.pdf}
+    \includegraphics[width=.3\textwidth]{XXXXXX/pG2_U2_data_pull_-1_1_vtx2.pdf}
+    \includegraphics[width=.3\textwidth]{XXXXXX/pFrac_U2_data_pull_-1_1_vtx2.pdf} 
+    \includegraphics[width=.3\textwidth]{XXXXXX/pG1_U2_data_pull_-1_1_vtx3.pdf}
+    \includegraphics[width=.3\textwidth]{XXXXXX/pG2_U2_data_pull_-1_1_vtx3.pdf}
+    \includegraphics[width=.3\textwidth]{XXXXXX/pFrac_U2_data_pull_-1_1_vtx3.pdf} 
+    \caption{Z$p_{T}$ dependency of width of the Small (left) and Large (cental) gaussian and the relative fraction (right) for U2 in three bin of nVTX for MC in the Boson rapidity bin $|Y|<1$. Full Circle indicate the results of the binned fit, while the open square indicate the result of the unbinned fit. In the case of the fraction for the unbinned fit are reported the results of the fitted parameters (black) and the one obtained with the relation beetween the two gaussians widths (blue). The fit to the binned results are displayed with red line and yellow band. {\color{blue}{plot oder than OCT6}}}
+    \label{fig:SmallLargeDATAVTX}
+  \end{center}
+\end{figure}
+
+%%%%%%%%
+%%%%%%%%
+%%%%%%%%
+%%%%%%%%
+
+\newpage
+\newpage
+
+\section{Application of the Recoil Correction}
+\label{sec:AppRecoil}
+\subsection{procedure}
+The fits described in Section~\ref{sec:ParamRecoil} provide response and resolution curves for U1 and U2 in Z events.
+In this Section we describe how we apply the recoil correction derived to the MC.
+
+A separate fit is performed on both the Z data and the Z MC simulation. 
+The comparison between data and Monte Carlo simulation of the behavior of the parametrized functions of each recoil components defines a scale factor.
+This scale factor is used to correct simulation to match the data.
+The response and resolution curves are also derived in the W MC in the same matter. 
+The scale factors derived by comparing the Z events in MC and DATA, are then applied to the recoil fits to W MC at a given $p^{V}_{T}$ for each bin of boson rapidity $Y(V)$. 
+The scale factors are applied to separate fitted parameterizations of the $W^{+}$ and $W^{−}$ bosons.
+The W and Z simulation samples are produced using the same generator, underlying event model, and reconstruction conditions to ensure consistency in the determination and application of the recoil scale factors.
+ensure consistency in the determination and application of the recoil scale factors.
+
+The scale and resolution corrections is done with the following multi-steps:
+
+\begin{itemize}
+\item To adjust the scale, for each event in the W MC, at each W $p_{T}$ we look up the U1 and U2 response ($U1_{fit}$($p^{W}_{T}$)) and apply the SF obtained as $\frac{(U1^{data}(p^{Z}_{T}))}{(U1^{MC}(p^{Z}_{T}))}$.
+\item To adjust the resolution, for each event in the MC and data, we know the distributions of the residuals and the corresponding MC or DATA pValue. 
+We replace the $U1^{MC}RMS(W)$ with the $U1^{data}RMS(Z)$ residual such that the \newline 
+$pValue(U1^{data}(Z))$=$pValue(U1^{MC}(Z))$=$pValue(U1^{data}(W))$;
+\item Combine the new Ui components to form a corrected recoil vector $\vec{U}$. Add the lepton vector back in to determine the corrected MET.
+\end{itemize}
+
+Since the recoils are taken directly from Z~$\rightarrow$~$\mu\mu$ data, they reflect the event-by-event response and resolution of the detector. The
+additional soft recoil is built in, as is the complicated zero-suppression-induced correlations between it and
+the hard component of the recoil. Proper scaling of the recoil system with instantaneous luminosity is
+automatic since the W and Z samples have similar instantaneous luminosity profile. The most significant
+advantage of this method lies in its simplicity since it does not require a first-principles understanding of the
+recoil system and has no adjustable parameters.
+
+\subsection{Uncertainties}
+
+There are significant statistical uncertainties since we obtain the recoil system for modeling the W events from the limited sample of Z boson events.
+In {\color{magenta}{YYYYY}} fb−1 of integrated luminosity in 7 TeV data, after the selection cuts, we expect
+approximately {\color{magenta}{XXXXX}} Z~$\rightarrow$~$\mu\mu$ events with both muons in the central detector, whereas in the same
+data we expect approximately {\color{magenta}{ZZZZZ}} W~$\rightarrow$~events with the muons in the central detector. 
+Our method is thus limited by the size of the Z recoil sample and any statistical fluctuations it
+contains.  The integrated luminosity of the MC dataset availble is {\color{magenta}{KKKKK}} more.
+
+%If we are to rely on this method as an input to a precision measurement, we need to determine the extent to which the statistical limitations of the Z ! ee sample propagate to an uncertainty on the measured W boson mass and width.
+
+The uncertainties on the ratio
+\begin{equation}
+W(MCcorr) =  W(MC) * \frac{Z(Data)}{Z(MC)} = W(MC) * SFZ
+\end{equation}
+are calculated in the following way.
+%\begin{equation}
+\begin{multline}
+ErrW(MCcorr)^2 =  SFZ^2  * ErrW(MC)^2 + \\
+				W(MC)^2 * SFZ^2 * [ \frac{ErrZ(Data)^2}{Z(Data)^2} + \frac{ErrZ(MC)^2}{Z(MC)^2} ] 
+\end{multline}
+%\end{equation}
+The errors ErrW(MC),ErrZ(Data) and  ErrZ(MC) indicate the statistical errors on the recoil parameters obtained from the fits ; those are progated as systematic uncertainties on the W MC recoil predictions.
+For the pol3 functional form used as model for the Zpt evolution we have a covariance matrix 6 x 6 ; this is diagonalized and then 
+
+This is done in the same way for the Scale U1 and the resoultion U1 and U2.
+Using the corrected W MC recoil predictions, we obtain corrected W MC MET and mT distributions.
+We review recoil model predictions for these observables in the sections that follow. 
+
+%First, we compare predictions from the uncorrected W recoil model against MC truth. Second, we
+%compare predictions from the corrected model to data.
+%%%{\color{magenta}{HERE need to add the WMC and Wdata.}}
+
+\subsection{closure}
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.315\textwidth]{CLOSURE53X/u1_MEAN_Zpt_wcorr.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSURE53X/u1_RMS_Zpt_wcorr.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSURE53X/u2_RMS_Zpt_wcorr.pdf}
+
+    \includegraphics[width=.315\textwidth]{CLOSURE53X/u1_MEAN_vtx_wcorr.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSURE53X/u1_RMS_vtx_wcorr.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSURE53X/u2_RMS_vtx_wcorr.pdf}
+    \caption{ 
+      Closure test as function of $Zp_{T}$ (top row) and numVTX (bottom row) of the Mean of the residual U1+Zpt (left), U1 rms (middle) and U2 rms (right). Data are displayed as black empty triangle, MC raw as red full dots and MC corrected is displayed in green.
+      The error bar are drawn as function as green line. The Mean distribution has only the error on the scale, the U1 (U2) RMS only the error on the resolution. When showing the closure as function of the nVTX, the Zpt is not reweighted.
+{\color{magenta}{Need to split the control and target sample.} {\color{blue}{plot oder than OCT6}}}
+    }
+    \label{fig:ClosureApplication}
+  \end{center}
+\end{figure}
+
+In Figure~\ref{fig:ClosureApplication} the closure test is done as function of the nVTX and Zpt.
+The recoil correction bring the MC prediction close to the data.
+
+{\color{magenta}{HERE add the plots the UPrallal/PtZ and RMS Uparall/PtZ}}
+
+Following figure MIDDLESLIDE6, we find the tkMET response is roughly 50\% the total
+response. For low boson pt are present, this does not cause a substaintial
+difference in the tkMET performance 
+%since the majority of events are a lot pT where the response of the other MET variables are low. 
+
+Need to demonstrate the improuved DATA/MC agreement between the central prediction and data.
+The difference between the raw and corrected MC discrepancy is a result of the relatively larger value for resolution
+found in data.
+The corrections to the MC shift the mT peak to lower values and modify the tails of the distribution. 
+Agreement is good but not perfect because the normalization used in the plots does not account for the TOP or EWK contributions at high mT 
+and because the W boson $p_{T}$ spectrum used follows a LO MC description and is not yet corrected to follow the data.
+
+%%%%%%%%
+%%%%%%%%
+%%%%%%%%
+%%%%%%%%
+%%%%%%%%
+
+\section{Recoil model validation}
+\label{sec:RecoilValidation}
+In this section, validation studies of the recoil model are presented.
+The idea is to rederive the corrections after have been applied once.
+If we get closure means that we can stop otherwise we need to understand what we do
+not get right.
+In the next section we refer to:
+\begin{description}
+\item[{\it iter0}-corrections]: the correction obtained comparing the raw MC with the DATA 
+\item[{\it iter1}-corrections]: the residual corrections needed to be applied to the MC corrected with the {\it iter0}-corrections.
+\end{description}
+
+In Section~\ref{sec:yBin} we show this in Bin of rapidity.
+In Section~\ref{sec:DoubleGaussValid} we show that there is the need to use a double gaussian model for the resolution.
+In Section~\ref{sec:Correlation} we show the investigation done on the correlation between the U1 and U2 RMS.
+
+
+\subsection{Closure test in bins of boson rapidity}
+\label{sec:yBin}
+
+Is important to verify that the correction obtained are valid in different boson rapidity for various reasons.
+First, the hard scattering that recoil against the Boson cover different region of the detector.
+{\color{magenta}{Need to check that the plus and minus separated also since the detector is asymmetric}}.
+In addition the differences beetween the W and the Z can be resolved as first approximation if parametrized as function of bosonY.
+
+The iterative closure is shown for different boson rapidity bin for the POWHEG MC in Figures~\ref{fig:iterClosurePOW}.
+As comparison is shown also the iterative closure for the madgraph sample in Figures~\ref{fig:iterClosureMAD}
+The closure is dominated by the statistics of the data samples. 
+The madgraph MC sample has larger error due to the lower MC statistics.
+%To overcome to this, the MADGRAPH simulation is treated as the “data” and the closure of the method is shown in Figures~\ref{fig:iterClosurePOWMAD} 
+%and the scale factors of the recoils corrections between the MADGRAPH and POWHEG simulations are applied to the POWHEG MC and compared to the madgraph data.
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_powheg_diGauss_1_Ru1.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_powheg_diGauss_1_Ru1MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_powheg_diGauss_1_Ru2MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_powheg_diGauss_125_Ru1.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_powheg_diGauss_125_Ru1MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_powheg_diGauss_125_Ru2MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_powheg_diGauss_150_Ru1.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_powheg_diGauss_150_Ru1MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_powheg_diGauss_150_Ru2MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_powheg_diGauss_175_Ru1.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_powheg_diGauss_175_Ru1MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_powheg_diGauss_175_Ru2MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_powheg_diGauss_200_Ru1.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_powheg_diGauss_200_Ru1MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_powheg_diGauss_200_Ru2MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_powheg_diGauss_201_Ru1.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_powheg_diGauss_201_Ru1MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_powheg_diGauss_201_Ru2MR.pdf}
+    \caption{POWHEG: Iterative closure, in the different Boson rapidity bin $Y$.}
+    \label{fig:iterClosurePOW}
+  \end{center}
+\end{figure}
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_madgraph_diGauss_1_Ru1.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_madgraph_diGauss_1_Ru1MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_madgraph_diGauss_1_Ru2MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_madgraph_diGauss_125_Ru1.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_madgraph_diGauss_125_Ru1MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_madgraph_diGauss_125_Ru2MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_madgraph_diGauss_150_Ru1.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_madgraph_diGauss_150_Ru1MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_madgraph_diGauss_150_Ru2MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_madgraph_diGauss_175_Ru1.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_madgraph_diGauss_175_Ru1MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_madgraph_diGauss_175_Ru2MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_madgraph_diGauss_200_Ru1.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_madgraph_diGauss_200_Ru1MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_madgraph_diGauss_200_Ru2MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_madgraph_diGauss_201_Ru1.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_madgraph_diGauss_201_Ru1MR.pdf}
+    \includegraphics[width=.315\textwidth]{CLOSUREOCT6/RapBin_madgraph_diGauss_201_Ru2MR.pdf}
+    \caption{MADGRAPH: Iterative closure, in the different Boson rapidity bin $Y$. }
+    \label{fig:iterClosureMAD}
+  \end{center}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+
+\subsection{Impact of the Double gaussian tails}
+\label{sec:DoubleGaussValid}
+In Figure~\ref{fig:OneTwoGauss} we show the difference between the single and double gaussian model.
+{\color{magenta}{Need to add the plot wih the impact on the MT and MET tails}}
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.315\textwidth]{NEW53X/RapBin_diOnegauss_1_Ru1.pdf}
+    \includegraphics[width=.315\textwidth]{NEW53X/RapBin_diOnegauss_1_Ru1MR.pdf}
+    \includegraphics[width=.315\textwidth]{NEW53X/RapBin_diOnegauss_1_Ru2MR.pdf}
+    \caption{Difference in the closure with the single and double gaussian, in the Boson rapidity bin $|Y|<1$. {\color{blue}{plot 4th raw oder than OCT6}}}
+    \label{fig:OneTwoGauss}
+  \end{center}
+\end{figure}
+
+
+\subsection{Correlations}
+\label{sec:Correlation}
+
+We investigated the presence of a correlation between the RMS of U1 and U2.
+In Figure~\ref{fig:correlation} we show the effect: in practice we checked that if we apply a correction to only U1(U2) the effect is seens also to U2(U1). 
+%This is also expected since a under-measurement or over-measurement in the recoil $\vec(U)$ will show up as an under-measurement or over-measurement in a correlated way.
+A complementary method to address the correlation, consider the smearing of the recoil vector U assuming the fully correlation of the magnitude and the angular resolution.
+In Figure~\ref{fig:correlationSolve} we show a complementary smearing method used to treat the smearing the recoil vector U instead of the single component U1 and U2.
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.315\textwidth]{NEW53X/RapBin_Correlation_spot_1_Ru1.pdf}
+    \includegraphics[width=.315\textwidth]{NEW53X/RapBin_Correlation_spot_1_Ru1MR.pdf}
+    \includegraphics[width=.315\textwidth]{NEW53X/RapBin_Correlation_spot_1_Ru2MR.pdf}
+    \caption{Size of the correlation spotted applying the recoil correction only to the U1 and U2 in the Boson rapidity bin $|Y|<1$.
+      In Blue the first correction derived from the comparison of the raw MC and the DATA; 
+      In Red the residual corrections on the MC with the only U2 smearing;
+      In Green the residual corrections on the MC with the only U1 smearing. {\color{blue}{plot oder than OCT6}}}
+    \label{fig:correlation}
+  \end{center}
+  \begin{center}
+    \includegraphics[width=.315\textwidth]{NEW53X/RapBin_Correlation_solve_1_Ru1.pdf}
+    \includegraphics[width=.315\textwidth]{NEW53X/RapBin_Correlation_solve_1_Ru1MR.pdf}
+    \includegraphics[width=.315\textwidth]{NEW53X/RapBin_Correlation_solve_1_Ru2MR.pdf}
+    \caption{Closure of the method to treat the correlations between the U1 and U2 RMS in the Boson rapidity bin $|Y|<1$ for the double gaussian recoil PLOTOCT6.
+      In Blue the first correction derived from the comparison of the raw MC and the DATA; 
+      In Red the corrections on the MC with the U1 and U2 uncorrelated smearing; 
+      In Green the corrections derived on the MC with the radial smearing (using the U2 gaussian width). {\color{blue}{plot oder than OCT6}}}
+    \label{fig:correlationSolve}
+  \end{center}
+\end{figure}
+
+
+\section{BKG contamination of the Z tails}
+\label{sec:Ztails}
+{\color{magenta}{HERE SLIDES:14,15,16}}
+
+The dimuon mass is restricted to the 80-100 GeV window. This has been optimized to reduce the $t\bar{t}$.
+The ttbar has larger contamination for central $\eta$ and for higher dimuon boson $p_{T}$.
+In Figures~\ref{fig:BKG} we show the bkg contamination in the dimMuonMass; the component parallel (U1) and the component perpendicular (U2) to the boson $p_{T}$.
+
+
+The Z/$\gamma^{*}$~$\rightarrow$~$\mu$~$\mu$ events in the Drell–Yan control region are used to check the Drell–Yan
+normalization. This is done in bins outside the dimuon invariant mass windown chosen m($\mu$,$\mu$) 60 and 120 GeV
+The Z/$\gamma^{*}$~$\rightarrow$~$\tau$~$\tau$ and $t\bar{t}$ backgrounds are normalized to the integrated luminosity of the data
+sample after correcting for the muon efficiency difference between data and MC simulation.
+The uncertainty in the integrated luminosity is about 2.2\%
+An additional 15\% is assigned as the uncertainty in the theoretical prediction of the $t\bar{t}$ cross section.
+The W~$\rightarrow$~$\tau$~$\nu$ background is normalized to the W~$\rightarrow$~$\mu$~~$\nu$ yields in data with a ratio obtained
+from a MC simulation. This ratio is largely determined by the branching fraction of $\tau$ decaying to a $\mu$.
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=.315\textwidth]{NEW53X/DiMuonMass.pdf}
+    \includegraphics[width=.315\textwidth]{NEW53X/U1_bins.pdf}
+    \includegraphics[width=.315\textwidth]{NEW53X/U2_bins.pdf}
+    \caption{PLOT on the BKG contamination. Left: dimMuonMass; central: U1; right U2 {\color{blue}{plot oder than OCT6}}}
+    \label{fig:BKG}
+  \end{center}
+\end{figure}
+
+
+Background contributions become significant in the tails of the MET distribution. In the region with
+MET~$>$~XXX GeV the ttbar background in particular becomes dominant.
+
+%%%%%%%%
+%%%%%%%%
+%%%%%%%%
+%%%%%%%%
+%%%%%%%%
+
+\chapter{From the Z to the W}
+This chapter this all the things that we need to do extra to transfer the calibration from the Z to the W.
+In previous chapter we discussed the ingredient for the Wlike system.
+
+\section{Differences between $W^{+}$/$W^{-}$ and Z boson (those are just notes)}
+\label{sec:WvsZ}
+
+\begin{description}
+
+\item[Boson PT reco vs gen] The parametrization as function of Boson $p_{T}$ and rapidity need to be done with the generator information for the W MC.
+In Figure~\ref{fig:RecoGenPtBinning} we show the comparison between a parametrization done as function of the reco PT and generator PT for the scale and resolution for Z MC. 
+The reconstructed Z pt can be different than the generated boson Pt due to final state emission of photons from muons and due to the muon momentum misreconstructed due to the mismodeling of magnetic filed, aligment and material budget. 
+To estimated the impact of this we recalibrated each muonPT, imposing the Zmass=PDG-PDFoffset.
+%For the reconstructed Zpt the muons are not yet corrected for the efficeincies. 
+The effect is on the scale and not in the resolution as expected . The effect is order of 1\% on recoil scale at low Boson Pt.
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.3\textwidth]{CLOSURESEP12/RapBin_powheg_recoMuonCheck_1_Ru1.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSURESEP12/RapBin_powheg_recoMuonCheck_1_Ru1MR.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSURESEP12/RapBin_powheg_recoMuonCheck_1_Ru2MR.pdf}
+    \caption{Comparison of scale and resolution with a parametrization as function of the generated and reconstructed boson $p_{T}$ with Z MC.
+%      In Blue the comparison of the MC with generated Pt vs the DATA with reconstructed Zpt with Rochester correction applied;
+ %     In Green for both DATA and MC the reconstructed Pt with Rochester correction (from 44X) applied.
+      In Blue the comparison w/o muon corrections applied; In Green the comparison w/ muon corrections applied obtained with the constraint of the Zmass;  {\color{blue}{plot oder than OCT6}}
+    }
+    \label{fig:RecoGenPtBinning}
+  \end{center}
+\end{figure}
+
+\item[MUON SELECTION] The selection muon selection is chosen such to minimize the recoil differences (i.e. metlike and second muon selection).
+impact of the second muon selection, i.e. muon footprint removal , muon efficiency.
+The second lepton there are no requirement on the isolation to avoid to create a bias in the missing et since we will remove approximatedly the underlying energy.
+
+
+\item[PDF and POLARIZATION] Kinematic differences between W and Z boson production are accounted for by using scale factors that are functions of $p_{T}$ and rapidity of the V boson. 
+The main process through which W and Z bosons were produced at the LHC was the quark-antiquark annihilation of u and/or d quarks.
+Additional contribution comes from annihilation of s or c sea quark.
+Additionally some rarer W boson production processes may involve (often high pT ) gluons.
+
+
+The need of the binning in boson rapidity is shown in Figures~\ref{fig:RapBinningPOW} and~\ref{fig:RapBinningMAD} for powheg and madgraph respectively.
+
+\item[PDF] The scale and resolution dependency on the PDF flavour is shown in Figures~\ref{fig:iterClosure12} and Figures~\ref{fig:iterClosure13}. 
+
+\end{description}
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.3\textwidth]{CLOSUREOCT6/RapBin_powheg_WZ_1_Ru1.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSUREOCT6/RapBin_powheg_WZ_1_Ru1MR.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSUREOCT6/RapBin_powheg_WZ_1_Ru2MR.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSUREOCT6/RapBin_powheg_WZ_2_Ru1.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSUREOCT6/RapBin_powheg_WZ_2_Ru1MR.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSUREOCT6/RapBin_powheg_WZ_2_Ru2MR.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSUREOCT6/RapBin_powheg_WZ_3_Ru1.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSUREOCT6/RapBin_powheg_WZ_3_Ru1MR.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSUREOCT6/RapBin_powheg_WZ_3_Ru2MR.pdf}
+    \caption{POWHEG: Scale and resolution ratio between $W^{+}/W^{-}$ (top), $W^{+}/Z$ (middle) and $W^{-}/Z$ (bottom) in different Boson rapidity bins.}
+    \label{fig:RapBinningPOW}
+  \end{center}
+\end{figure}
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.3\textwidth]{CLOSURESEP12/RapBin_madgraph_WZ_1_Ru1.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSURESEP12/RapBin_madgraph_WZ_1_Ru1MR.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSURESEP12/RapBin_madgraph_WZ_1_Ru2MR.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSURESEP12/RapBin_madgraph_WZ_2_Ru1.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSURESEP12/RapBin_madgraph_WZ_2_Ru1MR.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSURESEP12/RapBin_madgraph_WZ_2_Ru2MR.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSURESEP12/RapBin_madgraph_WZ_3_Ru1.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSURESEP12/RapBin_madgraph_WZ_3_Ru1MR.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSURESEP12/RapBin_madgraph_WZ_3_Ru2MR.pdf}
+    \caption{MADGRAPH: Scale and resolution ratio between $W^{+}/W^{-}$ (top), $W^{+}/Z$ (middle) and $W^{-}/Z$ (bottom) in different Boson rapidity bins. {\color{blue}{plot oder than OCT6}}}
+    \label{fig:RapBinningMAD}
+  \end{center}
+\end{figure}
+
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=.3\textwidth]{CLOSUREAUG5/RapBin_powheg_PDF_10_Ru1.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSUREAUG5/RapBin_powheg_PDF_10_Ru1MR.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSUREAUG5/RapBin_powheg_PDF_10_Ru2MR.pdf}
+    %%%%%%%%%//
+    \includegraphics[width=.3\textwidth]{CLOSUREAUG5/RapBin_powheg_PDF_11_Ru1.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSUREAUG5/RapBin_powheg_PDF_11_Ru1MR.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSUREAUG5/RapBin_powheg_PDF_11_Ru2MR.pdf}
+    \caption{Ratio of scale and resolution for $W^{\pm}/Z$ in different Boson rapidity bins in the bin $|Y|<1$ for the gluon+X process (top) and the process initiated by the valence quark (bottom) as classified in POWHEG. {\color{blue}{plot oder than OCT6}}}
+    \label{fig:iterClosure12}
+  \end{center}
+    %%%%%%%%%//
+  \begin{center}
+    \includegraphics[width=.3\textwidth]{CLOSUREAUG5/RapBin_powheg_PDF_12_Ru1.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSUREAUG5/RapBin_powheg_PDF_12_Ru1MR.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSUREAUG5/RapBin_powheg_PDF_12_Ru2MR.pdf}
+    %%%%%%%%%//
+    \includegraphics[width=.3\textwidth]{CLOSUREAUG5/RapBin_powheg_PDF_13_Ru1.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSUREAUG5/RapBin_powheg_PDF_13_Ru1MR.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSUREAUG5/RapBin_powheg_PDF_13_Ru2MR.pdf}
+    %%%%%%%%%//
+    \includegraphics[width=.3\textwidth]{CLOSUREAUG5/RapBin_powheg_PDF_14_Ru1.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSUREAUG5/RapBin_powheg_PDF_14_Ru1MR.pdf}
+    \includegraphics[width=.3\textwidth]{CLOSUREAUG5/RapBin_powheg_PDF_14_Ru2MR.pdf}
+    \caption{ratio of scale and resolution for different process as classified in POWHEG sample in the Boson rapidity bin $|Y|<1$ for the Z (top), $W^{+}$ (middle) and $W^{-}$ (bottom).{\color{blue}{plot oder than OCT6}} }
+    \label{fig:iterClosure13}
+  \end{center}
+\end{figure}
+
+\newpage
+
+\section{Other consideration: open points}
+\begin{itemize}
+\item sumET (or better look at the ntracks associated to the PV)
+\item vtx parametrization (low and high nvtx / runA-B)
+\item istantaneous luminosity
+\item separate rapidity minus and plus (the detector plus and minus are asymmetric)
+\item do other axis projections (i.e. on the W events, compare u along the lepton $p_{T}$, use the bisector on the Z event a la D0)
+\item met-phi modulation (????)
+\end{itemize}
+
+
+\newpage
+\include{results}
+
+
+\end{document}
+

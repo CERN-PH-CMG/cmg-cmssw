@@ -10,22 +10,24 @@ momcorr_scale_variations=( 0 )
 useRecoilCorr=( 0 ) # 1: YES, 0: NO
 # Recoil_U1resol_variations=( 0 )
 # Recoil_U1scale_variations=( 1 -1 )
+
 Recoil_U1scale_variations=( 0 )
 Recoil_U1resol_variations=( 0 )
 Recoil_U2resol_variations=( 0 )
+
 # Recoil_U1resol_variations=( 0 1 -1 0  0 )
 # Recoil_U1scale_variations=( 0 0  0 1 -1 )
 # useRecoilCorr=( 1 ) # 1: YES, 0: NO
 
 # infile_run='launch_analysis.py'
-infile_run='launch_analysis_testSplit_bash.py'
+infile_run_input='launch_analysis_testSplit_bkp_bash.py'
 
 # echo ${#Recoil_U1resol_variations[@]}
 
-usebatch=0 #  use batch submission for W/Z ANALYSIS
+usebatch=1 #  use batch submission for W/Z ANALYSIS
 run_all_or_just_fit=1 #  2 = W/Z ANALYSIS, 1 = RUN ALL,  0 = RUN FIT ONLY, 3 = W/Z ANALYSIS + QCD FIT
-run_W_or_Z=2 #  0 = W,  1 = Z,  2 = both (W and Z)
-fit_W_or_Z="W,Z" # "W" or "Z" or "W,Z"
+run_W_or_Z=1 #  0 = W,  1 = Z,  2 = both (W and Z)
+fit_W_or_Z="Z" # "W" or "Z" or "W,Z"
 
 for ((j=0; j < ${#use_PForNoPUorTKmet[@]} ; j++));
     do
@@ -58,11 +60,13 @@ for ((j=0; j < ${#use_PForNoPUorTKmet[@]} ; j++));
               echo "Recoil_U1scale_variations " ${Recoil_U1scale_variations[${iu2}]} " (m="$m")"
               echo "momcorr_scale_variations " ${momcorr_scale_variations[${h}]} " (h="$h")"
 
+              infile_run='launch_analysis_testSplit_bash_use_met'$PForNoPUorTKmet'_U1scale_'${Recoil_U1scale_variations[${iu2}]}'_U1resol_'${Recoil_U1resol_variations[${iu2}]}'_U2resol_'${Recoil_U2resol_variations[${iu2}]}'.py'
+
               # echo ${Recoil_U1resol_variations[${iu2}]} ${Recoil_U1scale_variations[${iu2}]}; 
               # for (resol,scale) in Recoil_U1scale_variations:
               # echo "i="$i " Recoil_U1resol_variations " ${Recoil_U1resol_variations[${iu2}]} " Recoil_U1scale_variations "${Recoil_U1scale_variations[${iu2}]}
               # echo "h="$h " momcorr_scale_variations " ${momcorr_scale_variations[${h}]}
-              cp launch_analysis_testSplit_bkp_bash.py $infile_run
+              cp $infile_run_input $infile_run
 
               sed -i "s/.*fit_W_or_Z = \"/fit_W_or_Z = \"$fit_W_or_Z\" \# \"W\" or \"Z\"/g" $infile_run
               sed -i "s/.*use_PForNoPUorTKmet = .*/use_PForNoPUorTKmet = ${use_PForNoPUorTKmet[${j}]}\ \#\ 0\:PF\,\ 1\:NOPU\,\ 2\:TK\;/g" $infile_run
@@ -120,7 +124,7 @@ for ((j=0; j < ${#use_PForNoPUorTKmet[@]} ; j++));
               still_running=1
               while [ $still_running -eq 1 ]; do
                 if [[ $useBatch == 0 ]]; then
-                  line=$(ps aux | grep perrozzi | grep analysis |grep root)
+                  line=$(ps aux | grep $USER | grep analysis |grep root)
                   # echo $line
                   if [[ ! ${line} =~ "runWanalysis" ]]; then
                     if [[ ! ${line} =~ "runZanalysis" ]]; then
@@ -135,10 +139,12 @@ for ((j=0; j < ${#use_PForNoPUorTKmet[@]} ; j++));
                   fi
                 else
                   line=$(bjobs | grep analysis |wc -l)
+                  line2=$(bjobs | grep analysis |grep RUN|wc -l)
                   if [[ ${line} -eq 0 ]]; then
                     still_running=0
                   else
-                    sleep 5
+                    echo ${line}' jobs still pending, '${line2}' in RUN state'
+                    sleep 20
                   fi
                 fi
               done

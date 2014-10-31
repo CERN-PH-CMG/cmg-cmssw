@@ -1,76 +1,7 @@
-import copy
-import os 
-import CMGTools.RootTools.fwlite.Config as cfg
-from CMGTools.RootTools.fwlite.Config import printComps
-from CMGTools.WMass.triggerMap import triggers_mu
+#Load all analyzers
+from CMGTools.WMass.analyzers.CoreModule_53X_cff import *
 
-jsonAna = cfg.Analyzer(
-    'JSONAnalyzer',
-    )
-
-triggerAna = cfg.Analyzer(
-     'triggerBitFilter',
-     # verbose = True,
-    )
-
-vertexAna = cfg.Analyzer(
-    'VertexAnalyzer',
-    allVertices = 'slimmedPrimaryVertices',
-    goodVertices = 'slimmedPrimaryVertices',
-    vertexWeight = None,
-    fixedWeight = 1,
-    verbose = False,
-    # keepFailingEvents = True,
-    )
-
-WAna = cfg.Analyzer(
-    'WAnalyzer',
-    recoilcut = 1000, # 20
-    pfmetcut = 0, # 25
-    jetptcut = 1000, # 30
-    pt = 30,
-    eta = 2.1,
-    iso = 0.5,
-    savegenp = False,
-    verbose = True,
-    triggerBits = {'SingleMu' : triggers_mu},
-    keepFailingEvents = False,
-    )
-
-WtreeProducer = cfg.Analyzer(
-    'WTreeProducer'
-    )
-
-ZAna = cfg.Analyzer(
-    'ZAnalyzer',
-    recoilcut = 1000, # 20
-    pfmetcut = 0, # 25
-    jetptcut = 1000, # 30
-    pt = 30,
-    eta = 2.1,
-    iso = 0.5,
-    savegenp = False,
-    verbose = True,
-    triggerBits = {'SingleMu' : triggers_mu},
-    keepFailingEvents = False,
-    )
-
-ZtreeProducer = cfg.Analyzer(
-    'ZTreeProducer',
-    storeNeutralCMGcandidates = False,
-    # storeCMGcandidates = True,
-    )
-
-sequence = cfg.Sequence( [
-    jsonAna,
-    triggerAna,
-    vertexAna,
-    WAna,
-    WtreeProducer,
-    ZAna,
-    ZtreeProducer
-   ] )
-
+sequence = cfg.Sequence(CoreDATAsequence)
 
 from CMGTools.H2TauTau.proto.samples.getFiles import getFiles
 

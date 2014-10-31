@@ -68,27 +68,6 @@ void copytreeZ() {
       oldtree->SetBranchStatus("MuNegGen_charge",0);
       oldtree->SetBranchStatus("MuNegDRGenP",0);
     }
-      oldtree->SetBranchStatus("cmgjets_number",0);
-      oldtree->SetBranchStatus("cmgjets_pt",0);
-      oldtree->SetBranchStatus("cmgjets_eta",0);
-      oldtree->SetBranchStatus("cmgjets_phi",0);
-      oldtree->SetBranchStatus("cmgmuons_number",0);
-      oldtree->SetBranchStatus("cmgmuons_charge",0);
-      oldtree->SetBranchStatus("cmgmuons_ID",0);
-      oldtree->SetBranchStatus("cmgmuons_Iso",0);
-      oldtree->SetBranchStatus("cmgmuons_IsPromt",0);
-      oldtree->SetBranchStatus("cmgmuons_IsTrig",0);
-      oldtree->SetBranchStatus("cmgmuons_pt",0);
-      oldtree->SetBranchStatus("cmgmuons_eta",0);
-      oldtree->SetBranchStatus("cmgmuons_phi",0);
-      oldtree->SetBranchStatus("cmgelectrons_number",0);
-      oldtree->SetBranchStatus("cmgelectrons_pt",0);
-      oldtree->SetBranchStatus("cmgelectrons_eta",0);
-      oldtree->SetBranchStatus("cmgelectrons_phi",0);
-      oldtree->SetBranchStatus("cmgelectrons_TightID",0);
-      oldtree->SetBranchStatus("cmgelectrons_TightIso",0);
-      oldtree->SetBranchStatus("cmgelectrons_charge",0);
-      oldtree->SetBranchStatus("cmgelectrons_IsPromt",0);
 
     TFile *newfileSig,*newfileFake;
     TTree *newtreeSig,*newtreeFake;
@@ -123,7 +102,7 @@ void copytreeZ() {
         newtreeSig->GetEntry(i);
         // Other calculations here...
         pt_vis=Z_pt;
-        phi_vis=Mu_pt;
+        phi_vis=Z_phi;
         aBra1->Fill();
         aBra2->Fill();
         u1corr=-u1;
@@ -170,7 +149,7 @@ void copytreeZ() {
           newtreeFake->GetEntry(i);
           // Other calculations here...
           pt_vis=Z_pt;
-          phi_vis=Mu_pt;
+          phi_vis=Z_phi;
           aBra1->Fill();
           aBra2->Fill();
           u1corr=-u1;
