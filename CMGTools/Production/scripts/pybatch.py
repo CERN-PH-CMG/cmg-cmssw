@@ -32,13 +32,44 @@ def split(comps):
     return splitComps
 
 
-def batchScriptCERN( index, remoteDir=''):
+def batchScriptCERN( jobDir, remoteDir=''):
    '''prepare the LSF version of the batch script, to run on LSF'''
+   
+   if remoteDir=='':
+      cpCmd="""echo 'sending the job directory back'
+cp -r Loop/* $LS_SUBCWD"""
+   elif remoteDir.startswith("/pnfs/psi.ch"):
+       cpCmd="""echo 'sending root files to remote dir'
+export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH # Fabio's workaround to fix gfal-tools with CMSSW
+for f in Loop/treeProducerSusyFullHad/*.root
+do
+   echo $f
+   ff=`basename $f | cut -d . -f 1`
+   echo $ff
+   gfal-mkdir -v {srm}
+   echo "gfal-copy file://`pwd`/Loop/treeProducerSusyFullHad/$ff.root {srm}/${{ff}}_{idx}.root"
+   gfal-copy -v file://`pwd`/Loop/treeProducerSusyFullHad/$ff.root {srm}/${{ff}}_{idx}.root
+   #s1=`gfal-ls -v -l {srm}/${{ff}}_{idx}.root | awk '{{print $8}}'`
+   #s2=`ls -l Loop/treeProducerSusyFullHad/$ff.root | awk '{{print $5}}'`
+   #if [ $s1 -ne $s2 ]; then
+   if [ $? -ne 0 ]; then
+      echo "ERROR: file $ff not copied correctly ?"
+   else
+      rm Loop/treeProducerSusyFullHad/$ff.root
+   fi
+done
+echo 'sending the logs back'  # will send also root files if copy failed
+cp -r Loop/* $LS_SUBCWD""".format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")])
+   else:
+       print "remote location not supported yet: ", remoteDir
+       print 'path must start with "/pnfs/psi.ch"'
+       sys.exit(1)
+
    script = """#!/bin/bash
 #BSUB -q 8nm
 echo 'environment:'
 echo
-env
+env | sort
 # ulimit -v 3000000 # NO
 echo 'copying job dir to worker'
 cd $CMSSW_BASE/src
@@ -52,13 +83,13 @@ cd `find . -type d | grep /`
 echo 'running'
 python $CMSSW_BASE/src/CMGTools/RootTools/python/fwlite/Looper.py config.pck
 echo
-echo 'sending the job directory back'
-cp -r Loop/* $LS_SUBCWD 
-""" 
+{copy}
+""".format(copy=cpCmd)
+
    return script
 
 
-def batchScriptPSI( index, jobDir, remoteDir=''):
+def batchScriptPSI( jobDir, remoteDir=''):
    '''prepare the SGE version of the batch script, to run on the PSI tier3 batch system'''
 
    cmssw_release = os.environ['CMSSW_BASE']
@@ -81,7 +112,7 @@ gfal-copy file:///`pwd`/Loop/treeProducerSusyFullHad/$ff.root {srm}/${{ff}}_{idx
 done
 rm Loop/treeProducerSusyFullHad/*.root
 echo 'sending the logs back'
-cp -r Loop/* $SUBMISIONDIR""".format(idx=index, srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")])
+cp -r Loop/* $SUBMISIONDIR""".format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")])
    else:
        print "remote directory not supported yet: ", remoteDir
        print 'path must start with "/pnfs/psi.ch"'
@@ -106,7 +137,7 @@ QUEUE=$QUEUE
 
 EOF
 echo "######## Environment Variables ##########"
-env
+env | sort
 echo "################################################################"
 TOPWORKDIR=/scratch/`whoami`
 JOBDIR=sgejob-$JOB_ID
@@ -178,9 +209,9 @@ class MyBatchManager( BatchManager ):
        storeDir = self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
        mode = self.RunningMode(options.batch)
        if mode == 'LXPLUS':
-           scriptFile.write( batchScriptCERN( storeDir, value) ) # watch out arguments are swapped (although not used)
+           scriptFile.write( batchScriptCERN (jobDir, storeDir) )
        elif mode == 'PSI':
-           scriptFile.write( batchScriptPSI ( value, jobDir, storeDir ) ) # storeDir not implemented at the moment
+           scriptFile.write( batchScriptPSI  (jobDir, storeDir) )
        elif mode == 'LOCAL':
            scriptFile.write( batchScriptLocal( storeDir, value) )  # watch out arguments are swapped (although not used)
        scriptFile.close()
