@@ -41,21 +41,17 @@ cp -r Loop/* $LS_SUBCWD"""
    elif remoteDir.startswith("/pnfs/psi.ch"):
        cpCmd="""echo 'sending root files to remote dir'
 export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH # Fabio's workaround to fix gfal-tools with CMSSW
-for f in Loop/treeProducerSusyFullHad/*.root
+for f in Loop/tree*/*.root
 do
-   echo $f
    ff=`basename $f | cut -d . -f 1`
-   echo $ff
+   d=`echo $f | cut -d / -f 2`
    gfal-mkdir -v {srm}
-   echo "gfal-copy file://`pwd`/Loop/treeProducerSusyFullHad/$ff.root {srm}/${{ff}}_{idx}.root"
-   gfal-copy -v file://`pwd`/Loop/treeProducerSusyFullHad/$ff.root {srm}/${{ff}}_{idx}.root
-   #s1=`gfal-ls -v -l {srm}/${{ff}}_{idx}.root | awk '{{print $8}}'`
-   #s2=`ls -l Loop/treeProducerSusyFullHad/$ff.root | awk '{{print $5}}'`
-   #if [ $s1 -ne $s2 ]; then
+   echo "gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root"
+   gfal-copy -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root
    if [ $? -ne 0 ]; then
       echo "ERROR: file $ff not copied correctly ?"
    else
-      rm Loop/treeProducerSusyFullHad/$ff.root
+      rm Loop/$d/$ff.root
    fi
 done
 echo 'sending the logs back'  # will send also root files if copy failed
@@ -101,16 +97,19 @@ cp -r Loop/* $SUBMISIONDIR"""
    elif remoteDir.startswith("/pnfs/psi.ch"):
        cpCmd="""echo 'sending root files to remote dir'
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/dcap/ # Fabio's workaround to fix gfal-tools
-for f in Loop/treeProducerSusyFullHad/*.root
+for f in Loop/tree*/*.root
 do
-echo $f
-ff=`basename $f | cut -d . -f 1`
-echo $ff
-gfal-mkdir {srm}
-echo "gfal-copy file:///`pwd`/Loop/treeProducerSusyFullHad/$file.root {srm}/${{ff}}_{idx}.root"
-gfal-copy file:///`pwd`/Loop/treeProducerSusyFullHad/$ff.root {srm}/${{ff}}_{idx}.root
+   ff=`basename $f | cut -d . -f 1`
+   d=`echo $f | cut -d / -f 2`
+   gfal-mkdir -v {srm}
+   echo "gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root"
+   gfal-copy -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root
+   if [ $? -ne 0 ]; then
+      echo "ERROR: file $ff not copied correctly ?"
+   else
+      rm Loop/$d/$ff.root
+   fi
 done
-rm Loop/treeProducerSusyFullHad/*.root
 echo 'sending the logs back'
 cp -r Loop/* $SUBMISIONDIR""".format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")])
    else:
