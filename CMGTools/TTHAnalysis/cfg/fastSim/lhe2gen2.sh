@@ -1,10 +1,10 @@
 #!/bin/bash
 TMPDIR=$PWD
 #### ENV
-cd /afs/cern.ch/user/g/gpetrucc/scratch0/cmgprod/CMSSW_5_3_14/src
+cd /afs/cern.ch/user/g/gpetrucc/scratch0/cmgprod/CMSSW_5_3_22/src
 export SCRAM_ARCH=slc5_amd64_gcc462
 eval $(scramv1 runtime -sh)
-SRC=/afs/cern.ch/user/g/gpetrucc/scratch0/cmgprod/CMSSW_5_3_14/src/CMGTools/TTHAnalysis/cfg/fastSim
+SRC=/afs/cern.ch/user/g/gpetrucc/scratch0/cmgprod/CMSSW_5_3_22/src/CMGTools/TTHAnalysis/cfg/fastSim
 #### CREATE CFG
 M="default"; if [[ "$1" == "--up" || "$1" == "--down" || "$1" == "--nojets" || "$1" == "--xqtup" || "$1" == "--xqtdown"  ]]; then M="$1"; shift; fi;
 EVENTS=""
@@ -24,7 +24,7 @@ while [[ "$1" != "" ]]; do
     if echo $INFILE | grep -q -v ^/store/; then
         if echo $INFILE | grep -q lhe.gz; then  
             echo "Unzipping $INFILE in $TMPDIR/events.$COUNTER.lhe"
-            zcat $INFILE | perl $SRC/lhe3to1.pl >  $TMPDIR/events.$COUNTER.lhe
+            zcat $INFILE | grep -v "sys_alpsfact" >  $TMPDIR/events.$COUNTER.lhe
             INFILE="file:$TMPDIR/events.$COUNTER.lhe";
             COUNTER=$(($COUNTER+1))
         else

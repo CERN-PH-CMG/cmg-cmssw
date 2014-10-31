@@ -1,0 +1,38 @@
+nJet25 : nJet25 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5,11.5,12.5] ; XTitle='N(jet\, p_{T} > 25)'
+nJet40 : nJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5,11.5,12.5] ; XTitle='N(jet\, p_{T} > 40)'
+nLepGood20 : nLepGood20 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5] ; XTitle='N(lep\, p_{T} > 20)'
+nLepGood15 : nLepGood15 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5] ; XTitle='N(lep\, p_{T} > 15)'
+nLepGood10 : nLepGood10 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5] ; XTitle='N(lep\, p_{T} > 10)'
+nLepGood   : nLepGood : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5] ; XTitle='N(lep)'
+nLepGood20_log : nLepGood20 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5] ; XTitle='N(lep\, p_{T} > 20)', Logy
+nLepGood15_log : nLepGood15 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5] ; XTitle='N(lep\, p_{T} > 15)', Logy
+nLepGood10_log : nLepGood10 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5] ; XTitle='N(lep\, p_{T} > 10)', Logy
+nLepGood_log   : nLepGood : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5] ; XTitle='N(lep)', Logy
+htJet25: htJet25: 20,0,2500
+htJet40: htJet40: 20,0,2500
+#nBJetLoose25 : nBJetLoose25 : [-0.5,0.5,1.5,2.5,3.5]  ; XTitle='N(jet\, p_{T} > 25\, CVS Loose)',XNDiv=505
+#nBJetMedium25 : nBJetMedium25 : 3,-0.5,2.5 ; XTitle='N(jet\, p_{T} > 25\, CVS Medium)',XNDiv=505
+met: met_pt: 40,0,1200    ; XTitle="E_{T}^{miss}  [GeV]"
+met_log: met_pt: 40,0,1200    ; XTitle="E_{T}^{miss}  [GeV]",Logy
+metLD: met_pt*0.00397 + mhtJet25*0.00265 : 40,-0.1,3.4 ; XTitle="E_{T}^{miss} LD"
+metLD_log: met_pt*0.00397 + mhtJet25*0.00265 : 40,-0.1,3.4 ; XTitle="E_{T}^{miss} LD",Logy
+#mZ1_wide: mZ1: 60,0,180 ; XTitle="best m(l^{+}l^{-})  [GeV]", Legend='TR', Blinded="x > 95"
+#mZ1: mZ1: 60,60,120 ; XTitle="best m(l^{+}l^{-})  [GeV]", Legend='TL', Blinded="x > 95"
+#mZO_wide: minMllSFOS+maxMllSFOS-mZ1: 50,0,250 ; XTitle="other m(l^{+}l^{-})  [GeV]", Legend='TR', Blinded="x > 95"
+#m12: (LepGood1_pdgId+LepGood2_pdgId==0)*mass_2(LepGood1_pt,LepGood1_eta,LepGood1_phi,LepGood1_mass,LepGood2_pt,LepGood2_eta,LepGood2_phi,LepGood2_mass) : 60,0,180 ; XTitle="m(12)  [GeV]", Legend='TR', Blinded="x > 95"
+#m13: (LepGood1_pdgId+LepGood3_pdgId==0)*mass_2(LepGood1_pt,LepGood1_eta,LepGood1_phi,LepGood1_mass,LepGood3_pt,LepGood3_eta,LepGood3_phi,LepGood3_mass) : 60,0,180 ; XTitle="m(13)  [GeV]", Legend='TR', Blinded="x > 95"
+#m23: (LepGood2_pdgId+LepGood3_pdgId==0)*mass_2(LepGood2_pt,LepGood2_eta,LepGood2_phi,LepGood2_mass,LepGood3_pt,LepGood3_eta,LepGood3_phi,LepGood3_mass) : 60,0,180 ; XTitle="m(23)  [GeV]", Legend='TR', Blinded="x > 95"
+#minmll: minMllAFAS: 70,0,140; XTitle="min m(ll')  [GeV]", Legend='TL', Blinded="x > 95"
+#minmllSFOS: minMllAFOS: 56,0,140; XTitle="min m(l^{+}l^{-})  [GeV]", Legend='TL', Blinded="x > 95"
+#maxmllSFOS: maxMllAFOS: 56,0,140; XTitle="max m(l^{+}l^{-})  [GeV]", Legend='TL', Blinded="x > 95"
+#minmllSFOS_log: minMllAFOS: 56,0,140; XTitle="min m(l^{+}l^{-})  [GeV]", Legend='TL', Blinded="x > 95", Logy
+#worstIso: max(max(LepGood1_relIso03,LepGood2_relIso03),LepGood3_relIso03) : 20,0,0.2 ; XTitle="Worst lep relIso03", Legend='TR', XNDiv=505
+l1Pt_low:  LepGood1_pt: 40,0,40; XTitle="Leading lepton p_{T}  [GeV]", Legend='TR'
+l2Pt_low:  LepGood2_pt: 24,0,24; XTitle="Subleading lepton p_{T}  [GeV]", Legend='TR'
+l3Pt_low:  LepGood3_pt: 12,0,24; XTitle="Third lepton p_{T}  [GeV]", Legend='TR'
+l4Pt_low:  LepGood4_pt: 6,0,24; XTitle="Fourth lepton p_{T}  [GeV]", Legend='TR'
+l1Pt:  LepGood1_pt: 40,0,200; XTitle="Leading lepton p_{T}  [GeV]", Legend='TR'
+l2Pt:  LepGood2_pt: 25,0,200; XTitle="Subleading lepton p_{T}  [GeV]", Legend='TR'
+l3Pt:  LepGood3_pt: 10,0,100; XTitle="Third lepton p_{T}  [GeV]", Legend='TR'
+l4Pt:  LepGood4_pt: 5,0,100; XTitle="Fourth lepton p_{T}  [GeV]", Legend='TR'
+#l3Pt:  LepGood3_pt: 20,0,100; XTitle="Third lepton p_{T}  [GeV]", Legend='TR'

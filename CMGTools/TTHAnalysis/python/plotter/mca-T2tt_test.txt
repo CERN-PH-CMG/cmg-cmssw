@@ -1,4 +1,8 @@
-GEN_T2tt_py8dec_py8had  : GEN_T2tt_py8dec_py8had : 1 ; FillColor=ROOT.kBlue-4,  Label="Nadia", TreeName="treeProducerSusyGenLevelOnly"
-GEN_T2tt_py8had         : GEN_T2tt_py8had        : 1 ; FillColor=ROOT.kGreen+2, Label="Josh" , TreeName="treeProducerSusyGenLevelOnly" 
-GEN_T2tt_mgdec_py8had   : GEN_T2tt_mgdec_py8had : 1  ; FillColor=ROOT.kRed+1,   Label="Mad", TreeName="treeProducerSusyGenLevelOnly"
-
+#GEN_T2tt_py8dec_py8had  : GEN_T2tt_py8dec_py8had : 1 ; FillColor=ROOT.kBlue-4,  Label="Nadia", TreeName="treeProducerSusyGenLevelOnly"
+#GEN_T2tt_py8had         : GEN_T2tt_py8had        : 1 ; FillColor=ROOT.kGreen+2, Label="Josh" , TreeName="treeProducerSusyGenLevelOnly" 
+#GEN_T2tt_py8dec_py8had  : GEN_T2tt_py8dec_py8had : 1 ; FillColor=ROOT.kBlue-4,  Label="Nadia", TreeName="treeProducerSusyGenLevelOnly"
+GEN_T2tt_py8had         : GEN_T2tt_py8had        : 1 ; FillColor=ROOT.kGreen+2, Label="Py8 4b" , TreeName="treeProducerSusyGenLevelOnly" 
+GEN_T2tt_mgdec_py8had   : GEN_T2tt_mgdec_py8had  : 1 ; FillColor=ROOT.kRed+1,   Label="Mg5 4b", TreeName="treeProducerSusyGenLevelOnly"
+GEN_T2tt_py8had_ch      : GEN_T2tt_py8had_ch     : 1 ; FillColor=ROOT.kBlue-4,  Label="Py8 \#chi\#pm", TreeName="treeProducerSusyGenLevelOnly"
+GEN_T2tt_mgdec_py8had_ch   : GEN_T2tt_mgdec_py8had_ch   : 1 ; FillColor=ROOT.kMagenta+1,  Label="Mg5 \#chi\#pm", TreeName="treeProducerSusyGenLevelOnly"
+GEN_T2tt_mgdec_py8had_both : GEN_T2tt_mgdec_py8had_both : 1 ; FillColor=ROOT.kOrange+7,  Label="Mg5 Any", TreeName="treeProducerSusyGenLevelOnly"

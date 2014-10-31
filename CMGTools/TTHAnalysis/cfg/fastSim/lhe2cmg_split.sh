@@ -125,7 +125,8 @@ _EOF_
 cd $TMPDIR
 echo ${CMSSSW_BASE}
 echo ${CMSSSW_RELEASE_BASE}
-cmsRun $JOB 2>&1 | tee FASTSIM_CMG_$OUTBASE.log
-test -f $TMPDIR/$OUTBASE.root && cmsStageIn $TMPDIR/$OUTBASE.root $OUTFILE
+cmsRun $JOB 2>&1 | tee FASTSIM_CMG_$OUTBASE.log | grep -v '^\(Time\|Trig\)Report'
+echo "cmsStageIn $TMPDIR/$OUTBASE.root $OUTFILE" | tee -a FASTSIM_CMG_$OUTBASE.log
+test -f $TMPDIR/$OUTBASE.root && cmsStageIn $TMPDIR/$OUTBASE.root $OUTFILE 2>&1 | tee -a FASTSIM_CMG_$OUTBASE.log
 perl  ~/sh/skimreport  --path=generation_step --all FASTSIM_CMG_$OUTBASE.log | grep -v HLT > $AREA/jobs/$OUTBASE.skimreport
 gzip FASTSIM_CMG_$OUTBASE.log && cp FASTSIM_CMG_$OUTBASE.log.gz $AREA/jobs

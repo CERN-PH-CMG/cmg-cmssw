@@ -1,0 +1,4 @@
+GEN_T1tttt_2J_mGo800_mStop300_mChi280_py8         : GEN_T1tttt_2J_mGo800_mStop300_mChi280_py8         : 1 ; FillColor=ROOT.kBlue+2, Label="t^{4}L Py4b", TreeName="treeProducerSusyGenLevelOnly"
+GEN_T1tttt_2J_mGo800_mStop300_mCh285_mChi280_py8  : GEN_T1tttt_2J_mGo800_mStop300_mCh285_mChi280_py8  : 1 ; FillColor=ROOT.kBlue-7, Label="t^{4}L Py\#chi", TreeName="treeProducerSusyGenLevelOnly"
+GEN_T1tttt_2J_mGo1300_mStop300_mChi280_py8        : GEN_T1tttt_2J_mGo1300_mStop300_mChi280_py8        : 1 ; FillColor=ROOT.kBlack,  Label="t^{4}H Py4b", TreeName="treeProducerSusyGenLevelOnly"
+GEN_T1tttt_2J_mGo1300_mStop300_mCh285_mChi280_py8 : GEN_T1tttt_2J_mGo1300_mStop300_mCh285_mChi280_py8 : 1 ; FillColor=ROOT.kGray+1, Label="t^{4}H Py\#chi", TreeName="treeProducerSusyGenLevelOnly"
