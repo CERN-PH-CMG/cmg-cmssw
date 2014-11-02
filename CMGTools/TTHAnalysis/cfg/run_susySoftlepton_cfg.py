@@ -13,15 +13,19 @@ from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
 # Redefine what I need
 
 # --- LEPTON DEFINITION ---
-ttHLepAna.inclusive_muon_pt  = 3
-ttHLepAna.loose_muon_pt  = 3
-ttHLepAna.loose_muon_relIso = 99.0
-ttHLepAna.loose_muon_absIso = 10.0
-ttHLepAna.inclusive_electron_pt  = 5
-ttHLepAna.loose_electron_pt  = 5
-ttHLepAna.loose_electron_relIso = 99.0
-ttHLepAna.loose_electron_absIso = 10.0
 
+ttHLepAna.loose_muon_pt = 3
+ttHLepAna.loose_muon_dxy = 0.02,
+ttHLepAna.loose_muon_dz = 0.5,
+ttHLepAna.loose_muon_relIso = 0.2
+ttHLepAna.loose_muon_absIso = 5
+ttHLepAna.loose_muon_ptIsoThreshold = 25
+ttHLepAna.loose_electron_pt = 5
+ttHLepAna.loose_electron_dxy = 0.02,
+ttHLepAna.loose_electron_dz = 0.5,
+ttHLepAna.loose_electron_relIso = 0.2
+ttHLepAna.loose_electron_absIso = 5
+ttHLepAna.loose_electron_ptIsoThreshold = 25
 
 # --- LEPTON SKIMMING ---
 ttHLepSkim.minLeptons = 2
@@ -29,8 +33,7 @@ ttHLepSkim.maxLeptons = 999
 ttHLepSkim.ptCuts = [5,3]
 
 # --- JET-LEPTON CLEANING ---
-ttHJetAna.minLepPt = 20 
-# otherwise with only absIso cut at 10 GeV and no relIso we risk cleaning away good jets
+# ttHJetAna.minLepPt = 20 
 
 # --- JET-MET SKIMMING ---
 ttHJetMETSkim.jetPtCuts = [100,]

@@ -93,6 +93,7 @@ ttHLepAna = cfg.Analyzer(
     loose_muon_dxy    = 0.05,
     loose_muon_dz     = 0.2,
     loose_muon_relIso = 0.4,
+    loose_muon_ptIsoThreshold = 0,
     # inclusive very loose electron selection
     inclusive_electron_id  = "",
     inclusive_electron_pt  = 5,
@@ -107,6 +108,7 @@ ttHLepAna = cfg.Analyzer(
     loose_electron_dxy    = 0.05,
     loose_electron_dz     = 0.2,
     loose_electron_relIso = 0.4,
+    loose_electron_ptIsoThreshold = 0,
     loose_electron_lostHits = 1.0,
     # minimum deltaR between a loose electron and a loose muon (on overlaps, discard the electron)
     min_dr_electron_muon = 0.02
