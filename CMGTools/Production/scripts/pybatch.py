@@ -45,9 +45,9 @@ for f in Loop/tree*/*.root
 do
    ff=`basename $f | cut -d . -f 1`
    d=`echo $f | cut -d / -f 2`
-   gfal-mkdir -v {srm}
+   gfal-mkdir {srm}
    echo "gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root"
-   gfal-copy -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root
+   gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root
    if [ $? -ne 0 ]; then
       echo "ERROR: file $ff not copied correctly ?"
    else
@@ -101,9 +101,9 @@ for f in Loop/tree*/*.root
 do
    ff=`basename $f | cut -d . -f 1`
    d=`echo $f | cut -d / -f 2`
-   gfal-mkdir -v {srm}
+   gfal-mkdir {srm}
    echo "gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root"
-   gfal-copy -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root
+   gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root
    if [ $? -ne 0 ]; then
       echo "ERROR: file $ff not copied correctly ?"
    else
