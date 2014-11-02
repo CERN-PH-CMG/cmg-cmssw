@@ -126,4 +126,3 @@ if __name__ == '__main__':
     batchManager.PrepareJobs( listOfValues, listOfNames )
     waitingTime = 0.1
     batchManager.SubmitJobs( waitingTime )
-
