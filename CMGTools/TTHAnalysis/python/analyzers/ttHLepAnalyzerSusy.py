@@ -89,8 +89,8 @@ class ttHLepAnalyzerSusy( Analyzer ):
                 if (mu.muonID(self.cfg_ana.loose_muon_id) and 
                         mu.pt() > self.cfg_ana.loose_muon_pt and abs(mu.eta()) < self.cfg_ana.loose_muon_eta and 
                         abs(mu.dxy()) < self.cfg_ana.loose_muon_dxy and abs(mu.dz()) < self.cfg_ana.loose_muon_dz and
-                        mu.relIso03 < self.cfg_ana.loose_muon_relIso and 
-                        mu.absIso03 < (self.cfg_ana.loose_muon_absIso if hasattr(self.cfg_ana,'loose_muon_absIso') else 9e99)):
+                        mu.relIso03 < (self.cfg_ana.loose_muon_relIso if (mu.pt() > self.cfg_ana.loose_muon_ptIsoThreshold) else 9e99) and 
+                        mu.absIso03 < ((self.cfg_ana.loose_muon_absIso if hasattr(self.cfg_ana,'loose_muon_absIso') else 9e99) if (mu.pt() < self.cfg_ana.loose_muon_ptIsoThreshold) else 9e99)):
                     mu.looseIdSusy = True
                     event.selectedLeptons.append(mu)
                     event.selectedMuons.append(mu)
@@ -114,8 +114,8 @@ class ttHLepAnalyzerSusy( Analyzer ):
                 if (ele.electronID(self.cfg_ana.loose_electron_id) and
                          ele.pt()>self.cfg_ana.loose_electron_pt and abs(ele.eta())<self.cfg_ana.loose_electron_eta and 
                          abs(ele.dxy()) < self.cfg_ana.loose_electron_dxy and abs(ele.dz())<self.cfg_ana.loose_electron_dz and 
-                         ele.relIso03 <= self.cfg_ana.loose_electron_relIso and
-                         ele.absIso03 < (self.cfg_ana.loose_electron_absIso if hasattr(self.cfg_ana,'loose_electron_absIso') else 9e99) and
+                         ele.relIso03 < (self.cfg_ana.loose_electron_relIso if (ele.pt() > self.cfg_ana.loose_electron_ptIsoThreshold) else 9e99) and 
+                         ele.absIso03 < ((self.cfg_ana.loose_electron_absIso if hasattr(self.cfg_ana,'loose_electron_absIso') else 9e99) if (ele.pt() < self.cfg_ana.loose_electron_ptIsoThreshold) else 9e99) and
                          ele.numberOfHits() <= self.cfg_ana.loose_electron_lostHits and
                          bestMatch(ele, looseMuons)[1] > self.cfg_ana.min_dr_electron_muon ):
                     event.selectedLeptons.append(ele)
