@@ -33,7 +33,7 @@ class BatchManager:
                                 help="Name of the local output directory for your jobs. This directory will be created automatically.",
                                 default=None)
         self.parser_.add_option("-r", "--remote-copy", dest="remoteCopy",
-                                help="remote output directory for your jobs. Example: /store/cmst3/user/cbern/CMG/HT/Run2011A-PromptReco-v1/AOD/PAT_CMG/RA2. This directory *must* be provided as a logical file name (LFN). When this option is used, all root files produced by a job are copied to the remote directory, and the job index is appended to the root file name. The Logger directory is tarred and compressed into Logger.tgz, and sent to the remote output directory as well. Afterwards, use logger.py to access the information contained in Logger.tgz.",
+                                help="remote output directory for your jobs. Example: /store/cmst3/user/cbern/CMG/HT/Run2011A-PromptReco-v1/AOD/PAT_CMG/RA2. This directory *must* be provided as a logical file name (LFN). When this option is used, all root files produced by a job are copied to the remote directory, and the job index is appended to the root file name. The Logger directory  will be sent back to the submision directory. For remote copy to PSI specify path like: '/pnfs/psi.ch/...'. Note: enviromental variable X509_USER_PROXY must point to home area before renewing proxy",
                                 default=None)
         self.parser_.add_option("-f", "--force", action="store_true",
                                 dest="force", default=False,
@@ -56,6 +56,9 @@ class BatchManager:
             if "psi.ch" in self.remoteOutputDir_: # T3 @ PSI:
                 # overwriting protection to be improved
                 if self.remoteOutputDir_.startswith("/pnfs/psi.ch"):
+                    ld_lib_path = os.environ.get('LD_LIBRARY_PATH')
+                    if ld_lib_path != "None":
+                        os.environ['LD_LIBRARY_PATH'] = "/usr/lib64/:"+ld_lib_path  # to solve gfal conflict with CMSSW
                     os.system("gfal-mkdir srm://t3se01.psi.ch/"+self.remoteOutputDir_)
                     outputDir = self.options_.outputDir
                     if outputDir==None:
@@ -63,6 +66,8 @@ class BatchManager:
                         outputDir = 'OutCmsBatch_%s' % today.strftime("%d%h%y_%H%M")
                     self.remoteOutputDir_+="/"+outputDir
                     os.system("gfal-mkdir srm://t3se01.psi.ch/"+self.remoteOutputDir_)
+                    if ld_lib_path != "None":
+                        os.environ['LD_LIBRARY_PATH'] = ld_lib_path  # back to original to avoid conflicts
                 else:
                     print "remote directory must start with /pnfs/psi.ch to send to the tier3 at PSI"
                     print self.remoteOutputDir_, "not valid"
