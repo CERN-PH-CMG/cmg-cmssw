@@ -185,9 +185,10 @@ TH2D histoPhiStarvsgenZpt("histoPhiStarvsgenZpt","histo PhiStar vs genZpt",100,0
 
 bool doGigiRescaling = false;
 
-bool do3Sigma=false;
+bool do3Sigma = false;
 
 bool usePol3 = true;
+bool useSubRanges = false;
 bool useErfPol2ScaleU1 = false;
 bool dodebug = false; 
 
@@ -1007,6 +1008,10 @@ void load(TTree *iTree, int type) {
     if(!fData) iTree->SetBranchAddress("ZGen_pt" ,&fZPt);
     if(!fData) iTree->SetBranchAddress("ZGen_phi",&fZPhi);
     if(!fData) iTree->SetBranchAddress("ZGen_rap",&fZRap);
+    // to get the recoPt also for MC
+    //    if(!fData)  iTree->SetBranchAddress("Z_pt" ,&fZPt);
+    //    if(!fData)  iTree->SetBranchAddress("Z_phi",&fZPhi);
+    //    if(!fData)  iTree->SetBranchAddress("Z_rap",&fZRap);
 
     if(!fData)  iTree->SetBranchAddress("Z_pt" ,&fZrecoPt);
 
@@ -1313,8 +1318,8 @@ bool runSelection(bool doMet) {
   if( fevtHasGoodVtx
       && fevtHasTrg
       //      && fZmass>50
-      //      && fZmass>70
-      //      && fZmass<110
+      //      && fZmass>70 // this is the default cut
+      //      && fZmass<110 // this is the default cut  
       && fZmass>81
       && fZmass<101
       && (fMuNeg_charge != fMuPos_charge)
@@ -1729,6 +1734,7 @@ void computeFitErrors(TF1 *iFit,TFitResultPtr &iFPtr,TF1 *iTrueFit,bool iPol0=fa
 
   double lE5 = 0;
   double lE6 = 0;
+  double lE7 = 0;
 
   // pol3 or greater
   if(lPol3) {
@@ -1746,11 +1752,16 @@ void computeFitErrors(TF1 *iFit,TFitResultPtr &iFPtr,TF1 *iTrueFit,bool iPol0=fa
   iFit->SetParameter(2,iTrueFit->GetParameter(2)); iFit->SetParError(2,lE2);
   iFit->SetParameter(3,iTrueFit->GetParameter(3)); iFit->SetParError(3,lE3);
   iFit->SetParameter(4,iTrueFit->GetParameter(4)); iFit->SetParError(4,lE4);
+  if(iTrueFit->GetParameter(5)) iFit->SetParameter(5,iTrueFit->GetParameter(5)); 
+  if(iTrueFit->GetParameter(6)) iFit->SetParameter(6,iTrueFit->GetParameter(6)); 
+  if(iTrueFit->GetParameter(7)) iFit->SetParameter(7,iTrueFit->GetParameter(7)); 
   iFit->SetParError(5,lE5);
   iFit->SetParError(6,lE6);
+  iFit->SetParError(7,lE7);
+
   
   cout << "===> Errors Diagonalized and Stored: lE0=" << lE0 << " lE1="<< lE1 << " lE2="<< lE2 << " lE3="<< lE3 << " lE4="<< lE4 << " lE5="<< lE5 << " lE6="<< lE6 << endl;
-  
+
   // 
   //   cout << "===> THIS TRY TO DIAGONALIZE THE MATRIX "<< endl; 
   //   const TVectorD diag = TMatrixDDiag_const(*lCov); 
@@ -2235,6 +2246,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
   lType     = "pol2";
   if(usePol3) lType     = "pol3";
+  if(usePol3 && useSubRanges && lPar==fU1 && !iRMS) lType = "pol3(0)+pol3(4)"; 
+
   if(useErfPol2ScaleU1 && lPar==fU1 && !iRMS) {
     lType     = "(TMath::Erf(x*[0])-TMath::Erf(x*[1]))*pol2(2)"; // MC 2 Erf
     //    lType     = "TMath::Erf(x*[0])*pol2(1)";
@@ -2257,7 +2270,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   // cout << "====================" << endl;
 
   // pol3 -- set to a constant the first param
-  if(!iRMS && lPar==fU1 && !useErfPol2ScaleU1) lFit->FixParameter(0,0);
+  if(!iRMS && lPar==fU1 && !useErfPol2ScaleU1 && !useSubRanges) lFit->FixParameter(0,0);
 
   if(!iRMS && lPar==fU1 && useErfPol2ScaleU1) {
 
@@ -2295,6 +2308,24 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       //f1->SetParLimits(4, -1, 1); 
       //f1->SetParameter(5,   -6.87765e-05); 
     }
+  }
+
+  if(useSubRanges && !iRMS && lPar==fU1) {
+
+    Double_t par[8];
+    TF1* first = new TF1("m1","pol3",0,5);
+    TF1* second = new TF1("m2","pol3",5,fZPtMax);
+    
+    //    first->SetParameter(0,0);
+    //    first->SetParLimits(0,-0.1, 0.1);
+    //    first->FixParameter(0,0);
+    pGraphA->Fit(first, "R");
+    pGraphA->Fit(second, "R+");
+    
+    first->GetParameters(&par[0]);
+    second->GetParameters(&par[4]);
+    lFit->SetParameters(par);
+    
   }
 
   //  if(!iRMS && lPar==fU1) lFit->SetParLimits(0, 0.0, 1.0); // first parameter between 0 and 1.0
@@ -3686,7 +3717,8 @@ void fitRecoilMET(TTree *iTree,std::string iName,int type, int lfId) {
   /// Made as pol10 to be safe 
 
   TF1 *lU1Fit=0;
-  if(!useErfPol2ScaleU1) lU1Fit= new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "pol10");
+  if(!useErfPol2ScaleU1 && !useSubRanges) lU1Fit= new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "pol10");
+  if(!useErfPol2ScaleU1 && useSubRanges) lU1Fit= new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "pol3(0)+pol3(4)");
   //  if(useErfPol2ScaleU1 && !fData && !doIterativeMet) lU1Fit= new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "(TMath::Erf(x*[0])-TMath::Erf(x*[1]))*pol12(2)");
   if(useErfPol2ScaleU1 && (fData || doIterativeMet || !fData))  lU1Fit= new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "TMath::Erf(x*[0])*pol12(1)"); 
   //  TF1 *lU1Fit     = new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "pol10");
@@ -3840,7 +3872,6 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
   if(MCtype==50) {
 
     //    for(int iloop=1; iloop < 21; iloop++) {                                                                                                                            
-
     cout << "PROCESSING DY + TOP MC " << endl;
 
     fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");
@@ -3870,7 +3901,7 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     if(!doMad && !do8TeV ) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root");  
 
     // this is the 8 TeV (contains the other MET variables) 
-    if(doMad && do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DYJetsLL_8TeV/ZTreeProducer_tree.root");
+    if(doMad && do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/ZTreeProducer_tree.root");
 
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = false; 
@@ -3897,21 +3928,21 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     
     cout << "PROCESSING DY DATA -- inclusive Nvertex -- charged only " << endl;
     //    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/DATA/ZTreeProducer_tree_RecoSkimmed.root"); // this is 44X
-    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DATA/ZTreeProducer_tree.root"); 
+    if(!do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DATA/ZTreeProducer_tree.root"); 
     //    if(doMad && !do8TeV )  fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");  
     //    if(!doMad && !do8TeV ) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root");  
-    
+
     // this is the 8TeV, is the runD, it contains the other METs, obtained from the Z skims
     //    if(doABC || do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DATA_Run2012A/ZTreeProducer_tree.root");
     //    if(doABC || do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DATA_Run2012B/ZTreeProducer_tree.root");
     //    if(doMad || do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DATA_Run2012C/ZTreeProducer_tree.root");
-    if(doMad || do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DATA_Run2012D/ZTreeProducer_tree.root");
+    //    if(doMad || do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DATA_Run2012D/ZTreeProducer_tree.root");
 
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = true; 
 
     name+="_DATA";
-    //    name+="_MClikeDATA";
+    //    name+="_MADlikeDATA";
 
   }
 
@@ -4037,7 +4068,9 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     if(!fData) fileName += pType;
     if(doYbinning) fileName += "_rapBin";
     if(doYbinning) fileName += fId;
-    
+    if(do8TeV) fileName += "_8TeV";
+    if(!do8TeV) fileName += "_7TeV";
+
     fileName += ".root";
     
     TFile f3(fileName.Data(),"RECREATE");
