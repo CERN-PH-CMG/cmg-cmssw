@@ -168,7 +168,7 @@ def _runIt(myargs):
                 if re.match(pat,m):
                     toRun[m] = True 
         modulesToRun = [ (m,v) for (m,v) in MODULES if m in toRun ]
-    el = EventLoop([ VariableProducer(options.treeDir,booker,MODULES), ])
+    el = EventLoop([ VariableProducer(options.treeDir,booker,modulesToRun), ])
     el.loop([tb], eventRange=range)
     booker.done()
     fb.Close()
