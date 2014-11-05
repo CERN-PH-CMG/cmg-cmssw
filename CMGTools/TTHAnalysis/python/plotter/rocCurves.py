@@ -98,6 +98,9 @@ if __name__ == "__main__":
     parser.add_option("-o", "--out", dest="out", default=None, help="Output file name. by default equal to plots -'.txt' +'.root'");
     parser.add_option("--xrange", dest="xrange", default=None, nargs=2, type='float', help="X axis range");
     parser.add_option("--yrange", dest="yrange", default=None, nargs=2, type='float', help="X axis range");
+    parser.add_option("--xtitle", dest="xtitle", default="Eff Background", type='string', help="X axis title");
+    parser.add_option("--ytitle", dest="ytitle", default="Eff Signal", type='string', help="Y axis title");
+    parser.add_option("--fontsize", dest="fontsize", default=0, type='float', help="Legend font size");
     (options, args) = parser.parse_args()
     options.globalRebin = 1
     mca  = MCAnalysis(args[0],options)
@@ -128,14 +131,15 @@ if __name__ == "__main__":
         rocs.append((plot.getOption("Title",plot.name),roc))
         outfile.WriteTObject(roc)
     allrocs.Draw("APL");
-    allrocs.GetXaxis().SetTitle("Eff Background")
-    allrocs.GetYaxis().SetTitle("Eff Signal")
+    allrocs.GetXaxis().SetTitle(options.xtitle)
+    allrocs.GetYaxis().SetTitle(options.ytitle)
     if options.xrange:
         allrocs.GetXaxis().SetRangeUser(options.xrange[0], options.xrange[1])
     if options.yrange:
         allrocs.GetYaxis().SetRangeUser(options.yrange[0], options.yrange[1])
     allrocs.Draw()
-    doLegend(rocs)
+    leg = doLegend(rocs)
+    if options.fontsize: leg.SetTextSize(options.fontsize)
     c1.Print(outname.replace(".root","")+".png")
     outfile.WriteTObject(c1,"roc_canvas")
     outfile.Close()

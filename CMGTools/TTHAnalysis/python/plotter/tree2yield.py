@@ -357,11 +357,22 @@ class TreeToYield:
             (nb,xmin,xmax) = bins.split(",")
             histo = ROOT.TH1KeysNew("dummyk","dummyk",int(nb),float(xmin),float(xmax))
             self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummyk"), cut, "goff")
+            self.negativeCheck(histo)
             return histo.GetHisto().Clone(name)
         #elif not self._isdata and self.getOption("KeysPdf",False):
         #else:
         #    print "Histogram for %s/%s has %d entries, so won't use KeysPdf (%s, %s) " % (self._cname, self._name, histo.GetEntries(), canKeys, self.getOption("KeysPdf",False))
+        self.negativeCheck(histo)
         return histo.Clone(name)
+    def negativeCheck(self,histo):
+        if not self._options.allowNegative: 
+            if "TH1" in histo.ClassName():
+                for b in xrange(0,histo.GetNbinsX()+2):
+                    if histo.GetBinContent(b) < 0: histo.SetBinContent(b, 0.0)
+            elif "TH2" in histo.ClassName():
+                for bx in xrange(0,histo.GetNbinsX()+2):
+                    for by in xrange(0,histo.GetNbinsY()+2):
+                        if histo.GetBinContent(bx,by) < 0: histo.SetBinContent(bx,by, 0.0)
     def __str__(self):
         mystr = ""
         mystr += str(self._fname) + '\n'
@@ -391,6 +402,7 @@ def addTreeToYieldOptions(parser):
     parser.add_option("--FD", "--add-friend-data",    dest="friendTreesData",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to data trees only. Can use {name}, {cname} patterns in the treename") 
     parser.add_option("--mcc", "--mc-corrections",    dest="mcCorrs",  action="append", default=[], nargs=1, help="Load the following file of mc to data corrections") 
     parser.add_option("--s2v", "--scalar2vector",     dest="doS2V",    action="store_true", default=False, help="Do scalar to vector conversion") 
+    parser.add_option("--neg", "--allow-negative-results",     dest="allowNegative",    action="store_true", default=False, help="If the total yield is negative, keep it so rather than truncating it to zero") 
 
 def mergeReports(reports):
     import copy
