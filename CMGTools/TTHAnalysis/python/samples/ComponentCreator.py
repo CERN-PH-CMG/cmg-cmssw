@@ -101,9 +101,6 @@ class ComponentCreator(object):
         # print 'getting files for', dataset,user,pattern
         ds = datasetToSource( user, dataset, pattern, True )
         files = ds.fileNames
-        #This if you are at DESY
-        #return ['dcap://dcache-cms-dcap.desy.de//pnfs/desy.de/cms/tier2%s' % f for f in files]
-        #This if you are at CERN
         return ['root://eoscms.cern.ch//eos/cms%s' % f for f in files]
 
 
