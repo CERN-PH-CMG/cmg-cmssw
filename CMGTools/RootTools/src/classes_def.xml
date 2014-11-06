@@ -12,4 +12,5 @@
   <class name="CMGMuonCleanerBySegmentsAlgo" transient="true" />
   <class name="EGammaMvaEleEstimatorFWLite" transient="true" />
   <class name="AlphaT" transient="true" />
+  <class name="RecoilCorrector"/>
 </lcgdict>
