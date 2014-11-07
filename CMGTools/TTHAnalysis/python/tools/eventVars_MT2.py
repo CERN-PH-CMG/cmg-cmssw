@@ -31,6 +31,11 @@ class EventVarsMT2:
 
         self.branches = [ "deltaPhiMin4", "deltaPhiMin3", "mt2_had_30" ] 
 
+        from ROOT import RecoilCorrector
+        recoilCorr = RecoilCorrector("fileToCorrect.root",123456)    
+        recoilCorr.addDataFile("fileZmumuData.root"); 
+        recoilCorr.addMCFile("fileZmumuMC.root"); 
+
     def listBranches(self):
         return self.branches[:]
     def __call__(self,event):
@@ -40,12 +45,38 @@ class EventVarsMT2:
         (met, metphi)  = event.met_pt, event.met_phi
         metp4 = ROOT.reco.Particle.LorentzVector(met*cos(metphi),met*sin(metphi),0,met)
 
+        genLepsp4 = [l for l in Collection(event,"genLep","ngenLep",10)]
+
         njet = len(jets); nlep = len(leps)
         # prepare output
         ret = dict([(name,0.0) for name in self.branches])
 
+###### smear MET with Recoil Correction for V + Jets
+
+        # fill output
+        if len(genLepsp4)>=2:
+
+            genZp4 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+            for l in genLepsp4:
+                genZp4 += ROOT.reco.Particle.LorentzVector( l.p4().Px(), l.p4().Py(), l.p4().Pz(), l.p4().Energy() )
+#            print 'genZ',genZp4.Pt()
+         
+            # those need to be added to the tree
+            # ZGen_pt, ZGen_phi, ZGen_rap 
+            # ZReco_pt, ZReco_phi
+
+            (met_corr, metphi_corr)  = (met, metphi)  
+#            recoilCorr.CorrectType2( met_corr, met_corr,
+#                                     genZp4.Pt(), genZp4.Phi(),
+#                                     ZReco_pt, ZReco_phi,
+#                                     u1_dummy, u2_dummy,
+#                                     RecoilCorrResolutionNSigmaU2, RecoilCorrResolutionNSigmaU1, RecoilCorrScaleNSigmaU1,
+#                                     rapBin,false); 
+            
+
         # fill output
         if njet >= 2:
+
 
 ###### for now clone of the code in ttHCoreEventAnalyzer.py
 
