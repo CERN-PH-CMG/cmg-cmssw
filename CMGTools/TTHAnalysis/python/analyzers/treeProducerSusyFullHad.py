@@ -86,7 +86,7 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             NTupleVariable("zll_pt", lambda ev : ev.zll_p4.Pt(), help="Pt of di-lepton system"),
             NTupleVariable("zll_eta", lambda ev : ev.zll_p4.Eta(), help="Eta of di-lepton system"),
             NTupleVariable("zll_phi", lambda ev : ev.zll_p4.Phi(), help="Phi of di-lepton system"),
-            NTupleVariable("zll_invmass", lambda ev : ev.zll_p4.M(), help="Invariant mass of di-lepton system"),
+            NTupleVariable("zll_mass", lambda ev : ev.zll_p4.M(), help="Invariant mass of di-lepton system"),
             ###
             ]
 
