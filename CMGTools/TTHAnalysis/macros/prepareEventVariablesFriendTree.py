@@ -78,7 +78,14 @@ parser.add_option("-V", "--vector",  dest="vectorTree", action="store_true", def
 parser.add_option("-F", "--add-friend",    dest="friendTrees",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename). Can use {name}, {cname} patterns in the treename") 
 parser.add_option("--FMC", "--add-friend-mc",    dest="friendTreesMC",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to MC only. Can use {name}, {cname} patterns in the treename") 
 parser.add_option("--FD", "--add-friend-data",    dest="friendTreesData",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to data trees only. Can use {name}, {cname} patterns in the treename") 
+parser.add_option("-L", "--list-modules",  dest="listModules", action="store_true", default=False, help="just list the configured modules");
 (options, args) = parser.parse_args()
+
+if options.listModules:
+    print "List of modules"
+    for (n,x) in MODULES:
+        print "   '%s': %s" % (n,x)
+    exit()
 
 if len(args) != 2 or not os.path.isdir(args[0]) or not os.path.isdir(args[1]): 
     print "Usage: program <TREE_DIR> <OUT>"

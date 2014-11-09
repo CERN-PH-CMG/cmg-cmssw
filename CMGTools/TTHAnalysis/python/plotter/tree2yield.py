@@ -39,6 +39,7 @@ class CutsFile:
             for cr,cn,cv in options.cutsToAdd:
                 if re.match(cr,"entry point"): self._cuts.append((cn,cv))
             for line in file:
+              try:
                 if len(line.strip()) == 0 or line.strip()[0] == '#': continue
                 while line.strip()[-1] == "\\":
                     line = line.strip()[:-1] + file.next()
@@ -51,6 +52,9 @@ class CutsFile:
                     if re.match(cr,name): self._cuts.append((cn,cv))
                 if options.upToCut and re.search(options.upToCut,name):
                     break
+              except ValueError, e:
+                print "Error parsing cut line [%s]" % line.strip()
+                raise 
             for ci in options.cutsToInvert:  self.invert(ci)
             for ci in options.cutsToExclude: self.remove(ci)
             for cr,cn,cv in options.cutsToReplace: self.replace(cr,cn,cv)
