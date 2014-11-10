@@ -59,14 +59,14 @@ mt2_gen:   mt2_gen: 16,0,800    ; XTitle="MT2 gen  [GeV]"
 ##### JET 
 
 jet_njet : njet : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5,11.5,12.5,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,21.5,22.5,23.5,24.5,25.5,26.5,27.5,28.5,29.5,30.5] ; XTitle='N(jet\, p_{T} > 10\, |#eta| < 5.2 )'
-jet_pt: jet_pt: 80,0,800    ; XTitle="jet p_{T}  [GeV]"
+jet_pt: jet_pt: 200, 0, 200    ; XTitle="jet p_{T}  [GeV]"
 jet_phi: jet_phi: 8,-3.15,3.15    ; XTitle="jet phi"
 jet_eta: jet_eta: 24,-6.0,6.0    ; XTitle="jet eta"
 jet_mass: jet_mass: 20,0,400.    ; XTitle="jet mass [GeV]"
 jet_csv: jet_btagCSV: 100,-11.,2.    ; XTitle="jet csv"
 
-jet_rawPt: jet_rawPt: 16,0,800    ; XTitle="jet raw pt"
-jet_mcPt: jet_mcPt: 16,0,800    ; XTitle="jet mc pt"
+jet_rawPt: jet_rawPt: 200, 0, 200     ; XTitle="jet raw pt"
+jet_mcPt: jet_mcPt: 200, 0, 200     ; XTitle="jet mc pt"
 
 jet_mcFlavour: jet_mcFlavour: 100, 0,100 ; XTitle="jet mc flavour"
 jet_area: jet_area: 100, 0,100 ; XTitle="jet mc area"
@@ -83,7 +83,8 @@ isoTrack_phi: isoTrack_phi: 8,-3.15,3.15    ; XTitle="isotrack phi"
 isoTrack_eta: isoTrack_eta: 10,-5.,5.    ; XTitle="isotrack eta"
 isoTrack_mass: isoTrack_mass: 20,0,400.    ; XTitle="isotrack mass [GeV]"
 
-isoTrack_pdgId : isoTrack_pdgId : [10.5,11.5,12.5,13.5,14.5,15.5,16.5] ; XTitle='PDG_ID'
+##isoTrack_pdgId : isoTrack_pdgId : [10.5,11.5,12.5,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,21.5,22.5,23.5,24.5,25.5] ; XTitle='PDG_ID'
+isoTrack_pdgId : isoTrack_pdgId : 150, 0,150 ; XTitle='PDG_ID'
 
 isoTrack_dz: isoTrack_dz: 100,0,0.5    ; XTitle="isotrack dz  [cm]"
 
