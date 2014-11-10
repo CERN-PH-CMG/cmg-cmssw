@@ -55,6 +55,7 @@ class PublishToFileSystem(object):
             cat = file(lfn).read()
         else:
             cat = castortools.cat(castortools.lfnToCastor(lfn))
+        #print "the cat is: ", cat
         return json.loads(cat)
     
     def get(self, dir):
