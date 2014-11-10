@@ -381,7 +381,7 @@ def doStatTests(total,data,test,legendCorner):
 
 
 legend_ = None;
-def doLegend(pmap,mca,corner="TR",textSize=0.035,cutoff=1e-2,mcStyle="F"):
+def doLegend(pmap,mca,corner="TR",textSize=0.035,cutoff=1e-2,mcStyle="F",legWidth=0.18):
         if (corner == None): return
         total = sum([x.Integral() for x in pmap.itervalues()])
         sigEntries = []; bgEntries = []
@@ -397,11 +397,11 @@ def doLegend(pmap,mca,corner="TR",textSize=0.035,cutoff=1e-2,mcStyle="F"):
                 bgEntries.append( (pmap[p],lbl,mcStyle) )
         nentries = len(sigEntries) + len(bgEntries) + ('data' in pmap)
 
-        (x1,y1,x2,y2) = (.7, .75 - textSize*max(nentries-3,0), .93, .93)
+        (x1,y1,x2,y2) = (.93-legWidth, .75 - textSize*max(nentries-3,0), .93, .93)
         if corner == "TR":
-            (x1,y1,x2,y2) = (.75, .75 - textSize*max(nentries-3,0), .93, .93)
+            (x1,y1,x2,y2) = (.93-legWidth, .75 - textSize*max(nentries-3,0), .93, .93)
         elif corner == "TL":
-            (x1,y1,x2,y2) = (.2, .75 - textSize*max(nentries-3,0), .38, .93)
+            (x1,y1,x2,y2) = (.2, .75 - textSize*max(nentries-3,0), .2+legWidth, .93)
         
         leg = ROOT.TLegend(x1,y1,x2,y2)
         leg.SetFillColor(0)
@@ -591,7 +591,8 @@ class PlotMaker:
                 if self._options.plotmode == "norm": legendCutoff = 0 
                 doLegend(pmap,mca,corner=pspec.getOption('Legend','TR'),
                                   cutoff=legendCutoff, mcStyle=("F" if self._options.plotmode == "stack" else "L"),
-                                  textSize=(0.045 if doRatio else 0.035))
+                                  textSize=(0.045 if doRatio else 0.035),
+                                  legWidth=options.legendWidth)
                 doTinyCmsPrelim(hasExpo = total.GetMaximum() > 9e4 and not c1.GetLogy(),textSize=(0.045 if doRatio else 0.033))
                 signorm = None; datnorm = None; sfitnorm = None
                 if options.showSigShape: 
@@ -673,6 +674,7 @@ def addPlotMakerOptions(parser):
     parser.add_option("--poisson", dest="poisson", action="store_true", default=False, help="Draw Poisson error bars")
     parser.add_option("--unblind", dest="unblind", action="store_true", default=False, help="Unblind plots irrespectively of plot file")
     parser.add_option("--select-plot", "--sP", dest="plotselect", action="append", default=[], help="Select only these plots out of the full file")
+    parser.add_option("--legendWidth", dest="legendWidth", type="float", default=0.25, help="Width of the legend")
 
 if __name__ == "__main__":
     from optparse import OptionParser
@@ -690,6 +692,10 @@ if __name__ == "__main__":
         os.system("mkdir -p "+os.path.dirname(outname))
         if os.path.exists("/afs/cern.ch"): os.system("cp /afs/cern.ch/user/g/gpetrucc/php/index.php "+os.path.dirname(outname))
     print "Will save plots to ",outname
+    fcut = open(re.sub("\.root$","",outname)+"_cuts.txt","w")
+    fcut.write("%s\n" % cuts); fcut.close()
+    os.system("cp %s %s " % (args[2], re.sub("\.root$","",outname)+"_plots.txt"))
+    os.system("cp %s %s " % (args[0], re.sub("\.root$","",outname)+"_mca.txt"))
     outfile  = ROOT.TFile(outname,"RECREATE")
     plotter = PlotMaker(outfile)
     plotter.run(mca,cuts,plots)
