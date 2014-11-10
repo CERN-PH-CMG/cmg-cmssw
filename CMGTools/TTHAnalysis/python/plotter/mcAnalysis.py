@@ -66,13 +66,14 @@ class MCAnalysis:
                     for p in p0.split(","):
                         if re.match(p+"$", field[0]): signal = True
             ## endif
-            rootfile = "%s/%s/%s/%s_tree.root" % (options.path, field[1].strip(), options.tree, options.tree)
+            treename = extra["TreeName"] if "TreeName" in extra else options.tree 
+            rootfile = "%s/%s/%s/%s_tree.root" % (options.path, field[1].strip(), treename, treename)
             if options.remotePath:
-                rootfile = "root:%s/%s/%s_tree.root" % (options.remotePath, field[1].strip(), options.tree)
+                rootfile = "root:%s/%s/%s_tree.root" % (options.remotePath, field[1].strip(), treename)
             elif os.path.exists(rootfile+".url"): #(not os.path.exists(rootfile)) and :
                 rootfile = open(rootfile+".url","r").readline().strip()
             pckfile = options.path+"/%s/skimAnalyzerCount/SkimReport.pck" % field[1].strip()
-            tty = TreeToYield(rootfile, options, settings=extra, name=field[0], cname=field[1].strip())
+            tty = TreeToYield(rootfile, options, settings=extra, name=field[0], cname=field[1].strip(), treename=treename)
             if signal: 
                 self._signals.append(tty)
                 self._isSignal[field[0]] = True

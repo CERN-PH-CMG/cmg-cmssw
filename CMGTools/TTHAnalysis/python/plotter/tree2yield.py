@@ -124,12 +124,13 @@ class PlotSpec:
         return self.opts[name] if (name in self.opts) else default
 
 class TreeToYield:
-    def __init__(self,root,options,scaleFactor=1.0,name=None,cname=None,settings={}):
+    def __init__(self,root,options,scaleFactor=1.0,name=None,cname=None,settings={},treename=None):
         self._name  = name  if name != None else root
         self._cname = cname if cname != None else self._name
         self._fname = root
         self._isInit = False
         self._options = options
+        self._treename = treename if treename else options.tree
         self._weight  = (options.weight and 'data' not in self._name and '2012' not in self._name and '2011' not in self._name )
         self._isdata = 'data' in self._name
         self._weightString  = options.weightString if not self._isdata else "1"
@@ -188,8 +189,8 @@ class TreeToYield:
         else:
             self._tfile = ROOT.TFile.Open(self._fname)
         if not self._tfile: raise RuntimeError, "Cannot open %s\n" % self._fname
-        t = self._tfile.Get(self._options.tree)
-        if not t: raise RuntimeError, "Cannot find tree %s in file %s\n" % (self._options.tree, self._fname)
+        t = self._tfile.Get(self._treename)
+        if not t: raise RuntimeError, "Cannot find tree %s in file %s\n" % (self._treename, self._fname)
         self._tree  = t
         #self._tree.SetCacheSize(10*1000*1000)
         if "root://" in self._fname: self._tree.SetCacheSize()
