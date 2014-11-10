@@ -135,6 +135,7 @@ class TreeToYield:
         self._isdata = 'data' in self._name
         self._weightString  = options.weightString if not self._isdata else "1"
         self._scaleFactor = scaleFactor
+        self._fullYield = 0 # yield of the full sample, as if it passed the full skim and all cuts
         self._settings = settings
         loadMCCorrections(options)            ## make sure this is loaded
         self._mcCorrs = globalMCCorrections() ##  get defaults
@@ -157,6 +158,8 @@ class TreeToYield:
         self._scaleFactor = scaleFactor
     def getScaleFactor(self):
         return self._scaleFactor
+    def setFullYield(self,fullYield):
+        self._fullYield = fullYield
     def name(self):
         return self._name
     def hasOption(self,name):
@@ -223,6 +226,8 @@ class TreeToYield:
             else:
                 cut = cv
             report.append((cn,self._getYield(self._tree,cut)))
+        if self._options.fullSampleYields and not noEntryLine:
+            report.insert(0, ('full sample', [self._fullYield,0]) )
         return report
     def prettyPrint(self,report):
         # maximum length of the cut descriptions
@@ -390,6 +395,7 @@ def addTreeToYieldOptions(parser):
     parser.add_option("-l", "--lumi",           dest="lumi",   type="float", default="19.7", help="Luminosity (in 1/fb)");
     parser.add_option("-u", "--unweight",       dest="weight",       action="store_false", default=True, help="Don't use weights (in MC events)");
     parser.add_option("-W", "--weightString",   dest="weightString", type="string", default="1", help="Use weight (in MC events)");
+    parser.add_option("--fsy", "--full-sample-yield",  dest="fullSampleYields", action="store_true", default=False, help="Compute also the yield as if all events passed");
     parser.add_option("-f", "--final",  dest="final", action="store_true", help="Just compute final yield after all cuts");
     parser.add_option("-e", "--errors",  dest="errors", action="store_true", help="Include uncertainties in the reports");
     parser.add_option("--tf", "--text-format",   dest="txtfmt", type="string", default="text", help="Output format: text, html");

@@ -95,8 +95,28 @@ class MCAnalysis:
                     scale = "%s/%g" % (field[2], 0.001*nevt)
                 if len(field) == 4: scale += "*("+field[3]+")"
                 tty.setScaleFactor(scale)
+                if options.fullSampleYields:
+                    fullYield = 0.0;
+                    try:
+                        fullYield = float(eval(field[2])) * 1000. * options.lumi
+                        if len(field) == 4:
+                            try:
+                                fullYield = fullYield * float(eval(field[3]))
+                            except:
+                                pass
+                    except:
+                        pass
+                    tty.setFullYield(fullYield)
             elif len(field) == 3:
                 tty.setScaleFactor(field[2])
+                if options.fullSampleYields:
+                    try:
+                        pckobj  = pickle.load(open(pckfile,'r'))
+                        counters = dict(pckobj)
+                        nevt = counters['All Events']
+                        tty.setFullYield(nevt)
+                    except:
+                        tty.setFullYield(0)
             if field[0] not in self._rank: self._rank[field[0]] = len(self._rank)
         #if len(self._signals) == 0: raise RuntimeError, "No signals!"
         #if len(self._backgrounds) == 0: raise RuntimeError, "No backgrounds!"
