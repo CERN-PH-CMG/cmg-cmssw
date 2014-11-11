@@ -174,6 +174,7 @@ ttHJetAna = cfg.Analyzer(
     recalibrateJets = False,
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     cleanJetsFromTaus = False,
+    doQG = False,
     )
 
 # Jet MC Match Analyzer (generic)
@@ -196,7 +197,7 @@ ttHHeavyFlavourHadronAnalyzer = cfg.Analyzer(
 
 ttHMetAna = cfg.Analyzer(
     'ttHMetEventAnalyzer',
-    doTkMet = True,
+    doTkMet = False,
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,

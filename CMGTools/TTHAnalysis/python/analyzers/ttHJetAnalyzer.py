@@ -88,8 +88,10 @@ class ttHJetAnalyzer( Analyzer ):
             if self.testJetNoID( jet ): 
                 event.jetsAllNoID.append(jet) 
                 if self.testJetID (jet ):
-                    self.computeQGvars(jet)
-                    jet.qgl = self.qglcalc.computeQGLikelihood(jet, rho)
+                    
+                    if(self.cfg_ana.doQG):
+                        self.computeQGvars(jet)
+                        jet.qgl = self.qglcalc.computeQGLikelihood(jet, rho)
 
                     ##manually match to genparticle
                     #deltaRmin = 999.
