@@ -38,6 +38,73 @@ class JetFromGen:
             return getattr(self.physObj, attr)
         raise RuntimeError, "Missing attribute '%s'" % attr
 
+class StopDecay:
+    def __init__(self,  physObj):
+        self.physObj = physObj
+        self.decay = 0
+        self.b    = None
+        self.chic = None
+        self.chi0 = None
+        self.q    = None
+        self.qb   = None
+        self.wp4  = None
+        self.tp4  = None
+        self.l    = None
+        self.v    = None
+        self.nbody = physObj.numberOfDaughters()
+        if physObj.numberOfDaughters() == 2:
+            d1,d2 = physObj.daughter(0), physObj.daughter(1)
+            if abs(d1.pdgId()) > abs(d2.pdgId()): d1,d2 = d2,d1
+            if abs(d1.pdgId()) == 5:
+                #print "t1 --> b %d " % d2.pdgId()
+                self.b    = d1
+                self.chic = d2
+                while self.chic.numberOfDaughters() == 1 and self.chic.daughter(0).pdgId() == self.chic.pdgId():
+                    self.chic = self.chic.daughter(0)
+                if self.chic.numberOfDaughters() == 3:
+                    di = [ self.chic.daughter(i) for i in 0,1,2 ]
+                    di.sort(key = lambda p : abs(p.pdgId()))
+                    #print "     %d --> (W* -> %d %d) %d " % (self.chic.pdgId(), di[0].pdgId(), di[1].pdgId(), di[2].pdgId())
+                    self.chi0 = di[2]
+                    if (abs(di[0].pdgId()) in [11,13,15]):
+                        self.decay = 2300 + abs(di[0].pdgId())
+                        self.l = di[0] 
+                        self.v = di[1] 
+                    else:
+                        self.decay = 2300 + abs(di[0].pdgId())
+                        iq = 0 if di[0].pdgId() > 0 else 1
+                        self.q = di[iq] 
+                        self.qb = di[1-iq] 
+                    self.wp4 = di[0].p4() + di[1].p4()
+                else:
+                    raise RuntimeError, "I can't understand the stop decay with %d daughters of the %d [%s]" % ( self.chic.numberOfDaughters(), self.chic.pdgId(), [(self.chic.daughter(i).pdgId(), self.chic.daughter(i).status()) for i in xrange(self.chic.numberOfDaughters()) ] )
+            else:
+                raise RuntimeError, "I can't understand the stop 2-body decay in %d %d" % ( d1.pdgId(), d2.pdgId() )
+        elif physObj.numberOfDaughters() == 4:
+            di = [ physObj.daughter(i) for i in 0,1,2,3 ]
+            di.sort(key = lambda p : abs(p.pdgId()))
+            self.chi0 = di[-1]
+            if abs(di[0].pdgId()) > 4:
+                di = [ di[1], di[2], di[0], di[3] ]
+            #print "t1 --> (W* -> %d %d) %d %d " % (di[0].pdgId(), di[1].pdgId(), di[2].pdgId(), di[3].pdgId())
+            self.b    = di[2]
+            self.chi0 = di[3]
+            if (abs(di[0].pdgId()) in [11,13,15]):
+                self.decay = 4000 + abs(di[0].pdgId())
+                self.l = di[0] 
+                self.v = di[1] 
+            else:
+                self.decay = 4000 + abs(di[0].pdgId())
+                iq = 0 if di[0].pdgId() > 0 else 1
+                self.q = di[iq] 
+                self.qb = di[1-iq] 
+            self.wp4 = di[0].p4() + di[1].p4()
+            self.tp4 = self.wp4 + self.b.p4()
+        else:
+            raise RuntimeError, "I can't understand the %d-body stop decay" % ( physObj.numberOfDaughters() )
+    def __getattr__(self, attr):
+        return getattr(self.physObj, attr)
+
 class ttHGenLevelOnlyStudy( Analyzer ):
     """
     Fakes a reco event starting from GEN-only files      
@@ -255,6 +322,20 @@ class ttHGenLevelOnlyStudy( Analyzer ):
         event.mhtJet40j = event.mhtJet40jvec.pt()
         event.mhtPhiJet40j = event.mhtJet40jvec.phi()
 
+    def doStops(self, event):
+        event.genStops = []
+        for stop in event.genParticles:
+            if abs(stop.pdgId()) != 1000006: continue
+            # skip intermediate stops
+            selfveto = False
+            for i in xrange(stop.numberOfDaughters()):
+                if abs(stop.daughter(i).pdgId()) == 1000006: 
+                    selfveto = True; break
+            if selfveto: continue
+            # add them
+            event.genStops.append(StopDecay(stop))
+        event.genStops.sort(key = lambda p : - p.pdgId())
+
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
@@ -276,6 +357,7 @@ class ttHGenLevelOnlyStudy( Analyzer ):
         self.doBTag(iEvent,event)
         self.doMET(iEvent,event)
         self.doHT(iEvent,event)
+        self.doStops(event)
 
         # do PDF weights, if requested
         if self.doPDFWeights:
