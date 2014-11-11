@@ -139,7 +139,8 @@ TH2D histoCorrU2("hCorrU2","",10,0,10, 10,0,10);
 TH2D histoU1vsMuPt("histoU1vsMuPt","",100,0,100, 100,-50,50);
 TH2D histoU2vsMuPt("histoU2vsMuPt","",100,0,100, 100,-50,50);
 
-TH1D histoDelta("hdelta","histo ",100,-95,5);
+TH1D histoDeltaU1("hdeltaU1","histo ",100,-95,5);
+TH1D histoDeltaU2("hdeltaU2","histo ",100,-95,5);
 
 //## needed for the boson PDF check check of the application of the recoilCorr
 TH1D Vpt0("Vpt0","gluon",100,0,50);
@@ -185,9 +186,10 @@ TH2D histoPhiStarvsgenZpt("histoPhiStarvsgenZpt","histo PhiStar vs genZpt",100,0
 
 bool doGigiRescaling = false;
 
-bool do3Sigma=false;
+bool do3Sigma = false;
 
 bool usePol3 = true;
+bool useSubRanges = false;
 bool useErfPol2ScaleU1 = false;
 bool dodebug = false; 
 
@@ -294,13 +296,13 @@ int fRun=-1;
 int fLumi=-1;
 int fEvent=-1;
 
-std::vector<std::vector<std::vector<float> > > lXVals_all;  std::vector<std::vector<std::vector<float> > > lYVals_all; std::vector<std::vector<std::vector<float> > > lYTVals_all;
-std::vector<std::vector<std::vector<float> > > lXEVals_all; std::vector<std::vector<std::vector<float> > > lYEVals_all; 
+std::vector<std::vector<std::vector<double> > > lXVals_all;  std::vector<std::vector<std::vector<double> > > lYVals_all; std::vector<std::vector<std::vector<double> > > lYTVals_all;
+std::vector<std::vector<std::vector<double> > > lXEVals_all; std::vector<std::vector<std::vector<double> > > lYEVals_all; 
 
-float ***vlXVals_all,***vlXEVals_all,***vlYVals_all,***vlYTVals_all,***vlYEVals_all; //two * are needed because it is a pofloater to a pofloater
+double ***vlXVals_all,***vlXEVals_all,***vlYVals_all,***vlYTVals_all,***vlYEVals_all; //two * are needed because it is a pofloater to a pofloater
 
-std::vector<std::vector<std::vector<float> > > lXVals_3S, lYVals_3S;
-float ***vlXVals_3S, ***vlYVals_3S;
+std::vector<std::vector<std::vector<double> > > lXVals_3S, lYVals_3S;
+double ***vlXVals_3S, ***vlYVals_3S;
 
 ///$$$$$$$$$$$$
 ///$$$$
@@ -487,7 +489,7 @@ double diGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2) {
 
   double lDiff = (lMax-lMin);
   //Iterative procedure to invert a double gaussian given a PVal
-  ///  int lId = 0; int lN1 = 4;  int lN2 = 10; 
+  //  int lId = 0; int lN1 = 4;  int lN2 = 10; 
   //  int lId = 0; int lN1 = 10;  int lN2 = 10; 
   int lId = 0; int lN1 = 10;  int lN2 = 100; 
   for(int i0 = 0; i0 < lN1; i0++) { 
@@ -675,7 +677,7 @@ void applyType2CorrU(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
 
     if(scaleU2) pUValMtest     = diGausPInverse(pUValM  ,pMFrac2,pMSigma2_1,pMSigma2_2);
     if(pUValM==fabs(recoil)) pUValMtest=fabs(recoil); // in those cases do nothing
-    histoDelta.Fill(pUValMtest-fabs(recoil));
+    histoDeltaU1.Fill(pUValMtest-fabs(recoil));
 
     //    if(iGenPt<20 && pUValMtest-fabs(recoil) < -10) cout << "=======>>>>>>> strange value output: " << pUValMtest << "; input " << fabs(recoil) << " frac2 " << pDFrac2 << endl;
 
@@ -798,6 +800,8 @@ void applyType2CorrMET(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   double pU1Diff  = pU1-pDefU1;
   double pU2Diff  = pU2;
 
+  if(dodebug) cout << " initial pU1 = " << pU1 << " pU2 = " << pU2 << endl;
+
   double p1Charge        = pU1Diff/fabs(pU1Diff);
   double p2Charge        = pU2Diff/fabs(pU2Diff);
   /////  double pTU1Diff        = pU1Diff;
@@ -847,6 +851,10 @@ void applyType2CorrMET(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
     pU1ValM         = diGausPVal(fabs(pU1Diff),pMFrac1,pMSigma1_1,pMSigma1_2); // when is singleGauss pMFrac1=1 pMSigma1_1=fullRMS pMSigma1_2=0 
     pU2ValM         = diGausPVal(fabs(pU2Diff),pMFrac2,pMSigma2_1,pMSigma2_2);
 
+    if(dodebug)  cout << "            after diGausPVal " << endl;
+    if(dodebug)  cout << "                fabs(pU1Diff)=" << fabs(pU1Diff) << "; pU1ValM=" << pU1ValM << endl;
+    if(dodebug)  cout << "                fabs(pU2Diff)=" << fabs(pU2Diff) << "; pU2ValM=" << pU2ValM << endl;
+
     if(!doOnlyU1 && !doOnlyU2) {
       pU1ValD         = diGausPInverse(pU1ValM  ,pDFrac1,pDSigma1_1,pDSigma1_2);
       pU2ValD         = diGausPInverse(pU2ValM  ,pDFrac2,pDSigma2_1,pDSigma2_2);
@@ -862,14 +870,24 @@ void applyType2CorrMET(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
       pU2ValD         = diGausPInverse(pU2ValM  ,pDFrac2,pDSigma2_1,pDSigma2_2);
     }
 
+    if(dodebug)  cout << "            after diGausPInverse " << endl;
+    if(dodebug)  cout << "                pU1ValD=" <<  pU1ValD << "; pU1ValM=" << pU1ValM << endl;
+    if(dodebug)  cout << "                pU2ValD=" <<  pU2ValD << "; pU2ValM=" << pU2ValM << endl;
+
     pU1ValMtest     = diGausPInverse(pU1ValM, pMFrac1, pMSigma1_1, pMSigma1_2);
     pU2ValMtest     = diGausPInverse(pU2ValM, pMFrac2, pMSigma2_1, pMSigma2_2);
-    //    if(pU1ValM==fabs(pU1Diff)) pU1ValMtest=fabs(recoil); // in those cases do nothing                                                                                       
-    histoDelta.Fill(pU1ValMtest-fabs(pU1Diff));
-    histoDelta.Fill(pU2ValMtest-fabs(pU2Diff));
+
+    //    cout << "            after diGausPInverse " << endl;
+    //    cout << "                pU1ValMtest=" <<  pU1ValD << "; pU1ValM=" << pU1ValM << endl;
+    //    cout << "                pU2ValMtest=" <<  pU2ValD << "; pU2ValM=" << pU2ValM << endl;
+
+    if(pU1ValM==fabs(pU1Diff)) pU1ValMtest=fabs(pU1Diff); // in those cases do nothing                                                                                       
+    if(pU2ValM==fabs(pU2Diff)) pU2ValMtest=fabs(pU2Diff); // in those cases do nothing                                                                                       
+    histoDeltaU1.Fill(pU1ValMtest-fabs(pU1Diff));
+    histoDeltaU2.Fill(pU2ValMtest-fabs(pU2Diff));
 
     if(pU1ValM==fabs(pU1Diff)) pU1ValD=fabs(pU1Diff); // in those cases do nothing
-    if(pU2ValM==fabs(pU2Diff)) pU1ValD=fabs(pU1Diff); // in those cases do nothing
+    if(pU2ValM==fabs(pU2Diff)) pU2ValD=fabs(pU2Diff); // in those cases do nothing
 
   }
 
@@ -889,6 +907,9 @@ void applyType2CorrMET(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   pU2   =                      pU2ValD;
   iMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
   iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
+
+  if(dodebug)  cout << " after pU1 = " << pU1 << " pU2 = " << pU2 << endl;
+
   //  iU1   = pU1; 
   //  iU2   = pU2;
 
@@ -1007,6 +1028,10 @@ void load(TTree *iTree, int type) {
     if(!fData) iTree->SetBranchAddress("ZGen_pt" ,&fZPt);
     if(!fData) iTree->SetBranchAddress("ZGen_phi",&fZPhi);
     if(!fData) iTree->SetBranchAddress("ZGen_rap",&fZRap);
+    // to get the recoPt also for MC
+    //    if(!fData)  iTree->SetBranchAddress("Z_pt" ,&fZPt);
+    //    if(!fData)  iTree->SetBranchAddress("Z_phi",&fZPhi);
+    //    if(!fData)  iTree->SetBranchAddress("Z_rap",&fZRap);
 
     if(!fData)  iTree->SetBranchAddress("Z_pt" ,&fZrecoPt);
 
@@ -1144,6 +1169,8 @@ void load(TTree *iTree, int type) {
 }
 
 void calculateU1U2(double &iPar, bool iType) {
+
+  //  cout << " inside calculateU1U2: fMet = " << fMet << " fMPhi = " << fMPhi << endl;
 
   // reset U1 U2
   fU1 = -9999;
@@ -1313,8 +1340,8 @@ bool runSelection(bool doMet) {
   if( fevtHasGoodVtx
       && fevtHasTrg
       //      && fZmass>50
-      //      && fZmass>70
-      //      && fZmass<110
+      //      && fZmass>70 // this is the default cut
+      //      && fZmass<110 // this is the default cut  
       && fZmass>81
       && fZmass<101
       && (fMuNeg_charge != fMuPos_charge)
@@ -1353,6 +1380,8 @@ bool runSelection(bool doMet) {
       histoPhiStarvsZpt.Fill(fZPt,PhiStar);
       histoPhiStar.Fill(PhiStar);
       histoThetaStar.Fill(CosThetaStar);
+
+      if(dodebug) cout << "passed run selection "<< endl;     
 
       return true;
 
@@ -1435,7 +1464,9 @@ bool runWSelection(bool doPos, bool doMet) {
      histoU1diff.Fill(fU1+fPt1);     
      histoU1.Fill(fU1);
      histoU2.Fill(fU2);
-     
+
+     if(dodebug) cout << "passed runW selection "<< endl;     
+
      return true;
      
    }
@@ -1729,6 +1760,7 @@ void computeFitErrors(TF1 *iFit,TFitResultPtr &iFPtr,TF1 *iTrueFit,bool iPol0=fa
 
   double lE5 = 0;
   double lE6 = 0;
+  double lE7 = 0;
 
   // pol3 or greater
   if(lPol3) {
@@ -1746,11 +1778,16 @@ void computeFitErrors(TF1 *iFit,TFitResultPtr &iFPtr,TF1 *iTrueFit,bool iPol0=fa
   iFit->SetParameter(2,iTrueFit->GetParameter(2)); iFit->SetParError(2,lE2);
   iFit->SetParameter(3,iTrueFit->GetParameter(3)); iFit->SetParError(3,lE3);
   iFit->SetParameter(4,iTrueFit->GetParameter(4)); iFit->SetParError(4,lE4);
+  if(iTrueFit->GetParameter(5)) iFit->SetParameter(5,iTrueFit->GetParameter(5)); 
+  if(iTrueFit->GetParameter(6)) iFit->SetParameter(6,iTrueFit->GetParameter(6)); 
+  if(iTrueFit->GetParameter(7)) iFit->SetParameter(7,iTrueFit->GetParameter(7)); 
   iFit->SetParError(5,lE5);
   iFit->SetParError(6,lE6);
+  iFit->SetParError(7,lE7);
+
   
   cout << "===> Errors Diagonalized and Stored: lE0=" << lE0 << " lE1="<< lE1 << " lE2="<< lE2 << " lE3="<< lE3 << " lE4="<< lE4 << " lE5="<< lE5 << " lE6="<< lE6 << endl;
-  
+
   // 
   //   cout << "===> THIS TRY TO DIAGONALIZE THE MATRIX "<< endl; 
   //   const TVectorD diag = TMatrixDDiag_const(*lCov); 
@@ -2210,7 +2247,6 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
   iC->cd();
 
-
   if(iRMS){   
     for(unsigned int iev=0; iev<lXVals_all.at(0).at(0).size(); iev++){
       // pVal = (lPar - iMeanFit->Eval(fZPt));
@@ -2235,6 +2271,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
   lType     = "pol2";
   if(usePol3) lType     = "pol3";
+  if(usePol3 && useSubRanges && lPar==fU1 && !iRMS) lType = "pol3(0)+pol3(4)"; 
+
   if(useErfPol2ScaleU1 && lPar==fU1 && !iRMS) {
     lType     = "(TMath::Erf(x*[0])-TMath::Erf(x*[1]))*pol2(2)"; // MC 2 Erf
     //    lType     = "TMath::Erf(x*[0])*pol2(1)";
@@ -2257,7 +2295,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   // cout << "====================" << endl;
 
   // pol3 -- set to a constant the first param
-  if(!iRMS && lPar==fU1 && !useErfPol2ScaleU1) lFit->FixParameter(0,0);
+  if(!iRMS && lPar==fU1 && !useErfPol2ScaleU1 && !useSubRanges) lFit->FixParameter(0,0);
 
   if(!iRMS && lPar==fU1 && useErfPol2ScaleU1) {
 
@@ -2295,6 +2333,24 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       //f1->SetParLimits(4, -1, 1); 
       //f1->SetParameter(5,   -6.87765e-05); 
     }
+  }
+
+  if(useSubRanges && !iRMS && lPar==fU1) {
+
+    Double_t par[8];
+    TF1* first = new TF1("m1","pol3",0,5);
+    TF1* second = new TF1("m2","pol3",5,fZPtMax);
+    
+    //    first->SetParameter(0,0);
+    //    first->SetParLimits(0,-0.1, 0.1);
+    //    first->FixParameter(0,0);
+    pGraphA->Fit(first, "R");
+    pGraphA->Fit(second, "R+");
+    
+    first->GetParameters(&par[0]);
+    second->GetParameters(&par[4]);
+    lFit->SetParameters(par);
+    
   }
 
   //  if(!iRMS && lPar==fU1) lFit->SetParLimits(0, 0.0, 1.0); // first parameter between 0 and 1.0
@@ -2427,8 +2483,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
     //    cout << "size X " << lXVals_3S.at(lPar!=fU1).at(iRMS).size() << " size Y " << lYVals_3S.at(lPar!=fU1).at(iRMS).size() << endl;
 
-    vlXVals_3S[lPar!=fU1][iRMS]=new float[lXVals_3S.at(lPar!=fU1).at(iRMS).size()];
-    vlYVals_3S[lPar!=fU1][iRMS]=new float[lYVals_3S.at(lPar!=fU1).at(iRMS).size()];
+    vlXVals_3S[lPar!=fU1][iRMS]=new double[lXVals_3S.at(lPar!=fU1).at(iRMS).size()];
+    vlYVals_3S[lPar!=fU1][iRMS]=new double[lYVals_3S.at(lPar!=fU1).at(iRMS).size()];
 
     for(unsigned int iev=0; iev<lXVals_3S.at(lPar!=fU1).at(iRMS).size(); iev++){
 
@@ -2558,6 +2614,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   //  RooFitResult *pFR = lGAdd.fitTo(lResidVals2D[0],Constrained(),Warnings(kTRUE),Save(kTRUE),ConditionalObservables(lRPt),Range(range_min, range_max),NumCPU(2),/*Minimizer("Minuit2","migrad"),*/Strategy(2),Minos());//,Minos()); //Double Gaussian fit
   RooFitResult *pFR = lGAdd.fitTo(lResidVals2D[0],Constrained(),Warnings(kTRUE),Save(kTRUE),ConditionalObservables(lRPt),NumCPU(2),/*Minimizer("Minuit2","migrad"),*/Strategy(2),Minos());//,Minos()); //Double Gaussian fit
 
+  //  RooFitResult *pFR = 0;
 
   // cout << "====================" << endl;
   // cout << "== FILL histograms from dataset and fitted PDF
@@ -2575,7 +2632,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
   // HISTOs from dataset
   TH1* hh  = lResidVals2D[0].createHistogram(nameHisto,lRPt,Binning(1000),YVar(lRXVar,Binning(100)));
-  if(hh) cout << " ===>>>>> CREATED HISTOGRAM FILE" << hh << endl;
+  if(hh) cout << " ===>>>>> CREATED HISTOGRAM FILE from dataset" << hh << endl;
 
   // HISTOs from fitted pdf
   //  TH1* hh_ = lGAdd.createHistogram(nameHistoFit,lRPt,Binning(100),YVar(lRXVar,Binning(100)));
@@ -3315,12 +3372,14 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
 
   for(int i1 = 0; i1 <  nEntries; i1++) {
   //  for(int i1 = 0; i1 <  1000000; i1++) {
+  //  for(int i1 = 0; i1 <  100; i1++) {
     //  for(int i1 = 0; i1 <  1e6; i1++) {
     iTree->GetEntry(i1);
 
     if(i1%100000==0) cout <<"Analyzed entry "<< i1 <<"/"<< nEntries <<endl;
 
-    ////////    cout << "RUN " << fRun << " LUMI " << fLumi << " EVENT " << fEvent << endl;
+    if(dodebug)       cout << " -------------------------------- " << endl;
+    if(dodebug)       cout << "RUN " << fRun << " LUMI " << fLumi << " EVENT " << fEvent << endl;
 
     if(doGigiRescaling) applyGigiRescaling();
 
@@ -3390,6 +3449,8 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
     if(fZPt<0) continue;
     if(fZPt > fZPtMax) continue;
 
+    if(dodebug) cout << " fZpt=" << fZPt << endl;
+
     ////
     ////
 
@@ -3458,7 +3519,7 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
 	   << endl;
       */
 
-      //      if(dodebug)      cout << "original MET " << fMet ; 
+      if(dodebug)      cout << "fEvent" << fEvent << " original MET " << fMet << " phi " << fMPhi << endl;; 
 
       if(!doApplyCorr) {
 	// this is good for the inclusive bins and for the binned one too since take the first only 
@@ -3476,8 +3537,7 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
 			  );
       }
       
-      //      if(dodebug)       cout << " MET after smearing " << fMet ; 
-      
+       
       //////
       //////
       //////
@@ -3541,6 +3601,10 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
       */
     }
 
+    if(dodebug)       cout << "fEvent" << fEvent << " MET after smearing " << fMet << " phi " << fMPhi << endl; 
+    //    if(dodebug)       cout << " ------------------ " << endl;
+
+
     if (doIterativeMet) {
 
       doMetCut=true;
@@ -3551,6 +3615,10 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
       if(doPosW && (!runWSelection(true,doMetCut))) continue;
       if(doNegW && (!runWSelection(false,doMetCut))) continue;
     }
+
+
+    if(dodebug)       cout << " MET after smearing " << fMet << " phi " << fMPhi << endl; 
+    //    if(dodebug)       cout << " ------------------ " << endl;
 
     if(fMet > fMetMax) continue;
 
@@ -3574,12 +3642,12 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
     //    bool MeanRMStruefalse[2]={false,true};
     
     for(int iU1U2=0; iU1U2<2; iU1U2++){
-        std::vector<std::vector<float> > dummy;
+        std::vector<std::vector<double> > dummy;
         lXVals_all.push_back(dummy); lXEVals_all.push_back(dummy); lYVals_all.push_back(dummy); lYTVals_all.push_back(dummy); lYEVals_all.push_back(dummy);
         lXVals_3S.push_back(dummy); lYVals_3S.push_back(dummy);      
 
       for(int iMeanRMS=0; iMeanRMS<2; iMeanRMS++){
-	std::vector<float> dummy1;
+	std::vector<double> dummy1;
 	lXVals_all.at(iU1U2).push_back(dummy1); lXEVals_all.at(iU1U2).push_back(dummy1); 
 	lYVals_all.at(iU1U2).push_back(dummy1); lYTVals_all.at(iU1U2).push_back(dummy1); lYEVals_all.at(iU1U2).push_back(dummy1);
 	lXVals_3S.at(iU1U2).push_back(dummy1);
@@ -3612,38 +3680,39 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
     }
   }
 
-  vlXVals_all=new float**[2]; //creates a new array of pofloaters to float objects
-  vlXEVals_all=new float**[2]; //creates a new array of pofloaters to float objects
-  vlYVals_all=new float**[2]; //creates a new array of pofloaters to float objects
-  vlYTVals_all=new float**[2]; //creates a new array of pofloaters to float objects
-  vlYEVals_all=new float**[2]; //creates a new array of pofloaters to float objects
+  vlXVals_all=new double**[2]; //creates a new array of pofloaters to float objects
+  vlXEVals_all=new double**[2]; //creates a new array of pofloaters to float objects
+  vlYVals_all=new double**[2]; //creates a new array of pofloaters to float objects
+  vlYTVals_all=new double**[2]; //creates a new array of pofloaters to float objects
+  vlYEVals_all=new double**[2]; //creates a new array of pofloaters to float objects
 
-  vlXVals_3S=new float**[2]; //creates a new array of pofloaters to float objects  
-  vlYVals_3S=new float**[2]; //creates a new array of pofloaters to float objects
+  vlXVals_3S=new double**[2]; //creates a new array of pofloaters to float objects  
+  vlYVals_3S=new double**[2]; //creates a new array of pofloaters to float objects
 
   for(int iU1U2=0; iU1U2<2; ++iU1U2){
-    vlXVals_all[iU1U2]=new float*[2];
-    vlXEVals_all[iU1U2]=new float*[2];
-    vlYVals_all[iU1U2]=new float*[2];
-    vlYTVals_all[iU1U2]=new float*[2];
-    vlYEVals_all[iU1U2]=new float*[2];
+    vlXVals_all[iU1U2]=new double*[2];
+    vlXEVals_all[iU1U2]=new double*[2];
+    vlYVals_all[iU1U2]=new double*[2];
+    vlYTVals_all[iU1U2]=new double*[2];
+    vlYEVals_all[iU1U2]=new double*[2];
 
-    vlXVals_3S[iU1U2]=new float*[2];
-    vlYVals_3S[iU1U2]=new float*[2];
+    vlXVals_3S[iU1U2]=new double*[2];
+    vlYVals_3S[iU1U2]=new double*[2];
 
       for(int iMeanRMS=0; iMeanRMS<2; ++iMeanRMS){
-        vlXVals_all[iU1U2][iMeanRMS]=new float[lXVals_all.at(0).at(0).size()];
-        vlXEVals_all[iU1U2][iMeanRMS]=new float[lXVals_all.at(0).at(0).size()];
-        vlYVals_all[iU1U2][iMeanRMS]=new float[lXVals_all.at(0).at(0).size()];
-        vlYTVals_all[iU1U2][iMeanRMS]=new float[lXVals_all.at(0).at(0).size()];
-        vlYEVals_all[iU1U2][iMeanRMS]=new float[lXVals_all.at(0).at(0).size()];
+        vlXVals_all[iU1U2][iMeanRMS]=new double[lXVals_all.at(0).at(0).size()];
+        vlXEVals_all[iU1U2][iMeanRMS]=new double[lXVals_all.at(0).at(0).size()];
+        vlYVals_all[iU1U2][iMeanRMS]=new double[lXVals_all.at(0).at(0).size()];
+        vlYTVals_all[iU1U2][iMeanRMS]=new double[lXVals_all.at(0).at(0).size()];
+        vlYEVals_all[iU1U2][iMeanRMS]=new double[lXVals_all.at(0).at(0).size()];
         for(unsigned int iev=0; iev<lXVals_all.at(0).at(0).size(); iev++){
           vlXVals_all[iU1U2][iMeanRMS][iev]  = lXVals_all.at(iU1U2).at(iU1U2).at(iev);
           // cout << "vlXVals_all["<<iU1U2<<"]["<<iMeanRMS<<"]["<<iev<<"] = "<<lXVals_all.at(iU1U2).at(iU1U2).at(iev)<<endl;
           vlXEVals_all[iU1U2][iMeanRMS][iev] = lXEVals_all.at(iU1U2).at(iU1U2).at(iev);
           // cout << "vlXEVals_all["<<iU1U2<<"]["<<iMeanRMS<<"]["<<iev<<"] = "<<lXVals_all.at(iU1U2).at(iU1U2).at(iev)<<endl;
           vlYVals_all[iU1U2][iMeanRMS][iev]  = lYVals_all.at(iU1U2).at(iU1U2).at(iev);
-          // cout << "vlYVals_all["<<iU1U2<<"]["<<iMeanRMS<<"]["<<iev<<"] = "<<lXVals_all.at(iU1U2).at(iU1U2).at(iev)<<endl;
+	  //          if(!doIterativeMet) cout << "vlYVals_all["<<iU1U2<<"]["<<iMeanRMS<<"]["<<iev<<"] = "<<lYVals_all.at(iU1U2).at(iU1U2).at(iev) << " Zpt=" << lXVals_all.at(iU1U2).at(iU1U2).at(iev) << endl;
+	  //          if(doIterativeMet) cout << "(iter)vlYVals_all["<<iU1U2<<"]["<<iMeanRMS<<"]["<<iev<<"] = "<<lYVals_all.at(iU1U2).at(iU1U2).at(iev) << " Zpt=" << lXVals_all.at(iU1U2).at(iU1U2).at(iev) <<endl;
           vlYTVals_all[iU1U2][iMeanRMS][iev] = lYTVals_all.at(iU1U2).at(iU1U2).at(iev);
           // cout << "vlYTVals_all["<<iU1U2<<"]["<<iMeanRMS<<"]["<<iev<<"] = "<<lXVals_all.at(iU1U2).at(iU1U2).at(iev)<<endl;
           vlYEVals_all[iU1U2][iMeanRMS][iev] = lYEVals_all.at(iU1U2).at(iU1U2).at(iev);
@@ -3686,7 +3755,8 @@ void fitRecoilMET(TTree *iTree,std::string iName,int type, int lfId) {
   /// Made as pol10 to be safe 
 
   TF1 *lU1Fit=0;
-  if(!useErfPol2ScaleU1) lU1Fit= new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "pol10");
+  if(!useErfPol2ScaleU1 && !useSubRanges) lU1Fit= new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "pol10");
+  if(!useErfPol2ScaleU1 && useSubRanges) lU1Fit= new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "pol3(0)+pol3(4)");
   //  if(useErfPol2ScaleU1 && !fData && !doIterativeMet) lU1Fit= new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "(TMath::Erf(x*[0])-TMath::Erf(x*[1]))*pol12(2)");
   if(useErfPol2ScaleU1 && (fData || doIterativeMet || !fData))  lU1Fit= new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "TMath::Erf(x*[0])*pol12(1)"); 
   //  TF1 *lU1Fit     = new TF1((lPrefix+"u1Mean_"+PUstring.str()).c_str(),   "pol10");
@@ -3822,7 +3892,7 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
 
   gStyle->SetOptFit(111111);
 
-  TString name="recoilfits/recoilfit_OCT6";
+  TString name="recoilfits/recoilfit_NOV10";
   if(do8TeV) name +="_8TeV";
   if(doABC) name +="_ABC";
 
@@ -3840,7 +3910,6 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
   if(MCtype==50) {
 
     //    for(int iloop=1; iloop < 21; iloop++) {                                                                                                                            
-
     cout << "PROCESSING DY + TOP MC " << endl;
 
     fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");
@@ -3870,7 +3939,7 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     if(!doMad && !do8TeV ) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root");  
 
     // this is the 8 TeV (contains the other MET variables) 
-    if(doMad && do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DYJetsLL_8TeV/ZTreeProducer_tree.root");
+    if(doMad && do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/ZTreeProducer_tree.root");
 
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = false; 
@@ -3879,15 +3948,15 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
 
     if(doIterativeMet) {
 
-      if(!doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_OCT6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
-      if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_OCT6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
+      if(!doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_NOV5_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
+      if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_NOV5_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
 
       ////// DATA closure
-      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_OCT6_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_53X.root" ,"PF",fId);
+      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_NOV5_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_53X.root" ,"PF",fId);
 
       ////// MC closure
-      //      if(!doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_OCT6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
-      //      if(doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_OCT6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
+      //      if(!doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_NOV5_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
+      //      if(doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_NOV5_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
 	
     }
     
@@ -3897,21 +3966,21 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     
     cout << "PROCESSING DY DATA -- inclusive Nvertex -- charged only " << endl;
     //    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/DATA/ZTreeProducer_tree_RecoSkimmed.root"); // this is 44X
-    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DATA/ZTreeProducer_tree.root"); 
+    if(!do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DATA/ZTreeProducer_tree.root"); 
     //    if(doMad && !do8TeV )  fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");  
     //    if(!doMad && !do8TeV ) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root");  
-    
+
     // this is the 8TeV, is the runD, it contains the other METs, obtained from the Z skims
     //    if(doABC || do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DATA_Run2012A/ZTreeProducer_tree.root");
     //    if(doABC || do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DATA_Run2012B/ZTreeProducer_tree.root");
     //    if(doMad || do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DATA_Run2012C/ZTreeProducer_tree.root");
-    if(doMad || do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DATA_Run2012D/ZTreeProducer_tree.root");
+    //    if(doMad || do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/DATA_Run2012D/ZTreeProducer_tree.root");
 
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
     fData = true; 
 
     name+="_DATA";
-    //    name+="_MClikeDATA";
+    //    name+="_MADlikeDATA";
 
   }
 
@@ -4037,7 +4106,9 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     if(!fData) fileName += pType;
     if(doYbinning) fileName += "_rapBin";
     if(doYbinning) fileName += fId;
-    
+    if(do8TeV) fileName += "_8TeV";
+    if(!do8TeV) fileName += "_7TeV";
+
     fileName += ".root";
     
     TFile f3(fileName.Data(),"RECREATE");
@@ -4068,7 +4139,8 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     histoU1diffvsZpt.Write();
     histoU1scalevsZpt.Write();
     histoU1scalevsZptscale.Write();
-    histoDelta.Write();
+    histoDeltaU1.Write();
+    histoDeltaU2.Write();
     //###
     histoPhiStar.Write();
     histoThetaStar.Write();
