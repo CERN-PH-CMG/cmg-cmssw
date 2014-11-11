@@ -42,18 +42,17 @@ class ttHIsoTrackAnalyzer( Analyzer ):
     # MAKE LIST
     #------------------
     def makeIsoTrack(self, event):
-
-
-
         event.selectedIsoTrack = []
         #event.preIsoTrack = []
 
+        charged = []
         pfcands = self.handles['cmgCand'].product()
 
-        charged = [ p for p in pfcands if ( p.charge() != 0 and abs(p.dz())<=self.cfg_ana.dzMax ) ]
-
+## ===> require the Track Candidate charge and with a  minimum dz
+        for i in xrange(pfcands.size()):
+            if (pfcands.at(i).charge()!=0 and (abs(pfcands.at(i).dz())<=self.cfg_ana.dzMax)):
+                charged.append(pfcands.at(i))
         alltrack = map( IsoTrack, charged )
-
 
         for track in alltrack:
 
@@ -76,8 +75,14 @@ class ttHIsoTrackAnalyzer( Analyzer ):
 
             othertracks = [ p for p in charged if( deltaR(p.eta(), p.phi(), track.eta(), track.phi()) < self.cfg_ana.isoDR and p.pt()>self.cfg_ana.ptPartMin ) ]
             #othertracks = alltrack
+            othertracks.sort(key = lambda l : l.pt(), reverse = True)
 
             isoSum=0
+
+## ===> if only one track it's likely to be the same track
+
+            if len(othertracks)<2: continue
+
             for part in othertracks:
                 #### ===> skip pfcands with a pt min (this should be 0)
                 #if part.pt()<self.cfg_ana.ptPartMin : continue
