@@ -203,7 +203,6 @@ TTZJets_PU20bx25 = kreator.makeMCComponentFromEOS('TTZJets_PU20bx25', '/TTZJets_
 T5Full_1200_1000_800 = kreator.makeMCComponentFromEOS('T5Full_1200_1000_800', '/T5Full-1200-1000-800-Decay-MGMMatch50/schoef-T5Full_T5Full-1200-1000-800-Decay-MGMMatch50-miniAOD', '/store/cmst3/user/gpetrucc/SUSY/%s/')
 T5Full_1500_800_100  = kreator.makeMCComponentFromEOS('T5Full_1500_800_100',  '/T5Full-1500-800-100-Decay-MGMMatch50/T5Full_T5Full-1500-800-100-Decay-MGMMatch50-miniAOD', '/store/cmst3/user/gpetrucc/SUSY/%s/')
 WZJetsTo3LNu_S14 = kreator.makeMCComponentFromEOS('WZJetsTo3LNu_S14', '/WZJetsTo3LNu_Tune4C_13TeV-madgraph-tauola/Spring14dr-PU_S14_POSTLS170_V6-v1/AODSIM', '/store/cmst3/user/gpetrucc/%s/miniAOD_CMSSW709p3')
-
 T1tttt_2J_mGo1300_mStop300_mCh285_mChi280_pythia8_S14 = kreator.makeMCComponentFromEOS('T1tttt_2J_mGo1300_mStop300_mCh285_mChi280_pythia8_S14', '/T1tttt_2J_mGo1300_mStop300_mCh285_mChi280_pythia8-23bodydec/', '/store/cmst3/user/gpetrucc/SUSY/Prod/MINIAODSIM/%s/')
 T1tttt_2J_mGo1300_mStop300_mChi280_pythia8_S14 = kreator.makeMCComponentFromEOS('T1tttt_2J_mGo1300_mStop300_mChi280_pythia8_S14', '/T1tttt_2J_mGo1300_mStop300_mChi280_pythia8-4bodydec/', '/store/cmst3/user/gpetrucc/SUSY/Prod/MINIAODSIM/%s/')
 T1tttt_2J_mGo800_mStop300_mCh285_mChi280_pythia8_S14 = kreator.makeMCComponentFromEOS('T1tttt_2J_mGo800_mStop300_mCh285_mChi280_pythia8_S14', '/T1tttt_2J_mGo800_mStop300_mCh285_mChi280_pythia8-23bodydec/', '/store/cmst3/user/gpetrucc/SUSY/Prod/MINIAODSIM/%s/')

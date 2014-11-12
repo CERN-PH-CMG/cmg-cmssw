@@ -1,7 +1,8 @@
+import os
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.TTHAnalysis.signedSip import SignedImpactParameterComputer
-
+from CMGTools.TTHAnalysis.tools.SVMVA import SVMVA
 from CMGTools.RootTools.utils.DeltaR import deltaR
 
 
@@ -34,6 +35,7 @@ def matchToGenHadron(particle, event, minDR=0.05, minDpt=0.1):
 class ttHSVAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHSVAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
+	self.SVMVA = SVMVA("%s/src/CMGTools/TTHAnalysis/data/btag/ivf/%%s_BDTG.weights.xml" % os.environ['CMSSW_BASE'])
 
     def declareHandles(self):
         super(ttHSVAnalyzer, self).declareHandles()
@@ -56,6 +58,7 @@ class ttHSVAnalyzer( Analyzer ):
              sv.dxy = SignedImpactParameterComputer.vertexDxy(sv, pv)
              sv.d3d = SignedImpactParameterComputer.vertexD3d(sv, pv)
              sv.cosTheta = SignedImpactParameterComputer.vertexDdotP(sv, pv)
+	     sv.mva = self.SVMVA(sv)
 
         event.ivf = allivf
 
