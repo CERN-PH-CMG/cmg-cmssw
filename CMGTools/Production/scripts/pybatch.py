@@ -56,9 +56,27 @@ do
 done
 echo 'sending the logs back'  # will send also root files if copy failed
 cp -r Loop/* $LS_SUBCWD""".format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")])
+   elif remoteDir.startswith("/eos/cms/store"):
+       cpCmd="""echo 'sending root files to remote dir'
+export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH # Fabio's workaround to fix gfal-tools with CMSSW
+for f in Loop/*ree*/*.root
+do
+   ff=`basename $f | cut -d . -f 1`
+   d=`echo $f | cut -d / -f 2`
+   /afs/cern.ch/project/eos/installation/0.3.15/bin/eos.select mkdir {srm}
+   echo "cmsStage /`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root"
+   cmsStage /`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root
+   if [ $? -ne 0 ]; then
+      echo "ERROR: file $ff not copied correctly ?"
+   else
+      rm Loop/$d/$ff.root
+   fi
+done
+echo 'sending the logs back'  # will send also root files if copy failed
+cp -r Loop/* $LS_SUBCWD""".format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm=(remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")]).split("/eos/cms",1)[1])
    else:
-       print "remote location not supported yet: ", remoteDir
-       print 'path must start with "/pnfs/psi.ch"'
+       print "choose location not supported yet: ", remoteDir
+       print 'path must start with "/pnfs/psi.ch" or "/eos/cms/store"'
        sys.exit(1)
 
    script = """#!/bin/bash

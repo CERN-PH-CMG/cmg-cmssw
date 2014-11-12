@@ -79,6 +79,7 @@ class ttHMetEventAnalyzer( Analyzer ):
         self.counters.counter('events').inc('all events')
 
         self.makeMETs(event)
+        event.tkMet = 0 
 
         if self.cfg_ana.doTkMet: 
             self.makeTkMETs(event);

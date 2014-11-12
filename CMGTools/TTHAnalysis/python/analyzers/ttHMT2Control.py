@@ -93,7 +93,7 @@ class ttHMT2Control( Analyzer ):
         event.zll_diffMetMht = -999.
         event.zll_mhtJet40j = -999.
         event.zll_mhtPhiJet40j = -999.
-        event.zll_invmass = -999.
+        event.zll_p4 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
 
         if len(vetoLeptons)==2:
             event.zll_met = ROOT.reco.Particle.LorentzVector( event.met.px(), event.met.py(), 0, 0 )
@@ -120,13 +120,10 @@ class ttHMT2Control( Analyzer ):
             event.zll_diffMetMht = sqrt( zll_diffMetMht_vec.px()*zll_diffMetMht_vec.px() + zll_diffMetMht_vec.py()*zll_diffMetMht_vec.py() )
 
             # di-lepton invariant mass                                                                                                                                                                                            
-            zll_p4 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
             for l in vetoLeptons:
-                zll_p4 += l.p4()
+                event.zll_p4 += l.p4()
 
-            event.zll_invmass = zll_p4.M()
-
-
+            ##event.zll_invmass = zll_p4.M()
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
