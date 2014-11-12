@@ -30,6 +30,11 @@ MODULES.append( ('LepMVAFriend', LepMVAFriend(("/afs/cern.ch/work/g/gpetrucc/TRE
 MODULES.append( ('LepMVAFriend', LepMVAFriend(("/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/SV_%s_BDTG.weights.xml",
                                                "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/SV_%s_BDTG.weights.xml",),
                                                training="muMVAId_SV", label="SV")) )
+
+
+#from CMGTools.TTHAnalysis.tools.eventVars_MT2 import EventVarsMT2 
+#MODULES.append( ('MT2', EventVarsMT2()) ) 
+
  
 class VariableProducer(Module):
     def __init__(self,name,booker,modules):

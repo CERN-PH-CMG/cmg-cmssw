@@ -198,6 +198,7 @@ class ttHCoreEventAnalyzer( Analyzer ):
         objects30a  = [ j for j in event.cleanJetsAll if j.pt() > 30 ] + event.selectedLeptons
         objects40a  = [ j for j in event.cleanJetsAll if j.pt() > 40 ] + event.selectedLeptons
         objects40ja = [ j for j in event.cleanJetsAll if j.pt() > 40 ] 
+        objects40ja10l = [ j for j in event.cleanJetsAll if j.pt() > 40 ] + [ l for l in event.selectedLeptons if l.pt() > 10 ]
 
         event.htJet25a = sum([x.pt() for x in objects25a])
         event.mhtJet25veca = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects25a])) , -1.*(sum([x.py() for x in objects25a])), 0, 0 )     
@@ -261,13 +262,13 @@ class ttHCoreEventAnalyzer( Analyzer ):
 
         # look for minimal deltaPhi between MET and four leading jets with pt>40 and eta<2.4
         event.deltaPhiMin_had = 999.
-        for n,j in enumerate(objects40j):
+        for n,j in enumerate(objects40ja):
             if n>3:  break
             thisDeltaPhi = abs( deltaPhi( j.phi(), event.met.phi() ) )
             if thisDeltaPhi < event.deltaPhiMin_had : event.deltaPhiMin_had = thisDeltaPhi
 
         event.deltaPhiMin = 999.
-        for n,j in enumerate(objects40j10l):
+        for n,j in enumerate(objects40ja10l):
             if n>3:  break
             thisDeltaPhi = abs( deltaPhi( j.phi(), event.met.phi() ) )
             if thisDeltaPhi < event.deltaPhiMin : event.deltaPhiMin = thisDeltaPhi

@@ -11,6 +11,7 @@
 #include "CMGTools/RootTools/interface/Hemisphere.h"
 #include "CMGTools/RootTools/interface/AlphaT.h"
 #include "CMGTools/RootTools/interface/HemisphereViaKt.h"
+#include "CMGTools/RootTools/interface/RecoilCorrector.h"
 
 namespace {
   namespace {
@@ -26,5 +27,6 @@ namespace {
     Davismt2 mt2;
     mt2w_bisect::mt2w mt2wlept;
     AlphaT alphaT;
+    RecoilCorrector recoilCorrector(string nameFileToCorrect, int iSeed);
   }
 }

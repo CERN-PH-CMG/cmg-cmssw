@@ -27,8 +27,9 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             NTupleVariable("diffMetMht_had", lambda ev : ev.diffMetMht_had, help="abs( vec(mht) - vec(met) ) - only jets"),
             NTupleVariable("deltaPhiMin_had", lambda ev : ev.deltaPhiMin_had, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4"),
 
-            NTupleVariable("tkmet_pt", lambda ev : ev.tkMet.pt(), help="TK E_{T}^{miss}"),
-            NTupleVariable("tkmet_phi", lambda ev : ev.tkMet.phi(), help="TK E_{T}^{miss}"),
+#            NTupleVariable("tkmet_pt", lambda ev : ev.tkMet.pt(), help="TK E_{T}^{miss}"),
+#            NTupleVariable("tkmet_phi", lambda ev : ev.tkMet.phi(), help="TK E_{T}^{miss}"),
+
             ##--------------------------------------------------
             # Physics object multplicities
             ##--------------------------------------------------
@@ -47,6 +48,7 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             # MT2
             ##--------------------------------------------------
             NTupleVariable("mt2_had", lambda ev: ev.mt2_had, float, help="mt2(j1,j2,met) with jets "),
+            NTupleVariable("mt2ViaKt_had", lambda ev: ev.mt2ViaKt_had, float, help="mt2(j1,j2,met) with jets with KT pseudo jets"),
             NTupleVariable("mt2_bb", lambda ev: ev.mt2bb, float, help="mt2(b1,b2,met) with jets "),
             NTupleVariable("mt2_gen", lambda ev: ev.mt2_gen, float, help="mt2(j1,j2,met) with jets at genInfo"),
             NTupleVariable("mt2", lambda ev: ev.mt2, float, help="mt2(j1,j2,met) with jets and leptons"),
@@ -82,7 +84,10 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             NTupleVariable("zll_mht_phi", lambda ev : ev.zll_mhtPhiJet40j, help="H_{T}^{miss} #phi computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
             NTupleVariable("zll_met_pt", lambda ev : ev.zll_met_pt, help="E_{T}^{miss} computed from jets (with |eta|<2.5, pt > 40 GeV) + 2 leptons"),
             NTupleVariable("zll_met_phi", lambda ev : ev.zll_met_phi, help="E_{T}^{miss} #phi computed from jets (with |eta|<2.5, pt > 40 GeV) + 2 leptons"),
-            NTupleVariable("zll_invmass", lambda ev : ev.zll_invmass, help="Invariant mass of di-lepton system"),
+            NTupleVariable("zll_pt", lambda ev : ev.zll_p4.Pt(), help="Pt of di-lepton system"),
+            NTupleVariable("zll_eta", lambda ev : ev.zll_p4.Eta(), help="Eta of di-lepton system"),
+            NTupleVariable("zll_phi", lambda ev : ev.zll_p4.Phi(), help="Phi of di-lepton system"),
+            NTupleVariable("zll_mass", lambda ev : ev.zll_p4.M(), help="Invariant mass of di-lepton system"),
             ###
             ]
 

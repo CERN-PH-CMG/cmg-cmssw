@@ -72,13 +72,9 @@ class ttHTopoVarAnalyzer( Analyzer ):
         import array
         import numpy
 
-        metVector = TVectorD(3,array.array('d',[0.,metVec.px(), metVec.py()]))
-        visaVector = TVectorD(3,array.array('d',[0.,visaVec.px(), visaVec.py()]))
-        visbVector = TVectorD(3,array.array('d',[0.,visbVec.px(), visbVec.py()]))
-
-        metVector =numpy.asarray(metVector,dtype='double')
-        visaVector =numpy.asarray(visaVector,dtype='double')
-        visbVector =numpy.asarray(visbVector,dtype='double')
+        metVector = array.array('d',[0.,metVec.px(), metVec.py()])
+        visaVector = array.array('d',[0.,visaVec.px(), visaVec.py()])
+        visbVector = array.array('d',[0.,visbVec.px(), visbVec.py()])
 
         davismt2.set_momenta(visaVector,visbVector,metVector);
         davismt2.set_mn(0);
@@ -243,7 +239,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
                 pzvec.push_back(jet.pz())
                 Evec.push_back(jet.energy())
 
-#### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
+            #### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
             hemisphere = Hemisphere(pxvec, pyvec, pzvec, Evec, 2, 3)
             grouping=hemisphere.getGrouping()
 ##            print 'grouping ',len(grouping)
@@ -300,7 +296,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
             #for obj in objects_fullmt2:
             #    print "pt: ", obj.pt(), ", eta: ", obj.eta(), ", phi: ", obj.phi(), ", mass: ", obj.mass()
 
-#### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
+            #### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
 
             hemisphere = Hemisphere(pxvec, pyvec, pzvec, Evec, 2, 3)
             grouping=hemisphere.getGrouping()
@@ -365,7 +361,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
                 pzvec.push_back(obj.pz())
                 Evec.push_back(obj.energy())
 
-#### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
+            #### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
 
             hemisphere = Hemisphere(pxvec, pyvec, pzvec, Evec, 2, 3)
             grouping=hemisphere.getGrouping()
@@ -416,7 +412,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
                 pzvec.push_back(obj.pz())
                 Evec.push_back(obj.energy())
 
-#### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
+            #### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
 
             hemisphere = Hemisphere(pxvec, pyvec, pzvec, Evec, 2, 3)
             grouping=hemisphere.getGrouping()
@@ -465,26 +461,28 @@ class ttHTopoVarAnalyzer( Analyzer ):
 ##                print 'MT2bb(1b)',event.mt2bb                                                                                                                                                                                                             
 
 ## ===> leptonic MT2 (as used in the SUS-13-025 )                                                                                                                                                                                                           
-        if len(event.selectedLeptons)>=2:
-            event.mt2lep = self.computeMT2(event.selectedLeptons[0], event.selectedLeptons[1], event.met)
+        if not self.cfg_ana.doOnlyDefault:
+            if len(event.selectedLeptons)>=2:
+                event.mt2lep = self.computeMT2(event.selectedLeptons[0], event.selectedLeptons[1], event.met)
 
 ## ===> hadronic MT2w (as used in the SUS-13-011) below just a placeHolder to be coded properly
 
-        if len(event.selectedLeptons)>=1:
+        if not self.cfg_ana.doOnlyDefault:
+            if len(event.selectedLeptons)>=1:
 
-            metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
-            lVector = TVectorD(3,array.array('d',[0.,event.selectedLeptons[0].px(), event.selectedLeptons[0].py()]))
-            #placeholder for visaVector and visbVector  need to get the jets
-            visaVector = TVectorD(3,array.array('d',[0.,event.selectedLeptons[0].px(), event.selectedLeptons[0].py()]))
-            visbVector = TVectorD(3,array.array('d',[0.,event.selectedLeptons[0].px(), event.selectedLeptons[0].py()]))
-            
-            metVector =numpy.asarray(metVector,dtype='double')
-            lVector =numpy.asarray(lVector,dtype='double')
-            visaVector =numpy.asarray(visaVector,dtype='double')
-            visbVector =numpy.asarray(visbVector,dtype='double')
+                metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
+                lVector = TVectorD(3,array.array('d',[0.,event.selectedLeptons[0].px(), event.selectedLeptons[0].py()]))
+                #placeholder for visaVector and visbVector  need to get the jets
+                visaVector = TVectorD(3,array.array('d',[0.,event.selectedLeptons[0].px(), event.selectedLeptons[0].py()]))
+                visbVector = TVectorD(3,array.array('d',[0.,event.selectedLeptons[0].px(), event.selectedLeptons[0].py()]))
 
-            mt2wSNT.set_momenta(lVector, visaVector,visbVector,metVector);
-            event.mt2w = mt2wSNT.get_mt2w() 
+                metVector =numpy.asarray(metVector,dtype='double')
+                lVector =numpy.asarray(lVector,dtype='double')
+                visaVector =numpy.asarray(visaVector,dtype='double')
+                visbVector =numpy.asarray(visbVector,dtype='double')
+
+                mt2wSNT.set_momenta(lVector, visaVector,visbVector,metVector);
+                event.mt2w = mt2wSNT.get_mt2w() 
 
 
 
