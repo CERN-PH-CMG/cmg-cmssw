@@ -1,3 +1,5 @@
+import os
+
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.Electron import Electron
@@ -9,6 +11,7 @@ from CMGTools.RootTools.physicsobjects.RochesterCorrections import rochcor
 from CMGTools.RootTools.physicsobjects.MuScleFitCorrector   import MuScleFitCorr
 from CMGTools.RootTools.physicsobjects.ElectronCalibrator import EmbeddedElectronCalibrator
 from CMGTools.TTHAnalysis.electronCalibrator import ElectronCalibrator
+from CMGTools.TTHAnalysis.tools.MuonMVA import MuonMVA
 
 from ROOT import CMGMuonCleanerBySegmentsAlgo
 cmgMuonCleanerBySegments = CMGMuonCleanerBySegmentsAlgo()
@@ -34,6 +37,7 @@ class ttHLepAnalyzerSusy( Analyzer ):
             self.electronEnergyCalibrator = ElectronCalibrator(cfg_comp.isMC)
         if hasattr(cfg_comp,'efficiency'):
             self.efficiency= EfficiencyCorrector(cfg_comp.efficiency)
+        self.muonMVAIdFull = MuonMVA("Full", "%s/src/CMGTools/TTHAnalysis/data/leptonMVA/muonMVAId_train70XFull_BDTG.weights.xml" % os.environ['CMSSW_BASE'])
     #----------------------------------------
     # DECLARATION OF HANDLES OF LEPTONS STUFF   
     #----------------------------------------
@@ -165,7 +169,10 @@ class ttHLepAnalyzerSusy( Analyzer ):
             mu.absIso04 = (mu.pfIsolationR04().sumChargedHadronPt + max( mu.pfIsolationR04().sumNeutralHadronEt +  mu.pfIsolationR04().sumPhotonEt -  mu.pfIsolationR04().sumPUPt/2,0.0))
             mu.relIso03 = mu.absIso03/mu.pt()
             mu.relIso04 = mu.absIso04/mu.pt()
- 
+
+        # Compute MVA Id: 
+        for mu in allmuons:
+            mu.mvaIdValue = self.muonMVAIdFull(mu)
         return allmuons
 
     def makeAllElectrons(self, event):

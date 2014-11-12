@@ -39,6 +39,7 @@ class CutsFile:
             for cr,cn,cv in options.cutsToAdd:
                 if re.match(cr,"entry point"): self._cuts.append((cn,cv))
             for line in file:
+              try:
                 if len(line.strip()) == 0 or line.strip()[0] == '#': continue
                 while line.strip()[-1] == "\\":
                     line = line.strip()[:-1] + file.next()
@@ -51,6 +52,9 @@ class CutsFile:
                     if re.match(cr,name): self._cuts.append((cn,cv))
                 if options.upToCut and re.search(options.upToCut,name):
                     break
+              except ValueError, e:
+                print "Error parsing cut line [%s]" % line.strip()
+                raise 
             for ci in options.cutsToInvert:  self.invert(ci)
             for ci in options.cutsToExclude: self.remove(ci)
             for cr,cn,cv in options.cutsToReplace: self.replace(cr,cn,cv)
@@ -120,16 +124,18 @@ class PlotSpec:
         return self.opts[name] if (name in self.opts) else default
 
 class TreeToYield:
-    def __init__(self,root,options,scaleFactor=1.0,name=None,cname=None,settings={}):
+    def __init__(self,root,options,scaleFactor=1.0,name=None,cname=None,settings={},treename=None):
         self._name  = name  if name != None else root
         self._cname = cname if cname != None else self._name
         self._fname = root
         self._isInit = False
         self._options = options
+        self._treename = treename if treename else options.tree
         self._weight  = (options.weight and 'data' not in self._name and '2012' not in self._name and '2011' not in self._name )
         self._isdata = 'data' in self._name
         self._weightString  = options.weightString if not self._isdata else "1"
         self._scaleFactor = scaleFactor
+        self._fullYield = 0 # yield of the full sample, as if it passed the full skim and all cuts
         self._settings = settings
         loadMCCorrections(options)            ## make sure this is loaded
         self._mcCorrs = globalMCCorrections() ##  get defaults
@@ -152,6 +158,8 @@ class TreeToYield:
         self._scaleFactor = scaleFactor
     def getScaleFactor(self):
         return self._scaleFactor
+    def setFullYield(self,fullYield):
+        self._fullYield = fullYield
     def name(self):
         return self._name
     def hasOption(self,name):
@@ -184,8 +192,8 @@ class TreeToYield:
         else:
             self._tfile = ROOT.TFile.Open(self._fname)
         if not self._tfile: raise RuntimeError, "Cannot open %s\n" % self._fname
-        t = self._tfile.Get(self._options.tree)
-        if not t: raise RuntimeError, "Cannot find tree %s in file %s\n" % (self._options.tree, self._fname)
+        t = self._tfile.Get(self._treename)
+        if not t: raise RuntimeError, "Cannot find tree %s in file %s\n" % (self._treename, self._fname)
         self._tree  = t
         #self._tree.SetCacheSize(10*1000*1000)
         if "root://" in self._fname: self._tree.SetCacheSize()
@@ -218,6 +226,8 @@ class TreeToYield:
             else:
                 cut = cv
             report.append((cn,self._getYield(self._tree,cut)))
+        if self._options.fullSampleYields and not noEntryLine:
+            report.insert(0, ('full sample', [self._fullYield,0]) )
         return report
     def prettyPrint(self,report):
         # maximum length of the cut descriptions
@@ -357,11 +367,22 @@ class TreeToYield:
             (nb,xmin,xmax) = bins.split(",")
             histo = ROOT.TH1KeysNew("dummyk","dummyk",int(nb),float(xmin),float(xmax))
             self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummyk"), cut, "goff")
+            self.negativeCheck(histo)
             return histo.GetHisto().Clone(name)
         #elif not self._isdata and self.getOption("KeysPdf",False):
         #else:
         #    print "Histogram for %s/%s has %d entries, so won't use KeysPdf (%s, %s) " % (self._cname, self._name, histo.GetEntries(), canKeys, self.getOption("KeysPdf",False))
+        self.negativeCheck(histo)
         return histo.Clone(name)
+    def negativeCheck(self,histo):
+        if not self._options.allowNegative: 
+            if "TH1" in histo.ClassName():
+                for b in xrange(0,histo.GetNbinsX()+2):
+                    if histo.GetBinContent(b) < 0: histo.SetBinContent(b, 0.0)
+            elif "TH2" in histo.ClassName():
+                for bx in xrange(0,histo.GetNbinsX()+2):
+                    for by in xrange(0,histo.GetNbinsY()+2):
+                        if histo.GetBinContent(bx,by) < 0: histo.SetBinContent(bx,by, 0.0)
     def __str__(self):
         mystr = ""
         mystr += str(self._fname) + '\n'
@@ -374,6 +395,7 @@ def addTreeToYieldOptions(parser):
     parser.add_option("-l", "--lumi",           dest="lumi",   type="float", default="19.7", help="Luminosity (in 1/fb)");
     parser.add_option("-u", "--unweight",       dest="weight",       action="store_false", default=True, help="Don't use weights (in MC events)");
     parser.add_option("-W", "--weightString",   dest="weightString", type="string", default="1", help="Use weight (in MC events)");
+    parser.add_option("--fsy", "--full-sample-yield",  dest="fullSampleYields", action="store_true", default=False, help="Compute also the yield as if all events passed");
     parser.add_option("-f", "--final",  dest="final", action="store_true", help="Just compute final yield after all cuts");
     parser.add_option("-e", "--errors",  dest="errors", action="store_true", help="Include uncertainties in the reports");
     parser.add_option("--tf", "--text-format",   dest="txtfmt", type="string", default="text", help="Output format: text, html");
@@ -391,6 +413,7 @@ def addTreeToYieldOptions(parser):
     parser.add_option("--FD", "--add-friend-data",    dest="friendTreesData",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to data trees only. Can use {name}, {cname} patterns in the treename") 
     parser.add_option("--mcc", "--mc-corrections",    dest="mcCorrs",  action="append", default=[], nargs=1, help="Load the following file of mc to data corrections") 
     parser.add_option("--s2v", "--scalar2vector",     dest="doS2V",    action="store_true", default=False, help="Do scalar to vector conversion") 
+    parser.add_option("--neg", "--allow-negative-results",     dest="allowNegative",    action="store_true", default=False, help="If the total yield is negative, keep it so rather than truncating it to zero") 
 
 def mergeReports(reports):
     import copy

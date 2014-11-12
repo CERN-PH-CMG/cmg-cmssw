@@ -1,3 +1,4 @@
+import os
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.TTHAnalysis.signedSip import SignedImpactParameterComputer
