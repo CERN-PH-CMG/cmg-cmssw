@@ -1,9 +1,9 @@
+import os
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.TTHAnalysis.signedSip import SignedImpactParameterComputer
-
+from CMGTools.TTHAnalysis.tools.SVMVA import SVMVA
 from CMGTools.RootTools.utils.DeltaR import deltaR
-
 
 def matchToGenHadron(particle, event, minDR=0.05, minDpt=0.1):
         match = ( None, minDR, 2 )
@@ -34,6 +34,7 @@ def matchToGenHadron(particle, event, minDR=0.05, minDpt=0.1):
 class ttHSVAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHSVAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
+	self.SVMVA = SVMVA("%s/src/CMGTools/TTHAnalysis/data/btag/ivf/%%s_BDTG.weights.xml" % os.environ['CMSSW_BASE'])
 
     def declareHandles(self):
         super(ttHSVAnalyzer, self).declareHandles()
@@ -56,6 +57,19 @@ class ttHSVAnalyzer( Analyzer ):
              sv.dxy = SignedImpactParameterComputer.vertexDxy(sv, pv)
              sv.d3d = SignedImpactParameterComputer.vertexD3d(sv, pv)
              sv.cosTheta = SignedImpactParameterComputer.vertexDdotP(sv, pv)
+	     sv.mva = self.SVMVA(sv)
+	     svtracks = []
+	     for id in xrange(sv.numberOfDaughters()):
+                  dau = sv.daughter(id)
+                  dau.sip3d = SignedImpactParameterComputer.signedIP3D(dau.pseudoTrack(), pv, sv.momentum()).significance()
+		  svtracks.append(dau)	     		     
+	     svtracks.sort(key = lambda t : abs(t.dxy()), reverse = True)	     
+	     sv.maxDxyTracks = svtracks[0].dxy() if len(svtracks) > 0 else -99
+	     sv.secDxyTracks = svtracks[1].dxy() if len(svtracks) > 1 else -99
+	     svtracks.sort(key = lambda t : t.sip3d, reverse = True)	     
+	     sv.maxD3dTracks = svtracks[0].sip3d if len(svtracks) > 0 else -99
+	     sv.secD3dTracks = svtracks[1].sip3d if len(svtracks) > 1 else -99
+	     
 
         event.ivf = allivf
 
@@ -131,7 +145,9 @@ class ttHSVAnalyzer( Analyzer ):
             for jdau in jdaus:
                 if jdau in daumap:
                     j.svs.append(daumap[jdau])
-                    daumap[jdau].jet = j
+                    daumap[jdau].jet = j	    
+
+
 
         #Attach SVs to leptons
         #print "\n\nNew event: "

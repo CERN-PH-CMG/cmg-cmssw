@@ -122,25 +122,34 @@ def doDataNorm(pspec,pmap):
     sig.Draw("HIST SAME")
     return sig
 
-def doStackSignalNorm(pspec,pmap):
-    #total = 0
-    #if "background" in pmap: total = pmap["background"].Integral()
-    #else: total = sum([pmap[x].Integral() for x in mca.listBackgrounds() if pmap.has_key(x) ])
+def doStackSignalNorm(pspec,pmap,individuals,extrascale=1.0):
     total = sum([v.Integral() for k,v in pmap.iteritems() if k != 'data' and not hasattr(v,'summary')])
     if options.noStackSig:
         total = sum([v.Integral() for k,v in pmap.iteritems() if not hasattr(v,'summary') and mca.isBackground(k) ])
-    sig = None
-    if "signal" in pmap: sig = pmap["signal"].Clone(pspec.name+"_signal_norm")
-    else: 
-        sigs = [pmap[x] for x in mca.listBackgrounds() if pmap.has_key(x) and pmap[x].Integral() > 0]
-        sig = sigs[0].Clone(sigs.GetName()+"_norm")
-    sig.SetFillStyle(0)
-    sig.SetLineColor(206)
-    sig.SetLineWidth(4)
-    if sig.Integral() > 0:
-        sig.Scale(total/sig.Integral())
-    sig.Draw("HIST SAME")
-    return sig
+    if individuals:
+        sigs = []
+        for sig in [pmap[x] for x in mca.listSignals() if pmap.has_key(x) and pmap[x].Integral() > 0]:
+            sig = sig.Clone(sig.GetName()+"_norm")
+            sig.SetFillStyle(0)
+            sig.SetLineColor(sig.GetFillColor())
+            sig.SetLineWidth(4)
+            sig.Scale(total*extrascale/sig.Integral())
+            sig.Draw("HIST SAME")
+            sigs.append(sig)
+        return sigs
+    else:
+        sig = None
+        if "signal" in pmap: sig = pmap["signal"].Clone(pspec.name+"_signal_norm")
+        else: 
+            sigs = [pmap[x] for x in mca.listBackgrounds() if pmap.has_key(x) and pmap[x].Integral() > 0]
+            sig = sigs[0].Clone(sigs.GetName()+"_norm")
+        sig.SetFillStyle(0)
+        sig.SetLineColor(206)
+        sig.SetLineWidth(4)
+        if sig.Integral() > 0:
+            sig.Scale(total*extrascale/sig.Integral())
+        sig.Draw("HIST SAME")
+        return [sig]
 
 def doStackSigScaledNormData(pspec,pmap):
     if "data"       not in pmap: return (None,-1.0)
@@ -399,12 +408,12 @@ def doStatTests(total,data,test,legendCorner):
 
 
 legend_ = None;
-def doLegend(pmap,mca,corner="TR",textSize=0.035,cutoff=1e-2,mcStyle="F"):
+def doLegend(pmap,mca,corner="TR",textSize=0.035,cutoff=1e-2,cutoffSignals=True,mcStyle="F",legWidth=0.18):
         if (corner == None): return
         total = sum([x.Integral() for x in pmap.itervalues()])
         sigEntries = []; bgEntries = []
         for p in mca.listSignals(allProcs=True):
-            if p in pmap and pmap[p].Integral() >= cutoff*total: 
+            if p in pmap and pmap[p].Integral() > (cutoff*total if cutoffSignals else 0): 
                 lbl = mca.getProcessOption(p,'Label',p)
                 sigEntries.append( (pmap[p],lbl,mcStyle) )
         backgrounds = mca.listBackgrounds(allProcs=True)
@@ -415,11 +424,11 @@ def doLegend(pmap,mca,corner="TR",textSize=0.035,cutoff=1e-2,mcStyle="F"):
                 bgEntries.append( (pmap[p],lbl,mcStyle) )
         nentries = len(sigEntries) + len(bgEntries) + ('data' in pmap)
 
-        (x1,y1,x2,y2) = (.7, .75 - textSize*max(nentries-3,0), .93, .93)
+        (x1,y1,x2,y2) = (.93-legWidth, .75 - textSize*max(nentries-3,0), .93, .93)
         if corner == "TR":
-            (x1,y1,x2,y2) = (.75, .75 - textSize*max(nentries-3,0), .93, .93)
+            (x1,y1,x2,y2) = (.93-legWidth, .75 - textSize*max(nentries-3,0), .93, .93)
         elif corner == "TL":
-            (x1,y1,x2,y2) = (.2, .75 - textSize*max(nentries-3,0), .38, .93)
+            (x1,y1,x2,y2) = (.2, .75 - textSize*max(nentries-3,0), .2+legWidth, .93)
         
         leg = ROOT.TLegend(x1,y1,x2,y2)
         leg.SetFillColor(0)
@@ -512,6 +521,7 @@ class PlotMaker:
                         plot = pmap[p]
                         if plot.Integral() <= 0: continue
                         if mca.isSignal(p) and options.noStackSig == True: continue 
+                        if mca.isSignal(p): plot.Scale(options.signalPlotScale)
                         if self._options.plotmode == "stack":
                             stack.Add(plot)
                             total.Add(plot)
@@ -608,12 +618,14 @@ class PlotMaker:
                 if self._options.plotmode == "norm": legendCutoff = 0 
                 doLegend(pmap,mca,corner=pspec.getOption('Legend','TR'),
                                   cutoff=legendCutoff, mcStyle=("F" if self._options.plotmode == "stack" else "L"),
-                                  textSize=(0.045 if doRatio else 0.035))
+                                  cutoffSignals=not(options.showSigShape or options.showIndivSigShapes or options.showSFitShape), 
+                                  textSize=(0.045 if doRatio else 0.035),
+                                  legWidth=options.legendWidth)
                 doTinyCmsPrelim(hasExpo = total.GetMaximum() > 9e4 and not c1.GetLogy(),textSize=(0.045 if doRatio else 0.033))
                 signorm = None; datnorm = None; sfitnorm = None
-                if options.showSigShape: 
-                    signorm = doStackSignalNorm(pspec,pmap)
-                    if signorm != None:
+                if options.showSigShape or options.showIndivSigShapes: 
+                    signorms = doStackSignalNorm(pspec,pmap,options.showIndivSigShapes,extrascale=options.signalPlotScale)
+                    for signorm in signorms:
                         signorm.SetDirectory(dir); dir.WriteTObject(signorm)
                         reMax(total,signorm,islog)
                 if options.showDatShape: 
@@ -679,13 +691,14 @@ class PlotMaker:
                 c1.Close()
 def addPlotMakerOptions(parser):
     addMCAnalysisOptions(parser)
-    parser.add_option("--ss",  "--scale-signal", dest="signalPlotScale", default=1.0, help="scale the signal in the plots by this amount");
+    parser.add_option("--ss",  "--scale-signal", dest="signalPlotScale", default=1.0, type="float", help="scale the signal in the plots by this amount");
     #parser.add_option("--lspam", dest="lspam",   type="string", default="CMS Simulation", help="Spam text on the right hand side");
     parser.add_option("--lspam", dest="lspam",   type="string", default="CMS Preliminary", help="Spam text on the right hand side");
     parser.add_option("--rspam", dest="rspam",   type="string", default="#sqrt{s} = 13 TeV, L = %(lumi).1f fb^{-1}", help="Spam text on the right hand side");
     parser.add_option("--print", dest="printPlots", type="string", default="png,pdf,txt", help="print out plots in this format or formats (e.g. 'png,pdf,txt')");
     parser.add_option("--pdir", "--print-dir", dest="printDir", type="string", default="plots", help="print out plots in this directory");
-    parser.add_option("--showSigShape", dest="showSigShape", action="store_true", default=False, help="Stack a normalized signal shape")
+    parser.add_option("--showSigShape", dest="showSigShape", action="store_true", default=False, help="Superimpose a normalized signal shape")
+    parser.add_option("--showIndivSigShapes", dest="showIndivSigShapes", action="store_true", default=False, help="Superimpose normalized shapes for each signal individually")
     parser.add_option("--noStackSig", dest="noStackSig", action="store_true", default=False, help="Don't add the signal shape to the stack (useful with --showSigShape)")
     parser.add_option("--showDatShape", dest="showDatShape", action="store_true", default=False, help="Stack a normalized data shape")
     parser.add_option("--showSFitShape", dest="showSFitShape", action="store_true", default=False, help="Stack a shape of background + scaled signal normalized to total data")
@@ -700,6 +713,7 @@ def addPlotMakerOptions(parser):
     parser.add_option("--poisson", dest="poisson", action="store_true", default=False, help="Draw Poisson error bars")
     parser.add_option("--select-plot", "--sP", dest="plotselect", action="append", default=[], help="Select only these plots out of the full file")
     parser.add_option("--exclude-plot", "--xP", dest="plotexclude", action="append", default=[], help="Exclude these plots from the full file")
+    parser.add_option("--legendWidth", dest="legendWidth", type="float", default=0.25, help="Width of the legend")
     parser.add_option("--flagDifferences", dest="flagDifferences", action="store_true", default=False, help="Flag plots that are different (when using only two processes, and plotmode nostack")
 
 if __name__ == "__main__":

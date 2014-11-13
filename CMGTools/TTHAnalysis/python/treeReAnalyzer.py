@@ -196,6 +196,7 @@ class BookDir:
         self._subs = []
     def mkdir(self,name):
         ret = BookDir(self.tdir.mkdir(name))
+        ret.name = name
         self._subs.append(ret)
         return ret
     def book(self,what,name,*args):
@@ -209,6 +210,17 @@ class BookDir:
         for s in self._subs: s.done()
         for k,v in self._objects.iteritems():
             self.tdir.WriteTObject(v)
+    def printObj(self,on,o,dir):
+        c1 = ROOT.TCanvas("c1","c1",800,600)
+        o.Draw()
+        for e in "png", "pdf":
+            c1.Print("%s/%s.%s" % (dir, on, e))
+    def printAll(self,dir):
+        ROOT.gSystem.Exec("mkdir -p %s" % dir)
+        for on,o in self._objects.iteritems():
+            self.printObj(on,o,dir)
+        for s in self._subs:
+            s.printAll(dir+"/"+s.name)
 
 class Booker(BookDir):
     def __init__(self,fileName):
