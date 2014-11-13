@@ -5,7 +5,6 @@ from CMGTools.TTHAnalysis.signedSip import SignedImpactParameterComputer
 from CMGTools.TTHAnalysis.tools.SVMVA import SVMVA
 from CMGTools.RootTools.utils.DeltaR import deltaR
 
-
 def matchToGenHadron(particle, event, minDR=0.05, minDpt=0.1):
         match = ( None, minDR, 2 )
         myeta, myphi = particle.eta(), particle.phi()
@@ -59,6 +58,16 @@ class ttHSVAnalyzer( Analyzer ):
              sv.d3d = SignedImpactParameterComputer.vertexD3d(sv, pv)
              sv.cosTheta = SignedImpactParameterComputer.vertexDdotP(sv, pv)
 	     sv.mva = self.SVMVA(sv)
+	     svtracks = []
+	     for id in xrange(sv.numberOfDaughters()):
+		  svtracks.append = sv.daughter(id).pseudoTrack()	     		     
+	     svtracks.sort(key = lambda t : abs(t.dxy()), reverse = True)	     
+	     sv.maxDxyTracks = svtracks[0].dxy()
+	     sv.secDxyTracks = svtracks[1].dxy()
+	     svtracks.sort(key = lambda t : abs(SignedImpactParameterComputer.signedIP3D(t, pv, t.momentum())), reverse = True)	     
+	     sv.maxD3dTracks = SignedImpactParameterComputer.signedIP3D(svtracks[0], pv, svtracks[0].momentum())
+	     sv.secD3dTracks = SignedImpactParameterComputer.signedIP3D(svtracks[1], pv, svtracks[1].momentum())
+	     
 
         event.ivf = allivf
 
@@ -134,7 +143,9 @@ class ttHSVAnalyzer( Analyzer ):
             for jdau in jdaus:
                 if jdau in daumap:
                     j.svs.append(daumap[jdau])
-                    daumap[jdau].jet = j
+                    daumap[jdau].jet = j	    
+
+
 
         #Attach SVs to leptons
         #print "\n\nNew event: "

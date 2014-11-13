@@ -122,6 +122,7 @@ if __name__ == "__main__":
             roc.SetMarkerStyle(0)
             roc.style = "L"
         else:
+            #print roc.GetX()[0],roc.GetY()[0],plot.name
             roc.SetMarkerColor(plot.getOption("MarkerColor",i+1))
             roc.SetMarkerStyle(plot.getOption("MarkerStyle",20 if roc.dim == 1 else 7))
             roc.SetMarkerSize(plot.getOption("MarkerSize",1.0))
