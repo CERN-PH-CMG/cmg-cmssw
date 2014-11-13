@@ -66,7 +66,7 @@ class ttHSVAnalyzer( Analyzer ):
 	     svtracks.sort(key = lambda t : abs(t.dxy()), reverse = True)	     
 	     sv.maxDxyTracks = svtracks[0].dxy() if len(svtracks) > 0 else -99
 	     sv.secDxyTracks = svtracks[1].dxy() if len(svtracks) > 1 else -99
-	     svtracks.sort(key = lambda t : abs(t.sip3d), reverse = True)	     
+	     svtracks.sort(key = lambda t : t.sip3d, reverse = True)	     
 	     sv.maxD3dTracks = svtracks[0].sip3d if len(svtracks) > 0 else -99
 	     sv.secD3dTracks = svtracks[1].sip3d if len(svtracks) > 1 else -99
 	     
