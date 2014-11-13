@@ -32,16 +32,16 @@ WJets    : WJetsToLNu_HT400to600_PU_S14_POSTLS170 :    55.61 * 1.23; Label="W+je
 WJets    : WJetsToLNu_HT600toInf_PU_S14_POSTLS170 :    18.81 * 1.23; Label="W+jets", FillColor=ROOT.kCyan+2, NormSystematic=0.5
 
 # -- SUSY
-T1tttt_HL+: T1tttt2J_6_PU_S14_POSTLS170 : 0.0141903 ; FillColor=ROOT.kAzure+8,   Label="T1t^{4} 1.5/0.1" 
-T1tttt_HM+: T1tttt2J_7_PU_S14_POSTLS170 : 0.0856418 ; FillColor=ROOT.kAzure+0,   Label="T1t^{4} 1.2/0.8" 
+T1tttt_HL+: SMS_T1tttt_2J_mGl1500_mLSP100_PU_S14_POSTLS170 : 0.0141903 ; FillColor=ROOT.kAzure+8,   Label="T1t^{4} 1.5/0.1" 
+T1tttt_HM+: SMS_T1tttt_2J_mGl1200_mLSP800_PU_S14_POSTLS170 : 0.0856418 ; FillColor=ROOT.kAzure+0,   Label="T1t^{4} 1.2/0.8" 
 T5Full_HM+: T5Full_1200_1000_800        : 0.0856418 ; FillColor=ROOT.kViolet+6,  Label="T5W^{2} 1.2/0.8"
 T5Full_HL+: T5Full_1500_800_100         : 0.0141903 ; FillColor=ROOT.kViolet+0,  Label="T5W^{2} 1.5/1.1"
 
 
-GEN_T5tttt_HLDx: GEN_T1tttt_2J_mGo1300_mStop300_mCh285_mChi280_py8 : 0.0460525 ; FillColor=ROOT.kAzure+8,   Label="G5t^{4} 1.3/.3/\#chi", TreeName="treeProducerSusyGenLevelOnly"
-GEN_T5tttt_HLD4: GEN_T1tttt_2J_mGo1300_mStop300_mChi280_py8        : 0.0460525 ; FillColor=ROOT.kRed-9,     Label="G5t^{4} 1.3/.3/4",     TreeName="treeProducerSusyGenLevelOnly"
-GEN_T5tttt_LLDx: GEN_T1tttt_2J_mGo800_mStop300_mCh285_mChi280_py8  : 1.4891 ; FillColor=ROOT.kAzure+8,   Label="G5t^{4} 0.8/.3/\#chi", TreeName="treeProducerSusyGenLevelOnly"
-GEN_T5tttt_LLD4: GEN_T1tttt_2J_mGo800_mStop300_mChi280_py8         : 1.4891 ; FillColor=ROOT.kRed-9,     Label="G5t^{4} 0.8/.3/4",     TreeName="treeProducerSusyGenLevelOnly"
+#GEN_T5tttt_HLDx: GEN_T1tttt_2J_mGo1300_mStop300_mCh285_mChi280_py8 : 0.0460525 ; FillColor=ROOT.kAzure+8,   Label="G5t^{4} 1.3/.3/\#chi", TreeName="treeProducerSusyGenLevelOnly"
+#GEN_T5tttt_HLD4: GEN_T1tttt_2J_mGo1300_mStop300_mChi280_py8        : 0.0460525 ; FillColor=ROOT.kRed-9,     Label="G5t^{4} 1.3/.3/4",     TreeName="treeProducerSusyGenLevelOnly"
+#GEN_T5tttt_LLDx: GEN_T1tttt_2J_mGo800_mStop300_mCh285_mChi280_py8  : 1.4891 ; FillColor=ROOT.kAzure+8,   Label="G5t^{4} 0.8/.3/\#chi", TreeName="treeProducerSusyGenLevelOnly"
+#GEN_T5tttt_LLD4: GEN_T1tttt_2J_mGo800_mStop300_mChi280_py8         : 1.4891 ; FillColor=ROOT.kRed-9,     Label="G5t^{4} 0.8/.3/4",     TreeName="treeProducerSusyGenLevelOnly"
 T5tttt_HLDx+: T1tttt_2J_mGo1300_mStop300_mCh285_mChi280_pythia8_S14: 0.0460525 ; FillColor=ROOT.kRed-9,    Label="T5t^{4} 1.3/.3/\#chi"
 T5tttt_HLD4+: T1tttt_2J_mGo1300_mStop300_mChi280_pythia8_S14       : 0.0460525 ; FillColor=ROOT.kRed+0, Label="T5t^{4} 1.3/.3/4"
 T5tttt_LLDx+: T1tttt_2J_mGo800_mStop300_mCh285_mChi280_pythia8_S14 : 1.4891 ; FillColor=ROOT.kMagenta-9,    Label="T5t^{4} 0.8/.3/\#chi"
