@@ -98,7 +98,7 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
 
         if isMC:
             ## PU weights
-            tr.fill("nTrueInt", event.nPU)
+            tr.fill("nTrueInt", getattr(event, 'nPU', -1))
             tr.fill("puWeight", event.eventWeight)
             tr.fill("genWeight", self.mchandles['GenInfo'].product().weight())
             ## PDF weights
