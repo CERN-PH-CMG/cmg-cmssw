@@ -255,10 +255,6 @@ genParticleWithMotherId = NTupleObjectType("genParticleWithMotherId", baseObject
 svType = NTupleObjectType("sv", baseObjectTypes = [ fourVectorType ], variables = [
     NTupleVariable("charge",   lambda x : x.charge(), int),
     NTupleVariable("ntracks", lambda x : x.numberOfDaughters(), int, help="Number of tracks (with weight > 0.5)"),
-    NTupleVariable("pt", lambda x : x.pt(), help="SV pt"),
-    NTupleVariable("eta", lambda x : x.eta(), help="SV eta"),
-    NTupleVariable("phi", lambda x : x.phi(), help="SV phi"),
-    NTupleVariable("mass", lambda x : x.mass(), help="SV mass"),
     NTupleVariable("chi2", lambda x : x.vertexChi2(), help="Chi2 of the vertex fit"),
     NTupleVariable("ndof", lambda x : x.vertexNdof(), help="Degrees of freedom of the fit, ndof = (2*ntracks - 3)" ),
     NTupleVariable("dxy",  lambda x : x.dxy.value(), help="Transverse distance from the PV [cm]"),

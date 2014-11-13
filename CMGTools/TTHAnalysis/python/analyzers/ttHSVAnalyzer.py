@@ -60,13 +60,15 @@ class ttHSVAnalyzer( Analyzer ):
 	     sv.mva = self.SVMVA(sv)
 	     svtracks = []
 	     for id in xrange(sv.numberOfDaughters()):
-		  svtracks.append = sv.daughter(id).pseudoTrack()	     		     
+                  dau = sv.daughter(id)
+                  dau.sip3d = SignedImpactParameterComputer.signedIP3D(dau.pseudoTrack(), pv, sv.momentum()).significance()
+		  svtracks.append(dau)	     		     
 	     svtracks.sort(key = lambda t : abs(t.dxy()), reverse = True)	     
-	     sv.maxDxyTracks = svtracks[0].dxy()
-	     sv.secDxyTracks = svtracks[1].dxy()
-	     svtracks.sort(key = lambda t : abs(SignedImpactParameterComputer.signedIP3D(t, pv, t.momentum())), reverse = True)	     
-	     sv.maxD3dTracks = SignedImpactParameterComputer.signedIP3D(svtracks[0], pv, svtracks[0].momentum())
-	     sv.secD3dTracks = SignedImpactParameterComputer.signedIP3D(svtracks[1], pv, svtracks[1].momentum())
+	     sv.maxDxyTracks = svtracks[0].dxy() if len(svtracks) > 0 else -99
+	     sv.secDxyTracks = svtracks[1].dxy() if len(svtracks) > 1 else -99
+	     svtracks.sort(key = lambda t : abs(t.sip3d), reverse = True)	     
+	     sv.maxD3dTracks = svtracks[0].sip3d if len(svtracks) > 0 else -99
+	     sv.secD3dTracks = svtracks[1].sip3d if len(svtracks) > 1 else -99
 	     
 
         event.ivf = allivf

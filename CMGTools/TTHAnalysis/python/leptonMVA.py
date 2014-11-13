@@ -91,19 +91,19 @@ _ElectronVars = {
 class LeptonMVA:
     def __init__(self, kind, basepath, isMC):
         global _CommonVars, _CommonSpect, _ElectronVars
-        print "Creating LeptonMVA of kind %s, base path %s" % (kind, basepath)
+        #print "Creating LeptonMVA of kind %s, base path %s" % (kind, basepath)
         self._isMC = isMC
         self._kind = kind
         muvars = _CommonVars[kind] + _MuonVars[kind]
         elvars = _CommonVars[kind] + _ElectronVars[kind]
-        print " ---> Muons"
+        #print " ---> Muons"
         self.mu = CategorizedMVA([
             ( lambda x: x.pt() <= 15 and abs(x.eta()) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_low_b", _CommonSpect,muvars) ),
             ( lambda x: x.pt() <= 15 and abs(x.eta()) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_low_e", _CommonSpect,muvars) ),
             ( lambda x: x.pt() >  15 and abs(x.eta()) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_high_b",_CommonSpect,muvars) ),
             ( lambda x: x.pt() >  15 and abs(x.eta()) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_high_e",_CommonSpect,muvars) ),
         ])
-        print " ---> Electrons"
+        #print " ---> Electrons"
         self.el = CategorizedMVA([
             ( lambda x: x.pt() <= 10 and abs(x.eta()) <  0.8                           , MVATool("BDTG",basepath%"el_pteta_low_cb", _CommonSpect,elvars) ),
             ( lambda x: x.pt() <= 10 and abs(x.eta()) >= 0.8 and abs(x.eta()) <  1.479 , MVATool("BDTG",basepath%"el_pteta_low_fb", _CommonSpect,elvars) ),
