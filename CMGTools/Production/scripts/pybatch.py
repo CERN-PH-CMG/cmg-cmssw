@@ -35,9 +35,14 @@ def split(comps):
 def batchScriptCERN( jobDir, remoteDir=''):
    '''prepare the LSF version of the batch script, to run on LSF'''
    
+   dirCopy = """cp -r Loop/* $LS_SUBCWD
+if [ $? -ne 0 ]; then
+   echo 'ERROR: problem copying job directory back'
+else
+   echo 'job directory copy succedeed'
+fi"""
    if remoteDir=='':
-      cpCmd="""echo 'sending the job directory back'
-cp -r Loop/* $LS_SUBCWD"""
+      cpCmd="echo 'sending the job directory back'\n" + dirCopy
    elif remoteDir.startswith("/pnfs/psi.ch"):
        cpCmd="""echo 'sending root files to remote dir'
 export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH # Fabio's workaround to fix gfal-tools with CMSSW
@@ -49,13 +54,14 @@ do
    echo "gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root"
    gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root
    if [ $? -ne 0 ]; then
-      echo "ERROR: file $ff not copied correctly ?"
+      echo "ERROR: remote copy failed for file $ff"
    else
+      echo "remote copy succeeded"
       rm Loop/$d/$ff.root
    fi
 done
 echo 'sending the logs back'  # will send also root files if copy failed
-cp -r Loop/* $LS_SUBCWD""".format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")])
+""".format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")]) + dirCopy
    else:
        print "remote location not supported yet: ", remoteDir
        print 'path must start with "/pnfs/psi.ch"'
@@ -91,9 +97,15 @@ def batchScriptPSI( jobDir, remoteDir=''):
    cmssw_release = os.environ['CMSSW_BASE']
    VO_CMS_SW_DIR = "/swshare/cms"  # $VO_CMS_SW_DIR doesn't seem to work in the new SL6 t3wn
 
+
+   dirCopy = """cp -r Loop/* $SUBMISIONDIR
+if [ $? -ne 0 ]; then
+   echo 'ERROR: problem copying job directory back'
+else
+   echo 'job directory copy succedeed'
+fi"""
    if remoteDir=='':
-       cpCmd="""echo 'sending the job directory back'
-cp -r Loop/* $SUBMISIONDIR"""
+       cpCmd="echo 'sending the job directory back'" + dirCopy
    elif remoteDir.startswith("/pnfs/psi.ch"):
        cpCmd="""echo 'sending root files to remote dir'
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/dcap/ # Fabio's workaround to fix gfal-tools
@@ -105,13 +117,14 @@ do
    echo "gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root"
    gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root
    if [ $? -ne 0 ]; then
-      echo "ERROR: file $ff not copied correctly ?"
+      echo "ERROR: remote copy failed for file $ff"
    else
+      echo "remote copy succeeded"
       rm Loop/$d/$ff.root
    fi
 done
 echo 'sending the logs back'
-cp -r Loop/* $SUBMISIONDIR""".format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")])
+""".format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")]) + dirCopy
    else:
        print "remote directory not supported yet: ", remoteDir
        print 'path must start with "/pnfs/psi.ch"'
