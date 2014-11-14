@@ -10,6 +10,19 @@ class treeProducerSusySoftlepton( treeProducerSusyCore ):
 
         ## Declare what we want to fill (in addition to susy core ones)
         self.globalVariables += [
+            ##-------- MET Filter ------------------------------------------
+            NTupleVariable("checkEcalDead",  lambda ev : ev.checkEcalDead, int, help="checkEcalDead"),
+            NTupleVariable("checkhcalLaser",  lambda ev : ev.checkhcalLaser, int, help="checkhcalLaser"),
+            NTupleVariable("checktrackingFailure",  lambda ev : ev.checktrackingFailure, int, help="checktrackingFailure"),
+            NTupleVariable("checkprimaryVertex",  lambda ev : ev.checkprimaryVertex, int, help="checkprimaryVertex"),
+            NTupleVariable("checknoscraping",  lambda ev : ev.checknoscraping, int, help="checknoscraping"),
+            NTupleVariable("checktrackIsolationMaker",  lambda ev : ev.checktrackIsolationMaker, int, help="checktrackIsolationMaker"),
+            NTupleVariable("checkmetNoiseCleaning",  lambda ev : ev.checkmetNoiseCleaning, int, help="checkmetNoiseCleaning"),
+            NTupleVariable("checkeeBadSc",  lambda ev : ev.checkeeBadSc, int, help="checkeeBadSc"),
+            NTupleVariable("checkecalLaser",  lambda ev : ev.checkecalLaser, int, help="checkecalLaser"),
+            NTupleVariable("checktotalKinematics",  lambda ev : ev.checktotalKinematics, int, help="checktotalKinematics"),
+            NTupleVariable("checkCSCTightHalo",  lambda ev : ev.checkCSCTightHalo, int, help="checkCSCTightHalo"),
+            NTupleVariable("checkHBHENoise",  lambda ev : ev.checkHBHENoise, int, help="checkHBHENoise"),
             ##-------- custom jets ------------------------------------------
             NTupleVariable("htJet25", lambda ev : ev.htJet25, help="H_{T} computed from leptons and jets (with |eta|<2.4, pt > 25 GeV)"),
             NTupleVariable("mhtJet25", lambda ev : ev.mhtJet25, help="H_{T}^{miss} computed from leptons and jets (with |eta|<2.4, pt > 25 GeV)"),
