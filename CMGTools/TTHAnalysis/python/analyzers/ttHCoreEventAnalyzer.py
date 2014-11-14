@@ -24,7 +24,8 @@ class ttHCoreEventAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHCoreEventAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
         self.maxLeps = cfg_ana.maxLeps
-        self.leptonMVA = LeptonMVA("%s/src/CMGTools/TTHAnalysis/data/leptonMVA/%%s_BDTG.weights.xml" % os.environ['CMSSW_BASE'], self.cfg_comp.isMC)
+        self.leptonMVATTH  = LeptonMVA("TTH", "%s/src/CMGTools/TTHAnalysis/data/leptonMVA/%%s_BDTG.weights.xml" % os.environ['CMSSW_BASE'], self.cfg_comp.isMC)
+        self.leptonMVASusy = LeptonMVA("Susy","%s/src/CMGTools/TTHAnalysis/data/leptonMVA/susy/%%s_BDTG.weights.xml" % os.environ['CMSSW_BASE'], self.cfg_comp.isMC)
 
     def declareHandles(self):
         super(ttHCoreEventAnalyzer, self).declareHandles()
@@ -132,21 +133,21 @@ class ttHCoreEventAnalyzer( Analyzer ):
             l.ptRelJet = sqrt(sum([v*v for v in cross]))/l.jet.p()
 
     
-    def makeMETs(self, event):
-        event.met = self.handles['met'].product()[0]
-        event.metNoPU = self.handles['nopumet'].product()[0]
-        if hasattr(event, 'deltaMetFromJetSmearing'):
-            import ROOT
-            px,py = event.met.px()+event.deltaMetFromJetSmearing[0], event.met.py()+event.deltaMetFromJetSmearing[1]
-            event.met.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
-            px,py = event.metNoPU.px()+event.deltaMetFromJetSmearing[0], event.metNoPU.py()+event.deltaMetFromJetSmearing[1]
-            event.metNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
-        if hasattr(event, 'deltaMetFromJEC') and event.deltaMetFromJEC[0] != 0 and event.deltaMetFromJEC[1] != 0:
-            import ROOT
-            px,py = event.met.px()+event.deltaMetFromJEC[0], event.met.py()+event.deltaMetFromJEC[1]
-            event.met.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
-            px,py = event.metNoPU.px()+event.deltaMetFromJEC[0], event.metNoPU.py()+event.deltaMetFromJEC[1]
-            event.metNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
+#    def makeMETs(self, event):
+#        event.met = self.handles['met'].product()[0]
+#        event.metNoPU = self.handles['nopumet'].product()[0]
+#        if hasattr(event, 'deltaMetFromJetSmearing'):
+#            import ROOT
+#            px,py = event.met.px()+event.deltaMetFromJetSmearing[0], event.met.py()+event.deltaMetFromJetSmearing[1]
+#            event.met.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
+#            px,py = event.metNoPU.px()+event.deltaMetFromJetSmearing[0], event.metNoPU.py()+event.deltaMetFromJetSmearing[1]
+#            event.metNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
+#        if hasattr(event, 'deltaMetFromJEC') and event.deltaMetFromJEC[0] != 0 and event.deltaMetFromJEC[1] != 0:
+#            import ROOT
+#            px,py = event.met.px()+event.deltaMetFromJEC[0], event.met.py()+event.deltaMetFromJEC[1]
+#            event.met.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
+#            px,py = event.metNoPU.px()+event.deltaMetFromJEC[0], event.metNoPU.py()+event.deltaMetFromJEC[1]
+#            event.metNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
@@ -197,6 +198,7 @@ class ttHCoreEventAnalyzer( Analyzer ):
         objects30a  = [ j for j in event.cleanJetsAll if j.pt() > 30 ] + event.selectedLeptons
         objects40a  = [ j for j in event.cleanJetsAll if j.pt() > 40 ] + event.selectedLeptons
         objects40ja = [ j for j in event.cleanJetsAll if j.pt() > 40 ] 
+        objects40ja10l = [ j for j in event.cleanJetsAll if j.pt() > 40 ] + [ l for l in event.selectedLeptons if l.pt() > 10 ]
 
         event.htJet25a = sum([x.pt() for x in objects25a])
         event.mhtJet25veca = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects25a])) , -1.*(sum([x.py() for x in objects25a])), 0, 0 )     
@@ -253,29 +255,31 @@ class ttHCoreEventAnalyzer( Analyzer ):
 
         ###event.weirdAssVar = sum([x.eta() for x in objects40a])
         
-        self.makeMETs(event);
+#        self.makeMETs(event);
         self.makeZs(event, self.maxLeps)
         self.makeMlls(event, self.maxLeps)
         self.makeLepPtRel(event)
 
         # look for minimal deltaPhi between MET and four leading jets with pt>40 and eta<2.4
         event.deltaPhiMin_had = 999.
-        for n,j in enumerate(objects40j):
+        for n,j in enumerate(objects40ja):
             if n>3:  break
             thisDeltaPhi = abs( deltaPhi( j.phi(), event.met.phi() ) )
             if thisDeltaPhi < event.deltaPhiMin_had : event.deltaPhiMin_had = thisDeltaPhi
 
         event.deltaPhiMin = 999.
-        for n,j in enumerate(objects40j10l):
+        for n,j in enumerate(objects40ja10l):
             if n>3:  break
             thisDeltaPhi = abs( deltaPhi( j.phi(), event.met.phi() ) )
             if thisDeltaPhi < event.deltaPhiMin : event.deltaPhiMin = thisDeltaPhi
 
         for lep in event.selectedLeptons:
-            self.leptonMVA.addMVA(lep)
+            lep.mvaValue     = self.leptonMVATTH(lep)
+            lep.mvaValueSusy = self.leptonMVASusy(lep)
         for lep in event.inclusiveLeptons:
             if lep not in event.selectedLeptons:
-                self.leptonMVA.addMVA(lep)
+                lep.mvaValue     = self.leptonMVATTH(lep)
+                lep.mvaValueSusy = self.leptonMVASusy(lep)
 
 
         # absolute value of the vectorial difference between met and mht

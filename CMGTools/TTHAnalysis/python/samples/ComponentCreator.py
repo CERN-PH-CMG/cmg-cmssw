@@ -103,13 +103,12 @@ class ComponentCreator(object):
         files = ds.fileNames
         return ['root://eoscms.cern.ch//eos/cms%s' % f for f in files]
 
-    ### MM
+
     def getMyFiles(self, dataset, user, pattern, dbsInstance):
         # print 'getting files for', dataset,user,pattern
         ds = myDatasetToSource( user, dataset, pattern, dbsInstance, True )
         files = ds.fileNames
         return ['root://eoscms.cern.ch//eos/cms%s' % f for f in files]
-    ### MM
 
     def getSkimEfficiency(self,dataset,user):
         info=DatasetInformation(dataset,user,'',False,False,'','','')

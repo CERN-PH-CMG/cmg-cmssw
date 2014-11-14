@@ -42,87 +42,81 @@ class ttHIsoTrackAnalyzer( Analyzer ):
     # MAKE LIST
     #------------------
     def makeIsoTrack(self, event):
-        event.selectedIsoTrack = []
-        event.preIsoTrack = []
 
-        charged = []
+
+
+        event.selectedIsoTrack = []
+        #event.preIsoTrack = []
+
         pfcands = self.handles['cmgCand'].product()
 
-## ===> require the Track Candidate charge and with a  minimum dz
-        for i in xrange(pfcands.size()):
-            if (pfcands.at(i).charge()!=0 and (abs(pfcands.at(i).dz())<=self.cfg_ana.dzMax)):
-                charged.append(pfcands.at(i))
+        charged = [ p for p in pfcands if ( p.charge() != 0 and abs(p.dz())<=self.cfg_ana.dzMax ) ]
 
-##        alltrack = map( IsoTrack, self.handles['cmgCand'].product() )
         alltrack = map( IsoTrack, charged )
+
 
         for track in alltrack:
 
             foundNonIsoTrack = False
-            foundIsoTrack = False
 
 ## ===> require Track Candidate above some pt and charged
-            if ( (track.pdgId()!=11) and (track.pdgId()!=13) and (track.pt() < self.cfg_ana.ptMin) ): continue
+            if ( (abs(track.pdgId())!=11) and (abs(track.pdgId())!=13) and (track.pt() < self.cfg_ana.ptMin) ): continue
             if ( track.pt() < self.cfg_ana.ptMinEMU ): continue
 
 
 ## ===> require is not the leading lepton and opposite to the leading lepton 
             if( (self.cfg_ana.doSecondVeto) and len(event.selectedLeptons)>0) : 
                if( deltaR(event.selectedLeptons[0].eta(), event.selectedLeptons[0].phi(), track.eta(), track.phi()) <0.01) : continue
-               if ( (track.pdgId()!=11) and (track.pdgId()!=13) and (track.charge()*event.selectedLeptons[0].charge()) ): continue
+               if ( (abs(track.pdgId())!=11) and (abs(track.pdgId())!=13) and (track.charge()*event.selectedLeptons[0].charge()) ): continue
 
 ## ===> Redundant:: require the Track Candidate with a  minimum dz
             track.associatedVertex = event.goodVertices[0]
-            if abs(track.dz())>self.cfg_ana.dzMax : continue 
 
 ## ===> compute the isolation and find the most isolated track
 
-            allpart = alltrack
+            othertracks = [ p for p in charged if( deltaR(p.eta(), p.phi(), track.eta(), track.phi()) < self.cfg_ana.isoDR and p.pt()>self.cfg_ana.ptPartMin ) ]
+            #othertracks = alltrack
 
-            preIsoSum=0
             isoSum=0
-            for part in allpart:
-                ### ===> skip pfcands with a pt min (this should be 0)
-                if part.pt()<self.cfg_ana.ptPartMin : continue
-                ### ===> skip pfcands outside the cone (this should be 0.3)
-                if deltaR(part.eta(), part.phi(), track.eta(), track.phi()) > self.cfg_ana.isoDR : continue
-                preIsoSum += part.pt()
+            for part in othertracks:
+                #### ===> skip pfcands with a pt min (this should be 0)
+                #if part.pt()<self.cfg_ana.ptPartMin : continue
+                #### ===> skip pfcands outside the cone (this should be 0.3)
+                #if deltaR(part.eta(), part.phi(), track.eta(), track.phi()) > self.cfg_ana.isoDR : continue
                 isoSum += part.pt()
                 ### break the loop to save time
-                if(preIsoSum > (self.cfg_ana.maxAbsIso + track.pt())):
+                if(isoSum > (self.cfg_ana.maxAbsIso + track.pt())):
                     foundNonIsoTrack = True
                     break
 
-            if not foundNonIsoTrack :
-                # reset
-                isoSum=0
-                for part in allpart :
-                ### ===> skip pfcands with a pt min (this should be 0)
-                    if part.pt()<self.cfg_ana.ptPartMin : continue
-                ### ===> skip pfcands outside the cone (this should be 0.3)
-                    if deltaR(part.eta(), part.phi(), track.eta(), track.phi()) > self.cfg_ana.isoDR : continue
-                    isoSum += part.pt()
+            if foundNonIsoTrack: continue
 
-                ### ===> the sum should not contain the track candidate
-                isoSum -= track.pt()
-                ###            isoSum = isoSum/track.pt()  ## <--- this is for relIso
+               ## reset
+               #isoSum=0
+               #for part in othertracks :
+               #### ===> skip pfcands with a pt min (this should be 0)
+               #    if part.pt()<self.cfg_ana.ptPartMin : continue
+               #### ===> skip pfcands outside the cone (this should be 0.3)
+               #    if deltaR(part.eta(), part.phi(), track.eta(), track.phi()) > self.cfg_ana.isoDR : continue
+               #    isoSum += part.pt()
 
-            track.absIso = isoSum
+            #    ###            isoSum = isoSum/track.pt()  ## <--- this is for relIso
 
-            ### store a preIso track
-            event.preIsoTrack.append(track)
+            ### ===> the sum should not contain the track candidate
+
+            track.absIso = isoSum - track.pt()
+
+            #### store a preIso track
+            #event.preIsoTrack.append(track)
             
 #            if (isoSum < minIsoSum ) :
             if(track.absIso < min(0.2*track.pt(), self.cfg_ana.maxAbsIso)): 
-                foundIsoTrack = True
-
-            if(foundIsoTrack):
                 event.selectedIsoTrack.append(track)
 
         event.selectedIsoTrack.sort(key = lambda l : l.pt(), reverse = True)
 
         self.counters.counter('events').inc('all events')
-        if(len(event.preIsoTrack)): self.counters.counter('events').inc('has >=1 selected Track') 
+        #if(len(event.preIsoTrack)): self.counters.counter('events').inc('has >=1 selected Track') 
         if(len(event.selectedIsoTrack)): self.counters.counter('events').inc('has >=1 selected Iso Track')
 
     def matchIsoTrack(self, event):

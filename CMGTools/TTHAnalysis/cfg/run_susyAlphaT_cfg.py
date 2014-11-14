@@ -195,7 +195,7 @@ elif test==4:
 #    comp.name = 'TTJets'
     #    comp.files = [ '/store/mc/Spring14miniaod/TT_Tune4C_13TeV-pythia8-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/063013AD-9907-E411-8135-0026189438BD.root' ]
 
-    comp.files = [ '/afs/cern.ch/user/m/mbaber/WORK/private/CSA14Samples/TT_Tune4C_13TeV-pythia8_PU20bx25.root' ]
+    comp.files = [ '/afs/cern.ch/user/m/mbaber/WORK/public/CSA14Samples/TT_Tune4C_13TeV-pythia8_PU20bx25.root' ]
 
     selectedComponents = [comp]
     comp.splitFactor = 1

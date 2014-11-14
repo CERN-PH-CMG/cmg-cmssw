@@ -72,13 +72,9 @@ class ttHTopoVarAnalyzer( Analyzer ):
         import array
         import numpy
 
-        metVector = TVectorD(3,array.array('d',[0.,metVec.px(), metVec.py()]))
-        visaVector = TVectorD(3,array.array('d',[0.,visaVec.px(), visaVec.py()]))
-        visbVector = TVectorD(3,array.array('d',[0.,visbVec.px(), visbVec.py()]))
-
-        metVector =numpy.asarray(metVector,dtype='double')
-        visaVector =numpy.asarray(visaVector,dtype='double')
-        visbVector =numpy.asarray(visbVector,dtype='double')
+        metVector = array.array('d',[0.,metVec.px(), metVec.py()])
+        visaVector = array.array('d',[0.,visaVec.px(), visaVec.py()])
+        visbVector = array.array('d',[0.,visbVec.px(), visbVec.py()])
 
         davismt2.set_momenta(visaVector,visbVector,metVector);
         davismt2.set_mn(0);
@@ -112,39 +108,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
                 pzvec.push_back(jet.pz())
                 Evec.push_back(jet.energy())
 
-#### get hemispheres via AntiKT -1 antikt, 1 kt, 0 CA                                                                                                                                    
-            hemisphereViaAKt = HemisphereViaKt(pxvec, pyvec, pzvec, Evec, -1.)
-            groupingViaAKt=hemisphereViaAKt.getGrouping()
-
-            pseudoJet1px = 0
-            pseudoJet1py = 0
-            pseudoJet1pz = 0
-            pseudoJet1energy = 0
-
-            pseudoJet2px = 0
-            pseudoJet2py = 0
-            pseudoJet2pz = 0
-            pseudoJet2energy = 0
-
-            for index in range(0, len(groupingViaAKt[0])):
-                if(index==0):
-                    pseudoJet1px = groupingViaAKt[0][index]
-                    pseudoJet1py = groupingViaAKt[1][index]
-                    pseudoJet1pz = groupingViaAKt[2][index]
-                    pseudoJet1energy = groupingViaAKt[3][index]
-                if(index==1):
-                    pseudoJet2px = groupingViaAKt[0][index]
-                    pseudoJet2py = groupingViaAKt[1][index]
-                    pseudoJet2pz = groupingViaAKt[2][index]
-                    pseudoJet2energy = groupingViaAKt[3][index]
-
-            event.pseudoViaAKtJet1_had = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
-            event.pseudoViaAKtJet2_had = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
-
-            event.mt2ViaAKt_had = self.computeMT2(event.pseudoViaAKtJet1_had, event.pseudoViaAKtJet2_had, event.met)
-
 #### get hemispheres via AntiKT -1 antikt, 1 kt, 0 CA
-                                                                                                                                    
             hemisphereViaKt = HemisphereViaKt(pxvec, pyvec, pzvec, Evec, 1.)
             groupingViaKt=hemisphereViaKt.getGrouping()
 
@@ -174,6 +138,39 @@ class ttHTopoVarAnalyzer( Analyzer ):
             event.pseudoViaKtJet2_had = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
 
             event.mt2ViaKt_had = self.computeMT2(event.pseudoViaKtJet1_had, event.pseudoViaKtJet2_had, event.met)
+
+
+            if not self.cfg_ana.doOnlyDefault:
+#### get hemispheres via AntiKT -1 antikt, 1 kt, 0 CA                                                                                                                                    
+                hemisphereViaAKt = HemisphereViaKt(pxvec, pyvec, pzvec, Evec, -1.)
+                groupingViaAKt=hemisphereViaAKt.getGrouping()
+
+                pseudoJet1px = 0
+                pseudoJet1py = 0
+                pseudoJet1pz = 0
+                pseudoJet1energy = 0
+
+                pseudoJet2px = 0
+                pseudoJet2py = 0
+                pseudoJet2pz = 0
+                pseudoJet2energy = 0
+
+                for index in range(0, len(groupingViaAKt[0])):
+                    if(index==0):
+                        pseudoJet1px = groupingViaAKt[0][index]
+                        pseudoJet1py = groupingViaAKt[1][index]
+                        pseudoJet1pz = groupingViaAKt[2][index]
+                        pseudoJet1energy = groupingViaAKt[3][index]
+                    if(index==1):
+                        pseudoJet2px = groupingViaAKt[0][index]
+                        pseudoJet2py = groupingViaAKt[1][index]
+                        pseudoJet2pz = groupingViaAKt[2][index]
+                        pseudoJet2energy = groupingViaAKt[3][index]
+
+                event.pseudoViaAKtJet1_had = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+                event.pseudoViaAKtJet2_had = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+                        
+                event.mt2ViaAKt_had = self.computeMT2(event.pseudoViaAKtJet1_had, event.pseudoViaAKtJet2_had, event.met)
 
 #### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
 
@@ -242,7 +239,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
                 pzvec.push_back(jet.pz())
                 Evec.push_back(jet.energy())
 
-#### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
+            #### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
             hemisphere = Hemisphere(pxvec, pyvec, pzvec, Evec, 2, 3)
             grouping=hemisphere.getGrouping()
 ##            print 'grouping ',len(grouping)
@@ -299,7 +296,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
             #for obj in objects_fullmt2:
             #    print "pt: ", obj.pt(), ", eta: ", obj.eta(), ", phi: ", obj.phi(), ", mass: ", obj.mass()
 
-#### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
+            #### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
 
             hemisphere = Hemisphere(pxvec, pyvec, pzvec, Evec, 2, 3)
             grouping=hemisphere.getGrouping()
@@ -364,7 +361,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
                 pzvec.push_back(obj.pz())
                 Evec.push_back(obj.energy())
 
-#### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
+            #### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
 
             hemisphere = Hemisphere(pxvec, pyvec, pzvec, Evec, 2, 3)
             grouping=hemisphere.getGrouping()
@@ -415,7 +412,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
                 pzvec.push_back(obj.pz())
                 Evec.push_back(obj.energy())
 
-#### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
+            #### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
 
             hemisphere = Hemisphere(pxvec, pyvec, pzvec, Evec, 2, 3)
             grouping=hemisphere.getGrouping()
@@ -464,26 +461,28 @@ class ttHTopoVarAnalyzer( Analyzer ):
 ##                print 'MT2bb(1b)',event.mt2bb                                                                                                                                                                                                             
 
 ## ===> leptonic MT2 (as used in the SUS-13-025 )                                                                                                                                                                                                           
-        if len(event.selectedLeptons)>=2:
-            event.mt2lep = self.computeMT2(event.selectedLeptons[0], event.selectedLeptons[1], event.met)
+        if not self.cfg_ana.doOnlyDefault:
+            if len(event.selectedLeptons)>=2:
+                event.mt2lep = self.computeMT2(event.selectedLeptons[0], event.selectedLeptons[1], event.met)
 
 ## ===> hadronic MT2w (as used in the SUS-13-011) below just a placeHolder to be coded properly
 
-        if len(event.selectedLeptons)>=1:
+        if not self.cfg_ana.doOnlyDefault:
+            if len(event.selectedLeptons)>=1:
 
-            metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
-            lVector = TVectorD(3,array.array('d',[0.,event.selectedLeptons[0].px(), event.selectedLeptons[0].py()]))
-            #placeholder for visaVector and visbVector  need to get the jets
-            visaVector = TVectorD(3,array.array('d',[0.,event.selectedLeptons[0].px(), event.selectedLeptons[0].py()]))
-            visbVector = TVectorD(3,array.array('d',[0.,event.selectedLeptons[0].px(), event.selectedLeptons[0].py()]))
-            
-            metVector =numpy.asarray(metVector,dtype='double')
-            lVector =numpy.asarray(lVector,dtype='double')
-            visaVector =numpy.asarray(visaVector,dtype='double')
-            visbVector =numpy.asarray(visbVector,dtype='double')
+                metVector = TVectorD(3,array.array('d',[0.,event.met.px(), event.met.py()]))
+                lVector = TVectorD(3,array.array('d',[0.,event.selectedLeptons[0].px(), event.selectedLeptons[0].py()]))
+                #placeholder for visaVector and visbVector  need to get the jets
+                visaVector = TVectorD(3,array.array('d',[0.,event.selectedLeptons[0].px(), event.selectedLeptons[0].py()]))
+                visbVector = TVectorD(3,array.array('d',[0.,event.selectedLeptons[0].px(), event.selectedLeptons[0].py()]))
 
-            mt2wSNT.set_momenta(lVector, visaVector,visbVector,metVector);
-            event.mt2w = mt2wSNT.get_mt2w() 
+                metVector =numpy.asarray(metVector,dtype='double')
+                lVector =numpy.asarray(lVector,dtype='double')
+                visaVector =numpy.asarray(visaVector,dtype='double')
+                visbVector =numpy.asarray(visbVector,dtype='double')
+
+                mt2wSNT.set_momenta(lVector, visaVector,visbVector,metVector);
+                event.mt2w = mt2wSNT.get_mt2w() 
 
 
 

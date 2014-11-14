@@ -174,6 +174,7 @@ ttHJetAna = cfg.Analyzer(
     recalibrateJets = False,
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     cleanJetsFromTaus = False,
+    doQG = False,
     )
 
 # Jet MC Match Analyzer (generic)
@@ -193,6 +194,14 @@ ttHHeavyFlavourHadronAnalyzer = cfg.Analyzer(
     'ttHHeavyFlavourHadronAnalyzer'
 )
 
+
+ttHMetAna = cfg.Analyzer(
+    'ttHMetEventAnalyzer',
+    doTkMet = False,
+    candidates='packedPFCandidates',
+    candidatesTypes='std::vector<pat::PackedCandidate>',
+    dzMax = 0.1,
+    )
 
 # Core Event Analyzer (computes basic quantities like HT, dilepton masses)
 ttHCoreEventAna = cfg.Analyzer(
@@ -234,6 +243,7 @@ susyCoreSequence = [
     ttHJetAna,
     ttHJetMCAna,
     #ttHSVAnalyzer, # out of core sequence for now
+    ttHMetAna,
     ttHCoreEventAna,
     ttHJetMETSkim
 ]

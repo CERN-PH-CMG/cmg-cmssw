@@ -12,7 +12,7 @@ class EventVars2LSS:
         # make python lists as Collection does not support indexing in slices
         leps = [l for l in Collection(event,"LepGood","nLepGood",4)]
         jets = [j for j in Collection(event,"Jet","nJet25",8)]
-        (met, metphi)  = event.met, event.met_phi
+        (met, metphi)  = event.met_pt, event.met_phi
         njet = len(jets); nlep = len(leps)
         # prepare output
         ret = dict([(name,0.0) for name in self.branches])
