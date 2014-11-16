@@ -56,7 +56,7 @@ class ComponentCreator(object):
         return component
     ### MM
 
-    def makeMCComponentFromEOS(self,name,dataset,path,pattern=".*root"):
+    def getFilesFromEOS(self,name,dataset,path,pattern=".*root"):
         from CMGTools.Production.dataset import getDatasetFromCache, writeDatasetToCache
         if "%" in path: path = path % dataset;
         try:
@@ -66,10 +66,12 @@ class ComponentCreator(object):
             if len(files) == 0:
                 raise RuntimeError, "ERROR making component %s: no files found under %s matching '%s'" % (name,path,pattern)
             writeDatasetToCache('EOS%{path}%{pattern}.pck'.format(path = path.replace('/','_'), pattern = pattern), files)
+        return files
+    def makeMCComponentFromEOS(self,name,dataset,path,pattern=".*root"):
         component = cfg.MCComponent(
             dataset=dataset,
             name = name,
-            files = files,
+            files = self.getFilesFromEOS(name,dataset,path,pattern),
             xSection = 1,
             nGenEvents = 1,
             triggers = [],
