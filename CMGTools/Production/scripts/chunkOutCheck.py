@@ -76,12 +76,15 @@ for d in dirs:
                                 succeeded = True
                                 break
                             else:
-                                print logName, 'remote copy failed. Copied locally'
+                                print logName, ': remote copy failed. Copied locally'
                 if succeeded:
                     break
             if succeeded:
                 continue # all good
-            print logName, 'copy failed or not sent to the expected location'
+            if logNames == []:
+                print d, ": no log files found matchig", match
+            else:
+                print logNames, ': copy failed or not sent to the expected location'
         else:
             continue # all good
     badDirs.append(d)
