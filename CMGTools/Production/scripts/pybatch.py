@@ -39,7 +39,7 @@ def batchScriptCERN( jobDir, remoteDir=''):
 if [ $? -ne 0 ]; then
    echo 'ERROR: problem copying job directory back'
 else
-   echo 'job directory copy succedeed'
+   echo 'job directory copy succeeded'
 fi"""
    if remoteDir=='':
       cpCmd="echo 'sending the job directory back'\n" + dirCopy
@@ -102,7 +102,7 @@ def batchScriptPSI( jobDir, remoteDir=''):
 if [ $? -ne 0 ]; then
    echo 'ERROR: problem copying job directory back'
 else
-   echo 'job directory copy succedeed'
+   echo 'job directory copy succeeded'
 fi"""
    if remoteDir=='':
        cpCmd="echo 'sending the job directory back'" + dirCopy

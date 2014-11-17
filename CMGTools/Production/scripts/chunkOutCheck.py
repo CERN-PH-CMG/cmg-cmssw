@@ -26,9 +26,6 @@ parser.add_option("-l","--log-file", dest="logfile",
 
 (options,args) = parser.parse_args()
 
-print "options:", options
-print "args:", args
-
 if len(args)==0:
     print 'provide at least one directory in argument. Use -h to display help'
 
@@ -60,10 +57,11 @@ for d in dirs:
     else:
         #everything ok so far
         if options.checkCopy:
-            match = ["*.txt", "*.log","*.out", "STD_OUTPUT"] if logfile = "" else [logfile]
+            match = ["*.txt", "*.log","*.out", "STD_OUTPUT"] if options.logfile == "" else [options.logfile]
             logNames = []
             for m in match:
-                logNames += glob.glob(d+"/"+match)
+                logNames += glob.glob(d+"/"+m)
+            succeeded = False
             for logName in logNames:
                 if not os.path.isfile( logName ):
                     print logName, 'does not exist'
@@ -74,12 +72,15 @@ for d in dirs:
                         if "gfal-copy" in line:
                             isRemote = True
                         if "copy succeeded" in line and "echo" not in line:
-                            if not isRemote:
-                                continue # all good
-                            elif "remote" in line:
-                                continue  # all good
+                            if not isRemote or "remote" in line:
+                                succeeded = True
+                                break
                             else:
                                 print logName, 'remote copy failed. Copied locally'
+                if succeeded:
+                    break
+            if succeeded:
+                continue # all good
             print logName, 'copy failed or not sent to the expected location'
         else:
             continue # all good
