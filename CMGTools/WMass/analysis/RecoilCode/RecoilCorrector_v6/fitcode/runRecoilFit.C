@@ -118,6 +118,9 @@ TH2D histoU1vsU2corrUnorm("hu1vsu2corrUnorm","histo U1 vs U2 after corrU",100,-1
 TH2D histoRecoil("hrecoil"," recoil vs recoilCorr",100,-20,20,100,-20,20);
 TH2D histoU1vsU2_520("hu1vsu2520","",100,-10,10,100,-10,10);
 
+TH2D histoU1Rawcorr("hU1Rawcorr","histo U1 raw vs U1 after corrU",100,-10,10,100,-10,10);
+TH2D histoU2Rawcorr("hU2Rawcorr","histo U2 raw vs U2 after corrU",100,-10,10,100,-10,10);
+
 TH2D histoU1vsU2_02("hu1vsu2_02","",100,-10,10, 100,-10,10);
 TH2D histoU1vsU2_24("hu1vsu2_24","",100,-10,10, 100,-10,10);
 TH2D histoU1vsU2_46("hu1vsu2_46","",100,-10,10, 100,-10,10);
@@ -141,6 +144,17 @@ TH2D histoU2vsMuPt("histoU2vsMuPt","",100,0,100, 100,-50,50);
 
 TH1D histoDeltaU1("hdeltaU1","histo ",100,-95,5);
 TH1D histoDeltaU2("hdeltaU2","histo ",100,-95,5);
+
+TH1D histoUpVal("histoUpVal","histoUpVal", 100,-1.5, 1.5);
+TH1D histoUraw2("histoUraw2","histoUraw2", 200, 0., 50.);
+TH1D histoUraw1("histoUraw1","histoUraw1", 200, 0., 50.);
+
+TH1D histoFrac1D("histoFrac1D","histoFrac1D", 500, 0., 1.);
+TH1D histoFrac1M("histoFrac1M","histoFrac1M", 500, 0., 1.);
+TH1D histoFrac2D("histoFrac2D","histoFrac2D", 500, 0., 1.);
+TH1D histoFrac2M("histoFrac2M","histoFrac2M", 500, 0., 1.);
+
+TH2D histoFrac1D2D("histoFrac1D2D","",100,0.,1.,100,0.,1.);
 
 //## needed for the boson PDF check check of the application of the recoilCorr
 TH1D Vpt0("Vpt0","gluon",100,0,50);
@@ -485,7 +499,7 @@ double diGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2) {
 
   double lMin = lVal * ((iSigma1 < iSigma2) ? iSigma1 : iSigma2);
   double lMax = lVal * ((iSigma1 < iSigma2) ? iSigma2 : iSigma1);
-  //  cout << "-- Min - " << lMin <<  " -> " << lMax << " -- " << iSigma1 << " -- " << iSigma2 << endl;
+  //  cout << "-- Min - " << lMin <<  " -> " << lMax << " -- Sigma1=" << iSigma1 << " Sigma2=" << iSigma2 << endl;
 
   double lDiff = (lMax-lMin);
   //Iterative procedure to invert a double gaussian given a PVal
@@ -498,11 +512,16 @@ double diGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2) {
     for(int i1 = 0; i1 < lN2; i1++) { 
       double pVal = lMin + lDiff/lN2*i1;
       pVal = diGausPVal(pVal,iFrac,iSigma1,iSigma2);
+      if(TMath::ErfInverse(pVal)==0) { lId = -99; break;};
+
       if(pVal==(lMin + lDiff/lN2*i1)) pVal=(lMin + lDiff/lN2*i1);
       if(pVal > iPVal) {lId = i1; break;}
       //      if(pVal < iPVal && lDiff < 0 ) {lId = i1; break;}
     }
   }
+
+  if(lId==-99) { return iPVal; cout << "nothing here " << endl; } 
+
   //  cout << "-- Final Val "  <<  (lMin + (lId-0.5)*lDiff/lN2) << " -- " << lId << endl;
   return (lMin + (lId-0.5)*lDiff/lN2);
 }
@@ -572,6 +591,12 @@ void applyType2CorrU(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   pMFrac1     = (pMFrac1-pMSigma1_2)/(pMSigma1_1-pMSigma1_2);
   pMFrac2     = (pMFrac2-pMSigma2_2)/(pMSigma2_1-pMSigma2_2);
 
+  histoFrac1D.Fill(pDFrac1);
+  histoFrac2D.Fill(pDFrac2);
+  histoFrac1M.Fill(pMFrac1);
+  histoFrac2M.Fill(pMFrac2);
+  histoFrac1D2D.Fill(pDFrac1,pDFrac2);
+
   /////
   /////
   /////
@@ -598,15 +623,15 @@ void applyType2CorrU(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
 
   double pU1   = pU*pCos;
   double pU2   = pU*pSin;
-  double pU1Diff  = pU1-offset; // pU1 of the event ; pDefU1 is the scale iU1RZDatFit ->Eval(iGenPt);
+  double pU1Diff  = pU1-offset; // pU1 of the event ; offset
   double pU2Diff  = pU2;
 
-  pU1Diff*=normSigmaM; /// comments for now
+  if(!scaleU2) pU2Diff*=normSigmaM; // make U2 similar to U1
+  if(scaleU2) pU1Diff*=normSigmaM; // make U1 similar to U2
 
   if(iGenPt<20) {
     histoU1vsZpt.Fill(iGenPt,pU1Diff);
     histoU1vsU2.Fill(pU1Diff,pU2Diff);
-    histoU1vsU2_520.Fill(pU1Diff,pU2Diff);
     histoU1.Fill(pU1Diff);
     histoU1O.Fill(pU1);
     histoU1Z.Fill(pU1/iGenPt);
@@ -670,28 +695,33 @@ void applyType2CorrU(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
 
     if(!scaleU2) pUValM         = diGausPVal(fabs(recoil),pMFrac1,pMSigma1_1,pMSigma1_2);
     if(!scaleU2) pUValD         = diGausPInverse(pUValM  ,pDFrac1,pDSigma1_1,pDSigma1_2);
-    
-    if(pUValM==fabs(recoil)) pUValD=fabs(recoil); // in those cases do nothing
 
-    //    cout << "=======>>>>>>> " << endl;
+    if(pUValM==fabs(recoil)) pUValD=fabs(recoil); // in those cases do nothing
+    if(pUValD==fabs(pUValM)) pUValD=fabs(recoil); // in those cases do nothing 
 
     if(scaleU2) pUValMtest     = diGausPInverse(pUValM  ,pMFrac2,pMSigma2_1,pMSigma2_2);
     if(pUValM==fabs(recoil)) pUValMtest=fabs(recoil); // in those cases do nothing
     histoDeltaU1.Fill(pUValMtest-fabs(recoil));
 
-    //    if(iGenPt<20 && pUValMtest-fabs(recoil) < -10) cout << "=======>>>>>>> strange value output: " << pUValMtest << "; input " << fabs(recoil) << " frac2 " << pDFrac2 << endl;
+  }
 
-
+  if(scaleU2) {
+    pU1ValD=pUValD*(pU1Diff/recoil)*(1/normSigmaD);
+    pU2ValD=pUValD*(pU2Diff/recoil);
+  } else {
+    pU1ValD=pUValD*(pU1Diff/recoil);
+    pU2ValD=pUValD*(pU2Diff/recoil)*(1/normSigmaD);
   }
 
 
-  if(iGenPt<20) histoRecoil.Fill(recoil,pUValD);
-  if(iGenPt<20) histoU1vsU2corrU.Fill(pUValD*(pU1Diff/recoil),pUValD*(pU2Diff/recoil));
-
-  pU1ValD=pUValD*(pU1Diff/recoil)*(1/normSigmaD);
-  pU2ValD=pUValD*(pU2Diff/recoil);
-
-  if(iGenPt<20) histoU1vsU2corrUnorm.Fill(pU1ValD,pU2ValD);
+  if(iGenPt<20 && pUValD!=fabs(recoil)) {
+    histoUpVal.Fill(pUValM);
+    histoUraw1.Fill(recoil);
+    histoUraw2.Fill(pUValD);
+    histoU1Rawcorr.Fill(pU1Diff,pU1ValD);
+    histoU2Rawcorr.Fill(pU2Diff,pU2ValD);
+    histoU1vsU2corrUnorm.Fill(pU1ValD,pU2ValD);
+  }
 
   if(iGenPt>0 && iGenPt<2) histoU1vsU2_02.Fill(pU1ValD,pU2ValD);
   if(iGenPt>2 && iGenPt<4) histoU1vsU2_24.Fill(pU1ValD,pU2ValD);
@@ -723,7 +753,7 @@ void applyType2CorrU(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   //  iU1   = pU1; 
   //  iU2   = pU2;
 
-  if(dodebug) cout << " Met=" << iMet << endl;
+  if(dodebug) cout << " Met=" << iMet << " Metphi=" << iMPhi << endl;
   if(dodebug) cout << "===========================" << endl;
 
   return;
@@ -870,31 +900,29 @@ void applyType2CorrMET(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
       pU2ValD         = diGausPInverse(pU2ValM  ,pDFrac2,pDSigma2_1,pDSigma2_2);
     }
 
-    if(dodebug)  cout << "            after diGausPInverse " << endl;
-    if(dodebug)  cout << "                pU1ValD=" <<  pU1ValD << "; pU1ValM=" << pU1ValM << endl;
-    if(dodebug)  cout << "                pU2ValD=" <<  pU2ValD << "; pU2ValM=" << pU2ValM << endl;
-
-    pU1ValMtest     = diGausPInverse(pU1ValM, pMFrac1, pMSigma1_1, pMSigma1_2);
-    pU2ValMtest     = diGausPInverse(pU2ValM, pMFrac2, pMSigma2_1, pMSigma2_2);
-
-    //    cout << "            after diGausPInverse " << endl;
-    //    cout << "                pU1ValMtest=" <<  pU1ValD << "; pU1ValM=" << pU1ValM << endl;
-    //    cout << "                pU2ValMtest=" <<  pU2ValD << "; pU2ValM=" << pU2ValM << endl;
-
-    if(pU1ValM==fabs(pU1Diff)) pU1ValMtest=fabs(pU1Diff); // in those cases do nothing                                                                                       
-    if(pU2ValM==fabs(pU2Diff)) pU2ValMtest=fabs(pU2Diff); // in those cases do nothing                                                                                       
-    histoDeltaU1.Fill(pU1ValMtest-fabs(pU1Diff));
-    histoDeltaU2.Fill(pU2ValMtest-fabs(pU2Diff));
-
+    //condition #1
     if(pU1ValM==fabs(pU1Diff)) pU1ValD=fabs(pU1Diff); // in those cases do nothing
     if(pU2ValM==fabs(pU2Diff)) pU2ValD=fabs(pU2Diff); // in those cases do nothing
 
+    //condition #2
+    if(pU1ValD==pU1ValM) pU1ValD=fabs(pU1Diff); // in those cases do nothing 
+    if(pU2ValD==pU2ValM) pU2ValD=fabs(pU2Diff); // in those cases do nothing 
+
+    // Some TEST
+    pU1ValMtest     = diGausPInverse(pU1ValM, pMFrac1, pMSigma1_1, pMSigma1_2);
+    pU2ValMtest     = diGausPInverse(pU2ValM, pMFrac2, pMSigma2_1, pMSigma2_2);
+    //condition #1
+    if(pU1ValM==fabs(pU1Diff)) pU1ValMtest=fabs(pU1Diff); // in those cases do nothing                                                                                       
+    if(pU2ValM==fabs(pU2Diff)) pU2ValMtest=fabs(pU2Diff); // in those cases do nothing                                                                                       
+    //condition #2
+    if(pU1ValMtest==pU1ValM) pU1ValMtest=fabs(pU1Diff); // in those cases do nothing                                                                                       
+    if(pU2ValMtest==pU2ValM) pU2ValMtest=fabs(pU2Diff); // in those cases do nothing                                                                                       
+    // fill TEST histo
+    histoDeltaU1.Fill(pU1ValMtest-fabs(pU1Diff));
+    histoDeltaU2.Fill(pU2ValMtest-fabs(pU2Diff));
+
   }
 
-  //  cout << "oneGAUSS " << endl;
-  //  cout << " iU1MSZMCFit ->Eval(iGenPt) " << iU1MSZMCFit ->Eval(iGenPt) << " U2MSZMCFit ->Eval(iGenPt) " << iU2MSZMCFit ->Eval(iGenPt) << endl;
-  //  cout << "  pU1ValM " << pU1ValM_one  << " pU1ValD " << pU1ValD_one  << endl;
-  //  cout << "  pU2ValM " << pU2ValM_one  << " pU2ValD " << pU2ValD_one  << endl;
 
   pU1ValD*=p1Charge;
   pU2ValD*=p2Charge;
@@ -1355,6 +1383,7 @@ bool runSelection(bool doMet) {
       /////////
       /// FILLING HISTOGRAMS
       
+      /*
       histoZPt.Fill(fZPt);
 
       histoU1vsZpt.Fill(fZPt,fU1);
@@ -1382,6 +1411,7 @@ bool runSelection(bool doMet) {
       histoThetaStar.Fill(CosThetaStar);
 
       if(dodebug) cout << "passed run selection "<< endl;     
+      */
 
       return true;
 
@@ -3892,7 +3922,7 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
 
   gStyle->SetOptFit(111111);
 
-  TString name="recoilfits/recoilfit_NOV10";
+  TString name="recoilfits/recoilfit_NOV19";
   if(do8TeV) name +="_8TeV";
   if(doABC) name +="_ABC";
 
@@ -3927,7 +3957,6 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
 
   }
 
-
   if(MCtype==1) {
 
     if(doMad) cout << "PROCESSING DY MC MADGRAPH -- inclusive Nvertex -- charged only " << endl;
@@ -3948,15 +3977,15 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
 
     if(doIterativeMet) {
 
-      if(!doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_NOV5_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
-      if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_NOV5_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
+      if(!doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_NOV19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
+      if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_NOV19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
 
       ////// DATA closure
-      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_NOV5_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_53X.root" ,"PF",fId);
+      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_NOV19_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_53X.root" ,"PF",fId);
 
       ////// MC closure
-      //      if(!doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_NOV5_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
-      //      if(doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_NOV5_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
+      //      if(!doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_NOV19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
+      //      if(doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_NOV19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
 	
     }
     
@@ -4129,6 +4158,16 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     histoU1vsU2_1416.Write();
     histoU1vsU2_1618.Write();
     histoU1vsU2_1820.Write();
+    histoU1Rawcorr.Write();
+    histoU2Rawcorr.Write();
+    histoUpVal.Write();
+    histoUraw1.Write();
+    histoUraw2.Write();
+    histoFrac1D.Write();
+    histoFrac2D.Write();
+    histoFrac1M.Write();
+    histoFrac2M.Write();
+    histoFrac1D2D.Write();
     histoU1.Write();
     histoU1O.Write();
     histoU1Z.Write();
