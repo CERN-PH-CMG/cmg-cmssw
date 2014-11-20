@@ -57,8 +57,8 @@ class ttHGenLevelAnalyzer( Analyzer ):
         #mc information
         self.mchandles['genParticles'] = AutoHandle( 'prunedGenParticles',
                                                      'std::vector<reco::GenParticle>' )
-        if self.doPDFWeights:
-            self.mchandles['pdfstuff'] = AutoHandle( 'generator', 'GenEventInfoProduct' )
+        #if self.doPDFWeights:
+        self.mchandles['pdfstuff'] = AutoHandle( 'generator', 'GenEventInfoProduct' )
 
     def beginLoop(self):
         super(ttHGenLevelAnalyzer,self).beginLoop()
@@ -71,7 +71,11 @@ class ttHGenLevelAnalyzer( Analyzer ):
             dau.sourceId = sourceId
             dau.isTau = isTau
             id = abs(dau.pdgId())
-            moid = abs(dau.mother().pdgId())
+            if(dau.mother() ):
+                moid = abs(dau.mother().pdgId())
+            else:
+                moid='None'
+                print 'Warning: no mother id for gen lepton'
             if id in [11,13]:
                 if isTau: event.gentauleps.append(dau)
                 else:     event.genleps.append(dau)
@@ -219,6 +223,14 @@ class ttHGenLevelAnalyzer( Analyzer ):
             event.pdfWeights[pdf] = [w for w in ws]
             #print "Produced %d weights for %s: %s" % (len(ws),pdf,event.pdfWeights[pdf])
 
+    def addGenBinning(self,event):
+        if self.mchandles['pdfstuff'].product().hasBinningValues():
+            event.genBin = self.mchandles['pdfstuff'].product().binningValues()[0]
+        else:
+            event.genBin = -999
+
+        event.genQScale = self.mchandles['pdfstuff'].product().qScale()
+
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
@@ -233,6 +245,8 @@ class ttHGenLevelAnalyzer( Analyzer ):
 
         # do MC level analysis
         self.makeMCInfo(event)
+
+        self.addGenBinning(event)
 
         # if MC and filtering on the Higgs decay mode, 
         # them do filter events
