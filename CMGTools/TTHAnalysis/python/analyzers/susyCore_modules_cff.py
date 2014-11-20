@@ -198,6 +198,7 @@ ttHHeavyFlavourHadronAnalyzer = cfg.Analyzer(
 ttHMetAna = cfg.Analyzer(
     'ttHMetEventAnalyzer',
     doTkMet = False,
+    doMetNoMu = False,
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,

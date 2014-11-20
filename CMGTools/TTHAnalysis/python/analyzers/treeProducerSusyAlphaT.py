@@ -14,6 +14,9 @@ class treeProducerSusyAlphaT( treeProducerSusyCore ):
 
             #NTupleVariable("crossSection", lambda ev : ev.crossSection, help="process cross section in pb"),
 
+            #Gen level 
+            NTupleVariable("genBin", lambda ev : ev.genBin, help="Generator level binning quantity"),
+            NTupleVariable("genQScale", lambda ev : ev.genQScale, help="Generator level binning quantity, QScale"),
 
             # Energy sums
             #----------------------------------------
@@ -65,7 +68,10 @@ class treeProducerSusyAlphaT( treeProducerSusyCore ):
             "cleanJetsAll"     : NTupleCollection("jet",      jetTypeSusy,             100, help="all jets (w/ x-cleaning, w/ ID applied w/o PUID applied pt > 50 |eta| < 3) , sorted by pt", filter=lambda l : l.pt()>50  ),
             "selectedPhotons"  : NTupleCollection("gamma",    photonTypeSusy,           50, help="photons with pt > 25 and loose cut based ID"),
             "selectedIsoTrack" : NTupleCollection("isoTrack", isoTrackType,             50, help="isoTrack, sorted by pt"),
+
+            #Gen collections
             "genParticles"     : NTupleCollection("genPart",  genParticleWithMotherId, 200, help="all pruned genparticles"),
+            "genJets"         : NTupleCollection("genJet",     genParticleType, 10, help="Generated jets (not cleaned)"),
 
             # add stuff for testing
             "selectedMuons" : NTupleCollection("muon", leptonTypeSusy, 50, help="Muons for testing"),

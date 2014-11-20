@@ -63,35 +63,10 @@ class ttHAlphaTVarAnalyzer( Analyzer ):
 
         return
 
-    def makeBiasedDPhi(self, event):
-
-        if len(event.cleanJets) == 0:
-            event.biasedDPhi = 0
-            return 
-	mhtPx = event.mhtJet50jvec.px()
-	mhtPy = event.mhtJet50jvec.py()
-
-	biasedDPhi = 10;
-        for jet in event.cleanJets:
-	    newPhi = atan2(mhtPy+jet.py(),mhtPx+jet.px())
-	    biasedDPhiTemp = abs(deltaPhi(newPhi,jet.phi()))
-	    if biasedDPhiTemp < biasedDPhi:
-		biasedDPhi = biasedDPhiTemp
-		biasedDPhiJet = jet
-            pass
-
-        event.biasedDPhi = biasedDPhi
-        event.biasedDPhiJet = biasedDPhiJet
-
-        return
-
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
         event.alphaT = -999
         self.makeAlphaT(event)
-	event.biasedDPhi = -999
-	#event.biasDPhiJet = -999
-	self.makeBiasedDPhi(event)
 
         return True

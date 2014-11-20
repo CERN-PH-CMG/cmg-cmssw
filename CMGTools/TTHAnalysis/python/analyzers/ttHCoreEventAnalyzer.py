@@ -148,6 +148,30 @@ class ttHCoreEventAnalyzer( Analyzer ):
 #            event.met.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
 #            px,py = event.metNoPU.px()+event.deltaMetFromJEC[0], event.metNoPU.py()+event.deltaMetFromJEC[1]
 #            event.metNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
+    
+    #Function to make the biased Dphi
+    def makeBiasedDPhi(self, event):
+
+        if len(event.cleanJets) == 0:
+            event.biasedDPhi = 0
+            return 
+	mhtPx = event.mhtJet50jvec.px()
+	mhtPy = event.mhtJet50jvec.py()
+
+	biasedDPhi = 10;
+        for jet in event.cleanJets:
+	    newPhi = atan2(mhtPy+jet.py(),mhtPx+jet.px())
+	    biasedDPhiTemp = abs(deltaPhi(newPhi,jet.phi()))
+	    if biasedDPhiTemp < biasedDPhi:
+		biasedDPhi = biasedDPhiTemp
+		biasedDPhiJet = jet
+            pass
+
+        event.biasedDPhi = biasedDPhi
+        event.biasedDPhiJet = biasedDPhiJet
+
+        return
+
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
@@ -295,4 +319,9 @@ class ttHCoreEventAnalyzer( Analyzer ):
         diffMetMht_vec = ROOT.reco.Particle.LorentzVector(event.mhtJet40j10lvec.px()-event.met.px(), event.mhtJet40j10lvec.py()-event.met.py(), 0, 0 )
         event.diffMetMht = sqrt( diffMetMht_vec.px()*diffMetMht_vec.px() + diffMetMht_vec.py()*diffMetMht_vec.py() )
         ###
+
+        #Make Biased DPhi
+        event.biasedDPhi = -999
+        self.makeBiasedDPhi(event)
+
         return True
