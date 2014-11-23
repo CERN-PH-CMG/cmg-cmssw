@@ -273,7 +273,7 @@ class MCAnalysis:
                 elif len(h) <= fmtlen:
                     print h.center(fmtlen),
                 else:
-                    print h[:fmtlen]
+                    print h[:fmtlen],
             print ""
             print "-"*((fmtlen+1)*len(table)+clen)
             for i,(cut,dummy) in enumerate(table[0][1]):
