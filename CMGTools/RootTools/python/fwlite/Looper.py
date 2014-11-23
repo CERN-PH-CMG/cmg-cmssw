@@ -36,7 +36,7 @@ class Looper(object):
         self.classes = {}
         #TODO: should be a diclist? 
         self.analyzers = map( self._buildAnalyzer, sequence )
-        self.nEvents = nEvents
+        self.nEvents = getattr(cfg_comp, 'maxEvents', nEvents)
         self.firstEvent = firstEvent
         self.nPrint = int(nPrint)
         # initialize FWLite chain on input file:
