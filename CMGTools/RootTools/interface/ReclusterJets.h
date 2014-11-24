@@ -25,11 +25,16 @@ class ReclusterJets {
   ReclusterJets(const std::vector<LorentzVector> & objects, double ktpower, double rparam);
 
   /// get grouping (inclusive jets)
-  std::vector<LorentzVector> getGrouping();
+  std::vector<LorentzVector> getGrouping(double ptMin = 0.0);
+
+  /// get grouping (exclusive jets, until n are left)
+  std::vector<LorentzVector> getGroupingExclusive(int njets);
+  /// get grouping (exclusive jets, up to cut dcut)
+  std::vector<LorentzVector> getGroupingExclusive(double dcut);
 
  private:
-
-  int Reconstruct();
+  // pack the returns in a fwlite-friendly way
+  std::vector<LorentzVector> makeP4s(const std::vector<fastjet::PseudoJet> &jets) ;
 
   // used to handle the inputs
   std::vector<fastjet::PseudoJet> fjInputs_;        // fastjet inputs
@@ -38,14 +43,10 @@ class ReclusterJets {
   double rparam_;
 
   /// fastjet outputs
-  std::vector<fastjet::PseudoJet> inclusiveJets_;          // fastjet jets
   typedef boost::shared_ptr<fastjet::ClusterSequence>  ClusterSequencePtr;
   ClusterSequencePtr fjClusterSeq_;    
-
-  /// friendly outputs
-  std::vector<LorentzVector> JetObjectsAll_;
+  std::vector<fastjet::PseudoJet> inclusiveJets_; 
+  std::vector<fastjet::PseudoJet> exclusiveJets_; 
 };
 
-//FASTJET_END_NAMESPACE
- 
 #endif    

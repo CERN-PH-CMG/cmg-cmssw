@@ -19,14 +19,6 @@ ReclusterJets::ReclusterJets(const std::vector<LorentzVector> & objects, double 
     fjInputs_.push_back(j);
   }
 
-}
-
-std::vector<math::XYZTLorentzVector> ReclusterJets::getGrouping() {
-  if (JetObjectsAll_.empty()) this->Reconstruct();
-  return JetObjectsAll_;
-}
-
-int ReclusterJets::Reconstruct(){
   // choose a jet definition
   fastjet::JetDefinition jet_def;
 
@@ -46,15 +38,32 @@ int ReclusterJets::Reconstruct(){
   ///
   // define jet clustering sequence
   fjClusterSeq_ = ClusterSequencePtr( new fastjet::ClusterSequence( fjInputs_, jet_def)); 
+}
 
-  // recluster jet
-  inclusiveJets_ = fastjet::sorted_by_pt( fjClusterSeq_->inclusive_jets());
-
-  JetObjectsAll_.clear();
-  for (const fastjet::PseudoJet & pj : inclusiveJets_) {
-    JetObjectsAll_.push_back( LorentzVector( pj.px(), pj.py(), pj.pz(), pj.e() ) );
+std::vector<math::XYZTLorentzVector> ReclusterJets::makeP4s(const std::vector<fastjet::PseudoJet> &jets) {
+  std::vector<math::XYZTLorentzVector> JetObjectsAll;
+  for (const fastjet::PseudoJet & pj : jets) {
+    JetObjectsAll.push_back( LorentzVector( pj.px(), pj.py(), pj.pz(), pj.e() ) );
   }
+  return JetObjectsAll;
+}
+std::vector<math::XYZTLorentzVector> ReclusterJets::getGrouping(double ptMin) {
+  // recluster jet
+  inclusiveJets_ = fastjet::sorted_by_pt(fjClusterSeq_->inclusive_jets(ptMin));
+  // return
+  return makeP4s(inclusiveJets_);
+}
 
-  //if(JetObjectAll.size()==0) return -1;
-  return 1;
+std::vector<math::XYZTLorentzVector> ReclusterJets::getGroupingExclusive(double dcut) {
+  // recluster jet
+  exclusiveJets_ = fastjet::sorted_by_pt(fjClusterSeq_->exclusive_jets(dcut));
+  // return
+  return makeP4s(exclusiveJets_);
+}
+
+std::vector<math::XYZTLorentzVector> ReclusterJets::getGroupingExclusive(int njets) {
+  // recluster jet
+  exclusiveJets_ = fastjet::sorted_by_pt(fjClusterSeq_->exclusive_jets(njets));
+  // return
+  return makeP4s(exclusiveJets_);
 }
