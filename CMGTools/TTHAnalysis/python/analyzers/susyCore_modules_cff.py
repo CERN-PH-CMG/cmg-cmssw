@@ -63,7 +63,9 @@ susyScanAna = cfg.Analyzer(
 
 # gen particles in Pythia 6
 susyPythia6Gen  = cfg.Analyzer(
-    'susyGenStatusThree'
+    'susyGenStatusThree',
+    pythia6only = False, # True = get status 3; False = try get interesting event whatever generator is used
+    verbose     = False,
     )
 
 # Lepton Analyzer (generic)

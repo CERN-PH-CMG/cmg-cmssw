@@ -62,17 +62,6 @@ class ttHGenLevelOnlyStudy( Analyzer ):
         super(ttHGenLevelOnlyStudy,self).beginLoop()
 
     def doLeptons(self,iEvent,event):
-        def isPrompt(l):
-            for x in xrange(l.numberOfMothers()):
-                mom = l.mother(x)
-                if mom.status() > 2: return True
-                id = abs(mom.pdgId())
-                if id > 100: return False
-                if id <   6: return False
-                if id == 21: return False
-                if id in [11,13,15]: return isPrompt(mom)
-                if id in [ 22,23,24,25,32 ]: return True
-            return True
             
         event.selectedLeptons = []
         for l in event.genParticles: 
@@ -81,7 +70,7 @@ class ttHGenLevelOnlyStudy( Analyzer ):
                 if l.pt() <= 5 or abs(l.eta()) > 2.4: continue
             if abs(l.pdgId()) == 11:
                 if l.pt() <= 7 or abs(l.eta()) > 2.5: continue
-            if not isPrompt(l):
+            if not isNotFromHadronicShower(l):
                 continue
             event.selectedLeptons.append(LeptonFromGen(l))
 

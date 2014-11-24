@@ -266,7 +266,8 @@ genParticleWithSourceType = NTupleObjectType("genParticleWithSource", baseObject
 ])
 genParticleWithMotherId = NTupleObjectType("genParticleWithMotherId", baseObjectTypes = [ genParticleType ], mcOnly=True, variables = [
     #NTupleVariable("motherId", lambda x : x.motherId, int, help="pdgId of the mother of the particle")
-    NTupleVariable("motherId", lambda x : x.mother(0).pdgId() if x.mother(0) else 0, int, help="pdgId of the mother of the particle"),
+    NTupleVariable("motherId", lambda x : getattr(x,'motherId',x.mother(0).pdgId() if x.mother(0) else 0), int, help="pdgId of the mother of the particle"),
+    NTupleVariable("motherIndex", lambda x : getattr(x,'motherIndex',-1), int, help="index of the mother of the particle (or -1 if not filled)"),
     NTupleVariable("grandmaId", lambda x : x.mother(0).mother(0).pdgId() if x.mother(0) and x.mother(0).mother(0) else 0, int, help="pdgId of the grandmother of the particle")
 ])
 
