@@ -73,6 +73,31 @@ class ttHMetEventAnalyzer( Analyzer ):
             px,py = event.metNoPU.px()+event.deltaMetFromJEC[0], event.metNoPU.py()+event.deltaMetFromJEC[1]
             event.metNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
 
+    def makeMETNoMu(self, event):
+        event.metNoMu = copy.deepcopy(self.handles['met'].product()[0])
+        event.metNoMuNoPU = copy.deepcopy(self.handles['nopumet'].product()[0])
+        
+        mupx = 0
+        mupy = 0
+        #sum muon momentum
+        for mu in event.selectedMuons:
+            mupx += mu.px()
+            mupy += mu.py()
+
+        #subtract muon momentum and construct met
+        if hasattr(event, 'deltaMetFromJetSmearing'):
+            import ROOT
+            px,py = event.metNoMu.px()+event.deltaMetFromJetSmearing[0]-mupx, event.metNoMu.py()+event.deltaMetFromJetSmearing[1]-mupy
+            event.metNoMu.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
+            px,py = event.metNoMuNoPU.px()+event.deltaMetFromJetSmearing[0]-mupx, event.metNoMuNoPU.py()+event.deltaMetFromJetSmearing[1]-mupy
+            event.metNoMuNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
+        if hasattr(event, 'deltaMetFromJEC') and event.deltaMetFromJEC[0] != 0 and event.deltaMetFromJEC[1] != 0:
+            import ROOT
+            px,py = event.metNoMu.px()+event.deltaMetFromJEC[0]-mupx, event.metNoMu.py()+event.deltaMetFromJEC[1]-mupy
+            event.met.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
+            px,py = event.metNoMuNoPU.px()+event.deltaMetFromJEC[0]-mupx, event.metNoMuNoPU.py()+event.deltaMetFromJEC[1]-mupy
+            event.metNoMuNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
+
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
@@ -83,5 +108,8 @@ class ttHMetEventAnalyzer( Analyzer ):
 
         if self.cfg_ana.doTkMet: 
             self.makeTkMETs(event);
+
+        if self.cfg_ana.doMetNoMu:
+            self.makeMETNoMu(event)
 
         return True

@@ -19,6 +19,7 @@ class Tree(object):
         if ltype.startswith('int'): return 'I'
         elif ltype.startswith('float'): return 'F'
         elif ltype.startswith('double'): return 'D'
+        elif ltype.startswith('bool'): return 'O'
         else: return None 
             
     def addVar(self, type, name):
@@ -29,7 +30,6 @@ class Tree(object):
         for var,type in self.vars.iteritems():
             structcode.append('{type} {var};'.format(type=type, var=var))
         structcode.append('};')
-        print structcode
         gROOT.ProcessLine( ' '.join(structcode) )
         from ROOT import struct_name
         self.s = struct_name()
