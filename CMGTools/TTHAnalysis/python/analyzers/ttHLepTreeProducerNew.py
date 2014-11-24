@@ -26,8 +26,9 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
 
     def declareHandles(self):
         super(ttHLepTreeProducerNew, self).declareHandles()
-        self.handles['TriggerResults'] = AutoHandle( ('TriggerResults','','HLT'), 'edm::TriggerResults' )
         self.mchandles['GenInfo'] = AutoHandle( ('generator','',''), 'GenEventInfoProduct' )
+        if hasattr(self.cfg_ana, 'triggerBits'):
+            self.handles['TriggerResults'] = AutoHandle( ('TriggerResults','','HLT'), 'edm::TriggerResults' )
         for k,v in self.collections.iteritems():
             if type(v) == tuple and isinstance(v[0], AutoHandle):
                 self.handles[k] = v[0]
@@ -90,13 +91,14 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
         tr.fill('evt', event.eventId)    
         tr.fill('isData', 0 if isMC else 1)
 
-        triggerResults = self.handles['TriggerResults'].product()
-        for T,TC in self.triggerBitCheckers:
-            tr.fill("HLT_"+T, TC.check(iEvent.object(), triggerResults))
+        if self.triggerBitCheckers:
+            triggerResults = self.handles['TriggerResults'].product()
+            for T,TC in self.triggerBitCheckers:
+                tr.fill("HLT_"+T, TC.check(iEvent.object(), triggerResults))
 
         if isMC:
             ## PU weights
-            tr.fill("nTrueInt", event.nPU)
+            tr.fill("nTrueInt", getattr(event, 'nPU', -1))
             tr.fill("puWeight", event.eventWeight)
             tr.fill("genWeight", self.mchandles['GenInfo'].product().weight())
             ## PDF weights

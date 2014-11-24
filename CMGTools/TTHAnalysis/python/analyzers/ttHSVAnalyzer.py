@@ -54,6 +54,7 @@ class ttHSVAnalyzer( Analyzer ):
         # attach distances to PV
         pv = event.goodVertices[0]
         for sv in allivf:
+             #sv.dz  = SignedImpactParameterComputer.vertexDz(sv, pv)
              sv.dxy = SignedImpactParameterComputer.vertexDxy(sv, pv)
              sv.d3d = SignedImpactParameterComputer.vertexD3d(sv, pv)
              sv.cosTheta = SignedImpactParameterComputer.vertexDdotP(sv, pv)
@@ -140,12 +141,24 @@ class ttHSVAnalyzer( Analyzer ):
             for i in xrange(s.numberOfDaughters()):
                 daumap[ref2id(s.daughterPtr(i))] = s
         for j in event.jetsIdOnly:
+            #print "jet with pt %5.2f, eta %+4.2f, phi %+4.2f: " % (j.pt(), j.eta(), j.phi())
             jdaus = [ref2id(j.daughterPtr(i)) for i in xrange(j.numberOfDaughters())]
             j.svs = []
             for jdau in jdaus:
                 if jdau in daumap:
+                    #print " --> matched by ref with SV with pt %5.2f, eta %+4.2f, phi %+4.2f: " % (daumap[jdau].pt(), daumap[jdau].eta(), daumap[jdau].phi())
                     j.svs.append(daumap[jdau])
                     daumap[jdau].jet = j	    
+        for s in event.ivf:
+            if s.jet != None: continue
+            #print "Unassociated SV with %d tracks, mass %5.2f, pt %5.2f, eta %+4.2f, phi %+4.2f: " % (s.numberOfDaughters(), s.mass(), s.pt(), s.eta(), s.phi())
+            bestDr = 0.4
+            for j in event.jetsIdOnly:
+                dr = deltaR(s.eta(),s.phi(),j.eta(),j.phi())
+                if dr < bestDr:
+                   bestDr = dr
+                   s.jet = j
+                   #print "   close to jet with pt %5.2f, eta %+4.2f, phi %+4.2f: dr = %.3f" % (j.pt(), j.eta(), j.phi(), dr)
 
 
 

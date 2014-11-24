@@ -1,7 +1,7 @@
 == 2 good leptons: nLepGood10 == 2
 cleanup: minMllAFAS > 12
 pt2010: LepGood1_pt>20 && LepGood2_pt>20
-lep MVA: min(LepGood1_mvaNew,LepGood2_mvaNew) > 0.93
+lep MVA: min(LepGood1_mvaSusy,LepGood2_mvaSusy) > 0.93
 el mu:  abs(LepGood1_pdgId) != abs(LepGood2_pdgId)
 same-sign: LepGood1_charge*LepGood2_charge > 0
 tight-charge: LepGood1_tightCharge > (abs(LepGood1_pdgId) == 11) && LepGood2_tightCharge > (abs(LepGood2_pdgId) == 11)

@@ -5,12 +5,12 @@ from CMGTools.Production import eostools
 import re
 
 class ComponentCreator(object):
-    def makeMCComponent(self,name,dataset,user,pattern):
+    def makeMCComponent(self,name,dataset,user,pattern,useAAA=False):
         
          component = cfg.MCComponent(
              dataset=dataset,
              name = name,
-             files = self.getFiles(dataset,user,pattern),
+             files = self.getFiles(dataset,user,pattern,useAAA=useAAA),
              xSection = 1,
              nGenEvents = 1,
              triggers = [],
@@ -41,12 +41,12 @@ class ComponentCreator(object):
          return component
     
     ### MM
-    def makeMyPrivateMCComponent(self,name,dataset,user,pattern,dbsInstance):
+    def makeMyPrivateMCComponent(self,name,dataset,user,pattern,dbsInstance, useAAA=False):
 
         component = cfg.MCComponent(
             dataset=dataset,
             name = name,
-            files = self.getMyFiles(dataset, user, pattern, dbsInstance),
+            files = self.getMyFiles(dataset, user, pattern, dbsInstance, useAAA=useAAA),
             xSection = 1,
             nGenEvents = 1,
             triggers = [],
@@ -56,7 +56,7 @@ class ComponentCreator(object):
         return component
     ### MM
 
-    def makeMCComponentFromEOS(self,name,dataset,path,pattern=".*root"):
+    def getFilesFromEOS(self,name,dataset,path,pattern=".*root"):
         from CMGTools.Production.dataset import getDatasetFromCache, writeDatasetToCache
         if "%" in path: path = path % dataset;
         try:
@@ -66,10 +66,12 @@ class ComponentCreator(object):
             if len(files) == 0:
                 raise RuntimeError, "ERROR making component %s: no files found under %s matching '%s'" % (name,path,pattern)
             writeDatasetToCache('EOS%{path}%{pattern}.pck'.format(path = path.replace('/','_'), pattern = pattern), files)
+        return files
+    def makeMCComponentFromEOS(self,name,dataset,path,pattern=".*root"):
         component = cfg.MCComponent(
             dataset=dataset,
             name = name,
-            files = files,
+            files = self.getFilesFromEOS(name,dataset,path,pattern),
             xSection = 1,
             nGenEvents = 1,
             triggers = [],
@@ -97,18 +99,22 @@ class ComponentCreator(object):
          return component
 
 
-    def getFiles(self, dataset, user, pattern):
+    def getFiles(self, dataset, user, pattern, useAAA=False):
         # print 'getting files for', dataset,user,pattern
         ds = datasetToSource( user, dataset, pattern, True )
         files = ds.fileNames
-        return ['root://eoscms.cern.ch//eos/cms%s' % f for f in files]
+        mapping = 'root://eoscms.cern.ch//eos/cms%s'
+        if useAAA: mapping = 'root://cms-xrd-global.cern.ch/%s'
+        return [ mapping % f for f in files]
 
 
-    def getMyFiles(self, dataset, user, pattern, dbsInstance):
+    def getMyFiles(self, dataset, user, pattern, dbsInstance, useAAA=False):
         # print 'getting files for', dataset,user,pattern
         ds = myDatasetToSource( user, dataset, pattern, dbsInstance, True )
         files = ds.fileNames
-        return ['root://eoscms.cern.ch//eos/cms%s' % f for f in files]
+        mapping = 'root://eoscms.cern.ch//eos/cms%s'
+        if useAAA: mapping = 'root://cms-xrd-global.cern.ch/%s'
+        return [ mapping % f for f in files]
 
     def getSkimEfficiency(self,dataset,user):
         info=DatasetInformation(dataset,user,'',False,False,'','','')
