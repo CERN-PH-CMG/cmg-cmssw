@@ -6,62 +6,44 @@
 #include <cmath>
 #include <TLorentzVector.h>
 #include <TMath.h>
-
-using namespace std;
-using std::vector;
-using std::cout;
-using std::endl;
+#include "DataFormats/Math/interface/LorentzVector.h"
 
 #include <boost/shared_ptr.hpp>
 #include <fastjet/internal/base.hh>
+#include "fastjet/PseudoJet.hh"
 #include "fastjet/JetDefinition.hh"
 #include "fastjet/ClusterSequence.hh"
 #include "fastjet/Selector.hh"
 #include "fastjet/PseudoJet.hh"
 
-//FASTJET_BEGIN_NAMESPACE
 
 class ReclusterJets {
     
  public:
+  typedef math::XYZTLorentzVector LorentzVector;
 
-  ReclusterJets(vector<float> Px_vector, vector<float> Py_vector, vector<float> Pz_vector, vector<float> E_vector, double ktpower, double rparam);
+  ReclusterJets(const std::vector<LorentzVector> & objects, double ktpower, double rparam);
 
-  // get grouping
-  std::vector<vector<float> > getGrouping();
-
+  /// get grouping (inclusive jets)
+  std::vector<LorentzVector> getGrouping();
 
  private:
 
   int Reconstruct();
 
   // used to handle the inputs
-  vector<float> Object_Px;
-  vector<float> Object_Py;
-  vector<float> Object_Pz;
-  vector<float> Object_E;
-
-  // used to store the exclusive jets
-  vector<float> JetObject_Px;
-  vector<float> JetObject_Py;
-  vector<float> JetObject_Pz;
-  vector<float> JetObject_E;
-  std::vector<vector<float> > JetObjectAll;
-
   std::vector<fastjet::PseudoJet> fjInputs_;        // fastjet inputs
-  std::vector<fastjet::PseudoJet> fjJets_;          // fastjet jets
-  typedef boost::shared_ptr<fastjet::ClusterSequence>  ClusterSequencePtr;
-  ClusterSequencePtr fjClusterSeq_;    
 
   double ktpower_;
   double rparam_;
 
-  int numLoop;
-  int ktpower;
-  double rparam;
-  int status;
-  int dbg;
-    
+  /// fastjet outputs
+  std::vector<fastjet::PseudoJet> inclusiveJets_;          // fastjet jets
+  typedef boost::shared_ptr<fastjet::ClusterSequence>  ClusterSequencePtr;
+  ClusterSequencePtr fjClusterSeq_;    
+
+  /// friendly outputs
+  std::vector<LorentzVector> JetObjectsAll_;
 };
 
 //FASTJET_END_NAMESPACE
