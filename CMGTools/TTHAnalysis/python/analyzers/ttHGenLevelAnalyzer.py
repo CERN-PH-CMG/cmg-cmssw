@@ -34,6 +34,7 @@ class ttHGenLevelAnalyzer( Analyzer ):
           event.genleps    = [ gen electrons and muons from hard scattering not from tau decays ]
           event.genbquarks  = [ gen b quarks from top quark decays ]
           event.genwzquarks = [ gen quarks from hadronic W,Z decays ]
+          event.gennus    = [ gen nus from from Z,W ]
 
        If filterHiggsDecays is set to a list of Higgs decay modes,
        it will filter events that have those decay modes.
@@ -71,11 +72,9 @@ class ttHGenLevelAnalyzer( Analyzer ):
             dau.sourceId = sourceId
             dau.isTau = isTau
             id = abs(dau.pdgId())
-            if(dau.mother() ):
+            moid = 0;
+            if dau.numberOfMothers() > 0:
                 moid = abs(dau.mother().pdgId())
-            else:
-                moid='None'
-                print 'Warning: no mother id for gen lepton'
             if id in [11,13]:
                 if isTau: event.gentauleps.append(dau)
                 else:     event.genleps.append(dau)
@@ -85,6 +84,8 @@ class ttHGenLevelAnalyzer( Analyzer ):
                 self.fillGenLeptons(event, dau, True, sourceId)
             elif id in [22,23,24]:
                 self.fillGenLeptons(event, dau, False, sourceId)
+            elif id in [12,14,16]:
+                event.gennus.append(dau)
 
     def fillWZQuarks(self, event, particle, isWZ=False, sourceId=25):
         """Descend daughters of 'particle', and add quarks from W,Z to event.genwzquarks
@@ -134,6 +135,8 @@ class ttHGenLevelAnalyzer( Analyzer ):
                 print ""
 
         event.genHiggsBoson = None
+        event.genVBosons = []
+        event.gennus    = []
         event.genleps    = []
         event.gentauleps = []
         event.gentaus    = []
@@ -166,11 +169,31 @@ class ttHGenLevelAnalyzer( Analyzer ):
                 return False
 
             bosons = [ gp for gp in event.genParticles if gp.status() > 2 and  abs(gp.pdgId()) in [22,23,24]  ]
+
+            if self.cfg_ana.verbose:
+                print "\n =============="
+                for i,p in enumerate(bosons):
+                    print " %5d: pdgId %+5d status %3d  pt %6.1f  " % (i, p.pdgId(),p.status(),p.pt()),
+                    if p.numberOfMothers() > 0:
+                        imom, mom = p.motherRef().key(), p.mother()
+                        print " | mother %5d pdgId %+5d status %3d  pt %6.1f  " % (imom, mom.pdgId(),mom.status(),mom.pt()),
+                    else:
+                        print " | no mother particle                              ",
+                    
+                    for j in xrange(min(3, p.numberOfDaughters())):
+                        idau, dau = p.daughterRef(j).key(), p.daughter(j)
+                        print " | dau[%d] %5d pdgId %+5d status %3d  pt %6.1f  " % (j,idau,dau.pdgId(),dau.status(),dau.pt()),
+                        print ""
+
             for b in bosons:
+                b.sourceId = -1
                 if hasAncestor(b,   lambda gp : abs(gp.pdgId()) == 6): continue
                 if hasDescendent(b, lambda gp : abs(gp.pdgId()) in [22,23,24] and gp.status() > 2): continue
                 self.fillGenLeptons(event, b, sourceId=abs(b.pdgId()))
                 self.fillWZQuarks(event, b, isWZ=True, sourceId=abs(b.pdgId()))
+                #print " ===>  %5d: pdgId %+5d status %3d  pt %6.1f  " % (i, b.pdgId(),b.status(),b.pt()),
+                #event.genVBosons.append(b)
+
         else:
             if len(higgsBosons) > 1: 
                 print "More than one higgs? \n%s\n" % higgsBosons
@@ -183,6 +206,7 @@ class ttHGenLevelAnalyzer( Analyzer ):
             self.fillGenLeptons( event, event.genHiggsBoson, sourceId=25 )
             if self.cfg_ana.verbose:
                 print "Higgs boson decay mode: ", event.genHiggsDecayMode
+                print "Generator level prompt nus:\n", "\n".join(["\t%s" % p for p in event.gennus])
                 print "Generator level prompt light leptons:\n", "\n".join(["\t%s" % p for p in event.genleps])
                 print "Generator level light leptons from taus:\n", "\n".join(["\t%s" % p for p in event.gentauleps])
                 print "Generator level prompt tau leptons:\n", "\n".join(["\t%s" % p for p in event.gentaus])
