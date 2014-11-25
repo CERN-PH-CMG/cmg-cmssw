@@ -12,6 +12,7 @@
 #include "CMGTools/RootTools/interface/AlphaT.h"
 #include "CMGTools/RootTools/interface/HemisphereViaKt.h"
 #include "CMGTools/RootTools/interface/RecoilCorrector.h"
+#include "CMGTools/RootTools/interface/ReclusterJets.h"
 
 namespace {
   namespace {
@@ -24,6 +25,7 @@ namespace {
     EGammaMvaEleEstimatorFWLite egMVA;
     Hemisphere hemisphere(vector<float> px, vector<float> py, vector<float> pz, vector<float> E, int hemi_seed, int hemi_association);
     HemisphereViaKt hemisphere(vector<float> px, vector<float> py, vector<float> pz, vector<float> E, double ktpower);
+    ReclusterJets reclusterJets(vector<float> px, vector<float> py, vector<float> pz, vector<float> E, double ktpower, double rparam);
     Davismt2 mt2;
     mt2w_bisect::mt2w mt2wlept;
     AlphaT alphaT;

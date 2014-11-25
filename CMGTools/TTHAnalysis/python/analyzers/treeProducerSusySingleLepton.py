@@ -42,6 +42,7 @@ class treeProducerSusySingleLepton( treeProducerSusyCore ):
             "selectedIsoTrack"    : NTupleCollection("isoTrack", isoTrackType, 50, help="isoTrack, sorted by pt"),
             ##------------------------------------------------
             "cleanJetsAll"       : NTupleCollection("Jet",     jetTypeSusy, 25, help="Cental jets after full selection and cleaning, sorted by pt"),
+            "reclusteredFatJets" : NTupleCollection("FatJet",     fourVectorType,20, help="FatJets reclusterd from ak4 cleanJetsAll"),
         })
 
         ## Book the variables, but only if we're called explicitly and not through a base class
