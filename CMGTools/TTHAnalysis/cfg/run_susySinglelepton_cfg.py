@@ -29,6 +29,10 @@ ttHLepSkim.maxLeptons = 999
 ttHJetAna.minLepPt = 10 
 ttHJetMCAna.smearJets     = False # do we need to smear the jets?
 
+ttHReclusterJets = cfg.Analyzer(
+            'ttHReclusterJetsAnalyzer',
+            )
+
 # Event Analyzer for susy multi-lepton (at the moment, it's the TTH one)
 ttHEventAna = cfg.Analyzer(
     'ttHLepEventAnalyzer',
@@ -77,6 +81,7 @@ selectedComponents = [ SingleMu, DoubleElectron, TTHToWW_PUS14, DYJetsM50_PU20bx
 sequence = cfg.Sequence(susyCoreSequence+[
     ttHIsoTrackAna,
     ttHEventAna,
+    ttHReclusterJets,
     treeProducer,
     ])
 
