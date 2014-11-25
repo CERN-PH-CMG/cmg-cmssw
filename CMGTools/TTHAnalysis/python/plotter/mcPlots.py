@@ -427,6 +427,8 @@ def doLegend(pmap,mca,corner="TR",textSize=0.035,cutoff=1e-2,cutoffSignals=True,
         (x1,y1,x2,y2) = (.93-legWidth, .75 - textSize*max(nentries-3,0), .93, .93)
         if corner == "TR":
             (x1,y1,x2,y2) = (.93-legWidth, .75 - textSize*max(nentries-3,0), .93, .93)
+        elif corner == "BR":
+            (x1,y1,x2,y2) = (.93-legWidth, .33 + textSize*max(nentries-3,0), .93, .15)
         elif corner == "TL":
             (x1,y1,x2,y2) = (.2, .75 - textSize*max(nentries-3,0), .2+legWidth, .93)
         
@@ -536,7 +538,7 @@ class PlotMaker:
                             plot.SetLineColor(plot.GetFillColor())
                             plot.SetLineWidth(3)
                             plot.SetFillStyle(0)
-                            if self._options.plotmode == "norm":
+                            if self._options.plotmode == "norm" and (plot.ClassName()[:2] == "TH"):
                                 ref = pmap['data'].Integral() if 'data' in pmap else 1.0
                                 plot.Scale(ref/plot.Integral())
                             stack.Add(plot)
