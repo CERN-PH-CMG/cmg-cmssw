@@ -36,8 +36,11 @@ private:
     edm::EDGetTokenT<reco::VertexCollection> vertexToken_;
     edm::EDGetTokenT<reco::GsfElectronCollection> electronToken_;
     edm::EDGetTokenT<double> eventrhoToken_;
-    edm::InputTag reducedEBRecHitCollection_;
-    edm::InputTag reducedEERecHitCollection_;
+    
+    //used tokens
+    edm::EDGetTokenT<EcalRecHitCollection>  ecalRechitEBToken_;
+    edm::EDGetTokenT<EcalRecHitCollection>  ecalRechitEEToken_;
+
     
     double _Rho;
     string method_;
@@ -63,8 +66,8 @@ ElectronIdMVAProducerCSA14::ElectronIdMVAProducerCSA14(const edm::ParameterSet& 
     verbose_ = iConfig.getUntrackedParameter<bool>("verbose", false);
     vertexToken_ = consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertexTag"));
 	electronToken_ = consumes<reco::GsfElectronCollection>(iConfig.getParameter<edm::InputTag>("electronTag"));
-    reducedEBRecHitCollection_ = iConfig.getParameter<edm::InputTag>("reducedEBRecHitCollection");
-    reducedEERecHitCollection_ = iConfig.getParameter<edm::InputTag>("reducedEERecHitCollection");
+    ecalRechitEBToken_ = consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>("reducedEBRecHitCollection"));
+    ecalRechitEEToken_ = consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>("reducedEERecHitCollection"));
 	method_ = iConfig.getParameter<string>("method");
 	std::vector<string> fpMvaWeightFiles = iConfig.getParameter<std::vector<std::string> >("mvaWeightFile");
 	Trig_ = iConfig.getParameter<bool>("Trig");
@@ -127,7 +130,7 @@ bool ElectronIdMVAProducerCSA14::filter(edm::Event& iEvent, const edm::EventSetu
         dummy = Vertex(p, e, 0, 0, 0);
     }
     
-    noZS::EcalClusterLazyTools lazyTools(iEvent, iSetup, reducedEBRecHitCollection_, reducedEERecHitCollection_);
+    noZS::EcalClusterLazyTools lazyTools(iEvent, iSetup, ecalRechitEBToken_, ecalRechitEEToken_);
     
     edm::ESHandle<TransientTrackBuilder> builder;
     iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", builder);
