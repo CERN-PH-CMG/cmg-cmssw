@@ -97,59 +97,31 @@ class EventVarsMT2:
  
 ###### for now clone of the code in ttHTopoVarAnalyzer.py
 
-            objects40jc = [ j for j in jets if j.pt > 40 and abs(j.eta)<3.0 ]
+            objects40jc = [ j for j in jets if j.pt > 40 and abs(j.eta)<2.5]
             if len(objects40jc)>=2:
 
                 from ROOT import Hemisphere
-                from ROOT import HemisphereViaKt
+                from ROOT import ReclusterJets
                 
                 from ROOT import Davismt2
                 davismt2 = Davismt2()
 
-                pxvec  = ROOT.std.vector(float)()
-                pyvec  = ROOT.std.vector(float)()
-                pzvec  = ROOT.std.vector(float)()
-                Evec  = ROOT.std.vector(float)()
-                grouping  = ROOT.std.vector(int)()
-
+                pseudoViaKtJet1_had = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+                pseudoViaKtJet2_had = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+                objects  = ROOT.std.vector(ROOT.reco.Particle.LorentzVector)()
                 for jet in objects40jc:
-
-                    jetp4 = jet.p4()
-                    pxvec.push_back(jetp4.Px())
-                    pyvec.push_back(jetp4.Py())
-                    pzvec.push_back(jetp4.Pz())
-                    Evec.push_back(jetp4.Energy())
+                    jetp4 = ROOT.reco.Particle.LorentzVector(jet.p4().Px(), jet.p4().Py(), jet.p4().Pz(), jet.p4().Energy())
+                    objects.push_back(jetp4)
                     
-                hemisphereViaKt = HemisphereViaKt(pxvec, pyvec, pzvec, Evec, 1.)
-                groupingViaKt=hemisphereViaKt.getGrouping()
+                    hemisphereViaKt = ReclusterJets(objects, 1.,50)
+                    groupingViaKt=hemisphereViaKt.getGroupingExclusive(2)
 
-                pseudoJet1px = 0
-                pseudoJet1py = 0
-                pseudoJet1pz = 0
-                pseudoJet1energy = 0
-                
-                pseudoJet2px = 0
-                pseudoJet2py = 0
-                pseudoJet2pz = 0
-                pseudoJet2energy = 0
-                
-                for index in range(0, len(groupingViaKt[0])):
-                    if(index==0):
-                        pseudoJet1px = groupingViaKt[0][index]
-                        pseudoJet1py = groupingViaKt[1][index]
-                        pseudoJet1pz = groupingViaKt[2][index]
-                        pseudoJet1energy = groupingViaKt[3][index]
-                    if(index==1):
-                        pseudoJet2px = groupingViaKt[0][index]
-                        pseudoJet2py = groupingViaKt[1][index]
-                        pseudoJet2pz = groupingViaKt[2][index]
-                        pseudoJet2energy = groupingViaKt[3][index]
-                
-                pseudoViaKtJet1_had = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
-                pseudoViaKtJet2_had = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+                    if len(groupingViaKt)>=2:
+                        pseudoViaKtJet1_had = groupingViaKt[0]
+                        pseudoViaKtJet2_had = groupingViaKt[1]
+                        ret["mt2_had_30"] = computeMT2(pseudoViaKtJet1_had, pseudoViaKtJet2_had, metp4)
 
-                ret["mt2_had_30"] = computeMT2(pseudoViaKtJet1_had, pseudoViaKtJet2_had, metp4)
-#                print 'mt2(had-original)',event.mt2,'mt2(had30)',ret["mt2_had_30"]
+        print 'mt2(had-original)=',event.mt2,'--- mt2ViaKt_had(original)=',event.mt2ViaKt_had,'--- mt2(new)=',ret["mt2_had_30"]
 
         return ret
 

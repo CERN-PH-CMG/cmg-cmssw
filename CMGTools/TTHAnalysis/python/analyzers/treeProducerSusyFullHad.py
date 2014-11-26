@@ -12,6 +12,11 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
         self.globalVariables += [
 
             ##--------------------------------------------------
+            ## Generator information
+            ##--------------------------------------------------
+            NTupleVariable("genQScale", lambda ev : ev.genQScale, help="Generator level binning quantity, QScale"),
+
+            ##--------------------------------------------------
             ## energy sums
             ##--------------------------------------------------
             NTupleVariable("ht", lambda ev : ev.htJet40j10l, help="H_{T} computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons and muons with |eta|<2.5, pt > 10 GeV)"),
