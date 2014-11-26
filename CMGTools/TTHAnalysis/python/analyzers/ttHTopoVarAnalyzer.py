@@ -107,8 +107,8 @@ class ttHTopoVarAnalyzer( Analyzer ):
             groupingViaKt=hemisphereViaKt.getGroupingExclusive(2)
 
             if len(groupingViaKt)>=2:
-                event.pseudoViaKtJet1_had = groupingViaKt[0]
-                event.pseudoViaKtJet2_had = groupingViaKt[1]
+                event.pseudoViaKtJet1_had = ROOT.reco.Particle.LorentzVector(groupingViaKt[0])
+                event.pseudoViaKtJet2_had = ROOT.reco.Particle.LorentzVector(groupingViaKt[1])
                 event.mt2ViaKt_had = self.computeMT2(event.pseudoViaKtJet1_had, event.pseudoViaKtJet2_had, event.met)
 
             if not self.cfg_ana.doOnlyDefault:
@@ -116,8 +116,8 @@ class ttHTopoVarAnalyzer( Analyzer ):
                 groupingViaAKt=hemisphereViaAKt.getGroupingExclusive(2)
 
                 if len(groupingViaAKt)>=2:
-                    event.pseudoViaKtJet1_had = groupingViaAKt[0]
-                    event.pseudoViaKtJet2_had = groupingViaAKt[1]
+                    event.pseudoViaKtJet1_had = ROOT.reco.Particle.LorentzVector(groupingViaAKt[0])
+                    event.pseudoViaKtJet2_had = ROOT.reco.Particle.LorentzVector(groupingViaAKt[1])
                     event.mt2ViaAKt_had = self.computeMT2(event.pseudoViaAKtJet1_had, event.pseudoViaAKtJet2_had, event.met)
 
 #### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
