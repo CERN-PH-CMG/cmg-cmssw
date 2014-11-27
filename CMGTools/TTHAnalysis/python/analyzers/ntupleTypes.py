@@ -81,7 +81,12 @@ leptonTypeSusy = NTupleObjectType("leptonSusy", baseObjectTypes = [ leptonType ]
     NTupleVariable("mcMatchAny",  lambda x : x.mcMatchAny, int, mcOnly=True, help="Match to any final state leptons: -mcMatchId if prompt, 0 if unmatched, 1 if light flavour, 2 if heavy flavour (b)"),
     NTupleVariable("mcMatchAny2",  lambda x : x.mcMatchAny2, int, mcOnly=True, help="Match to any final state leptons: -mcMatchId if prompt, 0 if unmatched, 1 if light flavour, 2 if heavy flavour (b)"),
     NTupleVariable("mcMatchTau",  lambda x : x.mcMatchTau, int, mcOnly=True, help="True if the leptons comes from a tau"),
+    # Soft Muon ID info (SOS Analysis)
+    NTupleVariable("softMuID",    lambda x : x.softMuID if hasattr(x, 'softMuID') and abs(x.pdgId())==13 else -1, int, help="Soft Muon ID (SOS Analysis)"),
 ])
+
+
+
 
 leptonTypeSusyFR = NTupleObjectType("leptonSusyFR", baseObjectTypes = [ leptonTypeTTH ], variables = [
     NTupleVariable("relIso03",  lambda x : x.relIso03, help="PF Rel Iso, R, with deltaBeta correction"),
@@ -145,9 +150,13 @@ jetTypeSusy = NTupleObjectType("jetSusy",  baseObjectTypes = [ jetType ], variab
 #    NTupleVariable("PuId_simple", lambda x : x.puId("simple"), int,    mcOnly=False, help="puId simple: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
 #    NTupleVariable("PuId_cut_based", lambda x : x.puId("cut-based"), int,    mcOnly=False, help="puId cut-based: returns an integeger containing 3 bits, one for each working point (loose-bit2, medium-bit1, tight-bit0)"),
     NTupleVariable("id",    lambda x : x.jetID("POG_PFID") , int, mcOnly=False,help="POG jet ID. return 1=loose, 2=medium, 3=tight"),
+    NTupleVariable("CHEF",  lambda x : x.component(1).fraction() , float, mcOnly=False, help="Charged Hadron Energy Fraction"),
+    NTupleVariable("NHEF",  lambda x : x.component(5).fraction() , float, mcOnly=False, help="Neutral Hadron Energy Fraction"),
+    NTupleVariable("PHEF",  lambda x : x.component(4).fraction() , float, mcOnly=False, help="Photon Energy Fraction"),
+    NTupleVariable("MUEF",  lambda x : x.component(3).fraction() , float, mcOnly=False, help="Muon Energy Fraction"),
+    NTupleVariable("ELEF",  lambda x : x.component(2).fraction() , float, mcOnly=False, help="Electron Energy Fraction"),
 ])
-
-        
+     
 metType = NTupleObjectType("met", baseObjectTypes = [ fourVectorType ], variables = [
     NTupleVariable("sumEt", lambda x : x.sumEt() ),
     NTupleVariable("genPt",  lambda x : x.genMET().pt() , mcOnly=True ),

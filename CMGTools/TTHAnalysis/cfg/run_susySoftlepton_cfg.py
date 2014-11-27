@@ -28,7 +28,7 @@ ttHLepAna.loose_electron_absIso = 5
 ttHLepAna.loose_electron_ptIsoThreshold = 25
 
 # --- LEPTON SKIMMING ---
-ttHLepSkim.minLeptons = 2
+ttHLepSkim.minLeptons = 0
 ttHLepSkim.maxLeptons = 999
 ttHLepSkim.ptCuts = [5,3]
 
@@ -37,7 +37,7 @@ ttHLepSkim.ptCuts = [5,3]
 ttHJetAna.jetPt = 30.0 
 
 # --- JET-MET SKIMMING ---
-ttHJetMETSkim.jetPtCuts = [100,]
+#ttHJetMETSkim.jetPtCuts = [100,]
 #ttHJetMETSkim.metCut    = 100
 
 # Event Analyzer for susy multi-lepton (at the moment, it's the TTH one)
@@ -50,6 +50,11 @@ ttHEventAna = cfg.Analyzer(
 metFilterAna = cfg.Analyzer(
     'metFilterAnalyzer',
     )
+
+# # Soft Muon Analyzer for susy soft-muons.
+# softMuonAna = cfg.Analyzer(
+#     'softMuonAnalyzer',
+#     )
 
 from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
 # Tree Producer
@@ -87,14 +92,25 @@ from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
 #selectedComponents = [ DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,TTH122,TTH127,TTJetsSem1,TTJetsSem2 ] 
 #selectedComponents = [ T2DegenerateStop_2J_4 ]
 selectedComponents = [ TTLep ]
+#selectedComponents = [ WW ]
 
 #-------- SEQUENCE
 
+#  ORIGINAL
 sequence = cfg.Sequence(susyCoreSequence+[
     ttHEventAna,
     metFilterAna,
     treeProducer,
     ])
+
+# #   Comment-out for debug purposes. Provide a list of event #'s to process.
+# eventSelector.toSelect = [ 1157146 ]
+# 
+# sequence = cfg.Sequence( [ eventSelector ] + susyCoreSequence+[
+#     ttHEventAna,
+#     metFilterAna,
+#     treeProducer,
+#     ])
 
 
 #-------- HOW TO RUN
@@ -102,7 +118,8 @@ test = 1
 if test==1:
     # test a single component, using a single thread.
     comp = selectedComponents[0]
-#    comp.files = comp.files[:4]
+    comp.files = comp.files[:1]         #   Comment-out this line to run interactively / Comment-in to run with lxbatch
+#     comp.files = comp.files[853:854]    #   for debug purposes.
     selectedComponents = [comp]
     comp.splitFactor = 500
 elif test==2:    
