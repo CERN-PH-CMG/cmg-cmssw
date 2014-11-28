@@ -118,6 +118,24 @@ TH2D histoU1vsU2corrUnorm("hu1vsu2corrUnorm","histo U1 vs U2 after corrU",100,-1
 TH2D histoRecoil("hrecoil"," recoil vs recoilCorr",100,-20,20,100,-20,20);
 TH2D histoU1vsU2_520("hu1vsu2520","",100,-10,10,100,-10,10);
 
+TH1D histoU1original("hu1original", "histo U1 original", 100, -25, 25);
+TH1D histoU2original("hu2original", "histo U2 original", 100, -25, 25);
+TH1D histoU1smeared("hu1smeared", "histo U1 smeared", 100, -25, 25);
+TH1D histoU2smeared("hu2smeared", "histo U2 smeared", 100, -25, 25);
+
+TH1D histoU2origFrac("hu2origFrac", "histo U2 orig frac", 100, 0, 1);
+TH1D histoU2wishFrac("hu2wishFrac", "histo U2 wish frac", 100, 0, 1);
+TH1D histoU2smearedFrac("hu2smearedFrac", "histo U2 smeared frac", 100, 0, 1);
+
+TH1D histoU2origFrac05("hu2origFrac05", "histo U2 orig frac", 100, 0, 1);
+TH1D histoU2wishFrac05("hu2wishFrac05", "histo U2 wish frac", 100, 0, 1);
+TH1D histoU2origFrac510("hu2origFrac510", "histo U2 orig frac", 100, 0, 1);
+TH1D histoU2wishFrac510("hu2wishFrac510", "histo U2 wish frac", 100, 0, 1);
+TH1D histoU2origFrac1015("hu2origFrac1015", "histo U2 orig frac", 100, 0, 1);
+TH1D histoU2wishFrac1015("hu2wishFrac1015", "histo U2 wish frac", 100, 0, 1);
+TH1D histoU2origFrac1520("hu2origFrac1520", "histo U2 orig frac", 100, 0, 1);
+TH1D histoU2wishFrac1520("hu2wishFrac1520", "histo U2 wish frac", 100, 0, 1);
+
 TH2D histoU1Rawcorr("hU1Rawcorr","histo U1 raw vs U1 after corrU",100,-10,10,100,-10,10);
 TH2D histoU2Rawcorr("hU2Rawcorr","histo U2 raw vs U2 after corrU",100,-10,10,100,-10,10);
 
@@ -214,8 +232,9 @@ bool doPrint = false; // save the unbinned Mean Scale and RMS ; the results of r
 bool doPrintAll = false; // when this is set to true, do the binned
 
 bool doIterativeMet = false;
+bool doDegenerateSigma = false;
 
-bool doApplyCorr = false; // apply correlation
+bool doApplyCorr = false; // smearing along the recoil vector
 bool doAbsolute = false;
 
 bool doOnlyU1 = false;
@@ -242,6 +261,8 @@ bool doBinnedVTX = false;
 
 bool doNeutralMet=false;
 bool doChargedMet=true;
+bool doGenTkMet=false;
+bool doGenPfMet=false;
 bool donoPU=false;
 
 bool doMetPhiCorr=false;
@@ -303,6 +324,7 @@ double fMuPos_phi, fMuPos_eta, fMuPos_pt, fMuPos_mass, fMuPos_charge, fMuPosReli
 double fMuNeg_phi, fMuNeg_eta, fMuNeg_pt, fMuNeg_mass, fMuNeg_charge, fMuNegReliso, fMuNeg_dxy, fMuNeg_dz;
 int fMuPosTrg, fMuPosIsTightAndIso, fevtHasGoodVtx, fevtHasTrg, fMuNegIsTightAndIso, fMuNegTrg;
 int fMuPosIsTight, fMuNegIsTight;
+double fMuNegGen_pt,fMuPosGen_pt;
 
 //rochcor_44X_v3 *muoncor44X ;
 
@@ -467,22 +489,20 @@ void applyType1CorrMET(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
 }
 
 double diGausPVal(double iVal,double iFrac,double iSigma1,double iSigma2) { 
-
+  
+  double lVal=iFrac*TMath::Erf(iVal/iSigma1) + (1-iFrac)*TMath::Erf(iVal/iSigma2);
   /*
-  if((iFrac*TMath::Erf(iVal/iSigma1) + (1-iFrac)*TMath::Erf(iVal/iSigma2))==1) {
+  cout << "=====================================" << endl;
   cout << "fabs(recoil_RAW)=" << iVal 
        << " iFrac=" << iFrac
        << " iSigma1=" << iSigma1
        << " iSigma2=" << iSigma2
+       << " lVal=" << lVal 
        << endl;
-  cout << "TMath::Erf(iVal/iSigma1) " << TMath::Erf(iVal/iSigma1) << endl;
-  }
+  cout << "    TMath::Erf(iVal/iSigma1) " << TMath::Erf(iVal/iSigma1) << "   TMath::Erf(iVal/iSigma2) " << TMath::Erf(iVal/iSigma2) << endl;
   */
-
-  double lVal=iFrac*TMath::Erf(iVal/iSigma1) + (1-iFrac)*TMath::Erf(iVal/iSigma2);
-
   if(TMath::ErfInverse(lVal)==0) return iVal;
-
+  
   return lVal;
 
 }
@@ -626,6 +646,9 @@ void applyType2CorrU(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   double pU1Diff  = pU1-offset; // pU1 of the event ; offset
   double pU2Diff  = pU2;
 
+  histoU1original.Fill(pU1);
+  histoU2original.Fill(pU2);
+
   if(!scaleU2) pU2Diff*=normSigmaM; // make U2 similar to U1
   if(scaleU2) pU1Diff*=normSigmaM; // make U1 similar to U2
 
@@ -753,6 +776,11 @@ void applyType2CorrU(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   //  iU1   = pU1; 
   //  iU2   = pU2;
 
+  histoU1smeared.Fill(pU1);
+  histoU2smeared.Fill(pU2);
+
+
+
   if(dodebug) cout << " Met=" << iMet << " Metphi=" << iMPhi << endl;
   if(dodebug) cout << "===========================" << endl;
 
@@ -776,8 +804,9 @@ void applyType2CorrMET(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
 
   //  bool doSingleGauss=true;
 
-  double pDefU1    = iU1Default->Eval(iGenPt);
   double lRescale  = sqrt((TMath::Pi())/2.);     
+
+  double pDefU1    = iU1Default->Eval(iGenPt);
   double pDU1       = iU1RZDatFit ->Eval(iGenPt);
   //double pDU2       = 0; sPM
   double pDFrac1    = iU1MSZDatFit->Eval(iGenPt)*lRescale;
@@ -816,6 +845,18 @@ void applyType2CorrMET(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   pMFrac1     = (pMFrac1-pMSigma1_2)/(pMSigma1_1-pMSigma1_2);
   pMFrac2     = (pMFrac2-pMSigma2_2)/(pMSigma2_1-pMSigma2_2);
 
+  histoU2origFrac.Fill(pMFrac2);
+  histoU2wishFrac.Fill(pDFrac2);
+
+  if(iGenPt>0 && iGenPt<=5) histoU2origFrac05.Fill(pMFrac2);
+  if(iGenPt>0 && iGenPt<=5) histoU2wishFrac05.Fill(pDFrac2);
+  if(iGenPt>5 && iGenPt<=10) histoU2origFrac510.Fill(pMFrac2);
+  if(iGenPt>5 && iGenPt<=10) histoU2wishFrac510.Fill(pDFrac2);
+  if(iGenPt>10 && iGenPt<=15) histoU2origFrac1015.Fill(pMFrac2);
+  if(iGenPt>10 && iGenPt<=15) histoU2wishFrac1015.Fill(pDFrac2);
+  if(iGenPt>15 && iGenPt<=20) histoU2origFrac1520.Fill(pMFrac2);
+  if(iGenPt>15 && iGenPt<=20) histoU2wishFrac1520.Fill(pDFrac2);
+
   double pUX   = iMet*cos(iMPhi) + iLepPt*cos(iLepPhi);
   double pUY   = iMet*sin(iMPhi) + iLepPt*sin(iLepPhi);
   double pU    = sqrt(pUX*pUX+pUY*pUY);
@@ -829,6 +870,9 @@ void applyType2CorrMET(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   double pU2   = pU*pSin;
   double pU1Diff  = pU1-pDefU1;
   double pU2Diff  = pU2;
+
+  histoU1original.Fill(pU1);
+  histoU2original.Fill(pU2);
 
   if(dodebug) cout << " initial pU1 = " << pU1 << " pU2 = " << pU2 << endl;
 
@@ -871,8 +915,7 @@ void applyType2CorrMET(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
       pU2ValD         = oneGausPInverse(pU2ValM  ,1,iU2MSZDatFit->Eval(iGenPt)*lRescale,0); 
     }
 
-    //    if(pU1ValD==0) pU1ValD=fabs(pU1Diff);
-    //    if(pU2ValD==0) pU2ValD=fabs(pU2Diff);
+    //condition #1
     if(pU1ValM==fabs(pU1Diff)) pU1ValD=fabs(pU1Diff); // in those cases do nothing  since Erf is zero
     if(pU2ValM==fabs(pU2Diff)) pU2ValD=fabs(pU2Diff); // in those cases do nothing  since Erf is zero
 
@@ -935,6 +978,9 @@ void applyType2CorrMET(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   pU2   =                      pU2ValD;
   iMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
   iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
+
+  histoU1smeared.Fill(pU1);
+  histoU2smeared.Fill(pU2);
 
   if(dodebug)  cout << " after pU1 = " << pU1 << " pU2 = " << pU2 << endl;
 
@@ -1117,6 +1163,26 @@ void load(TTree *iTree, int type) {
     iTree->SetBranchAddress("tkmet",&ftkMet);
     iTree->SetBranchAddress("tkmet_phi",&ftkMPhi);
     iTree->SetBranchAddress("tkmet_sumEt",&ftkMSumET);
+    if(doGenTkMet){
+      iTree->SetBranchAddress("gentkmet",&ftkMet);
+      iTree->SetBranchAddress("gentkmet_phi",&ftkMPhi);
+      iTree->SetBranchAddress("gentkmet_sumEt",&ftkMSumET);
+      iTree->SetBranchAddress("MuPosGen_pt" ,&fMuPosGen_pt);
+      iTree->SetBranchAddress("MuNegGen_pt" ,&fMuNegGen_pt);
+    }
+
+    if(doGenPfMet){
+      iTree->SetBranchAddress("genpfmet",&ftkMet);
+      iTree->SetBranchAddress("genpfmet_phi",&ftkMPhi);
+      iTree->SetBranchAddress("genpfmet_sumEt",&ftkMSumET);
+      iTree->SetBranchAddress("MuPosGen_pt" ,&fMuPosGen_pt);
+      iTree->SetBranchAddress("MuNegGen_pt" ,&fMuNegGen_pt);
+    }
+    if(doABC){
+      iTree->SetBranchAddress("tkmetABC",&ftkMet);
+      iTree->SetBranchAddress("tkmetABC_phi",&ftkMPhi);
+      iTree->SetBranchAddress("tkmetABC_sumEt",&ftkMSumET);
+    }
 
     if(donoPU){
       iTree->SetBranchAddress("nopumet",&fMet);
@@ -1570,7 +1636,7 @@ bool checkPDF(int typeBoson, bool doPlot) {
 	Vpt0.Fill(fZPt); Vy0.Fill(fZRap); sumEt0.Fill(ftkMSumET);};
       return true; //   cout << " gluon + X  " << endl;
     } else {
-      if(doPlot) {Vpt10.Fill(fZPt); Vy10.Fill(fZRap);  sumEt0.Fill(ftkMSumET);} return false; //cout << " UNKNOWN "<< endl;
+      if(doPlot) {Vpt10.Fill(fZPt); Vy10.Fill(fZRap);  sumEt10.Fill(ftkMSumET);} return false; //cout << " UNKNOWN "<< endl;
     }
   }
 
@@ -2081,7 +2147,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   double minSigma1=0.2; double maxSigma1=1.2;
   if(fId==201) maxSigma1=1.5;
   double startSigma2=1.5; 
-  double minSigma2=1.2; double maxSigma2=8.;
+  double minSigma2=1.2 ; double maxSigma2=8.;
   if(doAbsolute) { startSigma1=3*0.5;  startSigma2=3*1.2; }
   if(doAbsolute) { minSigma1=0.;  maxSigma1=10.;}
   if(doAbsolute) { minSigma2=3.;  maxSigma2=40.;}
@@ -2109,6 +2175,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   double B2init= 0.0;
   double C2init= 0.0; 
 
+  if(doDegenerateSigma) startSigma2=0.0;
+
   /// setting for POWHEG should be ok also for madgraph
   if(!fData && lPar==fU1) B1init = 0.02; // powheg U1
   if(!fData && lPar==fU1) C1init = -0.0003; // powheg U1
@@ -2125,6 +2193,16 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   RooRealVar    lC2Sig("c2sig","c2sig", C2init ,-0.05*SF, 0.05*SF);  
   if(!doMad && !fData && lPar!=fU1) lC2Sig.setConstant(kTRUE);  // POWHEG guessed from Z
   RooRealVar    lD2Sig("d2sig","d2sig",0.0 ,-0.1*SF, 0.1*SF);  lD2Sig.setConstant(kTRUE);
+
+
+  if(doDegenerateSigma) {
+
+    lA2Sig.setConstant(kTRUE);
+    lB2Sig.setConstant(kTRUE);
+    lC2Sig.setConstant(kTRUE);
+    lD2Sig.setConstant(kTRUE);
+
+  }
 
   /*
     /// setting for MADGRAPH
@@ -3499,6 +3577,12 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
       fMPhi = ftkMPhi;
     }
 
+    if(doGenTkMet || doGenPfMet) {
+      ftkMSumET = ftkMSumET - fMuNegGen_pt,fMuPosGen_pt - fMuNegGen_pt,fMuPosGen_pt; // want to check the sumEt of the recoil
+    } else {
+      ftkMSumET = ftkMSumET - fMuPos_pt - fMuNeg_pt; // want to check the sumEt of the recoil
+    }
+
 
     // THIS WAS FOR THE VTX selection
     if(doVTXbinning && !passId(VTXbin)) continue;
@@ -3522,7 +3606,6 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
     // this is for the W selection
     if(doPosW && (!runWSelection(true,doMetCut))) continue;
     if(doNegW && (!runWSelection(false,doMetCut))) continue;
-
 
     if(pType!=-1) {
       ////    cout << "passed selection " << endl;
@@ -3983,6 +4066,9 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
       ////// DATA closure
       readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_NOV19_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_53X.root" ,"PF",fId);
 
+      ////// MADGRAPH closure
+      //      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_NOV19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
+
       ////// MC closure
       //      if(!doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_NOV19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
       //      if(doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_NOV19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_madgraph.root" ,"PF",fId);
@@ -4061,7 +4147,8 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
 
   if(doChargedMet)  name+="_tkmet";
   if(!doChargedMet) name+="_pfmet";
-  
+  if(doGenTkMet||doGenPfMet) name +="_Gen";
+
   //    if(!doYbinning && fId == (-1.))  name+="_inclusiveNvtx";
   //    if(!doYbinning && fId != (-1.))  name+="_Nvtx";
   
@@ -4138,6 +4225,11 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     if(do8TeV) fileName += "_8TeV";
     if(!do8TeV) fileName += "_7TeV";
 
+    if(doIterativeMet && doApplyCorr) fileName += "_ITERATIVE_doApplyCorr";
+
+    if(doIterativeMet && doSingleGauss) fileName += "_ITERATIVE_oneGauss";
+    if(doIterativeMet && !doSingleGauss) fileName += "_ITERATIVE_twoGauss";
+
     fileName += ".root";
     
     TFile f3(fileName.Data(),"RECREATE");
@@ -4180,6 +4272,20 @@ void runRecoilFit(int MCtype, int iloop, int processType) {
     histoU1scalevsZptscale.Write();
     histoDeltaU1.Write();
     histoDeltaU2.Write();
+    histoU1original.Write();
+    histoU2original.Write();
+    histoU1smeared.Write();
+    histoU2smeared.Write();
+    histoU2origFrac.Write();
+    histoU2wishFrac.Write();
+    histoU2origFrac05.Write();
+    histoU2wishFrac05.Write();
+    histoU2origFrac510.Write();
+    histoU2wishFrac510.Write();
+    histoU2origFrac1015.Write();
+    histoU2wishFrac1015.Write();
+    histoU2origFrac1520.Write();
+    histoU2wishFrac1520.Write();
     //###
     histoPhiStar.Write();
     histoThetaStar.Write();
