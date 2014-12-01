@@ -58,7 +58,7 @@ class treeProducerSusyAlphaT( treeProducerSusyCore ):
             # put more here
             # "pseudoJet1"       : NTupleObject("pseudoJet1",     fourVectorType, help="pseudoJet1 for hemishphere"),
             # "pseudoJet2"       : NTupleObject("pseudoJet2",     fourVectorType, help="pseudoJet2 for hemishphere"),
-             "biasedDPhiJet"       : NTupleObject("biasedDPhiJet",     fourVectorType, help="jet closest to missing energy vector"),
+             #"biasedDPhiJet"       : NTupleObject("biasedDPhiJet",     fourVectorType, help="jet closest to missing energy vector"),
              "metNoMu":         NTupleObject("metNoMu",fourVectorType, help="met computed with muom momentum substracted"),
             })
         self.collections.update({

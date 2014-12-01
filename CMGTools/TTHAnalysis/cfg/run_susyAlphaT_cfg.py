@@ -61,6 +61,8 @@ ttHJetMCAna.smearJets     = False
 # NOTE: Currently energy sums are calculated with 40 GeV jets (ttHCoreEventAnalyzer.py)
 #       However, the input collection is cleanjets which have a 50 GeV cut so this is a labeling problem
 
+ttHMetAna.doMetNoMu=True
+
 ttHJetMETSkim.htCut       = ('htJet50j', 0)
 ttHJetMETSkim.mhtCut      = ('htJet40j', 0)
 ttHJetMETSkim.nBJet       = ('CSVM', 0, "jet.pt() > 50")     # require at least 0 jets passing CSVM and pt > 50
@@ -99,6 +101,10 @@ ttHIsoTrackAna = cfg.Analyzer(
 ttHAlphaTAna = cfg.Analyzer(
             'ttHAlphaTVarAnalyzer'
             )
+
+ttHAlphaTControlAna = cfg.Analyzer(
+                        'ttHAlphaTControlAnalyzer'
+                        )
 
 ##------------------------------------------
 ##  PRODUCER
@@ -162,12 +168,13 @@ selectedComponents.extend( TTbar )
 sequence = cfg.Sequence(susyCoreSequence + [
                         ttHIsoTrackAna,
                         ttHAlphaTAna,
+                        ttHAlphaTControlAna,
                         treeProducer,
                         ])
 
 
 #-------- HOW TO RUN
-test = 4
+test = 1
 
 # Test a single component, using a single thread.
 #--------------------------------------------------

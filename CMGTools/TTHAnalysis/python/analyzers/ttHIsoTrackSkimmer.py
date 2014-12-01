@@ -45,11 +45,11 @@ class ttHIsoTrackSkimmer( Analyzer ):
 	    allowTrack = False
 	    for i in range (0,len(event.selectedMuons)) :
 		if (i == self.cfg_ana.allowedMuon): break
-		if(deltaR(event.selectedMuons[i].eta(), event.selectedMuons[i].phi(), obj.eta(), obj.phi()) < 0.01) : allowTrack=True
+		if(deltaR(event.selectedMuons[i].eta(), event.selectedMuons[i].phi(), obj.eta(), obj.phi()) < 0.02) : allowTrack=True
 
 	    for i in range (0,len(event.selectedElectrons)) :
 		if (i == self.cfg_ana.allowedElectron): break
-		if(deltaR(event.selectedElectrons[i].eta(), event.selectedElectrons[i].phi(), obj.eta(), obj.phi()) < 0.01) : allowTrack=True
+		if(deltaR(event.selectedElectrons[i].eta(), event.selectedElectrons[i].phi(), obj.eta(), obj.phi()) < 0.02) : allowTrack=True
 
             if not self.idFunc(obj):
                 continue
