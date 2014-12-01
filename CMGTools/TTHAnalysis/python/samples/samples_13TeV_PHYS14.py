@@ -176,3 +176,9 @@ for comp in dataSamplesAll:
     comp.splitFactor = 1000
     comp.isMC = False
     comp.isData = True
+
+if __name__ == "__main__":
+   import sys
+   if "test" in sys.argv:
+       from CMGTools.TTHAnalysis.samples.ComponentCreator import testSamples
+       testSamples(mcSamples)
