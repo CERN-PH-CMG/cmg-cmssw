@@ -236,8 +236,6 @@ class ttHLepAnalyzerSusy( Analyzer ):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         self.counters.counter('events').inc('all events')
-        self.counters.counter('events').inc('vetoed events')
-        self.counters.counter('events').inc('accepted events')
 
         #call the leptons/photons functions
         self.makeLeptons(event)
