@@ -27,6 +27,8 @@ ttHEventAna = cfg.Analyzer(
 
 # Insert the SV analyzer in the sequence
 susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
+                        ttHFatJetAna)
+susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
                         ttHSVAnalyzer)
 susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
                         ttHHeavyFlavourHadronAnalyzer)
