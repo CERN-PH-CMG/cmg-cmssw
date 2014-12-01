@@ -51,6 +51,11 @@ metFilterAna = cfg.Analyzer(
     'metFilterAnalyzer',
     )
 
+# ST Filter Analyzer for susy soft-lepton.
+stFilterAna = cfg.Analyzer(
+    'stFilterAnalyzer',
+    )
+
 from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
 # Tree Producer
 treeProducer = cfg.Analyzer(
@@ -87,16 +92,17 @@ from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
 #selectedComponents = [ DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,TTH122,TTH127,TTJetsSem1,TTJetsSem2 ] 
 #selectedComponents = [ T2DegenerateStop_2J_4 ]
 
-selectedComponents = [ TTJetsLep ]
+#selectedComponents = [ TTJetsLep ]                                                                                 ->  newTuples000
 #selectedComponents = [ TbartW,TTH,TtW,TTWJets,TTZJets,WJets_HT250To300,WJets_HT300To400,WJets_HT400ToInf ]         ->  newTuples001
+selectedComponents = [ DYJetsM10,DYJetsM50,DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50 ]
 #selectedComponents = [ T2DegenerateStop_2J_1,T2DegenerateStop_2J_2,T2DegenerateStop_2J_3,T2DegenerateStop_2J_4 ]   ->  newTuples003
-#selectedComponents = [ DYJetsM10,DYJetsM50,DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50 ]
 
 #-------- SEQUENCE
 
 #  ORIGINAL
 sequence = cfg.Sequence(susyCoreSequence+[
     ttHEventAna,
+    stFilterAna,
     metFilterAna,
     treeProducer,
     ])
