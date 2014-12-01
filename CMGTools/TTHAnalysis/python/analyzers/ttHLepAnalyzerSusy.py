@@ -60,6 +60,8 @@ class ttHLepAnalyzerSusy( Analyzer ):
         self.counters.addCounter('events')
         count = self.counters.counter('events')
         count.register('all events')
+        count.register('vetoed events')
+        count.register('accepted events')
 
     #------------------
     # MAKE LEPTON LISTS
@@ -92,6 +94,10 @@ class ttHLepAnalyzerSusy( Analyzer ):
                         mu.relIso03 < (self.cfg_ana.loose_muon_relIso if (mu.pt() > self.cfg_ana.loose_muon_ptIsoThreshold) else 9e99) and 
                         mu.absIso03 < ((self.cfg_ana.loose_muon_absIso if hasattr(self.cfg_ana,'loose_muon_absIso') else 9e99) if (mu.pt() < self.cfg_ana.loose_muon_ptIsoThreshold) else 9e99)):
                     mu.looseIdSusy = True
+                    if(mu.sourcePtr().isSoftMuon(event.goodVertices[0])):
+                        mu.softMuID = True
+                    else:
+                        mu.softMuID = False
                     event.selectedLeptons.append(mu)
                     event.selectedMuons.append(mu)
                 else:

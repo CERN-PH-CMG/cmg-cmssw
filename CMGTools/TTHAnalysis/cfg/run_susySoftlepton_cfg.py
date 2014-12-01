@@ -28,8 +28,8 @@ ttHLepAna.loose_electron_absIso = 5
 ttHLepAna.loose_electron_ptIsoThreshold = 25
 
 # --- LEPTON SKIMMING ---
-ttHLepSkim.minLeptons = 2
-ttHLepSkim.maxLeptons = 999
+ttHLepSkim.minLeptons = 0
+ttHLepSkim.maxLeptons = 5
 ttHLepSkim.ptCuts = [5,3]
 
 # --- JET-LEPTON CLEANING ---
@@ -37,7 +37,7 @@ ttHLepSkim.ptCuts = [5,3]
 ttHJetAna.jetPt = 30.0 
 
 # --- JET-MET SKIMMING ---
-ttHJetMETSkim.jetPtCuts = [100,]
+#ttHJetMETSkim.jetPtCuts = [100,]
 #ttHJetMETSkim.metCut    = 100
 
 # Event Analyzer for susy multi-lepton (at the moment, it's the TTH one)
@@ -49,6 +49,11 @@ ttHEventAna = cfg.Analyzer(
 # MET Filter Analyzer for susy soft-lepton.
 metFilterAna = cfg.Analyzer(
     'metFilterAnalyzer',
+    )
+
+# ST Filter Analyzer for susy soft-lepton.
+stFilterAna = cfg.Analyzer(
+    'stFilterAnalyzer',
     )
 
 from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
@@ -86,30 +91,46 @@ from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
 
 #selectedComponents = [ DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,TTH122,TTH127,TTJetsSem1,TTJetsSem2 ] 
 #selectedComponents = [ T2DegenerateStop_2J_4 ]
-selectedComponents = [ TTLep ]
+
+#selectedComponents = [ TTJetsLep ]                                                                                 ->  newTuples000
+#selectedComponents = [ TbartW,TTH,TtW,TTWJets,TTZJets,WJets_HT250To300,WJets_HT300To400,WJets_HT400ToInf ]         ->  newTuples001
+selectedComponents = [ DYJetsM10,DYJetsM50,DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50 ]
+#selectedComponents = [ T2DegenerateStop_2J_1,T2DegenerateStop_2J_2,T2DegenerateStop_2J_3,T2DegenerateStop_2J_4 ]   ->  newTuples003
 
 #-------- SEQUENCE
 
+#  ORIGINAL
 sequence = cfg.Sequence(susyCoreSequence+[
     ttHEventAna,
+    stFilterAna,
     metFilterAna,
     treeProducer,
     ])
 
+# #   Comment-out for debug purposes. Provide a list of event #'s to process.
+# eventSelector.toSelect = [ 1157146 ]
+# 
+# sequence = cfg.Sequence( [ eventSelector ] + susyCoreSequence+[
+#     ttHEventAna,
+#     metFilterAna,
+#     treeProducer,
+#     ])
+
 
 #-------- HOW TO RUN
-test = 1
+test = 2
 if test==1:
     # test a single component, using a single thread.
     comp = selectedComponents[0]
-#    comp.files = comp.files[:4]
+    comp.files = comp.files[:1]         #   Comment-out this line to run interactively / Comment-in to run with lxbatch
+#     comp.files = comp.files[853:854]    #   for debug purposes.
     selectedComponents = [comp]
     comp.splitFactor = 500
 elif test==2:    
     # test all components (1 thread per component).
     for comp in selectedComponents:
-        comp.splitFactor = 1
-        comp.files = comp.files[:1]
+        comp.splitFactor = 500
+#         comp.files = comp.files[:1]
 
 
 

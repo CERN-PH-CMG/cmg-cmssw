@@ -22,7 +22,6 @@ class metFilterAnalyzer ( Analyzer ):
  
     def beginLoop(self):
         super(metFilterAnalyzer,self).beginLoop()
-      
        
     def process(self, iEvent, event):
         self.readCollections( iEvent )
