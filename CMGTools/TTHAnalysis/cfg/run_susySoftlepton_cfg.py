@@ -29,7 +29,7 @@ ttHLepAna.loose_electron_ptIsoThreshold = 25
 
 # --- LEPTON SKIMMING ---
 ttHLepSkim.minLeptons = 0
-ttHLepSkim.maxLeptons = 999
+ttHLepSkim.maxLeptons = 5
 ttHLepSkim.ptCuts = [5,3]
 
 # --- JET-LEPTON CLEANING ---
@@ -50,11 +50,6 @@ ttHEventAna = cfg.Analyzer(
 metFilterAna = cfg.Analyzer(
     'metFilterAnalyzer',
     )
-
-# # Soft Muon Analyzer for susy soft-muons.
-# softMuonAna = cfg.Analyzer(
-#     'softMuonAnalyzer',
-#     )
 
 from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
 # Tree Producer
@@ -91,8 +86,11 @@ from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
 
 #selectedComponents = [ DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,TTH122,TTH127,TTJetsSem1,TTJetsSem2 ] 
 #selectedComponents = [ T2DegenerateStop_2J_4 ]
-selectedComponents = [ TTLep ]
-#selectedComponents = [ WW ]
+
+selectedComponents = [ TTJetsLep ]
+#selectedComponents = [ TbartW,TTH,TtW,TTWJets,TTZJets,WJets_HT250To300,WJets_HT300To400,WJets_HT400ToInf ]         ->  newTuples001
+#selectedComponents = [ T2DegenerateStop_2J_1,T2DegenerateStop_2J_2,T2DegenerateStop_2J_3,T2DegenerateStop_2J_4 ]   ->  newTuples003
+#selectedComponents = [ DYJetsM10,DYJetsM50,DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50 ]
 
 #-------- SEQUENCE
 
@@ -114,7 +112,7 @@ sequence = cfg.Sequence(susyCoreSequence+[
 
 
 #-------- HOW TO RUN
-test = 1
+test = 2
 if test==1:
     # test a single component, using a single thread.
     comp = selectedComponents[0]
@@ -125,8 +123,8 @@ if test==1:
 elif test==2:    
     # test all components (1 thread per component).
     for comp in selectedComponents:
-        comp.splitFactor = 1
-        comp.files = comp.files[:1]
+        comp.splitFactor = 500
+#         comp.files = comp.files[:1]
 
 
 
