@@ -156,6 +156,7 @@ sequence = cfg.Sequence(susyCoreSequence+[
     ttHIsoTrackAna,
     ttHMT2Control,
     ttHTopoJetAna,
+    ttHFatJetAna,
     treeProducer,
     ])
 
