@@ -165,15 +165,15 @@ mcSamplesTest = [ DYJetsM50_Flat20to50, GluGluToHToZZTo4L_PUS14, GluGluToHToGG_F
 ### PU40 bx50ns
 
 #### Background samples
-DYJetsM50_HT100to200_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("DYJetsM50_HT100to200_PU_S14_POSTLS170", "/DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV-madgraph-tauola/phys_susy-miniAODforSusy_DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV-madgraph-tauola_Spring14dr-PU_S14_POSTLS170-af38aa319b7b7c91a6797b31c3be19b7/USER", "PRIVATE", ".*root", "phys03")
-DYJetsM50_HT200to400_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("DYJetsM50_HT200to400_PU_S14_POSTLS170", "/DYJetsToLL_M-50_HT-200to400_Tune4C_13TeV-madgraph-tauola/phys_susy-miniAODforSusy_DYJetsToLL_M-50_HT-200to400_Tune4C_13TeV-madgraph-tauola_Spring14dr-PU_S14_POSTLS170-af38aa319b7b7c91a6797b31c3be19b7/USER", "PRIVATE", ".*root", "phys03")
-DYJetsM50_HT400to600_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("DYJetsM50_HT400to600_PU_S14_POSTLS170", "/DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV-madgraph-tauola/phys_susy-miniAODforSusy_DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV-madgraph-tauola_Spring14dr-PU_S14_POSTLS170-af38aa319b7b7c91a6797b31c3be19b7/USER", "PRIVATE", ".*root", "phys03")
-DYJetsM50_HT600toInf_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("DYJetsM50_HT600toInf_PU_S14_POSTLS170", "/DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV-madgraph-tauola/phys_susy-miniAODforSusy_DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV-madgraph-tauola_Spring14dr-PU_S14_POSTLS170-af38aa319b7b7c91a6797b31c3be19b7/USER", "PRIVATE", ".*root", "phys03")
+DYJets_M50_HT100to200_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("DYJetsM50_HT100to200_PU_S14_POSTLS170", "/DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV-madgraph-tauola/phys_susy-miniAODforSusy_DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV-madgraph-tauola_Spring14dr-PU_S14_POSTLS170-af38aa319b7b7c91a6797b31c3be19b7/USER", "PRIVATE", ".*root", "phys03")
+DYJets_M50_HT200to400_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("DYJetsM50_HT200to400_PU_S14_POSTLS170", "/DYJetsToLL_M-50_HT-200to400_Tune4C_13TeV-madgraph-tauola/phys_susy-miniAODforSusy_DYJetsToLL_M-50_HT-200to400_Tune4C_13TeV-madgraph-tauola_Spring14dr-PU_S14_POSTLS170-af38aa319b7b7c91a6797b31c3be19b7/USER", "PRIVATE", ".*root", "phys03")
+DYJets_M50_HT400to600_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("DYJetsM50_HT400to600_PU_S14_POSTLS170", "/DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV-madgraph-tauola/phys_susy-miniAODforSusy_DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV-madgraph-tauola_Spring14dr-PU_S14_POSTLS170-af38aa319b7b7c91a6797b31c3be19b7/USER", "PRIVATE", ".*root", "phys03")
+DYJets_M50_HT600toInf_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("DYJetsM50_HT600toInf_PU_S14_POSTLS170", "/DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV-madgraph-tauola/phys_susy-miniAODforSusy_DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV-madgraph-tauola_Spring14dr-PU_S14_POSTLS170-af38aa319b7b7c91a6797b31c3be19b7/USER", "PRIVATE", ".*root", "phys03")
 DYJetsToLL = [
-DYJetsM50_HT100to200_PU_S14_POSTLS170,
-DYJetsM50_HT200to400_PU_S14_POSTLS170,
-DYJetsM50_HT400to600_PU_S14_POSTLS170,
-DYJetsM50_HT600toInf_PU_S14_POSTLS170,
+DYJets_M50_HT100to200_PU_S14_POSTLS170,
+DYJets_M50_HT200to400_PU_S14_POSTLS170,
+DYJets_M50_HT400to600_PU_S14_POSTLS170,
+DYJets_M50_HT600toInf_PU_S14_POSTLS170,
 ]
 
 
