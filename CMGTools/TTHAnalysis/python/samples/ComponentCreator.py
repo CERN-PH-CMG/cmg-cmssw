@@ -79,7 +79,51 @@ class ComponentCreator(object):
         )
         return component
 
+    def getFilesFromEOS(self,name,dataset,path,pattern=".*root"):
+        from CMGTools.Production.dataset import getDatasetFromCache, writeDatasetToCache
+        if "%" in path: path = path % dataset;
+        try:
+            files = getDatasetFromCache('EOS%{path}%{pattern}.pck'.format(path = path.replace('/','_'), pattern = pattern))
+        except IOError:
+            files = [ 'root://eoscms.cern.ch/'+x for x in eostools.listFiles('/eos/cms'+path) if re.match(pattern,x) ] 
+            if len(files) == 0:
+                raise RuntimeError, "ERROR making component %s: no files found under %s matching '%s'" % (name,path,pattern)
+            writeDatasetToCache('EOS%{path}%{pattern}.pck'.format(path = path.replace('/','_'), pattern = pattern), files)
+        return files
+    def makeMCComponentFromEOS(self,name,dataset,path,pattern=".*root"):
+        component = cfg.MCComponent(
+            dataset=dataset,
+            name = name,
+            files = self.getFilesFromEOS(name,dataset,path,pattern),
+            xSection = 1,
+            nGenEvents = 1,
+            triggers = [],
+            effCorrFactor = 1,
+        )
+        return component
 
+    def getFilesFromPSI(self,name,dataset,path,pattern=".*root"):
+        from CMGTools.Production.dataset import getDatasetFromCache, writeDatasetToCache
+        if "%" in path: path = path % dataset;
+        try:
+            files = getDatasetFromCache('PSI%{path}%{pattern}.pck'.format(path = path.replace('/','_'), pattern = pattern))
+        except IOError:
+            files = [ 'dcap://t3se01.psi.ch:22125/'+x for x in eostools.listFiles('/pnfs/psi.ch/cms/trivcat/'+path) if re.match(pattern,x) ] 
+            if len(files) == 0:
+                raise RuntimeError, "ERROR making component %s: no files found under %s matching '%s'" % (name,path,pattern)
+            writeDatasetToCache('PSI%{path}%{pattern}.pck'.format(path = path.replace('/','_'), pattern = pattern), files)
+        return files
+    def makeMCComponentFromPSI(self,name,dataset,path,pattern=".*root"):
+        component = cfg.MCComponent(
+            dataset=dataset,
+            name = name,
+            files = self.getFilesFromPSI(name,dataset,path,pattern),
+            xSection = 1,
+            nGenEvents = 1,
+            triggers = [],
+            effCorrFactor = 1,
+        )
+        return component
 
     def makeDataComponent(self,name,datasets,user,pattern):
          files=[]
@@ -97,7 +141,6 @@ class ComponentCreator(object):
          )
 
          return component
-
 
     def getFiles(self, dataset, user, pattern, useAAA=False):
         # print 'getting files for', dataset,user,pattern
