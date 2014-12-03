@@ -9,8 +9,8 @@ mvaTrigV050nsCSA14 = cms.EDFilter("ElectronIdMVAProducerCSA14",
                          reducedEERecHitCollection = cms.InputTag('reducedEcalRecHitsEE'),
                          method = cms.string("BDT"),
                          mvaWeightFile = cms.vstring(
-                                                     "EgammaAnalysis/ElectronTools/data/CSA14/TrigIDMVA_EB_BDT.weights.xml",
-                                                     "EgammaAnalysis/ElectronTools/data/CSA14/TrigIDMVA_EE_BDT.weights.xml",
+                                                     "EgammaAnalysis/ElectronTools/data/CSA14/TrigIDMVA_50ns_EB_BDT.weights.xml",
+                                                     "EgammaAnalysis/ElectronTools/data/CSA14/TrigIDMVA_50ns_EE_BDT.weights.xml",
     ),
                          Trig = cms.bool(True),
 )
