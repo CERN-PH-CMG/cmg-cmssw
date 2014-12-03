@@ -296,9 +296,9 @@ class TreeToYield:
     def getPlot(self,plotspec,cut):
         ret = self.getPlotRaw(plotspec.name, plotspec.expr, plotspec.bins, cut, plotspec)
         # fold overflow
-        if ret.ClassName() in [ "TH1F", "TH1D", "TProfile" ] :
+        if ret.ClassName() in [ "TH1F", "TH1D" ] :
             n = ret.GetNbinsX()
-            if plotspec.getOption('IncludeOverflows',True):
+            if plotspec.getOption('IncludeOverflows',True) and ret.ClassName() != "TProfile":
                 ret.SetBinContent(1,ret.GetBinContent(0)+ret.GetBinContent(1))
                 ret.SetBinContent(n,ret.GetBinContent(n+1)+ret.GetBinContent(n))
                 ret.SetBinError(1,hypot(ret.GetBinError(0),ret.GetBinError(1)))

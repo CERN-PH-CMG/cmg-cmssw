@@ -124,6 +124,7 @@ class treeProducerSusyMultilepton( treeProducerSusyCore ):
             ##------------------------------------------------
             "cleanJets"       : NTupleCollection("Jet",     jetTypeSusy, 15, help="Cental jets after full selection and cleaning, sorted by pt"),
             "cleanJetsFwd"    : NTupleCollection("JetFwd",  jetTypeSusy, 6, help="Forward jets after full selection and cleaning, sorted by pt"),            
+            "fatJets"         : NTupleCollection("FatJet", fatJetType, 15, help="Cental jets after full selection and cleaning, sorted by pt"),
             ##------------------------------------------------
             "ivf"       : NTupleCollection("SV",     svType, 20, help="SVs from IVF"),
             "genBHadrons"  : NTupleCollection("GenBHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level B hadrons"),

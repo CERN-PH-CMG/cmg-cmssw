@@ -123,3 +123,13 @@ class ComponentCreator(object):
             print 'ERROR FRACTION IS ONLY ',fraction
         return fraction 
         
+
+def testSamples(mcSamples):
+   from subprocess import check_output, CalledProcessError
+   for X in mcSamples:
+        print X.name, len(X.files)
+        try:
+            print "\tSample is accessible? ",("events" in check_output(["edmFileUtil","--ls",X.files[0]]))
+        except CalledProcessError:
+            print "\tERROR trying to access ",X.files[0]
+
