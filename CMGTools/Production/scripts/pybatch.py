@@ -35,51 +35,57 @@ def split(comps):
 def batchScriptCERN( jobDir, remoteDir=''):
    '''prepare the LSF version of the batch script, to run on LSF'''
    
-   dirCopy = """cp -r Loop/* $LS_SUBCWD
+   dirCopy = """echo 'sending the logs back'  # will send also root files if copy failed
+cp -r Loop/* $LS_SUBCWD
 if [ $? -ne 0 ]; then
    echo 'ERROR: problem copying job directory back'
 else
    echo 'job directory copy succeeded'
 fi"""
    if remoteDir=='':
-      cpCmd="echo 'sending the job directory back'\n" + dirCopy
+      cpCmd=dirCopy
    elif remoteDir.startswith("/pnfs/psi.ch"):
        cpCmd="""echo 'sending root files to remote dir'
-export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH # Fabio's workaround to fix gfal-tools with CMSSW
-for f in Loop/tree*/*.root
-do
-   ff=`basename $f | cut -d . -f 1`
-   d=`echo $f | cut -d / -f 2`
-   gfal-mkdir {srm}
-   echo "gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root"
-   gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root
-   if [ $? -ne 0 ]; then
-      echo "ERROR: remote copy failed for file $ff"
-   else
-      echo "remote copy succeeded"
-      rm Loop/$d/$ff.root
-   fi
-done
-echo 'sending the logs back'  # will send also root files if copy failed
+if [ looperExitStatus -ne 0 ]; then
+   echo 'Looper failed. Don't attempt to copy corrupted file remotely'
+else
+   export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH # Fabio's workaround to fix gfal-tools with CMSSW
+   for f in Loop/tree*/*.root
+   do
+      ff=`basename $f | cut -d . -f 1`
+      d=`echo $f | cut -d / -f 2`
+      gfal-mkdir {srm}
+      echo "gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root"
+      gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root
+      if [ $? -ne 0 ]; then
+         echo "ERROR: remote copy failed for file $ff"
+      else
+         echo "remote copy succeeded"
+         rm Loop/$d/$ff.root
+      fi
+   done
+fi
 """.format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")]) + dirCopy
    elif remoteDir.startswith("/eos/cms/store"):
        cpCmd="""echo 'sending root files to remote dir'
-export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH # Fabio's workaround to fix gfal-tools with CMSSW
-for f in Loop/*ree*/*.root
-do
-   ff=`basename $f | cut -d . -f 1`
-   d=`echo $f | cut -d / -f 2`
-   /afs/cern.ch/project/eos/installation/0.3.15/bin/eos.select mkdir {srm}
-   echo "cmsStage /`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root"
-   cmsStage /`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root
-   if [ $? -ne 0 ]; then
-      echo "ERROR: remote copy failed for file $ff"
-   else
-      echo "remote copy succeeded"
-      rm Loop/$d/$ff.root
-   fi
-done
-echo 'sending the logs back'  # will send also root files if copy failed
+if [ looperExitStatus -ne 0 ]; then
+   echo 'Looper failed. Don't attempt to copy corrupted file remotely'
+else
+   for f in Loop/*ree*/*.root
+   do
+      ff=`basename $f | cut -d . -f 1`
+      d=`echo $f | cut -d / -f 2`
+      /afs/cern.ch/project/eos/installation/0.3.15/bin/eos.select mkdir {srm}
+      echo "cmsStage /`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root"
+      cmsStage /`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root
+      if [ $? -ne 0 ]; then
+         echo "ERROR: remote copy failed for file $ff"
+      else
+         echo "remote copy succeeded"
+         rm Loop/$d/$ff.root
+      fi
+   done
+fi
 """.format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm=(remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")]).split("/eos/cms",1)[1]) + dirCopy
    else:
        print "choose location not supported yet: ", remoteDir
@@ -103,6 +109,7 @@ ls
 cd `find . -type d | grep /`
 echo 'running'
 python $CMSSW_BASE/src/CMGTools/RootTools/python/fwlite/Looper.py config.pck
+looperExitStatus=$?
 echo
 {copy}
 """.format(copy=cpCmd)
@@ -117,32 +124,36 @@ def batchScriptPSI( jobDir, remoteDir=''):
    VO_CMS_SW_DIR = "/swshare/cms"  # $VO_CMS_SW_DIR doesn't seem to work in the new SL6 t3wn
 
 
-   dirCopy = """cp -r Loop/* $SUBMISIONDIR
+   dirCopy = """echo 'sending the logs back'  # will send also root files if copy failed
+cp -r Loop/* $SUBMISIONDIR
 if [ $? -ne 0 ]; then
    echo 'ERROR: problem copying job directory back'
 else
    echo 'job directory copy succeeded'
 fi"""
    if remoteDir=='':
-       cpCmd="echo 'sending the job directory back'" + dirCopy
+       cpCmd=dirCopy
    elif remoteDir.startswith("/pnfs/psi.ch"):
        cpCmd="""echo 'sending root files to remote dir'
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/dcap/ # Fabio's workaround to fix gfal-tools
-for f in Loop/tree*/*.root
-do
-   ff=`basename $f | cut -d . -f 1`
-   d=`echo $f | cut -d / -f 2`
-   gfal-mkdir {srm}
-   echo "gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root"
-   gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root
-   if [ $? -ne 0 ]; then
-      echo "ERROR: remote copy failed for file $ff"
-   else
-      echo "remote copy succeeded"
-      rm Loop/$d/$ff.root
-   fi
-done
-echo 'sending the logs back'
+if [ looperExitStatus -ne 0 ]; then
+   echo 'Looper failed. Don't attempt to copy corrupted file remotely'
+else
+   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/dcap/ # Fabio's workaround to fix gfal-tools
+   for f in Loop/tree*/*.root
+   do
+      ff=`basename $f | cut -d . -f 1`
+      d=`echo $f | cut -d / -f 2`
+      gfal-mkdir {srm}
+      echo "gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root"
+      gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_{idx}.root
+      if [ $? -ne 0 ]; then
+         echo "ERROR: remote copy failed for file $ff"
+      else
+         echo "remote copy succeeded"
+         rm Loop/$d/$ff.root
+      fi
+   done
+fi
 """.format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")]) + dirCopy
    else:
        print "remote directory not supported yet: ", remoteDir
@@ -198,6 +209,7 @@ cd `find . -type d | grep /`
 echo 'running'
 #python $CMSSW_BASE/src/CMGTools/RootTools/python/fwlite/Looper.py config.pck
 python {cmssw}/src/CMGTools/RootTools/python/fwlite/Looper.py config.pck
+looperExitStatus=$?
 echo
 {copy}
 ###########################################################################
