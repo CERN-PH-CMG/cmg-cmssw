@@ -17,7 +17,7 @@ _Vars = {
         MVAVar("chi2LocalPosition := log(LepGood_chi2LocalPosition)", func = lambda LepGood : safelog(LepGood.combinedQuality().chi2LocalPosition)),
         MVAVar("chi2LocalMomentum := log(LepGood_chi2LocalMomentum)", func = lambda LepGood : safelog(LepGood.combinedQuality().chi2LocalMomentum)),
         MVAVar("innerTrackValidHitFraction := LepGood_innerTrackValidHitFraction", func = lambda LepGood : LepGood.innerTrack().validFraction()),
-        MVAVar("lostOuterHits := LepGood_lostOuterHits", func = lambda LepGood : LepGood.innerTrack().trackerExpectedHitsOuter().numberOfLostHits()),
+        MVAVar("lostOuterHits := LepGood_lostOuterHits", func = lambda LepGood : LepGood.innerTrack().hitPattern().numberOfLostHits(ROOT.reco.HitPattern.MISSING_OUTER_HITS)),
         MVAVar("glbTrackProbability := log(LepGood_glbTrackProbability)", func = lambda LepGood : safelog(LepGood.combinedQuality().glbTrackProbability)),
         MVAVar("trackerHits := LepGood_trackerHits", func = lambda LepGood : LepGood.track().hitPattern().numberOfValidTrackerHits()),
     ],
@@ -27,7 +27,7 @@ _Vars = {
         MVAVar("caloHadEnergy := min(LepGood_caloHadEnergy,30)", func = lambda LepGood : min(LepGood.calEnergy().had,30)),
     ],
     'Trk':[
-        MVAVar("lostHits := LepGood_lostHits", func = lambda LepGood : LepGood.innerTrack().trackerExpectedHitsInner().numberOfLostHits()),
+        MVAVar("lostHits := LepGood_lostHits", func = lambda LepGood : LepGood.innerTrack().hitPattern().numberOfLostHits(ROOT.reco.HitPattern.MISSING_INNER_HITS)),
         MVAVar("trkKink := min(100,LepGood_trkKink)", func = lambda LepGood : min(100,LepGood.combinedQuality().trkKink)),
         MVAVar("trackerLayers := LepGood_trackerLayers", func = lambda LepGood : LepGood.track().hitPattern().trackerLayersWithMeasurement()),
         MVAVar("pixelLayers := LepGood_pixelLayers", func = lambda LepGood : LepGood.track().hitPattern().pixelLayersWithMeasurement()),

@@ -1,5 +1,6 @@
 from CMGTools.RootTools.physicsobjects.Lepton import Lepton
 from CMGTools.RootTools.physicsobjects.ElectronMVAID import ElectronMVAID_Trig, ElectronMVAID_NonTrig, ElectronMVAID_TrigNoIP
+import ROOT
 
 
 class Electron( Lepton ):
@@ -124,7 +125,7 @@ class Electron( Lepton ):
                 else              : return self.mvaNonTrigV0(full5x5) > +0.60;
 
     def mvaIDZZ(self):
-        return self.mvaIDLoose() and (self.gsfTrack().trackerExpectedHitsInner().numberOfLostHits()<=1)
+        return self.mvaIDLoose() and (self.gsfTrack().hitPattern().numberOfLostHits(ROOT.reco.HitPattern.MISSING_INNER_HITS)<=1)
 
     def chargedHadronIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationVariables().sumChargedHadronPt 

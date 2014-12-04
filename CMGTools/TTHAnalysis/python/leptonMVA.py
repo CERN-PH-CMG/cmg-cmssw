@@ -80,7 +80,7 @@ _MuonVars = {
 _ElectronVars = {
  'TTH': [
     MVAVar("mvaId",lambda x: x.mvaNonTrigV0(full5x5=True)),
-    MVAVar("innerHits",lambda x: x.gsfTrack().trackerExpectedHitsInner().numberOfLostHits()),
+    MVAVar("innerHits",lambda x: x.gsfTrack().hitPattern().numberOfLostHits(ROOT.reco.HitPattern.MISSING_INNER_HITS)),
  ],
  'Susy': [
     MVAVar("mvaId",lambda x: x.mvaNonTrigV0(full5x5=True)),

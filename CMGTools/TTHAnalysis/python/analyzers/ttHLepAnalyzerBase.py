@@ -184,7 +184,7 @@ class ttHLepAnalyzerBase( Analyzer ):
             ## remove muons if muForEleCrossCleaning is not empty
             if bestMatch(ele, muForEleCrossCleaning)[1] < 0.02: continue
             ## apply selection
-            if ele.pt()>7 and abs(ele.eta())<2.5 and abs(ele.dxy())<0.5 and abs(ele.dz())<1. and ele.gsfTrack().trackerExpectedHitsInner().numberOfLostHits()<=1:
+            if ele.pt()>7 and abs(ele.eta())<2.5 and abs(ele.dxy())<0.5 and abs(ele.dz())<1. and ele.gsfTrack().hitPattern().numberOfLostHits(ROOT.reco.HitPattern.MISSING_INNER_HITS)<=1:
                  ## fill tightId:
                  if (ele.pt() > 20):
                     SCEta = abs(ele.superCluster().eta())
