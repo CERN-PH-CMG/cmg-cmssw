@@ -11,10 +11,11 @@ from CMGTools.RootTools.RootTools import *
 from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import * 
 
 ttHLepAna.loose_muon_pt  = 10
-ttHLepAna.loose_muon_relIso = 0.2
+ttHLepAna.loose_muon_relIso = 0.4
+ttHLepAna.mu_isoCorr = "deltaBeta" 
 ttHLepAna.loose_electron_pt  = 10
-ttHLepAna.loose_electron_relIso = 0.2
-ttHLepAna.ele_isoCorr = "deltaBeta" 
+ttHLepAna.loose_electron_relIso = 0.4
+ttHLepAna.ele_isoCorr = "rhoArea" 
 
 
 # Redefine what I need
@@ -55,6 +56,13 @@ ttHIsoTrackAna = cfg.Analyzer(
             MaxIsoSumEMU = 0.2, ### unused
             doSecondVeto = False
             )
+
+susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
+                        ttHSVAnalyzer)
+susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
+                        ttHHeavyFlavourHadronAnalyzer)
+
+
 
 from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_1mu, triggers_1muHT, triggers_1eleHT
 
