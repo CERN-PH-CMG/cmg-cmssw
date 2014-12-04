@@ -63,7 +63,9 @@ susyScanAna = cfg.Analyzer(
 
 # gen particles in Pythia 6
 susyPythia6Gen  = cfg.Analyzer(
-    'susyGenStatusThree'
+    'susyGenStatusThree',
+    pythia6only = False, # True = get status 3; False = try get interesting event whatever generator is used
+    verbose     = False,
     )
 
 # Lepton Analyzer (generic)
@@ -174,6 +176,7 @@ ttHJetAna = cfg.Analyzer(
     recalibrateJets = False,
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     cleanJetsFromTaus = False,
+    doQG = False,
     )
 
 # Jet MC Match Analyzer (generic)
@@ -181,6 +184,43 @@ ttHJetMCAna = cfg.Analyzer(
     'ttHJetMCMatchAnalyzer',
     smearJets = True,
     shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts
+    )
+
+# Fat Jets Analyzer (generic)
+ttHFatJetAna = cfg.Analyzer(
+    'ttHFatJetAnalyzer',
+    jetCol = 'slimmedJetsAK8',
+    jetPt = 100.,
+    jetEta = 2.4,
+    # v--- not implemented for AK8
+    #jetLepDR = 0.4,
+    #minLepPt = 10,
+    relaxJetId = False,  
+    # v--- not implemented for AK8
+    #doPuId = False, # Not commissioned in 7.0.X
+    #recalibrateJets = False,
+    #shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
+    )
+
+
+# Secondary vertex analyzer
+ttHSVAnalyzer = cfg.Analyzer(
+    'ttHSVAnalyzer'
+)
+
+# Secondary vertex analyzer
+ttHHeavyFlavourHadronAnalyzer = cfg.Analyzer(
+    'ttHHeavyFlavourHadronAnalyzer'
+)
+
+
+ttHMetAna = cfg.Analyzer(
+    'ttHMetEventAnalyzer',
+    doTkMet = False,
+    doMetNoMu = False,
+    candidates='packedPFCandidates',
+    candidatesTypes='std::vector<pat::PackedCandidate>',
+    dzMax = 0.1,
     )
 
 # Core Event Analyzer (computes basic quantities like HT, dilepton masses)
@@ -222,6 +262,9 @@ susyCoreSequence = [
     ttHTauMCAna,
     ttHJetAna,
     ttHJetMCAna,
+    #ttHFatJetAna,  # out of core sequence for now
+    #ttHSVAnalyzer, # out of core sequence for now
+    ttHMetAna,
     ttHCoreEventAna,
     ttHJetMETSkim
 ]

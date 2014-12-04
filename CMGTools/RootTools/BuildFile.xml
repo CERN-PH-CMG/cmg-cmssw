@@ -11,6 +11,8 @@
 <use   name="DataFormats/PatCandidates"/>
 <use   name="CommonTools/Utils"/>
 <use   name="DataFormats/HepMCCandidate"/>
+<use   name="fastjet"/>
+<use   name="ktjet"/>
 <use   name="EgammaAnalysis/ElectronTools"/>
 <use   name="boost"/>
 <export>

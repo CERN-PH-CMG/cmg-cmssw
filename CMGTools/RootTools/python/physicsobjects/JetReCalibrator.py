@@ -51,9 +51,9 @@ class JetReCalibrator:
         except RuntimeError, r:
             print "Caught %s when getting uncertainty for jet of pt %.1f, eta %.2f\n" % (r,corr * jet.pt() * jet.rawFactor(),jet.eta())
             jet.jetEnergyCorrUncertainty = 0.5
-        if jet.component(4).fraction() < 0.9 and jet.pt()*corr*jet.rawFactor() > 10:
-            metShift[0] -= jet.px()*(corr*jet.rawFactor() - 1)*(1-jet.component(3).fraction())
-            metShift[1] -= jet.py()*(corr*jet.rawFactor() - 1)*(1-jet.component(3).fraction()) 
+        if jet.photonEnergyFraction() < 0.9 and jet.pt()*corr*jet.rawFactor() > 10:
+            metShift[0] -= jet.px()*(corr*jet.rawFactor() - 1)*(1-jet.muonEnergyFraction())
+            metShift[1] -= jet.py()*(corr*jet.rawFactor() - 1)*(1-jet.muonEnergyFraction()) 
         if delta != 0:
             #print "   jet with corr pt %6.2f has an uncertainty %.2f " % (jet.pt()*jet.rawFactor()*corr, jet.jetEnergyCorrUncertainty)
             corr *= max(0, 1+delta*jet.jetEnergyCorrUncertainty)
@@ -64,7 +64,6 @@ class JetReCalibrator:
         if corr <= 0:
             return False
         jet.setP4(jet.p4() * (corr * jet.rawFactor()))
-        jet.setRawFactor(1.0/corr)
         return True
 
 class Type1METCorrection:

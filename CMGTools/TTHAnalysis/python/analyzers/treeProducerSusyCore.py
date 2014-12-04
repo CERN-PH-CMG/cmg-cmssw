@@ -56,11 +56,9 @@ class treeProducerSusyCore( ttHLepTreeProducerNew ):
         }
         self.collections = {
             ##--------------------------------------------------
-            "gentopquarks"    : NTupleCollection("GenTop",     genParticleType, 2, help="Generated top quarks from hard scattering"),
-            "genbquarks"      : NTupleCollection("GenBQuark",  genParticleType, 2, help="Generated bottom quarks from top quark decays"),
-            "genwzquarks"     : NTupleCollection("GenQuark",   genParticleWithSourceType, 6, help="Generated quarks from W/Z decays"),
-            "genleps"         : NTupleCollection("GenLep",     genParticleWithSourceType, 6, help="Generated leptons from W/Z decays"),
-            "gentauleps"      : NTupleCollection("GenLepFromTau", genParticleWithSourceType, 6, help="Generated leptons from decays of taus from W/Z/h decays"),
+            "genleps"         : NTupleCollection("genLep",     genParticleWithSourceType, 10, help="Generated leptons (e/mu) from W/Z decays"),
+            "gentauleps"      : NTupleCollection("genLepFromTau", genParticleWithSourceType, 10, help="Generated leptons (e/mu) from decays of taus from W/Z/h decays"),
+            "gentaus"         : NTupleCollection("genTau",     genParticleWithSourceType, 10, help="Generated leptons (tau) from W/Z decays"),
             "genStatusThree"   : NTupleCollection("GenP6StatusThree", genParticleWithMotherId, 100 , help="Pythia6 status three particles"),
             }
 

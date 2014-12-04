@@ -424,7 +424,7 @@ int Hemisphere::Reconstruct(){
 							float NewAxis2_E = Axis2[4];
 				// subtract the object from its hemisphere
 							if (Object_Group[i] == 1){
-								NewAxis1_Px = NewAxis1_Px - Object_Px[i];
+							        NewAxis1_Px = NewAxis1_Px - Object_Px[i];
 								NewAxis1_Py = NewAxis1_Py - Object_Py[i];
 								NewAxis1_Pz = NewAxis1_Pz - Object_Pz[i];
 								NewAxis1_E = NewAxis1_E - Object_E[i];
@@ -449,7 +449,8 @@ int Hemisphere::Reconstruct(){
 							}
 			// and associate the object to the best hemisphere and add it to the sum
 							if (mass1 < mass2) {
-								if (Object_Group[i] != 1){
+							  //if (Object_Group[i] != 1){
+							        if (Object_Group[i] != 1 && Object_Group[i] != 0){
 									I_Move = true;
 								}
 								Object_Group[i] = 1;
@@ -458,7 +459,8 @@ int Hemisphere::Reconstruct(){
 								Sum1_Pz += Object_Pz[i];
 								Sum1_E += Object_E[i];
 							} else {
-								if (Object_Group[i] != 2){
+							  //if (Object_Group[i] != 2){
+							        if (Object_Group[i] != 2 && Object_Group[i] != 0){
 									I_Move = true;
 								}
 								Object_Group[i] = 2;
@@ -520,6 +522,8 @@ int Hemisphere::Reconstruct(){
 			cout << endl;
 		}
 
+		if (numLoop <= 1) I_Move = true;
+		
 	} // end of iteration
 
 	// associate all objects to hemispheres for method 8

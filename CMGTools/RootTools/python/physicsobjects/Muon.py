@@ -31,7 +31,7 @@ class Muon( Lepton ):
             
     def mvaId(self):
         '''For a transparent treatment of electrons and muons. Returns -99'''
-        return -99
+        return getattr(self,'mvaIdValue',-99)
     
    
 

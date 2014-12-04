@@ -116,6 +116,7 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
         match = matchObjectCollection3(leps, event.anyLeptons, deltaRMax = 0.3, filter = lambda x,y : abs(x.pdgId()) == abs(y.pdgId()))
         for lep in leps:
             gen = match[lep]
+            lep.mcMatchAny_gp = gen
             lep.mcMatchAny = ((1 + self.isFromB(gen)) if gen != None else 0)
             if lep.mcMatchAny == 1 and self.isFromB(gen,bid=4):
                 lep.mcMatchAny2 = 4

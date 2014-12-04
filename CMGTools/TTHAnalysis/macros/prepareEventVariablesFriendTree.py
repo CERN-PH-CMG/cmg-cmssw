@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from CMGTools.TTHAnalysis.treeReAnalyzer import *
 from glob import glob
-import os.path
+import os.path, re
 
 MODULES = []
 
@@ -11,25 +11,52 @@ MODULES = []
 #MODULES.append( ('2lss_mva', FinalMVA_2LSS()) )
 #from CMGTools.TTHAnalysis.tools.finalMVA_3l import FinalMVA_3L
 #MODULES.append( ('3l_mva', FinalMVA_3L()) )
-from CMGTools.TTHAnalysis.tools.bbvars import bbVars
-MODULES.append( ('bbvars', bbVars()) )
-#from CMGTools.TTHAnalysis.tools.finalMVA_2lss_2 import FinalMVA_2LSS_2
-#MODULES.append( ('finalMVA_2lss_2', FinalMVA_2LSS_2()) )
+#from CMGTools.TTHAnalysis.tools.bbvars import bbVars
+#MODULES.append( ('bbvars', bbVars()) )
+from CMGTools.TTHAnalysis.tools.finalMVA_susy_2lss import FinalMVA_SUSY_2LSS
+MODULES.append( ('finalMVA_susy_2lss', FinalMVA_SUSY_2LSS()) )
 #from CMGTools.TTHAnalysis.tools.ttbarEventReco_2lss import TTEventReco_MC
 #MODULES.append( ('ttreco_mc', TTEventReco_MC()) )
 #from CMGTools.TTHAnalysis.tools.ttbarEventReco_2lss import TTEventReco
 #MODULES.append( ('ttreco', TTEventReco(sortersToUse={"BestGuess":"", "BestBySum4NoTJJb":"_bySum4"})) )
 #MODULES.append( ('ttreco', TTEventReco(sortersToUse={"BestGuess":"","ByGuessLL2B":"_byLL"})) )
+from CMGTools.TTHAnalysis.tools.MuonMVAFriend import MuonMVAFriend
+MODULES.append( ('MuMVAId', MuonMVAFriend("BPH",     "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_muMVAId_v1/train70XBPH_BDTG.weights.xml", label="BPH")) )
+MODULES.append( ('MuMVAId', MuonMVAFriend("BPHCalo", "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_muMVAId_v1/train70XBPHCalo_BDTG.weights.xml", label="BPHCalo")) )
+MODULES.append( ('MuMVAId', MuonMVAFriend("Full",    "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_muMVAId_v1/train70XFull_BDTG.weights.xml", label="Full")) )
+from CMGTools.TTHAnalysis.tools.LepMVAFriend import LepMVAFriend
+MODULES.append( ('LepMVAFriend', LepMVAFriend(("/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/%s_BDTG.weights.xml",
+                                               "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/%s_BDTG.weights.xml"))) )
+MODULES.append( ('LepMVAFriend', LepMVAFriend(("/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/SV_%s_BDTG.weights.xml",
+                                               "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/SV_%s_BDTG.weights.xml",),
+                                               training="muMVAId_SV", label="SV")) )
 
+
+#from CMGTools.TTHAnalysis.tools.eventVars_MT2 import EventVarsMT2 
+#MODULES.append( ('MT2', EventVarsMT2()) ) 
+
+ 
 class VariableProducer(Module):
     def __init__(self,name,booker,modules):
         Module.__init__(self,name,booker)
         self._modules = modules
     def beginJob(self):
         self.t = PyTree(self.book("TTree","t","t"))
+        self.branches = {}
         for name,mod in self._modules:
             for B in mod.listBranches():
-                self.t.branch(B ,"F")
+                # don't add the same branch twice
+                if B in self.branches: 
+                    print "Will not add branch %s twice" % (B,)
+                    continue
+                self.branches[B] = True
+                if type(B) == tuple:
+                    if len(B) == 2:
+                        self.t.branch(B[0],B[1])
+                    elif len(B) == 4:
+                        self.t.branch(B[0],B[1],n=B[2],lenVar=B[3])
+                else:
+                    self.t.branch(B ,"F")
     def analyze(self,event):
         for name,mod in self._modules:
             keyvals = mod(event)
@@ -42,7 +69,9 @@ import os, itertools
 
 from optparse import OptionParser
 parser = OptionParser(usage="%prog [options] <TREE_DIR> <OUT>")
+parser.add_option("-m", "--modules", dest="modules",  type="string", default=[], action="append", help="Run these modules");
 parser.add_option("-d", "--dataset", dest="datasets",  type="string", default=[], action="append", help="Process only this dataset (or dataset if specified multiple times)");
+parser.add_option("-D", "--dm", "--dataset-match", dest="datasetMatches",  type="string", default=[], action="append", help="Process only this dataset (or dataset if specified multiple times): REGEXP");
 parser.add_option("-c", "--chunk",   dest="chunks",    type="int",    default=[], action="append", help="Process only these chunks (works only if a single dataset is selected with -d)");
 parser.add_option("-N", "--events",  dest="chunkSize", type="int",    default=500000, help="Default chunk size when splitting trees");
 parser.add_option("-j", "--jobs",    dest="jobs",      type="int",    default=1, help="Use N threads");
@@ -54,7 +83,14 @@ parser.add_option("-V", "--vector",  dest="vectorTree", action="store_true", def
 parser.add_option("-F", "--add-friend",    dest="friendTrees",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename). Can use {name}, {cname} patterns in the treename") 
 parser.add_option("--FMC", "--add-friend-mc",    dest="friendTreesMC",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to MC only. Can use {name}, {cname} patterns in the treename") 
 parser.add_option("--FD", "--add-friend-data",    dest="friendTreesData",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to data trees only. Can use {name}, {cname} patterns in the treename") 
+parser.add_option("-L", "--list-modules",  dest="listModules", action="store_true", default=False, help="just list the configured modules");
 (options, args) = parser.parse_args()
+
+if options.listModules:
+    print "List of modules"
+    for (n,x) in MODULES:
+        print "   '%s': %s" % (n,x)
+    exit()
 
 if len(args) != 2 or not os.path.isdir(args[0]) or not os.path.isdir(args[1]): 
     print "Usage: program <TREE_DIR> <OUT>"
@@ -70,6 +106,11 @@ for D in glob(args[0]+"/*"):
         short = os.path.basename(D)
         if options.datasets != []:
             if short not in options.datasets: continue
+        if options.datasetMatches != []:
+            found = False
+            for dm in  options.datasetMatches:
+                if re.match(dm,short): found = True
+            if not found: continue
         data = ("DoubleMu" in short or "MuEG" in short or "DoubleElectron" in short or "SingleMu" in short)
         f = ROOT.TFile.Open(fname);
         t = f.Get(options.tree)
@@ -100,6 +141,7 @@ if options.queue:
     friendPost =  "".join(["  -F  %s %s " % (fn,ft) for fn,ft in options.friendTrees])
     friendPost += "".join([" --FM %s %s " % (fn,ft) for fn,ft in options.friendTreesMC])
     friendPost += "".join([" --FD %s %s " % (fn,ft) for fn,ft in options.friendTreesData])
+    friendPost += "".join(["  -m  '%s'  " % m for m in options.modules])
     for (name,fin,fout,data,range,chunk) in jobs:
         if chunk != -1:
             print "{base} -d {data} -c {chunk} {post}".format(base=basecmd, data=name, chunk=chunk, post=friendPost)
@@ -130,7 +172,15 @@ def _runIt(myargs):
         return (name,(nev,0))
     print "==== %s starting (%d entries) ====" % (name, nev)
     booker = Booker(fout)
-    el = EventLoop([ VariableProducer(options.treeDir,booker,MODULES), ])
+    modulesToRun = MODULES
+    if options.modules != []:
+        toRun = {}
+        for m,v in MODULES:
+            for pat in options.modules:
+                if re.match(pat,m):
+                    toRun[m] = True 
+        modulesToRun = [ (m,v) for (m,v) in MODULES if m in toRun ]
+    el = EventLoop([ VariableProducer(options.treeDir,booker,modulesToRun), ])
     el.loop([tb], eventRange=range)
     booker.done()
     fb.Close()

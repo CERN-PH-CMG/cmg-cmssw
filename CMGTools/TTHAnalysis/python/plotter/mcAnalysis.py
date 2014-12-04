@@ -66,13 +66,14 @@ class MCAnalysis:
                     for p in p0.split(","):
                         if re.match(p+"$", field[0]): signal = True
             ## endif
-            rootfile = "%s/%s/%s/%s_tree.root" % (options.path, field[1].strip(), options.tree, options.tree)
+            treename = extra["TreeName"] if "TreeName" in extra else options.tree 
+            rootfile = "%s/%s/%s/%s_tree.root" % (options.path, field[1].strip(), treename, treename)
             if options.remotePath:
-                rootfile = "root:%s/%s/%s_tree.root" % (options.remotePath, field[1].strip(), options.tree)
+                rootfile = "root:%s/%s/%s_tree.root" % (options.remotePath, field[1].strip(), treename)
             elif os.path.exists(rootfile+".url"): #(not os.path.exists(rootfile)) and :
                 rootfile = open(rootfile+".url","r").readline().strip()
             pckfile = options.path+"/%s/skimAnalyzerCount/SkimReport.pck" % field[1].strip()
-            tty = TreeToYield(rootfile, options, settings=extra, name=field[0], cname=field[1].strip())
+            tty = TreeToYield(rootfile, options, settings=extra, name=field[0], cname=field[1].strip(), treename=treename)
             if signal: 
                 self._signals.append(tty)
                 self._isSignal[field[0]] = True
@@ -85,12 +86,37 @@ class MCAnalysis:
             else                        : self._allData[field[0]] =     [tty]
             if "data" not in field[0]:
                 pckobj  = pickle.load(open(pckfile,'r'))
-                nevt = dict(pckobj)['All Events']
-                scale = "%s/%g" % (field[2], 0.001*nevt)
+                counters = dict(pckobj)
+                if ('Sum Weights' in counters) and options.weight:
+                    nevt = counters['Sum Weights']
+                    scale = "genWeight*%s/%g" % (field[2], 0.001*nevt)
+                else:
+                    nevt = counters['All Events']
+                    scale = "%s/%g" % (field[2], 0.001*nevt)
                 if len(field) == 4: scale += "*("+field[3]+")"
                 tty.setScaleFactor(scale)
+                if options.fullSampleYields:
+                    fullYield = 0.0;
+                    try:
+                        fullYield = float(eval(field[2])) * 1000. * options.lumi
+                        if len(field) == 4:
+                            try:
+                                fullYield = fullYield * float(eval(field[3]))
+                            except:
+                                pass
+                    except:
+                        pass
+                    tty.setFullYield(fullYield)
             elif len(field) == 3:
                 tty.setScaleFactor(field[2])
+                if options.fullSampleYields:
+                    try:
+                        pckobj  = pickle.load(open(pckfile,'r'))
+                        counters = dict(pckobj)
+                        nevt = counters['All Events']
+                        tty.setFullYield(nevt)
+                    except:
+                        tty.setFullYield(0)
             if field[0] not in self._rank: self._rank[field[0]] = len(self._rank)
         #if len(self._signals) == 0: raise RuntimeError, "No signals!"
         #if len(self._backgrounds) == 0: raise RuntimeError, "No backgrounds!"
@@ -241,7 +267,13 @@ class MCAnalysis:
 
         if self._options.txtfmt == "text":
             print "CUT".center(clen),
-            for h,r in table: print ("   "+h).center(fmtlen),
+            for h,r in table: 
+                if len("   "+h) <= fmtlen:
+                    print ("   "+h).center(fmtlen),
+                elif len(h) <= fmtlen:
+                    print h.center(fmtlen),
+                else:
+                    print h[:fmtlen],
             print ""
             print "-"*((fmtlen+1)*len(table)+clen)
             for i,(cut,dummy) in enumerate(table[0][1]):

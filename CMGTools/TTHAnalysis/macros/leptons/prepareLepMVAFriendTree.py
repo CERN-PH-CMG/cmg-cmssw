@@ -47,21 +47,17 @@ class CategorizedMVA:
 _CommonSpect = [ 
 ]
 _CommonVars = [ 
-    MVAVar("neuRelIso := relIso - chargedIso/pt",lambda x: x.relIso - x.chargedIso/x.pt),  
-    MVAVar("chRelIso := chargedIso/pt",lambda x: x.chargedIso/x.pt),
-    MVAVar("jetDR_in := min(dr_in,0.5)", lambda x : min(x.jetDR,0.5), corrfunc=ROOT.correctJetDRMC),
-    MVAVar("jetPtRatio_in := min(ptf_in,1.5)", lambda x : min(x.jetPtRatio,1.5), corrfunc=ROOT.correctJetPtRatioMC),
-    MVAVar("jetBTagCSV_in := max(CSV_in,0)", lambda x : max(x.jetBTagCSV,0.)),
-    #MVAVar("jetDR_out := min(dr_out,5)", lambda x : min(x.dr_out,5.)),
-    #MVAVar("jetPtRatio_out := min(ptf_out,1.5)", lambda x : min(x.ptf_out,1.5)),
-    #MVAVar("jetBTagCSV_out := max(CSV_out,0)", lambda x : max(x.CSV_out,0.)),
+    MVAVar("neuRelIso03 := relIso03 - chargedHadRelIso03",lambda x: x.relIso03 - x.chargedHadRelIso03),  
+    MVAVar("chRelIso03 := chargedHadRelIso03",lambda x: x.chargedHadRelIso03),
+    MVAVar("jetDR := min(jetDR,0.5)", lambda x : min(x.jetDR,0.5), corrfunc=ROOT.correctJetDRMC),
+    MVAVar("jetPtRatio := min(jetPtRatio,1.5)", lambda x : min(x.jetPtRatio,1.5), corrfunc=ROOT.correctJetPtRatioMC),
+    MVAVar("jetBTagCSV := max(jetBTagCSV,0)", lambda x : max(x.jetBTagCSV,0.)),
     MVAVar("sip3d",lambda x: x.sip3d, corrfunc=ROOT.scaleSip3dMC),
     MVAVar("dxy := log(abs(dxy))",lambda x: log(abs(x.dxy)), corrfunc=ROOT.scaleDxyMC),
     MVAVar("dz  := log(abs(dz))", lambda x: log(abs(x.dz)), corrfunc=ROOT.scaleDzMC),
 ]
 _ElectronVars = [
-    MVAVar("mvaId",lambda x: x.mvaId),
-    MVAVar("innerHits",lambda x: x.innerHits),
+    MVAVar("mvaId",lambda x: x.mvaId)
 ]
 class LeptonMVA:
     def __init__(self,basepath):
@@ -95,24 +91,24 @@ class LepMVATreeProducer(Module):
         self.t = PyTree(self.book("TTree","t","t"))
         for i in range(8):
             self.t.branch("LepGood%d_mvaNew" % (i+1),"F")
-            if not self.data and not self.fast:
-                self.t.branch("LepGood%d_mvaNewUncorr"     % (i+1),"F")
-                self.t.branch("LepGood%d_mvaNewDoubleCorr" % (i+1),"F")
+            #if not self.data and not self.fast:
+            #    self.t.branch("LepGood%d_mvaNewUncorr"     % (i+1),"F")
+            #    self.t.branch("LepGood%d_mvaNewDoubleCorr" % (i+1),"F")
     def analyze(self,event):
         lep = Collection(event,"LepGood","nLepGood",8)
         for i,l in enumerate(lep):
             if self.data:
                 setattr(self.t, "LepGood%d_mvaNew" % (i+1), self.mva(l,ncorr=0))
             else: 
-                setattr(self.t, "LepGood%d_mvaNew" % (i+1), self.mva(l,ncorr=1))
-                if not self.fast:
-                    setattr(self.t, "LepGood%d_mvaNewUncorr"     % (i+1), self.mva(l,ncorr=0))
-                    setattr(self.t, "LepGood%d_mvaNewDoubleCorr" % (i+1), self.mva(l,ncorr=2))
+                setattr(self.t, "LepGood%d_mvaNew" % (i+1), self.mva(l,ncorr=0))
+                #if not self.fast:
+                #    setattr(self.t, "LepGood%d_mvaNewUncorr"     % (i+1), self.mva(l,ncorr=0))
+                #    setattr(self.t, "LepGood%d_mvaNewDoubleCorr" % (i+1), self.mva(l,ncorr=2))
         for i in xrange(len(lep),8):
             setattr(self.t, "LepGood%d_mvaNew" % (i+1), -99.)
-            if not self.data and not self.fast:
-                setattr(self.t, "LepGood%d_mvaNewUncorr"     % (i+1), -99.)
-                setattr(self.t, "LepGood%d_mvaNewDoubleCorr" % (i+1), -99.)
+            #if not self.data and not self.fast:
+            #    setattr(self.t, "LepGood%d_mvaNewUncorr"     % (i+1), -99.)
+            #    setattr(self.t, "LepGood%d_mvaNewDoubleCorr" % (i+1), -99.)
         self.t.fill()
 
 import os, itertools

@@ -29,10 +29,12 @@ class ttHGenLevelAnalyzer( Analyzer ):
                                  24  for H -> W W
                                  xx  for H -> xx yy zzz 
 
+          event.gentauleps = [ gen electrons and muons from hard scattering not from tau decays ]
+          event.gentaus    = [ gen taus from from hard scattering ]
           event.genleps    = [ gen electrons and muons from hard scattering not from tau decays ]
-          event.gentauleps = [ gen electrons and muons from decays of taus from hard scattering ]
           event.genbquarks  = [ gen b quarks from top quark decays ]
           event.genwzquarks = [ gen quarks from hadronic W,Z decays ]
+          event.gennus    = [ gen nus from from Z,W ]
 
        If filterHiggsDecays is set to a list of Higgs decay modes,
        it will filter events that have those decay modes.
@@ -56,8 +58,8 @@ class ttHGenLevelAnalyzer( Analyzer ):
         #mc information
         self.mchandles['genParticles'] = AutoHandle( 'prunedGenParticles',
                                                      'std::vector<reco::GenParticle>' )
-        if self.doPDFWeights:
-            self.mchandles['pdfstuff'] = AutoHandle( 'generator', 'GenEventInfoProduct' )
+        #if self.doPDFWeights:
+        self.mchandles['pdfstuff'] = AutoHandle( 'generator', 'GenEventInfoProduct' )
 
     def beginLoop(self):
         super(ttHGenLevelAnalyzer,self).beginLoop()
@@ -70,13 +72,20 @@ class ttHGenLevelAnalyzer( Analyzer ):
             dau.sourceId = sourceId
             dau.isTau = isTau
             id = abs(dau.pdgId())
+            moid = 0;
+            if dau.numberOfMothers() > 0:
+                moid = abs(dau.mother().pdgId())
             if id in [11,13]:
                 if isTau: event.gentauleps.append(dau)
                 else:     event.genleps.append(dau)
             elif id == 15:
+                if moid in [22,23,24]:
+                    event.gentaus.append(dau)
                 self.fillGenLeptons(event, dau, True, sourceId)
             elif id in [22,23,24]:
                 self.fillGenLeptons(event, dau, False, sourceId)
+            elif id in [12,14,16]:
+                event.gennus.append(dau)
 
     def fillWZQuarks(self, event, particle, isWZ=False, sourceId=25):
         """Descend daughters of 'particle', and add quarks from W,Z to event.genwzquarks
@@ -126,8 +135,11 @@ class ttHGenLevelAnalyzer( Analyzer ):
                 print ""
 
         event.genHiggsBoson = None
+        event.genVBosons = []
+        event.gennus    = []
         event.genleps    = []
         event.gentauleps = []
+        event.gentaus    = []
         event.genbquarks  = []
         event.genwzquarks = []
         event.gentopquarks  = []
@@ -157,11 +169,31 @@ class ttHGenLevelAnalyzer( Analyzer ):
                 return False
 
             bosons = [ gp for gp in event.genParticles if gp.status() > 2 and  abs(gp.pdgId()) in [22,23,24]  ]
+
+            if self.cfg_ana.verbose:
+                print "\n =============="
+                for i,p in enumerate(bosons):
+                    print " %5d: pdgId %+5d status %3d  pt %6.1f  " % (i, p.pdgId(),p.status(),p.pt()),
+                    if p.numberOfMothers() > 0:
+                        imom, mom = p.motherRef().key(), p.mother()
+                        print " | mother %5d pdgId %+5d status %3d  pt %6.1f  " % (imom, mom.pdgId(),mom.status(),mom.pt()),
+                    else:
+                        print " | no mother particle                              ",
+                    
+                    for j in xrange(min(3, p.numberOfDaughters())):
+                        idau, dau = p.daughterRef(j).key(), p.daughter(j)
+                        print " | dau[%d] %5d pdgId %+5d status %3d  pt %6.1f  " % (j,idau,dau.pdgId(),dau.status(),dau.pt()),
+                        print ""
+
             for b in bosons:
+                b.sourceId = -1
                 if hasAncestor(b,   lambda gp : abs(gp.pdgId()) == 6): continue
                 if hasDescendent(b, lambda gp : abs(gp.pdgId()) in [22,23,24] and gp.status() > 2): continue
                 self.fillGenLeptons(event, b, sourceId=abs(b.pdgId()))
                 self.fillWZQuarks(event, b, isWZ=True, sourceId=abs(b.pdgId()))
+                #print " ===>  %5d: pdgId %+5d status %3d  pt %6.1f  " % (i, b.pdgId(),b.status(),b.pt()),
+                #event.genVBosons.append(b)
+
         else:
             if len(higgsBosons) > 1: 
                 print "More than one higgs? \n%s\n" % higgsBosons
@@ -174,8 +206,10 @@ class ttHGenLevelAnalyzer( Analyzer ):
             self.fillGenLeptons( event, event.genHiggsBoson, sourceId=25 )
             if self.cfg_ana.verbose:
                 print "Higgs boson decay mode: ", event.genHiggsDecayMode
+                print "Generator level prompt nus:\n", "\n".join(["\t%s" % p for p in event.gennus])
                 print "Generator level prompt light leptons:\n", "\n".join(["\t%s" % p for p in event.genleps])
                 print "Generator level light leptons from taus:\n", "\n".join(["\t%s" % p for p in event.gentauleps])
+                print "Generator level prompt tau leptons:\n", "\n".join(["\t%s" % p for p in event.gentaus])
                 print "Generator level b quarks from top:\n", "\n".join(["\t%s" % p for p in event.genbquarks])
                 print "Generator level quarks from W, Z decays:\n", "\n".join(["\t%s" % p for p in event.genwzquarks])
         # make sure prompt leptons have a non-zero sourceId
@@ -213,6 +247,14 @@ class ttHGenLevelAnalyzer( Analyzer ):
             event.pdfWeights[pdf] = [w for w in ws]
             #print "Produced %d weights for %s: %s" % (len(ws),pdf,event.pdfWeights[pdf])
 
+    def addGenBinning(self,event):
+        if self.mchandles['pdfstuff'].product().hasBinningValues():
+            event.genBin = self.mchandles['pdfstuff'].product().binningValues()[0]
+        else:
+            event.genBin = -999
+
+        event.genQScale = self.mchandles['pdfstuff'].product().qScale()
+
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
@@ -227,6 +269,8 @@ class ttHGenLevelAnalyzer( Analyzer ):
 
         # do MC level analysis
         self.makeMCInfo(event)
+
+        self.addGenBinning(event)
 
         # if MC and filtering on the Higgs decay mode, 
         # them do filter events

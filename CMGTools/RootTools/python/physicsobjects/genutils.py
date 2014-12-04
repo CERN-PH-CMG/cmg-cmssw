@@ -63,3 +63,15 @@ def isPromptLepton(lepton, beforeFSR, includeMotherless=True, includeTauDecays=F
 
 
 
+def isNotFromHadronicShower(l):
+    for x in xrange(l.numberOfMothers()):
+        mom = l.mother(x)
+        if mom.status() > 2: return True
+        id = abs(mom.pdgId())
+        if id > 100: return False
+        if id <   6: return False
+        if id == 21: return False
+        if id in [11,13,15]: return isNotFromHadronicShower(mom)
+        if id >= 22 and id <= 39: return True
+    return True
+

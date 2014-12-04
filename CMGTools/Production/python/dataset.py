@@ -18,11 +18,15 @@ class IntegrityCheckError(Exception):
 
 class BaseDataset( object ):
     
-    def __init__(self, name, user, pattern='.*root', run_range=None):
+    ### def __init__(self, name, user, pattern='.*root', run_range=None):
+    def __init__(self, name, user, pattern='.*root', run_range=None, dbsInstance=None):
         self.name = name
         self.user = user
         self.pattern = pattern
         self.run_range = run_range
+        ### MM
+        self.dbsInstance = dbsInstance
+        ### MM
         self.primaryDatasetEntries = -1
         self.report = None
         self.buildListOfFiles( self.pattern )
@@ -301,16 +305,28 @@ class Dataset( BaseDataset ):
 
     def extractFileSizes(self):
         '''Get the file size for each file, from the eos ls -l command.'''
-        lsout = castortools.runEOSCommand(self.castorDir, 'ls','-l')[0]
+        #lsout = castortools.runEOSCommand(self.castorDir, 'ls','-l')[0]
+        #lsout = lsout.split('\n')
+        #self.filesAndSizes = {}
+        #for entry in lsout:
+        #    values = entry.split()
+        #    if( len(values) != 9):
+        #        continue
+        #    # using full abs path as a key.
+        #    file = '/'.join([self.lfnDir, values[8]])
+        #    size = values[4]
+        #    self.filesAndSizes[file] = size 
+        # EOS command does not work in tier3
+        lsout = castortools.runXRDCommand(self.castorDir,'dirlist')[0]
         lsout = lsout.split('\n')
         self.filesAndSizes = {}
         for entry in lsout:
             values = entry.split()
-            if( len(values) != 9):
+            if( len(values) != 5):
                 continue
             # using full abs path as a key.
-            file = '/'.join([self.lfnDir, values[8]])
-            size = values[4]
+            file = '/'.join([self.lfnDir, values[4].split("/")[-1]])
+            size = values[1]
             self.filesAndSizes[file] = size 
          
     def printInfo(self):
@@ -323,35 +339,112 @@ class Dataset( BaseDataset ):
             return int(self.report.get('PrimaryDatasetEntries',-1))
         return -1
 
-def createDataset( user, dataset, pattern,  readcache=False, 
-                   basedir=None, run_range = None):
+
+### MM
+class PrivateDataset ( BaseDataset ):
+
+    def __init__(self, name, dbsInstance=None):
+        super(PrivateDataset, self).__init__(name, 'PRIVATE', dbsInstance=dbsInstance)
+
+    def buildListOfFilesDBS(self, name, dbsInstance):
+        entries = self.findPrimaryDatasetNumFiles(name, dbsInstance, -1, -1)
+        files = []
+        dbs = 'das_client.py --query="file dataset=%s instance=prod/%s" --limit=%s' % (name, dbsInstance, entries)
+        dbsOut = os.popen(dbs)
+        for line in dbsOut:
+            if line.find('/store')==-1:
+                continue
+            line = line.rstrip()
+            # print 'line',line
+            files.append(line)
+        #return ['root://eoscms//eos/cms%s' % f for f in files]
+        return files
     
+    def buildListOfFiles(self, pattern='.*root'):
+        self.files = self.buildListOfFilesDBS(self.name, self.dbsInstance)
+
+
+    @staticmethod
+    def findPrimaryDatasetEntries(dataset, dbsInstance, runmin, runmax):
+
+        query, qwhat = dataset, "dataset"
+        if "#" in dataset: qwhat = "block"
+        if runmin >0 or runmax > 0:
+            if runmin == runmax:
+                query = "%s run=%d" % (query,runmin)
+            else:
+                print "WARNING: queries with run ranges are slow in DAS"
+                query = "%s run between [%d, %d]" % (query,runmin if runmin > 0 else 1, runmax if runmax > 0 else 999999)
+        dbs='das_client.py --query="summary %s=%s instance=prod/%s"'%(qwhat, query, dbsInstance)
+        dbsOut = os.popen(dbs).readlines()
+
+        entries = []
+        for line in dbsOut:
+            line = line.replace('\n','')
+            if "nevents" in line:
+                entries.append(int(line.split(":")[1]))
+        if entries:
+            return sum(entries)
+        return -1
+        
+
+    @staticmethod
+    def findPrimaryDatasetNumFiles(dataset, dbsInstance, runmin, runmax):
+
+        query, qwhat = dataset, "dataset"
+        if "#" in dataset: qwhat = "block"
+        if runmin >0 or runmax > 0:
+            if runmin == runmax:
+                query = "%s run=%d" % (query,runmin)
+            else:
+                print "WARNING: queries with run ranges are slow in DAS"
+                query = "%s run between [%d, %d]" % (query,runmin if runmin > 0 else 1, runmax if runmax > 0 else 999999)
+        dbs='das_client.py --query="summary %s=%s instance=prod/%s"'%(qwhat, query, dbsInstance)
+        dbsOut = os.popen(dbs).readlines()
+        
+        entries = []
+        for line in dbsOut:
+            line = line.replace('\n','')
+            if "nfiles" in line:
+                entries.append(int(line.split(":")[1]))
+        if entries:
+            return sum(entries)
+        return -1
+
+    def getPrimaryDatasetEntries(self):
+        runmin = -1
+        runmax = -1
+        if self.run_range is not None:
+            runmin = self.run_range[0]
+            runmax = self.run_range[1]
+        return self.findPrimaryDatasetEntries(self.name, self.dbsInstance, runmin, runmax)
+### MM
+
+def getDatasetFromCache( cachename ) :
     cachedir =  '/'.join( [os.environ['HOME'],'.cmgdataset'])
+    pckfile = open( cachedir + "/" + cachename )
+    dataset = pickle.load(pckfile)      
+    return dataset
+
+def writeDatasetToCache( cachename, dataset ):
+    cachedir =  '/'.join( [os.environ['HOME'],'.cmgdataset'])
+    if not os.path.exists(cachedir):
+        os.mkdir(cachedir)
+    pckfile = open( cachedir + "/" + cachename, 'w')
+    pickle.dump(dataset, pckfile)
+
+def createDataset( user, dataset, pattern, readcache=False, 
+                   basedir = None, run_range = None):
+    
     
     def cacheFileName(data, user, pattern):
-        cf =  data.replace('/','_')
-        name = '{dir}/{user}%{name}%{pattern}.pck'.format(
-            dir = cachedir,
-            user = user,
-            name = cf,
-            pattern = pattern)
-        return name
+        return '{user}%{name}%{pattern}.pck'.format( user = user, name = data.replace('/','_'), pattern = pattern)
 
     def writeCache(dataset):
-        if not os.path.exists(cachedir):
-            os.mkdir(cachedir)
-        cachename = cacheFileName(dataset.name,
-                                  dataset.user,
-                                  dataset.pattern)
-        pckfile = open( cachename, 'w')
-        pickle.dump(dataset, pckfile)
+        writeDatasetToCache( cacheFileName(dataset.name, dataset.user, dataset.pattern), dataset )
 
     def readCache(data, user, pattern):
-        cachename = cacheFileName(data, user, pattern)
-        pckfile = open( cachename)
-        dataset = pickle.load(pckfile)      
-        #print 'reading cache'
-        return dataset
+        return getDatasetFromCache( cacheFileName(data, user, pattern) )
 
     if readcache:
         try:
@@ -364,7 +457,7 @@ def createDataset( user, dataset, pattern,  readcache=False,
             info = False
         elif user == 'LOCAL':
             data = LocalDataset( dataset, basedir, pattern)
-            info = False        
+            info = False
         else:
             data = Dataset( dataset, user, pattern)
         writeCache(data)
@@ -377,3 +470,49 @@ def createDataset( user, dataset, pattern,  readcache=False,
 ##     else:
 ##         data = Dataset( user, dataset, pattern )
     return data
+
+### MM
+def createMyDataset( user, dataset, pattern, dbsInstance, readcache=False):
+
+    cachedir =  '/'.join( [os.environ['HOME'],'.cmgdataset'])
+
+    def cacheFileName(data, user, dbsInstance, pattern):
+        cf =  data.replace('/','_')
+        name = '{dir}/{user}%{dbsInstance}%{name}%{pattern}.pck'.format(
+            dir = cachedir,
+            user = user,
+            dbsInstance = dbsInstance,
+            name = cf,
+            pattern = pattern)
+        return name
+
+    def writeCache(dataset):
+        if not os.path.exists(cachedir):
+            os.mkdir(cachedir)
+        cachename = cacheFileName(dataset.name,
+                                  dataset.user,
+                                  dataset.dbsInstance,
+                                  dataset.pattern)
+        pckfile = open( cachename, 'w')
+        pickle.dump(dataset, pckfile)
+
+    def readCache(data, user, dbsInstance, pattern):
+        cachename = cacheFileName(data, user, dbsInstance, pattern)
+        
+        pckfile = open( cachename)
+        dataset = pickle.load(pckfile)
+        #print 'reading cache'                                                                                                                                                                   
+        return dataset
+
+    if readcache:
+        try:
+            data = readCache(dataset, user, dbsInstance, pattern)    
+        except IOError:
+            readcache = False
+    if not readcache:
+        if user == 'PRIVATE':
+            data = PrivateDataset( dataset, dbsInstance )
+            info = False
+        writeCache(data)
+    return data
+### MM

@@ -74,6 +74,7 @@ def makeROC(plotmap,mca):
 def addROCMakerOptions(parser):
     addMCAnalysisOptions(parser)
     parser.add_option("--select-plot", "--sP", dest="plotselect", action="append", default=[], help="Select only these plots out of the full file")
+    parser.add_option("--exclude-plot", "--xP", dest="plotexclude", action="append", default=[], help="Exclude these plots from the full file")
 
 def doLegend(rocs,textSize=0.035):
         (x1,y1,x2,y2) = (.6, .30 + textSize*max(len(rocs)-3,0), .93, .18)
@@ -97,6 +98,9 @@ if __name__ == "__main__":
     parser.add_option("-o", "--out", dest="out", default=None, help="Output file name. by default equal to plots -'.txt' +'.root'");
     parser.add_option("--xrange", dest="xrange", default=None, nargs=2, type='float', help="X axis range");
     parser.add_option("--yrange", dest="yrange", default=None, nargs=2, type='float', help="X axis range");
+    parser.add_option("--xtitle", dest="xtitle", default="Eff Background", type='string', help="X axis title");
+    parser.add_option("--ytitle", dest="ytitle", default="Eff Signal", type='string', help="Y axis title");
+    parser.add_option("--fontsize", dest="fontsize", default=0, type='float', help="Legend font size");
     (options, args) = parser.parse_args()
     options.globalRebin = 1
     mca  = MCAnalysis(args[0],options)
@@ -111,13 +115,14 @@ if __name__ == "__main__":
     for i,plot in enumerate(plots.plots()):
         pmap = mca.getPlots(plot,cut,makeSummary=True)
         roc = makeROC(pmap,mca)
-        if roc.GetN() > 1 and roc.dim == 1:
+        if roc.GetN() > 1 and roc.dim == 1 and not plot.getOption("Discrete",False):
             roc.SetLineColor(plot.getOption("LineColor",i+1))
             roc.SetMarkerColor(plot.getOption("LineColor",i+1))
             roc.SetLineWidth(2)
             roc.SetMarkerStyle(0)
             roc.style = "L"
         else:
+            #print roc.GetX()[0],roc.GetY()[0],plot.name
             roc.SetMarkerColor(plot.getOption("MarkerColor",i+1))
             roc.SetMarkerStyle(plot.getOption("MarkerStyle",20 if roc.dim == 1 else 7))
             roc.SetMarkerSize(plot.getOption("MarkerSize",1.0))
@@ -127,14 +132,15 @@ if __name__ == "__main__":
         rocs.append((plot.getOption("Title",plot.name),roc))
         outfile.WriteTObject(roc)
     allrocs.Draw("APL");
-    allrocs.GetXaxis().SetTitle("Eff Background")
-    allrocs.GetYaxis().SetTitle("Eff Signal")
+    allrocs.GetXaxis().SetTitle(options.xtitle)
+    allrocs.GetYaxis().SetTitle(options.ytitle)
     if options.xrange:
         allrocs.GetXaxis().SetRangeUser(options.xrange[0], options.xrange[1])
     if options.yrange:
         allrocs.GetYaxis().SetRangeUser(options.yrange[0], options.yrange[1])
     allrocs.Draw()
-    doLegend(rocs)
+    leg = doLegend(rocs)
+    if options.fontsize: leg.SetTextSize(options.fontsize)
     c1.Print(outname.replace(".root","")+".png")
     outfile.WriteTObject(c1,"roc_canvas")
     outfile.Close()

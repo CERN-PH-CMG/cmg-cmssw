@@ -14,11 +14,12 @@ class skimAnalyzerCount( Analyzer ):
     
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(skimAnalyzerCount, self).__init__(cfg_ana, cfg_comp, looperName)
-        self.useLumiBlocks = self.cfg_ana.useLumiBlocks if (hasattr(self.cfg_ana,'useLumiBlocks')) else True
+        self.useLumiBlocks = self.cfg_ana.useLumiBlocks if (hasattr(self.cfg_ana,'useLumiBlocks')) else False
  
     def declareHandles(self):
         super(skimAnalyzerCount, self).declareHandles()
         self.counterHandle = Handle("edm::MergeableCounter")
+        self.mchandles['GenInfo'] = AutoHandle( ('generator','',''), 'GenEventInfoProduct' )
         
     def beginLoop(self):
         super(skimAnalyzerCount,self).beginLoop()
@@ -26,6 +27,8 @@ class skimAnalyzerCount( Analyzer ):
         self.counters.addCounter('SkimReport')
         self.count = self.counters.counter('SkimReport')
         self.count.register('All Events')
+        if self.cfg_comp.isMC: 
+            self.count.register('Sum Weights')
 
         if not self.useLumiBlocks:
             print 'Will actually count events instead of accessing lumi blocks'
@@ -45,6 +48,8 @@ class skimAnalyzerCount( Analyzer ):
        
         if self.useLumiBlocks:
             self.count.inc('All Events',totalEvents)
+            if self.cfg_comp.isMC: 
+                self.count.inc('Sum Weights',totalEvents)
             print 'Done -> proceeding with the analysis' 
         else:
             print 'Failed -> will have to actually count events (this can happen if the input dataset is not a CMG one)'
@@ -53,5 +58,8 @@ class skimAnalyzerCount( Analyzer ):
 
     def process(self, iEvent, event):
         if not self.useLumiBlocks:
+            self.readCollections( iEvent )
             self.count.inc('All Events')
+            if self.cfg_comp.isMC: 
+                self.count.inc('Sum Weights', self.mchandles['GenInfo'].product().weight())
         return True

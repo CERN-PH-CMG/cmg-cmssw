@@ -4,6 +4,7 @@ import imp
 # import glob
 import logging
 import pprint 
+import time
 from DataFormats.FWLite import Events, Handle
 from CMGTools.RootTools.fwlite.Event import Event 
 from CMGTools.RootTools.fwlite.PythonPath import pythonpath
@@ -35,7 +36,7 @@ class Looper(object):
         self.classes = {}
         #TODO: should be a diclist? 
         self.analyzers = map( self._buildAnalyzer, sequence )
-        self.nEvents = nEvents
+        self.nEvents = getattr(cfg_comp, 'maxEvents', nEvents)
         self.firstEvent = firstEvent
         self.nPrint = int(nPrint)
         # initialize FWLite chain on input file:
@@ -118,7 +119,11 @@ class Looper(object):
                 # if iEv == nEvents:
                 #     break
                 if iEv%100 ==0:
-                    print 'event', iEv
+                    if iEv == 100:
+                        print 'event', iEv
+                        self.start_time = time.time()
+                    elif iEv > 100:
+                        print 'event %d (%.1f ev/s)' % (iEv, (iEv-100)/float(time.time() - self.start_time))
                 self.process( iEv )
                 if iEv<self.nPrint:
                     print self.event

@@ -4,7 +4,7 @@
 # --- TT+W/Z/WW (TTWW usually quite negligible)
 ttV 	 : TTWJets:    0.232    ;  FillColor=ROOT.kBlue-9
 ttV 	 : TTZJets:    0.208    ;  FillColor=ROOT.kBlue-9
-ttV	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9
+#ttV	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9
 # --- Multiboson
 #VVV 	 : WWWJets:    0.08217  ;  FillColor=ROOT.kViolet
 #VVV 	 : WWZJets:    0.0633   ;  FillColor=ROOT.kViolet
@@ -20,10 +20,10 @@ ttV	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9
 #ZZ      : ZZTo4tau:   0.07691  ;  FillColor=ROOT.kAzure-9
 
 # -- TTbar and single top
-TTb 	 : TTJetsSem:	  107.53*(1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312))    : LepGood3_mcMatchAny >  1;  FillColor=ROOT.kGreen-5, Label="tt + b\#rightarrowl"
-TTl 	 : TTJetsSem:	  107.53*(1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312))    : LepGood3_mcMatchAny <= 1;  FillColor=ROOT.kGray, Label="tt + j\#rightarrowl"
-TTb 	 : TTJetsLep:  25.77*(1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)): LepGood3_mcMatchAny >  1;  FillColor=ROOT.kGreen-5, Label="tt + b\#rightarrowl"
-TTl 	 : TTJetsLep:  25.77*(1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)): LepGood3_mcMatchAny <= 1;  FillColor=ROOT.kGray, Label="tt + j\#rightarrowl"
+TT1lb 	 : TTJetsSem:	  107.53*(1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312))    : LepGood1_mcMatchAny >  1 || LepGood2_mcMatchAny >  1;  FillColor=ROOT.kGreen-5, Label="tt\, b\#rightarrowl"
+TT1lj 	 : TTJetsSem:	  107.53*(1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312))    : LepGood1_mcMatchAny <= 1 && LepGood2_mcMatchAny <= 1;  FillColor=ROOT.kGray, Label="tt\, j\#rightarrowl"
+TT2lb 	 : TTJetsLep:  25.77*(1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)): LepGood3_mcMatchAny >  1;  FillColor=ROOT.kGreen-5, Label="tt2l + b\#rightarrowl"
+TT2lj 	 : TTJetsLep:  25.77*(1.18246 + 0.00000210061*GenTop1_pt*(GenTop1_pt - 2*463.312)): LepGood3_mcMatchAny <= 1;  FillColor=ROOT.kGray, Label="tt2l + j\#rightarrowl"
 #
 # Top+W associated prod.
 TW 	 : TtW:        11.73    ;  FillColor=ROOT.kGray+2, Label="tW"
