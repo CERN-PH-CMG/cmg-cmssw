@@ -3,7 +3,4 @@
     <class name="DistributionRemapper" transient="true" />
     <class name="PdfWeightProducerTool" transient="true" />
     <class name="SetupIgProfDumpHook" transient="true" />
-    <class name="SimpleElectron" transient="true" />
-    <class name="ElectronEnergyCalibrator" transient="true" />
-    <class name="ElectronEPcombinator" transient="true" />
 </lcgdict>

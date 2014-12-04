@@ -10,7 +10,6 @@ from CMGTools.RootTools.utils.DeltaR import bestMatch
 from CMGTools.RootTools.physicsobjects.RochesterCorrections import rochcor
 from CMGTools.RootTools.physicsobjects.MuScleFitCorrector   import MuScleFitCorr
 from CMGTools.RootTools.physicsobjects.ElectronCalibrator import EmbeddedElectronCalibrator
-from CMGTools.TTHAnalysis.electronCalibrator import ElectronCalibrator
 from CMGTools.TTHAnalysis.tools.MuonMVA import MuonMVA
 
 from ROOT import CMGMuonCleanerBySegmentsAlgo
@@ -33,8 +32,6 @@ class ttHLepAnalyzerSusy( Analyzer ):
             self.cfg_ana.doMuScleFitCorrections = False
         if self.cfg_ana.doElectronScaleCorrections == "embedded":
             self.electronEnergyCalibrator = EmbeddedElectronCalibrator()
-        else:
-            self.electronEnergyCalibrator = ElectronCalibrator(cfg_comp.isMC)
         if hasattr(cfg_comp,'efficiency'):
             self.efficiency= EfficiencyCorrector(cfg_comp.efficiency)
         self.muonMVAIdFull = MuonMVA("Full", "%s/src/CMGTools/TTHAnalysis/data/leptonMVA/muonMVAId_train70XFull_BDTG.weights.xml" % os.environ['CMSSW_BASE'])

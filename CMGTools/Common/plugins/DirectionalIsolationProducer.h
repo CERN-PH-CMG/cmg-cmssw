@@ -22,8 +22,6 @@
 #include <memory>
 #include <vector>
 
-#include "CMGTools/Common/interface/SAKLooseLepton.h"
-
 namespace reco{
   typedef edm::Handle<std::vector<edm::FwdPtr<reco::PFCandidate> > > PFCandidateFwdPtrHandle;
   typedef std::vector<edm::FwdPtr<reco::PFCandidate> > PFCandidateFwdPtrCollection;
@@ -89,12 +87,14 @@ class DirectionalIsolationProducer : public edm::EDProducer{
 
 template <>
 bool DirectionalIsolationProducer<pat::Electron>::isLooseLepton(const pat::Electron& lepton, const math::XYZPoint& primaryVertex, const reco::PFCandidateFwdPtrCollection & pfCandidates) const{
-  return isLooseElectron(lepton, primaryVertex, pfCandidates);
+  throw cms::Exception("Loose leptons are not yet supported in this release");
+  //return isLooseElectron(lepton, primaryVertex, pfCandidates);
 }
 
 template <>
 bool DirectionalIsolationProducer<pat::Muon>::isLooseLepton(const pat::Muon& lepton, const math::XYZPoint& primaryVertex, const reco::PFCandidateFwdPtrCollection & pfCandidates) const{
-  return isLooseMuon(lepton, primaryVertex, pfCandidates);
+  throw cms::Exception("Loose leptons are not yet supported in this release");
+  //return isLooseMuon(lepton, primaryVertex, pfCandidates);
 }
 
 

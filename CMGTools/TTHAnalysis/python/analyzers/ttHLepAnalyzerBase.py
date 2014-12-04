@@ -20,7 +20,6 @@ from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch
 from CMGTools.RootTools.physicsobjects.RochesterCorrections import rochcor
 from CMGTools.RootTools.physicsobjects.MuScleFitCorrector   import MuScleFitCorr
 from CMGTools.RootTools.physicsobjects.ElectronCalibrator import EmbeddedElectronCalibrator
-from CMGTools.TTHAnalysis.electronCalibrator import * # load also older one
 
 from ROOT import CMGMuonCleanerBySegmentsAlgo, TRandom3
 cmgMuonCleanerBySegments = CMGMuonCleanerBySegmentsAlgo()
@@ -44,8 +43,6 @@ class ttHLepAnalyzerBase( Analyzer ):
             self.cfg_ana.doMuScleFitCorrections = False
         if self.cfg_ana.doElectronScaleCorrections == "embedded":
             self.electronEnergyCalibrator = EmbeddedElectronCalibrator()
-        else:
-            self.electronEnergyCalibrator = ElectronCalibrator(cfg_comp.isMC)
         if hasattr(cfg_comp,'efficiency'):
             self.efficiency= EfficiencyCorrector(cfg_comp.efficiency)
 
