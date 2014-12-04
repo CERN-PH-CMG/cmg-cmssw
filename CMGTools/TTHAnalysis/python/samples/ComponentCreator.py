@@ -108,7 +108,7 @@ class ComponentCreator(object):
         try:
             files = getDatasetFromCache('PSI%{path}%{pattern}.pck'.format(path = path.replace('/','_'), pattern = pattern))
         except IOError:
-            files = [ 'dcap://t3se01.psi.ch:22125/'+x for x in eostools.listFiles('/pnfs/psi.ch/cms/trivcat/'+path) if re.match(pattern,x) ] 
+            files = [ 'root://t3se01.psi.ch//'+x.replace("/pnfs/psi.ch/cms/trivcat/","") for x in eostools.listFiles('/pnfs/psi.ch/cms/trivcat/'+path) if re.match(pattern,x) ] 
             if len(files) == 0:
                 raise RuntimeError, "ERROR making component %s: no files found under %s matching '%s'" % (name,path,pattern)
             writeDatasetToCache('PSI%{path}%{pattern}.pck'.format(path = path.replace('/','_'), pattern = pattern), files)
