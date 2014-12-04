@@ -12,7 +12,7 @@ from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
 
 ttHLepAna.loose_muon_pt  = 5
 ttHLepAna.loose_muon_relIso = 0.4
-ttHLepAna.ele_isoCorr = "deltaBeta" 
+ttHLepAna.mu_isoCorr = "deltaBeta" 
 #ttHLepAna.loose_muon_absIso5= 10
 ttHLepAna.loose_electron_pt  = 7
 ttHLepAna.loose_electron_relIso = 0.4
