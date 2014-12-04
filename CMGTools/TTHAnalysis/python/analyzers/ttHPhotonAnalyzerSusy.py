@@ -83,11 +83,22 @@ class ttHPhotonAnalyzerSusy( Analyzer ):
         if len(event.selectedPhotons): self.counters.counter('events').inc('has >=1 selected gamma')
        
     def matchPhotons(self, event):
-        event.genPhotons = [ x for x in event.genParticles if x.status() == 3 and abs(x.pdgId()) == 22 ]
-        match = matchObjectCollection3(event.allphotons, event.genPhotons, deltaRMax = 0.5)
+        event.genPhotons = [ x for x in event.genParticles if x.status() == 1 and abs(x.pdgId()) == 22 ]
+        event.genPhotonsWithMom = [ x for x in event.genPhotons if x.mother(0) ]
+        event.genPhotonsMatched = [ x for x in event.genPhotonsWithMom if x.mother(0).status()==23 and ( x.mother(0).pdgId()==22 or x.mother(0).pdgId()==21 or ( abs(x.mother(0).pdgId())>0 and abs(x.mother(0).pdgId())<6 ) ) ]
+        match = matchObjectCollection3(event.allphotons, event.genPhotonsMatched, deltaRMax = 0.2)
         for gamma in event.allphotons:
-            gen = match[gamma]
-            gamma.mcMatchId = 1 if gen else 0
+          gamma.mcMatchId = 0
+          gen = match[gamma]
+          if( gen ):
+            sumPt = 0.;
+            for part in event.genParticles:
+              if part.status()!=1 : continue
+              if deltaR(gen.eta(), gen.phi(), part.eta(), part.phi()) > 0.4: continue
+              sumPt += part.pt()
+            sumPt -= gen.pt()
+            if( sumPt<5. ):
+              gamma.mcMatchId = 22
 
     def printInfo(self, event):
         print '----------------'
