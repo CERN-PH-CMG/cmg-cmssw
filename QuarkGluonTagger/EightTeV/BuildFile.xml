@@ -1,0 +1,17 @@
+<use name="FWCore/ParameterSet"/>
+<use name="FWCore/MessageLogger"/>
+<use name="DataFormats/Common"/>
+<use name="DataFormats/Math"/>
+<use name="DataFormats/JetReco"/>
+<use name="DataFormats/PatCandidates"/>
+<use name="DataFormats/VertexReco"/>
+<use name="RecoJets/JetAlgorithms"/>
+<use name="RecoJets/JetProducers"/>
+<use name="JetMETCorrections/Algorithms"/>
+<use name="JetMETCorrections/Objects"/>
+<use name="root"/>
+<use name="roottmva"/>
+
+<export>
+  <lib   name="1"/>
+</export>

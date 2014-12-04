@@ -1,0 +1,8 @@
+<use   name="DataFormats/ParticleFlowCandidate"/>
+<use   name="DataFormats/JetReco"/>
+<use   name="RecoJets/JetProducers"/>
+<use   name="FWCore/ParameterSet"/>
+<use   name="fastjet"/>
+<export>
+  <lib   name="1"/>
+</export>

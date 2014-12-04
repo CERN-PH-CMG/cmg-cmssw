@@ -1,0 +1,1217 @@
+diff -rupN JetProducers.orig/plugins/FastjetJetProducer.cc JetProducers/plugins/FastjetJetProducer.cc
+--- JetProducers.orig/plugins/FastjetJetProducer.cc	2012-02-14 20:43:31.000000000 +0100
++++ JetProducers/plugins/FastjetJetProducer.cc	2012-04-26 17:48:22.000000000 +0200
+@@ -329,7 +329,19 @@ void FastjetJetProducer::runAlgorithm( e
+   }
+ 
+   if ( !useTrimming_ && !useFiltering_ && !usePruning_ ) {
+-    fjJets_ = fastjet::sorted_by_pt(fjClusterSeq_->inclusive_jets(jetPtMin_));
++    //in case we want to make exclusive jets, of any kind
++    if (exclNJets_ > 0){
++      //we need to make sure we are not requesting more exclusive jets than particle in the event
++      if (fjInputs_.size() >= fabs(exclNJets_)){
++        fjJets_ = fjClusterSeq_->exclusive_jets(exclNJets_);
++      }
++    } else { 
++      //do Jade/Cambridge e+e- specific stuff if needed  
++      if (jetAlgorithm_ == "Jade" && yCutEE_ > 0){
++        fjJets_ = fjClusterSeq_->exclusive_jets_ycut(yCutEE_);
++      } else // Cambridge falls in the case below, provided the user sets jetPtMin_ = 0    
++        fjJets_ = fastjet::sorted_by_pt(fjClusterSeq_->inclusive_jets(jetPtMin_));
++    }
+   }
+   else {
+     fjJets_.clear();
+diff -rupN JetProducers.orig/plugins/VirtualJetProducer.cc JetProducers/plugins/VirtualJetProducer.cc
+--- JetProducers.orig/plugins/VirtualJetProducer.cc	2012-02-14 20:43:31.000000000 +0100
++++ JetProducers/plugins/VirtualJetProducer.cc	2012-04-26 17:48:22.000000000 +0200
+@@ -38,6 +38,9 @@
+ #include "fastjet/CMSIterativeConePlugin.hh"
+ #include "fastjet/ATLASConePlugin.hh"
+ #include "fastjet/CDFMidPointPlugin.hh"
++#include "fastjet/JadePlugin.hh"
++#include "fastjet/EECambridgePlugin.hh"
++
+ 
+ #include <iostream>
+ #include <memory>
+@@ -138,6 +141,28 @@ VirtualJetProducer::VirtualJetProducer(c
+ {
+   anomalousTowerDef_ = std::auto_ptr<AnomalousTower>(new AnomalousTower(iConfig));
+ 
++  // in order not to break pp configs, I leave these two parameters for e+e- optional
++  if (iConfig.exists("yCutEE"))
++    yCutEE_ = iConfig.getParameter<double>("yCutEE");
++  else 
++    yCutEE_ = -1;
++  if (iConfig.exists("exclNJets"))
++    exclNJets_ = iConfig.getParameter<int>("exclNJets");
++  else 
++    exclNJets_ = -1;
++
++  //consistency check, if we select an e+e- algo, then yCutEE_ and exclNJets_ cannot be both -1
++  if ( (jetAlgorithm_ == "Jade" || jetAlgorithm_ == "Cambridge") &&
++        yCutEE_ < 0 && exclNJets_ < 0 ){
++    throw cms::Exception("VirtualJetProducer") << "With and e+e- algo yCutEE and exclNJets cannot be both 0" ;
++  } 
++
++  //consistency check: if Cambridge is selected jetPtMin should be 0 (in Jade is not used anyway)
++  if (jetAlgorithm_ == "Cambridge" && jetPtMin_ > 0.){
++    throw cms::Exception("VirtualJetProducer") << "You cannot select jetPtMin != 0. for Cambridge algorithm" ; 
++  }
++          
++
+   //
+   // additional parameters to think about:
+   // - overlap threshold (set to 0.75 for the time being)
+@@ -171,6 +196,14 @@ VirtualJetProducer::VirtualJetProducer(c
+   else if (jetAlgorithm_=="GeneralizedKt")
+     fjJetDefinition_= JetDefPtr( new fastjet::JetDefinition(fastjet::genkt_algorithm,
+                                                             rParam_,-2) );
++  else if (jetAlgorithm_=="Jade"){
++    fjPlugin_ = PluginPtr(new fastjet::JadePlugin());
++    fjJetDefinition_= JetDefPtr(new fastjet::JetDefinition(&*fjPlugin_));
++  } 
++  else if (jetAlgorithm_=="Cambridge"){
++    fjPlugin_ = PluginPtr(new fastjet::EECambridgePlugin(yCutEE_));
++    fjJetDefinition_= JetDefPtr(new fastjet::JetDefinition(&*fjPlugin_));
++  }
+   else
+     throw cms::Exception("Invalid jetAlgorithm")
+       <<"Jet algorithm for VirtualJetProducer is invalid, Abort!\n";
+diff -rupN JetProducers.orig/plugins/VirtualJetProducer.cc.orig JetProducers/plugins/VirtualJetProducer.cc.orig
+--- JetProducers.orig/plugins/VirtualJetProducer.cc.orig	1970-01-01 01:00:00.000000000 +0100
++++ JetProducers/plugins/VirtualJetProducer.cc.orig	2012-04-26 17:48:22.000000000 +0200
+@@ -0,0 +1,765 @@
++////////////////////////////////////////////////////////////////////////////////
++//
++// VirtualJetProducer
++// ------------------
++//
++//            04/21/2009 Philipp Schieferdecker <philipp.schieferdecker@cern.ch>
++////////////////////////////////////////////////////////////////////////////////
++
++#include "RecoJets/JetProducers/plugins/VirtualJetProducer.h"
++#include "RecoJets/JetProducers/interface/JetSpecific.h"
++#include "RecoJets/JetProducers/interface/BackgroundEstimator.h"
++#include "RecoJets/JetProducers/interface/VirtualJetProducerHelper.h"
++
++#include "FWCore/Framework/interface/Event.h"
++#include "FWCore/Framework/interface/EventSetup.h"
++#include "FWCore/Framework/interface/ESHandle.h"
++#include "FWCore/Utilities/interface/Exception.h"
++#include "FWCore/MessageLogger/interface/MessageLogger.h"
++#include "FWCore/Framework/interface/MakerMacros.h"
++
++#include "DataFormats/Common/interface/View.h"
++#include "DataFormats/Common/interface/Handle.h"
++#include "DataFormats/VertexReco/interface/Vertex.h"
++#include "DataFormats/VertexReco/interface/VertexFwd.h"
++#include "DataFormats/JetReco/interface/CaloJetCollection.h"
++#include "DataFormats/JetReco/interface/GenJetCollection.h"
++#include "DataFormats/JetReco/interface/PFJetCollection.h"
++#include "DataFormats/JetReco/interface/BasicJetCollection.h"
++#include "DataFormats/JetReco/interface/TrackJetCollection.h"
++#include "DataFormats/JetReco/interface/PFClusterJetCollection.h"
++#include "DataFormats/Candidate/interface/CandidateFwd.h"
++#include "DataFormats/Candidate/interface/LeafCandidate.h"
++#include "DataFormats/Math/interface/deltaR.h"
++
++//#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
++
++#include "fastjet/SISConePlugin.hh"
++#include "fastjet/CMSIterativeConePlugin.hh"
++#include "fastjet/ATLASConePlugin.hh"
++#include "fastjet/CDFMidPointPlugin.hh"
++
++#include <iostream>
++#include <memory>
++#include <algorithm>
++#include <limits>
++#include <cmath>
++
++
++using namespace std;
++
++
++namespace reco {
++  namespace helper {
++    struct GreaterByPtPseudoJet {
++      bool operator()( const fastjet::PseudoJet & t1, const fastjet::PseudoJet & t2 ) const {
++        return t1.perp() > t2.perp();
++      }
++    };
++
++  }
++}
++
++//______________________________________________________________________________
++const char *VirtualJetProducer::JetType::names[] = {
++  "BasicJet","GenJet","CaloJet","PFJet","TrackJet","PFClusterJet"
++};
++
++
++//______________________________________________________________________________
++VirtualJetProducer::JetType::Type
++VirtualJetProducer::JetType::byName(const string &name)
++{
++  const char **pos = std::find(names, names + LastJetType, name);
++  if (pos == names + LastJetType) {
++    std::string errorMessage="Requested jetType not supported: "+name+"\n"; 
++    throw cms::Exception("Configuration",errorMessage);
++  }
++  return (Type)(pos-names);
++}
++
++
++void VirtualJetProducer::makeProduces( std::string alias, std::string tag ) 
++{
++
++
++  if ( writeCompound_ ) {
++    produces<reco::BasicJetCollection>();
++  }
++
++  if (makeCaloJet(jetTypeE)) {
++    produces<reco::CaloJetCollection>(tag).setBranchAlias(alias);
++  }
++  else if (makePFJet(jetTypeE)) {
++    produces<reco::PFJetCollection>(tag).setBranchAlias(alias);
++  }
++  else if (makeGenJet(jetTypeE)) {
++    produces<reco::GenJetCollection>(tag).setBranchAlias(alias);
++  }
++  else if (makeTrackJet(jetTypeE)) {
++    produces<reco::TrackJetCollection>(tag).setBranchAlias(alias);
++  }
++  else if (makePFClusterJet(jetTypeE)) {
++    produces<reco::PFClusterJetCollection>(tag).setBranchAlias(alias);
++  }
++  else if (makeBasicJet(jetTypeE)) {
++    produces<reco::BasicJetCollection>(tag).setBranchAlias(alias);
++  }
++}
++
++////////////////////////////////////////////////////////////////////////////////
++// construction / destruction
++////////////////////////////////////////////////////////////////////////////////
++
++//______________________________________________________________________________
++VirtualJetProducer::VirtualJetProducer(const edm::ParameterSet& iConfig)
++  : moduleLabel_   (iConfig.getParameter<string>       ("@module_label"))
++  , src_           (iConfig.getParameter<edm::InputTag>("src"))
++  , srcPVs_        (iConfig.getParameter<edm::InputTag>("srcPVs"))
++  , jetType_       (iConfig.getParameter<string>       ("jetType"))
++  , jetAlgorithm_  (iConfig.getParameter<string>       ("jetAlgorithm"))
++  , rParam_        (iConfig.getParameter<double>       ("rParam"))
++  , inputEtMin_    (iConfig.getParameter<double>       ("inputEtMin"))
++  , inputEMin_     (iConfig.getParameter<double>       ("inputEMin"))
++  , jetPtMin_      (iConfig.getParameter<double>       ("jetPtMin"))
++  , doPVCorrection_(iConfig.getParameter<bool>         ("doPVCorrection"))
++  , restrictInputs_(false)
++  , maxInputs_(99999999)
++  , doAreaFastjet_ (iConfig.getParameter<bool>         ("doAreaFastjet"))
++  , useExplicitGhosts_(false)
++  , doAreaDiskApprox_       (false)
++  , doRhoFastjet_  (iConfig.getParameter<bool>         ("doRhoFastjet"))
++  , voronoiRfact_           (-9)
++  , doPUOffsetCorr_(iConfig.getParameter<bool>         ("doPUOffsetCorr"))
++  , puWidth_(0)
++  , nExclude_(0)
++  , jetCollInstanceName_ ("")
++  , writeCompound_ ( false )
++{
++  anomalousTowerDef_ = std::auto_ptr<AnomalousTower>(new AnomalousTower(iConfig));
++
++  //
++  // additional parameters to think about:
++  // - overlap threshold (set to 0.75 for the time being)
++  // - p parameter for generalized kT (set to -2 for the time being)
++  // - fastjet PU subtraction parameters (not yet considered)
++  //
++  if (jetAlgorithm_=="SISCone") {
++    fjPlugin_ = PluginPtr( new fastjet::SISConePlugin(rParam_,0.75,0,0.0,false,
++                                                      fastjet::SISConePlugin::SM_pttilde) );
++    fjJetDefinition_= JetDefPtr( new fastjet::JetDefinition(&*fjPlugin_) );
++  }
++  else if (jetAlgorithm_=="IterativeCone") {
++    fjPlugin_ = PluginPtr(new fastjet::CMSIterativeConePlugin(rParam_,1.0));
++    fjJetDefinition_= JetDefPtr(new fastjet::JetDefinition(&*fjPlugin_));
++  }
++  else if (jetAlgorithm_=="CDFMidPoint") {
++    fjPlugin_ = PluginPtr(new fastjet::CDFMidPointPlugin(rParam_,0.75));
++    fjJetDefinition_= JetDefPtr(new fastjet::JetDefinition(&*fjPlugin_));
++  }
++  else if (jetAlgorithm_=="ATLASCone") {
++    fjPlugin_ = PluginPtr(new fastjet::ATLASConePlugin(rParam_));
++    fjJetDefinition_= JetDefPtr(new fastjet::JetDefinition(&*fjPlugin_));
++  }
++  else if (jetAlgorithm_=="Kt")
++    fjJetDefinition_= JetDefPtr(new fastjet::JetDefinition(fastjet::kt_algorithm,rParam_));
++  else if (jetAlgorithm_=="CambridgeAachen")
++    fjJetDefinition_= JetDefPtr(new fastjet::JetDefinition(fastjet::cambridge_algorithm,
++                                                           rParam_) );
++  else if (jetAlgorithm_=="AntiKt")
++    fjJetDefinition_= JetDefPtr( new fastjet::JetDefinition(fastjet::antikt_algorithm,rParam_) );
++  else if (jetAlgorithm_=="GeneralizedKt")
++    fjJetDefinition_= JetDefPtr( new fastjet::JetDefinition(fastjet::genkt_algorithm,
++                                                            rParam_,-2) );
++  else
++    throw cms::Exception("Invalid jetAlgorithm")
++      <<"Jet algorithm for VirtualJetProducer is invalid, Abort!\n";
++  
++  jetTypeE=JetType::byName(jetType_);
++
++  if ( iConfig.exists("jetCollInstanceName") ) {
++    jetCollInstanceName_ = iConfig.getParameter<string>("jetCollInstanceName");
++  }
++
++  if ( doPUOffsetCorr_ ) {
++    if ( jetTypeE != JetType::CaloJet && jetTypeE != JetType::BasicJet) {
++        throw cms::Exception("InvalidInput") << "Can only offset correct jets of type CaloJet or BasicJet";
++     }
++     
++     if(iConfig.exists("subtractorName")) puSubtractorName_  =  iConfig.getParameter<string> ("subtractorName");
++     else puSubtractorName_ = std::string();
++     
++     if(puSubtractorName_.empty()){
++       edm::LogWarning("VirtualJetProducer") << "Pile Up correction on; however, pile up type is not specified. Using default... \n";
++       subtractor_ =  boost::shared_ptr<PileUpSubtractor>(new PileUpSubtractor(iConfig));
++     }else{
++       subtractor_ =  boost::shared_ptr<PileUpSubtractor>(PileUpSubtractorFactory::get()->create( puSubtractorName_, iConfig));
++     }
++  }
++
++  // use explicit ghosts in the fastjet clustering sequence?
++  if ( iConfig.exists("useExplicitGhosts") ) {
++    useExplicitGhosts_ = iConfig.getParameter<bool>("useExplicitGhosts");
++  }
++
++  // do approximate disk-based area calculation => warn if conflicting request
++  if (iConfig.exists("doAreaDiskApprox")) {
++    doAreaDiskApprox_ = iConfig.getParameter<bool>("doAreaDiskApprox");
++    if (doAreaDiskApprox_ && doAreaFastjet_)
++      throw cms::Exception("Conflicting area calculations") << "Both the calculation of jet area via fastjet and via an analytical disk approximation have been requested. Please decide on one.\n";
++
++  }
++  // turn off jet collection output for speed
++  // Voronoi-based area calculation allows for an empirical scale factor
++  if (iConfig.exists("voronoiRfact"))
++    voronoiRfact_     = iConfig.getParameter<double>("voronoiRfact");
++
++
++  // do fasjet area / rho calcluation? => accept corresponding parameters
++  if ( doAreaFastjet_ || doRhoFastjet_ ) {
++    // Eta range of jets to be considered for Rho calculation
++    // Should be at most (jet acceptance - jet radius)
++    double rhoEtaMax=iConfig.getParameter<double>("Rho_EtaMax");
++    // default Ghost_EtaMax should be 5
++    double ghostEtaMax = iConfig.getParameter<double>("Ghost_EtaMax");
++    // default Active_Area_Repeats 1
++    int    activeAreaRepeats = iConfig.getParameter<int> ("Active_Area_Repeats");
++    // default GhostArea 0.01
++    double ghostArea = iConfig.getParameter<double> ("GhostArea");
++    if (voronoiRfact_ <= 0) {
++      fjActiveArea_     = ActiveAreaSpecPtr(new fastjet::GhostedAreaSpec(ghostEtaMax,activeAreaRepeats,ghostArea));
++      fjActiveArea_->set_fj2_placement(true);
++      if ( ! useExplicitGhosts_ ) {
++	fjAreaDefinition_ = AreaDefinitionPtr( new fastjet::AreaDefinition(fastjet::active_area, *fjActiveArea_ ) );
++      } else {
++	fjAreaDefinition_ = AreaDefinitionPtr( new fastjet::AreaDefinition(fastjet::active_area_explicit_ghosts, *fjActiveArea_ ) );
++      }
++    }
++    fjRangeDef_ = RangeDefPtr( new fastjet::RangeDefinition(rhoEtaMax) );
++  } 
++
++  // restrict inputs to first "maxInputs" towers?
++  if ( iConfig.exists("restrictInputs") ) {
++    restrictInputs_ = iConfig.getParameter<bool>("restrictInputs");
++    maxInputs_      = iConfig.getParameter<unsigned int>("maxInputs");
++  }
++ 
++
++  string alias=iConfig.getUntrackedParameter<string>("alias",moduleLabel_);
++
++
++  // Check to see if we are writing compound jets for substructure
++  // and jet grooming
++  if ( iConfig.exists("writeCompound") ) {
++    writeCompound_ = iConfig.getParameter<bool>("writeCompound");
++  }
++
++  // make the "produces" statements
++  makeProduces( alias, jetCollInstanceName_ );
++
++  doFastJetNonUniform_ = false;
++  if(iConfig.exists("doFastJetNonUniform")) doFastJetNonUniform_ = iConfig.getParameter<bool>   ("doFastJetNonUniform");
++  if(doFastJetNonUniform_){
++    puCenters_ = iConfig.getParameter<std::vector<double> >("puCenters");
++    puWidth_ = iConfig.getParameter<double>("puWidth");
++    nExclude_ = iConfig.getParameter<unsigned int>("nExclude");
++  }
++
++  useDeterministicSeed_ = false;
++  minSeed_ = 0;
++  if ( iConfig.exists("useDeterministicSeed") ) {
++    useDeterministicSeed_ = iConfig.getParameter<bool>("useDeterministicSeed");
++    minSeed_ =              iConfig.getParameter<unsigned int>("minSeed");
++  }
++
++
++  produces<std::vector<double> >("rhos");
++  produces<std::vector<double> >("sigmas");
++  produces<double>("rho");
++  produces<double>("sigma");
++
++  
++}
++
++//______________________________________________________________________________
++VirtualJetProducer::~VirtualJetProducer()
++{
++} 
++
++
++////////////////////////////////////////////////////////////////////////////////
++// implementation of member functions
++////////////////////////////////////////////////////////////////////////////////
++
++//______________________________________________________________________________
++void VirtualJetProducer::produce(edm::Event& iEvent,const edm::EventSetup& iSetup)
++{
++
++  // If requested, set the fastjet random seed to a deterministic function
++  // of the run/lumi/event. 
++  // NOTE!!! The fastjet random number sequence is a global singleton.
++  // Thus, we have to create an object and get access to the global singleton
++  // in order to change it. 
++  if ( useDeterministicSeed_ ) {
++    fastjet::GhostedAreaSpec gas;
++    std::vector<int> seeds(2);
++    seeds[0] = std::max(iEvent.id().run(),minSeed_ + 3) + 3 * iEvent.id().event();
++    seeds[1] = std::max(iEvent.id().run(),minSeed_ + 5) + 5 * iEvent.id().event();
++    gas.set_random_status(seeds);
++  }
++
++  LogDebug("VirtualJetProducer") << "Entered produce\n";
++  //determine signal vertex2
++  vertex_=reco::Jet::Point(0,0,0);
++  if (makeCaloJet(jetTypeE)&&doPVCorrection_) {
++    LogDebug("VirtualJetProducer") << "Adding PV info\n";
++    edm::Handle<reco::VertexCollection> pvCollection;
++    iEvent.getByLabel(srcPVs_,pvCollection);
++    if (pvCollection->size()>0) vertex_=pvCollection->begin()->position();
++  }
++
++  // For Pileup subtraction using offset correction:
++  // set up geometry map
++  if ( doPUOffsetCorr_ ) {
++     subtractor_->setupGeometryMap(iEvent, iSetup);
++  }
++
++  // clear data
++  LogDebug("VirtualJetProducer") << "Clear data\n";
++  fjInputs_.clear();
++  fjJets_.clear();
++  inputs_.clear();  
++  
++  // get inputs and convert them to the fastjet format (fastjet::PeudoJet)
++  edm::Handle<reco::CandidateView> inputsHandle;
++  iEvent.getByLabel(src_,inputsHandle);
++  for (size_t i = 0; i < inputsHandle->size(); ++i) {
++    inputs_.push_back(inputsHandle->ptrAt(i));
++  }
++  LogDebug("VirtualJetProducer") << "Got inputs\n";
++  
++  // Convert candidates to fastjet::PseudoJets.
++  // Also correct to Primary Vertex. Will modify fjInputs_
++  // and use inputs_
++  fjInputs_.reserve(inputs_.size());
++  inputTowers();
++  LogDebug("VirtualJetProducer") << "Inputted towers\n";
++
++  // For Pileup subtraction using offset correction:
++  // Subtract pedestal. 
++  if ( doPUOffsetCorr_ ) {
++     subtractor_->setDefinition(fjJetDefinition_);
++     subtractor_->reset(inputs_,fjInputs_,fjJets_);
++     subtractor_->calculatePedestal(fjInputs_); 
++     subtractor_->subtractPedestal(fjInputs_);    
++     LogDebug("VirtualJetProducer") << "Subtracted pedestal\n";
++  }
++  // Run algorithm. Will modify fjJets_ and allocate fjClusterSeq_. 
++  // This will use fjInputs_
++  runAlgorithm( iEvent, iSetup );
++
++  // if ( doPUOffsetCorr_ ) {
++  //    subtractor_->setAlgorithm(fjClusterSeq_);
++  // }
++
++  LogDebug("VirtualJetProducer") << "Ran algorithm\n";
++  // For Pileup subtraction using offset correction:
++  // Now we find jets and need to recalculate their energy,
++  // mark towers participated in jet,
++  // remove occupied towers from the list and recalculate mean and sigma
++  // put the initial towers collection to the jet,   
++  // and subtract from initial towers in jet recalculated mean and sigma of towers 
++  if ( doPUOffsetCorr_ ) {
++    LogDebug("VirtualJetProducer") << "Do PUOffsetCorr\n";
++    vector<fastjet::PseudoJet> orphanInput;
++    subtractor_->calculateOrphanInput(orphanInput);
++    subtractor_->calculatePedestal(orphanInput);
++    subtractor_->offsetCorrectJets();
++  }
++  // Write the output jets.
++  // This will (by default) call the member function template
++  // "writeJets", but can be overridden. 
++  // this will use inputs_
++  output( iEvent, iSetup );
++  LogDebug("VirtualJetProducer") << "Wrote jets\n";
++  
++  return;
++}
++
++//______________________________________________________________________________
++  
++void VirtualJetProducer::inputTowers( )
++{
++  std::vector<edm::Ptr<reco::Candidate> >::const_iterator inBegin = inputs_.begin(),
++    inEnd = inputs_.end(), i = inBegin;
++  for (; i != inEnd; ++i ) {
++    reco::CandidatePtr input = *i;
++    if (std::isnan(input->pt()))           continue;
++    if (input->et()    <inputEtMin_)  continue;
++    if (input->energy()<inputEMin_)   continue;
++    if (isAnomalousTower(input))      continue;
++    if (input->pt() == 0) {
++      edm::LogError("NullTransverseMomentum") << "dropping input candidate with pt=0";
++      continue;
++    }
++    if (makeCaloJet(jetTypeE)&&doPVCorrection_) {
++      const CaloTower* tower=dynamic_cast<const CaloTower*>(input.get());
++      math::PtEtaPhiMLorentzVector ct(tower->p4(vertex_));
++      fjInputs_.push_back(fastjet::PseudoJet(ct.px(),ct.py(),ct.pz(),ct.energy()));
++      //std::cout << "tower:" << *tower << '\n';
++    }
++    else {
++      /*
++      if(makePFJet(jetTypeE)) {
++	reco::PFCandidate* pfc = (reco::PFCandidate*)input.get();
++	std::cout << "PF cand:" << *pfc << '\n';
++      }
++      */
++      fjInputs_.push_back(fastjet::PseudoJet(input->px(),input->py(),input->pz(),
++					     input->energy()));
++    }
++    fjInputs_.back().set_user_index(i - inBegin);
++  }
++
++  if ( restrictInputs_ && fjInputs_.size() > maxInputs_ ) {
++    reco::helper::GreaterByPtPseudoJet   pTComparator;
++    std::sort(fjInputs_.begin(), fjInputs_.end(), pTComparator);
++    fjInputs_.resize(maxInputs_);
++    edm::LogWarning("JetRecoTooManyEntries") << "Too many inputs in the event, limiting to first " << maxInputs_ << ". Output is suspect.";
++  }
++}
++
++//______________________________________________________________________________
++bool VirtualJetProducer::isAnomalousTower(reco::CandidatePtr input)
++{
++  if (!makeCaloJet(jetTypeE)) 
++      return false;
++  else
++      return (*anomalousTowerDef_)(*input);
++}
++
++//------------------------------------------------------------------------------
++// This is pure virtual. 
++//______________________________________________________________________________
++// void VirtualJetProducer::runAlgorithm( edm::Event & iEvent, edm::EventSetup const& iSetup,
++//                                        std::vector<edm::Ptr<reco::Candidate> > const & inputs_);
++
++//______________________________________________________________________________
++void VirtualJetProducer::copyConstituents(const vector<fastjet::PseudoJet>& fjConstituents,
++                                          reco::Jet* jet)
++{
++  for (unsigned int i=0;i<fjConstituents.size();++i) { 
++    int index = fjConstituents[i].user_index();
++    if ( index >= 0 && static_cast<unsigned int>(index) < inputs_.size() )
++      jet->addDaughter(inputs_[index]);
++  }
++}
++
++
++//______________________________________________________________________________
++vector<reco::CandidatePtr>
++VirtualJetProducer::getConstituents(const vector<fastjet::PseudoJet>&fjConstituents)
++{
++  vector<reco::CandidatePtr> result;
++  for (unsigned int i=0;i<fjConstituents.size();i++) {
++    int index = fjConstituents[i].user_index();
++    if ( index >= 0 && static_cast<unsigned int>(index) < inputs_.size() ) {
++      reco::CandidatePtr candidate = inputs_[index];
++      result.push_back(candidate);
++    }
++  }
++  return result;
++}
++
++
++//_____________________________________________________________________________
++
++void VirtualJetProducer::output(edm::Event & iEvent, edm::EventSetup const& iSetup)
++{
++  // Write jets and constitutents. Will use fjJets_, inputs_
++  // and fjClusterSeq_
++
++  if ( !writeCompound_ ) {
++    switch( jetTypeE ) {
++    case JetType::CaloJet :
++      writeJets<reco::CaloJet>( iEvent, iSetup);
++      break;
++    case JetType::PFJet :
++      writeJets<reco::PFJet>( iEvent, iSetup);
++      break;
++    case JetType::GenJet :
++      writeJets<reco::GenJet>( iEvent, iSetup);
++      break;
++    case JetType::TrackJet :
++      writeJets<reco::TrackJet>( iEvent, iSetup);
++      break;
++    case JetType::PFClusterJet :
++      writeJets<reco::PFClusterJet>( iEvent, iSetup);
++      break;
++    case JetType::BasicJet :
++      writeJets<reco::BasicJet>( iEvent, iSetup);
++      break;
++    default:
++      throw cms::Exception("InvalidInput") << "invalid jet type in VirtualJetProducer\n";
++      break;
++    };
++  } else {
++    // Write jets and constitutents.
++    switch( jetTypeE ) {
++    case JetType::CaloJet :
++      writeCompoundJets<reco::CaloJet>( iEvent, iSetup );
++      break;
++    case JetType::PFJet :
++      writeCompoundJets<reco::PFJet>( iEvent, iSetup );
++      break;
++    case JetType::GenJet :
++      writeCompoundJets<reco::GenJet>( iEvent, iSetup );
++      break;
++    case JetType::BasicJet :
++      writeCompoundJets<reco::BasicJet>( iEvent, iSetup );
++      break;
++    default:
++      throw cms::Exception("InvalidInput") << "invalid jet type in CompoundJetProducer\n";
++      break;
++    };
++  }
++  
++}
++
++template< typename T >
++void VirtualJetProducer::writeJets( edm::Event & iEvent, edm::EventSetup const& iSetup )
++{
++  if (doRhoFastjet_) {
++    // declare jet collection without the two jets, 
++    // for unbiased background estimation.
++    std::vector<fastjet::PseudoJet> fjexcluded_jets;
++    fjexcluded_jets=fjJets_;
++    
++    if(fjexcluded_jets.size()>2) fjexcluded_jets.resize(nExclude_);
++    
++    if(doFastJetNonUniform_){
++      std::auto_ptr<std::vector<double> > rhos(new std::vector<double>);
++      std::auto_ptr<std::vector<double> > sigmas(new std::vector<double>);
++      int nEta = puCenters_.size();
++      rhos->reserve(nEta);
++      sigmas->reserve(nEta);
++      fastjet::ClusterSequenceAreaBase const* clusterSequenceWithArea =
++        dynamic_cast<fastjet::ClusterSequenceAreaBase const *> ( &*fjClusterSeq_ );
++
++      
++      for(int ie = 0; ie < nEta; ++ie){
++        double eta = puCenters_[ie];
++        double etamin=eta-puWidth_;
++        double etamax=eta+puWidth_;
++        fastjet::RangeDefinition range_rho(etamin,etamax);
++        fastjet::BackgroundEstimator bkgestim(*clusterSequenceWithArea,range_rho);
++        bkgestim.set_excluded_jets(fjexcluded_jets);
++        rhos->push_back(bkgestim.rho());
++        sigmas->push_back(bkgestim.sigma());
++      }
++      iEvent.put(rhos,"rhos");
++      iEvent.put(sigmas,"sigmas");
++    }else{
++      std::auto_ptr<double> rho(new double(0.0));
++      std::auto_ptr<double> sigma(new double(0.0));
++      double mean_area = 0;
++      
++      fastjet::ClusterSequenceAreaBase const* clusterSequenceWithArea =
++        dynamic_cast<fastjet::ClusterSequenceAreaBase const *> ( &*fjClusterSeq_ );
++      /*
++	const double nemptyjets = clusterSequenceWithArea->n_empty_jets(*fjRangeDef_);
++	if(( nemptyjets  < -15 ) || ( nemptyjets > fjRangeDef_->area()+ 15)) {
++	edm::LogWarning("StrangeNEmtpyJets") << "n_empty_jets is : " << clusterSequenceWithArea->n_empty_jets(*fjRangeDef_) << " with range " << fjRangeDef_->description() << ".";
++	}
++      */
++      clusterSequenceWithArea->get_median_rho_and_sigma(*fjRangeDef_,false,*rho,*sigma,mean_area);
++      if((*rho < 0)|| (std::isnan(*rho))) {
++	edm::LogError("BadRho") << "rho value is " << *rho << " area:" << mean_area << " and n_empty_jets: " << clusterSequenceWithArea->n_empty_jets(*fjRangeDef_) << " with range " << fjRangeDef_->description()
++				<<". Setting rho to rezo.";
++	*rho = 0;
++      }
++      iEvent.put(rho,"rho");
++      iEvent.put(sigma,"sigma");
++    }
++  } // doRhoFastjet_
++  
++  // produce output jet collection
++  
++  using namespace reco;
++  
++  std::auto_ptr<std::vector<T> > jets(new std::vector<T>() );
++  jets->reserve(fjJets_.size());
++  
++  // Distance between jet centers -- for disk-based area calculation
++  std::vector<std::vector<double> >   rij(fjJets_.size());
++
++  for (unsigned int ijet=0;ijet<fjJets_.size();++ijet) {
++    // allocate this jet
++    T jet;
++    // get the fastjet jet
++    const fastjet::PseudoJet& fjJet = fjJets_[ijet];
++    // get the constituents from fastjet
++    std::vector<fastjet::PseudoJet> fjConstituents = fastjet::sorted_by_pt(fjJet.constituents());
++    // convert them to CandidatePtr vector
++    std::vector<CandidatePtr> constituents =
++      getConstituents(fjConstituents);
++
++
++    // calcuate the jet area
++    double jetArea=0.0;
++    if ( doAreaFastjet_ && fjJet.has_area() ) {
++      jetArea = fjJet.area();
++    }
++    else if ( doAreaDiskApprox_ ) {
++      // Here it is assumed that fjJets_ is in decreasing order of pT, 
++      // which should happen in FastjetJetProducer::runAlgorithm() 
++      jetArea   = M_PI;
++      if (ijet) {
++        std::vector<double>&  distance  = rij[ijet];
++        distance.resize(ijet);
++        for (unsigned jJet = 0; jJet < ijet; ++jJet) {
++          distance[jJet]      = reco::deltaR(fjJets_[ijet],fjJets_[jJet]) / rParam_;
++          jetArea            -= reco::helper::VirtualJetProducerHelper::intersection(distance[jJet]);
++          for (unsigned kJet = 0; kJet < jJet; ++kJet) {
++            jetArea          += reco::helper::VirtualJetProducerHelper::intersection(distance[jJet], distance[kJet], rij[jJet][kJet]);
++          } // end loop over harder jets
++        } // end loop over harder jets
++      }
++      jetArea  *= rParam_;
++      jetArea  *= rParam_;
++    }  
++    // write the specifics to the jet (simultaneously sets 4-vector, vertex).
++    // These are overridden functions that will call the appropriate
++    // specific allocator. 
++    writeSpecific(jet,
++                  Particle::LorentzVector(fjJet.px(),
++                                          fjJet.py(),
++                                          fjJet.pz(),
++                                          fjJet.E()),
++                  vertex_, 
++                  constituents, iSetup);
++
++    jet.setJetArea (jetArea);
++    
++    if(doPUOffsetCorr_){
++      jet.setPileup(subtractor_->getPileUpEnergy(ijet));
++    }else{
++      jet.setPileup (0.0);
++    }
++    
++    // add to the list
++    jets->push_back(jet);        
++  }
++  // put the jets in the collection
++  iEvent.put(jets,jetCollInstanceName_);
++  
++
++}
++
++
++
++/// function template to write out the outputs
++template< class T>
++void VirtualJetProducer::writeCompoundJets(  edm::Event & iEvent, edm::EventSetup const& iSetup)
++{
++
++  // get a list of output jets
++  std::auto_ptr<reco::BasicJetCollection>  jetCollection( new reco::BasicJetCollection() );
++  // get a list of output subjets
++  std::auto_ptr<std::vector<T> >  subjetCollection( new std::vector<T>() );
++
++  // This will store the handle for the subjets after we write them
++  edm::OrphanHandle< std::vector<T> > subjetHandleAfterPut;
++  // this is the mapping of subjet to hard jet
++  std::vector< std::vector<int> > indices;
++  // this is the list of hardjet 4-momenta
++  std::vector<math::XYZTLorentzVector> p4_hardJets;
++  // this is the hardjet areas
++  std::vector<double> area_hardJets;
++
++
++  // Loop over the hard jets
++  std::vector<fastjet::PseudoJet>::const_iterator it = fjJets_.begin(),
++    iEnd = fjJets_.end(),
++    iBegin = fjJets_.begin();
++  indices.resize( fjJets_.size() );
++  for ( ; it != iEnd; ++it ) {
++    fastjet::PseudoJet const & localJet = *it;
++    unsigned int jetIndex = it - iBegin;
++    // Get the 4-vector for the hard jet
++    p4_hardJets.push_back( math::XYZTLorentzVector(localJet.px(), localJet.py(), localJet.pz(), localJet.e() ));
++    double localJetArea = 0.0;
++    if ( doAreaFastjet_ && localJet.has_area() ) {
++      localJetArea = localJet.area();
++    }
++    area_hardJets.push_back( localJetArea );
++
++    // create the subjet list
++    std::vector<fastjet::PseudoJet> constituents;
++    if ( it->has_pieces() ) {
++      constituents = it->pieces();
++    } else {
++      constituents=it->constituents();
++    }
++
++    
++    std::vector<fastjet::PseudoJet>::const_iterator itSubJetBegin = constituents.begin(),
++      itSubJet = itSubJetBegin, itSubJetEnd = constituents.end();
++    for (; itSubJet != itSubJetEnd; ++itSubJet ){
++
++      fastjet::PseudoJet const & subjet = *itSubJet;      
++
++      math::XYZTLorentzVector p4Subjet(subjet.px(), subjet.py(), subjet.pz(), subjet.e() );
++      reco::Particle::Point point(0,0,0);
++
++      // This will hold ptr's to the subjets
++      std::vector<reco::CandidatePtr> subjetConstituents;
++
++      // Get the transient subjet constituents from fastjet
++      std::vector<fastjet::PseudoJet> subjetFastjetConstituents = subjet.constituents();
++      std::vector<reco::CandidatePtr> constituents =
++	getConstituents(subjetFastjetConstituents );    
++
++      indices[jetIndex].push_back( subjetCollection->size() );
++
++      // Add the concrete subjet type to the subjet list to write to event record
++      T jet;
++      reco::writeSpecific( jet, p4Subjet, point, constituents, iSetup);
++      double subjetArea = 0.0;
++      if ( doAreaFastjet_ && itSubJet->has_area() ){
++	subjetArea = itSubJet->area();
++      }
++      jet.setJetArea( subjetArea );
++      subjetCollection->push_back( jet );
++
++    }
++  }
++  // put subjets into event record
++  subjetHandleAfterPut = iEvent.put( subjetCollection, jetCollInstanceName_ );
++  
++  
++  // Now create the hard jets with ptr's to the subjets as constituents
++  std::vector<math::XYZTLorentzVector>::const_iterator ip4 = p4_hardJets.begin(),
++    ip4Begin = p4_hardJets.begin(),
++    ip4End = p4_hardJets.end();
++
++  for ( ; ip4 != ip4End; ++ip4 ) {
++    int p4_index = ip4 - ip4Begin;
++    std::vector<int> & ind = indices[p4_index];
++    std::vector<reco::CandidatePtr> i_hardJetConstituents;
++    // Add the subjets to the hard jet
++    for( std::vector<int>::const_iterator isub = ind.begin();
++	 isub != ind.end(); ++isub ) {
++      reco::CandidatePtr candPtr( subjetHandleAfterPut, *isub, false );
++      i_hardJetConstituents.push_back( candPtr );
++    }   
++    reco::Particle::Point point(0,0,0);
++    reco::BasicJet toput( *ip4, point, i_hardJetConstituents);
++    toput.setJetArea( area_hardJets[ip4 - ip4Begin] );
++    jetCollection->push_back( toput );
++  }
++  
++  // put hard jets into event record
++  iEvent.put( jetCollection);
++
++}
+diff -rupN JetProducers.orig/plugins/VirtualJetProducer.h JetProducers/plugins/VirtualJetProducer.h
+--- JetProducers.orig/plugins/VirtualJetProducer.h	2012-02-14 20:43:31.000000000 +0100
++++ JetProducers/plugins/VirtualJetProducer.h	2012-04-26 17:48:22.000000000 +0200
+@@ -155,6 +155,8 @@ protected:
+   double                inputEtMin_;                // minimum et of input constituents
+   double                inputEMin_;                 // minimum e of input constituents
+   double                jetPtMin_;                  // minimum jet pt
++  double                yCutEE_;                    // ycut for e+e- algos
++  int                   exclNJets_;                 // specify the number of exclusive jets you want (-1 for inclusive algo)
+   bool                  doPVCorrection_;            // correct to primary vertex? 
+ 
+   // for restricting inputs due to processing time
+diff -rupN JetProducers.orig/plugins/VirtualJetProducer.h.orig JetProducers/plugins/VirtualJetProducer.h.orig
+--- JetProducers.orig/plugins/VirtualJetProducer.h.orig	1970-01-01 01:00:00.000000000 +0100
++++ JetProducers/plugins/VirtualJetProducer.h.orig	2012-04-26 17:48:22.000000000 +0200
+@@ -0,0 +1,209 @@
++#ifndef RecoJets_JetProducers_plugins_VirtualJetProducer_h
++#define RecoJets_JetProducers_plugins_VirtualJetProducer_h
++
++
++#include "FWCore/Framework/interface/EDProducer.h"
++#include "FWCore/ParameterSet/interface/ParameterSet.h"
++#include "DataFormats/Candidate/interface/Candidate.h"
++#include "DataFormats/Candidate/interface/CandidateFwd.h"
++#include "DataFormats/JetReco/interface/Jet.h"
++#include "DataFormats/JetReco/interface/CaloJet.h"
++#include "DataFormats/JetReco/interface/PFJet.h"
++#include "DataFormats/JetReco/interface/BasicJet.h"
++#include "DataFormats/JetReco/interface/GenJet.h"
++
++#include "RecoJets/JetProducers/interface/PileUpSubtractor.h"
++#include "RecoJets/JetProducers/interface/AnomalousTower.h"
++
++#include "fastjet/JetDefinition.hh"
++#include "fastjet/ClusterSequence.hh"
++#include "fastjet/ClusterSequenceArea.hh"
++#include "fastjet/PseudoJet.hh"
++#include "fastjet/GhostedAreaSpec.hh"
++
++#include <memory>
++#include <vector>
++#include <boost/shared_ptr.hpp>
++
++
++class VirtualJetProducer : public edm::EDProducer
++{
++protected:
++  //
++  // typedefs & structs
++  //
++  struct JetType {
++    enum Type {
++      BasicJet,
++      GenJet,
++      CaloJet,
++      PFJet,
++      TrackJet,
++      PFClusterJet,
++      LastJetType  // no real type, technical
++    };
++    static const char *names[];
++    static Type byName(const std::string &name);
++  };
++    
++  JetType::Type jetTypeE;
++
++  inline bool makeCaloJet(const JetType::Type &fTag) {
++    return fTag == JetType::CaloJet;
++  }
++  inline bool makePFJet(const JetType::Type &fTag) {
++    return fTag == JetType::PFJet;
++  }
++  inline bool makeGenJet(const JetType::Type &fTag) {
++    return fTag == JetType::GenJet;
++  }
++  inline bool makeTrackJet(const JetType::Type &fTag) {
++    return fTag == JetType::TrackJet;
++  }
++  inline bool makePFClusterJet(const JetType::Type &fTag) {
++    return fTag == JetType::PFClusterJet;
++  }
++  inline bool makeBasicJet(const JetType::Type &fTag) {
++    return fTag == JetType::BasicJet;
++  }
++  
++
++  //
++  // construction/destruction
++  //
++public:
++  explicit VirtualJetProducer(const edm::ParameterSet& iConfig);
++  virtual ~VirtualJetProducer();
++  
++  // typedefs
++  typedef boost::shared_ptr<fastjet::ClusterSequence>        ClusterSequencePtr;
++  typedef boost::shared_ptr<fastjet::JetDefinition::Plugin>  PluginPtr;
++  typedef boost::shared_ptr<fastjet::JetDefinition>          JetDefPtr;
++  typedef boost::shared_ptr<fastjet::GhostedAreaSpec>        ActiveAreaSpecPtr;
++  typedef boost::shared_ptr<fastjet::AreaDefinition>         AreaDefinitionPtr;
++  typedef boost::shared_ptr<fastjet::RangeDefinition>        RangeDefPtr;
++  
++  //
++  // member functions
++  //
++public:
++  virtual void  produce(edm::Event& iEvent, const edm::EventSetup& iSetup);
++  std::string   jetType() const { return jetType_; }
++  
++protected:
++
++  //
++  // Internal methods for jet production.
++  // The user can either use the defaults, or override all of these methods. 
++  //
++
++  // This method creates the "produces" statement in the constructor.
++  // The default is to produce a single jet collection as per the user's request
++  // (Calo,PF,Basic, or Gen). 
++  virtual void makeProduces( std::string s, std::string tag = "" );
++
++  // This method inputs the constituents from "inputs" and modifies
++  // fjInputs. 
++  virtual void inputTowers();
++
++  // This checks if the tower is anomalous (if a calo tower).
++  virtual bool isAnomalousTower(reco::CandidatePtr input);
++
++  // This will copy the fastjet constituents to the jet itself.
++  virtual void copyConstituents(const std::vector<fastjet::PseudoJet>&fjConstituents,
++				reco::Jet* jet);
++
++  // This will run the actual algorithm. This method is pure virtual and
++  // has no default. 
++  virtual void runAlgorithm( edm::Event& iEvent, const edm::EventSetup& iSetup) = 0;
++
++  // Do the offset correction. 
++  // Only runs if "doPUOffsetCorrection_" is true.  
++  void offsetCorrectJets(std::vector<fastjet::PseudoJet> & orphanInput);
++
++  // This will write the jets to the event. 
++  // The default is to write out the single jet collection in the default "produces"
++  // statement. 
++  // This is a function template that can be called for the six types
++  // CaloJet, PFJet, GenJet, TrackJet, PFClusterJet, BasicJet. 
++  // This is not suitable for compound jets. 
++  // Note: The "output" method is virtual and can be overriden.
++  // The default behavior is to call the function template "writeJets". 
++  virtual void output(  edm::Event & iEvent, edm::EventSetup const& iSetup );
++  template< typename T >
++  void writeJets( edm::Event & iEvent, edm::EventSetup const& iSetup );
++  
++  template< typename T>
++  void writeCompoundJets(  edm::Event & iEvent, edm::EventSetup const& iSetup);
++
++
++  // This method copies the constituents from the fjConstituents method
++  // to an output of CandidatePtr's. 
++  virtual std::vector<reco::CandidatePtr>
++    getConstituents(const std::vector<fastjet::PseudoJet>&fjConstituents);
++  
++  //
++  // member data
++  //
++protected:
++  std::string           moduleLabel_;               // label for this module
++  edm::InputTag         src_;                       // input constituent source
++  edm::InputTag         srcPVs_;                    // primary vertex source
++  std::string           jetType_;                   // type of jet (Calo,PF,Basic,Gen)
++  std::string           jetAlgorithm_;              // the jet algorithm to use
++  double                rParam_;                    // the R parameter to use
++  double                inputEtMin_;                // minimum et of input constituents
++  double                inputEMin_;                 // minimum e of input constituents
++  double                jetPtMin_;                  // minimum jet pt
++  bool                  doPVCorrection_;            // correct to primary vertex? 
++
++  // for restricting inputs due to processing time
++  bool                  restrictInputs_;            // restrict inputs to first "maxInputs" inputs.
++  unsigned int          maxInputs_;                 // maximum number of inputs. 
++
++  // for fastjet jet area calculation
++  bool                  doAreaFastjet_;             // calculate area w/ fastjet?
++  bool                  useExplicitGhosts_;         // use explicit ghosts in fastjet clustering sequence
++  bool                  doAreaDiskApprox_;          // calculate area w/ disk approximation (only makes sense for anti-KT)?
++  // for fastjet rho calculation
++  bool                  doRhoFastjet_;              // calculate rho w/ fastjet?
++  bool                  doFastJetNonUniform_;       // choice of eta-dependent PU calculation
++  double                voronoiRfact_;              // negative to calculate rho using active area (ghosts); otherwise calculates Voronoi area with this effective scale factor
++  
++  // for pileup offset correction
++  bool                  doPUOffsetCorr_;            // add the pileup calculation from offset correction? 
++  std::string           puSubtractorName_;
++
++
++  std::vector<edm::Ptr<reco::Candidate> > inputs_;  // input candidates [View, PtrVector and CandCollection have limitations]
++  reco::Particle::Point           vertex_;          // Primary vertex 
++  ClusterSequencePtr              fjClusterSeq_;    // fastjet cluster sequence
++  JetDefPtr                       fjJetDefinition_; // fastjet jet definition
++  PluginPtr                       fjPlugin_;        // fastjet plugin
++  ActiveAreaSpecPtr               fjActiveArea_;    // fastjet active area definition
++  AreaDefinitionPtr               fjAreaDefinition_;// fastjet area definition
++  RangeDefPtr                     fjRangeDef_;      // range definition
++  std::vector<fastjet::PseudoJet> fjInputs_;        // fastjet inputs
++  std::vector<fastjet::PseudoJet> fjJets_;          // fastjet jets
++
++  // Parameters of the eta-dependent rho calculation
++  std::vector<double>             puCenters_;
++  double                          puWidth_;
++  unsigned int                    nExclude_;
++
++  std::string                     jetCollInstanceName_;       // instance name for output jet collection
++  bool                            writeCompound_;    // write compound jets (i.e. jets of jets)
++  boost::shared_ptr<PileUpSubtractor>  subtractor_;
++
++  bool                            useDeterministicSeed_; // If desired, use a deterministic seed to fastjet
++  unsigned int                    minSeed_;              // minimum seed to use, useful for MC generation
++
++private:
++  std::auto_ptr<AnomalousTower>   anomalousTowerDef_;  // anomalous tower definition
++};
++
++
++
++
++
++#endif
+Binary files JetProducers.orig/python/AnomalousCellParameters_cfi.pyc and JetProducers/python/AnomalousCellParameters_cfi.pyc differ
+Binary files JetProducers.orig/python/CATopJetParameters_cfi.pyc and JetProducers/python/CATopJetParameters_cfi.pyc differ
+Binary files JetProducers.orig/python/CaloJetParameters_cfi.pyc and JetProducers/python/CaloJetParameters_cfi.pyc differ
+Binary files JetProducers.orig/python/CaloTowerSchemeBWithHO_cfi.pyc and JetProducers/python/CaloTowerSchemeBWithHO_cfi.pyc differ
+Binary files JetProducers.orig/python/CaloTowerSchemeB_cfi.pyc and JetProducers/python/CaloTowerSchemeB_cfi.pyc differ
+Binary files JetProducers.orig/python/CaloTowerSchemeBnoEE_cfi.pyc and JetProducers/python/CaloTowerSchemeBnoEE_cfi.pyc differ
+diff -rupN JetProducers.orig/python/ExclusiveNJadeGenJets_cfi.py JetProducers/python/ExclusiveNJadeGenJets_cfi.py
+--- JetProducers.orig/python/ExclusiveNJadeGenJets_cfi.py	1970-01-01 01:00:00.000000000 +0100
++++ JetProducers/python/ExclusiveNJadeGenJets_cfi.py	2012-04-26 17:48:22.000000000 +0200
+@@ -0,0 +1,15 @@
++import FWCore.ParameterSet.Config as cms
++
++from RecoJets.JetProducers.GenJetParameters_cfi import *
++from RecoJets.JetProducers.AnomalousCellParameters_cfi import *
++
++ExclusiveNJadeGenJets = cms.EDProducer(
++    "FastjetJetProducer",
++    GenJetParameters,
++    AnomalousCellParameters,
++    jetAlgorithm = cms.string("Jade"),
++    rParam     = cms.double(-1),
++    yCutEE     = cms.double(-1),
++    exclNJets  = cms.int32(2)
++    )
++
+Binary files JetProducers.orig/python/ExclusiveNJadeGenJets_cfi.pyc and JetProducers/python/ExclusiveNJadeGenJets_cfi.pyc differ
+diff -rupN JetProducers.orig/python/ExclusiveNJadePFJets_cfi.py JetProducers/python/ExclusiveNJadePFJets_cfi.py
+--- JetProducers.orig/python/ExclusiveNJadePFJets_cfi.py	1970-01-01 01:00:00.000000000 +0100
++++ JetProducers/python/ExclusiveNJadePFJets_cfi.py	2012-04-26 17:48:22.000000000 +0200
+@@ -0,0 +1,14 @@
++import FWCore.ParameterSet.Config as cms
++
++from RecoJets.JetProducers.PFJetParameters_cfi import *
++from RecoJets.JetProducers.AnomalousCellParameters_cfi import *
++
++ExclusiveNJadePFJets = cms.EDProducer(
++    "FastjetJetProducer",
++    PFJetParameters,
++    AnomalousCellParameters,
++    jetAlgorithm = cms.string("Jade"),
++    yCutEE     = cms.double(-1),
++    exclNJets  = cms.int32(2)
++    )
++
+Binary files JetProducers.orig/python/ExclusiveNJadePFJets_cfi.pyc and JetProducers/python/ExclusiveNJadePFJets_cfi.pyc differ
+diff -rupN JetProducers.orig/python/ExclusiveYcutJadeGenJets_cfi.py JetProducers/python/ExclusiveYcutJadeGenJets_cfi.py
+--- JetProducers.orig/python/ExclusiveYcutJadeGenJets_cfi.py	1970-01-01 01:00:00.000000000 +0100
++++ JetProducers/python/ExclusiveYcutJadeGenJets_cfi.py	2012-04-26 17:48:22.000000000 +0200
+@@ -0,0 +1,15 @@
++import FWCore.ParameterSet.Config as cms
++
++from RecoJets.JetProducers.GenJetParameters_cfi import *
++from RecoJets.JetProducers.AnomalousCellParameters_cfi import *
++
++ExclusiveYcutJadeGenJets = cms.EDProducer(
++    "FastjetJetProducer",
++    GenJetParameters,
++    AnomalousCellParameters,
++    jetAlgorithm = cms.string("Jade"),
++    rParam     = cms.double(-1),
++    yCutEE     = cms.double(0.5),
++    exclNJets  = cms.int32(-1)
++    )
++
+Binary files JetProducers.orig/python/ExclusiveYcutJadeGenJets_cfi.pyc and JetProducers/python/ExclusiveYcutJadeGenJets_cfi.pyc differ
+diff -rupN JetProducers.orig/python/ExclusiveYcutJadePFJets_cfi.py JetProducers/python/ExclusiveYcutJadePFJets_cfi.py
+--- JetProducers.orig/python/ExclusiveYcutJadePFJets_cfi.py	1970-01-01 01:00:00.000000000 +0100
++++ JetProducers/python/ExclusiveYcutJadePFJets_cfi.py	2012-04-26 17:48:22.000000000 +0200
+@@ -0,0 +1,14 @@
++import FWCore.ParameterSet.Config as cms
++
++from RecoJets.JetProducers.PFJetParameters_cfi import *
++from RecoJets.JetProducers.AnomalousCellParameters_cfi import *
++
++ExclusiveYcutJadePFJets  = cms.EDProducer(
++    "FastjetJetProducer",
++    PFJetParameters,
++    AnomalousCellParameters,
++    jetAlgorithm = cms.string("Jade"),
++    yCutEE       = cms.double(0.5),
++    exclNJets  = cms.int32(-1)
++    )
++
+Binary files JetProducers.orig/python/ExclusiveYcutJadePFJets_cfi.pyc and JetProducers/python/ExclusiveYcutJadePFJets_cfi.pyc differ
+Binary files JetProducers.orig/python/FastjetParameters_cfi.pyc and JetProducers/python/FastjetParameters_cfi.pyc differ
+Binary files JetProducers.orig/python/GenJetParameters_cfi.pyc and JetProducers/python/GenJetParameters_cfi.pyc differ
+Binary files JetProducers.orig/python/JetIDParams_cfi.pyc and JetProducers/python/JetIDParams_cfi.pyc differ
+Binary files JetProducers.orig/python/PFClusterJetParameters_cfi.pyc and JetProducers/python/PFClusterJetParameters_cfi.pyc differ
+Binary files JetProducers.orig/python/PFClustersForJets_cff.pyc and JetProducers/python/PFClustersForJets_cff.pyc differ
+Binary files JetProducers.orig/python/PFJetParameters_cfi.pyc and JetProducers/python/PFJetParameters_cfi.pyc differ
+Binary files JetProducers.orig/python/SubJetParameters_cfi.pyc and JetProducers/python/SubJetParameters_cfi.pyc differ
+Binary files JetProducers.orig/python/TrackJetParameters_cfi.pyc and JetProducers/python/TrackJetParameters_cfi.pyc differ
+Binary files JetProducers.orig/python/TracksForJets_cff.pyc and JetProducers/python/TracksForJets_cff.pyc differ
+Binary files JetProducers.orig/python/__init__.pyc and JetProducers/python/__init__.pyc differ
+Binary files JetProducers.orig/python/ak5CaloJets_cfi.pyc and JetProducers/python/ak5CaloJets_cfi.pyc differ
+Binary files JetProducers.orig/python/ak5GenJets_cfi.pyc and JetProducers/python/ak5GenJets_cfi.pyc differ
+Binary files JetProducers.orig/python/ak5JetID_cfi.pyc and JetProducers/python/ak5JetID_cfi.pyc differ
+Binary files JetProducers.orig/python/ak5PFClusterJets_cfi.pyc and JetProducers/python/ak5PFClusterJets_cfi.pyc differ
+Binary files JetProducers.orig/python/ak5PFJetsFiltered_cfi.pyc and JetProducers/python/ak5PFJetsFiltered_cfi.pyc differ
+Binary files JetProducers.orig/python/ak5PFJetsPruned_cfi.pyc and JetProducers/python/ak5PFJetsPruned_cfi.pyc differ
+Binary files JetProducers.orig/python/ak5PFJetsTrimmed_cfi.pyc and JetProducers/python/ak5PFJetsTrimmed_cfi.pyc differ
+Binary files JetProducers.orig/python/ak5PFJets_cfi.pyc and JetProducers/python/ak5PFJets_cfi.pyc differ
+Binary files JetProducers.orig/python/ak5TrackJets_cfi.pyc and JetProducers/python/ak5TrackJets_cfi.pyc differ
+Binary files JetProducers.orig/python/ak7CastorJetID_cfi.pyc and JetProducers/python/ak7CastorJetID_cfi.pyc differ
+Binary files JetProducers.orig/python/ak7CastorJets_cfi.pyc and JetProducers/python/ak7CastorJets_cfi.pyc differ
+Binary files JetProducers.orig/python/ak7JetID_cfi.pyc and JetProducers/python/ak7JetID_cfi.pyc differ
+Binary files JetProducers.orig/python/ca4CaloJets_cfi.pyc and JetProducers/python/ca4CaloJets_cfi.pyc differ
+Binary files JetProducers.orig/python/ca4GenJets_cfi.pyc and JetProducers/python/ca4GenJets_cfi.pyc differ
+Binary files JetProducers.orig/python/ca4JetID_cfi.pyc and JetProducers/python/ca4JetID_cfi.pyc differ
+Binary files JetProducers.orig/python/ca4PFJets_cfi.pyc and JetProducers/python/ca4PFJets_cfi.pyc differ
+Binary files JetProducers.orig/python/ca4TrackJets_cfi.pyc and JetProducers/python/ca4TrackJets_cfi.pyc differ
+Binary files JetProducers.orig/python/ca6JetID_cfi.pyc and JetProducers/python/ca6JetID_cfi.pyc differ
+Binary files JetProducers.orig/python/caSubjetFilterCaloJets_cfi.pyc and JetProducers/python/caSubjetFilterCaloJets_cfi.pyc differ
+Binary files JetProducers.orig/python/caSubjetFilterGenJets_cfi.pyc and JetProducers/python/caSubjetFilterGenJets_cfi.pyc differ
+Binary files JetProducers.orig/python/caSubjetFilterPFJets_cfi.pyc and JetProducers/python/caSubjetFilterPFJets_cfi.pyc differ
+Binary files JetProducers.orig/python/fixedGridRhoProducerFastjet_cfi.pyc and JetProducers/python/fixedGridRhoProducerFastjet_cfi.pyc differ
+Binary files JetProducers.orig/python/fixedGridRhoProducer_cfi.pyc and JetProducers/python/fixedGridRhoProducer_cfi.pyc differ
+Binary files JetProducers.orig/python/gk5CaloJets_cfi.pyc and JetProducers/python/gk5CaloJets_cfi.pyc differ
+Binary files JetProducers.orig/python/gk5GenJets_cfi.pyc and JetProducers/python/gk5GenJets_cfi.pyc differ
+Binary files JetProducers.orig/python/gk5JetID_cfi.pyc and JetProducers/python/gk5JetID_cfi.pyc differ
+Binary files JetProducers.orig/python/gk5PFJets_cfi.pyc and JetProducers/python/gk5PFJets_cfi.pyc differ
+Binary files JetProducers.orig/python/gk5TrackJets_cfi.pyc and JetProducers/python/gk5TrackJets_cfi.pyc differ
+Binary files JetProducers.orig/python/gk7JetID_cfi.pyc and JetProducers/python/gk7JetID_cfi.pyc differ
+Binary files JetProducers.orig/python/hltak5CaloJets_cfi.pyc and JetProducers/python/hltak5CaloJets_cfi.pyc differ
+Binary files JetProducers.orig/python/ic5CaloJets_cfi.pyc and JetProducers/python/ic5CaloJets_cfi.pyc differ
+Binary files JetProducers.orig/python/ic5GenJets_cfi.pyc and JetProducers/python/ic5GenJets_cfi.pyc differ
+Binary files JetProducers.orig/python/ic5JetID_cfi.pyc and JetProducers/python/ic5JetID_cfi.pyc differ
+Binary files JetProducers.orig/python/ic5PFJets_cfi.pyc and JetProducers/python/ic5PFJets_cfi.pyc differ
+Binary files JetProducers.orig/python/ic5TrackJets_cfi.pyc and JetProducers/python/ic5TrackJets_cfi.pyc differ
+Binary files JetProducers.orig/python/ic7JetID_cfi.pyc and JetProducers/python/ic7JetID_cfi.pyc differ
+Binary files JetProducers.orig/python/kt4CaloJets_cfi.pyc and JetProducers/python/kt4CaloJets_cfi.pyc differ
+Binary files JetProducers.orig/python/kt4GenJets_cfi.pyc and JetProducers/python/kt4GenJets_cfi.pyc differ
+Binary files JetProducers.orig/python/kt4JetID_cfi.pyc and JetProducers/python/kt4JetID_cfi.pyc differ
+Binary files JetProducers.orig/python/kt4PFJets_cfi.pyc and JetProducers/python/kt4PFJets_cfi.pyc differ
+Binary files JetProducers.orig/python/kt4TrackJets_cfi.pyc and JetProducers/python/kt4TrackJets_cfi.pyc differ
+Binary files JetProducers.orig/python/kt6JetID_cfi.pyc and JetProducers/python/kt6JetID_cfi.pyc differ
+Binary files JetProducers.orig/python/sc5CaloJets_cfi.pyc and JetProducers/python/sc5CaloJets_cfi.pyc differ
+Binary files JetProducers.orig/python/sc5GenJets_cfi.pyc and JetProducers/python/sc5GenJets_cfi.pyc differ
+Binary files JetProducers.orig/python/sc5JetID_cfi.pyc and JetProducers/python/sc5JetID_cfi.pyc differ
+Binary files JetProducers.orig/python/sc5PFJets_cfi.pyc and JetProducers/python/sc5PFJets_cfi.pyc differ
+Binary files JetProducers.orig/python/sc5TrackJets_cfi.pyc and JetProducers/python/sc5TrackJets_cfi.pyc differ
+Binary files JetProducers.orig/python/sc7JetID_cfi.pyc and JetProducers/python/sc7JetID_cfi.pyc differ

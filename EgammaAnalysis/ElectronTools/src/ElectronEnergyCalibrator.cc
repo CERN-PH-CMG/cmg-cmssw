@@ -205,15 +205,7 @@ void ElectronEnergyCalibrator::calibrate(SimpleElectron &electron, edm::StreamID
       	    break;
     }
 
-    edm::Service<edm::RandomNumberGenerator> rng;
-    if ( !rng.isAvailable() ) 
-    {
-        throw cms::Exception("Configuration")
-        << "XXXXXXX requires the RandomNumberGeneratorService\n"
-           "which is not present in the configuration file.  You must add the service\n"
-           "in the configuration file or remove the modules that require it.";
-    }
-    
+   
     if (!isMC_ )
     {
   	    for ( int i=0; i < nCorrValRaw; i++ )

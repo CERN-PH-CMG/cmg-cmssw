@@ -1,0 +1,7 @@
+import FWCore.ParameterSet.Config as cms
+
+%(histogramname)s = cms.EDAnalyzer(
+                "LorentzHistogramsAnalyzer",
+                inputCollection = cms.InputTag("%(pyfactoryname)s"),
+                name = cms.string("%(pyfactoryname)s")
+)
