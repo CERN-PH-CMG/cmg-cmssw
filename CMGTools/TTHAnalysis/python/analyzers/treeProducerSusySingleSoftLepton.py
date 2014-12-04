@@ -1,12 +1,12 @@
 from CMGTools.TTHAnalysis.analyzers.treeProducerSusyCore import *
 
-class treeProducerSusySingleLepton( treeProducerSusyCore ):
+class treeProducerSusySingleSoftLepton( treeProducerSusyCore ):
 
     #-----------------------------------
     # TREE PRODUCER FOR SUSY MULTILEPTONS 
     #-----------------------------------
     def __init__(self, cfg_ana, cfg_comp, looperName):
-        super(treeProducerSusySingleLepton,self).__init__(cfg_ana, cfg_comp, looperName)
+        super(treeProducerSusySingleSoftLepton,self).__init__(cfg_ana, cfg_comp, looperName)
 
         ## Declare what we want to fill (in addition to susy core ones)
         self.globalVariables += [
@@ -43,21 +43,22 @@ class treeProducerSusySingleLepton( treeProducerSusyCore ):
             "genbquarks"      : NTupleCollection("GenBQuark",  genParticleType, 6, help="Generated bottom quarks from top quark decays"),
             "genwzquarks"     : NTupleCollection("GenQuark",   genParticleWithSourceType, 6, help="Generated quarks from W/Z decays"),
             "genParticles"     : NTupleCollection("genPart",  genParticleWithMotherId, 200, help="all pruned genparticles"), # need to decide which gen collection ?
-           ##------------------------------------------------
+            ## ---------------------------------------------
             "selectedLeptons" : NTupleCollection("LepGood", leptonTypeSusy, 8, help="Leptons after the preselection"),
             "otherLeptons"    : NTupleCollection("LepOther", leptonTypeSusy, 8, help="Leptons after the preselection"),
             "selectedTaus"    : NTupleCollection("TauGood", tauTypeSusy, 3, help="Taus after the preselection"),
             "selectedIsoTrack"    : NTupleCollection("isoTrack", isoTrackType, 50, help="isoTrack, sorted by pt"),
             ##------------------------------------------------
             "cleanJetsAll"       : NTupleCollection("Jet",     jetTypeSusy, 25, help="Cental jets after full selection and cleaning, sorted by pt"),
-            "reclusteredFatJets" : NTupleCollection("FatJet",     fourVectorType,20, help="FatJets reclusterd from ak4 cleanJetsAll"),
-               ##----------------------------------------------
+            "cleanJetsFwd"    : NTupleCollection("JetFwd",  jetTypeSusy, 15, help="Forward jets after full selection and cleaning, sorted by pt"),            
+            #"reclusteredFatJets" : NTupleCollection("FatJet",     fourVectorType,20, help="FatJets reclusterd from ak4 cleanJetsAll"),
+            ##------------------------------------------------
             "ivf"       : NTupleCollection("SV",     svType, 20, help="SVs from IVF"),
             "genBHadrons"  : NTupleCollection("GenBHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level B hadrons"),
             "genDHadrons"  : NTupleCollection("GenDHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level D hadrons"),
         })
 
         ## Book the variables, but only if we're called explicitly and not through a base class
-        if cfg_ana.name == "treeProducerSusySingleLepton":
+        if cfg_ana.name == "treeProducerSusySingleSoftLepton":
             self.initDone = True
             self.declareVariables()
