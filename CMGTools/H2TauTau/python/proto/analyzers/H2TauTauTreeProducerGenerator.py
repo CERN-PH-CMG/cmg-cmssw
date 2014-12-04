@@ -252,6 +252,8 @@ class H2TauTauTreeProducerGenerator( TreeAnalyzerNumpy ):
         mjj = -1
         ncentral = -1
         
+        fill(tr, 'nGenJets', len(cleanGenJets))
+
         if len(cleanGenJets) >= 2:
             deta = cleanGenJets[0].eta() - cleanGenJets[1].eta()
             dijetp4 = cleanGenJets[0].p4() + cleanGenJets[1].p4()
@@ -266,7 +268,7 @@ class H2TauTauTreeProducerGenerator( TreeAnalyzerNumpy ):
             fill(tr, 'deta', deta)
             fill(tr, 'nCentral', ncentral)
             
-            fill(tr, 'nGenJets', len(cleanGenJets))
+            
 
         if len(cleanGenJets)>=1:
             fillGenParticle(tr, 'genjet1', cleanGenJets[0])
@@ -295,3 +297,4 @@ class H2TauTauTreeProducerGenerator( TreeAnalyzerNumpy ):
             
             
         self.tree.tree.Fill()
+
