@@ -24,9 +24,6 @@
 #include "FWCore/Utilities/interface/Exception.h"
 #include "CMGTools/Common/plugins/MetFlavorProducer.h"
 
-using namespace edm;
-using namespace std;
-using namespace reco;
 
 MetFlavorProducer::MetFlavorProducer(const edm::ParameterSet& iConfig) {
   produces<reco::PFMETCollection>();
@@ -40,8 +37,10 @@ MetFlavorProducer::MetFlavorProducer(const edm::ParameterSet& iConfig) {
   fDZMin          = iConfig.getParameter<double>       ("dZMin");  
   fMetFlavor      = iConfig.getParameter<int>          ("MetFlavor");
   fUtils          = new MetUtilities( iConfig.getParameter<unsigned>("WorkingPointId") );
-  fPUJetIdAlgo         = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("PUJetId"));
-  fPUJetIdAlgoLowPt    = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("PUJetIdLowPt"));
+  fPUJetIDName    = iConfig.getParameter<std::string>("puJetIDName");
+  fPUJetIDNameLowPt = iConfig.getParameter<std::string>("puJetIDNameLowPt");
+  // fPUJetIdAlgo         = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("PUJetId"));
+  // fPUJetIdAlgoLowPt    = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("PUJetIdLowPt"));
 }
 MetFlavorProducer::~MetFlavorProducer() { 
   delete fUtils;
@@ -52,12 +51,12 @@ void MetFlavorProducer::endJob() { }
 
 void MetFlavorProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {  
   //Uncorrected Jets                                                                                                                                                                                            
-//   Handle<PFJetCollection>       lHUCJets;
+//   edm::Handle<PFJetCollection>       lHUCJets;
 //   iEvent.getByLabel(fUnCorrJetName, lHUCJets);
 //   PFJetCollection               lUCJets = *lHUCJets;
 
   //Corrected Jets                                                                                                                                                                                              
-  Handle< std::vector<pat::Jet> >   lHCJets;
+  edm::Handle< std::vector<pat::Jet> >   lHCJets;
   iEvent.getByLabel(fCorrJetName  , lHCJets);
   const std::vector<pat::Jet>&      lCJets = *lHCJets;
 
@@ -67,27 +66,33 @@ void MetFlavorProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   //PFJetCollection               lCJets = *lHCJets;
 
   //Get pfCandidates
-  // Handle<PFCandidateCollection> lHCands;
-  Handle<std::vector<pat::PackedCandidate>> lHCands;
+  // edm::Handle<PFCandidateCollection> lHCands;
+  edm::Handle<std::vector<pat::PackedCandidate>> lHCands;
   iEvent.getByLabel(fPFCandName   , lHCands);
-  const std::vector<pat::PackedCandidate>&         lCands = *lHCands;
+  const std::vector<pat::PackedCandidate>& lCands = *lHCands;
 
   // vertices    
-  Handle<reco::VertexCollection> lHVertices;
+  edm::Handle<reco::VertexCollection> lHVertices;
   iEvent.getByLabel(fVertexName      , lHVertices); 
-  const VertexCollection& lVertices = *lHVertices;
-  const Vertex *lPV = 0; if(lVertices.size() > 0) lPV = &lVertices[0]; 
+  const reco::VertexCollection& lVertices = *lHVertices;
+  const reco::Vertex *lPV = 0; 
+  if(lVertices.size() > 0) 
+    lPV = &lVertices[0]; 
 
   //Get Rho
-  Handle<double>                                        lHRho;
-  iEvent.getByLabel(fRhoName                          , lHRho);
+  edm::Handle<double> lHRho;
+  iEvent.getByLabel(fRhoName, lHRho);
   double lRho = *lHRho;
   
   //Make Generic Objects
-  std::vector<LorentzVector >                                     lVisible;
-  std::vector<std::pair<LorentzVector,double> >         lPFInfo;  makeCandidates(lPFInfo, lCands,lPV);
-  std::vector<MetUtilities::JetInfo>                              lJetInfo; makeJets      (lJetInfo, lCJets,lVertices,lRho);
-  std::vector<Vector>                                             lVtxInfo; makeVertices  (lVtxInfo,lVertices);
+  std::vector<std::pair<LorentzVector,double> > lPFInfo;
+  makeCandidates(lPFInfo, lCands,lPV);
+
+  std::vector<MetUtilities::JetInfo> lJetInfo; 
+  makeJets(lJetInfo, lCJets, lVertices, lRho);
+
+  std::vector<Vector> lVtxInfo;
+  makeVertices(lVtxInfo, lVertices);
  
   //Calculate the Met
   std::pair<LorentzVector,double> lMetInfo; //MET, SumEt
@@ -98,21 +103,21 @@ void MetFlavorProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   if(fMetFlavor == 4)   lMetInfo = fUtils->PUCMet (lPFInfo,lJetInfo,fDZMin);
 
   //Add a PF Met object and put it in the event
-  PFMET lDummy;
-  PFMET lMet(lDummy.getSpecific(),lMetInfo.second,lMetInfo.first,lPV->position()); //Use PFMET sum Et
+  reco::PFMET lDummy;
+  reco::PFMET lMet(lDummy.getSpecific(), lMetInfo.second, lMetInfo.first, lPV->position()); //Use PFMET sum Et
 
   std::auto_ptr<reco::PFMETCollection> lPFMetColl;
-  lPFMetColl.reset     ( new reco::PFMETCollection);
-  lPFMetColl->push_back( lMet);
-  iEvent.put( lPFMetColl );
+  lPFMetColl.reset(new reco::PFMETCollection);
+  lPFMetColl->push_back(lMet);
+  iEvent.put(lPFMetColl);
 }
 
 void MetFlavorProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,
 				 const std::vector<pat::Jet>& iCJets,
-				 const VertexCollection &iVertices,double iRho) { 
+				 const reco::VertexCollection &iVertices,double iRho) { 
   
   for(int i1 = 0; i1 < (int) iCJets .size(); i1++) {   // corrected jets collection                                         
-    const pat::Jet     *pCJet  = &(iCJets.at(i1));
+    const pat::Jet* pCJet = &(iCJets.at(i1));
 
     //std::cout<<" MetFlavorProducer::makeJets  input :  "<<i1<<"  "<<pCJet->pt()<<" "<<pCJet->eta()<<" "<<pCJet->correctedJet(0).pt()<<" "<<pCJet->neutralEmEnergy()<<" "<<pCJet->neutralHadronEnergy()<<std::endl;
     
@@ -122,8 +127,7 @@ void MetFlavorProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,
 
     //std::cout<<" MetFlavorProducer::makeJets  PFLooseId :  "<<i1<<"  "<<pCJet->pt()<<" "<<pCJet->eta()<<" "<<pCJet->correctedJet(0).pt()<<" "<<pCJet->neutralEmEnergy()<<" "<<pCJet->neutralHadronEnergy()<<std::endl;
 
-    double lJec = 0;
-    double lMVA = jetMVA(pCJet,lJec,iVertices[0],iVertices,false);
+    double lMVA = jetMVA(pCJet);
     double lJetEnergy = pCJet->correctedJet(0).pt()/pCJet->pt()*pCJet->energy();
     // COLIN 53 
     double lNeuFrac = 1.;
@@ -140,7 +144,7 @@ void MetFlavorProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,
   }
 }
 
-void MetFlavorProducer::makeCandidates(std::vector<std::pair<LorentzVector,double> > &iPFInfo,const std::vector<pat::PackedCandidate> &iCands,const Vertex *iPV) { 
+void MetFlavorProducer::makeCandidates(std::vector<std::pair<LorentzVector,double> > &iPFInfo,const std::vector<pat::PackedCandidate> &iCands,const reco::Vertex *iPV) { 
   for(int i0 = 0; i0 < (int)iCands.size(); i0++) {
     const pat::PackedCandidate*  pflowCand = &(iCands.at(i0));
     double pDZ = -999;
@@ -150,9 +154,9 @@ void MetFlavorProducer::makeCandidates(std::vector<std::pair<LorentzVector,doubl
     iPFInfo.push_back(pPFObject);
   }
 }
-void MetFlavorProducer::makeVertices(std::vector<Vector>        &iPVInfo,const VertexCollection &iVertices) { 
+void MetFlavorProducer::makeVertices(std::vector<Vector>        &iPVInfo,const reco::VertexCollection &iVertices) { 
   for(int i0    = 0; i0 < (int)iVertices.size(); i0++) {
-    const Vertex       *pVertex = &(iVertices.at(i0));
+    const reco::Vertex       *pVertex = &(iVertices.at(i0));
 
     if(fabs(pVertex->z())           > 24.) continue;
     if(pVertex->ndof()              <  4.) continue;
@@ -178,53 +182,20 @@ bool MetFlavorProducer::passPFLooseId(const pat::Jet *iJet) {
   if(iJet->chargedMultiplicity()            < 1      && fabs(iJet->eta()) < 2.4 ) return false;
   return true;
 }
-double MetFlavorProducer::pfCandDz(const pat::PackedCandidate* iPFCand, const Vertex *iPV) { 
+double MetFlavorProducer::pfCandDz(const pat::PackedCandidate* iPFCand, const reco::Vertex *iPV) { 
   double lDz = -999;
-  // if(iPFCand->trackRef().isNonnull())    lDz = fabs(iPFCand->   trackRef()->dz(iPV->position()));
-  // FIXME - JAN - understand what the pseudoTrack gives
-  lDz = fabs(iPFCand->pseudoTrack().dz(iPV->position()));
-  // else if(iPFCand->gsfTrackRef().isNonnull()) lDz = fabs(iPFCand->gsfTrackRef()->dz(iPV->position()));
+  // FIXME - JAN - does pseudoTrack give something different from 
+  // PackedCandidate::dz(..) ?
+  lDz = fabs(iPFCand->dz(iPV->position()));
   return lDz;
 }
-double MetFlavorProducer::jetMVA (const pat::Jet *iCorrJet,double iJec, const Vertex& iPV, const reco::VertexCollection &iAllvtx, bool iPrintDebug) { 
+double MetFlavorProducer::jetMVA (const pat::Jet *iCorrJet) { 
+  // JAN - this returns the pre-computed PU jet ID present in miniAOD
+  // if you need another primary vertex, simply redo the PU jet ID production
+  if (iCorrJet->pt() > 10.)
+    return iCorrJet->userFloat(fPUJetIDName);
 
-  return iCorrJet->userFloat("pileupJetId:fullDiscriminant");
-  // std::cout << "jet " << iCorrJet << std::endl;
-  // std::cout << "iJec " << iJec << std::endl;
-  // std::cout << "vertex x " << iPV.x() << std::endl;
-  // std::cout << "vertex coll size " << iAllvtx.size() << std::endl;
-
-
-  // std::cout << "Is a PF jet? " << (dynamic_cast<const pat::Jet*>(iCorrJet))->isPFJet() << std::endl;
-
-  // PileupJetIdentifier lPUJetId     =  fPUJetIdAlgo->computeIdVariables(iCorrJet,iJec,&iPV,iAllvtx,true);
-  // // PileupJetIdentifier *lPUJetIdRef =  &lPUJetId;
-  // if(iCorrJet->pt() < 10) {
-  //   PileupJetIdentifier pPUJetId   =  fPUJetIdAlgoLowPt->computeIdVariables(iCorrJet,iJec,&iPV,iAllvtx,true);
-  //   // lPUJetIdRef = &pPUJetId;
-  // }
-  // if(iPrintDebug) { std::cout << "Debug Jet MVA: "
-		// 	      << lPUJetId.nvtx()      << " "
-		// 	      << iCorrJet->pt()       << " "
-		// 	      << lPUJetId.jetEta()    << " "
-		// 	      << lPUJetId.jetPhi()    << " "
-		// 	      << lPUJetId.d0()        << " "
-		// 	      << lPUJetId.dZ()        << " "
-		// 	      << lPUJetId.beta()      << " "
-		// 	      << lPUJetId.betaStar()  << " "
-		// 	      << lPUJetId.nCharged()  << " "
-		// 	      << lPUJetId.nNeutrals() << " "
-		// 	      << lPUJetId.dRMean()    << " "
-		// 	      << lPUJetId.frac01()    << " "
-		// 	      << lPUJetId.frac02()    << " "
-		// 	      << lPUJetId.frac03()    << " "
-		// 	      << lPUJetId.frac04()    << " "
-		// 	      << lPUJetId.frac05()
-		// 	      << " === : === "
-		// 	      << lPUJetId.mva() << " " << endl;
-  // }
-
-  // return lPUJetId.mva();
+  return iCorrJet->userFloat(fPUJetIDNameLowPt);
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

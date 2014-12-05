@@ -14,6 +14,8 @@ yrparser7TeV = YRParser( '/'.join( [os.environ['CMSSW_BASE'],
                                     'src/CMGTools/RootTools/python/yellowreport/YR_7TeV.json']))
 yrparser8TeV = YRParser( '/'.join( [os.environ['CMSSW_BASE'],
                                     'src/CMGTools/RootTools/python/yellowreport/YR_8TeV.json']))
+yrparser13TeV = YRParser( '/'.join( [os.environ['CMSSW_BASE'],
+                                    'src/CMGTools/RootTools/python/yellowreport/YR_13TeV.json']))
 
 if __name__ == '__main__':
 
@@ -38,5 +40,6 @@ if __name__ == '__main__':
     printSigma(yrparser7TeV)
     print '8 TeV'
     printSigma(yrparser8TeV)
-    
+    print '13 TeV'
+    printSigma(yrparser13TeV)
   
