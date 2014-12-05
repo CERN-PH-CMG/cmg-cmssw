@@ -192,6 +192,7 @@ class ttHCoreEventAnalyzer( Analyzer ):
         objects40j = [ j for j in event.cleanJets if j.pt() > 40 ] 
         objects50j = [ j for j in event.cleanJets if j.pt() > 50 ] 
         objects40j10l = [ j for j in event.cleanJets if j.pt() > 40 ] + [ l for l in event.selectedLeptons if l.pt() > 10 ]
+        objects40j10l.sort(key = lambda obj : obj.pt(), reverse = True)
 
         event.htJet25 = sum([x.pt() for x in objects25])
         event.mhtJet25vec = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects25])) , -1.*(sum([x.py() for x in objects25])), 0, 0 )     
@@ -229,6 +230,7 @@ class ttHCoreEventAnalyzer( Analyzer ):
         objects40a  = [ j for j in event.cleanJetsAll if j.pt() > 40 ] + event.selectedLeptons
         objects40ja = [ j for j in event.cleanJetsAll if j.pt() > 40 ] 
         objects40ja10l = [ j for j in event.cleanJetsAll if j.pt() > 40 ] + [ l for l in event.selectedLeptons if l.pt() > 10 ]
+        objects40ja10l.sort(key = lambda obj : obj.pt(), reverse = True)
 
         event.htJet25a = sum([x.pt() for x in objects25a])
         event.mhtJet25veca = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects25a])) , -1.*(sum([x.py() for x in objects25a])), 0, 0 )     
