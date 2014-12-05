@@ -30,6 +30,8 @@ class ttHPhotonAnalyzerSusy( Analyzer ):
 
         #photons
         self.handles['photons'] = AutoHandle( self.cfg_ana.photons,'std::vector<pat::Photon>')
+        self.mchandles['packedGen'] = AutoHandle( 'packedGenParticles', 'std::vector<pat::PackedGenParticle>' )
+
 
     def beginLoop(self):
         super(ttHPhotonAnalyzerSusy,self).beginLoop()
@@ -69,10 +71,24 @@ class ttHPhotonAnalyzerSusy( Analyzer ):
 
             gamma.idCutBased = idWP(gamma, "PhotonCutBasedID%s")
 
-            if gamma.photonID(self.cfg_ana.gammaID):
+            passedPhotonID = True
+            if (self.cfg_ana.gammaID=="PhotonCutBasedIDLoose_CSA14") :
+              if abs(gamma.eta())<1.479 :
+                if gamma.sigmaIetaIeta() > 0.012 : passedPhotonID = False
+                if gamma.hOVERe() > 0.0559       : passedPhotonID = False
+              else :
+                if gamma.sigmaIetaIeta() > 0.035 : passedPhotonID = False
+                if gamma.hOVERe() > 0.049        : passedPhotonID = False
+            else:
+              passedPhotonID = gamma.photonID(self.cfg_ana.gammaID)
+
+            if gamma.hasPixelSeed(): passedPhotonID = False
+
+
+            if passedPhotonID:
                 event.selectedPhotons.append(gamma)
             
-            if gamma.photonID(self.cfg_ana.gammaID) and abs(gamma.eta()) < self.etaCentral:
+            if passedPhotonID and abs(gamma.eta()) < self.etaCentral:
                 event.selectedPhotonsCentral.append(gamma)
 
         event.selectedPhotons.sort(key = lambda l : l.pt(), reverse = True)
@@ -85,25 +101,29 @@ class ttHPhotonAnalyzerSusy( Analyzer ):
     def matchPhotons(self, event):
         event.genPhotons = [ x for x in event.genParticles if x.status() == 1 and abs(x.pdgId()) == 22 ]
         event.genPhotonsWithMom = [ x for x in event.genPhotons if x.mother(0) ]
-        event.genPhotonsMatched = [ x for x in event.genPhotonsWithMom if x.mother(0).status()==23 and ( x.mother(0).pdgId()==22 or x.mother(0).pdgId()==21 or ( abs(x.mother(0).pdgId())>0 and abs(x.mother(0).pdgId())<6 ) ) ]
-        match = matchObjectCollection3(event.allphotons, event.genPhotonsMatched, deltaRMax = 0.2)
+        event.genPhotonsMatched = [ x for x in event.genPhotonsWithMom if abs(x.mother(0).pdgId())<23 ]
+        match = matchObjectCollection3(event.allphotons, event.genPhotonsMatched, deltaRMax = 0.1)
+        packedGenParts = [ p for p in self.mchandles['packedGen'].product() if abs(p.eta()) < 2.7 ]
         for gamma in event.allphotons:
-          gamma.mcMatchId = 0
           gen = match[gamma]
-          if( gen ):
+          if gen :
+            gamma.mcMatchId = 22
             sumPt = 0.;
-            for part in event.genParticles:
-              if part.status()!=1 : continue
+            for part in packedGenParts:
               if deltaR(gen.eta(), gen.phi(), part.eta(), part.phi()) > 0.4: continue
               sumPt += part.pt()
             sumPt -= gen.pt()
-            if( sumPt<5. ):
-              gamma.mcMatchId = 22
+            if sumPt<0. : sumPt=0.
+            gamma.genIso = sumPt
+          else:
+            gamma.mcMatchId = 0
+            gamma.genIso = -1.
+ 
 
     def printInfo(self, event):
         print '----------------'
         if len(event.selectedPhotons)>0:
-            print 'lenght: ',len(event.selectedPhotons)
+            print 'length: ',len(event.selectedPhotons)
             print 'gamma candidate pt: ',event.selectedPhotons[0].pt()
             print 'gamma candidate eta: ',event.selectedPhotons[0].eta()
             print 'gamma candidate phi: ',event.selectedPhotons[0].phi()
