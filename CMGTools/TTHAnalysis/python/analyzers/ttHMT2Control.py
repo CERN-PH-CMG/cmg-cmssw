@@ -63,6 +63,7 @@ class ttHMT2Control( Analyzer ):
         for gamma in event.selectedPhotonsCentral:
             event.gamma_met = ROOT.reco.Particle.LorentzVector( event.gamma_met.px() + gamma.px(), event.gamma_met.py() + gamma.py() , 0, 0 )
             event.gamma_metNoPU = ROOT.reco.Particle.LorentzVector( event.gamma_metNoPU.px() + gamma.px(), event.gamma_metNoPU.py() + gamma.py() , 0, 0 )
+            break # only lead photon
 
         # look for minimal deltaPhi between MET and four leading jets with pt>40 and eta<2.4                                                                                                                                      
         event.gamma_deltaPhiMin = 999.
