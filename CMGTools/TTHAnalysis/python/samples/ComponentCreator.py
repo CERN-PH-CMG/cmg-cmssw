@@ -66,12 +66,12 @@ class ComponentCreator(object):
             writeDatasetToCache('EOS%{path}%{pattern}.pck'.format(path = path.replace('/','_'), pattern = pattern), files)
         return files
 
-    def makeMCComponentFromEOS(self,name,dataset,path,pattern=".*root"):
+    def makeMCComponentFromEOS(self,name,dataset,path,pattern=".*root",xSec=1):
         component = cfg.MCComponent(
             dataset=dataset,
             name = name,
             files = self.getFilesFromEOS(name,dataset,path,pattern),
-            xSection = 1,
+            xSection = xSec,
             nGenEvents = 1,
             triggers = [],
             effCorrFactor = 1,
