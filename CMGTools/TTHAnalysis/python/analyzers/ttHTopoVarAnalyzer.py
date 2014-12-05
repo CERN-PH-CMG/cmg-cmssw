@@ -60,25 +60,6 @@ class ttHTopoVarAnalyzer( Analyzer ):
                 mtTemp = mtw(bjet, event.met)
                 event.minMTBMet = min(event.minMTBMet,mtTemp)
 
-##        print 'minMTBMet',event.minMTBMet
-          
-#    def makeMT(self, event):
-##        print '==> INSIDE THE PRINT MT'
-##        print 'MET=',event.met.pt() 
-
-#        if len(event.selectedLeptons)>0:
-#            for lepton in event.selectedLeptons:
-#                event.mtw = mtw(lepton, event.met)
-
-#        if len(event.selectedTaus)>0:
-#            for myTau in event.selectedTaus:
-#                event.mtwTau = mtw(myTau, event.met)
-#                foundTau = True
-                
-##        if len(event.selectedIsoTrack)>0:
-##            for myTrack in event.selectedIsoTrack:
-##                event.mtwIsoTrack = mtw(myTrack, event.met)
-                
     def computeMT2(self, visaVec, visbVec, metVec):
         
         import array
@@ -463,9 +444,6 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
-#        event.mtw=-999
-#        event.mtwTau=-999
-#        event.mtwIsoTrack=-999
 
         event.mt2_gen=-999
         event.mt2bb=-999
@@ -497,7 +475,6 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
         ###
 
-##        self.makeMT(event)
         self.makeMT2(event)
 
         event.minMTBMet=999999
