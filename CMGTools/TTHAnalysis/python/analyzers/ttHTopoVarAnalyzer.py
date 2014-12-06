@@ -51,23 +51,15 @@ class ttHTopoVarAnalyzer( Analyzer ):
         count = self.counters.counter('pairs')
         count.register('all events')
 
-    def makeMT(self, event):
-#        print '==> INSIDE THE PRINT MT'
-#        print 'MET=',event.met.pt() 
+    def makeMinMT(self,event):
 
-        if len(event.selectedLeptons)>0:
-            for lepton in event.selectedLeptons:
-                event.mtw = mtw(lepton, event.met)
+        objectsb40jc = [ j for j in event.cleanJets if j.pt() > 40 and abs(j.eta())<2.5 and j.btagWP("CSVM")]
 
-        if len(event.selectedTaus)>0:
-            for myTau in event.selectedTaus:
-                event.mtwTau = mtw(myTau, event.met)
-                foundTau = True
-                
-#        if len(event.selectedIsoTrack)>0:
-#            for myTrack in event.selectedIsoTrack:
-#                event.mtwIsoTrack = mtw(myTrack, event.met)
-                
+        if len(objectsb40jc)>0:
+            for bjet in objectsb40jc:
+                mtTemp = mtw(bjet, event.met)
+                event.minMTBMet = min(event.minMTBMet,mtTemp)
+
     def computeMT2(self, visaVec, visbVec, metVec):
         
         import array
@@ -452,9 +444,6 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
-        event.mtw=-999
-        event.mtwTau=-999
-        event.mtwIsoTrack=-999
 
         event.mt2_gen=-999
         event.mt2bb=-999
@@ -486,8 +475,11 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
         ###
 
-        self.makeMT(event)
         self.makeMT2(event)
+
+        event.minMTBMet=999999
+        self.makeMinMT(event)
+
 
 #        print 'variables computed: MT=',event.mtw,'MT2=',event.mt2,'MT2W=',event.mt2w
 #        print 'pseudoJet1 px=',event.pseudoJet1.px(),' py=',event.pseudoJet1.py(),' pz=',event.pseudoJet1.pz()
