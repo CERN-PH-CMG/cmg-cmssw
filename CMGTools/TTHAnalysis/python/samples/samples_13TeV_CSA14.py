@@ -51,11 +51,11 @@ kreator = ComponentCreator()
 ### PU20 bx25ns
 
 #### Background samples
-DYJetsM50_PU20bx25 = kreator.makeMCComponent("DYJetsM50_PU20bx25", "/DYJetsToLL_M-50_13TeV-madgraph-pythia8/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root")
-DYJetsM50pythia6_PU20bx25 = kreator.makeMCComponent("DYJetsM50pythia6_PU20bx25", "/DYJetsToLL_M-50_13TeV-pythia6/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root")
-DYJetsM50_HT200to400_PU20bx25 = kreator.makeMCComponent("DYJetsM50_HT200to400_PU20bx25", "/DYJetsToLL_M-50_HT-200to400_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root",52.24*1.27)
-DYJetsM50_HT400to600_PU20bx25 = kreator.makeMCComponent("DYJetsM50_HT400to600_PU20bx25", "/DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root",6.546*1.27)
-DYJetsM50_HT600toInf_PU20bx25 = kreator.makeMCComponent("DYJetsM50_HT600toInf_PU20bx25", "/DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root",2.179*1.27)
+DYJetsToLL_M50_pythia6_PU20bx25 = kreator.makeMCComponent("DYJetsToLL_M50_pythia6_PU20bx25", "/DYJetsToLL_M-50_13TeV-pythia6/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root")
+DYJetsToLL_M50_PU20bx25 = kreator.makeMCComponent("DYJetsToLL_M50_PU20bx25", "/DYJetsToLL_M-50_13TeV-madgraph-pythia8/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root")
+DYJetsToLL_M50_HT200to400_PU20bx25 = kreator.makeMCComponent("DYJetsToLL_M50_HT200to400_PU20bx25", "/DYJetsToLL_M-50_HT-200to400_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root",52.24*1.27)
+DYJetsToLL_M50_HT400to600_PU20bx25 = kreator.makeMCComponent("DYJetsToLL_M50_HT400to600_PU20bx25", "/DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root",6.546*1.27)
+DYJetsToLL_M50_HT600toInf_PU20bx25 = kreator.makeMCComponent("DYJetsToLL_M50_HT600toInf_PU20bx25", "/DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root",2.179*1.27)
 DYJetsMuMuM50_PtZ180_PU20bx25 = kreator.makeMCComponent("DYJetsMuMuM50_PtZ180_PU20bx25", "/DYJetsToMuMu_PtZ-180_M-50_13TeV-madgraph/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root")
 DYJetsMuMuM6pythia8_PU20bx25 = kreator.makeMCComponent("DYJetsMuMuM6pythia8_PU20bx25", "/DYToMuMu_M-6To15_Tune4C_13TeV-pythia8/Spring14miniaod-castor_PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root")
 DYJetsMuMuM15pythia8_PU20bx25 = kreator.makeMCComponent("DYJetsMuMuM15pythia8_PU20bx25", "/DYToMuMu_M-15To50_Tune4C_13TeV-pythia8/Spring14miniaod-castor_PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root")
@@ -134,7 +134,7 @@ VHMuMu_PU20bx25,VHTauTau_PU20bx25,VHWWInc_PU20bx25,VHWWLep_PU20bx25,VHZZ4L_PU20b
 ]
 
 #### Signal samples
-T1tttt_PU20bx25 = kreator.makeMCComponent("T1tttt_PU20bx25", "/SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root")
+T1tttt_PU20bx25 = kreator.makeMCComponent("T1tttt_PU20bx25", "/SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root",0.0856418)
 T2tt_PU20bx25_mStop_425_mLSP_325 = kreator.makeMCComponent("T2tt_mStop_425_mLSP_325","/SMS-T2tt_2J_mStop-425_mLSP-325_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root",1.31169)
 T2tt_PU20bx25_mStop_500_mLSP_325 = kreator.makeMCComponent("T2tt_mStop_500_mLSP_325","/SMS-T2tt_2J_mStop-500_mLSP-325_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root",0.51848)
 T2tt_PU20bx25_mStop_650_mLSP_325 = kreator.makeMCComponent("T2tt_mStop_650_mLSP_325","/SMS-T2tt_2J_mStop-650_mLSP-325_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-PU20bx25_POSTLS170_V5-v1/MINIAODSIM", "CMS", ".*root",0.107045)
@@ -144,7 +144,7 @@ SusySignalSamples_25ns = [
 T1tttt_PU20bx25
 ]
 
-mcSamplesCSA14_PU20bx25 = [ DYJetsM50_PU20bx25, DYJetsM50pythia6_PU20bx25, DYJetsM50_HT200to400_PU20bx25, DYJetsM50_HT400to600_PU20bx25, DYJetsM50_HT600toInf_PU20bx25, DYJetsMuMuM50_PtZ180_PU20bx25, DYJetsMuMuM6pythia8_PU20bx25, DYJetsMuMuM15pythia8_PU20bx25, DYJetsMuMuM50pythia8_PU20bx25, DYJetsEEpythia8_PU20bx25, DYJetsMuMupythia8_PU20bx25, EWKWmin_PU20bx25, EWKWplus_PU20bx25, EWKZjj_PU20bx25, EleGun_PU20bx25, GGHTauTau_PU20bx25, GGHZZ4L_PU20bx25, GJet_PU20bx25, JPsiPt20_PU20bx25, JPsiPt7_PU20bx25, MinBias_PU20bx25, MuMinGunPt100_PU20bx25, MuMinGunPt10_PU20bx25, MuPlusGunPt100_PU20bx25, MuPlusGunPt10_PU20bx25, NeutrinoGun_PU20bx25, QCDEM_20to30_PU20bx25, QCDEM_30to80_PU20bx25, QCDEM_80to170_PU20bx25, QCDMu_20to30_PU20bx25, QCDMu_30to50_PU20bx25, QCDMu_50to80_PU20bx25, QCDMu_80to120_PU20bx25, QCDMu_pythia6_120to170_PU20bx25, QCDMu_pythia6_20to30_PU20bx25, QCDMu_pythia6_30to50_PU20bx25, QCDMu_pythia6_50to80_PU20bx25, QCDMu_pythia6_80to120_PU20bx25, TTHBB_PU20bx25, TTHGG_PU20bx25, TTHTauTau_PU20bx25, TTHWW_PU20bx25, TTHZZ4L_PU20bx25, TTJets_PU20bx25, TTJets_PUS14, TTpythia8_PU20bx25, VBFHBB_PU20bx25, VBFHGG_PU20bx25, VBFHWWSemi_PU20bx25, VBFHWW_PU20bx25, VBFHZG_PU20bx25, VBFHZZ4L_PU20bx25, VHMuMu_PU20bx25, VHTauTau_PU20bx25, VHWWInc_PU20bx25, VHWWLep_PU20bx25, VHZZ4L_PU20bx25, WENupyhia8_PU20bx25, WJets_PU20bx25, WminTau_PU20bx25, WplusMu_PU20bx25, WplusTau_PU20bx25, ZHBBInv_PU20bx25, ZHBBLL_PU20bx25, ZHLLInv_PU20bx25] + SusySignalSamples_25ns
+mcSamplesCSA14_PU20bx25 = [ DYJetsToLL_M50_PU20bx25, DYJetsToLL_M50_pythia6_PU20bx25, DYJetsToLL_M50_HT200to400_PU20bx25, DYJetsToLL_M50_HT400to600_PU20bx25, DYJetsToLL_M50_HT600toInf_PU20bx25, DYJetsMuMuM50_PtZ180_PU20bx25, DYJetsMuMuM6pythia8_PU20bx25, DYJetsMuMuM15pythia8_PU20bx25, DYJetsMuMuM50pythia8_PU20bx25, DYJetsEEpythia8_PU20bx25, DYJetsMuMupythia8_PU20bx25, EWKWmin_PU20bx25, EWKWplus_PU20bx25, EWKZjj_PU20bx25, EleGun_PU20bx25, GGHTauTau_PU20bx25, GGHZZ4L_PU20bx25, GJet_PU20bx25, JPsiPt20_PU20bx25, JPsiPt7_PU20bx25, MinBias_PU20bx25, MuMinGunPt100_PU20bx25, MuMinGunPt10_PU20bx25, MuPlusGunPt100_PU20bx25, MuPlusGunPt10_PU20bx25, NeutrinoGun_PU20bx25, QCDEM_20to30_PU20bx25, QCDEM_30to80_PU20bx25, QCDEM_80to170_PU20bx25, QCDMu_20to30_PU20bx25, QCDMu_30to50_PU20bx25, QCDMu_50to80_PU20bx25, QCDMu_80to120_PU20bx25, QCDMu_pythia6_120to170_PU20bx25, QCDMu_pythia6_20to30_PU20bx25, QCDMu_pythia6_30to50_PU20bx25, QCDMu_pythia6_50to80_PU20bx25, QCDMu_pythia6_80to120_PU20bx25, TTHBB_PU20bx25, TTHGG_PU20bx25, TTHTauTau_PU20bx25, TTHWW_PU20bx25, TTHZZ4L_PU20bx25, TTJets_PU20bx25, TTJets_PUS14, TTpythia8_PU20bx25, VBFHBB_PU20bx25, VBFHGG_PU20bx25, VBFHWWSemi_PU20bx25, VBFHWW_PU20bx25, VBFHZG_PU20bx25, VBFHZZ4L_PU20bx25, VHMuMu_PU20bx25, VHTauTau_PU20bx25, VHWWInc_PU20bx25, VHWWLep_PU20bx25, VHZZ4L_PU20bx25, WENupyhia8_PU20bx25, WJets_PU20bx25, WminTau_PU20bx25, WplusMu_PU20bx25, WplusTau_PU20bx25, ZHBBInv_PU20bx25, ZHBBLL_PU20bx25, ZHLLInv_PU20bx25] + SusySignalSamples_25ns
 
 
 
@@ -249,7 +249,7 @@ ZJetsToNuNu_HT400to600_PU_S14_POSTLS170,
 ZJetsToNuNu_HT600toInf_PU_S14_POSTLS170,
 ]
 
-TTJets_MSDecaysCKM_central_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("TTJets_MSDecaysCKM_central_PU_S14_POSTLS170", "/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/phys_susy-miniAODforSusy_TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola_Spring14dr_PU_S14_POSTLS170-af38aa319b7b7c91a6797b31c3be19b7/USER", "PRIVATE", ".*root", "phys03",800.1)
+TTJets_MSDecaysCKM_central_PU_S14_POSTLS170 = kreator.makeMyPrivateMCComponent("TTJets_MSDecaysCKM_central_PU_S14_POSTLS170", "/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/phys_susy-miniAODforSusy_TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola_Spring14dr_PU_S14_POSTLS170-af38aa319b7b7c91a6797b31c3be19b7/USER", "PRIVATE", ".*root", "phys03",809.1)
 
 TTJets = [
 TTJets_MSDecaysCKM_central_PU_S14_POSTLS170,
@@ -330,7 +330,9 @@ T1tttt_2J_mGo1300_mStop300_mCh285_mChi280_dilep = kreator.makeMCComponentFromEOS
 T6ttWW_2J_mSbot600_mCh425_mChi50 = kreator.makeMCComponentFromEOS('T6ttWW_2J_mSbot600_mCh425_mChi50', '/T6ttWW_600_425_50/', '/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s',".*root",0.174599)
 T6ttWW_2J_mSbot650_mCh150_mChi50 = kreator.makeMCComponentFromEOS('T6ttWW_2J_mSbot650_mCh150_mChi50', '/T6ttWW_650_150_50/', '/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s',".*root",0.107045)
 
-mcPrivateSamplesCSA14v2 = [T5WW_2J_mGo1200_mCh1000_mChi800, T5WW_2J_mGo1500_mCh800_mChi100, T5WW_2J_mGo1400_mCh315_mChi300, T1tttt_2J_mGo1300_mStop300_mCh285_mChi280, T1tttt_2J_mGo1300_mStop300_mChi280, T1tttt_2J_mGo800_mStop300_mCh285_mChi280, T1tttt_2J_mGo800_mStop300_mChi280, T1tttt_2J_mGo1000_mStop300_mCh285_mChi280_dilep, T1tttt_2J_mGo1300_mStop300_mCh285_mChi280_dilep, T6ttWW_2J_mSbot600_mCh425_mChi50, T6ttWW_2J_mSbot650_mCh150_mChi50]
+T1ttbb_2J_mGo1500_mChi100 = kreator.makeMCComponentFromEOS('T1ttbb_2J_mGo1500_mChi100','T1ttbb_2J_mGo1500_mChi100_3bodydec_asymmDecOnly','/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s',".*root",0.0141903)
+
+mcPrivateSamplesCSA14v2 = [T5WW_2J_mGo1200_mCh1000_mChi800, T5WW_2J_mGo1500_mCh800_mChi100, T5WW_2J_mGo1400_mCh315_mChi300, T1tttt_2J_mGo1300_mStop300_mCh285_mChi280, T1tttt_2J_mGo1300_mStop300_mChi280, T1tttt_2J_mGo800_mStop300_mCh285_mChi280, T1tttt_2J_mGo800_mStop300_mChi280, T1tttt_2J_mGo1000_mStop300_mCh285_mChi280_dilep, T1tttt_2J_mGo1300_mStop300_mCh285_mChi280_dilep, T6ttWW_2J_mSbot600_mCh425_mChi50, T6ttWW_2J_mSbot650_mCh150_mChi50, T1ttbb_2J_mGo1500_mChi100]
 
 
 
