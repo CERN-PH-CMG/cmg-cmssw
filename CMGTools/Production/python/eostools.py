@@ -84,6 +84,8 @@ def lfnToPFN( path, tfcProt = 'rfio'):
 
     if path.startswith("/store/cmst3/"):
         path = path.replace("/store/cmst3/","root://eoscms.cern.ch//store/cmst3/")
+    if path.startswith("/pnfs/psi.ch/cms/trivcat/"):
+        path = path.replace("/pnfs/psi.ch/cms/trivcat/","root://t3se01.psi.ch//")
     #print "path to cmsFile():", path
     entity = cmsIO.cmsFile( path, tfcProt )
 #    tokens = cmsIO.splitPFN(entity.pfn)
@@ -322,8 +324,7 @@ def listFiles(path, rec = False, full_info = False):
             if full_info:
                 result.append( tokens)
             else:
-                result.append( tokens[4])
-    # print result
+                result.append( tokens[4] )
     return result
 
 def which(cmd):
