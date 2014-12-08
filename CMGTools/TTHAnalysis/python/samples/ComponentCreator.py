@@ -79,29 +79,6 @@ class ComponentCreator(object):
         )
         return component
 
-    def getFilesFromEOS(self,name,dataset,path,pattern=".*root"):
-        from CMGTools.Production.dataset import getDatasetFromCache, writeDatasetToCache
-        if "%" in path: path = path % dataset;
-        try:
-            files = getDatasetFromCache('EOS%{path}%{pattern}.pck'.format(path = path.replace('/','_'), pattern = pattern))
-        except IOError:
-            files = [ 'root://eoscms.cern.ch/'+x for x in eostools.listFiles('/eos/cms'+path) if re.match(pattern,x) ] 
-            if len(files) == 0:
-                raise RuntimeError, "ERROR making component %s: no files found under %s matching '%s'" % (name,path,pattern)
-            writeDatasetToCache('EOS%{path}%{pattern}.pck'.format(path = path.replace('/','_'), pattern = pattern), files)
-        return files
-    def makeMCComponentFromEOS(self,name,dataset,path,pattern=".*root"):
-        component = cfg.MCComponent(
-            dataset=dataset,
-            name = name,
-            files = self.getFilesFromEOS(name,dataset,path,pattern),
-            xSection = 1,
-            nGenEvents = 1,
-            triggers = [],
-            effCorrFactor = 1,
-        )
-        return component
-
     def getFilesFromPSI(self,name,dataset,path,pattern=".*root"):
         from CMGTools.Production.dataset import getDatasetFromCache, writeDatasetToCache
         if "%" in path: path = path % dataset;
