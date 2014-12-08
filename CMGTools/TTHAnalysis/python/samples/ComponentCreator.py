@@ -89,12 +89,12 @@ class ComponentCreator(object):
                 raise RuntimeError, "ERROR making component %s: no files found under %s matching '%s'" % (name,path,pattern)
             writeDatasetToCache('PSI%{path}%{pattern}.pck'.format(path = path.replace('/','_'), pattern = pattern), files)
         return files
-    def makeMCComponentFromPSI(self,name,dataset,path,pattern=".*root"):
+    def makeMCComponentFromPSI(self,name,dataset,path,pattern=".*root",xSec=1):
         component = cfg.MCComponent(
             dataset=dataset,
             name = name,
             files = self.getFilesFromPSI(name,dataset,path,pattern),
-            xSection = 1,
+            xSection = xSec,
             nGenEvents = 1,
             triggers = [],
             effCorrFactor = 1,
