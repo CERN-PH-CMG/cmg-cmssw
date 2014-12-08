@@ -11,8 +11,7 @@ from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.Photon import Photon
 
-from CMGTools.TTHAnalysis.analyzers.ttHLepMCMatchAnalyzer import matchObjectCollection3
-from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch
+from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch, matchObjectCollection3
 
 class ttHPhotonAnalyzerSusy( Analyzer ):
 

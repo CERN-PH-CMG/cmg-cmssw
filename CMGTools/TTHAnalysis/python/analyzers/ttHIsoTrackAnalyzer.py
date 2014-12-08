@@ -12,9 +12,8 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.Lepton import Lepton
 ##from CMGTools.RootTools.physicsobjects.Tau import Tau
 from CMGTools.RootTools.physicsobjects.IsoTrack import IsoTrack
-from CMGTools.TTHAnalysis.analyzers.ttHLepMCMatchAnalyzer import matchObjectCollection3
 
-from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch
+from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch, matchObjectCollection3
 
 
  
