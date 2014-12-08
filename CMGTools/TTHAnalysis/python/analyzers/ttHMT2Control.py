@@ -18,6 +18,8 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 
 from CMGTools.RootTools.utils.DeltaR import *
 
+def mtw(x1,x2):
+    return sqrt(2*x1.pt()*x2.pt()*(1-cos(x1.phi()-x2.phi())))
 
 class ttHMT2Control( Analyzer ):
 
@@ -25,7 +27,31 @@ class ttHMT2Control( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHMT2Control,self).__init__(cfg_ana,cfg_comp,looperName)
 
-
+    def makeMT(self, event):
+        #        print '==> INSIDE THE PRINT MT'
+        #        print 'MET=',event.met.pt()
+        
+        if len(event.selectedLeptons)>0:
+            for lepton in event.selectedLeptons:
+                event.mtw = mtw(lepton, event.met)
+                    
+        if len(event.selectedTaus)>0:
+            for myTau in event.selectedTaus:
+                event.mtwTau = mtw(myTau, event.met)
+                foundTau = True
+            
+        if len(event.selectedIsoTrack)>0:
+            for myTrack in event.selectedIsoTrack:
+                event.mtwIsoTrack = mtw(myTrack, event.met)      
+##number of PF leptons (e,mu) with pt > 5, reliso < 0.2, MT < 100 
+#number of PF hadrons with pt > 10, reliso < 0.1, MT < 100                        
+                if event.mtwIsoTrack < 100:
+                    if abs(myTrack.pdgId()) == 11 or abs(myTrack.pdgId()) == 13:
+                        if myTrack.pt()>5 and myTrack.absIso/myTrack.pt()<0.2:
+                            event.nPFLep5LowMT += 1                           
+                    if abs(myTrack.pdgId()) == 211:
+                        if myTrack.pt()>10 and myTrack.absIso/myTrack.pt()<0.1:
+                            event.nPFHad10LowMT += 1                            
 
     def makeGammaObjects(self, event):
 
@@ -126,8 +152,18 @@ class ttHMT2Control( Analyzer ):
             ##event.zll_invmass = zll_p4.M()
 
     def process(self, iEvent, event):
+
         self.readCollections( iEvent )
         self.makeGammaObjects(event)                                                                                                                                                                                             
         self.makeZllObjects(event)
+
+        event.nPFLep5LowMT = 0
+        event.nPFHad10LowMT = 0
+        event.mtw=-999 
+        event.mtwTau=-999
+        event.mtwIsoTrack=-999               
+
+        self.makeMT(event)
+
 
         return True
