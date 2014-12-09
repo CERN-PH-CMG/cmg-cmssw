@@ -114,6 +114,7 @@ class ttHMT2Control( Analyzer ):
         vetoLeptons = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta()) < 2.5 ]
 
         # MET + zll                                                                                                                                                                                                               
+        event.zll_ht = -999.
         event.zll_deltaPhiMin = -999.
         event.zll_met_pt = -999.
         event.zll_met_phi = -999.
@@ -137,7 +138,9 @@ class ttHMT2Control( Analyzer ):
             # look for minimal deltaPhi between MET and four leading jets with pt>40 and |eta|<2.4                                                                                                                                
             event.zll_deltaPhiMin = 999.
             objects40jc = [ j for j in event.cleanJets if j.pt() > 40 and abs(j.eta())<2.5 ]
-            for n,j in enumerate(objects40jc):
+            objects40ja = [ j for j in event.cleanJets if j.pt() > 40]
+            event.zll_ht = sum([x.pt() for x in objects40jc])
+            for n,j in enumerate(objects40ja):
                 if n>3:  break
                 thisDeltaPhi = abs( deltaPhi( j.phi(), event.zll_met.phi() ) )
                 if thisDeltaPhi < event.zll_deltaPhiMin : event.zll_deltaPhiMin = thisDeltaPhi
