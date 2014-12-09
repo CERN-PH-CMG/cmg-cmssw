@@ -41,21 +41,22 @@ class ComponentCreator(object):
          return component
     
     ### MM
-    def makeMyPrivateMCComponent(self,name,dataset,user,pattern,dbsInstance):
-
+    def makeMyPrivateMCComponent(self,name,dataset,user,pattern,dbsInstance, xSec=1, useAAA=False,  fileprefix='root://eoscms.cern.ch//eos/cms' ):
         component = cfg.MCComponent(
             dataset=dataset,
             name = name,
-            files = self.getMyFiles(dataset, user, pattern, dbsInstance),
-            xSection = 1,
+            files = self.getMyFiles(dataset, user, pattern, dbsInstance, useAAA=useAAA, fileprefix=fileprefix),
+            xSection = xSec,
             nGenEvents = 1,
             triggers = [],
             effCorrFactor = 1,
         )
 
         return component
-    ### MM
 
+
+
+    ### MM
     def makeMCComponentFromEOS(self,name,dataset,path,pattern=".*root"):
         from CMGTools.Production.dataset import getDatasetFromCache, writeDatasetToCache
         if "%" in path: path = path % dataset;
@@ -104,11 +105,13 @@ class ComponentCreator(object):
         return ['root://eoscms.cern.ch//eos/cms%s' % f for f in files]
 
     ### MM
-    def getMyFiles(self, dataset, user, pattern, dbsInstance):
+    def getMyFiles(self, dataset, user, pattern, dbsInstance, useAAA=False, fileprefix='root://eoscms.cern.ch//eos/cms'):
         # print 'getting files for', dataset,user,pattern
         ds = myDatasetToSource( user, dataset, pattern, dbsInstance, True )
         files = ds.fileNames
-        return ['root://eoscms.cern.ch//eos/cms%s' % f for f in files]
+        mapping = fileprefix+'%s'
+        if useAAA: mapping = 'root://cms-xrd-global.cern.ch/%s'
+        return [ mapping % f for f in files]
     ### MM
 
     def getSkimEfficiency(self,dataset,user):
