@@ -171,38 +171,40 @@ lep_tightCharge:  lep_tightCharge: [-1.5,-0.5,0.5,1.5];  Legend='TL'
 
 ##### GAMMA control variables
 
-gamma_mt2:   gamma_mt2: 16,0,800    ; XTitle="MT2  [GeV]"
+cr_gamma_mt2:   gamma_mt2: 16,0,800    ; XTitle="MT2  [GeV]"
 
-gamma_met:   gamma_met_pt: 16,0,800    ; XTitle="E_{T}^{miss}  [GeV]"
-gamma_met_phi:   gamma_met_phi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
+cr_gamma_met:   gamma_met_pt: 16,0,800    ; XTitle="E_{T}^{miss}  [GeV]"
+cr_gamma_met_phi:   gamma_met_phi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
 
-gamma_mht:   gamma_mht_pt: 16,0,800    ; XTitle="H_{T}^{miss}  [GeV]"
-gamma_mht_phi:   gamma_mht_phi: 8,-3.15,3.15    ; XTitle="phi of H_{T}^{miss}"
+cr_gamma_mht:   gamma_mht_pt: 16,0,800    ; XTitle="H_{T}^{miss}  [GeV]"
+cr_gamma_mht_phi:   gamma_mht_phi: 8,-3.15,3.15    ; XTitle="phi of H_{T}^{miss}"
 
-gamma_deltaPhiMin: gamma_deltaPhiMin: 70,0,3.15    ; XTitle="dphi_{min}(jet\,E_{T}^{miss})"
-gamma_diffMetMht: gamma_diffMetMht: 100,0,500    ; XTitle="|MET-MHT|"
+cr_gamma_deltaPhiMin: gamma_deltaPhiMin: 70,0,3.15    ; XTitle="dphi_{min}(jet\,E_{T}^{miss})"
+cr_gamma_diffMetMht: gamma_diffMetMht: 100,0,500    ; XTitle="|MET-MHT|"
 
-gamma_ht: gamma_ht:  16,0,800    ; XTitle="H_{T}  [GeV]" 
+cr_gamma_ht: gamma_ht:  16,0,800    ; XTitle="H_{T}  [GeV]" 
 
-gamma_nJet40 : gamma_nJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(jet\, p_{T} > 40)'
-##gamma_nBJet40 : gamman_BJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\, p_{T} > 40\, CSVM)'
+cr_gamma_nJet40 : gamma_nJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(jet\, p_{T} > 40)'
+##cr_gamma_nBJet40 : gamma_BJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\, p_{T} > 40\, CSVM)'
 
 
 ##### ZLL control variables
 
-zll_mt2:   zll_mt2: 16,0,800    ; XTitle="MT2  [GeV]"
+cr_zll_mt2:   zll_mt2: 16,0,800    ; XTitle="MT2  [GeV]"
 
-zll_met:   zll_met_pt: 16,0,800    ; XTitle="E_{T}^{miss}  [GeV]"
-zll_met_phi:   zll_met_phi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
+cr_zll_met:   zll_met_pt: 16,0,800    ; XTitle="E_{T}^{miss}  [GeV]"
+cr_zll_met_phi:   zll_met_phi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
 
-zll_mht:   zll_mht_pt: 16,0,800    ; XTitle="H_{T}^{miss}  [GeV]"
-zll_mht_phi:   zll_mht_phi: 8,-3.15,3.15    ; XTitle="phi of H_{T}^{miss}"
+cr_zll_ht: zll_ht:  16,0,800    ; XTitle="H_{T}  [GeV]" 
 
-zll_deltaPhiMin: zll_deltaPhiMin: 70,0,3.15    ; XTitle="dphi_{min}(jet\,E_{T}^{miss})"
-zll_diffMetMht: zll_diffMetMht: 100,0,500    ; XTitle="|MET-MHT|"
+cr_zll_mht:   zll_mht_pt: 16,0,800    ; XTitle="H_{T}^{miss}  [GeV]"
+cr_zll_mht_phi:   zll_mht_phi: 8,-3.15,3.15    ; XTitle="phi of H_{T}^{miss}"
 
-zll_pt: zll_pt: 16,0,800    ; XTitle="Z p_{T}  [GeV]"
-zll_phi: zll_phi: 8,-3.15,3.15    ; XTitle="Z phi"
-zll_eta: zll_eta: 10,-5.,5.    ; XTitle="Z eta"
-zll_mass: zll_mass: 20,0,400.    ; XTitle="Z mass [GeV]"
+cr_zll_deltaPhiMin: zll_deltaPhiMin: 70,0,3.15    ; XTitle="dphi_{min}(jet\,E_{T}^{miss})"
+cr_zll_diffMetMht: zll_diffMetMht: 100,0,500    ; XTitle="|MET-MHT|"
+
+cr_zll_pt: zll_pt: 16,0,800    ; XTitle="Z p_{T}  [GeV]"
+cr_zll_phi: zll_phi: 8,-3.15,3.15    ; XTitle="Z phi"
+cr_zll_eta: zll_eta: 10,-5.,5.    ; XTitle="Z eta"
+cr_zll_mass: zll_mass: 20,0,400.    ; XTitle="Z mass [GeV]"
 
