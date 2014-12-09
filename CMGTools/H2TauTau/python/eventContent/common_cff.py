@@ -4,7 +4,7 @@ import copy
 
 
 common = [
-    'keep *',
+    'drop *',
     ]
 
 

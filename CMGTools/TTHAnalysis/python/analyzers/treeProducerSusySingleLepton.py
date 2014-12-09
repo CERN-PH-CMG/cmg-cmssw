@@ -20,6 +20,9 @@ class treeProducerSusySingleLepton( treeProducerSusyCore ):
             NTupleVariable("htJet40a", lambda ev : ev.htJet40a, help="H_{T} computed from leptons and jets (with |eta|<4.7, pt > 40 GeV)"),
             NTupleVariable("mhtJet40", lambda ev : ev.mhtJet40, help="H_{T}^{miss} computed from leptons and jets (with |eta|<2.4, pt > 40 GeV)"),
             NTupleVariable("mhtJet40a", lambda ev : ev.mhtJet40a, help="H_{T}^{miss} computed from leptons and jets (with |eta|<4.7, pt > 40 GeV)"),
+            NTupleVariable("nSoftBJetLoose25",  lambda ev: sum([(sv.mva>0.3 and (sv.jet == None or sv.jet.pt() < 25)) for sv in ev.ivf]) + len(ev.bjetsMedium), int, help="Exclusive sum of jets with pt > 25 passing CSV medium and SV from ivf with loose sv mva"),
+            NTupleVariable("nSoftBJetMedium25", lambda ev: sum([(sv.mva>0.7 and (sv.jet == None or sv.jet.pt() < 25)) for sv in ev.ivf]) + len(ev.bjetsMedium), int, help="Exclusive sum of jets with pt > 25 passing CSV medium and SV from ivf with medium sv mva"),
+            NTupleVariable("nSoftBJetTight25",  lambda ev: sum([(sv.mva>0.9 and (sv.jet == None or sv.jet.pt() < 25)) for sv in ev.ivf]) + len(ev.bjetsMedium), int, help="Exclusive sum of jets with pt > 25 passing CSV medium and SV from ivf with tight sv mva"),
             ##--------------------------------------------------
             NTupleVariable("minMWjj", lambda ev: ev.minMWjj, int, help="minMWjj"),
             NTupleVariable("minMWjjPt", lambda ev: ev.minMWjjPt, int, help="minMWjjPt"),
@@ -36,6 +39,11 @@ class treeProducerSusySingleLepton( treeProducerSusyCore ):
         })
         self.collections.update({
             # put more here
+            "gentopquarks"    : NTupleCollection("GenTop",     genParticleType, 6, help="Generated top quarks from hard scattering"),
+            "genbquarks"      : NTupleCollection("GenBQuark",  genParticleType, 6, help="Generated bottom quarks from top quark decays"),
+            "genwzquarks"     : NTupleCollection("GenQuark",   genParticleWithSourceType, 6, help="Generated quarks from W/Z decays"),
+            "genParticles"     : NTupleCollection("genPart",  genParticleWithMotherId, 200, help="all pruned genparticles"), # need to decide which gen collection ?
+           ##------------------------------------------------
             "selectedLeptons" : NTupleCollection("LepGood", leptonTypeSusy, 8, help="Leptons after the preselection"),
             "otherLeptons"    : NTupleCollection("LepOther", leptonTypeSusy, 8, help="Leptons after the preselection"),
             "selectedTaus"    : NTupleCollection("TauGood", tauTypeSusy, 3, help="Taus after the preselection"),
@@ -43,6 +51,10 @@ class treeProducerSusySingleLepton( treeProducerSusyCore ):
             ##------------------------------------------------
             "cleanJetsAll"       : NTupleCollection("Jet",     jetTypeSusy, 25, help="Cental jets after full selection and cleaning, sorted by pt"),
             "reclusteredFatJets" : NTupleCollection("FatJet",     fourVectorType,20, help="FatJets reclusterd from ak4 cleanJetsAll"),
+               ##----------------------------------------------
+            "ivf"       : NTupleCollection("SV",     svType, 20, help="SVs from IVF"),
+            "genBHadrons"  : NTupleCollection("GenBHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level B hadrons"),
+            "genDHadrons"  : NTupleCollection("GenDHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level D hadrons"),
         })
 
         ## Book the variables, but only if we're called explicitly and not through a base class

@@ -40,6 +40,7 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
         tr.var('lumi', int, storageType="i")
         tr.var('evt', int, storageType="i")
         tr.var('isData', int)
+        tr.var('xsec', float)
 
         self.triggerBitCheckers = []
         if hasattr(self.cfg_ana, 'triggerBits'):
@@ -90,6 +91,7 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
         tr.fill('lumi',event.lumi)
         tr.fill('evt', event.eventId)    
         tr.fill('isData', 0 if isMC else 1)
+        tr.fill('xsec',self.cfg_comp.xSection)
 
         if self.triggerBitCheckers:
             triggerResults = self.handles['TriggerResults'].product()

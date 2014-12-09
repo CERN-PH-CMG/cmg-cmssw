@@ -185,6 +185,7 @@ photonTypeSusy = NTupleObjectType("gamma", baseObjectTypes = [ particleType ], v
     NTupleVariable("neuHadIso",  lambda x : x.neutralHadronIso(), float, help="neutralHadronIsolation for photons"),
     NTupleVariable("phIso",  lambda x : x.photonIso(), float, help="gammaIsolation for photons"),
     NTupleVariable("mcMatchId",  lambda x : x.mcMatchId, int, mcOnly=True, help="Match to source from hard scatter (25 for H, 6 for t, 23/24 for W/Z)"),
+    NTupleVariable("genIso",  lambda x : x.genIso, float, mcOnly=True, help="sum pt of all status 1 particles within DeltaR = 0.4 of the photon"),
 ])
 
 ##------------------------------------------  

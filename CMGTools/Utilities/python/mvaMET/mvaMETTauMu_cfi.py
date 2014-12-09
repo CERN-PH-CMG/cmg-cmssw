@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Utilities.mvaMET.weights_gbr import weights_gbrmet,weights_gbrmetphi, weights_gbrmetu1cov, weights_gbrmetu2cov
-from CMGTools.Common.miscProducers.mvaMET.metRegression_cff import puJetIdAlgo
+from CMGTools.Common.miscProducers.mvaMET.metRegression_cff import pfMetForRegression
 
 mvaMETTauMu = cms.EDProducer(
     "MVAMETProducerTauMu",
@@ -11,10 +11,10 @@ mvaMETTauMu = cms.EDProducer(
     pucmetSrc = cms.InputTag('pcMet'),
     pumetSrc = cms.InputTag('puMet'),
     recBosonSrc = cms.InputTag('cmgTauMu'),
-    jetSrc = cms.InputTag('slimmedJets'),
+    jetSrc = cms.InputTag('patJetsAK4PF'),
     minJetPt = cms.double(30.),
-    maxJetEta = cms.double(30.),
-    puJetIdLabel = puJetIdAlgo.label,
+    maxJetEta = cms.double(5.),
+    puJetIdLabel = pfMetForRegression.puJetIDName,
     vertexSrc = cms.InputTag('goodPVFilter'),
     nJetsPtGt1Src = cms.InputTag('nJetsPtGt1'),
     rhoSrc = cms.InputTag('fixedGridRhoFastjetAll'),

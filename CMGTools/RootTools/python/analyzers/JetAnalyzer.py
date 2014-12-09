@@ -33,6 +33,7 @@ class JetAnalyzer( Analyzer ):
       btagSFseed = 123456,
       # if True, the PF and PU jet ID are not applied, and the jets get flagged
       relaxJetId = False,
+      puJetIDDisc = 'pileupJetId:fullDiscriminant'
     )
     """
 
@@ -40,6 +41,7 @@ class JetAnalyzer( Analyzer ):
         super(JetAnalyzer,self).__init__(cfg_ana, cfg_comp, looperName)
         self.btagSF = BTagSF (cfg_ana.btagSFseed)
         self.is2012 = isNewerThan('CMSSW_5_2_0')
+        self.puJetIDDisc = cfg_ana.puJetIDDisc if hasattr(cfg_ana, 'puJetIDDisc') else 'pileupJetId:fullDiscriminant'
 
     def declareHandles(self):
         super(JetAnalyzer, self).declareHandles()
@@ -206,7 +208,7 @@ class JetAnalyzer( Analyzer ):
         jet.scaleEnergy(totalScale)
 
     def testJetID(self, jet):
-        jet.puJetIdPassed = jet.puJetId()
+        jet.puJetIdPassed = jet.puJetId(self.puJetIDDisc)
         jet.pfJetIdPassed = jet.jetID("POG_PFID_Loose")
 
         if self.cfg_ana.relaxJetId:
