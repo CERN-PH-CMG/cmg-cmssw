@@ -58,36 +58,41 @@ class ttHPhotonAnalyzerSusy( Analyzer ):
             def idWP(gamma,X):
                 """Create an integer equal to 1-2-3 for (loose,medium,tight)"""
 
-## medium not stored
-##                return gamma.photonID(X%"Loose") + gamma.photonID(X%"Medium") + gamma.photonID(X%"Tight")
-
-                id=-1
+                id=0
                 if gamma.photonID(X%"Loose"):
-                    id=0
+                    id=1
+                #if gamma.photonID(X%"Medium"):
+                #    id=2
                 if gamma.photonID(X%"Tight"):
-                    id=2
+                    id=3
                 return id
 
             gamma.idCutBased = idWP(gamma, "PhotonCutBasedID%s")
 
-            passedPhotonID = True
+            keepThisPhoton = True
             if (self.cfg_ana.gammaID=="PhotonCutBasedIDLoose_CSA14") :
               if abs(gamma.eta())<1.479 :
-                if gamma.sigmaIetaIeta() > 0.012 : passedPhotonID = False
-                if gamma.hOVERe() > 0.0559       : passedPhotonID = False
+                if gamma.sigmaIetaIeta() > 0.012 : keepThisPhoton = False
+                if gamma.hOVERe() > 0.0559       : keepThisPhoton = False
               else :
-                if gamma.sigmaIetaIeta() > 0.035 : passedPhotonID = False
-                if gamma.hOVERe() > 0.049        : passedPhotonID = False
+                if gamma.sigmaIetaIeta() > 0.035 : keepThisPhoton = False
+                if gamma.hOVERe() > 0.049        : keepThisPhoton = False
+              gamma.idCutBased = keepThisPhoton
+              # we're keeing sigmaietaieta sidebands, but the id is false for them:
+              if abs(gamma.eta())< 1.479 and gamma.sigmaIetaIeta()>0.010  : gamma.idCutBased = False
+              if abs(gamma.eta())>=1.479 and gamma.sigmaIetaIeta()>0.0321 : gamma.idCutBased = False
             else:
-              passedPhotonID = gamma.photonID(self.cfg_ana.gammaID)
+              keepThisPhoton = gamma.photonID(self.cfg_ana.gammaID)
 
-            if gamma.hasPixelSeed(): passedPhotonID = False
+            if gamma.hasPixelSeed(): 
+              keepThisPhoton = False
+              gamma.idCutBased = 0
 
 
-            if passedPhotonID:
+            if keepThisPhoton:
                 event.selectedPhotons.append(gamma)
             
-            if passedPhotonID and abs(gamma.eta()) < self.etaCentral:
+            if keepThisPhoton and abs(gamma.eta()) < self.etaCentral:
                 event.selectedPhotonsCentral.append(gamma)
 
         event.selectedPhotons.sort(key = lambda l : l.pt(), reverse = True)
@@ -111,6 +116,10 @@ class ttHPhotonAnalyzerSusy( Analyzer ):
             gamma.mcMatchId = 22
             sumPt = 0.;
             for part in packedGenParts:
+              if abs(part.pdgId())==12: continue # exclude neutrinos
+              if abs(part.pdgId())==14: continue
+              if abs(part.pdgId())==16: continue
+              if abs(part.pdgId())==18: continue
               if deltaR(gen.eta(), gen.phi(), part.eta(), part.phi()) > 0.4: continue
               sumPt += part.pt()
             sumPt -= gen.pt()
@@ -122,6 +131,10 @@ class ttHPhotonAnalyzerSusy( Analyzer ):
               gamma.mcMatchId = 7
               sumPt = 0.;
               for part in packedGenParts:
+                if abs(part.pdgId())==12: continue # exclude neutrinos
+                if abs(part.pdgId())==14: continue
+                if abs(part.pdgId())==16: continue
+                if abs(part.pdgId())==18: continue
                 if deltaR(genNoMom.eta(), genNoMom.phi(), part.eta(), part.phi()) > 0.4: continue
                 sumPt += part.pt()
               sumPt -= genNoMom.pt()
