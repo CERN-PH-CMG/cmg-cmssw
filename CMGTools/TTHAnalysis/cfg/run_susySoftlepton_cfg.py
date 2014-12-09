@@ -36,6 +36,9 @@ ttHLepSkim.ptCuts = [5,3]
 # ttHJetAna.minLepPt = 20 
 ttHJetAna.jetPt = 30.0 
 
+# --- JET-ENERGY-SCALE SYSTEMATICS ---
+ttHJetAna.shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
+
 # --- JET-MET SKIMMING ---
 #ttHJetMETSkim.jetPtCuts = [100,]
 #ttHJetMETSkim.metCut    = 100
@@ -74,9 +77,9 @@ treeProducer = cfg.Analyzer(
             'SingleMuNonIso' : ["HLT_Mu40_v*"],
             'MetTrigger' : ["HLT_PFMET150_v*"],
             'MetTriggerParked' : ["HLT_MET80_Parked_v*"],
-            'MET_120_HBHENoiseCleaned' : ["MET120_HBHENoiseCleaned*"],
-            'Mono_CentralPFJet80_PFMETNoMu95_NHEF0p95': ["MonoCentralPFJet80_PFMETNoMu95_NHEF0p95*"],
-            'Mono_CentralPFJet80_PFMETnoMu105_NHEF0p95':  ["MonoCentralPFJet80_PFMETnoMu105_NHEF0p95*"]
+            'MET_120_HBHENoiseCleaned' : ["HLT_MET120_HBHENoiseCleaned*"],
+            'Mono_CentralPFJet80_PFMETnoMu95_NHEF0p95': ["HLT_MonoCentralPFJet80_PFMETnoMu95_NHEF0p95*"],
+            'Mono_CentralPFJet80_PFMETnoMu105_NHEF0p95':  ["HLT_MonoCentralPFJet80_PFMETnoMu105_NHEF0p95*"]
         }
     )
 
@@ -89,18 +92,23 @@ from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
 #    mc.triggers = ["HLT_PFMET_150_v*" ]
 
 
-#selectedComponents = [ DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,TTH122,TTH127,TTJetsSem1,TTJetsSem2 ] 
-#selectedComponents = [ T2DegenerateStop_2J_4 ]
+#selectedComponents = [ TTJetsLep ]                                                                                 ->  newTuples000*
+#selectedComponents = [ TbartW,TTH,TtW,TTWJets,TTZJets,WJets_HT250To300,WJets_HT300To400,WJets_HT400ToInf ]         ->  newTuples001*
+#selectedComponents = [ DYJetsM10,DYJetsM50,DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50 ]                           ->  newTuples002
+#selectedComponents = [ T2DegenerateStop_2J_1,T2DegenerateStop_2J_2,T2DegenerateStop_2J_3,T2DegenerateStop_2J_4 ]   ->  newTuples003*
+#selectedComponents = [ WJetsPtW50To70,WJetsPtW70To100,WJetsPtW100,WJets,W1Jets,W2Jets,W3Jets,W4Jets ]              ->  newTuples004
+#selectedComponents = [ WW,WZ,ZZ,WWJets,WZJets,ZZJets4L,ZZ2e2mu,ZZ2e2tau,ZZ2mu2tau,ZZTo4mu,ZZTo4tau,ZZTo4e ]        ->  newTuples005
+#selectedComponents = [ TTLep,TTJets,TTJetsSem,TTJetsSem2,TTJetsHad ]                                               ->  newTuples006
+#selectedComponents = [ ZNuNu50HT100,ZNuNu100HT200,ZNuNu200HT400,ZNuNu400 ]                                         ->  newTuples007 the QCDMuPt15 was originaly here but failed and submited as new set 008 with larger split
+#selectedComponents = [ QCDMuPt15 ]                                                                                 ->  newTuples008
 
-#selectedComponents = [ TTJetsLep ]                                                                                 ->  newTuples000
-#selectedComponents = [ TbartW,TTH,TtW,TTWJets,TTZJets,WJets_HT250To300,WJets_HT300To400,WJets_HT400ToInf ]         ->  newTuples001
-selectedComponents = [ DYJetsM10,DYJetsM50,DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50 ]
-#selectedComponents = [ T2DegenerateStop_2J_1,T2DegenerateStop_2J_2,T2DegenerateStop_2J_3,T2DegenerateStop_2J_4 ]   ->  newTuples003
+selectedComponents = [ TTJetsLep ]
+
 
 #-------- SEQUENCE
 
 #  ORIGINAL
-sequence = cfg.Sequence(susyCoreSequence+[
+sequence = cfg.Sequence( [ eventSelector ] + susyCoreSequence+[
     ttHEventAna,
     stFilterAna,
     metFilterAna,
@@ -112,26 +120,29 @@ sequence = cfg.Sequence(susyCoreSequence+[
 # 
 # sequence = cfg.Sequence( [ eventSelector ] + susyCoreSequence+[
 #     ttHEventAna,
+#     stFilterAna,
 #     metFilterAna,
 #     treeProducer,
 #     ])
 
 
 #-------- HOW TO RUN
-test = 2
+test = 1
 if test==1:
     # test a single component, using a single thread.
     comp = selectedComponents[0]
-    comp.files = comp.files[:1]         #   Comment-out this line to run interactively / Comment-in to run with lxbatch
-#     comp.files = comp.files[853:854]    #   for debug purposes.
+    comp.files = comp.files[:1]         #   files to run interactively with "multiloop"
     selectedComponents = [comp]
-    comp.splitFactor = 500
+    comp.splitFactor = 1
 elif test==2:    
     # test all components (1 thread per component).
     for comp in selectedComponents:
         comp.splitFactor = 500
-#         comp.files = comp.files[:1]
-
+        comp.files = comp.files[:1]
+elif test==3:    
+    # run all components on lxbatch ( no need to set "comp.files = comp.files[A:B]" in this case ).
+    for comp in selectedComponents:
+        comp.splitFactor = 500
 
 
 config = cfg.Config( components = selectedComponents,
