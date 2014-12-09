@@ -80,6 +80,8 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             NTupleVariable("gamma_diffMetMht", lambda ev : ev.gamma_diffMetMht_had, help="abs( vec(mht) - vec(met) )"),
             NTupleVariable("gamma_mht_pt", lambda ev : ev.gamma_mhtJet40j, help="H_{T}^{miss} computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
             NTupleVariable("gamma_mht_phi", lambda ev : ev.gamma_mhtPhiJet40j, help="H_{T}^{miss} #phi computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
+            NTupleVariable("gamma_minMTBMet", lambda ev : ev.gamma_minMTBMet, help="min Mt(b,met)"),
+
             ##--------------------------------------------------
             # Zll variables
             ##--------------------------------------------------

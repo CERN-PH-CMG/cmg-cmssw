@@ -135,7 +135,7 @@ class ttHJetAnalyzer( Analyzer ):
 
         ## Clean Jets from *first* photon
         #photons = [ g for g in event.selectedPhotonsCentral ]
-        event.gamma_cleanJetsAll = cleanNearestJetOnly(event.cleanJetsAll, event.selectedPhotonsCentral[:1], self.jetGammaDR)
+        event.gamma_cleanJetsAll = cleanNearestJetOnly(event.jets, event.selectedPhotonsCentral[:1], self.jetGammaDR)
         event.gamma_cleanJets    = [j for j in event.gamma_cleanJetsAll if abs(j.eta()) <  self.cfg_ana.jetEtaCentral ]
         event.gamma_cleanJetsFwd = [j for j in event.gamma_cleanJetsAll if abs(j.eta()) >= self.cfg_ana.jetEtaCentral ]
         ###
