@@ -76,13 +76,10 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             NTupleVariable("gamma_nJet40", lambda ev: sum([j.pt() > 40 for j in ev.gamma_cleanJets]), int, help="Number of jets after photon-cleaning with pt > 40, |eta|<2.4"),
             NTupleVariable("gamma_nBJet40", lambda ev: sum([j.btagWP("CSVM") for j in ev.gamma_cleanJets if j.pt() > 40]), int, help="Number jets after photon-cleaning  with pt > 40 passing CSV medium"),
             NTupleVariable("gamma_ht", lambda ev : ev.gamma_htJet40j, help="H_{T} computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
-            NTupleVariable("gamma_deltaPhiMin", lambda ev : ev.gamma_deltaPhiMin, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4"),
-            NTupleVariable("gamma_diffMetMht", lambda ev : ev.gamma_diffMetMht, help="abs( vec(mht) - vec(met) )"),
-            NTupleVariable("gamma_mht_pt", lambda ev : ev.gamma_mhtJet40, help="H_{T}^{miss} computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
-            NTupleVariable("gamma_mht_phi", lambda ev : ev.gamma_mhtPhiJet40, help="H_{T}^{miss} #phi computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
-            NTupleVariable("gamma_diffMetMht_had", lambda ev : ev.gamma_diffMetMht_had, help="abs( vec(mht) - vec(met) ) - only jets"),
-            NTupleVariable("gamma_mht_had_pt", lambda ev : ev.gamma_mhtJet40j, help="H_{T}^{miss} computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
-            NTupleVariable("gamma_mht_had_phi", lambda ev : ev.gamma_mhtPhiJet40j, help="H_{T}^{miss} #phi computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
+            NTupleVariable("gamma_deltaPhiMin", lambda ev : ev.gamma_deltaPhiMin_had, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4"),
+            NTupleVariable("gamma_diffMetMht", lambda ev : ev.gamma_diffMetMht_had, help="abs( vec(mht) - vec(met) )"),
+            NTupleVariable("gamma_mht_pt", lambda ev : ev.gamma_mhtJet40j, help="H_{T}^{miss} computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
+            NTupleVariable("gamma_mht_phi", lambda ev : ev.gamma_mhtPhiJet40j, help="H_{T}^{miss} #phi computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
             ##--------------------------------------------------
             # Zll variables
             ##--------------------------------------------------
