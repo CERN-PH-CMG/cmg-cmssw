@@ -17,10 +17,25 @@ from CMGTools.RootTools.physicsobjects.IsoTrack import IsoTrack
 
 from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch, matchObjectCollection3
 
-
 def mtw(x1,x2):
     return sqrt(2*x1.pt()*x2.pt()*(1-cos(x1.phi()-x2.phi())))
 
+def makeNearestLeptons(leptons,track, event):
+
+    minDeltaR = 99999
+    
+    nearestLepton = []
+    ibest=-1
+    for i,lepton in enumerate(leptons):
+        minDeltaRtemp=deltaR(lepton.eta(),lepton.phi(),track.eta(),track.phi())
+        if minDeltaRtemp < minDeltaR:
+            minDeltaR = minDeltaRtemp
+            ibest=i
+
+    if len(leptons) > 0 and ibest!=-1:
+        nearestLepton.append(leptons[ibest])
+
+    return nearestLepton
  
 class ttHIsoTrackAnalyzer( Analyzer ):
 
@@ -118,17 +133,21 @@ class ttHIsoTrackAnalyzer( Analyzer ):
             if(track.absIso < min(0.2*track.pt(), self.cfg_ana.maxAbsIso)): 
                 event.selectedIsoTrack.append(track)
 
-            for lep in event.selectedLeptons:
-                if deltaR(lep.eta(), lep.phi(), track.eta(), track.phi()) > 0.1:
-                    if self.cfg_ana.doPrune:
-                        mtwIsoTrack = mtw(track, event.met)
-                        if mtwIsoTrack < 100:
-                            if abs(track.pdgId()) == 11 or abs(track.pdgId()) == 13:
-                                if track.pt()>5 and track.absIso/track.pt()<0.2:
-                                    event.selectedIsoCleanTrack.append(track)
 
-                    else: 
-                        event.selectedIsoCleanTrack.append(track)
+                if self.cfg_ana.doPrune:
+                    mtwIsoTrack = mtw(track, event.met)
+                    if mtwIsoTrack < 100:
+                        if abs(track.pdgId()) == 11 or abs(track.pdgId()) == 13:
+                            if track.pt()>5 and track.absIso/track.pt()<0.2:
+
+                                myLeptons = [ l for l in event.selectedLeptons if l.pt() > 10 ] 
+                                nearestSelectedLeptons = makeNearestLeptons(myLeptons,track, event)
+                                if len(nearestSelectedLeptons) > 0:
+                                    for lep in nearestSelectedLeptons:
+                                        if deltaR(lep.eta(), lep.phi(), track.eta(), track.phi()) > 0.1:
+                                            event.selectedIsoCleanTrack.append(track)
+                                else: 
+                                    event.selectedIsoCleanTrack.append(track)
 
         event.selectedIsoTrack.sort(key = lambda l : l.pt(), reverse = True)
         event.selectedIsoCleanTrack.sort(key = lambda l : l.pt(), reverse = True)

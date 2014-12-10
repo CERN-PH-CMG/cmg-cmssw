@@ -237,7 +237,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
             
 ## ===> full MT2 (jets + leptons)                                                                                                                                                                                             
 
-        objects10lc = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta())<2.5 ]
+        objects10lc = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta())<2.5 ] + [ t for t in event.selectedIsoCleanTrack ]
         objects40j10lc = objects40jc + objects10lc
 
         objects40j10lc.sort(key = lambda obj : obj.pt(), reverse = True)

@@ -19,9 +19,9 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             ##--------------------------------------------------
             ## energy sums
             ##--------------------------------------------------
-            NTupleVariable("ht", lambda ev : ev.htJet40j10l, help="H_{T} computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons and muons with |eta|<2.5, pt > 10 GeV)"),
-            NTupleVariable("mht_pt", lambda ev : ev.mhtJet40j10l, help="H_{T}^{miss} computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
-            NTupleVariable("mht_phi", lambda ev : ev.mhtPhiJet40j10l, help="H_{T}^{miss} #phi computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
+            NTupleVariable("ht", lambda ev : ev.htJet40j10l5t, help="H_{T} computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons and muons with |eta|<2.5, pt > 10 GeV)"),
+            NTupleVariable("mht_pt", lambda ev : ev.mhtJet40j10l5t, help="H_{T}^{miss} computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
+            NTupleVariable("mht_phi", lambda ev : ev.mhtPhiJet40j10l5t, help="H_{T}^{miss} #phi computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
             NTupleVariable("diffMetMht", lambda ev : ev.diffMetMht, help="abs( vec(mht) - vec(met) ) - with jets and leptons"),
             NTupleVariable("deltaPhiMin", lambda ev : ev.deltaPhiMin, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4 and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
 
