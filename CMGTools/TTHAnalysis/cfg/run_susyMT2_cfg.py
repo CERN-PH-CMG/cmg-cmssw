@@ -56,26 +56,7 @@ ttHPhoAna.gammaID = "PhotonCutBasedIDLoose_CSA14"
 ##  ISOLATED TRACK
 ##------------------------------------------
 
-# those are the cuts for the nonEMu
-ttHIsoTrackAna = cfg.Analyzer(
-            'ttHIsoTrackAnalyzer',
-#            candidates='cmgCandidates',
-#            candidatesTypes='std::vector<cmg::Candidate>',
-            candidates='packedPFCandidates',
-            candidatesTypes='std::vector<pat::PackedCandidate>',
-            ptMin = 5, # for pion 
-            ptMinEMU = 5, # for EMU
-            dzMax = 0.1,
-            #####
-            isoDR = 0.3,
-            ptPartMin = 0,
-            dzPartMax = 0.1,
-            maxAbsIso = 8,
-            #####
-            MaxIsoSum = 0.1, ### unused
-            MaxIsoSumEMU = 0.2, ### unused
-            doSecondVeto = False
-            )
+ttHIsoTrackAna.setOff=False
 
 ##------------------------------------------ 
 ##  CONTROL VARIABLES
@@ -154,7 +135,6 @@ selectedComponents = [ TTJets_PU20bx25 ]
 #-------- SEQUENCE
 
 sequence = cfg.Sequence(susyCoreSequence+[
-    ttHIsoTrackAna,
     ttHMT2Control,
     ttHTopoJetAna,
     ttHFatJetAna,

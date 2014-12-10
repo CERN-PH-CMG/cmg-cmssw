@@ -37,22 +37,7 @@ ttHEventAna = cfg.Analyzer(
     )
 
 
-
-ttHIsoTrackAna = cfg.Analyzer(
-            'ttHIsoTrackAnalyzer',
-            candidates='packedPFCandidates',
-            candidatesTypes='std::vector<pat::PackedCandidate>',
-            ptMin = 5, # for pion 
-            ptMinEMU = 5, # for EMU
-            dzMax = 0.1,
-            isoDR = 0.3,
-            ptPartMin = 0,
-            dzPartMax = 0.1,
-            maxAbsIso = 8,
-            MaxIsoSum = 0.1, ### unused
-            MaxIsoSumEMU = 0.2, ### unused
-            doSecondVeto = False
-            )
+ttHIsoTrackAna.setOff=False
 
 susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
                         ttHSVAnalyzer)
@@ -77,13 +62,12 @@ treeProducer = cfg.Analyzer(
 
 #-------- SAMPLES AND TRIGGERS -----------
 from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14 import *
-selectedComponents = [ SingleMu, DoubleElectron, TTHToWW_PUS14, DYJetsM50_PU20bx25, TTJets_PUS14 ]
+selectedComponents = [ SingleMu, DoubleElectron, TTHToWW_PUS14, DYJetsToLL_M50_PU20bx25, TTJets_PUS14 ]
 
 
 #-------- SEQUENCE
 
 sequence = cfg.Sequence(susyCoreSequence+[
-    ttHIsoTrackAna,
     ttHEventAna,
     treeProducer,
     ])

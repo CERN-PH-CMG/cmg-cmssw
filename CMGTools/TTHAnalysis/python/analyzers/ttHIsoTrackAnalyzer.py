@@ -151,6 +151,10 @@ class ttHIsoTrackAnalyzer( Analyzer ):
 
 
     def process(self, iEvent, event):
+
+        if self.cfg_ana.setOff:
+            return True
+
         self.readCollections( iEvent )
         self.makeIsoTrack(event)
 
