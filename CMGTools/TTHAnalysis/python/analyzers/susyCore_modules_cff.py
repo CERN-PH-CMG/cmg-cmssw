@@ -268,7 +268,7 @@ ttHJetMETSkim = cfg.Analyzer(
     htCut     = ('htJet40j', 0), # cut on HT defined with only jets and pt cut 40, at zero; i.e. no cut
                                  # see ttHCoreEventAnalyzer for alternative definitions
     mhtCut    = ('mhtJet40', 0), # cut on MHT defined with all leptons, and jets with pt > 40.
-    nBJet     = ('CSVM', 0, "jet.pt() > 30"),     # require at least 0 jets passing CSVM and pt > 30
+    nBJet     = ('CSVv2IVFM', 0, "jet.pt() > 30"),     # require at least 0 jets passing CSV medium and pt > 30
     )
 
 

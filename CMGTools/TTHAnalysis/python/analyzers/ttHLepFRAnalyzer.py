@@ -30,8 +30,8 @@ class ttHLepFRAnalyzer( ttHLepTreeProducerNew ):
             NTupleVariable("dr",     lambda ev:   dR(ev.selectedLeptons[0], ev.tag) if ev.tag != None else 0, help="#DeltaR between tag and probe"),
             NTupleVariable("nJet30", lambda ev: sum([j.pt() > 30 for j in ev.cleanJets]), int, help="Number of jets with pt > 30"),
             NTupleVariable("nJet40", lambda ev: sum([j.pt() > 40 for j in ev.cleanJets]), int, help="Number of jets with pt > 40"),
-            NTupleVariable("nBJetMedium30", lambda ev: sum([j.btagWP("CSVM") for j in ev.cleanJets if j.pt() > 30]), int, help="Number of jets with pt > 30 passing CSV medium"),
-            NTupleVariable("nBJetMedium40", lambda ev: sum([j.btagWP("CSVM") for j in ev.cleanJets if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CSV medium"),
+            NTupleVariable("nBJetMedium30", lambda ev: sum([j.btagWP("CSVv2IVFM") for j in ev.cleanJets if j.pt() > 30]), int, help="Number of jets with pt > 30 passing CSV medium"),
+            NTupleVariable("nBJetMedium40", lambda ev: sum([j.btagWP("CSVv2IVFM") for j in ev.cleanJets if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CSV medium"),
         ]
         self.globalObjects = {
             "probe"  : NTupleObject("Probe",   leptonTypeSusyFR, help="Probe lepton"),
