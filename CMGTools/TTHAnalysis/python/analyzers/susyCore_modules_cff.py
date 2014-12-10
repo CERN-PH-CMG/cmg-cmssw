@@ -289,12 +289,12 @@ susyCoreSequence = [
     ttHPhoAna,
     ttHTauAna,
     ttHTauMCAna,
-    ttHMetAna,
     ttHIsoTrackAna,
     ttHJetAna,
     ttHJetMCAna,
     #ttHFatJetAna,  # out of core sequence for now
     #ttHSVAnalyzer, # out of core sequence for now
+    ttHMetAna,
     ttHCoreEventAna,
     ttHJetMETSkim
 ]

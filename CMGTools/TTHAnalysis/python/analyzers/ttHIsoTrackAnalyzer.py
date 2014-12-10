@@ -48,6 +48,7 @@ class ttHIsoTrackAnalyzer( Analyzer ):
     def declareHandles(self):
         super(ttHIsoTrackAnalyzer, self).declareHandles()
         self.handles['cmgCand'] = AutoHandle(self.cfg_ana.candidates,self.cfg_ana.candidatesTypes) 
+        self.handles['met'] = AutoHandle( 'slimmedMETs', 'std::vector<pat::MET>' )
 
     def beginLoop(self):
         super(ttHIsoTrackAnalyzer,self).beginLoop()
@@ -133,9 +134,9 @@ class ttHIsoTrackAnalyzer( Analyzer ):
             if(track.absIso < min(0.2*track.pt(), self.cfg_ana.maxAbsIso)): 
                 event.selectedIsoTrack.append(track)
 
-
                 if self.cfg_ana.doPrune:
-                    mtwIsoTrack = mtw(track, event.met)
+                    myMet = self.handles['met'].product()[0]
+                    mtwIsoTrack = mtw(track, myMet)
                     if mtwIsoTrack < 100:
                         if abs(track.pdgId()) == 11 or abs(track.pdgId()) == 13:
                             if track.pt()>5 and track.absIso/track.pt()<0.2:
