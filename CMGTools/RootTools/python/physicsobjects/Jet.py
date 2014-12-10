@@ -25,6 +25,9 @@ _btagWPs = {
     "CSVL": ("combinedSecondaryVertexBJetTags", 0.244),
     "CSVM": ("combinedSecondaryVertexBJetTags", 0.679),
     "CSVT": ("combinedSecondaryVertexBJetTags", 0.898),
+    "CSVv2IVFL": ("combinedInclusiveSecondaryVertexV2BJetTags", 0.423),
+    "CSVv2IVFM": ("combinedInclusiveSecondaryVertexV2BJetTags", 0.814),
+    "CSVv2IVFT": ("combinedInclusiveSecondaryVertexV2BJetTags", 0.941),
 }
 
 class Jet(PhysicsObject):   

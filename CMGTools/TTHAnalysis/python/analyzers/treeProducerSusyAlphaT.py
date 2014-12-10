@@ -35,7 +35,7 @@ class treeProducerSusyAlphaT( treeProducerSusyCore ):
             NTupleVariable("nElectrons10", lambda ev: sum([l.pt() > 10 and abs(l.pdgId()) == 11 for l in ev.selectedLeptons]), int, help="Number of electrons with at least pt > 10"),
             NTupleVariable("nTaus20",      lambda ev: sum([l.pt() > 20 for l in ev.selectedTaus]), int, help="Number of taus with pt > 20"),
             NTupleVariable("nGammas25",    lambda ev: sum([l.pt() > 25 for l in ev.selectedPhotons]), int, help="Number of photons with at least pt > 25"),
-            NTupleVariable("nBJet50",      lambda ev: sum([j.btagWP("CSVM") for j in ev.cleanJets if j.pt() > 50]), int, help="Number of jets with pt > 50 passing CSV medium"),
+            NTupleVariable("nBJet50",      lambda ev: sum([j.btagWP("CSVv2IVFM") for j in ev.cleanJets if j.pt() > 50]), int, help="Number of jets with pt > 50 passing CSV medium"),
 
             # AlphaT variables
             #----------------------------------------
