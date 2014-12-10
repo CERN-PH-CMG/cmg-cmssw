@@ -38,6 +38,7 @@ ttHJetMCAna.smearJets = False
 ttHJetAna.jetGammaDR = 0.4
 ttHJetAna.minGammaPt = 20
 ttHJetAna.gammaEtaCentral = 2.4
+ttHJetAna.cleanJetsFromIsoTracks = True ## added for Dominick
 
 # TAU 
 ttHTauAna.etaMax = 2.3
@@ -47,7 +48,7 @@ ttHTauAna.vetoLeptons = False
 ttHTauAna.vetoLeptonsPOG = True
 
 # Photon
-ttHPhoAna.etaCentral = 2.4
+ttHPhoAna.etaCentral = 2.5
 ttHPhoAna.gammaID = "PhotonCutBasedIDLoose_CSA14"
 
 
@@ -56,26 +57,7 @@ ttHPhoAna.gammaID = "PhotonCutBasedIDLoose_CSA14"
 ##  ISOLATED TRACK
 ##------------------------------------------
 
-# those are the cuts for the nonEMu
-ttHIsoTrackAna = cfg.Analyzer(
-            'ttHIsoTrackAnalyzer',
-#            candidates='cmgCandidates',
-#            candidatesTypes='std::vector<cmg::Candidate>',
-            candidates='packedPFCandidates',
-            candidatesTypes='std::vector<pat::PackedCandidate>',
-            ptMin = 5, # for pion 
-            ptMinEMU = 5, # for EMU
-            dzMax = 0.1,
-            #####
-            isoDR = 0.3,
-            ptPartMin = 0,
-            dzPartMax = 0.1,
-            maxAbsIso = 8,
-            #####
-            MaxIsoSum = 0.1, ### unused
-            MaxIsoSumEMU = 0.2, ### unused
-            doSecondVeto = False
-            )
+ttHIsoTrackAna.setOff=False
 
 ##------------------------------------------ 
 ##  CONTROL VARIABLES
@@ -84,7 +66,6 @@ ttHIsoTrackAna = cfg.Analyzer(
 ttHMT2Control = cfg.Analyzer(
             'ttHMT2Control'
             )
-
 
 ##------------------------------------------
 ##  TOLOLOGIAL VARIABLES: MT, MT2
@@ -154,7 +135,6 @@ selectedComponents = [ TTJets_PU20bx25 ]
 #-------- SEQUENCE
 
 sequence = cfg.Sequence(susyCoreSequence+[
-    ttHIsoTrackAna,
     ttHMT2Control,
     ttHTopoJetAna,
     ttHFatJetAna,
@@ -168,10 +148,11 @@ if test==1:
     comp=TTJets_PU20bx25 #TTJets_forSynch
     #comp=SMS_T1qqqq_2J_mGl1400_mLSP100_PU_S14_POSTLS170 # small files for testing
     #comp=SMS_T1bbbb_2J_mGl1000_mLSP900_PU_S14_POSTLS170
+    #comp=GJets_HT100to200_PU_S14_POSTLS170
     #comp.files = ['/afs/cern.ch/work/p/pandolf/CMSSW_7_0_6_patch1_2/src/CMGTools/TTHAnalysis/cfg/pickevents.root']
-    comp.files = ['/afs/cern.ch/user/p/pandolf/public/file_gammaJet.root']
+    #comp.files = ['/afs/cern.ch/user/p/pandolf/public/file_gammaJet.root']
     #comp.files = ['/afs/cern.ch/work/p/pandolf/CMSSW_7_0_6_patch1_2/src/CMGTools/TTHAnalysis/cfg/file_gammaJet.root']
-    #comp.files = ['/afs/cern.ch/user//m/mmasciov/public/TTJets_forSynch_1.root']
+    comp.files = ['/afs/cern.ch/user//m/mmasciov/public/TTJets_forSynch_1.root']
     comp.files = comp.files[:1]
     selectedComponents = [comp]
     comp.splitFactor = 10

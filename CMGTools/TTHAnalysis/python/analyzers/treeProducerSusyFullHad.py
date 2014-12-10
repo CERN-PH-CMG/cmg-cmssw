@@ -19,9 +19,9 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             ##--------------------------------------------------
             ## energy sums
             ##--------------------------------------------------
-            NTupleVariable("ht", lambda ev : ev.htJet40j10l, help="H_{T} computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons and muons with |eta|<2.5, pt > 10 GeV)"),
-            NTupleVariable("mht_pt", lambda ev : ev.mhtJet40j10l, help="H_{T}^{miss} computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
-            NTupleVariable("mht_phi", lambda ev : ev.mhtPhiJet40j10l, help="H_{T}^{miss} #phi computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
+            NTupleVariable("ht", lambda ev : ev.htJet40j10l5t, help="H_{T} computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons and muons with |eta|<2.5, pt > 10 GeV)"),
+            NTupleVariable("mht_pt", lambda ev : ev.mhtJet40j10l5t, help="H_{T}^{miss} computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
+            NTupleVariable("mht_phi", lambda ev : ev.mhtPhiJet40j10l5t, help="H_{T}^{miss} #phi computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
             NTupleVariable("diffMetMht", lambda ev : ev.diffMetMht, help="abs( vec(mht) - vec(met) ) - with jets and leptons"),
             NTupleVariable("deltaPhiMin", lambda ev : ev.deltaPhiMin, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4 and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
 
@@ -76,13 +76,12 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             NTupleVariable("gamma_nJet40", lambda ev: sum([j.pt() > 40 for j in ev.gamma_cleanJets]), int, help="Number of jets after photon-cleaning with pt > 40, |eta|<2.4"),
             NTupleVariable("gamma_nBJet40", lambda ev: sum([j.btagWP("CSVM") for j in ev.gamma_cleanJets if j.pt() > 40]), int, help="Number jets after photon-cleaning  with pt > 40 passing CSV medium"),
             NTupleVariable("gamma_ht", lambda ev : ev.gamma_htJet40j, help="H_{T} computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
-            NTupleVariable("gamma_deltaPhiMin", lambda ev : ev.gamma_deltaPhiMin, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4"),
-            NTupleVariable("gamma_diffMetMht", lambda ev : ev.gamma_diffMetMht, help="abs( vec(mht) - vec(met) )"),
-            NTupleVariable("gamma_mht_pt", lambda ev : ev.gamma_mhtJet40, help="H_{T}^{miss} computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
-            NTupleVariable("gamma_mht_phi", lambda ev : ev.gamma_mhtPhiJet40, help="H_{T}^{miss} #phi computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
-            NTupleVariable("gamma_diffMetMht_had", lambda ev : ev.gamma_diffMetMht_had, help="abs( vec(mht) - vec(met) ) - only jets"),
-            NTupleVariable("gamma_mht_had_pt", lambda ev : ev.gamma_mhtJet40j, help="H_{T}^{miss} computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
-            NTupleVariable("gamma_mht_had_phi", lambda ev : ev.gamma_mhtPhiJet40j, help="H_{T}^{miss} #phi computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
+            NTupleVariable("gamma_deltaPhiMin", lambda ev : ev.gamma_deltaPhiMin_had, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4"),
+            NTupleVariable("gamma_diffMetMht", lambda ev : ev.gamma_diffMetMht_had, help="abs( vec(mht) - vec(met) )"),
+            NTupleVariable("gamma_mht_pt", lambda ev : ev.gamma_mhtJet40j, help="H_{T}^{miss} computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
+            NTupleVariable("gamma_mht_phi", lambda ev : ev.gamma_mhtPhiJet40j, help="H_{T}^{miss} #phi computed from jets (with |eta|<2.5, pt > 40 GeV) and leptons (electrons ans muons with |eta|<2.5, pt > 10 GeV)"),
+            NTupleVariable("gamma_minMTBMet", lambda ev : ev.gamma_minMTBMet, help="min Mt(b,met)"),
+
             ##--------------------------------------------------
             # Zll variables
             ##--------------------------------------------------
@@ -92,6 +91,7 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             NTupleVariable("zll_mht_phi", lambda ev : ev.zll_mhtPhiJet40j, help="H_{T}^{miss} #phi computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
             NTupleVariable("zll_met_pt", lambda ev : ev.zll_met_pt, help="E_{T}^{miss} computed from jets (with |eta|<2.5, pt > 40 GeV) + 2 leptons"),
             NTupleVariable("zll_met_phi", lambda ev : ev.zll_met_phi, help="E_{T}^{miss} #phi computed from jets (with |eta|<2.5, pt > 40 GeV) + 2 leptons"),
+            NTupleVariable("zll_ht", lambda ev: ev.zll_ht, float, help="H_{T} computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
             NTupleVariable("zll_pt", lambda ev : ev.zll_p4.Pt(), help="Pt of di-lepton system"),
             NTupleVariable("zll_eta", lambda ev : ev.zll_p4.Eta(), help="Eta of di-lepton system"),
             NTupleVariable("zll_phi", lambda ev : ev.zll_p4.Phi(), help="Phi of di-lepton system"),
@@ -124,7 +124,7 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             "selectedLeptons" : NTupleCollection("lep", leptonTypeSusy, 50, help="Leptons after the preselection", filter=lambda l : l.pt()>10 ),
             "selectedTaus"    : NTupleCollection("tau", tauTypeSusy, 50, help="Taus after the preselection"),
             "cleanJetsAll"       : NTupleCollection("jet",     jetTypeSusy, 100, help="all jets (w/ x-cleaning, w/ ID applied w/o PUID applied pt>10 |eta|<5.2) , sorted by pt", filter=lambda l : l.pt()>10  ),
-            "fatJets"         : NTupleCollection("FatJet", fatJetType, 15, help="Cental jets after full selection and cleaning, sorted by pt"),
+            "fatJets"         : NTupleCollection("fatJet", fatJetType, 15, help="Cental jets after full selection and cleaning, sorted by pt"),
             "selectedPhotons"    : NTupleCollection("gamma", photonTypeSusy, 50, help="photons with pt>20 and loose cut based ID"),
             "selectedIsoTrack"    : NTupleCollection("isoTrack", isoTrackType, 50, help="isoTrack, sorted by pt"),
             "genParticles" : NTupleCollection("genPart", genParticleWithMotherId, 200, help="all pruned genparticles"),

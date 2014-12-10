@@ -161,6 +161,34 @@ ttHTauMCAna = cfg.Analyzer(
 )
 
 
+#------------------------------------------
+##  ISOLATED TRACK
+##------------------------------------------                                                                                                                                                                
+
+# those are the cuts for the nonEMu                                                                                                                                                                         
+ttHIsoTrackAna = cfg.Analyzer(
+            'ttHIsoTrackAnalyzer',
+            setOff=True,
+            #####
+            candidates='packedPFCandidates',
+            candidatesTypes='std::vector<pat::PackedCandidate>',
+            ptMin = 5, # for pion 
+            ptMinEMU = 5, # for EMU
+            dzMax = 0.1,
+            #####
+            isoDR = 0.3,
+            ptPartMin = 0,
+            dzPartMax = 0.1,
+            maxAbsIso = 8,
+            #####
+            MaxIsoSum = 0.1, ### unused
+            MaxIsoSumEMU = 0.2, ### unused
+            doSecondVeto = False,
+            #####
+            doPrune = True
+            )
+
+
 # Jets Analyzer (generic)
 ttHJetAna = cfg.Analyzer(
     'ttHJetAnalyzer',
@@ -176,6 +204,7 @@ ttHJetAna = cfg.Analyzer(
     recalibrateJets = False,
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     cleanJetsFromTaus = False,
+    cleanJetsFromIsoTracks = False,
     doQG = False,
     )
 
@@ -260,6 +289,7 @@ susyCoreSequence = [
     ttHPhoAna,
     ttHTauAna,
     ttHTauMCAna,
+    ttHIsoTrackAna,
     ttHJetAna,
     ttHJetMCAna,
     #ttHFatJetAna,  # out of core sequence for now

@@ -1,5 +1,4 @@
-from ROOT import *
-
+import ROOT
 
 
 
@@ -31,7 +30,7 @@ class QGLikelihoodCalculator:
 
     print "[QGLikelihoodCalculator]: Initializing from file: " + filename
 
-    f = TFile(filename)
+    f = ROOT.TFile.Open(filename)
     if f.IsZombie() : return False
     try :
       self.etaBins = f.Get("etaBins")

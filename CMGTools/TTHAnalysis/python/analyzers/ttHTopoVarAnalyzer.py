@@ -60,6 +60,15 @@ class ttHTopoVarAnalyzer( Analyzer ):
                 mtTemp = mtw(bjet, event.met)
                 event.minMTBMet = min(event.minMTBMet,mtTemp)
 
+    def makeMinMTGamma(self,event):
+
+        gamma_objectsb40jc = [ j for j in event.gamma_cleanJets if j.pt() > 40 and abs(j.eta())<2.5 and j.btagWP("CSVM")]
+
+        if len(gamma_objectsb40jc)>0:
+            for bjet in gamma_objectsb40jc:
+                mtTemp = mtw(bjet, event.gamma_met)
+                event.gamma_minMTBMet = min(event.gamma_minMTBMet,mtTemp)
+
     def computeMT2(self, visaVec, visbVec, metVec):
         
         import array
@@ -227,8 +236,10 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
             
 ## ===> full MT2 (jets + leptons)                                                                                                                                                                                             
-
         objects10lc = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta())<2.5 ]
+        if hasattr(event, 'selectedIsoCleanTrack'):
+            objects10lc = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta())<2.5 ] + [ t for t in event.selectedIsoCleanTrack ]
+
         objects40j10lc = objects40jc + objects10lc
 
         objects40j10lc.sort(key = lambda obj : obj.pt(), reverse = True)
@@ -301,7 +312,8 @@ class ttHTopoVarAnalyzer( Analyzer ):
     
         gamma_objects40j10lc.sort(key = lambda obj : obj.pt(), reverse = True)
 
-        if len(gamma_objects40j10lc)>=2:
+##        if len(gamma_objects40j10lc)>=2:
+        if len(gamma_objects40jc)>=2:
 
             pxvec  = ROOT.std.vector(float)()
             pyvec  = ROOT.std.vector(float)()
@@ -309,7 +321,8 @@ class ttHTopoVarAnalyzer( Analyzer ):
             Evec  = ROOT.std.vector(float)()
             grouping  = ROOT.std.vector(int)()
 
-            for obj in objects40j10lc:
+##            for obj in objects40j10lc:
+            for obj in gamma_objects40jc:
                 pxvec.push_back(obj.px())
                 pyvec.push_back(obj.py())
                 pzvec.push_back(obj.pz())
@@ -480,6 +493,8 @@ class ttHTopoVarAnalyzer( Analyzer ):
         event.minMTBMet=999999
         self.makeMinMT(event)
 
+        event.gamma_minMTBMet=999999
+        self.makeMinMTGamma(event)
 
 #        print 'variables computed: MT=',event.mtw,'MT2=',event.mt2,'MT2W=',event.mt2w
 #        print 'pseudoJet1 px=',event.pseudoJet1.px(),' py=',event.pseudoJet1.py(),' pz=',event.pseudoJet1.pz()
