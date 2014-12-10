@@ -39,19 +39,20 @@ class ttHMT2Control( Analyzer ):
             for myTau in event.selectedTaus:
                 event.mtwTau = mtw(myTau, event.met)
                 foundTau = True
-            
-        if len(event.selectedIsoTrack)>0:
-            for myTrack in event.selectedIsoTrack:
-                event.mtwIsoTrack = mtw(myTrack, event.met)      
+
+        if hasattr(event, 'selectedIsoCleanTrack'):
+            if len(event.selectedIsoTrack)>0:
+                for myTrack in event.selectedIsoTrack:
+                    event.mtwIsoTrack = mtw(myTrack, event.met)      
 ##number of PF leptons (e,mu) with pt > 5, reliso < 0.2, MT < 100 
 #number of PF hadrons with pt > 10, reliso < 0.1, MT < 100                        
-                if event.mtwIsoTrack < 100:
-                    if abs(myTrack.pdgId()) == 11 or abs(myTrack.pdgId()) == 13:
-                        if myTrack.pt()>5 and myTrack.absIso/myTrack.pt()<0.2:
-                            event.nPFLep5LowMT += 1                           
-                    if abs(myTrack.pdgId()) == 211:
-                        if myTrack.pt()>10 and myTrack.absIso/myTrack.pt()<0.1:
-                            event.nPFHad10LowMT += 1                            
+                    if event.mtwIsoTrack < 100:
+                        if abs(myTrack.pdgId()) == 11 or abs(myTrack.pdgId()) == 13:
+                            if myTrack.pt()>5 and myTrack.absIso/myTrack.pt()<0.2:
+                                event.nPFLep5LowMT += 1                           
+                        if abs(myTrack.pdgId()) == 211:
+                            if myTrack.pt()>10 and myTrack.absIso/myTrack.pt()<0.1:
+                                event.nPFHad10LowMT += 1                            
 
     def makeGammaObjects(self, event):
 
@@ -174,7 +175,7 @@ class ttHMT2Control( Analyzer ):
         event.mtwTau=-999
         event.mtwIsoTrack=-999               
 
-        self.makeMT(event)
 
+        self.makeMT(event)
 
         return True

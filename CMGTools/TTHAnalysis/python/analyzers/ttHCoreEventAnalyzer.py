@@ -193,8 +193,11 @@ class ttHCoreEventAnalyzer( Analyzer ):
         objects50j = [ j for j in event.cleanJets if j.pt() > 50 ] 
         objects40j10l = [ j for j in event.cleanJets if j.pt() > 40 ] + [ l for l in event.selectedLeptons if l.pt() > 10 ] 
         objects40j10l.sort(key = lambda obj : obj.pt(), reverse = True)
-        objects40j10l5t = [ j for j in event.cleanJets if j.pt() > 40 ] + [ l for l in event.selectedLeptons if l.pt() > 10 ] + [ t for t in event.selectedIsoCleanTrack ] 
-        objects40j10l5t.sort(key = lambda obj : obj.pt(), reverse = True)
+
+        objects40j10l5t = []
+        if hasattr(event, 'selectedIsoCleanTrack'):
+            objects40j10l5t = [ j for j in event.cleanJets if j.pt() > 40 ] + [ l for l in event.selectedLeptons if l.pt() > 10 ] + [ t for t in event.selectedIsoCleanTrack ]
+            objects40j10l5t.sort(key = lambda obj : obj.pt(), reverse = True)
 
         event.htJet25 = sum([x.pt() for x in objects25])
         event.mhtJet25vec = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in objects25])) , -1.*(sum([x.py() for x in objects25])), 0, 0 )     
@@ -236,8 +239,12 @@ class ttHCoreEventAnalyzer( Analyzer ):
         objects30a  = [ j for j in event.cleanJetsAll if j.pt() > 30 ] + event.selectedLeptons
         objects40a  = [ j for j in event.cleanJetsAll if j.pt() > 40 ] + event.selectedLeptons
         objects40ja = [ j for j in event.cleanJetsAll if j.pt() > 40 ] 
-        objects40ja10l5t = [ j for j in event.cleanJetsAll if j.pt() > 40 ] + [ l for l in event.selectedLeptons if l.pt() > 10 ] + [ t for t in event.selectedIsoCleanTrack ]
-        objects40ja10l5t.sort(key = lambda obj : obj.pt(), reverse = True)
+
+        objects40ja10l5t = []
+        if hasattr(event, 'selectedIsoCleanTrack'):
+            objects40ja10l5t = [ j for j in event.cleanJetsAll if j.pt() > 40 ] + [ l for l in event.selectedLeptons if l.pt() > 10 ] + [ t for t in event.selectedIsoCleanTrack ]
+            objects40ja10l5t.sort(key = lambda obj : obj.pt(), reverse = True)
+
         objects40ja10l = [ j for j in event.cleanJetsAll if j.pt() > 40 ] + [ l for l in event.selectedLeptons if l.pt() > 10 ]
         objects40ja10l.sort(key = lambda obj : obj.pt(), reverse = True)
 
