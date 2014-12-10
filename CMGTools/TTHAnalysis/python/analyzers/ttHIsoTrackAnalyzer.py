@@ -3,6 +3,8 @@ import itertools
 import copy
 import types
 
+from math import *
+
 from ROOT import TLorentzVector
 
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
@@ -15,6 +17,9 @@ from CMGTools.RootTools.physicsobjects.IsoTrack import IsoTrack
 
 from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch, matchObjectCollection3
 
+
+def mtw(x1,x2):
+    return sqrt(2*x1.pt()*x2.pt()*(1-cos(x1.phi()-x2.phi())))
 
  
 class ttHIsoTrackAnalyzer( Analyzer ):
@@ -45,6 +50,7 @@ class ttHIsoTrackAnalyzer( Analyzer ):
 
 
         event.selectedIsoTrack = []
+        event.selectedIsoCleanTrack = []
         #event.preIsoTrack = []
 
         pfcands = self.handles['cmgCand'].product()
@@ -112,7 +118,20 @@ class ttHIsoTrackAnalyzer( Analyzer ):
             if(track.absIso < min(0.2*track.pt(), self.cfg_ana.maxAbsIso)): 
                 event.selectedIsoTrack.append(track)
 
+            for lep in event.selectedLeptons:
+                if deltaR(lep.eta(), lep.phi(), track.eta(), track.phi()) > 0.1:
+                    if self.cfg_ana.doPrune:
+                        mtwIsoTrack = mtw(track, event.met)
+                        if mtwIsoTrack < 100:
+                            if abs(track.pdgId()) == 11 or abs(track.pdgId()) == 13:
+                                if track.pt()>5 and track.absIso/track.pt()<0.2:
+                                    event.selectedIsoCleanTrack.append(track)
+
+                    else: 
+                        event.selectedIsoCleanTrack.append(track)
+
         event.selectedIsoTrack.sort(key = lambda l : l.pt(), reverse = True)
+        event.selectedIsoCleanTrack.sort(key = lambda l : l.pt(), reverse = True)
 
         self.counters.counter('events').inc('all events')
         #if(len(event.preIsoTrack)): self.counters.counter('events').inc('has >=1 selected Track') 

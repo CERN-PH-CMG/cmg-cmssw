@@ -126,6 +126,9 @@ class ttHJetAnalyzer( Analyzer ):
         leptons = [ l for l in event.selectedLeptons if l.pt() > self.lepPtMin ]
         if self.cfg_ana.cleanJetsFromTaus:
             leptons = leptons[:] + event.selectedTaus
+        if self.cfg_ana.cleanJetsFromIsoTracks:
+            leptons = leptons[:] + event.selectedIsoCleanTrack
+
         #event.cleanJets, dummy = cleanObjectCollection( event.jets,
         #                                                masks = leptons,
         #                                                deltaRMin = self.jetLepDR )

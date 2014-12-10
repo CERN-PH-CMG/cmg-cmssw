@@ -161,8 +161,8 @@ ttHTauMCAna = cfg.Analyzer(
 )
 
 
-#------------------------------------------                                                                                                                                                                
-##  ISOLATED TRACK                                                                                                                                                                                          
+#------------------------------------------
+##  ISOLATED TRACK
 ##------------------------------------------                                                                                                                                                                
 
 # those are the cuts for the nonEMu                                                                                                                                                                         
@@ -183,7 +183,9 @@ ttHIsoTrackAna = cfg.Analyzer(
             #####
             MaxIsoSum = 0.1, ### unused
             MaxIsoSumEMU = 0.2, ### unused
-            doSecondVeto = False
+            doSecondVeto = False,
+            #####
+            doPrune = True
             )
 
 
@@ -202,6 +204,7 @@ ttHJetAna = cfg.Analyzer(
     recalibrateJets = False,
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     cleanJetsFromTaus = False,
+    cleanJetsFromIsoTracks = False,
     doQG = False,
     )
 
@@ -286,12 +289,12 @@ susyCoreSequence = [
     ttHPhoAna,
     ttHTauAna,
     ttHTauMCAna,
+    ttHMetAna,
     ttHIsoTrackAna,
     ttHJetAna,
     ttHJetMCAna,
     #ttHFatJetAna,  # out of core sequence for now
     #ttHSVAnalyzer, # out of core sequence for now
-    ttHMetAna,
     ttHCoreEventAna,
     ttHJetMETSkim
 ]
