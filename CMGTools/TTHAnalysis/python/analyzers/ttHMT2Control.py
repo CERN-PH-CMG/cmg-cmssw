@@ -39,19 +39,20 @@ class ttHMT2Control( Analyzer ):
             for myTau in event.selectedTaus:
                 event.mtwTau = mtw(myTau, event.met)
                 foundTau = True
-            
-        if len(event.selectedIsoTrack)>0:
-            for myTrack in event.selectedIsoTrack:
-                event.mtwIsoTrack = mtw(myTrack, event.met)      
+
+        if hasattr(event, 'selectedIsoCleanTrack'):
+            if len(event.selectedIsoTrack)>0:
+                for myTrack in event.selectedIsoTrack:
+                    event.mtwIsoTrack = mtw(myTrack, event.met)      
 ##number of PF leptons (e,mu) with pt > 5, reliso < 0.2, MT < 100 
 #number of PF hadrons with pt > 10, reliso < 0.1, MT < 100                        
-                if event.mtwIsoTrack < 100:
-                    if abs(myTrack.pdgId()) == 11 or abs(myTrack.pdgId()) == 13:
-                        if myTrack.pt()>5 and myTrack.absIso/myTrack.pt()<0.2:
-                            event.nPFLep5LowMT += 1                           
-                    if abs(myTrack.pdgId()) == 211:
-                        if myTrack.pt()>10 and myTrack.absIso/myTrack.pt()<0.1:
-                            event.nPFHad10LowMT += 1                            
+                    if event.mtwIsoTrack < 100:
+                        if abs(myTrack.pdgId()) == 11 or abs(myTrack.pdgId()) == 13:
+                            if myTrack.pt()>5 and myTrack.absIso/myTrack.pt()<0.2:
+                                event.nPFLep5LowMT += 1                           
+                        if abs(myTrack.pdgId()) == 211:
+                            if myTrack.pt()>10 and myTrack.absIso/myTrack.pt()<0.1:
+                                event.nPFHad10LowMT += 1                            
 
     def makeGammaObjects(self, event):
 
@@ -60,8 +61,10 @@ class ttHMT2Control( Analyzer ):
         ## with Central Jets                                                                                                                                                                                                      
         gamma_objects25 = [ j for j in event.gamma_cleanJets if j.pt() > 25 ] + event.selectedLeptons
         gamma_objects30 = [ j for j in event.gamma_cleanJets if j.pt() > 30 ] + event.selectedLeptons
-        gamma_objects40  = [ j for j in event.gamma_cleanJetsAll if j.pt() > 40 and abs(j.eta()) < 2.5 ] + [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta()) < 2.5 ]
-        gamma_objects40j = [ j for j in event.gamma_cleanJets if j.pt() > 40 ]
+        gamma_objects40  = [ j for j in event.gamma_cleanJets if j.pt() > 40 and abs(j.eta()) < 2.5 ] + [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta()) < 2.5 ]
+        # for the gamma + jets variables we use do not take care about the leptons, we consider jets that do not overlap with the first jets
+        gamma_objects40j = [ j for j in event.gamma_cleanJets if j.pt() > 40 and abs(j.eta()) < 2.5 ]
+        gamma_objects40ja = [ j for j in event.gamma_cleanJetsAll if j.pt() > 40 ]
 
         event.gamma_htJet25 = sum([x.pt() for x in gamma_objects25])
         event.gamma_mhtJet25vec = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in gamma_objects25])) , -1.*(sum([x.py() for x in gamma_objects25])), 0, 0 )
@@ -83,6 +86,11 @@ class ttHMT2Control( Analyzer ):
         event.gamma_mhtJet40j = event.gamma_mhtJet40jvec.pt()
         event.gamma_mhtPhiJet40j = event.gamma_mhtJet40jvec.phi()
 
+        event.gamma_htJet40ja = sum([x.pt() for x in gamma_objects40ja])
+        event.gamma_mhtJet40javec = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in gamma_objects40ja])) , -1.*(sum([x.py() for x in gamma_objects40ja])), 0, 0 )
+        event.gamma_mhtJet40ja = event.gamma_mhtJet40javec.pt()
+        event.gamma_mhtPhiJet40ja = event.gamma_mhtJet40javec.phi()
+
          # MET + photon                                                                                                                                                                                                           
         event.gamma_met = ROOT.reco.Particle.LorentzVector( event.met.px(), event.met.py(), 0, 0 )
         event.gamma_metNoPU = ROOT.reco.Particle.LorentzVector( event.metNoPU.px(), event.metNoPU.py(), 0, 0 )
@@ -92,11 +100,11 @@ class ttHMT2Control( Analyzer ):
             break # only lead photon
 
         # look for minimal deltaPhi between MET and four leading jets with pt>40 and eta<2.4                                                                                                                                      
-        event.gamma_deltaPhiMin = 999.
-        for n,j in enumerate(gamma_objects40j):
+        event.gamma_deltaPhiMin_had = 999.
+        for n,j in enumerate(gamma_objects40ja):
             if n>3:  break
             thisDeltaPhi = abs( deltaPhi( j.phi(), event.gamma_met.phi() ) )
-            if thisDeltaPhi < event.gamma_deltaPhiMin : event.gamma_deltaPhiMin = thisDeltaPhi
+            if thisDeltaPhi < event.gamma_deltaPhiMin_had : event.gamma_deltaPhiMin_had = thisDeltaPhi
 
         # absolute value of the vectorial difference between met and mht                                                                                                                                                          
         gamma_diffMetMht_had_vec = ROOT.reco.Particle.LorentzVector(event.gamma_mhtJet40jvec.px()-event.gamma_met.px(), event.gamma_mhtJet40jvec.py()-event.gamma_met.py(), 0, 0 )
@@ -114,6 +122,7 @@ class ttHMT2Control( Analyzer ):
         vetoLeptons = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta()) < 2.5 ]
 
         # MET + zll                                                                                                                                                                                                               
+        event.zll_ht = -999.
         event.zll_deltaPhiMin = -999.
         event.zll_met_pt = -999.
         event.zll_met_phi = -999.
@@ -137,7 +146,9 @@ class ttHMT2Control( Analyzer ):
             # look for minimal deltaPhi between MET and four leading jets with pt>40 and |eta|<2.4                                                                                                                                
             event.zll_deltaPhiMin = 999.
             objects40jc = [ j for j in event.cleanJets if j.pt() > 40 and abs(j.eta())<2.5 ]
-            for n,j in enumerate(objects40jc):
+            objects40ja = [ j for j in event.cleanJets if j.pt() > 40]
+            event.zll_ht = sum([x.pt() for x in objects40jc])
+            for n,j in enumerate(objects40ja):
                 if n>3:  break
                 thisDeltaPhi = abs( deltaPhi( j.phi(), event.zll_met.phi() ) )
                 if thisDeltaPhi < event.zll_deltaPhiMin : event.zll_deltaPhiMin = thisDeltaPhi
@@ -164,7 +175,7 @@ class ttHMT2Control( Analyzer ):
         event.mtwTau=-999
         event.mtwIsoTrack=-999               
 
-        self.makeMT(event)
 
+        self.makeMT(event)
 
         return True
