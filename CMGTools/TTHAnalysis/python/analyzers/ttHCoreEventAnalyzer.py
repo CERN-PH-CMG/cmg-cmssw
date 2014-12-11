@@ -180,8 +180,8 @@ class ttHCoreEventAnalyzer( Analyzer ):
 ##        self.handles['rho'] = AutoHandle( ('fixedGridRhoFastjetAll','',''), 'double' )
 ##        event.rho  = float(self.handles['rho'].product()[0])
 ##        event.rho = self.handles['fixedGridRhoFastjetAll'] .product()[0]
-        event.bjetsLoose  = [ j for j in event.cleanJets if j.btagWP("CSVL") ]
-        event.bjetsMedium = [ j for j in event.cleanJets if j.btagWP("CSVM") ]
+        event.bjetsLoose  = [ j for j in event.cleanJets if j.btagWP("CSVv2IVFL") ]
+        event.bjetsMedium = [ j for j in event.cleanJets if j.btagWP("CSVv2IVFM") ]
 
         import ROOT
 

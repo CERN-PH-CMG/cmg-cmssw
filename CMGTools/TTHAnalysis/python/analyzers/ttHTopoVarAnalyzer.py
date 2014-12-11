@@ -53,7 +53,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
     def makeMinMT(self,event):
 
-        objectsb40jc = [ j for j in event.cleanJets if j.pt() > 40 and abs(j.eta())<2.5 and j.btagWP("CSVM")]
+        objectsb40jc = [ j for j in event.cleanJets if j.pt() > 40 and abs(j.eta())<2.5 and j.btagWP("CSVv2IVFM")]
 
         if len(objectsb40jc)>0:
             for bjet in objectsb40jc:
@@ -62,7 +62,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
     def makeMinMTGamma(self,event):
 
-        gamma_objectsb40jc = [ j for j in event.gamma_cleanJets if j.pt() > 40 and abs(j.eta())<2.5 and j.btagWP("CSVM")]
+        gamma_objectsb40jc = [ j for j in event.gamma_cleanJets if j.pt() > 40 and abs(j.eta())<2.5 and j.btagWP("CSVv2IVFM")]
 
         if len(gamma_objectsb40jc)>0:
             for bjet in gamma_objectsb40jc:
@@ -421,7 +421,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
         if len(event.bjetsMedium)==1:
 
             objects40jcCSV = [ j for j in event.cleanJets if j.pt() > 40 and abs(j.eta())<2.5 and j.p4()!=event.bjetsMedium[0].p4() ]
-            objects40jcCSV.sort(key = lambda l : l.btag('combinedSecondaryVertexBJetTags'), reverse = True)
+            objects40jcCSV.sort(key = lambda l : l.btag('combinedInclusiveSecondaryVertexV2BJetTags'), reverse = True)
 
             if len(objects40jcCSV)>0:
                 event.mt2bb = self.computeMT2(event.bjetsMedium[0], objects40jcCSV[0], event.met)

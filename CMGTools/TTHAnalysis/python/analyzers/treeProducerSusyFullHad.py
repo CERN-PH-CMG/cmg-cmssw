@@ -38,7 +38,7 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             ##--------------------------------------------------
             # Physics object multplicities
             ##--------------------------------------------------
-            NTupleVariable("nBJet40", lambda ev: sum([j.btagWP("CSVM") for j in ev.cleanJets if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CSV medium"),
+            NTupleVariable("nBJet40", lambda ev: sum([j.btagWP("CSVv2IVFM") for j in ev.cleanJets if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CSV medium"),
             NTupleVariable("nMuons10", lambda ev: sum([l.pt() > 10 and abs(l.pdgId()) == 13 for l in ev.selectedLeptons]), int, help="Number of muons with pt > 10"),
             NTupleVariable("nElectrons10", lambda ev: sum([l.pt() > 10 and abs(l.pdgId()) == 11 for l in ev.selectedLeptons]), int, help="Number of electrons with pt > 10"),
             NTupleVariable("nTaus20", lambda ev: sum([l.pt() > 20 for l in ev.selectedTaus]), int, help="Number of taus with pt > 20"),
@@ -74,7 +74,7 @@ class treeProducerSusyFullHad( treeProducerSusyCore ):
             # Gamma variables
             ##--------------------------------------------------
             NTupleVariable("gamma_nJet40", lambda ev: sum([j.pt() > 40 for j in ev.gamma_cleanJets]), int, help="Number of jets after photon-cleaning with pt > 40, |eta|<2.4"),
-            NTupleVariable("gamma_nBJet40", lambda ev: sum([j.btagWP("CSVM") for j in ev.gamma_cleanJets if j.pt() > 40]), int, help="Number jets after photon-cleaning  with pt > 40 passing CSV medium"),
+            NTupleVariable("gamma_nBJet40", lambda ev: sum([j.btagWP("CSVv2IVFM") for j in ev.gamma_cleanJets if j.pt() > 40]), int, help="Number jets after photon-cleaning  with pt > 40 passing CSV medium"),
             NTupleVariable("gamma_ht", lambda ev : ev.gamma_htJet40j, help="H_{T} computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
             NTupleVariable("gamma_deltaPhiMin", lambda ev : ev.gamma_deltaPhiMin_had, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4"),
             NTupleVariable("gamma_diffMetMht", lambda ev : ev.gamma_diffMetMht_had, help="abs( vec(mht) - vec(met) )"),
