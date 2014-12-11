@@ -46,8 +46,8 @@ fi"""
       cpCmd=dirCopy
    elif remoteDir.startswith("/pnfs/psi.ch"):
        cpCmd="""echo 'sending root files to remote dir'
-if [ looperExitStatus -ne 0 ]; then
-   echo 'Looper failed. Don't attempt to copy corrupted file remotely'
+if [ $looperExitStatus -ne 0 ]; then
+   echo "Looper failed. Don't attempt to copy corrupted file remotely"
 else
    export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH # Fabio's workaround to fix gfal-tools with CMSSW
    for f in Loop/tree*/*.root
@@ -68,8 +68,8 @@ fi
 """.format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")]) + dirCopy
    elif remoteDir.startswith("/eos/cms/store"):
        cpCmd="""echo 'sending root files to remote dir'
-if [ looperExitStatus -ne 0 ]; then
-   echo 'Looper failed. Don't attempt to copy corrupted file remotely'
+if [ $looperExitStatus -ne 0 ]; then
+   echo "Looper failed. Don't attempt to copy corrupted file remotely"
 else
    for f in Loop/*ree*/*.root
    do
@@ -135,8 +135,8 @@ fi"""
        cpCmd=dirCopy
    elif remoteDir.startswith("/pnfs/psi.ch"):
        cpCmd="""echo 'sending root files to remote dir'
-if [ looperExitStatus -ne 0 ]; then
-   echo 'Looper failed. Don't attempt to copy corrupted file remotely'
+if [ $looperExitStatus -ne 0 ]; then
+   echo "Looper failed. Don't attempt to copy corrupted file remotely"
 else
    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/dcap/ # Fabio's workaround to fix gfal-tools
    for f in Loop/tree*/*.root
