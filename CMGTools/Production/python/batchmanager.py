@@ -86,6 +86,8 @@ class BatchManager:
                     if outputDir==None:
                         today = datetime.today()
                         outputDir = 'OutCmsBatch_%s' % today.strftime("%d%h%y_%H%M")
+                    else:
+                      outputDir=outputDir.rstrip('/').split('/')[-1]
                     self.remoteOutputDir_+="/"+outputDir
                     print "Creating gfal-mkdir srm://hephyse.oeaw.ac.at/"+self.remoteOutputDir_#FIXME->remove
                     os.system("gfal-mkdir srm://hephyse.oeaw.ac.at/"+self.remoteOutputDir_)
