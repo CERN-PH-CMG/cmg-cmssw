@@ -36,7 +36,7 @@ class ttHLepEventAnalyzer( Analyzer ):
 
 
     def makeHadTopDecays(self, event):
-        event.lightJets = [ j for j in event.cleanJets if not j.btagWP("CSVM") ]
+        event.lightJets = [ j for j in event.cleanJets if not j.btagWP("CSVv2IVFM") ]
         event.minMWjj   = 999
         event.minMWjjPt = 0
         event.bestMWjj   = 0
