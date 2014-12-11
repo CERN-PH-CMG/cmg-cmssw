@@ -66,8 +66,6 @@ else
    done
 fi
 """.format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")]) + dirCopy
-<<<<<<< HEAD
-=======
    elif remoteDir.startswith("/dpm/oeaw.ac.at"):
        cpCmd="""echo 'sending root files to remote dir'
 if [ looperExitStatus -ne 0 ]; then
@@ -93,7 +91,6 @@ else
    done
 fi
 """.format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://hephyse.oeaw.ac.at'+remoteDir+jobDir[jobDir.rfind("/"):max(0,jobDir.find("_Chunk"))]) + dirCopy
->>>>>>> bf00b45... modify batch submission for T2_AT_VIENNA
    elif remoteDir.startswith("/eos/cms/store"):
        cpCmd="""echo 'sending root files to remote dir'
 if [ $looperExitStatus -ne 0 ]; then
