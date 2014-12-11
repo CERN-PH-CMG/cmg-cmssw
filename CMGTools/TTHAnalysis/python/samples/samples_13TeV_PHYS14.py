@@ -51,20 +51,17 @@ kreator = ComponentCreator()
 
 ## CENTRALLY PRODUCED MINIAODs V2 (from global DBS, in T2_CH_CAF)
 
-##################  PU40 bx25ns ################## 
-GGHZZ4L_PU40bx25 = kreator.makeMCComponent("GGHZZ4L_PU40bx25", "/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6/Phys14DR-PU40bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root")
+##################  PU40 bx25ns (not default, so samples have a _PU40bx25 postfix) ################## 
+GGHZZ4L_PU40bx25 = kreator.makeMCComponent("GGHZZ4L_PU40bx25", "/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6/Phys14DR-PU40bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 43.92*2.76E-04)
 
 DYJetsMuMuM50_PtZ180_PU40bx25 = kreator.makeMCComponent("DYJetsMuMuM50_PtZ180_PU40bx25", "/DYJetsToMuMu_PtZ-180_M-50_13TeV-madgraph/Phys14DR-PU40bx25_tsg_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root")
 
-TT_PU40bx25 = kreator.makeMCComponent("TT", "/TT_Tune4C_13TeV-pythia8-tauola/Phys14DR-PU40bx25_tsg_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",809.1)
-TTH_PU40bx25 = kreator.makeMCComponent("TTH", "/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/Phys14DR-PU40bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",0.5085)
+TT_PU40bx25 = kreator.makeMCComponent("TT_PU40bx25", "/TT_Tune4C_13TeV-pythia8-tauola/Phys14DR-PU40bx25_tsg_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",809.1)
+TTH_PU40bx25 = kreator.makeMCComponent("TTH_PU40bx25", "/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/Phys14DR-PU40bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",0.5085)
 
 mcSamplesPHYS14_PU40bx25 = [TT_PU40bx25,TTH_PU40bx25,DYJetsMuMuM50_PtZ180_PU40bx25,GGHZZ4L_PU40bx25]
 
-################## PU20 bx25ns ##############
-
-GGHZZ4L_PU20bx25 = kreator.makeMCComponent("GGHZZ4L_PU20bx25", "/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root")
-
+################## PU20 bx25ns (default of phys14, so no postfix) ##############
 
 #### Background samples
 QCD_HT250To500 = kreator.makeMCComponent("QCD_HT250To500", "/QCD_HT_250To500_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root")
@@ -79,7 +76,7 @@ WJetsToLNuHT = [
 WJetsToLNu_HT200to400,
 WJetsToLNu_HT400to600,
 ]
-DYJetsToLL_M50 = kreator.makeMCComponent("DYJetsToLL_M50", "/DYJetsToLL_M-50_13TeV-madgraph-pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root")
+DYJetsToLL_M50 = kreator.makeMCComponent("DYJetsToLL_M50", "/DYJetsToLL_M-50_13TeV-madgraph-pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 2008.*3)
 
 DYJetsToLL_M50_HT100to200 = kreator.makeMCComponent("DYJetsToLL_M50_HT100to200", "/DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",194.3*1.27)
 DYJetsToLL_M50_HT200to400 = kreator.makeMCComponent("DYJetsToLL_M50_HT200to400", "/DYJetsToLL_M-50_HT-200to400_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",52.24*1.27)
@@ -91,6 +88,8 @@ DYJetsToLL_M50_HT200to400,
 DYJetsToLL_M50_HT400to600,
 DYJetsToLL_M50_HT600toInf,
 ]
+DYJetsMuMuM50_PtZ180 = kreator.makeMCComponent("DYJetsMuMuM50_PtZ180", "/DYJetsToMuMu_PtZ-180_M-50_13TeV-madgraph/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v3/MINIAODSIM", "CMS", ".*root")
+
 GJets_HT100to200 = kreator.makeMCComponent("GJets_HT100to200", "/GJets_HT-100to200_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",1534)
 GJets_HT200to400 = kreator.makeMCComponent("GJets_HT200to400", "/GJets_HT-200to400_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",489.9)
 GJets_HT600toInf = kreator.makeMCComponent("GJets_HT600toInf", "/GJets_HT-600toInf_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",20.87)
@@ -121,10 +120,13 @@ SingleTop = [
 TTJets = kreator.makeMCComponent("TTJets", "/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",809.1)
 TTWJets = kreator.makeMCComponent("TTWJets", "/TTWJets_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",0.6647)
 TTZJets = kreator.makeMCComponent("TTZJets", "/TTZJets_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",0.8565)
+TTH = kreator.makeMCComponent("TTH", "/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v2/MINIAODSIM", "CMS", ".*root",0.5085)
 
 
 WZJetsTo3LNu = kreator.makeMCComponent("WZJetsTo3LNu", "/WZJetsTo3LNu_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",2.29)
-ZZTo4L = kreator.makeMCComponent("ZZTo4L","/ZZTo4L_Tune4C_13TeV-powheg-pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root")
+ZZTo4L = kreator.makeMCComponent("ZZTo4L","/ZZTo4L_Tune4C_13TeV-powheg-pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 	31.8*(0.03366**2))
+
+GGHZZ4L = kreator.makeMCComponent("GGHZZ4L", "/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 43.92*2.76E-04)
 
 #### Signal samples
 SMS_T2tt_2J_mStop850_mLSP100 = kreator.makeMCComponent("SMS_T2tt_2J_mStop850_mLSP100", "/SMS-T2tt_2J_mStop-850_mLSP-100_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",0.0189612)
@@ -158,7 +160,7 @@ SMS_T1bbbb_2J_mGl1500_mLSP100,
 SMS_T1bbbb_2J_mGl1000_mLSP900,
 ]
 
-mcSamplesPHYS14_PU20bx25 = QCDHT + WJetsToLNuHT +  [DYJetsToLL_M50, DYJetsMuMuM50_PtZ180_PU40bx25] + DYJetsM50HT + GJetsHT + ZJetsToNuNuHT + SingleTop + [ TTJets, TTWJets, TTZJets, WZJetsTo3LNu, ZZTo4L] + SusySignalSamples
+mcSamplesPHYS14_PU20bx25 = QCDHT + WJetsToLNuHT +  [DYJetsToLL_M50, DYJetsMuMuM50_PtZ180] + DYJetsM50HT + GJetsHT + ZJetsToNuNuHT + SingleTop + [ TTJets, TTWJets, TTZJets, TTH, WZJetsTo3LNu, ZZTo4L, GGHZZ4L] + SusySignalSamples
 
 mcSamples = mcSamplesPHYS14_PU20bx25 + mcSamplesPHYS14_PU40bx25
 
