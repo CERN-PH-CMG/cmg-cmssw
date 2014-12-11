@@ -66,6 +66,34 @@ else
    done
 fi
 """.format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")]) + dirCopy
+<<<<<<< HEAD
+=======
+   elif remoteDir.startswith("/dpm/oeaw.ac.at"):
+       cpCmd="""echo 'sending root files to remote dir'
+if [ looperExitStatus -ne 0 ]; then
+   echo 'Looper failed. Don't attempt to copy corrupted file remotely'
+else
+   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/dcap/ # Fabio's workaround to fix gfal-tools
+   nEvents=`grep 'number of events processed' Loop/log.txt | sed 's/.* \([0-9][0-9]*\)$/\\1/'`
+   for f in Loop/tree*/*.root
+   do
+      ff=`basename $f | cut -d . -f 1`
+      d=`echo $f | cut -d / -f 2`
+      gfal-mkdir {srm}
+      #echo "gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_nEvents$nEvents.root"
+      #gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_nEvents$nEvents.root
+      echo "lcg-cp -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_nEvents$nEvents.root"
+      lcg-cp -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_nEvents$nEvents.root
+      if [ $? -ne 0 ]; then
+         echo "ERROR: remote copy failed for file $ff"
+      else
+         echo "remote copy succeeded"
+         rm Loop/$d/$ff.root
+      fi
+   done
+fi
+""".format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://hephyse.oeaw.ac.at'+remoteDir+jobDir[jobDir.rfind("/"):max(0,jobDir.find("_Chunk"))]) + dirCopy
+>>>>>>> bf00b45... modify batch submission for T2_AT_VIENNA
    elif remoteDir.startswith("/eos/cms/store"):
        cpCmd="""echo 'sending root files to remote dir'
 if [ $looperExitStatus -ne 0 ]; then
