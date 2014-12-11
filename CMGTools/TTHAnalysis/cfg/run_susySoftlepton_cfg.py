@@ -15,17 +15,22 @@ from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
 # --- LEPTON DEFINITION ---
 
 ttHLepAna.loose_muon_pt = 3
-ttHLepAna.loose_muon_dxy = 0.02,
-ttHLepAna.loose_muon_dz = 0.5,
-ttHLepAna.loose_muon_relIso = 0.2
+ttHLepAna.loose_muon_dxy = 0.02
+ttHLepAna.loose_muon_dz = 0.5
+ttHLepAna.loose_muon_relIso = 0.5
 ttHLepAna.loose_muon_absIso = 5
 ttHLepAna.loose_muon_ptIsoThreshold = 25
+ttHLepAna.loose_muon_relIsoCone04 = True            # True -> use cone 0.4 for relIso, False -> use cone 0.3 for relIso (default)
+# ttHLepAna.doMuScleFitCorrections = "rereco"
+
 ttHLepAna.loose_electron_pt = 5
-ttHLepAna.loose_electron_dxy = 0.02,
-ttHLepAna.loose_electron_dz = 0.5,
-ttHLepAna.loose_electron_relIso = 0.2
+ttHLepAna.loose_electron_dxy = 0.02
+ttHLepAna.loose_electron_dz = 0.5
+ttHLepAna.loose_electron_relIso = 0.5
 ttHLepAna.loose_electron_absIso = 5
 ttHLepAna.loose_electron_ptIsoThreshold = 25
+ttHLepAna.loose_electron_relIsoCone04 = True        # True -> use cone 0.4 for relIso, False -> use cone 0.3 for relIso (default)
+
 
 # --- LEPTON SKIMMING ---
 ttHLepSkim.minLeptons = 0
@@ -35,6 +40,9 @@ ttHLepSkim.ptCuts = [5,3]
 # --- JET-LEPTON CLEANING ---
 # ttHJetAna.minLepPt = 20 
 ttHJetAna.jetPt = 30.0 
+
+# --- JET-ENERGY-SCALE SYSTEMATICS ---
+ttHJetAna.shiftJEC = 0 # set to +1 or -1 to get +/-1 sigma shifts
 
 # --- JET-MET SKIMMING ---
 #ttHJetMETSkim.jetPtCuts = [100,]
@@ -74,9 +82,9 @@ treeProducer = cfg.Analyzer(
             'SingleMuNonIso' : ["HLT_Mu40_v*"],
             'MetTrigger' : ["HLT_PFMET150_v*"],
             'MetTriggerParked' : ["HLT_MET80_Parked_v*"],
-            'MET_120_HBHENoiseCleaned' : ["MET120_HBHENoiseCleaned*"],
-            'Mono_CentralPFJet80_PFMETNoMu95_NHEF0p95': ["MonoCentralPFJet80_PFMETNoMu95_NHEF0p95*"],
-            'Mono_CentralPFJet80_PFMETnoMu105_NHEF0p95':  ["MonoCentralPFJet80_PFMETnoMu105_NHEF0p95*"]
+            'MET_120_HBHENoiseCleaned' : ["HLT_MET120_HBHENoiseCleaned*"],
+            'Mono_CentralPFJet80_PFMETnoMu95_NHEF0p95': ["HLT_MonoCentralPFJet80_PFMETnoMu95_NHEF0p95*"],
+            'Mono_CentralPFJet80_PFMETnoMu105_NHEF0p95':  ["HLT_MonoCentralPFJet80_PFMETnoMu105_NHEF0p95*"]
         }
     )
 
@@ -89,13 +97,8 @@ from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
 #    mc.triggers = ["HLT_PFMET_150_v*" ]
 
 
-#selectedComponents = [ DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,TTH122,TTH127,TTJetsSem1,TTJetsSem2 ] 
-#selectedComponents = [ T2DegenerateStop_2J_4 ]
+selectedComponents = [ WWJets ]
 
-#selectedComponents = [ TTJetsLep ]                                                                                 ->  newTuples000
-#selectedComponents = [ TbartW,TTH,TtW,TTWJets,TTZJets,WJets_HT250To300,WJets_HT300To400,WJets_HT400ToInf ]         ->  newTuples001
-selectedComponents = [ DYJetsM10,DYJetsM50,DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50 ]
-#selectedComponents = [ T2DegenerateStop_2J_1,T2DegenerateStop_2J_2,T2DegenerateStop_2J_3,T2DegenerateStop_2J_4 ]   ->  newTuples003
 
 #-------- SEQUENCE
 
@@ -112,26 +115,29 @@ sequence = cfg.Sequence(susyCoreSequence+[
 # 
 # sequence = cfg.Sequence( [ eventSelector ] + susyCoreSequence+[
 #     ttHEventAna,
+#     stFilterAna,
 #     metFilterAna,
 #     treeProducer,
 #     ])
 
 
 #-------- HOW TO RUN
-test = 2
+test = 1
 if test==1:
     # test a single component, using a single thread.
     comp = selectedComponents[0]
-    comp.files = comp.files[:1]         #   Comment-out this line to run interactively / Comment-in to run with lxbatch
-#     comp.files = comp.files[853:854]    #   for debug purposes.
+    comp.files = comp.files[:1]         #   files to run interactively with "multiloop"
     selectedComponents = [comp]
-    comp.splitFactor = 500
+    comp.splitFactor = 1
 elif test==2:    
     # test all components (1 thread per component).
     for comp in selectedComponents:
         comp.splitFactor = 500
-#         comp.files = comp.files[:1]
-
+        comp.files = comp.files[:1]
+elif test==3:    
+    # run all components on lxbatch ( no need to set "comp.files = comp.files[A:B]" in this case ).
+    for comp in selectedComponents:
+        comp.splitFactor = 500
 
 
 config = cfg.Config( components = selectedComponents,
