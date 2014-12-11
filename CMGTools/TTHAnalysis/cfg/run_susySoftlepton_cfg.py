@@ -15,17 +15,22 @@ from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
 # --- LEPTON DEFINITION ---
 
 ttHLepAna.loose_muon_pt = 3
-ttHLepAna.loose_muon_dxy = 0.02,
-ttHLepAna.loose_muon_dz = 0.5,
-ttHLepAna.loose_muon_relIso = 0.2
+ttHLepAna.loose_muon_dxy = 0.02
+ttHLepAna.loose_muon_dz = 0.5
+ttHLepAna.loose_muon_relIso = 0.5
 ttHLepAna.loose_muon_absIso = 5
 ttHLepAna.loose_muon_ptIsoThreshold = 25
+ttHLepAna.loose_muon_relIsoCone04 = True            # True -> use cone 0.4 for relIso, False -> use cone 0.3 for relIso (default)
+# ttHLepAna.doMuScleFitCorrections = "rereco"
+
 ttHLepAna.loose_electron_pt = 5
-ttHLepAna.loose_electron_dxy = 0.02,
-ttHLepAna.loose_electron_dz = 0.5,
-ttHLepAna.loose_electron_relIso = 0.2
+ttHLepAna.loose_electron_dxy = 0.02
+ttHLepAna.loose_electron_dz = 0.5
+ttHLepAna.loose_electron_relIso = 0.5
 ttHLepAna.loose_electron_absIso = 5
 ttHLepAna.loose_electron_ptIsoThreshold = 25
+ttHLepAna.loose_electron_relIsoCone04 = True        # True -> use cone 0.4 for relIso, False -> use cone 0.3 for relIso (default)
+
 
 # --- LEPTON SKIMMING ---
 ttHLepSkim.minLeptons = 0
@@ -37,7 +42,7 @@ ttHLepSkim.ptCuts = [5,3]
 ttHJetAna.jetPt = 30.0 
 
 # --- JET-ENERGY-SCALE SYSTEMATICS ---
-ttHJetAna.shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
+ttHJetAna.shiftJEC = 0 # set to +1 or -1 to get +/-1 sigma shifts
 
 # --- JET-MET SKIMMING ---
 #ttHJetMETSkim.jetPtCuts = [100,]
@@ -92,23 +97,13 @@ from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
 #    mc.triggers = ["HLT_PFMET_150_v*" ]
 
 
-#selectedComponents = [ TTJetsLep ]                                                                                 ->  newTuples000*
-#selectedComponents = [ TbartW,TTH,TtW,TTWJets,TTZJets,WJets_HT250To300,WJets_HT300To400,WJets_HT400ToInf ]         ->  newTuples001*
-#selectedComponents = [ DYJetsM10,DYJetsM50,DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50 ]                           ->  newTuples002
-#selectedComponents = [ T2DegenerateStop_2J_1,T2DegenerateStop_2J_2,T2DegenerateStop_2J_3,T2DegenerateStop_2J_4 ]   ->  newTuples003*
-#selectedComponents = [ WJetsPtW50To70,WJetsPtW70To100,WJetsPtW100,WJets,W1Jets,W2Jets,W3Jets,W4Jets ]              ->  newTuples004
-#selectedComponents = [ WW,WZ,ZZ,WWJets,WZJets,ZZJets4L,ZZ2e2mu,ZZ2e2tau,ZZ2mu2tau,ZZTo4mu,ZZTo4tau,ZZTo4e ]        ->  newTuples005
-#selectedComponents = [ TTLep,TTJets,TTJetsSem,TTJetsSem2,TTJetsHad ]                                               ->  newTuples006
-#selectedComponents = [ ZNuNu50HT100,ZNuNu100HT200,ZNuNu200HT400,ZNuNu400 ]                                         ->  newTuples007 the QCDMuPt15 was originaly here but failed and submited as new set 008 with larger split
-#selectedComponents = [ QCDMuPt15 ]                                                                                 ->  newTuples008
-
-selectedComponents = [ TTJetsLep ]
+selectedComponents = [ WWJets ]
 
 
 #-------- SEQUENCE
 
 #  ORIGINAL
-sequence = cfg.Sequence( [ eventSelector ] + susyCoreSequence+[
+sequence = cfg.Sequence(susyCoreSequence+[
     ttHEventAna,
     stFilterAna,
     metFilterAna,
