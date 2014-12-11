@@ -56,6 +56,12 @@ mt2_gen:   mt2_gen: 16,0,800    ; XTitle="MT2 gen  [GeV]"
 #pseudoJet2_eta: pseudoJet2_eta: 10,-5.,5.    ; XTitle="PseJet2 eta"
 #pseudoJet2_mass: pseudoJet2_mass: 20,0,400.    ; XTitle="PseJet2 mass [GeV]"
 
+nPFLep5LowMT:  nPFLep5LowMT: [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(PFLep\, p_{T} > 5\, M_{T} < 100)'
+
+nPFHad10LowMT: nPFHad10LowMT: [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(PFLep\, p_{T} > 5\, M_{T} < 100)'
+
+minMTBMet:     minMTBMet: 16,0,800    ; XTitle="min M_{T}(B\,met)"
+
 ##### JET 
 
 jet_njet : njet : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5,11.5,12.5,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,21.5,22.5,23.5,24.5,25.5,26.5,27.5,28.5,29.5,30.5] ; XTitle='N(jet\, p_{T} > 10\, |#eta| < 5.2 )'
@@ -139,8 +145,49 @@ gamma_hOverE: gamma_hOverE: 100,0,5.    ; XTitle="gamma hOverE"
 gamma_idCutBased: gamma_idCutBased: 10,0,10.    ; XTitle="gamma ID Cut based"
 gamma_mcMatchId:  gamma_mcMatchId: 28,-1.5,26.5;  Legend='TR'
 
+gamma_genIso: gamma_genIso: 100,0,0.5    ; XTitle="ph gamma ISO  [GeV]"
 
-##### LEPTON (to add)
+##### GAMMA control variables
+
+cr_gamma_mt2:   gamma_mt2: 16,0,800    ; XTitle="MT2  [GeV]"
+
+cr_gamma_met:   gamma_met_pt: 16,0,800    ; XTitle="E_{T}^{miss}  [GeV]"
+cr_gamma_met_phi:   gamma_met_phi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
+
+cr_gamma_mht:   gamma_mht_pt: 16,0,800    ; XTitle="H_{T}^{miss}  [GeV]"
+cr_gamma_mht_phi:   gamma_mht_phi: 8,-3.15,3.15    ; XTitle="phi of H_{T}^{miss}"
+
+cr_gamma_deltaPhiMin: gamma_deltaPhiMin: 70,0,3.15    ; XTitle="dphi_{min}(jet\,E_{T}^{miss})"
+cr_gamma_diffMetMht: gamma_diffMetMht: 100,0,500    ; XTitle="|MET-MHT|"
+
+cr_gamma_ht: gamma_ht:  16,0,800    ; XTitle="H_{T}  [GeV]" 
+
+cr_gamma_nJet40 : gamma_nJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(jet\, p_{T} > 40)'
+cr_gamma_nBJet40 : gamma_nBJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\, p_{T} > 40\, CSVM)'
+cr_gamma_minMTBMet : gamma_ minMTBMet: 16,0,800    ; XTitle="min M_{T}(B\,met)"
+
+##### ZLL control variables
+
+cr_zll_mt2:   zll_mt2: 16,0,800    ; XTitle="MT2  [GeV]"
+
+cr_zll_met:   zll_met_pt: 16,0,800    ; XTitle="E_{T}^{miss}  [GeV]"
+cr_zll_met_phi:   zll_met_phi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
+
+cr_zll_ht: zll_ht:  16,0,800    ; XTitle="H_{T}  [GeV]" 
+
+cr_zll_mht:   zll_mht_pt: 16,0,800    ; XTitle="H_{T}^{miss}  [GeV]"
+cr_zll_mht_phi:   zll_mht_phi: 8,-3.15,3.15    ; XTitle="phi of H_{T}^{miss}"
+
+cr_zll_deltaPhiMin: zll_deltaPhiMin: 70,0,3.15    ; XTitle="dphi_{min}(jet\,E_{T}^{miss})"
+cr_zll_diffMetMht: zll_diffMetMht: 100,0,500    ; XTitle="|MET-MHT|"
+
+cr_zll_pt: zll_pt: 16,0,800    ; XTitle="Z p_{T}  [GeV]"
+cr_zll_phi: zll_phi: 8,-3.15,3.15    ; XTitle="Z phi"
+cr_zll_eta: zll_eta: 10,-5.,5.    ; XTitle="Z eta"
+cr_zll_mass: zll_mass: 20,0,400.    ; XTitle="Z mass [GeV]"
+
+
+##### LEPTON
 
 lep_nlep : nlep : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5] ; XTitle='N(lep\, p_{T} > 10\, |#eta| < 2.4 )'
 lep_pt: lep_pt: 16,0,800    ; XTitle="lep p_{T}  [GeV]"
@@ -161,4 +208,6 @@ lep_tightId:  lep_tightId: [-0.5,0.5,1.5];  Legend='TL'
 lep_lostHits:  lep_lostHits: [-0.5,0.5,1.5,2.5,3.5,4.5,5.5];  Legend='TL'
 lep_convVeto:  lep_convVeto: 10,0.,5.;  Legend='TL'
 lep_tightCharge:  lep_tightCharge: [-1.5,-0.5,0.5,1.5];  Legend='TL'
+
+
 
