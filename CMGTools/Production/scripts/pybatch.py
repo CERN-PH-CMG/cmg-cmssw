@@ -73,7 +73,8 @@ if [ $looperExitStatus -ne 0 ]; then
    echo 'Looper failed. Don't attempt to copy corrupted file remotely'
 else
    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/dcap/ # Fabio's workaround to fix gfal-tools
-   nEvents=`grep 'number of events processed' Loop/log.txt | sed 's/.* \([0-9][0-9]*\)$/\\1/'`
+   #nEvents=`grep 'number of events processed' Loop/log.txt | sed 's/.* \([0-9][0-9]*\)$/\\1/'`
+   nEvents=`grep 'All Events' Loop/skimAnalyzerCount/SkimReport.txt | sed 's/.* All Events  *\([0-9][0-9]*\).*/\\1/'`
    echo "Processed ${{nEvents}} according to Loop/log.txt"
    for f in Loop/tree*/*.root
    do
