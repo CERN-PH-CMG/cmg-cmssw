@@ -72,8 +72,6 @@ class BatchManager:
                     print "remote directory must start with /pnfs/psi.ch to send to the tier3 at PSI"
                     print self.remoteOutputDir_, "not valid"
                     sys.exit(1)
-<<<<<<< HEAD
-=======
             if "oeaw.ac.at" in self.remoteOutputDir_: # T2 @ VIENNA:
                 # overwriting protection to be improved
                 if self.remoteOutputDir_.startswith("/dpm/oeaw.ac.at"):
@@ -97,7 +95,6 @@ class BatchManager:
                     print "remote directory must start with /dpm/oeaw.ac.at to send to the TIER2 at Vienna"
                     print self.remoteOutputDir_, "not valid"
                     sys.exit(1)
->>>>>>> bf00b45... modify batch submission for T2_AT_VIENNA
             else: # assume EOS
                 if not castortools.isLFN( self.remoteOutputDir_ ):
                     print 'When providing an output directory, you must give its LFN, starting by /store. You gave:'
