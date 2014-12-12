@@ -120,7 +120,7 @@ fi
        print 'path must start with "/pnfs/psi.ch" or "/eos/cms/store"'
        sys.exit(1)
 
-   script = """#!/bin/bash 
+   script = """#!/bin/bash
 #BSUB -q 8nm
 echo 'environment:'
 echo
