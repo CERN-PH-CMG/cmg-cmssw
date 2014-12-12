@@ -338,8 +338,7 @@ GPSamples = [ TTHWWnlo_S14, TTHWWpy6_S14, TTHTTpy6_S14, TTHTTnlo_S14, TTHnlo_S14
 mcSamples = mcSamplesCSA14_PU20bx25 + mcSamplesTest + mcSamplesCSA14_PU40bx50 + GPSamples + mcPrivateSamplesCSA14v2
 
 ### Samples from ACDV group
-T1ttbbWW_2J_mGo1000_mCh725_mChi715_3bodydec = kreator.makeMCComponentFromEOS('T1ttbbWW_2J_mGo1000_mCh725_mChi715_3bodydec', '/T1ttbbWW_2J_mGo1000_mCh725_mChi715
-_3bodydec/', '/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s')
+T1ttbbWW_2J_mGo1000_mCh725_mChi715_3bodydec = kreator.makeMCComponentFromEOS('T1ttbbWW_2J_mGo1000_mCh725_mChi715_3bodydec', '/T1ttbbWW_2J_mGo1000_mCh725_mChi715_3bodydec/', '/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s')
 T1ttbbWW_2J_mGo1000_mCh725_mChi720_3bodydec = kreator.makeMCComponentFromEOS('T1ttbbWW_2J_mGo1000_mCh725_mChi720_3bodydec', '/T1ttbbWW_2J_mGo1000_mCh725_mChi720_3bodydec/', '/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s')
 T1ttbbWW_2J_mGo1300_mCh300_mChi290_3bodydec = kreator.makeMCComponentFromEOS('T1ttbbWW_2J_mGo1300_mCh300_mChi290_3bodydec', '/T1ttbbWW_2J_mGo1300_mCh300_mChi290_3bodydec/', '/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s')
 T1ttbbWW_2J_mGo1300_mCh300_mChi295_3bodydec = kreator.makeMCComponentFromEOS('T1ttbbWW_2J_mGo1300_mCh300_mChi295_3bodydec', '/T1ttbbWW_2J_mGo1300_mCh300_mChi295_3bodydec/', '/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s')
