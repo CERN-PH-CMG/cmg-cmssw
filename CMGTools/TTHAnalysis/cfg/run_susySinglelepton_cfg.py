@@ -1,5 +1,6 @@
 ##########################################################
 ##       CONFIGURATION FOR SUSY MULTILEPTON TREES       ##
+## skim condition: >= 2 loose leptons, no pt cuts or id ##
 ##########################################################
 
 import CMGTools.RootTools.fwlite.Config as cfg
@@ -20,7 +21,7 @@ ttHLepAna.ele_isoCorr = "rhoArea"
 # Redefine what I need
 
 # --- LEPTON SKIMMING ---
-ttHLepSkim.minLeptons = 0
+ttHLepSkim.minLeptons = 1
 ttHLepSkim.maxLeptons = 999
 #ttHLepSkim.idCut  = ""
 #ttHLepSkim.ptCuts = []
@@ -64,11 +65,9 @@ treeProducer = cfg.Analyzer(
 
 #-------- SAMPLES AND TRIGGERS -----------
 from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14 import *
-#selectedComponents = [ SingleMu, DoubleElectron, TTHToWW_PUS14, DYJetsM50_PU20bx25, TTJets_PUS14 ]
+selectedComponents = [ SingleMu, DoubleElectron, TTHToWW_PUS14, DYJetsToLL_M50_PU20bx25, TTJets_PUS14 ]
 
-TTJets_PUS14.splitFactor=800
-selectedComponents = [ TTJets_PUS14 , WJetsToLNu_HT100to200_PU_S14_POSTLS170, WJetsToLNu_HT200to400_PU_S14_POSTLS170, WJetsToLNu_HT400to600_PU_S14_POSTLS170, WJetsToLNu_HT600toInf_PU_S14_POSTLS170]
-selectedComponents += [SMS_T1tttt_2J_mGl1200_mLSP800_PU_S14_POSTLS170, SMS_T1tttt_2J_mGl1500_mLSP100_PU_S14_POSTLS170]
+
 #-------- SEQUENCE
 
 sequence = cfg.Sequence(susyCoreSequence+[
@@ -79,7 +78,7 @@ sequence = cfg.Sequence(susyCoreSequence+[
 
 
 #-------- HOW TO RUN
-test = 0
+test = 1
 if test==1:
     # test a single component, using a single thread.
     comp = TTJets_PU20bx25
