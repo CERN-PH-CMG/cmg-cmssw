@@ -1,8 +1,4 @@
-
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.Event import Event
-from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 
 class ttHLepSkimmer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
@@ -10,14 +6,14 @@ class ttHLepSkimmer( Analyzer ):
         self.ptCuts = cfg_ana.ptCuts if hasattr(cfg_ana, 'ptCuts') else []
         self.ptCuts += 10*[-1.]
 
-        self.idCut = cfg_ana.idCut if hasattr(cfg_ana, 'idCut') else "True"
+        self.idCut = cfg_ana.idCut if (getattr(cfg_ana, 'idCut', '') != '') else "True"
         self.idFunc = eval("lambda lepton : "+self.idCut);
 
     def declareHandles(self):
         super(ttHLepSkimmer, self).declareHandles()
 
-    def beginLoop(self):
-        super(ttHLepSkimmer,self).beginLoop()
+    def beginLoop(self, setup):
+        super(ttHLepSkimmer,self).beginLoop(setup)
         self.counters.addCounter('events')
         count = self.counters.counter('events')
         count.register('all events')
@@ -25,8 +21,8 @@ class ttHLepSkimmer( Analyzer ):
         count.register('accepted events')
 
 
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
         self.counters.counter('events').inc('all events')
 
         
