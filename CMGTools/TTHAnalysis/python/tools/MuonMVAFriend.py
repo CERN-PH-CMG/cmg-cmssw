@@ -75,9 +75,13 @@ if __name__ == '__main__':
             self.full = MuonMVAFriend("Full",    "/afs/cern.ch/work/g/gpetrucc/micro/cmg/CMSSW_7_0_9/src/CMGTools/TTHAnalysis/macros/leptons/train70XFull_BDTG.weights.xml")
         def analyze(self,ev):
             print "\nrun %6d lumi %4d event %d: leps %d" % (ev.run, ev.lumi, ev.evt, ev.nLepGood)
-            print self.bph(ev)
-            print self.bphc(ev)
-            print self.full(ev)
+            ret = self.full(ev)
+            print ret
+            lep = Collection(ev,"LepGood","nLepGood",8)
+            for i,l in enumerate(lep):
+                if abs(l.pdgId) == 11: continue
+                print "Lepton %d (pdgId %+2d): mvaId =  +%.4f   mvaIdFriend = +%.4f" % (i, l.pdgId, l.mvaId, ret['LepGood_muonMVAId'][i])     
+            
     el = EventLoop([ Tester("tester") ])
     el.loop([tree], maxEvents = 50)
 

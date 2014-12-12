@@ -7,11 +7,7 @@ process = cms.Process("H2TAUTAU")
 
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
 
-process.maxLuminosityBlocks = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
-    )
-
-numberOfFilesToProcess = 10
+numberOfFilesToProcess = -1
 debugEventContent = False
 
 # tau-mu, tau-ele, di-tau, all
@@ -21,7 +17,7 @@ useCHS = False
 
 # newSVFit enables the svfit mass reconstruction used for the H->tau tau analysis.
 # if false, much faster processing but mass is wrong. 
-newSVFit = False
+newSVFit = True
 tauScaling = 0
 applyESCorr = True
 
@@ -53,19 +49,22 @@ process.source.inputCommands=cms.untracked.vstring(
     'keep *'
     )
 
+process.options = cms.untracked.PSet(
+        allowUnscheduled = cms.untracked.bool(True)
+)
+
 if numberOfFilesToProcess>0:
     process.source.fileNames = process.source.fileNames[:numberOfFilesToProcess]
 
 runOnMC = process.source.fileNames[0].find('Run201')==-1 and process.source.fileNames[0].find('embedded')==-1
 
-if runOnMC==False:
+if runOnMC == False:
     from CMGTools.H2TauTau.tools.setupJSON import setupJSON
     json = setupJSON(process)
 
 
 # load the channel paths -------------------------------------------
 process.load('CMGTools.H2TauTau.h2TauTau_cff')
-
 
 # setting up the recoil correction according to the input file ---------------
 print sep_line
@@ -78,6 +77,22 @@ setupRecoilCorrection( process, runOnMC,
 from CMGTools.H2TauTau.tools.setupEmbedding import setupEmbedding
 
 isEmbedded = setupEmbedding(process, channel)
+
+# Adding jet collection
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.GlobalTag.globaltag = 'PLS170_V7AN1::All'
+
+process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
+process.load('PhysicsTools.PatAlgos.slimming.unpackedTracksAndVertices_cfi')
+process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.StandardSequences.MagneticField_38T_cff")
+process.load('TrackingTools.TransientTrack.TransientTrackBuilder_cfi')
+process.load('RecoBTag.Configuration.RecoBTag_cff')
+
+from CMGTools.H2TauTau.objects.jetreco_cff import addAK4Jets
+
+addAK4Jets(process)
+process.tauMuPath.insert(0, process.jetSequenceAK4)
 
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()
@@ -104,19 +119,10 @@ if not signalTauProcess or not applyESCorr:
 else:
     print 'Apply tau ES corrections'
 
-# generator ----------------------------------------------
-if not runOnMC:
-    process.tauMuPath.remove( process.genSequence )
-    process.tauElePath.remove( process.genSequence )
-    process.diTauPath.remove( process.genSequence )
-
 
 process.tauMuPath.remove(process.cmgPFJetForRecoilPresel)
 process.tauMuPath.remove(process.cmgPFJetForRecoil)
 
-#import pdb; pdb.set_trace()
-
-#Jose: process.schedule doesn't have a += operator?
 if channel=='all':
     process.schedule = cms.Schedule(
         process.tauMuPath,
@@ -191,48 +197,48 @@ process.MessageLogger.cerr.FwkReport.reportEvery = reportInterval
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 
-# Jet recalibration
-if jetRecalib: 
-    process.load('Configuration.StandardSequences.Services_cff')
-    process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-    GT = None
-    if runOnMC:
-        if cmsswIs44X():
-            GT = 'START44_V13::All'
-        else:
-            GT = 'START52_V10::All'
-    else:
-        if cmsswIs44X():
-            GT = 'GR_R_44_V15::All'
-        else:
-            GT = 'GR_R_52_V8::All'  
-    process.GlobalTag.globaltag = GT
-    from CMGTools.Common.miscProducers.cmgPFJetCorrector_cfi import cmgPFJetCorrector
-    process.cmgPFJetSel = cmgPFJetCorrector.clone(src='cmgPFJetSel',
-                                                  payload='AK5PF')
-    process.cmgPFJetSelCHS = cmgPFJetCorrector.clone(src='cmgPFJetSelCHS',
-                                                     payload='AK5PFchs')
+# # Jet recalibration
+# if jetRecalib: 
+#     process.load('Configuration.StandardSequences.Services_cff')
+#     process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+#     GT = None
+#     if runOnMC:
+#         if cmsswIs44X():
+#             GT = 'START44_V13::All'
+#         else:
+#             GT = 'START52_V10::All'
+#     else:
+#         if cmsswIs44X():
+#             GT = 'GR_R_44_V15::All'
+#         else:
+#             GT = 'GR_R_52_V8::All'  
+#     process.GlobalTag.globaltag = GT
+#     from CMGTools.Common.miscProducers.cmgPFJetCorrector_cfi import cmgPFJetCorrector
+#     process.cmgPFJetSel = cmgPFJetCorrector.clone(src='cmgPFJetSel',
+#                                                   payload='AK5PF')
+#     process.cmgPFJetSelCHS = cmgPFJetCorrector.clone(src='cmgPFJetSelCHS',
+#                                                      payload='AK5PFchs')
 
-    if runOnMC:
-        process.cmgPFJetSel.levels = cms.vstring('L1FastJet','L2Relative','L3Absolute')
-        process.cmgPFJetSelCHS.levels = cms.vstring('L1FastJet','L2Relative','L3Absolute')
-    else:
-        process.cmgPFJetSel.levels = cms.vstring('L1FastJet','L2Relative','L3Absolute','L2L3Residual')
-        process.cmgPFJetSelCHS.levels = cms.vstring('L1FastJet','L2Relative','L3Absolute','L2L3Residual')
+#     if runOnMC:
+#         process.cmgPFJetSel.levels = cms.vstring('L1FastJet','L2Relative','L3Absolute')
+#         process.cmgPFJetSelCHS.levels = cms.vstring('L1FastJet','L2Relative','L3Absolute')
+#     else:
+#         process.cmgPFJetSel.levels = cms.vstring('L1FastJet','L2Relative','L3Absolute','L2L3Residual')
+#         process.cmgPFJetSelCHS.levels = cms.vstring('L1FastJet','L2Relative','L3Absolute','L2L3Residual')
 
-    process.tauMuPath.insert(0, process.cmgPFJetSel)
-    process.tauElePath.insert(0, process.cmgPFJetSel)
-    process.diTauPath.insert(0, process.cmgPFJetSel)
+#     process.tauMuPath.insert(0, process.cmgPFJetSel)
+#     process.tauElePath.insert(0, process.cmgPFJetSel)
+#     process.diTauPath.insert(0, process.cmgPFJetSel)
 
-    process.tauMuPath.insert(0, process.cmgPFJetSelCHS)
-    process.tauElePath.insert(0, process.cmgPFJetSelCHS)
-    process.diTauPath.insert(0, process.cmgPFJetSelCHS)
+#     process.tauMuPath.insert(0, process.cmgPFJetSelCHS)
+#     process.tauElePath.insert(0, process.cmgPFJetSelCHS)
+#     process.diTauPath.insert(0, process.cmgPFJetSelCHS)
 
-    print sep_line
-    print 'Jet recalibration with GLOBAL TAG', GT
+#     print sep_line
+#     print 'Jet recalibration with GLOBAL TAG', GT
 
-if useCHS:
-    process.cmgPFJetForRecoil.src = 'cmgPFJetSelCHS'
+# if useCHS:
+#     process.cmgPFJetForRecoil.src = 'cmgPFJetSelCHS'
 
 if newSVFit:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 2

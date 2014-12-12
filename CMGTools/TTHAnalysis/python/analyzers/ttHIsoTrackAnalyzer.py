@@ -3,6 +3,8 @@ import itertools
 import copy
 import types
 
+from math import *
+
 from ROOT import TLorentzVector
 
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
@@ -12,11 +14,28 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.Lepton import Lepton
 ##from CMGTools.RootTools.physicsobjects.Tau import Tau
 from CMGTools.RootTools.physicsobjects.IsoTrack import IsoTrack
-from CMGTools.TTHAnalysis.analyzers.ttHLepMCMatchAnalyzer import matchObjectCollection3
 
-from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch
+from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch, matchObjectCollection3
 
+def mtw(x1,x2):
+    return sqrt(2*x1.pt()*x2.pt()*(1-cos(x1.phi()-x2.phi())))
 
+def makeNearestLeptons(leptons,track, event):
+
+    minDeltaR = 99999
+    
+    nearestLepton = []
+    ibest=-1
+    for i,lepton in enumerate(leptons):
+        minDeltaRtemp=deltaR(lepton.eta(),lepton.phi(),track.eta(),track.phi())
+        if minDeltaRtemp < minDeltaR:
+            minDeltaR = minDeltaRtemp
+            ibest=i
+
+    if len(leptons) > 0 and ibest!=-1:
+        nearestLepton.append(leptons[ibest])
+
+    return nearestLepton
  
 class ttHIsoTrackAnalyzer( Analyzer ):
 
@@ -29,6 +48,7 @@ class ttHIsoTrackAnalyzer( Analyzer ):
     def declareHandles(self):
         super(ttHIsoTrackAnalyzer, self).declareHandles()
         self.handles['cmgCand'] = AutoHandle(self.cfg_ana.candidates,self.cfg_ana.candidatesTypes) 
+        self.handles['met'] = AutoHandle( 'slimmedMETs', 'std::vector<pat::MET>' )
 
     def beginLoop(self):
         super(ttHIsoTrackAnalyzer,self).beginLoop()
@@ -46,6 +66,7 @@ class ttHIsoTrackAnalyzer( Analyzer ):
 
 
         event.selectedIsoTrack = []
+        event.selectedIsoCleanTrack = []
         #event.preIsoTrack = []
 
         pfcands = self.handles['cmgCand'].product()
@@ -113,7 +134,24 @@ class ttHIsoTrackAnalyzer( Analyzer ):
             if(track.absIso < min(0.2*track.pt(), self.cfg_ana.maxAbsIso)): 
                 event.selectedIsoTrack.append(track)
 
+                if self.cfg_ana.doPrune:
+                    myMet = self.handles['met'].product()[0]
+                    mtwIsoTrack = mtw(track, myMet)
+                    if mtwIsoTrack < 100:
+                        if abs(track.pdgId()) == 11 or abs(track.pdgId()) == 13:
+                            if track.pt()>5 and track.absIso/track.pt()<0.2:
+
+                                myLeptons = [ l for l in event.selectedLeptons if l.pt() > 10 ] 
+                                nearestSelectedLeptons = makeNearestLeptons(myLeptons,track, event)
+                                if len(nearestSelectedLeptons) > 0:
+                                    for lep in nearestSelectedLeptons:
+                                        if deltaR(lep.eta(), lep.phi(), track.eta(), track.phi()) > 0.1:
+                                            event.selectedIsoCleanTrack.append(track)
+                                else: 
+                                    event.selectedIsoCleanTrack.append(track)
+
         event.selectedIsoTrack.sort(key = lambda l : l.pt(), reverse = True)
+        event.selectedIsoCleanTrack.sort(key = lambda l : l.pt(), reverse = True)
 
         self.counters.counter('events').inc('all events')
         #if(len(event.preIsoTrack)): self.counters.counter('events').inc('has >=1 selected Track') 
@@ -152,6 +190,10 @@ class ttHIsoTrackAnalyzer( Analyzer ):
 
 
     def process(self, iEvent, event):
+
+        if self.cfg_ana.setOff:
+            return True
+
         self.readCollections( iEvent )
         self.makeIsoTrack(event)
 

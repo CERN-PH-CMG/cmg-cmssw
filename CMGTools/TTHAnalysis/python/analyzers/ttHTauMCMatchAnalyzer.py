@@ -16,7 +16,6 @@ from CMGTools.RootTools.physicsobjects.Muon import Muon
 from CMGTools.RootTools.physicsobjects.Jet import Jet
 
 from CMGTools.RootTools.utils.DeltaR import *
-from CMGTools.TTHAnalysis.analyzers.ttHLepMCMatchAnalyzer import matchObjectCollection3
 
 class ttHTauMCMatchAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):

@@ -5,6 +5,7 @@ from math import *
 
 #from ROOT import TLorentzVector, TVectorD
 
+from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.Event import Event
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
@@ -16,7 +17,7 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 # from CMGTools.RootTools.physicsobjects.Tau import Tau
 from CMGTools.RootTools.physicsobjects.Jet import Jet
 
-from CMGTools.RootTools.utils.DeltaR import * 
+#from CMGTools.RootTools.utils.DeltaR import * 
 
 import ROOT
 from ROOT import AlphaT
@@ -50,8 +51,8 @@ class ttHAlphaTVarAnalyzer( Analyzer ):
         px  = ROOT.std.vector('double')()
         py  = ROOT.std.vector('double')()
         et  = ROOT.std.vector('double')()
-
-        for jet in event.cleanJets:
+#Make alphaT from lead 10 jets
+	for jet in event.cleanJets[:10]:
             px.push_back(jet.px())
             py.push_back(jet.py())
             et.push_back(jet.et())
@@ -61,7 +62,6 @@ class ttHAlphaTVarAnalyzer( Analyzer ):
         event.alphaT = alphaTCalc.getAlphaT( et, px, py )
 
         return
-
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )

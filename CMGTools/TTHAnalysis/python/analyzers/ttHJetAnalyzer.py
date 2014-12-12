@@ -88,8 +88,10 @@ class ttHJetAnalyzer( Analyzer ):
             if self.testJetNoID( jet ): 
                 event.jetsAllNoID.append(jet) 
                 if self.testJetID (jet ):
-                    self.computeQGvars(jet)
-                    jet.qgl = self.qglcalc.computeQGLikelihood(jet, rho)
+                    
+                    if(self.cfg_ana.doQG):
+                        self.computeQGvars(jet)
+                        jet.qgl = self.qglcalc.computeQGLikelihood(jet, rho)
 
                     ##manually match to genparticle
                     #deltaRmin = 999.
@@ -124,6 +126,9 @@ class ttHJetAnalyzer( Analyzer ):
         leptons = [ l for l in event.selectedLeptons if l.pt() > self.lepPtMin ]
         if self.cfg_ana.cleanJetsFromTaus:
             leptons = leptons[:] + event.selectedTaus
+        if self.cfg_ana.cleanJetsFromIsoTracks and hasattr(event, 'selectedIsoCleanTrack'):
+            leptons = leptons[:] + event.selectedIsoCleanTrack
+
         #event.cleanJets, dummy = cleanObjectCollection( event.jets,
         #                                                masks = leptons,
         #                                                deltaRMin = self.jetLepDR )
@@ -131,9 +136,9 @@ class ttHJetAnalyzer( Analyzer ):
         event.cleanJets    = [j for j in event.cleanJetsAll if abs(j.eta()) <  self.cfg_ana.jetEtaCentral ]
         event.cleanJetsFwd = [j for j in event.cleanJetsAll if abs(j.eta()) >= self.cfg_ana.jetEtaCentral ]
 
-        ## Clean Jets from photons
-        photons = [ g for g in event.selectedPhotonsCentral ]
-        event.gamma_cleanJetsAll = cleanNearestJetOnly(event.cleanJetsAll, photons, self.jetGammaDR)
+        ## Clean Jets from *first* photon
+        #photons = [ g for g in event.selectedPhotonsCentral ]
+        event.gamma_cleanJetsAll = cleanNearestJetOnly(event.jets, event.selectedPhotonsCentral[:1], self.jetGammaDR)
         event.gamma_cleanJets    = [j for j in event.gamma_cleanJetsAll if abs(j.eta()) <  self.cfg_ana.jetEtaCentral ]
         event.gamma_cleanJetsFwd = [j for j in event.gamma_cleanJetsAll if abs(j.eta()) >= self.cfg_ana.jetEtaCentral ]
         ###

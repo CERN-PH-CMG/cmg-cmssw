@@ -11,10 +11,11 @@ from CMGTools.RootTools.RootTools import *
 from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import * 
 
 ttHLepAna.loose_muon_pt  = 10
-ttHLepAna.loose_muon_relIso = 0.2
+ttHLepAna.loose_muon_relIso = 0.4
+ttHLepAna.mu_isoCorr = "deltaBeta" 
 ttHLepAna.loose_electron_pt  = 10
-ttHLepAna.loose_electron_relIso = 0.2
-ttHLepAna.ele_isoCorr = "deltaBeta" 
+ttHLepAna.loose_electron_relIso = 0.4
+ttHLepAna.ele_isoCorr = "rhoArea" 
 
 
 # Redefine what I need
@@ -29,6 +30,10 @@ ttHLepSkim.maxLeptons = 999
 ttHJetAna.minLepPt = 10 
 ttHJetMCAna.smearJets     = False # do we need to smear the jets?
 
+ttHReclusterJets = cfg.Analyzer(
+            'ttHReclusterJetsAnalyzer',
+            )
+
 # Event Analyzer for susy multi-lepton (at the moment, it's the TTH one)
 ttHEventAna = cfg.Analyzer(
     'ttHLepEventAnalyzer',
@@ -36,21 +41,12 @@ ttHEventAna = cfg.Analyzer(
     )
 
 
-ttHIsoTrackAna = cfg.Analyzer(
-            'ttHIsoTrackAnalyzer',
-            candidates='packedPFCandidates',
-            candidatesTypes='std::vector<pat::PackedCandidate>',
-            ptMin = 5, # for pion 
-            ptMinEMU = 5, # for EMU
-            dzMax = 0.1,
-            isoDR = 0.3,
-            ptPartMin = 0,
-            dzPartMax = 0.1,
-            maxAbsIso = 8,
-            MaxIsoSum = 0.1, ### unused
-            MaxIsoSumEMU = 0.2, ### unused
-            doSecondVeto = False
-            )
+ttHIsoTrackAna.setOff=False
+
+susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
+                        ttHSVAnalyzer)
+susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
+                        ttHHeavyFlavourHadronAnalyzer)
 
 from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_1mu, triggers_1muHT, triggers_1eleHT
 
@@ -69,14 +65,14 @@ treeProducer = cfg.Analyzer(
 
 #-------- SAMPLES AND TRIGGERS -----------
 from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14 import *
-selectedComponents = [ SingleMu, DoubleElectron, TTHToWW_PUS14, DYJetsM50_PU20bx25, TTJets_PUS14 ]
+selectedComponents = [ SingleMu, DoubleElectron, TTHToWW_PUS14, DYJetsToLL_M50_PU20bx25, TTJets_PUS14 ]
 
 
 #-------- SEQUENCE
 
 sequence = cfg.Sequence(susyCoreSequence+[
-    ttHIsoTrackAna,
     ttHEventAna,
+    ttHReclusterJets,
     treeProducer,
     ])
 

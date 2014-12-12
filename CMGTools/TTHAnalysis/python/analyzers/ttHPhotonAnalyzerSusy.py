@@ -11,8 +11,7 @@ from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.Photon import Photon
 
-from CMGTools.TTHAnalysis.analyzers.ttHLepMCMatchAnalyzer import matchObjectCollection3
-from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch
+from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch, matchObjectCollection3
 
 class ttHPhotonAnalyzerSusy( Analyzer ):
 
@@ -30,6 +29,8 @@ class ttHPhotonAnalyzerSusy( Analyzer ):
 
         #photons
         self.handles['photons'] = AutoHandle( self.cfg_ana.photons,'std::vector<pat::Photon>')
+        self.mchandles['packedGen'] = AutoHandle( 'packedGenParticles', 'std::vector<pat::PackedGenParticle>' )
+
 
     def beginLoop(self):
         super(ttHPhotonAnalyzerSusy,self).beginLoop()
@@ -57,22 +58,41 @@ class ttHPhotonAnalyzerSusy( Analyzer ):
             def idWP(gamma,X):
                 """Create an integer equal to 1-2-3 for (loose,medium,tight)"""
 
-## medium not stored
-##                return gamma.photonID(X%"Loose") + gamma.photonID(X%"Medium") + gamma.photonID(X%"Tight")
-
-                id=-1
+                id=0
                 if gamma.photonID(X%"Loose"):
-                    id=0
+                    id=1
+                #if gamma.photonID(X%"Medium"):
+                #    id=2
                 if gamma.photonID(X%"Tight"):
-                    id=2
+                    id=3
                 return id
 
             gamma.idCutBased = idWP(gamma, "PhotonCutBasedID%s")
 
-            if gamma.photonID(self.cfg_ana.gammaID):
+            keepThisPhoton = True
+            if (self.cfg_ana.gammaID=="PhotonCutBasedIDLoose_CSA14") :
+              if abs(gamma.eta())<1.479 :
+                if gamma.sigmaIetaIeta() > 0.012 : keepThisPhoton = False
+                if gamma.hOVERe() > 0.0559       : keepThisPhoton = False
+              else :
+                if gamma.sigmaIetaIeta() > 0.035 : keepThisPhoton = False
+                if gamma.hOVERe() > 0.049        : keepThisPhoton = False
+              gamma.idCutBased = keepThisPhoton
+              # we're keeing sigmaietaieta sidebands, but the id is false for them:
+              if abs(gamma.eta())< 1.479 and gamma.sigmaIetaIeta()>0.010  : gamma.idCutBased = False
+              if abs(gamma.eta())>=1.479 and gamma.sigmaIetaIeta()>0.0321 : gamma.idCutBased = False
+            else:
+              keepThisPhoton = gamma.photonID(self.cfg_ana.gammaID)
+
+            if gamma.hasPixelSeed(): 
+              keepThisPhoton = False
+              gamma.idCutBased = 0
+
+
+            if keepThisPhoton:
                 event.selectedPhotons.append(gamma)
             
-            if gamma.photonID(self.cfg_ana.gammaID) and abs(gamma.eta()) < self.etaCentral:
+            if keepThisPhoton and abs(gamma.eta()) < self.etaCentral:
                 event.selectedPhotonsCentral.append(gamma)
 
         event.selectedPhotons.sort(key = lambda l : l.pt(), reverse = True)
@@ -83,16 +103,52 @@ class ttHPhotonAnalyzerSusy( Analyzer ):
         if len(event.selectedPhotons): self.counters.counter('events').inc('has >=1 selected gamma')
        
     def matchPhotons(self, event):
-        event.genPhotons = [ x for x in event.genParticles if x.status() == 3 and abs(x.pdgId()) == 22 ]
-        match = matchObjectCollection3(event.allphotons, event.genPhotons, deltaRMax = 0.5)
+        event.genPhotons = [ x for x in event.genParticles if x.status() == 1 and abs(x.pdgId()) == 22 ]
+        event.genPhotonsWithMom = [ x for x in event.genPhotons if x.numberOfMothers()>0 ]
+        event.genPhotonsWithoutMom = [ x for x in event.genPhotons if x.numberOfMothers()==0 ]
+        event.genPhotonsMatched = [ x for x in event.genPhotonsWithMom if abs(x.mother(0).pdgId())<23 ]
+        match = matchObjectCollection3(event.allphotons, event.genPhotonsMatched, deltaRMax = 0.1)
+        matchNoMom = matchObjectCollection3(event.allphotons, event.genPhotonsWithoutMom, deltaRMax = 0.1)
+        packedGenParts = [ p for p in self.mchandles['packedGen'].product() if abs(p.eta()) < 3.1 ]
         for gamma in event.allphotons:
-            gen = match[gamma]
-            gamma.mcMatchId = 1 if gen else 0
+          gen = match[gamma]
+          if gen and gen.pt()>=0.5*gamma.pt() and gen.pt()<=2.*gamma.pt():
+            gamma.mcMatchId = 22
+            sumPt = 0.;
+            for part in packedGenParts:
+              if abs(part.pdgId())==12: continue # exclude neutrinos
+              if abs(part.pdgId())==14: continue
+              if abs(part.pdgId())==16: continue
+              if abs(part.pdgId())==18: continue
+              if deltaR(gen.eta(), gen.phi(), part.eta(), part.phi()) > 0.4: continue
+              sumPt += part.pt()
+            sumPt -= gen.pt()
+            if sumPt<0. : sumPt=0.
+            gamma.genIso = sumPt
+          else:
+            genNoMom = matchNoMom[gamma]
+            if genNoMom:
+              gamma.mcMatchId = 7
+              sumPt = 0.;
+              for part in packedGenParts:
+                if abs(part.pdgId())==12: continue # exclude neutrinos
+                if abs(part.pdgId())==14: continue
+                if abs(part.pdgId())==16: continue
+                if abs(part.pdgId())==18: continue
+                if deltaR(genNoMom.eta(), genNoMom.phi(), part.eta(), part.phi()) > 0.4: continue
+                sumPt += part.pt()
+              sumPt -= genNoMom.pt()
+              if sumPt<0. : sumPt=0.
+              gamma.genIso = sumPt
+            else:
+              gamma.mcMatchId = 0
+              gamma.genIso = -1.
+ 
 
     def printInfo(self, event):
         print '----------------'
         if len(event.selectedPhotons)>0:
-            print 'lenght: ',len(event.selectedPhotons)
+            print 'length: ',len(event.selectedPhotons)
             print 'gamma candidate pt: ',event.selectedPhotons[0].pt()
             print 'gamma candidate eta: ',event.selectedPhotons[0].eta()
             print 'gamma candidate phi: ',event.selectedPhotons[0].phi()

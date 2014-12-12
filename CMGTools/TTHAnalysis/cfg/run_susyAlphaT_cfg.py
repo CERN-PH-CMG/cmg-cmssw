@@ -61,6 +61,8 @@ ttHJetMCAna.smearJets     = False
 # NOTE: Currently energy sums are calculated with 40 GeV jets (ttHCoreEventAnalyzer.py)
 #       However, the input collection is cleanjets which have a 50 GeV cut so this is a labeling problem
 
+ttHMetAna.doMetNoMu=True
+
 ttHJetMETSkim.htCut       = ('htJet50j', 0)
 ttHJetMETSkim.mhtCut      = ('htJet40j', 0)
 ttHJetMETSkim.nBJet       = ('CSVM', 0, "jet.pt() > 50")     # require at least 0 jets passing CSVM and pt > 50
@@ -69,27 +71,7 @@ ttHJetMETSkim.nBJet       = ('CSVM', 0, "jet.pt() > 50")     # require at least 
 ##  ISOLATED TRACK
 ##------------------------------------------
 
-# those are the cuts for the nonEMu
-ttHIsoTrackAna = cfg.Analyzer(
-            'ttHIsoTrackAnalyzer',
-#            candidates='cmgCandidates',
-#            candidatesTypes='std::vector<cmg::Candidate>',
-            candidates      ='packedPFCandidates',
-            candidatesTypes ='std::vector<pat::PackedCandidate>',
-            ptMin           = 5, ### for pion 
-            ptMinEMU        = 5, ### for EMU
-            dzMax           = 0.1,
-            #####
-            isoDR           = 0.3,
-            ptPartMin       = 0,
-            dzPartMax       = 0.1,
-            maxAbsIso       = 8,
-            #####
-            MaxIsoSum       = 0.1, ### unused
-            MaxIsoSumEMU    = 0.2, ### unused
-            doSecondVeto    = False
-            )
-
+ttHIsoTrackAna.setOff=False
 
 ##------------------------------------------
 ##  ALPHAT VARIABLES
@@ -99,6 +81,10 @@ ttHIsoTrackAna = cfg.Analyzer(
 ttHAlphaTAna = cfg.Analyzer(
             'ttHAlphaTVarAnalyzer'
             )
+
+ttHAlphaTControlAna = cfg.Analyzer(
+                        'ttHAlphaTControlAnalyzer'
+                        )
 
 ##------------------------------------------
 ##  PRODUCER
@@ -124,7 +110,7 @@ treeProducer = cfg.Analyzer(
 #-------- SAMPLES AND TRIGGERS -----------
 from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14 import *
 
-# CSA13 PU20bx25 samples: DYJetsM50_PU20bx25, DYJetsM50pythia6_PU20bx25, DYJetsM50_HT200to400_PU20bx25, DYJetsM50_HT400to600_PU20bx25, DYJetsM50_HT600toInf_PU20bx25, DYJetsMuMuM50_PtZ180_PU20bx25, DYJetsMuMuM6pythia8_PU20bx25, DYJetsMuMuM15pythia8_PU20bx25, DYJetsMuMuM50pythia8_PU20bx25, DYJetsEEpythia8_PU20bx25, DYJetsMuMupythia8_PU20bx25, EWKWmin_PU20bx25, EWKWplus_PU20bx25, EWKZjj_PU20bx25, EleGun_PU20bx25, GGHTauTau_PU20bx25, GGHZZ4L_PU20bx25, GJet_PU20bx25, JPsiPt20_PU20bx25, JPsiPt7_PU20bx25, MinBias_PU20bx25, MuMinGunPt100_PU20bx25, MuMinGunPt10_PU20bx25, MuPlusGunPt100_PU20bx25, MuPlusGunPt10_PU20bx25, NeutrinoGun_PU20bx25, QCDEM_20to30_PU20bx25, QCDEM_30to80_PU20bx25, QCDEM_80to170_PU20bx25, QCDMu_20to30_PU20bx25, QCDMu_30to50_PU20bx25, QCDMu_50to80_PU20bx25, QCDMu_80to120_PU20bx25, QCDMu_pythia6_120to170_PU20bx25, QCDMu_pythia6_20to30_PU20bx25, QCDMu_pythia6_30to50_PU20bx25, QCDMu_pythia6_50to80_PU20bx25, QCDMu_pythia6_80to120_PU20bx25, T1tttt_PU20bx25, TTHBB_PU20bx25, TTHGG_PU20bx25, TTHTauTau_PU20bx25, TTHWW_PU20bx25, TTHZZ4L_PU20bx25, TTJets_PU20bx25, TTJets_PUS14, TTpythia8_PU20bx25, VBFHBB_PU20bx25, VBFHGG_PU20bx25, VBFHWWSemi_PU20bx25, VBFHWW_PU20bx25, VBFHZG_PU20bx25, VBFHZZ4L_PU20bx25, VHMuMu_PU20bx25, VHTauTau_PU20bx25, VHWWInc_PU20bx25, VHWWLep_PU20bx25, VHZZ4L_PU20bx25, WENupyhia8_PU20bx25, WJets_PU20bx25, WminTau_PU20bx25, WplusMu_PU20bx25, WplusTau_PU20bx25, ZHBBInv_PU20bx25, ZHBBLL_PU20bx25, ZHLLInv_PU20bx25
+# CSA13 PU20bx25 samples: DYJetsToLL_M50_PU20bx25, DYJetsM50pythia6_PU20bx25, DYJetsM50_HT200to400_PU20bx25, DYJetsM50_HT400to600_PU20bx25, DYJetsM50_HT600toInf_PU20bx25, DYJetsMuMuM50_PtZ180_PU20bx25, DYJetsMuMuM6pythia8_PU20bx25, DYJetsMuMuM15pythia8_PU20bx25, DYJetsMuMuM50pythia8_PU20bx25, DYJetsEEpythia8_PU20bx25, DYJetsMuMupythia8_PU20bx25, EWKWmin_PU20bx25, EWKWplus_PU20bx25, EWKZjj_PU20bx25, EleGun_PU20bx25, GGHTauTau_PU20bx25, GGHZZ4L_PU20bx25, GJet_PU20bx25, JPsiPt20_PU20bx25, JPsiPt7_PU20bx25, MinBias_PU20bx25, MuMinGunPt100_PU20bx25, MuMinGunPt10_PU20bx25, MuPlusGunPt100_PU20bx25, MuPlusGunPt10_PU20bx25, NeutrinoGun_PU20bx25, QCDEM_20to30_PU20bx25, QCDEM_30to80_PU20bx25, QCDEM_80to170_PU20bx25, QCDMu_20to30_PU20bx25, QCDMu_30to50_PU20bx25, QCDMu_50to80_PU20bx25, QCDMu_80to120_PU20bx25, QCDMu_pythia6_120to170_PU20bx25, QCDMu_pythia6_20to30_PU20bx25, QCDMu_pythia6_30to50_PU20bx25, QCDMu_pythia6_50to80_PU20bx25, QCDMu_pythia6_80to120_PU20bx25, T1tttt_PU20bx25, TTHBB_PU20bx25, TTHGG_PU20bx25, TTHTauTau_PU20bx25, TTHWW_PU20bx25, TTHZZ4L_PU20bx25, TTJets_PU20bx25, TTJets_PUS14, TTpythia8_PU20bx25, VBFHBB_PU20bx25, VBFHGG_PU20bx25, VBFHWWSemi_PU20bx25, VBFHWW_PU20bx25, VBFHZG_PU20bx25, VBFHZZ4L_PU20bx25, VHMuMu_PU20bx25, VHTauTau_PU20bx25, VHWWInc_PU20bx25, VHWWLep_PU20bx25, VHZZ4L_PU20bx25, WENupyhia8_PU20bx25, WJets_PU20bx25, WminTau_PU20bx25, WplusMu_PU20bx25, WplusTau_PU20bx25, ZHBBInv_PU20bx25, ZHBBLL_PU20bx25, ZHLLInv_PU20bx25
 
 
 
@@ -149,7 +135,7 @@ TTbar        = [ TTpythia8_PU20bx25 ]
 T1tttt       = [ T1tttt_PU20bx25 ]
 
 
-#selectedComponents = [ SingleMu, DoubleElectron, TTHToWW_PUS14, DYJetsM50_PU20bx25, TTJets_PUS14 ]
+#selectedComponents = [ SingleMu, DoubleElectron, TTHToWW_PUS14, DYJetsToLL_M50_PU20bx25, TTJets_PUS14 ]
 selectedComponents = []
 selectedComponents.extend( WJetsToLNu )
 selectedComponents.extend( TTbar )
@@ -160,14 +146,14 @@ selectedComponents.extend( TTbar )
 #-------- SEQUENCE
 
 sequence = cfg.Sequence(susyCoreSequence + [
-                        ttHIsoTrackAna,
                         ttHAlphaTAna,
+                        ttHAlphaTControlAna,
                         treeProducer,
                         ])
 
 
 #-------- HOW TO RUN
-test = 4
+test = 1
 
 # Test a single component, using a single thread.
 #--------------------------------------------------
