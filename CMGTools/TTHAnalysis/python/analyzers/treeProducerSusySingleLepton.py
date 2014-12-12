@@ -50,11 +50,11 @@ class treeProducerSusySingleLepton( treeProducerSusyCore ):
             "selectedIsoTrack"    : NTupleCollection("isoTrack", isoTrackType, 50, help="isoTrack, sorted by pt"),
             ##------------------------------------------------
             "cleanJetsAll"       : NTupleCollection("Jet",     jetTypeSusy, 25, help="Cental jets after full selection and cleaning, sorted by pt"),
-            "reclusteredFatJets" : NTupleCollection("FatJet",     fourVectorType,20, help="FatJets reclusterd from ak4 cleanJetsAll"),
+#            "reclusteredFatJets" : NTupleCollection("FatJet",     fourVectorType,20, help="FatJets reclusterd from ak4 cleanJetsAll"),
                ##----------------------------------------------
             "ivf"       : NTupleCollection("SV",     svType, 20, help="SVs from IVF"),
-            "genBHadrons"  : NTupleCollection("GenBHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level B hadrons"),
-            "genDHadrons"  : NTupleCollection("GenDHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level D hadrons"),
+#            "genBHadrons"  : NTupleCollection("GenBHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level B hadrons"),
+#            "genDHadrons"  : NTupleCollection("GenDHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level D hadrons"),
         })
 
         ## Book the variables, but only if we're called explicitly and not through a base class
