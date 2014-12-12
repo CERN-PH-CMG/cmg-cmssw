@@ -74,16 +74,16 @@ if [ $looperExitStatus -ne 0 ]; then
 else
    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/dcap/ # Fabio's workaround to fix gfal-tools
    nEvents=`grep 'number of events processed' Loop/log.txt | sed 's/.* \([0-9][0-9]*\)$/\\1/'`
-   echo "Processed ${nEvents} according to Loop/log.txt"
+   echo "Processed ${{nEvents}} according to Loop/log.txt"
    for f in Loop/tree*/*.root
    do
       ff=`basename $f | cut -d . -f 1`
       d=`echo $f | cut -d / -f 2`
       #gfal-mkdir {srm}
-      #echo "gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_nEvents${nEvents}.root"
-      #gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_nEvents${nEvents}.root
-      echo "lcg-cp -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_Chunk{idx}_nEvents${nEvents}.root 
-      lcg-cp -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_Chunk{idx}_nEvents${nEvents}.root
+      #echo "gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_nEvents${{nEvents}}.root"
+      #gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_nEvents${{nEvents}}.root
+      echo "lcg-cp -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_Chunk{idx}_nEvents${{nEvents}}.root"
+      lcg-cp -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_Chunk{idx}_nEvents${{nEvents}}.root
       if [ $? -ne 0 ]; then
          echo "ERROR: remote copy failed for file $ff"
       else
