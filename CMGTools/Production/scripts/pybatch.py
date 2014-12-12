@@ -78,7 +78,7 @@ else
    do
       ff=`basename $f | cut -d . -f 1`
       d=`echo $f | cut -d / -f 2`
-      gfal-mkdir {srm}
+      #gfal-mkdir {srm}
       #echo "gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_nEvents$nEvents.root"
       #gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_nEvents$nEvents.root
       echo "lcg-cp -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_Chunk{idx}_nEvents$nEvents.root 
