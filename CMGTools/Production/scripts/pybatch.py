@@ -70,7 +70,7 @@ fi
       print 'jobDir',jobDir
       cpCmd="""echo 'sending root files to remote dir'
 if [ $looperExitStatus -ne 0 ]; then
-   echo 'Looper failed. Don't attempt to copy corrupted file remotely'
+   echo "Looper failed. Don't attempt to copy corrupted file remotely"
 else
    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/dcap/ # Fabio's workaround to fix gfal-tools
    #nEvents=`grep 'number of events processed' Loop/log.txt | sed 's/.* \([0-9][0-9]*\)$/\\1/'`
