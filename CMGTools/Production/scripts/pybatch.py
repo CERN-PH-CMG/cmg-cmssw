@@ -87,7 +87,7 @@ else
       copyExitStatus=1
       while [ $icnt -lt 10 ]
       do
-        lcg-cp -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_Chunk{idx}_nEvents${{nEvents}}.root"
+        lcg-cp -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_Chunk{idx}_nEvents${{nEvents}}.root
         if [ $? -eq 0 ]
         then
           copyExitStatus=0
