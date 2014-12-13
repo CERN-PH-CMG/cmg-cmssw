@@ -67,7 +67,6 @@ else
 fi
 """.format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")]) + dirCopy
    elif remoteDir.startswith("/dpm/oeaw.ac.at"):
-      print 'jobDir',jobDir
       cpCmd="""echo 'sending root files to remote dir'
 if [ $looperExitStatus -ne 0 ]; then
    echo "Looper failed. Don't attempt to copy corrupted file remotely"
@@ -83,8 +82,19 @@ else
       #gfal-mkdir {srm}
       #echo "gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_nEvents${{nEvents}}.root"
       #gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_nEvents${{nEvents}}.root
-      echo "lcg-cp -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_Chunk{idx}_nEvents${{nEvents}}.root"
-      lcg-cp -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_Chunk{idx}_nEvents${{nEvents}}.root
+      echo "Trying 10x: lcg-cp -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_Chunk{idx}_nEvents${{nEvents}}.root"
+      icnt=0
+      while [ $icnt -lt 10 ]
+      do
+        lcg-cp -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_Chunk{idx}_nEvents${{nEvents}}.root"
+        if [ $? -eq 0 ]
+        then
+          break
+        else
+          let icnt+=1
+          sleep 300
+        fi
+      done
       if [ $? -ne 0 ]; then
          echo "ERROR: remote copy failed for file $ff"
       else
