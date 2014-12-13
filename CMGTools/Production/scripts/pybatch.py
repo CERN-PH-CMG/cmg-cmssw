@@ -84,18 +84,20 @@ else
       #gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_nEvents${{nEvents}}.root
       echo "Trying 10x: lcg-cp -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_Chunk{idx}_nEvents${{nEvents}}.root"
       icnt=0
+      copyExitStatus=1
       while [ $icnt -lt 10 ]
       do
         lcg-cp -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_Chunk{idx}_nEvents${{nEvents}}.root"
         if [ $? -eq 0 ]
         then
+          copyExitStatus=0
           break
         else
           let icnt+=1
           sleep 300
         fi
       done
-      if [ $? -ne 0 ]; then
+      if [ $copyExitStatus -ne 0 ]; then
          echo "ERROR: remote copy failed for file $ff"
       else
          echo "remote copy succeeded"
