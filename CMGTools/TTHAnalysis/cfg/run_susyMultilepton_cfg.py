@@ -49,9 +49,9 @@ treeProducer = cfg.Analyzer(
 
 #-------- SEQUENCE
 from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import TTH_PU40bx25
-TTHTest = cfg.MCComponent("TTHTest", files = TTH_PU40bx25.files[:1])
+TTH_PU40bx25.files = TTH_PU40bx25.files[:1]
 
-selectedComponents = [ TTHTest ]
+selectedComponents = [ TTH_PU40bx25 ]
 
 sequence = cfg.Sequence(susyCoreSequence+[
     #ttHEventAna,

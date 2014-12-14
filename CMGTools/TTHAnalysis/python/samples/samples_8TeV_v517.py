@@ -1,5 +1,6 @@
 from CMGTools.TTHAnalysis.samples.getFiles import getFiles
-import CMGTools.RootTools.fwlite.Config as cfg
+import PhysicsTools.HeppyCore.framework.config as cfg
+
 import os
 
 pat='PAT_CMG_V5_17_0'

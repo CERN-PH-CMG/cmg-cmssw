@@ -1,6 +1,5 @@
-from CMGTools.TTHAnalysis.samples.getFiles import getFiles
-from CMGTools.TTHAnalysis.samples.getMyFiles import getMyFiles
-import CMGTools.RootTools.fwlite.Config as cfg
+import PhysicsTools.HeppyCore.framework.config as cfg
+
 import os
 
 
