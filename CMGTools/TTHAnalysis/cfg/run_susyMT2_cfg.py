@@ -108,7 +108,10 @@ treeProducer = cfg.Analyzer(
 
 
 #-------- SAMPLES AND TRIGGERS -----------
-from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14 import * 
+#from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14 import * 
+#from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14v2 import *
+from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
+
 
 #selectedComponents = [ SingleMu, DoubleElectron, TTHToWW_PUS14, DYJetsToLL_M50_PU20bx25, TTJets_PUS14 ]
 
@@ -128,7 +131,7 @@ from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14 import *
 #selectedComponents = [ GJets_HT600toInf_PU_S14_POSTLS170 ]
 #, ZJetsToNuNu_HT100to200_PU_S14_POSTLS170 ]
 
-selectedComponents = [ TTJets_PU20bx25 ]
+##selectedComponents = [ TTJets_PU20bx25 ]
 
 #selectedComponents = [ SMS_T1qqqq_2J_mGl1000_mLSP800_PU_S14_POSTLS170 ]
 
@@ -145,14 +148,20 @@ sequence = cfg.Sequence(susyCoreSequence+[
 test = 1
 if test==1:
     # test a single component, using a single thread.
-    comp=TTJets_PU20bx25 #TTJets_forSynch
+    #comp=TTJets_PU20bx25 #TTJets_forSynch
     #comp=SMS_T1qqqq_2J_mGl1400_mLSP100_PU_S14_POSTLS170 # small files for testing
     #comp=SMS_T1bbbb_2J_mGl1000_mLSP900_PU_S14_POSTLS170
     #comp=GJets_HT100to200_PU_S14_POSTLS170
     #comp.files = ['/afs/cern.ch/work/p/pandolf/CMSSW_7_0_6_patch1_2/src/CMGTools/TTHAnalysis/cfg/pickevents.root']
     #comp.files = ['/afs/cern.ch/user/p/pandolf/public/file_gammaJet.root']
     #comp.files = ['/afs/cern.ch/work/p/pandolf/CMSSW_7_0_6_patch1_2/src/CMGTools/TTHAnalysis/cfg/file_gammaJet.root']
-    comp.files = ['/afs/cern.ch/user//m/mmasciov/public/TTJets_forSynch_1.root']
+    #comp.files = ['/afs/cern.ch/user//m/mmasciov/public/TTJets_forSynch_1.root']
+    ## 50 ns ttbar CSAv1
+    #    comp=TTJets_MSDecaysCKM_central_PU_S14_POSTLS170
+    ## 50 ns ttbar CSAv2
+    #    comp=TTJets
+    ## 25 ns ttbar PHYS14
+    comp = TTJets
     comp.files = comp.files[:1]
     selectedComponents = [comp]
     comp.splitFactor = 10
