@@ -3,9 +3,6 @@ from CMGTools.TTHAnalysis.samples.getMyFiles import getMyFiles
 import CMGTools.RootTools.fwlite.Config as cfg
 import os
 
-
-
-
 ################## Triggers 
 
 triggers_mumu = ["HLT_Mu17_Mu8_v*","HLT_Mu17_TkMu8_v*"]
@@ -340,7 +337,22 @@ GPSamples = [ TTHWWnlo_S14, TTHWWpy6_S14, TTHTTpy6_S14, TTHTTnlo_S14, TTHnlo_S14
 
 mcSamples = mcSamplesCSA14_PU20bx25 + mcSamplesTest + mcSamplesCSA14_PU40bx50 + GPSamples + mcPrivateSamplesCSA14v2
 
+### Samples from ACDV group
+T1ttbbWW_2J_mGo1000_mCh725_mChi715_3bodydec = kreator.makeMCComponentFromEOS('T1ttbbWW_2J_mGo1000_mCh725_mChi715_3bodydec', '/T1ttbbWW_2J_mGo1000_mCh725_mChi715_3bodydec/', '/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s',".*root", 0.325388)
+T1ttbbWW_2J_mGo1000_mCh725_mChi720_3bodydec = kreator.makeMCComponentFromEOS('T1ttbbWW_2J_mGo1000_mCh725_mChi720_3bodydec', '/T1ttbbWW_2J_mGo1000_mCh725_mChi720_3bodydec/', '/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s', ".*root", 0.325388)
+T1ttbbWW_2J_mGo1300_mCh300_mChi290_3bodydec = kreator.makeMCComponentFromEOS('T1ttbbWW_2J_mGo1300_mCh300_mChi290_3bodydec', '/T1ttbbWW_2J_mGo1300_mCh300_mChi290_3bodydec/', '/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s', ".*root", 0.0460525)
+T1ttbbWW_2J_mGo1300_mCh300_mChi295_3bodydec = kreator.makeMCComponentFromEOS('T1ttbbWW_2J_mGo1300_mCh300_mChi295_3bodydec', '/T1ttbbWW_2J_mGo1300_mCh300_mChi295_3bodydec/', '/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s', ".*root", 0.0460525)
 
+T1tttt_gluino_1300_LSP_100 = kreator.makeMCComponentFromEOS('T1tttt_gluino_1300_LSP_100', '/13TeV_T1tttt_gluino_1300_LSP_100/', '/store/cmst3/group/susy/alobanov/MC/MiniAOD_v2/%s', ".*root",0.0460525)
+T1tttt_gluino_800_LSP_450 = kreator.makeMCComponentFromEOS('T1tttt_gluino_800_LSP_450', '/13TeV_T1tttt_gluino_800_LSP_450/', '/store/cmst3/group/susy/alobanov/MC/MiniAOD_v2/%s', ".*root", 1.4891)
+T5qqqqWW_Gl_1400_LSP_100_Chi_325 = kreator.makeMCComponentFromEOS('T5qqqqWW_Gl_1400_LSP_100_Chi_325', '/13TeV_T5qqqqWW_Gl_1400_LSP_100_Chi_325/', '/store/cmst3/group/susy/alobanov/MC/MiniAOD_v2/%s', ".*root", 0.0252977)
+T5qqqqWW_Gl_1400_LSP_300_Chi_315 = kreator.makeMCComponentFromEOS('T5qqqqWW_Gl_1400_LSP_300_Chi_315', '/13TeV_T5qqqqWW_Gl_1400_LSP_300_Chi_315/', '/store/cmst3/group/susy/alobanov/MC/MiniAOD_v2/%s', ".*root", 0.0252977)
+
+#SqGltttt_Gl_1300_Sq_1300_LSP_100 = kreator.makeMCComponentFromEOS('SqGltttt_Gl_1300_Sq_1300_LSP_100', '/13TeV_SqGltttt_Gl_1300_Sq_1300_LSP_100/', '/store/cmst3/group/susy/alobanov/MC/MiniAOD_v2/%s')
+T6qqWW_Sq_950_LSP_300_Chi_325 =kreator.makeMCComponentFromEOS('T6qqWW_Sq_950_LSP_300_Chi_325', '/13TeV_T6qqWW_Sq_950_LSP_300_Chi_325/', '/store/cmst3/group/susy/alobanov/MC/MiniAOD_v2/%s')
+acdvSignals= [T1ttbbWW_2J_mGo1000_mCh725_mChi715_3bodydec, T1ttbbWW_2J_mGo1000_mCh725_mChi720_3bodydec, T1ttbbWW_2J_mGo1300_mCh300_mChi290_3bodydec, T1ttbbWW_2J_mGo1300_mCh300_mChi295_3bodydec, T1tttt_gluino_1300_LSP_100, T1tttt_gluino_800_LSP_450, T5qqqqWW_Gl_1400_LSP_100_Chi_325, T5qqqqWW_Gl_1400_LSP_300_Chi_315, T6qqWW_Sq_950_LSP_300_Chi_325]
+
+mcSamples+=acdvSignals
 #-----------DATA---------------
 
 dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data"
