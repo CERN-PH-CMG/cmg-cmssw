@@ -213,31 +213,25 @@ isoTrackAna = cfg.Analyzer(
 
 
 ## Jets Analyzer (generic)
-#ttHJetAna = cfg.Analyzer(
-#    'ttHJetAnalyzer',
-#    jetCol = 'slimmedJets',
-#    jetCol4MVA = 'slimmedJets',
-#    jetPt = 25.,
-#    jetEta = 4.7,
-#    jetEtaCentral = 2.4,
-#    jetLepDR = 0.4,
-#    minLepPt = 10,
-#    relaxJetId = False,  
-#    doPuId = False, # Not commissioned in 7.0.X
-#    recalibrateJets = False,
-#    shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
-#    cleanJetsFromTaus = False,
-#    cleanJetsFromIsoTracks = False,
-#    doQG = False,
-#    )
-#
-## Jet MC Match Analyzer (generic)
-#ttHJetMCAna = cfg.Analyzer(
-#    'ttHJetMCMatchAnalyzer',
-#    smearJets = True,
-#    shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts
-#    )
-#
+jetAna = cfg.Analyzer(
+    JetAnalyzer, name='jetAnalyzer',
+    jetCol = 'slimmedJets',
+    jetPt = 25.,
+    jetEta = 4.7,
+    jetEtaCentral = 2.4,
+    jetLepDR = 0.4,
+    minLepPt = 10,
+    relaxJetId = False,  
+    doPuId = False, # Not commissioned in 7.0.X
+    recalibrateJets = False,
+    shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
+    smearJets = True,
+    shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts  
+    cleanJetsFromTaus = False,
+    cleanJetsFromIsoTracks = False,
+    doQG = False,
+    )
+
 ## Fat Jets Analyzer (generic)
 #ttHFatJetAna = cfg.Analyzer(
 #    'ttHFatJetAnalyzer',
@@ -315,8 +309,7 @@ susyCoreSequence = [
     photonAna,
     tauAna,
     isoTrackAna,
-    #ttHJetAna,
-    #ttHJetMCAna,
+    jetAna,
     #ttHFatJetAna,  # out of core sequence for now
     #ttHSVAnalyzer, # out of core sequence for now
     metAna,
