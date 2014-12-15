@@ -291,13 +291,14 @@ metAna = cfg.Analyzer(
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,
     )
-#
-## Core Event Analyzer (computes basic quantities like HT, dilepton masses)
-#ttHCoreEventAna = cfg.Analyzer(
-#    'ttHCoreEventAnalyzer',
-#    maxLeps = 4, ## leptons to consider
-#    )
-#
+
+# Core Event Analyzer (computes basic quantities like HT, dilepton masses)
+from CMGTools.TTHAnalysis.analyzers.ttHCoreEventAnalyzer import ttHCoreEventAnalyzer
+ttHCoreEventAna = cfg.Analyzer(
+    ttHCoreEventAnalyzer, name='ttHCoreEventAnalyzer',
+    maxLeps = 4, ## leptons to consider
+    )
+
 ## Jet-MET based Skim (generic, but requirements depend on the final state)
 #ttHJetMETSkim = cfg.Analyzer(
 #    'ttHJetMETSkimmer',
@@ -335,7 +336,7 @@ susyCoreSequence = [
     #ttHFatJetAna,  # out of core sequence for now
     #ttHSVAnalyzer, # out of core sequence for now
     metAna,
-    #ttHCoreEventAna,
+    ttHCoreEventAna,
     #ttHJetMETSkim
     triggerFlagsAna,
     eventFlagsAna,

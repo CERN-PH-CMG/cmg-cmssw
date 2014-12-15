@@ -1,8 +1,7 @@
 from array import array
-from glob import glob
 from math import *
 import os.path
-from CMGTools.RootTools.utils.DeltaR import deltaR,deltaPhi
+from PhysicsTools.HeppyCore.utils.deltar import deltaR
 
 import os, ROOT
 if "/smearer_cc.so" not in ROOT.gSystem.GetLibraries(): 
@@ -48,19 +47,19 @@ _CommonSpect = [
 ]
 _CommonVars = {
  'TTH':[ 
-    MVAVar("neuRelIso := relIso - chargedIso/pt",lambda x: x.relIso(dBetaFactor=0.5) - x.chargedHadronIso()/x.pt()),  
-    MVAVar("chRelIso := chargedIso/pt",lambda x: x.chargedHadronIso()/x.pt()),
+    MVAVar("neuRelIso := relIso - chargedIso/pt",lambda x: x.relIso(dBetaFactor=0.5) - x.chargedHadronIsoR(0.4)/x.pt()),  
+    MVAVar("chRelIso := chargedIso/pt",lambda x: x.chargedHadronIsoR(0.4)/x.pt()),
     MVAVar("jetDR_in := min(dr_in,0.5)", lambda x : min(deltaR(x.eta(),x.phi(),x.jet.eta(),x.jet.phi()),0.5), corrfunc=ROOT.correctJetDRMC),
     MVAVar("jetPtRatio_in := min(ptf_in,1.5)", lambda x : min(x.pt()/x.jet.pt(),1.5), corrfunc=ROOT.correctJetPtRatioMC),
-    MVAVar("jetBTagCSV_in := max(CSV_in,0)", lambda x : max( (x.jet.btag('combinedSecondaryVertexBJetTags') if hasattr(x.jet, 'btag') else -99) ,0.)),
+    MVAVar("jetBTagCSV_in := max(CSV_in,0)", lambda x : max( (x.jet.btag('combinedInclusiveSecondaryVertexV2BJetTags') if hasattr(x.jet, 'btag') else -99) ,0.)),
     MVAVar("sip3d",lambda x: x.sip3D(), corrfunc=ROOT.scaleSip3dMC),
  ],
  'Susy':[ 
-    MVAVar("neuRelIso03 := relIso03 - chargedHadRelIso03",lambda x: x.relIso03 - x.chargedHadronIso(0.3)/x.pt()),  
-    MVAVar("chRelIso03 := chargedHadRelIso03",lambda x: x.chargedHadronIso(0.3)/x.pt()),
+    MVAVar("neuRelIso03 := relIso03 - chargedHadRelIso03",lambda x: x.relIso03 - x.chargedHadronIsoR(0.3)/x.pt()),  
+    MVAVar("chRelIso03 := chargedHadRelIso03",lambda x: x.chargedHadronIsoR(0.3)/x.pt()),
     MVAVar("jetDR := min(jetDR,0.5)", lambda x : min(deltaR(x.eta(),x.phi(),x.jet.eta(),x.jet.phi()),0.5), corrfunc=ROOT.correctJetDRMC),
     MVAVar("jetPtRatio := min(jetPtRatio,1.5)", lambda x : min(x.pt()/x.jet.pt(),1.5), corrfunc=ROOT.correctJetPtRatioMC),
-    MVAVar("jetBTagCSV := max(jetBTagCSV,0)", lambda x : max( (x.jet.btag('combinedSecondaryVertexBJetTags') if hasattr(x.jet, 'btag') else -99) ,0.)),
+    MVAVar("jetBTagCSV := max(jetBTagCSV,0)", lambda x : max( (x.jet.btag('combinedInclusiveSecondaryVertexV2BJetTags') if hasattr(x.jet, 'btag') else -99) ,0.)),
     MVAVar("sip3d",lambda x: x.sip3D(), corrfunc=ROOT.scaleSip3dMC),
     MVAVar("dxy := log(abs(dxy))",lambda x: log(abs(x.dxy())), corrfunc=ROOT.scaleDxyMC),
     MVAVar("dz  := log(abs(dz))", lambda x: log(abs(x.dz())), corrfunc=ROOT.scaleDzMC),

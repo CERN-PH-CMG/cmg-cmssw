@@ -1,21 +1,7 @@
-import operator 
-import itertools
-import copy
 from math import *
 
-from ROOT import TLorentzVector, TVectorD
-
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.Event import Event
-from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.Lepton import Lepton
-from CMGTools.RootTools.physicsobjects.Photon import Photon
-from CMGTools.RootTools.physicsobjects.Electron import Electron
-from CMGTools.RootTools.physicsobjects.Muon import Muon
-from CMGTools.RootTools.physicsobjects.Jet import Jet
-
-from CMGTools.RootTools.utils.DeltaR import * 
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi
 from CMGTools.TTHAnalysis.leptonMVA import LeptonMVA
 from CMGTools.TTHAnalysis.signedSip import *
 import os
@@ -29,11 +15,9 @@ class ttHCoreEventAnalyzer( Analyzer ):
 
     def declareHandles(self):
         super(ttHCoreEventAnalyzer, self).declareHandles()
-        self.handles['met'] = AutoHandle( 'slimmedMETs', 'std::vector<pat::MET>' )
-        self.handles['nopumet'] = AutoHandle( 'slimmedMETs', 'std::vector<pat::MET>' )
 
-    def beginLoop(self):
-        super(ttHCoreEventAnalyzer,self).beginLoop()
+    def beginLoop(self, setup):
+        super(ttHCoreEventAnalyzer,self).beginLoop(setup)
         self.counters.addCounter('events')
         count = self.counters.counter('events')
         count.register('all events')
@@ -133,21 +117,6 @@ class ttHCoreEventAnalyzer( Analyzer ):
             l.ptRelJet = sqrt(sum([v*v for v in cross]))/l.jet.p()
 
     
-#    def makeMETs(self, event):
-#        event.met = self.handles['met'].product()[0]
-#        event.metNoPU = self.handles['nopumet'].product()[0]
-#        if hasattr(event, 'deltaMetFromJetSmearing'):
-#            import ROOT
-#            px,py = event.met.px()+event.deltaMetFromJetSmearing[0], event.met.py()+event.deltaMetFromJetSmearing[1]
-#            event.met.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
-#            px,py = event.metNoPU.px()+event.deltaMetFromJetSmearing[0], event.metNoPU.py()+event.deltaMetFromJetSmearing[1]
-#            event.metNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
-#        if hasattr(event, 'deltaMetFromJEC') and event.deltaMetFromJEC[0] != 0 and event.deltaMetFromJEC[1] != 0:
-#            import ROOT
-#            px,py = event.met.px()+event.deltaMetFromJEC[0], event.met.py()+event.deltaMetFromJEC[1]
-#            event.met.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
-#            px,py = event.metNoPU.px()+event.deltaMetFromJEC[0], event.metNoPU.py()+event.deltaMetFromJEC[1]
-#            event.metNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
     
     #Function to make the biased Dphi
     def makeBiasedDPhi(self, event):
@@ -173,13 +142,10 @@ class ttHCoreEventAnalyzer( Analyzer ):
         return
 
 
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
         self.counters.counter('events').inc('all events')
 
-##        self.handles['rho'] = AutoHandle( ('fixedGridRhoFastjetAll','',''), 'double' )
-##        event.rho  = float(self.handles['rho'].product()[0])
-##        event.rho = self.handles['fixedGridRhoFastjetAll'] .product()[0]
         event.bjetsLoose  = [ j for j in event.cleanJets if j.btagWP("CSVv2IVFL") ]
         event.bjetsMedium = [ j for j in event.cleanJets if j.btagWP("CSVv2IVFM") ]
 
@@ -276,10 +242,9 @@ class ttHCoreEventAnalyzer( Analyzer ):
         #Of one lepton w.r.t. the PV of the event
         event.absIP3DA = absIP3D(event.selectedLeptons[0],event.goodVertices[0]) if nlep > 0 else (-1,-1)  
         event.absIP3DB = absIP3D(event.selectedLeptons[1],event.goodVertices[0]) if nlep > 1 else (-1,-1)    
- 
         event.absIP3DC = absIP3D(event.selectedLeptons[2],event.goodVertices[0]) if nlep > 2 else (-1,-1)
- 
         event.absIP3DD = absIP3D(event.selectedLeptons[3],event.goodVertices[0]) if nlep > 3 else (-1,-1)
+
         #Of one lepton w.r.t. the PV of the PV of the other leptons only
         event.absIP3DApvBC = absIP3Dtrkpvtrks(event.selectedLeptons[0],event.selectedLeptons[1],event.selectedLeptons[2],event.selectedLeptons[0],3,0) if nlep > 2 else (-1,-1)
         event.absIP3DBpvAC = absIP3Dtrkpvtrks(event.selectedLeptons[0],event.selectedLeptons[1],event.selectedLeptons[2],event.selectedLeptons[0],3,1) if nlep > 2 else (-1,-1)
@@ -301,9 +266,6 @@ class ttHCoreEventAnalyzer( Analyzer ):
         event.chi2pvtrksABDbutC = chi2pvtrks(event.selectedLeptons[0],event.selectedLeptons[1],event.selectedLeptons[3],event.selectedLeptons[0],3) if nlep > 3 else (-1,-1)
         event.chi2pvtrksABCbutD = chi2pvtrks(event.selectedLeptons[0],event.selectedLeptons[1],event.selectedLeptons[2],event.selectedLeptons[0],3) if nlep > 3 else (-1,-1)
 
-        ###event.weirdAssVar = sum([x.eta() for x in objects40a])
-        
-#        self.makeMETs(event);
         self.makeZs(event, self.maxLeps)
         self.makeMlls(event, self.maxLeps)
         self.makeLepPtRel(event)
