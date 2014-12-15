@@ -163,29 +163,29 @@ tauAna = cfg.Analyzer(
 ###------------------------------------------                                                                                                                                                                
 #
 ## those are the cuts for the nonEMu                                                                                                                                                                         
-#ttHIsoTrackAna = cfg.Analyzer(
-#            'ttHIsoTrackAnalyzer',
-#            setOff=True,
-#            #####
-#            candidates='packedPFCandidates',
-#            candidatesTypes='std::vector<pat::PackedCandidate>',
-#            ptMin = 5, # for pion 
-#            ptMinEMU = 5, # for EMU
-#            dzMax = 0.1,
-#            #####
-#            isoDR = 0.3,
-#            ptPartMin = 0,
-#            dzPartMax = 0.1,
-#            maxAbsIso = 8,
-#            #####
-#            MaxIsoSum = 0.1, ### unused
-#            MaxIsoSumEMU = 0.2, ### unused
-#            doSecondVeto = False,
-#            #####
-#            doPrune = True
-#            )
-#
-#
+isoTrackAna = cfg.Analyzer(
+    IsoTrackAnalyzer, name='isoTrackAnalyzer',
+    setOff=True,
+    #####
+    candidates='packedPFCandidates',
+    candidatesTypes='std::vector<pat::PackedCandidate>',
+    ptMin = 5, # for pion 
+    ptMinEMU = 5, # for EMU
+    dzMax = 0.1,
+    #####
+    isoDR = 0.3,
+    ptPartMin = 0,
+    dzPartMax = 0.1,
+    maxAbsIso = 8,
+    #####
+    MaxIsoSum = 0.1, ### unused
+    MaxIsoSumEMU = 0.2, ### unused
+    doSecondVeto = False,
+    #####
+    doPrune = True
+    )
+
+
 ## Jets Analyzer (generic)
 #ttHJetAna = cfg.Analyzer(
 #    'ttHJetAnalyzer',
@@ -286,7 +286,7 @@ susyCoreSequence = [
     #ttHLepMCAna,
     #ttHPhoAna,
     tauAna,
-    #ttHIsoTrackAna,
+    isoTrackAna,
     #ttHJetAna,
     #ttHJetMCAna,
     #ttHFatJetAna,  # out of core sequence for now
