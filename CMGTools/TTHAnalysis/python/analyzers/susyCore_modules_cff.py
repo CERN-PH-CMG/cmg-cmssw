@@ -245,14 +245,15 @@ ttHLepSkim = cfg.Analyzer(
 #)
 #
 #
-#ttHMetAna = cfg.Analyzer(
-#    'ttHMetEventAnalyzer',
-#    doTkMet = False,
-#    doMetNoMu = False,
-#    candidates='packedPFCandidates',
-#    candidatesTypes='std::vector<pat::PackedCandidate>',
-#    dzMax = 0.1,
-#    )
+
+metAna = cfg.Analyzer(
+    METAnalyzer, name="metAnalyzer",
+    doTkMet = False,
+    doMetNoMu = False,
+    candidates='packedPFCandidates',
+    candidatesTypes='std::vector<pat::PackedCandidate>',
+    dzMax = 0.1,
+    )
 #
 ## Core Event Analyzer (computes basic quantities like HT, dilepton masses)
 #ttHCoreEventAna = cfg.Analyzer(
@@ -296,7 +297,7 @@ susyCoreSequence = [
     #ttHJetMCAna,
     #ttHFatJetAna,  # out of core sequence for now
     #ttHSVAnalyzer, # out of core sequence for now
-    #ttHMetAna,
+    metAna,
     #ttHCoreEventAna,
     #ttHJetMETSkim
 ]
