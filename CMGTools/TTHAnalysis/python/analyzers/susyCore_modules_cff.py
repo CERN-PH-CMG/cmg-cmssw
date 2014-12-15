@@ -111,17 +111,11 @@ pdfwAna = cfg.Analyzer(
     PDFWeights = [ pdf for pdf,num in PDFWeights ]
     )
 
-## Lepton Analyzer (generic)
-#susyScanAna = cfg.Analyzer(
-#    'susyParameterScanAnalyzer',
-#    )
-
-## gen particles in Pythia 6
-#susyPythia6Gen  = cfg.Analyzer(
-#    'susyGenStatusThree',
-#    pythia6only = False, # True = get status 3; False = try get interesting event whatever generator is used
-#    verbose     = False,
-#    )
+# Save SUSY masses
+from CMGTools.TTHAnalysis.analyzers.susyParameterScanAnalyzer import susyParameterScanAnalyzer
+susyScanAna = cfg.Analyzer(
+    susyParameterScanAnalyzer, name="susyParameterScanAnalyzer",
+    )
 
 # Lepton Analyzer (generic)
 lepAna = cfg.Analyzer(
@@ -329,7 +323,7 @@ susyCoreSequence = [
     genHiggsAna,
     genHFAna,
     pdfwAna,
-    #susyScanAna,
+    susyScanAna,
     vertexAna,
     lepAna,
     ttHLepSkim,

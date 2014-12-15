@@ -1,7 +1,5 @@
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-#from CMGTools.RootTools.fwlite.Event import Event
-#from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from math import floor
 import re
         
@@ -37,14 +35,13 @@ class susyParameterScanAnalyzer( Analyzer ):
                                                      'std::vector<reco::GenParticle>' )
         self.mchandles['lhe'] = AutoHandle( 'source', 'LHEEventProduct', mayFail = True )
         
-    def beginLoop(self):
-        super(susyParameterScanAnalyzer,self).beginLoop()
+    def beginLoop(self, setup):
+        super(susyParameterScanAnalyzer,self).beginLoop(setup)
 
 
     def findSusyMasses(self,event):
         masses = {}
         for p in event.genParticles:
-            if p.status() != 3: continue
             id = abs(p.pdgId())
             if (id / 1000000) % 10 in [1,2]:
                 particle = None
@@ -82,12 +79,12 @@ class susyParameterScanAnalyzer( Analyzer ):
                     print "ERROR: I can't understand the model: ",comment
                     self.warned_already = True
 
-    def process(self, iEvent, event):
+    def process(self, event):
         # if not MC, nothing to do
         if not self.cfg_comp.isMC: 
             return True
 
-        self.readCollections( iEvent )
+        self.readCollections( event.input )
 
         # create parameters
         event.susyModel = None
