@@ -33,6 +33,34 @@ triggerAna = cfg.Analyzer(
     TriggerBitFilter, name="TriggerBitFilter",
     )
 
+# Create flags for trigger bits
+triggerFlagsAna = cfg.Analyzer(
+    TriggerBitAnalyzer, name="TriggerFlags",
+    processName = 'HLT',
+    triggerBits = {
+        # "<name>" : [ 'HLT_<Something>_v*', 'HLT_<SomethingElse>_v*' ] 
+    }
+    )
+# Create flags for MET filter bits
+eventFlagsAna = cfg.Analyzer(
+    TriggerBitAnalyzer, name="EventFlags",
+    processName = 'PAT',
+    outprefix   = 'Flag',
+    triggerBits = {
+        "HBHENoiseFilter" : [ "Flag_HBHENoiseFilter" ],
+        "CSCTightHaloFilter" : [ "Flag_CSCTightHaloFilter" ],
+        "hcalLaserEventFilter" : [ "Flag_hcalLaserEventFilter" ],
+        "EcalDeadCellTriggerPrimitiveFilter" : [ "Flag_EcalDeadCellTriggerPrimitiveFilter" ],
+        "goodVertices" : [ "Flag_goodVertices" ],
+        "trackingFailureFilter" : [ "Flag_trackingFailureFilter" ],
+        "eeBadScFilter" : [ "Flag_eeBadScFilter" ],
+        "ecalLaserCorrFilter" : [ "Flag_ecalLaserCorrFilter" ],
+        "trkPOGFilters" : [ "Flag_trkPOGFilters" ],
+        "trkPOG_manystripclus53X" : [ "Flag_trkPOG_manystripclus53X" ],
+        "trkPOG_toomanystripclus53X" : [ "Flag_trkPOG_toomanystripclus53X" ],
+        "trkPOG_logErrorTooManyClusters" : [ "Flag_trkPOG_logErrorTooManyClusters" ],
+    }
+    )
 
 # Select a list of good primary vertices (generic)
 vertexAna = cfg.Analyzer(
@@ -315,4 +343,6 @@ susyCoreSequence = [
     metAna,
     #ttHCoreEventAna,
     #ttHJetMETSkim
+    triggerFlagsAna,
+    eventFlagsAna,
 ]

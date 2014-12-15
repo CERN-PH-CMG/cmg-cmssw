@@ -29,9 +29,17 @@ ttHLepSkim.maxLeptons = 999
 #                        ttHSVAnalyzer)
 #susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
 #                        ttHHeavyFlavourHadronAnalyzer)
-#
-#
-#from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_mumu, triggers_ee, triggers_mue, triggers_1mu
+
+from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import triggers_mumu_iso, triggers_mumu_noniso, triggers_ee, triggers_3e, triggers_mue, triggers_1mu_iso, triggers_1e
+triggerFlagsAna.triggerBits = {
+    'DoubleMu' : triggers_mumu_iso,
+    'DoubleMuNoIso' : triggers_mumu_noniso,
+    'DoubleEl' : triggers_ee,
+    'TripleEl' : triggers_3e,
+    'MuEG'     : triggers_mue,
+    'SingleMu' : triggers_1mu_iso,
+    'SingleEl' : triggers_1e,
+}
 
 from CMGTools.TTHAnalysis.analyzers.treeProducerSusyMultilepton import * 
 ## Tree Producer
