@@ -1,6 +1,4 @@
-import CMGTools.RootTools.fwlite.Config as cfg
-from CMGTools.RootTools.fwlite.Config import printComps
-from CMGTools.RootTools.RootTools import *
+import PhysicsTools.HeppyCore.framework.config as cfg
 
 
 #Load all analyzers
@@ -11,70 +9,65 @@ from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
 ##------------------------------------------
 
 #Lepton
-ttHLepAna.loose_muon_dxy = 0.5
-ttHLepAna.loose_muon_dz  = 1.0
-ttHLepAna.loose_muon_relIso  = 0.15
-ttHLepAna.loose_electron_id  = "POG_Cuts_ID_2012_Veto"
-ttHLepAna.loose_electron_pt  = 5
-ttHLepAna.loose_electron_eta    = 2.4
-ttHLepAna.loose_electron_dxy    = 0.04
-ttHLepAna.loose_electron_dz     = 0.2
-ttHLepAna.loose_electron_relIso = 0.15
-ttHLepAna.loose_electron_lostHits = 999 # no cut
-ttHLepAna.inclusive_electron_lostHits = 999 # no cut
-ttHLepAna.ele_isoCorr = "deltaBeta"
-ttHLepAna.ele_tightId = "Cuts_2012"
-ttHLepAna.notCleaningElectrons = True
+lepAna.loose_muon_dxy = 0.5
+lepAna.loose_muon_dz  = 1.0
+lepAna.loose_muon_relIso  = 0.15
+lepAna.loose_electron_id  = "POG_Cuts_ID_2012_Veto"
+lepAna.loose_electron_pt  = 5
+lepAna.loose_electron_eta    = 2.4
+lepAna.loose_electron_dxy    = 0.04
+lepAna.loose_electron_dz     = 0.2
+lepAna.loose_electron_relIso = 0.15
+lepAna.loose_electron_lostHits = 999 # no cut
+lepAna.inclusive_electron_lostHits = 999 # no cut
+lepAna.ele_isoCorr = "deltaBeta"
+lepAna.ele_tightId = "Cuts_2012"
+lepAna.notCleaningElectrons = True
 
 # JET (for event variables do apply the jetID and not PUID yet)
-ttHJetAna.relaxJetId = False
-ttHJetAna.doPuId = False
-ttHJetAna.jetEta = 5.2
-ttHJetAna.jetEtaCentral = 2.5
-ttHJetAna.jetPt = 10.
-ttHJetAna.recalibrateJets = False
-ttHJetAna.jetLepDR = 0.4
-ttHJetMCAna.smearJets = False
-ttHJetAna.jetGammaDR = 0.4
-ttHJetAna.minGammaPt = 20
-ttHJetAna.gammaEtaCentral = 2.4
-ttHJetAna.cleanJetsFromIsoTracks = True ## added for Dominick
+jetAna.relaxJetId = False
+jetAna.doPuId = False
+jetAna.jetEta = 5.2
+jetAna.jetEtaCentral = 2.5
+jetAna.jetPt = 10.
+jetAna.recalibrateJets = False
+jetAna.jetLepDR = 0.4
+jetAna.smearJets = False
+jetAna.jetGammaDR = 0.4
+jetAna.minGammaPt = 20
+jetAna.gammaEtaCentral = 2.4
+jetAna.cleanJetsFromIsoTracks = True ## added for Dominick
 
 # TAU 
-ttHTauAna.etaMax = 2.3
-ttHTauAna.dxyMax = 99999.
-ttHTauAna.dzMax = 99999.
-ttHTauAna.vetoLeptons = False
-ttHTauAna.vetoLeptonsPOG = True
+tauAna.etaMax = 2.3
+tauAna.dxyMax = 99999.
+tauAna.dzMax = 99999.
+tauAna.vetoLeptons = False
+tauAna.vetoLeptonsPOG = True
 
 # Photon
-ttHPhoAna.etaCentral = 2.5
-ttHPhoAna.gammaID = "PhotonCutBasedIDLoose_CSA14"
+photonAna.etaCentral = 2.5
+photonAna.gammaID = "PhotonCutBasedIDLoose_CSA14"
 
-
-
-##------------------------------------------
-##  ISOLATED TRACK
-##------------------------------------------
-
-ttHIsoTrackAna.setOff=False
+# Isolated Track
+isoTrackAna.setOff=False
 
 ##------------------------------------------ 
 ##  CONTROL VARIABLES
 ##------------------------------------------ 
 
-ttHMT2Control = cfg.Analyzer(
-            'ttHMT2Control'
-            )
+#ttHMT2Control = cfg.Analyzer(
+#            'ttHMT2Control'
+#            )
 
 ##------------------------------------------
 ##  TOLOLOGIAL VARIABLES: MT, MT2
 ##------------------------------------------
 
-ttHTopoJetAna = cfg.Analyzer(
-            'ttHTopoVarAnalyzer',
-            doOnlyDefault = True
-            )
+#ttHTopoJetAna = cfg.Analyzer(
+#            'ttHTopoVarAnalyzer',
+#            doOnlyDefault = True
+#            )
 
 
 ##------------------------------------------
@@ -82,7 +75,7 @@ ttHTopoJetAna = cfg.Analyzer(
 ##------------------------------------------
 
 ####from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_mumu, triggers_ee, triggers_mue, triggers_1mu,
-from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_HT650, triggers_MET150, triggers_HTMET, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_mue, triggers_1mu, triggers_RA1_Photon
+from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import triggers_HT900, triggers_MET170, triggers_HTMET, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_mue, triggers_1mu, triggers_photon155
 
 # Tree Producer
 treeProducer = cfg.Analyzer(
@@ -91,15 +84,15 @@ treeProducer = cfg.Analyzer(
         PDFWeights = PDFWeights,
 ##        triggerBits = { }
         triggerBits = {
-            'HT650' : triggers_HT650,
-            'MET150' : triggers_MET150,
+            'HT650' : triggers_HT900,
+            'MET150' : triggers_MET170,
             'ht350met100' : triggers_HTMET,
             'SingleMu' : triggers_1mu,
             'DoubleMu' : triggers_MT2_mumu,
             'DoubleEl' : triggers_MT2_ee,
             'MuEG'     : triggers_MT2_mue,
-            'Photons'  : triggers_RA1_Photon,
-            'htXprescale' : triggers_HTMET
+            'htXprescale' : triggers_HTMET,
+            'Photons'  : triggers_photon155
             },
         )
 
@@ -138,9 +131,9 @@ from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
 #-------- SEQUENCE
 
 sequence = cfg.Sequence(susyCoreSequence+[
-    ttHMT2Control,
-    ttHTopoJetAna,
-    ttHFatJetAna,
+#    ttHMT2Control,
+#    ttHTopoJetAna,
+#    ttHFatJetAna,
     treeProducer,
     ])
 
