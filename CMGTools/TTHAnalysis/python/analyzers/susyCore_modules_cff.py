@@ -143,26 +143,21 @@ ttHLepSkim = cfg.Analyzer(
 #    gammaID = "PhotonCutBasedIDLoose",
 #)
 #
+
 ## Tau Analyzer (generic)
-#ttHTauAna = cfg.Analyzer(
-#    'ttHTauAnalyzer',
-#    ptMin = 20,
-#    etaMax = 9999,
-#    dxyMax = 0.5,
-#    dzMax = 1.0,
-#    vetoLeptons = True,
-#    leptonVetoDR = 0.4,
-#    vetoLeptonsPOG = False,
-#    tauID = "byLooseCombinedIsolationDeltaBetaCorr3Hits",
-#    tauLooseID = "decayModeFinding",
-#)
-#
-## Tau MC Matching (generic)
-#ttHTauMCAna = cfg.Analyzer(
-#    'ttHTauMCMatchAnalyzer',
-#)
-#
-#
+tauAna = cfg.Analyzer(
+    TauAnalyzer, name="tauAnalyzer",
+    ptMin = 20,
+    etaMax = 9999,
+    dxyMax = 0.5,
+    dzMax = 1.0,
+    vetoLeptons = True,
+    leptonVetoDR = 0.4,
+    vetoLeptonsPOG = False,
+    tauID = "byLooseCombinedIsolationDeltaBetaCorr3Hits",
+    tauLooseID = "decayModeFinding",
+)
+
 ##------------------------------------------
 ###  ISOLATED TRACK
 ###------------------------------------------                                                                                                                                                                
@@ -290,8 +285,7 @@ susyCoreSequence = [
     ttHLepSkim,
     #ttHLepMCAna,
     #ttHPhoAna,
-    #ttHTauAna,
-    #ttHTauMCAna,
+    tauAna,
     #ttHIsoTrackAna,
     #ttHJetAna,
     #ttHJetMCAna,
