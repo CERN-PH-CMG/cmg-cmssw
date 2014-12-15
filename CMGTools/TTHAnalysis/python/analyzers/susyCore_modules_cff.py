@@ -134,15 +134,16 @@ ttHLepSkim = cfg.Analyzer(
 #    matchAllInclusiveLeptons = False,
 #    )
 #
+
 ## Photon Analyzer (generic)
-#ttHPhoAna = cfg.Analyzer(
-#    'ttHPhotonAnalyzerSusy',
-#    photons='slimmedPhotons',
-#    ptMin = 20,
-#    etaMax = 2.5,
-#    gammaID = "PhotonCutBasedIDLoose",
-#)
-#
+photonAna = cfg.Analyzer(
+    PhotonAnalyzer, name='photonAnalyzer',
+    photons='slimmedPhotons',
+    ptMin = 20,
+    etaMax = 2.5,
+    gammaID = "PhotonCutBasedIDLoose_CSA14"         
+)
+
 
 ## Tau Analyzer (generic)
 tauAna = cfg.Analyzer(
@@ -284,7 +285,7 @@ susyCoreSequence = [
     lepAna,
     ttHLepSkim,
     #ttHLepMCAna,
-    #ttHPhoAna,
+    photonAna,
     tauAna,
     isoTrackAna,
     #ttHJetAna,
