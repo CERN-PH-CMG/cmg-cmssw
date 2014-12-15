@@ -151,9 +151,9 @@ T5qqqqWW_Gl_1400_LSP_100_Chi_325 = kreator.makeMCComponentFromEOS('T5qqqqWW_Gl_1
 T5qqqqWW_Gl_1400_LSP_300_Chi_315 = kreator.makeMCComponentFromEOS('T5qqqqWW_Gl_1400_LSP_300_Chi_315', '/13TeV_T5qqqqWW_Gl_1400_LSP_300_Chi_315/', '/store/cmst3/group/susy/alobanov/MC/MiniAOD_v2/%s', ".*root", 0.0252977)
 
 #SqGltttt_Gl_1300_Sq_1300_LSP_100 = kreator.makeMCComponentFromEOS('SqGltttt_Gl_1300_Sq_1300_LSP_100', '/13TeV_SqGltttt_Gl_1300_Sq_1300_LSP_100/', '/store/cmst3/group/susy/alobanov/MC/MiniAOD_v2/%s')
-T6qqWW_Sq_950_LSP_300_Chi_350 =kreator.makeMCComponentFromEOS('T6qqWW_Sq_950_LSP_300_Chi_350', '/13TeV_T6qqWW_Sq_950_LSP_300_Chi_350/', '/store/cmst3/group/susy/alobanov/MC/MiniAOD_v2/%s', ".*root", 0.0898112)
+T6qqWW_Sq_950_LSP_300_Chi_325 =kreator.makeMCComponentFromEOS('T6qqWW_Sq_950_LSP_300_Chi_325', '/13TeV_T6qqWW_Sq_950_LSP_300_Chi_325/', '/store/cmst3/group/susy/alobanov/MC/MiniAOD_v2/%s', ".*root", 0.0898112)
     
-acdvSignals= [T1ttbbWW_2J_mGo1000_mCh725_mChi715_3bodydec, T1ttbbWW_2J_mGo1000_mCh725_mChi720_3bodydec, T1ttbbWW_2J_mGo1300_mCh300_mChi290_3bodydec, T1ttbbWW_2J_mGo1300_mCh300_mChi295_3bodydec, T1tttt_gluino_1300_LSP_100, T1tttt_gluino_800_LSP_450, T5qqqqWW_Gl_1400_LSP_100_Chi_325, T5qqqqWW_Gl_1400_LSP_300_Chi_315, T6qqWW_Sq_950_LSP_300_Chi_350]
+acdvSignals= [T1ttbbWW_2J_mGo1000_mCh725_mChi715_3bodydec, T1ttbbWW_2J_mGo1000_mCh725_mChi720_3bodydec, T1ttbbWW_2J_mGo1300_mCh300_mChi290_3bodydec, T1ttbbWW_2J_mGo1300_mCh300_mChi295_3bodydec, T1tttt_gluino_1300_LSP_100, T1tttt_gluino_800_LSP_450, T5qqqqWW_Gl_1400_LSP_100_Chi_325, T5qqqqWW_Gl_1400_LSP_300_Chi_315, T6qqWW_Sq_950_LSP_300_Chi_325]
 mcSamples+=acdvSignals
 
 
