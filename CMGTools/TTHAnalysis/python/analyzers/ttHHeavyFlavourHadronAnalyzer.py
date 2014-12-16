@@ -1,9 +1,5 @@
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.TTHAnalysis.signedSip import SignedImpactParameterComputer
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from CMGTools.TTHAnalysis.analyzers.ttHSVAnalyzer import matchToGenHadron
-
-from CMGTools.RootTools.utils.DeltaR import deltaR
 
 class ttHHeavyFlavourHadronAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
@@ -12,12 +8,12 @@ class ttHHeavyFlavourHadronAnalyzer( Analyzer ):
     def declareHandles(self):
         super(ttHHeavyFlavourHadronAnalyzer, self).declareHandles()
 
-    def beginLoop(self):
-        super(ttHHeavyFlavourHadronAnalyzer,self).beginLoop()
+    def beginLoop(self, setup):
+        super(ttHHeavyFlavourHadronAnalyzer,self).beginLoop(setup)
 
        
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
         if not self.cfg_comp.isMC: return True
 
         def ref2id(ref):

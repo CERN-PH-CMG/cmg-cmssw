@@ -271,18 +271,20 @@ ttHFatJetAna = cfg.Analyzer(
     #shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     )
 
-#
-## Secondary vertex analyzer
-#ttHSVAnalyzer = cfg.Analyzer(
-#    'ttHSVAnalyzer'
-#)
-#
-## Secondary vertex analyzer
-#ttHHeavyFlavourHadronAnalyzer = cfg.Analyzer(
-#    'ttHHeavyFlavourHadronAnalyzer'
-#)
-#
-#
+
+# Secondary vertex analyzer
+from CMGTools.TTHAnalysis.analyzers.ttHSVAnalyzer import ttHSVAnalyzer
+ttHSVAna = cfg.Analyzer(
+    ttHSVAnalyzer, name="ttHSVAnalyzer",
+)
+
+# Secondary vertex analyzer
+from CMGTools.TTHAnalysis.analyzers.ttHHeavyFlavourHadronAnalyzer import ttHHeavyFlavourHadronAnalyzer
+ttHHeavyFlavourHadronAna = cfg.Analyzer(
+    ttHHeavyFlavourHadronAnalyzer, name="ttHHeavyFlavourHadronAnalyzer",
+)
+
+
 
 metAna = cfg.Analyzer(
     METAnalyzer, name="metAnalyzer",
@@ -335,7 +337,7 @@ susyCoreSequence = [
     isoTrackAna,
     jetAna,
     #ttHFatJetAna,  # out of core sequence for now
-    #ttHSVAnalyzer, # out of core sequence for now
+    #ttHSVAna, # out of core sequence for now
     metAna,
     ttHCoreEventAna,
     #ttHJetMETSkim

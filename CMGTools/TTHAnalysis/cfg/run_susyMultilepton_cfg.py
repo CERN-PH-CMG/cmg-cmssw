@@ -16,19 +16,20 @@ ttHLepSkim.maxLeptons = 999
 #ttHLepSkim.ptCuts = []
 
 
-## Event Analyzer for susy multi-lepton (at the moment, it's the TTH one)
-#ttHEventAna = cfg.Analyzer(
-#    'ttHLepEventAnalyzer',
-#    minJets25 = 0,
-#    )
-#
+# Event Analyzer for susy multi-lepton (at the moment, it's the TTH one)
+from CMGTools.TTHAnalysis.analyzers.ttHLepEventAnalyzer import ttHLepEventAnalyzer
+ttHEventAna = cfg.Analyzer(
+    ttHLepEventAnalyzer, name="ttHLepEventAnalyzer",
+    minJets25 = 0,
+    )
+
 ## Insert the SV analyzer in the sequence
-#susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
-#                        ttHFatJetAna)
-#susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
-#                        ttHSVAnalyzer)
-#susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
-#                        ttHHeavyFlavourHadronAnalyzer)
+susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
+                        ttHFatJetAna)
+susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
+                        ttHSVAna)
+susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
+                        ttHHeavyFlavourHadronAna)
 
 from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import triggers_mumu_iso, triggers_mumu_noniso, triggers_ee, triggers_3e, triggers_mue, triggers_1mu_iso, triggers_1e
 triggerFlagsAna.triggerBits = {
@@ -56,15 +57,22 @@ treeProducer = cfg.Analyzer(
 #-------- SAMPLES AND TRIGGERS -----------
 
 #-------- SEQUENCE
-from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import TTH_PU40bx25
-TTH_PU40bx25.files = TTH_PU40bx25.files[:1]
+from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import TTH_PU40bx25, SMS_T1tttt_2J_mGl1500_mLSP100
 
 selectedComponents = [ TTH_PU40bx25 ]
 
 sequence = cfg.Sequence(susyCoreSequence+[
-    #ttHEventAna,
+    ttHEventAna,
     treeProducer,
     ])
+
+test = 1
+if test == 1:
+    comp = TTH_PU40bx25; comp.name = "TTH"
+    #comp = SMS_T1tttt_2J_mGl1500_mLSP100
+    comp.files = comp.files[:1]
+    comp.splitFactor = 1
+    selectedComponents = [ comp ]
 
 # the following is declared in case this cfg is used in input to the heppy.py script
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
