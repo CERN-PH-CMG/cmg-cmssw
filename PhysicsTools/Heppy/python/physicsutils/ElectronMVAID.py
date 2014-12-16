@@ -4,7 +4,7 @@ import ROOT
 class ElectronMVAID:
     def __init__(self,name,type,*xmls):
         self.name = name
-        self.estimator = ROOT.heppy.EGammaMvaEleEstimatorFWLite()
+        self.estimator = ROOT.EGammaMvaEleEstimatorFWLite() # CMGTools one, which is not dummy
         self.sxmls = ROOT.vector(ROOT.string)()
         for x in xmls: self.sxmls.push_back(x)  
         self.etype = -1
@@ -14,8 +14,6 @@ class ElectronMVAID:
         if self.etype == -1: raise RuntimeError, "Unknown type %s" % type
         self._init = False
     def __call__(self,ele,vtx,rho,full5x5=False,debug=False):
-#FIXME:
-	return -99
         if not self._init:
             self.estimator.initialize(self.name,self.etype,True,self.sxmls)
             self._init = True

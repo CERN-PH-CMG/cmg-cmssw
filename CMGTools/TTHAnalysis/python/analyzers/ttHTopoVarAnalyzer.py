@@ -6,30 +6,23 @@ from math import *
 from ROOT import std 
 from ROOT import TLorentzVector, TVectorD
 
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.Event import Event
-from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.Lepton import Lepton
-from CMGTools.RootTools.physicsobjects.Photon import Photon
-from CMGTools.RootTools.physicsobjects.Electron import Electron
-from CMGTools.RootTools.physicsobjects.Muon import Muon
-from CMGTools.RootTools.physicsobjects.Tau import Tau
-from CMGTools.RootTools.physicsobjects.Jet import Jet
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.HeppyCore.framework.event import Event
+from PhysicsTools.HeppyCore.statistics.counter import Counter, Counters
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 
-from CMGTools.RootTools.utils.DeltaR import * 
+from PhysicsTools.HeppyCore.utils.deltar import deltaR
 
-import ROOT
+from ROOT.heppy import Hemisphere
+from ROOT.heppy import ReclusterJets
 
-from ROOT import Hemisphere
-from ROOT import ReclusterJets
-
-from ROOT import Davismt2
+from ROOT.heppy import Davismt2
 davismt2 = Davismt2()
 
-from ROOT import mt2w_bisect 
+from ROOT.heppy import mt2w_bisect 
 mt2wSNT = mt2w_bisect.mt2w()
 
+import ROOT
 
 import os
 
@@ -45,8 +38,8 @@ class ttHTopoVarAnalyzer( Analyzer ):
        #genJets                                                                                                                                                                     
         self.handles['genJets'] = AutoHandle( 'slimmedGenJets','std::vector<reco::GenJet>')
 
-    def beginLoop(self):
-        super(ttHTopoVarAnalyzer,self).beginLoop()
+    def beginLoop(self, setup):
+        super(ttHTopoVarAnalyzer,self).beginLoop(setup)
         self.counters.addCounter('pairs')
         count = self.counters.counter('pairs')
         count.register('all events')
@@ -185,7 +178,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
 #### do same things for GEN
 
-        allGenJets = map( Jet, self.handles['genJets'].product() ) 
+        allGenJets = [ x for x in self.handles['genJets'].product() ] 
         objects40jc_Gen = [ j for j in allGenJets if j.pt() > 40 and abs(j.eta())<2.5 ]
 
         if len(objects40jc_Gen)>=2:
@@ -455,8 +448,8 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
 ###
 
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
 
         event.mt2_gen=-999
         event.mt2bb=-999

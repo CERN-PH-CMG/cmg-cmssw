@@ -1,16 +1,6 @@
-from CMGTools.TTHAnalysis.analyzers.ttHLepTreeProducerNew import *
+from PhysicsTools.Heppy.analyzers.core.AutoFillTreeProducer  import * 
 
-class treeProducerSusyCore( ttHLepTreeProducerNew ):
-
-    #-----------------------------------
-    # CORE TREE PRODUCER FOR THE SUSY ANALYSES
-    # defines the core variables that will be present in the trees of all final states
-    #-----------------------------------
-    def __init__(self, cfg_ana, cfg_comp, looperName):
-        super(treeProducerSusyCore,self).__init__(cfg_ana, cfg_comp, looperName)
-
-        ## Declare what we want to fill
-        self.globalVariables = [
+susyCore_globalVariables = [
             NTupleVariable("rho",  lambda ev: ev.rho, float, help="kt6PFJets rho"),
             NTupleVariable("nVert",  lambda ev: len(ev.goodVertices), int, help="Number of good vertices"),
             NTupleVariable("nJet25", lambda ev: len(ev.cleanJets), int, help="Number of jets with pt > 25"),
@@ -27,9 +17,9 @@ class treeProducerSusyCore( ttHLepTreeProducerNew ):
             NTupleVariable("nLepGood15", lambda ev: sum([l.pt() > 15 for l in ev.selectedLeptons]), int, help="Number of leptons with pt > 15"),
             NTupleVariable("nLepGood10", lambda ev: sum([l.pt() > 10 for l in ev.selectedLeptons]), int, help="Number of leptons with pt > 10"),
             ##--------------------------------------------------
-            NTupleVariable("GenHeaviestQCDFlavour", lambda ev : ev.heaviestQCDFlavour, int, mcOnly=True, help="pdgId of heaviest parton in the event (after shower)"),
-            NTupleVariable("LepEff_1lep", lambda ev : ev.LepEff_1lep, mcOnly=True, help="Lepton preselection SF (1 lep)"),
-            NTupleVariable("LepEff_2lep", lambda ev : ev.LepEff_2lep, mcOnly=True, help="Lepton preselection SF (2 lep)"),
+            #NTupleVariable("GenHeaviestQCDFlavour", lambda ev : ev.heaviestQCDFlavour, int, mcOnly=True, help="pdgId of heaviest parton in the event (after shower)"),
+            #NTupleVariable("LepEff_1lep", lambda ev : ev.LepEff_1lep, mcOnly=True, help="Lepton preselection SF (1 lep)"),
+            #NTupleVariable("LepEff_2lep", lambda ev : ev.LepEff_2lep, mcOnly=True, help="Lepton preselection SF (2 lep)"),
             ##------------------------------------------------
             NTupleVariable("GenSusyMScan1", lambda ev : ev.genSusyMScan1, int, mcOnly=True, help="Susy mass 1 in scan"),
             NTupleVariable("GenSusyMScan2", lambda ev : ev.genSusyMScan2, int, mcOnly=True, help="Susy mass 2 in scan"),
@@ -48,21 +38,16 @@ class treeProducerSusyCore( ttHLepTreeProducerNew ):
             NTupleVariable("GenSusyMNeutralino4", lambda ev : ev.genSusyMNeutralino4, int, mcOnly=True, help="Susy Neutralino4 mass"),
             NTupleVariable("GenSusyMChargino", lambda ev : ev.genSusyMChargino, int, mcOnly=True, help="Susy Chargino mass"),
             NTupleVariable("GenSusyMChargino2", lambda ev : ev.genSusyMChargino2, int, mcOnly=True, help="Susy Chargino2 mass"),
-        ]
+]
 
-        self.globalObjects = {
+susyCore_globalObjects = {
             "met" : NTupleObject("met", metType, help="PF E_{T}^{miss}, after type 1 corrections"),
-            "metNoPU" : NTupleObject("metNoPU", fourVectorType, help="PF noPU E_{T}^{miss}"),
-        }
-        self.collections = {
-            ##--------------------------------------------------
-            "genleps"         : NTupleCollection("genLep",     genParticleWithSourceType, 10, help="Generated leptons (e/mu) from W/Z decays"),
-            "gentauleps"      : NTupleCollection("genLepFromTau", genParticleWithSourceType, 10, help="Generated leptons (e/mu) from decays of taus from W/Z/h decays"),
-            "gentaus"         : NTupleCollection("genTau",     genParticleWithSourceType, 10, help="Generated leptons (tau) from W/Z decays"),
-            "genStatusThree"   : NTupleCollection("GenP6StatusThree", genParticleWithMotherId, 100 , help="Pythia6 status three particles"),
-            }
+            #"metNoPU" : NTupleObject("metNoPU", fourVectorType, help="PF noPU E_{T}^{miss}"),
+}
 
-        ## Book the variables, but only if we're called explicitly and not through a base class
-        if cfg_ana.name == "treeProducerSusyCore":
-            self.initDone = True
-            self.declareVariables()
+susyCore_collections = {
+            #"genleps"         : NTupleCollection("genLep",     genParticleWithSourceType, 10, help="Generated leptons (e/mu) from W/Z decays"),
+            #"gentauleps"      : NTupleCollection("genLepFromTau", genParticleWithSourceType, 10, help="Generated leptons (e/mu) from decays of taus from W/Z/h decays"),
+            #"gentaus"         : NTupleCollection("genTau",     genParticleWithSourceType, 10, help="Generated leptons (tau) from W/Z decays"),
+            "generatorSummary" : NTupleCollection("GenPart", genParticleWithLinksType, 100 , help="Hard scattering particles, with ancestry and links"),
+}

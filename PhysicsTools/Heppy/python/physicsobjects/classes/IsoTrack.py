@@ -1,9 +1,6 @@
+from PhysicsTools.Heppy.physicsobjects.PhysicsObject import *
+import ROOT
 import math
-from CMGTools.RootTools.physicsobjects.PhysicsObject import *
-
-###
-### keep this object slim, since is needed for every pfCand
-###
 
 class IsoTrack( PhysicsObject ):
     

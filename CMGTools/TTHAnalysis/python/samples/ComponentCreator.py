@@ -1,4 +1,4 @@
-import CMGTools.RootTools.fwlite.Config as cfg
+import PhysicsTools.HeppyCore.framework.config as cfg
 from CMGTools.Production.datasetToSource import datasetToSource, myDatasetToSource
 from CMGTools.Production.datasetInformation import DatasetInformation
 from CMGTools.Production import eostools
@@ -15,10 +15,8 @@ class ComponentCreator(object):
              nGenEvents = 1,
              triggers = [],
              effCorrFactor = 1,
-#             skimEfficiency = self.getSkimEfficiency(dataset,user)
          )
 
- #        print 'Skim Efficiency for ',name,'=', component.skimEfficiency
          return component
 
     def makePrivateMCComponent(self,name,dataset,files,xSec=1):
@@ -34,10 +32,8 @@ class ComponentCreator(object):
              nGenEvents = 1,
              triggers = [],
              effCorrFactor = 1,
-#             skimEfficiency = self.getSkimEfficiency(dataset,user)
          )
 
- #        print 'Skim Efficiency for ',name,'=', component.skimEfficiency
          return component
     
     def makeMyPrivateMCComponent(self,name,dataset,user,pattern,dbsInstance, xSec=1,useAAA=False):
@@ -101,13 +97,13 @@ class ComponentCreator(object):
         )
         return component
 
-    def makeDataComponent(self,name,datasets,user,pattern):
+    def makeDataComponent(self,name,datasets,user,pattern,json=None):
          files=[]
 
          for dataset in datasets:
              files=files+self.getFiles(dataset,user,pattern)
         
-         component = cfgDataComponent(
+         component = cfg.DataComponent(
              dataset=dataset,
              name = name,
              files = files,

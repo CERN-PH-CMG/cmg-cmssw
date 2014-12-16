@@ -1,28 +1,27 @@
 import random
 import math
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
-from CMGTools.RootTools.utils.DeltaR import * 
-from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.RootTools.physicsobjects.JetReCalibrator import JetReCalibrator
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Jet
+from PhysicsTools.Heppy.physicsutils.JetReCalibrator import JetReCalibrator
 
+from PhysicsTools.HeppyCore.utils.deltar import *
+import PhysicsTools.HeppyCore.framework.config as cfg
 
 class ttHFatJetAnalyzer( Analyzer ):
     """Taken from RootTools.JetAnalyzer, simplified, modified, added corrections    """
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(ttHFatJetAnalyzer,self).__init__(cfg_ana, cfg_comp, looperName)
         # -- this part needs some updates for 7.0.X (but AK7 is correct)
-        #mcGT   = cfg_ana.mcGT   if hasattr(cfg_ana,'mcGT')   else "PLS170_V6AN2"
+        #mcGT   = cfg_ana.mcGT   if hasattr(cfg_ana,'mcGT')   else "PHYS14_25_V1"
         #dataGT = cfg_ana.dataGT if hasattr(cfg_ana,'dataGT') else "GR_70_V2_AN1"
-        #if self.cfg_comp.isMC:
-            #self.jetReCalibrator    = JetReCalibrator(mcGT,"AK7PF",    False)
-            #self.jetReCalibratorCHS = JetReCalibrator(mcGT,"AK7PFchs", False)
-        #else:
-            #self.jetReCalibrator    = JetReCalibrator(dataGT,"AK7PF",    True)
-            #self.jetReCalibratorCHS = JetReCalibrator(dataGT,"AK7PFchs", True)
         #self.shiftJEC = self.cfg_ana.shiftJEC if hasattr(self.cfg_ana, 'shiftJEC') else 0
         #self.doJEC = self.cfg_ana.recalibrateJets or (self.shiftJEC != 0)
+        #if self.doJEC:
+        #  if self.cfg_comp.isMC:
+        #    self.jetReCalibrator = JetReCalibrator(mcGT,"AK7PFchs", False,cfg_ana.jecPath)
+        #  else:
+        #    self.jetReCalibrator = JetReCalibrator(dataGT,"AK7PFchs", True,cfg_ana.jecPath)
         self.jetLepDR = self.cfg_ana.jetLepDR  if hasattr(self.cfg_ana, 'jetLepDR') else 0.5
         self.lepPtMin = self.cfg_ana.minLepPt  if hasattr(self.cfg_ana, 'minLepPt') else -1
 
@@ -30,14 +29,12 @@ class ttHFatJetAnalyzer( Analyzer ):
     def declareHandles(self):
         super(ttHFatJetAnalyzer, self).declareHandles()
         self.handles['jets'] = AutoHandle( self.cfg_ana.jetCol, 'std::vector<pat::Jet>' )
-        #self.handles['rho']  = AutoHandle( ('fixedGridRhoFastjetAll','',''), 'double' )
     
-    def beginLoop(self):
-        super(ttHFatJetAnalyzer,self).beginLoop()
+    def beginLoop(self, setup):
+        super(ttHFatJetAnalyzer,self).beginLoop(setup)
         
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
-        #rho  = float(self.handles['rho'].product()[0])
+    def process(self, event):
+        self.readCollections( event.input )
 
         ## Read jets, if necessary recalibrate and shift MET
         allJets = map(Jet, self.handles['jets'].product()) 

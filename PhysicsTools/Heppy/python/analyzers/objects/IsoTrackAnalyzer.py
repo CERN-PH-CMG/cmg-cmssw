@@ -1,24 +1,25 @@
-import operator 
+import operator
 import itertools
 import copy
 import types
 
-from math import *
-
 from ROOT import TLorentzVector
 
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.Event import Event
-from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.Lepton import Lepton
-##from CMGTools.RootTools.physicsobjects.Tau import Tau
-from CMGTools.RootTools.physicsobjects.IsoTrack import IsoTrack
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.HeppyCore.framework.event import Event
+from PhysicsTools.HeppyCore.statistics.counter import Counter, Counters
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.physicsobjects.Lepton import Lepton
+from PhysicsTools.Heppy.physicsobjects.Tau import Tau
+from PhysicsTools.Heppy.physicsobjects.IsoTrack import IsoTrack
 
-from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch, matchObjectCollection3
+from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi, bestMatch , matchObjectCollection3
+
+import PhysicsTools.HeppyCore.framework.config as cfg
 
 def mtw(x1,x2):
-    return sqrt(2*x1.pt()*x2.pt()*(1-cos(x1.phi()-x2.phi())))
+    import math
+    return math.sqrt(2*x1.pt()*x2.pt()*(1-math.cos(x1.phi()-x2.phi())))
 
 def makeNearestLeptons(leptons,track, event):
 
@@ -37,21 +38,21 @@ def makeNearestLeptons(leptons,track, event):
 
     return nearestLepton
  
-class ttHIsoTrackAnalyzer( Analyzer ):
+class IsoTrackAnalyzer( Analyzer ):
 
     def __init__(self, cfg_ana, cfg_comp, looperName ):
-        super(ttHIsoTrackAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
+        super(IsoTrackAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
 
     #----------------------------------------
     # DECLARATION OF HANDLES OF LEPTONS STUFF   
     #----------------------------------------
     def declareHandles(self):
-        super(ttHIsoTrackAnalyzer, self).declareHandles()
+        super(IsoTrackAnalyzer, self).declareHandles()
         self.handles['cmgCand'] = AutoHandle(self.cfg_ana.candidates,self.cfg_ana.candidatesTypes) 
         self.handles['met'] = AutoHandle( 'slimmedMETs', 'std::vector<pat::MET>' )
 
-    def beginLoop(self):
-        super(ttHIsoTrackAnalyzer,self).beginLoop()
+    def beginLoop(self, setup):
+        super(IsoTrackAnalyzer,self).beginLoop(setup)
         self.counters.addCounter('events')
         count = self.counters.counter('events')
         count.register('all events')
@@ -189,12 +190,12 @@ class ttHIsoTrackAnalyzer( Analyzer ):
         print '----------------'
 
 
-    def process(self, iEvent, event):
+    def process(self, event):
 
         if self.cfg_ana.setOff:
             return True
 
-        self.readCollections( iEvent )
+        self.readCollections( event.input )
         self.makeIsoTrack(event)
 
         if len(event.selectedIsoTrack)==0 : return True
@@ -207,8 +208,9 @@ class ttHIsoTrackAnalyzer( Analyzer ):
         
         if not self.cfg_comp.isMC:
             return True
-        
-        self.matchIsoTrack(event)        
+
+        if hasattr(event, 'gentaus') and hasattr(event, 'gentauleps') and hasattr(event, 'genleps') :
+            self.matchIsoTrack(event)        
 
 ###        self.printInfo(event)
         
@@ -224,3 +226,27 @@ class ttHIsoTrackAnalyzer( Analyzer ):
 
 
         return True
+
+
+setattr(IsoTrackAnalyzer,"defaultConfig",cfg.Analyzer(
+    class_object=IsoTrackAnalyzer,
+    setOff=True,
+    #####
+    candidates='packedPFCandidates',
+    candidatesTypes='std::vector<pat::PackedCandidate>',
+    ptMin = 5, # for pion 
+    ptMinEMU = 5, # for EMU
+    dzMax = 0.1,
+    #####
+    isoDR = 0.3,
+    ptPartMin = 0,
+    dzPartMax = 0.1,
+    maxAbsIso = 8,
+    #####
+    MaxIsoSum = 0.1, ### unused
+    MaxIsoSumEMU = 0.2, ### unused
+    doSecondVeto = False,
+    #####
+    doPrune = True,
+  )
+)
