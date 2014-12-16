@@ -56,18 +56,22 @@ isoTrackAna.setOff=False
 ##  CONTROL VARIABLES
 ##------------------------------------------ 
 
-#ttHMT2Control = cfg.Analyzer(
-#            'ttHMT2Control'
-#            )
+from CMGTools.TTHAnalysis.analyzers.ttHMT2Control import ttHMT2Control
+
+ttHMT2Control = cfg.Analyzer(
+            ttHMT2Control, name = 'ttHMT2Control'
+            )
 
 ##------------------------------------------
 ##  TOLOLOGIAL VARIABLES: MT, MT2
 ##------------------------------------------
 
-#ttHTopoJetAna = cfg.Analyzer(
-#            'ttHTopoVarAnalyzer',
-#            doOnlyDefault = True
-#            )
+from CMGTools.TTHAnalysis.analyzers.ttHTopoVarAnalyzer import ttHTopoVarAnalyzer
+
+ttHTopoJetAna = cfg.Analyzer(
+            ttHTopoVarAnalyzer, name = 'ttHTopoVarAnalyzer',
+            doOnlyDefault = True
+            )
 
 
 ##------------------------------------------
@@ -104,8 +108,8 @@ treeProducer = cfg.Analyzer(
 )
 
 sequence = cfg.Sequence(susyCoreSequence+[
-#    ttHMT2Control,
-#    ttHTopoJetAna,
+    ttHMT2Control,
+    ttHTopoJetAna,
 #    ttHFatJetAna,
     treeProducer,
     ])
