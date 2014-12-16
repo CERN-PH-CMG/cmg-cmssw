@@ -94,17 +94,17 @@ triggerFlagsAna.triggerBits = {
 
 #-------- SEQUENCE
 
-from CMGTools.TTHAnalysis.analyzers.treeProducerSusyCore import *
+from CMGTools.TTHAnalysis.analyzers.treeProducerSusyFullHad import *
 
 treeProducer = cfg.Analyzer(
-##     AutoFillTreeProducer, name='treeProducerSusyFullHad',
-     AutoFillTreeProducer, name='treeProducerSusyCore',
+     AutoFillTreeProducer, name='treeProducerSusyFullHad',
+##     AutoFillTreeProducer, name='treeProducerSusyCore',
      vectorTree = True,
      saveTLorentzVectors = False,  # can set to True to get also the TLorentzVectors, but trees will be bigger
      PDFWeights = PDFWeights,
-     globalVariables = susyCore_globalVariables,
-     globalObjects = susyCore_globalObjects,
-     collections = susyCore_collections,
+     globalVariables = susyFullHad_globalVariables,
+     globalObjects = susyFullHad_globalObjects,
+     collections = susyFullHad_collections,
 )
 
 sequence = cfg.Sequence(susyCoreSequence+[
