@@ -1,42 +1,15 @@
 #!/bin/env python
 from math import *
+from PhysicsTools.Heppy.analyzers.core.autovars import NTupleObjectType  
+from PhysicsTools.Heppy.analyzers.objects.autophobj import  *
 from CMGTools.TTHAnalysis.signedSip import *
-from CMGTools.TTHAnalysis.analyzers.ntupleObjects import *
 from CMGTools.RootTools.utils.DeltaR import deltaR
 
-twoVectorType = NTupleObjectType("twoVector", variables = [
-    NTupleVariable("pt",    lambda x : x.pt()),
-    NTupleVariable("phi",   lambda x : x.phi()),
-])
-
-fourVectorType = NTupleObjectType("fourVector", variables = [
-    NTupleVariable("pt",    lambda x : x.pt()),
-    NTupleVariable("eta",   lambda x : x.eta()),
-    NTupleVariable("phi",   lambda x : x.phi()),
-    NTupleVariable("mass",  lambda x : x.mass()),
-    NTupleVariable("p4",    lambda x : x, "TLorentzVector", default=ROOT.reco.Particle.LorentzVector(0.,0.,0.,0.), filler = lambda vector, obj: vector.SetPtEtaPhiM(obj.pt(), obj.eta(), obj.phi(), obj.mass())),
-    #               ^^^^------- Note: p4 normally is not saved unless 'saveTLorentzVectors' is enabled in the tree producer
-])
-particleType = NTupleObjectType("particle", baseObjectTypes = [ fourVectorType ], variables = [
-    NTupleVariable("pdgId",   lambda x : x.pdgId(), int),
-])
 
 ##------------------------------------------  
 ## LEPTON
 ##------------------------------------------  
 
-leptonType = NTupleObjectType("lepton", baseObjectTypes = [ particleType ], variables = [
-    NTupleVariable("charge",   lambda x : x.charge(), int),
-    NTupleVariable("dxy",   lambda x : x.dxy(), help="d_{xy} with respect to PV, in cm (with sign)"),
-    NTupleVariable("dz",    lambda x : x.dz() , help="d_{z} with respect to PV, in cm (with sign)"),
-    NTupleVariable("edxy",  lambda x : x.edB(), help="#sigma(d_{xy}) with respect to PV, in cm"),
-    NTupleVariable("edz",   lambda x : x.gsfTrack().dzError() if abs(x.pdgId())==11 else x.innerTrack().dzError() , help="#sigma(d_{z}) with respect to PV, in cm"),
-    NTupleVariable("ip3d",  lambda x : abs(signedIp3D(x)) , help="d_{3d} with respect to PV, in cm (absolute value)"),
-    NTupleVariable("sip3d",  lambda x : x.sip3D(), help="S_{ip3d} with respect to PV (absolute value)"),
-    NTupleVariable("tightId",     lambda x : x.tightId(), int, help="POG Tight ID (based on triggering MVA value for electrons, boolean for muons)"),
-    NTupleVariable("convVeto",    lambda x : x.passConversionVeto() if abs(x.pdgId())==11 else 1, int, help="Conversion veto (always true for muons)"),
-    NTupleVariable("lostHits",    lambda x : x.gsfTrack().hitPattern().numberOfLostHits(ROOT.reco.HitPattern.MISSING_INNER_HITS) if abs(x.pdgId())==11 else x.innerTrack().hitPattern().numberOfLostHits(ROOT.reco.HitPattern.MISSING_INNER_HITS), int, help="Number of lost hits on inner track")
-])
 leptonTypeTTH = NTupleObjectType("leptonTTH", baseObjectTypes = [ leptonType ], variables = [
     NTupleVariable("tightCharge", lambda lepton : ( lepton.isGsfCtfScPixChargeConsistent() + lepton.isGsfScPixChargeConsistent() ) if abs(lepton.pdgId()) == 11 else 2*(lepton.innerTrack().ptError()/lepton.innerTrack().pt() < 0.2), int, help="Tight charge criteria"),
     NTupleVariable("relIso",  lambda x : x.relIso(dBetaFactor=0.5), help="PF Iso, R=0.4, with deltaBeta correction"),
