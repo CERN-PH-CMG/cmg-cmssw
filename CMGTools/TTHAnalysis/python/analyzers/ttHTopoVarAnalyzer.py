@@ -13,17 +13,16 @@ from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
 
-import ROOT
+from ROOT.heppy import Hemisphere
+from ROOT.heppy import ReclusterJets
 
-from ROOT import Hemisphere
-from ROOT import ReclusterJets
-
-from ROOT import Davismt2
+from ROOT.heppy import Davismt2
 davismt2 = Davismt2()
 
-from ROOT import mt2w_bisect 
+from ROOT.heppy import mt2w_bisect 
 mt2wSNT = mt2w_bisect.mt2w()
 
+import ROOT
 
 import os
 
