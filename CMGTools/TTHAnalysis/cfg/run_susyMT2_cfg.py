@@ -110,7 +110,7 @@ treeProducer = cfg.Analyzer(
 sequence = cfg.Sequence(susyCoreSequence+[
     ttHMT2Control,
     ttHTopoJetAna,
-#    ttHFatJetAna,
+    ttHFatJetAna,
     treeProducer,
     ])
 

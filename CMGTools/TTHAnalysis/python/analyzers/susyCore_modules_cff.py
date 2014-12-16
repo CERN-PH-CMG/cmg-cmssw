@@ -255,21 +255,22 @@ jetAna = cfg.Analyzer(
     )
 
 ## Fat Jets Analyzer (generic)
-#ttHFatJetAna = cfg.Analyzer(
-#    'ttHFatJetAnalyzer',
-#    jetCol = 'slimmedJetsAK8',
-#    jetPt = 100.,
-#    jetEta = 2.4,
-#    # v--- not implemented for AK8
-#    #jetLepDR = 0.4,
-#    #minLepPt = 10,
-#    relaxJetId = False,  
-#    # v--- not implemented for AK8
-#    #doPuId = False, # Not commissioned in 7.0.X
-#    #recalibrateJets = False,
-#    #shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
-#    )
-#
+from CMGTools.TTHAnalysis.analyzers.ttHFatJetAnalyzer import ttHFatJetAnalyzer
+ttHFatJetAna = cfg.Analyzer(
+    ttHFatJetAnalyzer, name = 'ttHFatJetAnalyzer',
+    jetCol = 'slimmedJetsAK8',
+    jetPt = 100.,
+    jetEta = 2.4,
+    # v--- not implemented for AK8
+    #jetLepDR = 0.4,
+    #minLepPt = 10,
+    relaxJetId = False,  
+    # v--- not implemented for AK8
+    #doPuId = False, # Not commissioned in 7.0.X
+    #recalibrateJets = False,
+    #shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
+    )
+
 #
 ## Secondary vertex analyzer
 #ttHSVAnalyzer = cfg.Analyzer(
