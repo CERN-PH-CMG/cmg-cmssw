@@ -74,16 +74,9 @@ isoTrackAna.setOff=False
 ##  PRODUCER
 ##------------------------------------------
 
-####from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_mumu, triggers_ee, triggers_mue, triggers_1mu,
 from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import triggers_HT900, triggers_MET170, triggers_HTMET, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_mue, triggers_1mu, triggers_photon155
 
-# Tree Producer
-treeProducer = cfg.Analyzer(
-        'treeProducerSusyFullHad',
-        vectorTree = True,
-        PDFWeights = PDFWeights,
-##        triggerBits = { }
-        triggerBits = {
+triggerFlagsAna.triggerBits = {
             'HT650' : triggers_HT900,
             'MET150' : triggers_MET170,
             'ht350met100' : triggers_HTMET,
@@ -93,18 +86,37 @@ treeProducer = cfg.Analyzer(
             'MuEG'     : triggers_MT2_mue,
             'htXprescale' : triggers_HTMET,
             'Photons'  : triggers_photon155
-            },
-        )
+}
+
+#-------- SEQUENCE
+
+from CMGTools.TTHAnalysis.analyzers.treeProducerSusyCore import *
+
+treeProducer = cfg.Analyzer(
+##     AutoFillTreeProducer, name='treeProducerSusyFullHad',
+     AutoFillTreeProducer, name='treeProducerSusyCore',
+     vectorTree = True,
+     saveTLorentzVectors = False,  # can set to True to get also the TLorentzVectors, but trees will be bigger
+     PDFWeights = PDFWeights,
+     globalVariables = susyCore_globalVariables,
+     globalObjects = susyCore_globalObjects,
+     collections = susyCore_collections,
+)
+
+sequence = cfg.Sequence(susyCoreSequence+[
+#    ttHMT2Control,
+#    ttHTopoJetAna,
+#    ttHFatJetAna,
+    treeProducer,
+    ])
 
 ###---- to switch off the comptrssion
 #treeProducer.isCompressed = 0
-
 
 #-------- SAMPLES AND TRIGGERS -----------
 #from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14 import * 
 #from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14v2 import *
 from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
-
 
 #selectedComponents = [ SingleMu, DoubleElectron, TTHToWW_PUS14, DYJetsToLL_M50_PU20bx25, TTJets_PUS14 ]
 
@@ -127,15 +139,6 @@ from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
 ##selectedComponents = [ TTJets_PU20bx25 ]
 
 #selectedComponents = [ SMS_T1qqqq_2J_mGl1000_mLSP800_PU_S14_POSTLS170 ]
-
-#-------- SEQUENCE
-
-sequence = cfg.Sequence(susyCoreSequence+[
-#    ttHMT2Control,
-#    ttHTopoJetAna,
-#    ttHFatJetAna,
-    treeProducer,
-    ])
 
 #-------- HOW TO RUN
 test = 1
@@ -166,8 +169,12 @@ elif test==2:
         comp.files = comp.files[:]
         #comp.files = comp.files[:1]
 
+# the following is declared in case this cfg is used in input to the heppy.py script                                                                                                                   
+from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
 config = cfg.Config( components = selectedComponents,
-                     sequence = sequence )
+                     sequence = sequence,
+                     services = [],
+                     events_class = Events)
 
-printComps(config.components, True)
+#printComps(config.components, True)
         
