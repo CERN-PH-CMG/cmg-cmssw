@@ -4,9 +4,9 @@
 ##########################################################
 
 import PhysicsTools.HeppyCore.framework.config as cfg
-from PhysicsTools.Heppy.analyzers.core import *
-from PhysicsTools.Heppy.analyzers.objects import *
-from PhysicsTools.Heppy.analyzers.gen import *
+from PhysicsTools.Heppy.analyzers.core.all import *
+from PhysicsTools.Heppy.analyzers.objects.all import *
+from PhysicsTools.Heppy.analyzers.gen.all import *
 
 PDFWeights = []
 #PDFWeights = [ ("CT10",53), ("MSTW2008lo68cl",41), ("NNPDF21_100",101) ]
