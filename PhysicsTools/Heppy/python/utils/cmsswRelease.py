@@ -2,7 +2,8 @@ import os
 import re
 
 def cmsswRelease():
-    return os.environ['CMSSW_BASE'].split('/')[-1]
+##    return os.environ['CMSSW_BASE'].split('/')[-1]
+    return os.environ['CMSSW_VERSION']
 
 def cmsswIs44X():
     return cmsswRelease().find('CMSSW_4_4_') != -1

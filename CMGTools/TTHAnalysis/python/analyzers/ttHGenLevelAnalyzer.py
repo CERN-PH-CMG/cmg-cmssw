@@ -4,18 +4,14 @@ import copy
 
 from ROOT import TLorentzVector
 
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.Event import Event
-from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.Lepton import Lepton
-from CMGTools.RootTools.physicsobjects.Photon import Photon
-from CMGTools.RootTools.physicsobjects.Electron import Electron
-from CMGTools.RootTools.physicsobjects.Muon import Muon
-from CMGTools.RootTools.physicsobjects.Jet import Jet
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.HeppyCore.statistics.counter import Counter, Counters
+
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
 
-from CMGTools.RootTools.utils.DeltaR import deltaR,deltaPhi
+from PhysicsTools.HeppyCore.utils.deltar import *
+
 from CMGTools.RootTools.physicsobjects.genutils import *
         
 class ttHGenLevelAnalyzer( Analyzer ):
@@ -61,8 +57,8 @@ class ttHGenLevelAnalyzer( Analyzer ):
         #if self.doPDFWeights:
         self.mchandles['pdfstuff'] = AutoHandle( 'generator', 'GenEventInfoProduct' )
 
-    def beginLoop(self):
-        super(ttHGenLevelAnalyzer,self).beginLoop()
+    def beginLoop(self, setup):
+        super(ttHGenLevelAnalyzer,self).beginLoop( setup )
 
     def fillGenLeptons(self, event, particle, isTau=False, sourceId=25):
         """Get the gen level light leptons (prompt and/or from tau decays)"""
@@ -255,8 +251,8 @@ class ttHGenLevelAnalyzer( Analyzer ):
 
         event.genQScale = self.mchandles['pdfstuff'].product().qScale()
 
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
 
         ## creating a "sub-event" for this analyzer
         #myEvent = Event(event.iEv)

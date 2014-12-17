@@ -1,24 +1,7 @@
-import operator 
-import itertools
-import copy
-from math import *
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.HeppyCore.utils.deltar import deltaR
 
-from ROOT import TLorentzVector, TVectorD
 
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.Event import Event
-from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.Lepton import Lepton
-from CMGTools.RootTools.physicsobjects.Photon import Photon
-from CMGTools.RootTools.physicsobjects.Electron import Electron
-from CMGTools.RootTools.physicsobjects.Muon import Muon
-from CMGTools.RootTools.physicsobjects.Jet import Jet
-
-from CMGTools.RootTools.utils.DeltaR import * 
-from CMGTools.TTHAnalysis.leptonMVA import LeptonMVA
-from CMGTools.TTHAnalysis.signedSip import twoTrackChi2
-import os
         
 class ttHLepEventAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
@@ -27,8 +10,8 @@ class ttHLepEventAnalyzer( Analyzer ):
     def declareHandles(self):
         super(ttHLepEventAnalyzer, self).declareHandles()
 
-    def beginLoop(self):
-        super(ttHLepEventAnalyzer,self).beginLoop()
+    def beginLoop(self, setup):
+        super(ttHLepEventAnalyzer,self).beginLoop(setup)
         self.counters.addCounter('events')
         count = self.counters.counter('events')
         count.register('all events')
@@ -62,8 +45,8 @@ class ttHLepEventAnalyzer( Analyzer ):
                             event.bestMTopHad = mtop
                             event.bestMTopHadPt = tp4.Pt()
 
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
         self.counters.counter('events').inc('all events')
 
         if hasattr(self.cfg_ana, 'minJets25'):

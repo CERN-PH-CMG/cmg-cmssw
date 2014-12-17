@@ -1,9 +1,9 @@
 import os
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from CMGTools.TTHAnalysis.signedSip import SignedImpactParameterComputer
 from CMGTools.TTHAnalysis.tools.SVMVA import SVMVA
-from CMGTools.RootTools.utils.DeltaR import deltaR
+from PhysicsTools.HeppyCore.utils.deltar import deltaR
 
 def matchToGenHadron(particle, event, minDR=0.05, minDpt=0.1):
         match = ( None, minDR, 2 )
@@ -41,12 +41,12 @@ class ttHSVAnalyzer( Analyzer ):
         self.handles['ivf'] = AutoHandle( ('slimmedSecondaryVertices',''),'std::vector<reco::VertexCompositePtrCandidate>')
         self.mchandles['packedGen'] = AutoHandle( 'packedGenParticles', 'std::vector<pat::PackedGenParticle>' )
 
-    def beginLoop(self):
-        super(ttHSVAnalyzer,self).beginLoop()
+    def beginLoop(self, setup):
+        super(ttHSVAnalyzer,self).beginLoop(setup)
 
        
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
 
         #get all vertices from IVF
         allivf = [ v for v in self.handles['ivf'].product() ]

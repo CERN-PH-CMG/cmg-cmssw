@@ -1,15 +1,7 @@
 from CMGTools.TTHAnalysis.analyzers.treeProducerSusyCore import *
+from CMGTools.TTHAnalysis.analyzers.ntupleTypes import *
 
-class treeProducerSusyMultilepton( treeProducerSusyCore ):
-
-    #-----------------------------------
-    # TREE PRODUCER FOR SUSY MULTILEPTONS 
-    #-----------------------------------
-    def __init__(self, cfg_ana, cfg_comp, looperName):
-        super(treeProducerSusyMultilepton,self).__init__(cfg_ana, cfg_comp, looperName)
-
-        ## Declare what we want to fill (in addition to susy core ones)
-        self.globalVariables += [
+susyMultilepton_globalVariables = susyCore_globalVariables + [
             ##-------- custom jets ------------------------------------------
             NTupleVariable("htJet25", lambda ev : ev.htJet25, help="H_{T} computed from leptons and jets (with |eta|<2.4, pt > 25 GeV)"),
             NTupleVariable("mhtJet25", lambda ev : ev.mhtJet25, help="H_{T}^{miss} computed from leptons and jets (with |eta|<2.4, pt > 25 GeV)"),
@@ -54,8 +46,8 @@ class treeProducerSusyMultilepton( treeProducerSusyCore ):
             NTupleVariable("bestMTopHadPt", lambda ev: ev.bestMTopHadPt, int, help="bestMTopHadPt"),
             ##--------------------------------------------------
             NTupleVariable("GenHiggsDecayMode", lambda ev : ev.genHiggsDecayMode, int, mcOnly=True, help="H decay mode (15 = tau, 23/24 = W/Z)"),
-            NTupleVariable("LepEff_3lep", lambda ev : ev.LepEff_3lep, mcOnly=True, help="Lepton preselection SF (3 lep)"),
-            NTupleVariable("LepEff_4lep", lambda ev : ev.LepEff_4lep, mcOnly=True, help="Lepton preselection SF (4 lep)"),
+            #NTupleVariable("LepEff_3lep", lambda ev : ev.LepEff_3lep, mcOnly=True, help="Lepton preselection SF (3 lep)"),
+            #NTupleVariable("LepEff_4lep", lambda ev : ev.LepEff_4lep, mcOnly=True, help="Lepton preselection SF (4 lep)"),
             ##--------vertex variables------------------------------------------
             #A = selectedLeptons[0], B = selectedLeptons[1], C = selectedLeptons[2], D = selectedLeptons[3] 
             ##Variables related to IP
@@ -64,10 +56,8 @@ class treeProducerSusyMultilepton( treeProducerSusyCore ):
             NTupleVariable("absIP3DAerr", lambda ev: ev.absIP3DA[1], help="Error of absIP3DAval"),
             NTupleVariable("absIP3DBval", lambda ev: ev.absIP3DB[0], help="Absolute IP of B w.r.t. PV of evt"),
             NTupleVariable("absIP3DBerr", lambda ev: ev.absIP3DB[1], help="Error of absIP3DBval"),     
-
             NTupleVariable("absIP3DCval", lambda ev: ev.absIP3DC[0], help="Absolute IP of C w.r.t. PV of evt"),
             NTupleVariable("absIP3DCerr", lambda ev: ev.absIP3DC[1], help="Error of absIP3DCval"),
-
             NTupleVariable("absIP3DDval", lambda ev: ev.absIP3DD[0], help="Absolute IP of D w.r.t. PV of evt"),
             NTupleVariable("absIP3DDerr", lambda ev: ev.absIP3DD[1], help="Error of absIP3DDval"),
             
@@ -105,33 +95,27 @@ class treeProducerSusyMultilepton( treeProducerSusyCore ):
             NTupleVariable("chi2pvtrksABDbutCdof", lambda ev: ev.chi2pvtrksABDbutC[1], help="DOF from the fit to the PV of A,B,D"),
             NTupleVariable("chi2pvtrksABCbutDval", lambda ev: ev.chi2pvtrksABCbutD[0], help="chi2 of the fit to the PV of A,B,C"),
             NTupleVariable("chi2pvtrksABCbutDdof", lambda ev: ev.chi2pvtrksABCbutD[1], help="DOF from the fit to the PV of A,B,C"),
+]
 
-        ]
-
-        self.globalObjects.update({
+susyMultilepton_globalObjects = susyCore_globalObjects.copy()
+susyMultilepton_globalObjects.update({
             # put more here
-        })
+})
 
-        self.collections.update({
+susyMultilepton_collections = susyCore_collections.copy()
+susyMultilepton_collections.update({
             # put more here
-            "gentopquarks"    : NTupleCollection("GenTop",     genParticleType, 6, help="Generated top quarks from hard scattering"),
-            "genbquarks"      : NTupleCollection("GenBQuark",  genParticleType, 6, help="Generated bottom quarks from top quark decays"),
-            "genwzquarks"     : NTupleCollection("GenQuark",   genParticleWithSourceType, 6, help="Generated quarks from W/Z decays"),
+            "gentopquarks"    : NTupleCollection("GenTop",     genParticleType, 2, help="Generated top quarks from hard scattering (needed separately for top pt reweighting)"),
             ##--------------------------------------------------                                                                                                                                   
-            "selectedTaus"    : NTupleCollection("TauGood", tauTypeSusy, 3, help="Taus after the preselection"),
+            "selectedTaus"    : NTupleCollection("TauGood",  tauTypeSusy, 3, help="Taus after the preselection"),
+            "selectedLeptons" : NTupleCollection("LepGood",  leptonTypeSusyExtra, 8, help="Leptons after the preselection"),
             "otherLeptons"    : NTupleCollection("LepOther", leptonTypeSusyExtra, 8, help="Leptons after the preselection"),
-            "selectedLeptons" : NTupleCollection("LepGood", leptonTypeSusyExtra, 8, help="Leptons after the preselection"),
             ##------------------------------------------------
             "cleanJets"       : NTupleCollection("Jet",     jetTypeSusy, 15, help="Cental jets after full selection and cleaning, sorted by pt"),
-            "cleanJetsFwd"    : NTupleCollection("JetFwd",  jetTypeSusy, 6, help="Forward jets after full selection and cleaning, sorted by pt"),            
-            "fatJets"         : NTupleCollection("FatJet", fatJetType, 15, help="Cental jets after full selection and cleaning, sorted by pt"),
+            "cleanJetsFwd"    : NTupleCollection("JetFwd",  jetTypeSusy,  6, help="Forward jets after full selection and cleaning, sorted by pt"),            
+            "fatJets"         : NTupleCollection("FatJet",  fatJetType,  15, help="AK8 jets, sorted by pt"),
             ##------------------------------------------------
             "ivf"       : NTupleCollection("SV",     svType, 20, help="SVs from IVF"),
             "genBHadrons"  : NTupleCollection("GenBHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level B hadrons"),
             "genDHadrons"  : NTupleCollection("GenDHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level D hadrons"),
-        })
-
-        ## Book the variables, but only if we're called explicitly and not through a base class
-        if cfg_ana.name == "treeProducerSusyMultilepton":
-            self.initDone = True
-            self.declareVariables()
+})

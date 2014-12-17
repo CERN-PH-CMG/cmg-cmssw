@@ -7,16 +7,12 @@ from math import *
 
 from ROOT import TLorentzVector
 
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.Event import Event
-from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.HeppyCore.framework.event import Event
+from PhysicsTools.HeppyCore.statistics.counter import Counter, Counters
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 
-#from CMGTools.RootTools.physicsobjects.Photon import Photon
-#from CMGTools.RootTools.physicsobjects.Electron import Electron
-#from CMGTools.RootTools.physicsobjects.Muon import Muon
-
-from CMGTools.RootTools.utils.DeltaR import *
+from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi
 
 def mtw(x1,x2):
     return sqrt(2*x1.pt()*x2.pt()*(1-cos(x1.phi()-x2.phi())))
@@ -163,9 +159,9 @@ class ttHMT2Control( Analyzer ):
 
             ##event.zll_invmass = zll_p4.M()
 
-    def process(self, iEvent, event):
+    def process(self, event):
 
-        self.readCollections( iEvent )
+        self.readCollections( event.input )
         self.makeGammaObjects(event)                                                                                                                                                                                             
         self.makeZllObjects(event)
 
