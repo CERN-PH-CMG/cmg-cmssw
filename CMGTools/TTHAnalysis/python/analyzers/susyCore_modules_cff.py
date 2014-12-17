@@ -141,8 +141,8 @@ lepAna = cfg.Analyzer(
     loose_muon_pt     = 5,
     loose_muon_eta    = 2.4,
     loose_muon_dxy    = 0.05,
-    loose_muon_dz     = 0.2,
-    loose_muon_relIso = 0.4,
+    loose_muon_dz     = 0.1,
+    loose_muon_relIso = 0.5,
     # inclusive very loose electron selection
     inclusive_electron_id  = "",
     inclusive_electron_pt  = 5,
@@ -155,12 +155,16 @@ lepAna = cfg.Analyzer(
     loose_electron_pt     = 7,
     loose_electron_eta    = 2.4,
     loose_electron_dxy    = 0.05,
-    loose_electron_dz     = 0.2,
-    loose_electron_relIso = 0.4,
+    loose_electron_dz     = 0.1,
+    loose_electron_relIso = 0.5,
     loose_electron_lostHits = 1.0,
+    # muon isolation correction method (can be "rhoArea" or "deltaBeta")
+    mu_isoCorr = "rhoArea" ,
+    mu_effectiveAreas = "Phys14_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1')
     # electron isolation correction method (can be "rhoArea" or "deltaBeta")
     ele_isoCorr = "rhoArea" ,
-    ele_tightId = "MVA" ,
+    el_effectiveAreas = "Phys14_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1')
+    ele_tightId = "Cuts_2012" ,
     # minimum deltaR between a loose electron and a loose muon (on overlaps, discard the electron)
     min_dr_electron_muon = 0.02,
     # do MC matching 
