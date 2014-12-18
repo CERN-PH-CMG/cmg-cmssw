@@ -2982,7 +2982,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   ///////  int lNBins = 50;
   int lNBins = (range_max-range_min)/binSize;
   for(int i0  = 0; i0 < lNBins; i0++) { 
-    RooDataSet lData(pSS.str().c_str(),pSS.str().c_str(),RooArgSet(lRXVar)); 
+    std::stringstream pSS1; pSS1 << "Crapsky" << i0;
+    RooDataSet lData(pSS1.str().c_str(),pSS1.str().c_str(),RooArgSet(lRXVar)); 
     //    RooDataSet *lData = new RooDataSet(pSS.str().c_str(),pSS.str().c_str(),RooArgSet(lRXVar)); 
     //    lRPt.setBins(500);
     //    lRPt.setBins(fZPtMax);
@@ -3212,12 +3213,12 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       //      lRGAdd.plotOn(lFrame1,LineStyle(kDashed),LineColor(kRed),LineWidth(2),VisualizeError(*fr,1,kFALSE),DrawOption("L"),RooFit::Components(lRGaus1));
       lRGAdd.plotOn(lFrame1,FillColor(kMagenta-9),VisualizeError(*fr,1),RooFit::Components(lRGaus2)); // 1 sigma band
       //      lRGAdd.plotOn(lFrame1,LineStyle(kDashed),LineColor(kViolet),LineWidth(2),VisualizeError(*fr,1),DrawOption("L"),RooFit::Components(lRGaus2));
-      lRGAdd.plotOn(lFrame1,FillColor(kGreen+2),VisualizeError(*fr,1),RooFit::Components(lRGaus3)); // 1 sigma band
+      if(do3G) lRGAdd.plotOn(lFrame1,FillColor(kGreen+2),VisualizeError(*fr,1),RooFit::Components(lRGaus3)); // 1 sigma band
       //      lRGAdd.plotOn(lFrame1,LineStyle(kDashed),LineColor(kViolet),LineWidth(2),VisualizeError(*fr,1),DrawOption("L"),RooFit::Components(lRGaus2));
       // draw central value
       lRGAdd.plotOn(lFrame1,RooFit::Components(lRGaus1),RooFit::LineStyle(kDashed),RooFit::LineColor(kRed)); // central value
       lRGAdd.plotOn(lFrame1,RooFit::Components(lRGaus2),RooFit::LineStyle(kDashed),RooFit::LineColor(kViolet)); // central value
-      lRGAdd.plotOn(lFrame1,RooFit::Components(lRGaus3),RooFit::LineStyle(kDashed),RooFit::LineColor(kGreen)); // central value
+      if(do3G) lRGAdd.plotOn(lFrame1,RooFit::Components(lRGaus3),RooFit::LineStyle(kDashed),RooFit::LineColor(kGreen)); // central value
 
       if(i0==5 || i0==10 || i0==15 || i0==20 || i0==25) {
 	TString nameHistoOn="hh_plotOn_U1";
@@ -3273,8 +3274,17 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
       iC->cd(); lFrame1->Draw();
       
-      cout << "++++> CHI2=" << lFrame1->chiSquare() << " reduced CHI2=" << lFrame1->chiSquare(fr->floatParsFinal().getSize()) << endl;
-      TString chi2str = Form("chi2 = %.2f",lFrame1->chiSquare());
+      //      cout << "++++> CHI2=" << lFrame1->chiSquare() << " reduced CHI2=" << lFrame1->chiSquare(fr->floatParsFinal().getSize()) << endl;
+
+      //      cout << " namePDF=" << lRGAdd.GetName() << " nameDataset= " << lResidVals[i0].GetName() << endl;
+      //      (RooHist::h_Crapsky4,RooCurve::RAdd_Norm[XVar],RooCurve::RAdd_Norm[XVar]_errorband_Comp[Rgaus1],RooCurve::RAdd_Norm[XVar]_errorband_Comp[Rgaus2],RooCurve::RAdd_Norm[XVar]_Comp[Rgaus1],RooCurve::RAdd_Norm[XVar]_Comp[Rgaus2])
+      lFrame1->Print(); 
+
+      TString nameRooHist="h_";
+      nameRooHist+=lResidVals[i0].GetName();
+      TString nameRooCurve="RAdd_Norm[XVar]";
+
+      TString chi2str = Form("chi2 = %.2f",lFrame1->chiSquare("RAdd_Norm[XVar]",nameRooHist.Data()));
       //      TString chi2str = Form("chi2/ndof = %.2f",lFrame1->chiSquare(fr->floatParsFinal().getSize()));
       latexLabel.DrawLatex(0.65, 0.8, chi2str);
       TString frac1str = Form("frac1 = %.2f",lR1Frac.getVal());
@@ -3332,7 +3342,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       if(i0==5 || i0==10 || i0==15) iC->Print(testPDF.Data());
 
       if(!fr->status()) {
-	lchi2[i0]=lFrame1->chiSquare();
+	lchi2[i0]=lFrame1->chiSquare("RAdd_Norm[XVar]",nameRooHist.Data());
       } else {
 	lchi2[i0]=0;
       }
