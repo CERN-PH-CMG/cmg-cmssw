@@ -1,9 +1,7 @@
-import operator 
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle, PhysicsObject, printOut
-from CMGTools.RootTools.physicsobjects.genutils import *
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import GenParticle, printOut
+# from CMGTools.RootTools.physicsobjects.genutils import *
 
 from ROOT import FSRWeightAlgo
 
@@ -22,8 +20,8 @@ class GenParticleAnalyzer( Analyzer ):
                 self.cfg_ana.src else 'std::vector<reco::GenParticle>'
             )
 
-    def beginLoop(self):
-        super(GenParticleAnalyzer,self).beginLoop()        
+    def beginLoop(self, setup):
+        super(GenParticleAnalyzer,self).beginLoop(setup)
         self.fsrWeightAlgo = FSRWeightAlgo()
 
     def buildGenParticles(self, cmgGenParticles, event):
