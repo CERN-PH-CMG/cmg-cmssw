@@ -3,7 +3,7 @@ import copy
 from CMGTools.H2TauTau.proto.plotter.categories_common import *
 from CMGTools.H2TauTau.proto.plotter.cut import * 
 
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
+from PhysicsTools.Heppy.utils.cmsswRelease import cmsswIs44X,cmsswIs52X
 
 pt1 = 30
 pt2 = 17 # 2011

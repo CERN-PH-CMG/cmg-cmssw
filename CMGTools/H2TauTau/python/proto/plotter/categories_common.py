@@ -1,4 +1,4 @@
-from CMGTools.Common.Tools.cmsswRelease import isNewerThan
+from PhysicsTools.Heppy.utils.cmsswRelease import isNewerThan
 
 cat_VBF = 'nJets>=2 && VBF_nCentral==0 && VBF_mjj > 500 && abs(VBF_deta) > 3.5'
 cat_VBF_Rel_30 = 'nJets>=2 && nBJets==0 && VBF_nCentral==0 && VBF_mjj>200 && abs(VBF_deta) > 2.'

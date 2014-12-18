@@ -40,7 +40,7 @@ class H2TauTauTreeProducerMuMu( TreeAnalyzerNumpy ):
 ##        var( tr, 'isSignal')
        
 
-    def process(self, iEvent, event):
+    def process(self, event):
             
        tr = self.tree
        tr.reset()

@@ -1,5 +1,5 @@
 from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from CMGTools.H2TauTau.proto.analyzers.ntuple import *
 
 class H2TauTauSyncTreeTauTau( TreeAnalyzerNumpy ):
@@ -183,8 +183,8 @@ class H2TauTauSyncTreeTauTau( TreeAnalyzerNumpy ):
             'cmg::METSignificance' 
             )                
 
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
         
         tr = self.tree
         tr.reset()

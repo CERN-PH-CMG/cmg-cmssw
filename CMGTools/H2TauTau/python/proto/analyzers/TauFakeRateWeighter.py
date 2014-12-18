@@ -1,7 +1,7 @@
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.statistics.Average import Average
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.HeppyCore.statistics.average import Average
+from PhysicsTools.Heppy.utils.cmsswRelease import cmsswIs44X,cmsswIs52X
 
 class TauFakeRateWeighter( Analyzer ):
     '''Gets tau decay mode efficiency weight and puts it in the event'''
@@ -10,12 +10,12 @@ class TauFakeRateWeighter( Analyzer ):
         super(TauFakeRateWeighter,self).__init__(cfg_ana, cfg_comp, looperName)
 
             
-    def beginLoop(self):
+    def beginLoop(self, setup):
         print self, self.__class__
-        super(TauFakeRateWeighter,self).beginLoop()
+        super(TauFakeRateWeighter,self).beginLoop(setup)
         self.averages.add('weight', Average('weight') )
 
-    def process(self, iEvent, event):
+    def process(self, event):
         self.weight = 1
 
         # print 'FR weighter', self.cfg_comp.name

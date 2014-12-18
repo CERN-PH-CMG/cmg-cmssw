@@ -1,10 +1,10 @@
 import re
 
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from CMGTools.RootTools.analyzers.GenParticleAnalyzer import *
-from CMGTools.RootTools.utils.DeltaR import matchObjectCollection
+from PhysicsTools.HeppyCore.utils.deltar import matchObjectCollection
 from CMGTools.RootTools.physicsobjects.genutils import *
-from CMGTools.RootTools.statistics.Average import Average
+from PhysicsTools.HeppyCore.statistics.average import Average
 from CMGTools.RootTools.statistics.TreeNumpy import TreeNumpy
 
 from ROOT import TFile, TH1F
@@ -46,8 +46,8 @@ class NJetsAnalyzer( Analyzer ):
 
 
         
-    def beginLoop(self):
-        super(NJetsAnalyzer,self).beginLoop()        
+    def beginLoop(self, setup):
+        super(NJetsAnalyzer,self).beginLoop(setup)        
         self.averages.add('NUP', Average('NUP') )
         self.averages.add('NJets', Average('NJets') )
         self.averages.add('NJetWeight', Average('NJetWeight') )
@@ -64,7 +64,7 @@ class NJetsAnalyzer( Analyzer ):
                 self.tree.var('weight')
                 
             
-    def process(self, iEvent, event):
+    def process(self, event):
         event.NUP = -1
         event.NJetWeight = 1
         
@@ -79,7 +79,7 @@ class NJetsAnalyzer( Analyzer ):
         if 'ext' in self.cfg_comp.name:
             event.NUP = int(self.cfg_comp.name[1]) + 5
         else:
-            self.readCollections( iEvent )
+            self.readCollections( event.input )
             event.NUP = self.mchandles['source'].product().hepeup().NUP
 
  

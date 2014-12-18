@@ -14,7 +14,7 @@ from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
 from CMGTools.H2TauTau.proto.plotter.datacards import datacards
 from CMGTools.H2TauTau.proto.plotter.plotinfo import *
-from CMGTools.RootTools.statistics.Counter import Counters
+from PhysicsTools.HeppyCore.statistics.counter import Counters
 from CMGTools.RootTools.Style import *
 from CMGTools.H2TauTau.proto.plotter.categories_common import replaceCategories
 from CMGTools.H2TauTau.proto.plotter.categories_TauEle import categories

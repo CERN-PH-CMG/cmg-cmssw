@@ -1,4 +1,4 @@
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 
 class DYLLReweighterTauEle( Analyzer ):
     '''Apply the reweighting calculated by Jose on the basis of the data/mc agreement
@@ -7,7 +7,7 @@ class DYLLReweighterTauEle( Analyzer ):
        event.zllWeight is added to the event and multiplied to event.eventWeight
     '''
 
-    def process(self, iEvent, event):
+    def process(self, event):
         event.zllWeight = 1
         if not self.cfg_comp.isMC:
             return True

@@ -1,5 +1,5 @@
 from CMGTools.RootTools.analyzers.GenParticleAnalyzer import *
-from CMGTools.RootTools.utils.DeltaR import matchObjectCollection
+from PhysicsTools.HeppyCore.utils.deltar import matchObjectCollection
 from CMGTools.RootTools.physicsobjects.genutils import *
 from math import sqrt
 
@@ -36,12 +36,12 @@ class DYJetsFakeAnalyzer( GenParticleAnalyzer ):
             print 'WARNING, generated tau has no daughter'
         return False
 
-    def process(self, iEvent, event):
+    def process(self, event):
         event.isFake = 0
         if not self.cfg_comp.isMC:
             return True
         
-        self.readCollections( iEvent )
+        self.readCollections( event.input )
         event.genParticles = self.buildGenParticles( self.mchandles['genpart'].product(), event )
         
         # check if it is a Z->tau tau event.

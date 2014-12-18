@@ -1,10 +1,9 @@
-from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.DiObject import TauElectron
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, GenParticle
-from CMGTools.RootTools.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
+from PhysicsTools.Heppy.analyzers.examples.DiLeptonAnalyzer import DiLeptonAnalyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Muon, GenParticle
+from PhysicsTools.Heppy.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
 
-from CMGTools.RootTools.utils.DeltaR import deltaR
+from CMGTools.H2TauTau.proto.physicsobjects.DiObject import TauElectron
 
 class TauEleAnalyzer( DiLeptonAnalyzer ):
 
@@ -116,10 +115,10 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-    def process(self, iEvent, event):
+    def process(self, event):
         
         # import pdb; pdb.set_trace()
-        result = super(TauEleAnalyzer, self).process(iEvent, event)
+        result = super(TauEleAnalyzer, self).process(event)
         
         if self.cfg_ana.verbose and result is False:
             print event.run, event.lumi, event.eventId

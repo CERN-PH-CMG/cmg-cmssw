@@ -1,7 +1,7 @@
 from ROOT import TTree, TH1F, TH2F, TProfile, gDirectory
 
 from CMGTools.RootTools.statistics.Histograms import Histograms
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Tau,isTau
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Tau,isTau
 
     
 class LegHistograms(Histograms):

@@ -1,9 +1,11 @@
 import operator
-from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+
+from PhysicsTools.Heppy.analyzers.examples.DiLeptonAnalyzer import DiLeptonAnalyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Muon, GenParticle
+from PhysicsTools.Heppy.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
+
 from CMGTools.H2TauTau.proto.physicsobjects.DiObject import TauMuon
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, GenParticle
-from CMGTools.RootTools.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
 
 class TauMuAnalyzer( DiLeptonAnalyzer ):
 
@@ -84,11 +86,11 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         return otherLeptons
 
 
-    def process(self, iEvent, event):
+    def process(self, event):
 
         #if event.eventId == 70370:
         #    print 'EVENT', event.eventId
-        result = super(TauMuAnalyzer, self).process(iEvent, event)
+        result = super(TauMuAnalyzer, self).process(event)
 
         # import pdb; pdb.set_trace()
 
@@ -216,3 +218,4 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             return max( osDiLeptons, key=operator.methodcaller( 'sumPt' ) )
         else:
             return max( diLeptons, key=operator.methodcaller( 'sumPt' ) )
+

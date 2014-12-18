@@ -1,9 +1,8 @@
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.statistics.Average import Average
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
-from CMGTools.RootTools.statistics.Counter import Counter, Counters
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.HeppyCore.statistics.Average import Average
+from PhysicsTools.Heppy.utils.cmsswRelease import cmsswIs52X
+from PhysicsTools.Heppy.physicsobjects import GenParticle
 
 class EmbedWeighter( Analyzer ):
     '''Gets lepton efficiency weight and puts it in the event.
@@ -16,9 +15,9 @@ class EmbedWeighter( Analyzer ):
         super(EmbedWeighter,self).__init__(cfg_ana, cfg_comp, looperName)
 
             
-    def beginLoop(self):
+    def beginLoop(self, setup):
         print self, self.__class__
-        super(EmbedWeighter,self).beginLoop()
+        super(EmbedWeighter,self).beginLoop(setup)
         self.averages.add('weight', Average('weight') )
         self.counters.addCounter('EmbedWeighter')
         count = self.counters.counter('EmbedWeighter')
@@ -78,8 +77,8 @@ class EmbedWeighter( Analyzer ):
 
                 
 
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
         self.weight = 1
         isRHEmbedded = False
         event.genfilter                = 1.

@@ -1,10 +1,8 @@
 import re
 
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.analyzers.GenParticleAnalyzer import *
-from CMGTools.RootTools.utils.DeltaR import matchObjectCollection
-from CMGTools.RootTools.physicsobjects.genutils import *
-from CMGTools.RootTools.statistics.Average import Average
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.HeppyCore.statistics.average import Average
 
 from ROOT import TFile, TH1F
 
@@ -24,7 +22,6 @@ class WNJetsAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(WNJetsAnalyzer,self).__init__(cfg_ana, cfg_comp, looperName)
 
-        cname = self.cfg_comp.name
         wpat = re.compile('W\d?Jet.*')
         match = wpat.match(self.cfg_comp.name)
         self.isWJets = not (match is None)
@@ -40,8 +37,8 @@ class WNJetsAnalyzer( Analyzer ):
 
 
         
-    def beginLoop(self):
-        super(WNJetsAnalyzer,self).beginLoop()        
+    def beginLoop(self, setup):
+        super(WNJetsAnalyzer,self).beginLoop(setup)        
         self.averages.add('NUP', Average('NUP') )
         self.averages.add('NJets', Average('NJets') )
         self.averages.add('WJetWeight', Average('WJetWeight') )
@@ -53,7 +50,7 @@ class WNJetsAnalyzer( Analyzer ):
             self.njets = TH1F('njets', 'njets', 10,0,10)
         
         
-    def process(self, iEvent, event):
+    def process(self, event):
         event.NUP = -1
         event.WJetWeight = 1
         
@@ -64,7 +61,7 @@ class WNJetsAnalyzer( Analyzer ):
             return True
         
         #        try:
-        self.readCollections( iEvent )
+        self.readCollections( event.input )
         event.NUP = self.mchandles['source'].product().hepeup().NUP
         # except :
         #    return True

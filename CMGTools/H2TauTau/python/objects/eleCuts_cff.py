@@ -1,5 +1,5 @@
 import FWCore.ParameterSet.Config as cms
-from CMGTools.Common.Tools.cmsswRelease import isNewerThan
+from PhysicsTools.Heppy.utils.cmsswRelease import isNewerThan
 
 is53X = isNewerThan('CMSSW_5_2_X')
 

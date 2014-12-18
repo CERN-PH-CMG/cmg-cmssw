@@ -1,6 +1,6 @@
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.statistics.Average import Average
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.HeppyCore.statistics.average import Average
 from CMGTools.RootTools.statistics.Tree import Tree
 from ROOT import TFile
 
@@ -8,7 +8,7 @@ from CMGTools.H2TauTau.proto.analyzers.Regions import H2TauTauRegions
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauOutput import H2TauTauOutput as H2TauTauOutput 
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauOutput import inclusiveRegionName
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauOutput import wholeMTRegionName
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle 
+from PhysicsTools.Heppy.physicsobjects import GenParticle 
 
 
 import os, errno
@@ -67,8 +67,8 @@ class H2TauTauEventSorter( Analyzer ):
         self.embhandles['generatorWeight'] = AutoHandle( ('generator', 'weight'),
                                                          'double')
     
-    def beginLoop(self):
-        super(H2TauTauEventSorter,self).beginLoop()
+    def beginLoop(self, setup):
+        super(H2TauTauEventSorter,self).beginLoop(setup)
         self.counters.addCounter('Sorter')
         self.counters.counter('Sorter').register('All events')
         self.counters.counter('Sorter').register('tau iso')
@@ -77,8 +77,8 @@ class H2TauTauEventSorter( Analyzer ):
         self.averages.add('eventWeight', Average('eventWeight') )
 
         
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
 
         event.generatorWeight = 1
         if self.cfg_comp.isEmbed:

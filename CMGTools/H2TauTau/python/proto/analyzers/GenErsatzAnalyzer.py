@@ -1,5 +1,5 @@
 from CMGTools.RootTools.analyzers.GenParticleAnalyzer import *
-from CMGTools.RootTools.utils.DeltaR import matchObjectCollection
+from PhysicsTools.HeppyCore.utils.deltar import matchObjectCollection
 from CMGTools.RootTools.physicsobjects.genutils import *
 
 class Boson(GenParticle):
@@ -28,12 +28,12 @@ class WBoson(Boson):
 
 class GenErsatzAnalyzer( GenParticleAnalyzer ):
 
-    def process(self, iEvent, event):
+    def process(self, event):
         # event.W = None
         # event.Z = None
         if not self.cfg_comp.isMC:
             return True
-        result = super(GenErsatzAnalyzer, self).process(iEvent, event)
+        result = super(GenErsatzAnalyzer, self).process(event)
         
         event.genZs = [ZBoson(part) for part in event.genParticles if part.status()==3 and part.pdgId()==23]
         event.genWs = [WBoson(part) for part in event.genParticles if part.status()==3 and abs(part.pdgId())==24]

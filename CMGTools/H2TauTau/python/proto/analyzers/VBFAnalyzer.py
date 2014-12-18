@@ -1,14 +1,13 @@
 import random
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet, GenJet
-from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
-from CMGTools.RootTools.physicsobjects.VBF import VBF
-from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.RootTools.physicsobjects.BTagSF import BTagSF
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
-from CMGTools.RootTools.utils.DeltaR import deltaR2
-from CMGTools.Common.Tools.cmsswRelease import isNewerThan
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Jet, GenJet
+from PhysicsTools.HeppyCore.utils.deltar import cleanObjectCollection, matchObjectCollection
+from PhysicsTools.Heppy.physicsobjects.VBF import VBF
+from PhysicsTools.Heppy.physicsutils.BTagSF import BTagSF
+from PhysicsTools.Heppy.physicsobjects import GenParticle
+from PhysicsTools.HeppyCore.utils.deltar import deltaR2
+from PhysicsTools.Heppy.utils.cmsswRelease import isNewerThan
 
 class VBFAnalyzer( Analyzer ):
     '''Analyze jets, and in particular VBF.
@@ -53,8 +52,8 @@ class VBFAnalyzer( Analyzer ):
             self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                      'std::vector<reco::GenParticle>' )
 
-    def beginLoop(self):
-        super(VBFAnalyzer,self).beginLoop()
+    def beginLoop(self, setup):
+        super(VBFAnalyzer,self).beginLoop(setup)
         self.counters.addCounter('VBF')
         count = self.counters.counter('VBF')
         count.register('all events')
@@ -64,9 +63,9 @@ class VBFAnalyzer( Analyzer ):
         count.register('delta Eta > {cut:3.1f}'.format(cut=self.cfg_ana.deltaEta) )
         count.register('no central jets')
         
-    def process(self, iEvent, event):
+    def process(self, event):
         
-        self.readCollections( iEvent )
+        self.readCollections( event.input )
         cmgJets = self.handles['jets'].product()
 
         allJets = []

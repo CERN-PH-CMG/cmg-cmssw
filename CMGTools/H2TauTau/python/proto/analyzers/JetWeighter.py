@@ -1,6 +1,6 @@
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.statistics.Average import Average
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.HeppyCore.statistics.average import Average
 
 from CMGTools.H2TauTau.proto.TriggerEfficiency import TriggerEfficiency
 
@@ -25,9 +25,9 @@ class JetWeighter( Analyzer ):
                                                  self.cfg_ana.effWeightMC )
             
             
-    def beginLoop(self):
+    def beginLoop(self, setup):
         print self, self.__class__
-        super(JetWeighter,self).beginLoop()
+        super(JetWeighter,self).beginLoop(setup)
         self.averages.add('weight', Average('weight') )
         self.averages.add('triggerWeight', Average('triggerWeight') )
         self.averages.add('eff_data', Average('eff_data') )
@@ -35,8 +35,8 @@ class JetWeighter( Analyzer ):
         self.averages.add('recEffWeight', Average('recEffWeight') )
 
 
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
 	if len(event.cleanJets)<1: return
 	#import pdb ; pdb.set_trace()
         self.jet1 = event.cleanJets[0]

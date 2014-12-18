@@ -1,8 +1,8 @@
 import math
 
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, Tau
-from CMGTools.RootTools.physicsobjects.HTauTauElectron import HTauTauElectron
-from CMGTools.RootTools.utils.DeltaR import deltaR2
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjectsimport Muon, Tau
+from PhysicsTools.Heppy.physicsobjects.HTauTauElectron import HTauTauElectron
+from PhysicsTools.HeppyCore.utils.deltar import deltaR2
 from ROOT import TVector3
 
 class DiObject( object ):
@@ -21,6 +21,10 @@ class DiObject( object ):
 
     def leg2(self):
         return self.daughter(1)
+
+    def sumPt(self):
+        '''pt_leg1 + pt_leg2. used for finding the best DiTau.'''
+        return self.leg1().pt() + self.leg2().pt()
 
     def __getattr__(self, name):
         '''all accessors  from cmg::DiObject are transferred to this class.'''
@@ -42,10 +46,6 @@ class DiTau( DiObject ):
     
     def met(self):
         return self.daughter(2)
-
-    def sumPt(self):
-        '''pt_leg1 + pt_leg2. used for finding the best DiTau.'''
-        return self.leg1().pt() + self.leg2().pt()
 
     def svfitMass(self):
         return self.userFloat('mass')

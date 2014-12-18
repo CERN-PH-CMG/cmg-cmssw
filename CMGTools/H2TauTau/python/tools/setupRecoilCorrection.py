@@ -180,7 +180,7 @@ def setupRecoilCorrection( process, runOnMC, enable=True, is53X=True, mode=None,
 if __name__ == '__main__':
 
     import sys
-    from CMGTools.Common.Tools.cmsswRelease import isNewerThan
+    from PhysicsTools.Heppy.utils.cmsswRelease import isNewerThan
 
     data, mc, type = basicParameters(isNewerThan('CMSSW_5_2_X'))
     

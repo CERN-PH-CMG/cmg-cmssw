@@ -3,13 +3,11 @@ import re
 from ROOT import TFile
 
 from CMGTools.RootTools.analyzers.GenParticleAnalyzer import *
-from CMGTools.RootTools.utils.DeltaR import matchObjectCollection
+from PhysicsTools.HeppyCore.utils.deltar import matchObjectCollection
 from CMGTools.RootTools.physicsobjects.genutils import *
-from CMGTools.RootTools.statistics.Average import Average
+from PhysicsTools.HeppyCore.statistics.Average import Average
 
 from CMGTools.H2TauTau.proto.BTagEfficiency import BTagEfficiency, BTagWeight
-
-import copy
 
 class BTagEffWeighter( GenParticleAnalyzer ):
     '''Weight the event to get the NLO Higgs pT distribution for ggH events
@@ -41,21 +39,19 @@ class BTagEffWeighter( GenParticleAnalyzer ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
 
 
-    def beginLoop(self):
+    def beginLoop(self, setup):
         print self, self.__class__
-        super(BTagEffWeighter,self).beginLoop()
+        super(BTagEffWeighter,self).beginLoop(setup)
         self.averages.add('btagEffWeight', Average('btagEffWeight') )
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-    def process(self, iEvent, event):
-        result = super(BTagEffWeighter, self).process(iEvent, event)
+    def process(self, event):
+        super(BTagEffWeighter, self).process(event)
         
         btagEffWeight_ = 1 # this is a float
-
-        jetinfovec = []
  
         # loop over jets
         self.btagWeight_.BTagWeightPy.cleanVector()

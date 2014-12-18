@@ -1,6 +1,6 @@
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjectsimport Jet
 from ROOT import TH1F, TFile
 
 class BTagPlotter( Analyzer ):
@@ -17,11 +17,11 @@ class BTagPlotter( Analyzer ):
         self.h_mva_g_bvet = TH1F ('h_mva_g_bvet', 'h_mva_g_bvet', 100, 0, 1)
 
 
-    def beginLoop(self):
-        super(BTagPlotter,self).beginLoop()
+    def beginLoop(self, setup):
+        super(BTagPlotter,self).beginLoop(setup)
         
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
         for jet in event.jets:
             pf = abs(jet.partonFlavour())
             if jet.btagFlag == True :
