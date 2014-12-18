@@ -1,4 +1,4 @@
-from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
+from PhysicsTools.Heppy.analyzers.core.TreeAnalyzerNumpy import TreeAnalyzerNumpy
 from CMGTools.H2TauTau.proto.analyzers.ntuple import *
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 
@@ -8,7 +8,7 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
 
     Some of the functions in this class should be made available to everybody.'''
     
-    def declareVariables(self):
+    def declareVariables(self, setup):
 
         tr = self.tree
 

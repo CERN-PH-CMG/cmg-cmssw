@@ -1,6 +1,6 @@
 import math
 
-from PhysicsTools.Heppy.physicsobjects.PhysicsObjectsimport Muon, Tau
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Muon, Tau
 from PhysicsTools.Heppy.physicsobjects.HTauTauElectron import HTauTauElectron
 from PhysicsTools.HeppyCore.utils.deltar import deltaR2
 from ROOT import TVector3

@@ -1,6 +1,6 @@
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
-from PhysicsTools.HeppyCore.statistics.Average import Average
+from PhysicsTools.HeppyCore.statistics.average import Average
 from PhysicsTools.Heppy.utils.cmsswRelease import cmsswIs52X
 from PhysicsTools.Heppy.physicsobjects import GenParticle
 

@@ -13,6 +13,7 @@ for s in mc_higgs:
 MC_list = [mc_dict['HiggsVBF125']]
 for sam in MC_list:
     sam.triggers = None # No triggers yet
+    sam.triggers = [] # No triggers yet
     
 allsamples = copy.copy(MC_list)
 

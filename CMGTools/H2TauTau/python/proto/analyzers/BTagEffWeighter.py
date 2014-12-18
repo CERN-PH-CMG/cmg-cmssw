@@ -5,7 +5,7 @@ from ROOT import TFile
 from CMGTools.RootTools.analyzers.GenParticleAnalyzer import *
 from PhysicsTools.HeppyCore.utils.deltar import matchObjectCollection
 from CMGTools.RootTools.physicsobjects.genutils import *
-from PhysicsTools.HeppyCore.statistics.Average import Average
+from PhysicsTools.HeppyCore.statistics.average import Average
 
 from CMGTools.H2TauTau.proto.BTagEfficiency import BTagEfficiency, BTagWeight
 

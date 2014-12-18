@@ -50,7 +50,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         '''
         diLeptons = []
         for index, dil in enumerate(cmgDiLeptons):
-            pydil = self.__class__.DiObjectClass(dil)
+            # pydil = self.__class__.DiObjectClass(dil)
+            pydil = TauMuon(dil)
             pydil.leg1().associatedVertex = event.goodVertices[0]
             pydil.leg2().associatedVertex = event.goodVertices[0]
             if not self.testLeg2( pydil.leg2(), 99999 ):
@@ -66,7 +67,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         The loose ID selection is done to ensure that the muon has an inner track.'''
         leptons = []
         for index, lep in enumerate(cmgLeptons):
-            pyl = self.__class__.LeptonClass(lep)
+            # pyl = self.__class__.LeptonClass(lep)
+            pyl = Muon(lep)
             pyl.associatedVertex = event.goodVertices[0]
             leptons.append( pyl )
         return leptons
@@ -77,7 +79,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         '''
         otherLeptons = []
         for index, lep in enumerate(cmgOtherLeptons):
-            pyl = self.__class__.OtherLeptonClass(lep)
+            # pyl = self.__class__.OtherLeptonClass(lep)
+            pyl = Electron(lep)
             pyl.associatedVertex = event.goodVertices[0]
             # JAN FIXME: Check if the overall rho is needed (from the
             # VertexAnalyzer)
