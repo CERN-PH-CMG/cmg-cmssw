@@ -13,23 +13,23 @@ MODULES = []
 #MODULES.append( ('3l_mva', FinalMVA_3L()) )
 #from CMGTools.TTHAnalysis.tools.bbvars import bbVars
 #MODULES.append( ('bbvars', bbVars()) )
-from CMGTools.TTHAnalysis.tools.finalMVA_susy_2lss import FinalMVA_SUSY_2LSS
-MODULES.append( ('finalMVA_susy_2lss', FinalMVA_SUSY_2LSS()) )
+#from CMGTools.TTHAnalysis.tools.finalMVA_susy_2lss import FinalMVA_SUSY_2LSS
+#MODULES.append( ('finalMVA_susy_2lss', FinalMVA_SUSY_2LSS()) )
 #from CMGTools.TTHAnalysis.tools.ttbarEventReco_2lss import TTEventReco_MC
 #MODULES.append( ('ttreco_mc', TTEventReco_MC()) )
 #from CMGTools.TTHAnalysis.tools.ttbarEventReco_2lss import TTEventReco
 #MODULES.append( ('ttreco', TTEventReco(sortersToUse={"BestGuess":"", "BestBySum4NoTJJb":"_bySum4"})) )
 #MODULES.append( ('ttreco', TTEventReco(sortersToUse={"BestGuess":"","ByGuessLL2B":"_byLL"})) )
-from CMGTools.TTHAnalysis.tools.MuonMVAFriend import MuonMVAFriend
-MODULES.append( ('MuMVAId', MuonMVAFriend("BPH",     "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_muMVAId_v1/train70XBPH_BDTG.weights.xml", label="BPH")) )
-MODULES.append( ('MuMVAId', MuonMVAFriend("BPHCalo", "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_muMVAId_v1/train70XBPHCalo_BDTG.weights.xml", label="BPHCalo")) )
-MODULES.append( ('MuMVAId', MuonMVAFriend("Full",    "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_muMVAId_v1/train70XFull_BDTG.weights.xml", label="Full")) )
+#from CMGTools.TTHAnalysis.tools.MuonMVAFriend import MuonMVAFriend
+#MODULES.append( ('MuMVAId', MuonMVAFriend("BPH",     "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_muMVAId_v1/train70XBPH_BDTG.weights.xml", label="BPH")) )
+#MODULES.append( ('MuMVAId', MuonMVAFriend("BPHCalo", "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_muMVAId_v1/train70XBPHCalo_BDTG.weights.xml", label="BPHCalo")) )
+#MODULES.append( ('MuMVAId', MuonMVAFriend("Full",    "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_muMVAId_v1/train70XFull_BDTG.weights.xml", label="Full")) )
 from CMGTools.TTHAnalysis.tools.LepMVAFriend import LepMVAFriend
-MODULES.append( ('LepMVAFriend', LepMVAFriend(("/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/%s_BDTG.weights.xml",
-                                               "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/%s_BDTG.weights.xml"))) )
-MODULES.append( ('LepMVAFriend', LepMVAFriend(("/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/SV_%s_BDTG.weights.xml",
-                                               "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/SV_%s_BDTG.weights.xml",),
-                                               training="muMVAId_SV", label="SV")) )
+MODULES.append( ('LepMVAFriend', LepMVAFriend(("/afs/cern.ch/user/g/gpetrucc/w/TREES_72X_171214/0_lepMVA_v1/%s_BDTG.weights.xml",
+                                               "/afs/cern.ch/user/g/gpetrucc/w/TREES_72X_171214/0_lepMVA_v1/%s_BDTG.weights.xml"))) )
+#MODULES.append( ('LepMVAFriend', LepMVAFriend(("/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/SV_%s_BDTG.weights.xml",
+#                                               "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/SV_%s_BDTG.weights.xml",),
+#                                               training="muMVAId_SV", label="SV")) )
 
 
 #from CMGTools.TTHAnalysis.tools.eventVars_MT2 import EventVarsMT2 
@@ -101,7 +101,7 @@ if len(options.chunks) != 0 and len(options.datasets) != 1:
 
 jobs = []
 for D in glob(args[0]+"/*"):
-    fname = D+"/"+options.tree+"/"+options.tree+"_tree.root"
+    fname = D+"/treeProducerSusyMultilepton/tree.root"
     if os.path.exists(fname):
         short = os.path.basename(D)
         if options.datasets != []:
@@ -155,7 +155,7 @@ def _runIt(myargs):
     (name,fin,fout,data,range,chunk) = myargs
     timer = ROOT.TStopwatch()
     fb = ROOT.TFile(fin)
-    tb = fb.Get(options.tree)
+    tb = fb.Get("tree")
     if options.vectorTree:
         tb.vectorTree = True
     else:
