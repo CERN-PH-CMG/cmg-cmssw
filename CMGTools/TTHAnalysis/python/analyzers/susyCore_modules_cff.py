@@ -7,6 +7,7 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 from PhysicsTools.Heppy.analyzers.core.all import *
 from PhysicsTools.Heppy.analyzers.objects.all import *
 from PhysicsTools.Heppy.analyzers.gen.all import *
+import os
 
 PDFWeights = []
 #PDFWeights = [ ("CT10",53), ("MSTW2008lo68cl",41), ("NNPDF21_100",101) ]
@@ -141,8 +142,8 @@ lepAna = cfg.Analyzer(
     loose_muon_pt     = 5,
     loose_muon_eta    = 2.4,
     loose_muon_dxy    = 0.05,
-    loose_muon_dz     = 0.2,
-    loose_muon_relIso = 0.4,
+    loose_muon_dz     = 0.1,
+    loose_muon_relIso = 0.5,
     # inclusive very loose electron selection
     inclusive_electron_id  = "",
     inclusive_electron_pt  = 5,
@@ -155,12 +156,16 @@ lepAna = cfg.Analyzer(
     loose_electron_pt     = 7,
     loose_electron_eta    = 2.4,
     loose_electron_dxy    = 0.05,
-    loose_electron_dz     = 0.2,
-    loose_electron_relIso = 0.4,
+    loose_electron_dz     = 0.1,
+    loose_electron_relIso = 0.5,
     loose_electron_lostHits = 1.0,
+    # muon isolation correction method (can be "rhoArea" or "deltaBeta")
+    mu_isoCorr = "rhoArea" ,
+    mu_effectiveAreas = "Phys14_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1')
     # electron isolation correction method (can be "rhoArea" or "deltaBeta")
     ele_isoCorr = "rhoArea" ,
-    ele_tightId = "MVA" ,
+    el_effectiveAreas = "Phys14_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1')
+    ele_tightId = "Cuts_2012" ,
     # minimum deltaR between a loose electron and a loose muon (on overlaps, discard the electron)
     min_dr_electron_muon = 0.02,
     # do MC matching 
@@ -177,13 +182,6 @@ ttHLepSkim = cfg.Analyzer(
     #idCut  = "lepton.relIso03 < 0.2" # can give a cut
     #ptCuts = [20,10],                # can give a set of pt cuts on the leptons
     )
-
-## Lepton MC Matching (generic, must happen early to allow for MVA corrections)
-#ttHLepMCAna = cfg.Analyzer(
-#    'ttHLepMCMatchAnalyzer',
-#    matchAllInclusiveLeptons = False,
-#    )
-#
 
 ## Photon Analyzer (generic)
 photonAna = cfg.Analyzer(
@@ -248,7 +246,9 @@ jetAna = cfg.Analyzer(
     minLepPt = 10,
     relaxJetId = False,  
     doPuId = False, # Not commissioned in 7.0.X
-    recalibrateJets = False,
+    recalibrateJets = "MC", # True, False, 'MC', 'Data'
+    mGT     = "PHYS14_25_V2",
+    jecPath = "%s/src/CMGTools/RootTools/data/jec/" % os.environ['CMSSW_BASE'],
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     smearJets = True,
     shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts  
