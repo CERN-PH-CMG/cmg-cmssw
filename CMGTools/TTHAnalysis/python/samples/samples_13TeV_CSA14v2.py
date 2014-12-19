@@ -119,10 +119,10 @@ mcSamplesCSA14v2 = DYJetsM50HT + ZJetsToNuNuHT + WJetsToLNuHT + GJetsHT + QCDHT 
 ## MORE private samples on EOS
 ### PU40 bx50ns
 #### Signal samples
-T5qqqqWW_2J_mGo1200_mCh1000_mChi800 = kreator.makeMCComponentFromEOS('T5WW_2J_mGo1200_mCh1000_mChi800', '/T5Full-1200-1000-800-Decay-MGMMatch50/', '/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s',".*root",0.0856418)
-T5qqqqWW_2J_mGo1500_mCh800_mChi100  = kreator.makeMCComponentFromEOS('T5WW_2J_mGo1500_mCh800_mChi100', '/T5Full-1500-800-100-Decay-MGMMatch50/', '/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s',".*root",0.0141903)
-T5qqqqWW_2J_mGo1400_mCh315_mChi300 = kreator.makePrivateMCComponent('T5WW_2J_mGo1400_mCh315_mChi300','', ["/store/cmst3/group/susy/alobanov/MC/MiniAOD_v2/13TeV_T5qqqqWW_Gl_1400_LSP_300_Chi_315/13TeV_T5qqqqWW_Gl_1400_LSP_300_Chi_315_MiniAOD-v2.root"],0.0252977)
-T5qqqqWW_2J_mGo1400_mCh315_mChi325 = kreator.makeMCComponentFromEOS('T5qqqqWW_Gl_1400_LSP_100_Chi_325', '/13TeV_T5qqqqWW_Gl_1400_LSP_100_Chi_325/', '/store/cmst3/group/susy/alobanov/MC/MiniAOD_v2/%s', ".*root", 0.0252977)
+T5qqqqWW_2J_mGo1200_mCh1000_mChi800 = kreator.makeMCComponentFromEOS('T5qqqqWW_2J_mGo1200_mCh1000_mChi800', '/T5Full-1200-1000-800-Decay-MGMMatch50/', '/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s',".*root",0.0856418)
+T5qqqqWW_2J_mGo1500_mCh800_mChi100  = kreator.makeMCComponentFromEOS('T5qqqqWW_2J_mGo1500_mCh800_mChi100', '/T5Full-1500-800-100-Decay-MGMMatch50/', '/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s',".*root",0.0141903)
+T5qqqqWW_2J_mGo1400_mCh315_mChi300 = kreator.makePrivateMCComponent('T5qqqqWW_2J_mGo1400_mCh315_mChi300','', ["/store/cmst3/group/susy/alobanov/MC/MiniAOD_v2/13TeV_T5qqqqWW_Gl_1400_LSP_300_Chi_315/13TeV_T5qqqqWW_Gl_1400_LSP_300_Chi_315_MiniAOD-v2.root"],0.0252977)
+T5qqqqWW_2J_mGo1400_mCh315_mChi325 = kreator.makeMCComponentFromEOS('T5qqqqWW_2J_mGo1400_mCh315_mChi325', '/13TeV_T5qqqqWW_Gl_1400_LSP_100_Chi_325/', '/store/cmst3/group/susy/alobanov/MC/MiniAOD_v2/%s', ".*root", 0.0252977)
 T1tttt_2J_mGo1300_mStop300_mCh285_mChi280 = kreator.makeMCComponentFromEOS('T1tttt_2J_mGo1300_mStop300_mCh285_mChi280', '/T1tttt_2J_mGo1300_mStop300_mCh285_mChi280_pythia8-23bodydec/', '/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s',".*root",0.0460525)
 T1tttt_2J_mGo1300_mStop300_mChi280 = kreator.makeMCComponentFromEOS('T1tttt_2J_mGo1300_mStop300_mChi280', '/T1tttt_2J_mGo1300_mStop300_mChi280_pythia8-4bodydec/', '/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s/',".*root",0.0460525)
 T1tttt_2J_mGo800_mStop300_mCh285_mChi280 = kreator.makeMCComponentFromEOS('T1tttt_2J_mGo800_mStop300_mCh285_mChi280', '/T1tttt_2J_mGo800_mStop300_mCh285_mChi280_pythia8-23bodydec/', '/store/cmst3/group/susy/gpetrucc/13TeV/MINIAODSIM/%s',".*root",1.4891)
