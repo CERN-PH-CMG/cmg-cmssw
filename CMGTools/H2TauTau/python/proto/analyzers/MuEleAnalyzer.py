@@ -1,6 +1,6 @@
 from PhysicsTools.Heppy.analyzers.examples.DiLeptonAnalyzer import DiLeptonAnalyzer
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
-from PhysicsTools.Heppy.physicsobjects.PhysicsObjectsimport Electron
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Electron
 
 from CMGTools.H2TauTau.proto.physicsobjects.DiObject import MuonElectron
 
