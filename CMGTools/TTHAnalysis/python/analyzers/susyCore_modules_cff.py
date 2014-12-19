@@ -189,7 +189,8 @@ photonAna = cfg.Analyzer(
     photons='slimmedPhotons',
     ptMin = 20,
     etaMax = 2.5,
-    gammaID = "PhotonCutBasedIDLoose_CSA14"         
+    gammaID = "PhotonCutBasedIDLoose_CSA14",
+    do_mc_match = True,
 )
 
 
