@@ -3,13 +3,13 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.Common.diTau_cff import *
 from CMGTools.H2TauTau.objects.tauMuCuts_cff import * 
 
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
+from PhysicsTools.Heppy.utils.cmsswRelease import cmsswIs44X,cmsswIs52X
 
 from CMGTools.Utilities.metRecoilCorrection.metRecoilCorrection_cff import *
 
 from CMGTools.H2TauTau.objects.cmgTauMuCor_cfi import cmgTauMuCor 
 from CMGTools.H2TauTau.objects.tauMuSVFit_cfi import tauMuSVFit 
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
+from PhysicsTools.Heppy.utils.cmsswRelease import cmsswIs44X,cmsswIs52X
 
 cmgTauMu.leg1Collection = cms.InputTag('slimmedTaus')
 cmgTauMu.leg2Collection = cms.InputTag('slimmedMuons')

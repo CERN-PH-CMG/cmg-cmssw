@@ -11,7 +11,7 @@ class WNJetsTreeAnalyzer( TreeAnalyzer ):
         self.tree.addVar('int', 'nup')
         self.tree.book()
         
-    def process(self, iEvent, event):
+    def process(self, event):
         self.tree.s.wjetweight = event.WJetWeight
         self.tree.s.nup = event.NUP
         self.tree.fill()

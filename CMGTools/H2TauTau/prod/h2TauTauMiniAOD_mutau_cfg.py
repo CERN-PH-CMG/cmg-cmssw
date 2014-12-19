@@ -1,5 +1,5 @@
 import FWCore.ParameterSet.Config as cms
-from CMGTools.Common.Tools.cmsswRelease import isNewerThan, cmsswIs44X
+from PhysicsTools.Heppy.utils.cmsswRelease import isNewerThan, cmsswIs44X
 
 sep_line = '-'*70
 

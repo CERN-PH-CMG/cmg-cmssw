@@ -1,6 +1,6 @@
 import copy
 import re 
-import CMGTools.RootTools.fwlite.Config as cfg
+import PhysicsTools.HeppyCore.framework.config as cfg
 from CMGTools.RootTools.yellowreport.YRParser import yrparser13TeV
 # from CMGTools.H2TauTau.proto.samples.sampleShift import sampleShift
 

@@ -1,6 +1,6 @@
 from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
 from CMGTools.H2TauTau.proto.analyzers.ntuple import *
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 
 
 class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
@@ -76,8 +76,8 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
             'std::vector<cmg::BaseMET>' 
             )
         
-    def process(self, iEvent, event):
-       self.readCollections( iEvent )
+    def process(self, event):
+       self.readCollections( event.input )
             
        tr = self.tree
        tr.reset()

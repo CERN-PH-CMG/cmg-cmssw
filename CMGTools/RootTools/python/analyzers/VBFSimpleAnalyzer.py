@@ -1,16 +1,8 @@
-import random
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
-from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 
-from CMGTools.RootTools.physicsobjects.VBF import VBF
-from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.RootTools.utils.DeltaR import deltaR2
-from CMGTools.RootTools.utils.cmsswRelease import isNewerThan
+from PhysicsTools.Heppy.physicsutils.VBF import VBF
 
-
-class VBFSimpleAnalyzer( Analyzer ):
+class VBFSimpleAnalyzer(Analyzer):
     """Analyses the collection of jets stored in event.cleanJets,
     and adds a VBF object to the event, as event.vbf.
 
@@ -32,18 +24,18 @@ class VBFSimpleAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(VBFSimpleAnalyzer,self).__init__(cfg_ana, cfg_comp, looperName)
 
-    def beginLoop(self):
-        super(VBFSimpleAnalyzer,self).beginLoop()
+    def beginLoop(self, setup):
+        super(VBFSimpleAnalyzer, self).beginLoop(setup)
         self.counters.addCounter('VBF')
         count = self.counters.counter('VBF')
         count.register('all events')
         count.register('M_jj > {cut:3.1f}'.format(cut=self.cfg_ana.Mjj))
-        count.register('delta Eta > {cut:3.1f}'.format(cut=self.cfg_ana.deltaEta) )
+        count.register('delta Eta > {cut:3.1f}'.format(cut=self.cfg_ana.deltaEta))
         count.register('no central jets')
 
         
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections(event.input)
 
         self.counters.counter('VBF').inc('all events')
 
@@ -56,10 +48,12 @@ class VBFSimpleAnalyzer( Analyzer ):
             self.counters.counter('VBF').inc('M_jj > {cut:3.1f}'.format(cut=self.cfg_ana.Mjj) )
         else:
             return True 
+            
         if abs(event.vbf.deta) > self.cfg_ana.deltaEta:
             self.counters.counter('VBF').inc('delta Eta > {cut:3.1f}'.format(cut=self.cfg_ana.deltaEta) )
         else:
             return True 
+        
         if len(event.vbf.centralJets)==0:
             self.counters.counter('VBF').inc('no central jets')
         else:

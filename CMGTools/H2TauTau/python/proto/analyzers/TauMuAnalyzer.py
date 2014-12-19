@@ -1,9 +1,11 @@
 import operator
-from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+
+from PhysicsTools.Heppy.analyzers.examples.DiLeptonAnalyzer import DiLeptonAnalyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Muon, GenParticle
+from PhysicsTools.Heppy.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
+
 from CMGTools.H2TauTau.proto.physicsobjects.DiObject import TauMuon
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, GenParticle
-from CMGTools.RootTools.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
 
 class TauMuAnalyzer( DiLeptonAnalyzer ):
 
@@ -48,7 +50,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         '''
         diLeptons = []
         for index, dil in enumerate(cmgDiLeptons):
-            pydil = self.__class__.DiObjectClass(dil)
+            # pydil = self.__class__.DiObjectClass(dil)
+            pydil = TauMuon(dil)
             pydil.leg1().associatedVertex = event.goodVertices[0]
             pydil.leg2().associatedVertex = event.goodVertices[0]
             if not self.testLeg2( pydil.leg2(), 99999 ):
@@ -64,7 +67,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         The loose ID selection is done to ensure that the muon has an inner track.'''
         leptons = []
         for index, lep in enumerate(cmgLeptons):
-            pyl = self.__class__.LeptonClass(lep)
+            # pyl = self.__class__.LeptonClass(lep)
+            pyl = Muon(lep)
             pyl.associatedVertex = event.goodVertices[0]
             leptons.append( pyl )
         return leptons
@@ -75,7 +79,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         '''
         otherLeptons = []
         for index, lep in enumerate(cmgOtherLeptons):
-            pyl = self.__class__.OtherLeptonClass(lep)
+            # pyl = self.__class__.OtherLeptonClass(lep)
+            pyl = Electron(lep)
             pyl.associatedVertex = event.goodVertices[0]
             # JAN FIXME: Check if the overall rho is needed (from the
             # VertexAnalyzer)
@@ -84,11 +89,11 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         return otherLeptons
 
 
-    def process(self, iEvent, event):
+    def process(self, event):
 
         #if event.eventId == 70370:
         #    print 'EVENT', event.eventId
-        result = super(TauMuAnalyzer, self).process(iEvent, event)
+        result = super(TauMuAnalyzer, self).process(event)
 
         # import pdb; pdb.set_trace()
 
@@ -216,3 +221,4 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             return max( osDiLeptons, key=operator.methodcaller( 'sumPt' ) )
         else:
             return max( diLeptons, key=operator.methodcaller( 'sumPt' ) )
+

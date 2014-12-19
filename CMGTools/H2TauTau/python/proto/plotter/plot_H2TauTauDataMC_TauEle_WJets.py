@@ -16,7 +16,7 @@ from CMGTools.H2TauTau.proto.plotter.plotmod import *
 from CMGTools.H2TauTau.proto.plotter.datacards import *
 from CMGTools.H2TauTau.proto.plotter.embed import *
 from CMGTools.H2TauTau.proto.plotter.plotinfo import *
-from CMGTools.RootTools.statistics.Counter import Counters
+from PhysicsTools.HeppyCore.statistics.counter import Counters
 from CMGTools.RootTools.Style import *
 from ROOT import kGray, kPink, TH1, TPaveText, TPad, TCanvas
 

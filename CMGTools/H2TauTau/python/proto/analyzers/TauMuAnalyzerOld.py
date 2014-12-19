@@ -1,7 +1,7 @@
-from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.DiObject import TauMuon
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, GenParticle
+from PhysicsTools.Heppy.analyzers.examples.DiLeptonAnalyzer import DiLeptonAnalyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from CMGTools.H2TauTau.proto.physicsobjects.DiObject import TauMuon
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Muon, GenParticle
 
 class TauMuAnalyzer( DiLeptonAnalyzer ):
 
@@ -62,12 +62,12 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         return leptons
 
 
-    def process(self, iEvent, event):
+    def process(self, event):
 
 ##         if event.iEv == 421:
 ##             import pdb; pdb.set_trace()
 
-        result = super(TauMuAnalyzer, self).process(iEvent, event)
+        result = super(TauMuAnalyzer, self).process(event)
         
         if result is False:
             selDiLeptons = [ diL for diL in event.diLeptons if \

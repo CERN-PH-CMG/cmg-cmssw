@@ -1,6 +1,6 @@
-from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
+from PhysicsTools.Heppy.analyzers.core.TreeAnalyzerNumpy import TreeAnalyzerNumpy
 from CMGTools.H2TauTau.proto.analyzers.ntuple import *
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 
 
 class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
@@ -8,7 +8,7 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
 
     Some of the functions in this class should be made available to everybody.'''
     
-    def declareVariables(self):
+    def declareVariables(self, setup):
 
         tr = self.tree
 
@@ -83,8 +83,8 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
                 'std::vector<pat::MET>' 
                 )
         
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
                 
         tr = self.tree
         tr.reset()

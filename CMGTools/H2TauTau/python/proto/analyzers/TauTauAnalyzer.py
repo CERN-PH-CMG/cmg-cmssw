@@ -1,17 +1,19 @@
 import math
 import re
 from fnmatch import fnmatch as fnm
-from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.DiObject import TauTau
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Tau, Muon, GenParticle
-from CMGTools.RootTools.utils.DeltaR import deltaR2
 from ROOT import TFile
-from CMGTools.RootTools.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
+
+from PhysicsTools.Heppy.analyzers.examples.DiLeptonAnalyzer import DiLeptonAnalyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Tau, Muon, GenParticle
+from PhysicsTools.HeppyCore.utils.deltar import deltaR2
+from PhysicsTools.Heppy.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Jet
+from PhysicsTools.HeppyCore.utils.deltar import cleanObjectCollection
+from PhysicsTools.HeppyCore.statistics.counter import Counters
+
+from CMGTools.H2TauTau.proto.physicsobjects.DiObject import TauTau
 from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
-from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
-from CMGTools.RootTools.statistics.Counter import Counters
 
 ### TauID WP summer13
 #           loose  medium tight
@@ -83,8 +85,8 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             self.higgsPtWeightHistogramUp   = self.higgsPtWeightFile.Get("Up")
             self.higgsPtWeightHistogramDown = self.higgsPtWeightFile.Get("Down")
 
-    def beginLoop(self):
-        super(TauTauAnalyzer,self).beginLoop()
+    def beginLoop(self, setup):
+        super(TauTauAnalyzer,self).beginLoop(setup)
         self.counters = Counters()
         self.counters.addCounter('DiLepton')
         count = self.counters.counter('DiLepton')
@@ -113,12 +115,12 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
         #### highest sum pt pair
         #return max( [ (dilep.sumPt(), dilep) for dilep in diLeptons ] )[1]
     
-    def process(self, iEvent, event):
+    def process(self, event):
         # select signal dileptons with all cuts on both legs
         
         if 'TTJets_emb' in self.cfg_comp.name :
           self.cfg_comp.isEmbed = True
-        self.readCollections( iEvent )
+        self.readCollections( event.input )
         # trigger stuff could be put in a separate analyzer
         # event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
         
@@ -136,7 +138,7 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
 	event.rawMET = self.handles['rawMET'].product()
         
 	triggerResults = self.handles['triggerResults'].product()
-        triggerNames = iEvent._event.triggerNames(triggerResults)
+        triggerNames = event.input._event.triggerNames(triggerResults)
 	#event.hltPath = []
 	for trig in self.triggers:
 	    index = triggerNames.triggerIndex(trig)

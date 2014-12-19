@@ -1,7 +1,8 @@
-from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.DiObject import MuonElectron
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Electron
+from PhysicsTools.Heppy.analyzers.examples.DiLeptonAnalyzer import DiLeptonAnalyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjectsimport Electron
+
+from CMGTools.H2TauTau.proto.physicsobjects.DiObject import MuonElectron
 
 class MuEleAnalyzer( DiLeptonAnalyzer ):
 

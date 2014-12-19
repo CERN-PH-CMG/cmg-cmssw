@@ -1,6 +1,6 @@
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.statistics.Average import Average
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.HeppyCore.statistics.average import Average
 
 from CMGTools.H2TauTau.proto.TriggerEfficiency import TriggerEfficiency
 from CMGTools.H2TauTau.proto.analyzers.RecEffCorrection import recEffMapEle, recEffMapMu
@@ -28,9 +28,9 @@ class LeptonWeighter( Analyzer ):
                                                      self.cfg_ana.effWeightMC )
 
             
-    def beginLoop(self):
+    def beginLoop(self, setup):
         print self, self.__class__
-        super(LeptonWeighter,self).beginLoop()
+        super(LeptonWeighter,self).beginLoop(setup)
         self.averages.add('weight', Average('weight') )
         self.averages.add('triggerWeight', Average('triggerWeight') )
         self.averages.add('eff_data', Average('eff_data') )
@@ -40,8 +40,8 @@ class LeptonWeighter( Analyzer ):
         self.averages.add('isoWeight', Average('isoWeight') )
 
 
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
         lep = getattr( event, self.leptonName )
         lep.weight = 1
         lep.triggerWeight = 1
@@ -68,22 +68,14 @@ class LeptonWeighter( Analyzer ):
                 else:
                     lep.triggerWeight = 1.                    
 
-            def getWeight(weightMap, lepton):
-                try:
-                    weight = weightMap.weight(
-                        pt=lep.pt(),
-                        eta=abs(lep.eta()) ).weight.value
-                except AttributeError:
-                    print 'cannot find weight!'
-                    print weightMap
-                    print lep.pt(), lep.eta()
-                    raise
-
             if hasattr( self.cfg_ana, 'idWeight'):
                 lep.idWeight = self.cfg_ana.idWeight.weight(lep.pt(), abs(lep.eta()) ).weight.value
             # JAN: Do not apply iso weight for embedded sample
-            if hasattr( self.cfg_ana, 'isoWeight') and not self.cfg_comp.isEmbed:
-                lep.isoWeight = self.cfg_ana.isoWeight.weight(lep.pt(), abs(lep.eta()) ).weight.value
+            if hasattr( self.cfg_ana, 'isoWeight'):
+                if not self.cfg_comp.isEmbed:
+                    lep.isoWeight = self.cfg_ana.isoWeight.weight(lep.pt(), abs(lep.eta()) ).weight.value
+                else:
+                    print 'Not applying isolation weights for embedded samples, to be reconsidered in 2015!'
             
         lep.recEffWeight = lep.idWeight * lep.isoWeight
         lep.weight = lep.triggerWeight * lep.recEffWeight

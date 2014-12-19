@@ -1,12 +1,40 @@
-import CMGTools.RootTools.fwlite.Config as cfg
-from CMGTools.RootTools.fwlite.Config import printComps
+import PhysicsTools.HeppyCore.framework.config as cfg
+from PhysicsTools.HeppyCore.framework.config import printComps
+# from CMGTools.RootTools.fwlite.Config import printComps
 
-from CMGTools.Production.getFiles import getFiles
+# import all analysers:
 
+# Heppy analyzers
+from PhysicsTools.Heppy.analyzers.core.JSONAnalyzer import JSONAnalyzer
+from PhysicsTools.Heppy.analyzers.core.EventSelector import EventSelector
+# from PhysicsTools.Heppy.analyzers.examples.TriggerAnalyzer import TriggerAnalyzer
+from PhysicsTools.Heppy.analyzers.objects.VertexAnalyzer import VertexAnalyzer
+from PhysicsTools.Heppy.analyzers.core.PileUpAnalyzer import PileUpAnalyzer
+from PhysicsTools.Heppy.analyzers.examples.JetAnalyzer import JetAnalyzer
+
+# Tau-tau analyzers
+from CMGTools.H2TauTau.proto.analyzers.EmbedWeighter import EmbedWeighter
+from CMGTools.H2TauTau.proto.analyzers.GenErsatzAnalyzer import GenErsatzAnalyzer
+from CMGTools.H2TauTau.proto.analyzers.TauMuAnalyzer import TauMuAnalyzer
+from CMGTools.H2TauTau.proto.analyzers.DYJetsFakeAnalyzer import DYJetsFakeAnalyzer
+from CMGTools.H2TauTau.proto.analyzers.WNJetsAnalyzer import WNJetsAnalyzer
+from CMGTools.H2TauTau.proto.analyzers.NJetsAnalyzer import NJetsAnalyzer
+from CMGTools.H2TauTau.proto.analyzers.HiggsPtWeighter import HiggsPtWeighter
+from CMGTools.H2TauTau.proto.analyzers.WNJetsTreeAnalyzer import WNJetsTreeAnalyzer
+from CMGTools.H2TauTau.proto.analyzers.TauDecayModeWeighter import TauDecayModeWeighter
+from CMGTools.H2TauTau.proto.analyzers.TauFakeRateWeighter import TauFakeRateWeighter
+from CMGTools.H2TauTau.proto.analyzers.LeptonWeighter import LeptonWeighter
+from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerTauMu import H2TauTauTreeProducerTauMu
+from CMGTools.H2TauTau.proto.analyzers.H2TauTauSyncTree import H2TauTauSyncTree
+
+from CMGTools.RootTools.analyzers.VBFSimpleAnalyzer import VBFSimpleAnalyzer
+
+
+# from CMGTools.Production.getFiles import getFiles
 # from CMGTools.H2TauTau.triggerMap import pathsAndFilters
 # from CMGTools.H2TauTau.proto.weights.weighttable import mu_id_taumu_2012, mu_iso_taumu_2012
 # from CMGTools.H2TauTau.proto.samples.sampleShift import selectShift
-from CMGTools.RootTools.RootTools import * 
+
 
 # 'Nom', 'Up', 'Down', or None
 shift = None
@@ -14,9 +42,6 @@ shift = None
 tauScaleShift = 1.0
 
 syncntuple = False
-simulatedOnly = False # Useful for systematic shifts on simulated samples, e.g. JEC
-doThePlot = False # Set to true for the plotting script
-
 
 # Andrew Summer 13 (MC is identical to the previous one)
 # puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/13-09-13/MC_Summer12_PU_S10-600bins.root'
@@ -37,46 +62,54 @@ mc_muEffWeight = None
     
     
 eventSelector = cfg.Analyzer(
-    'EventSelector',
-    toSelect = [
+    EventSelector,
+    name='EventSelector',
+    toSelect=[
     105104
     ]
     )
 
 
 jsonAna = cfg.Analyzer(
-    'JSONAnalyzer',
+    JSONAnalyzer,
+    name='JSONAnalyzer',
     )
 
-triggerAna = cfg.Analyzer(
-    'TriggerAnalyzer'
-    )
+# triggerAna = cfg.Analyzer(
+#     TriggerAnalyzer,
+#     'TriggerAnalyzer'
+#     )
 
 vertexAna = cfg.Analyzer(
-    'VertexAnalyzer',
-    goodVertices = 'goodPVFilter',
-    vertexWeight = None,
-    fixedWeight = 1,
-    verbose = False,
+    VertexAnalyzer,
+    name='VertexAnalyzer',
+    goodVertices='goodPVFilter',
+    vertexWeight=None,
+    fixedWeight=1,
+    verbose=False,
     )
 
 embedWeighter = cfg.Analyzer(
-    'EmbedWeighter',
-    isRecHit = False,
-    verbose = False
+    EmbedWeighter,
+    name='EmbedWeighter',
+    isRecHit=False,
+    verbose=False
     )
 
 pileUpAna = cfg.Analyzer(
+    PileUpAnalyzer,
     'PileUpAnalyzer',
     true = True
     )
 
 genErsatzAna = cfg.Analyzer(
+    GenErsatzAnalyzer,
     'GenErsatzAnalyzer',
-    verbose = False
+    verbose=False
     )
 
 TauMuAna = cfg.Analyzer(
+    TauMuAnalyzer,
     'TauMuAnalyzer',
     scaleShift1 = tauScaleShift,
     pt1 = 20,
@@ -94,40 +127,48 @@ TauMuAna = cfg.Analyzer(
     )
 
 dyJetsFakeAna = cfg.Analyzer(
+    DYJetsFakeAnalyzer,
     'DYJetsFakeAnalyzer',
     leptonType = 13,
     src = 'prunedGenParticles',
     )
 
 WNJetsAna = cfg.Analyzer(
+    WNJetsAnalyzer,
     'WNJetsAnalyzer',
     verbose = False
     )
 
 NJetsAna = cfg.Analyzer(
+    NJetsAnalyzer,
     'NJetsAnalyzer',
     fillTree = True,
     verbose = False
     )
 
 WNJetsTreeAna = cfg.Analyzer(
+    WNJetsTreeAnalyzer,
     'WNJetsTreeAnalyzer'
     )
 
 higgsWeighter = cfg.Analyzer(
+    HiggsPtWeighter,
     'HiggsPtWeighter',
     src = 'genParticlesPruned',
     )
 
 tauDecayModeWeighter = cfg.Analyzer(
+    TauDecayModeWeighter,
     'TauDecayModeWeighter',
     )
 
 tauFakeRateWeighter = cfg.Analyzer(
+    TauFakeRateWeighter,
     'TauFakeRateWeighter'
     )
 
 tauWeighter = cfg.Analyzer(
+    LeptonWeighter,
     'LeptonWeighter_tau',
     effWeight = None,
     effWeightMC = None,
@@ -137,6 +178,7 @@ tauWeighter = cfg.Analyzer(
     )
 
 muonWeighter = cfg.Analyzer(
+    LeptonWeighter,
     'LeptonWeighter_mu',
     effWeight = None,
     effWeightMC = None,
@@ -149,6 +191,7 @@ muonWeighter = cfg.Analyzer(
 
 
 jetAna = cfg.Analyzer(
+    JetAnalyzer,
     'JetAnalyzer',
     # jetCol = 'slimmedJets', # <- These are CHS jets
     jetCol = 'patJetsAK4PF',
@@ -162,6 +205,7 @@ jetAna = cfg.Analyzer(
     )
 
 vbfSimpleAna = cfg.Analyzer(
+    VBFSimpleAnalyzer,
     'VBFSimpleAnalyzer',
     vbfMvaWeights = '',
     cjvPtCut = 30.,
@@ -170,17 +214,19 @@ vbfSimpleAna = cfg.Analyzer(
     )
 
 treeProducer = cfg.Analyzer(
+    H2TauTauTreeProducerTauMu,
     'H2TauTauTreeProducerTauMu'
     )
 
 treeProducerXCheck = cfg.Analyzer(
+    H2TauTauSyncTree,
     'H2TauTauSyncTree',
     pt20 = False
     )
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.csa2014.tauMu_Sync_Jan import * 
+from CMGTools.H2TauTau.proto.samples.csa2014.tauMu_Sync_Jan import MC_list, mc_higgs, mc_dict
 
 #########################################################################################
 
@@ -194,9 +240,7 @@ for mc in MC_list:
     mc.puFileData = puFileData
 
 
-higgs = mc_higgs
-
-selectedComponents = [HiggsVBF125]
+selectedComponents = [mc_dict['HiggsVBF125']]
 
 sequence = cfg.Sequence( [
     # eventSelector,
@@ -228,7 +272,7 @@ if syncntuple:
 
 test = 0
 if test==1:
-    comp = HiggsVBF125
+    comp = mc_dict['HiggsVBF125']
     # comp = data_Run2012A
     selectedComponents = [comp]
     comp.splitFactor = 1
@@ -241,10 +285,16 @@ elif test==2:
         comp.files = comp.files[:5]
 
 
+# the following is declared in case this cfg is used in input to the heppy.py script
+from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
 config = cfg.Config( components = selectedComponents,
-                     sequence = sequence )
+                     sequence = sequence,
+                     services = [],  
+                     events_class = Events
+                     )
 
 printComps(config.components, True)
 
 def modCfgForPlot(config):
     config.components = []
+

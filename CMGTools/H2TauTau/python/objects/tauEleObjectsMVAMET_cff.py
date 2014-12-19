@@ -3,13 +3,13 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.Common.diTau_cff import *
 from CMGTools.H2TauTau.objects.tauEleCuts_cff import * 
 
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
+from PhysicsTools.Heppy.utils.cmsswRelease import cmsswIs44X,cmsswIs52X
 
 from CMGTools.Utilities.metRecoilCorrection.metRecoilCorrection_cff import *
 
 from CMGTools.H2TauTau.objects.cmgTauEleCor_cfi import cmgTauEleCor 
 from CMGTools.H2TauTau.objects.tauEleSVFit_cfi import tauEleSVFit 
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
+from PhysicsTools.Heppy.utils.cmsswRelease import cmsswIs44X,cmsswIs52X
 
 
 

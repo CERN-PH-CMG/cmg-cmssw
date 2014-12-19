@@ -3,9 +3,9 @@ import re
 from ROOT import TFile
 
 from CMGTools.RootTools.analyzers.GenParticleAnalyzer import *
-from CMGTools.RootTools.utils.DeltaR import matchObjectCollection
+from PhysicsTools.HeppyCore.utils.deltar import matchObjectCollection
 from CMGTools.RootTools.physicsobjects.genutils import *
-from CMGTools.RootTools.statistics.Average import Average
+from PhysicsTools.HeppyCore.statistics.average import Average
 
 class HiggsPtWeighter( GenParticleAnalyzer ):
     '''Weight the event to get the NLO Higgs pT distribution for ggH events
@@ -36,19 +36,19 @@ class HiggsPtWeighter( GenParticleAnalyzer ):
             return False, -1
         
 
-    def beginLoop(self):
+    def beginLoop(self, setup):
         print self, self.__class__
-        super(HiggsPtWeighter,self).beginLoop()
+        super(HiggsPtWeighter,self).beginLoop(setup)
         self.averages.add('weight', Average('weight') )
 
-    def process(self, iEvent, event):
+    def process(self, event):
         event.higgsPtWeight = 1 
         event.higgsPtWeightUp = 1 
         event.higgsPtWeightDown = 1 
         if not self.isGGH:
             return True
         
-        result = super(HiggsPtWeighter, self).process(iEvent, event)
+        result = super(HiggsPtWeighter, self).process(event)
         higgsBosons = [gen for gen in event.genParticles if gen.status()==3 and gen.pdgId()==25]
         if len(higgsBosons)!=1:
             strerr = '{nhiggs} Higgs bosons, this should not happen for a ggH component. Your component is:\n {comp}'.format(nhiggs=len(higgsBosons), comp=str(self.cfg_comp))

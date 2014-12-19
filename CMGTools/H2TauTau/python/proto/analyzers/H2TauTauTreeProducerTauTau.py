@@ -1,5 +1,5 @@
 from CMGTools.RootTools.analyzers.TreeAnalyzer import TreeAnalyzer
-from CMGTools.RootTools.utils.DeltaR import bestMatch
+from PhysicsTools.HeppyCore.utils.deltar import bestMatch
 from math import *
 import inspect
 
@@ -257,7 +257,7 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
 	
         self.tree.book()
 
-    def process(self, iEvent, event):
+    def process(self, event):
 
         #if event.eventId in notPassed :
         #  print 'WEIRD!! I have this event'

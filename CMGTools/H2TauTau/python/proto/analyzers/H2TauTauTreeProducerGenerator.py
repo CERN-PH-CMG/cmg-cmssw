@@ -1,11 +1,10 @@
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.physicsobjects import GenParticle
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import GenJet
+from PhysicsTools.HeppyCore.utils.deltar import cleanObjectCollection
+
 from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
 from CMGTools.H2TauTau.proto.analyzers.ntuple import *
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.utils.DeltaR import bestMatch
-#from CMGTools.RootTools.analyzers.GenParticleAnalyzer import *
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle, PhysicsObject, printOut
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet, GenJet
-from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection
 
 class H2TauTauTreeProducerGenerator( TreeAnalyzerNumpy ):
     '''Tree producer for the H->tau tau analysis.'''
@@ -146,15 +145,15 @@ class H2TauTauTreeProducerGenerator( TreeAnalyzerNumpy ):
 
         
         
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
                 
         tr = self.tree
         tr.reset()
 
-        fill( tr, 'run', iEvent.eventAuxiliary().id().run())
-        fill( tr, 'lumi', iEvent.eventAuxiliary().id().luminosityBlock())
-        fill( tr, 'evt', iEvent.eventAuxiliary().id().event())
+        fill( tr, 'run', event.input.eventAuxiliary().id().run())
+        fill( tr, 'lumi', event.input.eventAuxiliary().id().luminosityBlock())
+        fill( tr, 'evt', event.input.eventAuxiliary().id().event())
 
         genParticles = self.mchandles['genParticles'].product()
         event.genParticles = map( GenParticle, genParticles)

@@ -2,17 +2,23 @@ import copy
 
 from CMGTools.Production.getFiles import getFiles
 
-from CMGTools.H2TauTau.proto.samples.csa2014.higgs import *
+from CMGTools.H2TauTau.proto.samples.csa2014.higgs import mc_higgs
 
-MC_list = [HiggsVBF125]
+
+# dictionarize
+mc_dict = {}
+for s in mc_higgs:
+    mc_dict[s.name] = s
+
+MC_list = [mc_dict['HiggsVBF125']]
 for sam in MC_list:
     sam.triggers = None # No triggers yet
+    sam.triggers = [] # No triggers yet
     
 allsamples = copy.copy(MC_list)
 
-pat = pat = '/VBF_HToTauTau_M-125_13TeV-powheg-pythia6/Spring14dr-PU20bx25_POSTLS170_V5-v1/AODSIM/SS14/TAUMU_MINIAODTEST_steggema'
+pat = '/VBF_HToTauTau_M-125_13TeV-powheg-pythia6/Spring14dr-PU20bx25_POSTLS170_V5-v1/AODSIM/SS14/TAUMU_MINIAODTEST_steggema'
 
-HiggsVBF125.files = getFiles(pat, 'steggema', '.*root')
-
-HiggsVBF125.splitFactor = 14
+mc_dict['HiggsVBF125'].files = getFiles(pat, 'steggema', '.*root')
+mc_dict['HiggsVBF125'].splitFactor = 14
 
