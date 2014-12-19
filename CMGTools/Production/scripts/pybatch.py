@@ -66,6 +66,54 @@ else
    done
 fi
 """.format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")]) + dirCopy
+   elif remoteDir.startswith("/dpm/oeaw.ac.at"):
+      cpCmd="""echo 'sending root files to remote dir'
+copyExitStat=0
+if [ $looperExitStatus -ne 0 ]; then
+   echo "Looper failed. Don't attempt to copy corrupted file remotely"
+else
+   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/dcap/ # Fabio's workaround to fix gfal-tools
+   #nEvents=`grep 'number of events processed' Loop/log.txt | sed 's/.* \([0-9][0-9]*\)$/\\1/'`
+   nEvents=`grep 'All Events' Loop/skimAnalyzerCount/SkimReport.txt | sed 's/.* All Events  *\([0-9][0-9]*\).*/\\1/'`
+   echo "Processed ${{nEvents}} according to Loop/log.txt"
+   for f in Loop/tree*/*.root
+   do
+      ff=`basename $f | cut -d . -f 1`
+      d=`echo $f | cut -d / -f 2`
+      #gfal-mkdir {srm}
+      #echo "gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_nEvents${{nEvents}}.root"
+      #gfal-copy file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_nEvents${{nEvents}}.root
+      echo "Trying 10x: lcg-cp -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_Chunk{idx}_nEvents${{nEvents}}.root"
+      icnt=0
+      fileCopyExitStatus=1
+      while [ $icnt -lt 10 ]
+      do
+        lcg-cp -v file://`pwd`/Loop/$d/$ff.root {srm}/${{ff}}_Chunk{idx}_nEvents${{nEvents}}.root
+        if [ $? -eq 0 ]
+        then
+          fileCopyExitStatus=0
+          break
+        else
+          let icnt+=1
+          sleep 300
+        fi
+      done
+      rm Loop/$d/$ff.root
+      if [ $fileCopyExitStatus -ne 0 ]; then
+         echo "ERROR: remote copy failed for file $ff"
+         copyExitStat=$fileCopyExitStatus
+      else
+         echo "remote copy succeeded"
+      fi
+   done
+fi
+if (( ( $looperExitStatus == 0 ) && ( $copyExitStat == 0 ) ))
+then
+  exit 0
+else
+  exit 1
+fi
+""".format(idx=0 if not "_Chunk" in jobDir else jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://hephyse.oeaw.ac.at'+remoteDir+jobDir[jobDir.rfind("/"):max(0,jobDir.find("_Chunk"))]) + dirCopy
    elif remoteDir.startswith("/eos/cms/store"):
        cpCmd="""echo 'sending root files to remote dir'
 if [ $looperExitStatus -ne 0 ]; then
