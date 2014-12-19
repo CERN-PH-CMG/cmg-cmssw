@@ -16,6 +16,9 @@ ttHLepSkim.maxLeptons = 999
 #ttHLepSkim.ptCuts = []
 
 
+# switch off slow photon MC matching
+photonAna.do_mc_match = False
+
 # Event Analyzer for susy multi-lepton (at the moment, it's the TTH one)
 from CMGTools.TTHAnalysis.analyzers.ttHLepEventAnalyzer import ttHLepEventAnalyzer
 ttHEventAna = cfg.Analyzer(
@@ -57,9 +60,9 @@ treeProducer = cfg.Analyzer(
 #-------- SAMPLES AND TRIGGERS -----------
 
 #-------- SEQUENCE
-from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import TTH_PU40bx25, SMS_T1tttt_2J_mGl1500_mLSP100
+from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
 
-selectedComponents = [ TTH_PU40bx25 ]
+selectedComponents = [ SMS_T1tttt_2J_mGl1200_mLSP800  ]
 
 sequence = cfg.Sequence(susyCoreSequence+[
     ttHEventAna,
@@ -68,11 +71,22 @@ sequence = cfg.Sequence(susyCoreSequence+[
 
 test = 1
 if test == 1:
-    comp = TTH_PU40bx25; comp.name = "TTH"
+    comp = TTH; comp.name = "TTH"
     #comp = SMS_T1tttt_2J_mGl1500_mLSP100
     comp.files = comp.files[:1]
     comp.splitFactor = 1
+    comp.fineSplitFactor = 4
     selectedComponents = [ comp ]
+elif test == 2:
+    for comp in selectedComponents:
+        comp.files = comp.files[:1]
+        comp.splitFactor = 1
+elif test == 3:
+    comp = TTJets
+    comp.files = comp.files[:1]
+    comp.splitFactor = 1
+    selectedComponents = [ comp ]
+
 
 # the following is declared in case this cfg is used in input to the heppy.py script
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
