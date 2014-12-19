@@ -7,6 +7,7 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 from PhysicsTools.Heppy.analyzers.core.all import *
 from PhysicsTools.Heppy.analyzers.objects.all import *
 from PhysicsTools.Heppy.analyzers.gen.all import *
+import os
 
 PDFWeights = []
 #PDFWeights = [ ("CT10",53), ("MSTW2008lo68cl",41), ("NNPDF21_100",101) ]
@@ -182,13 +183,6 @@ ttHLepSkim = cfg.Analyzer(
     #ptCuts = [20,10],                # can give a set of pt cuts on the leptons
     )
 
-## Lepton MC Matching (generic, must happen early to allow for MVA corrections)
-#ttHLepMCAna = cfg.Analyzer(
-#    'ttHLepMCMatchAnalyzer',
-#    matchAllInclusiveLeptons = False,
-#    )
-#
-
 ## Photon Analyzer (generic)
 photonAna = cfg.Analyzer(
     PhotonAnalyzer, name='photonAnalyzer',
@@ -252,7 +246,9 @@ jetAna = cfg.Analyzer(
     minLepPt = 10,
     relaxJetId = False,  
     doPuId = False, # Not commissioned in 7.0.X
-    recalibrateJets = False,
+    recalibrateJets = "MC", # True, False, 'MC', 'Data'
+    mGT     = "PHYS14_25_V2",
+    jecPath = "%s/src/CMGTools/RootTools/data/jec/" % os.environ['CMSSW_BASE'],
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     smearJets = True,
     shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts  
