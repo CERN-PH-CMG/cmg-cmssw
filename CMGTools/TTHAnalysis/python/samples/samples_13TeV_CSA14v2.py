@@ -148,7 +148,7 @@ json=dataDir+'/json/Cert_Run2012ABCD_22Jan2013ReReco.json'
 SingleMu = cfg.DataComponent(
     name = 'SingleMu',
     files = kreator.getFilesFromEOS('SingleMu', 
-                                    '/SingleMu/Run2012D-15Apr2014-v1/AOD/02e0a1be-c9c7-11e3-bfe2-0024e83ef644/MINIAOD/CMSSW_7_0_9_patch2_GR_70_V2_AN1',
+                                    '/SingleMu/Run2012D-15Apr2014-v1/AOD/MINIAOD/CMSSW_7_0_9_patch2_GR_70_V2_AN1',
                                     '/eos/cms/store/cmst3/user/cmgtools/CMG/%s'),
     intLumi = 1,
     triggers = [],
