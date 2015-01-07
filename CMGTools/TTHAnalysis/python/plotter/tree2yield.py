@@ -141,7 +141,8 @@ class TreeToYield:
         self._mcCorrs = globalMCCorrections() ##  get defaults
         if 'SkipDefaultMCCorrections' in settings: ## unless requested to 
             self._mcCorrs = []                     ##  skip them
-        if self._isdata: self._mcCorrs = [] ## no MC corrections for data
+        if self._isdata: 
+            self._mcCorrs = [c for c in self._mcCorrs if c.alsoData] ## most don't apply to data, some do 
         if 'MCCorrections' in settings:
             self._mcCorrs = self._mcCorrs[:] # make copy
             for cfile in settings['MCCorrections'].split(','): 
@@ -271,6 +272,7 @@ class TreeToYield:
             if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
             histo = ROOT.TH1F("dummy","dummy",1,0.0,1.0); histo.Sumw2()
             nev = tree.Draw("0.5>>dummy", cut, "goff")
+            self.negativeCheck(histo)
             return [ histo.GetBinContent(1), histo.GetBinError(1) ]
         else: 
             if self._options.doS2V:
