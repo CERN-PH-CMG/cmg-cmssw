@@ -86,6 +86,7 @@ parser.add_option("-F", "--add-friend",    dest="friendTrees",  action="append",
 parser.add_option("--FMC", "--add-friend-mc",    dest="friendTreesMC",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to MC only. Can use {name}, {cname} patterns in the treename") 
 parser.add_option("--FD", "--add-friend-data",    dest="friendTreesData",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to data trees only. Can use {name}, {cname} patterns in the treename") 
 parser.add_option("-L", "--list-modules",  dest="listModules", action="store_true", default=False, help="just list the configured modules");
+parser.add_option("-n", "--new",  dest="newOnly", action="store_true", default=False, help="Make only missing trees");
 (options, args) = parser.parse_args()
 
 if options.listModules:
@@ -122,6 +123,17 @@ for D in glob(args[0]+"/*"):
         t = f.Get(treename)
         entries = t.GetEntries()
         f.Close()
+        if options.newOnly:
+            fout = "%s/evVarFriend_%s.root" % (args[1],short)
+            if os.path.exists(fout):
+                f = ROOT.TFile.Open(fname);
+                t = f.Get(treename)
+                if t.GetEntries() != entries:
+                    print "Component %s has to be remade, mismatching number of entries (%d vs %d)" % (short, entries, t.GetEntries()) 
+                    f.Close()
+                else:
+                    print "Component %s exists already and has matching number of entries (%d)" % (short, entries) 
+                    continue 
         chunk = options.chunkSize
         if entries < chunk:
             print "  ",os.path.basename(D),("  DATA" if data else "  MC")," single chunk"
