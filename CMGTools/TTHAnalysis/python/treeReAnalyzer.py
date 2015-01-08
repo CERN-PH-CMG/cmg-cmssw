@@ -48,13 +48,22 @@ class Event:
             warnings.filterwarnings(action='ignore', category=RuntimeWarning, 
                                     message='creating converter for unknown type "const char\*\*"$')
         if expr not in self._tree._exprs:
-            self._tree._exprs[expr] = ROOT.TTreeFormula(expr,expr,self._tree)
+            formula = ROOT.TTreeFormula(expr,expr,self._tree)
+            if formula.IsInteger():
+                formula.go = formula.EvalInstance64
+            else:
+                formula.go = formula.EvalInstance
+            self._tree._exprs[expr] = formula
             # force sync, to be safe
             self._tree.GetEntry(self._entry)
             self._tree.entry = self._entry
+            #self._tree._exprs[expr].SetQuickLoad(False)
         else:
             self._sync()
-        return self._tree._exprs[expr].EvalInstance()
+            formula = self._tree._exprs[expr]
+        if "[" in expr: # unclear why this is needed, but otherwise for some arrays x[i] == 0 for all i > 0
+            formula.GetNdata()
+        return formula.go()
             
 
 class Object:
