@@ -275,6 +275,7 @@ class TreeToYield:
             self.negativeCheck(histo)
             return [ histo.GetBinContent(1), histo.GetBinError(1) ]
         else: 
+            cut = self.adaptExpr(cut,cut=True)
             if self._options.doS2V:
                 cut  = scalarToVector(cut)
             npass = tree.Draw("1",self.adaptExpr(cut,cut=True),"goff");
