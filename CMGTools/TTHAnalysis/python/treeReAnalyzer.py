@@ -156,6 +156,12 @@ class Module:
         pass
     def book(self,what,name,*args):
         return self._booker.book(what,name,*args)
+    def beginComponent(self,component):
+        """Used when running within tree2yields"""
+        pass
+    def endComponent(self,component):
+        """Used when running within tree2yields"""
+        pass
 
 class EventLoop:
     def __init__(self,modules):
@@ -178,6 +184,10 @@ class EventLoop:
                 if i > 0 and i % 10000 == 0:
                     print "Processed %8d/%8d entries of this tree" % (i,tree.GetEntries())
         for m in modules: m.endJob()
+    def beginComponent(self,component):
+        for m in self._modules: m.beginComponent(component)
+    def endComponent(self,component):
+        for m in self._modules: m.endComponent(component)
 
 #### ========= NTUPLING AND HISTOGRAMMING =======================
 class PyTree:

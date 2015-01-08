@@ -307,6 +307,10 @@ class MCAnalysis:
         for a in self._backgrounds:
             mystr += str(a) + '\n'
         return mystr[:-1]
+    def processEvents(self,eventLoop,cut):
+        for p in self.listProcesses():
+            for tty in self._allData[p]:
+                tty.processEvents(eventLoop,cut)
 
 def addMCAnalysisOptions(parser,addTreeToYieldOnesToo=True):
     if addTreeToYieldOnesToo: addTreeToYieldOptions(parser)

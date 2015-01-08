@@ -393,6 +393,15 @@ class TreeToYield:
         mystr += str(self._weight) + '\n'
         mystr += str(self._scaleFactor)
         return mystr
+    def processEvents(self,eventLoop,cut):
+        if not self._isInit: self._init()
+        cut = self.adaptExpr(cut,cut=True)
+        if self._options.doS2V:
+            cut  = scalarToVector(cut)
+            self._tree.vectorTree = True 
+        eventLoop.beginComponent(self)
+        eventLoop.loop(self._tree, getattr(self._options, 'maxEvents', -1), cut=cut)
+        eventLoop.endComponent(self)
 
 def addTreeToYieldOptions(parser):
     parser.add_option("-l", "--lumi",           dest="lumi",   type="float", default="19.7", help="Luminosity (in 1/fb)");
