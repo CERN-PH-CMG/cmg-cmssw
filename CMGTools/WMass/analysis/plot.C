@@ -60,8 +60,8 @@ void plotLeg(string tagger, double weight, TH1* h1,float posX, float posY, TStri
   this_leg->SetFillColor(0);
   this_leg->SetBorderSize(0);
   this_leg->SetTextColor(h1->GetLineColor());
-  this_leg->SetTextSize(0.1);
-  //  this_leg->SetTextSize(0.04);
+  //  this_leg->SetTextSize(0.1);
+  this_leg->SetTextSize(0.04);
   this_leg->AddEntry(h1, leg, drawOption);
   this_leg->Draw();
 
@@ -643,21 +643,149 @@ void trendGraph() {
 }
 
 
-void fitDiffHisto(int Zpt)
+void drawGraph(bool doU1=false, bool doZ=true)
 {
 
-  TString fileNameMC =  "/afs/cern.ch/work/d/dalfonso/CMSSW_5_3_22_patch1_Wmass/src/CMGTools/WMass/analysis/RecoilCode/RecoilCorrector_v6/fitcode/file2Dfit_ZMC_MADGRAPH.root";
-  TString fileNamePOW = "/afs/cern.ch/work/d/dalfonso/CMSSW_5_3_22_patch1_Wmass/src/CMGTools/WMass/analysis/RecoilCode/RecoilCorrector_v6/fitcode/file2Dfit_ZMC_POWHEG.root";
-  TString fileNameDATA= "/afs/cern.ch/work/d/dalfonso/CMSSW_5_3_22_patch1_Wmass/src/CMGTools/WMass/analysis/RecoilCode/RecoilCorrector_v6/fitcode/file2Dfit_DATA.root";
+  gStyle->SetOptStat(0000000);
+
+  TString dirName="/afs/cern.ch/work/d/dalfonso/CMSSW_5_3_22_patch1_Wmass/src/CMGTools/WMass/analysis/";  
+  //  TString dirName="/afs/cern.ch/work/d/dalfonso/CMSSW_5_3_22_patch1_Wmass/src/CMGTools/WMass/analysis/RecoilCode/RecoilCorrector_v6/fitcode/";
+
+  TString fileNameMC = dirName.Data();  
+  fileNameMC += "file2Dfit_ZMC_MADGRAPH_Y1_PDF-1_3G.root";
+  //  fileNameMC += "file2Dfit_ZMC_MADGRAPH_Y1_PDF-1.root";
+  TString fileNamePOW = dirName.Data();
+  fileNamePOW += "file2Dfit_ZMC_POWHEG_Y1_PDF-1_3G.root";
+  //  fileNamePOW += "file2Dfit_ZMC_POWHEG_Y1_PDF-1.root";
+  TString fileNameDATA = dirName.Data(); 
+  fileNameDATA += "file2Dfit_DATA_Y1_PDF-1_3G.root";
+  //  fileNameDATA += "file2Dfit_DATA_Y1_PDF-1.root";
+
+  TString fileNameWposPOW = dirName.Data();
+  fileNameWposPOW += "file2Dfit_WposMC_POWHEG_Y1_PDF-1_3G.root";
+  TString fileNameWnegMAD = dirName.Data();
+  fileNameWnegMAD += "file2Dfit_WnegMC_MADGRAPH_Y1_PDF-1_3G.root";
+  TString fileNameWposMAD = dirName.Data();
+  fileNameWposMAD += "file2Dfit_WposMC_MADGRAPH_Y1_PDF-1_3G.root";
+
+  /*
+  Form("%s/%s",dirName.Data(),"file2Dfit_ZMC_MADGRAPH_Y1_PDF-1_3G.root");
+  Form("%s/%s",dirName.Data(),"file2Dfit_ZMC_POWHEG_Y1_PDF-1_3G.root");
+  Form("%s/%s",dirName.Data(),"file2Dfit_DATA_Y1_PDF-1_3G.root");
+
+  Form("%s/%s",dirName.Data(),"file2Dfit_WposMC_MADGRAPH_Y1_PDF-1_3G.root");
+  Form("%s/%s",dirName.Data(),"file2Dfit_WnegMC_MADGRAPH_Y1_PDF-1_3G.root");
+  Form("%s/%s",dirName.Data(),"file2Dfit_WposMC_POWHEG_Y1_PDF-1_3G.root");
+  */
+
+
+  TString histoName="chi2";
+  if(doU1) histoName += "_U1";
+  if(!doU1) histoName += "_U2";
+
+  TFile *fileDATA_ = TFile::Open(fileNameDATA);
+  TGraph* gDATA_ = (TGraph*) fileDATA_->Get(histoName.Data());
+  gDATA_->SetMarkerColor(1);
+  gDATA_->SetLineColor(1);
+  gDATA_->SetLineWidth(3);
+  gDATA_->SetMarkerStyle(kFullCircle);
+
+  TFile *filePOW_ = TFile::Open(fileNamePOW);
+  TGraph* gPOW_ = (TGraph*) filePOW_->Get(histoName.Data());
+  if(gPOW_) gPOW_->SetMarkerColor(2);
+  if(gPOW_) gPOW_->SetLineColor(2);
+  if(gPOW_) gPOW_->SetLineWidth(3);
+  if(gPOW_) gPOW_->SetMarkerStyle(kFullCircle);
+
+  TFile *fileMAD_ = TFile::Open(fileNameMC);
+  TGraph* gMAD_ = (TGraph*) fileMAD_->Get(histoName.Data());
+  if(gMAD_) gMAD_->SetMarkerColor(4);
+  if(gMAD_) gMAD_->SetLineColor(4);
+  if(gMAD_) gMAD_->SetLineWidth(3);
+  if(gMAD_) gMAD_->SetMarkerStyle(kFullCircle);
+
+  TFile *fileWposPOW_ = TFile::Open(fileNameWposPOW);
+  TGraph* gWposPOW_ = (TGraph*) fileWposPOW_->Get(histoName.Data());
+  if(gWposPOW_) gWposPOW_->SetMarkerColor(1);
+  if(gWposPOW_) gWposPOW_->SetLineColor(1);
+  if(gWposPOW_) gWposPOW_->SetLineWidth(3);
+  if(gWposPOW_) gWposPOW_->SetMarkerStyle(kFullCircle);
+
+  TFile *fileWposMAD_ = TFile::Open(fileNameWposMAD);
+  TGraph* gWposMAD_ = (TGraph*) fileWposMAD_->Get(histoName.Data());
+  if(gWposMAD_) gWposMAD_->SetMarkerColor(2);
+  if(gWposMAD_) gWposMAD_->SetLineColor(2);
+  if(gWposMAD_) gWposMAD_->SetLineWidth(3);
+  if(gWposMAD_) gWposMAD_->SetMarkerStyle(kFullCircle);
+
+  TFile *fileWnegMAD_ = TFile::Open(fileNameWnegMAD);
+  TGraph* gWnegMAD_ = (TGraph*) fileWnegMAD_->Get(histoName.Data());
+  if(gWnegMAD_) gWnegMAD_->SetMarkerColor(4);
+  if(gWnegMAD_) gWnegMAD_->SetLineColor(4);
+  if(gWnegMAD_) gWnegMAD_->SetLineWidth(3);
+  if(gWnegMAD_)gWnegMAD_->SetMarkerStyle(kFullCircle);
+
+  if(doZ) {
+
+    if(gPOW_) gPOW_->Draw("A L P ");
+    if(gDATA_) gDATA_->Draw("L P same");
+    if(gMAD_) gMAD_->Draw("L P same");
+    
+    if(gDATA_) plotLegMarker("DATA",1.,gDATA_,0.2,0.80,"l");
+    if(gPOW_) plotLegMarker("POWHEG",1.,gPOW_, 0.2,0.75,"l");
+    if(gMAD_) plotLegMarker("MAD",1.,gMAD_, 0.2,0.7,"l");
+
+  } else {
+
+    if(gWposPOW_) gWposPOW_->Draw("A L P ");
+    if(gWposMAD_) gWposMAD_->Draw("L P same");
+    if(gWnegMAD_) gWnegMAD_->Draw("L P same");
+    
+    if(gWposPOW_) plotLegMarker("W^{+} powheg",1.,gWposPOW_,0.2,0.80,"l");
+    if(gWposMAD_) plotLegMarker("W^{+} mad"   ,1.,gWposMAD_,0.2,0.75,"l");
+    if(gWnegMAD_) plotLegMarker("W^{-} mad"   ,1.,gWnegMAD_,0.2,0.7,"l");
+  }
+
+}
+
+
+void fitDiffHisto(int Zpt, bool doU1=false, bool doClosure=false)
+{
+
+  gStyle->SetOptStat(0000000);
+
+  TString dirName="/afs/cern.ch/work/d/dalfonso/CMSSW_5_3_22_patch1_Wmass/src/CMGTools/WMass/analysis/";  
+  //  TString dirName="/afs/cern.ch/work/d/dalfonso/CMSSW_5_3_22_patch1_Wmass/src/CMGTools/WMass/analysis/RecoilCode/RecoilCorrector_v6/fitcode/";
+
+  TString fileNameMC = dirName.Data();  
+  fileNameMC += "file2Dfit_ZMC_MADGRAPH_Y1_PDF-1_3G.root";
+  TString fileNamePOW = dirName.Data();
+  fileNamePOW += "file2Dfit_ZMC_POWHEG_Y1_PDF-1_3G.root";
+  TString fileNameDATA = dirName.Data(); 
+  fileNameDATA += "file2Dfit_DATA_Y1_PDF-1_3G.root";
+
+  TString fileNamePOWsmeared = dirName.Data();
+  fileNamePOWsmeared += "file2Dfit_ZMC_POWHEG_ITERATIVE_Y1_PDF-1_3G.root";
 
   double rebin=10;
 
-  TString histoName = "hh_plotOn_U2_1_Zpt";
+  TString histoName = "hh_";
+  if(!doClosure)  histoName += "plotOn_";
+  if(doU1) { histoName += "U1";
+  } else {
+    histoName += "U2";
+  } 
+  histoName += "_1_Zpt";
   histoName += Zpt;
+
+  TString histoNameFit = histoName.Data();
   histoName += "__XVar";
-  TString histoNameFit = "hh_plotOn_U2_1_Zpt";
-  histoNameFit += Zpt;
   histoNameFit += "_Fit__XVar";
+
+  TCanvas * c1 = new TCanvas("c1","c1",700,700);
+  c1->Draw();
+  c1->cd();
+  c1->SetGridx(1);
 
   TH1 *MC_ptMC = getHisto(fileNameMC,"0",histoName,4,1, rebin);
   TH1 *MC_ptMC_fit = getHisto(fileNameMC,"0",histoNameFit,4,1, rebin);
@@ -666,42 +794,73 @@ void fitDiffHisto(int Zpt)
   TH1 *MC_ptDATA = getHisto(fileNameDATA,"0",histoName,1,1,rebin);
   TH1 *MC_ptDATA_fit = getHisto(fileNameDATA,"0",histoNameFit,1,1,rebin);
 
-  //  TH1 *MC_ptMC_ = MC_ptMC->Clone();
-  //  TH1 *MC_ptPOW_ = MC_ptPOW->Clone();
-  //  TH1 *MC_ptDATA_ = MC_ptDATA->Clone();
+  TH1 *MC_ptPOW_smeared = getHisto(fileNamePOWsmeared,"0",histoName,2,3, rebin);
 
-  if(MC_ptMC_fit) MC_ptMC_fit->Scale(-1./MC_ptMC_fit->Integral());
-  if(MC_ptMC) MC_ptMC->Scale(1./MC_ptMC->Integral());
-  //  if(MC_ptMC) MC_ptMC_->Scale(-1./MC_ptMC->Integral());
-  if(MC_ptMC && MC_ptMC_fit) MC_ptMC->Add(MC_ptMC_fit);
-  //  MC_ptMC->Add(MC_ptDATA);
+  if(!doClosure) { 
 
-  if(MC_ptPOW_fit) MC_ptPOW_fit->Scale(-1./MC_ptPOW_fit->Integral());
-  if(MC_ptPOW) MC_ptPOW->Scale(1./MC_ptPOW->Integral());
-  //  if(MC_ptPOW_) MC_ptPOW_->Scale(-1./MC_ptPOW->Integral());
-  if(MC_ptPOW) MC_ptPOW->Add(MC_ptPOW_fit);
-  //  MC_ptPOW->Add(MC_ptDATA);
+    //  TH1 *MC_ptMC_ = MC_ptMC->Clone();
+    //  TH1 *MC_ptPOW_ = MC_ptPOW->Clone();
+    //  TH1 *MC_ptDATA_ = MC_ptDATA->Clone();
+    
+    if(MC_ptMC_fit) MC_ptMC_fit->Scale(-1./MC_ptMC_fit->Integral());
+    if(MC_ptMC) MC_ptMC->Scale(1./MC_ptMC->Integral());
+    //  if(MC_ptMC) MC_ptMC_->Scale(-1./MC_ptMC->Integral());
+    if(MC_ptMC && MC_ptMC_fit) MC_ptMC->Add(MC_ptMC_fit);
+    //  MC_ptMC->Add(MC_ptDATA);
+    
+    if(MC_ptPOW_fit) MC_ptPOW_fit->Scale(-1./MC_ptPOW_fit->Integral());
+    if(MC_ptPOW) MC_ptPOW->Scale(1./MC_ptPOW->Integral());
+    //  if(MC_ptPOW_) MC_ptPOW_->Scale(-1./MC_ptPOW->Integral());
+    if(MC_ptPOW) MC_ptPOW->Add(MC_ptPOW_fit);
+    //  MC_ptPOW->Add(MC_ptDATA);
+    
+    if(MC_ptDATA_fit) MC_ptDATA_fit->Scale(-1./MC_ptDATA_fit->Integral());
+    if(MC_ptDATA) MC_ptDATA->Scale(1./MC_ptDATA->Integral());
+    //  if(MC_ptDATA) MC_ptDATA_->Scale(-1./MC_ptDATA->Integral());
+    if(MC_ptDATA && MC_ptDATA_fit) MC_ptDATA->Add(MC_ptDATA_fit);
+    //  MC_ptDATA->Add(MC_ptDATA);
+    
+    if(MC_ptDATA) MC_ptDATA->GetXaxis()->SetTitle("[U-UmeanFit]/UsigmaFit");
+    if(MC_ptDATA) MC_ptDATA->GetYaxis()->SetTitle("dataset - fit");
+    if(MC_ptDATA) MC_ptDATA->GetXaxis()->SetRangeUser(-5.,5.);
+    if(MC_ptDATA) MC_ptDATA->GetYaxis()->SetRangeUser(-0.02,0.02);
+    //  MC_ptDATA->GetYaxis()->SetRangeUser(-1.,1.);
+    
+    if(MC_ptDATA) MC_ptDATA->SetTitle("");
+    if(MC_ptDATA) MC_ptDATA->Draw("hist");
+    if(MC_ptPOW) MC_ptPOW->Draw("hist same");
+    if(MC_ptMC) MC_ptMC->Draw("hist same");
+    
+    if(MC_ptDATA) plotLeg("DATA",1.,MC_ptDATA,0.2,0.80,"l");
+    if(MC_ptPOW) plotLeg("POWHEG",1.,MC_ptPOW, 0.2,0.75,"l");
+    if(MC_ptMC) plotLeg("MAD",1.,MC_ptMC, 0.2,0.7,"l");
+    
+  } else {
 
-  if(MC_ptDATA_fit) MC_ptDATA_fit->Scale(-1./MC_ptDATA_fit->Integral());
-  if(MC_ptDATA) MC_ptDATA->Scale(1./MC_ptDATA->Integral());
-  //  if(MC_ptDATA) MC_ptDATA_->Scale(-1./MC_ptDATA->Integral());
-  if(MC_ptDATA && MC_ptDATA_fit) MC_ptDATA->Add(MC_ptDATA_fit);
-  //  MC_ptDATA->Add(MC_ptDATA);
+    if(MC_ptDATA) MC_ptDATA->Draw("hist");
+    if(MC_ptPOW) MC_ptPOW->Draw("hist same");
+    if(MC_ptPOW_smeared) MC_ptPOW_smeared->Draw("hist same");
+  }
 
-  if(MC_ptDATA) MC_ptDATA->GetXaxis()->SetTitle("[U-UmeanFit]/UsigmaFit");
-  if(MC_ptDATA) MC_ptDATA->GetYaxis()->SetTitle("dataset - fit");
-  if(MC_ptDATA) MC_ptDATA->GetXaxis()->SetRangeUser(-5.,5.);
-  if(MC_ptDATA) MC_ptDATA->GetYaxis()->SetRangeUser(-0.02,0.02);
-  //  MC_ptDATA->GetYaxis()->SetRangeUser(-1.,1.);
-
-  if(MC_ptDATA) MC_ptDATA->Draw("hist");
-  if(MC_ptPOW) MC_ptPOW->Draw("hist same");
-  if(MC_ptMC) MC_ptMC->Draw("hist same");
-
-  if(MC_ptDATA) plotLeg("DATA",1.,MC_ptDATA,0.2,0.80,"l");
-  if(MC_ptPOW) plotLeg("POWHEG",1.,MC_ptPOW, 0.2,0.75,"l");
-  if(MC_ptMC) plotLeg("MAD",1.,MC_ptMC, 0.2,0.7,"l");
-
+  TString stringToPrint = "Zpt=";
+  stringToPrint + = Zpt;
+  if(doU1) stringToPrint + = "_U1";
+  if(!doU1) stringToPrint + = "_U2";
+  
+  TLatex latexLabel;
+  latexLabel.SetTextSize(0.04);
+  latexLabel.SetNDC();
+  latexLabel.DrawLatex(0.25, 0.2, stringToPrint.Data());
+  
+  TString fileToPrint="residual";
+  fileToPrint + = stringToPrint.Data();
+  TString fileToSave = fileToPrint.Data();
+  fileToSave + = ".png";
+  fileToPrint + = ".pdf";
+  
+  c1->Print(fileToPrint.Data());
+  c1->SaveAs(fileToSave.Data());
+  
 }
 
 void bosonPTratio()

@@ -4,45 +4,45 @@
 //(for Wpos replace the first argument with 3
 //(for Wneg replace the first argument with 4
 
-nohup root.exe -b -x -q runRecoilFit.C+\(1,1,-1\) &
+nohup root.exe -b -x -q runRecoilFit3G.C+\(1,1,-1\) &
 sleep 20
-nohup root.exe -b -x -q runRecoilFit.C+\(1,125,-1\) &
+nohup root.exe -b -x -q runRecoilFit3G.C+\(1,125,-1\) &
 sleep 20
-nohup root.exe -b -x -q runRecoilFit.C+\(1,150,-1\) &
+nohup root.exe -b -x -q runRecoilFit3G.C+\(1,150,-1\) &
 sleep 20
-nohup root.exe -b -x -q runRecoilFit.C+\(1,175,-1\) &
+nohup root.exe -b -x -q runRecoilFit3G.C+\(1,175,-1\) &
 sleep 20
-nohup root.exe -b -x -q runRecoilFit.C+\(1,200,-1\) &
+nohup root.exe -b -x -q runRecoilFit3G.C+\(1,200,-1\) &
 sleep 20
-nohup root.exe -b -x -q runRecoilFit.C+\(1,201,-1\) &
+nohup root.exe -b -x -q runRecoilFit3G.C+\(1,201,-1\) &
 
 //for PDF see settings
 
 ### gluon
-nohup root.exe -b -x -q runRecoilFit.C+\(1,1,0\) &
+nohup root.exe -b -x -q runRecoilFit3G.C+\(1,1,0\) &
 sleep 20
-nohup root.exe -b -x -q runRecoilFit.C+\(3,1,0\) &
+nohup root.exe -b -x -q runRecoilFit3G.C+\(3,1,0\) &
 sleep 20
-nohup root.exe -b -x -q runRecoilFit.C+\(4,1,0\) &
+nohup root.exe -b -x -q runRecoilFit3G.C+\(4,1,0\) &
 
 ### quarks
-nohup root.exe -b -x -q runRecoilFit.C+\(1,1,1\) &
+nohup root.exe -b -x -q runRecoilFit3G.C+\(1,1,1\) &
 sleep 20
-nohup root.exe -b -x -q runRecoilFit.C+\(3,1,1\) &
+nohup root.exe -b -x -q runRecoilFit3G.C+\(3,1,1\) &
 sleep 20
-nohup root.exe -b -x -q runRecoilFit.C+\(4,1,1\) &
+nohup root.exe -b -x -q runRecoilFit3G.C+\(4,1,1\) &
 sleep 20
-nohup root.exe -b -x -q runRecoilFit.C+\(1,1,2\) &
-sleep 20
-
-nohup root.exe -b -x -q runRecoilFit.C+\(1,1,3\) &
-sleep 20
-nohup root.exe -b -x -q runRecoilFit.C+\(1,1,4\) &
+nohup root.exe -b -x -q runRecoilFit3G.C+\(1,1,2\) &
 sleep 20
 
-nohup root.exe -b -x -q runRecoilFit.C+\(3,1,2\) &
+nohup root.exe -b -x -q runRecoilFit3G.C+\(1,1,3\) &
 sleep 20
-nohup root.exe -b -x -q runRecoilFit.C+\(4,1,2\) &
+nohup root.exe -b -x -q runRecoilFit3G.C+\(1,1,4\) &
+sleep 20
+
+nohup root.exe -b -x -q runRecoilFit3G.C+\(3,1,2\) &
+sleep 20
+nohup root.exe -b -x -q runRecoilFit3G.C+\(4,1,2\) &
 sleep 20
 
 
@@ -230,14 +230,14 @@ bool doPrintAll = true; // when this is set to true, do the binned
 /// BELOW FLAGS to set the fits
 bool usePol3 = true;
 bool useSubRanges = false;
-bool useErfPol2ScaleU1 = true;
+bool useErfPol2ScaleU1 = false;
 
 bool doDegenerateSigma = false;
 bool do3G=true;
 bool doAbsolute = false;
 
 /// BELOW FLOAGS for the inversion
-bool doIterativeMet = true;
+bool doIterativeMet = false;
 bool invGraph = true;
 bool doSingleGauss = false;
 bool doTriGauss = true;
@@ -3233,10 +3233,10 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
     // erf DATA
     if( fData || doIterativeMet || !fData) {
-      lFit->SetParameter(0,-0.05);
+      lFit->SetParameter(0,-0.07);
       lFit->SetParLimits(0,-2, 2);
 
-      lFit->SetParameter(1, 4.0);
+      lFit->SetParameter(1, 3.0);
       lFit->SetParLimits(1,0,10);
 
       lFit->SetParameter(2, 0.15);
@@ -3593,11 +3593,13 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   if(doMad && !fData) fileName2DFIT += "_MADGRAPH";
   if(!doMad && !fData) fileName2DFIT += "_POWHEG";
   if(doIterativeMet) fileName2DFIT += "_ITERATIVE";
+  if(useErfPol2ScaleU1) fileName2DFIT += "_ERF";
   fileName2DFIT += "_Y";
   fileName2DFIT += fId;
   fileName2DFIT += "_PDF";
   fileName2DFIT += pType;
   if(do3G)fileName2DFIT += "_3G";
+  //  fileName2DFIT += startEntries;
   fileName2DFIT += ".root";
   
   if(doPrint) {
@@ -4575,7 +4577,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     gPad->SaveAs(pSS4.Data());
     gPad->Print(pSS4pdf.Data());
 
-  return;
+    //  return;
 
   } //  END //  if(doPrintAll && !doIterativeMet)
 
@@ -4649,6 +4651,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   iFrac->SetParameter(1,lBFrac.getVal());
   iFrac->SetParameter(2,lCFrac.getVal());
   iFrac->SetParameter(3,lDFrac.getVal());
+
+  cout << "fraction to save="<< iFrac->Eval(fZPt) << endl;
 
   /*
   /// ORIGINAL FROM PHIL
@@ -4726,17 +4730,19 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
   int nEntries = iTree->GetEntries();
   if(isBKG) nEntries = iTree->GetEntries()/30;
   
-  if(doIterativeMet) nEntries = 2000000; // this takes 1h.30
+  if(doIterativeMet) nEntries = 5000000; // this takes 3h
+
   for(int i1 = 0; i1 <  nEntries; i1++) {
   //  for(int i1 = 0; i1 <  1000000; i1++) {
-  //  for(int i1 = 0; i1 <  1000000; i1++) {
+  //  for(int i1 = 0; i1 <  100000; i1++) {
   //  for(int i1 = 0; i1 <  10000000; i1++) {
   //  for(int i1 = 0; i1 <  500000; i1++) {
   //  for(int i1 = 0; i1 <  100; i1++) {
     //  for(int i1 = 0; i1 <  1e6; i1++) {
     iTree->GetEntry(i1);
 
-    if(i1%100000==0) cout <<"Analyzed entry "<< i1 <<"/"<< nEntries <<endl;
+    if(i1%100000==0) cout <<"Analyzed entry "<< i1 <<"/"<< nEntries << endl;
+    //    if(i1%100000==0) cout <<"Analyzed entry "<< i1 <<"/"<< nEntries << " started entry "<< startEntries <<endl;
 
     if(dodebug)       cout << " -------------------------------- " << endl;
     if(dodebug)       cout << "RUN " << fRun << " LUMI " << fLumi << " EVENT " << fEvent << endl;
@@ -5270,7 +5276,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType) {
 
   //  TString name="recoilfits/recoilfit_DEC19mcvsMC";
   //  TString name="recoilfits/recoilfit_JAN8test";
-  TString name="recoilfits/recoilfit_JAN8";
+  TString name="recoilfits/recoilfit_JAN9";
   if(do8TeV) name +="_8TeV";
   if(doABC) name +="_ABC";
 
@@ -5330,11 +5336,17 @@ void runRecoilFit3G(int MCtype, int iloop, int processType) {
 
       ////// DATA closure
       //      if(!doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,lZMU1RMS3Fit,lZMU1FracFit, /*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,lZMU2RMS3Fit,lZMU2FracFit,/*lZMU23SigFit,*/"recoilfits/recoilfit_JAN8_genZ_invGraph_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
-      if(!doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,lZMU1RMS3Fit,lZMU1FracFit, /*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,lZMU2RMS3Fit,lZMU2FracFit,/*lZMU23SigFit,*/"recoilfits/recoilfit_JAN8_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
-      if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,lZMU1RMS3Fit,lZMU1FracFit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,lZMU2RMS3Fit,lZMU2FracFit,/*lZMU23SigFit,*/"recoilfits/recoilfit_JAN8_genZ_invGraph_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
+      if(!doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,lZMU1RMS3Fit,lZMU1FracFit, /*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,lZMU2RMS3Fit,lZMU2FracFit,/*lZMU23SigFit,*/"recoilfits/recoilfit_JAN9_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
+      if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,lZMU1RMS3Fit,lZMU1FracFit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,lZMU2RMS3Fit,lZMU2FracFit,/*lZMU23SigFit,*/"recoilfits/recoilfit_JAN9_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 
       ////// DATA closure
-      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,/*lZDU23SigFit,*/"recoilfits/recoilfit_JAN8_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_UNBINNED_3G_53X.root" ,"PF",fId);
+      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,/*lZDU23SigFit,*/"recoilfits/recoilfit_JAN9_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_UNBINNED_3G_53X.root" ,"PF",fId);
+
+
+      ////// MC closure
+      //      if(!doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,/*lZDU23SigFit,*/"recoilfits/recoilfit_JAN9_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
+      //      if(doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,/*lZDU23SigFit,*/"recoilfits/recoilfit_JAN9_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
+
 
       //////
       //////
