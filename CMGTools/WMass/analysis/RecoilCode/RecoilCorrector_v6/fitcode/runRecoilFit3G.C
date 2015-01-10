@@ -308,7 +308,7 @@ double fTKU1 = 0; double fTKU2 = 0;
 
 /*float fZPt = 0; float fZPhi = 0; float fPhi = 0; */
 double fZGenPt=0; double fZPt = 0; double fZPhi = 0; double fZRap = 0;// double fPhi = 0;
-double fZrecoPt = 0;
+double fZrecoPt = 0; double fZrecoPhi = 0;
 
 /*float fMet = 0;  float fMPhi = 0; */ 
 double fMet = 0;  double fMPhi = 0;  double fMSumET=0;
@@ -1375,6 +1375,7 @@ void load(TTree *iTree, int type) {
     //    if(!fData)  iTree->SetBranchAddress("Z_rap",&fZRap);
 
     if(!fData)  iTree->SetBranchAddress("Z_pt" ,&fZrecoPt);
+    if(!fData)  iTree->SetBranchAddress("Z_phi" ,&fZrecoPhi);
 
     //  if(!fData) iTree->SetBranchAddress("Z_pt" ,&fZPt);
     //  if(!fData) iTree->SetBranchAddress("Z_phi",&fZPhi);
@@ -2449,6 +2450,8 @@ double startSigma1, minSigma1, maxSigma1;
 double startSigma2, minSigma2, maxSigma2;
 double startSigma3, minSigma3, maxSigma3; 
 
+double minFrac, maxFrac;
+
 double minMean=-1.; double maxMean=1.;
 
 RooRealVar   lA1Mean("A1mean","A1mean",0,-10.,10.);
@@ -2579,6 +2582,9 @@ void constructPDF(double lPar) {
     minSigma3 = 1.5; 
     maxSigma3 = 6.; //12
 
+    minFrac = 0.;
+    maxFrac = 1.;
+    if(lPar!=fU1) maxFrac = 0.6;
   }
 
   cout << "========================" << endl;
@@ -2590,7 +2596,7 @@ void constructPDF(double lPar) {
 
   lR1Mean.setRange(minMean,maxMean); lR1Mean.setVal(0);
 
-  lRAFrac.setRange(0.1,0.9); lRAFrac.setVal(0.35);
+  lRAFrac.setRange(minFrac,maxFrac); lRAFrac.setVal(0.35);
 
   lR1Sigma.setRange(minSigma1, maxSigma1); lR1Sigma.setVal(startSigma1);
   lR2Sigma.setRange(minSigma2, maxSigma2); lR2Sigma.setVal(startSigma2);
@@ -2839,8 +2845,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   if(iRMS) { 
     
     //  RooRealVar lRXVar("XVar","(U_{1}(Z_{p_{T}})-x_{i})/#sigma_{U1} (Z_{p_{T}})",0,minRangeSigma,maxRangeSigma);
-    if(lPar!=fU1) lRXVar.SetTitle("(U_{2}(Z_{p_{T}})-x_{i})/#sigma_{U2} (Z_{p_{T}})");
-    if(lPar==fU1) lRXVar.SetTitle("(U_{1}(Z_{p_{T}})-x_{i})/#sigma_{U1} (Z_{p_{T}})");
+    if(lPar!=fU1) lRXVar.SetTitle("(U_{#perp}(Z_{p_{T}})-x_{i})/#sigma_{U#perp} (Z_{p_{T}})");
+    if(lPar==fU1) lRXVar.SetTitle("(U_{#parallel}(Z_{p_{T}})-x_{i})/#sigma_{U#parallel} (Z_{p_{T}})");
     //  lRXVar.SetTitle("(U_{2}(Z_{p_{T}})-x_{i})/#sigma_{U2} (Z_{p_{T}})");
 
     constructPDF(lPar);
@@ -3119,9 +3125,17 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   if(VTXbin==3) leg3 += " = >10";
 
   TString legDATA = "DATA";  
-  if(!fData) legDATA = "MC";
-  if(!fData && doPosW) legDATA += " Wpos";
-  if(!fData && doNegW) legDATA += " Wneg";
+  if(doMad && (!fData)) {
+    legDATA = "Z madgraph";
+    if(doPosW) legDATA += " Wpos madgraph";
+    if(doNegW) legDATA += " Wneg madgraph";
+  }
+  if(!doMad && (!fData)) {
+    legDATA = "Z powheg";
+    if(doPosW) legDATA += " Wpos powheg";
+    if(doNegW) legDATA += " Wneg powheg";
+  }
+
 
   TString legU1U2 = "U1";  
   if(lPar!=fU1) legU1U2 = "U2";
@@ -3344,13 +3358,13 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     if(!lPar==fU1 && !iRMS) cout << "MARIA CHI2 "<< chi2 << " for "<< ndof << "DOF <== U2 mean " << endl;
     if(!lPar==fU1 && iRMS) cout << "MARIA CHI2 "<< chi2 << " for "<< ndof << "DOF <== U2 RMS " << endl;
 
-    if(lPar==fU1) pGraphA->GetYaxis()->SetTitle("U1"); 
-    if(lPar!=fU1) pGraphA->GetYaxis()->SetTitle("U2"); 
+    if(lPar==fU1) pGraphA->GetYaxis()->SetTitle("U#parallel"); 
+    if(lPar!=fU1) pGraphA->GetYaxis()->SetTitle("U#perp"); 
     pGraphA->GetXaxis()->SetTitle("Z p_{T}"); 
 
     latexLabel.DrawLatex(0.25, 0.8, leg1);
     if(doVTXbinning) latexLabel.DrawLatex(0.25, 0.7, leg3);
-    latexLabel.DrawLatex(0.25, 0.25, legDATA);
+    latexLabel.DrawLatex(0.25, 0.75, legDATA);
     latexLabel.DrawLatex(0.25, 0.3, legU1U2);
 
     TFile f1(fileName2D,"UPDATE");
@@ -3422,8 +3436,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       //      double Mean3Sigma = lFit3S->GetParameter(0) + fZPt * lFit3S->GetParameter(1) + fZPt*fZPt * lFit3S->GetParameter(2); 
       //      cout << " Mean3Sigma " << Mean3Sigma << " p0=" << lFit3S->GetParameter(0) << " p1=" << lFit3S->GetParameter(0) << " p2= " << lFit3S->GetParameter(2) << endl;
       
-      if(lPar==fU1) pGraph3Sigma->GetYaxis()->SetTitle("U1 > 3 SigmaMeanU1"); 
-      if(lPar!=fU1) pGraph3Sigma->GetYaxis()->SetTitle("U2 > 3 SigmaMeanU2"); 
+      if(lPar==fU1) pGraph3Sigma->GetYaxis()->SetTitle("U#parallel > 3 SigmaMeanU1"); 
+      if(lPar!=fU1) pGraph3Sigma->GetYaxis()->SetTitle("U#perp > 3 SigmaMeanU2"); 
       pGraph3Sigma->GetXaxis()->SetTitle("Z p_{T}"); 
 
       pGraph3Sigma->SetMarkerColor(kCyan);
@@ -3960,18 +3974,17 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 	lY1[i0-int(range_min)] = lR1Sigma.getVal();///sqrt(2*3.14159265)*2.;
 	lY2[i0-int(range_min)] = lR2Sigma.getVal();///sqrt(2*3.14159265)*2.;
 	if(do3G) lY3[i0-int(range_min)] = lR3Sigma.getVal();///sqrt(2*3.14159265)*2.;
+	lEY1[i0-int(range_min)] = lR1Sigma.getError();///sqrt(2*3.14159265)*2.;
+	lEY2[i0-int(range_min)] = lR2Sigma.getError();///sqrt(2*3.14159265)*2.;
+	if(do3G) lEY3[i0-int(range_min)] = lR3Sigma.getError();///sqrt(2*3.14159265)*2.;
 	// mean
 	myMean[i0-int(range_min)] = lR1Mean.getVal();
 	myMeanE[i0-int(range_min)] = lR1Mean.getError();
 	// fraction
 	myFrac[i0-int(range_min)] = lR1Frac->getVal();
-	//	myFracE[i0] = lR1Frac->getError();
         myFracE[i0-int(range_min)] = lR1Frac->getPropagatedError(*fr) ;
-	if(do3G) myFracSecond[i0-int(range_min)] = lRFrac->getVal()*(1-lR1Frac->getVal());
-	if(do3G && pFR) myFracSecond2D[i0-int(range_min)] = lFrac->getVal()*(1-l1Frac->getVal());
-	lEY1[i0-int(range_min)] = lR1Sigma.getError();///sqrt(2*3.14159265)*2.;
-	lEY2[i0-int(range_min)] = lR2Sigma.getError();///sqrt(2*3.14159265)*2.;
-	if(do3G) lEY3[i0-int(range_min)] = lR3Sigma.getError();///sqrt(2*3.14159265)*2.;
+	//	if(do3G) myFracSecond[i0-int(range_min)] = lRFrac->getVal()*(1-lR1Frac->getVal());
+	//	if(do3G && pFR) myFracSecond2D[i0-int(range_min)] = lFrac->getVal()*(1-l1Frac->getVal());
       } else {
 	lY0[i0-int(range_min)] = 0;
 	lY1[i0-int(range_min)] = 0;
@@ -4041,6 +4054,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     TGraphErrors *lG1 = new TGraphErrors(lNBins,lX,lY1,lEX,lEY1); lG1->SetMarkerStyle(kFullCircle);
     TGraphErrors *lG2 = new TGraphErrors(lNBins,lX,lY2,lEX,lEY2); lG2->SetMarkerStyle(kFullCircle);
     TGraphErrors *lG3 = new TGraphErrors(lNBins,lX,lY3,lEX,lEY3); lG3->SetMarkerStyle(kFullCircle);
+    TGraphErrors* gFrac = new TGraphErrors(lNBins, lX, myFrac, lEX, myFracE);  gFrac->SetMarkerStyle(kFullCircle);
 
     TGraphErrors *lM0_2d = new TGraphErrors(lNBins,lX,myMean2D,lEX,lEY0); lM0_2d->SetMarkerStyle(kOpenSquare); // this is the mean fitted of the two gaussian
     TGraphErrors *lG0_2d = new TGraphErrors(lNBins,lX,lY02D,lEX,lEY02D); lG0_2d->SetMarkerStyle(kOpenSquare); // this is the convoluted RMS
@@ -4052,14 +4066,15 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     if(lPar!=fU1) lG0->GetYaxis()->SetTitle("U2 #sigma_{mean}");
     */
 
-    if(lPar==fU1) lM0->GetYaxis()->SetTitle("mean [ (U1-U1_{fit})/#sigma_{fit}(U1) ]");
-    if(lPar!=fU1) lM0->GetYaxis()->SetTitle("mean [ (U2-U2_{fit})/#sigma_{fit}(U2) ]");
-    if(lPar==fU1) lG0->GetYaxis()->SetTitle("RMS [ (U1-U1_{fit})/#sigma_{fit}(U1) ]");
+    if(lPar==fU1) lM0->GetYaxis()->SetTitle("mean [ (U#perp-U#perp_{fit})/#sigma_{fit}(U#perp) ]");
+    if(lPar!=fU1) lM0->GetYaxis()->SetTitle("mean [ (U#parallel-U#parallel_{fit})/#sigma_{fit}(Uparallel) ]");
+    if(lPar==fU1) lG0->GetYaxis()->SetTitle("RMS [ (U#perp-U#perp_{fit})/#sigma_{fit}(U#perp) ]");
     if(lPar!=fU1) lG0->GetYaxis()->SetTitle("RMS [ (U2-U2_{fit})/#sigma_{fit}(U2) ]");
 
     lG1->GetYaxis()->SetTitle("#sigma_{1}");
     lG2->GetYaxis()->SetTitle("#sigma_{2}");
     lG3->GetYaxis()->SetTitle("#sigma_{3}");
+    gFrac->GetYaxis()->SetTitle("fraction_{sigma_{1}}");
     
     double SFabs=1;
     if(doAbsolute) SFabs=10;
@@ -4069,38 +4084,38 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     lG1->GetYaxis()->SetRangeUser(0.,1.5*SFabs);
     lG2->GetYaxis()->SetRangeUser(0.,5.*SFabs);
     lG3->GetYaxis()->SetRangeUser(0.,5.*SFabs);
+    gFrac->GetYaxis()->SetRangeUser(0.,1.5);
     
     lM0->GetXaxis()->SetTitle("Z p_{T}");
     lG0->GetXaxis()->SetTitle("Z p_{T}");
     lG1->GetXaxis()->SetTitle("Z p_{T}");
     lG2->GetXaxis()->SetTitle("Z p_{T}");
     lG3->GetXaxis()->SetTitle("Z p_{T}");
+    gFrac->GetXaxis()->SetTitle("Z p_{T}");
+
+    if(doPosW || doNegW) {
+      lM0->GetXaxis()->SetTitle("W p_{T}");
+      lG0->GetXaxis()->SetTitle("W p_{T}");
+      lG1->GetXaxis()->SetTitle("W p_{T}");
+      lG2->GetXaxis()->SetTitle("W p_{T}");
+      lG3->GetXaxis()->SetTitle("W p_{T}");
+      gFrac->GetXaxis()->SetTitle("W p_{T}");
+    }
 
     lM0->SetTitle("");
     lG0->SetTitle("");
     lG1->SetTitle("");
     lG2->SetTitle("");
     lG3->SetTitle("");
-
-    //    gPad.DrawFrame(0,0,50,1);
-    TGraphErrors* gFrac = new TGraphErrors(lNBins, lX, myFrac, lEX, myFracE);
-    TGraphErrors* gFrac2D = new TGraphErrors(lNBins, lX, myFrac2D, lEX, myFrac2DE);
-    TGraphErrors* gFracSecond = new TGraphErrors(lNBins, lX, myFracSecond, lEX, myFracSecondE);
-    TGraphErrors* gFracSecond2D = new TGraphErrors(lNBins, lX, myFracSecond2D, lEX, myFracSecond2DE);
-
     gFrac->SetTitle("");
-    gFrac->GetYaxis()->SetRangeUser(0.,1.5);
-    gFrac->SetMarkerStyle(kFullCircle);
-    gFrac->GetYaxis()->SetTitle("#fraction_{1}");
-    gFrac->GetXaxis()->SetTitle("Z p_{T}");
-    
+
     //////
     //// cin.get();
     //////
 
-    for(int ix=0; ix<=lNBins; ix++) {
-      cout << ix << " lX=" << lX[ix] << " lchi2=" << lchi2[ix]<< endl;
-    } 
+    //    for(int ix=0; ix<=lNBins; ix++) {
+    //      cout << ix << " lX=" << lX[ix] << " lchi2=" << lchi2[ix]<< endl;
+    //    } 
 
 
     iC->cd();
@@ -4110,8 +4125,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     TGraph* gChi2 = new TGraph(lNBins, lX, lchi2);
     if(lPar==fU1) gChi2->SetName("chi2_U1");
     if(lPar!=fU1) gChi2->SetName("chi2_U2");
-    if(lPar==fU1) gChi2->SetTitle("U1");
-    if(lPar!=fU1) gChi2->SetTitle("U2");
+    if(lPar==fU1) gChi2->SetTitle("U#perp");
+    if(lPar!=fU1) gChi2->SetTitle("U#parallel");
     gChi2->SetMarkerColor(kBlue);
     gChi2->SetMarkerStyle(kOpenSquare);
     gChi2->GetXaxis()->SetTitle("Z p_{T}");
@@ -4146,14 +4161,11 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     // superimpose the 2D fit
     lG0_2d->Draw("pe");
 
-    latexLabel.DrawLatex(0.25, 0.75, leg1);
+    latexLabel.DrawLatex(0.25, 0.7, leg1);
     if(doVTXbinning) latexLabel.DrawLatex(0.25, 0.7, leg3);
     //    latexLabel.DrawLatex(0.25, 0.8, "Y(V)<1");
-    latexLabel.DrawLatex(0.25, 0.25, legDATA);
+    latexLabel.DrawLatex(0.25, 0.75, legDATA);
     latexLabel.DrawLatex(0.25, 0.3, legU1U2);      
-
-    if(!doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.8, "powheg");
-    if(doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.8, "madgraph");
 
     TString pSS0="PLOTNOTE/G0";
     
@@ -4187,14 +4199,11 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     lM0->Draw("pe");
     lM0_2d->Draw("pe");
 
-    latexLabel.DrawLatex(0.25, 0.75, leg1);
+    latexLabel.DrawLatex(0.25, 0.7, leg1);
     if(doVTXbinning) latexLabel.DrawLatex(0.25, 0.6, leg3);
     //    latexLabel.DrawLatex(0.25, 0.8, "Y(V)<1");
-    latexLabel.DrawLatex(0.25, 0.25, legDATA);
+    latexLabel.DrawLatex(0.25, 0.75, legDATA);
     latexLabel.DrawLatex(0.25, 0.3, legU1U2);
-
-    if(!doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.80, "powheg");
-    if(doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.80, "madgraph");
 
     TString pMM0="PLOTNOTE/M0";
 
@@ -4284,21 +4293,22 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       myMean2D[i0-int(range_min)]=lA1Mean.getVal()+lA2Mean.getVal()*(i0*binSize)+lA3Mean.getVal()*(i0*binSize)*(i0*binSize);
       lY12D[i0-int(range_min)] = lA1Sig.getVal() + lB1Sig.getVal()*(i0*binSize) + lC1Sig.getVal()*(i0*binSize)*(i0*binSize);///sqrt(2*3.14159265)*2.;
       lY22D[i0-int(range_min)] = lA2Sig.getVal() + lB2Sig.getVal()*(i0*binSize) + lC2Sig.getVal()*(i0*binSize)*(i0*binSize);///sqrt(2*3.14159265)*2.;
-      if(do3G) lY32D[i0-int(range_min)] = lA3Sig.getVal() + lB3Sig.getVal()*(i0*binSize) + lC3Sig.getVal()*(i0*binSize)*(i0*binSize);; // to be implemented   
-
-      myFrac2D[i0-int(range_min)] = l1Frac->getVal();
+      if(do3G) lY32D[i0-int(range_min)] = lA3Sig.getVal() + lB3Sig.getVal()*(i0*binSize) + lC3Sig.getVal()*(i0*binSize)*(i0*binSize);
+      //      myFrac2D[i0-int(range_min)] = l1Frac->getval();
+      myFrac2D[i0-int(range_min)] = lAFrac.getVal() + lBFrac.getVal()*(i0*binSize) + lCFrac.getVal()*(i0*binSize)*(i0*binSize);
 
       lEY02D[i0-int(range_min)] = 0; // to be implemented
       lEY12D[i0-int(range_min)] = 0; // to be implemented
       lEY22D[i0-int(range_min)] = 0; // to be implemented   
       if(do3G) lEY32D[i0-int(range_min)] = 0; // to be implemented   
-      myFrac2D[i0-int(range_min)] = 0;
+      myFrac2DE[i0-int(range_min)] = 0;  // to be implemented   
     }
 
     TGraphErrors *lG1_2d = new TGraphErrors(lNBins,lX,lY12D,lEX,lEY12D); lG1_2d->SetMarkerStyle(kOpenSquare);
     TGraphErrors *lG2_2d = new TGraphErrors(lNBins,lX,lY22D,lEX,lEY22D); lG2_2d->SetMarkerStyle(kOpenSquare);
     TGraphErrors *lG3_2d = new TGraphErrors(lNBins,lX,lY32D,lEX,lEY32D); lG3_2d->SetMarkerStyle(kOpenSquare);
-    TGraphErrors *gFrac_2d = new TGraphErrors(lNBins,lX,myFrac2D,lEX,lEY32D); gFrac_2d->SetMarkerStyle(kOpenSquare);
+    TGraphErrors* gFrac2D = new TGraphErrors(lNBins,lX,myFrac2D,lEX,myFrac2DE); gFrac2D->SetMarkerStyle(kOpenSquare);
+    //    TGraphErrors* gFracSecond2D = new TGraphErrors(lNBins, lX, myFracSecond2D, lEX, myFracSecond2DE);
 
     cout << "============" << endl;
     cout << "============" << endl;
@@ -4336,11 +4346,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     latexLabel.DrawLatex(0.25, 0.7, leg1); // Y bins
     if(doVTXbinning) latexLabel.DrawLatex(0.25, 0.7, leg3);
     //    latexLabel.DrawLatex(0.25, 0.8, "Y(V)<1");
-    latexLabel.DrawLatex(0.25, 0.25, legDATA);
+    latexLabel.DrawLatex(0.25, 0.75, legDATA);
     latexLabel.DrawLatex(0.25, 0.3, legU1U2);      
-
-    if(!doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.75, "powheg");
-    if(doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.75, "madgraph");
 
     TLine *lineMin = new TLine(range_min, 0,   range_min, 5);
     TLine *lineMax = new TLine(range_max, 0.,   range_max, 5.);
@@ -4399,11 +4406,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
     latexLabel.DrawLatex(0.25, 0.7, leg1); // Y bin
     if(doVTXbinning) latexLabel.DrawLatex(0.25, 0.7, leg3);
-    latexLabel.DrawLatex(0.25, 0.25, legDATA);
+    latexLabel.DrawLatex(0.25, 0.75, legDATA);
     latexLabel.DrawLatex(0.25, 0.3, legU1U2);      
-
-    if(!doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.75, "powheg");
-    if(doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.75, "madgraph");
 
 
     TLine *lineSS2_min = new TLine(range_min, minSigma2,   range_max, minSigma2);
@@ -4460,11 +4464,11 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
     latexLabel.DrawLatex(0.25, 0.7, leg1); // Y bin
     if(doVTXbinning) latexLabel.DrawLatex(0.25, 0.7, leg3);
-    latexLabel.DrawLatex(0.25, 0.25, legDATA);
+    latexLabel.DrawLatex(0.25, 0.75, legDATA);
     latexLabel.DrawLatex(0.25, 0.3, legU1U2);      
 
-    if(!doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.75, "powheg");
-    if(doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.75, "madgraph");
+    //    if(!doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.75, "powheg");
+    //    if(doMad && (!fData)) latexLabel.DrawLatex(0.25, 0.75, "madgraph");
 
 
     TLine *lineSS3_min = new TLine(range_min, minSigma3,   range_max, minSigma3);
@@ -4512,10 +4516,11 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     drawErrorBands(iFitFrac,fZPtMax);
     gFrac->Draw("pe");
     gFrac2D->Draw("pe");
-    if(pFR) latexLabel.DrawLatex(0.25, 0.9, Form("lAFrac = %f", lAFrac.getVal()));
-    if(pFR) latexLabel.DrawLatex(0.25, 0.85, Form("lBFrac = %f", lBFrac.getVal()));
-    if(pFR) latexLabel.DrawLatex(0.25, 0.8, Form("lCFrac = %f", lCFrac.getVal()));
-    
+
+    if(pFR) latexLabel.DrawLatex(0.15, 0.95, Form("status = %d", pFR->status()));
+    if(pFR) latexLabel.DrawLatex(0.15, 0.9, Form("AFrac = %f +/- %f", lAFrac.getVal(),lAFrac.getError()));
+    if(pFR) latexLabel.DrawLatex(0.15, 0.85, Form("BFrac = %f +/- %f", lBFrac.getVal(),lBFrac.getError()));
+    if(pFR) latexLabel.DrawLatex(0.15, 0.8, Form("CFrac = %f +/- %f", lCFrac.getVal(),lCFrac.getError()));    
 
     //    gFrac->SetTitle("");
     //    gFrac->GetYaxis()->SetRangeUser(0.,1.);
@@ -4553,14 +4558,17 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     gPad->Modified();
     */
 
-    latexLabel.DrawLatex(0.65, 0.4, leg1);
+    latexLabel.DrawLatex(0.25, 0.7, leg1);
     if(doVTXbinning) latexLabel.DrawLatex(0.65, 0.35, leg3);
-    latexLabel.DrawLatex(0.25, 0.25, legDATA);
+    latexLabel.DrawLatex(0.25, 0.75, legDATA);
     latexLabel.DrawLatex(0.25, 0.3, legU1U2);      
 
-    if(!doMad && (!fData)) latexLabel.DrawLatex(0.65, 0.45, "powheg");
-    if(doMad && (!fData)) latexLabel.DrawLatex(0.65, 0.45, "madgraph");
-
+    TLine *lineSS4_min = new TLine(range_min,minFrac,range_max,minFrac);
+    TLine *lineSS4_max = new TLine(range_min,maxFrac,range_max,maxFrac);
+    lineSS4_min->SetLineColor(11);
+    lineSS4_max->SetLineColor(11);
+    lineSS4_min->Draw("same");
+    lineSS4_max->Draw("same");
     lineMin->Draw("same");
     lineMax->Draw("same");
 
@@ -4794,6 +4802,9 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
 
     }
     */
+
+    //    if(!fData) fZPt = fZrecoPt;
+    //    if(!fData) fZPhi = fZrecoPhi;
 
     /////
 
