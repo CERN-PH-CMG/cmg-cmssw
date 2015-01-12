@@ -164,7 +164,7 @@ class SusyDumper(BaseDumper):
     def muId(self,mu):
         return mu.tightId > 0
     def eleId(self,ele):
-        return ele.tightId >= 2 and ele.convVeto and ele.tightCharge > 1
+        return ele.tightId >= 2 and ele.convVeto and ele.tightCharge > 1 and ele.lostHits == 0
     def makeVars(self,ev):
         leps = Collection(ev,"LepGood","nLepGood") 
         self.lepsOther = [l for l in Collection(ev,"LepOther","nLepOther")]
@@ -181,7 +181,8 @@ class SusyDumper(BaseDumper):
             if not ev.isData:
                 print "   mcMatch %+3d" % (l.mcMatchId if l.mcMatchId > 0 else -l.mcMatchAny),
             if abs(l.pdgId) == 11:
-                print "   misHit %d conVeto %d tightCh %d" % (l.lostHits, l.convVeto, l.tightCharge) 
+                print "   lostHits %d conVeto %d tightCh %d" % (l.lostHits, l.convVeto, l.tightCharge)
+                #print "       ", " ".join("%s %.6f" % (s, getattr(l,s)) for s in "sigmaIEtaIEta dEtaScTrkIn dPhiScTrkIn hadronicOverEm eInvMinusPInv scEta".split())
             else:
                 print "   lostHits %2d tightCh %d" % (l.lostHits, l.tightCharge)
         for i,j in enumerate(self.jets):
@@ -197,15 +198,18 @@ class SusyDumper(BaseDumper):
             if abs(l.pdgId) == 11:
                 print "   misHit %d conVeto %d tightCh %d" % (l.lostHits, l.convVeto, l.tightCharge) 
             else:
-                print "   lostHits %2d tightCh %d" % (l.lostHits, l.tightCharge)
+                print "   lostHits %d tightCh %d" % (l.lostHits, l.tightCharge)
 
         #for i,j in enumerate(self.jetsBadPtSorted):
         #    if self.options.ismc:
         #        print "    bad jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f mcMatch %2d mcFlavour %d/%d mcPt %5.1f  jetId %1d puId %1d" % (i, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)), j.mcMatchId, j.mcMatchFlav,j.mcFlavour, j.mcPt, j.looseJetId, j.puJetId)
         #    else:
         #        print "    bad jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f  jetId %1d puId %1d" % (i+1, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)), j.looseJetId, j.puJetId)
-        
- 
+       
+        for il1 in xrange(len(self.lepsAny)-1):
+            for il2 in xrange(il1+1,len(self.lepsAny)):
+                print "        m(l%d,l%d) = %6.1f" % (il1+1,il2+1,(self.lepsAny[il1].p4()+self.lepsAny[il2].p4()).M()) 
+        print "    minMll: AFAS %6.1f  AFOS %6.1f   SFOS %6.1f  mZ1 %6.1f " % (ev.minMllAFAS,ev.minMllAFOS,ev.minMllSFOS,ev.mZ1) 
         print "    met %6.2f (phi %+4.2f)     mhtJet25 %6.2f" % (ev.met_pt, ev.met_phi, ev.mhtJet25)
         print "    htJet40j %6.2f  htJet25 %6.2f" % (ev.htJet40j, ev.htJet25)
         if not ev.isData:

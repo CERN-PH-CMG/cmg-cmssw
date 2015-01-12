@@ -1,12 +1,18 @@
 #!/bin/bash
 T="~/w/TREES_72X_SYNC"
 CORE="-P $T --s2v --tree treeProducerSusyMultilepton "
-CORE="${CORE} -F sf/t $T/1_susyVars_2lssInc_v0/evVarFriend_{cname}.root -X exclusive --mcc bins/susy_2lssinc_lepchoice.txt"
+CORE="${CORE} -F sf/t $T/1_susyVars_2lssInc_v0/evVarFriend_{cname}.root -X exclusive --mcc bins/susy_2lssinc_lepchoice_sync.txt"
 
 POST="";
 if [[ "$1" == "mccounts" ]]; then
     GO="python mcAnalysis.py $CORE mca-Phys14.txt bins/susy_2lss_sync.txt -p T1tttt_HM -f -G -u "
     POST="| awk '/all/{print \$2}' "
+elif [[ "$1" == "mcdumps" ]]; then
+    FMT='{run:1d} {lumi:9d} {evt:12d}\t{nLepGood10:2d}\t{LepGood1_pdgId:+2d} {LepGood1_pt:5.1f}\t{LepGood2_pdgId:+2d} {LepGood2_pt:5.1f}\t{nJet40}\t{nBJetMedium40:2d}\t{met_pt:5.1f}\t{htJet40j:6.1f}'
+    python mcDump.py $CORE  mca-Phys14.txt bins/susy_2lss_sync.txt -p T1tttt_HM -X lep1_pt25 -X lep2_pt25   | sort -n -k1 -k2 > 2lssInc_all.txt
+    python mcDump.py $CORE  mca-Phys14.txt bins/susy_2lss_sync.txt -p T1tttt_HM -X lep1_pt25 -X lep2_pt25 -X 'lep id' -X 'lep iso' -X 'lep dxy' -X 'ele cuts' $FMT  | sort -n -k1 -k2 > 2lssInc_all_relaxLept.txt
+    wc -l  2lssInc_all.txt  2lssInc_all_relaxLept.txt
+    exit;
 else
     echo "I don't know what you want"
     exit;
