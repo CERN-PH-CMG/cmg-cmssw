@@ -78,9 +78,9 @@ namespace reco
 							  const reco::Vertex* hardScatterVertex, 
 							  int& lId, bool& lHasPhotons, edm::Event & iEvent);
 
-    std::vector<reco::PUSubMETCandInfo> computeLeptonInfo(const std::vector<std::unique_ptr<const reco::Candidate> >& srcLeptons_, const reco::CandidateView& pfCandidates_view,
+    std::vector<reco::PUSubMETCandInfo> computeLeptonInfo(const std::vector<edm::RefToBase<const reco::Candidate>>& srcLeptons_, const reco::CandidateView& pfCandidates_view,
                                     const reco::Vertex* hardScatterVertex,
-                                    int& lId, bool& lHasPhotons, edm::Event& evt);
+                                    int& lId, bool& lHasPhotons);
 
 
     std::vector<reco::PUSubMETCandInfo> computeJetInfo(const reco::PFJetCollection&, const edm::Handle<reco::PFJetCollection>&,

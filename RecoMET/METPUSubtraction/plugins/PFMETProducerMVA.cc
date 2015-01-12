@@ -109,7 +109,6 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
   // compute objects specific to MVA based MET reconstruction
   std::vector<reco::PUSubMETCandInfo> pfCandidateInfo = computePFCandidateInfo(*pfCandidates_view, hardScatterVertex);
 
-
   std::vector<std::vector<size_t> > permutations;
 
   if (permuteLeptons_) {
@@ -117,8 +116,6 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
   }
   else
     permutations.push_back(std::vector<size_t>{0});
-
-  
 
 
   // add PFMET object to the event
@@ -130,14 +127,14 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
     std::vector<reco::PUSubMETCandInfo> leptonInfo;
 
     if (permuteLeptons_) {
-      std::vector<std::unique_ptr<const reco::Candidate>> perm_leptons;
+      std::vector<edm::RefToBase<const reco::Candidate>> perm_leptons;
       for (size_t i = 0; i < permutation.size(); ++i) {
         size_t pos = permutation[i];
         edm::Handle<reco::CandidateView> leptons;
         evt.getByToken(srcLeptons_[i], leptons);
-        perm_leptons.emplace_back(std::unique_ptr<const reco::Candidate>(&leptons->at(pos)));
+        perm_leptons.emplace_back(leptons->refAt(pos));
       }
-      leptonInfo = std::move(computeLeptonInfo(perm_leptons, *pfCandidates_view,hardScatterVertex, lId, lHasPhotons, evt));
+      leptonInfo = std::move(computeLeptonInfo(perm_leptons, *pfCandidates_view,hardScatterVertex, lId, lHasPhotons));
     }
     else {
       std::vector<reco::PUSubMETCandInfo> leptonInfo = computeLeptonInfo(srcLeptons_, *pfCandidates_view, hardScatterVertex, lId, lHasPhotons, evt);
@@ -178,19 +175,23 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
 std::vector<std::vector<size_t> > 
 PFMETProducerMVA::getPermutations(std::vector<size_t> lengths, std::vector<size_t>& current, std::vector<std::vector<size_t> >& result)
 { 
-  size_t length0 = lengths.back();
-  lengths.pop_back();
+  // size_t length0 = lengths.back();
+  // lengths.pop_back();
+  size_t length0 = lengths.front();
+  lengths.erase(lengths.begin());
 
   for (size_t i = 0; i < length0; ++i) {
 
     // Check whether a previous collection is identical to the current one.
     // If yes, make sure to only take each object/object pair once.
     bool already_used = false;
-    for (size_t i_depth = 0; i < current.size(); ++i) {
+    for (size_t i_depth = 0; i_depth < current.size(); ++i_depth) {
       if (srcLeptonsTags_[current.size()] == srcLeptonsTags_[i_depth] ) {
-        if (i >= current[i_depth])
+        edm::LogInfo("getPermutations") << "using same collection" << std::endl;
+        if (i >= current[i_depth]) {
           already_used = true;
-        break;
+          break;
+        }
       }
     }
     if (already_used)
@@ -269,19 +270,19 @@ PFMETProducerMVA::computeLeptonInfo(const std::vector<edm::EDGetTokenT<reco::Can
 }
 
 std::vector<reco::PUSubMETCandInfo>
-PFMETProducerMVA::computeLeptonInfo(const std::vector<std::unique_ptr<const reco::Candidate> >& srcLeptons_,
+PFMETProducerMVA::computeLeptonInfo(const std::vector<edm::RefToBase<const reco::Candidate>>& srcLeptons,
                                     const reco::CandidateView& pfCandidates_view,
                                     const reco::Vertex* hardScatterVertex,
-                                    int& lId, bool& lHasPhotons, edm::Event& evt ) {
+                                    int& lId, bool& lHasPhotons) {
 
   std::vector<reco::PUSubMETCandInfo> leptonInfo;
-
-  for ( const auto& cand_ptr : srcLeptons_ ) {
+  for ( const auto& cand_ref : srcLeptons ) {
     reco::PUSubMETCandInfo pLeptonInfo;
-    pLeptonInfo.p4_          = cand_ptr->p4();
-    pLeptonInfo.chargedEnFrac_ = chargedEnFrac(&(*cand_ptr), pfCandidates_view, hardScatterVertex);
+    pLeptonInfo.p4_          = cand_ref->p4();
+    pLeptonInfo.chargedEnFrac_ = chargedEnFrac(cand_ref.get(), pfCandidates_view, hardScatterVertex);
     leptonInfo.push_back(pLeptonInfo); 
-    if(cand_ptr->isPhoton()) { lHasPhotons = true; }            lId++;
+    if(cand_ref->isPhoton()) { lHasPhotons = true; }
+    lId++;
   }
  
   return leptonInfo;
