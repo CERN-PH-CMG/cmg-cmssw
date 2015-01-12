@@ -72,6 +72,29 @@ class BatchManager:
                     print "remote directory must start with /pnfs/psi.ch to send to the tier3 at PSI"
                     print self.remoteOutputDir_, "not valid"
                     sys.exit(1)
+            if "oeaw.ac.at" in self.remoteOutputDir_: # T2 @ VIENNA:
+                # overwriting protection to be improved
+                if self.remoteOutputDir_.startswith("/dpm/oeaw.ac.at"):
+                    ld_lib_path = os.environ.get('LD_LIBRARY_PATH')
+                    if ld_lib_path != "None":
+                        os.environ['LD_LIBRARY_PATH'] = "/usr/lib64/:"+ld_lib_path  # to solve gfal conflict with CMSSW
+                    print "Creating gfal-mkdir srm://hephyse.oeaw.ac.at/"+self.remoteOutputDir_#FIXME->remove
+                    os.system("gfal-mkdir srm://hephyse.oeaw.ac.at/"+self.remoteOutputDir_)
+                    outputDir = self.options_.outputDir
+                    if outputDir==None:
+                        today = datetime.today()
+                        outputDir = 'OutCmsBatch_%s' % today.strftime("%d%h%y_%H%M")
+                    else:
+                      outputDir=outputDir.rstrip('/').split('/')[-1]
+                    self.remoteOutputDir_+="/"+outputDir
+                    print "Creating gfal-mkdir srm://hephyse.oeaw.ac.at/"+self.remoteOutputDir_#FIXME->remove
+                    os.system("gfal-mkdir srm://hephyse.oeaw.ac.at/"+self.remoteOutputDir_)
+                    if ld_lib_path != "None":
+                        os.environ['LD_LIBRARY_PATH'] = ld_lib_path  # back to original to avoid conflicts
+                else:
+                    print "remote directory must start with /dpm/oeaw.ac.at to send to the TIER2 at Vienna"
+                    print self.remoteOutputDir_, "not valid"
+                    sys.exit(1)
             else: # assume EOS
                 if not castortools.isLFN( self.remoteOutputDir_ ):
                     print 'When providing an output directory, you must give its LFN, starting by /store. You gave:'

@@ -36,12 +36,12 @@ class ComponentCreator(object):
 
          return component
     
-    def makeMyPrivateMCComponent(self,name,dataset,user,pattern,dbsInstance, xSec=1,useAAA=False):
-
+    ### MM
+    def makeMyPrivateMCComponent(self,name,dataset,user,pattern,dbsInstance, xSec=1, useAAA=False,  fileprefix='root://eoscms.cern.ch//eos/cms' ):
         component = cfg.MCComponent(
             dataset=dataset,
             name = name,
-            files = self.getMyFiles(dataset, user, pattern, dbsInstance, useAAA=useAAA),
+            files = self.getMyFiles(dataset, user, pattern, dbsInstance, useAAA=useAAA, fileprefix=fileprefix),
             xSection = xSec,
             nGenEvents = 1,
             triggers = [],
@@ -123,11 +123,12 @@ class ComponentCreator(object):
         return [ mapping % f for f in files]
 
 
-    def getMyFiles(self, dataset, user, pattern, dbsInstance, useAAA=False):
+    ### MM
+    def getMyFiles(self, dataset, user, pattern, dbsInstance, useAAA=False, fileprefix='root://eoscms.cern.ch//eos/cms'):
         # print 'getting files for', dataset,user,pattern
         ds = myDatasetToSource( user, dataset, pattern, dbsInstance, True )
         files = ds.fileNames
-        mapping = 'root://eoscms.cern.ch//eos/cms%s'
+        mapping = fileprefix+'%s'
         if useAAA: mapping = 'root://cms-xrd-global.cern.ch/%s'
         return [ mapping % f for f in files]
 
