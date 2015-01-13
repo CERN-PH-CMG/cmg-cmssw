@@ -71,7 +71,7 @@ void cmg::DiObjectUpdateFactory<T, U>::produce(edm::Event& iEvent, const edm::Ev
     // assert( index < metCands->size() );
     T leg1(*dynamic_cast<const T*>(diObject.daughter(0)));
     U leg2(*dynamic_cast<const U*>(diObject.daughter(1)));
-    reco::LeafCandidate met(*dynamic_cast<const reco::LeafCandidate*>(diObject.daughter(2)));
+    reco::MET met(*dynamic_cast<const reco::MET*>(diObject.daughter(2)));
 
     float shift1 = 0.;
     float shift2 = 0.;
@@ -162,10 +162,8 @@ void cmg::DiObjectUpdateFactory<T, U>::produce(edm::Event& iEvent, const edm::Ev
     if (shiftTaus_ ){ leg2.setP4(leg2Vec); }
     if (shiftMet_  ){ met.setP4(reco::Candidate::LorentzVector(metVecNew.Px(),metVecNew.Py(),metVecNew.Pz(),metVecNew.E())); }
 
-    // T diObjectNew = T(leg1,leg2);
     result->push_back(diObject);
 
-    // diObjectFactory_.set( std::make_pair(leg1, leg2), met, & result->back() );
     DiTauObjectFactory<T, U>::set( std::make_pair(leg1, leg2), met, result->back() );
   }
   
