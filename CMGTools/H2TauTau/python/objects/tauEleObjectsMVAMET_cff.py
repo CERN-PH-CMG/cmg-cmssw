@@ -5,7 +5,7 @@ from CMGTools.H2TauTau.objects.tauEleCuts_cff import *
 
 from PhysicsTools.Heppy.utils.cmsswRelease import cmsswIs44X,cmsswIs52X
 
-from CMGTools.Utilities.metRecoilCorrection.metRecoilCorrection_cff import *
+# from CMGTools.Utilities.metRecoilCorrection.metRecoilCorrection_cff import *
 
 from CMGTools.H2TauTau.objects.cmgTauEleCor_cfi import cmgTauEleCor 
 from CMGTools.H2TauTau.objects.tauEleSVFit_cfi import tauEleSVFit 
@@ -42,9 +42,18 @@ tauEleStdSequence = cms.Sequence(
 
 from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
 
-from CMGTools.Utilities.mvaMET.mvaMET_cff import *
+from RecoMET.METPUSubtraction.mvaPFMET_cff import puJetIdForPFMVAMEt, pfMVAMEt, calibratedAK4PFJetsForPFMVAMEt
+
+pfMVAMEt.srcPFCandidates = cms.InputTag("packedPFCandidates")
+pfMVAMEt.srcVertices = cms.InputTag("offlineSlimmedPrimaryVertices")
+
+puJetIdForPFMVAMEt.jec =  cms.string('AK4PF')
+#process.puJetIdForPFMVAMEt.jets = cms.InputTag("ak4PFJets")
+puJetIdForPFMVAMEt.vertexes = cms.InputTag("offlineSlimmedPrimaryVertices")
+puJetIdForPFMVAMEt.rho = cms.InputTag("fixedGridRhoFastjetAll")
+
 from CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi import cmgBaseMETFromPFMET
-mvaMETTauEle.recBosonSrc = 'cmgTauElePreSel'
+# mvaMETTauEle.recBosonSrc = 'cmgTauElePreSel'
 
 cmgTauEleMVAPreSel = cmgTauEleCor.clone()
 cmgTauEleMVAPreSel.cfg.diObjectCollection = 'cmgTauElePreSel'
@@ -71,20 +80,26 @@ cmgTauEleTauPtSel = cmgTauEleTauPtSel.clone()
 # recoil correction
 
 #IN 52X: should be type1 MET. In 44X, should be raw MET
-diTausForRecoil = 'cmgTauEleTauPtSel'
-recoilCorMETTauEle =  recoilCorrectedMETTauEle.clone(
-    recBosonSrc = diTausForRecoil
-    )
+# diTausForRecoil = 'cmgTauEleTauPtSel'
+# recoilCorMETTauEle =  recoilCorrectedMETTauEle.clone(
+    # recBosonSrc = diTausForRecoil
+    # )
 
 # mvaBaseMETTauEle = cmgBaseMETFromPFMET.clone()
 # mvaBaseMETTauEle.cfg.inputCollection = 'recoilCorMETTauEle'
 
-tauEleMvaMETRecoilSequence = cms.Sequence( goodPVFilter + 
-                               mvaMETTauEle +
-                               cmgTauEleCor +
-                               cmgTauEleTauPtSel +
-                               recoilCorMETTauEle 
-                               )
+# tauEleMvaMETRecoilSequence = cms.Sequence( goodPVFilter + 
+#                                mvaMETTauEle +
+#                                cmgTauEleCor +
+#                                cmgTauEleTauPtSel +
+#                                recoilCorMETTauEle 
+#                                )
+
+tauEleMVAMetSequence = cms.Sequence(
+    calibratedAK4PFJetsForPFMVAMEt*
+    puJetIdForPFMVAMEt*
+    pfMVAMEt
+  )
 
 # SVFit
 
@@ -98,8 +113,8 @@ cmgTauEleCorSVFitFullSel = cmgTauEleSel.clone( src = 'cmgTauEleCorSVFitPreSel',
                                              ) 
 
 tauEleCorSVFitSequence = cms.Sequence( #
-    tauEleMvaMETRecoilSequence +
-    # cmgTauEleCorPreSel +
+    # tauEleMvaMETRecoilSequence +
+    tauEleMVAMetSequence +
     cmgTauEleCorSVFitPreSel +
     cmgTauEleCorSVFitFullSel
     )

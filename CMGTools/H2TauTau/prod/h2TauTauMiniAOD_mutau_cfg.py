@@ -1,5 +1,5 @@
 import FWCore.ParameterSet.Config as cms
-from PhysicsTools.Heppy.utils.cmsswRelease import isNewerThan, cmsswIs44X
+# from PhysicsTools.Heppy.utils.cmsswRelease import isNewerThan, cmsswIs44X
 
 sep_line = '-'*70
 
@@ -34,9 +34,13 @@ print 'tau scaling =', tauScaling
 
 # Input & JSON             -------------------------------------------------
 
-dataset_user = 'htautau_group' 
-dataset_name = '/VBF_HToTauTau_M-125_13TeV-powheg-pythia6/Spring14dr-PU20bx25_POSTLS170_V5-v1/AODSIM/SS14/'
-dataset_files = 'miniAOD-prod_PAT_.*root'
+# dataset_user = 'htautau_group' 
+# dataset_name = '/VBF_HToTauTau_M-125_13TeV-powheg-pythia6/Spring14dr-PU20bx25_POSTLS170_V5-v1/AODSIM/SS14/'
+# dataset_files = 'miniAOD-prod_PAT_.*root'
+
+dataset_user = 'CMS'
+dataset_name = '/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/Phys14DR-PU40bx25_PHYS14_25_V1-v1/MINIAODSIM'
+dataset_files = '.*root'
 
 from CMGTools.Production.datasetToSource import datasetToSource
 process.source = datasetToSource(
@@ -67,20 +71,23 @@ if runOnMC == False:
 process.load('CMGTools.H2TauTau.h2TauTau_cff')
 
 # setting up the recoil correction according to the input file ---------------
-print sep_line
-from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
+# print sep_line
+# from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
 
-recoilEnabled = False
-setupRecoilCorrection( process, runOnMC,
-                       enable=recoilEnabled, is53X=isNewerThan('CMSSW_5_2_X'))
+# recoilEnabled = False
+# setupRecoilCorrection( process, runOnMC,
+#                        enable=recoilEnabled, is53X=isNewerThan('CMSSW_5_2_X'))
 
 from CMGTools.H2TauTau.tools.setupEmbedding import setupEmbedding
 
 isEmbedded = setupEmbedding(process, channel)
+addAK4 = True
 
 # Adding jet collection
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'PLS170_V7AN1::All'
+process.GlobalTag.globaltag = 'PHYS14_25_V2::All'
+# process.GlobalTag.globaltag = 'auto:run2_mc'
+
 
 process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
 process.load('PhysicsTools.PatAlgos.slimming.unpackedTracksAndVertices_cfi')
@@ -89,10 +96,11 @@ process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 process.load('TrackingTools.TransientTrack.TransientTrackBuilder_cfi')
 process.load('RecoBTag.Configuration.RecoBTag_cff')
 
-from CMGTools.H2TauTau.objects.jetreco_cff import addAK4Jets
+if addAK4:
+    from CMGTools.H2TauTau.objects.jetreco_cff import addAK4Jets
 
-addAK4Jets(process)
-process.tauMuPath.insert(0, process.jetSequenceAK4)
+    addAK4Jets(process)
+    process.tauMuPath.insert(0, process.jetSequenceAK4)
 
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()
@@ -108,20 +116,9 @@ signalTauProcess = (process.source.fileNames[0].find('HToTauTau') != -1) or (pro
 
 #import pdb; pdb.set_trace(); #pdb.tauMuPath
 
-if not signalTauProcess or not applyESCorr:
-    print 'Not applying tau ES corrections as no process with real simulated taus or tau ES switched off'
-    process.tauMuPath.remove( process.cmgTauMuCor )
-    process.cmgTauMuTauPtSel.src = cms.InputTag('mvaMETTauMu')
-    # process.diTauPath.remove( process.cmgDiTauCorPreSel )
-    process.mvaMETDiTau.src = cms.InputTag('cmgDiTauPreSel')
-    process.tauElePath.remove( process.cmgTauEleCor )
-    process.cmgTauEleTauPtSel.src = cms.InputTag('mvaMETTauEle')
-else:
-    print 'Apply tau ES corrections'
 
-
-process.tauMuPath.remove(process.cmgPFJetForRecoilPresel)
-process.tauMuPath.remove(process.cmgPFJetForRecoil)
+# process.tauMuPath.remove(process.cmgPFJetForRecoilPresel)
+# process.tauMuPath.remove(process.cmgPFJetForRecoil)
 
 if channel=='all':
     process.schedule = cms.Schedule(
@@ -242,10 +239,10 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 if newSVFit:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 2
-    process.cmgTauEleCorSVFitPreSel.SVFitVersion = 2
-    process.cmgDiTauCorSVFitPreSel.SVFitVersion = 2
+    # process.cmgTauEleCorSVFitPreSel.SVFitVersion = 2
+    # process.cmgDiTauCorSVFitPreSel.SVFitVersion = 2
 else:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 1
-    process.cmgTauEleCorSVFitPreSel.SVFitVersion = 1
-    process.cmgDiTauCorSVFitPreSel.SVFitVersion = 1
+    # process.cmgTauEleCorSVFitPreSel.SVFitVersion = 1
+    # process.cmgDiTauCorSVFitPreSel.SVFitVersion = 1
 

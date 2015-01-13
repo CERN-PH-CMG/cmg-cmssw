@@ -1,7 +1,7 @@
-from CMGTools.Common.skims.cmgTauMuCount_cfi import *
-from CMGTools.Common.skims.cmgTauEleCount_cfi import *
-from CMGTools.Common.skims.cmgMuEleCount_cfi import *
-from CMGTools.Common.skims.cmgDiTauCount_cfi import *
+from CMGTools.H2TauTau.skims.cmgTauMuCount_cfi import *
+from CMGTools.H2TauTau.skims.cmgTauEleCount_cfi import *
+from CMGTools.H2TauTau.skims.cmgMuEleCount_cfi import *
+from CMGTools.H2TauTau.skims.cmgDiTauCount_cfi import *
 
 
 # tau-mu

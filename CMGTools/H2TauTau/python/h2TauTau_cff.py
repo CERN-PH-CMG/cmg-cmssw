@@ -1,17 +1,20 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.H2TauTau.objects.tauMuObjectsMVAMET_cff import *
-from CMGTools.H2TauTau.objects.tauEleObjectsMVAMET_cff import *
-from CMGTools.H2TauTau.objects.diTauObjectsMVAMET_cff import *
-from CMGTools.H2TauTau.skims.skim_cff import *
-from CMGTools.Common.miscProducers.mvaMET.metRegression_cff import *
+from CMGTools.H2TauTau.objects.tauMuObjectsMVAMET_cff import tauMuSequence
+# from CMGTools.H2TauTau.objects.tauEleObjectsMVAMET_cff import tauEleSequence
+# from CMGTools.H2TauTau.objects.diTauObjectsMVAMET_cff import diTauSequence
+from CMGTools.H2TauTau.skims.skim_cff import tauMuFullSelSkimSequence, tauEleFullSelSkimSequence, diTauFullSelSkimSequence
 
+
+from CMGTools.H2TauTau.objects.tauMuObjectsMVAMET_cff import puJetIdForPFMVAMEt, pfMVAMEt, calibratedAK4PFJetsForPFMVAMEt, cmgTauMu, cmgTauMuCor, cmgTauMuTauPtSel, cmgTauMuCorSVFitPreSel, cmgTauMuCorSVFitFullSel, tauMuMVAMetSequence
+
+from CMGTools.H2TauTau.skims.skim_cff import tauMuFullSelCount, tauEleFullSelCount, diTauFullSelCount
 
 # tau-mu ---
 
 # full selection
 tauMuPath = cms.Path(
-    metRegressionSequence + 
+    # metRegressionSequence + 
     tauMuSequence + 
     tauMuFullSelSkimSequence
     )

@@ -1,49 +1,43 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Common.diTau_cff import *
-from CMGTools.H2TauTau.objects.tauMuCuts_cff import * 
 
-from PhysicsTools.Heppy.utils.cmsswRelease import cmsswIs44X,cmsswIs52X
+from CMGTools.H2TauTau.objects.cmgTauMu_cfi import cmgTauMu
+from CMGTools.H2TauTau.skims.cmgTauMuSel_cfi import cmgTauMuSel
 
-from CMGTools.Utilities.metRecoilCorrection.metRecoilCorrection_cff import *
+# from CMGTools.Utilities.metRecoilCorrection.metRecoilCorrection_cff import *
 
 from CMGTools.H2TauTau.objects.cmgTauMuCor_cfi import cmgTauMuCor 
 from CMGTools.H2TauTau.objects.tauMuSVFit_cfi import tauMuSVFit 
-from PhysicsTools.Heppy.utils.cmsswRelease import cmsswIs44X,cmsswIs52X
-
-cmgTauMu.leg1Collection = cms.InputTag('slimmedTaus')
-cmgTauMu.leg2Collection = cms.InputTag('slimmedMuons')
-cmgTauMu.metsigCollection = cms.InputTag('')
-cmgTauMu.metCollection = cms.InputTag('slimmedMETs')
 
 
-# creates a tau-mu pair
-tauMuStdSequence = cms.Sequence(
-    cmgTauMu 
-    )
+
 
 
 # correction and svfit ------------------------------------------------------
 
 # mva MET
 
-from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
+# from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
 
-from CMGTools.Utilities.mvaMET.mvaMET_cff import *
+from RecoMET.METPUSubtraction.mvaPFMET_cff import puJetIdForPFMVAMEt, pfMVAMEt, calibratedAK4PFJetsForPFMVAMEt
 
-cmgTauMuMVAPreSel = cmgTauMuCor.clone()
-cmgTauMuMVAPreSel.diObjectCollection = 'cmgTauMu'
+pfMVAMEt.srcPFCandidates = cms.InputTag("packedPFCandidates")
+pfMVAMEt.srcVertices = cms.InputTag("offlineSlimmedPrimaryVertices")
+pfMVAMEt.srcLeptons = cms.VInputTag(
+  cms.InputTag("slimmedTaus", "", ""),
+  cms.InputTag("slimmedMuons", "", ""),
+  )
+pfMVAMEt.permuteLeptons = cms.bool(True)
+
+puJetIdForPFMVAMEt.jec =  cms.string('AK4PF')
+#process.puJetIdForPFMVAMEt.jets = cms.InputTag("ak4PFJets")
+puJetIdForPFMVAMEt.vertexes = cms.InputTag("offlineSlimmedPrimaryVertices")
+puJetIdForPFMVAMEt.rho = cms.InputTag("fixedGridRhoFastjetAll")
+
 
 # Correct tau pt (after MVA MET according to current baseline)
 
-from CMGTools.H2TauTau.objects.cmgTauMuCor_cfi import cmgTauMuCor
 cmgTauMuCor = cmgTauMuCor.clone()
-
-cmgTauMuCor.diObjectCollection = cms.InputTag('mvaMETTauMu')
-
-# JAN: It's debatable whether this should be applied after MVA MET
-# and before the recoil correction instead of at the very beginning
-
 
 # This selector goes after the tau pt correction
 cmgTauMuTauPtSel = cms.EDFilter(
@@ -57,36 +51,41 @@ cmgTauMuTauPtSel = cmgTauMuTauPtSel.clone()
 
 # recoil correction
 
-diTausForRecoil = 'cmgTauMuTauPtSel'
-recoilCorMETTauMu =  recoilCorrectedMETTauMu.clone(
-    recBosonSrc = diTausForRecoil
-    )
+# diTausForRecoil = 'cmgTauMuTauPtSel'
+# recoilCorMETTauMu =  recoilCorrectedMETTauMu.clone(
+#     recBosonSrc = diTausForRecoil
+#     )
 
-tauMuMvaMETrecoilSequence = cms.Sequence( goodPVFilter + 
-                               mvaMETTauMu +
-                               cmgTauMuCor +
-                               cmgTauMuTauPtSel +
-                               recoilCorMETTauMu
-                               )
+# tauMuMvaMETrecoilSequence = cms.Sequence( goodPVFilter + 
+#                                mvaMETTauMu +
+#                                cmgTauMuCor +
+#                                cmgTauMuTauPtSel +
+#                                recoilCorMETTauMu
+#                                )
+
+tauMuMVAMetSequence = cms.Sequence(
+    calibratedAK4PFJetsForPFMVAMEt*
+    puJetIdForPFMVAMEt*
+    pfMVAMEt
+  )
 
 # SVFit
 
 cmgTauMuCorSVFitPreSel = tauMuSVFit.clone()
-cmgTauMuCorSVFitPreSel.diTauSrc = cms.InputTag('recoilCorMETTauMu')
+# cmgTauMuCorSVFitPreSel.diTauSrc = cms.InputTag('recoilCorMETTauMu')
 
-# This module is not really necessary anymore
+# If you want to apply some extra selection after SVFit, do it here
 cmgTauMuCorSVFitFullSel = cmgTauMuSel.clone( src = 'cmgTauMuCorSVFitPreSel',
                                              cut = ''
                                              ) 
 
-tauMuCorSVFitSequence = cms.Sequence( #
-    tauMuMvaMETrecoilSequence +
+tauMuSequence = cms.Sequence(     
+    tauMuMVAMetSequence +
+    cmgTauMu +
+    cmgTauMuCor+
+    cmgTauMuTauPtSel +
     cmgTauMuCorSVFitPreSel +
     cmgTauMuCorSVFitFullSel
-    )
-
-tauMuSequence = cms.Sequence( tauMuStdSequence +
-                              tauMuCorSVFitSequence
-                              )
+  )
 
 
