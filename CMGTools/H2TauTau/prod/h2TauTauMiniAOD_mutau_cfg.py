@@ -193,50 +193,6 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = reportInterval
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
-
-# # Jet recalibration
-# if jetRecalib: 
-#     process.load('Configuration.StandardSequences.Services_cff')
-#     process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-#     GT = None
-#     if runOnMC:
-#         if cmsswIs44X():
-#             GT = 'START44_V13::All'
-#         else:
-#             GT = 'START52_V10::All'
-#     else:
-#         if cmsswIs44X():
-#             GT = 'GR_R_44_V15::All'
-#         else:
-#             GT = 'GR_R_52_V8::All'  
-#     process.GlobalTag.globaltag = GT
-#     from CMGTools.Common.miscProducers.cmgPFJetCorrector_cfi import cmgPFJetCorrector
-#     process.cmgPFJetSel = cmgPFJetCorrector.clone(src='cmgPFJetSel',
-#                                                   payload='AK5PF')
-#     process.cmgPFJetSelCHS = cmgPFJetCorrector.clone(src='cmgPFJetSelCHS',
-#                                                      payload='AK5PFchs')
-
-#     if runOnMC:
-#         process.cmgPFJetSel.levels = cms.vstring('L1FastJet','L2Relative','L3Absolute')
-#         process.cmgPFJetSelCHS.levels = cms.vstring('L1FastJet','L2Relative','L3Absolute')
-#     else:
-#         process.cmgPFJetSel.levels = cms.vstring('L1FastJet','L2Relative','L3Absolute','L2L3Residual')
-#         process.cmgPFJetSelCHS.levels = cms.vstring('L1FastJet','L2Relative','L3Absolute','L2L3Residual')
-
-#     process.tauMuPath.insert(0, process.cmgPFJetSel)
-#     process.tauElePath.insert(0, process.cmgPFJetSel)
-#     process.diTauPath.insert(0, process.cmgPFJetSel)
-
-#     process.tauMuPath.insert(0, process.cmgPFJetSelCHS)
-#     process.tauElePath.insert(0, process.cmgPFJetSelCHS)
-#     process.diTauPath.insert(0, process.cmgPFJetSelCHS)
-
-#     print sep_line
-#     print 'Jet recalibration with GLOBAL TAG', GT
-
-# if useCHS:
-#     process.cmgPFJetForRecoil.src = 'cmgPFJetSelCHS'
-
 if newSVFit:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 2
     # process.cmgTauEleCorSVFitPreSel.SVFitVersion = 2

@@ -1,7 +1,17 @@
 import FWCore.ParameterSet.Config as cms
 
-cutsElectronMVA3Medium = [0.933,0.921,0.944,0.945,0.918,0.941,0.981,0.943,0.956,0.947,0.951,0.95,0.897,0.958,0.955,0.942]
+tauPreSelection = cms.EDFilter(
+    # "PFTauSelector",
+    "PATTauSelector",
+    src = cms.InputTag("slimmedTaus"),
+    # The tau disriminators are defined here http://cmslxr.fnal.gov/lxr/source/PhysicsTools/PatAlgos/python/producersLayer1/tauProducer_cfi.py
+    cut = cms.string('pt > 15. && abs(eta) < 2.5 && tauID("decayModeFinding") > 0.5') 
+    # againstMuonLooseMVA, againstElectronLooseMVA5: could be in pre-selection 
+    # as well
+    )
 
+
+cutsElectronMVA3Medium = [0.933,0.921,0.944,0.945,0.918,0.941,0.981,0.943,0.956,0.947,0.951,0.95,0.897,0.958,0.955,0.942]
 
 electronMVA3MediumString = ''
 for iCat, catCut in enumerate(cutsElectronMVA3Medium):
@@ -12,12 +22,10 @@ for iCat, catCut in enumerate(cutsElectronMVA3Medium):
         electronMVA3MediumString = '||'.join([electronMVA3MediumString, mvaCut])
 electronMVA3MediumString += '|| {leg}().tauID("againstElectronMVA3category") > 15'
 
-def getTauCuts( leg, channel='tauMu'):
+def getTauCuts(leg, channel='tauMu'):
 
     ptCut = 15.
     etaCut = 2.3
-    muVeto = None
-    eVeto = None
 
     kinematics = cms.PSet(
         pt = cms.string('{leg}().pt()>{ptCut}'.format(leg=leg, ptCut=ptCut)),

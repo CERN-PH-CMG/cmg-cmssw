@@ -1,15 +1,17 @@
 import FWCore.ParameterSet.Config as cms
 
-
 from CMGTools.H2TauTau.objects.cmgTauMu_cfi import cmgTauMu
 from CMGTools.H2TauTau.skims.cmgTauMuSel_cfi import cmgTauMuSel
-
-# from CMGTools.Utilities.metRecoilCorrection.metRecoilCorrection_cff import *
 
 from CMGTools.H2TauTau.objects.cmgTauMuCor_cfi import cmgTauMuCor 
 from CMGTools.H2TauTau.objects.tauMuSVFit_cfi import tauMuSVFit 
 
+from CMGTools.H2TauTau.objects.tauCuts_cff import tauPreSelection
+from CMGTools.H2TauTau.objects.muCuts_cff import muonPreSelection
 
+# tau pre-selection
+tauPreSelection = tauPreSelection.clone()
+muonPreSelection = muonPreSelection.clone()
 
 
 
@@ -24,8 +26,8 @@ from RecoMET.METPUSubtraction.mvaPFMET_cff import puJetIdForPFMVAMEt, pfMVAMEt, 
 pfMVAMEt.srcPFCandidates = cms.InputTag("packedPFCandidates")
 pfMVAMEt.srcVertices = cms.InputTag("offlineSlimmedPrimaryVertices")
 pfMVAMEt.srcLeptons = cms.VInputTag(
-  cms.InputTag("slimmedTaus", "", ""),
-  cms.InputTag("slimmedMuons", "", ""),
+  cms.InputTag("tauPreSelection", "", ""),
+  cms.InputTag("muonPreSelection", "", ""),
   )
 pfMVAMEt.permuteLeptons = cms.bool(True)
 
@@ -79,7 +81,9 @@ cmgTauMuCorSVFitFullSel = cmgTauMuSel.clone( src = 'cmgTauMuCorSVFitPreSel',
                                              cut = ''
                                              ) 
 
-tauMuSequence = cms.Sequence(     
+tauMuSequence = cms.Sequence(   
+    tauPreSelection +   
+    muonPreSelection +   
     tauMuMVAMetSequence +
     cmgTauMu +
     cmgTauMuCor+

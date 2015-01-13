@@ -1,6 +1,11 @@
 import FWCore.ParameterSet.Config as cms
 
-# from CMGTools.Common.selections.vbtfmuon_cfi import *
+muonPreSelection = cms.EDFilter(
+    "PATMuonSelector",
+    src = cms.InputTag("slimmedMuons"),
+    cut = cms.string('pt > 20. && abs(eta) < 2.5') 
+    )
+
 
 # muCuts = vbtfmuon.clone()
 # muCuts.dxy = cms.string('abs(dxy)<0.045')
