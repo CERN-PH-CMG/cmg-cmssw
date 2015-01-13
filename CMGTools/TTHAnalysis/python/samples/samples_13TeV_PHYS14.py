@@ -233,7 +233,21 @@ T6ttWW_mSbot600_mCh425_mChi50 = kreator.makeMCComponentFromEOS('T6ttWW_mSbot600_
 T6ttWW_mSbot650_mCh150_mChi50 = kreator.makeMCComponentFromEOS('T6ttWW_mSbot650_mCh150_mChi50', '/T6ttWW_650_150_50_v2/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.107045)
 T6ttWW = [ T6ttWW_mSbot600_mCh425_mChi50, T6ttWW_mSbot650_mCh150_mChi50 ]
 
-mcSamplesPriv = T5ttttDeg + T1ttbbWW + T1ttbb + T6ttWW
+#SqGltttt_mGo1300_mSq1300_mChi100 = kreator.makeMCComponentFromEOS('SqGltttt_mGo1300_mSq1300_mChi100', '/13TeV_SqGltttt_Gl_1300_Sq_1300_LSP_100/', '/store/cmst3/group/susy/alobanov/MC/PHYS14/PU20_25ns/%s', '.*root')
+SqGltttt = [ ] #SqGltttt_mGo1300_mSq1300_mChi100 ]
+
+T1tttt_mGo1300_mChi100 = kreator.makeMCComponentFromEOS('T1tttt_mGo1300_mChi100', '/13TeV_T1tttt_gluino_1300_LSP_100/', '/store/cmst3/group/susy/alobanov/MC/PHYS14/PU20_25ns/%s', '.*root', 0.0460525)
+T1tttt_mGo800_mChi450 = kreator.makeMCComponentFromEOS('T1tttt_mGo800_mChi450', '/13TeV_T1tttt_gluino_800_LSP_450/', '/store/cmst3/group/susy/alobanov/MC/PHYS14/PU20_25ns/%s', '.*root', 1.4891)
+T1tttt_priv = [ T1tttt_mGo1300_mChi100, T1tttt_mGo800_mChi450 ] 
+
+T5qqqqWW_mGo1400_mCh315_mChi300 = kreator.makeMCComponentFromEOS('T5qqqqWW_mGo1400_mCh315_mChi300', '/13TeV_T5qqqqWW_Gl_1400_LSP_300_Chi_315/', '/store/cmst3/group/susy/alobanov/MC/PHYS14/PU20_25ns/%s', '.*root', 0.0252977)
+T5qqqqWW = [ T5qqqqWW_mGo1400_mCh315_mChi300 ]
+
+# note: cross section for q~ q~ from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SUSYCrossSections13TeVsquarkantisquark (i.e. gluinos and stops decoupled)
+T6qqWW_mSq950_mCh325_mChi300 = kreator.makeMCComponentFromEOS('T6qqWW_mSq950_mCh325_mChi300', '/13TeV_T6qqWW_Sq_950_LSP_300_Chi_325/', '/store/cmst3/group/susy/alobanov/MC/PHYS14/PU20_25ns/%s', '.*root', 0.0898112)
+T6qqWW = [ T6qqWW_mSq950_mCh325_mChi300 ]
+
+mcSamplesPriv = T5ttttDeg + T1ttbbWW + T1ttbb + T6ttWW + SqGltttt + T1tttt_priv + T5qqqqWW + T6qqWW 
 
 mcSamples = mcSamplesPHYS14_PU20bx25 + mcSamplesPHYS14_PU40bx25 + mcSamplesPriv
 
