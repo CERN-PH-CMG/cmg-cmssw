@@ -1,125 +1,76 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Common.diTau_cff import *
-from CMGTools.H2TauTau.objects.tauEleCuts_cff import * 
-
-from PhysicsTools.Heppy.utils.cmsswRelease import cmsswIs44X,cmsswIs52X
-
-# from CMGTools.Utilities.metRecoilCorrection.metRecoilCorrection_cff import *
+from CMGTools.H2TauTau.objects.cmgTauEle_cfi import cmgTauEle
+from CMGTools.H2TauTau.skims.cmgTauEleSel_cfi import cmgTauEleSel
 
 from CMGTools.H2TauTau.objects.cmgTauEleCor_cfi import cmgTauEleCor 
 from CMGTools.H2TauTau.objects.tauEleSVFit_cfi import tauEleSVFit 
-from PhysicsTools.Heppy.utils.cmsswRelease import cmsswIs44X,cmsswIs52X
 
+from CMGTools.H2TauTau.objects.tauCuts_cff import tauPreSelection
+from CMGTools.H2TauTau.objects.eleCuts_cff import electronPreSelection
 
-
-# no correction, no svfit ---------------------------------------------------
-
-# attaching the cuts defined in this module
-# to the di-tau factory
-cmgTauEle.cuts = tauEleCuts.clone()
-cmgTauEle.cfg.leg1Collection = 'cmgTauSel'
-cmgTauEle.cfg.metsigCollection = cms.InputTag('')
-
-# preselection 
-cmgTauElePreSel = cmgTauEleSel.clone(
-    # cut = ''
-    #WARNING
-    cut = 'getSelection("cuts_baseline")'
-    )
-
-tauEleStdSequence = cms.Sequence( 
-    cmgTauEle +
-    cmgTauElePreSel
-    )
+# tau pre-selection
+tauPreSelectionTauEle = tauPreSelection.clone()
+electronPreSelectionTauEle = electronPreSelection.clone()
 
 
 # correction and svfit ------------------------------------------------------
 
-# this is done for preselected di-taus
-
 # mva MET
 
-from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
+# from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
 
-from RecoMET.METPUSubtraction.mvaPFMET_cff import puJetIdForPFMVAMEt, pfMVAMEt, calibratedAK4PFJetsForPFMVAMEt
+from RecoMET.METPUSubtraction.mvaPFMET_cff import pfMVAMEt
 
-pfMVAMEt.srcPFCandidates = cms.InputTag("packedPFCandidates")
-pfMVAMEt.srcVertices = cms.InputTag("offlineSlimmedPrimaryVertices")
+mvaMETTauEle = pfMVAMEt.clone()
 
-puJetIdForPFMVAMEt.jec =  cms.string('AK4PF')
-#process.puJetIdForPFMVAMEt.jets = cms.InputTag("ak4PFJets")
-puJetIdForPFMVAMEt.vertexes = cms.InputTag("offlineSlimmedPrimaryVertices")
-puJetIdForPFMVAMEt.rho = cms.InputTag("fixedGridRhoFastjetAll")
+mvaMETTauEle.srcPFCandidates = cms.InputTag("packedPFCandidates")
+mvaMETTauEle.srcVertices = cms.InputTag("offlineSlimmedPrimaryVertices")
+mvaMETTauEle.srcLeptons = cms.VInputTag(
+  cms.InputTag("tauPreSelectionTauEle", "", ""),
+  cms.InputTag("electronPreSelectionTauEle", "", ""),
+  )
+mvaMETTauEle.permuteLeptons = cms.bool(True)
 
-from CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi import cmgBaseMETFromPFMET
-# mvaMETTauEle.recBosonSrc = 'cmgTauElePreSel'
-
-cmgTauEleMVAPreSel = cmgTauEleCor.clone()
-cmgTauEleMVAPreSel.cfg.diObjectCollection = 'cmgTauElePreSel'
 
 
 # Correct tau pt (after MVA MET according to current baseline)
 
-from CMGTools.H2TauTau.objects.cmgTauEleCor_cfi import cmgTauEleCor
 cmgTauEleCor = cmgTauEleCor.clone()
 
-cmgTauEleCor.cfg.diObjectCollection = cms.InputTag('mvaMETTauEle')
-
-# This selector goes after the tau pt correction.
-# Can in principal apply any further selection on the
-# di-tau object.
+# This selector goes after the tau pt correction
 cmgTauEleTauPtSel = cms.EDFilter(
-    "CmgTauEleSelector",
-    src = cms.InputTag( "cmgTauEleCor" ),
-    cut = cms.string( "leg1().pt()>18." )
+    "PATCompositeCandidateSelector",
+    src = cms.InputTag( "cmgTauMuCor" ),
+    cut = cms.string( "daughter(0).pt()>18." )
     )
 
 cmgTauEleTauPtSel = cmgTauEleTauPtSel.clone()
 
+
 # recoil correction
-
-#IN 52X: should be type1 MET. In 44X, should be raw MET
-# diTausForRecoil = 'cmgTauEleTauPtSel'
-# recoilCorMETTauEle =  recoilCorrectedMETTauEle.clone(
-    # recBosonSrc = diTausForRecoil
-    # )
-
-# mvaBaseMETTauEle = cmgBaseMETFromPFMET.clone()
-# mvaBaseMETTauEle.cfg.inputCollection = 'recoilCorMETTauEle'
-
-# tauEleMvaMETRecoilSequence = cms.Sequence( goodPVFilter + 
-#                                mvaMETTauEle +
-#                                cmgTauEleCor +
-#                                cmgTauEleTauPtSel +
-#                                recoilCorMETTauEle 
-#                                )
+# JAN: We don't know yet if we need this in 2015; re-include if necessary
 
 tauEleMVAMetSequence = cms.Sequence(
-    calibratedAK4PFJetsForPFMVAMEt*
-    puJetIdForPFMVAMEt*
-    pfMVAMEt
+    mvaMETTauEle
   )
 
 # SVFit
 
 cmgTauEleCorSVFitPreSel = tauEleSVFit.clone()
-cmgTauEleCorSVFitPreSel.diTauSrc = cms.InputTag('recoilCorMETTauEle')
+# cmgTauEleCorSVFitPreSel.diTauSrc = cms.InputTag('recoilCorMETTauEle')
 # cmgTauEleCorSVFitPreSel.metsigSrc = 'mvaMETTauEle'
-cmgTauEleCorSVFitFullSel = cmgTauEleSel.clone( src = 'cmgTauEleCorSVFitPreSel',
+cmgTauEleCorSVFitFullSel = cmgTauEleSel.clone(src = 'cmgTauEleCorSVFitPreSel',
                                              cut = ''
-                                             # WARNING!
-                                             # cut = 'getSelection("cuts_baseline")'
                                              ) 
 
-tauEleCorSVFitSequence = cms.Sequence( #
-    # tauEleMvaMETRecoilSequence +
+tauEleSequence = cms.Sequence( #
+    tauPreSelectionTauEle +   
+    electronPreSelectionTauEle +   
     tauEleMVAMetSequence +
+    cmgTauEle +
+    cmgTauEleCor+
+    cmgTauEleTauPtSel +
     cmgTauEleCorSVFitPreSel +
     cmgTauEleCorSVFitFullSel
     )
-
-tauEleSequence = cms.Sequence( tauEleStdSequence +
-                               tauEleCorSVFitSequence
-                               )
-

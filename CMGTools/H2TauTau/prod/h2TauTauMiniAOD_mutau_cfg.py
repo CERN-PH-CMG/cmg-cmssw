@@ -1,11 +1,10 @@
 import FWCore.ParameterSet.Config as cms
-# from PhysicsTools.Heppy.utils.cmsswRelease import isNewerThan, cmsswIs44X
 
 sep_line = '-'*70
 
 process = cms.Process("H2TAUTAU")
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 
 numberOfFilesToProcess = -1
 debugEventContent = False
@@ -23,7 +22,7 @@ applyESCorr = True
 
 # increase to 1000 before running on the batch, to reduce size of log files
 # on your account
-reportInterval = 1000
+reportInterval = 1
 
 print sep_line
 print 'channel', channel
@@ -70,10 +69,9 @@ if runOnMC == False:
 # load the channel paths -------------------------------------------
 process.load('CMGTools.H2TauTau.h2TauTau_cff')
 
-# setting up the recoil correction according to the input file ---------------
-# print sep_line
+# JAN: recoil correction disabled for now; reactivate if necessary
+# setting up the recoil correction according to the input file
 # from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
-
 # recoilEnabled = False
 # setupRecoilCorrection( process, runOnMC,
 #                        enable=recoilEnabled, is53X=isNewerThan('CMSSW_5_2_X'))
@@ -100,28 +98,24 @@ if addAK4:
     from CMGTools.H2TauTau.objects.jetreco_cff import addAK4Jets
 
     addAK4Jets(process)
-    process.tauMuPath.insert(0, process.jetSequenceAK4)
+    process.mvaMetInputPath.insert(0, process.jetSequenceAK4)
 
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()
 
-# don't apply Tau ES corrections for data (but do for embedded) or processes not containing real taus
 
-signalTauProcess = (process.source.fileNames[0].find('HToTauTau') != -1) or (process.source.fileNames[0].find('DY') != -1) or isEmbedded
+# JAN: In 2015, we should finally make sure that we apply the correction to all
+# generator-matched taus, regardless of the process
 
-# UPDATE: Only apply Tau ES corrections for embedded
-# signalTauProcess = isEmbedded
+# 2012: don't apply Tau ES corrections for data (but do for embedded) or 
+# processes not containing real taus
 
-# if not runOnMC and not isEmbedded:
+# signalTauProcess = (process.source.fileNames[0].find('HToTauTau') != -1) or (process.source.fileNames[0].find('DY') != -1) or isEmbedded
 
-#import pdb; pdb.set_trace(); #pdb.tauMuPath
-
-
-# process.tauMuPath.remove(process.cmgPFJetForRecoilPresel)
-# process.tauMuPath.remove(process.cmgPFJetForRecoil)
 
 if channel=='all':
     process.schedule = cms.Schedule(
+        process.mvaMetInputPath,
         process.tauMuPath,
         process.tauElePath,
         # process.muElePath,    
@@ -130,16 +124,19 @@ if channel=='all':
         )
 elif channel=='tau-mu':
     process.schedule = cms.Schedule(
+        process.mvaMetInputPath,
         process.tauMuPath,
         process.outpath
         )
 elif channel=='tau-ele':
     process.schedule = cms.Schedule(
+        process.mvaMetInputPath,
         process.tauElePath,
         process.outpath
         )
 elif channel=='di-tau':
     process.schedule = cms.Schedule(
+        process.mvaMetInputPath,
         process.diTauPath,
         process.outpath
         )
@@ -195,10 +192,10 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 if newSVFit:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 2
-    # process.cmgTauEleCorSVFitPreSel.SVFitVersion = 2
+    process.cmgTauEleCorSVFitPreSel.SVFitVersion = 2
     # process.cmgDiTauCorSVFitPreSel.SVFitVersion = 2
 else:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 1
-    # process.cmgTauEleCorSVFitPreSel.SVFitVersion = 1
+    process.cmgTauEleCorSVFitPreSel.SVFitVersion = 1
     # process.cmgDiTauCorSVFitPreSel.SVFitVersion = 1
 

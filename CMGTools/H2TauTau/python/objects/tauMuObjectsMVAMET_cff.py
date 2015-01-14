@@ -10,8 +10,8 @@ from CMGTools.H2TauTau.objects.tauCuts_cff import tauPreSelection
 from CMGTools.H2TauTau.objects.muCuts_cff import muonPreSelection
 
 # tau pre-selection
-tauPreSelection = tauPreSelection.clone()
-muonPreSelection = muonPreSelection.clone()
+tauPreSelectionTauMu = tauPreSelection.clone()
+muonPreSelectionTauMu = muonPreSelection.clone()
 
 
 
@@ -21,20 +21,17 @@ muonPreSelection = muonPreSelection.clone()
 
 # from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
 
-from RecoMET.METPUSubtraction.mvaPFMET_cff import puJetIdForPFMVAMEt, pfMVAMEt, calibratedAK4PFJetsForPFMVAMEt
+from RecoMET.METPUSubtraction.mvaPFMET_cff import pfMVAMEt
 
-pfMVAMEt.srcPFCandidates = cms.InputTag("packedPFCandidates")
-pfMVAMEt.srcVertices = cms.InputTag("offlineSlimmedPrimaryVertices")
-pfMVAMEt.srcLeptons = cms.VInputTag(
-  cms.InputTag("tauPreSelection", "", ""),
-  cms.InputTag("muonPreSelection", "", ""),
+mvaMETTauMu = pfMVAMEt.clone()
+
+mvaMETTauMu.srcPFCandidates = cms.InputTag("packedPFCandidates")
+mvaMETTauMu.srcVertices = cms.InputTag("offlineSlimmedPrimaryVertices")
+mvaMETTauMu.srcLeptons = cms.VInputTag(
+  cms.InputTag("tauPreSelectionTauMu", "", ""),
+  cms.InputTag("muonPreSelectionTauMu", "", ""),
   )
-pfMVAMEt.permuteLeptons = cms.bool(True)
-
-puJetIdForPFMVAMEt.jec =  cms.string('AK4PF')
-#process.puJetIdForPFMVAMEt.jets = cms.InputTag("ak4PFJets")
-puJetIdForPFMVAMEt.vertexes = cms.InputTag("offlineSlimmedPrimaryVertices")
-puJetIdForPFMVAMEt.rho = cms.InputTag("fixedGridRhoFastjetAll")
+mvaMETTauMu.permuteLeptons = cms.bool(True)
 
 
 # Correct tau pt (after MVA MET according to current baseline)
@@ -52,23 +49,10 @@ cmgTauMuTauPtSel = cmgTauMuTauPtSel.clone()
 
 
 # recoil correction
-
-# diTausForRecoil = 'cmgTauMuTauPtSel'
-# recoilCorMETTauMu =  recoilCorrectedMETTauMu.clone(
-#     recBosonSrc = diTausForRecoil
-#     )
-
-# tauMuMvaMETrecoilSequence = cms.Sequence( goodPVFilter + 
-#                                mvaMETTauMu +
-#                                cmgTauMuCor +
-#                                cmgTauMuTauPtSel +
-#                                recoilCorMETTauMu
-#                                )
+# JAN: We don't know yet if we need this in 2015; re-include if necessary
 
 tauMuMVAMetSequence = cms.Sequence(
-    calibratedAK4PFJetsForPFMVAMEt*
-    puJetIdForPFMVAMEt*
-    pfMVAMEt
+    mvaMETTauMu
   )
 
 # SVFit
@@ -77,13 +61,13 @@ cmgTauMuCorSVFitPreSel = tauMuSVFit.clone()
 # cmgTauMuCorSVFitPreSel.diTauSrc = cms.InputTag('recoilCorMETTauMu')
 
 # If you want to apply some extra selection after SVFit, do it here
-cmgTauMuCorSVFitFullSel = cmgTauMuSel.clone( src = 'cmgTauMuCorSVFitPreSel',
-                                             cut = ''
+cmgTauMuCorSVFitFullSel = cmgTauMuSel.clone(src = 'cmgTauMuCorSVFitPreSel',
+                                            cut = ''
                                              ) 
 
 tauMuSequence = cms.Sequence(   
-    tauPreSelection +   
-    muonPreSelection +   
+    tauPreSelectionTauMu +   
+    muonPreSelectionTauMu +   
     tauMuMVAMetSequence +
     cmgTauMu +
     cmgTauMuCor+
