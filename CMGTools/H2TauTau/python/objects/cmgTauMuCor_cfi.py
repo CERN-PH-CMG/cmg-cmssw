@@ -2,11 +2,10 @@ import FWCore.ParameterSet.Config as cms
 
 cmgTauMuCor = cms.EDProducer(
     "TauMuUpdateProducer",
-    # leg1 and leg2 are dummy collections here
     diObjectCollection  = cms.InputTag('cmgTauMu'),
     genCollection = cms.InputTag('prunedGenParticles'),
     nSigma              = cms.double(0),
-    uncertainty         = cms.double(0.), # 2012: 0.03
+    uncertainty         = cms.double(0.03), # 2012: 0.03
     shift1ProngNoPi0    = cms.double(0.),
     shift1Prong1Pi0     = cms.double(0.), # 2012: 0.012
     ptDependence1Pi0    = cms.double(0.),

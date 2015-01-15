@@ -9,20 +9,13 @@ from CMGTools.H2TauTau.objects.tauMuSVFit_cfi import tauMuSVFit
 from CMGTools.H2TauTau.objects.tauCuts_cff import tauPreSelection
 from CMGTools.H2TauTau.objects.muCuts_cff import muonPreSelection
 
+from RecoMET.METPUSubtraction.mvaPFMET_cff import pfMVAMEt
+
 # tau pre-selection
 tauPreSelectionTauMu = tauPreSelection.clone()
 muonPreSelectionTauMu = muonPreSelection.clone()
 
-
-
-# correction and svfit ------------------------------------------------------
-
 # mva MET
-
-# from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
-
-from RecoMET.METPUSubtraction.mvaPFMET_cff import pfMVAMEt
-
 mvaMETTauMu = pfMVAMEt.clone()
 
 mvaMETTauMu.srcPFCandidates = cms.InputTag("packedPFCandidates")
@@ -35,14 +28,13 @@ mvaMETTauMu.permuteLeptons = cms.bool(True)
 
 
 # Correct tau pt (after MVA MET according to current baseline)
-
 cmgTauMuCor = cmgTauMuCor.clone()
 
 # This selector goes after the tau pt correction
 cmgTauMuTauPtSel = cms.EDFilter(
     "PATCompositeCandidateSelector",
-    src = cms.InputTag( "cmgTauMuCor" ),
-    cut = cms.string( "daughter(0).pt()>18." )
+    src = cms.InputTag("cmgTauMuCor"),
+    cut = cms.string("daughter(0).pt()>18.")
     )
 
 cmgTauMuTauPtSel = cmgTauMuTauPtSel.clone()
@@ -56,14 +48,12 @@ tauMuMVAMetSequence = cms.Sequence(
   )
 
 # SVFit
-
 cmgTauMuCorSVFitPreSel = tauMuSVFit.clone()
-# cmgTauMuCorSVFitPreSel.diTauSrc = cms.InputTag('recoilCorMETTauMu')
 
 # If you want to apply some extra selection after SVFit, do it here
 cmgTauMuCorSVFitFullSel = cmgTauMuSel.clone(src = 'cmgTauMuCorSVFitPreSel',
                                             cut = ''
-                                             ) 
+                                            ) 
 
 tauMuSequence = cms.Sequence(   
     tauPreSelectionTauMu +   

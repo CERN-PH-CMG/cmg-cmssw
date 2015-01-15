@@ -20,7 +20,7 @@ namespace cmg{
     
     DiObjectUpdateFactory(const edm::ParameterSet& ps):
       diObjectLabel_     (ps.getParameter<edm::InputTag>("diObjectCollection")),
-      genParticleLabel_     (ps.getParameter<edm::InputTag>("genCollection")),
+      genParticleLabel_  (ps.getParameter<edm::InputTag>("genCollection")),
       nSigma_            (ps.getParameter<double>("nSigma")),
       uncertainty_       (ps.getParameter<double>("uncertainty")),
       shift1ProngNoPi0_  (ps.getParameter<double>("shift1ProngNoPi0")),

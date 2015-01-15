@@ -10,7 +10,7 @@ numberOfFilesToProcess = -1
 debugEventContent = False
 
 # tau-mu, tau-ele, di-tau, all
-channel = 'tau-mu' # 'tau-mu' #'di-tau' 'all' 'tau-ele'
+channel = 'all' # 'tau-mu' #'di-tau' 'all' 'tau-ele'
 jetRecalib = False
 useCHS = False
 
@@ -193,9 +193,8 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 if newSVFit:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 2
     process.cmgTauEleCorSVFitPreSel.SVFitVersion = 2
-    # process.cmgDiTauCorSVFitPreSel.SVFitVersion = 2
+    process.cmgDiTauCorSVFitPreSel.SVFitVersion = 2
 else:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 1
     process.cmgTauEleCorSVFitPreSel.SVFitVersion = 1
-    # process.cmgDiTauCorSVFitPreSel.SVFitVersion = 1
-
+    process.cmgDiTauCorSVFitPreSel.SVFitVersion = 1
