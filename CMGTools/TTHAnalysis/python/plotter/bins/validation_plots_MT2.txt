@@ -28,17 +28,33 @@ count_nGammas20 : nGammas20 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5]; XTitle="N(#gamma\,
 count_nJet40 : nJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(jet\, p_{T} > 40)'
 count_nBJet40 : nBJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\, p_{T} > 40\, CSVM)'
 
+count_ngenParticles: ngenPart : 500,0,500  ; XTitle="nGenParticles"
+
 ##### TRIGGERS
 
-HLT_ht350met100: HLT_ht350met100: [-0.5,0.5,1.5]; XTitle="HLT"
-HLT_MET150     : HLT_MET150     : [-0.5,0.5,1.5]; XTitle="HLT" 
-HLT_HT650      : HLT_HT650      : [-0.5,0.5,1.5]; XTitle="HLT"
+HLT_ht350met120: HLT_ht350met120: [-0.5,0.5,1.5]; XTitle="HLT"
+HLT_MET170     : HLT_MET170     : [-0.5,0.5,1.5]; XTitle="HLT" 
+HLT_HT900      : HLT_HT900      : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_SingleMu   : HLT_SingleMu   : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_DoubleMu   : HLT_DoubleMu   : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_DoubleEl   : HLT_DoubleEl   : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_MuEG       : HLT_MuEG       : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_Photons    : HLT_Photons    : [-0.5,0.5,1.5]; XTitle="HLT"
 ###HLT_htXprescale: HLT_htXprescale: [-0.5,0.5,1.5]; XTitle="HLT"
+
+Flag_EcalDeadCellTriggerPrimitiveFilter : Flag_EcalDeadCellTriggerPrimitiveFilter: [-0.5,0.5,1.5]; XTitle="metFilter"
+Flag_trkPOG_manystripclus53X : Flag_trkPOG_manystripclus53X: [-0.5,0.5,1.5]; XTitle="metFilter"
+Flag_ecalLaserCorrFilter : Flag_ecalLaserCorrFilter: [-0.5,0.5,1.5]; XTitle="metFilter"
+Flag_trkPOG_toomanystripclus53X : Flag_trkPOG_toomanystripclus53X : [-0.5,0.5,1.5]; XTitle="metFilter"
+Flag_hcalLaserEventFilter : Flag_hcalLaserEventFilter : [-0.5,0.5,1.5]; XTitle="metFilter"
+Flag_trkPOG_logErrorTooManyClusters : Flag_trkPOG_logErrorTooManyClusters : [-0.5,0.5,1.5]; XTitle="metFilter"
+Flag_trkPOGFilters : Flag_trkPOGFilters : [-0.5,0.5,1.5]; XTitle="metFilter"
+Flag_trackingFailureFilter : Flag_trackingFailureFilter: [-0.5,0.5,1.5]; XTitle="metFilter"
+Flag_CSCTightHaloFilter : Flag_CSCTightHaloFilter: [-0.5,0.5,1.5]; XTitle="metFilter"
+Flag_HBHENoiseFilter : Flag_HBHENoiseFilter : [-0.5,0.5,1.5]; XTitle="metFilter"
+Flag_goodVertices : Flag_goodVertices: [-0.5,0.5,1.5]; XTitle="metFilter"
+Flag_eeBadScFilter : Flag_eeBadScFilter: [-0.5,0.5,1.5]; XTitle="metFilter"
+Flag_METFilters : Flag_METFilters: [-0.5,0.5,1.5]; XTitle="metFilter"
 
 ##### MT2
 
@@ -139,9 +155,9 @@ gamma_chHadIso: gamma_chHadIso: 100,0,0.5    ; XTitle="ch gamma ISO  [GeV]"
 gamma_neuHadIso: gamma_neuHadIso: 100,0,0.5    ; XTitle="neu gamma ISO  [GeV]"   
 gamma_phIso: gamma_phIso: 100,0,0.5    ; XTitle="ph gamma ISO  [GeV]"   
 
-gamma_sigmaIetaIeta: gamma_sigmaIetaIeta: 100,0,5.    ; XTitle="gamma sigmaIetaIeta"
-gamma_r9: gamma_r9: 100,0,5.    ; XTitle="gamma r9"
-gamma_hOverE: gamma_hOverE: 100,0,5.    ; XTitle="gamma hOverE"
+gamma_sigmaIetaIeta: gamma_sigmaIetaIeta: 100,0,0.1    ; XTitle="gamma sigmaIetaIeta"
+gamma_r9: gamma_r9: 100,0,1.    ; XTitle="gamma r9"
+gamma_hOverE: gamma_hOverE: 100,0,0.1    ; XTitle="gamma hOverE"
 gamma_idCutBased: gamma_idCutBased: 10,0,10.    ; XTitle="gamma ID Cut based"
 gamma_mcMatchId:  gamma_mcMatchId: 28,-1.5,26.5;  Legend='TR'
 

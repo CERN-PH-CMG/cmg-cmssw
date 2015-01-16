@@ -48,7 +48,7 @@ triggers_HTMET = ["HLT_PFHT350_PFMET120_NoiseCleaned_v*"]
 
 triggers_photon155 = ["HLT_Photon155_v*"]
 
-triggers_MT2_mumu = triggers_mumu_iso + triggers_mumu_noniso
+triggers_MT2_mumu = triggers_mumu_iso
 triggers_MT2_ee   = triggers_ee
 
 triggers_MT2_mue = triggers_mue
@@ -131,10 +131,12 @@ GJets_HT600toInf,
 ]
 ZJetsToNuNu_HT100to200 = kreator.makeMCComponent("ZJetsToNuNu_HT100to200", "/ZJetsToNuNu_HT-100to200_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",372.6*1.27)
 ZJetsToNuNu_HT200to400 = kreator.makeMCComponent("ZJetsToNuNu_HT200to400", "/ZJetsToNuNu_HT-200to400_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",100.8*1.27)
+ZJetsToNuNu_HT400to600 = kreator.makeMCComponent("ZJetsToNuNu_HT400to600", "/ZJetsToNuNu_HT-400to600_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v2/MINIAODSIM", "CMS", ".*root",11.99*1.27)
 ZJetsToNuNu_HT600toInf = kreator.makeMCComponent("ZJetsToNuNu_HT600toInf", "/ZJetsToNuNu_HT-600toInf_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",4.113*1.27)
 ZJetsToNuNuHT = [
 ZJetsToNuNu_HT100to200,
 ZJetsToNuNu_HT200to400,
+ZJetsToNuNu_HT400to600,
 ZJetsToNuNu_HT600toInf,
 ]
 
