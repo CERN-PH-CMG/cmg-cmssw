@@ -1,15 +1,8 @@
 from CMGTools.TTHAnalysis.analyzers.treeProducerSusyCore import *
+from CMGTools.TTHAnalysis.analyzers.ntupleTypes import *
 
-class treeProducerSusySingleLepton( treeProducerSusyCore ):
+susySingleLepton_globalVariables = susyCore_globalVariables + [
 
-    #-----------------------------------
-    # TREE PRODUCER FOR SUSY MULTILEPTONS 
-    #-----------------------------------
-    def __init__(self, cfg_ana, cfg_comp, looperName):
-        super(treeProducerSusySingleLepton,self).__init__(cfg_ana, cfg_comp, looperName)
-
-        ## Declare what we want to fill (in addition to susy core ones)
-        self.globalVariables += [
 
             ##-------- custom jets ------------------------------------------
             NTupleVariable("htJet25", lambda ev : ev.htJet25, help="H_{T} computed from leptons and jets (with |eta|<2.4, pt > 25 GeV)"),
@@ -32,32 +25,30 @@ class treeProducerSusySingleLepton( treeProducerSusyCore ):
             NTupleVariable("bestMTopHadPt", lambda ev: ev.bestMTopHadPt, int, help="bestMTopHadPt"),
             ##--------------------------------------------------
             ##------------------------------------------------
-        ]
+]
+susySingleLepton_globalObjects = susyCore_globalObjects.copy()
+susySingleLepton_globalObjects.update({
+            # put more here
+})
 
-        self.globalObjects.update({
+susySingleLepton_collections = susyCore_collections.copy()
+susySingleLepton_collections.update({
+
             # put more here
-        })
-        self.collections.update({
-            # put more here
-            "gentopquarks"    : NTupleCollection("GenTop",     genParticleType, 6, help="Generated top quarks from hard scattering"),
-            "genbquarks"      : NTupleCollection("GenBQuark",  genParticleType, 6, help="Generated bottom quarks from top quark decays"),
-            "genwzquarks"     : NTupleCollection("GenQuark",   genParticleWithSourceType, 6, help="Generated quarks from W/Z decays"),
             "genParticles"     : NTupleCollection("genPart",  genParticleWithMotherId, 200, help="all pruned genparticles"), # need to decide which gen collection ?
-           ##------------------------------------------------
+            ## ---------------------------------------------
             "selectedLeptons" : NTupleCollection("LepGood", leptonTypeSusy, 8, help="Leptons after the preselection"),
             "otherLeptons"    : NTupleCollection("LepOther", leptonTypeSusy, 8, help="Leptons after the preselection"),
             "selectedTaus"    : NTupleCollection("TauGood", tauTypeSusy, 3, help="Taus after the preselection"),
             "selectedIsoTrack"    : NTupleCollection("isoTrack", isoTrackType, 50, help="isoTrack, sorted by pt"),
             ##------------------------------------------------
             "cleanJetsAll"       : NTupleCollection("Jet",     jetTypeSusy, 25, help="Cental jets after full selection and cleaning, sorted by pt"),
-            "reclusteredFatJets" : NTupleCollection("FatJet",     fourVectorType,20, help="FatJets reclusterd from ak4 cleanJetsAll"),
-               ##----------------------------------------------
+            "cleanJetsFwd"    : NTupleCollection("JetFwd",  jetTypeSusy, 25, help="Forward jets after full selection and cleaning, sorted by pt"),            
+            "fatJets"         : NTupleCollection("FatJet",  fatJetType,  15, help="AK8 jets, sorted by pt"),
+            #"reclusteredFatJets" : NTupleCollection("RCFatJet",     fourVectorType,20, help="FatJets reclusterd from ak4 cleanJetsAll"),
+            ##------------------------------------------------
             "ivf"       : NTupleCollection("SV",     svType, 20, help="SVs from IVF"),
             "genBHadrons"  : NTupleCollection("GenBHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level B hadrons"),
             "genDHadrons"  : NTupleCollection("GenDHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level D hadrons"),
-        })
+})
 
-        ## Book the variables, but only if we're called explicitly and not through a base class
-        if cfg_ana.name == "treeProducerSusySingleLepton":
-            self.initDone = True
-            self.declareVariables()
