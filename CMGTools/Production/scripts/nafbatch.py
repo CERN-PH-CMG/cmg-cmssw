@@ -7,55 +7,10 @@ import os
 import shutil
 import pickle
 import math
+
 from CMGTools.Production.batchmanager import BatchManager
-
-def chunks(l, n):
-    return [l[i:i+n] for i in range(0, len(l), n)]
-
-def split(comps):
-    # import pdb; pdb.set_trace()
-    splitComps = []
-    for comp in comps:
-        if hasattr( comp, 'splitFactor') and comp.splitFactor>1:
-            chunkSize = len(comp.files) / comp.splitFactor
-            if len(comp.files) % comp.splitFactor:
-                chunkSize += 1
-            # print 'chunk size',chunkSize, len(comp.files), comp.splitFactor
-            for ichunk, chunk in enumerate( chunks( comp.files, chunkSize)):
-                newComp = copy.deepcopy(comp)
-                newComp.files = chunk
-                newComp.name = '{name}_Chunk{index}'.format(name=newComp.name,
-                                                       index=ichunk)
-                splitComps.append( newComp )
-        else:
-            splitComps.append( comp )
-    return splitComps
-
-
-def batchScriptCERN( index, remoteDir=''):
-   '''prepare the LSF version of the batch script, to run on LSF'''
-   script = """#!/bin/bash
-#BSUB -q 8nm
-echo 'environment:'
-echo
-env
-# ulimit -v 3000000 # NO
-echo 'copying job dir to worker'
-cd $CMSSW_BASE/src
-eval `scramv1 ru -sh`
-# cd $LS_SUBCWD
-# eval `scramv1 ru -sh`
-cd -
-cp -rf $LS_SUBCWD .
-ls
-cd `find . -type d | grep /`
-echo 'running'
-python $CMSSW_BASE/src/CMGTools/RootTools/python/fwlite/Looper.py config.pck
-echo
-echo 'sending the job directory back'
-cp -r Loop/* $LS_SUBCWD
-"""
-   return script
+#from PhysicsTools.HeppyCore.utils.batchmanager import BatchManager
+from PhysicsTools.HeppyCore.framework.heppy import split
 
 def batchScriptNAF( jobDir='/nfs/dust/cms/user/lobanov/SUSY/Run2/CMG/CMSSW_7_0_6_patch1/src/CMGTools/TTHAnalysis/cfg/output_Directory/TTJets_PU20bx25_V52'):
    '''prepare the NAF version of the batch script, to run on NAF'''
@@ -67,7 +22,7 @@ def batchScriptNAF( jobDir='/nfs/dust/cms/user/lobanov/SUSY/Run2/CMG/CMSSW_7_0_6
 ## the maximum memory usage of this job
 #$ -l h_vmem=1900M
 ## operating system
-##$ -l distro=sld5
+#$ -l distro=sld6
 ## architecture
 ##$ -l arch=amd64
 ## stderr and stdout are merged together to stdout
@@ -84,23 +39,24 @@ def batchScriptNAF( jobDir='/nfs/dust/cms/user/lobanov/SUSY/Run2/CMG/CMSSW_7_0_6
 #append Job directory
    script += jobDir
    script += """
-##$ -v OUTDIR=/afs/desy.de/user/l/lobanov/calib/Batch/
 ## define dir for stdout
 #$ -o """
 #append log directory
    script += jobDir
    script += """/logs"""
    script += """
-##$ -o /afs/desy.de/user/l/lobanov/calib/Batch/Output
-
 #start of script
 echo job start at `date`
+echo "Running on machine" `uname -a`
+echo $(lsb_release -a | grep Description)
+echo "Locating in" `pwd`
 
-#echo 'copying job dir to worker'
-cd $CMSSW_BASE/src
-eval `scramv1 ru -sh`
-# cd $LS_SUBCWD
-# eval `scramv1 ru -sh`
+#cd $CMSSW_BASE/src
+eval `/cvmfs/cms.cern.ch/common/scramv1 runtime -sh`
+echo "CMSSW version:" $CMSSW_VERSION
+echo "CMSSW base:" $CMSSW_BASE
+echo "Python version" `python --version`
+
 cd $OUTDIR
 TaskID=$((SGE_TASK_ID+1))
 #cd *_Chunk$TaskID
@@ -108,8 +64,8 @@ JobDir=$(find . -maxdepth 1 -type d ! -name "logs" | sed ''$TaskID'q;d')
 echo "Changing to job dir" $JobDir
 cd $JobDir
 
-echo 'running in dir' `pwd`
-python $CMSSW_BASE/src/CMGTools/RootTools/python/fwlite/Looper.py config.pck
+echo 'Running in dir' `pwd`
+python $CMSSW_BASE/src/PhysicsTools/HeppyCore/python/framework/looper.py pycfg.py config.pck
 echo
 echo job end at `date`
 """
@@ -120,7 +76,7 @@ def batchScriptLocal(  remoteDir, index ):
 
    script = """#!/bin/bash
 echo 'running'
-python $CMSSW_BASE/src/CMGTools/RootTools/python/fwlite/Looper.py config.pck
+python $CMSSW_BASE/src/PhysicsTools/HeppyCore/python/framework/looper.py pycfg.py config.pck
 echo
 echo 'sending the job directory back'
 mv Loop/* ./
@@ -165,10 +121,10 @@ class MyBatchManager( BatchManager ):
            os.system('chmod +x %s' % scriptFileName)
 
        shutil.copyfile(cfgFileName, jobDir+'/pycfg.py')
-       jobConfig = copy.deepcopy(config)
-       jobConfig.components = [ components[value] ]
+#      jobConfig = copy.deepcopy(config)
+#      jobConfig.components = [ components[value] ]
        cfgFile = open(jobDir+'/config.pck','w')
-       pickle.dump( jobConfig, cfgFile )
+       pickle.dump(  components[value] , cfgFile )
        # pickle.dump( cfo, cfgFile )
        cfgFile.close()
 
