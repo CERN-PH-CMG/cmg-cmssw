@@ -6,6 +6,6 @@ import FWCore.ParameterSet.Config as cms
 
 cmgDiTauSel = cms.EDFilter(
     "PATCompositeCandidateSelector",
-    src = cms.InputTag("cmgDiTau"),
+    src = cms.InputTag("cmgDiTauCorSVFitPreSel"),
     cut = cms.string("")
     )

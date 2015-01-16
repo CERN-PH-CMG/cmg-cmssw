@@ -1,22 +1,20 @@
 import FWCore.ParameterSet.Config as cms
 
-cmgMuEleCorFactory = cms.PSet(
-    # leg1 and leg2 are dummy collections here
-    leg1Collection = cms.InputTag(''),
-    leg2Collection = cms.InputTag(''),
-    metCollection = cms.InputTag('recoilCorrectedMET'),
-    diObjectCollection = cms.InputTag('cmgMuEleSel'),
-    nSigma              = cms.double(0),
-    uncertainty         = cms.double(0.03),
-    shift1ProngNoPi0    = cms.double(0.),
-    shift1Prong1Pi0     = cms.double(0.),
-    ptDependence1Pi0    = cms.double(0.),
-    shift3Prong         = cms.double(0.),
-    ptDependence3Prong  = cms.double(0.)
-)
+# JAN - currently doesn't make sense for mu-ele as no hadronic tau 
+# corrections are needed in the mu-ele channel, but this should be replaced
+# by something like an electron 
 
-cmgMuEleCor = cms.EDFilter(
-    "MuEleUpdatePOProducer",
-    cfg = cmgMuEleCorFactory.clone(),
-    cuts = cms.PSet()
-    )
+cmgMuEleCor = cms.EDProducer(
+    "MuEleUpdateProducer",
+    diObjectCollection  = cms.InputTag('cmgMuEle'),
+    genCollection = cms.InputTag('prunedGenParticles'),
+    nSigma              = cms.double(0),
+    uncertainty         = cms.double(0.03), # 2012: 0.03
+    shift1ProngNoPi0    = cms.double(0.),
+    shift1Prong1Pi0     = cms.double(0.), # 2012: 0.012
+    ptDependence1Pi0    = cms.double(0.),
+    shift3Prong         = cms.double(0.), # 2012: 0.012
+    ptDependence3Prong  = cms.double(0.),
+    shiftMet = cms.bool(True),
+    shiftTaus = cms.bool(True)
+)

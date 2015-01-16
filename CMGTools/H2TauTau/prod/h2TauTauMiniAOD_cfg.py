@@ -1,5 +1,12 @@
 import FWCore.ParameterSet.Config as cms
 
+from CMGTools.Production.datasetToSource import datasetToSource
+from CMGTools.H2TauTau.tools.setupJSON import setupJSON
+# from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
+from CMGTools.H2TauTau.tools.setupEmbedding import setupEmbedding
+from CMGTools.H2TauTau.objects.jetreco_cff import addAK4Jets
+from CMGTools.H2TauTau.tools.setupOutput import addTauMuOutput, addTauEleOutput, addDiTauOutput, addMuEleOutput
+
 sep_line = '-'*70
 
 process = cms.Process("H2TAUTAU")
@@ -9,16 +16,13 @@ process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 numberOfFilesToProcess = -1
 debugEventContent = False
 
-# tau-mu, tau-ele, di-tau, all
-channel = 'all' # 'tau-mu' #'di-tau' 'all' 'tau-ele'
-jetRecalib = False
-useCHS = False
+# choose from 'tau-mu' 'di-tau' 'tau-ele' 'mu-ele' 'all'
+channel = 'all'
 
 # newSVFit enables the svfit mass reconstruction used for the H->tau tau analysis.
 # if false, much faster processing but mass is wrong. 
 newSVFit = True
-tauScaling = 0
-applyESCorr = True
+tauScaling = 0 # JAN: to be implemented downstream
 
 # increase to 1000 before running on the batch, to reduce size of log files
 # on your account
@@ -26,8 +30,6 @@ reportInterval = 1
 
 print sep_line
 print 'channel', channel
-print 'jet recalib', jetRecalib
-print 'useCHS', useCHS
 print 'newSVFit', newSVFit
 print 'tau scaling =', tauScaling
 
@@ -41,7 +43,7 @@ dataset_user = 'CMS'
 dataset_name = '/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/Phys14DR-PU40bx25_PHYS14_25_V1-v1/MINIAODSIM'
 dataset_files = '.*root'
 
-from CMGTools.Production.datasetToSource import datasetToSource
+
 process.source = datasetToSource(
     dataset_user,
     dataset_name,
@@ -62,7 +64,6 @@ if numberOfFilesToProcess>0:
 runOnMC = process.source.fileNames[0].find('Run201')==-1 and process.source.fileNames[0].find('embedded')==-1
 
 if runOnMC == False:
-    from CMGTools.H2TauTau.tools.setupJSON import setupJSON
     json = setupJSON(process)
 
 
@@ -71,12 +72,11 @@ process.load('CMGTools.H2TauTau.h2TauTau_cff')
 
 # JAN: recoil correction disabled for now; reactivate if necessary
 # setting up the recoil correction according to the input file
-# from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
 # recoilEnabled = False
 # setupRecoilCorrection( process, runOnMC,
 #                        enable=recoilEnabled, is53X=isNewerThan('CMSSW_5_2_X'))
 
-from CMGTools.H2TauTau.tools.setupEmbedding import setupEmbedding
+
 
 isEmbedded = setupEmbedding(process, channel)
 addAK4 = True
@@ -95,8 +95,6 @@ process.load('TrackingTools.TransientTrack.TransientTrackBuilder_cfi')
 process.load('RecoBTag.Configuration.RecoBTag_cff')
 
 if addAK4:
-    from CMGTools.H2TauTau.objects.jetreco_cff import addAK4Jets
-
     addAK4Jets(process)
     process.mvaMetInputPath.insert(0, process.jetSequenceAK4)
 
@@ -118,7 +116,7 @@ if channel=='all':
         process.mvaMetInputPath,
         process.tauMuPath,
         process.tauElePath,
-        # process.muElePath,    
+        process.muElePath,    
         process.diTauPath,
         process.outpath
         )
@@ -143,52 +141,22 @@ elif channel=='di-tau':
 else:
     raise ValueError('unrecognized channel')    
 
-
-print sep_line
-print 'INPUT:'
-print sep_line
-print process.source.fileNames
-print
-if runOnMC==False:
-    print 'json:', json
-print
-print sep_line
-print 'PROCESSING'
-print sep_line
-print 'runOnMC:', runOnMC
-print 
-print sep_line
-print 'OUTPUT:'
-print sep_line
-justn = 30 
-# print 'baseline selection EDM output'.ljust(justn), baselineName
-# print 'basic selection EDM output'.ljust(justn), basicName
-# print 'histograms output'.ljust(justn), histName 
-# print 'Debug event content'.ljust(justn), debugEventContent
-
 ### Enable printouts like this:
 # process.cmgTauMuCorSVFitPreSel.verbose = True
-# process.mvaMETTauMu.verbose = True
-# process.recoilCorMETTauMu.verbose= True
 
-# systematic shift on tau energy scale 
-# process.cmgTauScaler.cfg.nSigma = tauScaling
-
-from CMGTools.H2TauTau.tools.setupOutput import addTauMuOutput, addTauEleOutput, addDiTauOutput
 if channel=='tau-mu' or channel=='all':
-    addTauMuOutput( process, debugEventContent, addPreSel=False)
+    addTauMuOutput(process, debugEventContent, addPreSel=False)
 if channel=='tau-ele' or channel=='all':
-    addTauEleOutput( process, debugEventContent, addPreSel=False)
-## if channel=='mu-ele' or channel=='all':
-##     addMuEleOutput( process, debugEventContent, addPreSel=False)
+    addTauEleOutput(process, debugEventContent, addPreSel=False)
+if channel=='mu-ele' or channel=='all':
+    addMuEleOutput(process, debugEventContent, addPreSel=False)
 if channel=='di-tau' or channel=='all':
-    addDiTauOutput( process, debugEventContent, addPreSel=False)
-
+    addDiTauOutput(process, debugEventContent, addPreSel=False)
 
 # Message logger setup.
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = reportInterval
-process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
+process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(False))
 
 if newSVFit:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 2
@@ -198,3 +166,17 @@ else:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 1
     process.cmgTauEleCorSVFitPreSel.SVFitVersion = 1
     process.cmgDiTauCorSVFitPreSel.SVFitVersion = 1
+
+print sep_line
+print 'INPUT:'
+print sep_line
+print process.source.fileNames
+print
+if not runOnMC:
+    print 'json:', json
+print
+print sep_line
+print 'PROCESSING'
+print sep_line
+print 'runOnMC:', runOnMC
+print 

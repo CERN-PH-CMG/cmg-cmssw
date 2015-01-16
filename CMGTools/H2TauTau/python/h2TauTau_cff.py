@@ -3,8 +3,9 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.H2TauTau.objects.tauMuObjectsMVAMET_cff import tauMuSequence
 from CMGTools.H2TauTau.objects.tauEleObjectsMVAMET_cff import tauEleSequence
 from CMGTools.H2TauTau.objects.diTauObjectsMVAMET_cff import diTauSequence
+from CMGTools.H2TauTau.objects.muEleObjectsMVAMET_cff import muEleSequence
 
-from CMGTools.H2TauTau.skims.skim_cff import tauMuFullSelSkimSequence, tauEleFullSelSkimSequence, diTauFullSelSkimSequence
+from CMGTools.H2TauTau.skims.skim_cff import tauMuFullSelSkimSequence, tauEleFullSelSkimSequence, diTauFullSelSkimSequence, muEleFullSelSkimSequence
 
 
 # Need to explicitly import all modules in all sequences for cms.load(..)
@@ -16,10 +17,11 @@ from CMGTools.H2TauTau.objects.tauMuObjectsMVAMET_cff import mvaMETTauMu, cmgTau
 
 from CMGTools.H2TauTau.objects.tauEleObjectsMVAMET_cff import mvaMETTauEle, cmgTauEle, cmgTauEleCor, cmgTauEleTauPtSel, cmgTauEleCorSVFitPreSel, cmgTauEleCorSVFitFullSel, tauEleMVAMetSequence, tauPreSelectionTauEle, electronPreSelectionTauEle
 
-
 from CMGTools.H2TauTau.objects.diTauObjectsMVAMET_cff import mvaMETDiTau, cmgDiTau, cmgDiTauCor, cmgDiTauTauPtSel, cmgDiTauCorSVFitPreSel, cmgDiTauCorSVFitFullSel, diTauMVAMetSequence, tauPreSelectionDiTau
 
-from CMGTools.H2TauTau.skims.skim_cff import tauMuFullSelCount, tauEleFullSelCount, diTauFullSelCount
+from CMGTools.H2TauTau.objects.muEleObjectsMVAMET_cff import mvaMETMuEle, cmgMuEle, cmgMuEleCor, cmgMuEleTauPtSel, cmgMuEleCorSVFitPreSel, cmgMuEleCorSVFitFullSel, muEleMVAMetSequence, muonPreSelectionMuEle, electronPreSelectionMuEle
+
+from CMGTools.H2TauTau.skims.skim_cff import tauMuFullSelCount, tauEleFullSelCount, diTauFullSelCount, muEleFullSelCount
 
 
 # MVA MET Inputs
@@ -28,8 +30,6 @@ mvaMetInputPath = cms.Path(
     )
 
 # tau-mu ---
-
-# full selection
 tauMuPath = cms.Path(
     # metRegressionSequence + 
     tauMuSequence + 
@@ -37,8 +37,6 @@ tauMuPath = cms.Path(
     )
 
 # tau-ele ---
-
-# full selection
 tauElePath = cms.Path(
     # metRegressionSequence + 
     tauEleSequence + 
@@ -46,11 +44,14 @@ tauElePath = cms.Path(
     )
 
 # tau-tau ---
-
-# full selection
 diTauPath = cms.Path(
     # metRegressionSequence + 
     diTauSequence +
     diTauFullSelSkimSequence     
     )
 
+# mu-ele ---
+muElePath = cms.Path(
+    muEleSequence +
+    muEleFullSelSkimSequence     
+    )

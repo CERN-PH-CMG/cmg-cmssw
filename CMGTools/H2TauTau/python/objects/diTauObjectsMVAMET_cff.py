@@ -51,9 +51,7 @@ diTauMVAMetSequence = cms.Sequence(
 # SVFit ----------------------------------------------------------------
 cmgDiTauCorSVFitPreSel = diTauSVFit.clone()
 
-cmgDiTauCorSVFitFullSel = cmgDiTauSel.clone(src = 'cmgDiTauCorSVFitPreSel',
-                                            cut = '',
-                                            ) 
+cmgDiTauCorSVFitFullSel = cmgDiTauSel.clone() 
 
 diTauSequence = cms.Sequence(   
     tauPreSelectionDiTau +   
