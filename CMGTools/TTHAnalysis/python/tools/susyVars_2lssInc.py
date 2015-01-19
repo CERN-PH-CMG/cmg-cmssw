@@ -4,6 +4,10 @@ class SusyVars2LSSInc:
     def __init__(self):
         self.branches = [ "iL1", "iL2", "iL1T", "iL2T",
                           "mZ1cut10LL","mZ1cut10TL","minMllAFASTL","minMllAFOSTL","minMllSFOSTL",
+                          "nLepGood10T", "nLepGood10noBJet40", "nLepGood10noBJet25", 
+                          "nLepGood10relIso04sip10",
+                          "nLepGood10relIso04sip10noBJet25",
+                          "nBJetMedium40LepRec", "nBJetMedium25LepRec", 
                           "htJet25je08", "htJet25je12", "htJet25j",
                           "htJet40je08", "htJet40je12"  ]
     def listBranches(self):
@@ -84,6 +88,13 @@ class SusyVars2LSSInc:
         ret['htJet25je12'] = sum([j.pt for j in jets if (j.pt > 25 and abs(j.eta) < 1.2)])
         ret['htJet40je08'] = sum([j.pt for j in jets if (j.pt > 40 and abs(j.eta) < 0.8)])
         ret['htJet40je12'] = sum([j.pt for j in jets if (j.pt > 40 and abs(j.eta) < 1.2)])
+        ret['nLepGood10T'] = sum([(self.lepId(l)) for l in leps ])
+        ret['nLepGood10noBJet40'] = sum([((l.jetBTagCSV<0.814 or l.pt/l.jetPtRatio<=40) and l.pt > 10) for l in leps ])
+        ret['nLepGood10noBJet25'] = sum([((l.jetBTagCSV<0.814 or l.pt/l.jetPtRatio<=25) and l.pt > 10) for l in leps ])
+        ret['nLepGood10relIso04sip10'] = sum([(l.relIso03<0.4 and l.sip3d < 10 and l.pt > 10) for l in leps ])
+        ret['nLepGood10relIso04sip10noBJet25'] = sum([(l.relIso03<0.4 and l.sip3d < 10 and l.pt > 10 and (l.jetBTagCSV<0.814 or l.pt/l.jetPtRatio<=25)) for l in leps ])
+        ret['nBJetMedium40LepRec'] = event.nBJetMedium40 + sum([(l.jetBTagCSV>0.814 and l.pt/l.jetPtRatio>40) for l in leps ])
+        ret['nBJetMedium25LepRec'] = event.nBJetMedium25 + sum([(l.jetBTagCSV>0.814 and l.pt/l.jetPtRatio>25) for l in leps ])
         return ret
 
 if __name__ == '__main__':
