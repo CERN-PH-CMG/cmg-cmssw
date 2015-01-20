@@ -94,9 +94,13 @@ jetTypeSusyExtra = NTupleObjectType("jetSusyExtra",  baseObjectTypes = [ jetType
 fatJetType = NTupleObjectType("fatJet",  baseObjectTypes = [ jetType ], variables = [
     NTupleVariable("prunedMass",  lambda x : x.userFloat("ak8PFJetsCHSPrunedLinks"),  float, help="pruned mass"),
     NTupleVariable("trimmedMass", lambda x : x.userFloat("ak8PFJetsCHSTrimmedLinks"), float, help="trimmed mass"),
+    NTupleVariable("filteredMass", lambda x : x.userFloat("ak8PFJetsCHSFilteredLinks"), float, help="filtered mass"),
     NTupleVariable("tau1", lambda x : x.userFloat("NjettinessAK8:tau1"), float, help="1-subjettiness"),
     NTupleVariable("tau2", lambda x : x.userFloat("NjettinessAK8:tau2"), float, help="2-subjettiness"),
     NTupleVariable("tau3", lambda x : x.userFloat("NjettinessAK8:tau3"), float, help="3-subjettiness"),
+    NTupleVariable("topMass", lambda x : (x.tagInfo("caTop").properties().topMass if x.tagInfo("caTop") else -99), float, help="CA8 jet topMass"),
+    NTupleVariable("minMass", lambda x : (x.tagInfo("caTop").properties().minMass if x.tagInfo("caTop") else -99), float, help="CA8 jet minMass"),
+    NTupleVariable("nSubJets", lambda x : (x.tagInfo("caTop").properties().nSubJets if x.tagInfo("caTop") else -99), float, help="CA8 jet nSubJets"),
 ])
       
 ##------------------------------------------  

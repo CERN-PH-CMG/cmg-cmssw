@@ -97,6 +97,31 @@ class ComponentCreator(object):
         )
         return component
 
+    def getFilesFromLocal(self,name,dataset,path,pattern=".*root"):
+        from CMGTools.Production.dataset import getDatasetFromCache, writeDatasetToCache
+        if "%" in path: path = path % dataset;
+        try:
+            files = getDatasetFromCache('Local%{path}%{pattern}.pck'.format(path = path.replace('/','_'), pattern = pattern))
+        except IOError:
+            files = [ x for x in eostools.listFiles(path,True) if re.match(pattern,x) ] 
+            if len(files) == 0:
+                raise RuntimeError, "ERROR making component %s: no files found under %s matching '%s'" % (name,path,pattern)
+            writeDatasetToCache('Local%{path}%{pattern}.pck'.format(path = path.replace('/','_'), pattern = pattern), files)
+        return files
+
+    def makeMCComponentFromLocal(self,name,dataset,path,pattern=".*root",xSec=1):
+        component = cfg.MCComponent(
+            dataset=dataset,
+            name = name,
+            files = self.getFilesFromLocal(name,dataset,path,pattern),
+            xSection = xSec,
+            nGenEvents = 1,
+            triggers = [],
+            effCorrFactor = 1,
+        )
+        return component
+
+
     def makeDataComponent(self,name,datasets,user,pattern,json=None):
          files=[]
 

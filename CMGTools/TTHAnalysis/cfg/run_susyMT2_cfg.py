@@ -20,6 +20,7 @@ lepAna.loose_electron_dz     = 0.2
 lepAna.loose_electron_relIso = 0.15
 lepAna.loose_electron_lostHits = 999 # no cut
 lepAna.inclusive_electron_lostHits = 999 # no cut
+lepAna.mu_isoCorr = "deltaBeta"
 lepAna.ele_isoCorr = "deltaBeta"
 lepAna.ele_tightId = "Cuts_2012"
 lepAna.notCleaningElectrons = True
@@ -30,7 +31,7 @@ jetAna.doPuId = False
 jetAna.jetEta = 5.2
 jetAna.jetEtaCentral = 2.5
 jetAna.jetPt = 10.
-jetAna.recalibrateJets = False
+jetAna.recalibrateJets = True
 jetAna.jetLepDR = 0.4
 jetAna.smearJets = False
 jetAna.jetGammaDR = 0.4
@@ -51,6 +52,9 @@ photonAna.gammaID = "PhotonCutBasedIDLoose_CSA14"
 
 # Isolated Track
 isoTrackAna.setOff=False
+
+# recalibrate MET
+metAna.recalibrate = False
 
 ##------------------------------------------ 
 ##  CONTROL VARIABLES
@@ -78,13 +82,13 @@ ttHTopoJetAna = cfg.Analyzer(
 ##  PRODUCER
 ##------------------------------------------
 
-from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import triggers_HT900, triggers_MET170, triggers_HTMET, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_mue, triggers_1mu, triggers_photon155
+from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import triggers_HT900, triggers_MET170, triggers_HTMET, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_mue, triggers_1mu, triggers_photon155,triggers_1mu_isolow
 
 triggerFlagsAna.triggerBits = {
-            'HT650' : triggers_HT900,
-            'MET150' : triggers_MET170,
-            'ht350met100' : triggers_HTMET,
-            'SingleMu' : triggers_1mu,
+            'HT900' : triggers_HT900,
+            'MET170' : triggers_MET170,
+            'ht350met120' : triggers_HTMET,
+            'SingleMu' : triggers_1mu_isolow,
             'DoubleMu' : triggers_MT2_mumu,
             'DoubleEl' : triggers_MT2_ee,
             'MuEG'     : triggers_MT2_mue,
@@ -107,7 +111,11 @@ treeProducer = cfg.Analyzer(
      collections = susyFullHad_collections,
 )
 
-sequence = cfg.Sequence(susyCoreSequence+[
+
+susyCoreSequence.insert(susyCoreSequence.index(skimAnalyzer),
+                        susyCounter)
+sequence = cfg.Sequence(
+    susyCoreSequence+[
     ttHMT2Control,
     ttHTopoJetAna,
     ttHFatJetAna,
@@ -161,8 +169,13 @@ if test==1:
     ## 50 ns ttbar CSAv2
     #    comp=TTJets
     ## 25 ns ttbar PHYS14
-    comp = TTJets
-    comp.files = comp.files[:1]
+#    comp = TTJets
+#    comp.files = comp.files[:1]
+
+#    comp=TTJets
+#    comp.files = ['/afs/cern.ch/work/d/dalfonso/public/ttjets_miniaodsim_00C90EFC-3074-E411-A845-002590DB9262.root']
+    comp=GJets_HT200to400
+    comp.files = ['/afs/cern.ch/work/d/dalfonso/public/gjets_ht200to400_miniaodsim_060B8ED3-8571-E411-A2CD-002590D0AFEA.root']
     selectedComponents = [comp]
     comp.splitFactor = 10
 elif test==2:
@@ -173,11 +186,20 @@ elif test==2:
         comp.files = comp.files[:]
         #comp.files = comp.files[:1]
 
+from PhysicsTools.HeppyCore.framework.services.tfile import TFileService 
+output_service = cfg.Service(
+      TFileService,
+      'outputfile',
+      name="outputfile",
+      fname='mt2.root',
+      option='recreate'
+    )
+
 # the following is declared in case this cfg is used in input to the heppy.py script                                                                                                                   
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence,
-                     services = [],
+                     services = [output_service],
                      events_class = Events)
 
 #printComps(config.components, True)
