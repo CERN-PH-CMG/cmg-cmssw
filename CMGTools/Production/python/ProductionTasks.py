@@ -208,7 +208,7 @@ class FindOnCastor(Task):
             return {'Topdir':None,'Directory':None}
         topdir = castortools.lfnToCastor(castorBaseDir(user=self.user))
         directory = '%s/%s' % (topdir,self.dataset)
-        directory = directory.replace('//','/')
+        # directory = directory.replace('//','/')
         if not castortools.fileExists(directory):
             if hasattr(self,'create') and self.create:
                 castortools.createCastorDir(directory)
