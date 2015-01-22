@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-slimmedPhotonsFromMiniAOD = cms.EDProducer("PATPhotonSlimmer",
+slimmedPhotons = cms.EDProducer("PATPhotonSlimmer",
     src = cms.InputTag("slimmedPhotons"),
     dropSuperCluster = cms.string("0"), # always keep SC?   # ! (r9()>0.8 || chargedHadronIso()<20 || chargedHadronIso()<0.3*pt())"), # you can put a cut to slim selectively, e.g. pt < 10
     dropBasicClusters = cms.string("0"), # you can put a cut to slim selectively, e.g. pt < 10
