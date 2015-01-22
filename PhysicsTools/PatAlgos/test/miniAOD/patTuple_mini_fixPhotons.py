@@ -58,6 +58,8 @@ process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
 )
 
 # Additional output definition
+process.MINIAODSIMoutput.outputCommands.append("drop *_slimmedPhotons_*_PAT")
+process.MINIAODSIMoutput.outputCommands.append("keep *_slimmedPhotons_*_REPAT")
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
@@ -74,7 +76,7 @@ process.MINIAODSIMoutput_step = cms.EndPath(process.MINIAODSIMoutput)
 
 # reslimming photons
 process.load('PhysicsTools.PatAlgos.slimming.slimmedPhotonsFromMiniAOD_cfi')
-process.photon_reslimming = cms.Path(process.slimmedPhotonsFromMiniAOD)
+process.photon_reslimming = cms.Path(process.slimmedPhotons)
 
 # customisation of the process.
 
