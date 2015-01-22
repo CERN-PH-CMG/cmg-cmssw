@@ -10,7 +10,8 @@ slimmedPhotonsFromMiniAOD = cms.EDProducer("PATPhotonSlimmer",
     linkToPackedPFCandidates = cms.bool(False),
     recoToPFMap = cms.InputTag("reducedEgamma","reducedPhotonPfCandMap"),
     packedPFCandidates = cms.InputTag("packedPFCandidates"),
-    saveNonZSClusterShapes = cms.string("(r9()>0.8 || chargedHadronIso()<20 || chargedHadronIso()<0.3*pt())"), # save additional user floats: (sigmaIetaIeta,sigmaIphiIphi,sigmaIetaIphi,r9,e1x5_over_e5x5)_NoZS 
+    #saveNonZSClusterShapes = cms.string("(r9()>0.8 || chargedHadronIso()<20 || chargedHadronIso()<0.3*pt())"), # save additional user floats: (sigmaIetaIeta,sigmaIphiIphi,sigmaIetaIphi,r9,e1x5_over_e5x5)_NoZS 
+    saveNonZSClusterShapes = cms.string("1"),
     reducedBarrelRecHitCollection = cms.InputTag("reducedEgamma","reducedEBRecHits"),
     reducedEndcapRecHitCollection = cms.InputTag("reducedEgamma","reducedEERecHits"),
 )
