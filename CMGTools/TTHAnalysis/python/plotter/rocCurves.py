@@ -10,12 +10,18 @@ def hist2ROC1d(hsig,hbg):
     if hsig.GetMean() > hbg.GetMean():
         si.reverse(); bi.reverse()
     sums,sumb = sum(si), sum(bi)
+    if sums == 0 or sumb == 0: 
+        return None
     for i in xrange(1,bins): 
         si[i] += si[i-1]
         bi[i] += bi[i-1]
     fullsi, fullbi = si[:], bi[:]
     si, bi = [], [];
     for i in xrange(1,bins):
+        # skip negative weights
+        if len(si) > 0 and (fullsi[i] < si[-1] or fullbi[i] < bi[-1]):
+            continue
+        # skip repetitions
         if fullsi[i] != fullsi[i-1] or fullbi[i] != fullbi[i-1]:
             si.append(fullsi[i])
             bi.append(fullbi[i])
@@ -63,8 +69,10 @@ def makeROC(plotmap,mca,sname="signal",bname="background"):
     bkg = plotmap[bname]
     if sig.ClassName() == "TH1F":
         ret = hist2ROC1d(sig,bkg)
+        if not ret: return ret
     elif sig.ClassName() == "TH2F":
         ret = hist2ROC2d(sig,bkg)
+        if not ret: return ret
     else: raise RuntimeError, "Can't make a ROC from a "+sig.ClassName()
     ret.GetXaxis().SetTitle("Eff Background")
     ret.GetYaxis().SetTitle("Eff Signal")
@@ -124,6 +132,7 @@ if __name__ == "__main__":
     parser.add_option("--groupBy",  dest="groupBy",  default="process",  type="string", help="Group by: variable, process")
     (options, args) = parser.parse_args()
     options.globalRebin = 1
+    options.allowNegative = True # with the fine bins used in ROCs, one otherwise gets nonsensical results
     mca  = MCAnalysis(args[0],options)
     signals = mca.listSignals() if options.splitSig else [ "signal" ]
     backgrounds = mca.listBackgrounds() if options.splitBkg else [ "background" ]
@@ -147,6 +156,7 @@ if __name__ == "__main__":
                 else:
                     mytitle = "%s/%s" % (mca.getProcessOption(sig,"Label",sig),mca.getProcessOption(bkg,"Label",bkg)) 
                 roc = makeROC(pmap,mca,sname=sig,bname=bkg)
+                if not roc: continue
                 color = mca.getProcessOption(ptitle,"FillColor",SAFE_COLOR_LIST[i]) if ptitle else SAFE_COLOR_LIST[i]
                 if roc.GetN() > 1 and roc.dim == 1 and not plot.getOption("Discrete",False):
                     roc.SetLineColor(color)
@@ -161,6 +171,7 @@ if __name__ == "__main__":
                     roc.style = "P"
                 roc.SetName("%s_%s_%s" % (plot.name,s,b))
                 rocs.append((mytitle,roc))
+            if len(rocs) == 0: continue
             stackRocks(myname,outfile,rocs,options.xtitle,options.ytitle,options)
     if "process" in options.groupBy:
         for (sig,bkg) in [(s,b) for s in signals for b in backgrounds ]:
@@ -177,6 +188,7 @@ if __name__ == "__main__":
             for i,plot in enumerate(plots):
                 pmap = pmaps[i]
                 roc = makeROC(pmap,mca,sname=sig,bname=bkg)
+                if not roc: continue
                 if roc.GetN() > 1 and roc.dim == 1 and not plot.getOption("Discrete",False):
                     roc.SetLineColor(plot.getOption("LineColor",SAFE_COLOR_LIST[i]))
                     roc.SetMarkerColor(plot.getOption("LineColor",SAFE_COLOR_LIST[i]))
@@ -189,8 +201,11 @@ if __name__ == "__main__":
                     roc.SetMarkerStyle(plot.getOption("MarkerStyle",20 if roc.dim == 1 else 7))
                     roc.SetMarkerSize(plot.getOption("MarkerSize",1.0))
                     roc.style = "P"
+                #for ipoint in xrange(roc.GetN()):
+                #    print "%-20s %6d    %.5f %.5f" % (plot.name,ipoint,roc.GetX()[ipoint],roc.GetY()[ipoint])
                 roc.SetName(plot.name)
                 rocs.append((plot.getOption("Title",plot.name),roc))
+            if len(rocs) == 0: continue
             stackRocks(myname,outfile,rocs,xtit,ytit,options)
     outfile.Close()
 
