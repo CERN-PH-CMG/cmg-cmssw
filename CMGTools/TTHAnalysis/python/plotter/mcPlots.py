@@ -125,7 +125,7 @@ def doDataNorm(pspec,pmap):
     sig.Draw("HIST SAME")
     return sig
 
-def doStackSignalNorm(pspec,pmap,individuals,extrascale=1.0):
+def doStackSignalNorm(pspec,pmap,individuals,extrascale=1.0,norm=True):
     total = sum([v.Integral() for k,v in pmap.iteritems() if k != 'data' and not hasattr(v,'summary')])
     if options.noStackSig:
         total = sum([v.Integral() for k,v in pmap.iteritems() if not hasattr(v,'summary') and mca.isBackground(k) ])
@@ -136,7 +136,7 @@ def doStackSignalNorm(pspec,pmap,individuals,extrascale=1.0):
             sig.SetFillStyle(0)
             sig.SetLineColor(sig.GetFillColor())
             sig.SetLineWidth(4)
-            sig.Scale(total*extrascale/sig.Integral())
+            if norm: sig.Scale(total*extrascale/sig.Integral())
             sig.Draw("HIST SAME")
             sigs.append(sig)
         return sigs
@@ -149,7 +149,7 @@ def doStackSignalNorm(pspec,pmap,individuals,extrascale=1.0):
         sig.SetFillStyle(0)
         sig.SetLineColor(206)
         sig.SetLineWidth(4)
-        if sig.Integral() > 0:
+        if norm and sig.Integral() > 0:
             sig.Scale(total*extrascale/sig.Integral())
         sig.Draw("HIST SAME")
         return [sig]
@@ -526,8 +526,8 @@ class PlotMaker:
                     if p in pmap: 
                         plot = pmap[p]
                         if plot.Integral() <= 0: continue
-                        if mca.isSignal(p) and options.noStackSig == True: continue 
                         if mca.isSignal(p): plot.Scale(options.signalPlotScale)
+                        if mca.isSignal(p) and options.noStackSig == True: continue 
                         if self._options.plotmode == "stack":
                             stack.Add(plot)
                             total.Add(plot)
@@ -629,8 +629,8 @@ class PlotMaker:
                                   legWidth=options.legendWidth)
                 doTinyCmsPrelim(hasExpo = total.GetMaximum() > 9e4 and not c1.GetLogy(),textSize=(0.045 if doRatio else 0.033))
                 signorm = None; datnorm = None; sfitnorm = None
-                if options.showSigShape or options.showIndivSigShapes: 
-                    signorms = doStackSignalNorm(pspec,pmap,options.showIndivSigShapes,extrascale=options.signalPlotScale)
+                if options.showSigShape or options.showIndivSigShapes or options.showIndivSigs: 
+                    signorms = doStackSignalNorm(pspec,pmap,options.showIndivSigShapes or options.showIndivSigs,extrascale=options.signalPlotScale, norm=not options.showIndivSigs)
                     for signorm in signorms:
                         signorm.SetDirectory(dir); dir.WriteTObject(signorm)
                         reMax(total,signorm,islog)
@@ -686,10 +686,12 @@ class PlotMaker:
                                 dump.write(("%%%ds %%7.0f\n" % (maxlen+1)) % ('DATA', pmap['data'].Integral()))
                             dump.close()
                         else:
-                            if "TH2" in total.ClassName():
+                            if "TH2" in total.ClassName() or "TProfile2D" in total.ClassName():
                                 for p in mca.listSignals(allProcs=True) + mca.listBackgrounds(allProcs=True) + ["signal", "background"]:
                                     if p not in pmap: continue
                                     plot = pmap[p]
+                                    c1.SetRightMargin(0.20)
+                                    plot.SetContour(100)
                                     plot.Draw("COLZ")
                                     c1.Print("%s/%s_%s.%s" % (fdir, pspec.name, p, ext))
                             else:
@@ -705,6 +707,7 @@ def addPlotMakerOptions(parser):
     parser.add_option("--pdir", "--print-dir", dest="printDir", type="string", default="plots", help="print out plots in this directory");
     parser.add_option("--showSigShape", dest="showSigShape", action="store_true", default=False, help="Superimpose a normalized signal shape")
     parser.add_option("--showIndivSigShapes", dest="showIndivSigShapes", action="store_true", default=False, help="Superimpose normalized shapes for each signal individually")
+    parser.add_option("--showIndivSigs", dest="showIndivSigs", action="store_true", default=False, help="Superimpose shapes for each signal individually (normalized to their expected event yield)")
     parser.add_option("--noStackSig", dest="noStackSig", action="store_true", default=False, help="Don't add the signal shape to the stack (useful with --showSigShape)")
     parser.add_option("--showDatShape", dest="showDatShape", action="store_true", default=False, help="Stack a normalized data shape")
     parser.add_option("--showSFitShape", dest="showSFitShape", action="store_true", default=False, help="Stack a shape of background + scaled signal normalized to total data")

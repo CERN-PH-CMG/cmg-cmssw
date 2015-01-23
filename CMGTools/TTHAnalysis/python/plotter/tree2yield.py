@@ -165,6 +165,8 @@ class TreeToYield:
         self._fullYield = fullYield
     def name(self):
         return self._name
+    def cname(self):
+        return self._cname
     def hasOption(self,name):
         return (name in self._settings)
     def getOption(self,name,default=None):
@@ -207,6 +209,10 @@ class TreeToYield:
             tf = self._tree.AddFriend(tf_tree, tf_file.format(name=self._name, cname=self._cname)),
             self._friends.append(tf)
         self._isInit = True
+
+    def getTree(self):
+        if not self._isInit: self._init()
+        return self._tree
     def getYields(self,cuts,noEntryLine=False):
         if not self._isInit: self._init()
         report = []; cut = ""
@@ -304,7 +310,7 @@ class TreeToYield:
         # fold overflow
         if ret.ClassName() in [ "TH1F", "TH1D" ] :
             n = ret.GetNbinsX()
-            if plotspec.getOption('IncludeOverflows',True) and ret.ClassName() != "TProfile":
+            if plotspec.getOption('IncludeOverflows',True) and ("TProfile" not in ret.ClassName()):
                 ret.SetBinContent(1,ret.GetBinContent(0)+ret.GetBinContent(1))
                 ret.SetBinContent(n,ret.GetBinContent(n+1)+ret.GetBinContent(n))
                 ret.SetBinError(1,hypot(ret.GetBinError(0),ret.GetBinError(1)))
@@ -322,6 +328,7 @@ class TreeToYield:
     def getPlotRaw(self,name,expr,bins,cut,plotspec):
         unbinnedData2D = plotspec.getOption('UnbinnedData2D',False) if plotspec != None else False
         profile1D      = plotspec.getOption('Profile1D',False) if plotspec != None else False
+        profile2D      = plotspec.getOption('Profile2D',False) if plotspec != None else False
         if self._options.doS2V:
             expr = scalarToVector(expr)
         if not self._isInit: self._init()
@@ -349,16 +356,23 @@ class TreeToYield:
                     histo = ROOT.TH1F("dummy","dummy",int(nb),float(xmin),float(xmax))
                     canKeys = True
             unbinnedData2D = False
-        elif nvars == 2:
+        elif nvars == 2 or (nvars == 3 and profile2D):
             if bins[0] == "[":
                 xbins, ybins = bins.split("*")
                 xedges = [ float(f) for f in xbins[1:-1].split(",") ]
                 yedges = [ float(f) for f in ybins[1:-1].split(",") ]
-                histo = ROOT.TH2F("dummy","dummy",len(xedges)-1,array('f',xedges),len(yedges)-1,array('f',yedges))
+                if profile2D:
+                    histo = ROOT.TProfile2D("dummy","dummy",len(xedges)-1,array('d',xedges),len(yedges)-1,array('d',yedges))
+                else:
+                    histo = ROOT.TH2F("dummy","dummy",len(xedges)-1,array('f',xedges),len(yedges)-1,array('f',yedges))
             else:
                 (nbx,xmin,xmax,nby,ymin,ymax) = bins.split(",")
-                histo = ROOT.TH2F("dummy","dummy",int(nbx),float(xmin),float(xmax),int(nby),float(ymin),float(ymax))
-                unbinnedData2D = (self._name == "data") and unbinnedData2D
+                if profile2D:
+                    histo = ROOT.TProfile2D("dummy","dummy",int(nbx),float(xmin),float(xmax),int(nby),float(ymin),float(ymax))
+                    unbinnedData2D = False 
+                else:
+                    histo = ROOT.TH2F("dummy","dummy",int(nbx),float(xmin),float(xmax),int(nby),float(ymin),float(ymax))
+                    unbinnedData2D = (self._name == "data") and unbinnedData2D
         elif nvars == 3:
             ez,ey,ex = [ e.replace("--","::") for e in expr.replace("::","--").split(":") ]
             if bins[0] == "[":
@@ -381,7 +395,7 @@ class TreeToYield:
             graph = ROOT.gROOT.FindObject("Graph").Clone(name)
             return graph
         drawOpt = "goff"
-        if profile1D: drawOpt += " PROF";
+        if profile1D or profile2D: drawOpt += " PROF";
         self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummy"), cut, drawOpt)
         if canKeys and histo.GetEntries() > 0 and histo.GetEntries() < self.getOption('KeysPdfMinN',100) and not self._isdata and self.getOption("KeysPdf",False):
             #print "Histogram for %s/%s has %d entries, so will use KeysPdf " % (self._cname, self._name, histo.GetEntries())
