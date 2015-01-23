@@ -27,6 +27,13 @@ class MCAnalysis:
         self._isSignal    = {}
         self._rank        = {} ## keep ranks as in the input text file
         self._projection  = Projections(options.project, options) if options.project != None else None
+        self._premap = []
+        for premap in options.premap:
+            to,fro = premap.split("=")
+            if to[-1] == ":": to = to[:-1]
+            to = to.strip()
+            for k in fro.split(","):
+                self._premap.append((re.compile(k.strip()+"$"), to))
         for line in open(samples,'r'):
             if re.match("\s*#.*", line): continue
             line = re.sub(r"(?<!\\)#.*","",line)  ## regexp black magic: match a # only if not preceded by a \!
@@ -43,17 +50,22 @@ class MCAnalysis:
             if len(field) <= 1: continue
             if "SkipMe" in extra and extra["SkipMe"] == True and not options.allProcesses: continue
             signal = False
-            if field[0][-1] == "+": 
+            pname = field[0]
+            if pname[-1] == "+": 
                 signal = True
-                field[0] = field[0][:-1]
+                pname = pname[:-1]
+            ## if we remap process names, do it
+            for x,newname in self._premap:
+                if re.match(x,pname):
+                    pname = newname
             ## If we have a selection of process names, apply it
             skipMe = (len(options.processes) > 0)
             for p0 in options.processes:
                 for p in p0.split(","):
-                    if re.match(p+"$", field[0]): skipMe = False
+                    if re.match(p+"$", pname): skipMe = False
             for p0 in options.processesToExclude:
                 for p in p0.split(","):
-                    if re.match(p+"$", field[0]): skipMe = True
+                    if re.match(p+"$", pname): skipMe = True
             for p0 in options.filesToExclude:
                 for p in p0.split(","):
                     if re.match(p+"$", field[1]): skipMe = True
@@ -64,7 +76,7 @@ class MCAnalysis:
                 signal = False
                 for p0 in options.processesAsSignal:
                     for p in p0.split(","):
-                        if re.match(p+"$", field[0]): signal = True
+                        if re.match(p+"$", pname): signal = True
             ## endif
             treename = extra["TreeName"] if "TreeName" in extra else options.tree 
             rootfile = "%s/%s/%s/%s_tree.root" % (options.path, field[1].strip(), treename, treename)
@@ -77,18 +89,18 @@ class MCAnalysis:
                 rootfile = "%s/%s/%s/tree.root" % (options.path, field[1].strip(), treename)
                 treename = "tree"
             pckfile = options.path+"/%s/skimAnalyzerCount/SkimReport.pck" % field[1].strip()
-            tty = TreeToYield(rootfile, options, settings=extra, name=field[0], cname=field[1].strip(), treename=treename)
+            tty = TreeToYield(rootfile, options, settings=extra, name=pname, cname=field[1].strip(), treename=treename)
             if signal: 
                 self._signals.append(tty)
-                self._isSignal[field[0]] = True
-            elif field[0] == "data":
+                self._isSignal[pname] = True
+            elif pname == "data":
                 self._data.append(tty)
             else:
-                self._isSignal[field[0]] = False
+                self._isSignal[pname] = False
                 self._backgrounds.append(tty)
-            if field[0] in self._allData: self._allData[field[0]].append(tty)
-            else                        : self._allData[field[0]] =     [tty]
-            if "data" not in field[0]:
+            if pname in self._allData: self._allData[pname].append(tty)
+            else                        : self._allData[pname] =     [tty]
+            if "data" not in pname:
                 pckobj  = pickle.load(open(pckfile,'r'))
                 counters = dict(pckobj)
                 if ('Sum Weights' in counters) and options.weight:
@@ -121,7 +133,7 @@ class MCAnalysis:
                         tty.setFullYield(nevt)
                     except:
                         tty.setFullYield(0)
-            if field[0] not in self._rank: self._rank[field[0]] = len(self._rank)
+            if pname not in self._rank: self._rank[pname] = len(self._rank)
         #if len(self._signals) == 0: raise RuntimeError, "No signals!"
         #if len(self._backgrounds) == 0: raise RuntimeError, "No backgrounds!"
     def listProcesses(self):
@@ -307,6 +319,10 @@ class MCAnalysis:
         for a in self._backgrounds:
             mystr += str(a) + '\n'
         return mystr[:-1]
+    def processEvents(self,eventLoop,cut):
+        for p in self.listProcesses():
+            for tty in self._allData[p]:
+                tty.processEvents(eventLoop,cut)
 
 def addMCAnalysisOptions(parser,addTreeToYieldOnesToo=True):
     if addTreeToYieldOnesToo: addTreeToYieldOptions(parser)
@@ -314,6 +330,7 @@ def addMCAnalysisOptions(parser,addTreeToYieldOnesToo=True):
     parser.add_option("-P", "--path",           dest="path",        type="string", default="./",      help="path to directory with input trees and pickle files (./)") 
     parser.add_option("--RP", "--remote-path",   dest="remotePath",  type="string", default=None,      help="path to remote directory with trees, but not other metadata (default: same as path)") 
     parser.add_option("-p", "--process", dest="processes", type="string", default=[], action="append", help="Processes to print (comma-separated list of regexp, can specify multiple ones)");
+    parser.add_option("--pg", "--pgroup", dest="premap", type="string", default=[], action="append", help="Group proceses into one. Syntax is '<newname> := (comma-separated list of regexp)', can specify multiple times. Note tahat it is applied _before_ -p, --sp and --xp");
     parser.add_option("--xf", "--exclude-files", dest="filesToExclude", type="string", default=[], action="append", help="Files to exclude (comma-separated list of regexp, can specify multiple ones)");
     parser.add_option("--xp", "--exclude-process", dest="processesToExclude", type="string", default=[], action="append", help="Processes to exclude (comma-separated list of regexp, can specify multiple ones)");
     parser.add_option("--sp", "--signal-process", dest="processesAsSignal", type="string", default=[], action="append", help="Processes to set as signal (overriding the '+' in the text file)");

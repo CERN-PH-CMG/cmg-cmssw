@@ -79,12 +79,12 @@ void trainLeptonID(TString name, TString train="GoodvsBad") {
 
     // re-weighting to approximately match n(jet) multiplicity of signal
     //factory->SetWeightExpression("puWeight*((good>0)+(good<=0)*pow(nJet25,2.36))");
-    factory->SetWeightExpression("puWeight");
+    //factory->SetWeightExpression("puWeight");
 
     if (train=="GoodvsBad") {
-        factory->PrepareTrainingAndTestTree( lepton+" LepGood_mcMatchId > 0", lepton+" LepGood_mcMatchId <= 0", "" );
+        factory->PrepareTrainingAndTestTree( lepton+" LepGood_mcMatchId != 0", lepton+" LepGood_mcMatchId == 0", "" );
     } else if (train=="GoodvsLight") {
-        factory->PrepareTrainingAndTestTree( lepton+" LepGood_mcMatchId > 0", lepton+" LepGood_mcMatchId <= 0 && LepGood_mcMatchAny <= 1", "" );
+      factory->PrepareTrainingAndTestTree( lepton+" LepGood_mcMatchId != 0", lepton+" LepGood_mcMatchId == 0 && LepGood_mcMatchAny <= 1", "" ); //check mcMatchAny with new def
     }  else { 
         std::cerr << "ERROR: No idea of what training you want." << std::endl; return; 
     }

@@ -19,7 +19,7 @@ parser.add_option("--tau", dest="tau",  default=False, action="store_true",  hel
 parser.add_option("-j", "--json",   dest="json",  default=None, type="string", help="JSON file to apply")
 parser.add_option("-n", "--maxEvents",  dest="maxEvents", default=-1, type="int", help="Max events")
 parser.add_option("-f", "--format",   dest="fmt",  default=None, type="string",  help="Print this format string")
-parser.add_option("-t", "--tree",          dest="tree", default='ttHLepTreeProducerTTH', help="Pattern for tree name");
+parser.add_option("-t", "--tree",          dest="tree", default='tree', help="Pattern for tree name");
 
 ### CUT-file options
 parser.add_option("-S", "--start-at-cut",   dest="startCut",   type="string", help="Run selection starting at the cut matched by this regexp, included.") 
@@ -31,8 +31,6 @@ parser.add_option("-A", "--add-cut",     dest="cutsToAdd",     action="append", 
 parser.add_option("--s2v", "--scalar2vector",     dest="doS2V",    action="store_true", default=False, help="Do scalar to vector conversion") 
  
 (options, args) = parser.parse_args()
-what = args[1] if len(args) > 1 else "signal"
-if what not in [ "signal", "CRss", "CRos" ]: raise RuntimeError, "Unknown what"
 
 if options.cut and options.cutfile: raise RuntimeError, "You can't specify both a cut and a cutfile"
 
@@ -153,6 +151,72 @@ class BaseDumper(Module):
         print ""
         print ""
 
+class SusyDumper(BaseDumper):
+    def __init__(self,name,options=None,booker=None):
+        BaseDumper.__init__(self,name,booker=booker,options=options)
+    def lepId(self,lep):
+        if lep.pt <= 10: return False
+        if abs(lep.pdgId) == 13:
+            if not self.muId(lep): return False
+        elif abs(lep.pdgId) == 11:
+            if not self.eleId(lep): return False
+        return lep.relIso03 < 0.1 and abs(lep.sip3d) < 4
+    def muId(self,mu):
+        return mu.tightId > 0
+    def eleId(self,ele):
+        return ele.tightId >= 2 and ele.convVeto and ele.tightCharge > 1 and ele.lostHits == 0
+    def makeVars(self,ev):
+        leps = Collection(ev,"LepGood","nLepGood") 
+        self.lepsOther = [l for l in Collection(ev,"LepOther","nLepOther")]
+        self.lepsAny   = [l for l in leps]
+        self.lepsTight = [l for l in leps if self.lepId(l)]
+        self.jets = Collection(ev,"Jet","nJet")
+    def analyze(self,ev):
+        self.makeVars(ev)
+        print "run %6d lumi %4d event %11d : leptons %d (tight %d), jets 40 GeV %d (CSV medium %d), jets 25 GeV %d (CSV medium %d)" % (
+                ev.run, ev.lumi, ev.evt, ev.nLepGood, len(self.lepsTight), ev.nJet40, ev.nBJetMedium40, ev.nJet25, ev.nBJetMedium25)
+        for i,l in enumerate(self.lepsAny):
+            print "    lepton  %2d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f    tightId %d  relIso03 %5.3f sip3d %5.2f dxy %+5.4f dz %+5.4f   jetPtR %4.2f jetDR %4.3f jetBTag %4.3f" % (
+                    i+1, l.pdgId,l.pt,l.eta,l.phi, l.tightId, l.relIso03, l.sip3d, l.dxy, l.dz, l.jetPtRatio, l.jetDR, min(1.,max(0.,l.jetBTagCSV))),
+            if not ev.isData:
+                print "   mcMatch %+3d" % (l.mcMatchId if l.mcMatchId > 0 else -l.mcMatchAny),
+            if abs(l.pdgId) == 11:
+                print "   lostHits %d conVeto %d tightCh %d" % (l.lostHits, l.convVeto, l.tightCharge)
+                #print "       ", " ".join("%s %.6f" % (s, getattr(l,s)) for s in "sigmaIEtaIEta dEtaScTrkIn dPhiScTrkIn hadronicOverEm eInvMinusPInv scEta".split())
+            else:
+                print "   lostHits %2d tightCh %d" % (l.lostHits, l.tightCharge)
+        for i,j in enumerate(self.jets):
+            if not ev.isData:
+                print "    jet %2d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f mcMatch %2d mcFlavour %d mcPt %5.1f" % (i, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)), j.mcMatchId, j.mcFlavour, j.mcPt)
+            else:
+                print "    jet %2d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f" % (i+1, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)))
+        for i,l in enumerate(self.lepsOther):
+            print "    bad lep %2d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f    tightId %d  relIso03 %5.3f sip3d %5.2f dxy %+5.4f dz %+5.4f " % (
+                    i+1, l.pdgId,l.pt,l.eta,l.phi, l.tightId, l.relIso03, l.sip3d, l.dxy, l.dz),
+            if not ev.isData:
+                print "   mcMatch %+3d" % (l.mcMatchId if l.mcMatchId > 0 else -l.mcMatchAny),
+            if abs(l.pdgId) == 11:
+                print "   misHit %d conVeto %d tightCh %d" % (l.lostHits, l.convVeto, l.tightCharge) 
+            else:
+                print "   lostHits %d tightCh %d" % (l.lostHits, l.tightCharge)
+
+        #for i,j in enumerate(self.jetsBadPtSorted):
+        #    if self.options.ismc:
+        #        print "    bad jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f mcMatch %2d mcFlavour %d/%d mcPt %5.1f  jetId %1d puId %1d" % (i, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)), j.mcMatchId, j.mcMatchFlav,j.mcFlavour, j.mcPt, j.looseJetId, j.puJetId)
+        #    else:
+        #        print "    bad jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f  jetId %1d puId %1d" % (i+1, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)), j.looseJetId, j.puJetId)
+       
+        for il1 in xrange(len(self.lepsAny)-1):
+            for il2 in xrange(il1+1,len(self.lepsAny)):
+                print "        m(l%d,l%d) = %6.1f" % (il1+1,il2+1,(self.lepsAny[il1].p4()+self.lepsAny[il2].p4()).M()) 
+        print "    minMll: AFAS %6.1f  AFOS %6.1f   SFOS %6.1f  mZ1 %6.1f " % (ev.minMllAFAS,ev.minMllAFOS,ev.minMllSFOS,ev.mZ1) 
+        print "    met %6.2f (phi %+4.2f)     mhtJet25 %6.2f" % (ev.met_pt, ev.met_phi, ev.mhtJet25)
+        print "    htJet40j %6.2f  htJet25 %6.2f" % (ev.htJet40j, ev.htJet25)
+        if not ev.isData:
+            print "    vertices %d    pu weight %5.2f" % (ev.nVert, ev.puWeight)
+        else:
+            print "    vertices %d" % (ev.nVert)
+
 
 cut = None
 if options.cutfile:
@@ -163,9 +227,12 @@ if options.doS2V:
     cut = scalarToVector(cut)
  
 file = ROOT.TFile.Open(args[0])
-treename = options.tree
-tree = file.Get(treename)
-tree.vectorTree = (options.tree == 'ttHLepTreeProducerTTH')
-el = EventLoop([BaseDumper("dump", options)])
+tree = file.Get(options.tree)
+tree.vectorTree = True 
+if len(args) > 1 and args[1] == "susy":
+    dumper = SusyDumper("dump", options)
+else:
+    dumper = BaseDumper("dump", options)
+el = EventLoop([dumper])
 el.loop(tree,options.maxEvents,cut=cut)
 

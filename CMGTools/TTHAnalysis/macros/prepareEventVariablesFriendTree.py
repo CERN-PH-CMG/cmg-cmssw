@@ -7,6 +7,8 @@ MODULES = []
 
 #from CMGTools.TTHAnalysis.tools.eventVars_2lss import EventVars2LSS 
 #MODULES.append( ('2lss', EventVars2LSS()) )
+from CMGTools.TTHAnalysis.tools.susyVars_2lssInc import SusyVars2LSSInc 
+MODULES.append( ('susy2lss', SusyVars2LSSInc()) )
 #from CMGTools.TTHAnalysis.tools.finalMVA_2lss import FinalMVA_2LSS
 #MODULES.append( ('2lss_mva', FinalMVA_2LSS()) )
 #from CMGTools.TTHAnalysis.tools.finalMVA_3l import FinalMVA_3L
@@ -84,6 +86,7 @@ parser.add_option("-F", "--add-friend",    dest="friendTrees",  action="append",
 parser.add_option("--FMC", "--add-friend-mc",    dest="friendTreesMC",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to MC only. Can use {name}, {cname} patterns in the treename") 
 parser.add_option("--FD", "--add-friend-data",    dest="friendTreesData",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to data trees only. Can use {name}, {cname} patterns in the treename") 
 parser.add_option("-L", "--list-modules",  dest="listModules", action="store_true", default=False, help="just list the configured modules");
+parser.add_option("-n", "--new",  dest="newOnly", action="store_true", default=False, help="Make only missing trees");
 (options, args) = parser.parse_args()
 
 if options.listModules:
@@ -101,7 +104,11 @@ if len(options.chunks) != 0 and len(options.datasets) != 1:
 
 jobs = []
 for D in glob(args[0]+"/*"):
-    fname = D+"/treeProducerSusyMultilepton/tree.root"
+    treename = options.tree
+    fname    = "%s/%s/%s_tree.root" % (D,options.tree,options.tree)
+    if (not os.path.exists(fname)) and os.path.exists("%s/%s/tree.root" % (D,options.tree)):
+        treename = "tree"
+        fname    = "%s/%s/tree.root" % (D,options.tree)
     if os.path.exists(fname):
         short = os.path.basename(D)
         if options.datasets != []:
@@ -113,9 +120,20 @@ for D in glob(args[0]+"/*"):
             if not found: continue
         data = ("DoubleMu" in short or "MuEG" in short or "DoubleElectron" in short or "SingleMu" in short)
         f = ROOT.TFile.Open(fname);
-        t = f.Get(options.tree)
+        t = f.Get(treename)
         entries = t.GetEntries()
         f.Close()
+        if options.newOnly:
+            fout = "%s/evVarFriend_%s.root" % (args[1],short)
+            if os.path.exists(fout):
+                f = ROOT.TFile.Open(fname);
+                t = f.Get(treename)
+                if t.GetEntries() != entries:
+                    print "Component %s has to be remade, mismatching number of entries (%d vs %d)" % (short, entries, t.GetEntries()) 
+                    f.Close()
+                else:
+                    print "Component %s exists already and has matching number of entries (%d)" % (short, entries) 
+                    continue 
         chunk = options.chunkSize
         if entries < chunk:
             print "  ",os.path.basename(D),("  DATA" if data else "  MC")," single chunk"
@@ -155,7 +173,8 @@ def _runIt(myargs):
     (name,fin,fout,data,range,chunk) = myargs
     timer = ROOT.TStopwatch()
     fb = ROOT.TFile(fin)
-    tb = fb.Get("tree")
+    tb = fb.Get(options.tree)
+    if not tb: tb = fb.Get("tree") # new trees
     if options.vectorTree:
         tb.vectorTree = True
     else:
