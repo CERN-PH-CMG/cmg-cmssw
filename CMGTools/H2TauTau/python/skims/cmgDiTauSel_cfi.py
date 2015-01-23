@@ -5,9 +5,7 @@ import FWCore.ParameterSet.Config as cms
 # you should override these cuts in your analysis.
 
 cmgDiTauSel = cms.EDFilter(
-    "CmgDiTauSelector",
-    src = cms.InputTag( "cmgDiTau" ),
-    cut = cms.string( " pt()>0 " )
+    "PATCompositeCandidateSelector",
+    src = cms.InputTag("cmgDiTauCorSVFitPreSel"),
+    cut = cms.string("")
     )
-
-

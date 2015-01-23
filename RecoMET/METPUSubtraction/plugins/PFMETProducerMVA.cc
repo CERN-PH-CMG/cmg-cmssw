@@ -15,12 +15,13 @@ PFMETProducerMVA::PFMETProducerMVA(const edm::ParameterSet& cfg)
   srcJetIds_       = consumes<edm::ValueMap<float> >(cfg.getParameter<edm::InputTag>("srcMVAPileupJetId"));
   srcPFCandidatesView_ = consumes<reco::CandidateView>(cfg.getParameter<edm::InputTag>("srcPFCandidates"));
   srcVertices_     = consumes<reco::VertexCollection>(cfg.getParameter<edm::InputTag>("srcVertices"));
-  vInputTag srcLeptonsTags = cfg.getParameter<vInputTag>("srcLeptons");
-  for(vInputTag::const_iterator it=srcLeptonsTags.begin();it!=srcLeptonsTags.end();it++) {
+  srcLeptonsTags_ = cfg.getParameter<vInputTag>("srcLeptons");
+  for(vInputTag::const_iterator it=srcLeptonsTags_.begin();it!=srcLeptonsTags_.end();it++) {
     srcLeptons_.push_back( consumes<reco::CandidateView >( *it ) );
   }
 
   minNumLeptons_   = cfg.getParameter<int>("minNumLeptons");
+  permuteLeptons_  = cfg.getParameter<bool>("permuteLeptons");
   srcRho_          = consumes<edm::Handle<double> >(cfg.getParameter<edm::InputTag>("srcRho"));
 
   globalThreshold_ = cfg.getParameter<double>("globalThreshold");
@@ -43,16 +44,16 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
   if ( minNumLeptons_ > 0 ) {
     int numLeptons = 0;
     for ( std::vector<edm::EDGetTokenT<reco::CandidateView> >::const_iterator srcLeptons_i = srcLeptons_.begin();
-	  srcLeptons_i != srcLeptons_.end(); ++srcLeptons_i ) {
+          srcLeptons_i != srcLeptons_.end(); ++srcLeptons_i ) {
       edm::Handle<reco::CandidateView> leptons;
       evt.getByToken(*srcLeptons_i, leptons);
       numLeptons += leptons->size();
     }
     if ( !(numLeptons >= minNumLeptons_) ) {
       LogDebug( "produce" )
-	<< "<PFMETProducerMVA::produce>:" << std::endl
-	<< "Run: " << evt.id().run() << ", LS: " << evt.luminosityBlock()  << ", Event: " << evt.id().event() << std::endl
-	<< " numLeptons = " << numLeptons << ", minNumLeptons = " << minNumLeptons_ << " --> skipping !!" << std::endl;
+        << "<PFMETProducerMVA::produce>:" << std::endl
+        << "Run: " << evt.id().run() << ", LS: " << evt.luminosityBlock()  << ", Event: " << evt.id().event() << std::endl
+        << " numLeptons = " << numLeptons << ", minNumLeptons = " << minNumLeptons_ << " --> skipping !!" << std::endl;
       
       reco::PFMET pfMEt;
       std::auto_ptr<reco::PFMETCollection> pfMEtCollection(new reco::PFMETCollection());
@@ -87,12 +88,6 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
   const reco::Vertex* hardScatterVertex = ( vertices->size() >= 1 ) ?
     &(vertices->front()) : 0;
   
-  // get leptons
-  // (excluded from sum over PFCandidates when computing hadronic recoil)
-  int  lId         = 0;
-  bool lHasPhotons = false;
-  std::vector<reco::PUSubMETCandInfo> leptonInfo = computeLeptonInfo(srcLeptons_,*pfCandidates_view,hardScatterVertex, lId, lHasPhotons,
-								     evt);
 
   // initialize MVA MET algorithm
   // (this will load the BDTs, stored as GBRForrest objects;
@@ -101,6 +96,7 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
     mvaMEtAlgo_.initialize(es);
     mvaMEtAlgo_isInitialized_ = true;
   }
+
 
   // reconstruct "standard" particle-flow missing Et
   CommonMETData pfMEt_data = metAlgo_.run( (*pfCandidates_view), globalThreshold_);
@@ -112,65 +108,153 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
    
   // compute objects specific to MVA based MET reconstruction
   std::vector<reco::PUSubMETCandInfo> pfCandidateInfo = computePFCandidateInfo(*pfCandidates_view, hardScatterVertex);
-  std::vector<reco::PUSubMETCandInfo>    jetInfo         = computeJetInfo(*uncorrJets, corrJets, *jetIds, *vertices, hardScatterVertex, *corrector,evt,es,leptonInfo,pfCandidateInfo);
-  std::vector<reco::Vertex::Point>         vertexInfo      = computeVertexInfo(*vertices);
-  // compute MVA based MET and estimate of its uncertainty
-  mvaMEtAlgo_.setInput(leptonInfo, jetInfo, pfCandidateInfo, vertexInfo);
-  mvaMEtAlgo_.setHasPhotons(lHasPhotons);
-  mvaMEtAlgo_.evaluateMVA();
-  pfMEt.setP4(mvaMEtAlgo_.getMEt());
-  pfMEt.setSignificanceMatrix(mvaMEtAlgo_.getMEtCov());
-  
-  LogDebug("produce")
-    << "Run: " << evt.id().run() << ", LS: " << evt.luminosityBlock()  << ", Event: " << evt.id().event() << std::endl
-    << " PFMET: Pt = " << pfMEtP4_original.pt() << ", phi = " << pfMEtP4_original.phi() << " "
-    << "(Px = " << pfMEtP4_original.px() << ", Py = " << pfMEtP4_original.py() << ")" << std::endl
-    << " MVA MET: Pt = " << pfMEt.pt() << " phi = " << pfMEt.phi() << " (Px = " << pfMEt.px() << ", Py = " << pfMEt.py() << ")" << std::endl
-    << " Cov:" << std::endl
-    <<(mvaMEtAlgo_.getMEtCov())(0,0)<<"  "<<(mvaMEtAlgo_.getMEtCov())(0,1)<<std::endl
-    <<(mvaMEtAlgo_.getMEtCov())(1,0)<<"  "<<(mvaMEtAlgo_.getMEtCov())(1,1)<<std::endl  << std::endl;
- 
+
+  std::vector<std::vector<size_t> > permutations;
+
+  if (permuteLeptons_) {
+    permutations = std::move(getPermutations(evt));
+  }
+  else
+    permutations.push_back(std::vector<size_t>{0});
+
+
   // add PFMET object to the event
   std::auto_ptr<reco::PFMETCollection> pfMEtCollection(new reco::PFMETCollection());
-  pfMEtCollection->push_back(pfMEt);
+
+  for (const auto& permutation : permutations) {
+    int  lId         = 0;
+    bool lHasPhotons = false;
+    std::vector<reco::PUSubMETCandInfo> leptonInfo;
+
+    if (permuteLeptons_) {
+      std::vector<edm::RefToBase<const reco::Candidate>> perm_leptons;
+      for (size_t i = 0; i < permutation.size(); ++i) {
+        size_t pos = permutation[i];
+        edm::Handle<reco::CandidateView> leptons;
+        evt.getByToken(srcLeptons_[i], leptons);
+        perm_leptons.emplace_back(leptons->refAt(pos));
+      }
+      leptonInfo = std::move(computeLeptonInfo(perm_leptons, *pfCandidates_view,hardScatterVertex, lId, lHasPhotons));
+    }
+    else {
+      std::vector<reco::PUSubMETCandInfo> leptonInfo = computeLeptonInfo(srcLeptons_, *pfCandidates_view, hardScatterVertex, lId, lHasPhotons, evt);
+    }
+
+
+    // get leptons
+    // (excluded from sum over PFCandidates when computing hadronic recoil)
+
+
+    
+
+    std::vector<reco::PUSubMETCandInfo>    jetInfo         = computeJetInfo(*uncorrJets, corrJets, *jetIds, *vertices, hardScatterVertex, *corrector,evt,es,leptonInfo,pfCandidateInfo);
+    std::vector<reco::Vertex::Point>         vertexInfo      = computeVertexInfo(*vertices);
+    // compute MVA based MET and estimate of its uncertainty
+    mvaMEtAlgo_.setInput(leptonInfo, jetInfo, pfCandidateInfo, vertexInfo);
+    mvaMEtAlgo_.setHasPhotons(lHasPhotons);
+    mvaMEtAlgo_.evaluateMVA();
+    pfMEt.setP4(mvaMEtAlgo_.getMEt());
+    pfMEt.setSignificanceMatrix(mvaMEtAlgo_.getMEtCov());
+    
+    LogDebug("produce")
+      << "Run: " << evt.id().run() << ", LS: " << evt.luminosityBlock()  << ", Event: " << evt.id().event() << std::endl
+      << " PFMET: Pt = " << pfMEtP4_original.pt() << ", phi = " << pfMEtP4_original.phi() << " "
+      << "(Px = " << pfMEtP4_original.px() << ", Py = " << pfMEtP4_original.py() << ")" << std::endl
+      << " MVA MET: Pt = " << pfMEt.pt() << " phi = " << pfMEt.phi() << " (Px = " << pfMEt.px() << ", Py = " << pfMEt.py() << ")" << std::endl
+      << " Cov:" << std::endl
+      <<(mvaMEtAlgo_.getMEtCov())(0,0)<<"  "<<(mvaMEtAlgo_.getMEtCov())(0,1)<<std::endl
+      <<(mvaMEtAlgo_.getMEtCov())(1,0)<<"  "<<(mvaMEtAlgo_.getMEtCov())(1,1)<<std::endl  << std::endl;
+   
+    
+    pfMEtCollection->push_back(pfMEt);
+  }
   evt.put(pfMEtCollection);
+}
+
+// Recursive function that creates all combinations of objects given
+std::vector<std::vector<size_t> > 
+PFMETProducerMVA::getPermutations(std::vector<size_t> lengths, std::vector<size_t>& current, std::vector<std::vector<size_t> >& result)
+{ 
+  // size_t length0 = lengths.back();
+  // lengths.pop_back();
+  size_t length0 = lengths.front();
+  lengths.erase(lengths.begin());
+
+  for (size_t i = 0; i < length0; ++i) {
+
+    // Check whether a previous collection is identical to the current one.
+    // If yes, make sure to only take each object/object pair once.
+    bool already_used = false;
+    for (size_t i_depth = 0; i_depth < current.size(); ++i_depth) {
+      if (srcLeptonsTags_[current.size()] == srcLeptonsTags_[i_depth] ) {
+        edm::LogInfo("getPermutations") << "using same collection" << std::endl;
+        if (i >= current[i_depth]) {
+          already_used = true;
+          break;
+        }
+      }
+    }
+    if (already_used)
+      continue;
+
+    current.push_back(i);
+    if (lengths.size() == 0) { // nothing left
+        result.push_back(current);
+    } else {
+      getPermutations(lengths, current, result);
+    }
+    current.pop_back();
+  }
+  return result;
+}
+
+std::vector<std::vector<size_t> > PFMETProducerMVA::getPermutations(const edm::Event& evt) {
+  std::vector<size_t> lengths;
+  for (auto& v : srcLeptons_) {
+    edm::Handle<reco::CandidateView> leptons;
+    evt.getByToken(v, leptons);
+    lengths.push_back(leptons->size());
+  }
+  std::vector<size_t> current;
+  std::vector<std::vector<size_t> > result;
+  return std::move(getPermutations(lengths, current, result));
 }
 
 std::vector<reco::PUSubMETCandInfo>
 PFMETProducerMVA::computeLeptonInfo(const std::vector<edm::EDGetTokenT<reco::CandidateView > >& srcLeptons_,
-				    const reco::CandidateView& pfCandidates_view,
-				    const reco::Vertex* hardScatterVertex,
-				    int& lId, bool& lHasPhotons, edm::Event& evt ) {
+                                    const reco::CandidateView& pfCandidates_view,
+                                    const reco::Vertex* hardScatterVertex,
+                                    int& lId, bool& lHasPhotons, edm::Event& evt ) {
 
   std::vector<reco::PUSubMETCandInfo> leptonInfo;
 
   for ( std::vector<edm::EDGetTokenT<reco::CandidateView > >::const_iterator srcLeptons_i = srcLeptons_.begin();
-	srcLeptons_i != srcLeptons_.end(); ++srcLeptons_i ) {
+        srcLeptons_i != srcLeptons_.end(); ++srcLeptons_i ) {
     edm::Handle<reco::CandidateView> leptons;
     evt.getByToken(*srcLeptons_i, leptons);
     for ( reco::CandidateView::const_iterator lepton1 = leptons->begin();
-	  lepton1 != leptons->end(); ++lepton1 ) {
+          lepton1 != leptons->end(); ++lepton1 ) {
       bool pMatch = false;
       for ( std::vector<edm::EDGetTokenT<reco::CandidateView> >::const_iterator srcLeptons_j = srcLeptons_.begin();
-	    srcLeptons_j != srcLeptons_.end(); ++srcLeptons_j ) {
-	edm::Handle<reco::CandidateView> leptons2;
-	evt.getByToken(*srcLeptons_j, leptons2);
-	for ( reco::CandidateView::const_iterator lepton2 = leptons2->begin();
-	      lepton2 != leptons2->end(); ++lepton2 ) {
-	  if(&(*lepton1) == &(*lepton2)) { continue; }
-	  if(deltaR2(lepton1->p4(),lepton2->p4()) < dR2Max) { pMatch = true; }
-	  if(pMatch &&     !istau(&(*lepton1)) &&  istau(&(*lepton2))) { pMatch = false; }
-	  if(pMatch &&    ( (istau(&(*lepton1)) && istau(&(*lepton2))) || (!istau(&(*lepton1)) && !istau(&(*lepton2)))) 
-	     &&     lepton1->pt() > lepton2->pt()) { pMatch = false; }
-	  if(pMatch && lepton1->pt() == lepton2->pt()) {
-	    pMatch = false;
-	    for(unsigned int i0 = 0; i0 < leptonInfo.size(); i0++) {
-	      if(std::abs(lepton1->pt() - leptonInfo[i0].p4_.pt()) < dPtMatch) { pMatch = true; break; }
-	    }
-	  }
-	  if(pMatch) break;
-	}
-	if(pMatch) break;
+            srcLeptons_j != srcLeptons_.end(); ++srcLeptons_j ) {
+        edm::Handle<reco::CandidateView> leptons2;
+        evt.getByToken(*srcLeptons_j, leptons2);
+        for ( reco::CandidateView::const_iterator lepton2 = leptons2->begin();
+              lepton2 != leptons2->end(); ++lepton2 ) {
+          if(&(*lepton1) == &(*lepton2)) { continue; }
+          if(deltaR2(lepton1->p4(),lepton2->p4()) < dR2Max) { pMatch = true; }
+          if(pMatch &&     !istau(&(*lepton1)) &&  istau(&(*lepton2))) { pMatch = false; }
+          if(pMatch &&    ( (istau(&(*lepton1)) && istau(&(*lepton2))) || (!istau(&(*lepton1)) && !istau(&(*lepton2)))) 
+             &&     lepton1->pt() > lepton2->pt()) { pMatch = false; }
+          if(pMatch && lepton1->pt() == lepton2->pt()) {
+            pMatch = false;
+            for(unsigned int i0 = 0; i0 < leptonInfo.size(); i0++) {
+              if(std::abs(lepton1->pt() - leptonInfo[i0].p4_.pt()) < dPtMatch) { pMatch = true; break; }
+            }
+          }
+          if(pMatch) break;
+        }
+        if(pMatch) break;
       }
       if(pMatch) continue;
       reco::PUSubMETCandInfo pLeptonInfo;
@@ -185,22 +269,41 @@ PFMETProducerMVA::computeLeptonInfo(const std::vector<edm::EDGetTokenT<reco::Can
   return leptonInfo;
 }
 
+std::vector<reco::PUSubMETCandInfo>
+PFMETProducerMVA::computeLeptonInfo(const std::vector<edm::RefToBase<const reco::Candidate>>& srcLeptons,
+                                    const reco::CandidateView& pfCandidates_view,
+                                    const reco::Vertex* hardScatterVertex,
+                                    int& lId, bool& lHasPhotons) {
+
+  std::vector<reco::PUSubMETCandInfo> leptonInfo;
+  for ( const auto& cand_ref : srcLeptons ) {
+    reco::PUSubMETCandInfo pLeptonInfo;
+    pLeptonInfo.p4_          = cand_ref->p4();
+    pLeptonInfo.chargedEnFrac_ = chargedEnFrac(cand_ref.get(), pfCandidates_view, hardScatterVertex);
+    leptonInfo.push_back(pLeptonInfo); 
+    if(cand_ref->isPhoton()) { lHasPhotons = true; }
+    lId++;
+  }
+ 
+  return leptonInfo;
+}
+
 
 std::vector<reco::PUSubMETCandInfo> 
 PFMETProducerMVA::computeJetInfo(const reco::PFJetCollection& uncorrJets, 
-				 const edm::Handle<reco::PFJetCollection>& corrJets, 
-				 const edm::ValueMap<float>& jetIds,
-				 const reco::VertexCollection& vertices,
-				 const reco::Vertex* hardScatterVertex,
-				 const JetCorrector &iCorrector,edm::Event &iEvent,const edm::EventSetup &iSetup,
-				 std::vector<reco::PUSubMETCandInfo> &iLeptons,std::vector<reco::PUSubMETCandInfo> &iCands)
+                                 const edm::Handle<reco::PFJetCollection>& corrJets, 
+                                 const edm::ValueMap<float>& jetIds,
+                                 const reco::VertexCollection& vertices,
+                                 const reco::Vertex* hardScatterVertex,
+                                 const JetCorrector &iCorrector,edm::Event &iEvent,const edm::EventSetup &iSetup,
+                                 std::vector<reco::PUSubMETCandInfo> &iLeptons,std::vector<reco::PUSubMETCandInfo> &iCands)
 {
   const L1FastjetCorrector* lCorrector = dynamic_cast<const L1FastjetCorrector*>(&iCorrector);
   std::vector<reco::PUSubMETCandInfo> retVal;
   for ( reco::PFJetCollection::const_iterator uncorrJet = uncorrJets.begin();
-	uncorrJet != uncorrJets.end(); ++uncorrJet ) {
+        uncorrJet != uncorrJets.end(); ++uncorrJet ) {
     // for ( reco::PFJetCollection::const_iterator corrJet = corrJets.begin();
-    // 	  corrJet != corrJets.end(); ++corrJet ) {
+    //    corrJet != corrJets.end(); ++corrJet ) {
     for( size_t cjIdx=0;cjIdx<corrJets->size();cjIdx++) {
       reco::PFJetRef corrJet( corrJets, cjIdx );
 
@@ -220,25 +323,25 @@ PFMETProducerMVA::computeJetInfo(const reco::PFJetCollection& uncorrJets,
       jetInfo.p4_ = corrJet->p4();
       double lType1Corr = 0;
       if(useType1_) { //Compute the type 1 correction ===> This code is crap 
-	double pCorr = lCorrector->correction(*uncorrJet,iEvent,iSetup);
-	lType1Corr = (corrJet->pt()-pCorr*uncorrJet->pt());
-	TLorentzVector pVec; pVec.SetPtEtaPhiM(lType1Corr,0,corrJet->phi(),0); 
-	reco::Candidate::LorentzVector pType1Corr; pType1Corr.SetCoordinates(pVec.Px(),pVec.Py(),pVec.Pz(),pVec.E());
-	//Filter to leptons
-	bool pOnLepton = false;
-	for(unsigned int i0 = 0; i0 < iLeptons.size(); i0++) {
-	  if(deltaR2(iLeptons[i0].p4_,corrJet->p4()) < dR2Max) {pOnLepton = true; break;}
-	}	
- 	//Add it to PF Collection
-	if(corrJet->pt() > 10 && !pOnLepton) {
-	  reco::PUSubMETCandInfo pfCandidateInfo;
-	  pfCandidateInfo.p4_ = pType1Corr;
-	  pfCandidateInfo.dZ_ = -999;
-	  iCands.push_back(pfCandidateInfo);
-	}
-	//Scale
-	lType1Corr = (pCorr*uncorrJet->pt()-uncorrJet->pt());
-	lType1Corr /=corrJet->pt();
+        double pCorr = lCorrector->correction(*uncorrJet,iEvent,iSetup);
+        lType1Corr = (corrJet->pt()-pCorr*uncorrJet->pt());
+        TLorentzVector pVec; pVec.SetPtEtaPhiM(lType1Corr,0,corrJet->phi(),0); 
+        reco::Candidate::LorentzVector pType1Corr; pType1Corr.SetCoordinates(pVec.Px(),pVec.Py(),pVec.Pz(),pVec.E());
+        //Filter to leptons
+        bool pOnLepton = false;
+        for(unsigned int i0 = 0; i0 < iLeptons.size(); i0++) {
+          if(deltaR2(iLeptons[i0].p4_,corrJet->p4()) < dR2Max) {pOnLepton = true; break;}
+        }       
+        //Add it to PF Collection
+        if(corrJet->pt() > 10 && !pOnLepton) {
+          reco::PUSubMETCandInfo pfCandidateInfo;
+          pfCandidateInfo.p4_ = pType1Corr;
+          pfCandidateInfo.dZ_ = -999;
+          iCands.push_back(pfCandidateInfo);
+        }
+        //Scale
+        lType1Corr = (pCorr*uncorrJet->pt()-uncorrJet->pt());
+        lType1Corr /=corrJet->pt();
       }
       
       // check that jet Pt used to compute MVA based jet id. is above threshold
@@ -254,24 +357,24 @@ PFMETProducerMVA::computeJetInfo(const reco::PFJetCollection& uncorrJets,
 }
 
 std::vector<reco::PUSubMETCandInfo> PFMETProducerMVA::computePFCandidateInfo(const reco::CandidateView& pfCandidates,
-										  const reco::Vertex* hardScatterVertex)
+                                                                                  const reco::Vertex* hardScatterVertex)
 {
   std::vector<reco::PUSubMETCandInfo> retVal;
   for ( reco::CandidateView::const_iterator pfCandidate = pfCandidates.begin();
-	pfCandidate != pfCandidates.end(); ++pfCandidate ) {
+        pfCandidate != pfCandidates.end(); ++pfCandidate ) {
     double dZ = -999.; // PH: If no vertex is reconstructed in the event
                        //     or PFCandidate has no track, set dZ to -999
     if ( hardScatterVertex ) {
       const reco::PFCandidate* pfc = dynamic_cast<const reco::PFCandidate* >( &(*pfCandidate) );
       if( pfc != nullptr ) { //PF candidate for RECO and PAT levels
-	if      ( pfc->trackRef().isNonnull()    ) dZ = std::abs(pfc->trackRef()->dz(hardScatterVertex->position()));
-	else if ( pfc->gsfTrackRef().isNonnull() ) dZ = std::abs(pfc->gsfTrackRef()->dz(hardScatterVertex->position()));
+        if      ( pfc->trackRef().isNonnull()    ) dZ = std::abs(pfc->trackRef()->dz(hardScatterVertex->position()));
+        else if ( pfc->gsfTrackRef().isNonnull() ) dZ = std::abs(pfc->gsfTrackRef()->dz(hardScatterVertex->position()));
       }
       else { //if not, then packedCandidate for miniAOD level
-	const pat::PackedCandidate* pfc = dynamic_cast<const pat::PackedCandidate* >( &(*pfCandidate) );
-	dZ = std::abs( pfc->dz( hardScatterVertex->position() ) );
-	//exact dz=zero corresponds to the -999 case for pfcandidate
-	if(dZ==0) {dZ=-999;}
+        const pat::PackedCandidate* pfc = dynamic_cast<const pat::PackedCandidate* >( &(*pfCandidate) );
+        dZ = std::abs( pfc->dz( hardScatterVertex->position() ) );
+        //exact dz=zero corresponds to the -999 case for pfcandidate
+        if(dZ==0) {dZ=-999;}
       }
     }
     reco::PUSubMETCandInfo pfCandidateInfo;
@@ -286,7 +389,7 @@ std::vector<reco::Vertex::Point> PFMETProducerMVA::computeVertexInfo(const reco:
 {
   std::vector<reco::Vertex::Point> retVal;
   for ( reco::VertexCollection::const_iterator vertex = vertices.begin();
-	vertex != vertices.end(); ++vertex ) {
+        vertex != vertices.end(); ++vertex ) {
     if(std::abs(vertex->z())           > 24.) continue;
     if(vertex->ndof()              <  4.) continue;
     if(vertex->position().Rho()    >  2.) continue;
@@ -295,7 +398,7 @@ std::vector<reco::Vertex::Point> PFMETProducerMVA::computeVertexInfo(const reco:
   return retVal;
 }
 double PFMETProducerMVA::chargedEnFrac(const reco::Candidate *iCand,
-				     const reco::CandidateView& pfCandidates,const reco::Vertex* hardScatterVertex) { 
+                                     const reco::CandidateView& pfCandidates,const reco::Vertex* hardScatterVertex) { 
   if(iCand->isMuon())     {
     return 1;
   }
@@ -318,9 +421,9 @@ double PFMETProducerMVA::chargedEnFrac(const reco::Candidate *iCand,
     lPatPFTau = dynamic_cast<const pat::Tau*>(iCand);
     if(lPatPFTau != nullptr) { 
       for (UInt_t i0 = 0; i0 < lPatPFTau->signalPFCands().size(); i0++) { 
-	lPtTot += (lPatPFTau->signalPFCands())[i0]->pt(); 
-	if((lPatPFTau->signalPFCands())[i0]->charge() == 0) continue;
-	lPtCharged += (lPatPFTau->signalPFCands())[i0]->pt(); 
+        lPtTot += (lPatPFTau->signalPFCands())[i0]->pt(); 
+        if((lPatPFTau->signalPFCands())[i0]->charge() == 0) continue;
+        lPtCharged += (lPatPFTau->signalPFCands())[i0]->pt(); 
       }
     }
   }
@@ -346,25 +449,25 @@ bool PFMETProducerMVA::passPFLooseId(const PFJet *iJet) {
 }
 
 double PFMETProducerMVA::chargedFracInCone(const reco::Candidate *iCand,
-					   const reco::CandidateView& pfCandidates,
-					   const reco::Vertex* hardScatterVertex,double iDRMax)
+                                           const reco::CandidateView& pfCandidates,
+                                           const reco::Vertex* hardScatterVertex,double iDRMax)
 {
   double iDR2Max = iDRMax*iDRMax;
   reco::Candidate::LorentzVector lVis(0,0,0,0);
   for ( reco::CandidateView::const_iterator pfCandidate = pfCandidates.begin();
-	pfCandidate != pfCandidates.end(); ++pfCandidate ) {
+        pfCandidate != pfCandidates.end(); ++pfCandidate ) {
     if(deltaR2(iCand->p4(),pfCandidate->p4()) > iDR2Max)  continue;
     double dZ = -999.; // PH: If no vertex is reconstructed in the event
                        //     or PFCandidate has no track, set dZ to -999
     if ( hardScatterVertex ) {
       const reco::PFCandidate* pfc = dynamic_cast<const reco::PFCandidate* >( (&(*pfCandidate)) );
       if( pfc != nullptr ) { //PF candidate for RECO and PAT levels
-	if      ( pfc->trackRef().isNonnull()    ) dZ = std::abs(pfc->trackRef()->dz(hardScatterVertex->position()));
-	else if ( pfc->gsfTrackRef().isNonnull() ) dZ = std::abs(pfc->gsfTrackRef()->dz(hardScatterVertex->position()));
+        if      ( pfc->trackRef().isNonnull()    ) dZ = std::abs(pfc->trackRef()->dz(hardScatterVertex->position()));
+        else if ( pfc->gsfTrackRef().isNonnull() ) dZ = std::abs(pfc->gsfTrackRef()->dz(hardScatterVertex->position()));
       }
       else { //if not, then packedCandidate for miniAOD level
-	const pat::PackedCandidate* pfc = dynamic_cast<const pat::PackedCandidate* >( &(*pfCandidate) );
-	dZ = std::abs( pfc->dz( hardScatterVertex->position() ) );
+        const pat::PackedCandidate* pfc = dynamic_cast<const pat::PackedCandidate* >( &(*pfCandidate) );
+        dZ = std::abs( pfc->dz( hardScatterVertex->position() ) );
       }
     }
     if(std::abs(dZ) > 0.1) continue; 

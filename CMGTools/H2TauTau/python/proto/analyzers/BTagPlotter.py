@@ -1,6 +1,4 @@
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
-from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
-from PhysicsTools.Heppy.physicsobjects.PhysicsObjectsimport Jet
 from ROOT import TH1F, TFile
 
 class BTagPlotter( Analyzer ):

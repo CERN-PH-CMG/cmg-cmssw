@@ -68,6 +68,7 @@ pfMVAMEt = cms.EDProducer("PFMETProducerMVA",
     srcLeptons = cms.VInputTag(),#"isomuons","isoelectrons","isotaus") # NOTE: you need to set this to collections of electrons, muons and tau-jets
                                  #                                             passing the lepton reconstruction & identification criteria applied in your analysis
     minNumLeptons = cms.int32(0),                     
+    permuteLeptons = cms.bool(False),
     srcRho = cms.InputTag('fixedGridRhoFastjetAll'),
     globalThreshold = cms.double(-1.),#pfMet.globalThreshold,
     minCorrJetPt = cms.double(-1.),

@@ -17,7 +17,6 @@
 <use name="TauAnalysis/SVFitStandAlone"/>
 <use name="TauAnalysis/CandidateTools"/>
 <use name="CMGTools/Common"/>
-<use name="CMGTools/Utilities"/>
 <use name="CMGTools/RootTools"/>
 <export>
   <lib   name="1"/>

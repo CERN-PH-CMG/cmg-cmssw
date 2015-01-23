@@ -1,9 +1,13 @@
 import FWCore.ParameterSet.Config as cms
-from PhysicsTools.Heppy.utils.cmsswRelease import isNewerThan
 
-is53X = isNewerThan('CMSSW_5_2_X')
+electronPreSelection = cms.EDFilter(
+    "PATElectronSelector",
+    src = cms.InputTag("slimmedElectrons"),
+    cut = cms.string('pt > 20. && abs(eta) < 2.5') 
+    # JAN: Should add MVA cut here when studied
+    )
 
-def getEleCuts(leg, channel='tauEle', skim=False):
+def getEleCuts(leg, channel='tauEle'):
 
     ptCut = None
     etaCut = None
@@ -13,9 +17,7 @@ def getEleCuts(leg, channel='tauEle', skim=False):
     lmvaID3 = -99999
 #    isoCut = 100
     if channel == 'tauEle':
-        ptCut = 20.
-        if is53X:
-            ptCut = 24.
+        ptCut = 24.
         etaCut = 2.1
 #        lmvaID = 0.9
         lmvaID1 = 0.925
@@ -28,9 +30,6 @@ def getEleCuts(leg, channel='tauEle', skim=False):
     else:
         raise ValueError('bad channel specification:'+channel)
 
-    if skim:
-        print 'WARNING: skimming not implemented in getEleCuts!'
-
     eleCuts = cms.PSet(
         kinematics = cms.PSet(
           pt = cms.string('{leg}().pt()>{ptCut}'.format(leg=leg, ptCut=ptCut)),
@@ -41,10 +40,6 @@ def getEleCuts(leg, channel='tauEle', skim=False):
             convVeto = cms.string('{leg}().passConversionVeto()!=0'.format(leg=leg)),
             mvaID = cms.string('(abs({leg}().sourcePtr().superCluster().eta())<0.8 && {leg}().mvaNonTrigV0() > {lmvaID1}) || (abs({leg}().sourcePtr().superCluster().eta())>0.8 && abs({leg}().sourcePtr().superCluster().eta())<1.479 && {leg}().mvaNonTrigV0() > {lmvaID2}) || (abs({leg}().sourcePtr().superCluster().eta())>1.479 && {leg}().mvaNonTrigV0() > {lmvaID3})'.format(leg=leg, lmvaID1=lmvaID1, lmvaID2=lmvaID2, lmvaID3=lmvaID3))
         ),
-#         iso = cms.PSet(
-#           #COLIN the iso elest be done on charged particles, not charged hadrons
-#           relIsoDBeta = cms.string('{leg}().relIso(0.5, 1)<{isoCut}'.format(leg=leg,isoCut=isoCut))
-#         )
     )
 
     return eleCuts
