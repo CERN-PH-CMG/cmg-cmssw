@@ -82,12 +82,16 @@ sleep 20
 #include "RooDataSet.h"
 #include "RooAbsPdf.h"
 #include "RooAddPdf.h"
+#include "RooArgList.h"
 #include "RooProdPdf.h"
 #include "RooVoigtian.h"
 #include "RooPlot.h"
 #include "RooFitResult.h"
 #include "RooDataHist.h"
 #include "RooHistPdf.h"
+#include "RooAddition.h"
+#include "RooCustomizer.h"
+#include "RooWorkspace.h"
 #include "Math/MinimizerOptions.h"
 #include "Math/Minimizer.h"
 //#include "../../../AnalysisCode/rochcor_44X_v3.C"
@@ -250,7 +254,7 @@ bool doClosure = false;
 /// BELOW FLAGS for dataset and met def
 bool do8TeV = false;
 bool doABC = false;
-bool doMad = false;
+bool doMad = true;
 bool doBKG = false;
 bool doGigiRescaling = false;
 bool do3Sigma = false;
@@ -726,7 +730,7 @@ double triGausInvGraph(double iPVal, /**/ double meanRMSMC, double iMean1MC, dou
   double iFrac2MC = getFrac3gauss(meanRMSMC, iFrac1MC, iSigma1MC, iSigma2MC, iSigma3MC);
 
   /*
-  // those parameters are stored in GeV
+  // those parameters are passed in GeV
   cout << "meanRMSMC " << meanRMSMC << " iFrac1MC=" << iFrac1MC << " iSigma1MC=" << iSigma1MC << " iSigma2MC=" << iSigma2MC << " iSigma3MC=" << iSigma3MC << " iMean1MC=" << iMean1MC << "iMean2MC=" << iMean2MC << endl;
   cout << "meanRMSDATA " << meanRMSDATA << " iFrac1DATA=" << iFrac1DATA << " iSigma1DATA=" << iSigma1DATA << " iSigma2DATA=" << iSigma2DATA << " iSigma3DATA=" << iSigma3DATA << " iMean1DATA=" << iMean1DATA << "iMean2DATA=" << iMean2DATA << endl;
   cout << "iFrac2DATA=" << iFrac2DATA << " iFrac2MC= " << iFrac2MC << endl;
@@ -3051,6 +3055,174 @@ void constructPDF2d(TF1 * FitSigma1, TF1 * FitSigma2, TF1 * FitSigma3,  TF1 * Fi
 
 }
 
+
+//$$$$$$$$$$$$$$$$$$$$$$$$
+//$$   below code from https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/master/src/PdfDiagonalizer.cc
+//$$$$$$$$$$$$$$$$$$$$$$$$
+
+std::string name_;
+RooArgList  * parameters_;
+RooArgList  replacements_;
+
+void PdfDiagonalizer(const char *name, RooWorkspace *w, RooFitResult &result) {
+
+  name_= "eig";/// MARIA hard coded
+  parameters_= new RooArgList(result.floatParsFinal());
+
+  int n = parameters_->getSize();
+  //  int n = result.floatParsFinal().getSize();
+
+  //  cout << " parameters_.getSize() " << n  << " " << result.floatParsFinal() << endl;
+
+  TMatrixDSym cov(result.covarianceMatrix());
+  TMatrixDSymEigen eigen(cov);
+
+  const TMatrixD& vectors = eigen.GetEigenVectors();
+  const TVectorD& values  = eigen.GetEigenValues();
+
+  RooArgList eigenVars_;
+
+  char buff[10240];
+
+  // create unit gaussians per eigen-vector
+  for (int i = 0; i < n; ++i) {
+    snprintf(buff,sizeof(buff),"%s_eig%d[-5,5]", name, i);
+    // w->factory(buff);
+    eigenVars_.add(*(w->factory(buff)));
+  }
+
+  //  cout << " eigvVars.Print() " << endl;
+  //  eigenVars_.Print();
+
+  // put them in a list, with a one at the end to set the mean
+  RooArgList eigvVarsPlusOne(eigenVars_);
+  if (w->var("_one_") == 0) w->factory("_one_[1]");
+  eigvVarsPlusOne.add(*w->var("_one_"));
+
+  // then go create the linear combinations
+  // each is equal to the transpose matrx times the square root of the eigenvalue (so that we get unit gaussians)
+  for (int i = 0; i < n; ++i) {
+    RooArgList coeffs;
+    for (int j = 0; j < n; ++j) {
+      snprintf(buff,sizeof(buff),"%s_eigCoeff_%d_%d[%g]", name, i, j, vectors(i,j)*sqrt(values(j)));
+      coeffs.add(*w->factory(buff));
+    }
+    snprintf(buff,sizeof(buff),"%s_eigBase_%d[%g]", name, i, (dynamic_cast<RooAbsReal*>(parameters_->at(i)))->getVal());
+    coeffs.add(*w->factory(buff));
+    snprintf(buff,sizeof(buff),"%s_eigLin_%d", name, i);
+    RooAddition *add = new RooAddition(buff,buff,coeffs,eigvVarsPlusOne);
+    w->import(*add,Silence());
+    replacements_.add(*add);
+  }
+
+  cout << "---------------------- NEW WORKSPACE --------------------- "<< endl;
+  w->Print();
+
+  /*
+  cov.Print();
+
+  cout << " vectors.Print() " << endl;
+  vectors.Print();
+
+  cout << " values.Print() " << endl;
+  values.Print();
+  */
+
+
+}
+
+RooAbsPdf* diagonalize(RooAbsPdf &pdf)
+{
+  if (!pdf.dependsOn(*parameters_)) return 0;
+
+  // now do the customization
+  RooCustomizer custom(pdf, name_.c_str());
+  for (int i = 0, n = parameters_->getSize(); i < n; ++i) {
+    if (pdf.dependsOn(*parameters_->at(i))) {
+      custom.replaceArg(*parameters_->at(i), *replacements_.at(i));
+    }
+  }
+
+  RooAbsPdf *ret = dynamic_cast<RooAbsPdf *>(custom.build());
+  ret->SetName((std::string(pdf.GetName()) + "_" + name_).c_str());
+  return ret;
+}
+
+//$$$$$$$$$$$$$$$$$$$$$$$$
+//$$   end code from https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/master/src/PdfDiagonalizer.cc
+//$$$$$$$$$$$$$$$$$$$$$$$$
+
+void diagoResults(bool doU1=false) {
+
+  TFile *file_ = TFile::Open("recoilfits/recoilfit_JAN24_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root");
+
+  TString namePDF="";
+  if(doU1) namePDF="AddU1";
+  if(!doU1) namePDF="AddU2";
+  TString nameRooFitResults="";
+  if(doU1) nameRooFitResults="fitresult_AddU1_Crapsky0_U1_2D";
+  if(!doU1) nameRooFitResults="fitresult_AddU2_Crapsky0_U2_2D";
+
+  RooAddPdf* pdfOriginal = (RooAddPdf*) file_->Get(namePDF.Data());
+  RooFitResult* frOriginal = (RooFitResult*) file_->Get(nameRooFitResults.Data());
+
+  //  RooWorkspace *w;
+  RooWorkspace *w = new RooWorkspace("w","w");
+  w->import(*pdfOriginal,Silence());
+
+  //  w->Print();
+  //  w->defineSet("obs", "x");
+  //  w->defineSet("vars", "a,b");
+  //  void runDiago(RooWorkspace *w, RooDataSet *data, RooFitResult *result, const char *fit) {
+
+  //  gSystem->Load("../../../AnalysisCode/PdfDiagonalizer.cc++");
+  //  cout << "Loaded diagonalizer "<< endl;
+
+  PdfDiagonalizer("eig", w, *frOriginal);
+  RooAbsPdf* newPdf = diagonalize(*pdfOriginal);
+
+  cout << " -------- pdf ------- " << endl;
+  RooArgSet* comps = pdfOriginal->getComponents() ;
+  comps->Print();
+
+  cout << " -------- new pdf ------ " << endl;
+  RooArgSet* compsnew = newPdf->getComponents() ;
+  compsnew->Print();
+
+  cout << " -------- print sigmas ------ " << endl;
+  RooAbsArg* sigma1_ = comps->find("sigma1") ;
+  RooArgSet* sigma1Var1 = sigma1_->getVariables() ;
+  sigma1Var1->Print() ;
+
+  double myZpt=10;
+  double sigma1=sigma1Var1->getRealValue("a1sig") + sigma1Var1->getRealValue("b1sig")*myZpt + sigma1Var1->getRealValue("c1sig")*myZpt*myZpt;
+
+  cout << "evaluated sigma1=" << sigma1 << " at Zpt" << myZpt<< endl;
+
+  RooAbsArg* sigma1_new = compsnew->find("sigma1_eig") ;
+  RooArgSet* sigma1Var1new = sigma1_new->getVariables() ;
+  sigma1Var1new->Print() ;
+
+
+  cout << " -------- plotting pdf ------ " << endl;
+
+  RooPlot *lFrame2D = lRXVar.frame(Title("frame2D")) ;
+  pdfOriginal->plotOn(lFrame2D,RooFit::LineColor(kGreen));
+  newPdf->plotOn(lFrame2D,RooFit::LineColor(kMagenta),RooFit::LineStyle(kDashed));
+  //  lRGAdd.plotOn(lFrame2D,RooFit::Components(lGaus1),RooFit::LineStyle(kDashed),RooFit::LineColor(kGreen));
+  //  lRGAdd.plotOn(lFrame2D,RooFit::Components(lGaus2),RooFit::LineStyle(kDashed),RooFit::LineColor(kMagenta));
+
+  TCanvas* c = new TCanvas("validatePDF","validatePDF",800,400);
+  c->cd();
+  lFrame2D->Draw();
+ 
+  c->SaveAs("newOldPDF.png");
+
+}
+
+//$$$$$$$$$$$$$$$$$$$$$$$$
+//$$   end code from https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/master/src/PdfDiagonalizer.cc
+//$$$$$$$$$$$$$$$$$$$$$$$$
 
 void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 //	      float &lPar, TF1 *iFit, TF1 *iFitS1=0, TF1 *iFitS2=0, TF1* iMeanFit=0,
@@ -5844,6 +6016,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
   muoncor44X = new rochcor_44X_v3();
   */
 
+ 
   startTreeEntries = startEntries;
 
   gStyle->SetOptFit(111111);
