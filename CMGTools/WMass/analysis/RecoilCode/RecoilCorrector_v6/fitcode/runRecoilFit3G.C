@@ -250,7 +250,7 @@ bool doClosure = false;
 /// BELOW FLAGS for dataset and met def
 bool do8TeV = false;
 bool doABC = false;
-bool doMad = true;
+bool doMad = false;
 bool doBKG = false;
 bool doGigiRescaling = false;
 bool do3Sigma = false;
@@ -727,7 +727,6 @@ double triGausInvGraph(double iPVal, /**/ double meanRMSMC, double iMean1MC, dou
 
   /*
   // those parameters are stored in GeV
-
   cout << "meanRMSMC " << meanRMSMC << " iFrac1MC=" << iFrac1MC << " iSigma1MC=" << iSigma1MC << " iSigma2MC=" << iSigma2MC << " iSigma3MC=" << iSigma3MC << " iMean1MC=" << iMean1MC << "iMean2MC=" << iMean2MC << endl;
   cout << "meanRMSDATA " << meanRMSDATA << " iFrac1DATA=" << iFrac1DATA << " iSigma1DATA=" << iSigma1DATA << " iSigma2DATA=" << iSigma2DATA << " iSigma3DATA=" << iSigma3DATA << " iMean1DATA=" << iMean1DATA << "iMean2DATA=" << iMean2DATA << endl;
   cout << "iFrac2DATA=" << iFrac2DATA << " iFrac2MC= " << iFrac2MC << endl;
@@ -1610,7 +1609,7 @@ void load(TTree *iTree, int type) {
 
 void calculateU1U2(double &iPar, bool iType) {
 
-  //  cout << " inside calculateU1U2: fMet = " << fMet << " fMPhi = " << fMPhi << endl;
+  //  cout << " inside calculateU1U2: fMet = " << fMet << " fMPhi = " << fMPhi << " fPt1 " << fPt1 << endl;
 
   // reset U1 U2
   fU1 = -9999;
@@ -2998,7 +2997,8 @@ void constructPDF2d(TF1 * FitSigma1, TF1 * FitSigma2, TF1 * FitSigma3,  TF1 * Fi
     //    l1Frac= new RooFormulaVar("frac1","@0",RooArgSet(lAFrac));
     lFrac= new RooFormulaVar("frac"  ,"(-(-@0*@1+@0*@3-@3+1)/((@0-1)*(@2-@3)))",RooArgSet(*l1Frac,*l1Sigma,*l2Sigma,*l3Sigma)); // free parameter for the doAbsolute=true
     //  RooAddPdf lGAdd("Add","Add",RooArgList(lGaus1,lGaus2,lGaus3),RooArgList(l1Frac,lFrac),kTRUE);
-    lGAdd = new RooAddPdf("Add","Add",RooArgList(*lGaus1,*lGaus2,*lGaus3),RooArgList(*l1Frac,*lFrac),kTRUE);
+    if(lPar==fU1) lGAdd = new RooAddPdf("AddU1","AddU1",RooArgList(*lGaus1,*lGaus2,*lGaus3),RooArgList(*l1Frac,*lFrac),kTRUE);
+    if(lPar!=fU1) lGAdd = new RooAddPdf("AddU2","AddU2",RooArgList(*lGaus1,*lGaus2,*lGaus3),RooArgList(*l1Frac,*lFrac),kTRUE);
     //RooAbsReal
   } else {
     ///<+++++ 2G 
@@ -3399,6 +3399,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   if(!doAbsolute) labeling += "_pull";
   
   if(doIterativeMet) labeling += "_iterative";
+  if(doClosure) labeling += "_closure";
 
   labeling += "_";
   labeling += fNJetSelect;
@@ -3584,6 +3585,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   if(!fData) fileName2D += "MC"; 
   if(doMad && !fData) fileName2D += "_MADGRAPH";
   if(!doMad && !fData) fileName2D += "_POWHEG";
+  if(doClosure) fileName2D += "_closure";
   fileName2D += ".root";
   
   if(doPrint) {
@@ -3712,6 +3714,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   //  std::vector<RooDataSet> lResidVals2D; 
   std::vector<RooDataHist> lResidVals2D; 
   std::stringstream pSS; pSS << "Crapsky" << 0;
+  if(lPar==fU1) pSS << "_U1_";
+  if(lPar!=fU1) pSS << "_U2_";
   pSS << "2D"; RooDataHist lData2D(pSS.str().c_str(),pSS.str().c_str(),RooArgSet(lRXVar,lRPt));
   //  pSS << "2D"; RooDataSet *lData2D = new RooDataSet(pSS.str().c_str(),pSS.str().c_str(),RooArgSet(lRXVar,lRPt));
   //  int lNBins = 10;
@@ -3720,7 +3724,11 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   int lNBins = (range_max-range_min)/binSize;
   //  int lNBins = fZPtMax;
   for(int i0  = 0; i0 < fZPtMax; i0++) { 
-    std::stringstream pSS1; pSS1 << "Crapsky" << i0;
+    std::stringstream pSS1;
+    pSS1 << "Crapsky";
+    if(lPar==fU1) pSS1 << "_U1_";
+    if(lPar!=fU1) pSS1 << "_U2_";
+    pSS1 << i0;
     RooDataSet lData(pSS1.str().c_str(),pSS1.str().c_str(),RooArgSet(lRXVar)); 
     //    RooDataSet lData_1(pSS1.str().c_str(),pSS1.str().c_str(),RooArgSet(lRXVar)); 
     //    RooDataSet * lData_2 = (RooDataSet*) lData_1.reduce("XVar>-4.");
@@ -3776,9 +3784,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
     // MARIA: here the switch for pull or GeV
     if(!doAbsolute) lRXVar.setVal(vlYTVals_all[lPar!=fU1][iRMS][i0]/(lYTest)); // residual  for the Pull
-    if(doAbsolute || doClosure) lRXVar.setVal(vlYTVals_all[lPar!=fU1][iRMS][i0]);  // residual  for the fit in GeV
+    if(doAbsolute) lRXVar.setVal(vlYTVals_all[lPar!=fU1][iRMS][i0]);  // residual  for the fit in GeV
     lRPt.setVal(vlXVals_all[lPar!=fU1][iRMS][i0]);     // Zpt
-
 
     //    lRWeight.setVal(1./vlYEVals_all[lPar!=fU1][iRMS][i0]/vlYEVals_all[lPar!=fU1][iRMS][i0]);
     /////    int pId = int(vlXVals_all[lPar!=fU1][iRMS][i0]/((range_max-range_min)/lNBins)); if(pId > lNBins-1) pId = lNBins-1;
@@ -3916,7 +3923,6 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
   //  if(doBKG) return;
   //  if(doClosure || doAbsolute) return;
-
 
   //// AFTER here set up for the 1D fit                                                                                                                    
   //  if(doPrintAll && !doIterativeMet) {
@@ -4582,7 +4588,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       TFile f15(rootFileNameFrame.c_str(),"UPDATE");
       
       //      if(lFrame2D) lFrame2D->Write();
-      if(lGAdd) lRGAdd->Write();
+      if(lGAdd) lGAdd->Write();
       if(pFR) pFR->Write();
           
       f15.Write();
@@ -5175,9 +5181,12 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
   //  if(isBKG) nEntries = iTree->GetEntries()/30;
 
   //  if(writeTree) nEntries = 1000000; // this takes little
-  if(writeTree) nEntries = 500000; // this takes little
-
-  //  nEntries = 1000;
+  if(writeTree) {
+    
+    nEntries = 250000; // this takes little
+    if((iTree->GetEntries()-startTreeEntries)<nEntries) nEntries = iTree->GetEntries()-startTreeEntries;
+    
+  }
 
   TFile *fout_loopOverTree = 0;
   TTree *iterEvTree = 0;
@@ -5193,7 +5202,7 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
     TBranch* br_lumi = iterEvTree->Branch("lumi", &fLumi, "fLumi/I");
     TBranch* br_evt = iterEvTree->Branch("evt", &fEvent, "fEvent/I");
     TBranch* br_nvtx = iterEvTree->Branch("nvtx", &fNPV, "fNPV/I");
-    
+
     TBranch* br_fZPt = iterEvTree->Branch("Z_pt", &fZrecoPt, "fZPt/D");
     TBranch* br_fZPhi = iterEvTree->Branch("Z_phi", &fZrecoPhi, "fZPhi/D");
     TBranch* br_fZRap = iterEvTree->Branch("Z_rap", &fZrecoRap, "fZRap/D");
@@ -5204,10 +5213,10 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
     //  TBranch* br_fMPhi = iterEvTree->Branch("MPhi", &fMPhi, "fMPhi/D");
     TBranch* br_pt_vis = iterEvTree->Branch("pt_vis", &fPt1, "pt_vis/D");
     TBranch* br_phi_vis = iterEvTree->Branch("phi_vis", &fPhi1, "phi_vis/D");
-    
-    if(!fData) br_fZPt = iterEvTree->Branch("ZGen_pt" ,&fZPt, "fZPt/D");
-    if(!fData) br_fZPhi = iterEvTree->Branch("ZGen_phi" ,&fZPhi, "fZPhi/D");
-    if(!fData) br_fZRap = iterEvTree->Branch("ZGen_rap" ,&fZRap, "fZRap/D");
+
+    TBranch* br_fZGenPt = iterEvTree->Branch("ZGen_pt" ,&fZPt, "fZPt/D");
+    TBranch* br_fZGenPhi = iterEvTree->Branch("ZGen_phi" ,&fZPhi, "fZPhi/D");
+    TBranch* br_fZGenRap = iterEvTree->Branch("ZGen_rap" ,&fZRap, "fZRap/D");
     
     TBranch* br_tkmet = iterEvTree->Branch("tkmet",&fMet,"tkmet/D");   /// this will be replaced after the smearing
     TBranch* br_tkmetphi = iterEvTree->Branch("tkmet_phi",&fMPhi,"tkmet_phi/D");  /// this will be replaced after the smearing
@@ -5258,6 +5267,10 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
     if(i1%100000==0) cout <<"Analyzed entry "<< i1 <<"/"<< nEntries << endl;
     //    if(i1%1==0) cout <<"Analyzed entry "<< i1 <<"/"<< nEntries << endl;
     if(doIterativeMet && i1%10000==0) cout <<"Analyzed entry "<< i1 << " out of nEntries=" << nEntries << " started entry "<< startTreeEntries << " (totalEntries= "<< iTree->GetEntries() << ")" << endl;
+
+
+    //    cout << "------------------------------------" << endl;
+    //    cout << "Zpt as read " << fZPt << " reco" << fZrecoPt << endl;
 
     //    cout << " -------------------------------- " << endl;
     if(dodebug)       cout << " -------------------------------- " << endl;
@@ -5414,7 +5427,7 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
       */
 
       //      if(dodebug)      cout << "fEvent" << fEvent << " original MET " << fMet << " phi " << fMPhi << endl;
-      //      cout << "fEvent" << fEvent << " original MET " << fMet << " phi " << fMPhi << endl;
+      //      cout << "fEvent" << fEvent << " original MET " << fMet << " phi " << fMPhi << " fZPt "<< fZPt << endl;
 
       if(!doApplyCorr) {
 	// this is good for the inclusive bins and for the binned one too since take the first only 
@@ -5574,7 +5587,6 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
 	//	bool iRMS=MeanRMStruefalse[iMeanRMS];
         
         calculateU1U2(lPar,isU1);
-	//	if(dodebug) cout << "lPar " << lPar << " isU1 " << isU1 << endl;
 
         double pVal = lPar;    
         // if(iRMS && iMeanFit != 0)   pVal = (lPar - iMeanFit->Eval(fZPt));
@@ -5638,6 +5650,8 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
         }
       }
   }
+
+  
   
   // for(int iev=0; iev<lXVals_all.at(0).at(0).size(); iev++){
     // cout << "iev= " << iev << endl;
@@ -5839,7 +5853,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
   //  TString name="recoilfits/recoilfit_JAN22_MADtoDATA";
   //  TString name="recoilfits/recoilfit_JAN22_MADtoMAD";
   //  TString name="recoilfits/recoilfit_JAN22_POWtoMAD";
-  TString name="recoilfits/recoilfit_JAN22";
+  TString name="recoilfits/recoilfit_JAN24";
   if(do8TeV) name +="_8TeV";
   if(doABC) name +="_ABC";
 
@@ -5879,21 +5893,34 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 
     if(doMad) cout << "PROCESSING DY MC MADGRAPH -- inclusive Nvertex -- charged only " << endl;
     if(!doMad) cout << "PROCESSING DY MC POWHEG -- inclusive Nvertex -- charged only " << endl;
+
+    // this is the 8 TeV (contains the other MET variables) 
+    if(doMad && do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/ZTreeProducer_tree.root");
+
     // 44X
     //    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");
     // 53X
     //    if(doMad && !do8TeV )  fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");  
     //    if(!doMad && !do8TeV ) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root");  
-    if(doMad && !do8TeV)  fDataFile = TFile::Open("TREE/output_skimmedTree_mad1_iter0.root");
-    if(!doMad && !do8TeV)  fDataFile = TFile::Open("TREE/output_skimmedTree_mad0_iter0.root");
+    if(doMad && !do8TeV && !doClosure)  { 
+      fDataFile = TFile::Open("TREE/output_skimmedTree_mad1_iter0.root");
+      cout << " reading TREE/output_skimmedTree_mad1_iter0.root " << endl;
+    } 
+    if(!doMad && !do8TeV && !doClosure)  {
+      fDataFile = TFile::Open("TREE/output_skimmedTree_mad0_iter0.root");
+      cout << " reading TREE/output_skimmedTree_mad0_iter0.root " << endl;
+    }
 
-    // this is the 8 TeV (contains the other MET variables) 
-    if(doMad && do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/ZTreeProducer_tree.root");
-
-    //    if(doMad && doClosure)    fDataFile = TFile::Open("TREE/output_mad1_iter1.root");    
-    //    if(!doMad && doClosure)    fDataFile = TFile::Open("TREE/output_pow1_iter1.root");    
-    if(!doMad && doClosure)    fDataFile = TFile::Open("TREE/output_pow1_MADasDATA_iter1.root"); // closure POW vs MAD
-    if(doMad && doClosure) fDataFile = TFile::Open("TREE/output_mad1_iter1.root"); // closure MAD vs DATA
+    //    if(doMad && doClosure)    fDataFile = TFile::Open("TREE/output_mad1_iter1.root");
+    //    if(!doMad && doClosure)    fDataFile = TFile::Open("TREE/output_pow1_MADasDATA_iter1.root"); // closure POW vs MAD
+    if(!doMad && doClosure && !do8TeV)    {
+      fDataFile = TFile::Open("TREE/output_mad0_iter1.root");
+      cout << " reading TREE/output_mad0_iter1.root" << endl;
+    }
+    if(doMad && doClosure && !do8TeV)   {
+      fDataFile = TFile::Open("TREE/output_mad1_iter1.root"); // closure MAD vs DATA
+      cout << " reading TREE/output_mad1_iter1.root" << endl;
+    }
 
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
 
@@ -5906,14 +5933,15 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
     if(doIterativeMet) {
 
       ////// DATA closure
-      if(!doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,lZMU1RMS3Fit,lZMU1FracFit, lZMU1Mean1Fit, lZMU1Mean2Fit, /*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,lZMU2RMS3Fit,lZMU2FracFit,lZMU2Mean1Fit, lZMU2Mean2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_JAN22_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
-      if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,lZMU1RMS3Fit,lZMU1FracFit,lZMU1Mean1Fit, lZMU1Mean2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,lZMU2RMS3Fit,lZMU2FracFit,lZMU2Mean1Fit, lZMU2Mean2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_JAN22_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
+      if(!doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,lZMU1RMS3Fit,lZMU1FracFit, lZMU1Mean1Fit, lZMU1Mean2Fit, /*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,lZMU2RMS3Fit,lZMU2FracFit,lZMU2Mean1Fit, lZMU2Mean2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_JAN24_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
+
+      if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,lZMU1RMS3Fit,lZMU1FracFit,lZMU1Mean1Fit, lZMU1Mean2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,lZMU2RMS3Fit,lZMU2FracFit,lZMU2Mean1Fit, lZMU2Mean2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_JAN24_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
       
       ////// DATA closure
-      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,lZDU1Mean1Fit, lZDU1Mean2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,lZDU2Mean1Fit, lZDU2Mean2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_JAN22_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root" ,"PF",fId);
+      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,lZDU1Mean1Fit, lZDU1Mean2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,lZDU2Mean1Fit, lZDU2Mean2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_JAN24_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root" ,"PF",fId);
       
       // MADGRAPH as DATA closure  
-      //      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,lZDU1Mean1Fit, lZDU1Mean2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,lZDU2Mean1Fit, lZDU2Mean2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_JAN22_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
+      //      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,lZDU1Mean1Fit, lZDU1Mean2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,lZDU2Mean1Fit, lZDU2Mean2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_JAN24_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 
       ////// MC closure
       //      if(!doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,/*lZDU23SigFit,*/"recoilfits/recoilfit_JAN16_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
@@ -5938,7 +5966,6 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
       ////// MC closure
       //      if(!doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,/*lZDU23SigFit,*/"recoilfits/recoilfit_DEC19_genZ_invGraph_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_3G_53X_powheg.root" ,"PF",fId);
       //      if(doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,/*lZDU23SigFit,*/"recoilfits/recoilfit_DEC19_genZ_invGraph_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_3G_53X_madgraph.root" ,"PF",fId);
-
 
       ////// MC closure
       //      if(!doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_NOV19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X_powheg.root" ,"PF",fId);
