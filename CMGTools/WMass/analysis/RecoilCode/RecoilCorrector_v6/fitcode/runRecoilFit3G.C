@@ -241,14 +241,14 @@ bool do3G=true;
 bool doAbsolute = false;
 
 /// BELOW FLOAGS for the inversion
-bool doIterativeMet = false;
+bool doIterativeMet = true;
 bool invGraph = true;
 bool doSingleGauss = false;
 bool doTriGauss = true;
 bool doApplyCorr = false; // smearing along the recoil vector
 bool doOnlyU1 = false;
 bool doOnlyU2 = true;
-bool writeTree = false;
+bool writeTree = true;
 bool doClosure = false;
 
 /// BELOW FLAGS for dataset and met def
@@ -808,11 +808,12 @@ double triGausInvGraph(double iPVal, /**/ double meanRMSMC, double iMean1MC, dou
 
 
 
+
 void applyType2CorrU(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
 		     double iLepPt,double iLepPhi,/*TRandom3 *iRand,*/
 		     TF1 *iU1Default,
 		     TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
-		     TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit, 
+		     TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
 		     TF1 *iU1S1ZDatFit, TF1 *iU1S1ZMCFit, 
 		     TF1 *iU1S2ZDatFit, TF1 *iU1S2ZMCFit, 
 		     TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
@@ -823,7 +824,7 @@ void applyType2CorrU(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   if(dodebug) cout << "BEFORE CORRU Met=" << iMet << endl;
 
   double pDefU1    = iU1Default->Eval(iGenPt);
-  double lRescale  = sqrt((TMath::Pi())/2.);     
+  double lRescale  = sqrt((TMath::Pi())/2.);
   double pDU1       = iU1RZDatFit ->Eval(iGenPt);
   //double pDU2       = 0; sPM
   double pDFrac1    = iU1MSZDatFit->Eval(iGenPt)*lRescale;
@@ -1043,7 +1044,7 @@ void applyType2CorrMET(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
                        double iLepPt,double iLepPhi,/*TRandom3 *iRand,*/
 		       TF1 *iU1Default,
 		       TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
-		       TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit, 
+		       TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
 		       TF1 *iU1S1ZDatFit, TF1 *iU1S1ZMCFit, 
 		       TF1 *iU1S2ZDatFit, TF1 *iU1S2ZMCFit, 
 		       TF1 *iU1S3ZDatFit, TF1 *iU1S3ZMCFit,
@@ -1058,14 +1059,14 @@ void applyType2CorrMET(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
 		       TF1 *iU2fracZDatFit, TF1 *iU2fracZMCFit,
 		       TF1 *iU2mean1ZDatFit, TF1 *iU2mean1ZMCFit,
 		       TF1 *iU2mean2ZDatFit, TF1 *iU2mean2ZMCFit
-		       ){        
+		       ){
 
   //  cout << "inside metType2 " << endl;
   //  bool doAbsolute=true;
 
   //  bool doSingleGauss=true;
 
-  double lRescale  = sqrt((TMath::Pi())/2.);     
+  double lRescale  = sqrt((TMath::Pi())/2.);
   //  double lRescale  = 1;     // for squares
 
   double pDefU1    = iU1Default->Eval(iGenPt);
@@ -3233,6 +3234,187 @@ void diagoResults(bool doU1=false) {
   return;
 
 }
+
+double triGausInvGraph(double iPVal, double Zpt, RooAddPdf *pdfMC, RooAddPdf *pdfDATA) {
+
+  RooRealVar lRXVar("XVar","larger range",0,-20.,20.);
+
+  RooWorkspace *wMC = new RooWorkspace("wMC","wMC");
+  wMC->import(*pdfMC,Silence());
+
+  RooWorkspace *wDATA = new RooWorkspace("wDATA","wDATA");
+  wDATA->import(*pdfDATA,Silence());
+
+  //  wMC->Print("tV"); ;
+
+  /// HERE NEED TO DIAGONALIZE
+  //  PdfDiagonalizer("eig", w, *frOriginal);
+  //  RooAbsPdf* newPdf = diagonalize(*pdfOriginal);
+
+  RooRealVar* myptm=wMC->var("pt");
+  //  mypt->setVal(10);
+  myptm->setVal(Zpt);
+
+  RooRealVar* myptd=wDATA->var("pt");
+  //  mypt->setVal(10);
+  myptd->setVal(Zpt);
+
+  //  wMC->Print("tV"); ;
+
+  RooAbsReal* pdfMCcdf = pdfMC->createCdf(lRXVar);
+  //  TH1* hMC = pdfMCcdf->createHistogram("MC", lRXVar_prime, Binning(2000));
+  TH1* hMC = pdfMC->createHistogram("MC", lRXVar, Binning(50000));
+  TH1* hMC1 = pdfMCcdf->createHistogram("MCcdf", lRXVar, Binning(50000));
+
+  RooAbsReal* pdfDATAcdf = pdfDATA->createCdf(lRXVar);
+  //  TH1* hMC = pdfMCcdf->createHistogram("MC", lRXVar_prime, Binning(2000));
+  TH1* hDATA = pdfDATA->createHistogram("DATA", lRXVar, Binning(50000));
+  TH1* hDATA1 = pdfDATAcdf->createHistogram("DATAcdf", lRXVar, Binning(50000));
+
+  TGraph *gr_mc = new TGraph(hMC1);
+  TGraph *gr_data = new TGraph(hDATA1);
+  TGraph *gr_data_inverse = new TGraph(gr_data->GetN(),gr_data->GetY(), gr_data->GetX());
+
+  /*
+  hMC1->SetLineColor(kMagenta);
+  hMC1->Draw("hist");
+  hMC->SetLineColor(kRed);
+  hMC->Draw("hist same");
+
+  hDATA1->SetLineColor(kGreen);
+  hDATA1->Draw("hist same");
+  hDATA->SetLineColor(kGreen+1);
+  hDATA->Draw("hist same");
+
+  gr_mc->SetLineColor(kRed);
+  gr_mc->SetMarkerStyle(22);
+  gr_mc->SetMarkerColor(kRed);
+  gr_mc->Draw("P L same");
+
+  gr_data->SetLineColor(kGreen+1);
+  gr_data->SetMarkerStyle(23);
+  gr_data->SetMarkerColor(kGreen+1);
+  gr_data->Draw("P L same ");
+
+//  gr_data_inverse->SetLineColor(kCyan);
+//  gr_data_inverse->SetMarkerColor(kCyan);
+//  gr_data_inverse->Draw("P L same ");
+*/
+
+  double pVal=gr_data_inverse->Eval(gr_mc->Eval(iPVal));
+  cout << "ORIGINAL MC: " << iPVal ;
+  cout << " FROM INVERSE: " << gr_data_inverse->Eval(gr_mc->Eval(iPVal)) << endl;
+
+  delete gr_mc;
+  delete gr_data;
+  delete gr_data_inverse;
+
+  return pVal;
+
+}
+
+void applyTriGausInv(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
+		     double iLepPt,double iLepPhi,/*TRandom3 *iRand,*/
+		     TF1 *iU1Default,
+		     TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
+		     TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
+		     TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit
+		     ) {
+
+  double lRescale  = sqrt((TMath::Pi())/2.);
+  //  double lRescale  = 1;     // for squares
+
+  double pDefU1    = iU1Default->Eval(iGenPt);
+
+  double pDU1       = iU1RZDatFit ->Eval(iGenPt); // U1 average scale
+  double pDRMSU1    = iU1MSZDatFit->Eval(iGenPt)*lRescale; // U1 average RMS
+  double pDRMSU2    = iU2MSZDatFit->Eval(iGenPt)*lRescale; // U2 average RMS
+
+  double pMU1       = iU1RZMCFit  ->Eval(iGenPt);
+  double pMRMSU1    = iU1MSZMCFit ->Eval(iGenPt)*lRescale;
+  double pMRMSU2    = iU2MSZMCFit ->Eval(iGenPt)*lRescale;
+
+  TFile *fileDATA_ = TFile::Open("recoilfits/recoilfit_JAN25_DATA_bkg_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root");
+  TFile *fileMC_ = TFile::Open("recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
+
+  RooAddPdf* pdfMCU1 = (RooAddPdf*) fileMC_->Get("AddU1Y1");
+  RooAddPdf* pdfMCU2 = (RooAddPdf*) fileMC_->Get("AddU2Y1");
+
+  RooAddPdf* pdfDATAU1 = (RooAddPdf*) fileDATA_->Get("AddU1Y1");
+  RooAddPdf* pdfDATAU2 = (RooAddPdf*) fileDATA_->Get("AddU2Y1");
+
+  ///
+  /// ENDING of the PARAMETERS
+  ///
+
+  double pUX   = iMet*cos(iMPhi) + iLepPt*cos(iLepPhi);
+  double pUY   = iMet*sin(iMPhi) + iLepPt*sin(iLepPhi);
+  double pU    = sqrt(pUX*pUX+pUY*pUY);
+
+  double pCos  = - (pUX*cos(iGenPhi) + pUY*sin(iGenPhi))/pU;
+  double pSin  =   (pUX*sin(iGenPhi) - pUY*cos(iGenPhi))/pU;
+
+  /////
+  
+  double pU1   = pU*pCos;
+  double pU2   = pU*pSin;
+  double pU1Diff  = pU1-pDefU1;
+  double pU2Diff  = pU2;
+
+  cout << " ------------------------------------------------------- " << endl;
+  cout << " initial pU1 = " << pU1 << " pU2 = " << pU2 << endl;
+
+  double p1Charge        = pU1Diff/fabs(pU1Diff);
+  double p2Charge        = pU2Diff/fabs(pU2Diff);
+
+  double pU1ValD = 0 ;
+  double pU2ValD = 0;
+  double pUValM = 0;
+  double pUValD = 0 ;
+
+  // go to the pull space (we are on MC)
+  // ????? what to do for the scale ??????
+  pU1Diff = pU1Diff/pMRMSU1;
+  pU2Diff = pU2Diff/pMRMSU2;
+
+  if(doOnlyU1 && !doOnlyU2) {
+    pU1ValD = triGausInvGraph(fabs(pU1Diff),iGenPt,pdfMCU1,pdfDATAU1);
+    pU2ValD = fabs(pU2Diff);
+  }
+
+  if(!doOnlyU1 && doOnlyU2) {
+    pU1ValD = fabs(pU1Diff);
+    pU2ValD = triGausInvGraph(fabs(pU2Diff),iGenPt,pdfMCU2,pdfDATAU2);
+    //    pU2ValD = triGausInvGraph(fabs(pU2Diff),iGenPt,pdfMCU2,pdfMCU2);
+  }
+
+  if(!doOnlyU1 && !doOnlyU2) {
+    pU1ValD = triGausInvGraph(fabs(pU1Diff),iGenPt,pdfMCU1,pdfDATAU1);
+    pU2ValD = triGausInvGraph(fabs(pU2Diff),iGenPt,pdfMCU2,pdfDATAU2);
+  }
+
+  // go back to GeV space (we are on DATA)
+  // ????? what to do for the scale ??????
+  pU1ValD = pU1ValD*pDRMSU1;
+  pU2ValD = pU2ValD*pDRMSU2;
+
+  pU1ValD*=p1Charge;
+  pU2ValD*=p2Charge;
+
+  pDefU1 *= (pDU1/pMU1);
+
+  pU1   = pDefU1             + pU1ValD;
+  pU2   =                      pU2ValD;
+  iMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
+  iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
+
+  cout << " after pU1 = " << pU1 << " pU2 = " << pU2 << endl;
+
+  return;
+
+}
+
+
 
 //$$$$$$$$$$$$$$$$$$$$$$$$
 //$$   end code from https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/master/src/PdfDiagonalizer.cc
@@ -5619,29 +5801,42 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
       //      cout << "fEvent" << fEvent << " original MET " << fMet << " phi " << fMPhi << " fZPt "<< fZPt << endl;
 
       if(!doApplyCorr) {
-	// this is good for the inclusive bins and for the binned one too since take the first only 
-	applyType2CorrMET(fMet,fMPhi,
+
+	bool doOldMethod=false;
+	if(doOldMethod) {
+	  // this is good for the inclusive bins and for the binned one too since take the first only 
+	  applyType2CorrMET(fMet,fMPhi,
+			    fZPt,fZPhi,
+			    fPt1,fPhi1,
+			    lZMU1Fit[0],
+			    lZDU1Fit[0], lZMU1Fit[0], // SCALE
+			    lZDU1RMSSMFit[0], lZMU1RMSSMFit[0], // RMS
+			    lZDU1RMS1Fit[0], lZMU1RMS1Fit[0],
+			    lZDU1RMS2Fit[0], lZMU1RMS2Fit[0],
+			    lZDU1RMS3Fit[0], lZMU1RMS3Fit[0],
+			    lZDU1FracFit[0], lZMU1FracFit[0],
+			    lZDU1Mean1Fit[0], lZMU1Mean1Fit[0],
+			    lZDU1Mean2Fit[0], lZMU1Mean2Fit[0],
+			    //
+			    lZDU2RMSSMFit[0], lZMU2RMSSMFit[0], // RMS 
+			    lZDU2RMS1Fit[0], lZMU2RMS1Fit[0],
+			    lZDU2RMS2Fit[0], lZMU2RMS2Fit[0],
+			    lZDU2RMS3Fit[0], lZMU2RMS3Fit[0],
+			    lZDU2FracFit[0], lZMU2FracFit[0],
+			    lZDU2Mean1Fit[0], lZMU2Mean1Fit[0],
+			    lZDU2Mean2Fit[0], lZMU2Mean2Fit[0]
+			    );
+	} else {
+
+	  applyTriGausInv(fMet,fMPhi,
 			  fZPt,fZPhi,
 			  fPt1,fPhi1,
 			  lZMU1Fit[0],
 			  lZDU1Fit[0], lZMU1Fit[0], // SCALE
-			  lZDU1RMSSMFit[0], lZMU1RMSSMFit[0], // RMS
-			  lZDU1RMS1Fit[0], lZMU1RMS1Fit[0], 
-			  lZDU1RMS2Fit[0], lZMU1RMS2Fit[0], 
-			  lZDU1RMS3Fit[0], lZMU1RMS3Fit[0], 
-			  lZDU1FracFit[0], lZMU1FracFit[0],
-			  lZDU1Mean1Fit[0], lZMU1Mean1Fit[0],
-			  lZDU1Mean2Fit[0], lZMU1Mean2Fit[0],
-			  //
-			  lZDU2RMSSMFit[0], lZMU2RMSSMFit[0], // RMS 
-			  lZDU2RMS1Fit[0], lZMU2RMS1Fit[0], 
-			  lZDU2RMS2Fit[0], lZMU2RMS2Fit[0], 
-			  lZDU2RMS3Fit[0], lZMU2RMS3Fit[0],
-			  lZDU2FracFit[0], lZMU2FracFit[0],
-			  lZDU2Mean1Fit[0], lZMU2Mean1Fit[0],
-			  lZDU2Mean2Fit[0], lZMU2Mean2Fit[0]
+			  lZDU1RMSSMFit[0], lZMU1RMSSMFit[0], // RMS U1
+			  lZDU2RMSSMFit[0], lZMU2RMSSMFit[0] // RMS U2
 			  );
-
+	} // end if old methods
       }
        
       //////
