@@ -27,8 +27,13 @@ ttHLepSkim.maxLeptons = 999
 
 # --- JET-LEPTON CLEANING ---
 jetAna.minLepPt = 10 
-#JetMCAna.smearJets     = False # do we need to smear the jets?
-jetAna.smearJets = False
+
+jetAna.mGT = "PHYS14_25_V2_LowPtHenningFix"
+
+jetAna.smearJets = False #should be false in susycore, already
+jetAna.recalibrateJets = True #should be true in susycore, already
+metAna.recalibrate = False #should be false in susycore, already
+
 
 #ttHReclusterJets = cfg.Analyzer(
 #            'ttHReclusterJetsAnalyzer',
@@ -43,6 +48,8 @@ isoTrackAna.setOff=False
 #ttHReclusterJets = cfg.Analyzer(
 #    ttHReclusterJetsAnalyzer, name="ttHReclusterJetsAnalyzer",
 #    )
+
+
 from CMGTools.TTHAnalysis.analyzers.ttHLepEventAnalyzer import ttHLepEventAnalyzer
 ttHEventAna = cfg.Analyzer(
     ttHLepEventAnalyzer, name="ttHLepEventAnalyzer",
@@ -57,6 +64,12 @@ susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna),
 susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna),
                         ttHHeavyFlavourHadronAna)
 
+## Single lepton + ST skim
+from CMGTools.TTHAnalysis.analyzers.ttHSTSkimmer import ttHSTSkimmer
+ttHSTSkimmer = cfg.Analyzer(
+    ttHSTSkimmer, name='ttHSTSkimmer',
+    minST = 175,
+    )
 
 
 from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14  import *
@@ -91,6 +104,7 @@ from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
 sequence = cfg.Sequence(susyCoreSequence+[
     ttHEventAna,
 #    ttHReclusterJets,
+    ttHSTSkimmer,
     treeProducer,
     ])
 
@@ -100,6 +114,7 @@ test = 1
 if test==1:
     # test a single component, using a single thread.
     comp = TTJets
+#    comp = SMS_T1tttt_2J_mGl1500_mLSP100
     comp.files = comp.files[:1]
     selectedComponents = [comp]
     comp.splitFactor = 1
