@@ -8,12 +8,13 @@ if "/mcCorrections_cc.so" not in ROOT.gSystem.GetLibraries():
     ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/TTHAnalysis/python/plotter/mcCorrections.cc+" % os.environ['CMSSW_BASE']);
 
 class SimpleCorrection:
-    def __init__(self,find,replace,procMatch=None,componentMatch=None,onlyForCuts=False):
+    def __init__(self,find,replace,procMatch=None,componentMatch=None,onlyForCuts=False,alsoData=False):
         self._find    = re.compile(find)
         self._replace = replace
         self._procMatch = re.compile(procMatch) if procMatch else None
         self._componentMatch = re.compile(componentMatch) if componentMatch else None
         self._onlyForCuts = onlyForCuts
+        self.alsoData = alsoData
     def __call__(self,expr,process,component,iscut):
         if self._procMatch and not re.match(self._procMatch, process): return expr
         if self._componentMatch and not re.match(self._componentMatch, component   ): return expr
@@ -40,7 +41,8 @@ class MCCorrections:
             self._corrections.append( SimpleCorrection(field[0], field[1], 
                                     procMatch=(extra['Process'] if 'Process' in extra else None),
                                     componentMatch=(extra['Component'] if 'Component' in extra else None),
-                                    onlyForCuts=('OnlyForCuts' in extra)) )
+                                    onlyForCuts=('OnlyForCuts' in extra),
+                                    alsoData=('AlsoData' in extra)) )
     def __call__(self,expr,process,component,iscut):
         ret = expr
         for c in self._corrections:

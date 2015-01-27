@@ -27,6 +27,11 @@ susyMultilepton_globalVariables = susyCore_globalVariables + [
             NTupleVariable("maxMllAFAS", lambda ev: ev.maxMllAFAS, help="max m(ll), AF/AS"),
             NTupleVariable("m2l", lambda ev: ev.m2l, help="m(ll)"),
             ##--------------------------------------------------           
+            NTupleVariable("minDrllAFSS", lambda ev: ev.minDrllAFSS, help="min Dr(ll), AF/SS"),
+            NTupleVariable("maxDrllAFSS", lambda ev: ev.maxDrllAFSS, help="max Dr(ll), AF/SS"),
+            NTupleVariable("minDrllAFOS", lambda ev: ev.minDrllAFOS, help="min Dr(ll), AF/OS"),
+            NTupleVariable("maxDrllAFOS", lambda ev: ev.maxDrllAFOS, help="max Dr(ll), AF/OS"),
+            ##--------------------------------------------------
             NTupleVariable("mZ2", lambda ev : ev.bestZ2[3], help="m(ll) of second SF/OS pair, for ZZ reco."),
             NTupleVariable("m3l", lambda ev: ev.m3l, help="m(3l)"),
             NTupleVariable("m4l", lambda ev: ev.m4l, help="m(4l)"),

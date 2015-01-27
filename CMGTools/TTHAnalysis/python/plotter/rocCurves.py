@@ -10,12 +10,18 @@ def hist2ROC1d(hsig,hbg):
     if hsig.GetMean() > hbg.GetMean():
         si.reverse(); bi.reverse()
     sums,sumb = sum(si), sum(bi)
+    if sums == 0 or sumb == 0: 
+        return None
     for i in xrange(1,bins): 
         si[i] += si[i-1]
         bi[i] += bi[i-1]
     fullsi, fullbi = si[:], bi[:]
     si, bi = [], [];
     for i in xrange(1,bins):
+        # skip negative weights
+        if len(si) > 0 and (fullsi[i] < si[-1] or fullbi[i] < bi[-1]):
+            continue
+        # skip repetitions
         if fullsi[i] != fullsi[i-1] or fullbi[i] != fullbi[i-1]:
             si.append(fullsi[i])
             bi.append(fullbi[i])
@@ -58,14 +64,15 @@ def hist2ROC2d(hsig,hbg):
     ret.dim=2
     return ret
 
-def makeROC(plotmap,mca):
-    sig, bkg = None, None
-    if 'signal'     in plotmap: sig = plotmap['signal']
-    if 'background' in plotmap: bkg  = plotmap['background']
+def makeROC(plotmap,mca,sname="signal",bname="background"):
+    sig = plotmap[sname]
+    bkg = plotmap[bname]
     if sig.ClassName() == "TH1F":
         ret = hist2ROC1d(sig,bkg)
+        if not ret: return ret
     elif sig.ClassName() == "TH2F":
         ret = hist2ROC2d(sig,bkg)
+        if not ret: return ret
     else: raise RuntimeError, "Can't make a ROC from a "+sig.ClassName()
     ret.GetXaxis().SetTitle("Eff Background")
     ret.GetYaxis().SetTitle("Eff Signal")
@@ -91,6 +98,25 @@ def doLegend(rocs,textSize=0.035):
         legend_ = leg 
         return leg
 
+def stackRocks(outname,outfile,rocs,xtit,ytit,options):
+    allrocs = ROOT.TMultiGraph("all","all")
+    for title,roc in rocs:
+        allrocs.Add(roc,roc.style)
+        outfile.WriteTObject(roc)
+    c1 = ROOT.TCanvas("roc_canvas","roc_canvas")
+    allrocs.Draw("APL");
+    allrocs.GetXaxis().SetTitle(xtit)
+    allrocs.GetYaxis().SetTitle(ytit)
+    if options.xrange:
+        allrocs.GetXaxis().SetRangeUser(options.xrange[0], options.xrange[1])
+    if options.yrange:
+        allrocs.GetYaxis().SetRangeUser(options.yrange[0], options.yrange[1])
+    allrocs.Draw()
+    leg = doLegend(rocs)
+    if options.fontsize: leg.SetTextSize(options.fontsize)
+    c1.Print(outname.replace(".root","")+".png")
+    outfile.WriteTObject(c1,"roc_canvas")
+
 if __name__ == "__main__":
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options] mc.txt cuts.txt plotfile.txt")
@@ -101,48 +127,86 @@ if __name__ == "__main__":
     parser.add_option("--xtitle", dest="xtitle", default="Eff Background", type='string', help="X axis title");
     parser.add_option("--ytitle", dest="ytitle", default="Eff Signal", type='string', help="Y axis title");
     parser.add_option("--fontsize", dest="fontsize", default=0, type='float', help="Legend font size");
+    parser.add_option("--splitSig", dest="splitSig", default=False, action="store_true", help="Make one ROC per signal")
+    parser.add_option("--splitBkg", dest="splitBkg", default=False, action="store_true", help="Make one ROC per background")
+    parser.add_option("--groupBy",  dest="groupBy",  default="process",  type="string", help="Group by: variable, process")
     (options, args) = parser.parse_args()
     options.globalRebin = 1
+    options.allowNegative = True # with the fine bins used in ROCs, one otherwise gets nonsensical results
     mca  = MCAnalysis(args[0],options)
+    signals = mca.listSignals() if options.splitSig else [ "signal" ]
+    backgrounds = mca.listBackgrounds() if options.splitBkg else [ "background" ]
     cut = CutsFile(args[1],options).allCuts()
-    plots = PlotFile(args[2],options)
+    plots = PlotFile(args[2],options).plots()
     outname  = options.out if options.out else (args[2].replace(".txt","")+".root")
     outfile  = ROOT.TFile(outname,"RECREATE")
-    rocs = []
     ROOT.gROOT.ProcessLine(".x tdrstyle.cc")
-    c1 = ROOT.TCanvas("roc_canvas","roc_canvas")
-    allrocs = ROOT.TMultiGraph("all","all")
-    for i,plot in enumerate(plots.plots()):
-        pmap = mca.getPlots(plot,cut,makeSummary=True)
-        roc = makeROC(pmap,mca)
-        if roc.GetN() > 1 and roc.dim == 1 and not plot.getOption("Discrete",False):
-            roc.SetLineColor(plot.getOption("LineColor",i+1))
-            roc.SetMarkerColor(plot.getOption("LineColor",i+1))
-            roc.SetLineWidth(2)
-            roc.SetMarkerStyle(0)
-            roc.style = "L"
-        else:
-            #print roc.GetX()[0],roc.GetY()[0],plot.name
-            roc.SetMarkerColor(plot.getOption("MarkerColor",i+1))
-            roc.SetMarkerStyle(plot.getOption("MarkerStyle",20 if roc.dim == 1 else 7))
-            roc.SetMarkerSize(plot.getOption("MarkerSize",1.0))
-            roc.style = "P"
-        allrocs.Add(roc,roc.style)
-        roc.SetName(plot.name)
-        rocs.append((plot.getOption("Title",plot.name),roc))
-        outfile.WriteTObject(roc)
-    allrocs.Draw("APL");
-    allrocs.GetXaxis().SetTitle(options.xtitle)
-    allrocs.GetYaxis().SetTitle(options.ytitle)
-    if options.xrange:
-        allrocs.GetXaxis().SetRangeUser(options.xrange[0], options.xrange[1])
-    if options.yrange:
-        allrocs.GetYaxis().SetRangeUser(options.yrange[0], options.yrange[1])
-    allrocs.Draw()
-    leg = doLegend(rocs)
-    if options.fontsize: leg.SetTextSize(options.fontsize)
-    c1.Print(outname.replace(".root","")+".png")
-    outfile.WriteTObject(c1,"roc_canvas")
+    pmaps = [  mca.getPlots(p,cut,makeSummary=True) for p in plots ]
+    if len(signals+backgrounds)>2 and "variable" in options.groupBy:
+        for ip,plot in enumerate(plots):
+            pmap = pmaps[ip]
+            rocs = []
+            myname = outname.replace(".root","_%s.root" % plot.name)
+            for i,(sig,bkg) in enumerate([(s,b) for s in signals for b in backgrounds ]):
+                mytitle = ""; ptitle = None
+                if len(signals)>1 and len(backgrounds)==1:
+                    mytitle = mca.getProcessOption(sig,"Label",sig); ptitle = sig
+                elif len(signal) == 1 and len(backgrounds)>1: 
+                    mytitle = mca.getProcessOption(bkg,"Label",bkg); ptitle = bkg
+                else:
+                    mytitle = "%s/%s" % (mca.getProcessOption(sig,"Label",sig),mca.getProcessOption(bkg,"Label",bkg)) 
+                roc = makeROC(pmap,mca,sname=sig,bname=bkg)
+                if not roc: continue
+                color = mca.getProcessOption(ptitle,"FillColor",SAFE_COLOR_LIST[i]) if ptitle else SAFE_COLOR_LIST[i]
+                if roc.GetN() > 1 and roc.dim == 1 and not plot.getOption("Discrete",False):
+                    roc.SetLineColor(color)
+                    roc.SetMarkerColor(color)
+                    roc.SetLineWidth(2)
+                    roc.SetMarkerStyle(0)
+                    roc.style = "L"
+                else:
+                    roc.SetMarkerColor(color)
+                    roc.SetMarkerStyle(mca.getProcessOption(ptitle,"MarkerStyle",20 if roc.dim == 1 else 7) if ptitle else (20 if roc.dim == 1 else 7))
+                    roc.SetMarkerSize(mca.getProcessOption(ptitle,"MarkerSize",1.0) if ptitle else 1.0)
+                    roc.style = "P"
+                roc.SetName("%s_%s_%s" % (plot.name,s,b))
+                rocs.append((mytitle,roc))
+            if len(rocs) == 0: continue
+            stackRocks(myname,outfile,rocs,options.xtitle,options.ytitle,options)
+    if "process" in options.groupBy:
+        for (sig,bkg) in [(s,b) for s in signals for b in backgrounds ]:
+            rocs = []
+            myname = outname; xtit = options.xtitle; ytit = options.ytitle
+            if len(signals)>1:     
+                myname = myname.replace(".root","_%s.root" % sig)
+                stit = mca.getProcessOption(sig,"Label",sig)
+                ytit = ytit % stit if "%" in ytit else "%s (%s)" % (ytit,stit)
+            if len(backgrounds)>1: 
+                myname = myname.replace(".root","_%s.root" % bkg)
+                btit = mca.getProcessOption(bkg,"Label",bkg);
+                xtit = xtit % btit if "%" in xtit else "%s (%s)" % (xtit,btit)
+            for i,plot in enumerate(plots):
+                pmap = pmaps[i]
+                roc = makeROC(pmap,mca,sname=sig,bname=bkg)
+                if not roc: continue
+                if roc.GetN() > 1 and roc.dim == 1 and not plot.getOption("Discrete",False):
+                    roc.SetLineColor(plot.getOption("LineColor",SAFE_COLOR_LIST[i]))
+                    roc.SetMarkerColor(plot.getOption("LineColor",SAFE_COLOR_LIST[i]))
+                    roc.SetLineWidth(2)
+                    roc.SetMarkerStyle(0)
+                    roc.style = "L"
+                else:
+                    #print roc.GetX()[0],roc.GetY()[0],plot.name
+                    roc.SetMarkerColor(plot.getOption("MarkerColor",SAFE_COLOR_LIST[i]))
+                    roc.SetMarkerStyle(plot.getOption("MarkerStyle",20 if roc.dim == 1 else 7))
+                    roc.SetMarkerSize(plot.getOption("MarkerSize",1.0))
+                    roc.style = "P"
+                #for ipoint in xrange(roc.GetN()):
+                #    print "%-20s %6d    %.5f %.5f" % (plot.name,ipoint,roc.GetX()[ipoint],roc.GetY()[ipoint])
+                roc.SetName(plot.name)
+                rocs.append((plot.getOption("Title",plot.name),roc))
+            if len(rocs) == 0: continue
+            stackRocks(myname,outfile,rocs,xtit,ytit,options)
     outfile.Close()
 
 

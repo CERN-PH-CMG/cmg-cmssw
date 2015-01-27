@@ -111,6 +111,8 @@ class CutsFile:
         return self
     def setParams(self,paramMap):
         self._cuts = [ (cn.format(**paramMap), cv.format(**paramMap)) for (cn,cv) in self._cuts ]
+    def cartesianProduct(self,other):
+        return CutsFile( [ ("%s && %s" % (cn1,cn2), "(%s) && (%s)" % (cv1,cv2)) for (cn1,cv1) in self._cuts for (cn2,cv2) in other.cuts() ] )
 
 class PlotSpec:
     def __init__(self,name,expr,bins,opts):
@@ -141,7 +143,8 @@ class TreeToYield:
         self._mcCorrs = globalMCCorrections() ##  get defaults
         if 'SkipDefaultMCCorrections' in settings: ## unless requested to 
             self._mcCorrs = []                     ##  skip them
-        if self._isdata: self._mcCorrs = [] ## no MC corrections for data
+        if self._isdata: 
+            self._mcCorrs = [c for c in self._mcCorrs if c.alsoData] ## most don't apply to data, some do 
         if 'MCCorrections' in settings:
             self._mcCorrs = self._mcCorrs[:] # make copy
             for cfile in settings['MCCorrections'].split(','): 
@@ -162,6 +165,8 @@ class TreeToYield:
         self._fullYield = fullYield
     def name(self):
         return self._name
+    def cname(self):
+        return self._cname
     def hasOption(self,name):
         return (name in self._settings)
     def getOption(self,name,default=None):
@@ -204,6 +209,10 @@ class TreeToYield:
             tf = self._tree.AddFriend(tf_tree, tf_file.format(name=self._name, cname=self._cname)),
             self._friends.append(tf)
         self._isInit = True
+
+    def getTree(self):
+        if not self._isInit: self._init()
+        return self._tree
     def getYields(self,cuts,noEntryLine=False):
         if not self._isInit: self._init()
         report = []; cut = ""
@@ -271,8 +280,10 @@ class TreeToYield:
             if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
             histo = ROOT.TH1F("dummy","dummy",1,0.0,1.0); histo.Sumw2()
             nev = tree.Draw("0.5>>dummy", cut, "goff")
+            self.negativeCheck(histo)
             return [ histo.GetBinContent(1), histo.GetBinError(1) ]
         else: 
+            cut = self.adaptExpr(cut,cut=True)
             if self._options.doS2V:
                 cut  = scalarToVector(cut)
             npass = tree.Draw("1",self.adaptExpr(cut,cut=True),"goff");
@@ -290,15 +301,16 @@ class TreeToYield:
         plot.SetMarkerStyle(self.getOption('MarkerStyle',20))
         plot.SetMarkerSize(self.getOption('MarkerSize',1.6))
         ## Plot specific-options, from spec
-        plot.GetYaxis().SetTitle(spec.getOption('YTitle',spec.getOption("YTitle","Events")))
-        plot.GetXaxis().SetTitle(spec.getOption('XTitle',spec.name))
-        plot.GetXaxis().SetNdivisions(spec.getOption('XNDiv',510))
+        if "TH3" not in plot.ClassName():
+            plot.GetYaxis().SetTitle(spec.getOption('YTitle',"Events"))
+            plot.GetXaxis().SetTitle(spec.getOption('XTitle',spec.name))
+            plot.GetXaxis().SetNdivisions(spec.getOption('XNDiv',510))
     def getPlot(self,plotspec,cut):
         ret = self.getPlotRaw(plotspec.name, plotspec.expr, plotspec.bins, cut, plotspec)
         # fold overflow
         if ret.ClassName() in [ "TH1F", "TH1D" ] :
             n = ret.GetNbinsX()
-            if plotspec.getOption('IncludeOverflows',True) and ret.ClassName() != "TProfile":
+            if plotspec.getOption('IncludeOverflows',True) and ("TProfile" not in ret.ClassName()):
                 ret.SetBinContent(1,ret.GetBinContent(0)+ret.GetBinContent(1))
                 ret.SetBinContent(n,ret.GetBinContent(n+1)+ret.GetBinContent(n))
                 ret.SetBinError(1,hypot(ret.GetBinError(0),ret.GetBinError(1)))
@@ -316,6 +328,7 @@ class TreeToYield:
     def getPlotRaw(self,name,expr,bins,cut,plotspec):
         unbinnedData2D = plotspec.getOption('UnbinnedData2D',False) if plotspec != None else False
         profile1D      = plotspec.getOption('Profile1D',False) if plotspec != None else False
+        profile2D      = plotspec.getOption('Profile2D',False) if plotspec != None else False
         if self._options.doS2V:
             expr = scalarToVector(expr)
         if not self._isInit: self._init()
@@ -327,17 +340,8 @@ class TreeToYield:
         if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
         histo = None
         canKeys = False
-        if ":" in expr.replace("::","--") and not profile1D:
-            if bins[0] == "[":
-                xbins, ybins = bins.split("*")
-                xedges = [ float(f) for f in xbins[1:-1].split(",") ]
-                yedges = [ float(f) for f in ybins[1:-1].split(",") ]
-                histo = ROOT.TH2F("dummy","dummy",len(xedges)-1,array('f',xedges),len(yedges)-1,array('f',yedges))
-            else:
-                (nbx,xmin,xmax,nby,ymin,ymax) = bins.split(",")
-                histo = ROOT.TH2F("dummy","dummy",int(nbx),float(xmin),float(xmax),int(nby),float(ymin),float(ymax))
-                unbinnedData2D = (self._name == "data") and unbinnedData2D
-        else:
+        nvars = expr.replace("::","--").count(":")+1
+        if nvars == 1 or (nvars == 2 and profile1D):
             if bins[0] == "[":
                 edges = [ float(f) for f in bins[1:-1].split(",") ]
                 if profile1D: 
@@ -352,13 +356,46 @@ class TreeToYield:
                     histo = ROOT.TH1F("dummy","dummy",int(nb),float(xmin),float(xmax))
                     canKeys = True
             unbinnedData2D = False
+        elif nvars == 2 or (nvars == 3 and profile2D):
+            if bins[0] == "[":
+                xbins, ybins = bins.split("*")
+                xedges = [ float(f) for f in xbins[1:-1].split(",") ]
+                yedges = [ float(f) for f in ybins[1:-1].split(",") ]
+                if profile2D:
+                    histo = ROOT.TProfile2D("dummy","dummy",len(xedges)-1,array('d',xedges),len(yedges)-1,array('d',yedges))
+                else:
+                    histo = ROOT.TH2F("dummy","dummy",len(xedges)-1,array('f',xedges),len(yedges)-1,array('f',yedges))
+            else:
+                (nbx,xmin,xmax,nby,ymin,ymax) = bins.split(",")
+                if profile2D:
+                    histo = ROOT.TProfile2D("dummy","dummy",int(nbx),float(xmin),float(xmax),int(nby),float(ymin),float(ymax))
+                    unbinnedData2D = False 
+                else:
+                    histo = ROOT.TH2F("dummy","dummy",int(nbx),float(xmin),float(xmax),int(nby),float(ymin),float(ymax))
+                    unbinnedData2D = (self._name == "data") and unbinnedData2D
+        elif nvars == 3:
+            ez,ey,ex = [ e.replace("--","::") for e in expr.replace("::","--").split(":") ]
+            if bins[0] == "[":
+                xbins, ybins, zbins = bins.split("*")
+                xedges = [ float(f) for f in xbins[1:-1].split(",") ]
+                yedges = [ float(f) for f in ybins[1:-1].split(",") ]
+                zedges = [ float(f) for f in zbins[1:-1].split(",") ]
+                histo = ROOT.TH3F("dummy","dummy",len(xedges)-1,array('f',xedges),len(yedges)-1,array('f',yedges),len(zedges)-1,array('f',zedges))
+            else:
+                (nbx,xmin,xmax,nby,ymin,ymax,nbz,zmin,zmax) = bins.split(",")
+                histo = ROOT.TH3F("dummy","dummy",int(nbx),float(xmin),float(xmax),int(nby),float(ymin),float(ymax),int(nbz),float(zmin),float(zmax))
+            histo.GetXaxis().SetTitle(ex)
+            histo.GetYaxis().SetTitle(ey)
+            histo.GetZaxis().SetTitle(ez)
+        else:
+            raise RuntimeError, "Can't make a plot with %d dimensions" % nvars
         histo.Sumw2()
         if unbinnedData2D:
             self._tree.Draw("%s" % (self.adaptExpr(expr)), cut)
             graph = ROOT.gROOT.FindObject("Graph").Clone(name)
             return graph
         drawOpt = "goff"
-        if profile1D: drawOpt += " PROF";
+        if profile1D or profile2D: drawOpt += " PROF";
         self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummy"), cut, drawOpt)
         if canKeys and histo.GetEntries() > 0 and histo.GetEntries() < self.getOption('KeysPdfMinN',100) and not self._isdata and self.getOption("KeysPdf",False):
             #print "Histogram for %s/%s has %d entries, so will use KeysPdf " % (self._cname, self._name, histo.GetEntries())
@@ -383,6 +420,12 @@ class TreeToYield:
                 for bx in xrange(0,histo.GetNbinsX()+2):
                     for by in xrange(0,histo.GetNbinsY()+2):
                         if histo.GetBinContent(bx,by) < 0: histo.SetBinContent(bx,by, 0.0)
+            elif "TH3" in histo.ClassName():
+                for bx in xrange(0,histo.GetNbinsX()+2):
+                    for by in xrange(0,histo.GetNbinsY()+2):
+                        for bz in xrange(0,histo.GetNbinsZ()+2):
+                            if histo.GetBinContent(bx,by,bz) < 0: histo.SetBinContent(bx,by,bz, 0.0)
+
     def __str__(self):
         mystr = ""
         mystr += str(self._fname) + '\n'
@@ -390,6 +433,15 @@ class TreeToYield:
         mystr += str(self._weight) + '\n'
         mystr += str(self._scaleFactor)
         return mystr
+    def processEvents(self,eventLoop,cut):
+        if not self._isInit: self._init()
+        cut = self.adaptExpr(cut,cut=True)
+        if self._options.doS2V:
+            cut  = scalarToVector(cut)
+            self._tree.vectorTree = True 
+        eventLoop.beginComponent(self)
+        eventLoop.loop(self._tree, getattr(self._options, 'maxEvents', -1), cut=cut)
+        eventLoop.endComponent(self)
 
 def addTreeToYieldOptions(parser):
     parser.add_option("-l", "--lumi",           dest="lumi",   type="float", default="19.7", help="Luminosity (in 1/fb)");

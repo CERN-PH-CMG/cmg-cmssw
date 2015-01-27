@@ -176,14 +176,17 @@ for name in systsEnv.keys():
         effmap12[p] = effect12 
     systsEnv[name] = (effmap0,effmap12,mode)
 
-for signal in signals:
+for signal in mca.listSignals():
     myout = outdir
     myout += "%s/" % signal 
-    myprocs = backgrounds + [ signal ] 
+    myprocs = ( backgrounds + [ signal ] ) if signal in signals else backgrounds
     if not os.path.exists(myout): os.system("mkdir -p "+myout)
     myyields = dict([(k,v) for (k,v) in allyields.iteritems()]) 
     datacard = open(myout+binname+".card.txt", "w"); 
     datacard.write("## Datacard for cut file %s (signal %s)\n"%(args[1],signal))
+    datacard.write("## Event selection: \n")
+    for cutline in str(cuts).split("\n"):  datacard.write("##   %s\n" % cutline)
+    if signal not in signals: datacard.write("## NOTE: no signal contribution found with this event selection.\n")
     datacard.write("shapes *        * ../common/%s.input.root x_$PROCESS x_$PROCESS_$SYSTEMATIC\n" % binname)
     datacard.write('##----------------------------------\n')
     datacard.write('bin         %s\n' % binname)
