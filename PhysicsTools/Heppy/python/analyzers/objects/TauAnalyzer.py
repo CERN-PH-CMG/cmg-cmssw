@@ -1,19 +1,8 @@
-
-import operator 
-import itertools
-import copy
-import types
-
-from ROOT import TLorentzVector
-
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
-from PhysicsTools.HeppyCore.framework.event import Event
-from PhysicsTools.HeppyCore.statistics.counter import Counter, Counters
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
-from PhysicsTools.Heppy.physicsobjects.Lepton import Lepton
 from PhysicsTools.Heppy.physicsobjects.Tau import Tau
 
-from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi, bestMatch , matchObjectCollection3
+from PhysicsTools.HeppyCore.utils.deltar import deltaR, matchObjectCollection3
 
 import PhysicsTools.HeppyCore.framework.config as cfg
 
@@ -63,9 +52,9 @@ class TauAnalyzer( Analyzer ):
                         tau.lepVeto = True
                 if tau.lepVeto: continue
             if self.cfg_ana.vetoLeptonsPOG:
-                if not tau.tauID("againstMuonTight"):
+                if not tau.tauID(self.tauAntiMuonID):
                         tau.lepVeto = True
-                if not tau.tauID("againstElectronLoose"):
+                if not tau.tauID(self.tauAntiElectronID):
                         tau.lepVeto = True
                 if tau.lepVeto: continue
             if tau.pt() < self.cfg_ana.ptMin: continue
@@ -76,8 +65,10 @@ class TauAnalyzer( Analyzer ):
             def id3(tau,X):
                 """Create an integer equal to 1-2-3 for (loose,medium,tight)"""
                 return tau.tauID(X%"Loose") + tau.tauID(X%"Medium") + tau.tauID(X%"Tight")
-            #tau.idMVA2   = id3(tau, "by%sIsolationMVA2")
+            tau.idMVA = id3(tau, "by%sIsolationMVA3oldDMwLT")
             tau.idCI3hit = id3(tau, "by%sCombinedIsolationDeltaBetaCorr3Hits")
+            tau.idAntiMu = id3(tau, "againstMuon%sMVA")
+            tau.idAntiE = id3(tau, "againstElectron%sMVA5")
             #print "Tau pt %5.1f: idMVA2 %d, idCI3hit %d, %s, %s" % (tau.pt(), tau.idMVA2, tau.idCI3hit, tau.tauID(self.cfg_ana.tauID), tau.tauID(self.cfg_ana.tauLooseID))
             if tau.tauID(self.cfg_ana.tauID):
                 event.selectedTaus.append(tau)
@@ -114,6 +105,8 @@ class TauAnalyzer( Analyzer ):
         
         return True
 
+# Find the definitions of the tau ID strings here:
+# http://cmslxr.fnal.gov/lxr/source/PhysicsTools/PatAlgos/python/producersLayer1/tauProducer_cfi.py
 
 setattr(TauAnalyzer,"defaultConfig",cfg.Analyzer(
     class_object=TauAnalyzer,
@@ -124,7 +117,10 @@ setattr(TauAnalyzer,"defaultConfig",cfg.Analyzer(
     vetoLeptons = True,
     leptonVetoDR = 0.4,
     vetoLeptonsPOG = False,
+    # tauID = "byLooseIsolationMVA3oldDMwLT",
     tauID = "byLooseCombinedIsolationDeltaBetaCorr3Hits",
+    tauAntiMuonID = "againstMuonLooseMVA",
+    tauAntiElectronID = "againstElectronLooseMVA5",
     tauLooseID = "decayModeFinding",
   )
 )
