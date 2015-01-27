@@ -44,8 +44,6 @@ nohup root.exe -b -x -q runRecoilFit3G.C+\(3,1,2\) &
 sleep 20
 nohup root.exe -b -x -q runRecoilFit3G.C+\(4,1,2\) &
 sleep 20
-
-
 */
 
 
@@ -3235,15 +3233,9 @@ void diagoResults(bool doU1=false) {
 
 }
 
-double triGausInvGraph(double iPVal, double Zpt, RooAddPdf *pdfMC, RooAddPdf *pdfDATA) {
+double triGausInvGraph(double iPVal, double Zpt, RooAddPdf *pdfMC, RooAddPdf *pdfDATA, RooWorkspace *wMC, RooWorkspace *wDATA) {
 
   RooRealVar lRXVar("XVar","larger range",0,-20.,20.);
-
-  RooWorkspace *wMC = new RooWorkspace("wMC","wMC");
-  wMC->import(*pdfMC,Silence());
-
-  RooWorkspace *wDATA = new RooWorkspace("wDATA","wDATA");
-  wDATA->import(*pdfDATA,Silence());
 
   //  wMC->Print("tV"); ;
 
@@ -3257,19 +3249,33 @@ double triGausInvGraph(double iPVal, double Zpt, RooAddPdf *pdfMC, RooAddPdf *pd
   RooRealVar* myptd=wDATA->var("pt");
   myptd->setVal(Zpt);
 
+  RooRealVar* myXm=wMC->var("XVar");
+  RooRealVar* myXd=wDATA->var("XVar");
+
   //  wMC->Print("tV"); ;
 
-  RooAbsReal* pdfMCcdf = pdfMC->createCdf(lRXVar);
-  RooAbsReal* pdfDATAcdf = pdfDATA->createCdf(lRXVar);
+  RooAbsReal* pdfMCcdf = pdfMC->createCdf(*myXm);
+  RooAbsReal* pdfDATAcdf = pdfDATA->createCdf(*myXd);
 
+  /*
   //  TF1* funcMCpdf = (TF1*) pdfMC->asTF( RooArgList(lRXVar));
-  TF1* funcMCcdf = (TF1*) pdfMCcdf->asTF( RooArgList(lRXVar));
+  TF1* funcMCcdf = (TF1*) pdfMCcdf->asTF( RooArgList(*myXm));
   //  TF1* funcDATApdf = (TF1*) pdfDATA->asTF( RooArgList(lRXVar));
-  TF1* funcDATAcdf = (TF1*) pdfDATAcdf->asTF( RooArgList(lRXVar));
+  TF1* funcDATAcdf = (TF1*) pdfDATAcdf->asTF( RooArgList(*myXd));
 
   TGraph *gr_mc = new TGraph(funcMCcdf);
   TGraph *gr_data = new TGraph(funcDATAcdf);
   TGraph *gr_data_inverse = new TGraph(gr_data->GetN(),gr_data->GetY(), gr_data->GetX());
+  */
+
+  //  double pVal=gr_data_inverse->Eval(gr_mc->Eval(iPVal));
+  //  cout << "ORIGINAL MC: " << iPVal ;
+  //  cout << " FROM INVERSE graph: " << gr_data_inverse->Eval(gr_mc->Eval(iPVal)) << endl;
+
+  myXm->setVal(iPVal);
+  double pVal=pdfDATAcdf->findRoot(*myXd,myXd->getMin(),myXd->getMax(),pdfMCcdf->evaluate());
+  //  cout << " from findRoot " << pVal << endl;
+  //  myXd->Print();
 
   /*
   TCanvas* c = new TCanvas("validatePDF","validatePDF",800,400) ;
@@ -3302,24 +3308,40 @@ double triGausInvGraph(double iPVal, double Zpt, RooAddPdf *pdfMC, RooAddPdf *pd
   //  gr_data_inverse->Draw("P L same "
   //  c->SaveAs("Graph.png");
 
-  double pVal=gr_data_inverse->Eval(gr_mc->Eval(iPVal));
-  //  cout << "ORIGINAL MC: " << iPVal ;
-  //  cout << " FROM INVERSE: " << gr_data_inverse->Eval(gr_mc->Eval(iPVal)) << endl;
-
-  delete gr_mc;
-  delete gr_data;
-  delete gr_data_inverse;
+  //  delete wMC;
+  //  delete wDATA;
+  //  delete myptm;
+  //  delete myptd;
+  delete pdfMCcdf; 
+  delete pdfDATAcdf;
+  //  delete funcMCcdf;
+  //  delete funcDATAcdf;
+  //  delete gr_mc;
+  //  delete gr_data;
+  //  delete gr_data_inverse;
 
   return pVal;
 
 }
+
+RooAddPdf* pdfMCU1;
+RooAddPdf* pdfMCU2;
+RooAddPdf* pdfDATAU1;
+RooAddPdf* pdfDATAU2;
+
+RooWorkspace *wMCU1; 
+RooWorkspace *wMCU2; 
+RooWorkspace *wDATAU1; 
+RooWorkspace *wDATAU2; 
 
 void applyTriGausInv(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
 		     double iLepPt,double iLepPhi,/*TRandom3 *iRand,*/
 		     TF1 *iU1Default,
 		     TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
 		     TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
-		     TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit
+		     TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit//,
+		     //                     RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1, 
+		     //                     RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2 
 		     ) {
 
   double lRescale  = sqrt((TMath::Pi())/2.);
@@ -3334,19 +3356,6 @@ void applyTriGausInv(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   double pMU1       = iU1RZMCFit  ->Eval(iGenPt);
   double pMRMSU1    = iU1MSZMCFit ->Eval(iGenPt)*lRescale;
   double pMRMSU2    = iU2MSZMCFit ->Eval(iGenPt)*lRescale;
-
-  // those need to be read in readRecoil ....
-  TString nameMC="";
-  if(doMad) nameMC="recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
-  if(!doMad) nameMC="recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
-  TFile *fileMC_ = TFile::Open(nameMC.Data());
-  TFile *fileDATA_ = TFile::Open("recoilfits/recoilfit_JAN25_DATA_bkg_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root");
-
-  RooAddPdf* pdfMCU1 = (RooAddPdf*) fileMC_->Get(Form("AddU1Y%d",fId));
-  RooAddPdf* pdfMCU2 = (RooAddPdf*) fileMC_->Get(Form("AddU2Y%d",fId));
-
-  RooAddPdf* pdfDATAU1 = (RooAddPdf*) fileDATA_->Get(Form("AddU1Y%d",fId));
-  RooAddPdf* pdfDATAU2 = (RooAddPdf*) fileDATA_->Get(Form("AddU2Y%d",fId));
 
   ///
   /// ENDING of the PARAMETERS
@@ -3382,7 +3391,7 @@ void applyTriGausInv(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
 
   if(doOnlyU1 && !doOnlyU2) {
     pU1Diff = pU1Diff/pMRMSU1;
-    pU1ValD = triGausInvGraph(fabs(pU1Diff),iGenPt,pdfMCU1,pdfDATAU1);
+    pU1ValD = triGausInvGraph(fabs(pU1Diff),iGenPt,pdfMCU1,pdfDATAU1,wMCU1,wDATAU1);
     pU1ValD = pU1ValD*pDRMSU1;
 
     pU2ValD = fabs(pU2Diff);
@@ -3394,15 +3403,15 @@ void applyTriGausInv(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
     pU1ValD = fabs(pU1Diff);
 
     pU2Diff = pU2Diff/pMRMSU2;
-    pU2ValD = triGausInvGraph(fabs(pU2Diff),iGenPt,pdfMCU2,pdfDATAU2);
+    pU2ValD = triGausInvGraph(fabs(pU2Diff),iGenPt,pdfMCU2,pdfDATAU2,wMCU2,wDATAU2);
     pU2ValD = pU2ValD*pDRMSU2;
   }
 
   if(!doOnlyU1 && !doOnlyU2) {
     pU1Diff = pU1Diff/pMRMSU1;
     pU2Diff = pU2Diff/pMRMSU2;
-    pU1ValD = triGausInvGraph(fabs(pU1Diff),iGenPt,pdfMCU1,pdfDATAU1);
-    pU2ValD = triGausInvGraph(fabs(pU2Diff),iGenPt,pdfMCU2,pdfDATAU2);
+    pU1ValD = triGausInvGraph(fabs(pU1Diff),iGenPt,pdfMCU1,pdfDATAU1,wMCU1,wDATAU1);
+    pU2ValD = triGausInvGraph(fabs(pU2Diff),iGenPt,pdfMCU2,pdfDATAU2,wMCU2,wDATAU2);
     pU1ValD = pU1ValD*pDRMSU1;
     pU2ValD = pU2ValD*pDRMSU2;
 
@@ -5573,8 +5582,8 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
 
   if(writeTree) {
 
-    //    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_MADasDATA_mad%d_iter%d_%d_writeTree_%d.root",doMad,doIterativeMet,startTreeEntries,writeTree),"RECREATE");
-    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_mad%d_iter%d_%d_writeTree_%d.root",doMad,doIterativeMet,startTreeEntries,writeTree),"RECREATE");
+    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_POWasMAD_mad%d_iter%d_onlyU2%d_%d_writeTree_%d.root",doMad,doIterativeMet,doOnlyU2,startTreeEntries,writeTree),"RECREATE");
+    //    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_mad%d_iter%d_%d_writeTree_%d.root",doMad,doIterativeMet,startTreeEntries,writeTree),"RECREATE");
     //    fout_loopOverTree = new TFile(Form("TREE/foutIter_skimmedTree_mad%d_iter%d_%d_writeTree_%d.root",doMad,doIterativeMet,startTreeEntries,writeTree),"RECREATE");
     iterEvTree = new TTree("ZTreeProducer","ZTreeProducer");
     
@@ -6302,6 +6311,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
       cout << " reading TREE/output_skimmedTree_mad" << doMad << "_Y" << fId << "_iter0.root" << endl;
     } 
 
+    /*
     //    if(doMad && doClosure)    fDataFile = TFile::Open("TREE/output_mad1_iter1.root");
     //    if(!doMad && doClosure)    fDataFile = TFile::Open("TREE/output_pow1_MADasDATA_iter1.root"); // closure POW vs MAD
     if(!doMad && doClosure && !do8TeV)    {
@@ -6311,6 +6321,12 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
     if(doMad && doClosure && !do8TeV)   {
       fDataFile = TFile::Open("TREE/output_mad1_iter1.root"); // closure MAD vs DATA
       cout << " reading TREE/output_mad1_iter1.root" << endl;
+    }
+    */
+
+    if(doClosure && !do8TeV)   {
+      fDataFile = TFile::Open(Form("TREE/output_mad%d_POWasMAD_onlyU21_iter1.root",doMad)); // closure MAD vs DATA
+      cout << " reading TREE/output_mad" << doMad << "_POWasMAD_onlyU21_iter1.root"<< endl;
     }
 
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
@@ -6329,10 +6345,45 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
       if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,lZMU1RMS3Fit,lZMU1FracFit,lZMU1Mean1Fit, lZMU1Mean2Fit,/*lZMU13SigFit,*/lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,lZMU2RMS3Fit,lZMU2FracFit,lZMU2Mean1Fit, lZMU2Mean2Fit,/*lZMU23SigFit,*/"recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
       
       ////// DATA closure
-      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,lZDU1Mean1Fit, lZDU1Mean2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,lZDU2Mean1Fit, lZDU2Mean2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_JAN25_DATA_bkg_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root" ,"PF",fId);
+      //      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,lZDU1Mean1Fit, lZDU1Mean2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,lZDU2Mean1Fit, lZDU2Mean2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_JAN25_DATA_bkg_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root" ,"PF",fId);
       
       // MADGRAPH as DATA closure  
-      //      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,lZDU1Mean1Fit, lZDU1Mean2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,lZDU2Mean1Fit, lZDU2Mean2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
+      readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,lZDU1Mean1Fit, lZDU1Mean2Fit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,lZDU2Mean1Fit, lZDU2Mean2Fit,/*lZDU23SigFit,*/"recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
+
+      // those need to be read in readRecoil ....
+      TString nameMC="";
+      if(doMad) nameMC="recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
+      if(!doMad) nameMC="recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
+      TFile *fileMC_ = TFile::Open(nameMC.Data());
+      // fileDATA_ is my target
+      //  TFile *fileDATA_ = TFile::Open("recoilfits/recoilfit_JAN25_DATA_bkg_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root");
+      TFile *fileDATA_ = TFile::Open("recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root");
+      
+      //      RooAddPdf* pdfMCU1 = (RooAddPdf*) fileMC_->Get(Form("AddU1Y%d",fId));
+      //      RooAddPdf* pdfMCU2 = (RooAddPdf*) fileMC_->Get(Form("AddU2Y%d",fId));
+      
+      //      RooAddPdf* pdfDATAU1 = (RooAddPdf*) fileDATA_->Get(Form("AddU1Y%d",fId));
+      //      RooAddPdf* pdfDATAU2 = (RooAddPdf*) fileDATA_->Get(Form("AddU2Y%d",fId));
+
+      pdfMCU1 = (RooAddPdf*) fileMC_->Get(Form("AddU1Y%d",fId));
+      pdfMCU2 = (RooAddPdf*) fileMC_->Get(Form("AddU2Y%d",fId));
+      
+      pdfDATAU1 = (RooAddPdf*) fileDATA_->Get(Form("AddU1Y%d",fId));
+      pdfDATAU2 = (RooAddPdf*) fileDATA_->Get(Form("AddU2Y%d",fId));
+
+      ////-------------------
+
+      wMCU1 = new RooWorkspace("wMCU1","wMCU1");
+      wMCU1->import(*pdfMCU1,Silence());
+      
+      wMCU2 = new RooWorkspace("wMCU2","wMCU2");
+      wMCU2->import(*pdfMCU2,Silence());
+
+      wDATAU1 = new RooWorkspace("wDATAU1","wDATAU1");
+      wDATAU1->import(*pdfDATAU1,Silence());
+
+      wDATAU2 = new RooWorkspace("wDATAU2","wDATAU2");
+      wDATAU2->import(*pdfDATAU1,Silence());
 
       ////// MC closure
       //      if(!doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,/*lZDU13SigFit,*/lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,/*lZDU23SigFit,*/"recoilfits/recoilfit_JAN16_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
