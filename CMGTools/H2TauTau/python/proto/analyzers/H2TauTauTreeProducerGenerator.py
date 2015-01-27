@@ -3,7 +3,7 @@ from PhysicsTools.Heppy.physicsobjects import GenParticle
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import GenJet
 from PhysicsTools.HeppyCore.utils.deltar import cleanObjectCollection
 
-from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
+from PhysicsTools.Heppy.analyzers.core.TreeAnalyzerNumpy import TreeAnalyzerNumpy
 from CMGTools.H2TauTau.proto.analyzers.ntuple import *
 
 class H2TauTauTreeProducerGenerator( TreeAnalyzerNumpy ):

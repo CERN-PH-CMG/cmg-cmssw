@@ -1,14 +1,11 @@
 import operator
 
-from PhysicsTools.Heppy.analyzers.examples.DiLeptonAnalyzer import DiLeptonAnalyzer
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Muon, GenParticle
 from PhysicsTools.Heppy.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
 
+from CMGTools.H2TauTau.proto.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.H2TauTau.proto.physicsobjects.DiObject import TauMuon
-
-# from ROOT import gSystem
-# gSystem.Load('libSmatrix.so')
 
 class TauMuAnalyzer( DiLeptonAnalyzer ):
 
@@ -33,7 +30,6 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             'std::vector<pat::Muon>'
             )
         
-        # FIXME reading the genparticlespruned collection. problem elsewhere?
         self.mchandles['genParticles'] = AutoHandle( 'prunedGenParticles',
                                                      'std::vector<reco::GenParticle>' )
 
@@ -77,8 +73,6 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             # pyl = self.__class__.OtherLeptonClass(lep)
             pyl = Electron(lep)
             pyl.associatedVertex = event.goodVertices[0]
-            # JAN FIXME: Check if the overall rho is needed (from the
-            # VertexAnalyzer)
             pyl.rho = event.rho
             otherLeptons.append( pyl )
         return otherLeptons

@@ -109,7 +109,8 @@ def fillLepton( tree, pName, lepton ):
 
 def bookMuon( tree, pName ):
     bookLepton(tree, pName )
-    var(tree, '{pName}_mvaIso'.format(pName=pName))
+    # JAN FIXME - do we need the MVA iso and does it exist?
+    # var(tree, '{pName}_mvaIso'.format(pName=pName))
     var(tree, '{pName}_looseId'.format(pName=pName))
     var(tree, '{pName}_tightId'.format(pName=pName))
 
@@ -126,7 +127,7 @@ def fillMuon( tree, pName, muon ):
 
 def bookEle( tree, pName ):
     bookLepton(tree, pName )
-    var(tree, '{pName}_mvaIso'.format(pName=pName))
+    # var(tree, '{pName}_mvaIso'.format(pName=pName))
     var(tree, '{pName}_mvaTrigV0'.format(pName=pName))
     var(tree, '{pName}_mvaNonTrigV0'.format(pName=pName))
     var(tree, '{pName}_looseId'.format(pName=pName))
@@ -137,12 +138,15 @@ def bookEle( tree, pName ):
 
 def fillEle( tree, pName, ele ):
     fillLepton(tree, pName, ele)
-    fill(tree, '{pName}_mvaIso'.format(pName=pName), ele.mvaIso() )
-    fill(tree, '{pName}_mvaTrigV0'.format(pName=pName), ele.sourcePtr().electronID("mvaTrigV0") )
-    fill(tree, '{pName}_mvaNonTrigV0'.format(pName=pName), ele.sourcePtr().electronID("mvaNonTrigV0") )
+    # JAN FIXME - do we need the MVA iso and does it exist?
+    # fill(tree, '{pName}_mvaIso'.format(pName=pName), ele.mvaIso() )
+    # fill(tree, '{pName}_mvaTrigV0'.format(pName=pName), ele.electronID("mvaTrigV0") )
+    # fill(tree, '{pName}_mvaNonTrigV0'.format(pName=pName), ele.electronID("mvaNonTrigV0") )
+    fill(tree, '{pName}_mvaTrigV0'.format(pName=pName), ele.mvaTrigV0() )
+    fill(tree, '{pName}_mvaNonTrigV0'.format(pName=pName), ele.mvaNonTrigV0() )
     fill(tree, '{pName}_looseId'.format(pName=pName), ele.looseIdForEleTau() )
     fill(tree, '{pName}_tightId'.format(pName=pName), ele.tightIdForEleTau() )
-    fill(tree, '{pName}_numberOfMissingHits'.format(pName=pName), ele.numberOfHits() )
+    fill(tree, '{pName}_numberOfMissingHits'.format(pName=pName), ele.lostInner() )
     fill(tree, '{pName}_passConversionVeto'.format(pName=pName), ele.passConversionVeto() )
 
 # tau 

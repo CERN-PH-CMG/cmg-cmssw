@@ -15,16 +15,17 @@ from PhysicsTools.Heppy.analyzers.core.PileUpAnalyzer import PileUpAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.JetAnalyzer import JetAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.EmbedWeighter import EmbedWeighter
 from CMGTools.H2TauTau.proto.analyzers.GenErsatzAnalyzer import GenErsatzAnalyzer
-from CMGTools.H2TauTau.proto.analyzers.TauMuAnalyzer import TauMuAnalyzer
+from CMGTools.H2TauTau.proto.analyzers.TauEleAnalyzer import TauEleAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.DYJetsFakeAnalyzer import DYJetsFakeAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.WNJetsAnalyzer import WNJetsAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.NJetsAnalyzer import NJetsAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.HiggsPtWeighter import HiggsPtWeighter
 from CMGTools.H2TauTau.proto.analyzers.WNJetsTreeAnalyzer import WNJetsTreeAnalyzer
+from CMGTools.H2TauTau.proto.analyzers.DYLLReweighterTauEle import DYLLReweighterTauEle
 from CMGTools.H2TauTau.proto.analyzers.TauDecayModeWeighter import TauDecayModeWeighter
 from CMGTools.H2TauTau.proto.analyzers.TauFakeRateWeighter import TauFakeRateWeighter
 from CMGTools.H2TauTau.proto.analyzers.LeptonWeighter import LeptonWeighter
-from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerTauMu import H2TauTauTreeProducerTauMu
+from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerTauEle import H2TauTauTreeProducerTauEle
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauSyncTree import H2TauTauSyncTree
 
 from CMGTools.RootTools.analyzers.VBFSimpleAnalyzer import VBFSimpleAnalyzer
@@ -32,7 +33,7 @@ from CMGTools.RootTools.analyzers.VBFSimpleAnalyzer import VBFSimpleAnalyzer
 
 # from CMGTools.Production.getFiles import getFiles
 # from CMGTools.H2TauTau.triggerMap import pathsAndFilters
-# from CMGTools.H2TauTau.proto.weights.weighttable import mu_id_taumu_2012, mu_iso_taumu_2012
+# from CMGTools.H2TauTau.proto.weights.weighttable import ele_id_tauele_2012, ele_iso_tauele_2012
 # from CMGTools.H2TauTau.proto.samples.sampleShift import selectShift
 
 
@@ -50,15 +51,15 @@ syncntuple = False
 puFileMC = None
 puFileData = None
 
-# mc_tauEffWeight_mc = 'effTau_muTau_MC_2012ABCDSummer13'
-# mc_muEffWeight_mc = 'effMu_muTau_MC_2012ABCD'
-# mc_tauEffWeight = 'effTau_muTau_Data_2012ABCDSummer13'
-# mc_muEffWeight = 'effMu_muTau_Data_2012ABCDSummer13'
+# hlt_tauEffWeight_mc = 'effTau_eTau_MC_2012ABCDSummer13'
+# hlt_tauEffWeight = 'effTau_eTau_Data_2012ABCDSummer13'
+# hlt_eleEffWeight_mc = 'effEle_eTau_MC_2012ABCD'
+# hlt_eleEffWeight = 'effEle_eTau_Data_2012ABCDSummer13'
 
-mc_tauEffWeight_mc = None
-mc_muEffWeight_mc = None
-mc_tauEffWeight = None
-mc_muEffWeight = None
+hlt_tauEffWeight_mc = None
+hlt_tauEffWeight = None
+hlt_eleEffWeight_mc = None
+hlt_eleEffWeight = None
     
     
 eventSelector = cfg.Analyzer(
@@ -108,19 +109,18 @@ genErsatzAna = cfg.Analyzer(
     verbose=False
     )
 
-TauMuAna = cfg.Analyzer(
-    TauMuAnalyzer,
-    'TauMuAnalyzer',
+TauEleAna = cfg.Analyzer(
+    TauEleAnalyzer,
+    'TauEleAnalyzer',
     scaleShift1 = tauScaleShift,
     pt1 = 20,
     eta1 = 2.3,
     iso1 = None,
-    pt2 = 20,
+    pt2 = 24,
     eta2 = 2.1,
     iso2 = 0.1,
     m_min = 10,
     m_max = 99999,
-    dR_min = 0.5,
     # triggerMap = pathsAndFilters,
     verbose = False
     )
@@ -130,6 +130,17 @@ dyJetsFakeAna = cfg.Analyzer(
     'DYJetsFakeAnalyzer',
     leptonType = 13,
     src = 'prunedGenParticles',
+    )
+
+dyLLReweighterTauEle = cfg.Analyzer(
+    DYLLReweighterTauEle,
+    'DYLLReweighterTauEle',
+    # 2012 
+    W1p0PB = 1., #1.37, # weight for 1 prong 0 Pi Barrel
+    W1p0PE = 1., #1.11,
+    W1p1PB = 1., #2.18,
+    W1p1PE = 1., #0.47,
+    verbose = False
     )
 
 WNJetsAna = cfg.Analyzer(
@@ -176,9 +187,9 @@ tauWeighter = cfg.Analyzer(
     disable = True,
     )
 
-muonWeighter = cfg.Analyzer(
+eleWeighter = cfg.Analyzer(
     LeptonWeighter,
-    'LeptonWeighter_mu',
+    'LeptonWeighter_ele',
     effWeight = None,
     effWeightMC = None,
     lepton = 'leg2',
@@ -187,7 +198,6 @@ muonWeighter = cfg.Analyzer(
     idWeight = None,
     isoWeight = None    
     )
-
 
 jetAna = cfg.Analyzer(
     JetAnalyzer,
@@ -213,8 +223,8 @@ vbfSimpleAna = cfg.Analyzer(
     )
 
 treeProducer = cfg.Analyzer(
-    H2TauTauTreeProducerTauMu,
-    'H2TauTauTreeProducerTauMu'
+    H2TauTauTreeProducerTauEle,
+    'H2TauTauTreeProducerTauEle'
     )
 
 treeProducerXCheck = cfg.Analyzer(
@@ -246,8 +256,9 @@ sequence = cfg.Sequence( [
     jsonAna, 
     # triggerAna,
     vertexAna, 
-    TauMuAna,
+    TauEleAna,
     dyJetsFakeAna,
+    dyLLReweighterTauEle,
     # WNJetsAna,
     # WNJetsTreeAna,
     NJetsAna,
@@ -259,7 +270,7 @@ sequence = cfg.Sequence( [
     tauDecayModeWeighter,
     tauFakeRateWeighter,
     tauWeighter, 
-    muonWeighter, 
+    eleWeighter, 
     treeProducer,
     # treeProducerXCheck
    ] )
@@ -269,7 +280,7 @@ if syncntuple:
 
 # selectedComponents = [comp for comp in selectedComponents if comp.dataset_entries > 0]
 
-mc_dict['HiggsTTHInclusive125'].files = ['/afs/cern.ch/user/s/steggema/work/CMSSW_7_2_3/src/CMGTools/H2TauTau/prod/tauMu_fullsel_tree_CMG.root']
+mc_dict['HiggsTTHInclusive125'].files = ['/afs/cern.ch/user/s/steggema/work/CMSSW_7_2_3/src/CMGTools/H2TauTau/prod/tauEle_fullsel_tree_CMG.root']
 
 test = 1
 if test==1:
