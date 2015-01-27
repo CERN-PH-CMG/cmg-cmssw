@@ -14,4 +14,4 @@ ele cuts: (abs(LepGood1_pdgId) == 13 || (LepGood1_convVeto && LepGood1_lostHits 
 ht: htJet40j > 80
 met: met_pt > 30 || htJet40j > 500
 njet: nJet40 >=2
-nBjet: nBJetMedium40 >= 0
+nBjet: nBJetMedium25 >= 0
