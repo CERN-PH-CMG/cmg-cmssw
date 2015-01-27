@@ -122,7 +122,6 @@ TauMuAna = cfg.Analyzer(
     m_max = 99999,
     dR_min = 0.5,
     # triggerMap = pathsAndFilters,
-    mvametsigs = 'mvaMETTauMu',
     verbose = False
     )
 
@@ -193,8 +192,8 @@ muonWeighter = cfg.Analyzer(
 jetAna = cfg.Analyzer(
     JetAnalyzer,
     'JetAnalyzer',
-    # jetCol = 'slimmedJets', # <- These are CHS jets
-    jetCol = 'patJetsAK4PF',
+    jetCol = 'slimmedJets', # <- These are CHS jets
+    # jetCol = 'patJetsAK4PF', # <- These are plain PF jets
     jetPt = 20.,
     jetEta = 4.7,
     btagSFseed = 123456,
@@ -240,7 +239,7 @@ for mc in MC_list:
     mc.puFileData = puFileData
 
 
-selectedComponents = [mc_dict['HiggsVBF125']]
+selectedComponents = [mc_dict['HiggsTTHInclusive125']]
 
 sequence = cfg.Sequence( [
     # eventSelector,
@@ -270,9 +269,11 @@ if syncntuple:
 
 # selectedComponents = [comp for comp in selectedComponents if comp.dataset_entries > 0]
 
-test = 0
+mc_dict['HiggsTTHInclusive125'].files = ['/afs/cern.ch/user/s/steggema/work/CMSSW_7_2_3/src/CMGTools/H2TauTau/prod/tauMu_fullsel_tree_CMG.root']
+
+test = 1
 if test==1:
-    comp = mc_dict['HiggsVBF125']
+    comp = mc_dict['HiggsTTHInclusive125']
     # comp = data_Run2012A
     selectedComponents = [comp]
     comp.splitFactor = 1
