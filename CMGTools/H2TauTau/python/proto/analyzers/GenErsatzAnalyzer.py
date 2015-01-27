@@ -1,5 +1,4 @@
 from CMGTools.RootTools.analyzers.GenParticleAnalyzer import *
-from PhysicsTools.HeppyCore.utils.deltar import matchObjectCollection
 from PhysicsTools.Heppy.physicsutils.genutils import *
 
 class Boson(GenParticle):
