@@ -1,6 +1,6 @@
 from CMGTools.RootTools.analyzers.GenParticleAnalyzer import *
 from PhysicsTools.HeppyCore.utils.deltar import matchObjectCollection
-from CMGTools.RootTools.physicsobjects.genutils import *
+from PhysicsTools.Heppy.physicsutils.genutils import *
 from math import sqrt
 
 class DYJetsFakeAnalyzer( GenParticleAnalyzer ):

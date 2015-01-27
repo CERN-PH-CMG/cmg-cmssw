@@ -1,9 +1,6 @@
-import re
-
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from CMGTools.RootTools.analyzers.GenParticleAnalyzer import *
-from PhysicsTools.HeppyCore.utils.deltar import matchObjectCollection
-from CMGTools.RootTools.physicsobjects.genutils import *
+from PhysicsTools.Heppy.physicsutils.genutils import *
 from PhysicsTools.HeppyCore.statistics.average import Average
 from CMGTools.RootTools.statistics.TreeNumpy import TreeNumpy
 
@@ -116,8 +113,8 @@ class NJetsAnalyzer( Analyzer ):
             'LHEEventProduct'
             )
         
-    def write(self):
-        super(NJetsAnalyzer, self).write()
+    def write(self, setup):
+        super(NJetsAnalyzer, self).write(setup)
         if self.cfg_comp.isMC:
             self.rootfile.Write()
             self.rootfile.Close()

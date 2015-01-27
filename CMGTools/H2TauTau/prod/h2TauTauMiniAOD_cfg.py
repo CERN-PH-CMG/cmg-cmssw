@@ -17,7 +17,7 @@ numberOfFilesToProcess = -1
 debugEventContent = False
 
 # choose from 'tau-mu' 'di-tau' 'tau-ele' 'mu-ele' 'all'
-channel = 'all'
+channel = 'tau-mu'
 
 # newSVFit enables the svfit mass reconstruction used for the H->tau tau analysis.
 # if false, much faster processing but mass is wrong. 
@@ -26,7 +26,7 @@ tauScaling = 0 # JAN: to be implemented downstream
 
 # increase to 1000 before running on the batch, to reduce size of log files
 # on your account
-reportInterval = 1
+reportInterval = 100
 
 print sep_line
 print 'channel', channel

@@ -1,8 +1,8 @@
-from PhysicsTools.Heppy.analyzers.examples.DiLeptonAnalyzer import DiLeptonAnalyzer
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Muon, GenParticle
 from PhysicsTools.Heppy.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
 
+from CMGTools.H2TauTau.proto.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.H2TauTau.proto.physicsobjects.DiObject import TauElectron
 
 class TauEleAnalyzer( DiLeptonAnalyzer ):
@@ -13,29 +13,22 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     def declareHandles(self):
         super(TauEleAnalyzer, self).declareHandles()
-        # print 'TauEleAnalyzer.declareHandles'
         self.handles['diLeptons'] = AutoHandle(
             'cmgTauEleCorSVFitFullSel',
-            'std::vector<cmg::DiTauObject<cmg::Tau,cmg::Electron>>'
+            'std::vector<pat::CompositeCandidate>'
             )
 
-        # if hasattr(self.cfg_ana, 'mvametsigs'):
-        #     self.handles['mvametsigs'] = AutoHandle(
-        #         self.cfg_ana.mvametsigs, # 'mvaMETTauMu'
-        #         'std::vector<cmg::METSignificance>'
-        #         )
-        
         self.handles['otherLeptons'] = AutoHandle(
-            'cmgMuonSel',
-            'std::vector<cmg::Muon>'
+            'slimmedMuons',
+            'std::vector<pat::Muon>'
             )
 
         self.handles['leptons'] = AutoHandle(
-            'cmgElectronSel',
-            'std::vector<cmg::Electron>'
+            'slimmedElectrons',
+            'std::vector<pat::Electron>'
             )
 
-        self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
+        self.mchandles['genParticles'] = AutoHandle( 'prunedGenParticles',
                                                      'std::vector<reco::GenParticle>' )
 
         self.relaxEleId = False
@@ -55,12 +48,9 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             pydil = self.__class__.DiObjectClass(dil)
             pydil.leg1().associatedVertex = event.goodVertices[0]
             pydil.leg2().associatedVertex = event.goodVertices[0]
-            #COLIN for debugging
-            pydil.leg2().eventId = event.eventId
+            pydil.leg2().rho = event.rho
             if not self.testLeg2( pydil.leg2(), 999999 ):
                 continue
-            # if hasattr(self.cfg_ana, 'mvametsigs'):
-            #     pydil.mvaMetSig = mvaMetSig = self.handles['mvametsigs'].product()[index]
             diLeptons.append( pydil )
         return diLeptons
 
@@ -76,6 +66,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         for index, lep in enumerate(cmgLeptons):
             pyl = self.__class__.LeptonClass(lep)
             pyl.associatedVertex = event.goodVertices[0]
+            pyl.rho = event.rho
             # if not pyl.looseIdForEleTau():
             #     continue
             leptons.append( pyl )
@@ -169,14 +160,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             else:
                 event.genMatched = False                
 
-#        for dil in event.diLeptons :
-#            print 'TEST tau iso',result,dil.leg1().tauID('byRawIsoMVA')
-
         return True
-
-
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-
 
     def testLeg1ID(self, tau):
         # import pdb; pdb.set_trace()
@@ -185,28 +169,15 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             return tau.tauID("againstMuonLoose")>0.5 and \
                (tau.zImpact() > 0.5 or tau.zImpact() < -1.5) and\
                self.testVertex( tau )    
-        return tau.electronMVA3Medium() and \
+        return tau.tauID('againstElectronMediumMVA5') and \
                tau.tauID("againstMuonLoose")>0.5 and \
                (tau.zImpact() > 0.5 or tau.zImpact() < -1.5) and\
                self.testVertex( tau )
-
-               # tau.tauID("againstElectronTightMVA3") >0.5 and \
-               # tau.tauID("againstElectronMVA") >0.5 and \ 
-               # tau.tauID("againstElectronTightMVA2") >0.5 and \
-               # tau.tauID("againstMuonLoose")>0.5 and \
-
-
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-
 
     def testVertex(self, lepton):
         '''Tests vertex constraints, for mu and tau'''
         return abs(lepton.dxy()) < 0.045 and \
                abs(lepton.dz()) < 0.2 
-
-
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-
 
     def testLeg1Iso(self, tau, isocut):
         '''if isocut is None, returns true if three-hit iso MVA is passed.
@@ -214,11 +185,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         if isocut is None:
             return tau.tauID('byCombinedIsolationDeltaBetaCorrRaw3Hits') < 1.5
         else:
-            return tau.tauID("byRawIsoMVA")>isocut
-
-
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-
+            return tau.tauID("byIsolationMVA3oldDMwLTraw")>isocut
 
     def testLeg2ID(self, electron):
         '''Tight muon selection, no isolation requirement'''
@@ -230,18 +197,10 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         return electron.tightIdForEleTau() and \
                self.testVertex( electron )
 
-
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-
-
     def testLeg2Iso(self, leg, isocut): #electron
         if isocut is None:
            isocut = self.cfg_ana.iso2
         return leg.relIsoAllChargedDB05() < isocut
-
-
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-
 
     def testLooseLeg2 (self, leg): # electrons
         if leg.relIsoAllChargedDB05() > 0.3 : return False
@@ -250,10 +209,6 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         if leg.looseIdForEleTau()  == False : return False
         return True
 
-
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-
-
     def testTightOtherLepton (self, muon):
         '''Tight muon selection, no isolation requirement'''
         return muon.tightId ()                   and \
@@ -261,10 +216,6 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
                abs (muon.eta ()) < 2.4           and \
                muon.pt () > 10.                  and \
                muon.relIsoAllChargedDB05 () < 0.3
-
-
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-
 
     def thirdLeptonVeto(self, leptons, otherLeptons, isoCut = 0.3) :
         # count electrons (leg 2)
@@ -281,10 +232,6 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             return False
         else:
             return True
-        
-        
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-
 
     def leptonAccept(self, leptons, isoCut = 0.3) :
         ''' returns True if the additional lepton veto is successful'''
