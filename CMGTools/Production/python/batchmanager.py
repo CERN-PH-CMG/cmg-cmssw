@@ -241,6 +241,7 @@ class BatchManager:
         "LXPLUS" : batch command is bsub, and logged on lxplus
         "PSI"    : batch command is qsub, and logged to t3uiXX
         "NAF"    : batch command is qsub, and logged on naf
+        "IC"     : batch command is qsub, and logged on hep.ph.ic.ac.uk
         "LOCAL"  : batch command is nohup.
 
         In all other cases, a CmsBatchException is raised
@@ -269,6 +270,9 @@ class BatchManager:
             elif onNAF:
                 print 'running on NAF : %s from %s' % (batchCmd, hostName)
                 return 'NAF'
+            elif onIC:
+                print 'running on IC : %s from %s' % (batchCmd, hostName)
+                return 'IC'
             else:
                 err = 'Cannot run %s on %s' % (batchCmd, hostName)
                 raise ValueError( err )
