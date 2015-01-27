@@ -117,17 +117,40 @@ pat::PATPhotonSlimmer::produce(edm::Event & iEvent, const edm::EventSetup & iSet
             }
         }
         if (saveNonZSClusterShapes_(photon)) {
-            std::vector<float> vCov = lazyToolsNoZS.localCovariances(*( photon.superCluster()->seed()));
+            std::vector<float> full5x5_locCov = lazyToolsNoZS.localCovariances(*( photon.superCluster()->seed()));
+            std::vector<float> full5x5_cov =  lazyToolsNoZS.covariances(*( photon.superCluster()->seed()));
+
             float r9 = lazyToolsNoZS.e3x3( *( photon.superCluster()->seed())) / photon.superCluster()->rawEnergy() ;
-            float sigmaIetaIeta = ( !edm::isNotFinite(vCov[0]) ) ? sqrt(vCov[0]) : 0;
-            float sigmaIetaIphi = vCov[1];
-            float sigmaIphiIphi = ( !edm::isNotFinite(vCov[2]) ) ? sqrt(vCov[2]) : 0;
+            float sigmaIetaIeta = ( !edm::isNotFinite(full5x5_locCov[0]) ) ? sqrt(full5x5_locCov[0]) : 0;
+            float sigmaIetaIphi = full5x5_locCov[1];
+            float sigmaIphiIphi = ( !edm::isNotFinite(full5x5_locCov[2]) ) ? sqrt(full5x5_locCov[2]) : 0;
             float e15o55 = lazyToolsNoZS.e1x5( *( photon.superCluster()->seed()) ) / lazyToolsNoZS.e5x5( *( photon.superCluster()->seed()) );
             photon.addUserFloat("sigmaIetaIeta_NoZS", sigmaIetaIeta);
             photon.addUserFloat("sigmaIetaIphi_NoZS", sigmaIetaIphi);
             photon.addUserFloat("sigmaIphiIphi_NoZS", sigmaIphiIphi);
             photon.addUserFloat("r9_NoZS", r9);
             photon.addUserFloat("e1x5_over_e5x5_NoZS", e15o55);
+
+            float full5x5_maxXtal =   lazyToolsNoZS.eMax( *( photon.superCluster()->seed()) );
+            float full5x5_e1x5    =   lazyToolsNoZS.e1x5( *( photon.superCluster()->seed()) );
+            float full5x5_e2x5    =   lazyToolsNoZS.e2x5Max(  *( photon.superCluster()->seed()) );
+            float full5x5_e3x3    =   lazyToolsNoZS.e3x3(  *( photon.superCluster()->seed()) );
+            float full5x5_e5x5    =   lazyToolsNoZS.e5x5( *( photon.superCluster()->seed()) );
+
+            float full5x5_sigmaEtaEta = sqrt(full5x5_cov[0]);
+            float full5x5_sigmaIetaIeta = ( !edm::isNotFinite(full5x5_locCov[0]) ) ? sqrt(full5x5_locCov[0]) : 0; 
+
+            /// fill full5x5 shower shape block
+            reco::Photon::ShowerShape  full5x5_showerShape;
+            full5x5_showerShape.e1x5= full5x5_e1x5;
+            full5x5_showerShape.e2x5= full5x5_e2x5;
+            full5x5_showerShape.e3x3= full5x5_e3x3;
+            full5x5_showerShape.e5x5= full5x5_e5x5;
+            full5x5_showerShape.maxEnergyXtal =  full5x5_maxXtal;
+            full5x5_showerShape.sigmaEtaEta =    full5x5_sigmaEtaEta;
+            full5x5_showerShape.sigmaIetaIeta =  full5x5_sigmaIetaIeta;
+            photon.full5x5_setShowerShapeVariables ( full5x5_showerShape ); 
+
         }
      }
 

@@ -76,15 +76,14 @@ mcSamplesPHYS14_PU40bx25 = [TT_PU40bx25,TTH_PU40bx25,DYJetsMuMuM50_PtZ180_PU40bx
 
 #### Background samples
 
-QCD_HT_100To250 = kreator.makeMCComponent("QCD_HT_100To250", "/QCD_HT-100To250_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root")
-QCD_HT_250To500 = kreator.makeMCComponent("QCD_HT_250To500", "/QCD_HT_250To500_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root")
-QCD_HT_250To500_ext1 = kreator.makeMCComponent("QCD_HT_250To500_ext1", "/QCD_HT_250To500_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1_ext1-v2/MINIAODSIM", "CMS", ".*root")
-QCD_HT_500To1000 = kreator.makeMCComponent("QCD_HT_500To1000", "/QCD_HT-500To1000_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root")
-QCD_HT_500To1000_ext1 = kreator.makeMCComponent("QCD_HT_500To1000", "/QCD_HT-500To1000_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1_ext1-v1/MINIAODSIM", "CMS", ".*root")
-QCD_HT_1000ToInf = kreator.makeMCComponent("QCD_HT_1000ToInf", "/QCD_HT_1000ToInf_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1_ext1-v1/MINIAODSIM", "CMS", ".*root")
-QCD_HT_1000ToInf_ext1 = kreator.makeMCComponent("QCD_HT_1000ToInf", "/QCD_HT_1000ToInf_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root")
-
-
+## Cross sections from McM (LO Madgraph)
+QCD_HT_100To250 = kreator.makeMCComponent("QCD_HT_100To250", "/QCD_HT-100To250_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 28730000)
+QCD_HT_250To500 = kreator.makeMCComponent("QCD_HT_250To500", "/QCD_HT_250To500_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 670500)
+QCD_HT_250To500_ext1 = kreator.makeMCComponent("QCD_HT_250To500_ext1", "/QCD_HT_250To500_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1_ext1-v2/MINIAODSIM", "CMS", ".*root", 670500)
+QCD_HT_500To1000 = kreator.makeMCComponent("QCD_HT_500To1000", "/QCD_HT-500To1000_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 26740)
+QCD_HT_500To1000_ext1 = kreator.makeMCComponent("QCD_HT_500To1000_ext1", "/QCD_HT-500To1000_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1_ext1-v1/MINIAODSIM", "CMS", ".*root", 26740)
+QCD_HT_1000ToInf = kreator.makeMCComponent("QCD_HT_1000ToInf", "/QCD_HT_1000ToInf_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1_ext1-v1/MINIAODSIM", "CMS", ".*root", 769.7)
+QCD_HT_1000ToInf_ext1 = kreator.makeMCComponent("QCD_HT_1000ToInf_ext1", "/QCD_HT_1000ToInf_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 769.7)
 QCDHT = [
 QCD_HT_100To250,
 QCD_HT_250To500,
@@ -95,8 +94,10 @@ QCD_HT_500To1000_ext1,
 QCD_HT_1000ToInf_ext1
 ]
 
-WJetsToLNu = kreator.makeMCComponent("WJetsToLNu","/WJetsToLNu_13TeV-madgraph-pythia8-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",20508.9)
+# W inclusive (cross section from FEWZ, StandardModelCrossSectionsat13TeV)
+WJetsToLNu = kreator.makeMCComponent("WJetsToLNu","/WJetsToLNu_13TeV-madgraph-pythia8-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 20508.9)
 
+# cross sections for WJets taken from McM LO times inclusive k-factor from FEWZ(20508.9 pb x3)/McM(50100.0) 
 WJetsToLNu_HT100to200 = kreator.makeMCComponent("WJetsToLNu_HT100to200", "/WJetsToLNu_HT-100to200_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",1817.0*1.23)
 WJetsToLNu_HT200to400 = kreator.makeMCComponent("WJetsToLNu_HT200to400", "/WJetsToLNu_HT-200to400_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",471.6*1.23)
 WJetsToLNu_HT400to600 = kreator.makeMCComponent("WJetsToLNu_HT400to600", "/WJetsToLNu_HT-400to600_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",55.61*1.23)
@@ -107,8 +108,11 @@ WJetsToLNu_HT200to400,
 WJetsToLNu_HT400to600,
 WJetsToLNu_HT600toInf,
 ]
+
+# DY inclusive (cross section from FEWZ, StandardModelCrossSectionsat13TeV)
 DYJetsToLL_M50 = kreator.makeMCComponent("DYJetsToLL_M50", "/DYJetsToLL_M-50_13TeV-madgraph-pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 2008.*3)
 
+# DY HT bins: cross sections for DYJets taken from McM LO times inclusive k-factor from FEWZ(2008 pb x3)/McM(4746)
 DYJetsToLL_M50_HT100to200 = kreator.makeMCComponent("DYJetsToLL_M50_HT100to200", "/DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",194.3*1.27)
 DYJetsToLL_M50_HT200to400 = kreator.makeMCComponent("DYJetsToLL_M50_HT200to400", "/DYJetsToLL_M-50_HT-200to400_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",52.24*1.27)
 DYJetsToLL_M50_HT400to600 = kreator.makeMCComponent("DYJetsToLL_M50_HT400to600", "/DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",6.546*1.27)
@@ -119,6 +123,7 @@ DYJetsToLL_M50_HT200to400,
 DYJetsToLL_M50_HT400to600,
 DYJetsToLL_M50_HT600toInf,
 ]
+
 DYJetsMuMuM50_PtZ180 = kreator.makeMCComponent("DYJetsMuMuM50_PtZ180", "/DYJetsToMuMu_PtZ-180_M-50_13TeV-madgraph/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v3/MINIAODSIM", "CMS", ".*root")
 
 GJets_HT100to200 = kreator.makeMCComponent("GJets_HT100to200", "/GJets_HT-100to200_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",1534)
@@ -140,11 +145,11 @@ ZJetsToNuNu_HT400to600,
 ZJetsToNuNu_HT600toInf,
 ]
 
-# https://twiki.cern.ch/twiki/bin/viewauth/CMS/SingleTopSigma
-TToLeptons_tch = kreator.makeMCComponent("TToLeptons_tch", "/TToLeptons_t-channel-CSA14_Tune4C_13TeV-aMCatNLO-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 136.05*0.108) 
-TToLeptons_sch = kreator.makeMCComponent("TToLeptons_sch", "/TToLeptons_s-channel-CSA14_Tune4C_13TeV-aMCatNLO-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 7.20*0.108)
-TBarToLeptons_tch = kreator.makeMCComponent("TBarToLeptons_tch", "/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 80.97*0.108)
-TBarToLeptons_sch = kreator.makeMCComponent("TBarToLeptons_sch", "/TBarToLeptons_s-channel-CSA14_Tune4C_13TeV-aMCatNLO-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",  4.16*0.108)
+# Single top cross sections: https://twiki.cern.ch/twiki/bin/viewauth/CMS/SingleTopSigma
+TToLeptons_tch = kreator.makeMCComponent("TToLeptons_tch", "/TToLeptons_t-channel-CSA14_Tune4C_13TeV-aMCatNLO-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 136.05*0.108*3) 
+TToLeptons_sch = kreator.makeMCComponent("TToLeptons_sch", "/TToLeptons_s-channel-CSA14_Tune4C_13TeV-aMCatNLO-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 7.20*0.108*3)
+TBarToLeptons_tch = kreator.makeMCComponent("TBarToLeptons_tch", "/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 80.97*0.108*3)
+TBarToLeptons_sch = kreator.makeMCComponent("TBarToLeptons_sch", "/TBarToLeptons_s-channel-CSA14_Tune4C_13TeV-aMCatNLO-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",  4.16*0.108*3)
 TBar_tWch = kreator.makeMCComponent("TBar_tWch", "/Tbar_tW-channel-DR_Tune4C_13TeV-CSA14-powheg-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",35.6)
 T_tWch = kreator.makeMCComponent("T_tWch", "/T_tW-channel-DR_Tune4C_13TeV-CSA14-powheg-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",35.6)
 
@@ -152,18 +157,27 @@ SingleTop = [
     TToLeptons_tch, TToLeptons_sch, TBarToLeptons_tch, TBarToLeptons_sch, TBar_tWch, T_tWch
 ]
 
+# TTbar cross section: MCFM with dynamic scale, StandardModelCrossSectionsat13TeV
 TTJets = kreator.makeMCComponent("TTJets", "/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",809.1)
+
+# TTV cross sections are from 13 TeV MG5_aMC@NLO v2.2.1, NNPDF 2.3nlo, fixed scale = mtop + 0.5*mv
 TTWJets = kreator.makeMCComponent("TTWJets", "/TTWJets_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",0.6647)
 TTZJets = kreator.makeMCComponent("TTZJets", "/TTZJets_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",0.8565)
+
+# TTH cross section from LHC Higgs XS WG: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt1314TeV?rev=15
 TTH = kreator.makeMCComponent("TTH", "/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v2/MINIAODSIM", "CMS", ".*root",0.5085)
 
 
-WZJetsTo3LNu = kreator.makeMCComponent("WZJetsTo3LNu", "/WZJetsTo3LNu_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",2.29)
-ZZTo4L = kreator.makeMCComponent("ZZTo4L","/ZZTo4L_Tune4C_13TeV-powheg-pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 	31.8*(0.03366**2))
+# cross section from StandardModelCrossSectionsat13TeV (NLO MCFM, mll > 12) times BR=(3*0.108)*(3*0.0337)
+WZJetsTo3LNu = kreator.makeMCComponent("WZJetsTo3LNu", "/WZJetsTo3LNu_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",2.165)
+# cross section from StandardModelCrossSectionsat13TeV (NLO MCFM, mll > 12) times BR=(3*0.0337)**2
+ZZTo4L = kreator.makeMCComponent("ZZTo4L","/ZZTo4L_Tune4C_13TeV-powheg-pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 	31.8*(3*0.03366**2))
 
+# GGH cross section from LHC Higgs XS WG: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt1314TeV?rev=15
 GGHZZ4L = kreator.makeMCComponent("GGHZZ4L", "/GluGluToHToZZTo4L_M-125_13TeV-powheg-pythia6/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 43.92*2.76E-04)
 
 #### Signal samples
+# cross sections from LHC SUSY Cross Section Working Group https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SUSYCrossSections
 SMS_T2tt_2J_mStop850_mLSP100 = kreator.makeMCComponent("SMS_T2tt_2J_mStop850_mLSP100", "/SMS-T2tt_2J_mStop-850_mLSP-100_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",0.0189612)
 SMS_T2tt_2J_mStop650_mLSP325 = kreator.makeMCComponent("SMS_T2tt_2J_mStop650_mLSP325", "/SMS-T2tt_2J_mStop-650_mLSP-325_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",0.107045)
 SMS_T2tt_2J_mStop500_mLSP325 = kreator.makeMCComponent("SMS_T2tt_2J_mStop500_mLSP325", "/SMS-T2tt_2J_mStop-500_mLSP-325_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",0.51848)
@@ -197,7 +211,72 @@ SMS_T1bbbb_2J_mGl1000_mLSP900,
 
 mcSamplesPHYS14_PU20bx25 = QCDHT + [WJetsToLNu] + WJetsToLNuHT +  [DYJetsToLL_M50, DYJetsMuMuM50_PtZ180] + DYJetsM50HT + GJetsHT + ZJetsToNuNuHT + SingleTop + [ TTJets, TTWJets, TTZJets, TTH, WZJetsTo3LNu, ZZTo4L, GGHZZ4L] + SusySignalSamples
 
-mcSamples = mcSamplesPHYS14_PU20bx25 + mcSamplesPHYS14_PU40bx25
+
+## PRIVATE SAMPLES
+
+T5ttttDeg_mGo1000_mStop300_mCh285_mChi280 = kreator.makeMCComponentFromEOS('T5ttttDeg_mGo1000_mStop300_mCh285_mChi280', '/T5ttttDeg_mGo1000_mStop300_mCh285_mChi280_23bodydec_v2/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.325388)
+T5ttttDeg_mGo1300_mStop300_mCh285_mChi280 = kreator.makeMCComponentFromEOS('T5ttttDeg_mGo1300_mStop300_mCh285_mChi280', '/T5ttttDeg_mGo1300_mStop300_mCh285_mChi280_23bodydec_v2/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.0460525)
+T5ttttDeg_mGo1000_mStop300_mChi280 = kreator.makeMCComponentFromEOS('T5ttttDeg_mGo1000_mStop300_mChi280', '/T5ttttDeg_mGo1000_mStop300_mChi280_4bodydec_v2/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.325388)
+T5ttttDeg_mGo1300_mStop300_mChi280 = kreator.makeMCComponentFromEOS('T5ttttDeg_mGo1300_mStop300_mChi280', '/T5ttttDeg_mGo1300_mStop300_mChi280_4bodydec_v2/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.0460525)
+T5ttttDeg_mGo1000_mStop300_mCh285_mChi280_dil = kreator.makeMCComponentFromEOS('T5ttttDeg_mGo1000_mStop300_mCh285_mChi280_dil', '/T5ttttDeg_mGo1000_mStop300_mCh285_mChi280_23bodydec_dilepfilterPt8p5_v2/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.325388)
+T5ttttDeg_mGo1300_mStop300_mCh285_mChi280_dil = kreator.makeMCComponentFromEOS('T5ttttDeg_mGo1300_mStop300_mCh285_mChi280_dil', '/T5ttttDeg_mGo1300_mStop300_mCh285_mChi280_23bodydec_dilepfilterPt8p5_v2/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.0460525)
+T5ttttDeg = [ T5ttttDeg_mGo1000_mStop300_mCh285_mChi280, T5ttttDeg_mGo1300_mStop300_mCh285_mChi280, T5ttttDeg_mGo1000_mStop300_mChi280, T5ttttDeg_mGo1300_mStop300_mChi280, T5ttttDeg_mGo1000_mStop300_mCh285_mChi280_dil, T5ttttDeg_mGo1300_mStop300_mCh285_mChi280_dil ]
+
+T1ttbbWW_mGo1000_mCh725_mChi715 = kreator.makeMCComponentFromEOS('T1ttbbWW_mGo1000_mCh725_mChi715', '/T1ttbbWW_2J_mGo1000_mCh725_mChi715_3bodydec_v2/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.325388)
+T1ttbbWW_mGo1000_mCh725_mChi720 = kreator.makeMCComponentFromEOS('T1ttbbWW_mGo1000_mCh725_mChi720', '/T1ttbbWW_2J_mGo1000_mCh725_mChi720_3bodydec_v2/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.325388)
+T1ttbbWW_mGo1300_mCh300_mChi290 = kreator.makeMCComponentFromEOS('T1ttbbWW_mGo1300_mCh300_mChi290', '/T1ttbbWW_2J_mGo1300_mCh300_mChi290_3bodydec_v2/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.0460525)
+T1ttbbWW_mGo1300_mCh300_mChi295 = kreator.makeMCComponentFromEOS('T1ttbbWW_mGo1300_mCh300_mChi295', '/T1ttbbWW_2J_mGo1300_mCh300_mChi295_3bodydec_v2/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.0460525)
+T1ttbbWW = [ T1ttbbWW_mGo1000_mCh725_mChi715, T1ttbbWW_mGo1000_mCh725_mChi720, T1ttbbWW_mGo1300_mCh300_mChi290, T1ttbbWW_mGo1300_mCh300_mChi295 ]
+
+T1ttbb_mGo1500_mChi100 = kreator.makeMCComponentFromEOS('T1ttbb_mGo1500_mChi100', '/T1ttbb_2J_mGo1500_mChi100_3bodydec_asymmDecOnly/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.0141903)
+T1ttbb = [ T1ttbb_mGo1500_mChi100 ]
+
+T6ttWW_mSbot600_mCh425_mChi50 = kreator.makeMCComponentFromEOS('T6ttWW_mSbot600_mCh425_mChi50', '/T6ttWW_600_425_50_v2/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.174599)
+T6ttWW_mSbot650_mCh150_mChi50 = kreator.makeMCComponentFromEOS('T6ttWW_mSbot650_mCh150_mChi50', '/T6ttWW_650_150_50_v2/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.107045)
+T6ttWW = [ T6ttWW_mSbot600_mCh425_mChi50, T6ttWW_mSbot650_mCh150_mChi50 ]
+
+#SqGltttt_mGo1300_mSq1300_mChi100 = kreator.makeMCComponentFromEOS('SqGltttt_mGo1300_mSq1300_mChi100', '/13TeV_SqGltttt_Gl_1300_Sq_1300_LSP_100/', '/store/cmst3/group/susy/alobanov/MC/PHYS14/PU20_25ns/%s', '.*root')
+SqGltttt = [ ] #SqGltttt_mGo1300_mSq1300_mChi100 ]
+
+T1tttt_mGo1300_mChi100 = kreator.makeMCComponentFromEOS('T1tttt_mGo1300_mChi100', '/SMS_T1tttt_2J_mGl1300_mLSP100/', '/store/cmst3/group/susy/alobanov/MC/PHYS14/PU20_25ns/%s', '.*root', 0.0460525)
+T1tttt_mGo800_mChi450 = kreator.makeMCComponentFromEOS('T1tttt_mGo800_mChi450', '/SMS_T1tttt_2J_mGl800_mLSP450/', '/store/cmst3/group/susy/alobanov/MC/PHYS14/PU20_25ns/%s', '.*root', 1.4891)
+T1tttt_priv = [ T1tttt_mGo1300_mChi100, T1tttt_mGo800_mChi450 ] 
+
+T5qqqqWWDeg_mGo1400_mCh315_mChi300 = kreator.makeMCComponentFromEOS('T5qqqqWWDeg_mGo1400_mCh315_mChi300', '/SMS_T5qqqqWW_mGl1400_mChi315_mLSP300/', '/store/cmst3/group/susy/alobanov/MC/PHYS14/PU20_25ns/%s', '.*root', 0.0252977)
+T5qqqqWWDeg_mGo1000_mCh310_mChi300 = kreator.makeMCComponentFromEOS('T5qqqqWWDeg_mGo1000_mCh310_mChi300', '/T5qqqqWWDeg_mGo1000_mCh310_mChi300/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.325388) 
+T5qqqqWWDeg_mGo1000_mCh310_mChi300_dilep= kreator.makeMCComponentFromEOS('T5qqqqWWDeg_mGo1000_mCh310_mChi300_dilep', '/T5qqqqWWDeg_mGo1000_mCh310_mChi300_dilep/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.325388*(0.333)*(0.333)) 
+T5qqqqWWDeg_mGo1000_mCh315_mChi300 = kreator.makeMCComponentFromEOS('T5qqqqWWDeg_mGo1000_mCh315_mChi300', '/T5qqqqWWDeg_mGo1000_mCh315_mChi300/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.325388) 
+T5qqqqWWDeg_mGo1000_mCh315_mChi300_dilep = kreator.makeMCComponentFromEOS('T5qqqqWWDeg_mGo1000_mCh315_mChi300_dilep', '/T5qqqqWWDeg_mGo1000_mCh315_mChi300_dilep/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.325388*(0.333)*(0.333)) 
+T5qqqqWWDeg_mGo1000_mCh325_mChi300 = kreator.makeMCComponentFromEOS('T5qqqqWWDeg_mGo1000_mCh325_mChi300', '/T5qqqqWWDeg_mGo1000_mCh325_mChi300/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.325388) 
+T5qqqqWWDeg_mGo1000_mCh325_mChi300_dilep = kreator.makeMCComponentFromEOS('T5qqqqWWDeg_mGo1000_mCh325_mChi300_dilep', '/T5qqqqWWDeg_mGo1000_mCh325_mChi300_dilep/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.325388*(0.324)*(0.324)) 
+T5qqqqWWDeg_mGo800_mCh305_mChi300 = kreator.makeMCComponentFromEOS('T5qqqqWWDeg_mGo800_mCh305_mChi300', '/T5qqqqWWDeg_mGo800_mCh305_mChi300/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 1.4891) 
+T5qqqqWWDeg_mGo800_mCh305_mChi300_dilep = kreator.makeMCComponentFromEOS('T5qqqqWWDeg_mGo800_mCh305_mChi300_dilep', '/T5qqqqWWDeg_mGo800_mCh305_mChi300_dilep/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 1.4891*(0.342)*(0.342)) 
+T5qqqqWWDeg = [
+    T5qqqqWWDeg_mGo1400_mCh315_mChi300,
+    T5qqqqWWDeg_mGo1000_mCh310_mChi300, T5qqqqWWDeg_mGo1000_mCh315_mChi300, T5qqqqWWDeg_mGo1000_mCh325_mChi300, T5qqqqWWDeg_mGo800_mCh305_mChi300,
+    T5qqqqWWDeg_mGo1000_mCh310_mChi300_dilep, T5qqqqWWDeg_mGo1000_mCh315_mChi300_dilep, T5qqqqWWDeg_mGo1000_mCh325_mChi300_dilep, T5qqqqWWDeg_mGo800_mCh305_mChi300_dilep
+]
+
+T5qqqqWW_mGo1500_mCh800_mChi100 = kreator.makeMCComponentFromEOS('T5qqqqWW_mGo1500_mCh800_mChi100', '/SMS_T5qqqqWW_Gl1500_Chi800_LSP100/', '/store/cmst3/group/susy/alobanov/MC/PHYS14/PU20_25ns/%s', '.*root', 0.0141903)
+T5qqqqWW_mGo1200_mCh1000_mChi800 = kreator.makeMCComponentFromEOS('T5qqqqWW_mGo1200_mCh1000_mChi800', '/SMS_T5qqqqWW_Gl1200_Chi1000_LSP800/', '/store/cmst3/group/susy/alobanov/MC/PHYS14/PU20_25ns/%s', '.*root', 0.0856418)
+T5qqqqWW_mGo1000_mCh800_mChi700 = kreator.makeMCComponentFromEOS('T5qqqqWW_mGo1000_mCh800_mChi700', '/T5qqqqWW_mGo1000_mCh800_mChi700/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.325388) 
+T5qqqqWW_mGo1000_mCh800_mChi700_dilep= kreator.makeMCComponentFromEOS('T5qqqqWW_mGo1000_mCh800_mChi700_dilep', '/T5qqqqWW_mGo1000_mCh800_mChi700_dilep/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.325388*(3*0.108)*(3*0.108)) 
+T5qqqqWW_mGo1200_mCh1000_mChi800_cmg = kreator.makeMCComponentFromEOS('T5qqqqWW_mGo1200_mCh1000_mChi800_cmg', '/T5qqqqWW_mGo1200_mCh1000_mChi800/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.0856418) 
+T5qqqqWW_mGo1200_mCh1000_mChi800_dilep= kreator.makeMCComponentFromEOS('T5qqqqWW_mGo1200_mCh1000_mChi800_dilep', '/T5qqqqWW_mGo1200_mCh1000_mChi800_dilep/', '/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/%s',".*root", 0.0856418*(3*0.108)*(3*0.108)) 
+
+T5qqqqWW = [
+    T5qqqqWW_mGo1500_mCh800_mChi100, T5qqqqWW_mGo1200_mCh1000_mChi800,
+    T5qqqqWW_mGo1000_mCh800_mChi700, T5qqqqWW_mGo1200_mCh1000_mChi800_cmg,
+    T5qqqqWW_mGo1000_mCh800_mChi700_dilep, T5qqqqWW_mGo1200_mCh1000_mChi800_dilep
+]
+
+# note: cross section for q~ q~ from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SUSYCrossSections13TeVsquarkantisquark (i.e. gluinos and stops decoupled)
+T6qqWW_mSq950_mCh325_mChi300 = kreator.makeMCComponentFromEOS('T6qqWW_mSq950_mCh325_mChi300', '/SMS_T6qqWW_mSq950_mChi325_mLSP300/', '/store/cmst3/group/susy/alobanov/MC/PHYS14/PU20_25ns/%s', '.*root', 0.0898112)
+T6qqWW = [ T6qqWW_mSq950_mCh325_mChi300 ]
+
+mcSamplesPriv = T5ttttDeg + T1ttbbWW + T1ttbb + T6ttWW + SqGltttt + T1tttt_priv + T5qqqqWW + T5qqqqWWDeg + T6qqWW 
+
+mcSamples = mcSamplesPHYS14_PU20bx25 + mcSamplesPHYS14_PU40bx25 + mcSamplesPriv
 
 #-----------DATA---------------
 

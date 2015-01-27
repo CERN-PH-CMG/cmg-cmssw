@@ -10,7 +10,7 @@ class ttHCoreEventAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHCoreEventAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
         self.maxLeps = cfg_ana.maxLeps
-        #self.leptonMVATTH  = LeptonMVA("TTH", "%s/src/CMGTools/TTHAnalysis/data/leptonMVA/%%s_BDTG.weights.xml" % os.environ['CMSSW_BASE'], self.cfg_comp.isMC)
+        self.leptonMVATTH  = LeptonMVA("Susy", "%s/src/CMGTools/TTHAnalysis/data/leptonMVA/tth/%%s_BDTG.weights.xml" % os.environ['CMSSW_BASE'], self.cfg_comp.isMC)
         self.leptonMVASusy = LeptonMVA("Susy","%s/src/CMGTools/TTHAnalysis/data/leptonMVA/susy/%%s_BDTG.weights.xml" % os.environ['CMSSW_BASE'], self.cfg_comp.isMC)
 
     def declareHandles(self):
@@ -284,11 +284,11 @@ class ttHCoreEventAnalyzer( Analyzer ):
             if thisDeltaPhi < event.deltaPhiMin : event.deltaPhiMin = thisDeltaPhi
 
         for lep in event.selectedLeptons:
-            #lep.mvaValue     = self.leptonMVATTH(lep)
+            lep.mvaValueTTH     = self.leptonMVATTH(lep)
             lep.mvaValueSusy = self.leptonMVASusy(lep)
         for lep in event.inclusiveLeptons:
             if lep not in event.selectedLeptons:
-                #lep.mvaValue     = self.leptonMVATTH(lep)
+                lep.mvaValueTTH     = self.leptonMVATTH(lep)
                 lep.mvaValueSusy = self.leptonMVASusy(lep)
 
 

@@ -6,7 +6,7 @@
 #include "FWCore/Utilities/interface/Exception.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-#include "CMGTools/H2TauTau/interface/METSignificance.h"
+#include "DataFormats/METReco/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/CompositeCandidate.h"
 #include "TauAnalysis/SVFitStandAlone/interface/NSVfitStandaloneAlgorithm2011.h"
 
@@ -15,7 +15,6 @@
 
 #include <sstream>
 
-// JAN - why not in namespace cmg??
 
 template< typename T, typename U>
 class DiTauWithSVFitProducer : public edm::EDProducer {
@@ -35,7 +34,6 @@ private:
   
   /// source diobject inputtag
   edm::InputTag diTauSrc_;
-  edm::InputTag metsigSrc_;
 
   unsigned warningNumbers_;
   bool verbose_;
@@ -47,8 +45,6 @@ private:
 template< typename T, typename U >
 DiTauWithSVFitProducer<T, U>::DiTauWithSVFitProducer(const edm::ParameterSet & iConfig) : 
   diTauSrc_( iConfig.getParameter<edm::InputTag>("diTauSrc") ),
-  //   metSrc_( iConfig.getParameter<edm::InputTag>("metSrc") ),
-  metsigSrc_( iConfig.getParameter<edm::InputTag>("metsigSrc") ),
   warningNumbers_(0),
   verbose_( iConfig.getUntrackedParameter<bool>("verbose", false ) ),
   SVFitVersion_( iConfig.getParameter<int>("SVFitVersion") ),
@@ -65,9 +61,6 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event & iEvent, const edm::Event
 
   edm::Handle< DiTauCollection > diTauH;
   iEvent.getByLabel(diTauSrc_, diTauH);
-
-  edm::Handle< std::vector<cmg::METSignificance> > metSigH;
-  iEvent.getByLabel(metsigSrc_, metSigH);
 
   if(verbose_ && !diTauH->empty() ) {
     std::cout<<"DiTauWithSVFitProducer"<<std::endl;
@@ -112,9 +105,17 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event & iEvent, const edm::Event
 
   for (size_t i=0; i<diTauH->size(); ++i) {
     DiTauObject diTau(diTauH->at(i));
-    const cmg::METSignificance& metsig = metSigH->at(i);
-    const reco::LeafCandidate& met(dynamic_cast<const reco::LeafCandidate&>(*diTau.daughter(2)));
-    const TMatrixD* tmsig = &metsig.significance();
+    const reco::MET& met(dynamic_cast<const reco::MET&>(*diTau.daughter(2)));
+
+    const auto& smsig = met.getSignificanceMatrix();
+
+    TMatrixD tmsig(2, 2);
+    // tmsig.SetMatrixArray(smsig.Array());
+    // Set elements by hand to avoid array gymnastics/assumptions
+    tmsig(0,0) = smsig(0,0);
+    tmsig(0,1) = smsig(0,1);
+    tmsig(1,0) = smsig(1,0);
+    tmsig(1,1) = smsig(1,1);
 
     if(verbose_) {
       std::cout<<"  ---------------- "<<std::endl;
@@ -125,7 +126,7 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event & iEvent, const edm::Event
     }
 
     double massSVFit=0.;
-    float det=tmsig->Determinant();
+    float det=tmsig.Determinant();
     if(det>1e-8) { 
       if(SVFitVersion_==1) {
         //Note that this works only for di-objects where the tau is the leg1 and mu is leg2
@@ -135,7 +136,7 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event & iEvent, const edm::Event
         NSVfitStandalone2011::LorentzVector p2(diTau.daughter(1)->p4());
         measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(leg2type2011,p2));
         measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(leg1type2011,p1));    
-        NSVfitStandaloneAlgorithm2011 algo(measuredTauLeptons,measuredMET, tmsig, 0);
+        NSVfitStandaloneAlgorithm2011 algo(measuredTauLeptons,measuredMET, &tmsig, 0);
         algo.maxObjFunctionCalls(5000);
         algo.fit();
         massSVFit = algo.fittedDiTauSystem().mass();
@@ -144,7 +145,7 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event & iEvent, const edm::Event
         std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
         measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(leg2type, diTau.daughter(1)->p4()));
         measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(leg1type, diTau.daughter(0)->p4()));
-        NSVfitStandaloneAlgorithm algo(measuredTauLeptons, met.p4().Vect(), *(tmsig), 0);
+        NSVfitStandaloneAlgorithm algo(measuredTauLeptons, met.p4().Vect(), tmsig, 0);
         algo.addLogM(false);
         
         if (fitAlgo_ == "VEGAS")

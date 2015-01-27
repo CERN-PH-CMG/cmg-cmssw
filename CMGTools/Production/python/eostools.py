@@ -65,7 +65,7 @@ def eosToLFN( path ):
     Just strip out /eos/cms from path.
     If this string is not found, return path.
     ??? Shouldn't we raise an exception instead?"""
-    return path.replace('/eos/cms','')
+    return path.replace('root://eoscms.cern.ch/', '').replace('/eos/cms','')
 
 #also define an alias for backwards compatibility
 castorToLFN = eosToLFN
@@ -83,7 +83,7 @@ def lfnToPFN( path, tfcProt = 'rfio'):
     ??? what is tfcprot? """
 
     if path.startswith("/store/cmst3/"):
-        path = path.replace("/store/cmst3/","root://eoscms.cern.ch//store/cmst3/")
+        path = path.replace("/store/cmst3/","root://eoscms.cern.ch//eos/cms/store/cmst3/")
     if path.startswith("/pnfs/psi.ch/cms/trivcat/"):
         path = path.replace("/pnfs/psi.ch/cms/trivcat/","root://t3se01.psi.ch//")
     #print "path to cmsFile():", path
@@ -107,8 +107,8 @@ def lfnToEOS( path ):
     If path is not an LFN in the first place, return path.
     ??? shouldn't we raise an exception?"""
     if isLFN(path):
-        pfn = '/eos/cms/' + path
-        return pfn.replace('//','/') 
+        pfn = 'root://eoscms.cern.ch//eos/cms/' + path
+        return pfn.replace('//store','/store') 
     else:
         return path
 
@@ -120,6 +120,8 @@ def isEOSDir( path ):
     /store/...
     or
     /eos/cms/store/...
+    or
+    root://eoscms.cern.ch//eos/cms/
 
     Otherwise, returns False.
 
@@ -132,7 +134,7 @@ def isEOSDir( path ):
         # COLIN: I think this condition could be removed,
         # as it duplicates the following one. 
         return False
-    if not path.startswith('/eos') and not path.startswith('/store'):
+    if not path.startswith('/eos') and not path.startswith('/store') and not path.startswith('root://eoscms.cern.ch//eos/cms/'):
         # neither an EOS PFN or a LFN.
         return False
     # at this stage, we must have an EOS PFN or an LFN

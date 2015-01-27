@@ -1,73 +1,64 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Common.Tools.cmsswRelease                             import cmsswIs44X,cmsswIs52X
-from CMGTools.Common.diTau_cff                                      import *
-from CMGTools.H2TauTau.objects.diTauCuts_cff                        import * 
-from CMGTools.H2TauTau.objects.cmgDiTauCor_cfi                      import cmgDiTauCor 
-from CMGTools.H2TauTau.objects.diTauSVFit_cfi                       import diTauSVFit 
-from CMGTools.Common.eventCleaning.goodPVFilter_cfi                 import goodPVFilter
-from CMGTools.Utilities.metRecoilCorrection.metRecoilCorrection_cff import *
-from CMGTools.Utilities.mvaMET.mvaMET_cff                           import *
-from CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi              import cmgBaseMETFromPFMET
+from CMGTools.H2TauTau.objects.cmgDiTau_cfi import cmgDiTau
+from CMGTools.H2TauTau.skims.cmgDiTauSel_cfi import cmgDiTauSel
 
-# build diTau ----------------------------------------------------------
-cmgDiTau.cuts = diTauCuts.clone()
-cmgDiTau.cfg.metsigCollection = cms.InputTag('')
+from CMGTools.H2TauTau.objects.cmgDiTauCor_cfi import cmgDiTauCor 
+from CMGTools.H2TauTau.objects.diTauSVFit_cfi import diTauSVFit 
 
-# pT preselection ------------------------------------------------------
-cmgDiTauPreSel = cmgDiTauSel.clone( 
- src = 'cmgDiTau',
- cut = 'leg1().pt()>40. && leg2().pt()>40. && leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") < 10. &&  leg2().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") < 10.',
- )
+from CMGTools.H2TauTau.objects.tauCuts_cff import tauPreSelection
+
+from RecoMET.METPUSubtraction.mvaPFMET_cff import pfMVAMEt
+
+# tau pre-selection
+tauPreSelectionDiTau = tauPreSelection.clone(
+  cut='pt > 40. && abs(eta) < 2.5 && tauID("decayModeFinding") > 0.5')
+
+# 2012 preselection:
+# cut = 'leg1().pt()>40. && leg2().pt()>40. && leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") < 10. &&  leg2().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") < 10.',
+
+# mva MET
+
+mvaMETDiTau = pfMVAMEt.clone()
+
+mvaMETDiTau.srcPFCandidates = cms.InputTag("packedPFCandidates")
+mvaMETDiTau.srcVertices = cms.InputTag("offlineSlimmedPrimaryVertices")
+mvaMETDiTau.srcLeptons = cms.VInputTag(
+  cms.InputTag("tauPreSelectionDiTau", "", ""),
+  cms.InputTag("tauPreSelectionDiTau", "", ""),
+  )
+mvaMETDiTau.permuteLeptons = cms.bool(True)
+
  
-# sequence -------------------------------------------------------------
-diTauStdSequence = cms.Sequence( cmgDiTau       +
-                                 cmgDiTauPreSel
-                                 )
-
-# mva MET --------------------------------------------------------------
-mvaMETDiTau.recBosonSrc = 'cmgDiTauPreSel'
-
-
-# correct TauES (after MVA MET according to current baseline) ----------
+# correct TauES (after MVA MET according to current baseline)
 cmgDiTauCor = cmgDiTauCor.clone()
-cmgDiTauCor.cfg.diObjectCollection = cms.InputTag('mvaMETDiTau')
 
-# this selector goes after the TauES correction ------------------------
-cmgDiTauPtSel = cmgDiTauSel.clone(
-    src = cms.InputTag( "cmgDiTauCor" ),
-    cut = cms.string( "leg1().pt()>45. && leg2().pt()>45." )
+# this selector goes after the TauES correction
+cmgDiTauTauPtSel = cms.EDFilter(
+    "PATCompositeCandidateSelector",
+    src = cms.InputTag("cmgDiTauCor"),
+    cut = cms.string("daughter(0).pt()>45. && daughter(1).pt()>45.")
     )
 
 # recoil correction ----------------------------------------------------
-recoilCorMETDiTau =  recoilCorrectedMETDiTau.clone(
-    recBosonSrc = 'cmgDiTauPtSel',
-    )
+# JAN: We don't know yet if we need this in 2015; re-include if necessary
 
 # sequence -------------------------------------------------------------
-mvaMETSequence = cms.Sequence( goodPVFilter      + 
-                               mvaMETDiTau       +
-                               cmgDiTauCor       +
-                               cmgDiTauPtSel     +
-                               recoilCorMETDiTau 
-                               )
+diTauMVAMetSequence = cms.Sequence(
+    mvaMETDiTau
+    )
 
 # SVFit ----------------------------------------------------------------
 cmgDiTauCorSVFitPreSel = diTauSVFit.clone()
-cmgDiTauCorSVFitPreSel.diTauSrc = cms.InputTag('recoilCorMETDiTau')
-#cmgDiTauCorSVFitPreSel.verbose = True
 
-cmgDiTauCorSVFitFullSel = cmgDiTauSel.clone( src = 'cmgDiTauCorSVFitPreSel',
-                                             cut = '',
-                                             ) 
+cmgDiTauCorSVFitFullSel = cmgDiTauSel.clone() 
 
-diTauCorSVFitSequence = cms.Sequence(
-    mvaMETSequence          +
-    cmgDiTauCorSVFitPreSel  +
+diTauSequence = cms.Sequence(   
+    tauPreSelectionDiTau +   
+    diTauMVAMetSequence +
+    cmgDiTau +
+    cmgDiTauCor+
+    cmgDiTauTauPtSel +
+    cmgDiTauCorSVFitPreSel +
     cmgDiTauCorSVFitFullSel
-    )
-
-diTauSequence = cms.Sequence( diTauStdSequence +
-                              diTauCorSVFitSequence
-                              )
-
+  )

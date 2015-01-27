@@ -9,8 +9,8 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
-#include "CMGTools/H2TauTau/interface/METSignificance.h"
 #include "DataFormats/PatCandidates/interface/CompositeCandidate.h"
+#include "DataFormats/METReco/interface/MET.h"
 
 #include <algorithm>
 #include <set>
@@ -26,23 +26,18 @@ class DiTauObjectFactory : public edm::EDProducer
         DiTauObjectFactory(const edm::ParameterSet& ps) :             
             leg1Label_(ps.getParameter<edm::InputTag>("leg1Collection")),
             leg2Label_(ps.getParameter<edm::InputTag>("leg2Collection")),
-            metLabel_(ps.getParameter<edm::InputTag>("metCollection")),
-            metSigLabel_(ps.getParameter<edm::InputTag>("metsigCollection"))
+            metLabel_(ps.getParameter<edm::InputTag>("metCollection"))
         {
           produces<std::vector<DiTauObject>>();
-          // JAN - do we still need to produce the MET significance?
-          produces<std::vector<METSignificance>>();
         }
 
         void produce(edm::Event&, const edm::EventSetup&);
-        static void set(const std::pair<T, U>& pair, const reco::LeafCandidate& met, cmg::DiTauObject& obj);
-        static void set(const std::pair<T, U>& pair, const reco::LeafCandidate& met, const cmg::METSignificance& metSig, cmg::DiTauObject& obj);
+        static void set(const std::pair<T, U>& pair, const reco::MET& met, cmg::DiTauObject& obj);
 
     private:
         const edm::InputTag leg1Label_;
         const edm::InputTag leg2Label_;
         const edm::InputTag metLabel_;
-        const edm::InputTag metSigLabel_;
 };
 
 ///Make when the types are different
@@ -71,7 +66,7 @@ cmg::DiTauObject makeDiTau(const T& l1, const T& l2){
 
 
 template<typename T, typename U>
-void cmg::DiTauObjectFactory<T, U>::set(const std::pair<T, U>& pair, const reco::LeafCandidate& met, cmg::DiTauObject& obj) {
+void cmg::DiTauObjectFactory<T, U>::set(const std::pair<T, U>& pair, const reco::MET& met, cmg::DiTauObject& obj) {
 
   T first = pair.first;
   U second = pair.second;
@@ -85,31 +80,6 @@ void cmg::DiTauObjectFactory<T, U>::set(const std::pair<T, U>& pair, const reco:
   obj.setP4(first.p4() + second.p4());
   obj.setCharge(first.charge() + second.charge());
   obj.addDaughter(met);
-
-  // JAN: Let's see where we set all this stuff,
-  // maybe only in python!
-  // It could also be set as user floats
-
-  // obj->mT_ = cmg::DiObjectFactory<T, U>::mT(pair.first, pair.second);
-  // if (pair.first.isElectron() || pair.first.isMuon())
-  //   obj->lp_ = cmg::DiObjectFactory<T, U>::lp(pair.first, obj);
-  // //calculate the Razor variables with MET
-  // obj->mRT_ = cmg::DiObjectFactory<T, U>::mRT(pair.first, pair.second, met);
-  // std::pair<double,double> pZetaVars = cmg::DiObjectFactory<T, U>::pZeta(pair.first, pair.second, met);
-  // obj->pZetaVis_ = pZetaVars.first;
-  // obj->pZetaMET_ = pZetaVars.second;    
-  // obj->mTLeg1_ = cmg::DiObjectFactory<T, U>::mT(pair.first, met);
-  // obj->mTLeg2_ = cmg::DiObjectFactory<T, U>::mT(pair.second, met);    
-}
-
-template<typename T, typename U>
-void cmg::DiTauObjectFactory<T, U>::set(const std::pair<T, U>& pair, const reco::LeafCandidate& met, const cmg::METSignificance& metSig, cmg::DiTauObject& obj) {
-  set(pair, met, obj);
-
-  // JAN - FIXME, important, we have to put the MET significance into the event
-  // in an extra collection that's aligned with the di tau objects
-
-  // obj.metSig_ = metSig;
 }
 
 template< typename T, typename U>
@@ -117,8 +87,7 @@ void cmg::DiTauObjectFactory<T, U>::produce(edm::Event& iEvent, const edm::Event
   
   typedef edm::View<T> collection1;
   typedef edm::View<U> collection2;
-  typedef edm::View<reco::LeafCandidate> met_collection;
-  typedef edm::View<cmg::METSignificance> metSig_collection;
+  typedef edm::View<reco::MET> met_collection;
   
   edm::Handle<collection1> leg1Cands;
   iEvent.getByLabel(this->leg1Label_, leg1Cands);
@@ -133,27 +102,12 @@ void cmg::DiTauObjectFactory<T, U>::produce(edm::Event& iEvent, const edm::Event
     iEvent.getByLabel(this->metLabel_, metCands);
   }
 
-  edm::Handle<metSig_collection> metSigCands;
-
-  bool metSigAvailable = false;
-  if (!(metSigLabel_ == edm::InputTag())) {
-    metSigAvailable = true; 
-    iEvent.getByLabel(this->metSigLabel_, metSigCands);
-  }
-  
   std::auto_ptr<std::vector<DiTauObject>> result(new std::vector<DiTauObject>);
-  std::auto_ptr<std::vector<METSignificance>> resultMETSig(new std::vector<METSignificance>);
-
-  // Necessary?
-  if( !leg1Cands->size() || !leg2Cands->size() ){
-      iEvent.put<std::vector<DiTauObject>>(result);
-      iEvent.put<std::vector<METSignificance>>(resultMETSig); 
-      return;
-  }
 
   const bool sameCollection = (leg1Cands.id () == leg2Cands.id());
   for (size_t i1 = 0; i1 < leg1Cands->size(); ++i1) {
     for (size_t i2 = 0; i2 < leg2Cands->size(); ++i2) {
+
       // if the same collection, only produce each possible pair once
       if (sameCollection && (i1 >= i2)) 
         continue;
@@ -164,18 +118,15 @@ void cmg::DiTauObjectFactory<T, U>::produce(edm::Event& iEvent, const edm::Event
       if (metAvailable && ! metCands->empty()) {
           T* first = dynamic_cast<T*>(cmgTmp.daughter(0));
           U* second = dynamic_cast<U*>(cmgTmp.daughter(1));
-          if (metSigAvailable && !metSigCands->empty()) {
-              cmg::DiTauObjectFactory<T, U>::set(std::make_pair(*first, *second), metCands->at(0), metSigCands->at(0), cmgTmp);
-          }
-          else
-              cmg::DiTauObjectFactory<T, U>::set(std::make_pair(*first, *second), metCands->at(0), cmgTmp);
+          if (metCands->size() < result->size()+1)
+            edm::LogWarning("produce") << "Fewer MET candidates than leg1/leg2 combinations; are the inputs to the MET producer and the di-tau object producer the same?" << std::endl;
+          cmg::DiTauObjectFactory<T, U>::set(std::make_pair(*first, *second), metCands->at(result->size()), cmgTmp);
           result->push_back(cmgTmp);
       }
     }
   }
 
   iEvent.put(result); 
-  iEvent.put(resultMETSig); 
 }
 
 } // namespace cmg

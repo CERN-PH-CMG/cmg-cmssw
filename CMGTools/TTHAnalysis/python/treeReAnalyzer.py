@@ -48,13 +48,22 @@ class Event:
             warnings.filterwarnings(action='ignore', category=RuntimeWarning, 
                                     message='creating converter for unknown type "const char\*\*"$')
         if expr not in self._tree._exprs:
-            self._tree._exprs[expr] = ROOT.TTreeFormula(expr,expr,self._tree)
+            formula = ROOT.TTreeFormula(expr,expr,self._tree)
+            if formula.IsInteger():
+                formula.go = formula.EvalInstance64
+            else:
+                formula.go = formula.EvalInstance
+            self._tree._exprs[expr] = formula
             # force sync, to be safe
             self._tree.GetEntry(self._entry)
             self._tree.entry = self._entry
+            #self._tree._exprs[expr].SetQuickLoad(False)
         else:
             self._sync()
-        return self._tree._exprs[expr].EvalInstance()
+            formula = self._tree._exprs[expr]
+        if "[" in expr: # unclear why this is needed, but otherwise for some arrays x[i] == 0 for all i > 0
+            formula.GetNdata()
+        return formula.go()
             
 
 class Object:
@@ -147,6 +156,12 @@ class Module:
         pass
     def book(self,what,name,*args):
         return self._booker.book(what,name,*args)
+    def beginComponent(self,component):
+        """Used when running within tree2yields"""
+        pass
+    def endComponent(self,component):
+        """Used when running within tree2yields"""
+        pass
 
 class EventLoop:
     def __init__(self,modules):
@@ -169,6 +184,10 @@ class EventLoop:
                 if i > 0 and i % 10000 == 0:
                     print "Processed %8d/%8d entries of this tree" % (i,tree.GetEntries())
         for m in modules: m.endJob()
+    def beginComponent(self,component):
+        for m in self._modules: m.beginComponent(component)
+    def endComponent(self,component):
+        for m in self._modules: m.endComponent(component)
 
 #### ========= NTUPLING AND HISTOGRAMMING =======================
 class PyTree:
