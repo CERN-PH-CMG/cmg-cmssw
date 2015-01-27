@@ -5,18 +5,18 @@ from math import *
 
 #from ROOT import TLorentzVector, TVectorD
 
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.Event import Event
-from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-# from CMGTools.RootTools.physicsobjects.Lepton import Lepton
-# from CMGTools.RootTools.physicsobjects.Photon import Photon
-# from CMGTools.RootTools.physicsobjects.Electron import Electron
-# from CMGTools.RootTools.physicsobjects.Muon import Muon
-# from CMGTools.RootTools.physicsobjects.Tau import Tau
-from CMGTools.RootTools.physicsobjects.Jet import Jet
+from PhysicsTools.HeppyCore.utils.deltar import deltaR
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.HeppyCore.framework.event import Event
+from PhysicsTools.HeppyCore.statistics.counter import Counter, Counters
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 
-from CMGTools.RootTools.utils.DeltaR import deltaR
+# from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Lepton
+# from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Photon
+# from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Electron
+# from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Muon
+# from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Tau
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Jet
 
 import os
 
@@ -33,8 +33,8 @@ class ttHAlphaTControlAnalyzer( Analyzer ):
        #genJets                                                                                                                                                                     
         self.handles['genJets'] = AutoHandle( 'slimmedGenJets','std::vector<reco::GenJet>')
 
-    def beginLoop(self):
-        super(ttHAlphaTControlAnalyzer,self).beginLoop()
+    def beginLoop(self,setup):
+        super(ttHAlphaTControlAnalyzer,self).beginLoop(setup)
         self.counters.addCounter('pairs')
         count = self.counters.counter('pairs')
         count.register('all events')
@@ -103,8 +103,8 @@ class ttHAlphaTControlAnalyzer( Analyzer ):
 
         return
 
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
 
         #W variables
         event.mtw = -999

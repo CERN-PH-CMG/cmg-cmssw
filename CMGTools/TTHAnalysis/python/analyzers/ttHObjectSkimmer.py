@@ -1,10 +1,10 @@
 import os 
 import logging 
 
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.Event import Event
-from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.HeppyCore.framework.event import Event
+from PhysicsTools.HeppyCore.statistics.counter import Counter, Counters
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 
 class ttHObjectSkimmer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
@@ -40,8 +40,8 @@ class ttHObjectSkimmer( Analyzer ):
     def declareHandles(self):
         super(ttHObjectSkimmer, self).declareHandles()
 
-    def beginLoop(self):
-        super(ttHObjectSkimmer,self).beginLoop()
+    def beginLoop(self,setup):
+        super(ttHObjectSkimmer,self).beginLoop(setup)
         self.counters.addCounter('events')
         count = self.counters.counter('events')
         count.register('all events')
@@ -50,8 +50,8 @@ class ttHObjectSkimmer( Analyzer ):
         count.register('accepted events')
 
 
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
         self.counters.counter('events').inc('all events')
 
         
