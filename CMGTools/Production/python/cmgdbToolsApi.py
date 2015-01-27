@@ -11,6 +11,8 @@ os.system("source /afs/cern.ch/cms/slc5_amd64_gcc434/external/oracle/11.2.0.1.0p
 os.system("source /afs/cern.ch/cms/slc5_amd64_gcc434/external/python/2.6.4-cms16/etc/profile.d/init.sh")
 os.system("source /afs/cern.ch/cms/slc5_amd64_gcc434/external/py2-cx-oracle/5.1/etc/profile.d/init.sh")
 
+import CMGTools.Production.eostools as eostools
+
 import sys, re
 #import CMGTools.Production.cx_Oracle as cx_Oracle
 import cx_Oracle
@@ -686,7 +688,7 @@ class CmgdbToolsApi(CmgdbApi):
 
     	def addRootFilesToValidationRunWithAnalyzerOnDataset( self, validationRunID, eosPath, dir_name, analyzer_name, root_file ):
         	try:
-            		lfnPath = eosPath.replace( "/eos/cms", "" )
+            		lfnPath = eostools.eosToLFN(eosPath)
             		datasetInfo = self.selectCur.execute( "SELECT dataset_id,file_owner, path_name from " +self.schema_name+ ".dataset_details where lfn='%s'" % lfnPath 
 ).fetchone()
         	except:

@@ -137,7 +137,7 @@ echo 'sending the job directory back'
 """ % prog
 
    if remoteDir != '':
-      remoteDir = remoteDir.replace('/eos/cms','')
+      remoteDir = castortools.eosToLFN(remoteDir)
       script += """
 for file in *.root; do
 newFileName=`echo $file | sed -r -e 's/\./_%s\./'`

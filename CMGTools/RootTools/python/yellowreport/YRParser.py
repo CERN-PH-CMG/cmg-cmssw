@@ -19,14 +19,12 @@ yrparser13TeV = YRParser( '/'.join( [os.environ['CMSSW_BASE'],
 
 if __name__ == '__main__':
 
-    import pprint
     import sys
     mass = float(sys.argv[1])
 
     process = ['GGH', 'VBF', 'WH', 'ZH', 'TTH']
     
     print 'mass', mass 
-    #pprint.pprint( yrparser7TeV.get(mass) )
 
     def printSigma(parser):
         tot = 0
