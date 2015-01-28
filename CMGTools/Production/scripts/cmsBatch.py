@@ -7,7 +7,7 @@ from optparse import OptionParser
 
 # particle flow specific
 from CMGTools.Production.batchmanager import BatchManager
-# import CMGTools.Production.eostools as castortools
+import CMGTools.Production.eostools as castortools
 
 # cms specific
 import FWCore.ParameterSet.Config as cms
@@ -105,7 +105,7 @@ echo 'sending the job directory back'
 """ % prog
 
    if remoteDir != '':
-      remoteDir = remoteDir.replace('/eos/cms','')
+      remoteDir = castortools.eosToLFN(remoteDir) #remoteDir.replace('/eos/cms','')
       script += """
 for file in *.root; do
 newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
@@ -137,7 +137,7 @@ echo 'sending the job directory back'
 """ % prog
 
    if remoteDir != '':
-      remoteDir = remoteDir.replace('/eos/cms','')
+      remoteDir = castortools.eosToLFN(remoteDir)
       script += """
 for file in *.root; do
 newFileName=`echo $file | sed -r -e 's/\./_%s\./'`

@@ -1,4 +1,4 @@
-from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
+from PhysicsTools.Heppy.analyzers.core.TreeAnalyzerNumpy import TreeAnalyzerNumpy
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from CMGTools.H2TauTau.proto.analyzers.ntuple import *
 

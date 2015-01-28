@@ -1,10 +1,10 @@
 import operator
 
-from PhysicsTools.Heppy.analyzers.examples.DiLeptonAnalyzer import DiLeptonAnalyzer
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Muon, GenParticle
 from PhysicsTools.Heppy.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
 
+from CMGTools.H2TauTau.proto.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.H2TauTau.proto.physicsobjects.DiObject import TauMuon
 
 class TauMuAnalyzer( DiLeptonAnalyzer ):
@@ -16,16 +16,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
     def declareHandles(self):
         super(TauMuAnalyzer, self).declareHandles()
         self.handles['diLeptons'] = AutoHandle(
-            'cmgTauMuCorSVFitFullSel', # FIXME!!
-            # 'cmgTauMu',
-            #'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>'
-            # 'std::vector<cmg::DiTauObject<cmg::Tau,cmg::Muon>>'
+            'cmgTauMuCorSVFitFullSel',
             'std::vector<pat::CompositeCandidate>'
-            )
-
-        self.handles['mvametsigs'] = AutoHandle(
-            'mvaMETTauMu',
-            'std::vector<cmg::METSignificance>'
             )
 
         self.handles['otherLeptons'] = AutoHandle(
@@ -38,7 +30,6 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             'std::vector<pat::Muon>'
             )
         
-        # FIXME reading the genparticlespruned collection. problem elsewhere?
         self.mchandles['genParticles'] = AutoHandle( 'prunedGenParticles',
                                                      'std::vector<reco::GenParticle>' )
 
@@ -56,8 +47,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             pydil.leg2().associatedVertex = event.goodVertices[0]
             if not self.testLeg2( pydil.leg2(), 99999 ):
                 continue
-            pydil.mvaMetSig = self.handles['mvametsigs'].product()[index]
-            # pydil.mvaMetSig = dil.metSig()
+            
+            # pydil.mvaMetSig = pydil.met().getSignificanceMatrix()
             diLeptons.append( pydil )
         return diLeptons
 
@@ -82,8 +73,6 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             # pyl = self.__class__.OtherLeptonClass(lep)
             pyl = Electron(lep)
             pyl.associatedVertex = event.goodVertices[0]
-            # JAN FIXME: Check if the overall rho is needed (from the
-            # VertexAnalyzer)
             pyl.rho = event.rho
             otherLeptons.append( pyl )
         return otherLeptons
@@ -128,12 +117,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         
 
     def testLeg1ID(self, tau):
-        if tau.decayMode() == 0 and \
-               tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B
-            return False
-        #return tau.tauID("againstMuonTight2")>0.5 and \
-        # JAN: revert back to old muon rejection (Jose HN)
-        return tau.tauID("againstMuonTight")>0.5 and \
+        return tau.tauID('decayModeFinding')>0.5 and \
+               tau.tauID("againstMuonTight")>0.5 and \
                tau.tauID("againstElectronLoose")>0.5 and \
                self.testVertex( tau )
         
@@ -176,7 +161,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         # count electrons
         votherLeptons = [olep for olep in otherLeptons if 
                          self.testLegKine(olep, ptcut=ptcut, etacut=2.5) and \
-                         olep.looseIdForTriLeptonVeto()           and \
+                         # olep.looseIdForTriLeptonVeto()           and \
+                         olep.mvaIDLoose() and \
                          self.testVertex( olep )           and \
                          olep.relIsoAllChargedDB05() < isocut
                         ]

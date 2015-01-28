@@ -1,4 +1,4 @@
-from CMGTools.RootTools.analyzers.TreeAnalyzer import TreeAnalyzer
+from PhysicsTools.Heppy.analyzers.core.TreeAnalyzerNumpy import TreeAnalyzerNumpy
 from PhysicsTools.HeppyCore.utils.deltar import bestMatch
 from math import *
 import inspect

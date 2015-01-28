@@ -302,7 +302,7 @@ class DatasetInformation(object):
         
         try:
             self._logger_file = tempfile.NamedTemporaryFile()
-            lfn = self.dataset_details['LFN']
+            lfn = eostools.eosToLFN(self.dataset_details['LFN'])
             os.system("cmsStage -f "+lfn+"/Logger.tgz "+self._logger_file.name)
             self._logger_tar_object = tarfile.open(fileobj=self._logger_file)
 
@@ -453,7 +453,7 @@ class DatasetInformation(object):
         for group_name in self.dataset_details['FileGroups']:
             size_in_bytes = 0
             for file_name in self.dataset_details['FileGroups'][group_name]['Files']:
-                size_in_bytes += int(self.dataset.filesAndSizes[file_name])
+                size_in_bytes += int(self.dataset.filesAndSizes[eostools.lfnToEOS(file_name)])
 
             size_in_tb = float(size_in_bytes)/1000000000000
             self.dataset_details['FileGroups'][group_name]["SizeInTB"]=size_in_tb
