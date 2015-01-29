@@ -62,3 +62,21 @@ mvaNonTrigV025nsCSA14 = cms.EDFilter("ElectronIdMVAProducerCSA14",
                                                                  ),
                                      Trig = cms.bool(False),
                                      )
+
+mvaNonTrigV025nsPHYS14 = cms.EDFilter("ElectronIdMVAProducerCSA14",
+                                     verbose = cms.untracked.bool(False),
+                                     vertexTag = cms.InputTag('offlinePrimaryVertices'),
+                                     electronTag = cms.InputTag('gedGsfElectrons'),
+                                     reducedEBRecHitCollection = cms.InputTag('reducedEcalRecHitsEB'),
+                                     reducedEERecHitCollection = cms.InputTag('reducedEcalRecHitsEE'),
+                                     method = cms.string("BDTSimpleCat"),
+                                     mvaWeightFile = cms.vstring(
+                                                                 "EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB1_5_oldscenario2phys14_BDT.weights.xml",
+                                                                 "EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB2_5_oldscenario2phys14_BDT.weights.xml",
+                                                                 "EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EE_5_oldscenario2phys14_BDT.weights.xml",
+                                                                 "EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB1_10_oldscenario2phys14_BDT.weights.xml",
+                                                                 "EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB2_10_oldscenario2phys14_BDT.weights.xml",
+                                                                 "EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EE_10_oldscenario2phys14_BDT.weights.xml",
+                                                                 ),
+                                     Trig = cms.bool(False),
+                                     )

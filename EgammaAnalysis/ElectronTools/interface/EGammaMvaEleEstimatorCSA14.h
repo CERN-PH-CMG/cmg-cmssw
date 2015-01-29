@@ -48,8 +48,9 @@ class EGammaMvaEleEstimatorCSA14{
     ~EGammaMvaEleEstimatorCSA14(); 
   
     enum MVAType {
-      kTrig = 0,                     // MVA for triggering electrons     
-      kNonTrig = 1,                      // MVA for non-triggering electrons
+        kTrig = 0,                         // MVA for triggering electrons
+        kNonTrig = 1,                      // MVA for non-triggering electrons
+        kNonTrigPhys14 = 2,                // MVA for non-triggering electrons in Phys14
     };
   
     void     initialize( std::string methodName,
@@ -125,6 +126,7 @@ class EGammaMvaEleEstimatorCSA14{
     Float_t                    fMVAVar_rho;
     Float_t                    fMVAVar_isBarrel;
     Float_t                    fMVAVar_isEndcap;
+    Float_t                    fMVAVar_SCeta;
   
     Float_t                    fMVAVar_ChargedIso_DR0p0To0p1;
     Float_t                    fMVAVar_ChargedIso_DR0p1To0p2;

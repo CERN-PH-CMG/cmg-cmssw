@@ -80,8 +80,10 @@ ElectronIdMVAProducerCSA14::ElectronIdMVAProducerCSA14(const edm::ParameterSet& 
     
     if(Trig_){type_ = EGammaMvaEleEstimatorCSA14::kTrig;}
     
-    if(!Trig_){type_ = EGammaMvaEleEstimatorCSA14::kNonTrig;}
-    
+    if(!Trig_){
+        if (fpMvaWeightFiles.size() > 4) type_ = EGammaMvaEleEstimatorCSA14::kNonTrigPhys14;
+        else type_ = EGammaMvaEleEstimatorCSA14::kNonTrig;
+    }
     bool manualCat_ = true;
     
 	string path_mvaWeightFileEleID;
@@ -111,7 +113,6 @@ ElectronIdMVAProducerCSA14::~ElectronIdMVAProducerCSA14()
 // ------------ method called on each new Event  ------------
 bool ElectronIdMVAProducerCSA14::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	using namespace edm;
-    
     std::auto_ptr<edm::ValueMap<float> > out(new edm::ValueMap<float>() );
     
 	Handle<reco::VertexCollection>  vertexCollection;
@@ -144,7 +145,6 @@ bool ElectronIdMVAProducerCSA14::filter(edm::Event& iEvent, const edm::EventSetu
     
     std::vector<float> values;
     values.reserve(egCollection->size());
-    
     for ( reco::GsfElectronCollection::const_iterator egIter = egCandidates.begin(); egIter != egCandidates.end(); ++egIter) {
         
         double mvaVal = -999999;

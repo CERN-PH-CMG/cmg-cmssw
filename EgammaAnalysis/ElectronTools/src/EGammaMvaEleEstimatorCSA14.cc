@@ -47,7 +47,6 @@ void EGammaMvaEleEstimatorCSA14::initialize( std::string methodName,
     if (fTMVAReader[i]) delete fTMVAReader[i];
   }
   fTMVAReader.clear();
-
   //initialize
   fisInitialized = kTRUE;
   fMVAType = type;
@@ -61,6 +60,9 @@ void EGammaMvaEleEstimatorCSA14::initialize( std::string methodName,
   }
    else if (type == kNonTrig) {
     ExpectedNBins = 4;
+  }
+   else if (type ==kNonTrigPhys14) {
+    ExpectedNBins = 6;
   }
 
   fNMVABins = ExpectedNBins;
@@ -114,7 +116,7 @@ void EGammaMvaEleEstimatorCSA14::initialize( std::string methodName,
     }
   
   
-    if (type == kNonTrig) {
+    if ((type == kNonTrig)||(type == kNonTrigPhys14)) {
         
         tmpTMVAReader->AddVariable("ele_kfhits",          &fMVAVar_kfhits);
         // Pure ECAL -> shower shapes
@@ -125,7 +127,8 @@ void EGammaMvaEleEstimatorCSA14::initialize( std::string methodName,
         tmpTMVAReader->AddVariable("ele_scletawidth",        &fMVAVar_etawidth);
         tmpTMVAReader->AddVariable("ele_sclphiwidth",        &fMVAVar_phiwidth);
         tmpTMVAReader->AddVariable("ele_he",             &fMVAVar_HoE);
-        if(i == 1 || i == 3) tmpTMVAReader->AddVariable("ele_psEoverEraw",&fMVAVar_PreShowerOverRaw);
+        if ((type == kNonTrig)&&(i == 1 || i == 3)) tmpTMVAReader->AddVariable("ele_psEoverEraw",&fMVAVar_PreShowerOverRaw);
+        if ((type == kNonTrigPhys14)&&(i == 2 || i == 5)) tmpTMVAReader->AddVariable("ele_psEoverEraw",&fMVAVar_PreShowerOverRaw);
         
         
         //Pure tracking variables
@@ -147,6 +150,7 @@ void EGammaMvaEleEstimatorCSA14::initialize( std::string methodName,
         tmpTMVAReader->AddSpectator("ele_pT",             &fMVAVar_pt);
         tmpTMVAReader->AddSpectator("ele_isbarrel",             &fMVAVar_isBarrel);
         tmpTMVAReader->AddSpectator("ele_isendcap",             &fMVAVar_isEndcap);
+        if (type == kNonTrigPhys14) tmpTMVAReader->AddSpectator("scl_eta",                  &fMVAVar_SCeta);
 
     }
 
@@ -189,7 +193,15 @@ UInt_t EGammaMvaEleEstimatorCSA14::GetMVABin( double eta, double pt) const {
       if (pt >= 20 && fabs(eta) >= 1.479) bin = 1;
     }
 
- 
+    if (fMVAType == EGammaMvaEleEstimatorCSA14::kNonTrigPhys14 ){
+       bin = 0;
+       if (pt < 10 && fabs(eta) < 0.6) bin = 0;
+       if (pt < 10 && fabs(eta) >= 0.6 && fabs(eta) < 1.479) bin = 1;
+       if (pt < 10 && fabs(eta) >= 1.479) bin = 2;
+       if (pt >= 10 && fabs(eta) < 0.6) bin = 3;
+       if (pt >= 10 && fabs(eta) >= 0.6 && fabs(eta) < 1.479) bin = 4;
+       if (pt >= 10 && fabs(eta) >= 1.479) bin = 5;
+    }
 
     return bin;
 }
@@ -212,11 +224,11 @@ Double_t EGammaMvaEleEstimatorCSA14::mvaValue(const reco::GsfElectron& ele,
     return -9999;
   }
 
-  if ( (fMVAType != EGammaMvaEleEstimatorCSA14::kTrig) && (fMVAType != EGammaMvaEleEstimatorCSA14::kNonTrig )) {
+  if ( (fMVAType != EGammaMvaEleEstimatorCSA14::kTrig) && (fMVAType != EGammaMvaEleEstimatorCSA14::kNonTrig )&& (fMVAType != EGammaMvaEleEstimatorCSA14::kNonTrigPhys14 )) {
     std::cout << "Error: This method should be called for kTrig or kNonTrig MVA only" << endl;
     return -9999;
   }
-  
+ 
   bool validKF= false; 
   reco::TrackRef myTrackRef = ele.closestCtfTrackRef();
   validKF = (myTrackRef.isAvailable());
@@ -262,6 +274,7 @@ Double_t EGammaMvaEleEstimatorCSA14::mvaValue(const reco::GsfElectron& ele,
   fMVAVar_pt              =  ele.pt();                          
   fMVAVar_isBarrel        =  (ele.superCluster()->eta()<1.479);
   fMVAVar_isEndcap        =  (ele.superCluster()->eta()>1.479);
+  fMVAVar_SCeta           =  ele.superCluster()->eta();
  
 
   // for triggering electrons get the impact parameteres
@@ -292,7 +305,6 @@ Double_t EGammaMvaEleEstimatorCSA14::mvaValue(const reco::GsfElectron& ele,
     }
   }
   
-
   // evaluate
   bindVariables();
   Double_t mva = -9999;  
@@ -392,7 +404,7 @@ Double_t EGammaMvaEleEstimatorCSA14::mvaValue(const pat::Electron& ele,
     fMVAVar_pt              =  ele.pt();
     fMVAVar_isBarrel        =  (ele.superCluster()->eta()<1.479);
     fMVAVar_isEndcap        =  (ele.superCluster()->eta()>1.479);
-    
+    fMVAVar_SCeta           =  ele.superCluster()->eta();
     
 
     
@@ -400,6 +412,7 @@ Double_t EGammaMvaEleEstimatorCSA14::mvaValue(const pat::Electron& ele,
     bindVariables();
     Double_t mva = -9999;
     if (fUseBinnedVersion) {
+        
         mva = fTMVAReader[GetMVABin(fMVAVar_eta,fMVAVar_pt)]->EvaluateMVA(fMethodname);
     } else {
         mva = fTMVAReader[0]->EvaluateMVA(fMethodname);
