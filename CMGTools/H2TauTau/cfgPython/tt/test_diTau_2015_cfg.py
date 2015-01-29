@@ -1,5 +1,3 @@
-import os 
-
 import PhysicsTools.HeppyCore.framework.config as cfg
 from PhysicsTools.HeppyCore.framework.config import printComps
 
@@ -37,6 +35,11 @@ eventSelector = cfg.Analyzer(
   'EventSelector',
   toSelect = [
   ]
+  )
+
+jsonAna = cfg.Analyzer(
+  JSONAnalyzer         ,
+  name = 'JSONAnalyzer',
   )
 
 # triggerAna = cfg.Analyzer(
@@ -94,20 +97,40 @@ jetAna = cfg.Analyzer(
   )
 
 # defined for vbfAna and eventSorter
-vbfKwargs = dict( Mjj = 400, deltaEta = 4.0 )
+vbfKwargs = dict( Mjj = 500, deltaEta = 3.5 )
 
 vbfAna = cfg.Analyzer(
   VBFSimpleAnalyzer            ,
   'VBFSimpleAnalyzer'          ,
-  vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG_HCP_52X.weights.xml',
-  jetCol        = 'cmgPFJetSel',
-  jetPt         = 30           ,
+#   vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG_HCP_52X.weights.xml',
+#   jetCol        = 'cmgPFJetSel',
+  jetPt         = 30.          ,
   looseJetPt    = 20           ,
   jetEta        = 4.7          ,
   cjvPtCut      = 30.          ,
   btagSFseed    = 123456       ,
   relaxJetId    = False        ,
   **vbfKwargs
+  )
+
+tauWeighterLeg1 = cfg.Analyzer(
+  LeptonWeighter       ,
+  'LeptonWeighter_tau1',
+  effWeight   = None   ,
+  effWeightMC = None   ,
+  lepton      = 'leg1' ,
+  verbose     = False  ,
+  disable     = True   ,
+  )
+
+tauWeighterLeg2 = cfg.Analyzer(
+  LeptonWeighter       ,
+  'LeptonWeighter_tau2',
+  effWeight   = None   ,
+  effWeightMC = None   ,
+  lepton      = 'leg2' ,
+  verbose     = False  ,
+  disable     = True   ,
   )
 
 treeProducer = cfg.Analyzer(
@@ -144,14 +167,17 @@ selectedComponents = allsamples
 ###                  SEQUENCE                   ###
 ###################################################
 sequence = cfg.Sequence( [
-  #eventSelector,
-  #triggerAna   ,
-  vertexAna    ,
-  TauTauAna    ,
-  jetAna       ,
-  vbfAna       ,
-  pileUpAna    ,
-  treeProducer ,
+  #eventSelector  ,
+  jsonAna        ,
+  #triggerAna     ,
+  vertexAna      ,
+  TauTauAna      ,
+  jetAna         ,
+  vbfAna         ,
+#   pileUpAna      ,
+  tauWeighterLeg1, 
+  tauWeighterLeg2, 
+  treeProducer   ,
   ] )
 
 ###################################################
@@ -176,10 +202,11 @@ sequence = cfg.Sequence( [
 ###################################################
 ###            SET BATCH OR LOCAL               ###
 ###################################################
-test = 0 # test = 0 run on batch, test = 1 run locally
+test = 1 # test = 0 run on batch, test = 1 run locally
 if test == 1 :
   cache              = True
   comp               = HiggsGGH125
+  comp.triggers      = [] # empty for now
   selectedComponents = [comp]
   comp.splitFactor   = 1
   comp.files         = comp.files[:1]

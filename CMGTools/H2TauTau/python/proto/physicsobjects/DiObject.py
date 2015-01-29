@@ -202,8 +202,8 @@ class MuonElectron( DiTau ):
 class TauTau( DiTau ):
     def __init__(self, diobject):
         super(TauTau, self).__init__(diobject)
-        self.tau = Tau( diobject.leg1() )
-        self.tau2 = Tau( diobject.leg2() )
+        self.tau  = Tau( super(TauTau, self).leg1() )
+        self.tau2 = Tau( super(TauTau, self).leg2() )
 
     def leg1(self):
         return self.tau

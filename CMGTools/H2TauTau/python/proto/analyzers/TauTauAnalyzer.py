@@ -1,9 +1,10 @@
 from PhysicsTools.HeppyCore.statistics.counter              import Counters
 from PhysicsTools.Heppy.analyzers.core.AutoHandle           import AutoHandle
-from PhysicsTools.Heppy.analyzers.examples.DiLeptonAnalyzer import DiLeptonAnalyzer
-from PhysicsTools.Heppy.physicsutils.DiObject               import TauTau ## RIC: what DiObject should we import? Heppy, HTauTau?
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects       import Tau, Muon, Jet, GenParticle
 from PhysicsTools.Heppy.physicsobjects.HTauTauElectron      import HTauTauElectron as Electron
+
+from CMGTools.H2TauTau.proto.analyzers.DiLeptonAnalyzer     import DiLeptonAnalyzer
+from CMGTools.H2TauTau.proto.physicsobjects.DiObject        import TauTau
 
 class TauTauAnalyzer( DiLeptonAnalyzer ) :
 
@@ -13,17 +14,16 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
 
   def declareHandles( self ) :
     super(TauTauAnalyzer, self).declareHandles()
-    self.handles['diLeptons' ] = AutoHandle( 'cmgDiTauCorSVFitFullSel', 'vector<pat::CompositeCandidate>' ) 
-    self.handles['electrons' ] = AutoHandle( 'slimmedElectronss'      , 'vector<pat::Electron>'           )
-    self.handles['muons'     ] = AutoHandle( 'slimmedMuons'           , 'vector<pat::Muon>'               )
-    self.handles['jets'      ] = AutoHandle( 'slimmedJets'            , 'vector<pat::Jet>'                )
-    self.handles['mvametsigs'] = AutoHandle( 'mvaMETTauMu'            , 'vector<cmg::METSignificance>'    )
+    self.handles['diLeptons'    ] = AutoHandle( 'cmgDiTauCorSVFitFullSel', 'std::vector<pat::CompositeCandidate>' ) 
+    self.handles['otherLeptons' ] = AutoHandle( 'slimmedElectrons'       , 'std::vector<pat::Electron>'           )
+    self.handles['leptons'      ] = AutoHandle( 'slimmedMuons'           , 'std::vector<pat::Muon>'               )
+    self.handles['jets'         ] = AutoHandle( 'slimmedJets'            , 'std::vector<pat::Jet>'                )
+    self.handles['mvametsigs'   ] = AutoHandle( 'mvaMETTauTau'           , 'std::vector<cmg::METSignificance>'    )
   
   def process( self, event ):
-    
-    # build di-tau pairs
-    event.diLeptons = self.buildDiLeptons( self.handles['diLeptons'].product(), event )
-        
+
+    super(TauTauAnalyzer, self).process(event)
+            
     # method inherited from parent class DiLeptonAnalyzer
     # asks for at least on di-tau pair
     # applies the third lepton veto
@@ -31,45 +31,47 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
     # cleans by dR the two signal leptons
     # applies the trigger matching to the two signal leptons
     # choses the best di-tau pair, with the bestDiLepton method implemented here
-    self.selectionSequence(event, fillCounter = True, 
-                           leg1IsoCut = self.cfg_ana.isolation, 
-                           leg2IsoCut = self.cfg_ana.isolation)
+    
+    if not ( hasattr(event, 'leg1') and hasattr(event, 'leg2') ) :
+      return False
     
     # make sure that the legs are sorted by pt
-    if event.leg1.pt < event.leg2.pt :
+    if event.leg1.pt() < event.leg2.pt() :
       event.leg1 = event.diLepton.leg2()
       event.leg2 = event.diLepton.leg1()
       event.selectedLeptons = [event.leg2, event.leg1]
 
     return True
       
-  def bestDiLepton( self, diLeptons) :
-    '''Returns the most isolated di-tau candidate:
-       OS if present, else SS.'''
-    iso = self.cfg_ana.isolation 
-    myDiLeptons = [ dilep for dilep in diLeptons if dilep.leg1().charge() * dilep.leg1().charge() < 0 ]
-    if len(myDiLeptons) < 1 : myDiLeptons = [ dilep for dilep in diLeptons ]     
-    return sorted(myDiLeptons, key=lambda dilep: max(dilep.leg1().tauID(iso), \
-                                                     dilep.leg2().tauID(iso)), reverse=True)[0]
+  def buildDiLeptons(self, cmgDiLeptons, event):
+    '''Build di-leptons, associate best vertex to both legs.'''
+    diLeptons = []
+    for index, dil in enumerate(cmgDiLeptons):
+      pydil = TauTau(dil)
+      pydil.leg1().associatedVertex = event.goodVertices[0]
+      pydil.leg2().associatedVertex = event.goodVertices[0]
+      diLeptons.append( pydil )
+    return diLeptons
 
-  def muonVeto ( self, pt = 10., eta = 2.4, iso = 0.3 ) :
-    event.muons = [ muon for muon in self.buildMuons(self.handles['muons'].product(),event)
-                    if self.testLegKine(muon, ptcut=pt, etacut=eta) and 
-                       self.testVertex(muon)                        and
-                       self.testMuonID(muon)                        and
-                       self.testMuonIso(muon, iso) ]
-    return len(event.muons) == 0
-                      
-  def electronVeto ( self, pt = 10., eta = 2.4, iso = 0.3 ) :
-    event.electrons = [ electron for electron in self.buildElectrons(self.handles['electrons'].product(),event)
-                        if self.testLegKine(electron, ptcut=pt, etacut=eta) and
-                           self.testVertex(electron)                        and
-                           electron.looseIdForTriLeptonVeto()               and
-                           electron.relIsoAllChargedDB05() < iso]
-    return len(event.electrons) == 0
+  def buildLeptons(self, cmgLeptons, event):
+    '''Build muons for veto, associate best vertex, select loose ID muons.
+    The loose ID selection is done to ensure that the muon has an inner track.'''
+    leptons = []
+    for index, lep in enumerate(cmgLeptons):
+      pyl = Muon(lep)
+      pyl.associatedVertex = event.goodVertices[0]
+      leptons.append( pyl )
+    return leptons
 
-  def thirdLeptonVeto ( self ) :
-    return self.muonVeto and self.electronVeto
+  def buildOtherLeptons(self, cmgOtherLeptons, event):
+    '''Build electrons for third lepton veto, associate best vertex.'''
+    otherLeptons = []
+    for index, lep in enumerate(cmgOtherLeptons):
+      pyl = Electron(lep)
+      pyl.associatedVertex = event.goodVertices[0]
+      pyl.rho = event.rho
+      otherLeptons.append( pyl )
+    return otherLeptons
 
   def testLeg( self, leg, leg_pt, leg_eta, iso, isocut ) :      
     '''requires loose isolation, pt, eta and minimal tauID cuts'''
@@ -81,14 +83,14 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
              leg.tauID('againstElectronLoose') > 0.5     and 
              leg.tauID('againstMuonLoose')     > 0.5       )
 
-  def testLeg1(self, leg) :
+  def testLeg1(self, leg, dummy) :
     leg_pt  = self.cfg_ana.pt1       
     leg_eta = self.cfg_ana.eta1      
     iso     = self.cfg_ana.isolation 
     isocut  = self.cfg_ana.iso1           
     return self.testLeg(leg, leg_pt, leg_eta, iso, isocut)    
 
-  def testLeg2(self, leg) :
+  def testLeg2(self, leg, dummy) :
     leg_pt  = self.cfg_ana.pt2       
     leg_eta = self.cfg_ana.eta2      
     iso     = self.cfg_ana.isolation 
@@ -119,26 +121,6 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
            muon.isTrackerMuon()                   and \
            muon.sourcePtr().userFloat('isPFMuon')
         
-  def buildMuons( self, cmgLeptons, event ):
-    '''Build muons for veto, associate best vertex, select loose ID muons.
-    The loose ID selection is done to ensure that the muon has an inner track.'''
-    muons = []
-    for index, lep in enumerate(cmgLeptons):
-      pyl = Muon(lep)
-      pyl.associatedVertex = event.goodVertices[0]
-      if not self.testMuonIDLoose( pyl ) : continue
-      muons.append( pyl )
-    return muons
-
-  def buildElectrons( self, cmgOtherLeptons, event ):
-   '''Build electrons for third lepton veto, associate best vertex'''
-   electrons = []
-   for index, lep in enumerate(cmgOtherLeptons):
-     pyl = Electron(lep)
-     pyl.associatedVertex = event.goodVertices[0]
-     electrons.append( pyl )
-   return electrons
-
   def testJetID( self, jet ) :
     #jet.puJetIdPassed = jet.puJetId()
     jet.puJetIdPassed = jet.puJetId53X()
