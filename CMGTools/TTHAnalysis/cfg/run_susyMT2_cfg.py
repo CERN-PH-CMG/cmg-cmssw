@@ -56,6 +56,9 @@ isoTrackAna.setOff=False
 # recalibrate MET
 metAna.recalibrate = False
 
+# store all taus by default
+genAna.allGenTaus = True
+
 ##------------------------------------------ 
 ##  CONTROL VARIABLES
 ##------------------------------------------ 
