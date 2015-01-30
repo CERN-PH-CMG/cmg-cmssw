@@ -139,6 +139,13 @@ tauDecayModeWeighter = cfg.Analyzer(
   legs = ['leg1', 'leg2'],
   )
 
+higgsWeighter = cfg.Analyzer(
+  HiggsPtWeighter            ,
+  'HiggsPtWeighter'          ,
+  #src = 'prunedGenParticles' ,
+  makeSplittedGenLists = True,
+  )
+
 treeProducer = cfg.Analyzer(
   H2TauTauTreeProducerTauTau  ,
   'H2TauTauTreeProducerTauTau',
@@ -183,7 +190,8 @@ sequence = cfg.Sequence( [
   pileUpAna           ,
   tauWeighterLeg1     , 
   tauWeighterLeg2     ,
-  tauDecayModeWeighter, 
+  tauDecayModeWeighter,
+  higgsWeighter       ,
   treeProducer        ,
   ] )
 
