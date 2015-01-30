@@ -75,13 +75,17 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
 
   def testLeg( self, leg, leg_pt, leg_eta, iso, isocut ) :      
     '''requires loose isolation, pt, eta and minimal tauID cuts'''
-    return ( self.testVertex(leg)                        and 
-             leg.tauID(iso)                    < isocut  and 
-             leg.pt()                          > leg_pt  and  
-             abs(leg.eta())                    < leg_eta and 
-             leg.tauID('decayModeFinding')     > 0.5     and 
-             leg.tauID('againstElectronLoose') > 0.5     and 
-             leg.tauID('againstMuonLoose')     > 0.5       )
+    return ( self.testVertex(leg)                            and 
+             leg.tauID(iso)                        < isocut  and 
+             leg.pt()                              > leg_pt  and  
+             abs(leg.eta())                        < leg_eta and 
+             leg.tauID('decayModeFindingNewDMs')   > 0.5     and 
+             leg.tauID('againstElectronLooseMVA5') > 0.5     and 
+             leg.tauID('againstMuonLooseMVA')      > 0.5       )
+# RIC: old discriminators, shall we switch to newTauID, shall we?
+#              leg.tauID('decayModeFinding')     > 0.5     and 
+#              leg.tauID('againstElectronLoose') > 0.5     and 
+#              leg.tauID('againstMuonLoose')     > 0.5       )
 
   def testLeg1(self, leg, dummy) :
     leg_pt  = self.cfg_ana.pt1       
