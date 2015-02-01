@@ -56,10 +56,12 @@ DYJetsToLL_M50 = kreator.makeMCComponent("DYJetsToLL_M50", "/DYJetsToLL_M-50_13T
 
 DYJetsToLL_M50_HT100to200 = kreator.makeMCComponent("DYJetsToLL_M50_HT100to200", "/DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",194.3*1.27)
 DYJetsToLL_M50_HT200to400 = kreator.makeMCComponent("DYJetsToLL_M50_HT200to400", "/DYJetsToLL_M-50_HT-200to400_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",52.24*1.27)
+DYJetsToLL_M50_HT400to600 = kreator.makeMCComponent("DYJetsToLL_M50_HT400to600", "/DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",52.24*1.27)
 DYJetsToLL_M50_HT600toInf = kreator.makeMCComponent("DYJetsToLL_M50_HT600toInf", "/DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",2.179*1.27)
 DYJetsM50HT = [
 DYJetsToLL_M50_HT100to200,
 DYJetsToLL_M50_HT200to400,
+DYJetsToLL_M50_HT400to600,
 DYJetsToLL_M50_HT600toInf,
 ]
 
@@ -79,18 +81,22 @@ WJetsToLNu = kreator.makeMCComponent("WJetsToLNu", "/WJetsToLNu_13TeV-madgraph-p
 
 WJetsToLNu_HT100to200 = kreator.makeMCComponent("WJetsToLNu_HT100to200", "/WJetsToLNu_HT-100to200_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",1817*1.23)
 WJetsToLNu_HT200to400 = kreator.makeMCComponent("WJetsToLNu_HT200to400", "/WJetsToLNu_HT-200to400_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",471.6*1.23)
+WJetsToLNu_HT400to600 = kreator.makeMCComponent("WJetsToLNu_HT400to600", "/WJetsToLNu_HT-400to600_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",55.61*1.23)
 WJetsToLNu_HT600toInf = kreator.makeMCComponent("WJetsToLNu_HT600toInf", "/WJetsToLNu_HT-600toInf_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",18.81*1.23)
 WJetsToLNuHT = [
 WJetsToLNu_HT100to200,
 WJetsToLNu_HT200to400,
+WJetsToLNu_HT400to600,
 WJetsToLNu_HT600toInf,
 ]
 
 GJets_HT100to200 = kreator.makeMCComponent("GJets_HT100to200", "/GJets_HT-100to200_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",1534)
+GJets_HT200to400 = kreator.makeMCComponent("GJets_HT200to400", "/GJets_HT-200to400_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",489.9)
 GJets_HT400to600 = kreator.makeMCComponent("GJets_HT400to600", "/GJets_HT-400to600_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",62.05)
 GJets_HT600toInf = kreator.makeMCComponent("GJets_HT600toInf", "/GJets_HT-600toInf_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v2/MINIAODSIM", "CMS", ".*root",20.87)
 GJetsHT = [
 GJets_HT100to200,
+GJets_HT200to400,
 GJets_HT400to600,
 GJets_HT600toInf,
 ]
@@ -133,9 +139,14 @@ SMS_T2bb_2J_mStop600_mLSP580 = kreator.makeMCComponent("SMS_T2bb_2J_mStop600_mLS
 SMS_T2bb_2J_mStop900_mLSP100 = kreator.makeMCComponent("SMS_T2bb_2J_mStop900_mLSP100", "/SMS-T2bb_2J_mStop-900_mLSP-100_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",0.0128895)
 SMS_T2tt_2J_mStop500_mLSP325 = kreator.makeMCComponent("SMS_T2tt_2J_mStop500_mLSP325", "/SMS-T2tt_2J_mStop-500_mLSP-325_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",0.51848)
 SMS_T2tt_2J_mStop650_mLSP325 = kreator.makeMCComponent("SMS_T2tt_2J_mStop650_mLSP325", "/SMS-T2tt_2J_mStop-650_mLSP-325_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v2/MINIAODSIM", "CMS", ".*root",0.107045)
+SMS_T2tt_2J_mStop425_mLSP325 = kreator.makeMCComponent("SMS_T2tt_2J_mStop425_mLSP325", "/SMS-T2tt_2J_mStop-425_mLSP-325_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",1.31169)
+SMS_T2tt_2J_mStop850_mLSP100 = kreator.makeMCComponent("SMS_T2tt_2J_mStop850_mLSP100", "/SMS-T2tt_2J_mStop-850_mLSP-100_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",0.0189612)
+SMS_T1tttt_2J_mGl1500_mLSP100 = kreator.makeMCComponent("SMS_T1tttt_2J_mGl1500_mLSP100", "/SMS-T1tttt_2J_mGl-1500_mLSP-100_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",0.0141903)
+SMS_T1tttt_2J_mGl1200_mLSP800 = kreator.makeMCComponent("SMS_T1tttt_2J_mGl1200_mLSP800", "/SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",0.0856418)
 SMS_T1bbbb_2J_mGl1000_mLSP900 = kreator.makeMCComponent("SMS_T1bbbb_2J_mGl1000_mLSP900", "/SMS-T1bbbb_2J_mGl-1000_mLSP-900_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",0.325388)
 SMS_T1bbbb_2J_mGl1500_mLSP100 = kreator.makeMCComponent("SMS_T1bbbb_2J_mGl1500_mLSP100", "/SMS-T1bbbb_2J_mGl-1500_mLSP-100_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v2/MINIAODSIM", "CMS", ".*root",0.0141903)
 SMS_T1qqqq_2J_mGl1400_mLSP100 = kreator.makeMCComponent("SMS_T1qqqq_2J_mGl1400_mLSP100", "/SMS-T1qqqq_2J_mGl-1400_mLSP-100_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",0.0252977)
+SMS_T1qqqq_2J_mGl1000_mLSP800 = kreator.makeMCComponent("SMS_T1qqqq_2J_mGl1000_mLSP800", "/SMS-T1qqqq_2J_mGl-1000_mLSP-800_Tune4C_13TeV-madgraph-tauola/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root",0.325388)
 
 SusySignalSamples = [
 SMS_T2qq_2J_mStop600_mLSP550,
@@ -144,9 +155,14 @@ SMS_T2bb_2J_mStop600_mLSP580,
 SMS_T2bb_2J_mStop900_mLSP100,
 SMS_T2tt_2J_mStop500_mLSP325,
 SMS_T2tt_2J_mStop650_mLSP325,
+SMS_T2tt_2J_mStop850_mLSP100,
+SMS_T2tt_2J_mStop425_mLSP325,
+SMS_T1tttt_2J_mGl1500_mLSP100,
+SMS_T1tttt_2J_mGl1200_mLSP800,
 SMS_T1bbbb_2J_mGl1000_mLSP900,
 SMS_T1bbbb_2J_mGl1500_mLSP100,
 SMS_T1qqqq_2J_mGl1400_mLSP100,
+SMS_T1qqqq_2J_mGl1000_mLSP800,
 ]
 
 mcSamplesCSA14v2 = DYJetsM50HT + ZJetsToNuNuHT + WJetsToLNuHT + GJetsHT + QCDHT +  QCDPt + SingleTop + [TTJets, TTZJets, WJetsToLNu, DYJetsToLL_M50, WZJetsTo3LNu, ZZTo4L]  + SusySignalSamples
