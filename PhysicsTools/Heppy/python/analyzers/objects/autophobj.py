@@ -107,6 +107,8 @@ tauType = NTupleObjectType("tau",  baseObjectTypes = [ particleType ], variables
     NTupleVariable("dz",    lambda x : x.dz() , help="d_{z} of lead track with respect to PV, in cm (with sign)"),
     NTupleVariable("idMVA", lambda x : x.idMVA, int, help="1,2,3 if the tau passes the loose, medium, tight WP of the By<X>IsolationMVAXXX discriminator as configured in the analysis"),
     NTupleVariable("idCI3hit", lambda x : x.idCI3hit, int, help="1,2,3 if the tau passes the loose, medium, tight WP of the By<X>CombinedIsolationDBSumPtCorr3Hits discriminator"),
+    NTupleVariable("idAntiMu", lambda x : x.idAntiMu, int, help="1,2,3 if the tau passes the loose, medium, tight WP of the againstMuon<X>MVA discriminator"),
+    NTupleVariable("idAntiE", lambda x : x.idAntiE, int, help="1,2,3 if the tau passes the loose, medium, tight WP of the againstElectron<X>MVA5 discriminator"),
     NTupleVariable("isoCI3hit",  lambda x : x.tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits"), help="byCombinedIsolationDeltaBetaCorrRaw3Hits raw output discriminator"),
     #NTupleVariable("isoMVA2",  lambda x : x.tauID("byIsolationMVA2raw"), help="ByIsolationMVA2 raw output discriminator"),
     # MC-match info
