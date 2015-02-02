@@ -2,6 +2,9 @@
 #include "EgammaAnalysis/ElectronTools/interface/EGammaMvaEleEstimatorCSA14.h"
 #include <cmath>
 #include <vector>
+#include <cstdio>
+#include <zlib.h>
+#include "TMVA/MethodBase.h"
 
 
 //--------------------------------------------------------------------------------------------------
@@ -19,6 +22,7 @@ fNMVABins(0)
 EGammaMvaEleEstimatorCSA14::~EGammaMvaEleEstimatorCSA14()
 {
   for (unsigned int i=0;i<fTMVAReader.size(); ++i) {
+    if (fTMVAMethod[i]) delete fTMVAMethod[i];
     if (fTMVAReader[i]) delete fTMVAReader[i];
   }
 }
@@ -45,8 +49,10 @@ void EGammaMvaEleEstimatorCSA14::initialize( std::string methodName,
   //clean up first
   for (unsigned int i=0;i<fTMVAReader.size(); ++i) {
     if (fTMVAReader[i]) delete fTMVAReader[i];
+    if (fTMVAMethod[i]) delete fTMVAMethod[i];
   }
   fTMVAReader.clear();
+  fTMVAMethod.clear();
   //initialize
   fisInitialized = kTRUE;
   fMVAType = type;
@@ -157,8 +163,36 @@ void EGammaMvaEleEstimatorCSA14::initialize( std::string methodName,
  
 
 
-
-    tmpTMVAReader->BookMVA(fMethodname , weightsfiles[i]);
+#ifndef STANDALONE
+    if ((fMethodname.find("BDT") == 0) && (weightsfiles[i].rfind(".xml.gz") == weightsfiles[i].length()-strlen(".xml.gz"))) {
+        gzFile file = gzopen(weightsfiles[i].c_str(), "rb");
+        if (file == nullptr) { std::cout  << "Error opening gzip file associated to " << weightsfiles[i] << std::endl; throw cms::Exception("Configuration","Error reading zipped XML file"); }
+        std::vector<char> data; 
+        data.reserve(1024*1024*10);
+        unsigned int bufflen = 32*1024;
+        char *buff = reinterpret_cast<char *>(malloc(bufflen));
+        if (buff == nullptr) { std::cout  << "Error creating buffer for " << weightsfiles[i] << std::endl;  gzclose(file); throw cms::Exception("Configuration","Error reading zipped XML file"); }
+        int read;
+        while ((read = gzread(file, buff, bufflen)) != 0) {
+            if (read == -1) { std::cout  << "Error reading gzip file associated to " << weightsfiles[i] << ": " << gzerror(file,&read) << std::endl; gzclose(file); free(buff); throw cms::Exception("Configuration","Error reading zipped XML file"); }
+            data.insert(data.end(), buff, buff+read);
+        }
+        if (gzclose(file) != Z_OK) { std::cout  << "Error closing gzip file associated to " << weightsfiles[i] << std::endl; }
+        free(buff);
+        data.push_back('\0'); // IMPORTANT
+        fTMVAMethod.push_back(dynamic_cast<TMVA::MethodBase*>(tmpTMVAReader->BookMVA(TMVA::Types::kBDT, &data[0])));
+    } else {
+        if (weightsfiles[i].rfind(".xml.gz") == weightsfiles[i].length()-strlen(".xml.gz")) {
+            std::cout  << "Error: xml.gz unsupported for method " << fMethodname << ", weight file " << weightsfiles[i] << std::endl; throw cms::Exception("Configuration","Error reading zipped XML file"); 
+        }
+        fTMVAMethod.push_back(dynamic_cast<TMVA::MethodBase*>(tmpTMVAReader->BookMVA(fMethodname , weightsfiles[i])));
+    }
+#else
+    if (weightsfiles[i].rfind(".xml.gz") == weightsfiles[i].length()-strlen(".xml.gz")) {
+        std::cout  << "Error: xml.gz unsupported for method " << fMethodname << ", weight file " << weightsfiles[i] << std::endl; abort();
+    }
+    fTMVAMethod.push_back(dynamic_cast<TMVA::MethodBase*>(tmpTMVAReader->BookMVA(fMethodname , weightsfiles[i])));
+#endif
     std::cout << "MVABin " << i << " : MethodName = " << fMethodname 
               << " , type == " << type << " , "
               << "Load weights file : " << weightsfiles[i] 
@@ -190,16 +224,16 @@ UInt_t EGammaMvaEleEstimatorCSA14::GetMVABin( double eta, double pt) const {
       ) {
       bin = 0;
       if (pt >= 10 && fabs(eta) < 1.479) bin = 0;
-      if (pt >= 20 && fabs(eta) >= 1.479) bin = 1;
+      if (pt >= 10 && fabs(eta) >= 1.479) bin = 1;
     }
 
     if (fMVAType == EGammaMvaEleEstimatorCSA14::kNonTrigPhys14 ){
        bin = 0;
-       if (pt < 10 && fabs(eta) < 0.6) bin = 0;
-       if (pt < 10 && fabs(eta) >= 0.6 && fabs(eta) < 1.479) bin = 1;
+       if (pt < 10 && fabs(eta) < 0.8) bin = 0;
+       if (pt < 10 && fabs(eta) >= 0.8 && fabs(eta) < 1.479) bin = 1;
        if (pt < 10 && fabs(eta) >= 1.479) bin = 2;
-       if (pt >= 10 && fabs(eta) < 0.6) bin = 3;
-       if (pt >= 10 && fabs(eta) >= 0.6 && fabs(eta) < 1.479) bin = 4;
+       if (pt >= 10 && fabs(eta) < 0.8) bin = 3;
+       if (pt >= 10 && fabs(eta) >= 0.8 && fabs(eta) < 1.479) bin = 4;
        if (pt >= 10 && fabs(eta) >= 1.479) bin = 5;
     }
 
@@ -224,8 +258,8 @@ Double_t EGammaMvaEleEstimatorCSA14::mvaValue(const reco::GsfElectron& ele,
     return -9999;
   }
 
-  if ( (fMVAType != EGammaMvaEleEstimatorCSA14::kTrig) && (fMVAType != EGammaMvaEleEstimatorCSA14::kNonTrig )&& (fMVAType != EGammaMvaEleEstimatorCSA14::kNonTrigPhys14 )) {
-    std::cout << "Error: This method should be called for kTrig or kNonTrig MVA only" << endl;
+  if ( (fMVAType != EGammaMvaEleEstimatorCSA14::kTrig) && (fMVAType != EGammaMvaEleEstimatorCSA14::kNonTrig) && (fMVAType != EGammaMvaEleEstimatorCSA14::kNonTrigPhys14) ) {
+    std::cout << "Error: This method should be called for kTrig or kNonTrig or kNonTrigPhys14 MVA only" << endl;
     return -9999;
   }
  
@@ -309,9 +343,10 @@ Double_t EGammaMvaEleEstimatorCSA14::mvaValue(const reco::GsfElectron& ele,
   bindVariables();
   Double_t mva = -9999;  
   if (fUseBinnedVersion) {
-    mva = fTMVAReader[GetMVABin(fMVAVar_eta,fMVAVar_pt)]->EvaluateMVA(fMethodname);
+    int bin = GetMVABin(fMVAVar_eta,fMVAVar_pt);
+    mva = fTMVAReader[bin]->EvaluateMVA(fTMVAMethod[bin]);
   } else {
-    mva = fTMVAReader[0]->EvaluateMVA(fMethodname);
+    mva = fTMVAReader[0]->EvaluateMVA(fTMVAMethod[0]);
   }
 
 
@@ -357,8 +392,8 @@ Double_t EGammaMvaEleEstimatorCSA14::mvaValue(const pat::Electron& ele,
         return -9999;
     }
     
-    if ( (fMVAType != EGammaMvaEleEstimatorCSA14::kTrig) && (fMVAType != EGammaMvaEleEstimatorCSA14::kNonTrig )) {
-        std::cout << "Error: This method should be called for kTrig or kNonTrig MVA only" << endl;
+    if ( (fMVAType != EGammaMvaEleEstimatorCSA14::kTrig) && (fMVAType != EGammaMvaEleEstimatorCSA14::kNonTrig) && (fMVAType != EGammaMvaEleEstimatorCSA14::kNonTrigPhys14) ) {
+        std::cout << "Error: This method should be called for kTrig or kNonTrig or kNonTrigPhys14 MVA only" << endl;
         return -9999;
     }
     
@@ -412,10 +447,10 @@ Double_t EGammaMvaEleEstimatorCSA14::mvaValue(const pat::Electron& ele,
     bindVariables();
     Double_t mva = -9999;
     if (fUseBinnedVersion) {
-        
-        mva = fTMVAReader[GetMVABin(fMVAVar_eta,fMVAVar_pt)]->EvaluateMVA(fMethodname);
+        int bin = GetMVABin(fMVAVar_eta,fMVAVar_pt);
+        mva = fTMVAReader[bin]->EvaluateMVA(fTMVAMethod[bin]);
     } else {
-        mva = fTMVAReader[0]->EvaluateMVA(fMethodname);
+        mva = fTMVAReader[0]->EvaluateMVA(fTMVAMethod[0]);
     }
     
     

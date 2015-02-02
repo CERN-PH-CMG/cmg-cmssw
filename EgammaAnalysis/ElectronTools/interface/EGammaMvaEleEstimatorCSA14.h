@@ -86,6 +86,7 @@ class EGammaMvaEleEstimatorCSA14{
   private:
 
     std::vector<TMVA::Reader*> fTMVAReader;
+    std::vector<TMVA::MethodBase*> fTMVAMethod;
     std::string                fMethodname;
     Bool_t                     fisInitialized;
     MVAType                    fMVAType;
