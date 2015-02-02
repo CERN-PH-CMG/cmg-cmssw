@@ -1,0 +1,20 @@
+>= 2 good leptons: nLepGood10 >= 2
+cleanup: minMllAFAS > 12
+pt2010: LepGood1_pt>20 && LepGood2_pt>10
+pt2020: LepGood2_pt > 20
+htllv100: LepGood1_pt+LepGood2_pt+met > 100
+lep MVA: min(LepGood1_mvaSusy,LepGood2_mvaSusy) > 0.53
+el mu:  abs(LepGood1_pdgId) != abs(LepGood2_pdgId)
+same-sign: LepGood1_charge*LepGood2_charge > 0
+tight-charge: LepGood1_tightCharge > (abs(LepGood1_pdgId) == 11) && LepGood2_tightCharge > (abs(LepGood2_pdgId) == 11)
+conv veto: (abs(LepGood1_pdgId) == 13 || (LepGood1_convVeto > 0 && LepGood1_lostHits == 0)) && (abs(LepGood2_pdgId) == 13 || (LepGood2_convVeto > 0 && LepGood2_lostHits == 0))
+4j: nJet25>=4
+2b loose: nBJetLoose25 >= 2 || nBJetMedium25 >= 1
+2b medium: nBJetLoose25 >= 2 && nBJetMedium25 >= 1
+2B tight: nBJetMedium25 >= 2
+1tau: nTauGood >= 1
+#tau 30: TauGood1_pt > 30
+#tau 45: TauGood1_pt > 45
+== 2 good leptons: nLepGood10 == 2
+#pt2525: LepGood1_pt > 25 && LepGood2_pt > 25
+#pt3030: LepGood1_pt > 30 && LepGood2_pt > 30
