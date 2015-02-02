@@ -63,22 +63,22 @@ pileUpAna = cfg.Analyzer(
   )
     
 TauTauAna = cfg.Analyzer(
-  TauTauAnalyzer                                         ,
-  'TauTauAnalyzer'                                       ,
-  pt1        = 45                                        ,
-  eta1       = 2.1                                       ,
-  iso1       = 10.                                       ,
-  pt2        = 45                                        ,
-  eta2       = 2.1                                       ,
-  iso2       = 10.                                       ,
-  isolation  = 'byCombinedIsolationDeltaBetaCorrRaw3Hits',
-  m_min      = 10                                        ,
-  m_max      = 99999                                     ,
-  dR_min     = 0.5                                       ,
-  triggerMap = pathsAndFilters                           ,
-  jetPt      = 30.                                       ,    
-  jetEta     = 4.7                                       ,
-  relaxJetId = False                                     ,
+  TauTauAnalyzer                           ,
+  'TauTauAnalyzer'                         ,
+  pt1        = 45                          ,
+  eta1       = 2.1                         ,
+  iso1       = 10.                         ,
+  pt2        = 45                          ,
+  eta2       = 2.1                         ,
+  iso2       = 10.                         ,
+  isolation  = 'byIsolationMVA3newDMwLTraw',
+  m_min      = 10                          ,
+  m_max      = 99999                       ,
+  dR_min     = 0.5                         ,
+  triggerMap = pathsAndFilters             ,
+  jetPt      = 30.                         ,    
+  jetEta     = 4.7                         ,
+  relaxJetId = False                       ,
   verbose    = False           
   )
 
@@ -93,7 +93,7 @@ jetAna = cfg.Analyzer(
   relaxJetId  = False         , 
   jerCorr     = False         ,
   #jesCorr     = 1.            ,
-  puJetIDDisc = 'pileupJetIdFull:full53xDiscriminant'
+  puJetIDDisc = 'pileupJetIdFull:full53xDiscriminant',
   )
 
 # defined for vbfAna and eventSorter
@@ -110,7 +110,7 @@ vbfAna = cfg.Analyzer(
   cjvPtCut      = 30.          ,
   btagSFseed    = 123456       ,
   relaxJetId    = False        ,
-  **vbfKwargs
+  **vbfKwargs                  
   )
 
 tauWeighterLeg1 = cfg.Analyzer(
@@ -131,6 +131,19 @@ tauWeighterLeg2 = cfg.Analyzer(
   lepton      = 'leg2' ,
   verbose     = False  ,
   disable     = True   ,
+  )
+
+tauDecayModeWeighter = cfg.Analyzer(
+  TauDecayModeWeighter   ,
+  'TauDecayModeWeighter' ,
+  legs = ['leg1', 'leg2'],
+  )
+
+higgsWeighter = cfg.Analyzer(
+  HiggsPtWeighter            ,
+  'HiggsPtWeighter'          ,
+  #src = 'prunedGenParticles' ,
+  makeSplittedGenLists = True,
   )
 
 treeProducer = cfg.Analyzer(
@@ -167,17 +180,19 @@ selectedComponents = allsamples
 ###                  SEQUENCE                   ###
 ###################################################
 sequence = cfg.Sequence( [
-  #eventSelector  ,
-  jsonAna        ,
-  #triggerAna     ,
-  vertexAna      ,
-  TauTauAna      ,
-  jetAna         ,
-  vbfAna         ,
-#   pileUpAna      ,
-  tauWeighterLeg1, 
-  tauWeighterLeg2, 
-  treeProducer   ,
+  #eventSelector       ,
+  jsonAna             ,
+  #triggerAna          ,
+  vertexAna           ,
+  TauTauAna           ,
+  jetAna              ,
+  vbfAna              ,
+  pileUpAna           ,
+  tauWeighterLeg1     , 
+  tauWeighterLeg2     ,
+  tauDecayModeWeighter,
+  higgsWeighter       ,
+  treeProducer        ,
   ] )
 
 ###################################################

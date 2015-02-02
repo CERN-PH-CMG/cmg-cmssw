@@ -110,7 +110,7 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzerNumpy ):
     #self.tree.book()
 
   def process(self, event):
- 
+     
     fill(self.tree, 'run'  , event.run    )
     fill(self.tree, 'lumi' , event.lumi   )
     fill(self.tree, 'event', event.eventId)
@@ -153,10 +153,11 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzerNumpy ):
       fill   (self.tree, 'jet2Btag'     , event.cleanJets[1].btag('combinedSecondaryVertexBJetTags') )
 #       fill   (self.tree, 'jet2Bmatch'   , event.cleanJets[1].matchGenParton                          )
     
-#     fill(self.tree, 'mjj'          , event.vbf.mjj                                   )
-#     fill(self.tree, 'dEtajj'       , event.vbf.deta                                  )
-#     fill(self.tree, 'dPhijj'       , deltaPhi(event.cleanJets[0], event.cleanJets[1]))
-#     fill(self.tree, 'nCentralJets' , len(event.vbf.centralJets)                      )
+    if hasattr(event, 'vbf') :
+      fill(self.tree, 'mjj'          , event.vbf.mjj                                   )
+      fill(self.tree, 'dEtajj'       , event.vbf.deta                                  )
+      fill(self.tree, 'dPhijj'       , deltaPhi(event.cleanJets[0], event.cleanJets[1]))
+      fill(self.tree, 'nCentralJets' , len(event.vbf.centralJets)                      )
 
     nbJets = len(event.cleanBJets)
     fill(self.tree, 'nbJets', nbJets )
@@ -181,13 +182,13 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzerNumpy ):
       fill(self.tree, 'isZj'   , event.isZj    )
       fill(self.tree, 'isZttll', event.isZttll )
       fill(self.tree, 'isZttj' , event.isZttj  )
-    else :
-      fill(self.tree, 'isZtt'  , -1 )
-      fill(self.tree, 'isZee'  , -1 )
-      fill(self.tree, 'isZmm'  , -1 )
-      fill(self.tree, 'isZj'   , -1 )
-      fill(self.tree, 'isZttll', -1 )
-      fill(self.tree, 'isZttj' , -1 )
+#     else :
+#       fill(self.tree, 'isZtt'  , -1 )
+#       fill(self.tree, 'isZee'  , -1 )
+#       fill(self.tree, 'isZmm'  , -1 )
+#       fill(self.tree, 'isZj'   , -1 )
+#       fill(self.tree, 'isZttll', -1 )
+#       fill(self.tree, 'isZttj' , -1 )
     
     hasW = 0
     if hasattr(event,'hasW') : hasW = event.hasW
