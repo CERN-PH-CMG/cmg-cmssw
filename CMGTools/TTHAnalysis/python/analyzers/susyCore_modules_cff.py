@@ -172,6 +172,11 @@ lepAna = cfg.Analyzer(
     ele_isoCorr = "rhoArea" ,
     el_effectiveAreas = "Phys14_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1')
     ele_tightId = "Cuts_2012" ,
+    # Mini-isolation, with pT dependent cone: will fill in the miniRelIso, miniRelIsoCharged, miniRelIsoNeutral variables of the leptons (see https://indico.cern.ch/event/368826/ )
+    doMiniIsolation = False, # off by default since it requires access to all PFCandidates 
+    packedCandidates = 'packedPFCandidates',
+    miniIsolationPUCorr = 'rhoArea', # Allowed options: 'rhoArea' (EAs for 03 cone scaled by R^2), 'deltaBeta', 'raw' (uncorrected), 'weights' (delta beta weights; not validated)
+    miniIsolationVetoLeptons = None, # use 'inclusive' to veto inclusive leptons and their footprint in all isolation cones
     # minimum deltaR between a loose electron and a loose muon (on overlaps, discard the electron)
     min_dr_electron_muon = 0.02,
     # do MC matching 
