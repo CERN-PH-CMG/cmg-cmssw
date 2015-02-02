@@ -109,6 +109,7 @@ treeProducer = cfg.Analyzer(
      globalVariables = susyFullHad_globalVariables,
      globalObjects = susyFullHad_globalObjects,
      collections = susyFullHad_collections,
+     defaultFloatType = 'F',
 )
 
 
