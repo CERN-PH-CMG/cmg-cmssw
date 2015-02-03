@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "TauAnalysis/SVFitStandAlone/interface/svFitAuxFunctions.h"
-#include "TauAnalysis/SVFitStandAlone/interface/LikelihoodFunctions.h"
+#include "TauAnalysis/SVFitStandAlone2011/interface/svFitAuxFunctions.h"
+#include "TauAnalysis/SVFitStandAlone2011/interface/LikelihoodFunctions.h"
 
 
 double 

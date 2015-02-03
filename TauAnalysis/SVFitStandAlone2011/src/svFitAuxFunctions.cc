@@ -1,4 +1,4 @@
-#include "TauAnalysis/SVFitStandAlone/interface/svFitAuxFunctions.h"
+#include "TauAnalysis/SVFitStandAlone2011/interface/svFitAuxFunctions.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
