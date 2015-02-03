@@ -2,7 +2,7 @@
 from math import *
 from PhysicsTools.Heppy.analyzers.core.autovars import NTupleObjectType  
 from PhysicsTools.Heppy.analyzers.objects.autophobj import  *
-from CMGTools.RootTools.utils.DeltaR import deltaR
+from PhysicsTools.HeppyCore.utils.deltar import deltaR
 
 
 ##------------------------------------------  
@@ -20,6 +20,7 @@ leptonTypeSusy = NTupleObjectType("leptonSusy", baseObjectTypes = [ leptonType ]
     NTupleVariable("mvaTTH",    lambda lepton : getattr(lepton, 'mvaValueTTH', -1), help="Lepton MVA (TTH version)"),
     NTupleVariable("mvaSusy",    lambda lepton : getattr(lepton, 'mvaValueSusy', -1), help="Lepton MVA (SUSY version)"),
     NTupleVariable("jetPtRatio", lambda lepton : lepton.pt()/lepton.jet.pt() if hasattr(lepton,'jet') else -1, help="pt(lepton)/pt(nearest jet)"),
+    NTupleVariable("jetPtRel",   lambda lepton : ptRel(lepton.p4(),lepton.jet.p4()) if hasattr(lepton,'jet') else -1, help="pt of the lepton transverse to the jet axis"),
     NTupleVariable("jetBTagCSV", lambda lepton : lepton.jet.btag('combinedInclusiveSecondaryVertexV2BJetTags') if hasattr(lepton,'jet') and hasattr(lepton.jet, 'btag') else -99, help="CSV btag of nearest jet"),
     NTupleVariable("jetBTagCMVA", lambda lepton : lepton.jet.btag('combinedMVABJetTags') if hasattr(lepton,'jet') and hasattr(lepton.jet, 'btag') else -99, help="CMA btag of nearest jet"),
     NTupleVariable("jetDR",      lambda lepton : deltaR(lepton.eta(),lepton.phi(),lepton.jet.eta(),lepton.jet.phi()) if hasattr(lepton,'jet') else -1, help="deltaR(lepton, nearest jet)"),
@@ -174,4 +175,7 @@ heavyFlavourHadronType = NTupleObjectType("heavyFlavourHadron", baseObjectTypes 
 ])
 
 
-
+def ptRel(p4,axis):
+    a = ROOT.TVector3(axis.Vect().X(),axis.Vect().Y(),axis.Vect().Z())
+    o = ROOT.TLorentzVector(p4.Px(),p4.Py(),p4.Pz(),p4.E())
+    return o.Perp(a)
