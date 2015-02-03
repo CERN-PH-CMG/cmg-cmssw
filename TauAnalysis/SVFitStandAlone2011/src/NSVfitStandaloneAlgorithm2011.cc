@@ -1,5 +1,5 @@
-#include "TauAnalysis/SVFitStandAlone/interface/NSVfitStandaloneAlgorithm2011.h"
-#include "TauAnalysis/SVFitStandAlone/interface/svFitAuxFunctions.h"
+#include "TauAnalysis/SVFitStandAlone2011/interface/NSVfitStandaloneAlgorithm2011.h"
+#include "TauAnalysis/SVFitStandAlone2011/interface/svFitAuxFunctions.h"
 
 #include "Math/Factory.h"
 #include "Math/Functor.h"
