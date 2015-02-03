@@ -13,8 +13,20 @@ conv veto: (abs(LepGood1_pdgId) == 13 || (LepGood1_convVeto > 0 && LepGood1_lost
 2b medium: nBJetLoose25 >= 2 && nBJetMedium25 >= 1
 2B tight: nBJetMedium25 >= 2
 1tau: nTauGood >= 1
+
+tau MVA: TauGood1_idMVA >= 1
+tau MVA + MC: (TauGood1_idMVA >= 1 && TauGood1_mcMatchId == 1)
+
 #tau 30: TauGood1_pt > 30
 #tau 45: TauGood1_pt > 45
 == 2 good leptons: nLepGood10 == 2
+
+
+#tau anti-mu + anti-e + MVA: (TauGood1_idAntiMu >= 1 && TauGood1_idAntiE >= 1 && TauGood1_idMVA >= 1) || (TauGood2_idAntiMu >= 1 && TauGood2_idAntiE >= 1 && TauGood2_idMVA >= 1)  || (TauGood3_idAntiMu >= 1 && TauGood3_idAntiE >= 1 && TauGood3_idMVA >= 1)
+
+#tau anti-mu + anti-e + MVA + MC: (TauGood1_idAntiMu >= 1 && TauGood1_idAntiE >= 1 && TauGood1_idMVA >= 1 && TauGood1_mcMatchId == 1) || (TauGood2_idAntiMu >= 1 && TauGood2_idAntiE >= 1 && TauGood2_idMVA >= 1 && TauGood2_mcMatchId == 1)  || (TauGood3_idAntiMu >= 1 && TauGood3_idAntiE >= 1 && TauGood3_idMVA >= 1 && TauGood3_mcMatchId == 1)
 #pt2525: LepGood1_pt > 25 && LepGood2_pt > 25
 #pt3030: LepGood1_pt > 30 && LepGood2_pt > 30
+# tau anti-mu: TauGood1_idAntiMu >= 1 || TauGood2_idAntiMu >= 1 || TauGood3_idAntiMu >= 1
+# tau anti-e: TauGood1_idAntiE >= 1 || TauGood2_idAntiE >= 1 || TauGood3_idAntiE >= 1
+#tau anti-mu + anti-e: (TauGood1_idAntiMu >= 1 && TauGood1_idAntiE >= 1) || (TauGood2_idAntiMu >= 1 && TauGood2_idAntiE >= 1)  || (TauGood3_idAntiMu >= 1 && TauGood3_idAntiE >= 1)
