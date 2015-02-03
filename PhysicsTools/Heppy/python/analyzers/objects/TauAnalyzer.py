@@ -46,17 +46,22 @@ class TauAnalyzer( Analyzer ):
         for tau in alltaus:
             tau.associatedVertex = event.goodVertices[0]
             tau.lepVeto = False
+            tau.idDecayMode = tau.tauID("decayModeFinding")
+            if self.cfg_ana.decayMode:
+                if not tau.idDecayMode:
+                    continue
             if self.cfg_ana.vetoLeptons:
                 for lep in event.selectedLeptons:
                     if deltaR(lep.eta(), lep.phi(), tau.eta(), tau.phi()) < self.cfg_ana.leptonVetoDR:
                         tau.lepVeto = True
                 if tau.lepVeto: continue
             if self.cfg_ana.vetoLeptonsPOG:
-                if not tau.tauID(self.tauAntiMuonID):
+                if not tau.tauID(self.cfg_ana.tauAntiMuonID):
                         tau.lepVeto = True
-                if not tau.tauID(self.tauAntiElectronID):
+                if not tau.tauID(self.cfg_ana.tauAntiElectronID):
                         tau.lepVeto = True
                 if tau.lepVeto: continue
+
             if tau.pt() < self.cfg_ana.ptMin: continue
             if abs(tau.eta()) > self.cfg_ana.etaMax: continue
 ###            tau.dxy and tau.dz are zero
