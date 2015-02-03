@@ -11,7 +11,6 @@ def signedSip3D(lepton, vertex=None):
     meas = SignedImpactParameterComputer.signedIP3D(track.get(), vertex, dir)
     return meas.significance()
 
-
 def signedIp3D(lepton, vertex=None):
     if vertex is None:
         vertex = lepton.associatedVertex
@@ -20,12 +19,78 @@ def signedIp3D(lepton, vertex=None):
     meas = SignedImpactParameterComputer.signedIP3D(track.get(), vertex, dir)
     return meas.value()
 
+
+def maxSignedSip3Djettracks(lepton, vertex=None):
+    if vertex is None:
+        vertex = lepton.associatedVertex
+    if hasattr(lepton,'jet') and lepton.jet != lepton :
+       dir = lepton.jet.momentum()   
+       jetTracks = [ dau.pseudoTrack() for dau in lepton.jet.daughterPtrVector() if dau.charge() != 0 and dau.pt() > 1.0 ]
+       if len(jetTracks) !=0:
+           meas = max((SignedImpactParameterComputer.signedIP3D(track,vertex,dir)).significance() for track in jetTracks )
+           return meas
+       else:
+           return -1.
+    else : 
+        return -1.
+
+
+def maxSip3Djettracks(lepton, vertex=None):
+    if vertex is None:
+        vertex = lepton.associatedVertex
+    if hasattr(lepton,'jet') and lepton.jet != lepton :
+       dir = lepton.jet.momentum()   
+       jetTracks = [ dau.pseudoTrack() for dau in lepton.jet.daughterPtrVector() if dau.charge() != 0 and dau.pt() > 1.0 ]
+       if len(jetTracks) !=0:
+           meas = max( (SignedImpactParameterComputer.IP3D(track,vertex)).significance() for track in jetTracks )
+           return meas
+       else:
+           return -1.
+    else : 
+        return -1.
+
+
+def maxSignedSip2Djettracks(lepton, vertex=None):
+    if vertex is None:
+        vertex = lepton.associatedVertex
+    if hasattr(lepton,'jet') and lepton.jet != lepton :
+       dir = lepton.jet.momentum()   
+       jetTracks = [ dau.pseudoTrack() for dau in lepton.jet.daughterPtrVector() if dau.charge() != 0 and dau.pt() > 1.0 ]
+       if len(jetTracks) !=0:
+           meas = max( (SignedImpactParameterComputer.signedIP2D(track,vertex,dir)).significance() for track in jetTracks )
+           return meas
+       else:
+           return -1.
+    else : 
+        return -1.
+
+
+
+def maxSip2Djettracks(lepton, vertex=None):
+    if vertex is None:
+        vertex = lepton.associatedVertex
+    if hasattr(lepton,'jet') and lepton.jet != lepton :
+       dir = lepton.jet.momentum()   
+       jetTracks = [ dau.pseudoTrack() for dau in lepton.jet.daughterPtrVector() if dau.charge() != 0 and dau.pt() > 1.0 ]
+       if len(jetTracks) !=0:
+           meas = max( (SignedImpactParameterComputer.IP2D(track,vertex)).significance() for track in jetTracks )
+           return meas
+       else:
+           return -1.
+    else : 
+        return -1.
+
+
+
+
+
+
+
 def twoTrackChi2(lepton1,lepton2):
     track1 = lepton1.gsfTrack() if abs(lepton1.pdgId()) == 11  else lepton1.track()
     track2 = lepton2.gsfTrack() if abs(lepton2.pdgId()) == 11  else lepton2.track()
     pair = SignedImpactParameterComputer.twoTrackChi2(track1.get(),track2.get())
     return (pair.first,pair.second)
-
 
 #For the vertex related variables
 #A = selectedLeptons[0], B = selectedLeptons[1], C = selectedLeptons[2], D = selectedLeptons[3] 
