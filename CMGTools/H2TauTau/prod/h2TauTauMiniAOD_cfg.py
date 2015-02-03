@@ -145,6 +145,12 @@ elif channel=='di-tau':
         process.diTauPath,
         process.outpath
         )
+elif channel=='mu-ele':
+    process.schedule = cms.Schedule(
+        process.mvaMetInputPath,
+        process.muElePath,
+        process.outpath
+        )
 else:
     raise ValueError('unrecognized channel')    
 

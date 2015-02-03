@@ -15,7 +15,7 @@ class EMuAnalyzer( DiLeptonAnalyzer ):
 
     def declareHandles(self):
         super(EMuAnalyzer, self).declareHandles()
-        self.handles  ['diLeptons'   ] = AutoHandle('cmgTauMuCorSVFitFullSel', 'std::vector<pat::CompositeCandidate>')
+        self.handles  ['diLeptons'   ] = AutoHandle('cmgMuEleCorSVFitFullSel', 'std::vector<pat::CompositeCandidate>')
         self.handles  ['otherLeptons'] = AutoHandle('slimmedElectrons'       , 'std::vector<pat::Electron>'          )
         self.handles  ['leptons'     ] = AutoHandle('slimmedMuons'           , 'std::vector<pat::Muon>'              )
         self.mchandles['genParticles'] = AutoHandle('prunedGenParticles'     , 'std::vector<reco::GenParticle>'      )
@@ -32,9 +32,8 @@ class EMuAnalyzer( DiLeptonAnalyzer ):
             pydil = MuonElectron(dil)
             pydil.leg1().associatedVertex = event.goodVertices[0]
             pydil.leg2().associatedVertex = event.goodVertices[0]
-            if not self.testLeg2( pydil.leg2(), 99999 ):
-                continue
-            
+            #if not self.testLeg2( pydil.leg2(), 99999 ):
+            #    continue
             # pydil.mvaMetSig = pydil.met().getSignificanceMatrix()
             diLeptons.append( pydil )
         return diLeptons
@@ -65,7 +64,9 @@ class EMuAnalyzer( DiLeptonAnalyzer ):
     def process(self, event):
 
         result = super(EMuAnalyzer, self).process(event)
-
+        
+        import pdb ; pdb.set_trace()
+        
         if result is False:
             # trying to get a dilepton from the control region.
             # it must have well id'ed and trig matched legs,

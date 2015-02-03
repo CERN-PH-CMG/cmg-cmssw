@@ -1,4 +1,5 @@
-from CMGTools.RootTools.analyzers.GenParticleAnalyzer import *
+# from CMGTools.RootTools.analyzers.GenParticleAnalyzer import *
+from PhysicsTools.Heppy.analyzers.gen.GeneratorAnalyzer import GeneratorAnalyzer 
 from PhysicsTools.Heppy.physicsutils.genutils import *
 
 class Boson(GenParticle):
@@ -25,7 +26,8 @@ class WBoson(Boson):
         assert( abs(self.leg1.pdgId()) not in [12,14,16]) 
         
 
-class GenErsatzAnalyzer( GenParticleAnalyzer ):
+# class GenErsatzAnalyzer( GenParticleAnalyzer ):
+class GenErsatzAnalyzer( GeneratorAnalyzer ):
 
     def process(self, event):
         # event.W = None

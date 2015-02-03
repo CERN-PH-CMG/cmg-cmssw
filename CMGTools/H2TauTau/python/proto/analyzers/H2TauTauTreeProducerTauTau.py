@@ -83,7 +83,7 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzerNumpy ):
         
     fillDiLepton(self.tree, event.diLepton)  
     
-    import pdb ; pdb.set_trace()
+#     import pdb ; pdb.set_trace()
 
 #     fill(self.tree, 'metcov00', event.diLepton.metSig().significance()(0,0))
 #     fill(self.tree, 'metcov01', event.diLepton.metSig().significance()(0,1))

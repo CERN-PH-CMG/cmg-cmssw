@@ -1,7 +1,7 @@
 from PhysicsTools.Heppy.analyzers.core.TreeAnalyzerNumpy import TreeAnalyzerNumpy
 from CMGTools.H2TauTau.proto.analyzers.ntuple            import *
 
-class H2TauTauTreeProducerTauTau( TreeAnalyzerNumpy ):
+class H2TauTauTreeProducerEMu( TreeAnalyzerNumpy ):
   '''Tree producer for the H->tau tau analysis'''
   
   def declareVariables(self, setup):
@@ -83,7 +83,7 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzerNumpy ):
         
     fillDiLepton(self.tree, event.diLepton)  
     
-    import pdb ; pdb.set_trace()
+#     import pdb ; pdb.set_trace()
 
 #     fill(self.tree, 'metcov00', event.diLepton.metSig().significance()(0,0))
 #     fill(self.tree, 'metcov01', event.diLepton.metSig().significance()(0,1))
@@ -94,8 +94,9 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzerNumpy ):
     fill(self.tree, 'mey'     , event.diLepton.met().py() )
     fill(self.tree, 'met'     , event.diLepton.met().pt() )
     
-    fillMuon(self.tree, 'l1', event.leg1 )
-    fillEle (self.tree, 'l2', event.leg2 )
+    import pdb ; pdb.set_trace()
+    fillMuon(self.tree, 'l1', event.diLepton.leg1() )
+    fillEle (self.tree, 'l2', event.diLepton.leg2() )
 
     if hasattr(event,'genMass'):
       fill(self.tree, 'genMass', event.genMass )
