@@ -17,7 +17,7 @@ numberOfFilesToProcess = -1
 debugEventContent = False
 
 # choose from 'tau-mu' 'di-tau' 'tau-ele' 'mu-ele' 'all'
-channel = 'di-tau'
+channel = 'all'
 
 # newSVFit enables the svfit mass reconstruction used for the H->tau tau analysis.
 # if false, much faster processing but mass is wrong. 

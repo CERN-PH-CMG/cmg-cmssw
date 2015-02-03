@@ -1,27 +1,5 @@
-# from CMGTools.RootTools.analyzers.TreeAnalyzer import TreeAnalyzer
-# from PhysicsTools.HeppyCore.utils.deltar       import bestMatch
 from PhysicsTools.Heppy.analyzers.core.TreeAnalyzerNumpy import TreeAnalyzerNumpy
 from CMGTools.H2TauTau.proto.analyzers.ntuple            import *
-
-from math import *
-
-def deltaPhi(l1, l2) :
-  p = abs(l1.phi()-l2.phi())
-  if p < pi : return p
-  else      : return 2*pi-p
-
-def deltaR(l1, l2) :
-  deta = l1.eta()-l2.eta()
-  dphi = deltaPhi(l1,l2)
-  return sqrt(deta*deta + dphi*dphi)
-
-def pth(met, l1, l2) :  
-  return sqrt( pow( met.px() +          
-                    l1 .px() +          
-                    l2 .px() , 2 ) +    
-               pow( met.py() +          
-                    l1 .py() +          
-                    l2 .py() , 2 ) )    
 
 class H2TauTauTreeProducerTauTau( TreeAnalyzerNumpy ):
   '''Tree producer for the H->tau tau analysis'''
@@ -41,17 +19,10 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzerNumpy ):
     bookTau(self.tree, 'l1')
     bookTau(self.tree, 'l2')
     
-    bookDiLepton(self.tree)
-            
     ###################################################
     ###              DI-TAU VARIABLES               ###
     ###################################################
-    var(self.tree, 'visMass'  )
-    var(self.tree, 'svfitMass')
-    var(self.tree, 'pThiggs'  )
-    var(self.tree, 'dRtt'     )
-    var(self.tree, 'dEtatt'   )
-    var(self.tree, 'dPhitt'   )
+    bookDiLepton(self.tree)
    
     ###################################################
     ###                  MISSING ET                 ###
@@ -68,10 +39,7 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzerNumpy ):
     ###################################################
     ###                VBF VARIABLES                ###
     ###################################################
-    var(self.tree, 'mjj'              )
-    var(self.tree, 'dEtajj'           )
-    var(self.tree, 'dPhijj'           )
-    var(self.tree, 'nCentralJets', int)
+    bookVBF(self.tree, 'ditau')
 
     ###################################################
     ###           JET AND B-JET VARIABLES           ###
@@ -107,28 +75,20 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzerNumpy ):
     var(self.tree, 'NUP'    , int)
     var(self.tree, 'genMass'     )
   
-    #self.tree.book()
-
   def process(self, event):
      
     fill(self.tree, 'run'  , event.run    )
     fill(self.tree, 'lumi' , event.lumi   )
     fill(self.tree, 'event', event.eventId)
-      
-    fill(self.tree, 'visMass'  , event.diLepton.mass()     )
-    fill(self.tree, 'svfitMass', event.diLepton.svfitMass())
-    fill(self.tree, 'pThiggs'  , pth(event.diLepton.met() ,
-                                     event.leg1           ,
-                                     event.leg2           ))
-                          
-    fill(self.tree, 'dRtt'    , deltaR  (event.leg1, event.leg2)      )
-    fill(self.tree, 'dPhitt'  , deltaPhi(event.leg1, event.leg2)      )
-    fill(self.tree, 'dEtatt'  , abs(event.leg1.eta()-event.leg2.eta()))
+        
+    fillDiLepton(self.tree, event.diLepton)  
+    
+    import pdb ; pdb.set_trace()
 
-#     fill(self.tree, 'mvacov00', event.diLepton.metSig().significance()(0,0))
-#     fill(self.tree, 'mvacov01', event.diLepton.metSig().significance()(0,1))
-#     fill(self.tree, 'mvacov10', event.diLepton.metSig().significance()(1,0))
-#     fill(self.tree, 'mvacov11', event.diLepton.metSig().significance()(1,1))
+#     fill(self.tree, 'metcov00', event.diLepton.metSig().significance()(0,0))
+#     fill(self.tree, 'metcov01', event.diLepton.metSig().significance()(0,1))
+#     fill(self.tree, 'metcov10', event.diLepton.metSig().significance()(1,0))
+#     fill(self.tree, 'metcov11', event.diLepton.metSig().significance()(1,1))
     fill(self.tree, 'metPhi'  , event.diLepton.met().phi())
     fill(self.tree, 'mex'     , event.diLepton.met().px() )
     fill(self.tree, 'mey'     , event.diLepton.met().py() )
@@ -154,10 +114,7 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzerNumpy ):
 #       fill   (self.tree, 'jet2Bmatch'   , event.cleanJets[1].matchGenParton                          )
     
     if hasattr(event, 'vbf') :
-      fill(self.tree, 'mjj'          , event.vbf.mjj                                   )
-      fill(self.tree, 'dEtajj'       , event.vbf.deta                                  )
-      fill(self.tree, 'dPhijj'       , deltaPhi(event.cleanJets[0], event.cleanJets[1]))
-      fill(self.tree, 'nCentralJets' , len(event.vbf.centralJets)                      )
+      fillVBF(self.tree, 'ditau', event.vbf)
 
     nbJets = len(event.cleanBJets)
     fill(self.tree, 'nbJets', nbJets )
@@ -182,13 +139,13 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzerNumpy ):
       fill(self.tree, 'isZj'   , event.isZj    )
       fill(self.tree, 'isZttll', event.isZttll )
       fill(self.tree, 'isZttj' , event.isZttj  )
-#     else :
-#       fill(self.tree, 'isZtt'  , -1 )
-#       fill(self.tree, 'isZee'  , -1 )
-#       fill(self.tree, 'isZmm'  , -1 )
-#       fill(self.tree, 'isZj'   , -1 )
-#       fill(self.tree, 'isZttll', -1 )
-#       fill(self.tree, 'isZttj' , -1 )
+    else :
+      fill(self.tree, 'isZtt'  , -1 )
+      fill(self.tree, 'isZee'  , -1 )
+      fill(self.tree, 'isZmm'  , -1 )
+      fill(self.tree, 'isZj'   , -1 )
+      fill(self.tree, 'isZttll', -1 )
+      fill(self.tree, 'isZttj' , -1 )
     
     hasW = 0
     if hasattr(event,'hasW') : hasW = event.hasW
