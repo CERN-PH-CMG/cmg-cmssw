@@ -255,6 +255,7 @@ jetAna = cfg.Analyzer(
     jetEta = 4.7,
     jetEtaCentral = 2.4,
     jetLepDR = 0.4,
+    jetLepArbitration = (lambda jet,lepton : lepton), # you can decide which to keep in case of overlaps; e.g. if the jet is b-tagged you might want to keep the jet
     minLepPt = 10,
     relaxJetId = False,  
     doPuId = False, # Not commissioned in 7.0.X
