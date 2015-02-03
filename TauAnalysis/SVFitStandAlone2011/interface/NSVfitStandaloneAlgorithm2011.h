@@ -1,7 +1,7 @@
 #ifndef TauAnalysis_SVFitStandAlone_NSVfitStandaloneAlgorithm2011_h
 #define TauAnalysis_SVFitStandAlone_NSVfitStandaloneAlgorithm2011_h
 
-#include "TauAnalysis/SVFitStandAlone/interface/NSVfitStandaloneLikelihood2011.h"
+#include "TauAnalysis/SVFitStandAlone2011/interface/NSVfitStandaloneLikelihood2011.h"
 
 using NSVfitStandalone2011::Vector;
 using NSVfitStandalone2011::LorentzVector;

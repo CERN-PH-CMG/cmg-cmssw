@@ -1,7 +1,7 @@
-#ifndef TauAnalysis_CandidateTools_MarkovChainIntegrator_h
-#define TauAnalysis_CandidateTools_MarkovChainIntegrator_h
+#ifndef TauAnalysis_SVfitStandalone_SVfitStandaloneMarkovChainIntegrator_h
+#define TauAnalysis_SVfitStandalone_SVfitStandaloneMarkovChainIntegrator_h
 
-/** \class MarkovChainIntegrator
+/** \class SVfitStandaloneMarkovChainIntegrator
  *
  * Generic class to perform Markov Chain type integration
  * in N-dimensional space.
@@ -17,13 +17,7 @@
  *
  * \author Christian Veelken, LLR
  *
- * \version $Revision: 1.8.2.2 $
- *
- * $Id: MarkovChainIntegrator.h,v 1.8.2.2 2013/01/12 20:27:59 rwolf Exp $
- *
  */
-
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include <Math/Functor.h>
 #include <TRandom3.h>
@@ -34,11 +28,11 @@
 #include <string>
 #include <iostream>
 
-class MarkovChainIntegrator
+class SVfitStandaloneMarkovChainIntegrator
 {
  public:
-  MarkovChainIntegrator(const edm::ParameterSet&);
-  ~MarkovChainIntegrator();
+  SVfitStandaloneMarkovChainIntegrator(const std::string&, unsigned, unsigned, unsigned, unsigned, double, double, unsigned, unsigned, double, double, double, int);
+  ~SVfitStandaloneMarkovChainIntegrator();
 
 //--- set initial position of Markov Chain in N-dimensional space to given values,
 //    in order to start path of chain transitions from non-random point
@@ -64,12 +58,7 @@ class MarkovChainIntegrator
 //    N-dimensional space in which the integration is performed.
   void registerCallBackFunction(const ROOT::Math::Functor&);
 
-//--- set function to evaluate function values 
-//    in N-dimensional space in which the integration is performed
-//   (e.g. to monitor variation of resonance mass)
-  void setF(const ROOT::Math::Functor&, const std::string&);
-
-  void integrate(const std::vector<double>&, const std::vector<double>&, double&, double&, int&, const std::string& = "");
+  void integrate(const std::vector<double>&, const std::vector<double>&, double&, double&, int&);
 
   void print(std::ostream&) const;
 
@@ -184,27 +173,7 @@ class MarkovChainIntegrator
   long numMovesTotal_accepted_;
   long numMovesTotal_rejected_;
 
-  void openMonitorFile(const std::string&);
-  void updateMonitorFile();
-  void closeMonitorFile();
-
-  TFile* monitorFile_;
-  TTree* monitorTree_;
-  std::vector<Float_t> branchValues_;
-  struct monitorElementType
-  {
-    monitorElementType(const ROOT::Math::Functor* f, const std::string& branchName)
-      : f_(f),
-	branchName_(branchName)
-    {}
-    ~monitorElementType() {}
-    const ROOT::Math::Functor* f_;
-    std::string branchName_;
-    Float_t branchValue_;
-  };
-  std::vector<monitorElementType> extraMonitorBranches_;
-
-  int verbosity_; // flag to enable/disable debug output
+  int verbose_; // flag to enable/disable debug output
 };
 
 #endif
