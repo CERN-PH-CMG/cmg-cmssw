@@ -103,6 +103,8 @@ leptonTypeExtra = NTupleObjectType("leptonExtra", baseObjectTypes = [ leptonType
 
 tauType = NTupleObjectType("tau",  baseObjectTypes = [ particleType ], variables = [
     NTupleVariable("charge",   lambda x : x.charge(), int),
+    NTupleVariable("decayMode",   lambda x : x.decayMode(), int),
+    NTupleVariable("idDecayMode",   lambda x : x.idDecayMode, int),
     NTupleVariable("dxy",   lambda x : x.dxy(), help="d_{xy} of lead track with respect to PV, in cm (with sign)"),
     NTupleVariable("dz",    lambda x : x.dz() , help="d_{z} of lead track with respect to PV, in cm (with sign)"),
     NTupleVariable("idMVA", lambda x : x.idMVA, int, help="1,2,3 if the tau passes the loose, medium, tight WP of the By<X>IsolationMVAXXX discriminator as configured in the analysis"),
