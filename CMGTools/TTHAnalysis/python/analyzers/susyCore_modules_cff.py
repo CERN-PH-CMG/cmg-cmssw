@@ -207,10 +207,13 @@ tauAna = cfg.Analyzer(
     etaMax = 2.3,
     dxyMax = 0.5,
     dzMax = 1.0,
-    vetoLeptons = False,
+    decayMode = True,
+    vetoLeptons = True,
     leptonVetoDR = 0.4,
-    vetoLeptonsPOG = False,
-    tauID = "decayModeFinding",
+    vetoLeptonsPOG = True,
+    tauID = "byLooseIsolationMVA3oldDMwLT",
+    tauAntiMuonID = "againstMuonLooseMVA",
+    tauAntiElectronID = "againstElectronLooseMVA5",
     tauLooseID = "decayModeFinding",
 )
 
