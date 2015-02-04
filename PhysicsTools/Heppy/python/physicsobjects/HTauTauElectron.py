@@ -12,6 +12,7 @@ class HTauTauElectron( Electron ):
         super(HTauTauElectron, self).__init__(*args, **kwargs)
         self.photonIsoCache = None
         self.chargedAllIsoCache = None
+        self.isoRadius = 0.3
 
     # JAN FIXME - replace our old tau-tau-specific vetoes
     # I hope they are not needed anymore!
@@ -27,8 +28,7 @@ class HTauTauElectron( Electron ):
     #     return self.photonIsoCache
 
     def photonIso(self):
-        #return super(HTauTauElectron, self).photonIso(0.3) # RIC
-        return super(HTauTauElectron, self).photonIsoR(0.3)
+        return super(HTauTauElectron, self).photonIsoR(self.isoRadius) # RIC
 
     # JAN FIXME - replace our old tau-tau-specific vetoes
     # I hope they are not needed anymore!
@@ -47,9 +47,24 @@ class HTauTauElectron( Electron ):
     #         # self.chargedAllIsoCache = iso
     #     return self.chargedAllIsoCache
 
-    def chargedAllIsoR(self):
+    def chargedAllIso(self):
         #return self.physObj.pfIsolationVariables().sumChargedParticlePt #RIC
-        return super(HTauTauElectron, self).chargedAllIsoR(0.3)
+        return super(HTauTauElectron, self).chargedAllIsoR(self.isoRadius)
+
+
+    # RIC: this HTT-specific electron object is probably due to end
+    # but, since as of 4/2/15, some isolation components are available
+    # only with R=0.3 in PHYS14 samples, let's redefine the default
+    # cone to 0.3 for all the iso components
+    def chargedHadronIso(self):
+        return super(HTauTauElectron, self).chargedHadronIsoR(self.isoRadius)
+        
+    def neutralHadronIso(self):
+        return super(HTauTauElectron, self).neutralHadronIsoR(self.isoRadius)
+
+    def puChargedHadronIso(self):
+        return super(HTauTauElectron, self).puChargedHadronIsoR(self.isoRadius)
+
         
     def relaxedIdForEleTau(self):
         """Relaxing conversion cuts for sideband studies

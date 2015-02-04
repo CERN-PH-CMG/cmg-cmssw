@@ -28,8 +28,8 @@ class EMuAnalyzer( DiLeptonAnalyzer ):
         '''
         diLeptons = []
         for index, dil in enumerate(cmgDiLeptons):
-            # pydil = self.__class__.DiObjectClass(dil)
-            pydil = MuonElectron(dil)
+            pydil = self.__class__.DiObjectClass(dil)
+            # pydil = MuonElectron(dil)
             pydil.leg1().associatedVertex = event.goodVertices[0]
             pydil.leg2().associatedVertex = event.goodVertices[0]
             pydil.leg2().rho = event.rho
@@ -44,8 +44,8 @@ class EMuAnalyzer( DiLeptonAnalyzer ):
         The loose ID selection is done to ensure that the muon has an inner track.'''
         leptons = []
         for index, lep in enumerate(cmgLeptons):
-            # pyl = self.__class__.LeptonClass(lep)
-            pyl = Muon(lep)
+            pyl = self.__class__.LeptonClass(lep)
+            #pyl = Muon(lep)
             pyl.associatedVertex = event.goodVertices[0]
             leptons.append( pyl )
         return leptons
@@ -55,8 +55,9 @@ class EMuAnalyzer( DiLeptonAnalyzer ):
         '''
         otherLeptons = []
         for index, lep in enumerate(cmgOtherLeptons):
-            # pyl = self.__class__.OtherLeptonClass(lep)
-            pyl = Electron(lep)
+            pyl = self.__class__.OtherLeptonClass(lep)
+            #import pdb ; pdb.set_trace()
+            #pyl = Electron(lep)
             pyl.associatedVertex = event.goodVertices[0]
             pyl.rho = event.rho
             otherLeptons.append( pyl )

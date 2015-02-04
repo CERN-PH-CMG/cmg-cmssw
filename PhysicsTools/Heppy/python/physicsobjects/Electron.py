@@ -165,6 +165,26 @@ class Electron( Lepton ):
         raise RuntimeError, "Electron chargedHadronIso missing for R=%s" % R
 
 
+    # RIC: override parent class' isolation methods
+    # useful in case the PAT obj does not have a given method
+    # used by Lepton.py
+    # e.g. chargedAllIso as needed by Lepton's absIso
+    # In principle one could alternatively just strip 
+    # the R from the methods above.
+    def chargedHadronIso(self,*args):
+        return self.chargedHadronIsoR(*args)
+        
+    def neutralHadronIso(self,*args):
+        return self.neutralHadronIsoR(*args)
+
+    def photonIso(self,*args):
+        return self.photonIsoR(*args)
+
+    def chargedAllIso(self,*args):
+        return self.chargedAllIsoR(*args)
+
+    def puChargedHadronIso(self,*args):
+        return self.puChargedHadronIsoR(*args)
 
 
     def chargedAllIso(self):
