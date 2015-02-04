@@ -1,8 +1,0 @@
-<use name="TauAnalysis/CandidateTools"/>
-<use name="FWCore/PythonParameterSet"/>
-<use name="FWCore/ParameterSet"/>
-<use name="rootcintex"/>
-<use name="root"/>
-<environment>
-  <bin file="nsvfitStandalone.cc"> </bin>
-</environment>
