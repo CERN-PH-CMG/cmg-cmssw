@@ -47,7 +47,8 @@ class EOSEventsWithDownload(object):
                     if fname.startswith("root://eoscms"):
                         if not self.isLocal(fname):
                             tmpdir = os.environ['TMPDIR'] if 'TMPDIR' in os.environ else "/tmp"
-                            localfile = tmpdir+"/"+os.path.basename(fname)
+                            rndchars  = "".join([hex(ord(i))[2:] for i in os.urandom(8)])
+                            localfile = "%s/%s-%s.root" % (tmpdir, os.path.basename(fname).replace(".root",""), rndchars)
                             try:
                                 print "Filename %s is remote (geotag >= 9000), will do a copy to local path %s " % (fname,localfile)
                                 subprocess.check_output(["xrdcp","-f",fname,localfile])
