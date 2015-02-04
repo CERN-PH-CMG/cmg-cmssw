@@ -129,13 +129,15 @@ elif test == 10: # sync
     selectedComponents = [ comp ]
 
 
-
+            
 
 # the following is declared in case this cfg is used in input to the heppy.py script
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
+from CMGTools.TTHAnalysis.tools.EOSEventsWithDownload import EOSEventsWithDownload
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence,
                      services = [],  
-                     events_class = Events)
+                     events_class = EOSEventsWithDownload)
+                     #events_class = Events)
 
 
