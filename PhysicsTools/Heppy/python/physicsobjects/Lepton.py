@@ -51,7 +51,8 @@ class Lepton( PhysicsObject):
         corNeutralIso = neutralIso - dBetaFactor * self.puChargedHadronIso();
         charged = self.chargedHadronIso();
         if  allCharged:
-            charged = self.chargedAllIso();
+            #charged = self.chargedAllIso();
+            charged = self.chargedAllIsoR();
         return charged + max(corNeutralIso,0)
 
     def  relIso(self,dBetaFactor=0, allCharged=0):

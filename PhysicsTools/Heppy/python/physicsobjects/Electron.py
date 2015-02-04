@@ -155,7 +155,7 @@ class Electron( Lepton ):
         elif R == 0.4: return self.physObj.photonIso()
         raise RuntimeError, "Electron photonIso missing for R=%s" % R
 
-    def chargedAllIso(self,R=0.4):
+    def chargedAllIsoR(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationVariables().sumChargedParticlePt 
         raise RuntimeError, "Electron chargedAllIso missing for R=%s" % R
 

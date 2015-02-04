@@ -27,7 +27,8 @@ class HTauTauElectron( Electron ):
     #     return self.photonIsoCache
 
     def photonIso(self):
-        return super(HTauTauElectron, self).photonIso(0.3)
+        #return super(HTauTauElectron, self).photonIso(0.3) # RIC
+        return super(HTauTauElectron, self).photonIsoR(0.3)
 
     # JAN FIXME - replace our old tau-tau-specific vetoes
     # I hope they are not needed anymore!
@@ -46,9 +47,10 @@ class HTauTauElectron( Electron ):
     #         # self.chargedAllIsoCache = iso
     #     return self.chargedAllIsoCache
 
-    def chargedAllIso(self):
-        return self.physObj.pfIsolationVariables().sumChargedParticlePt 
-    
+    def chargedAllIsoR(self):
+        #return self.physObj.pfIsolationVariables().sumChargedParticlePt #RIC
+        return super(HTauTauElectron, self).chargedAllIsoR(0.3)
+        
     def relaxedIdForEleTau(self):
         """Relaxing conversion cuts for sideband studies
         """
