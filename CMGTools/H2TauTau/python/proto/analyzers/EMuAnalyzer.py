@@ -64,9 +64,7 @@ class EMuAnalyzer( DiLeptonAnalyzer ):
     def process(self, event):
 
         result = super(EMuAnalyzer, self).process(event)
-        
-        import pdb ; pdb.set_trace()
-        
+                
         if result is False:
             # trying to get a dilepton from the control region.
             # it must have well id'ed and trig matched legs,
