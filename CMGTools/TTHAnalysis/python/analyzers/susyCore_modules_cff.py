@@ -209,16 +209,13 @@ photonAna = cfg.Analyzer(
 tauAna = cfg.Analyzer(
     TauAnalyzer, name="tauAnalyzer",
     ptMin = 20,
-    etaMax = 2.3,
+    etaMax = 9999,
     dxyMax = 0.5,
     dzMax = 1.0,
-    decayMode = True,
     vetoLeptons = True,
     leptonVetoDR = 0.4,
-    vetoLeptonsPOG = True,
-    tauID = "byLooseIsolationMVA3oldDMwLT",
-    tauAntiMuonID = "againstMuonLooseMVA",
-    tauAntiElectronID = "againstElectronLooseMVA5",
+    vetoLeptonsPOG = False,
+    tauID = "byLooseCombinedIsolationDeltaBetaCorr3Hits",
     tauLooseID = "decayModeFinding",
 )
 
