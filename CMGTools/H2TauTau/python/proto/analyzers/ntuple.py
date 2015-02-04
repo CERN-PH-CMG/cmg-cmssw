@@ -85,26 +85,25 @@ def fillDiLepton(tree, diLepton):
 
 def bookLepton( tree, pName ):
     bookParticle(tree, pName )
-    var(tree, '{pName}_relIso05'.format(pName=pName))
-    var(tree, '{pName}_dxy'.format(pName=pName))
-    var(tree, '{pName}_dz'.format(pName=pName))
-    var(tree, '{pName}_weight'.format(pName=pName))
-    var(tree, '{pName}_triggerWeight'.format(pName=pName))
+    var(tree, '{pName}_relIso05'      .format(pName=pName))
+    var(tree, '{pName}_dxy'           .format(pName=pName))
+    var(tree, '{pName}_dz'            .format(pName=pName))
+    var(tree, '{pName}_weight'        .format(pName=pName))
+    var(tree, '{pName}_triggerWeight' .format(pName=pName))
     var(tree, '{pName}_triggerEffData'.format(pName=pName))
-    var(tree, '{pName}_triggerEffMC'.format(pName=pName))
-    var(tree, '{pName}_recEffWeight'.format(pName=pName))
+    var(tree, '{pName}_triggerEffMC'  .format(pName=pName))
+    var(tree, '{pName}_recEffWeight'  .format(pName=pName))
 
 def fillLepton( tree, pName, lepton ):
     fillParticle(tree, pName, lepton )
-    import pdb ; pdb.set_trace()
-    fill(tree, '{pName}_relIso05'.format(pName=pName), lepton.relIsoAllChargedDB05() )
-    fill(tree, '{pName}_dxy'.format(pName=pName), lepton.dxy() )
-    fill(tree, '{pName}_dz'.format(pName=pName), lepton.dz() )
-    fill(tree, '{pName}_weight'.format(pName=pName), lepton.weight )
-    fill(tree, '{pName}_triggerWeight'.format(pName=pName), lepton.triggerWeight )
-    fill(tree, '{pName}_triggerEffData'.format(pName=pName), lepton.triggerEffData )
-    fill(tree, '{pName}_triggerEffMC'.format(pName=pName), lepton.triggerEffMC )
-    fill(tree, '{pName}_recEffWeight'.format(pName=pName), lepton.recEffWeight )
+    fill(tree, '{pName}_relIso05'      .format(pName=pName), lepton.relIsoAllChargedDB05() )
+    fill(tree, '{pName}_dxy'           .format(pName=pName), lepton.dxy()                  )
+    fill(tree, '{pName}_dz'            .format(pName=pName), lepton.dz()                   )
+    fill(tree, '{pName}_weight'        .format(pName=pName), lepton.weight                 )
+    fill(tree, '{pName}_triggerWeight' .format(pName=pName), lepton.triggerWeight          )
+    fill(tree, '{pName}_triggerEffData'.format(pName=pName), lepton.triggerEffData         )
+    fill(tree, '{pName}_triggerEffMC'  .format(pName=pName), lepton.triggerEffMC           )
+    fill(tree, '{pName}_recEffWeight'  .format(pName=pName), lepton.recEffWeight           )
 
 
 # muon

@@ -110,9 +110,9 @@ vbfAna = cfg.Analyzer(
   **vbfKwargs                  
   )
 
-tauWeighterLeg1 = cfg.Analyzer(
+muonWeighter = cfg.Analyzer(
   LeptonWeighter       ,
-  'LeptonWeighter_tau1',
+  'LeptonWeighterMuon',
   effWeight   = None   ,
   effWeightMC = None   ,
   lepton      = 'leg1' ,
@@ -120,9 +120,9 @@ tauWeighterLeg1 = cfg.Analyzer(
   disable     = True   ,
   )
 
-tauWeighterLeg2 = cfg.Analyzer(
+eleWeighter = cfg.Analyzer(
   LeptonWeighter       ,
-  'LeptonWeighter_tau2',
+  'LeptonWeighterEle'  ,
   effWeight   = None   ,
   effWeightMC = None   ,
   lepton      = 'leg2' ,
@@ -179,8 +179,8 @@ sequence = cfg.Sequence( [
   jetAna              ,
   vbfAna              ,
   pileUpAna           ,
-  #tauWeighterLeg1     , 
-  #tauWeighterLeg2     ,
+  muonWeighter        , 
+  eleWeighter         ,
   higgsWeighter       ,
   treeProducer        ,
   ] )

@@ -32,8 +32,9 @@ class EMuAnalyzer( DiLeptonAnalyzer ):
             pydil = MuonElectron(dil)
             pydil.leg1().associatedVertex = event.goodVertices[0]
             pydil.leg2().associatedVertex = event.goodVertices[0]
-            #if not self.testLeg2( pydil.leg2(), 99999 ):
-            #    continue
+            pydil.leg2().rho = event.rho
+            if not self.testLeg2( pydil.leg2(), 999999 ):
+                continue
             # pydil.mvaMetSig = pydil.met().getSignificanceMatrix()
             diLeptons.append( pydil )
         return diLeptons
@@ -94,33 +95,46 @@ class EMuAnalyzer( DiLeptonAnalyzer ):
                 
         return True
         
-    def testLeg1ID(self, tau):
-        # RIC: this leg is the muon, I believe
-        # needs to be implemented here 
-        return True
+    def testLeg1ID(self, muon):
+        '''Tight muon selection, no isolation requirement'''
+        # RIC: this leg is the muon,
+        # needs to be implemented here. 
+        # For now taken straight from mt channel
+        return muon.tightId() and \
+               self.testVertex( muon )
         
-    def testLeg1Iso(self, tau, isocut):
-        '''if isocut is None, returns true if three-hit iso cut is passed.
-        Otherwise, returns true if iso MVA > isocut.'''
-        # RIC: this leg is the muon, I believe
+    def testLeg1Iso(self, muon, isocut):
+        '''Muon isolation to be implemented'''
+        # RIC: this leg is the muon,
         # needs to be implemented here 
-        return True
+        # For now taken straight from mt channel
+        if isocut is None:
+            isocut = self.cfg_ana.iso1
+        return muon.relIsoAllChargedDB05()<isocut    
 
     def testVertex(self, lepton):
-        '''Tests vertex constraints, for mu and tau'''
+        '''Tests vertex constraints, for mu and electron'''
         return abs(lepton.dxy()) < 0.045 and abs(lepton.dz ()) < 0.2 
 
-    def testLeg2ID(self, muon):
+    def testLeg2ID(self, electron):
         '''Electron ID. To be implemented'''
-        # RIC: this leg is the electron, I believe
+        # RIC: this leg is the electron,
         # needs to be implemented here 
-        return True
+        # For now taken straight from et channel
+#         if self.relaxEleId:
+#             return electron.relaxedIdForEleTau() and \
+#                self.testVertex( electron )    
+        return electron.tightIdForEleTau() and \
+               self.testVertex( electron )
                
-    def testLeg2Iso(self, muon, isocut):
-        '''Electron ID. To be implemented'''
-        # RIC: this leg is the electron, I believe
+    def testLeg2Iso(self, electron, isocut):
+        '''Electron Isolation. To be implemented'''
+        # RIC: this leg is the electron,
         # needs to be implemented here 
-        return True
+        # For now taken straight from et channel
+        if isocut is None:
+           isocut = self.cfg_ana.iso2
+        return electron.relIsoAllChargedDB05() < isocut
 
     def thirdLeptonVeto(self, leptons, otherLeptons, ptcut = 10, isocut = 0.3) :
         '''The tri-lepton veto. To be implemented'''

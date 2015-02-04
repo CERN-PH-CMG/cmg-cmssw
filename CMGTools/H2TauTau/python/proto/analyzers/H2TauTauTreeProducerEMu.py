@@ -94,7 +94,7 @@ class H2TauTauTreeProducerEMu( TreeAnalyzerNumpy ):
     fill(self.tree, 'mey'     , event.diLepton.met().py() )
     fill(self.tree, 'met'     , event.diLepton.met().pt() )
     
-    import pdb ; pdb.set_trace()
+#     import pdb ; pdb.set_trace()
     fillMuon(self.tree, 'l1', event.diLepton.leg1() )
     fillEle (self.tree, 'l2', event.diLepton.leg2() )
 
