@@ -217,8 +217,11 @@ class Looper(object):
             for ana,rep in zip(self.analyzers,self.timeReport):
                 print "%9d   %9d   %10.2f  %10.2f   %s" % ( rep['events'], allev, 1000*rep['time']/(rep['events']-1) if rep['events']>1 else 0, 1000*rep['time']/(allev-1) if allev > 1 else 0, ana.name)
             print ""
-        pass
-
+            print "%9s   %9s    %9s   %9s   %s" % ("---------","--------","---------", "---------", "-------------")
+            sumtime = sum(rep['time'] for rep in self.timeReport)
+            passev  = self.timeReport[-1]['events']
+            print "%9d   %9d   %10.2f  %10.2f   %s" % ( passev, allev, 1000*sumtime/(passev-1) if passev>1 else 0, 1000*sumtime/(allev-1) if allev > 1 else 0, "TOTAL")
+            print ""
 
 if __name__ == '__main__':
 
