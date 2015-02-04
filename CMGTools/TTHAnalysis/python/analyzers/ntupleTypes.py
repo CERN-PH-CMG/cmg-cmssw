@@ -76,6 +76,7 @@ isoTrackTypeSusy = NTupleObjectType("isoTrackSusy",  baseObjectTypes = [ isoTrac
 ##------------------------------------------  
 
 photonTypeSusy = NTupleObjectType("gammaSusy", baseObjectTypes = [ photonType ], variables = [
+    NTupleVariable("genIso",  lambda x : getattr(x, 'genIso', -1.0), float, mcOnly=True, help="sum pt of all status 1 particles within DeltaR = 0.4 of the photon"),
 ])
 
 ##------------------------------------------  
