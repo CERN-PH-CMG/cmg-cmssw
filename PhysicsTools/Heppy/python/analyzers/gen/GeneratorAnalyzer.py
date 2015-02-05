@@ -84,7 +84,7 @@ class GeneratorAnalyzer( Analyzer ):
                     continue
             else:
                 # everything else, we want it after radiation, i.e. just before decay
-                if any((p.daughter(j).pdgId() == p.pdgId() and p.daughter(j).status > 2) for j in xrange(p.numberOfDaughters())):
+                if any((p.daughter(j).pdgId() == p.pdgId() and p.daughter(j).status() > 2) for j in xrange(p.numberOfDaughters())):
                     #print "    fail auto-decay"
                     continue
             # FIXME find a better criterion to discard there
@@ -93,7 +93,7 @@ class GeneratorAnalyzer( Analyzer ):
                 continue 
             # is it an interesting particle?
             ok = False
-            if interestingPdgId(id):
+            if interestingPdgId(id, includeLeptons=True):
                 #print "    pass pdgId"
                 ok = True
             ### no: we don't select by decay, so that we keep the particle summary free of incoming partons and such
