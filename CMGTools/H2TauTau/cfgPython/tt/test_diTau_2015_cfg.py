@@ -84,16 +84,6 @@ TauTauAna = cfg.Analyzer(
   )
 
 genAna = GeneratorAnalyzer.defaultConfig
-# genAna = cfg.Analyzer(
-#   GeneratorAnalyzer            ,
-#   'GeneratorAnalyzer'          ,
-#   stableBSMParticleIds  = []   ,
-#   savePreFSRParticleIds = [1,2,3,4,5, 11,12,13,14,15,16, 21 ] ,
-#   makeAllGenParticles   = True ,
-#   makeSplittedGenLists  = True ,
-#   allGenTaus            = False,
-# 
-#   )
   
 jetAna = cfg.Analyzer(
   JetAnalyzer                 ,

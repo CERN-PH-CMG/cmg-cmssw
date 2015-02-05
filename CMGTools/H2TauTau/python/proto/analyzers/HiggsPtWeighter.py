@@ -6,8 +6,7 @@ from PhysicsTools.HeppyCore.statistics.average  import Average
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 
 class HiggsPtWeighter( Analyzer ):
-    '''Weight the event to get the NLO Higgs pT distribution for ggH events
-    '''
+    '''Weight the event to get the NLO Higgs pT distribution for ggH events'''
 
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(HiggsPtWeighter,self).__init__(cfg_ana, cfg_comp, looperName)
@@ -45,9 +44,8 @@ class HiggsPtWeighter( Analyzer ):
 
         if not self.isGGH: return True
         
-#         import pdb ; pdb.set_trace()
-#         higgsBosons = [gen for gen in event.genParticles if gen.status()==3 and gen.pdgId()==25]
         higgsBosons = event.genHiggsBosons
+        
         if len(higgsBosons)!=1:
             strerr = '{nhiggs} Higgs bosons, this should not happen for a ggH component. \
                       Your component is:\n {comp}'.format(nhiggs=len(higgsBosons), comp=str(self.cfg_comp))

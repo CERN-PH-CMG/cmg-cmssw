@@ -81,7 +81,7 @@ class HTauTauElectron( Electron ):
 
         https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#2012_Baseline_Selection
         """
-        
+        import pdb ; pdb.set_trace()
         # JAN FIXME - do we need this cut?
         # if self.numberOfHits() != 0: return False
         if not self.passConversionVeto(): return False        
