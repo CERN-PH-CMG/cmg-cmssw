@@ -1,9 +1,9 @@
 from PhysicsTools.HeppyCore.statistics.counter              import Counters
 from PhysicsTools.Heppy.analyzers.core.AutoHandle           import AutoHandle
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects       import Tau, Muon, Jet, GenParticle
-# from PhysicsTools.Heppy.physicsobjects.HTauTauElectron      import HTauTauElectron as Electron
-from PhysicsTools.Heppy.physicsobjects.Electron       import Electron
-from PhysicsTools.Heppy.physicsobjects.HTauTauElectron      import HTauTauElectron as HTTElectron
+# from PhysicsTools.Heppy.physicsobjects.HTauTauElectron      import HTauTauElectron as Electron # RIC
+from PhysicsTools.Heppy.physicsobjects.Electron             import Electron
+# from PhysicsTools.Heppy.physicsobjects.HTauTauElectron      import HTauTauElectron as HTTElectron
 
 from CMGTools.H2TauTau.proto.analyzers.DiLeptonAnalyzer     import DiLeptonAnalyzer
 from CMGTools.H2TauTau.proto.physicsobjects.DiObject        import TauTau
@@ -70,11 +70,10 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
     otherLeptons = []
     for index, lep in enumerate(cmgOtherLeptons):
       pyl = Electron(lep)
-      try :
-        pylhtt = HTTElectron(lep)
-      except :
-        import pdb ; pdb.set_trace()
- 
+#       try :
+#         pyl = HTTElectron(lep)
+#       except :
+#         import pdb ; pdb.set_trace()
       pyl.associatedVertex = event.goodVertices[0]
       pyl.rho = event.rho
       otherLeptons.append( pyl )
