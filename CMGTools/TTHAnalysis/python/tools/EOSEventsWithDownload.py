@@ -24,15 +24,20 @@ class EOSEventsWithDownload(object):
         try:
             finfo = subprocess.check_output(["/afs/cern.ch/project/eos/installation/pro/bin/eos.select", "fileinfo", fpath])
             replicas = False
+            fars     = False
             for line in finfo.split("\n"):
                 if line.endswith("geotag"):
                     replicas = True
                 elif replicas and ".cern.ch" in line:
                     geotag = int(line.split()[-1])
                     print "Found a replica with geotag %d" % geotag
-                    return (geotag < 9000)
+                    if geotag < 9000 : return True # local replica: ok
+                    else: fars = True # we have found a replica that is far away
+            # if we have found some far replicas, and no near replicas, it's a remote file
+            if fars: return False
         except:
             pass
+        # we don't know, so we don't transfer (better slow than messed up)
         return True
     def __getitem__(self, iEv):
         if self._fileindex == -1 or not(self._files[self._fileindex][1] <= iEv and iEv < self._files[self._fileindex][2]):
@@ -56,6 +61,7 @@ class EOSEventsWithDownload(object):
                                 fname = localfile
                             except:
                                 print "Could not save file locally, will run from remote"
+                                if os.path.exists(localfile): os.remove(localfile) # delete in case of incomplete transfer
                     print "Will run from "+fname
                     self.events = FWLiteEvents([fname])
                     break
