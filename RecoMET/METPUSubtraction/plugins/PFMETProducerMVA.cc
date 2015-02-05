@@ -128,6 +128,8 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
     bool lHasPhotons = false;
     std::vector<reco::PUSubMETCandInfo> leptonInfo;
 
+    std::vector<edm::Ptr<reco::Candidate>> leptonPtrs;
+
     if (permuteLeptons_) {
       std::vector<edm::RefToBase<const reco::Candidate>> perm_leptons;
       for (size_t i = 0; i < permutation.size(); ++i) {
@@ -135,6 +137,7 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
         edm::Handle<reco::CandidateView> leptons;
         evt.getByToken(srcLeptons_[i], leptons);
         perm_leptons.emplace_back(leptons->refAt(pos));
+        leptonPtrs.emplace_back(leptons->ptrAt(pos));
       }
       leptonInfo = std::move(computeLeptonInfo(perm_leptons, *pfCandidates_view,hardScatterVertex, lId, lHasPhotons));
     }
@@ -167,8 +170,15 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
       <<(mvaMEtAlgo_.getMEtCov())(0,0)<<"  "<<(mvaMEtAlgo_.getMEtCov())(0,1)<<std::endl
       <<(mvaMEtAlgo_.getMEtCov())(1,0)<<"  "<<(mvaMEtAlgo_.getMEtCov())(1,1)<<std::endl  << std::endl;
    
+    // Can only construct pat MET from PF MET
+    pat::MET patMet(pfMEt);
+    auto i_ptr = 1;
+    for (auto& leptonPtr : leptonPtrs) {
+      patMet.addUserCand("lepton"+std::to_string(i_ptr), leptonPtr);
+      ++i_ptr;
+    }
     
-    pfMEtCollection->emplace_back(pat::MET(pfMEt));
+    pfMEtCollection->emplace_back(std::move(patMet));
   }
   evt.put(pfMEtCollection);
 }
