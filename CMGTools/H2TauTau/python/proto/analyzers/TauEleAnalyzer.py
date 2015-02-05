@@ -1,6 +1,7 @@
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Muon, GenParticle
-from PhysicsTools.Heppy.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
+# from PhysicsTools.Heppy.physicsobjects.HTauTauElectron  import HTauTauElectron as Electron
+from PhysicsTools.Heppy.physicsobjects.Electron         import Electron
 
 from CMGTools.H2TauTau.proto.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.H2TauTau.proto.physicsobjects.DiObject import TauElectron
