@@ -1,6 +1,4 @@
-# from CMGTools.RootTools.analyzers.GenParticleAnalyzer import *
-from PhysicsTools.Heppy.analyzers.gen.GeneratorAnalyzer import GeneratorAnalyzer 
-from PhysicsTools.Heppy.physicsutils.genutils import *
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 
 class Boson(GenParticle):
     def __init__(self, boson):
@@ -36,8 +34,8 @@ class GenErsatzAnalyzer( GeneratorAnalyzer ):
             return True
         result = super(GenErsatzAnalyzer, self).process(event)
         
-        event.genZs = [ZBoson(part) for part in event.genParticles if part.status()==3 and part.pdgId()==23]
-        event.genWs = [WBoson(part) for part in event.genParticles if part.status()==3 and abs(part.pdgId())==24]
+        event.genZs = [ZBoson(part) for part in event.genVBosons if part.pdgId()==23]
+        event.genWs = [WBoson(part) for part in event.genVBosons if part.pdgId()==23]
 
         if self.cfg_ana.verbose:
             print 'W Bosons:'
