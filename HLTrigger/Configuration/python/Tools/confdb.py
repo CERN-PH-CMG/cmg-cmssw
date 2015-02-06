@@ -51,7 +51,12 @@ class HLTProcess(object):
     "HLT_DoubleMu38NoFiltersNoVtx_v*",
     "HLT_Mu38NoFiltersNoVtx_Photon38_CaloIdL_v*",
     "HLT_Mu42NoFiltersNoVtx_Photon42_CaloIdL_v*",
- 
+    "HLT_DoubleMu23NoFiltersNoVtxDisplaced_v*",
+    "HLT_DoubleMu28NoFiltersNoVtxDisplaced_v*",
+    "HLT_Mu28NoFiltersNoVtxDisplaced_Photon28_CaloIdL_v*",
+    "HLT_Mu33NoFiltersNoVtxDisplaced_Photon33_CaloIdL_v*",
+    "HLT_HT350_DisplacedDijet80_Tight_DisplacedTrack_v*",
+    "HLT_HT350_DisplacedDijet80_DisplacedTrack_v*"
   )
 
   def __init__(self, configuration):
@@ -850,34 +855,35 @@ if 'GlobalTag' in %%(dict)s:
 
 
   def instrumentDQM(self):
-    # remove any reference to the hltDQMFileSaver
-    if 'hltDQMFileSaver' in self.data:
-      self.data = re.sub(r'\b(process\.)?hltDQMFileSaver \+ ', '', self.data)
-      self.data = re.sub(r' \+ \b(process\.)?hltDQMFileSaver', '', self.data)
-      self.data = re.sub(r'\b(process\.)?hltDQMFileSaver',     '', self.data)
+    if not self.config.hilton:
+      # remove any reference to the hltDQMFileSaver
+      if 'hltDQMFileSaver' in self.data:
+        self.data = re.sub(r'\b(process\.)?hltDQMFileSaver \+ ', '', self.data)
+        self.data = re.sub(r' \+ \b(process\.)?hltDQMFileSaver', '', self.data)
+        self.data = re.sub(r'\b(process\.)?hltDQMFileSaver',     '', self.data)
 
-    # instrument the HLT menu with DQMStore and DQMRootOutputModule suitable for running offline
-    dqmstore  = "\n# load the DQMStore and DQMRootOutputModule\n"
-    dqmstore += self.loadCffCommand('DQMServices.Core.DQMStore_cfi')
-    dqmstore += "%(process)sDQMStore.enableMultiThread = True\n"
-    dqmstore += """
+      # instrument the HLT menu with DQMStore and DQMRootOutputModule suitable for running offline
+      dqmstore  = "\n# load the DQMStore and DQMRootOutputModule\n"
+      dqmstore += self.loadCffCommand('DQMServices.Core.DQMStore_cfi')
+      dqmstore += "%(process)sDQMStore.enableMultiThread = True\n"
+      dqmstore += """
 %(process)sdqmOutput = cms.OutputModule("DQMRootOutputModule",
     fileName = cms.untracked.string("DQMIO.root")
 )
 """
 
-    empty_path = re.compile(r'.*\b(process\.)?DQMOutput = cms\.EndPath\( *\).*')
-    other_path = re.compile(r'(.*\b(process\.)?DQMOutput = cms\.EndPath\()(.*)')
-    if empty_path.search(self.data):
-      # replace an empty DQMOutput path
-      self.data = empty_path.sub(dqmstore + '\n%(process)sDQMOutput = cms.EndPath( %(process)sdqmOutput )\n', self.data)
-    elif other_path.search(self.data):
-      # prepend the dqmOutput to the DQMOutput path
-      self.data = other_path.sub(dqmstore + r'\g<1> %(process)sdqmOutput +\g<3>', self.data)
-    else:
-      # ceate a new DQMOutput path with the dqmOutput module
-      self.data += dqmstore
-      self.data += '\n%(process)sDQMOutput = cms.EndPath( %(process)sdqmOutput )\n'
+      empty_path = re.compile(r'.*\b(process\.)?DQMOutput = cms\.EndPath\( *\).*')
+      other_path = re.compile(r'(.*\b(process\.)?DQMOutput = cms\.EndPath\()(.*)')
+      if empty_path.search(self.data):
+        # replace an empty DQMOutput path
+        self.data = empty_path.sub(dqmstore + '\n%(process)sDQMOutput = cms.EndPath( %(process)sdqmOutput )\n', self.data)
+      elif other_path.search(self.data):
+        # prepend the dqmOutput to the DQMOutput path
+        self.data = other_path.sub(dqmstore + r'\g<1> %(process)sdqmOutput +\g<3>', self.data)
+      else:
+        # ceate a new DQMOutput path with the dqmOutput module
+        self.data += dqmstore
+        self.data += '\n%(process)sDQMOutput = cms.EndPath( %(process)sdqmOutput )\n'
 
 
   @staticmethod
@@ -947,16 +953,18 @@ if 'GlobalTag' in %%(dict)s:
   def buildOptions(self):
     # common configuration for all scenarios
     self.options['services'].append( "-DQM" )
-    self.options['services'].append( "-EvFDaqDirector" )
-    self.options['services'].append( "-FastMonitoringService" )
     self.options['services'].append( "-FUShmDQMOutputService" )
     self.options['services'].append( "-MicroStateService" )
     self.options['services'].append( "-ModuleWebRegistry" )
     self.options['services'].append( "-TimeProfilerService" )
 
-    # drop the online definition of the DQMStore and DQMFileSaver
-    self.options['services'].append( "-DQMStore" )
-    self.options['modules'].append( "-hltDQMFileSaver" )
+    # remove the DAQ modules and the online definition of the DQMStore and DQMFileSaver
+    # unless a hilton-like configuration has been requested
+    if not self.config.hilton:
+      self.options['services'].append( "-EvFDaqDirector" )
+      self.options['services'].append( "-FastMonitoringService" )
+      self.options['services'].append( "-DQMStore" )
+      self.options['modules'].append( "-hltDQMFileSaver" )
 
     if self.config.fragment:
       # extract a configuration file fragment
@@ -1082,6 +1090,11 @@ if 'GlobalTag' in %%(dict)s:
       self.options['modules'].append( "-hltESRawToRecHitFacility" )
       self.options['modules'].append( "-hltEcalRecHitAll" )
       self.options['modules'].append( "-hltESRecHitAll" )
+      # === eGamma
+      self.options['modules'].append( "-hltEgammaCkfTrackCandidatesForGSF" )
+      self.options['modules'].append( "-hltEgammaGsfTracks" )
+      self.options['modules'].append( "-hltEgammaCkfTrackCandidatesForGSFUnseeded" )
+      self.options['modules'].append( "-hltEgammaGsfTracksUnseeded" )
       # === hltPF
       self.options['modules'].append( "-hltPFJetCkfTrackCandidates" )
       self.options['modules'].append( "-hltPFJetCtfWithMaterialTracks" )
@@ -1210,11 +1223,14 @@ if 'GlobalTag' in %%(dict)s:
       self.options['sequences'].append( "-HLTIterativeTrackingHighPtTkMu" )
       self.options['sequences'].append( "-HLTIterativeTrackingHighPtTkMuIsoIter02" )
       self.options['sequences'].append( "-HLTIterativeTrackingForBTagIter02" )
+      self.options['sequences'].append( "-HLTIterativeTrackingForBTagIter12" )
       self.options['sequences'].append( "-HLTIterativeTrackingForTauIter04" )
       self.options['sequences'].append( "-HLTIterativeTrackingForTauIter02" )
       self.options['sequences'].append( "-HLTIterativeTrackingDisplacedJpsiIter02" )
       self.options['sequences'].append( "-HLTIterativeTrackingDisplacedPsiPrimeIter02" )
       self.options['sequences'].append( "-HLTIterativeTrackingDisplacedNRMuMuIter02" )
+      self.options['sequences'].append( "-HLTIterativeTrackingForBTagIteration0" )
+      self.options['sequences'].append( "-HLTIterativeTrackingIteration4DisplacedJets" )
       self.options['sequences'].append( "-HLTRegionalCKFTracksForL3Isolation" )
       self.options['sequences'].append( "-HLTHBHENoiseCleanerSequence" )
 

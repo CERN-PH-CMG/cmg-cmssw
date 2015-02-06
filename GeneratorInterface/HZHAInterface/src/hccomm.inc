@@ -1,0 +1,3 @@
+      INTEGER    IHCD
+      REAL*8     MH, TBT, TAF
+      COMMON /HCCOMM/ MH(4), TBT, TAF, IHCD(2)

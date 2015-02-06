@@ -1,0 +1,6 @@
+<use name="GeneratorInterface/ZNNBInterface"/>
+<use   name="GeneratorInterface/ExternalDecays"/>
+<library   file="*.cc" name="GeneratorInterfaceZNNBFilter">
+<Flags LDFLAGS="$(PYTHIA6_BASE)/lib/pydata.o -L/afs/cern.ch/sw/lcg/external/cernlib/2006b/x86_64-slc5-gcc43-opt/lib/ -lkernlib -lpacklib -lmathlib -lkernlib-shift"/>
+<flags   EDM_PLUGIN="1"/>
+</library>
