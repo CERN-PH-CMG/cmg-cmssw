@@ -1,4 +1,5 @@
-from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.Heppy.analyzers.core.Analyzer    import Analyzer
+from PhysicsTools.Heppy.physicsobjects.GenParticle import GenParticle
 
 class Boson(GenParticle):
     def __init__(self, boson):
@@ -25,7 +26,7 @@ class WBoson(Boson):
         
 
 # class GenErsatzAnalyzer( GenParticleAnalyzer ):
-class GenErsatzAnalyzer( GeneratorAnalyzer ):
+class GenErsatzAnalyzer( Analyzer ):
 
     def process(self, event):
         # event.W = None
