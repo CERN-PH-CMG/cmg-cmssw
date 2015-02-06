@@ -1,8 +1,0 @@
-#include "%(formatclassfile)s"
-#include "%(factoryclassfile)s"
-
-#include "CMGTools/Common/plugins/PhysicsObjectProducer.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
-
-typedef PhysicsObjectProducer<%(namespace)s::%(factoryname)s> %(producername)s;
-DEFINE_FWK_MODULE(%(producername)s);

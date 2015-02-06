@@ -1,9 +1,0 @@
-import FWCore.ParameterSet.Config as cms
-
-from %(factoryconfigfile)s import %(pyfactoryname)s
-from %(histogramconfigfile)s import %(histogramname)s
-
-%(pysequencename)s = cms.Sequence(
-    %(pyfactoryname)s +
-    %(histogramname)s
-    )
