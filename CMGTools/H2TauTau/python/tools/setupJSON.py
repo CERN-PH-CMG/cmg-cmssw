@@ -1,5 +1,5 @@
 import os 
-from CMGTools.Common.Tools.applyJSON_cff import *
+from CMGTools.H2TauTau.skim.applyJSON_cff import *
 from CMGTools.RootTools.json.jsonPick import *
 from CMGTools.H2TauTau.officialJSONS import jsonMap
 
