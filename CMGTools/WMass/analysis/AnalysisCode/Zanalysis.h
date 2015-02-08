@@ -218,7 +218,7 @@ class Zanalysis {
   virtual void     Loop(int chunk=0, int Entry_ini=0, int Entry_fin=0, int IS_MC_CLOSURE_TEST=0, int isMCorDATA=0, TString outputdir=0, int buildTemplates=0, int useMomentumCorr=0, int smearRochCorrByNsigma=0, int useEffSF=0, int usePtSF=0, int useVtxSF=0, int controlplots=0, TString sampleName="", int generated_PDF_set=-1, int generated_PDF_member=-1, int contains_PDF_reweight=-1, int usePhiMETCorr=0, int useRecoilCorr=0, int RecoilCorrResolutionNSigmaU1=0, int RecoilCorrScaleNSigmaU1=0, int RecoilCorrResolutionNSigmaU2=0, int use_PForNoPUorTKmet=0, int use_syst_ewk_Alcaraz=0, int gen_mass_value_MeV=0, int contains_LHE_weights=0);
   virtual Bool_t   Notify();
   virtual void     Show(Long64_t entry = -1);
-  void ComputeHXVarAndPhiStarEta();
+  void ComputeHXVarAndPhiStarEta(TLorentzVector muPosNoCorr,TLorentzVector muNegNoCorr, bool isGen);
 
   virtual void plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorentzVector Z, double u1_scale, string leptCharge, string cut , bool doCut, bool doneu, std::map<std::string, TH1D*> &h_1d, std::map<std::string, TH2D*> &h_2d,double weight);
 

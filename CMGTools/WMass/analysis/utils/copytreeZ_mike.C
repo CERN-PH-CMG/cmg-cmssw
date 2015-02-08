@@ -2,7 +2,8 @@ void copytreeZ_mike() {
 
   // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/";
   // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_10_15/";
-  TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
+  // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
+  TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_8TeV/";
   
   TString fZana_str[7] = {
     "root://eoscms//"+root_folder+"WJetsLL/ZTreeProducer_tree.root",

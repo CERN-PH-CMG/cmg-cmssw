@@ -1,658 +1,382 @@
 #include "RecoilCorrector.h"
 
-//-----------------------------------------------------------------------------------------------------------------------------------------
-RecoilCorrector::RecoilCorrector(string iNameZDat,std::string iPrefix, int iSeed) {
-
-  fRandom = new TRandom3(iSeed);
-
-  // get fits for Z data
-  readRecoil(fF1U1Fit,fF1U1RMSSMFit,fF1U1RMS1Fit,fF1U1RMS2Fit,fF1U2Fit,fF1U2RMSSMFit,fF1U2RMS1Fit,fF1U2RMS2Fit,iNameZDat,iPrefix);
-  if(iPrefix == "PF") readCorr  (iNameZDat,fF1U1U2Corr,fF2U1U2Corr,fF1F2U1Corr,fF1F2U2Corr,fF1F2U1U2Corr,fF1F2U2U1Corr,0);
-  if(iPrefix == "TK") readCorr  (iNameZDat,fF1U1U2Corr,fF2U1U2Corr,fF1F2U1Corr,fF1F2U2Corr,fF1F2U1U2Corr,fF1F2U2U1Corr,1);  
-  fId = 0; fJet = 0;
-}
+// mytype: 0 = target file , 1 = DATA , 2 = Z MC
 
 RecoilCorrector::RecoilCorrector(string iNameZ, int iSeed) {
 
   fRandom = new TRandom3(iSeed);
-  // get fits for Z data
-  readRecoil(fF1U1Fit,fF1U1RMSSMFit,fF1U1RMS1Fit,fF1U1RMS2Fit,fF1U2Fit,fF1U2RMSSMFit,fF1U2RMS1Fit,fF1U2RMS2Fit,iNameZ,"PF");
-  readRecoil(fF2U1Fit,fF2U1RMSSMFit,fF2U1RMS1Fit,fF2U1RMS2Fit,fF2U2Fit,fF2U2RMSSMFit,fF2U2RMS1Fit,fF2U2RMS2Fit,iNameZ,"TK");
-  readCorr  (iNameZ  ,fF1U1U2Corr,fF2U1U2Corr,fF1F2U1Corr,fF1F2U2Corr,fF1F2U1U2Corr,fF1F2U2U1Corr);
+  readRecoil(fF1U1Fit,fF1U1RMSSMFit,fF1U1RMS1Fit,fF1U1RMS2Fit,fF1U1RMS3Fit,fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit, fF1U2Fit,fF1U2RMSSMFit,fF1U2RMS1Fit,fF1U2RMS2Fit,fF1U2RMS3Fit,fF1U2FracFit,fF1U2Mean1Fit, fF1U2Mean2Fit,iNameZ,"PF",1,0);  
+  
   fId = 0; fJet = 0;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 void RecoilCorrector::addDataFile(std::string iNameData) { 
-  readRecoil(fD1U1Fit,fD1U1RMSSMFit,fD1U1RMS1Fit,fD1U1RMS2Fit,fD1U2Fit,fD1U2RMSSMFit,fD1U2RMS1Fit,fD1U2RMS2Fit,iNameData,"PF");
-  readRecoil(fD2U1Fit,fD2U1RMSSMFit,fD2U1RMS1Fit,fD2U1RMS2Fit,fD2U2Fit,fD2U2RMSSMFit,fD2U2RMS1Fit,fD2U2RMS2Fit,iNameData,"TK");
-  //readCorr(iNameData);
+  readRecoil(fD1U1Fit,fD1U1RMSSMFit,fD1U1RMS1Fit,fD1U1RMS2Fit,fD1U1RMS3Fit,fD1U1FracFit, fD1U1Mean1Fit, fD1U1Mean2Fit, fD1U2Fit,fD1U2RMSSMFit,fD1U2RMS1Fit,fD1U2RMS2Fit,fD1U2RMS3Fit,fD1U2FracFit,fD1U2Mean1Fit, fD1U2Mean2Fit,iNameData,"PF",1,1);  
   fId++;   
 }
-
+//-----------------------------------------------------------------------------------------------------------------------------------------
 void RecoilCorrector::addMCFile  (std::string iNameMC) { 
   fId++;
-  readRecoil(fM1U1Fit,fM1U1RMSSMFit,fM1U1RMS1Fit,fM1U1RMS2Fit,fM1U2Fit,fM1U2RMSSMFit,fM1U2RMS1Fit,fM1U2RMS2Fit,iNameMC,"PF");
-  readRecoil(fM2U1Fit,fM2U1RMSSMFit,fM2U1RMS1Fit,fM2U1RMS2Fit,fM2U2Fit,fM2U2RMSSMFit,fM2U2RMS1Fit,fM2U2RMS2Fit,iNameMC,"TK");
-  readCorr  (iNameMC ,fM1U1U2Corr,fM2U1U2Corr,fM1M2U1Corr,fM1M2U2Corr,fM1M2U1U2Corr,fM1M2U2U1Corr);
-}
-
-void RecoilCorrector::CorrectAll(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,double iFluc,double iScale,int njet) {
-
-  fJet = njet; 
+  readRecoil(fM1U1Fit,fM1U1RMSSMFit,fM1U1RMS1Fit,fM1U1RMS2Fit,fM1U1RMS3Fit,fM1U1FracFit, fM1U1Mean1Fit, fM1U1Mean2Fit, fM1U2Fit,fM1U2RMSSMFit,fM1U2RMS1Fit,fM1U2RMS2Fit,fM1U2RMS3Fit,fM1U2FracFit,fM1U2Mean1Fit, fM1U2Mean2Fit,iNameMC,"PF",1,2);  
   
-  //  if(njet > 2) fJet = 2;  
-  //  if(fJet >= int(fF1U1Fit.size())) fJet = 1; 
-  if(fJet >= int(fF1U1Fit.size())) fJet = int(fF1U1Fit.size()) - 1; 
-
-  fRandom->SetSeed((int)((lGenPhi+4)*100000));
-  metDistribution(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,fRandom,
-		  fF1U1Fit     [fJet],
-		  fF1U1RMSSMFit[fJet],
-		  fF1U1RMS1Fit [fJet],
-		  fF1U1RMS2Fit [fJet],
-		  fF1U2RMSSMFit[fJet],
-		  fF1U2RMS1Fit [fJet],
-		  fF1U2RMS2Fit [fJet],
-		  fF1U1U2Corr  [fJet],
-		  iU1, iU2,iFluc,iScale
-		  );
 }
 
-void RecoilCorrector::CorrectType1(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,double iFlucU2,double iFlucU1,double iScale,int njet) {
-
-  //  cout << "TYPE1: nVTX " << njet << " fId " << fId << " function size "<< fF1U1Fit.size() << endl;
-
-  fJet = njet; 
-
-  //  if(njet > 2) fJet = 2;  
-  //  if(fJet >= int(fF1U1Fit.size())) fJet = 1; 
-  if(fJet >= int(fF1U1Fit.size())) fJet = int(fF1U1Fit.size()) - 1; 
-
-  fRandom->SetSeed((int)((lGenPhi+4)*100000));
-  metDistributionType1(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,fRandom,
-		       fD1U1Fit     [fJet],fM1U1Fit     [fJet],
-		       fD1U1RMSSMFit[fJet],fM1U1RMSSMFit[fJet],
-		       fD1U2RMSSMFit[fJet],fM1U2RMSSMFit[fJet],
-		       //fF1U1U2Corr  [fJet],fM1U1U2Corr  [fJet], ===> For the future
-		       iU1,iU2,iFlucU2,iFlucU1,iScale
-		       );
-}
-
-void RecoilCorrector::CorrectType2(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,double iFlucU2,double iFlucU1,double iScale,int njet, bool doSingleGauss) {
-
-  //  cout << "TYPE2: nVTX " << njet << " function size "<< fD1U1Fit.size() << endl;
-  
-  fJet = njet; 
-
-  //  if(njet > 2) fJet = 2;  
-  //  if(fJet >= int(fF1U1Fit.size())) fJet = 1; 
-  if(fJet >= int(fF1U1Fit.size())) fJet = int(fF1U1Fit.size()) - 1; 
-
-  metDistributionType2(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,fF1U1Fit[fJet],
-		       fD1U1Fit     [fJet],fM1U1Fit     [fJet],
-		       fD1U1RMSSMFit[fJet],fM1U1RMSSMFit[fJet],
-		       fD1U1RMS1Fit [fJet],fM1U1RMS1Fit [fJet],
-		       fD1U1RMS2Fit [fJet],fM1U1RMS2Fit [fJet],
-		       fD1U2RMSSMFit[fJet],fM1U2RMSSMFit[fJet],
-		       fD1U2RMS1Fit [fJet],fM1U2RMS1Fit [fJet],
-		       fD1U2RMS2Fit [fJet],fM1U2RMS2Fit [fJet],
-		       //		       fF1U1U2Corr  [fJet],fM1U1U2Corr  [fJet],  // MARIA comment for now since not used
-		       iU1,iU2,iFlucU2,iFlucU1,iScale,
-		       doSingleGauss );
-}
-
-void RecoilCorrector::Correct(double &pfmet, double &pfmetphi, double &trkmet, double &trkmetphi, 
-                              double lGenPt, double lGenPhi, double lepPt, double lepPhi,double iFluc,double iScale,int njet) {
-  double lU1 = 0; double lU2 = 0;
-  fJet = njet; 
-
-  //    if(njet > 2) fJet = 2;  
-  //  if(fJet > int(fF1U1Fit.size())) fJet = 1; 
-  if(fJet >= int(fF1U1Fit.size())) fJet = int(fF1U1Fit.size()) - 1; 
-
-  fRandom->SetSeed((int)((lGenPhi+4)*100000));
-  metDistribution(pfmet,pfmetphi,trkmet,trkmetphi,lGenPt,lGenPhi,lepPt,lepPhi,fRandom,
-		  fF1U1Fit     [fJet],fF2U1Fit     [fJet],
-		  fF1U1RMSSMFit[fJet],fF2U1RMSSMFit[fJet],
-		  fF1U1RMS1Fit [fJet],fF2U1RMS1Fit [fJet],
-		  fF1U1RMS2Fit [fJet],fF2U1RMS2Fit [fJet],
-		  fF1U2RMSSMFit[fJet],fF2U2RMSSMFit[fJet],
-		  fF1U2RMS1Fit [fJet],fF2U2RMS1Fit [fJet],
-		  fF1U2RMS2Fit [fJet],fF2U2RMS2Fit [fJet],
-		  fF1U1U2Corr  [fJet],fF2U1U2Corr  [fJet],
-		  fF1F2U1Corr  [fJet],fF1F2U2Corr  [fJet],
-		  fF1F2U1U2Corr[fJet],fF1F2U2U1Corr[fJet],
-		  lU1                ,lU2,
-		  iFluc,              iScale
-		  );
-}
-void RecoilCorrector::CorrectU1U2(double &iPFU1, double &iPFU2, double &iTKU1, double &iTKU2, 
-				  double lGenPt, double lGenPhi, double lepPt, double lepPhi,double iFluc,double iScale,int njet) {
-  double pfmet = 0; double pfmetphi = 0; //double trkmet = 0; double trkmetphi = 0;
-  fJet = njet; 
-
-  //   if(njet > 2) fJet = 2;  
-  //    if(fJet > int(fF1U1Fit.size())) fJet = 1; 
-  if(fJet >= int(fF1U1Fit.size())) fJet = int(fF1U1Fit.size()) - 1; 
-
-  metDistribution(pfmet,pfmetphi,iTKU1,iTKU2,lGenPt,lGenPhi,lepPt,lepPhi,fRandom,
-		  fF1U1Fit     [fJet],fF2U1Fit     [fJet],
-		  fF1U1RMSSMFit[fJet],fF2U1RMSSMFit[fJet],
-		  fF1U1RMS1Fit [fJet],fF2U1RMS1Fit [fJet],
-		  fF1U1RMS2Fit [fJet],fF2U1RMS2Fit [fJet],
-		  fF1U2RMSSMFit[fJet],fF2U2RMSSMFit[fJet],
-		  fF1U2RMS1Fit [fJet],fF2U2RMS1Fit [fJet],
-		  fF1U2RMS2Fit [fJet],fF2U2RMS2Fit [fJet],
-		  fF1U1U2Corr  [fJet],fF2U1U2Corr  [fJet],
-		  fF1F2U1Corr  [fJet],fF1F2U2Corr  [fJet],
-		  fF1F2U1U2Corr[fJet],fF1F2U2U1Corr[fJet],
-		  iPFU1              ,iPFU2,
-		  iFluc,              iScale
-		  );
-  //iTKU1 = 0; iTKU2 = 0;
-}
-double RecoilCorrector::CorrVal(double iPt, double iVal, Recoil iType) { 
-  if(fId == 0 || fId == 1) return iVal;
-  switch(iType) {
-  case PFU1   : return iVal*(fD1U1Fit     [fJet]->Eval(iPt)/fM1U1Fit     [fJet]->Eval(iPt));
-  case PFMSU1 : return iVal*(fD1U1RMSSMFit[fJet]->Eval(iPt)/fM1U1RMSSMFit[fJet]->Eval(iPt));
-  case PFS1U1 : return iVal*(fD1U1RMS1Fit [fJet]->Eval(iPt)/fM1U1RMS1Fit [fJet]->Eval(iPt));
-  case PFS2U1 : return iVal*(fD1U1RMS2Fit [fJet]->Eval(iPt)/fM1U1RMS2Fit [fJet]->Eval(iPt));
-  case PFU2   : return 0;
-  case PFMSU2 : return iVal*(fD1U2RMSSMFit[fJet]->Eval(iPt)/fM1U2RMSSMFit[fJet]->Eval(iPt));
-  case PFS1U2 : return iVal*(fD1U2RMS1Fit [fJet]->Eval(iPt) /fM1U2RMS1Fit[fJet]->Eval(iPt));
-  case PFS2U2 : return iVal*(fD1U2RMS2Fit [fJet]->Eval(iPt) /fM1U2RMS2Fit[fJet]->Eval(iPt));
-  case TKU1   : return iVal*(fD2U1Fit     [fJet]->Eval(iPt)/fM2U1Fit     [fJet]->Eval(iPt));
-  case TKMSU1 : return iVal*(fD2U1RMSSMFit[fJet]->Eval(iPt)/fM2U1RMSSMFit[fJet]->Eval(iPt));
-  case TKS1U1 : return iVal*(fD2U1RMS1Fit [fJet]->Eval(iPt) /fM2U1RMS1Fit[fJet]->Eval(iPt));
-  case TKS2U1 : return iVal*(fD2U1RMS2Fit [fJet]->Eval(iPt) /fM2U1RMS2Fit[fJet]->Eval(iPt));
-  case TKU2   : return 0;
-  case TKMSU2 : return iVal*(fD2U2RMSSMFit[fJet]->Eval(iPt)/fM2U2RMSSMFit[fJet]->Eval(iPt));
-  case TKS1U2 : return iVal*(fD2U2RMS1Fit [fJet]->Eval(iPt) /fM2U2RMS1Fit[fJet]->Eval(iPt));
-  case TKS2U2 : return iVal*(fD2U2RMS2Fit [fJet]->Eval(iPt) /fM2U2RMS2Fit[fJet]->Eval(iPt));
-  }
-  return iVal;
-}
-TF1* RecoilCorrector::getFunc(bool iMC, Recoil iType) { 
-  if(fId == 0 || fId == 1) return 0;
-  switch(iType) {
-  case PFU1   : if(iMC) {return fD1U1Fit     [fJet];} return fM1U1Fit     [fJet];
-  case PFMSU1 : if(iMC) {return fD1U1RMSSMFit[fJet];} return fM1U1RMSSMFit[fJet];
-  case PFS1U1 : if(iMC) {return fD1U1RMS1Fit [fJet];} return fM1U1RMS1Fit [fJet];
-  case PFS2U1 : if(iMC) {return fD1U1RMS2Fit [fJet];} return fM1U1RMS2Fit [fJet];
-  case PFU2   : return 0;
-  case PFMSU2 : if(iMC) {return fD1U2RMSSMFit[fJet];} return fM1U2RMSSMFit[fJet];
-  case PFS1U2 : if(iMC) {return fD1U2RMS1Fit [fJet];} return fM1U2RMS1Fit [fJet];
-  case PFS2U2 : if(iMC) {return fD1U2RMS2Fit [fJet];} return fM1U2RMS2Fit [fJet];
-  case TKU1   : if(iMC) {return fD2U1Fit     [fJet];} return fM2U1Fit     [fJet];
-  case TKMSU1 : if(iMC) {return fD2U1RMSSMFit[fJet];} return fM2U1RMSSMFit[fJet];
-  case TKS1U1 : if(iMC) {return fD2U1RMS1Fit [fJet];} return fM2U1RMS1Fit [fJet];
-  case TKS2U1 : if(iMC) {return fD2U1RMS2Fit [fJet];} return fM2U1RMS2Fit [fJet];
-  case TKU2   : return 0;
-  case TKMSU2 : if(iMC) {return fD2U2RMSSMFit[fJet];} return fM2U2RMSSMFit[fJet];
-  case TKS1U2 : if(iMC) {return fD2U2RMS1Fit [fJet];} return fM2U2RMS1Fit [fJet];
-  case TKS2U2 : if(iMC) {return fD2U2RMS2Fit [fJet];} return fM2U2RMS2Fit [fJet];
-  }
-  return 0;
-}
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector::readRecoil(std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,
-		                 std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,
-		                 std::string iFName,std::string iPrefix) {
-//  if(!getenv("CMSSW_BASE")) {
-//    printf("error! RecoilCorrector called without input files. Define CMSSW_BASE or add by hand.\n");
-//    assert(0);
-//  }
-  TFile *lFile  = new TFile(iFName.c_str());
+void RecoilCorrector::readRecoil(/* std::vector<double> &iSumEt, */
+std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,
+std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,std::vector<TF1*> &iU1RMS3Fit,
+std::vector<TF1*> &iU1FracFit,std::vector<TF1*> &iU1Mean1Fit, std::vector<TF1*> &iU1Mean2Fit,//std::vector<TF1*> &iU1Sig3Fit,
+std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,
+std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2RMS3Fit,
+std::vector<TF1*> &iU2FracFit,std::vector<TF1*> &iU2Mean1Fit, std::vector<TF1*> &iU2Mean2Fit,//std::vector<TF1*> &iU2Sig3Fit,
+std::string iFName = "recoilfit.root",std::string iPrefix="",int vtxBin=-1, int mytype=0) {
 
-  cout << "reading file "<< iFName.c_str() << endl; 
+  //type=1 read U1; type=2 read U2;
+  cout << "inside readRecoil" << endl;
+
+  TFile *lFile  = new TFile(iFName.c_str());
   // lFile->ls();
 
-  int lNJet = 1; // this is for the nvtx or rapidity binned
-  //   int lNJet = -1; // this is for inclusive nvtx 
-  std::stringstream lSS; lSS << iPrefix << "u1Mean_" << lNJet;
-  while(lFile->FindObjectAny(lSS.str().c_str()) != 0) { lSS.str("");
-    //     cout << lNJet << endl;
+  // now defined in the .h
+  // const int lNBins = 2;                   
 
-    lSS << iPrefix << "u1Mean_"    << lNJet; iU1Fit.push_back    ( (TF1*) lFile->FindObjectAny(lSS.str().c_str())); lSS.str("");
-    lSS << iPrefix << "u1MeanRMS_" << lNJet; iU1MRMSFit.push_back( (TF1*) lFile->FindObjectAny(lSS.str().c_str())); lSS.str(""); 
-    lSS << iPrefix << "u1RMS1_"    << lNJet; iU1RMS1Fit.push_back( (TF1*) lFile->FindObjectAny(lSS.str().c_str())); lSS.str(""); 
-    lSS << iPrefix << "u1RMS2_"    << lNJet; iU1RMS2Fit.push_back( (TF1*) lFile->FindObjectAny(lSS.str().c_str())); lSS.str(""); 
-    lSS << iPrefix << "u2Mean_"    << lNJet; iU2Fit    .push_back( (TF1*) lFile->FindObjectAny(lSS.str().c_str())); lSS.str("");
-    lSS << iPrefix << "u2MeanRMS_" << lNJet; iU2MRMSFit.push_back( (TF1*) lFile->FindObjectAny(lSS.str().c_str())); lSS.str("");
-    lSS << iPrefix << "u2RMS1_"    << lNJet; iU2RMS1Fit.push_back( (TF1*) lFile->FindObjectAny(lSS.str().c_str())); lSS.str("");
-    lSS << iPrefix << "u2RMS2_"    << lNJet; iU2RMS2Fit.push_back( (TF1*) lFile->FindObjectAny(lSS.str().c_str())); lSS.str("");
-    lSS << iPrefix << "u2RMS2_"    << lNJet; iU2RMS2Fit.push_back( (TF1*) lFile->FindObjectAny(lSS.str().c_str())); lSS.str("");
-    lNJet++; lSS << iPrefix << "u1Mean_" << lNJet;
+  int init = 1; // this is for the binned
+  
+  cout << "init " << init<< " lNBins " << lNBins<<" vtxBin " << vtxBin<< endl;
 
-    //    cout << "Filename " << iFName.c_str() << " lNJet " << lNJet << endl;
+  for(int i0 = init; i0 <= lNBins; i0++) {
+    // if(i0!=vtxBin) continue;
+    cout << "reading bin " << i0 << endl;
 
+    std::string lStr = iPrefix;
+    //iSumEt.push_back(lGraph->GetY()[i0]);                                                                                                                     
+
+    std::stringstream pSS1,pSS2,pSS3,pSS4,pSS5,pSS6,pSS7,pSS8,pSS9,pSS10,pSS11,pSS12,pSS13,pSS14,pSS15,pSS16;
+
+    pSS1  << lStr << "u1Mean_"    << i0;  iU1Fit.push_back    ( (TF1*) lFile->FindObjectAny((pSS1.str()).c_str())); //iU1Fit[i0]->SetDirectory(0);              
+    // cout << "pSS1 " << pSS1.str() << endl;
+    // iU1Fit[0]->Print();
+    pSS2  << lStr << "u1MeanRMS_" << i0;  iU1MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS2.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);           
+    pSS3  << lStr << "u1RMS1_"    << i0;  iU1RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS3.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);     
+    pSS4  << lStr << "u1RMS2_"    << i0;  iU1RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS4.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);     
+    pSS5  << lStr << "u1RMS3_"    << i0;  iU1RMS3Fit.push_back( (TF1*) lFile->FindObjectAny((pSS5.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);     
+    //pSS5  << "u1Sig3_"    << i0;  iU1Sig3Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+pSS5.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);         
+    pSS6  << lStr << "u2Mean_"    << i0;  iU2Fit    .push_back( (TF1*) lFile->FindObjectAny((pSS6.str()).c_str())); //iU2Fit[i0]->SetDirectory(0);              
+    pSS7  << lStr << "u2MeanRMS_" << i0;  iU2MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS7.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);           
+    pSS8  << lStr << "u2RMS1_"    << i0;  iU2RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS8.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);     
+    pSS9  << lStr << "u2RMS2_"    << i0;  iU2RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS9.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);     
+    pSS10  << lStr << "u2RMS3_"    << i0;  iU2RMS3Fit.push_back( (TF1*) lFile->FindObjectAny((pSS10.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);
+    //pSS10 << "u2Sig3_"    << i0;  iU2Sig3Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+pSS10.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);
+    pSS11  << lStr << "u1Frac_"    << i0;  iU1FracFit.push_back( (TF1*) lFile->FindObjectAny((pSS11.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);     
+    pSS12  << lStr << "u2Frac_"    << i0;  iU2FracFit.push_back( (TF1*) lFile->FindObjectAny((pSS12.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);           
+    pSS13  << lStr << "u1Mean1_"    << i0;  iU1Mean1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS13.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);
+    pSS14  << lStr << "u1Mean2_"    << i0;  iU1Mean2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS14.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);
+    pSS15  << lStr << "u2Mean1_"    << i0;  iU2Mean1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS15.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);
+    pSS16  << lStr << "u2Mean2_"    << i0;  iU2Mean2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS16.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);
+
+    wU1[mytype][i0] = new RooWorkspace("wU1","wU1");
+    pdfU1[mytype][i0] = (RooAddPdf*) lFile->Get(Form("AddU1Y%d",i0));
+    wU1[mytype][i0]->import(*pdfU1[mytype][i0],RooFit::Silence());
+    frU1[mytype][i0] = (RooFitResult*) lFile->Get(Form("fitresult_AddU1Y%d_Crapsky0_U1_2D",i0));
+    // cout << "CALLING frU1[mytype][i0]->Print(\"V\")" << endl;
+    // frU1[mytype][i0]->Print("V");
+    // wU1[mytype][i0]->Print();
+    runDiago(wU1[mytype][i0],frU1[mytype][i0],Form("AddU1Y%d",i0),pdfU1Cdf[mytype][i0]);
+    
+    wU2[mytype][i0] = new RooWorkspace("wU2","wU2");
+    pdfU2[mytype][i0] = (RooAddPdf*) lFile->Get(Form("AddU2Y%d",i0));
+    wU2[mytype][i0]->import(*pdfU2[mytype][i0],RooFit::Silence());
+    frU2[mytype][i0] = (RooFitResult*) lFile->Get(Form("fitresult_AddU2Y%d_Crapsky0_U2_2D",i0));
+    // wU2[mytype][i0]->Print();
+    // wU2diago[mytype][i0] = wU2[mytype][i0];
+    runDiago(wU2[mytype][i0],frU2[mytype][i0],Form("AddU2Y%d",i0),pdfU2Cdf[mytype][i0]);
+    
   }
 
+  cout << "read U1 size: " << iU1Fit.size() << endl;
+  
+  
   lFile->Close();
+  // iSumEt.push_back(1000);
+  // return lNBins;
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
+
+double RecoilCorrector::calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2) {
+  double lMX = -iEPt*cos(iEPhi) - iU1*cos(iWPhi) + iU2*sin(iWPhi);
+  double lMY = -iEPt*sin(iEPhi) - iU1*sin(iWPhi) - iU2*cos(iWPhi);
+
+  if(iMet == 0) return sqrt(lMX*lMX + lMY*lMY);
+  if(iMet == 1) {if(lMX > 0) {return atan(lMY/lMX);} return (fabs(lMY)/lMY)*TMath::Pi() + atan(lMY/lMX); }
+  if(iMet == 2) return lMX;
+  if(iMet == 3) return lMY;
+  return lMY;
+
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector::readCorr(std::string iName,
-			       std::vector<TF1*> &iF1U1U2Corr  ,std::vector<TF1*> &iF2U1U2Corr,std::vector<TF1*> &iF1F2U1Corr,std::vector<TF1*> &iF1F2U2Corr,
-			       std::vector<TF1*> &iF1F2U1U2Corr,std::vector<TF1*> &iF1F2U2U1Corr,int iType) {
-  TFile *lFile = new TFile(iName.c_str());
-  std::stringstream pSS1,pSS2,pSS3,pSS4,pSS5,pSS6;
-  int lNJet = 0;
-  std::stringstream lSS; lSS << "PFu1Mean_" << lNJet;
-  while(lFile->FindObjectAny(lSS.str().c_str()) != 0) { 
-    lSS.str(""); pSS1.str(""); pSS2.str(""); pSS3.str(""); pSS4.str(""); pSS5.str(""); pSS6.str("");
-    if(iType != 1) {pSS1  << "u1u2pfCorr_" << lNJet;   iF1U1U2Corr.push_back((TF1*) lFile->FindObjectAny(pSS1.str().c_str())); }
-    if(iType != 0) {pSS2  << "u1u2tkCorr_" << lNJet;   iF2U1U2Corr.push_back((TF1*) lFile->FindObjectAny(pSS2.str().c_str())); }
-    if(iType <  2) { lNJet++; lSS <<  "PFu1Mean_" << lNJet;  continue;}
-    pSS3  << "pftku1Corr_"  << lNJet;   iF1F2U1Corr   .push_back((TF1*) lFile->FindObjectAny(pSS3.str().c_str()));
-    pSS4  << "pftku2Corr_"  << lNJet;   iF1F2U2Corr   .push_back((TF1*) lFile->FindObjectAny(pSS4.str().c_str()));
-    pSS5  << "pftkum1Corr_" << lNJet;   iF1F2U1U2Corr .push_back((TF1*) lFile->FindObjectAny(pSS5.str().c_str()));
-    pSS6  << "pftkum2Corr_" << lNJet;   iF1F2U2U1Corr .push_back((TF1*) lFile->FindObjectAny(pSS6.str().c_str()));
-    lNJet++; lSS   << "PFu1Mean_" << lNJet;
-  }
-  lFile->Close();
+void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,double iFlucU2,double iFlucU1,double iScale,int njet, bool doSingleGauss, int mytype) {
+
+  // cout << "TYPE2: nVTX " << njet << " function size "<< fD1U1Fit.size() << endl;
+  fJet = njet; 
+
+  if(fJet >= int(fF1U1Fit.size())) fJet = int(fF1U1Fit.size()) - 1; 
+
+  // applyCorrMET3gaus(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,
+  // fF1U1Fit[fJet],
+  // fD1U1Fit[fJet],  fM1U1Fit[fJet],
+  // fD1U1RMSSMFit[fJet], fM1U1RMSSMFit[fJet], 
+  // fD1U1RMS1Fit[fJet], fM1U1RMS1Fit[fJet], 
+  // fD1U1RMS2Fit[fJet], fM1U1RMS2Fit[fJet], 
+  // fD1U1RMS3Fit[fJet], fM1U1RMS3Fit[fJet],
+  // fD1U1FracFit[fJet], fM1U1FracFit[fJet],
+  // fD1U1Mean1Fit[fJet], fM1U1Mean1Fit[fJet],
+  // fD1U1Mean2Fit[fJet], fM1U1Mean2Fit[fJet],
+  // //
+  // // fD1U2Fit[fJet], fM1U2Fit[fJet],
+  // fD1U2RMSSMFit[fJet], fM1U2RMSSMFit[fJet],        
+  // fD1U2RMS1Fit[fJet], fM1U2RMS1Fit[fJet],
+  // fD1U2RMS2Fit[fJet], fM1U2RMS2Fit[fJet],
+  // fD1U2RMS3Fit[fJet], fM1U2RMS3Fit[fJet],
+  // fD1U2FracFit[fJet], fM1U2FracFit[fJet],
+  // fD1U2Mean1Fit[fJet], fM1U2Mean1Fit[fJet],
+  // fD1U2Mean2Fit[fJet], fM1U2Mean2Fit[fJet],
+
+  // // iU1,iU2,
+  // iFlucU2,iFlucU1,iScale, mytype
+  // // , doSingleGauss 
+  // );
+  
+  applyCorrMET3gausPDF(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,
+  fF1U1Fit[fJet],
+  fD1U1Fit[fJet],  fM1U1Fit[fJet],
+  fD1U1RMSSMFit[fJet], fM1U1RMSSMFit[fJet], 
+  // fD1U1RMS1Fit[fJet], fM1U1RMS1Fit[fJet], 
+  // fD1U1RMS2Fit[fJet], fM1U1RMS2Fit[fJet], 
+  // fD1U1RMS3Fit[fJet], fM1U1RMS3Fit[fJet],
+  // fD1U1FracFit[fJet], fM1U1FracFit[fJet],
+  // fD1U1Mean1Fit[fJet], fM1U1Mean1Fit[fJet],
+  // fD1U1Mean2Fit[fJet], fM1U1Mean2Fit[fJet],
+  //
+  // fD1U2Fit[fJet], fM1U2Fit[fJet],
+  fD1U2RMSSMFit[fJet], fM1U2RMSSMFit[fJet],        
+  // fD1U2RMS1Fit[fJet], fM1U2RMS1Fit[fJet],
+  // fD1U2RMS2Fit[fJet], fM1U2RMS2Fit[fJet],
+  // fD1U2RMS3Fit[fJet], fM1U2RMS3Fit[fJet],
+  // fD1U2FracFit[fJet], fM1U2FracFit[fJet],
+  // fD1U2Mean1Fit[fJet], fM1U2Mean1Fit[fJet],
+  // fD1U2Mean2Fit[fJet], fM1U2Mean2Fit[fJet],
+
+  // iU1,iU2,
+  iFlucU2,iFlucU1,iScale, mytype, fJet
+  // , doSingleGauss 
+  );
+  
 }
+
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector::metDistribution(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
-		                      double iLepPt,double iLepPhi,TRandom3 *iRand,
-		                      TF1 *iU1RZDatFit,
-		                      TF1 *iU1MSZDatFit, 
-		                      TF1 *iU1S1ZDatFit,
-		                      TF1 *iU1S2ZDatFit,
-		                      TF1 *iU2MSZDatFit, 		   
-		                      TF1 *iU2S1ZDatFit, 
-		                      TF1 *iU2S2ZDatFit, 		                      
-		                      TF1 *iU1U2Corr,
-				      double &iU1, double &iU2,
-		                      double iFluc,double iScale) {
-  double lRescale  = sqrt((TMath::Pi())/2.);		     
-  double pU1       = CorrVal(iGenPt,iU1RZDatFit->Eval(iGenPt),PFU1); //iU1RZDatFit->Eval(iGenPt);//CorrVal(iGenPt,iU1RZDatFit->Eval(iGenPt),PFU1);
-  double pU2       = 0; //Right guys are for cumulants => code deleted
-  double pFrac1    = CorrVal(iGenPt,iU1MSZDatFit->Eval(iGenPt),PFMSU1)*lRescale;
-  double pFrac2    = CorrVal(iGenPt,iU2MSZDatFit->Eval(iGenPt),PFMSU2)*lRescale;
-  double pSigma1_1 = CorrVal(iGenPt,iU1S1ZDatFit->Eval(iGenPt),PFS1U1)*lRescale*CorrVal(iGenPt,iU1MSZDatFit->Eval(iGenPt),PFMSU1);
-  double pSigma1_2 = CorrVal(iGenPt,iU1S2ZDatFit->Eval(iGenPt),PFS2U1)*lRescale*CorrVal(iGenPt,iU1MSZDatFit->Eval(iGenPt),PFMSU1);
-  double pSigma2_1 = CorrVal(iGenPt,iU2S1ZDatFit->Eval(iGenPt),PFS1U2)*lRescale*CorrVal(iGenPt,iU2MSZDatFit->Eval(iGenPt),PFS1U2);
-  double pSigma2_2 = CorrVal(iGenPt,iU2S2ZDatFit->Eval(iGenPt),PFS2U2)*lRescale*CorrVal(iGenPt,iU2MSZDatFit->Eval(iGenPt),PFS2U2);
-  //double pMU1      = fabs(iU1RZDatFit->GetParameter(1));
-  
-  //Uncertainty propagation
-  if(iFluc != 0 || iScale != 0) { 
-    double lEUR1    = getError(iGenPt,iU1RZDatFit ,PFU1);
-    double lEUS1_1  = getError(iGenPt,iU1S1ZDatFit,PFS1U1);
-    double lEUS1_2  = getError(iGenPt,iU1S2ZDatFit,PFS2U1);
-    double lEU1Frac = getError(iGenPt,iU1MSZDatFit,PFMSU1);
-    double lEUS2_1  = getError(iGenPt,iU2S1ZDatFit,PFS1U2);
-    double lEUS2_2  = getError(iGenPt,iU2S2ZDatFit,PFS2U2);
-    double lEU2Frac = getError(iGenPt,iU2MSZDatFit,PFMSU2);
+void RecoilCorrector::applyCorrMET3gaus(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
+double iLepPt,double iLepPhi,/*TRandom3 *iRand,*/
+TF1 *iU1Default,
+TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
+TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit, 
+TF1 *iU1S1ZDatFit, TF1 *iU1S1ZMCFit, 
+TF1 *iU1S2ZDatFit, TF1 *iU1S2ZMCFit, 
+TF1 *iU1S3ZDatFit, TF1 *iU1S3ZMCFit,
+TF1 *iU1fracZDatFit, TF1 *iU1fracZMCFit,
+TF1 *iU1mean1ZDatFit, TF1 *iU1mean1ZMCFit,
+TF1 *iU1mean2ZDatFit, TF1 *iU1mean2ZMCFit,
+//
+TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
+TF1 *iU2S1ZDatFit, TF1 *iU2S1ZMCFit,        
+TF1 *iU2S2ZDatFit, TF1 *iU2S2ZMCFit,
+TF1 *iU2S3ZDatFit, TF1 *iU2S3ZMCFit,
+TF1 *iU2fracZDatFit, TF1 *iU2fracZMCFit,
+TF1 *iU2mean1ZDatFit, TF1 *iU2mean1ZMCFit,
+TF1 *iU2mean2ZDatFit, TF1 *iU2mean2ZMCFit,
+double iFlucU2,double iFlucU1,double iScale, int mytype
+){
 
-    //Modify all the different parameters the choice of signs makes it maximal
-    pU1       = pU1       + iScale*lEUR1;           //Recoil
-    pFrac1    = pFrac1    + iFluc*(lEU1Frac);        //Mean RMS 
-    pSigma1_1 = pSigma1_1 - iFluc*lEUS1_1*pFrac1;    //Sigma 1 smalles sigma
-    pSigma1_2 = pSigma1_2 + iFluc*lEUS1_2*pFrac1;    //Sigma 2 (Maximal when oppsite sigma 1)
-    pFrac2    = pFrac2    + iFluc*(lEU2Frac);        //Mean RMS for U2
-    pSigma2_1 = pSigma2_1 - iFluc*lEUS2_1*pFrac2;    //Sigma 1 U2
-    pSigma2_2 = pSigma2_2 + iFluc*(lEUS2_2)*pFrac2;
-  }
-  //Caculat the proper fraction
-  pFrac1 = (pFrac1-pSigma1_2)/(pSigma1_1-pSigma1_2);
-  pFrac2 = (pFrac2-pSigma2_2)/(pSigma2_1-pSigma2_2);
-
-  //Now sample for the MET distribution
-  double pVal0  = iRand->Uniform(0,1);
-  double pVal1  = iRand->Uniform(0,1);
-  double pCorr1 = iRand->Gaus(0,1);     
-  double pCorr2 = iRand->Gaus(0,1);  
-  //double pCorrT1    = iRand->Gaus(0,1);     double pCorrT2    = iRand->Gaus(0,1);  
-  pSigma1_1 = ((pVal0 < pFrac1)*(pSigma1_1)+(pVal0 > pFrac1)*(pSigma1_2)); 
-  pSigma2_1 = ((pVal1 < pFrac2)*(pSigma2_1)+(pVal1 > pFrac2)*(pSigma2_2)); 
-  
-  double lU1U2   = iU1U2Corr->Eval(iGenPt)*0.5;
-  //cout << "===> " << lU1U2 << " -- " << iGenPt << endl;
-  double pVal1_1 = correlatedSeed(pSigma1_1,lU1U2,0.,0.,pCorr1,pCorr2,0.,0.);
-  double pVal2_1 = correlatedSeed(pSigma2_1,lU1U2,0.,0.,pCorr2,pCorr1,0.,0.);
-  //double pVal2_1 = correlatedSeed(pSigma2_1,lU1U2,0.,0.,pCorr2,pCorr1,0.,0.);
-  //double pVal2_2 = correlatedSeed(pSigma2_2,lU1U2,0.,0.,pCorrT2,pCorrT1,0.,0.);
-
-
-  pU1   = (pVal1_1+pU1);//(pVal0 < pFrac1)*(pVal1_1+pU1)+(pVal0 > pFrac1)*(pVal1_2+pU1);
-  pU2   = (pVal2_1+pU2);//(pVal1 < pFrac2)*(pVal2_1+pU2)+(pVal1 > pFrac2)*(pVal2_2+pU2);
-
-  //pU1   = (lVal0 < pFrac1)*iRand->Gaus(pU1,pSigma1_1)+(lVal0 > pFrac1)*iRand->Gaus(pU1,pSigma1_2);
-  //pU2   = (lVal1 < pFrac2)*iRand->Gaus(pU2,pSigma2_1)+(lVal1 > pFrac2)*iRand->Gaus(pU2,pSigma2_2);
-  iMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
-  iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
-
-  iU1   = pU1; 
-  iU2   = pU2;
-  return;
-}
-
-void RecoilCorrector::metDistributionType1(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
-					   double iLepPt,double iLepPhi,TRandom3 *iRand,
-					   TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
-					   TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit, 
-					   TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit, 		   		   
-					   //TF1 *iU1U2ZDatCorr,TF1 *iU1U2ZMCCorr,
-					   double &iU1,double &iU2, double iFlucU2, double iFlucU1, double iScale) {
-
-  // MARIA : commented this one
-  //  if(iLepPt < 4) return;
-
-  double lRescale  = sqrt((TMath::Pi())/2.);		     
-  double pU1       = iU1RZDatFit->Eval(iGenPt)/iU1RZMCFit->Eval(iGenPt);
-  double pU2       = 0; //Right guys are for cumulants => code deleted
-  double pFrac1    = max( iU1MSZDatFit->Eval(iGenPt)*iU1MSZDatFit->Eval(iGenPt)
-			  -(pU1*pU1)*iU1MSZMCFit->Eval(iGenPt)*iU1MSZMCFit ->Eval(iGenPt),0.);
-  double pFrac2    = max( iU2MSZDatFit->Eval(iGenPt)*iU2MSZDatFit->Eval(iGenPt)
-			  -iU2MSZMCFit->Eval(iGenPt)*iU2MSZMCFit ->Eval(iGenPt),0.);
-  pFrac1 = sqrt(pFrac1)*lRescale;
-  pFrac2 = sqrt(pFrac2)*lRescale;
- 
-  //  cout << "===> " << pU1 << " -- " << pFrac1 << " -- " << pFrac2 << " -- "  << iU1MSZDatFit->Eval(iGenPt) << " - " << iU1MSZMCFit->Eval(iGenPt) << endl;
-  
-  //Uncertainty propagation
-  if(iFlucU2 != 0 || iFlucU1 != 0 || iScale != 0) { 
-    /*
-    /// ORIGIANL ERROR FROM PHIL
-
-    double lEUR1    = getError(iGenPt,iU1RZDatFit ,PFU1);
-    double lEU1Frac = getError(iGenPt,iU1MSZDatFit,PFMSU1);
-    double lEU2Frac = getError(iGenPt,iU2MSZDatFit,PFMSU2);
-
-    //Modify all the different parameters the choice of signs makes it maximal
-    pU1       = pU1       + iScale*lEUR1;             //Recoil
-    pFrac1    = pFrac1    + iFlucU1*(lEU1Frac);        //Mean RMS 
-    pFrac2    = pFrac2    + iFlucU2*(lEU2Frac);        //Mean RMS for U2
-    */
-
-    /// MARIA IMPLEMENTATION: should be the same as Phil and original function getError
-    double lEUR1    = sqrt(getError2(iGenPt, iU1RZDatFit));
-    double lEUR1mc  = sqrt(getError2(iGenPt, iU1RZMCFit));
-
-    double lEU1Frac = sqrt(getError2(iGenPt,iU1MSZDatFit));
-    double lEU2Frac = sqrt(getError2(iGenPt,iU2MSZDatFit));
-
-    double lEU1FracMC = sqrt(getError2(iGenPt,iU1MSZMCFit));
-    double lEU2FracMC = sqrt(getError2(iGenPt,iU2MSZMCFit));
-
-    double errorScale= pU1 * sqrt((lEUR1*lEUR1)/(iU1RZDatFit->Eval(iGenPt)*iU1RZDatFit->Eval(iGenPt))+(lEUR1mc*lEUR1mc)/(iU1RZMCFit->Eval(iGenPt)*iU1RZMCFit->Eval(iGenPt)));
-    //    double errorResU1= lRescale * sqrt(lEU1Frac*lEU1Frac + (pU1*pU1)*lEU1FracMC*lEU1FracMC ) ; // for this we keep the scale constant
-    //    double errorResU2= lRescale * sqrt(lEU2Frac*lEU2Frac + lEU2FracMC*lEU2FracMC ) ;
-
-    double errorResU1=0;
-    double errorResU2=0;
-
-    if(pFrac1!=0) errorResU1 = (lRescale*lRescale/pFrac1) * sqrt(lEU1Frac*lEU1Frac*iU1MSZDatFit->Eval(iGenPt)*iU1MSZDatFit->Eval(iGenPt) + pU1*pU1*pU1*pU1*lEU1FracMC*lEU1FracMC*iU1MSZMCFit->Eval(iGenPt)*iU1MSZMCFit->Eval(iGenPt)); // for this we keep the scale constant                                                                                                          
-    if(pFrac2!=0) errorResU2 = (lRescale*lRescale/pFrac2) * sqrt(lEU2Frac*lEU2Frac*iU2MSZDatFit->Eval(iGenPt)*iU2MSZDatFit->Eval(iGenPt) + lEU2FracMC*lEU2FracMC*iU2MSZMCFit->Eval(iGenPt)*iU2MSZMCFit->Eval(iGenPt)) ;
-
-    pU1       = pU1       + iScale*errorScale;         //Recoil 
-    pFrac1    = pFrac1    + iFlucU1*(errorResU1);        //Mean RMS 
-    pFrac2    = pFrac2    + iFlucU2*(errorResU2);        //Mean RMS for U2 
-
-  }
-
-  //For the future
-  //double lU1U2   = iU1U2Corr->Eval(iGenPt);
-  //double pVal1_1 = correlatedSeed(pSigma1_1,lU1U2,0.,0.,pCorr1,pCorr2,0.,0.);
-  //double pVal2_1 = correlatedSeed(pSigma2_1,lU1U2,0.,0.,pCorr2,pCorr1,0.,0.);
-
-  double pUX  = iMet*cos(iMPhi) + iLepPt*cos(iLepPhi);
-  double pUY  = iMet*sin(iMPhi) + iLepPt*sin(iLepPhi);
-  double pU   = sqrt(pUX*pUX+pUY*pUY);
-
-  // default
-  double pCos = - (pUX*cos(iGenPhi) + pUY*sin(iGenPhi))/pU;
-  double pSin =   (pUX*sin(iGenPhi) - pUY*cos(iGenPhi))/pU;
-
-  pU1   = pU*pCos*pU1;//*(pU1*(iGenPt > 10) + (iGenPt > 10)*((1.-iGenPt/10.)*(pU1-1.)+1.));
-  pU2   = pU*pSin;
-  pU1   = iRand->Gaus(pU1,pFrac1);
-  pU2   = iRand->Gaus(pU2,pFrac2);
-  iMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
-  iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
-  iU1   = pU1; 
-  iU2   = pU2;
-  return;
-}
-
-void RecoilCorrector::metDistributionType2CorrU(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
-						double iLepPt,double iLepPhi,
-						TF1 *iU1Default,
-						TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
-						TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit, 
-						TF1 *iU1S1ZDatFit, TF1 *iU1S1ZMCFit, 
-						TF1 *iU1S2ZDatFit, TF1 *iU1S2ZMCFit, 
-						TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
-						TF1 *iU2S1ZDatFit, TF1 *iU2S1ZMCFit,  		   		   
-						TF1 *iU2S2ZDatFit, TF1 *iU2S2ZMCFit,  		   		   
-						//					   TF1 *iU1U2ZDatCorr,TF1 *iU1U2ZMCCorr, // MARIA comment for now
-						double &iU1,double &iU2,double iFlucU2, double iFlucU1, double iScale,
-						bool doSingleGauss) {
-  
-  double pDefU1    = iU1Default->Eval(iGenPt);
-  double lRescale  = sqrt((TMath::Pi())/2.);
-  double pDU1       = iU1RZDatFit ->Eval(iGenPt);
-  //double pDU2       = 0; sPM                                                                                                                                                         
-  double pDFrac1    = iU1MSZDatFit->Eval(iGenPt)*lRescale;
-  double pDSigma1_1 = iU1S1ZDatFit->Eval(iGenPt)*pDFrac1;
-  double pDSigma1_2 = iU1S2ZDatFit->Eval(iGenPt)*pDFrac1;
-
-  double pDFrac2    = iU2MSZDatFit->Eval(iGenPt)*lRescale;
-  double pDSigma2_1 = iU2S1ZDatFit->Eval(iGenPt)*pDFrac2;
-  double pDSigma2_2 = iU2S2ZDatFit->Eval(iGenPt)*pDFrac2;
-  //double pDMean1    = pDFrac1;                                                                                                                                                       
-  //double pDMean2    = pDFrac2;                                                                                                                                                       
-
-  double pMU1       = iU1RZMCFit  ->Eval(iGenPt);
-  //  double pMU2       = 0;                                                                                                                                                           
-  double pMFrac1    = iU1MSZMCFit ->Eval(iGenPt)*lRescale;
-  double pMSigma1_1 = iU1S1ZMCFit ->Eval(iGenPt)*pMFrac1;
-  double pMSigma1_2 = iU1S2ZMCFit ->Eval(iGenPt)*pMFrac1;
-
-  double pMFrac2    = iU2MSZMCFit ->Eval(iGenPt)*lRescale;
-  double pMSigma2_1 = iU2S1ZMCFit ->Eval(iGenPt)*pMFrac2;
-  double pMSigma2_2 = iU2S2ZMCFit ->Eval(iGenPt)*pMFrac2;
-
-  //double pMMean1    = pMFrac1;                                                                                                                                                       
-  //double pMMean2    = pMFrac2;                                
-
-  //double pMMean1    = pMFrac1;                                                                                                                                                       
-  //double pMMean2    = pMFrac2;                                                                                                                                                       
-  //Uncertainty propagation                                                                                                                                                            
-  pDFrac1     = (pDFrac1-pDSigma1_2)/(pDSigma1_1-pDSigma1_2);
-  pDFrac2     = (pDFrac2-pDSigma2_2)/(pDSigma2_1-pDSigma2_2);
-  pMFrac1     = (pMFrac1-pMSigma1_2)/(pMSigma1_1-pMSigma1_2);
-  pMFrac2     = (pMFrac2-pMSigma2_2)/(pMSigma2_1-pMSigma2_2);
-
-  /////                                                                                                                                                                                
-  /////                                                                                                                                                                                
-  /////                                                                                                                                                                                
-
-  double pUX   = iMet*cos(iMPhi) + iLepPt*cos(iLepPhi);
-  double pUY   = iMet*sin(iMPhi) + iLepPt*sin(iLepPhi);
-  double pU    = sqrt(pUX*pUX+pUY*pUY);
-
-  double pCos  = - (pUX*cos(iGenPhi) + pUY*sin(iGenPhi))/pU;
-  double pSin  =   (pUX*sin(iGenPhi) - pUY*cos(iGenPhi))/pU;
-
-  double offset = iU1RZMCFit->Eval(iGenPt);
-
-  bool scaleU2=true;
-
-  double normSigmaM = iU2MSZMCFit ->Eval(iGenPt)/iU1MSZMCFit ->Eval(iGenPt);
-  if(!scaleU2) normSigmaM = iU1MSZMCFit ->Eval(iGenPt)/iU2MSZMCFit ->Eval(iGenPt);
-  double normSigmaD = iU2MSZDatFit ->Eval(iGenPt)/iU1MSZDatFit ->Eval(iGenPt);
-  if(!scaleU2) normSigmaD = iU1MSZDatFit ->Eval(iGenPt)/iU2MSZDatFit ->Eval(iGenPt);
-
-  double pU1   = pU*pCos;
-  double pU2   = pU*pSin;
-  double pU1Diff  = pU1-offset; // pU1 of the event ; pDefU1 is the scale iU1RZDatFit ->Eval(iGenPt);                                                                                  
-  double pU2Diff  = pU2;
-
-  pU1Diff*=normSigmaM; 
-
-  double recoil = sqrt(pU1Diff*pU1Diff+pU2Diff*pU2Diff); 
-
-  double pU1ValM = 0;
-  double pU2ValM = 0 ;
-  double pU1ValD = 0 ;
-  double pU2ValD = 0;
-  double pUValM = 0;
-  double pUValD = 0 ;
-
-  if(doSingleGauss) {
-
-    if(scaleU2) pUValM         = diGausPVal(fabs(recoil),1,iU2MSZMCFit ->Eval(iGenPt)*lRescale,0);
-    if(scaleU2) pUValD         = oneGausPInverse(pUValM ,1,iU2MSZDatFit->Eval(iGenPt)*lRescale,0);
-
-    if(!scaleU2) pUValM         = diGausPVal(fabs(recoil),1,iU1MSZMCFit ->Eval(iGenPt)*lRescale,0);
-    if(!scaleU2) pUValD         = oneGausPInverse(pUValM ,1,iU1MSZDatFit->Eval(iGenPt)*lRescale,0);
-
-  } else {
-
-    if(scaleU2) pUValM         = diGausPVal(fabs(recoil),pMFrac2,pMSigma2_1,pMSigma2_2);
-    if(scaleU2) pUValD         = diGausPInverse(pUValM  ,pDFrac2,pDSigma2_1,pDSigma2_2);
-
-    if(!scaleU2) pUValM         = diGausPVal(fabs(recoil),pMFrac1,pMSigma1_1,pMSigma1_2);
-    if(!scaleU2) pUValD         = diGausPInverse(pUValM  ,pDFrac1,pDSigma1_1,pDSigma1_2);
-
-  }
-
-  if(pUValM==fabs(recoil)) pUValD=fabs(recoil); // in those cases do nothing  since Erf is zero  
-
-  pU1ValD=pUValD*(pU1Diff/recoil)*(1/normSigmaD);
-  pU2ValD=pUValD*(pU2Diff/recoil);
-  pDefU1 *= (pDU1/pMU1);
-
-
-  pU1   = pDefU1       +       pU1ValD;
-  pU2   =                      pU2ValD;
-  iMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
-  iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
-  iU1   = pU1;                                                                                                                                                                     
-  iU2   = pU2;                                                                                                                                                                     
-
-  return;
-
-}
-
-double RecoilCorrector::diGausPVal(double iVal,double iFrac,double iSigma1,double iSigma2) { 
-
-  double lVal=iFrac*TMath::Erf(iVal/iSigma1) + (1-iFrac)*TMath::Erf(iVal/iSigma2);
-  if(TMath::ErfInverse(lVal)==0) return iVal;
-  return lVal;
-
-
-}
-double RecoilCorrector::diGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2) { 
-  double lVal = TMath::ErfInverse(iPVal);
-  double lMin = lVal * ((iSigma1 < iSigma2) ? iSigma1 : iSigma2);
-  double lMax = lVal * ((iSigma1 < iSigma2) ? iSigma2 : iSigma1);
-  //  cout << "-- Min - " << lMin <<  " -> " << lMax << " -- " << iSigma1 << " -- " << iSigma2 << endl;
-  double lDiff = (lMax-lMin);
-  //Iterative procedure to invert a double gaussian given a PVal
-  //  int lId = 0; int lN1 = 4;  int lN2 = 10; 
-  int lId = 0; int lN1 = 10;  int lN2 = 100; 
-  for(int i0 = 0; i0 < lN1; i0++) { 
-    if(i0 != 0) lMin = lMin + (lId-1)*lDiff/lN2;
-    if(i0 != 0) lDiff/=lN2;
-    for(int i1 = 0; i1 < lN2; i1++) { 
-      double pVal = lMin + lDiff/lN2*i1;
-      pVal = diGausPVal(pVal,iFrac,iSigma1,iSigma2);
-      if(pVal > iPVal) {lId = i1; break;}
-      //      if(pVal < iPVal && lDiff < 0 ) {lId = i1; break;}
-    }
-  }
-  //  cout << "-- Final Val "  <<  (lMin + (lId-0.5)*lDiff/lN2) << " -- " << lId << endl;
-  return (lMin + (lId-0.5)*lDiff/lN2);
-}
-
-double RecoilCorrector::oneGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2) {
-
-  double lVal = TMath::ErfInverse(iPVal);
-  double pVal = lVal *iSigma1;
-  //  double sigmaD = diGausPVal(pVal,iFrac,iSigma1,iSigma2);
-  return pVal;
-
-}
-
-void RecoilCorrector::metDistributionType2(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
-					   double iLepPt,double iLepPhi,
-					   TF1 *iU1Default,
-					   TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
-					   TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit, 
-					   TF1 *iU1S1ZDatFit, TF1 *iU1S1ZMCFit, 
-					   TF1 *iU1S2ZDatFit, TF1 *iU1S2ZMCFit, 
-					   TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
-					   TF1 *iU2S1ZDatFit, TF1 *iU2S1ZMCFit,  		   		   
-					   TF1 *iU2S2ZDatFit, TF1 *iU2S2ZMCFit,  		   		   
-					   //					   TF1 *iU1U2ZDatCorr,TF1 *iU1U2ZMCCorr, // MARIA comment for now
-					   double &iU1,double &iU2,double iFlucU2, double iFlucU1, double iScale,
-					   bool doSingleGauss) {
   //  cout << "inside metType2 " << endl;
+  //  bool doAbsolute=true;
 
-  double pDefU1    = iU1Default->Eval(iGenPt);
-  double lRescale  = sqrt((TMath::Pi())/2.);		     
-  double pDU1       = iU1RZDatFit ->Eval(iGenPt);
-  //double pDU2       = 0; sPM
-  double pDFrac1    = iU1MSZDatFit->Eval(iGenPt)*lRescale;
-  double pDSigma1_1 = iU1S1ZDatFit->Eval(iGenPt)*pDFrac1;
-  double pDSigma1_2 = iU1S2ZDatFit->Eval(iGenPt)*pDFrac1;
-  double pDFrac2    = iU2MSZDatFit->Eval(iGenPt)*lRescale;
-  double pDSigma2_1 = iU2S1ZDatFit->Eval(iGenPt)*pDFrac2;
-  double pDSigma2_2 = iU2S2ZDatFit->Eval(iGenPt)*pDFrac2;
-  //double pDMean1    = pDFrac1;
-  //double pDMean2    = pDFrac2;
- 
-  double pMU1       = iU1RZMCFit  ->Eval(iGenPt);
-  double pMU2       = 0; 
-  double pMFrac1    = iU1MSZMCFit ->Eval(iGenPt)*lRescale;
-  double pMSigma1_1 = iU1S1ZMCFit ->Eval(iGenPt)*pMFrac1;
-  double pMSigma1_2 = iU1S2ZMCFit ->Eval(iGenPt)*pMFrac1;
-  double pMFrac2    = iU2MSZMCFit ->Eval(iGenPt)*lRescale;
-  double pMSigma2_1 = iU2S1ZMCFit ->Eval(iGenPt)*pMFrac2;
-  double pMSigma2_2 = iU2S2ZMCFit ->Eval(iGenPt)*pMFrac2;
+  //  bool doSingleGauss=true;
+  bool dodebug=false;
+  bool doIterativeMet = false;
+  bool invGraph = true;
+  bool doSingleGauss = false;
+  bool doTriGauss = true;
+  bool doApplyCorr = false; // smearing along the recoil vector
+  bool doOnlyU1 = false;
+  bool doOnlyU2 = true;
+  bool writeTree = false;
+  bool doClosure = false;
+
+  double lRescale  = sqrt((TMath::Pi())/2.);     
+  double pDefU1,pDU1,pDRMSU1;
+  double pDSigmaU1_1,pDSigmaU1_2,pDSigmaU1_3;
+  double pDRMSU2;
+  double pDSigmaU2_1,pDSigmaU2_2,pDSigmaU2_3;
+  double pMU1;
+  double pMRMSU1;
+  double pMSigmaU1_1,pMSigmaU1_2,pMSigmaU1_3;
+  double pMRMSU2;
+  double pMSigmaU2_1,pMSigmaU2_2,pMSigmaU2_3;
+  double meanM1U1,meanM2U1,meanM1U2,meanM2U2;
+  double meanD1U1,meanD2U1,meanD1U2,meanD2U2;
+
+  pDefU1    = iU1Default->Eval(iGenPt);
+  if(iScale==0 || mytype!=1){
+    pDU1       = iU1RZDatFit ->Eval(iGenPt);
+  }
+  if(iFlucU1==0 || mytype!=1){
+    pDRMSU1    = iU1MSZDatFit->Eval(iGenPt)*lRescale;
+    pDSigmaU1_1 = iU1S1ZDatFit->Eval(iGenPt)*pDRMSU1;
+    pDSigmaU1_2 = iU1S2ZDatFit->Eval(iGenPt)*pDRMSU1;
+    pDSigmaU1_3 = 0;
+    if(iU1S3ZDatFit) pDSigmaU1_3 = iU1S3ZDatFit->Eval(iGenPt)*pDRMSU1;
+    meanD1U1=iU1mean1ZDatFit->Eval(iGenPt)*pDRMSU1;
+    meanD2U1=iU1mean2ZDatFit->Eval(iGenPt)*pDRMSU1;
+  }
+  if(iFlucU2==0 || mytype!=1){
+    pDRMSU2    = iU2MSZDatFit->Eval(iGenPt)*lRescale;
+    // RooFormulaVar::mean[ actualVars=(Amean1,Bmean1,Cmean1,pt) formula="@0+@1*@3+@2*@3*@3" ] = 0
+    // RooFormulaVar::sigma1[ actualVars=(a1sig,b1sig,c1sig,pt,d1sig) formula="@0+@1*@3+@2*@3*@3+@4*@3*@3*@3" ] = 0.356981
+    pDSigmaU2_1 = iU2S1ZDatFit->Eval(iGenPt)*pDRMSU2;
+    pDSigmaU2_2 = iU2S2ZDatFit->Eval(iGenPt)*pDRMSU2;
+    pDSigmaU2_3 = 0;
+    if(iU2S3ZDatFit) pDSigmaU2_3 = iU2S3ZDatFit->Eval(iGenPt)*pDRMSU2;
+    meanD1U2=iU2mean1ZDatFit->Eval(iGenPt)*pDRMSU2;
+    meanD2U2=iU2mean2ZDatFit->Eval(iGenPt)*pDRMSU2;
+  }
+  if(iScale==0 || mytype!=2){
+    pMU1       = iU1RZMCFit  ->Eval(iGenPt);
+  }
+  if(iFlucU1==0 || mytype!=2){
+    pMRMSU1    = iU1MSZMCFit ->Eval(iGenPt)*lRescale;
+    pMSigmaU1_1 = iU1S1ZMCFit ->Eval(iGenPt)*pMRMSU1;
+    pMSigmaU1_2 = iU1S2ZMCFit ->Eval(iGenPt)*pMRMSU1;
+    pMSigmaU1_3 = 0;
+    if(iU1S3ZMCFit) pMSigmaU1_3 = iU1S3ZMCFit ->Eval(iGenPt)*pMRMSU1;
+    meanM1U1=iU1mean1ZMCFit->Eval(iGenPt)*pMRMSU1;
+    meanM2U1=iU1mean2ZMCFit->Eval(iGenPt)*pMRMSU1;
+  }
+  if(iFlucU2==0 || mytype!=2){
+    pMRMSU2    = iU2MSZMCFit ->Eval(iGenPt)*lRescale;
+    // RooFormulaVar::mean[ actualVars=(Amean1,Bmean1,Cmean1,pt) formula="@0+@1*@3+@2*@3*@3" ] = 0
+    // RooFormulaVar::sigma1[ actualVars=(a1sig,b1sig,c1sig,pt,d1sig) formula="@0+@1*@3+@2*@3*@3+@4*@3*@3*@3" ] = 0.356981
+    pMSigmaU2_1 = iU2S1ZMCFit ->Eval(iGenPt)*pMRMSU2;
+    pMSigmaU2_2 = iU2S2ZMCFit ->Eval(iGenPt)*pMRMSU2;
+    pMSigmaU2_3 = 0;
+    if(iU2S3ZMCFit) pMSigmaU2_3 = iU2S3ZMCFit ->Eval(iGenPt)*pMRMSU2;
+    meanM1U2=iU2mean1ZMCFit->Eval(iGenPt)*pMRMSU2;
+    meanM2U2=iU2mean2ZMCFit->Eval(iGenPt)*pMRMSU2;
+  }
+  
+  // // else{
+  // cout << " -------- pdf ------- " << endl;
+  // RooAddPdf*pdfU2_old = (RooAddPdf*)wU2[mytype]->pdf("AddU2");
+  // // pdfU2_old->Print();
+  // // pdfU2[mytype]->Print();
+  // RooArgSet* compsU2 = pdfU2_old->getComponents() ;
+  // // compsU2->Print();
+
+  // cout << " -------- print sigmas ------ " << endl;
+  // p.d.f.s
+  // -------
+  // RooAddPdf::AddU2[ frac1 * gaus1 + AddU2_recursive_fraction_gaus2 * gaus2 + AddU2_recursive_fraction_gaus3 * gaus3 ] = 0.594558
+  // RooAddPdf::AddU2_eig[ frac1_eig * gaus1_eig + AddU2_recursive_fraction_gaus2_eig * gaus2_eig + AddU2_recursive_fraction_gaus3_eig * gaus3_eig ] = 0.594559
+  // RooGaussian::gaus1[ x=XVar mean=mean sigma=sigma1 ] = 0.133782
+  // RooGaussian::gaus1_eig[ x=XVar mean=mean sigma=sigma1_eig ] = 0.133783
+  // RooGaussian::gaus2[ x=XVar mean=mean1 sigma=sigma2 ] = 0.644544
+  // RooGaussian::gaus2_eig[ x=XVar mean=mean1 sigma=sigma2_eig ] = 0.644544
+  // RooGaussian::gaus3[ x=XVar mean=mean1 sigma=sigma3 ] = 0.865853
+  // RooGaussian::gaus3_eig[ x=XVar mean=mean1 sigma=sigma3_eig ] = 0.865852
+  // RooAbsArg* frac1_ = compsU2->find("frac") ;
+  // frac1_->Print();
+  // frac1_ = compsU2->find("frac1") ;
+  // frac1_->Print();
+  // RooAbsPdf *frac2_ = compsU2->find("gaus1") ;
+  // frac2_->Print();
+  // frac1_ = compsU2->find("mean") ;
+  // frac1_->Print();
+  // frac1_ = compsU2->find("sigma1") ;
+  // frac1_->Print();
+  // // frac1_ = compsU2->find("AddU2_recursive_fraction_gaus2") ;
+  // // frac1_->Print();
+  // frac1_ = compsU2->find("mean1") ;
+  // frac1_->Print();
+  // frac1_ = compsU2->find("sigma2") ;
+  // frac1_->Print();
+  // // frac1_ = compsU2->find("AddU2_recursive_fraction_gaus3") ;
+  // // frac1_->Print();
+  // // frac1_ = compsU2->find("mean1") ;
+  // // frac1_->Print();
+  // frac1_ = compsU2->find("sigma3") ;
+  // frac1_->Print();
+  // // RooArgSet* frac1Var1 = frac1_->getVariables() ;
+  // // cout << " print frac1_ " << endl;
+  // // cout << " print frac1Var1 " << endl;
+  // // frac1Var1->Print();
+  // // frac1Var1->Print() ;
+  
+  // RooFormulaVar::frac1[ actualVars=(AFrac,BFrac,CFrac,pt,DFrac) formula="@0+@1*@3+@2*@3*@3+@4*@3*@3*@3" ] = 0.198816
+
+  // RooFormulaVar::mean1[ actualVars=(Amean2,Bmean2,Cmean2,pt) formula="@0+@1*@3+@2*@3*@3" ] = 0
+  // RooFormulaVar::sigma2[ actualVars=(a2sig,b2sig,c2sig,pt,d2sig) formula="@0+@1*@3+@2*@3*@3+@4*@3*@3*@3" ] = 0.888454
+  // RooFormulaVar::sigma3[ actualVars=(a3sig,b3sig,c3sig,pt,d3sig) formula="@0+@1*@3+@2*@3*@3+@4*@3*@3*@3" ] = 1.71202
+
+
+  // double myZpt=10;
+  // double sigma1=frac1Var1->getRealValue("a1sig") + frac1Var1->getRealValue("b1sig")*myZpt + frac1Var1->getRealValue("c1sig")*myZpt*myZpt;
+
+  // cout << "evaluated sigma1=" << sigma1 << " at Zpt" << myZpt<< endl;  
+
+  // cout << " -------- new pdf ------ " << endl;
+  // RooAddPdf*pdfU2_new = (RooAddPdf*)wU2[mytype]->pdf("AddU2_eig");
+  // // pdfU2_new->Print();
+  // RooArgSet* compsU2new = pdfU2_new->getComponents() ;
+  // // compsU2new->Print();
+
+  // cout << " -------- print sigmas ------ " << endl;
+  // frac1_ = compsU2new->find("sigma1") ;
+  // frac1Var1 = frac1_->getVariables() ;
+  // frac1Var1->Print() ;
+
+  // myZpt=10;
+  // sigma1=frac1Var1->getRealValue("a1sig") + frac1Var1->getRealValue("b1sig")*myZpt + frac1Var1->getRealValue("c1sig")*myZpt*myZpt;
+
+  // cout << "evaluated sigma1=" << sigma1 << " at Zpt" << myZpt<< endl;  
+  
+  // wU2[mytype]->Print();
+  // }
+  
+  ///
+  /// ENDING of the PARAMETERS
+  ///
+  ///
+
   //double pMMean1    = pMFrac1;
   //double pMMean2    = pMFrac2;
-  //Uncertainty propagation
 
-  if(iFlucU1 != 0 || iFlucU2 != 0 || iScale != 0) { 
+  // this for two gaussian
+  double pDFracU1 = getFrac2gauss(pDRMSU1, pDSigmaU1_1, pDSigmaU1_2);
+  double pDFracU2 = getFrac2gauss(pDRMSU2, pDSigmaU2_1, pDSigmaU2_2);
+  double pMFracU1 = getFrac2gauss(pMRMSU1, pMSigmaU1_1, pMSigmaU1_2);
+  double pMFracU2 = getFrac2gauss(pMRMSU2, pMSigmaU2_1, pMSigmaU2_2);
 
-    double lEUR1    = getError(iGenPt,iU1Default  ,PFU1);
-    double lEUS1_1  = getError(iGenPt,iU1S1ZDatFit,PFS1U1);
-    double lEUS1_2  = getError(iGenPt,iU1S2ZDatFit,PFS2U1);
-    double lEU1Frac = getError(iGenPt,iU1MSZDatFit,PFMSU1);
-    double lEUS2_1  = getError(iGenPt,iU2S1ZDatFit,PFS1U2);
-    double lEUS2_2  = getError(iGenPt,iU2S2ZDatFit,PFS2U2);
-    double lEU2Frac = getError(iGenPt,iU2MSZDatFit,PFMSU2);
+  // histoU2origFrac.Fill(pMFracU2);
+  // histoU2wishFrac.Fill(pDFracU2);
 
-    //cout << "Err u1    : " << lEU1Frac << " -- " << iFluc << " -- " << pDFrac1 << " -- " << iU1MSZDatFit->GetParError(0) << endl;
-    //cout << "Err u2    : " << lEU2Frac << " -- " << iFluc << " -- " << pDFrac2 << endl;
-    //cout << "Err u1 s1 : " << lEUS1_1 << endl;
-    //cout << "Err u1 s2 : " << lEUS1_2 << endl;
-    //cout << "Err u2 s1 : " << lEUS2_1 << endl;
-    //cout << "Err u2 s2 : " << lEUS2_2 << endl;
-  
-    //Modify all the different parameters the choice of signs makes it maximal
-    pDU1       = pDU1       + iScale*lEUR1;             //Recoil
-
-    pDFrac1    = pDFrac1    + iFlucU1*(lEU1Frac);        //Mean RMS 
-    pDSigma1_1 = pDSigma1_1 + iFlucU1*lEU1Frac;//lEUS1_1*pDFrac1;    //Sigma 1 smalles sigma
-    pDSigma1_2 = pDSigma1_2 + iFlucU1*lEU1Frac;//lEUS1_2*pDFrac1;    //Sigma 2 (Maximal when oppsite sigma 1)
-
-    pDFrac2    = pDFrac2    + iFlucU2*(lEU2Frac);        //Mean RMS for U2
-    pDSigma2_1 = pDSigma2_1 + iFlucU2*lEU2Frac;//lEUS2_1*pDFrac2;    //Sigma 1 U2
-    pDSigma2_2 = pDSigma2_2 + iFlucU2*lEU2Frac;//(lEUS2_2)*pDFrac2;
-
-  }
-
-  pDFrac1     = (pDFrac1-pDSigma1_2)/(pDSigma1_1-pDSigma1_2);
-  pDFrac2     = (pDFrac2-pDSigma2_2)/(pDSigma2_1-pDSigma2_2);
-  pMFrac1     = (pMFrac1-pMSigma1_2)/(pMSigma1_1-pMSigma1_2);
-  pMFrac2     = (pMFrac2-pMSigma2_2)/(pMSigma2_1-pMSigma2_2);
+  // if(iGenPt>0 && iGenPt<=5) histoU2origFrac05.Fill(pMFracU2);
+  // if(iGenPt>0 && iGenPt<=5) histoU2wishFrac05.Fill(pDFracU2);
+  // if(iGenPt>5 && iGenPt<=10) histoU2origFrac510.Fill(pMFracU2);
+  // if(iGenPt>5 && iGenPt<=10) histoU2wishFrac510.Fill(pDFracU2);
+  // if(iGenPt>10 && iGenPt<=15) histoU2origFrac1015.Fill(pMFracU2);
+  // if(iGenPt>10 && iGenPt<=15) histoU2wishFrac1015.Fill(pDFracU2);
+  // if(iGenPt>15 && iGenPt<=20) histoU2origFrac1520.Fill(pMFracU2);
+  // if(iGenPt>15 && iGenPt<=20) histoU2wishFrac1520.Fill(pDFracU2);
 
   double pUX   = iMet*cos(iMPhi) + iLepPt*cos(iLepPhi);
   double pUY   = iMet*sin(iMPhi) + iLepPt*sin(iLepPhi);
@@ -668,299 +392,480 @@ void RecoilCorrector::metDistributionType2(double &iMet,double &iMPhi,double iGe
   double pU1Diff  = pU1-pDefU1;
   double pU2Diff  = pU2;
 
+  // histoU1original.Fill(pU1);
+  // histoU2original.Fill(pU2);
+
+  if(dodebug) cout << " initial pU1 = " << pU1 << " pU2 = " << pU2 << endl;
+
   double p1Charge        = pU1Diff/fabs(pU1Diff);
   double p2Charge        = pU2Diff/fabs(pU2Diff);
-  double pTU1Diff        = pU1Diff;
-
-  /*
-  // double lMU1U2  = iU1U2ZMCCorr->Eval(iGenPt);
-  // pU1Diff                = deCorrelate(pMMean1,lMU1U2,0.,0.,pU1Diff/pMMean1,pU2Diff/pMMean1 ,0.,0.);
-  //pU2Diff                = deCorrelate(pMMean2,lMU1U2,0.,0.,pU2Diff/pMMean2,pTU1Diff/pMMean2,0.,0.);
-  double pU1ValM         = diGausPVal(fabs(pU1Diff),pMFrac1,pMSigma1_1,pMSigma1_2);
-  double pU2ValM         = diGausPVal(fabs(pU2Diff),pMFrac2,pMSigma2_1,pMSigma2_2);
-  double pU1ValD         = diGausPInverse(pU1ValM  ,pDFrac1,pDSigma1_1,pDSigma1_2);
-  double pU2ValD         = diGausPInverse(pU2ValM  ,pDFrac2,pDSigma2_1,pDSigma2_2);
-  */
+  /////  double pTU1Diff        = pU1Diff;
+  
+  //  cout << "------------"<< endl;
+  //  cout << "diGAUSS "<< endl;
+  //  cout << "  pU1ValM " << pU1ValM  << " pU1ValD " << pU1ValD  <<endl;
+  //  cout << "  pU2ValM " << pU2ValM  << " pU2ValD " << pU2ValD  <<endl;
+  double pU1ValMtest = 0;
+  double pU2ValMtest = 0;
 
   double pU1ValM = 0;
   double pU2ValM = 0 ;
   double pU1ValD = 0 ;
   double pU2ValD = 0;
 
-  if(doSingleGauss) {
+  //  pU2ValM         = diGausPVal(fabs(pU2Diff),1,iU2MSZMCFit ->Eval(iGenPt)*lRescale,0);
+  //  pU2ValD         = oneGausPInverse(pU2ValM  ,1,iU2MSZDatFit->Eval(iGenPt)*lRescale,0); 
 
-    pU1ValM         = diGausPVal(fabs(pU1Diff),1,iU1MSZMCFit ->Eval(iGenPt)*lRescale,0); // when is singleGauss pMFrac1=1 pMSigma1_1=fullRMS pMSigma1_2=0                                   
-    pU2ValM         = diGausPVal(fabs(pU2Diff),1,iU2MSZMCFit ->Eval(iGenPt)*lRescale,0);
-    pU1ValD         = oneGausPInverse(pU1ValM  ,1,iU1MSZDatFit->Eval(iGenPt)*lRescale,0);
-    pU2ValD         = oneGausPInverse(pU2ValM  ,1,iU2MSZDatFit->Eval(iGenPt)*lRescale,0);
+  //  cout << "pMFrac1=" << pMFrac1 << " pMSigma1_1=" << pMSigma1_1 << " pMSigma1_2=" << pMSigma1_2 << "MEAN2=" << iU1MSZMCFit ->Eval(iGenPt)*lRescale<< endl;
+  //  cout  << "--------------------------" << endl;
 
-  } else {
+  //  cout << "pU1Diff " << pU1Diff << "pU2Diff " << pU2Diff << endl;
 
-    pU1ValM         = diGausPVal(fabs(pU1Diff),pMFrac1,pMSigma1_1,pMSigma1_2); // when is singleGauss pMFrac1=1 pMSigma1_1=fullRMS pMSigma1_2=0                                             
-    pU2ValM         = diGausPVal(fabs(pU2Diff),pMFrac2,pMSigma2_1,pMSigma2_2);
-    pU1ValD         = diGausPInverse(pU1ValM  ,pDFrac1,pDSigma1_1,pDSigma1_2);
-    pU2ValD         = diGausPInverse(pU2ValM  ,pDFrac2,pDSigma2_1,pDSigma2_2);
+  //  cout << "doing graph inversion " << endl;
 
+  ///$$$$$
+  ///$$$$$ Graph inversion
+  ///$$$$$
+
+  if(doTriGauss) {
+    
+    if(doOnlyU1 && !doOnlyU2) {
+      pU1ValD         = triGausInvGraph(fabs(pU1Diff), /**/ pMRMSU1, meanM1U1, meanM2U1, iU1fracZMCFit->Eval(iGenPt), pMSigmaU1_1, pMSigmaU1_2, pMSigmaU1_3, /**/ pDRMSU1, meanD1U1, meanD2U1, iU1fracZDatFit->Eval(iGenPt), pDSigmaU1_1, pDSigmaU1_2, pDSigmaU1_3);
+      pU2ValD = fabs(pU2Diff);
+    }
+    if(!doOnlyU1 && doOnlyU2) {
+      //	cout << "Zpt " << iGenPt << endl;
+      pU1ValD = fabs(pU1Diff);
+      pU2ValD         = triGausInvGraph(fabs(pU2Diff), /**/ pMRMSU2, meanM1U2, meanM2U2, iU2fracZMCFit->Eval(iGenPt), pMSigmaU2_1, pMSigmaU2_2, pMSigmaU2_3, /**/ pDRMSU2, meanD1U2, meanD2U2, iU2fracZDatFit->Eval(iGenPt), pDSigmaU2_1, pDSigmaU2_2, pDSigmaU2_3);
+    }
+
+  } else if(!doSingleGauss && !doTriGauss) {
+
+    if(doOnlyU1 && !doOnlyU2) {
+      pU1ValD         = diGausInvGraph(fabs(pU1Diff), pMFracU1, pMSigmaU1_1, pMSigmaU1_2, pDFracU1, pDSigmaU1_1, pDSigmaU1_2);
+      pU2ValD = fabs(pU2Diff);
+    }
+    if(!doOnlyU1 && doOnlyU2) {
+      pU1ValD = fabs(pU1Diff);
+      pU2ValD         = diGausInvGraph(fabs(pU2Diff), pMFracU2, pMSigmaU2_1, pMSigmaU2_2, pDFracU2, pDSigmaU2_1, pDSigmaU2_2);
+    }
   }
 
-  if(pU1ValM==fabs(pU1Diff)) pU1ValD=fabs(pU1Diff); // in those cases do nothing  since Erf is zero                                                                                       
-  if(pU2ValM==fabs(pU2Diff)) pU2ValD=fabs(pU2Diff); // in those cases do nothing  since Erf is zero                                                                                       
-
+  // histoDeltaU1.Fill(-pU1ValD+fabs(pU1Diff));
+  // histoDeltaU2.Fill(-pU2ValD+fabs(pU2Diff));
 
   pU1ValD*=p1Charge;
   pU2ValD*=p2Charge;
-  pDefU1 *= (pDU1/pMU1);
 
+  //  cout << "pU1ValD " << pU1ValD << "pU2ValD " << pU2ValD << endl;
+
+  if(dodebug)   cout << " ==> Zpt: " << iGenPt << " pDef1: " << pDefU1 << " pDU1: " << pDU1 << " pMU1: " << pMU1 << endl;
+
+  pDefU1 *= (pDU1/pMU1);
 
   pU1   = pDefU1             + pU1ValD;
   pU2   =                      pU2ValD;
   iMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
   iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
 
-  iU1   = pU1;
-  iU2   = pU2;
+  // histoU1smeared.Fill(pU1);
+  // histoU2smeared.Fill(pU2);
+
+  if(dodebug)  cout << " after pU1 = " << pU1 << " pU2 = " << pU2 << endl;
+
+  //  iU1   = pU1; 
+  //  iU2   = pU2;
+
   return;
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
+// RooAddPdf* pdfMCU1;
+// RooAddPdf* pdfMCU2;
+// RooAddPdf* pdfDATAU1;
+// RooAddPdf* pdfDATAU2;
+
+// RooWorkspace *wMCU1; 
+// RooWorkspace *wMCU2; 
+// RooWorkspace *wDATAU1; 
+// RooWorkspace *wDATAU2; 
+// NEW WITH PDFs
+void RecoilCorrector::applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
+double iLepPt,double iLepPhi,/*TRandom3 *iRand,*/
+TF1 *iU1Default,
+TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
+TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
+TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
+//                     RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1, 
+//                     RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2 
+double iFlucU2,double iFlucU1,double iScale, int mytype, int fJet
+) {
+
+  bool dodebug=false;
+  bool doIterativeMet = false;
+  bool invGraph = true;
+  bool doSingleGauss = false;
+  bool doTriGauss = true;
+  bool doApplyCorr = false; // smearing along the recoil vector
+  bool doOnlyU1 = false;
+  bool doOnlyU2 = true;
+  bool writeTree = false;
+  bool doClosure = false;
+
+  double lRescale  = sqrt((TMath::Pi())/2.);
+  //  double lRescale  = 1;     // for squares
+
+  double pDefU1    = iU1Default->Eval(iGenPt);
+
+  double pDU1       = iU1RZDatFit ->Eval(iGenPt); // U1 average scale
+  double pDRMSU1    = iU1MSZDatFit->Eval(iGenPt)*lRescale; // U1 average RMS
+  double pDRMSU2    = iU2MSZDatFit->Eval(iGenPt)*lRescale; // U2 average RMS
+
+  double pMU1       = iU1RZMCFit  ->Eval(iGenPt);
+  double pMRMSU1    = iU1MSZMCFit ->Eval(iGenPt)*lRescale;
+  double pMRMSU2    = iU2MSZMCFit ->Eval(iGenPt)*lRescale;
+
+  ///
+  /// ENDING of the PARAMETERS
+  ///
+
+  double pUX   = iMet*cos(iMPhi) + iLepPt*cos(iLepPhi);
+  double pUY   = iMet*sin(iMPhi) + iLepPt*sin(iLepPhi);
+  double pU    = sqrt(pUX*pUX+pUY*pUY);
+
+  double pCos  = - (pUX*cos(iGenPhi) + pUY*sin(iGenPhi))/pU;
+  double pSin  =   (pUX*sin(iGenPhi) - pUY*cos(iGenPhi))/pU;
+
+  /////
+  
+  double pU1   = pU*pCos;
+  double pU2   = pU*pSin;
+  double pU1Diff  = pU1-pDefU1;
+  double pU2Diff  = pU2;
+
+  //  cout << " ------------------------------------------------------- " << endl;
+   // cout << " initial pU1 = " << pU1 << " pU2 = " << pU2 << endl;
+
+  double p1Charge        = pU1Diff/fabs(pU1Diff);
+  double p2Charge        = pU2Diff/fabs(pU2Diff);
+
+  double pU1ValD = 0 ;
+  double pU2ValD = 0;
+  double pUValM = 0;
+  double pUValD = 0 ;
+
+  // go to the pull space (we are on MC)
+  // ????? what to do for the scale ??????
+
+  pU1Diff = pU1Diff/pMRMSU1;
+  pU1ValD = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[2][fJet],pdfU1Cdf[1][fJet],wU1[2][fJet],wU1[1][fJet]);
+            // triGausInvGraphPDF(     iPVal,   Zpt,         pdfMCcdf,       pdfDATAcdf,           wMC,         wDATA)
+
+  pU1ValD = pU1ValD*pDRMSU1;
+
+  pU2ValD = fabs(pU2Diff);
+
+  pDefU1 *= (pDU1/pMU1);
+  pU1ValD = fabs(pU1Diff);
+
+  pU2Diff = pU2Diff/pMRMSU2;
+  pU2ValD = triGausInvGraphPDF(fabs(pU2Diff),iGenPt,pdfU2Cdf[2][fJet],pdfU2Cdf[1][fJet],wU2[2][fJet],wU2[1][fJet]);
+  pU2ValD = pU2ValD*pDRMSU2;
+
+  // if(iFlucU1) {
+  // }else if(iFlucU2) {
+  // }
+  
+  // pU1ValD*=p1Charge;
+  pU2ValD*=p2Charge;
+
+  pU1   = pDefU1             + pU1ValD;
+  pU2   =                      pU2ValD;
+  iMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
+  iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
+
+   // cout << " after pU1 = " << pU1 << " pU2 = " << pU2 << endl;
+
+  return;
+
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------
+// double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAddPdf *pdfMC, RooAddPdf *pdfDATA, RooWorkspace *wMC, RooWorkspace *wDATA) {
+double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsReal *pdfDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA) {
+
+  // cout << "inside triGausInvGraphPDF pdfMCcdf " << pdfMCcdf <<endl;
+  RooRealVar lRXVar("XVar","larger range",0,-20.,20.);
+
+  RooRealVar* myptm=wMC->var("pt");
+  myptm->setVal(Zpt);
+
+  RooRealVar* myptd=wDATA->var("pt");
+  myptd->setVal(Zpt);
+
+  RooRealVar* myXm = wMC->var("XVar");
+  RooRealVar* myXd = wDATA->var("XVar");
+
+  // RooAbsReal* pdfMCcdf = pdfMC->createCdf(*myXm);
+  // RooAbsReal* pdfDATAcdf = pdfDATA->createCdf(*myXd);
+  
+  // /*
+  myXm->setVal(iPVal);
+  // double eval = pdfMCcdf->evaluate();
+  // double eval = pdfMCcdf->getVal();
+  // double pVal=pdfDATAcdf->findRoot(*myXd,myXd->getMin(),myXd->getMax(),eval);
+  // cout << "before pdfDATAcdf->findRoot"<<endl;
+  // cout << "myXd->getMin()= " << myXd->getMin()  << endl;
+  // cout << " myXd->getMax()= " << myXd->getMax()  << endl;
+  // cout << " pdfMCcdf->getVal()= " << pdfMCcdf->getVal() << endl;
+  double pVal=pdfDATAcdf->findRoot(*myXd,myXd->getMin(),myXd->getMax(),pdfMCcdf->getVal());
+  // cout << "after pdfDATAcdf->findRoot"<<endl;
+
+  // delete pdfMCcdf; 
+  // delete pdfDATAcdf;
+  //  cout << " from findRoot " << pVal << endl;
+  //  myXd->Print();
+  // */
+  
+  /*
+  //  TF1* funcMCpdf = (TF1*) pdfMC->asTF( RooArgList(lRXVar));
+  TF1* funcMCcdf = (TF1*) pdfMCcdf->asTF( RooArgList(*myXm));
+  //  TF1* funcDATApdf = (TF1*) pdfDATA->asTF( RooArgList(lRXVar));
+  TF1* funcDATAcdf = (TF1*) pdfDATAcdf->asTF( RooArgList(*myXd));
+  TGraph *gr_mc = new TGraph(funcMCcdf);
+  TGraph *gr_data = new TGraph(funcDATAcdf);
+  TGraph *gr_data_inverse = new TGraph(gr_data->GetN(),gr_data->GetY(), gr_data->GetX());
+  double pVal=gr_data_inverse->Eval(gr_mc->Eval(iPVal));
+  //  cout << "ORIGINAL MC: " << iPVal ;
+  //  cout << " FROM INVERSE graph: " << gr_data_inverse->Eval(gr_mc->Eval(iPVal)) << endl;
+  delete gr_mc;
+  delete gr_data;
+  delete gr_data_inverse;
+  delete funcMCcdf;
+  delete funcDATAcdf;
+  // */
+
+  
+  // add protection for outlier since I tabulated up to 5
+  if(TMath::Abs(pVal)>=5) pVal=iPVal;
+
+  return pVal;
+
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
+void RecoilCorrector::runDiago(/* TFile *file_, */RooWorkspace *w, /*RooDataSet *data,*/ RooFitResult *result, TString fit, RooAbsReal *&pdfUiCdf) {
+  
+  // cout << "w= " << w << " result= " << result << " fit= " << fit << " pdfUiCdf= " << pdfUiCdf << endl;
+  
+  // cout << "BEFORE DIAGO 1" << " fit= " << fit<< endl;
+  // w->Print();
+  // cout << "AFTER CALLING w->Print()"<< " fit= " << fit << endl;
+  // cout << "CALLING result->Print(\"V\")" << endl;
+  // result->Print("V");
+  PdfDiagonalizer *diago = new PdfDiagonalizer("eig", w, *result);
+  // cout << "AFTER CALLING DIAGO 1, searching for pdf " << fit << " fit= " << fit<< endl;
+  RooAddPdf* pdf_temp = (RooAddPdf*) w->pdf(fit.Data());
+  // pdf_temp->Print();
+  // cout << "AFTER CALLING pdf_temp"<< " fit= " << fit << endl;
+  RooAbsPdf *newpdf = diago->diagonalize(*pdf_temp);
+  // cout << "AFTER CALLING diagonalize" << endl;
+  // newpdf->Print();
+  // cout << "AFTER print after CALLING diagonalize" << endl;
+  w->import(*newpdf, RooFit::RecycleConflictNodes(),RooFit::Silence());
+  
+  RooRealVar* myX1=w->var("XVar");
+  pdfUiCdf = newpdf->createCdf(*myX1);
+
+  
+  // // DIAGONALIZER !!!
+  // cout << newpdf->getVal() << endl; 
+  // RooRealVar *v = w->var("eig_eig0");
+  // v->Print();
+  // Float_t oldVal = v->getVal();
+  // v->setVal(3);
+  // v->Print();
+  // cout << newpdf->getVal() << endl;
+  // v->setVal(-3);
+  // v->Print();
+  // cout << newpdf->getVal() << endl;
+  
+  
+  // RooAbsPdf *newpdf_shifted = diago.diagonalizeWithEigenVariations(*w->pdf(Form("%s_eig",fit)),*result,0,1);
+  
+  // cout << "BEFORE NEW PDF DIAGO SHIFTED" << endl;
+  // // newpdf->Print();
+  // newpdf_shifted->Print();
+  // cout << "AFTER NEW PDF DIAGO SHIFTED" << endl;
+  
+  // w->import(*newpdf_shifted, RooFit::RecycleConflictNodes());
+  // // w->Print();
+  // cout << "AFTER CALLING w->Print()" << endl;
+  return;
+  // // RooFitResult *res2 = newfit->fitTo(*data, RooFit::Save(1), RooFit::Minimizer("Minuit2"), RooFit::PrintLevel(-1));
+  // // res2->Print("V");
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
+double RecoilCorrector::getFrac2gauss(double RMS, double sigma1, double sigma2) {
+
+  return (RMS-sigma2)/(sigma1-sigma2);
+  //  return (RMS*RMS-sigma2*sigma2)/(sigma1*sigma1-sigma2*sigma2);
+
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
+double RecoilCorrector::triGausInvGraph(double iPVal, /**/ double meanRMSMC, double iMean1MC, double iMean2MC, double iFrac1MC,double iSigma1MC,double iSigma2MC,double iSigma3MC,/**/ double meanRMSDATA, double iMean1DATA, double iMean2DATA,double iFrac1DATA,double iSigma1DATA,double iSigma2DATA,double iSigma3DATA) {
+
+  // this for three gaussian
+  double iFrac2DATA = getFrac3gauss(meanRMSDATA, iFrac1DATA, iSigma1DATA, iSigma2DATA, iSigma3DATA);
+  double iFrac2MC = getFrac3gauss(meanRMSMC, iFrac1MC, iSigma1MC, iSigma2MC, iSigma3MC);
 
   /*
-  //Not Used Current
-  iU1U2ZMCCorr ->Eval(iGenPt);
-  iU1U2ZDatCorr->Eval(iGenPt);
+  // those parameters are stored in GeV
+
+  cout << "meanRMSMC " << meanRMSMC << " iFrac1MC=" << iFrac1MC << " iSigma1MC=" << iSigma1MC << " iSigma2MC=" << iSigma2MC << " iSigma3MC=" << iSigma3MC << " iMean1MC=" << iMean1MC << "iMean2MC=" << iMean2MC << endl;
+  cout << "meanRMSDATA " << meanRMSDATA << " iFrac1DATA=" << iFrac1DATA << " iSigma1DATA=" << iSigma1DATA << " iSigma2DATA=" << iSigma2DATA << " iSigma3DATA=" << iSigma3DATA << " iMean1DATA=" << iMean1DATA << "iMean2DATA=" << iMean2DATA << endl;
+  cout << "iFrac2DATA=" << iFrac2DATA << " iFrac2MC= " << iFrac2MC << endl;
   */
 
+  TF1 *totalMC = new TF1("totalMC","gaus(0)+gaus(3)+gaus(6)",0,100);
+  totalMC->SetParameter(0,iFrac1MC); 
+  totalMC->SetParameter(1,iMean1MC); // mean
+  totalMC->SetParameter(2,iSigma1MC); 
+  totalMC->SetParameter(3,iFrac2MC); 
+  totalMC->SetParameter(4,iMean2MC); // mean
+  totalMC->SetParameter(5,iSigma2MC);
+  totalMC->SetParameter(6,(1-iFrac1MC-iFrac2MC)); 
+  totalMC->SetParameter(7,iMean2MC); // mean
+  totalMC->SetParameter(8,iSigma3MC);
+  totalMC->SetNpx(2000);
+
+  TF1 *totalDATA = new TF1("totalDATA","gaus(0)+gaus(3)+gaus(6)",0,100);
+  totalDATA->SetParameter(0,iFrac1DATA); 
+  totalDATA->SetParameter(1,iMean1DATA); // mean
+  totalDATA->SetParameter(2,iSigma1DATA); 
+  totalDATA->SetParameter(3,iFrac2DATA);
+  totalDATA->SetParameter(4,iMean2DATA); // mean
+  totalDATA->SetParameter(5,iSigma2DATA);
+  totalDATA->SetParameter(6,(1-iFrac1DATA-iFrac2DATA));
+  totalDATA->SetParameter(7,iMean2DATA); // mean
+  totalDATA->SetParameter(8,iSigma3DATA);
+  totalDATA->SetNpx(2000);
+
+  /*
+  TCanvas* c = new TCanvas("validatePDF","validatePDF",800,400) ;
+  c->cd();
+
+  totalMC->SetLineColor(kMagenta); 
+  totalMC->Draw("hist");
+  totalDATA->SetLineColor(kBlue); 
+  totalDATA->Draw("hist same");
+  c->SaveAs("gauss.png");
+  cin.get(); 
+  */
+  //  cout << "constructed gauss " << endl;
+
+  TGraph *gr_mc = new TGraph(totalMC, "I");
+  TGraph *gr_data = new TGraph(totalDATA, "I");
+  TGraph *gr_data_inverse = new TGraph(gr_data->GetN(),gr_data->GetY(), gr_data->GetX());
+
+  /*
+  gr_mc->SetLineColor(kMagenta);
+  gr_mc->SetMarkerColor(kMagenta);
+  gr_mc->Draw("A P L same");
+
+  gr_data->SetLineColor(kGreen+1);
+  gr_data->SetMarkerColor(kGreen+1);
+  gr_data->Draw("P L same ");
+
+  gr_data_inverse->SetLineColor(kCyan);
+  gr_data_inverse->SetMarkerColor(kCyan);
+  gr_data_inverse->Draw("P L same ");
+  */
+
+  double pVal=gr_data_inverse->Eval(gr_mc->Eval(iPVal));
+  //  cout << "ORIGINAL MC: " << iPVal ;
+  //  cout << " FROM INVERSE: " << gr_data_inverse->Eval(gr_mc->Eval(iPVal)) << endl;
+
+  delete totalMC;
+  delete totalDATA;
+
+  delete gr_mc;
+  delete gr_data;
+  delete gr_data_inverse;
+
+  return pVal;
+
 }
-
-void RecoilCorrector::metDistribution(double &iPFMet,double &iPFMPhi,double &iTKMet,double &iTKMPhi,
-				      double iGenPt,double iGenPhi,
-		                      double iLepPt,double iLepPhi,TRandom3 *iRand,
-		                      TF1 *iU1RPFFit,   TF1 *iU1RTKFit,
-		                      TF1 *iU1MSPFFit,  TF1 *iU1MSTKFit, 
-		                      TF1 *iU1S1PFFit,  TF1 *iU1S1TKFit,
-		                      TF1 *iU1S2PFFit,  TF1 *iU1S2TKFit,
-		                      TF1 *iU2MSPFFit,  TF1 *iU2MSTKFit, 		      
-		                      TF1 *iU2S1PFFit,  TF1 *iU2S1TKFit, 
-		                      TF1 *iU2S2PFFit,  TF1 *iU2S2TKFit, 
-		                      TF1 *iPFU1U2Corr, TF1 *iTKU1U2Corr,
-		                      TF1 *iPFTKU1Corr, TF1 *iPFTKU2Corr,
-		                      TF1 *iPFTKU1MCorr,TF1 *iPFTKU2MCorr,
-				      double       &iU1, double &iU2,
-				      double iFluc,double iScale) {
-  //Important constants re-scaling of sigma on left and mean wpt of W resbos on right
-  double lRescale  = sqrt((TMath::Pi())/2.); //double lPtMean = 16.3; //==> tuned for W bosons
-  ///
-  double pPFU1       = CorrVal(iGenPt,iU1RPFFit->Eval(iGenPt),PFU1);
-  double pPFU2       = 0;
-  double pPFSigma1_1 = CorrVal(iGenPt,iU1S1PFFit->Eval(iGenPt),PFS1U1)*CorrVal(iGenPt,iU1MSPFFit->Eval(iGenPt),PFMSU1)*lRescale;
-  double pPFSigma1_2 = CorrVal(iGenPt,iU1S2PFFit->Eval(iGenPt),PFS2U1)*CorrVal(iGenPt,iU1MSPFFit->Eval(iGenPt),PFMSU1)*lRescale;
-  double pPFFrac1    = CorrVal(iGenPt,iU1MSPFFit->Eval(iGenPt),PFMSU1)                         *lRescale;
-  double pPFSigma2_1 = CorrVal(iGenPt,iU2S1PFFit->Eval(iGenPt),PFS1U2)*CorrVal(iGenPt,iU2MSPFFit->Eval(iGenPt),PFMSU2)*lRescale;
-  double pPFSigma2_2 = CorrVal(iGenPt,iU2S2PFFit->Eval(iGenPt),PFS2U2)*CorrVal(iGenPt,iU2MSPFFit->Eval(iGenPt),PFMSU2)*lRescale;
-  double pPFFrac2    = CorrVal(iGenPt,iU2MSPFFit->Eval(iGenPt),PFMSU2)                         *lRescale;
-  if(pPFSigma1_1 > pPFSigma1_2) {double pT = pPFSigma1_2; pPFSigma1_2 = pPFSigma1_1; pPFSigma1_1 = pT;}
-  if(pPFSigma2_1 > pPFSigma2_2) {double pT = pPFSigma2_2; pPFSigma2_2 = pPFSigma2_1; pPFSigma2_2 = pT;}
-  
-  double pTKU1       = CorrVal(iGenPt,iU1RTKFit->Eval(iGenPt),TKU1);
-  double pTKU2       = 0;
-  double pTKSigma1_1 = CorrVal(iGenPt,iU1S1TKFit->Eval(iGenPt),TKS1U1)*CorrVal(iGenPt,iU1MSTKFit->Eval(iGenPt),TKMSU1)*lRescale;
-  double pTKSigma1_2 = CorrVal(iGenPt,iU1S2TKFit->Eval(iGenPt),TKS2U1)*CorrVal(iGenPt,iU1MSTKFit->Eval(iGenPt),TKMSU1)*lRescale;
-  double pTKFrac1    = CorrVal(iGenPt,iU1MSTKFit->Eval(iGenPt),TKMSU1)                         *lRescale;
-  double pTKSigma2_1 = CorrVal(iGenPt,iU2S1TKFit->Eval(iGenPt),TKS1U2)*CorrVal(iGenPt,iU2MSTKFit->Eval(iGenPt),TKMSU2)*lRescale;
-  double pTKSigma2_2 = CorrVal(iGenPt,iU2S2TKFit->Eval(iGenPt),TKS2U2)*CorrVal(iGenPt,iU2MSTKFit->Eval(iGenPt),TKMSU2)*lRescale;
-  double pTKFrac2    = CorrVal(iGenPt,iU2MSTKFit->Eval(iGenPt),TKMSU2)                         *lRescale;
-  if(pTKSigma1_1 > pTKSigma1_2) {double pT = pTKSigma1_2; pTKSigma1_2 = pTKSigma1_1; pTKSigma1_1 = pT;}
-  if(pTKSigma2_1 > pTKSigma2_2) {double pT = pTKSigma2_2; pTKSigma2_2 = pTKSigma2_1; pTKSigma2_2 = pT;}
-
-  //Uncertainty propagation
-  if(iFluc != 0 || iScale != 0) { 
-    double lEUR1    = getError(iGenPt ,iU1RPFFit , PFU1);
-    double lEUS1_1  = getError(iGenPt ,iU1S1PFFit, PFS1U1);
-    double lEUS1_2  = getError(iGenPt ,iU1S2PFFit, PFS2U1);
-    double lEU1Frac = getError(iGenPt ,iU1MSPFFit, PFMSU1)*lRescale;
-    double lEUS2_1  = getError(iGenPt ,iU2S1PFFit, PFS1U2);
-    double lEUS2_2  = getError(iGenPt ,iU2S2PFFit, PFS2U2);
-    double lEU2Frac = getError(iGenPt ,iU2MSPFFit, PFMSU2)*lRescale;
-    //cout << "===> " << pPFSigma1_1 << " -- " << iU1S2PFFit->GetParError(0) << " -- " << lEUS1_1 << endl;
-    //Modify all the different parameters the choice of signs makes it maximal
-    if(iU1S1PFFit->Eval(iGenPt) > 1) {double pPF = lEUS1_1; lEUS1_1 = lEUS1_2; lEUS1_1 = pPF;}
-    if(iU2S1PFFit->Eval(iGenPt) > 1) {double pPF = lEUS2_1; lEUS2_1 = lEUS2_2; lEUS2_1 = pPF;}
-
-    pPFU1       = pPFU1       + iScale*lEUR1;              //Recoil
-    pPFFrac1    = pPFFrac1    + iFluc*(lEU1Frac);        //Mean RMS 
-    pPFSigma1_1 = pPFSigma1_1 + iFluc*lEUS1_1*pPFFrac1;    //Sigma 1 smalles sigma
-    pPFSigma1_2 = pPFSigma1_2 - iFluc*lEUS1_2*pPFFrac1;    //Sigma 2 (Maximal when oppsite sigma 1)
-    pPFFrac2    = pPFFrac2    + iFluc*(lEU2Frac);        //Mean RMS for U2
-    pPFSigma2_1 = pPFSigma2_1 + iFluc*lEUS2_1*pPFFrac2  ;    //Sigma 1 U2
-    pPFSigma2_2 = pPFSigma2_2 - iFluc*(lEUS2_2)*pPFFrac2;
-    
-    lEUR1    = getError(iGenPt,iU1RTKFit ,TKU1);
-    lEUS1_1  = getError(iGenPt,iU1S1TKFit,TKS1U1);
-    lEUS1_2  = getError(iGenPt,iU1S2TKFit,TKS2U1);
-    lEU1Frac = getError(iGenPt,iU1MSTKFit,TKMSU1)*lRescale;
-    lEUS2_1  = getError(iGenPt,iU2S1TKFit,TKS1U2);
-    lEUS2_2  = getError(iGenPt,iU2S2TKFit,TKS2U2);
-    lEU2Frac = getError(iGenPt,iU2MSTKFit,TKMSU2)*lRescale;
-    if(iU1S1TKFit->Eval(iGenPt) > 1) {double pPF = lEUS1_1; lEUS1_1 = lEUS1_2; lEUS1_1 = pPF;}
-    if(iU2S1TKFit->Eval(iGenPt) > 1) {double pPF = lEUS2_1; lEUS2_1 = lEUS2_2; lEUS2_1 = pPF;}
-    //Modify all the different parameters the choice of signs makes it maximal
-    pTKU1       = pTKU1        + iScale*lEUR1;              //Recoil
-    pTKFrac1    = pTKFrac1     + iFluc*(lEU1Frac);        //Mean RMS 
-    pTKSigma1_1 = pTKSigma1_1  +  iFluc*lEUS1_1 *pTKFrac1;    //Sigma 1 smalles sigma
-    pTKSigma1_2 = pTKSigma1_2  -  iFluc*lEUS1_2 *pTKFrac1;    //Sigma 2 (Maximal when oppsite sigma 1)
-    pTKFrac2    = pTKFrac2     + iFluc*(lEU2Frac);        //Mean RMS for U2
-    pTKSigma2_1 = pTKSigma2_1  + iFluc*lEUS2_1  *pTKFrac2;    //Sigma 1 U2
-    pTKSigma2_2 = pTKSigma2_2  - iFluc*(lEUS2_2)*pTKFrac2;
-  }
-  //double lMeanU1 = pPFFrac1;
-  //double lMeanU2 = pPFFrac2;
-    
-  //Caculat the proper fraction
-  pPFFrac1 = (pPFFrac1-pPFSigma1_2)/(pPFSigma1_1-pPFSigma1_2);
-  pPFFrac2 = (pPFFrac2-pPFSigma2_2)/(pPFSigma2_1-pPFSigma2_2);
-
-  pTKFrac1 = (pTKFrac1-pTKSigma1_2)/(pTKSigma1_1-pTKSigma1_2);
-  pTKFrac2 = (pTKFrac2-pTKSigma2_2)/(pTKSigma2_1-pTKSigma2_2);
-  //if(iGenPt > 60) cout << "===> " << pFrac1 << " -- " <<pFrac2 << endl;
-  double pPFVal0 = iRand->Uniform(0,1);
-  double pPFVal1 = iRand->Uniform(0,1);
-
-  double pTKVal0 = iRand->Uniform(0,1);
-  double pTKVal1 = iRand->Uniform(0,1);
-
-  double pPFCorr1     = iRand->Gaus(0,1);     double pPFCorr2     = iRand->Gaus(0,1);  
-  //double pPFCorrT1    = iRand->Gaus(0,1);     double pPFCorrT2    = iRand->Gaus(0,1);  
-
-  double pTKCorr1     = iRand->Gaus(0,1);     double pTKCorr2     = iRand->Gaus(0,1);  
-  //double pTKCorrT1    = iRand->Gaus(0,1);     double pTKCorrT2    = iRand->Gaus(0,1);  
-
-  double lPFU1U2  = TMath::Max(iPFU1U2Corr->Eval(iGenPt),0.);//iPFU1U2Corr->Eval(iGenPt) ,0.);
-  double lTKU1U2  = TMath::Max(iTKU1U2Corr->Eval(iGenPt),0.);//iTKU1U2Corr->Eval(iGenPt) ,0.);
-  double lPFTKU1  = iPFTKU1Corr ->Eval(iGenPt); //TMath::Max(iPFTKU1Corr->Eval(iGenPt) ,0.);
-  double lPFTKU2  = iPFTKU2Corr ->Eval(iGenPt);//TMath::Max(iPFTKU2Corr->Eval(iGenPt) ,0.);
-  double lPFTKU1M = iPFTKU1MCorr->Eval(iGenPt);
-  double lPFTKU2M = iPFTKU2MCorr->Eval(iGenPt);
-
-  //Needs some more work
-  double pScale = 1.; //pPFFrac1 = (pPFFrac1+pPFFrac2)/2.; //pPFFrac2 = pPFFrac1;//+pPFFrac2)/2.;
-  pPFSigma1_1 = ((pPFVal0 < pPFFrac1)*(pPFSigma1_1)+(pPFVal0 > pPFFrac1)*(pPFSigma1_2)); pPFVal0 = -1;
-  pPFSigma2_1 = ((pPFVal1 < pPFFrac2)*(pPFSigma2_1)+(pPFVal1 > pPFFrac2)*(pPFSigma2_2)); pPFVal1 = -1;
-  pTKSigma1_1 = (pTKVal0 < pTKFrac1)*(pTKSigma1_1)+(pTKVal0 > pTKFrac1)*(pTKSigma1_2);   pTKVal0 = -1;
-  pTKSigma2_1 = (pTKVal1 < pTKFrac2)*(pTKSigma2_1)+(pTKVal1 > pTKFrac2)*(pTKSigma2_2);   pTKVal1 = -1;
-  
-  //double pPFSigma1_1_old = pPFSigma1_1*(lMeanU2/lMeanU1);
-  //double pPFVal1_1 = correlatedSeed(pPFSigma1_1*pScale,lPFU1U2,lPFTKU1,lPFTKU1M,pPFSigma1_1,pPFSigma2_1*(lMeanU1/lMeanU2),pTKCorr1,pTKCorr2);
-  //double pPFVal2_1 = correlatedSeed(pPFSigma2_1*pScale,lPFU1U2,lPFTKU2,lPFTKU2M,pPFSigma2_1,pPFSigma1_1_old,pTKCorr2,pTKCorr1);
-
-  double pPFVal1_1 = correlatedSeed(pPFSigma1_1*pScale,lPFU1U2,lPFTKU1,lPFTKU1M,pPFCorr1,pPFCorr2,pTKCorr1,pTKCorr2);
-  double pPFVal2_1 = correlatedSeed(pPFSigma2_1*pScale,lPFU1U2,lPFTKU2,lPFTKU2M,pPFCorr2,pPFCorr1,pTKCorr2,pTKCorr1);
-  double pTKVal1_1 = correlatedSeed(pTKSigma1_1*pScale,lTKU1U2,lPFTKU1,lPFTKU2M,pTKCorr1,pTKCorr2,pPFCorr1,pPFCorr2);
-  double pTKVal2_1 = correlatedSeed(pTKSigma2_1*pScale,lTKU1U2,lPFTKU2,lPFTKU1M,pTKCorr2,pTKCorr1,pPFCorr2,pPFCorr1);
-   
-  //double pPFVal1_2 = correlatedSeed(pPFSigma1_2*pScale,lPFU1U2,lPFTKU1,lPFTKU1M,pPFCorrT1,pPFCorrT2,pTKCorrT1,pTKCorrT2);
-  //double pPFVal2_2 = correlatedSeed(pPFSigma2_2*pScale,lPFU1U2,lPFTKU2,lPFTKU2M,pPFCorrT2,pPFCorrT1,pTKCorrT2,pTKCorrT1);
-  //double pTKVal1_2 = correlatedSeed(pTKSigma1_2*pScale,lTKU1U2,lPFTKU1,lPFTKU2M,pTKCorrT1,pTKCorrT2,pPFCorrT1,pPFCorrT2);
-  //double pTKVal2_2 = correlatedSeed(pTKSigma2_2*pScale,lTKU1U2,lPFTKU2,lPFTKU1M,pTKCorrT2,pTKCorrT1,pPFCorrT2,pPFCorrT1);
-
-  pPFU1   = (pPFVal0 < pPFFrac1)*(pPFVal1_1+pPFU1);//+(pPFVal0 > pPFFrac1)*(pPFVal1_2+pPFU1);
-  pPFU2   = (pPFVal1 < pPFFrac2)*(pPFVal2_1+pPFU2);//+(pPFVal1 > pPFFrac2)*(pPFVal2_2+pPFU2);
-  pTKU1   = (pTKVal0 < pTKFrac1)*(pTKVal1_1+pTKU1);//+(pTKVal0 > pTKFrac1)*(pTKVal1_2+pTKU1);
-  pTKU2   = (pTKVal1 < pTKFrac2)*(pTKVal2_1+pTKU2);//+(pTKVal1 > pTKFrac2)*(pTKVal2_2+pTKU2);
-
-  iPFMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pPFU1,pPFU2);
-  iPFMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pPFU1,pPFU2);
-  iTKMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pTKU1,pTKU2);
-  iTKMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pTKU1,pTKU2);
-  iU1 = pTKU1;
-  iU2 = pTKU2;
-  return;
-  //Not used right now
-  //iPFTKU2Corr->Eval(0);
-  //iPFTKU1MCorr.Eval(0);
-  //iPFTKU2MCorr.Eval(0);
-}
-
 //-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector::calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2) { 
-  double lMX = -iEPt*cos(iEPhi) - iU1*cos(iWPhi) + iU2*sin(iWPhi);
-  double lMY = -iEPt*sin(iEPhi) - iU1*sin(iWPhi) - iU2*cos(iWPhi);
+double RecoilCorrector::diGausPVal(double iVal,double iFrac,double iSigma1,double iSigma2) {
 
-  if(iMet == 0) return sqrt(lMX*lMX + lMY*lMY);
-  if(iMet == 1) {if(lMX > 0) {return atan(lMY/lMX);} return (fabs(lMY)/lMY)*3.14159265 + atan(lMY/lMX); } 
-  if(iMet == 2) return lMX;
-  if(iMet == 3) return lMY;
-  return lMY;
-
-}
-
-//-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector::getCorError2(double iVal,TF1 *iFit) { 
-  double lE = sqrt(iFit->GetParError(0))  + iVal*sqrt(iFit->GetParError(2));
-  if(fabs(iFit->GetParError(4)) > 0) lE += iVal*iVal*sqrt(iFit->GetParError(4));
-  return lE*lE;
-}
-
-//-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector::getError2(double iVal,TF1 *iFit) { 
-  //  return iFit->GetParError(0);
-  double lE2 = iFit->GetParError(0) + iVal*iFit->GetParError(1) + iVal*iVal*iFit->GetParError(2);
-  if(iFit->GetParError(3) != 0 ) lE2 += iVal*iVal*iVal*  iFit->GetParError(3);
-  if(iFit->GetParError(4) != 0 ) lE2 += iVal*iVal*iVal*iVal*  iFit->GetParError(4);
-  if(iFit->GetParError(5) != 0 ) lE2 += iVal*iVal*iVal*iVal*iVal*  iFit->GetParError(5);
-  if(iFit->GetParError(6) != 0 ) lE2 += iVal*iVal*iVal*iVal*iVal*iVal*  iFit->GetParError(6);
-
-  if(lE2<0) {
-    cout << "negative error: this will cause nan for iVal=" << iVal << endl;
-    cout << "iFit->GetParError(0) " << iFit->GetParError(0) << endl;
-    cout << "iFit->GetParError(1) " << iFit->GetParError(1) << " xE1 " << iVal*iFit->GetParError(1) << endl;
-    cout << "iFit->GetParError(2) " << iFit->GetParError(2) << " x2E2 " << iVal*iVal*iFit->GetParError(2) << endl;
-    cout << "iFit->GetParError(3) " << iFit->GetParError(3) << " x3E3 " << iVal*iVal*iVal*iFit->GetParError(3) <<  endl;
-    cout << "iFit->GetParError(4) " << iFit->GetParError(4) << " x4E4 " << iVal*iVal*iVal*iVal*iFit->GetParError(4) <<  endl;
-    cout << "iFit->GetParError(5) " << iFit->GetParError(5) << " x5E5 " << iVal*iVal*iVal*iVal*iVal*iFit->GetParError(5) <<  endl;
-    cout << "iFit->GetParError(6) " << iFit->GetParError(6) << " x6E6 " << iVal*iVal*iVal*iVal*iVal*iVal*iFit->GetParError(6) <<  endl;
-    cout << "THIS SHOULD NEVER HAPPEN, MEANS THE ERRORS ARE NOT PROPERLY STORED : so do not trust them" << endl;
-  }
-
-  return lE2;
-}
-
-//-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector::getError(double iVal,TF1 *iFit,Recoil iType) {
-
-  //  return sqrt(getError2(iVal,iFit)); 
-  // MARIA: this should be good for the scale for type2 (for type1 need only the lER part)                                                                                  
-
-  double lEW2  = getError2(iVal,iFit);
-  double lEZD2 = getError2(iVal,getFunc(true ,iType));
-  double lEZM2 = getError2(iVal,getFunc(false,iType));
-  double lZDat = getFunc(true ,iType)->Eval(iVal);
-  double lZMC  = getFunc(false,iType)->Eval(iVal);
-  double lWMC  = iFit                ->Eval(iVal);
-  double lR    = lZDat/lZMC;
-  double lER   = lR*lR/lZDat/lZDat*lEZD2 + lR*lR/lZMC/lZMC*lEZM2;
-  double lVal  = lR*lR*lEW2 + lWMC*lWMC*lER;
-
-  //cout << "====> Error Data : "<<  lEZD2 << " MC : " << lEZM2 << " -- Rat " << lR << " -- DatV " << lZDat << " -- MCV " << lZMC << " -- " << lWMC << " -- Total " << lER  << " -- W : " << lEW2 << " -- All : " << lVal << endl;                                                                                                                      
-  return sqrt(lVal);
-
-}
-
-//-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector::mag(double iV0,double iV1,double iV2,double iV3) { 
-  return sqrt(iV0+iV1*iV1+2*iV1*0.88 + iV2*iV2+2.*iV2*0.88+ iV3*iV3+2.*iV3*0.88);//
-  //return sqrt(iV0*iV0 + iV1*iV1 + iV2*iV2 + iV3*iV3);
-}
-
-//-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector::correlatedSeed(double iVal, double iCorr1,double iCorr2,double iCorr3,double iSeed0,double iSeed1,double iSeed2,double iSeed3) { 
-  double lMag = mag(1.,iCorr1,iCorr2,iCorr3); 
-  //double lVal = ((1./lMag)*iSeed0 + (iCorr1/lMag)*iSeed1 + (iCorr2/lMag)*iSeed2 + (iCorr3/lMag)*iSeed3)*iVal;
-  double lVal = ((1./lMag) + (iCorr1/lMag)*(iSeed1) + (iCorr2/lMag)*fabs(iSeed2) + (iCorr3/lMag)*fabs(iSeed3))*iVal;
-  lVal*=iSeed0;
+  double lVal=iFrac*TMath::Erf(iVal/iSigma1) + (1-iFrac)*TMath::Erf(iVal/iSigma2);
+  if(TMath::ErfInverse(lVal)==0) return iVal;
   return lVal;
-}
-double RecoilCorrector::deCorrelate(double iVal, double iCorr1,double iCorr2,double iCorr3,double iSeed0,double iSeed1,double iSeed2,double iSeed3) { 
-  double lMag = mag(1.,iCorr1,iCorr2,iCorr3); 
-  double lVal =  (1 - iCorr1*fabs(iSeed1) - iCorr2*fabs(iSeed2) - iCorr3*fabs(iSeed3))*lMag;
-  return lVal*iVal*iSeed0;
-}
 
-//a = 1/m + 1/m b' 
-//b = 1/m + 1/m a'
+
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------
+double RecoilCorrector::diGausInvGraph(double iPVal,double iFracMC,double iSigma1MC,double iSigma2MC,double iFracDATA,double iSigma1DATA,double iSigma2DATA) {
+
+  TF1 *totalMC = new TF1("totalMC","gaus(0)+gaus(3)",0,100);
+  totalMC->SetParameter(0,iFracMC); 
+  totalMC->SetParameter(1,0); // mean at zero
+  totalMC->SetParameter(2,iSigma1MC); 
+  totalMC->SetParameter(3,(1-iFracMC)); 
+  totalMC->SetParameter(4,0); // mean at zero
+  totalMC->SetParameter(5,iSigma2MC);
+  totalMC->SetNpx(2000);
+
+  TF1 *totalDATA = new TF1("totalDATA","gaus(0)+gaus(3)",0,100);
+  totalDATA->SetParameter(0,iFracDATA); 
+  totalDATA->SetParameter(1,0); 
+  totalDATA->SetParameter(2,iSigma1DATA); 
+  totalDATA->SetParameter(3,(1-iFracDATA));
+  totalDATA->SetParameter(4,0); 
+  totalDATA->SetParameter(5,iSigma2DATA);
+  totalDATA->SetNpx(2000);
+
+  TGraph *gr_mc = new TGraph(totalMC, "I");
+  TGraph *gr_data = new TGraph(totalDATA, "I");
+  TGraph *gr_data_inverse = new TGraph(gr_data->GetN(),gr_data->GetY(), gr_data->GetX());
+
+  /*
+  gr_mc->SetLineColor(kMagenta);
+  gr_mc->SetMarkerColor(kMagenta);
+  gr_mc->Draw("A P L same");
+  gr_data->SetLineColor(kGreen+1);
+  gr_data->SetMarkerColor(kGreen+1);
+  gr_data->Draw("P L same ");
+  gr_data_inverse->SetLineColor(kCyan);
+  gr_data_inverse->SetMarkerColor(kCyan);
+  gr_data_inverse->Draw("P L same ");
+  */
+
+  double pVal=gr_data_inverse->Eval(gr_mc->Eval(iPVal));
+  //  cout << "ORIGINAL MC: " << iPVal ;
+  //  cout << " FROM INVERSE: " << gr_data_inverse->Eval(gr_mc->Eval(iPVal)) << endl;
+
+  delete totalMC;
+  delete totalDATA;
+
+  delete gr_mc;
+  delete gr_data;
+  delete gr_data_inverse;
+
+  return pVal;
+
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------
+double RecoilCorrector::getFrac3gauss(double RMS, double f1, double sigma1, double sigma2, double sigma3) {
+
+  sigma1=sigma1/RMS;
+  sigma2=sigma2/RMS;
+  sigma3=sigma3/RMS;
+  
+  double f2=(-1.)*( -f1*sigma1 + f1*sigma3 - sigma3 + 1. ) / ( (f1-1.)*(sigma2-sigma3) );
+
+  return f2*(1-f1);
+
+}
