@@ -239,18 +239,18 @@ bool useErfPol2ScaleU1 = false;
 
 bool doDegenerateSigma = false;
 bool do3G=true;
-bool doAbsolute = false;
 
 /// BELOW FLOAGS for the inversion
-bool doIterativeMet = false;
 bool invGraph = true;
 bool doSingleGauss = false;
 bool doTriGauss = true;
 bool doApplyCorr = false; // smearing along the recoil vector
 bool doOnlyU1 = false;
-bool doOnlyU2 = true;
+bool doOnlyU2 = false;
+bool doIterativeMet = false;
 bool writeTree = false;
 bool doClosure = false;
+bool doAbsolute = false;
 
 /// BELOW FLAGS for dataset and met def
 bool do8TeV = false;
@@ -3372,6 +3372,7 @@ double triGausInvGraph(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsRea
 
   // add protection for outlier since I tabulated up to 5
   if(pVal>=5) pVal=iPVal;
+  if(pVal<=-5) pVal=iPVal;
 
   /*
   if((iPVal-pVal)>0.5) {
@@ -3499,7 +3500,7 @@ void applyTriGausInv(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   if(doOnlyU1 && !doOnlyU2) {
 
     pU1Diff = pU1Diff/pMRMSU1;
-    pU1ValD = triGausInvGraph(fabs(pU1Diff),iGenPt,ipdfMCU1,ipdfDATAU1,iwMCU1,iwDATAU1);
+    pU1ValD = triGausInvGraph(pU1Diff,iGenPt,ipdfMCU1,ipdfDATAU1,iwMCU1,iwDATAU1);
     pU1ValD = pU1ValD*pDRMSU1;
 
     pU2ValD = fabs(pU2Diff);
@@ -3525,7 +3526,7 @@ void applyTriGausInv(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   if(!doOnlyU1 && !doOnlyU2) {
     pU1Diff = pU1Diff/pMRMSU1;
     pU2Diff = pU2Diff/pMRMSU2;
-    pU1ValD = triGausInvGraph(fabs(pU1Diff),iGenPt,ipdfMCU1,ipdfDATAU1,iwMCU1,iwDATAU1);
+    pU1ValD = triGausInvGraph(pU1Diff,iGenPt,ipdfMCU1,ipdfDATAU1,iwMCU1,iwDATAU1);
     pU2ValD = triGausInvGraph(fabs(pU2Diff),iGenPt,ipdfMCU2,ipdfDATAU2,iwMCU2,iwDATAU2);
     pU1ValD = pU1ValD*pDRMSU1;
     pU2ValD = pU2ValD*pDRMSU2;
@@ -3533,7 +3534,7 @@ void applyTriGausInv(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
     pDefU1 *= (pDU1/pMU1);
   }
 
-  pU1ValD*=p1Charge;
+  //  pU1ValD*=p1Charge; /// removed the ABS value on the argument of triGausInvGraph
   pU2ValD*=p2Charge;
   
   //  cout << "   pU2ValD(GeV) " << pU2ValD << endl;
@@ -4443,6 +4444,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
   //  if(doBKG) return;
   //  if(doClosure || doAbsolute) return;
+  if(doAbsolute) return;
 
   //// AFTER here set up for the 1D fit                                                                                                                    
   //  if(doPrintAll && !doIterativeMet) {
@@ -5712,7 +5714,7 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
 
   if(writeTree) {
 
-    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_POWasMAD_mad%d_iter%d_onlyU2%d_%d_writeTree_%d.root",doMad,doIterativeMet,doOnlyU2,startTreeEntries,writeTree),"RECREATE");
+    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_POWasMAD_mad%d_iter%d_onlyU2%d_onlyU1%d_%d_writeTree_%d.root",doMad,doIterativeMet,doOnlyU2,doOnlyU1,startTreeEntries,writeTree),"RECREATE");
     //    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_mad%d_iter%d_%d_writeTree_%d.root",doMad,doIterativeMet,startTreeEntries,writeTree),"RECREATE");
     //    fout_loopOverTree = new TFile(Form("TREE/foutIter_skimmedTree_mad%d_iter%d_%d_writeTree_%d.root",doMad,doIterativeMet,startTreeEntries,writeTree),"RECREATE");
     iterEvTree = new TTree("ZTreeProducer","ZTreeProducer");
@@ -6439,8 +6441,8 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 
     if(doClosure && !do8TeV)   {
       //output_mad0_POWasMAD_onlyU21_iter1_feb7.root
-      fDataFile = TFile::Open(Form("TREE/output_mad%d_POWasMAD_onlyU21_iter1_feb7_bis.root",doMad)); // closure MAD vs DATA
-      cout << " reading TREE/output_mad" << doMad << "_POWasMAD_onlyU21_iter1_feb7_bis.root"<< endl;
+      fDataFile = TFile::Open(Form("TREE/output_mad%d_POWasMAD_onlyU20_onlyU10_iter1_feb8tris.root",doMad)); // closure MAD vs DATA
+      cout << " reading TREE/output_mad" << doMad << "_POWasMAD_onlyU20_onlyU10_iter1_feb8tris.root"<< endl;
     }
 
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
