@@ -262,40 +262,40 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
       cout << "ERROR !!!!! RecoilCorrVarDiagoParU1orU2fromDATAorMC= " << RecoilCorrVarDiagoParU1orU2fromDATAorMC << " RecoilCorrVarDiagoParN= " << RecoilCorrVarDiagoParN << endl;
   
   RooRealVar *v; 
-  cout << "RecoilCorrVarDiagoParN="<<RecoilCorrVarDiagoParN << Form(" eig_eig%d",RecoilCorrVarDiagoParN) << endl;
+  // cout << "RecoilCorrVarDiagoParN="<<RecoilCorrVarDiagoParN << Form(" eig_eig%d",RecoilCorrVarDiagoParN) << endl;
   v = wU1[1][fJet]->var(Form("eig_eig%d",RecoilCorrVarDiagoParN));
   if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==1)
     v->setVal(RecoilCorrVarDiagoParSigmas);
   else
     v->setVal(0);
-  cout << "wU1[1]["<<fJet<<"]" << endl; v->Print();
+  // cout << "wU1[1]["<<fJet<<"]" << endl; v->Print();
   
   v = wU2[1][fJet]->var(Form("eig_eig%d",RecoilCorrVarDiagoParN));
   if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==2)
     v->setVal(RecoilCorrVarDiagoParSigmas);
   else
-    v->setVal(0);
-  cout << "wU2[1]["<<fJet<<"]" << endl; v->Print();
+    // v->setVal(0);
+  // cout << "wU2[1]["<<fJet<<"]" << endl; v->Print();
   
   v = wU1[2][fJet]->var(Form("eig_eig%d",RecoilCorrVarDiagoParN));
   if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==3)
     v->setVal(RecoilCorrVarDiagoParSigmas);
   else
     v->setVal(0);
-  cout << "wU1[2]["<<fJet<<"]" << endl; v->Print();
+  // cout << "wU1[2]["<<fJet<<"]" << endl; v->Print();
   
   v = wU2[2][fJet]->var(Form("eig_eig%d",RecoilCorrVarDiagoParN));
   if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==4)
     v->setVal(RecoilCorrVarDiagoParSigmas);
   else
     v->setVal(0);
-  cout << "wU2[2]["<<fJet<<"]" << endl; v->Print();
+  // cout << "wU2[2]["<<fJet<<"]" << endl; v->Print();
   
   
-  pdfU1Cdf[2][fJet] = (RooAddPdf*)wU1[2][fJet]->pdf(Form("AddU1Y%d_eig_cdf",fJet));
-  pdfU1Cdf[1][fJet] = (RooAddPdf*)wU1[1][fJet]->pdf(Form("AddU1Y%d_eig_cdf",fJet));
-  pdfU2Cdf[2][fJet] = (RooAddPdf*)wU2[2][fJet]->pdf(Form("AddU2Y%d_eig_cdf",fJet));
-  pdfU2Cdf[1][fJet] = (RooAddPdf*)wU2[1][fJet]->pdf(Form("AddU2Y%d_eig_cdf",fJet));
+  pdfU1Cdf[2][fJet] = (RooAbsReal*)wU1[2][fJet]->pdf(Form("AddU1Y%d_eig_cdf",fJet));
+  pdfU1Cdf[1][fJet] = (RooAbsReal*)wU1[1][fJet]->pdf(Form("AddU1Y%d_eig_cdf",fJet));
+  pdfU2Cdf[2][fJet] = (RooAbsReal*)wU2[2][fJet]->pdf(Form("AddU2Y%d_eig_cdf",fJet));
+  pdfU2Cdf[1][fJet] = (RooAbsReal*)wU2[1][fJet]->pdf(Form("AddU2Y%d_eig_cdf",fJet));
   
   cout 
     << "pdfU1Cdf[2]["<<fJet<<"]->getVal()= " << pdfU1Cdf[2][fJet]->getVal()
@@ -304,6 +304,7 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
     << " pdfU2Cdf[1]["<<fJet<<"]->getVal()= " << pdfU2Cdf[1][fJet]->getVal()
     << endl;
   
+  cout << "triGausInvGraphPDF U1" << endl;
   pU1ValD = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[2][fJet],pdfU1Cdf[1][fJet],wU1[2][fJet],wU1[1][fJet]);
             // triGausInvGraphPDF(     iPVal,   Zpt,         pdfMCcdf,       pdfDATAcdf,           wMC,         wDATA)
 
@@ -315,6 +316,7 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
   pU1ValD = fabs(pU1Diff);
 
   pU2Diff = pU2Diff/pMRMSU2;
+  cout << "triGausInvGraphPDF U2" << endl;
   pU2ValD = triGausInvGraphPDF(fabs(pU2Diff),iGenPt,pdfU2Cdf[2][fJet],pdfU2Cdf[1][fJet],wU2[2][fJet],wU2[1][fJet]);
   pU2ValD = pU2ValD*pDRMSU2;
 
@@ -340,7 +342,7 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
 double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsReal *pdfDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA) {
 
   // cout << "inside triGausInvGraphPDF pdfMCcdf " << pdfMCcdf <<endl;
-  RooRealVar lRXVar("XVar","larger range",0,-20.,20.);
+  // RooRealVar lRXVar("XVar","larger range",0,-20.,20.);
 
   RooRealVar* myptm=wMC->var("pt");
   myptm->setVal(Zpt);
@@ -360,9 +362,9 @@ double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal 
   // double eval = pdfMCcdf->getVal();
   // double pVal=pdfDATAcdf->findRoot(*myXd,myXd->getMin(),myXd->getMax(),eval);
   cout << "before pdfDATAcdf->findRoot"<<endl;
-  cout << "myXd->getVal()= " << myXd->getVal()  << endl;
-  cout << "myXd->getMin()= " << myXd->getMin()  << endl;
-  cout << " myXd->getMax()= " << myXd->getMax()  << endl;
+  cout << "iPVal= " << iPVal << " myXm->getVal()= " << myXm->getVal()  << " myXd->getVal()= " << myXd->getVal()  << endl;
+  // cout << "myXd->getMin()= " << myXd->getMin()  << endl;
+  // cout << " myXd->getMax()= " << myXd->getMax()  << endl;
   cout << " pdfDATAcdf->getVal()= " << pdfDATAcdf->getVal() << endl;
   cout << " pdfMCcdf->getVal()= " << pdfMCcdf->getVal() << endl;
 
