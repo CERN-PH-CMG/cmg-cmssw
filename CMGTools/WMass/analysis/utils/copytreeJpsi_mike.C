@@ -2,11 +2,14 @@ void copytreeJpsi_mike() {
 
   // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/";
   // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_10_15/";
-  // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
-  TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_03_04/";
-  
+  TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
+  // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_03_04/";
+  // TString root_folder="/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_8TeV/";
+
   TString fZana_str[7] = {
-    "/afs/cern.ch/work/p/perrozzi/private/git/v5_18_0/common_maria/CMSSW_5_3_19/src/CMGTools/WMass/cfg/JPsiMC/JpsiMC/ZTreeProducer/ZTreeProducer_tree.root",
+    // "/afs/cern.ch/work/p/perrozzi/private/git/v5_18_0/common_maria/CMSSW_5_3_19/src/CMGTools/WMass/cfg/JPsiMC/JpsiMC/ZTreeProducer/ZTreeProducer_tree.root",
+    // "/afs/cern.ch/user/p/perrozzi/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_8TeV/DATA_JpsiRun2012ABCD/ZTreeProducer_tree.root",
+    "/afs/cern.ch/user/p/perrozzi/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/JPsiMM/allEvts/ZTreeProducer_tree.root",
     // "root://eoscms//"+root_folder+"WJetsLL/ZTreeProducer_tree.root",
     // "root://eoscms//"+root_folder+"DYJetsMM/ZTreeProducer_tree.root",
     "root://eoscms//"+root_folder+"JPsiMM/ZTreeProducer_tree.root",
@@ -17,7 +20,8 @@ void copytreeJpsi_mike() {
     "root://eoscms//"+root_folder+"DATA_Jpsi/ZTreeProducer_tree.root"
   };  
   TString fZana_RecoSkimmed_str[7] = {
-    "/afs/cern.ch/work/p/perrozzi/private/git/v5_18_0/common_maria/CMSSW_5_3_19/src/CMGTools/WMass/cfg/JPsiMC/JpsiMC/ZTreeProducer/ZTreeProducer_tree_RecoSkimmed.root",
+    // "/afs/cern.ch/user/p/perrozzi/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_8TeV/DATA_JpsiRun2012ABCD//ZTreeProducer_tree_RecoSkimmed.root",
+    "/afs/cern.ch/user/p/perrozzi/eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/JPsiMM/allEvts/ZTreeProducer_tree_RecoSkimmed.root",
     // root_folder+"WJetsLL/ZTreeProducer_tree_RecoSkimmed.root",
     // root_folder+"DYJetsMM/ZTreeProducer_tree_RecoSkimmed.root",
     root_folder+"JPsiMM/ZTreeProducer_tree_RecoSkimmed.root",
@@ -34,8 +38,8 @@ void copytreeJpsi_mike() {
     if(
        // !fZana_RecoSkimmed_str[sample].Contains("DYJetsMM")
        // && 
-       // !fZana_RecoSkimmed_str[sample].Contains("JPsiMM")
-       !fZana_RecoSkimmed_str[sample].Contains("common_maria")
+       !fZana_RecoSkimmed_str[sample].Contains("JPsiMM/allEvts")
+       // !fZana_RecoSkimmed_str[sample].Contains("IncludeDisplaced")
        ) continue;
     
     TFile *oldfile = TFile::Open(Form("%s",fZana_str[sample].Data()));
@@ -92,11 +96,17 @@ void copytreeJpsi_mike() {
     
     // && MuPosRelIso<0.12 
     // && MuNegRelIso<0.12
+    // cutSig+="&& evtHasGoodVtx && evtHasTrg && Z_mass>2.8 && Z_mass<3.35 && MuPos_charge != MuNeg_charge \
+    // && MuPosIsTight && MuNegIsTight &&\
+    // ( (MuPosTrg && TMath::Abs(MuPos_eta)<2.4 &&  MuPos_pt>4 && MuPos_dxy<0.02 \
+    // && TMath::Abs(MuNeg_eta)<2.4 && MuNeg_pt>4 ) \
+    // || ( MuNegTrg && TMath::Abs(MuNeg_eta)<2.4 &&  MuNeg_pt>4 && MuNeg_dxy<0.02 \
+    // && TMath::Abs(MuPos_eta)<2.4 && MuPos_pt>4 ) )";
     cutSig+="&& evtHasGoodVtx && evtHasTrg && Z_mass>2.8 && Z_mass<3.35 && MuPos_charge != MuNeg_charge \
     && MuPosIsTight && MuNegIsTight &&\
-    ( (MuPosTrg && TMath::Abs(MuPos_eta)<2.4 &&  MuPos_pt>4 && MuPos_dxy<0.02 \
+    ( (TMath::Abs(MuPos_eta)<2.4 &&  MuPos_pt>4 && MuPos_dxy<0.02 \
     && TMath::Abs(MuNeg_eta)<2.4 && MuNeg_pt>4 ) \
-    || ( MuNegTrg && TMath::Abs(MuNeg_eta)<2.4 &&  MuNeg_pt>4 && MuNeg_dxy<0.02 \
+    || (TMath::Abs(MuNeg_eta)<2.4 &&  MuNeg_pt>4 && MuNeg_dxy<0.02 \
     && TMath::Abs(MuPos_eta)<2.4 && MuPos_pt>4 ) )";
 
     
@@ -143,7 +153,7 @@ void copytreeJpsi_mike() {
     delete newfileSig;
     // continue;
     gROOT->ProcessLine(Form(".! /afs/cern.ch/project/eos/installation/0.3.15/bin/eos.select cp Z_tree_temp3.root %s",filenameoutSig.Data()));
-    gROOT->ProcessLine(Form(".! rm Z_tree_temp3.root"));
+    // gROOT->ProcessLine(Form(".! rm Z_tree_temp3.root"));
 
     delete newfileFake;
     delete oldfile;

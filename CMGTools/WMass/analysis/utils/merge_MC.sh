@@ -18,6 +18,29 @@ for (( id_sample=0; id_sample<${#samples[@]}; id_sample++ ))
       if [ $nchunks -ne $nchunks_planned ]
       then
         echo "MISSING "${analyses[id_ana]}" chunk for "${samples[id_sample]}": nchunks="${nchunks}" nchunks_planned="${nchunks_planned}"!!! EXITING"
+        nchunk=$(ls ${1}/test_numbers_${samples[id_sample]}/${analyses[id_ana]}_chunk*.root)
+        ARRAY=()
+        for i in `seq 1 ${nchunks_planned}`;
+        do
+          # echo $i
+          if [[ $nchunk != *""${analyses[id_ana]}"_chunk"${i}".root"* ]]
+          then
+            # echo "${i} It's not there!";
+            ARRAY+=(""${i}"")
+            if [[ ${2} == 1 ]]
+            then
+              cd ${1}/test_numbers_${samples[id_sample]}/
+              # bsub -q ${3} -u pippo123 -J run${analyses[id_ana]} run${analyses[id_ana]}_${samples[id_sample]}_${i}.sh
+              sh run${analyses[id_ana]}_${samples[id_sample]}_${i}.sh
+              # echo "RESUBMITTING "${i}
+              cd -
+            fi
+            # echo $ARRAY
+          fi
+        done
+        printf "%s "  "${ARRAY[@]}"
+        echo ""
+        # echo ${ARRAY}
         exit 1
         # continue
       fi
@@ -29,6 +52,8 @@ for (( id_sample=0; id_sample<${#samples[@]}; id_sample++ ))
     
   done
 done
+
+# exit 1
 
 echo 'EWK ONLY (EWK)'
 # EWK ONLY
