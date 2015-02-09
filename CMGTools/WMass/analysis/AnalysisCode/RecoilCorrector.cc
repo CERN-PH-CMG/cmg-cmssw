@@ -586,9 +586,6 @@ double iFlucU2,double iFlucU1,double iScale, int mytype, int fJet
 // double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAddPdf *pdfMC, RooAddPdf *pdfDATA, RooWorkspace *wMC, RooWorkspace *wDATA) {
 double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsReal *pdfDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA) {
 
-  // cout << "inside triGausInvGraphPDF pdfMCcdf " << pdfMCcdf <<endl;
-  RooRealVar lRXVar("XVar","larger range",0,-20.,20.);
-
   RooRealVar* myptm=wMC->var("pt");
   myptm->setVal(Zpt);
 
@@ -598,48 +595,15 @@ double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal 
   RooRealVar* myXm = wMC->var("XVar");
   RooRealVar* myXd = wDATA->var("XVar");
 
-  // RooAbsReal* pdfMCcdf = pdfMC->createCdf(*myXm);
-  // RooAbsReal* pdfDATAcdf = pdfDATA->createCdf(*myXd);
-  
-  // /*
   myXm->setVal(iPVal);
-  // double eval = pdfMCcdf->evaluate();
-  // double eval = pdfMCcdf->getVal();
-  // double pVal=pdfDATAcdf->findRoot(*myXd,myXd->getMin(),myXd->getMax(),eval);
-  // cout << "before pdfDATAcdf->findRoot"<<endl;
-  // cout << "myXd->getMin()= " << myXd->getMin()  << endl;
-  // cout << " myXd->getMax()= " << myXd->getMax()  << endl;
-  // cout << " pdfMCcdf->getVal()= " << pdfMCcdf->getVal() << endl;
   double pVal=pdfDATAcdf->findRoot(*myXd,myXd->getMin(),myXd->getMax(),pdfMCcdf->getVal());
-  // cout << "after pdfDATAcdf->findRoot"<<endl;
 
-  // delete pdfMCcdf; 
-  // delete pdfDATAcdf;
-  //  cout << " from findRoot " << pVal << endl;
-  //  myXd->Print();
-  // */
-  
-  /*
-  //  TF1* funcMCpdf = (TF1*) pdfMC->asTF( RooArgList(lRXVar));
-  TF1* funcMCcdf = (TF1*) pdfMCcdf->asTF( RooArgList(*myXm));
-  //  TF1* funcDATApdf = (TF1*) pdfDATA->asTF( RooArgList(lRXVar));
-  TF1* funcDATAcdf = (TF1*) pdfDATAcdf->asTF( RooArgList(*myXd));
-  TGraph *gr_mc = new TGraph(funcMCcdf);
-  TGraph *gr_data = new TGraph(funcDATAcdf);
-  TGraph *gr_data_inverse = new TGraph(gr_data->GetN(),gr_data->GetY(), gr_data->GetX());
-  double pVal=gr_data_inverse->Eval(gr_mc->Eval(iPVal));
-  //  cout << "ORIGINAL MC: " << iPVal ;
-  //  cout << " FROM INVERSE graph: " << gr_data_inverse->Eval(gr_mc->Eval(iPVal)) << endl;
-  delete gr_mc;
-  delete gr_data;
-  delete gr_data_inverse;
-  delete funcMCcdf;
-  delete funcDATAcdf;
-  // */
-
-  
   // add protection for outlier since I tabulated up to 5
   if(TMath::Abs(pVal)>=5) pVal=iPVal;
+
+  // cout << " original " << iPVal;
+  // cout << "after pdfDATAcdf->findRoot" << pVal <<endl;
+
 
   return pVal;
 
