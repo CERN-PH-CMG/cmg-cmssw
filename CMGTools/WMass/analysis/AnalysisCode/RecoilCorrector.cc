@@ -501,6 +501,7 @@ TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
 double iFlucU2,double iFlucU1,double iScale, int mytype, int fJet
 ) {
 
+  /*
   bool dodebug=false;
   bool doIterativeMet = false;
   bool invGraph = true;
@@ -511,6 +512,7 @@ double iFlucU2,double iFlucU1,double iScale, int mytype, int fJet
   bool doOnlyU2 = true;
   bool writeTree = false;
   bool doClosure = false;
+  */
 
   double lRescale  = sqrt((TMath::Pi())/2.);
   //  double lRescale  = 1;     // for squares
@@ -544,7 +546,7 @@ double iFlucU2,double iFlucU1,double iScale, int mytype, int fJet
   double pU2Diff  = pU2;
 
   //  cout << " ------------------------------------------------------- " << endl;
-   // cout << " initial pU1 = " << pU1 << " pU2 = " << pU2 << endl;
+  // cout << " initial pU1 = " << pU1 << " pU2 = " << pU2 << endl;
 
   double p1Charge        = pU1Diff/fabs(pU1Diff);
   double p2Charge        = pU2Diff/fabs(pU2Diff);
@@ -559,24 +561,15 @@ double iFlucU2,double iFlucU1,double iScale, int mytype, int fJet
 
   pU1Diff = pU1Diff/pMRMSU1;
   pU1ValD = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[2][fJet],pdfU1Cdf[1][fJet],wU1[2][fJet],wU1[1][fJet]);
-            // triGausInvGraphPDF(     iPVal,   Zpt,         pdfMCcdf,       pdfDATAcdf,           wMC,         wDATA)
-
   pU1ValD = pU1ValD*pDRMSU1;
-
-  pU2ValD = fabs(pU2Diff);
-
   pDefU1 *= (pDU1/pMU1);
-  pU1ValD = fabs(pU1Diff);
+
 
   pU2Diff = pU2Diff/pMRMSU2;
   pU2ValD = triGausInvGraphPDF(fabs(pU2Diff),iGenPt,pdfU2Cdf[2][fJet],pdfU2Cdf[1][fJet],wU2[2][fJet],wU2[1][fJet]);
   pU2ValD = pU2ValD*pDRMSU2;
 
-  // if(iFlucU1) {
-  // }else if(iFlucU2) {
-  // }
-  
-  // pU1ValD*=p1Charge;
+  // pU1ValD*=p1Charge; // since removed the abs value
   pU2ValD*=p2Charge;
 
   pU1   = pDefU1             + pU1ValD;
