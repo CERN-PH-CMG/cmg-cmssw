@@ -321,6 +321,9 @@ void Zanalysis::Init(TTree *tree)
   fChain->SetBranchAddress("tkmet", &tkmet, &b_tkmet);
   fChain->SetBranchAddress("tkmet_phi", &tkmet_phi, &b_tkmet_phi);
   fChain->SetBranchAddress("tkmet_sumEt", &tkmet_sumEt, &b_tkmet_sumEt);
+  //  fChain->SetBranchAddress("tkmetABC", &tkmet, &b_tkmet);
+  //  fChain->SetBranchAddress("tkmetABC_phi", &tkmet_phi, &b_tkmet_phi);
+  //  fChain->SetBranchAddress("tkmetABC_sumEt", &tkmet_sumEt, &b_tkmet_sumEt);
   fChain->SetBranchAddress("pfmetWlikeNeg", &pfmetWlikeNeg, &b_pfmetWlikeNeg);
   fChain->SetBranchAddress("pfmetWlikeNeg_phi", &pfmetWlikeNeg_phi, &b_pfmetWlikeNeg_phi);
   fChain->SetBranchAddress("pfmetWlikePos", &pfmetWlikePos, &b_pfmetWlikePos);
@@ -445,9 +448,11 @@ void Zanalysis::plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorent
     common_stuff::plot1D("h_u"+leptCharge+cut  , u   ,                      weight, h_1d, 100, 0., 20.);
     common_stuff::plot1D("h_u2"+leptCharge+cut  , u_perp   ,                weight, h_1d, 200, -100., 100.);
 
+    common_stuff::plot1D("h_u2Res"+leptCharge+cut  , u_perp/(u_parall/Z.Pt())   ,                weight, h_1d, 200, -100., 100.);
 
     common_stuff::plot1D("h_u1_Residual"+leptCharge+cut  , u_parall+ptVis.Pt(), weight, h_1d, 200, -100., 100.);
-    common_stuff::plot1D("h_u1_Pull"+leptCharge+cut  , (u_parall+Z.Pt())/Z.Pt(),  weight, h_1d, 200, -100., 100.);
+    common_stuff::plot1D("h_u1_Pull"+leptCharge+cut  , (u_parall+Z.Pt())/Z.Pt(),  weight, h_1d, 200, -10., 10.);
+    common_stuff::plot1D("h_u1_Scale"+leptCharge+cut, u_parall/Z.Pt() ,                weight, h_1d, 200, -100., 100.);
     common_stuff::plot1D("h_u1"+leptCharge+cut, u_parall ,                weight, h_1d, 200, -100., 100.);
 
     common_stuff::plot1D("h_met_pull_Z"+leptCharge+cut, met.Pt()-Z.Pt() ,   weight, h_1d, 200, -100, 100);
