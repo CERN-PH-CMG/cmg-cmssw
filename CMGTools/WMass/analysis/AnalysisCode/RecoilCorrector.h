@@ -188,7 +188,7 @@ protected:
   double oneGausInvGraph(double iPVal,double iFracMC,double iSigma1MC,double iSigma2MC,double iFracDATA,double iSigma1DATA,double iSigma2DATA);
   double getFrac2gauss(double RMS, double sigma1, double sigma2);
   double getFrac3gauss(double RMS, double f1, double sigma1, double sigma2, double sigma3);
-  void runDiago(RooWorkspace *w,RooFitResult *result, TString fit/*, RooAbsReal *&pdfUiCdf */);
+  void runDiago(RooWorkspace *w,RooFitResult *result, TString fit, RooAbsReal *&pdfUiCdf);
   double diGausPVal(double iVal, double iFrac,double iSimga1,double iSigma2);
   double triGausInvGraph(double iPVal, /**/ double meanRMSMC, double iMean1MC, double iMean2MC, double iFrac1MC,double iSigma1MC,double iSigma2MC,double iSigma3MC,/**/ double meanRMSDATA, double iMean1DATA, double iMean2DATA,double iFrac1DATA,double iSigma1DATA,double iSigma2DATA,double iSigma3DATA);
   // double triGausInvGraphPDF(double iPVal, double Zpt, RooAddPdf *pdfMC, RooAddPdf *pdfDATA, RooWorkspace *wMC, RooWorkspace *wDATA);
