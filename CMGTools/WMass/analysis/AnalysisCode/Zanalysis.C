@@ -283,6 +283,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   std::string fileCorrectTo = Form("../RecoilCode/recoilfit_JAN25_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
   std::string fileZmmMC = Form("../RecoilCode/recoilfit_JAN25_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
   std::string fileZmmData = Form("../RecoilCode/recoilfit_JAN25_DATA%s_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root",metSuffix.Data());
+  // std::string fileZmmData = Form("../RecoilCode/recoilfit_JAN25_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
 
   // recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root
   // recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root
@@ -309,8 +310,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // start the event loop
   //------------------------------------------------------
   Long64_t nbytes = 0, nb = 0;
-  // for(Long64_t jentry=first_entry; jentry<nentries;jentry++) {
-    for (Long64_t jentry=0; jentry<1e1;jentry++) { // TEMP !!!
+  for(Long64_t jentry=first_entry; jentry<nentries;jentry++) {
+    // for (Long64_t jentry=0; jentry<1e1;jentry++) { // TEMP !!!
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;
@@ -547,12 +548,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               int vtxBin=rapBin;
               
               if(first_time_in_the_event && use_PForNoPUorTKmet<3 && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){ // use MET corrections if required
-                cout
-                << "pfmet_bla before=" << pfmet_bla
-                << " pfmetphi_bla before=" << pfmetphi_bla
-                << " pfmet_blaCentral before=" << pfmet_blaCentral
-                << " pfmetphi_blaCentral before=" << pfmetphi_blaCentral
-                << endl;
+                // cout
+                // << "pfmet_bla before=" << pfmet_bla
+                // << " pfmetphi_bla before=" << pfmetphi_bla
+                // << " pfmet_blaCentral before=" << pfmet_blaCentral
+                // << " pfmetphi_blaCentral before=" << pfmetphi_blaCentral
+                // << endl;
                 if(useRecoilCorr==1){ // use MET corrections if required
                   // correctorRecoil_Z->CorrectType2( pfmet_bla, pfmetphi_bla,
                                     // ZGen_pt, ZGen_phi,
@@ -579,7 +580,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                         // << " RecoilCorrVarDiagoParSigmas=" << RecoilCorrVarDiagoParSigmas
                         // << " vtxBin=" << vtxBin
                         // << endl;
-                        cout << "correcting pfmet" << endl;
+                        // cout << "correcting pfmet" << endl;
                     correctorRecoil_Z->CorrectMET3gaus(pfmet_bla,pfmetphi_bla,
                                       ZGen_pt,ZGen_phi,
                                       ZNocorr.Pt(),ZNocorr.Phi(),
@@ -587,7 +588,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                     RecoilCorrVarDiagoParU1orU2fromDATAorMC, RecoilCorrVarDiagoParN, RecoilCorrVarDiagoParSigmas,
                                    vtxBin,doSingleGauss,1); 
                                    // return;
-                        cout << "correcting pfmet_Central" << endl;
+                        // cout << "correcting pfmet_Central" << endl;
                     correctorRecoil_Z->CorrectMET3gaus(pfmet_blaCentral,pfmetphi_blaCentral,
                                       ZGen_pt,ZGen_phi,
                                       ZNocorr.Pt(),ZNocorr.Phi(),
@@ -595,12 +596,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                     0, 0, 0,
                                    vtxBin,doSingleGauss,1); 
                 }
-                cout
-                << "pfmet_bla after=" << pfmet_bla
-                << " pfmetphi_bla after=" << pfmetphi_bla
-                << " pfmet_blaCentral after=" << pfmet_blaCentral
-                << " pfmetphi_blaCentral after=" << pfmetphi_blaCentral
-                << endl;
+                // cout
+                // << "pfmet_bla after=" << pfmet_bla
+                // << " pfmetphi_bla after=" << pfmetphi_bla
+                // << " pfmet_blaCentral after=" << pfmet_blaCentral
+                // << " pfmetphi_blaCentral after=" << pfmetphi_blaCentral
+                // << endl;
               }
 
 
