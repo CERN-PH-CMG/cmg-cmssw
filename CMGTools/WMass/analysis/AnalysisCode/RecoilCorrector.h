@@ -48,10 +48,10 @@ public:
   double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double iFluc    ,double iScale=0,int njet=0);
   void CorrectType1(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFlucU2,double iFlucU1,double iScale=0,int njet=0);
   void CorrectType2(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFlucU2,double iFlucU1,double iScale=0,int njet=0,bool doSingleGauss=false);
-  void CorrectMET3gaus(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFlucU2,double iFlucU1,double iScale=0,int njet=0,bool doSingleGauss=false, int mytype=0);
+  void CorrectMET3gaus(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int njet=0,bool doSingleGauss=false, int mytype=0);
   void CorrectU1U2(double &pfu1, double &pfu2, double &trku1, double &trku2, 
   double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double iFluc,double iScale=0,int njet=0);
-  void addDataFile(std::string iNameDat);
+  void addDataFile(std::string iNameDat/* , int RecoilCorrVarDiagoParU1orU2=1, int RecoilCorrU1VarDiagoParN=0, int RecoilCorrVarDiagoParSigmas=0 */);
   void addMCFile  (std::string iNameMC);
 protected:
   enum Recoil { 
@@ -83,7 +83,7 @@ protected:
                      std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,
                      std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2RMS3Fit,
 		     std::vector<TF1*> &iU2FracFit,std::vector<TF1*> &iU2Mean1Fit, std::vector<TF1*> &iU2Mean2Fit,//std::vector<TF1*> &iU2Sig3Fit,
-                     std::string iFName,std::string iPrefix,int vtxBin, int mytype);
+                     std::string iFName,std::string iPrefix,int vtxBin, int mytype=0/* , int RecoilCorrVarDiagoParU1orU2=1, int RecoilCorrU1VarDiagoParN=0, int RecoilCorrVarDiagoParSigmas=0 */);
                      
   void readCorr(std::string iName,//int iType=2,
   std::vector<TF1*> &iF1U1U2Corr  ,std::vector<TF1*> &iF2U1U2Corr,std::vector<TF1*> &iF1F2U1Corr,std::vector<TF1*> &iF1F2U2Corr,
@@ -180,14 +180,15 @@ protected:
 		     TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
 		     //                     RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1, 
 		     //                     RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2 
-         double iFlucU2,double iFlucU1,double iScale, int mytype, int fJet
+         int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas, 
+         int mytype, int fJet
 		     );
   double calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2);
   double diGausInvGraph(double iPVal,double iFracMC,double iSigma1MC,double iSigma2MC,double iFracDATA,double iSigma1DATA,double iSigma2DATA);
   double oneGausInvGraph(double iPVal,double iFracMC,double iSigma1MC,double iSigma2MC,double iFracDATA,double iSigma1DATA,double iSigma2DATA);
   double getFrac2gauss(double RMS, double sigma1, double sigma2);
   double getFrac3gauss(double RMS, double f1, double sigma1, double sigma2, double sigma3);
-  void runDiago(/* TFile *file_, */RooWorkspace *w,/* RooDataSet *data,*/ RooFitResult *result, TString fit, RooAbsReal *&pdfUiCdf );
+  void runDiago(RooWorkspace *w,RooFitResult *result, TString fit/*, RooAbsReal *&pdfUiCdf */);
   double diGausPVal(double iVal, double iFrac,double iSimga1,double iSigma2);
   double triGausInvGraph(double iPVal, /**/ double meanRMSMC, double iMean1MC, double iMean2MC, double iFrac1MC,double iSigma1MC,double iSigma2MC,double iSigma3MC,/**/ double meanRMSDATA, double iMean1DATA, double iMean2DATA,double iFrac1DATA,double iSigma1DATA,double iSigma2DATA,double iSigma3DATA);
   // double triGausInvGraphPDF(double iPVal, double Zpt, RooAddPdf *pdfMC, RooAddPdf *pdfDATA, RooWorkspace *wMC, RooWorkspace *wDATA);

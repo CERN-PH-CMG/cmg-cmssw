@@ -11,7 +11,7 @@ useLHAPDF = False
 # foldername = "test2_zm_pdf";
 # foldername = "test_efficiencies";
 # foldername = "test_bosonpt";
-foldername = "test_newreco";
+foldername = "test_newstd";
 foldername_orig=foldername
 
 ntuple_folder = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
@@ -34,9 +34,9 @@ LocalSmearingRochCorrNToys = 0;
 GlobalSmearingRochCorrNsigma = 0;
 usePhiMETCorr = 0; # 0=none, 1=yes
 useRecoilCorr = 2; # 0=none, 1=yes
-RecoilCorrScaleNSigmaU1 = "0"; # 0=none, 1=yes
-RecoilCorrResolutionNSigmaU1 = "0"; # 0=none, 1=yes
-RecoilCorrResolutionNSigmaU2 = "0"; # 0=none, 1=yes
+RecoilCorrVarDiagoParU1orU2fromDATAorMC = "3"; # SYST VARIATIONS: 1= U1 DATA, 2= U2 DATA, 3= U1 MC, 4= U2 MC
+RecoilCorrVarDiagoParN = "2";                  # 0...16 =none, 1=yes
+RecoilCorrVarDiagoParSigmas = "1"; # 0=none, 1=yes
 syst_ewk_Alcaraz = "0"; # 0=none, 1=yes
 # LHAPDF_reweighting_sets="11200" # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
 # LHAPDF_reweighting_members="51" # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
@@ -63,7 +63,7 @@ WMassNSteps = "5"; # 60
 etaMuonNSteps = "1"; # 5
 etaMaxMuons = "0.9"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
-parallelize = 1;
+parallelize = 0;
 # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 # resumbit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" 
 resumbit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
@@ -71,10 +71,10 @@ resumbit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig, 
 
 runWanalysis = 0;
 runZanalysis = 1;
-useBatch = 1;
+useBatch = 0;
 resubmit = 0;
-batchQueue = "1nh";
-controlplots = 1;
+batchQueue = "8nh";
+controlplots = 0;
 
 mergeSigEWKbkg = 0;
 
@@ -142,8 +142,8 @@ runPhiStarEta = 0;
 ## ============================================================== #
 
 # if LocalSmearingRochCorrNToys != 0 or GlobalSmearingRochCorrNsigma != 0 or usePhiMETCorr != 0 \
-    # or useRecoilCorr != 1 or RecoilCorrScaleNSigmaU1 != "0" or RecoilCorrResolutionNSigmaU1 != "0" \
-    # or RecoilCorrResolutionNSigmaU2 != "0" or syst_ewk_Alcaraz != "0" or LHAPDF_reweighting_members !="1":
+    # or useRecoilCorr != 1 or RecoilCorrVarDiagoParSigmas != "0" or RecoilCorrVarDiagoParN != "0" \
+    # or RecoilCorrVarDiagoParU1orU2fromDATAorMC != "0" or syst_ewk_Alcaraz != "0" or LHAPDF_reweighting_members !="1":
   # WMassNSteps = "0"
 
 print "cd /afs/cern.ch/work/p/perrozzi/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;eval `scramv1 runtime -sh`; cd -;"
@@ -176,10 +176,10 @@ if(usePhiMETCorr==1):
   foldername+="_phiMETcorr";
 if(useRecoilCorr>0): 
   foldername+="_RecoilCorr"+str(useRecoilCorr);
-  if(("0" not in RecoilCorrResolutionNSigmaU1) or ("0" not in RecoilCorrResolutionNSigmaU2)):
-    foldername+="_Resol_U1_"+str(RecoilCorrResolutionNSigmaU1)+"_U2_"+str(RecoilCorrResolutionNSigmaU2);
-  if(("0" not in RecoilCorrScaleNSigmaU1)):
-    foldername+="_Scale_U1_"+str(RecoilCorrScaleNSigmaU1);
+  if(("0" not in RecoilCorrVarDiagoParN) or ("0" not in RecoilCorrVarDiagoParU1orU2fromDATAorMC)):
+    foldername+="_Resol_U1_"+str(RecoilCorrVarDiagoParN)+"_U2_"+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC);
+  if(("0" not in RecoilCorrVarDiagoParSigmas)):
+    foldername+="_Scale_U1_"+str(RecoilCorrVarDiagoParSigmas);
 
 if(useEffSF==1): foldername+="_EffSFCorr";
 if(useEffSF==2): foldername+="_EffHeinerSFCorr";
@@ -428,7 +428,7 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
         
         if(runWanalysis):
             
-            wstring="\""+WfileDATA+"\","+str(WfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+filename_outputdir+"\","+str(useMomentumCorr)+","+str(GlobalSmearingRochCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrResolutionNSigmaU1)+","+str(RecoilCorrScaleNSigmaU1)+","+str(RecoilCorrResolutionNSigmaU2)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])
+            wstring="\""+WfileDATA+"\","+str(WfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+filename_outputdir+"\","+str(useMomentumCorr)+","+str(GlobalSmearingRochCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrVarDiagoParN)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])
             if(counter<2):
                 if(useLHAPDF):
                     os.system("sed -i 's/.*\#define\ LHAPDF_ON.*/\#define\ LHAPDF_ON/' Wanalysis.C")
@@ -502,7 +502,7 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
 
         if(runZanalysis):
 
-            zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+filename_outputdir+"\","+str(useMomentumCorr)+","+str(GlobalSmearingRochCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(0)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrResolutionNSigmaU1)+","+str(RecoilCorrScaleNSigmaU1)+","+str(RecoilCorrResolutionNSigmaU1)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])
+            zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+filename_outputdir+"\","+str(useMomentumCorr)+","+str(GlobalSmearingRochCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(0)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrVarDiagoParN)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])
             
             if(counter<2 and not resubmit):
                 if(useLHAPDF):
@@ -523,8 +523,8 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
                 os.system("./runZanalysis.o 0,0,"+str(nEntries)+","+zstring)
             else:
                 nevents = 2e5
-                # if ("DYJetsMadSig" in sample[i]  or "DYJetsPow" in sample[i]):
-                  # nevents = 3e4
+                if ("DYJetsMadSig" in sample[i]  or "DYJetsPow" in sample[i]):
+                  nevents = 1e5
                 if ("DATA" in sample[i]):
                   nevents = 5e5  
                 # if (WMassNSteps=="0"):
@@ -558,8 +558,8 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
                         # text_file.write("source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh \n")
                         text_file.write("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh \n")
                         text_file.write("cd "+start_dir+"\n")
-                        text_file.write("../"+filename_outputdir+"../runZanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+zstring)
-                        # text_file.write("./runZanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+zstring)
+                        # text_file.write("../"+filename_outputdir+"../runZanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+zstring)
+                        text_file.write("./runZanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+zstring)
                         text_file.close()
                         # print 'file created, launching bsub'
                         os.system("chmod 755 runZanalysis_"+sample[i]+"_"+str(x)+".sh")
@@ -580,7 +580,7 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
             
         if(runPhiStarEta):
 
-            zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+filename_outputdir+"\","+str(useMomentumCorr)+","+str(GlobalSmearingRochCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(0)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrResolutionNSigmaU1)+","+str(RecoilCorrScaleNSigmaU1)
+            zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+filename_outputdir+"\","+str(useMomentumCorr)+","+str(GlobalSmearingRochCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(0)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrVarDiagoParN)+","+str(RecoilCorrVarDiagoParSigmas)
             
             if(counter<2):
                 if(useLHAPDF):
@@ -601,7 +601,7 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
                 os.system("./PhiStarEtaAnalysis.o "+zstring+" > ../"+filename_outputdir+"Zlog.log 2>&1 &")
 
         if(run_BuildEvByEvTemplates):
-            zTemplstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+filename_outputdir+"\","+str(useMomentumCorr)+","+str(GlobalSmearingRochCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(run_BuildEvByEvTemplates)+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrResolutionNSigmaU1)+","+str(RecoilCorrScaleNSigmaU1)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)
+            zTemplstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+filename_outputdir+"\","+str(useMomentumCorr)+","+str(GlobalSmearingRochCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(run_BuildEvByEvTemplates)+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrVarDiagoParN)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)
             if not parallelize:
                 os.system("root -l -b -q \'runZanalysis.C("+zTemplstring+")\'");
             else:

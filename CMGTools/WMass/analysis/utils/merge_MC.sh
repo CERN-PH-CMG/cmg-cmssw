@@ -41,8 +41,12 @@ for (( id_sample=0; id_sample<${#samples[@]}; id_sample++ ))
         printf "%s "  "${ARRAY[@]}"
         echo ""
         # echo ${ARRAY}
-        exit 1
-        # continue
+        read -p " PRESS 1 TO EXIT, 0 TO CONTINUE? : " n1
+        if [[ ${n1} == 1 ]]
+        then
+          exit 1
+          # continue
+        fi
       fi
       hadd -f ${1}/test_numbers_${samples[id_sample]}/${analyses[id_ana]}OnDATA.root ${1}/test_numbers_${samples[id_sample]}/${analyses[id_ana]}_chunk*.root 
       rm ${1}/test_numbers_${samples[id_sample]}/${analyses[id_ana]}_chunk*.root 
