@@ -19,5 +19,5 @@ fi
 
 echo "Will print out the commands to resubmit the chunks that failed "
 for D in *_Chunk[0-9]*; do
-    test -f $D/JSONAnalyzer/JSON.pck || echo cmgResubChunk -q 8nh ${BASE}${D}; 
+    test -f $D/JSONAnalyzer/JSON.pck || echo cmgResubChunk -q $Q ${BASE}${D}; 
 done;
