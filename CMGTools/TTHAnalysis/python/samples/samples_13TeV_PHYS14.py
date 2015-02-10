@@ -72,6 +72,16 @@ TTH_PU40bx25 = kreator.makeMCComponent("TTH_PU40bx25", "/TTbarH_M-125_13TeV_amca
 
 mcSamplesPHYS14_PU40bx25 = [TT_PU40bx25,TTH_PU40bx25,DYJetsMuMuM50_PtZ180_PU40bx25,GGHZZ4L_PU40bx25]
 
+################## PU4 bx25ns (no default of phys14, so no _4bx50 postfix) ##############
+# inclusive samples only for the low PU scenario
+
+TT_PU4bx50 = kreator.makeMCComponent("TT_PU4bx50", "/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU4bx50_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",809.1)
+WJetsToLNu_PU4bx50 = kreator.makeMCComponent("WJetsToLNu_PU4bx50","/WJetsToLNu_13TeV-madgraph-pythia8-tauola/Phys14DR-PU4bx50_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 20508.9)
+DYJetsToLL_M50_PU4bx50 = kreator.makeMCComponent("DYJetsToLL_M50_PU4bx50", "/DYJetsToLL_M-50_13TeV-madgraph-pythia8/Phys14DR-PU4bx50_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 2008.*3)
+
+mcSamplesPHYS14_PU4bx50 = [TT_PU4bx50,WJetsToLNu_PU4bx50,DYJetsToLL_M50_PU4bx50]
+
+
 ################## PU20 bx25ns (default of phys14, so no postfix) ##############
 
 #### Background samples
@@ -128,10 +138,12 @@ DYJetsMuMuM50_PtZ180 = kreator.makeMCComponent("DYJetsMuMuM50_PtZ180", "/DYJetsT
 
 GJets_HT100to200 = kreator.makeMCComponent("GJets_HT100to200", "/GJets_HT-100to200_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",1534)
 GJets_HT200to400 = kreator.makeMCComponent("GJets_HT200to400", "/GJets_HT-200to400_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",489.9)
+GJets_HT400to600 = kreator.makeMCComponent("GJets_HT400to600", "/GJets_HT-400to600_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",62.05)
 GJets_HT600toInf = kreator.makeMCComponent("GJets_HT600toInf", "/GJets_HT-600toInf_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",20.87)
 GJetsHT = [
 GJets_HT100to200,
 GJets_HT200to400,
+GJets_HT400to600,
 GJets_HT600toInf,
 ]
 ZJetsToNuNu_HT100to200 = kreator.makeMCComponent("ZJetsToNuNu_HT100to200", "/ZJetsToNuNu_HT-100to200_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",372.6*1.27)
@@ -276,7 +288,7 @@ T6qqWW = [ T6qqWW_mSq950_mCh325_mChi300 ]
 
 mcSamplesPriv = T5ttttDeg + T1ttbbWW + T1ttbb + T6ttWW + SqGltttt + T1tttt_priv + T5qqqqWW + T5qqqqWWDeg + T6qqWW 
 
-mcSamples = mcSamplesPHYS14_PU20bx25 + mcSamplesPHYS14_PU40bx25 + mcSamplesPriv
+mcSamples = mcSamplesPHYS14_PU20bx25 + mcSamplesPHYS14_PU40bx25 + mcSamplesPHYS14_PU4bx50 + mcSamplesPriv
 
 #-----------DATA---------------
 

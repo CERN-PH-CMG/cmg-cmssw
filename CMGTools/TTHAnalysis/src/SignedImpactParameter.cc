@@ -19,6 +19,8 @@ SignedImpactParameter::SignedImpactParameter() {
 SignedImpactParameter::~SignedImpactParameter() {
 }
 
+//Signed 3D IP
+
 Measurement1D 
 SignedImpactParameter::signedIP3D(const reco::Track &tk, const reco::Vertex &vtx, const reco::Track::Vector jetdir) const {
     if (paramField_ == 0) paramField_ = new OAEParametrizedMagneticField("3_8T");
@@ -31,6 +33,55 @@ SignedImpactParameter::signedIP3D(const reco::Track &tk, const reco::VertexCompo
     reco::Vertex::CovarianceMatrix csv; sv.fillVertexCovariance(csv);
     reco::Vertex svtx(sv.vertex(), csv);
     return signedIP3D(tk, svtx, jetdir);
+}
+
+//Signed 2D IP
+
+Measurement1D 
+SignedImpactParameter::signedIP2D(const reco::Track &tk, const reco::Vertex &vtx, const reco::Track::Vector jetdir) const {
+    if (paramField_ == 0) paramField_ = new OAEParametrizedMagneticField("3_8T");
+    reco::TransientTrack ttk(tk,paramField_);
+    return IPTools::signedTransverseImpactParameter(ttk, GlobalVector(jetdir.X(),jetdir.Y(),jetdir.Z()), vtx).second;
+}
+
+Measurement1D 
+SignedImpactParameter::signedIP2D(const reco::Track &tk, const reco::VertexCompositePtrCandidate &sv, const reco::Track::Vector jetdir) const {
+    reco::Vertex::CovarianceMatrix csv; sv.fillVertexCovariance(csv);
+    reco::Vertex svtx(sv.vertex(), csv);
+    return signedIP2D(tk, svtx, jetdir);
+}
+
+
+//3D IP
+
+Measurement1D 
+SignedImpactParameter::IP3D(const reco::Track &tk, const reco::Vertex &vtx) const {
+    if (paramField_ == 0) paramField_ = new OAEParametrizedMagneticField("3_8T");
+    reco::TransientTrack ttk(tk,paramField_);
+    return IPTools::absoluteImpactParameter3D(ttk,vtx).second;
+}
+
+Measurement1D 
+SignedImpactParameter::IP3D(const reco::Track &tk, const reco::VertexCompositePtrCandidate &sv) const {
+    reco::Vertex::CovarianceMatrix csv; sv.fillVertexCovariance(csv);
+    reco::Vertex svtx(sv.vertex(), csv);
+    return IP3D(tk, svtx);
+}
+
+//2D IP
+
+Measurement1D 
+SignedImpactParameter::IP2D(const reco::Track &tk, const reco::Vertex &vtx) const {
+    if (paramField_ == 0) paramField_ = new OAEParametrizedMagneticField("3_8T");
+    reco::TransientTrack ttk(tk,paramField_);
+    return IPTools::absoluteTransverseImpactParameter(ttk,vtx).second;
+}
+
+Measurement1D 
+SignedImpactParameter::IP2D(const reco::Track &tk, const reco::VertexCompositePtrCandidate &sv) const {
+    reco::Vertex::CovarianceMatrix csv; sv.fillVertexCovariance(csv);
+    reco::Vertex svtx(sv.vertex(), csv);
+    return IP2D(tk, svtx);
 }
 
 

@@ -1,0 +1,5 @@
+<bin   file="testSVfitStandalone.cc" name="testSVfitStandalone">
+  <use name="TauAnalysis/SVfitStandalone"/>
+  <use name="rootcintex"/>
+  <use name="root"/>
+</bin>

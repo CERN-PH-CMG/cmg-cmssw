@@ -56,6 +56,9 @@ isoTrackAna.setOff=False
 # recalibrate MET
 metAna.recalibrate = False
 
+# store all taus by default
+genAna.allGenTaus = True
+
 ##------------------------------------------ 
 ##  CONTROL VARIABLES
 ##------------------------------------------ 
@@ -109,6 +112,7 @@ treeProducer = cfg.Analyzer(
      globalVariables = susyFullHad_globalVariables,
      globalObjects = susyFullHad_globalObjects,
      collections = susyFullHad_collections,
+     defaultFloatType = 'F',
 )
 
 

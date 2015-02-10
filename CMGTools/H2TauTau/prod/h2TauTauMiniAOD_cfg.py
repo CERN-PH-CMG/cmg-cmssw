@@ -17,7 +17,7 @@ numberOfFilesToProcess = -1
 debugEventContent = False
 
 # choose from 'tau-mu' 'di-tau' 'tau-ele' 'mu-ele' 'all'
-channel = 'tau-mu'
+channel = 'di-tau'
 
 # newSVFit enables the svfit mass reconstruction used for the H->tau tau analysis.
 # if false, much faster processing but mass is wrong. 
@@ -26,7 +26,7 @@ tauScaling = 0 # JAN: to be implemented downstream
 
 # increase to 1000 before running on the batch, to reduce size of log files
 # on your account
-reportInterval = 100
+reportInterval = 1
 
 print sep_line
 print 'channel', channel
@@ -40,7 +40,14 @@ print 'tau scaling =', tauScaling
 # dataset_files = 'miniAOD-prod_PAT_.*root'
 
 dataset_user = 'CMS'
-dataset_name = '/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/Phys14DR-PU40bx25_PHYS14_25_V1-v1/MINIAODSIM'
+# dataset_name = '/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/Phys14DR-PU40bx25_PHYS14_25_V1-v1/MINIAODSIM'
+dataset_name = '/GluGluToHToTauTau_M-125_13TeV-powheg-pythia6/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1/MINIAODSIM'
+#dataset_name = '/GluGluToHToTauTau_M-125_13TeV-powheg-pythia6/Phys14DR-PU40bx25_PHYS14_25_V1-v2/MINIAODSIM'
+# dataset_name = '/VBF_HToTauTau_M-125_13TeV-powheg-pythia6/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v2/MINIAODSIM'
+# dataset_name = '/VBF_HToTauTau_M-125_13TeV-powheg-pythia6/Phys14DR-PU40bx25_PHYS14_25_V1-v1/MINIAODSIM'
+# dataset_name = '/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v2/MINIAODSIM' ## also in Marias request
+# dataset_name = '/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/Phys14DR-PU40bx25_PHYS14_25_V1-v1/MINIAODSIM'
+
 dataset_files = '.*root'
 
 
