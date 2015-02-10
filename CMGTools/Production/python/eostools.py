@@ -12,9 +12,6 @@ def setCAFPath():
     """Hack to get the CAF scripts on the PYTHONPATH"""
     caf = '/afs/cern.ch/cms/caf/python'
 
-    if not os.path.exists(caf):
-        caf='/vols/cms02/ace09/public/alphat/cmgtools/dependencies/caf/python'    
-
     if caf not in sys.path:
         sys.path.append(caf)
 setCAFPath()
