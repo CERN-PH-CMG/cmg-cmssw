@@ -54,8 +54,8 @@ class ttHGenLevelAnalyzer( Analyzer ):
         #mc information
         self.mchandles['genParticles'] = AutoHandle( 'prunedGenParticles',
                                                      'std::vector<reco::GenParticle>' )
-        #if self.doPDFWeights:
-        self.mchandles['pdfstuff'] = AutoHandle( 'generator', 'GenEventInfoProduct' )
+        if self.doPDFWeights:
+            self.mchandles['pdfstuff'] = AutoHandle( 'generator', 'GenEventInfoProduct' )
 
     def beginLoop(self, setup):
         super(ttHGenLevelAnalyzer,self).beginLoop( setup )
@@ -243,14 +243,6 @@ class ttHGenLevelAnalyzer( Analyzer ):
             event.pdfWeights[pdf] = [w for w in ws]
             #print "Produced %d weights for %s: %s" % (len(ws),pdf,event.pdfWeights[pdf])
 
-    def addGenBinning(self,event):
-        if self.mchandles['pdfstuff'].product().hasBinningValues():
-            event.genBin = self.mchandles['pdfstuff'].product().binningValues()[0]
-        else:
-            event.genBin = -999
-
-        event.genQScale = self.mchandles['pdfstuff'].product().qScale()
-
     def process(self, event):
         self.readCollections( event.input )
 
@@ -265,8 +257,6 @@ class ttHGenLevelAnalyzer( Analyzer ):
 
         # do MC level analysis
         self.makeMCInfo(event)
-
-        self.addGenBinning(event)
 
         # if MC and filtering on the Higgs decay mode, 
         # them do filter events
