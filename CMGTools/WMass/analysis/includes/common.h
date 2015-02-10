@@ -17,14 +17,17 @@ namespace WMass{
   static const int Wmass_values_array[2*WMassNSteps+1] = {80398};
   static const int Zmass_values_array[2*WMassNSteps+1] = {91188};
   
-  static const int etaMuonNSteps = 3;
-  static const float etaMaxMuons[etaMuonNSteps] = { 1.1,1.6,2.1 };
+  static const int PtSFNSteps = 1;
+  static const int PtSFtype[PtSFNSteps] = { -1 };
+
+  static const int etaMuonNSteps = 1;
+  static const float etaMaxMuons[etaMuonNSteps] = { 0.9 };
   static const int nSigOrQCD = 2;
   TString nSigOrQCD_str[nSigOrQCD] = {"Sig","QCD"};
   static const int NFitVar = 3;
   TString FitVar_str[NFitVar] = {"Pt","Mt","MET"};
   static const int PDF_sets = 229800;
-  static const int PDF_members = 100;
+  static const int PDF_members = 1;
   static const int NtoysMomCorr = 1;
   
   static const int WpTcut = 15;
