@@ -175,7 +175,7 @@ cd {cmssw}/src
 eval `scramv1 ru -sh`
 cd -
 echo 'running'
-python {cmssw_release}/src/PhysicsTools/HeppyCore/python/framework/looper.py pycfg.py config.pck
+python {cmssw}/src/PhysicsTools/HeppyCore/python/framework/looper.py pycfg.py config.pck
 echo
 echo 'sending the job directory back'
 mv Loop/* ./
