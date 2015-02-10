@@ -17,15 +17,18 @@ namespace WMass{
   static const int Wmass_values_array[2*WMassNSteps+1] = {80398};
   static const int Zmass_values_array[2*WMassNSteps+1] = {91188};
   
-  static const int etaMuonNSteps = 3;
-  static const float etaMaxMuons[etaMuonNSteps] = { 1.1,1.6,2.1 };
+  static const int PtSFNSteps = 1;
+  static const int PtSFtype[PtSFNSteps] = { -1 };
+  
+  static const int etaMuonNSteps = 1;
+  static const float etaMaxMuons[etaMuonNSteps] = { 0.9 };
   static const int nSigOrQCD = 2;
   TString nSigOrQCD_str[nSigOrQCD] = {"Sig","QCD"};
   static const int NFitVar = 3;
   TString FitVar_str[NFitVar] = {"Pt","Mt","MET"};
   static const int PDF_sets = 229800;
-  static const int PDF_members = 100;
-  static const int NtoysMomCorr = 1;
+  static const int PDF_members = 1;
+  static const int NVarRecoilCorr = 30;
   
   static const int WpTcut = 15;
   
@@ -44,7 +47,9 @@ namespace WMass{
   // 362 #w,ren,fac,pdf,mW,mZ 1.01129558613 1.0 1.0 232000 80.398 91.1876      <------------ NNPDF2.3 NNLO
   static const int LHE_NNPDF2p3_NNLO_central_index = 362; // 100 members
   
-
+ static const int RecoilCorrVarDiagoParU1orU2fromDATAorMC_[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  1,  1,  1,  1,  1,  1,  1,  1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,  2,  2 };
+ static const int RecoilCorrVarDiagoParN_[]                  = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+  
 
   // bool isGood_WGenPos_1_Gen(double WGen_m,
                             // int MuGen_charge

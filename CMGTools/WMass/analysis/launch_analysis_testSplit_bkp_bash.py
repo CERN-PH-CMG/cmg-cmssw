@@ -9,7 +9,7 @@ import urllib, urlparse, string, time, os, shutil, sys, math
 useLHAPDF = False
 
 # foldername = "test2_zm_pdf";
-foldername = "test";
+foldername = "test_polarization";
 foldername_orig=foldername
 
 ntuple_folder = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
@@ -27,7 +27,7 @@ usePileupSF = 1; # 0=no, 1=yes
 useEffSF = 2; # 0=no, 1=MuonPOG, 2=Heiner
 usePtSF = 0; # Boson pT reweighting: 0=no, 1=yes
 useMomentumCorr = 1; # 0=none, 1=Rochester, 2=MuscleFit
-LocalSmearingRochCorrNToys = 0;
+RecoilCorrNVarAll = 0;
 GlobalSmearingRochCorrNsigma = 0;
 usePhiMETCorr = 0; # 0=none, 1=yes
 useRecoilCorr = 0; # 0=none, 1=yes
@@ -55,22 +55,22 @@ useAlsoGenPforSig= 1;
 ZMassCentral_MeV = "91188"; # 91.1876
 WMassCentral_MeV = "80398"; # 80385
 WMassSkipNSteps = "5"; # 15
-WMassNSteps = "5"; # 60
-# WMassNSteps = "0"; # 60
+# WMassNSteps = "5"; # 60
+WMassNSteps = "0"; # 60
 etaMuonNSteps = "1"; # 5
 etaMaxMuons = "1.6"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
 parallelize = 1;
 # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
-resumbit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" 
-# resumbit_sample = "DYJetsPow,DYJetsMadSig" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
+# resumbit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" 
+resumbit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 
-runWanalysis = 1;
+runWanalysis = 0;
 runZanalysis = 1;
 useBatch = 1;
+resubmit = 0;
 batchQueue = "1nh";
 controlplots = 0;
-resubmit = 0;
 
 mergeSigEWKbkg = 0;
 
@@ -137,7 +137,7 @@ runPhiStarEta = 0;
 ## ============================================================== #
 ## ============================================================== #
 
-# if LocalSmearingRochCorrNToys != 0 or GlobalSmearingRochCorrNsigma != 0 or usePhiMETCorr != 0 \
+# if RecoilCorrNVarAll != 0 or GlobalSmearingRochCorrNsigma != 0 or usePhiMETCorr != 0 \
     # or useRecoilCorr != 1 or RecoilCorrScaleNSigmaU1 != "0" or RecoilCorrResolutionNSigmaU1 != "0" \
     # or RecoilCorrResolutionNSigmaU2 != "0" or syst_ewk_Alcaraz != "0" or LHAPDF_reweighting_members !="1":
   # WMassNSteps = "0"
@@ -160,8 +160,8 @@ if(IS_MC_CLOSURE_TEST==1):
     usePtSF=0;
     usePileupSF=0;
 
-if(LocalSmearingRochCorrNToys<1):
-  LocalSmearingRochCorrNToys=1
+if(RecoilCorrNVarAll<1):
+  RecoilCorrNVarAll=1
 if(useMomentumCorr==1): 
   foldername+="_RochCorr";
   if(GlobalSmearingRochCorrNsigma>0): 
@@ -289,7 +289,8 @@ fZana_str = [
   ntuple_folder+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
   ntuple_folder+"WJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",
   # ntuple_folder+"DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_folder+"DYJetsMM/InclWeights/ZTreeProducer_tree.root",
+  # ntuple_folder+"DYJetsMM/InclWeights/ZTreeProducer_tree.root",
+  ntuple_folder+"DYJetsMM/allEvts/ZTreeProducer_tree.root",
 ##  ntuple_folder_8TeV_ABC+"ZTreeProducer_tree_tkmetABC.root",  # this is the 8TeV DYJetsLL contains also the tkmetABC  
   ntuple_folder+"DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
   ntuple_folder+"DYJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",
@@ -411,7 +412,7 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
         else: # otherwise build it from this cfg
             print "creating JobOutputs/"+foldername+"/"+outputdir+"/common.h from includes/common.h.bkp"
             shutil.copyfile("includes/common.h.bkp", "includes/common.h");
-            os.system("sh "+os.getcwd()+"/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMuonNSteps+" \""+etaMaxMuons+"\" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(LocalSmearingRochCorrNToys)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index))
+            os.system("sh "+os.getcwd()+"/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMuonNSteps+" \""+etaMaxMuons+"\" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(RecoilCorrNVarAll)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index))
             shutil.copyfile("includes/common.h","JobOutputs/"+foldername+"/"+outputdir+"/common.h");
         
         os.chdir("AnalysisCode/");

@@ -37,7 +37,7 @@ infile_run_input='launch_analysis_bash.py'
 
 usebatch=1 #  use batch submission for W/Z ANALYSIS
 run_all_or_just_fit=( -1 ) #  1 = RUN ALL, -1 = W/Z ANALYSIS, -2 = MERGE, -3 = BACKGROUND FIT, -4 = DATACARDS, -5 = LIKELIHOOD FIT
-resubmit=1
+resubmit=0
 run_W_or_Z=1 #  0 = W,  1 = Z,  2 = both (W and Z)
 fit_W_or_Z="Z" # "W" or "Z" or "W,Z"
 
