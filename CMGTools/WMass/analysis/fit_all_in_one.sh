@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh
+
 # use_PForNoPUorTKmet=( 2 1 0 ) # 0:PF, 1:NOPU, 2:TK 
 use_PForNoPUorTKmet=( 2 ) # 0:PF, 1:NOPU, 2:TK 
 
@@ -34,10 +36,9 @@ zpt_scale_variations=( \
 infile_run_input='launch_analysis_bash.py'
 
 # echo ${#Recoil_U1resol_variations[@]}
-
 usebatch=1 #  use batch submission for W/Z ANALYSIS
 run_all_or_just_fit=( -1 ) #  1 = RUN ALL, -1 = W/Z ANALYSIS, -2 = MERGE, -3 = BACKGROUND FIT, -4 = DATACARDS, -5 = LIKELIHOOD FIT
-resubmit=1
+resubmit=0
 run_W_or_Z=1 #  0 = W,  1 = Z,  2 = both (W and Z)
 fit_W_or_Z="Z" # "W" or "Z" or "W,Z"
 
@@ -73,7 +74,7 @@ for ((n=0; n < ${#run_all_or_just_fit[@]} ; n++));
                   echo "Recoil_U1scale_variations " ${Recoil_U1scale_variations[${iu2}]} " (m="$m")"
                   echo "momcorr_scale_variations " ${momcorr_scale_variations[${h}]} " (h="$h")"
 
-                  infile_run='launch_analysis_testSplit_bash_use_met'$PForNoPUorTKmet'_U1scale_'${Recoil_U1scale_variations[${iu2}]}'_U1resol_'${Recoil_U1resol_variations[${iu2}]}'_U2resol_'${Recoil_U2resol_variations[${iu2}]}'_zpt_'${zpt_scale_variations[${z}]}'.py'
+                  infile_run='launch_analysis_testSplit_bash_use_met'$use_PForNoPUorTKmet'_U1scale_'${Recoil_U1scale_variations[${iu2}]}'_U1resol_'${Recoil_U1resol_variations[${iu2}]}'_U2resol_'${Recoil_U2resol_variations[${iu2}]}'_zpt_'${zpt_scale_variations[${z}]}'.py'
 
                   # echo ${Recoil_U1resol_variations[${iu2}]} ${Recoil_U1scale_variations[${iu2}]}; 
                   # for (resol,scale) in Recoil_U1scale_variations:

@@ -12,6 +12,8 @@ useLHAPDF = False
 # foldername = "test_efficiencies";
 # foldername = "test_bosonpt";
 foldername = "test_newstd";
+##foldername = "test_controlPLOT_7TeV";
+##foldername = "test_controlPLOT_8TeV_genTKMET";
 foldername_orig=foldername
 
 ntuple_folder = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
@@ -68,6 +70,8 @@ parallelize = 0;
 # resumbit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" 
 resumbit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 # resumbit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
+#resumbit_sample = "DATA, DYJetsMadSig"
+#resumbit_sample = "DATA, DYJetsMadSig ,DYJetsPow"
 
 runWanalysis = 0;
 runZanalysis = 1;

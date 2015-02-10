@@ -266,7 +266,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
   TString metSuffix=use_PForNoPUorTKmet==1?"_pfnoPU":"";
   if(use_PForNoPUorTKmet==2) metSuffix="_tkmet";
-  if(use_PForNoPUorTKmet==0) metSuffix="_pfmet";
+  if(use_PForNoPUorTKmet==0) metSuffix="_tkmet";
+  //  if(use_PForNoPUorTKmet==0) metSuffix="_pfmet"; // since we do no have the pfmet as of JAN25
   
   TString generatorSuffix="_powheg";
   if (sampleName.Contains("DYJetsMadSig"))
@@ -782,7 +783,25 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   if(nvtx==18) tag_VTX="_VTX18";
                   if(nvtx==19) tag_VTX="_VTX19";
                   if(nvtx>=20) tag_VTX="_VTX20";
-                  
+		  /*
+		  // for 8 TeV
+                  if(nvtx==20) tag_VTX="_VTX20";
+                  if(nvtx==21) tag_VTX="_VTX21";
+                  if(nvtx==22) tag_VTX="_VTX22";
+                  if(nvtx==23) tag_VTX="_VTX23";
+                  if(nvtx==24) tag_VTX="_VTX24";
+                  if(nvtx==25) tag_VTX="_VTX25";
+                  if(nvtx==26) tag_VTX="_VTX26";
+                  if(nvtx==27) tag_VTX="_VTX27";
+                  if(nvtx==28) tag_VTX="_VTX28";
+                  if(nvtx==29) tag_VTX="_VTX29";
+                  if(nvtx==30) tag_VTX="_VTX30";
+                  if(nvtx==31) tag_VTX="_VTX31";
+                  if(nvtx==32) tag_VTX="_VTX32";
+                  if(nvtx==33) tag_VTX="_VTX33";
+                  if(nvtx==34) tag_VTX="_VTX34";
+                  if(nvtx>=35) tag_VTX="_VTX35";
+		  */
                               
                   TLorentzVector VisPt;
                   VisPt.SetPtEtaPhiM(Zcorr.Pt(),0,Zcorr.Phi(),0);
