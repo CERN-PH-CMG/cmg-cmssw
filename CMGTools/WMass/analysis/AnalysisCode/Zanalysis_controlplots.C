@@ -68,8 +68,8 @@ void Zanalysis_controlplots::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TStrin
   TH1D *hWlikePos_VarScaled_5_RecoCut[WMass::NFitVar][WMass::etaMuonNSteps][2*WMass::WMassNSteps+1];
   TH1D *hWlikePos_VarScaled_6_METCut[WMass::NFitVar][WMass::etaMuonNSteps][2*WMass::WMassNSteps+1];
   TH1D *hWlikePos_VarScaled_7_RecoilCut[WMass::NFitVar][WMass::etaMuonNSteps][2*WMass::WMassNSteps+1];
-  TH1D *hWlikePos_VarScaled_8_JetCut[WMass::NtoysMomCorr][WMass::PDF_members][WMass::NFitVar][WMass::etaMuonNSteps][2*WMass::WMassNSteps+1];
-  TH1D *hWlikePos_VarNonScaled_8_JetCut[WMass::NtoysMomCorr][WMass::PDF_members][WMass::NFitVar][WMass::etaMuonNSteps][2*WMass::WMassNSteps+1];
+  TH1D *hWlikePos_VarScaled_8_JetCut[WMass::NVarRecoilCorr][WMass::PDF_members][WMass::NFitVar][WMass::etaMuonNSteps][2*WMass::WMassNSteps+1];
+  TH1D *hWlikePos_VarNonScaled_8_JetCut[WMass::NVarRecoilCorr][WMass::PDF_members][WMass::NFitVar][WMass::etaMuonNSteps][2*WMass::WMassNSteps+1];
   TH1D *hWlikePos_VarScaled_QCD[WMass::NFitVar][WMass::etaMuonNSteps][2*WMass::WMassNSteps+1];
 
   TH1D *hPDF_weights[WMass::PDF_members];
@@ -225,9 +225,9 @@ void Zanalysis_controlplots::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TStrin
         hWlikePos_VarScaled_7_RecoilCut[k][i][j]=new TH1D(Form("hWlikePos_%sScaled_7_RecoilCut_eta%s_%d",WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass),Form("hWlikePos_%sScaled_7_RecoilCut_eta%s_%d",WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass),nbins,bins_scaled[k]);
         hWlikePos_VarScaled_7_RecoilCut[k][i][j]->Sumw2();
         for(int h=0; h<WMass::PDF_members; h++){
-          for(int m=0; m<WMass::NtoysMomCorr; m++){
+          for(int m=0; m<WMass::NVarRecoilCorr; m++){
             TString toys_str = "";
-            if(WMass::NtoysMomCorr>1) toys_str = Form("_MomCorrToy%d",m);
+            if(WMass::NVarRecoilCorr>1) toys_str = Form("_RecoilCorrVar%d",m);
             
             hWlikePos_VarScaled_8_JetCut[m][h][k][i][j]=new TH1D(Form("hWlikePos_%sScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass),Form("hWlikePos_%sScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass),nbins,bins_scaled[k]);
             hWlikePos_VarScaled_8_JetCut[m][h][k][i][j]->Sumw2();
@@ -314,7 +314,7 @@ void Zanalysis_controlplots::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TStrin
   
   //To get the central value of the momentum correction
   int random_seed_start=67525;
-  rochcor_44X_v3 *rmcor44X = WMass::NtoysMomCorr>1? new rochcor_44X_v3(random_seed_start) : new rochcor_44X_v3();  // make the pointer of rochcor class
+  rochcor_44X_v3 *rmcor44X = WMass::NVarRecoilCorr>1? new rochcor_44X_v3(random_seed_start) : new rochcor_44X_v3();  // make the pointer of rochcor class
   TString MuscleCard = (IS_MC_CLOSURE_TEST || isMCorDATA==0) ? "MuScleFit_2011_MC_44X" : "MuScleFit_2011_DATA_44X";
   TString fitParametersFile = MuscleCard+".txt";
   MuScleFitCorrector *corrector;
@@ -436,7 +436,7 @@ void Zanalysis_controlplots::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TStrin
         } // end gen stuff 
         
         if(!useGenVar || Z_mass>0){ // dummy thing to separate signal and background in DY+Jets (useless)
-          for(int m=0; m<WMass::NtoysMomCorr; m++){
+          for(int m=0; m<WMass::NVarRecoilCorr; m++){
             if( evtHasGoodVtx && evtHasTrg){ // good reco event
 
               TLorentzVector muPosCorr,muNegCorr, muPosNoCorr,muNegNoCorr, Zcorr; //TLorentzVector of the reconstructed muon
@@ -836,9 +836,9 @@ void Zanalysis_controlplots::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TStrin
           int jWmass = (WMass::WMassCentral_MeV-(WMass::WMassNSteps-j)*WMass::WMassStep_MeV);
           for(int k=0;k<3;k++){
             for(int h=0; h<WMass::PDF_members; h++){
-              for(int m=0; m<WMass::NtoysMomCorr; m++){
+              for(int m=0; m<WMass::NVarRecoilCorr; m++){
                 TString toys_str = "";
-                if(WMass::NtoysMomCorr>1) toys_str = Form("_MomCorrToy%d",m);
+                if(WMass::NVarRecoilCorr>1) toys_str = Form("_RecoilCorrVar%d",m);
                 
                 hWlikePos_VarScaled_8_JetCut[m][h][k][i][j]=(TH1D*)hWlikePos_VarScaled_8_JetCut[m][h][k][i][WMass::WMassNSteps]->Clone(Form("hWlikePos_%sScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass));
                 hWlikePos_VarScaled_8_JetCut[m][h][k][i][j]->SetName(Form("hWlikePos_%sScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass));

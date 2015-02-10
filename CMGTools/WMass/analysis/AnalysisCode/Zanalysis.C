@@ -51,7 +51,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   cout << "generated_PDF_set= "<<generated_PDF_set
        << " generated_PDF_member= " << generated_PDF_member
        << " contains_PDF_reweight= " << contains_PDF_reweight
-       << " WMass::NtoysMomCorr= " << WMass::NtoysMomCorr
+       << " WMass::NVarRecoilCorr= " << WMass::NVarRecoilCorr
        << endl;
 
   TRandom3 *r = new TRandom3(0);
@@ -240,7 +240,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   //To get the central value of the momentum correction
   // rochcor42X *rmcor42X = new rochcor42X();  // make the pointer of rochcor class
   int random_seed_start=67525;
-  rochcor_44X_v3 *rmcor44X = WMass::NtoysMomCorr>1? new rochcor_44X_v3(random_seed_start) : new rochcor_44X_v3();  // make the pointer of rochcor class
+  rochcor_44X_v3 *rmcor44X = WMass::NVarRecoilCorr>1? new rochcor_44X_v3(random_seed_start) : new rochcor_44X_v3();  // make the pointer of rochcor class
   TString MuscleCard = (IS_MC_CLOSURE_TEST || isMCorDATA==0) ? "MuScleFit_2011_MC_44X" : "MuScleFit_2011_DATA_44X";
   TString fitParametersFile = MuscleCard+".txt";
   MuScleFitCorrector *corrector;
@@ -317,8 +317,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     nb = fChain->GetEntry(jentry);   nbytes += nb;
     // if (Cut(ientry) < 0) continue;
     // if(jentry%250000==0) cout <<"Analyzed entry "<<jentry<<"/"<<nentries<<endl;
-    // if(jentry%25000==0) 
-        cout <<"\nAnalyzed entry "<<jentry<<"/"<<nentries<<endl;
+    if(jentry%25000==0) 
+        cout <<"Analyzed entry "<<jentry<<"/"<<nentries<<endl;
     if(jentry%50000==0){
       time_t now = time(0);
       TString dt = ctime(&now); dt.ReplaceAll("\n"," ");
@@ -520,10 +520,10 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         } // end gen stuff 
         
         if(!useGenVar || Z_mass>0){ // dummy thing to separate signal and background in DY+Jets (useless)
-          for(int m=0; m<WMass::NtoysMomCorr; m++){
+          for(int m=0; m<WMass::NVarRecoilCorr; m++){
             
             TString toys_str = "";
-            if(WMass::NtoysMomCorr>1) toys_str = Form("_MomCorrToy%d",m);
+            if(WMass::NVarRecoilCorr>1) toys_str = Form("_RecoilCorrVar%d",m);
             // cout << "toys_str " << toys_str << endl;
             
             //------------------------------------------------------
@@ -547,9 +547,27 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               // int vtxBin=1;
               int vtxBin=rapBin;
               
-              if(first_time_in_the_event && use_PForNoPUorTKmet<3 && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){ // use MET corrections if required
+              if( (first_time_in_the_event || WMass::NVarRecoilCorr>1) 
+                  && use_PForNoPUorTKmet<3 && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){ // use MET corrections if required
+                
+                if(use_PForNoPUorTKmet==0){
+                  pfmet_bla = pfmet;
+                  pfmetphi_bla = pfmet_phi;
+                }else if(use_PForNoPUorTKmet==1){
+                  pfmet_bla = nopumet;
+                  pfmetphi_bla = nopumet_phi;
+                }else if(use_PForNoPUorTKmet==2){
+                  pfmet_bla = tkmet;
+                  pfmetphi_bla = tkmet_phi;
+                }
+                
                 // cout
-                // << "pfmet_bla before=" << pfmet_bla
+                // << "m= " << m 
+                // << " u1u2 " << WMass::RecoilCorrVarDiagoParU1orU2fromDATAorMC_[m]
+                // << " par " << WMass::RecoilCorrVarDiagoParN_[m] 
+                // << " first_time_in_the_event " << first_time_in_the_event << endl;
+                // cout 
+                // << " pfmet_bla before=" << pfmet_bla
                 // << " pfmetphi_bla before=" << pfmetphi_bla
                 // << " pfmet_blaCentral before=" << pfmet_blaCentral
                 // << " pfmetphi_blaCentral before=" << pfmetphi_blaCentral
@@ -585,16 +603,19 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                       ZGen_pt,ZGen_phi,
                                       ZNocorr.Pt(),ZNocorr.Phi(),
                                     u1_dummy, u2_dummy,
-                                    RecoilCorrVarDiagoParU1orU2fromDATAorMC, RecoilCorrVarDiagoParN, RecoilCorrVarDiagoParSigmas,
+                                    // RecoilCorrVarDiagoParU1orU2fromDATAorMC, RecoilCorrVarDiagoParN, RecoilCorrVarDiagoParSigmas,
+                                    WMass::RecoilCorrVarDiagoParU1orU2fromDATAorMC_[m], WMass::RecoilCorrVarDiagoParN_[m], RecoilCorrVarDiagoParSigmas,
                                    vtxBin,doSingleGauss,1); 
                                    // return;
                         // cout << "correcting pfmet_Central" << endl;
-                    correctorRecoil_Z->CorrectMET3gaus(pfmet_blaCentral,pfmetphi_blaCentral,
+                    if(first_time_in_the_event && m==0){
+                      correctorRecoil_Z->CorrectMET3gaus(pfmet_blaCentral,pfmetphi_blaCentral,
                                       ZGen_pt,ZGen_phi,
                                       ZNocorr.Pt(),ZNocorr.Phi(),
-                                    u1_dummy, u2_dummy,
-                                    0, 0, 0,
-                                   vtxBin,doSingleGauss,1); 
+                                      u1_dummy, u2_dummy,
+                                      0, 0, 0,
+                                      vtxBin,doSingleGauss,1); 
+                    }
                 }
                 // cout
                 // << "pfmet_bla after=" << pfmet_bla
@@ -1270,9 +1291,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
           int jZmass_MeV = WMass::Zmass_values_array[j];
           for(int k=0;k<3;k++){
             for(int h=0; h<WMass::PDF_members; h++){
-              for(int m=0; m<WMass::NtoysMomCorr; m++){
+              for(int m=0; m<WMass::NVarRecoilCorr; m++){
                 TString toys_str = "";
-                if(WMass::NtoysMomCorr>1) toys_str = Form("_MomCorrToy%d",m);
+                if(WMass::NVarRecoilCorr>1) toys_str = Form("_RecoilCorrVar%d",m);
                 
                 common_stuff::cloneHisto1D(Form("hWlikePos_%sScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV), 
                                             Form("hWlikePos_%sScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jZmass_MeV), 

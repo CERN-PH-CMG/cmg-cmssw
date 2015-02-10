@@ -27,9 +27,9 @@ void R_WdivZ(TString folder="", int OnlyCounts=0, int tot_N_evts=1, int generate
   // cR_WdivZ_WlikePos_all[i][j]=new TCanvas(Form("cR_WdivZ_WlikePos_all_pdf%d-%d_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,eta_str.Data(),jWmass),Form("cR_WdivZ_WlikePos_all_pdf%d-%d_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,eta_str.Data(),jWmass),700,700);
   
   TString Wana_str[CutSteps]    ={"hWPos_PtScaled_1_Gen","hWPos_PtScaled_2_ZGenMassCut","hWPos_PtScaled_3_Mu1GenCut","hWPos_PtScaled_4_Mu2GenCut",
-    "hWPos_PtScaled_5_RecoCut","hWPos_PtScaled_6_METCut","hWPos_PtScaled_7_RecoilCut",Form("hWPos_PtScaled_8_JetCut_pdf%d-%d%s",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,generated_PDF_member, WMass::NtoysMomCorr>1?Form("_MomCorrToy0"):"")};
+    "hWPos_PtScaled_5_RecoCut","hWPos_PtScaled_6_METCut","hWPos_PtScaled_7_RecoilCut",Form("hWPos_PtScaled_8_JetCut_pdf%d-%d%s",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,generated_PDF_member, WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar0"):"")};
   TString Zana_str[CutSteps]    ={"hWlikePos_PtScaled_1_Gen","hWlikePos_PtScaled_2_ZGenMassCut","hWlikePos_PtScaled_3_Mu1GenCut","hWlikePos_PtScaled_4_Mu2GenCut",
-    "hWlikePos_PtScaled_5_RecoCut","hWlikePos_PtScaled_6_METCut","hWlikePos_PtScaled_7_RecoilCut",Form("hWlikePos_PtScaled_8_JetCut_pdf%d-%d%s",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,generated_PDF_member, WMass::NtoysMomCorr>1?Form("_MomCorrToy0"):"")};
+    "hWlikePos_PtScaled_5_RecoCut","hWlikePos_PtScaled_6_METCut","hWlikePos_PtScaled_7_RecoilCut",Form("hWlikePos_PtScaled_8_JetCut_pdf%d-%d%s",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,generated_PDF_member, WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar0"):"")};
   TString hR_WdivZana_str[CutSteps]={"hR_WdivZ_WlikePos_1_Gen","hR_WdivZ_WlikePos_2_ZGenMassCut","hR_WdivZ_WlikePos_3_Mu1GenCut","hR_WdivZ_WlikePos_4_Mu2GenCut",
     "hR_WdivZ_WlikePos_5_RecoCut","hR_WdivZ_WlikePos_6_METCut","hR_WdivZ_WlikePos_7_RecoilCut","hR_WdivZ_WlikePos_8_JetCut"};
   TString cR_WdivZana_str[CutSteps]={"cR_WdivZ_WlikePos_1_Gen","cR_WdivZ_WlikePos_2_ZGenMassCut","cR_WdivZ_WlikePos_3_Mu1GenCut","cR_WdivZ_WlikePos_4_Mu2GenCut",
@@ -63,8 +63,8 @@ void R_WdivZ(TString folder="", int OnlyCounts=0, int tot_N_evts=1, int generate
 
       }
       
-      TH1D*hWPos_NonPtScaled=(TH1D*)Wana->Get(Form("hWPos_PtNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,generated_PDF_member, WMass::NtoysMomCorr>1?Form("_MomCorrToy0"):"",eta_str.Data(),jWmass));
-      TH1D*hWlikePos_NonPtScaled=(TH1D*)Zana->Get(Form("hWlikePos_PtNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,generated_PDF_member, WMass::NtoysMomCorr>1?Form("_MomCorrToy0"):"",eta_str.Data(),jWmass));
+      TH1D*hWPos_NonPtScaled=(TH1D*)Wana->Get(Form("hWPos_PtNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,generated_PDF_member, WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar0"):"",eta_str.Data(),jWmass));
+      TH1D*hWlikePos_NonPtScaled=(TH1D*)Zana->Get(Form("hWlikePos_PtNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,generated_PDF_member, WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar0"):"",eta_str.Data(),jWmass));
       if(!OnlyCounts){
         hR_WdivZ_WlikePos_NonPtScaled[i][j]=(*hWPos_NonPtScaled)/(*hWlikePos_NonPtScaled);
         hR_WdivZ_WlikePos_NonPtScaled[i][j].SetName(Form("hR_WdivZ_WlikePos_PtNonScaled_8_JetCut_eta%s_%d",eta_str.Data(),jWmass));
