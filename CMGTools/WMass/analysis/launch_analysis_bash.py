@@ -11,13 +11,14 @@ useLHAPDF = False
 # foldername = "test2_zm_pdf";
 # foldername = "test_efficiencies";
 # foldername = "test_bosonpt";
-foldername = "test_newstd";
+# foldername = "test_newstd";
+foldername = "test_recoilVar";
 ##foldername = "test_controlPLOT_7TeV";
 ##foldername = "test_controlPLOT_8TeV_genTKMET";
 foldername_orig=foldername
 
 ntuple_folder = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
-ntuple_folder_8TeV_ABC = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_8TeV/";
+ntuple_folder_8TeV_ABC = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/";
 # ntuple_folder = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/";
 # ntuple_folder = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_10_15/";
 # ntuple_folder = "root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/";
@@ -32,13 +33,13 @@ useEffSF = 2; # 0=no, 1=MuonPOG, 2=Heiner
 # usePtSF = sys.argv[1]; # Boson pT reweighting: 0=no, 1=yes
 usePtSF = -1; # Boson pT reweighting: 0=no, 1=yes
 useMomentumCorr = 3; # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector
-LocalSmearingRochCorrNToys = 0;
 GlobalSmearingRochCorrNsigma = 0;
 usePhiMETCorr = 0; # 0=none, 1=yes
 useRecoilCorr = 2; # 0=none, 1=yes
-RecoilCorrVarDiagoParU1orU2fromDATAorMC = "3"; # SYST VARIATIONS: 1= U1 DATA, 2= U2 DATA, 3= U1 MC, 4= U2 MC
-RecoilCorrVarDiagoParN = "2";                  # 0...16 =none, 1=yes
+RecoilCorrNVarAll = 30;
 RecoilCorrVarDiagoParSigmas = "1"; # 0=none, 1=yes
+RecoilCorrVarDiagoParU1orU2fromDATAorMC = "0"; # SYST VARIATIONS: 1= U1 DATA, 2= U2 DATA, 3= U1 MC, 4= U2 MC
+RecoilCorrVarDiagoParN = "0";                  # 0...16 =none, 1=yes
 syst_ewk_Alcaraz = "0"; # 0=none, 1=yes
 # LHAPDF_reweighting_sets="11200" # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
 # LHAPDF_reweighting_members="51" # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
@@ -60,12 +61,12 @@ useAlsoGenPforSig= 1;
 ZMassCentral_MeV = "91188"; # 91.1876
 WMassCentral_MeV = "80398"; # 80385
 WMassSkipNSteps = "5"; # 15
-WMassNSteps = "5"; # 60
-# WMassNSteps = "0"; # 60
+# WMassNSteps = "5"; # 60
+WMassNSteps = "0"; # 60
 etaMuonNSteps = "1"; # 5
 etaMaxMuons = "0.9"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
-parallelize = 0;
+parallelize = 1;
 # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 # resumbit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" 
 resumbit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
@@ -75,9 +76,9 @@ resumbit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig, 
 
 runWanalysis = 0;
 runZanalysis = 1;
-useBatch = 0;
+useBatch = 1;
 resubmit = 0;
-batchQueue = "8nh";
+batchQueue = "1nd";
 controlplots = 0;
 
 mergeSigEWKbkg = 0;
@@ -145,7 +146,7 @@ runPhiStarEta = 0;
 ## ============================================================== #
 ## ============================================================== #
 
-# if LocalSmearingRochCorrNToys != 0 or GlobalSmearingRochCorrNsigma != 0 or usePhiMETCorr != 0 \
+# if RecoilCorrNVarAll != 0 or GlobalSmearingRochCorrNsigma != 0 or usePhiMETCorr != 0 \
     # or useRecoilCorr != 1 or RecoilCorrVarDiagoParSigmas != "0" or RecoilCorrVarDiagoParN != "0" \
     # or RecoilCorrVarDiagoParU1orU2fromDATAorMC != "0" or syst_ewk_Alcaraz != "0" or LHAPDF_reweighting_members !="1":
   # WMassNSteps = "0"
@@ -168,8 +169,8 @@ if(IS_MC_CLOSURE_TEST==1):
     # usePtSF=0;
     # usePileupSF=0;
 
-if(LocalSmearingRochCorrNToys<1):
-  LocalSmearingRochCorrNToys=1
+if(RecoilCorrNVarAll<1):
+  RecoilCorrNVarAll=1
 if(useMomentumCorr==1): 
   foldername+="_RochCorr";
   if(GlobalSmearingRochCorrNsigma>0): 
@@ -299,7 +300,7 @@ fZana_str = [
   ntuple_folder+"DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root",
   # ntuple_folder+"DYJetsMM/InclWeights/ZTreeProducer_tree.root",
   # ntuple_folder+"DYJetsMM/allEvts/ZTreeProducer_tree.root",
-##  ntuple_folder_8TeV_ABC+"DYJetsLL/ZTreeProducer_tree_tkmetABC.root",  # this is the 8TeV DYJetsLL contains also the tkmetABC
+##  ntuple_folder_8TeV_ABC+"ZTreeProducer_tree_tkmetABC.root",  # this is the 8TeV DYJetsLL contains also the tkmetABC  
   ntuple_folder+"DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
   ntuple_folder+"DYJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",
   ntuple_folder+"TTJets/ZTreeProducer_tree.root",
@@ -420,7 +421,7 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
         else: # otherwise build it from this cfg
             print "creating JobOutputs/"+foldername+"/"+outputdir+"/common.h from includes/common.h.bkp"
             shutil.copyfile("includes/common.h.bkp", "includes/common.h");
-            os.system("sh "+os.getcwd()+"/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMuonNSteps+" \""+etaMaxMuons+"\" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(LocalSmearingRochCorrNToys)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF))
+            os.system("sh "+os.getcwd()+"/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMuonNSteps+" \""+etaMaxMuons+"\" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(RecoilCorrNVarAll)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF))
             shutil.copyfile("includes/common.h","JobOutputs/"+foldername+"/"+outputdir+"/common.h");
             # sys.exit()
         os.chdir("AnalysisCode/");
@@ -526,11 +527,11 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
             if not parallelize:
                 os.system("./runZanalysis.o 0,0,"+str(nEntries)+","+zstring)
             else:
-                nevents = 2e5
+                nevents = 1e5
                 if ("DYJetsMadSig" in sample[i]  or "DYJetsPow" in sample[i]):
-                  nevents = 1e5
+                  nevents = 5e3
                 if ("DATA" in sample[i]):
-                  nevents = 5e5  
+                  nevents = 2e5  
                 # if (WMassNSteps=="0"):
                   # nevents = 1e6  
                   

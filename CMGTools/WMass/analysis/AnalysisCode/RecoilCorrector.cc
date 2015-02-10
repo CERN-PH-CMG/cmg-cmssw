@@ -270,13 +270,6 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
     v->setVal(0);
   // cout << "wU1[1]["<<fJet<<"]" << endl; v->Print();
   
-  v = wU2[1][fJet]->var(Form("eig_eig%d",RecoilCorrVarDiagoParN));
-  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==2)
-    v->setVal(RecoilCorrVarDiagoParSigmas);
-  else
-    // v->setVal(0);
-  // cout << "wU2[1]["<<fJet<<"]" << endl; v->Print();
-  
   v = wU1[2][fJet]->var(Form("eig_eig%d",RecoilCorrVarDiagoParN));
   if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==3)
     v->setVal(RecoilCorrVarDiagoParSigmas);
@@ -284,13 +277,20 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
     v->setVal(0);
   // cout << "wU1[2]["<<fJet<<"]" << endl; v->Print();
   
-  v = wU2[2][fJet]->var(Form("eig_eig%d",RecoilCorrVarDiagoParN));
-  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==4)
-    v->setVal(RecoilCorrVarDiagoParSigmas);
-  else
-    v->setVal(0);
-  // cout << "wU2[2]["<<fJet<<"]" << endl; v->Print();
-  
+  if(RecoilCorrVarDiagoParN<12){
+    v = wU2[1][fJet]->var(Form("eig_eig%d",RecoilCorrVarDiagoParN));
+    if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==2)
+      v->setVal(RecoilCorrVarDiagoParSigmas);
+    else
+      v->setVal(0);
+    // cout << "wU2[1]["<<fJet<<"]" << endl; v->Print();
+    v = wU2[2][fJet]->var(Form("eig_eig%d",RecoilCorrVarDiagoParN));
+    if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==4)
+      v->setVal(RecoilCorrVarDiagoParSigmas);
+    else
+      v->setVal(0);
+    // cout << "wU2[2]["<<fJet<<"]" << endl; v->Print();
+  }
   
   // pdfU1Cdf[2][fJet] = (RooAbsReal*)wU1[2][fJet]->function(Form("AddU1Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",fJet));
   // pdfU1Cdf[1][fJet] = (RooAbsReal*)wU1[1][fJet]->function(Form("AddU1Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",fJet));
