@@ -16,7 +16,6 @@
 <use name="PhysicsTools/SelectorUtils"/>
 <use name="TauAnalysis/SVFitStandAlone2011"/>
 <use name="TauAnalysis/SVfitStandalone"/>
-<use name="CMGTools/Common"/>
 <use name="CMGTools/RootTools"/>
 <export>
   <lib   name="1"/>

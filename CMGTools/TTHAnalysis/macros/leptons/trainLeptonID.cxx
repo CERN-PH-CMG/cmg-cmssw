@@ -2,8 +2,7 @@ void trainLeptonID(TString name, TString train="GoodvsBad") {
     TTree *dSig = (TTree*) _file0->Get("tree");
     TTree *dBg1 = (TTree*) _file1->Get("tree");
     TFile *fOut = new TFile(name+".root","RECREATE");
-    TMVA::Factory *factory = new TMVA::Factory(name, fOut, "!V:!Color");
-
+    TMVA::Factory *factory = new TMVA::Factory(name, fOut, "!V:!Color:Transformations=I");
     
     if (!name.Contains("pteta")) {
         factory->AddSpectator("LepGood_pt", 'D');

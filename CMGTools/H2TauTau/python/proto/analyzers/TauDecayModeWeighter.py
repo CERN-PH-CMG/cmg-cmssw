@@ -20,21 +20,27 @@ class TauDecayModeWeighter( Analyzer ):
 
     def process(self, event):
         self.weight = 1
-
+        
+        # RIC: let the user decide which leg needs to be corrected. In tt is both.
+        # Default is leg1, so that for mt and et this modification is transparent 
+        if hasattr( self.cfg_ana, 'legs' ) : legs = self.cfg_ana.legs
+        else                               : legs = 'leg1'
+        
         # Not strictly correct, but this is agreed upon for Summer 2013:
         if self.cfg_comp.isEmbed or 'Higgs' in self.cfg_comp.name or ('DY' in self.cfg_comp.name and event.isFake == 0):
-            decayMode = event.diLepton.leg1().decayMode()
-            if decayMode == 0:
-                self.weight = self.oneProngNoPiZeroWeight
+            for leg in legs :
+                decayMode = getattr(event.diLepton, leg)().decayMode()
+                if decayMode == 0:
+                    self.weight *= self.oneProngNoPiZeroWeight
 
             # print decayMode, self.weight, self.cfg_comp.name
-
-
+            
         event.eventWeight *= self.weight
         event.tauESWeight = self.weight
 
         if self.cfg_ana.verbose:
-            print 'TauDecayModeWeighter', event.diLepton.leg1().decayMode(), event.isFake, event.tauESWeight
+            for leg in legs :            
+              print 'TauDecayModeWeighter\t',leg,'\t', getattr(event.diLepton, leg)().decayMode(), event.isFake, event.tauESWeight
 
         self.averages['weight'].add( self.weight )
         return True
