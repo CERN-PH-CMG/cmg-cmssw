@@ -11,6 +11,7 @@ import shutil
 def setCAFPath():
     """Hack to get the CAF scripts on the PYTHONPATH"""
     caf = '/afs/cern.ch/cms/caf/python'
+
     if caf not in sys.path:
         sys.path.append(caf)
 setCAFPath()

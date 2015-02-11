@@ -306,6 +306,7 @@ metAna = cfg.Analyzer(
     METAnalyzer, name="metAnalyzer",
     doTkMet = False,
     doMetNoMu = False,
+    doMetNoPhoton = False,
     recalibrate = False,
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
@@ -320,8 +321,9 @@ ttHCoreEventAna = cfg.Analyzer(
     )
 
 ## Jet-MET based Skim (generic, but requirements depend on the final state)
-#ttHJetMETSkim = cfg.Analyzer(
-#    'ttHJetMETSkimmer',
+# from CMGTools.TTHAnalysis.analyzers.ttHJetMETSkimmer import ttHJetMETSkimmer
+# ttHJetMETSkim = cfg.Analyzer(
+#    ttHJetMETSkimmer, name='ttHJetMETSkimmer',
 #    jets      = "cleanJets", # jet collection to use
 #    jetPtCuts = [],  # e.g. [60,40,30,20] to require at least four jets with pt > 60,40,30,20
 #    jetVetoPt =  0,  # if non-zero, veto additional jets with pt > veto beyond the ones in jetPtCuts

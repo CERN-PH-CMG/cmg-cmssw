@@ -97,6 +97,25 @@ class ComponentCreator(object):
         )
         return component
 
+    def getFilesFromIC(self, dataset, user, pattern):
+        # print 'getting files for', dataset,user,pattern
+        ds = datasetToSource( user, dataset, pattern, True )
+        files = ds.fileNames
+        mapping = 'root://gfe02.grid.hep.ph.ic.ac.uk/pnfs/hep.ph.ic.ac.uk/data/cms%s'
+        return [ mapping % f for f in files]
+
+    def makeMCComponentFromIC(self,name,dataset,path,pattern=".*root",xSec=1):
+        component = cfg.MCComponent(
+            dataset=dataset,
+            name = name,
+            files = self.getFilesFromIC(dataset,path,pattern),
+            xSection = xSec,
+            nGenEvents = 1,
+            triggers = [],
+            effCorrFactor = 1,
+        )
+        return component
+
     def getFilesFromLocal(self,name,dataset,path,pattern=".*root"):
         from CMGTools.Production.dataset import getDatasetFromCache, writeDatasetToCache
         if "%" in path: path = path % dataset;
@@ -120,7 +139,6 @@ class ComponentCreator(object):
             effCorrFactor = 1,
         )
         return component
-
 
     def makeDataComponent(self,name,datasets,user,pattern,json=None):
          files=[]
