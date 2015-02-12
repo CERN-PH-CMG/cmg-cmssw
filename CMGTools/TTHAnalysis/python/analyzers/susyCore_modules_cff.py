@@ -210,12 +210,15 @@ tauAna = cfg.Analyzer(
     TauAnalyzer, name="tauAnalyzer",
     ptMin = 20,
     etaMax = 9999,
-    dxyMax = 0.5,
-    dzMax = 1.0,
+    dxyMax = 1000.,
+    dzMax = 0.2,
     vetoLeptons = True,
     leptonVetoDR = 0.4,
-    vetoLeptonsPOG = False,
+    decayModeID = "decayModeFindingNewDMs", # ignored if not set or ""
     tauID = "byLooseCombinedIsolationDeltaBetaCorr3Hits",
+    vetoLeptonsPOG = False, # If True, the following two IDs are required
+    tauAntiMuonID = "againstMuonLoose3",
+    tauAntiElectronID = "againstElectronLooseMVA5",
     tauLooseID = "decayModeFinding",
 )
 
