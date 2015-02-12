@@ -39,7 +39,7 @@ double phi_CS = -1e10;
 double costh_CS_gen = -1e10;
 double phi_CS_gen = -1e10;
 
-void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, int buildTemplates, int useMomentumCorr, int smearRochCorrByNsigma, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int usePhiMETCorr, int useRecoilCorr, int RecoilCorrVarDiagoParN, int RecoilCorrVarDiagoParSigmas, int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights)
+void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, int buildTemplates, int useMomentumCorr, int varyGlobalSscaleMuonCorrNsigma, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int usePhiMETCorr, int useRecoilCorr, int RecoilCorrVarDiagoParN, int RecoilCorrVarDiagoParSigmas, int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights)
 {
 
   if (fChain == 0) return;
@@ -529,7 +529,15 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             //------------------------------------------------------
             // start reco event selection
             //------------------------------------------------------
-            if( evtHasGoodVtx && evtHasTrg && MuPos_pt>0){ // good reco event
+            if( evtHasGoodVtx && evtHasTrg && MuPos_pt>0
+              // CUTS ADDED TO SPEED UP THE CODE
+              && TMath::Abs(muPosCorrCentral.Eta())<WMass::etaMaxMuons[i] 
+              && TMath::Abs(muNegCorrCentral.Eta())<2.4 
+              && MuPos_charge != MuNeg_charge
+              && MuPosTrg
+              && MuPosIsTight && MuPosRelIso<0.12 && MuPos_dxy<0.02
+              && MuNegIsTight && MuNegRelIso<0.5 && MuNeg_dxy<0.02
+            ){ // good reco event
 
               //------------------------------------------------------------------------------------------------
               // Apply recoil corrections
@@ -641,14 +649,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               if(first_time_in_the_event){ // use rochester corrections if required
                 if(useMomentumCorr==1){ // use rochester corrections if required
                   if(IS_MC_CLOSURE_TEST || isMCorDATA==0){
-                    rmcor44X->momcor_mc(muPosCorr, MuPos_charge, smearRochCorrByNsigma/* , runopt */);
-                    rmcor44X->momcor_mc(muNegCorr, MuNeg_charge, smearRochCorrByNsigma/* , runopt */);
+                    rmcor44X->momcor_mc(muPosCorr, MuPos_charge, varyGlobalSscaleMuonCorrNsigma/* , runopt */);
+                    rmcor44X->momcor_mc(muNegCorr, MuNeg_charge, varyGlobalSscaleMuonCorrNsigma/* , runopt */);
                     rmcor44X->momcor_mc(muPosCorrCentral, MuPos_charge, 0/* , runopt */);
                     rmcor44X->momcor_mc(muNegCorrCentral, MuNeg_charge, 0/* , runopt */);
                   }
                   else{
-                    rmcor44X->momcor_data(muPosCorr, MuPos_charge, smearRochCorrByNsigma , run<175832 ? 0 : 1 );
-                    rmcor44X->momcor_data(muNegCorr, MuNeg_charge, smearRochCorrByNsigma , run<175832 ? 0 : 1 );
+                    rmcor44X->momcor_data(muPosCorr, MuPos_charge, varyGlobalSscaleMuonCorrNsigma , run<175832 ? 0 : 1 );
+                    rmcor44X->momcor_data(muNegCorr, MuNeg_charge, varyGlobalSscaleMuonCorrNsigma , run<175832 ? 0 : 1 );
                     rmcor44X->momcor_data(muPosCorrCentral, MuPos_charge, 0 , run<175832 ? 0 : 1 );
                     rmcor44X->momcor_data(muNegCorrCentral, MuNeg_charge, 0 , run<175832 ? 0 : 1 );
                   }
@@ -682,7 +690,10 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                       corrector_Kalman->smear(muPosCorrCentral);
                       corrector_Kalman->smear(muNegCorrCentral);
                     }
-                    
+                    if(varyGlobalSscaleMuonCorrNsigma!=0){
+                      corrector_Kalman->applyPtBias(muPosCorr,1e-3*varyGlobalSscaleMuonCorrNsigma); //returns the corrected pt 
+                      // corrector_Kalman->applyPtBias(muNegCorr,1e-3*varyGlobalSscaleMuonCorrNsigma); //returns the corrected pt 
+                    }
                     // cout << "muPosCorr after muon correction" << endl; 
                     // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
                     // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
@@ -729,8 +740,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               // good pair within acceptance cuts for both muons
               //------------------------------------------------------
               if( ZcorrCentral.M()>50
-                  && TMath::Abs(muPosCorrCentral.Eta())<WMass::etaMaxMuons[i] && muPosCorrCentral.Pt()>WMass::sel_xmin[0]*ZWmassRatio && MuPosTrg
-                  && TMath::Abs(muNegCorrCentral.Eta())<2.4 && muNegCorrCentral.Pt()>10 && MuPos_charge != MuNeg_charge
+                  && TMath::Abs(muPosCorrCentral.Eta())<WMass::etaMaxMuons[i] 
+                  && TMath::Abs(muNegCorrCentral.Eta())<2.4 
+                  && MuPos_charge != MuNeg_charge
+                  && MuPosTrg
+                  && muPosCorrCentral.Pt()>WMass::sel_xmin[0]*ZWmassRatio 
+                  && muNegCorrCentral.Pt()>10 
                   // && noTrgExtraMuonsLeadingPt<10 // REMOVED BECAUSE OF MARKUS
                   ){
                 //------------------------------------------------------
@@ -743,8 +758,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   for(int k=0;k<3;k++)
                     if(m==0 && WMass::WMassNSteps==j) common_stuff::plot1D(Form("hWlikePos_%sNonScaled_5_RecoCut_eta%s_%d",WMass::FitVar_str[k].Data(),eta_str.Data(),jZmass_MeV),
 									   MuPos_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
-		  
-		  
 			  
                 //------------------------------------------------------------------------------------------------
                 // BELOW PLOTS for CLOSURE TEST
