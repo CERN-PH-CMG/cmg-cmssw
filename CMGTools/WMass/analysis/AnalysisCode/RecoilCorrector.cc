@@ -258,42 +258,52 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
     // << " RecoilCorrVarDiagoParSigmas=="<<RecoilCorrVarDiagoParSigmas
     // <<endl;
   
-  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==1 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==3)
-    if(RecoilCorrVarDiagoParN < 0 || RecoilCorrVarDiagoParN > 17)
+  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==1 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==3){
+    if(RecoilCorrVarDiagoParN < 0 || RecoilCorrVarDiagoParN > 17){
       cout << "ERROR !!!!! RecoilCorrVarDiagoParU1orU2fromDATAorMC= " << RecoilCorrVarDiagoParU1orU2fromDATAorMC << " RecoilCorrVarDiagoParN= " << RecoilCorrVarDiagoParN << endl;
-  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==2 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==4)
-    if(RecoilCorrVarDiagoParN < 0 || RecoilCorrVarDiagoParN > 11)
+    }
+  }
+  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==2 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==4){
+    if(RecoilCorrVarDiagoParN < 0 || RecoilCorrVarDiagoParN > 11){
       cout << "ERROR !!!!! RecoilCorrVarDiagoParU1orU2fromDATAorMC= " << RecoilCorrVarDiagoParU1orU2fromDATAorMC << " RecoilCorrVarDiagoParN= " << RecoilCorrVarDiagoParN << endl;
+    }
+  }
   
   RooRealVar *v; 
   // cout << "RecoilCorrVarDiagoParN="<<RecoilCorrVarDiagoParN << Form(" eig_eig%d",RecoilCorrVarDiagoParN) << endl;
-  v = wU1[1][fJet]->var(Form("eig_eig%d",RecoilCorrVarDiagoParN));
-  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==1)
-    v->setVal(RecoilCorrVarDiagoParSigmas);
-  else
-    v->setVal(0);
-  // cout << "wU1[1]["<<fJet<<"]" << endl; v->Print();
-  
-  v = wU1[2][fJet]->var(Form("eig_eig%d",RecoilCorrVarDiagoParN));
-  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==3)
-    v->setVal(RecoilCorrVarDiagoParSigmas);
-  else
-    v->setVal(0);
-  // cout << "wU1[2]["<<fJet<<"]" << endl; v->Print();
-  
-  if(RecoilCorrVarDiagoParN<12){
-    v = wU2[1][fJet]->var(Form("eig_eig%d",RecoilCorrVarDiagoParN));
-    if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==2)
+  for(int ipar=0; ipar<18; ipar++){
+    v = wU1[1][fJet]->var(Form("eig_eig%d",ipar));
+    if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==1 && RecoilCorrVarDiagoParN==ipar){
       v->setVal(RecoilCorrVarDiagoParSigmas);
-    else
+    }else{
       v->setVal(0);
-    // cout << "wU2[1]["<<fJet<<"]" << endl; v->Print();
-    v = wU2[2][fJet]->var(Form("eig_eig%d",RecoilCorrVarDiagoParN));
-    if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==4)
+    }
+    // cout << "wU1[1]["<<fJet<<"]" << endl; v->Print();
+    
+    v = wU1[2][fJet]->var(Form("eig_eig%d",ipar));
+    if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==3 && RecoilCorrVarDiagoParN==ipar){
       v->setVal(RecoilCorrVarDiagoParSigmas);
-    else
+    }else{
       v->setVal(0);
-    // cout << "wU2[2]["<<fJet<<"]" << endl; v->Print();
+    }
+    // cout << "wU1[2]["<<fJet<<"]" << endl; v->Print();
+    
+    if(ipar<12){
+      v = wU2[1][fJet]->var(Form("eig_eig%d",ipar));
+      if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==2 && RecoilCorrVarDiagoParN==ipar){
+        v->setVal(RecoilCorrVarDiagoParSigmas);
+      }else{
+        v->setVal(0);
+      }
+      // cout << "wU2[1]["<<fJet<<"]" << endl; v->Print();
+      v = wU2[2][fJet]->var(Form("eig_eig%d",ipar));
+      if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==4 && RecoilCorrVarDiagoParN==ipar){
+        v->setVal(RecoilCorrVarDiagoParSigmas);
+      }else{
+        v->setVal(0);
+      }
+      // cout << "wU2[2]["<<fJet<<"]" << endl; v->Print();
+    }
   }
   
   // pdfU1Cdf[2][fJet] = (RooAbsReal*)wU1[2][fJet]->function(Form("AddU1Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",fJet));
@@ -302,7 +312,8 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
   // pdfU2Cdf[1][fJet] = (RooAbsReal*)wU2[1][fJet]->function(Form("AddU2Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",fJet));
   
   // cout 
-    // << "pdfU1Cdf[2]["<<fJet<<"]->getVal()= " << pdfU1Cdf[2][fJet]->getVal()
+    // << "before triGausInvGraphPDF"
+    // << " pdfU1Cdf[2]["<<fJet<<"]->getVal()= " << pdfU1Cdf[2][fJet]->getVal()
     // << " pdfU1Cdf[1]["<<fJet<<"]->getVal()= " << pdfU1Cdf[1][fJet]->getVal()
     // << " pdfU2Cdf[2]["<<fJet<<"]->getVal()= " << pdfU2Cdf[2][fJet]->getVal()
     // << " pdfU2Cdf[1]["<<fJet<<"]->getVal()= " << pdfU2Cdf[1][fJet]->getVal()
@@ -314,13 +325,28 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
   pU1ValD = pU1ValD*pDRMSU1;
   pDefU1 *= (pDU1/pMU1);
 
+  // cout 
+    // << "after triGausInvGraphPDF U1"
+    // << " pdfU1Cdf[2]["<<fJet<<"]->getVal()= " << pdfU1Cdf[2][fJet]->getVal()
+    // << " pdfU1Cdf[1]["<<fJet<<"]->getVal()= " << pdfU1Cdf[1][fJet]->getVal()
+    // << " pdfU2Cdf[2]["<<fJet<<"]->getVal()= " << pdfU2Cdf[2][fJet]->getVal()
+    // << " pdfU2Cdf[1]["<<fJet<<"]->getVal()= " << pdfU2Cdf[1][fJet]->getVal()
+    // << endl;
 
   pU2Diff = pU2Diff/pMRMSU2;
   // cout << "triGausInvGraphPDF U2" << endl;
   pU2ValD = triGausInvGraphPDF(fabs(pU2Diff),iGenPt,pdfU2Cdf[2][fJet],pdfU2Cdf[1][fJet],wU2[2][fJet],wU2[1][fJet]);
   pU2ValD = pU2ValD*pDRMSU2;
 
-  // pU1ValD*=p1Charge;
+  // cout 
+    // << "after triGausInvGraphPDF U2"
+    // << " pdfU1Cdf[2]["<<fJet<<"]->getVal()= " << pdfU1Cdf[2][fJet]->getVal()
+    // << " pdfU1Cdf[1]["<<fJet<<"]->getVal()= " << pdfU1Cdf[1][fJet]->getVal()
+    // << " pdfU2Cdf[2]["<<fJet<<"]->getVal()= " << pdfU2Cdf[2][fJet]->getVal()
+    // << " pdfU2Cdf[1]["<<fJet<<"]->getVal()= " << pdfU2Cdf[1][fJet]->getVal()
+    // << endl;
+
+    // pU1ValD*=p1Charge;
   pU2ValD*=p2Charge;
 
   pU1   = pDefU1             + pU1ValD;
@@ -337,19 +363,50 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
 // double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAddPdf *pdfMC, RooAddPdf *pdfDATA, RooWorkspace *wMC, RooWorkspace *wDATA) {
 double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsReal *pdfDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA) {
 
+  // cout << "beginning of triGausInvGraphPDF"
+  // << " pdfMCcdf->getVal()= " << pdfMCcdf->getVal()
+  // << " pdfDATAcdf->getVal()= " << pdfDATAcdf->getVal()
+  // << endl;
+  
   if(TMath::Abs(iPVal)>=5) return iPVal;
 
   RooRealVar* myptm=wMC->var("pt");
+  // cout<< " myptm->getVal()= " << myptm->getVal()<< endl;
   myptm->setVal(Zpt);
 
+  // cout << "after myptm"
+  // << " pdfMCcdf->getVal()= " << pdfMCcdf->getVal()
+  // << " pdfDATAcdf->getVal()= " << pdfDATAcdf->getVal()
+  // << endl;
+
   RooRealVar* myptd=wDATA->var("pt");
+  // cout<< " myptd->getVal()= " << myptd->getVal()<< endl;
   myptd->setVal(Zpt);
 
+  // cout << "after myptd"
+  // << " pdfMCcdf->getVal()= " << pdfMCcdf->getVal()
+  // << " pdfDATAcdf->getVal()= " << pdfDATAcdf->getVal()
+  // << endl;
+
   RooRealVar* myXm = wMC->var("XVar");
+  // cout << " myXm->getVal()= " << myXm->getVal()<< endl;
   RooRealVar* myXd = wDATA->var("XVar");
+  // cout << " myXd->getVal()= " << myXd->getVal()<< endl;
   
   myXm->setVal(iPVal);
+  
+  // cout << "after myXm"
+  // << " pdfMCcdf->getVal()= " << pdfMCcdf->getVal()
+  // << " pdfDATAcdf->getVal()= " << pdfDATAcdf->getVal()
+  // << endl;
+  // pdfDATAcdf->getVal();
+  
   double pVal=pdfDATAcdf->findRoot(*myXd,myXd->getMin(),myXd->getMax(),pdfMCcdf->getVal());
+
+  // cout << "after findRoot"
+  // << " pdfMCcdf->getVal()= " << pdfMCcdf->getVal()
+  // << " pdfDATAcdf->getVal()= " << pdfDATAcdf->getVal()
+  // << endl;
 
   // add protection for outlier since I tabulated up to 5
   if(TMath::Abs(pVal)>=5) pVal=iPVal;
@@ -358,6 +415,10 @@ double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal 
   // cout << " original " << iPVal;
   // cout << "after pdfDATAcdf->findRoot" << pVal <<endl;
 
+  myptd->setVal(1);
+  myptm->setVal(1);
+  myXm->setVal(0);
+  myXd->setVal(0);
 
   return pVal;
 
