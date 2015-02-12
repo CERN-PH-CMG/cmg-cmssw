@@ -30,6 +30,10 @@ ttHLepSkim.maxLeptons = 999
 
 # --- JET-LEPTON CLEANING ---
 jetAna.minLepPt = 10 
+<<<<<<< HEAD
+=======
+
+>>>>>>> cmg-central/CMGTools-from-CMSSW_7_2_3
 jetAna.mcGT = "PHYS14_25_V2_LowPtHenningFix"
 
 jetAna.smearJets = False #should be false in susycore, already
