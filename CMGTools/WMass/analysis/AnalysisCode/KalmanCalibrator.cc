@@ -97,6 +97,17 @@ KalmanCalibrator::~KalmanCalibrator() {
 
 //-----------------------------------------------------------------------------------//
 // double KalmanCalibrator::getCorrectedPt(double pt,double eta,double phi,int charge) {
+void KalmanCalibrator::applyPtBias(TLorentzVector &muon, double relativeBias) {
+  double pt=muon.Pt()*(1+relativeBias); double eta=muon.Eta(); double phi=muon.Phi(); double mass=muon.M(); 
+  // std::cout << "initial pt= " << pt << " eta= " << eta << " phi= " << phi << " mass= " << mass << std::endl; 
+  
+  muon.SetPtEtaPhiM(pt,eta,phi,mass);
+  // std::cout << "muon inside KalmanCalibrator::getCorrectedPt()" << std::endl;
+  // muon.Print();
+}
+
+//-----------------------------------------------------------------------------------//
+// double KalmanCalibrator::getCorrectedPt(double pt,double eta,double phi,int charge) {
 void KalmanCalibrator::getCorrectedPt(TLorentzVector &muon,int charge) {
   double pt=muon.Pt(); double eta=muon.Eta(); double phi=muon.Phi(); double mass=muon.M(); 
   // std::cout << "initial pt= " << pt << " eta= " << eta << " phi= " << phi << " mass= " << mass << std::endl; 
