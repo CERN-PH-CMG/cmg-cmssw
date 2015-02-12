@@ -7,17 +7,18 @@ RecoilCorrector::RecoilCorrector(string iNameZ, int iSeed) {
   fRandom = new TRandom3(iSeed);
   readRecoil(fF1U1Fit,fF1U1RMSSMFit,fF1U1RMS1Fit,fF1U1RMS2Fit,fF1U1RMS3Fit,fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit, fF1U2Fit,fF1U2RMSSMFit,fF1U2RMS1Fit,fF1U2RMS2Fit,fF1U2RMS3Fit,fF1U2FracFit,fF1U2Mean1Fit, fF1U2Mean2Fit,iNameZ,"PF",1,0);  
   
-  fId = 0; fJet = 0;
+  // fId = 0; 
+  fJet = 0;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 void RecoilCorrector::addDataFile(std::string iNameData/* ,int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int RecoilCorrU1VarDiagoParN, int RecoilCorrVarDiagoParSigmas */) { 
   readRecoil(fD1U1Fit,fD1U1RMSSMFit,fD1U1RMS1Fit,fD1U1RMS2Fit,fD1U1RMS3Fit,fD1U1FracFit, fD1U1Mean1Fit, fD1U1Mean2Fit, fD1U2Fit,fD1U2RMSSMFit,fD1U2RMS1Fit,fD1U2RMS2Fit,fD1U2RMS3Fit,fD1U2FracFit,fD1U2Mean1Fit, fD1U2Mean2Fit,iNameData,"PF",1,1/* , RecoilCorrVarDiagoParU1orU2fromDATAorMC,RecoilCorrU1VarDiagoParN, RecoilCorrVarDiagoParSigmas */);  
-  fId++;   
+  // fId++;   
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------
 void RecoilCorrector::addMCFile  (std::string iNameMC) { 
-  fId++;
+  // fId++;
   readRecoil(fM1U1Fit,fM1U1RMSSMFit,fM1U1RMS1Fit,fM1U1RMS2Fit,fM1U1RMS3Fit,fM1U1FracFit, fM1U1Mean1Fit, fM1U1Mean2Fit, fM1U2Fit,fM1U2RMSSMFit,fM1U2RMS1Fit,fM1U2RMS2Fit,fM1U2RMS3Fit,fM1U2FracFit,fM1U2Mean1Fit, fM1U2Mean2Fit,iNameMC,"PF",1,2);  
   
 }
@@ -34,6 +35,9 @@ std::string iFName ,std::string iPrefix,int vtxBin, int mytype/* , int RecoilCor
 
   //type=1 read U1; type=2 read U2;
   cout << "inside readRecoil" << endl;
+  if(mytype==0) cout << " read target"   << endl;
+  if(mytype==1) cout << " read DATA"  << endl;
+  if(mytype==2) cout << " read MC"  << endl;
 
   TFile *lFile  = new TFile(iFName.c_str());
   // lFile->ls();
@@ -344,6 +348,7 @@ double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal 
   RooRealVar* myXm = wMC->var("XVar");
   RooRealVar* myXd = wDATA->var("XVar");
   
+  myXm->setVal(iPVal);
   double pVal=pdfDATAcdf->findRoot(*myXd,myXd->getMin(),myXd->getMax(),pdfMCcdf->getVal());
 
   // add protection for outlier since I tabulated up to 5
@@ -385,169 +390,4 @@ void RecoilCorrector::runDiago(RooWorkspace *w, RooFitResult *result, TString fi
   // w->Print();
   
   return;
-}
-
-//-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector::getFrac2gauss(double RMS, double sigma1, double sigma2) {
-
-  return (RMS-sigma2)/(sigma1-sigma2);
-  //  return (RMS*RMS-sigma2*sigma2)/(sigma1*sigma1-sigma2*sigma2);
-
-}
-
-//-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector::triGausInvGraph(double iPVal, /**/ double meanRMSMC, double iMean1MC, double iMean2MC, double iFrac1MC,double iSigma1MC,double iSigma2MC,double iSigma3MC,/**/ double meanRMSDATA, double iMean1DATA, double iMean2DATA,double iFrac1DATA,double iSigma1DATA,double iSigma2DATA,double iSigma3DATA) {
-
-  // this for three gaussian
-  double iFrac2DATA = getFrac3gauss(meanRMSDATA, iFrac1DATA, iSigma1DATA, iSigma2DATA, iSigma3DATA);
-  double iFrac2MC = getFrac3gauss(meanRMSMC, iFrac1MC, iSigma1MC, iSigma2MC, iSigma3MC);
-
-  /*
-  // those parameters are stored in GeV
-
-  cout << "meanRMSMC " << meanRMSMC << " iFrac1MC=" << iFrac1MC << " iSigma1MC=" << iSigma1MC << " iSigma2MC=" << iSigma2MC << " iSigma3MC=" << iSigma3MC << " iMean1MC=" << iMean1MC << "iMean2MC=" << iMean2MC << endl;
-  cout << "meanRMSDATA " << meanRMSDATA << " iFrac1DATA=" << iFrac1DATA << " iSigma1DATA=" << iSigma1DATA << " iSigma2DATA=" << iSigma2DATA << " iSigma3DATA=" << iSigma3DATA << " iMean1DATA=" << iMean1DATA << "iMean2DATA=" << iMean2DATA << endl;
-  cout << "iFrac2DATA=" << iFrac2DATA << " iFrac2MC= " << iFrac2MC << endl;
-  */
-
-  TF1 *totalMC = new TF1("totalMC","gaus(0)+gaus(3)+gaus(6)",0,100);
-  totalMC->SetParameter(0,iFrac1MC); 
-  totalMC->SetParameter(1,iMean1MC); // mean
-  totalMC->SetParameter(2,iSigma1MC); 
-  totalMC->SetParameter(3,iFrac2MC); 
-  totalMC->SetParameter(4,iMean2MC); // mean
-  totalMC->SetParameter(5,iSigma2MC);
-  totalMC->SetParameter(6,(1-iFrac1MC-iFrac2MC)); 
-  totalMC->SetParameter(7,iMean2MC); // mean
-  totalMC->SetParameter(8,iSigma3MC);
-  totalMC->SetNpx(2000);
-
-  TF1 *totalDATA = new TF1("totalDATA","gaus(0)+gaus(3)+gaus(6)",0,100);
-  totalDATA->SetParameter(0,iFrac1DATA); 
-  totalDATA->SetParameter(1,iMean1DATA); // mean
-  totalDATA->SetParameter(2,iSigma1DATA); 
-  totalDATA->SetParameter(3,iFrac2DATA);
-  totalDATA->SetParameter(4,iMean2DATA); // mean
-  totalDATA->SetParameter(5,iSigma2DATA);
-  totalDATA->SetParameter(6,(1-iFrac1DATA-iFrac2DATA));
-  totalDATA->SetParameter(7,iMean2DATA); // mean
-  totalDATA->SetParameter(8,iSigma3DATA);
-  totalDATA->SetNpx(2000);
-
-  /*
-  TCanvas* c = new TCanvas("validatePDF","validatePDF",800,400) ;
-  c->cd();
-
-  totalMC->SetLineColor(kMagenta); 
-  totalMC->Draw("hist");
-  totalDATA->SetLineColor(kBlue); 
-  totalDATA->Draw("hist same");
-  c->SaveAs("gauss.png");
-  cin.get(); 
-  */
-  //  cout << "constructed gauss " << endl;
-
-  TGraph *gr_mc = new TGraph(totalMC, "I");
-  TGraph *gr_data = new TGraph(totalDATA, "I");
-  TGraph *gr_data_inverse = new TGraph(gr_data->GetN(),gr_data->GetY(), gr_data->GetX());
-
-  /*
-  gr_mc->SetLineColor(kMagenta);
-  gr_mc->SetMarkerColor(kMagenta);
-  gr_mc->Draw("A P L same");
-
-  gr_data->SetLineColor(kGreen+1);
-  gr_data->SetMarkerColor(kGreen+1);
-  gr_data->Draw("P L same ");
-
-  gr_data_inverse->SetLineColor(kCyan);
-  gr_data_inverse->SetMarkerColor(kCyan);
-  gr_data_inverse->Draw("P L same ");
-  */
-
-  double pVal=gr_data_inverse->Eval(gr_mc->Eval(iPVal));
-  //  cout << "ORIGINAL MC: " << iPVal ;
-  //  cout << " FROM INVERSE: " << gr_data_inverse->Eval(gr_mc->Eval(iPVal)) << endl;
-
-  delete totalMC;
-  delete totalDATA;
-
-  delete gr_mc;
-  delete gr_data;
-  delete gr_data_inverse;
-
-  return pVal;
-
-}
-//-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector::diGausPVal(double iVal,double iFrac,double iSigma1,double iSigma2) {
-
-  double lVal=iFrac*TMath::Erf(iVal/iSigma1) + (1-iFrac)*TMath::Erf(iVal/iSigma2);
-  if(TMath::ErfInverse(lVal)==0) return iVal;
-  return lVal;
-
-
-}
-//-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector::diGausInvGraph(double iPVal,double iFracMC,double iSigma1MC,double iSigma2MC,double iFracDATA,double iSigma1DATA,double iSigma2DATA) {
-
-  TF1 *totalMC = new TF1("totalMC","gaus(0)+gaus(3)",0,100);
-  totalMC->SetParameter(0,iFracMC); 
-  totalMC->SetParameter(1,0); // mean at zero
-  totalMC->SetParameter(2,iSigma1MC); 
-  totalMC->SetParameter(3,(1-iFracMC)); 
-  totalMC->SetParameter(4,0); // mean at zero
-  totalMC->SetParameter(5,iSigma2MC);
-  totalMC->SetNpx(2000);
-
-  TF1 *totalDATA = new TF1("totalDATA","gaus(0)+gaus(3)",0,100);
-  totalDATA->SetParameter(0,iFracDATA); 
-  totalDATA->SetParameter(1,0); 
-  totalDATA->SetParameter(2,iSigma1DATA); 
-  totalDATA->SetParameter(3,(1-iFracDATA));
-  totalDATA->SetParameter(4,0); 
-  totalDATA->SetParameter(5,iSigma2DATA);
-  totalDATA->SetNpx(2000);
-
-  TGraph *gr_mc = new TGraph(totalMC, "I");
-  TGraph *gr_data = new TGraph(totalDATA, "I");
-  TGraph *gr_data_inverse = new TGraph(gr_data->GetN(),gr_data->GetY(), gr_data->GetX());
-
-  /*
-  gr_mc->SetLineColor(kMagenta);
-  gr_mc->SetMarkerColor(kMagenta);
-  gr_mc->Draw("A P L same");
-  gr_data->SetLineColor(kGreen+1);
-  gr_data->SetMarkerColor(kGreen+1);
-  gr_data->Draw("P L same ");
-  gr_data_inverse->SetLineColor(kCyan);
-  gr_data_inverse->SetMarkerColor(kCyan);
-  gr_data_inverse->Draw("P L same ");
-  */
-
-  double pVal=gr_data_inverse->Eval(gr_mc->Eval(iPVal));
-  //  cout << "ORIGINAL MC: " << iPVal ;
-  //  cout << " FROM INVERSE: " << gr_data_inverse->Eval(gr_mc->Eval(iPVal)) << endl;
-
-  delete totalMC;
-  delete totalDATA;
-
-  delete gr_mc;
-  delete gr_data;
-  delete gr_data_inverse;
-
-  return pVal;
-
-}
-//-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector::getFrac3gauss(double RMS, double f1, double sigma1, double sigma2, double sigma3) {
-
-  sigma1=sigma1/RMS;
-  sigma2=sigma2/RMS;
-  sigma3=sigma3/RMS;
-  
-  double f2=(-1.)*( -f1*sigma1 + f1*sigma3 - sigma3 + 1. ) / ( (f1-1.)*(sigma2-sigma3) );
-
-  return f2*(1-f1);
-
 }
