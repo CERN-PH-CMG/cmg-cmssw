@@ -88,6 +88,11 @@ class MCAnalysis:
                 # Heppy calls the tree just 'tree.root'
                 rootfile = "%s/%s/%s/tree.root" % (options.path, field[1].strip(), treename)
                 treename = "tree"
+            elif (not os.path.exists(rootfile)) and os.path.exists("%s/%s/%s/tree.root.url" % (options.path, field[1].strip(), treename)):
+                # Heppy calls the tree just 'tree.root'
+                rootfile = "%s/%s/%s/tree.root" % (options.path, field[1].strip(), treename)
+                rootfile = open(rootfile+".url","r").readline().strip()
+                treename = "tree"
             pckfile = options.path+"/%s/skimAnalyzerCount/SkimReport.pck" % field[1].strip()
             tty = TreeToYield(rootfile, options, settings=extra, name=pname, cname=field[1].strip(), treename=treename)
             if signal: 

@@ -104,6 +104,8 @@ def stackRocks(outname,outfile,rocs,xtit,ytit,options):
         allrocs.Add(roc,roc.style)
         outfile.WriteTObject(roc)
     c1 = ROOT.TCanvas("roc_canvas","roc_canvas")
+    c1.SetGridy(options.showGrid)
+    c1.SetGridx(options.showGrid)
     allrocs.Draw("APL");
     allrocs.GetXaxis().SetTitle(xtit)
     allrocs.GetYaxis().SetTitle(ytit)
@@ -111,6 +113,7 @@ def stackRocks(outname,outfile,rocs,xtit,ytit,options):
         allrocs.GetXaxis().SetRangeUser(options.xrange[0], options.xrange[1])
     if options.yrange:
         allrocs.GetYaxis().SetRangeUser(options.yrange[0], options.yrange[1])
+    c1.SetLogx(options.logx)
     allrocs.Draw()
     leg = doLegend(rocs)
     if options.fontsize: leg.SetTextSize(options.fontsize)
@@ -129,6 +132,8 @@ if __name__ == "__main__":
     parser.add_option("--fontsize", dest="fontsize", default=0, type='float', help="Legend font size");
     parser.add_option("--splitSig", dest="splitSig", default=False, action="store_true", help="Make one ROC per signal")
     parser.add_option("--splitBkg", dest="splitBkg", default=False, action="store_true", help="Make one ROC per background")
+    parser.add_option("--grid", dest="showGrid", action="store_true", default=False, help="Show grid lines")
+    parser.add_option("--logx", dest="logx", action="store_true", default=False, help="Log x-axis")
     parser.add_option("--groupBy",  dest="groupBy",  default="process",  type="string", help="Group by: variable, process")
     (options, args) = parser.parse_args()
     options.globalRebin = 1
