@@ -11,7 +11,6 @@ class ttHHeavyFlavourHadronAnalyzer( Analyzer ):
     def beginLoop(self, setup):
         super(ttHHeavyFlavourHadronAnalyzer,self).beginLoop(setup)
 
-       
     def process(self, event):
         self.readCollections( event.input )
         if not self.cfg_comp.isMC: return True
@@ -57,6 +56,14 @@ class ttHHeavyFlavourHadronAnalyzer( Analyzer ):
             # OK, here we are
             g.flav = myflav
             heavyHadrons.append(g)
+
+        # if none is found, give up here without going through the rest, so we avoid e.g. mc matching for jets
+        if len(heavyHadrons) == 0:
+            event.genHeavyHadrons = heavyHadrons
+            event.genBHadrons = [ h for h in heavyHadrons if h.flav == 5 ]
+            event.genDHadrons = [ h for h in heavyHadrons if h.flav == 4 ]
+            return True
+ 
         # match with IVF 
         had_ivf_pairs = []
         #print "\nNew event"
@@ -83,15 +90,23 @@ class ttHHeavyFlavourHadronAnalyzer( Analyzer ):
             #    print " had %d is already matched " % (ihad,) 
         # match with jets:
         had_jet_pairs = []
+        # first loop on jets, get and match daughters
+        jetsWithMatchedDaughters = [] 
+        for j in event.jetsIdOnly:
+            dausWithMatch = []
+            for idau in xrange(j.numberOfDaughters()):
+                dau = j.daughter(idau)
+                if dau.charge() == 0 or abs(dau.eta()) > 2.5: continue
+                mct, dr, dpt =  matchToGenHadron(dau, event, minDR=0.05, minDpt=0.1)
+                if mct == None: continue
+                dausWithMatch.append((dau,mct))
+            jetsWithMatchedDaughters.append((j,dausWithMatch))
         for ihad, had in enumerate(heavyHadrons):
             had.jet = None
-            for ij,j in enumerate(event.jetsIdOnly):
+            for ij,(j,dausWithMatch) in enumerate(jetsWithMatchedDaughters):
                 shared_n, shared_pt = 0, 0 
-                for dau in [j.daughter(i) for i in xrange(j.numberOfDaughters())]:
-                    if dau.charge() == 0 or abs(dau.eta()) > 2.5: continue
-                    mct, dr, dpt =  matchToGenHadron(dau, event, minDR=0.05, minDpt=0.1)
-                    if mct == None: continue
-                    if descendent(mct,had):
+                for dau,mct in dausWithMatch:
+                   if descendent(mct,had):
                         shared_n += 1; shared_pt += mct.pt()
                 if shared_n:
                     had_jet_pairs.append( (ihad, ij, shared_n, shared_pt) )
