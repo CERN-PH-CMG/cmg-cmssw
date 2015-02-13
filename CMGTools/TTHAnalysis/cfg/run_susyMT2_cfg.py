@@ -84,6 +84,23 @@ ttHTopoJetAna = cfg.Analyzer(
             doOnlyDefault = True
             )
 
+##------------------------------------------
+##  Z skim
+##------------------------------------------
+
+from CMGTools.TTHAnalysis.analyzers.ttHmllSkimmer import ttHmllSkimmer
+# Tree Producer                                                                                                                                                                         
+ttHZskim = cfg.Analyzer(
+            ttHmllSkimmer, name='ttHmllSkimmer',
+            lepId=13,
+            maxLeps=3,
+            intPDG=13,
+            massMin=60,
+            massMax=120,
+            doZGen = False,
+            doZReco = True
+            )
+
 
 ##------------------------------------------
 ##  PRODUCER
@@ -119,9 +136,12 @@ treeProducer = cfg.Analyzer(
      defaultFloatType = 'F',
 )
 
-
 susyCoreSequence.insert(susyCoreSequence.index(skimAnalyzer),
                         susyCounter)
+
+#susyCoreSequence.insert(susyCoreSequence.index(ttHLepSkim),
+#                        ttHZskim)
+
 sequence = cfg.Sequence(
     susyCoreSequence+[
     ttHMT2Control,
@@ -185,6 +205,8 @@ if test==1:
     comp=GJets_HT200to400
 #    comp.files = ['/afs/cern.ch/work/d/dalfonso/public/gjets_ht200to400_miniaodsim_060B8ED3-8571-E411-A2CD-002590D0AFEA.root']
     comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/gjets_ht200to400_miniaodsim_fix.root']
+#    comp=DYJetsToLL_M50_PU4bx50
+#    comp.files = comp.files[:1]
 
     selectedComponents = [comp]
     comp.splitFactor = 10
