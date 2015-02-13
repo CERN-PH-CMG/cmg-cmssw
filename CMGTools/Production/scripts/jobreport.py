@@ -19,7 +19,7 @@ def createLoggerTemporaryFile( dataset_lfn_dir ):
 	when retrieving tags and jobs"""
 	try:
 		logger_file = tempfile.NamedTemporaryFile()
-		os.system("cmsStage -f "+ os.path.join( dataset_lfn_dir, "Logger.tgz") + " " + logger_file.name)
+		os.system("cmsStage -f "+ os.path.join( eostools.eosToLFN(dataset_lfn_dir), "Logger.tgz") + " " + logger_file.name)
 		logger_tar_object = tarfile.open(fileobj = logger_file)
 		if len( logger_tar_object.getmembers() )==0: 
 			print "\nERROR: Failed to stage logger file"

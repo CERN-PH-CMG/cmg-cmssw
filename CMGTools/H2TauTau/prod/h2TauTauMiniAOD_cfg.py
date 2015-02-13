@@ -17,7 +17,7 @@ numberOfFilesToProcess = -1
 debugEventContent = False
 
 # choose from 'tau-mu' 'di-tau' 'tau-ele' 'mu-ele' 'all'
-channel = 'di-tau'
+channel = 'tau-mu'
 
 # newSVFit enables the svfit mass reconstruction used for the H->tau tau analysis.
 # if false, much faster processing but mass is wrong. 
@@ -104,6 +104,15 @@ process.load('RecoBTag.Configuration.RecoBTag_cff')
 if addAK4:
     addAK4Jets(process)
     process.mvaMetInputPath.insert(0, process.jetSequenceAK4)
+
+if '25' in dataset_name:
+    print 'Using 25 ns MVA MET training'
+    process.mvaMETTauMu.inputFileNames = cms.PSet(
+        U     = cms.FileInPath('RecoMET/METPUSubtraction/data/gbrmet_7_2_X_MINIAOD_BX25PU20_Jan2015.root'),
+        DPhi  = cms.FileInPath('RecoMET/METPUSubtraction/data/gbrphi_7_2_X_MINIAOD_BX25PU20_Jan2015.root'),
+        CovU1 = cms.FileInPath('RecoMET/METPUSubtraction/data/gbru1cov_7_2_X_MINIAOD_BX25PU20_Jan2015.root'),
+        CovU2 = cms.FileInPath('RecoMET/METPUSubtraction/data/gbru2cov_7_2_X_MINIAOD_BX25PU20_Jan2015.root')
+    )
 
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()
