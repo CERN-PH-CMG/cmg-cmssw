@@ -65,7 +65,7 @@ class JetAnalyzer( Analyzer ):
         self.lepPtMin = getattr(self.cfg_ana, 'minLepPt', -1)
         self.jetGammaDR =  getattr(self.cfg_ana, 'jetGammaDR', 0.4)
         if(self.cfg_ana.doQG):
-            self.qglcalc = QGLikelihoodCalculator("/afs/cern.ch/user/t/tomc/public/QG_pdfs_13TeV_2014-10-12/pdfQG_AK4chs_antib_NoQC_13TeV.root")
+            self.qglcalc = QGLikelihoodCalculator("/afs/cern.ch/user/t/tomc/public/qgTagger/QGLikelihoodDBFiles/QGL_v1a/pdfQG_AK4chs_antib_13TeV_v1.root")
 
     def declareHandles(self):
         super(JetAnalyzer, self).declareHandles()
@@ -141,7 +141,11 @@ class JetAnalyzer( Analyzer ):
         ## Clean Jets from photons
         photons = []
         if hasattr(event, 'selectedPhotons'):
-            photons = [ g for g in event.selectedPhotons ]
+            if self.cfg_ana.cleanJetsFromFirstPhoton:
+                photons = event.selectedPhotons[:1]
+            else:
+                photons = [ g for g in event.selectedPhotons ] 
+
         event.gamma_cleanJetsAll = cleanNearestJetOnly(event.cleanJetsAll, photons, self.jetGammaDR)
         event.gamma_cleanJets    = [j for j in event.gamma_cleanJetsAll if abs(j.eta()) <  self.cfg_ana.jetEtaCentral ]
         event.gamma_cleanJetsFwd = [j for j in event.gamma_cleanJetsAll if abs(j.eta()) >= self.cfg_ana.jetEtaCentral ]
@@ -215,33 +219,29 @@ class JetAnalyzer( Analyzer ):
 
          part = jet.daughter(ii)
 
-         usePart = True
-
          if part.charge() == 0 : # neutral particles 
 
-           if part.pt() > 1.: jet.mult += 1
+           if part.pt() < 1.: continue
 
          else : # charged particles
 
-           jet.mult += 1
-
-           if part.trackHighPurity()==False: usePart=False
-           if part.fromPV()<=1: usePart=False
+           if part.trackHighPurity()==False: continue
+           if part.fromPV()<=1: continue
 
 
+         jet.mult += 1
 
-         if usePart:
-           deta = part.eta() - jet.eta()
-           dphi = deltaPhi(part.phi(), jet.phi())
-           partPt = part.pt()
-           weight = partPt*partPt
-           sum_weight += weight
-           sum_pt += partPt
-           sum_deta += deta*weight
-           sum_dphi += dphi*weight
-           sum_deta2 += deta*deta*weight
-           sum_detadphi += deta*dphi*weight
-           sum_dphi2 += dphi*dphi*weight
+         deta = part.eta() - jet.eta()
+         dphi = deltaPhi(part.phi(), jet.phi())
+         partPt = part.pt()
+         weight = partPt*partPt
+         sum_weight += weight
+         sum_pt += partPt
+         sum_deta += deta*weight
+         sum_dphi += dphi*weight
+         sum_deta2 += deta*deta*weight
+         sum_detadphi += deta*dphi*weight
+         sum_dphi2 += dphi*dphi*weight
 
 
 
@@ -360,6 +360,7 @@ setattr(JetAnalyzer,"defaultConfig", cfg.Analyzer(
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     smearJets = True,
     shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts    
+    cleanJetsFromFirstPhoton = False,
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
     jecPath = ""

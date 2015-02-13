@@ -110,10 +110,25 @@ QCD_HT250To500,
 QCD_HT500To1000,
 QCD_HT1000ToInf, 
 ]
+
+QCD_Pt300to470 = kreator.makeMCComponent("QCD_Pt300to470", "/QCD_Pt-300to470_Tune4C_13TeV_pythia8/Spring14miniaod-141029_PU40bx50_castor_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root")
+QCD_Pt470to600 = kreator.makeMCComponent("QCD_Pt470to600", "/QCD_Pt-470to600_Tune4C_13TeV_pythia8/Spring14miniaod-141029_PU40bx50_castor_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root")
+QCD_Pt600to800 = kreator.makeMCComponent("QCD_Pt600to800", "/QCD_Pt-600to800_Tune4C_13TeV_pythia8/Spring14miniaod-141029_PU40bx50_castor_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root")
+QCD_Pt800to1000 = kreator.makeMCComponent("QCD_Pt800to1000", "/QCD_Pt-800to1000_Tune4C_13TeV_pythia8/Spring14miniaod-141029_PU40bx50_castor_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root")
+QCD_Pt1000to1400 = kreator.makeMCComponent("QCD_Pt1000to1400", "/QCD_Pt-1000to1400_Tune4C_13TeV_pythia8/Spring14miniaod-141029_PU40bx50_castor_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root")
+QCD_Pt1400to1800 = kreator.makeMCComponent("QCD_Pt1400to1800", "/QCD_Pt-1400to1800_Tune4C_13TeV_pythia8/Spring14miniaod-141029_PU40bx50_castor_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root")
+QCD_Pt1800       = kreator.makeMCComponent("QCD_Pt1800      ", "/QCD_Pt-1800_Tune4C_13TeV_pythia8/Spring14miniaod-141029_PU40bx50_castor_PLS170_V6AN2-v1/MINIAODSIM","CMS", ".*root")
 QCD_Pt1800to2400 = kreator.makeMCComponent("QCD_Pt1800to2400", "/QCD_Pt-1800to2400_Tune4C_13TeV_pythia8/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root")
 QCD_Pt2400to3200 = kreator.makeMCComponent("QCD_Pt2400to3200", "/QCD_Pt-2400to3200_Tune4C_13TeV_pythia8/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root")
 QCD_Pt3200 = kreator.makeMCComponent("QCD_Pt3200", "/QCD_Pt-3200_Tune4C_13TeV_pythia8/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root")
 QCDPt = [
+QCD_Pt300to470,
+QCD_Pt470to600,
+QCD_Pt600to800,
+QCD_Pt800to1000,
+QCD_Pt1000to1400,
+QCD_Pt1400to1800,
+QCD_Pt1800,
 QCD_Pt1800to2400,
 QCD_Pt2400to3200,
 QCD_Pt3200,

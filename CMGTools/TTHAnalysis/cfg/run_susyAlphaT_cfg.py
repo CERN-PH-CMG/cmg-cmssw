@@ -1,5 +1,4 @@
-import CMGTools.RootTools.fwlite.Config as cfg
-from CMGTools.RootTools.fwlite.Config import printComps
+import PhysicsTools.HeppyCore.framework.config as cfg
 from CMGTools.RootTools.RootTools import *
 
 #Load all analyzers
@@ -11,49 +10,48 @@ from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
 
 # Muons
 #------------------------------
-ttHLepAna.loose_muon_pt               = 10.,
-ttHLepAna.loose_muon_eta              = 2.5,
-ttHLepAna.loose_muon_dxy              = 0.5
-ttHLepAna.loose_muon_dz               = 1.0
-#ttHLepAna.loose_muon_relIso           = 0.15
+lepAna.loose_muon_pt               = 10.,
+lepAna.loose_muon_eta              = 2.5,
+lepAna.loose_muon_dxy              = 0.5
+lepAna.loose_muon_dz               = 1.0
+#lepAna.loose_muon_relIso           = 0.15
 
 # Electrons
 #------------------------------
-ttHLepAna.loose_electron_id           = "POG_Cuts_ID_2012_Veto"
-ttHLepAna.loose_electron_pt           = 10
-ttHLepAna.loose_electron_eta          = 2.5
-ttHLepAna.loose_electron_dxy          = 0.5
-ttHLepAna.loose_electron_dz           = 0.
-# ttHLepAna.loose_electron_relIso       = 0.15
-# ttHLepAna.loose_electron_lostHits     = 999 # no cut
-# ttHLepAna.inclusive_electron_lostHits = 999 # no cut
-# ttHLepAna.ele_isoCorr                 = "deltaBeta"
-# ttHLepAna.ele_tightId                 = "Cuts_2012"
+lepAna.loose_electron_id           = "POG_Cuts_ID_2012_Veto"
+lepAna.loose_electron_pt           = 10
+lepAna.loose_electron_eta          = 2.5
+lepAna.loose_electron_dxy          = 0.5
+lepAna.loose_electron_dz           = 0.
+# lepAna.loose_electron_relIso       = 0.15
+# lepAna.loose_electron_lostHits     = 999 # no cut
+# lepAna.inclusive_electron_lostHits = 999 # no cut
+# lepAna.ele_isoCorr                 = "deltaBeta"
+# lepAna.ele_tightId                 = "Cuts_2012"
 
 # Photons
 #------------------------------
-ttHPhoAna.ptMin                        = 25,
-ttHPhoAna.epaMax                       = 2.5,
+photonAna.ptMin                        = 25,
+photonAna.epaMax                       = 2.5,
 
 # Taus 
 #------------------------------
-ttHTauAna.etaMax         = 2.3
-ttHTauAna.dxyMax         = 99999.
-ttHTauAna.dzMax          = 99999.
-ttHTauAna.vetoLeptons    = False
-ttHTauAna.vetoLeptonsPOG = True
+tauAna.etaMax         = 2.3
+tauAna.dxyMax         = 99999.
+tauAna.dzMax          = 99999.
+tauAna.vetoLeptons    = False
+tauAna.vetoLeptonsPOG = True
 
 
 # Jets (for event variables do apply the jetID and not PUID yet)
 #------------------------------
-ttHJetAna.relaxJetId      = False
-ttHJetAna.doPuId          = False
-ttHJetAna.jetEta          = 5.
-ttHJetAna.jetEtaCentral   = 3.
-ttHJetAna.jetPt           = 50.
-ttHJetAna.recalibrateJets = False
-ttHJetAna.jetLepDR        = 0.4
-ttHJetMCAna.smearJets     = False
+jetAna.relaxJetId      = False
+jetAna.doPuId          = False
+jetAna.jetEta          = 5.
+jetAna.jetEtaCentral   = 3.
+jetAna.jetPt           = 50.
+jetAna.recalibrateJets = False
+jetAna.jetLepDR        = 0.4
 
 
 # Energy sums
@@ -61,7 +59,22 @@ ttHJetMCAna.smearJets     = False
 # NOTE: Currently energy sums are calculated with 40 GeV jets (ttHCoreEventAnalyzer.py)
 #       However, the input collection is cleanjets which have a 50 GeV cut so this is a labeling problem
 
-ttHMetAna.doMetNoMu=True
+metAna.doMetNoMu=True
+metAna.doMetNoPhoton=True
+
+# Jet-MET based Skim (generic, but requirements depend on the final state)
+from CMGTools.TTHAnalysis.analyzers.ttHJetMETSkimmer import ttHJetMETSkimmer
+ttHJetMETSkim = cfg.Analyzer(
+   ttHJetMETSkimmer, name='ttHJetMETSkimmer',
+   jets      = "cleanJets", # jet collection to use
+   jetPtCuts = [],  # e.g. [60,40,30,20] to require at least four jets with pt > 60,40,30,20
+   jetVetoPt =  0,  # if non-zero, veto additional jets with pt > veto beyond the ones in jetPtCuts
+   metCut    =  0,  # MET cut
+   htCut     = ('htJet40j', 0), # cut on HT defined with only jets and pt cut 40, at zero; i.e. no cut
+                                # see ttHCoreEventAnalyzer for alternative definitions
+   mhtCut    = ('mhtJet40', 0), # cut on MHT defined with all leptons, and jets with pt > 40.
+   nBJet     = ('CSVv2IVFM', 0, "jet.pt() > 30"),     # require at least 0 jets passing CSV medium and pt > 30
+   )
 
 ttHJetMETSkim.htCut       = ('htJet50j', 0)
 ttHJetMETSkim.mhtCut      = ('htJet40j', 0)
@@ -71,47 +84,60 @@ ttHJetMETSkim.nBJet       = ('CSVM', 0, "jet.pt() > 50")     # require at least 
 ##  ISOLATED TRACK
 ##------------------------------------------
 
-ttHIsoTrackAna.setOff=False
+isoTrackAna.setOff=False
 
 ##------------------------------------------
 ##  ALPHAT VARIABLES
 ##------------------------------------------
 
+from CMGTools.TTHAnalysis.analyzers.ttHAlphaTVarAnalyzer import ttHAlphaTVarAnalyzer
+from CMGTools.TTHAnalysis.analyzers.ttHAlphaTControlAnalyzer import ttHAlphaTControlAnalyzer
 # Tree Producer
 ttHAlphaTAna = cfg.Analyzer(
-            'ttHAlphaTVarAnalyzer'
+            ttHAlphaTVarAnalyzer, name='ttHAlphaTVarAnalyzer'
             )
 
 ttHAlphaTControlAna = cfg.Analyzer(
-                        'ttHAlphaTControlAnalyzer'
+                        ttHAlphaTControlAnalyzer,name='ttHAlphaTControlAnalyzer'
                         )
-
 ##------------------------------------------
+##  EXTRA GEN STUFF
+##------------------------------------------
+
+# Gen Info Analyzer
+from CMGTools.TTHAnalysis.analyzers.ttHGenBinningAnalyzer import ttHGenBinningAnalyzer
+ttHGenBinAna = cfg.Analyzer(
+    ttHGenBinningAnalyzer, name = 'ttHGenBinningAnalyzer'
+    )
+
+
+#------------------------------------------
 ##  PRODUCER
 ##------------------------------------------
-
-from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_RA1_Bulk, triggers_RA1_Prompt, triggers_RA1_Parked, triggers_RA1_Single_Mu, triggers_RA1_Photon, triggers_RA1_Muon
-
-# Tree Producer
+from CMGTools.TTHAnalysis.analyzers.treeProducerSusyAlphaT import * 
+## Tree Producer
 treeProducer = cfg.Analyzer(
-        'treeProducerSusyAlphaT',
-        vectorTree = True,
-        PDFWeights = PDFWeights,
-        triggerBits = {
-            'Bulk'     : triggers_RA1_Bulk,
-            'Prompt'   : triggers_RA1_Prompt,
-            'Parked'   : triggers_RA1_Parked,
-            'SingleMu' : triggers_RA1_Single_Mu,
-            'Photon'   : triggers_RA1_Photon,
-            'Muon'     : triggers_RA1_Muon,
-            }
-        )
+     AutoFillTreeProducer, name='treeProducerSusyAlphaT',
+     vectorTree = True,
+     saveTLorentzVectors = False,  # can set to True to get also the TLorentzVectors, but trees will be bigger
+     PDFWeights = PDFWeights,
+     globalVariables = susyAlphaT_globalVariables,
+     globalObjects = susyAlphaT_globalObjects,
+     collections = susyAlphaT_collections,
+)
+
+#-------- SEQUENCE
+
+sequence = cfg.Sequence(susyCoreSequence + [
+                        ttHAlphaTAna,
+                        ttHAlphaTControlAna,
+                        ttHGenBinAna,
+                        treeProducer,
+                        ])
+
 
 #-------- SAMPLES AND TRIGGERS -----------
 from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14 import *
-
-# CSA13 PU20bx25 samples: DYJetsToLL_M50_PU20bx25, DYJetsM50pythia6_PU20bx25, DYJetsM50_HT200to400_PU20bx25, DYJetsM50_HT400to600_PU20bx25, DYJetsM50_HT600toInf_PU20bx25, DYJetsMuMuM50_PtZ180_PU20bx25, DYJetsMuMuM6pythia8_PU20bx25, DYJetsMuMuM15pythia8_PU20bx25, DYJetsMuMuM50pythia8_PU20bx25, DYJetsEEpythia8_PU20bx25, DYJetsMuMupythia8_PU20bx25, EWKWmin_PU20bx25, EWKWplus_PU20bx25, EWKZjj_PU20bx25, EleGun_PU20bx25, GGHTauTau_PU20bx25, GGHZZ4L_PU20bx25, GJet_PU20bx25, JPsiPt20_PU20bx25, JPsiPt7_PU20bx25, MinBias_PU20bx25, MuMinGunPt100_PU20bx25, MuMinGunPt10_PU20bx25, MuPlusGunPt100_PU20bx25, MuPlusGunPt10_PU20bx25, NeutrinoGun_PU20bx25, QCDEM_20to30_PU20bx25, QCDEM_30to80_PU20bx25, QCDEM_80to170_PU20bx25, QCDMu_20to30_PU20bx25, QCDMu_30to50_PU20bx25, QCDMu_50to80_PU20bx25, QCDMu_80to120_PU20bx25, QCDMu_pythia6_120to170_PU20bx25, QCDMu_pythia6_20to30_PU20bx25, QCDMu_pythia6_30to50_PU20bx25, QCDMu_pythia6_50to80_PU20bx25, QCDMu_pythia6_80to120_PU20bx25, T1tttt_PU20bx25, TTHBB_PU20bx25, TTHGG_PU20bx25, TTHTauTau_PU20bx25, TTHWW_PU20bx25, TTHZZ4L_PU20bx25, TTJets_PU20bx25, TTJets_PUS14, TTpythia8_PU20bx25, VBFHBB_PU20bx25, VBFHGG_PU20bx25, VBFHWWSemi_PU20bx25, VBFHWW_PU20bx25, VBFHZG_PU20bx25, VBFHZZ4L_PU20bx25, VHMuMu_PU20bx25, VHTauTau_PU20bx25, VHWWInc_PU20bx25, VHWWLep_PU20bx25, VHZZ4L_PU20bx25, WENupyhia8_PU20bx25, WJets_PU20bx25, WminTau_PU20bx25, WplusMu_PU20bx25, WplusTau_PU20bx25, ZHBBInv_PU20bx25, ZHBBLL_PU20bx25, ZHLLInv_PU20bx25
-
 
 
 # Selected samples as defined on the AlphaT twiki
@@ -143,13 +169,6 @@ selectedComponents.extend( TTbar )
 
 
 
-#-------- SEQUENCE
-
-sequence = cfg.Sequence(susyCoreSequence + [
-                        ttHAlphaTAna,
-                        ttHAlphaTControlAna,
-                        treeProducer,
-                        ])
 
 
 #-------- HOW TO RUN
@@ -160,7 +179,7 @@ test = 1
 if test==1:
     comp               = TTJets_PU20bx25
     #comp.files = ['/afs/cern.ch/work/p/pandolf/CMSSW_7_0_6_patch1_2/src/CMGTools/TTHAnalysis/cfg/pickevents.root']
-    comp.files         = comp.files[:2]
+    comp.files         = comp.files[:1]
     
     selectedComponents = [comp]
     comp.splitFactor   = 1
@@ -188,8 +207,15 @@ elif test==4:
 #--------------------------------------------------
 
 
-config = cfg.Config( components = selectedComponents,
-                     sequence = sequence )
+#config = cfg.Config( components = selectedComponents,
+#                     sequence = sequence )
 
-printComps(config.components, True)
-        
+#printComps(config.components, True)
+        # the following is declared in case this cfg is used in input to the heppy.py script
+
+from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
+config = cfg.Config( components = selectedComponents,
+                     sequence = sequence,
+                     services = [],  
+                     events_class = Events)
+

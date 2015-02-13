@@ -4,10 +4,8 @@
 import os
 import sys
 import imp
-# import copy
 import logging
 import pprint
-from platform import platform 
 from math import ceil
 from event import Event
 import timeit
@@ -52,7 +50,10 @@ class Looper(object):
     def __init__( self, name,
                   config, 
                   nEvents=None,
-                  firstEvent=0, nPrint=0, timeReport=False ):
+                  firstEvent=0,
+                  nPrint=0,
+                  timeReport=False,
+                  quiet=False):
         """Handles the processing of an event sample.
         An Analyzer is built for each Config.Analyzer present
         in sequence. The Looper can then be used to process an event,
@@ -71,7 +72,9 @@ class Looper(object):
         self.logger = logging.getLogger( self.name )
         self.logger.addHandler(logging.FileHandler('/'.join([self.name,
                                                              'log.txt'])))
-        self.logger.addHandler( logging.StreamHandler(sys.stdout) )
+        self.logger.propagate = False
+        if not quiet: 
+            self.logger.addHandler( logging.StreamHandler(sys.stdout) )
 
         self.cfg_comp = config.components[0]
         self.classes = {}
@@ -144,11 +147,11 @@ class Looper(object):
         else:
             nEvents = int(nEvents)
         eventSize = nEvents
-        self.logger.warning(
+        self.logger.info(
             'starting loop at event {firstEvent} '\
                 'to process {eventSize} events.'.format(firstEvent=firstEvent,
                                                         eventSize=eventSize))
-        self.logger.warning( str( self.cfg_comp ) )
+        self.logger.info( str( self.cfg_comp ) )
         for analyzer in self.analyzers:
             analyzer.beginLoop(self.setup)
         try:
@@ -170,13 +173,32 @@ class Looper(object):
 
         except UserWarning:
             print 'Stopped loop following a UserWarning exception'
+
+        info = self.logger.info
+        info('number of events processed: {nEv}'.format(nEv=iEv+1))
+        info('')
+        info( self.cfg_comp )
+        info('')        
         for analyzer in self.analyzers:
             analyzer.endLoop(self.setup)
-        warn = self.logger.warning
-        warn('')
-        warn( self.cfg_comp )
-        warn('')
-        warn('number of events processed: {nEv}'.format(nEv=iEv+1))
+        if self.timeReport:
+            allev = max([x['events'] for x in self.timeReport])
+            warning = self.logger.warning
+            warning("\n      ---- TimeReport (all times in ms; first evt is skipped) ---- ")
+            warning("%9s   %9s    %9s   %9s %6s   %s" % ("processed","all evts","time/proc", " time/all", "  [%] ", "analyer"))
+            warning("%9s   %9s    %9s   %9s %6s   %s" % ("---------","--------","---------", "---------", " -----", "-------------"))
+            sumtime = sum(rep['time'] for rep in self.timeReport)
+            passev  = self.timeReport[-1]['events']
+            for ana,rep in zip(self.analyzers,self.timeReport):
+                timePerProcEv = rep['time']/(rep['events']-1) if rep['events'] > 1 else 0
+                timePerAllEv  = rep['time']/(allev-1)         if allev > 1         else 0
+                fracAllEv     = rep['time']/sumtime
+                warning( "%9d   %9d   %10.2f  %10.2f %5.1f%%   %s" % ( rep['events'], allev, 1000*timePerProcEv, 1000*timePerAllEv, 100.0*fracAllEv, ana.name))
+            totPerProcEv = sumtime/(passev-1) if passev > 1 else 0
+            totPerAllEv  = sumtime/(allev-1)  if allev > 1  else 0
+            warning("%9s   %9s    %9s   %9s   %s" % ("---------","--------","---------", "---------", "-------------"))
+            warning("%9d   %9d   %10.2f  %10.2f %5.1f%%   %s" % ( passev, allev, 1000*totPerProcEv, 1000*totPerAllEv, 100.0, "TOTAL"))
+            warning("")
 
     def process(self, iEv ):
         """Run event processing for all analyzers in the sequence.
@@ -198,6 +220,8 @@ class Looper(object):
                     self.timeReport[i]['time'] += timeit.default_timer() - start
             if ret == False:
                 return (False, analyzer.name)
+        if iEv<self.nPrint:
+            self.logger.info( self.event.__str__() )
         return (True, analyzer.name)
 
     def write(self):
@@ -209,19 +233,6 @@ class Looper(object):
             analyzer.write(self.setup)
         self.setup.close() 
 
-        if self.timeReport:
-            allev = max([x['events'] for x in self.timeReport])
-            print "\n      ---- TimeReport (all times in ms; first evt is skipped) ---- "
-            print "%9s   %9s    %9s   %9s   %s" % ("processed","all evts","time/proc", " time/all", "analyer")
-            print "%9s   %9s    %9s   %9s   %s" % ("---------","--------","---------", "---------", "-------------")
-            for ana,rep in zip(self.analyzers,self.timeReport):
-                print "%9d   %9d   %10.2f  %10.2f   %s" % ( rep['events'], allev, 1000*rep['time']/(rep['events']-1) if rep['events']>1 else 0, 1000*rep['time']/(allev-1) if allev > 1 else 0, ana.name)
-            print ""
-            print "%9s   %9s    %9s   %9s   %s" % ("---------","--------","---------", "---------", "-------------")
-            sumtime = sum(rep['time'] for rep in self.timeReport)
-            passev  = self.timeReport[-1]['events']
-            print "%9d   %9d   %10.2f  %10.2f   %s" % ( passev, allev, 1000*sumtime/(passev-1) if passev>1 else 0, 1000*sumtime/(allev-1) if allev > 1 else 0, "TOTAL")
-            print ""
 
 if __name__ == '__main__':
 
