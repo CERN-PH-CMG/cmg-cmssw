@@ -24,17 +24,17 @@ class EOSEventsWithDownload(object):
         try:
             finfo = subprocess.check_output(["/afs/cern.ch/project/eos/installation/pro/bin/eos.select", "fileinfo", fpath])
             replicas = False
-            fars     = False
+            nears    = False
             for line in finfo.split("\n"):
                 if line.endswith("geotag"):
                     replicas = True
                 elif replicas and ".cern.ch" in line:
                     geotag = int(line.split()[-1])
                     print "Found a replica with geotag %d" % geotag
-                    if geotag < 9000 : return True # local replica: ok
-                    else: fars = True # we have found a replica that is far away
-            # if we have found some far replicas, and no near replicas, it's a remote file
-            if fars: return False
+                    if geotag > 9000: return False # far replica: bad (EOS sometimes gives the far even if there's a near!)
+                    else: nears = True # we have found a replica that is far away
+            # if we have found some near replicas, and no far replicas
+            if nears: return True
         except:
             pass
         # we don't know, so we don't transfer (better slow than messed up)
