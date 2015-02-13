@@ -37,6 +37,7 @@ jetAna.smearJets = False
 jetAna.jetGammaDR = 0.4
 jetAna.minGammaPt = 20
 jetAna.gammaEtaCentral = 2.4
+jetAna.cleanJetsFromFirstPhoton = True
 jetAna.cleanJetsFromIsoTracks = True ## added for Dominick
 
 # TAU 
@@ -182,7 +183,9 @@ if test==1:
 #    comp=TTJets
 #    comp.files = ['/afs/cern.ch/work/d/dalfonso/public/ttjets_miniaodsim_00C90EFC-3074-E411-A845-002590DB9262.root']
     comp=GJets_HT200to400
-    comp.files = ['/afs/cern.ch/work/d/dalfonso/public/gjets_ht200to400_miniaodsim_060B8ED3-8571-E411-A2CD-002590D0AFEA.root']
+#    comp.files = ['/afs/cern.ch/work/d/dalfonso/public/gjets_ht200to400_miniaodsim_060B8ED3-8571-E411-A2CD-002590D0AFEA.root']
+    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/gjets_ht200to400_miniaodsim_fix.root']
+
     selectedComponents = [comp]
     comp.splitFactor = 10
 elif test==2:
