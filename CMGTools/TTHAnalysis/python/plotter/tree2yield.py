@@ -279,14 +279,14 @@ class TreeToYield:
             ROOT.gROOT.cd()
             if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
             histo = ROOT.TH1F("dummy","dummy",1,0.0,1.0); histo.Sumw2()
-            nev = tree.Draw("0.5>>dummy", cut, "goff")
+            nev = tree.Draw("0.5>>dummy", cut, "goff", self._options.maxEntries)
             self.negativeCheck(histo)
             return [ histo.GetBinContent(1), histo.GetBinError(1) ]
         else: 
             cut = self.adaptExpr(cut,cut=True)
             if self._options.doS2V:
                 cut  = scalarToVector(cut)
-            npass = tree.Draw("1",self.adaptExpr(cut,cut=True),"goff");
+            npass = tree.Draw("1",self.adaptExpr(cut,cut=True),"goff", self._options.maxEntries);
             return [ npass, sqrt(npass) ]
     def _stylePlot(self,plot,spec):
         ## Sample specific-options, from self
@@ -391,19 +391,19 @@ class TreeToYield:
             raise RuntimeError, "Can't make a plot with %d dimensions" % nvars
         histo.Sumw2()
         if unbinnedData2D:
-            self._tree.Draw("%s" % (self.adaptExpr(expr)), cut)
+            self._tree.Draw("%s" % (self.adaptExpr(expr)), cut, "", self._options.maxEntries)
             graph = ROOT.gROOT.FindObject("Graph").Clone(name)
             return graph
         drawOpt = "goff"
         if profile1D or profile2D: drawOpt += " PROF";
-        self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummy"), cut, drawOpt)
+        self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummy"), cut, drawOpt, self._options.maxEntries)
         if canKeys and histo.GetEntries() > 0 and histo.GetEntries() < self.getOption('KeysPdfMinN',100) and not self._isdata and self.getOption("KeysPdf",False):
             #print "Histogram for %s/%s has %d entries, so will use KeysPdf " % (self._cname, self._name, histo.GetEntries())
             if "/TH1Keys_cc.so" not in ROOT.gSystem.GetLibraries(): 
                 ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/TTHAnalysis/python/plotter/TH1Keys.cc+" % os.environ['CMSSW_BASE']);
             (nb,xmin,xmax) = bins.split(",")
             histo = ROOT.TH1KeysNew("dummyk","dummyk",int(nb),float(xmin),float(xmax))
-            self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummyk"), cut, "goff")
+            self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummyk"), cut, "goff", self._options.maxEntries)
             self.negativeCheck(histo)
             return histo.GetHisto().Clone(name)
         #elif not self._isdata and self.getOption("KeysPdf",False):
@@ -466,6 +466,7 @@ def addTreeToYieldOptions(parser):
     parser.add_option("--mcc", "--mc-corrections",    dest="mcCorrs",  action="append", default=[], nargs=1, help="Load the following file of mc to data corrections") 
     parser.add_option("--s2v", "--scalar2vector",     dest="doS2V",    action="store_true", default=False, help="Do scalar to vector conversion") 
     parser.add_option("--neg", "--allow-negative-results",     dest="allowNegative",    action="store_true", default=False, help="If the total yield is negative, keep it so rather than truncating it to zero") 
+    parser.add_option("--max-entries",     dest="maxEntries", default=1000000000, type="int", help="Max entries to process in each tree") 
 
 def mergeReports(reports):
     import copy
