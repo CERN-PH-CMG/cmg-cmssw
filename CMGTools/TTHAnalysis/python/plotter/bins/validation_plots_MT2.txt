@@ -62,15 +62,15 @@ mt2:   mt2: 16,0,800    ; XTitle="MT2  [GeV]"
 
 mt2_gen:   mt2_gen: 16,0,800    ; XTitle="MT2 gen  [GeV]"
 
-#pseudoJet1_pt: pseudoJet1_pt: 16,0,800    ; XTitle="PseJet1  p_{T}  [GeV]", Legend='TR'
-#pseudoJet1_phi: pseudoJet1_phi: 8,-3.15,3.15    ; XTitle="PseJet1 phi"
-#pseudoJet1_eta: pseudoJet1_eta: 10,-5.,5.    ; XTitle="PseJet1 eta"
-#pseudoJet1_mass: pseudoJet1_mass: 20,0,400.    ; XTitle="PseJet1 mass [GeV]"
+pseudoJet1_pt: pseudoJet1_pt: 16,0,800    ; XTitle="PseJet1  p_{T}  [GeV]", Legend='TR'
+pseudoJet1_phi: pseudoJet1_phi: 8,-3.15,3.15    ; XTitle="PseJet1 phi"
+pseudoJet1_eta: pseudoJet1_eta: 10,-5.,5.    ; XTitle="PseJet1 eta"
+pseudoJet1_mass: pseudoJet1_mass: 20,0,400.    ; XTitle="PseJet1 mass [GeV]"
 
-#pseudoJet2_pt: pseudoJet2_pt: 16,0,800    ; XTitle="PseJet12 p_{T}  [GeV]"
-#pseudoJet2_phi: pseudoJet2_phi: 8,-3.15,3.15    ; XTitle="PseJet2 phi"
-#pseudoJet2_eta: pseudoJet2_eta: 10,-5.,5.    ; XTitle="PseJet2 eta"
-#pseudoJet2_mass: pseudoJet2_mass: 20,0,400.    ; XTitle="PseJet2 mass [GeV]"
+pseudoJet2_pt: pseudoJet2_pt: 16,0,800    ; XTitle="PseJet12 p_{T}  [GeV]"
+pseudoJet2_phi: pseudoJet2_phi: 8,-3.15,3.15    ; XTitle="PseJet2 phi"
+pseudoJet2_eta: pseudoJet2_eta: 10,-5.,5.    ; XTitle="PseJet2 eta"
+pseudoJet2_mass: pseudoJet2_mass: 20,0,400.    ; XTitle="PseJet2 mass [GeV]"
 
 nPFLep5LowMT:  nPFLep5LowMT: [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(PFLep\, p_{T} > 5\, M_{T} < 100)'
 
