@@ -74,6 +74,8 @@ class Object:
     def __getattr__(self,name):
         if name in self.__dict__: return self.__dict__[name]
         if name == "pdgLabel": return self.pdgLabel_()
+        if name[:2] == "__" and name[-2:] == "__":
+            raise AttributeError
         try:
             val = getattr(self._event,self._prefix+name)
             if self._index != None:
@@ -102,6 +104,10 @@ class Object:
         return ret
     def subObj(self,prefix):
         return Object(self,self._event,self._prefix+prefix)
+    def __repr__(self):
+        return ("<%s[%s]>" % (self._prefix[:-1],self._index)) if self._index != None else ("<%s>" % self._prefix[:-1])
+    def __str__(self):
+        return self.__repr__()
 
 class Collection:
     def __init__(self,event,prefix,len=None,maxlen=None,testVar="pt"):
