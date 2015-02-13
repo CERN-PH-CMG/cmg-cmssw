@@ -30,8 +30,9 @@ ttHLepSkim.maxLeptons = 999
 
 # --- JET-LEPTON CLEANING ---
 jetAna.minLepPt = 10 
-jetAna.mcGT = "PHYS14_25_V2_LowPtHenningFix"
 
+jetAna.mcGT = "PHYS14_25_V2_LowPtHenningFix"
+jetAna.doQG = True
 jetAna.smearJets = False #should be false in susycore, already
 jetAna.recalibrateJets = True #should be true in susycore, already
 metAna.recalibrate = False #should be false in susycore, already
