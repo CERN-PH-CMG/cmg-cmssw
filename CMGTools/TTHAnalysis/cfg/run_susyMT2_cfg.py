@@ -92,9 +92,8 @@ from CMGTools.TTHAnalysis.analyzers.ttHmllSkimmer import ttHmllSkimmer
 # Tree Producer                                                                                                                                                                         
 ttHZskim = cfg.Analyzer(
             ttHmllSkimmer, name='ttHmllSkimmer',
-            lepId=13,
+            lepId=[13],
             maxLeps=3,
-            intPDG=13,
             massMin=60,
             massMax=120,
             doZGen = False,
@@ -199,7 +198,6 @@ if test==1:
     ## 25 ns ttbar PHYS14
 #    comp = TTJets
 #    comp.files = comp.files[:1]
-
 #    comp=TTJets
 #    comp.files = ['/afs/cern.ch/work/d/dalfonso/public/ttjets_miniaodsim_00C90EFC-3074-E411-A845-002590DB9262.root']
     comp=GJets_HT200to400
