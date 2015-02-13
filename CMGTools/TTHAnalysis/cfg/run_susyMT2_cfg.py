@@ -45,6 +45,9 @@ tauAna.dxyMax = 99999.
 tauAna.dzMax = 99999.
 tauAna.vetoLeptons = False
 tauAna.vetoLeptonsPOG = True
+tauAna.decayModeID = "" # ignored if not set or ""
+tauAna.tauAntiMuonID = "againstMuonTight"
+tauAna.tauAntiElectronID = "againstElectronLoose"
 
 # Photon
 photonAna.etaCentral = 2.5
