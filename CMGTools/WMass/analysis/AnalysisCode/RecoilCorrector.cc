@@ -404,7 +404,7 @@ void RecoilCorrector::runDiago(RooWorkspace *w, RooFitResult *result, TString fi
   w->import(*newpdf, RooFit::RecycleConflictNodes(),RooFit::Silence());
   
   RooRealVar* myX1=w->var("XVar");
-  /* RooAbsReal * */pdfUiCdf = newpdf->createCdf(*myX1);
+  /* RooAbsReal * */pdfUiCdf = newpdf->createCdf(*myX1,RooFit::ScanAllCdf());
   w->import(*pdfUiCdf, RooFit::RecycleConflictNodes(),RooFit::Silence());
   // w->Print();
   
