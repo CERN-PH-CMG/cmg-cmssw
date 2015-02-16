@@ -1,7 +1,8 @@
 import math
 
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Muon, Tau
-from PhysicsTools.Heppy.physicsobjects.HTauTauElectron import HTauTauElectron
+# from PhysicsTools.Heppy.physicsobjects.HTauTauElectron import HTauTauElectron
+from PhysicsTools.Heppy.physicsobjects.Electron import Electron
 from PhysicsTools.HeppyCore.utils.deltar import deltaR2
 from ROOT import TVector3
 
@@ -179,7 +180,8 @@ class TauElectron( DiTau ):
     def __init__(self, diobject):
         super(TauElectron, self).__init__(diobject)
         self.tau = Tau( super(TauElectron, self).leg1() )
-        self.ele = HTauTauElectron( super(TauElectron, self).leg2() )
+        self.ele = Electron( super(TauElectron, self).leg2() )
+#         self.ele = HTauTauElectron( super(TauElectron, self).leg2() )
 
     def leg1(self):
         return self.tau
@@ -191,7 +193,8 @@ class MuonElectron( DiTau ):
     def __init__(self, diobject):
         super(MuonElectron, self).__init__(diobject)
         self.mu = Muon( super(MuonElectron, self).leg1() )
-        self.ele = HTauTauElectron( super(MuonElectron, self).leg2() )
+        self.ele = Electron( super(MuonElectron, self).leg2() )
+#         self.ele = HTauTauElectron( super(MuonElectron, self).leg2() )
 
     def leg1(self):
         return self.mu

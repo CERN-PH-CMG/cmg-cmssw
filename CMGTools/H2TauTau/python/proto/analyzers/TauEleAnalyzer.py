@@ -1,6 +1,7 @@
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Muon, GenParticle
-from PhysicsTools.Heppy.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
+# from PhysicsTools.Heppy.physicsobjects.HTauTauElectron  import HTauTauElectron as Electron
+from PhysicsTools.Heppy.physicsobjects.Electron         import Electron
 
 from CMGTools.H2TauTau.proto.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.H2TauTau.proto.physicsobjects.DiObject import TauElectron
@@ -49,8 +50,12 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             pydil.leg1().associatedVertex = event.goodVertices[0]
             pydil.leg2().associatedVertex = event.goodVertices[0]
             pydil.leg2().rho = event.rho
-            if not self.testLeg2( pydil.leg2(), 999999 ):
-                continue
+            #print 'before' 
+            #import pdb ; pdb.set_trace()
+            #if not self.testLeg2( pydil.leg2(), 999999 ):
+            #    continue
+            #print 'after' 
+            #import pdb ; pdb.set_trace()
             diLeptons.append( pydil )
         return diLeptons
 
@@ -188,25 +193,35 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             return tau.tauID("byIsolationMVA3oldDMwLTraw")>isocut
 
     def testLeg2ID(self, electron):
-        '''Tight muon selection, no isolation requirement'''
+        '''Tight muon selection, no isolation requirement
+           RIC: needs to be revised, in parallel to the heppy Electron
+                currently using POG_CSA14_25ns_v1_{Loose,Tight} FIXME!
+        '''
         #        print 'WARNING: USING SETUP FOR SYNC PURPOSES'
         #        return electron.looseIdForEleTau() and \
         if self.relaxEleId:
-            return electron.relaxedIdForEleTau() and \
+            return electron.cutBasedId('POG_CSA14_25ns_v1_Loose') and \
                self.testVertex( electron )    
-        return electron.tightIdForEleTau() and \
+#             return electron.relaxedIdForEleTau() and \
+#                self.testVertex( electron )    
+        return electron.cutBasedId('POG_CSA14_25ns_v1_Tight') and \
                self.testVertex( electron )
+#         return electron.tightIdForEleTau() and \
+#                self.testVertex( electron )
 
     def testLeg2Iso(self, leg, isocut): #electron
         if isocut is None:
            isocut = self.cfg_ana.iso2
+        # RIC: the lepton isolation is temporarily messed up
+        # Relax it
+        # return True
         return leg.relIsoAllChargedDB05() < isocut
-
+        
     def testLooseLeg2 (self, leg): # electrons
         if leg.relIsoAllChargedDB05() > 0.3 : return False
         if abs( leg.eta() )           > 2.5 : return False
         if leg.pt()                   < 15  : return False
-        if leg.looseIdForEleTau()  == False : return False
+        #if leg.looseIdForEleTau()  == False : return False # RIC: ele ID needs to be revised
         return True
 
     def testTightOtherLepton (self, muon):
@@ -222,7 +237,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         # import pdb; pdb.set_trace()
         selLeptons = [electron for electron in leptons if
                       self.testLegKine(electron, ptcut=10, etacut=2.5) and \
-                      electron.looseIdForTriLeptonVeto() and \
+                      #electron.looseIdForTriLeptonVeto() and \
                       self.testVertex(electron) and \
                       self.testLeg2Iso(electron, isoCut) ]                                                                                                    
 

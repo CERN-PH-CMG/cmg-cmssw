@@ -23,10 +23,8 @@ class TauDecayModeWeighter( Analyzer ):
         
         # RIC: let the user decide which leg needs to be corrected. In tt is both.
         # Default is leg1, so that for mt and et this modification is transparent 
-        if hasattr(self.cfg_ana, 'legs'):
-            legs = self.cfg_ana.legs
-        else:
-            legs = ['leg1']
+        if hasattr( self.cfg_ana, 'legs' ) : legs = self.cfg_ana.legs
+        else                               : legs = ['leg1']
         
         # Not strictly correct, but this is agreed upon for Summer 2013:
         if self.cfg_comp.isEmbed or 'Higgs' in self.cfg_comp.name or ('DY' in self.cfg_comp.name and event.isFake == 0):
