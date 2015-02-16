@@ -11,7 +11,7 @@ from PhysicsTools.Heppy.analyzers.objects.METAnalyzer import *
 # Redefine what I need
 
 # --- MONOJET SKIMMING ---
-monoJetSkim.metCut = 100
+monoJetSkim.metCut = 200
 monoJetSkim.jetPtCuts = []
 
 # run miniIso
@@ -27,7 +27,37 @@ lepAna.miniIsolationVetoLeptons = None # use 'inclusive' to veto inclusive lepto
 # switch off slow photon MC matching
 photonAna.do_mc_match = False
 
+##------------------------------------------
+##  TOLOLOGIAL VARIABLES: MT, MT2
+##------------------------------------------
+from CMGTools.TTHAnalysis.analyzers.ttHTopoVarAnalyzer import ttHTopoVarAnalyzer
+ttHTopoJetAna = cfg.Analyzer(
+    ttHTopoVarAnalyzer, name = 'ttHTopoVarAnalyzer',
+    doOnlyDefault = True
+    )
+
+from CMGTools.TTHAnalysis.analyzers.ttHMT2Control import ttHMT2Control
+ttHMT2ControlAna = cfg.Analyzer(
+    ttHMT2Control, name = 'ttHMT2Control',
+
+    )
+##------------------------------------------
+##  TOLOLOGIAL VARIABLES: ALPHAT
+##------------------------------------------
+from CMGTools.TTHAnalysis.analyzers.ttHAlphaTVarAnalyzer import ttHAlphaTVarAnalyzer
+ttHAlphaTAna = cfg.Analyzer(
+    ttHAlphaTVarAnalyzer, name = 'ttHAlphaTVarAnalyzer',
+    )
+
+from CMGTools.TTHAnalysis.analyzers.ttHAlphaTControlAnalyzer import ttHAlphaTControlAnalyzer
+ttHAlphaTControlAna = cfg.Analyzer(
+    ttHAlphaTVarAnalyzer, name = 'ttHAlphaTControlAnalyzer',
+    )
+
+
+##------------------------------------------
 # Event Analyzer for monojet 
+##------------------------------------------
 from CMGTools.MonoXAnalysis.analyzers.monoJetEventAnalyzer import monoJetEventAnalyzer
 MonoJetEventAna = cfg.Analyzer(
     monoJetEventAnalyzer, name="monoJetEventAnalyzer",
@@ -60,6 +90,11 @@ from CMGTools.MonoXAnalysis.samples.samples_dummy import *
 selectedComponents = []
 
 sequence = cfg.Sequence(dmCoreSequence+[
+    ttHMT2ControlAna,
+    ttHTopoJetAna,
+    ttHFatJetAna,
+    ttHAlphaTAna,
+    ttHAlphaTControlAna,
     MonoJetEventAna,
     treeProducer,
     ])
