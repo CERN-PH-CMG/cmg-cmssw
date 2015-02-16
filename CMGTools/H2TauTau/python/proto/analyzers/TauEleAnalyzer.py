@@ -50,8 +50,12 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             pydil.leg1().associatedVertex = event.goodVertices[0]
             pydil.leg2().associatedVertex = event.goodVertices[0]
             pydil.leg2().rho = event.rho
+            print 'before' 
+            import pdb ; pdb.set_trace()
             if not self.testLeg2( pydil.leg2(), 999999 ):
                 continue
+            print 'after' 
+            import pdb ; pdb.set_trace()
             diLeptons.append( pydil )
         return diLeptons
 
@@ -189,20 +193,30 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             return tau.tauID("byIsolationMVA3oldDMwLTraw")>isocut
 
     def testLeg2ID(self, electron):
-        '''Tight muon selection, no isolation requirement'''
+        '''Tight muon selection, no isolation requirement
+           RIC: needs to be revised, in parallel to the heppy Electron
+                currently using POG_CSA14_25ns_v1_{Loose,Tight} FIXME!
+        '''
         #        print 'WARNING: USING SETUP FOR SYNC PURPOSES'
         #        return electron.looseIdForEleTau() and \
         if self.relaxEleId:
-            return electron.relaxedIdForEleTau() and \
+            return electron.cutBasedId('POG_CSA14_25ns_v1_Loose') and \
                self.testVertex( electron )    
-        return electron.tightIdForEleTau() and \
+#             return electron.relaxedIdForEleTau() and \
+#                self.testVertex( electron )    
+        return electron.cutBasedId('POG_CSA14_25ns_v1_Tight') and \
                self.testVertex( electron )
+#         return electron.tightIdForEleTau() and \
+#                self.testVertex( electron )
 
     def testLeg2Iso(self, leg, isocut): #electron
         if isocut is None:
            isocut = self.cfg_ana.iso2
+        # RIC: the lepton isolation is temporarily messed up
+        # Relax it
+        # return True
         return leg.relIsoAllChargedDB05() < isocut
-
+        
     def testLooseLeg2 (self, leg): # electrons
         if leg.relIsoAllChargedDB05() > 0.3 : return False
         if abs( leg.eta() )           > 2.5 : return False
