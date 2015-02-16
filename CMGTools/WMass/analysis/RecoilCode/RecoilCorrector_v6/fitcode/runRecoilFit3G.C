@@ -267,7 +267,6 @@ int VTXbin=-1;
 bool doWeight=false;
 
 bool doPhiStar=false;
-
 bool doOnlyU = false; // un-needed
 
 bool doRoch_corr = false;
@@ -608,7 +607,7 @@ const int readRecoil(std::vector<double> &iSumEt,
     //  iwU1->Print("tV");
     
     RooRealVar* myX1=iwU1->var("XVar");
-    iPdfU1 = diagPdfU1->createCdf(*myX1);
+    iPdfU1 = diagPdfU1->createCdf(*myX1,ScanAllCdf());
     //  iPdfU1 = pdfU1->createCdf(*myX1);
     delete pdfU1;
     delete frU1;
@@ -629,7 +628,7 @@ const int readRecoil(std::vector<double> &iSumEt,
     //  //  iwU2->import(*diagPdfU2,Silence());
   
     RooRealVar* myX2=iwU2->var("XVar");
-    iPdfU2 = diagPdfU2->createCdf(*myX2);
+    iPdfU2 = diagPdfU2->createCdf(*myX2,ScanAllCdf());
     //  iPdfU2 = diagPdfU2->createCdf(*myX2);
     delete pdfU2;
     delete frU2;
@@ -650,6 +649,7 @@ const int readRecoil(std::vector<double> &iSumEt,
   return lNBins;
 
 }
+
 
 double calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2) {
   double lMX = -iEPt*cos(iEPhi) - iU1*cos(iWPhi) + iU2*sin(iWPhi);
@@ -2681,10 +2681,13 @@ RooFormulaVar * sigbkgFrac2D;
 RooHistPdf * bkg_pdf2D;
 RooDataHist * bkg_hist2D;
 
+double rangeMinXVar = -5.;
+double rangeMaxXVar = 5.;
+
 //RooRealVar lRPt;
 //RooRealVar lRXVar;
 RooRealVar lRPt("pt","Z_{p_{T}}",5.,0.,20.);
-RooRealVar lRXVar("XVar","(U_{1}(Z_{p_{T}})-x_{i})/#sigma_{U1} (Z_{p_{T}})",0,-5.,5.);
+RooRealVar lRXVar("XVar","(U_{1}(Z_{p_{T}})-x_{i})/#sigma_{U1} (Z_{p_{T}})",0,rangeMinXVar,rangeMaxXVar);
 RooAddPdf * lRGAdd;
 RooAddPdf * lGAdd;  
 RooGaussian * lGaus1;
@@ -3329,16 +3332,15 @@ void diagoResults(bool doU1=false) {
 double triGausInvGraph(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsReal *pdfDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA) {
   
   RooRealVar* myptm=wMC->var("pt");
-  myptm->setVal(Zpt);
-
   RooRealVar* myptd=wDATA->var("pt");
+  RooRealVar* myXm = wMC->var("XVar");
+  RooRealVar* myXd = wDATA->var("XVar");
+ 
+  myptm->setVal(Zpt);
   myptd->setVal(Zpt);
 
   //  cout << "PRINTING THE DATA workspace" << endl;
   //  wDATA->Print("tV");
-
-  RooRealVar* myXm = wMC->var("XVar");
-  RooRealVar* myXd = wDATA->var("XVar");
 
   //  RooAbsReal* pdfMCcdf = pdfMC->createCdf(*myXm);
   //  RooAbsReal* pdfDATAcdf = pdfDATA->createCdf(*myXd);
@@ -3371,8 +3373,8 @@ double triGausInvGraph(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsRea
   //  cout << " from findRoot " << pVal << endl;
 
   // add protection for outlier since I tabulated up to 5
-  if(pVal>=5) pVal=iPVal;
-  if(pVal<=-5) pVal=iPVal;
+  if(pVal>=rangeMaxXVar) pVal=iPVal;
+  if(pVal<=rangeMinXVar) pVal=iPVal;
 
   /*
   if((iPVal-pVal)>0.5) {
@@ -3430,6 +3432,11 @@ double triGausInvGraph(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsRea
   //  delete gr_data;
   //  delete gr_data_inverse;
 
+  myptd->setVal(0 );
+  myptm->setVal(0 );
+  myXm->setVal(0 );
+  myXd->setVal(0 );
+
   return pVal;
 
 }
@@ -3483,11 +3490,11 @@ void applyTriGausInv(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   double pU1Diff  = pU1-pDefU1;
   double pU2Diff  = pU2;
 
-  double pU1Initial=pU1;
-  double pU2Initial=pU2;
+  double pU1Initial=pU1Diff;
+  double pU2Initial=pU2Diff;
 
-  double p1Charge        = pU1Diff/fabs(pU1Diff);
-  double p2Charge        = pU2Diff/fabs(pU2Diff);
+  double p1Charge = pU1Diff/fabs(pU1Diff);
+  double p2Charge = pU2Diff/fabs(pU2Diff);
 
   double pU1ValD = 0 ;
   double pU2ValD = 0;
@@ -3537,25 +3544,10 @@ void applyTriGausInv(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
   //  pU1ValD*=p1Charge; /// removed the ABS value on the argument of triGausInvGraph
   pU2ValD*=p2Charge;
   
-  //  cout << "   pU2ValD(GeV) " << pU2ValD << endl;
-
   pU1   = pDefU1             + pU1ValD;
   pU2   =                      pU2ValD;
   iMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
   iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
-
-  /*
-  if((pU1Initial-pU1)>0.5 || (pU2Initial-pU2)>0.5) {
-
-    //    cout << " ------------------------------------------------------- " << endl;
-    //    cout << " =====> DIFF: " << " iGenPt=" << iGenPt << endl;
-
-    cout << " initial pU1 = " << pU1Initial << " pU2 = " << pU2Initial << endl;
-    cout << " after pU1 = " << pU1 << " pU2 = " << pU2 << endl;
-    
-  }
-  */
-
 
   return;
 
@@ -3583,8 +3575,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   range_min=fZPtMin;
   range_max=fZPtMax;
 
-  minRangeSigma = -5.;
-  maxRangeSigma =  5.;
+  minRangeSigma = rangeMinXVar;
+  maxRangeSigma = rangeMaxXVar;
 
   if(doAbsolute) minRangeSigma = -50.;
   if(doAbsolute) maxRangeSigma = 50.;
@@ -4101,7 +4093,9 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   if(!fData) fileName2D += "MC"; 
   if(doMad && !fData) fileName2D += "_MADGRAPH";
   if(!doMad && !fData) fileName2D += "_POWHEG";
-  if(doClosure) fileName2D += "_closure";
+  //  if(doClosure) fileName2D += "_closure";
+  if(doClosure) fileName2D += "_closureVSDATA";
+  fileName2D += "_FEB16";
   fileName2D += ".root";
   
   if(doPrint) {
@@ -4297,7 +4291,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     //    double lYTest = sqrt(iFit->Eval(vlXVals_all[lPar!=fU1][iRMS][i0]));      // for squares
 
     // clean the under/overflow
-    if(!doAbsolute && (vlYTVals_all[lPar!=fU1][iRMS][i0]/(lYTest)<-5. || vlYTVals_all[lPar!=fU1][iRMS][i0]/(lYTest)>5.)) continue;
+    if(!doAbsolute && (vlYTVals_all[lPar!=fU1][iRMS][i0]/(lYTest)<rangeMinXVar || vlYTVals_all[lPar!=fU1][iRMS][i0]/(lYTest)>rangeMaxXVar)) continue;
     if(doAbsolute && (vlYTVals_all[lPar!=fU1][iRMS][i0]<-50. || vlYTVals_all[lPar!=fU1][iRMS][i0]>50.)) continue;
 
     // MARIA: here the switch for pull or GeV
@@ -4365,7 +4359,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   */
 
   TString fileName2DFIT="file2Dfit_";
-  fileName2DFIT += "FEB6_";
+  fileName2DFIT += "FEB16_";
   if(!fData && (!doPosW && doNegW) && !doBKG) fileName2DFIT += "Wneg";
   if(!fData && (doPosW && !doNegW) && !doBKG) fileName2DFIT += "Wpos";
   if(!fData && (!doPosW && !doNegW) && !doBKG) fileName2DFIT += "Z";
@@ -5712,6 +5706,9 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
   TFile *fout_loopOverTree = 0;
   TTree *iterEvTree = 0;
 
+  double fMetOriginal=fMet;
+  double fMPhiOriginal=fMPhi;
+
   if(writeTree) {
 
     fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_POWasMAD_mad%d_iter%d_onlyU2%d_onlyU1%d_%d_writeTree_%d.root",doMad,doIterativeMet,doOnlyU2,doOnlyU1,startTreeEntries,writeTree),"RECREATE");
@@ -5742,6 +5739,9 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
     TBranch* br_tkmet = iterEvTree->Branch("tkmet",&fMet,"tkmet/D");   /// this will be replaced after the smearing
     TBranch* br_tkmetphi = iterEvTree->Branch("tkmet_phi",&fMPhi,"tkmet_phi/D");  /// this will be replaced after the smearing
     TBranch* br_tkmetsumEt = iterEvTree->Branch("tkmet_sumEt",&ftkMSumET,"tkmet_sumEt/D");
+
+    TBranch* br_tkmet_ori = iterEvTree->Branch("tkmet_ori",&fMetOriginal,"tkmet_ori/D");   /// this will be replaced after the smearing
+    TBranch* br_tkmetphi_ori = iterEvTree->Branch("tkmet_phi_ori",&fMPhiOriginal,"tkmet_phi_ori/D");  /// this will be replaced after the smearing
     
     //    TBranch* br_tkmet = iterEvTree->Branch("tkmet",&ftkMet,"tkmet/D");   /// this will be replaced after the smearing
     //    TBranch* br_tkmetphi = iterEvTree->Branch("tkmet_phi",&ftkMPhi,"tkmet_phi/D");  /// this will be replaced after the smearing
@@ -5897,6 +5897,8 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
       ftkMSumET = ftkMSumET - fMuPos_pt - fMuNeg_pt; // want to check the sumEt of the recoil
     }
 
+    fMetOriginal=fMet;
+    fMPhiOriginal=fMPhi;
 
     // THIS WAS FOR THE VTX selection
     if(doVTXbinning && !passId(VTXbin)) continue;
@@ -6391,7 +6393,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
   //  TString name="recoilfits/recoilfit_JAN22_MADtoMAD";
   //  TString name="recoilfits/recoilfit_JAN22_POWtoMAD";
   //  TString name="recoilfits/recoilfit_JAN28";
-  TString name="recoilfits/recoilfit_FEB6";
+  TString name="recoilfits/recoilfit_FEB16";
   if(do8TeV) name +="_8TeV";
   if(doABC) name +="_ABC";
 
@@ -6427,22 +6429,15 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
     } 
 
     /*
-    //    if(doMad && doClosure)    fDataFile = TFile::Open("TREE/output_mad1_iter1.root");
-    //    if(!doMad && doClosure)    fDataFile = TFile::Open("TREE/output_pow1_MADasDATA_iter1.root"); // closure POW vs MAD
-    if(!doMad && doClosure && !do8TeV)    {
-      fDataFile = TFile::Open("TREE/output_mad0_iter1.root");
-      cout << " reading TREE/output_mad0_iter1.root" << endl;
-    }
-    if(doMad && doClosure && !do8TeV)   {
-      fDataFile = TFile::Open("TREE/output_mad1_iter1.root"); // closure MAD vs DATA
-      cout << " reading TREE/output_mad1_iter1.root" << endl;
+    if(doClosure && !do8TeV)   {
+      fDataFile = TFile::Open(Form("TREE/output_mad%d_POWasMAD_onlyU20_onlyU10_iter1_feb8tris.root",doMad)); // closure MAD as DATA
+      cout << " reading TREE/output_mad" << doMad << "_POWasMAD_onlyU20_onlyU10_iter1_feb8tris.root"<< endl;
     }
     */
 
     if(doClosure && !do8TeV)   {
-      //output_mad0_POWasMAD_onlyU21_iter1_feb7.root
-      fDataFile = TFile::Open(Form("TREE/output_mad%d_POWasMAD_onlyU20_onlyU10_iter1_feb8tris.root",doMad)); // closure MAD vs DATA
-      cout << " reading TREE/output_mad" << doMad << "_POWasMAD_onlyU20_onlyU10_iter1_feb8tris.root"<< endl;
+      fDataFile = TFile::Open(Form("TREE/output_mad%d_POWasMAD_onlyU20_onlyU10_iter1_feb16.root",doMad)); // closure vs DATA
+      cout << " reading TREE/output_mad" << doMad << "_POWasMAD_onlyU20_onlyU10_iter1_feb16.root"<< endl;
     }
 
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
@@ -6474,7 +6469,8 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
       readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,lZDU1Mean1Fit, lZDU1Mean2Fit,
 		 lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,lZDU2Mean1Fit, lZDU2Mean2Fit,
 		 lpdfDATAU1, lwDATAU1, lpdfDATAU2, lwDATAU2,
-		 "recoilfits/recoilfit_JAN25_DATA_bkg_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root" ,"PF",fId);
+		 //		 "recoilfits/recoilfit_JAN25_DATA_bkg_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root" ,"PF",fId);
+		 "recoilfits/recoilfit_JAN25_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root" ,"PF",fId);
       */
 
       // MADGRAPH as DATA closure
@@ -6482,7 +6478,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 		 lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,lZDU2Mean1Fit, lZDU2Mean2Fit,
 		 lpdfDATAU1, lwDATAU1, lpdfDATAU2, lwDATAU2,
 		 "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
-      
+
       /*
       // POWHEG as DATA closure
       if(!doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,lZDU1Mean1Fit, lZDU1Mean2Fit,
