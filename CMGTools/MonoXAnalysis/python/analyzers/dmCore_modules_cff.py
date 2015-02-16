@@ -206,6 +206,33 @@ tauAna = cfg.Analyzer(
     tauLooseID = "decayModeFinding",
 )
 
+##------------------------------------------
+###  ISOLATED TRACK
+###------------------------------------------                                                                                                                                                                
+#
+## those are the cuts for the nonEMu                                                                                                                                                                         
+isoTrackAna = cfg.Analyzer(
+    IsoTrackAnalyzer, name='isoTrackAnalyzer',
+    setOff=False,
+    #####
+    candidates='packedPFCandidates',
+    candidatesTypes='std::vector<pat::PackedCandidate>',
+    ptMin = 5, # for pion 
+    ptMinEMU = 5, # for EMU
+    dzMax = 0.1,
+    #####
+    isoDR = 0.3,
+    ptPartMin = 0,
+    dzPartMax = 0.1,
+    maxAbsIso = 8,
+    #####
+    MaxIsoSum = 0.1, ### unused
+    MaxIsoSumEMU = 0.2, ### unused
+    doSecondVeto = False,
+    #####
+    doPrune = True
+    )
+
 ## Jets Analyzer (generic)
 jetAna = cfg.Analyzer(
     JetAnalyzer, name='jetAnalyzer',
@@ -292,8 +319,8 @@ dmCoreSequence = [
     lepAna,
     photonAna,
     tauAna,
+    isoTrackAna,
     jetAna,
-    ttHFatJetAna,
     metAna,
     ttHCoreEventAna,
     monoJetSkim,
