@@ -1,3 +1,6 @@
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi
+
 import operator 
 import itertools
 import copy
@@ -5,19 +8,8 @@ from math import *
 
 #from ROOT import TLorentzVector, TVectorD
 
-from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.Event import Event
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-# from CMGTools.RootTools.physicsobjects.Lepton import Lepton
-# from CMGTools.RootTools.physicsobjects.Photon import Photon
-# from CMGTools.RootTools.physicsobjects.Electron import Electron
-# from CMGTools.RootTools.physicsobjects.Muon import Muon
-# from CMGTools.RootTools.physicsobjects.Tau import Tau
-from CMGTools.RootTools.physicsobjects.Jet import Jet
-
-#from CMGTools.RootTools.utils.DeltaR import * 
 
 import ROOT
 from ROOT import AlphaT
@@ -34,8 +26,8 @@ class ttHAlphaTVarAnalyzer( Analyzer ):
        #genJets                                                                                                                                                                     
         self.handles['genJets'] = AutoHandle( 'slimmedGenJets','std::vector<reco::GenJet>')
 
-    def beginLoop(self):
-        super(ttHAlphaTVarAnalyzer,self).beginLoop()
+    def beginLoop(self, setup):
+        super(ttHAlphaTVarAnalyzer,self).beginLoop(setup)
         self.counters.addCounter('pairs')
         count = self.counters.counter('pairs')
         count.register('all events')
@@ -63,8 +55,8 @@ class ttHAlphaTVarAnalyzer( Analyzer ):
 
         return
 
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
 
         event.alphaT = -999
         self.makeAlphaT(event)

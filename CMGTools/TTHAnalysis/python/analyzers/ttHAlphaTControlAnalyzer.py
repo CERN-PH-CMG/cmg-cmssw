@@ -14,7 +14,7 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 # from CMGTools.RootTools.physicsobjects.Electron import Electron
 # from CMGTools.RootTools.physicsobjects.Muon import Muon
 # from CMGTools.RootTools.physicsobjects.Tau import Tau
-from CMGTools.RootTools.physicsobjects.Jet import Jet
+# from CMGTools.RootTools.physicsobjects.Jet import Jet
 
 from CMGTools.RootTools.utils.DeltaR import deltaR
 
@@ -33,8 +33,8 @@ class ttHAlphaTControlAnalyzer( Analyzer ):
        #genJets                                                                                                                                                                     
         self.handles['genJets'] = AutoHandle( 'slimmedGenJets','std::vector<reco::GenJet>')
 
-    def beginLoop(self):
-        super(ttHAlphaTControlAnalyzer,self).beginLoop()
+    def beginLoop(self, setup):
+        super(ttHAlphaTControlAnalyzer,self).beginLoop(setup)
         self.counters.addCounter('pairs')
         count = self.counters.counter('pairs')
         count.register('all events')
@@ -103,8 +103,8 @@ class ttHAlphaTControlAnalyzer( Analyzer ):
 
         return
 
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
 
         #W variables
         event.mtw = -999
