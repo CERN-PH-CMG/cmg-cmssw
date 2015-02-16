@@ -15,6 +15,9 @@ ttHLepSkim.maxLeptons = 999
 #ttHLepSkim.idCut  = ""
 #ttHLepSkim.ptCuts = []
 
+# --- LEPTON SELECTION ---
+lepAna.loose_electron_id = "POG_MVA_ID_Run2_NonTrig_Loose"
+
 # run miniIso
 lepAna.doMiniIsolation = True
 lepAna.packedCandidates = 'packedPFCandidates'
@@ -96,12 +99,12 @@ from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
 from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14v2 import SingleMu
 
 selectedComponents = [
-   ] + WJetsToLNuHT + DYJetsM50HT + [DYJetsToLL_M50,
-    TTJets ]+ SingleTop +[
-    TTWJets,TTZJets, TTH,
-    WZJetsTo3LNu, ZZTo4L,
-    GGHZZ4L,
-    SMS_T1tttt_2J_mGl1500_mLSP100, SMS_T1tttt_2J_mGl1200_mLSP800
+  ] + WJetsToLNuHT + DYJetsM50HT + [DYJetsToLL_M50,
+   TTJets ]+ SingleTop +[
+   TTWJets,TTZJets, TTH,
+   WZJetsTo3LNu, ZZTo4L,
+   GGHZZ4L,
+   SMS_T1tttt_2J_mGl1500_mLSP100, SMS_T1tttt_2J_mGl1200_mLSP800
 ]
 
 sequence = cfg.Sequence(susyCoreSequence+[
