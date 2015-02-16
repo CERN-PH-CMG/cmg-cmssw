@@ -45,7 +45,7 @@ class DYJetsFakeAnalyzer( Analyzer ):
       event.genMet    = genmet.pt()
       event.genMex    = genmet.px()
       event.genMey    = genmet.py()
-      event.genMetPhi = genmet.py()
+      event.genMetPhi = genmet.phi()
        
     if   'Higgs' in self.cfg_comp.name : theZs = [ bos for bos in event.genHiggsBosons if bos.pdgId() in (25, 35, 36, 37) ]
     elif 'DY'    in self.cfg_comp.name : theZs = [ bos for bos in event.genVBosons     if bos.pdgId() == 23               ]
