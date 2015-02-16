@@ -28,6 +28,8 @@ class Electron( Lepton ):
         elif id == "POG_MVA_ID_Trig":     return self.mvaIDTight()
         elif id == "POG_MVA_ID_NonTrig_full5x5":  return self.mvaIDLoose(full5x5=True)
         elif id == "POG_MVA_ID_Trig_full5x5":     return self.mvaIDTight(full5x5=True)
+        elif id == "POG_MVA_ID_Run2_NonTrig_Loose":    return self.mvaIDRun2("NonTrigPhys14","Loose")
+        elif id == "POG_MVA_ID_Run2_NonTrig_Tight":    return self.mvaIDRun2("NonTrigPhys14","Tight")
         elif id.startswith("POG_Cuts_ID_"): 
                 return self.cutBasedId(id.replace("POG_Cuts_ID_","POG_")) 
         for ID in self.electronIDs():
@@ -136,6 +138,21 @@ class Electron( Lepton ):
                 if   (eta < 0.8)  : return self.mvaNonTrigV0(full5x5) > -0.34;
                 elif (eta < 1.479): return self.mvaNonTrigV0(full5x5) > -0.65;
                 else              : return self.mvaNonTrigV0(full5x5) > +0.60;
+
+    def mvaIDRun2(self, name, wp):
+            eta = abs(self.superCluster().eta())
+            if name == "NonTrigPhys14":
+                if wp=="Loose":
+                    if   (eta < 0.8)  : return self.mvaRun2(name) > +0.35;
+                    elif (eta < 1.479): return self.mvaRun2(name) > +0.20;
+                    else              : return self.mvaRun2(name) > -0.52;
+                elif wp=="Tight":
+                    if   (eta < 0.8)  : return self.mvaRun2(name) > 0.73;
+                    elif (eta < 1.479): return self.mvaRun2(name) > 0.57;
+                    else              : return self.mvaRun2(name) > 0.05;  
+                else: raise RuntimeError, "Ele MVA ID Working point not found"
+            else: raise RuntimeError, "Ele MVA ID type not found"   
+
 
     def mvaIDZZ(self):
         return self.mvaIDLoose() and (self.gsfTrack().trackerExpectedHitsInner().numberOfLostHits()<=1)
