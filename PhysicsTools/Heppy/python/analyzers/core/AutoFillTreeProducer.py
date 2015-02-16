@@ -37,7 +37,7 @@ class AutoFillTreeProducer( TreeAnalyzerNumpy ):
     def declareHandles(self):
         super(AutoFillTreeProducer, self).declareHandles()
 #        self.handles['TriggerResults'] = AutoHandle( ('TriggerResults','','HLT'), 'edm::TriggerResults' )
-        self.mchandles['GenInfo'] = AutoHandle( ('generator','',''), 'GenEventInfoProduct' )
+#         self.mchandles['GenInfo'] = AutoHandle( ('generator','',''), 'GenEventInfoProduct' )
         for k,v in self.collections.iteritems():
             if type(v) == tuple and isinstance(v[0], AutoHandle):
                 self.handles[k] = v[0]
@@ -66,7 +66,7 @@ class AutoFillTreeProducer( TreeAnalyzerNumpy ):
             ## number of true interactions
             tr.var("nTrueInt",int)
             ## generator weight
-            tr.var("genWeight")
+#             tr.var("genWeight")
             ## PDF weights
             self.pdfWeights = []
             if hasattr(self.cfg_ana, "PDFWeights") and len(self.cfg_ana.PDFWeights) > 0:
@@ -124,7 +124,7 @@ class AutoFillTreeProducer( TreeAnalyzerNumpy ):
                     tr.fill("nTrueInt", -1)
                     tr.fill("puWeight", 1.0)
                 
-            tr.fill("genWeight", self.mchandles['GenInfo'].product().weight())
+#             tr.fill("genWeight", self.mchandles['GenInfo'].product().weight())
             ## PDF weights
             if hasattr(event,"pdfWeights") :
               for (pdf,nvals) in self.pdfWeights:

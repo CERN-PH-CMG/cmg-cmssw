@@ -22,6 +22,7 @@ class NTupleVariable:
         if self.mcOnly and not isMC: return
         treeNumpy.var(self.name, type=self.type, default=self.default, title=self.help, filler=self.filler)
     def fillBranch(self,treeNumpy,object,isMC):
+#         import pdb ; pdb.set_trace()
         if self.mcOnly and not isMC: return
         treeNumpy.fill(self.name, self(object))
 

@@ -15,14 +15,16 @@ class AutoHandle( Handle, object ):
         self.mayFail = mayFail
         Handle.__init__(self, self.type)
     def product(self):
-	if not self.isLoaded :
-		self.ReallyLoad(self.event)
-		self.isLoaded=True
-	return super(AutoHandle,self).product()
+#         try : self.isLoaded
+#         except : self.isLoaded = False
+        if not self.isLoaded :
+            self.ReallyLoad(self.event)
+            self.isLoaded=True
+        return super(AutoHandle,self).product()
 
     def Load(self, event):  #is actually a reset state
-	self.event=event
- 	self.isLoaded=False
+        self.event=event
+        self.isLoaded=False
 
     def ReallyLoad(self, event):
         '''Load self from a given event.

@@ -64,8 +64,12 @@ class HTauTauElectron( Electron ):
 
     def puChargedHadronIso(self):
         return super(HTauTauElectron, self).puChargedHadronIsoR(self.isoRadius)
-
         
+    def superCluster(self):
+#         myele = Electron(self)
+#         return myele.superCluster()
+        return super(HTauTauElectron, self).superCluster()
+
     def relaxedIdForEleTau(self):
         """Relaxing conversion cuts for sideband studies
         """
