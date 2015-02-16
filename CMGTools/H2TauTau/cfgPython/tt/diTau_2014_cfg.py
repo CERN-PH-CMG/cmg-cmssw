@@ -9,14 +9,14 @@ from PhysicsTools.Heppy.analyzers.core.EventSelector              import EventSe
 from PhysicsTools.Heppy.analyzers.objects.VertexAnalyzer          import VertexAnalyzer
 from PhysicsTools.Heppy.analyzers.core.PileUpAnalyzer             import PileUpAnalyzer
 from PhysicsTools.Heppy.analyzers.gen.GeneratorAnalyzer           import GeneratorAnalyzer
-from PhysicsTools.Heppy.analyzers.core.AutoFillTreeProducer       import AutoFillTreeProducer
+# from PhysicsTools.Heppy.analyzers.core.AutoFillTreeProducer       import AutoFillTreeProducer
 
 # Tau-tau analyzers
 from CMGTools.H2TauTau.proto.analyzers.JetAnalyzer                import JetAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.EmbedWeighter              import EmbedWeighter
 from CMGTools.H2TauTau.proto.analyzers.GenErsatzAnalyzer          import GenErsatzAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.TauTauAnalyzer             import TauTauAnalyzer
-# from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerTauTau import H2TauTauTreeProducerTauTau
+from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerTauTau import H2TauTauTreeProducerTauTau
 from CMGTools.H2TauTau.proto.analyzers.DYJetsFakeAnalyzer         import DYJetsFakeAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.WNJetsAnalyzer             import WNJetsAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.NJetsAnalyzer              import NJetsAnalyzer
@@ -63,16 +63,20 @@ pileUpAna = cfg.Analyzer(
   'PileUpAnalyzer',
   true = True
   )
+
+genAna = GeneratorAnalyzer.defaultConfig
     
 TauTauAna = cfg.Analyzer(
   TauTauAnalyzer                           ,
   'TauTauAnalyzer'                         ,
   pt1        = 45                          ,
   eta1       = 2.1                         ,
-  iso1       = 10.                         ,
+  iso1       = 1.                          ,
+  looseiso1  = 10.                         ,
   pt2        = 45                          ,
   eta2       = 2.1                         ,
-  iso2       = 10.                         ,
+  iso2       = 1.                          ,
+  looseiso2  = 10.                         ,
   isolation  = 'byIsolationMVA3newDMwLTraw',
   m_min      = 10                          ,
   m_max      = 99999                       ,
@@ -83,8 +87,6 @@ TauTauAna = cfg.Analyzer(
   relaxJetId = False                       ,
   verbose    = False           
   )
-
-genAna = GeneratorAnalyzer.defaultConfig
 
 dyJetsFakeAna = cfg.Analyzer(
   DYJetsFakeAnalyzer  ,
@@ -123,6 +125,20 @@ vbfAna = cfg.Analyzer(
   **vbfKwargs                  
   )
 
+embedWeighter = cfg.Analyzer(
+  EmbedWeighter            ,
+  name     ='EmbedWeighter',
+  isRecHit = False         ,
+  verbose  = False
+  )
+
+NJetsAna = cfg.Analyzer(
+  NJetsAnalyzer   ,
+  'NJetsAnalyzer' ,
+  fillTree = True ,
+  verbose  = False
+  )
+
 tauWeighterLeg1 = cfg.Analyzer(
   LeptonWeighter       ,
   'LeptonWeighter_tau1',
@@ -150,30 +166,28 @@ tauDecayModeWeighter = cfg.Analyzer(
   )
 
 higgsWeighter = cfg.Analyzer(
-  HiggsPtWeighter            ,
-  'HiggsPtWeighter'          ,
-  #src = 'prunedGenParticles' ,
-  makeSplittedGenLists = True,
-  )
+    HiggsPtWeighter,
+    'HiggsPtWeighter',
+    )
 
-# treeProducer = cfg.Analyzer(
-#   H2TauTauTreeProducerTauTau  ,
-#   'H2TauTauTreeProducerTauTau',
-#   )
-
-from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerTauTau import *
-## Tree Producer
 treeProducer = cfg.Analyzer(
-  AutoFillTreeProducer                        , 
-  'H2TauTauTreeProducerTauTau'                ,
-  vectorTree          = True                  ,
-  saveTLorentzVectors = False                 ,  # can set to True to get also the TLorentzVectors, but trees will be bigger
-  defaultFloatType    = 'F'                   , # use Float_t for floating point
-#   PDFWeights          = PDFWeights            ,
-  globalVariables     = htt_tt_globalVariables,
-  globalObjects       = htt_tt_globalObjects  ,
-  collections         = htt_tt_collections    ,
+  H2TauTauTreeProducerTauTau  ,
+  'H2TauTauTreeProducerTauTau',
   )
+
+# from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerTauTau import *
+# ## Tree Producer
+# treeProducer = cfg.Analyzer(
+#   AutoFillTreeProducer                        , 
+#   'H2TauTauTreeProducerTauTau'                ,
+#   vectorTree          = True                  ,
+#   saveTLorentzVectors = False                 ,  # can set to True to get also the TLorentzVectors, but trees will be bigger
+#   defaultFloatType    = 'F'                   , # use Float_t for floating point
+# #   PDFWeights          = PDFWeights            ,
+#   globalVariables     = htt_tt_globalVariables,
+#   globalObjects       = htt_tt_globalObjects  ,
+#   collections         = htt_tt_collections    ,
+#   )
 
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
@@ -214,6 +228,8 @@ sequence = cfg.Sequence( [
   jetAna              ,
   vbfAna              ,
   pileUpAna           ,
+  embedWeighter       ,
+  NJetsAna            ,
   tauWeighterLeg1     , 
   tauWeighterLeg2     ,
   tauDecayModeWeighter,

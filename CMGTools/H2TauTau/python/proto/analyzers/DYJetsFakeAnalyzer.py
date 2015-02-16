@@ -19,21 +19,23 @@ class DYJetsFakeAnalyzer( Analyzer ):
   
   def process(self, event) :
 
-    event.isZtt     = None
-    event.isZmt     = None
-    event.isZet     = None
-    event.isZee     = None
-    event.isZmm     = None
-    event.isZem     = None
-    event.isZEE     = None
-    event.isZMM     = None
-    event.isZLL     = None    
-    event.isFake    = None
-    event.genMass   = None
-    event.genMet    = None
-    event.genMex    = None
-    event.genMey    = None
-    event.genMetPhi = None
+    event.isZtt     = False
+    event.isZmt     = False
+    event.isZet     = False
+    event.isZee     = False
+    event.isZmm     = False
+    event.isZem     = False
+    event.isZEE     = False
+    event.isZMM     = False
+    event.isZLL     = False    
+    event.isFake    = -99
+    event.genMass   = -99.
+    event.genMet    = -99.
+    event.genMex    = -99.
+    event.genMey    = -99.
+    event.genMetPhi = -99.
+    event.hasZ      = False
+    event.hasW      = False
 
     # gen MET as sum of the neutrino 4-momenta
     neutrinos = [ part for part in event.genParticles if abs(part.pdgId()) in (12,14,16) ]
@@ -47,21 +49,27 @@ class DYJetsFakeAnalyzer( Analyzer ):
       event.genMey    = genmet.py()
       event.genMetPhi = genmet.phi()
        
-    if   'Higgs' in self.cfg_comp.name : theZs = [ bos for bos in event.genHiggsBosons if bos.pdgId() in (25, 35, 36, 37) ]
-    elif 'DY'    in self.cfg_comp.name : theZs = [ bos for bos in event.genVBosons     if bos.pdgId() == 23               ]
+    if   'Higgs' in self.cfg_comp.name : theZs = [ bos for bos in event.genHiggsBosons if     bos.pdgId() in (25, 35, 36, 37)  ]
+    elif 'DY'    in self.cfg_comp.name : theZs = [ bos for bos in event.genVBosons     if     bos.pdgId()  == 23               ]
+    elif 'W'     in self.cfg_comp.name : theZs = [ bos for bos in event.genVBosons     if abs(bos.pdgId()) == 24               ]
     else                               : return True
 
     # there must always be a Z or a H boson
     # should raise an error too FIXME
     if len(theZs) != 1 :
-      print 'I cannot find any H or Z in the sample!' 
+      print 'I cannot find any H, W or Z in the sample!' 
       return False
     
+    event.parentBoson = theZs[0]
+    
+    # check SM H associated production
+    if event.parentBoson.pdgId() == 25 :
+      if any( [    bos.pdgId  == 23 for bos in event.genVBosons] ) : event.hasZ = True
+      if any( [abs(bos.pdgId) == 24 for bos in event.genVBosons] ) : event.hasW = True
+      
     # gen mass of the Higgs or Z boson
-    event.genMass = theZs[0].mass()
-        
-    self.getGenType(event)
-
+    event.genMass = event.parentBoson.mass()
+    
     ptcut = 0.
     # you can apply a pt cut on the gen leptons, electrons and muons
     # in HIG-13-004 it was 8 GeV
@@ -84,6 +92,11 @@ class DYJetsFakeAnalyzer( Analyzer ):
     self.l2.isPromptLep = False
 
     self.genMatch(event)
+
+    # move on if this is a W sample
+    if abs(event.parentBoson.pdgId()) == 24 : return True
+        
+    self.getGenType(event)
     
     if self.cfg_ana.channel == 'tt' : self.isFakeTauTau(event)
     if self.cfg_ana.channel == 'et' : self.isFakeETau  (event)
@@ -98,43 +111,56 @@ class DYJetsFakeAnalyzer( Analyzer ):
     # to generated had taus
     l1match, dR2best = bestMatch(self.l1, event.gentaus)
     if dR2best < dR2 :
-      self.l1.genl1 = l1match
+      self.l1.genp = l1match
       self.l1.isTauHad = True
 
     # to generated leptons from taus
     if not self.l1.isTauHad :
       l1match, dR2best = bestMatch(self.l1, self.ptSelGentauleps)
       if dR2best < dR2 :
-        self.l1.genl1 = l1match
+        self.l1.genp = l1match
         self.l1.isTauLep = True
 
     # to generated prompt leptons
-    if not self.l1.isTauLep :
+    elif not self.l1.isTauLep :
       l1match, dR2best = bestMatch(self.l1, self.ptSelGenleps)
       if dR2best < dR2 :
-        self.l1.genl1 = l1match
+        self.l1.genp = l1match
         self.l1.isPromptLep = True
+
+    # match with any other gen particle
+    elif not self.l1.isPromptLep :
+      l1match, dR2best = bestMatch(self.l1, event.genParticles)
+      if dR2best < dR2 :
+        self.l1.genp = l1match
+    
     
     # match the mu leg
     # to generated had taus
     l2match, dR2best = bestMatch(self.l2, event.gentaus)
     if dR2best < dR2 :
-      self.l2.genl2 = l2match
+      self.l2.genp = l2match
       self.l2.isTauHad = True
         
     # to generated leptons from taus
     if not self.l2.isTauHad :
       l2match, dR2best = bestMatch(self.l2, self.ptSelGentauleps)
       if dR2best < dR2 :
-        self.l2.genl2 = l2match
+        self.l2.genp = l2match
         self.l2.isTauLep = True
 
     # to generated prompt leptons
-    if not self.l2.isTauLep :
+    elif not self.l2.isTauLep :
       l2match, dR2best = bestMatch(self.l2, self.ptSelGenleps)
       if dR2best < dR2 :
-        self.l2.genl2 = l2match
+        self.l2.genp = l2match
         self.l2.isPromptLep = True
+
+    # match with any other gen particle
+    elif not self.l2.isPromptLep :
+      l2match, dR2best = bestMatch(self.l2, event.genParticles)
+      if dR2best < dR2 :
+        self.l2.genp = l2match
     
   def getGenType(self, event) :
     '''Check the Z or H boson decay mode at gen level.

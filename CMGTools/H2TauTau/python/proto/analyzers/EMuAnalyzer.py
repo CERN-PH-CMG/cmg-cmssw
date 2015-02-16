@@ -126,9 +126,10 @@ class EMuAnalyzer( DiLeptonAnalyzer ):
 #         if self.relaxEleId:
 #             return electron.relaxedIdForEleTau() and \
 #                self.testVertex( electron )    
-        return electron.tightIdForEleTau() and \
-               self.testVertex( electron )
-               
+#         return electron.tightIdForEleTau() and \
+#                self.testVertex( electron )
+        return True # RIC: 16/2/15 disabled until ele obj is fixed
+                       
     def testLeg2Iso(self, electron, isocut):
         '''Electron Isolation. To be implemented'''
         # RIC: this leg is the electron,

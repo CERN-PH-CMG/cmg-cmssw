@@ -50,12 +50,12 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             pydil.leg1().associatedVertex = event.goodVertices[0]
             pydil.leg2().associatedVertex = event.goodVertices[0]
             pydil.leg2().rho = event.rho
-            print 'before' 
-            import pdb ; pdb.set_trace()
-            if not self.testLeg2( pydil.leg2(), 999999 ):
-                continue
-            print 'after' 
-            import pdb ; pdb.set_trace()
+            #print 'before' 
+            #import pdb ; pdb.set_trace()
+            #if not self.testLeg2( pydil.leg2(), 999999 ):
+            #    continue
+            #print 'after' 
+            #import pdb ; pdb.set_trace()
             diLeptons.append( pydil )
         return diLeptons
 
@@ -221,7 +221,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         if leg.relIsoAllChargedDB05() > 0.3 : return False
         if abs( leg.eta() )           > 2.5 : return False
         if leg.pt()                   < 15  : return False
-        if leg.looseIdForEleTau()  == False : return False
+        #if leg.looseIdForEleTau()  == False : return False # RIC: ele ID needs to be revised
         return True
 
     def testTightOtherLepton (self, muon):
@@ -237,7 +237,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         # import pdb; pdb.set_trace()
         selLeptons = [electron for electron in leptons if
                       self.testLegKine(electron, ptcut=10, etacut=2.5) and \
-                      electron.looseIdForTriLeptonVeto() and \
+                      #electron.looseIdForTriLeptonVeto() and \
                       self.testVertex(electron) and \
                       self.testLeg2Iso(electron, isoCut) ]                                                                                                    
 

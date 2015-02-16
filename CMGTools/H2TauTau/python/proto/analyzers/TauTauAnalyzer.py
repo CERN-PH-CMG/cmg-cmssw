@@ -24,16 +24,33 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
   
   def process( self, event ):
 
-    super(TauTauAnalyzer, self).process(event)
-            
     # method inherited from parent class DiLeptonAnalyzer
     # asks for at least on di-tau pair
     # applies the third lepton veto
     # tests leg1 and leg2
     # cleans by dR the two signal leptons
     # applies the trigger matching to the two signal leptons
-    # choses the best di-tau pair, with the bestDiLepton method implemented here
-    
+    # choses the best di-tau pair, with the bestDiLepton method 
+    # as implemented here    
+
+    result = super(TauTauAnalyzer, self).process(event)
+        
+    if result :
+      event.isSignal = True
+    else : 
+      # trying to get a dilepton from the control region.
+      # it must have well id'ed and trig matched legs,
+      # di-lepton and tri-lepton veto must pass
+      result = self.selectionSequence( event, 
+                                       fillCounter = False                  ,
+                                       leg1IsoCut  = self.cfg_ana.looseiso1 ,
+                                       leg2IsoCut  = self.cfg_ana.looseiso2 )
+      if result is False:
+          # really no way to find a suitable di-lepton,
+          # even in the control region
+          return False
+      event.isSignal = False
+
     if not ( hasattr(event, 'leg1') and hasattr(event, 'leg2') ) :
       return False
     
