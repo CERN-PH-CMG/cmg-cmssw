@@ -1,8 +1,0 @@
-<use name="RecoMET/METAlgorithms"/>
-<export></export>
-<library name="CMGToolsCommonPlugins" file="*.cc">
-  <use name="CMGTools/Common"/>
-  <use name="DQMServices/Core"/>
-  <use name="JetMETCorrections/Modules"/>
-  <flags   EDM_PLUGIN="1"/>
-</library>
