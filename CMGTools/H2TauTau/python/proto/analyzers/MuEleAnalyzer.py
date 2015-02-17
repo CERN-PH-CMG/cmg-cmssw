@@ -74,8 +74,8 @@ class EMuAnalyzer( DiLeptonAnalyzer ):
             # it must have well id'ed and trig matched legs,
             # di-lepton and tri-lepton veto must pass
             result = self.selectionSequence(event, fillCounter = False,
-                                            leg1IsoCut = looseiso1,
-                                            leg2IsoCut = looseiso2)
+                                            leg1IsoCut = self.cfg_ana.looseiso1,
+                                            leg2IsoCut = self.cfg_ana.looseiso2)
             if result is False:
                 # really no way to find a suitable di-lepton,
                 # even in the control region
