@@ -34,7 +34,7 @@ cmgMuEleCor = cmgMuEleCor.clone()
 # This selector goes after the tau pt correction
 cmgMuEleTauPtSel = cms.EDFilter(
     "PATCompositeCandidateSelector",
-    src = cms.InputTag("cmgTauMuCor"),
+    src = cms.InputTag("cmgMuEleCor"),
     cut = cms.string("daughter(0).pt()>18.")
     )
 
