@@ -9,6 +9,7 @@ from PhysicsTools.Heppy.analyzers.core.JSONAnalyzer import JSONAnalyzer
 from PhysicsTools.Heppy.analyzers.core.EventSelector import EventSelector
 from PhysicsTools.Heppy.analyzers.objects.VertexAnalyzer import VertexAnalyzer
 from PhysicsTools.Heppy.analyzers.core.PileUpAnalyzer import PileUpAnalyzer
+from PhysicsTools.Heppy.analyzers.gen.GeneratorAnalyzer import GeneratorAnalyzer
 
 # Tau-tau analyzers
 from CMGTools.H2TauTau.proto.analyzers.TriggerAnalyzer import TriggerAnalyzer
@@ -104,6 +105,8 @@ pileUpAna = cfg.Analyzer(
     'PileUpAnalyzer',
     true = True
     )
+
+genAna = GeneratorAnalyzer.defaultConfig
 
 genErsatzAna = cfg.Analyzer(
     GenErsatzAnalyzer,
@@ -249,6 +252,7 @@ sequence = cfg.Sequence( [
     triggerAna,
     vertexAna, 
     TauMuAna,
+    genAna,
     dyJetsFakeAna,
     # WNJetsAna,
     # WNJetsTreeAna,
