@@ -161,8 +161,8 @@ higgsWeighter = cfg.Analyzer(
     )
 
 treeProducer = cfg.Analyzer(
-  H2TauTauTreeProducerEMu  ,
-  'H2TauTauTreeProducerEMu',
+  H2TauTauTreeProducerMuEle  ,
+  'H2TauTauTreeProducerMuEle',
   )
 
 ###################################################
