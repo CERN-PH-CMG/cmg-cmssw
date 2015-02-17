@@ -91,8 +91,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             # it must have well id'ed and trig matched legs,
             # di-lepton and tri-lepton veto must pass
             result = self.selectionSequence(event, fillCounter=False,
-                                            leg1IsoCut = -9999,
-                                            leg2IsoCut = 9999)
+                                            leg1IsoCut=-9999,
+                                            leg2IsoCut=9999)
             if result is False:
                 # really no way to find a suitable di-lepton,
                 # even in the control region
@@ -120,7 +120,7 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         return tau.tauID('decayModeFinding')>0.5 and \
                tau.tauID("againstMuonTight")>0.5 and \
                tau.tauID("againstElectronLoose")>0.5 and \
-               self.testVertex( tau )
+               self.testTauVertex(tau)
         
 
     def testLeg1Iso(self, tau, isocut):
@@ -133,10 +133,15 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             return tau.tauID("byIsolationMVA3newDMwLTraw")>isocut
 
 
+    def testTauVertex(self, lepton):
+        '''Tests vertex constraints, for tau'''
+        #return abs(lepton.dxy()) < 0.045 and \
+        isPV = lepton.vertex().z() == lepton.associatedVertex.z()
+        return isPV #abs(lepton.dz()) < 0.2 
+
     def testVertex(self, lepton):
-        '''Tests vertex constraints, for mu and tau'''
-        return abs(lepton.dxy()) < 0.045 and \
-               abs(lepton.dz()) < 0.2 
+        '''Tests vertex constraints, for mu'''
+        return abs(lepton.dxy()) < 0.045 and abs(lepton.dz()) < 0.2 
 
 
     def testLeg2ID(self, muon):

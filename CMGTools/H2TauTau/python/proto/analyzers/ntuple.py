@@ -95,8 +95,13 @@ def bookLepton( tree, pName ):
 def fillLepton( tree, pName, lepton ):
     fillParticle(tree, pName, lepton )
     fill(tree, '{pName}_relIso05'.format(pName=pName), lepton.relIsoAllChargedDB05() )
-    fill(tree, '{pName}_dxy'.format(pName=pName), lepton.dxy() )
-    fill(tree, '{pName}_dz'.format(pName=pName), lepton.dz() )
+    try:
+        fill(tree, '{pName}_dxy'.format(pName=pName), lepton.dxy() )
+        fill(tree, '{pName}_dz'.format(pName=pName), lepton.dz() )
+    except RuntimeError:
+        fill(tree, '{pName}_dxy'.format(pName=pName), -999.)
+        fill(tree, '{pName}_dz'.format(pName=pName), -999.)
+    
     fill(tree, '{pName}_weight'.format(pName=pName), lepton.weight )
     fill(tree, '{pName}_triggerWeight'.format(pName=pName), lepton.triggerWeight )
     fill(tree, '{pName}_triggerEffData'.format(pName=pName), lepton.triggerEffData )
