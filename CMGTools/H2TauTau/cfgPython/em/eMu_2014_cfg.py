@@ -64,8 +64,8 @@ pileUpAna = cfg.Analyzer(
 genAna = GeneratorAnalyzer.defaultConfig
     
 EMuAna = cfg.Analyzer(
-  EMuAnalyzer                  ,
-  'EMuAnalyzer'                ,
+  MuEleAnalyzer                ,
+  'MuEleAnalyzer'              ,
   pt1        = 10.             ,
   eta1       = 2.5             ,
   iso1       = 10.             ,
