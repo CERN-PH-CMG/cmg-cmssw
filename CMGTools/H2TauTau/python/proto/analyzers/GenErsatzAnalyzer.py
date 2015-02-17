@@ -25,7 +25,6 @@ class WBoson(Boson):
         assert( abs(self.leg1.pdgId()) not in [12,14,16]) 
         
 
-# class GenErsatzAnalyzer( GenParticleAnalyzer ):
 class GenErsatzAnalyzer( Analyzer ):
 
     def process(self, event):
@@ -35,8 +34,8 @@ class GenErsatzAnalyzer( Analyzer ):
             return True
         result = super(GenErsatzAnalyzer, self).process(event)
         
-        event.genZs = [ZBoson(part) for part in event.genVBosons if part.pdgId()==23]
-        event.genWs = [WBoson(part) for part in event.genVBosons if part.pdgId()==23]
+        event.genZs = [ZBoson(part) for part in event.genVBosons if     part.pdgId() ==23]
+        event.genWs = [WBoson(part) for part in event.genVBosons if abs(part.pdgId())==24]
 
         if self.cfg_ana.verbose:
             print 'W Bosons:'
