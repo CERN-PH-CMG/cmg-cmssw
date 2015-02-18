@@ -40,7 +40,7 @@ treeProducer.name         = 'H2TauTauTreeProducerMuEle'
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
-from CMGTools.H2TauTau.proto.samples.phys14.diTau_Ric_Jan27 import *
+from CMGTools.H2TauTau.proto.samples.phys14.muEle_Ric_Jan27 import *
 
 ###################################################
 ###     ASSIGN JET SMEAR, SCALE and PU to MC    ###
