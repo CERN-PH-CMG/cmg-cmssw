@@ -33,6 +33,10 @@ dmMonoJet_globalVariables = dmCore_globalVariables + [
     ## AlphaT
     ##-------------------------------------------------- 
     NTupleVariable("alphaT",        lambda ev: ev.alphaT, help="AlphaT computed using jets with pt > 50, |eta|<3"),
+    ##-------------------------------------------------- 
+    ## MonoJet specific ones
+    ##-------------------------------------------------- 
+    NTupleVariable("apcjetmetmin",  lambda ev: ev.apcjetmetmin, help="apcjetmetmin computed using jets with pt > 50, |eta|<3"),
     ##--------------------------------------------------            
     ## dilepton masses
     ##--------------------------------------------------            
@@ -73,7 +77,7 @@ dmMonoJet_collections.update({
             ##------------------------------------------------                       
             "selectedTaus"    : NTupleCollection("TauGood",  tauTypeSusy, 3, help="Taus after the preselection"),
             "selectedLeptons" : NTupleCollection("LepGood",  leptonTypeSusyExtra, 8, help="Leptons after the preselection"),
-            "otherLeptons"    : NTupleCollection("LepOther", leptonTypeSusyExtra, 8, help="Leptons after the preselection"),
+            "vetoLeptons"     : NTupleCollection("LepVeto",  leptonTypeSusyExtra, 8, help="Leptons after the veto selection"),
             ##------------------------------------------------
             "cleanJets"       : NTupleCollection("Jet",     jetTypeSusyExtra, 15, help="Cental jets after full selection and cleaning, sorted by pt"),
             "cleanJetsFwd"    : NTupleCollection("JetFwd",  jetTypeSusyExtra,  6, help="Forward jets after full selection and cleaning, sorted by pt"),            

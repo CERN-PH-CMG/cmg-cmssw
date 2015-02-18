@@ -132,28 +132,28 @@ lepAna = cfg.Analyzer(
     inclusive_muon_eta = 2.4,
     inclusive_muon_dxy = 0.5,
     inclusive_muon_dz  = 1.0,
-    # loose muon selection
+    # veto muon selection
     loose_muon_id     = "POG_ID_Loose",
-    loose_muon_pt     = 5,
+    loose_muon_pt     = 10,
     loose_muon_eta    = 2.4,
-    loose_muon_dxy    = 0.05,
-    loose_muon_dz     = 0.1,
-    loose_muon_relIso = 0.5,
+    loose_muon_dxy    = 0.2,
+    loose_muon_dz     = 0.5,
+    loose_muon_relIso = 0.4,
     # inclusive very loose electron selection
     inclusive_electron_id  = "",
     inclusive_electron_pt  = 5,
     inclusive_electron_eta = 2.5,
     inclusive_electron_dxy = 0.5,
     inclusive_electron_dz  = 1.0,
-    inclusive_electron_lostHits = 1.0,
-    # loose electron selection
+    inclusive_electron_lostHits = 5.0,
+    # veto electron selection
     loose_electron_id     = "POG_Cuts_ID_2012_Veto_full5x5",
     loose_electron_pt     = 7,
-    loose_electron_eta    = 2.4,
-    loose_electron_dxy    = 0.05,
-    loose_electron_dz     = 0.1,
-    loose_electron_relIso = 0.5,
-    loose_electron_lostHits = 1.0,
+    loose_electron_eta    = 2.5,
+    loose_electron_dxy    = 0.5,
+    loose_electron_dz     = 0.5,
+    loose_electron_relIso = 1.0,
+    loose_electron_lostHits = 5.0,
     # muon isolation correction method (can be "rhoArea" or "deltaBeta")
     mu_isoCorr = "rhoArea" ,
     mu_effectiveAreas = "Phys14_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1')
@@ -172,6 +172,26 @@ lepAna = cfg.Analyzer(
     do_mc_match = True, # note: it will in any case try it only on MC, not on data
     match_inclusiveLeptons = False, # match to all inclusive leptons
     )
+
+## Lepton analyzer (dm specific)
+from CMGTools.MonoXAnalysis.analyzers.objects.MonoXLeptonAnalyzer import MonoXLeptonAnalyzer
+monoXLepAna = cfg.Analyzer(
+    MonoXLeptonAnalyzer, name='MonoXLeptonAnalyzer',
+    # veto muon selection
+    veto_muon_pt     = 10,
+    veto_muon_eta    = 2.4,
+    veto_muon_dxy    = 0.2,
+    veto_muon_dz     = 0.5,
+    veto_muon_relIso = 0.4,
+    # veto electron selection
+    veto_electron_pt     = 10,
+    veto_electron_eta    = 2.5,
+    veto_electron_dxy    = [0.0250, 0.2232],
+    veto_electron_dz     = [0.5863, 0.9513],
+    veto_electron_relIso = [0.3313, 0.3816],
+    veto_electron_lostHits = [2.0, 3.0],
+    )
+
 
 ## MET-based Skim
 from CMGTools.MonoXAnalysis.analyzers.monoJetSkimmer import monoJetSkimmer
@@ -317,6 +337,7 @@ dmCoreSequence = [
     pdfwAna,
     vertexAna,
     lepAna,
+    monoXLepAna,
     photonAna,
     tauAna,
     isoTrackAna,
