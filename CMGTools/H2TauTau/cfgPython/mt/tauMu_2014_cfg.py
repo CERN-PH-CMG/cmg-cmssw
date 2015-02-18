@@ -4,19 +4,25 @@ from PhysicsTools.HeppyCore.framework.config import printComps
 # Tau-tau analyzers
 from CMGTools.H2TauTau.proto.analyzers.TauMuAnalyzer import TauMuAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerTauMu import H2TauTauTreeProducerTauMu
+# RIC: off until fixed
+# from CMGTools.H2TauTau.proto.analyzers.H2TauTauSyncTree import H2TauTauSyncTree
+from CMGTools.H2TauTau.proto.analyzers.TauDecayModeWeighter import TauDecayModeWeighter
+from CMGTools.H2TauTau.proto.analyzers.TauFakeRateWeighter import TauFakeRateWeighter
+from CMGTools.H2TauTau.proto.analyzers.LeptonWeighter import LeptonWeighter
 
 # common configuration and sequence
-from CMGTools.H2TauTau.htt_ntuple_base_cff import *
+from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, puFileData, puFileMC
+
+
+### mu-tau specific configuration settings
 
 # 'Nom', 'Up', 'Down', or None
 shift = None
 # 1.0, 1.03, 0.97
 tauScaleShift = 1.0
-
 syncntuple = False
 
-puFileMC = None
-puFileData = None
+# When ready, include weights from CMGTools.H2TauTau.proto.weights.weighttable
 
 # mc_tauEffWeight_mc = 'effTau_muTau_MC_2012ABCDSummer13'
 # mc_muEffWeight_mc = 'effMu_muTau_MC_2012ABCD'
@@ -28,65 +34,93 @@ mc_muEffWeight_mc = None
 mc_tauEffWeight = None
 mc_muEffWeight = None
 
-eventSelector.toSelect = []
+### Define mu-tau specific modules
 
-diLeptonAna.class_object = TauMuAnalyzer
-diLeptonAna.name = 'TauMuAnalyzer'
-diLeptonAna.scaleShift1 = tauScaleShift
-diLeptonAna.pt1 = 20
-diLeptonAna.eta1 = 2.3
-diLeptonAna.iso1 = None
-diLeptonAna.pt2 = 20
-diLeptonAna.eta2 = 2.1
-diLeptonAna.iso2 = 0.1
-diLeptonAna.m_min = 10
-diLeptonAna.m_max = 99999
-diLeptonAna.dR_min = 0.5
-diLeptonAna.triggerMap = pathsAndFilters
-diLeptonAna.verbose = False
+tauMuAna = cfg.Analyzer(
+    TauMuAnalyzer,
+    name='TauMuAnalyzer',
+    scaleShift1 = tauScaleShift,
+    pt1 = 20,
+    eta1 = 2.3,
+    iso1 = None,
+    pt2 = 20,
+    eta2 = 2.1,
+    iso2 = 0.1,
+    m_min = 10,
+    m_max = 99999,
+    dR_min = 0.5,
+    # triggerMap = pathsAndFilters,
+    verbose = False
+)
 
 tauDecayModeWeighter = cfg.Analyzer(
     TauDecayModeWeighter,
-    'TauDecayModeWeighter',
-    )
+    name='TauDecayModeWeighter',
+)
 
 tauFakeRateWeighter = cfg.Analyzer(
     TauFakeRateWeighter,
-    'TauFakeRateWeighter'
+    name='TauFakeRateWeighter'
+)
+
+tauWeighter = cfg.Analyzer(
+    LeptonWeighter,
+    name='LeptonWeighter_tau',
+    effWeight = None,
+    effWeightMC = None,
+    lepton = 'leg1',
+    verbose = False,
+    disable = True,
+    )
+
+muonWeighter = cfg.Analyzer(
+    LeptonWeighter,
+    name='LeptonWeighter_mu',
+    effWeight = None,
+    effWeightMC = None,
+    lepton = 'leg2',
+    verbose = False,
+    disable = True,
+    idWeight = None,
+    isoWeight = None    
+    )
+
+treeProducer = cfg.Analyzer(
+    H2TauTauTreeProducerTauMu,
+    name='H2TauTauTreeProducerTauMu'
     )
 
 treeProducer.class_object = H2TauTauTreeProducerTauMu
-treeProducer.name         = 'H2TauTauTreeProducerTauMu'
+treeProducer.name = 'H2TauTauTreeProducerTauMu'
 
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
-from CMGTools.H2TauTau.proto.samples.phys14.diTau_Ric_Jan27 import *
+from CMGTools.H2TauTau.proto.samples.phys14.tauMu_Jan_Feb13 import MC_list, mc_dict
 
 ###################################################
-###     ASSIGN JET SMEAR, SCALE and PU to MC    ###
+###     ASSIGN PU to MC    ###
 ###################################################
-mc_jet_scale = 1.
-mc_jet_smear = 0.
 for mc in MC_list:
-  mc.jetScale   = mc_jet_scale
-  mc.jetSmear   = mc_jet_smear
-  mc.puFileData = puFileData
-  mc.puFileMC   = puFileMC
+    mc.puFileData = puFileData
+    mc.puFileMC = puFileMC
 
 ###################################################
 ###             SET COMPONENTS BY HAND          ###
 ###################################################
-selectedComponents = allsamples
-# selectedComponents  = [ ZZJetsTo4L ]
+selectedComponents = [mc_dict['HiggsGGH125']]
 # for c in selectedComponents : c.splitFactor *= 5
 
 ###################################################
 ###                  SEQUENCE                   ###
 ###################################################
 sequence = commonSequence
-sequence.append( tauDecayModeWeighter ) # insert at the end
-sequence.append( tauFakeRateWeighter  ) # insert at the end
+sequence.insert(sequence.index(genAna), tauMuAna)
+sequence.append(tauDecayModeWeighter)
+sequence.append(tauFakeRateWeighter)
+sequence.append(tauWeighter)
+sequence.append(muonWeighter)
+sequence.append(treeProducer)
 # RIC: off until fixed
 # if not syncntuple:
 #   sequence.remove( treeProducerXCheck )
@@ -94,56 +128,32 @@ sequence.append( tauFakeRateWeighter  ) # insert at the end
 ###################################################
 ###             CHERRY PICK EVENTS              ###
 ###################################################
+# eventSelector.toSelect = []
 # sequence.insert(0, eventSelector)
-
-###################################################
-###    SET THE TRIGGERS TO BE USED WITH DATA    ###
-###################################################
-# for data in data_parked_2012:
-#   data.triggers  = data_parked_triggers_2012  ## ORDER MATTERS!
-#   data.triggers += data_triggers_2012         ## ORDER MATTERS!
-  
-###################################################
-###     SET THE TRIGGERS TO BE USED WITH MC     ###
-###################################################
-# for mc in MC_list:
-#   mc.triggers = ['HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_v6']
-
-###################################################
-###   SET THE TRIGGERS TO BE USED WITH RH EMB   ###
-###################################################
-# for emb in embed_list:
-#   emb.triggers = emb_rechit_triggers
 
 ###################################################
 ###            SET BATCH OR LOCAL               ###
 ###################################################
-test = 1 # test = 0 run on batch, test = 1 run locally
-if test == 1 :
-  cache              = True
-  comp               = HiggsGGH125
-  comp.triggers      = [] # empty for now
-  selectedComponents = [comp]
-  comp.splitFactor   = 1
-  comp.files         = comp.files[:1]
 
-###################################################
-###                SOME PRINTOUT                ###
-###################################################
-print '_'*70
-print 'Processing...' 
-print [s.name for s in selectedComponents]
+# JAN - can we finally get this via command line options?
+test = 1  # test = 0 run on batch, test = 1 run locally
+if test == 1:
+    comp = mc_dict['HiggsGGH125']
+    selectedComponents = [comp]
+    comp.splitFactor = 1
+    # comp.files = comp.files[:1]
 
-# the following is declared in case this cfg is used in input to the heppy.py script
+
+# the following is declared in case this cfg is used in input to the
+# heppy.py script
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
-config = cfg.Config( components   = selectedComponents,
-                     sequence     = sequence          ,
-                     services     = []                ,  
-                     events_class = Events
-                     )
+config = cfg.Config(components=selectedComponents,
+                    sequence=sequence,
+                    services=[],
+                    events_class=Events
+                    )
 
 printComps(config.components, True)
 
 def modCfgForPlot(config):
     config.components = []
-
