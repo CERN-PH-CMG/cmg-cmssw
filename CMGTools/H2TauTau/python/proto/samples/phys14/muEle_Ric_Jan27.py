@@ -14,11 +14,13 @@ aliases = {
 MC_list = [ HiggsGGH125 ]
 
 for sam in MC_list:
-  sam.triggers = ['HLT_DoubleMediumIsoPFTau40_Trk1_eta2p1_Reg_v1']
-  
+  sam.triggers = ['HLT_Mu23_TrkIsoVVL_Ele12_Gsf_CaloId_TrackId_Iso_MediumWP_v1',
+                  'HLT_Mu8_TrkIsoVVL_Ele23_Gsf_CaloId_TrackId_Iso_MediumWP_v1'
+                 ]
+    
 allsamples = copy.copy(MC_list)
 connect( allsamples, '%htt_tt_27jan15_manzoni_nom', 'miniAOD*root', aliases, cache=True, verbose=False)
 
 HiggsGGH125.files = [
-  '/afs/cern.ch/work/m/manzoni/diTau2015/CMSSW_7_2_3/src/CMGTools/H2TauTau/prod/diTau_fullsel_tree_CMG.root'   , 
+  '/afs/cern.ch/work/m/manzoni/diTau2015/CMSSW_7_2_3/src/CMGTools/H2TauTau/prod/muEle_fullsel_tree_CMG.root'   , 
                     ]
