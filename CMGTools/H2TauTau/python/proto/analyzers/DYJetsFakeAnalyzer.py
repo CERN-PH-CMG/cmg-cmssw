@@ -64,8 +64,10 @@ class DYJetsFakeAnalyzer( Analyzer ):
     
     # check SM H associated production
     if event.parentBoson.pdgId() == 25 :
-      if any( [    bos.pdgId  == 23 for bos in event.genVBosons] ) : event.hasZ = True
-      if any( [abs(bos.pdgId) == 24 for bos in event.genVBosons] ) : event.hasW = True
+      if any([bos.pdgId() == 23 for bos in event.genVBosons]): 
+          event.hasZ = True
+      if any([abs(bos.pdgId()) == 24 for bos in event.genVBosons]): 
+          event.hasW = True
       
     # gen mass of the Higgs or Z boson
     event.genMass = event.parentBoson.mass()
