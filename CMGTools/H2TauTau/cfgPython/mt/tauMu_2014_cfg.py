@@ -108,8 +108,8 @@ sequence.append( tauFakeRateWeighter  ) # insert at the end
 ###################################################
 ###     SET THE TRIGGERS TO BE USED WITH MC     ###
 ###################################################
-# for mc in MC_list:
-#   mc.triggers = ['HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_v6']
+for mc in MC_list:
+  mc.triggers = ['HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v1', 'HLT_IsoMu24_eta2p1_IterTrk02_v1']
 
 ###################################################
 ###   SET THE TRIGGERS TO BE USED WITH RH EMB   ###
