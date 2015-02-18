@@ -53,7 +53,13 @@ from CMGTools.TTHAnalysis.analyzers.ttHAlphaTControlAnalyzer import ttHAlphaTCon
 ttHAlphaTControlAna = cfg.Analyzer(
     ttHAlphaTVarAnalyzer, name = 'ttHAlphaTControlAnalyzer',
     )
-
+##-----------------------------------------------
+##  TOLOLOGIAL VARIABLES: MONOJET SPECIFIC ONES
+##-----------------------------------------------
+from CMGTools.MonoXAnalysis.analyzers.monoJetVarAnalyzer import monoJetVarAnalyzer
+monoJetVarAna = cfg.Analyzer(
+    monoJetVarAnalyzer, name = 'monoJetVarAnalyzer',
+    )
 
 ##------------------------------------------
 # Event Analyzer for monojet 
@@ -64,7 +70,7 @@ MonoJetEventAna = cfg.Analyzer(
     minJets25 = 0,
     )
 
-from CMGTools.MonoXAnalysis.samples.samples_dummy import triggers_mumu_iso, triggers_mumu_noniso, triggers_ee, triggers_3e, triggers_mue, triggers_1mu_iso, triggers_1e, triggers_MonoJet
+from CMGTools.MonoXAnalysis.samples.samples_monojet import triggers_mumu_iso, triggers_mumu_noniso, triggers_ee, triggers_3e, triggers_mue, triggers_1mu_iso, triggers_1e, triggers_MonoJet
 triggerFlagsAna.triggerBits = {
     'MonoJet' : triggers_MonoJet,
 }
@@ -85,7 +91,7 @@ treeProducer = cfg.Analyzer(
 #-------- SAMPLES AND TRIGGERS -----------
 
 #-------- SEQUENCE
-from CMGTools.MonoXAnalysis.samples.samples_dummy import *
+from CMGTools.MonoXAnalysis.samples.samples_monojet import *
 
 selectedComponents = []
 
@@ -95,6 +101,7 @@ sequence = cfg.Sequence(dmCoreSequence+[
     ttHFatJetAna,
     ttHAlphaTAna,
     ttHAlphaTControlAna,
+    monoJetVarAna,
     MonoJetEventAna,
     treeProducer,
     ])
@@ -112,7 +119,7 @@ if test == 1:
     comp.files = [ '/afs/cern.ch/work/a/avartak/public/dmVM10.root' ]
     comp.splitFactor = 1
     comp.fineSplitFactor = 1
-    #ttHLepSkim.minLeptons = 0
+    monoJetSkim.metCut = 0
     selectedComponents = [ comp ]
 elif test == 2:
     for comp in selectedComponents:
