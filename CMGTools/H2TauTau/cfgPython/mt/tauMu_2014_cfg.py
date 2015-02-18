@@ -11,7 +11,7 @@ from CMGTools.H2TauTau.proto.analyzers.TauFakeRateWeighter import TauFakeRateWei
 from CMGTools.H2TauTau.proto.analyzers.LeptonWeighter import LeptonWeighter
 
 # common configuration and sequence
-from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, puFileData, puFileMC
+from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC
 
 
 ### mu-tau specific configuration settings
@@ -33,6 +33,8 @@ mc_tauEffWeight_mc = None
 mc_muEffWeight_mc = None
 mc_tauEffWeight = None
 mc_muEffWeight = None
+
+dyJetsFakeAna.channel = 'mt'
 
 ### Define mu-tau specific modules
 
