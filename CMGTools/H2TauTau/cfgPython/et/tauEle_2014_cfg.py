@@ -4,6 +4,9 @@ from PhysicsTools.HeppyCore.framework.config import printComps
 # Tau-tau analyzers
 from CMGTools.H2TauTau.proto.analyzers.TauEleAnalyzer import TauEleAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerTauEle import H2TauTauTreeProducerTauEle
+from CMGTools.H2TauTau.proto.analyzers.DYLLReweighterTauEle import DYLLReweighterTauEle
+from CMGTools.H2TauTau.proto.analyzers.TauFakeRateWeighter import TauFakeRateWeighter
+from CMGTools.H2TauTau.proto.analyzers.TauDecayModeWeighter import TauDecayModeWeighter
 
 # common configuration and sequence
 from CMGTools.H2TauTau.htt_ntuple_base_cff import *

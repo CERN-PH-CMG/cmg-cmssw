@@ -5,12 +5,12 @@ from PhysicsTools.HeppyCore.framework.config import printComps
 # Heppy analyzers
 from PhysicsTools.Heppy.analyzers.core.JSONAnalyzer         import JSONAnalyzer
 from PhysicsTools.Heppy.analyzers.core.EventSelector        import EventSelector
-# from PhysicsTools.Heppy.analyzers.examples.TriggerAnalyzer  import TriggerAnalyzer
 from PhysicsTools.Heppy.analyzers.objects.VertexAnalyzer    import VertexAnalyzer
 from PhysicsTools.Heppy.analyzers.core.PileUpAnalyzer       import PileUpAnalyzer
 from PhysicsTools.Heppy.analyzers.gen.GeneratorAnalyzer     import GeneratorAnalyzer
 
 # Tau-tau analyzers
+from CMGTools.H2TauTau.proto.analyzers.TriggerAnalyzer      import TriggerAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.JetAnalyzer          import JetAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.EmbedWeighter        import EmbedWeighter
 from CMGTools.H2TauTau.proto.analyzers.GenErsatzAnalyzer    import GenErsatzAnalyzer
@@ -43,12 +43,13 @@ jsonAna = cfg.Analyzer(
   name = 'JSONAnalyzer',
   )
 
-# RIC: off until fixed
-# triggerAna = cfg.Analyzer(
-#   TriggerAnalyzer  ,
-#   'TriggerAnalyzer',
-#   verbose = False
-#   )
+triggerAna = cfg.Analyzer(
+  TriggerAnalyzer          ,
+  'TriggerAnalyzer'        ,
+  addTriggerObjects = True ,
+  requireTrigger    = True ,
+  usePrescaled      = False,
+  )
 
 vertexAna = cfg.Analyzer(
   VertexAnalyzer                         ,
@@ -187,7 +188,7 @@ selectedComponents = allsamples
 ###################################################
 commonSequence = cfg.Sequence( [
   jsonAna            ,
-  #triggerAna         ,
+  triggerAna         ,
   vertexAna          ,
   diLeptonAna        ,
   genAna             ,

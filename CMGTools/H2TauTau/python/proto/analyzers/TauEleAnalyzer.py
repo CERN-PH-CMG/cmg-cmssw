@@ -177,12 +177,17 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         return tau.tauID('againstElectronMediumMVA5') and \
                tau.tauID("againstMuonLoose")>0.5 and \
                (tau.zImpact() > 0.5 or tau.zImpact() < -1.5) and\
-               self.testVertex( tau )
+               self.testTauVertex( tau )
 
     def testVertex(self, lepton):
-        '''Tests vertex constraints, for mu and tau'''
+        '''Tests vertex constraints, for electron and muon'''
         return abs(lepton.dxy()) < 0.045 and \
                abs(lepton.dz()) < 0.2 
+
+    def testTauVertex(self, lepton):
+        '''Tests vertex constraints, for tau'''
+        isPV = lepton.vertex().z() == lepton.associatedVertex.z()
+        return isPV
 
     def testLeg1Iso(self, tau, isocut):
         '''if isocut is None, returns true if three-hit iso MVA is passed.
