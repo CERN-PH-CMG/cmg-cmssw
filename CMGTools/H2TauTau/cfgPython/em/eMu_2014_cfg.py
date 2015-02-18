@@ -2,8 +2,8 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 from PhysicsTools.HeppyCore.framework.config import printComps
 
 # Tau-tau analyzers
-from CMGTools.H2TauTau.proto.analyzers.EMuAnalyzer                import EMuAnalyzer
-from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerEMu    import H2TauTauTreeProducerEMu
+from CMGTools.H2TauTau.proto.analyzers.MuEleAnalyzer             import MuEleAnalyzer
+from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerMuEle import H2TauTauTreeProducerMuEle
 
 # common configuration and sequence
 from CMGTools.H2TauTau.htt_ntuple_base_cff import *

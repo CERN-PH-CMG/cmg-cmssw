@@ -9,14 +9,14 @@ from PhysicsTools.Heppy.physicsobjects.Electron         import Electron
 from CMGTools.H2TauTau.proto.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.H2TauTau.proto.physicsobjects.DiObject    import MuonElectron
 
-class EMuAnalyzer( DiLeptonAnalyzer ):
+class MuEleAnalyzer( DiLeptonAnalyzer ):
 
     DiObjectClass    = MuonElectron
     LeptonClass      = Muon
     OtherLeptonClass = Electron
 
     def declareHandles(self):
-        super(EMuAnalyzer, self).declareHandles()
+        super(MuEleAnalyzer, self).declareHandles()
         self.handles  ['diLeptons'   ] = AutoHandle('cmgMuEleCorSVFitFullSel', 'std::vector<pat::CompositeCandidate>')
         self.handles  ['otherLeptons'] = AutoHandle('slimmedElectrons'       , 'std::vector<pat::Electron>'          )
         self.handles  ['leptons'     ] = AutoHandle('slimmedMuons'           , 'std::vector<pat::Muon>'              )
@@ -67,7 +67,7 @@ class EMuAnalyzer( DiLeptonAnalyzer ):
 
     def process(self, event):
 
-        result = super(EMuAnalyzer, self).process(event)
+        result = super(MuEleAnalyzer, self).process(event)
                 
         if result is False:
             # trying to get a dilepton from the control region.
