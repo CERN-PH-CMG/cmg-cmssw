@@ -1,5 +1,5 @@
 import operator 
-import math
+
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Lepton
 from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaR2
@@ -30,7 +30,6 @@ class DiLeptonAnalyzer( Analyzer ):
         m_min = 10,    # mass range
         m_max = 99999,
         dR_min = 0.5,  #O min delta R between the two legs
-        triggerMap = pathsAndFilters, #O, necessary for trigger matching
         verbose = False               #from base Analyzer class
         )
     """
@@ -52,9 +51,8 @@ class DiLeptonAnalyzer( Analyzer ):
         count.register('lepton accept')
         count.register('third lepton veto')
         count.register('leg1 offline cuts passed')
-        count.register('leg1 trig matched')
         count.register('leg2 offline cuts passed')
-        count.register('leg2 trig matched')
+        count.register('trig matched')
         count.register('{min:3.1f} < m < {max:3.1f}'.format( min = self.cfg_ana.m_min,
                                                              max = self.cfg_ana.m_max ))
         if hasattr(self.cfg_ana, 'dR_min'):
@@ -108,18 +106,21 @@ class DiLeptonAnalyzer( Analyzer ):
 
     def selectionSequence(self, event, fillCounter, leg1IsoCut=None, leg2IsoCut=None):
 
-        if fillCounter: self.counters.counter('DiLepton').inc('all events')
+        if fillCounter: 
+            self.counters.counter('DiLepton').inc('all events')
 
         if len(event.diLeptons) == 0:
             return False
-        if fillCounter: self.counters.counter('DiLepton').inc('> 0 di-lepton')
+
+        if fillCounter: 
+            self.counters.counter('DiLepton').inc('> 0 di-lepton')
 
         # testing di-lepton itself
         selDiLeptons = event.diLeptons
         # selDiLeptons = self.selectDiLeptons( selDiLeptons ) 
 
         event.leptonAccept = False
-        if self.leptonAccept( event.leptons ):
+        if self.leptonAccept(event.leptons):
             if fillCounter: self.counters.counter('DiLepton').inc('lepton accept')
             event.leptonAccept = True
 
@@ -129,21 +130,13 @@ class DiLeptonAnalyzer( Analyzer ):
             event.thirdLeptonVeto = True
 
         # testing leg1
-        selDiLeptons = [ diL for diL in selDiLeptons if \
-                         self.testLeg1( diL.leg1(), leg1IsoCut ) ]
+        selDiLeptons = [diL for diL in selDiLeptons if \
+                        self.testLeg1(diL.leg1(), leg1IsoCut)]
+
         if len(selDiLeptons) == 0:
             return False
-        else:
-            if fillCounter: self.counters.counter('DiLepton').inc('leg1 offline cuts passed')
-
-        if len(self.cfg_comp.triggers)>0:
-            # trigger matching leg1
-            selDiLeptons = [diL for diL in selDiLeptons if \
-                            self.trigMatched(event, diL.leg1(), 'leg1')]
-            if len(selDiLeptons) == 0:
-                return False
-            else:
-                if fillCounter: self.counters.counter('DiLepton').inc('leg1 trig matched')
+        elif fillCounter: 
+            self.counters.counter('DiLepton').inc('leg1 offline cuts passed')
 
         # testing leg2 
         selDiLeptons = [ diL for diL in selDiLeptons if \
@@ -153,14 +146,15 @@ class DiLeptonAnalyzer( Analyzer ):
         else:
             if fillCounter: self.counters.counter('DiLepton').inc('leg2 offline cuts passed')
 
+        # Trigger matching; both legs
         if len(self.cfg_comp.triggers)>0:
-            # trigger matching leg2
             selDiLeptons = [diL for diL in selDiLeptons if \
-                            self.trigMatched(event, diL.leg2(), 'leg2')]
+                            self.trigMatched(event, diL)]
+
             if len(selDiLeptons) == 0:
                 return False
-            else:
-                if fillCounter: self.counters.counter('DiLepton').inc('leg2 trig matched')
+            elif fillCounter: 
+                self.counters.counter('DiLepton').inc('trig matched')
 
         # mass cut 
         selDiLeptons = [ diL for diL in selDiLeptons if \
@@ -276,60 +270,35 @@ class DiLeptonAnalyzer( Analyzer ):
         '''Returns the best diLepton (the one with highest pt1 + pt2).'''
         return max( diLeptons, key=operator.methodcaller( 'sumPt' ) )
     
+    def trigMatched(self, event, diL):
+        '''Check that at least one trigger object per pgdId from a given trigger 
+        has a matched with a leg with the same pdg ID'''
+        matched = False
+        legs = [diL.leg1(), diL.leg2()]
+        event.matchedPaths = set()
+        for info in event.trigger_infos:
+            matchedIds = set()
+            for to in info.objects:
+                if self.trigObjMatched(to, legs):
+                    matchedIds.add(abs(to.pdgId()))
+            if matchedIds == info.objIds:
+                matched = True
+                event.matchedPaths.add(info.name)
+        return matched
 
-    def trigMatched(self, event, leg, legName):
-        '''Returns true if the leg is matched to a trigger object as defined in the
-        triggerMap parameter'''
-        if not hasattr( self.cfg_ana, 'triggerMap'):
-            return True
-        path = event.hltPath
-        triggerObjects = event.triggerObjects
-        filters = self.cfg_ana.triggerMap[path]
-        filter = None
-        if legName == 'leg1':
-            filter = filters[0]
-        elif legName == 'leg2':
-            filter = filters[1]
-        else:
-            raise ValueError('legName should be leg1 or leg2, not {leg}'.format(
-                leg=legName))
 
-        # JAN: Need a hack for the embedded samples: No trigger matching in that case
-        if filter == '':
-            return True
 
-        pdgIds = None
-        if len(filter) == 2:
-            filter, pdgIds = filter[0], filter[1]
-        return self.triggerMatched(leg, triggerObjects, path, filter,
-                              # dR2Max=0.089999, # 0.3 squared
-                              dR2Max=0.25,
-                              pdgIds=pdgIds )
+    def trigObjMatched(self, to, legs, dR2Max=0.25): #dR2Max=0.089999
+        '''Returns true if the leg is matched to a trigger object'''
+        eta = to.eta()
+        phi = to.phi()
+        pdgId = abs(to.pdgId())
+        to.matched = False
+        for leg in legs:
+            if pdgId == abs(leg.pdgId()):
+                if deltaR2(eta, phi, leg.eta(), leg.phi()) < dR2Max:
+                    to.matched = True
+                    # leg.trigMatched = True
 
-    def triggerMatched(obj, triggerObjects, path, filter,
-                    dR2Max=0.089999, dRMax=0., pdgIds=None, index=False):
-        '''The default dR2Max is 0.3^2'''
-        eta = obj.eta()
-        phi = obj.phi()
-        # to speed up the code, could sort the triggerObjects by decreasing pT
-        # when they are produced
-        for i, trigObj in enumerate(triggerObjects):
-            if trigObj.hasPath( path )        and \
-               trigObj.hasSelection( filter ) and \
-               dRMax == 0.                    and \
-               deltaR2( eta, phi, trigObj.eta(), trigObj.phi() ) < dR2Max:
-                if pdgIds is None or abs(trigObj.pdgId()) in pdgIds:
-                    if index : return True, i
-                    else     : return True
-            if trigObj.hasPath( path )        and \
-               trigObj.hasSelection( filter ) and \
-               dRMax > 0.                     and \
-               math.sqrt(deltaR2( eta, phi, trigObj.eta(), trigObj.phi() )) < dRMax:
-                if pdgIds is None or abs(trigObj.pdgId()) in pdgIds:
-                    if index : return True, i
-                    else     : return True
+        return to.matched
 
-        if index: 
-            return False, -99
-        else: 
-            return False
