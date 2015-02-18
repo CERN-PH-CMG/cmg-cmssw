@@ -158,15 +158,37 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event& iEvent, const edm::EventS
         std::vector<svFitStandalone::MeasuredTauLepton> measuredTauLeptons;
         int leg1DecayMode = -1;
         int leg2DecayMode = -1;
+        auto leg2Mass = diTau.daughter(1)->mass();
+        auto leg1Mass = diTau.daughter(0)->mass();
+
         if (leg1type == svFitStandalone::kTauToHadDecay) {
           leg1DecayMode = static_cast<pat::Tau*>(diTau.daughter(0))->decayMode();
         }
+        else if (leg1type == svFitStandalone::kTauToElecDecay)
+        {
+          // Reconstructed GSF electrons have non-fixed mass in CMS
+          leg1Mass = 0.000511;
+        }
+        else if (leg1type == svFitStandalone::kTauToMuDecay)
+        {
+          // Muons may sometimes have the charged pion mass
+          leg1Mass = 0.10566;
+        }
+
         if (leg2type == svFitStandalone::kTauToHadDecay) {
           leg2DecayMode = static_cast<pat::Tau*>(diTau.daughter(1))->decayMode();
         }
+        else if (leg2type == svFitStandalone::kTauToElecDecay)
+        {
+          leg2Mass = 0.000511;
+        }
+        else if (leg2type == svFitStandalone::kTauToMuDecay)
+        {
+          leg2Mass = 0.10566;
+        }
 
-        measuredTauLeptons.push_back(svFitStandalone::MeasuredTauLepton(leg2type, diTau.daughter(1)->pt(), diTau.daughter(1)->eta(), diTau.daughter(1)->phi(), diTau.daughter(1)->mass(), leg2DecayMode));
-        measuredTauLeptons.push_back(svFitStandalone::MeasuredTauLepton(leg1type, diTau.daughter(0)->pt(), diTau.daughter(0)->eta(), diTau.daughter(0)->phi(), diTau.daughter(0)->mass(), leg1DecayMode));
+        measuredTauLeptons.push_back(svFitStandalone::MeasuredTauLepton(leg2type, diTau.daughter(1)->pt(), diTau.daughter(1)->eta(), diTau.daughter(1)->phi(), leg2Mass, leg2DecayMode));
+        measuredTauLeptons.push_back(svFitStandalone::MeasuredTauLepton(leg1type, diTau.daughter(0)->pt(), diTau.daughter(0)->eta(), diTau.daughter(0)->phi(), leg1Mass, leg1DecayMode));
         SVfitStandaloneAlgorithm algo(measuredTauLeptons, met.px(), met.py(), tmsig, 0);
         algo.addLogM(false);
         

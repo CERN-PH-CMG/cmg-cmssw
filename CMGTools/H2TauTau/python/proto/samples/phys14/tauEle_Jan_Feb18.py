@@ -3,7 +3,7 @@ from CMGTools.RootTools.utils.connect import connect
 from CMGTools.RootTools.utils.splitFactor import splitFactor
 
 from CMGTools.H2TauTau.proto.samples.phys14.higgs import mc_higgs
-from CMGTools.H2TauTau.proto.samples.phys14.triggers_tauMu import mc_triggers
+from CMGTools.H2TauTau.proto.samples.phys14.triggers_tauEle import mc_triggers
 
 aliases = {
     '/GluGluToHToTauTau.*Phys14DR.*' : 'HiggsGGH',
@@ -26,4 +26,6 @@ MC_list = [m for m in MC_list if m.files]
 
 for sample in MC_list:
     sample.splitFactor = splitFactor(sample, 10e4)
+    # JAN - temporarily use local file until we have TAUELE samples
+    sample.files = ['/afs/cern.ch/user/s/steggema/work/CMSSW_7_2_3/src/CMGTools/H2TauTau/prod/tauEle_fullsel_tree_CMG.root']
 

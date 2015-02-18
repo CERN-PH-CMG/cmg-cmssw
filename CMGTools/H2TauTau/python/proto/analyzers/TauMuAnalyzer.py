@@ -3,7 +3,7 @@ import operator
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Muon, GenParticle
 # from PhysicsTools.Heppy.physicsobjects.HTauTauElectron  import HTauTauElectron as Electron
-from PhysicsTools.Heppy.physicsobjects.Electron         import Electron
+from PhysicsTools.Heppy.physicsobjects.Electron import Electron
 
 from CMGTools.H2TauTau.proto.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.H2TauTau.proto.physicsobjects.DiObject import TauMuon
@@ -101,20 +101,7 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             event.isSignal = False
         else:
             event.isSignal = True
-       
-        event.genMatched = None
-        if self.cfg_comp.isMC:
-            # print event.eventId
-            genParticles = self.mchandles['genParticles'].product()
-            event.genParticles = map( GenParticle, genParticles)
-            leg1DeltaR, leg2DeltaR = event.diLepton.match( event.genParticles ) 
-            if leg1DeltaR>-1 and leg1DeltaR < 0.1 and \
-               leg2DeltaR>-1 and leg2DeltaR < 0.1:
-                event.genMatched = True
-            else:
-                event.genMatched = False
-        
-#         import pdb ; pdb.set_trace()        
+      
         return True
         
 

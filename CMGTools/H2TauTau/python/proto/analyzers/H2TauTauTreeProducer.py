@@ -83,7 +83,7 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         
         self.maxNGenJets = 4
 
-    def process( self, event ):
+    def process(self, event):
     
         # needed when doing handle.product(), goes back to PhysicsTools.Heppy.analyzers.core.Analyzer
         self.readCollections( event.input ) 
@@ -137,7 +137,8 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         pfmet = self.handles['pfmetraw'].product()[0]
         self.fillParticle(self.tree, 'pfmet', pfmet)
         
-        self.tree.tree.Fill()
+        if type(self) is H2TauTauTreeProducer:
+            self.tree.tree.Fill()
 
 
     # event ID
@@ -256,8 +257,13 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.fillParticle(tree, pName       , lepton     )
         self.fillParticle(tree, pName+'_jet', lepton.jet )
         self.fill(tree, '{pName}_relIso05'      .format(pName=pName), lepton.relIsoAllChargedDB05() )
-        self.fill(tree, '{pName}_dxy'           .format(pName=pName), lepton.dxy()                  )
-        self.fill(tree, '{pName}_dz'            .format(pName=pName), lepton.dz()                   )
+        try:
+            self.fill(tree, '{pName}_dxy'.format(pName=pName), lepton.dxy())
+            self.fill(tree, '{pName}_dz'.format(pName=pName), lepton.dz())
+        except:
+            self.fill(tree, '{pName}_dxy'.format(pName=pName), 999.)
+            self.fill(tree, '{pName}_dz'.format(pName=pName), 999.)
+
         self.fill(tree, '{pName}_weight'        .format(pName=pName), lepton.weight                 )
         self.fill(tree, '{pName}_triggerWeight' .format(pName=pName), lepton.triggerWeight          )
         self.fill(tree, '{pName}_triggerEffData'.format(pName=pName), lepton.triggerEffData         )
@@ -431,4 +437,4 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
                                                          (p.numberOfDaughters() == 0 or p.daughter(0).status() != 3)]
         quarksGluons.sort(key=lambda x: -x.pt())
         for i in range(0, min(self.maxNGenJets, len(quarksGluons))):
-            self.fillGenParticle(tr, 'genQG_{i}'.format(i=i), quarksGluons[i])
+            self.fillGenParticle(tree, 'genQG_{i}'.format(i=i), quarksGluons[i])
