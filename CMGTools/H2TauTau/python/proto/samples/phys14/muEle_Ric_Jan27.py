@@ -14,7 +14,9 @@ aliases = {
 MC_list = [ HiggsGGH125 ]
 
 for sam in MC_list:
-  sam.triggers = None # No triggers yet
+  sam.triggers = ['HLT_Mu23_TrkIsoVVL_Ele12_Gsf_CaloId_TrackId_Iso_MediumWP_v1',
+                  'HLT_Mu8_TrkIsoVVL_Ele23_Gsf_CaloId_TrackId_Iso_MediumWP_v1'
+                 ]
     
 allsamples = copy.copy(MC_list)
 connect( allsamples, '%htt_tt_27jan15_manzoni_nom', 'miniAOD*root', aliases, cache=True, verbose=False)

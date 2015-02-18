@@ -63,7 +63,7 @@ treeProducer.name         = 'H2TauTauTreeProducerTauMu'
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
-from CMGTools.H2TauTau.proto.samples.phys14.diTau_Ric_Jan27 import *
+from CMGTools.H2TauTau.proto.samples.phys14.tauMu_Jan_Feb13 import *
 
 ###################################################
 ###     ASSIGN JET SMEAR, SCALE and PU to MC    ###
@@ -87,8 +87,9 @@ selectedComponents = allsamples
 ###                  SEQUENCE                   ###
 ###################################################
 sequence = commonSequence
-sequence.append( tauDecayModeWeighter ) # insert at the end
-sequence.append( tauFakeRateWeighter  ) # insert at the end
+mainAnaIndex = sequence.index(diLeptonAna)
+sequence.insert( mainAnaIndex + 1, tauDecayModeWeighter ) # insert at the end
+sequence.insert( mainAnaIndex + 2, tauFakeRateWeighter  ) # insert at the end
 # RIC: off until fixed
 # if not syncntuple:
 #   sequence.remove( treeProducerXCheck )
@@ -124,7 +125,7 @@ test = 1 # test = 0 run on batch, test = 1 run locally
 if test == 1 :
   cache              = True
   comp               = HiggsGGH125
-  comp.triggers      = [] # empty for now
+  #comp.triggers      = [] # empty for now
   selectedComponents = [comp]
   comp.splitFactor   = 1
   comp.files         = comp.files[:1]

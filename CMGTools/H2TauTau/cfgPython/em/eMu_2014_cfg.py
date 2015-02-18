@@ -99,7 +99,7 @@ test = 1 # test = 0 run on batch, test = 1 run locally
 if test == 1 :
   cache              = True
   comp               = HiggsGGH125
-  comp.triggers      = [] # empty for now
+  #comp.triggers      = [] # empty for now
   selectedComponents = [comp]
   comp.splitFactor   = 1
   comp.files         = comp.files[:1]
