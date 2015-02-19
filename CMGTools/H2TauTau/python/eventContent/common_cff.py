@@ -10,7 +10,7 @@ common = [
     'keep patJets_slimmedJets_*_*',
     'keep patMETs_slimmedMETs_*_*',
     'keep patMuons_slimmedMuons_*_*',
-    # 'keep patPacked*_*_*_*',
+    'keep patPacked*_*_*_*', # RIC: agreed to keep it to: 1. tau vtx 2. possibly compute isolations at analysis level
     'keep patTaus_slimmedTaus_*_*',
     'keep patTrigger*_*_*_*',
     'keep recoVertexs_*_*_*',
