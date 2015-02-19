@@ -20,7 +20,6 @@ MC_list = [v for k, v in mc_dict.items()]#[mc_dict['HiggsGGH125'], mc_dict['Higg
 for sam in MC_list:
   sam.triggers = mc_triggers
 
-
 mc_dict['HiggsGGH125'].files = [
   '/afs/cern.ch/work/m/manzoni/diTau2015/CMSSW_7_2_3/src/CMGTools/H2TauTau/prod/diTau_fullsel_tree_CMG.root'   , 
                     ]

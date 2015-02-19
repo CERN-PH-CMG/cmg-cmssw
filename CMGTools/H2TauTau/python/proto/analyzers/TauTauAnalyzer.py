@@ -86,10 +86,6 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
     otherLeptons = []
     for index, lep in enumerate(cmgOtherLeptons):
       pyl = Electron(lep)
-#       try :
-#         pyl = HTTElectron(lep)
-#       except :
-#         import pdb ; pdb.set_trace()
       pyl.associatedVertex = event.goodVertices[0]
       pyl.rho = event.rho
       otherLeptons.append( pyl )
@@ -123,19 +119,6 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
     isocut  = self.cfg_ana.iso2           
     return self.testLeg(leg, leg_pt, leg_eta, iso, isocut)    
 
-  def muonIso( self, muon ) :
-    '''dbeta corrected pf isolation with all charged particles instead of
-    charged hadrons'''
-    return muon.relIsoAllChargedDB05()
-
-  def testMuonID( self, muon ) :
-    '''Tight muon selection, no isolation requirement'''
-    return muon.tightId()
-             
-  def testMuonIso( self, muon, isocut ):
-    '''Tight muon selection, with isolation requirement'''
-    return self.muonIso(muon)<isocut
-
   def testTauVertex(self, lepton):
     '''Tests vertex constraints, for tau'''
     isPV = lepton.vertex().z() == lepton.associatedVertex.z()
@@ -145,10 +128,4 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
     '''Tests vertex constraints, for mu, e and tau'''
     return abs(lepton.dxy()) < dxy and \
            abs(lepton.dz())  < dz 
-
-  def testMuonIDLoose( self, muon ):
-    '''Loose muon ID and kine, no isolation requirement, for lepton veto'''        
-    return muon.isGlobalMuon()                    and \
-           muon.isTrackerMuon()                   and \
-           muon.sourcePtr().userFloat('isPFMuon')
         

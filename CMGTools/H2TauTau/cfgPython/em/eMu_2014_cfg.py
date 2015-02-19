@@ -32,7 +32,7 @@ muEleAna = cfg.Analyzer(
   m_min        = 10             ,
   m_max        = 99999          ,
   dR_min       = 0.5            ,
-  triggerMap   = pathsAndFilters,
+#   triggerMap   = pathsAndFilters,
   jetPt        = 30.            ,
   jetEta       = 4.7            ,
   relaxJetId   = False          ,
@@ -51,7 +51,7 @@ muonWeighter = cfg.Analyzer(
   isoWeight   = None     
   )
 
-muonWeighter = cfg.Analyzer(
+eleWeighter = cfg.Analyzer(
   LeptonWeighter                   ,
   name        ='LeptonWeighter_ele',
   effWeight   = None               ,
@@ -87,7 +87,7 @@ for mc in MC_list:
 ###################################################
 ###             SET COMPONENTS BY HAND          ###
 ###################################################
-selectedComponents = allsamples
+selectedComponents = mc_dict['HiggsGGH125']
 # selectedComponents  = [ ZZJetsTo4L ]
 # for c in selectedComponents : c.splitFactor *= 5
 
@@ -134,7 +134,7 @@ sequence.append(treeProducer)
 test = 1 # test = 0 run on batch, test = 1 run locally
 if test == 1 :
   cache              = True
-  comp               = HiggsGGH125
+  comp               = mc_dict['HiggsGGH125']
   #comp.triggers      = [] # empty for now
   selectedComponents = [comp]
   comp.splitFactor   = 1
