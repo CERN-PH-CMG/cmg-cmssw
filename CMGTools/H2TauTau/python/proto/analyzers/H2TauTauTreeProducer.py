@@ -256,7 +256,7 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
     def fillLepton( self, tree, pName, lepton ):
         self.fillParticle(tree, pName       , lepton     )
         self.fillParticle(tree, pName+'_jet', lepton.jet )
-        self.fill(tree, '{pName}_relIso05'      .format(pName=pName), lepton.relIsoAllChargedDB05() )
+        self.fill(tree, '{pName}_relIso05'      .format(pName=pName), lepton.relIso(0.5) )
         try:
             self.fill(tree, '{pName}_dxy'.format(pName=pName), lepton.dxy())
             self.fill(tree, '{pName}_dz'.format(pName=pName), lepton.dz())
