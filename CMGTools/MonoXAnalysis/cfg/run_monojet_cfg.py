@@ -70,9 +70,10 @@ MonoJetEventAna = cfg.Analyzer(
     minJets25 = 0,
     )
 
-from CMGTools.MonoXAnalysis.samples.samples_monojet import triggers_mumu_iso, triggers_mumu_noniso, triggers_ee, triggers_3e, triggers_mue, triggers_1mu_iso, triggers_1e, triggers_MonoJet
+from CMGTools.MonoXAnalysis.samples.samples_monojet import triggers_MonoJet,triggers_WZ
 triggerFlagsAna.triggerBits = {
     'MonoJet' : triggers_MonoJet,
+    'WZ' : triggers_WZ,
 }
 
 from CMGTools.MonoXAnalysis.analyzers.treeProducerDarkMatterMonoJet import * 
