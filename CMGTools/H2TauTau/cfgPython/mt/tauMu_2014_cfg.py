@@ -18,8 +18,6 @@ from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJets
 
 # 'Nom', 'Up', 'Down', or None
 shift = None
-# 1.0, 1.03, 0.97
-tauScaleShift = 1.0
 syncntuple = False
 
 # When ready, include weights from CMGTools.H2TauTau.proto.weights.weighttable
@@ -41,7 +39,6 @@ dyJetsFakeAna.channel = 'mt'
 tauMuAna = cfg.Analyzer(
     TauMuAnalyzer,
     name='TauMuAnalyzer',
-    scaleShift1 = tauScaleShift,
     pt1 = 20,
     eta1 = 2.3,
     iso1 = None,
