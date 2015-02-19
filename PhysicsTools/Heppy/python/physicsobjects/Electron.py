@@ -1,5 +1,5 @@
 from PhysicsTools.Heppy.physicsobjects.Lepton import Lepton
-from PhysicsTools.Heppy.physicsutils.ElectronMVAID import ElectronMVAID_Trig, ElectronMVAID_NonTrig, ElectronMVAID_TrigNoIP
+from PhysicsTools.Heppy.physicsutils.ElectronMVAID import *
 import ROOT
 
 class Electron( Lepton ):
@@ -18,6 +18,7 @@ class Electron( Lepton ):
         self._mvaNonTrigV0  = {True:None, False:None}
         self._mvaTrigV0     = {True:None, False:None}
         self._mvaTrigNoIPV0 = {True:None, False:None}
+        self._mvaRun2 = {}
 
     def electronID( self, id, vertex=None, rho=None ):
         if id is None or id == "": return True
@@ -106,6 +107,13 @@ class Electron( Lepton ):
             self._mvaTrigNoIPV0[full5x5] = ElectronMVAID_TrigNoIP(self.physObj, self.associatedVertex, self.rho, full5x5, debug)
         return self._mvaTrigNoIPV0[full5x5] 
 
+    def mvaRun2( self, name, debug = False ):
+        if name not in self._mvaRun2: 
+            if name not in ElectronMVAID_ByName: raise RuntimeError, "Unknown electron run2 mva id %s (known ones are: %s)\n" % (name, ElectronMVAID_ByName.keys())
+            if self.associatedVertex == None: raise RuntimeError, "You need to set electron.associatedVertex before calling any MVA"
+            if self.rho              == None: raise RuntimeError, "You need to set electron.rho before calling any MVA"
+            self._mvaRun2[name] = ElectronMVAID_ByName[name](self.physObj, self.associatedVertex, self.rho, True, debug)
+        return self._mvaRun2[name]
 
     def mvaIDTight(self, full5x5=False):
             eta = abs(self.superCluster().eta())
@@ -147,17 +155,23 @@ class Electron( Lepton ):
         elif R == 0.4: return self.physObj.photonIso()
         raise RuntimeError, "Electron photonIso missing for R=%s" % R
 
-    def chargedAllIsoR(self,R=0.4):
+    def chargedAllIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationVariables().sumChargedParticlePt 
         raise RuntimeError, "Electron chargedAllIso missing for R=%s" % R
-
-    def chargedAllIso(self):
-        raise RuntimeError, "Electron chargedAllIso missing"
 
     def puChargedHadronIsoR(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationVariables().sumPUPt 
         elif R == 0.4: return self.physObj.puChargedHadronIso()
         raise RuntimeError, "Electron chargedHadronIso missing for R=%s" % R
+
+
+
+
+    def chargedAllIso(self):
+        '''This function is used in the isolation, see Lepton class.
+        Here, we replace the all charged isolation by the all charged isolation with cone veto'''
+        return self.chargedAllIsoWithConeVeto()
+
 
     def dxy(self, vertex=None):
         '''Returns dxy.

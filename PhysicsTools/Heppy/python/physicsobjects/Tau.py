@@ -13,8 +13,8 @@ class Tau(Lepton):
         self.tau = tau
         super(Tau, self).__init__(tau)
         
-    def relIso(self, dBetaFactor=0, allCharged=0):
-        '''Just making the tau behave as a lepton, with dummy parameters.'''
+    def relIso(self, dummy1, dummy2):
+        '''Just making the tau behave as a lepton.'''
         return -1
 
     def mvaId(self):
