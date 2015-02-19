@@ -19,18 +19,17 @@ class DiLeptonAnalyzer( Analyzer ):
     ana = cfg.Analyzer(
         DiLeptonAnalyzer,
         'DiLeptonAnalyzer',
-        scaleShift1 = eScaleShift,  #O shift factor for leg 1 energy scale
-        scaleShift2 = tauScaleShift,#O same for leg 2
-        pt1 = 20,   # pt, eta, iso cuts for leg 1
-        eta1 = 2.3,
-        iso1 = None,
-        pt2 = 20,   # same for leg 2
-        eta2 = 2.1,
-        iso2 = 0.1,
-        m_min = 10,    # mass range
-        m_max = 99999,
-        dR_min = 0.5,  #O min delta R between the two legs
-        verbose = False               #from base Analyzer class
+        pt1=20, # pt, eta, iso cuts for leg 1
+        eta1=2.3,
+        iso1=None,
+        pt2=20, # same for leg 2
+        eta2=2.1,
+        iso2=0.1,
+        m_min=10, # mass range
+        m_max=99999,
+        dR_min=0.5, #O min delta R between the two legs
+        allTriggerObjMatched=False,
+        verbose=False #from base Analyzer class
         )
     """
 
@@ -53,8 +52,8 @@ class DiLeptonAnalyzer( Analyzer ):
         count.register('leg1 offline cuts passed')
         count.register('leg2 offline cuts passed')
         count.register('trig matched')
-        count.register('{min:3.1f} < m < {max:3.1f}'.format( min = self.cfg_ana.m_min,
-                                                             max = self.cfg_ana.m_max ))
+        count.register('{min:3.1f} < m < {max:3.1f}'.format(min=self.cfg_ana.m_min,
+                                                            max=self.cfg_ana.m_max))
         if hasattr(self.cfg_ana, 'dR_min'):
             count.register('dR > {min:3.1f}'.format( min = self.cfg_ana.dR_min))
                            
@@ -80,29 +79,15 @@ class DiLeptonAnalyzer( Analyzer ):
 
         
     def process(self, event):
-        self.readCollections( event.input )
-        event.diLeptons = self.buildDiLeptons( self.handles['diLeptons'].product(), event )
-        event.leptons = self.buildLeptons( self.handles['leptons'].product(), event )
-        event.otherLeptons = self.buildOtherLeptons( self.handles['otherLeptons'].product(), event )
-        self.shiftEnergyScale(event)
+        self.readCollections(event.input)
+
+        event.diLeptons = self.buildDiLeptons(self.handles['diLeptons'].product(), event)
+        event.leptons = self.buildLeptons(self.handles['leptons'].product(), event)
+        event.otherLeptons = self.buildOtherLeptons(self.handles['otherLeptons'].product(), event)
         return self.selectionSequence(event, fillCounter=True,
                                       leg1IsoCut=self.cfg_ana.iso1,
                                       leg2IsoCut=self.cfg_ana.iso2)
 
-    def shiftEnergyScale(self, event):
-        scaleShift1 = None
-        scaleShift2 = None
-        if hasattr( self.cfg_ana, 'scaleShift1'):
-            scaleShift1 = self.cfg_ana.scaleShift1
-        if hasattr( self.cfg_ana, 'scaleShift2'):
-            scaleShift2 = self.cfg_ana.scaleShift2
-        if scaleShift1:
-            # import pdb; pdb.set_trace()
-            map( lambda x: x.leg1().scaleEnergy(scaleShift1), event.diLeptons )
-        if scaleShift2:
-            map( lambda x: x.leg2().scaleEnergy(scaleShift2), event.diLeptons )
-            map( lambda x: x.scaleEnergy(scaleShift2), event.leptons )
-        
 
     def selectionSequence(self, event, fillCounter, leg1IsoCut=None, leg2IsoCut=None):
 
@@ -117,7 +102,6 @@ class DiLeptonAnalyzer( Analyzer ):
 
         # testing di-lepton itself
         selDiLeptons = event.diLeptons
-        # selDiLeptons = self.selectDiLeptons( selDiLeptons ) 
 
         event.leptonAccept = False
         if self.leptonAccept(event.leptons):
@@ -147,9 +131,11 @@ class DiLeptonAnalyzer( Analyzer ):
             if fillCounter: self.counters.counter('DiLepton').inc('leg2 offline cuts passed')
 
         # Trigger matching; both legs
-        if len(self.cfg_comp.triggers)>0:
+        if len(self.cfg_comp.triggers ) >0:
+            requireAllMatched = hasattr(self.cfg_ana, 'allTriggerObjMatched') \
+                                and self.cfg_ana.allTriggerObjMatched
             selDiLeptons = [diL for diL in selDiLeptons if \
-                            self.trigMatched(event, diL)]
+                            self.trigMatched(event, diL, requireAllMatched)]
 
             if len(selDiLeptons) == 0:
                 return False
@@ -270,26 +256,37 @@ class DiLeptonAnalyzer( Analyzer ):
         '''Returns the best diLepton (the one with highest pt1 + pt2).'''
         return max( diLeptons, key=operator.methodcaller( 'sumPt' ) )
     
-    def trigMatched(self, event, diL):
+
+    def trigMatched(self, event, diL, requireAllMatched=False):
         '''Check that at least one trigger object per pgdId from a given trigger 
-        has a matched with a leg with the same pdg ID'''
+        has a matched leg with the same pdg ID. If requireAllMatched is True, 
+        requires that each single trigger object has a match.'''
         matched = False
         legs = [diL.leg1(), diL.leg2()]
         event.matchedPaths = set()
+
         for info in event.trigger_infos:
             matchedIds = set()
+            allMatched = True
             for to in info.objects:
                 if self.trigObjMatched(to, legs):
                     matchedIds.add(abs(to.pdgId()))
+                else:
+                    allMatched = False
+
             if matchedIds == info.objIds:
-                matched = True
-                event.matchedPaths.add(info.name)
+                if requireAllMatched and not allMatched:
+                    matched = False
+                else:
+                    matched = True
+                    event.matchedPaths.add(info.name)
+
         return matched
 
 
-
     def trigObjMatched(self, to, legs, dR2Max=0.25): #dR2Max=0.089999
-        '''Returns true if the leg is matched to a trigger object'''
+        '''Returns true if the trigger object is matched to one of the given
+        legs'''
         eta = to.eta()
         phi = to.phi()
         pdgId = abs(to.pdgId())
