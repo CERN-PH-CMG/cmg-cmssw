@@ -92,16 +92,13 @@ treeProducer = cfg.Analyzer(
     name='H2TauTauTreeProducerTauMu'
     )
 
-treeProducer.class_object = H2TauTauTreeProducerTauMu
-treeProducer.name = 'H2TauTauTreeProducerTauMu'
-
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
 from CMGTools.H2TauTau.proto.samples.phys14.tauMu_Jan_Feb13 import MC_list, mc_dict
 
 ###################################################
-###     ASSIGN PU to MC    ###
+###              ASSIGN PU to MC                ###
 ###################################################
 for mc in MC_list:
     mc.puFileData = puFileData
@@ -136,7 +133,6 @@ sequence.append(treeProducer)
 ###################################################
 ###            SET BATCH OR LOCAL               ###
 ###################################################
-
 # JAN - can we finally get this via command line options?
 test = 1  # test = 0 run on batch, test = 1 run locally
 if test == 1:

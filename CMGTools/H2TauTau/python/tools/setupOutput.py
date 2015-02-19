@@ -10,7 +10,7 @@ from CMGTools.H2TauTau.eventContent.muEle_cff import muEleDebug as muEleDebugEve
 from CMGTools.H2TauTau.eventContent.diTau_cff import diTau as diTauEventContent
 from CMGTools.H2TauTau.eventContent.diTau_cff import diTauDebug as diTauDebugEventContent
 
-def addOutput(process, type12, addDebugEventContent=False, addPreSel=True):
+def addOutput(process, type12, addDebugEventContent=False, addPreSel=True, oneFile=False):
     
     allowedTypes = ['tauMu', 'tauEle', 'muEle', 'diTau']
     if type12 not in allowedTypes:
@@ -18,8 +18,12 @@ def addOutput(process, type12, addDebugEventContent=False, addPreSel=True):
 
     # skim (basic selection)     ------
     outFileNameExt = 'CMG'
+    if oneFile : 
+        mytype='htt'
+    else :
+        mytype=type12    
     basicName = '{type}_presel_tree_{ext}.root'.format(
-        type = type12,
+        type = mytype,
         ext = outFileNameExt
         )
     
@@ -37,14 +41,25 @@ def addOutput(process, type12, addDebugEventContent=False, addPreSel=True):
     elif type12 == 'diTau':
         eventContent = diTauEventContent
         debugEventContent = diTauDebugEventContent
-        
-    
+    elif oneFile:
+        eventContent = set(tauMuEventContent+ 
+                           tauEleEventContent+
+                           diTauEventContent+
+                           muEleEventContent)
+        debugEventContent = set(tauMuDebugEventContent+ 
+                                tauEleDebugEventContent+
+                                muEleDebugEventContent+
+                                diTauDebugEventContent)
+                                
+    prePathVString=['{type12}PreSelPath'.format(type12=type12)]
+    if oneFile: 
+        prePathVString=['{type12}PreSelPath'.format(type12=type12) for type12 in allowedTypes] 
     out = cms.OutputModule(
         "PoolOutputModule",
         fileName = cms.untracked.string( basicName ),
         # save only events passing the full path
         SelectEvents   = cms.untracked.PSet(
-           SelectEvents = cms.vstring('{type12}PreSelPath'.format(type12=type12))
+           SelectEvents = cms.vstring(prePathVString)
         ),
         # save PAT Layer 1 output; you need a '*' to
         # unpack the list of commands 'patEventContent'
@@ -58,12 +73,15 @@ def addOutput(process, type12, addDebugEventContent=False, addPreSel=True):
 
     # full baseline selection    ------
 
+    pathVString=['{type12}Path'.format(type12=type12)]
+    if oneFile: 
+        pathVString=['{type12}Path'.format(type12=type12) for type12 in allowedTypes] 
     outBaseline = out.clone()
     outBaseline.SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('{type12}Path'.format(type12=type12))
+        SelectEvents = cms.vstring(pathVString)
         )
     baselineName = '{type12}_fullsel_tree_{ext}.root'.format(
-        type12 = type12,
+        type12 = mytype,
         ext = outFileNameExt
         )
     outBaseline.fileName = baselineName
@@ -77,16 +95,15 @@ def addOutput(process, type12, addDebugEventContent=False, addPreSel=True):
         print 'adding output:', out.fileName
     
     
+def addTauMuOutput( process, debugEventContent=False, addPreSel=True, oneFile=False):
+    addOutput(process, 'tauMu', debugEventContent, addPreSel, oneFile)
 
-def addTauMuOutput( process, debugEventContent=False, addPreSel=True):
-    addOutput(process, 'tauMu', debugEventContent, addPreSel)
+def addTauEleOutput( process, debugEventContent=False, addPreSel=True, oneFile=False):
+    addOutput(process, 'tauEle', debugEventContent, addPreSel, oneFile)
+ 
+def addMuEleOutput( process, debugEventContent=False, addPreSel=True, oneFile=False):
+    addOutput(process, 'muEle', debugEventContent, addPreSel, oneFile)
+ 
+def addDiTauOutput( process, debugEventContent=False, addPreSel=True, oneFile=False):
+    addOutput(process, 'diTau', debugEventContent, addPreSel, oneFile)
 
-def addTauEleOutput( process, debugEventContent=False, addPreSel=True ):
-    addOutput(process, 'tauEle', debugEventContent, addPreSel)
- 
-def addMuEleOutput( process, debugEventContent=False, addPreSel=True ):
-    addOutput(process, 'muEle', debugEventContent, addPreSel)
- 
-def addDiTauOutput( process, debugEventContent=False, addPreSel=True ):
-    addOutput(process, 'diTau', debugEventContent, addPreSel)
- 

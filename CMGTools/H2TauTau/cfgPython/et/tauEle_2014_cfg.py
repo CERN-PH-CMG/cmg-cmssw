@@ -104,7 +104,8 @@ treeProducer = cfg.Analyzer(
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
-from CMGTools.H2TauTau.proto.samples.phys14.tauEle_Jan_Feb18 import MC_list, mc_dict
+# from CMGTools.H2TauTau.proto.samples.phys14.tauEle_Jan_Feb18 import MC_list, mc_dict
+from CMGTools.H2TauTau.proto.samples.phys14.tauEle_Ric_Jan27 import MC_list, mc_dict # RIC: sorry for flipping back and forth
 
 ###################################################
 ###     ASSIGN PU to MC    ###
