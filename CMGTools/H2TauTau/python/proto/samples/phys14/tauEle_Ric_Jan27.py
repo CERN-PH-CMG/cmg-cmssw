@@ -1,24 +1,20 @@
-import copy
-
-from CMGTools.H2TauTau.proto.samples.phys14.higgs import *
-
-from CMGTools.Production.getFiles         import getFiles
-from CMGTools.RootTools.utils.connect     import connect
+# from CMGTools.Production.getFiles import getFiles
+from CMGTools.RootTools.utils.connect import connect
 from CMGTools.RootTools.utils.splitFactor import splitFactor
-from CMGTools.RootTools.fwlite.Config     import printComps
+
+from CMGTools.H2TauTau.proto.samples.phys14.higgs import mc_higgs
+from CMGTools.H2TauTau.proto.samples.phys14.triggers_tauEle import mc_triggers
 
 aliases = {
-  '/GluGluToHToTauTau.*Phys14DR.*' : 'HiggsGGH',
-          }
+    '/GluGluToHToTauTau.*Phys14DR.*' : 'HiggsGGH',
+    '/VBF_HToTauTau_M-125_13TeV-powheg-pythia6.*Phys14DR.*' : 'HiggsVBF',
+}
 
 MC_list = [ HiggsGGH125 ]
 
 for sam in MC_list:
-  sam.triggers = ['HLT_Ele22_eta2p1_WP85_Gsf_LooseIsoPFTau20_v1','HLT_Ele27_eta2p1_WP85_Gsf_v1']
-  
-# HLT_Ele27_eta2p1_WP85_Gsf_v1
-# HLT_Ele32_eta2p1_WP85_Gsf_v1
-  
+  sam.triggers = mc_triggers
+
 allsamples = copy.copy(MC_list)
 connect( allsamples, '%htt_tt_27jan15_manzoni_nom', 'miniAOD*root', aliases, cache=True, verbose=False)
 
