@@ -55,11 +55,12 @@ dmMonoJet_globalVariables = dmCore_globalVariables + [
     ##--------------------------------------------------
     # Physics object multplicities
     ##--------------------------------------------------
-    NTupleVariable("nBJet40", lambda ev: sum([j.btagWP("CSVv2IVFM") for j in ev.cleanJets if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CSV medium"),
-    NTupleVariable("nMuons10", lambda ev: sum([l.pt() > 10 and abs(l.pdgId()) == 13 for l in ev.selectedLeptons]), int, help="Number of muons with pt > 10"),
+    NTupleVariable("nBJet25",    lambda ev: sum([j.btagWP("CSVv2IVFM") for j in ev.cleanJets if j.pt() > 25]), int, help="Number of jets with pt > 40 passing CSV medium"),
+    NTupleVariable("nFatJet100", lambda ev: sum([j.pt() > 100 for j in ev.fatJets]), int, help="Number of fat jets with pt > 100"),
+    NTupleVariable("nMuons10",   lambda ev: sum([l.pt() > 10 and abs(l.pdgId()) == 13 for l in ev.selectedLeptons]), int, help="Number of muons with pt > 10"),
     NTupleVariable("nElectrons10", lambda ev: sum([l.pt() > 10 and abs(l.pdgId()) == 11 for l in ev.selectedLeptons]), int, help="Number of electrons with pt > 10"),
-    NTupleVariable("nTaus20", lambda ev: sum([l.pt() > 20 for l in ev.selectedTaus]), int, help="Number of taus with pt > 20"),
-    NTupleVariable("nGammas20", lambda ev: sum([l.pt() > 20 for l in ev.selectedPhotons]), int, help="Number of photons with pt > 20"),
+    NTupleVariable("nTaus20",    lambda ev: sum([l.pt() > 20 for l in ev.selectedTaus]), int, help="Number of taus with pt > 20"),
+    NTupleVariable("nGammas20",  lambda ev: sum([l.pt() > 20 for l in ev.selectedPhotons]), int, help="Number of photons with pt > 20"),
 
 
 ]
@@ -79,12 +80,12 @@ dmMonoJet_collections.update({
             "selectedLeptons" : NTupleCollection("LepGood",  leptonTypeSusyExtra, 8, help="Leptons after the preselection"),
             "vetoLeptons"     : NTupleCollection("LepVeto",  leptonTypeSusyExtra, 8, help="Leptons after the veto selection"),
             ##------------------------------------------------
-            "cleanJets"       : NTupleCollection("Jet",     jetTypeSusyExtra, 15, help="Cental jets after full selection and cleaning, sorted by pt"),
-            "cleanJetsFwd"    : NTupleCollection("JetFwd",  jetTypeSusyExtra,  6, help="Forward jets after full selection and cleaning, sorted by pt"),            
-            "fatJets"         : NTupleCollection("FatJet",  fatJetType,       15, help="AK8 jets, sorted by pt"),
+            "cleanJets"       : NTupleCollection("Jet",     jetTypeSusyExtra, 10, help="Cental jets after full selection and cleaning, sorted by pt"),
+            "cleanJetsFwd"    : NTupleCollection("JetFwd",  jetTypeSusyExtra,  5, help="Forward jets after full selection and cleaning, sorted by pt"),
+            "fatJets"         : NTupleCollection("FatJet",  fatJetType,       10, help="AK8 jets, sorted by pt"),
             ##------------------------------------------------
-            "discardedJets"    : NTupleCollection("DiscJet", jetTypeSusyExtra, 15, help="Jets discarted in the jet-lepton cleaning"),
-            "discardedLeptons" : NTupleCollection("DiscLep", leptonTypeSusyExtra, 8, help="Leptons discarded in the jet-lepton cleaning"),
+            #"discardedJets"    : NTupleCollection("DiscJet", jetTypeSusyExtra, 10, help="Jets discarted in the jet-lepton cleaning"),
+            #"discardedLeptons" : NTupleCollection("DiscLep", leptonTypeSusyExtra, 8, help="Leptons discarded in the jet-lepton cleaning"),
             ##------------------------------------------------
             "selectedIsoTrack"    : NTupleCollection("isoTrack", isoTrackType, 50, help="isoTrack, sorted by pt"),
             ##------------------------------------------------

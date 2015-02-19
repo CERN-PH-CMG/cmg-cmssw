@@ -111,7 +111,7 @@ sequence = cfg.Sequence(dmCoreSequence+[
 #    comp.splitFactor = 1
 #    comp.fineSplitFactor = 40
     
-test = 1
+test = 10
 if test == 1:
     comp = Monojet_M_10; comp.name = "Monojet_M_10"
     #comp = SMS_T1tttt_2J_mGl1500_mLSP100
@@ -141,10 +141,11 @@ elif test == 10: # sync
     #sequence = cfg.Sequence([eventSelector] + susyCoreSequence+[ ttHEventAna, treeProducer, ])
     jetAna.recalibrateJets = False 
     jetAna.smearJets       = False 
-    comp = SMS_T1tttt_2J_mGl1200_mLSP800
-    comp.files = [ 'root://eoscms//eos/cms/store/mc/Phys14DR/SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/0CD15D7F-4E6B-E411-AEB4-002590DB9216.root' ]
+    comp = Monojet_M_10; comp.name = "Monojet_M_10"
+    comp.files = [ '/afs/cern.ch/work/a/avartak/public/dmVM10.root' ]
     comp.splitFactor = 1
-    #comp.fineSplitFactor = 10
+    comp.fineSplitFactor = 1
+    monoJetSkim.metCut = 0
     selectedComponents = [ comp ]
 
 
