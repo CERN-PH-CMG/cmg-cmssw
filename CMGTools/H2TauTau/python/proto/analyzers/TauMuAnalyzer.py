@@ -52,7 +52,7 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
             # to change data format otherwise, though we don't yet strictly
             # need the MET significance matrix here since we calculate SVFit
             # before
-            # pydil.mvaMetSig = pydil.met().getSignificanceMatrix()
+            pydil.mvaMetSig = pydil.met().getSignificanceMatrix()
             diLeptons.append(pydil)
         return diLeptons
 
