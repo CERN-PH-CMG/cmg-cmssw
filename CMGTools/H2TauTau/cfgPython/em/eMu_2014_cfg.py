@@ -5,8 +5,6 @@ from PhysicsTools.HeppyCore.framework.config import printComps
 from CMGTools.H2TauTau.proto.analyzers.MuEleAnalyzer             import MuEleAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerMuEle import H2TauTauTreeProducerMuEle
 from CMGTools.H2TauTau.proto.analyzers.LeptonWeighter            import LeptonWeighter
-# RIC: off until fixed
-# from CMGTools.H2TauTau.proto.analyzers.H2TauTauSyncTree          import H2TauTauSyncTree
 
 # common configuration and sequence
 from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC
