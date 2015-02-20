@@ -143,7 +143,7 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         '''Tight muon selection, with isolation requirement'''
         if isocut is None:
             isocut = self.cfg_ana.iso2
-        return muon.relIsoAllChargedDB05()<isocut    
+        return muon.relIso(dBetaFactor=0.5, allCharged=0)<isocut    
 
 
     def thirdLeptonVeto(self, leptons, otherLeptons, ptcut = 10, isocut = 0.3) :
@@ -157,8 +157,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
                          self.testLegKine(olep, ptcut=ptcut, etacut=2.5) and \
                          # olep.looseIdForTriLeptonVeto()           and \
                          olep.mvaIDLoose() and \
-                         self.testVertex( olep )           and \
-                         olep.relIsoAllChargedDB05() < isocut
+                         self.testVertex( olep ) and \
+                         olep.relIso(dBetaFactor=0.5, allCharged=0) < isocut
                         ]
         if len(vleptons) + len(votherLeptons)> 1:
             return False

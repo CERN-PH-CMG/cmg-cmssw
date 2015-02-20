@@ -45,7 +45,7 @@ class H2TauTauTreeProducerTauEle( H2TauTauTreeProducer ):
         taupo = tau.physObj    
         # save the p4 of the visible tau products at the generator level
         # make sure that the reco tau matches with a gen tau that decays into hadrons
-        if hasattr(taupo, 'genJet') and hasattr(tau,'genp') and abs(tau.genp.pdgId()) == 15 : 
+        if hasattr(taupo, 'genJet') and hasattr(tau,'genp') and abs(tau.genp.pdgId()) == 15 and tau.physObj.genJet() : 
             self.fillParticle(self.tree, 'l1_gen_vis', tau.physObj.genJet() )
 
         self.fill(self.tree, 'tauFakeRateWeightUp'  , event.tauFakeRateWeightUp  )
@@ -65,4 +65,4 @@ class H2TauTauTreeProducerTauEle( H2TauTauTreeProducer ):
                 self.fillGenParticle(self.tree, 'genWlep', event.genWs[0].lep)
                 self.fillGenParticle(self.tree, 'genWnu' , event.genWs[0].nu )
        
-        self.tree.tree.Fill()
+        self.fillTree(event)

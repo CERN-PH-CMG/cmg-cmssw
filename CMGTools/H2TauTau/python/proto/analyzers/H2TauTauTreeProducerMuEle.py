@@ -1,11 +1,11 @@
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducer import H2TauTauTreeProducer
 
-class H2TauTauTreeProducerEMu( H2TauTauTreeProducer ):
+class H2TauTauTreeProducerMuEle( H2TauTauTreeProducer ):
   '''Tree producer for the H->tau tau analysis'''
   
   def declareVariables(self, setup):
 
-    super(H2TauTauTreeProducerEMu, self).declareVariables(setup)
+    super(H2TauTauTreeProducerMuEle, self).declareVariables(setup)
 
     self.bookMuon(self.tree, 'l1')
     self.bookEle (self.tree, 'l2')
@@ -15,7 +15,7 @@ class H2TauTauTreeProducerEMu( H2TauTauTreeProducer ):
   
   def process(self, event):
      
-    super(H2TauTauTreeProducerEMu, self).process(event)
+    super(H2TauTauTreeProducerMuEle, self).process(event)
 
     muon = event.diLepton.leg1() 
     ele  = event.diLepton.leg2()
@@ -26,4 +26,4 @@ class H2TauTauTreeProducerEMu( H2TauTauTreeProducer ):
     if hasattr(muon, 'genp') : self.fillGenParticle(self.tree, 'l1_gen', muon.genp )
     if hasattr(ele , 'genp') : self.fillGenParticle(self.tree, 'l2_gen', ele .genp )
 
-    self.tree.tree.Fill() 
+    self.fillTree(event)

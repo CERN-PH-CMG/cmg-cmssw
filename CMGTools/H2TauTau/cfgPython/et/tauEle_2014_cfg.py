@@ -19,7 +19,7 @@ shift = None
 # 1.0, 1.03, 0.97
 tauScaleShift = 1.0
 
-syncntuple = False
+syncntuple = True
 
 # When ready, include weights from CMGTools.H2TauTau.proto.weights.weighttable
 
@@ -101,10 +101,18 @@ treeProducer = cfg.Analyzer(
     name='H2TauTauTreeProducerTauEle'
 )
 
+syncTreeProducer = cfg.Analyzer(
+    H2TauTauTreeProducerTauEle,
+    name='H2TauTauSyncTreeProducerTauEle',
+    varStyle='sync',
+    skimFunction='event.isSignal'
+    )
+
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
-from CMGTools.H2TauTau.proto.samples.phys14.tauEle_Jan_Feb18 import MC_list, mc_dict
+# from CMGTools.H2TauTau.proto.samples.phys14.tauEle_Jan_Feb18 import MC_list, mc_dict
+from CMGTools.H2TauTau.proto.samples.phys14.tauEle_Ric_Jan27 import MC_list, mc_dict # RIC: sorry for flipping back and forth
 
 ###################################################
 ###     ASSIGN PU to MC    ###
@@ -131,9 +139,8 @@ sequence.append(tauWeighter)
 sequence.append(eleWeighter)
 sequence.insert(sequence.index(dyJetsFakeAna) + 1, dyLLReweighterTauEle)
 sequence.append(treeProducer)
-# RIC: off until fixed
-# if not syncntuple:
-#   sequence.remove( treeProducerXCheck )
+if syncntuple:
+    sequence.append(syncTreeProducer)
 
 ###################################################
 ###             CHERRY PICK EVENTS              ###
