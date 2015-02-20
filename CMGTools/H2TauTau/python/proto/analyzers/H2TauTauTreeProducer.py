@@ -216,10 +216,10 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.fill(tree, 'mtleg2'   , diLepton.mTLeg2()   ) # RIC: handy for tt, redundant but non destructive
         self.fill(tree, 'mtleg1'   , diLepton.mTLeg1()   )
         # RIC: can't find cov matrix... will look it up later
-        #self.fill(tree, 'metcov00', diLepton.metSig().significance()(0,0))
-        #self.fill(tree, 'metcov01', diLepton.metSig().significance()(0,1))
-        #self.fill(tree, 'metcov10', diLepton.metSig().significance()(1,0))
-        #self.fill(tree, 'metcov11', diLepton.metSig().significance()(1,1))
+        self.fill(tree, 'metcov00', diLepton.mvaMetSig(0,0))
+        self.fill(tree, 'metcov01', diLepton.mvaMetSig(0,1))
+        self.fill(tree, 'metcov10', diLepton.mvaMetSig(1,0))
+        self.fill(tree, 'metcov11', diLepton.mvaMetSig(1,1))
         self.fill(tree, 'metphi'  , diLepton.met().phi())
         self.fill(tree, 'mex'     , diLepton.met().px() )
         self.fill(tree, 'mey'     , diLepton.met().py() )
