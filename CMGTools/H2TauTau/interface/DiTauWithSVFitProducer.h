@@ -101,7 +101,7 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event& iEvent, const edm::EventS
   } else if (typeid(U) == typeid(pat::Muon)) {
       leg2type=svFitStandalone::kTauToMuDecay;
       leg2type2011=NSVfitStandalone2011::kLepDecay;
-      warningMessage += " - second leg is electron from tau";
+      warningMessage += " - second leg is muon from tau";
   }
 
   const unsigned maxWarnings = 5;
@@ -133,8 +133,8 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event& iEvent, const edm::EventS
     if(verbose_) {
       std::cout << "  ---------------- " << std::endl;
       std::cout << "\trec boson: " << diTau << std::endl;
-      std::cout << "\t\tleg1: " << diTau.daughter(0) << std::endl;
-      std::cout << "\t\tleg2: " << diTau.daughter(1) << std::endl;
+      std::cout << "\t\tleg1: " << *diTau.daughter(0) << std::endl;
+      std::cout << "\t\tleg2: " << *diTau.daughter(1) << std::endl;
       std::cout << "\t\tMET = " << met.et() << ", phi_MET = " << met.phi() << std::endl;      
     }
 
