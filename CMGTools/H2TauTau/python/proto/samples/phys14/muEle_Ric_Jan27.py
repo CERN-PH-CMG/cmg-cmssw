@@ -3,7 +3,7 @@ from CMGTools.RootTools.utils.connect import connect
 from CMGTools.RootTools.utils.splitFactor import splitFactor
 
 from CMGTools.H2TauTau.proto.samples.phys14.higgs import mc_higgs
-from CMGTools.H2TauTau.proto.samples.phys14.triggers_tauTau import mc_triggers
+from CMGTools.H2TauTau.proto.samples.phys14.triggers_muEle import mc_triggers
 
 aliases = {
     '/GluGluToHToTauTau.*Phys14DR.*' : 'HiggsGGH',
@@ -21,7 +21,7 @@ for sam in MC_list:
   sam.triggers = mc_triggers
 
 mc_dict['HiggsGGH125'].files = [
-  '/afs/cern.ch/work/m/manzoni/diTau2015/CMSSW_7_2_3/src/CMGTools/H2TauTau/prod/diTau_fullsel_tree_CMG.root'   , 
+  '/afs/cern.ch/work/m/manzoni/diTau2015/CMSSW_7_2_3/src/CMGTools/H2TauTau/prod/muEle_fullsel_tree_CMG.root'   , 
                     ]
 
 for sample in MC_list:

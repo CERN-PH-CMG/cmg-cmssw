@@ -9,14 +9,14 @@ from PhysicsTools.Heppy.physicsobjects.Electron         import Electron
 from CMGTools.H2TauTau.proto.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.H2TauTau.proto.physicsobjects.DiObject    import MuonElectron
 
-class EMuAnalyzer( DiLeptonAnalyzer ):
+class MuEleAnalyzer( DiLeptonAnalyzer ):
 
     DiObjectClass    = MuonElectron
     LeptonClass      = Muon
     OtherLeptonClass = Electron
 
     def declareHandles(self):
-        super(EMuAnalyzer, self).declareHandles()
+        super(MuEleAnalyzer, self).declareHandles()
         self.handles  ['diLeptons'   ] = AutoHandle('cmgMuEleCorSVFitFullSel', 'std::vector<pat::CompositeCandidate>')
         self.handles  ['otherLeptons'] = AutoHandle('slimmedElectrons'       , 'std::vector<pat::Electron>'          )
         self.handles  ['leptons'     ] = AutoHandle('slimmedMuons'           , 'std::vector<pat::Muon>'              )
@@ -67,7 +67,7 @@ class EMuAnalyzer( DiLeptonAnalyzer ):
 
     def process(self, event):
 
-        result = super(EMuAnalyzer, self).process(event)
+        result = super(MuEleAnalyzer, self).process(event)
                 
         if result is False:
             # trying to get a dilepton from the control region.
@@ -113,7 +113,7 @@ class EMuAnalyzer( DiLeptonAnalyzer ):
         # For now taken straight from mt channel
         if isocut is None:
             isocut = self.cfg_ana.iso1
-        return muon.relIsoAllChargedDB05()<isocut    
+        return muon.relIso(dBetaFactor=0.5, allCharged=0)<isocut    
 
     def testVertex(self, lepton):
         '''Tests vertex constraints, for mu and electron'''
@@ -132,13 +132,16 @@ class EMuAnalyzer( DiLeptonAnalyzer ):
         return True # RIC: 16/2/15 disabled until ele obj is fixed
                        
     def testLeg2Iso(self, electron, isocut):
-        '''Electron Isolation. To be implemented'''
+        '''Electron Isolation. Relative isolation
+           dB corrected factor 0.5
+           only charged hadrons
+        '''
         # RIC: this leg is the electron,
         # needs to be implemented here 
         # For now taken straight from et channel
         if isocut is None:
            isocut = self.cfg_ana.iso2
-        return electron.relIsoAllChargedDB05() < isocut
+        return electron.relIso(dBetaFactor=0.5, allCharged=0) < isocut
 
     def thirdLeptonVeto(self, leptons, otherLeptons, ptcut = 10, isocut = 0.3) :
         '''The tri-lepton veto. To be implemented'''

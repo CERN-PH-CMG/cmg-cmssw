@@ -37,9 +37,9 @@ class H2TauTauTreeProducerTauTau( H2TauTauTreeProducer ):
 
     # save the p4 of the visible tau products at the generator level
     # make sure that the reco tau matches with a gen tau that decays into hadrons
-    if hasattr(tau1po, 'genJet') and hasattr(tau1,'genl') and abs(tau1.genl.pdgId()) == 15 : 
+    if hasattr(tau1po, 'genJet') and hasattr(tau1,'genl') and abs(tau1.genl.pdgId()) == 15 and tau1.physObj.genJet() : 
         self.fillParticle(self.tree, 'l1_gen_vis', tau1.physObj.genJet() )
-    if hasattr(tau2po, 'genJet') and hasattr(tau2,'genl') and abs(tau2.genl.pdgId()) == 15 : 
+    if hasattr(tau2po, 'genJet') and hasattr(tau2,'genl') and abs(tau2.genl.pdgId()) == 15 and tau2.physObj.genJet() : 
         self.fillParticle(self.tree, 'l2_gen_vis', tau2.physObj.genJet() )
       
-    self.tree.tree.Fill()
+    self.fillTree(event)
