@@ -25,10 +25,11 @@ def main():
     pwd = os.environ['PWD']
 
     firstEvent = 1
+    firstLuminosityBlock = 1
     while (firstEvent < opt.eventsperfile or opt.eventsperfile == -1):
         lastEvent = firstEvent+opt.neventsjob
-        os.system("echo bsub -q 8nh "+pwd+"/lhe2gen2.sh --events "+str(firstEvent)+" "+str(lastEvent)+" gen_z1jet.py "+opt.eos+"/"+sample+"_"+str(ijob)+".root "+lhefile)
-        os.system("bsub -q 8nh "+pwd+"/lhe2gen2.sh --events "+str(firstEvent)+" "+str(lastEvent)+" gen_z1jet.py "+opt.eos+"/"+sample+"_"+str(ijob)+".root "+lhefile)
+        os.system("echo bsub -q 8nh "+pwd+"/lhe2gen2.sh --events "+str(firstEvent-1)+" "+str(+opt.neventsjob)+" --firstLuminosityBlock "+str(ijob+1)+" gen_z1jet.py "+opt.eos+"/"+sample+"_"+str(ijob)+".root "+lhefile)
+        os.system("bsub -q 8nh "+pwd+"/lhe2gen2.sh --events "+str(firstEvent-1)+" "+str(+opt.neventsjob)+" --firstLuminosityBlock "+str(ijob+1)+" gen_z1jet.py "+opt.eos+"/"+sample+"_"+str(ijob)+".root "+lhefile)
         ijob = ijob+1
         if (opt.eventsperfile == -1): break
         else: firstEvent = lastEvent

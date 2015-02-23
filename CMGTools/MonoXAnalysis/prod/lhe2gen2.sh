@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  usage:   lhe2gen2.sh [ --events <skipEvents> <maxEvents> ] /store/path/output_file.root inputfile.lhe[.gz] [ inputfile2.lhe[.gz] ... ]
+#  usage:   lhe2gen2.sh [ --events <skipEvents> <maxEvents> ] [ --firstLuminosityBlock <firstLumiBlock>] /store/path/output_file.root inputfile.lhe[.gz] [ inputfile2.lhe[.gz] ... ]
 #
 TMPDIR=$PWD
 #### ENV
@@ -21,6 +21,11 @@ if [[ "$1" == "--events" ]]; then
     EVENTS="process.source.skipEvents = cms.untracked.uint32($2); process.maxEvents.input = cms.untracked.int32($3);"
     echo "Will process $3 events skipping the first $2"
     shift; shift; shift;
+fi;
+if [[ "$1" == "--firstLuminosityBlock" ]]; then
+    LUMIS="process.source.firstLuminosityBlock = cms.untracked.uint32($2)"
+    echo "Will set firstLuminosityBlock to $2"
+    shift; shift;
 fi;
 CFGFILE=$1; shift;
 echo " $SRC/$CFGFILE "
@@ -88,6 +93,7 @@ echo "process.output.fileName = '$TMPDIR/$OUTBASE.root'"   >> $OUTBASE.cfg.py
 cat >> $OUTBASE.cfg.py <<_EOF_
 ## If needed, select events to process
 $EVENTS
+$LUMIS
 ## Scramble
 import random
 rnd = random.SystemRandom()
