@@ -240,10 +240,10 @@ class ttHCoreEventAnalyzer( Analyzer ):
         
         ##Variables related to IP
         #Of one lepton w.r.t. the PV of the event
-        event.absIP3DA = absIP3D(event.selectedLeptons[0],event.goodVertices[0]) if nlep > 0 else (-1,-1)  
-        event.absIP3DB = absIP3D(event.selectedLeptons[1],event.goodVertices[0]) if nlep > 1 else (-1,-1)    
-        event.absIP3DC = absIP3D(event.selectedLeptons[2],event.goodVertices[0]) if nlep > 2 else (-1,-1)
-        event.absIP3DD = absIP3D(event.selectedLeptons[3],event.goodVertices[0]) if nlep > 3 else (-1,-1)
+        event.absIP3DA = absIP3D(event.selectedLeptons[0],event.goodVertices[0] if len(event.goodVertices)>0 else event.vertices[0]) if nlep > 0 else (-1,-1)  
+        event.absIP3DB = absIP3D(event.selectedLeptons[1],event.goodVertices[0] if len(event.goodVertices)>0 else event.vertices[0]) if nlep > 1 else (-1,-1)    
+        event.absIP3DC = absIP3D(event.selectedLeptons[2],event.goodVertices[0] if len(event.goodVertices)>0 else event.vertices[0]) if nlep > 2 else (-1,-1)
+        event.absIP3DD = absIP3D(event.selectedLeptons[3],event.goodVertices[0] if len(event.goodVertices)>0 else event.vertices[0]) if nlep > 3 else (-1,-1)
 
         #Of one lepton w.r.t. the PV of the PV of the other leptons only
         event.absIP3DApvBC = absIP3Dtrkpvtrks(event.selectedLeptons[0],event.selectedLeptons[1],event.selectedLeptons[2],event.selectedLeptons[0],3,0) if nlep > 2 else (-1,-1)

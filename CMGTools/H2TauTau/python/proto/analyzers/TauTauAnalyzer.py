@@ -20,7 +20,6 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
     self.handles['otherLeptons' ] = AutoHandle( 'slimmedElectrons'       , 'std::vector<pat::Electron>'           )
     self.handles['leptons'      ] = AutoHandle( 'slimmedMuons'           , 'std::vector<pat::Muon>'               )
     self.handles['jets'         ] = AutoHandle( 'slimmedJets'            , 'std::vector<pat::Jet>'                )
-    self.handles['mvametsigs'   ] = AutoHandle( 'mvaMETTauTau'           , 'std::vector<cmg::METSignificance>'    )
   
   def process( self, event ):
 
@@ -87,10 +86,6 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
     otherLeptons = []
     for index, lep in enumerate(cmgOtherLeptons):
       pyl = Electron(lep)
-#       try :
-#         pyl = HTTElectron(lep)
-#       except :
-#         import pdb ; pdb.set_trace()
       pyl.associatedVertex = event.goodVertices[0]
       pyl.rho = event.rho
       otherLeptons.append( pyl )
@@ -98,7 +93,7 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
 
   def testLeg( self, leg, leg_pt, leg_eta, iso, isocut ) :      
     '''requires loose isolation, pt, eta and minimal tauID cuts'''
-    return ( self.testVertex(leg)                            and 
+    return ( self.testTauVertex(leg)                         and 
              leg.tauID(iso)                        < isocut  and 
              leg.pt()                              > leg_pt  and  
              abs(leg.eta())                        < leg_eta and 
@@ -124,41 +119,13 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
     isocut  = self.cfg_ana.iso2           
     return self.testLeg(leg, leg_pt, leg_eta, iso, isocut)    
 
-  def muonIso( self, muon ) :
-    '''dbeta corrected pf isolation with all charged particles instead of
-    charged hadrons'''
-    return muon.relIsoAllChargedDB05()
-
-  def testMuonID( self, muon ) :
-    '''Tight muon selection, no isolation requirement'''
-    return muon.tightId()
-             
-  def testMuonIso( self, muon, isocut ):
-    '''Tight muon selection, with isolation requirement'''
-    return self.muonIso(muon)<isocut
+  def testTauVertex(self, lepton):
+    '''Tests vertex constraints, for tau'''
+    isPV = lepton.vertex().z() == lepton.associatedVertex.z()
+    return isPV
 
   def testVertex( self, lepton, dxy = 0.045, dz = 0.2 ) :
     '''Tests vertex constraints, for mu, e and tau'''
     return abs(lepton.dxy()) < dxy and \
            abs(lepton.dz())  < dz 
-
-  def testMuonIDLoose( self, muon ):
-    '''Loose muon ID and kine, no isolation requirement, for lepton veto'''        
-    return muon.isGlobalMuon()                    and \
-           muon.isTrackerMuon()                   and \
-           muon.sourcePtr().userFloat('isPFMuon')
-        
-  def testJetID( self, jet ) :
-    #jet.puJetIdPassed = jet.puJetId()
-    jet.puJetIdPassed = jet.puJetId53X()
-    jet.pfJetIdPassed = jet.looseJetId()
-    #jet.pfJetIdPassed = jet.getSelection('cuts_looseJetId')
-    if self.cfg_ana.relaxJetId : return True
-    else                       : return jet.puJetIdPassed and jet.pfJetIdPassed
-           
-  def testJet( self, jet ) :
-    # 2 is loose pile-up jet id
-    return jet.pt()         > self.cfg_ana.jetPt  and \
-           abs( jet.eta() ) < self.cfg_ana.jetEta and \
-           self.testJetID(jet)
         

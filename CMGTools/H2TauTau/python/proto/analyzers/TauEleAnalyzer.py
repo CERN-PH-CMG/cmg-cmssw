@@ -144,6 +144,11 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
         '''Tests vertex constraints, for mu'''
         return abs(lepton.dxy()) < 0.045 and abs(lepton.dz()) < 0.2
 
+    def testTauVertex(self, lepton):
+        '''Tests vertex constraints, for tau'''
+        isPV = lepton.vertex().z() == lepton.associatedVertex.z()
+        return isPV
+
     def testLeg1Iso(self, tau, isocut):
         '''if isocut is None, returns true if three-hit iso MVA is passed.
         Otherwise, returns true if iso MVA > isocut.'''
@@ -173,11 +178,10 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
         if isocut is None:
             isocut = self.cfg_ana.iso2
 
-        return leg.relIso(0.5) < isocut
+        return leg.relIso(dBetaFactor=0.5, allCharged=0) < isocut
 
-    def testLooseLeg2(self, leg):
-        '''For additional electron veto'''
-        if leg.relIso(0.5) > 0.3:
+    def testLooseLeg2(self, leg):  # electrons
+        if leg.relIso(dBetaFactor=0.5, allCharged=0) > 0.3:
             return False
         if abs(leg.eta()) > 2.5:
             return False
@@ -193,7 +197,8 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
             self.testVertex(muon) and \
             abs(muon.eta()) < 2.4 and \
             muon.pt() > 10. and \
-            muon.relIso(0.5) < 0.3
+            muon.relIso(dBetaFactor=0.5, allCharged=0) < 0.3
+
 
     def thirdLeptonVeto(self, leptons, otherLeptons, isoCut=0.3):
         # count electrons (leg 2)

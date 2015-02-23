@@ -4,8 +4,6 @@ from PhysicsTools.HeppyCore.framework.config import printComps
 # Tau-tau analyzers
 from CMGTools.H2TauTau.proto.analyzers.TauMuAnalyzer import TauMuAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerTauMu import H2TauTauTreeProducerTauMu
-# RIC: off until fixed
-# from CMGTools.H2TauTau.proto.analyzers.H2TauTauSyncTree import H2TauTauSyncTree
 from CMGTools.H2TauTau.proto.analyzers.TauDecayModeWeighter import TauDecayModeWeighter
 from CMGTools.H2TauTau.proto.analyzers.TauFakeRateWeighter import TauFakeRateWeighter
 from CMGTools.H2TauTau.proto.analyzers.LeptonWeighter import LeptonWeighter
@@ -18,7 +16,8 @@ from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJets
 
 # 'Nom', 'Up', 'Down', or None
 shift = None
-syncntuple = False
+syncntuple = True
+
 
 # When ready, include weights from CMGTools.H2TauTau.proto.weights.weighttable
 
@@ -89,8 +88,12 @@ treeProducer = cfg.Analyzer(
     name='H2TauTauTreeProducerTauMu'
     )
 
-treeProducer.class_object = H2TauTauTreeProducerTauMu
-treeProducer.name = 'H2TauTauTreeProducerTauMu'
+syncTreeProducer = cfg.Analyzer(
+    H2TauTauTreeProducerTauMu,
+    name='H2TauTauSyncTreeProducerTauMu',
+    varStyle='sync',
+    skimFunction='event.isSignal'
+    )
 
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
@@ -98,7 +101,7 @@ treeProducer.name = 'H2TauTauTreeProducerTauMu'
 from CMGTools.H2TauTau.proto.samples.phys14.tauMu_Jan_Feb13 import MC_list, mc_dict
 
 ###################################################
-###     ASSIGN PU to MC    ###
+###              ASSIGN PU to MC                ###
 ###################################################
 for mc in MC_list:
     mc.puFileData = puFileData
@@ -120,9 +123,8 @@ sequence.append(tauFakeRateWeighter)
 sequence.append(tauWeighter)
 sequence.append(muonWeighter)
 sequence.append(treeProducer)
-# RIC: off until fixed
-# if not syncntuple:
-#   sequence.remove( treeProducerXCheck )
+if syncntuple:
+    sequence.append(syncTreeProducer)
 
 ###################################################
 ###             CHERRY PICK EVENTS              ###
@@ -133,7 +135,6 @@ sequence.append(treeProducer)
 ###################################################
 ###            SET BATCH OR LOCAL               ###
 ###################################################
-
 # JAN - can we finally get this via command line options?
 test = 1  # test = 0 run on batch, test = 1 run locally
 if test == 1:

@@ -140,6 +140,7 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
         '''Tight muon selection, with isolation requirement'''
         if isocut is None:
             isocut = self.cfg_ana.iso2
+
         return muon.relIso(dBetaFactor=0.5, allCharged=1) < isocut    
 
 
@@ -156,7 +157,7 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
                          # Take loose MVA ID for now
                          olep.mvaIDLoose() and
                          self.testVertex(olep) and
-                         olep.relIso(0.5) < isocut
+                         olep.relIso(dBetaFactor=0.5, allCharged=0) < isocut
                         ]
         if len(vleptons) + len(votherLeptons) > 1:
             return False

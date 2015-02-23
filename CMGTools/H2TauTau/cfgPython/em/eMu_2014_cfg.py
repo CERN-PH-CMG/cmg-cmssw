@@ -2,45 +2,81 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 from PhysicsTools.HeppyCore.framework.config import printComps
 
 # Tau-tau analyzers
-from CMGTools.H2TauTau.proto.analyzers.EMuAnalyzer                import EMuAnalyzer
-from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerEMu    import H2TauTauTreeProducerEMu
+from CMGTools.H2TauTau.proto.analyzers.MuEleAnalyzer             import MuEleAnalyzer
+from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerMuEle import H2TauTauTreeProducerMuEle
+from CMGTools.H2TauTau.proto.analyzers.LeptonWeighter            import LeptonWeighter
 
 # common configuration and sequence
-from CMGTools.H2TauTau.htt_ntuple_base_cff import *
+from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC
 
 # local switches
-syncntuple = False
-
-eventSelector.toSelect = []
-
-diLeptonAna.class_object = MuEleAnalyzer               
-diLeptonAna.name         = 'MuEleAnalyzer'             
-diLeptonAna.pt1          = 10.            
-diLeptonAna.eta1         = 2.5            
-diLeptonAna.iso1         = 10.            
-diLeptonAna.looseiso1    = 10.            
-diLeptonAna.pt2          = 10.            
-diLeptonAna.eta2         = 2.5            
-diLeptonAna.iso2         = 10.            
-diLeptonAna.looseiso2    = 10.            
-diLeptonAna.m_min        = 10             
-diLeptonAna.m_max        = 99999          
-diLeptonAna.dR_min       = 0.5            
-diLeptonAna.triggerMap   = pathsAndFilters
-diLeptonAna.jetPt        = 30.            
-diLeptonAna.jetEta       = 4.7            
-diLeptonAna.relaxJetId   = False          
-diLeptonAna.verbose      = False           
+syncntuple = True
 
 dyJetsFakeAna.channel = 'em'
 
-treeProducer.class_object = H2TauTauTreeProducerMuEle
-treeProducer.name         = 'H2TauTauTreeProducerMuEle'
+### Define mu-ele specific modules
+
+muEleAna = cfg.Analyzer(
+  MuEleAnalyzer                 ,     
+  'MuEleAnalyzer'               ,     
+  pt1          = 10.            ,
+  eta1         = 2.5            ,
+  iso1         = 10.            ,
+  looseiso1    = 10.            ,
+  pt2          = 10.            ,
+  eta2         = 2.5            ,
+  iso2         = 10.            ,
+  looseiso2    = 10.            ,
+  m_min        = 10             ,
+  m_max        = 99999          ,
+  dR_min       = 0.5            ,
+#   triggerMap   = pathsAndFilters,
+  jetPt        = 30.            ,
+  jetEta       = 4.7            ,
+  relaxJetId   = False          ,
+  verbose      = False          ,
+  )
+
+muonWeighter = cfg.Analyzer(
+  LeptonWeighter                  ,
+  name        ='LeptonWeighter_mu',
+  effWeight   = None              ,
+  effWeightMC = None              ,
+  lepton      = 'leg1'            ,
+  verbose     = False             ,
+  disable     = True              ,
+  idWeight    = None              ,
+  isoWeight   = None     
+  )
+
+eleWeighter = cfg.Analyzer(
+  LeptonWeighter                   ,
+  name        ='LeptonWeighter_ele',
+  effWeight   = None               ,
+  effWeightMC = None               ,
+  lepton      = 'leg2'             ,
+  verbose     = False              ,
+  disable     = True               ,
+  idWeight    = None               ,
+  isoWeight   = None     
+  )
+
+treeProducer = cfg.Analyzer(
+  H2TauTauTreeProducerMuEle         ,
+  name = 'H2TauTauTreeProducerMuEle'
+  )
+
+syncTreeProducer = cfg.Analyzer(
+  H2TauTauTreeProducerMuEle                     ,
+  name         = 'H2TauTauSyncTreeProducerMuEle',
+  varStyle     = 'sync'                         ,
+  skimFunction = 'event.isSignal'
+  )
 
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
-from CMGTools.H2TauTau.proto.samples.phys14.diTau_Ric_Jan27 import *
+from CMGTools.H2TauTau.proto.samples.phys14.muEle_Ric_Jan27 import *
 
 ###################################################
 ###     ASSIGN JET SMEAR, SCALE and PU to MC    ###
@@ -56,7 +92,7 @@ for mc in MC_list:
 ###################################################
 ###             SET COMPONENTS BY HAND          ###
 ###################################################
-selectedComponents = allsamples
+selectedComponents = mc_dict['HiggsGGH125']
 # selectedComponents  = [ ZZJetsTo4L ]
 # for c in selectedComponents : c.splitFactor *= 5
 
@@ -64,13 +100,17 @@ selectedComponents = allsamples
 ###                  SEQUENCE                   ###
 ###################################################
 sequence = commonSequence
-# RIC: off until fixed
-# if not syncntuple:
-#   sequence.remove( treeProducerXCheck )
+sequence.insert(sequence.index(genAna), muEleAna)
+sequence.append(muonWeighter)
+sequence.append(eleWeighter)
+sequence.append(treeProducer)
+if syncntuple:
+    sequence.append(syncTreeProducer)
 
 ###################################################
 ###             CHERRY PICK EVENTS              ###
 ###################################################
+# eventSelector.toSelect = []
 # sequence.insert(0, eventSelector)
 
 ###################################################
@@ -98,18 +138,11 @@ sequence = commonSequence
 test = 1 # test = 0 run on batch, test = 1 run locally
 if test == 1 :
   cache              = True
-  comp               = HiggsGGH125
-  comp.triggers      = [] # empty for now
+  comp               = mc_dict['HiggsGGH125']
+  #comp.triggers      = [] # empty for now
   selectedComponents = [comp]
   comp.splitFactor   = 1
   comp.files         = comp.files[:1]
-
-###################################################
-###                SOME PRINTOUT                ###
-###################################################
-print '_'*70
-print 'Processing...' 
-print [s.name for s in selectedComponents]
 
 # the following is declared in case this cfg is used in input to the heppy.py script
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
@@ -118,3 +151,8 @@ config = cfg.Config( components   = selectedComponents,
                      services     = []                ,  
                      events_class = Events
                      )
+
+printComps(config.components, True)
+
+def modCfgForPlot(config):
+    config.components = []

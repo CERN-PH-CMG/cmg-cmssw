@@ -1,7 +1,9 @@
 from PhysicsTools.Heppy.analyzers.core.TreeAnalyzerNumpy import TreeAnalyzerNumpy
-from CMGTools.H2TauTau.proto.analyzers.tauIDs            import tauIDs
 from PhysicsTools.HeppyCore.utils.deltar                 import deltaR, deltaPhi
 from PhysicsTools.Heppy.analyzers.core.AutoHandle        import AutoHandle
+
+from CMGTools.H2TauTau.proto.analyzers.tauIDs            import tauIDs
+from CMGTools.H2TauTau.proto.analyzers.varsDictionary    import vars
 
 
 class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
@@ -30,13 +32,27 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
        _ hard scattering quarks and gluons (up to 4, can be set by self.maxNGenJets)
        Signal lepton-specific variables need to be booked
        and filled in the channel-specific child producers.
+       
+       The branch names can be changed by means of a dictionary.
     '''
+    
+    def __init__( self, *args ) :
+        super(H2TauTauTreeProducer, self).__init__(*args)
+        self.varStyle     = 'std'
+        self.varDict      = vars
+        self.skimFunction = 'True'
+        if hasattr(self.cfg_ana, 'varStyle'):
+            self.varStyle = self.cfg_ana.varStyle
+        if hasattr(self.cfg_ana, 'varDict'):
+            self.varDict  = self.cfg_ana.varDict
+        if hasattr(self.cfg_ana, 'skimFunction'):
+            self.skimFunction = self.cfg_ana.skimFunction
 
     def var( self, tree, varName, type=float ):
-        tree.var(varName, type)
+        tree.var(self.varName(varName), type)
     
     def fill( self, tree, varName, value ):
-        tree.fill( varName, value )
+        tree.fill(self.varName(varName), value)
 
     def declareHandles(self):
         super(H2TauTauTreeProducer, self).declareHandles()
@@ -44,7 +60,20 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
                 'slimmedMETs',
                 'std::vector<pat::MET>' 
                 )
-    
+
+    def varName(self, name) :
+        try :
+            return self.varDict[name][self.varStyle]
+        except :
+            if self.verbose:
+                print 'WARNING: self.varDict[{NAME}][{VARSTYLE}] does not exist'.format(NAME=name, VARSTYLE=self.varStyle)
+                print '         using {NAME}'.format(NAME=name)
+            return name
+
+    def fillTree(self, event) :
+        if eval(self.skimFunction) :
+            self.tree.tree.Fill()
+
     def declareVariables( self, setup ):
         
         self.bookEvtID      (self.tree)
@@ -89,7 +118,10 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.readCollections( event.input ) 
 
         self.tree.reset()
-     
+
+        if not eval(self.skimFunction) :
+            return False
+                                 
         self.fillEvtID   (self.tree, event         )
         self.fillDiLepton(self.tree, event.diLepton)          
         self.fillGenInfo (self.tree, event         )
@@ -138,7 +170,7 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.fillParticle(self.tree, 'pfmet', pfmet)
         
         if type(self) is H2TauTauTreeProducer:
-            self.tree.tree.Fill()
+            self.fillTree(event)
 
 
     # event ID
@@ -183,28 +215,28 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
     
     # di-tau 
     def bookDiLepton( self, tree ):
-        self.var( tree, 'visMass'      )
-        self.var( tree, 'svfitMass'    )
-        self.var( tree, 'pZetaMET'     )
-        self.var( tree, 'pZetaVis'     )
-        self.var( tree, 'pZetaDisc'    )
-        self.var( tree, 'mtleg2'       )
-        self.var( tree, 'mtleg1'       )
-        self.var( tree, 'mt'           )
-        self.var( tree, 'pthiggs'      )
-        self.var( tree, 'deltaPhiL1L2' )
-        self.var( tree, 'deltaEtaL1L2' )
-        self.var( tree, 'deltaRL1L2'   )
-        self.var( tree, 'deltaPhiL1MET')
-        self.var( tree, 'deltaPhiL2MET')
-        self.var( tree, 'metcov00'     )
-        self.var( tree, 'metcov01'     )
-        self.var( tree, 'metcov10'     )
-        self.var( tree, 'metcov11'     )
-        self.var( tree, 'metphi'       )
-        self.var( tree, 'mex'          )
-        self.var( tree, 'mey'          )
-        self.var( tree, 'met'          )
+        self.var(tree, 'visMass'      )
+        self.var(tree, 'svfitMass'    )
+        self.var(tree, 'pZetaMET'     )
+        self.var(tree, 'pZetaVis'     )
+        self.var(tree, 'pZetaDisc'    )
+        self.var(tree, 'mtleg2'       )
+        self.var(tree, 'mtleg1'       )
+        self.var(tree, 'mt'           )
+        self.var(tree, 'pthiggs'      )
+        self.var(tree, 'deltaPhiL1L2' )
+        self.var(tree, 'deltaEtaL1L2' )
+        self.var(tree, 'deltaRL1L2'   )
+        self.var(tree, 'deltaPhiL1MET')
+        self.var(tree, 'deltaPhiL2MET')
+        self.var(tree, 'metcov00'     )
+        self.var(tree, 'metcov01'     )
+        self.var(tree, 'metcov10'     )
+        self.var(tree, 'metcov11'     )
+        self.var(tree, 'metphi'       )
+        self.var(tree, 'mex'          )
+        self.var(tree, 'mey'          )
+        self.var(tree, 'met'          )
     
     def fillDiLepton( self, tree, diLepton):
         self.fill(tree, 'visMass'  , diLepton.mass()     )
@@ -256,7 +288,7 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
     def fillLepton( self, tree, pName, lepton ):
         self.fillParticle(tree, pName       , lepton     )
         self.fillParticle(tree, pName+'_jet', lepton.jet )
-        self.fill(tree, '{pName}_relIso05'      .format(pName=pName), lepton.relIso(0.5) )
+        self.fill(tree, '{pName}_relIso05'      .format(pName=pName), lepton.relIso(dBetaFactor=0.5, allCharged=0)         )
         try:
             self.fill(tree, '{pName}_dxy'.format(pName=pName), lepton.dxy())
             self.fill(tree, '{pName}_dz'.format(pName=pName), lepton.dz())

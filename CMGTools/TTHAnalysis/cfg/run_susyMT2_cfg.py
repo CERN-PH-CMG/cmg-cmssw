@@ -8,6 +8,9 @@ from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
 ## Redefine what I need
 ##------------------------------------------
 
+#Vertex
+vertexAna.keepFailingEvents = True # keep events with no good vertices
+
 #Lepton
 lepAna.loose_muon_dxy = 0.5
 lepAna.loose_muon_dz  = 1.0
