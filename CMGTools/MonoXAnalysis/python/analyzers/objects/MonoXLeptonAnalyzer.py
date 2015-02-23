@@ -77,8 +77,8 @@ class MonoXLeptonAnalyzer( Analyzer ):
                  (abs(ele.dxy()) < (self.cfg_ana.veto_electron_dxy[0] if ele.isEB() else self.cfg_ana.veto_electron_dxy[1]) and 
                   abs(ele.dz()) < (self.cfg_ana.veto_electron_dz[0]  if ele.isEB() else self.cfg_ana.veto_electron_dxy[1])) and 
                  self.eleIsoCut(ele) and 
-                 ele.convVeto() and ele.lostInner() <= (self.cfg_ana.veto_electron_lostHits[0] if ele.isEB() else self.cfg_ana.veto_electron_lostHits[1]) and
-                 ( True if getattr(self.cfg_ana,'notCleaningElectrons',False) else (bestMatch(ele, looseMuons)[1] > (self.cfg_ana.min_dr_electron_muon**2)) )):
+                 ele.passConversionVeto() and ele.lostInner() <= (self.cfg_ana.veto_electron_lostHits[0] if ele.isEB() else self.cfg_ana.veto_electron_lostHits[1]) and
+                 ( True if getattr(self.cfg_ana,'notCleaningElectrons',False) else (bestMatch(ele, vetoMuons)[1] > (self.cfg_ana.min_dr_electron_muon**2)) )):
                     event.vetoLeptons.append(ele)
                     event.vetoElectrons.append(ele)
                     ele.vetoIdMonoX = True
@@ -120,5 +120,7 @@ setattr(MonoXLeptonAnalyzer,"defaultConfig",cfg.Analyzer(
     veto_electron_dz     = [0.5863, 0.9513],
     veto_electron_relIso = [0.3313, 0.3816],
     veto_electron_lostHits = [2.0, 3.0],
+    # minimum deltaR between a loose electron and a loose muon (on overlaps, discard the electron)
+    min_dr_electron_muon = 0.02,
     )
 )

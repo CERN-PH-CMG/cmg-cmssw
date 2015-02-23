@@ -191,6 +191,8 @@ monoXLepAna = cfg.Analyzer(
     veto_electron_dz     = [0.5863, 0.9513],
     veto_electron_relIso = [0.3313, 0.3816],
     veto_electron_lostHits = [2.0, 3.0],
+    # minimum deltaR between a loose electron and a loose muon (on overlaps, discard the electron)
+    min_dr_electron_muon = 0.02,
     )
 
 
