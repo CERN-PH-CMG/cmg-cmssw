@@ -23,7 +23,9 @@ common = [
     'keep patPackedGenParticles_packedGenParticles__PAT', # these are status 1
     'keep recoGsfElectronCores_*_*_*', # needed?
     'keep recoSuperClusters_*_*_*', # for electron MVA ID
-    'keep recoGenJets_slimmedGenJets_*_*' 
+    'keep recoGenJets_slimmedGenJets_*_*',
+    'keep *_slimmedSecondaryVertices_*_*',
+    'keep patPackedCandidates_packedPFCandidates__PAT'
     ]
 
 commonDebug = copy.deepcopy(common) 

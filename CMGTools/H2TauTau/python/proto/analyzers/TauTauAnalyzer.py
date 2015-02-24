@@ -69,6 +69,7 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
       pydil.leg1().associatedVertex = event.goodVertices[0]
       pydil.leg2().associatedVertex = event.goodVertices[0]
       diLeptons.append( pydil )
+      pydil.mvaMetSig = pydil.met().getSignificanceMatrix()
     return diLeptons
 
   def buildLeptons(self, cmgLeptons, event):

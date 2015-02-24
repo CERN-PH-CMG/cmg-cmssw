@@ -117,7 +117,6 @@ genErsatzAna = cfg.Analyzer(
 TauMuAna = cfg.Analyzer(
     TauMuAnalyzer,
     'TauMuAnalyzer',
-    scaleShift1 = tauScaleShift,
     pt1 = 20,
     eta1 = 2.3,
     iso1 = None,

@@ -1,4 +1,3 @@
-from PhysicsTools.HeppyCore.utils.deltar        import matchObjectCollection
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.HeppyCore.utils.deltar        import bestMatch
 

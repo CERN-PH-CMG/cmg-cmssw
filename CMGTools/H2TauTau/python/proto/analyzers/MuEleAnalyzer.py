@@ -39,6 +39,7 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
                 continue
             # pydil.mvaMetSig = pydil.met().getSignificanceMatrix()
             diLeptons.append( pydil )
+            pydil.mvaMetSig = pydil.met().getSignificanceMatrix()
         return diLeptons
 
     def buildLeptons(self, cmgLeptons, event):
