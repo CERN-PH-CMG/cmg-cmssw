@@ -18,7 +18,7 @@ from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJets
 # 'Nom', 'Up', 'Down', or None
 shift = None
 syncntuple = True
-computeSVfit = True
+computeSVfit = False
 
 # When ready, include weights from CMGTools.H2TauTau.proto.weights.weighttable
 
@@ -96,13 +96,12 @@ syncTreeProducer = cfg.Analyzer(
     skimFunction='event.isSignal'
     )
 
-
 svfitProducer = cfg.Analyzer(
     SVfitProducer,
     name='SVfitProducer',
     integration='VEGAS',
     #integration='MarkovChain',
-    debug=True,
+    #debug=True,
     l1type='tau',
     l2type='muon'
     )
