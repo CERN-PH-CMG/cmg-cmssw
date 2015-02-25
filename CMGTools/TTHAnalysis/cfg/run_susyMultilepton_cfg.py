@@ -96,6 +96,10 @@ TauAna = TauAnalyzer.defaultConfig
 #-------- SAMPLES AND TRIGGERS -----------
 
 #-------- SEQUENCE
+## histo counter
+susyCoreSequence.insert(susyCoreSequence.index(skimAnalyzer),
+                        susyCounter)
+
 from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
 from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14v2 import SingleMu
 
