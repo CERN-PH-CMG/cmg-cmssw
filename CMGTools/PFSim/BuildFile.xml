@@ -1,0 +1,8 @@
+<use   name="hepmc"/>
+<use   name="FWCore/ParameterSet"/>
+<use   name="SimGeneral/HepPDTRecord"/>
+<export>
+  <lib   name="1"/>
+</export>
+
+
