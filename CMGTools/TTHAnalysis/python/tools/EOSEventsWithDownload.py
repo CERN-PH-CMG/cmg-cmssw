@@ -44,7 +44,11 @@ class EOSEventsWithDownload(object):
             self.events = None # so it's closed
             if self._localCopy:
                 print "Removing local cache file %s" % self._localCopy
-                os.remove(self._localCopy)
+                try:
+                    os.remove(self._localCopy)
+                except:
+                    pass
+                self._localCopy = None
             for i,(fname,first,last) in enumerate(self._files):
                 if first <= iEv and iEv < last:
                     print "For event range [ %d, %d ) will use file %r " % (first,last,fname)
@@ -65,7 +69,7 @@ class EOSEventsWithDownload(object):
                     print "Will run from "+fname
                     self.events = FWLiteEvents([fname])
                     break
-        self.events.to(iEv)
+        self.events.to(iEv - self._files[self._fileindex][1])
         return self
     def __del__(self):
         todelete = getattr(self,'_localCopy',None)
