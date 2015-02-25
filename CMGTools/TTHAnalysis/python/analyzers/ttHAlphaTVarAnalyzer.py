@@ -1,6 +1,3 @@
-from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
-from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi
-
 import operator 
 import itertools
 import copy
