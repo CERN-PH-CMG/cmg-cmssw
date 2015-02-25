@@ -6,12 +6,14 @@ from CMGTools.H2TauTau.proto.analyzers.TauTauAnalyzer             import TauTauA
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerTauTau import H2TauTauTreeProducerTauTau
 from CMGTools.H2TauTau.proto.analyzers.TauDecayModeWeighter       import TauDecayModeWeighter
 from CMGTools.H2TauTau.proto.analyzers.LeptonWeighter             import LeptonWeighter
+from CMGTools.H2TauTau.proto.analyzers.SVfitProducer              import SVfitProducer
 
 # common configuration and sequence
 from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC
 
 # local switches
 syncntuple = True
+computeSVfit = False
 
 dyJetsFakeAna.channel = 'tt'
 
@@ -77,6 +79,16 @@ syncTreeProducer = cfg.Analyzer(
   skimFunction = 'event.isSignal'
   )
 
+svfitProducer = cfg.Analyzer(
+  SVfitProducer                ,
+  name        = 'SVfitProducer',
+  integration = 'VEGAS'        ,
+  #integration = 'MarkovChain'  ,
+  #debug       = True           ,
+  l1type      = 'tau'          ,
+  l2type      = 'tau'
+  )
+
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
@@ -108,6 +120,8 @@ sequence.insert(sequence.index(genAna), tauTauAna)
 sequence.append(tauDecayModeWeighter)
 sequence.append(tau1Weighter)
 sequence.append(tau2Weighter)
+if computeSVfit: 
+    sequence.append(svfitProducer)
 sequence.append(treeProducer)
 if syncntuple:
     sequence.append(syncTreeProducer)
