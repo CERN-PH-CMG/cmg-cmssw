@@ -116,7 +116,7 @@ susyMultilepton_collections.update({
             "selectedLeptons" : NTupleCollection("LepGood",  leptonTypeSusyExtra, 8, help="Leptons after the preselection"),
             "otherLeptons"    : NTupleCollection("LepOther", leptonTypeSusyExtra, 8, help="Leptons after the preselection"),
             ##------------------------------------------------
-            "cleanJets"       : NTupleCollection("Jet",     jetTypeSusy, 15, help="Cental jets after full selection and cleaning, sorted by pt"),
+            "cleanJets"       : NTupleCollection("Jet",     jetTypeSusyExtra, 15, help="Cental jets after full selection and cleaning, sorted by pt"),
             "cleanJetsFwd"    : NTupleCollection("JetFwd",  jetTypeSusy,  6, help="Forward jets after full selection and cleaning, sorted by pt"),            
             "fatJets"         : NTupleCollection("FatJet",  fatJetType,  15, help="AK8 jets, sorted by pt"),
             ##------------------------------------------------
