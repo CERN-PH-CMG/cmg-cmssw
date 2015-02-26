@@ -272,19 +272,24 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
   RooRealVar *v; 
   // cout << "RecoilCorrVarDiagoParN="<<RecoilCorrVarDiagoParN << Form(" eig_eig%d",RecoilCorrVarDiagoParN) << endl;
   for(int ipar=0; ipar<18; ipar++){
+    
     v = wU1[1][fJet]->var(Form("eig_eig%d",ipar));
     if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==1 && RecoilCorrVarDiagoParN==ipar){
       v->setVal(RecoilCorrVarDiagoParSigmas);
+      // cout << "wU1[1]["<<fJet<<"]->"<<Form("eig_eig%d",ipar)<<"->setVal("<<RecoilCorrVarDiagoParSigmas<<")"<<endl;
     }else{
       v->setVal(0);
+      // cout << "wU1[1]["<<fJet<<"]->"<<Form("eig_eig%d",ipar)<<"->setVal("<<0<<")"<<endl;
     }
     // cout << "wU1[1]["<<fJet<<"]" << endl; v->Print();
     
     v = wU1[2][fJet]->var(Form("eig_eig%d",ipar));
     if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==3 && RecoilCorrVarDiagoParN==ipar){
       v->setVal(RecoilCorrVarDiagoParSigmas);
+      // cout << "wU1[2]["<<fJet<<"]->"<<Form("eig_eig%d",ipar)<<"->setVal("<<RecoilCorrVarDiagoParSigmas<<")"<<endl;
     }else{
       v->setVal(0);
+      // cout << "wU1[2]["<<fJet<<"]->"<<Form("eig_eig%d",ipar)<<"->setVal("<<0<<")"<<endl;
     }
     // cout << "wU1[2]["<<fJet<<"]" << endl; v->Print();
     
@@ -292,18 +297,23 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
       v = wU2[1][fJet]->var(Form("eig_eig%d",ipar));
       if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==2 && RecoilCorrVarDiagoParN==ipar){
         v->setVal(RecoilCorrVarDiagoParSigmas);
+        // cout << "wU2[1]["<<fJet<<"]->"<<Form("eig_eig%d",ipar)<<"->setVal("<<RecoilCorrVarDiagoParSigmas<<")"<<endl;
       }else{
         v->setVal(0);
+        // cout << "wU2[1]["<<fJet<<"]->"<<Form("eig_eig%d",ipar)<<"->setVal("<<0<<")"<<endl;
       }
       // cout << "wU2[1]["<<fJet<<"]" << endl; v->Print();
       v = wU2[2][fJet]->var(Form("eig_eig%d",ipar));
       if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==4 && RecoilCorrVarDiagoParN==ipar){
         v->setVal(RecoilCorrVarDiagoParSigmas);
+        // cout << "wU2[2]["<<fJet<<"]->"<<Form("eig_eig%d",ipar)<<"->setVal("<<RecoilCorrVarDiagoParSigmas<<")"<<endl;
       }else{
         v->setVal(0);
+        // cout << "wU2[2]["<<fJet<<"]->"<<Form("eig_eig%d",ipar)<<"->setVal("<<0<<")"<<endl;
       }
       // cout << "wU2[2]["<<fJet<<"]" << endl; v->Print();
     }
+  
   }
   
   // pdfU1Cdf[2][fJet] = (RooAbsReal*)wU1[2][fJet]->function(Form("AddU1Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",fJet));
@@ -399,7 +409,7 @@ double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal 
   // << " pdfMCcdf->getVal()= " << pdfMCcdf->getVal()
   // << " pdfDATAcdf->getVal()= " << pdfDATAcdf->getVal()
   // << endl;
-  // pdfDATAcdf->getVal();
+  pdfDATAcdf->getVal();
   
   double pVal=pdfDATAcdf->findRoot(*myXd,myXd->getMin(),myXd->getMax(),pdfMCcdf->getVal());
 
@@ -446,7 +456,8 @@ void RecoilCorrector::runDiago(RooWorkspace *w, RooFitResult *result, TString fi
   w->import(*newpdf, RooFit::RecycleConflictNodes(),RooFit::Silence());
   
   RooRealVar* myX1=w->var("XVar");
-  /* RooAbsReal * */pdfUiCdf = newpdf->createCdf(*myX1);
+  // pdfUiCdf = newpdf->createCdf(*myX1,RooFit::ScanAllCdf());
+  pdfUiCdf = newpdf->createCdf(*myX1);
   w->import(*pdfUiCdf, RooFit::RecycleConflictNodes(),RooFit::Silence());
   // w->Print();
   
