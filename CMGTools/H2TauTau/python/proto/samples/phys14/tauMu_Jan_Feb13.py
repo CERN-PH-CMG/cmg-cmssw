@@ -1,10 +1,9 @@
-import copy
-
 # from CMGTools.Production.getFiles import getFiles
 from CMGTools.RootTools.utils.connect import connect
 from CMGTools.RootTools.utils.splitFactor import splitFactor
 
 from CMGTools.H2TauTau.proto.samples.phys14.higgs import mc_higgs
+from CMGTools.H2TauTau.proto.samples.phys14.triggers_tauMu import mc_triggers
 
 aliases = {
     '/GluGluToHToTauTau.*Phys14DR.*' : 'HiggsGGH',
@@ -18,11 +17,10 @@ for s in mc_higgs:
 
 MC_list = [v for k, v in mc_dict.items()]#[mc_dict['HiggsGGH125'], mc_dict['HiggsVBF125']]
 for sam in MC_list:
-    sam.triggers = None # No triggers yet
-    sam.triggers = [] # No triggers yet
-    
+    # Set MC triggers
+    sam.triggers = mc_triggers
 
-connect(MC_list, '%TAUMU_MINIAOD_SVFITv2_steggema', '.*root', aliases, cache=True, verbose=False)
+connect(MC_list, '%TAUMU_MINIAOD_SVFIT25ns_steggema', '.*root', aliases, cache=True, verbose=False)
 
 MC_list = [m for m in MC_list if m.files]
 
