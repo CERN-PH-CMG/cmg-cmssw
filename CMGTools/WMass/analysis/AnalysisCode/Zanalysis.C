@@ -39,7 +39,7 @@ double phi_CS = -1e10;
 double costh_CS_gen = -1e10;
 double phi_CS_gen = -1e10;
 
-void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, int buildTemplates, int useMomentumCorr, int varyGlobalSscaleMuonCorrNsigma, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int usePhiMETCorr, int useRecoilCorr, int RecoilCorrVarDiagoParN, int RecoilCorrVarDiagoParSigmas, int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights)
+void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, int buildTemplates, int useMomentumCorr, int varyGlobalScaleMuonCorrNsigma, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int usePhiMETCorr, int useRecoilCorr, int RecoilCorrVarDiagoParN, int RecoilCorrVarDiagoParSigmas, int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights)
 {
 
   if (fChain == 0) return;
@@ -57,8 +57,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   TRandom3 *r = new TRandom3(0);
 
   TString chunk_str = chunk>0? Form("_chunk%d",chunk) : "";
-  ofstream outTXTfile;
-  outTXTfile.open(Form("%s/Zanalysis_EVlog%s.log",outputdir.Data(),chunk_str.Data()));
+  // ofstream outTXTfile;
+  // outTXTfile.open(Form("%s/Zanalysis_EVlog%s.log",outputdir.Data(),chunk_str.Data()));
   if(!outputdir.Contains("../")) outputdir = "../"+outputdir;
   cout << "output filename= " << Form("%s/Zanalysis%s.root",outputdir.Data(),chunk_str.Data()) << endl;
   
@@ -309,6 +309,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   //------------------------------------------------------
   // start the event loop
   //------------------------------------------------------
+  // int cout_freq=1;
+  int cout_freq=TMath::Min(1+(nentries-first_entry)/10,(Long64_t) 25000);
+  cout << "couts every " << cout_freq << " events" << endl;
   Long64_t nbytes = 0, nb = 0;
   for(Long64_t jentry=first_entry; jentry<nentries;jentry++) {
     // for (Long64_t jentry=0; jentry<1e1;jentry++) { // TEMP !!!
@@ -317,12 +320,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     nb = fChain->GetEntry(jentry);   nbytes += nb;
     // if (Cut(ientry) < 0) continue;
     // if(jentry%250000==0) cout <<"Analyzed entry "<<jentry<<"/"<<nentries<<endl;
-    if(jentry%25000==0) 
-        cout <<"Analyzed entry "<<jentry<<"/"<<nentries<<endl;
-    if(jentry%50000==0){
+    // cout << endl;
+    if(jentry%cout_freq==0){
+      // cout <<"Analyzed entry "<<jentry<<"/"<<nentries<<endl;
+      // if(jentry%50000==0){
       time_t now = time(0);
       TString dt = ctime(&now); dt.ReplaceAll("\n"," ");
-      outTXTfile << dt << "\t - \t Analyzed entry "<<jentry<<"/"<<nentries<<endl;
+      // outTXTfile << dt << "\t - \t Analyzed entry "<<jentry<<"/"<<nentries<<endl;
+      cout << dt << "\t - \t Analyzed entry "<<jentry<<"/"<<nentries<<endl;
     }
     
     bool first_time_in_the_event = true;
@@ -524,7 +529,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             
             TString toys_str = "";
             if(WMass::NVarRecoilCorr>1) toys_str = Form("_RecoilCorrVar%d",m);
-            // cout << "toys_str " << toys_str << endl;
+            // cout << toys_str << endl;
             
             //------------------------------------------------------
             // start reco event selection
@@ -637,7 +642,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               //------------------------------------------------------
               // Apply met phi corrections
               //------------------------------------------------------
-              if(first_time_in_the_event && usePhiMETCorr==1){ // use MET Phi correction if required
+              if(first_time_in_the_event && usePhiMETCorr==1 && m==0){ // use MET Phi correction if required
                 pair<double, double> pfmet_phicorr = common_stuff::getPhiCorrMET( pfmet_bla, pfmetphi_bla, nvtx, !sampleName.Contains("DATA"));
                 pfmet_bla = pfmet_phicorr.first;
                 pfmetphi_bla = pfmet_phicorr.second;
@@ -646,17 +651,17 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               //------------------------------------------------------------------------------------------------
               // Apply muon corrections
               //------------------------------------------------------------------------------------------------
-              if(first_time_in_the_event){ // use rochester corrections if required
+              if(first_time_in_the_event && m==0){ // use rochester corrections if required
                 if(useMomentumCorr==1){ // use rochester corrections if required
                   if(IS_MC_CLOSURE_TEST || isMCorDATA==0){
-                    rmcor44X->momcor_mc(muPosCorr, MuPos_charge, varyGlobalSscaleMuonCorrNsigma/* , runopt */);
-                    rmcor44X->momcor_mc(muNegCorr, MuNeg_charge, varyGlobalSscaleMuonCorrNsigma/* , runopt */);
+                    rmcor44X->momcor_mc(muPosCorr, MuPos_charge, varyGlobalScaleMuonCorrNsigma/* , runopt */);
+                    rmcor44X->momcor_mc(muNegCorr, MuNeg_charge, varyGlobalScaleMuonCorrNsigma/* , runopt */);
                     rmcor44X->momcor_mc(muPosCorrCentral, MuPos_charge, 0/* , runopt */);
                     rmcor44X->momcor_mc(muNegCorrCentral, MuNeg_charge, 0/* , runopt */);
                   }
                   else{
-                    rmcor44X->momcor_data(muPosCorr, MuPos_charge, varyGlobalSscaleMuonCorrNsigma , run<175832 ? 0 : 1 );
-                    rmcor44X->momcor_data(muNegCorr, MuNeg_charge, varyGlobalSscaleMuonCorrNsigma , run<175832 ? 0 : 1 );
+                    rmcor44X->momcor_data(muPosCorr, MuPos_charge, varyGlobalScaleMuonCorrNsigma , run<175832 ? 0 : 1 );
+                    rmcor44X->momcor_data(muNegCorr, MuNeg_charge, varyGlobalScaleMuonCorrNsigma , run<175832 ? 0 : 1 );
                     rmcor44X->momcor_data(muPosCorrCentral, MuPos_charge, 0 , run<175832 ? 0 : 1 );
                     rmcor44X->momcor_data(muNegCorrCentral, MuNeg_charge, 0 , run<175832 ? 0 : 1 );
                   }
@@ -672,27 +677,34 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   
                   // if(TMath::Abs(muPosCorr.Eta())<0.9){
                   
-                    // cout << endl;
                     // cout << "muPosCorr before muon correction" << endl; 
                     // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
                     // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
 
                     corrector_Kalman->getCorrectedPt(muPosCorr,MuPos_charge); //returns the corrected pt 
                     corrector_Kalman->getCorrectedPt(muNegCorr,MuNeg_charge); //returns the corrected pt 
-                    corrector_Kalman->getCorrectedPt(muPosCorrCentral,MuPos_charge); //returns the corrected pt 
-                    corrector_Kalman->getCorrectedPt(muNegCorrCentral,MuNeg_charge); //returns the corrected pt 
+                    // corrector_Kalman->getCorrectedPt(muPosCorrCentral,MuPos_charge); //returns the corrected pt 
+                    // corrector_Kalman->getCorrectedPt(muNegCorrCentral,MuNeg_charge); //returns the corrected pt 
                     
-                    // cout << "muPosCorr after scale correction" << endl; muPosCorr.Print();
+                    // cout << "muPosCorr after scale correction, varyGlobalScaleMuonCorrNsigma=" << varyGlobalScaleMuonCorrNsigma << endl; 
+                    // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
+                    // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
+                    // muPosCorr.Print();
                     
                     if(isMCorDATA==0){ // Applies smearing to the MC to match the data-returns the smeared pt -> Only for MC .
                       corrector_Kalman->smear(muPosCorr);
                       corrector_Kalman->smear(muNegCorr);
-                      corrector_Kalman->smear(muPosCorrCentral);
-                      corrector_Kalman->smear(muNegCorrCentral);
+                      // corrector_Kalman->smear(muPosCorrCentral);
+                      // corrector_Kalman->smear(muNegCorrCentral);
                     }
-                    if(varyGlobalSscaleMuonCorrNsigma!=0){
-                      corrector_Kalman->applyPtBias(muPosCorr,1e-3*varyGlobalSscaleMuonCorrNsigma); //returns the corrected pt 
-                      // corrector_Kalman->applyPtBias(muNegCorr,1e-3*varyGlobalSscaleMuonCorrNsigma); //returns the corrected pt 
+                    muPosCorrCentral = muPosCorr;
+                    muNegCorrCentral = muNegCorr;
+                    // cout << "muPosCorr after smear correction, varyGlobalScaleMuonCorrNsigma=" << varyGlobalScaleMuonCorrNsigma << endl; 
+                    // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
+                    // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
+                    if(varyGlobalScaleMuonCorrNsigma!=0){
+                      corrector_Kalman->applyPtBias(muPosCorr,1e-3*varyGlobalScaleMuonCorrNsigma); //returns the corrected pt 
+                      // corrector_Kalman->applyPtBias(muNegCorr,1e-3*varyGlobalScaleMuonCorrNsigma); //returns the corrected pt 
                     }
                     // cout << "muPosCorr after muon correction" << endl; 
                     // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
@@ -700,26 +712,26 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   // }
                 }
               
-                //------------------------------------------------------
-                // Define mu+, mu-, Z
-                //------------------------------------------------------
-                Zcorr = muPosCorr + muNegCorr;
-                ZcorrCentral = muPosCorrCentral + muNegCorrCentral;
-                
-                Z_met.SetPtEtaPhiM(pfmet_bla,0,pfmetphi_bla,0);
-                Z_metCentral.SetPtEtaPhiM(pfmet_blaCentral,0,pfmetphi_blaCentral,0);
-                muneg_bla.SetPtEtaPhiM(muNegCorr.Pt(),0,muNegCorr.Phi(),0);
-                muneg_blaCentral.SetPtEtaPhiM(muNegCorrCentral.Pt(),0,muNegCorrCentral.Phi(),0);
-                mupos_bla.SetPtEtaPhiM(muPosCorr.Pt(),0,muPosCorr.Phi(),0);
-                mupos_blaCentral.SetPtEtaPhiM(muPosCorrCentral.Pt(),0,muPosCorrCentral.Phi(),0);
-                WlikePos_met = muneg_bla + Z_met;
-                WlikePos_metCentral = muneg_blaCentral + Z_metCentral;
-                WlikePos_met.SetPtEtaPhiM(WlikePos_met.Pt(),0,WlikePos_met.Phi(),0);
-                WlikePos_metCentral.SetPtEtaPhiM(WlikePos_metCentral.Pt(),0,WlikePos_metCentral.Phi(),0);
-                WlikePos = mupos_bla + WlikePos_met;
-                WlikePosCentral = mupos_blaCentral + WlikePos_metCentral;
               }
+              //------------------------------------------------------
+              // Define mu+, mu-, Z
+              //------------------------------------------------------
+              Zcorr = muPosCorr + muNegCorr;
+              ZcorrCentral = muPosCorrCentral + muNegCorrCentral;
               
+              Z_met.SetPtEtaPhiM(pfmet_bla,0,pfmetphi_bla,0);
+              Z_metCentral.SetPtEtaPhiM(pfmet_blaCentral,0,pfmetphi_blaCentral,0);
+              muneg_bla.SetPtEtaPhiM(muNegCorr.Pt(),0,muNegCorr.Phi(),0);
+              muneg_blaCentral.SetPtEtaPhiM(muNegCorrCentral.Pt(),0,muNegCorrCentral.Phi(),0);
+              mupos_bla.SetPtEtaPhiM(muPosCorr.Pt(),0,muPosCorr.Phi(),0);
+              mupos_blaCentral.SetPtEtaPhiM(muPosCorrCentral.Pt(),0,muPosCorrCentral.Phi(),0);
+              WlikePos_met = muneg_bla + Z_met;
+              WlikePos_metCentral = muneg_blaCentral + Z_metCentral;
+              WlikePos_met.SetPtEtaPhiM(WlikePos_met.Pt(),0,WlikePos_met.Phi(),0);
+              WlikePos_metCentral.SetPtEtaPhiM(WlikePos_metCentral.Pt(),0,WlikePos_metCentral.Phi(),0);
+              WlikePos = mupos_bla + WlikePos_met;
+              WlikePosCentral = mupos_blaCentral + WlikePos_metCentral;
+            
               //------------------------------------------------------
               // Variables to fill the histos (pT, mT, MET)
               //------------------------------------------------------
@@ -915,8 +927,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                           }
                           
                           if(
-                          controlplots && 
-                          m==0 && WMass::WMassNSteps==j){
+                            controlplots && 
+                            m==0 && WMass::WMassNSteps==j){
+                              
                             double fMet;fMet=pfmet_bla;
                             double fMPhi;fMPhi=pfmetphi_bla;
                             double fU1;
@@ -1288,7 +1301,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         
   } // end event loop
 
-  outTXTfile.close();
+  // outTXTfile.close();
   
   TFile*fout = new TFile(Form("%s/Zanalysis%s.root",outputdir.Data(),chunk_str.Data()),"RECREATE");
   fout->cd();
