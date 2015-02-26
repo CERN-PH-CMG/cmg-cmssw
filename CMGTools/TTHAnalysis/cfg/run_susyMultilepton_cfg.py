@@ -89,27 +89,25 @@ treeProducer = cfg.Analyzer(
      collections = susyMultilepton_collections,
 )
 
-## and the tau producer
-from PhysicsTools.Heppy.analyzers.objects.TauAnalyzer import TauAnalyzer
-TauAna = TauAnalyzer.defaultConfig
+## histo counter
+TFileServiceMode=False
+if TFileServiceMode:
+    susyCoreSequence.insert(susyCoreSequence.index(skimAnalyzer),
+                            susyCounter)
 
 #-------- SAMPLES AND TRIGGERS -----------
 
 #-------- SEQUENCE
-## histo counter
-susyCoreSequence.insert(susyCoreSequence.index(skimAnalyzer),
-                        susyCounter)
-
 from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
 from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14v2 import SingleMu
 
 selectedComponents = [
-   ] + WJetsToLNuHT + DYJetsM50HT + [DYJetsToLL_M50,
-    TTJets ]+ SingleTop +[
-    TTWJets,TTZJets, TTH,
-    WZJetsTo3LNu, ZZTo4L,
+#   ] + WJetsToLNuHT + DYJetsM50HT + [DYJetsToLL_M50,
+#    TTJets ]+ SingleTop +[
+#    TTWJets,TTZJets, TTH,
+#    WZJetsTo3LNu, ZZTo4L,
     GGHZZ4L,
-    SMS_T1tttt_2J_mGl1500_mLSP100, SMS_T1tttt_2J_mGl1200_mLSP800
+#    SMS_T1tttt_2J_mGl1500_mLSP100, SMS_T1tttt_2J_mGl1200_mLSP800
 ]
 
 sequence = cfg.Sequence(susyCoreSequence+[
@@ -174,15 +172,17 @@ elif test == '2lss-sync': # sync
     selectedComponents = [ comp ]
 
 ## output histogram
-from PhysicsTools.HeppyCore.framework.services.tfile import TFileService
-output_service = cfg.Service(
-    TFileService,
-    'outputfile',
-    name="outputfile",
-    fname='tree.root',
-    option='recreate'
-    )    
-
+outputService=[]
+if TFileServiceMode:
+    from PhysicsTools.HeppyCore.framework.services.tfile import TFileService
+    output_service = cfg.Service(
+        TFileService,
+        'outputfile',
+        name="outputfile",
+        fname='treeProducerSusyMultilepton/tree.root',
+        option='recreate'
+        )    
+    outputService.append(output_service)
 
 # the following is declared in case this cfg is used in input to the heppy.py script
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
@@ -192,5 +192,5 @@ if getHeppyOption("nofetch"):
     event_class = Events 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence,
-                     services = [output_service],  
+                     services = outputService,  
                      events_class = event_class)
