@@ -4,6 +4,10 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 #Load all analyzers
 from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
 
+#new stuff
+cfg.Analyzer.nosubdir = True 
+
+
 ##------------------------------------------
 ## Redefine what I need
 ##------------------------------------------
