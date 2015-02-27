@@ -162,7 +162,7 @@ sequence = cfg.Sequence(
 
 
 #-------- HOW TO RUN
-test = 1
+test = 0
 if test==0:
     # ------------------------------------------------------------------------------------------- #
     # --- all this lines taken from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 
