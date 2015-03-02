@@ -440,6 +440,7 @@ void Zanalysis::plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorent
   common_stuff::plot2D("u1_vs_u2_scale"+leptCharge+cut ,  u_perp, u_parall+u1_scale,   weight, h_2d, 100, -50., 50. , 100, -50., 50.);
   common_stuff::plot2D("u_vs_Angle"+leptCharge+cut ,  unorm, uPhi ,   weight, h_2d, 100, 0., 10. , 100, -TMath::Pi(), TMath::Pi());
 
+  common_stuff::plot1D("h_ptZ"+leptCharge+cut  , ptVis.Pt()   ,                      weight, h_1d, 100, 0., 50.);
 
   TString test = cut.c_str();
 
