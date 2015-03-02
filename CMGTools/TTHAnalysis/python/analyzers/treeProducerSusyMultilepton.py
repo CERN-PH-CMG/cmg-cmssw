@@ -14,6 +14,7 @@ susyMultilepton_globalVariables = susyCore_globalVariables + [
             NTupleVariable("nSoftBLoose25",  lambda ev: sum([(sv.mva>0.3 and (sv.jet == None or sv.jet.pt() < 25)) for sv in ev.ivf]), int, help="SV from ivf with loose sv mva not matched to a jet with pt > 25 GeV"),
             NTupleVariable("nSoftBMedium25", lambda ev: sum([(sv.mva>0.7 and (sv.jet == None or sv.jet.pt() < 25)) for sv in ev.ivf]), int, help="SV from ivf with medium sv mva not matched to a jet with pt > 25 GeV"),
             NTupleVariable("nSoftBTight25",  lambda ev: sum([(sv.mva>0.9 and (sv.jet == None or sv.jet.pt() < 25)) for sv in ev.ivf]), int, help="SV from ivf with tight sv mva not matched to a jet with pt > 25 GeV"),
+
             ##--------------------------------------------------            
             NTupleVariable("mZ1", lambda ev : ev.bestZ1[0], help="Best m(ll) SF/OS"),
             NTupleVariable("mZ1SFSS", lambda ev : ev.bestZ1sfss[0], help="Best m(ll) SF/SS"),
@@ -126,4 +127,9 @@ susyMultilepton_collections.update({
             "ivf"       : NTupleCollection("SV",     svType, 20, help="SVs from IVF"),
             "genBHadrons"  : NTupleCollection("GenBHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level B hadrons"),
             "genDHadrons"  : NTupleCollection("GenDHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level D hadrons"),
+            ##------------------------------------------------
+            "jetsNonTauIdx" : NTupleCollection("JetNoTauIdx",objectInt, 10, help="index of jets not associated to taus"),
+            "bjetsMNonTauIdx" : NTupleCollection("BJetMediumNoTauIdx",objectInt, 10, help="index of b-jets (CSV medium) not associated to taus"),
+
+
 })

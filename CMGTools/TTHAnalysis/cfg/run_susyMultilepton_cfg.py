@@ -32,6 +32,13 @@ ttHEventAna = cfg.Analyzer(
     minJets25 = 0,
     )
 
+##==== tau jet analyzer, to be called (for the moment) once bjetsMedium are produced
+from CMGTools.TTHAnalysis.analyzers.ttHJetTauAnalyzer import ttHJetTauAnalyzer
+ttHJetTauAna = cfg.Analyzer(
+    ttHJetTauAnalyzer, name="ttHJetTauAnalyzer",
+    )
+
+
 ## Insert the SV analyzer in the sequence
 susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
                         ttHFatJetAna)
@@ -111,8 +118,9 @@ selectedComponents = [
 ]
 
 sequence = cfg.Sequence(susyCoreSequence+[
-    ttHEventAna,
-    treeProducer,
+        ttHJetTauAna,
+        ttHEventAna,
+        treeProducer,
     ])
 
 # -- fine splitting, for some private MC samples with a single file
