@@ -12,10 +12,10 @@ class ttHCoreEventAnalyzer( Analyzer ):
         self.maxLeps = cfg_ana.maxLeps
         self.leptonMVAKindTTH = getattr(self.cfg_ana, "leptonMVAKindTTH", "Susy")
         self.leptonMVAKindSusy = getattr(self.cfg_ana, "leptonMVAKindSusy", "Susy")
-        self.leptonMVAPathTTH = getattr(self.cfg_ana, "leptonMVAPathTTH", "CMGTools/TTHAnalysis/data/leptonMVA/tth/%%s_BDTG.weights.xml")
+        self.leptonMVAPathTTH = getattr(self.cfg_ana, "leptonMVAPathTTH", "CMGTools/TTHAnalysis/data/leptonMVA/tth/%s_BDTG.weights.xml")
         if self.leptonMVAPathTTH[0] != "/": self.leptonMVAPathTTH = "%s/src/%s" % ( os.environ['CMSSW_BASE'], self.leptonMVAPathTTH)
         self.leptonMVATTH = LeptonMVA(self.leptonMVAKindTTH, self.leptonMVAPathTTH, self.cfg_comp.isMC)
-        self.leptonMVAPathSusy = getattr(self.cfg_ana, "leptonMVAPathSusy", "CMGTools/TTHAnalysis/data/leptonMVA/susy/%%s_BDTG.weights.xml")
+        self.leptonMVAPathSusy = getattr(self.cfg_ana, "leptonMVAPathSusy", "CMGTools/TTHAnalysis/data/leptonMVA/susy/%s_BDTG.weights.xml")
         if self.leptonMVAPathSusy[0] != "/": self.leptonMVAPathSusy = "%s/src/%s" % ( os.environ['CMSSW_BASE'], self.leptonMVAPathSusy)
         self.leptonMVASusy = LeptonMVA(self.leptonMVAKindSusy, self.leptonMVAPathSusy, self.cfg_comp.isMC)
 
