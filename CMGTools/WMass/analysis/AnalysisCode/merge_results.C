@@ -277,7 +277,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
               if(deltaM[i][m][h][k][c]<deltaMmin[i][k][c]) deltaMmin[i][k][c]=deltaM[i][m][h][k][c];
               if(deltaM[i][m][h][k][c]>deltaMmax[i][k][c]) deltaMmax[i][k][c]=deltaM[i][m][h][k][c];
 
-              if(h>0){
+              if(h>0 || m>0){
                 if(deltaM[i][m][h][k][c]<0) deltaMnegSummed[i][k][c] = TMath::Sqrt(deltaMnegSummed[i][k][c]*deltaMnegSummed[i][k][c] + deltaM[i][m][h][k][c]*deltaM[i][m][h][k][c]);
                 if(deltaM[i][m][h][k][c]>0) deltaMposSummed[i][k][c] = TMath::Sqrt(deltaMposSummed[i][k][c]*deltaMposSummed[i][k][c] + deltaM[i][m][h][k][c]*deltaM[i][m][h][k][c]);
                 deltaMSummed[i][k][c] = TMath::Sqrt(deltaMSummed[i][k][c]*deltaMSummed[i][k][c] + deltaM[i][m][h][k][c]*deltaM[i][m][h][k][c]);
@@ -369,7 +369,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
             
             // if(usedpdf==232000){ // NNPDF, see ref. http://arxiv.org/pdf/1301.6754v1.pdf formulae 2.23 and 2.25
               // cout << Form("PDF %d with %s: #DeltaM_{W} square summed = -%.0f MeV, #DeltaM_{W} square summed = %.0f MeV", WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets, WMass::FitVar_str[k].Data(), deltaMnegSummed[i][k]/denominator, deltaMposSummed[i][k]/denominator) << endl;
-              denominator = TMath::Sqrt(WMass::NVarRecoilCorr/2-1);
+              // denominator = TMath::Sqrt(WMass::NVarRecoilCorr/2-1);
               cout << Form("MomCorr toys with %s: #DeltaM_{W%s} square summed = %.0f MeV", WMass::FitVar_str[k].Data(), Wlike.Data(),deltaMSummed[i][k][c]/denominator) << endl;
               text = new TLatex(0.2,0.8,Form("MomCorr toys with %s: #DeltaM_{W%s} square summed = %.0f MeV", WMass::FitVar_str[k].Data(), Wlike.Data(),deltaMSummed[i][k][c]/denominator));
               text->SetTextSize(0.035);

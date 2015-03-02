@@ -9,6 +9,7 @@
 class KalmanCalibrator {
  public:
   KalmanCalibrator(bool isData = false);
+  void applyPtBias(TLorentzVector &muon, double relativeBias);
   // double getCorrectedPt(double,double,double,int);
   void getCorrectedPt(TLorentzVector &muon, int chrge);
   double smearGEN(double,double);

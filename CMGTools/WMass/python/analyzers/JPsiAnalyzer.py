@@ -445,7 +445,7 @@ class JPsiAnalyzer( Analyzer ):
         event.Zu2 = u2
         
         if fillCounter:
-          if event.Wpos4VfromZ.M() > 2.8 and event.Wpos4VfromZ.M() > 3.35: 
+          if event.Wpos4VfromZ.M() > 2.8 and event.Wpos4VfromZ.M() < 15.: 
             self.counters.counter('JPsiAna').inc('Z Inv Mass>50')
             if event.BestZPosMuonIsTight : 
               self.counters.counter('JPsiAna').inc('Z pos Mu is MuIsTightAndIso')
@@ -472,8 +472,9 @@ class JPsiAnalyzer( Analyzer ):
           if( \
             not event.passedVertexAnalyzer 
             # or not event.passedTriggerAnalyzer 
-            or not ((event.Z4V.M()>2.8 and event.Z4V.M()<3.35) 
+            # or not ((event.Z4V.M()>2.8 and event.Z4V.M()<3.35) 
             # or (event.Z4V.M()>8.5 and event.Z4V.M()<11.5)
+            or not ((event.Z4V.M()>2.8 and event.Z4V.M()<11.5) 
             ) \
             or not event.BestZPosMuon.charge() != event.BestZNegMuon.charge() \
             or not event.BestZPosMuonIsTight == 1 or not event.BestZNegMuonIsTight == 1 \
