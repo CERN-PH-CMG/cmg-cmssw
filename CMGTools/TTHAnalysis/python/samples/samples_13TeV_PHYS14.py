@@ -92,8 +92,32 @@ QCD_Pt2400to3200,
 QCD_Pt3200
 ]
 
-# Muon-enriched QCD (cross sectiona and filter efficiency from McM)
+# Muon-enriched QCD (cross sections and filter efficiency from McM)
 QCD_Mu15 = kreator.makeMCComponent("QCD_Mu15", "/QCD_Pt-20toInf_MuEnrichedPt15_PionKaonDecay_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v3/MINIAODSIM", "CMS", ".*root", 866.6e6*0.00044);
+
+# Electron-enriched QCD (cross sections and filter efficiency from McM)
+QCD_Pt10to20_EMEnriched = kreator.makeMCComponent("QCD_Pt10to20_EMEnriched", "/QCD_Pt-10to20_EMEnriched_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_castor_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 8838e6*0.143);
+QCD_Pt20to30_EMEnriched = kreator.makeMCComponent("QCD_Pt20to30_EMEnriched", "/QCD_Pt-20to30_EMEnriched_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_castor_PHYS14_25_V1-v2/MINIAODSIM", "CMS", ".*root", 6773e5*0.007);
+QCD_Pt30to80_EMEnriched = kreator.makeMCComponent("QCD_Pt30to80_EMEnriched", "/QCD_Pt-30to80_EMEnriched_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_castor_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 1859e5*0.056);
+QCD_Pt80to170_EMEnriched = kreator.makeMCComponent("QCD_Pt80to170_EMEnriched", "/QCD_Pt-80to170_EMEnriched_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_castor_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 3259e3*0.158);
+QCDPtEMEnriched = [
+QCD_Pt10to20_EMEnriched,
+QCD_Pt20to30_EMEnriched,
+QCD_Pt30to80_EMEnriched,
+QCD_Pt80to170_EMEnriched
+]
+
+QCD_Pt20to30_bcToE = kreator.makeMCComponent("QCD_Pt20to30_bcToE", "/QCD_Pt_20to30_bcToE_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v2/MINIAODSIM", "CMS", ".*root", 6759e5*0.00075);
+QCD_Pt30to80_bcToE = kreator.makeMCComponent("QCD_Pt30to80_bcToE", "/QCD_Pt_30to80_bcToE_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 1859e5*0.00272);
+QCD_Pt80to170_bcToE = kreator.makeMCComponent("QCD_Pt80to170_bcToE", "/QCD_Pt_80to170_bcToE_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v2/MINIAODSIM", "CMS", ".*root", 3495e3*0.01225);
+QCD_Pt170toInf_bcToE = kreator.makeMCComponent("QCD_Pt170toInf_bcToE", "/QCD_Pt_170toInf_bcToE_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 1285e2*0.0406);
+QCDPtbcToE = [
+QCD_Pt20to30_bcToE,
+QCD_Pt30to80_bcToE,
+QCD_Pt80to170_bcToE,
+QCD_Pt170toInf_bcToE
+]
+
 
 # W inclusive (cross section from FEWZ, StandardModelCrossSectionsat13TeV)
 WJetsToLNu = kreator.makeMCComponent("WJetsToLNu","/WJetsToLNu_13TeV-madgraph-pythia8-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 20508.9)
@@ -212,7 +236,7 @@ SMS_T1bbbb_2J_mGl1500_mLSP100,
 SMS_T1bbbb_2J_mGl1000_mLSP900,
 ]
 
-mcSamplesPHYS14_PU20bx25 = QCDHT + QCDPt + [QCD_Mu15] + [WJetsToLNu] + WJetsToLNuHT +  [DYJetsToLL_M50, DYJetsMuMuM50_PtZ180] + DYJetsM50HT + GJetsHT + ZJetsToNuNuHT + SingleTop + [ TTJets, TTWJets, TTZJets, TTH, WZJetsTo3LNu, ZZTo4L, GGHZZ4L] + SusySignalSamples
+mcSamplesPHYS14_PU20bx25 = QCDHT + QCDPt + [QCD_Mu15] + QCDPtEMEnriched + QCDPtbcToE + [WJetsToLNu] + WJetsToLNuHT +  [DYJetsToLL_M50, DYJetsMuMuM50_PtZ180] + DYJetsM50HT + GJetsHT + ZJetsToNuNuHT + SingleTop + [ TTJets, TTWJets, TTZJets, TTH, WZJetsTo3LNu, ZZTo4L, GGHZZ4L] + SusySignalSamples
 
 
 ## PRIVATE SAMPLES

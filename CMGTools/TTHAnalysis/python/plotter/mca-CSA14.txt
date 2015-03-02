@@ -14,7 +14,7 @@ TTZ : TTZJets_S14 : 0.8565 ; FillColor=ROOT.kSpring+2, Label="ttZ", NormSystemat
 #TTV : TTZJets_S14 : 0.8565 ; FillColor=ROOT.kSpring+2, Label="ttZ", NormSystematic=0.2
 
 # -- Backgrounds
-TT 	 : TTJets_MSDecaysCKM_central_PU_S14_POSTLS170 : 809.1 ; FillColor=ROOT.kGray+1, Label="tt", NormSystematic=0.5
+TT 	 : TTJets : 809.1 ; FillColor=ROOT.kGray+1, Label="tt", NormSystematic=0.5
 
 #TT_wHT 	 : TTJets_MSDecaysCKM_central_PU_S14_POSTLS170 : 809.1 * pow(min(htJet40j/1000,1.0), 2.6) ; FillColor=ROOT.kBlack, Label="TT w(H_{T})"
 
@@ -36,8 +36,8 @@ WJets    : WJetsToLNu_HT400to600_PU_S14_POSTLS170 :    55.61 * 1.23; Label="W+je
 WJets    : WJetsToLNu_HT600toInf_PU_S14_POSTLS170 :    18.81 * 1.23; Label="W+jets", FillColor=ROOT.kCyan+2, NormSystematic=0.5
 
 # -- SUSY
-T1tttt_HL+: SMS_T1tttt_2J_mGl1500_mLSP100_PU_S14_POSTLS170 : 0.0141903 ; FillColor=ROOT.kAzure+8,   Label="T1t^{4} 1.5/0.1" 
-T1tttt_HM+: SMS_T1tttt_2J_mGl1200_mLSP800_PU_S14_POSTLS170 : 0.0856418 ; FillColor=ROOT.kAzure+0,   Label="T1t^{4} 1.2/0.8" 
+T1tttt_HL+: SMS_T1tttt_2J_mGl1500_mLSP100 : 0.0141903 ; FillColor=ROOT.kAzure+8,   Label="T1t^{4} 1.5/0.1" 
+T1tttt_HM+: SMS_T1tttt_2J_mGl1200_mLSP800 : 0.0856418 ; FillColor=ROOT.kAzure+0,   Label="T1t^{4} 1.2/0.8" 
 T5Full_HM+: T5Full_1200_1000_800        : 0.0856418 ; FillColor=ROOT.kViolet+6,  Label="T5W^{2} 1.2/0.8"
 T5Full_HL+: T5Full_1500_800_100         : 0.0141903 ; FillColor=ROOT.kViolet+0,  Label="T5W^{2} 1.5/1.1"
 
