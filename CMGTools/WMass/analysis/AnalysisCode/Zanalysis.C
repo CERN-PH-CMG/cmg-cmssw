@@ -266,21 +266,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
   TString metSuffix=use_PForNoPUorTKmet==1?"_pfnoPU":"";
   if(use_PForNoPUorTKmet==2) metSuffix="_tkmet";
-  if(use_PForNoPUorTKmet==0) metSuffix="_tkmet";
-  //  if(use_PForNoPUorTKmet==0) metSuffix="_pfmet"; // since we do no have the pfmet as of JAN25
+  //  if(use_PForNoPUorTKmet==0) metSuffix="_tkmet";
+  if(use_PForNoPUorTKmet==0) metSuffix="_pfmet"; // this doesn't work since we do no have the pfmet as of JAN25
   
   TString generatorSuffix="_powheg";
   if (sampleName.Contains("DYJetsMadSig"))
     generatorSuffix="_madgraph";
 
   /// TKMET type2
-  // std::string fileCorrectTo = Form("../RecoilCode/recoilfit_OCT6_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
-  // std::string fileZmmMC = Form("../RecoilCode/recoilfit_OCT6_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
-  // std::string fileZmmData = Form("../RecoilCode/recoilfit_OCT6_DATA%s_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_53X.root",metSuffix.Data());
-  
-  // std::string fileCorrectTo = Form("../RecoilCode/recoilfit_JAN22_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
-  // std::string fileZmmMC = Form("../RecoilCode/recoilfit_JAN22_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
-  // std::string fileZmmData = Form("../RecoilCode/recoilfit_JAN22_DATA%s_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root",metSuffix.Data());
   std::string fileCorrectTo = Form("../RecoilCode/recoilfit_JAN25_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
   std::string fileZmmMC = Form("../RecoilCode/recoilfit_JAN25_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
   std::string fileZmmData = Form("../RecoilCode/recoilfit_JAN25_DATA%s_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root",metSuffix.Data());
@@ -1409,3 +1402,28 @@ void Zanalysis::ComputeHXVarAndPhiStarEta(TLorentzVector muPos,TLorentzVector mu
 
 }
 
+float Zanalysis::deltaPhi( float phi1 , float phi2 ) {
+  float dphi = fabs( phi1 - phi2 );
+  if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
+  return dphi;
+}
+
+
+double Zanalysis::getMTFirstOrder(double Mu_pt, double Mu_phi, double tkmet,double tkmet_phi, double coeff) {
+
+  TLorentzVector softStuff,met,mu;
+  TLorentzVector newSoftStuff,newMET;
+  met.SetPtEtaPhiM(tkmet,0,tkmet_phi,0);
+  mu.SetPtEtaPhiM(Mu_pt,0,Mu_phi,0); // mu projected on transverse plane
+  softStuff = -met-mu; // this is -ptW
+  newSoftStuff = coeff*softStuff;
+  newMET = -newSoftStuff -mu;
+
+  float dphi = deltaPhi(newSoftStuff.Phi(), mu.Phi());
+  double MT= 2*mu.Pt() + newSoftStuff.Pt() * cos(dphi);
+
+  return MT;
+
+  //MT=2*pt_mu(modulo) +h(vettore)*pt_mu(vettore)/pt_mu(modulo)
+
+}
