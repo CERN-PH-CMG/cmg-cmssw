@@ -24,7 +24,6 @@ lepAna.packedCandidates = 'packedPFCandidates'
 lepAna.miniIsolationPUCorr = 'rhoArea'
 lepAna.miniIsolationVetoLeptons = None # use 'inclusive' to veto inclusive leptons and their footprint in all isolation cones
     
-
 # switch off slow photon MC matching
 photonAna.do_mc_match = False
 
@@ -45,6 +44,7 @@ susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna),
 
 ## Lepton preselection to use
 isolation = "relIso03"
+#isolation = "ptRel"
 if isolation == "ptRel": 
     # delay isolation cut for leptons of pt > 10, for which we do pTrel recovery
     lepAna.loose_muon_isoCut     = lambda muon : muon.relIso03 < 0.5 or muon.pt() > 10
@@ -53,6 +53,10 @@ if isolation == "ptRel":
     jetAna.jetLepArbitration = lambda jet,lepton : (
         lepton if (lepton.relIso03 < 0.4 or ptRelv1(lepton.p4(),jet.p4()) > 5) else jet
     )
+    ttHCoreEventAna.leptonMVAKindTTH = "SusyWithBoost"
+    ttHCoreEventAna.leptonMVAKindSusy = "SusyWithBoost" 
+    ttHCoreEventAna.leptonMVAPathTTH = "CMGTools/TTHAnalysis/macros/leptons/trainingPHYS14leptonMVA_PHYS14eleMVA_MiniIso_ttH/weights/%s_BDTG.weights.xml"
+    ttHCoreEventAna.leptonMVAPathSusy = "CMGTools/TTHAnalysis/macros/leptons/trainingPHYS14leptonMVA_PHYS14eleMVA_MiniIso_SusyT1/weights/%s_BDTG.weights.xml"
     # insert a second skimmer after the jet cleaning 
     ttHLepSkim2 = cfg.Analyzer(
         ttHLepSkimmer, name='ttHLepSkimmer2',
@@ -106,6 +110,11 @@ selectedComponents = [
    GGHZZ4L,
    SMS_T1tttt_2J_mGl1500_mLSP100, SMS_T1tttt_2J_mGl1200_mLSP800
 ]
+
+#selectedComponents = [
+#  ] + WJetsToLNuHT + [TTJets, TTH, SMS_T1tttt_2J_mGl1500_mLSP100, SMS_T1tttt_2J_mGl1200_mLSP800]
+
+#selectedComponents = [T5ttttDeg_mGo1000_mStop300_mCh285_mChi280, T5ttttDeg_mGo1000_mStop300_mCh285_mChi280_dil, TTWJets, TTZJets, WZJetsTo3LNu]
 
 sequence = cfg.Sequence(susyCoreSequence+[
     ttHEventAna,
