@@ -23,9 +23,6 @@ class ttHJetTauAnalyzer( Analyzer ):
     def process(self, event):
         self.readCollections(event.input)
         
-        for j in event.cleanjets
-
         event.jetsNonTauIdx = self.findNonTauJets(event.cleanJets)
-        event.bjetsMNonTauIdx = self.findNonTauJets(event.bjetsMedium)
 
         return True
