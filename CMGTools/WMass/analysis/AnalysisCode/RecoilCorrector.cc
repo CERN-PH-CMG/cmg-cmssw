@@ -404,13 +404,7 @@ double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal 
   myptm->setVal(Zpt);
   myptd->setVal(Zpt);
 
-  // cout << "after myptd"
-  // << " pdfMCcdf->getVal()= " << pdfMCcdf->getVal()
-  // << " pdfDATAcdf->getVal()= " << pdfDATAcdf->getVal()
-  // << endl;
-
   RooRealVar* myXm = wMC->var("XVar");
-  // cout << " myXm->getVal()= " << myXm->getVal()<< endl;
   RooRealVar* myXd = wDATA->var("XVar");
   
   myXm->setVal(iPVal);
