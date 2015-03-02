@@ -274,7 +274,10 @@ void readRecoil(RooAbsReal * & iPdfU1, RooWorkspace * & iwU1,RooAbsReal * & iPdf
   //  if(!isData) iPdfU2 = pdfU2->createCdf(*myX2,ScanNoCdf());
   //  if(isData) iPdfU2 = pdfU2->createCdf(*myX2,ScanAllCdf());
 
-  iPdfU2 = diagPdfU2->createCdf(*myX2);
+  if(isData) iPdfU2 = pdfU2->createCdf(*myX2,ScanNoCdf());
+  if(!isData) iPdfU2 = pdfU2->createCdf(*myX2);
+
+  //  iPdfU2 = diagPdfU2->createCdf(*myX2);
   //  delete pdfU2;
   delete frU2;
   //  delete diagPdfU2;
@@ -348,7 +351,7 @@ void makeToys() {
 
   readRecoil(lpdfMCU1, lwMCU1, lpdfMCU2, lwMCU2, fpow_scale.GetName(),true);
   //readRecoil(lpdfDATAU1, lwDATAU1, lpdfDATAU2, lwDATAU2, fpow_scale.GetName(),true);
-  readRecoil(lpdfDATAU1, lwDATAU1, lpdfDATAU2, lwDATAU2, fmad_scale.GetName(),true);
+  readRecoil(lpdfDATAU1, lwDATAU1, lpdfDATAU2, lwDATAU2, fmad_scale.GetName(),false);
 
   ////
 
@@ -373,6 +376,7 @@ void makeToys() {
 
   TH1F *hPrime = new TH1F("u2prime","u2prime", 200,-5.,5.);
   TH1F *hOri = new TH1F("u2ori","u2ori", 200,-5.,5.);
+  TH1F *hDelta = new TH1F("u2delta","u2delta", 200,-10.,10.);
 
   for (int i=0; i<toyMC->numEntries(); i++ ) {
 
@@ -412,6 +416,7 @@ void makeToys() {
   hPrime->GetYaxis()->SetTitle("Corrected / Original");
   hPrime->SetTitle("Corrected (powheg * (P->P)) / Original (powheg)");
   //  hPrime->Draw("hist"); 
+
 
 
 }
@@ -507,8 +512,8 @@ void closurePlot(bool doOriginal, bool doMad) {
   trktree->SetBranchAddress("MuNeg_phi", &MuNeg_phi);
   trktree->SetBranchAddress("MuNeg_mass", &MuNeg_mass);
 
-  //  Int_t nrow = trktree->GetEntries();
-  Int_t nrow = 250000;
+  Int_t nrow = trktree->GetEntries();
+  //  Int_t nrow = 1000000;
   for (Int_t i =0; i < nrow; i++) {
     trktree->GetEntry(i);
     //    cout << "i=" << i << " tkmet=" << tkmet << endl;
@@ -664,19 +669,39 @@ double getNewMT(double Mu_pt, double Mu_phi, double tkmet,double tkmet_phi, doub
   TLorentzVector newSoftStuff,newMET;
   met.SetPtEtaPhiM(tkmet,0,tkmet_phi,0);
   mu.SetPtEtaPhiM(Mu_pt,0,Mu_phi,0); // mu projected on transverse plane
-  softStuff = -met-mu;
+  softStuff = -met-mu; // this is -ptW
   newSoftStuff = coeff*softStuff;
   newMET = -newSoftStuff -mu;
   
   //  float mt_new =  getMT(Mu_pt, Mu_phi, newMET.Pt(), newMET.Phi());
   float mt_new =  getMT(Mu_pt, Mu_phi, newMET.Pt(), tkmet_phi); // change only the pt
 
-  if(newMET.Pt()<25) mt_new=-1.;
+  //  if(newMET.Pt()<25) mt_new=-1.;
     
   return mt_new;
 
 }
 
+double getMTFirstOrder(double Mu_pt, double Mu_phi, double tkmet,double tkmet_phi, double coeff) {
+
+  TLorentzVector softStuff,met,mu;
+  TLorentzVector newSoftStuff,newMET;
+  met.SetPtEtaPhiM(tkmet,0,tkmet_phi,0);
+  mu.SetPtEtaPhiM(Mu_pt,0,Mu_phi,0); // mu projected on transverse plane
+  softStuff = -met-mu; // this is -ptW
+  newSoftStuff = coeff*softStuff;
+  newMET = -newSoftStuff -mu;
+
+  //  double MT= 2*mu.Pt() + (( newSoftStuff * mu ) / mu.Pt()); // doesn't wort for TLorentzVector
+
+  float dphi = deltaPhi(newSoftStuff.Phi(), mu.Phi());
+  double MT= 2*mu.Pt() + newSoftStuff.Pt() * cos(dphi);
+
+  return MT;
+
+  //MT=2*pt_mu(modulo) +h(vettore)*pt_mu(vettore)/pt_mu(modulo)
+
+}
 
 //TFile fpow_plus("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/WPlusPOWHEG/WTreeProducer_tree.root");
 //lxplus0190
@@ -687,6 +712,7 @@ void makeWmtplot() {
   static Double_t tkmet,tkmet_phi,evt;
   static Double_t pfmet,pfmet_phi;
   static Double_t pfGenMet,pfGenMet_phi;
+  static Double_t MuGen_pt,MuGen_phi;
   static Double_t WGen_pt,WGen_phi,WGen_mass;
   static Double_t Mu_pt,Mu_eta,Mu_phi,Mu_mass;
 
@@ -699,8 +725,8 @@ void makeWmtplot() {
   trktree->SetBranchAddress("pfmet", &pfmet);
   trktree->SetBranchAddress("pfmet_phi", &pfmet_phi);
 
-  trktree->SetBranchAddress("NuGen_pt",&pfGenMet);
-  trktree->SetBranchAddress("NuGen_phi",&pfGenMet_phi);
+  trktree->SetBranchAddress("MuGen_pt",&MuGen_pt);
+  trktree->SetBranchAddress("MuGen_phi",&MuGen_phi);
 
   trktree->SetBranchAddress("WGen_pt", &WGen_pt);
   trktree->SetBranchAddress("WGen_phi", &WGen_phi);
@@ -721,6 +747,8 @@ void makeWmtplot() {
   for (Int_t i =0; i < nrow; i++) {
     trktree->GetEntry(i);
 
+    if(i%100000==0) cout <<"Analyzed entry "<< i <<"/"<< nrow << endl;
+
     if(Mu_pt<30) continue;
 
     //    if(tkmet<25) continue;
@@ -735,10 +763,14 @@ void makeWmtplot() {
     if(pfGenMet>25) plot1D("hmt_tk", mt_tk_gen, 1, h_1d, 120 , 0., 120. );
     if(pfGenMet>25) plot1D("hmt_tk_w", mt_tk_gen, w, h_1d, 120 , 0., 120. );
 
-
     continue;
     */
-    
+
+    TLorentzVector genMu, genNu, genW;
+    genW.SetPtEtaPhiM(WGen_pt,0,WGen_phi,0);
+    genMu.SetPtEtaPhiM(MuGen_pt,0,MuGen_phi,0); // mu projected on transverse plane
+    genNu = genW - genMu;
+
     std::string tag_PT="";
     if(WGen_pt>0 && WGen_pt<=5)  tag_PT="_Wpt0";
     if(WGen_pt>5 && WGen_pt<=10)  tag_PT="_Wpt5";
@@ -746,6 +778,7 @@ void makeWmtplot() {
     if(WGen_pt>15 && WGen_pt<=20)  tag_PT="_Wpt15";
 
     float mt_tk =  getMT(Mu_pt, Mu_phi, tkmet, tkmet_phi);
+    float mt_tk_gen =  getMT(genMu.Pt(), genMu.Phi(), genNu.Pt(), genNu.Phi());
 
     float mt_tk_new_1 = getNewMT(Mu_pt, Mu_phi, tkmet, tkmet_phi, 1.); 
     float mt_tk_new_125 = getNewMT(Mu_pt, Mu_phi, tkmet, tkmet_phi, 1.25); 
@@ -762,6 +795,8 @@ void makeWmtplot() {
     float mt_pf =  getMT(Mu_pt, Mu_phi, pfmet, pfmet_phi);
 
     if(mt_tk!=(-1.)) plot1D("hmt_tk"+tag_PT, mt_tk, 1, h_1d, 120 , 0., 120. );
+    if(mt_tk_gen!=(-1.)) plot1D("hmt_tk_gen"+tag_PT, mt_tk_gen, 1, h_1d, 120 , 0., 120. );
+
     if(mt_tk_new_1!=(-1.)) plot1D("hmt_tk_new100"+tag_PT, mt_tk_new_1, 1, h_1d, 120 , 0., 120. );
     if(mt_tk_new_125!=(-1.)) plot1D("hmt_tk_new125"+tag_PT, mt_tk_new_125, 1, h_1d, 120 , 0., 120. );
     if(mt_tk_new_15!=(-1.)) plot1D("hmt_tk_new150"+tag_PT, mt_tk_new_15, 1, h_1d, 120 , 0., 120. );
@@ -772,11 +807,33 @@ void makeWmtplot() {
     if(mt_tk_new_275!=(-1.)) plot1D("hmt_tk_new275"+tag_PT, mt_tk_new_275, 1, h_1d, 120 , 0., 120. );
     if(mt_tk_new_3!=(-1.)) plot1D("hmt_tk_new300"+tag_PT, mt_tk_new_3, 1, h_1d, 120 , 0., 120. );
 
+    ////////
+    ///// approximate plots
+    ///
+    float mt_tk_gen_approx_1 = getMTFirstOrder(genMu.Pt(), genMu.Phi(), genNu.Pt(), genNu.Phi(), 1.);
+
+    float mt_tk_approx_1 = getMTFirstOrder(Mu_pt, Mu_phi, tkmet, tkmet_phi, 1.);
+    float mt_tk_approx_15 = getMTFirstOrder(Mu_pt, Mu_phi, tkmet, tkmet_phi, 1.5);
+    float mt_tk_approx_175 = getMTFirstOrder(Mu_pt, Mu_phi, tkmet, tkmet_phi, 1.75);
+    float mt_tk_approx_2 = getMTFirstOrder(Mu_pt, Mu_phi, tkmet, tkmet_phi, 2.);
+    float mt_tk_approx_25 = getMTFirstOrder(Mu_pt, Mu_phi, tkmet, tkmet_phi, 2.5);
+    float mt_tk_approx_3 = getMTFirstOrder(Mu_pt, Mu_phi, tkmet, tkmet_phi, 3.);
+
+
+    if(mt_tk_gen_approx_1!=(-1.)) plot1D("hmt_tk_gen_approx_1"+tag_PT, mt_tk_gen_approx_1, 1, h_1d, 120 , 0., 120. );
+
+    if(mt_tk_approx_1!=(-1.)) plot1D("hmt_tk_approx100"+tag_PT, mt_tk_approx_1, 1, h_1d, 120 , 0., 120. );
+    if(mt_tk_approx_15!=(-1.)) plot1D("hmt_tk_approx150"+tag_PT, mt_tk_approx_15, 1, h_1d, 120 , 0., 120. );
+    if(mt_tk_approx_175!=(-1.)) plot1D("hmt_tk_approx175"+tag_PT, mt_tk_approx_175, 1, h_1d, 120 , 0., 120. );
+    if(mt_tk_approx_2!=(-1.)) plot1D("hmt_tk_approx200"+tag_PT, mt_tk_approx_2, 1, h_1d, 120 , 0., 120. );
+    if(mt_tk_approx_25!=(-1.)) plot1D("hmt_tk_approx250"+tag_PT, mt_tk_approx_25, 1, h_1d, 120 , 0., 120. );
+    if(mt_tk_approx_3!=(-1.)) plot1D("hmt_tk_approx300"+tag_PT, mt_tk_approx_3, 1, h_1d, 120 , 0., 120. );
+
   }
 
 
-  //  TFile* fout = new TFile(Form("Histo_mt_Wpt.root"),"RECREATE");
-  TFile* fout = new TFile(Form("Histo_mt_BRweight.root"),"RECREATE");
+  TFile* fout = new TFile(Form("Histo_mt_Wpt.root"),"RECREATE");
+  //  TFile* fout = new TFile(Form("Histo_mt_BRweight.root"),"RECREATE");
 
   std::map<std::string, TH1F*>::iterator it1d;
   for(it1d=h_1d.begin(); it1d!=h_1d.end(); it1d++) {
@@ -822,92 +879,62 @@ void makeWmtplot() {
 
 }
 
+TH1 * getHisto(TString histoName, int color) {
 
-void drawMtPTplot(int type) {
+  TH1 * h_;
 
   TFile *file_ = TFile::Open("Histo_mt_Wpt.root");
 
-  TH1 * h_100_0 = (TH1F*) file_->Get("hmt_tk_new100_Wpt0");
-  TH1 * h_100_5 = (TH1F*) file_->Get("hmt_tk_new100_Wpt5");
-  TH1 * h_100_10 = (TH1F*) file_->Get("hmt_tk_new100_Wpt10");
-  TH1 * h_100_15 = (TH1F*) file_->Get("hmt_tk_new100_Wpt15");
-  h_100_0->SetLineWidth(3);
-  h_100_15->SetLineWidth(3);
-  h_100_15->SetLineStyle(2);
-  h_100_0->SetLineColor(kBlack);
-  h_100_15->SetLineColor(kBlack);
+  if(file_) h_ = (TH1F*) file_->Get(histoName);
 
-  TH1 * h_125_0 = (TH1F*) file_->Get("hmt_tk_new125_Wpt0");
-  TH1 * h_125_5 = (TH1F*) file_->Get("hmt_tk_new125_Wpt5");
-  TH1 * h_125_10 = (TH1F*) file_->Get("hmt_tk_new125_Wpt10");
-  TH1 * h_125_15 = (TH1F*) file_->Get("hmt_tk_new125_Wpt15");
-  h_125_0->SetLineWidth(3);
-  h_125_15->SetLineWidth(3);
-  h_125_15->SetLineStyle(2);
-  h_125_0->SetLineColor(kRed);
-  h_125_5->SetLineColor(kRed);
-  h_125_10->SetLineColor(kRed);
-  h_125_15->SetLineColor(kRed);
+  if(h_) h_->SetLineWidth(3);
+  if(h_) h_->SetLineColor(color);
 
-  TH1 * h_150_0 = (TH1F*) file_->Get("hmt_tk_new150_Wpt0");
-  TH1 * h_150_5 = (TH1F*) file_->Get("hmt_tk_new150_Wpt5");
-  TH1 * h_150_10 = (TH1F*) file_->Get("hmt_tk_new150_Wpt10");
-  TH1 * h_150_15 = (TH1F*) file_->Get("hmt_tk_new150_Wpt15");
-  h_150_0->SetLineWidth(3);
-  h_150_15->SetLineWidth(3);
-  h_150_15->SetLineStyle(2);
-  h_150_0->SetLineColor(kBlue);
-  h_150_5->SetLineColor(kBlue);
-  h_150_10->SetLineColor(kBlue);
-  h_150_15->SetLineColor(kBlue);
+  if(histoName.Contains("Wpt15") && h_) h_->SetLineStyle(2);
 
-  TH1 * h_175_0 = (TH1F*) file_->Get("hmt_tk_new175_Wpt0");
-  TH1 * h_175_5 = (TH1F*) file_->Get("hmt_tk_new175_Wpt5");
-  TH1 * h_175_10 = (TH1F*) file_->Get("hmt_tk_new175_Wpt10");
-  TH1 * h_175_15 = (TH1F*) file_->Get("hmt_tk_new175_Wpt15");
-  h_175_0->SetLineWidth(3);
-  h_175_15->SetLineWidth(3);
-  h_175_15->SetLineStyle(2);
-  h_175_0->SetLineColor(kGreen+1);
-  h_175_5->SetLineColor(kGreen+1);
-  h_175_10->SetLineColor(kGreen+1);
-  h_175_15->SetLineColor(kGreen+1);
+  return h_;
 
-  TH1 * h_200_0 = (TH1F*) file_->Get("hmt_tk_new200_Wpt0");
-  TH1 * h_200_5 = (TH1F*) file_->Get("hmt_tk_new200_Wpt5");
-  TH1 * h_200_10 = (TH1F*) file_->Get("hmt_tk_new200_Wpt10");
-  TH1 * h_200_15 = (TH1F*) file_->Get("hmt_tk_new200_Wpt15");
-  h_200_0->SetLineWidth(3);
-  h_200_15->SetLineWidth(3);
-  h_200_15->SetLineStyle(2);
-  h_200_0->SetLineColor(kMagenta);
-  h_200_5->SetLineColor(kMagenta);
-  h_200_10->SetLineColor(kMagenta);
-  h_200_15->SetLineColor(kMagenta);
+}
 
-  TH1 * h_250_0 = (TH1F*) file_->Get("hmt_tk_new250_Wpt0");
-  TH1 * h_250_5 = (TH1F*) file_->Get("hmt_tk_new250_Wpt5");
-  TH1 * h_250_10 = (TH1F*) file_->Get("hmt_tk_new250_Wpt10");
-  TH1 * h_250_15 = (TH1F*) file_->Get("hmt_tk_new250_Wpt15");
-  h_250_0->SetLineWidth(3);
-  h_250_15->SetLineWidth(3);
-  h_250_15->SetLineStyle(2);
-  h_250_0->SetLineColor(kOrange);
-  h_250_5->SetLineColor(kOrange);
-  h_250_10->SetLineColor(kOrange);
-  h_250_15->SetLineColor(kOrange);
+void drawMtPTplot(int type) {
 
-  TH1 * h_300_0 = (TH1F*) file_->Get("hmt_tk_new300_Wpt0");
-  TH1 * h_300_5 = (TH1F*) file_->Get("hmt_tk_new300_Wpt5");
-  TH1 * h_300_10 = (TH1F*) file_->Get("hmt_tk_new300_Wpt10");
-  TH1 * h_300_15 = (TH1F*) file_->Get("hmt_tk_new300_Wpt15");
-  h_300_0->SetLineWidth(3);
-  h_300_15->SetLineWidth(3);
-  h_300_15->SetLineStyle(2);
-  h_300_0->SetLineColor(kRed);
-  h_300_5->SetLineColor(kRed);
-  h_300_10->SetLineColor(kRed);
-  h_300_15->SetLineColor(kRed);
+  //  TString label="new";
+  TString label="approx";
+
+  TH1 * h_100_0=getHisto(Form("hmt_tk_%s100_Wpt0",label.Data()),kBlack);
+  TH1 * h_100_5=getHisto(Form("hmt_tk_%s100_Wpt5",label.Data()),kBlack);
+  TH1 * h_100_10=getHisto(Form("hmt_tk_%s100_Wpt10",label.Data()),kBlack);
+  TH1 * h_100_15=getHisto(Form("hmt_tk_%s100_Wpt15",label.Data()),kBlack);
+
+  TH1 * h_125_0 = getHisto(Form("hmt_tk_%s125_Wpt0",label.Data()),kRed);
+  TH1 * h_125_5 = getHisto(Form("hmt_tk_%s125_Wpt5",label.Data()),kRed);
+  TH1 * h_125_10 = getHisto(Form("hmt_tk_%s125_Wpt10",label.Data()),kRed);
+  TH1 * h_125_15 = getHisto(Form("hmt_tk_%s125_Wpt15",label.Data()),kRed);
+
+  TH1 * h_150_0 = getHisto(Form("hmt_tk_%s150_Wpt0",label.Data()),kBlue);
+  TH1 * h_150_5 = getHisto(Form("hmt_tk_%s150_Wpt5",label.Data()),kBlue);
+  TH1 * h_150_10 = getHisto(Form("hmt_tk_%s150_Wpt10",label.Data()),kBlue);
+  TH1 * h_150_15 = getHisto(Form("hmt_tk_%s150_Wpt15",label.Data()),kBlue);
+
+  TH1 * h_175_0 = getHisto(Form("hmt_tk_%s175_Wpt0",label.Data()),kGreen+1);
+  TH1 * h_175_5 = getHisto(Form("hmt_tk_%s175_Wpt5",label.Data()),kGreen+1);
+  TH1 * h_175_10 = getHisto(Form("hmt_tk_%s175_Wpt10",label.Data()),kGreen+1);
+  TH1 * h_175_15 = getHisto(Form("hmt_tk_%s175_Wpt15",label.Data()),kGreen+1);
+
+  TH1 * h_200_0 = getHisto(Form("hmt_tk_%s200_Wpt0",label.Data()),kMagenta);
+  TH1 * h_200_5 = getHisto(Form("hmt_tk_%s200_Wpt5",label.Data()),kMagenta);
+  TH1 * h_200_10 = getHisto(Form("hmt_tk_%s200_Wpt10",label.Data()),kMagenta);
+  TH1 * h_200_15 = getHisto(Form("hmt_tk_%s200_Wpt15",label.Data()),kMagenta);
+
+  TH1 * h_250_0 = getHisto(Form("hmt_tk_%s250_Wpt0",label.Data()),kOrange);
+  TH1 * h_250_5 = getHisto(Form("hmt_tk_%s250_Wpt5",label.Data()),kOrange);
+  TH1 * h_250_10 = getHisto(Form("hmt_tk_%s250_Wpt10",label.Data()),kOrange);
+  TH1 * h_250_15 = getHisto(Form("hmt_tk_%s250_Wpt15",label.Data()),kOrange);
+
+  TH1 * h_300_0 = getHisto(Form("hmt_tk_%s300_Wpt0",label.Data()),kRed);
+  TH1 * h_300_5 = getHisto(Form("hmt_tk_%s300_Wpt5",label.Data()),kRed);
+  TH1 * h_300_10 = getHisto(Form("hmt_tk_%s300_Wpt10",label.Data()),kRed);
+  TH1 * h_300_15 = getHisto(Form("hmt_tk_%s300_Wpt15",label.Data()),kRed);
 
   if(type==1) {
 
@@ -922,9 +949,9 @@ void drawMtPTplot(int type) {
     h_150_15->DrawNormalized("hist sames");
     cout << "coeff=1.50  "<< h_150_0->GetMean() << "   " << h_150_15->GetMean() << "   " << double((h_150_15->GetMean()-h_150_0->GetMean())/h_150_0->GetMean()) << endl;
     
-    h_175_0->DrawNormalized("hist sames");
-    h_175_15->DrawNormalized("hist sames");
-    cout << "coeff=1.75  "<< h_175_0->GetMean() << "   " << h_175_15->GetMean() << "   " << double((h_175_15->GetMean()-h_175_0->GetMean())/h_175_0->GetMean()) << endl;    
+    //    h_175_0->DrawNormalized("hist sames");
+    //    h_175_15->DrawNormalized("hist sames");
+    //    cout << "coeff=1.75  "<< h_175_0->GetMean() << "   " << h_175_15->GetMean() << "   " << double((h_175_15->GetMean()-h_175_0->GetMean())/h_175_0->GetMean()) << endl;
 
     h_200_0->DrawNormalized("hist sames");
     h_200_15->DrawNormalized("hist sames");
