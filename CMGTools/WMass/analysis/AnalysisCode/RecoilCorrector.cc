@@ -358,15 +358,22 @@ double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal 
 
   if(TMath::Abs(iPVal)>=5) return iPVal;
 
-  RooRealVar* myptm=wMC->var("pt");
-  myptm->setVal(Zpt);
+  // fix pt for CDF
+  RooRealVar* myptmCDF = (RooRealVar*) pdfMCcdf->getVariables()->find("pt");
+  RooRealVar* myptdCDF = (RooRealVar*) pdfDATAcdf->getVariables()->find("pt");
+  myptmCDF->setVal(Zpt);
+  myptdCDF->setVal(Zpt);
 
+  // fix pt for workspace
+  RooRealVar* myptm=wMC->var("pt");
   RooRealVar* myptd=wDATA->var("pt");
+  myptm->setVal(Zpt);
   myptd->setVal(Zpt);
 
   RooRealVar* myXm = wMC->var("XVar");
   RooRealVar* myXd = wDATA->var("XVar");
-  
+
+
   myXm->setVal(iPVal);
   double pVal=pdfDATAcdf->findRoot(*myXd,myXd->getMin(),myXd->getMax(),pdfMCcdf->getVal());
 
