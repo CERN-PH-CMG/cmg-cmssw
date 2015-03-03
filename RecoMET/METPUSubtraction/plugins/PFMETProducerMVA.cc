@@ -107,9 +107,7 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
   const reco::Candidate::Point vtx(0.0, 0.0, 0.0 );
   reco::PFMET pfMEt(specificPfMET,pfMEt_data.sumet, p4, vtx);
   reco::Candidate::LorentzVector pfMEtP4_original = pfMEt.p4();
-   
-  // compute objects specific to MVA based MET reconstruction
-  std::vector<reco::PUSubMETCandInfo> pfCandidateInfo = computePFCandidateInfo(*pfCandidates_view, hardScatterVertex);
+
 
   std::vector<std::vector<size_t> > permutations;
 
@@ -150,10 +148,13 @@ void PFMETProducerMVA::produce(edm::Event& evt, const edm::EventSetup& es)
     // (excluded from sum over PFCandidates when computing hadronic recoil)
 
 
+    // compute objects specific to MVA based MET reconstruction
+    // modified by computeJetInfo, so recomputed for each lepton permutation
+    std::vector<reco::PUSubMETCandInfo> pfCandidateInfo = computePFCandidateInfo(*pfCandidates_view, hardScatterVertex);
     
-
     std::vector<reco::PUSubMETCandInfo>    jetInfo         = computeJetInfo(*uncorrJets, corrJets, *jetIds, *vertices, hardScatterVertex, *corrector,evt,es,leptonInfo,pfCandidateInfo);
     std::vector<reco::Vertex::Point>         vertexInfo      = computeVertexInfo(*vertices);
+
     // compute MVA based MET and estimate of its uncertainty
     mvaMEtAlgo_.setInput(leptonInfo, jetInfo, pfCandidateInfo, vertexInfo);
     mvaMEtAlgo_.setHasPhotons(lHasPhotons);
