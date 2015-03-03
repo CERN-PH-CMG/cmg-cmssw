@@ -101,7 +101,7 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event& iEvent, const edm::EventS
   } else if (typeid(U) == typeid(pat::Muon)) {
       leg2type=svFitStandalone::kTauToMuDecay;
       leg2type2011=NSVfitStandalone2011::kLepDecay;
-      warningMessage += " - second leg is electron from tau";
+      warningMessage += " - second leg is muon from tau";
   }
 
   const unsigned maxWarnings = 5;
@@ -133,8 +133,8 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event& iEvent, const edm::EventS
     if(verbose_) {
       std::cout << "  ---------------- " << std::endl;
       std::cout << "\trec boson: " << diTau << std::endl;
-      std::cout << "\t\tleg1: " << diTau.daughter(0) << std::endl;
-      std::cout << "\t\tleg2: " << diTau.daughter(1) << std::endl;
+      std::cout << "\t\tleg1: " << *diTau.daughter(0) << std::endl;
+      std::cout << "\t\tleg2: " << *diTau.daughter(1) << std::endl;
       std::cout << "\t\tMET = " << met.et() << ", phi_MET = " << met.phi() << std::endl;      
     }
 
@@ -158,15 +158,37 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event& iEvent, const edm::EventS
         std::vector<svFitStandalone::MeasuredTauLepton> measuredTauLeptons;
         int leg1DecayMode = -1;
         int leg2DecayMode = -1;
+        auto leg2Mass = diTau.daughter(1)->mass();
+        auto leg1Mass = diTau.daughter(0)->mass();
+
         if (leg1type == svFitStandalone::kTauToHadDecay) {
           leg1DecayMode = static_cast<pat::Tau*>(diTau.daughter(0))->decayMode();
         }
+        else if (leg1type == svFitStandalone::kTauToElecDecay)
+        {
+          // Reconstructed GSF electrons have non-fixed mass in CMS
+          leg1Mass = 0.000511;
+        }
+        else if (leg1type == svFitStandalone::kTauToMuDecay)
+        {
+          // Muons may sometimes have the charged pion mass
+          leg1Mass = 0.10566;
+        }
+
         if (leg2type == svFitStandalone::kTauToHadDecay) {
           leg2DecayMode = static_cast<pat::Tau*>(diTau.daughter(1))->decayMode();
         }
+        else if (leg2type == svFitStandalone::kTauToElecDecay)
+        {
+          leg2Mass = 0.000511;
+        }
+        else if (leg2type == svFitStandalone::kTauToMuDecay)
+        {
+          leg2Mass = 0.10566;
+        }
 
-        measuredTauLeptons.push_back(svFitStandalone::MeasuredTauLepton(leg2type, diTau.daughter(1)->pt(), diTau.daughter(1)->eta(), diTau.daughter(1)->phi(), diTau.daughter(1)->mass(), leg2DecayMode));
-        measuredTauLeptons.push_back(svFitStandalone::MeasuredTauLepton(leg1type, diTau.daughter(0)->pt(), diTau.daughter(0)->eta(), diTau.daughter(0)->phi(), diTau.daughter(0)->mass(), leg1DecayMode));
+        measuredTauLeptons.push_back(svFitStandalone::MeasuredTauLepton(leg2type, diTau.daughter(1)->pt(), diTau.daughter(1)->eta(), diTau.daughter(1)->phi(), leg2Mass, leg2DecayMode));
+        measuredTauLeptons.push_back(svFitStandalone::MeasuredTauLepton(leg1type, diTau.daughter(0)->pt(), diTau.daughter(0)->eta(), diTau.daughter(0)->phi(), leg1Mass, leg1DecayMode));
         SVfitStandaloneAlgorithm algo(measuredTauLeptons, met.px(), met.py(), tmsig, 0);
         algo.addLogM(false);
         

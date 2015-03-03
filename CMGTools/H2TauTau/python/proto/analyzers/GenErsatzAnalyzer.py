@@ -1,5 +1,5 @@
-from CMGTools.RootTools.analyzers.GenParticleAnalyzer import *
-from PhysicsTools.Heppy.physicsutils.genutils import *
+from PhysicsTools.Heppy.analyzers.core.Analyzer    import Analyzer
+from PhysicsTools.Heppy.physicsobjects.GenParticle import GenParticle
 
 class Boson(GenParticle):
     def __init__(self, boson):
@@ -25,7 +25,7 @@ class WBoson(Boson):
         assert( abs(self.leg1.pdgId()) not in [12,14,16]) 
         
 
-class GenErsatzAnalyzer( GenParticleAnalyzer ):
+class GenErsatzAnalyzer( Analyzer ):
 
     def process(self, event):
         # event.W = None
@@ -34,8 +34,8 @@ class GenErsatzAnalyzer( GenParticleAnalyzer ):
             return True
         result = super(GenErsatzAnalyzer, self).process(event)
         
-        event.genZs = [ZBoson(part) for part in event.genParticles if part.status()==3 and part.pdgId()==23]
-        event.genWs = [WBoson(part) for part in event.genParticles if part.status()==3 and abs(part.pdgId())==24]
+        event.genZs = [ZBoson(part) for part in event.genVBosons if     part.pdgId() ==23]
+        event.genWs = [WBoson(part) for part in event.genVBosons if abs(part.pdgId())==24]
 
         if self.cfg_ana.verbose:
             print 'W Bosons:'

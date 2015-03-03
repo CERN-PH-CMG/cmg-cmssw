@@ -11,13 +11,14 @@ sep_line = '-'*70
 
 process = cms.Process("H2TAUTAU")
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
 
 numberOfFilesToProcess = -1
 debugEventContent = False
 
-# choose from 'tau-mu' 'di-tau' 'tau-ele' 'mu-ele' 'all'
-channel = 'di-tau'
+# choose from 'tau-mu' 'di-tau' 'tau-ele' 'mu-ele' 'all-separate', 'all'
+# channel = 'all'
+channel = 'all-separate'
 
 # newSVFit enables the svfit mass reconstruction used for the H->tau tau analysis.
 # if false, much faster processing but mass is wrong. 
@@ -26,7 +27,7 @@ tauScaling = 0 # JAN: to be implemented downstream
 
 # increase to 1000 before running on the batch, to reduce size of log files
 # on your account
-reportInterval = 1
+reportInterval = 100
 
 print sep_line
 print 'channel', channel
@@ -105,6 +106,15 @@ if addAK4:
     addAK4Jets(process)
     process.mvaMetInputPath.insert(0, process.jetSequenceAK4)
 
+if '25' in dataset_name:
+    print 'Using 25 ns MVA MET training'
+    process.mvaMETTauMu.inputFileNames = cms.PSet(
+        U     = cms.FileInPath('RecoMET/METPUSubtraction/data/gbrmet_7_2_X_MINIAOD_BX25PU20_Jan2015.root'),
+        DPhi  = cms.FileInPath('RecoMET/METPUSubtraction/data/gbrphi_7_2_X_MINIAOD_BX25PU20_Jan2015.root'),
+        CovU1 = cms.FileInPath('RecoMET/METPUSubtraction/data/gbru1cov_7_2_X_MINIAOD_BX25PU20_Jan2015.root'),
+        CovU2 = cms.FileInPath('RecoMET/METPUSubtraction/data/gbru2cov_7_2_X_MINIAOD_BX25PU20_Jan2015.root')
+    )
+
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()
 
@@ -117,8 +127,7 @@ process.outpath = cms.EndPath()
 
 # signalTauProcess = (process.source.fileNames[0].find('HToTauTau') != -1) or (process.source.fileNames[0].find('DY') != -1) or isEmbedded
 
-
-if channel=='all':
+if channel=='all' or channel=='all-separate':
     process.schedule = cms.Schedule(
         process.mvaMetInputPath,
         process.tauMuPath,
@@ -145,20 +154,26 @@ elif channel=='di-tau':
         process.diTauPath,
         process.outpath
         )
+elif channel=='mu-ele':
+    process.schedule = cms.Schedule(
+        process.mvaMetInputPath,
+        process.muElePath,
+        process.outpath
+        )
 else:
     raise ValueError('unrecognized channel')    
 
 ### Enable printouts like this:
 # process.cmgTauMuCorSVFitPreSel.verbose = True
 
-if channel=='tau-mu' or channel=='all':
-    addTauMuOutput(process, debugEventContent, addPreSel=False)
-if channel=='tau-ele' or channel=='all':
-    addTauEleOutput(process, debugEventContent, addPreSel=False)
-if channel=='mu-ele' or channel=='all':
-    addMuEleOutput(process, debugEventContent, addPreSel=False)
-if channel=='di-tau' or channel=='all':
-    addDiTauOutput(process, debugEventContent, addPreSel=False)
+if channel=='tau-mu' or 'all' in channel:
+    addTauMuOutput(process, debugEventContent, addPreSel=False, oneFile=(channel=='all'))
+if channel=='tau-ele' or 'all' in channel:
+    addTauEleOutput(process, debugEventContent, addPreSel=False, oneFile=(channel=='all'))
+if channel=='mu-ele' or 'all' in channel:
+    addMuEleOutput(process, debugEventContent, addPreSel=False, oneFile=(channel=='all'))
+if channel=='di-tau' or 'all' in channel:
+    addDiTauOutput(process, debugEventContent, addPreSel=False, oneFile=(channel=='all'))
 
 # Message logger setup.
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
@@ -169,10 +184,12 @@ if newSVFit:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 2
     process.cmgTauEleCorSVFitPreSel.SVFitVersion = 2
     process.cmgDiTauCorSVFitPreSel.SVFitVersion = 2
+    process.cmgMuEleCorSVFitPreSel.SVFitVersion = 2
 else:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 1
     process.cmgTauEleCorSVFitPreSel.SVFitVersion = 1
     process.cmgDiTauCorSVFitPreSel.SVFitVersion = 1
+    process.cmgMuEleCorSVFitPreSel.SVFitVersion = 1
 
 print sep_line
 print 'INPUT:'

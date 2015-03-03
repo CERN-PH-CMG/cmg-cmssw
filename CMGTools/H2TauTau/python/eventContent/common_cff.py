@@ -11,6 +11,7 @@ common = [
     'keep patMETs_slimmedMETs_*_*',
     'keep patMuons_slimmedMuons_*_*',
     # 'keep patPacked*_*_*_*',
+    'keep patPackedCandidate*_*packedPFCandidates*_*_*PAT', # RIC: agreed to keep it to: 1. tau vtx 2. possibly compute isolations at analysis level
     'keep patTaus_slimmedTaus_*_*',
     'keep patTrigger*_*_*_*',
     'keep recoVertexs_*_*_*',
@@ -22,7 +23,9 @@ common = [
     'keep patPackedGenParticles_packedGenParticles__PAT', # these are status 1
     'keep recoGsfElectronCores_*_*_*', # needed?
     'keep recoSuperClusters_*_*_*', # for electron MVA ID
-    'keep recoGenJets_slimmedGenJets_*_*' 
+    'keep recoGenJets_slimmedGenJets_*_*',
+    'keep *_slimmedSecondaryVertices_*_*',
+    'keep patPackedCandidates_packedPFCandidates__PAT'
     ]
 
 commonDebug = copy.deepcopy(common) 

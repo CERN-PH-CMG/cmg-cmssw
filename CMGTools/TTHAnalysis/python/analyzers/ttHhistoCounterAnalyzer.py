@@ -28,7 +28,7 @@ class ttHhistoCounterAnalyzer( Analyzer ):
         count.register('all events')
         if "outputfile" in setup.services :
             setup.services["outputfile"].file.cd()
-            self.inputCounter = ROOT.TH1F("Count","Count",1,0,2)
+            self.inputCounter = ROOT.TH1D("Count","Count",1,0,2)
 
     def process(self, event):
         self.readCollections( event.input )

@@ -40,6 +40,7 @@ class GeneratorAnalyzer( Analyzer ):
             event.genwzquarks   = [] # quarks from W,Z decays
             event.genbquarksFromTop = []
             event.genbquarksFromH   = []
+            event.genlepsFromTop = [] #mu/ele that have a t->W chain as ancestor, also contained in event.genleps
        event.genwzquarks and event.genbquarks, might have overlaps 
        event.genbquarksFromTop and event.genbquarksFromH are all contained in event.genbquarks
        
@@ -86,7 +87,7 @@ class GeneratorAnalyzer( Analyzer ):
                     continue
             else:
                 # everything else, we want it after radiation, i.e. just before decay
-                if any((p.daughter(j).pdgId() == p.pdgId() and p.daughter(j).status > 2) for j in xrange(p.numberOfDaughters())):
+                if any((p.daughter(j).pdgId() == p.pdgId() and p.daughter(j).status() > 2) for j in xrange(p.numberOfDaughters())):
                     #print "    fail auto-decay"
                     continue
             # FIXME find a better criterion to discard there
@@ -109,6 +110,9 @@ class GeneratorAnalyzer( Analyzer ):
                     # exclude extra x from p -> p + x
                     if not any(mom.daughter(j2).pdgId() == mom.pdgId() for j2 in xrange(mom.numberOfDaughters())):
                         #print "         pass no-self-decay"
+                        ok = True
+                    # Account for generator feature with Higgs decaying to itself with same four-vector but no daughters
+                    elif mom.pdgId() == 25 and any(mom.daughter(j2).pdgId() == 25 and mom.daughter(j2).numberOfDaughters()==0 for j2 in range(mom.numberOfDaughters())):
                         ok = True
                 if abs(mom.pdgId()) == 15:
                     # if we're a tau daughter we're status 2
@@ -180,6 +184,7 @@ class GeneratorAnalyzer( Analyzer ):
             event.genwzquarks    = []
             event.genbquarksFromTop = []
             event.genbquarksFromH   = []
+            event.genlepsFromTop = []
             for p in event.generatorSummary:
                 id = abs(p.pdgId())
                 if id == 25: 
@@ -189,10 +194,23 @@ class GeneratorAnalyzer( Analyzer ):
                 elif id in {12,14,16}:
                     event.gennus.append(p)
                 elif id in {11,13}:
+                    #taus to separate vector
                     if abs(p.motherId) == 15:
                         event.gentauleps.append(p)
+                    #all muons and electrons
                     else:
                         event.genleps.append(p)
+                        momids = [(m, abs(m.pdgId())) for m in realGenMothers(p)]
+
+                        #have a look at the lepton mothers
+                        for mom, momid in momids:
+                            #lepton from W
+                            if momid == 24:
+                                wmomids = [abs(m.pdgId()) for m in realGenMothers(mom)]
+                                #W from t
+                                if 6 in wmomids:
+                                    #save mu,e from t->W->mu/e
+                                    event.genlepsFromTop.append(p)
                 elif id == 15:
                     if self.allGenTaus or not any([abs(d.pdgId()) in {11,13} for d in realGenDaughters(p)]):
                         event.gentaus.append(p)
