@@ -57,7 +57,7 @@ void PhiStarEtaAnalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC
   cout << "generated_PDF_set= "<<generated_PDF_set
   << " generated_PDF_member= " << generated_PDF_member
   << " contains_PDF_reweight= " << contains_PDF_reweight
-  << " WMass::NtoysMomCorr= " << WMass::NtoysMomCorr
+  << " WMass::NVarRecoilCorr= " << WMass::NVarRecoilCorr
   << endl;
 
   // ofstream outTXTfile;
@@ -208,7 +208,7 @@ void PhiStarEtaAnalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC
   
   //To get the central value of the momentum correction
   int random_seed_start=67525;
-  rmcor44X = WMass::NtoysMomCorr>1? new rochcor_44X_v3(random_seed_start) : new rochcor_44X_v3();  // make the pointer of rochcor class
+  rmcor44X = WMass::NVarRecoilCorr>1? new rochcor_44X_v3(random_seed_start) : new rochcor_44X_v3();  // make the pointer of rochcor class
   TString MuscleCard = (IS_MC_CLOSURE_TEST || isMCorDATA==0) ? "MuScleFit_2011_MC_44X" : "MuScleFit_2011_DATA_44X";
   TString fitParametersFile = MuscleCard+".txt";
   if(useMomentumCorr==2){
@@ -439,10 +439,10 @@ void PhiStarEtaAnalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC
       } // end gen stuff 
       
       if(!useGenVar || Z_mass>0){ // dummy thing to separate signal and background in DY+Jets (useless)
-        for(int m=0; m<WMass::NtoysMomCorr; m++){
+        for(int m=0; m<WMass::NVarRecoilCorr; m++){
           
           TString toys_str = "";
-          if(WMass::NtoysMomCorr>1) toys_str = Form("_MomCorrToy%d",m);
+          if(WMass::NVarRecoilCorr>1) toys_str = Form("_RecoilCorrVar%d",m);
           
           if( evtHasGoodVtx && evtHasTrg){ // good reco event
           
@@ -906,9 +906,9 @@ void PhiStarEtaAnalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC
     for(int i=0; i<WMass::etaMuonNSteps; i++){
       TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
       for(int h=0; h<WMass::PDF_members; h++){
-        for(int m=0; m<WMass::NtoysMomCorr; m++){
+        for(int m=0; m<WMass::NVarRecoilCorr; m++){
           TString toys_str = "";
-          if(WMass::NtoysMomCorr>1) toys_str = Form("_MomCorrToy%d",m);
+          if(WMass::NVarRecoilCorr>1) toys_str = Form("_RecoilCorrVar%d",m);
 
           // common_stuff::makeRatioHisto1D(Form("logPhiStarEta_gen_MCEffWeighted_ATLASbin_pdf%d_eta%s",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,eta_str.Data()),
                                          // Form("logPhiStarEta_NoEffWeights_ATLASbin_pdf%d_%d%s_eta%s",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data()),

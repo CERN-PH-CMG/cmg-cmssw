@@ -34,7 +34,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   cout << "generated_PDF_set= "<<generated_PDF_set
        << " generated_PDF_member= " << generated_PDF_member
        << " contains_PDF_reweight= " << contains_PDF_reweight
-       << " WMass::NtoysMomCorr= " << WMass::NtoysMomCorr
+       << " WMass::NVarRecoilCorr= " << WMass::NVarRecoilCorr
        << endl;  
 
   int PDF_reweighting_central_Index = -1;
@@ -177,7 +177,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
   //To get the central value of the momentum correction
   int random_seed_start=67525;
-  rochcor_44X_v3 *rmcor44X = WMass::NtoysMomCorr>1? new rochcor_44X_v3(random_seed_start) : new rochcor_44X_v3();  // make the pointer of rochcor class
+  rochcor_44X_v3 *rmcor44X = WMass::NVarRecoilCorr>1? new rochcor_44X_v3(random_seed_start) : new rochcor_44X_v3();  // make the pointer of rochcor class
   TString MuscleCard = (IS_MC_CLOSURE_TEST || isMCorDATA==0) ? "MuScleFit_2011_MC_44X" : "MuScleFit_2011_DATA_44X";
   TString fitParametersFile = MuscleCard+".txt";
   MuScleFitCorrector *corrector;
@@ -371,9 +371,9 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         if(!useGenVar || W_mt>0){ // dummy thing to separate between sig and bkg in W+Jets (useless)
           TString MuCharge_str = Mu_charge>0? "Pos" : "Neg"; 
           
-          for(int m=0; m<WMass::NtoysMomCorr; m++){
+          for(int m=0; m<WMass::NVarRecoilCorr; m++){
             TString toys_str = "";
-            if(WMass::NtoysMomCorr>1) toys_str = Form("_MomCorrToy%d",m);
+            if(WMass::NVarRecoilCorr>1) toys_str = Form("_RecoilCorrVar%d",m);
             
             //------------------------------------------------------
             // start reco event selection
@@ -831,9 +831,9 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         int jWmass_MeV = WMass::Wmass_values_array[j];
         for(int k=0;k<3;k++){
           for(int h=0; h<WMass::PDF_members; h++){
-            for(int m=0; m<WMass::NtoysMomCorr; m++){
+            for(int m=0; m<WMass::NVarRecoilCorr; m++){
               TString toys_str = "";
-              if(WMass::NtoysMomCorr>1) toys_str = Form("_MomCorrToy%d",m);
+              if(WMass::NVarRecoilCorr>1) toys_str = Form("_RecoilCorrVar%d",m);
               TString MuCharge_str[]={"Pos","Neg"};
               for(int MuCharge = 0; MuCharge < 2; MuCharge++){
                 common_stuff::cloneHisto1D(Form("hW%s_%sScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str[MuCharge].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),WMass::WMassCentral_MeV), 
