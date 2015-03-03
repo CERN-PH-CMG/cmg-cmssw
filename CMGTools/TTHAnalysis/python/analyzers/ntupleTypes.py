@@ -25,6 +25,9 @@ leptonTypeSusy = NTupleObjectType("leptonSusy", baseObjectTypes = [ leptonType ]
     NTupleVariable("jetBTagCSV", lambda lepton : lepton.jet.btag('combinedInclusiveSecondaryVertexV2BJetTags') if hasattr(lepton,'jet') and hasattr(lepton.jet, 'btag') else -99, help="CSV btag of nearest jet"),
     NTupleVariable("jetBTagCMVA", lambda lepton : lepton.jet.btag('combinedMVABJetTags') if hasattr(lepton,'jet') and hasattr(lepton.jet, 'btag') else -99, help="CMA btag of nearest jet"),
     NTupleVariable("jetDR",      lambda lepton : deltaR(lepton.eta(),lepton.phi(),lepton.jet.eta(),lepton.jet.phi()) if hasattr(lepton,'jet') else -1, help="deltaR(lepton, nearest jet)"),
+    NTupleVariable("jetDecDR",      lambda lepton : lepton.jetDecDR if hasattr(lepton,'jetDecDR') else -1, help="deltaR(lepton, nearest jet) after declustering"),
+    NTupleVariable("jetDecPtRel", lambda lepton : lepton.jetDecPtRel if hasattr(lepton,'jetDecDR') else -1, help="pt of the lepton transverse to the jet axis (subtracting the lepton), after declustering"),
+    NTupleVariable("jetDecPtRatio", lambda lepton :  lepton.jetDecPtRel if hasattr(lepton,'jetDecDR') else -1, help="pt(lepton)/pt(nearest jet) after declustering"),
 ])
 
 
