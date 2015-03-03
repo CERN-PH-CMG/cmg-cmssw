@@ -71,6 +71,22 @@ if isolation == "ptRel":
         maxLeptons = 999,
         )
     susyCoreSequence.insert(susyCoreSequence.index(jetAna)+1, ttHLepSkim2)
+    from CMGTools.TTHAnalysis.analyzers.ttHDeclusterJetsAnalyzer import ttHDeclusterJetsAnalyzer
+    ttHDecluster = cfg.Analyzer(
+        ttHDeclusterJetsAnalyzer, name='ttHDecluster',
+        lepCut     = lambda lep,ptrel : lep.pt() > 10 and lep.relIso03 > 0.2 and ptrel > 5,
+        maxSubjets = 6,
+        drMin      = 0.2, # minimal deltaR(l,subjet) required for a successful subjet match
+        ptRatioMax = 1.5, # maximum pt(l)/pt(subjet) required for a successful match
+        ptRatioDiff = 0.1,  # cut on abs( pt(l)/pt(subjet) - 1 ) sufficient to call a match successful
+        drMatch     = 0.02, # deltaR(l,subjet) sufficient to call a match successful
+        ptRelMin    = 5,    # maximum ptRelV1(l,subjet) sufficient to call a match successful
+        prune       = True, # also do pruning of the jets 
+        pruneZCut       = 0.1, # pruning parameters (usual value in CMS: 0.1)
+        pruneRCutFactor = 0.5, # pruning parameters (usual value in CMS: 0.5)
+        verbose     = 100,   # print out the first 100 leptons
+        )
+    susyCoreSequence.insert(susyCoreSequence.index(jetAna)+1, ttHDecluster)
 elif isolation == "miniIso": 
     lepAna.loose_muon_isoCut     = lambda muon : muon.miniRelIso < 0.4
     lepAna.loose_electron_isoCut = lambda elec : elec.miniRelIso < 0.4
