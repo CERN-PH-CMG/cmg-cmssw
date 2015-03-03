@@ -2,7 +2,8 @@ import os
 import re
 
 def cmsswRelease():
-##    return os.environ['CMSSW_BASE'].split('/')[-1]
+    #return os.environ['CMSSW_BASE'].split('/')[-1]
+    #this also works when the CMSSW directory is renamed
     return os.environ['CMSSW_VERSION']
 
 def cmsswIs44X():
