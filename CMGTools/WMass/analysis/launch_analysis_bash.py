@@ -14,10 +14,12 @@ useLHAPDF = False
 # foldername = "test_newstd";
 # foldername = "test_nnpdf23x0";
 foldername = "test_recoilfinal";
+##foldername = "test_controlPLOT_7TeV";
+##foldername = "test_controlPLOT_8TeV";
 foldername_orig=foldername
 
 ntuple_folder = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
-ntuple_folder_8TeV_ABC = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_gentkmet/";
+ntuple_folder_8TeV_ABC = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_8TeV/";
 # ntuple_folder = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/";
 # ntuple_folder = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_10_15/";
 # ntuple_folder = "root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/";
@@ -71,6 +73,12 @@ parallelize = 1;
 resumbit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" 
 # resumbit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 # resumbit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
+#resumbit_sample = "DATA, DYJetsMadSig"
+#resumbit_sample = "DATA, DYJetsMadSig ,DYJetsPow"
+##resumbit_sample = "DATA"
+##resumbit_sample = "DATA, DYJetsPow"
+##resumbit_sample = "WJetsMadSig"#WJetsPowPlus"
+##resumbit_sample = "WJetsPowPlus"
 
 runWanalysis = 0;
 runZanalysis = 1;
@@ -298,7 +306,7 @@ fZana_str = [
   ntuple_folder+"DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root",
   # ntuple_folder+"DYJetsMM/InclWeights/ZTreeProducer_tree.root",
   # ntuple_folder+"DYJetsMM/allEvts/ZTreeProducer_tree.root",
-##  ntuple_folder_8TeV_ABC+"ZTreeProducer_tree_tkmetABC.root",  # this is the 8TeV DYJetsLL contains also the tkmetABC  
+##  ntuple_folder_8TeV_ABC+"DYJetsLL/ZTreeProducer_tree_tkmetABC.root",  # this is the 8TeV DYJetsLL contains also the tkmetABC
   ntuple_folder+"DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
   ntuple_folder+"DYJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",
   ntuple_folder+"TTJets/ZTreeProducer_tree.root",

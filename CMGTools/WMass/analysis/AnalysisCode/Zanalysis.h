@@ -219,6 +219,8 @@ class Zanalysis {
   virtual Bool_t   Notify();
   virtual void     Show(Long64_t entry = -1);
   void ComputeHXVarAndPhiStarEta(TLorentzVector muPosNoCorr,TLorentzVector muNegNoCorr, bool isGen);
+  double getMTFirstOrder(double Mu_pt, double Mu_phi, double tkmet,double tkmet_phi, double coeff);
+  float deltaPhi( float phi1 , float phi2 );
 
   virtual void plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorentzVector Z, double u1_scale, string leptCharge, string cut , bool doCut, bool doneu, std::map<std::string, TH1D*> &h_1d, std::map<std::string, TH2D*> &h_2d,double weight);
 
@@ -321,6 +323,9 @@ void Zanalysis::Init(TTree *tree)
   fChain->SetBranchAddress("tkmet", &tkmet, &b_tkmet);
   fChain->SetBranchAddress("tkmet_phi", &tkmet_phi, &b_tkmet_phi);
   fChain->SetBranchAddress("tkmet_sumEt", &tkmet_sumEt, &b_tkmet_sumEt);
+  //  fChain->SetBranchAddress("gentkmet", &tkmet, &b_tkmet);
+  //  fChain->SetBranchAddress("gentkmet_phi", &tkmet_phi, &b_tkmet_phi);
+  //  fChain->SetBranchAddress("gentkmet_sumEt", &tkmet_sumEt, &b_tkmet_sumEt);
   //  fChain->SetBranchAddress("tkmetABC", &tkmet, &b_tkmet);
   //  fChain->SetBranchAddress("tkmetABC_phi", &tkmet_phi, &b_tkmet_phi);
   //  fChain->SetBranchAddress("tkmetABC_sumEt", &tkmet_sumEt, &b_tkmet_sumEt);
@@ -437,6 +442,7 @@ void Zanalysis::plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorent
   common_stuff::plot2D("u1_vs_u2_scale"+leptCharge+cut ,  u_perp, u_parall+u1_scale,   weight, h_2d, 100, -50., 50. , 100, -50., 50.);
   common_stuff::plot2D("u_vs_Angle"+leptCharge+cut ,  unorm, uPhi ,   weight, h_2d, 100, 0., 10. , 100, -TMath::Pi(), TMath::Pi());
 
+  common_stuff::plot1D("h_ptZ"+leptCharge+cut  , ptVis.Pt()   ,                      weight, h_1d, 100, 0., 50.);
 
   TString test = cut.c_str();
 
@@ -448,7 +454,7 @@ void Zanalysis::plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorent
     common_stuff::plot1D("h_u"+leptCharge+cut  , u   ,                      weight, h_1d, 100, 0., 20.);
     common_stuff::plot1D("h_u2"+leptCharge+cut  , u_perp   ,                weight, h_1d, 200, -100., 100.);
 
-    common_stuff::plot1D("h_u2Res"+leptCharge+cut  , u_perp/(u_parall/Z.Pt())   ,                weight, h_1d, 200, -100., 100.);
+    common_stuff::plot1D("h_u2Res"+leptCharge+cut  , u_perp/(u_parall)   ,                weight, h_1d, 200, -100., 100.);
 
     common_stuff::plot1D("h_u1_Residual"+leptCharge+cut  , u_parall+ptVis.Pt(), weight, h_1d, 200, -100., 100.);
     common_stuff::plot1D("h_u1_Pull"+leptCharge+cut  , (u_parall+Z.Pt())/Z.Pt(),  weight, h_1d, 200, -10., 10.);

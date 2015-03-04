@@ -266,20 +266,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
   TString metSuffix=use_PForNoPUorTKmet==1?"_pfnoPU":"";
   if(use_PForNoPUorTKmet==2) metSuffix="_tkmet";
-  if(use_PForNoPUorTKmet==0) metSuffix="_pfmet";
+  //  if(use_PForNoPUorTKmet==0) metSuffix="_tkmet";
+  if(use_PForNoPUorTKmet==0) metSuffix="_pfmet"; // this doesn't work since we do no have the pfmet as of JAN25
   
   TString generatorSuffix="_powheg";
   if (sampleName.Contains("DYJetsMadSig"))
     generatorSuffix="_madgraph";
 
   /// TKMET type2
-  // std::string fileCorrectTo = Form("../RecoilCode/recoilfit_OCT6_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
-  // std::string fileZmmMC = Form("../RecoilCode/recoilfit_OCT6_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_x2Stat_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
-  // std::string fileZmmData = Form("../RecoilCode/recoilfit_OCT6_DATA%s_eta21_MZ81101_pol3_type2_doubleGauss_x2Stat_53X.root",metSuffix.Data());
-  
-  // std::string fileCorrectTo = Form("../RecoilCode/recoilfit_JAN22_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
-  // std::string fileZmmMC = Form("../RecoilCode/recoilfit_JAN22_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
-  // std::string fileZmmData = Form("../RecoilCode/recoilfit_JAN22_DATA%s_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root",metSuffix.Data());
   std::string fileCorrectTo = Form("../RecoilCode/recoilfit_JAN25_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
   std::string fileZmmMC = Form("../RecoilCode/recoilfit_JAN25_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
   std::string fileZmmData = Form("../RecoilCode/recoilfit_JAN25_DATA%s_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root",metSuffix.Data());
@@ -828,7 +822,25 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   if(nvtx==18) tag_VTX="_VTX18";
                   if(nvtx==19) tag_VTX="_VTX19";
                   if(nvtx>=20) tag_VTX="_VTX20";
-                  
+		  /*
+		  // for 8 TeV
+                  if(nvtx==20) tag_VTX="_VTX20";
+                  if(nvtx==21) tag_VTX="_VTX21";
+                  if(nvtx==22) tag_VTX="_VTX22";
+                  if(nvtx==23) tag_VTX="_VTX23";
+                  if(nvtx==24) tag_VTX="_VTX24";
+                  if(nvtx==25) tag_VTX="_VTX25";
+                  if(nvtx==26) tag_VTX="_VTX26";
+                  if(nvtx==27) tag_VTX="_VTX27";
+                  if(nvtx==28) tag_VTX="_VTX28";
+                  if(nvtx==29) tag_VTX="_VTX29";
+                  if(nvtx==30) tag_VTX="_VTX30";
+                  if(nvtx==31) tag_VTX="_VTX31";
+                  if(nvtx==32) tag_VTX="_VTX32";
+                  if(nvtx==33) tag_VTX="_VTX33";
+                  if(nvtx==34) tag_VTX="_VTX34";
+                  if(nvtx>=35) tag_VTX="_VTX35";
+		  */
                               
                   TLorentzVector VisPt;
                   VisPt.SetPtEtaPhiM(Zcorr.Pt(),0,Zcorr.Phi(),0);
@@ -1390,3 +1402,28 @@ void Zanalysis::ComputeHXVarAndPhiStarEta(TLorentzVector muPos,TLorentzVector mu
 
 }
 
+float Zanalysis::deltaPhi( float phi1 , float phi2 ) {
+  float dphi = fabs( phi1 - phi2 );
+  if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
+  return dphi;
+}
+
+
+double Zanalysis::getMTFirstOrder(double Mu_pt, double Mu_phi, double tkmet,double tkmet_phi, double coeff) {
+
+  TLorentzVector softStuff,met,mu;
+  TLorentzVector newSoftStuff,newMET;
+  met.SetPtEtaPhiM(tkmet,0,tkmet_phi,0);
+  mu.SetPtEtaPhiM(Mu_pt,0,Mu_phi,0); // mu projected on transverse plane
+  softStuff = -met-mu; // this is -ptW
+  newSoftStuff = coeff*softStuff;
+  newMET = -newSoftStuff -mu;
+
+  float dphi = deltaPhi(newSoftStuff.Phi(), mu.Phi());
+  double MT= 2*mu.Pt() + newSoftStuff.Pt() * cos(dphi);
+
+  return MT;
+
+  //MT=2*pt_mu(modulo) +h(vettore)*pt_mu(vettore)/pt_mu(modulo)
+
+}

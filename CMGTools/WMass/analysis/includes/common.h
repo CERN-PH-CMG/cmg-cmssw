@@ -19,7 +19,7 @@ namespace WMass{
   
   static const int PtSFNSteps = 1;
   static const int PtSFtype[PtSFNSteps] = { -1 };
-  
+
   static const int etaMuonNSteps = 1;
   static const float etaMaxMuons[etaMuonNSteps] = { 0.9 };
   static const int nSigOrQCD = 2;
