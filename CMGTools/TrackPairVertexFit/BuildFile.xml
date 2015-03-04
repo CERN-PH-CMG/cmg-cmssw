@@ -1,0 +1,11 @@
+<export>
+<lib name="1"/>
+</export>
+<use name="DataFormats/TrackReco"/>
+<use name="TrackingTools/TransientTrack"/>
+<use name="TrackingTools/Records"/>
+<use name="RecoVertex/VertexPrimitives"/>
+<use name="RecoVertex/KinematicFitPrimitives"/>
+<use name="RecoVertex/KalmanVertexFit"/>
+<use name="RecoVertex/KinematicFit"/>
+<use name="root"/>
