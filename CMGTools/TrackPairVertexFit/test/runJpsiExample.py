@@ -7,8 +7,11 @@ process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
 process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'GR_R_53_V21A::All'
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(20000) )
+process.GlobalTag.globaltag = 'START53_LV6::All' # Legacy MC
+# process.GlobalTag.globaltag = 'FT_R_53_LV5::All' # DATA
+# process.GlobalTag.globaltag = 'GR_R_53_V21A::All' # random, to check
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(24000) )
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use

@@ -5,10 +5,10 @@
 // 
 /**\class JpsiVertexFitExample JpsiVertexFitExample.cc CMGTools/JpsiVertexFitExample/src/JpsiVertexFitExample.cc
 
- Description: [one line class summary]
+Description: [one line class summary]
 
- Implementation:
-     [Notes on implementation]
+Implementation:
+    [Notes on implementation]
 */
 //
 // Original Author:  Michail Bachtis,40 1-B08,+41227678176,
@@ -23,7 +23,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/EDProducer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -31,31 +31,34 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "CMGTools/TrackPairVertexFit/interface/CMGTrackPairVertexFitter.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
+#include "AnalysisDataFormats/CMGTools/interface/Candidate.h"
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include <DataFormats/MuonReco/interface/Muon.h>
+
 #include "TH1F.h"
 #include "TFile.h"
 //
 // class declaration
 //
 
-class JpsiVertexFitExample : public edm::EDAnalyzer {
-   public:
-      explicit JpsiVertexFitExample(const edm::ParameterSet&);
-      ~JpsiVertexFitExample();
+class JpsiVertexFitExample : public edm::EDProducer {
+public:
+  typedef cmg::Muon  Muon;
+  typedef std::vector< Muon > MuonCollection;
+  
+  explicit JpsiVertexFitExample(const edm::ParameterSet& iConfig);
+  virtual ~JpsiVertexFitExample();
 
-      static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+  virtual void produce(edm::Event&, const edm::EventSetup&);
 
+  // static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
-   private:
-      virtual void beginJob() ;
-      virtual void analyze(const edm::Event&, const edm::EventSetup&);
-      virtual void endJob() ;
+  virtual void beginJob() ;
+  virtual void endJob() ;
 
-      virtual void beginRun(edm::Run const&, edm::EventSetup const&);
-      virtual void endRun(edm::Run const&, edm::EventSetup const&);
-      virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
-      virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
+private:
 
-      // ----------member data ---------------------------
+  // ----------member data ---------------------------
   CMGTrackPairVertexFitter *fitter;
   TFile *file; 
   TH1F *before; 
@@ -63,46 +66,39 @@ class JpsiVertexFitExample : public edm::EDAnalyzer {
 };
 
 //
-// constants, enums and typedefs
-//
-
-//
-// static data member definitions
-//
-
-//
 // constructors and destructor
 //
 JpsiVertexFitExample::JpsiVertexFitExample(const edm::ParameterSet& iConfig)
-
 {
+  // produces< std::vector<cmg::Muon> > ();
+  produces< std::vector< Muon > >();
+
+  //now do what ever initialization is needed
 
   file = new TFile("output.root","RECREATE");
-  before = new TH1F("before","before",1000,2,12);
-  after = new TH1F("after","after",1000,2,12);
+  before = new TH1F("before","before",300,2.6,3.6);
+  after = new TH1F("after","after",300,2.6,3.6);
   
   fitter = new CMGTrackPairVertexFitter();
   
- //now do what ever initialization is needed
 
 }
 
 
 JpsiVertexFitExample::~JpsiVertexFitExample()
 {
- 
-  if (fitter)
-    delete fitter;
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
 
+  if (fitter)
+  delete fitter;
+  // do anything here that needs to be done at desctruction time
+  // (e.g. close files, deallocate resources etc.)
 
   if (before)
-    delete before;
+  delete before;
   if (after)
-    delete after;
+  delete after;
   if (file)
-    delete file;
+  delete file;
 
 }
 
@@ -113,45 +109,70 @@ JpsiVertexFitExample::~JpsiVertexFitExample()
 
 // ------------ method called for each event  ------------
 void
-JpsiVertexFitExample::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+JpsiVertexFitExample::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   using namespace edm;
+  using namespace edm;
+  using namespace std;
 
+  double Jpsi_mass = 3.096916, mass_best_postfit=1e10,mass_best_prefit=1e10;
+  unsigned int mu1_idx=0, mu2_idx=1;
 
+  Handle< MuonCollection > muonsH;
+  iEvent.getByLabel("cmgMuonSel",muonsH);
 
-   Handle<std::vector<cmg::Muon> > muonsH;
-   iEvent.getByLabel("cmgMuonSel",muonsH);
+  typedef std::auto_ptr< MuonCollection >  OutPtr;
 
-   for (unsigned int i=0;i<muonsH->size()-1;++i)
-     for (unsigned int j=i+1;j<muonsH->size();++j) {
-       const cmg::Muon& mu1= (*muonsH)[i];  
-       const cmg::Muon& mu2= (*muonsH)[j];  
-       if ((mu1.charge()+mu2.charge())!=0)
-	 continue;
-       
-       if (!(mu1.isTrackerMuon()&&mu2.isTrackerMuon()))
-	 continue;
+  if(muonsH->size()<2) return;
+  
+  for (unsigned int i=0;i<muonsH->size()-1;++i){
+    for (unsigned int j=i+1;j<muonsH->size();++j) {
+      const cmg::Muon& mu1= (*muonsH)[i];  
+      const cmg::Muon& mu2= (*muonsH)[j];  
+      if ((mu1.charge()+mu2.charge())!=0)
+        continue;
+      
+      if (!(mu1.isTrackerMuon()&&mu2.isTrackerMuon()))
+        continue;
 
-       float m = (mu1.p4()+mu2.p4()).M();
+      float m = (mu1.p4()+mu2.p4()).M();
 
-       //       if (m<2.8 || m>3.3)
-       //	 continue;
+      // printf("Mass before=%f \n",(mu1.p4()+mu2.p4()).M());
+      if (!((*mu1.sourcePtr())->innerTrack().isNonnull() && (*mu1.sourcePtr())->innerTrack().isNonnull()))
+        continue;
+      
+      if (fitter->fit((*mu1.sourcePtr())->innerTrack(),(*mu2.sourcePtr())->innerTrack(),iSetup)) {
+        // printf("Fitted plus=%f %f %f\n",fitter->plus()->Pt(),fitter->plus()->Eta(),fitter->plus()->Phi());
+        // printf("Fitted minus=%f %f %f\n",fitter->minus()->Pt(),fitter->minus()->Eta(),fitter->minus()->Phi());
 
-       printf("Mass before=%f \n",(mu1.p4()+mu2.p4()).M());
-       before->Fill(m);
-       if (!((*mu1.sourcePtr())->innerTrack().isNonnull() && (*mu1.sourcePtr())->innerTrack().isNonnull()))
-	 continue;
-       if (fitter->fit((*mu1.sourcePtr())->innerTrack(),(*mu2.sourcePtr())->innerTrack(),iSetup)) {
-	 printf("Fitted plus=%f %f %f\n",fitter->plus()->Pt(),fitter->plus()->Eta(),fitter->plus()->Phi());
-	 printf("Fitted minus=%f %f %f\n",fitter->minus()->Pt(),fitter->minus()->Eta(),fitter->minus()->Phi());
-       }
+        float m2 = ((*fitter->plus())+(*fitter->minus())).M();
+        if(TMath::Abs(m2-Jpsi_mass)<TMath::Abs(mass_best_postfit-Jpsi_mass)){
+          mu1_idx=i;
+          mu2_idx=j;
+          mass_best_prefit=m;
+          mass_best_postfit=m2;
+        }
+      }
 
-       float m2 = ((*fitter->plus())+(*fitter->minus())).M();
+    }
+  }
+  
+  // we have the best muon candidate pair
+  
+  if(mass_best_postfit>2.5 && mass_best_postfit<3.6 ){
+    // printf("Mass after=%f \n",m2);
+    before->Fill(mass_best_prefit);
+    after->Fill(mass_best_postfit);
+  }
+  
+  Muon mu1_best( muonsH->at(mu1_idx) );
+  Muon mu2_best( muonsH->at(mu2_idx) );
+  // std::cout << mu1_best << " " << mu2_best << std::endl;
 
-       printf("Mass after=%f \n",m2);
-       after->Fill(m2);
+  OutPtr pOut( new MuonCollection() );
 
-     }
+  pOut->push_back(mu1_best);
+  pOut->push_back(mu2_best);
+  iEvent.put( pOut );
 
 }
 
@@ -173,39 +194,15 @@ JpsiVertexFitExample::endJob()
 
 }
 
-// ------------ method called when starting to processes a run  ------------
-void 
-JpsiVertexFitExample::beginRun(edm::Run const&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-JpsiVertexFitExample::endRun(edm::Run const&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-JpsiVertexFitExample::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-JpsiVertexFitExample::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
-{
-}
-
-// ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
-void
-JpsiVertexFitExample::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
-  //The following says we do not know what parameters are allowed so do no validation
-  // Please change this to state exactly what you do use, even if it is no parameters
-  edm::ParameterSetDescription desc;
-  desc.setUnknown();
-  descriptions.addDefault(desc);
-}
+// // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
+// void
+// JpsiVertexFitExample::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+  // //The following says we do not know what parameters are allowed so do no validation
+  // // Please change this to state exactly what you do use, even if it is no parameters
+  // edm::ParameterSetDescription desc;
+  // desc.setUnknown();
+  // descriptions.addDefault(desc);
+// }
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(JpsiVertexFitExample);

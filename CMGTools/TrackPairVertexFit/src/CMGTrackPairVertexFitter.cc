@@ -10,9 +10,9 @@ CMGTrackPairVertexFitter::CMGTrackPairVertexFitter() {
 
 CMGTrackPairVertexFitter::~CMGTrackPairVertexFitter() {
   if (t1)
-    delete t1;
+  delete t1;
   if (t2)
-    delete t2;
+  delete t2;
 }
 
 
@@ -41,7 +41,7 @@ bool CMGTrackPairVertexFitter::fit(const reco::TrackRef& pos, const reco::TrackR
   RefCountedKinematicTree vertexFitTree = fitter.fit(muonParticles);
 
   if (!vertexFitTree->isValid())
-    return false;
+  return false;
 
   vertexFitTree->movePointerToTheTop();
 
@@ -50,15 +50,15 @@ bool CMGTrackPairVertexFitter::fit(const reco::TrackRef& pos, const reco::TrackR
     const RefCountedKinematicParticle& particle = children[i];
     if (particle->currentState().particleCharge()>0) {
       t1->SetPxPyPzE(particle->currentState().globalMomentum().x(),
-		     particle->currentState().globalMomentum().y(),
-		     particle->currentState().globalMomentum().z(),
-		     sqrt(particle->currentState().globalMomentum().mag2()+muon_mass*muon_mass));
+      particle->currentState().globalMomentum().y(),
+      particle->currentState().globalMomentum().z(),
+      sqrt(particle->currentState().globalMomentum().mag2()+muon_mass*muon_mass));
     }
     else {
       t2->SetPxPyPzE(particle->currentState().globalMomentum().x(),
-		     particle->currentState().globalMomentum().y(),
-		     particle->currentState().globalMomentum().z(),
-		     sqrt(particle->currentState().globalMomentum().mag2()+muon_mass*muon_mass));
+      particle->currentState().globalMomentum().y(),
+      particle->currentState().globalMomentum().z(),
+      sqrt(particle->currentState().globalMomentum().mag2()+muon_mass*muon_mass));
     }
 
 
