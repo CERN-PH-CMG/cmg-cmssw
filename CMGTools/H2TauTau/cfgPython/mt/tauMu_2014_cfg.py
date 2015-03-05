@@ -18,7 +18,7 @@ from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJets
 # 'Nom', 'Up', 'Down', or None
 shift = None
 syncntuple = True
-computeSVfit = False
+computeSVfit = True
 
 # When ready, include weights from CMGTools.H2TauTau.proto.weights.weighttable
 
@@ -81,7 +81,7 @@ muonWeighter = cfg.Analyzer(
     verbose = False,
     disable = True,
     idWeight = None,
-    isoWeight = None    
+    isoWeight = None
     )
 
 treeProducer = cfg.Analyzer(
@@ -99,13 +99,13 @@ syncTreeProducer = cfg.Analyzer(
 svfitProducer = cfg.Analyzer(
     SVfitProducer,
     name='SVfitProducer',
-    integration='VEGAS',
-    #integration='MarkovChain',
-    #debug=True,
+    #integration='VEGAS',
+    integration='MarkovChain',
+    #verbose=True,
     l1type='tau',
     l2type='muon'
     )
-    
+
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
@@ -133,7 +133,7 @@ sequence.append(tauDecayModeWeighter)
 sequence.append(tauFakeRateWeighter)
 sequence.append(tauWeighter)
 sequence.append(muonWeighter)
-if computeSVfit: 
+if computeSVfit:
     sequence.append(svfitProducer)
 sequence.append(treeProducer)
 if syncntuple:
