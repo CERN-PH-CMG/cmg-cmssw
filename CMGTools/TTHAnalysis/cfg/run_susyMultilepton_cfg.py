@@ -15,13 +15,15 @@ ttHLepSkim.maxLeptons = 999
 #ttHLepSkim.idCut  = ""
 #ttHLepSkim.ptCuts = []
 
+# --- LEPTON SELECTION ---
+lepAna.loose_electron_id = "POG_MVA_ID_Run2_NonTrig_Loose"
+
 # run miniIso
 lepAna.doMiniIsolation = True
 lepAna.packedCandidates = 'packedPFCandidates'
 lepAna.miniIsolationPUCorr = 'rhoArea'
 lepAna.miniIsolationVetoLeptons = None # use 'inclusive' to veto inclusive leptons and their footprint in all isolation cones
     
-
 # switch off slow photon MC matching
 photonAna.do_mc_match = False
 
@@ -31,6 +33,13 @@ ttHEventAna = cfg.Analyzer(
     ttHLepEventAnalyzer, name="ttHLepEventAnalyzer",
     minJets25 = 0,
     )
+
+##==== tau jet analyzer, to be called (for the moment) once bjetsMedium are produced
+from CMGTools.TTHAnalysis.analyzers.ttHJetTauAnalyzer import ttHJetTauAnalyzer
+ttHJetTauAna = cfg.Analyzer(
+    ttHJetTauAnalyzer, name="ttHJetTauAnalyzer",
+    )
+
 
 ## Insert the SV analyzer in the sequence
 susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
@@ -42,6 +51,7 @@ susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna),
 
 ## Lepton preselection to use
 isolation = "relIso03"
+#isolation = "ptRel"
 if isolation == "ptRel": 
     # delay isolation cut for leptons of pt > 10, for which we do pTrel recovery
     lepAna.loose_muon_isoCut     = lambda muon : muon.relIso03 < 0.5 or muon.pt() > 10
@@ -50,6 +60,10 @@ if isolation == "ptRel":
     jetAna.jetLepArbitration = lambda jet,lepton : (
         lepton if (lepton.relIso03 < 0.4 or ptRelv1(lepton.p4(),jet.p4()) > 5) else jet
     )
+    ttHCoreEventAna.leptonMVAKindTTH = "SusyWithBoost"
+    ttHCoreEventAna.leptonMVAKindSusy = "SusyWithBoost" 
+    ttHCoreEventAna.leptonMVAPathTTH = "CMGTools/TTHAnalysis/macros/leptons/trainingPHYS14leptonMVA_PHYS14eleMVA_MiniIso_ttH/weights/%s_BDTG.weights.xml"
+    ttHCoreEventAna.leptonMVAPathSusy = "CMGTools/TTHAnalysis/macros/leptons/trainingPHYS14leptonMVA_PHYS14eleMVA_MiniIso_SusyT1/weights/%s_BDTG.weights.xml"
     # insert a second skimmer after the jet cleaning 
     ttHLepSkim2 = cfg.Analyzer(
         ttHLepSkimmer, name='ttHLepSkimmer2',
@@ -89,6 +103,12 @@ treeProducer = cfg.Analyzer(
      collections = susyMultilepton_collections,
 )
 
+## histo counter
+TFileServiceMode=False
+if TFileServiceMode:
+    susyCoreSequence.insert(susyCoreSequence.index(skimAnalyzer),
+                            susyCounter)
+
 #-------- SAMPLES AND TRIGGERS -----------
 
 #-------- SEQUENCE
@@ -96,23 +116,30 @@ from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
 from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14v2 import SingleMu
 
 selectedComponents = [
-   ] + WJetsToLNuHT + DYJetsM50HT + [DYJetsToLL_M50,
-    TTJets ]+ SingleTop +[
-    TTWJets,TTZJets, TTH,
-    WZJetsTo3LNu, ZZTo4L,
-    GGHZZ4L,
-    SMS_T1tttt_2J_mGl1500_mLSP100, SMS_T1tttt_2J_mGl1200_mLSP800
+  ] + WJetsToLNuHT + DYJetsM50HT + [DYJetsToLL_M50,
+   TTJets ]+ SingleTop +[
+   TTWJets,TTZJets, TTH,
+   WZJetsTo3LNu, ZZTo4L,
+   GGHZZ4L,
+   SMS_T1tttt_2J_mGl1500_mLSP100, SMS_T1tttt_2J_mGl1200_mLSP800
 ]
 
+#selectedComponents = [
+#  ] + WJetsToLNuHT + [TTJets, TTH, SMS_T1tttt_2J_mGl1500_mLSP100, SMS_T1tttt_2J_mGl1200_mLSP800]
+
+#selectedComponents = [T5ttttDeg_mGo1000_mStop300_mCh285_mChi280, T5ttttDeg_mGo1000_mStop300_mCh285_mChi280_dil, TTWJets, TTZJets, WZJetsTo3LNu]
+
 sequence = cfg.Sequence(susyCoreSequence+[
-    ttHEventAna,
-    treeProducer,
+        ttHJetTauAna,
+        ttHEventAna,
+        treeProducer,
     ])
 
 # -- fine splitting, for some private MC samples with a single file
 #for comp in selectedComponents:
 #    comp.splitFactor = 1
 #    comp.fineSplitFactor = 40
+
     
 from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
 test = getHeppyOption('test')
@@ -164,8 +191,18 @@ elif test == '2lss-sync': # sync
     comp.fineSplitFactor = 10
     selectedComponents = [ comp ]
 
-
-            
+## output histogram
+outputService=[]
+if TFileServiceMode:
+    from PhysicsTools.HeppyCore.framework.services.tfile import TFileService
+    output_service = cfg.Service(
+        TFileService,
+        'outputfile',
+        name="outputfile",
+        fname='treeProducerSusyMultilepton/tree.root',
+        option='recreate'
+        )    
+    outputService.append(output_service)
 
 # the following is declared in case this cfg is used in input to the heppy.py script
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
@@ -175,5 +212,5 @@ if getHeppyOption("nofetch"):
     event_class = Events 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence,
-                     services = [],  
+                     services = outputService,  
                      events_class = event_class)

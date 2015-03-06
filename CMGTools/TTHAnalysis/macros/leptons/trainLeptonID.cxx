@@ -11,6 +11,9 @@ void trainLeptonID(TString name, TString train="GoodvsBad") {
 
     TString allvars = ""; 
     //common variables
+    //factory->AddVariable("LepGood_miniRelIsoCharged", 'D'); allvars += "chMiniRelIso03";
+    //factory->AddVariable("LepGood_miniRelIsoNeutral", 'D'); allvars += ":neuMiniIso03";
+    //factory->AddVariable("LepGood_jetPtRelV1", 'D'); allvars += ":jetPtRelV1";
     factory->AddVariable("LepGood_neuRelIso03 := LepGood_relIso03 - LepGood_chargedHadRelIso03", 'D'); allvars += "neuRelIso03";
     factory->AddVariable("LepGood_chRelIso03 := LepGood_chargedHadRelIso03", 'D');        allvars += ":chRelIso03";
     factory->AddVariable("LepGood_jetDR := min(LepGood_jetDR,0.5)", 'D');         allvars += ":jetDR";
@@ -33,7 +36,7 @@ void trainLeptonID(TString name, TString train="GoodvsBad") {
     } else if (name.Contains("el")) {
       //electron variables
         if (!name.Contains("NoID")) {
-            factory->AddVariable("LepGood_mvaId",'D');     allvars += ":mvaId";           
+            factory->AddVariable("LepGood_mvaIdPhys14",'D');     allvars += ":mvaId";           
         }
     } else { std::cerr << "ERROR: must either be electron or muon." << std::endl; return; }
 
@@ -49,8 +52,32 @@ void trainLeptonID(TString name, TString train="GoodvsBad") {
         factory->AddVariable("LepGood_svChi2n := min(max( LepGood_svChi2n, -1),10)", 'D');   allvars += ":svChi2n";
         factory->AddVariable("LepGood_svDxy := min(max( LepGood_svDxy, 0),4)", 'D');   allvars += ":svDxy";
     }
+
+
+    // if (name.Contains("FR")) {
+    //   factory->AddVariable("LepGood_jetNDau := min(max(LepGood_jetNDau,-1),150)", 'D');         allvars += ":jetNDau";
+    //   factory->AddVariable("LepGood_jetNDauCharged := min(max(LepGood_jetNDauCharged,-1),150)", 'D');         allvars += ":jetNDauCharged";
+    //   factory->AddVariable("LepGood_jetNDauPV := min(max(LepGood_jetNDauPV,-1),150)", 'D');         allvars += ":jetNDauPV";
+    //   factory->AddVariable("LepGood_jetNDauNotPV := min(max(LepGood_jetNDauNotPV,-1),150)", 'D');         allvars += ":jetNDauNotPV";
+    //   factory->AddVariable("LepGood_jetmaxSignedSip3D := min(LepGood_jetmaxSignedSip3D,0.5)", 'D');         allvars += ":jetmaxSignedSip3D";
+    //   factory->AddVariable("LepGood_jetmaxSip3D := min(LepGood_jetmaxSip3D,0.5)", 'D');         allvars += ":jetmaxSip3D";
+    //   factory->AddVariable("LepGood_jetmaxSignedSip2D := min(LepGood_jetmaxSignedSip2D,0.5)", 'D');         allvars += ":jetmaxSignedSip2D";
+    //   factory->AddVariable("LepGood_jetmaxSip2D := min(LepGood_jetmaxSip2D,0.5)", 'D');         allvars += ":jetmaxSip2D";
    
-    TCut lepton = (name.Contains("mu") ? "abs(LepGood_pdgId) == 13 && (LepGood_innerTrackValidHitFraction >= 0.80 &&  LepGood_segmentCompatibility>0.303 + (0.451-0.303)*(!(LepGood_chi2LocalPosition < 12 && LepGood_globalTrackChi2 > 0 && LepGood_globalTrackChi2 < 3 && LepGood_trkKink < 20)))" : "abs(LepGood_pdgId) == 11");
+    // }
+
+    
+
+
+    //For standard trees 
+    //TCut lepton = (name.Contains("mu") ? "abs(LepGood_pdgId) == 13 && (LepGood_innerTrackValidHitFraction >= 0.80 &&  LepGood_segmentCompatibility>0.303 + (0.451-0.303)*(!(LepGood_chi2LocalPosition < 12 && LepGood_globalTrackChi2 > 0 && LepGood_globalTrackChi2 < 3 && LepGood_trkKink < 20)))" : "abs(LepGood_pdgId) == 11");
+    //TCut lepton = (name.Contains("mu") ? "abs(LepGood_pdgId) == 13 && LepGood_mediumMuonId == 1 " : "abs(LepGood_pdgId) == 11");
+    //For relaxed preselection trees
+    //TCut lepton = (name.Contains("mu") ? "abs(LepGood_pdgId) == 13 && LepGood_relIso03 > 0.5 && LepGood_mediumMuonId == 1" : "abs(LepGood_pdgId) == 11 && LepGood_relIso03 > 0.5 && LepGood_tightId>=0");
+    //For new electron presel
+    TCut lepton = (name.Contains("mu") ? "abs(LepGood_pdgId) == 13 && LepGood_relIso03 > 0.5 && LepGood_mediumMuonId == 1" : "abs(LepGood_pdgId) == 11 && LepGood_relIso03 > 0.5 && LepGood_mvaIdPhys14 >= (0.35+(0.20-0.35)*(abs(LepGood_eta)>0.8)+(-0.52-0.20)*(abs(LepGood_eta)>1.479))");
+    //For ptRel
+    //TCut lepton = (name.Contains("mu") ? "abs(LepGood_pdgId) == 13 && ((LepGood_relIso03<0.4)||(LepGood_jetPtRelV1>5)) && LepGood_mediumMuonId == 1" : "abs(LepGood_pdgId) == 11 && ((LepGood_relIso03<0.4)||(LepGood_jetPtRelV1>5)) && LepGood_mvaIdPhys14 >= (0.35+(0.20-0.35)*(abs(LepGood_eta)>0.8)+(-0.52-0.20)*(abs(LepGood_eta)>1.479))");
 
     if (name.Contains("mu")) {
         if (name.Contains("pteta")) {
@@ -76,7 +103,10 @@ void trainLeptonID(TString name, TString train="GoodvsBad") {
     factory->AddSignalTree(dSig, wSig);
     factory->AddBackgroundTree(dBg1, wBkg);
 
-    // re-weighting to approximately match n(jet) multiplicity of signal
+
+    
+
+    //re-weighting to approximately match n(jet) multiplicity of signal
     //factory->SetWeightExpression("puWeight*((good>0)+(good<=0)*pow(nJet25,2.36))");
     //factory->SetWeightExpression("puWeight");
 
