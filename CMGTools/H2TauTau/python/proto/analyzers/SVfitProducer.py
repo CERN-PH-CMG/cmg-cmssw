@@ -37,16 +37,14 @@ class SVfitProducer(Analyzer):
                                  event.leg2.eta(), event.leg2.phi(), mass2, decayMode2)
 
         measuredLeptons = std.vector('svFitStandalone::MeasuredTauLepton')()
-        measuredLeptons.push_back(leg2)
-        measuredLeptons.push_back(leg1)
 
-        # RIC: not needed since SVfit internally sorts the inputs
-        # if self.cfg_ana.order == '12' :
-        #     measuredLeptons.push_back(leg1)
-        #     measuredLeptons.push_back(leg2)
-        # if self.cfg_ana.order == '21' :
-        #     measuredLeptons.push_back(leg2)
-        #     measuredLeptons.push_back(leg1)
+        # RIC: not really needed since SVfit internally sorts the inputs
+        if hasattr(self.cfg_ana, 'order') and self.cfg_ana.order == '12' :
+            measuredLeptons.push_back(leg1)
+            measuredLeptons.push_back(leg2)
+        else :
+            measuredLeptons.push_back(leg2)
+            measuredLeptons.push_back(leg1)
 
         metcov = TMatrixD(2, 2)
 
@@ -58,7 +56,7 @@ class SVfitProducer(Analyzer):
         mex = event.diLepton.met().px()
         mey = event.diLepton.met().py()
 
-        svfit = SVfitAlgo(measuredLeptons, mex, mey, metcov, self.cfg_ana.verbose)
+        svfit = SVfitAlgo(measuredLeptons, mex, mey, metcov, 2*self.cfg_ana.verbose)
 
         # add an additional logM(tau,tau) term to the nll
         # to suppress tails on M(tau,tau) (default is false)
@@ -74,14 +72,23 @@ class SVfitProducer(Analyzer):
             raise
 
         # debug
-        if hasattr(self.cfg_ana, 'debug'):
-            if self.cfg_ana.debug:
-                if abs(event.diLepton.svfitMass()-svfit.getMass()) > 0.01:
-                    print 'WARNING: run {RUN}, lumi {LUMI}, event {EVT}'.format(RUN=str(event.run),
-                                                                                LUMI=str(event.lumi),
-                                                                                EVT=str(event.eventId))
-                    print 'precomputed svfit mass   ', event.diLepton.svfitMass()
-                    print 'svfit mass computed here ', svfit.mass()
+        if self.cfg_ana.verbose:
+            if abs(event.diLepton.svfitMass()-svfit.mass()) > 0.01:
+                print 'WARNING: run {RUN}, lumi {LUMI}, event {EVT}'.format(RUN=str(event.run),
+                                                                            LUMI=str(event.lumi),
+                                                                            EVT=str(event.eventId))
+                print 'precomputed svfit mass   ', event.diLepton.svfitMass()
+                print 'svfit mass computed here ', svfit.mass()
+
+        import pdb ; pdb.set_trace()
 
         # method override
-        event.diLepton.svfitMass = svfit.mass
+        event.diLepton.svfitMass      = svfit.mass
+        event.diLepton.svfitMassError = svfit.massUncert
+
+        # add also the pt, eta and phi as computed by SVfit
+        if self.cfg_ana.integration == 'MarkovChain':
+            event.diLepton.svfitPt       = svfit.pt
+            event.diLepton.svfitPtError  = svfit.ptUncert
+            event.diLepton.svfitEta      = svfit.eta
+            event.diLepton.svfitPhi      = svfit.phi

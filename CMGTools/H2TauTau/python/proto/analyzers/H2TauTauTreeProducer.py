@@ -32,10 +32,10 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
        _ hard scattering quarks and gluons (up to 4, can be set by self.maxNGenJets)
        Signal lepton-specific variables need to be booked
        and filled in the channel-specific child producers.
-       
+
        The branch names can be changed by means of a dictionary.
     '''
-    
+
     def __init__( self, *args ) :
         super(H2TauTauTreeProducer, self).__init__(*args)
         self.varStyle     = 'std'
@@ -50,7 +50,7 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
 
     def var( self, tree, varName, type=float ):
         tree.var(self.varName(varName), type)
-    
+
     def fill( self, tree, varName, value ):
         tree.fill(self.varName(varName), value)
 
@@ -58,7 +58,7 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         super(H2TauTauTreeProducer, self).declareHandles()
         self.handles['pfmetraw'] = AutoHandle(
                 'slimmedMETs',
-                'std::vector<pat::MET>' 
+                'std::vector<pat::MET>'
                 )
 
     def varName(self, name) :
@@ -75,9 +75,9 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
             self.tree.tree.Fill()
 
     def declareVariables( self, setup ):
-        
+
         self.bookEvtID      (self.tree)
-        self.bookDiLepton   (self.tree)          
+        self.bookDiLepton   (self.tree)
         self.bookGenInfo    (self.tree)
         self.bookVBF        (self.tree, 'ditau')
 
@@ -89,19 +89,19 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.var            (self.tree, 'nJets20', int) # pt>20 GeV
         self.bookJet        (self.tree, 'jet1'        )
         self.bookJet        (self.tree, 'jet2'        )
-   
+
         self.var            (self.tree, 'nCSVLJets', int)
         self.var            (self.tree, 'nbJets'   , int)
         self.bookJet        (self.tree, 'bjet1'         )
         self.bookJet        (self.tree, 'bjet2'         )
-           
+
         self.var            (self.tree, 'nVert'       , int)
         self.var            (self.tree, 'rho'              )
         self.var            (self.tree, 'weight'           )
         self.var            (self.tree, 'vertexWeight'     )
         self.var            (self.tree, 'embedWeight'      )
         self.var            (self.tree, 'NJetWeight'       )
-   
+
         self.var            (self.tree, 'hqtWeight'    )
         self.var            (self.tree, 'hqtWeightUp'  )
         self.var            (self.tree, 'hqtWeightDown')
@@ -109,21 +109,21 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.bookParticle   (self.tree, 'pfmet')
 
         self.bookGenParticle(self.tree, 'genBoson')
-        
+
         self.maxNGenJets = 4
 
     def process(self, event):
-    
+
         # needed when doing handle.product(), goes back to PhysicsTools.Heppy.analyzers.core.Analyzer
-        self.readCollections( event.input ) 
+        self.readCollections( event.input )
 
         self.tree.reset()
 
         if not eval(self.skimFunction) :
             return False
-                                 
+
         self.fillEvtID   (self.tree, event         )
-        self.fillDiLepton(self.tree, event.diLepton)          
+        self.fillDiLepton(self.tree, event.diLepton)
         self.fillGenInfo (self.tree, event         )
         if hasattr(event, 'vbf') :
             self.fillVBF     (self.tree, 'ditau', event.vbf)
@@ -131,17 +131,17 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.fill(self.tree, 'isSignal'       , event.isSignal       )
         self.fill(self.tree, 'leptonAccept'   , event.leptonAccept   )
         self.fill(self.tree, 'thirdLeptonVeto', event.thirdLeptonVeto)
-        
+
         nJets   = len(event.cleanJets30)
         nJets20 = len(event.cleanJets  )
         self.fill(self.tree, 'nJets'  , nJets  )
         self.fill(self.tree, 'nJets20', nJets20)
-        for i, jet in enumerate(event.cleanJets[:2]) : 
+        for i, jet in enumerate(event.cleanJets[:2]) :
             self.fillJet(self.tree, 'jet{NUM}'.format(NUM=str(i+1)), jet)
-        
+
         nbJets = len(event.cleanBJets)
         self.fill(self.tree, 'nbJets', nbJets)
-        for i, jet in enumerate(event.cleanBJets[:2]) : 
+        for i, jet in enumerate(event.cleanBJets[:2]) :
             self.fillJet(self.tree, 'bjet{NUM}'.format(NUM=str(i+1)), jet)
         # JAN - directly count CSVL jets as done in
         # other groups. May apply SFs as for CSVM jets
@@ -151,24 +151,24 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
             if jet.btag('combinedSecondaryVertexBJetTags') > 0.244:
                     nCSVLJets += 1
         self.fill(self.tree, 'nCSVLJets', nCSVLJets)
-        
-        self.fill(self.tree, 'nVert'       , len(event.vertices)) 
-        self.fill(self.tree, 'rho'         , event.rho          ) 
+
+        self.fill(self.tree, 'nVert'       , len(event.vertices))
+        self.fill(self.tree, 'rho'         , event.rho          )
         self.fill(self.tree, 'weight'      , event.eventWeight  )
         self.fill(self.tree, 'vertexWeight', event.vertexWeight )
         self.fill(self.tree, 'embedWeight' , event.embedWeight  )
         self.fill(self.tree, 'NJetWeight'  , event.NJetWeight   )
 
-        self.fill(self.tree, 'hqtWeight'    , event.higgsPtWeight    ) 
-        self.fill(self.tree, 'hqtWeightUp'  , event.higgsPtWeightUp  ) 
-        self.fill(self.tree, 'hqtWeightDown', event.higgsPtWeightDown) 
+        self.fill(self.tree, 'hqtWeight'    , event.higgsPtWeight    )
+        self.fill(self.tree, 'hqtWeightUp'  , event.higgsPtWeightUp  )
+        self.fill(self.tree, 'hqtWeightDown', event.higgsPtWeightDown)
 
         if hasattr(event, 'parentBoson') :
             self.fillGenParticle(self.tree, 'genBoson', event.parentBoson)
 
         pfmet = self.handles['pfmetraw'].product()[0]
         self.fillParticle(self.tree, 'pfmet', pfmet)
-        
+
         if type(self) is H2TauTauTreeProducer:
             self.fillTree(event)
 
@@ -184,7 +184,7 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.fill(tree, 'lumi' , event.lumi   )
         self.fill(tree, 'event', event.eventId)
 
-    
+
     # simple particle
     def bookParticle( self, tree, pName ):
         self.var(tree, '{pName}_pt'    .format(pName=pName))
@@ -192,31 +192,34 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.var(tree, '{pName}_phi'   .format(pName=pName))
         self.var(tree, '{pName}_charge'.format(pName=pName))
         self.var(tree, '{pName}_mass'  .format(pName=pName))
-    
+
     def fillParticle( self, tree, pName, particle ):
         self.fill(tree, '{pName}_pt'    .format(pName=pName), particle.pt()     )
         self.fill(tree, '{pName}_eta'   .format(pName=pName), particle.eta()    )
         self.fill(tree, '{pName}_phi'   .format(pName=pName), particle.phi()    )
         self.fill(tree, '{pName}_charge'.format(pName=pName), particle.charge() )
         self.fill(tree, '{pName}_mass'  .format(pName=pName), particle.mass()   )
-    
-    
+
+
     # simple gen particle
     def bookGenParticle( self, tree, pName ):
         self.bookParticle(tree, pName)
         self.var(tree, '{pName}_mass' .format(pName=pName))
         self.var(tree, '{pName}_pdgId'.format(pName=pName))
-        
+
     def fillGenParticle( self, tree, pName, particle ):
         self.fillParticle(tree, pName, particle)
         self.fill(tree, '{pName}_mass' .format(pName=pName), particle.mass() )
         self.fill(tree, '{pName}_pdgId'.format(pName=pName), particle.pdgId())
-    
-    
-    # di-tau 
+
+
+    # di-tau
     def bookDiLepton( self, tree ):
         self.var(tree, 'visMass'      )
         self.var(tree, 'svfitMass'    )
+        self.var(tree, 'svfitPt'      )
+        self.var(tree, 'svfitEta'     )
+        self.var(tree, 'svfitPhi'     )
         self.var(tree, 'pZetaMET'     )
         self.var(tree, 'pZetaVis'     )
         self.var(tree, 'pZetaDisc'    )
@@ -237,10 +240,13 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.var(tree, 'mex'          )
         self.var(tree, 'mey'          )
         self.var(tree, 'met'          )
-    
+
     def fillDiLepton( self, tree, diLepton):
         self.fill(tree, 'visMass'  , diLepton.mass()     )
         self.fill(tree, 'svfitMass', diLepton.svfitMass())
+        self.fill(tree, 'svfitPt'  , diLepton.svfitPt()  )
+        self.fill(tree, 'svfitEta' , diLepton.svfitEta() )
+        self.fill(tree, 'svfitPhi' , diLepton.svfitPhi() )
         self.fill(tree, 'pZetaMET' , diLepton.pZetaMET() )
         self.fill(tree, 'pZetaVis' , diLepton.pZetaVis() )
         self.fill(tree, 'pZetaDisc', diLepton.pZetaDisc())
@@ -256,10 +262,10 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.fill(tree, 'mex'     , diLepton.met().px() )
         self.fill(tree, 'mey'     , diLepton.met().py() )
         self.fill(tree, 'met'     , diLepton.met().pt() )
-    
+
         pthiggs = (diLepton.leg1().p4()+diLepton.leg2().p4()+diLepton.met().p4()).pt()
         self.fill(tree, 'pthiggs', pthiggs)
-        
+
         l1eta  = diLepton.leg1().eta()
         l2eta  = diLepton.leg2().eta()
         l1phi  = diLepton.leg1().phi()
@@ -270,8 +276,8 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.fill(tree, 'deltaRL1L2'   , deltaR(l1eta, l1phi, l2eta, l2phi))
         self.fill(tree, 'deltaPhiL1MET', deltaPhi(l1phi, metphi)           )
         self.fill(tree, 'deltaPhiL2MET', deltaPhi(l2phi, metphi)           )
-        
-    
+
+
     # lepton
     def bookLepton( self, tree, pName ):
         self.bookParticle(tree, pName        )
@@ -284,7 +290,7 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.var(tree, '{pName}_triggerEffData'.format(pName=pName))
         self.var(tree, '{pName}_triggerEffMC'  .format(pName=pName))
         self.var(tree, '{pName}_recEffWeight'  .format(pName=pName))
-    
+
     def fillLepton( self, tree, pName, lepton ):
         self.fillParticle(tree, pName       , lepton     )
         self.fillParticle(tree, pName+'_jet', lepton.jet )
@@ -301,8 +307,8 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.fill(tree, '{pName}_triggerEffData'.format(pName=pName), lepton.triggerEffData         )
         self.fill(tree, '{pName}_triggerEffMC'  .format(pName=pName), lepton.triggerEffMC           )
         self.fill(tree, '{pName}_recEffWeight'  .format(pName=pName), lepton.recEffWeight           )
-    
-    
+
+
     # muon
     def bookMuon( self, tree, pName ):
         self.bookLepton(tree, pName )
@@ -310,15 +316,15 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         # var(tree, '{pName}_mvaIso'.format(pName=pName))
         self.var(tree, '{pName}_looseId'.format(pName=pName))
         self.var(tree, '{pName}_tightId'.format(pName=pName))
-    
+
     def fillMuon( self, tree, pName, muon ):
         self.fillLepton(tree, pName, muon)
         # JAN FIXME - do we need the MVA iso and does it exist?
         # fill(tree, '{pName}_mvaIso'.format(pName=pName), muon.mvaIso() )
         self.fill(tree, '{pName}_looseId'.format(pName=pName), muon.looseId() )
         self.fill(tree, '{pName}_tightId'.format(pName=pName), muon.tightId() )
-    
-    
+
+
     # electron
     def bookEle( self, tree, pName ):
         self.bookLepton(tree, pName )
@@ -329,7 +335,7 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.var(tree, '{pName}_tightId'            .format(pName=pName))
         self.var(tree, '{pName}_numberOfMissingHits'.format(pName=pName))
         self.var(tree, '{pName}_passConversionVeto' .format(pName=pName))
-        
+
     def fillEle( self, tree, pName, ele ):
         self.fillLepton(tree, pName, ele)
         # JAN FIXME - do we need the MVA iso and does it exist?
@@ -341,9 +347,9 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         # self.fill(tree, '{pName}_tightId'            .format(pName=pName), ele.tightIdForEleTau()         )
         # self.fill(tree, '{pName}_numberOfMissingHits'.format(pName=pName), ele.lostInner()                )
         # self.fill(tree, '{pName}_passConversionVeto' .format(pName=pName), ele.passConversionVeto()       )
-    
-    
-    # tau   
+
+
+    # tau
     def bookTau( self, tree, pName ):
         self.bookLepton(tree, pName )
         for tauID in tauIDs:
@@ -351,7 +357,7 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.var(tree, '{pName}_EOverp'   .format(pName=pName))
         self.var(tree, '{pName}_decayMode'.format(pName=pName))
         self.var(tree, '{pName}_zImpact'  .format(pName=pName))
-    
+
     def fillTau( self, tree, pName, tau ):
         self.fillLepton(tree, pName, tau)
         for tauID in tauIDs:
@@ -359,8 +365,8 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         #self.fill(tree, '{pName}_EOverp'   .format(pName=pName), tau.calcEOverP())
         self.fill(tree, '{pName}_decayMode'.format(pName=pName), tau.decayMode()  )
         self.fill(tree, '{pName}_zImpact'  .format(pName=pName), tau.zImpact()    )
-    
-    
+
+
     # jet
     def bookJet( self, tree, pName ):
         self.bookParticle(tree, pName)
@@ -372,7 +378,7 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.var(tree, '{pName}_partonFlavour'.format(pName=pName))
         self.var(tree, '{pName}_csv'          .format(pName=pName))
         self.var(tree, '{pName}_Bmatch'       .format(pName=pName))
-    
+
     def fillJet( self, tree, pName, jet ):
         self.fillParticle(tree, pName, jet )
         # JAN - only one PU mva working point, but we may want to add more
@@ -387,9 +393,9 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.fill(tree, '{pName}_Bmatch'       .format(pName=pName), jet.matchGenParton                               )
         if hasattr(jet, 'matchedGenJet') and jet.matchedGenJet:
             self.fill(tree, '{pName}_genJetPt'.format(pName=pName), jet.matchedGenJet.pt())
-    
-    
-    # vbf  
+
+
+    # vbf
     def bookVBF( self, tree, pName ):
         self.var(tree, '{pName}_mjj'      .format(pName=pName))
         self.var(tree, '{pName}_deta'     .format(pName=pName))
@@ -401,7 +407,7 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.var(tree, '{pName}_hdijetphi'.format(pName=pName))
         self.var(tree, '{pName}_visjeteta'.format(pName=pName))
         self.var(tree, '{pName}_ptvis'    .format(pName=pName))
-        
+
     def fillVBF( self, tree, pName, vbf ):
         self.fill(tree, '{pName}_mjj'      .format(pName=pName), vbf.mjj              )
         self.fill(tree, '{pName}_deta'     .format(pName=pName), vbf.deta             )
@@ -413,9 +419,9 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.fill(tree, '{pName}_hdijetphi'.format(pName=pName), vbf.dphidijethiggs   )
         self.fill(tree, '{pName}_visjeteta'.format(pName=pName), vbf.visjeteta        )
         self.fill(tree, '{pName}_ptvis'    .format(pName=pName), vbf.ptvis            )
-    
-    
-    # generator information 
+
+
+    # generator information
     def bookGenInfo( self, tree ):
         self.var(tree, 'genMatched', int)
         self.var(tree, 'NUP'      , int)
@@ -436,7 +442,7 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.var(tree, 'genMex'        )
         self.var(tree, 'genMey'        )
         self.var(tree, 'genMetPhi'     )
-    
+
     def fillGenInfo( self, tree, event ):
         #self.fill(tree, 'NUP'      , event.NUP       )
         self.fill(tree, 'isZtt'    , event.isZtt     )
@@ -458,7 +464,7 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.fill(tree, 'genMetPhi', event.genMetPhi )
 
     # quark and gluons
-    def bookQG( self, tree ):    
+    def bookQG( self, tree ):
         for i in range(0, self.maxNGenJets):
             self.bookGenParticle(self.tree, 'genQG_{i}'.format(i=i))
 
