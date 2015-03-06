@@ -6,6 +6,9 @@ met_phi:   met_phi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
 genmet:   met_genPt: 16,0,800    ; XTitle="E_{T}^{miss}  [GeV]"
 genmet_phi:   met_genPhi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
 
+rawmet: met_rawPt: 16,0,800    ; XTitle="E_{T}^{miss}  [GeV]" 
+rawmet_phi: met_rawPhi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
+
 mht:   mht_pt: 16,0,800    ; XTitle="H_{T}^{miss}  [GeV]"
 mht_phi:   mht_phi: 8,-3.15,3.15    ; XTitle="phi of H_{T}^{miss}"
 

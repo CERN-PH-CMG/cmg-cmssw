@@ -24,7 +24,10 @@ susyFullHad_globalVariables = susyCore_globalVariables + [
     NTupleVariable("mht_had_phi", lambda ev : ev.mhtPhiJet40j, help="H_{T}^{miss} #phi computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
     NTupleVariable("diffMetMht_had", lambda ev : ev.diffMetMht_had, help="abs( vec(mht) - vec(met) ) - only jets"),
     NTupleVariable("deltaPhiMin_had", lambda ev : ev.deltaPhiMin_had, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4"),
-    
+
+    NTupleVariable("met_rawPt", lambda ev : ev.met.shiftedPt(12, 0), help="raw met p_{T}"),
+    NTupleVariable("met_rawPhi", lambda ev : ev.met.shiftedPhi(12, 0), help="raw met phi"),
+
     #            NTupleVariable("tkmet_pt", lambda ev : ev.tkMet.pt(), help="TK E_{T}^{miss}"),
     #            NTupleVariable("tkmet_phi", lambda ev : ev.tkMet.phi(), help="TK E_{T}^{miss}"),
     
