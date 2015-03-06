@@ -95,6 +95,7 @@ jet_area: jet_area: 100, 0,100 ; XTitle="jet mc area"
 
 jet_id: jet_id: [-0.5,0.5,1.5,2.5,3.5] ; XTitle="jet id"
 jet_puId: jet_puId: [-0.5,0.5,1.5] ; XTitle="jet PU id"
+jet_qgl: jet_qgl: [-0.5,0.,0.5,1.,1.5] ; XTitle="jet qgl"
 
 jet1_pt: jet1_pt: 16,0,800    ; XTitle="jet1  p_{T}  [GeV]", Legend='TR'
 jet2_pt: jet2_pt: 16,0,800    ; XTitle="jet2  p_{T}  [GeV]", Legend='TR'
@@ -208,6 +209,7 @@ cr_zll_phi: zll_phi: 8,-3.15,3.15    ; XTitle="Z phi"
 cr_zll_eta: zll_eta: 10,-5.,5.    ; XTitle="Z eta"
 cr_zll_mass: zll_mass: 20,0,400.    ; XTitle="Z mass [GeV]"
 
+cr_zll_minMTBMet: zll_minMTBMet: 16,0,800    ; XTitle="min M_{T}(B\,met)"
 
 ##### LEPTON
 
