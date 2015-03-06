@@ -203,10 +203,20 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event& iEvent, const edm::EventS
 
         // Add more fit results as user floats
         diTau.addUserFloat("massUncert", algo.massUncert());
-        diTau.addUserFloat("pt"        , algo.pt()        );
-        diTau.addUserFloat("ptUncert"  , algo.ptUncert()  );
-        diTau.addUserFloat("fittedEta" , algo.eta()       );
-        diTau.addUserFloat("fittedPhi" , algo.phi()       );
+
+        if (fitAlgo_ == "MC"){
+          diTau.addUserFloat("pt"        , algo.pt()        );
+          diTau.addUserFloat("ptUncert"  , algo.ptUncert()  );
+          diTau.addUserFloat("fittedEta" , algo.eta()       );
+          diTau.addUserFloat("fittedPhi" , algo.phi()       );
+        }
+        else {
+          diTau.addUserFloat("pt"        , -99.);
+          diTau.addUserFloat("ptUncert"  , -99.);
+          diTau.addUserFloat("fittedEta" , -99.);
+          diTau.addUserFloat("fittedPhi" , -99.);
+        }
+
       } else {
         std::cout << " Unrecognized SVFitVersion !!!!!!!!!!!!" << std::endl;
       }
