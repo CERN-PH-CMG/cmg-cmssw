@@ -5,12 +5,14 @@ from PhysicsTools.HeppyCore.framework.config import printComps
 from CMGTools.H2TauTau.proto.analyzers.MuEleAnalyzer             import MuEleAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducerMuEle import H2TauTauTreeProducerMuEle
 from CMGTools.H2TauTau.proto.analyzers.LeptonWeighter            import LeptonWeighter
+from CMGTools.H2TauTau.proto.analyzers.SVfitProducer              import SVfitProducer
 
 # common configuration and sequence
 from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC
 
 # local switches
 syncntuple = True
+computeSVfit = False
 
 dyJetsFakeAna.channel = 'em'
 
@@ -73,6 +75,16 @@ syncTreeProducer = cfg.Analyzer(
   skimFunction = 'event.isSignal'
   )
 
+svfitProducer = cfg.Analyzer(
+  SVfitProducer                ,
+  name        = 'SVfitProducer',
+  integration = 'VEGAS'        ,
+  #integration = 'MarkovChain'  ,
+  #debug       = True           ,
+  l1type      = 'muon'         ,
+  l2type      = 'ele'
+  )
+
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
@@ -103,6 +115,8 @@ sequence = commonSequence
 sequence.insert(sequence.index(genAna), muEleAna)
 sequence.append(muonWeighter)
 sequence.append(eleWeighter)
+if computeSVfit: 
+    sequence.append(svfitProducer)
 sequence.append(treeProducer)
 if syncntuple:
     sequence.append(syncTreeProducer)
