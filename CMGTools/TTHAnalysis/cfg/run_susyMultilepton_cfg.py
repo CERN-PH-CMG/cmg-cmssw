@@ -34,6 +34,13 @@ ttHEventAna = cfg.Analyzer(
     minJets25 = 0,
     )
 
+##==== tau jet analyzer, to be called (for the moment) once bjetsMedium are produced
+from CMGTools.TTHAnalysis.analyzers.ttHJetTauAnalyzer import ttHJetTauAnalyzer
+ttHJetTauAna = cfg.Analyzer(
+    ttHJetTauAnalyzer, name="ttHJetTauAnalyzer",
+    )
+
+
 ## Insert the SV analyzer in the sequence
 susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), 
                         ttHFatJetAna)
@@ -96,6 +103,12 @@ treeProducer = cfg.Analyzer(
      collections = susyMultilepton_collections,
 )
 
+## histo counter
+TFileServiceMode=False
+if TFileServiceMode:
+    susyCoreSequence.insert(susyCoreSequence.index(skimAnalyzer),
+                            susyCounter)
+
 #-------- SAMPLES AND TRIGGERS -----------
 
 #-------- SEQUENCE
@@ -117,14 +130,16 @@ selectedComponents = [
 #selectedComponents = [T5ttttDeg_mGo1000_mStop300_mCh285_mChi280, T5ttttDeg_mGo1000_mStop300_mCh285_mChi280_dil, TTWJets, TTZJets, WZJetsTo3LNu]
 
 sequence = cfg.Sequence(susyCoreSequence+[
-    ttHEventAna,
-    treeProducer,
+        ttHJetTauAna,
+        ttHEventAna,
+        treeProducer,
     ])
 
 # -- fine splitting, for some private MC samples with a single file
 #for comp in selectedComponents:
 #    comp.splitFactor = 1
 #    comp.fineSplitFactor = 40
+
     
 from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
 test = getHeppyOption('test')
@@ -176,8 +191,18 @@ elif test == '2lss-sync': # sync
     comp.fineSplitFactor = 10
     selectedComponents = [ comp ]
 
-
-            
+## output histogram
+outputService=[]
+if TFileServiceMode:
+    from PhysicsTools.HeppyCore.framework.services.tfile import TFileService
+    output_service = cfg.Service(
+        TFileService,
+        'outputfile',
+        name="outputfile",
+        fname='treeProducerSusyMultilepton/tree.root',
+        option='recreate'
+        )    
+    outputService.append(output_service)
 
 # the following is declared in case this cfg is used in input to the heppy.py script
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
@@ -187,5 +212,5 @@ if getHeppyOption("nofetch"):
     event_class = Events 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence,
-                     services = [],  
+                     services = outputService,  
                      events_class = event_class)
