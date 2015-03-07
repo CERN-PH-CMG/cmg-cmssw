@@ -491,7 +491,7 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
         event.zll_minMTBMet=999999
         csLeptons = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta()) < 2.5 ]
-        if len(csLeptons)>2:
+        if len(csLeptons)==2:
             event.zll_minMTBMet=event.minMTBMet
 #        print 'variables computed: MT=',event.mtw,'MT2=',event.mt2,'MT2W=',event.mt2w
 #        print 'pseudoJet1 px=',event.pseudoJet1.px(),' py=',event.pseudoJet1.py(),' pz=',event.pseudoJet1.pz()

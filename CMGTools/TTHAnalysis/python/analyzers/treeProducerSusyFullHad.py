@@ -90,10 +90,10 @@ susyFullHad_globalVariables = susyCore_globalVariables + [
     NTupleVariable("zll_met_pt", lambda ev : ev.zll_met_pt, help="E_{T}^{miss} computed from jets (with |eta|<2.5, pt > 40 GeV) + 2 leptons"),
     NTupleVariable("zll_met_phi", lambda ev : ev.zll_met_phi, help="E_{T}^{miss} #phi computed from jets (with |eta|<2.5, pt > 40 GeV) + 2 leptons"),
     NTupleVariable("zll_ht", lambda ev: ev.zll_ht, float, help="H_{T} computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
-    NTupleVariable("zll_pt", lambda ev : ev.zll_p4.Pt(), help="Pt of di-lepton system"),
-    NTupleVariable("zll_eta", lambda ev : ev.zll_p4.Eta(), help="Eta of di-lepton system"),
-    NTupleVariable("zll_phi", lambda ev : ev.zll_p4.Phi(), help="Phi of di-lepton system"),
-    NTupleVariable("zll_mass", lambda ev : ev.zll_p4.M(), help="Invariant mass of di-lepton system"),
+    NTupleVariable("zll_pt", lambda ev : ev.zll_p4.Pt() if ev.zll_p4.P()!=0 else -999., help="Pt of di-lepton system"),
+    NTupleVariable("zll_eta", lambda ev : ev.zll_p4.Eta() if ev.zll_p4.P()!=0 else -999., help="Eta of di-lepton system"),
+    NTupleVariable("zll_phi", lambda ev : ev.zll_p4.Phi() if ev.zll_p4.P()!=0 else -999., help="Phi of di-lepton system"),
+    NTupleVariable("zll_mass", lambda ev : ev.zll_p4.M() if ev.zll_p4.P()!=0 else -999., help="Invariant mass of di-lepton system"),
     NTupleVariable("zll_minMTBMet", lambda ev: ev.zll_minMTBMet, float, help="min Mt(b,met) for zll, same as in main search"),
 
     ###
