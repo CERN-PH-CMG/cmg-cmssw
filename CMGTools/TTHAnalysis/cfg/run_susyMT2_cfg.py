@@ -5,7 +5,7 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
 
 # Comment this line if you want the diagnostic folders produced along with the output root file
-cfg.Analyzer.nosubdir = True 
+cfg.Analyzer.nosubdir = True
 
 
 ##------------------------------------------
@@ -200,7 +200,7 @@ elif test==1:
     comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/gjets_ht200to400_miniaodsim_fix.root']
 
 #    comp=TTJets
-#    comp.files = ['/afs/cern.ch/work/d/dalfonso/public/ttjets_miniaodsim_00C90EFC-3074-E411-A845-002590DB9262.root']
+#    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/TTJets_miniAOD_fixPhoton_forSynch.root']
 
     selectedComponents = [comp]
     comp.splitFactor = 10
