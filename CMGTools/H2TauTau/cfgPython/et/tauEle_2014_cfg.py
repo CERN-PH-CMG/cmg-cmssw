@@ -11,14 +11,14 @@ from CMGTools.H2TauTau.proto.analyzers.LeptonWeighter import LeptonWeighter
 from CMGTools.H2TauTau.proto.analyzers.SVfitProducer import SVfitProducer
 
 # common configuration and sequence
-from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC
+from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC, eventSelector
 
 # e-tau specific configuration settings
 
 # 'Nom', 'Up', 'Down', or None
 shift = None
 syncntuple = True
-computeSVfit = False
+computeSVfit = True
 
 # When ready, include weights from CMGTools.H2TauTau.proto.weights.weighttable
 
@@ -41,7 +41,7 @@ tauEleAna = cfg.Analyzer(
     name='TauEleAnalyzer',
     pt1=20,
     eta1=2.3,
-    iso1=None,
+    iso1=1.5,
     pt2=24,
     eta2=2.1,
     iso2=0.1,
@@ -91,7 +91,7 @@ eleWeighter = cfg.Analyzer(
     verbose = False,
     disable = True,
     idWeight = None,
-    isoWeight = None    
+    isoWeight = None
     )
 
 treeProducer = cfg.Analyzer(
@@ -110,26 +110,32 @@ syncTreeProducer = cfg.Analyzer(
 svfitProducer = cfg.Analyzer(
     SVfitProducer,
     name='SVfitProducer',
-    integration='VEGAS',
-    #integration='MarkovChain',
-    #debug=True,
+    #integration='VEGAS',
+    integration='MarkovChain',
+    #verbose=True,
+    #order='21', # muon first, tau second
     l1type='tau',
     l2type='ele'
     )
-    
+
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
 # from CMGTools.H2TauTau.proto.samples.phys14.tauEle_Jan_Feb18 import MC_list, mc_dict
-from CMGTools.H2TauTau.proto.samples.phys14.tauEle_Ric_Jan27 import MC_list, mc_dict # RIC: sorry for flipping back and forth
+from CMGTools.H2TauTau.proto.samples.phys14.htt_Ric_Mar9 import MC_list, mc_dict, mc_triggers_et
 
 ###################################################
-###     ASSIGN PU to MC    ###
+###              ASSIGN PU to MC                ###
 ###################################################
-
 for mc in MC_list:
     mc.puFileData = puFileData
     mc.puFileMC = puFileMC
+
+###################################################
+###              ASSIGN TRIGGER                 ###
+###################################################
+for mc in MC_list:
+    mc.triggers = mc_triggers_et
 
 ###################################################
 ###             SET COMPONENTS BY HAND          ###
@@ -147,7 +153,7 @@ sequence.append(tauFakeRateWeighter)
 sequence.append(tauWeighter)
 sequence.append(eleWeighter)
 sequence.insert(sequence.index(dyJetsFakeAna) + 1, dyLLReweighterTauEle)
-if computeSVfit: 
+if computeSVfit:
     sequence.append(svfitProducer)
 sequence.append(treeProducer)
 if syncntuple:
@@ -156,6 +162,7 @@ if syncntuple:
 ###################################################
 ###             CHERRY PICK EVENTS              ###
 ###################################################
+# eventSelector.toSelect = []
 # sequence.insert(0, eventSelector)
 
 ###################################################
@@ -169,12 +176,6 @@ if test == 1:
     comp.splitFactor = 1
     comp.files = comp.files[:1]
 
-###################################################
-###                SOME PRINTOUT                ###
-###################################################
-print '_' * 70
-print 'Processing...'
-print [s.name for s in selectedComponents]
 
 # the following is declared in case this cfg is used in input to the
 # heppy.py script
@@ -186,7 +187,6 @@ config = cfg.Config(components=selectedComponents,
                     )
 
 printComps(config.components, True)
-
 
 def modCfgForPlot(config):
     config.components = []

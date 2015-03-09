@@ -8,19 +8,19 @@ from CMGTools.H2TauTau.proto.analyzers.LeptonWeighter            import LeptonWe
 from CMGTools.H2TauTau.proto.analyzers.SVfitProducer              import SVfitProducer
 
 # common configuration and sequence
-from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC
+from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC, eventSelector
 
 # local switches
 syncntuple = True
-computeSVfit = False
+computeSVfit = True
 
 dyJetsFakeAna.channel = 'em'
 
 ### Define mu-ele specific modules
 
 muEleAna = cfg.Analyzer(
-  MuEleAnalyzer                 ,     
-  'MuEleAnalyzer'               ,     
+  MuEleAnalyzer                 ,
+  'MuEleAnalyzer'               ,
   pt1          = 10.            ,
   eta1         = 2.5            ,
   iso1         = 10.            ,
@@ -48,7 +48,7 @@ muonWeighter = cfg.Analyzer(
   verbose     = False             ,
   disable     = True              ,
   idWeight    = None              ,
-  isoWeight   = None     
+  isoWeight   = None
   )
 
 eleWeighter = cfg.Analyzer(
@@ -60,7 +60,7 @@ eleWeighter = cfg.Analyzer(
   verbose     = False              ,
   disable     = True               ,
   idWeight    = None               ,
-  isoWeight   = None     
+  isoWeight   = None
   )
 
 treeProducer = cfg.Analyzer(
@@ -78,9 +78,10 @@ syncTreeProducer = cfg.Analyzer(
 svfitProducer = cfg.Analyzer(
   SVfitProducer                ,
   name        = 'SVfitProducer',
-  integration = 'VEGAS'        ,
-  #integration = 'MarkovChain'  ,
-  #debug       = True           ,
+  # integration = 'VEGAS'        ,
+  integration = 'MarkovChain'  ,
+  # verbose     = True           ,
+  # order       = '21'           , # muon first, tau second
   l1type      = 'muon'         ,
   l2type      = 'ele'
   )
@@ -88,24 +89,26 @@ svfitProducer = cfg.Analyzer(
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
-from CMGTools.H2TauTau.proto.samples.phys14.muEle_Ric_Jan27 import *
+# from CMGTools.H2TauTau.proto.samples.phys14.muEle_Ric_Jan27 import *
+from CMGTools.H2TauTau.proto.samples.phys14.htt_Ric_Mar9 import MC_list, mc_dict, mc_triggers_em
 
 ###################################################
-###     ASSIGN JET SMEAR, SCALE and PU to MC    ###
+###              ASSIGN PU to MC                ###
 ###################################################
-mc_jet_scale = 1.
-mc_jet_smear = 0.
 for mc in MC_list:
-  mc.jetScale   = mc_jet_scale
-  mc.jetSmear   = mc_jet_smear
-  mc.puFileData = puFileData
-  mc.puFileMC   = puFileMC
+    mc.puFileData = puFileData
+    mc.puFileMC = puFileMC
+
+###################################################
+###              ASSIGN TRIGGER                 ###
+###################################################
+for mc in MC_list:
+    mc.triggers = mc_triggers_em
 
 ###################################################
 ###             SET COMPONENTS BY HAND          ###
 ###################################################
 selectedComponents = mc_dict['HiggsGGH125']
-# selectedComponents  = [ ZZJetsTo4L ]
 # for c in selectedComponents : c.splitFactor *= 5
 
 ###################################################
@@ -115,7 +118,7 @@ sequence = commonSequence
 sequence.insert(sequence.index(genAna), muEleAna)
 sequence.append(muonWeighter)
 sequence.append(eleWeighter)
-if computeSVfit: 
+if computeSVfit:
     sequence.append(svfitProducer)
 sequence.append(treeProducer)
 if syncntuple:
@@ -133,7 +136,7 @@ if syncntuple:
 # for data in data_parked_2012:
 #   data.triggers  = data_parked_triggers_2012  ## ORDER MATTERS!
 #   data.triggers += data_triggers_2012         ## ORDER MATTERS!
-  
+
 ###################################################
 ###     SET THE TRIGGERS TO BE USED WITH MC     ###
 ###################################################
@@ -158,11 +161,12 @@ if test == 1 :
   comp.splitFactor   = 1
   comp.files         = comp.files[:1]
 
-# the following is declared in case this cfg is used in input to the heppy.py script
+# the following is declared in case this cfg is used in input to the
+# heppy.py script
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
 config = cfg.Config( components   = selectedComponents,
                      sequence     = sequence          ,
-                     services     = []                ,  
+                     services     = []                ,
                      events_class = Events
                      )
 
