@@ -462,7 +462,7 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.var(tree, 'genMet'         )
         self.var(tree, 'genMex'         )
         self.var(tree, 'genMey'         )
-        self.var(tree, 'genMetPhi '     )
+        self.var(tree, 'genMetPhi'      )
         self.var(tree, 'genMeEta'       )
 
     def fillGenInfo( self, tree, event ):
@@ -480,7 +480,7 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.fill(tree, 'hasW'     , event.hasW      )
         self.fill(tree, 'hasZ'     , event.hasZ      )
         self.fill(tree, 'genMass'  , event.genMass   )
-        self.fill(tree, 'genMe '   , event.genMe     )
+        self.fill(tree, 'genMe'    , event.genMe     )
         self.fill(tree, 'genMet'   , event.genMet    )
         self.fill(tree, 'genMex'   , event.genMex    )
         self.fill(tree, 'genMey'   , event.genMey    )
