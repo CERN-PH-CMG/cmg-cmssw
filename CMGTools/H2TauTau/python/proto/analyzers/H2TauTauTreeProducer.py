@@ -5,6 +5,7 @@ from PhysicsTools.Heppy.analyzers.core.AutoHandle        import AutoHandle
 from CMGTools.H2TauTau.proto.analyzers.tauIDs            import tauIDs
 from CMGTools.H2TauTau.proto.analyzers.varsDictionary    import vars
 
+from math import sqrt
 
 class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
     '''
@@ -224,6 +225,11 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.var(tree, 'svfitPtError'  )
         self.var(tree, 'svfitEta'      )
         self.var(tree, 'svfitPhi'      )
+        self.var(tree, 'svfitMET'      )
+        self.var(tree, 'svfitMETPhi'   )
+        self.var(tree, 'svfitMETEta'   )
+        self.bookParticle(tree, 'svfitL1')
+        self.bookParticle(tree, 'svfitL2')
         self.var(tree, 'pZetaMET'      )
         self.var(tree, 'pZetaVis'      )
         self.var(tree, 'pZetaDisc'     )
@@ -246,27 +252,34 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.var(tree, 'met'           )
 
     def fillDiLepton( self, tree, diLepton):
-        self.fill(tree, 'visMass'       , diLepton.mass()          )
-        self.fill(tree, 'svfitMass'     , diLepton.svfitMass()     )
+        self.fill(tree, 'visMass'       , diLepton.mass()        )
+        self.fill(tree, 'svfitMass'     , diLepton.svfitMass()   )
         if hasattr(diLepton,'svfitMassError'): self.fill(tree, 'svfitMassError', diLepton.svfitMassError())
         if hasattr(diLepton,'svfitPt'       ): self.fill(tree, 'svfitPt'       , diLepton.svfitPt()       )
         if hasattr(diLepton,'svfitPtError'  ): self.fill(tree, 'svfitPtError'  , diLepton.svfitPtError()  )
         if hasattr(diLepton,'svfitEta'      ): self.fill(tree, 'svfitEta'      , diLepton.svfitEta()      )
         if hasattr(diLepton,'svfitPhi'      ): self.fill(tree, 'svfitPhi'      , diLepton.svfitPhi()      )
-        self.fill(tree, 'pZetaMET'      , diLepton.pZetaMET()      )
-        self.fill(tree, 'pZetaVis'      , diLepton.pZetaVis()      )
-        self.fill(tree, 'pZetaDisc'     , diLepton.pZetaDisc()     )
-        self.fill(tree, 'mt'            , diLepton.mTLeg2()        )
-        self.fill(tree, 'mtleg2'        , diLepton.mTLeg2()        ) # RIC: handy for tt, redundant but non destructive
-        self.fill(tree, 'mtleg1'        , diLepton.mTLeg1()        )
-        self.fill(tree, 'metcov00'      , diLepton.mvaMetSig(0,0)  )
-        self.fill(tree, 'metcov01'      , diLepton.mvaMetSig(0,1)  )
-        self.fill(tree, 'metcov10'      , diLepton.mvaMetSig(1,0)  )
-        self.fill(tree, 'metcov11'      , diLepton.mvaMetSig(1,1)  )
-        self.fill(tree, 'metphi'        , diLepton.met().phi()     )
-        self.fill(tree, 'mex'           , diLepton.met().px()      )
-        self.fill(tree, 'mey'           , diLepton.met().py()      )
-        self.fill(tree, 'met'           , diLepton.met().pt()      )
+        if hasattr(diLepton,'svfitMET'      ):
+            self.fill(tree, 'svfitMET'      , sqrt(diLepton.svfitMET().mag2()))
+            self.fill(tree, 'svfitMETPhi'   , diLepton.svfitMET().phi()       )
+            self.fill(tree, 'svfitMETEta'   , diLepton.svfitMET().eta()       )
+        if hasattr(diLepton,'svfitTaus'     ):
+            for i, tau in enumerate(diLepton.svfitTaus()):
+                self.fillParticle(tree, 'svfitL'+str(i+1), tau)
+        self.fill(tree, 'pZetaMET'      , diLepton.pZetaMET()    )
+        self.fill(tree, 'pZetaVis'      , diLepton.pZetaVis()    )
+        self.fill(tree, 'pZetaDisc'     , diLepton.pZetaDisc()   )
+        self.fill(tree, 'mt'            , diLepton.mTLeg2()      )
+        self.fill(tree, 'mtleg2'        , diLepton.mTLeg2()      ) # RIC: handy for tt, redundant but non destructive
+        self.fill(tree, 'mtleg1'        , diLepton.mTLeg1()      )
+        self.fill(tree, 'metcov00'      , diLepton.mvaMetSig(0,0))
+        self.fill(tree, 'metcov01'      , diLepton.mvaMetSig(0,1))
+        self.fill(tree, 'metcov10'      , diLepton.mvaMetSig(1,0))
+        self.fill(tree, 'metcov11'      , diLepton.mvaMetSig(1,1))
+        self.fill(tree, 'metphi'        , diLepton.met().phi()   )
+        self.fill(tree, 'mex'           , diLepton.met().px()    )
+        self.fill(tree, 'mey'           , diLepton.met().py()    )
+        self.fill(tree, 'met'           , diLepton.met().pt()    )
 
         pthiggs = (diLepton.leg1().p4()+diLepton.leg2().p4()+diLepton.met().p4()).pt()
         self.fill(tree, 'pthiggs', pthiggs)

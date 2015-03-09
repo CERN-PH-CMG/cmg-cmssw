@@ -80,8 +80,6 @@ class SVfitProducer(Analyzer):
                 print 'precomputed svfit mass   ', event.diLepton.svfitMass()
                 print 'svfit mass computed here ', svfit.mass()
 
-        import pdb ; pdb.set_trace()
-
         # method override
         event.diLepton.svfitMass      = svfit.mass
         event.diLepton.svfitMassError = svfit.massUncert
@@ -92,3 +90,5 @@ class SVfitProducer(Analyzer):
             event.diLepton.svfitPtError  = svfit.ptUncert
             event.diLepton.svfitEta      = svfit.eta
             event.diLepton.svfitPhi      = svfit.phi
+            event.diLepton.svfitMET      = svfit.fittedMET
+            event.diLepton.svfitTaus     = svfit.fittedTauLeptons
