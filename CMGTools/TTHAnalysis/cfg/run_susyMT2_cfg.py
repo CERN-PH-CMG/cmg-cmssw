@@ -163,7 +163,7 @@ sequence = cfg.Sequence(
 
 #-------- HOW TO RUN
 # choose 2 for full production
-test = 0
+test = 2
 if test==0:
     # ------------------------------------------------------------------------------------------- #
     # --- all this lines taken from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 
@@ -200,7 +200,8 @@ elif test==1:
 elif test==2:
     from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
     # full production
-    selectedComponents = [ TTJets, # TTJets
+    selectedComponents = [ 
+TTJets, # TTJets
 ZJetsToNuNu_HT100to200, ZJetsToNuNu_HT200to400, ZJetsToNuNu_HT400to600, ZJetsToNuNu_HT600toInf, # ZJetsToNuNu_HT
 WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, # WJetsToLNu_HT
 GJets_HT100to200_fixPhoton, GJets_HT200to400_fixPhoton, GJets_HT400to600_fixPhoton, GJets_HT600toInf_fixPhoton, # GJets_HT
