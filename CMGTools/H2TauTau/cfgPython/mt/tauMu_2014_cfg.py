@@ -10,7 +10,7 @@ from CMGTools.H2TauTau.proto.analyzers.LeptonWeighter import LeptonWeighter
 from CMGTools.H2TauTau.proto.analyzers.SVfitProducer import SVfitProducer
 
 # common configuration and sequence
-from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC
+from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC, eventSelector
 
 
 ### mu-tau specific configuration settings
@@ -102,6 +102,7 @@ svfitProducer = cfg.Analyzer(
     #integration='VEGAS',
     integration='MarkovChain',
     #verbose=True,
+    #order='21', # muon first, tau second
     l1type='tau',
     l2type='muon'
     )
@@ -109,7 +110,8 @@ svfitProducer = cfg.Analyzer(
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
-from CMGTools.H2TauTau.proto.samples.phys14.tauMu_Jan_Feb13 import MC_list, mc_dict
+# from CMGTools.H2TauTau.proto.samples.phys14.tauMu_Jan_Feb13 import MC_list, mc_dict
+from CMGTools.H2TauTau.proto.samples.phys14.htt_Ric_Mar9 import MC_list, mc_dict, mc_triggers_mt
 
 ###################################################
 ###              ASSIGN PU to MC                ###
@@ -117,6 +119,12 @@ from CMGTools.H2TauTau.proto.samples.phys14.tauMu_Jan_Feb13 import MC_list, mc_d
 for mc in MC_list:
     mc.puFileData = puFileData
     mc.puFileMC = puFileMC
+
+###################################################
+###              ASSIGN TRIGGER                 ###
+###################################################
+for mc in MC_list:
+    mc.triggers = mc_triggers_mt
 
 ###################################################
 ###             SET COMPONENTS BY HAND          ###
