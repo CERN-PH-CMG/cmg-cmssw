@@ -43,6 +43,7 @@ class Jet(PhysicsObject):
         self._rawFactorMultiplier = 1.0
         self._leadingTrack = None
         self._leadingTrackSearched = False
+        self._iJetByCSV = -99
 
     def jetID(self,name=""):
         if not self.isPFJet():
