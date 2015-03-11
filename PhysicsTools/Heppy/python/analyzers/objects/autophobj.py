@@ -158,6 +158,7 @@ jetType = NTupleObjectType("jet",  baseObjectTypes = [ fourVectorType ], variabl
     NTupleVariable("puId", lambda x : getattr(x, 'puJetIdPassed', -99), int,     mcOnly=False, help="puId (full MVA, loose WP, 5.3.X training on AK5PFchs: the only thing that is available now)"),
     NTupleVariable("btagCSV",   lambda x : x.btag('combinedInclusiveSecondaryVertexV2BJetTags'), help="CSV-IVF v2 discriminator"),
     NTupleVariable("btagCMVA",  lambda x : x.btag('combinedMVABJetTags'), help="CMVA discriminator"),
+    NTupleVariable("iJetByCSV",   lambda x : x._iJetByCSV, help="Position of the most b-tagged jet in order in the collection of jets sorted by pt."),
     NTupleVariable("rawPt",  lambda x : x.pt() * x.rawFactor(), help="p_{T} before JEC"),
     NTupleVariable("mcPt",   lambda x : x.mcJet.pt() if getattr(x,"mcJet",None) else 0., mcOnly=True, help="p_{T} of associated gen jet"),
     NTupleVariable("mcFlavour", lambda x : x.partonFlavour(), int,     mcOnly=True, help="parton flavour (physics definition, i.e. including b's from shower)"),
