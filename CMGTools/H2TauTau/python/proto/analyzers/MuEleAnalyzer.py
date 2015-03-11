@@ -122,7 +122,7 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
         # RIC: this leg is the electron,
         # needs to be implemented here
         # For now taken straight from et channel
-        return electron.mvaNonTrigPhys14() and \
+        return electron.electronID('POG_MVA_ID_Run2_NonTrig_Tight') and \
             self.testVertex(electron)
 
     def testLeg2Iso(self, electron, isocut):

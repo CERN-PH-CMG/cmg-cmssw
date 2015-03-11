@@ -42,6 +42,7 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
                                        fillCounter = False                  ,
                                        leg1IsoCut  = self.cfg_ana.looseiso1 ,
                                        leg2IsoCut  = self.cfg_ana.looseiso2 )
+
       if result is False:
           # really no way to find a suitable di-lepton,
           # even in the control region
@@ -77,6 +78,9 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
     for index, lep in enumerate(cmgLeptons):
       pyl = Muon(lep)
       pyl.associatedVertex = event.goodVertices[0]
+      if not pyl.muonID('POG_ID_Medium')                     : continue
+      if not pyl.relIso(dBetaFactor=0.5, allCharged=0) < 0.3 : continue
+      if not self.testLegKine(pyl, ptcut=10, etacut=2.4)     : continue
       leptons.append( pyl )
     return leptons
 
@@ -87,6 +91,9 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
       pyl = Electron(lep)
       pyl.associatedVertex = event.goodVertices[0]
       pyl.rho = event.rho
+      if not pyl.cutBasedId('POG_PHYS14_25ns_v1_Veto')       : continue
+      if not pyl.relIso(dBetaFactor=0.5, allCharged=0) < 0.3 : continue
+      if not self.testLegKine(pyl, ptcut=10, etacut=2.5)     : continue
       otherLeptons.append( pyl )
     return otherLeptons
 
@@ -101,18 +108,16 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
              leg.tauID('againstElectronVLooseMVA5') > 0.5     and
              leg.tauID('againstMuonLoose3')         > 0.5       )
 
-  def testLeg1(self, leg, dummy):
+  def testLeg1(self, leg, isocut):
     leg_pt  = self.cfg_ana.pt1
     leg_eta = self.cfg_ana.eta1
     iso     = self.cfg_ana.isolation
-    isocut  = self.cfg_ana.iso1
     return self.testLeg(leg, leg_pt, leg_eta, iso, isocut)
 
-  def testLeg2(self, leg, dummy):
+  def testLeg2(self, leg, isocut):
     leg_pt  = self.cfg_ana.pt2
     leg_eta = self.cfg_ana.eta2
     iso     = self.cfg_ana.isolation
-    isocut  = self.cfg_ana.iso2
     return self.testLeg(leg, leg_pt, leg_eta, iso, isocut)
 
   def testTauVertex(self, lepton):

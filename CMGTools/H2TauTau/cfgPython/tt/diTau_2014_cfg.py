@@ -113,7 +113,8 @@ for mc in MC_list:
 ###################################################
 ###             SET COMPONENTS BY HAND          ###
 ###################################################
-selectedComponents = [mc_dict['HiggsGGH125']]
+selectedComponents = MC_list
+# selectedComponents = mc_dict['HiggsGGH125']
 # for c in selectedComponents : c.splitFactor *= 5
 
 ###################################################
@@ -158,7 +159,7 @@ if syncntuple:
 ###################################################
 ###            SET BATCH OR LOCAL               ###
 ###################################################
-test = 1 # test = 0 run on batch, test = 1 run locally
+test = 0 # test = 0 run on batch, test = 1 run locally
 if test == 1 :
   cache              = True
   comp               = mc_dict['HiggsGGH125']

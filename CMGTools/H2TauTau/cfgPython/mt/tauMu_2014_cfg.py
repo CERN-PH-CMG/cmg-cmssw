@@ -42,9 +42,11 @@ tauMuAna = cfg.Analyzer(
     pt1 = 20,
     eta1 = 2.3,
     iso1 = 1.5,
-    pt2 = 20,
+    looseiso1 = 9999.,
+    pt2 = 18,
     eta2 = 2.1,
     iso2 = 0.1,
+    looseiso2 = 9999.,
     m_min = 10,
     m_max = 99999,
     dR_min = 0.5,
@@ -129,7 +131,8 @@ for mc in MC_list:
 ###################################################
 ###             SET COMPONENTS BY HAND          ###
 ###################################################
-selectedComponents = [mc_dict['HiggsGGH125']]
+selectedComponents = MC_list
+# selectedComponents = mc_dict['HiggsGGH125']
 # for c in selectedComponents : c.splitFactor *= 5
 
 ###################################################
@@ -157,12 +160,13 @@ if syncntuple:
 ###            SET BATCH OR LOCAL               ###
 ###################################################
 # JAN - can we finally get this via command line options?
-test = 1  # test = 0 run on batch, test = 1 run locally
+test = 0  # test = 0 run on batch, test = 1 run locally
 if test == 1:
+    cache = True
     comp = mc_dict['HiggsGGH125']
     selectedComponents = [comp]
     comp.splitFactor = 1
-    # comp.files = comp.files[:1]
+    comp.files = comp.files[:1]
 
 
 # the following is declared in case this cfg is used in input to the

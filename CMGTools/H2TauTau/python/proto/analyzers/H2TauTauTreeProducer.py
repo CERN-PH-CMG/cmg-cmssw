@@ -334,25 +334,31 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.bookLepton(tree, pName )
         # JAN FIXME - do we need the MVA iso and does it exist?
         # var(tree, '{pName}_mvaIso'.format(pName=pName))
-        self.var(tree, '{pName}_looseId'.format(pName=pName))
-        self.var(tree, '{pName}_tightId'.format(pName=pName))
+        self.var(tree, '{pName}_MlooseId'     .format(pName=pName))
+        self.var(tree, '{pName}_MmediumId'    .format(pName=pName))
+        self.var(tree, '{pName}_MtightId'     .format(pName=pName))
+        self.var(tree, '{pName}_MtightNoVtxId'.format(pName=pName))
+        self.var(tree, '{pName}_MhighPtId'    .format(pName=pName))
 
     def fillMuon( self, tree, pName, muon ):
         self.fillLepton(tree, pName, muon)
         # JAN FIXME - do we need the MVA iso and does it exist?
         # fill(tree, '{pName}_mvaIso'.format(pName=pName), muon.mvaIso() )
-        self.fill(tree, '{pName}_looseId'.format(pName=pName), muon.looseId() )
-        self.fill(tree, '{pName}_tightId'.format(pName=pName), muon.tightId() )
-
+        self.fill(tree, '{pName}_MlooseId'     .format(pName=pName), muon.muonID('POG_ID_Loose')      )
+        self.fill(tree, '{pName}_MmediumId'    .format(pName=pName), muon.muonID('POG_ID_Medium')     )
+        self.fill(tree, '{pName}_MtightId'     .format(pName=pName), muon.muonID('POG_ID_Tight')      )
+        self.fill(tree, '{pName}_MtightNoVtxId'.format(pName=pName), muon.muonID('POG_ID_TightNoVtx') )
+        self.fill(tree, '{pName}_MhighPtId'    .format(pName=pName), muon.muonID('POG_ID_HighPt')     )
 
     # electron
     def bookEle( self, tree, pName ):
         self.bookLepton(tree, pName )
-        #self.var(tree, '{pName}_mvaIso'             .format(pName=pName))
-        self.var(tree, '{pName}_mvaTrigV0'          .format(pName=pName))
-        self.var(tree, '{pName}_mvaNonTrigV0'       .format(pName=pName))
-        self.var(tree, '{pName}_looseId'            .format(pName=pName))
-        self.var(tree, '{pName}_tightId'            .format(pName=pName))
+        self.var(tree, '{pName}_EmvaNonTrigLoose'   .format(pName=pName))
+        self.var(tree, '{pName}_EmvaNonTrigTight'   .format(pName=pName))
+        self.var(tree, '{pName}_EvetoId'            .format(pName=pName))
+        self.var(tree, '{pName}_ElooseId'           .format(pName=pName))
+        self.var(tree, '{pName}_EmediumId'          .format(pName=pName))
+        self.var(tree, '{pName}_EtightId'           .format(pName=pName))
         self.var(tree, '{pName}_numberOfMissingHits'.format(pName=pName))
         self.var(tree, '{pName}_passConversionVeto' .format(pName=pName))
 
@@ -360,14 +366,14 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.fillLepton(tree, pName, ele)
         # JAN FIXME - do we need the MVA iso and does it exist?
         # RIC: 16/2/15 this is all messed up, commented out until electron obj is fixed
-        # self.fill(tree, '{pName}_mvaIso'             .format(pName=pName), ele.mvaIso()                   )
-        # self.fill(tree, '{pName}_mvaTrigV0'          .format(pName=pName), ele.mvaTrigV0()                )
-        # self.fill(tree, '{pName}_mvaNonTrigV0'       .format(pName=pName), ele.mvaNonTrigV0()             )
-        # self.fill(tree, '{pName}_looseId'            .format(pName=pName), ele.looseIdForEleTau()         )
-        # self.fill(tree, '{pName}_tightId'            .format(pName=pName), ele.tightIdForEleTau()         )
-        # self.fill(tree, '{pName}_numberOfMissingHits'.format(pName=pName), ele.lostInner()                )
-        # self.fill(tree, '{pName}_passConversionVeto' .format(pName=pName), ele.passConversionVeto()       )
-
+        self.fill(tree, '{pName}_EmvaNonTrigLoose'    .format(pName=pName), ele.mvaIDRun2("NonTrigPhys14","Loose")             )
+        self.fill(tree, '{pName}_EmvaNonTrigTight'    .format(pName=pName), ele.mvaIDRun2("NonTrigPhys14","Tight")             )
+        self.fill(tree, '{pName}_EvetoId'             .format(pName=pName), ele.cutBasedId('POG_PHYS14_25ns_v1_Veto')          )
+        self.fill(tree, '{pName}_ElooseId'            .format(pName=pName), ele.cutBasedId('POG_PHYS14_25ns_v1_Loose')         )
+        self.fill(tree, '{pName}_EmediumId'           .format(pName=pName), ele.cutBasedId('POG_PHYS14_25ns_v1_Medium')        )
+        self.fill(tree, '{pName}_EtightId'            .format(pName=pName), ele.cutBasedId('POG_PHYS14_25ns_v1_Tight')         )
+        self.fill(tree, '{pName}_numberOfMissingHits' .format(pName=pName), ele.physObj.gsfTrack().hitPattern().numberOfHits(1))
+        self.fill(tree, '{pName}_passConversionVeto'  .format(pName=pName), ele.passConversionVeto()                           )
 
     # tau
     def bookTau( self, tree, pName ):
@@ -392,12 +398,14 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         self.bookParticle(tree, pName)
         self.var(tree, '{pName}_puMva'        .format(pName=pName))
         self.var(tree, '{pName}_looseJetId'   .format(pName=pName))
+        self.var(tree, '{pName}_puJetId'      .format(pName=pName))
         self.var(tree, '{pName}_btagMVA'      .format(pName=pName))
         self.var(tree, '{pName}_area'         .format(pName=pName))
         self.var(tree, '{pName}_genJetPt'     .format(pName=pName))
         self.var(tree, '{pName}_partonFlavour'.format(pName=pName))
         self.var(tree, '{pName}_csv'          .format(pName=pName))
         self.var(tree, '{pName}_Bmatch'       .format(pName=pName))
+        self.var(tree, '{pName}_rawFactor'    .format(pName=pName))
 
     def fillJet( self, tree, pName, jet ):
         self.fillParticle(tree, pName, jet )
@@ -406,11 +414,13 @@ class H2TauTauTreeProducer( TreeAnalyzerNumpy ):
         # (for which Jet.py would have to be touched again)
         self.fill(tree, '{pName}_puMva'        .format(pName=pName), jet.puMva('pileupJetIdFull:full53xDiscriminant') )
         self.fill(tree, '{pName}_looseJetId'   .format(pName=pName), jet.looseJetId()                                 )
+        self.fill(tree, '{pName}_puJetId'      .format(pName=pName), jet.puJetId()                                    )
         self.fill(tree, '{pName}_btagMVA'      .format(pName=pName), jet.btagMVA                                      )
         self.fill(tree, '{pName}_area'         .format(pName=pName), jet.jetArea()                                    )
         self.fill(tree, '{pName}_partonFlavour'.format(pName=pName), jet.partonFlavour()                              )
         self.fill(tree, '{pName}_csv'          .format(pName=pName), jet.btag('combinedSecondaryVertexBJetTags')      )
         self.fill(tree, '{pName}_Bmatch'       .format(pName=pName), jet.matchGenParton                               )
+        self.fill(tree, '{pName}_rawFactor'    .format(pName=pName), jet.rawFactor()                                  )
         if hasattr(jet, 'matchedGenJet') and jet.matchedGenJet:
             self.fill(tree, '{pName}_genJetPt'.format(pName=pName), jet.matchedGenJet.pt())
 

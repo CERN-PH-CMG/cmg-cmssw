@@ -23,11 +23,11 @@ muEleAna = cfg.Analyzer(
   'MuEleAnalyzer'               ,
   pt1          = 10.            ,
   eta1         = 2.5            ,
-  iso1         = 10.            ,
+  iso1         = 0.15           ,
   looseiso1    = 10.            ,
   pt2          = 10.            ,
   eta2         = 2.5            ,
-  iso2         = 10.            ,
+  iso2         = 0.15           ,
   looseiso2    = 10.            ,
   m_min        = 10             ,
   m_max        = 99999          ,
@@ -108,7 +108,8 @@ for mc in MC_list:
 ###################################################
 ###             SET COMPONENTS BY HAND          ###
 ###################################################
-selectedComponents = mc_dict['HiggsGGH125']
+selectedComponents = MC_list
+# selectedComponents = mc_dict['HiggsGGH125']
 # for c in selectedComponents : c.splitFactor *= 5
 
 ###################################################
@@ -152,13 +153,14 @@ if syncntuple:
 ###################################################
 ###            SET BATCH OR LOCAL               ###
 ###################################################
-test = 1 # test = 0 run on batch, test = 1 run locally
+test = 0 # test = 0 run on batch, test = 1 run locally
 if test == 1 :
   cache              = True
   comp               = mc_dict['HiggsGGH125']
   #comp.triggers      = [] # empty for now
   selectedComponents = [comp]
-  comp.splitFactor   = 1
+  comp.splitFactor     = 1
+#   comp.fineSplitFactor = 5
   comp.files         = comp.files[:1]
 
 # the following is declared in case this cfg is used in input to the
@@ -170,7 +172,7 @@ config = cfg.Config( components   = selectedComponents,
                      events_class = Events
                      )
 
-printComps(config.components, True)
-
-def modCfgForPlot(config):
-    config.components = []
+# printComps(config.components, True)
+#
+# def modCfgForPlot(config):
+#     config.components = []
