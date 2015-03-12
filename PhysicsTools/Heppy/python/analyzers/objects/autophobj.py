@@ -94,7 +94,6 @@ leptonTypeExtra = NTupleObjectType("leptonExtra", baseObjectTypes = [ leptonType
     NTupleVariable("dPhiScTrkIn",    lambda x : x.deltaPhiSuperClusterTrackAtVtx() if abs(x.pdgId())==11 else 0, help="Electron deltaPhiSuperClusterTrackAtVtx (without absolute value!)"),
     NTupleVariable("hadronicOverEm", lambda x : x.hadronicOverEm() if abs(x.pdgId())==11 else 0, help="Electron hadronicOverEm"),
     NTupleVariable("eInvMinusPInv",  lambda x : ((1.0/x.ecalEnergy() - x.eSuperClusterOverP()/x.ecalEnergy()) if x.ecalEnergy()>0. else 9e9) if abs(x.pdgId())==11 else 0, help="Electron 1/E - 1/p  (without absolute value!)"),
-    NTupleVariable("etaSc", lambda x : x.superCluster().eta() if abs(x.pdgId())==11 else -100, help="Electron supercluster pseudorapidity"),
 ])
  
 
@@ -143,7 +142,8 @@ photonType = NTupleObjectType("gamma", baseObjectTypes = [ particleType ], varia
     #NTupleVariable("chHadIso",  lambda x : x.chargedHadronIso(), float, help="chargedHadronIsolation for photons"),
     #NTupleVariable("neuHadIso",  lambda x : x.neutralHadronIso(), float, help="neutralHadronIsolation for photons"),
     #NTupleVariable("phIso",  lambda x : x.photonIso(), float, help="gammaIsolation for photons"),
-    NTupleVariable("chHadIso",  lambda x : x.recoChargedHadronIso(), float, help="chargedHadronIsolation for photons"),
+    NTupleVariable("chHadIso",  lambda x : x.recoChargedHadronIso(), float, help="chargedHadronIsolation for photons (reco::Photon method, deltaR = 0.3)"),
+    NTupleVariable("chHadIso04",  lambda x : x.chargedHadronIso(), float, help="chargedHadronIsolation for photons (PAT method, deltaR = 0.4)"),
     NTupleVariable("neuHadIso",  lambda x : x.recoNeutralHadronIso(), float, help="neutralHadronIsolation for photons"),
     NTupleVariable("phIso",  lambda x : x.recoPhotonIso(), float, help="gammaIsolation for photons"),
     NTupleVariable("mcMatchId",  lambda x : x.mcMatchId, int, mcOnly=True, help="Match to source from hard scatter (pdgId of heaviest particle in chain, 25 for H, 6 for t, 23/24 for W/Z), zero if non-prompt or fake"),
