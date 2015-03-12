@@ -83,8 +83,8 @@ def lfnToPFN( path, tfcProt = 'rfio'):
     
     ??? what is tfcprot? """
 
-    if path.startswith("/store/cmst3/"):
-        path = path.replace("/store/cmst3/","root://eoscms.cern.ch//eos/cms/store/cmst3/")
+    if path.startswith("/store/"):
+        path = path.replace("/store/","root://eoscms.cern.ch//eos/cms/store/")
     if path.startswith("/pnfs/psi.ch/cms/trivcat/"):
         path = path.replace("/pnfs/psi.ch/cms/trivcat/","root://t3se01.psi.ch//")
     #print "path to cmsFile():", path

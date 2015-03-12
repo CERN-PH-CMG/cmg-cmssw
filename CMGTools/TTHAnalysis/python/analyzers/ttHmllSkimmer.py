@@ -43,6 +43,7 @@ class ttHmllSkimmer( Analyzer ):
         if self.cfg_ana.doZReco:
             self.makeZs( event, self.cfg_ana.maxLeps, self.cfg_ana.lepId)
             if event.bestZ[0] > self.cfg_ana.massMin and event.bestZ[0] < self.cfg_ana.massMax:
+                event.zll_p4 = event.selectedLeptons[event.bestZ[1]].p4() + event.selectedLeptons[event.bestZ[2]].p4()
                 self.counters.counter('events').inc('pass reco Zll skim')
                 return True
 

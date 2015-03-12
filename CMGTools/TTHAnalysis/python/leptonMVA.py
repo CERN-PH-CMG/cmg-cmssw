@@ -1,6 +1,7 @@
 from array import array
 from math import *
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
+from CMGTools.TTHAnalysis.analyzers.ntupleTypes import ptRelv1
 
 import ROOT
 #import os
@@ -47,6 +48,7 @@ _CommonSpect = [
 ]
 _CommonVars = {
  'Susy':[ 
+
     MVAVar("LepGood_neuRelIso03 := LepGood_relIso03 - LepGood_chargedHadRelIso03",lambda x: x.relIso03 - x.chargedHadronIsoR(0.3)/x.pt()),  
     MVAVar("LepGood_chRelIso03 := LepGood_chargedHadRelIso03",lambda x: x.chargedHadronIsoR(0.3)/x.pt()),
     MVAVar("LepGood_jetDR := min(LepGood_jetDR,0.5)", lambda x : min(deltaR(x.eta(),x.phi(),x.jet.eta(),x.jet.phi()),0.5)), #, corrfunc=ROOT.correctJetDRMC),
@@ -55,19 +57,44 @@ _CommonVars = {
     MVAVar("LepGood_sip3d",lambda x: x.sip3D()), #, corrfunc=ROOT.scaleSip3dMC),
     MVAVar("LepGood_dxy := log(abs(LepGood_dxy))",lambda x: log(abs(x.dxy()))), #, corrfunc=ROOT.scaleDxyMC),
     MVAVar("LepGood_dz  := log(abs(LepGood_dz))", lambda x: log(abs(x.dz()))), #, corrfunc=ROOT.scaleDzMC),
- ]
+ ],
+
+'SusyWithBoost':[ 
+    MVAVar("LepGood_miniRelIsoCharged",lambda x: getattr(x,'miniAbsIsoCharged',-99)/x.pt()), 
+    MVAVar("LepGood_miniRelIsoNeutral",lambda x: getattr(x,'miniAbsIsoNeutral',-99)/x.pt()), 
+    MVAVar("LepGood_jetPtRelV1",lambda x: ptRelv1(x.p4(),x.jet.p4())), 
+    MVAVar("LepGood_neuRelIso03 := LepGood_relIso03 - LepGood_chargedHadRelIso03",lambda x: x.relIso03 - x.chargedHadronIsoR(0.3)/x.pt()),  
+    MVAVar("LepGood_chRelIso03 := LepGood_chargedHadRelIso03",lambda x: x.chargedHadronIsoR(0.3)/x.pt()),
+    MVAVar("LepGood_jetDR := min(LepGood_jetDR,0.5)", lambda x : min(deltaR(x.eta(),x.phi(),x.jet.eta(),x.jet.phi()),0.5)), #, corrfunc=ROOT.correctJetDRMC),
+    MVAVar("LepGood_jetPtRatio := min(LepGood_jetPtRatio,1.5)", lambda x : min(x.pt()/x.jet.pt(),1.5)), #, corrfunc=ROOT.correctJetPtRatioMC),
+    MVAVar("LepGood_jetBTagCSV := max(LepGood_jetBTagCSV,0)", lambda x : max( (x.jet.btag('combinedInclusiveSecondaryVertexV2BJetTags') if hasattr(x.jet, 'btag') else -99) ,0.)),
+    MVAVar("LepGood_sip3d",lambda x: x.sip3D()), #, corrfunc=ROOT.scaleSip3dMC),
+    MVAVar("LepGood_dxy := log(abs(LepGood_dxy))",lambda x: log(abs(x.dxy()))), #, corrfunc=ROOT.scaleDxyMC),
+    MVAVar("LepGood_dz  := log(abs(LepGood_dz))", lambda x: log(abs(x.dz()))), #, corrfunc=ROOT.scaleDzMC),
+]
+
 }
 
 _MuonVars = {
  'Susy': [
     MVAVar("LepGood_segmentCompatibility",lambda x: x.segmentCompatibility()), 
+ ],
+
+ 'SusyWithBoost': [
+    MVAVar("LepGood_segmentCompatibility",lambda x: x.segmentCompatibility()), 
  ]
+
 }
 
 _ElectronVars = {
  'Susy': [
-    MVAVar("LepGood_mvaId",lambda x: x.mvaNonTrigV0(full5x5=True)),
+    MVAVar("LepGood_mvaIdPhys14",lambda x: x.mvaRun2("NonTrigPhys14")),    
+ ],
+ 
+ 'SusyWithBoost': [
+    MVAVar("LepGood_mvaIdPhys14",lambda x: x.mvaRun2("NonTrigPhys14")),    
  ]
+
 }
 
 

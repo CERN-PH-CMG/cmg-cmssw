@@ -11,9 +11,31 @@ susyMultilepton_globalVariables = susyCore_globalVariables + [
             NTupleVariable("htJet40a", lambda ev : ev.htJet40a, help="H_{T} computed from leptons and jets (with |eta|<4.7, pt > 40 GeV)"),
             NTupleVariable("mhtJet40", lambda ev : ev.mhtJet40, help="H_{T}^{miss} computed from leptons and jets (with |eta|<2.4, pt > 40 GeV)"),
             NTupleVariable("mhtJet40a", lambda ev : ev.mhtJet40a, help="H_{T}^{miss} computed from leptons and jets (with |eta|<4.7, pt > 40 GeV)"),
+
+            ##
+            NTupleVariable("nJet25NoTau", lambda ev: sum([ (j.pt() > 25 and not j.taus ) for j in ev.cleanJets]), int, help="Number of jets with pt > 25, not matched with taus"),
+            NTupleVariable("nBJetLoose25NoTau", lambda ev: sum([(j.btagWP("CSVv2IVFL") and not j.taus) for j in ev.cleanJets]), int, help="Number of jets with pt > 25 passing CSV loose, not matched with taus"),
+            NTupleVariable("nBJetMedium25NoTau", lambda ev: sum([(j.btagWP("CSVv2IVFM") and not j.taus) for j in ev.bjetsMedium]), int, help="Number of jets with pt > 25 passing CSV medium, not matched with taus"),
+            NTupleVariable("nBJetCMVALoose25", lambda ev: sum([j.btagWP("CMVAL") for j in ev.cleanJets]), int, help="Number of jets with pt > 25 passing CMVA Loose"),
+            NTupleVariable("nBJetCMVAMedium25", lambda ev: sum([j.btagWP("CMVAM") for j in ev.cleanJets]), int, help="Number of jets with pt > 25 passing CMVA Medium"),
+            NTupleVariable("nBJetCMVATight25", lambda ev: sum([j.btagWP("CMVAT") for j in ev.cleanJets]), int, help="Number of jets with pt > 25 passing CMVA Tight"),
             NTupleVariable("nSoftBLoose25",  lambda ev: sum([(sv.mva>0.3 and (sv.jet == None or sv.jet.pt() < 25)) for sv in ev.ivf]), int, help="SV from ivf with loose sv mva not matched to a jet with pt > 25 GeV"),
             NTupleVariable("nSoftBMedium25", lambda ev: sum([(sv.mva>0.7 and (sv.jet == None or sv.jet.pt() < 25)) for sv in ev.ivf]), int, help="SV from ivf with medium sv mva not matched to a jet with pt > 25 GeV"),
             NTupleVariable("nSoftBTight25",  lambda ev: sum([(sv.mva>0.9 and (sv.jet == None or sv.jet.pt() < 25)) for sv in ev.ivf]), int, help="SV from ivf with tight sv mva not matched to a jet with pt > 25 GeV"),
+            ##
+
+            NTupleVariable("nJet30NoTau", lambda ev: sum([ (j.pt() > 30 and not j.taus ) for j in ev.cleanJets]), int, help="Number of jets with pt > 30, not matched with taus"),
+            NTupleVariable("nBJetLoose30NoTau", lambda ev: sum([(j.btagWP("CSVv2IVFL") and not j.taus) for j in ev.cleanJets if j.pt() > 30]), int, help="Number of jets with pt > 30 passing CSV loose, not matched with taus"),
+            NTupleVariable("nBJetMedium30NoTau", lambda ev: sum([(j.btagWP("CSVv2IVFM") and not j.taus) for j in ev.bjetsMedium if j.pt() > 30]), int, help="Number of jets with pt > 30 passing CSV medium, not matched with taus"),
+            ##
+
+            NTupleVariable("nJet40NoTau", lambda ev: sum([ (j.pt() > 40 and not j.taus ) for j in ev.cleanJets]), int, help="Number of jets with pt > 40, not matched with taus"),
+            NTupleVariable("nBJetLoose40NoTau", lambda ev: sum([(j.btagWP("CSVv2IVFL") and not j.taus) for j in ev.cleanJets if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CSV loose, not matched with taus"),
+            NTupleVariable("nBJetMedium40NoTau", lambda ev: sum([(j.btagWP("CSVv2IVFM") and not j.taus) for j in ev.bjetsMedium if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CSV medium, not matched with taus"),
+            NTupleVariable("nBJetCMVALoose40", lambda ev: sum([j.btagWP("CMVAL") for j in ev.cleanJets if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CMVA Loose"),
+            NTupleVariable("nBJetCMVAMedium40", lambda ev: sum([j.btagWP("CMVAM") for j in ev.cleanJets if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CMVA Medium"),
+            NTupleVariable("nBJetCMVATight40", lambda ev: sum([j.btagWP("CMVAT") for j in ev.cleanJets if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CMVA Tight"),
+
             ##--------------------------------------------------            
             NTupleVariable("mZ1", lambda ev : ev.bestZ1[0], help="Best m(ll) SF/OS"),
             NTupleVariable("mZ1SFSS", lambda ev : ev.bestZ1sfss[0], help="Best m(ll) SF/SS"),
@@ -116,7 +138,7 @@ susyMultilepton_collections.update({
             "selectedLeptons" : NTupleCollection("LepGood",  leptonTypeSusyExtra, 8, help="Leptons after the preselection"),
             "otherLeptons"    : NTupleCollection("LepOther", leptonTypeSusyExtra, 8, help="Leptons after the preselection"),
             ##------------------------------------------------
-            "cleanJets"       : NTupleCollection("Jet",     jetTypeSusy, 15, help="Cental jets after full selection and cleaning, sorted by pt"),
+            "cleanJets"       : NTupleCollection("Jet",     jetTypeSusyExtra, 15, help="Cental jets after full selection and cleaning, sorted by pt"),
             "cleanJetsFwd"    : NTupleCollection("JetFwd",  jetTypeSusy,  6, help="Forward jets after full selection and cleaning, sorted by pt"),            
             "fatJets"         : NTupleCollection("FatJet",  fatJetType,  15, help="AK8 jets, sorted by pt"),
             ##------------------------------------------------
@@ -126,4 +148,8 @@ susyMultilepton_collections.update({
             "ivf"       : NTupleCollection("SV",     svType, 20, help="SVs from IVF"),
             "genBHadrons"  : NTupleCollection("GenBHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level B hadrons"),
             "genDHadrons"  : NTupleCollection("GenDHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level D hadrons"),
+            ##------------------------------------------------
+            "jetsNonTauIdx" : NTupleCollection("JetNoTauIdx",objectInt, 10, help="index of jets not associated to taus"),
+
+
 })
