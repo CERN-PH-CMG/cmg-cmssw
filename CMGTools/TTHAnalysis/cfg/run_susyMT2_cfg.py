@@ -5,7 +5,7 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
 
 # Comment this line if you want the diagnostic folders produced along with the output root file
-cfg.Analyzer.nosubdir = True 
+cfg.Analyzer.nosubdir = True
 
 
 ##------------------------------------------
@@ -161,6 +161,9 @@ sequence = cfg.Sequence(
 #treeProducer.isCompressed = 0
 
 
+
+from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
+
 #-------- HOW TO RUN
 test = 0
 if test==0:
@@ -191,11 +194,17 @@ if test==0:
     comp.splitFactor = 10
 
 elif test==1:
+
     from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
     comp=GJets_HT200to400
     comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/gjets_ht200to400_miniaodsim_fix.root']
+
+#    comp=TTJets
+#    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/TTJets_miniAOD_fixPhoton_forSynch.root']
+
     selectedComponents = [comp]
     comp.splitFactor = 10
+
 elif test==2:
     from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
     selectedComponents = [ SingleMu, DoubleElectron, TTHToWW_PUS14, DYJetsToLL_M50_PU20bx25, TTJets_PUS14 ]
@@ -204,6 +213,10 @@ elif test==2:
         comp.splitFactor = 251
         comp.files = comp.files[:]
         #comp.files = comp.files[:1]
+
+
+
+# ------------------------------------------------------------------------------------------- #
 
 from PhysicsTools.HeppyCore.framework.services.tfile import TFileService 
 output_service = cfg.Service(
@@ -214,12 +227,16 @@ output_service = cfg.Service(
       option='recreate'
     )
 
-# the following is declared in case this cfg is used in input to the heppy.py script                                                                                                                   
+# the following is declared in case this cfg is used in input to the heppy.py script
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
+from CMGTools.TTHAnalysis.tools.EOSEventsWithDownload import EOSEventsWithDownload
+event_class = EOSEventsWithDownload
+if getHeppyOption("nofetch"):
+    event_class = Events
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence,
                      services = [output_service],
-                     events_class = Events)
-
+                     events_class = event_class)
+#                     events_class = Events)
 #printComps(config.components, True)
         

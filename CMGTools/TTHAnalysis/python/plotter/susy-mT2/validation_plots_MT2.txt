@@ -6,6 +6,9 @@ met_phi:   met_phi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
 genmet:   met_genPt: 16,0,800    ; XTitle="E_{T}^{miss}  [GeV]"
 genmet_phi:   met_genPhi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
 
+rawmet: met_rawPt: 16,0,800    ; XTitle="E_{T}^{miss}  [GeV]" 
+rawmet_phi: met_rawPhi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
+
 mht:   mht_pt: 16,0,800    ; XTitle="H_{T}^{miss}  [GeV]"
 mht_phi:   mht_phi: 8,-3.15,3.15    ; XTitle="phi of H_{T}^{miss}"
 
@@ -28,7 +31,7 @@ count_nGammas20 : nGammas20 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5]; XTitle="N(#gamma\,
 count_nJet40 : nJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(jet\, p_{T} > 40)'
 count_nBJet40 : nBJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\, p_{T} > 40\, CSVM)'
 
-count_ngenParticles: ngenPart : 500,0,500  ; XTitle="nGenParticles"
+##count_ngenParticles: ngenPart : 500,0,500  ; XTitle="nGenParticles"
 
 ##### TRIGGERS
 
@@ -95,6 +98,10 @@ jet_area: jet_area: 100, 0,100 ; XTitle="jet mc area"
 
 jet_id: jet_id: [-0.5,0.5,1.5,2.5,3.5] ; XTitle="jet id"
 jet_puId: jet_puId: [-0.5,0.5,1.5] ; XTitle="jet PU id"
+jet_qgl: jet_qgl: [-0.5,0.,0.5,1.,1.5] ; XTitle="jet qgl"
+
+jet1_pt: jet1_pt: 16,0,800    ; XTitle="jet1  p_{T}  [GeV]", Legend='TR'
+jet2_pt: jet2_pt: 16,0,800    ; XTitle="jet2  p_{T}  [GeV]", Legend='TR'
 
 
 ##### ISO TRACK 
@@ -145,7 +152,7 @@ genTau_pdgId : genTau_pdgId : [10.5,11.5,12.5,13.5,14.5,15.5,16.5] ; XTitle='PDG
 
 ##### PHOTONS
 
-gamma_ngamma : ngamma : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5] ; XTitle='N(tau\, p_{T} > 10\, |#eta| < 2.4 )'
+gamma_ngamma : ngamma : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5] ; XTitle='N(gamma\, p_{T} > 10\, |#eta| < 2.4 )'
 gamma_pt: gamma_pt: 16,0,800    ; XTitle="gamma p_{T}  [GeV]"
 gamma_phi: gamma_phi: 8,-3.15,3.15    ; XTitle="gamma phi"
 gamma_eta: gamma_eta: 10,-5.,5.    ; XTitle="gamma eta"
@@ -180,7 +187,10 @@ cr_gamma_ht: gamma_ht:  16,0,800    ; XTitle="H_{T}  [GeV]"
 
 cr_gamma_nJet40 : gamma_nJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(jet\, p_{T} > 40)'
 cr_gamma_nBJet40 : gamma_nBJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\, p_{T} > 40\, CSVM)'
-cr_gamma_minMTBMet : gamma_ minMTBMet: 16,0,800    ; XTitle="min M_{T}(B\,met)"
+cr_gamma_minMTBMet : gamma_minMTBMet: 16,0,800    ; XTitle="min M_{T}(B\,met)"
+
+cr_gamma_jet1_pt: gamma_jet1_pt: 16,0,800    ; XTitle="gamma jet1  p_{T}  [GeV]", Legend='TR'
+cr_gamma_jet2_pt: gamma_jet2_pt: 16,0,800    ; XTitle="gamma jet2  p_{T}  [GeV]", Legend='TR'
 
 ##### ZLL control variables
 
@@ -202,6 +212,7 @@ cr_zll_phi: zll_phi: 8,-3.15,3.15    ; XTitle="Z phi"
 cr_zll_eta: zll_eta: 10,-5.,5.    ; XTitle="Z eta"
 cr_zll_mass: zll_mass: 20,0,400.    ; XTitle="Z mass [GeV]"
 
+cr_zll_minMTBMet: zll_minMTBMet: 16,0,800    ; XTitle="min M_{T}(B\,met)"
 
 ##### LEPTON
 
