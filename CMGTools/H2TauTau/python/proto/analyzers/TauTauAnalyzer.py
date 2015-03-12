@@ -129,3 +129,13 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
     '''Tests vertex constraints, for mu, e and tau'''
     return abs(lepton.dxy()) < dxy and \
            abs(lepton.dz())  < dz
+
+  def bestDiLepton(self, diLeptons):
+    '''Returns the best diLepton (1st precedence most isolated opposite-sign,
+    2nd precedence most isolated).'''
+    osDiLeptons = [dl for dl in diLeptons if dl.leg1().charge() != dl.leg2().charge()]
+    least_iso = lambda dl : max(dl.leg1().tauID(self.cfg_ana.isolation), dl.leg2().tauID(self.cfg_ana.isolation))
+    # set reverse = True in case the isolation changes to MVA
+    # in that case the least isolated is the one with the lowest MVAscore
+    if osDiLeptons : return sorted(osDiLeptons, key=lambda dl : least_iso(dl), reverse=False)[0]
+    else           : return sorted(  diLeptons, key=lambda dl : least_iso(dl), reverse=False)[0]
