@@ -220,7 +220,7 @@ class PhotonAnalyzer( Analyzer ):
             phiRC -= 2.*pi
 
           gamma.chHadIsoRC03 = self.computeRandomCone( event, etaPhot, phiRC, 0.3, charged, jets20, photons10 )
-          gamma.chHadIsoRC   = self.computeRandomCone( event, etaPhot, phiRC, 0.4, charged, jets20, photons10 )
+          gamma.chHadIsoRC04 = self.computeRandomCone( event, etaPhot, phiRC, 0.4, charged, jets20, photons10 )
 
           if gamma.chHadIsoRC>=0. : continue #good to go
 
