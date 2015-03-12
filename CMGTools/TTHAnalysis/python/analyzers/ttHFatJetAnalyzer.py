@@ -48,6 +48,20 @@ class ttHFatJetAnalyzer( Analyzer ):
                 if self.testJetID (jet ):
                     event.fatJets.append(jet)
 
+        ## Associate jets to leptons
+        leptons = event.inclusiveLeptons if hasattr(event, 'inclusiveLeptons') else event.selectedLeptons
+        jlpairs = matchObjectCollection( leptons, allJets, self.jetLepDR**2)
+
+        for jet in allJets:
+            jet.leptons = [l for l in jlpairs if jlpairs[l] == jet ]
+
+        for lep in leptons:
+            jet = jlpairs[lep]
+            if jet is None:
+                lep.fatjet = lep.jet
+            else:
+                lep.fatjet = jet   
+                
 
     def testJetID(self, jet):
         #jet.puJetIdPassed = jet.puJetId() 
