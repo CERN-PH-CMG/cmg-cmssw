@@ -38,6 +38,7 @@ def addAK4Jets(process):
        algo = 'AK', 
        rParam = 0.4
        )
+    process.ak4PFJets.doAreaFastjet = cms.bool(True)
     process.patJetGenJetMatchAK4PF.matched = "slimmedGenJets"
     process.patJetPartonMatchAK4PF.matched = "prunedGenParticles"
     process.patJetPartons.particles = "prunedGenParticles"
