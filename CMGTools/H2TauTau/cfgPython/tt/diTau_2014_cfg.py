@@ -159,7 +159,7 @@ if syncntuple:
 ###################################################
 ###            SET BATCH OR LOCAL               ###
 ###################################################
-test = 0 # test = 0 run on batch, test = 1 run locally
+test = 1 # test = 0 run on batch, test = 1 run locally
 if test == 1 :
   cache              = True
   comp               = mc_dict['HiggsGGH125']
