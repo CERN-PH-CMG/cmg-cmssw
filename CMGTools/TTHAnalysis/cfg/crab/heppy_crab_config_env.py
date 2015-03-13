@@ -2,6 +2,8 @@
 # values we'll be taken from environment variables set in launchall.py
 # fixed options will be taken from heppy_crab_config.py
 
+debug = False
+
 import imp
 file = open( "heppy_crab_config.py", 'r' )
 cfg = imp.load_source( 'cfg', "heppy_crab_config.py", file)
@@ -22,6 +24,10 @@ config.General.workArea = 'crab_' + production_label # crab dir name
 config.Data.unitsPerJob = 10
 config.Data.totalUnits = config.Data.unitsPerJob * NJOBS
 
+if debug:
+    NJOBS = 2
+    NEVENTS = 200
+
 # arguments to pass to scriptExe. They have to be like "arg=value". 
 config.JobType.scriptArgs = ["dataset="+dataset, "total="+str(NJOBS)]
 
@@ -31,10 +37,6 @@ config.Data.outLFN += '/babies/' + cmg_version
 config.Data.primaryDataset =  production_label
 config.Data.publishDataName = dataset
 #final output: /store/user/$USER/babies/cmg_version/production_label/dataset/150313_114158/0000/foo.bar
-
-# uncomment for test purposes
-# NJOBS = 2
-# NEVENTS = 200
 
 # if NEVENTS variable is set then only nevents will be run
 try: 
