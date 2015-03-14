@@ -1,6 +1,6 @@
 #include "CMGTools/TTHAnalysis/interface/SignedImpactParameter.h"
 #include "MagneticField/UniformEngine/src/UniformMagneticField.h"
-#include "MagneticField/ParametrizedEngine/plugins/OAEParametrizedMagneticField.h"
+#include "MagneticField/ParametrizedEngine/src/OAEParametrizedMagneticField.h"
 #include "TrackingTools/PatternTools/interface/TwoTrackMinimumDistance.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "TrackingTools/IPTools/interface/IPTools.h"
