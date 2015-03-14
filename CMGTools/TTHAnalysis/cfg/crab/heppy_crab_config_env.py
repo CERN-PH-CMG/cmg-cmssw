@@ -2,7 +2,7 @@
 # values we'll be taken from environment variables set in launchall.py
 # fixed options will be taken from heppy_crab_config.py
 
-debug = True
+debug = False
 
 import imp
 file = open( "heppy_crab_config.py", 'r' )
