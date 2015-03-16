@@ -19,6 +19,8 @@ from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJets
 shift = None
 syncntuple = True
 computeSVfit = True
+# JAN - can we finally get this via command line options?
+production = False  # production = True run on batch, production = False run locally
 
 # When ready, include weights from CMGTools.H2TauTau.proto.weights.weighttable
 
@@ -112,8 +114,11 @@ svfitProducer = cfg.Analyzer(
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
-# from CMGTools.H2TauTau.proto.samples.phys14.tauMu_Jan_Feb13 import MC_list, mc_dict
-from CMGTools.H2TauTau.proto.samples.phys14.htt_Ric_Mar9 import MC_list, mc_dict, mc_triggers_mt
+from CMGTools.H2TauTau.proto.samples.phys14.connector import httConnector
+my_connect = httConnector('htt_6mar15_manzoni_nom', 'htautau_group',
+                          '.*root', 'mt', production=production)
+my_connect.connect()
+MC_list = my_connect.MC_list
 
 ###################################################
 ###              ASSIGN PU to MC                ###
@@ -121,12 +126,6 @@ from CMGTools.H2TauTau.proto.samples.phys14.htt_Ric_Mar9 import MC_list, mc_dict
 for mc in MC_list:
     mc.puFileData = puFileData
     mc.puFileMC = puFileMC
-
-###################################################
-###              ASSIGN TRIGGER                 ###
-###################################################
-for mc in MC_list:
-    mc.triggers = mc_triggers_mt
 
 ###################################################
 ###             SET COMPONENTS BY HAND          ###
@@ -159,13 +158,12 @@ if syncntuple:
 ###################################################
 ###            SET BATCH OR LOCAL               ###
 ###################################################
-# JAN - can we finally get this via command line options?
-test = 0  # test = 0 run on batch, test = 1 run locally
-if test == 1:
+if not production:
     cache = True
-    comp = mc_dict['HiggsGGH125']
+    comp = my_connect.mc_dict['HiggsGGH125']
     selectedComponents = [comp]
     comp.splitFactor = 1
+    comp.fineSplitFactor = 1
     comp.files = comp.files[:1]
 
 

@@ -12,8 +12,9 @@ from CMGTools.H2TauTau.proto.analyzers.SVfitProducer              import SVfitPr
 from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC, eventSelector
 
 # local switches
-syncntuple = True
+syncntuple   = True
 computeSVfit = True
+production   = False  # production = True run on batch, production = False run locally
 
 dyJetsFakeAna.channel = 'tt'
 
@@ -94,8 +95,11 @@ svfitProducer = cfg.Analyzer(
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
-# from CMGTools.H2TauTau.proto.samples.phys14.diTau_Ric_Jan27 import MC_list, mc_dict
-from CMGTools.H2TauTau.proto.samples.phys14.htt_Ric_Mar9 import MC_list, mc_dict, mc_triggers_tt
+from CMGTools.H2TauTau.proto.samples.phys14.connector import httConnector
+my_connect = httConnector('htt_6mar15_manzoni_nom', 'htautau_group',
+                          '.*root', 'tt', production=production)
+my_connect.connect()
+MC_list = my_connect.MC_list
 
 ###################################################
 ###              ASSIGN PU to MC                ###
@@ -103,12 +107,6 @@ from CMGTools.H2TauTau.proto.samples.phys14.htt_Ric_Mar9 import MC_list, mc_dict
 for mc in MC_list:
     mc.puFileData = puFileData
     mc.puFileMC = puFileMC
-
-###################################################
-###              ASSIGN TRIGGER                 ###
-###################################################
-for mc in MC_list:
-    mc.triggers = mc_triggers_tt
 
 ###################################################
 ###             SET COMPONENTS BY HAND          ###
@@ -138,35 +136,15 @@ if syncntuple:
 # sequence.insert(0, eventSelector)
 
 ###################################################
-###    SET THE TRIGGERS TO BE USED WITH DATA    ###
-###################################################
-# for data in data_parked_2012:
-#   data.triggers  = data_parked_triggers_2012  ## ORDER MATTERS!
-#   data.triggers += data_triggers_2012         ## ORDER MATTERS!
-
-###################################################
-###     SET THE TRIGGERS TO BE USED WITH MC     ###
-###################################################
-# for mc in MC_list:
-#   mc.triggers = ['HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_v6']
-
-###################################################
-###   SET THE TRIGGERS TO BE USED WITH RH EMB   ###
-###################################################
-# for emb in embed_list:
-#   emb.triggers = emb_rechit_triggers
-
-###################################################
 ###            SET BATCH OR LOCAL               ###
 ###################################################
-test = 1 # test = 0 run on batch, test = 1 run locally
-if test == 1 :
-  cache              = True
-  comp               = mc_dict['HiggsGGH125']
-  #comp.triggers      = [] # empty for now
-  selectedComponents = [comp]
-  comp.splitFactor   = 1
-  comp.files         = comp.files[:1]
+if not production:
+  cache                = True
+  comp                 = my_connect.mc_dict['HiggsGGH125']
+  selectedComponents   = [comp]
+  comp.splitFactor     = 1
+  comp.fineSplitFactor = 1
+  comp.files           = comp.files[:1]
 
 # the following is declared in case this cfg is used in input to the
 # heppy.py script
