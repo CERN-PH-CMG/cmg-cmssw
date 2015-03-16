@@ -7,7 +7,7 @@ def dasql(x):
     return json.loads(txtjson)
 
 def go(dataset):
-    dsets = dasql("dataset dataset=%s" % dataset)
+    dsets = dasql("dataset dataset=%s" % dataset)['data']
     if "*" in dataset:
         for d in dsets:
             go(d['dataset'][0]['name'])

@@ -32,10 +32,32 @@ def stackEffs(outname,x,effs,options):
     alleffs = ROOT.THStack("all","all")
     for title,eff in effs:
         alleffs.Add(eff)
-    c1 = ROOT.TCanvas("eff_canvas","eff_canvas")
-    c1.SetGridy(options.showGrid)
-    c1.SetGridx(options.showGrid)
-    c1.SetLogx(x.getOption('Logx',False))
+    doRatio = options.showRatio and len(effs) > 1
+    # define aspect ratio
+    if doRatio: ROOT.gStyle.SetPaperSize(20.,25.)
+    else:       ROOT.gStyle.SetPaperSize(20.,20.)
+    # create canvas
+    c1 = ROOT.TCanvas(outname+"_canvas", outname, 600, (750 if doRatio else 600))
+    c1.Draw()
+    p1, p2 = c1, None # high and low panes
+    # set borders, if necessary create subpads
+    if doRatio:
+        c1.SetWindowSize(600 + (600 - c1.GetWw()), (750 + (750 - c1.GetWh())));
+        p1 = ROOT.TPad("pad1","pad1",0,0.31,1,1);
+        p1.SetBottomMargin(0);
+        p1.Draw();
+        p2 = ROOT.TPad("pad2","pad2",0,0,1,0.31);
+        p2.SetTopMargin(0);
+        p2.SetBottomMargin(0.3);
+        p2.SetFillStyle(0);
+        p2.Draw();
+        p1.cd();
+    else:
+        c1.SetWindowSize(600 + (600 - c1.GetWw()), 600 + (600 - c1.GetWh()));
+    p1.SetGridy(options.showGrid)
+    p1.SetGridx(options.showGrid)
+    p1.SetLogx(x.getOption('Logx',False))
+    p1.SetLogy(options.logy)
     alleffs.Draw("APL");
     h0 = effs[0][1].Clone("frame"); h0.Reset();
     h0.GetYaxis().SetDecimals()
@@ -48,9 +70,60 @@ def stackEffs(outname,x,effs,options):
         h0.GetYaxis().SetRangeUser(options.yrange[0], options.yrange[1])
     leg = doLegend(effs,options)
     if options.fontsize: leg.SetTextSize(options.fontsize)
+    if doRatio:
+        p2.cd()
+        h0.GetXaxis().SetLabelOffset(999) ## send them away
+        h0.GetXaxis().SetTitleOffset(999) ## in outer space
+        h0.GetYaxis().SetLabelSize(0.05)
+        doEffRatio(x,effs,options)
     c1.Print(outname.replace(".root","")+".png")
     c1.Print(outname.replace(".root","")+".eps")
     c1.Print(outname.replace(".root","")+".pdf")
+
+def doEffRatio(x,effs,options):
+    effrels = [ e.ProjectionX(n+"_rel") for (n,e) in effs ]
+    unity   = effrels[0]
+    rmin, rmax = 1,1
+    for ie,eff in enumerate(effrels):
+        for b in xrange(1,eff.GetNbinsX()+1):
+            scale = effs[0][1].GetBinContent(b)
+            if scale == 0:
+                eff.SetBinContent(b,0)
+                eff.SetBinError(b,0)
+                continue
+            eff.SetBinContent(b, eff.GetBinContent(b)/scale)
+            eff.SetBinError(b, eff.GetBinError(b)/scale)
+            if ie == 0:
+                eff.SetFillStyle(3013)
+                eff.SetFillColor(effs[ie][1].GetLineColor())
+                eff.SetMarkerStyle(0)
+            else:
+                eff.SetLineColor(effs[ie][1].GetLineColor())
+                eff.SetLineWidth(effs[ie][1].GetLineWidth())
+                eff.SetMarkerColor(effs[ie][1].GetMarkerColor())
+                eff.SetMarkerStyle(effs[ie][1].GetMarkerStyle())
+            rmax = max(rmax, eff.GetBinContent(b)+2*eff.GetBinError(b))
+            rmin = min(rmin, max(0,eff.GetBinContent(b)-2*eff.GetBinError(b)))
+    if options.ratioRange != (-1,-1):
+        rmin,rmax = options.ratioRange
+    unity.Draw("E2");
+    unity.GetYaxis().SetRangeUser(rmin,rmax);
+    unity.GetXaxis().SetTitleSize(0.14)
+    unity.GetYaxis().SetTitleSize(0.14)
+    unity.GetXaxis().SetLabelSize(0.11)
+    unity.GetYaxis().SetLabelSize(0.11)
+    unity.GetYaxis().SetNdivisions(505)
+    unity.GetYaxis().SetDecimals(True)
+    unity.GetYaxis().SetTitle("X / "+effs[0][0])
+    unity.GetYaxis().SetTitleOffset(0.52);
+    line = ROOT.TLine(unity.GetXaxis().GetXmin(),1,unity.GetXaxis().GetXmax(),1)
+    line.SetLineWidth(3);
+    line.SetLineColor(effs[0][1].GetLineColor());
+    line.DrawLine(unity.GetXaxis().GetXmin(),1,unity.GetXaxis().GetXmax(),1)
+    for ratio in effrels[1:]:
+        ratio.Draw("E SAME");
+
+    
 
 def makeEff(mca,cut,idplot,xvarplot):
     import copy
@@ -73,12 +146,15 @@ if __name__ == "__main__":
     parser.add_option("-o", "--out", dest="out", default=None, help="Output file name. by default equal to plots -'.txt' +'.root'");
     parser.add_option("--rebin", dest="globalRebin", type="int", default="0", help="Rebin all plots by this factor")
     parser.add_option("--xrange", dest="xrange", default=None, nargs=2, type='float', help="X axis range");
-    parser.add_option("--yrange", dest="yrange", default=None, nargs=2, type='float', help="X axis range");
+    parser.add_option("--yrange", dest="yrange", default=None, nargs=2, type='float', help="Y axis range");
+    parser.add_option("--logy", dest="logy", default=False, action='store_true', help="Do y axis in log scale");
     parser.add_option("--ytitle", dest="ytitle", default="Efficiency", type='string', help="Y axis title");
     parser.add_option("--fontsize", dest="fontsize", default=0, type='float', help="Legend font size");
     parser.add_option("--grid", dest="showGrid", action="store_true", default=False, help="Show grid lines")
     parser.add_option("--groupBy",  dest="groupBy",  default="process",  type="string", help="Group by: cut, process")
     parser.add_option("--legend",  dest="legend",  default="TR",  type="string", help="Legend position (BR, TR)")
+    parser.add_option("--showRatio", dest="showRatio", action="store_true", default=False, help="Add a data/sim ratio plot at the bottom")
+    parser.add_option("--rr", "--ratioRange", dest="ratioRange", type="float", nargs=2, default=(-1,-1), help="Min and max for the ratio")
     (options, args) = parser.parse_args()
     options.globalRebin = 1
     options.allowNegative = True # with the fine bins used in ROCs, one otherwise gets nonsensical results
@@ -103,10 +179,10 @@ if __name__ == "__main__":
                     eff = pmap[proc]
                     if not eff: continue
                     eff.SetLineColor(mca.getProcessOption(proc,"FillColor",SAFE_COLOR_LIST[len(effs)]))
-                    eff.SetFillColor(mca.getProcessOption(proc,"FillColor",SAFE_COLOR_LIST[len(effs)]))
-                    eff.SetMarkerStyle(mca.getProcessOption(proc,"MarkerStyle",33))
-                    eff.SetMarkerSize(mca.getProcessOption(proc,"MarkerSize",1.4)*0.8)
-                    eff.SetLineWidth(2)
+                    eff.SetMarkerColor(mca.getProcessOption(proc,"FillColor",SAFE_COLOR_LIST[len(effs)]))
+                    eff.SetMarkerStyle(mca.getProcessOption(proc,"MarkerStyle",20))
+                    eff.SetMarkerSize(mca.getProcessOption(proc,"MarkerSize",1.6)*0.8)
+                    eff.SetLineWidth(4)
                     effs.append((mca.getProcessOption(proc,"Label",proc),eff))
                 if len(effs) == 0: continue
                 stackEffs(myname,x,effs,options)
@@ -123,7 +199,7 @@ if __name__ == "__main__":
                     eff.SetMarkerColor(y.getOption("MarkerColor",SAFE_COLOR_LIST[len(effs)]))
                     eff.SetMarkerStyle(y.getOption("MarkerStyle",33))
                     eff.SetMarkerSize(y.getOption("MarkerSize",1.4)*0.8)
-                    eff.SetLineWidth(2)
+                    eff.SetLineWidth(4)
                     effs.append((y.getOption("Title",y.name),eff))
             if len(effs) == 0: continue
             stackEffs(myname,x,effs,options)
