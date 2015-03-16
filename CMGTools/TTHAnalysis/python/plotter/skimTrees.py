@@ -9,6 +9,7 @@ if __name__ == "__main__":
     parser = OptionParser(usage="%prog [options] mc.txt cuts.txt outputDir")
     parser.add_option("-D", "--drop",  dest="drop", type="string", default=[], action="append",  help="Branches to drop, as per TTree::SetBranchStatus") 
     parser.add_option("-K", "--keep",  dest="keep", type="string", default=[], action="append",  help="Branches to keep, as per TTree::SetBranchStatus") 
+    parser.add_option("--oldstyle",    dest="oldstyle", default=False, action="store_true",  help="Oldstyle naming (e.g. file named as <analyzer>_tree.root)") 
     addMCAnalysisOptions(parser)
     (options, args) = parser.parse_args()
     options.weight = False
@@ -38,13 +39,17 @@ if __name__ == "__main__":
             os.system("mkdir -p "+myoutpath)
             os.system("cp -r %s/skimAnalyzerCount %s/" % (mysource,myoutpath))
             os.system("mkdir -p %s/%s" % (myoutpath,options.tree))
-            fout = ROOT.TFile("%s/%s/tree.root" % (myoutpath,options.tree), "RECREATE");
+            if not options.oldstyle:
+                fout = ROOT.TFile("%s/%s/tree.root" % (myoutpath,options.tree), "RECREATE");
+            else:
+                fout = ROOT.TFile("%s/%s/%s_tree.root" % (myoutpath,options.tree,options.tree), "RECREATE");
             # drop and keep branches
             for drop in options.drop: mytree.SetBranchStatus(drop,0)
             for keep in options.keep: mytree.SetBranchStatus(keep,1)
             out = mytree.CopyTree(mycut)
-            for tf in out.GetListOfFriends():
-                out.RemoveFriend(tf.GetTree())
-            fout.WriteTObject(out,"tree")
+            if out.GetListOfFriends():
+                for tf in out.GetListOfFriends():
+                    out.RemoveFriend(tf.GetTree())
+            fout.WriteTObject(out,options.tree if options.oldstyle else "tree")
             fout.Close()
 
