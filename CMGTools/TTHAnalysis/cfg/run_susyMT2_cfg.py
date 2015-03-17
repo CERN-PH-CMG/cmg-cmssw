@@ -4,6 +4,10 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 #Load all analyzers
 from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
 
+# Comment this line if you want the diagnostic folders produced along with the output root file
+cfg.Analyzer.nosubdir = True
+
+
 ##------------------------------------------
 ## Redefine what I need
 ##------------------------------------------
@@ -108,7 +112,8 @@ ttHZskim = cfg.Analyzer(
 ##  PRODUCER
 ##------------------------------------------
 
-from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import triggers_HT900, triggers_MET170, triggers_HTMET, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_mue, triggers_1mu, triggers_photon155,triggers_1mu_isolow
+from CMGTools.TTHAnalysis.samples.triggers_13TeV_PHYS14 import triggers_HT900, triggers_MET170, triggers_HTMET, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_mue, triggers_1mu, triggers_photon155,triggers_1mu_isolow
+
 
 triggerFlagsAna.triggerBits = {
             'HT900' : triggers_HT900,
@@ -152,72 +157,78 @@ sequence = cfg.Sequence(
     treeProducer,
     ])
 
-###---- to switch off the comptrssion
+###---- to switch off the compression
 #treeProducer.isCompressed = 0
 
-#-------- SAMPLES AND TRIGGERS -----------
-#from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14 import * 
-#from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14v2 import *
-from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
 
-#selectedComponents = [ SingleMu, DoubleElectron, TTHToWW_PUS14, DYJetsToLL_M50_PU20bx25, TTJets_PUS14 ]
 
-#selectedComponents = [ TTJets_MSDecaysCKM_central_PU_S14_POSTLS170 ]
-#selectedComponents = [ WJetsToLNu_HT100to200_PU_S14_POSTLS170, WJetsToLNu_HT200to400_PU_S14_POSTLS170, WJetsToLNu_HT400to600_PU_S14_POSTLS170, WJetsToLNu_HT600toInf_PU_S14_POSTLS170 ]
-
-#selectedComponents = [ QCD_Pt1000to1400_PU_S14_POSTLS170, QCD_Pt10to15_PU_S14_POSTLS170, QCD_Pt15to30_PU_S14_POSTLS170, QCD_Pt120to170_PU_S14_POSTLS170, QCD_Pt170to300_PU_S14_POSTLS170, QCD_Pt1400to1800_PU_S14_POSTLS170, QCD_Pt1800_PU_S14_POSTLS170, QCD_Pt300to470_PU_S14_POSTLS170, QCD_Pt30to50_PU_S14_POSTLS170, QCD_Pt470to600_PU_S14_POSTLS170, QCD_Pt50to80_PU_S14_POSTLS170, QCD_Pt5to10_PU_S14_POSTLS170, QCD_Pt600to800_PU_S14_POSTLS170, QCD_Pt800to1000_PU_S14_POSTLS170, QCD_Pt80to120_PU_S14_POSTLS170 ]
-
-#selectedComponents = [ DYJets_M50_HT100to200_PU_S14_POSTLS170, DYJets_M50_HT200to400_PU_S14_POSTLS170, DYJets_M50_HT400to600_PU_S14_POSTLS170, DYJets_M50_HT600toInf_PU_S14_POSTLS170 ]
-
-#selectedComponents = [ GJets_HT100to200_PU_S14_POSTLS170, GJets_HT200to400_PU_S14_POSTLS170, GJets_HT400to600_PU_S14_POSTLS170, ZJetsToNuNu_HT200to400_PU_S14_POSTLS170, ZJetsToNuNu_HT400to600_PU_S14_POSTLS170, ZJetsToNuNu_HT600toInf_PU_S14_POSTLS170 ]
-
-#selectedComponents = [ SMS_T1bbbb_2J_mGl1000_mLSP900_PU_S14_POSTLS170, SMS_T1bbbb_2J_mGl1500_mLSP100_PU_S14_POSTLS170, SMS_T1qqqq_2J_mGl1400_mLSP100_PU_S14_POSTLS170, SMS_T1tttt_2J_mGl1200_mLSP800_PU_S14_POSTLS170, SMS_T1tttt_2J_mGl1500_mLSP100_PU_S14_POSTLS170 ]
-
-#selectedComponents = [ DYJetsM50_HT100to200_PU_S14_POSTLS170, DYJetsM50_HT200to400_PU_S14_POSTLS170, DYJetsM50_HT400to600_PU_S14_POSTLS170, DYJetsM50_HT600toInf_PU_S14_POSTLS170, SMS_T1bbbb_2J_mGl1000_mLSP900_PU_S14_POSTLS170, SMS_T1bbbb_2J_mGl1500_mLSP100_PU_S14_POSTLS170, SMS_T1qqqq_2J_mGl1400_mLSP100_PU_S14_POSTLS170, SMS_T1tttt_2J_mGl1200_mLSP800_PU_S14_POSTLS170, SMS_T1tttt_2J_mGl1500_mLSP100_PU_S14_POSTLS170 ]
-
-#selectedComponents = [ GJets_HT600toInf_PU_S14_POSTLS170 ]
-#, ZJetsToNuNu_HT100to200_PU_S14_POSTLS170 ]
-
-##selectedComponents = [ TTJets_PU20bx25 ]
-
-#selectedComponents = [ SMS_T1qqqq_2J_mGl1000_mLSP800_PU_S14_POSTLS170 ]
+from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
 
 #-------- HOW TO RUN
-test = 1
-if test==1:
-    # test a single component, using a single thread.
-    #comp=TTJets_PU20bx25 #TTJets_forSynch
-    #comp=SMS_T1qqqq_2J_mGl1400_mLSP100_PU_S14_POSTLS170 # small files for testing
-    #comp=SMS_T1bbbb_2J_mGl1000_mLSP900_PU_S14_POSTLS170
-    #comp=GJets_HT100to200_PU_S14_POSTLS170
-    #comp.files = ['/afs/cern.ch/work/p/pandolf/CMSSW_7_0_6_patch1_2/src/CMGTools/TTHAnalysis/cfg/pickevents.root']
-    #comp.files = ['/afs/cern.ch/user/p/pandolf/public/file_gammaJet.root']
-    #comp.files = ['/afs/cern.ch/work/p/pandolf/CMSSW_7_0_6_patch1_2/src/CMGTools/TTHAnalysis/cfg/file_gammaJet.root']
-    #comp.files = ['/afs/cern.ch/user//m/mmasciov/public/TTJets_forSynch_1.root']
-    ## 50 ns ttbar CSAv1
-    #    comp=TTJets_MSDecaysCKM_central_PU_S14_POSTLS170
-    ## 50 ns ttbar CSAv2
-    #    comp=TTJets
-    ## 25 ns ttbar PHYS14
-#    comp = TTJets
-#    comp.files = comp.files[:1]
-#    comp=TTJets
-#    comp.files = ['/afs/cern.ch/work/d/dalfonso/public/ttjets_miniaodsim_00C90EFC-3074-E411-A845-002590DB9262.root']
-    comp=GJets_HT200to400
-#    comp.files = ['/afs/cern.ch/work/d/dalfonso/public/gjets_ht200to400_miniaodsim_060B8ED3-8571-E411-A2CD-002590D0AFEA.root']
+# choose 2 for full production
+test = 2
+if test==0:
+    # ------------------------------------------------------------------------------------------- #
+    # --- all this lines taken from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 
+    # --- They may not be in synch anymore 
+    from CMGTools.TTHAnalysis.samples.ComponentCreator import ComponentCreator
+    kreator = ComponentCreator()
+    testComponent = kreator.makeMCComponent("testComponent", "/GJets_HT-200to400_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",489.9)
+    mcSamples=[testComponent]
+
+    dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data"
+    json=dataDir+'/json/Cert_Run2012ABCD_22Jan2013ReReco.json'
+    from CMGTools.TTHAnalysis.setup.Efficiencies import *
+
+    for comp in mcSamples:
+        comp.isMC = True
+        comp.isData = False
+        comp.splitFactor = 250 
+        comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
+        comp.puFileData=dataDir+"/puProfile_Data12.root"
+        comp.efficiency = eff2012
+    # ------------------------------------------------------------------------------------------- #
+
+    comp=testComponent
     comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/gjets_ht200to400_miniaodsim_fix.root']
-#    comp=DYJetsToLL_M50_PU4bx50
-#    comp.files = comp.files[:1]
+    selectedComponents = [comp]
+    comp.splitFactor = 10
+
+elif test==1:
+
+    from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
+    comp=GJets_HT200to400
+    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/gjets_ht200to400_miniaodsim_fix.root']
+
+#    comp=TTJets
+#    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/TTJets_miniAOD_fixPhoton_forSynch.root']
 
     selectedComponents = [comp]
     comp.splitFactor = 10
+
 elif test==2:
-    selectedComponents = [ SingleMu, DoubleElectron, TTHToWW_PUS14, DYJetsToLL_M50_PU20bx25, TTJets_PUS14 ]
+    from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
+    # full production
+    selectedComponents = [ 
+TTJets, # TTJets
+ZJetsToNuNu_HT100to200, ZJetsToNuNu_HT200to400, ZJetsToNuNu_HT400to600, ZJetsToNuNu_HT600toInf, # ZJetsToNuNu_HT
+WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, # WJetsToLNu_HT
+GJets_HT100to200_fixPhoton, GJets_HT200to400_fixPhoton, GJets_HT400to600_fixPhoton, GJets_HT600toInf_fixPhoton, # GJets_HT
+QCD_HT_100To250_fixPhoton, QCD_HT_250To500_fixPhoton, QCD_HT_500To1000_fixPhoton, QCD_HT_1000ToInf_fixPhoton, QCD_HT_250To500_ext1_fixPhoton, QCD_HT_500To1000_ext1_fixPhoton,QCD_HT_1000ToInf_ext1_fixPhoton, # QCD_HT
+ QCD_Pt170to300_fixPhoton, QCD_Pt300to470_fixPhoton, QCD_Pt470to600_fixPhoton, QCD_Pt600to800_fixPhoton, QCD_Pt800to1000_fixPhoton, QCD_Pt1000to1400_fixPhoton, QCD_Pt1400to1800_fixPhoton, QCD_Pt1800to2400_fixPhoton, QCD_Pt2400to3200_fixPhoton, QCD_Pt3200_fixPhoton, # QCD_Pt
+SMS_T2tt_2J_mStop850_mLSP100, SMS_T2tt_2J_mStop650_mLSP325, SMS_T2tt_2J_mStop500_mLSP325, SMS_T2tt_2J_mStop425_mLSP325, SMS_T2qq_2J_mStop600_mLSP550, SMS_T2qq_2J_mStop1200_mLSP100, SMS_T2bb_2J_mStop900_mLSP100, SMS_T2bb_2J_mStop600_mLSP580, SMS_T1tttt_2J_mGl1500_mLSP100, SMS_T1tttt_2J_mGl1200_mLSP800, SMS_T1qqqq_2J_mGl1400_mLSP100, SMS_T1qqqq_2J_mGl1000_mLSP800, SMS_T1bbbb_2J_mGl1500_mLSP100, SMS_T1bbbb_2J_mGl1000_mLSP900, # SMS
+DYJetsToLL_M50_HT100to200, DYJetsToLL_M50_HT200to400, DYJetsToLL_M50_HT400to600, DYJetsToLL_M50_HT600toInf # DYJetsToLL_M50_HT
+]
+
     # test all components (1 thread per component).
     for comp in selectedComponents:
-        comp.splitFactor = 251
+        comp.splitFactor = 600
         comp.files = comp.files[:]
         #comp.files = comp.files[:1]
+
+
+
+# ------------------------------------------------------------------------------------------- #
 
 from PhysicsTools.HeppyCore.framework.services.tfile import TFileService 
 output_service = cfg.Service(
@@ -228,12 +239,16 @@ output_service = cfg.Service(
       option='recreate'
     )
 
-# the following is declared in case this cfg is used in input to the heppy.py script                                                                                                                   
+# the following is declared in case this cfg is used in input to the heppy.py script
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
+from CMGTools.TTHAnalysis.tools.EOSEventsWithDownload import EOSEventsWithDownload
+event_class = EOSEventsWithDownload
+if getHeppyOption("nofetch"):
+    event_class = Events
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence,
                      services = [output_service],
-                     events_class = Events)
-
+                     events_class = event_class)
+#                     events_class = Events)
 #printComps(config.components, True)
         

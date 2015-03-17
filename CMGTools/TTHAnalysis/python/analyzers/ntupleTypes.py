@@ -54,6 +54,13 @@ leptonTypeSusyExtra = NTupleObjectType("leptonSusyExtra", baseObjectTypes = [ le
     NTupleVariable("jetmaxSignedSip2D",    lambda lepton  : maxSignedSip2Djettracks(lepton) , help="max signed Sip2D among jet's tracks"),
     NTupleVariable("jetmaxSip2D",    lambda lepton :   maxSip2Djettracks(lepton), help="max Sip2D among jet's tracks"),
     NTupleVariable("jetPtRelv0",   lambda lepton : ptRel(lepton.p4(),lepton.jet.p4()) if hasattr(lepton,'jet') else -1, help="pt of the lepton transverse to the jet axis (not subtracting the lepton)"),
+    NTupleVariable("jetDecDR",      lambda lepton : lepton.jetDecDR if hasattr(lepton,'jetDecDR') else -1, help="deltaR(lepton, nearest jet) after declustering"),
+    NTupleVariable("jetDecPtRel", lambda lepton : lepton.jetDecPtRel if hasattr(lepton,'jetDecPtRel') else -1, help="pt of the lepton transverse to the jet axis (subtracting the lepton), after declustering"),
+    NTupleVariable("jetDecPtRatio", lambda lepton :  lepton.jetDecPtRatio if hasattr(lepton,'jetDecPtRatio') else -1, help="pt(lepton)/pt(nearest jet) after declustering"),
+    NTupleVariable("jetDec02DR",      lambda lepton : lepton.jetDec02DR if hasattr(lepton,'jetDec02DR') else -1, help="deltaR(lepton, nearest jet) after declustering 02"),
+    NTupleVariable("jetDec02PtRel", lambda lepton : lepton.jetDec02PtRel if hasattr(lepton,'jetDec02PtRel') else -1, help="pt of the lepton transverse to the jet axis (subtracting the lepton), after declustering 02"),
+    NTupleVariable("jetDec02PtRatio", lambda lepton :  lepton.jetDec02PtRatio if hasattr(lepton,'jetDec02PtRatio') else -1, help="pt(lepton)/pt(nearest jet) after declustering 02"),
+
 ])
 
 
