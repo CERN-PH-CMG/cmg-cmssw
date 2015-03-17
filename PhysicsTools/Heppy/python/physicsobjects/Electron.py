@@ -35,7 +35,6 @@ class Electron( Lepton ):
         for ID in self.electronIDs():
             if ID.first == id:
                 return ID.second
-        import pdb ; pdb.set_trace()
         raise RuntimeError, "Electron id '%s' not yet implemented in Electron.py" % id
 
     def cutBasedId(self, wp, showerShapes="auto"):
@@ -97,8 +96,6 @@ class Electron( Lepton ):
         }
 
         WP.update(WP_conversion_veto)
-
-        import pdb ; pdb.set_trace()
 
         if wp not in WP:
             raise RuntimeError, "Working point '%s' not yet implemented in Electron.py" % wp
