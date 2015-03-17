@@ -42,7 +42,7 @@ class Electron( Lepton ):
             showerShapes = "full5x5"
             wp = wp.replace("_full5x5","")
         elif showerShapes == "auto":
-            if "POG_CSA14_25ns_v1" in wp or "POG_CSA14_50ns_v1" in wp or 'POG_PHYS14_25ns_v1':
+            if "POG_CSA14_25ns_v1" in wp or "POG_CSA14_50ns_v1" in wp or "POG_PHYS14_25ns_v1" in wp:
                 showerShapes = "full5x5"
         vars = {
             'dEtaIn' : abs(self.physObj.deltaEtaSuperClusterTrackAtVtx()),
