@@ -21,7 +21,8 @@ def findFirstAncestor(dataset_id, info):
     else:
         parent_id = rows[0][0]
         groups = ['tauMu_fullsel_tree_CMG', 'tauMu_fullsel_tree', 'tauEle_fullsel_tree_CMG',
-                  'tauEle_fullsel_tree', 'diTau_fullsel_tree_CMG', 'diTau_fullsel_tree','cmgTuple', 'PFAOD'] 
+                  'tauEle_fullsel_tree', 'diTau_fullsel_tree_CMG', 'diTau_fullsel_tree','cmgTuple',
+                  'htt_fullsel_tree_CMG', 'htt_fullsel_tree', 'PFAOD']
         igroup = 0
         while 1:
             #import pdb ; pdb.set_trace()
@@ -31,7 +32,7 @@ def findFirstAncestor(dataset_id, info):
             igroup+=1
         file_group_name, number_files_good, number_files_bad, number_files_missing, dataset_fraction = ginfo
         dinfo=dict(
-            dataset_id = dataset_id, 
+            dataset_id = dataset_id,
             parent_dataset_id = rows[0][0],
             path_name = rows[0][1],
             primary_dataset_entries = rows[0][2],
@@ -44,14 +45,14 @@ def findFirstAncestor(dataset_id, info):
             dataset_entries = rows[0][5],
             dataset_fraction = dataset_fraction
             )
-        
-        
+
+
         # pprint.pprint(dinfo)
         info.append(dinfo)
-        
+
         if parent_id is None:
             # print 'last in the DB'
-            return 
+            return
         findFirstAncestor( parent_id, info )
 
 
@@ -67,7 +68,7 @@ def groupInfo(dataset_id, group_name):
     else:
         file_group_name, number_files_good, number_files_bad, number_files_missing, dataset_fraction = rows[0]
         return file_group_name, number_files_good, number_files_bad, number_files_missing, dataset_fraction
-    
+
 
 
 class DatasetInfo(list):
@@ -108,10 +109,10 @@ def processInfo(info):
         # pid, path_name, pde, njobs, nmiss, nbad, dataset_fraction, task_id = ds
         # try to find the total number of entries in the CMS dataset
         if pde>0:
-            if dsInfo.primary_dataset_entries is None:  
+            if dsInfo.primary_dataset_entries is None:
                 dsInfo.primary_dataset_entries=pde
             elif dsInfo.primary_dataset_entries != pde:
-                print 'WARNING! there can only be one value for primary_dataset_entries in the history of a dataset, see task',task_id 
+                print 'WARNING! there can only be one value for primary_dataset_entries in the history of a dataset, see task',task_id
         else:
             print 'WARNING! primary_dataset_entries==-1 for',path_name
         # which step is that?
@@ -133,10 +134,10 @@ def processInfo(info):
             step = 'Unknown'
 
         try    :
-          nmiss + nbad 
-        except : 
+          nmiss + nbad
+        except :
           njobs, nbad, nmiss = retrieveInfosFromBadPublished(ds)
-        
+
         if nmiss+nbad == 0:
             job_eff = 1
         else:
@@ -160,9 +161,9 @@ def processInfo(info):
                              pde       = pde
                              )
                        )
-        # pprint.pprint( dsInfo[-1] ) 
+        # pprint.pprint( dsInfo[-1] )
     return dsInfo
-        
+
 
 
 rePatMass = re.compile('M-(\d+)_')
@@ -180,7 +181,7 @@ def findAlias(path_name, aliases):
         mass = match.group(1)
         return name + mass
     else:
-        return name 
+        return name
 
 
 
@@ -192,7 +193,7 @@ def retrieveInfosFromBadPublished(ds) :
     num_of_files        = 0
     num_of_bad_jobs     = 0
     num_of_missing_jobs = 0 ### dummy as long as I don't figure out where tot num of jobs is stored
-    
+
     ic = ''
 
     ### retrieve the owner of the dataset
@@ -202,7 +203,7 @@ def retrieveInfosFromBadPublished(ds) :
       if ds['path_name'] in line :
         fulluser = line.split('||')[0]
         fulluser = fulluser.strip(' ')
-              
+
     if fulluser == 'cmgtools' :
       user  = 'cmgtools'
       group = 'user'
@@ -232,7 +233,7 @@ def retrieveInfosFromBadPublished(ds) :
         if new_ic_version > ic_version :
           ic = line.rstrip('\n')
           ic_version = new_ic_version
-          
+
     ### stage the IntegrityCheck file in the user $HOME (THERE'S A WAY TO READ TEXT FILES FROM EOS?)
     cmsStage_command = '/afs/cern.ch/cms/caf/scripts/cmsStage'
     os.system("{EOS} /store/cmst3/{GROUP}/{USER}/CMG{SAMPLE}/{INT} {HOME}".format(EOS    = cmsStage_command,\
@@ -240,26 +241,26 @@ def retrieveInfosFromBadPublished(ds) :
                                                                                   USER   = user            ,\
                                                                                   SAMPLE = ds['path_name'] ,\
                                                                                   INT    = ic              ,\
-                                                                                  HOME   = os.environ['HOME']))        
+                                                                                  HOME   = os.environ['HOME']))
     icfile = file('{HOME}/{INT}'.format(HOME = os.environ['HOME'], INT  = ic))
-    
+
     ### read the IntegrityCheck file and retrieve the number of bad jobs
     if icfile != '' :
       for line in icfile:
         if 'BadJobs' in line:
           num_of_bad_jobs_list = re.findall(r"(\d{1,100})", line)
-          break        
-    
+          break
+
     if   len(num_of_bad_jobs_list)==1 :
       num_of_bad_jobs = int(num_of_bad_jobs_list[0])
     elif len(num_of_bad_jobs_list)==0 :
       pass
     else :
       print 'WARNING!: number of bad jobs in {INT} badly formatted \nimposing it to 0'.format(INT=ic)
-    
+
     ### clean up the user $HOME
     os.system('rm {HOME}/{INT}'.format(HOME = os.environ['HOME'], INT  = ic) )
-    
+
     ### assign sensate numbers
     njobs = num_of_files
     nbad  = num_of_bad_jobs
@@ -307,7 +308,7 @@ def connectSample(components, row, filePattern, aliases, cache, verbose):
         if eff is None:
             print 'WARNING: efficiency not determined for',compName
             eff = 0.0
-        try: 
+        try:
             globalEff *= eff
         except TypeError:
             pprint.pprint(dsInfo)
@@ -328,7 +329,7 @@ def connectSample(components, row, filePattern, aliases, cache, verbose):
              comp.name.startswith('embed_') ):
         comp.nGenEvents = nEvents
         if comp.nGenEvents is None:
-            print 'WARNING: nGenEvents is None, setting it to 1.'            
+            print 'WARNING: nGenEvents is None, setting it to 1.'
             comp.nGenEvents = 1.
         if comp.nGenEvents != 1.:
             comp.nGenEvents *= globalEff
@@ -347,7 +348,7 @@ def connectSample(components, row, filePattern, aliases, cache, verbose):
             print 'WEIRD! Efficiency is way too low ({globalEff})! you might have to edit your cfg manually.'.format(globalEff=globalEff)
             print dsInfo
 
-    
+
 def connect(components, samplePattern, filePattern, aliases, cache, verbose=False):
     """
     Find some information about a list of components.
@@ -356,7 +357,7 @@ def connect(components, samplePattern, filePattern, aliases, cache, verbose=Fals
     (SQL patterns use % as a wildcard).
 
     The datasets must also match one of the patterns provided as a key in the aliases
-    dictionary, which looks like this: 
+    dictionary, which looks like this:
     aliases = {
     '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball.*':'DYJets',
     '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV.*START53.*':'TTJets',
@@ -368,14 +369,14 @@ def connect(components, samplePattern, filePattern, aliases, cache, verbose=Fals
     * If no match is found in the aliases directory, a harmless warning is printed.
       - If you don't need the dataset, no action is needed.
       - If you need the dataset, just add an entry to your aliases dictionary,
-      and call the function again. 
-    
+      and call the function again.
+
     * If several datasets match a given pattern in the aliases directory,
     the last one will be associated to the component.
     You probably want to make sure that your patterns are accurate enough to be matched
     by a single dataset, the one you need. In the example above, we were careful
     enough to include the string 8TeV in the pattern, to be sure not to match both the
-    2011 and 2012 datasets to the same component. 
+    2011 and 2012 datasets to the same component.
 
     For each dataset, the CMG database is used to look at the whole dataset history
     (PFAOD->PAT+CMG->Anything->Anything else), and to estimate a global computing efficiency E.
@@ -397,18 +398,18 @@ def connect(components, samplePattern, filePattern, aliases, cache, verbose=Fals
 
     Need help? contact Colin, this module is a bit tricky.
     """
-    
+
     pattern = samplePattern
     cols, rows = db.sql("select dataset_id, path_name, file_owner from dataset_details where path_name like '{pattern}' order by path_name".format(
         pattern = samplePattern
         ))
-    
+
 #     import pdb ; pdb.set_trace()
     for row in rows:
         connectSample(components, row, filePattern, aliases, cache, verbose)
-        
-    
-    
+
+
+
 if __name__ == '__main__':
     pass
     info = []

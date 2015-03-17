@@ -9,15 +9,11 @@ class DYJetsFakeAnalyzer( Analyzer ):
   - Z->tau tau : isFake = 0
   - Z->tau tau with matched rec hadr. tau->l: isFake = 3
   - Z->l l matched : isFake = 1
-  - other : isFake = 2 
+  - other : isFake = 2
   set the lepton type as leptonType in the configuration.
   In case of VH events, only the Higgs is considered.
   '''
 
-#   def __init__(self, event) :
-#     super(DYJetsFakeAnalyzer, self).__init__(event)
-#     ## flag to split DYJets into ZTT, ZL, ZJ
-  
   def process(self, event) :
 
     event.geninfo_tt = False
@@ -39,25 +35,24 @@ class DYJetsFakeAnalyzer( Analyzer ):
     event.geninfo_has_z = False
     event.geninfo_has_w = False
 
-
     # gen MET as sum of the neutrino 4-momenta
     neutrinos = [p for p in event.genParticles if abs(p.pdgId()) in (12, 14, 16)]
 
     genmet = ROOT.math.XYZTLorentzVectorD()
     for nu in neutrinos[1:]:
         genmet += nu.p4()
+
     event.genmet_pt = genmet.pt()
     event.genmet_px = genmet.px()
     event.genmet_py = genmet.py()
     event.genmet_phi = genmet.phi()
-
 
     ptcut = 0.
     # you can apply a pt cut on the gen leptons, electrons and muons
     # in HIG-13-004 it was 8 GeV
     if hasattr(self.cfg_ana, 'genPtCut') :
       ptcut = self.cfg_ana.genPtCut
-    
+
     self.ptSelGentauleps = [ lep for lep in event.gentauleps if lep.pt() > ptcut ]
     self.ptSelGenleps    = [ lep for lep in event.genleps    if lep.pt() > ptcut ]
     # self.ptSelGentaus    = [ lep for lep in event.gentaus    if lep.pt() > ptcut ] # not needed
@@ -100,18 +95,18 @@ class DYJetsFakeAnalyzer( Analyzer ):
     
     # move on if this is a W sample
     if abs(event.parentBoson.pdgId()) == 24 : return True
-        
+
     self.getGenType(event)
-    
+
     if self.cfg_ana.channel == 'tt' : self.isFakeTauTau(event)
     if self.cfg_ana.channel == 'et' : self.isFakeETau  (event)
     if self.cfg_ana.channel == 'mt' : self.isFakeMuTau (event)
     if self.cfg_ana.channel == 'em' : self.isFakeEMu   (event)
 
   def genMatch(self, event, dR = 0.3) :
-    
+
     dR2 = dR * dR
-    
+
     # match the tau_h leg
     # to generated had taus
     l1match, dR2best = bestMatch(self.l1, event.gentaus)
@@ -138,15 +133,15 @@ class DYJetsFakeAnalyzer( Analyzer ):
       l1match, dR2best = bestMatch(self.l1, event.genParticles)
       if dR2best < dR2 :
         self.l1.genp = l1match
-    
-    
+
+
     # match the mu leg
     # to generated had taus
     l2match, dR2best = bestMatch(self.l2, event.gentaus)
     if dR2best < dR2 :
       self.l2.genp = l2match
       self.l2.isTauHad = True
-        
+
     # to generated leptons from taus
     if not self.l2.isTauHad :
       l2match, dR2best = bestMatch(self.l2, self.ptSelGentauleps)
@@ -166,7 +161,7 @@ class DYJetsFakeAnalyzer( Analyzer ):
       l2match, dR2best = bestMatch(self.l2, event.genParticles)
       if dR2best < dR2 :
         self.l2.genp = l2match
-    
+
   def getGenType(self, event) :
     '''Check the Z or H boson decay mode at gen level.
        Saves a bunch of flags in the event
@@ -234,6 +229,7 @@ class DYJetsFakeAnalyzer( Analyzer ):
     elif self.l1.isPromptLep and self.l2.isPromptLep and event.geninfo_LL : event.geninfo_fakeid = 1
     elif self.l1.isTauLep    and self.l2.isTauLep                    : event.geninfo_fakeid = 3
     else                                                             : event.geninfo_fakeid = 2
+
 
   def isFakeEMu(self, event) :
     '''Define the criteria to label a given em ZTT event as fake.
