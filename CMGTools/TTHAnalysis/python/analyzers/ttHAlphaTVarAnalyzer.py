@@ -19,7 +19,7 @@ from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Jet
 
 import ROOT
-from ROOT import AlphaT
+from ROOT.heppy import AlphaT
 
 
 import os
