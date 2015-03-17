@@ -112,9 +112,9 @@ class httConnector(object):
                 alias_k = m.group('sample')
             if alias_k not in self.aliases.values():
                 continue
-            sample_pkl = '*'.join(['',redict_aliases[alias_k].replace('/','').replace('.','*'),
+            sample_pck = '*'.join(['',redict_aliases[alias_k].replace('/','').replace('.','*'),
                                    self.tier.replace('%',''),self.pattern+'.pck'])
-            cached_sample = glob.glob('/'.join([self.homedir,'.cmgdataset',sample_pkl]))
+            cached_sample = glob.glob('/'.join([self.homedir,'.cmgdataset',sample_pck]))
             single_mc_list = [alias_v]
 
             if len(cached_sample) == 0:
@@ -133,6 +133,8 @@ class httConnector(object):
                 mycomp = pickle.load(file)
                 single_mc_list[0].files = getFiles('/'.join( ['']+mycomp.lfnDir.split('/')[mycomp.lfnDir.split('/').index('CMG')+1:] ),
                                                               mycomp.user, self.pattern, useCache=self.cache)
+                print 'attached files to %s' %(single_mc_list[0].name)
+                print 'files %s' %('/'.join(single_mc_list[0].files[0].split('/')[:-1]+[self.pattern]))
 
     def pruneSampleList_(self):
         self.MC_list = [m for m in self.MC_list if m.files]

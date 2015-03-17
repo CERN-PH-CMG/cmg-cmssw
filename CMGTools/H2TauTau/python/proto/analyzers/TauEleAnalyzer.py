@@ -92,8 +92,8 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
 
     def process(self, event):
 
-        # import pdb; pdb.set_trace()
         result = super(TauEleAnalyzer, self).process(event)
+        import pdb; pdb.set_trace()
 
         event.isSignal = False
 
@@ -206,7 +206,7 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
         vLeptons = [electron for electron in leptons if
                       self.testLegKine(electron, ptcut=10, etacut=2.5) and
                       self.testVertex(electron) and
-                      electron.cutBasedId('POG_PHYS14_25ns_v1_Veto') and
+                      electron.electronID('POG_Cuts_ID_PHYS14_25ns_v1_ConvVeto_Veto') and
                       self.testLeg2Iso(electron, isoCut)]
 
         # count tight muons
