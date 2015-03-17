@@ -122,6 +122,15 @@ susyMultilepton_globalVariables = susyCore_globalVariables + [
             NTupleVariable("chi2pvtrksABDbutCdof", lambda ev: ev.chi2pvtrksABDbutC[1], help="DOF from the fit to the PV of A,B,D"),
             NTupleVariable("chi2pvtrksABCbutDval", lambda ev: ev.chi2pvtrksABCbutD[0], help="chi2 of the fit to the PV of A,B,C"),
             NTupleVariable("chi2pvtrksABCbutDdof", lambda ev: ev.chi2pvtrksABCbutD[1], help="DOF from the fit to the PV of A,B,C"),
+            ### ===========
+            NTupleVariable("nRecJet40", lambda ev : sum(j.pt()>40 for j in ev.recoveredJets), int, help="number of recovered jets, pt 40"),
+            NTupleVariable("nRecJet25", lambda ev : sum(j.pt()>25 for j in ev.recoveredJets), int, help="number of recovered jets, pt 40"),
+            NTupleVariable("nRecBJetMedium40", lambda ev : sum(j.pt()>40 for j in ev.recoveredJets if j.btagWP("CSVv2IVFM")), int, help="number of recovered jets, pt 40"),
+            NTupleVariable("nRecBJetMedium25", lambda ev : sum(j.pt()>25 for j in ev.recoveredJets if j.btagWP("CSVv2IVFM")), int, help="number of recovered jets, pt 40"),
+            NTupleVariable("nRecSplitJet40", lambda ev : sum(j.pt()>40 for j in ev.recoveredSplitJets), int, help="number of recovered jets, pt 40"),
+            NTupleVariable("nRecSplitJet25", lambda ev : sum(j.pt()>25 for j in ev.recoveredSplitJets), int, help="number of recovered jets, pt 40"),
+            NTupleVariable("nRecSplitBJetMedium40", lambda ev : sum(j.pt()>40 for j in ev.recoveredSplitJets if j.btagWP("CSVv2IVFM")), int, help="number of recovered jets, pt 40"),
+            NTupleVariable("nRecSplitBJetMedium25", lambda ev : sum(j.pt()>25 for j in ev.recoveredSplitJets if j.btagWP("CSVv2IVFM")), int, help="number of recovered jets, pt 40"),
 ]
 
 susyMultilepton_globalObjects = susyCore_globalObjects.copy()
@@ -144,6 +153,8 @@ susyMultilepton_collections.update({
             ##------------------------------------------------
             "discardedJets"    : NTupleCollection("DiscJet", jetTypeSusy, 15, help="Jets discarted in the jet-lepton cleaning"),
             "discardedLeptons" : NTupleCollection("DiscLep", leptonTypeSusyExtra, 8, help="Leptons discarded in the jet-lepton cleaning"),
+            "recoveredJets"    : NTupleCollection("RecJet", jetTypeSusy, 15, help="Jets recovered declustering in the jet-lepton cleaning"),
+            "recoveredSplitJets" : NTupleCollection("RecSplitJet", jetTypeSusy, 15, help="Jets recovered declustering in the jet-lepton cleaning, split"),
             ##------------------------------------------------
             "ivf"       : NTupleCollection("SV",     svType, 20, help="SVs from IVF"),
             "genBHadrons"  : NTupleCollection("GenBHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level B hadrons"),

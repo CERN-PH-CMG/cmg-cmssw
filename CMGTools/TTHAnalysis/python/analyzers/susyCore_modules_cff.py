@@ -281,6 +281,7 @@ ttHFatJetAna = cfg.Analyzer(
     jetCol = 'slimmedJetsAK8',
     jetPt = 100.,
     jetEta = 2.4,
+    jetLepDR = 0.4,
     # v--- not implemented for AK8
     #jetLepDR = 0.4,
     #minLepPt = 10,
