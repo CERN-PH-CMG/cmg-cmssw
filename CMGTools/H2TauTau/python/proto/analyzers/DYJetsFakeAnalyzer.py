@@ -1,3 +1,5 @@
+import ROOT
+
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.HeppyCore.utils.deltar        import bestMatch
 
@@ -18,59 +20,38 @@ class DYJetsFakeAnalyzer( Analyzer ):
   
   def process(self, event) :
 
-    event.isZtt     = False
-    event.isZmt     = False
-    event.isZet     = False
-    event.isZee     = False
-    event.isZmm     = False
-    event.isZem     = False
-    event.isZEE     = False
-    event.isZMM     = False
-    event.isZLL     = False    
-    event.isFake    = -99
-    event.genMass   = -99.
-    event.genMet    = -99.
-    event.genMex    = -99.
-    event.genMey    = -99.
-    event.genMetPhi = -99.
-    event.hasZ      = False
-    event.hasW      = False
+    event.geninfo_tt = False
+    event.geninfo_mt = False
+    event.geninfo_et = False
+    event.geninfo_ee = False
+    event.geninfo_mm = False
+    event.geninfo_em = False
+    event.geninfo_EE = False
+    event.geninfo_MM = False
+    event.geninfo_TT = False
+    event.geninfo_LL = False
+    event.geninfo_fakeid = -99
+    event.geninfo_mass = -99.
+    event.genmet_pt = -99.
+    event.genmet_px = -99.
+    event.genmet_py = -99.
+    event.genmet_phi = -99.
+    event.geninfo_has_z = False
+    event.geninfo_has_w = False
+
 
     # gen MET as sum of the neutrino 4-momenta
-    neutrinos = [ part for part in event.genParticles if abs(part.pdgId()) in (12,14,16) ]
-    if len(neutrinos) == 0 : pass
-    else :
-      genmet = neutrinos[0].p4()
-      for nu in neutrinos[1:] :
-        genmet += nu.p4()
-      event.genMet    = genmet.pt()
-      event.genMex    = genmet.px()
-      event.genMey    = genmet.py()
-      event.genMetPhi = genmet.phi()
-       
-    if   'Higgs' in self.cfg_comp.name : theZs = [ bos for bos in event.genHiggsBosons if     bos.pdgId() in (25, 35, 36, 37)  ]
-    elif 'DY'    in self.cfg_comp.name : theZs = [ bos for bos in event.genVBosons     if     bos.pdgId()  == 23               ]
-    elif 'W'     in self.cfg_comp.name : theZs = [ bos for bos in event.genVBosons     if abs(bos.pdgId()) == 24               ]
-    else                               : return True
+    neutrinos = [p for p in event.genParticles if abs(p.pdgId()) in (12, 14, 16)]
 
-    # there must always be a Z or a H boson
-    # should raise an error too FIXME
-    if len(theZs) != 1 :
-      print 'I cannot find any H, W or Z in the sample!' 
-      return False
-    
-    event.parentBoson = theZs[0]
-    
-    # check SM H associated production
-    if event.parentBoson.pdgId() == 25 :
-      if any([bos.pdgId() == 23 for bos in event.genVBosons]): 
-          event.hasZ = True
-      if any([abs(bos.pdgId()) == 24 for bos in event.genVBosons]): 
-          event.hasW = True
-      
-    # gen mass of the Higgs or Z boson
-    event.genMass = event.parentBoson.mass()
-    
+    genmet = ROOT.math.XYZTLorentzVectorD()
+    for nu in neutrinos[1:]:
+        genmet += nu.p4()
+    event.genmet_pt = genmet.pt()
+    event.genmet_px = genmet.px()
+    event.genmet_py = genmet.py()
+    event.genmet_phi = genmet.phi()
+
+
     ptcut = 0.
     # you can apply a pt cut on the gen leptons, electrons and muons
     # in HIG-13-004 it was 8 GeV
@@ -94,6 +75,29 @@ class DYJetsFakeAnalyzer( Analyzer ):
 
     self.genMatch(event)
 
+    if   'Higgs' in self.cfg_comp.name : theZs = [ bos for bos in event.genHiggsBosons if     bos.pdgId() in (25, 35, 36, 37)  ]
+    elif 'DY'    in self.cfg_comp.name : theZs = [ bos for bos in event.genVBosons     if     bos.pdgId()  == 23               ]
+    elif 'W'     in self.cfg_comp.name : theZs = [ bos for bos in event.genVBosons     if abs(bos.pdgId()) == 24               ]
+    else                               : return True
+
+    # there must always be a Z or a H boson
+    # should raise an error too FIXME
+    if len(theZs) != 1 :
+      print 'I cannot find any H, W or Z in the sample!' 
+      return False
+    
+    event.parentBoson = theZs[0]
+    
+    # check SM H associated production
+    if event.parentBoson.pdgId() == 25 :
+      if any([bos.pdgId() == 23 for bos in event.genVBosons]): 
+          event.hasZ = True
+      if any([abs(bos.pdgId()) == 24 for bos in event.genVBosons]): 
+          event.hasW = True
+      
+    # gen mass of the Higgs or Z boson
+    event.geninfo_mass = event.parentBoson.mass()
+    
     # move on if this is a W sample
     if abs(event.parentBoson.pdgId()) == 24 : return True
         
@@ -165,66 +169,86 @@ class DYJetsFakeAnalyzer( Analyzer ):
     
   def getGenType(self, event) :
     '''Check the Z or H boson decay mode at gen level.
-       Save a bunch of flags in the event.
-       event.isZtt : Z/H -> tautau, fully hadronic
-       event.isZmt : Z/H -> tautau, mutau
-       event.isZet : Z/H -> tautau, etau
-       event.isZee : Z/H -> tautau, ee
-       event.isZmm : Z/H -> tautau, mm
-       event.isZem : Z/H -> tautau, em
-       event.isZEE : Z/H -> ee
-       event.isZMM : Z/H -> mm
-       event.isZLL : Z/H -> ll (ee or mm)
+       Saves a bunch of flags in the event
+       (capital e/m denotes prompt electron/muon).
+       event.geninfo_tt : Z/H -> tautau -> tau_h tau_h
+       event.geninfo_mt : Z/H -> tautau -> m tau_h
+       event.geninfo_et : Z/H -> tautau -> e tau_h
+       event.geninfo_ee : Z/H -> tautau -> ee
+       event.geninfo_mm : Z/H -> tautau -> mm
+       event.geninfo_em : Z/H -> tautau -> em
+       event.geninfo_EE : Z/H -> ee
+       event.geninfo_MM : Z/H -> mm
+       event.geninfo_TT : Z/H -> tautau
+       event.geninfo_LL : Z/H -> ll (ee or mm)
     ''' 
     # Z->TT
-    # full hadronic first 
-    if   len(event.gentauleps) == 0 and len(event.gentaus) == 2 : event.isZtt = True
-    # semi leptonic 
-    elif len(event.gentauleps) == 1 and len(event.gentaus) == 1 : 
-      if abs(event.gentauleps[0].pdgId()) == 11 : event.isZet = True
-      if abs(event.gentauleps[0].pdgId()) == 13 : event.isZmt = True
-    # fully leptonic 
-    elif len(event.gentauleps) == 2 and len(event.gentaus) == 0 :
-      if   abs(event.gentauleps[0].pdgId()) == 11 and abs(event.gentauleps[1].pdgId()) == 11 : event.isZee = True
-      elif abs(event.gentauleps[0].pdgId()) == 13 and abs(event.gentauleps[1].pdgId()) == 13 : event.isZmm = True
-      else                                                                                   : event.isZem = True
+
+    h_taus = event.gentaus
+    l_taus = event.gentauleps
+    ls = event.genleps
+
+    if len(l_taus) + len(h_taus) == 2:
+        event.geninfo_TT = True
+
+        # full hadronic first 
+        if len(h_taus) == 2:
+            event.geninfo_tt = True
+
+        # semi leptonic 
+        elif len(h_taus) == 1: 
+            if abs(l_taus[0].pdgId()) == 11:
+                event.geninfo_et = True
+            if abs(l_taus[0].pdgId()) == 13:
+                event.geninfo_mt = True
+
+        # fully leptonic 
+        elif len(h_taus) == 0:
+            if abs(l_taus[0].pdgId()) == 11 and abs(l_taus[1].pdgId()) == 11:
+                event.geninfo_ee = True
+            elif abs(l_taus[0].pdgId()) == 13 and abs(l_taus[1].pdgId()) == 13:
+                event.geninfo_mm = True
+            else:
+                event.geninfo_em = True
     # Z->LL
-    elif len(event.genleps) == 2 : 
-      if   abs(event.genleps[0].pdgId()) == 11 and abs(event.genleps[1].pdgId()) == 11 : event.isZEE = True
-      elif abs(event.genleps[0].pdgId()) == 13 and abs(event.genleps[1].pdgId()) == 13 : event.isZMM = True
+    elif len(ls) == 2 : 
+        event.geninfo_LL = True
+        if abs(ls[0].pdgId()) == 11 and abs(ls[1].pdgId()) == 11:
+            event.geninfo_EE = True
+        elif abs(ls[0].pdgId()) == 13 and abs(ls[1].pdgId()) == 13:
+            event.geninfo_MM = True
+
     # should raise an error too FIXME
-    else : return False
-    
-    event.isZLL = event.isZEE or event.isZMM
+
 
   def isFakeMuTau(self, event) :
     '''Define the criteria to label a given mt ZTT event as fake''' 
-    if   self.l1.isTauHad    and self.l2.isTauLep    and event.isZmt : event.isFake = 0
-    elif self.l1.isPromptLep and self.l2.isPromptLep and event.isZLL : event.isFake = 1
-    elif self.l1.isTauLep    and self.l2.isTauLep                    : event.isFake = 3
-    else                                                             : event.isFake = 2
+    if   self.l1.isTauHad    and self.l2.isTauLep    and event.geninfo_mt : event.geninfo_fakeid = 0
+    elif self.l1.isPromptLep and self.l2.isPromptLep and event.geninfo_LL : event.geninfo_fakeid = 1
+    elif self.l1.isTauLep    and self.l2.isTauLep                    : event.geninfo_fakeid = 3
+    else                                                             : event.geninfo_fakeid = 2
   
   def isFakeETau(self, event) :
     '''Define the criteria to label a given et ZTT event as fake''' 
-    if   self.l1.isTauHad    and self.l2.isTauLep    and event.isZet : event.isFake = 0
-    elif self.l1.isPromptLep and self.l2.isPromptLep and event.isZLL : event.isFake = 1
-    elif self.l1.isTauLep    and self.l2.isTauLep                    : event.isFake = 3
-    else                                                             : event.isFake = 2
+    if   self.l1.isTauHad    and self.l2.isTauLep    and event.geninfo_et : event.geninfo_fakeid = 0
+    elif self.l1.isPromptLep and self.l2.isPromptLep and event.geninfo_LL : event.geninfo_fakeid = 1
+    elif self.l1.isTauLep    and self.l2.isTauLep                    : event.geninfo_fakeid = 3
+    else                                                             : event.geninfo_fakeid = 2
 
   def isFakeEMu(self, event) :
     '''Define the criteria to label a given em ZTT event as fake.
        RIC: TO BE PROPERLY DEFINED FIXME!
     ''' 
-    if   self.l1.isTauLep    and self.l2.isTauLep    and event.isZem : event.isFake = 0
-    elif self.l1.isPromptLep and self.l2.isPromptLep and event.isZLL : event.isFake = 1
-    elif self.l1.isTauHad    and self.l2.isTauLep                    : event.isFake = 3
-    else                                                             : event.isFake = 2
+    if   self.l1.isTauLep    and self.l2.isTauLep    and event.geninfo_em : event.geninfo_fakeid = 0
+    elif self.l1.isPromptLep and self.l2.isPromptLep and event.geninfo_LL : event.geninfo_fakeid = 1
+    elif self.l1.isTauHad    and self.l2.isTauLep                    : event.geninfo_fakeid = 3
+    else                                                             : event.geninfo_fakeid = 2
 
   def isFakeTauTau(self, event) :
     '''Define the criteria to label a given tt ZTT event as fake
        RIC: TO BE PROPERLY DEFINED FIXME!
     ''' 
-    if   self.l1.isTauHad    and self.l2.isTauHad    and event.isZtt : event.isFake = 0
-    elif self.l1.isPromptLep and self.l2.isPromptLep and event.isZLL : event.isFake = 1
-    elif self.l1.isTauLep    and self.l2.isTauLep                    : event.isFake = 3
-    else                                                             : event.isFake = 2
+    if   self.l1.isTauHad    and self.l2.isTauHad    and event.geninfo_tt : event.geninfo_fakeid = 0
+    elif self.l1.isPromptLep and self.l2.isPromptLep and event.geninfo_LL : event.geninfo_fakeid = 1
+    elif self.l1.isTauLep    and self.l2.isTauLep                    : event.geninfo_fakeid = 3
+    else                                                             : event.geninfo_fakeid = 2
