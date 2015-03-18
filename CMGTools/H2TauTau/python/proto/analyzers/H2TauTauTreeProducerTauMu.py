@@ -17,9 +17,9 @@ class H2TauTauTreeProducerTauMu(H2TauTauTreeProducer):
 
         self.bookParticle(self.tree, 'l1_gen_vis')
 
-        self.var(self.tree, 'tauFakeRateWeight')
-        self.var(self.tree, 'tauFakeRateWeightUp')
-        self.var(self.tree, 'tauFakeRateWeightDown')
+        self.var(self.tree, 'l1_weight_fakerate')
+        self.var(self.tree, 'l1_weight_fakerate_up')
+        self.var(self.tree, 'l1_weight_fakerate_down')
 
     def process(self, event):
 
@@ -37,14 +37,11 @@ class H2TauTauTreeProducerTauMu(H2TauTauTreeProducer):
             self.fillGenParticle(self.tree, 'l2_gen', muon.genp)
 
         # save the p4 of the visible tau products at the generator level
-        # make sure that the reco tau matches with a gen tau that decays into
-        # hadrons
-
         if tau.genJet() and hasattr(tau, 'genp') and abs(tau.genp.pdgId()) == 15:
             self.fillParticle(self.tree, 'l1_gen_vis', tau.physObj.genJet())
 
-        self.fill(self.tree, 'tauFakeRateWeightUp', event.tauFakeRateWeightUp)
-        self.fill(self.tree, 'tauFakeRateWeightDown', event.tauFakeRateWeightDown)
-        self.fill(self.tree, 'tauFakeRateWeight', event.tauFakeRateWeight)
+        self.fill(self.tree, 'l1_weight_fakerate', event.tauFakeRateWeightUp)
+        self.fill(self.tree, 'l1_weight_fakerate_up', event.tauFakeRateWeightDown)
+        self.fill(self.tree, 'l1_weight_fakerate_down', event.tauFakeRateWeight)
 
         self.fillTree(event)
