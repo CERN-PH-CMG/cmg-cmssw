@@ -204,9 +204,10 @@ class JPsiAnalyzer( Analyzer ):
         # save genp only for signal events
         # i.e. only one Z is present and daughters are muons
         genZ_dummy = [ genp for genp in event.genParticles if \
-                             math.fabs(genp.pdgId())==443 # J/PSI!!!!
+                             (math.fabs(genp.pdgId())==443 # J/PSI!!!!
+                             or math.fabs(genp.pdgId())==553)
                              and genp.numberOfDaughters()>0
-                             and not math.fabs(genp.daughter(0).pdgId())== 443
+                             and not ( math.fabs(genp.daughter(0).pdgId())== 443 or math.fabs(genp.daughter(0).pdgId())== 553)
                              ]
         
         # print 'number of genZ_dummy',len(genZ_dummy)
@@ -568,7 +569,8 @@ class JPsiAnalyzer( Analyzer ):
     def declareHandles(self):        
         super(JPsiAnalyzer, self).declareHandles()
         # self.handles['cmgTriggerObjectSel'] =  AutoHandle('cmgTriggerObjectSel','std::vector<cmg::TriggerObject>')
-        self.handles['Zmuons'] = AutoHandle('cmgMuonSel','std::vector<cmg::Muon>')
+        # self.handles['Zmuons'] = AutoHandle('cmgMuonSel','std::vector<cmg::Muon>')
+        self.handles['Zmuons'] = AutoHandle('jpsiMuons','std::vector<cmg::Muon>')
         self.handles['Zjets'] = AutoHandle('cmgPFJetSel','std::vector<cmg::PFJet>')
         # self.handles['kt6PFJets'] = AutoHandle('kt6PFJets','std::vector<reco::PFJet>')
         if hasattr(self.cfg_ana,'storeNeutralCMGcandidates') or hasattr(self.cfg_ana,'storeCMGcandidates'):

@@ -219,8 +219,6 @@ class Zanalysis {
   virtual Bool_t   Notify();
   virtual void     Show(Long64_t entry = -1);
   void ComputeHXVarAndPhiStarEta(TLorentzVector muPosNoCorr,TLorentzVector muNegNoCorr, bool isGen);
-  double getMTFirstOrder(double Mu_pt, double Mu_phi, double tkmet,double tkmet_phi, double coeff);
-  float deltaPhi( float phi1 , float phi2 );
 
   virtual void plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorentzVector Z, double u1_scale, string leptCharge, string cut , bool doCut, bool doneu, std::map<std::string, TH1D*> &h_1d, std::map<std::string, TH2D*> &h_2d,double weight);
 

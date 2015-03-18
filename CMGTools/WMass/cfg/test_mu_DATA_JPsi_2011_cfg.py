@@ -80,7 +80,8 @@ from CMGTools.H2TauTau.proto.samples.getFiles import getFiles
 
 data_Run2011A_Nov8ReReco_v1 = cfg.DataComponent(
     name = 'data_Run2011A_Nov8ReReco_v1',
-    files = getFiles('/MuOnia/Run2011A-12Oct2013-v1/AOD/PAT_CMG_V5_18_0', 'cmgtools', '.*root'),
+    # files = getFiles('/MuOnia/Run2011A-12Oct2013-v1/AOD/PAT_CMG_V5_18_0', 'cmgtools', '.*root'),
+    files = getFiles('/MuOnia/Run2011A-12Oct2013-v1/AOD/PAT_CMG_V5_18_0/JpsiRefit', 'cmgtools', '.*root'),
     intLumi =  4749.90,
     # triggers = ["HLT_IsoMu24_v1","HLT_IsoMu24_v2","HLT_IsoMu24_v3","HLT_IsoMu24_v4","HLT_IsoMu24_v5","HLT_IsoMu24_v6","HLT_IsoMu24_v7",\
                    # "HLT_IsoMu24_v8","HLT_IsoMu24_v9","HLT_IsoMu24_v10","HLT_IsoMu24_v11","HLT_IsoMu24_v12","HLT_IsoMu24_v13","HLT_IsoMu24_v14",\
@@ -95,7 +96,8 @@ data_Run2011A_Nov8ReReco_v1 = cfg.DataComponent(
     
 data_Run2011B_Nov19ReReco_v1 = cfg.DataComponent(
     name = 'data_Run2011B_Nov19ReReco_v1',
-    files = getFiles('/MuOnia/Run2011B-12Oct2013-v1/AOD/PAT_CMG_V5_18_0', 'cmgtools', '.*root'),
+    # files = getFiles('/MuOnia/Run2011B-12Oct2013-v1/AOD/PAT_CMG_V5_18_0', 'cmgtools', '.*root'),
+    files = getFiles('/MuOnia/Run2011B-12Oct2013-v1/AOD/PAT_CMG_V5_18_0/JpsiRefit', 'cmgtools', '.*root'),
     intLumi =  4749.90,
     # triggers = ["HLT_IsoMu24_v1","HLT_IsoMu24_v2","HLT_IsoMu24_v3","HLT_IsoMu24_v4","HLT_IsoMu24_v5","HLT_IsoMu24_v6","HLT_IsoMu24_v7",\
                    # "HLT_IsoMu24_v8","HLT_IsoMu24_v9","HLT_IsoMu24_v10","HLT_IsoMu24_v11","HLT_IsoMu24_v12","HLT_IsoMu24_v13","HLT_IsoMu24_v14",\
@@ -125,21 +127,23 @@ data_Run2011AB_Nov8Nov19ReReco_v1 = cfg.DataComponent(
 
 data_Run2011AB_Nov8Nov19ReReco_v1.files = data_Run2011A_Nov8ReReco_v1.files + data_Run2011B_Nov19ReReco_v1.files
 
-# selectedComponents = [data_Run2011A_Nov8ReReco_v1,data_Run2011B_Nov19ReReco_v1]
+selectedComponents = [data_Run2011A_Nov8ReReco_v1,data_Run2011B_Nov19ReReco_v1]
 # selectedComponents = [data_Run2011A_Nov8ReReco_v1]
-selectedComponents = [data_Run2011B_Nov19ReReco_v1]
+# selectedComponents = [data_Run2011B_Nov19ReReco_v1]
 data_Run2011A_Nov8ReReco_v1.splitFactor = 1000
 data_Run2011B_Nov19ReReco_v1.splitFactor = 1000
 data_Run2011AB_Nov8Nov19ReReco_v1.splitFactor = 2000
 
 
-## TEST
-# selectedComponents = [data_Run2011A_Nov8ReReco_v1]
-# data_Run2011A_Nov8ReReco_v1.splitFactor = 1
-# data_Run2011A_Nov8ReReco_v1.files = data_Run2011A_Nov8ReReco_v1.files[:10]
+# ## TEST
+# # selectedComponents = [data_Run2011A_Nov8ReReco_v1]
+# # data_Run2011A_Nov8ReReco_v1.splitFactor = 1
+# # data_Run2011A_Nov8ReReco_v1.files = data_Run2011A_Nov8ReReco_v1.files[:10]
 # selectedComponents = [data_Run2011B_Nov19ReReco_v1]
 # data_Run2011B_Nov19ReReco_v1.splitFactor = 1
 # data_Run2011B_Nov19ReReco_v1.files = data_Run2011B_Nov19ReReco_v1.files[:10]
+# # data_Run2011B_Nov19ReReco_v1.triggers = ["HLT_Dimuon*_Jpsi_Displaced_v*"]
+# # data_Run2011B_Nov19ReReco_v1.triggers = ["HLT_Dimuon10_Jpsi_Barrel_v*"]
 
 
 # data_Run2011B_Nov19ReReco_v1_testPFcands = cfg.DataComponent(

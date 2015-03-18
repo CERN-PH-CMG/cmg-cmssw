@@ -726,6 +726,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               WlikePos = mupos_bla + WlikePos_met;
               WlikePosCentral = mupos_blaCentral + WlikePos_metCentral;
             
+              double coeff=2;
+              double MTFirstOrder_central = common_stuff::getMTFirstOrder(muPosCorrCentral.Pt(), muPosCorrCentral.Phi(), WlikePos_metCentral.Pt() ,WlikePos_metCentral.Phi(), coeff);
+              double MTFirstOrder = common_stuff::getMTFirstOrder(muPosCorr.Pt(), muPosCorr.Phi(), WlikePos_met.Pt(),WlikePos_met.Phi(), coeff);
               //------------------------------------------------------
               // Variables to fill the histos (pT, mT, MET)
               //------------------------------------------------------
@@ -735,8 +738,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               //------------------------------------------------------
               // Variables to define the box cut (pT, mT, MET)
               //------------------------------------------------------
-              // double MuPos_var_NotScaledCentral[3] = {muPosCorrCentral.Pt(),WlikePosCentral.Mt()/* ZcorrCentral.Mt() */,WlikePos_metCentral.Pt()}; // Zcorr would be TEMP !!!!
-              double MuPos_var_NotScaledCentral[3] = {muPosCorrCentral.Pt(),ZcorrCentral.M() ,WlikePos_metCentral.Pt()}; // Zcorr would be TEMP !!!!
+              double MuPos_var_NotScaledCentral[3] = {muPosCorrCentral.Pt(),WlikePosCentral.Mt(),WlikePos_metCentral.Pt()}; // Zcorr would be TEMP !!!!
+              // double MuPos_var_NotScaledCentral[3] = {muPosCorrCentral.Pt(),ZcorrCentral.M() ,WlikePos_metCentral.Pt()}; // TEMP !!!!
               
               // LUCA ADD TO AVOID OVERFLOW
               for(int k=0;k<3;k++)
@@ -1399,31 +1402,5 @@ void Zanalysis::ComputeHXVarAndPhiStarEta(TLorentzVector muPos,TLorentzVector mu
   // if(D_phi>TMath::Pi()) D_phi-=TMath::Pi();
   // phistar=TMath::Tan((TMath::Pi()- D_phi)/2.)*TMath::Sqrt(1.-TMath::Power(TMath::TanH(TMath::Abs(muSubLeadingPtCorr.Eta()-muLeadingPtCorr.Eta())/2.0),2));
   // logphistar=TMath::Log10(phistar);
-
-}
-
-float Zanalysis::deltaPhi( float phi1 , float phi2 ) {
-  float dphi = fabs( phi1 - phi2 );
-  if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
-  return dphi;
-}
-
-
-double Zanalysis::getMTFirstOrder(double Mu_pt, double Mu_phi, double tkmet,double tkmet_phi, double coeff) {
-
-  TLorentzVector softStuff,met,mu;
-  TLorentzVector newSoftStuff,newMET;
-  met.SetPtEtaPhiM(tkmet,0,tkmet_phi,0);
-  mu.SetPtEtaPhiM(Mu_pt,0,Mu_phi,0); // mu projected on transverse plane
-  softStuff = -met-mu; // this is -ptW
-  newSoftStuff = coeff*softStuff;
-  newMET = -newSoftStuff -mu;
-
-  float dphi = deltaPhi(newSoftStuff.Phi(), mu.Phi());
-  double MT= 2*mu.Pt() + newSoftStuff.Pt() * cos(dphi);
-
-  return MT;
-
-  //MT=2*pt_mu(modulo) +h(vettore)*pt_mu(vettore)/pt_mu(modulo)
 
 }

@@ -10,6 +10,35 @@
 
 ///////////////////////////////////////////////////////////////
 
+float common_stuff::deltaPhi( float phi1 , float phi2 ) {
+  float dphi = fabs( phi1 - phi2 );
+  if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
+  return dphi;
+}
+
+///////////////////////////////////////////////////////////////
+
+double common_stuff::getMTFirstOrder(double Mu_pt, double Mu_phi, double tkmet,double tkmet_phi, double coeff) {
+
+  TLorentzVector softStuff,met,mu;
+  TLorentzVector newSoftStuff,newMET;
+  met.SetPtEtaPhiM(tkmet,0,tkmet_phi,0);
+  mu.SetPtEtaPhiM(Mu_pt,0,Mu_phi,0); // mu projected on transverse plane
+  softStuff = -met-mu; // this is -ptW
+  newSoftStuff = coeff*softStuff;
+  newMET = -newSoftStuff -mu;
+
+  float dphi = deltaPhi(newSoftStuff.Phi(), mu.Phi());
+  double MT= 2*mu.Pt() + newSoftStuff.Pt() * cos(dphi);
+
+  return MT;
+
+  //MT=2*pt_mu(modulo) +h(vettore)*pt_mu(vettore)/pt_mu(modulo)
+
+}
+
+///////////////////////////////////////////////////////////////
+
 void common_stuff::calculateU1U2(double fMet , double fMPhi, double fZPt, double fZPhi, double fPtVisual, double fPhiVisual, double & fU1,double & fU2)
 {
   double lUX  = fMet*cos(fMPhi) + fPtVisual*cos(fPhiVisual);
