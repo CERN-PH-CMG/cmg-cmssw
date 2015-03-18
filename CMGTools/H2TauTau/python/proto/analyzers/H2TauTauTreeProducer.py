@@ -16,7 +16,6 @@ class Variable():
         self.type = float
 
 # event variables
-
 event_vars = [
     Variable('run', type=int),
     Variable('lumi', type=int),
@@ -27,7 +26,7 @@ event_vars = [
     Variable('n_jets', lambda ev : len(ev.cleanJets30), type=int),
     Variable('n_jets_20', lambda ev : len(ev.cleanJets), type=int),
     Variable('n_bjets', lambda ev : len(ev.cleanBJets), type=int),
-    Variable('n_jets_csvl', lambda ev : sum(1 for jet in ev.cleanJets if jet.btag('combinedSecondaryVertexBJetTags') > 0.244), type=int),
+    Variable('n_jets_csvl', lambda ev : sum(1 for jet in ev.cleanJets if jet.btagWP('CSVv2IVFL')), type=int),
     Variable('n_vertices', lambda ev : len(ev.vertices), type=int),
     Variable('rho', lambda ev : ev.rho),
     Variable('weight', lambda ev : ev.eventWeight),
@@ -67,11 +66,11 @@ ditau_vars = [
     Variable('met_py', lambda dil : dil.met().py()),
     Variable('met_pt', lambda dil : dil.met().pt()),
     Variable('pthiggs', lambda dil : (dil.leg1().p4() + dil.leg2().p4() + dil.met().p4()).pt()),
-    Variable('deltaPhiL1L2', lambda dil : deltaPhi(dil.leg1().phi(), dil.leg2().phi())),
-    Variable('deltaEtaL1L2', lambda dil : abs(dil.leg1().eta() - dil.leg2().eta())),
-    Variable('deltaRL1L2', lambda dil : deltaR(dil.leg1().eta(), dil.leg1().phi(), dil.leg2().eta(), dil.leg2().phi())),
-    Variable('deltaPhiL1MET', lambda dil : deltaPhi(dil.leg1().phi(), dil.met().phi())),
-    Variable('deltaPhiL2MET', lambda dil : deltaPhi(dil.leg2().phi(), dil.met().phi())),
+    Variable('delta_phi_l1_l2', lambda dil : deltaPhi(dil.leg1().phi(), dil.leg2().phi())),
+    Variable('delta_eta_l1_l2', lambda dil : abs(dil.leg1().eta() - dil.leg2().eta())),
+    Variable('delta_r_l1_l2', lambda dil : deltaR(dil.leg1().eta(), dil.leg1().phi(), dil.leg2().eta(), dil.leg2().phi())),
+    Variable('delta_phi_l1_met', lambda dil : deltaPhi(dil.leg1().phi(), dil.met().phi())),
+    Variable('delta_phi_l2_met', lambda dil : deltaPhi(dil.leg2().phi(), dil.met().phi())),
 ]
 
 # generic particle
@@ -135,7 +134,7 @@ jet_vars = [
     Variable('mva_btag', lambda jet : jet.btagMVA),
     Variable('area', lambda jet : jet.jetArea()),
     Variable('flavour_parton', lambda jet : jet.partonFlavour()),
-    Variable('csv', lambda jet : jet.btag('combinedSecondaryVertexBJetTags')),
+    Variable('csv', lambda jet : jet.btag('combinedInclusiveSecondaryVertexV2BJetTags')),
     Variable('rawfactor', lambda jet : jet.rawFactor()),
     Variable('genjet_pt', lambda jet : jet.matchedGenJet.pt() if hasattr(jet, 'matchedGenJet') and jet.matchedGenJet else -999.),
 ]
