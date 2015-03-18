@@ -13,7 +13,9 @@ class H2TauTauTreeProducerTauMu(H2TauTauTreeProducer):
         self.bookMuon(self.tree, 'l2')
 
         self.bookGenParticle(self.tree, 'l1_gen')
+        self.var(self.tree, 'l1_gen_lepfromtau', int)
         self.bookGenParticle(self.tree, 'l2_gen')
+        self.var(self.tree, 'l2_gen_lepfromtau', int)
 
         self.bookParticle(self.tree, 'l1_gen_vis')
 
@@ -31,10 +33,12 @@ class H2TauTauTreeProducerTauMu(H2TauTauTreeProducer):
         self.fillTau(self.tree, 'l1', tau)
         self.fillMuon(self.tree, 'l2', muon)
 
-        if hasattr(tau, 'genp'):
+        if tau.genp:
             self.fillGenParticle(self.tree, 'l1_gen', tau.genp)
-        if hasattr(muon, 'genp'):
+            self.fill(self.tree, 'l1_gen_lepfromtau', tau.isTauLep)
+        if muon.genp:
             self.fillGenParticle(self.tree, 'l2_gen', muon.genp)
+            self.fill(self.tree, 'l2_gen_lepfromtau', muon.isTauLep)
 
         # save the p4 of the visible tau products at the generator level
         if tau.genJet() and hasattr(tau, 'genp') and abs(tau.genp.pdgId()) == 15:

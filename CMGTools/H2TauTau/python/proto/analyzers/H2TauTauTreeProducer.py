@@ -5,7 +5,6 @@ from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from CMGTools.H2TauTau.proto.analyzers.tauIDs import tauIDs
 from CMGTools.H2TauTau.proto.analyzers.varsDictionary import vars
 
-
 class Variable():
     def __init__(self, name, function=None, type=float):
         self.name = name
@@ -120,8 +119,8 @@ tau_vars = [
     Variable('decayMode', lambda tau : tau.decayMode()),
     Variable('zImpact', lambda tau : tau.zImpact())
 ]
-for tauID in tauIDs:
-    tau_vars.append(Variable(tauID, lambda tau : tau.tauID(tauID)))
+for tau_id in tauIDs:
+    tau_vars.append(Variable(tau_id, eval('lambda tau : tau.tauID("{id}")'.format(id=tau_id))))
 
 # jet
 jet_vars = [

@@ -1,6 +1,6 @@
 from CMGTools.H2TauTau.proto.analyzers.H2TauTauTreeProducer import H2TauTauTreeProducer
 
-class H2TauTauTreeProducerTauEle( H2TauTauTreeProducer ):
+class H2TauTauTreeProducerTauEle(H2TauTauTreeProducer):
     '''Tree producer for the H->tau tau analysis.'''
 
     def declareVariables(self, setup):
@@ -11,7 +11,9 @@ class H2TauTauTreeProducerTauEle( H2TauTauTreeProducer ):
         self.bookEle(self.tree, 'l2')
 
         self.bookGenParticle(self.tree, 'l1_gen')
+        self.var(self.tree, 'l1_gen_lepfromtau', int)
         self.bookGenParticle(self.tree, 'l2_gen')
+        self.var(self.tree, 'l2_gen_lepfromtau', int)
 
         self.bookParticle(self.tree, 'l1_gen_vis')
 
@@ -31,10 +33,12 @@ class H2TauTauTreeProducerTauEle( H2TauTauTreeProducer ):
         self.fillTau(self.tree, 'l1', tau)
         self.fillEle(self.tree, 'l2', ele)
 
-        if hasattr(tau, 'genp'):
+        if tau.genp:
             self.fillGenParticle(self.tree, 'l1_gen', tau.genp)
-        if hasattr(ele, 'genp'):
+            self.fill(self.tree, 'l1_gen_lepfromtau', tau.isTauLep)
+        if ele.genp:
             self.fillGenParticle(self.tree, 'l2_gen', ele.genp)
+            self.fill(self.tree, 'l2_gen_lepfromtau', ele.isTauLep)
         
         # save the p4 of the visible tau products at the generator level
         if tau.genJet() and hasattr(tau, 'genp') and abs(tau.genp.pdgId()) == 15:

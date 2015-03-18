@@ -60,28 +60,20 @@ class DYJetsFakeAnalyzer(Analyzer):
         if hasattr(self.cfg_ana, 'genPtCut'):
             ptcut = self.cfg_ana.genPtCut
 
-        self.ptSelGentauleps = [
-            lep for lep in event.gentauleps if lep.pt() > ptcut]
+        self.ptSelGentauleps = [lep for lep in event.gentauleps if lep.pt() > ptcut]
         self.ptSelGenleps = [lep for lep in event.genleps if lep.pt() > ptcut]
+        self.ptSelGenSummary = [p for p in event.generatorSummary if p.pt() > ptcut and abs(p.pdgId()) not in [6, 23, 24, 25, 35, 36, 37]]
         # self.ptSelGentaus    = [ lep for lep in event.gentaus    if lep.pt()
         # > ptcut ] # not needed
 
         self.l1 = event.diLepton.leg1()
         self.l2 = event.diLepton.leg2()
 
-        self.l1.isTauHad = False
-        self.l1.isTauLep = False
-        self.l1.isPromptLep = False
-
-        self.l2.isTauHad = False
-        self.l2.isTauLep = False
-        self.l2.isPromptLep = False
-
-        self.genMatch(event)
+        self.genMatch(event, self.l1)
+        self.genMatch(event, self.l2)
 
         if 'Higgs' in self.cfg_comp.name:
-            theZs = [
-                bos for bos in event.genHiggsBosons if bos.pdgId() in (25, 35, 36, 37)]
+            theZs = [bos for bos in event.genHiggsBosons if bos.pdgId() in (25, 35, 36, 37)]
         elif 'DY' in self.cfg_comp.name:
             theZs = [bos for bos in event.genVBosons if bos.pdgId() == 23]
         elif 'W' in self.cfg_comp.name:
@@ -122,63 +114,43 @@ class DYJetsFakeAnalyzer(Analyzer):
         if self.cfg_ana.channel == 'em':
             self.isFakeEMu(event)
 
-    def genMatch(self, event, dR=0.3):
+    def genMatch(self, event, leg, dR=0.3, matchAll=True):
 
         dR2 = dR * dR
 
+        leg.isTauHad = False
+        leg.isTauLep = False
+        leg.isPromptLep = False
+        leg.genp = None
+
         # match the tau_h leg
         # to generated had taus
-        l1match, dR2best = bestMatch(self.l1, event.gentaus)
+        l1match, dR2best = bestMatch(leg, event.gentaus)
         if dR2best < dR2:
-            self.l1.genp = l1match
-            self.l1.isTauHad = True
+            leg.genp = l1match
+            leg.isTauHad = True
+            return
 
         # to generated leptons from taus
-        if not self.l1.isTauHad:
-            l1match, dR2best = bestMatch(self.l1, self.ptSelGentauleps)
-            if dR2best < dR2:
-                self.l1.genp = l1match
-                self.l1.isTauLep = True
-
-        # to generated prompt leptons
-        elif not self.l1.isTauLep:
-            l1match, dR2best = bestMatch(self.l1, self.ptSelGenleps)
-            if dR2best < dR2:
-                self.l1.genp = l1match
-                self.l1.isPromptLep = True
-
-        # match with any other gen particle
-        elif not self.l1.isPromptLep:
-            l1match, dR2best = bestMatch(self.l1, event.genParticles)
-            if dR2best < dR2:
-                self.l1.genp = l1match
-
-        # match the mu leg
-        # to generated had taus
-        l2match, dR2best = bestMatch(self.l2, event.gentaus)
+        l1match, dR2best = bestMatch(leg, self.ptSelGentauleps)
         if dR2best < dR2:
-            self.l2.genp = l2match
-            self.l2.isTauHad = True
-
-        # to generated leptons from taus
-        if not self.l2.isTauHad:
-            l2match, dR2best = bestMatch(self.l2, self.ptSelGentauleps)
-            if dR2best < dR2:
-                self.l2.genp = l2match
-                self.l2.isTauLep = True
+            leg.genp = l1match
+            leg.isTauLep = True
+            return
 
         # to generated prompt leptons
-        elif not self.l2.isTauLep:
-            l2match, dR2best = bestMatch(self.l2, self.ptSelGenleps)
-            if dR2best < dR2:
-                self.l2.genp = l2match
-                self.l2.isPromptLep = True
+        l1match, dR2best = bestMatch(leg, self.ptSelGenleps)
+        if dR2best < dR2:
+            leg.genp = l1match
+            leg.isPromptLep = True
+            return
 
-        # match with any other gen particle
-        elif not self.l2.isPromptLep:
-            l2match, dR2best = bestMatch(self.l2, event.genParticles)
+        # match with any other relevant gen particle
+        if matchAll:
+            l1match, dR2best = bestMatch(leg, self.ptSelGenSummary)
             if dR2best < dR2:
-                self.l2.genp = l2match
+                leg.genp = l1match
+
 
     def getGenType(self, event):
         '''Check the Z or H boson decay mode at gen level.
