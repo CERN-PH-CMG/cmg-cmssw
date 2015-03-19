@@ -92,6 +92,7 @@ class ttHDeclusterJetsAnalyzer( Analyzer ):
                          print "    exclusive subjet %d/%d: pt %6.1f, mass %6.2f (pruned %6.2f), dr(lep) = %.3f, ptRel v1 = %5.1f (pruned %5.1f), ptF = %5.2f (pruned %5.2f)" % (isub,nsub, sj.pt(), sj.mass(), pM, dr, ptR, ppR, ptF, ppF)
                       else:
                          print "    exlcusive subjet %d/%d: pt %6.1f, mass %6.2f, dr(lep) = %.3f, ptRel v1 = %5.1f, ptF = %5.2f" % (isub,nsub, sj.pt(), sj.mass(), dr, ptR, ptF)
+               if ibest == -1: continue
                sj = exclusiveJets[ibest]
                dr  = deltaR(l.eta(),l.phi(),sj.eta(),sj.phi())
                ptR = ptRelv1(l.p4(),sj)
@@ -151,25 +152,26 @@ class ttHDeclusterJetsAnalyzer( Analyzer ):
                       print "    inclusive subjet %d/%d: pt %6.1f, mass %6.2f (pruned %6.2f), dr(lep) = %.3f, ptRel v1 = %5.1f (pruned %5.1f), ptF = %5.2f (pruned %5.2f)" % (isub,nsub, ij.pt(), ij.mass(), pM, dr, ptR, ppR, ptF, ppF)
                    else:
                       print "    inclusive subjet %d/%d: pt %6.1f, mass %6.2f, dr(lep) = %.3f, ptRel v1 = %5.1f, ptF = %5.2f" % (isub,nsub, ij.pt(), ij.mass(), dr, ptR, ptF)
-            ij = inclusiveJets02[ibest]
-            dr  = deltaR(l.eta(),l.phi(),ij.eta(),ij.phi())
-            ptR = ptRelv1(l.p4(),ij)
-            ptF = l.pt()/ij.pt()
-            l.jetDec02DR      = dr 
-            l.jetDec02PtRatio = ptF
-            l.jetDec02PtRel   = ptR
-            if self.cfg_ana.prune:
-               pp4 = reclusterJets02.getPrunedSubjetInclusive(ibest,self.cfg_ana.pruneZCut,self.cfg_ana.pruneRCutFactor)
-               ppF = l.pt()/pp4.pt()
-               ppR = ptRelv1(l.p4(),pp4)
-               pM  = pp4.mass()
-               l.jetDec02PrunedPtRatio = ppF #l.pt()/pp4.pt()
-               l.jetDec02PrunedMass    = pM  #l.jet.mass()
-            if self.verbose:
-               if self.cfg_ana.prune:
-                  print "    best inclusive subject %d/%d: pt %6.1f, mass %6.2f (pruned %6.2f), dr(lep) = %.3f, ptRel v1 = %5.1f (pruned %5.1f), ptF = %5.2f (pruned %5.2f)" % (ibest,nsub, ij.pt(), ij.mass(), pM, dr, ptR, ppR, ptF, ppF)
-               else:
-                  print "    best inclusive subject %d/%d: pt %6.1f, mass %6.2f, dr(lep) = %.3f, ptRel v1 = %5.1f, ptF = %5.2f" % (ibest,nsub, ij.pt(), ij.mass(), dr, ptR, ptF)
+            if ibest != -1:
+                ij = inclusiveJets02[ibest]
+                dr  = deltaR(l.eta(),l.phi(),ij.eta(),ij.phi())
+                ptR = ptRelv1(l.p4(),ij)
+                ptF = l.pt()/ij.pt()
+                l.jetDec02DR      = dr 
+                l.jetDec02PtRatio = ptF
+                l.jetDec02PtRel   = ptR
+                if self.cfg_ana.prune:
+                   pp4 = reclusterJets02.getPrunedSubjetInclusive(ibest,self.cfg_ana.pruneZCut,self.cfg_ana.pruneRCutFactor)
+                   ppF = l.pt()/pp4.pt()
+                   ppR = ptRelv1(l.p4(),pp4)
+                   pM  = pp4.mass()
+                   l.jetDec02PrunedPtRatio = ppF #l.pt()/pp4.pt()
+                   l.jetDec02PrunedMass    = pM  #l.jet.mass()
+                if self.verbose:
+                   if self.cfg_ana.prune:
+                      print "    best inclusive subject %d/%d: pt %6.1f, mass %6.2f (pruned %6.2f), dr(lep) = %.3f, ptRel v1 = %5.1f (pruned %5.1f), ptF = %5.2f (pruned %5.2f)" % (ibest,nsub, ij.pt(), ij.mass(), pM, dr, ptR, ppR, ptF, ppF)
+                   else:
+                      print "    best inclusive subject %d/%d: pt %6.1f, mass %6.2f, dr(lep) = %.3f, ptRel v1 = %5.1f, ptF = %5.2f" % (ibest,nsub, ij.pt(), ij.mass(), dr, ptR, ptF)
 
             # ##### considering candidates from the ak08 jet   
             # if fobjects.size() <= 1: continue           
