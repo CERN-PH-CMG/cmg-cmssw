@@ -120,7 +120,15 @@ tau_vars = [
     Variable('zImpact', lambda tau : tau.zImpact())
 ]
 for tau_id in tauIDs:
-    tau_vars.append(Variable(tau_id, eval('lambda tau : tau.tauID("{id}")'.format(id=tau_id))))
+    if type(tau_id) is str:
+        # Need to use eval since functions are otherwise bound to local
+        # variables
+        tau_vars.append(Variable(tau_id, eval('lambda tau : tau.tauID("{id}")'.format(id=tau_id))))
+    else:
+        sum_id_str = ' + '.join('tau.tauID("{id}")'.format(id=tau_id[0].format(wp=wp)) for wp in tau_id[1])
+        tau_vars.append(Variable(tau_id[0].format(wp=''), 
+            eval('lambda tau : ' + sum_id_str), int))
+
 
 # jet
 jet_vars = [
