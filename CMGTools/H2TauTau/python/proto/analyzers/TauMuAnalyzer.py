@@ -1,7 +1,7 @@
 import operator
 
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
-from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Muon
+from PhysicsTools.Heppy.physicsobjects.Muon import Muon
 from PhysicsTools.Heppy.physicsobjects.Electron import Electron
 
 from CMGTools.H2TauTau.proto.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
@@ -24,16 +24,17 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
             'slimmedElectrons',
             'std::vector<pat::Electron>'
             )
-        
+
         self.handles['leptons'] = AutoHandle(
             'slimmedMuons',
             'std::vector<pat::Muon>'
             )
-        
+
         self.mchandles['genParticles'] = AutoHandle(
             'prunedGenParticles',
             'std::vector<reco::GenParticle>'
             )
+
 
     def buildDiLeptons(self, patDiLeptons, event):
         '''Build di-leptons, associate best vertex to both legs,
@@ -88,8 +89,8 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
             # it must have well id'ed and trig matched legs,
             # di-lepton and tri-lepton veto must pass
             result = self.selectionSequence(event, fillCounter=False,
-                                            leg1IsoCut=-9999,
-                                            leg2IsoCut=9999)
+                                            leg1IsoCut=self.cfg_ana.looseiso1,
+                                            leg2IsoCut=self.cfg_ana.looseiso2)
             if result is False:
                 # really no way to find a suitable di-lepton,
                 # even in the control region
@@ -97,17 +98,23 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
             event.isSignal = False
         else:
             event.isSignal = True
-      
+
         return True
-        
+
 
     def testLeg1ID(self, tau):
+        # RIC: 9 March 2015
+        return ( (tau.tauID('decayModeFinding')         > 0.5  or
+                  tau.tauID('decayModeFindingNewDMs')   > 0.5) and
+                 tau.tauID('againstElectronVLooseMVA5') > 0.5  and
+                 tau.tauID('againstMuonTight3')         > 0.5  and
+                 self.testTauVertex(tau) )
         # https://twiki.cern.ch/twiki/bin/view/CMS/TauIDRecommendation13TeV
-        return tau.tauID('decayModeFinding') > 0.5 and \
-               tau.tauID('againstMuonTight3') > 0.5 and \
-               tau.tauID('againstElectronLooseMVA5') > 0.5 and \
-               self.testTauVertex(tau)
-        
+        # return tau.tauID('decayModeFinding') > 0.5 and \
+        #        tau.tauID('againstMuonTight3') > 0.5 and \
+        #        tau.tauID('againstElectronLooseMVA5') > 0.5 and \
+        #        self.testTauVertex(tau)
+
 
     def testLeg1Iso(self, tau, isocut):
         '''if isocut is None, returns true if three-hit iso cut is passed.
@@ -116,7 +123,9 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
             return tau.tauID('byLooseCombinedIsolationDeltaBetaCorr3Hits') > 0.5
         else:
             # JAN FIXME - placeholder, as of now only used to define passing cuts
-            return tau.tauID("byIsolationMVA3newDMwLTraw") > isocut
+            # return tau.tauID("byIsolationMVA3newDMwLTraw") > isocut
+            # RIC: 9 March 2015
+            return tau.tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") < isocut
 
 
     def testTauVertex(self, lepton):
@@ -126,44 +135,46 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
         isPV = lepton.vertex().z() == lepton.associatedVertex.z()
         return isPV
 
+
     def testVertex(self, lepton):
         '''Tests vertex constraints, for mu'''
-        return abs(lepton.dxy()) < 0.045 and abs(lepton.dz()) < 0.2 
+        return abs(lepton.dxy()) < 0.045 and abs(lepton.dz()) < 0.2
 
 
     def testLeg2ID(self, muon):
         '''Tight muon selection, no isolation requirement'''
-        return muon.tightId() and self.testVertex( muon )
-               
+        return muon.muonID('POG_ID_Medium') and self.testVertex(muon)
+
 
     def testLeg2Iso(self, muon, isocut):
         '''Tight muon selection, with isolation requirement'''
         if isocut is None:
             isocut = self.cfg_ana.iso2
 
-        return muon.relIso(dBetaFactor=0.5, allCharged=1) < isocut    
+        return muon.relIso(dBetaFactor=0.5, allCharged=0) < isocut
 
 
-    def thirdLeptonVeto(self, leptons, otherLeptons, ptcut=10, isocut=0.3):
-        '''Tri-lepton veto. Returns False if >= 2 leptons (e or mu).'''
-        vleptons = [lep for lep in leptons if
-                    self.testLegKine(lep, ptcut=ptcut, etacut=2.4) and 
-                    self.testLeg2ID(lep) and
-                    self.testLeg2Iso(lep, isocut)
-                   ]
-        # count electrons
-        votherLeptons = [olep for olep in otherLeptons if 
-                         self.testLegKine(olep, ptcut=ptcut, etacut=2.5) and
-                         # Take loose MVA ID for now
-                         olep.mvaIDLoose() and
-                         self.testVertex(olep) and
-                         olep.relIso(dBetaFactor=0.5, allCharged=0) < isocut
-                        ]
-        if len(vleptons) + len(votherLeptons) > 1:
+    def thirdLeptonVeto(self, leptons, otherLeptons, isoCut=0.3):
+        # count electrons (leg 2)
+        vOtherLeptons = [electron for electron in otherLeptons if
+                           self.testLegKine(electron, ptcut=10, etacut=2.5) and
+                           self.testVertex(electron) and
+                           electron.cutBasedId('POG_PHYS14_25ns_v1_Veto') and
+                           electron.relIso(dBetaFactor=0.5, allCharged=0) < 0.3]
+
+        # count tight muons
+        vLeptons = [muon for muon in leptons if
+                      muon.muonID('POG_ID_Medium') and
+                      self.testVertex(muon) and
+                      self.testLegKine(muon, ptcut=10, etacut=2.4) and
+                      muon.relIso(dBetaFactor=0.5, allCharged=0) < 0.3]
+
+        if len(vLeptons) + len(vOtherLeptons) > 1:
             return False
-        
+
         return True
-        
+
+
 
     def leptonAccept(self, leptons):
         '''Di-lepton veto: returns false if >= 1 OS same flavour lepton pair,
@@ -182,6 +193,7 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
            return False
 
         return True
+
 
     def bestDiLepton(self, diLeptons):
         '''Returns the best diLepton (1st precedence opposite-sign, 2nd precedence

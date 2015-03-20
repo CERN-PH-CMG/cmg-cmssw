@@ -69,7 +69,7 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
     def process(self, event):
 
         result = super(MuEleAnalyzer, self).process(event)
-                
+
         if result is False:
             # trying to get a dilepton from the control region.
             # it must have well id'ed and trig matched legs,
@@ -84,109 +84,71 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
             event.isSignal = False
         else:
             event.isSignal = True
-       
+
         event.genMatched = None
         if self.cfg_comp.isMC:
             # print event.eventId
             genParticles = self.mchandles['genParticles'].product()
             event.genParticles = map( GenParticle, genParticles)
-            leg1DeltaR, leg2DeltaR = event.diLepton.match( event.genParticles ) 
+            leg1DeltaR, leg2DeltaR = event.diLepton.match( event.genParticles )
             if leg1DeltaR>-1 and leg1DeltaR < 0.1 and \
                leg2DeltaR>-1 and leg2DeltaR < 0.1:
                 event.genMatched = True
             else:
                 event.genMatched = False
-                
+
         return True
-        
+
     def testLeg1ID(self, muon):
         '''Tight muon selection, no isolation requirement'''
-        # RIC: this leg is the muon,
-        # needs to be implemented here. 
-        # For now taken straight from mt channel
-        return muon.tightId() and \
-               self.testVertex( muon )
-        
+        # RIC: 9 March 2015
+        return muon.muonID('POG_ID_Medium')
+
     def testLeg1Iso(self, muon, isocut):
         '''Muon isolation to be implemented'''
         # RIC: this leg is the muon,
-        # needs to be implemented here 
+        # needs to be implemented here
         # For now taken straight from mt channel
         if isocut is None:
             isocut = self.cfg_ana.iso1
-        return muon.relIso(dBetaFactor=0.5, allCharged=0)<isocut    
+        return muon.relIso(dBetaFactor=0.5, allCharged=0)<isocut
 
     def testVertex(self, lepton):
         '''Tests vertex constraints, for mu and electron'''
-        return abs(lepton.dxy()) < 0.045 and abs(lepton.dz ()) < 0.2 
+        return abs(lepton.dxy()) < 0.045 and abs(lepton.dz ()) < 0.2
 
     def testLeg2ID(self, electron):
         '''Electron ID. To be implemented'''
         # RIC: this leg is the electron,
-        # needs to be implemented here 
+        # needs to be implemented here
         # For now taken straight from et channel
-#         if self.relaxEleId:
-#             return electron.relaxedIdForEleTau() and \
-#                self.testVertex( electron )    
-#         return electron.tightIdForEleTau() and \
-#                self.testVertex( electron )
-        return True # RIC: 16/2/15 disabled until ele obj is fixed
-                       
+        return electron.electronID('POG_MVA_ID_Run2_NonTrig_Tight') and \
+            self.testVertex(electron)
+
     def testLeg2Iso(self, electron, isocut):
         '''Electron Isolation. Relative isolation
            dB corrected factor 0.5
-           only charged hadrons
+           all charged aprticles
         '''
         # RIC: this leg is the electron,
-        # needs to be implemented here 
+        # needs to be implemented here
         # For now taken straight from et channel
         if isocut is None:
-           isocut = self.cfg_ana.iso2
+            isocut = self.cfg_ana.iso2
         return electron.relIso(dBetaFactor=0.5, allCharged=0) < isocut
 
     def thirdLeptonVeto(self, leptons, otherLeptons, ptcut = 10, isocut = 0.3) :
         '''The tri-lepton veto. To be implemented'''
-#         vleptons = [ lep for lep in leptons if self.testLegKine(lep, ptcut=ptcut, etacut=2.4) and 
-#                                                self.testLeg2ID (lep)                          and
-#                                                self.testLeg2Iso(lep, isocut)                      ]
-#         # count electrons
-#         votherLeptons = [ olep for olep in otherLeptons if self.testLegKine(olep, ptcut=ptcut, etacut=2.5) and
-#                                                            olep.mvaIDLoose()                               and
-#                                                            self.testVertex( olep )                         and
-#                                                            olep.relIsoAllChargedDB05() < isocut                ]
-#         if len(vleptons) + len(votherLeptons) > 0 : return False
-#         else                                      : return True
-        return True        
+        return True
 
     def leptonAccept(self, leptons):
         '''The di-lepton veto, returns false if > one lepton.
         e.g. > 1 mu in the mu tau channel.
         To be implemented.'''
-#         looseLeptons = [muon for muon in leptons if
-#                         self.testLegKine(muon, ptcut=15, etacut=2.4) and
-#                         muon.isGlobalMuon() and
-#                         muon.isTrackerMuon() and
-#                         muon.userFloat('isPFMuon') and
-#                         #COLIN Not sure this vertex cut is ok... check emu overlap
-#                         #self.testVertex(muon) and
-#                         # JAN: no dxy cut
-#                         abs(muon.dz()) < 0.2 and
-#                         self.testLeg2Iso(muon, 0.3)
-#                         ]
-#         isPlus = False
-#         isMinus = False
-#         # import pdb; pdb.set_trace()
-#         for lepton in looseLeptons:
-#             if lepton.charge()<0: isMinus=True
-#             elif lepton.charge()>0: isPlus=True
-#             else:
-#                 raise ValueError('Impossible!')
-#         veto = isMinus and isPlus
-#         return not veto
         return True
-        
+
     def bestDiLepton(self, diLeptons):
-        '''Returns the best diLepton (1st precedence opposite-sign, 
+        '''Returns the best diLepton (1st precedence opposite-sign,
         2nd precedence highest pt1 + pt2).'''
         osDiLeptons = [dl for dl in diLeptons if dl.leg1().charge() != dl.leg2().charge()]
         if osDiLeptons : return max( osDiLeptons, key=operator.methodcaller( 'sumPt' ) )
