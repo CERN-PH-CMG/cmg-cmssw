@@ -28,6 +28,15 @@ lepAna.miniIsolationVetoLeptons = None # use 'inclusive' to veto inclusive lepto
 photonAna.do_mc_match = False
 
 ##------------------------------------------
+##  TOLOLOGIAL VARIABLES: RAZOR
+##------------------------------------------
+from CMGTools.MonoXAnalysis.analyzers.monoXRazorAnalyzer import monoXRazorAnalyzer
+monoXRazorAna = cfg.Analyzer(
+    monoXRazorAnalyzer, name = 'monoXRazorAnalyzer',
+    doOnlyDefault = False
+    )
+
+##------------------------------------------
 ##  TOLOLOGIAL VARIABLES: MT, MT2
 ##------------------------------------------
 from CMGTools.TTHAnalysis.analyzers.ttHTopoVarAnalyzer import ttHTopoVarAnalyzer
@@ -97,6 +106,7 @@ from CMGTools.MonoXAnalysis.samples.samples_monojet import *
 selectedComponents = []
 
 sequence = cfg.Sequence(dmCoreSequence+[
+    monoXRazorAna,
     ttHMT2ControlAna,
     ttHTopoJetAna,
     ttHFatJetAna,
@@ -143,7 +153,7 @@ elif test == 10: # sync
     jetAna.recalibrateJets = False 
     jetAna.smearJets       = False 
     comp = Monojet_M_10; comp.name = "Monojet_M_10"
-    comp.files = [ '/afs/cern.ch/work/a/avartak/public/dmVM10.root' ]
+    comp.files = [ 'root://eoscms//eos/cms/store/mc/Phys14DR/DYJetsToLL_M-50_13TeV-madgraph-pythia8/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/0432E62A-7A6C-E411-87BB-002590DB92A8.root' ]
     comp.splitFactor = 1
     comp.fineSplitFactor = 1
     monoJetSkim.metCut = 0

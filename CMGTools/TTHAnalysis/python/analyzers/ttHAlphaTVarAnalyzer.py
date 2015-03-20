@@ -1,6 +1,3 @@
-from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
-from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi
-
 import operator 
 import itertools
 import copy
@@ -22,7 +19,7 @@ from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Jet
 
 import ROOT
-from ROOT import AlphaT
+from ROOT.heppy import AlphaT
 
 
 import os
@@ -44,31 +41,31 @@ class ttHAlphaTVarAnalyzer( Analyzer ):
 
 
     # Calculate alphaT using jet ET
-    def makeAlphaT(self, event):
+    def makeAlphaT(self, jets):
 
-        if len(event.cleanJets) == 0:
-            event.alphaT = 0
-            return
+        if len(jets) == 0:
+            return 0.
         
         px  = ROOT.std.vector('double')()
         py  = ROOT.std.vector('double')()
         et  = ROOT.std.vector('double')()
-#Make alphaT from lead 10 jets
-	for jet in event.cleanJets[:10]:
+
+        #Make alphaT from lead 10 jets
+	for jet in jets[:10]:
             px.push_back(jet.px())
             py.push_back(jet.py())
             et.push_back(jet.et())
-            pass
 
         alphaTCalc   = AlphaT()
-        event.alphaT = alphaTCalc.getAlphaT( et, px, py )
-
-        return
+        return alphaTCalc.getAlphaT( et, px, py )
 
     def process(self, event):
         self.readCollections( event.input )
 
-        event.alphaT = -999
-        self.makeAlphaT(event)
+        event.alphaT = self.makeAlphaT(event.cleanJets)
+
+        #Do the same with gen jets for MC
+        if self.cfg_comp.isMC:
+            event.genAlphaT = self.makeAlphaT(event.cleanGenJets)
 
         return True
