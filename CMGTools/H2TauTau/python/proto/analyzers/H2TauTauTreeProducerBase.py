@@ -1,6 +1,6 @@
 from PhysicsTools.Heppy.analyzers.core.TreeAnalyzerNumpy import TreeAnalyzerNumpy
 
-from CMGTools.H2TauTau.proto.analyzers.varsDictionary import vars
+from CMGTools.H2TauTau.proto.analyzers.varsDictionary import vars as var_dict
 from CMGTools.H2TauTau.proto.analyzers.TreeVariables import event_vars, ditau_vars, particle_vars, lepton_vars, electron_vars, muon_vars, tau_vars, jet_vars, geninfo_vars, vbf_vars
 
 class H2TauTauTreeProducerBase(TreeAnalyzerNumpy):
@@ -15,7 +15,7 @@ class H2TauTauTreeProducerBase(TreeAnalyzerNumpy):
     def __init__(self, *args):
         super(H2TauTauTreeProducerBase, self).__init__(*args)
         self.varStyle = 'std'
-        self.varDict = vars
+        self.varDict = var_dict
         self.skimFunction = 'True'
         if hasattr(self.cfg_ana, 'varStyle'):
             self.varStyle = self.cfg_ana.varStyle
@@ -172,16 +172,16 @@ class H2TauTauTreeProducerBase(TreeAnalyzerNumpy):
         self.fillGeneric(tree, geninfo_vars, event)
 
     # quark and gluons
-    def bookQG(self, tree):
-        for i in range(0, self.maxNGenJets):
+    def bookQG(self, tree, maxNGenJets=2):
+        for i in range(0, maxNGenJets):
             self.bookGenParticle(self.tree, 'genqg_{i}'.format(i=i))
 
-    def fillQG(self, tree, event):
+    def fillQG(self, tree, event, maxNGenJets=2):
         # Fill hard quarks/gluons
         quarksGluons = [p for p in event.genParticles if abs(p.pdgId()) in (1, 2, 3, 4, 5, 21) and
                         p.status() == 3 and
                         (p.numberOfDaughters() == 0 or p.daughter(0).status() != 3)]
         quarksGluons.sort(key=lambda x: -x.pt())
-        for i in range(0, min(self.maxNGenJets, len(quarksGluons))):
+        for i in range(0, min(maxNGenJets, len(quarksGluons))):
             self.fillGenParticle(
                 tree, 'genqg_{i}'.format(i=i), quarksGluons[i])

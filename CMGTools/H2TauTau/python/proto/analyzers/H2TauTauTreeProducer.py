@@ -26,7 +26,6 @@ class H2TauTauTreeProducer(H2TauTauTreeProducerBase):
        _ weight_njet
        _ event rho
        _ HqT weights
-       _ hard scattering quarks and gluons (up to 4, can be set by self.maxNGenJets)
        Signal lepton-specific variables need to be booked
        and filled in the channel-specific child producers.
 
@@ -60,7 +59,6 @@ class H2TauTauTreeProducer(H2TauTauTreeProducerBase):
 
         self.bookGenParticle(self.tree, 'genboson')
 
-        self.maxNGenJets = 4
 
     def process(self, event):
 
