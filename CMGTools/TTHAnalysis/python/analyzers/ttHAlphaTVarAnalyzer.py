@@ -1,6 +1,3 @@
-from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
-from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi
-
 import operator 
 import itertools
 import copy
@@ -22,7 +19,7 @@ from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Jet
 
 import ROOT
-from ROOT import AlphaT
+from ROOT.heppy import AlphaT
 
 
 import os
