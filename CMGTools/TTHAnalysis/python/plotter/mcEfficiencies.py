@@ -164,11 +164,22 @@ if __name__ == "__main__":
     ids   = PlotFile(args[2],options).plots()
     xvars = PlotFile(args[3],options).plots()
     outname  = options.out if options.out else (args[2].replace(".txt","")+".root")
+    if os.path.dirname(outname) != "":
+        dirname = os.path.dirname(outname)
+        if not os.path.exists(dirname):
+            os.system("mkdir -p "+dirname)
+            if os.path.exists("/afs/cern.ch"): os.system("cp /afs/cern.ch/user/g/gpetrucc/php/index.php "+os.path.dirname(outname))
     outfile  = ROOT.TFile(outname,"RECREATE")
     ROOT.gROOT.ProcessLine(".x tdrstyle.cc")
     ROOT.gStyle.SetErrorX(0.5)
     ROOT.gStyle.SetOptStat(0)
     effplots = [ (y,x,makeEff(mca,cut,y,x)) for y in ids for x in xvars ]
+    for (y,x,pmap) in effplots:
+        for proc in procs:
+            eff = pmap[proc]
+            if not eff: continue
+            eff.SetName("_".join([y.name,x.name,proc]))
+            outfile.WriteTObject(eff)
     if len(procs)>1 and "cut" in options.groupBy:
         for x in xvars:
             for y,ex,pmap in effplots:
