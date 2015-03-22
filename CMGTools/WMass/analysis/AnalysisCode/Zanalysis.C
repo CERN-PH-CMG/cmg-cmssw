@@ -847,13 +847,16 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               
                   TLorentzVector VisPt;
                   VisPt.SetPtEtaPhiM(Zcorr.Pt(),0,Zcorr.Phi(),0);
-                              
+
+                  TLorentzVector Zgen;
+                  Zgen.SetPtEtaPhiM(ZGen_pt,0,ZGen_phi,0);
+
                   string mettype="_tk";
                               
                   double u1_scale=0;
-                  plotVariables( Z_met, VisPt,  Zcorr, u1_scale, tag_zPtcut.c_str(), mettype.c_str() , false, false, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF);
-                  plotVariables( Z_met, VisPt,  Zcorr, u1_scale, tag_VTX.c_str(), mettype.c_str() , false, false, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF);
-                  plotVariables( Z_met, VisPt,  Zcorr, u1_scale, tag_y.c_str(), mettype.c_str() , false, false, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF);
+                  plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, tag_zPtcut.c_str(), mettype.c_str() , false, false, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, WMass::WMassNSteps, jZmass_MeV);
+                  plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, tag_VTX.c_str(), mettype.c_str() , false, false, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, WMass::WMassNSteps, jZmass_MeV);
+                  plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, tag_y.c_str(), mettype.c_str() , false, false, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, WMass::WMassNSteps , jZmass_MeV);
                 }
 
                   //------------------------------------------------------
@@ -941,54 +944,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                                   MuPos_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
                           }
                           
-                          if(
-                            controlplots && 
-                            m==0 && WMass::WMassNSteps==j){
-                              
-                            double fMet;fMet=pfmet_bla;
-                            double fMPhi;fMPhi=pfmetphi_bla;
-                            double fU1;
-                            double fU2;
-                            double fZPt;fZPt=ZGen_pt;
-                            double fZPhi;fZPhi=ZGen_phi;
-                            double fPtVisual;fPtVisual=ZGen_pt;
-                            double fPhiVisual;fPhiVisual=ZGen_phi;
-                            common_stuff::calculateU1U2( fMet,  
-                                                         fMPhi,  
-                                                         fZPt,  
-                                                         fZPhi,  
-                                                         fPtVisual,  
-                                                         fPhiVisual,  
-                                                         fU1, 
-                                                         fU2
-                                                        );
-                            common_stuff::plot2D(Form("U1_vs_Zpt_gen_eta%s_%d",eta_str.Data(),jZmass_MeV),
-                                          fZPt,fU1, evt_weight*TRG_TIGHT_ISO_muons_SF, 
-                                          h_2d, 100,0,20,100,-10,10 );
-                            common_stuff::plot2D(Form("U2_vs_Zpt_gen_eta%s_%d",eta_str.Data(),jZmass_MeV),
-                                          fZPt,fU2, evt_weight*TRG_TIGHT_ISO_muons_SF, 
-                                          h_2d, 100,0,20,100,-10,10 );
-                            fZPt=Z_pt;
-                            fZPhi=Z_phi;
-                            fPtVisual=Z_pt;
-                            fPhiVisual=Z_phi;
-                            common_stuff::calculateU1U2( fMet,  
-                                                         fMPhi,  
-                                                         fZPt,  
-                                                         fZPhi,  
-                                                         fPtVisual,  
-                                                         fPhiVisual,  
-                                                         fU1, 
-                                                         fU2
-                                                        );
-                            common_stuff::plot2D(Form("U1_vs_Zpt_reco_eta%s_%d",eta_str.Data(),jZmass_MeV),
-                                          fZPt,fU1, evt_weight*TRG_TIGHT_ISO_muons_SF, 
-                                          h_2d, 100,0,20,100,-10,10 );
-                            common_stuff::plot2D(Form("U2_vs_Zpt_reco_eta%s_%d",eta_str.Data(),jZmass_MeV),
-                                          fZPt,fU2, evt_weight*TRG_TIGHT_ISO_muons_SF, 
-                                          h_2d, 100,0,20,100,-10,10 );
-                          }
-                                            
                           //------------------------------------------------------------------------------------------------
                           // EXTRA PLOTS
                           //------------------------------------------------------------------------------------------------ 
@@ -1011,149 +966,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                         // control plots for different etas but only for central W mass
                         //------------------------------------------------------------------------------------------------ 
                         if(TMath::Abs(jZmass_MeV - WMass::ZMassCentral_MeV) > 1)  continue;
-                        if(controlplots && m==0){
-                          // control distributions 
-                          common_stuff::plot1D(Form("hnvtx_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          nvtx, evt_weight, h_1d, 50,0,50 );
-                          common_stuff::plot1D(Form("Zmass_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          Zcorr.M(), evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 300,50,200 );
-                          
-                          common_stuff::plot1D(Form("Zmass_zoomed_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          Zcorr.M(), evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 6000,60,120 );
-                          common_stuff::plot2D(Form("ZmassVsMuPosEta_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Eta(),Zcorr.M(), evt_weight*TRG_TIGHT_ISO_muons_SF, 
-                                          h_2d, 50,-2.5,2.5,200,90,92 );
-                          // common_stuff::plot2D(Form("PosMuonPtCorrVsMuPosEta_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          // muPosCorr.Eta(),Zcorr.M(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          // h_2d, 50,-2.5,2.5,300,60,120
-                                        // );
-                          // common_stuff::plot2D(Form("PosMuonPtCorrVsMuPosPhi_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          // muPosCorr.Phi(),Zcorr.M(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          // h_2d, 50,-2*TMath::Pi(),2*TMath::Pi(),300,60,120
-                                        // );
-                          common_stuff::plot1D(Form("ZlepDeltaEta_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Eta()-muNegCorr.Eta(),evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 200,-5,5 );
+			TLorentzVector metBLA;
+			metBLA.SetPtEtaPhiM(pfmet_bla,0,pfmetphi_bla,0);
 
-                          common_stuff::plot2D(Form("ZlepEta1VsEta2_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Eta(),muNegCorr.Eta(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_2d, 50,-2.5,2.5,50,-2.5,2.5 );
-                          common_stuff::plot2D(Form("ZlepDeltaEtaVsEta1_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Eta(),muPosCorr.Eta()-muNegCorr.Eta(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_2d, 50,-2.5,2.5,100,-5,5 );
-                          common_stuff::plot1D(Form("ZlepDeltaPt_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Pt()-muNegCorr.Pt(),evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 100,-50,50 );
-                          common_stuff::plot2D(Form("ZlepPt1VsPt2_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Pt(),muNegCorr.Pt(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_2d, 200,0,200,200,0,200 );
-                          common_stuff::plot2D(Form("ZlepDeltaPtVsPt1_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Pt(),muPosCorr.Pt()-muNegCorr.Pt(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_2d, 200,0,200,100,-50,50 );
-                          common_stuff::plot1D(Form("ZlepDeltaPhi_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Phi()-muNegCorr.Phi(),evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 200,-2*TMath::Pi(),2*TMath::Pi() );
-                          common_stuff::plot2D(Form("ZlepPhi1VsPhi2_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Phi(),muNegCorr.Phi(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_2d, 200,-2*TMath::Pi(),2*TMath::Pi(),200,-2*TMath::Pi(),2*TMath::Pi() );
-                          common_stuff::plot2D(Form("ZlepDeltaPhiVsPhi1_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Phi(),muPosCorr.Phi()-muNegCorr.Phi(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_2d, 200,-2*TMath::Pi(),2*TMath::Pi(),200,-2*TMath::Pi(),2*TMath::Pi() );
-                          common_stuff::plot1D(Form("ZlepDeltaR_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Eta()-Jet_leading_eta,evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 1000,0,10 );
-                          common_stuff::plot1D(Form("ZDeltaEtaMuPosJet_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Eta()-Jet_leading_eta,evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 200,-5,5 );
-                          common_stuff::plot1D(Form("ZDeltaPhiMuPosJet_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Phi()-Jet_leading_phi,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 200,-2*TMath::Pi(),2*TMath::Pi() );
-                          common_stuff::plot1D(Form("ZDeltaRMuPosJet_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          TMath::Hypot(muPosCorr.Phi()-Jet_leading_phi,muPosCorr.Eta()-Jet_leading_eta),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 1000,0,10 );
-                          common_stuff::plot1D(Form("ZDeltaEtaMuNegJet_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muNegCorr.Eta()-Jet_leading_eta,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 200,-5,5 );
-                          common_stuff::plot1D(Form("ZDeltaPhiMuNegJet_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muNegCorr.Phi()-Jet_leading_phi,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 200,-2*TMath::Pi(),2*TMath::Pi() );
-                          common_stuff::plot1D(Form("ZDeltaRMuNegJet_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          TMath::Hypot(muNegCorr.Phi()-Jet_leading_phi,muNegCorr.Eta()-Jet_leading_eta),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 1000,0,10 );
-                          common_stuff::plot1D(Form("hpfMET_Z_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          pfmet_bla,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,0,200 );
-                          common_stuff::plot1D(Form("hpfMETphi_Z_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          pfmetphi_bla,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,-TMath::Pi(),TMath::Pi() );
-                          common_stuff::plot1D(Form("hZ_phi_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          Zcorr.Phi(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,-TMath::Pi(),TMath::Pi() );
-                          common_stuff::plot1D(Form("hZ_mt_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          Zcorr.Mt(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,0,200 );
-                          common_stuff::plot2D(Form("hZ_ptVsmt_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          Zcorr.Mt(),Zcorr.Pt(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_2d, 150,50,200,100,0,25 );
-                          common_stuff::plot1D(Form("hWlikePos_pt_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          WlikePos_pt,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,0,25 );
-                          common_stuff::plot1D(Form("hWlikePos_phi_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          WlikePos_phi,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,-TMath::Pi(),TMath::Pi() );
-                          common_stuff::plot1D(Form("hWlikePos_mt_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          WlikePos_mt,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 200,0,200 );
-                          common_stuff::plot1D(Form("hpfMET_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          pfmetWlikePos,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,0,200 );
-                          common_stuff::plot1D(Form("hpfMETphi_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          pfmetWlikePos_phi,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,-TMath::Pi(),TMath::Pi() );
-                          common_stuff::plot1D(Form("hMupt_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Pt()<200 ? muPosCorr.Pt() : 199.5,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 200,0,200 );
-                          common_stuff::plot1D(Form("hMueta_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Eta(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,-2.5,2.5 );
-                          common_stuff::plot1D(Form("hMuphi_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Eta(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,-TMath::Pi(),TMath::Pi() );
-                          common_stuff::plot1D(Form("hMuiso_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          MuPosRelIso,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 1000,0,10 );
-                          common_stuff::plot1D(Form("hMuMETpt_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muNegCorr.Pt(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,0,200 );
-                          common_stuff::plot1D(Form("hMuMETeta_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muNegCorr.Eta(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,-2.5,2.5 );
-                          common_stuff::plot1D(Form("hMuMETeta_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          muNegCorr.Phi(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,-TMath::Pi(),TMath::Pi() );
-                          common_stuff::plot1D(Form("hMuMETiso_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          MuNegRelIso,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,0,10 );
-                          common_stuff::plot1D(Form("hJetpt_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          Jet_leading_pt,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,0,50 );
-                          common_stuff::plot1D(Form("hJeteta_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          Jet_leading_eta,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100, -2.5,2.5 );
-                          common_stuff::plot1D(Form("hJeteta_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          Jet_leading_phi,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100, -TMath::Pi(),TMath::Pi() );
-                          common_stuff::plot1D(Form("hu1_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          u1,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 360,-30,150 );
-                          common_stuff::plot1D(Form("hu1_Zpt_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          u1-Zcorr.Pt(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 360,-30,150 );
-                          common_stuff::plot1D(Form("hu2_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          u2,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 250,-50,50 );
-                          common_stuff::plot2D(Form("hu1vsZpt_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          Zcorr.Pt(),u1,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_2d, 100,0,25,360,-30,150 );
-                          common_stuff::plot2D(Form("hu1vsZpt_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),jZmass_MeV),
-                                          Zcorr.Pt(),u2,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_2d, 100,0,25,250,-50,50 );
-                        }
+                        if(controlplots && m==0) fillControlPlots(Zcorr, metBLA, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, jZmass_MeV , eta_str, WMass::nSigOrQCD_str[0]);
+
                       }
                     }
                   }
@@ -1181,129 +998,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                     //------------------------------------------------------
                     // QCD distributions for central W mass
                     //------------------------------------------------------
-                    common_stuff::plot1D(Form("Zmass_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          nvtx, evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 300,50,200 );
-                    common_stuff::plot1D(Form("Zmass_zoomed_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          nvtx, evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 6000,60,120 );
-                    common_stuff::plot2D(Form("ZmassVsMuPosEta_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Eta(),Zcorr.M(), evt_weight*TRG_TIGHT_ISO_muons_SF, 
-                                          h_2d, 50,-2.5,2.5,200,90,92 );
-                    common_stuff::plot1D(Form("ZlepDeltaPt_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Pt()-muNegCorr.Pt(),evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 100,-50,50 );
-                    common_stuff::plot2D(Form("ZlepPt1VsPt2_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Pt(),muNegCorr.Pt(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_2d, 200,0,200,200,0,200 );
-                    common_stuff::plot2D(Form("ZlepDeltaPtVsPt1_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Pt(),muPosCorr.Pt()-muNegCorr.Pt(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_2d, 200,0,200,100,-50,50 );
-                    common_stuff::plot1D(Form("ZlepDeltaPhi_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Phi()-muNegCorr.Phi(),evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 200,-2*TMath::Pi(),2*TMath::Pi() );
-                    common_stuff::plot2D(Form("ZlepPhi1VsPhi2_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Phi(),muNegCorr.Phi(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_2d, 200,-2*TMath::Pi(),2*TMath::Pi(),200,-2*TMath::Pi(),2*TMath::Pi() );
-                    common_stuff::plot2D(Form("ZlepDeltaPhiVsPhi1_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Phi(),muPosCorr.Phi()-muNegCorr.Phi(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_2d, 200,-2*TMath::Pi(),2*TMath::Pi(),200,-2*TMath::Pi(),2*TMath::Pi() );
-                    common_stuff::plot1D(Form("ZlepDeltaR_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Eta()-Jet_leading_eta,evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 1000,0,10 );
-                    common_stuff::plot1D(Form("ZDeltaEtaMuPosJet_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Eta()-Jet_leading_eta,evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 200,-5,5 );
-                    common_stuff::plot1D(Form("ZDeltaPhiMuPosJet_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Phi()-Jet_leading_phi,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 200,-2*TMath::Pi(),2*TMath::Pi() );
-                    common_stuff::plot1D(Form("ZDeltaRMuPosJet_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          TMath::Hypot(muPosCorr.Phi()-Jet_leading_phi,muPosCorr.Eta()-Jet_leading_eta),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 1000,0,10 );
-                    common_stuff::plot1D(Form("ZDeltaEtaMuNegJet_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                    muNegCorr.Eta()-Jet_leading_eta,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                    h_1d, 200,-5,5 );
-                    common_stuff::plot1D(Form("ZDeltaPhiMuNegJet_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          muNegCorr.Phi()-Jet_leading_phi,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 200,-2*TMath::Pi(),2*TMath::Pi() );
-                    common_stuff::plot1D(Form("ZDeltaRMuNegJet_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          TMath::Hypot(muNegCorr.Phi()-Jet_leading_phi,muNegCorr.Eta()-Jet_leading_eta),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 1000,0,10 );
-                    common_stuff::plot1D(Form("hpfMET_Z_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          TMath::Hypot(muNegCorr.Phi()-Jet_leading_phi,muNegCorr.Eta()-Jet_leading_eta),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,0,200 );
-                    common_stuff::plot1D(Form("hpfMETphi_Z_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          pfmetphi_bla,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,-TMath::Pi(),TMath::Pi() );
-                    common_stuff::plot1D(Form("hZ_pt_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          Zcorr.Pt(),evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 100,0,25 );
-                    common_stuff::plot1D(Form("hZ_phi_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          Zcorr.Phi(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,-TMath::Pi(),TMath::Pi() );
-                    common_stuff::plot1D(Form("hZ_mt_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          Zcorr.Mt(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,0,200 );
-                    common_stuff::plot2D(Form("hZ_ptVsmt_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          Zcorr.Mt(),Zcorr.Pt(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_2d, 150,50,200,100,0,25 );
-                    common_stuff::plot1D(Form("hWlikePos_pt_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          WlikePos_pt,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,0,25 );
-                    common_stuff::plot1D(Form("hWlikePos_phi_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          WlikePos_phi,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,-TMath::Pi(),TMath::Pi() );
-                    common_stuff::plot1D(Form("hWlikePos_mt_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          WlikePos_mt,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 200,0,200 );
-                    common_stuff::plot1D(Form("hpfMET_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          pfmetWlikePos,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,0,200 );
-                    common_stuff::plot1D(Form("hpfMETphi_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          pfmetWlikePos_phi,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,-TMath::Pi(),TMath::Pi() );
-                    common_stuff::plot1D(Form("hMupt_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Pt()<200 ? muPosCorr.Pt() : 199.5,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 200,0,200 );
-                    common_stuff::plot1D(Form("hMueta_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Eta(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,-2.5,2.5 );
-                    common_stuff::plot1D(Form("hMuphi_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          muPosCorr.Eta(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,-TMath::Pi(),TMath::Pi() );
-                    common_stuff::plot1D(Form("hMuiso_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          MuPosRelIso,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 1000,0,10 );
-                    common_stuff::plot1D(Form("hMuMETpt_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          muNegCorr.Pt(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,0,200 );
-                    common_stuff::plot1D(Form("hMuMETeta_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          muNegCorr.Eta(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,-2.5,2.5 );
-                    common_stuff::plot1D(Form("hMuMETeta_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          muNegCorr.Phi(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,-TMath::Pi(),TMath::Pi() );
-                    common_stuff::plot1D(Form("hMuMETiso_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          MuNegRelIso,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,0,10 );
-                    common_stuff::plot1D(Form("hJetpt_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          MuNegRelIso,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100,0,50 );
-                    common_stuff::plot1D(Form("hJeteta_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          Jet_leading_eta,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100, -2.5,2.5 );
-                    common_stuff::plot1D(Form("hJeteta_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          Jet_leading_phi,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 100, -TMath::Pi(),TMath::Pi() );
-                    common_stuff::plot1D(Form("hu1_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          u1,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 360,-30,150 );
-                    common_stuff::plot1D(Form("hu1_Zpt_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          u1-Zcorr.Pt(),evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 360,-30,150 );
-                    common_stuff::plot1D(Form("hu2_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          u2,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_1d, 250,-50,50 );
-                    common_stuff::plot2D(Form("hu1vsZpt_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          Zcorr.Pt(),u1,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_2d, 100,0,25,360,-30,150 );
-                    common_stuff::plot2D(Form("hu1vsZpt_WlikePos_%s_eta%s_%d",WMass::nSigOrQCD_str[1].Data(),eta_str.Data(),jZmass_MeV),
-                                          Zcorr.Pt(),u2,evt_weight*TRG_TIGHT_ISO_muons_SF,
-                                          h_2d, 100,0,25,250,-50,50 );
-                    
+		    TLorentzVector metBLA;
+		    metBLA.SetPtEtaPhiM(pfmet_bla,0,pfmetphi_bla,0);
+
+		    fillControlPlots(Zcorr, metBLA, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, jZmass_MeV , eta_str, WMass::nSigOrQCD_str[1]);
+
                   } // end if for qcd enriched
                 } // end else for muon cuts (sig or qcd enriched)
               } // end if for good pair within acceptance cuts for both muons
