@@ -283,6 +283,28 @@ void common_stuff::makeRatioHisto1D(std::string title1, std::string title2, std:
 
 ///////////////////////////////////////////////////////////////
 
+void common_stuff::plotAndSaveHisto1D(TFile*f1, TString str1, TFile*f2, TString str2, int logx, int logy, int logz, int normalized){
+
+  TH1D*h1=(TH1D*)f1->Get(str1.Data());
+  h1->SetLineColor(2);
+  TH1D*h2=(TH1D*)f2->Get(str2.Data());
+
+  TCanvas *c1 = new TCanvas("c"+str1);
+  c1->SetLogx(logx);
+  c1->SetLogy(logy);
+  c1->SetLogz(logz);
+
+  if(normalized){
+    h1->DrawNormalized();
+    h2->DrawNormalized("same");
+  }else{
+    h1->Draw();
+    h2->Draw("same");
+  }
+  c1->SaveAs(str1+".png");
+
+}
+
 
 void common_stuff::plotAndSaveHisto1D_stack(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEWK, TFile*fMCTT, TFile*fMCQCD, TFile*fDATA, TString HistoName_st, int logx, int logy, int logz, int scaleMCtoDATA, TString title,double xmin, double xmax, int rebinfactor, int PullOrRatio){
 
