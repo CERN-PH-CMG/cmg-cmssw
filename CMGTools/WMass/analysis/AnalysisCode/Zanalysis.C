@@ -805,45 +805,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   else tag_y = "_ignore";
                   
                   string tag_VTX="";
-                  if(nvtx==1 || nvtx==0) tag_VTX="_VTX1";
-                  if(nvtx==2) tag_VTX="_VTX2";
-                  if(nvtx==3) tag_VTX="_VTX3";
-                  if(nvtx==4) tag_VTX="_VTX4";
-                  if(nvtx==5) tag_VTX="_VTX5";
-                  if(nvtx==6) tag_VTX="_VTX6";
-                  if(nvtx==7) tag_VTX="_VTX7";
-                  if(nvtx==8) tag_VTX="_VTX8";
-                  if(nvtx==9) tag_VTX="_VTX9";
-                  if(nvtx==10) tag_VTX="_VTX10";
-                  if(nvtx==11) tag_VTX="_VTX11";
-                  if(nvtx==12) tag_VTX="_VTX12";
-                  if(nvtx==13) tag_VTX="_VTX13";
-                  if(nvtx==14) tag_VTX="_VTX14";
-                  if(nvtx==15) tag_VTX="_VTX15";
-                  if(nvtx==16) tag_VTX="_VTX16";
-                  if(nvtx==17) tag_VTX="_VTX17";
-                  if(nvtx==18) tag_VTX="_VTX18";
-                  if(nvtx==19) tag_VTX="_VTX19";
-                  if(nvtx>=20) tag_VTX="_VTX20";
-		  /*
-		  // for 8 TeV
-                  if(nvtx==20) tag_VTX="_VTX20";
-                  if(nvtx==21) tag_VTX="_VTX21";
-                  if(nvtx==22) tag_VTX="_VTX22";
-                  if(nvtx==23) tag_VTX="_VTX23";
-                  if(nvtx==24) tag_VTX="_VTX24";
-                  if(nvtx==25) tag_VTX="_VTX25";
-                  if(nvtx==26) tag_VTX="_VTX26";
-                  if(nvtx==27) tag_VTX="_VTX27";
-                  if(nvtx==28) tag_VTX="_VTX28";
-                  if(nvtx==29) tag_VTX="_VTX29";
-                  if(nvtx==30) tag_VTX="_VTX30";
-                  if(nvtx==31) tag_VTX="_VTX31";
-                  if(nvtx==32) tag_VTX="_VTX32";
-                  if(nvtx==33) tag_VTX="_VTX33";
-                  if(nvtx==34) tag_VTX="_VTX34";
-                  if(nvtx>=35) tag_VTX="_VTX35";
-		  */
+                  if(nvtx==0) tag_VTX="_VTX1";
+                  int n_vtx_max = 20; // 7 TeV
+                  // int n_vtx_max = 35; // 8 TeV
+                  else if(nvtx>=1 && nvtx<=n_vtx_max) tag_VTX=Form("_VTX%d",nvtx);
+                  else if(nvtx>n_vtx_max) tag_VTX=Form("_VTX%d",n_vtx_max);
                               
                   TLorentzVector VisPt;
                   VisPt.SetPtEtaPhiM(Zcorr.Pt(),0,Zcorr.Phi(),0);
@@ -966,8 +932,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                         // control plots for different etas but only for central W mass
                         //------------------------------------------------------------------------------------------------ 
                         if(TMath::Abs(jZmass_MeV - WMass::ZMassCentral_MeV) > 1)  continue;
-			TLorentzVector metBLA;
-			metBLA.SetPtEtaPhiM(pfmet_bla,0,pfmetphi_bla,0);
+                        TLorentzVector metBLA;
+                        metBLA.SetPtEtaPhiM(pfmet_bla,0,pfmetphi_bla,0);
 
                         if(controlplots && m==0) fillControlPlots(Zcorr, metBLA, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, jZmass_MeV , eta_str, WMass::nSigOrQCD_str[0]);
 
@@ -998,10 +964,10 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                     //------------------------------------------------------
                     // QCD distributions for central W mass
                     //------------------------------------------------------
-		    TLorentzVector metBLA;
-		    metBLA.SetPtEtaPhiM(pfmet_bla,0,pfmetphi_bla,0);
+                    TLorentzVector metBLA;
+                    metBLA.SetPtEtaPhiM(pfmet_bla,0,pfmetphi_bla,0);
 
-		    fillControlPlots(Zcorr, metBLA, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, jZmass_MeV , eta_str, WMass::nSigOrQCD_str[1]);
+                    fillControlPlots(Zcorr, metBLA, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, jZmass_MeV , eta_str, WMass::nSigOrQCD_str[1]);
 
                   } // end if for qcd enriched
                 } // end else for muon cuts (sig or qcd enriched)
