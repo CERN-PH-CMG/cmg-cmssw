@@ -75,3 +75,17 @@ diTauFullSelSkimSequence = cms.Sequence(
     diTauFullSelCount
     )
 
+# mu-mu
+diMuPreSelCount = cmgDiTauCount.clone( minNumber = 1,
+                                        src = 'cmgDiMuSVFit')
+
+diMuFullSelCount = diMuPreSelCount.clone( src = 'cmgDiMuCorSVFitFullSel')
+
+
+diMuPreSelSkimSequence = cms.Sequence(
+    diMuPreSelCount 
+    )
+
+diMuFullSelSkimSequence = cms.Sequence(
+    diMuFullSelCount
+    )
