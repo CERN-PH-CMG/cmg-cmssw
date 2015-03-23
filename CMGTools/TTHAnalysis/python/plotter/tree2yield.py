@@ -315,6 +315,10 @@ class TreeToYield:
                 ret.SetBinContent(n,ret.GetBinContent(n+1)+ret.GetBinContent(n))
                 ret.SetBinError(1,hypot(ret.GetBinError(0),ret.GetBinError(1)))
                 ret.SetBinError(n,hypot(ret.GetBinError(n+1),ret.GetBinError(n)))
+                ret.SetBinContent(0,0)
+                ret.SetBinContent(n+1,0)
+                ret.SetBinContent(0,0)
+                ret.SetBinContent(n+1,0)
             rebin = plotspec.getOption('rebinFactor',0)
             if plotspec.bins[0] != "[" and rebin > 1 and n > 5:
                 while n % rebin != 0: rebin -= 1
