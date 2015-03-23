@@ -3,9 +3,10 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.H2TauTau.objects.tauMuObjectsMVAMET_cff import tauMuSequence
 from CMGTools.H2TauTau.objects.tauEleObjectsMVAMET_cff import tauEleSequence
 from CMGTools.H2TauTau.objects.diTauObjectsMVAMET_cff import diTauSequence
+from CMGTools.H2TauTau.objects.diMuObjectsMVAMET_cff import diMuSequence
 from CMGTools.H2TauTau.objects.muEleObjectsMVAMET_cff import muEleSequence
 
-from CMGTools.H2TauTau.skims.skim_cff import tauMuFullSelSkimSequence, tauEleFullSelSkimSequence, diTauFullSelSkimSequence, muEleFullSelSkimSequence
+from CMGTools.H2TauTau.skims.skim_cff import tauMuFullSelSkimSequence, tauEleFullSelSkimSequence, diTauFullSelSkimSequence, muEleFullSelSkimSequence, diMuFullSelSkimSequence
 
 
 # Need to explicitly import all modules in all sequences for cms.load(..)
@@ -21,7 +22,9 @@ from CMGTools.H2TauTau.objects.diTauObjectsMVAMET_cff import mvaMETDiTau, cmgDiT
 
 from CMGTools.H2TauTau.objects.muEleObjectsMVAMET_cff import mvaMETMuEle, cmgMuEle, cmgMuEleCor, cmgMuEleTauPtSel, cmgMuEleCorSVFitPreSel, cmgMuEleCorSVFitFullSel, muEleMVAMetSequence, muonPreSelectionMuEle, electronPreSelectionMuEle
 
-from CMGTools.H2TauTau.skims.skim_cff import tauMuFullSelCount, tauEleFullSelCount, diTauFullSelCount, muEleFullSelCount
+from CMGTools.H2TauTau.objects.diMuObjectsMVAMET_cff import mvaMETDiMu, cmgDiMu, cmgDiMuCor, cmgDiMuTauPtSel, cmgDiMuCorSVFitPreSel, cmgDiMuCorSVFitFullSel, diMuMVAMetSequence, muonPreSelectionDiMu
+
+from CMGTools.H2TauTau.skims.skim_cff import tauMuFullSelCount, tauEleFullSelCount, diTauFullSelCount, muEleFullSelCount, diMuFullSelCount
 
 
 # MVA MET Inputs
@@ -48,6 +51,13 @@ diTauPath = cms.Path(
     # metRegressionSequence + 
     diTauSequence +
     diTauFullSelSkimSequence     
+    )
+
+# tau-tau ---
+diMuPath = cms.Path(
+    # metRegressionSequence + 
+    diMuSequence +
+    diMuFullSelSkimSequence     
     )
 
 # mu-ele ---
