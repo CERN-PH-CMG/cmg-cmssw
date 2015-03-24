@@ -110,13 +110,13 @@ lepAna = cfg.Analyzer(
     doSegmentBasedMuonCleaning=True,
     notCleaningElectrons=True, # no deltaR(ele,mu) cleaning at this step
     # inclusive very loose muon selection
-    inclusive_muon_id  = "",
+    inclusive_muon_id  = "POG_Global_OR_TMArbitrated",
     inclusive_muon_pt  = 5,
     inclusive_muon_eta = 2.4,
     inclusive_muon_dxy = 0.5,
     inclusive_muon_dz  = 1.0,
     # loose muon selection
-    loose_muon_id     = "",
+    loose_muon_id     = "POG_Global_OR_TMArbitrated",
     loose_muon_pt     = 5,
     loose_muon_eta    = 2.4,
     loose_muon_dxy    = 0.5,
@@ -140,10 +140,11 @@ lepAna = cfg.Analyzer(
     # muon isolation correction method (can be "rhoArea" or "deltaBeta")
     mu_isoCorr = "deltaBeta" ,
     mu_effectiveAreas = "Phys14_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1')
+    mu_tightId = "POG_ID_Loose",
     # electron isolation correction method (can be "rhoArea" or "deltaBeta")
     ele_isoCorr = "rhoArea" ,
     el_effectiveAreas = "Phys14_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1')
-    ele_tightId = "Cuts_2012" ,
+    ele_tightId = "POG_MVA_ID_Run2_NonTrig_HZZ",
     # Mini-isolation, with pT dependent cone: will fill in the miniRelIso, miniRelIsoCharged, miniRelIsoNeutral variables of the leptons (see https://indico.cern.ch/event/368826/ )
     doMiniIsolation = False, # off by default since it requires access to all PFCandidates 
     packedCandidates = 'packedPFCandidates',
@@ -166,9 +167,10 @@ jetAna = cfg.Analyzer(
     jetEtaCentral = 4.7,
     jetLepDR = 0.4,
     jetLepArbitration = (lambda jet,lepton : lepton), # you can decide which to keep in case of overlaps; e.g. if the jet is b-tagged you might want to keep the jet
-    minLepPt = 10,
+    minLepPt = 0,
+    lepSelCut = lambda lepton : lepton.sip3D() < 4 and lepton.tightId() and lepton.relIso04 < (0.4 if abs(lepton.pdgId())==13 else 0.5),
     relaxJetId = False,  
-    doPuId = False, # Not commissioned in 7.0.X
+    doPuId = True,
     recalibrateJets = False, # True, False, 'MC', 'Data'
     mcGT     = "PHYS14_25_V2",
     jecPath = "%s/src/CMGTools/RootTools/data/jec/" % os.environ['CMSSW_BASE'],
