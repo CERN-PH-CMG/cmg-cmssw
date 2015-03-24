@@ -63,6 +63,8 @@ class FourLeptonAnalyzer( FourLeptonAnalyzerBase ):
         #smart cut
         passed=cutFlow.applyCut(self.stupidCut,'Smart cut',1,'fourLeptonsFinal')
 
+        #compute MELA
+        passed=cutFlow.applyCut(self.fillMEs,'Fill MEs',1,'fourLeptonsWithME')
 
         #Save the best
         if len(subevent.fourLeptonsFinal)>0:

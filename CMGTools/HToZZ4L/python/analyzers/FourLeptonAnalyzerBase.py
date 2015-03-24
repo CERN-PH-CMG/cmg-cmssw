@@ -10,6 +10,7 @@ from CMGTools.HToZZ4L.tools.CutFlowMaker  import CutFlowMaker
 
 import os
 import itertools
+import ROOT
 
 class EventBox(object):
     def __init__(self):
@@ -42,6 +43,7 @@ class EventBox(object):
 class FourLeptonAnalyzerBase( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(FourLeptonAnalyzerBase,self).__init__(cfg_ana,cfg_comp,looperName)
+        self._MEMs = ROOT.MEMCalculatorsWrapper(13.0)
 
     def declareHandles(self):
         super(FourLeptonAnalyzerBase, self).declareHandles()
@@ -258,5 +260,12 @@ class FourLeptonAnalyzerBase( Analyzer ):
             del g.nearestLepton
             
                 
-
+    def fillMEs(self,quad):
+        legs = [ quad.leg1.leg1, quad.leg1.leg2, quad.leg2.leg1, quad.leg2.leg2 ]
+        lvs  = [ ROOT.TLorentzVector(l.px(),l.py(),l.pz(),l.energy()) for l in legs ]
+        ids  = [ l.pdgId() for l in legs ]
+        quad.melaAngles = self._MEMs.computeAngles(lvs[0],ids[0], lvs[1],ids[1], lvs[2],ids[2], lvs[3],ids[3])
+        self._MEMs.computeAll(lvs[0],ids[0], lvs[1],ids[1], lvs[2],ids[2], lvs[3],ids[3])
+        quad.KD = self._MEMs.getKD()
+        return True
 
