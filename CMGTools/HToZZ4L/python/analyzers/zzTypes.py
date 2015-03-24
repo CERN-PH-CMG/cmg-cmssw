@@ -21,6 +21,12 @@ ZZType = NTupleObjectType("ZZType", baseObjectTypes=[fourVectorType], variables 
     NTupleSubObject("z1_l2",  lambda x : x.leg1.leg2,leptonTypeHZZ),
     NTupleSubObject("z2_l1",  lambda x : x.leg2.leg1,leptonTypeHZZ),
     NTupleSubObject("z2_l2",  lambda x : x.leg2.leg2,leptonTypeHZZ),
+    NTupleVariable("mll_12",   lambda x : (x.leg1.leg1.p4()+x.leg1.leg2.p4()).M()),
+    NTupleVariable("mll_13",   lambda x : (x.leg1.leg1.p4()+x.leg2.leg1.p4()).M()),
+    NTupleVariable("mll_14",   lambda x : (x.leg1.leg1.p4()+x.leg2.leg2.p4()).M()),
+    NTupleVariable("mll_23",   lambda x : (x.leg1.leg2.p4()+x.leg2.leg1.p4()).M()),
+    NTupleVariable("mll_24",   lambda x : (x.leg1.leg2.p4()+x.leg2.leg2.p4()).M()),
+    NTupleVariable("mll_34",   lambda x : (x.leg2.leg1.p4()+x.leg2.leg2.p4()).M()),
     # -------
     NTupleVariable("KD",   lambda x : getattr(x, 'KD', -1.0), help="MELA KD"),
     NTupleVariable("MELAcosthetastar", lambda x : x.melaAngles.costhetastar if hasattr(x,'melaAngles') else -99.0, help="MELA angle costhetastar"),
