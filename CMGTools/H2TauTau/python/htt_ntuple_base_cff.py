@@ -69,7 +69,6 @@ jetAna = cfg.Analyzer(
     # jetCol = 'patJetsAK4PF', # <- These are plain PF jets
     jetPt=20.,
     jetEta=4.7,
-    btagSFseed=123456,
     relaxJetId=False,
     jerCorr=False,
     #jesCorr = 1.,
@@ -79,12 +78,7 @@ jetAna = cfg.Analyzer(
 vbfAna = cfg.Analyzer(
     VBFSimpleAnalyzer,
     name='VBFSimpleAnalyzer',
-    jetPt=30.,
-    looseJetPt=20.,
-    jetEta=4.7,
     cjvPtCut=30.,
-    btagSFseed=123456,
-    relaxJetId=False,
     Mjj=500.,
     deltaEta=3.5
 )

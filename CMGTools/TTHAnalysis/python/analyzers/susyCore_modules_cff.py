@@ -272,6 +272,7 @@ jetAna = cfg.Analyzer(
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
     doQG = False,
+    cleanGenJetsFromPhoton = False
     )
 
 ## Fat Jets Analyzer (generic)
@@ -281,6 +282,7 @@ ttHFatJetAna = cfg.Analyzer(
     jetCol = 'slimmedJetsAK8',
     jetPt = 100.,
     jetEta = 2.4,
+    jetLepDR = 0.4,
     # v--- not implemented for AK8
     #jetLepDR = 0.4,
     #minLepPt = 10,
@@ -322,6 +324,8 @@ from CMGTools.TTHAnalysis.analyzers.ttHCoreEventAnalyzer import ttHCoreEventAnal
 ttHCoreEventAna = cfg.Analyzer(
     ttHCoreEventAnalyzer, name='ttHCoreEventAnalyzer',
     maxLeps = 4, ## leptons to consider
+    mhtForBiasedDPhi = "mhtJet40jvec",
+    jetForBiasedDPhi = "cleanJets",
     )
 
 ## Jet-MET based Skim (generic, but requirements depend on the final state)
