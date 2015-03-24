@@ -11,6 +11,7 @@ from CMGTools.HToZZ4L.analyzers.FourLeptonEventSkimmer import *
 from CMGTools.HToZZ4L.analyzers.FSRPhotonMaker import *
 from CMGTools.HToZZ4L.analyzers.GenFSRAnalyzer import *
 from CMGTools.HToZZ4L.analyzers.fourLeptonTree import *
+from CMGTools.HToZZ4L.samples.samples_13TeV_PHYS14 import triggers_mumu_iso,triggers_ee,triggers_3e,triggers_mue
 
 import os
 
@@ -65,8 +66,10 @@ triggerFlagsAna = cfg.Analyzer(
     TriggerBitAnalyzer, name="TriggerFlags",
     processName = 'HLT',
     triggerBits = {
-        # "<name>" : [ 'HLT_<Something>_v*', 'HLT_<SomethingElse>_v*' ] 
-    }
+        'DoubleMu' : triggers_mumu_iso,
+        'DoubleEl' : triggers_ee,
+        'TripleEl' : triggers_3e,                                                                                                                                               'MuEG'     : triggers_mue,
+        }
     )
 
 
@@ -105,6 +108,7 @@ lepAna = cfg.Analyzer(
     doRochesterCorrections=False,
     doElectronScaleCorrections=False, # "embedded" in 5.18 for regression
     doSegmentBasedMuonCleaning=True,
+    notCleaningElectrons=True, # no deltaR(ele,mu) cleaning at this step
     # inclusive very loose muon selection
     inclusive_muon_id  = "",
     inclusive_muon_pt  = 5,
