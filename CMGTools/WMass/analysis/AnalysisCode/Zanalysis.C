@@ -432,20 +432,16 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         double weight_i=1,bweight_i=1,lheweight_i=1;
         if(useGenVar){
           if(!contains_LHE_weights){
-          double shat=0,gamma=2.141 /*HARD CODED TO PDG VALUE*/,mw0=0,mw_i=0;
-          shat=ZGen_mass*ZGen_mass;
-          // mw0=WMass::ZMassCentral_MeV;
-          mw0=gen_mass_value_MeV/1e3;
-          mw_i=iZmass_GeV;
-          // ((shat - mw0^2)^2 + gamma^2 mw0^2) / ((shat - mw_i^2)^2 + gamma^2 mw_i^2)
-          weight_i=(TMath::Power(shat - mw0*mw0,2) + TMath::Power(gamma*mw0,2)) / (TMath::Power(shat - mw_i*mw_i,2) + TMath::Power(gamma*mw_i,2));
-          bweight_i = weight_i;
-          // cout << "ZGen_mass = " << ZGen_mass << " mw0= " << mw0 << " mw_i= " << mw_i << " weight_i= " << weight_i << endl;
+
+	    double gamma=2.141; /*HARD CODED TO PDG VALUE*/
+	    weight_i = common_stuff::BWweight(ZGen_mass, iZmass_GeV, gen_mass_value_MeV, gamma);
+	    bweight_i = weight_i;
+
           }else{
-          // cout << "LHE weight= " << (LHE_weight [ (WMass::LHE_mass_central_index + ( -WMass::WMassNSteps + j)*WMass::WMassSkipNSteps) ]) << " weight_i= " << weight_i << endl;
-          // common_stuff::plot2D(Form("hCorrMassweights_eta%s_%d",eta_str.Data(),jZmass_MeV),
-              // weight_i,LHE_weight [ (WMass::LHE_mass_central_index + ( -WMass::WMassNSteps + j)*WMass::WMassSkipNSteps) ], 1, 
-              // h_2d, 200,0.9,1.1,200,0.9,1.1 );
+	    // cout << "LHE weight= " << (LHE_weight [ (WMass::LHE_mass_central_index + ( -WMass::WMassNSteps + j)*WMass::WMassSkipNSteps) ]) << " weight_i= " << weight_i << endl;
+	    // common_stuff::plot2D(Form("hCorrMassweights_eta%s_%d",eta_str.Data(),jZmass_MeV),
+	    // weight_i,LHE_weight [ (WMass::LHE_mass_central_index + ( -WMass::WMassNSteps + j)*WMass::WMassSkipNSteps) ], 1,
+	    // h_2d, 200,0.9,1.1,200,0.9,1.1 );
 
             weight_i = LHE_weight [ (WMass::LHE_mass_central_index + ( -WMass::WMassNSteps + j)*WMass::WMassSkipNSteps) ];
             lheweight_i = weight_i;
@@ -805,11 +801,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   else tag_y = "_ignore";
                   
                   string tag_VTX="";
-                  if(nvtx==0) tag_VTX="_VTX1";
                   int n_vtx_max = 20; // 7 TeV
                   // int n_vtx_max = 35; // 8 TeV
-                  else if(nvtx>=1 && nvtx<=n_vtx_max) tag_VTX=Form("_VTX%d",nvtx);
-                  else if(nvtx>n_vtx_max) tag_VTX=Form("_VTX%d",n_vtx_max);
+                  if(nvtx==0) tag_VTX="_VTX1";
+		  else if(nvtx>=1 && nvtx<=n_vtx_max) tag_VTX=Form("_VTX%d",nvtx);
+		  else if(nvtx>n_vtx_max) tag_VTX=Form("_VTX%d",n_vtx_max);
                               
                   TLorentzVector VisPt;
                   VisPt.SetPtEtaPhiM(Zcorr.Pt(),0,Zcorr.Phi(),0);

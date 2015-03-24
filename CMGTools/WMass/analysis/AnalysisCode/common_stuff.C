@@ -10,6 +10,27 @@
 
 ///////////////////////////////////////////////////////////////
 
+double common_stuff::BWweight(double VGen_mass, double iVmass_GeV, double gen_mass_value_MeV, double gamma) {
+
+  //  static const int ZMassCentral_MeV = 91188;
+  //  static const int WMassCentral_MeV = 80398;
+  //  -->Z --> gamma=2.141;  /*HARD CODED TO PDG VALUE*/
+  //  -->W --> gamma=2.085;  /*HARD CODED TO PDG VALUE*/
+    
+  double shat=VGen_mass*VGen_mass;
+  double mw0=gen_mass_value_MeV/1e3;
+  double mw_i=iVmass_GeV;
+
+  // ((shat - mw0^2)^2 + gamma^2 mw0^2) / ((shat - mw_i^2)^2 + gamma^2 mw_i^2)
+  double weight_i=(TMath::Power(shat - mw0*mw0,2) + TMath::Power(gamma*mw0,2)) / (TMath::Power(shat - mw_i*mw_i,2) + TMath::Power(gamma*mw_i,2));
+  
+  return weight_i;
+  
+}
+
+
+///////////////////////////////////////////////////////////////
+
 float common_stuff::deltaPhi( float phi1 , float phi2 ) {
   float dphi = fabs( phi1 - phi2 );
   if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;

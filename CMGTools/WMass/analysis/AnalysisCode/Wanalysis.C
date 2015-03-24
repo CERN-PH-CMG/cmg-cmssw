@@ -8,7 +8,7 @@
 #define Wanalysis_cxx
 #include "Wanalysis.h"
 #include "../includes/common.h"
-#include "common_stuff.h"
+//#include "common_stuff.h"
 #include "RecoilCorrector.h"
 // #include "rochcor_42X.h"
 #include "rochcor_44X_v3.h"
@@ -316,14 +316,10 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         double weight_i=1;
         if(useGenVar){
           if(!contains_LHE_weights){
-            double shat=0,gamma=2.085 /*HARD CODED TO PDG VALUE*/,mw0=0,mw_i=0;
-            shat=WGen_m*WGen_m;
-            // mw0=WMass::WMassCentral_MeV/1e3;
-            mw0=gen_mass_value_MeV/1e3;
-            mw_i=iWmass_GeV;
-            // ((shat - mw0^2)^2 + gamma^2 mw0^2) / ((shat - mw_i^2)^2 + gamma^2 mw_i^2)
-            weight_i=(TMath::Power(shat - mw0*mw0,2) + TMath::Power(gamma*mw0,2)) / (TMath::Power(shat - mw_i*mw_i,2) + TMath::Power(gamma*mw_i,2));
-            // cout << "WGen_m = " << WGen_m << " mw0= " << mw0 << " mw_i= " << mw_i << " weight_i= " << weight_i << endl;
+
+            double gamma=2.085; /*HARD CODED TO PDG VALUE*/
+            weight_i = common_stuff::BWweight(WGen_m, iWmass_GeV, gen_mass_value_MeV, gamma);
+
           }else{
             weight_i = LHE_weight [ WMass::LHE_mass_central_index - (WMass::WMassNSteps + j)*WMass::WMassSkipNSteps ];
             // cout << "j= " << j << " index= " << (WMass::LHE_mass_central_index + (-WMass::WMassNSteps + j)*WMass::WMassSkipNSteps) << endl;
@@ -428,7 +424,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               }
                             
               if(useRecoilCorr==1 && use_PForNoPUorTKmet<3 && (sampleName.Contains("WJets") && !sampleName.Contains("Fake"))){ // use Rochester Recoil corrections if required
-                
+
                 if(Mu_charge>0){ // W plus corrections
                   correctorRecoil_W_Pos_->CorrectType2( pfmet_bla, pfmetphi_bla,
                                     WGen_pt, WGen_phi,

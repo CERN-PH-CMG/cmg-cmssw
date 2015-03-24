@@ -14,6 +14,10 @@
 #include <iostream>
 #include <TSystem.h>
 
+//#include "../includes/common.h"
+#include "common_stuff.h"
+
+
 using namespace std;
 
 class Wanalysis {
