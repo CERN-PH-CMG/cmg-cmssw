@@ -39,6 +39,11 @@ def testJson(ev):
     except KeyError:
         return False
 
+def findLepIndex(leps,pt,eta):
+    for il,l in enumerate(leps):
+        if abs(l.pt-pt)<1e-5 and abs(l.eta-eta)<1e-5:
+            return il
+    return -1
 class BaseDumper(Module):
     def __init__(self,name,options=None,booker=None):
         Module.__init__(self,name,booker)
@@ -61,8 +66,8 @@ class BaseDumper(Module):
         jets = Collection(ev,"Jet")
         print "run %6d lumi %4d event %11d " % (ev.run, ev.lumi, ev.evt)
         for i,l in enumerate(leps):
-            print "    lepton %d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f   tightId %d relIso %5.3f sip3d %5.2f dxy %+4.3f dz %+4.3f " % (
-                    i+1, l.pdgId,l.pt,l.eta,l.phi, l.tightId, l.relIso04, l.sip3d, l.dxy, l.dz),
+            print "    lepton %d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f   tightId %d relIso %5.3f sip3d %5.2f dxy %+4.3f dz %+4.3f bdt %+5.3f lostHits %1d" % (
+                    i+1, l.pdgId,l.pt,l.eta,l.phi, l.tightId, l.relIso04, l.sip3d, l.dxy, l.dz, l.mvaIdPhys14, l.lostHits),
             if self.options.ismc:
                 print "   mcMatch id %+3d, any %+2d" % (l.mcMatchId, l.mcMatchAny),
             print ""
@@ -71,7 +76,20 @@ class BaseDumper(Module):
                 print "    jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f mcMatch %2d mcFlavour %2d mcPt %5.1f" % (i, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)), j.mcMatchId, j.mcFlavour, j.mcPt)
             else:
                 print "    jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f" % (i+1, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)))
- 
+
+        for type in "zz", "zz2P2F", "zz3P1F", "zzSS":
+            zzs = Collection(ev,type)
+            if len(zzs):
+                print "    four-lepton candidates of type %s" % type
+            for izz,zz in enumerate(zzs):
+                ils = [ findLepIndex(leps, zz.z1_l1_pt, zz.z1_l1_eta),
+                        findLepIndex(leps, zz.z1_l2_pt, zz.z1_l2_eta),
+                        findLepIndex(leps, zz.z2_l1_pt, zz.z2_l1_eta),
+                        findLepIndex(leps, zz.z2_l2_pt, zz.z2_l2_eta) ]
+                print "      candidate %1d: leptons %d %d %d %d, mass %6.3f mz1 %6.3f mz2 %6.3f  " % (
+                        izz, ils[0]+1,ils[1]+1,ils[2]+1,ils[3]+1, zz.mass, zz.z1_mass, zz.z2_mass, )
+                print "                   m12 %6.3f  m13 %6.3f  m14 %6.3f  m23 %6.3f  m24 %6.3f  m34 %6.3f" % (
+                         zz.mll_12, zz.mll_13, zz.mll_14, zz.mll_23, zz.mll_24, zz.mll_34)
         print "    met %6.2f (phi %+4.2f)" % (ev.met_pt, ev.met_phi)
         if self.options.ismc:
             print "    vertices %d" % (ev.nVert)
