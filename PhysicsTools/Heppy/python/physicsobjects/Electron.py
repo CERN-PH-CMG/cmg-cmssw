@@ -30,8 +30,8 @@ class Electron( Lepton ):
         elif id == "POG_MVA_ID_Trig_full5x5":     return self.mvaIDTight(full5x5=True)
         elif id == "POG_MVA_ID_Run2_NonTrig_Loose":    return self.mvaIDRun2("NonTrigPhys14","Loose")
         elif id == "POG_MVA_ID_Run2_NonTrig_Tight":    return self.mvaIDRun2("NonTrigPhys14","Tight")
-        elif id.startswith("POG_Cuts_ID_"): 
-                return self.cutBasedId(id.replace("POG_Cuts_ID_","POG_")) 
+        elif id.startswith("POG_Cuts_ID_"):
+                return self.cutBasedId(id.replace("POG_Cuts_ID_","POG_"))
         for ID in self.electronIDs():
             if ID.first == id:
                 return ID.second
@@ -141,7 +141,7 @@ class Electron( Lepton ):
         return self._mvaTrigNoIPV0[full5x5]
 
     def mvaRun2( self, name, debug = False ):
-        if name not in self._mvaRun2: 
+        if name not in self._mvaRun2:
             if name not in ElectronMVAID_ByName: raise RuntimeError, "Unknown electron run2 mva id %s (known ones are: %s)\n" % (name, ElectronMVAID_ByName.keys())
             if self.associatedVertex == None: raise RuntimeError, "You need to set electron.associatedVertex before calling any MVA"
             if self.rho              == None: raise RuntimeError, "You need to set electron.rho before calling any MVA"
@@ -180,9 +180,9 @@ class Electron( Lepton ):
                 elif wp=="Tight":
                     if   (eta < 0.8)  : return self.mvaRun2(name) > 0.73;
                     elif (eta < 1.479): return self.mvaRun2(name) > 0.57;
-                    else              : return self.mvaRun2(name) > 0.05;  
+                    else              : return self.mvaRun2(name) > 0.05;
                 else: raise RuntimeError, "Ele MVA ID Working point not found"
-            else: raise RuntimeError, "Ele MVA ID type not found"   
+            else: raise RuntimeError, "Ele MVA ID type not found"
 
 
     def mvaIDZZ(self):
