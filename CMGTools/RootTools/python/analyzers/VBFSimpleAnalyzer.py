@@ -18,7 +18,6 @@ class VBFSimpleAnalyzer(Analyzer):
         cjvPtCut = 30.,
     )
 
-
     """
 
     def __init__(self, cfg_ana, cfg_comp, looperName):
@@ -39,22 +38,21 @@ class VBFSimpleAnalyzer(Analyzer):
 
         self.counters.counter('VBF').inc('all events')
 
-        if len(event.cleanJets)<2:
+        if len(event.cleanJets) < 2:
             return True
 
-        event.vbf = VBF( event.cleanJets, event.diLepton,
-                         None, self.cfg_ana.cjvPtCut )
+        event.vbf = VBF(event.cleanJets, event.diLepton, None, self.cfg_ana.cjvPtCut)
         if event.vbf.mjj > self.cfg_ana.Mjj:
-            self.counters.counter('VBF').inc('M_jj > {cut:3.1f}'.format(cut=self.cfg_ana.Mjj) )
+            self.counters.counter('VBF').inc('M_jj > {cut:3.1f}'.format(cut=self.cfg_ana.Mjj))
         else:
             return True 
             
         if abs(event.vbf.deta) > self.cfg_ana.deltaEta:
-            self.counters.counter('VBF').inc('delta Eta > {cut:3.1f}'.format(cut=self.cfg_ana.deltaEta) )
+            self.counters.counter('VBF').inc('delta Eta > {cut:3.1f}'.format(cut=self.cfg_ana.deltaEta))
         else:
             return True 
         
-        if len(event.vbf.centralJets)==0:
+        if len(event.vbf.centralJets) == 0:
             self.counters.counter('VBF').inc('no central jets')
         else:
             return True
