@@ -61,13 +61,14 @@ class BaseDumper(Module):
         jets = Collection(ev,"Jet")
         print "run %6d lumi %4d event %11d " % (ev.run, ev.lumi, ev.evt)
         for i,l in enumerate(leps):
-            print "    lepton %d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f    relIso %5.3f sip3d %5.2f dxy %+4.3f dz %+4.3f " % (
-                    i+1, l.pdgId,l.pt,l.eta,l.phi, l.relIso04, l.sip3d, l.dxy, l.dz),
+            print "    lepton %d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f   tightId %d relIso %5.3f sip3d %5.2f dxy %+4.3f dz %+4.3f " % (
+                    i+1, l.pdgId,l.pt,l.eta,l.phi, l.tightId, l.relIso04, l.sip3d, l.dxy, l.dz),
             if self.options.ismc:
-                print "   mcMatch id %+3d, any %+2d" % (l.mcMatchId, l.mcMatchAny)
+                print "   mcMatch id %+3d, any %+2d" % (l.mcMatchId, l.mcMatchAny),
+            print ""
         for i,j in enumerate(jets):
             if self.options.ismc:
-                print "    jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f mcMatch %2d mcFlavour %d mcPt %5.1f" % (i, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)), j.mcMatchId, j.mcFlavour, j.mcPt)
+                print "    jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f mcMatch %2d mcFlavour %2d mcPt %5.1f" % (i, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)), j.mcMatchId, j.mcFlavour, j.mcPt)
             else:
                 print "    jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f" % (i+1, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)))
  
