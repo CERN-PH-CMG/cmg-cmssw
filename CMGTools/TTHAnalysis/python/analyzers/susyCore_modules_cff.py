@@ -298,6 +298,7 @@ ttHFatJetAna = cfg.Analyzer(
 from CMGTools.TTHAnalysis.analyzers.ttHSVAnalyzer import ttHSVAnalyzer
 ttHSVAna = cfg.Analyzer(
     ttHSVAnalyzer, name="ttHSVAnalyzer",
+    do_mc_match = True,
 )
 
 # Secondary vertex analyzer
