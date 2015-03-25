@@ -95,7 +95,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
         return self.diLeptonMass(fourLepton.leg1) and self.diLeptonMass(fourLepton.leg2)
 
     def fourLeptonMassZ1(self,fourLepton):
-        return fourLepton.leg1.M()>40.0
+        return fourLepton.leg1.M()>40.0 and fourLepton.leg1.M()<120. # usually implied in fourLeptonMassZ1Z2 but sometimes needed independently
 
     def stupidCut(self,fourLepton):
         #if not 4mu/4e  pass 
@@ -103,10 +103,23 @@ class FourLeptonAnalyzerBase( Analyzer ):
             return True
 
         #find Alternative pairing.Do not forget FSR
-        alternate =DiObjectPair(fourLepton.leg1.leg1, fourLepton.leg2.leg2,fourLepton.leg1.leg2,fourLepton.leg2.leg1)
-        if (abs(alternate.leg1.M()-91.118)<  abs(fourLepton.leg1.M()-91.118)) and  alternate.leg2.M()<12.:
-            return False
-        return True
+        leptons  = [ fourLepton.leg1.leg1, fourLepton.leg1.leg2, fourLepton.leg2.leg1, fourLepton.leg2.leg2 ]
+        quads = []
+        for quad in self.findOSSFQuads(leptons, fourLepton.allPhotonsForFSR):
+            # skip self
+            if fourLepton.leg1.leg1 == quad.leg1.leg1 and fourLepton.leg1.leg2 == quad.leg1.leg2 and fourLepton.leg2.leg1 == quad.leg2.leg1:
+                continue
+            # skip those that fail cuts except Z2 mass
+            if not self.fourLeptonIsolation(quad) or not self.fourLeptonMassZ1(quad) or not self.qcdSuppression(quad):
+                continue
+            #print "Found alternate, mZ1 %.3f, mZ2 %.3f: %s" % (quad.leg1.M(),quad.leg2.M(),quad)
+            quads.append(quad)
+        if len(quads) == 0:
+            #print "No alternates to ",fourLepton
+            return True
+        bestByZ1 = min(quads, key = lambda quad : abs(quad.leg1.M()-91.118))
+        #print "Best alternate, mZ1 %.3f, mZ2 %.3f: %s" % (bestByZ1.leg1.M(),bestByZ1.leg2.M(),bestByZ1)
+        return bestByZ1.leg2.M() > 12.
 
 
 
@@ -185,7 +198,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
     def attachFSR(self,quad,photons):
         #first attach photons to the closest leptons
-        attachData={}
+        quad.allPhotonsForFSR = photons # record this for later
         
         legs=[quad.leg1.leg1,quad.leg1.leg2,quad.leg2.leg1,quad.leg2.leg2]
 
