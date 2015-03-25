@@ -74,6 +74,13 @@ ttHSTSkimmer = cfg.Analyzer(
     minST = 200,
     )
 
+from CMGTools.TTHAnalysis.analyzers.ttHReclusterJetsAnalyzer import ttHReclusterJetsAnalyzer
+ttHReclusterJets = cfg.Analyzer(
+    ttHReclusterJetsAnalyzer, name="ttHReclusterJetsAnalyzer",
+    pTSubJet = 30,
+    etaSubJet = 5.0,
+            )
+
 from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14  import *
 
 triggerFlagsAna.triggerBits = {
@@ -107,6 +114,7 @@ from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
 sequence = cfg.Sequence(susyCoreSequence+[
     ttHEventAna,
     ttHSTSkimmer,
+    ttHReclusterJets,
     treeProducer,
     ])
 
