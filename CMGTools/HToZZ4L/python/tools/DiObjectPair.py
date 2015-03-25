@@ -4,8 +4,8 @@ class DiObjectPair( TLorentzVector ):
     '''Class used for A->VV'''
     def __init__(self, leg1, leg2,leg3,leg4):
 
-        a=DiObject(leg1,leg2)
-        b=DiObject(leg3,leg4)
+        a=DiObject(leg1,leg2, doSort=False)
+        b=DiObject(leg3,leg4, doSort=False)
         lv=a+b
         super( DiObjectPair, self).__init__(lv)
         self.leg1=a
