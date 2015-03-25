@@ -10,6 +10,8 @@ import ROOT
 class ttHReclusterJetsAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHReclusterJetsAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName) 
+        self.pTSubJet = self.cfg_ana.pTSubJet  if hasattr(self.cfg_ana, 'pTSubJet') else 30.0
+        self.etaSubJet = self.cfg_ana.etaSubJet  if hasattr(self.cfg_ana, 'etaSubJet') else 5.0
 
     def declareHandles(self):
         super(ttHReclusterJetsAnalyzer, self).declareHandles()
@@ -23,12 +25,11 @@ class ttHReclusterJetsAnalyzer( Analyzer ):
         count.register('all events')
 
     def makeFatJets(self, event):
-        objects40jc = [ j for j in event.cleanJets if j.pt() > 30.0 and abs(j.eta())< 5.0 ]
-        
-        if len(objects40jc)>=1:
+       	objectsJ = [ j for j in event.cleanJetsAll if j.pt() > self.pTSubJet and abs(j.eta())<self.etaSubJet ] 
+        if len(objectsJ)>=1:
             
            objects  = ROOT.std.vector(ROOT.reco.Particle.LorentzVector)()
-           for jet in objects40jc:
+           for jet in objectsJ:
                 objects.push_back(jet.p4())
                 
            reclusterJets = ReclusterJets(objects, 1.,1.2)
