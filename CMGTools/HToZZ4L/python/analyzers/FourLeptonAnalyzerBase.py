@@ -102,6 +102,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
         if abs(fourLepton.leg1.leg1.pdgId())!=abs(fourLepton.leg2.leg1.pdgId()):
             return True
 
+        #print "Nominal, mZ1 %.3f, mZ2 %.3f: %s" % (fourLepton.leg1.M(),fourLepton.leg2.M(),fourLepton)
         #find Alternative pairing.Do not forget FSR
         leptons  = [ fourLepton.leg1.leg1, fourLepton.leg1.leg2, fourLepton.leg2.leg1, fourLepton.leg2.leg2 ]
         quads = []
@@ -111,6 +112,9 @@ class FourLeptonAnalyzerBase( Analyzer ):
                 continue
             # skip those that fail cuts except Z2 mass
             if not self.fourLeptonIsolation(quad) or not self.fourLeptonMassZ1(quad) or not self.qcdSuppression(quad):
+                continue
+            # skip those that have a worse Z1 mass than the nominal
+            if abs(fourLepton.leg1.M()-91.118) < abs(quad.leg1.M()-91.118):
                 continue
             #print "Found alternate, mZ1 %.3f, mZ2 %.3f: %s" % (quad.leg1.M(),quad.leg2.M(),quad)
             quads.append(quad)
