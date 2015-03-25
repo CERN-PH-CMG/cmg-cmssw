@@ -41,13 +41,12 @@ class FSRPhotonMaker( Analyzer ):
 
 
         for p in pf:
-            if p.pdgId() !=22 or (p.pt()>2.0 and abs(p.eta())<2.4):
+            if p.pdgId() != 22 or not( p.pt() > 2.0 and abs(p.eta()) < 2.4 ):
                 continue
             for l in leptons:
                 if abs(l.pdgId())==11 and self.electronID(l):
-                    if (abs(p.eta()-l.eta())<0.05 or deltaPhi(p.phi(),l.phi())<0.2) or deltaR(p.eta(),p.phi(),l.eta(),l.phi())<0.15: 
+                    if (abs(p.eta()-l.eta())<0.05 and deltaPhi(p.phi(),l.phi())<2) or deltaR(p.eta(),p.phi(),l.eta(),l.phi())<0.15: 
                         continue;
-
                 DR =deltaR(l.eta(),l.phi(),p.eta(),p.phi())     
                 if DR<0.07 and p.pt()>2.0:
                     direct.append(p)
@@ -55,16 +54,22 @@ class FSRPhotonMaker( Analyzer ):
                 elif  DR<0.5 and p.pt()>4.0:   
                     forIso.append(p)
                     break;
-                    
-
         isolatedPhotons=[]        
         for g in forIso:
-            iso = (self.IsolationComputer.chargedAbsIso(g.physObj,0.3,0,0.2)+self.IsolationComputer.puAbsIso(g.physObj,0.3,0,0.2)+self.IsolationComputer.neutralAbsIsoRaw(g.physObj,0.3,0,0.5))/g.pt()
-            if iso<1.0:
+            g.absIsoCH = self.IsolationComputer.chargedAbsIso(g.physObj,0.3,0,0.2)
+            g.absIsoPU = self.IsolationComputer.puAbsIso(g.physObj,0.3,0,0.2)
+            g.absIsoNH = self.IsolationComputer.neutralAbsIsoRaw(g.physObj,0.3,0,0.5)
+            g.relIso   = (g.absIsoCH+g.absIsoPU+g.absIsoNH)/g.pt()
+            if g.relIso<1.0:
                 isolatedPhotons.append(g)
 
         event.fsrPhotons = isolatedPhotons+direct
-
+                    
+        # save all, for debugging
+        event.fsrPhotonsNoIso = forIso + direct
+        for fsr in event.fsrPhotonsNoIso:
+            closest = min(leptons, key = lambda l : deltaR(fsr.eta(),fsr.phi(),l.eta(),l.phi()))
+            fsr.globalClosestLepton = closest
 
         return True
         
