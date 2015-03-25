@@ -70,6 +70,9 @@ metAna.recalibrate = False
 # store all taus by default
 genAna.allGenTaus = True
 
+# switch off the SV and MC matching
+#ttHSVAna.do_mc_match = False
+
 ##------------------------------------------ 
 ##  CONTROL VARIABLES
 ##------------------------------------------ 
@@ -148,6 +151,9 @@ susyCoreSequence.insert(susyCoreSequence.index(skimAnalyzer),
 
 #susyCoreSequence.insert(susyCoreSequence.index(ttHLepSkim),
 #                        ttHZskim)
+
+#susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna),
+#                        ttHSVAna)
 
 sequence = cfg.Sequence(
     susyCoreSequence+[
