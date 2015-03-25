@@ -65,7 +65,7 @@ class BaseDumper(Module):
             return True
         leps = Collection(ev,"Lep","nLep") 
         jets = Collection(ev,"Jet")
-        print "run %6d lumi %4d event %11d " % (ev.run, ev.lumi, ev.evt)
+        print "run %6d lumi %4d event %11d (id: %d:%d:%d) " % (ev.run, ev.lumi, ev.evt, ev.run, ev.lumi, ev.evt)
         for i,l in enumerate(leps):
             print "    lepton %d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f   tightId %d relIso %5.3f sip3d %5.2f dxy %+4.3f dz %+4.3f bdt %+5.3f lostHits %1d" % (
                     i+1, l.pdgId,l.pt,l.eta,l.phi, l.tightId, l.relIso04, l.sip3d, l.dxy, l.dz, l.mvaIdPhys14, l.lostHits),
@@ -81,8 +81,8 @@ class BaseDumper(Module):
                 print "    jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f" % (i+1, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)))
         fsr = Collection(ev, "FSR")
         for i,g in enumerate(fsr):
-            print "    fsr %2d:  pt %5.1f eta %+4.2f phi %+4.2f  reliso% 6.3f (ch %5.1f nh %5.1f pu %5.1f), closest lepton id %+2d pt %5.1f eta %+4.2f phi %+4.2f dr %.4f " % (i+1, 
-                        g.pt, g.eta, g.phi, g.relIso, g.chargedHadIso, g.neutralHadIso, g.puChargedHadIso, g.closestLepton_pdgId, g.closestLepton_pt, g.closestLepton_eta, g.closestLepton_phi, g.closestLeptonDR)
+            print "    fsr %2d:  pt %5.1f eta %+4.2f phi %+4.2f  reliso% 6.3f (ch %5.1f nh %5.1f ph %5.1f pu %5.1f), closest lepton id %+2d pt %5.1f eta %+4.2f phi %+4.2f dr %.4f " % (i+1, 
+                        g.pt, g.eta, g.phi, g.relIso, g.chargedHadIso, g.neutralHadIso, g.photonIso, g.puChargedHadIso, g.closestLepton_pdgId, g.closestLepton_pt, g.closestLepton_eta, g.closestLepton_phi, g.closestLeptonDR)
 
         for type in "zz", "zz2P2F", "zz3P1F", "zzSS":
             zzs = Collection(ev,type)
@@ -93,8 +93,10 @@ class BaseDumper(Module):
                         findLepIndex(leps, zz.z1_l2_pt, zz.z1_l2_eta),
                         findLepIndex(leps, zz.z2_l1_pt, zz.z2_l1_eta),
                         findLepIndex(leps, zz.z2_l2_pt, zz.z2_l2_eta) ]
+                ifsr1 = findLepIndex(fsr, zz.z1_pho_pt, zz.z1_pho_eta) if zz.z1_hasFSR else -1
+                ifsr2 = findLepIndex(fsr, zz.z2_pho_pt, zz.z2_pho_eta) if zz.z2_hasFSR else -1
                 print "      candidate %1d: leptons %d %d %d %d, mass %6.3f mz1 %6.3f mz2 %6.3f , Z1 FSR %d Z2 FSR %d " % (
-                        izz, ils[0]+1,ils[1]+1,ils[2]+1,ils[3]+1, zz.mass, zz.z1_mass, zz.z2_mass, zz.z1_hasFSR, zz.z2_hasFSR )
+                        izz, ils[0]+1,ils[1]+1,ils[2]+1,ils[3]+1, zz.mass, zz.z1_mass, zz.z2_mass, ifsr1+1, ifsr2+1 )
                 print "                   m12 %6.3f  m13 %6.3f  m14 %6.3f  m23 %6.3f  m24 %6.3f  m34 %6.3f" % (
                          zz.mll_12, zz.mll_13, zz.mll_14, zz.mll_23, zz.mll_24, zz.mll_34)
         print "    met %6.2f (phi %+4.2f)" % (ev.met_pt, ev.met_phi)

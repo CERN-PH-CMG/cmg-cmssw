@@ -13,6 +13,7 @@ leptonTypeHZZ = NTupleObjectType("leptonHZZ", baseObjectTypes = [ leptonTypeExtr
 
 fsrPhotonTypeHZZ = NTupleObjectType("fsrPhotonHZZ", baseObjectTypes = [ particleType ], variables = [
     NTupleVariable("chargedHadIso",   lambda x : getattr(x,'absIsoCH',-1.0),   help="PF Iso, R=0.3, charged hadrons only"),
+    NTupleVariable("photonIso",       lambda x : getattr(x,'absIsoPH',-1.0),   help="PF Iso, R=0.3, photons only"),
     NTupleVariable("neutralHadIso",   lambda x : getattr(x,'absIsoNH',-1.0),   help="PF Iso, R=0.3, neutral hadrons only"),
     NTupleVariable("puChargedHadIso", lambda x : getattr(x,'absIsoPU',-1.0),   help="PF Iso, R=0.3, pileup charged hadrons only"),
     NTupleVariable("relIso",          lambda x : getattr(x,'relIso', -1.0),    help="PF Rel Iso, R=0.3, charged + netural had + pileup"),
@@ -36,6 +37,13 @@ ZZType = NTupleObjectType("ZZType", baseObjectTypes=[fourVectorType], variables 
     NTupleVariable("mll_23",   lambda x : (x.leg1.leg2.p4()+x.leg2.leg1.p4()).M()),
     NTupleVariable("mll_24",   lambda x : (x.leg1.leg2.p4()+x.leg2.leg2.p4()).M()),
     NTupleVariable("mll_34",   lambda x : (x.leg2.leg1.p4()+x.leg2.leg2.p4()).M()),
+    # -------
+    NTupleVariable("z1_pho_pt",  lambda x : (x.leg1.fsrPhoton.pt()  if x.leg1.hasFSR() else -99.0) ),
+    NTupleVariable("z1_pho_eta", lambda x : (x.leg1.fsrPhoton.eta() if x.leg1.hasFSR() else -99.0) ),
+    NTupleVariable("z1_pho_phi", lambda x : (x.leg1.fsrPhoton.phi() if x.leg1.hasFSR() else -99.0) ),
+    NTupleVariable("z2_pho_pt",  lambda x : (x.leg2.fsrPhoton.pt()  if x.leg2.hasFSR() else -99.0) ),
+    NTupleVariable("z2_pho_eta", lambda x : (x.leg2.fsrPhoton.eta() if x.leg2.hasFSR() else -99.0) ),
+    NTupleVariable("z2_pho_phi", lambda x : (x.leg2.fsrPhoton.phi() if x.leg2.hasFSR() else -99.0) ),
     # -------
     NTupleVariable("KD",   lambda x : getattr(x, 'KD', -1.0), help="MELA KD"),
     NTupleVariable("MELAcosthetastar", lambda x : x.melaAngles.costhetastar if hasattr(x,'melaAngles') else -99.0, help="MELA angle costhetastar"),
