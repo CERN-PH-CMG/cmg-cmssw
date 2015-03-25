@@ -20,4 +20,5 @@ hzz_collections = {
     "selectedLeptons" : NTupleCollection("Lep",    leptonTypeHZZ, 10, help="Leptons after the preselection"),
     "cleanJets"       : NTupleCollection("Jet",     jetTypeExtra, 10, help="Cental jets after full selection and cleaning, sorted by pt"),
     "discardedJets"   : NTupleCollection("DiscJet", jetTypeExtra,  5, help="Jets discarted in the jet-lepton cleaning"),
+    "fsrPhotonsNoIso" : NTupleCollection("FSR",    fsrPhotonTypeHZZ, 10, help="Photons for FSR recovery (isolation not applied)"),
 }
