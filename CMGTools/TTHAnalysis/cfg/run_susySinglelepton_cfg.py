@@ -75,8 +75,10 @@ ttHSTSkimmer = cfg.Analyzer(
     )
 
 from CMGTools.TTHAnalysis.analyzers.ttHReclusterJetsAnalyzer import ttHReclusterJetsAnalyzer
-ttHReclusterJets = cfg.Analyzer(                                                                                              
-       ttHReclusterJetsAnalyzer, name = 'ttHReclusterJetsAnalyzer',                                                                                       
+ttHReclusterJets = cfg.Analyzer(
+    ttHReclusterJetsAnalyzer, name="ttHReclusterJetsAnalyzer",
+    pTSubJet = 30,
+    etaSubJet = 5.0,
             )
 
 from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14  import *
