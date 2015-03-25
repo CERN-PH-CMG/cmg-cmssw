@@ -280,6 +280,22 @@ class FourLeptonAnalyzerBase( Analyzer ):
     def fillMEs(self,quad):
         legs = [ quad.leg1.leg1, quad.leg1.leg2, quad.leg2.leg1, quad.leg2.leg2 ]
         lvs  = [ ROOT.TLorentzVector(l.px(),l.py(),l.pz(),l.energy()) for l in legs ]
+
+        if hasattr(quad.leg1,'fsrPhoton'):
+            photon = ROOT.TLorentzVector(quad.leg1.fsrPhoton.px(),quad.leg1.fsrPhoton.py(),quad.leg1.fsrPhoton.pz(),quad.leg1.fsrPhoton.energy())
+            if quad.leg1.fsrDR1() < quad.leg1.fsrDR2():
+                lvs[0] = lvs[0]+photon
+            else:
+                lvs[1]=lvs[1]+photon
+
+        if hasattr(quad.leg2,'fsrPhoton'):
+            photon = ROOT.TLorentzVector(quad.leg2.fsrPhoton.px(),quad.leg2.fsrPhoton.py(),quad.leg2.fsrPhoton.pz(),quad.leg2.fsrPhoton.energy())
+            if quad.leg2.fsrDR1() < quad.leg2.fsrDR2():
+                lvs[2] = lvs[2]+photon
+            else:
+                lvs[3]=lvs[3]+photon
+
+
         ids  = [ l.pdgId() for l in legs ]
         quad.melaAngles = self._MEMs.computeAngles(lvs[0],ids[0], lvs[1],ids[1], lvs[2],ids[2], lvs[3],ids[3])
         self._MEMs.computeAll(lvs[0],ids[0], lvs[1],ids[1], lvs[2],ids[2], lvs[3],ids[3])
