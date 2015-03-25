@@ -78,6 +78,7 @@ class FourLeptonAnalyzer( FourLeptonAnalyzerBase ):
         passedFSR=cutFlow.applyCut(lambda x: x.hasFSR(),'FSR tagged',1,'fourLeptonsFSR')
         if passedFSR:
             for c in subevent.fourLeptonsFSR:
-                print 'Mass' ,c.fsrUncorrected().M(),c.M()
+                #print 'Mass' ,c.fsrUncorrected().M(),c.M()
+                pass
 
         return True        
