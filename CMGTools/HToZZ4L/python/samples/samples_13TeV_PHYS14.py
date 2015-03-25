@@ -23,7 +23,7 @@ triggers_mue   = [
     ]
 
 
-triggers_multilep  = triggers_mumu + triggers_ee + triggers_3e + triggers_mue
+triggers_multilep  = triggers_mumu_iso + triggers_ee + triggers_3e + triggers_mue
 
 
 #####COMPONENT CREATOR
