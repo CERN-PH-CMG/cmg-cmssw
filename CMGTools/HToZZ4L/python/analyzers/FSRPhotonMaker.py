@@ -56,10 +56,11 @@ class FSRPhotonMaker( Analyzer ):
                     break;
         isolatedPhotons=[]        
         for g in forIso:
-            g.absIsoCH = self.IsolationComputer.chargedAbsIso(g.physObj,0.3,0,0.2)
-            g.absIsoPU = self.IsolationComputer.puAbsIso(g.physObj,0.3,0,0.2)
-            g.absIsoNH = self.IsolationComputer.neutralAbsIsoRaw(g.physObj,0.3,0,0.5)
-            g.relIso   = (g.absIsoCH+g.absIsoPU+g.absIsoNH)/g.pt()
+            g.absIsoCH = self.IsolationComputer.chargedAbsIso(g.physObj,0.3,0.0001,0.2)
+            g.absIsoPU = self.IsolationComputer.puAbsIso(g.physObj,0.3,0.0001,0.2)
+            g.absIsoNH = self.IsolationComputer.neutralHadAbsIsoRaw(g.physObj,0.3,0.01,0.5)
+            g.absIsoPH = self.IsolationComputer.photonAbsIsoRaw(g.physObj,0.3,0.01,0.5)
+            g.relIso   = (g.absIsoCH+g.absIsoPU+g.absIsoNH+g.absIsoPH)/g.pt()
             if g.relIso<1.0:
                 isolatedPhotons.append(g)
 
