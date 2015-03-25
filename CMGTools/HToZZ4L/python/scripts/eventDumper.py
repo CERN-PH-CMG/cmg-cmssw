@@ -13,6 +13,7 @@ parser.add_option("-C", "--cut",  dest="cut", default=None, type="string", help=
 parser.add_option("-T", "--type",  dest="type", default=None, type="string", help="Type of events to select")
 parser.add_option("-F", "--fudge",   dest="fudge",  default=False, action="store_true",  help="print -999 for missing variables")
 parser.add_option("-m", "--mc",     dest="ismc",  default=False, action="store_true",  help="print MC match info")
+parser.add_option("-M", "--more",     dest="ismore",  default=False, action="store_true",  help="print more info")
 parser.add_option("--mm", "--more-mc",     dest="moremc",  default=False, action="store_true",  help="print more MC match info")
 parser.add_option("--tau", dest="tau",  default=False, action="store_true",  help="print Taus")
 parser.add_option("-j", "--json",   dest="json",  default=None, type="string", help="JSON file to apply")
@@ -71,11 +72,17 @@ class BaseDumper(Module):
             if self.options.ismc:
                 print "   mcMatch id %+3d, any %+2d" % (l.mcMatchId, l.mcMatchAny),
             print ""
+            if self.options.ismore:
+                print "              charged iso %.3f nh iso %.3f  pho iso %.3f   pu %.3f  rho %.3f  ea %.3f " % ( l.chargedHadIso04, l.neutralHadIso04, l.photonIso04, l.puChargedHadIso04, l.rho, l.EffectiveArea04 )
         for i,j in enumerate(jets):
             if self.options.ismc:
                 print "    jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f mcMatch %2d mcFlavour %2d mcPt %5.1f" % (i, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)), j.mcMatchId, j.mcFlavour, j.mcPt)
             else:
                 print "    jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f" % (i+1, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)))
+        fsr = Collection(ev, "FSR")
+        for i,g in enumerate(fsr):
+            print "    fsr %2d:  pt %5.1f eta %+4.2f phi %+4.2f  reliso% 6.3f (ch %5.1f nh %5.1f pu %5.1f), closest lepton id %+2d pt %5.1f eta %+4.2f phi %+4.2f dr %.4f " % (i+1, 
+                        g.pt, g.eta, g.phi, g.relIso, g.chargedHadIso, g.neutralHadIso, g.puChargedHadIso, g.closestLepton_pdgId, g.closestLepton_pt, g.closestLepton_eta, g.closestLepton_phi, g.closestLeptonDR)
 
         for type in "zz", "zz2P2F", "zz3P1F", "zzSS":
             zzs = Collection(ev,type)
@@ -86,13 +93,14 @@ class BaseDumper(Module):
                         findLepIndex(leps, zz.z1_l2_pt, zz.z1_l2_eta),
                         findLepIndex(leps, zz.z2_l1_pt, zz.z2_l1_eta),
                         findLepIndex(leps, zz.z2_l2_pt, zz.z2_l2_eta) ]
-                print "      candidate %1d: leptons %d %d %d %d, mass %6.3f mz1 %6.3f mz2 %6.3f  " % (
-                        izz, ils[0]+1,ils[1]+1,ils[2]+1,ils[3]+1, zz.mass, zz.z1_mass, zz.z2_mass, )
+                print "      candidate %1d: leptons %d %d %d %d, mass %6.3f mz1 %6.3f mz2 %6.3f , Z1 FSR %d Z2 FSR %d " % (
+                        izz, ils[0]+1,ils[1]+1,ils[2]+1,ils[3]+1, zz.mass, zz.z1_mass, zz.z2_mass, zz.z1_hasFSR, zz.z2_hasFSR )
                 print "                   m12 %6.3f  m13 %6.3f  m14 %6.3f  m23 %6.3f  m24 %6.3f  m34 %6.3f" % (
                          zz.mll_12, zz.mll_13, zz.mll_14, zz.mll_23, zz.mll_24, zz.mll_34)
         print "    met %6.2f (phi %+4.2f)" % (ev.met_pt, ev.met_phi)
         print "    vertices %d" % (ev.nVert)
         print "    HLT: ", " ".join([t for t in "DoubleMu DoubleEl TripleEl MuEG".split() if getattr(ev,"HLT_"+t)])
+        print ""
 
 cut = None
 if options.cut:
