@@ -11,6 +11,15 @@ leptonTypeHZZ = NTupleObjectType("leptonHZZ", baseObjectTypes = [ leptonTypeExtr
     NTupleVariable("EffectiveArea04",   lambda x : x.EffectiveArea04,                 help="EA for isolation"),
 ])
 
+fsrPhotonTypeHZZ = NTupleObjectType("fsrPhotonHZZ", baseObjectTypes = [ particleType ], variables = [
+    NTupleVariable("chargedHadIso",   lambda x : getattr(x,'absIsoCH',-1.0),   help="PF Iso, R=0.3, charged hadrons only"),
+    NTupleVariable("neutralHadIso",   lambda x : getattr(x,'absIsoNH',-1.0),   help="PF Iso, R=0.3, neutral hadrons only"),
+    NTupleVariable("puChargedHadIso", lambda x : getattr(x,'absIsoPU',-1.0),   help="PF Iso, R=0.3, pileup charged hadrons only"),
+    NTupleVariable("relIso",          lambda x : getattr(x,'relIso', -1.0),    help="PF Rel Iso, R=0.3, charged + netural had + pileup"),
+    NTupleSubObject("closestLepton",  lambda x : x.globalClosestLepton, particleType),
+    NTupleVariable("closestLeptonDR", lambda x : deltaR(x.eta(),x.phi(),x.globalClosestLepton.eta(),x.globalClosestLepton.phi())),
+]) 
+
 ZZType = NTupleObjectType("ZZType", baseObjectTypes=[fourVectorType], variables = [
     NTupleVariable("hasFSR",   lambda x : x.hasFSR(), int),
     NTupleVariable("z1_hasFSR",   lambda x : x.leg1.hasFSR(), int),
