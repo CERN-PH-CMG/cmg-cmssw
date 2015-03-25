@@ -91,8 +91,8 @@ class BaseDumper(Module):
                 print "                   m12 %6.3f  m13 %6.3f  m14 %6.3f  m23 %6.3f  m24 %6.3f  m34 %6.3f" % (
                          zz.mll_12, zz.mll_13, zz.mll_14, zz.mll_23, zz.mll_24, zz.mll_34)
         print "    met %6.2f (phi %+4.2f)" % (ev.met_pt, ev.met_phi)
-        if self.options.ismc:
-            print "    vertices %d" % (ev.nVert)
+        print "    vertices %d" % (ev.nVert)
+        print "    HLT: ", " ".join([t for t in "DoubleMu DoubleEl TripleEl MuEG".split() if getattr(ev,"HLT_"+t)])
 
 cut = None
 if options.cut:
