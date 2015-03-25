@@ -208,7 +208,6 @@ class FourLeptonAnalyzerBase( Analyzer ):
                 DR=deltaR(l.eta(),l.phi(),g.eta(),g.phi())
                 if DR>0.5:
                     continue;
-                
                 if hasattr(g,'DR'):
                     if DR<g.DR:
                         g.DR=DR
@@ -216,6 +215,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
                 else:        
                     g.DR=DR
                     g.nearestLepton = l
+            if hasattr(g,'DR'):
                 assocPhotons.append(g)
 
         
