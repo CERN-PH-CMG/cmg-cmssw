@@ -95,7 +95,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
         return self.diLeptonMass(fourLepton.leg1) and self.diLeptonMass(fourLepton.leg2)
 
     def fourLeptonMassZ1(self,fourLepton):
-        return fourLepton.leg1.M()>60.0
+        return fourLepton.leg1.M()>40.0
 
     def stupidCut(self,fourLepton):
         #if not 4mu/4e  pass 
