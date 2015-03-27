@@ -74,7 +74,7 @@ particle_vars = [
     Variable('pt', lambda p: p.pt()),
     Variable('eta', lambda p: p.eta()),
     Variable('phi', lambda p: p.phi()),
-    Variable('charge', lambda p: p.charge()), # charge may be non-integer for gen particles
+    Variable('charge', lambda p: p.charge() if hasattr(p, 'charge') else 0), # charge may be non-integer for gen particles
     Variable('mass', lambda p: p.mass()),
 ]
 
