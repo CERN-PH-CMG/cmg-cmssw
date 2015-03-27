@@ -8,18 +8,17 @@ class TauTreeProducer(H2TauTauTreeProducerBase):
 
     def __init__(self, *args):
         super(TauTreeProducer, self).__init__(*args)
-        self.maxNTaus = 2
+        self.maxNTaus = 5
 
     def declareHandles(self):
         super(TauTreeProducer, self).declareHandles()
 
     def declareVariables(self, setup):
 
-        for i in range(self.maxNTaus):
-            self.bookTau(self.tree, 'tau{i}'.format(i=i))
-            self.bookGenParticle(self.tree, 'tau{i}_gen'.format(i=i))
-            self.bookGenParticle(self.tree, 'tau{i}_gen_vis'.format(i=i))
-            self.var(self.tree, 'tau{i}_gen_decayMode'.format(i=i))
+        self.bookTau(self.tree, 'tau')
+        self.bookGenParticle(self.tree, 'tau_gen')
+        self.bookGenParticle(self.tree, 'tau_gen_vis')
+        self.var(self.tree, 'tau_gen_decayMode')
 
 
     def process(self, event):
@@ -27,19 +26,19 @@ class TauTreeProducer(H2TauTauTreeProducerBase):
         # PhysicsTools.Heppy.analyzers.core.Analyzer
         self.readCollections(event.input)
 
-        self.tree.reset()
 
         if not eval(self.skimFunction):
             return False
 
         for i_tau, tau in enumerate(event.selectedTaus):
+            
             if i_tau < self.maxNTaus:
-                self.fillTau(self.tree, 'tau{i}'.format(i=i_tau), tau)
+                self.tree.reset()
+                self.fillTau(self.tree, 'tau', tau)
                 if tau.mcTau:
-                    self.fillGenParticle(self.tree, 'tau{i}_gen'.format(i=i_tau), tau.mcTau)
+                    self.fillGenParticle(self.tree, 'tau_gen', tau.mcTau)
                     if tau.genJet():
-                        self.fillGenParticle(self.tree, 'tau{i}_gen_vis'.format(i=i_tau), tau.genJet())
-                        self.fill(self.tree, 'tau{i}_gen_decayMode'.format(i=i_tau), tauDecayModes.genDecayModeInt(tau.genJet()))
+                        self.fillGenParticle(self.tree, 'tau_gen_vis', tau.genJet())
+                        self.fill(self.tree, 'tau_gen_decayMode', tauDecayModes.genDecayModeInt(tau.genJet()))
 
-        if type(self) is TauTreeProducer:
-            self.fillTree(event)
+                self.fillTree(event)

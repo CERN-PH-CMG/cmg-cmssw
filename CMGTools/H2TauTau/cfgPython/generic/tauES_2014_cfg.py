@@ -5,9 +5,11 @@ from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
 from PhysicsTools.Heppy.analyzers.objects.TauAnalyzer import TauAnalyzer
 
 from CMGTools.H2TauTau.proto.analyzers.TauTreeProducer import TauTreeProducer
+from CMGTools.H2TauTau.proto.analyzers.TauGenTreeProducer import TauGenTreeProducer
 
 # from CMGTools.H2TauTau.proto.samples.phys14.connector import httConnector
 from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import DYJetsToLL_M50
+from CMGTools.TTHAnalysis.samples.ComponentCreator import ComponentCreator
 
 # common configuration and sequence
 from CMGTools.H2TauTau.htt_ntuple_base_cff import genAna, vertexAna
@@ -22,6 +24,11 @@ production = getHeppyOption('production')
 treeProducer = cfg.Analyzer(
     TauTreeProducer,
     name='TauTreeProducer'
+)
+
+genTreeProducer = cfg.Analyzer(
+    TauGenTreeProducer,
+    name='TauGenTreeProducer'
 )
 
 tauAna = cfg.Analyzer(
@@ -50,15 +57,19 @@ tauAna = cfg.Analyzer(
 # MC_list = my_connect.MC_list
 
 
+creator = ComponentCreator()
+ggh125 = creator.makeMCComponent("GGH125", "/GluGluToHToTauTau_M-125_13TeV-powheg-pythia6/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 1.0)
+
 ###################################################
 ###             SET COMPONENTS BY HAND          ###
 ###################################################
-selectedComponents = [DYJetsToLL_M50]
+selectedComponents = [ggh125]
 sequence = cfg.Sequence([
     genAna,
     vertexAna,
     tauAna,
-    treeProducer
+    treeProducer,
+    genTreeProducer
 ])
 
 if not production:
