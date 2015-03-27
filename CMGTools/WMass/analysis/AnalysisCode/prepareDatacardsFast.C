@@ -55,7 +55,7 @@ void prepareDatacardsFast(TString folder, TString syst_folder, TString SignalSam
           
           for(int h=0; h<WMass::PDF_members; h++){
               for(int m=0; m<WMass::NVarRecoilCorr; m++){
-              for(int k=0;k<3;k++){
+              for(int k=0;k<WMass::NFitVar;k++){
                 for(int c=0;c<charges;c++){
                   // TemplatesW[c][m][h][k][isample][ieta][jmass] = (TH1D*) finTemplatesW[isample]->Get(Form("hW%s%s_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"",eta_str.Data(),jWmass));
                   
@@ -73,7 +73,7 @@ void prepareDatacardsFast(TString folder, TString syst_folder, TString SignalSam
         for(int jmass=0; jmass<2*WMass::WMassNSteps+1; jmass++){
           for(int h=0; h<WMass::PDF_members; h++){
             for(int m=0; m<WMass::NVarRecoilCorr; m++){
-              for(int k=0;k<3;k++){
+              for(int k=0;k<WMass::NFitVar;k++){
                 for(int c=0;c<charges;c++){
                   
                   if(TemplatesW_NonScaled[c][m][h][k][isample][ieta][jmass]){
@@ -140,7 +140,7 @@ void prepareDatacardsFast(TString folder, TString syst_folder, TString SignalSam
               
               //LOOP OVER THE SAMPLES
               for(int isample=0; isample<Nsamples;isample++){
-                for(int k=0;k<3;k++){
+                for(int k=0;k<WMass::NFitVar;k++){
                 
                   if(!TemplatesW_NonScaled[c][m][h][k][isample][ieta][jmass]) continue;
                 
@@ -223,7 +223,7 @@ void prepareDatacardsFast(TString folder, TString syst_folder, TString SignalSam
               }
 
               // PREPARE DUMMY DATACARD NON SCALED WITH BACKGROUND WITHOUT Z DATADRIVEN
-              for(int k=0;k<3;k++){
+              for(int k=0;k<WMass::NFitVar;k++){
 
                 ofstream DummyDatacard;
                 DummyDatacard.open(Form("%s/DataCards/dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s_eta%s_%d_%sNonScaled.txt",folder.Data(),Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data()));

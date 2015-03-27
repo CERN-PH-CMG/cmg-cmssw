@@ -44,7 +44,7 @@ void ClosureTest_fits(int generated_PDF_set=1, int generated_PDF_member=0, TStri
                   // gROOT->ProcessLine(Form(".! combine -M MaxLikelihoodFit --saveNorm --justFit dummy_datacard_Wmass_MuPos_eta%s_%d.txt  -v10 -m %d  > dummy_datacard_Wmass_MuPos_eta%s_%d.log 2>&1",eta_str.Data(),jWmass,jWmass,eta_str.Data(),jWmass));
                   // gROOT->ProcessLine(Form(".! combine -M MaxLikelihoodFit --saveNorm --justFit dummy_datacard_Wmass_MuPos_eta%s_%d_NonScaled.txt  -v10 -m %d  > dummy_datacard_Wmass_MuPos_eta%s_%d_NonScaled.log 2>&1",eta_str.Data(),jWmass,jWmass,eta_str.Data(),jWmass));
                   // gROOT->ProcessLine(Form(".! combine -m %d -M HybridNew --testStat=TEV --singlePoint 1 --onlyTestStat -t 10000 output_eta%s_%d.root   >> dummy_datacard_Wmass_MuPos_eta%s_%d_NonScaled.log 2>&1",jWmass,eta_str.Data(),jWmass,eta_str.Data(),jWmass));
-                  for(int k=0;k<3;k++){
+                  for(int k=0;k<WMass::NFitVar;k++){
                     counter++;
                     if(counter>1 && WMass::PDF_members>1) gROOT->ProcessLine(".! sleep 1");
                     else if(counter>1) gROOT->ProcessLine(".! usleep 300000");
@@ -75,7 +75,7 @@ void ClosureTest_fits(int generated_PDF_set=1, int generated_PDF_member=0, TStri
                 // gROOT->ProcessLine(Form(".! combine -M MaxLikelihoodFit --saveNorm --justFit dummy_datacard_Wmass_MuPos_eta%s_%d.txt  -v10 -m %d  > dummy_datacard_Wmass_MuPos_eta%s_%d.log 2>&1",eta_str.Data(),jWmass,jWmass,eta_str.Data(),jWmass));
                 // gROOT->ProcessLine(Form(".! combine -M MaxLikelihoodFit --saveNorm --justFit dummy_datacard_Wmass_MuPos_eta%s_%d_NonScaled.txt  -v10 -m %d  > dummy_datacard_Wmass_MuPos_eta%s_%d_NonScaled.log 2>&1",eta_str.Data(),jWmass,jWmass,eta_str.Data(),jWmass));
                 // gROOT->ProcessLine(Form(".! combine -m %d -M HybridNew --testStat=TEV --singlePoint 1 --onlyTestStat -t 10000 output_eta%s_%d.root   >> dummy_datacard_Wmass_MuPos_eta%s_%d_NonScaled.log 2>&1",jWmass,eta_str.Data(),jWmass,eta_str.Data(),jWmass));
-                for(int k=0;k<3;k++){
+                for(int k=0;k<WMass::NFitVar;k++){
                   counter++;
                   // if(counter>1) gROOT->ProcessLine(".! sleep 1");
                   if(counter>1 && WMass::PDF_members>1) gROOT->ProcessLine(".! sleep 1");

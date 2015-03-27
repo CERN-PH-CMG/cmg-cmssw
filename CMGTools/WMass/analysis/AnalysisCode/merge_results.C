@@ -47,20 +47,20 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
     
       TGraph *result;
       TCanvas*c_chi2;
-      TF1*ffit[WMass::etaMuonNSteps][3][2];
-      // TGraph *result_NonScaled[WMass::PDF_members][3];
-      TGraph *result_NonScaled[WMass::etaMuonNSteps][WMass::NVarRecoilCorr][WMass::PDF_members][3][2];
-      double deltaM[WMass::etaMuonNSteps][WMass::NVarRecoilCorr][WMass::PDF_members][3][2];
-      double deltaMmin[WMass::etaMuonNSteps][3][2]={{0}},deltaMmax[WMass::etaMuonNSteps][3][2]={{0}};
-      double deltaMnegSummed[WMass::etaMuonNSteps][3][2]={{0}},deltaMposSummed[WMass::etaMuonNSteps][3][2]={{0}},deltaMSummed[WMass::etaMuonNSteps][3][2]={{0}},deltaMJuan[WMass::etaMuonNSteps][3][2]={{0}};
-      TH1D*h_deltaM_PDF[WMass::etaMuonNSteps][3][2];
-      TGraphErrors*g_deltaM_PDF[WMass::etaMuonNSteps][3][2];
+      TF1*ffit[WMass::etaMuonNSteps][WMass::NFitVar][2];
+      // TGraph *result_NonScaled[WMass::PDF_members][WMass::NFitVar];
+      TGraph *result_NonScaled[WMass::etaMuonNSteps][WMass::NVarRecoilCorr][WMass::PDF_members][WMass::NFitVar][2];
+      double deltaM[WMass::etaMuonNSteps][WMass::NVarRecoilCorr][WMass::PDF_members][WMass::NFitVar][2];
+      double deltaMmin[WMass::etaMuonNSteps][WMass::NFitVar][2]={{0}},deltaMmax[WMass::etaMuonNSteps][WMass::NFitVar][2]={{0}};
+      double deltaMnegSummed[WMass::etaMuonNSteps][WMass::NFitVar][2]={{0}},deltaMposSummed[WMass::etaMuonNSteps][WMass::NFitVar][2]={{0}},deltaMSummed[WMass::etaMuonNSteps][WMass::NFitVar][2]={{0}},deltaMJuan[WMass::etaMuonNSteps][WMass::NFitVar][2]={{0}};
+      TH1D*h_deltaM_PDF[WMass::etaMuonNSteps][WMass::NFitVar][2];
+      TGraphErrors*g_deltaM_PDF[WMass::etaMuonNSteps][WMass::NFitVar][2];
 
     for(int c=0; c<charges; c++){
       cout <<"merging W"<<Wlike<<" " << WCharge_str[c].Data() << endl;
       
       if(WMass::PDF_members>1 || WMass::NVarRecoilCorr>1){
-        for(int k=0;k<3;k++){
+        for(int k=0;k<WMass::NFitVar;k++){
           for(int i=0; i<WMass::etaMuonNSteps; i++){
             TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
             // TString eta_str = Form("%.1f",WMass::etaMaxMuons[0]); eta_str.ReplaceAll(".","p");
@@ -88,7 +88,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
             TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
             cout << "merging pdf eta bin= " << i << endl;
             
-            for(int k=0;k<3;k++){
+            for(int k=0;k<WMass::NFitVar;k++){
 
               cout << "variable= " << k << endl;
             
@@ -259,8 +259,8 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
             leg1->SetTextSize(0.035);
             leg1->AddEntry(l, Form("gen M_{W%s} (%d MeV)",Wlike.Data(),(massCentral_MeV)), "l");
 
-            TF1*f[3];
-            for(int k=0;k<3;k++){
+            TF1*f[WMass::NFitVar];
+            for(int k=0;k<WMass::NFitVar;k++){
               // cout << result_NonScaled[i][h][k]->GetParameter(1) << " " << ffit[i][k]->GetParameter(2) << endl;
               // ffit[i][k]->Draw("");
               f[k] = (TF1*) result_NonScaled[i][m][h][k][c]->GetFunction(Form("ffit_W%s%s_%s_pdf%d-%d%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"",eta_str.Data()));
@@ -305,7 +305,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
       
       for(int i=0; i<WMass::etaMuonNSteps; i++){
         TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
-        for(int k=0;k<3;k++){
+        for(int k=0;k<WMass::NFitVar;k++){
           if(WMass::PDF_members>1){
 
             cout << endl;

@@ -69,7 +69,7 @@ void prepareDatacards(TString folder, TString syst_folder, TString sample, int g
               // TemplatesZ_NonScaled[m][h][isample][ieta][jmass] = (TH1D*) finTemplatesZ[isample]->Get(Form("hWlikePos_PtNonScaled_RWeighted_SimpleTemplates_pdf%d-%d%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"",eta_str.Data(),jWmass));
               // cout << Form("hWlikePos_PtNonScaled_RWeighted_SimpleTemplates_pdf%d-%d_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,eta_str.Data(),jWmass) << endl;
               // TemplatesZ_NonScaled[h][isample][ieta][jmass]->Print();
-              for(int k=0;k<3;k++){
+              for(int k=0;k<WMass::NFitVar;k++){
                 for(int c=0;c<charges;c++){
                   TemplatesW[c][m][h][k][isample][ieta][jmass] = (TH1D*) finTemplatesW[isample]->Get(Form("hW%s%s_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"",eta_str.Data(),jWmass));
                   // TemplatesW_NonScaled[h][isample][ieta][jmass] = (TH1D*) finTemplatesW[isample]->Get(Form("hWPos_PtNonScaled_8_JetCut_eta%s_%d",eta_str.Data(),jWmass));
@@ -97,7 +97,7 @@ void prepareDatacards(TString folder, TString syst_folder, TString sample, int g
         for(int jmass=0; jmass<2*WMass::WMassNSteps+1; jmass++){
           for(int h=0; h<WMass::PDF_members; h++){
             for(int m=0; m<WMass::NVarRecoilCorr; m++){
-              for(int k=0;k<3;k++){
+              for(int k=0;k<WMass::NFitVar;k++){
                 for(int c=0;c<charges;c++){
                                       // TemplatesW_NonScaled[c][m][h][k][isample][ieta][jmass]->Print();
                   // double int_hist_data = TemplatesW_NonScaled[c][0][0][k][DATA][ieta][WMass::WMassNSteps]->Integral();
@@ -173,7 +173,7 @@ void prepareDatacards(TString folder, TString syst_folder, TString sample, int g
                 // cout << "using " << samples_str[isample].Data() << endl;
                 if(samples_str[isample].Contains(WorZ.Contains("W")?"DYJetsFake":"WJetsFake") || samples_str[isample].Contains("QCD")) continue;
                 
-                for(int k=0;k<3;k++){
+                for(int k=0;k<WMass::NFitVar;k++){
                   // DEFINE NEW HISTO NAMES
                   // Z_histoname[isample] = Form("Z_%s_%s_pdf%d-%d%s",samples_str[isample].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"");
                   W_histoname[isample] = samples_str[isample] == "DATA" ? Form("data_obs_W%s%s_%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data()) : Form("W%s%s_%s_%s_pdf%d-%d%s",Wlike.Data(),WCharge_str[c].Data(),samples_str[isample].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"");
@@ -276,7 +276,7 @@ void prepareDatacards(TString folder, TString syst_folder, TString sample, int g
               // // PREPARE DUMMY DATACARD
 
               // PREPARE DUMMY DATACARD NON SCALED WITH BACKGROUND WITHOUT Z DATADRIVEN
-              for(int k=0;k<3;k++){
+              for(int k=0;k<WMass::NFitVar;k++){
 
                 ofstream DummyDatacard;
                 DummyDatacard.open(Form("%s/DataCards/dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s_eta%s_%d_%sNonScaled.txt",folder.Data(),Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data()));

@@ -24,8 +24,8 @@ namespace WMass{
   static const float etaMaxMuons[etaMuonNSteps] = { PAR_ETA_STEPS };
   static const int nSigOrQCD = 2;
   TString nSigOrQCD_str[nSigOrQCD] = {"Sig","QCD"};
-  static const int NFitVar = 3;
-  TString FitVar_str[NFitVar] = {"Pt","Mt","MET"};
+  static const int NFitVar = 4;
+  TString FitVar_str[NFitVar] = {"Pt","Mt","MET","MtLin"};
   static const int PDF_sets = PAR_PDF_SETS;
   static const int PDF_members = PAR_PDF_MEMBERS;
   static const int NVarRecoilCorr = PAR_TOYS_MOMCORR;
@@ -33,11 +33,11 @@ namespace WMass{
   static const int WpTcut = 15;
   
   // static const double sel_xmin[3]={30,  60, 30};
-  static const double sel_xmin[3]={30,  60, 30};
-  static const double sel_xmax[3]={55, 100, 55};
+  static const double sel_xmin[NFitVar]={30,  60, 30,  60};
+  static const double sel_xmax[NFitVar]={55, 100, 55, 100};
   
-  static const double fit_xmin[3]={32,  65, 32};
-  static const double fit_xmax[3]={45,  90, 45};
+  static const double fit_xmin[NFitVar]={32,  65, 32,  65};
+  static const double fit_xmax[NFitVar]={45,  90, 45,  90};
 
   static const int LHE_mass_central_index = PAR_DELTAM_MEV_CENTRAL_INDEX;
   // 209 #w,ren,fac,pdf,mW,mZ 1.0 1.0 1.0 229800 80.398 91.1876               <------------ NNPDF2.3 NLO

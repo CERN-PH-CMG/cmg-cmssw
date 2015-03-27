@@ -37,7 +37,7 @@ void PlotWdistributionsMCvsDATA_stack(TString folderMCsig="",TString folderMCEWK
       for(int j=WMass::WMassNSteps; j<WMass::WMassNSteps+1; j++){
         int jWmass = WMass::WMassCentral_MeV-(WMass::WMassNSteps-j)*WMass::WMassStep_MeV;
         
-        for(int k=0;k<3;k++){
+        for(int k=0;k<WMass::NFitVar;k++){
 	  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hW%s_%sNonScaled_SelRange_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets,0,"",eta_str.Data(),jWmass),0,0,0,1,Form(";%s [GeV];Counts",WMass::FitVar_str[k].Data()),-1,-1,1,1);
 	  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hW%s_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets,0,"",eta_str.Data(),jWmass),0,0,0,1,Form(";%s [GeV];Counts",WMass::FitVar_str[k].Data()),-1,-1,1,1);
         }
