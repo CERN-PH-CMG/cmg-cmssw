@@ -30,6 +30,7 @@ class Electron( Lepton ):
         elif id == "POG_MVA_ID_Trig_full5x5":     return self.mvaIDTight(full5x5=True)
         elif id == "POG_MVA_ID_Run2_NonTrig_Loose":    return self.mvaIDRun2("NonTrigPhys14","Loose")
         elif id == "POG_MVA_ID_Run2_NonTrig_Tight":    return self.mvaIDRun2("NonTrigPhys14","Tight")
+        elif id == "POG_MVA_ID_Run2_NonTrig_HZZ":          return self.mvaIDRun2("NonTrigPhys14","HZZ")
         elif id.startswith("POG_Cuts_ID_"):
                 return self.cutBasedId(id.replace("POG_Cuts_ID_","POG_"))
         for ID in self.electronIDs():
@@ -181,12 +182,19 @@ class Electron( Lepton ):
                     if   (eta < 0.8)  : return self.mvaRun2(name) > 0.73;
                     elif (eta < 1.479): return self.mvaRun2(name) > 0.57;
                     else              : return self.mvaRun2(name) > 0.05;
+                elif wp=="HZZ":
+                    if self.pt() <= 10:
+                        if   (eta < 0.8)  : return self.mvaRun2(name) > -0.202;
+                        elif (eta < 1.479): return self.mvaRun2(name) > -0.444;
+                        else              : return self.mvaRun2(name) > +0.264;
+                    else:
+                        if   (eta < 0.8)  : return self.mvaRun2(name) > -0.110;
+                        elif (eta < 1.479): return self.mvaRun2(name) > -0.284;
+                        else              : return self.mvaRun2(name) > -0.212;
                 else: raise RuntimeError, "Ele MVA ID Working point not found"
             else: raise RuntimeError, "Ele MVA ID type not found"
 
 
-    def mvaIDZZ(self):
-        return self.mvaIDLoose() and (self.gsfTrack().trackerExpectedHitsInner().numberOfLostHits()<=1)
 
     def chargedHadronIsoR(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationVariables().sumChargedHadronPt

@@ -52,7 +52,7 @@ class ttHSVAnalyzer( Analyzer ):
         allivf = [ v for v in self.handles['ivf'].product() ]
        
         # attach distances to PV
-        pv = event.goodVertices[0]
+        pv = event.goodVertices[0] if len(event.goodVertices)>0 else event.vertices[0]
         for sv in allivf:
              #sv.dz  = SignedImpactParameterComputer.vertexDz(sv, pv)
              sv.dxy = SignedImpactParameterComputer.vertexDxy(sv, pv)
@@ -74,7 +74,7 @@ class ttHSVAnalyzer( Analyzer ):
 
         event.ivf = allivf
 
-        if self.cfg_comp.isMC:
+	if self.cfg_comp.isMC and self.cfg_ana.do_mc_match:
             event.packedGenForHadMatch = [ (p.eta(),p.phi(),p) for p in self.mchandles['packedGen'].product() if p.charge() != 0 and abs(p.eta()) < 2.7 ]
             event.packedGenForHadMatch.sort(key = lambda (e,p,x) : e)
             for s in event.ivf:
