@@ -131,6 +131,7 @@ susyFullHad_collections.update({
         "selectedPhotons"    : NTupleCollection("gamma", photonTypeSusy, 50, help="photons with pt>20 and loose cut based ID"),
         "selectedIsoTrack"    : NTupleCollection("isoTrack", isoTrackType, 50, help="isoTrack, sorted by pt"),
         "genParticles" : NTupleCollection("genPart", genParticleWithMotherId, 300, help="all pruned genparticles"),
+##        "ivf"       : NTupleCollection("SV",     svType, 20, help="SVs from IVF", filter=lambda l : l.pt()>5),
 })
         
             
