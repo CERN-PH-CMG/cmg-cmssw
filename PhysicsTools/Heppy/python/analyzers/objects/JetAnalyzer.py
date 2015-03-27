@@ -1,4 +1,4 @@
-import math
+import math, os
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Jet
@@ -65,7 +65,7 @@ class JetAnalyzer( Analyzer ):
         self.lepPtMin = getattr(self.cfg_ana, 'minLepPt', -1)
         self.jetGammaDR =  getattr(self.cfg_ana, 'jetGammaDR', 0.4)
         if(self.cfg_ana.doQG):
-            self.qglcalc = QGLikelihoodCalculator("/afs/cern.ch/user/t/tomc/public/qgTagger/QGLikelihoodDBFiles/QGL_v1a/pdfQG_AK4chs_antib_13TeV_v1.root")
+            self.qglcalc = QGLikelihoodCalculator("%s/src/PhysicsTools/Heppy/data/pdfQG_AK4chs_antib_13TeV_v1.root" % os.environ['CMSSW_BASE'])
 
     def declareHandles(self):
         super(JetAnalyzer, self).declareHandles()
