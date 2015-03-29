@@ -106,13 +106,19 @@ class FourLeptonAnalyzerBase( Analyzer ):
         #find Alternative pairing.Do not forget FSR
         leptons  = [ fourLepton.leg1.leg1, fourLepton.leg1.leg2, fourLepton.leg2.leg1, fourLepton.leg2.leg2 ]
         quads = []
-        for quad in self.findOSSFQuads(leptons, fourLepton.allPhotonsForFSR):
+        for quad in self.findOSSFQuads(leptons, fourLepton.daughterPhotons()): # only re-search for FSR from already-attached photons
             # skip self
             if fourLepton.leg1.leg1 == quad.leg1.leg1 and fourLepton.leg1.leg2 == quad.leg1.leg2 and fourLepton.leg2.leg1 == quad.leg2.leg1:
                 continue
-            # skip those that fail cuts except Z2 mass
-            if not self.fourLeptonIsolation(quad) or not self.fourLeptonMassZ1(quad) or not self.qcdSuppression(quad):
-                continue
+
+            # we used to skip those that fail cuts except Z2 mass
+            ### if not self.fourLeptonIsolation(quad) or not self.fourLeptonMassZ1(quad) or not self.qcdSuppression(quad):
+            ###    continue
+            # however:
+            # - we've now decided in the sync that we don't re-check for isolation on the alternate pairing
+            # - QCD suppression does not depend on photons, and so it doesn't depend on the pairing
+            # - if the new pairing has a better Z1 mass than the original one, then it passes the Z1 mass cut
+
             # skip those that have a worse Z1 mass than the nominal
             if abs(fourLepton.leg1.M()-91.118) < abs(quad.leg1.M()-91.118):
                 continue
