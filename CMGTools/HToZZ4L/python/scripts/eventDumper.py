@@ -69,11 +69,11 @@ class BaseDumper(Module):
         for i,l in enumerate(leps):
             print "    lepton %d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f   tightId %d relIso %5.3f sip3d %5.2f dxy %+4.3f dz %+4.3f bdt %+5.3f lostHits %1d" % (
                     i+1, l.pdgId,l.pt,l.eta,l.phi, l.tightId, l.relIso04, l.sip3d, l.dxy, l.dz, l.mvaIdPhys14, l.lostHits),
+            if self.options.ismore:
+                print " iso ch %.3f nh %.3f ph %.3f pu %.3f rho %.3f ea %.3f " % ( l.chargedHadIso04, l.neutralHadIso04, l.photonIso04, l.puChargedHadIso04, l.rho, l.EffectiveArea04 ),
             if self.options.ismc:
                 print "   mcMatch id %+3d, any %+2d" % (l.mcMatchId, l.mcMatchAny),
             print ""
-            if self.options.ismore:
-                print "              charged iso %.3f nh iso %.3f  pho iso %.3f   pu %.3f  rho %.3f  ea %.3f " % ( l.chargedHadIso04, l.neutralHadIso04, l.photonIso04, l.puChargedHadIso04, l.rho, l.EffectiveArea04 )
         for i,j in enumerate(jets):
             if self.options.ismc:
                 print "    jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f mcMatch %2d mcFlavour %2d mcPt %5.1f" % (i, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)), j.mcMatchId, j.mcFlavour, j.mcPt)
