@@ -175,7 +175,7 @@ from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
 
 #-------- HOW TO RUN
 # choose 2 for full production
-test = 2
+test = 0
 if test==0:
     # ------------------------------------------------------------------------------------------- #
     # --- all this lines taken from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 
@@ -233,7 +233,9 @@ DYJetsToLL_M50_HT100to200, DYJetsToLL_M50_HT200to400, DYJetsToLL_M50_HT400to600,
     for comp in selectedComponents:
         comp.splitFactor = 600
         comp.files = comp.files[:]
-        #comp.files = comp.files[:1]
+        #comp.files = comp.files[:1]  
+        #comp.files = comp.files[57:58]  # to process only file [57]  
+        #comp.triggers = triggers_HT900 + triggers_HTMET # to apply trigger skimming
 
 
 
