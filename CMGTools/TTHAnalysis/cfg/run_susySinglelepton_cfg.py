@@ -125,7 +125,7 @@ sequence = cfg.Sequence(susyCoreSequence+[
 test = 1
 if test==1:
     # test a single component, using a single thread.
-#    comp = TTJets
+    comp = TTJets
 #    comp = SMS_T1tttt_2J_mGl1500_mLSP100
     comp.files = comp.files[:1]
     selectedComponents = [comp]
