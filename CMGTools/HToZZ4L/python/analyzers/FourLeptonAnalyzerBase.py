@@ -57,24 +57,9 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
 
     def leptonID_tight(self,lepton):
-        if abs(lepton.sip3D())>4:
-            return False
-        if abs(lepton.pdgId())==13:
-            if not ((lepton.physObj.isGlobalMuon() or lepton.physObj.isTrackerMuon()) and lepton.physObj.isPFMuon()):
-                return False
-        elif abs(lepton.pdgId())==11:
-            if not lepton.electronID("POG_MVA_ID_Run2_NonTrig_HZZ"):
-                return False
-        return True    
-
+        return lepton.tightId()
 
     def leptonID_loose(self,lepton):
-        if abs(lepton.sip3D())>4:
-            return False
-        if abs(lepton.pdgId())==13:
-            if lepton.physObj.isTrackerMuon() and not (lepton.physObj.isGlobalMuon()):
-                if not (lepton.physObj.numberOfMatchedStations())>0:
-                    return False
         return True    
 
 
