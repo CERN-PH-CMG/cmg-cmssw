@@ -121,7 +121,7 @@ lepAna = cfg.Analyzer(
     loose_muon_eta    = 2.4,
     loose_muon_dxy    = 0.5,
     loose_muon_dz     = 1,
-    loose_muon_isoCut = lambda muon : True,
+    loose_muon_isoCut = lambda muon : muon.sip3D() < 4,
     # inclusive very loose electron selection
     inclusive_electron_id  = "",
     inclusive_electron_pt  = 7,
@@ -135,7 +135,7 @@ lepAna = cfg.Analyzer(
     loose_electron_eta    = 2.5,
     loose_electron_dxy    = 0.5,
     loose_electron_dz     = 1.0,
-    loose_electron_isoCut = lambda x: True,
+    loose_electron_isoCut = lambda x: x.sip3D() < 4,
     loose_electron_lostHits = 1.0,
     # muon isolation correction method (can be "rhoArea" or "deltaBeta")
     mu_isoCorr = "deltaBeta" ,
@@ -168,7 +168,7 @@ jetAna = cfg.Analyzer(
     jetLepDR = 0.4,
     jetLepArbitration = (lambda jet,lepton : lepton), # you can decide which to keep in case of overlaps; e.g. if the jet is b-tagged you might want to keep the jet
     minLepPt = 0,
-    lepSelCut = lambda lepton : lepton.sip3D() < 4 and lepton.tightId() and lepton.relIso04 < (0.4 if abs(lepton.pdgId())==13 else 0.5),
+    lepSelCut = lambda lepton : lepton.tightId() and lepton.relIso04 < (0.4 if abs(lepton.pdgId())==13 else 0.5),
     relaxJetId = False,  
     doPuId = True,
     recalibrateJets = False, # True, False, 'MC', 'Data'
