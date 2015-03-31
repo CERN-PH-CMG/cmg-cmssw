@@ -201,7 +201,7 @@ metAna = cfg.Analyzer(
 fsrPhotonMaker = cfg.Analyzer(
     FSRPhotonMaker, name="fsrPhotonMaker",
     leptons="selectedLeptons",
-    electronID = lambda x: x.electronID("POG_MVA_ID_Run2_NonTrig_HZZ")
+    electronID = lambda x: True, #x.electronID("POG_MVA_ID_Run2_NonTrig_HZZ")
 )
 
 
