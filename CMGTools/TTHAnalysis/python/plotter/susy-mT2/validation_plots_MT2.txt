@@ -98,7 +98,7 @@ jet_area: jet_area: 100, 0,100 ; XTitle="jet mc area"
 
 jet_id: jet_id: [-0.5,0.5,1.5,2.5,3.5] ; XTitle="jet id"
 jet_puId: jet_puId: [-0.5,0.5,1.5] ; XTitle="jet PU id"
-jet_qgl: jet_qgl: [-0.5,0.,0.5,1.,1.5] ; XTitle="jet qgl"
+jet_qgl: jet_qgl: 60,-0.5,1.0 ; XTitle="jet qgl"
 
 jet1_pt: jet1_pt: 16,0,800    ; XTitle="jet1  p_{T}  [GeV]", Legend='TR'
 jet2_pt: jet2_pt: 16,0,800    ; XTitle="jet2  p_{T}  [GeV]", Legend='TR'
