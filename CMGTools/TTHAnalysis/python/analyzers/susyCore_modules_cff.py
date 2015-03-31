@@ -202,6 +202,7 @@ photonAna = cfg.Analyzer(
     etaMax = 2.5,
     gammaID = "PhotonCutBasedIDLoose_CSA14",
     do_mc_match = True,
+    do_randomCone = False,
 )
 
 
