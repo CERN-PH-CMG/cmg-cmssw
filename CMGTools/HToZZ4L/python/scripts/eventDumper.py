@@ -70,7 +70,7 @@ class BaseDumper(Module):
             print "    lepton %d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f   tightId %d relIso %5.3f sip3d %5.2f dxy %+4.3f dz %+4.3f bdt %+5.3f lostHits %1d" % (
                     i+1, l.pdgId,l.pt,l.eta,l.phi, l.tightId, l.relIso04, l.sip3d, l.dxy, l.dz, l.mvaIdPhys14, l.lostHits),
             if self.options.ismore:
-                print " iso ch %.3f nh %.3f ph %.3f pu %.3f rho %.3f ea %.3f " % ( l.chargedHadIso04, l.neutralHadIso04, l.photonIso04, l.puChargedHadIso04, l.rho, l.EffectiveArea04 ),
+                print " iso ch %5.2f nh %5.2f ph %5.2f pu %5.2f rho %5.2f ea %4.3f " % ( l.chargedHadIso04, l.neutralHadIso04, l.photonIso04, l.puChargedHadIso04, l.rho, l.EffectiveArea04 ),
             if self.options.ismc:
                 print "   mcMatch id %+3d, any %+2d" % (l.mcMatchId, l.mcMatchAny),
             print ""
@@ -81,7 +81,7 @@ class BaseDumper(Module):
                 print "    jet %d:  pt %5.1f uncorrected pt %5.1f eta %+4.2f phi %+4.2f  btag %4.3f" % (i+1, j.pt, j.rawPt, j.eta, j.phi, min(1.,max(0.,j.btagCSV)))
         fsr = Collection(ev, "FSR")
         for i,g in enumerate(fsr):
-            print "    fsr %2d:  pt %5.1f eta %+4.2f phi %+4.2f  reliso% 6.3f (ch %5.1f nh %5.1f ph %5.1f pu %5.1f), closest lepton id %+2d pt %5.1f eta %+4.2f phi %+4.2f dr %.4f " % (i+1, 
+            print "    photon %d:        pt %5.1f eta %+4.2f phi %+4.2f             reliso% 6.3f (ch %5.1f nh %5.1f ph %5.1f pu %5.1f), closest lepton id %+2d pt %5.1f eta %+4.2f phi %+4.2f dr %.4f " % (i+1, 
                         g.pt, g.eta, g.phi, g.relIso, g.chargedHadIso, g.neutralHadIso, g.photonIso, g.puChargedHadIso, g.closestLepton_pdgId, g.closestLepton_pt, g.closestLepton_eta, g.closestLepton_phi, g.closestLeptonDR)
 
         for type in "zz", "zz2P2F", "zz3P1F", "zzSS":
