@@ -45,8 +45,14 @@ class FSRPhotonMaker( Analyzer ):
                 continue
             for l in leptons:
                 if abs(l.pdgId())==11 and self.electronID(l):
-                    if (abs(p.eta()-l.eta())<0.05 and deltaPhi(p.phi(),l.phi())<2) or deltaR(p.eta(),p.phi(),l.eta(),l.phi())<0.15: 
-                        continue;
+                    if self.cfg_ana.electronVeto == "superclusterEta":
+                        if (abs(p.eta()-l.superCluster().eta())<0.05 and deltaPhi(p.phi(),l.superCluster().phi())<2) or deltaR(p.eta(),p.phi(),l.superCluster().eta(),l.superCluster().phi())<0.15: 
+                            continue
+                    elif self.cfg_ana.electronVeto == "electronEta":
+                        if (abs(p.eta()-l.eta())<0.05 and deltaPhi(p.phi(),l.phi())<2) or deltaR(p.eta(),p.phi(),l.eta(),l.phi())<0.15: 
+                            continue
+                    else: 
+                        raise RuntimeError, "electronVeto option %r not implemented" % self.cfg_ana.electronVeto
                 DR =deltaR(l.eta(),l.phi(),p.eta(),p.phi())     
                 if DR<0.07 and p.pt()>2.0:
                     direct.append(p)

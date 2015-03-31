@@ -202,6 +202,7 @@ fsrPhotonMaker = cfg.Analyzer(
     FSRPhotonMaker, name="fsrPhotonMaker",
     leptons="selectedLeptons",
     electronID = lambda x: True, #x.electronID("POG_MVA_ID_Run2_NonTrig_HZZ")
+    electronVeto = "superclusterEta", # alternatives: "electronEta" and in the future "pfCandReference"
 )
 
 
