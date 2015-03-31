@@ -203,6 +203,9 @@ class FourLeptonAnalyzerBase( Analyzer ):
                 DR=deltaR(l.eta(),l.phi(),g.eta(),g.phi())
                 if DR>0.5:
                     continue;
+                if self.cfg_ana.attachFsrToGlobalClosestLeptonOnly:
+                    if l != g.globalClosestLepton:
+                        continue
                 if hasattr(g,'DR'):
                     if DR<g.DR:
                         g.DR=DR

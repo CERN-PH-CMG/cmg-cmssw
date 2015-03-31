@@ -207,22 +207,26 @@ fsrPhotonMaker = cfg.Analyzer(
 
 fourLeptonAnalyzerSignal = cfg.Analyzer(
     FourLeptonAnalyzer, name="fourLeptonAnalyzerSignal",
-    tag = "Signal"
+    tag = "Signal",
+    attachFsrToGlobalClosestLeptonOnly = True
 )
 
 fourLeptonAnalyzer2P2F = cfg.Analyzer(
     FourLeptonAnalyzer2P2F, name="fourLeptonAnalyzer2P2F",
-    tag = "2P2F"
+    tag = "2P2F",
+    attachFsrToGlobalClosestLeptonOnly = True
 )
 
 fourLeptonAnalyzer3P1F = cfg.Analyzer(
     FourLeptonAnalyzer3P1F, name="fourLeptonAnalyzer3P1F",
-    tag = "3P1F"
+    tag = "3P1F",
+    attachFsrToGlobalClosestLeptonOnly = True
 )
 
 fourLeptonAnalyzerSS = cfg.Analyzer(
     FourLeptonAnalyzerSS, name="fourLeptonAnalyzerSS",
-    tag = "SS"
+    tag = "SS",
+    attachFsrToGlobalClosestLeptonOnly = True
 )
 
 fourLeptonEventSkimmer = cfg.Analyzer(
