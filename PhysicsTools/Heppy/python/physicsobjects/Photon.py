@@ -33,22 +33,37 @@ class Photon(PhysicsObject ):
     def photonIso(self):
         return self.physObj.photonIso()
 
-    def photonIDCSA14(self, name):
+    def photonIDCSA14(self, name, sidebands=False):
         keepThisPhoton = True
+        sigmaThresh  = 999
+        hovereThresh = 999
         if name == "PhotonCutBasedIDLoose_CSA14":
             if abs(self.physObj.eta())<1.479 :
-                if self.full5x5_sigmaIetaIeta() > 0.010 : keepThisPhoton = False
-                if self.hOVERe() > 0.0559       : keepThisPhoton = False
+                sigmaThresh  = 0.010
+                hovereThresh = 0.0559
             else :
-                if self.full5x5_sigmaIetaIeta() > 0.030 : keepThisPhoton = False
-                if self.hOVERe() > 0.049        : keepThisPhoton = False
-        if name == "PhotonCutBasedIDLoose_PHYS14":
+                sigmaThresh  = 0.030
+                hovereThresh = 0.049
+        elif name == "PhotonCutBasedIDLoose_PHYS14":
             if abs(self.physObj.eta())<1.479 :
-                if self.full5x5_sigmaIetaIeta() > 0.0106 : keepThisPhoton = False
-                if self.hOVERe() > 0.048        : keepThisPhoton = False
+                sigmaThresh  = 0.0106
+                hovereThresh = 0.048
             else :
-                if self.full5x5_sigmaIetaIeta() > 0.0266 : keepThisPhoton = False
-                if self.hOVERe() > 0.069        : keepThisPhoton = False
+                sigmaThresh  = 0.0266
+                hovereThresh = 0.069
+        else :
+          print "WARNING! Unkown photon ID! Will return true!" 
+          return True
+
+        if sidebands:
+          if abs(self.physObj.eta())<1.479 :
+            sigmaThresh = 0.015
+          else :
+            sigmaThresh = 0.035
+
+        if self.full5x5_sigmaIetaIeta() > sigmaThresh  : keepThisPhoton = False
+        if self.hOVERe()                > hovereThresh : keepThisPhoton = False
+
         return keepThisPhoton
                 
     pass
