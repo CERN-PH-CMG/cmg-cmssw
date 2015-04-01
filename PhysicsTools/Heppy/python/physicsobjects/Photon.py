@@ -37,11 +37,18 @@ class Photon(PhysicsObject ):
         keepThisPhoton = True
         if name == "PhotonCutBasedIDLoose_CSA14":
             if abs(self.physObj.eta())<1.479 :
-                if self.full5x5_sigmaIetaIeta() > 0.015 : keepThisPhoton = False
+                if self.full5x5_sigmaIetaIeta() > 0.010 : keepThisPhoton = False
                 if self.hOVERe() > 0.0559       : keepThisPhoton = False
             else :
-                if self.full5x5_sigmaIetaIeta() > 0.035 : keepThisPhoton = False
+                if self.full5x5_sigmaIetaIeta() > 0.030 : keepThisPhoton = False
                 if self.hOVERe() > 0.049        : keepThisPhoton = False
+        if name == "PhotonCutBasedIDLoose_PHYS14":
+            if abs(self.physObj.eta())<1.479 :
+                if self.full5x5_sigmaIetaIeta() > 0.0106 : keepThisPhoton = False
+                if self.hOVERe() > 0.048        : keepThisPhoton = False
+            else :
+                if self.full5x5_sigmaIetaIeta() > 0.0266 : keepThisPhoton = False
+                if self.hOVERe() > 0.069        : keepThisPhoton = False
         return keepThisPhoton
                 
     pass
