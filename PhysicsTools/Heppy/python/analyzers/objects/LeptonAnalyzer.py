@@ -36,26 +36,12 @@ class LeptonAnalyzer( Analyzer ):
         self.electronEnergyCalibrator = EmbeddedElectronCalibrator()
 #        if hasattr(cfg_comp,'efficiency'):
 #            self.efficiency= EfficiencyCorrector(cfg_comp.efficiency)
-        # Isolation cut
-        if hasattr(cfg_ana, 'loose_electron_isoCut'):
-            self.eleIsoCut = cfg_ana.loose_electron_isoCut
-        else:
-            self.eleIsoCut = lambda ele : (
-                    ele.relIso03 <= self.cfg_ana.loose_electron_relIso and 
-                    ele.absIso03 <  getattr(self.cfg_ana,'loose_electron_absIso',9e99))
-        if hasattr(cfg_ana, 'loose_muon_isoCut'):
-            self.muIsoCut = cfg_ana.loose_muon_isoCut
-        else:
-            self.muIsoCut = lambda mu : (
-                    mu.relIso03 <= self.cfg_ana.loose_muon_relIso and 
-                    mu.absIso03 <  getattr(self.cfg_ana,'loose_muon_absIso',9e99))
-
-
 
         self.eleEffectiveArea = getattr(cfg_ana, 'ele_effectiveAreas', "Phys14_25ns_v1")
         self.muEffectiveArea  = getattr(cfg_ana, 'mu_effectiveAreas',  "Phys14_25ns_v1")
         # MiniIsolation
         self.doMiniIsolation = getattr(cfg_ana, 'doMiniIsolation', False)
+        self.useMiniIsolation = getattr(cfg_ana, 'useMiniIsolation', False)
         if self.doMiniIsolation:
             self.miniIsolationPUCorr = self.cfg_ana.miniIsolationPUCorr
             self.miniIsolationVetoLeptons = self.cfg_ana.miniIsolationVetoLeptons
@@ -65,6 +51,32 @@ class LeptonAnalyzer( Analyzer ):
                 self.IsolationComputer = heppy.IsolationComputer(0.4)
             else:
                 self.IsolationComputer = heppy.IsolationComputer()
+
+
+        # Isolation cut
+        if hasattr(cfg_ana, 'loose_electron_isoCut'):
+            self.eleIsoCut = cfg_ana.loose_electron_isoCut
+        else:
+            self.eleIsoCut = lambda ele : (
+                    ele.miniRelIso<self.cfg_ana.loose_electron_minRelIso
+                    if self.doMiniIsolation and self.useMiniIsolation
+                    else
+                    ele.relIso03 <= self.cfg_ana.loose_electron_relIso and
+                    ele.absIso03 <  getattr(self.cfg_ana,'loose_electron_absIso',9e99)
+                    )
+        if hasattr(cfg_ana, 'loose_muon_isoCut'):
+            self.muIsoCut = cfg_ana.loose_muon_isoCut
+        else:
+            self.muIsoCut = lambda mu : (
+                    mu.miniRelIso<self.cfg_ana.loose_muon_minRelIso
+                    if self.doMiniIsolation and self.useMiniIsolation
+                    else
+                    mu.relIso03 <= self.cfg_ana.loose_muon_relIso and
+                    mu.absIso03 <  getattr(self.cfg_ana,'loose_muon_absIso',9e99)
+                    )
+
+
+
     #----------------------------------------
     # DECLARATION OF HANDLES OF LEPTONS STUFF   
     #----------------------------------------
@@ -129,10 +141,15 @@ class LeptonAnalyzer( Analyzer ):
                 inclusiveMuons.append(mu)
         for ele in allelectrons:
             if ( ele.electronID(self.cfg_ana.inclusive_electron_id) and
-                    ele.pt()>self.cfg_ana.inclusive_electron_pt and abs(ele.eta())<self.cfg_ana.inclusive_electron_eta and 
-                    abs(ele.dxy())<self.cfg_ana.inclusive_electron_dxy and abs(ele.dz())<self.cfg_ana.inclusive_electron_dz and 
-                    ele.lostInner()<=self.cfg_ana.inclusive_electron_lostHits ):
-                inclusiveElectrons.append(ele)
+                 ele.pt()>self.cfg_ana.inclusive_electron_pt and abs(ele.eta())<self.cfg_ana.inclusive_electron_eta ) :
+                if ( self.cfg_ana.inclusive_electron_id=="POG_Cuts_ID_PHYS14_25ns_v1_ConvVeto_Veto_full5x5") :
+                    if ( (abs(ele.dxy())<0.060279 if ele.isEB() else 0.273097) and (abs(ele.dz())<0.800538 if ele.isEB() else 0.885860) ):
+                        inclusiveElectrons.append(ele)
+                else :
+                    if (abs(ele.dxy())<self.cfg_ana.inclusive_electron_dxy and abs(ele.dz())<self.cfg_ana.inclusive_electron_dz and
+                        ele.lostInner()<=self.cfg_ana.inclusive_electron_lostHits
+                        ):
+                        inclusiveElectrons.append(ele)
         event.inclusiveLeptons = inclusiveMuons + inclusiveElectrons
  
         if self.doMiniIsolation:
@@ -144,30 +161,30 @@ class LeptonAnalyzer( Analyzer ):
 
         # make loose leptons (basic selection)
         for mu in inclusiveMuons:
-                if (mu.muonID(self.cfg_ana.loose_muon_id) and 
-                        mu.pt() > self.cfg_ana.loose_muon_pt and abs(mu.eta()) < self.cfg_ana.loose_muon_eta and 
-                        abs(mu.dxy()) < self.cfg_ana.loose_muon_dxy and abs(mu.dz()) < self.cfg_ana.loose_muon_dz and
-                        self.muIsoCut(mu)):
-                    mu.looseIdSusy = True
-                    event.selectedLeptons.append(mu)
-                    event.selectedMuons.append(mu)
-                else:
-                    mu.looseIdSusy = False
-                    event.otherLeptons.append(mu)
-        looseMuons = event.selectedLeptons[:]
+            if (mu.muonID(self.cfg_ana.loose_muon_id) and 
+                mu.pt() > self.cfg_ana.loose_muon_pt and abs(mu.eta()) < self.cfg_ana.loose_muon_eta and 
+                abs(mu.dxy()) < self.cfg_ana.loose_muon_dxy and abs(mu.dz()) < self.cfg_ana.loose_muon_dz and
+                self.muIsoCut(mu)):
+                mu.looseIdSusy = True
+                event.selectedLeptons.append(mu)
+                event.selectedMuons.append(mu)
+            else:
+                mu.looseIdSusy = False
+                event.otherLeptons.append(mu)
+                looseMuons = event.selectedLeptons[:]
         for ele in inclusiveElectrons:
-               if (ele.electronID(self.cfg_ana.loose_electron_id) and
-                         ele.pt()>self.cfg_ana.loose_electron_pt and abs(ele.eta())<self.cfg_ana.loose_electron_eta and 
-                         abs(ele.dxy()) < self.cfg_ana.loose_electron_dxy and abs(ele.dz())<self.cfg_ana.loose_electron_dz and 
-                         self.eleIsoCut(ele) and 
-                         ele.lostInner() <= self.cfg_ana.loose_electron_lostHits and
-                         ( True if getattr(self.cfg_ana,'notCleaningElectrons',False) else (bestMatch(ele, looseMuons)[1] > (self.cfg_ana.min_dr_electron_muon**2)) )):
-                    event.selectedLeptons.append(ele)
-                    event.selectedElectrons.append(ele)
-                    ele.looseIdSusy = True
-               else:
-                    event.otherLeptons.append(ele)
-                    ele.looseIdSusy = False
+            if (ele.electronID(self.cfg_ana.loose_electron_id) and
+                ele.pt()>self.cfg_ana.loose_electron_pt and abs(ele.eta())<self.cfg_ana.loose_electron_eta and
+                abs(ele.dxy())<self.cfg_ana.loose_electron_dxy and abs(ele.dz())<self.cfg_ana.loose_electron_dz and ele.lostInner()<=self.cfg_ana.loose_electron_lostHits and
+                ( True if getattr(self.cfg_ana,'notCleaningElectrons',False) else (bestMatch(ele, looseMuons)[1] > (self.cfg_ana.min_dr_electron_muon**2)) ) and
+                self.eleIsoCut(ele)
+                ):
+                event.selectedLeptons.append(ele)
+                event.selectedElectrons.append(ele)
+                ele.looseIdSusy = True
+            else:
+                event.otherLeptons.append(ele)
+                ele.looseIdSusy = False
 
         event.otherLeptons.sort(key = lambda l : l.pt(), reverse = True)
         event.selectedLeptons.sort(key = lambda l : l.pt(), reverse = True)
@@ -334,6 +351,9 @@ class LeptonAnalyzer( Analyzer ):
                  ele.tightIdResult = ele.electronID("POG_MVA_ID_Trig_full5x5")
             elif self.cfg_ana.ele_tightId=="Cuts_2012" :
                  ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_2012_Veto_full5x5") + 1*ele.electronID("POG_Cuts_ID_2012_Loose_full5x5") + 1*ele.electronID("POG_Cuts_ID_2012_Medium_full5x5") + 1*ele.electronID("POG_Cuts_ID_2012_Tight_full5x5")
+            elif self.cfg_ana.ele_tightId=="PHYS14" :
+                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVeto_Veto_full5x5") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVeto_Loose_full5x5") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVeto_Medium_full5x5") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVeto_Tight_full5x5")
+
             else :
                  try:
                      ele.tightIdResult = ele.electronID(self.cfg_ana.ele_tightId)
@@ -471,6 +491,7 @@ setattr(LeptonAnalyzer,"defaultConfig",cfg.Analyzer(
     loose_muon_dxy    = 0.05,
     loose_muon_dz     = 0.2,
     loose_muon_relIso = 0.4,
+    loose_muon_miniRelIso = 0.2,
     # inclusive very loose electron selection
     inclusive_electron_id  = "",
     inclusive_electron_pt  = 5,
@@ -485,6 +506,7 @@ setattr(LeptonAnalyzer,"defaultConfig",cfg.Analyzer(
     loose_electron_dxy    = 0.05,
     loose_electron_dz     = 0.2,
     loose_electron_relIso = 0.4,
+    loose_electron_miniRelIso = 0.1,
     loose_electron_lostHits = 1.0,
     # muon isolation correction method (can be "rhoArea" or "deltaBeta")
     mu_isoCorr = "rhoArea" ,
@@ -497,10 +519,11 @@ setattr(LeptonAnalyzer,"defaultConfig",cfg.Analyzer(
     # minimum deltaR between a loose electron and a loose muon (on overlaps, discard the electron)
     min_dr_electron_muon = 0.02,
     # Mini-isolation, with pT dependent cone: will fill in the miniRelIso, miniRelIsoCharged, miniRelIsoNeutral variables of the leptons (see https://indico.cern.ch/event/368826/ )
-    doMiniIsolation = False, # off by default since it requires access to all PFCandidates 
+    doMiniIsolation = False, # off by default since it requires access to all PFCandidates
     packedCandidates = 'packedPFCandidates',
     miniIsolationPUCorr = 'rhoArea', # Allowed options: 'rhoArea' (EAs for 03 cone scaled by R^2), 'deltaBeta', 'raw' (uncorrected), 'weights' (delta beta weights; not validated)
     miniIsolationVetoLeptons = None, # use 'inclusive' to veto inclusive leptons and their footprint in all isolation cones
+    useMiniIsolation = False, # off by default
     # do MC matching 
     do_mc_match = True, # note: it will in any case try it only on MC, not on data
     match_inclusiveLeptons = False, # match to all inclusive leptons
