@@ -12,6 +12,10 @@ cfg.Analyzer.nosubdir = True
 ## Redefine what I need
 ##------------------------------------------
 
+
+# core analyzer
+ttHCoreEventAna.jetEta = 4.7
+
 #Vertex
 vertexAna.keepFailingEvents = True # keep events with no good vertices
 
@@ -95,7 +99,8 @@ genAna.allGenTaus = True
 from CMGTools.TTHAnalysis.analyzers.ttHMT2Control import ttHMT2Control
 
 ttHMT2Control = cfg.Analyzer(
-            ttHMT2Control, name = 'ttHMT2Control'
+            ttHMT2Control, name = 'ttHMT2Control',
+            jetEta = 4.7
             )
 
 ##------------------------------------------
