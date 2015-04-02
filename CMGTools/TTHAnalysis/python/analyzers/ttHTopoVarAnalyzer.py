@@ -178,54 +178,57 @@ class ttHTopoVarAnalyzer( Analyzer ):
 
 #### do same things for GEN
 
-        allGenJets = [ x for x in self.handles['genJets'].product() ] 
-        objects40jc_Gen = [ j for j in allGenJets if j.pt() > 40 and abs(j.eta())<2.5 ]
-
-        if len(objects40jc_Gen)>=2:
-
-            pxvec  = ROOT.std.vector(float)()
-            pyvec  = ROOT.std.vector(float)()
-            pzvec  = ROOT.std.vector(float)()
-            Evec  = ROOT.std.vector(float)()
-            grouping  = ROOT.std.vector(int)()
-            
-            for jet in objects40jc_Gen:
-                pxvec.push_back(jet.px())
-                pyvec.push_back(jet.py())
-                pzvec.push_back(jet.pz())
-                Evec.push_back(jet.energy())
-
-            #### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
-            hemisphere = Hemisphere(pxvec, pyvec, pzvec, Evec, 2, 3)
-            grouping=hemisphere.getGrouping()
-##            print 'grouping ',len(grouping)
-
-            pseudoJet1px = 0 
-            pseudoJet1py = 0 
-            pseudoJet1pz = 0
-            pseudoJet1energy = 0 
-
-            pseudoJet2px = 0 
-            pseudoJet2py = 0 
-            pseudoJet2pz = 0
-            pseudoJet2energy = 0 
+        if self.cfg_comp.isMC:
+            allGenJets = [ x for x in self.handles['genJets'].product() ] 
+            objects40jc_Gen = [ j for j in allGenJets if j.pt() > 40 and abs(j.eta())<2.5 ]
+     
+            if len(objects40jc_Gen)>=2:
+     
+                pxvec  = ROOT.std.vector(float)()
+                pyvec  = ROOT.std.vector(float)()
+                pzvec  = ROOT.std.vector(float)()
+                Evec  = ROOT.std.vector(float)()
+                grouping  = ROOT.std.vector(int)()
                 
-            for index in range(0, len(pxvec)):
-                if(grouping[index]==1):
-                    pseudoJet1px += pxvec[index]
-                    pseudoJet1py += pyvec[index]
-                    pseudoJet1pz += pzvec[index]
-                    pseudoJet1energy += Evec[index]
-                if(grouping[index]==2):
-                    pseudoJet2px += pxvec[index]
-                    pseudoJet2py += pyvec[index]
-                    pseudoJet2pz += pzvec[index]
-                    pseudoJet2energy += Evec[index]                    
-
-            pseudoGenJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
-            pseudoGenJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
-
-            event.mt2_gen = self.computeMT2(pseudoGenJet1, pseudoGenJet2, event.met.genMET())
+                for jet in objects40jc_Gen:
+                    pxvec.push_back(jet.px())
+                    pyvec.push_back(jet.py())
+                    pzvec.push_back(jet.pz())
+                    Evec.push_back(jet.energy())
+     
+                #### get hemispheres (seed 2: max inv mass, association method: default 3 = minimal lund distance)
+                hemisphere = Hemisphere(pxvec, pyvec, pzvec, Evec, 2, 3)
+                grouping=hemisphere.getGrouping()
+     #            print 'grouping ',len(grouping)
+     
+                pseudoJet1px = 0 
+                pseudoJet1py = 0 
+                pseudoJet1pz = 0
+                pseudoJet1energy = 0 
+     
+                pseudoJet2px = 0 
+                pseudoJet2py = 0 
+                pseudoJet2pz = 0
+                pseudoJet2energy = 0 
+                    
+                for index in range(0, len(pxvec)):
+                    if(grouping[index]==1):
+                        pseudoJet1px += pxvec[index]
+                        pseudoJet1py += pyvec[index]
+                        pseudoJet1pz += pzvec[index]
+                        pseudoJet1energy += Evec[index]
+                    if(grouping[index]==2):
+                        pseudoJet2px += pxvec[index]
+                        pseudoJet2py += pyvec[index]
+                        pseudoJet2pz += pzvec[index]
+                        pseudoJet2energy += Evec[index]                    
+     
+                pseudoGenJet1 = ROOT.reco.Particle.LorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+                pseudoGenJet2 = ROOT.reco.Particle.LorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+     
+                event.mt2_gen = self.computeMT2(pseudoGenJet1, pseudoGenJet2, event.met.genMET())
+        else:
+            event.mt2_gen = -999.
 
             
 ## ===> full MT2 (jets + leptons)                                                                                                                                                                                             
