@@ -28,8 +28,8 @@ susyFullHad_globalVariables = susyCore_globalVariables + [
     NTupleVariable("met_rawPt", lambda ev : ev.met.shiftedPt(12, 0), help="raw met p_{T}"),
     NTupleVariable("met_rawPhi", lambda ev : ev.met.shiftedPhi(12, 0), help="raw met phi"),
 
-    #            NTupleVariable("tkmet_pt", lambda ev : ev.tkMet.pt(), help="TK E_{T}^{miss}"),
-    #            NTupleVariable("tkmet_phi", lambda ev : ev.tkMet.phi(), help="TK E_{T}^{miss}"),
+    #    NTupleVariable("tkmet_pt", lambda ev : ev.tkMet.pt(), help="TK E_{T}^{miss}"),
+    #    NTupleVariable("tkmet_phi", lambda ev : ev.tkMet.phi(), help="TK E_{T}^{miss}"),
     
     ##--------------------------------------------------
     # Physics object multplicities
@@ -40,6 +40,13 @@ susyFullHad_globalVariables = susyCore_globalVariables + [
     NTupleVariable("nElectrons10", lambda ev: sum([l.pt() > 10 and abs(l.pdgId()) == 11 for l in ev.selectedLeptons]), int, help="Number of electrons with pt > 10"),
     NTupleVariable("nTaus20", lambda ev: sum([l.pt() > 20 for l in ev.selectedTaus]), int, help="Number of taus with pt > 20"),
     NTupleVariable("nGammas20", lambda ev: sum([l.pt() > 20 for l in ev.selectedPhotons]), int, help="Number of photons with pt > 20"),
+
+
+    #    NTupleVariable("nIVFLooseExtra", lambda ev: sum([ (sv.mva>0.3 and sv.pt>5 and ( abs(sv.dxy.value())<3 and sv.cosTheta>0.98 ) and (sv.jet == None or sv.jet.pt() < 25)) for sv in ev.ivf]),int, help="SV from ivf with loose sv mva"),
+    #    NTupleVariable("nIVFMediumExtra", lambda ev: sum([(sv.mva>0.7 and sv.pt>5 and ( abs(sv.dxy.value())<3 and sv.cosTheta>0.98 ) and (sv.jet == None or sv.jet.pt() < 25)) for sv in ev.ivf]),int, help="SV from ivf with medium sv mva"),
+    #    NTupleVariable("nIVFTightExtra", lambda ev: sum([ (sv.mva>0.9 and sv.pt>5 and ( abs(sv.dxy.value())<3 and sv.cosTheta>0.98 ) and (sv.jet == None or sv.jet.pt() < 25)) for sv in ev.ivf]),int, help="SV from ivf with tight sv mva"),
+
+
     ##--------------------------------------------------
     #            NTupleVariable("mtw", lambda ev: ev.mtw, int, help="mt(l,met)"),
     #            NTupleVariable("mtwTau", lambda ev: ev.mtwTau, int, help="mt(tau,met)"),
