@@ -75,15 +75,10 @@ class PhotonAnalyzer( Analyzer ):
 
 
             keepThisPhoton = True
-            if self.cfg_ana.gammaID=="PhotonCutBasedIDLoose_CSA14" :
-                keepThisPhoton = gamma.photonIDCSA14("PhotonCutBasedIDLoose_CSA14")
-                gamma.idCutBased = keepThisPhoton
-                # we're keeing sigmaietaieta sidebands, but the id is false for them:
-                
-                if abs(gamma.eta())< 1.479 and gamma.full5x5_sigmaIetaIeta()>0.010 : 
-                    gamma.idCutBased = False
-                if abs(gamma.eta())>=1.479 and gamma.full5x5_sigmaIetaIeta()>0.0321 : 
-                    gamma.idCutBased = False
+            if self.cfg_ana.gammaID=="PhotonCutBasedIDLoose_CSA14" or self.cfg_ana.gammaID=="PhotonCutBasedIDLoose_PHYS14" :
+                gamma.idCutBased = gamma.photonIDCSA14(self.cfg_ana.gammaID)
+                # we're keeing sigmaietaieta sidebands:
+                keepThisPhoton   = gamma.photonIDCSA14(self.cfg_ana.gammaID, True)
             else:
               keepThisPhoton = gamma.photonID(self.cfg_ana.gammaID)
 
@@ -113,7 +108,7 @@ class PhotonAnalyzer( Analyzer ):
         match = matchObjectCollection3(event.allphotons, event.genPhotonsMatched, deltaRMax = 0.1)
         matchNoMom = matchObjectCollection3(event.allphotons, event.genPhotonsWithoutMom, deltaRMax = 0.1)
         packedGenParts = [ p for p in self.mchandles['packedGen'].product() if abs(p.eta()) < 3.1 ]
-        partons = [ p for p in self.mchandles['prunedGen'].product() if abs(p.eta()) < 3.1 and (p.status()==23 or p.status()==22) and abs(p.pdgId())<22 ]
+        partons = [ p for p in self.mchandles['prunedGen'].product() if (p.status()==23 or p.status()==22) and abs(p.pdgId())<22 ]
         for gamma in event.allphotons:
           gen = match[gamma]
           gamma.mcGamma = gen

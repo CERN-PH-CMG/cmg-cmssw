@@ -61,7 +61,7 @@ tauAna.tauAntiElectronID = "againstElectronLoose"
 
 # Photon
 photonAna.etaCentral = 2.5
-photonAna.gammaID = "PhotonCutBasedIDLoose_CSA14"
+photonAna.gammaID = "PhotonCutBasedIDLoose_PHYS14"
 photonAna.do_randomCone = True
 
 # Isolated Track
@@ -175,7 +175,7 @@ from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
 
 #-------- HOW TO RUN
 # choose 2 for full production
-test = 0
+test = 1
 if test==0:
     # ------------------------------------------------------------------------------------------- #
     # --- all this lines taken from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 
