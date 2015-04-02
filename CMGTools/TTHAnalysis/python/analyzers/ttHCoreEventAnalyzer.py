@@ -160,17 +160,17 @@ class ttHCoreEventAnalyzer( Analyzer ):
         import ROOT
 
         ## with Central Jets
-        objects25  = [ j for j in event.cleanJets if j.pt() > 25 and abs(j.eta())<self.cfg_ana.jetEta ] + event.selectedLeptons
-        objects30  = [ j for j in event.cleanJets if j.pt() > 30 and abs(j.eta())<self.cfg_ana.jetEta ] + event.selectedLeptons
-        objects40  = [ j for j in event.cleanJets if j.pt() > 40 and abs(j.eta())<self.cfg_ana.jetEta ] + event.selectedLeptons
-        objects40j = [ j for j in event.cleanJets if j.pt() > 40 and abs(j.eta())<self.cfg_ana.jetEta ] 
-        objects50j = [ j for j in event.cleanJets if j.pt() > 50 and abs(j.eta())<self.cfg_ana.jetEta ] 
-        objects40j10l = [ j for j in event.cleanJets if j.pt() > 40 and abs(j.eta())<self.cfg_ana.jetEta ] + [ l for l in event.selectedLeptons if l.pt() > 10 ] 
+        objects25  = [ j for j in event.cleanJets if j.pt() > 25 ] + event.selectedLeptons
+        objects30  = [ j for j in event.cleanJets if j.pt() > 30 ] + event.selectedLeptons
+        objects40  = [ j for j in event.cleanJets if j.pt() > 40 ] + event.selectedLeptons
+        objects40j = [ j for j in event.cleanJets if j.pt() > 40 ] 
+        objects50j = [ j for j in event.cleanJets if j.pt() > 50 ] 
+        objects40j10l = [ j for j in event.cleanJets if j.pt() > 40 ] + [ l for l in event.selectedLeptons if l.pt() > 10 ] 
         objects40j10l.sort(key = lambda obj : obj.pt(), reverse = True)
 
         objects40j10l5t = []
         if hasattr(event, 'selectedIsoCleanTrack'):
-            objects40j10l5t = [ j for j in event.cleanJets if j.pt() > 40 and abs(j.eta())<self.cfg_ana.jetEta ] + [ l for l in event.selectedLeptons if l.pt() > 10 ] + [ t for t in event.selectedIsoCleanTrack ]
+            objects40j10l5t = [ j for j in event.cleanJets if j.pt() > 40 ] + [ l for l in event.selectedLeptons if l.pt() > 10 ] + [ t for t in event.selectedIsoCleanTrack ]
             objects40j10l5t.sort(key = lambda obj : obj.pt(), reverse = True)
 
         event.htJet25 = sum([x.pt() for x in objects25])
@@ -201,8 +201,8 @@ class ttHCoreEventAnalyzer( Analyzer ):
         #Make 40 and 50 GeV HTs from cleanGenJets
         if self.cfg_comp.isMC:
             
-            genObjects40j = [j for j in event.cleanGenJets if j.pt()>40 and abs(j.eta())<self.cfg_ana.jetEta]
-            genObjects50j = [j for j in event.cleanGenJets if j.pt()>50 and abs(j.eta())<self.cfg_ana.jetEta]
+            genObjects40j = [j for j in event.cleanGenJets if j.pt()>40 ]
+            genObjects50j = [j for j in event.cleanGenJets if j.pt()>50 ]
 
             event.htGenJet40j = sum([x.pt() for x in genObjects40j])
             event.mhtGenJet40jvec = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in genObjects40j])) , -1.*(sum([x.py() for x in genObjects40j])), 0, 0 )               
@@ -225,17 +225,17 @@ class ttHCoreEventAnalyzer( Analyzer ):
         event.mhtPhiJet40j10l5t = event.mhtJet40j10l5tvec.phi()        
 
         ## same but with all eta range
-        objects25a  = [ j for j in event.cleanJetsAll if j.pt() > 25 and abs(j.eta())<self.cfg_ana.jetEta ] + event.selectedLeptons
-        objects30a  = [ j for j in event.cleanJetsAll if j.pt() > 30 and abs(j.eta())<self.cfg_ana.jetEta ] + event.selectedLeptons
-        objects40a  = [ j for j in event.cleanJetsAll if j.pt() > 40 and abs(j.eta())<self.cfg_ana.jetEta ] + event.selectedLeptons
-        objects40ja = [ j for j in event.cleanJetsAll if j.pt() > 40 and abs(j.eta())<self.cfg_ana.jetEta ] 
+        objects25a  = [ j for j in event.cleanJetsAll if j.pt() > 25 ] + event.selectedLeptons
+        objects30a  = [ j for j in event.cleanJetsAll if j.pt() > 30 ] + event.selectedLeptons
+        objects40a  = [ j for j in event.cleanJetsAll if j.pt() > 40 ] + event.selectedLeptons
+        objects40ja = [ j for j in event.cleanJetsAll if j.pt() > 40 ] 
 
         objects40ja10l5t = []
         if hasattr(event, 'selectedIsoCleanTrack'):
-            objects40ja10l5t = [ j for j in event.cleanJetsAll if j.pt() > 40 and abs(j.eta())<self.cfg_ana.jetEta ] + [ l for l in event.selectedLeptons if l.pt() > 10 ] + [ t for t in event.selectedIsoCleanTrack ]
+            objects40ja10l5t = [ j for j in event.cleanJetsAll if j.pt() > 40 ] + [ l for l in event.selectedLeptons if l.pt() > 10 ] + [ t for t in event.selectedIsoCleanTrack ]
             objects40ja10l5t.sort(key = lambda obj : obj.pt(), reverse = True)
 
-        objects40ja10l = [ j for j in event.cleanJetsAll if j.pt() > 40 and abs(j.eta())<self.cfg_ana.jetEta ] + [ l for l in event.selectedLeptons if l.pt() > 10 ]
+        objects40ja10l = [ j for j in event.cleanJetsAll if j.pt() > 40 ] + [ l for l in event.selectedLeptons if l.pt() > 10 ]
         objects40ja10l.sort(key = lambda obj : obj.pt(), reverse = True)
 
         event.htJet25a = sum([x.pt() for x in objects25a])

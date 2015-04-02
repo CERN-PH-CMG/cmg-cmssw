@@ -131,7 +131,8 @@ class JetAnalyzer( Analyzer ):
             leptons = leptons[:] + event.selectedTaus
         if self.cfg_ana.cleanJetsFromIsoTracks and hasattr(event, 'selectedIsoCleanTrack'):
             leptons = leptons[:] + event.selectedIsoCleanTrack
-        event.cleanJetsAll, cleanLeptons = cleanJetsAndLeptons(event.jets, leptons, self.jetLepDR, self.jetLepArbitration)
+        jetsEtaCut = [j for j in event.jets if abs(j.eta()) <  self.cfg_ana.jetEta ]
+        event.cleanJetsAll, cleanLeptons = cleanJetsAndLeptons(jetsEtaCut, leptons, self.jetLepDR, self.jetLepArbitration)
         event.cleanJets    = [j for j in event.cleanJetsAll if abs(j.eta()) <  self.cfg_ana.jetEtaCentral ]
         event.cleanJetsFwd = [j for j in event.cleanJetsAll if abs(j.eta()) >= self.cfg_ana.jetEtaCentral ]
         event.discardedJets = [j for j in event.jets if j not in event.cleanJetsAll]
