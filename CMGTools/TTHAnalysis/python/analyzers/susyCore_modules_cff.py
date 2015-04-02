@@ -150,6 +150,7 @@ lepAna = cfg.Analyzer(
     loose_muon_dxy    = 0.05,
     loose_muon_dz     = 0.1,
     loose_muon_relIso = 0.5,
+    loose_muon_minRelIso = 0.2,
     # inclusive very loose electron selection
     inclusive_electron_id  = "",
     inclusive_electron_pt  = 5,
@@ -164,6 +165,7 @@ lepAna = cfg.Analyzer(
     loose_electron_dxy    = 0.05,
     loose_electron_dz     = 0.1,
     loose_electron_relIso = 0.5,
+    loose_electron_minRelIso = 0.1,
     loose_electron_lostHits = 1.0,
     # muon isolation correction method (can be "rhoArea" or "deltaBeta")
     mu_isoCorr = "rhoArea" ,
@@ -177,6 +179,7 @@ lepAna = cfg.Analyzer(
     packedCandidates = 'packedPFCandidates',
     miniIsolationPUCorr = 'rhoArea', # Allowed options: 'rhoArea' (EAs for 03 cone scaled by R^2), 'deltaBeta', 'raw' (uncorrected), 'weights' (delta beta weights; not validated)
     miniIsolationVetoLeptons = None, # use 'inclusive' to veto inclusive leptons and their footprint in all isolation cones
+    useMiniIsolation = False,
     # minimum deltaR between a loose electron and a loose muon (on overlaps, discard the electron)
     min_dr_electron_muon = 0.05,
     # do MC matching 
