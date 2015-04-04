@@ -1,6 +1,6 @@
 import fnmatch
 import math
-from CMGTools.RootTools.utils.DeltaR import deltaR2
+from PhysicsTools.HeppyCore.utils.deltar import deltaR2
 
 def triggerMatched( object, triggerObjects, path, filter,
                     dR2Max=0.089999, dRMax=0., pdgIds=None, index=False):
