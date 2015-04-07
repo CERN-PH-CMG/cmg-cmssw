@@ -103,10 +103,10 @@ class Electron( Lepton ):
         WP_conversion_veto_DxyDz = {
             # missing Hits incremented by 1 because we return False if >=, note the '='
             ## ------- https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2#Working_points_for_PHYS14_sample
-            'POG_PHYS14_25ns_v1_ConvVetoDxyDz_Veto'   :  WP['POG_PHYS14_25ns_v1_ConvVeto_Veto'  ]+[('abs(dxy)',[0.060279, 0.273097]) , ('abs(dz)',[0.800538, 0.885860])],
-            'POG_PHYS14_25ns_v1_ConvVetoDxyDz_Loose'  :  WP['POG_PHYS14_25ns_v1_ConvVeto_Loose' ]+[('abs(dxy)',[0.022664, 0.097358]) , ('abs(dz)',[0.173670, 0.198444])],
-            'POG_PHYS14_25ns_v1_ConvVetoDxyDz_Medium' :  WP['POG_PHYS14_25ns_v1_ConvVeto_Medium']+[('abs(dxy)',[0.011811, 0.051682]) , ('abs(dz)',[0.070775, 0.180720])],
-            'POG_PHYS14_25ns_v1_ConvVetoDxyDz_Tight'  :  WP['POG_PHYS14_25ns_v1_ConvVeto_Tight' ]+[('abs(dxy)',[0.009924, 0.027261]) , ('abs(dz)',[0.015310, 0.147154])],
+            'POG_PHYS14_25ns_v1_ConvVetoDxyDz_Veto'   :  WP['POG_PHYS14_25ns_v1_ConvVeto_Veto'  ]+[('dxy',[0.060279, 0.273097]) , ('dz',[0.800538, 0.885860])],
+            'POG_PHYS14_25ns_v1_ConvVetoDxyDz_Loose'  :  WP['POG_PHYS14_25ns_v1_ConvVeto_Loose' ]+[('dxy',[0.022664, 0.097358]) , ('dz',[0.173670, 0.198444])],
+            'POG_PHYS14_25ns_v1_ConvVetoDxyDz_Medium' :  WP['POG_PHYS14_25ns_v1_ConvVeto_Medium']+[('dxy',[0.011811, 0.051682]) , ('dz',[0.070775, 0.180720])],
+            'POG_PHYS14_25ns_v1_ConvVetoDxyDz_Tight'  :  WP['POG_PHYS14_25ns_v1_ConvVeto_Tight' ]+[('dxy',[0.009924, 0.027261]) , ('dz',[0.015310, 0.147154])],
         }
 
         WP.update(WP_conversion_veto_DxyDz)
