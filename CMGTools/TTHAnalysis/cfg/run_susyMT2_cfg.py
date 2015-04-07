@@ -26,19 +26,19 @@ lepAna.loose_electron_eta    = 2.4
 lepAna.loose_electron_relIso = 0.15
 lepAna.loose_electron_minRelIso  = 0.1
 
-lepAna.loose_electron_id  = "POG_Cuts_ID_PHYS14_25ns_v1_ConvVeto_Veto_full5x5"
+lepAna.loose_electron_id  = "POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Veto_full5x5"
 lepAna.loose_electron_lostHits = 999. # no cut
 lepAna.loose_electron_dxy    = 999.
 lepAna.loose_electron_dz     = 999.
 
-lepAna.inclusive_electron_id  = "POG_Cuts_ID_PHYS14_25ns_v1_ConvVeto_Veto_full5x5"
+lepAna.inclusive_electron_id  = "POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Veto_full5x5"
 lepAna.inclusive_electron_lostHits = 999. # no cut since embedded in ID
 lepAna.inclusive_electron_dxy    = 999. # no cut since embedded in ID
 lepAna.inclusive_electron_dz     = 999. # no cut since embedded in ID
 
 lepAna.mu_isoCorr = "deltaBeta"
 lepAna.ele_isoCorr = "deltaBeta"
-lepAna.ele_tightId = "PHYS14"
+lepAna.ele_tightId = "Cuts_PHYS14_25ns_v1_ConvVetoDxyDz"
 lepAna.notCleaningElectrons = True
 lepAna.doMiniIsolation = True
 lepAna.miniIsolationPUCorr = 'raw'
@@ -75,6 +75,7 @@ tauAna.tauAntiElectronID = "againstElectronLoose"
 photonAna.etaCentral = 2.5
 photonAna.gammaID = "PhotonCutBasedIDLoose_CSA14"
 photonAna.do_randomCone = True
+#photonAna.do_mc_match = False
 
 # Isolated Track
 isoTrackAna.setOff=False
