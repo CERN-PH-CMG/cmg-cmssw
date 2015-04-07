@@ -1,0 +1,4 @@
+./submit_lhe_batch.py -T 1000000 -N 10000 --eos=/store/cmst3/user/emanuele/monox/mcsamples/zjet_8tev/gen/gamma1jet_LO_pT150to400 /afs/cern.ch/work/a/avartak/public/ZGammaFiles/gamma1jet_LO_pT150to400.lhe
+./submit_lhe_batch.py -T 1000000 -N 10000 --eos=/store/cmst3/user/emanuele/monox/mcsamples/zjet_8tev/gen/gamma1jet_NLO_pT150to400 /afs/cern.ch/work/a/avartak/public/ZGammaFiles/gamma1jet_NLO_pT150to400.lhe
+./submit_lhe_batch.py -T 1000000 -N 10000 --eos=/store/cmst3/user/emanuele/monox/mcsamples/zjet_8tev/gen/z1jet_LO_pT150to400 /afs/cern.ch/work/a/avartak/public/ZGammaFiles/z1jet_LO_pT150to400.lhe
+./submit_lhe_batch.py -T 1000000 -N 10000 --eos=/store/cmst3/user/emanuele/monox/mcsamples/zjet_8tev/gen/z1jet_NLO_pT150to400 /afs/cern.ch/work/a/avartak/public/ZGammaFiles/z1jet_NLO_pT150to400.lhe
