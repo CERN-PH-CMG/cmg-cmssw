@@ -136,14 +136,16 @@ class LeptonAnalyzer( Analyzer ):
         inclusiveElectrons = []
         for mu in allmuons:
             if (mu.track().isNonnull() and mu.muonID(self.cfg_ana.inclusive_muon_id) and 
-                    mu.pt()>self.cfg_ana.inclusive_muon_pt and abs(mu.eta())<self.cfg_ana.inclusive_muon_eta and 
-                    abs(mu.dxy())<self.cfg_ana.inclusive_muon_dxy and abs(mu.dz())<self.cfg_ana.inclusive_muon_dz):
+                mu.pt()>self.cfg_ana.inclusive_muon_pt and abs(mu.eta())<self.cfg_ana.inclusive_muon_eta and
+                abs(mu.dxy())<self.cfg_ana.inclusive_muon_dxy and abs(mu.dz())<self.cfg_ana.inclusive_muon_dz):
                 inclusiveMuons.append(mu)
         for ele in allelectrons:
-            if ( ele.electronID(self.cfg_ana.inclusive_electron_id) and
-                 ele.pt()>self.cfg_ana.inclusive_electron_pt and abs(ele.eta())<self.cfg_ana.inclusive_electron_eta ) :
-                if ( self.cfg_ana.inclusive_electron_id=="POG_Cuts_ID_PHYS14_25ns_v1_ConvVeto_Veto_full5x5") :
-                    if ( (abs(ele.dxy())<(0.060279 if ele.isEB() else 0.273097)) and (abs(ele.dz())<(0.800538 if ele.isEB() else 0.885860)) ):
+            if (ele.electronID(self.cfg_ana.inclusive_electron_id) and
+                ele.pt()>self.cfg_ana.inclusive_electron_pt and abs(ele.eta())<self.cfg_ana.inclusive_electron_eta ) :
+                if ( self.cfg_ana.inclusive_electron_id=="POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Veto_full5x5") :
+                    if ( (abs(ele.dxy())<(0.060279 if ele.isEB() else 0.273097)) and (abs(ele.dz())<(0.800538 if ele.isEB() else 0.885860)) and
+                         ele.lostInner()<=(2 if ele.isEB() else 3)
+                         ):
                         inclusiveElectrons.append(ele)
                 else :
                     if (abs(ele.dxy())<self.cfg_ana.inclusive_electron_dxy and abs(ele.dz())<self.cfg_ana.inclusive_electron_dz and
@@ -351,8 +353,8 @@ class LeptonAnalyzer( Analyzer ):
                  ele.tightIdResult = ele.electronID("POG_MVA_ID_Trig_full5x5")
             elif self.cfg_ana.ele_tightId=="Cuts_2012" :
                  ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_2012_Veto_full5x5") + 1*ele.electronID("POG_Cuts_ID_2012_Loose_full5x5") + 1*ele.electronID("POG_Cuts_ID_2012_Medium_full5x5") + 1*ele.electronID("POG_Cuts_ID_2012_Tight_full5x5")
-            elif self.cfg_ana.ele_tightId=="PHYS14" :
-                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVeto_Veto_full5x5") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVeto_Loose_full5x5") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVeto_Medium_full5x5") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVeto_Tight_full5x5")
+            elif self.cfg_ana.ele_tightId=="Cuts_PHYS14_25ns_v1_ConvVetoDxyDz" :
+                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Veto_full5x5") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Loose_full5x5") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Medium_full5x5") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Tight_full5x5")
 
             else :
                  try:
