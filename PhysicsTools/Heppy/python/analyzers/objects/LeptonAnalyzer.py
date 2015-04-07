@@ -171,7 +171,7 @@ class LeptonAnalyzer( Analyzer ):
             else:
                 mu.looseIdSusy = False
                 event.otherLeptons.append(mu)
-                looseMuons = event.selectedLeptons[:]
+        looseMuons = event.selectedLeptons[:]
         for ele in inclusiveElectrons:
             if (ele.electronID(self.cfg_ana.loose_electron_id) and
                 ele.pt()>self.cfg_ana.loose_electron_pt and abs(ele.eta())<self.cfg_ana.loose_electron_eta and
@@ -368,7 +368,10 @@ class LeptonAnalyzer( Analyzer ):
         # -- version with increasing cone at low pT, gives slightly better performance for tight cuts and low pt leptons
         # mu.miniIsoR = 10.0/min(max(mu.pt(), 50),200) if mu.pt() > 20 else 4.0/min(max(mu.pt(),10),20) 
         what = "mu" if (abs(mu.pdgId()) == 13) else ("eleB" if mu.isEB() else "eleE")
-        mu.miniAbsIsoCharged = self.IsolationComputer.chargedAbsIso(mu.physObj, mu.miniIsoR, {"mu":0.0001,"eleB":0,"eleE":0.015}[what], 0.0,self.IsolationComputer.selfVetoNone);
+        if what == "mu":
+            mu.miniAbsIsoCharged = self.IsolationComputer.chargedAbsIso(mu.physObj, mu.miniIsoR, {"mu":0.0001,"eleB":0,"eleE":0.015}[what], 0.0);
+        else:
+            mu.miniAbsIsoCharged = self.IsolationComputer.chargedAbsIso(mu.physObj, mu.miniIsoR, {"mu":0.0001,"eleB":0,"eleE":0.015}[what], 0.0,self.IsolationComputer.selfVetoNone);
         if self.miniIsolationPUCorr == "weights":
             if what == "mu":
                 mu.miniAbsIsoNeutral = self.IsolationComputer.neutralAbsIsoWeighted(mu.physObj, mu.miniIsoR, 0.01, 0.5);
@@ -377,7 +380,7 @@ class LeptonAnalyzer( Analyzer ):
                                          self.IsolationComputer.neutralHadAbsIsoWeighted(mu.physObj, mu.miniIsoR, 0.0, 0.0, self.IsolationComputer.selfVetoNone) )
         else:
             if what == "mu":
-                mu.miniAbsIsoNeutral = self.IsolationComputer.neutralAbsIsoRaw(mu.physObj, mu.miniIsoR, 0.01, 0.5,self.IsolationComputer.selfVetoNone);
+                mu.miniAbsIsoNeutral = self.IsolationComputer.neutralAbsIsoRaw(mu.physObj, mu.miniIsoR, 0.01, 0.5);
             else:
                 mu.miniAbsIsoPho  = self.IsolationComputer.photonAbsIsoRaw(    mu.physObj, mu.miniIsoR, 0.08 if what == "eleE" else 0.0, 0.0, self.IsolationComputer.selfVetoNone) 
                 mu.miniAbsIsoNHad = self.IsolationComputer.neutralHadAbsIsoRaw(mu.physObj, mu.miniIsoR, 0.0, 0.0, self.IsolationComputer.selfVetoNone) 
@@ -390,7 +393,7 @@ class LeptonAnalyzer( Analyzer ):
                 mu.miniAbsIsoNeutral = max(0.0, mu.miniAbsIsoNeutral - mu.rho * mu.EffectiveArea03 * (mu.miniIsoR/0.3)**2)
             elif self.miniIsolationPUCorr == "deltaBeta":
                 if what == "mu":
-                    mu.miniAbsIsoPU = self.IsolationComputer.puAbsIso(mu.physObj, mu.miniIsoR, 0.01, 0.5,self.IsolationComputer.selfVetoNone);
+                    mu.miniAbsIsoPU = self.IsolationComputer.puAbsIso(mu.physObj, mu.miniIsoR, 0.01, 0.5);
                 else:
                     mu.miniAbsIsoPU = self.IsolationComputer.puAbsIso(mu.physObj, mu.miniIsoR, 0.015 if what == "eleE" else 0.0, 0.0,self.IsolationComputer.selfVetoNone);
                 mu.miniAbsIsoNeutral = max(0.0, mu.miniAbsIsoNeutral - 0.5*mu.miniAbsIsoPU)
