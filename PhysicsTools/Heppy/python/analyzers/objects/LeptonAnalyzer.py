@@ -141,17 +141,11 @@ class LeptonAnalyzer( Analyzer ):
                 inclusiveMuons.append(mu)
         for ele in allelectrons:
             if (ele.electronID(self.cfg_ana.inclusive_electron_id) and
-                ele.pt()>self.cfg_ana.inclusive_electron_pt and abs(ele.eta())<self.cfg_ana.inclusive_electron_eta ) :
-                if ( self.cfg_ana.inclusive_electron_id=="POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Veto_full5x5") :
-                    if ( (abs(ele.dxy())<(0.060279 if ele.isEB() else 0.273097)) and (abs(ele.dz())<(0.800538 if ele.isEB() else 0.885860)) and
-                         ele.lostInner()<=(2 if ele.isEB() else 3)
-                         ):
-                        inclusiveElectrons.append(ele)
-                else :
-                    if (abs(ele.dxy())<self.cfg_ana.inclusive_electron_dxy and abs(ele.dz())<self.cfg_ana.inclusive_electron_dz and
-                        ele.lostInner()<=self.cfg_ana.inclusive_electron_lostHits
-                        ):
-                        inclusiveElectrons.append(ele)
+                ele.pt()>self.cfg_ana.inclusive_electron_pt and abs(ele.eta())<self.cfg_ana.inclusive_electron_eta and
+                abs(ele.dxy())<self.cfg_ana.inclusive_electron_dxy and abs(ele.dz())<self.cfg_ana.inclusive_electron_dz and
+                ele.lostInner()<=self.cfg_ana.inclusive_electron_lostHits
+                ) :
+                inclusiveElectrons.append(ele)
         event.inclusiveLeptons = inclusiveMuons + inclusiveElectrons
  
         if self.doMiniIsolation:
