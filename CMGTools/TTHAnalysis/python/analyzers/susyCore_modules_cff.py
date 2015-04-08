@@ -255,6 +255,7 @@ isoTrackAna = cfg.Analyzer(
 jetAna = cfg.Analyzer(
     JetAnalyzer, name='jetAnalyzer',
     jetCol = 'slimmedJets',
+    copyJetsByValue = False,      #Whether or not to copy the input jets or to work with references (should be 'True' if JetAnalyzer is run more than once)
     genJetCol = 'slimmedGenJets',
     rho = ('fixedGridRhoFastjetAll','',''),
     jetPt = 25.,
