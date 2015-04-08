@@ -263,7 +263,7 @@ DYJetsToLL_M50_HT100to200, DYJetsToLL_M50_HT200to400, DYJetsToLL_M50_HT400to600,
 
 # ------------------------------------------------------------------------------------------- #
 
-doSpecialSettingsForMECCA = 1
+doSpecialSettingsForMECCA = 0
 if doSpecialSettingsForMECCA==1:
     jetAna.doQG = False
     photonAna.do_randomCone = False
