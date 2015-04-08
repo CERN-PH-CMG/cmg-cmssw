@@ -119,7 +119,7 @@ isoTrack_dz: isoTrack_dz: 100,0,0.5    ; XTitle="isotrack dz  [cm]"
 
 isoTrack_absIso:  isoTrack_absIso: 10,0,.50;  Legend='TR'
 
-isoTrack_mcMatchId:  isoTrack_mcMatchId: 28,-1.5,26.5;  Legend='TR'
+#isoTrack_mcMatchId:  isoTrack_mcMatchId: 28,-1.5,26.5;  Legend='TR'
 
 ##### TAU
 
@@ -130,10 +130,10 @@ tau_eta: tau_eta: 10,-5.,5.    ; XTitle="tau eta"
 tau_mass: tau_mass: 20,0,400.    ; XTitle="tau mass"
 
 tau_Charge:  tau_charge: [-1.5,-0.5,0.5,1.5];  Legend='TL'
-tau_mcMatchId:  tau_mcMatchId: 28,-1.5,26.5;  Legend='TR'
+#tau_mcMatchId:  tau_mcMatchId: 28,-1.5,26.5;  Legend='TR'
 
-tau_dxy: tau_dxy: 100,0,0.5    ; XTitle="tau dxy  [cm]"
-tau_dz: tau_dz: 100,0,0.5    ; XTitle="tau dz  [cm]"
+#tau_dxy: tau_dxy: 100,0,0.5    ; XTitle="tau dxy  [cm]"
+#tau_dz: tau_dz: 100,0,0.5    ; XTitle="tau dz  [cm]"
 
 tau_isoCI3hit: tau_isoCI3hit: 100,0,0.5    ; XTitle="tau ISO  [GeV]"   
 tau_idCI3hit: tau_idCI3hit: 10,0,10.    ; XTitle="tau ID "
@@ -231,7 +231,7 @@ lep_dz: lep_dz: 100,0,0.5    ; XTitle="lep dz  [cm]"
 lep_relIso03:  lep_relIso03: 15,0,.5;  Legend='TR'
 lep_relIso04:  lep_relIso04: 15,0,.5;  Legend='TR'
 lep_miniRelIso: lep_miniRelIso: 15,0,.5;  Legend='TR'
-lep_mcMatchId:  lep_mcMatchId: 28,-1.5,26.5;  Legend='TR'
+#lep_mcMatchId:  lep_mcMatchId: 28,-1.5,26.5;  Legend='TR'
 lep_tightId:  lep_tightId: [-0.5,0.5,1.5,2.5,3.5];  Legend='TL'
 
 lep_lostHits:  lep_lostHits: [-0.5,0.5,1.5,2.5,3.5,4.5,5.5];  Legend='TL'
