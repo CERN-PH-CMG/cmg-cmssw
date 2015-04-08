@@ -53,7 +53,7 @@ jetAna.doQG = True
 jetAna.jetEta = 4.7
 jetAna.jetEtaCentral = 2.5
 jetAna.jetPt = 10.
-#jetAna.mcGT = "PHYS14_V4_MC" # jec corrections
+jetAna.mcGT = "PHYS14_V4_MC" # jec corrections
 jetAna.recalibrateJets = True
 jetAna.jetLepDR = 0.4
 jetAna.smearJets = False
@@ -217,9 +217,13 @@ if test==0:
     comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/gjets_ht200to400_miniaodsim_fix.root']
     selectedComponents = [comp]
     comp.splitFactor = 10
-#    comp.fineSplitFactor = 100
+
 
 elif test==1:
+    # Uncomment the two following lines to run on a specific event
+    #eventSelector.toSelect = [ 84142401 ]
+    #sequence = cfg.Sequence([eventSelector] + sequence)
+
 
     from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
 #    comp=GJets_HT200to400
@@ -230,6 +234,7 @@ elif test==1:
 
     selectedComponents = [comp]
     comp.splitFactor = 1
+
 
 elif test==2:
     from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
@@ -248,6 +253,7 @@ DYJetsToLL_M50_HT100to200, DYJetsToLL_M50_HT200to400, DYJetsToLL_M50_HT400to600,
     # test all components (1 thread per component).
     for comp in selectedComponents:
         comp.splitFactor = 600
+        #comp.fineSplitFactor = 2 # to run two jobs per file
         comp.files = comp.files[:]
         #comp.files = comp.files[:1]  
         #comp.files = comp.files[57:58]  # to process only file [57]  
@@ -256,6 +262,31 @@ DYJetsToLL_M50_HT100to200, DYJetsToLL_M50_HT200to400, DYJetsToLL_M50_HT400to600,
 
 
 # ------------------------------------------------------------------------------------------- #
+
+doSpecialSettingsForMECCA = 1
+if doSpecialSettingsForMECCA==1:
+    jetAna.doQG = False
+    photonAna.do_randomCone = False
+    treeProducer.treename = 'mt2'
+
+
+
+
+
+# ------------------------------------------------------------------------------------------- #
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 from PhysicsTools.HeppyCore.framework.services.tfile import TFileService 
 output_service = cfg.Service(
