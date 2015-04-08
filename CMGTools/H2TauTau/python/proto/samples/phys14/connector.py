@@ -8,6 +8,7 @@ from CMGTools.RootTools.utils.splitFactor                   import splitFactor
 from CMGTools.H2TauTau.proto.samples.phys14.higgs           import mc_higgs
 from CMGTools.H2TauTau.proto.samples.phys14.ewk             import mc_ewk
 from CMGTools.H2TauTau.proto.samples.phys14.diboson         import mc_diboson
+from CMGTools.H2TauTau.proto.samples.phys14.qcd             import mc_qcd
 from CMGTools.H2TauTau.proto.samples.phys14.triggers_tauMu  import mc_triggers as mc_triggers_mt
 from CMGTools.H2TauTau.proto.samples.phys14.triggers_tauEle import mc_triggers as mc_triggers_et
 from CMGTools.H2TauTau.proto.samples.phys14.triggers_tauTau import mc_triggers as mc_triggers_tt
@@ -34,24 +35,30 @@ class httConnector(object):
         self.homedir         = os.getenv('HOME')
         self.mc_dict         = {}
         self.MC_list         = []
-        self.aliases         = aliases = {
-                                          '/GluGluToHToTauTau.*Phys14DR.*' : 'HiggsGGH'         ,
-                                          '/VBF_HToTauTau.*Phys14DR.*'     : 'HiggsVBF'         ,
-                                          '/DYJetsToLL.*Phys14DR.*'        : 'DYJets'           ,
-                                          '/TTJets.*Phys14DR.*'            : 'TTJets'           ,
-                                          '/T_tW.*Phys14DR.*'              : 'T_tW'             ,
-                                          '/Tbar_tW.*Phys14DR.*'           : 'Tbar_tW'          ,
-                                          '/WZJetsTo3LNu.*Phys14DR.*'      : 'WZJetsTo3LNu'     ,
-                                          '/TTbarH.*Phys14DR.*'            : 'HiggsTTHInclusive',
-                                          '/WJetsToLNu.*Phys14DR.*'        : 'WJets'            ,
+        self.aliases         = aliases =  {
+                                          '/GluGluToHToTauTau.*Phys14DR.*'            : 'HiggsGGH'         ,
+                                          '/VBF_HToTauTau.*Phys14DR.*'                : 'HiggsVBF'         ,
+                                          '/DYJetsToLL.*Phys14DR.*'                   : 'DYJets'           ,
+                                          '/TTJets.*Phys14DR.*'                       : 'TTJets'           ,
+                                          '/T_tW.*Phys14DR.*'                         : 'T_tW'             ,
+                                          '/Tbar_tW.*Phys14DR.*'                      : 'Tbar_tW'          ,
+                                          '/WZJetsTo3LNu.*Phys14DR.*'                 : 'WZJetsTo3LNu'     ,
+                                          '/TTbarH.*Phys14DR.*'                       : 'HiggsTTHInclusive',
+                                          '/WJetsToLNu.*Phys14DR.*'                   : 'WJets'            ,
+                                          '/QCD_Pt-10to20_EMEnriched.*Phys14DR.*'     : 'QCDEM10to20'      ,
+                                          '/QCD_Pt-20to30_EMEnriched.*Phys14DR.*'     : 'QCDEM20to30'      ,
+                                          '/QCD_Pt-30to80_EMEnriched.*Phys14DR.*'     : 'QCDEM30to80'      ,
+                                          '/QCD_Pt-80to170_EMEnriched.*Phys14DR.*'    : 'QCDEM80to170'     ,
+                                          '/QCD_Pt-30to50_MuEnrichedPt5.*Phys14DR.*'  : 'QCDMu30to50'      ,
+                                          '/QCD_Pt-50to80_MuEnrichedPt5.*Phys14DR.*'  : 'QCDMu50to80'      ,
+                                          '/QCD_Pt-80to120_MuEnrichedPt5.*Phys14DR.*' : 'QCDMu80to120'     ,
                                          }
-
         self.dictionarize_()
         self.listify_()
 
     def dictionarize_(self):
         ''' '''
-        for s in mc_higgs + mc_ewk + mc_diboson:
+        for s in mc_higgs + mc_ewk + mc_diboson + mc_qcd:
             self.mc_dict[s.name] = s
 
     def listify_(self):
@@ -108,7 +115,7 @@ class httConnector(object):
 
         for alias_k, alias_v in self.mc_dict.items():
             m = regex.match(alias_k)
-            if m:
+            if m and 'QCD' not in alias_k:
                 alias_k = m.group('sample')
             if alias_k not in self.aliases.values():
                 continue
@@ -138,3 +145,20 @@ class httConnector(object):
 
     def pruneSampleList_(self):
         self.MC_list = [m for m in self.MC_list if m.files]
+
+if __name__ == '__main__':
+
+    from optparse import OptionParser
+    parser = OptionParser()
+    parser.usage = ''' To be written '''
+
+    parser.add_option('-T', '--tier'      , dest = 'tier'      ,  help = 'Tier. Search samples on eos that end with this tier'                                            )
+    parser.add_option('-U', '--user'      , dest = 'user'      ,  help = 'User. User or group that owns the samples. Default htautau_group'    , default = 'htautau_group')
+    parser.add_option('-P', '--pattern'   , dest = 'pattern'   ,  help = 'Pattern. Connect only files that match this pattern. Default .*root' , default = '.*root'       )
+    parser.add_option('-C', '--channel'   , dest = 'channel'   ,  help = 'Channel. Choose [mt, et, tt, em]. Default mt'                        , default = 'mt'           )
+    parser.add_option('-p', '--production', dest = 'production',  help = 'Production. Check the cache first. Default False'                    , default = False          )
+
+    (options,args) = parser.parse_args()
+
+    my_connect = httConnector(options.tier, options.user, options.pattern, options.channel, options.production)
+    my_connect.connect()
