@@ -19,12 +19,12 @@ vertexAna.keepFailingEvents = True # keep events with no good vertices
 lepAna.loose_muon_dxy = 0.5
 lepAna.loose_muon_dz  = 1.0
 lepAna.loose_muon_relIso  = 0.15
-lepAna.loose_muon_minRelIso  = 0.2
+lepAna.loose_muon_isoCut = lambda muon :muon.miniRelIso < 0.2
 
 lepAna.loose_electron_pt  = 5
 lepAna.loose_electron_eta    = 2.4
 lepAna.loose_electron_relIso = 0.15
-lepAna.loose_electron_minRelIso  = 0.1
+lepAna.loose_electron_isoCut = lambda electron : electron.miniRelIso < 0.1
 
 lepAna.loose_electron_id  = "POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Veto_full5x5"
 lepAna.loose_electron_lostHits = 999. # no cut
@@ -42,7 +42,6 @@ lepAna.ele_tightId = "Cuts_PHYS14_25ns_v1_ConvVetoDxyDz"
 lepAna.notCleaningElectrons = True
 lepAna.doMiniIsolation = True
 lepAna.miniIsolationPUCorr = 'raw'
-lepAna.useMiniIsolation = True
 
 # JET (for event variables do apply the jetID and not PUID yet)
 jetAna.relaxJetId = False
