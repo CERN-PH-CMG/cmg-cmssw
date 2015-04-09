@@ -44,7 +44,7 @@ class DYJetsFakeAnalyzer(Analyzer):
             p for p in event.genParticles if abs(p.pdgId()) in (12, 14, 16)]
 
         genmet = ROOT.math.XYZTLorentzVectorD()
-        for nu in neutrinos[1:]:
+        for nu in neutrinos:
             genmet += nu.p4()
 
         event.genmet_pt = genmet.pt()
