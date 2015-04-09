@@ -162,7 +162,7 @@ from CMGTools.HToZZ4L.analyzers.ElectronMuonCleaner import ElectronMuonCleaner
 eleMuClean = cfg.Analyzer(
     ElectronMuonCleaner, name='eleMuClean',
     selectedMuCut = lambda mu : mu.isPFMuon() or mu.isGlobalMuon(),
-    otherMuCut    = lambda mu : mu.isPFMuon() or mu.isGlobalMuon(),
+    otherMuCut    = lambda mu : False, # (mu.isPFMuon() or mu.isGlobalMuon()) and muon.muonBestTrackType() != 2, # uncomment to include also muons with sip > 4
     mustClean = lambda ele, mu, dr: dr < 0.05
 )
 
