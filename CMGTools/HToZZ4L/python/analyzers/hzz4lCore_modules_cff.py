@@ -170,16 +170,21 @@ eleMuClean = cfg.Analyzer(
 jetAna = cfg.Analyzer(
     JetAnalyzer, name='jetAnalyzer',
     jetCol = 'slimmedJets',
+    copyJetsByValue = False,      #Whether or not to copy the input jets or to work with references (should be 'True' if JetAnalyzer is run more than once)
+    genJetCol = 'slimmedGenJets',
+    rho = ('fixedGridRhoFastjetAll','',''),
     jetPt = 30.,
     jetEta = 4.7,
     jetEtaCentral = 4.7,
     jetLepDR = 0.4,
     jetLepArbitration = (lambda jet,lepton : lepton), # you can decide which to keep in case of overlaps; e.g. if the jet is b-tagged you might want to keep the jet
+    cleanSelectedLeptons = True, #Whether to clean 'selectedLeptons' after disambiguation. Treat with care (= 'False') if running Jetanalyzer more than once
     minLepPt = 0,
     lepSelCut = lambda lepton : lepton.tightId() and lepton.relIso04 < (0.4 if abs(lepton.pdgId())==13 else 0.5),
     relaxJetId = False,  
     doPuId = True,
     recalibrateJets = False, # True, False, 'MC', 'Data'
+    recalibrationType = "AK4PFchs",
     mcGT     = "PHYS14_25_V2",
     jecPath = "%s/src/CMGTools/RootTools/data/jec/" % os.environ['CMSSW_BASE'],
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
