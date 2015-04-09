@@ -115,13 +115,14 @@ lepAna = cfg.Analyzer(
     inclusive_muon_eta = 2.4,
     inclusive_muon_dxy = 0.5,
     inclusive_muon_dz  = 1.0,
+    muon_dxydz_track   = "muonBestTrack",
     # loose muon selection
     loose_muon_id     = "POG_Global_OR_TMArbitrated",
     loose_muon_pt     = 5,
     loose_muon_eta    = 2.4,
     loose_muon_dxy    = 0.5,
     loose_muon_dz     = 1,
-    loose_muon_isoCut = lambda muon : muon.sip3D() < 4,
+    loose_muon_isoCut = lambda muon : muon.sip3D() < 4 and muon.muonBestTrackType() != 2,
     # inclusive very loose electron selection
     inclusive_electron_id  = "",
     inclusive_electron_pt  = 7,
