@@ -190,7 +190,7 @@ from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
 
 #-------- HOW TO RUN
 # choose 2 for full production
-test = 1
+test = 2
 if test==0:
     # ------------------------------------------------------------------------------------------- #
     # --- all this lines taken from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 
@@ -253,7 +253,7 @@ DYJetsToLL_M50_HT100to200, DYJetsToLL_M50_HT200to400, DYJetsToLL_M50_HT400to600,
     # test all components (1 thread per component).
     for comp in selectedComponents:
         comp.splitFactor = 600
-        #comp.fineSplitFactor = 2 # to run two jobs per file
+        comp.fineSplitFactor = 2 # to run two jobs per file
         comp.files = comp.files[:]
         #comp.files = comp.files[:1]  
         #comp.files = comp.files[57:58]  # to process only file [57]  
