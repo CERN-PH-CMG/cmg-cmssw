@@ -158,6 +158,13 @@ lepAna = cfg.Analyzer(
     match_inclusiveLeptons = False, # match to all inclusive leptons
     )
 
+from CMGTools.HToZZ4L.analyzers.ElectronMuonCleaner import ElectronMuonCleaner
+eleMuClean = cfg.Analyzer(
+    ElectronMuonCleaner, name='eleMuClean',
+    selectedMuCut = lambda mu : mu.isPFMuon() or mu.isGlobalMuon(),
+    otherMuCut    = lambda mu : mu.isPFMuon() or mu.isGlobalMuon(),
+    mustClean = lambda ele, mu, dr: dr < 0.05
+)
 
 ## Jets Analyzer (generic)
 jetAna = cfg.Analyzer(
@@ -261,6 +268,7 @@ hzz4lCoreSequence = [
     pileUpAna,
     vertexAna,
     lepAna,
+    eleMuClean,
     jetAna,
     metAna,
     triggerFlagsAna,
