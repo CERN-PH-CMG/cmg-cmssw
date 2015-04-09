@@ -30,6 +30,7 @@ count_nGammas20 : nGammas20 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5]; XTitle="N(#gamma\,
 
 count_nJet40 : nJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(jet\, p_{T} > 40)'
 count_nBJet40 : nBJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\, p_{T} > 40\, CSVM)'
+count_nBJet25 : nBJet25 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\, p_{T} > 35\, CSVM)'
 
 ##count_ngenParticles: ngenPart : 500,0,500  ; XTitle="nGenParticles"
 
@@ -76,8 +77,8 @@ pseudoJet2_eta: pseudoJet2_eta: 10,-5.,5.    ; XTitle="PseJet2 eta"
 pseudoJet2_mass: pseudoJet2_mass: 20,0,400.    ; XTitle="PseJet2 mass [GeV]"
 
 nPFLep5LowMT:  nPFLep5LowMT: [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(PFLep\, p_{T} > 5\, M_{T} < 100)'
-
-nPFHad10LowMT: nPFHad10LowMT: [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(PFLep\, p_{T} > 5\, M_{T} < 100)'
+nPFHad10LowMT: nPFHad10LowMT: [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(PFHad\, p_{T} > 10\, M_{T} < 100)'
+nLepLowMT:  nLepLowMT: [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(Lep(POG+isoTrack)\, M_{T} < 100)'
 
 minMTBMet:     minMTBMet: 16,0,800    ; XTitle="min M_{T}(B\,met)"
 
@@ -112,8 +113,7 @@ isoTrack_phi: isoTrack_phi: 8,-3.15,3.15    ; XTitle="isotrack phi"
 isoTrack_eta: isoTrack_eta: 10,-5.,5.    ; XTitle="isotrack eta"
 isoTrack_mass: isoTrack_mass: 20,0,400.    ; XTitle="isotrack mass [GeV]"
 
-##isoTrack_pdgId : isoTrack_pdgId : [10.5,11.5,12.5,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,21.5,22.5,23.5,24.5,25.5] ; XTitle='PDG_ID'
-isoTrack_pdgId : isoTrack_pdgId : 150, 0,150 ; XTitle='PDG_ID'
+isoTrack_pdgId : isoTrack_pdgId : 300, -150,150 ; XTitle='PDG_ID'
 
 isoTrack_dz: isoTrack_dz: 100,0,0.5    ; XTitle="isotrack dz  [cm]"
 
@@ -187,6 +187,7 @@ cr_gamma_ht: gamma_ht:  16,0,800    ; XTitle="H_{T}  [GeV]"
 
 cr_gamma_nJet40 : gamma_nJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(jet\, p_{T} > 40)'
 cr_gamma_nBJet40 : gamma_nBJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\, p_{T} > 40\, CSVM)'
+cr_gamma_nBJet25 : gamma_nBJet25 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\, p_{T} > 25\, CSVM)'
 cr_gamma_minMTBMet : gamma_minMTBMet: 16,0,800    ; XTitle="min M_{T}(B\,met)"
 
 cr_gamma_jet1_pt: gamma_jet1_pt: 16,0,800    ; XTitle="gamma jet1  p_{T}  [GeV]", Legend='TR'
@@ -207,7 +208,7 @@ cr_zll_mht_phi:   zll_mht_phi: 8,-3.15,3.15    ; XTitle="phi of H_{T}^{miss}"
 cr_zll_deltaPhiMin: zll_deltaPhiMin: 70,0,3.15    ; XTitle="dphi_{min}(jet\,E_{T}^{miss})"
 cr_zll_diffMetMht: zll_diffMetMht: 100,0,500    ; XTitle="|MET-MHT|"
 
-cr_zll_pt: zll_pt: 16,0,800    ; XTitle="Z p_{T}  [GeV]"
+cr_zll_pt: zll_pt: 16,0,600    ; XTitle="Z p_{T}  [GeV]"
 cr_zll_phi: zll_phi: 8,-3.15,3.15    ; XTitle="Z phi"
 cr_zll_eta: zll_eta: 10,-5.,5.    ; XTitle="Z eta"
 cr_zll_mass: zll_mass: 20,0,400.    ; XTitle="Z mass [GeV]"
@@ -229,8 +230,9 @@ lep_dz: lep_dz: 100,0,0.5    ; XTitle="lep dz  [cm]"
 
 lep_relIso03:  lep_relIso03: 15,0,.5;  Legend='TR'
 lep_relIso04:  lep_relIso04: 15,0,.5;  Legend='TR'
+lep_miniRelIso: lep_miniRelIso: 15,0,.5;  Legend='TR'
 lep_mcMatchId:  lep_mcMatchId: 28,-1.5,26.5;  Legend='TR'
-lep_tightId:  lep_tightId: [-0.5,0.5,1.5];  Legend='TL'
+lep_tightId:  lep_tightId: [-0.5,0.5,1.5,2.5,3.5];  Legend='TL'
 
 lep_lostHits:  lep_lostHits: [-0.5,0.5,1.5,2.5,3.5,4.5,5.5];  Legend='TL'
 lep_convVeto:  lep_convVeto: 10,0.,5.;  Legend='TL'
