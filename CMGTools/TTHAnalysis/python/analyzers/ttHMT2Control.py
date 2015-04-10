@@ -50,6 +50,17 @@ class ttHMT2Control( Analyzer ):
                             if myTrack.pt()>10 and myTrack.absIso/myTrack.pt()<0.1:
                                 event.nPFHad10LowMT += 1                            
 
+        leptons = []
+        if hasattr(event, 'selectedLeptons'):
+            leptons = [ l for l in event.selectedLeptons if l.pt() > 10]
+        if hasattr(event, 'selectedIsoCleanTrack'):
+            leptons = leptons[:] + event.selectedIsoCleanTrack
+        if len(leptons)>0:
+            for lepton in leptons:
+                mtwLep = mtw(lepton, event.met)
+                if mtwLep < 100:
+                    event.nLepLowMT +=1
+
     def makeGammaObjects(self, event):
 
         import ROOT
@@ -165,6 +176,7 @@ class ttHMT2Control( Analyzer ):
         self.makeGammaObjects(event)                                                                                                                                                                                             
         self.makeZllObjects(event)
 
+        event.nLepLowMT =0
         event.nPFLep5LowMT = 0
         event.nPFHad10LowMT = 0
         event.mtw=-999 

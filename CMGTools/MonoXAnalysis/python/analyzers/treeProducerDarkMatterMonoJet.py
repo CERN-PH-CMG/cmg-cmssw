@@ -29,6 +29,24 @@ dmMonoJet_globalVariables = dmCore_globalVariables + [
     NTupleVariable("mt2", lambda ev: ev.mt2, float, help="mt2(j1,j2,met) with jets and leptons"),
     NTupleVariable("gamma_mt2", lambda ev: ev.gamma_mt2, float, help="mt2(j1,j2,met) with photons added to met"),
     NTupleVariable("zll_mt2", lambda ev: ev.zll_mt2, float, help="mt2(j1,j2,met) with zll added to met, only hadrons"),
+    ##--------------------------------------------------
+    # RAZOR
+    ##--------------------------------------------------
+    NTupleVariable("mr_had", lambda ev: ev.mr_had, float, help="mr(j1,j2,met) with jets "),
+    NTupleVariable("mr_bb", lambda ev: ev.mr_bb, float, help="mr(b1,b2,met) with jets "),
+    NTupleVariable("mr_lept", lambda ev: ev.mr_lept, float, help="mr(j1,j2,met) with leptons"),
+    NTupleVariable("mr_gen", lambda ev: ev.mr_gen, float, help="mr(j1,j2,met) with jets at genInfo"),
+    NTupleVariable("mr", lambda ev: ev.mr, float, help="mr(j1,j2,met) with jets and leptons"),
+    NTupleVariable("mtr_had", lambda ev: ev.mtr_had, float, help="mtr(j1,j2,met) with jets "),
+    NTupleVariable("mtr_bb", lambda ev: ev.mtr_bb, float, help="mtr(b1,b2,met) with jets "),
+    NTupleVariable("mtr_lept", lambda ev: ev.mtr_lept, float, help="mtr(j1,j2,met) with leptons"),
+    NTupleVariable("mtr_gen", lambda ev: ev.mtr_gen, float, help="mtr(j1,j2,met) with jets at genInfo"),
+    NTupleVariable("mtr", lambda ev: ev.mtr, float, help="mtr(j1,j2,met) with jets and leptons"),
+    NTupleVariable("r_had", lambda ev: ev.r_had, float, help="r(j1,j2,met) with jets "),
+    NTupleVariable("r_bb", lambda ev: ev.r_bb, float, help="r(b1,b2,met) with jets "),
+    NTupleVariable("r_lept", lambda ev: ev.r_lept, float, help="r(j1,j2,met) with leptons"),
+    NTupleVariable("r_gen", lambda ev: ev.r_gen, float, help="r(j1,j2,met) with jets at genInfo"),
+    NTupleVariable("r", lambda ev: ev.r, float, help="r(j1,j2,met) with jets and leptons"),
     ##-------------------------------------------------- 
     ## AlphaT
     ##-------------------------------------------------- 

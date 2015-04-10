@@ -133,6 +133,7 @@ lepAna = cfg.Analyzer(
     inclusive_muon_eta = 2.4,
     inclusive_muon_dxy = 0.5,
     inclusive_muon_dz  = 1.0,
+    muon_dxydz_track = "innerTrack",
     # veto muon selection
     loose_muon_id     = "POG_ID_Loose",
     loose_muon_pt     = 10,
@@ -148,7 +149,7 @@ lepAna = cfg.Analyzer(
     inclusive_electron_dz  = 1.0,
     inclusive_electron_lostHits = 5.0,
     # veto electron selection
-    loose_electron_id     = "POG_Cuts_ID_2012_Veto_full5x5",
+    loose_electron_id     = "POG_Cuts_ID_PHYS14_25ns_v1_Veto_full5x5",
     loose_electron_pt     = 7,
     loose_electron_eta    = 2.5,
     loose_electron_dxy    = 0.5,
@@ -274,9 +275,11 @@ jetAna = cfg.Analyzer(
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     smearJets = False,
     shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts  
+    cleanJetsFromFirstPhoton = False,
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
     doQG = False,
+    cleanGenJetsFromPhoton = False
     )
 
 ## Fat Jets Analyzer (generic)
@@ -314,6 +317,7 @@ metAna = cfg.Analyzer(
     METAnalyzer, name="metAnalyzer",
     doTkMet = False,
     doMetNoMu = True,
+    doMetNoPhoton = False,
     recalibrate = False,
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
@@ -325,6 +329,8 @@ from CMGTools.TTHAnalysis.analyzers.ttHCoreEventAnalyzer import ttHCoreEventAnal
 ttHCoreEventAna = cfg.Analyzer(
     ttHCoreEventAnalyzer, name='ttHCoreEventAnalyzer',
     maxLeps = 4, ## leptons to consider
+    mhtForBiasedDPhi = "mhtJet40jvec",
+    jetForBiasedDPhi = "cleanJets",
     )
 
 # Core sequence of all common modules

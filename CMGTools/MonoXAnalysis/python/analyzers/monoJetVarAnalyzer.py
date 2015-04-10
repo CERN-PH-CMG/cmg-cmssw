@@ -19,7 +19,6 @@ class monoJetVarAnalyzer( Analyzer ):
 
     def declareHandles(self):
         super(monoJetVarAnalyzer, self).declareHandles()
-        self.handles['genJets'] = AutoHandle( 'slimmedGenJets','std::vector<reco::GenJet>')
 
     def beginLoop(self, setup):
         super(monoJetVarAnalyzer,self).beginLoop(setup)

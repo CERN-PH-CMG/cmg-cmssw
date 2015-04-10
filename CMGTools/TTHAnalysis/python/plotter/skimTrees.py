@@ -2,7 +2,7 @@
 #from mcPlots import *
 from CMGTools.TTHAnalysis.plotter.mcAnalysis import *
 
-
+import ROOT
 
 if __name__ == "__main__":
     from optparse import OptionParser
@@ -39,17 +39,21 @@ if __name__ == "__main__":
             os.system("mkdir -p "+myoutpath)
             os.system("cp -r %s/skimAnalyzerCount %s/" % (mysource,myoutpath))
             os.system("mkdir -p %s/%s" % (myoutpath,options.tree))
+            histo = ROOT.gROOT.FindObject("Count")
             if not options.oldstyle:
                 fout = ROOT.TFile("%s/%s/tree.root" % (myoutpath,options.tree), "RECREATE");
             else:
                 fout = ROOT.TFile("%s/%s/%s_tree.root" % (myoutpath,options.tree,options.tree), "RECREATE");
+            fout = ROOT.TFile("%s/%s/tree.root" % (myoutpath,options.tree), "RECREATE");
             # drop and keep branches
             for drop in options.drop: mytree.SetBranchStatus(drop,0)
             for keep in options.keep: mytree.SetBranchStatus(keep,1)
             out = mytree.CopyTree(mycut)
-            if out.GetListOfFriends():
-                for tf in out.GetListOfFriends():
+            friends = out.GetListOfFriends() or []
+            for tf in friends:
                     out.RemoveFriend(tf.GetTree())
             fout.WriteTObject(out,options.tree if options.oldstyle else "tree")
+            fout.WriteTObject(out,"tree")
+            if histo: histo.Write()
             fout.Close()
 

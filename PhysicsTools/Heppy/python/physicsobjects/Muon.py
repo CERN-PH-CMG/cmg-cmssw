@@ -1,14 +1,23 @@
 from PhysicsTools.Heppy.physicsobjects.Lepton import Lepton
+from PhysicsTools.HeppyCore.utils.deltar import deltaR
 
 class Muon( Lepton ):
+    def __init__(self, *args, **kwargs):
+        super(Muon, self).__init__(*args, **kwargs)
+        self._trackForDxyDz = "muonBestTrack"
+
+    def setTrackForDxyDz(self,what):
+        if not hasattr(self,what):
+            raise RuntimeError, "I don't have a track called "+what
+        self._trackForDxyDz = what
 
     def looseId( self ):
         '''Loose ID as recommended by mu POG.'''
         return self.physObj.isLooseMuon()
 
     def tightId( self ):
-        '''Tight ID as recommended by mu POG.'''
-        return self.muonID("POG_ID_Tight")
+        '''Tight ID as recommended by mu POG (unless redefined in the lepton analyzer).'''
+        return getattr(self,"tightIdResult",self.muonID("POG_ID_Tight"))
 
     def muonID(self, name, vertex=None):
         if name == "" or name is None: 
@@ -31,6 +40,8 @@ class Muon( Lepton ):
                 if not self.looseId(): return False
                 goodGlb = self.physObj.isGlobalMuon() and self.physObj.globalTrack().normalizedChi2() < 3 and self.physObj.combinedQuality().chi2LocalPosition < 12 and self.physObj.combinedQuality().trkKink < 20;
                 return self.physObj.innerTrack().validFraction() >= 0.8 and self.physObj.segmentCompatibility() >= (0.303 if goodGlb else 0.451)
+            if name == "POG_Global_OR_TMArbitrated":
+                return self.physObj.isGlobalMuon() or (self.physObj.isTrackerMuon() and self.physObj.numberOfMatchedStations() > 0)
         return self.physObj.muonID(name)
             
     def mvaId(self):
@@ -51,7 +62,11 @@ class Muon( Lepton ):
         '''
         if vertex is None:
             vertex = self.associatedVertex
-        return self.innerTrack().dxy( vertex.position() )
+        return getattr(self,self._trackForDxyDz)().dxy( vertex.position() )
+
+    def edxy(self):
+        '''returns the uncertainty on dxy (from gsf track)'''
+        return getattr(self,self._trackForDxyDz)().dxyError()
  
 
     def dz(self, vertex=None):
@@ -61,7 +76,11 @@ class Muon( Lepton ):
         '''
         if vertex is None:
             vertex = self.associatedVertex
-        return self.innerTrack().dz( vertex.position() )
+        return getattr(self,self._trackForDxyDz)().dz( vertex.position() )
+
+    def edz(self):
+        '''returns the uncertainty on dxz (from gsf track)'''
+        return getattr(self,self._trackForDxyDz)().dzError()
 
     def chargedHadronIsoR(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationR03().sumChargedHadronPt 
@@ -92,5 +111,22 @@ class Muon( Lepton ):
         raise RuntimeError, "Muon chargedHadronIso missing for R=%s" % R
 
 
-
-
+    def absIsoWithFSR(self, R=0.4, puCorr="deltaBeta", dBetaFactor=0.5):
+        '''
+        Calculate Isolation, subtract FSR, apply specific PU corrections" 
+        '''
+        photonIso = self.photonIsoR(R)
+        if hasattr(self,'fsrPhotons'):
+            for gamma in self.fsrPhotons:
+                dr = deltaR(gamma.eta(), gamma.phi(), self.physObj.eta(), self.physObj.phi())
+                if dr > 0.01 and dr < R:
+                    photonIso = max(photonIso-gamma.pt(),0.0)                
+        if puCorr == "deltaBeta":
+            offset = dBetaFactor * self.puChargedHadronIsoR(R)
+        elif puCorr == "rhoArea":
+            offset = self.rho*getattr(self,"EffectiveArea"+(str(R).replace(".","")))
+        elif puCorr in ["none","None",None]:
+            offset = 0
+        else:
+             raise RuntimeError, "Unsupported PU correction scheme %s" % puCorr
+        return self.chargedHadronIsoR(R)+max(0.,photonIso+self.neutralHadronIsoR(R)-offset)            

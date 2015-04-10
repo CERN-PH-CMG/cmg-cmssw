@@ -119,10 +119,8 @@ treeProducer = cfg.Analyzer(
 )
 
 ## histo counter
-TFileServiceMode=False
-if TFileServiceMode:
-    susyCoreSequence.insert(susyCoreSequence.index(skimAnalyzer),
-                            susyCounter)
+susyCoreSequence.insert(susyCoreSequence.index(skimAnalyzer),
+                        susyCounter)
 
 
 #-------- SAMPLES AND TRIGGERS -----------
@@ -224,16 +222,15 @@ elif test == '2lss-sync': # sync
 
 ## output histogram
 outputService=[]
-if TFileServiceMode:
-    from PhysicsTools.HeppyCore.framework.services.tfile import TFileService
-    output_service = cfg.Service(
-        TFileService,
-        'outputfile',
-        name="outputfile",
-        fname='treeProducerSusyMultilepton/tree.root',
-        option='recreate'
-        )    
-    outputService.append(output_service)
+from PhysicsTools.HeppyCore.framework.services.tfile import TFileService
+output_service = cfg.Service(
+    TFileService,
+    'outputfile',
+    name="outputfile",
+    fname='treeProducerSusyMultilepton/tree.root',
+    option='recreate'
+    )    
+outputService.append(output_service)
 
 # the following is declared in case this cfg is used in input to the heppy.py script
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
