@@ -7,18 +7,31 @@
 
 TH2 * FR_mu = 0;
 TH2 * FR2_mu = 0;
+TH2 * FR3_mu = 0;
+TH2 * FR4_mu = 0;
+TH2 * FR5_mu = 0;
 TH2 * FR_el = 0;
 TH2 * FR2_el = 0;
+TH2 * FR3_el = 0;
+TH2 * FR4_el = 0;
+TH2 * FR5_el = 0;
 TH2 * QF_el = 0;
+TH2 * FRi_mu[6], *FRi_el[6];
 
 
 bool loadFRHisto(const std::string &histoName, const char *file, const char *name) {
-    TH2 **histo = 0;
-    if (histoName == "FR_mu") histo = & FR_mu;
-    if (histoName == "FR_el") histo = & FR_el;
-    if (histoName == "FR2_mu") histo = & FR2_mu;
-    if (histoName == "FR2_el") histo = & FR2_el;
-    if (histoName == "QF_el") histo = & QF_el;
+    TH2 **histo = 0, **hptr2 = 0;
+    if      (histoName == "FR_mu")  { histo = & FR_mu;  hptr2 = & FRi_mu[0]; }
+    else if (histoName == "FR_el")  { histo = & FR_el;  hptr2 = & FRi_el[0]; }
+    else if (histoName == "FR2_mu") { histo = & FR2_mu; hptr2 = & FRi_mu[2]; }
+    else if (histoName == "FR2_el") { histo = & FR2_el; hptr2 = & FRi_el[2]; }
+    else if (histoName == "FR3_mu") { histo = & FR3_mu; hptr2 = & FRi_mu[3]; }
+    else if (histoName == "FR3_el") { histo = & FR3_el; hptr2 = & FRi_el[3]; }
+    else if (histoName == "FR4_mu") { histo = & FR4_mu; hptr2 = & FRi_mu[4]; }
+    else if (histoName == "FR4_el") { histo = & FR4_el; hptr2 = & FRi_el[4]; }
+    else if (histoName == "FR5_mu") { histo = & FR5_mu; hptr2 = & FRi_mu[5]; }
+    else if (histoName == "FR5_el") { histo = & FR5_el; hptr2 = & FRi_el[5]; }
+    else if (histoName == "QF_el") histo = & QF_el;
     if (histo == 0)  {
         std::cerr << "ERROR: histogram " << histoName << " is not defined in fakeRate.cc." << std::endl;
         return 0;
@@ -32,6 +45,7 @@ bool loadFRHisto(const std::string &histoName, const char *file, const char *nam
     } else {
         *histo = (TH2*) f->Get(name)->Clone(name);
         (*histo)->SetDirectory(0);
+        if (hptr2) *hptr2 = *histo;
     }
     f->Close();
     return histo != 0;
@@ -68,8 +82,9 @@ float fakeRateWeight_2lss(float l1pt, float l1eta, int l1pdgId, float l1mva,
 }
 
 
-float fakeRateWeight_2lssCB(float l1pt, float l1eta, int l1pdgId, float l1relIso,
-                            float l2pt, float l2eta, int l2pdgId, float l2relIso, float WP) 
+
+float fakeRateWeight_2lssCB_i(float l1pt, float l1eta, int l1pdgId, float l1relIso,
+                            float l2pt, float l2eta, int l2pdgId, float l2relIso, float WP, int iFR) 
 {
     int nfail = (l1relIso > WP)+(l2relIso > WP);
     switch (nfail) {
@@ -77,18 +92,18 @@ float fakeRateWeight_2lssCB(float l1pt, float l1eta, int l1pdgId, float l1relIso
             double fpt,feta; int fid;
             if (l1relIso > l2relIso) { fpt = l1pt; feta = std::abs(l1eta); fid = abs(l1pdgId); }
             else                     { fpt = l2pt; feta = std::abs(l2eta); fid = abs(l2pdgId); }
-            TH2 *hist = (fid == 11 ? FR_el : FR_mu);
+            TH2 *hist = (fid == 11 ? FRi_el[iFR] : FRi_mu[iFR]);
             int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(fpt)));
             int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(feta)));
             double fr = hist->GetBinContent(ptbin,etabin);
             return fr/(1-fr);
         }
         case 2: {
-            TH2 *hist1 = (abs(l1pdgId) == 11 ? FR_el : FR_mu);
+            TH2 *hist1 = (abs(l1pdgId) == 11 ? FRi_el[iFR] : FRi_mu[iFR]);
             int ptbin1  = std::max(1, std::min(hist1->GetNbinsX(), hist1->GetXaxis()->FindBin(l1pt)));
             int etabin1 = std::max(1, std::min(hist1->GetNbinsY(), hist1->GetYaxis()->FindBin(std::abs(l1eta))));
             double fr1 = hist1->GetBinContent(ptbin1,etabin1);
-            TH2 *hist2 = (abs(l2pdgId) == 11 ? FR_el : FR_mu);
+            TH2 *hist2 = (abs(l2pdgId) == 11 ? FRi_el[iFR] : FRi_mu[iFR]);
             int ptbin2  = std::max(1, std::min(hist2->GetNbinsX(), hist2->GetXaxis()->FindBin(l2pt)));
             int etabin2 = std::max(1, std::min(hist2->GetNbinsY(), hist2->GetYaxis()->FindBin(std::abs(l2eta))));
             double fr2 = hist2->GetBinContent(ptbin2,etabin2);
@@ -96,6 +111,13 @@ float fakeRateWeight_2lssCB(float l1pt, float l1eta, int l1pdgId, float l1relIso
         }
         default: return 0;
     }
+}
+
+float fakeRateWeight_2lssCB(float l1pt, float l1eta, int l1pdgId, float l1relIso,
+                            float l2pt, float l2eta, int l2pdgId, float l2relIso, float WP) 
+{
+    return fakeRateWeight_2lssCB_i(l1pt, l1eta, l1pdgId, l1relIso,
+                            l2pt, l2eta, l2pdgId, l2relIso, WP, 0);
 }
 
 
@@ -207,7 +229,7 @@ float fakeRateWeight_2lssBCatX(float l1pt, float l1eta, int l1pdgId, float l1mva
             int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(pts[i])));
             int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(etas[i])));
             double fr = hist->GetBinContent(ptbin,etabin);
-            ret *= -fr/max(1.0f-fr,0.5);
+            ret *= -fr/std::max(1.0f-fr,0.5);
         }
     }
     if (ret == -1.0f) ret = 0.0f;
@@ -242,6 +264,43 @@ float fakeRateWeight_2lssMuIDCat(float l1pt, float l1eta, int l1pdgId, float l1m
     if (ret == -1.0f) ret = 0.0f;
     return ret;
 }
+
+float fakeRateWeight_2lssCB_ptRel2D(float l1pt, float l1eta, int l1pdgId, float l1relIso, float l1ptRel,
+                                    float l2pt, float l2eta, int l2pdgId, float l2relIso, float l2ptRel, float WPIsoL, float WPIsoT, float WPPtRelL, float WPPtRelT) 
+{
+    float relIsos[]={l1relIso, l2relIso};
+    float ptRels[]={l1ptRel, l2ptRel};
+    float pts[]={l1pt, l2pt};
+    float etas[]={fabs(l1eta), fabs(l2eta)};
+    int pdgids[]={l1pdgId, l2pdgId};
+    float ret = 0.f;
+    int npass = 0;
+    for (unsigned int i = 0; i < 2 ; ++i) {
+        if (relIsos[i] < WPIsoT || ptRels[i] > WPPtRelT) { 
+            npass++; continue; 
+        }
+        if (relIsos[i] < WPIsoL && ptRels[i] <= WPPtRelL) {
+            // iso sideband
+	    TH2 *hist = abs(pdgids[i]) == 11 ? FR2_el : FR2_mu;
+            int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(pts[i])));
+            int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(etas[i])));
+            double fr = hist->GetBinContent(ptbin,etabin);
+            ret += fr/(1.0f-fr);
+        }
+        if (ptRels[i] > WPPtRelL) {
+            // ptrel sideband
+	    TH2 *hist = abs(pdgids[i]) == 11 ? FR3_el : FR3_mu;
+            int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(pts[i])));
+            int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(etas[i])));
+            double fr = hist->GetBinContent(ptbin,etabin);
+            ret += fr/(1.0f-fr);
+        }
+    }
+    if (npass != 1) ret = 0.0f;
+    return ret;
+}
+
+
 
 float fakeRateWeight_3lMuIDCat(float l1pt, float l1eta, int l1pdgId, float l1mva, float l1tightId,
                         float l2pt, float l2eta, int l2pdgId, float l2mva, float l2tightId,
@@ -610,4 +669,39 @@ float fakeRateBin_Muons_pt(float bin) {
     int ibin = floor(bin);
     return (ibin/5)*5.0 + 2.5;
 }
+
+namespace WP {
+    enum WPId { V=0, VL=0, VVL=-1, L=1, M=2, T=3, VT=4, HT=5 } ;
+}
+float multiIso_singleWP(float LepGood_miniRelIso, float LepGood_jetPtRatio, float LepGood_jetPtRel, WP::WPId wp) {
+    switch (wp) {
+        case WP::HT: return LepGood_miniRelIso < 0.05  && (LepGood_jetPtRatio>0.725 || LepGood_jetPtRel>8   );
+        case WP::VT: return LepGood_miniRelIso < 0.075 && (LepGood_jetPtRatio>0.725 || LepGood_jetPtRel>7   );
+        case WP::T:  return LepGood_miniRelIso < 0.10  && (LepGood_jetPtRatio>0.700 || LepGood_jetPtRel>7   );
+        case WP::M:  return LepGood_miniRelIso < 0.14  && (LepGood_jetPtRatio>0.68  || LepGood_jetPtRel>6.7 );
+        case WP::L:  return LepGood_miniRelIso < 0.22  && (LepGood_jetPtRatio>0.63  || LepGood_jetPtRel>6.0 );
+        case WP::VVL: return LepGood_miniRelIso < 0.4;
+        default:
+            std::cerr << "Working point " << wp << " not implemented for multiIso_singleWP" << std::endl;
+            abort();
+    }
+}
+float multiIso_multiWP(int LepGood_pdgId, float LepGood_pt, float LepGood_eta, float LepGood_miniRelIso, float LepGood_jetPtRatio, float LepGood_jetPtRel, WP::WPId wp) {
+    switch (wp) {
+        case WP::VT: 
+           return abs(LepGood_pdgId)==13 ? 
+                    multiIso_singleWP(LepGood_miniRelIso,LepGood_jetPtRatio,LepGood_jetPtRel, WP::VT) :
+                    multiIso_singleWP(LepGood_miniRelIso,LepGood_jetPtRatio,LepGood_jetPtRel, WP::HT) ;
+        case WP::T:
+           return abs(LepGood_pdgId)==13 ? 
+                    multiIso_singleWP(LepGood_miniRelIso,LepGood_jetPtRatio,LepGood_jetPtRel, WP::T) :
+                    multiIso_singleWP(LepGood_miniRelIso,LepGood_jetPtRatio,LepGood_jetPtRel, WP::VT) ;
+        case WP::VVL: return LepGood_miniRelIso < 0.4;
+        default:
+            std::cerr << "Working point " << wp << " not implemented for multiIso_multiWP" << std::endl;
+            abort();
+    }
+}
+
+
 void fakeRate() {}
