@@ -20,6 +20,7 @@ dataset = ""
 total = 0  # total number of jobs for given dataset, not used at the moment
 nevents = None # this means run all events
 nprint  = 0 # quiet printout, change if you want to print the first nprint events
+useAAA = True # use xrootd by default
 
 # arguments of scriptExe
 print "ARGV:",sys.argv
@@ -35,6 +36,9 @@ for arg in sys.argv[2:]:
     elif arg.split("=")[0] == "nevents":
         nevents = int(arg.split("=")[1])
         print "selected to run over", nevents, "events"
+    elif arg.split("=")[0] == "useAAA":
+        useAAA = bool(arg.split("=")[1])
+        print "chosen to run via xrootd"
 
 print "dataset:", dataset
 print "job", job , " out of", total
@@ -51,6 +55,8 @@ selectedComponents = []
 for comp in config.components:
     if comp.name == dataset:
         comp.files = comp.files[job-1: job] # first job number is 1
+        if useAAA:
+            comp.files = [x.replace("root://eoscms.cern.ch//eos/cms","root://cms-xrd-global.cern.ch/") for x in comp.files]
         comp.name = comp.name+"_Chunk"+str(job)
         selectedComponents.append(comp)
 
