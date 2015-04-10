@@ -6,16 +6,21 @@ import imp, os
 production_label = "fullProd_test3"
 cmg_version = 'MT2_CMGTools-from-CMSSW_7_2_3'
 
+debug  = False
+useAAA = True
+
 handle = open("heppy_config.py", 'r')
 cfo = imp.load_source("heppy_config", "heppy_config.py", handle)
 conf = cfo.config
 handle.close()
 
-os.system("scramv1 runtime -sh")
+#os.system("scramv1 runtime -sh")
 os.system("source /cvmfs/cms.cern.ch/crab3/crab.sh")
 
-os.environ["PROD_LABEL"] = production_label
+os.environ["PROD_LABEL"]  = production_label
 os.environ["CMG_VERSION"] = cmg_version
+os.environ["DEBUG"]       = str(debug)
+os.environ["USEAAA"]      = str(useAAA)
 
 for comp in conf.components:
     #set maximal splitting
