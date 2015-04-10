@@ -128,13 +128,15 @@ class METAnalyzer( Analyzer ):
         #Shifted METs
         #Uncertainties defined in https://github.com/cms-sw/cmssw/blob/CMSSW_7_2_X/DataFormats/PatCandidates/interface/MET.h#L168
         #event.met_shifted = []
-        for i in range(14):
-            m = deepcopy(self.met)
-            px  = m.shiftedPx(i);
-            py  = m.shiftedPy(i);
-            m.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, math.hypot(px,py)))
-            #event.met_shifted += [m]
-            setattr(event, "met{0}_shifted_{1}".format(self.cfg_ana.collectionPostFix, i), m)
+        if not self.cfg_ana.copyMETsByValue:
+          for i in range(14):
+              m = deepcopy(self.met)
+              px  = m.shiftedPx(i);
+              py  = m.shiftedPy(i);
+              m.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, math.hypot(px,py)))
+              #event.met_shifted += [m]
+              setattr(event, "met{0}_shifted_{1}".format(self.cfg_ana.collectionPostFix, i), m)
+
         self.met_sig = self.met.significance()
         self.met_sumet = self.met.sumEt()
 
@@ -186,7 +188,7 @@ setattr(METAnalyzer,"defaultConfig", cfg.Analyzer(
     class_object = METAnalyzer,
     metCollection     = "slimmedMETs",
     noPUMetCollection = "slimmedMETs",
-    copyMETsByValue = True,
+    copyMETsByValue = False,
     recalibrate = True,
     jetAnalyzerCalibrationPostFix = "",
     doTkMet = False,
