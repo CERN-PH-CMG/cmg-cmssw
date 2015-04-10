@@ -325,6 +325,7 @@ metAna = cfg.Analyzer(
     doMetNoMu = False,
     doMetNoPhoton = False,
     recalibrate = False,
+    jetAnalyzerCalibrationPostFix = "",
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,
