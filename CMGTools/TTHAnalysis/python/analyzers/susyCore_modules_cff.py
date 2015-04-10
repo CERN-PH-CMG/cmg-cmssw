@@ -321,6 +321,7 @@ metAna = cfg.Analyzer(
     metCollection     = "slimmedMETs",
     noPUMetCollection = "slimmedMETs",
     doTkMet = False,
+    doMetNoPU = True,
     doMetNoMu = False,
     doMetNoPhoton = False,
     recalibrate = False,
