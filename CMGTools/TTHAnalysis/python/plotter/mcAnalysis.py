@@ -143,7 +143,7 @@ class MCAnalysis:
         #if len(self._backgrounds) == 0: raise RuntimeError, "No backgrounds!"
     def listProcesses(self):
         ret = self._allData.keys()[:]
-        ret.sort(key = lambda n : self._rank[n], reverse = True)
+        ret.sort(key = lambda n : self._rank[n])
         return ret
     def isBackground(self,process):
         return process != 'data' and not self._isSignal[process]
@@ -151,11 +151,11 @@ class MCAnalysis:
         return self._isSignal[process]
     def listSignals(self,allProcs=False):
         ret = [ p for p in self._allData.keys() if p != 'data' and self._isSignal[p] and (self.getProcessOption(p, 'SkipMe') != True or allProcs) ]
-        ret.sort(key = lambda n : self._rank[n], reverse = True)
+        ret.sort(key = lambda n : self._rank[n])
         return ret
     def listBackgrounds(self,allProcs=False):
         ret = [ p for p in self._allData.keys() if p != 'data' and not self._isSignal[p] and (self.getProcessOption(p, 'SkipMe') != True or allProcs) ]
-        ret.sort(key = lambda n : self._rank[n], reverse = True)
+        ret.sort(key = lambda n : self._rank[n])
         return ret
     def hasProcess(self,process):
         return process in self._allData
