@@ -19,18 +19,29 @@ vertexAna.keepFailingEvents = True # keep events with no good vertices
 lepAna.loose_muon_dxy = 0.5
 lepAna.loose_muon_dz  = 1.0
 lepAna.loose_muon_relIso  = 0.15
-lepAna.loose_electron_id  = "POG_Cuts_ID_2012_Veto"
+lepAna.loose_muon_isoCut = lambda muon :muon.miniRelIso < 0.2
+
 lepAna.loose_electron_pt  = 5
 lepAna.loose_electron_eta    = 2.4
-lepAna.loose_electron_dxy    = 0.04
-lepAna.loose_electron_dz     = 0.2
 lepAna.loose_electron_relIso = 0.15
-lepAna.loose_electron_lostHits = 999 # no cut
-lepAna.inclusive_electron_lostHits = 999 # no cut
+lepAna.loose_electron_isoCut = lambda electron : electron.miniRelIso < 0.1
+
+lepAna.loose_electron_id  = "POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Veto_full5x5"
+lepAna.loose_electron_lostHits = 999. # no cut
+lepAna.loose_electron_dxy    = 999.
+lepAna.loose_electron_dz     = 999.
+
+lepAna.inclusive_electron_id  = "POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Veto_full5x5"
+lepAna.inclusive_electron_lostHits = 999. # no cut since embedded in ID
+lepAna.inclusive_electron_dxy    = 999. # no cut since embedded in ID
+lepAna.inclusive_electron_dz     = 999. # no cut since embedded in ID
+
 lepAna.mu_isoCorr = "deltaBeta"
 lepAna.ele_isoCorr = "deltaBeta"
-lepAna.ele_tightId = "Cuts_2012"
+lepAna.ele_tightId = "Cuts_PHYS14_25ns_v1_ConvVetoDxyDz"
 lepAna.notCleaningElectrons = True
+lepAna.doMiniIsolation = True
+lepAna.miniIsolationPUCorr = 'raw'
 
 # JET (for event variables do apply the jetID and not PUID yet)
 jetAna.relaxJetId = False
@@ -63,6 +74,7 @@ tauAna.tauAntiElectronID = "againstElectronLoose"
 photonAna.etaCentral = 2.5
 photonAna.gammaID = "PhotonCutBasedIDLoose_CSA14"
 photonAna.do_randomCone = True
+#photonAna.do_mc_match = False
 
 # Isolated Track
 isoTrackAna.setOff=False
@@ -175,7 +187,7 @@ from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
 
 #-------- HOW TO RUN
 # choose 2 for full production
-test = 0
+test = 1
 if test==0:
     # ------------------------------------------------------------------------------------------- #
     # --- all this lines taken from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 
@@ -202,15 +214,16 @@ if test==0:
     comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/gjets_ht200to400_miniaodsim_fix.root']
     selectedComponents = [comp]
     comp.splitFactor = 10
+#    comp.fineSplitFactor = 100
 
 elif test==1:
 
     from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
-    comp=GJets_HT200to400
-    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/gjets_ht200to400_miniaodsim_fix.root']
+#    comp=GJets_HT200to400
+#    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/gjets_ht200to400_miniaodsim_fix.root']
 
-#    comp=TTJets
-#    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/TTJets_miniAOD_fixPhoton_forSynch.root']
+    comp=TTJets
+    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/TTJets_miniAOD_fixPhoton_forSynch.root']
 
     selectedComponents = [comp]
     comp.splitFactor = 1
