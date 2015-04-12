@@ -12,8 +12,8 @@ dataset=os.environ["DATASET"]
 NJOBS=int(os.environ["NJOBS"])
 production_label = os.environ["PROD_LABEL"]
 cmg_version = os.environ["CMG_VERSION"]
-debug  = bool(os.environ["DEBUG"] )
-useAAA = bool(os.environ["USEAAA"])
+debug  = os.environ["DEBUG"] == 'True'
+useAAA = os.environ["USEAAA"] == 'True'
 
 
 print dataset, NJOBS
