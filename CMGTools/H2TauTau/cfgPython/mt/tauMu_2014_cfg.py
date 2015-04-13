@@ -1,5 +1,6 @@
 import PhysicsTools.HeppyCore.framework.config as cfg
 from PhysicsTools.HeppyCore.framework.config import printComps
+from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
 
 # Tau-tau analyzers
 from CMGTools.H2TauTau.proto.analyzers.TauMuAnalyzer import TauMuAnalyzer
@@ -9,18 +10,24 @@ from CMGTools.H2TauTau.proto.analyzers.TauFakeRateWeighter import TauFakeRateWei
 from CMGTools.H2TauTau.proto.analyzers.LeptonWeighter import LeptonWeighter
 from CMGTools.H2TauTau.proto.analyzers.SVfitProducer import SVfitProducer
 
+from CMGTools.H2TauTau.proto.samples.phys14.connector import httConnector
+
 # common configuration and sequence
 from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC, eventSelector
 
 
-### mu-tau specific configuration settings
+# Get all heppy options; set via "-o production" or "-o production=True"
+
+# production = True run on batch, production = False (or unset) run locally
+production = getHeppyOption('production')
+
+# mu-tau specific configuration settings
 
 # 'Nom', 'Up', 'Down', or None
 shift = None
 syncntuple = True
 computeSVfit = True
-# JAN - can we finally get this via command line options?
-production = False  # production = True run on batch, production = False run locally
+
 
 # When ready, include weights from CMGTools.H2TauTau.proto.weights.weighttable
 
@@ -36,24 +43,23 @@ mc_muEffWeight = None
 
 dyJetsFakeAna.channel = 'mt'
 
-### Define mu-tau specific modules
+# Define mu-tau specific modules
 
 tauMuAna = cfg.Analyzer(
     TauMuAnalyzer,
     name='TauMuAnalyzer',
-    pt1 = 20,
-    eta1 = 2.3,
-    iso1 = 1.5,
-    looseiso1 = 9999.,
-    pt2 = 18,
-    eta2 = 2.1,
-    iso2 = 0.1,
-    looseiso2 = 9999.,
-    m_min = 10,
-    m_max = 99999,
-    dR_min = 0.5,
-    # triggerMap = pathsAndFilters,
-    verbose = False
+    pt1=20,
+    eta1=2.3,
+    iso1=1.5,
+    looseiso1=9999.,
+    pt2=18,
+    eta2=2.1,
+    iso2=0.1,
+    looseiso2=9999.,
+    m_min=10,
+    m_max=99999,
+    dR_min=0.5,
+    verbose=False
 )
 
 tauDecayModeWeighter = cfg.Analyzer(
@@ -69,52 +75,51 @@ tauFakeRateWeighter = cfg.Analyzer(
 tauWeighter = cfg.Analyzer(
     LeptonWeighter,
     name='LeptonWeighter_tau',
-    effWeight = None,
-    effWeightMC = None,
-    lepton = 'leg1',
-    verbose = False,
-    disable = True,
-    )
+    effWeight=None,
+    effWeightMC=None,
+    lepton='leg1',
+    verbose=False,
+    disable=True,
+)
 
 muonWeighter = cfg.Analyzer(
     LeptonWeighter,
     name='LeptonWeighter_mu',
-    effWeight = None,
-    effWeightMC = None,
-    lepton = 'leg2',
-    verbose = False,
-    disable = True,
-    idWeight = None,
-    isoWeight = None
-    )
+    effWeight=None,
+    effWeightMC=None,
+    lepton='leg2',
+    verbose=False,
+    disable=True,
+    idWeight=None,
+    isoWeight=None
+)
 
 treeProducer = cfg.Analyzer(
     H2TauTauTreeProducerTauMu,
     name='H2TauTauTreeProducerTauMu'
-    )
+)
 
 syncTreeProducer = cfg.Analyzer(
     H2TauTauTreeProducerTauMu,
     name='H2TauTauSyncTreeProducerTauMu',
     varStyle='sync',
     skimFunction='event.isSignal'
-    )
+)
 
 svfitProducer = cfg.Analyzer(
     SVfitProducer,
     name='SVfitProducer',
-    #integration='VEGAS',
+    # integration='VEGAS',
     integration='MarkovChain',
-    #verbose=True,
-    #order='21', # muon first, tau second
+    # verbose=True,
+    # order='21', # muon first, tau second
     l1type='tau',
     l2type='muon'
-    )
+)
 
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
-from CMGTools.H2TauTau.proto.samples.phys14.connector import httConnector
 my_connect = httConnector('htt_6mar15_manzoni_nom', 'htautau_group',
                           '.*root', 'mt', production=production)
 my_connect.connect()
@@ -160,7 +165,7 @@ if syncntuple:
 ###################################################
 if not production:
     cache = True
-    comp = my_connect.mc_dict['HiggsGGH125']
+    comp = my_connect.mc_dict['TTJets']
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.fineSplitFactor = 1
@@ -177,6 +182,7 @@ config = cfg.Config(components=selectedComponents,
                     )
 
 printComps(config.components, True)
+
 
 def modCfgForPlot(config):
     config.components = []

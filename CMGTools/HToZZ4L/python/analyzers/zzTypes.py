@@ -3,19 +3,19 @@ from PhysicsTools.Heppy.analyzers.core.AutoFillTreeProducer  import *
 leptonTypeHZZ = NTupleObjectType("leptonHZZ", baseObjectTypes = [ leptonTypeExtra ], variables = [
     NTupleVariable("mvaIdPhys14",   lambda lepton : lepton.mvaRun2("NonTrigPhys14") if abs(lepton.pdgId()) == 11 else 1, help="EGamma POG MVA ID for non-triggering electrons, Phys14 re-training; 1 for muons"),
     # Extra isolation variables
-    NTupleVariable("chargedHadIso04",   lambda x : x.chargedHadronIsoR(0.4)/x.pt(),   help="PF Iso, R=0.4, charged hadrons only"),
-    NTupleVariable("neutralHadIso04",   lambda x : x.neutralHadronIsoR(0.4)/x.pt(),   help="PF Iso, R=0.4, neutral hadrons only"),
-    NTupleVariable("photonIso04",       lambda x : x.photonIsoR(0.4)/x.pt(),          help="PF Iso, R=0.4, photons only"),
-    NTupleVariable("puChargedHadIso04", lambda x : x.puChargedHadronIsoR(0.4)/x.pt(), help="PF Iso, R=0.4, pileup charged hadrons only"),
+    NTupleVariable("chargedHadIso04",   lambda x : x.chargedHadronIsoR(0.4),   help="PF Abs Iso, R=0.4, charged hadrons only"),
+    NTupleVariable("neutralHadIso04",   lambda x : x.neutralHadronIsoR(0.4),   help="PF Abs Iso, R=0.4, neutral hadrons only"),
+    NTupleVariable("photonIso04",       lambda x : x.photonIsoR(0.4),          help="PF Abs Iso, R=0.4, photons only"),
+    NTupleVariable("puChargedHadIso04", lambda x : x.puChargedHadronIsoR(0.4), help="PF Abs Iso, R=0.4, pileup charged hadrons only"),
     NTupleVariable("rho",               lambda x : x.rho,                             help="rho for isolation"),
     NTupleVariable("EffectiveArea04",   lambda x : x.EffectiveArea04,                 help="EA for isolation"),
 ])
 
 fsrPhotonTypeHZZ = NTupleObjectType("fsrPhotonHZZ", baseObjectTypes = [ particleType ], variables = [
-    NTupleVariable("chargedHadIso",   lambda x : getattr(x,'absIsoCH',-1.0),   help="PF Iso, R=0.3, charged hadrons only"),
-    NTupleVariable("photonIso",       lambda x : getattr(x,'absIsoPH',-1.0),   help="PF Iso, R=0.3, photons only"),
-    NTupleVariable("neutralHadIso",   lambda x : getattr(x,'absIsoNH',-1.0),   help="PF Iso, R=0.3, neutral hadrons only"),
-    NTupleVariable("puChargedHadIso", lambda x : getattr(x,'absIsoPU',-1.0),   help="PF Iso, R=0.3, pileup charged hadrons only"),
+    NTupleVariable("chargedHadIso",   lambda x : getattr(x,'absIsoCH',-1.0),   help="PF Abs Iso, R=0.3, charged hadrons only"),
+    NTupleVariable("photonIso",       lambda x : getattr(x,'absIsoPH',-1.0),   help="PF Abs Iso, R=0.3, photons only"),
+    NTupleVariable("neutralHadIso",   lambda x : getattr(x,'absIsoNH',-1.0),   help="PF Abs Iso, R=0.3, neutral hadrons only"),
+    NTupleVariable("puChargedHadIso", lambda x : getattr(x,'absIsoPU',-1.0),   help="PF Abs Iso, R=0.3, pileup charged hadrons only"),
     NTupleVariable("relIso",          lambda x : getattr(x,'relIso', -1.0),    help="PF Rel Iso, R=0.3, charged + netural had + pileup"),
     NTupleSubObject("closestLepton",  lambda x : x.globalClosestLepton, particleType),
     NTupleVariable("closestLeptonDR", lambda x : deltaR(x.eta(),x.phi(),x.globalClosestLepton.eta(),x.globalClosestLepton.phi())),

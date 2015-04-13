@@ -79,11 +79,6 @@ MonoJetEventAna = cfg.Analyzer(
     minJets25 = 0,
     )
 
-from CMGTools.MonoXAnalysis.samples.samples_monojet import triggers_MonoJet,triggers_WZ
-triggerFlagsAna.triggerBits = {
-    'MonoJet' : triggers_MonoJet,
-    'WZ' : triggers_WZ,
-}
 
 from CMGTools.MonoXAnalysis.analyzers.treeProducerDarkMatterMonoJet import * 
 ## Tree Producer
@@ -99,12 +94,22 @@ treeProducer = cfg.Analyzer(
 )
 
 #-------- SAMPLES AND TRIGGERS -----------
+from CMGTools.MonoXAnalysis.samples.samples_monojet import *
+from CMGTools.MonoXAnalysis.samples.samples_8TeV import *
+
+selectedComponents = [ DoubleElectronAB, Monojet_M_10 ]
+
+from CMGTools.MonoXAnalysis.samples.samples_monojet import triggers_MonoJet, triggers_WZ
+from CMGTools.MonoXAnalysis.samples.samples_8TeV import triggers_ee
+triggerFlagsAna.triggerBits = {
+    'MonoJet' : triggers_MonoJet,
+    'WZ' : triggers_WZ,
+    'DoubleEl' : triggers_ee,
+}
+
+
 
 #-------- SEQUENCE
-from CMGTools.MonoXAnalysis.samples.samples_monojet import *
-
-selectedComponents = []
-
 sequence = cfg.Sequence(dmCoreSequence+[
     monoXRazorAna,
     ttHMT2ControlAna,
@@ -122,7 +127,7 @@ sequence = cfg.Sequence(dmCoreSequence+[
 #    comp.splitFactor = 1
 #    comp.fineSplitFactor = 40
     
-test = 10
+test = 4
 if test == 1:
     comp = Monojet_M_10; comp.name = "Monojet_M_10"
     #comp = SMS_T1tttt_2J_mGl1500_mLSP100
@@ -143,9 +148,16 @@ elif test == 3:
     comp.splitFactor = 1
     selectedComponents = [ comp ]
 elif test == 4:
-    comp = SingleMu
-    comp.files = comp.files[:1]
+    # test data
+    comp = DoubleElectronAB; comp.name = "dataSamplesAll"
+    comp.triggers = []
+    jetAna.recalibrateJets = False 
+    jetAna.smearJets       = False 
+    comp.files = [ '/afs/cern.ch/work/e/emanuele/monox/heppy/CMSSW_7_2_3_patch1/src/step5.root' ]
+    comp.isMC = False
     comp.splitFactor = 1
+    comp.fineSplitFactor = 1
+    monoJetSkim.metCut = 0
     selectedComponents = [ comp ]
 elif test == 10: # sync
     #eventSelector.toSelect = [ 11809 ]
