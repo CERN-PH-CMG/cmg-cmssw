@@ -117,52 +117,58 @@ class monoXRazorAnalyzer( Analyzer ):
 
 #### do same things for GEN
 
-        (genmet, genmetphi)  = event.met.genMET().pt(), event.met.genMET().phi()
-        genmetp4 = ROOT.TLorentzVector()
-        genmetp4.SetPtEtaPhiM(genmet,0,genmetphi,0)
+        if self.cfg_comp.isMC:
+            (genmet, genmetphi)  = event.met.genMET().pt(), event.met.genMET().phi()
+            genmetp4 = ROOT.TLorentzVector()
+            genmetp4.SetPtEtaPhiM(genmet,0,genmetphi,0)
 
-        allGenJets = [ x for x in self.handles['genJets'].product() ] 
-        objects40jc_Gen = [ j for j in allGenJets if j.pt() > 40 and abs(j.eta())<2.5 ]
+            allGenJets = [ x for x in self.handles['genJets'].product() ] 
+            objects40jc_Gen = [ j for j in allGenJets if j.pt() > 40 and abs(j.eta())<2.5 ]
 
-        if len(objects40jc_Gen)>=2:
+            if len(objects40jc_Gen)>=2:
+     
+                pxvec  = ROOT.std.vector(float)()
+                pyvec  = ROOT.std.vector(float)()
+                pzvec  = ROOT.std.vector(float)()
+                Evec  = ROOT.std.vector(float)()
+                grouping  = ROOT.std.vector(int)()
+                
+                for jet in objects40jc_Gen:
+                    pxvec.push_back(jet.px())
+                    pyvec.push_back(jet.py())
+                    pzvec.push_back(jet.pz())
+                    Evec.push_back(jet.energy())
+     
+                megajet = Megajet(pxvec, pyvec, pzvec, Evec, 1)
+     
+                pseudoJet1px = megajet.getAxis1()[0] * megajet.getAxis1()[3]
+                pseudoJet1py = megajet.getAxis1()[1] * megajet.getAxis1()[3]
+                pseudoJet1pz = megajet.getAxis1()[2] * megajet.getAxis1()[3]
+                pseudoJet1energy = megajet.getAxis1()[4]
+     
+                pseudoJet2px = megajet.getAxis2()[0] * megajet.getAxis2()[3]
+                pseudoJet2py = megajet.getAxis2()[1] * megajet.getAxis2()[3]
+                pseudoJet2pz = megajet.getAxis2()[2] * megajet.getAxis2()[3]
+                pseudoJet2energy = megajet.getAxis2()[4]
+     
+                pseudoJet1pt2 = pseudoJet1px*pseudoJet1px + pseudoJet1py*pseudoJet1py
+                pseudoJet2pt2 = pseudoJet2px*pseudoJet2px + pseudoJet2py*pseudoJet2py
+     
+                if pseudoJet1pt2 >= pseudoJet2pt2:
+                    pseudoJet1_gen = ROOT.TLorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+                    pseudoJet2_gen = ROOT.TLorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+                else:
+                    pseudoJet2_gen = ROOT.TLorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
+                    pseudoJet1_gen = ROOT.TLorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
+     
+                event.mr_gen = self.computeMR(pseudoJet1_gen, pseudoJet2_gen)
+                event.mtr_gen = self.computeMTR(pseudoJet1_gen, pseudoJet2_gen, genmetp4)
+                event.r_gen = self.computeR(pseudoJet1_gen, pseudoJet2_gen, genmetp4)
+        else:
+            event.mr_gen = -999
+            event.mtr_gen = -999
+            event.r_gen = -999
 
-            pxvec  = ROOT.std.vector(float)()
-            pyvec  = ROOT.std.vector(float)()
-            pzvec  = ROOT.std.vector(float)()
-            Evec  = ROOT.std.vector(float)()
-            grouping  = ROOT.std.vector(int)()
-            
-            for jet in objects40jc_Gen:
-                pxvec.push_back(jet.px())
-                pyvec.push_back(jet.py())
-                pzvec.push_back(jet.pz())
-                Evec.push_back(jet.energy())
-
-            megajet = Megajet(pxvec, pyvec, pzvec, Evec, 1)
-
-            pseudoJet1px = megajet.getAxis1()[0] * megajet.getAxis1()[3]
-            pseudoJet1py = megajet.getAxis1()[1] * megajet.getAxis1()[3]
-            pseudoJet1pz = megajet.getAxis1()[2] * megajet.getAxis1()[3]
-            pseudoJet1energy = megajet.getAxis1()[4]
-
-            pseudoJet2px = megajet.getAxis2()[0] * megajet.getAxis2()[3]
-            pseudoJet2py = megajet.getAxis2()[1] * megajet.getAxis2()[3]
-            pseudoJet2pz = megajet.getAxis2()[2] * megajet.getAxis2()[3]
-            pseudoJet2energy = megajet.getAxis2()[4]
-
-            pseudoJet1pt2 = pseudoJet1px*pseudoJet1px + pseudoJet1py*pseudoJet1py
-            pseudoJet2pt2 = pseudoJet2px*pseudoJet2px + pseudoJet2py*pseudoJet2py
-
-            if pseudoJet1pt2 >= pseudoJet2pt2:
-                pseudoJet1_gen = ROOT.TLorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
-                pseudoJet2_gen = ROOT.TLorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
-            else:
-                pseudoJet2_gen = ROOT.TLorentzVector( pseudoJet1px, pseudoJet1py, pseudoJet1pz, pseudoJet1energy)
-                pseudoJet1_gen = ROOT.TLorentzVector( pseudoJet2px, pseudoJet2py, pseudoJet2pz, pseudoJet2energy)
-
-            event.mr_gen = self.computeMR(pseudoJet1_gen, pseudoJet2_gen)
-            event.mtr_gen = self.computeMTR(pseudoJet1_gen, pseudoJet2_gen, genmetp4)
-            event.r_gen = self.computeR(pseudoJet1_gen, pseudoJet2_gen, genmetp4)
             
 ## ===> full RAZOR (jets + leptons)                                                                                                                                                                                             
         objects10lc = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta())<2.5 ]
