@@ -1,9 +1,9 @@
 import imp, os
 
 # datasets to run as defined from run_susyMT2.cfg
-# right now configured for maximal job splitting
+# number of jobs to run per dataset decided based on splitFactor and fineSplitFactor from cfg file
 # in principle one only needs to modify the following two lines:
-production_label = "fullProd_test3"
+production_label = "testSplit"
 cmg_version = 'MT2_CMGTools-from-CMSSW_7_2_3'
 
 debug  = False
@@ -22,9 +22,10 @@ os.environ["CMG_VERSION"] = cmg_version
 os.environ["DEBUG"]       = str(debug)
 os.environ["USEAAA"]      = str(useAAA)
 
+from PhysicsTools.HeppyCore.framework.heppy import split
 for comp in conf.components:
-    #set maximal splitting
-    NJOBS = len(comp.files)
+    # get splitting from config file according to splitFactor and fineSplitFactor (priority given to the latter)
+    NJOBS = len(split([comp]))
     os.environ["NJOBS"] = str(NJOBS)
     os.environ["DATASET"] = str(comp.name)
     os.system("crab submit -c heppy_crab_config_env.py")

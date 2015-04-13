@@ -15,12 +15,11 @@ cmg_version = os.environ["CMG_VERSION"]
 debug  = os.environ["DEBUG"] == 'True'
 useAAA = os.environ["USEAAA"] == 'True'
 
-
-print dataset, NJOBS
-
 if debug:
     NJOBS = 4
     NEVENTS = 200
+
+print "Will send dataset", dataset, "with", NJOBS, "jobs"
 
 config.General.requestName = dataset + "_" + cmg_version # task name
 config.General.workArea = 'crab_' + production_label # crab dir name
