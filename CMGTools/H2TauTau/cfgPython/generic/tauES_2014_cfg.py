@@ -8,7 +8,7 @@ from CMGTools.H2TauTau.proto.analyzers.TauTreeProducer import TauTreeProducer
 from CMGTools.H2TauTau.proto.analyzers.TauGenTreeProducer import TauGenTreeProducer
 
 # from CMGTools.H2TauTau.proto.samples.phys14.connector import httConnector
-from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import DYJetsToLL_M50
+from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import DYJetsToLL_M50, TTH
 from CMGTools.TTHAnalysis.samples.ComponentCreator import ComponentCreator
 
 # common configuration and sequence
@@ -63,7 +63,7 @@ ggh125 = creator.makeMCComponent("GGH125", "/GluGluToHToTauTau_M-125_13TeV-powhe
 ###################################################
 ###             SET COMPONENTS BY HAND          ###
 ###################################################
-selectedComponents = [ggh125]
+selectedComponents = [TTH] # [ggh125]
 sequence = cfg.Sequence([
     genAna,
     vertexAna,
