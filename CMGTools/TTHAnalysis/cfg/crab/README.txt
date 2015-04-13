@@ -1,4 +1,4 @@
-1) edit ../run_susyMT2.cfg to run over your favorite components
+1) edit ../run_susyMT2.cfg to run over your favorite components (and set splitting -> NJOBS)
 
 2) edit launchall.py to change the CMG-version/tag and the production name
 

@@ -50,15 +50,16 @@ cfo = imp.load_source("heppy_config", "heppy_config.py", handle)
 config = cfo.config
 handle.close()
 
+from PhysicsTools.HeppyCore.framework.heppy import split
 # pick right component from dataset and file from jobID
 selectedComponents = []
 for comp in config.components:
     if comp.name == dataset:
-        comp.files = comp.files[job-1: job] # first job number is 1
+        # this selects the files and events and changes the name to _ChunkX according to fineSplitFactor and splitFactor
+        newComp = split([comp])[job-1] # first job number is 1
         if useAAA:
-            comp.files = [x.replace("root://eoscms.cern.ch//eos/cms","root://cms-xrd-global.cern.ch/") for x in comp.files]
-        comp.name = comp.name+"_Chunk"+str(job)
-        selectedComponents.append(comp)
+            newComp.files = [x.replace("root://eoscms.cern.ch//eos/cms","root://cms-xrd-global.cern.ch/") for x in newComp.files]
+        selectedComponents.append(newComp)
 
 # check selectedComponents
 if len(selectedComponents) == 0:
