@@ -161,7 +161,7 @@ lepAna = cfg.Analyzer(
 from CMGTools.HToZZ4L.analyzers.ElectronMuonCleaner import ElectronMuonCleaner
 eleMuClean = cfg.Analyzer(
     ElectronMuonCleaner, name='eleMuClean',
-    selectedMuCut = lambda mu : mu.isPFMuon() or mu.isGlobalMuon(),
+    selectedMuCut = lambda mu : mu.tightId(), #isPFMuon() or mu.isGlobalMuon(),
     otherMuCut    = lambda mu : False, # (mu.isPFMuon() or mu.isGlobalMuon()) and muon.muonBestTrackType() != 2, # uncomment to include also muons with sip > 4
     mustClean = lambda ele, mu, dr: dr < 0.05
 )
@@ -181,8 +181,8 @@ jetAna = cfg.Analyzer(
     cleanSelectedLeptons = True, #Whether to clean 'selectedLeptons' after disambiguation. Treat with care (= 'False') if running Jetanalyzer more than once
     minLepPt = 0,
     lepSelCut = lambda lepton : lepton.tightId() and lepton.relIso04 < (0.4 if abs(lepton.pdgId())==13 else 0.5),
-    relaxJetId = False,  
-    doPuId = True,
+    relaxJetId = True, #False,  
+    doPuId =True,
     recalibrateJets = False, # True, False, 'MC', 'Data'
     recalibrationType = "AK4PFchs",
     mcGT     = "PHYS14_25_V2",
