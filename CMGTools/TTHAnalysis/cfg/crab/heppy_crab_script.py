@@ -20,6 +20,7 @@ dataset = ""
 total = 0  # total number of jobs for given dataset, not used at the moment
 nevents = None # this means run all events
 nprint  = 0 # quiet printout, change if you want to print the first nprint events
+useAAA = True # use xrootd by default
 
 # arguments of scriptExe
 print "ARGV:",sys.argv
@@ -35,6 +36,9 @@ for arg in sys.argv[2:]:
     elif arg.split("=")[0] == "nevents":
         nevents = int(arg.split("=")[1])
         print "selected to run over", nevents, "events"
+    elif arg.split("=")[0] == "useAAA":
+        useAAA = bool(arg.split("=")[1])
+        print "chosen to run via xrootd"
 
 print "dataset:", dataset
 print "job", job , " out of", total
@@ -46,13 +50,16 @@ cfo = imp.load_source("heppy_config", "heppy_config.py", handle)
 config = cfo.config
 handle.close()
 
+from PhysicsTools.HeppyCore.framework.heppy import split
 # pick right component from dataset and file from jobID
 selectedComponents = []
 for comp in config.components:
     if comp.name == dataset:
-        comp.files = comp.files[job-1: job] # first job number is 1
-        comp.name = comp.name+"_Chunk"+str(job)
-        selectedComponents.append(comp)
+        # this selects the files and events and changes the name to _ChunkX according to fineSplitFactor and splitFactor
+        newComp = split([comp])[job-1] # first job number is 1
+        if useAAA:
+            newComp.files = [x.replace("root://eoscms.cern.ch//eos/cms","root://cms-xrd-global.cern.ch/") for x in newComp.files]
+        selectedComponents.append(newComp)
 
 # check selectedComponents
 if len(selectedComponents) == 0:
