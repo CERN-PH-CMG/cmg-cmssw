@@ -100,6 +100,8 @@ genAna = cfg.Analyzer(
     # Make also the splitted lists
     makeSplittedGenLists = True,
     allGenTaus = False,
+    # Save LHE weights from LHEEventProduct
+    makeLHEweights = True,
     # Print out debug information
     verbose = False,
     )

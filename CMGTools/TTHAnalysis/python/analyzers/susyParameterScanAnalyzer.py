@@ -33,7 +33,7 @@ class susyParameterScanAnalyzer( Analyzer ):
         #mc information
         self.mchandles['genParticles'] = AutoHandle( 'prunedGenParticles',
                                                      'std::vector<reco::GenParticle>' )
-        self.mchandles['lhe'] = AutoHandle( 'source', 'LHEEventProduct', mayFail = True )
+        self.mchandles['lhe'] = AutoHandle( 'source', 'LHEEventProduct', mayFail = True, lazy = False )
         
     def beginLoop(self, setup):
         super(susyParameterScanAnalyzer,self).beginLoop(setup)
