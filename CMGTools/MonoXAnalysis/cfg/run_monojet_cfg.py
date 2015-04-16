@@ -126,28 +126,50 @@ sequence = cfg.Sequence(dmCoreSequence+[
 #for comp in selectedComponents:
 #    comp.splitFactor = 1
 #    comp.fineSplitFactor = 40
-    
-test = 4
-if test == 1:
-    comp = Monojet_M_10; comp.name = "Monojet_M_10"
-    #comp = SMS_T1tttt_2J_mGl1500_mLSP100
-    comp.files = comp.files[:1]
+
+#-------- HOW TO RUN ----------- 
+from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
+test = getHeppyOption('test')
+if test == '1':
+    comp = Monojet_M_10
+    monoJetSkim.metCut = 0
+    if getHeppyOption('dmVM10'):
+        comp = dmVM10
+    #comp.files = comp.files[:1]
     comp.files = [ '/afs/cern.ch/work/a/avartak/public/dmVM10.root' ]
     comp.splitFactor = 1
-    comp.fineSplitFactor = 1
-    monoJetSkim.metCut = 0
+    if not getHeppyOption('single'):
+        comp.fineSplitFactor = 4
     selectedComponents = [ comp ]
-elif test == 2:
+elif test == '2':
     for comp in selectedComponents:
         comp.files = comp.files[:1]
         comp.splitFactor = 1
         comp.fineSplitFactor = 1
-elif test == 3:
-    comp = TTJets
+elif test == 'EOS':
+    comp = DYJetsToLL_M50#TTJets
+    comp.files = comp.files[:1]
+    if getHeppyOption('Wigner'):
+        print "Will read from WIGNER"
+        comp.files = [ 'root://eoscms//eos/cms/store/mc/Phys14DR/DYJetsToLL_M-50_13TeV-madgraph-pythia8/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/0432E62A-7A6C-E411-87BB-002590DB92A8.root' ]
+    else:
+        print "Will read from CERN Meyrin"
+        comp.files = [ 'root://eoscms//eos/cms/store/mc/Phys14DR/DYJetsToLL_M-50_13TeV-madgraph-pythia8/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/10000/F675C068-5E6C-E411-B915-0025907DC9AC.root' ]
+    os.system("/afs/cern.ch/project/eos/installation/0.3.15/bin/eos.select fileinfo "+comp.files[0].replace("root://eoscms//","/"))
+    comp.splitFactor = 1
+    comp.fineSplitFactor = 1
+    selectedComponents = [ comp ]
+elif test == 'SingleMu':
+    comp = SingleMu
     comp.files = comp.files[:1]
     comp.splitFactor = 1
     selectedComponents = [ comp ]
-elif test == 4:
+elif test == '5':
+    for comp in selectedComponents:
+        comp.files = comp.files[:5]
+        comp.splitFactor = 1
+        comp.fineSplitFactor = 5
+elif test == '6':
     # test data
     comp = DoubleElectronAB; comp.name = "dataSamplesAll"
     comp.triggers = []
@@ -159,20 +181,29 @@ elif test == 4:
     comp.fineSplitFactor = 1
     monoJetSkim.metCut = 0
     selectedComponents = [ comp ]
-elif test == 10: # sync
+elif test == 'monojet-synch': # sync
     #eventSelector.toSelect = [ 11809 ]
     #sequence = cfg.Sequence([eventSelector] + susyCoreSequence+[ ttHEventAna, treeProducer, ])
     jetAna.recalibrateJets = False 
     jetAna.smearJets       = False 
-    comp = Monojet_M_10; comp.name = "Monojet_M_10"
+    comp = Monojet_M_10;
     comp.files = [ 'root://eoscms//eos/cms/store/mc/Phys14DR/DYJetsToLL_M-50_13TeV-madgraph-pythia8/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/0432E62A-7A6C-E411-87BB-002590DB92A8.root' ]
     comp.splitFactor = 1
     comp.fineSplitFactor = 1
     monoJetSkim.metCut = 0
     selectedComponents = [ comp ]
-
-
-
+    
+## output histogram
+outputService=[]
+from PhysicsTools.HeppyCore.framework.services.tfile import TFileService
+output_service = cfg.Service(
+    TFileService,
+    'outputfile',
+    name="outputfile",
+    fname='treeProducerDarkMatterMonoJet/tree.root',
+    option='recreate'
+    )    
+outputService.append(output_service)
 
 # the following is declared in case this cfg is used in input to the heppy.py script
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
