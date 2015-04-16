@@ -1,8 +1,6 @@
 <lcgdict>
 
  <class name="TriggerEfficiency"/>
- <class name="VBFMVA"/>
- <class name="VBFMVA2012"/>
  <class name="cmg::METSignificance" />
  <class name="edm::Wrapper<cmg::METSignificance>" />
  <class name="std::vector<cmg::METSignificance>" />
