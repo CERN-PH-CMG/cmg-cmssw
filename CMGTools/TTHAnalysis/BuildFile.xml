@@ -1,6 +1,7 @@
 <use name="CommonTools/Utils"/>
 <use name="TrackingTools/IPTools"/>
 <use name="MagneticField/UniformEngine"/>
+<use name="MagneticField/ParametrizedEngine"/>
 <use name="EgammaAnalysis/ElectronTools"/>
 <use name="SimDataFormats/GeneratorProducts"/>
 <use name="RecoVertex/KalmanVertexFit"/>
@@ -8,7 +9,6 @@
 <use name="roottmva"/>
 <use name="rootminuit2"/>
 <use name="lhapdf"/>
-<flags LDFLAGS="/afs/cern.ch/cms/slc6_amd64_gcc481/cms/cmssw/CMSSW_7_0_2/lib/slc6_amd64_gcc481/pluginMagneticFieldParametrizedEnginePlugins.so" />
 <export>
   <lib   name="1"/>
 </export>

@@ -121,7 +121,7 @@ do
 echo $f
 ff=`basename $f | cut -d . -f 1`
 echo $ff
-gfal-mkdir {srm}
+gfal-mkdir -p {srm}
 echo "gfal-copy file:///`pwd`/Loop/treeProducerSusyFullHad/$file.root {srm}/${{ff}}_{idx}.root"
 gfal-copy file:///`pwd`/Loop/treeProducerSusyFullHad/$ff.root {srm}/${{ff}}_{idx}.root
 done

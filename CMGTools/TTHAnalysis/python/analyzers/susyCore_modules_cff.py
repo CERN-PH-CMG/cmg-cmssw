@@ -202,6 +202,7 @@ photonAna = cfg.Analyzer(
     etaMax = 2.5,
     gammaID = "PhotonCutBasedIDLoose_CSA14",
     do_mc_match = True,
+    do_randomCone = False,
 )
 
 
@@ -298,6 +299,7 @@ ttHFatJetAna = cfg.Analyzer(
 from CMGTools.TTHAnalysis.analyzers.ttHSVAnalyzer import ttHSVAnalyzer
 ttHSVAna = cfg.Analyzer(
     ttHSVAnalyzer, name="ttHSVAnalyzer",
+    do_mc_match = True,
 )
 
 # Secondary vertex analyzer
