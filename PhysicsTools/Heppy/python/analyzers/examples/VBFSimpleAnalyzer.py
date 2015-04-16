@@ -1,5 +1,4 @@
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
-
 from PhysicsTools.Heppy.physicsutils.VBF import VBF
 
 class VBFSimpleAnalyzer(Analyzer):

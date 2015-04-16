@@ -115,13 +115,14 @@ lepAna = cfg.Analyzer(
     inclusive_muon_eta = 2.4,
     inclusive_muon_dxy = 0.5,
     inclusive_muon_dz  = 1.0,
+    muon_dxydz_track   = "muonBestTrack",
     # loose muon selection
     loose_muon_id     = "POG_Global_OR_TMArbitrated",
     loose_muon_pt     = 5,
     loose_muon_eta    = 2.4,
     loose_muon_dxy    = 0.5,
     loose_muon_dz     = 1,
-    loose_muon_isoCut = lambda muon : True,
+    loose_muon_isoCut = lambda muon : muon.sip3D() < 4 and muon.muonBestTrackType() != 2,
     # inclusive very loose electron selection
     inclusive_electron_id  = "",
     inclusive_electron_pt  = 7,
@@ -135,7 +136,7 @@ lepAna = cfg.Analyzer(
     loose_electron_eta    = 2.5,
     loose_electron_dxy    = 0.5,
     loose_electron_dz     = 1.0,
-    loose_electron_isoCut = lambda x: True,
+    loose_electron_isoCut = lambda x: x.sip3D() < 4,
     loose_electron_lostHits = 1.0,
     # muon isolation correction method (can be "rhoArea" or "deltaBeta")
     mu_isoCorr = "deltaBeta" ,
@@ -157,21 +158,33 @@ lepAna = cfg.Analyzer(
     match_inclusiveLeptons = False, # match to all inclusive leptons
     )
 
+from CMGTools.HToZZ4L.analyzers.ElectronMuonCleaner import ElectronMuonCleaner
+eleMuClean = cfg.Analyzer(
+    ElectronMuonCleaner, name='eleMuClean',
+    selectedMuCut = lambda mu : mu.isPFMuon() or mu.isGlobalMuon(),
+    otherMuCut    = lambda mu : False, # (mu.isPFMuon() or mu.isGlobalMuon()) and muon.muonBestTrackType() != 2, # uncomment to include also muons with sip > 4
+    mustClean = lambda ele, mu, dr: dr < 0.05
+)
 
 ## Jets Analyzer (generic)
 jetAna = cfg.Analyzer(
     JetAnalyzer, name='jetAnalyzer',
     jetCol = 'slimmedJets',
+    copyJetsByValue = False,      #Whether or not to copy the input jets or to work with references (should be 'True' if JetAnalyzer is run more than once)
+    genJetCol = 'slimmedGenJets',
+    rho = ('fixedGridRhoFastjetAll','',''),
     jetPt = 30.,
     jetEta = 4.7,
     jetEtaCentral = 4.7,
     jetLepDR = 0.4,
     jetLepArbitration = (lambda jet,lepton : lepton), # you can decide which to keep in case of overlaps; e.g. if the jet is b-tagged you might want to keep the jet
+    cleanSelectedLeptons = True, #Whether to clean 'selectedLeptons' after disambiguation. Treat with care (= 'False') if running Jetanalyzer more than once
     minLepPt = 0,
-    lepSelCut = lambda lepton : lepton.sip3D() < 4 and lepton.tightId() and lepton.relIso04 < (0.4 if abs(lepton.pdgId())==13 else 0.5),
+    lepSelCut = lambda lepton : lepton.tightId() and lepton.relIso04 < (0.4 if abs(lepton.pdgId())==13 else 0.5),
     relaxJetId = False,  
     doPuId = True,
     recalibrateJets = False, # True, False, 'MC', 'Data'
+    recalibrationType = "AK4PFchs",
     mcGT     = "PHYS14_25_V2",
     jecPath = "%s/src/CMGTools/RootTools/data/jec/" % os.environ['CMSSW_BASE'],
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
@@ -201,28 +214,33 @@ metAna = cfg.Analyzer(
 fsrPhotonMaker = cfg.Analyzer(
     FSRPhotonMaker, name="fsrPhotonMaker",
     leptons="selectedLeptons",
-    electronID = lambda x: x.electronID("POG_MVA_ID_Run2_NonTrig_HZZ")
+    electronID = lambda x: True, #x.electronID("POG_MVA_ID_Run2_NonTrig_HZZ")
+    electronVeto = "superclusterEta", # alternatives: "electronEta" and in the future "pfCandReference"
 )
 
 
 fourLeptonAnalyzerSignal = cfg.Analyzer(
     FourLeptonAnalyzer, name="fourLeptonAnalyzerSignal",
-    tag = "Signal"
+    tag = "Signal",
+    attachFsrToGlobalClosestLeptonOnly = True
 )
 
 fourLeptonAnalyzer2P2F = cfg.Analyzer(
     FourLeptonAnalyzer2P2F, name="fourLeptonAnalyzer2P2F",
-    tag = "2P2F"
+    tag = "2P2F",
+    attachFsrToGlobalClosestLeptonOnly = True
 )
 
 fourLeptonAnalyzer3P1F = cfg.Analyzer(
     FourLeptonAnalyzer3P1F, name="fourLeptonAnalyzer3P1F",
-    tag = "3P1F"
+    tag = "3P1F",
+    attachFsrToGlobalClosestLeptonOnly = True
 )
 
 fourLeptonAnalyzerSS = cfg.Analyzer(
     FourLeptonAnalyzerSS, name="fourLeptonAnalyzerSS",
-    tag = "SS"
+    tag = "SS",
+    attachFsrToGlobalClosestLeptonOnly = True
 )
 
 fourLeptonEventSkimmer = cfg.Analyzer(
@@ -255,6 +273,7 @@ hzz4lCoreSequence = [
     pileUpAna,
     vertexAna,
     lepAna,
+    eleMuClean,
     jetAna,
     metAna,
     triggerFlagsAna,
