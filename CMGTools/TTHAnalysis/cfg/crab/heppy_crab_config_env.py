@@ -2,8 +2,6 @@
 # values we'll be taken from environment variables set in launchall.py
 # fixed options will be taken from heppy_crab_config.py
 
-debug = False
-
 import imp
 file = open( "heppy_crab_config.py", 'r' )
 cfg = imp.load_source( 'cfg', "heppy_crab_config.py", file)
@@ -14,12 +12,14 @@ dataset=os.environ["DATASET"]
 NJOBS=int(os.environ["NJOBS"])
 production_label = os.environ["PROD_LABEL"]
 cmg_version = os.environ["CMG_VERSION"]
-
-print dataset, NJOBS
+debug  = os.environ["DEBUG"] == 'True'
+useAAA = os.environ["USEAAA"] == 'True'
 
 if debug:
-    NJOBS = 2
+    NJOBS = 4
     NEVENTS = 200
+
+print "Will send dataset", dataset, "with", NJOBS, "jobs"
 
 config.General.requestName = dataset + "_" + cmg_version # task name
 config.General.workArea = 'crab_' + production_label # crab dir name
@@ -29,7 +29,7 @@ config.Data.unitsPerJob = 10
 config.Data.totalUnits = config.Data.unitsPerJob * NJOBS
 
 # arguments to pass to scriptExe. They have to be like "arg=value". 
-config.JobType.scriptArgs = ["dataset="+dataset, "total="+str(NJOBS)]
+config.JobType.scriptArgs = ["dataset="+dataset, "total="+str(NJOBS), "useAAA="+str(useAAA)]
 
 # output will be .../$outLFN/$PRIMARY_DS/$PUBLISH_NAME/$TIMESTAMP/$COUNTER/$FILENAME
 # https://twiki.cern.ch/twiki/bin/view/CMSPublic/Crab3DataHandling
