@@ -322,6 +322,7 @@ metAna = cfg.Analyzer(
     METAnalyzer, name="metAnalyzer",
     doTkMet = False,
     doMetNoMu = False,
+    doMetNoEle = False,
     doMetNoPhoton = False,
     recalibrate = False,
     candidates='packedPFCandidates',
