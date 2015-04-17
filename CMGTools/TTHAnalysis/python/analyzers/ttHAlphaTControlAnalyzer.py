@@ -28,6 +28,9 @@ class ttHAlphaTControlAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHAlphaTControlAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName) 
 
+        self.maxLeps = cfg_ana.maxLeps if hasattr(cfg_ana,'maxLeps') else 999
+        self.maxPhotons = cfg_ana.maxPhotons if hasattr(cfg_ana,'maxPhotons') else 999
+
     def declareHandles(self):
         super(ttHAlphaTControlAnalyzer, self).declareHandles()
        #genJets                                                                                                                                                                     
@@ -42,22 +45,19 @@ class ttHAlphaTControlAnalyzer( Analyzer ):
 
     # Calculate MT_W (stolen from the MT2 code)
     # Modularize this later?
+    # Does it just for the leading lepton 
     def makeMT(self, event):
     # print '==> INSIDE THE PRINT MT'
     # print 'MET=',event.met.pt() 
 
         if len(event.selectedLeptons)>0:
-            for lepton in event.selectedLeptons:
-                event.mtw = mtw(lepton, event.met)
+            event.mtw = mtw(event.selectedLeptons[0], event.met)
 
         if len(event.selectedTaus)>0:
-            for myTau in event.selectedTaus:
-                event.mtwTau = mtw(myTau, event.met)
-                foundTau = True
+            event.mtwTau = mtw(event.selectedTaus[0], event.met)
                 
         if len(event.selectedIsoTrack)>0:
-            for myTrack in event.selectedIsoTrack:
-                event.mtwIsoTrack = mtw(myTrack, event.met)
+            event.mtwIsoTrack = mtw(event.selectedIsoTrack[0], event.met)
 
         return
 
@@ -74,7 +74,9 @@ class ttHAlphaTControlAnalyzer( Analyzer ):
 
         event.minDeltaRLepJet = []
 
-        for lepton in event.selectedLeptons:
+        for i,lepton in enumerate(event.selectedLeptons):
+
+            if i == self.maxLeps: break
 
             minDeltaR = 999
 
@@ -91,7 +93,9 @@ class ttHAlphaTControlAnalyzer( Analyzer ):
 
         event.minDeltaRPhoJet = []
 
-        for photon in event.selectedPhotons:
+        for i,photon in enumerate(event.selectedPhotons):
+
+            if i == self.maxPhotons: break
 
             minDeltaR = 999
 
