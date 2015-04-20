@@ -48,6 +48,7 @@ class TauGenTreeProducer(H2TauTauTreeProducerBase):
         self.var(self.tree, 'tau2_gen_decayMode')
 
         self.var(self.tree, 'n_gen_taus')
+        self.var(self.tree, 'n_gen_tauleps')
 
 
     def process(self, event):
@@ -60,23 +61,46 @@ class TauGenTreeProducer(H2TauTauTreeProducerBase):
             return False
 
         self.tree.reset()
-        self.fill(self.tree, 'n_gen_taus', len(event.gentaus))
+        
 
-        for i_tau, gen_tau in enumerate(event.gentaus):
-            if i_tau >= 2:
+        n_gen_tau = 0
+        for gen_tau in event.gentaus:
+            # FIXME - temporary, let's see for a longer-term solution...
+            if abs(gen_tau.mother().pdgId()) in [23, 24]:
+                continue
+
+            if n_gen_tau >= 2:
                 print 'More than two generated hadronic taus!'
                 continue
 
-            self.fillGenParticle(self.tree, 'tau{i}_gen'.format(i=i_tau+1), gen_tau)
-            self.fillParticle(self.tree, 'tau{i}_gen_vis'.format(i=i_tau+1), self.visibleP4(gen_tau))
-            self.fill(self.tree, 'tau{i}_gen_decayMode'.format(i=i_tau+1), tauDecayModes.genDecayModeInt([d for d in TauGenTreeProducer.finalDaughters(gen_tau) if abs(d.pdgId()) not in [12, 14, 16]]))
+            self.fillGenParticle(self.tree, 'tau{i}_gen'.format(i=n_gen_tau+1), gen_tau)
+            self.fillParticle(self.tree, 'tau{i}_gen_vis'.format(i=n_gen_tau+1), self.visibleP4(gen_tau))
+            self.fill(self.tree, 'tau{i}_gen_decayMode'.format(i=n_gen_tau+1), tauDecayModes.genDecayModeInt([d for d in TauGenTreeProducer.finalDaughters(gen_tau) if abs(d.pdgId()) not in [12, 14, 16]]))
 
             for tau in event.selectedTaus:
                 if tau.mcTau == gen_tau:
                     # import pdb; pdb.set_trace()
-                    self.fillTau(self.tree, 'tau{i}'.format(i=i_tau+1), tau)
+                    self.fillTau(self.tree, 'tau{i}'.format(i=n_gen_tau+1), tau)
                     # if tau.genJet():
-                        # self.fillGenParticle(self.tree, 'tau{i}_gen_vis'.format(i=i_tau), tau.genJet())
-                        
+                        # self.fillGenParticle(self.tree, 'tau{i}_gen_vis'.format(i=n_gen_tau), tau.genJet())
+
+            n_gen_tau += 1
+
+        self.fill(self.tree, 'n_gen_taus', n_gen_tau)
+                            
+        n_gen_taulep = 0
+        for gen_tau_lep in event.gentauleps:
+            tau = gen_tau_lep.mother()
+            if abs(tau.pdgId()) != 15:
+                continue
+            if abs(tau.mother().pdgId()) == 15:
+                tau = tau.mother()
+            if abs(tau.mother().pdgId()) in [23, 24]:
+                continue
+            
+            n_gen_taulep += 1
+
+        
+        self.fill(self.tree, 'n_gen_tauleps', n_gen_taulep)
 
         self.fillTree(event)

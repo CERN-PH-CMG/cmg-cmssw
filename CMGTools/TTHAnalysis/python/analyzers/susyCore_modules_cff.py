@@ -320,14 +320,20 @@ ttHHeavyFlavourHadronAna = cfg.Analyzer(
 
 metAna = cfg.Analyzer(
     METAnalyzer, name="metAnalyzer",
+    metCollection     = "slimmedMETs",
+    noPUMetCollection = "slimmedMETs",    
+    copyMETsByValue = False,
     doTkMet = False,
+    doMetNoPU = True,
     doMetNoMu = False,
     doMetNoEle = False,
     doMetNoPhoton = False,
     recalibrate = False,
+    jetAnalyzerCalibrationPostFix = "",
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,
+    collectionPostFix = "",
     )
 
 # Core Event Analyzer (computes basic quantities like HT, dilepton masses)
