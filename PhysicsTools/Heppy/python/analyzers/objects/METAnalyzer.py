@@ -97,8 +97,8 @@ class METAnalyzer( Analyzer ):
 
 
     def makeMETNoEle(self, event):
-        event.metNoEle = copy.deepcopy(event.met)
-        if self.cfg_ana.doMetNoPU: event.metNoEleNoPU = copy.deepcopy(event.metNoPU)
+        self.metNoEle = copy.deepcopy(self.met)
+        if self.cfg_ana.doMetNoPU: self.metNoEleNoPU = copy.deepcopy(self.metNoPU)
 
         elepx = 0
         elepy = 0
@@ -108,8 +108,8 @@ class METAnalyzer( Analyzer ):
             elepy += ele.py()
 
         #subtract electron momentum and construct met                                                                                                                                                                                                     
-        px,py = event.metNoEle.px()+elepx, event.metNoEle.py()+elepy
-        event.metNoEle.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, math.hypot(px,py)))
+        px,py = self.metNoEle.px()+elepx, self.metNoEle.py()+elepy
+        self.metNoEle.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, math.hypot(px,py)))
 
         px,py = self.metNoEleNoPU.px()+elepx, self.metNoEleNoPU.py()+elepy
         self.metNoEleNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, math.hypot(px,py)))
