@@ -14,6 +14,9 @@ from PhysicsTools.Heppy.analyzers.objects.METAnalyzer import *
 monoJetSkim.metCut = 200
 monoJetSkim.jetPtCuts = []
 
+# --- W->munu control sample SKIMMING ---
+monoJetCtrlLepSkim.minLeptons = 0
+
 # run miniIso
 lepAna.doMiniIsolation = True
 lepAna.packedCandidates = 'packedPFCandidates'
@@ -97,7 +100,7 @@ treeProducer = cfg.Analyzer(
 from CMGTools.MonoXAnalysis.samples.samples_monojet import *
 from CMGTools.MonoXAnalysis.samples.samples_8TeV import *
 
-selectedComponents = [ DoubleElectronAB, Monojet_M_10 ]
+selectedComponents = [ DoubleElectronAB, Monojet_M_10, WJetsToLNuHT ]
 
 from CMGTools.MonoXAnalysis.samples.samples_monojet import triggers_MonoJet, triggers_WZ
 from CMGTools.MonoXAnalysis.samples.samples_8TeV import triggers_ee
@@ -192,6 +195,14 @@ elif test == 'monojet-synch': # sync
     comp.fineSplitFactor = 1
     monoJetSkim.metCut = 0
     selectedComponents = [ comp ]
+elif test == 'Wctrl':
+    monoJetSkim.metCut = 0
+    monoJetCtrlLepSkim.minLeptons = 1
+    comp = WJetsToLNu_HT100to200
+    comp.files = [ 'root://eoscms//eos/cms/store/mc/Phys14DR//WJetsToLNu_HT-100to200_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/FACF4684-5377-E411-8F81-002590DB0640.root' ]
+    comp.splitFactor = 1
+    comp.fineSplitFactor = 1
+    selectedComponents = [ comp ] 
     
 ## output histogram
 outputService=[]
