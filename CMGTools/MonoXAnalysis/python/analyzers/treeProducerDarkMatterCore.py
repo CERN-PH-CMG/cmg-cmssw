@@ -32,12 +32,11 @@ dmCore_globalVariables = [
 dmCore_globalObjects = {
             "met" : NTupleObject("met", metType, help="PF E_{T}^{miss}, after type 1 corrections"),
             "metNoMu" : NTupleObject("metNoMu", metType, help="PF E_{T}^{miss}, with muon pt added back"),
-            #"metNoPU" : NTupleObject("metNoPU", fourVectorType, help="PF noPU E_{T}^{miss}"),
+            "metNoPU" : NTupleObject("metNoPU", fourVectorType, help="PF noPU E_{T}^{miss}"),
 }
 
 dmCore_collections = {
-            "genleps"         : NTupleCollection("genLep",     genParticleWithLinksType, 10, help="Generated leptons (e/mu) from W/Z decays"),                                                                                                
-            "gentauleps"      : NTupleCollection("genLepFromTau", genParticleWithLinksType, 10, help="Generated leptons (e/mu) from decays of taus from W/Z/h decays"),                                                                       
-            "gentaus"         : NTupleCollection("genTau",     genParticleWithLinksType, 10, help="Generated leptons (tau) from W/Z decays"),                            
+            "genJets"          : NTupleCollection("genJet",  genParticleType, 10, help="Generated jets (not cleaned)"),
+            "genleps"          : NTupleCollection("genLep",  genParticleWithLinksType, 10, help="Generated leptons (e/mu) from W/Z decays"),
             "generatorSummary" : NTupleCollection("GenPart", genParticleWithLinksType, 100 , help="Hard scattering particles, with ancestry and links"),
 }

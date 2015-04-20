@@ -92,7 +92,7 @@ dmMonoJet_globalObjects.update({
 dmMonoJet_collections = dmCore_collections.copy()
 dmMonoJet_collections.update({
             # put more here
-            "gentopquarks"    : NTupleCollection("GenTop",     genParticleType, 2, help="Generated top quarks from hard scattering (needed separately for top pt reweighting)"),
+            "genleps"         : NTupleCollection("genLep",     genParticleWithLinksType, 10, help="Generated leptons (e/mu) from W/Z decays"), 
             ##------------------------------------------------                       
             "selectedTaus"    : NTupleCollection("TauGood",  tauTypeSusy, 3, help="Taus after the preselection"),
             "selectedLeptons" : NTupleCollection("LepGood",  leptonTypeSusyExtra, 8, help="Leptons after the preselection"),
