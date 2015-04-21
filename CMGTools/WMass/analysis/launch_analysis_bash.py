@@ -43,7 +43,7 @@ RecoilCorrNVarAll = 1;
 RecoilCorrVarDiagoParU1orU2fromDATAorMC = "0"; # SYST VARIATIONS: 1= U1 DATA, 2= U2 DATA, 3= U1 MC, 4= U2 MC
 RecoilCorrVarDiagoParSigmas = "0"; # 0=none, 1=yes
 RecoilCorrVarDiagoParN = "0";                  # 0...16 =none, 1=yes
-syst_ewk_Alcaraz = "0"; # 0=none, 1=yes
+syst_ewk_Alcaraz = "-1"; # 0=none, 1=yes
 # LHAPDF_reweighting_sets="11200" # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
 # LHAPDF_reweighting_members="51" # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
 # LHAPDF_reweighting_sets="10042" # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
