@@ -13,9 +13,10 @@ useLHAPDF = False
 # foldername = "test_bosonpt";
 # foldername = "test_newstd";
 # foldername = "test_nnpdf23x0";
-foldername = "test_recoilfinal";
-##foldername = "test_controlPLOT_7TeV";
-##foldername = "test_controlPLOT_8TeV";
+# foldername = "test_RecApr12";
+# foldername = "test_Recoil13Apr";
+# foldername = "test_Recoil13Aprnobkg";
+foldername = "test_qed";
 foldername_orig=foldername
 
 ntuple_folder = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
@@ -32,17 +33,17 @@ use_LHE_weights = 0; # 0=no, 1=yes
 usePileupSF = 1; # 0=no, 1=yes
 useEffSF = 2; # 0=no, 1=MuonPOG, 2=Heiner
 # usePtSF = sys.argv[1]; # Boson pT reweighting: 0=no, 1=yes
-usePtSF = -1; # Boson pT reweighting: 0=no, 1=yes
+usePtSF = 0; # Boson pT reweighting: -1=none, 0=data, 1...=other options
 useMomentumCorr = 3; # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector
 GlobalSscaleMuonCorrNsigma = 0;
 usePhiMETCorr = 0; # 0=none, 1=yes
-useRecoilCorr = 2; # 0=none, 1=yes, 2=PDFw3gaus
-# RecoilCorrNVarAll = 30;
-RecoilCorrNVarAll = 0;
-RecoilCorrVarDiagoParSigmas = "0"; # 0=none, 1=yes
+useRecoilCorr = 0; # 0=none, 1=yes, 2=PDFw3gaus
+RecoilCorrNVarAll = 1;
+# RecoilCorrNVarAll = 0;
 RecoilCorrVarDiagoParU1orU2fromDATAorMC = "0"; # SYST VARIATIONS: 1= U1 DATA, 2= U2 DATA, 3= U1 MC, 4= U2 MC
+RecoilCorrVarDiagoParSigmas = "0"; # 0=none, 1=yes
 RecoilCorrVarDiagoParN = "0";                  # 0...16 =none, 1=yes
-syst_ewk_Alcaraz = "0"; # 0=none, 1=yes
+syst_ewk_Alcaraz = "-1"; # 0=none, 1=yes
 # LHAPDF_reweighting_sets="11200" # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
 # LHAPDF_reweighting_members="51" # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
 # LHAPDF_reweighting_sets="10042" # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
@@ -68,23 +69,24 @@ WMassNSteps = "5"; # 60
 etaMuonNSteps = "1"; # 5
 etaMaxMuons = "0.9"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
-parallelize = 1;
 # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 resumbit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" 
 # resumbit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 # resumbit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
 #resumbit_sample = "DATA, DYJetsMadSig"
 #resumbit_sample = "DATA, DYJetsMadSig ,DYJetsPow"
-##resumbit_sample = "DATA"
-##resumbit_sample = "DATA, DYJetsPow"
-##resumbit_sample = "WJetsMadSig"#WJetsPowPlus"
-##resumbit_sample = "WJetsPowPlus"
+#resumbit_sample = "DATA"
+#resumbit_sample = "DATA, DYJetsPow"
+#resumbit_sample = "WJetsMadSig"#WJetsPowPlus"
+#resumbit_sample = "WJetsPowPlus"
+
+parallelize = 1;
+useBatch = 1;
+batchQueue = "1nh";
 
 runWanalysis = 0;
-runZanalysis = 1;
-useBatch = 1;
+runZanalysis = 0;
 resubmit = 0;
-batchQueue = "1nh";
 controlplots = 0;
 
 mergeSigEWKbkg = 0;
@@ -94,11 +96,11 @@ fit_W_or_Z = "Z" # "W,Z" or "W" or "Z"
 
 usePowOrMadForSig = "POWHEG"; # use "POWHEG" or use "MADGRAPH"
 runPrepareDataCardsFast = 0; # ALTERNATIVE FAST WAY: TEMPLATES ARE IN THE SYsT FOLDER, PSEUDO-DATA IN THE LOCAL FOLDER
-DataCards_systFromFolder="" # evaluate systematics wrt folder (or leave it empty)
+DataCards_systFromFolder="test_qed_tkmet_ewk-1_RochCorr_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr" # evaluate systematics wrt folder (or leave it empty)
 
 ## NEW FIT
 print "if it doesn't work, try with this first: cd /afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_5_3_3_patch3/src; SCRAM_ARCH slc5_amd64_gcc462;cmsenv; cd -";
-runClosureTestLikeLihoodRatioAnsMergeResults = 0;
+runClosureTestLikeLihoodRatioAnsMergeResults = 1;
 mergeResults = 0;
 
 #######################
@@ -136,9 +138,6 @@ elif(use_PForNoPUorTKmet==2): # 0:PF, 1:NOPU, 2:TK
 ExtractNumbers = 0; # NOT REALLY USED
 run_BuildEvByEvTemplates= 0; # NOT REALLY USED
 runDataCardsParametrization = 0; # NOT REALLY USED
-runClosureTest = 0;
-run_MassFit         = 0;
-fitType             = 0; # 0 = ROOT, 1 = CUSTOM
 
 ## PRODUCE R(X)=W/Z DISTRIBUTION TO REWEIGHT Z in DATA
 runR_WdivZ= 0;
@@ -154,8 +153,9 @@ runPhiStarEta = 0;
 
 # if RecoilCorrNVarAll != 0 or GlobalSscaleMuonCorrNsigma != 0 or usePhiMETCorr != 0 \
     # or useRecoilCorr != 1 or RecoilCorrVarDiagoParSigmas != "0" or RecoilCorrVarDiagoParN != "0" \
-    # or RecoilCorrVarDiagoParU1orU2fromDATAorMC != "0" or syst_ewk_Alcaraz != "0" or LHAPDF_reweighting_members !="1":
-  # WMassNSteps = "0"
+    # or syst_ewk_Alcaraz != "0" 
+if RecoilCorrVarDiagoParU1orU2fromDATAorMC != "0" or LHAPDF_reweighting_members !="1":
+  WMassNSteps = "0"
 
 print "cd /afs/cern.ch/work/p/perrozzi/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;eval `scramv1 runtime -sh`; cd -;"
 
@@ -174,6 +174,9 @@ if(IS_MC_CLOSURE_TEST==1):
     # useEffSF=0;
     # usePtSF=0;
     # usePileupSF=0;
+    
+if(syst_ewk_Alcaraz>-1): 
+  foldername+="_ewk"+str(syst_ewk_Alcaraz);
 
 if(RecoilCorrNVarAll<1):
   RecoilCorrNVarAll=1
@@ -187,10 +190,18 @@ if(usePhiMETCorr==1):
   foldername+="_phiMETcorr";
 if(useRecoilCorr>0): 
   foldername+="_RecoilCorr"+str(useRecoilCorr);
-  if(("0" not in RecoilCorrVarDiagoParN) or ("0" not in RecoilCorrVarDiagoParU1orU2fromDATAorMC)):
-    foldername+="_Resol_U1_"+str(RecoilCorrVarDiagoParN)+"_U2_"+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC);
+  # if(("0" not in RecoilCorrVarDiagoParN) or ("0" not in RecoilCorrVarDiagoParU1orU2fromDATAorMC)):
+    # foldername+="_Resol_U1_"+str(RecoilCorrVarDiagoParN)+"_U2_"+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC);
+  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC=="1"):
+    foldername+="_U1Data_";
+  elif(RecoilCorrVarDiagoParU1orU2fromDATAorMC=="2"):
+    foldername+="_U2Data_";
+  elif(RecoilCorrVarDiagoParU1orU2fromDATAorMC=="3"):
+    foldername+="_U1MC_";
+  elif(RecoilCorrVarDiagoParU1orU2fromDATAorMC=="4"):
+    foldername+="_U2MC_";
   if(("0" not in RecoilCorrVarDiagoParSigmas)):
-    foldername+="_Scale_U1_"+str(RecoilCorrVarDiagoParSigmas);
+    foldername+="_RecCorrVarSigma_"+str(RecoilCorrVarDiagoParSigmas);
 
 if(useEffSF==1): foldername+="_EffSFCorr";
 if(useEffSF==2): foldername+="_EffHeinerSFCorr";
@@ -297,7 +308,7 @@ fWana_str = [
 ];  
   
 fZana_str = [
-##  ntuple_folder_8TeV_ABC+"DATA_Run2012ABCD/ZTreeProducer_tree.root", # this is the 8TeV data contain also the tkmetABC
+#  ntuple_folder_8TeV_ABC+"DATA_Run2012ABCD/ZTreeProducer_tree.root", # this is the 8TeV data contain also the tkmetABC
   ntuple_folder+"DATA/ZTreeProducer_tree_RecoSkimmed.root",
   ntuple_folder+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
   ntuple_folder+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
@@ -306,7 +317,7 @@ fZana_str = [
   ntuple_folder+"DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root",
   # ntuple_folder+"DYJetsMM/InclWeights/ZTreeProducer_tree.root",
   # ntuple_folder+"DYJetsMM/allEvts/ZTreeProducer_tree.root",
-##  ntuple_folder_8TeV_ABC+"DYJetsLL/ZTreeProducer_tree_tkmetABC.root",  # this is the 8TeV DYJetsLL contains also the tkmetABC
+#  ntuple_folder_8TeV_ABC+"DYJetsLL/ZTreeProducer_tree_tkmetABC.root",  # this is the 8TeV DYJetsLL contains also the tkmetABC
   ntuple_folder+"DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
   ntuple_folder+"DYJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",
   ntuple_folder+"TTJets/ZTreeProducer_tree.root",
@@ -329,6 +340,7 @@ if not os.path.exists("JobOutputs/"+foldername):
     os.makedirs("JobOutputs/"+foldername)
 shutil.copyfile(os.path.basename(__file__), file_dest)
 
+os.system("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh")
 
 if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
     
@@ -536,9 +548,9 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
             else:
                 nevents = 1e5
                 if ("DYJetsMadSig" in sample[i]  or "DYJetsPow" in sample[i]):
-                  nevents = 5e4
+                  nevents = 3e4
                   if useRecoilCorr>0 and int(RecoilCorrVarDiagoParSigmas)>0:
-                    nevents = 2.5e3
+                    nevents = 5e3
                 if ("DATA" in sample[i]):
                   nevents = 2e5  
                 # if (WMassNSteps=="0"):
