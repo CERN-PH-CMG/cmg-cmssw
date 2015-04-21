@@ -116,6 +116,7 @@ class Zanalysis {
   Double_t        LHE_ren[200];
   Double_t        LHE_fac[200];
   Double_t        LHE_pdf[200];
+  Double_t        ZGen_PostFSR_mass;
 
   // List of branches
   TBranch        *b_scalePDF;   //!
@@ -206,6 +207,7 @@ class Zanalysis {
   TBranch        *b_LHE_ren;   //!
   TBranch        *b_LHE_fac;   //!
   TBranch        *b_LHE_pdf;   //!
+  TBranch        *b_ZGen_PostFSR_mass;   //!
 
 
   Zanalysis(TString f_str=0, double lumi_scaling_input=1, int useGen=0, TTree *tree=0);
@@ -369,6 +371,8 @@ void Zanalysis::Init(TTree *tree)
   fChain->SetBranchAddress("Jet_leading_eta", &Jet_leading_eta, &b_Jet_leading_eta);
   fChain->SetBranchAddress("Jet_leading_phi", &Jet_leading_phi, &b_Jet_leading_phi);
   fChain->SetBranchAddress("FSRWeight", &FSRWeight, &b_FSRWeight);
+  fChain->SetBranchAddress("ZGen_PostFSR_mass", &ZGen_PostFSR_mass, &b_ZGen_PostFSR_mass);
+
  
   if(useGenVar){
     fChain->SetBranchAddress("ZGen_mass", &ZGen_mass, &b_ZGen_mass);
