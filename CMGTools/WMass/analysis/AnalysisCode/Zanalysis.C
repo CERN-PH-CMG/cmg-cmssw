@@ -352,8 +352,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   //------------------------------------------------------
   // start the event loop
   //------------------------------------------------------
-  // int cout_freq=1;
   int cout_freq=TMath::Min(1+(nentries-first_entry)/10,(Long64_t) 25000);
+  // cout_freq=1;
+  // nentries=100;
   cout << "couts every " << cout_freq << " events" << endl;
   Long64_t nbytes = 0, nb = 0;
   for(Long64_t jentry=first_entry; jentry<nentries;jentry++) {
@@ -594,7 +595,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
           // for(int m=0; m<WMass::NVarRecoilCorr; m++){
             // cout <<"WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_["<<RecoilCorrVarDiagoParU1orU2fromDATAorMC<<"]="<<
             // WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC]<<endl;
-          for(int m=0; m<WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC]; m++){
+          for(int m=WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC]; m<WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC]; m++){
             
             TString toys_str = "";
             if(WMass::NVarRecoilCorr>1) toys_str = Form("_RecoilCorrVar%d",m);
@@ -680,6 +681,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   // << " m=" << m
                   // << " RecoilCorrVarDiagoParSigmas=" << RecoilCorrVarDiagoParSigmas
                   // << " vtxBin=" << vtxBin
+                  // << Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,0,toys_str.Data(),eta_str.Data(),jZmass_MeV)
                   // << endl;
                   // cout << "correcting pfmet" << endl;
                   correctorRecoil_Z->CorrectMET3gaus(pfmet_bla,pfmetphi_bla,
@@ -690,8 +692,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                              // WMass::RecoilCorrVarDiagoParU1orU2fromDATAorMC_[m], WMass::RecoilCorrVarDiagoParN_[m], RecoilCorrVarDiagoParSigmas,
                              vtxBin,doSingleGauss,1);
                   // return;
-                  // cout << "correcting pfmet_Central" << endl;
                   if(first_time_in_the_event && m==0){
+                    // cout << "correcting pfmet_Central" << endl;
                     correctorRecoil_Z->CorrectMET3gaus(pfmet_blaCentral,pfmetphi_blaCentral,
                                ZGen_pt,ZGen_phi,
                                ZNocorr.Pt(),ZNocorr.Phi(),

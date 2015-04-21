@@ -276,12 +276,13 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
     // << " RecoilCorrVarDiagoParSigmas=="<<RecoilCorrVarDiagoParSigmas
     // <<endl;
 
-  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==1 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==3){
+  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==1 ||RecoilCorrVarDiagoParU1orU2fromDATAorMC==2 
+    || RecoilCorrVarDiagoParU1orU2fromDATAorMC==4 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==5){
     if(RecoilCorrVarDiagoParN < 0 || RecoilCorrVarDiagoParN > 17){
       cout << "ERROR !!!!! RecoilCorrVarDiagoParU1orU2fromDATAorMC= " << RecoilCorrVarDiagoParU1orU2fromDATAorMC << " RecoilCorrVarDiagoParN= " << RecoilCorrVarDiagoParN << endl;
     }
   }
-  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==2 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==4){
+  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==3 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==6){
     if(RecoilCorrVarDiagoParN < 0 || RecoilCorrVarDiagoParN > 11){
       cout << "ERROR !!!!! RecoilCorrVarDiagoParU1orU2fromDATAorMC= " << RecoilCorrVarDiagoParU1orU2fromDATAorMC << " RecoilCorrVarDiagoParN= " << RecoilCorrVarDiagoParN << endl;
     }
@@ -292,7 +293,7 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
   for(int ipar=0; ipar<18; ipar++){
     
     v = wU1[1][fJet]->var(Form("eig_eig%d",ipar));
-    if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==1 && RecoilCorrVarDiagoParN==ipar){
+    if((RecoilCorrVarDiagoParU1orU2fromDATAorMC==1 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==2) && RecoilCorrVarDiagoParN==ipar){
       v->setVal(RecoilCorrVarDiagoParSigmas);
       // cout << "wU1[1]["<<fJet<<"]->"<<Form("eig_eig%d",ipar)<<"->setVal("<<RecoilCorrVarDiagoParSigmas<<")"<<endl;
     }else{
@@ -302,7 +303,7 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
     // cout << "wU1[1]["<<fJet<<"]" << endl; v->Print();
     
     v = wU1[2][fJet]->var(Form("eig_eig%d",ipar));
-    if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==3 && RecoilCorrVarDiagoParN==ipar){
+    if((RecoilCorrVarDiagoParU1orU2fromDATAorMC==4 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==5) && RecoilCorrVarDiagoParN==ipar){
       v->setVal(RecoilCorrVarDiagoParSigmas);
       // cout << "wU1[2]["<<fJet<<"]->"<<Form("eig_eig%d",ipar)<<"->setVal("<<RecoilCorrVarDiagoParSigmas<<")"<<endl;
     }else{
@@ -313,7 +314,7 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
     
     if(ipar<12){
       v = wU2[1][fJet]->var(Form("eig_eig%d",ipar));
-      if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==2 && RecoilCorrVarDiagoParN==ipar){
+      if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==3 && RecoilCorrVarDiagoParN==ipar){
         v->setVal(RecoilCorrVarDiagoParSigmas);
         // cout << "wU2[1]["<<fJet<<"]->"<<Form("eig_eig%d",ipar)<<"->setVal("<<RecoilCorrVarDiagoParSigmas<<")"<<endl;
       }else{
@@ -322,7 +323,7 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
       }
       // cout << "wU2[1]["<<fJet<<"]" << endl; v->Print();
       v = wU2[2][fJet]->var(Form("eig_eig%d",ipar));
-      if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==4 && RecoilCorrVarDiagoParN==ipar){
+      if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==6 && RecoilCorrVarDiagoParN==ipar){
         v->setVal(RecoilCorrVarDiagoParSigmas);
         // cout << "wU2[2]["<<fJet<<"]->"<<Form("eig_eig%d",ipar)<<"->setVal("<<RecoilCorrVarDiagoParSigmas<<")"<<endl;
       }else{
@@ -347,10 +348,10 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
     // << " pdfU2Cdf[2]["<<fJet<<"]->getVal()= " << pdfU2Cdf[2][fJet]->getVal()
     // << " pdfU2Cdf[1]["<<fJet<<"]->getVal()= " << pdfU2Cdf[1][fJet]->getVal()
     // << endl;
-    pdfU1Cdf[2][fJet]->getVal();
-    pdfU1Cdf[1][fJet]->getVal();
-    pdfU2Cdf[2][fJet]->getVal();
-    pdfU2Cdf[1][fJet]->getVal();
+    // pdfU1Cdf[2][fJet]->getVal();
+    // pdfU1Cdf[1][fJet]->getVal();
+    // pdfU2Cdf[2][fJet]->getVal();
+    // pdfU2Cdf[1][fJet]->getVal();
   
   // cout << "triGausInvGraphPDF U1" << endl;
   pU1ValD = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[2][fJet],pdfU1Cdf[1][fJet],wU1[2][fJet],wU1[1][fJet]);
