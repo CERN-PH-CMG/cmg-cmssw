@@ -772,10 +772,10 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                     // cout << "muPosCorr after smear correction, varyGlobalScaleMuonCorrNsigma=" << varyGlobalScaleMuonCorrNsigma << endl; 
                     // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
                     // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
-                    if(varyGlobalScaleMuonCorrNsigma!=0){
-                      corrector_Kalman->applyPtBias(muPosCorr,1e-3*varyGlobalScaleMuonCorrNsigma); //returns the corrected pt 
-                      // corrector_Kalman->applyPtBias(muNegCorr,1e-3*varyGlobalScaleMuonCorrNsigma); //returns the corrected pt 
-                    }
+                    // if(varyGlobalScaleMuonCorrNsigma!=0){
+                      // corrector_Kalman->applyPtBias(muPosCorr,1e-3*varyGlobalScaleMuonCorrNsigma); //returns the corrected pt 
+                      // // corrector_Kalman->applyPtBias(muNegCorr,1e-3*varyGlobalScaleMuonCorrNsigma); //returns the corrected pt 
+                    // }
                     // cout << "muPosCorr after muon correction" << endl; 
                     // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
                     // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;

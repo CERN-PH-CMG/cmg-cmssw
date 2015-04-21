@@ -9,12 +9,12 @@ KalmanCalibrator::KalmanCalibrator(bool isData) {
   random_ = new TRandom3(10101982);
 
   if (isData) {
-    std::string path("../utils/kalmanCalibration_data_17042015.root");
+    std::string path("../utils/kalmanCalibration_data_19042015.root");
     file_ = new TFile(path.c_str());
     magnetic = (TH2F*)file_->Get("magnetic");
   }
   else {
-    std::string path("../utils/kalmanCalibration_mc_17042015.root");
+    std::string path("../utils/kalmanCalibration_mc_19042015.root");
     file_ = new TFile(path.c_str());
   }
   // file_->ls();
