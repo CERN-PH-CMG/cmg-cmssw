@@ -1,0 +1,5 @@
+# cross sections for WJets taken from McM LO times inclusive k-factor from FEWZ(20508.9 pb x3)/McM(50100.0) 
+WJets+     : WJetsToLNu_HT100to200 :  xsec; Label="W+jets", FillColor=ROOT.kCyan+2, NormSystematic=0.5
+WJets+     : WJetsToLNu_HT200to400 :  xsec; Label="W+jets", FillColor=ROOT.kCyan+2, NormSystematic=0.5
+WJets+     : WJetsToLNu_HT400to600 :  xsec; Label="W+jets", FillColor=ROOT.kCyan+2, NormSystematic=0.5
+WJets+     : WJetsToLNu_HT600toInf :  xsec; Label="W+jets", FillColor=ROOT.kCyan+2, NormSystematic=0.5
