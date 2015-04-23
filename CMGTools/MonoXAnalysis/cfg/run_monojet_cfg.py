@@ -107,7 +107,8 @@ triggerFlagsAna.triggerBits = {
 }
 
 from CMGTools.MonoXAnalysis.samples.samples_monojet import *
-selectedComponents = [ ] + WJetsToLNuHT + ZJetsToNuNuHT + [TTJets, SingleTop] + MonojetSignalSamples
+#selectedComponents = [ ] + WJetsToLNuHT + ZJetsToNuNuHT + [TTJets] + SingleTop + MonojetSignalSamples
+backgroundSamples =  WJetsToLNuHT + ZJetsToNuNuHT + SingleTop + [TTJets]
 
 #-------- SEQUENCE
 sequence = cfg.Sequence(dmCoreSequence+[
@@ -130,7 +131,7 @@ sequence = cfg.Sequence(dmCoreSequence+[
 #-------- HOW TO RUN ----------- 
 from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
 #test = getHeppyOption('test')
-test = '1'
+test = 'allBkg'
 if test == '1':
     comp = Monojet_M_1000_AV
     monoJetSkim.metCut = 200
@@ -211,6 +212,13 @@ elif test == 'Znunu':
     monoJetCtrlLepSkim.minLeptons = 0
     for comp in selectedComponents:
         comp.splitFactor = 300
+elif test == 'allBkg':
+    selectedComponents = backgroundSamples
+    monoJetSkim.metCut = 200
+    monoJetCtrlLepSkim.minLeptons = 0
+    for comp in selectedComponents:
+        comp.splitFactor = 250
+        #comp.files = comp.files[:1]
     
 
 ## output histogram
