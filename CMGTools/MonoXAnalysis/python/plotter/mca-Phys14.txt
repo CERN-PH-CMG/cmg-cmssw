@@ -1,5 +1,30 @@
-# cross sections for WJets taken from McM LO times inclusive k-factor from FEWZ(20508.9 pb x3)/McM(50100.0) 
-WJets+     : WJetsToLNu_HT100to200 :  xsec; Label="W+jets", FillColor=ROOT.kCyan+2, NormSystematic=0.5
-WJets+     : WJetsToLNu_HT200to400 :  xsec; Label="W+jets", FillColor=ROOT.kCyan+2, NormSystematic=0.5
-WJets+     : WJetsToLNu_HT400to600 :  xsec; Label="W+jets", FillColor=ROOT.kCyan+2, NormSystematic=0.5
-WJets+     : WJetsToLNu_HT600toInf :  xsec; Label="W+jets", FillColor=ROOT.kCyan+2, NormSystematic=0.5
+# MonoJet samples
+#Monojet_M10V+: 
+
+# -- Z->nunu Background --
+ZNuNu+       : ZJetsToNuNu_HT100to200 : xsec; FillColor=ROOT.kAzure-9, Label="Znunu + jets", NormSystematic=0.2
+ZNuNu+       : ZJetsToNuNu_HT200to400 : xsec; FillColor=ROOT.kAzure-9, Label="Znunu + jets", NormSystematic=0.2
+ZNuNu+       : ZJetsToNuNu_HT400to600 : xsec; FillColor=ROOT.kAzure-9, Label="Znunu + jets", NormSystematic=0.2
+ZNuNu+       : ZJetsToNuNu_HT600toInf : xsec; FillColor=ROOT.kAzure-9, Label="Znunu + jets", NormSystematic=0.2
+
+# -- W+jets background -- 
+WJets     : WJetsToLNu_HT100to200 :  xsec; Label="Wlnu + jets", FillColor=ROOT.kAzure+3, NormSystematic=0.5
+WJets     : WJetsToLNu_HT200to400 :  xsec; Label="Wlnu + jets", FillColor=ROOT.kAzure+3, NormSystematic=0.5
+WJets     : WJetsToLNu_HT400to600 :  xsec; Label="Wlnu + jets", FillColor=ROOT.kAzure+3, NormSystematic=0.5
+WJets     : WJetsToLNu_HT600toInf :  xsec; Label="Wlnu + jets", FillColor=ROOT.kAzure+3, NormSystematic=0.5
+
+# -- Z->ll background -- (to be processed)
+
+# -- photon + jets background -- (to be processed)
+
+# -- TTbar background
+TT       : TTJets: xsec ; FillColor=ROOT.kGreen+3, Label="tt", NormSystematic=0.5
+
+# Single Top and Top+W associated prod.
+T 	 : T_tWch:     xsec;  FillColor=ROOT.kGreen-7, Label="single t", NormSystematic=0.2
+T 	 : TBar_tWch:  xsec;  FillColor=ROOT.kGreen-7, Label="single t", NormSystematic=0.2
+T        : TToLeptons_tch:     xsec ;  FillColor=ROOT.kGreen-7, Label="single t", NormSystematic=0.2
+T  	 : TBarToLeptons_tch:  xsec ;  FillColor=ROOT.kGreen-7, Label="single t", NormSystematic=0.2
+T        : TToLeptons_sch:     xsec ;  FillColor=ROOT.kGreen-7, Label="single t", NormSystematic=0.2
+T  	 : TBarToLeptons_sch:  xsec ;  FillColor=ROOT.kGreen-7, Label="single t", NormSystematic=0.2
+
