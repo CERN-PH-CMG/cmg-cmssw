@@ -194,10 +194,10 @@ GGHZZ4L = kreator.makeMCComponent("GGHZZ4L", "/GluGluToHToZZTo4L_M-125_13TeV-pow
 Monojet_M_10_V = kreator.makeMCComponent("Monojet_M_10_V", '/DarkMatter_Monojet_M-10_V_Tune4C_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM', "CMS", ".*root", 9.5463E-07)
 Monojet_M_100_V = kreator.makeMCComponent("Monojet_M_100_V", '/DarkMatter_Monojet_M-100_V_Tune4C_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM', "CMS", ".*root", 9.0451E-07)
 Monojet_M_1000_V = kreator.makeMCComponent("Monojet_M_1000_V", '/DarkMatter_Monojet_M-1000_V_Tune4C_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM', "CMS", ".*root", 1.2438E-07)
-Monojet_M_1_AV = kreator.makeMCComponent("Monojet_M_1_AV", '/DarkMatter_Monojet_M-1_AV_Tune4C_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM', "CMS", ".*root", 9.5695E-07)
+Monojet_M_1_AV = kreator.makeMCComponent("Monojet_M_1_AV", '/DarkMatter_Monojet_M-1_AV_Tune4C_13TeV-madgraph/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1/MINIAODSIM', "CMS", ".*root", 9.5695E-07)
 Monojet_M_10_AV = kreator.makeMCComponent("Monojet_M_10_AV", '/DarkMatter_Monojet_M-10_AV_Tune4C_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM', "CMS", ".*root", 9.5381E-07)
-Monojet_M_100_AV = kreator.makeMCComponent("Monojet_M_100_AV", '/DarkMatter_Monojet_M-100_AV_Tune4C_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM', "CMS", ".*root", 8.0087E-07)
-Monojet_M_1000_AV = kreator.makeMCComponent("Monojet_M_1000_AV", '/DarkMatter_Monojet_M-1000_AV_Tune4C_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM', "CMS", ".*root", 4.6629E-07)
+Monojet_M_100_AV = kreator.makeMCComponent("Monojet_M_100_AV", '/DarkMatter_Monojet_M-100_AV_Tune4C_13TeV-madgraph/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1/MINIAODSIM', "CMS", ".*root", 8.0087E-07)
+Monojet_M_1000_AV = kreator.makeMCComponent("Monojet_M_1000_AV", '/DarkMatter_Monojet_M-1000_AV_Tune4C_13TeV-madgraph/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1/MINIAODSIM', "CMS", ".*root", 4.6629E-07)
 MonojetSignalSamples = [
 Monojet_M_10_V,
 Monojet_M_100_V,
