@@ -33,9 +33,9 @@ photonAna.do_mc_match = False
 ##------------------------------------------
 ##  TOLOLOGIAL VARIABLES: RAZOR
 ##------------------------------------------
-from CMGTools.MonoXAnalysis.analyzers.monoXRazorAnalyzer import monoXRazorAnalyzer
+from PhysicsTools.Heppy.analyzers.eventtopology.RazorAnalyzer import RazorAnalyzer
 monoXRazorAna = cfg.Analyzer(
-    monoXRazorAnalyzer, name = 'monoXRazorAnalyzer',
+    RazorAnalyzer, name = 'RazorAnalyzer',
     doOnlyDefault = False
     )
 
@@ -131,7 +131,7 @@ sequence = cfg.Sequence(dmCoreSequence+[
 #-------- HOW TO RUN ----------- 
 from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
 #test = getHeppyOption('test')
-test = 'allBkg'
+test = '1'
 if test == '1':
     comp = Monojet_M_1000_AV
     monoJetSkim.metCut = 200

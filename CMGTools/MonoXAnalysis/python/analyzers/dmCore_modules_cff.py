@@ -344,6 +344,7 @@ metAna = cfg.Analyzer(
     doTkMet = False,
     doMetNoPU = True,
     doMetNoMu = True,
+    doMetNoEle = False,
     doMetNoPhoton = False,
     recalibrate = False,
     jetAnalyzerCalibrationPostFix = "",
