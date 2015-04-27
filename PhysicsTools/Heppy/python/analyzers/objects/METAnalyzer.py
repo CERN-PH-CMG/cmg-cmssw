@@ -95,7 +95,6 @@ class METAnalyzer( Analyzer ):
         setattr(event, "metNoMu"+self.cfg_ana.collectionPostFix, self.metNoMu)
         if self.cfg_ana.doMetNoPU: setattr(event, "metNoMuNoPU"+self.cfg_ana.collectionPostFix, self.metNoMuNoPU)
 
-        
     def makeMETNoEle(self, event):
         self.metNoEle = copy.deepcopy(self.met)
         if self.cfg_ana.doMetNoPU: self.metNoEleNoPU = copy.deepcopy(self.metNoPU)
