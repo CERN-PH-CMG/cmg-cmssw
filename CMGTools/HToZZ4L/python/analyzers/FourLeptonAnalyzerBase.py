@@ -105,14 +105,14 @@ class FourLeptonAnalyzerBase( Analyzer ):
             # - if the new pairing has a better Z1 mass than the original one, then it passes the Z1 mass cut
 
             # skip those that have a worse Z1 mass than the nominal
-            if abs(fourLepton.leg1.M()-91.118) < abs(quad.leg1.M()-91.118):
+            if abs(fourLepton.leg1.M()-91.1876) < abs(quad.leg1.M()-91.1876):
                 continue
             #print "Found alternate, mZ1 %.3f, mZ2 %.3f: %s" % (quad.leg1.M(),quad.leg2.M(),quad)
             quads.append(quad)
         if len(quads) == 0:
             #print "No alternates to ",fourLepton
             return True
-        bestByZ1 = min(quads, key = lambda quad : abs(quad.leg1.M()-91.118))
+        bestByZ1 = min(quads, key = lambda quad : abs(quad.leg1.M()-91.1876))
         #print "Best alternate, mZ1 %.3f, mZ2 %.3f: %s" % (bestByZ1.leg1.M(),bestByZ1.leg2.M(),bestByZ1)
         return bestByZ1.leg2.M() > 12.
 
@@ -183,7 +183,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
             quadObject =DiObjectPair(l1, l2,l3,l4)
             self.attachFSR(quadObject,photons)
-            if abs(quadObject.leg1.M()-91.118)>abs(quadObject.leg2.M()-91.118):
+            if abs(quadObject.leg1.M()-91.1876)>abs(quadObject.leg2.M()-91.1876):
                 continue;
             out.append(quadObject)
 
