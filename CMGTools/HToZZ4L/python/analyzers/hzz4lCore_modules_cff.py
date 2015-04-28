@@ -4,6 +4,7 @@ from PhysicsTools.Heppy.analyzers.objects.all import *
 from PhysicsTools.Heppy.analyzers.gen.all import *
 from CMGTools.HToZZ4L.analyzers.FourLeptonAnalyzer import *
 from CMGTools.HToZZ4L.analyzers.FourLeptonAnalyzer2P2F import *
+from CMGTools.HToZZ4L.analyzers.FourLeptonAnalyzerRelaxIdIso import *
 from CMGTools.HToZZ4L.analyzers.FourLeptonAnalyzer3P1F import *
 from CMGTools.HToZZ4L.analyzers.FourLeptonAnalyzerSS import *
 from CMGTools.HToZZ4L.analyzers.FourLeptonEventSkimmer import *
@@ -243,9 +244,16 @@ fourLeptonAnalyzerSS = cfg.Analyzer(
     attachFsrToGlobalClosestLeptonOnly = True
 )
 
+fourLeptonAnalyzerRelaxIdIso = cfg.Analyzer(
+    FourLeptonAnalyzerRelaxIdIso, name="fourLeptonAnalyzerRelaxIdIso",
+    tag = "RelaxIdIso",
+    maxCand = 999, # save all, not just the best one
+    attachFsrToGlobalClosestLeptonOnly = True
+)
+
 fourLeptonEventSkimmer = cfg.Analyzer(
     FourLeptonEventSkimmer, name="fourLeptonEventSkimmer",
-    required = ['bestFourLeptonsSignal','bestFourLeptons2P2F','bestFourLeptons3P1F','bestFourLeptonsSS']
+    required = ['bestFourLeptonsSignal','bestFourLeptons2P2F','bestFourLeptons3P1F','bestFourLeptonsSS', 'bestFourLeptonsRelaxIdIso' ]
 
 )
 
@@ -282,6 +290,7 @@ hzz4lCoreSequence = [
     fourLeptonAnalyzer2P2F,
     fourLeptonAnalyzer3P1F,
     fourLeptonAnalyzerSS,
+    fourLeptonAnalyzerRelaxIdIso,
     fourLeptonEventSkimmer,
     treeProducer
 ]
