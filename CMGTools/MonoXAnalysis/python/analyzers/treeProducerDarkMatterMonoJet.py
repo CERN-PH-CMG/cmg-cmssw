@@ -96,7 +96,6 @@ dmMonoJet_collections.update({
             ##------------------------------------------------                       
             "selectedTaus"    : NTupleCollection("TauGood",  tauTypeSusy, 3, help="Taus after the preselection"),
             "selectedLeptons" : NTupleCollection("LepGood",  leptonTypeSusyExtra, 8, help="Leptons after the preselection"),
-            "vetoLeptons"     : NTupleCollection("LepVeto",  leptonTypeSusyExtra, 8, help="Leptons after the veto selection"),
             "selectedPhotons" : NTupleCollection("GammaGood", photonTypeSusy, 10, help="photons with pt>20 and loose cut based ID"),
             ##------------------------------------------------
             "cleanJets"       : NTupleCollection("Jet",     jetTypeSusyExtra, 10, help="Cental jets after full selection and cleaning, sorted by pt"),
