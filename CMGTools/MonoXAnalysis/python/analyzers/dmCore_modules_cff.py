@@ -156,19 +156,19 @@ lepAna = cfg.Analyzer(
     inclusive_electron_lostHits = 5.0,
     # veto electron selection
     loose_electron_id     = "POG_Cuts_ID_PHYS14_25ns_v1_Veto_full5x5",
-    loose_electron_pt     = 7,
+    loose_electron_pt     = 10,
     loose_electron_eta    = 2.5,
     loose_electron_dxy    = 0.5,
     loose_electron_dz     = 0.5,
     loose_electron_relIso = 1.0,
     loose_electron_lostHits = 5.0,
     # muon isolation correction method (can be "rhoArea" or "deltaBeta")
-    mu_isoCorr = "rhoArea" ,
+    mu_isoCorr = "deltaBeta" ,
     mu_effectiveAreas = "Phys14_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1')
     # electron isolation correction method (can be "rhoArea" or "deltaBeta")
-    ele_isoCorr = "rhoArea" ,
+    ele_isoCorr = "deltaBeta" ,
     el_effectiveAreas = "Phys14_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1')
-    ele_tightId = "Cuts_2012" ,
+    ele_tightId = "MVA" ,
     # Mini-isolation, with pT dependent cone: will fill in the miniRelIso, miniRelIsoCharged, miniRelIsoNeutral variables of the leptons (see https://indico.cern.ch/event/368826/ )
     doMiniIsolation = False, # off by default since it requires access to all PFCandidates 
     packedCandidates = 'packedPFCandidates',
@@ -179,27 +179,6 @@ lepAna = cfg.Analyzer(
     # do MC matching 
     do_mc_match = True, # note: it will in any case try it only on MC, not on data
     match_inclusiveLeptons = False, # match to all inclusive leptons
-    )
-
-## Lepton analyzer (dm specific)
-from CMGTools.MonoXAnalysis.analyzers.objects.MonoXLeptonAnalyzer import MonoXLeptonAnalyzer
-monoXLepAna = cfg.Analyzer(
-    MonoXLeptonAnalyzer, name='MonoXLeptonAnalyzer',
-    # veto muon selection
-    veto_muon_pt     = 10,
-    veto_muon_eta    = 2.4,
-    veto_muon_dxy    = 0.2,
-    veto_muon_dz     = 0.5,
-    veto_muon_relIso = 0.4,
-    # veto electron selection
-    veto_electron_pt     = 10,
-    veto_electron_eta    = 2.5,
-    veto_electron_dxy    = [0.0250, 0.2232],
-    veto_electron_dz     = [0.5863, 0.9513],
-    veto_electron_relIso = [0.3313, 0.3816],
-    veto_electron_lostHits = [2.0, 3.0],
-    # minimum deltaR between a loose electron and a loose muon (on overlaps, discard the electron)
-    min_dr_electron_muon = 0.02,
     )
 
 
@@ -227,9 +206,9 @@ monoJetCtrlLepSkim = cfg.Analyzer(
 photonAna = cfg.Analyzer(
     PhotonAnalyzer, name='photonAnalyzer',
     photons='slimmedPhotons',
-    ptMin = 20,
+    ptMin = 15,
     etaMax = 2.5,
-    gammaID = "PhotonCutBasedIDLoose_CSA14",
+    gammaID = "POG_PHYS14_25ns_Loose",
     do_mc_match = True,
     do_randomCone = False,
 )
@@ -237,7 +216,7 @@ photonAna = cfg.Analyzer(
 ## Tau Analyzer (generic)
 tauAna = cfg.Analyzer(
     TauAnalyzer, name="tauAnalyzer",
-    ptMin = 20,
+    ptMin = 15,
     etaMax = 9999,
     dxyMax = 0.5,
     dzMax = 1.0,
@@ -284,7 +263,7 @@ jetAna = cfg.Analyzer(
     rho = ('fixedGridRhoFastjetAll','',''),
     jetPt = 25.,
     jetEta = 4.7,
-    jetEtaCentral = 2.4,
+    jetEtaCentral = 2.5,
     jetLepDR = 0.4,
     jetLepArbitration = (lambda jet,lepton : lepton), # you can decide which to keep in case of overlaps; e.g. if the jet is b-tagged you might want to keep the jet
     cleanSelectedLeptons = True, #Whether to clean 'selectedLeptons' after disambiguation. Treat with care (= 'False') if running Jetanalyzer more than once
@@ -376,7 +355,6 @@ dmCoreSequence = [
     pdfwAna,
     vertexAna,
     lepAna,
-    monoXLepAna,
     photonAna,
     tauAna,
     isoTrackAna,
