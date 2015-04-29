@@ -107,8 +107,9 @@ triggerFlagsAna.triggerBits = {
 }
 
 from CMGTools.MonoXAnalysis.samples.samples_monojet import *
-#selectedComponents = [ ] + WJetsToLNuHT + ZJetsToNuNuHT + [TTJets] + SingleTop + MonojetSignalSamples
-backgroundSamples =  WJetsToLNuHT + ZJetsToNuNuHT + SingleTop + [TTJets]
+signalSamples = MonojetSignalSamples
+backgroundSamples =  WJetsToLNuHT + ZJetsToNuNuHT + SingleTop + [TTJets] + DYJetsM50HT + GJetsHT + QCDHT
+selectedComponents = backgroundSamples + signalSamples
 
 #-------- SEQUENCE
 sequence = cfg.Sequence(dmCoreSequence+[
@@ -135,8 +136,8 @@ test = '1'
 if test == '1':
     comp = Monojet_M_1000_AV
     monoJetSkim.metCut = 200
-    #comp.files = comp.files[:1]
-    comp.files = [ '/afs/cern.ch/work/a/avartak/public/dmVM10.root' ]
+    comp.files = comp.files[:1]
+    #comp.files = [ '/afs/cern.ch/work/a/avartak/public/dmVM10.root' ]
     comp.splitFactor = 1
     comp.fineSplitFactor = 1
     if not getHeppyOption('single'):
@@ -206,20 +207,12 @@ elif test == 'Wctrl':
     #         #    comp.files = [ 'root://eoscms//eos/cms/store/mc/Phys14DR//WJetsToLNu_HT-100to200_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/FACF4684-5377-E411-8F81-002590DB0640.root' ]
     #         comp.splitFactor = 1
     #         comp.fineSplitFactor = 1 if getHeppyOption("single") else 4
-elif test == 'Znunu':
-    selectedComponents = ZJetsToNuNuHT
+elif test == 'SR':
+    selectedComponents = backgroundSamples + signalSamples
     monoJetSkim.metCut = 200
     monoJetCtrlLepSkim.minLeptons = 0
     for comp in selectedComponents:
-        comp.splitFactor = 300
-elif test == 'allBkg':
-    selectedComponents = backgroundSamples
-    monoJetSkim.metCut = 200
-    monoJetCtrlLepSkim.minLeptons = 0
-    for comp in selectedComponents:
-        comp.splitFactor = 250
-        #comp.files = comp.files[:1]
-    
+        comp.splitFactor = 350
 
 ## output histogram
 outputService=[]
