@@ -2,10 +2,15 @@
 
 // mytype: 0 = target file , 1 = DATA , 2 = Z MC
 
-RecoilCorrector::RecoilCorrector(string iNameZ, int iSeed,TString model_name) {
+RecoilCorrector::RecoilCorrector(string iNameZ, int iSeed,TString model_name, TString fNonClosure_name) {
 
   fRandom = new TRandom3(iSeed);
   readRecoil(fF1U1Fit,fF1U1RMSSMFit,fF1U1RMS1Fit,fF1U1RMS2Fit,fF1U1RMS3Fit,fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit, fF1U2Fit,fF1U2RMSSMFit,fF1U2RMS1Fit,fF1U2RMS2Fit,fF1U2RMS3Fit,fF1U2FracFit,fF1U2Mean1Fit, fF1U2Mean2Fit,iNameZ,"PF",1,0,model_name);  
+  fNonClosure = new TFile(fNonClosure_name.Data());
+  hNonClosure[0][0] = (TH2D*) fNonClosure->Get("mean_U1_y1");
+  hNonClosure[0][1] = (TH2D*) fNonClosure->Get("mean_U1_y2");
+  hNonClosure[1][0] = (TH2D*) fNonClosure->Get("RMS_U2_y1");
+  hNonClosure[1][1] = (TH2D*) fNonClosure->Get("RMS_U2_y2");
   
   // fId = 0; 
   fJet = 0;
@@ -123,6 +128,57 @@ TString model_name
   lFile->Close();
   // iSumEt.push_back(1000);
   // return lNBins;
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
+
+double RecoilCorrector::NonClosure_weight(double iMet,double iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi) {
+  
+  // cout 
+  // << "iMet= " << iMet
+  // << " iMPhi= " << iMPhi
+  // << " iGenPt= " << iGenPt
+  // << " iGenPhi= " << iGenPhi
+  // << " iGenRap= " << iGenRap
+  // << " iLepPt= " << iLepPt
+  // << " iLepPhi= " << iLepPhi
+  // << endl;
+  
+  double pUX   = iMet*cos(iMPhi) + iLepPt*cos(iLepPhi);
+  double pUY   = iMet*sin(iMPhi) + iLepPt*sin(iLepPhi);
+  double pU    = sqrt(pUX*pUX+pUY*pUY);
+
+  double pCos  = - (pUX*cos(iGenPhi) + pUY*sin(iGenPhi))/pU;
+  double pSin  =   (pUX*sin(iGenPhi) - pUY*cos(iGenPhi))/pU;
+
+  double pU1   = pU*pCos;
+  double pU2   = pU*pSin; 
+  double abs_pU2   = TMath::Abs(pU2); // we use the abs, i.e. the mean rms, to reduce fluctuations 
+  
+  // cout << "pU1= " << pU1 << " abs_pU2= " << abs_pU2 << endl;
+  
+  double weight_NonClosure = 1;
+  int rap_bin = 0;
+ 
+ // if(iGenRap>1) rap_bin = 1 // for the moment we use only one rapidity bin, i.e. y1
+
+ // weight_NonClosure *= hNonClosure[0][rap_bin]->GetBinContent(hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1)); // u1
+ if(hNonClosure[0][rap_bin]->GetBinContent(hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1)!=0))
+  weight_NonClosure /= hNonClosure[0][rap_bin]->GetBinContent(hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1)); // u1
+  // cout << "hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1)= " << hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1) << endl;
+  // cout << "weight_NonClosure after u1= " << weight_NonClosure;
+  if(weight_NonClosure==0) weight_NonClosure=1;
+  // cout << " ------->>> " << weight_NonClosure << endl;
+
+  // weight_NonClosure *= hNonClosure[1][rap_bin]->GetBinContent(hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2)); // u2
+  if(hNonClosure[1][rap_bin]->GetBinContent(hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2))!=0)
+    weight_NonClosure /= hNonClosure[1][rap_bin]->GetBinContent(hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2)); // u2
+  // cout << "hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2)= " << hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2) << endl;
+  // cout << "weight_NonClosure after u2= " << weight_NonClosure;
+  if(weight_NonClosure==0) weight_NonClosure=1;
+  // cout << " ------->>> " << weight_NonClosure << endl;
+  
+  
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -348,10 +404,10 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
     // << " pdfU2Cdf[2]["<<fJet<<"]->getVal()= " << pdfU2Cdf[2][fJet]->getVal()
     // << " pdfU2Cdf[1]["<<fJet<<"]->getVal()= " << pdfU2Cdf[1][fJet]->getVal()
     // << endl;
-    // pdfU1Cdf[2][fJet]->getVal();
-    // pdfU1Cdf[1][fJet]->getVal();
-    // pdfU2Cdf[2][fJet]->getVal();
-    // pdfU2Cdf[1][fJet]->getVal();
+    pdfU1Cdf[2][fJet]->getVal();
+    pdfU1Cdf[1][fJet]->getVal();
+    pdfU2Cdf[2][fJet]->getVal();
+    pdfU2Cdf[1][fJet]->getVal();
   
   // cout << "triGausInvGraphPDF U1" << endl;
   pU1ValD = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[2][fJet],pdfU1Cdf[1][fJet],wU1[2][fJet],wU1[1][fJet]);
@@ -456,8 +512,8 @@ void RecoilCorrector::runDiago(RooWorkspace *w, RooFitResult *result, TString fi
   w->import(*newpdf, RooFit::RecycleConflictNodes(),RooFit::Silence());
   
   RooRealVar* myX1=w->var("XVar");
-  pdfUiCdf = newpdf->createCdf(*myX1,RooFit::ScanAllCdf());
-  // pdfUiCdf = newpdf->createCdf(*myX1);
+  // pdfUiCdf = newpdf->createCdf(*myX1,RooFit::ScanAllCdf());
+  pdfUiCdf = newpdf->createCdf(*myX1);
   w->import(*pdfUiCdf, RooFit::RecycleConflictNodes(),RooFit::Silence());
   // w->Print();
   
