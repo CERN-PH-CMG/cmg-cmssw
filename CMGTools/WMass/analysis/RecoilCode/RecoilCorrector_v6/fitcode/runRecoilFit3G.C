@@ -114,6 +114,8 @@ using namespace RooFit;
 TH1D histoU1O("hu1O","histo U1",100,-10,10);
 TH1D histoU1Z("hu1scale","histo U1",100,-5.,5.);
 TH1D histoZPt("hZpt","histo Zpt",500,0.,50.);
+TH1D histoUnbinnedY1ZPt("hUnbinnedY1Zpt","histo Unbinned Y1 Zpt",500,0.,50.);
+TH1D histoUnbinnedY2ZPt("hUnbinnedY2Zpt","histo Unbinned Y2 Zpt",500,0.,50.);
 TH1D histoU1("hu1","histo U1",100,-10,10);
 TH1D histoU1diff("hu1diff","histo U1 - Zpt",100,-10,10);
 TH2D histoU1vsZpt("hu1vsZpt","histo U1 vs Zpt",100,0,20,100,-10,10);
@@ -260,8 +262,8 @@ bool doTriGauss = true;
 bool doApplyCorr = false; // smearing along the recoil vector
 bool doOnlyU1 = false;
 bool doOnlyU2 = false;
-bool doIterativeMet = true; // <-- together
-bool writeTree = true; // <-- together
+bool doIterativeMet = false; // <-- together
+bool writeTree = false; // <-- together
 bool doClosure = false;
 bool doAbsolute = false;
 
@@ -636,7 +638,8 @@ const int readRecoil(std::vector<double> &iSumEt,
     //    RooRealVar* myX1 = (RooRealVar*) diagPdfU1->getVariables()->find("XVar");
     //    iPdfU1 = diagPdfU1->createCdf(*myX1,RooFit::ScanAllCdf());
     RooRealVar* myX1=iwU1->var("XVar");
-    iPdfU1 = pdfU1->createCdf(*myX1,RooFit::ScanAllCdf());
+    //    iPdfU1 = pdfU1->createCdf(*myX1,RooFit::ScanAllCdf());
+    iPdfU1 = pdfU1->createCdf(*myX1);
     iwU1->import(*iPdfU1, RooFit::RecycleConflictNodes(),RooFit::Silence());
     //    delete pdfU1;
     //    delete frU1;
@@ -664,7 +667,8 @@ const int readRecoil(std::vector<double> &iSumEt,
     //    RooRealVar* myX2 = (RooRealVar*) diagPdfU2->getVariables()->find("XVar");
     //    iPdfU2 = diagPdfU2->createCdf(*myX2,RooFit::ScanAllCdf());
     RooRealVar* myX2=iwU2->var("XVar");
-    iPdfU2 = pdfU2->createCdf(*myX2,RooFit::ScanAllCdf());
+    //    iPdfU2 = pdfU2->createCdf(*myX2,RooFit::ScanAllCdf());
+    iPdfU2 = pdfU2->createCdf(*myX2);
     iwU2->import(*iPdfU2, RooFit::RecycleConflictNodes(),RooFit::Silence());
     //    delete pdfU2;
     //    delete frU2;
@@ -2913,9 +2917,10 @@ void constructPDFbkg(double lPar, int index) {
 
   // Sum the composite signal and background 
   //  model = new RooAddPdf("model","g1+g2+g3+bkg",RooArgList(*lRGAdd,bkg_pdf),sigbkgfrac);
-  if(fId==1) model = new RooAddPdf("modelY1","modelY1",*lRGAdd,*bkg_pdf,*sigbkgFrac);
-  if(fId==2) model = new RooAddPdf("modelY2","modelU2",*lRGAdd,*bkg_pdf,*sigbkgFrac);
-
+  if(lPar==fU1 && fId==1) model = new RooAddPdf("modelU1Y1","modelU1Y1",*lRGAdd,*bkg_pdf,*sigbkgFrac);
+  if(lPar!=fU1 && fId==1) model = new RooAddPdf("modelU2Y1","modelU2Y1",*lRGAdd,*bkg_pdf,*sigbkgFrac);
+  if(lPar==fU1 && fId==2) model = new RooAddPdf("modelU1Y2","modelU1Y2",*lRGAdd,*bkg_pdf,*sigbkgFrac);
+  if(lPar!=fU1 && fId==2) model = new RooAddPdf("modelU2Y2","modelU2Y2",*lRGAdd,*bkg_pdf,*sigbkgFrac);
   /*
   RooPlot* xframe  = lRXVar.frame(Title("Test 1D")) ;
   RooDataSet *data1D = model->generate(lRXVar,1000) ;
@@ -2982,8 +2987,12 @@ void constructPDFbkg2D(double lPar) {
 
   // Sum the composite signal and background 
   //  model = new RooAddPdf("model","g1+g2+g3+bkg",RooArgList(*lRGAdd,bkg_pdf),sigbkgfrac);
-  if(lPar==fU1) model2D = new RooAddPdf("model2D_U1","model2D_U1",*lGAdd,*bkg_pdf,*sigbkgFrac2D);
-  if(lPar!=fU1) model2D = new RooAddPdf("model2D_U2","model2D_U2",*lGAdd,*bkg_pdf,*sigbkgFrac2D);
+
+  if(lPar==fU1 && fId==1) model2D = new RooAddPdf("model2DU1Y1","model2DU1Y1",*lGAdd,*bkg_pdf,*sigbkgFrac2D);
+  if(lPar!=fU1 && fId==1) model2D = new RooAddPdf("model2DU2Y1","model2DU2Y1",*lGAdd,*bkg_pdf,*sigbkgFrac2D);
+  if(lPar==fU1 && fId==2) model2D = new RooAddPdf("model2DU1Y2","model2DU1Y2",*lGAdd,*bkg_pdf,*sigbkgFrac2D);
+  if(lPar!=fU1 && fId==2) model2D = new RooAddPdf("model2DU2Y2","model2DU2Y2",*lGAdd,*bkg_pdf,*sigbkgFrac2D);
+
 
   return;
 
@@ -3391,8 +3400,8 @@ double triGausInvGraph(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsRea
 
   //  cout << " inside triGausInvGraph " << endl;
 
-  RooRealVar* myptm=wMC->var("pt");
-  RooRealVar* myptd=wDATA->var("pt");
+  RooRealVar* myptm= wMC->var("pt");
+  RooRealVar* myptd= wDATA->var("pt");
   RooRealVar* myXm = wMC->var("XVar");
   RooRealVar* myXd = wDATA->var("XVar");
  
@@ -3443,6 +3452,9 @@ double triGausInvGraph(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsRea
   myXmCDF->setVal(iPVal);
   //  double pVal=pdfDATAcdf->findRoot(*myXd,myXd->getMin(),myXd->getMax(),pdfMCcdf->evaluate());
   pVal=pdfDATAcdf->findRoot(*myXdCDF,myXdCDF->getMin(), myXdCDF->getMax(),pdfMCcdf->getVal());
+
+  //  cout << "ORIGINAL MC: " << iPVal ;
+  //  cout << " from findRoot " << pVal << endl;
 
   if(iPVal<-5) {
     cout << "lowRange "<<  endl;
@@ -3947,6 +3959,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   string type2 = ROOT::Math::MinimizerOptions::DefaultMinimizerType();
 
   ROOT::Math::MinimizerOptions::SetDefaultStrategy(2);
+  ROOT::Math::MinimizerOptions::SetDefaultTolerance(0.001);
 
   cout << "CHANGED TO: algo " << algo.c_str() << " type " << type2.c_str() << " tolerance " << ROOT::Math::MinimizerOptions::DefaultTolerance() << " strategy " << ROOT::Math::MinimizerOptions::DefaultStrategy() << endl;
 
@@ -4049,6 +4062,14 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   //TGraphErrors *pGraphA = new TGraphErrors(lXVals.size(),(Float_t*)&(lXVals[0]),(Float_t*)&(lYVals[0]),(Float_t*)&(lXEVals[0]),(Float_t*)&(lYEVals[0]));
   // TGraph *pGraphA       = new TGraph      (lXVals.size(),(Float_t*)&(lXVals[0]),(Float_t*)&(lYVals[0]));
 
+  if(lPar==fU1 && !iRMS) {
+
+    for(unsigned int iev=0; iev<lXVals_all.at(0).at(0).size(); iev++){
+      if(fId==1) histoUnbinnedY1ZPt.Fill(vlXVals_all[lPar!=fU1][iRMS][iev]);
+      if(fId==2) histoUnbinnedY2ZPt.Fill(vlXVals_all[lPar!=fU1][iRMS][iev]);
+    }
+  }
+
   TGraph *pGraphA       = new TGraph(lXVals_all.at(0).at(0).size(), 
 				     vlXVals_all[0][0], 
 				     vlYVals_all[lPar!=fU1][iRMS]
@@ -4086,6 +4107,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
   // pol3 -- set to a constant the first param
   if(!iRMS && lPar==fU1 && !useErfPol2ScaleU1 && !useSubRanges) lFit->FixParameter(0,0);
+  //  if(!useErfPol2ScaleU1 && !useSubRanges) lFit->FixParameter(0,0);
 
   if(!iRMS && lPar==fU1 && useErfPol2ScaleU1) {
 
@@ -4205,7 +4227,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   //  if(doClosure) fileName2D += "_closure";
   //  if(doClosure) fileName2D += "_closureVSDATA";
   if(doClosure) fileName2D += "_closureVSMAD";
-  fileName2D += "_MARCH31";
+  fileName2D += "_APR29";
   fileName2D += ".root";
   
   if(doPrint) {
@@ -4242,6 +4264,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
     pGraphA->SetName(graphName.Data());
     pGraphA->Write();
+    if(lPar==fU1 && !iRMS && fId==1)     histoUnbinnedY1ZPt.Write();
+    if(lPar==fU1 && !iRMS && fId==2)     histoUnbinnedY2ZPt.Write();
     f1.Write();
     f1.Close();
 
@@ -4391,6 +4415,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
   for(unsigned int i0 = 0; i0 < lXVals_all.at(0).at(0).size(); i0++) { 
 
+    // Zpt range
     //    if(vlXVals_all[lPar!=fU1][iRMS][i0]>range_min && vlXVals_all[lPar!=fU1][iRMS][i0]<range_max) {
     if(vlXVals_all[lPar!=fU1][iRMS][i0]<range_min) continue;
     if(vlXVals_all[lPar!=fU1][iRMS][i0]>=range_max) continue;
@@ -4450,10 +4475,11 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   cout << "== FILL histograms from dataset and fitted PDF===" << endl; 
   cout << "====================" << endl;
 
-  TString nameHisto="hh_U1";
-  if(lPar!=fU1) nameHisto="hh_U2";
-  nameHisto  += "_";
-  nameHisto += fId;
+
+  //  TString nameHisto="hh_U1";
+  //  if(lPar!=fU1) nameHisto="hh_U2";
+  //  nameHisto  += "_";
+  //  nameHisto += fId;
   
   //  // HISTOs from dataset
   //  TH1* hh  = lResidVals2D[0].createHistogram(nameHisto,lRPt,Binning(1000),YVar(lRXVar,Binning(100)));
@@ -4469,7 +4495,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   */
 
   TString fileName2DFIT="file2Dfit_";
-  fileName2DFIT += "MARCH31_";
+  fileName2DFIT += "APR29_";
   if(!fData && (!doPosW && doNegW) && !doBKG) fileName2DFIT += "Wneg";
   if(!fData && (doPosW && !doNegW) && !doBKG) fileName2DFIT += "Wpos";
   if(!fData && (!doPosW && !doNegW) && !doBKG) fileName2DFIT += "Z";
@@ -4502,7 +4528,10 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   
   if(doPrint) {
 
-    TFile f4(fileName2DFIT.Data(),"UPDATE");
+    TString nameHisto="hh_U1";
+    if(lPar!=fU1) nameHisto="hh_U2";
+    nameHisto  += "_";
+    nameHisto += fId;
 
     TString nameHisto_="";
 
@@ -4511,6 +4540,9 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     TString nameHistoFitG2="";
     TString nameHistoFitG3="";
 
+
+    TFile f4(fileName2DFIT.Data(),"UPDATE");
+
     for(unsigned int id=1; id<lResidVals.size(); id++) {
 
       // HISTOs from dataset
@@ -4518,7 +4550,9 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       nameHisto_  = nameHisto.Data();
       nameHisto_ += "_";
       nameHisto_ += id;
-      TH1* hh_1d_  = lResidVals[id].createHistogram(nameHisto_,lRXVar,Binning(100));
+      nameHisto_ += "_1D";
+
+      TH1* hh_1d_  = lResidVals[id].createHistogram(nameHisto_,lRXVar,Binning(1000));
       if(hh_1d_) cout << " ===>>>>> CREATED 1D HISTOGRAM FILE from dataset" << id << " " << hh_1d_ << endl;
       //      if(hh_1d_) hh_1d_->Write(); // the createHistogram already store
 
@@ -4540,9 +4574,9 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
     }
 
-    // HISTOs from dataset
-    TH1* hh  = lResidVals2D[0].createHistogram(nameHisto,lRPt,Binning(1000),YVar(lRXVar,Binning(100)));
-    if(hh) cout << " ===>>>>> CREATED 2D HISTOGRAM FILE from dataset" << hh << endl;
+    // HISTOs from dataset (this create both 2D and other projections)
+    //    TH1* hh  = lResidVals2D[0].createHistogram(nameHisto,lRPt,Binning(1000),YVar(lRXVar,Binning(100)));
+    //    if(hh) cout << " ===>>>>> CREATED 2D HISTOGRAM FILE from dataset" << hh << endl;
 
     //    if(hh) hh->Write();
     //    if(hh1_) hh1_->Write();
@@ -4555,8 +4589,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   }
 
   //  if(doBKG) return;
-  //  if(doClosure || doAbsolute) return;
-  if(doAbsolute) return;
+  if(doClosure || doAbsolute) return;
+  //  if(doAbsolute) return;
 
   //// AFTER here set up for the 1D fit                                                                                                                    
   //  if(doPrintAll && !doIterativeMet) {
@@ -5856,8 +5890,10 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
 
   if(writeTree) {
 
-    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_POWasDATA_mad%d_iter%d_onlyU2%d_onlyU1%d_iParamU1%d_iParamU2%d_%d_writeTree_%d.root",doMad,doIterativeMet,doOnlyU2,doOnlyU1,iParamU1,iParamU2,startTreeEntries,writeTree),"RECREATE");
-    //    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_POWasMAD_mad%d_iter%d_onlyU2%d_onlyU1%d_iParamU1%d_iParamU2%d_%d_writeTree_%d.root",doMad,doIterativeMet,doOnlyU2,doOnlyU1,iParamU1,iParamU2,startTreeEntries,writeTree),"RECREATE");
+    //    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_POWasDATA_mad%d_iter%d_onlyU2%d_onlyU1%d_iParamU1%d_iParamU2%d_%d_writeTree_%d.root",doMad,doIterativeMet,doOnlyU2,doOnlyU1,iParamU1,iParamU2,startTreeEntries,writeTree),"RECREATE");
+    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_Y%d_POWasMAD_mad%d_iter%d_onlyU2%d_onlyU1%d_iParamU1%d_iParamU2%d_%d_writeTree_%d.root",fId,doMad,doIterativeMet,doOnlyU2,doOnlyU1,iParamU1,iParamU2,startTreeEntries,writeTree),"RECREATE");
+    //    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_Y%d_MADasMAD_mad%d_iter%d_onlyU2%d_onlyU1%d_iParamU1%d_iParamU2%d_%d_writeTree_%d.root",fId,doMad,doIterativeMet,doOnlyU2,doOnlyU1,iParamU1,iParamU2,startTreeEntries,writeTree),"RECREATE");
+    //    fout_loopOverTree = new TFile("TREE/test.root","RECREATE");
 
     //    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_mad%d_iter%d_%d_writeTree_%d.root",doMad,doIterativeMet,startTreeEntries,writeTree),"RECREATE");
     //    fout_loopOverTree = new TFile(Form("TREE/foutIter_skimmedTree_mad%d_iter%d_%d_writeTree_%d.root",doMad,doIterativeMet,startTreeEntries,writeTree),"RECREATE");
@@ -6546,7 +6582,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
   //  TString name="recoilfits/recoilfit_JAN22_MADtoMAD";
   //  TString name="recoilfits/recoilfit_JAN22_POWtoMAD";
   //  TString name="recoilfits/recoilfit_JAN28";
-  TString name="recoilfits/recoilfit_MARCH31";
+  TString name="recoilfits/recoilfit_APR29";
   if(do8TeV) name +="_8TeV";
   if(doABC) name +="_ABC";
 
@@ -6588,8 +6624,9 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
     */
 
     if(doClosure && !do8TeV)   {
-      fDataFile = TFile::Open(Form("TREE/output_mad%d_POWasMAD_onlyU20_onlyU10_iParamU1%d_iParamU2%d_iter1_march26.root",doMad,iParamU1,iParamU2)); // closure vs DATA
-      cout << " reading TREE/output_mad" << doMad << "_POWasMAD_onlyU20_onlyU10_iParamU1" << iParamU1 << "_iParamU2" << iParamU2 << "_iter1_feb26.root"<< endl;
+      //      fDataFile = TFile::Open(Form("TREE/output_mad%d_POWasMAD_onlyU20_onlyU10_iParamU1%d_iParamU2%d_iter1_march26.root",doMad,iParamU1,iParamU2)); // closure vs DATA
+      fDataFile = TFile::Open(Form("TREE/output_Y%d_mad%d_POWasMAD_onlyU20_onlyU10_iParamU1%d_iParamU2%d_iter1_apr13.root",fId,doMad,iParamU1,iParamU2)); // closure vs DATA
+      cout << " reading TREE/output_mad" << doMad << "_POWasMAD_onlyU20_onlyU10_iParamU1" << iParamU1 << "_iParamU2" << iParamU2 << "_iter1_apr13.root"<< endl;
       //      fDataFile = TFile::Open(Form("TREE/output_mad%d_POWasMAD_onlyU20_onlyU10_iter1_feb16.root",doMad)); // closure vs DATA
       //      cout << " reading TREE/output_mad" << doMad << "_POWasMAD_onlyU20_onlyU10_iter1_feb16.root"<< endl;
     }
@@ -6613,13 +6650,15 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 			    lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,lZMU2RMS3Fit,lZMU2FracFit,lZMU2Mean1Fit, lZMU2Mean2Fit,
 			    lpdfMCU1, lwMCU1, lpdfMCU2, lwMCU2,
 			    ////			    "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
-			    "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
+			    //			    "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
+			    "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
 
       if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,lZMU1RMS3Fit,lZMU1FracFit,lZMU1Mean1Fit, lZMU1Mean2Fit,
 			   lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,lZMU2RMS3Fit,lZMU2FracFit,lZMU2Mean1Fit, lZMU2Mean2Fit,
 			   lpdfMCU1, lwMCU1, lpdfMCU2, lwMCU2,
 			   //			   "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
-			   "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
+			   //			   "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
+			   "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 
       isMC=false;
   
@@ -6638,7 +6677,8 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 		 lZDU2Fit,lZDU2RMSSMFit,lZDU2RMS1Fit,lZDU2RMS2Fit,lZDU2RMS3Fit,lZDU2FracFit,lZDU2Mean1Fit, lZDU2Mean2Fit,
 		 lpdfDATAU1, lwDATAU1, lpdfDATAU2, lwDATAU2,
 		 //		 "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
-		 "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
+		 //		 "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
+		 "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 
       /*
       // POWHEG as DATA closure
