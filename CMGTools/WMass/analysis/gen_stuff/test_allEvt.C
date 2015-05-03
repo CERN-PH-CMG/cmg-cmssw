@@ -6,7 +6,7 @@
 #include <iostream>
 
 
-TLorentzVector muPosNoCorr,muNegNoCorr,ZNocorr,muPosGen,muNegGen,ZGen_status1;
+TLorentzVector muPosGen_status1,muNegGen_status1,ZNocorr,muPosGen,muNegGen,ZGen_status1,ZGen_status3;
 HTransformToHelicityFrame *GoToHXframe;
 double costh_HX = -1e10;
 double phi_HX = -1e10;
@@ -36,9 +36,17 @@ void test_allEvt::Loop()
 
   GoToHXframe = new HTransformToHelicityFrame();
   GoToCSframe = new HTransformToCS();
-
-  TH1D *hmass=new TH1D("hmass","hmass",150,50,200);
-  hmass->Sumw2();
+  
+  TFile *fin_ewk_syst = new TFile("fout_invariant_mass_qed.root");
+  TH1D *hvpt_ewk_syst = (TH1D*) fin_ewk_syst->Get("vpt_ewk_p8std_div_ewk_p8bad");
+  TH1D *hmass_ewk_syst = (TH1D*) fin_ewk_syst->Get("ewk_p8std_div_ewk_p8bad");
+  TH1D *hmass_ewk_syst_photos = (TH1D*) fin_ewk_syst->Get("ewk_p8photos_div_ewk_p8bad");
+  
+  // TH1D *hmass=new TH1D("hmass","hmass",150,50,200);
+  // hmass->Sumw2();
+  
+  // TH1D *hvpt=new TH1D("hvpt","hvpt",300,0,300);
+  // hvpt->Sumw2();
   
   if (fChain == 0) return;
 
@@ -47,7 +55,7 @@ void test_allEvt::Loop()
   Long64_t nbytes = 0, nb = 0;
   // for (Long64_t jentry=0; jentry<nentries;jentry++) {
   for (Long64_t jentry=0; jentry<10e6;jentry++) {
-    // for (Long64_t jentry=0; jentry<10e2;jentry++) {
+    // for (Long64_t jentry=0; jentry<10e3;jentry++) {
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;
@@ -61,33 +69,91 @@ void test_allEvt::Loop()
         && TMath::Abs(MuPosGenStatus1_eta)<2.5
         && TMath::Abs(MuNegGenStatus1_eta)<2.5
         ){
-      hmass->Fill(ZGen_PostFSR_mass);
+          
+      muPosGen_status1.SetPtEtaPhiM(MuPosGenStatus1_pt,MuPosGenStatus1_eta,MuPosGenStatus1_phi,MuPosGenStatus1_mass);
+      muNegGen_status1.SetPtEtaPhiM(MuNegGenStatus1_pt,MuNegGenStatus1_eta,MuNegGenStatus1_phi,MuNegGenStatus1_mass);
+      ZGen_status1 = muPosGen_status1 + muNegGen_status1;
+      // mtv = sqrt(2*ptl1*ptl2*(1d0-cos(delphi)))
+      double dphi = MuPosGenStatus1_phi - MuNegGenStatus1_phi; 
+      if ( dphi > TMath::Pi() ) {
+        dphi -= 2.0*TMath::Pi();
+      } else if ( dphi <= -TMath::Pi() ) {
+        dphi += 2.0*TMath::Pi();
+      }
+      double ZGen_status1_mT = TMath::Sqrt(2*MuPosGenStatus1_pt*MuNegGenStatus1_pt*(1-TMath::Cos(dphi)));
+      // cout << "ZGen_status1_mT= " << ZGen_status1_mT << " ZGen_status1.Mt()= " << ZGen_status1.Mt() << endl;
+      
+      double vpt_rew_factor = hvpt_ewk_syst->Interpolate(ZGen_status1.Pt());
+      double vmass_std_rew_factor = hmass_ewk_syst->Interpolate(ZGen_status1.M());
+      double vmass_photos_rew_factor = hmass_ewk_syst_photos->Interpolate(ZGen_status1.M());
+          
+      // hmass->Fill(ZGen_PostFSR_mass);
+      common_stuff::plot1D("hmass", ZGen_PostFSR_mass, 1, h_1d, 150,50,200 );
+      common_stuff::plot1D("hNegleptonpt", muNegGen_status1.Pt(), 1, h_1d, 160,25,65 );
+      common_stuff::plot1D("hPosleptonpt", muPosGen_status1.Pt(), 1, h_1d, 160,25,65 );
+      common_stuff::plot1D("hvpt", ZGen_status1.Pt(), 1, h_1d, 300,0,300 );
+      common_stuff::plot1D("hrapidity", ZGen_status1.Rapidity(), 1, h_1d, 25,-2.5,2.5 );
+      common_stuff::plot1D("hNegleptoneta", muNegGen_status1.Eta(), 1, h_1d, 25,-2.5,2.5 );
+      common_stuff::plot1D("hPosleptoneta", muPosGen_status1.Eta(), 1, h_1d, 25,-2.5,2.5 );
+      // common_stuff::plot1D("hmT", ZGen_status1.Mt(), 1, h_1d, 100,50,100 );
+      common_stuff::plot1D("hmT", ZGen_status1_mT, 1, h_1d, 100,50,100 );
+      
+      common_stuff::plot1D("hmass_VpTRewTo_ewk_p8std", ZGen_PostFSR_mass, vpt_rew_factor, h_1d, 150,50,200 );
+      common_stuff::plot1D("hNegleptonpt_VpTRewTo_ewk_p8std", muNegGen_status1.Pt(), vpt_rew_factor, h_1d, 160,25,65 );
+      common_stuff::plot1D("hPosleptonpt_VpTRewTo_ewk_p8std", muPosGen_status1.Pt(), vpt_rew_factor, h_1d, 160,25,65 );
+      common_stuff::plot1D("hvpt_VpTRewTo_ewk_p8std", ZGen_status1.Pt(), vpt_rew_factor, h_1d, 300,0,300 );
+      common_stuff::plot1D("hrapidity_VpTRewTo_ewk_p8std", ZGen_status1.Rapidity(), vpt_rew_factor, h_1d, 25,-2.5,2.5 );
+      common_stuff::plot1D("hNegleptoneta_VpTRewTo_ewk_p8std", muNegGen_status1.Eta(), vpt_rew_factor, h_1d, 25,-2.5,2.5 );
+      common_stuff::plot1D("hPosleptoneta_VpTRewTo_ewk_p8std", muPosGen_status1.Eta(), vpt_rew_factor, h_1d, 25,-2.5,2.5 );
+      // common_stuff::plot1D("hmT_VpTRewTo_ewk_p8std", ZGen_status1.Mt(), vpt_rew_factor, h_1d, 100,50,100 );
+      common_stuff::plot1D("hmT_VpTRewTo_ewk_p8std", ZGen_status1_mT, vpt_rew_factor, h_1d, 100,50,100 );
+      
+      common_stuff::plot1D("hmass_VpTRewTo_ewk_p8std_massStd", ZGen_PostFSR_mass, vpt_rew_factor*vmass_std_rew_factor, h_1d, 150,50,200 );
+      common_stuff::plot1D("hNegleptonpt_VpTRewTo_ewk_p8std_massStd", muNegGen_status1.Pt(), vpt_rew_factor*vmass_std_rew_factor, h_1d, 160,25,65 );
+      common_stuff::plot1D("hPosleptonpt_VpTRewTo_ewk_p8std_massStd", muPosGen_status1.Pt(), vpt_rew_factor*vmass_std_rew_factor, h_1d, 160,25,65 );
+      common_stuff::plot1D("hvpt_VpTRewTo_ewk_p8std_massStd", ZGen_status1.Pt(), vpt_rew_factor*vmass_std_rew_factor, h_1d, 300,0,300 );
+      common_stuff::plot1D("hrapidity_VpTRewTo_ewk_p8std_massStd", ZGen_status1.Rapidity(), vpt_rew_factor*vmass_std_rew_factor, h_1d, 25,-2.5,2.5 );
+      common_stuff::plot1D("hNegleptoneta_VpTRewTo_ewk_p8std_massStd", muNegGen_status1.Eta(), vpt_rew_factor*vmass_std_rew_factor, h_1d, 25,-2.5,2.5 );
+      common_stuff::plot1D("hPosleptoneta_VpTRewTo_ewk_p8std_massStd", muPosGen_status1.Eta(), vpt_rew_factor*vmass_std_rew_factor, h_1d, 25,-2.5,2.5 );
+      // common_stuff::plot1D("hmT_VpTRewTo_ewk_p8std_massStd", ZGen_status1.Mt(), vpt_rew_factor*vmass_std_rew_factor, h_1d, 100,50,100 );
+      common_stuff::plot1D("hmT_VpTRewTo_ewk_p8std_massStd", ZGen_status1_mT, vpt_rew_factor*vmass_std_rew_factor, h_1d, 100,50,100 );
+      
+      common_stuff::plot1D("hmass_VpTRewTo_ewk_p8std_massPhotos", ZGen_PostFSR_mass, vpt_rew_factor*vmass_photos_rew_factor, h_1d, 150,50,200 );
+      common_stuff::plot1D("hNegleptonpt_VpTRewTo_ewk_p8std_massPhotos", muNegGen_status1.Pt(), vpt_rew_factor*vmass_photos_rew_factor, h_1d, 160,25,65 );
+      common_stuff::plot1D("hPosleptonpt_VpTRewTo_ewk_p8std_massPhotos", muPosGen_status1.Pt(), vpt_rew_factor*vmass_photos_rew_factor, h_1d, 160,25,65 );
+      common_stuff::plot1D("hvpt_VpTRewTo_ewk_p8std_massPhotos", ZGen_status1.Pt(), vpt_rew_factor*vmass_photos_rew_factor, h_1d, 300,0,300 );
+      common_stuff::plot1D("hrapidity_VpTRewTo_ewk_p8std_massPhotos", ZGen_status1.Rapidity(), vpt_rew_factor*vmass_photos_rew_factor, h_1d, 25,-2.5,2.5 );
+      common_stuff::plot1D("hNegleptoneta_VpTRewTo_ewk_p8std_massPhotos", muNegGen_status1.Eta(), vpt_rew_factor*vmass_photos_rew_factor, h_1d, 25,-2.5,2.5 );
+      common_stuff::plot1D("hPosleptoneta_VpTRewTo_ewk_p8std_massPhotos", muPosGen_status1.Eta(), vpt_rew_factor*vmass_photos_rew_factor, h_1d, 25,-2.5,2.5 );
+      // common_stuff::plot1D("hmT_VpTRewTo_ewk_p8std_massPhotos", ZGen_status1.Mt(), vpt_rew_factor*vmass_photos_rew_factor, h_1d, 100,50,100 );
+      common_stuff::plot1D("hmT_VpTRewTo_ewk_p8std_massPhotos", ZGen_status1_mT, vpt_rew_factor*vmass_photos_rew_factor, h_1d, 100,50,100 );
+    
     }
     
     costh_HX = -1e10;     phi_HX = -1e10;
     costh_HX_gen = -1e10; phi_HX_gen = -1e10;
     costh_CS = -1e10;     phi_CS = -1e10;
     costh_CS_gen = -1e10; phi_CS_gen = -1e10;
-
+    
     muPosGen.SetPtEtaPhiM(MuPosGen_pt,MuPosGen_eta,MuPosGen_phi,MuPosGen_mass);
     muNegGen.SetPtEtaPhiM(MuNegGen_pt,MuNegGen_eta,MuNegGen_phi,MuNegGen_mass);
-    ZGen_status1 = muPosGen + muNegGen;
+    ZGen_status3 = muPosGen + muNegGen;
 
     ComputeHXVar(muPosGen,muNegGen,true);
-    common_stuff::plot2D(Form("phi_vs_costh_HX_ptbin%d_rapbin%d",hptbins->FindBin(ZGen_status1.Pt()),hrapbins->FindBin(TMath::Abs(ZGen_status1.Rapidity()))),
+    common_stuff::plot2D(Form("phi_vs_costh_HX_ptbin%d_rapbin%d",hptbins->FindBin(ZGen_status3.Pt()),hrapbins->FindBin(TMath::Abs(ZGen_status3.Rapidity()))),
                         costh_HX_gen,TMath::Abs(phi_HX_gen), 1, 
                         h_2d, 12,-1,1,12,0,TMath::Pi() );
 
     ComputeCSVar(muPosGen,muNegGen,true);
-    common_stuff::plot2D(Form("phi_vs_costh_CS_ptbin%d_rapbin%d",hptbins->FindBin(ZGen_status1.Pt()),hrapbins->FindBin(TMath::Abs(ZGen_status1.Rapidity()))),
+    common_stuff::plot2D(Form("phi_vs_costh_CS_ptbin%d_rapbin%d",hptbins->FindBin(ZGen_status3.Pt()),hrapbins->FindBin(TMath::Abs(ZGen_status3.Rapidity()))),
                         costh_CS_gen,TMath::Abs(phi_CS_gen), 1, 
                         h_2d, 12,-1,1,12,0,TMath::Pi() );
     
     ComputeAllVarPietro(muPosGen,muNegGen);
-    common_stuff::plot2D(Form("phi_vs_costh_HX_pietro_ptbin%d_rapbin%d",hptbins->FindBin(ZGen_status1.Pt()),hrapbins->FindBin(TMath::Abs(ZGen_status1.Rapidity()))),
+    common_stuff::plot2D(Form("phi_vs_costh_HX_pietro_ptbin%d_rapbin%d",hptbins->FindBin(ZGen_status3.Pt()),hrapbins->FindBin(TMath::Abs(ZGen_status3.Rapidity()))),
                         costh_HX,TMath::Abs(phi_HX), 1, 
                         h_2d, 12,-1,1,12,0,TMath::Pi() );
-    common_stuff::plot2D(Form("phi_vs_costh_CS_pietro_ptbin%d_rapbin%d",hptbins->FindBin(ZGen_status1.Pt()),hrapbins->FindBin(TMath::Abs(ZGen_status1.Rapidity()))),
+    common_stuff::plot2D(Form("phi_vs_costh_CS_pietro_ptbin%d_rapbin%d",hptbins->FindBin(ZGen_status3.Pt()),hrapbins->FindBin(TMath::Abs(ZGen_status3.Rapidity()))),
                         costh_CS,TMath::Abs(phi_CS), 1, 
                         h_2d, 12,-1,1,12,0,TMath::Pi() );
                         
@@ -110,7 +176,7 @@ void test_allEvt::Loop()
 
   common_stuff::writeOutHistos( fout, h_1d, h_2d );
 
-  hmass->Write();
+  // hmass->Write();
   fout->Write();
   fout->Close();
   
