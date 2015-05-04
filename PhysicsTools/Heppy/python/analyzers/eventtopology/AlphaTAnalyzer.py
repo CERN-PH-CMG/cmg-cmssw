@@ -67,3 +67,5 @@ class AlphaTAnalyzer( Analyzer ):
         #Do the same with gen jets for MC
         if self.cfg_comp.isMC:
             event.genAlphaT = self.makeAlphaT(event.cleanGenJets)
+
+        return True
