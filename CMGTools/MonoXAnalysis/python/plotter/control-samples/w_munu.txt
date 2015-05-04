@@ -1,0 +1,5 @@
+1L: nLepGood == 1
+lep MVA: abs(LepGood1_pdgId==13) || LepGood1_mvaIdPhys14 >= 0.35
+pt > 20: LepGood1_pt > 20
+njets < 2: nJet25 < 2
+met > 30: met_pt > 30

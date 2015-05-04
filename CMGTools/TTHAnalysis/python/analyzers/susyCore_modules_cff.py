@@ -100,6 +100,8 @@ genAna = cfg.Analyzer(
     # Make also the splitted lists
     makeSplittedGenLists = True,
     allGenTaus = False,
+    # Save LHE weights from LHEEventProduct
+    makeLHEweights = True,
     # Print out debug information
     verbose = False,
     )
@@ -122,6 +124,7 @@ pdfwAna = cfg.Analyzer(
 from CMGTools.TTHAnalysis.analyzers.susyParameterScanAnalyzer import susyParameterScanAnalyzer
 susyScanAna = cfg.Analyzer(
     susyParameterScanAnalyzer, name="susyParameterScanAnalyzer",
+    doLHE=True,
     )
 
 # Lepton Analyzer (generic)
@@ -275,6 +278,7 @@ jetAna = cfg.Analyzer(
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     smearJets = False,
     shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts  
+    alwaysCleanPhotons = False,
     cleanJetsFromFirstPhoton = False,
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
@@ -318,13 +322,20 @@ ttHHeavyFlavourHadronAna = cfg.Analyzer(
 
 metAna = cfg.Analyzer(
     METAnalyzer, name="metAnalyzer",
+    metCollection     = "slimmedMETs",
+    noPUMetCollection = "slimmedMETs",    
+    copyMETsByValue = False,
     doTkMet = False,
+    doMetNoPU = True,
     doMetNoMu = False,
+    doMetNoEle = False,
     doMetNoPhoton = False,
     recalibrate = False,
+    jetAnalyzerCalibrationPostFix = "",
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,
+    collectionPostFix = "",
     )
 
 # Core Event Analyzer (computes basic quantities like HT, dilepton masses)
