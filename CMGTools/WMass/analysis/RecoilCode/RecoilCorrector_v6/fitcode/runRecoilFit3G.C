@@ -60,6 +60,11 @@ sleep 20
 #include "TCanvas.h"
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TH3F.h"
+
+#include "TH1I.h"
+#include "TProfile2D.h"
+
 #include "TLegend.h"
 #include "TF1.h"
 #include "TStyle.h"
@@ -287,6 +292,7 @@ bool doPhiStar=false;
 bool doOnlyU = false; // un-needed
 
 bool doRoch_corr = false;
+bool doKalman_corr = false;
 
 bool doBinnedVTX = false;
 
@@ -1882,30 +1888,135 @@ bool checkOdd() {
   
 }
 
-double getPtMuonCorrrection(double pt, double eta, double phi, double charge) {
+TH3F *scale_A1;
+TH3F *scale_A2;
+TH3F *scale_e;
+TH3F *scale_B;
 
-  if(pt>80) return pt;
+TH3F *shifted_A1;
+TH3F *shifted_A2;
+TH3F *shifted_e;
+TH3F *shifted_B;
+TH2F *magnetic;
 
-  TFile *kalmanfile_ = TFile::Open("../../../utils/kalmanCalibration_data.root");
-  TFile *bfile_ = TFile::Open("../../../utils/mapCalibration.root");
+void setUpMuonCorrection(bool isData_) {
 
-  TH1D * h_ = (TH1D*) bfile_->Get("mapCorrection");
-  TH1D * hA = (TH1D*) kalmanfile_->Get("A_0");
-  TH1D * hM = (TH1D*) kalmanfile_->Get("M_0");
-  TH1D * hB = (TH1D*) kalmanfile_->Get("B_0");
+  // https://github.com/CERN-PH-CMG/cmg-cmssw/blob/c910b07530278a29f2b30bc78ba08143c8d59b22/CMGTools/WMass/analysis/AnalysisCode/KalmanCalibrator.cc#L7
 
-  int mag_bin = h_->GetBin(h_->GetXaxis()->FindBin(phi),h_->GetYaxis()->FindBin(eta));
-  double newCurv = h_->GetBinContent(mag_bin)/pt;
+  TRandom * random_ = new TRandom3(10101982);
+  TFile *filekalman_;
 
-  int kalman_bin = hA->GetBinContent(hA->GetXaxis()->FindBin(newCurv),hA->GetYaxis()->FindBin(eta),hA->GetZaxis()->FindBin(phi));
+  if (isData_) {
+    std::string path("../../../utils/kalmanCalibration_data_19042015.root");
+    filekalman_ = new TFile(path.c_str());
+    magnetic = (TH2F*)filekalman_->Get("magnetic");
+    magnetic->SetDirectory(0);
+  }
+  else {
+    std::string path("../../../utils/kalmanCalibration_mc_19042015.root");
+    filekalman_ = new TFile(path.c_str());
+  }
+  // file_->ls();
 
-  double A = hA->GetBinContent(kalman_bin);
-  double M = hM->GetBinContent(kalman_bin);
-  double B = hB->GetBinContent(kalman_bin);
+  scale_A1 =(TH3F*)filekalman_->Get("A1");
+  scale_A2 =(TH3F*)filekalman_->Get("A2");
+  scale_e = (TH3F*)filekalman_->Get("e") ;
+  scale_B = (TH3F*)filekalman_->Get("B") ;
 
-  newCurv = (A-1)*newCurv + newCurv/(1+M*newCurv) + charge*B; 
+  scale_A1->SetDirectory(0);
+  scale_A2->SetDirectory(0);
+  scale_e->SetDirectory(0);
+  scale_B->SetDirectory(0);
 
-  return 1.0/newCurv;
+  shifted_A1 =(TH3F*)scale_A1->Clone();
+  shifted_A1->SetName("shifted_A1");
+  shifted_A1->SetDirectory(0);
+
+  shifted_A2 =(TH3F*)scale_A2->Clone();
+  shifted_A2->SetName("shifted_A2");
+  shifted_A2->SetDirectory(0);
+
+  shifted_e = (TH3F*)scale_e->Clone();
+  shifted_e->SetName("shifted_e");
+  shifted_e->SetDirectory(0);
+
+  shifted_B = (TH3F*)scale_B->Clone();
+  shifted_B->SetName("shifted_B");
+  shifted_B->SetDirectory(0);
+
+  filekalman_->Close();
+
+
+
+  /*
+  // those are not needed for the central corrections
+
+  TH3F *sigma_A_target = (TH3F*)filekalman_->Get("sigma_A_target");
+  TH3F *sigma_B_target = (TH3F*)filekalman_->Get("sigma_B_target");
+  TH3F *sigma_C_target = (TH3F*)filekalman_->Get("sigma_C_target");
+
+  TH3F *sigma_A_ref = (TH3F*)filekalman_->Get("sigma_A_ref");
+  TH3F *sigma_B_ref = (TH3F*)filekalman_->Get("sigma_B_ref");
+  TH3F *sigma_C_ref = (TH3F*)filekalman_->Get("sigma_C_ref");
+
+  TH3F *ebe_A = (TH3F*)filekalman_->Get("ebe_A");
+  TH3F *ebe_B = (TH3F*)filekalman_->Get("ebe_B");
+  TH3F *ebe_C = (TH3F*)filekalman_->Get("ebe_C");
+
+
+  TH3F *closure_ = (TH3F*)file_->Get("closure");
+
+  TMatrixDSym *cholesky_ = (TMatrixDSym*)file_->Get("cholesky");
+  TH1I *covHistoMap_ = (TH1I*)file_->Get("covHistoMap");
+  TH1I *covBinMap_ = (TH1I*)file_->Get("covBinMap");
+
+  TVectorD* eigenvalues_ = (TVectorD*)file_->Get("eigenvalues");
+  TMatrixD* eigenvectors_ = (TMatrixD*)file_->Get("eigenvectors");
+
+  varyClosure_=0;
+  */
+
+}
+
+
+void getPtMuonCorrrection(TLorentzVector &muon,int charge, bool isData_) {
+
+  //////
+  // https://github.com/CERN-PH-CMG/cmg-cmssw/blob/c910b07530278a29f2b30bc78ba08143c8d59b22/CMGTools/WMass/analysis/AnalysisCode/KalmanCalibrator.cc#L140
+
+  double pt=muon.Pt(); double eta=muon.Eta(); double phi=muon.Phi(); double mass=muon.M();
+
+  double magneticMapFactor=1.0;
+  if (isData_)magneticMapFactor = magnetic->GetBinContent(magnetic->GetBin(
+									   magnetic->GetXaxis()->FindBin(phi),
+									   magnetic->GetYaxis()->FindBin(eta)
+									   )
+							  );
+
+  double curvature = magneticMapFactor/pt;
+  double sinTheta  = sin(2*atan(exp(-eta)));
+  double e = shifted_e->GetBinContent(scale_e->GetBin(1,
+                                                      scale_e->GetYaxis()->FindBin(eta),
+                                                      1
+                                                      )
+                                      );
+
+  double A1 = shifted_A1->GetBinContent(13);
+  double A2 = shifted_A2->GetBinContent(13);
+  double B = shifted_B->GetBinContent(scale_B->GetBin(1,
+                                                      scale_B->GetYaxis()->FindBin(eta),
+                                                      scale_B->GetZaxis()->FindBin(phi)
+                                                      )
+                                      );
+
+  curvature = (A2*eta*eta+A1)*curvature -e*sinTheta*curvature*curvature+charge*B;
+
+  //  pt = (1.0/curvature)*(1.0+varyClosure_*closure(pt,eta));
+  pt = (1.0/curvature);
+
+  muon.SetPtEtaPhiM(pt,eta,phi,mass);
+
+  return;
 
 }
 
@@ -1934,10 +2045,10 @@ void applyGigiRescaling() {
 
       fZmass = Z.M();
 
-      // those only on DATA since for the MC are used the Gen 
+      // those only on DATA since for the MC are used the Gen
       if(fData) fZPt = Z.Pt();
       if(fData) fZPhi = Z.Phi();
-      if(fData) fZRap = Z.Rapidity(); 
+      if(fData) fZRap = Z.Rapidity();
 
 }
 
@@ -3711,8 +3822,10 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   if(iRMS) { 
     
     //  RooRealVar lRXVar("XVar","(U_{1}(Z_{p_{T}})-x_{i})/#sigma_{U1} (Z_{p_{T}})",0,minRangeSigma,maxRangeSigma);
-    if(lPar!=fU1) lRXVar.SetTitle("(U_{#perp}(Z_{p_{T}})-x_{i})/#sigma_{U#perp} (Z_{p_{T}})");
-    if(lPar==fU1) lRXVar.SetTitle("(U_{#parallel}(Z_{p_{T}})-x_{i})/#sigma_{U#parallel} (Z_{p_{T}})");
+    //    if(lPar!=fU1) lRXVar.SetTitle("(U_{#perp}(Z_{p_{T}})-x_{i})/#sigma_{U#perp} (Z_{p_{T}})");
+    //    if(lPar==fU1) lRXVar.SetTitle("(U_{#parallel}(Z_{p_{T}})-x_{i})/#sigma_{U#parallel} (Z_{p_{T}})");
+    if(lPar!=fU1) lRXVar.SetTitle("(U^{#perp}_{i}-#mu^{i}_{#perp}(Z_{p_{T}}))/#sigma^{i}_{U#perp}(Z_{p_{T}})");
+    if(lPar==fU1) lRXVar.SetTitle("(U^{#parallel}_{i}-#mu^{i}_{#parallel}(Z_{p_{T}}))/#sigma^{i}_{U#parallel}(Z_{p_{T}})");
     //  lRXVar.SetTitle("(U_{2}(Z_{p_{T}})-x_{i})/#sigma_{U2} (Z_{p_{T}})");
 
     constructPDF(lPar);
@@ -4227,7 +4340,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   //  if(doClosure) fileName2D += "_closure";
   //  if(doClosure) fileName2D += "_closureVSDATA";
   if(doClosure) fileName2D += "_closureVSMAD";
-  fileName2D += "_APR29";
+  fileName2D += "_MAY2";
   fileName2D += ".root";
   
   if(doPrint) {
@@ -4495,7 +4608,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   */
 
   TString fileName2DFIT="file2Dfit_";
-  fileName2DFIT += "APR29_";
+  fileName2DFIT += "MAY2_";
   if(!fData && (!doPosW && doNegW) && !doBKG) fileName2DFIT += "Wneg";
   if(!fData && (doPosW && !doNegW) && !doBKG) fileName2DFIT += "Wpos";
   if(!fData && (!doPosW && !doNegW) && !doBKG) fileName2DFIT += "Z";
@@ -4588,6 +4701,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
   }
 
+  if(writeTree) return;
   //  if(doBKG) return;
   if(doClosure || doAbsolute) return;
   //  if(doAbsolute) return;
@@ -4784,7 +4898,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 	lRGAdd->plotOn(lFrame1,RooFit::Components(*lRGaus1),RooFit::LineStyle(kDashed),RooFit::LineColor(kRed)); // central value
 	lRGAdd->plotOn(lFrame1,RooFit::Components(*lRGaus2),RooFit::LineStyle(kDashed),RooFit::LineColor(kViolet)); // central value
 	if(do3G) lRGAdd->plotOn(lFrame1,RooFit::Components(*lRGaus3),RooFit::LineStyle(kDashed),RooFit::LineColor(kGreen)); // central value
-	lRGAdd->paramOn(lFrame1, Format("NELU", AutoPrecision(2)), Layout(0.1, 0.45,0.9) );
+	lRGAdd->paramOn(lFrame1, Format("NELU", AutoPrecision(2)), Layout(0.15, 0.5,0.95) );
 
 	TFile f15(rootFileNameFrame.c_str(),"UPDATE");
 	
@@ -5874,9 +5988,10 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
   int nEntries = iTree->GetEntries();
   //  if(isBKG) nEntries = iTree->GetEntries()/30;
 
-  //  if(writeTree) nEntries = 1000000; // this takes little
   if(writeTree) {
-    
+
+    //    if(writeTree) nEntries = 1000000; // this takes little
+    //    if(writeTree) nEntries = 500000; // this takes little
     nEntries = 250000; // this takes little
     if((iTree->GetEntries()-startTreeEntries)<nEntries) nEntries = iTree->GetEntries()-startTreeEntries;
     
@@ -5896,7 +6011,8 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
     //    fout_loopOverTree = new TFile("TREE/test.root","RECREATE");
 
     //    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_mad%d_iter%d_%d_writeTree_%d.root",doMad,doIterativeMet,startTreeEntries,writeTree),"RECREATE");
-    //    fout_loopOverTree = new TFile(Form("TREE/foutIter_skimmedTree_mad%d_iter%d_%d_writeTree_%d.root",doMad,doIterativeMet,startTreeEntries,writeTree),"RECREATE");
+    //    fout_loopOverTree = new TFile(Form("TREE/foutIter_skimmedTree_Y%d_mad%d_doKalmanCorr%d_iter%d_%d_writeTree_%d.root",fId,doMad,doKalman_corr,doIterativeMet,startTreeEntries,writeTree),"RECREATE");
+
     iterEvTree = new TTree("ZTreeProducer","ZTreeProducer");
     
     TBranch* br_run = iterEvTree->Branch("run", &fRun, "fRun/I");
@@ -5968,6 +6084,7 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
     //  for(int i1 = 0; i1 <  1e6; i1++) {
     iTree->GetEntry(i1);
 
+    //    if(i1%10000==0) cout <<"Analyzed entry "<< i1 <<"/"<< nEntries << endl;
     if(i1%100000==0) cout <<"Analyzed entry "<< i1 <<"/"<< nEntries << endl;
     //    if(i1%1==0) cout <<"Analyzed entry "<< i1 <<"/"<< nEntries << endl;
     if(doIterativeMet && i1%10000==0) cout <<"Analyzed entry "<< i1 << " out of nEntries=" << nEntries << " started entry "<< startTreeEntries << " (totalEntries= "<< iTree->GetEntries() << ")" << endl;
@@ -5981,7 +6098,53 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
     if(dodebug)       cout << " -------------------------------- " << endl;
     if(dodebug)       cout << "RUN " << fRun << " LUMI " << fLumi << " EVENT " << fEvent << endl;
 
-    if(doGigiRescaling) applyGigiRescaling();
+    //    if(doGigiRescaling) applyGigiRescaling();
+
+    if(doKalman_corr) {
+
+      //      cout << "========================================== " << endl;
+      //      cout << "before correction Mass= " << fZmass << " Pt= " << fZPt << endl;
+      //      cout << "before correction pos " << fMuPos_pt << " neg " << fMuNeg_pt << endl;
+      TLorentzVector muonPos, muonNeg, Zorg, muonPosCorr, muonNegCorr,Zcorr;
+
+      //      cout << "fMuNeg_pt " << fMuNeg_pt << " fMuNeg_eta " << fMuNeg_eta << " fMuNeg_phi " << fMuNeg_phi << endl;
+      //      cout << "fMuPos_pt " << fMuPos_pt << " fMuPos_eta " << fMuPos_eta << " fMuPos_phi " << fMuPos_phi << endl;
+
+      muonNeg.SetPtEtaPhiM( fMuNeg_pt, fMuNeg_eta, fMuNeg_phi, 0);
+      muonPos.SetPtEtaPhiM( fMuPos_pt, fMuPos_eta, fMuPos_phi, 0);
+      Zorg=muonPos+muonNeg;
+
+      getPtMuonCorrrection(muonNeg , fMuNeg_charge, fData);
+      getPtMuonCorrrection(muonPos , fMuPos_charge, fData);
+
+      Zcorr = muonNeg + muonPos;
+
+      /////
+
+      //----------------------------
+      //those things below are used for the selection of events
+      // rescale the relIso
+      fMuPosReliso = fMuPosReliso*(fMuPos_pt/muonPos.Pt());
+      fMuNegReliso = fMuNegReliso*(fMuNeg_pt/muonNeg.Pt());
+      // adjust the pt
+      fMuPos_pt = muonPos.Pt();
+      fMuNeg_pt = muonNeg.Pt();
+      // adjust the Zmass
+      fZmass = Zcorr.M();
+
+      fZrecoPt = Zcorr.Pt();
+      fZrecoPhi = Zcorr.Phi();
+      fZrecoRap = Zcorr.Rapidity();
+
+      // cout << "fZmass " << fZmass << endl;
+
+      //----------------------------
+      // those only on DATA since for the MC are used the Gen
+      if(fData) fZPt = Zcorr.Pt();
+      if(fData) fZPhi = Zcorr.Phi();
+      if(fData) fZRap = Zcorr.Rapidity();
+
+    }
 
     /*
     if(doRoch_corr) {
@@ -6571,6 +6734,9 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
   muoncor44X = new rochcor_44X_v3();
   */
 
+  bool thisISDATA=true;
+  if(MCtype!=2)  thisISDATA=false;
+  setUpMuonCorrection(thisISDATA);
  
   startTreeEntries = startEntries;
 
@@ -6582,7 +6748,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
   //  TString name="recoilfits/recoilfit_JAN22_MADtoMAD";
   //  TString name="recoilfits/recoilfit_JAN22_POWtoMAD";
   //  TString name="recoilfits/recoilfit_JAN28";
-  TString name="recoilfits/recoilfit_APR29";
+  TString name="recoilfits/recoilfit_MAY2";
   if(do8TeV) name +="_8TeV";
   if(doABC) name +="_ABC";
 
@@ -6608,13 +6774,20 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
     // 44X
     //    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");
     // 53X
-    //    if(doMad && !do8TeV )  fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");  
-    //    if(!doMad && !do8TeV ) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root");  
+    /*
+    if(doMad && !do8TeV )  fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    if(!doMad && !do8TeV ) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root");
+    */
 
     if(!do8TeV && !doClosure)  {
-      fDataFile = TFile::Open(Form("TREE/output_skimmedTree_mad%d_Y%d_iter0.root",doMad,fId));
-      cout << " reading TREE/output_skimmedTree_mad" << doMad << "_Y" << fId << "_iter0.root" << endl;
+      /*HERE THE RAW muon*/
+      //      fDataFile = TFile::Open(Form("TREE/output_skimmedTree_mad%d_Y%d_iter0.root",doMad,fId));
+      //      cout << " reading TREE/output_skimmedTree_mad" << doMad << "_Y" << fId << "_iter0.root" << endl;
+      /**/
+      fDataFile = TFile::Open(Form("TREE/skimmedTree_Y%d_mad%d_doKalmanCorr1_iter0_writeTree_1.root",fId,doMad));
+      cout << " reading TREE/skimmedTree_Y" << fId << "_mad" << doMad << "_doKalmanCorr1_iter0_writeTree_1.root" << endl;
     } 
+
 
     /*
     if(doClosure && !do8TeV)   {
@@ -6624,11 +6797,20 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
     */
 
     if(doClosure && !do8TeV)   {
+      /*
       //      fDataFile = TFile::Open(Form("TREE/output_mad%d_POWasMAD_onlyU20_onlyU10_iParamU1%d_iParamU2%d_iter1_march26.root",doMad,iParamU1,iParamU2)); // closure vs DATA
       fDataFile = TFile::Open(Form("TREE/output_Y%d_mad%d_POWasMAD_onlyU20_onlyU10_iParamU1%d_iParamU2%d_iter1_apr13.root",fId,doMad,iParamU1,iParamU2)); // closure vs DATA
       cout << " reading TREE/output_mad" << doMad << "_POWasMAD_onlyU20_onlyU10_iParamU1" << iParamU1 << "_iParamU2" << iParamU2 << "_iter1_apr13.root"<< endl;
       //      fDataFile = TFile::Open(Form("TREE/output_mad%d_POWasMAD_onlyU20_onlyU10_iter1_feb16.root",doMad)); // closure vs DATA
       //      cout << " reading TREE/output_mad" << doMad << "_POWasMAD_onlyU20_onlyU10_iter1_feb16.root"<< endl;
+      */
+
+      if(!doMad) fDataFile = TFile::Open(Form("TREE/output_Y%d_mad%d_POWasMAD_onlyU20_onlyU10_iParamU1%d_iParamU2%d_iter1_may2.root",fId,doMad,iParamU1,iParamU2)); // closure POW vs MAD
+      if(!doMad) cout << " reading TREE/output_mad" << doMad << "_POWasMAD_onlyU20_onlyU10_iParamU1" << iParamU1 << "_iParamU2" << iParamU2 << "_iter1_may2.root"<< endl;
+
+      if(doMad) fDataFile = TFile::Open(Form("TREE/output_Y%d_mad%d_MADasMAD_onlyU20_onlyU10_iParamU1%d_iParamU2%d_iter1_may2.root",fId,doMad,iParamU1,iParamU2)); // closure MAD vs MAD
+      if(doMad) cout << " reading TREE/output_mad" << doMad << "_MADasMAD_onlyU20_onlyU10_iParamU1" << iParamU1 << "_iParamU2" << iParamU2 << "_iter1_may2.root"<< endl;
+
     }
 
     fDataTree = (TTree*) fDataFile->FindObjectAny("ZTreeProducer");
@@ -6651,14 +6833,16 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 			    lpdfMCU1, lwMCU1, lpdfMCU2, lwMCU2,
 			    ////			    "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
 			    //			    "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
-			    "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
+			    //			    "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
+			    "../../recoilfit_MAY2_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
 
       if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,lZMU1RMS3Fit,lZMU1FracFit,lZMU1Mean1Fit, lZMU1Mean2Fit,
 			   lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,lZMU2RMS3Fit,lZMU2FracFit,lZMU2Mean1Fit, lZMU2Mean2Fit,
 			   lpdfMCU1, lwMCU1, lpdfMCU2, lwMCU2,
 			   //			   "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 			   //			   "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
-			   "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
+			   //			   "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
+			   "../../recoilfit_MAY2_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 
       isMC=false;
   
@@ -6678,8 +6862,8 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 		 lpdfDATAU1, lwDATAU1, lpdfDATAU2, lwDATAU2,
 		 //		 "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 		 //		 "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
-		 "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
-
+		 //		 "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
+		 "../../recoilfit_MAY2_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
       /*
       // POWHEG as DATA closure
       if(!doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,lZDU1Mean1Fit, lZDU1Mean2Fit,
