@@ -24,7 +24,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("LHESource",
-    fileNames = cms.untracked.vstring('file:/afs/cern.ch/work/a/avartak/public/ZGammaFiles/z1jet_LO_pT250.lhe')
+    fileNames = cms.untracked.vstring('file:/afs/cern.ch/work/a/avartak/public/MadGraph/z1jetLO/pt200to225/z1jet.lhe')
 )
 
 process.options = cms.untracked.PSet(
@@ -66,6 +66,7 @@ process.generator = cms.EDFilter("Pythia8HadronizerFilter",
     PythiaParameters = cms.PSet(
         pythia8aMCatNLOSettingsBlock,
         processParameters = cms.vstring(
+            '23:onMode = off',
             '23:onIfAny = 12',
             '23:onIfAny = 14',
             '23:onIfAny = 16',
