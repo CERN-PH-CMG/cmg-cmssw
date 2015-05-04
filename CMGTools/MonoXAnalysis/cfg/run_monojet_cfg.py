@@ -30,6 +30,7 @@ lepAna.miniIsolationVetoLeptons = None # use 'inclusive' to veto inclusive lepto
 # switch off slow photon MC matching
 photonAna.do_mc_match = False
 
+
 ##------------------------------------------
 ##  TOLOLOGIAL VARIABLES: RAZOR
 ##------------------------------------------
@@ -40,7 +41,7 @@ monoXRazorAna = cfg.Analyzer(
     )
 
 ##------------------------------------------
-##  TOLOLOGIAL VARIABLES: MT, MT2
+##  TOLOLOGIAL VARIABLES: MT2
 ##------------------------------------------
 from CMGTools.TTHAnalysis.analyzers.ttHTopoVarAnalyzer import ttHTopoVarAnalyzer
 ttHTopoJetAna = cfg.Analyzer(
@@ -48,11 +49,12 @@ ttHTopoJetAna = cfg.Analyzer(
     doOnlyDefault = True
     )
 
-from CMGTools.TTHAnalysis.analyzers.ttHMT2Control import ttHMT2Control
-ttHMT2ControlAna = cfg.Analyzer(
-    ttHMT2Control, name = 'ttHMT2Control',
-
+from PhysicsTools.Heppy.analyzers.eventtopology.MT2Analyzer import MT2Analyzer
+monoXMT2Ana = cfg.Analyzer(
+    MT2Analyzer, name = 'MT2Analyzer',
+    doOnlyDefault = False
     )
+
 ##------------------------------------------
 ##  TOLOLOGIAL VARIABLES: ALPHAT
 ##------------------------------------------
@@ -114,8 +116,7 @@ selectedComponents = backgroundSamples + signalSamples
 #-------- SEQUENCE
 sequence = cfg.Sequence(dmCoreSequence+[
     monoXRazorAna,
-    ttHMT2ControlAna,
-    ttHTopoJetAna,
+    monoXMT2Ana,
     ttHFatJetAna,
     ttHAlphaTAna,
     ttHAlphaTControlAna,
