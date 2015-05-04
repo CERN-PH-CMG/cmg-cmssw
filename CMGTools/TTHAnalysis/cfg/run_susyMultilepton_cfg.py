@@ -25,7 +25,7 @@ lepAna.miniIsolationPUCorr = 'rhoArea'
 lepAna.miniIsolationVetoLeptons = None # use 'inclusive' to veto inclusive leptons and their footprint in all isolation cones
     
 # Lepton Preselection
-lepAna.loose_electron_id = "POG_MVA_ID_Run2_NonTrig_Loose"
+lepAna.loose_electron_id = "POG_MVA_ID_Run2_NonTrig_VLoose"
 
 isolation = "relIso03"
 #isolation = "ptRel"
@@ -89,7 +89,7 @@ susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna),
 from CMGTools.TTHAnalysis.analyzers.ttHDeclusterJetsAnalyzer import ttHDeclusterJetsAnalyzer
 ttHDecluster = cfg.Analyzer(
     ttHDeclusterJetsAnalyzer, name='ttHDecluster',
-    lepCut     = lambda lep,ptrel : lep.pt() > 10 and lep.relIso03 > 0.2 and ptrel > 5,
+    lepCut     = lambda lep,ptrel : lep.pt() > 10,
     maxSubjets = 6, # for exclusive reclustering
     ptMinSubjets = 5, # for inclusive reclustering
     drMin      = 0.2, # minimal deltaR(l,subjet) required for a successful subjet match
@@ -101,6 +101,10 @@ ttHDecluster = cfg.Analyzer(
     pruneZCut       = 0.1, # pruning parameters (usual value in CMS: 0.1)
     pruneRCutFactor = 0.5, # pruning parameters (usual value in CMS: 0.5)
     verbose     = 0,   # print out the first N leptons
+    jetCut = lambda jet : jet.pt() > 20,
+    mcPartonPtCut = 20,
+    mcLeptonPtCut =  5,
+    mcTauPtCut    = 15,
     )
 susyCoreSequence.insert(susyCoreSequence.index(ttHFatJetAna)+1, ttHDecluster)
 
@@ -140,17 +144,20 @@ triggerFlagsAna.triggerBits = {
 from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
 from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14v2 import SingleMu
 
-# selectedComponents = [
-#   ] + WJetsToLNuHT + DYJetsM50HT + [DYJetsToLL_M50,
-#    TTJets ]+ SingleTop +[
-#    TTWJets,TTZJets, TTH,
-#    WZJetsTo3LNu, ZZTo4L,
-#    GGHZZ4L,
-#    SMS_T1tttt_2J_mGl1500_mLSP100, SMS_T1tttt_2J_mGl1200_mLSP800
-# ]
-
 selectedComponents = [
-  ] + WJetsToLNuHT + [TTJets, TTH, SMS_T1tttt_2J_mGl1500_mLSP100, SMS_T1tttt_2J_mGl1200_mLSP800, T5ttttDeg_mGo1000_mStop300_mCh285_mChi280, T5ttttDeg_mGo1000_mStop300_mCh285_mChi280_dil, TTWJets, TTZJets, WZJetsTo3LNu]
+  ] + WJetsToLNuHT + DYJetsM50HT + [ #DYJetsToLL_M50,
+   TTJets ]+ SingleTop +[
+   TTWJets,TTZJets, TTH,
+   WZJetsTo3LNu, ZZTo4L,
+   #GGHZZ4L, GGHTT, VBFTT, 
+   SMS_T1tttt_2J_mGl1500_mLSP100, SMS_T1tttt_2J_mGl1200_mLSP800,
+   T5ttttDeg_mGo1000_mStop300_mCh285_mChi280, T5ttttDeg_mGo1000_mStop300_mCh285_mChi280_dil,
+   T5qqqqWW_mGo1200_mCh1000_mChi800_dilep, T5qqqqWWDeg_mGo1000_mCh315_mChi300_dilep
+]
+if False:
+    ttHLepSkim.minLeptons = 1
+    QCDPtEMEnriched.remove(QCD_Pt10to20_EMEnriched)
+    selectedComponents = [ QCD_Mu15 ] + QCD_Mu5 + QCDPtEMEnriched + QCDPtbcToE
 
 
 # -- fine splitting, for some private MC samples with a single file
@@ -176,6 +183,8 @@ if test == '1':
     comp = TTH
     if getHeppyOption('T1tttt'):
         comp = SMS_T1tttt_2J_mGl1500_mLSP100
+    if getHeppyOption('H4L'):
+        comp = GGHZZ4L
     comp.files = comp.files[:1]
     comp.splitFactor = 1
     if not getHeppyOption('single'):
@@ -204,6 +213,11 @@ elif test == 'SingleMu':
     comp.files = comp.files[:1]
     comp.splitFactor = 1
     selectedComponents = [ comp ]
+elif test == '3':
+    for comp in selectedComponents:
+        comp.files = comp.files[:1]
+        comp.splitFactor = 1
+        comp.fineSplitFactor = 4
 elif test == '5':
     for comp in selectedComponents:
         comp.files = comp.files[:5]
