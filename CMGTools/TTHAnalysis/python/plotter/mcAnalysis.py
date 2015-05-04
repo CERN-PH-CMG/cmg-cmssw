@@ -256,8 +256,8 @@ class MCAnalysis:
             if key != 'data':
                 if self._isSignal[key]: allSig.append((key,reports[key]))
                 else: allBg.append((key,reports[key]))
-        allSig.sort(key = lambda (n,v): self._rank[n], reverse = True)
-        allBg.sort( key = lambda (n,v): self._rank[n], reverse = True)
+        allSig.sort(key = lambda (n,v): self._rank[n])
+        allBg.sort( key = lambda (n,v): self._rank[n])
         table = allSig + allBg
         if makeSummary:
             if len(allSig)>1:
