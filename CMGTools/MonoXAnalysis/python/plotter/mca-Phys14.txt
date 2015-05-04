@@ -5,7 +5,7 @@ M10V+:    Monojet_M_10_V   : 1.0; FillColor=ROOT.kRed-9, Label="MJ^{V} 10 GeV"
 
 #M1AV+:    Monojet_M_1_AV    : 1.0; FillColor=ROOT.kViolet-9, Label="MJ^{AV} 1 GeV"
 #M10AV+:   Monojet_M_10_AV   : 1.0; FillColor=ROOT.kViolet-8, Label="MJ^{AV} 10 GeV"
-M100AV+:     Monojet_M_100_AV  : 1.0; FillColor=ROOT.kViolet-7, Label="MJ^{AV} 100 GeV"
+#M100AV+:     Monojet_M_100_AV  : 1.0; FillColor=ROOT.kViolet-7, Label="MJ^{AV} 100 GeV"
 #M1000AV+: Monojet_M_1000_AV : 1.0; FillColor=ROOT.kViolet-6, Label="MJ^{AV} 1000 GeV"
 
 # -- Z->nunu Background --
