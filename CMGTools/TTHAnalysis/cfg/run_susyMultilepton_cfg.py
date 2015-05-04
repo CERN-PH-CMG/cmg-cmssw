@@ -25,7 +25,7 @@ lepAna.miniIsolationPUCorr = 'rhoArea'
 lepAna.miniIsolationVetoLeptons = None # use 'inclusive' to veto inclusive leptons and their footprint in all isolation cones
     
 # Lepton Preselection
-lepAna.loose_electron_id = "POG_MVA_ID_Run2_NonTrig_Loose"
+lepAna.loose_electron_id = "POG_MVA_ID_Run2_NonTrig_VLoose"
 
 isolation = "relIso03"
 #isolation = "ptRel"
@@ -144,17 +144,20 @@ triggerFlagsAna.triggerBits = {
 from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
 from CMGTools.TTHAnalysis.samples.samples_13TeV_CSA14v2 import SingleMu
 
-# selectedComponents = [
-#   ] + WJetsToLNuHT + DYJetsM50HT + [DYJetsToLL_M50,
-#    TTJets ]+ SingleTop +[
-#    TTWJets,TTZJets, TTH,
-#    WZJetsTo3LNu, ZZTo4L,
-#    GGHZZ4L,
-#    SMS_T1tttt_2J_mGl1500_mLSP100, SMS_T1tttt_2J_mGl1200_mLSP800
-# ]
-
 selectedComponents = [
-  ] + WJetsToLNuHT + [TTJets, TTH, SMS_T1tttt_2J_mGl1500_mLSP100, SMS_T1tttt_2J_mGl1200_mLSP800, T5ttttDeg_mGo1000_mStop300_mCh285_mChi280, T5ttttDeg_mGo1000_mStop300_mCh285_mChi280_dil, TTWJets, TTZJets, WZJetsTo3LNu]
+  ] + WJetsToLNuHT + DYJetsM50HT + [ #DYJetsToLL_M50,
+   TTJets ]+ SingleTop +[
+   TTWJets,TTZJets, TTH,
+   WZJetsTo3LNu, ZZTo4L,
+   #GGHZZ4L, GGHTT, VBFTT, 
+   SMS_T1tttt_2J_mGl1500_mLSP100, SMS_T1tttt_2J_mGl1200_mLSP800,
+   T5ttttDeg_mGo1000_mStop300_mCh285_mChi280, T5ttttDeg_mGo1000_mStop300_mCh285_mChi280_dil,
+   T5qqqqWW_mGo1200_mCh1000_mChi800_dilep, T5qqqqWWDeg_mGo1000_mCh315_mChi300_dilep
+]
+if False:
+    ttHLepSkim.minLeptons = 1
+    QCDPtEMEnriched.remove(QCD_Pt10to20_EMEnriched)
+    selectedComponents = [ QCD_Mu15 ] + QCD_Mu5 + QCDPtEMEnriched + QCDPtbcToE
 
 
 # -- fine splitting, for some private MC samples with a single file
