@@ -63,7 +63,7 @@ for f in Loop/mt2*.root
 do
    ff=`basename $f | cut -d . -f 1`
    #d=`echo $f | cut -d / -f 2`
-   gfal-mkdir {srm}
+   gfal-mkdir -p {srm}
    echo "gfal-copy file://`pwd`/Loop/$ff.root {srm}/${{ff}}_{idx}.root"
    gfal-copy file://`pwd`/Loop/$ff.root {srm}/${{ff}}_{idx}.root
    if [ $? -ne 0 ]; then
