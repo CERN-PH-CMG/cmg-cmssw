@@ -74,7 +74,6 @@ tauAna.tauAntiElectronID = "againstElectronLoose"
 photonAna.etaCentral = 2.5
 photonAna.gammaID = "PhotonCutBasedIDLoose_CSA14"
 photonAna.do_randomCone = True
-#photonAna.do_mc_match = False
 
 # Isolated Track
 isoTrackAna.setOff=False
@@ -99,7 +98,7 @@ ttHMT2Control = cfg.Analyzer(
             )
 
 ##------------------------------------------
-##  TOLOLOGIAL VARIABLES: MT, MT2
+##  TOLOLOGIAL VARIABLES: minMT, MT2
 ##------------------------------------------
 
 from CMGTools.TTHAnalysis.analyzers.ttHTopoVarAnalyzer import ttHTopoVarAnalyzer
@@ -108,6 +107,13 @@ ttHTopoJetAna = cfg.Analyzer(
             ttHTopoVarAnalyzer, name = 'ttHTopoVarAnalyzer',
             doOnlyDefault = True
             )
+
+from PhysicsTools.Heppy.analyzers.eventtopology.MT2Analyzer import MT2Analyzer
+
+MT2Ana = cfg.Analyzer(
+    MT2Analyzer, name = 'MT2Analyzer',
+    doOnlyDefault = True
+    )
 
 ##------------------------------------------
 ##  Z skim
@@ -173,6 +179,7 @@ susyCoreSequence.insert(susyCoreSequence.index(skimAnalyzer),
 sequence = cfg.Sequence(
     susyCoreSequence+[
     ttHMT2Control,
+    MT2Ana,
     ttHTopoJetAna,
     ttHFatJetAna,
     treeProducer,
@@ -180,6 +187,14 @@ sequence = cfg.Sequence(
 
 ###---- to switch off the compression
 #treeProducer.isCompressed = 0
+
+
+treeProducer.treename = 'mt2'
+doSpecialSettingsForMECCA = 0
+if doSpecialSettingsForMECCA==1:
+    jetAna.doQG = False
+    photonAna.do_randomCone = False
+    photonAna.do_mc_match = False
 
 
 
