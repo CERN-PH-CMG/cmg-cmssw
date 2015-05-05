@@ -133,7 +133,7 @@ sequence = cfg.Sequence(dmCoreSequence+[
 #-------- HOW TO RUN ----------- 
 from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
 #test = getHeppyOption('test')
-test = '1'
+test = 'SR'
 if test == '1':
     comp = Monojet_M_1000_AV
     monoJetSkim.metCut = 200
@@ -195,19 +195,6 @@ elif test == 'monojet-synch': # sync
     comp.fineSplitFactor = 1
     monoJetSkim.metCut = 0
     selectedComponents = [ comp ]
-elif test == 'Wctrl':
-    #selectedComponents = [ WJetsToLNu_HT100to200, WJetsToLNu_HT200to400 ]
-    selectedComponents = WJetsToLNuHT
-    for comp in selectedComponents:
-        comp.splitFactor = 300
-    monoJetSkim.metCut = 0
-    monoJetCtrlLepSkim.minLeptons = 1
-    # if not getHeppyOption('all'):
-    #     for comp in selectedComponents:
-    #         comp.files = comp.files[:1]
-    #         #    comp.files = [ 'root://eoscms//eos/cms/store/mc/Phys14DR//WJetsToLNu_HT-100to200_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/FACF4684-5377-E411-8F81-002590DB0640.root' ]
-    #         comp.splitFactor = 1
-    #         comp.fineSplitFactor = 1 if getHeppyOption("single") else 4
 elif test == 'SR':
     selectedComponents = backgroundSamples + signalSamples
     monoJetSkim.metCut = 200
