@@ -9,6 +9,31 @@ MODULES = []
 #MODULES.append( ('2lss', EventVars2LSS()) )
 from CMGTools.TTHAnalysis.tools.susyVars_2lssInc import SusyVars2LSSInc 
 MODULES.append( ('susy2lss', SusyVars2LSSInc()) )
+from CMGTools.TTHAnalysis.tools.leptonJetReCleaner import LeptonJetReCleaner,_susy2lss_lepId_CB,_susy2lss_lepId_CBloose,_susy2lss_multiIso,_tthlep_lepId
+#--- TTH instances
+MODULES.append( ('leptonJetReCleanerTTH', LeptonJetReCleaner("I03Sip8", 
+                lambda lep : lep.relIso03 < 0.5 and lep.sip3d < 8 and _tthlep_lepId(lep), 
+                lambda lep : lep.mvaTTH > 0.6 and lep.mediumMuonId,
+                cleanJet = lambda lep,jet,dr : (lep.pt > 10 and dr < 0.4)) ))
+MODULES.append( ('leptonJetReCleanerTTH', LeptonJetReCleaner("MiniSip8", 
+                lambda lep : lep.miniRelIso < 0.4 and lep.sip3d < 8 and _tthlep_lepId(lep), 
+                lambda lep : lep.mvaTTH > 0.6 and lep.mediumMuonId,
+                cleanJet = lambda lep,jet,dr : (lep.pt > 10 and dr < 0.4)) ))
+#--- Susy multilep instances
+MODULES.append( ('leptonJetReCleanerSusy', LeptonJetReCleaner("Mini", 
+                lambda lep : lep.miniRelIso < 0.4 and _susy2lss_lepId_CBloose(lep), 
+                lambda lep : lep.sip3d < 4 and _susy2lss_multiIso(lep) and _susy2lss_lepId_CB(lep),
+                cleanJet = lambda lep,jet,dr : (lep.pt > 10 and dr < 0.4)) ))
+from CMGTools.TTHAnalysis.tools.leptonFakeRateQCDVars import LeptonFakeRateQCDVars
+#--- TTH instances
+MODULES.append( ('leptonFakeRateQCDVarsTTH', LeptonFakeRateQCDVars(
+                lambda lep : lep.sip3d < 8 and lep.relIso03 < 0.5 and _tthlep_lepId(lep),
+                lambda jet, lep, dr : jet.pt > (20 if abs(jet.eta)<2.4 else 30) and dr > 0.7) ) )
+#--- Susy multilep instances
+MODULES.append( ('leptonFakeRateQCDVarsSusy', LeptonFakeRateQCDVars(
+                lambda lep : lep.miniRelIso < 0.4 and _susy2lss_lepId_CBloose(lep),
+                lambda jet, lep, dr : jet.pt > (20 if abs(jet.eta)<2.4 else 30) and dr > 0.7) ) )
+
 #from CMGTools.TTHAnalysis.tools.finalMVA_2lss import FinalMVA_2LSS
 #MODULES.append( ('2lss_mva', FinalMVA_2LSS()) )
 #from CMGTools.TTHAnalysis.tools.finalMVA_3l import FinalMVA_3L
