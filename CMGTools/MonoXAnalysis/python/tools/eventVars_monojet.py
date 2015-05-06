@@ -51,9 +51,9 @@ class EventVarsMonojet:
         jets = [j for j in Collection(event,"Jet","nJet")]
         njet = len(jets)
         ret['dphijj'] = deltaPhi(jets[0],jets[1]) if njet >= 2 else 999 
-        if njets >= 1:
+        if njet >= 1:
             jclean = jets[0].chHEF > 0.2 and jets[0].neHEF < 0.7 and jets[0].phEF < 0.7
-            if njets >= 2:
+            if njet >= 2:
                 jclean = jclean and jets[0].neHEF < 0.7 and jets[0].phEF < 0.9
             ret['jetclean'] = jclean
         return ret

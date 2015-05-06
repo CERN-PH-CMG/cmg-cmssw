@@ -3,10 +3,10 @@
 WHAT=$1; if [[ "$1" == "" ]]; then echo "monojet.sh <what>"; exit 1; fi
 
 if [[ "$HOSTNAME" == "cmsphys06" ]]; then
-    T="/data1/emanuele/monox/TREES_040515_MET200SKIM";
+    T="/data1/emanuele/monox/TREES_060515_MET200SKIM";
     J=6;
 else
-    T="/cmshome/dimarcoe/TREES_040515_MET200SKIM";
+    T="/cmshome/dimarcoe/TREES_060515_MET200SKIM";
     J=6;
 fi
 COREOPT="-P $T --s2v -j $J -l 5.0"
