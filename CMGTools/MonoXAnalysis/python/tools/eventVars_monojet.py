@@ -3,7 +3,7 @@ from CMGTools.TTHAnalysis.treeReAnalyzer import *
 class EventVarsMonojet:
     def __init__(self):
         self.branches = [ "nMu10V", "nMu20T", "nEle10V", "nEle20T", "nTau15V", "nGamma15V", "nGamma175T",
-                          "dphijj"]
+                          "dphijj","jetclean"]
     def listBranches(self):
         return self.branches[:]
     # physics object multiplicity with the monojet analysis specific selections
@@ -49,8 +49,13 @@ class EventVarsMonojet:
         ret['nGamma175T'] = sum([(int(self.gammaIdTight(p))) for p in photons ])
         # event variables for the monojet analysis
         jets = [j for j in Collection(event,"Jet","nJet")]
-        njets = len(jets)
-        ret['dphijj'] = deltaPhi(jets[0],jets[1]) if njets >= 2 else 999 
+        njet = len(jets)
+        ret['dphijj'] = deltaPhi(jets[0],jets[1]) if njet >= 2 else 999 
+        if njets >= 1:
+            jclean = jets[0].chHEF > 0.2 and jets[0].neHEF < 0.7 and jets[0].phEF < 0.7
+            if njets >= 2:
+                jclean = jclean and jets[0].neHEF < 0.7 and jets[0].phEF < 0.9
+            ret['jetclean'] = jclean
         return ret
 
 if __name__ == '__main__':
