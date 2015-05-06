@@ -106,15 +106,25 @@ def stackRocks(outname,outfile,rocs,xtit,ytit,options):
     c1 = ROOT.TCanvas("roc_canvas","roc_canvas")
     c1.SetGridy(options.showGrid)
     c1.SetGridx(options.showGrid)
-    allrocs.Draw("APL");
-    allrocs.GetXaxis().SetTitle(xtit)
-    allrocs.GetYaxis().SetTitle(ytit)
-    if options.xrange:
-        allrocs.GetXaxis().SetRangeUser(options.xrange[0], options.xrange[1])
-    if options.yrange:
-        allrocs.GetYaxis().SetRangeUser(options.yrange[0], options.yrange[1])
     c1.SetLogx(options.logx)
-    allrocs.Draw()
+    if options.xrange and options.yrange:
+        frame = ROOT.TH1F("frame","frame",1000,options.xrange[0], options.xrange[1])
+        frame.GetXaxis().SetTitle(xtit)
+        frame.GetYaxis().SetTitle(ytit)
+        frame.GetYaxis().SetRangeUser(options.yrange[0], options.yrange[1])
+        frame.GetYaxis().SetDecimals(True)
+        frame.Draw();
+        for title,roc in rocs:
+            roc.Draw(roc.style+" SAME")
+    else:
+        allrocs.Draw("APL");
+        allrocs.GetXaxis().SetTitle(xtit)
+        allrocs.GetYaxis().SetTitle(ytit)
+        allrocs.GetYaxis().SetDecimals(True)
+        if options.xrange:
+            allrocs.GetXaxis().SetRangeUser(options.xrange[0], options.xrange[1])
+        if options.yrange:
+            allrocs.GetYaxis().SetRangeUser(options.yrange[0], options.yrange[1])
     leg = doLegend(rocs)
     if options.fontsize: leg.SetTextSize(options.fontsize)
     c1.Print(outname.replace(".root","")+".png")
@@ -146,6 +156,7 @@ if __name__ == "__main__":
     outname  = options.out if options.out else (args[2].replace(".txt","")+".root")
     outfile  = ROOT.TFile(outname,"RECREATE")
     ROOT.gROOT.ProcessLine(".x tdrstyle.cc")
+    ROOT.gStyle.SetOptStat(0)
     pmaps = [  mca.getPlots(p,cut,makeSummary=True) for p in plots ]
     if len(signals+backgrounds)>2 and "variable" in options.groupBy:
         for ip,plot in enumerate(plots):
@@ -156,7 +167,7 @@ if __name__ == "__main__":
                 mytitle = ""; ptitle = None
                 if len(signals)>1 and len(backgrounds)==1:
                     mytitle = mca.getProcessOption(sig,"Label",sig); ptitle = sig
-                elif len(signal) == 1 and len(backgrounds)>1: 
+                elif len(signals) == 1 and len(backgrounds)>1: 
                     mytitle = mca.getProcessOption(bkg,"Label",bkg); ptitle = bkg
                 else:
                     mytitle = "%s/%s" % (mca.getProcessOption(sig,"Label",sig),mca.getProcessOption(bkg,"Label",bkg)) 

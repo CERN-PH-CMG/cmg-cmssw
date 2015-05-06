@@ -18,7 +18,57 @@ class ttHDeclusterJetsAnalyzer( Analyzer ):
     def beginLoop(self, setup):
         super(ttHDeclusterJetsAnalyzer,self).beginLoop(setup)
 
-    def process(self, event):
+    def partonCount(self, event):
+        if not self.cfg_comp.isMC: return True
+        partons = [ p for p in event.generatorSummary if abs(p.pdgId()) in [1,2,3,4,5,21,22] and p.pt() > self.cfg_ana.mcPartonPtCut ]
+        leptons = [ l for l in event.genleps + event.gentauleps if l.pt() > self.cfg_ana.mcLeptonPtCut ]
+        taus    = [ t for t in event.gentaus if t.pt() > self.cfg_ana.mcTauPtCut ]
+        for i,j in enumerate(event.jets):
+            j.mcNumPartons = sum([(deltaR(p,j) < 0.4) for p in partons ])
+            j.mcNumLeptons = sum([(deltaR(p,j) < 0.4) for p in leptons ])
+            j.mcNumTaus    = sum([(deltaR(p,j) < 0.4) for p in taus    ])
+            p4any = None 
+            for p in partons+leptons+taus:
+                if deltaR(p,j) < 0.4:
+                    p4any = p.p4() + p4any if p4any != None else p.p4()
+            j.mcAnyPartonMass = p4any.M() if p4any != None else 0.0
+            #print "Jet %3d of pt %8.2f, eta %+5.2f, mass %6.2f has %2d/%1d/%1d p/l/t for a total inv mass of %8.2f" % (
+            #            i, j.pt(), j.eta(), j.mass(), j.mcNumPartons, j.mcNumLeptons, j.mcNumTaus, j.mcAnyPartonMass)
+
+    def processJets(self, event):
+        for j in event.jets:
+            j.prunedMass = j.mass()
+            j.nSubJets   = 1
+            j.nSubJets25 = 1 if j.pt() > 25 else 0
+            j.nSubJets30 = 1 if j.pt() > 30 else 0
+            j.nSubJets40 = 1 if j.pt() > 40 else 0
+            j.nSubJetsZ01 = 1
+            if not self.cfg_ana.jetCut(j): 
+                continue
+            objects  = ROOT.std.vector(ROOT.reco.Particle.LorentzVector)()
+            for idau in xrange(j.numberOfDaughters()):
+               dau = j.daughter(idau)
+               objects.push_back(dau.p4())
+            if objects.size() <= 1: continue           
+            if self.verbose: print "Jet of pt %8.2f, eta %+5.2f, mass %6.2f " % (j.pt(), j.eta(), j.mass())
+            if self.cfg_comp.isMC: 
+                if self.verbose: print "\t partons %2d, leptons %1d, taus %2d (total mass: %8.2f)" % ( j.mcNumPartons, j.mcNumLeptons, j.mcNumTaus, j.mcAnyPartonMass)
+            if self.cfg_ana.prune:
+                # kt exclusive
+                reclusterJets = ROOT.heppy.ReclusterJets(objects, 1.,10)
+                pruned = reclusterJets.getPruned(self.cfg_ana.pruneZCut,self.cfg_ana.pruneRCutFactor)
+                j.prunedP4 = pruned
+                if self.verbose: print "\t pruned mass %8.2f, ptLoss %.3f" % ( pruned.M(), pruned.Pt()/j.pt() )
+            # kt inclusive R=0.2
+            reclusterJets02 = ROOT.heppy.ReclusterJets(objects, 1.,0.2)          
+            inclusiveJets02 = reclusterJets02.getGrouping(self.cfg_ana.ptMinSubjets)
+            j.nSubJets25 = sum([(js.pt() > 25) for js in inclusiveJets02])
+            j.nSubJets30 = sum([(js.pt() > 30) for js in inclusiveJets02])
+            j.nSubJets40 = sum([(js.pt() > 40) for js in inclusiveJets02])
+            j.nSubJetsZ01 = sum([(js.pt() > 0.1*j.pt()) for js in inclusiveJets02])
+            if self.verbose: print "\t subjets: \n\t\t%s" % ("\n\t\t".join(["pt %8.2f, mass %6.2f" % (js.pt(),js.M()) for js in inclusiveJets02]))
+
+    def processLeptons(self, event):
         event.recoveredJets = []
         event.recoveredSplitJets = []
         for l in event.selectedLeptons:
@@ -92,6 +142,7 @@ class ttHDeclusterJetsAnalyzer( Analyzer ):
                          print "    exclusive subjet %d/%d: pt %6.1f, mass %6.2f (pruned %6.2f), dr(lep) = %.3f, ptRel v1 = %5.1f (pruned %5.1f), ptF = %5.2f (pruned %5.2f)" % (isub,nsub, sj.pt(), sj.mass(), pM, dr, ptR, ppR, ptF, ppF)
                       else:
                          print "    exlcusive subjet %d/%d: pt %6.1f, mass %6.2f, dr(lep) = %.3f, ptRel v1 = %5.1f, ptF = %5.2f" % (isub,nsub, sj.pt(), sj.mass(), dr, ptR, ptF)
+               if ibest == -1: continue
                sj = exclusiveJets[ibest]
                dr  = deltaR(l.eta(),l.phi(),sj.eta(),sj.phi())
                ptR = ptRelv1(l.p4(),sj)
@@ -151,70 +202,31 @@ class ttHDeclusterJetsAnalyzer( Analyzer ):
                       print "    inclusive subjet %d/%d: pt %6.1f, mass %6.2f (pruned %6.2f), dr(lep) = %.3f, ptRel v1 = %5.1f (pruned %5.1f), ptF = %5.2f (pruned %5.2f)" % (isub,nsub, ij.pt(), ij.mass(), pM, dr, ptR, ppR, ptF, ppF)
                    else:
                       print "    inclusive subjet %d/%d: pt %6.1f, mass %6.2f, dr(lep) = %.3f, ptRel v1 = %5.1f, ptF = %5.2f" % (isub,nsub, ij.pt(), ij.mass(), dr, ptR, ptF)
-            ij = inclusiveJets02[ibest]
-            dr  = deltaR(l.eta(),l.phi(),ij.eta(),ij.phi())
-            ptR = ptRelv1(l.p4(),ij)
-            ptF = l.pt()/ij.pt()
-            l.jetDec02DR      = dr 
-            l.jetDec02PtRatio = ptF
-            l.jetDec02PtRel   = ptR
-            if self.cfg_ana.prune:
-               pp4 = reclusterJets02.getPrunedSubjetInclusive(ibest,self.cfg_ana.pruneZCut,self.cfg_ana.pruneRCutFactor)
-               ppF = l.pt()/pp4.pt()
-               ppR = ptRelv1(l.p4(),pp4)
-               pM  = pp4.mass()
-               l.jetDec02PrunedPtRatio = ppF #l.pt()/pp4.pt()
-               l.jetDec02PrunedMass    = pM  #l.jet.mass()
-            if self.verbose:
-               if self.cfg_ana.prune:
-                  print "    best inclusive subject %d/%d: pt %6.1f, mass %6.2f (pruned %6.2f), dr(lep) = %.3f, ptRel v1 = %5.1f (pruned %5.1f), ptF = %5.2f (pruned %5.2f)" % (ibest,nsub, ij.pt(), ij.mass(), pM, dr, ptR, ppR, ptF, ppF)
-               else:
-                  print "    best inclusive subject %d/%d: pt %6.1f, mass %6.2f, dr(lep) = %.3f, ptRel v1 = %5.1f, ptF = %5.2f" % (ibest,nsub, ij.pt(), ij.mass(), dr, ptR, ptF)
+            if ibest != -1:
+                ij = inclusiveJets02[ibest]
+                dr  = deltaR(l.eta(),l.phi(),ij.eta(),ij.phi())
+                ptR = ptRelv1(l.p4(),ij)
+                ptF = l.pt()/ij.pt()
+                l.jetDec02DR      = dr 
+                l.jetDec02PtRatio = ptF
+                l.jetDec02PtRel   = ptR
+                if self.cfg_ana.prune:
+                   pp4 = reclusterJets02.getPrunedSubjetInclusive(ibest,self.cfg_ana.pruneZCut,self.cfg_ana.pruneRCutFactor)
+                   ppF = l.pt()/pp4.pt()
+                   ppR = ptRelv1(l.p4(),pp4)
+                   pM  = pp4.mass()
+                   l.jetDec02PrunedPtRatio = ppF #l.pt()/pp4.pt()
+                   l.jetDec02PrunedMass    = pM  #l.jet.mass()
+                if self.verbose:
+                   if self.cfg_ana.prune:
+                      print "    best inclusive subject %d/%d: pt %6.1f, mass %6.2f (pruned %6.2f), dr(lep) = %.3f, ptRel v1 = %5.1f (pruned %5.1f), ptF = %5.2f (pruned %5.2f)" % (ibest,nsub, ij.pt(), ij.mass(), pM, dr, ptR, ppR, ptF, ppF)
+                   else:
+                      print "    best inclusive subject %d/%d: pt %6.1f, mass %6.2f, dr(lep) = %.3f, ptRel v1 = %5.1f, ptF = %5.2f" % (ibest,nsub, ij.pt(), ij.mass(), dr, ptR, ptF)
 
-            # ##### considering candidates from the ak08 jet   
-            # if fobjects.size() <= 1: continue           
-            # # kt inclusive R=0.2
-            # reclusterFJets02 = ROOT.heppy.ReclusterJets(fobjects, 1.,0.2)          
-            
-            # # lepton-jet variable, jet is obtained from reclustering of associated akt08 jet daughters, with kt inclusive R=0.2
-            # inclusiveFJets02 = reclusterFJets02.getGrouping(self.cfg_ana.ptMinSubjets)
-            # drbest = 1; ibest = -1
-            # for isub in xrange(len(inclusiveFJets02)):
-            #     ij = inclusiveFJets02[isub]
-            #     dr  = deltaR(l.eta(),l.phi(),ij.eta(),ij.phi())
-            #     ptR = ptRelv1(l.p4(),ij)
-            #     ptF = l.pt()/ij.pt()
-            #     if dr < drbest or ibest == -1:
-            #         drbest = dr; ibest = isub
-            #     if self.cfg_ana.prune:
-            #         pp4 = reclusterFJets02.getPrunedSubjetInclusive(isub,self.cfg_ana.pruneZCut,self.cfg_ana.pruneRCutFactor)
-            #         ppF = l.pt()/pp4.pt()
-            #         ppR = ptRelv1(l.p4(),pp4)
-            #         pM  = pp4.mass()
-            #     if self.verbose:
-            #         if self.cfg_ana.prune:
-            #             print "    inclusive subjet from fj %d/%d: pt %6.1f, mass %6.2f (pruned %6.2f), dr(lep) = %.3f, ptRel v1 = %5.1f (pruned %5.1f), ptF = %5.2f (pruned %5.2f)" % (isub,nsub, ij.pt(), ij.mass(), pM, dr, ptR, ppR, ptF, ppF)
-            #         else:
-            #             print "    inclusive subjet from fj %d/%d: pt %6.1f, mass %6.2f, dr(lep) = %.3f, ptRel v1 = %5.1f, ptF = %5.2f" % (isub,nsub, ij.pt(), ij.mass(), dr, ptR, ptF)
-            # ij = inclusiveFJets02[ibest]
-            # dr  = deltaR(l.eta(),l.phi(),ij.eta(),ij.phi())
-            # ptR = ptRelv1(l.p4(),ij)
-            # ptF = l.pt()/ij.pt()
-            # l.fjetDec02DR      = dr 
-            # l.fjetDec02PtRatio = ptF
-            # l.fjetDec02PtRel   = ptR
-            # if self.cfg_ana.prune:
-            #     pp4 = reclusterFJets02.getPrunedSubjetInclusive(ibest,self.cfg_ana.pruneZCut,self.cfg_ana.pruneRCutFactor)
-            #     ppF = l.pt()/pp4.pt()
-            #     ppR = ptRelv1(l.p4(),pp4)
-            #     pM  = pp4.mass()
-            #     l.fjetDec02PrunedPtRatio = ppF #l.pt()/pp4.pt()
-            #     l.fjetDec02PrunedMass    = pM  #l.jet.mass()
-            # if self.verbose:
-            #     if self.cfg_ana.prune:
-            #         print "    best inclusive subjet from fj  %d/%d: pt %6.1f, mass %6.2f (pruned %6.2f), dr(lep) = %.3f, ptRel v1 = %5.1f (pruned %5.1f), ptF = %5.2f (pruned %5.2f)" % (ibest,nsub, ij.pt(), ij.mass(), pM, dr, ptR, ppR, ptF, ppF)
-            #     else:
-            #         print "    best inclusive subject from fj  %d/%d: pt %6.1f, mass %6.2f, dr(lep) = %.3f, ptRel v1 = %5.1f, ptF = %5.2f" % (ibest,nsub, ij.pt(), ij.mass(), dr, ptR, ptF)     
                     
                      
+    def process(self, event):
+        self.partonCount(event)
+        self.processJets(event)
+        self.processLeptons(event)
         return True

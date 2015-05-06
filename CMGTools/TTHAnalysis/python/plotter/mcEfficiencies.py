@@ -146,6 +146,7 @@ if __name__ == "__main__":
     parser.add_option("-o", "--out", dest="out", default=None, help="Output file name. by default equal to plots -'.txt' +'.root'");
     parser.add_option("--rebin", dest="globalRebin", type="int", default="0", help="Rebin all plots by this factor")
     parser.add_option("--xrange", dest="xrange", default=None, nargs=2, type='float', help="X axis range");
+    parser.add_option("--xcut", dest="xcut", default=None, nargs=2, type='float', help="X axis cut");
     parser.add_option("--yrange", dest="yrange", default=None, nargs=2, type='float', help="Y axis range");
     parser.add_option("--logy", dest="logy", default=False, action='store_true', help="Do y axis in log scale");
     parser.add_option("--ytitle", dest="ytitle", default="Efficiency", type='string', help="Y axis title");
@@ -164,12 +165,29 @@ if __name__ == "__main__":
     ids   = PlotFile(args[2],options).plots()
     xvars = PlotFile(args[3],options).plots()
     outname  = options.out if options.out else (args[2].replace(".txt","")+".root")
+    if os.path.dirname(outname) != "":
+        dirname = os.path.dirname(outname)
+        if not os.path.exists(dirname):
+            os.system("mkdir -p "+dirname)
+            if os.path.exists("/afs/cern.ch"): os.system("cp /afs/cern.ch/user/g/gpetrucc/php/index.php "+os.path.dirname(outname))
     outfile  = ROOT.TFile(outname,"RECREATE")
     ROOT.gROOT.ProcessLine(".x tdrstyle.cc")
     ROOT.gStyle.SetErrorX(0.5)
     ROOT.gStyle.SetOptStat(0)
     effplots = [ (y,x,makeEff(mca,cut,y,x)) for y in ids for x in xvars ]
-    if len(procs)>1 and "cut" in options.groupBy:
+    for (y,x,pmap) in effplots:
+        for proc in procs:
+            eff = pmap[proc]
+            if not eff: continue
+            if options.xcut:
+                ax = eff.GetXaxis()
+                for b in xrange(1,eff.GetNbinsX()+1):
+                    if ax.GetBinCenter(b) < options.xcut[0] or ax.GetBinCenter(b) > options.xcut[1]:
+                        eff.SetBinContent(b,0)
+                        eff.SetBinError(b,0)
+            eff.SetName("_".join([y.name,x.name,proc]))
+            outfile.WriteTObject(eff)
+    if len(procs)>=1 and "cut" in options.groupBy:
         for x in xvars:
             for y,ex,pmap in effplots:
                 if ex != x: continue
