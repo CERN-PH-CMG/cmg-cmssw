@@ -20,12 +20,17 @@ RUNY="${COREY} mca-Phys14.txt --s2v "
 RUNYSR="${RUNY} sr/monojet.txt "
 
 PLOT="${COREP} mca-Phys14.txt --s2v "
-PLOTSR="${PLOT} sr/monojet.txt sr/monojet-plots.txt "
+PLOTSR="${PLOT} sr/monojet.txt sr/monojet-plots.txt --noStackSig --showSigShape "
 
 case $WHAT in
 sr)
-        SF="-W 'puWeight'"
+        #SF="-W 'puWeight'"
+        SF=" "
         echo "python ${RUNYSR} $FEV $SF "
         echo "python ${PLOTSR}  $FEV $SF "
+;;
+wmunu)
+        echo "python ${RUNY} control-samples/w_munu.txt $FEV --sp WJets --xp M10V "
+        echo "python ${PLOT} control-samples/w_munu.txt control-samples/w_munu_plots.txt $FEV --sp WJets --xp M10V --pdir plots/wmunu "
 ;;
 esac;
