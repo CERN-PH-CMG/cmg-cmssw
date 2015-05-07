@@ -31,6 +31,9 @@ sr)
 ;;
 wmunu)
         echo "python ${RUNY} control-samples/w_munu.txt $FEV --sp WJets --xp M10V "
-        echo "python ${PLOT} control-samples/w_munu.txt control-samples/w_munu_plots.txt $FEV --sp WJets --xp M10V --pdir plots/wmunu "
+        echo "python ${PLOT} control-samples/w_munu.txt control-samples/w_munu-plots.txt $FEV --sp WJets --xp M10V --pdir plots/wmunu "
 ;;
+zmumu)
+        echo "python ${RUNY} control-samples/zmumu.txt $FEV --sp DYJets --xp M10V "
+        echo "python ${PLOT} control-samples/zmumu.txt control-samples/zmumu-plots.txt $FEV --sp WJets --xp M10V --pdir plots/zmumu "
 esac;
