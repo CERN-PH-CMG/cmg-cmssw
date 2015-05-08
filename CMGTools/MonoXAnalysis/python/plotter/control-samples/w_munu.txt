@@ -5,4 +5,8 @@ photon veto: nGamma15V==0
 nj: (nJet30 == 1 || nJet30 == 2) && jetclean > 0.5
 ptj>110: Jet1_pt > 110 
 dphijj: nJet30 == 1 || (nJet==2 && abs(dphijj)<2.5)
-
+b veto: nBJetMedium30 == 0
+#met250: metNoMu_pt>250
+#met300: metNoMu_pt>300
+#met400: metNoMu_pt>400
+#met500: metNoMu_pt>500
