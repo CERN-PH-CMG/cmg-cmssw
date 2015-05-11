@@ -30,6 +30,7 @@ lepAna.miniIsolationVetoLeptons = None # use 'inclusive' to veto inclusive lepto
 # switch off slow photon MC matching
 photonAna.do_mc_match = False
 
+
 ##------------------------------------------
 ##  TOLOLOGIAL VARIABLES: RAZOR
 ##------------------------------------------
@@ -40,7 +41,7 @@ monoXRazorAna = cfg.Analyzer(
     )
 
 ##------------------------------------------
-##  TOLOLOGIAL VARIABLES: MT, MT2
+##  TOLOLOGIAL VARIABLES: MT2
 ##------------------------------------------
 from CMGTools.TTHAnalysis.analyzers.ttHTopoVarAnalyzer import ttHTopoVarAnalyzer
 ttHTopoJetAna = cfg.Analyzer(
@@ -48,11 +49,12 @@ ttHTopoJetAna = cfg.Analyzer(
     doOnlyDefault = True
     )
 
-from CMGTools.TTHAnalysis.analyzers.ttHMT2Control import ttHMT2Control
-ttHMT2ControlAna = cfg.Analyzer(
-    ttHMT2Control, name = 'ttHMT2Control',
-
+from PhysicsTools.Heppy.analyzers.eventtopology.MT2Analyzer import MT2Analyzer
+monoXMT2Ana = cfg.Analyzer(
+    MT2Analyzer, name = 'MT2Analyzer',
+    doOnlyDefault = False
     )
+
 ##------------------------------------------
 ##  TOLOLOGIAL VARIABLES: ALPHAT
 ##------------------------------------------
@@ -114,8 +116,7 @@ selectedComponents = backgroundSamples + signalSamples
 #-------- SEQUENCE
 sequence = cfg.Sequence(dmCoreSequence+[
     monoXRazorAna,
-    ttHMT2ControlAna,
-    ttHTopoJetAna,
+    monoXMT2Ana,
     ttHFatJetAna,
     ttHAlphaTAna,
     ttHAlphaTControlAna,
@@ -132,7 +133,7 @@ sequence = cfg.Sequence(dmCoreSequence+[
 #-------- HOW TO RUN ----------- 
 from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
 #test = getHeppyOption('test')
-test = '1'
+test = 'SR'
 if test == '1':
     comp = Monojet_M_1000_AV
     monoJetSkim.metCut = 200
@@ -194,19 +195,6 @@ elif test == 'monojet-synch': # sync
     comp.fineSplitFactor = 1
     monoJetSkim.metCut = 0
     selectedComponents = [ comp ]
-elif test == 'Wctrl':
-    #selectedComponents = [ WJetsToLNu_HT100to200, WJetsToLNu_HT200to400 ]
-    selectedComponents = WJetsToLNuHT
-    for comp in selectedComponents:
-        comp.splitFactor = 300
-    monoJetSkim.metCut = 0
-    monoJetCtrlLepSkim.minLeptons = 1
-    # if not getHeppyOption('all'):
-    #     for comp in selectedComponents:
-    #         comp.files = comp.files[:1]
-    #         #    comp.files = [ 'root://eoscms//eos/cms/store/mc/Phys14DR//WJetsToLNu_HT-100to200_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/FACF4684-5377-E411-8F81-002590DB0640.root' ]
-    #         comp.splitFactor = 1
-    #         comp.fineSplitFactor = 1 if getHeppyOption("single") else 4
 elif test == 'SR':
     selectedComponents = backgroundSamples + signalSamples
     monoJetSkim.metCut = 200

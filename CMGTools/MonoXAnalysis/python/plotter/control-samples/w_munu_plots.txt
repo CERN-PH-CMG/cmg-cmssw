@@ -1,7 +1,0 @@
-nJet25 : nJet25 : 8,0,8 ; XTitle='N(jet\, p_{T} > 25)',Logy,LegendCutoff=1e-3, YMin=100, YMax=1e8
-nvtx: nVert: 40,0.5,40.5 ; XTitle="N(vertices)", Legend='TR'
-met: met: 60,0,300    ; XTitle="E_{T}^{miss}  [GeV]",Logy,LegendCutoff=1e-3, YMin=50, YMax=1e7
-iso03: LepGood1_relIso03: 20,0,.4
-iso04: LepGood1_relIso04: 20,0,.4
-l1pt:  LepGood1_pt: 40,0,100; XTitle="Leading lepton p_{T}  [GeV]", Legend='TR'
-l1eta:  LepGood1_eta: 40,-2.5,2.5;    XTitle="Leading lepton #eta", Legend='TR'
