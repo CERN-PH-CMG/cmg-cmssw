@@ -1,0 +1,8 @@
+>= 2 good leptons > 20 GeV: nLepGood20 >= 2
+lep1_pt25: LepGood1_pt > 25 
+lep2_pt20: LepGood2_pt > 20 
+exclude 1.4 - 1.6 in |eta|: (abs(LepGood1_eta) < 1.4 || abs(LepGood1_eta) > 1.6) && (abs(LepGood2_eta) < 1.4 || abs(LepGood2_eta) > 1.6)
+only muons for now: ( abs(LepGood1_pdgId) == 13 && abs(LepGood2_pdgId) == 13 )
+opposite-sign: LepGood1_charge*LepGood2_charge < 0
+separated 0.3 in dR:  minDrllAFOS > 0.3
+isolation < 0.15:  lepreliso03 < 0.15
