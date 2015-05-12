@@ -1,8 +1,9 @@
->= 2 good leptons > 20 GeV: nLepGood20 >= 2
-lep1_pt25: LepGood1_pt > 25 
-lep2_pt20: LepGood2_pt > 20 
-exclude 1.4 - 1.6 in |eta|: (abs(LepGood1_eta) < 1.4 || abs(LepGood1_eta) > 1.6) && (abs(LepGood2_eta) < 1.4 || abs(LepGood2_eta) > 1.6)
-only muons for now: ( abs(LepGood1_pdgId) == 13 && abs(LepGood2_pdgId) == 13 )
-opposite-sign: LepGood1_charge*LepGood2_charge < 0
+#>= 2 good leptons > 20 GeV: nlep >= 2
+only electrons for now: Sum$(abs(lep_pdgId) == 11) >=2 
+within eta 2.4: (abs(lep_eta[0]) < 2.4 && abs(lep_eta[1]) < 2.4)
+lep1_pt25: lep_pt[0] > 25 
+lep2_pt20: lep_pt[1] > 20 
+exclude 1.4 - 1.6 in |eta|: (abs(lep_eta[0]) < 1.4 || abs(lep_eta[0]) > 1.6) && (abs(lep_eta[1]) < 1.4 || abs(lep_eta[1]) > 1.6)
+opposite-sign: lep_charge[0]*lep_charge[1] < 0
 separated 0.3 in dR:  minDrllAFOS > 0.3
-isolation < 0.15:  lepreliso03 < 0.15
+isolation of both < 0.15:  lep_relIso03[0] < 0.15 && lep_relIso03[1] < 0.15
