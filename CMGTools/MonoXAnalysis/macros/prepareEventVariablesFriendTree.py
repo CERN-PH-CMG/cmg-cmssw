@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from CMGTools.TTHAnalysis.treeReAnalyzer import *
 from glob import glob
-import os.path, re
+import os.path, re, pickle
 
 MODULES = []
 
@@ -9,13 +9,15 @@ from CMGTools.MonoXAnalysis.tools.eventVars_monojet import EventVarsMonojet
 MODULES.append( ('vars_mj', EventVarsMonojet()) )
  
 class VariableProducer(Module):
-    def __init__(self,name,booker,modules):
+    def __init__(self,name,booker,sample_nevt,modules):
         Module.__init__(self,name,booker)
         self._modules = modules
+        self._sample_nevt = sample_nevt
     def beginJob(self):
         self.t = PyTree(self.book("TTree","t","t"))
         self.branches = {}
         for name,mod in self._modules:
+            mod.initSampleNormalization(self._sample_nevt)
             for B in mod.listBranches():
                 # don't add the same branch twice
                 if B in self.branches: 
@@ -76,6 +78,7 @@ jobs = []
 for D in glob(args[0]+"/*"):
     treename = "tree"
     fname    = "%s/%s/tree.root" % (D,options.tree)
+    pckfile  = "%s/skimAnalyzerCount/SkimReport.pck" % (D)
     if (not os.path.exists(fname)) and os.path.exists("%s/%s/tree.root" % (D,options.tree)):
         treename = "tree"
         fname    = "%s/%s/tree.root" % (D,options.tree)
@@ -89,6 +92,12 @@ for D in glob(args[0]+"/*"):
                 if re.match(dm,short): found = True
             if not found: continue
         data = ("DoubleMu" in short or "MuEG" in short or "DoubleElectron" in short or "SingleMu" in short)
+        pckobj  = pickle.load(open(pckfile,'r'))
+        counters = dict(pckobj)
+        if ('Sum Weights' in counters):
+            sample_nevt = counters['Sum Weights']
+        else:
+            sample_nevt = counters['All Events']
         f = ROOT.TFile.Open(fname);
         t = f.Get(treename)
         entries = t.GetEntries()
@@ -107,7 +116,7 @@ for D in glob(args[0]+"/*"):
         chunk = options.chunkSize
         if entries < chunk:
             print "  ",os.path.basename(D),("  DATA" if data else "  MC")," single chunk"
-            jobs.append((short,fname,"%s/evVarFriend_%s.root" % (args[1],short),data,xrange(entries),-1))
+            jobs.append((short,fname,sample_nevt,"%s/evVarFriend_%s.root" % (args[1],short),data,xrange(entries),-1))
         else:
             nchunk = int(ceil(entries/float(chunk)))
             print "  ",os.path.basename(D),("  DATA" if data else "  MC")," %d chunks" % nchunk
@@ -115,7 +124,7 @@ for D in glob(args[0]+"/*"):
                 if options.chunks != []:
                     if i not in options.chunks: continue
                 r = xrange(int(i*chunk),min(int((i+1)*chunk),entries))
-                jobs.append((short,fname,"%s/evVarFriend_%s.chunk%d.root" % (args[1],short,i),data,r,i))
+                jobs.append((short,fname,sample_nevt,"%s/evVarFriend_%s.chunk%d.root" % (args[1],short,i),data,r,i))
 print "\n"
 print "I have %d taks to process" % len(jobs)
 
@@ -130,7 +139,7 @@ if options.queue:
     friendPost += "".join([" --FM %s %s " % (fn,ft) for fn,ft in options.friendTreesMC])
     friendPost += "".join([" --FD %s %s " % (fn,ft) for fn,ft in options.friendTreesData])
     friendPost += "".join(["  -m  '%s'  " % m for m in options.modules])
-    for (name,fin,fout,data,range,chunk) in jobs:
+    for (name,fin,sample_nevt,fout,data,range,chunk) in jobs:
         if chunk != -1:
             print "{base} -d {data} -c {chunk} {post}".format(base=basecmd, data=name, chunk=chunk, post=friendPost)
         else:
@@ -140,7 +149,7 @@ if options.queue:
 
 maintimer = ROOT.TStopwatch()
 def _runIt(myargs):
-    (name,fin,fout,data,range,chunk) = myargs
+    (name,fin,sample_nevt,fout,data,range,chunk) = myargs
     timer = ROOT.TStopwatch()
     fb = ROOT.TFile(fin)
     tb = fb.Get(options.tree)
@@ -169,7 +178,7 @@ def _runIt(myargs):
                 if re.match(pat,m):
                     toRun[m] = True 
         modulesToRun = [ (m,v) for (m,v) in MODULES if m in toRun ]
-    el = EventLoop([ VariableProducer(options.treeDir,booker,modulesToRun), ])
+    el = EventLoop([ VariableProducer(options.treeDir,booker,sample_nevt,modulesToRun), ])
     el.loop([tb], eventRange=range)
     booker.done()
     fb.Close()
