@@ -29,53 +29,63 @@ lepAna.inclusive_electron_id  = "POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Loose_
 lepAna.inclusive_electron_pt           = 5
 lepAna.inclusive_electron_eta          = 2.4
 lepAna.inclusive_electron_lostHits = 4.0
+lepAna.inclusive_electron_dxy = 0.5
+lepAna.inclusive_electron_dz  = 1.0
+
+
 lepAna.loose_electron_id  = "POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Loose_full5x5"
 lepAna.loose_electron_pt           = 5
 lepAna.loose_electron_eta          = 2.4
 lepAna.loose_electron_relIso       = 999
+lepAna.loose_electron_dxy    = 0.1
+lepAna.loose_electron_dz     = 0.2
 lepAna.loose_electron_lostHits = 4.0
 lepAna.ele_tightId = "Cuts_PHYS14_25ns_v1_ConvVetoDxyDz"
 
 # Muon Preselection
 lepAna.inclusive_muon_id  = "POG_ID_Tight"
-lepAna.inclusive_muon_pt           = 5
-lepAna.inclusive_muon_eta          = 2.4
-lepAna.loose_muon_id  = "POG_ID_Tight"
-lepAna.loose_muon_pt           = 5
-lepAna.loose_muon_eta          = 2.4
-lepAna.loose_muon_relIso       = 999
+lepAna.inclusive_muon_pt  = 5
+lepAna.inclusive_muon_eta = 2.4
+lepAna.inclusive_muon_dxy = 0.2
+lepAna.inclusive_muon_dz  = 0.5
+
+lepAna.loose_muon_id     = "POG_ID_Tight"
+lepAna.loose_muon_pt     = 5
+lepAna.loose_muon_eta    = 2.4
+lepAna.loose_muon_dxy    = 0.2,
+lepAna.loose_muon_dz     = 0.5,
+lepAna.loose_muon_relIso = 999
 lepAna.mu_tightId = "POG_ID_Tight"
 
 isolation = "relIso03"
-#isolation = "ptRel"
-if isolation == "ptRel": 
-    # delay isolation cut for leptons of pt > 10, for which we do pTrel recovery
-    lepAna.loose_muon_isoCut     = lambda muon : muon.relIso03 < 0.5 or muon.pt() > 10
-    lepAna.loose_electron_isoCut = lambda elec : elec.relIso03 < 0.5 or elec.pt() > 10
-    # in the cleaning, keep the jet if the lepton fails relIso or ptRel
-    jetAna.jetLepArbitration = lambda jet,lepton : (
-        lepton if (lepton.relIso03 < 0.4 or ptRelv1(lepton.p4(),jet.p4()) > 5) else jet
-    )
-    ttHCoreEventAna.leptonMVAKindTTH = "SusyWithBoost"
-    ttHCoreEventAna.leptonMVAKindSusy = "SusyWithBoost" 
-    ttHCoreEventAna.leptonMVAPathTTH = "CMGTools/TTHAnalysis/macros/leptons/trainingPHYS14leptonMVA_PHYS14eleMVA_MiniIso_ttH/weights/%s_BDTG.weights.xml"
-    ttHCoreEventAna.leptonMVAPathSusy = "CMGTools/TTHAnalysis/macros/leptons/trainingPHYS14leptonMVA_PHYS14eleMVA_MiniIso_SusyT1/weights/%s_BDTG.weights.xml"
-    # insert a second skimmer after the jet cleaning 
-    ttHLepSkim2 = cfg.Analyzer(
-        ttHLepSkimmer, name='ttHLepSkimmer2',
-        minLeptons = 2,
-        maxLeptons = 999,
-        )
-    susyCoreSequence.insert(susyCoreSequence.index(jetAna)+1, ttHLepSkim2)
-elif isolation == "miniIso": 
-    lepAna.loose_muon_isoCut     = lambda muon : muon.miniRelIso < 0.4
-    lepAna.loose_electron_isoCut = lambda elec : elec.miniRelIso < 0.4
-elif isolation == None:
-    lepAna.loose_muon_isoCut     = lambda muon : True
-    lepAna.loose_electron_isoCut = lambda elec : True
-else:
-    # nothing to do, will use normal relIso03
-    pass
+## not needed for edge  if isolation == "ptRel": 
+## not needed for edge      # delay isolation cut for leptons of pt > 10, for which we do pTrel recovery
+## not needed for edge      lepAna.loose_muon_isoCut     = lambda muon : muon.relIso03 < 0.5 or muon.pt() > 10
+## not needed for edge      lepAna.loose_electron_isoCut = lambda elec : elec.relIso03 < 0.5 or elec.pt() > 10
+## not needed for edge      # in the cleaning, keep the jet if the lepton fails relIso or ptRel
+## not needed for edge      jetAna.jetLepArbitration = lambda jet,lepton : (
+## not needed for edge          lepton if (lepton.relIso03 < 0.4 or ptRelv1(lepton.p4(),jet.p4()) > 5) else jet
+## not needed for edge      )
+## not needed for edge      ttHCoreEventAna.leptonMVAKindTTH = "SusyWithBoost"
+## not needed for edge      ttHCoreEventAna.leptonMVAKindSusy = "SusyWithBoost" 
+## not needed for edge      ttHCoreEventAna.leptonMVAPathTTH = "CMGTools/TTHAnalysis/macros/leptons/trainingPHYS14leptonMVA_PHYS14eleMVA_MiniIso_ttH/weights/%s_BDTG.weights.xml"
+## not needed for edge      ttHCoreEventAna.leptonMVAPathSusy = "CMGTools/TTHAnalysis/macros/leptons/trainingPHYS14leptonMVA_PHYS14eleMVA_MiniIso_SusyT1/weights/%s_BDTG.weights.xml"
+## not needed for edge      # insert a second skimmer after the jet cleaning 
+## not needed for edge      ttHLepSkim2 = cfg.Analyzer(
+## not needed for edge          ttHLepSkimmer, name='ttHLepSkimmer2',
+## not needed for edge          minLeptons = 2,
+## not needed for edge          maxLeptons = 999,
+## not needed for edge          )
+## not needed for edge      susyCoreSequence.insert(susyCoreSequence.index(jetAna)+1, ttHLepSkim2)
+## not needed for edge  elif isolation == "miniIso": 
+## not needed for edge      lepAna.loose_muon_isoCut     = lambda muon : muon.miniRelIso < 0.4
+## not needed for edge      lepAna.loose_electron_isoCut = lambda elec : elec.miniRelIso < 0.4
+## not needed for edge  elif isolation == None:
+## not needed for edge      lepAna.loose_muon_isoCut     = lambda muon : True
+## not needed for edge      lepAna.loose_electron_isoCut = lambda elec : True
+## not needed for edge  else:
+## not needed for edge      # nothing to do, will use normal relIso03
+## not needed for edge      pass
 
 # Switch off slow photon MC matching
 photonAna.do_mc_match = False
@@ -186,12 +196,12 @@ if False:
     QCDPtEMEnriched.remove(QCD_Pt10to20_EMEnriched)
     selectedComponents = [ QCD_Mu15 ] + QCD_Mu5 + QCDPtEMEnriched + QCDPtbcToE
 
-selectedComponents = [TTJets, DYJetsToLL_M50]
+selectedComponents = [TTJets]
 
 
 # -- fine splitting, for some private MC samples with a single file
 for comp in selectedComponents:
-    comp.splitFactor = 300
+    comp.splitFactor = 400
     #comp.fineSplitFactor = 4
 
     
@@ -221,48 +231,49 @@ if test == '1':
         comp.fineSplitFactor = 4
     selectedComponents = [ comp ]
 elif test == '2':
-    for comp in selectedComponents:
-        comp.files = comp.files[:1]
-        #comp.splitFactor = 4
-        comp.finesplitFactor = 4
-elif test == 'EOS':
-    comp = DYJetsToLL_M50#TTJets
-    comp.files = comp.files[:1]
-    if getHeppyOption('Wigner'):
-        print "Will read from WIGNER"
-        comp.files = [ 'root://eoscms//eos/cms/store/mc/Phys14DR/DYJetsToLL_M-50_13TeV-madgraph-pythia8/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/0432E62A-7A6C-E411-87BB-002590DB92A8.root' ]
-    else:
-        print "Will read from CERN Meyrin"
-        comp.files = [ 'root://eoscms//eos/cms/store/mc/Phys14DR/DYJetsToLL_M-50_13TeV-madgraph-pythia8/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/10000/F675C068-5E6C-E411-B915-0025907DC9AC.root' ]
-    os.system("/afs/cern.ch/project/eos/installation/0.3.15/bin/eos.select fileinfo "+comp.files[0].replace("root://eoscms//","/"))
-    comp.splitFactor = 1
-    comp.fineSplitFactor = 1
-    selectedComponents = [ comp ]
-elif test == 'SingleMu':
-    comp = SingleMu
+    comp = TTJets
     comp.files = comp.files[:1]
     comp.splitFactor = 1
-    selectedComponents = [ comp ]
-elif test == '3':
-    for comp in selectedComponents:
-        comp.files = comp.files[:1]
-        comp.splitFactor = 1
-        comp.fineSplitFactor = 4
-elif test == '5':
-    for comp in selectedComponents:
-        comp.files = comp.files[:5]
-        comp.splitFactor = 1
-        comp.fineSplitFactor = 5
-elif test == '2lss-sync': # sync
-    #eventSelector.toSelect = [ 11809 ]
-    #sequence = cfg.Sequence([eventSelector] + susyCoreSequence+[ ttHEventAna, treeProducer, ])
-    jetAna.recalibrateJets = False 
-    jetAna.smearJets       = False 
-    comp = SMS_T1tttt_2J_mGl1200_mLSP800
-    comp.files = [ 'root://eoscms//eos/cms/store/mc/Phys14DR/SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/0CD15D7F-4E6B-E411-AEB4-002590DB9216.root' ]
-    comp.splitFactor = 1
-    comp.fineSplitFactor = 10
-    selectedComponents = [ comp ]
+    comp.finesplitFactor = 4
+    selectedComponents = [comp]
+## elif test == 'EOS':
+##     comp = DYJetsToLL_M50#TTJets
+##     comp.files = comp.files[:1]
+##     if getHeppyOption('Wigner'):
+##         print "Will read from WIGNER"
+##         comp.files = [ 'root://eoscms//eos/cms/store/mc/Phys14DR/DYJetsToLL_M-50_13TeV-madgraph-pythia8/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/0432E62A-7A6C-E411-87BB-002590DB92A8.root' ]
+##     else:
+##         print "Will read from CERN Meyrin"
+##         comp.files = [ 'root://eoscms//eos/cms/store/mc/Phys14DR/DYJetsToLL_M-50_13TeV-madgraph-pythia8/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/10000/F675C068-5E6C-E411-B915-0025907DC9AC.root' ]
+##     os.system("/afs/cern.ch/project/eos/installation/0.3.15/bin/eos.select fileinfo "+comp.files[0].replace("root://eoscms//","/"))
+##     comp.splitFactor = 1
+##     comp.fineSplitFactor = 1
+##     selectedComponents = [ comp ]
+## elif test == 'SingleMu':
+##     comp = SingleMu
+##     comp.files = comp.files[:1]
+##     comp.splitFactor = 1
+##     selectedComponents = [ comp ]
+## elif test == '3':
+##     for comp in selectedComponents:
+##         comp.files = comp.files[:1]
+##         comp.splitFactor = 1
+##         comp.fineSplitFactor = 4
+## elif test == '5':
+##     for comp in selectedComponents:
+##         comp.files = comp.files[:5]
+##         comp.splitFactor = 1
+##         comp.fineSplitFactor = 5
+## elif test == '2lss-sync': # sync
+##     #eventSelector.toSelect = [ 11809 ]
+##     #sequence = cfg.Sequence([eventSelector] + susyCoreSequence+[ ttHEventAna, treeProducer, ])
+##     jetAna.recalibrateJets = False 
+##     jetAna.smearJets       = False 
+##     comp = SMS_T1tttt_2J_mGl1200_mLSP800
+##     comp.files = [ 'root://eoscms//eos/cms/store/mc/Phys14DR/SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/0CD15D7F-4E6B-E411-AEB4-002590DB9216.root' ]
+##     comp.splitFactor = 1
+##     comp.fineSplitFactor = 10
+##     selectedComponents = [ comp ]
 
 ## output histogram
 outputService=[]
