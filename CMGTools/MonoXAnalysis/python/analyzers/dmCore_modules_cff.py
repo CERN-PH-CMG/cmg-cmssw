@@ -281,7 +281,7 @@ jetAna = cfg.Analyzer(
     cleanJetsFromFirstPhoton = False,
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
-    doQG = False,
+    doQG = True,
     cleanGenJetsFromPhoton = False
     )
 
