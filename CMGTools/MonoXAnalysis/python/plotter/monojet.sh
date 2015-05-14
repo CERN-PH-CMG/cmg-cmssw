@@ -35,5 +35,5 @@ wmunu)
 ;;
 zmumu)
         echo "python ${RUNY} control-samples/zmumu.txt $FEV --sp DYJets --xp M10V "
-        echo "python ${PLOT} control-samples/zmumu.txt control-samples/zmumu-plots.txt $FEV --sp WJets --xp M10V --pdir plots/zmumu "
+        echo "python ${PLOT} control-samples/zmumu.txt control-samples/zmumu-plots.txt $FEV --sp DYJets --xp M10V --pdir plots/zmumu "
 esac;
