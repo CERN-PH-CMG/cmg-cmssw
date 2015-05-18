@@ -74,7 +74,7 @@ GJets_HT600toInf,
 ]
 
 #photon+jets relval for synch, dummy xsec
-GJets_RelVal_PT10 = kreator.makeMCComponent("GJets_RelVal", "/RelValPhotonJets_Pt_10_13/CMSSW_7_0_6_patch1-PLS170_V6AN1-v1/MINIAODSIM", "CMS", ".*root", 1)
+GJets_RelVal_PT10 = kreator.makeMCComponent("GJets_RelVal", "/RelValPhotonJets_Pt_10_13/CMSSW_7_4_0-MCRUN2_74_V7_GENSIM_7_1_15-v1/MINIAODSIM", "CMS", ".*root", 1)
 GJets_RelVal = [GJets_RelVal_PT10]
 
 #QCD 
