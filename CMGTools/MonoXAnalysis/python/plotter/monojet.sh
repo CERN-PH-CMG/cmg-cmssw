@@ -3,7 +3,7 @@
 WHAT=$1; if [[ "$1" == "" ]]; then echo "monojet.sh <what>"; exit 1; fi
 
 if [[ "$HOSTNAME" == "cmsphys06" ]]; then
-    T="/data1/emanuele/monox/TREES_060515_MET200SKIM";
+    T="/data1/emanuele/monox/TREES_150515_MET200SKIM";
     J=6;
 else
     T="/cmshome/dimarcoe/TREES_060515_MET200SKIM";
@@ -27,7 +27,7 @@ sr)
         #SF="-W 'puWeight'"
         SF=" "
         echo "python ${RUNYSR} $FEV $SF "
-        echo "python ${PLOTSR}  $FEV $SF "
+        echo "python ${PLOTSR}  $FEV $SF --pdir plots/sr "
 ;;
 wmunu)
         echo "python ${RUNY} control-samples/w_munu.txt $FEV --sp WJets --xp M10V "
