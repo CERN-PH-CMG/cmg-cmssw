@@ -186,7 +186,7 @@ class LeptonJetReCleaner:
                     if l1.charge == l2.charge:
                         flav = abs(l1.pdgId) + abs(l2.pdgId) if byflav else 0
                         ht   = l1.pt + l2.pt
-                        pairs.append( (-flav,-ht,il1,il2) )                    
+                        pairs.append( (-flav,-ht,il1,il2) )
             if len(pairs):
                 pairs.sort()
                 ret = (pairs[0][2],pairs[0][3])
