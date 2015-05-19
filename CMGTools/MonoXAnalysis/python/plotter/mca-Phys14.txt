@@ -9,22 +9,22 @@ M10V+:    Monojet_M_10_V   : 1.0; FillColor=ROOT.kRed-9, Label="MJ^{V} 10 GeV"
 #M1000AV+: Monojet_M_1000_AV : 1.0; FillColor=ROOT.kViolet-6, Label="MJ^{AV} 1000 GeV"
 
 # -- Z->nunu Background --
-ZNuNu       : ZJetsToNuNu_HT100to200 : xsec/1.27; FillColor=ROOT.kAzure-9, Label="Z\#nu\#nu+jets", NormSystematic=0.2
-ZNuNu       : ZJetsToNuNu_HT200to400 : xsec/1.27; FillColor=ROOT.kAzure-9, Label="Z\#nu\#nu+jets", NormSystematic=0.2
-ZNuNu       : ZJetsToNuNu_HT400to600 : xsec/1.27; FillColor=ROOT.kAzure-9, Label="Z\#nu\#nu+jets", NormSystematic=0.2
-ZNuNu       : ZJetsToNuNu_HT600toInf : xsec/1.27; FillColor=ROOT.kAzure-9, Label="Z\#nu\#nu+jets", NormSystematic=0.2
+ZNuNu       : ZJetsToNuNu_HT100to200 : xsec; FillColor=ROOT.kAzure-9, Label="Z\#nu\#nu+jets", NormSystematic=0.2
+ZNuNu       : ZJetsToNuNu_HT200to400 : xsec; FillColor=ROOT.kAzure-9, Label="Z\#nu\#nu+jets", NormSystematic=0.2
+ZNuNu       : ZJetsToNuNu_HT400to600 : xsec; FillColor=ROOT.kAzure-9, Label="Z\#nu\#nu+jets", NormSystematic=0.2
+ZNuNu       : ZJetsToNuNu_HT600toInf : xsec; FillColor=ROOT.kAzure-9, Label="Z\#nu\#nu+jets", NormSystematic=0.2
 
 # -- W+jets background -- 
-WJets     : WJetsToLNu_HT100to200 :  xsec/1.23; Label="W+jets", FillColor=ROOT.kAzure+3, NormSystematic=0.5
-WJets     : WJetsToLNu_HT200to400 :  xsec/1.23; Label="W+jets", FillColor=ROOT.kAzure+3, NormSystematic=0.5
-WJets     : WJetsToLNu_HT400to600 :  xsec/1.23; Label="W+jets", FillColor=ROOT.kAzure+3, NormSystematic=0.5
-WJets     : WJetsToLNu_HT600toInf :  xsec/1.23; Label="W+jets", FillColor=ROOT.kAzure+3, NormSystematic=0.5
+WJets     : WJetsToLNu_HT100to200 :  xsec; Label="W+jets", FillColor=ROOT.kAzure+3, NormSystematic=0.5
+WJets     : WJetsToLNu_HT200to400 :  xsec; Label="W+jets", FillColor=ROOT.kAzure+3, NormSystematic=0.5
+WJets     : WJetsToLNu_HT400to600 :  xsec; Label="W+jets", FillColor=ROOT.kAzure+3, NormSystematic=0.5
+WJets     : WJetsToLNu_HT600toInf :  xsec; Label="W+jets", FillColor=ROOT.kAzure+3, NormSystematic=0.5
 
 # -- Z->ll background -- (to be processed)
-DYJets    : DYJetsToLL_M50_HT100to200 :  xsec/1.23; Label="Z+jets", FillColor=ROOT.kCyan, NormSystematic=0.5
-DYJets    : DYJetsToLL_M50_HT200to400 :  xsec/1.23; Label="Z+jets", FillColor=ROOT.kCyan, NormSystematic=0.5
-DYJets    : DYJetsToLL_M50_HT400to600 :  xsec/1.23; Label="Z+jets", FillColor=ROOT.kCyan, NormSystematic=0.5
-DYJets    : DYJetsToLL_M50_HT600toInf :  xsec/1.23; Label="Z+jets", FillColor=ROOT.kCyan, NormSystematic=0.5
+DYJets    : DYJetsToLL_M50_HT100to200 :  xsec; Label="Z+jets", FillColor=ROOT.kCyan, NormSystematic=0.5
+DYJets    : DYJetsToLL_M50_HT200to400 :  xsec; Label="Z+jets", FillColor=ROOT.kCyan, NormSystematic=0.5
+DYJets    : DYJetsToLL_M50_HT400to600 :  xsec; Label="Z+jets", FillColor=ROOT.kCyan, NormSystematic=0.5
+DYJets    : DYJetsToLL_M50_HT600toInf :  xsec; Label="Z+jets", FillColor=ROOT.kCyan, NormSystematic=0.5
 
 # -- photon + jets background --
 GJets     : GJets_HT100to200 :  xsec;  Label="\#gamma+jets", FillColor=ROOT.kCyan+2, NormSystematic=0.5
