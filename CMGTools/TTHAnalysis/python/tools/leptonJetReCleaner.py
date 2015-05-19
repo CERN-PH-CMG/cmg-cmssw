@@ -20,6 +20,7 @@ class LeptonJetReCleaner:
                  ("iL1p"+label, "I"), ("iL2p"+label, "I"), 
                  ("iL1Tp"+label, "I"), ("iL2Tp"+label, "I"), 
                  "mZ1cut10TL"+label, "minMllAFASTL"+label,"minMllAFOSTL"+label,"minMllSFOSTL"+label,
+                 "minMllAFASTT"+label,"minMllAFOSTT"+label,"minMllSFOSTT"+label,
                  "mZ1"+label, "minMllAFAS"+label,"minMllAFOS"+label,"minMllSFOS"+label,
                 ]
         for jfloat in "pt eta phi mass btagCSV rawPt".split():
@@ -105,6 +106,8 @@ class LeptonJetReCleaner:
         ### 2lss specific things
         lepsl = [ leps[il] for il in ret["iL"]  ]
         lepst = [ leps[il] for il in ret["iLT"] ]
+        idxLTV = [ il for il in ret["iLT"] if self.passMllTLVeto(leps[il], lepsl, 76, 106, True) and self.passMllTLVeto(leps[il], lepsl, 0, 12, True) ]
+        lepstv = [ leps[il] for il in idxLTV ]
         ret['mZ1'] = self.bestZ1TL(lepsl, lepsl)
         ret['mZ1cut10TL'] = self.bestZ1TL(lepsl, lepst, cut=lambda l:l.pt>10)
         ret['minMllAFAS'] = self.minMllTL(lepsl, lepsl) 
@@ -113,10 +116,14 @@ class LeptonJetReCleaner:
         ret['minMllAFASTL'] = self.minMllTL(lepsl, lepst) 
         ret['minMllAFOSTL'] = self.minMllTL(lepsl, lepst, paircut = lambda l1,l2 : l1.charge !=  l2.charge) 
         ret['minMllSFOSTL'] = self.minMllTL(lepsl, lepst, paircut = lambda l1,l2 : l1.pdgId  == -l2.pdgId) 
-        for (name,lepcoll,byflav) in ("",lepsl,True),("p",lepsl,False),("T",lepst,True),("Tp",lepst,False):
+        ret['minMllAFASTT'] = self.minMllTL(lepst, lepst)
+        ret['minMllAFOSTT'] = self.minMllTL(lepst, lepst, paircut = lambda l1,l2 : l1.charge !=  l2.charge) 
+        ret['minMllSFOSTT'] = self.minMllTL(lepst, lepst, paircut = lambda l1,l2 : l1.pdgId  == -l2.pdgId) 
+        for (name,lepcoll,lepIdxs, byflav) in ("",lepsl,ret["iL"],True),("p",lepsl,ret["iL"],False),("T",lepstv,idxLTV,True),("Tp",lepstv,idxLTV,False):
             iL1iL2 = self.bestSSPair(lepcoll, byflav, cut = lambda lep : lep.pt > 10)
-            ret["iL1"+name] = iL1iL2[0]
-            ret["iL2"+name] = iL1iL2[1]
+            sizeIdxs=len(lepIdxs)
+            ret["iL1"+name] = lepIdxs[ iL1iL2[0] ] if sizeIdxs >=1 else -1
+            ret["iL2"+name] = lepIdxs[ iL1iL2[1] ] if sizeIdxs >=2 else -1
         #
         ### attach labels and return
         fullret = {}
@@ -125,6 +132,18 @@ class LeptonJetReCleaner:
         for k,v in jetret.iteritems(): 
             fullret["JetSel%s_%s" % (self.label,k)] = v
         return fullret
+    def passMllVeto(self, l1, l2, mZmin, mZmax, isOSSF ):
+        if  l1.pdgId == -l2.pdgId or not isOSSF:
+            mz = (l1.p4() + l2.p4()).M()
+            if mz > mZmin and  mz < mZmax:
+                return False
+        return True
+    def passMllTLVeto(self, lep, lepsl, mZmin, mZmax, isOSSF):
+        for ll in lepsl:
+            if ll == lep: continue
+            if not self.passMllVeto(lep, ll, mZmin, mZmax, isOSSF):
+                return False
+        return True
     def bestZ1TL(self,lepsl,lepst,cut=lambda lep:True):
           pairs = []
           for l1 in lepst:
@@ -154,6 +173,8 @@ class LeptonJetReCleaner:
             return -1
     def bestSSPair(self,leps,byflav,cut=lambda lep:True):
         ret = (0,1)
+        if len(leps) < 2:
+            ret = (-1,-1)
         if len(leps) > 2:
             pairs = []
             for il1 in xrange(len(leps)-1):
@@ -161,15 +182,15 @@ class LeptonJetReCleaner:
                     l1 = leps[il1]
                     l2 = leps[il2]
                     if not cut(l1) or not cut(l2): continue
+                    if not self.passMllVeto(l1, l2, 0, 8, False): continue
                     if l1.charge == l2.charge:
                         flav = abs(l1.pdgId) + abs(l2.pdgId) if byflav else 0
                         ht   = l1.pt + l2.pt
-                        pairs.append( (-flav,-ht,il1,il2) )
+                        pairs.append( (-flav,-ht,il1,il2) )                    
             if len(pairs):
                 pairs.sort()
                 ret = (pairs[0][2],pairs[0][3])
         return ret
-
 
 def _tthlep_lepId(lep):
         #if lep.pt <= 10: return False
