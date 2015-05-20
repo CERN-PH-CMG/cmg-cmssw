@@ -1,11 +1,11 @@
-# /dev/CMSSW_7_4_0/Fake/V6 (CMSSW_7_4_0_pre9)
+# /dev/CMSSW_7_4_0/Fake/V7 (CMSSW_7_4_0)
 
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process( "HLTFake" )
 
 process.HLTConfigVersion = cms.PSet(
-  tableName = cms.string('/dev/CMSSW_7_4_0/Fake/V6')
+  tableName = cms.string('/dev/CMSSW_7_4_0/Fake/V7')
 )
 
 process.streams = cms.PSet(  A = cms.vstring( 'InitialPD' ) )
@@ -352,20 +352,12 @@ process.HLTSchedule = cms.Schedule( *(process.HLTriggerFirstPath, process.HLT_Ph
 
 process.source = cms.Source( "PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:RelVal_Raw_Fake_MC.root',
+        'file:RelVal_Raw_Fake_DATA.root',
     ),
     inputCommands = cms.untracked.vstring(
         'keep *'
     )
 )
-
-# customise the HLT menu for running on MC
-from HLTrigger.Configuration.customizeHLTforMC import customizeHLTforMC
-process = customizeHLTforMC(process)
-
-# add release-specific customizations
-from HLTrigger.Configuration.customizeHLTforCMSSW import customiseHLTforCMSSW
-process = customiseHLTforCMSSW(process,menuType="Fake",fastSim=False)
 
 # adapt HLT modules to the correct process name
 if 'hltTrigReport' in process.__dict__:
@@ -412,7 +404,7 @@ process.options = cms.untracked.PSet(
 # override the GlobalTag, connection string and pfnPrefix
 if 'GlobalTag' in process.__dict__:
     from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag as customiseGlobalTag
-    process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag = 'auto:run1_mc_Fake')
+    process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag = 'auto:run1_hlt_Fake')
     process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_CONDITIONS'
     process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
     for pset in process.GlobalTag.toGet.value():
@@ -426,4 +418,21 @@ if 'MessageLogger' in process.__dict__:
     process.MessageLogger.categories.append('L1GtTrigReport')
     process.MessageLogger.categories.append('HLTrigReport')
     process.MessageLogger.categories.append('FastReport')
+
+# add specific customizations
+_customInfo = {}
+_customInfo['menuType'  ]= "Fake"
+_customInfo['globalTags']= {}
+_customInfo['globalTags'][True ] = "auto:run1_hlt_Fake"
+_customInfo['globalTags'][False] = "auto:run1_mc_Fake"
+_customInfo['inputFiles']={}
+_customInfo['inputFiles'][True]  = "file:RelVal_Raw_Fake_DATA.root"
+_customInfo['inputFiles'][False] = "file:RelVal_Raw_Fake_MC.root"
+_customInfo['maxEvents' ]=  100
+_customInfo['globalTag' ]= "auto:run1_hlt_Fake"
+_customInfo['inputFile' ]=  ['file:RelVal_Raw_Fake_DATA.root']
+_customInfo['realData'  ]=  True
+_customInfo['fastSim'   ]=  False
+from HLTrigger.Configuration.customizeHLTforALL import customizeHLTforAll
+process = customizeHLTforAll(process,_customInfo)
 

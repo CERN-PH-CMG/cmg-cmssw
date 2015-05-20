@@ -51,7 +51,7 @@ class AlphaTAnalyzer( Analyzer ):
         et  = ROOT.std.vector('double')()
 
         #Make alphaT from lead 10 jets
-        for jet in jets[:10]:
+	for jet in jets[:10]:
             px.push_back(jet.px())
             py.push_back(jet.py())
             et.push_back(jet.et())
