@@ -3,7 +3,7 @@
 T="/afs/cern.ch/user/g/gpetrucc/w/TREES_72X_050515_2lssSync"
 #T="/afs/cern.ch/user/g/gpetrucc/w/TREES_72X_210315_NoIso"
 CORE="-P $T --s2v --tree treeProducerSusyMultilepton "
-CORE="${CORE} -F sf/t {P}/1_lepJetReClean_ttH_v1/evVarFriend_{cname}.root "
+CORE="${CORE} -F sf/t {P}/1_lepJetReClean_Susy_v3/evVarFriend_{cname}.root"
 CORE="${CORE} -X exclusive --mcc susy-multilepton/susy_2lssinc_lepchoice_multiiso.txt"
 
 POST="";
@@ -17,9 +17,9 @@ elif [[ "$WHAT" == "mcyields" ]]; then
 elif [[ "$WHAT" == "mcplots" ]]; then
     GO="python mcPlots.py $CORE mca-Phys14.txt susy-multilepton/susy_2lss_multiiso.txt -f -G -l 4.0  -p  T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD,TT.,TT,WJets,DY,T,TW,WZ  -j 8 -f   --showIndivSigs --noStackSig --legendWidth 0.30 --ss 5 susy-multilepton/susy_2lss_plots.txt"
 elif [[ "$WHAT" == "mcdumps" ]]; then
-    FMT='{run:1d} {lumi:9d} {evt:12d}\t{nLepGood10:2d}\t{LepGood1_pdgId:+2d} {LepGood1_pt:5.1f}\t{LepGood2_pdgId:+2d} {LepGood2_pt:5.1f}\t{nJet40}\t{nBJetMedium40:2d}\t{met_pt:5.1f}\t{htJet40j:6.1f}'
-    python mcDump.py $CORE  mca-Phys14.txt susy-multilepton/susy_2lss_sync.txt -p T1tttt_HM -X lep1_pt25 -X lep2_pt25   | sort -n -k1 -k2 > 2lssInc_all.txt
-    python mcDump.py $CORE  mca-Phys14.txt susy-multilepton/susy_2lss_sync.txt -p T1tttt_HM -X lep1_pt25 -X lep2_pt25 -X 'lep id' -X 'lep iso' -X 'lep dxy' -X 'ele cuts' $FMT  | sort -n -k1 -k2 > 2lssInc_all_relaxLept.txt
+    FMT='{run:1d} {lumi:9d} {evt:12d}\t{nLepGood_Mini:2d}\t{LepGood1_pdgId:+2d} {LepGood1_pt:5.1f}\t{LepGood2_pdgId:+2d} {LepGood2_pt:5.1f}\t{nJet40}\t{nBJetMedium25:2d}\t{met_pt:5.1f}\t{htJet40j:6.1f}\t{SR_Mini:2d}'
+    python mcDump.py $CORE mca-Phys14.txt susy-multilepton/susy_2lss_multiiso.txt -p 'T1tttt_HM'  $FMT  | sort -n -k1 -k2 > 2lssInc_all.txt
+    python mcDump.py $CORE mca-Phys14.txt susy-multilepton/susy_2lss_multiiso.txt -p 'T1tttt_HM' -X lep1_pt25 -X lep2_pt25 -X 'lep id' -X 'lep iso' -X 'lep dxy' -X 'ele cuts' $FMT | sort -n -k1 -k2 > 2lssInc_all_relaxLept.txt
     wc -l  2lssInc_all.txt  2lssInc_all_relaxLept.txt
     exit;
 else
@@ -30,7 +30,7 @@ fi
 SAVE="${GO}"
 #for LL  in ee em mm ll; do 
 for LL  in ee em mm; do 
-for SR  in 00 10 20 30; do # 0X 1X 2X 3X; do 
+for SR  in 0 10 20 30; do # 0X 1X 2X 3X; do 
 for LPt in hh hl ll; do
 for MOD in multiiso; do #oldpresel ptrel miniiso; do
 
@@ -47,6 +47,7 @@ case $SR in
 2[1-9X])  GO="${GO} -R nBjet nBjet2 'nBJetMedium25 == 2' -R met metSR 'met_pt > 50' -R ht htSR 'htJet40j > 200'" ;;
 3[1-9X])  GO="${GO} -R nBjet nBjet3 'nBJetMedium25 >= 3' -R met metSR 'met_pt > 50' -R ht htSR 'htJet40j > 200'" ;;
 2[1-9X]+)  GO="${GO} -R nBjet nBjet2 'nBJetMedium25 >= 2' -R met metSR 'met_pt > 50' -R ht htSR 'htJet40j > 200'" ;;
+
 esac;
 case $LL in
 ee)  GO="${GO} -R anyll ee 'abs(LepGood1_pdgId) == 11 && abs(LepGood2_pdgId) == 11' " ;;
@@ -66,16 +67,16 @@ esac;
 
 if [[ "${WHAT}" == "mcplots" || "${WHAT}" == "mcrocs" ]]; then
     case $SR in
-    #0[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T5qqqqWW_H.,T5qqqqWWD,T6ttWW_H.}"   ;;
-    #1[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T1tttt_HM,T5tttt_MLDx,T6ttWW_H.,T5qqqqWW_H.,T5qqqqWWD}"   ;;
-    #2[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T1tttt_HL,T1tttt_HM,T5tttt_MLDx,T1ttbbWW_HL10,T6ttWW_H.}"   ;;
-    #2[1-9X]+) GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T1tttt_HL,T1tttt_HM,T5tttt_MLDx,T1ttbbWW_HL10,T6ttWW_H.}"   ;;
-    #3[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T1tttt_HL,T1tttt_HM,T5tttt_MLDx,T1ttbbWW_HL10,T1ttbbWW_MM5}"   ;;
-    #0[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T5qqqqWW_HM,T5qqqqWWD}"   ;;
-    #1[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD}"   ;;
-    #2[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T1tttt_HL,T1tttt_HM,T5tttt_MLDx}"   ;;
-    #2[1-9X]+) GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T1tttt_HL,T1tttt_HM,T5tttt_MLDx}"   ;;
-    #3[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T1tttt_HL,T1tttt_HM,T5tttt_MLDx}"   ;;
+    0[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T5qqqqWW_H.,T5qqqqWWD,T6ttWW_H.}"   ;;
+    1[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T1tttt_HM,T5tttt_MLDx,T6ttWW_H.,T5qqqqWW_H.,T5qqqqWWD}"   ;;
+    2[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T1tttt_HL,T1tttt_HM,T5tttt_MLDx,T1ttbbWW_HL10,T6ttWW_H.}"   ;;
+    2[1-9X]+) GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T1tttt_HL,T1tttt_HM,T5tttt_MLDx,T1ttbbWW_HL10,T6ttWW_H.}"   ;;
+    3[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T1tttt_HL,T1tttt_HM,T5tttt_MLDx,T1ttbbWW_HL10,T1ttbbWW_MM5}"   ;;
+    0[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T5qqqqWW_HM,T5qqqqWWD}"   ;;
+    1[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD}"   ;;
+    2[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T1tttt_HL,T1tttt_HM,T5tttt_MLDx}"   ;;
+    2[1-9X]+) GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T1tttt_HL,T1tttt_HM,T5tttt_MLDx}"   ;;
+    3[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T1tttt_HL,T1tttt_HM,T5tttt_MLDx}"   ;;
     0[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T5qqqqWW_HM.*,T5qqqqWWD,T5qqqqWWD_.*}"   ;;
     1[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T1tttt_HM.*,T5tttt_MLDx.*,T5qqqqWW_HM.*,T5qqqqWWD,T5qqqqWWD_.*}"   ;;
     2[1-9X])  GO=" ${GO/T1tttt_HM,T5tttt_MLDx,T5qqqqWW_HM,T5qqqqWWD/T1tttt_HL.*,T1tttt_HM.*,T5tttt_MLDx.*}"   ;;
