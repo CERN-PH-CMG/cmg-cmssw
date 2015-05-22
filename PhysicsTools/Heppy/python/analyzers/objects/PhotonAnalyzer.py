@@ -87,10 +87,10 @@ class PhotonAnalyzer( Analyzer ):
 
             else:
                 # Reading from miniAOD directly
-                #keepThisPhoton = gamma.photonID(self.cfg_ana.gammaID) 
+                #keepThisPhoton = gamma.photonID(self.cfg_ana.gammaID)
 
                 # implement cut based ID with CMGTools
-                keepThisPhoton = gamma.passPhotonID(self.cfg_ana.gammaID) #from cmg
+                keepThisPhoton = gamma.passPhotonID(self.cfg_ana.gammaID) 
 
 
             if keepThisPhoton:
