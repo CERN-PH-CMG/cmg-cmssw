@@ -41,14 +41,15 @@ class LeptonAnalyzer( Analyzer ):
             self.eleIsoCut = cfg_ana.loose_electron_isoCut
         else:
             self.eleIsoCut = lambda ele : (
-                    ele.relIso03 <= self.cfg_ana.loose_electron_relIso and
+                    ele.relIso03 <= self.cfg_ana.loose_electron_relIso and 
                     ele.absIso03 <  getattr(self.cfg_ana,'loose_electron_absIso',9e99))
         if hasattr(cfg_ana, 'loose_muon_isoCut'):
             self.muIsoCut = cfg_ana.loose_muon_isoCut
         else:
             self.muIsoCut = lambda mu : (
-                    mu.relIso03 <= self.cfg_ana.loose_muon_relIso and
+                    mu.relIso03 <= self.cfg_ana.loose_muon_relIso and 
                     mu.absIso03 <  getattr(self.cfg_ana,'loose_muon_absIso',9e99))
+
 
 
         self.eleEffectiveArea = getattr(cfg_ana, 'ele_effectiveAreas', "Phys14_25ns_v1")
@@ -64,8 +65,6 @@ class LeptonAnalyzer( Analyzer ):
                 self.IsolationComputer = heppy.IsolationComputer(0.4)
             else:
                 self.IsolationComputer = heppy.IsolationComputer()
-
-
     #----------------------------------------
     # DECLARATION OF HANDLES OF LEPTONS STUFF   
     #----------------------------------------
@@ -125,8 +124,8 @@ class LeptonAnalyzer( Analyzer ):
         inclusiveElectrons = []
         for mu in allmuons:
             if (mu.track().isNonnull() and mu.muonID(self.cfg_ana.inclusive_muon_id) and 
-                mu.pt()>self.cfg_ana.inclusive_muon_pt and abs(mu.eta())<self.cfg_ana.inclusive_muon_eta and
-                abs(mu.dxy())<self.cfg_ana.inclusive_muon_dxy and abs(mu.dz())<self.cfg_ana.inclusive_muon_dz):
+                    mu.pt()>self.cfg_ana.inclusive_muon_pt and abs(mu.eta())<self.cfg_ana.inclusive_muon_eta and 
+                    abs(mu.dxy())<self.cfg_ana.inclusive_muon_dxy and abs(mu.dz())<self.cfg_ana.inclusive_muon_dz):
                 inclusiveMuons.append(mu)
         for ele in allelectrons:
             if (ele.electronID(self.cfg_ana.inclusive_electron_id) and
