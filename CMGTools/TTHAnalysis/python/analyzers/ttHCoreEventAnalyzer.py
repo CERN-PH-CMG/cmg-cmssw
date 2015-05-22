@@ -160,11 +160,11 @@ class ttHCoreEventAnalyzer( Analyzer ):
         import ROOT
 
         ## with Central Jets
-        objects25  = [ j for j in event.cleanJets if j.pt() > 25 ] + event.selectedLeptons
-        objects30  = [ j for j in event.cleanJets if j.pt() > 30 ] + event.selectedLeptons
-        objects40  = [ j for j in event.cleanJets if j.pt() > 40 ] + event.selectedLeptons
-        objects40j = [ j for j in event.cleanJets if j.pt() > 40 ] 
-        objects50j = [ j for j in event.cleanJets if j.pt() > 50 ] 
+        objects25 = [ j for j in event.cleanJets if j.pt() > 25 ] + event.selectedLeptons
+        objects30 = [ j for j in event.cleanJets if j.pt() > 30 ] + event.selectedLeptons
+        objects40 = [ j for j in event.cleanJets if j.pt() > 40 ] + event.selectedLeptons
+        objects40j = [ j for j in event.cleanJets if j.pt() > 40] 
+        objects50j = [ j for j in event.cleanJets if j.pt() > 50] 
         objects40j10l = [ j for j in event.cleanJets if j.pt() > 40 ] + [ l for l in event.selectedLeptons if l.pt() > 10 ] 
         objects40j10l.sort(key = lambda obj : obj.pt(), reverse = True)
 

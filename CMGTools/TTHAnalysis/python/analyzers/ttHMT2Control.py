@@ -71,7 +71,7 @@ class ttHMT2Control( Analyzer ):
         gamma_objects40  = [ j for j in event.gamma_cleanJets if j.pt() > 40 and abs(j.eta()) < 2.5 ] + [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta()) < 2.5 ]
         # for the gamma + jets variables we use do not take care about the leptons, we consider jets that do not overlap with the first jets
         gamma_objects40j = [ j for j in event.gamma_cleanJets if j.pt() > 40 and abs(j.eta()) < 2.5 ]
-        gamma_objects40ja = [ j for j in event.gamma_cleanJetsAll if j.pt() > 40 ]
+        gamma_objects40ja = [ j for j in event.gamma_cleanJetsAll if j.pt() > 40]
 
         event.gamma_htJet25 = sum([x.pt() for x in gamma_objects25])
         event.gamma_mhtJet25vec = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in gamma_objects25])) , -1.*(sum([x.py() for x in gamma_objects25])), 0, 0 )
