@@ -162,6 +162,7 @@ treeProducer = cfg.Analyzer(
      globalObjects = susyFullHad_globalObjects,
      collections = susyFullHad_collections,
      defaultFloatType = 'F',
+     treename = 'mt2'
 )
 
 susyCoreSequence.insert(susyCoreSequence.index(skimAnalyzer),
@@ -190,7 +191,7 @@ from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
 
 #-------- HOW TO RUN
 # choose 2 for full production
-test = 2
+test = 1
 if test==0:
     # ------------------------------------------------------------------------------------------- #
     # --- all this lines taken from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 
@@ -236,6 +237,10 @@ elif test==1:
     comp.splitFactor = 1
     comp.triggers = triggers_HT900 + triggers_HTMET + triggers_photon155 + triggers_1mu_isolow + triggers_MT2_mumu + triggers_MT2_ee + triggers_MT2_mue # to apply trigger skimming
 
+
+
+
+
 elif test==2:
     from CMGTools.TTHAnalysis.samples.samples_13TeV_PHYS14 import *
     # full production
@@ -270,7 +275,7 @@ doSpecialSettingsForMECCA = 0
 if doSpecialSettingsForMECCA==1:
     jetAna.doQG = False
     photonAna.do_randomCone = False
-    treeProducer.treename = 'mt2'
+    #treeProducer.treename = 'mt2'
 
 
 
