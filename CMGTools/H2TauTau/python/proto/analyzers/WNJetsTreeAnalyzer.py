@@ -1,5 +1,4 @@
 from CMGTools.RootTools.analyzers.TreeAnalyzer import TreeAnalyzer
-import random
 
 
 class WNJetsTreeAnalyzer( TreeAnalyzer ):

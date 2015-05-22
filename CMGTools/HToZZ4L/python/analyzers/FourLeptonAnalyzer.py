@@ -30,10 +30,6 @@ class FourLeptonAnalyzer( FourLeptonAnalyzerBase ):
 
         passed = cutFlow.applyCut(lambda x:True,'At least four loose leptons',4,'looseLeptons')
 
-        #Remove any loose electrons that are near to tight muons!
-        cleanOverlap = OverlapCleaner(cutFlow.obj1,0.05,11,13,lambda x: (x.physObj.isGlobalMuon() or  x.physObj.isPFMuon()))
-        passed = cutFlow.applyCut(cleanOverlap,'Electron cross cleaning',4,'cleanedLeptons')
-
         #Ask for four goodleptons
         passed = cutFlow.applyCut(self.leptonID,'At least four good non isolated Leptons',4,'goodLeptons')
 

@@ -1,5 +1,6 @@
 from PhysicsTools.Heppy.physicsobjects.Lepton import Lepton
 from PhysicsTools.Heppy.physicsutils.ElectronMVAID import *
+from PhysicsTools.HeppyCore.utils.deltar import deltaR
 import ROOT
 
 class Electron( Lepton ):
@@ -28,6 +29,7 @@ class Electron( Lepton ):
         elif id == "POG_MVA_ID_Trig":     return self.mvaIDTight()
         elif id == "POG_MVA_ID_NonTrig_full5x5":  return self.mvaIDLoose(full5x5=True)
         elif id == "POG_MVA_ID_Trig_full5x5":     return self.mvaIDTight(full5x5=True)
+        elif id == "POG_MVA_ID_Run2_NonTrig_VLoose":   return self.mvaIDRun2("NonTrigPhys14","VLoose")
         elif id == "POG_MVA_ID_Run2_NonTrig_Loose":    return self.mvaIDRun2("NonTrigPhys14","Loose")
         elif id == "POG_MVA_ID_Run2_NonTrig_Tight":    return self.mvaIDRun2("NonTrigPhys14","Tight")
         elif id == "POG_MVA_ID_Run2_NonTrig_HZZ":          return self.mvaIDRun2("NonTrigPhys14","HZZ")
@@ -192,6 +194,10 @@ class Electron( Lepton ):
                     if   (eta < 0.8)  : return self.mvaRun2(name) > +0.35;
                     elif (eta < 1.479): return self.mvaRun2(name) > +0.20;
                     else              : return self.mvaRun2(name) > -0.52;
+                elif wp=="VLoose":
+                    if   (eta < 0.8)  : return self.mvaRun2(name) > -0.11;
+                    elif (eta < 1.479): return self.mvaRun2(name) > -0.35;
+                    else              : return self.mvaRun2(name) > -0.55;
                 elif wp=="Tight":
                     if   (eta < 0.8)  : return self.mvaRun2(name) > 0.73;
                     elif (eta < 1.479): return self.mvaRun2(name) > 0.57;
@@ -237,6 +243,28 @@ class Electron( Lepton ):
         elif R == 0.4: return self.physObj.puChargedHadronIso()
         raise RuntimeError, "Electron chargedHadronIso missing for R=%s" % R
 
+
+    def absIsoWithFSR(self, R=0.4, puCorr="rhoArea", dBetaFactor=0.5):
+        '''
+        Calculate Isolation, subtract FSR, apply specific PU corrections" 
+        '''
+        photonIso = self.photonIsoR(R)
+        if hasattr(self,'fsrPhotons'):
+            for gamma in self.fsrPhotons:
+                dr = deltaR(gamma.eta(), gamma.phi(), self.physObj.eta(), self.physObj.phi())
+                if (self.isEB() or dr > 0.08) and dr < R:
+                    photonIso = max(photonIso-gamma.pt(),0.0)                
+        if puCorr == "deltaBeta":
+            offset = dBetaFactor * self.puChargedHadronIsoR(R)
+        elif puCorr == "rhoArea":
+            offset = self.rho*getattr(self,"EffectiveArea"+(str(R).replace(".","")))
+        elif puCorr in ["none","None",None]:
+            offset = 0
+        else:
+             raise RuntimeError, "Unsupported PU correction scheme %s" % puCorr
+        return self.chargedHadronIsoR(R)+max(0.,photonIso+self.neutralHadronIsoR(R)-offset)            
+
+
     def dxy(self, vertex=None):
         '''Returns dxy.
         Computed using vertex (or self.associatedVertex if vertex not specified),
@@ -245,6 +273,11 @@ class Electron( Lepton ):
         if vertex is None:
             vertex = self.associatedVertex
         return self.gsfTrack().dxy( vertex.position() )
+
+    def edxy(self):
+        '''returns the uncertainty on dxy (from gsf track)'''
+        return self.gsfTrack().dxyError()
+
     def p4(self):
 	 return ROOT.reco.Candidate.p4(self.physObj)
 
@@ -259,6 +292,11 @@ class Electron( Lepton ):
         if vertex is None:
             vertex = self.associatedVertex
         return self.gsfTrack().dz( vertex.position() )
+
+    def edz(self):
+        '''returns the uncertainty on dxz (from gsf track)'''
+        return self.gsfTrack().dzError()
+
 
     def lostInner(self) :
         if hasattr(self.gsfTrack(),"trackerExpectedHitsInner") :

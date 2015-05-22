@@ -200,7 +200,7 @@ SVfitStandaloneAlgorithm::SVfitStandaloneAlgorithm(const std::vector<svFitStanda
     integrator2_(0),
     integrator2_nDim_(0),
     isInitialized2_(false),
-    maxObjFunctionCalls2_(250000),
+    maxObjFunctionCalls2_(100000),
     marginalizeVisMass_(false),
     lutVisMassAllDMs_(0),
     shiftVisMass_(false),
@@ -244,6 +244,8 @@ SVfitStandaloneAlgorithm::~SVfitStandaloneAlgorithm()
   //delete lutVisPtResDM0_;
   //delete lutVisPtResDM1_;
   //delete lutVisPtResDM10_;
+
+  delete clock_;
 }
 
 namespace
@@ -313,20 +315,20 @@ SVfitStandaloneAlgorithm::setup()
 {
   using namespace svFitStandalone;
 
-  if ( verbose_ >= 1 ) {
-    std::cout << "<SVfitStandaloneAlgorithm::setup()>:" << std::endl;
-  }
+  //if ( verbose_ >= 1 ) {
+  //  std::cout << "<SVfitStandaloneAlgorithm::setup()>:" << std::endl;
+  //}
   for ( size_t idx = 0; idx < nll_->measuredTauLeptons().size(); ++idx ) {
     const MeasuredTauLepton& measuredTauLepton = nll_->measuredTauLeptons()[idx];
-    if ( verbose_ >= 1 ) {
-      std::cout << " --> upper limit of leg1::mNuNu will be set to "; 
-      if ( measuredTauLepton.type() == kTauToHadDecay ) { 
-	std::cout << "0";
-      } else {
-	std::cout << (svFitStandalone::tauLeptonMass - TMath::Min(measuredTauLepton.mass(), 1.5));
-      } 
-      std::cout << std::endl;
-    }
+    //if ( verbose_ >= 1 ) {
+    //  std::cout << " --> upper limit of leg1::mNuNu will be set to "; 
+    //  if ( measuredTauLepton.type() == kTauToHadDecay ) { 
+    //	  std::cout << "0";
+    //  } else {
+    //	  std::cout << (svFitStandalone::tauLeptonMass - TMath::Min(measuredTauLepton.mass(), 1.5));
+    //  } 
+    //  std::cout << std::endl;
+    //}
     // start values for xFrac
     minimizer_->SetLimitedVariable(
       idx*kMaxFitParams + kXFrac, 
@@ -378,11 +380,11 @@ SVfitStandaloneAlgorithm::setup()
 void
 SVfitStandaloneAlgorithm::fit()
 {
-  if ( verbose_ >= 1 ) {
-    std::cout << "<SVfitStandaloneAlgorithm::fit()>" << std::endl
-	      << " dimension of fit    : " << nll_->measuredTauLeptons().size()*svFitStandalone::kMaxFitParams << std::endl
-	      << " maxObjFunctionCalls : " << maxObjFunctionCalls_ << std::endl; 
-  }
+  //if ( verbose_ >= 1 ) {
+  //  std::cout << "<SVfitStandaloneAlgorithm::fit()>" << std::endl
+  //	        << " dimension of fit    : " << nll_->measuredTauLeptons().size()*svFitStandalone::kMaxFitParams << std::endl
+  //	        << " maxObjFunctionCalls : " << maxObjFunctionCalls_ << std::endl; 
+  //}
   // clear minimizer
   minimizer_->Clear();
   // set verbosity level of minimizer
@@ -398,19 +400,19 @@ SVfitStandaloneAlgorithm::fit()
   // compute uncertainties for increase of objective function by 0.5 wrt. 
   // minimum (objective function is log-likelihood function)
   minimizer_->SetErrorDef(0.5);
-  if ( verbose_ >= 1 ) {
-    std::cout << "starting ROOT::Math::Minimizer::Minimize..." << std::endl;
-    std::cout << " #freeParameters = " << minimizer_->NFree() << ","
-  	      << " #constrainedParameters = " << (minimizer_->NDim() - minimizer_->NFree()) << std::endl;
-  }
+  //if ( verbose_ >= 1 ) {
+  //  std::cout << "starting ROOT::Math::Minimizer::Minimize..." << std::endl;
+  //  std::cout << " #freeParameters = " << minimizer_->NFree() << ","
+  //	        << " #constrainedParameters = " << (minimizer_->NDim() - minimizer_->NFree()) << std::endl;
+  //}
   // do the minimization
   nll_->addDelta(false);
   nll_->addSinTheta(true);
   nll_->requirePhysicalSolution(false);
   minimizer_->Minimize();
-  if ( verbose_ >= 2 ) { 
-    minimizer_->PrintResults(); 
-  };
+  //if ( verbose_ >= 2 ) { 
+  //  minimizer_->PrintResults(); 
+  //};
   /* get Minimizer status code, check if solution is valid:
     
      0: Valid solution
@@ -421,9 +423,9 @@ SVfitStandaloneAlgorithm::fit()
      5: Any other failure
   */
   fitStatus_ = minimizer_->Status();
-  if ( verbose_ >=1 ) { 
-    std::cout << "--> fitStatus = " << fitStatus_ << std::endl; 
-  }
+  //if ( verbose_ >=1 ) { 
+  //  std::cout << "--> fitStatus = " << fitStatus_ << std::endl; 
+  //}
   
   // and write out the result
   using svFitStandalone::kXFrac;
@@ -439,31 +441,31 @@ SVfitStandaloneAlgorithm::fit()
   fittedDiTauSystem_ = fittedTauLeptons_[0] + fittedTauLeptons_[1];
   mass_ = fittedDiTauSystem().mass();
   massUncert_ = TMath::Sqrt(0.25*x1RelErr*x1RelErr + 0.25*x2RelErr*x2RelErr)*fittedDiTauSystem().mass();
-  if ( verbose_ >= 2 ) {
-    std::cout << ">> -------------------------------------------------------------" << std::endl;
-    std::cout << ">> Resonance Record: " << std::endl;
-    std::cout << ">> -------------------------------------------------------------" << std::endl;
-    std::cout << ">> pt  (di-tau)    = " << fittedDiTauSystem().pt  () << std::endl;
-    std::cout << ">> eta (di-tau)    = " << fittedDiTauSystem().eta () << std::endl;
-    std::cout << ">> phi (di-tau)    = " << fittedDiTauSystem().phi () << std::endl;
-    std::cout << ">> mass(di-tau)    = " << fittedDiTauSystem().mass() << std::endl;  
-    std::cout << ">> massUncert      = " << massUncert_ << std::endl
-	      << "   error[xFrac1]   = " << minimizer_->Errors()[svFitStandalone::kXFrac] << std::endl
-	      << "   value[xFrac1]   = " << minimizer_->X()[svFitStandalone::kXFrac]      << std::endl
-	      << "   error[xFrac2]   = " << minimizer_->Errors()[svFitStandalone::kMaxFitParams+kXFrac] << std::endl
-	      << "   value[xFrac2]   = " << minimizer_->X()[svFitStandalone::kMaxFitParams+kXFrac]      << std::endl;
-    for ( size_t leg = 0; leg < 2 ; ++leg ) {
-      std::cout << ">> -------------------------------------------------------------" << std::endl;
-      std::cout << ">> Leg " << leg+1 << " Record: " << std::endl;
-      std::cout << ">> -------------------------------------------------------------" << std::endl;
-      std::cout << ">> pt  (meas)      = " << nll_->measuredTauLeptons()[leg].p4().pt () << std::endl;
-      std::cout << ">> eta (meas)      = " << nll_->measuredTauLeptons()[leg].p4().eta() << std::endl;
-      std::cout << ">> phi (meas)      = " << nll_->measuredTauLeptons()[leg].p4().phi() << std::endl; 
-      std::cout << ">> pt  (fit )      = " << fittedTauLeptons()[leg].pt () << std::endl;
-      std::cout << ">> eta (fit )      = " << fittedTauLeptons()[leg].eta() << std::endl;
-      std::cout << ">> phi (fit )      = " << fittedTauLeptons()[leg].phi() << std::endl; 
-    }
-  }
+  //if ( verbose_ >= 2 ) {
+  //  std::cout << ">> -------------------------------------------------------------" << std::endl;
+  //  std::cout << ">> Resonance Record: " << std::endl;
+  //  std::cout << ">> -------------------------------------------------------------" << std::endl;
+  //  std::cout << ">> pt  (di-tau)    = " << fittedDiTauSystem().pt  () << std::endl;
+  //  std::cout << ">> eta (di-tau)    = " << fittedDiTauSystem().eta () << std::endl;
+  //  std::cout << ">> phi (di-tau)    = " << fittedDiTauSystem().phi () << std::endl;
+  //  std::cout << ">> mass(di-tau)    = " << fittedDiTauSystem().mass() << std::endl;  
+  //  std::cout << ">> massUncert      = " << massUncert_ << std::endl
+  //	        << "   error[xFrac1]   = " << minimizer_->Errors()[svFitStandalone::kXFrac] << std::endl
+  //	        << "   value[xFrac1]   = " << minimizer_->X()[svFitStandalone::kXFrac]      << std::endl
+  //	        << "   error[xFrac2]   = " << minimizer_->Errors()[svFitStandalone::kMaxFitParams+kXFrac] << std::endl
+  //	        << "   value[xFrac2]   = " << minimizer_->X()[svFitStandalone::kMaxFitParams+kXFrac]      << std::endl;
+  //  for ( size_t leg = 0; leg < 2 ; ++leg ) {
+  //    std::cout << ">> -------------------------------------------------------------" << std::endl;
+  //    std::cout << ">> Leg " << leg+1 << " Record: " << std::endl;
+  //    std::cout << ">> -------------------------------------------------------------" << std::endl;
+  //    std::cout << ">> pt  (meas)      = " << nll_->measuredTauLeptons()[leg].p4().pt () << std::endl;
+  //    std::cout << ">> eta (meas)      = " << nll_->measuredTauLeptons()[leg].p4().eta() << std::endl;
+  //    std::cout << ">> phi (meas)      = " << nll_->measuredTauLeptons()[leg].p4().phi() << std::endl; 
+  //    std::cout << ">> pt  (fit )      = " << fittedTauLeptons()[leg].pt () << std::endl;
+  //    std::cout << ">> eta (fit )      = " << fittedTauLeptons()[leg].eta() << std::endl;
+  //    std::cout << ">> phi (fit )      = " << fittedTauLeptons()[leg].phi() << std::endl; 
+  //  }
+  //}
 }
 
 void
@@ -744,9 +746,9 @@ SVfitStandaloneAlgorithm::integrateVEGAS(const std::string& likelihoodFileName)
     delete likelihoodGraph;
   }
 
-  delete x0;
-  delete xl;
-  delete xh;
+  delete[] x0;
+  delete[] xl;
+  delete[] xh;
 
   if ( verbose_ >= 1 ) {
     clock_->Show("<SVfitStandaloneAlgorithm::integrateVEGAS>");

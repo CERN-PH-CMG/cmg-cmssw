@@ -1,0 +1,6 @@
+nvtx: nVert: 40,0.5,40.5 ; XTitle="N(vertices)", Legend='TR'
+met: met: 60,200,1200    ; XTitle="E_{T}^{miss}  [GeV]",Logy,LegendCutoff=1e-3, YMin=1, YMax=1e7
+j1pt: Jet1_pt: 40,30,1000; XTitle="Leading jet p_{T}  [GeV]", Legend='TR',Logy,LegendCutoff=1e-3, YMin=1, YMax=1e7
+j1eta: Jet1_eta: 40,-2.5,2.5;    XTitle="Leading jet #eta", Legend='TR',Logy,LegendCutoff=1e-3, YMin=1, YMax=1e7
+j2pt: Jet2_pt: 40,30,1000; XTitle="Trailing jet p_{T}  [GeV]", Legend='TR',Logy,LegendCutoff=1e-3, YMin=1, YMax=1e7
+j2eta: Jet2_eta: 40,-2.5,2.5;    XTitle="Trailing jet #eta", Legend='TR',Logy,LegendCutoff=1e-3, YMin=1, YMax=1e7

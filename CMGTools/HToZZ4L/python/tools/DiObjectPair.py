@@ -50,7 +50,7 @@ class DiObjectPair( TLorentzVector ):
 
     def PdgId(self):
         '''Dummy, needed to fill the tree'''
-        return 24
+        return 25
 
 
 
