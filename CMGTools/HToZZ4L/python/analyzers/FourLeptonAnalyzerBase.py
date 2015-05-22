@@ -57,24 +57,9 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
 
     def leptonID_tight(self,lepton):
-        if abs(lepton.sip3D())>4:
-            return False
-        if abs(lepton.pdgId())==13:
-            if not ((lepton.physObj.isGlobalMuon() or lepton.physObj.isTrackerMuon()) and lepton.physObj.isPFMuon()):
-                return False
-        elif abs(lepton.pdgId())==11:
-            if not lepton.electronID("POG_MVA_ID_Run2_NonTrig_HZZ"):
-                return False
-        return True    
-
+        return lepton.tightId()
 
     def leptonID_loose(self,lepton):
-        if abs(lepton.sip3D())>4:
-            return False
-        if abs(lepton.pdgId())==13:
-            if lepton.physObj.isTrackerMuon() and not (lepton.physObj.isGlobalMuon()):
-                if not (lepton.physObj.numberOfMatchedStations())>0:
-                    return False
         return True    
 
 
@@ -83,10 +68,10 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
 
     def muonIsolation(self,lepton):
-        return lepton.absIso(0.5)/lepton.pt()<0.4
+        return lepton.absIsoWithFSR(R=0.4,puCorr="deltaBeta")/lepton.pt()<0.4
 
     def electronIsolation(self,lepton):
-        return lepton.absIsoFromEA("04")/lepton.pt()<0.5
+        return lepton.absIsoWithFSR(R=0.4,puCorr="rhoArea")/lepton.pt()<0.5
 
     def diLeptonMass(self,dilepton):
         return dilepton.M()>12.0 and dilepton.M()<120.
@@ -106,13 +91,19 @@ class FourLeptonAnalyzerBase( Analyzer ):
         #find Alternative pairing.Do not forget FSR
         leptons  = [ fourLepton.leg1.leg1, fourLepton.leg1.leg2, fourLepton.leg2.leg1, fourLepton.leg2.leg2 ]
         quads = []
-        for quad in self.findOSSFQuads(leptons, fourLepton.allPhotonsForFSR):
+        for quad in self.findOSSFQuads(leptons, fourLepton.daughterPhotons()): # only re-search for FSR from already-attached photons
             # skip self
             if fourLepton.leg1.leg1 == quad.leg1.leg1 and fourLepton.leg1.leg2 == quad.leg1.leg2 and fourLepton.leg2.leg1 == quad.leg2.leg1:
                 continue
-            # skip those that fail cuts except Z2 mass
-            if not self.fourLeptonIsolation(quad) or not self.fourLeptonMassZ1(quad) or not self.qcdSuppression(quad):
-                continue
+
+            # we used to skip those that fail cuts except Z2 mass
+            ### if not self.fourLeptonIsolation(quad) or not self.fourLeptonMassZ1(quad) or not self.qcdSuppression(quad):
+            ###    continue
+            # however:
+            # - we've now decided in the sync that we don't re-check for isolation on the alternate pairing
+            # - QCD suppression does not depend on photons, and so it doesn't depend on the pairing
+            # - if the new pairing has a better Z1 mass than the original one, then it passes the Z1 mass cut
+
             # skip those that have a worse Z1 mass than the nominal
             if abs(fourLepton.leg1.M()-91.118) < abs(quad.leg1.M()-91.118):
                 continue
@@ -212,6 +203,9 @@ class FourLeptonAnalyzerBase( Analyzer ):
                 DR=deltaR(l.eta(),l.phi(),g.eta(),g.phi())
                 if DR>0.5:
                     continue;
+                if self.cfg_ana.attachFsrToGlobalClosestLeptonOnly:
+                    if l != g.globalClosestLepton:
+                        continue
                 if hasattr(g,'DR'):
                     if DR<g.DR:
                         g.DR=DR

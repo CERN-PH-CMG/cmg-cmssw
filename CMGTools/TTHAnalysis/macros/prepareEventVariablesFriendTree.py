@@ -119,8 +119,11 @@ for D in glob(args[0]+"/*"):
                 if re.match(dm,short): found = True
             if not found: continue
         data = ("DoubleMu" in short or "MuEG" in short or "DoubleElectron" in short or "SingleMu" in short)
-        f = ROOT.TFile.Open(fname);
+        f = ROOT.TFile.Open(fname)
         t = f.Get(treename)
+        if not t:
+            print "Corrupted ",fname
+            continue
         entries = t.GetEntries()
         f.Close()
         if options.newOnly:

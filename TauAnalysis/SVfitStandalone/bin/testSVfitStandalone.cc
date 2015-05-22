@@ -7,10 +7,13 @@
    from a flat n-tuple or single event.
 */
 
+#include "FWCore/ParameterSet/interface/FileInPath.h"
+
 #include "TauAnalysis/SVfitStandalone/interface/SVfitStandaloneAlgorithm.h"
 
-#include "TTree.h"
 #include "TFile.h"
+#include "TTree.h"
+#include "TH1.h"
 
 void singleEvent()
 {
@@ -29,28 +32,33 @@ void singleEvent()
   // define lepton four vectors
   std::vector<svFitStandalone::MeasuredTauLepton> measuredTauLeptons;
   measuredTauLeptons.push_back(svFitStandalone::MeasuredTauLepton(svFitStandalone::kTauToElecDecay, 33.7393, 0.9409,  -0.541458, 0.51100e-3)); // tau -> electron decay (Pt, eta, phi, mass)
-  measuredTauLeptons.push_back(svFitStandalone::MeasuredTauLepton(svFitStandalone::kTauToHadDecay,  25.7322, 0.618228, 2.79362,  0.13957));    // tau -> hadron decay   (Pt, eta, phi, mass)
+  measuredTauLeptons.push_back(svFitStandalone::MeasuredTauLepton(svFitStandalone::kTauToHadDecay,  25.7322, 0.618228, 2.79362,  0.13957, 0)); // tau -> 1prong0pi0 hadronic decay (Pt, eta, phi, mass)
   // define algorithm (set the debug level to 3 for testing)
   unsigned verbosity = 2;
   SVfitStandaloneAlgorithm algo(measuredTauLeptons, measuredMETx, measuredMETy, covMET, verbosity);
-  algo.addLogM(false);
+  algo.addLogM(false);  
+  edm::FileInPath inputFileName_visPtResolution("TauAnalysis/SVfitStandalone/data/svFitVisMassAndPtResolutionPDF.root");
+  TH1::AddDirectory(false);  
+  TFile* inputFile_visPtResolution = new TFile(inputFileName_visPtResolution.fullPath().data());
+  algo.shiftVisPt(true, inputFile_visPtResolution);
   /* 
      the following lines show how to use the different methods on a single event
   */
   // minuit fit method
   //algo.fit();
   // integration by VEGAS (same as function algo.integrate() that has been in use when markov chain integration had not yet been implemented)
-  algo.integrateVEGAS();
+  //algo.integrateVEGAS();
   // integration by markov chain MC
-  //algo.integrateMarkovChain();
+  algo.integrateMarkovChain();
 
   double mass = algo.getMass(); // return value is in units of GeV
   if ( algo.isValidSolution() ) {
-    std::cout << "found mass = " << mass << " (expected value = 123.126)" << std::endl;
+    std::cout << "found mass = " << mass << " (expected value = 118.64)" << std::endl;
   } else {
     std::cout << "sorry -- status of NLL is not valid [" << algo.isValidSolution() << "]" << std::endl;
   }
-  return;
+
+  delete inputFile_visPtResolution;
 }
 
 void eventsFromTree(int argc, char* argv[]) 

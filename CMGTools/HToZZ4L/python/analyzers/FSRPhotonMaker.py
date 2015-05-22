@@ -43,10 +43,21 @@ class FSRPhotonMaker( Analyzer ):
         for p in pf:
             if p.pdgId() != 22 or not( p.pt() > 2.0 and abs(p.eta()) < 2.4 ):
                 continue
+            scVetoed = False
             for l in leptons:
                 if abs(l.pdgId())==11 and self.electronID(l):
-                    if (abs(p.eta()-l.eta())<0.05 and deltaPhi(p.phi(),l.phi())<2) or deltaR(p.eta(),p.phi(),l.eta(),l.phi())<0.15: 
-                        continue;
+                    #print "Testing photon pt %5.1f eta %+7.4f phi %+7.4f vs ele pt %.1f eta %+7.4f  phi %+7.4f sc  eta %+7.4f  phi %+7.4f" % ( p.pt(), p.eta(), p.phi(), l.pt(), l.eta(), l.phi(), l.superCluster().eta(), l.superCluster().phi() )
+                    #print "Testing                                                       deta %+7.4f dphi %+7.4f sc deta %+7.4f dphi %+7.4f" % ( abs(p.eta()-l.eta()), deltaPhi(p.phi(),l.phi()), abs(p.eta()-l.superCluster().eta()), deltaPhi(p.phi(),l.superCluster().phi()))
+                    if self.cfg_ana.electronVeto == "superclusterEta":
+                        if (abs(p.eta()-l.superCluster().eta())<0.05 and abs(deltaPhi(p.phi(),l.superCluster().phi()))<2) or deltaR(p.eta(),p.phi(),l.superCluster().eta(),l.superCluster().phi())<0.15: 
+                            scVetoed = True; break
+                    elif self.cfg_ana.electronVeto == "electronEta":
+                        if (abs(p.eta()-l.eta())<0.05 and abs(deltaPhi(p.phi(),l.phi()))<2) or deltaR(p.eta(),p.phi(),l.eta(),l.phi())<0.15: 
+                            scVetoed = True; break
+                    else: 
+                        raise RuntimeError, "electronVeto option %r not implemented" % self.cfg_ana.electronVeto
+            if scVetoed: continue
+            for l in leptons:
                 DR =deltaR(l.eta(),l.phi(),p.eta(),p.phi())     
                 if DR<0.07 and p.pt()>2.0:
                     direct.append(p)

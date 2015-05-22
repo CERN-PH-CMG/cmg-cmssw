@@ -3,7 +3,7 @@ import math
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Muon, Tau, Electron
 from PhysicsTools.Heppy.physicsobjects.PhysicsObject import PhysicsObject
 from PhysicsTools.Heppy.physicsobjects.HTauTauElectron import HTauTauElectron
-from CMGTools.RootTools.utils.DeltaR import deltaR2
+from PhysicsTools.HeppyCore.utils.deltar import deltaR2
 
 class DiObject( PhysicsObject ):
     '''Generic di-object class, to handle di-objects from the EDM file

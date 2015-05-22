@@ -8,7 +8,7 @@ class Variable():
         self.function = function
         if function is None:
             # Note: works for attributes, not member functions
-            self.function = lambda x : getattr(x, self.name) 
+            self.function = lambda x : getattr(x, self.name, -999.) 
         self.type = float
 
 # event variables
@@ -74,7 +74,7 @@ particle_vars = [
     Variable('pt', lambda p: p.pt()),
     Variable('eta', lambda p: p.eta()),
     Variable('phi', lambda p: p.phi()),
-    Variable('charge', lambda p: p.charge()), # charge may be non-integer for gen particles
+    Variable('charge', lambda p: p.charge() if hasattr(p, 'charge') else 0), # charge may be non-integer for gen particles
     Variable('mass', lambda p: p.mass()),
 ]
 
@@ -84,10 +84,10 @@ lepton_vars = [
     Variable('dxy', lambda lep : lep.dxy()),
     Variable('dz', lambda lep : lep.dz()),
     Variable('weight'),
-    Variable('weight_trigger', lambda lep : lep.triggerWeight),
-    Variable('eff_trigger_data', lambda lep : lep.triggerEffData),
-    Variable('eff_trigger_mc', lambda lep : lep.triggerEffMC),
-    Variable('weight_rec_eff', lambda lep : lep.recEffWeight),
+    Variable('weight_trigger', lambda lep : getattr(lep, 'triggerWeight', -999.)),
+    Variable('eff_trigger_data', lambda lep : getattr(lep, 'triggerEffData', -999.)),
+    Variable('eff_trigger_mc', lambda lep : getattr(lep, 'triggerEffMC', -999.)),
+    Variable('weight_rec_eff', lambda lep : getattr(lep, 'recEffWeight', -999.)),
 ]
 
 # electron

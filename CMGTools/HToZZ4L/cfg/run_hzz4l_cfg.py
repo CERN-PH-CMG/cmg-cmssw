@@ -39,6 +39,9 @@ elif test == 'Debug':
     comp.fineSplitFactor = 1
     selectedComponents = [ comp ]
     eventSelector.toSelect = [ (1,1,2), (1,1,53), (1,1,69), (1,1,75), (1,1,79) ] 
+    if getHeppyOption('events'):
+        eventSelector.toSelect = [ eval("("+x.replace(":",",")+")") for x in getHeppyOption('events').split(",") ]
+        print "Will select events ",eventSelector.toSelect
     sequence = cfg.Sequence([eventSelector] + hzz4lCoreSequence)
 
 

@@ -20,12 +20,12 @@ vertexAna.keepFailingEvents = True # keep events with no good vertices
 lepAna.loose_muon_dxy = 0.5
 lepAna.loose_muon_dz  = 1.0
 lepAna.loose_muon_relIso  = 0.15
-lepAna.loose_muon_minRelIso  = 0.2
+lepAna.loose_muon_isoCut = lambda muon :muon.miniRelIso < 0.2
 
 lepAna.loose_electron_pt  = 5
 lepAna.loose_electron_eta    = 2.4
 lepAna.loose_electron_relIso = 0.15
-lepAna.loose_electron_minRelIso  = 0.1
+lepAna.loose_electron_isoCut = lambda electron : electron.miniRelIso < 0.1
 
 lepAna.loose_electron_id  = "POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Veto_full5x5"
 lepAna.loose_electron_lostHits = 999. # no cut
@@ -43,7 +43,6 @@ lepAna.ele_tightId = "Cuts_PHYS14_25ns_v1_ConvVetoDxyDz"
 lepAna.notCleaningElectrons = True
 lepAna.doMiniIsolation = True
 lepAna.miniIsolationPUCorr = 'raw'
-lepAna.useMiniIsolation = True
 
 # JET (for event variables do apply the jetID and not PUID yet)
 jetAna.relaxJetId = False
@@ -77,7 +76,6 @@ tauAna.tauAntiElectronID = "againstElectronLoose"
 photonAna.etaCentral = 2.5
 photonAna.gammaID = "PhotonCutBasedIDLoose_PHYS14"
 photonAna.do_randomCone = True
-#photonAna.do_mc_match = False
 
 # Isolated Track
 isoTrackAna.setOff=False
@@ -102,7 +100,7 @@ ttHMT2Control = cfg.Analyzer(
             )
 
 ##------------------------------------------
-##  TOLOLOGIAL VARIABLES: MT, MT2
+##  TOLOLOGIAL VARIABLES: minMT, MT2
 ##------------------------------------------
 
 from CMGTools.TTHAnalysis.analyzers.ttHTopoVarAnalyzer import ttHTopoVarAnalyzer
@@ -111,6 +109,13 @@ ttHTopoJetAna = cfg.Analyzer(
             ttHTopoVarAnalyzer, name = 'ttHTopoVarAnalyzer',
             doOnlyDefault = True
             )
+
+from PhysicsTools.Heppy.analyzers.eventtopology.MT2Analyzer import MT2Analyzer
+
+MT2Ana = cfg.Analyzer(
+    MT2Analyzer, name = 'MT2Analyzer',
+    doOnlyDefault = True
+    )
 
 ##------------------------------------------
 ##  Z skim
@@ -177,6 +182,7 @@ susyCoreSequence.insert(susyCoreSequence.index(skimAnalyzer),
 sequence = cfg.Sequence(
     susyCoreSequence+[
     ttHMT2Control,
+    MT2Ana,
     ttHTopoJetAna,
     ttHFatJetAna,
     treeProducer,
@@ -184,6 +190,14 @@ sequence = cfg.Sequence(
 
 ###---- to switch off the compression
 #treeProducer.isCompressed = 0
+
+
+treeProducer.treename = 'mt2'
+doSpecialSettingsForMECCA = 0
+if doSpecialSettingsForMECCA==1:
+    jetAna.doQG = False
+    photonAna.do_randomCone = False
+    photonAna.do_mc_match = False
 
 
 

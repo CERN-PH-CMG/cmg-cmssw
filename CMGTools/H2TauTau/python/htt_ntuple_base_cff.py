@@ -15,8 +15,7 @@ from CMGTools.H2TauTau.proto.analyzers.EmbedWeighter import EmbedWeighter
 from CMGTools.H2TauTau.proto.analyzers.DYJetsFakeAnalyzer import DYJetsFakeAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.NJetsAnalyzer import NJetsAnalyzer
 from CMGTools.H2TauTau.proto.analyzers.HiggsPtWeighter import HiggsPtWeighter
-
-from CMGTools.RootTools.analyzers.VBFSimpleAnalyzer import VBFSimpleAnalyzer
+from CMGTools.H2TauTau.proto.analyzers.VBFAnalyzer import VBFAnalyzer
 
 puFileMC = None
 puFileData = None
@@ -76,8 +75,8 @@ jetAna = cfg.Analyzer(
 )
 
 vbfAna = cfg.Analyzer(
-    VBFSimpleAnalyzer,
-    name='VBFSimpleAnalyzer',
+    VBFAnalyzer,
+    name='VBFAnalyzer',
     cjvPtCut=30.,
     Mjj=500.,
     deltaEta=3.5
