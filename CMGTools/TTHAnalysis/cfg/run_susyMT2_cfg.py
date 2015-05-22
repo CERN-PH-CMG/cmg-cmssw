@@ -192,14 +192,6 @@ sequence = cfg.Sequence(
 #treeProducer.isCompressed = 0
 
 
-treeProducer.treename = 'mt2'
-doSpecialSettingsForMECCA = 0
-if doSpecialSettingsForMECCA==1:
-    jetAna.doQG = False
-    photonAna.do_randomCone = False
-    photonAna.do_mc_match = False
-
-
 
 from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
 
@@ -289,12 +281,7 @@ doSpecialSettingsForMECCA = 0
 if doSpecialSettingsForMECCA==1:
     jetAna.doQG = False
     photonAna.do_randomCone = False
-    #treeProducer.treename = 'mt2'
-
-
-
-
-
+    photonAna.do_mc_match = False
 # ------------------------------------------------------------------------------------------- #
 
 
