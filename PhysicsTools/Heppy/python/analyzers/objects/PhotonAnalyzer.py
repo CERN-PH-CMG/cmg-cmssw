@@ -77,29 +77,21 @@ class PhotonAnalyzer( Analyzer ):
             keepThisPhoton = True
 
             if self.cfg_ana.gammaID=="PhotonCutBasedIDLoose_CSA14" or self.cfg_ana.gammaID=="PhotonCutBasedIDLoose_PHYS14" :
-                #gamma.idCutBased = gamma.photonIDCSA14(self.cfg_ana.gammaID)  ## from us
+                gamma.idCutBased = gamma.photonIDCSA14(self.cfg_ana.gammaID) 
                 # we're keeing sigmaietaieta sidebands:
-                #keepThisPhoton   = gamma.photonIDCSA14(self.cfg_ana.gammaID, True) ## from us
-#=======
-            #if self.cfg_ana.gammaID=="PhotonCutBasedIDLoose_CSA14" :
-                keepThisPhoton = gamma.photonIDCSA14("PhotonCutBasedIDLoose_CSA14")
-                gamma.idCutBased = keepThisPhoton
-                # we're keeing sigmaietaieta sidebands, but the id is false for them:
-                
-                if abs(gamma.eta())< 1.479 and gamma.full5x5_sigmaIetaIeta()>0.010 : 
-                    gamma.idCutBased = False
-                if abs(gamma.eta())>=1.479 and gamma.full5x5_sigmaIetaIeta()>0.0321 : 
-                    gamma.idCutBased = False
+                keepThisPhoton   = gamma.photonIDCSA14(self.cfg_ana.gammaID, True) 
+
                 if gamma.hasPixelSeed():
                     keepThisPhoton = False
                     gamma.idCutBased = 0
-#>>>>>>> cmg-central/CMGTools-from-CMSSW_7_2_3
+
             else:
                 # Reading from miniAOD directly
-                # keepThisPhoton = gamma.photonID(self.cfg_ana.gammaID)
+                #keepThisPhoton = gamma.photonID(self.cfg_ana.gammaID)
 
                 # implement cut based ID with CMGTools
-                keepThisPhoton = gamma.passPhotonID(self.cfg_ana.gammaID)
+                keepThisPhoton = gamma.passPhotonID(self.cfg_ana.gammaID) 
+
 
             if keepThisPhoton:
                 event.selectedPhotons.append(gamma)
