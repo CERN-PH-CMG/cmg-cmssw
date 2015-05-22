@@ -163,8 +163,8 @@ class ttHCoreEventAnalyzer( Analyzer ):
         objects25 = [ j for j in event.cleanJets if j.pt() > 25 ] + event.selectedLeptons
         objects30 = [ j for j in event.cleanJets if j.pt() > 30 ] + event.selectedLeptons
         objects40 = [ j for j in event.cleanJets if j.pt() > 40 ] + event.selectedLeptons
-        objects40j = [ j for j in event.cleanJets if j.pt() > 40] 
-        objects50j = [ j for j in event.cleanJets if j.pt() > 50] 
+        objects40j = [ j for j in event.cleanJets if j.pt() > 40 ] 
+        objects50j = [ j for j in event.cleanJets if j.pt() > 50 ] 
         objects40j10l = [ j for j in event.cleanJets if j.pt() > 40 ] + [ l for l in event.selectedLeptons if l.pt() > 10 ] 
         objects40j10l.sort(key = lambda obj : obj.pt(), reverse = True)
 
@@ -201,8 +201,8 @@ class ttHCoreEventAnalyzer( Analyzer ):
         #Make 40 and 50 GeV HTs from cleanGenJets
         if self.cfg_comp.isMC:
             
-            genObjects40j = [j for j in event.cleanGenJets if j.pt()>40 ]
-            genObjects50j = [j for j in event.cleanGenJets if j.pt()>50 ]
+            genObjects40j = [j for j in event.cleanGenJets if j.pt()>40]
+            genObjects50j = [j for j in event.cleanGenJets if j.pt()>50]
 
             event.htGenJet40j = sum([x.pt() for x in genObjects40j])
             event.mhtGenJet40jvec = ROOT.reco.Particle.LorentzVector(-1.*(sum([x.px() for x in genObjects40j])) , -1.*(sum([x.py() for x in genObjects40j])), 0, 0 )               
