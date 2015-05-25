@@ -56,6 +56,7 @@ public:
   TString model_name = "fitresult_Add");
   void addMCFile  (std::string iNameMC,TString model_name = "fitresult_Add");
   double NonClosure_weight(double iMet,double iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi);
+  double NonClosure_scale(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi);
 
 protected:
   enum Recoil { 

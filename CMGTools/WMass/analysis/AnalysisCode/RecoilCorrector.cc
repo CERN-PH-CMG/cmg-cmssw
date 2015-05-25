@@ -12,6 +12,11 @@ RecoilCorrector::RecoilCorrector(string iNameZ, int iSeed,TString model_name, TS
   hNonClosure[1][0] = (TH2D*) fNonClosure->Get("RMS_U2_y1");
   hNonClosure[1][1] = (TH2D*) fNonClosure->Get("RMS_U2_y2");
   
+  // hNonClosure[0][0]->Smooth(10);
+  // hNonClosure[0][1]->Smooth(10);
+  // hNonClosure[1][0]->Smooth(10);
+  // hNonClosure[1][1]->Smooth(10);
+  
   // fId = 0; 
   fJet = 0;
 }
@@ -158,7 +163,7 @@ double RecoilCorrector::NonClosure_weight(double iMet,double iMPhi,double iGenPt
   // cout << "pU1= " << pU1 << " abs_pU2= " << abs_pU2 << endl;
   
   double weight_NonClosure = 1;
-  int rap_bin = 0;
+  int rap_bin = 0; if(iGenRap>1.2) rap_bin=1;
  
  // if(iGenRap>1) rap_bin = 1 // for the moment we use only one rapidity bin, i.e. y1
 
@@ -179,6 +184,54 @@ double RecoilCorrector::NonClosure_weight(double iMet,double iMPhi,double iGenPt
   // cout << " ------->>> " << weight_NonClosure << endl;
   
   
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
+double RecoilCorrector::NonClosure_scale(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi) {
+  
+  // cout 
+  // << "iMet= " << iMet
+  // << " iMPhi= " << iMPhi
+  // << " iGenPt= " << iGenPt
+  // << " iGenPhi= " << iGenPhi
+  // << " iGenRap= " << iGenRap
+  // << " iLepPt= " << iLepPt
+  // << " iLepPhi= " << iLepPhi
+  // << endl;
+  
+  double pUX   = iMet*cos(iMPhi) + iLepPt*cos(iLepPhi);
+  double pUY   = iMet*sin(iMPhi) + iLepPt*sin(iLepPhi);
+  double pU    = sqrt(pUX*pUX+pUY*pUY);
+
+  double pCos  = - (pUX*cos(iGenPhi) + pUY*sin(iGenPhi))/pU;
+  double pSin  =   (pUX*sin(iGenPhi) - pUY*cos(iGenPhi))/pU;
+
+  double pU1   = pU*pCos;
+  double pU2   = pU*pSin; 
+  double abs_pU2   = TMath::Abs(pU2); // we use the abs, i.e. the mean rms, to reduce fluctuations 
+  
+  // cout << "pU1= " << pU1 << " abs_pU2= " << abs_pU2 << endl;
+  
+  int rap_bin = 0;
+ 
+  // if(iGenRap>1) rap_bin = 1 // for the moment we use only one rapidity bin, i.e. y1
+
+  if(hNonClosure[0][rap_bin]->GetBinContent(hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1)!=0))
+    pU1 /= hNonClosure[0][rap_bin]->GetBinContent(hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1)); // u1
+  // cout << "hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1)= " << hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1) << endl;
+
+  if(hNonClosure[1][rap_bin]->GetBinContent(hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2))!=0)
+    pU2 /= hNonClosure[1][rap_bin]->GetBinContent(hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2)); // u2
+  // cout << "hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2)= " << hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2) << endl;
+  
+  iMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
+  iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
+  
+  // cout 
+  // << "iMet= " << iMet
+  // << " iMPhi= " << iMPhi
+  // << " after rescaling "
+  // << endl;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
