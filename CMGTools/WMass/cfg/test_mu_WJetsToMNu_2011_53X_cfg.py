@@ -2,10 +2,21 @@
 from CMGTools.WMass.analyzers.CoreModule_53X_cff import * 
 
 WAna.doMad = False
+
+CoreWsequence = cfg.Sequence( [
+    genAna,
+    jsonAna,
+    triggerAna,
+    vertexAna,
+    WAna,
+    WtreeProducer,
+    # ZAna,
+    # ZtreeProducer,
+   ] )
 sequence = cfg.Sequence(CoreWsequence)
 
-# WAna.storeLHE_weight = True
-# WtreeProducer.storeLHE_weight = True
+WAna.storeLHE_weight = True
+WtreeProducer.storeLHE_weight = True
 # # WtreeProducer.superslimNtuples = True
 
 from CMGTools.H2TauTau.proto.samples.ewk import WJets
@@ -135,8 +146,8 @@ selectedComponents = [WJetsMinus3,WJetsMinus3_p2]
 
 # # TEST
 # # selectedComponents = [WJetsPlus,WJetsPlus2,WJetsPlus3]
-# selectedComponents = [WJetsPlus]
-# WJetsPlus.files = WJetsPlus.files[:1]
+selectedComponents = [WJetsPlus]
+WJetsPlus.files = WJetsPlus.files[:1]
 # WJetsPlus.splitFactor = 1
 # WJetsPlus2.files = WJetsPlus2.files[:1]
 # WJetsPlus2.splitFactor = 1

@@ -240,8 +240,11 @@ class ZAnalyzer( Analyzer ):
                             print "\n"
             print "\n ========================================================="
 
-        # for genp in event.genParticles:
+        foundZ = False
+        for genp in event.genParticles:
           # if math.fabs(genp.pdgId())==23:
+          if math.fabs(genp.pdgId())==23 and genp.status()==62:
+            foundZ = True
             # print 'genp.pdgId()=',genp.pdgId(), 'genp.status()=',genp.status(), 'genp.numberOfDaughters()=',genp.numberOfDaughters()
             # # if(genp.numberOfDaughters()>0 and genp.status()==62):
             # if(genp.numberOfDaughters()>0):
@@ -249,6 +252,8 @@ class ZAnalyzer( Analyzer ):
               # if(genp.numberOfDaughters()>1):
                 # print 'genp.daughter(1)',genp.daughter(1).pdgId(),'status',genp.daughter(1).status()
 
+        # if not foundZ: print 'NO Z FOUND!!!'
+          
         genZ_dummy = [ genp for genp in event.genParticles if \
                              math.fabs(genp.pdgId())==23 and (self.cfg_ana.doMad or genp.status()==62 ) 
                              ]
@@ -291,8 +296,10 @@ class ZAnalyzer( Analyzer ):
 
         ##------------------------ HERE THERE is the selection --------------------------------------  
         
-        # reco events must have good reco vertex and trigger fired...                          
-        if not (event.passedVertexAnalyzer):
+        # reco events must have good reco vertex and trigger fired...                       
+        if (not event.passedVertexAnalyzer) or (event.vertices[0] != event.goodVertices[0]):
+        # if (not event.passedVertexAnalyzer):
+          # print 'PROBLEM'
           if not hasattr(self.cfg_ana,'keepFailingEvents') or (hasattr(self.cfg_ana,'keepFailingEvents') and not self.cfg_ana.keepFailingEvents):
             return False
           else:
@@ -481,7 +488,7 @@ class ZAnalyzer( Analyzer ):
         
         # event is fully considered as good
         event.ZGoodEvent = True
-
+        
         ##------------------------  EXTRA  --------------------------------------  
         
         if not hasattr(self.cfg_ana,'keepFailingEvents') or (hasattr(self.cfg_ana,'keepFailingEvents') and not self.cfg_ana.keepFailingEvents):
@@ -503,15 +510,23 @@ class ZAnalyzer( Analyzer ):
             or not ( \
                     ( event.BestZPosMuon.pt() > 30 and event.BestZPosMuon.relIso(0.5) < 0.12 \
                     and math.fabs(event.BestZPosMuon.eta()) < 2.1 and math.fabs(event.BestZPosMuon.dxy()) < 0.2 \
-                    and math.fabs(event.BestZPosMuon.dz()) < 0.5 ) \
+                    # and math.fabs(event.BestZPosMuon.dz()) < 0.5 ) \
+                    and math.fabs(event.BestZPosMuon.dz()) < 0.1  \
+                    and math.fabs(event.BestZNegMuon.dz()) < 0.1 ) \
                     or\
                     ( event.BestZNegMuon.pt() > 30 and event.BestZNegMuon.relIso(0.5) < 0.12 \
                     and math.fabs(event.BestZNegMuon.eta()) < 2.1 and math.fabs(event.BestZNegMuon.dxy()) < 0.2 \
-                    and math.fabs(event.BestZNegMuon.dz()) < 0.5 ) \
+                    # and math.fabs(event.BestZNegMuon.dz()) < 0.5 ) \
+                    and math.fabs(event.BestZNegMuon.dz()) < 0.1  \
+                    and math.fabs(event.BestZPosMuon.dz()) < 0.1 ) \
                     )\
           ):
             return False
         
+        if(event.tkmet.sumEt()-event.BestZPosMuon.pt()-event.BestZNegMuon.pt()<0):
+          print 'event.passedVertexAnalyzer',event.passedVertexAnalyzer,'event.vertices[0].ndof()',event.vertices[0].ndof(),'event.goodVertices[0].ndof()',event.goodVertices[0].ndof(),'PROBLEM?',event.vertices[0] != event.goodVertices[0]
+          print 'tkmet_SumEt-mupos-muneg',event.tkmet.sumEt()-event.BestZPosMuon.pt()-event.BestZNegMuon.pt()
+          print 'event.BestZPosMuon.dz()',event.BestZPosMuon.dz(),'event.BestZNegMuon.dz()',event.BestZNegMuon.dz()
         return True
          
         

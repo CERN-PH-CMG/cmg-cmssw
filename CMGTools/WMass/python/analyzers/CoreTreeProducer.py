@@ -70,6 +70,10 @@ def bookMuon( tree, pName ):
     var(tree, '{pName}_mass'.format(pName=pName))
     var(tree, '{pName}_charge'.format(pName=pName))
     var(tree, '{pName}RelIso'.format(pName=pName))
+    var(tree, '{pName}TkIso'.format(pName=pName))
+    var(tree, '{pName}TkValidHits'.format(pName=pName))
+    # var(tree, '{pName}TkAlgo'.format(pName=pName))
+    # var(tree, '{pName}_ptError'.format(pName=pName))
 
 def fillMuon( tree, pName, particle ):
     fill(tree, '{pName}_pt'.format(pName=pName), particle.pt() )
@@ -78,6 +82,10 @@ def fillMuon( tree, pName, particle ):
     fill(tree, '{pName}_mass'.format(pName=pName), particle.mass() )
     fill(tree, '{pName}_charge'.format(pName=pName), particle.charge() )
     fill(tree, '{pName}RelIso'.format(pName=pName), particle.relIso(0.5) )
+    fill(tree, '{pName}TkIso'.format(pName=pName), particle.sourcePtr().userIsolation( 7 ) )
+    fill(tree, '{pName}TkValidHits'.format(pName=pName), particle.sourcePtr().innerTrack().numberOfValidHits() )
+    # fill(tree, '{pName}TkAlgo'.format(pName=pName), particle.sourcePtr().innerTrack.TrackAlgorithm() )
+    # fill(tree, '{pName}_ptError'.format(pName=pName), particle.sourceCandidatePtr(0).innerTrack().ptError() )
 
 
 def bookJet( tree, pName ):
@@ -146,7 +154,7 @@ class CoreTreeProducer( TreeAnalyzerNumpy ):
     def declareCoreHandles(self):
 
       self.handles['pfMet'] = AutoHandle('cmgPFMET','std::vector<cmg::BaseMET>')
-      # self.handles['pfMetraw'] = AutoHandle('cmgPFMETRaw','std::vector<cmg::BaseMET>')
+      self.handles['pfMetraw'] = AutoHandle('cmgPFMETRaw','std::vector<cmg::BaseMET>')
       self.handles['pfMetSignificance'] = AutoHandle('pfMetSignificance','cmg::METSignificance')
       self.handles['nopuMet'] = AutoHandle('nopuMet','std::vector<reco::PFMET>')
       self.handles['pucMet'] = AutoHandle('pcMet','std::vector<reco::PFMET>')
@@ -198,10 +206,10 @@ class CoreTreeProducer( TreeAnalyzerNumpy ):
     def declareCoreVariables(self, isMC):
         tr = self.tree
 
-        if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
-          var( tr, 'run', int)
-          var( tr, 'lumi', int)
-          var( tr, 'evt', int)
+        # if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+          # var( tr, 'run', int)
+          # var( tr, 'lumi', int)
+          # var( tr, 'evt', int)
 
         var( tr, 'nvtx', int)
         if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
@@ -248,6 +256,7 @@ class CoreTreeProducer( TreeAnalyzerNumpy ):
           bookCustomMET( tr, 'pumet')
           bookCustomMET( tr, 'pucmet')
           bookCustomMET( tr, 'pfMetForRegression')
+          bookCustomMET( tr, 'pfMetraw')
 
         # if ( not hasattr(self.cfg_ana,'storeSlimGenInfo') ):
             # bookCustomMET( tr, 'pfmetraw')
@@ -265,9 +274,9 @@ class CoreTreeProducer( TreeAnalyzerNumpy ):
 
     def fillCoreVariables(self, tr, iEvent, event, isMC):
 
-        fill( tr, 'run', event.run)
-        fill( tr, 'lumi',event.lumi)
-        fill( tr, 'evt', event.eventId)
+        # fill( tr, 'run', event.run)
+        # fill( tr, 'lumi',event.lumi)
+        # fill( tr, 'evt', event.eventId)
 
         fill( tr, 'nvtx', len(event.goodVertices))
         if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
@@ -347,18 +356,18 @@ class CoreTreeProducer( TreeAnalyzerNumpy ):
 #            fill( tr, 'pfmetcov10', pfMetSignificance(1,0))
 #            fill( tr, 'pfmetcov11', pfMetSignificance(1,1))
             
-#            event.pfmetraw = self.handles['pfMetraw'].product()[0]
-#            fillCustomMET(tr, 'pfmetraw', event.pfmetraw)
             
         if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
           event.nopumet = self.handles['nopuMet'].product()[0]
           event.pucmet = self.handles['pucMet'].product()[0]
           event.pfMetForRegression = self.handles['pfMetForRegression'].product()[0]
           event.pumet = self.handles['puMet'].product()[0]
+          event.pfMetraw = self.handles['pfMetraw'].product()[0]
           fillCustomMET(tr, 'nopumet', event.nopumet)
           fillCustomMET(tr, 'pucmet', event.pucmet)
           fillCustomMET(tr, 'pumet', event.pumet)
           fillCustomMET(tr, 'pfMetForRegression', event.pfMetForRegression)
+          fillCustomMET(tr, 'pfMetraw', event.pfMetraw)
         
             
 def process(self, iEvent, event):

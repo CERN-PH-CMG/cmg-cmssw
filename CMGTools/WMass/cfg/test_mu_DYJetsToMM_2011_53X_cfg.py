@@ -1,11 +1,26 @@
 #Load all analyzers
 from CMGTools.WMass.analyzers.CoreModule_53X_cff import *
 
-ZtreeProducer.storeLHE_weight = True
-ZAna.storeLHE_weight = True
-ZAna.use_newWeights = True
+ZtreeProducer.storeLHE_weight = False
+ZAna.storeLHE_weight = False
+ZAna.use_newWeights = False
 ZAna.doMad = False
-sequence = cfg.Sequence(CoreZsequence)
+# sequence = cfg.Sequence(CoreZsequence)
+
+# TEST FOR MIKE WITHOUT RECO CUTS
+# vertexAna.keepFailingEvents = True
+# ZAna.keepFailingEvents = True
+# ZtreeProducer.superslimNtuples = True
+sequence = cfg.Sequence([
+    genAna,
+    # jsonAna,
+    triggerAna,
+    vertexAna,
+    # WAna,
+    # WtreeProducer,
+    ZAna,
+    ZtreeProducer,
+   ])
 
 from CMGTools.H2TauTau.proto.samples.ewk import DYJets
 from CMGTools.H2TauTau.proto.samples.getFiles import getFiles
@@ -36,28 +51,29 @@ DYJets4.files = getFiles('/DYToMuMu_M-50To250_ew-BMNNP_7TeV-powheg-pythia8/Summe
 # DYJets1_newWeights.name = 'DYJets1_newWeights'
 # DYJets1_newWeights.files = getFiles('/DYToMuMu_M-50To250_ew-BMNNP_7TeV-powheg/Summer11LegDR-PU_S13_START53_LV6-v1/AODSIM/V5_B/PAT_CMG_V5_18_0_newLHEweights', 'wmass_group', '.*root')
 
-DYJets_p2 = copy.deepcopy(DYJets)
-DYJets_p2.name = 'DYJets_p2'
-DYJets2_p2 = copy.deepcopy(DYJets2)
-DYJets2_p2.name = 'DYJets2_p2'
-DYJets3_p2 = copy.deepcopy(DYJets3)
-DYJets3_p2.name = 'DYJets3_p2'
-DYJets4_p2 = copy.deepcopy(DYJets4)
-DYJets4_p2.name = 'DYJets4_p2'
+# DYJets_p2 = copy.deepcopy(DYJets)
+# DYJets_p2.name = 'DYJets_p2'
+# DYJets2_p2 = copy.deepcopy(DYJets2)
+# DYJets2_p2.name = 'DYJets2_p2'
+# DYJets3_p2 = copy.deepcopy(DYJets3)
+# DYJets3_p2.name = 'DYJets3_p2'
+# DYJets4_p2 = copy.deepcopy(DYJets4)
+# DYJets4_p2.name = 'DYJets4_p2'
 
-
-DYJets.files = DYJets.files[400:]
-DYJets_p2.files = DYJets_p2.files[:400]
-DYJets2.files = DYJets2.files[425:]
-DYJets2_p2.files = DYJets2_p2.files[:425]
-DYJets3.files = DYJets3.files[450:]
-DYJets3_p2.files = DYJets3_p2.files[:450]
-DYJets4.files = DYJets4.files[460:]
-DYJets4_p2.files = DYJets4_p2.files[:460]
+# DYJets.files = DYJets.files[400:]
+# DYJets_p2.files = DYJets_p2.files[:400]
+# DYJets2.files = DYJets2.files[425:]
+# DYJets2_p2.files = DYJets2_p2.files[:425]
+# DYJets3.files = DYJets3.files[450:]
+# DYJets3_p2.files = DYJets3_p2.files[:450]
+# DYJets4.files = DYJets4.files[460:]
+# DYJets4_p2.files = DYJets4_p2.files[:460]
 
 # selectedComponents = [DYJets,DYJets2,DYJets3]
 # DYJets.files = DYJets.files[:3750]
 # DYJets2.files = DYJets2.files[3750:]
+
+# selectedComponents = [DYJets,DYJets_p2,DYJets2,DYJets2_p2,DYJets3,DYJets3_p2,DYJets4,DYJets4_p2]
 
 # ONE AT THE TIME
 # selectedComponents = [DYJets]
@@ -70,16 +86,18 @@ DYJets4_p2.files = DYJets4_p2.files[:460]
 # selectedComponents = [DYJets3_p2]
 # selectedComponents = [DYJets3,DYJets3_p2]
 # selectedComponents = [DYJets4]
-selectedComponents = [DYJets4_p2]
+# selectedComponents = [DYJets4_p2]
 # selectedComponents = [DYJets4,DYJets4_p2]
 
 # selectedComponents = [DYJets1_newWeights]
+# selectedComponents = [DYJets,DYJets_p2]
+selectedComponents = [DYJets,DYJets2,DYJets3,DYJets4]
 
 
-# # TEST
-# # selectedComponents = [DYJets,DYJets2,DYJets3]
+# TEST
+# selectedComponents = [DYJets,DYJets2,DYJets3]
 # selectedComponents = [DYJets]
-# DYJets.files = DYJets.files[:1]
+# DYJets.files = DYJets.files[:10]
 # DYJets.splitFactor = 1
 # DYJets2.files = DYJets2.files[:1]
 # DYJets2.splitFactor = 1
