@@ -121,6 +121,10 @@ TH1D histoU1Z("hu1scale","histo U1",100,-5.,5.);
 TH1D histoZPt("hZpt","histo Zpt",500,0.,50.);
 TH1D histoUnbinnedY1ZPt("hUnbinnedY1Zpt","histo Unbinned Y1 Zpt",500,0.,50.);
 TH1D histoUnbinnedY2ZPt("hUnbinnedY2Zpt","histo Unbinned Y2 Zpt",500,0.,50.);
+
+TH1D histoSumEtY1("sumEtY1","all",500,0,500);
+TH1D histoSumEtY2("sumEtY2","all",500,0,500);
+
 TH1D histoU1("hu1","histo U1",100,-10,10);
 TH1D histoU1diff("hu1diff","histo U1 - Zpt",100,-10,10);
 TH2D histoU1vsZpt("hu1vsZpt","histo U1 vs Zpt",100,0,20,100,-10,10);
@@ -210,6 +214,7 @@ TH1D Vpt4("Vpt4","quark4",100,0,50);
 TH1D Vpt5("Vpt5","quark5",100,0,50);
 TH1D Vpt10("Vpt10","quark10",100,0,50);
 
+TH1D sumEt("sumEt","all",500,0,500);
 TH1D sumEt0("sumEt0","gluon",100,0,500);
 TH1D sumEt1("sumEt1","quark1",100,0,500);
 TH1D sumEt2("sumEt2","quark2",100,0,500);
@@ -272,6 +277,8 @@ bool writeTree = false; // <-- together
 bool doClosure = false;
 bool doAbsolute = false;
 
+bool doLepProjAbsolute = false;
+
 /// BELOW FLAGS for dataset and met def
 bool do8TeV = false;
 bool doABC = false;
@@ -281,10 +288,14 @@ bool doGigiRescaling = false;
 bool do3Sigma = false;
 
 bool doHalfStat=false;
+bool doRunA=false;
+bool doRunB=false;
 
 int VTXbin=-1;
 
 /////
+
+bool doRecoParam=false;
 
 bool doWeight=false;
 
@@ -305,9 +316,6 @@ bool donoPU=false;
 bool doMetPhiCorr=false;
 bool doPosW=false;
 bool doNegW=false;
-
-bool doRunA=false;
-bool doRunB=false;
 
 bool doVTXbinning=false;
 bool doYbinning=true;
@@ -337,6 +345,7 @@ float fMetMax = 0; float fZPtMin = 0; float fZPtMax = 0; int fNJetSelect = 0;
 
 double fPFU1 = 0;  double fPFU2   = 0;
 double fU1 = -99999; double fU2 = -99999;
+double fU1lep = -99999; double fU2lep = -99999;
 double fTKU1 = 0; double fTKU2 = 0;
 
 /*float fZPt = 0; float fZPhi = 0; float fPhi = 0; */
@@ -1875,6 +1884,36 @@ void calculateU1U2(double &iPar, bool iType) {
   
 }
 
+void calculateU1U2lep(double &iPar, bool iType) {
+  //  cout << " inside calculateU1U2: fMet = " << fMet << " fMPhi = " << fMPhi << " fPt1 " << fPt1 << endl;
+
+  // reset U1 U2
+  fU1lep = -9999;
+  fU2lep = -9999;
+
+  double lUX  = fMet*cos(fMPhi) + fPt1*cos(fPhi1);
+  double lUY  = fMet*sin(fMPhi) + fPt1*sin(fPhi1);
+  //  double lUX  = fMet*cos(fMuPos_phi) + fPt1*cos(fMuPos_pt);
+  //  double lUY  = fMet*sin(fMuPos_phi) + fPt1*sin(fMuPos_pt);
+  double lU   = sqrt(lUX*lUX+lUY*lUY);
+
+  // rotate of -180 the X and Y component
+  double lCos = - (lUX*cos(fMuPos_phi) + lUY*sin(fMuPos_phi))/lU;
+  double lSin =   (lUX*sin(fMuPos_phi) - lUY*cos(fMuPos_phi))/lU;
+  fU1lep = lU*lCos;
+  fU2lep = lU*lSin;
+  if(iType)  iPar = fU1lep;
+  if(!iType) iPar = fU2lep;
+
+  /*
+    cout << "----------------" << endl;
+    cout << "fU1: recomputed " << fU1 << " stored " << fPFU1 << endl;
+    cout << "fU2: recomputed " << fU2 << " stored " << fPFU2 << endl;
+  */
+
+}
+
+
 bool checkOdd() {
   
   if(fData) return true;
@@ -2097,7 +2136,7 @@ bool runSelection(bool doMet) {
 		   //              && fMuNegIsTightAndIso // relax iso on the second muon
 		   //              && fMuNegReliso<0.12   // relax iso on the second muon
 		   && fabs(fMuNeg_dxy)<0.02
-		   //                   && fabs(fMuNeg_dz)<0.1
+		   //		   && fabs(fMuNeg_dz)<0.1
 		   );
   
   bool LeadingNeg=(TMath::Abs(fMuNeg_eta)<etaMuon && fMuNeg_pt>muonPt && fMuNegTrg
@@ -3801,7 +3840,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   //RooFit Build a double Gaussian
   TRandom lRand(0xDEADBEEF);
   //  RooRealVar    lRWeight("weight","weight",0,10);
-  //  RooRealVar    lRWeight("weight","weight",0.5); // fixed weight for now
+  RooRealVar    lRWeight("weight","weight",0.5); // fixed weight for now
   
   range_min=fZPtMin;
   range_max=fZPtMax;
@@ -3824,8 +3863,10 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     //  RooRealVar lRXVar("XVar","(U_{1}(Z_{p_{T}})-x_{i})/#sigma_{U1} (Z_{p_{T}})",0,minRangeSigma,maxRangeSigma);
     //    if(lPar!=fU1) lRXVar.SetTitle("(U_{#perp}(Z_{p_{T}})-x_{i})/#sigma_{U#perp} (Z_{p_{T}})");
     //    if(lPar==fU1) lRXVar.SetTitle("(U_{#parallel}(Z_{p_{T}})-x_{i})/#sigma_{U#parallel} (Z_{p_{T}})");
-    if(lPar!=fU1) lRXVar.SetTitle("(U^{#perp}_{i}-#mu^{i}_{#perp}(Z_{p_{T}}))/#sigma^{i}_{U#perp}(Z_{p_{T}})");
-    if(lPar==fU1) lRXVar.SetTitle("(U^{#parallel}_{i}-#mu^{i}_{#parallel}(Z_{p_{T}}))/#sigma^{i}_{U#parallel}(Z_{p_{T}})");
+    //    if(lPar!=fU1) lRXVar.SetTitle("(U^{#perp}_{i}-#mu^{i}_{#perp}(Z_{p_{T}}))/#sigma^{i}_{U#perp}(Z_{p_{T}})");
+    //    if(lPar==fU1) lRXVar.SetTitle("(U^{#parallel}_{i}-#mu^{i}_{#parallel}(Z_{p_{T}}))/#sigma^{i}_{U#parallel}(Z_{p_{T}})");
+    if(lPar!=fU1) lRXVar.SetTitle("(U^{#perp}_{i}-#mu^{i}(Z_{p_{T}}))/#sigma^{i}(Z_{p_{T}})");
+    if(lPar==fU1) lRXVar.SetTitle("(U^{#parallel}_{i}-#mu^{i}(Z_{p_{T}}))/#sigma^{i}(Z_{p_{T}})");
     //  lRXVar.SetTitle("(U_{2}(Z_{p_{T}})-x_{i})/#sigma_{U2} (Z_{p_{T}})");
 
     constructPDF(lPar);
@@ -4118,8 +4159,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   }
 
 
-  TString legU1U2 = "U1";  
-  if(lPar!=fU1) legU1U2 = "U2";
+  TString legU1U2 = "U#parallel";
+  if(lPar!=fU1) legU1U2 = "U#perp";
 
   TString labeling="";
   
@@ -4139,6 +4180,9 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
   if(doAbsolute) labeling += "_absolute";
   if(!doAbsolute) labeling += "_pull";
+
+  if(doRunA) labeling += "_runA";
+  if(doRunB) labeling += "_runB";
   
   if(doIterativeMet) labeling += "_iterative";
   if(doClosure) labeling += "_closure";
@@ -4300,9 +4344,13 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     lFit2->SetParameter(0,lFit->GetParameter(0));
     lFit2->SetParameter(1,lFit->GetParameter(1));
     
-    if(usePol3 || useErfPol2ScaleU1) {
+    if(usePol3 || usePol4 || useErfPol2ScaleU1) {
       lFit2->SetParameter(2,lFit->GetParameter(2));
       lFit2->SetParameter(3,lFit->GetParameter(3)); 
+
+      if(usePol4 ) {
+	lFit2->SetParameter(4,lFit->GetParameter(4));
+      }
     }
 
 //    if(useErfPol2ScaleU1 && !fData && !doIterativeMet ) {
@@ -4340,6 +4388,13 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   //  if(doClosure) fileName2D += "_closure";
   //  if(doClosure) fileName2D += "_closureVSDATA";
   if(doClosure) fileName2D += "_closureVSMAD";
+  //  fileName2D += "_upToZpt50";
+  if(doHalfStat) fileName2D += "_halfSize";
+  if(doRunA) fileName2D += "_runA";
+  if(doRunB) fileName2D += "_runB";
+  if(do8TeV)  fileName2D += "_8TeV";
+  if(doRecoParam) fileName2D += "_doRecoParam";
+  if(doLepProjAbsolute) fileName2D += "_doLepProjAbsolute";
   fileName2D += "_MAY2";
   fileName2D += ".root";
   
@@ -4379,6 +4434,10 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     pGraphA->Write();
     if(lPar==fU1 && !iRMS && fId==1)     histoUnbinnedY1ZPt.Write();
     if(lPar==fU1 && !iRMS && fId==2)     histoUnbinnedY2ZPt.Write();
+
+    if(lPar==fU1 && !iRMS && fId==1)     histoSumEtY1.Write();
+    if(lPar==fU1 && !iRMS && fId==2)     histoSumEtY2.Write();
+
     f1.Write();
     f1.Close();
 
@@ -4493,9 +4552,9 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     //    RooDataSet * lData_2 = (RooDataSet*) lData_1.reduce("XVar>-4.");
     //    RooDataSet * lData   = (RooDataSet*) lData_2->reduce("XVar<4."); 
     if(doWeight) {
-      //      RooRealVar* w = (RooRealVar*) lData->addColumn(lRWeight); 
-      //      RooDataSet wData(lData->GetName(),lData->GetTitle(),lData,*lData->get(),(char*)0,w->GetName()) ;
-      //      lResidVals.push_back(wData); 
+      RooRealVar* w = (RooRealVar*) lData.addColumn(lRWeight);
+      RooDataSet wData(lData.GetName(),lData.GetTitle(),&lData,*lData.get(),(char*)0,w->GetName());
+      lResidVals.push_back(wData);
     } else {
       //      lResidVals.push_back(*lData); 
       lResidVals.push_back(lData); 
@@ -4510,6 +4569,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     //    RooRealVar* w2D = (RooRealVar*) lData2D->addColumn(lRWeight); 
     //    RooDataSet wData2D(lData2D->GetName(),lData2D->GetTitle(),lData2D,*lData2D->get(),(char*)0,w2D->GetName());
     //    lResidVals2D.push_back(wData2D);
+    lResidVals2D.push_back(lData2D);
   } else {
     //    lResidVals2D.push_back(*lData2D);
     lResidVals2D.push_back(lData2D);
@@ -4552,9 +4612,12 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     //    int pId = int(vlXVals_all[lPar!=fU1][iRMS][i0]/((range_max-range_min)/lNBins)); // if(pId > lNBins-1) pId = lNBins-1;
     int pId = int(vlXVals_all[lPar!=fU1][iRMS][i0]);
 
+    lRWeight.setVal(0.5);
+
     // MARIA: USED for the 1D fit (binned/uncorrelated in Zpt and binned in residuals )  
     //    RooDataSet lData_1(RooArgSet(lRXVar)); 
-    lResidVals[pId].add(RooArgSet(lRXVar)/*,lRWeight.getVal()*/); //Fill the Double Gaussian   
+    //    lResidVals[pId].add(RooArgSet(lRXVar)/*,lRWeight.getVal()*/); //Fill the Double Gaussian
+    lResidVals[pId].add(RooArgSet(lRXVar),lRWeight.getVal()); //Fill the 1D Double Gaussian
     //    lResidVals[pId].reduce("XVar>-4.");
     //    lResidVals[pId].reduce("XVar<4."); 
     //    RooDataSet * lData_2 = (RooDataSet*) lData_1.reduce("XVar>-4.");
@@ -4632,8 +4695,11 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   if(iParamU1!=-1) fileName2DFIT += iParamU1;
   if(iParamU2!=-1) fileName2DFIT += "_iParamU2";
   if(iParamU2!=-1) fileName2DFIT += iParamU2;
-
   if(doHalfStat) fileName2DFIT += "_halfSize";
+  if(doRunA) fileName2DFIT += "_runA";
+  if(doRunB) fileName2DFIT += "_runB";
+  if(doRecoParam) fileName2DFIT += "_recoParam";
+  if(doLepProjAbsolute) fileName2D += "_doLepProjAbsolute";
 
   fileName2DFIT += "_startEntries";
   fileName2DFIT += startTreeEntries;
@@ -4898,7 +4964,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 	lRGAdd->plotOn(lFrame1,RooFit::Components(*lRGaus1),RooFit::LineStyle(kDashed),RooFit::LineColor(kRed)); // central value
 	lRGAdd->plotOn(lFrame1,RooFit::Components(*lRGaus2),RooFit::LineStyle(kDashed),RooFit::LineColor(kViolet)); // central value
 	if(do3G) lRGAdd->plotOn(lFrame1,RooFit::Components(*lRGaus3),RooFit::LineStyle(kDashed),RooFit::LineColor(kGreen)); // central value
-	lRGAdd->paramOn(lFrame1, Format("NELU", AutoPrecision(2)), Layout(0.15, 0.5,0.95) );
+	lRGAdd->paramOn(lFrame1, Format("NELU", AutoPrecision(2)), Layout(0.16, 0.5,0.95) );
 
 	TFile f15(rootFileNameFrame.c_str(),"UPDATE");
 	
@@ -5664,6 +5730,14 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     if(lPar!=fU1) lG1_2d->SetName("lG1_U2_2d");
     if(lPar!=fU1) lG2_2d->SetName("lG2_U2_2d");
     if(lPar!=fU1) lG3_2d->SetName("lG3_U2_2d");
+
+    if(lPar==fU1) lM0_2d->SetName("lM0_U1_2d");
+    if(lPar!=fU1) lM0_2d->SetName("lM0_U2_2d");
+    if(lPar==fU1) lM0large_2d->SetName("lM0large_U1_2d");
+    if(lPar!=fU1) lM0large_2d->SetName("lM0large_U2_2d");
+
+    lM0_2d->Write();
+    lM0large_2d->Write();
     lG1_2d->Write();
     lG2_2d->Write();
     lG3_2d->Write();
@@ -5990,7 +6064,7 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
 
   if(writeTree) {
 
-    //    if(writeTree) nEntries = 1000000; // this takes little
+    //    if(writeTree) nEntries = 1000000; // this for the SKIM
     //    if(writeTree) nEntries = 500000; // this takes little
     nEntries = 250000; // this takes little
     if((iTree->GetEntries()-startTreeEntries)<nEntries) nEntries = iTree->GetEntries()-startTreeEntries;
@@ -6006,12 +6080,12 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
   if(writeTree) {
 
     //    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_POWasDATA_mad%d_iter%d_onlyU2%d_onlyU1%d_iParamU1%d_iParamU2%d_%d_writeTree_%d.root",doMad,doIterativeMet,doOnlyU2,doOnlyU1,iParamU1,iParamU2,startTreeEntries,writeTree),"RECREATE");
-    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_Y%d_POWasMAD_mad%d_iter%d_onlyU2%d_onlyU1%d_iParamU1%d_iParamU2%d_%d_writeTree_%d.root",fId,doMad,doIterativeMet,doOnlyU2,doOnlyU1,iParamU1,iParamU2,startTreeEntries,writeTree),"RECREATE");
+    //    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_Y%d_POWasMAD_mad%d_iter%d_onlyU2%d_onlyU1%d_iParamU1%d_iParamU2%d_%d_writeTree_%d.root",fId,doMad,doIterativeMet,doOnlyU2,doOnlyU1,iParamU1,iParamU2,startTreeEntries,writeTree),"RECREATE");
     //    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_Y%d_MADasMAD_mad%d_iter%d_onlyU2%d_onlyU1%d_iParamU1%d_iParamU2%d_%d_writeTree_%d.root",fId,doMad,doIterativeMet,doOnlyU2,doOnlyU1,iParamU1,iParamU2,startTreeEntries,writeTree),"RECREATE");
     //    fout_loopOverTree = new TFile("TREE/test.root","RECREATE");
 
     //    fout_loopOverTree = new TFile(Form("TREE/foutIter_loopOverTree_mad%d_iter%d_%d_writeTree_%d.root",doMad,doIterativeMet,startTreeEntries,writeTree),"RECREATE");
-    //    fout_loopOverTree = new TFile(Form("TREE/foutIter_skimmedTree_Y%d_mad%d_doKalmanCorr%d_iter%d_%d_writeTree_%d.root",fId,doMad,doKalman_corr,doIterativeMet,startTreeEntries,writeTree),"RECREATE");
+    fout_loopOverTree = new TFile(Form("TREE/foutIter_skimmedTree_Y%d_mad%d_doKalmanCorr%d_iter%d_%d_writeTree_%d.root",fId,doMad,doKalman_corr,doIterativeMet,startTreeEntries,writeTree),"RECREATE");
 
     iterEvTree = new TTree("ZTreeProducer","ZTreeProducer");
     
@@ -6090,6 +6164,9 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
     if(doIterativeMet && i1%10000==0) cout <<"Analyzed entry "<< i1 << " out of nEntries=" << nEntries << " started entry "<< startTreeEntries << " (totalEntries= "<< iTree->GetEntries() << ")" << endl;
 
     if(doHalfStat && i1%2 && fData) continue;
+    if(doRunA && fRun>175832) continue;
+    if(doRunB && fRun<175832) continue;
+
 
     //    cout << "------------------------------------" << endl;
     //    cout << "Zpt as read " << fZPt << " reco" << fZrecoPt << endl;
@@ -6099,6 +6176,15 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
     if(dodebug)       cout << "RUN " << fRun << " LUMI " << fLumi << " EVENT " << fEvent << endl;
 
     //    if(doGigiRescaling) applyGigiRescaling();
+
+
+    double ftkMSumET_original=ftkMSumET;
+    // undo the muon before the Kalman corrections
+    if(doGenTkMet || doGenPfMet) {
+      ftkMSumET = ftkMSumET - fMuPosGen_pt - fMuNegGen_pt; // want to check the sumEt of the recoil
+    } else {
+      ftkMSumET = ftkMSumET - fMuPos_pt - fMuNeg_pt; // want to check the sumEt of the recoil
+    }
 
     if(doKalman_corr) {
 
@@ -6211,8 +6297,11 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
     //    cout << "RUN " << fRun << " LUMI " << fLumi << " EVENT " << fEvent << endl;
 
     ///$$$$ ---> in case is needed to get the Reco and not Gen
-    //    if(!fData) fZPt = fZrecoPt;
-    //    if(!fData) fZPhi = fZrecoPhi;
+    if(doRecoParam) {
+      if(!fData) fZPt = fZrecoPt;
+      if(!fData) fZPhi = fZrecoPhi;
+      if(!fData) fZRap = fZrecoRap;
+    }
 
     // Fit only the good range
     if(fZPt > fZPtMax) continue;
@@ -6236,12 +6325,6 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
     if(doChargedMet) {
       fMet = ftkMet;
       fMPhi = ftkMPhi;
-    }
-
-    if(doGenTkMet || doGenPfMet) {
-      ftkMSumET = ftkMSumET - fMuPosGen_pt - fMuNegGen_pt; // want to check the sumEt of the recoil
-    } else {
-      ftkMSumET = ftkMSumET - fMuPos_pt - fMuNeg_pt; // want to check the sumEt of the recoil
     }
 
     fMetOriginal=fMet;
@@ -6439,9 +6522,14 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
 
     if(writeTree) iterEvTree->Fill();
 
+    //    cout << " ftkMSumET " << ftkMSumET << endl;
+    histoSumEtY1.Fill(ftkMSumET);
+    histoSumEtY2.Fill(ftkMSumET);
+
     //if(!passMatching()) continue;
     //if(fPt2 > 30) fNJet++;
-    
+
+
     /*
     //MARIA comment for now
     ////    if(fNBTag > 0) continue;
@@ -6473,7 +6561,11 @@ void loopOverTree(TTree *iTree, bool isBKG=false) {
         bool isU1=U1U2truefalse[iU1U2];
 	//	bool iRMS=MeanRMStruefalse[iMeanRMS];
         
-        calculateU1U2(lPar,isU1);
+	if(doLepProjAbsolute) {
+	  calculateU1U2lep(lPar,isU1);
+	} else {
+	  calculateU1U2(lPar,isU1);
+	}
 
         double pVal = lPar;    
         // if(iRMS && iMeanFit != 0)   pVal = (lPar - iMeanFit->Eval(fZPt));
@@ -6736,7 +6828,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 
   bool thisISDATA=true;
   if(MCtype!=2)  thisISDATA=false;
-  setUpMuonCorrection(thisISDATA);
+  if(doKalman_corr) setUpMuonCorrection(thisISDATA);
  
   startTreeEntries = startEntries;
 
@@ -6774,20 +6866,17 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
     // 44X
     //    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");
     // 53X
-    /*
     if(doMad && !do8TeV )  fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");
     if(!doMad && !do8TeV ) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root");
-    */
 
     if(!do8TeV && !doClosure)  {
       /*HERE THE RAW muon*/
       //      fDataFile = TFile::Open(Form("TREE/output_skimmedTree_mad%d_Y%d_iter0.root",doMad,fId));
       //      cout << " reading TREE/output_skimmedTree_mad" << doMad << "_Y" << fId << "_iter0.root" << endl;
       /**/
-      fDataFile = TFile::Open(Form("TREE/skimmedTree_Y%d_mad%d_doKalmanCorr1_iter0_writeTree_1.root",fId,doMad));
-      cout << " reading TREE/skimmedTree_Y" << fId << "_mad" << doMad << "_doKalmanCorr1_iter0_writeTree_1.root" << endl;
+      //      fDataFile = TFile::Open(Form("TREE/skimmedTree_Y%d_mad%d_doKalmanCorr1_iter0_writeTree_1.root",fId,doMad));
+      //   cout << " reading TREE/skimmedTree_Y" << fId << "_mad" << doMad << "_doKalmanCorr1_iter0_writeTree_1.root" << endl;
     } 
-
 
     /*
     if(doClosure && !do8TeV)   {
@@ -6918,6 +7007,8 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
     cout << "PROCESSING DY DATA -- inclusive Nvertex -- charged only " << endl;
     if(doBKG) cout << "w/ BKG fits  " << endl;
     //    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/DATA/ZTreeProducer_tree_RecoSkimmed.root"); // this is 44X
+
+    if(do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_8TeV/DATA_Run2012ABCD/ZTreeProducer_tree.root");
     if(!do8TeV) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DATA/ZTreeProducer_tree.root"); 
     //    if(doMad && !do8TeV )  fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");
 
@@ -7033,12 +7124,18 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
   if(doSingleGauss) name += "_oneGauss";
   if(doTriGauss && !doSingleGauss) name += "_triGauss";
   
+
   if(doHalfStat) { 
     name+="_halfStat";
   } else { 
     name+="_x2Stat";
   }
 
+  if(doRunA) name += "_runA";
+  if(doRunB) name += "_runB";
+
+  if(doLepProjAbsolute)  name +="_doLepProjAbsolute";
+  if(doRecoParam) name += "_recoParam";
   if(doAbsolute) name+="_absolute";
   if(doApplyCorr) name+="_Correlation";
   
@@ -7090,7 +7187,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
     if(doYbinning) fileName += fId;
     if(do8TeV) fileName += "_8TeV";
     if(!do8TeV) fileName += "_7TeV";
-
+    if(doRecoParam) fileName += "_recoParam";
     if(doIterativeMet && doApplyCorr) fileName += "_ITERATIVE_doApplyCorr";
     if(doIterativeMet && invGraph) fileName += "_ITERATIVE_invGraph";
 
