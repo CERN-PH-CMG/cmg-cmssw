@@ -1,7 +1,7 @@
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 import PhysicsTools.HeppyCore.framework.config as cfg
-
+from collections import defaultdict
         
 class PDFWeightsAnalyzer( Analyzer ):
     """    """
@@ -26,7 +26,7 @@ class PDFWeightsAnalyzer( Analyzer ):
         super(PDFWeightsAnalyzer,self).beginLoop(setup)
 
     def initPDFWeights(self):
-        from ROOT import PdfWeightProducerTool
+        from ROOT.heppy import PdfWeightProducerTool
         self.pdfWeightInit = True
         self.pdfWeightTool = PdfWeightProducerTool()
         for pdf in self.cfg_ana.PDFWeights:
@@ -36,7 +36,7 @@ class PDFWeightsAnalyzer( Analyzer ):
     def makePDFWeights(self, event):
         if not self.pdfWeightInit: self.initPDFWeights()
         self.pdfWeightTool.processEvent(self.genInfo)
-        event.pdfWeights = {}
+        event.pdfWeights = defaultdict(list)
         for pdf in self.cfg_ana.PDFWeights:
             ws = self.pdfWeightTool.getWeights(pdf+".LHgrid")
             event.pdfWeights[pdf] = [w for w in ws]
@@ -63,6 +63,7 @@ class PDFWeightsAnalyzer( Analyzer ):
 
 setattr(PDFWeightsAnalyzer,"defaultConfig",
     cfg.Analyzer(PDFWeightsAnalyzer,
-        PDFWeights = []
+        PDFWeights = [],
+        doPDFVars = False,
     )
 )
