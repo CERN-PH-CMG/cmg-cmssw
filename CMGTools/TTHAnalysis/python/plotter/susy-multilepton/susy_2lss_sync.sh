@@ -3,7 +3,7 @@
 T="/afs/cern.ch/user/g/gpetrucc/w/TREES_72X_050515_2lssSync"
 #T="/afs/cern.ch/user/g/gpetrucc/w/TREES_72X_210315_NoIso"
 CORE="-P $T --s2v --tree treeProducerSusyMultilepton "
-CORE="${CORE} -F sf/t {P}/1_lepJetReClean_Susy_v3/evVarFriend_{cname}.root"
+CORE="${CORE} -F sf/t {P}/1_lepJetReClean_Susy_v4/evVarFriend_{cname}.root"
 CORE="${CORE} -X exclusive --mcc susy-multilepton/susy_2lssinc_lepchoice_multiiso.txt"
 
 POST="";
@@ -31,7 +31,7 @@ SAVE="${GO}"
 #for LL  in ee em mm ll; do 
 for LL  in ee em mm; do 
 for SR  in 0 10 20 30; do # 0X 1X 2X 3X; do 
-for LPt in hh hl ll; do
+for LPt in hh hl; do
 for MOD in multiiso; do #oldpresel ptrel miniiso; do
 
 GO="${SAVE}"
