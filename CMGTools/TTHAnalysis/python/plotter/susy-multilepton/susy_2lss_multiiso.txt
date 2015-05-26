@@ -1,7 +1,5 @@
 >= 2 good leptons: nLepGood10 >= 2
-#minMllAS8:  minMllAFAS > 8
-#minMllOS12: minMllAFOS <= 0 || minMllAFOS > 12
-#zveto3l:    mZ1 < 76 || mZ1 > 106
+minMllAS8:  minMllAFAS > 8
 exclusive:  nLepGood10 == 2
 anyll: abs(LepGood1_pdgId) > 0 && abs(LepGood2_pdgId) > 0
 same-sign: LepGood1_charge*LepGood2_charge > 0

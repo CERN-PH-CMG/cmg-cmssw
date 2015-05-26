@@ -1,12 +1,9 @@
 LepGood1_(\w+) : LepGood_\1[iL1TV_Mini]; AlsoData
 LepGood2_(\w+) : LepGood_\1[iL2TV_Mini]; AlsoData
 nLepGood10\b: nLepTightVeto10_Mini; AlsoData
-#LepGood1_(\w+) : LepGood_\1[iL1T_Mini]; AlsoData
-#LepGood2_(\w+) : LepGood_\1[iL2T_Mini]; AlsoData
-#nLepGood10\b: nLepGood10_Mini; AlsoData
 \bmZ1\b: mZ1cut10TL_Mini; AlsoData
 minMllAFOS\b: minMllAFOSTL_Mini; AlsoData
-minMllAFAS\b: minMllAFASTL_Mini; AlsoData
+minMllAFAS\b: mllTV_Mini; AlsoData
 nJet40\b: nJet40_Mini; AlsoData
 htJet40j\b: htJet40j_Mini; AlsoData
 nBJetMedium40\b: nBJetMedium40_Mini; AlsoData
