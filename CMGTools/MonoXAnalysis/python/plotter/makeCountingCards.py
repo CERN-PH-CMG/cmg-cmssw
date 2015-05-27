@@ -34,12 +34,9 @@ for i,b in enumerate(mca.listBackgrounds()):
 allyields = mergeReports([y for x,y in report.iteritems()])
 
 if options.asimov:
-    tomerge = []
-    for p in mca.listBackgrounds():
-        if p in report: tomerge.append(report[p])
-    report['data_obs'] = mergeReports(tomerge)
+    report['data_obs'] = allyields
 else:
-    report['data_obs'] = report['data'].Clone("x_data_obs") 
+    report['data_obs'] = report['data']
 
 systs = {}
 for sysfile in args[2:]:
@@ -84,14 +81,13 @@ for signal in mca.listSignals():
     datacard.write("## Event selection: \n")
     for cutline in str(cuts).split("\n"):  datacard.write("##   %s\n" % cutline)
     if signal not in signals: datacard.write("## NOTE: no signal contribution found with this event selection.\n")
-    datacard.write("shapes *        * ../common/%s.input.root x_$PROCESS x_$PROCESS_$SYSTEMATIC\n" % binname)
     datacard.write('##----------------------------------\n')
     datacard.write('bin         %s\n' % binname)
-    datacard.write('observation %s\n' % report['data_obs'][-1][1][0])
-    datacard.write('##----------------------------------\n')
     klen = max([7, len(binname)]+[len(p) for p in procs])
     kpatt = " %%%ds "  % klen
     fpatt = " %%%d.%df " % (klen,3)
+    datacard.write('observation'+("".join(fpatt % report['data_obs'][-1][1][0]))+"\n")
+    datacard.write('##----------------------------------\n')
     datacard.write('##----------------------------------\n')
     datacard.write('bin             '+(" ".join([kpatt % binname     for p in myprocs]))+"\n")
     datacard.write('process         '+(" ".join([kpatt % p           for p in myprocs]))+"\n")
@@ -99,4 +95,4 @@ for signal in mca.listSignals():
     datacard.write('rate            '+(" ".join([fpatt % report[p][-1][1][0] for p in myprocs]))+"\n")
     datacard.write('##----------------------------------\n')
     for name,effmap in systs.iteritems():
-        datacard.write(('%-8s lnN' % name) + " ".join([kpatt % effmap[p]   for p in procs]) +"\n")
+        datacard.write(('%-40s lnN' % name) + " ".join([kpatt % effmap[p]   for p in procs]) +"\n")
