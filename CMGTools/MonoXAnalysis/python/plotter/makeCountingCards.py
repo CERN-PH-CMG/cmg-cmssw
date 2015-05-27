@@ -95,4 +95,4 @@ for signal in mca.listSignals():
     datacard.write('rate            '+(" ".join([fpatt % report[p][-1][1][0] for p in myprocs]))+"\n")
     datacard.write('##----------------------------------\n')
     for name,effmap in systs.iteritems():
-        datacard.write(('%-40s lnN' % name) + " ".join([kpatt % effmap[p]   for p in procs]) +"\n")
+        datacard.write(('%-30s lnN' % name) + " ".join([kpatt % effmap[p]   for p in myprocs]) +"\n")
