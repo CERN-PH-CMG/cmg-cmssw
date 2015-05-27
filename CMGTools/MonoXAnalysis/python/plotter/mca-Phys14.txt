@@ -1,12 +1,12 @@
 # MonoJet samples
-M10V+:    Monojet_M_10_V   : 1.0; FillColor=ROOT.kRed-9, Label="MJ^{V} 10 GeV"
-#M100V+:  Monojet_M_100_V  : 1.0; FillColor=ROOT.kRed-8, Label="MJ^{V} 100 GeV"
-#M1000V+: Monojet_M_1000_V : 1.0; FillColor=ROOT.kRed-7, Label="MJ^{V} 1000 GeV"
+X10V+:    Monojet_M_10_V   : 1.0; FillColor=ROOT.kRed-9, Label="X_{V} 10 GeV"
+#X100V+:  Monojet_M_100_V  : 1.0; FillColor=ROOT.kRed-8, Label="X_{V} 100 GeV"
+#X1000V+: Monojet_M_1000_V : 1.0; FillColor=ROOT.kRed-7, Label="X_{V} 1000 GeV"
 
-#M1AV+:    Monojet_M_1_AV    : 1.0; FillColor=ROOT.kViolet-9, Label="MJ^{AV} 1 GeV"
-#M10AV+:   Monojet_M_10_AV   : 1.0; FillColor=ROOT.kViolet-8, Label="MJ^{AV} 10 GeV"
-#M100AV+:     Monojet_M_100_AV  : 1.0; FillColor=ROOT.kViolet-7, Label="MJ^{AV} 100 GeV"
-#M1000AV+: Monojet_M_1000_AV : 1.0; FillColor=ROOT.kViolet-6, Label="MJ^{AV} 1000 GeV"
+#X1AV+:    Monojet_M_1_AV    : 1.0; FillColor=ROOT.kViolet-9, Label="MJ^{AV} 1 GeV"
+#X10AV+:   Monojet_M_10_AV   : 1.0; FillColor=ROOT.kViolet-8, Label="MJ^{AV} 10 GeV"
+#X100AV+:  Monojet_M_100_AV  : 1.0; FillColor=ROOT.kViolet-7, Label="MJ^{AV} 100 GeV"
+#X1000AV+: Monojet_M_1000_AV : 1.0; FillColor=ROOT.kViolet-6, Label="MJ^{AV} 1000 GeV"
 
 # -- Z->nunu Background --
 ZNuNu       : ZJetsToNuNu_HT100to200 : xsec; FillColor=ROOT.kAzure-9, Label="Z\#nu\#nu+jets", NormSystematic=0.2
