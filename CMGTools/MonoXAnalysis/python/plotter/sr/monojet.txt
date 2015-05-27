@@ -3,9 +3,6 @@ pt110: Jet1_pt>110
 dphi jj: nJet30 == 1 || (nJet==2 && abs(dphijj)<2.5)
 photon veto: nGamma15V==0
 lep veto: nMu10V==0 && nEle10V==0 && nTau15V==0
-#met250: metNoMu_pt>250
-#met300: metNoMu_pt>300
-#met400: metNoMu_pt>400
-#met500: metNoMu_pt>500
+
 
 
