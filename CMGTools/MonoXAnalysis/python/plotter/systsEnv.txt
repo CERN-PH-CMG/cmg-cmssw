@@ -1,9 +1,12 @@
 # luminosity
-lumi_8TeV      : .*X.*|Top|DYJets|QCD : .* : 1.026
+lumi_13TeV      : .*X.*|Top|DYJets|GJets|QCD : .* : 1.026
 
 # common theoretical uncertainties (fully correlated everywhere)
 #QCDscale_X   : X.*   : .* : 1.06
 #pdf_qqbar    : X.*   : .* : 1.072
+
+# normalization theoretical uncertainties
+CMS_X1j_xsec_X  :  X.* : .* : 1.200
 
 # shape theoretical uncertainties (private to this channel)
 CMS_X1j_pdf_shape_X      : X.* : .* : 1.03: shapeOnly
@@ -24,9 +27,9 @@ CMS_X1j_Estimate_WJets_BKG       : WJets  : .* : 1.020
 CMS_X1j_Estimate_MuSF            : DYJets : .* : 1.020 
 CMS_X1j_Estimate_MuSF            : WJets  : .* : 1.010 
 
-CMS_X1j_Estimate_DYJets          : DYJets : .* : 1.200
-CMS_X1j_Estimate_Top             : DYJets : .* : 1.200
-CMS_X1j_Estimate_QCD             : DYJets : .* : 1.600
+CMS_X1j_Estimate_DYJets          : DYJets       : .* : 1.200
+CMS_X1j_Estimate_Top             : Top          : .* : 1.200
+CMS_X1j_Estimate_QCD             : QCD|GJets    : .* : 1.600
 
 # acceptance uncertainties 
 CMS_X1j_Estimate_WJets_AE        : WJets  : .* : 1.050
