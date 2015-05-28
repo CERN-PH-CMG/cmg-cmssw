@@ -4,6 +4,7 @@ from PhysicsTools.Heppy.analyzers.objects.all import *
 from PhysicsTools.Heppy.analyzers.gen.all import *
 from CMGTools.HToZZ4L.analyzers.FourLeptonAnalyzer import *
 from CMGTools.HToZZ4L.analyzers.FourLeptonAnalyzer2P2F import *
+from CMGTools.HToZZ4L.analyzers.FourLeptonAnalyzerRelaxIdIso import *
 from CMGTools.HToZZ4L.analyzers.FourLeptonAnalyzer3P1F import *
 from CMGTools.HToZZ4L.analyzers.FourLeptonAnalyzerSS import *
 from CMGTools.HToZZ4L.analyzers.FourLeptonEventSkimmer import *
@@ -31,6 +32,8 @@ genAna = cfg.Analyzer(
     # Make also the splitted lists
     makeSplittedGenLists = True,
     allGenTaus = False,
+    # Save LHE weights from LHEEventProduct
+    makeLHEweights = True,
     # Print out debug information
     verbose = False,
     )
@@ -161,7 +164,7 @@ lepAna = cfg.Analyzer(
 from CMGTools.HToZZ4L.analyzers.ElectronMuonCleaner import ElectronMuonCleaner
 eleMuClean = cfg.Analyzer(
     ElectronMuonCleaner, name='eleMuClean',
-    selectedMuCut = lambda mu : mu.isPFMuon() or mu.isGlobalMuon(),
+    selectedMuCut = lambda mu : mu.tightId(), #isPFMuon() or mu.isGlobalMuon(),
     otherMuCut    = lambda mu : False, # (mu.isPFMuon() or mu.isGlobalMuon()) and muon.muonBestTrackType() != 2, # uncomment to include also muons with sip > 4
     mustClean = lambda ele, mu, dr: dr < 0.05
 )
@@ -181,8 +184,8 @@ jetAna = cfg.Analyzer(
     cleanSelectedLeptons = True, #Whether to clean 'selectedLeptons' after disambiguation. Treat with care (= 'False') if running Jetanalyzer more than once
     minLepPt = 0,
     lepSelCut = lambda lepton : lepton.tightId() and lepton.relIso04 < (0.4 if abs(lepton.pdgId())==13 else 0.5),
-    relaxJetId = False,  
-    doPuId = True,
+    relaxJetId = True, #False,  
+    doPuId =True,
     recalibrateJets = False, # True, False, 'MC', 'Data'
     recalibrationType = "AK4PFchs",
     mcGT     = "PHYS14_25_V2",
@@ -190,23 +193,31 @@ jetAna = cfg.Analyzer(
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     smearJets = False,
     shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts  
+    alwaysCleanPhotons = False,
     cleanJetsFromFirstPhoton = False,
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
-    cleanGenJetsFromPhoton = False,
     doQG = False,
+    cleanGenJetsFromPhoton = False,
     )
 
 
 metAna = cfg.Analyzer(
     METAnalyzer, name="metAnalyzer",
+    metCollection     = "slimmedMETs",
+    noPUMetCollection = "slimmedMETs",    
+    copyMETsByValue = False,
     doTkMet = False,
+    doMetNoPU = False,
     doMetNoMu = False,
+    doMetNoEle = False,
     doMetNoPhoton = False,
     recalibrate = False,
+    jetAnalyzerCalibrationPostFix = "",
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,
+    collectionPostFix = "",
     )
 
 
@@ -243,9 +254,16 @@ fourLeptonAnalyzerSS = cfg.Analyzer(
     attachFsrToGlobalClosestLeptonOnly = True
 )
 
+fourLeptonAnalyzerRelaxIdIso = cfg.Analyzer(
+    FourLeptonAnalyzerRelaxIdIso, name="fourLeptonAnalyzerRelaxIdIso",
+    tag = "RelaxIdIso",
+    maxCand = 999, # save all, not just the best one
+    attachFsrToGlobalClosestLeptonOnly = True
+)
+
 fourLeptonEventSkimmer = cfg.Analyzer(
     FourLeptonEventSkimmer, name="fourLeptonEventSkimmer",
-    required = ['bestFourLeptonsSignal','bestFourLeptons2P2F','bestFourLeptons3P1F','bestFourLeptonsSS']
+    required = ['bestFourLeptonsSignal','bestFourLeptons2P2F','bestFourLeptons3P1F','bestFourLeptonsSS', 'bestFourLeptonsRelaxIdIso' ]
 
 )
 
@@ -282,6 +300,7 @@ hzz4lCoreSequence = [
     fourLeptonAnalyzer2P2F,
     fourLeptonAnalyzer3P1F,
     fourLeptonAnalyzerSS,
+    fourLeptonAnalyzerRelaxIdIso,
     fourLeptonEventSkimmer,
     treeProducer
 ]

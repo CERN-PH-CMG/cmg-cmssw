@@ -21,6 +21,9 @@ class FourLeptonAnalyzerSS( FourLeptonAnalyzer ):
     def leptonID(self,lepton):
         return self.leptonID_loose(lepton)
 
+    def zSorting(self,Z1,Z2):
+        return True
+
 
     #Redefine the QUADS so Z2 is SF/SS!!!
     def findOSSFQuads(self, leptons,photons):
@@ -39,7 +42,7 @@ class FourLeptonAnalyzerSS( FourLeptonAnalyzer ):
                 continue;
             quadObject =DiObjectPair(l1, l2,l3,l4)
             self.attachFSR(quadObject,photons)
-            if abs(quadObject.leg1.M()-91.118)>abs(quadObject.leg2.M()-91.118):
+            if not self.zSorting(quadObject.leg1,quadObject.leg2):
                 continue;
             out.append(quadObject)
 

@@ -57,14 +57,17 @@ class FSRPhotonMaker( Analyzer ):
                     else: 
                         raise RuntimeError, "electronVeto option %r not implemented" % self.cfg_ana.electronVeto
             if scVetoed: continue
+            okNoIso = False; okIfIso = False
             for l in leptons:
                 DR =deltaR(l.eta(),l.phi(),p.eta(),p.phi())     
                 if DR<0.07 and p.pt()>2.0:
                     direct.append(p)
+                    okNoIso = True
                     break;
                 elif  DR<0.5 and p.pt()>4.0:   
-                    forIso.append(p)
-                    break;
+                    okIfIso = True
+            if okIfIso and not okNoIso:
+                forIso.append(p)
         isolatedPhotons=[]        
         for g in forIso:
             g.absIsoCH = self.IsolationComputer.chargedAbsIso(g.physObj,0.3,0.0001,0.2)

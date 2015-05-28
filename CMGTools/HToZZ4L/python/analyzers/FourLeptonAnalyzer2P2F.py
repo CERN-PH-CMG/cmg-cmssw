@@ -21,6 +21,9 @@ class FourLeptonAnalyzer2P2F( FourLeptonAnalyzer ):
         return self.leptonID_loose(lepton)
 
 
+    def zSorting(self,Z1,Z2):
+        return True
+
     def fourLeptonIsolation(self,fourLepton):
         ##Fancy! Here require that Z1 leptons pass tight ID and isolationand the two other leptons fail ID or isolation
         leptons = fourLepton.daughterLeptons()
@@ -39,17 +42,21 @@ class FourLeptonAnalyzer2P2F( FourLeptonAnalyzer ):
                 if not self.muonIsolation(l):
                     return False
 
+        nFail = 0
         for l in [fourLepton.leg2.leg1,fourLepton.leg2.leg2]:
-            if  self.leptonID_tight(l):
-                return False
+            if not self.leptonID_tight(l):
+                nFail += 1
+                continue
             l.fsrPhotons=[]
             for g in photons:
                 if deltaR(g.eta(),g.phi(),l.eta(),l.phi())<0.4:
                     l.fsrPhotons.append(g)
             if abs(l.pdgId())==11:
-                if  self.electronIsolation(l):
-                    return False
+                if not self.electronIsolation(l):
+                    nFail += 1
+                    continue
             if abs(l.pdgId())==13:
-                if  self.muonIsolation(l):
-                    return False
-        return True        
+                if not self.muonIsolation(l):
+                    nFail += 1
+                    continue
+        return (nFail == 2)

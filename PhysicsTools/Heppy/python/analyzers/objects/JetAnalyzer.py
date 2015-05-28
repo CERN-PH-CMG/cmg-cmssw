@@ -241,10 +241,8 @@ class JetAnalyzer( Analyzer ):
     def testJetID(self, jet):
         jet.puJetIdPassed = jet.puJetId() 
         jet.pfJetIdPassed = jet.jetID('POG_PFID_Loose') 
-        if self.cfg_ana.relaxJetId:
-            return True
-        else:
-            return jet.pfJetIdPassed and (jet.puJetIdPassed or not(self.doPuId)) 
+        return ((jet.pfJetIdPassed or self.cfg_ana.relaxJetId) and
+                (jet.puJetIdPassed or not self.doPuId)) 
         
     def testJetNoID( self, jet ):
         # 2 is loose pile-up jet id

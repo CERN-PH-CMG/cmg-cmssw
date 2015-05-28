@@ -65,8 +65,8 @@ class FourLeptonAnalyzer( FourLeptonAnalyzerBase ):
         #Save the best
         if len(subevent.fourLeptonsFinal)>0:
             subevent.fourLeptonsFinal=sorted(subevent.fourLeptonsFinal,key=lambda x: x.leg2.leg1.pt()+x.leg2.leg2.pt(),reverse=True)
-            subevent.fourLeptonsFinal=sorted(subevent.fourLeptonsFinal,key=lambda x: abs(x.leg1.M()-91.118))
-            setattr(event,'bestFourLeptons'+self.tag,[subevent.fourLeptonsFinal[0]])
+            subevent.fourLeptonsFinal=sorted(subevent.fourLeptonsFinal,key=lambda x: abs(x.leg1.M()-91.1876))
+            setattr(event,'bestFourLeptons'+self.tag,subevent.fourLeptonsFinal[:getattr(self.cfg_ana,'maxCand',1)])
         else:    
             setattr(event,'bestFourLeptons'+self.tag,[])
 

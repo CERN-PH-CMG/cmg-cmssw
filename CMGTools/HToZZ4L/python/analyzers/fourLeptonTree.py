@@ -16,6 +16,7 @@ hzz_collections = {
     "bestFourLeptons2P2F"    : NTupleCollection("zz2P2F",ZZType, 1, help="Four Lepton Candidates 2Pass 2 Fail"),    
     "bestFourLeptons3P1F"    : NTupleCollection("zz3P1F",ZZType, 1, help="Four Lepton Candidates 3 Pass 1 Fail"),   
     "bestFourLeptonsSS"      : NTupleCollection("zzSS",  ZZType, 1, help="Four Lepton Candidates SS"),   
+    "bestFourLeptonsRelaxIdIso" : NTupleCollection("zzRelII",  ZZType, 8, help="Four Lepton Candidates (relax id, iso)"),   
     # ---------------
     "selectedLeptons" : NTupleCollection("Lep",    leptonTypeHZZ, 10, help="Leptons after the preselection"),
     "cleanJets"       : NTupleCollection("Jet",     jetTypeExtra, 10, help="Cental jets after full selection and cleaning, sorted by pt"),

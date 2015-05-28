@@ -10,6 +10,7 @@ from CMGTools.HToZZ4L.tools.CutFlowMaker  import CutFlowMaker
 
 import os
 import itertools
+import collections
 import ROOT
 
 class EventBox(object):
@@ -105,14 +106,14 @@ class FourLeptonAnalyzerBase( Analyzer ):
             # - if the new pairing has a better Z1 mass than the original one, then it passes the Z1 mass cut
 
             # skip those that have a worse Z1 mass than the nominal
-            if abs(fourLepton.leg1.M()-91.118) < abs(quad.leg1.M()-91.118):
+            if abs(fourLepton.leg1.M()-91.1876) < abs(quad.leg1.M()-91.1876):
                 continue
             #print "Found alternate, mZ1 %.3f, mZ2 %.3f: %s" % (quad.leg1.M(),quad.leg2.M(),quad)
             quads.append(quad)
         if len(quads) == 0:
             #print "No alternates to ",fourLepton
             return True
-        bestByZ1 = min(quads, key = lambda quad : abs(quad.leg1.M()-91.118))
+        bestByZ1 = min(quads, key = lambda quad : abs(quad.leg1.M()-91.1876))
         #print "Best alternate, mZ1 %.3f, mZ2 %.3f: %s" % (bestByZ1.leg1.M(),bestByZ1.leg2.M(),bestByZ1)
         return bestByZ1.leg2.M() > 12.
 
@@ -163,6 +164,8 @@ class FourLeptonAnalyzerBase( Analyzer ):
         return fourLepton.minOSPairMass()>4.0
 
         
+    def zSorting(self,Z1,Z2):
+        return abs(Z1.M()-91.1876) <= abs(Z2.M()-91.1876)
 
     def findOSSFQuads(self, leptons,photons):
         '''Make combinatorics and make permulations of four leptons
@@ -183,8 +186,8 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
             quadObject =DiObjectPair(l1, l2,l3,l4)
             self.attachFSR(quadObject,photons)
-            if abs(quadObject.leg1.M()-91.118)>abs(quadObject.leg2.M()-91.118):
-                continue;
+            if not self.zSorting(quadObject.leg1,quadObject.leg2):
+                continue
             out.append(quadObject)
 
         return out
@@ -230,7 +233,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
                 mllg = (quad.leg1.leg1.p4()+quad.leg1.leg2.p4()+g.p4()).M()
                 if mllg<4 or mllg>100:
                     continue
-                if abs(mllg-91.188)>abs(mll-91.188):
+                if abs(mllg-91.1876)>abs(mll-91.1876):
                     continue
                 z1Photons.append(g)
                 if g.pt()>4:
@@ -241,7 +244,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
                 mllg = (quad.leg2.leg1.p4()+quad.leg2.leg2.p4()+g.p4()).M()
                 if mllg<4 or mllg>100:
                     continue
-                if abs(mllg-91.188)>abs(mll-91.188):
+                if abs(mllg-91.1876)>abs(mll-91.1876):
                     continue
                 z2Photons.append(g)
                 if g.pt()>4:

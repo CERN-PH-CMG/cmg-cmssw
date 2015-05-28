@@ -21,6 +21,9 @@ class FourLeptonAnalyzer3P1F( FourLeptonAnalyzer ):
         return self.leptonID_loose(lepton)
 
 
+    def zSorting(self,Z1,Z2):
+        return True
+
     def fourLeptonIsolation(self,fourLepton):
         ##Fancy! Here require that Z1 leptons pass tight ID and isolationand the two other leptons fail ID or isolation
         leptons = fourLepton.daughterLeptons()
