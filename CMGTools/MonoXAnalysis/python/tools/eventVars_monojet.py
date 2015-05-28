@@ -3,7 +3,10 @@ from CMGTools.TTHAnalysis.treeReAnalyzer import *
 class EventVarsMonojet:
     def __init__(self):
         self.branches = [ "nMu10V", "nMu20T", "nEle10V", "nEle20T", "nTau15V", "nGamma15V", "nGamma175T",
-                          "dphijj","jetclean"]
+                          "dphijj","jetclean",
+                          "weight"]
+    def initSampleNormalization(self,sample_nevt):
+        self.sample_nevt = sample_nevt        
     def listBranches(self):
         return self.branches[:]
     # physics object multiplicity with the monojet analysis specific selections
@@ -37,6 +40,7 @@ class EventVarsMonojet:
     def __call__(self,event):
         # prepare output
         ret = dict([(name,0.0) for name in self.branches])
+        ret['weight'] = event.xsec * 1000 / self.sample_nevt
         leps = [l for l in Collection(event,"LepGood","nLepGood")]
         ret['nMu10V'] = sum([(abs(l.pdgId)==13 and int(self.lepIdVeto(l))) for l in leps ])
         ret['nMu20T'] = sum([(abs(l.pdgId)==13 and int(self.lepIdTight(l))) for l in leps ])

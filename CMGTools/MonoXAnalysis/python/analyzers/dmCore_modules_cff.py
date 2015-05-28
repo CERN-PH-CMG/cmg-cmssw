@@ -117,7 +117,8 @@ genHFAna = cfg.Analyzer(
 )
 pdfwAna = cfg.Analyzer(
     PDFWeightsAnalyzer, name="PDFWeightsAnalyzer",
-    PDFWeights = [ pdf for pdf,num in PDFWeights ]
+    PDFWeights = [ pdf for pdf,num in PDFWeights ],
+    doPDFVars = True,
     )
 
 # Lepton Analyzer (generic)
@@ -281,7 +282,7 @@ jetAna = cfg.Analyzer(
     cleanJetsFromFirstPhoton = False,
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
-    doQG = False,
+    doQG = True,
     cleanGenJetsFromPhoton = False
     )
 
