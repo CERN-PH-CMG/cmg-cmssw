@@ -10,6 +10,7 @@ from CMGTools.HToZZ4L.tools.CutFlowMaker  import CutFlowMaker
 
 import os
 import itertools
+import collections
 import ROOT
 
 class EventBox(object):
@@ -163,6 +164,8 @@ class FourLeptonAnalyzerBase( Analyzer ):
         return fourLepton.minOSPairMass()>4.0
 
         
+    def zSorting(self,Z1,Z2):
+        return abs(Z1.M()-91.1876) <= abs(Z2.M()-91.1876)
 
     def findOSSFQuads(self, leptons,photons):
         '''Make combinatorics and make permulations of four leptons
@@ -183,8 +186,8 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
             quadObject =DiObjectPair(l1, l2,l3,l4)
             self.attachFSR(quadObject,photons)
-            if abs(quadObject.leg1.M()-91.1876)>abs(quadObject.leg2.M()-91.1876):
-                continue;
+            if not self.zSorting(quadObject.leg1,quadObject.leg2):
+                continue
             out.append(quadObject)
 
         return out
@@ -230,7 +233,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
                 mllg = (quad.leg1.leg1.p4()+quad.leg1.leg2.p4()+g.p4()).M()
                 if mllg<4 or mllg>100:
                     continue
-                if abs(mllg-91.188)>abs(mll-91.188):
+                if abs(mllg-91.1876)>abs(mll-91.1876):
                     continue
                 z1Photons.append(g)
                 if g.pt()>4:
@@ -241,7 +244,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
                 mllg = (quad.leg2.leg1.p4()+quad.leg2.leg2.p4()+g.p4()).M()
                 if mllg<4 or mllg>100:
                     continue
-                if abs(mllg-91.188)>abs(mll-91.188):
+                if abs(mllg-91.1876)>abs(mll-91.1876):
                     continue
                 z2Photons.append(g)
                 if g.pt()>4:
