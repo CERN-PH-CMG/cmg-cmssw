@@ -43,6 +43,33 @@ elif test == 'Debug':
         eventSelector.toSelect = [ eval("("+x.replace(":",",")+")") for x in getHeppyOption('events').split(",") ]
         print "Will select events ",eventSelector.toSelect
     sequence = cfg.Sequence([eventSelector] + hzz4lCoreSequence)
+elif test == 'CR':
+    comp = GGHZZ4L
+    comp.files = [
+        '/afs/cern.ch/user/g/gortona/work/public/miniAODPhys14/DYJetsToLL_M-50_13TeV_3leptons.root'
+    ]
+    comp.fineSplitFactor = 1 if getHeppyOption('single') else 4
+    selectedComponents = [ comp ]
+    if getHeppyOption('events'):
+        eventSelector.toSelect = [ eval("("+x.replace(":",",")+")") for x in getHeppyOption('events').split(",") ]
+        sequence = cfg.Sequence([eventSelector] + hzz4lCoreSequence)
+        print "Will select events ",eventSelector.toSelect
+elif test == 'Cat':
+    comp = GGHZZ4L
+    comp.files = [
+        'root://eoscms//eos/cms/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ggH_JHU_125/ggH_JHU_125.MINIAODSIM00.root',
+        'root://eoscms//eos/cms/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/VBF_JHU_125/VBF_JHU_125.MINIAODSIM00.root',
+        'root://eoscms//eos/cms/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/WminusH_JHU_125/WminusH_JHU_125.MINIAODSIM00.root',
+        'root://eoscms//eos/cms/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ZH_JHU_125/ZH_JHU_125.MINIAODSIM00.root',
+        'root://eoscms//eos/cms/store/cmst3/group/susy/gpetrucc/13TeV/Phys14DR/MINIAODSIM/ttH_JHU_125/ttH_JHU_125.MINIAODSIM00.root',
+    ]
+    comp.splitFactor = 1 if getHeppyOption('single') else 99
+    comp.fineSplitFactor = 1
+    selectedComponents = [ comp ]
+    if getHeppyOption('events'):
+        eventSelector.toSelect = [ eval("("+x.replace(":",",")+")") for x in getHeppyOption('events').split(",") ]
+        sequence = cfg.Sequence([eventSelector] + hzz4lCoreSequence)
+        print "Will select events ",eventSelector.toSelect
 
 
 # the following is declared in case this cfg is used in input to the heppy.py script
