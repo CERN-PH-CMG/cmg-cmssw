@@ -33,7 +33,8 @@ class susyParameterScanAnalyzer( Analyzer ):
         #mc information
         self.mchandles['genParticles'] = AutoHandle( 'prunedGenParticles',
                                                      'std::vector<reco::GenParticle>' )
-        self.mchandles['lhe'] = AutoHandle( 'source', 'LHEEventProduct', mayFail = True )
+        if self.cfg_ana.doLHE:
+            self.mchandles['lhe'] = AutoHandle( 'source', 'LHEEventProduct', mayFail = True, lazy = False )
         
     def beginLoop(self, setup):
         super(susyParameterScanAnalyzer,self).beginLoop(setup)
@@ -96,6 +97,7 @@ class susyParameterScanAnalyzer( Analyzer ):
         event.genSusyMScan4 = 0.0
 
         # do MC level analysis
-        self.readLHE(event)
+        if self.cfg_ana.doLHE:
+            self.readLHE(event)
         self.findSusyMasses(event)
         return True

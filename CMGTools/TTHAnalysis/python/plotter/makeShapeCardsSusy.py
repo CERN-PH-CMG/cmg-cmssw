@@ -66,7 +66,7 @@ for sysfile in args[4:]:
             systsEnv[name].append((re.compile(procmap),amount,field[4]))
         else:
             raise RuntimeError, "Unknown systematic type %s" % field[4]
-    if options.verbose:
+    if options.verbose > 0:
         print "Loaded %d systematics" % len(systs)
         print "Loaded %d envelop systematics" % len(systsEnv)
 
@@ -211,8 +211,9 @@ for signal in mca.listSignals():
         if mode in ["envelop", "shapeOnly"]:
             datacard.write(('%-10s shape' % (name+"1")) + " ".join([kpatt % effmap12[p] for p in myprocs]) +"\n")
             datacard.write(('%-10s shape' % (name+"2")) + " ".join([kpatt % effmap12[p] for p in myprocs]) +"\n")
-    print "Wrote to ",myout+binname+".card.txt"
-    if options.verbose:
+    if options.verbose > -1:
+        print "Wrote to ",myout+binname+".card.txt"
+    if options.verbose > 0:
         print "="*120
         os.system("cat %s.card.txt" % (myout+binname));
         print "="*120
@@ -221,8 +222,9 @@ myout = outdir+"/common/";
 if not os.path.exists(myout): os.system("mkdir -p "+myout)
 workspace = ROOT.TFile.Open(myout+binname+".input.root", "RECREATE")
 for n,h in report.iteritems():
-    if options.verbose: print "\t%s (%8.3f events)" % (h.GetName(),h.Integral())
+    if options.verbose > 0: print "\t%s (%8.3f events)" % (h.GetName(),h.Integral())
     workspace.WriteTObject(h,h.GetName())
 workspace.Close()
 
-print "Wrote to ",myout+binname+".input.root"
+if options.verbose > -1:
+    print "Wrote to ",myout+binname+".input.root"

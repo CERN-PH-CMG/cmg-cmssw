@@ -149,16 +149,24 @@ class TreeToYield:
             self._mcCorrs = self._mcCorrs[:] # make copy
             for cfile in settings['MCCorrections'].split(','): 
                 self._mcCorrs.append( MCCorrections(cfile) )
+        if self._mcCorrs and self._scaleFactor and self._scaleFactor != 1.0:
+            # apply MC corrections to the scale factor
+            self._scaleFactor = self.adaptExpr(self._scaleFactor, cut=True)
         if 'FakeRate' in settings:
             self._FR = FakeRate(settings['FakeRate'])
-            ## add additional weight correction 
-            self._weightString += "* (" + self.adaptDataMCExpr(self._FR.weight()) + ")"
-            ## modify cuts to get to control region
+            ## add additional weight correction.
+            ## note that the weight receives the other mcCorrections, but not itself
+            self._weightString += "* (" + self.adaptExpr(self._FR.weight(), cut=True) + ")"
+            ## modify cuts to get to control region. order is important
             self._mcCorrs = self._mcCorrs + self._FR.cutMods()  + self._FR.mods()
             self._weight = True
         #print "Done creation  %s for task %s in pid %d " % (self._fname, self._name, os.getpid())
     def setScaleFactor(self,scaleFactor):
-        self._scaleFactor = scaleFactor
+        if self._mcCorrs and scaleFactor and scaleFactor != 1.0:
+            # apply MC corrections to the scale factor
+            self._scaleFactor = self.adaptExpr(scaleFactor, cut=True)
+        else:
+            self._scaleFactor = scaleFactor
     def getScaleFactor(self):
         return self._scaleFactor
     def setFullYield(self,fullYield):
@@ -205,8 +213,9 @@ class TreeToYield:
         self._friends = []
         friendOpts = self._options.friendTrees[:]
         friendOpts += (self._options.friendTreesData if self._isdata else self._options.friendTreesMC)
+        if 'Friends' in self._settings: friendOpts += self._settings['Friends']
         for tf_tree,tf_file in friendOpts:
-            tf = self._tree.AddFriend(tf_tree, tf_file.format(name=self._name, cname=self._cname)),
+            tf = self._tree.AddFriend(tf_tree, tf_file.format(name=self._name, cname=self._cname, P=getattr(self._options,'path',''))),
             self._friends.append(tf)
         self._isInit = True
 
@@ -297,6 +306,7 @@ class TreeToYield:
             plot.SetFillStyle(0)
             plot.SetLineWidth(self.getOption('LineWidth',1))
         plot.SetLineColor(self.getOption('LineColor',1))
+        plot.SetLineStyle(self.getOption('LineStyle',1))
         plot.SetMarkerColor(self.getOption('MarkerColor',1))
         plot.SetMarkerStyle(self.getOption('MarkerStyle',20))
         plot.SetMarkerSize(self.getOption('MarkerSize',1.6))
@@ -315,6 +325,10 @@ class TreeToYield:
                 ret.SetBinContent(n,ret.GetBinContent(n+1)+ret.GetBinContent(n))
                 ret.SetBinError(1,hypot(ret.GetBinError(0),ret.GetBinError(1)))
                 ret.SetBinError(n,hypot(ret.GetBinError(n+1),ret.GetBinError(n)))
+                ret.SetBinContent(0,0)
+                ret.SetBinContent(n+1,0)
+                ret.SetBinContent(0,0)
+                ret.SetBinContent(n+1,0)
             rebin = plotspec.getOption('rebinFactor',0)
             if plotspec.bins[0] != "[" and rebin > 1 and n > 5:
                 while n % rebin != 0: rebin -= 1

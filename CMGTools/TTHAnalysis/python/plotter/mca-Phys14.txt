@@ -39,17 +39,24 @@ WJets    : WJetsToLNu_HT600toInf :  xsec; Label="W+jets", FillColor=ROOT.kCyan+2
 
 # -- SUSY
 T1tttt_HL+: SMS_T1tttt_2J_mGl1500_mLSP100: xsec ; FillColor=ROOT.kAzure+8,   Label="T1t^{4} 1.5/0.1" 
+T1tttt_HL_mc+: SMS_T1tttt_2J_mGl1500_mLSP100: xsec : LepGood1_mcMatchId!=0 && LepGood2_mcMatchId!=0; FillColor=ROOT.kAzure+8,   Label="T1t^{4} 1.5/0.1 MC", LineStyle=2, HideInLegend 
 T1tttt_HM+: SMS_T1tttt_2J_mGl1200_mLSP800: xsec ; FillColor=ROOT.kAzure+0,   Label="T1t^{4} 1.2/0.8"
+T1tttt_HM_mc+: SMS_T1tttt_2J_mGl1200_mLSP800: xsec : LepGood1_mcMatchId!=0 && LepGood2_mcMatchId!=0 ; FillColor=ROOT.kAzure+0,   Label="T1t^{4} 1.2/0.8 MC", LineStyle=2, HideInLegend
 T5qqqqWW_HL+: T5qqqqWW_mGo1500_mCh800_mChi100  : xsec ; FillColor=ROOT.kAzure-6,  Label="T5W^{2} 1.5/0.1"
+T5qqqqWW_HL_mc+: T5qqqqWW_mGo1500_mCh800_mChi100  : xsec : LepGood1_mcMatchId!=0 && LepGood2_mcMatchId!=0 ; FillColor=ROOT.kAzure-6,  Label="T5W^{2} 1.5/0.1 MC", LineStyle=2, HideInLegend
 T5qqqqWW_HM+: T5qqqqWW_mGo1200_mCh1000_mChi800_dilep : xsec ; FillColor=ROOT.kBlue+0,  Label="T5W^{2} 1.2/0.8"
+T5qqqqWW_HM_mc+: T5qqqqWW_mGo1200_mCh1000_mChi800_dilep : xsec : LepGood1_mcMatchId!=0 && LepGood2_mcMatchId!=0 ; FillColor=ROOT.kBlue+0,  Label="T5W^{2} 1.2/0.8 MC", LineStyle=2, HideInLegend
 #T5qqqqWWDD+  : T5qqqqWWDeg_mGo1000_mCh310_mChi300_dilep : 0.325388*(0.333*0.333) ; FillColor=ROOT.kViolet+6,  Label="T5W^{2} 1.0/0.3/10" # hopeless
 #T5qqqqWWD+  : T5qqqqWW_mGo1400_mCh315_mChi300        :  	0.325388 ; FillColor=ROOT.kViolet+6,  Label="T5W^{2} 1.0/0.3/15"
 T5qqqqWWD+  : T5qqqqWWDeg_mGo1000_mCh315_mChi300_dilep : 0.325388*(0.333*0.333) ; FillColor=ROOT.kAzure+2,  Label="T5W^{2} 1.0/0.3/15"
+T5qqqqWWD_mc+  : T5qqqqWWDeg_mGo1000_mCh315_mChi300_dilep : LepGood1_mcMatchId!=0 && LepGood2_mcMatchId!=0 : 0.325388*(0.333*0.333) ; FillColor=ROOT.kAzure+2,  Label="T5W^{2} 1.0/0.3/15 MC", LineStyle=2, HideInLegend
 T5qqqqWWD25+  : T5qqqqWWDeg_mGo1000_mCh325_mChi300_dilep : 0.325388*(0.333*0.333) ; FillColor=ROOT.kViolet+6,  Label="T5W^{2} 1.0/0.3/25" 
-#T5Full_HL+: T5Full_1500_800_100         : 0.0141903 ; FillColor=ROOT.kViolet+0,  Label="T5W^{2} 1.5/1.1"
+T5qqqqWWD25_mc+  : T5qqqqWWDeg_mGo1000_mCh325_mChi300_dilep : LepGood1_mcMatchId!=0 && LepGood2_mcMatchId!=0 : 0.325388*(0.333*0.333) ; FillColor=ROOT.kViolet+6,  Label="T5W^{2} 1.0/0.3/25 MC", LineStyle=2, HideInLegend 
+
 
 T5tttt_HLDx+: T5ttttDeg_mGo1300_mStop300_mCh285_mChi280  : xsec ; FillColor=ROOT.kRed-9,    Label="T5t^{4} 1.3/.3/\#chi"
 T5tttt_MLDx+: T5ttttDeg_mGo1000_mStop300_mCh285_mChi280  : xsec ; FillColor=ROOT.kRed+2,    Label="T5t^{4} 1.0/.3/\#chi"
+T5tttt_MLDx_mc+: T5ttttDeg_mGo1000_mStop300_mCh285_mChi280  : xsec : LepGood1_mcMatchId!=0 && LepGood2_mcMatchId!=0 ; FillColor=ROOT.kRed+2,    Label="T5t^{4} 1.0/.3/\#chi MC", LineStyle=2, HideInLegend
 T5tttt_HLD4+: T5ttttDeg_mGo1300_mStop300_mChi280  : xsec ; FillColor=ROOT.kRed-9,    Label="T5t^{4} 1.3/.3/4"
 T5tttt_MLD4+: T5ttttDeg_mGo1000_mStop300_mChi280  : xsec ; FillColor=ROOT.kRed-9,    Label="T5t^{4} 1.0/.3/4"
 ## dilepton-enriched samples made with the multi-hadronizer. the cross section must be multiplied by the boost to the matching efficiency and by (sum weights)/(events),
