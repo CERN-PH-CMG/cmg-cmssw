@@ -209,8 +209,8 @@ class METAnalyzer( Analyzer ):
 
     def makeuparauperp(self, event):
  
-        event.upara = 0
-	event.uperp = 0
+        self.upara = 0
+	self.uperp = 0
  
 	nlep = len(event.selectedLeptons)
 	for i in xrange (nlep - 1):
@@ -227,9 +227,13 @@ class METAnalyzer( Analyzer ):
 		   u1 = (uX*qX + uY*qY)/diLpt
 		   u2 = (uX*qX - uY*qY)/diLpt
 	
-		   event.upara = u1
-		   event.uperp = u2
-		   		    
+		   self.upara = u1
+		   self.uperp = u2
+		   
+		   setattr(event, "upara"+self.cfg_ana.collectionPostFix, self.upara)
+		   setattr(event, "uperp"+self.cfg_ana.collectionPostFix, self.uperp)	
+			
+				    
     def process(self, event):
         self.readCollections( event.input)
         self.counters.counter('events').inc('all events')
