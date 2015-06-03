@@ -230,10 +230,9 @@ class METAnalyzer( Analyzer ):
 		   self.upara = u1
 		   self.uperp = u2
 		   
-		   setattr(event, "upara"+self.cfg_ana.collectionPostFix, self.upara)
-		   setattr(event, "uperp"+self.cfg_ana.collectionPostFix, self.uperp)	
-			
-				    
+	setattr(event, "upara"+self.cfg_ana.collectionPostFix, self.upara)
+	setattr(event, "uperp"+self.cfg_ana.collectionPostFix, self.uperp)
+		   		    
     def process(self, event):
         self.readCollections( event.input)
         self.counters.counter('events').inc('all events')
