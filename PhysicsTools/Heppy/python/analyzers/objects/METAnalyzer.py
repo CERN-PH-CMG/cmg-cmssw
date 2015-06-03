@@ -207,11 +207,36 @@ class METAnalyzer( Analyzer ):
         if self.cfg_ana.doMetNoPhoton and hasattr(event, 'selectedPhotons'):
             self.makeMETNoPhoton(event)
 
+    def makeuparauperp(self, event):
+ 
+        event.upara = 0
+	event.uperp = 0
+ 
+	nlep = len(event.selectedLeptons)
+	for i in xrange (nlep - 1):
+	    l1 = event.selectedLeptons[i]
+	    for j in xrange (i + 1, nlep):
+	        l2 = event.selectedLeptons[j]
+		if l1.pdgId() == - l2.pdgId():
+		
+		   qX = l1.px() + l2.px()
+		   qY = l1.py() + l2.py()
+		   diLpt = math.sqrt(qX*qX + qY*qY)
+		   uX = - self.met.px() - qX
+		   uY = - self.met.py() - qY
+		   u1 = (uX*qX + uY*qY)/diLpt
+		   u2 = (uX*qX - uY*qY)/diLpt
+	
+		   event.upara = u1
+		   event.uperp = u2
+		   		    
     def process(self, event):
         self.readCollections( event.input)
         self.counters.counter('events').inc('all events')
 
         self.makeMETs(event)
+	
+	self.makeuparauperp(event)
 
         if self.cfg_ana.doTkMet: 
             self.makeTkMETs(event);
