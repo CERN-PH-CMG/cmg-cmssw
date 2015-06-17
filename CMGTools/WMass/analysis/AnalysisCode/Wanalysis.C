@@ -8,7 +8,7 @@
 #define Wanalysis_cxx
 #include "Wanalysis.h"
 #include "../includes/common.h"
-#include "common_stuff.h"
+//#include "common_stuff.h"
 #include "RecoilCorrector.h"
 // #include "rochcor_42X.h"
 #include "rochcor_44X_v3.h"
@@ -144,24 +144,24 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     }
   }
 
-  static const int nbins=75;
-  double bins_scaled[3][nbins+1]={{0.}};
-  double bins_Notscaled[3][nbins+1]={{0.}};
-  double binsize1=0.01,binsize2=0.04;
-  double binsize;
-  double xmin=0.6,xmax=1.8, x;
-  for(int k=0;k<3;k++){
-    x=xmin;
-    binsize=binsize1;
-    for(int i=0;i<nbins;i++){
-      bins_scaled[k][i]=x;
-      bins_Notscaled[k][i]=x*80/(k==1 ? 1 : 2); // mT has double range wrt pt, met
-      if(x>1.2-binsize) binsize=binsize2;
-      x+=binsize;
-    }
-    bins_scaled[k][nbins]=xmax;
-    bins_Notscaled[k][nbins]=xmax*80/(k==1 ? 1 : 2);
-  }
+  // static const int nbins=75;
+  // double bins_scaled[3][nbins+1]={{0.}};
+  // double bins_Notscaled[3][nbins+1]={{0.}};
+  // double binsize1=0.01,binsize2=0.04;
+  // double binsize;
+  // double xmin=0.6,xmax=1.8, x;
+  // for(int k=0;k<3;k++){
+    // x=xmin;
+    // binsize=binsize1;
+    // for(int i=0;i<nbins;i++){
+      // bins_scaled[k][i]=x;
+      // bins_Notscaled[k][i]=x*80/(k==1 ? 1 : 2); // mT has double range wrt pt, met
+      // if(x>1.2-binsize) binsize=binsize2;
+      // x+=binsize;
+    // }
+    // bins_scaled[k][nbins]=xmax;
+    // bins_Notscaled[k][nbins]=xmax*80/(k==1 ? 1 : 2);
+  // }
   
   Long64_t first_entry = Entry_ini;
   Long64_t nentries = Entry_fin;
@@ -316,14 +316,10 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         double weight_i=1;
         if(useGenVar){
           if(!contains_LHE_weights){
-            double shat=0,gamma=2.085 /*HARD CODED TO PDG VALUE*/,mw0=0,mw_i=0;
-            shat=WGen_m*WGen_m;
-            // mw0=WMass::WMassCentral_MeV/1e3;
-            mw0=gen_mass_value_MeV/1e3;
-            mw_i=iWmass_GeV;
-            // ((shat - mw0^2)^2 + gamma^2 mw0^2) / ((shat - mw_i^2)^2 + gamma^2 mw_i^2)
-            weight_i=(TMath::Power(shat - mw0*mw0,2) + TMath::Power(gamma*mw0,2)) / (TMath::Power(shat - mw_i*mw_i,2) + TMath::Power(gamma*mw_i,2));
-            // cout << "WGen_m = " << WGen_m << " mw0= " << mw0 << " mw_i= " << mw_i << " weight_i= " << weight_i << endl;
+
+            double gamma=2.085; /*HARD CODED TO PDG VALUE*/
+            weight_i = common_stuff::BWweight(WGen_m, iWmass_GeV, gen_mass_value_MeV, gamma);
+
           }else{
             weight_i = LHE_weight [ WMass::LHE_mass_central_index - (WMass::WMassNSteps + j)*WMass::WMassSkipNSteps ];
             // cout << "j= " << j << " index= " << (WMass::LHE_mass_central_index + (-WMass::WMassNSteps + j)*WMass::WMassSkipNSteps) << endl;
@@ -338,14 +334,14 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
           if(WGen_m>0  && WMass::WMassNSteps==j ){ // only for signal event
             TString MuGenCharge_str = MuGen_charge>0? "Pos" : "Neg"; 
             
-            double MuGen_var_jacobian[3] = {2*MuGen_pt/iWmass_GeV,WGen_mt/iWmass_GeV,2*NuGen_pt/iWmass_GeV};
-            double MuGen_var_NotScaled[3] = {MuGen_pt,WGen_mt,NuGen_pt};
+            double MuGen_var_jacobian[WMass::NFitVar-1] = {2*MuGen_pt/iWmass_GeV,WGen_mt/iWmass_GeV,2*NuGen_pt/iWmass_GeV};
+            double MuGen_var_NotScaled[WMass::NFitVar-1] = {MuGen_pt,WGen_mt,NuGen_pt};
             // AVOID OVERFLOW BIN TO BE FILLED
-            for(int k=0;k<3;k++)
+              for(int k=0;k<WMass::NFitVar-1;k++){
               if(MuGen_var_jacobian[k]>=xmax) MuGen_var_jacobian[k]=xmax-binsize2/2;
             
             if(WMass::PDF_members<2){
-              for(int k=0;k<3;k++){
+              for(int k=0;k<WMass::NFitVar-1;k++){
                 common_stuff::plot1D(Form("hW%s_%sNonScaled_1_Gen_eta%s_%d",MuGenCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass_MeV),
                                     MuGen_var_NotScaled[k], evt_weight, h_1d, 50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
                 // mass cut not meaningful for W case
@@ -354,7 +350,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               }
                 
               if(TMath::Abs(MuGen_eta)<WMass::etaMaxMuons[i]){
-                for(int k=0;k<3;k++){
+                for(int k=0;k<WMass::NFitVar-1;k++){
                   common_stuff::plot1D(Form("hW%s_%sNonScaled_3_Mu1GenCut_eta%s_%d",MuGenCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass_MeV),
                                   MuGen_var_NotScaled[k], evt_weight, h_1d, 50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
                   // second lepton (i.e. neutrino) not detected
@@ -428,7 +424,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               }
                             
               if(useRecoilCorr==1 && use_PForNoPUorTKmet<3 && (sampleName.Contains("WJets") && !sampleName.Contains("Fake"))){ // use Rochester Recoil corrections if required
-                
+
                 if(Mu_charge>0){ // W plus corrections
                   correctorRecoil_W_Pos_->CorrectType2( pfmet_bla, pfmetphi_bla,
                                     WGen_pt, WGen_phi,
@@ -494,17 +490,17 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               WCentralCorr = mublaCentralCorr + nuCentralCorr;
               // W = mu + nu;      // <<<<<<------ LUCA BUGGY FOR TEST
 
-              double Mu_var_jacobian[3] = {2*mu.Pt()/iWmass_GeV,W.Mt()/iWmass_GeV,2*nu.Pt()/iWmass_GeV}; // SCALED VARIABLE
-              double Mu_var_NotScaled[3] = {mu.Pt(),W.Mt(),nu.Pt()}; // SCALED VARIABLE 
-              double Mu_var_NotScaledCentralCorr[3] = {muCentralCorr.Pt(),WCentralCorr.Mt(),nuCentralCorr.Pt()}; // SCALED VARIABLE 
-              // double Mu_var_NotScaled[3] = {mu.Pt(),W.Mt()*W.Mt(),nu.Pt()}; // SCALED VARIABLE LUCA TEMP!!!
+              // double Mu_var_jacobian[WMass::NFitVar] = {2*mu.Pt()/iWmass_GeV,W.Mt()/iWmass_GeV,2*nu.Pt()/iWmass_GeV,W.Mt()/iWmass_GeV}; // SCALED VARIABLE
+              double Mu_var_NotScaled[WMass::NFitVar] = {mu.Pt(),W.Mt(),nu.Pt(),W.Mt()}; // SCALED VARIABLE 
+              double Mu_var_NotScaledCentralCorr[WMass::NFitVar] = {muCentralCorr.Pt(),WCentralCorr.Mt(),nuCentralCorr.Pt(),WCentralCorr.Mt()}; // SCALED VARIABLE 
+              // double Mu_var_NotScaled[WMass::NFitVar] = {mu.Pt(),W.Mt()*W.Mt(),nu.Pt()}; // SCALED VARIABLE LUCA TEMP!!!
               double dphiGen = MuGen_phi-NuGen_phi;
               if(dphiGen > TMath::Pi()) dphiGen -= 2*TMath::Pi();
               if(dphiGen < -TMath::Pi()) dphiGen += 2*TMath::Pi();
-              double Mu_var_NotScaledGen[3] = {MuGen_pt,WGen_mt,dphiGen}; // SCALED VARIABLE
+              // double Mu_var_NotScaledGen[WMass::NFitVar] = {MuGen_pt,WGen_mt,WGen_mt,dphiGen}; // SCALED VARIABLE
               // LUCA ADD TO AVOID OVERFLOW
-              for(int k=0;k<3;k++)
-                if(Mu_var_jacobian[k]>=xmax) Mu_var_jacobian[k]=xmax-binsize2/2;
+                // for(int k=0;k<WMass::NFitVar;k++)
+                // if(Mu_var_jacobian[k]>=xmax) Mu_var_jacobian[k]=xmax-binsize2/2;
               
               int wmass1 = iWmass_GeV*1e3;
 
@@ -528,7 +524,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                       common_stuff::plot1D("hPileUp_Fall11_5_RecoCut", npu, evt_weight, h_1d, 50,0,50 );
                   }
 
-                  for(int k=0;k<3;k++)
+                    for(int k=0;k<WMass::NFitVar;k++)
                     if(m==0 && WMass::PDF_members<2) common_stuff::plot1D(Form("hW%s_%sNonScaled_5_RecoCut_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass_MeV),
 									  Mu_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
 		  
@@ -557,7 +553,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                         common_stuff::plot1D("hPileUp_Fall11_6_METCut", npu, evt_weight, h_1d, 50,0,50 );
                     }
 
-                    for(int k=0;k<3;k++)
+                      for(int k=0;k<WMass::NFitVar;k++)
                       if(m==0 && WMass::PDF_members<2) common_stuff::plot1D(Form("hW%s_%sNonScaled_6_METCut_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass_MeV),
                                     Mu_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
                     
@@ -565,7 +561,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                     // cut on W recoil (BY DEFAULT IS 15)
                     //------------------------------------------------------
                     if(WCentralCorr.Pt()<WMass::WpTcut){ // DEFAULT IS WMass::WpTcut
-                      for(int k=0;k<3;k++)
+                        for(int k=0;k<WMass::NFitVar;k++)
                         if(m==0 && WMass::PDF_members<2 && WMass::WMassNSteps==j ) common_stuff::plot1D(Form("hW%s_%sNonScaled_7_RecoilCut_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jWmass_MeV),
 									      Mu_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
                       
@@ -710,7 +706,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                           // END SET PDF WEIGHT and THOSE SHOULD BE THE FINAL HISTOGRAMS TO FIT 
                           // PLOTS OF FIT VARIABLES WITHIN THE FIT RANGE
                           //------------------------------------------------------
-                          for(int k=0;k<3;k++){
+                          for(int k=0;k<WMass::NFitVar;k++){
                             common_stuff::plot1D(Form("hW%s_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),eta_str.Data(),jWmass_MeV),
                                     Mu_var_NotScaled[k] ,evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 
                                     50, WMass::fit_xmin[k],WMass::fit_xmax[k] );
@@ -829,7 +825,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       for(int j=0; j<2*WMass::WMassNSteps+1; j++){
         // int jWmass_MeV = (WMass::WMassCentral_MeV-(WMass::WMassNSteps-j)*WMass::WMassSkipNSteps);
         int jWmass_MeV = WMass::Wmass_values_array[j];
-        for(int k=0;k<3;k++){
+        for(int k=0;k<WMass::NFitVar;k++){
           for(int h=0; h<WMass::PDF_members; h++){
             for(int m=0; m<WMass::NVarRecoilCorr; m++){
               TString toys_str = "";

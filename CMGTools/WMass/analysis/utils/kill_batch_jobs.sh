@@ -17,8 +17,8 @@ fi
 echo 'Waiting 5 sec before to START KILLING JOBS to let you think about it...'
 sleep 5
 
-# declare RESULT=($(bjobs |grep 2nd | awk '{print $1}'))
-declare RESULT=($(bjobs | awk '{print $1}'))
+declare RESULT=($(bjobs |grep 1nh | awk '{print $1}'))
+# declare RESULT=($(bjobs | awk '{print $1}'))
 
 for (( job_id=0; job_id<${#RESULT[@]}; job_id++ ))
   do

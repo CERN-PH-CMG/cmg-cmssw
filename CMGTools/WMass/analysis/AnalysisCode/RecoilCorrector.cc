@@ -2,24 +2,32 @@
 
 // mytype: 0 = target file , 1 = DATA , 2 = Z MC
 
-RecoilCorrector::RecoilCorrector(string iNameZ, int iSeed) {
+RecoilCorrector::RecoilCorrector(string iNameZ, int iSeed,TString model_name, TString fNonClosure_name) {
 
   fRandom = new TRandom3(iSeed);
-  readRecoil(fF1U1Fit,fF1U1RMSSMFit,fF1U1RMS1Fit,fF1U1RMS2Fit,fF1U1RMS3Fit,fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit, fF1U2Fit,fF1U2RMSSMFit,fF1U2RMS1Fit,fF1U2RMS2Fit,fF1U2RMS3Fit,fF1U2FracFit,fF1U2Mean1Fit, fF1U2Mean2Fit,iNameZ,"PF",1,0);  
+  readRecoil(fF1U1Fit,fF1U1RMSSMFit,fF1U1RMS1Fit,fF1U1RMS2Fit,fF1U1RMS3Fit,fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit, fF1U2Fit,fF1U2RMSSMFit,fF1U2RMS1Fit,fF1U2RMS2Fit,fF1U2RMS3Fit,fF1U2FracFit,fF1U2Mean1Fit, fF1U2Mean2Fit,iNameZ,"PF",1,0,model_name);  
+  fNonClosure = new TFile(fNonClosure_name.Data());
+  hNonClosure[0][0] = (TH2D*) fNonClosure->Get("mean_U1_y1");
+  hNonClosure[0][1] = (TH2D*) fNonClosure->Get("mean_U1_y2");
+  hNonClosure[1][0] = (TH2D*) fNonClosure->Get("RMS_U2_y1");
+  hNonClosure[1][1] = (TH2D*) fNonClosure->Get("RMS_U2_y2");
   
   // fId = 0; 
   fJet = 0;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector::addDataFile(std::string iNameData/* ,int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int RecoilCorrU1VarDiagoParN, int RecoilCorrVarDiagoParSigmas */) { 
-  readRecoil(fD1U1Fit,fD1U1RMSSMFit,fD1U1RMS1Fit,fD1U1RMS2Fit,fD1U1RMS3Fit,fD1U1FracFit, fD1U1Mean1Fit, fD1U1Mean2Fit, fD1U2Fit,fD1U2RMSSMFit,fD1U2RMS1Fit,fD1U2RMS2Fit,fD1U2RMS3Fit,fD1U2FracFit,fD1U2Mean1Fit, fD1U2Mean2Fit,iNameData,"PF",1,1/* , RecoilCorrVarDiagoParU1orU2fromDATAorMC,RecoilCorrU1VarDiagoParN, RecoilCorrVarDiagoParSigmas */);  
+void RecoilCorrector::addDataFile(std::string iNameData,/* ,int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int RecoilCorrU1VarDiagoParN, int RecoilCorrVarDiagoParSigmas */TString model_name) { 
+  readRecoil(fD1U1Fit,fD1U1RMSSMFit,fD1U1RMS1Fit,fD1U1RMS2Fit,fD1U1RMS3Fit,fD1U1FracFit, fD1U1Mean1Fit, fD1U1Mean2Fit, fD1U2Fit,fD1U2RMSSMFit,fD1U2RMS1Fit,fD1U2RMS2Fit,fD1U2RMS3Fit,fD1U2FracFit,fD1U2Mean1Fit, fD1U2Mean2Fit,iNameData,"PF",1,1,/* , RecoilCorrVarDiagoParU1orU2fromDATAorMC,RecoilCorrU1VarDiagoParN, RecoilCorrVarDiagoParSigmas */
+  model_name
+);  
   // fId++;   
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector::addMCFile  (std::string iNameMC) { 
+void RecoilCorrector::addMCFile  (std::string iNameMC,TString model_name) { 
   // fId++;
-  readRecoil(fM1U1Fit,fM1U1RMSSMFit,fM1U1RMS1Fit,fM1U1RMS2Fit,fM1U1RMS3Fit,fM1U1FracFit, fM1U1Mean1Fit, fM1U1Mean2Fit, fM1U2Fit,fM1U2RMSSMFit,fM1U2RMS1Fit,fM1U2RMS2Fit,fM1U2RMS3Fit,fM1U2FracFit,fM1U2Mean1Fit, fM1U2Mean2Fit,iNameMC,"PF",1,2);  
+  readRecoil(fM1U1Fit,fM1U1RMSSMFit,fM1U1RMS1Fit,fM1U1RMS2Fit,fM1U1RMS3Fit,fM1U1FracFit, fM1U1Mean1Fit, fM1U1Mean2Fit, fM1U2Fit,fM1U2RMSSMFit,fM1U2RMS1Fit,fM1U2RMS2Fit,fM1U2RMS3Fit,fM1U2FracFit,fM1U2Mean1Fit, fM1U2Mean2Fit,iNameMC,"PF",1,2,model_name
+);  
   
 }
 
@@ -31,7 +39,9 @@ std::vector<TF1*> &iU1FracFit,std::vector<TF1*> &iU1Mean1Fit, std::vector<TF1*> 
 std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,
 std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2RMS3Fit,
 std::vector<TF1*> &iU2FracFit,std::vector<TF1*> &iU2Mean1Fit, std::vector<TF1*> &iU2Mean2Fit,//std::vector<TF1*> &iU2Sig3Fit,
-std::string iFName ,std::string iPrefix,int vtxBin, int mytype/* , int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int RecoilCorrU1VarDiagoParN, int RecoilCorrVarDiagoParSigmas */) {
+std::string iFName ,std::string iPrefix,int vtxBin, int mytype,/* , int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int RecoilCorrU1VarDiagoParN, int RecoilCorrVarDiagoParSigmas */
+TString model_name
+) {
 
   //type=1 read U1; type=2 read U2;
   cout << "inside readRecoil" << iFName.c_str() << endl;
@@ -82,7 +92,7 @@ std::string iFName ,std::string iPrefix,int vtxBin, int mytype/* , int RecoilCor
     wU1[mytype][i0] = new RooWorkspace("wU1","wU1");
     pdfU1[mytype][i0] = (RooAddPdf*) lFile->Get(Form("AddU1Y%d",i0));
     wU1[mytype][i0]->import(*pdfU1[mytype][i0],RooFit::Silence());
-    frU1[mytype][i0] = (RooFitResult*) lFile->Get(Form("fitresult_AddU1Y%d_Crapsky0_U1_2D",i0));
+    frU1[mytype][i0] = (RooFitResult*) lFile->Get(Form("%sU1Y%d_Crapsky0_U1_2D",model_name.Data(),i0));
     // cout << "CALLING frU1[mytype][i0]->Print(\"V\")" << endl;
     // frU1[mytype][i0]->Print("V");
     // wU1[mytype][i0]->Print();
@@ -98,7 +108,7 @@ std::string iFName ,std::string iPrefix,int vtxBin, int mytype/* , int RecoilCor
     wU2[mytype][i0] = new RooWorkspace("wU2","wU2");
     pdfU2[mytype][i0] = (RooAddPdf*) lFile->Get(Form("AddU2Y%d",i0));
     wU2[mytype][i0]->import(*pdfU2[mytype][i0],RooFit::Silence());
-    frU2[mytype][i0] = (RooFitResult*) lFile->Get(Form("fitresult_AddU2Y%d_Crapsky0_U2_2D",i0));
+    frU2[mytype][i0] = (RooFitResult*) lFile->Get(Form("%sU2Y%d_Crapsky0_U2_2D",model_name.Data(),i0));
     // wU2[mytype][i0]->Print();
     // wU2diago[mytype][i0] = wU2[mytype][i0];
     runDiago(wU2[mytype][i0],frU2[mytype][i0],Form("AddU2Y%d",i0),pdfU2Cdf[mytype][i0]);
@@ -118,6 +128,57 @@ std::string iFName ,std::string iPrefix,int vtxBin, int mytype/* , int RecoilCor
   lFile->Close();
   // iSumEt.push_back(1000);
   // return lNBins;
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
+
+double RecoilCorrector::NonClosure_weight(double iMet,double iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi) {
+  
+  // cout 
+  // << "iMet= " << iMet
+  // << " iMPhi= " << iMPhi
+  // << " iGenPt= " << iGenPt
+  // << " iGenPhi= " << iGenPhi
+  // << " iGenRap= " << iGenRap
+  // << " iLepPt= " << iLepPt
+  // << " iLepPhi= " << iLepPhi
+  // << endl;
+  
+  double pUX   = iMet*cos(iMPhi) + iLepPt*cos(iLepPhi);
+  double pUY   = iMet*sin(iMPhi) + iLepPt*sin(iLepPhi);
+  double pU    = sqrt(pUX*pUX+pUY*pUY);
+
+  double pCos  = - (pUX*cos(iGenPhi) + pUY*sin(iGenPhi))/pU;
+  double pSin  =   (pUX*sin(iGenPhi) - pUY*cos(iGenPhi))/pU;
+
+  double pU1   = pU*pCos;
+  double pU2   = pU*pSin; 
+  double abs_pU2   = TMath::Abs(pU2); // we use the abs, i.e. the mean rms, to reduce fluctuations 
+  
+  // cout << "pU1= " << pU1 << " abs_pU2= " << abs_pU2 << endl;
+  
+  double weight_NonClosure = 1;
+  int rap_bin = 0;
+ 
+ // if(iGenRap>1) rap_bin = 1 // for the moment we use only one rapidity bin, i.e. y1
+
+ // weight_NonClosure *= hNonClosure[0][rap_bin]->GetBinContent(hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1)); // u1
+ if(hNonClosure[0][rap_bin]->GetBinContent(hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1)!=0))
+  weight_NonClosure /= hNonClosure[0][rap_bin]->GetBinContent(hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1)); // u1
+  // cout << "hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1)= " << hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1) << endl;
+  // cout << "weight_NonClosure after u1= " << weight_NonClosure;
+  if(weight_NonClosure==0) weight_NonClosure=1;
+  // cout << " ------->>> " << weight_NonClosure << endl;
+
+  // weight_NonClosure *= hNonClosure[1][rap_bin]->GetBinContent(hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2)); // u2
+  if(hNonClosure[1][rap_bin]->GetBinContent(hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2))!=0)
+    weight_NonClosure /= hNonClosure[1][rap_bin]->GetBinContent(hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2)); // u2
+  // cout << "hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2)= " << hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2) << endl;
+  // cout << "weight_NonClosure after u2= " << weight_NonClosure;
+  if(weight_NonClosure==0) weight_NonClosure=1;
+  // cout << " ------->>> " << weight_NonClosure << endl;
+  
+  
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -271,12 +332,13 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
     // << " RecoilCorrVarDiagoParSigmas=="<<RecoilCorrVarDiagoParSigmas
     // <<endl;
 
-  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==1 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==3){
+  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==1 ||RecoilCorrVarDiagoParU1orU2fromDATAorMC==2 
+    || RecoilCorrVarDiagoParU1orU2fromDATAorMC==4 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==5){
     if(RecoilCorrVarDiagoParN < 0 || RecoilCorrVarDiagoParN > 17){
       cout << "ERROR !!!!! RecoilCorrVarDiagoParU1orU2fromDATAorMC= " << RecoilCorrVarDiagoParU1orU2fromDATAorMC << " RecoilCorrVarDiagoParN= " << RecoilCorrVarDiagoParN << endl;
     }
   }
-  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==2 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==4){
+  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==3 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==6){
     if(RecoilCorrVarDiagoParN < 0 || RecoilCorrVarDiagoParN > 11){
       cout << "ERROR !!!!! RecoilCorrVarDiagoParU1orU2fromDATAorMC= " << RecoilCorrVarDiagoParU1orU2fromDATAorMC << " RecoilCorrVarDiagoParN= " << RecoilCorrVarDiagoParN << endl;
     }
@@ -287,7 +349,7 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
   for(int ipar=0; ipar<18; ipar++){
     
     v = wU1[1][fJet]->var(Form("eig_eig%d",ipar));
-    if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==1 && RecoilCorrVarDiagoParN==ipar){
+    if((RecoilCorrVarDiagoParU1orU2fromDATAorMC==1 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==2) && RecoilCorrVarDiagoParN==ipar){
       v->setVal(RecoilCorrVarDiagoParSigmas);
       // cout << "wU1[1]["<<fJet<<"]->"<<Form("eig_eig%d",ipar)<<"->setVal("<<RecoilCorrVarDiagoParSigmas<<")"<<endl;
     }else{
@@ -297,7 +359,7 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
     // cout << "wU1[1]["<<fJet<<"]" << endl; v->Print();
     
     v = wU1[2][fJet]->var(Form("eig_eig%d",ipar));
-    if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==3 && RecoilCorrVarDiagoParN==ipar){
+    if((RecoilCorrVarDiagoParU1orU2fromDATAorMC==4 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==5) && RecoilCorrVarDiagoParN==ipar){
       v->setVal(RecoilCorrVarDiagoParSigmas);
       // cout << "wU1[2]["<<fJet<<"]->"<<Form("eig_eig%d",ipar)<<"->setVal("<<RecoilCorrVarDiagoParSigmas<<")"<<endl;
     }else{
@@ -308,7 +370,7 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
     
     if(ipar<12){
       v = wU2[1][fJet]->var(Form("eig_eig%d",ipar));
-      if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==2 && RecoilCorrVarDiagoParN==ipar){
+      if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==3 && RecoilCorrVarDiagoParN==ipar){
         v->setVal(RecoilCorrVarDiagoParSigmas);
         // cout << "wU2[1]["<<fJet<<"]->"<<Form("eig_eig%d",ipar)<<"->setVal("<<RecoilCorrVarDiagoParSigmas<<")"<<endl;
       }else{
@@ -317,7 +379,7 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
       }
       // cout << "wU2[1]["<<fJet<<"]" << endl; v->Print();
       v = wU2[2][fJet]->var(Form("eig_eig%d",ipar));
-      if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==4 && RecoilCorrVarDiagoParN==ipar){
+      if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==6 && RecoilCorrVarDiagoParN==ipar){
         v->setVal(RecoilCorrVarDiagoParSigmas);
         // cout << "wU2[2]["<<fJet<<"]->"<<Form("eig_eig%d",ipar)<<"->setVal("<<RecoilCorrVarDiagoParSigmas<<")"<<endl;
       }else{
@@ -342,6 +404,10 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
     // << " pdfU2Cdf[2]["<<fJet<<"]->getVal()= " << pdfU2Cdf[2][fJet]->getVal()
     // << " pdfU2Cdf[1]["<<fJet<<"]->getVal()= " << pdfU2Cdf[1][fJet]->getVal()
     // << endl;
+    pdfU1Cdf[2][fJet]->getVal();
+    pdfU1Cdf[1][fJet]->getVal();
+    pdfU2Cdf[2][fJet]->getVal();
+    pdfU2Cdf[1][fJet]->getVal();
   
   // cout << "triGausInvGraphPDF U1" << endl;
   pU1ValD = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[2][fJet],pdfU1Cdf[1][fJet],wU1[2][fJet],wU1[1][fJet]);

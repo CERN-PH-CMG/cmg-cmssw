@@ -9,7 +9,7 @@ use_PForNoPUorTKmet=( 2 ) # 0:PF, 1:NOPU, 2:TK
 momcorr_scale_variations=( 0 )
 
 # RECOIL CORRECTION VARIATIONS
-useRecoilCorr=( 2 ) # 1: YES, 0: NO
+useRecoilCorr=( 2 ) # 0: NO, 1: OLD, 2: PDFw3GAUS
 # Recoil_U1resol_variations=( 0 )
 # Recoil_U1scale_variations=( 1 -1 )
 
@@ -19,13 +19,13 @@ Recoil_U2resol_variations=( 0 )
 
 zpt_scale_variations=( \
        -1
+      )
        # 30 
        # 29 31 32 33 34 35 100 120 \
        # 1030 
        # 1029 1031 1032 1033 1034 1035 1036 1037\
        # 1329 1331 1332 1333 1334 1335 1336 1337\
        # 1529 1531 1532 1533 1534 1535 1536 1537\
-      )
 
 # Recoil_U1resol_variations=( 0 1 -1 0  0 )
 # Recoil_U1scale_variations=( 0 0  0 1 -1 )

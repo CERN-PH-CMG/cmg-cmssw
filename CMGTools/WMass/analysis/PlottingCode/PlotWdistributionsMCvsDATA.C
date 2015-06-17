@@ -1,3 +1,6 @@
+#include "../includes/common.h"
+#include "../AnalysisCode/common_stuff.C"
+
 void PlotWdistributionsMCvsDATA(TString folderMC="",TString folderDATA=""){
 
   cout << "PlotWdistributionsMCvsDATA.C working dir: " << gSystem->WorkingDirectory() << endl;
@@ -9,17 +12,17 @@ void PlotWdistributionsMCvsDATA(TString folderMC="",TString folderDATA=""){
   fMC->Print();
   fDATA->Print();
       
-  plotAndSaveHisto1D(fMC,"hpfMET_WPos_Sig_eta2p1",fDATA,"hpfMET_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
-  plotAndSaveHisto1D(fMC,"hpfMETphi_WPos_Sig_eta2p1",fDATA,"hpfMETphi_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
-  plotAndSaveHisto1D(fMC,"hWPos_pt_Sig_eta2p1",fDATA,"hWPos_pt_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
-  plotAndSaveHisto1D(fMC,"hWPos_phi_Sig_eta2p1",fDATA,"hWPos_phi_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
-  plotAndSaveHisto1D(fMC,"hWPos_mt_Sig_eta2p1",fDATA,"hWPos_mt_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
-  plotAndSaveHisto1D(fMC,"hMupt_WPos_Sig_eta2p1",fDATA,"hMupt_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
-  plotAndSaveHisto1D(fMC,"hMueta_WPos_Sig_eta2p1",fDATA,"hMueta_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
-  plotAndSaveHisto1D(fMC,"hMuphi_WPos_Sig_eta2p1",fDATA,"hMuphi_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
-  plotAndSaveHisto1D(fMC,"hJetpt_WPos_Sig_eta2p1",fDATA,"hJetpt_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
-  plotAndSaveHisto1D(fMC,"hJeteta_WPos_Sig_eta2p1",fDATA,"hJeteta_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
-  plotAndSaveHisto1D(fMC,"hJetphi_WPos_Sig_eta2p1",fDATA,"hJetphi_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
+  common_stuff::plotAndSaveHisto1D(fMC,"hpfMET_WPos_Sig_eta2p1",fDATA,"hpfMET_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
+  common_stuff::plotAndSaveHisto1D(fMC,"hpfMETphi_WPos_Sig_eta2p1",fDATA,"hpfMETphi_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
+  common_stuff::plotAndSaveHisto1D(fMC,"hWPos_pt_Sig_eta2p1",fDATA,"hWPos_pt_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
+  common_stuff::plotAndSaveHisto1D(fMC,"hWPos_phi_Sig_eta2p1",fDATA,"hWPos_phi_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
+  common_stuff::plotAndSaveHisto1D(fMC,"hWPos_mt_Sig_eta2p1",fDATA,"hWPos_mt_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
+  common_stuff::plotAndSaveHisto1D(fMC,"hMupt_WPos_Sig_eta2p1",fDATA,"hMupt_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
+  common_stuff::plotAndSaveHisto1D(fMC,"hMueta_WPos_Sig_eta2p1",fDATA,"hMueta_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
+  common_stuff::plotAndSaveHisto1D(fMC,"hMuphi_WPos_Sig_eta2p1",fDATA,"hMuphi_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
+  common_stuff::plotAndSaveHisto1D(fMC,"hJetpt_WPos_Sig_eta2p1",fDATA,"hJetpt_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
+  common_stuff::plotAndSaveHisto1D(fMC,"hJeteta_WPos_Sig_eta2p1",fDATA,"hJeteta_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
+  common_stuff::plotAndSaveHisto1D(fMC,"hJetphi_WPos_Sig_eta2p1",fDATA,"hJetphi_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
   
   // TCanvas*cZlepEta1VsEta2_MC=new TCanvas("cZlepEta1VsEta2_MC","cZlepEta1VsEta2_MC");
   // TH2D*ZlepEta1VsEta2_MC=(TH2D*)fMC->Get("ZlepEta1VsEta2");
@@ -40,29 +43,6 @@ void PlotWdistributionsMCvsDATA(TString folderMC="",TString folderDATA=""){
   // }
   // chpfMETphi_Z->SaveAs("hpfMETphi_V.png");
 
-  
-}
-
-void plotAndSaveHisto1D(TFile*f1, TString str1, TFile*f2, TString str2, int logx, int logy, int logz, int normalized){
-
-  TH1D*h1=(TH1D*)f1->Get(str1.Data());
-  h1->SetLineColor(2);
-  TH1D*h2=(TH1D*)f2->Get(str2.Data());
-  
-  TCanvas *c1 = new TCanvas("c"+str1);
-  c1->SetLogx(logx);
-  c1->SetLogy(logy);
-  c1->SetLogz(logz);
-  
-  if(normalized){
-    h1->DrawNormalized();
-    h2->DrawNormalized("same");
-  }else{
-    h1->Draw();
-    h2->Draw("same");    
-  }
-  
-  c1->SaveAs(str1+".png");
   
 }
 

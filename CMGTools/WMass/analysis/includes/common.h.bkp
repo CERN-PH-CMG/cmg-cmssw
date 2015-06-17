@@ -24,20 +24,22 @@ namespace WMass{
   static const float etaMaxMuons[etaMuonNSteps] = { PAR_ETA_STEPS };
   static const int nSigOrQCD = 2;
   TString nSigOrQCD_str[nSigOrQCD] = {"Sig","QCD"};
-  static const int NFitVar = 3;
-  TString FitVar_str[NFitVar] = {"Pt","Mt","MET"};
+  static const int NFitVar = 4;
+  TString FitVar_str[NFitVar] = {"Pt","Mt","MET","MtLin"};
   static const int PDF_sets = PAR_PDF_SETS;
   static const int PDF_members = PAR_PDF_MEMBERS;
   static const int NVarRecoilCorr = PAR_TOYS_MOMCORR;
   
   static const int WpTcut = 15;
   
-  // static const double sel_xmin[3]={30,  60, 30};
-  static const double sel_xmin[3]={30,  60, 30};
-  static const double sel_xmax[3]={55, 100, 55};
+  static const int KalmanNvariations = PAR_KALMAN_VARIATIONS; //200;
   
-  static const double fit_xmin[3]={32,  65, 32};
-  static const double fit_xmax[3]={45,  90, 45};
+  // static const double sel_xmin[3]={30,  60, 30};
+  static const double sel_xmin[NFitVar]={30,  60, 30,  60};
+  static const double sel_xmax[NFitVar]={55, 100, 55, 100};
+  
+  static const double fit_xmin[NFitVar]={32,  65, 32,  65};
+  static const double fit_xmax[NFitVar]={45,  90, 45,  90};
 
   static const int LHE_mass_central_index = PAR_DELTAM_MEV_CENTRAL_INDEX;
   // 209 #w,ren,fac,pdf,mW,mZ 1.0 1.0 1.0 229800 80.398 91.1876               <------------ NNPDF2.3 NLO
@@ -47,8 +49,14 @@ namespace WMass{
   // 362 #w,ren,fac,pdf,mW,mZ 1.01129558613 1.0 1.0 232000 80.398 91.1876      <------------ NNPDF2.3 NNLO
   static const int LHE_NNPDF2p3_NNLO_central_index = 362; // 100 members
   
- static const int RecoilCorrVarDiagoParU1orU2fromDATAorMC_[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  1,  1,  1,  1,  1,  1,  1,  1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,  2,  2 };
- static const int RecoilCorrVarDiagoParN_[]                  = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+  // static const int RecoilCorrVarDiagoParU1orU2fromDATAorMC_[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  1,  1,  1,  1,  1,  1,  1,  1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,  2,  2 };
+  // static const int RecoilCorrVarDiagoParN_[]                  = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+  
+  static const int RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[] = {0, 0, 9, 0, 0, 9, 0 };
+  static const int RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[] = {1, 9, 18, 12, 9, 18, 12 };
+  
+  // static const int RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[] = {1, 18, 12, 18, 12 };
+  static const int RecoilCorrVarDiagoParN_[]                  = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
   
 
   // bool isGood_WGenPos_1_Gen(double WGen_m,
@@ -73,28 +81,4 @@ namespace WMass{
   // }
 
 
-void plotAndSaveHisto1D(TFile*f1, TString str1, TFile*f2, TString str2, int logx, int logy, int logz, int normalized){
-
-  TH1D*h1=(TH1D*)f1->Get(str1.Data());
-  h1->SetLineColor(2);
-  TH1D*h2=(TH1D*)f2->Get(str2.Data());
-  
-  TCanvas *c1 = new TCanvas("c"+str1);
-  c1->SetLogx(logx);
-  c1->SetLogy(logy);
-  c1->SetLogz(logz);
-  
-  if(normalized){
-    h1->DrawNormalized();
-    h2->DrawNormalized("same");
-  }else{
-    h1->Draw();
-    h2->Draw("same");    
-  }
-  
-  c1->SaveAs(str1+".png");
-  
-}
-
-  
 }

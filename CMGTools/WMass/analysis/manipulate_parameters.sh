@@ -26,6 +26,8 @@
   sed "s:PAR_PDF_MEMBERS:${9}:g" -i includes/common.h
   # int NtoysMomCorr = PAR_TOYS_MOMCORR;
   sed "s:PAR_TOYS_MOMCORR:${10}:g" -i includes/common.h
+  # int NtoysMomCorr = PAR_KALMAN_VARIATIONS;
+  sed "s:PAR_KALMAN_VARIATIONS:${15}:g" -i includes/common.h
   # static const int PtSFNSteps = PAR_PTSF_NSTEP;
   PtSFNSteps=$(grep -o "," <<< "${14}" | wc -l)
   PtSFNSteps=$((PtSFNSteps+1))
