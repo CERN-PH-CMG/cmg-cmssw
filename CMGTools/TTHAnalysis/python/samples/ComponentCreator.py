@@ -3,13 +3,13 @@ from CMGTools.Production.datasetToSource import datasetToSource
 from CMGTools.Production.datasetInformation import DatasetInformation
 
 class ComponentCreator(object):
-    def makeMCComponent(self,name,dataset,user,pattern):
+    def makeMCComponent(self,name,dataset,user,pattern,xSec=1):
         
          component = cfg.MCComponent(
              dataset=dataset,
              name = name,
              files = self.getFiles(dataset,user,pattern),
-             xSection = 1,
+             xSection = xSec,
              nGenEvents = 1,
              triggers = [],
              effCorrFactor = 1,
@@ -19,7 +19,7 @@ class ComponentCreator(object):
  #        print 'Skim Efficiency for ',name,'=', component.skimEfficiency
          return component
 
-    def makePrivateMCComponent(self,name,dataset,files):
+    def makePrivateMCComponent(self,name,dataset,files,xSec=1):
          if len(files) == 0:
             raise RuntimeError, "Trying to make a component %s with no files" % name
          # prefix filenames with dataset unless they start with "/"
@@ -28,7 +28,7 @@ class ComponentCreator(object):
              dataset=dataset,
              name = name,
              files = ['root://eoscms//eos/cms%s%s' % (dprefix,f) for f in files],
-             xSection = 1,
+             xSection = xSec,
              nGenEvents = 1,
              triggers = [],
              effCorrFactor = 1,
