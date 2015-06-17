@@ -51,6 +51,8 @@ class common_stuff {
   // static const double fit_xmin[];
   // static const double fit_xmax[];
   
+  static void ComputeAllVarPietro(TLorentzVector lepP,TLorentzVector lepN, double &costh_CS, double &phi_CS, double &costh_HX, double &phi_HX);
+
   static void calculateU1U2( double fMet , double fMPhi,double fZPt, double fZPhi, double fPt1, double fPhi1, double & fU1,double & fU2 );
   
  private:

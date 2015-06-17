@@ -17,7 +17,7 @@ useLHAPDF = False
 # foldername = "test_Recoil13Apr";
 # foldername = "test_Recoil13Aprnobkg";
 # foldername = "test_preapproval_norecoil";
-foldername = "test_metfix3";
+foldername = "test_metfix3_nosmooth";
 foldername_orig=foldername
 
 ntuple_folder = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
@@ -70,8 +70,8 @@ etaMuonNSteps = "1"; # 5
 etaMaxMuons = "0.9"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
 # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
-resumbit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" 
-# resumbit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
+# resumbit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" 
+resumbit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 # resumbit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
 #resumbit_sample = "DATA, DYJetsMadSig"
 #resumbit_sample = "DATA, DYJetsMadSig ,DYJetsPow"
@@ -80,8 +80,8 @@ resumbit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadFake,
 #resumbit_sample = "WJetsMadSig"#WJetsPowPlus"
 #resumbit_sample = "WJetsPowPlus"
 
-parallelize = 1;
-useBatch = 1;
+parallelize = 0;
+useBatch = 0;
 batchQueue = "1nh";
 WMassNSteps = "5"; # 60
 # WMassNSteps = "0"; # 60
@@ -98,7 +98,7 @@ fit_W_or_Z = "Z" # "W,Z" or "W" or "Z"
 
 usePowOrMadForSig = "POWHEG"; # use "POWHEG" or use "MADGRAPH"
 runPrepareDataCardsFast = 0; # ALTERNATIVE FAST WAY: TEMPLATES ARE IN THE SYsT FOLDER, PSEUDO-DATA IN THE LOCAL FOLDER
-DataCards_systFromFolder="test_metfix3_tkmet_ewk-1_KalmanCorr_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr" # evaluate systematics wrt folder (or leave it empty)
+DataCards_systFromFolder="" # evaluate systematics wrt folder (or leave it empty)
 
 ## NEW FIT
 print "if it doesn't work, try with this first: cd /afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_5_3_3_patch3/src; SCRAM_ARCH slc5_amd64_gcc462;cmsenv; cd -";

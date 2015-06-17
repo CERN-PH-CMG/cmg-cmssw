@@ -27,7 +27,7 @@
 #include <ctime>
 #include <time.h>
 
-TLorentzVector muPosNoCorr,muNegNoCorr,ZNocorr,muPosGen_status1,muNegGen_status1,ZGen_status1;
+TLorentzVector muPosNoCorr,muNegNoCorr,ZNocorr,muPosGen_status3,muNegGen_status3,ZGen_status3;
 TLorentzVector muPosCorr,muNegCorr,muPosCorrCentral,muNegCorrCentral;
 TLorentzVector Zcorr, ZcorrCentral; //TLorentzVector of the reconstructed muon
 TLorentzVector Z_met,Z_metCentral,WlikePos_met,WlikePos_metCentral;
@@ -35,15 +35,13 @@ TLorentzVector WlikePos,WlikePosCentral;
 
 
 HTransformToHelicityFrame *GoToHXframe;
-double costh_HX = -1e10;
-double phi_HX = -1e10;
-double costh_HX_gen = -1e10;
-double phi_HX_gen = -1e10;
+double costh_HX = -1e10, phi_HX = -1e10;
+double costh_HX_gen = -1e10, phi_HX_gen = -1e10;
+double costh_HX_gen_pietro = -1e10, phi_HX_gen_pietro = -1e10;
 HTransformToCS *GoToCSframe;
-double costh_CS = -1e10;
-double phi_CS = -1e10;
-double costh_CS_gen = -1e10;
-double phi_CS_gen = -1e10;
+double costh_CS = -1e10, phi_CS = -1e10;
+double costh_CS_gen_pietro = -1e10, phi_CS_gen_pietro = -1e10;
+double costh_CS_gen = -1e10, phi_CS_gen = -1e10;
 
 void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, int buildTemplates, int useMomentumCorr, int varyGlobalScaleMuonCorrNsigma, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int usePhiMETCorr, int useRecoilCorr, int RecoilCorrNonClosure, int RecoilCorrVarDiagoParSigmas, int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights)
 {
@@ -164,6 +162,33 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     }
     if(!finZmassSF){
       cout << "file " << Form("../utils/Zpt_reweighting.root") << " is missing, impossible to retrieve ZPt reweighting factors" << endl;
+      return;
+    }    
+  }
+  //------------------------------------------------------
+  // retrieve angular coefficients SF (for POWHEG vs DATA)
+  //------------------------------------------------------
+  const int fitcoeff = 6;  
+  const int nrapbins = 2;
+  const int nptbins = 8;
+  double rapbins[nrapbins+1] = {0,1,2.1};
+  TH1D *hrapbins = new TH1D("hrapbins","hrapbins",nrapbins,rapbins);
+  double ptbins[nptbins+1] = {0.1,10,20,35,55,80,120,200,1000};
+  TH1D *hptbins = new TH1D("hptbins","hptbins",nptbins,ptbins);
+  TFile*finAngCoefSF;
+  TH1D *hratioAngCoefSF[nrapbins][fitcoeff];
+  if(true){
+    finAngCoefSF = new TFile("../utils/polarization_data_powheg.root"); // used only to build templates
+    // finAngCoefSF->ls();
+    for(int irap=0; irap<nrapbins; irap++){
+      for(int ipt=0; ipt<nptbins; ipt++){
+        hratioAngCoefSF[irap][ipt] = (TH1D*) finAngCoefSF->Get(Form("ratio_phi_vs_costh_CS_pietro_ptbin%d_rapbin%d_POWHEG_over_data",ipt+1,irap+1));
+        // cout << Form("ratio_phi_vs_costh_CS_pietro_ptbin%d_rapbin%d_POWHEG_over_data",ipt,irap) << endl;
+        // hratioAngCoefSF[irap][ipt]->Print();
+      }
+    }
+    if(!finAngCoefSF){
+      cout << "file " << Form("../utils/polarization_data_powheg.root") << " is missing, impossible to retrieve Angular coefficients reweighting factors" << endl;
       return;
     }    
   }
@@ -322,17 +347,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     TString model_name[2]={"fitresult_Add","fitresult_model2D"};
     
     /// TKMET type2
-    // std::string fileCorrectTo = Form("../RecoilCode/recoilfit_JAN25_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
-    // std::string fileZmmMC = Form("../RecoilCode/recoilfit_JAN25_genZ%s_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",metSuffix.Data(),generatorSuffix.Data());
-    // std::string fileZmmData = Form("../RecoilCode/recoilfit_JAN25_DATA%s_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root",metSuffix.Data());
-    // std::string fileCorrectTo = Form("../RecoilCode/recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
-    // std::string fileZmmMC = Form("../RecoilCode/recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
-    // std::string fileZmmData = Form("../RecoilCode/recoilfit_MARCH25_DATA_bkg_tkmet_eta21_MZ81101_pol4_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root"); int model_name_idx=1;
-    // std::string fileZmmData = Form("../RecoilCode/recoilfit_MARCH25_DATA_tkmet_eta21_MZ81101_pol4_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root"); int model_name_idx=0;
     std::string fileCorrectTo = Form("../RecoilCode/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
     std::string fileZmmMC =     Form("../RecoilCode/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
     // std::string fileZmmData =   Form("../RecoilCode/recoilfit_APR13_DATA_bkg_tkmet_eta21_MZ81101_pol4_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root"); int model_name_idx=1;
     std::string fileZmmData =   Form("../RecoilCode/recoilfit_APR13_DATA_tkmet_eta21_MZ81101_pol4_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root"); int model_name_idx=0;
+    // std::string fileCorrectTo = Form("../RecoilCode/recoilfit_MAY2_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg");
+    // std::string fileZmmMC =     Form("../RecoilCode/recoilfit_MAY2_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg");
+    // // std::string fileZmmData =   Form("../RecoilCode/recoilfit_APR13_DATA_bkg_tkmet_eta21_MZ81101_pol4_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root"); int model_name_idx=1;
+    // std::string fileZmmData =   Form("../RecoilCode/recoilfit_MAY2_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_recoParam_UNBINNED_3G_53X_powheg"); int model_name_idx=0;
 
 
     // recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root
@@ -341,7 +363,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     // recoilfit_JAN25_DATA_bkg_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root
 
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;
-    correctorRecoil_Z = new RecoilCorrector(fileCorrectTo.c_str(),123456,model_name[0],"../RecoilCode/nonClosureAPR13.root");
+    correctorRecoil_Z = new RecoilCorrector(fileCorrectTo.c_str(),123456,model_name[0],"../RecoilCode/nonClosureMAY2.root");
     cout << "INITIALIZING RECOIL Z DATA FILE" << endl;
     correctorRecoil_Z->addDataFile(fileZmmData.c_str(),/* ,RecoilCorrVarDiagoParU1orU2fromDATAorMC, RecoilCorrNonClosure, RecoilCorrVarDiagoParSigmas */
     model_name[model_name_idx]);
@@ -380,6 +402,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       // outTXTfile << dt << "\t - \t Analyzed entry "<<jentry<<"/"<<nentries<<endl;
       cout << dt << "\t - \t Analyzed entry "<<jentry<<"/"<<nentries<<endl;
     }
+    
+  
+    //------------------------------------------------------------
+    // Reject even events in DATA, if not controlplots, since where used for Recoil Corrections
+    //------------------------------------------------------------
+    if(!controlplots && !(jentry%2) && sampleName.Contains("DATA")) continue;
 
     //------------------------------------------------------
     // initilize the mu+, mu-, met event variables
@@ -409,9 +437,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     muNegNoCorr.SetPtEtaPhiM(MuNeg_pt,MuNeg_eta,MuNeg_phi,MuNeg_mass);
     ZNocorr = muPosNoCorr + muNegNoCorr;
 
-    muPosGen_status1.SetPtEtaPhiM(MuPosGen_pt,MuPosGen_eta,MuPosGen_phi,MuPosGen_mass);
-    muNegGen_status1.SetPtEtaPhiM(MuNegGen_pt,MuNegGen_eta,MuNegGen_phi,MuNegGen_mass);
-    ZGen_status1 = muPosGen_status1 + muNegGen_status1;
+    muPosGen_status3.SetPtEtaPhiM(MuPosGen_pt,MuPosGen_eta,MuPosGen_phi,MuPosGen_mass);
+    muNegGen_status3.SetPtEtaPhiM(MuNegGen_pt,MuNegGen_eta,MuNegGen_phi,MuNegGen_mass);
+    ZGen_status3 = muPosGen_status3 + muNegGen_status3;
 
     muPosCorr = muPosNoCorr;
     muPosCorrCentral = muPosNoCorr;
@@ -436,7 +464,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     costh_CS = -1e10;     phi_CS = -1e10;
     costh_CS_gen = -1e10; phi_CS_gen = -1e10;
 
-    if(MuPosGen_pt>0 && MuNegGen_pt>0) ComputeHXVarAndPhiStarEta(muPosGen_status1,muNegGen_status1,true);
+    if(MuPosGen_pt>0 && MuNegGen_pt>0) ComputeHXVarAndPhiStarEta(muPosGen_status3,muNegGen_status3,true);
     if(MuPos_pt>0 && MuNeg_pt>0) ComputeHXVarAndPhiStarEta(muPosNoCorr,muNegNoCorr,false);
 
     if(useEffSF==2 && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
@@ -460,6 +488,37 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     if((IS_MC_CLOSURE_TEST || isMCorDATA==0) && controlplots) 
       common_stuff::plot1D("hPileUp_Fall11",npu, 1, h_1d, 50,0,50);
 
+    //---------------- Angular coefficients weight
+    if(false && sampleName.Contains("DYJetsPow")){
+      common_stuff::ComputeAllVarPietro(muPosGen_status3,muNegGen_status3, costh_CS_gen_pietro, phi_CS_gen_pietro, costh_HX_gen_pietro, phi_HX_gen_pietro);
+      // cout
+      // << " ZGen_status3.Rapidity()= " << ZGen_status3.Rapidity()
+      // << " ZGen_status3.Pt()= " << ZGen_status3.Pt()
+      // << " hrapbins->GetXaxis()->FindBin(ZGen_status3.Rapidity())= " << hrapbins->GetXaxis()->FindBin(ZGen_status3.Rapidity())
+      // << " hptbins->GetXaxis()->FindBin(ZGen_status3.Pt())= " << hptbins->GetXaxis()->FindBin(ZGen_status3.Pt())
+      // << " costh_CS_gen_pietro= " << costh_CS_gen_pietro
+      // << " phi_CS_gen_pietro= " << phi_CS_gen_pietro
+      // << endl;
+      double AngCoef_sf = 1;
+      if( TMath::Abs(ZGen_status3.Rapidity())<2.1 && ZGen_status3.Pt()<1000 ){
+        int i_rapbin = hrapbins->GetXaxis()->FindBin(TMath::Abs(ZGen_status3.Rapidity()))-1 ;
+        // cout << "i_rapbin= " << i_rapbin<< endl;;
+        int i_ptbin = hptbins->GetXaxis()->FindBin(ZGen_status3.Pt())>0 ? hptbins->GetXaxis()->FindBin(ZGen_status3.Pt())-1 : 0 ;
+        // cout << " i_ptbin= " << i_ptbin<< endl;;
+        // hratioAngCoefSF[i_rapbin][i_ptbin]->Print();
+        int costh_bin = hratioAngCoefSF[i_rapbin][i_ptbin]->GetXaxis()->FindBin(costh_CS_gen_pietro);
+        // cout << " costh_bin= " << costh_bin<< endl;;
+        int phi_bin = hratioAngCoefSF[i_rapbin][i_ptbin]->GetYaxis()->FindBin(TMath::Abs(phi_CS_gen_pietro));
+        // cout << " phi_bin= " << phi_bin<< endl;;
+        AngCoef_sf = hratioAngCoefSF[i_rapbin][i_ptbin]->GetBinContent(costh_bin,phi_bin);
+      }
+      // cout << "ang corr weight= " << AngCoef_sf 
+           // << endl;
+      evt_weight_original*= AngCoef_sf!=0 ? AngCoef_sf : 1;
+      // hZmassSF->Print();
+      // cout << "ciao ciao 2" << endl;
+    }
+    
     //---------------- Invariant Mass weight
     if(use_syst_ewk_Alcaraz>-1 && use_syst_ewk_Alcaraz!=100 && sampleName.Contains("DYJetsPow")){
       evt_weight_original*=ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200?hZmassSF->Interpolate(ZGen_PostFSR_mass):1;
@@ -576,13 +635,13 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               }
             }
           }
-          common_stuff::plot1D(Form("z_mass_gen"), ZGen_status1.M(), 1, h_1d, 200, 0, 200 );
-          common_stuff::plot1D(Form("z_rap_gen"), ZGen_status1.Rapidity(), 1, h_1d, 200, 0, 200 );
+          common_stuff::plot1D(Form("z_mass_gen"), ZGen_status3.M(), 1, h_1d, 200, 0, 200 );
+          common_stuff::plot1D(Form("z_rap_gen"), ZGen_status3.Rapidity(), 1, h_1d, 200, 0, 200 );
           
-          common_stuff::plot1D(Form("mupos_pt_gen"), muPosGen_status1.Pt(), 1, h_1d, 100, 0, 100 );
-          common_stuff::plot1D(Form("muneg_pt_gen"), muNegGen_status1.Pt(), 1, h_1d, 100, 0, 100 );
-          common_stuff::plot1D(Form("mupos_eta_gen"), muPosGen_status1.Pt(), 1, h_1d, 50, -5, 5 );
-          common_stuff::plot1D(Form("muneg_eta_gen"), muNegGen_status1.Pt(), 1, h_1d, 50, -5, 5 );
+          common_stuff::plot1D(Form("mupos_pt_gen"), muPosGen_status3.Pt(), 1, h_1d, 100, 0, 100 );
+          common_stuff::plot1D(Form("muneg_pt_gen"), muNegGen_status3.Pt(), 1, h_1d, 100, 0, 100 );
+          common_stuff::plot1D(Form("mupos_eta_gen"), muPosGen_status3.Pt(), 1, h_1d, 50, -5, 5 );
+          common_stuff::plot1D(Form("muneg_eta_gen"), muNegGen_status3.Pt(), 1, h_1d, 50, -5, 5 );
           
           // put polarization plots here:
           common_stuff::plot2D(Form("phi_vs_costh_CS"),
@@ -813,9 +872,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                  0, 0, 0,
                                  vtxBin,doSingleGauss,1);
                                  
-                      evt_weight*= correctorRecoil_Z->NonClosure_weight(pfmet_bla,pfmetphi_bla,
-                                                                       ZGen_pt,ZGen_phi,ZGen_rap,
-                                                                       Zcorr.Pt(),Zcorr.Phi());
+                      // evt_weight*= correctorRecoil_Z->NonClosure_weight(pfmet_bla,pfmetphi_bla,
+                                                                       // ZGen_pt,ZGen_phi,ZGen_rap,
+                                                                       // Zcorr.Pt(),Zcorr.Phi());
+                      correctorRecoil_Z->NonClosure_scale(pfmet_bla,pfmetphi_bla,
+                                                           ZGen_pt,ZGen_phi,ZGen_rap,
+                                                           Zcorr.Pt(),Zcorr.Phi());
                     }
                     
                   }
