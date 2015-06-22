@@ -897,7 +897,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   pfmet_bla = pfmet_phicorr.first;
                   pfmetphi_bla = pfmet_phicorr.second;
                 }
-                
                 //------------------------------------------------------
                 // Define mu+, mu-, Z
                 //------------------------------------------------------
@@ -905,8 +904,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 
                 Z_met.SetPtEtaPhiM(pfmet_bla,0,pfmetphi_bla,0);
                 Z_metCentral.SetPtEtaPhiM(pfmet_blaCentral,0,pfmetphi_blaCentral,0);
-                muneg_bla.SetPtEtaPhiM(muNegCorr.Pt(),0,muNegCorr.Phi(),0);
-                muneg_blaCentral.SetPtEtaPhiM(muNegCorrCentral.Pt(),0,muNegCorrCentral.Phi(),0);
+                muneg_bla.SetPtEtaPhiM(muNegNoCorr.Pt(),0,muNegNoCorr.Phi(),0); // correction only one one muon for Wlike
+                muneg_blaCentral.SetPtEtaPhiM(muNegNoCorr.Pt(),0,muNegNoCorr.Phi(),0); // correction only one one muon for Wlike
                 mupos_bla.SetPtEtaPhiM(muPosCorr.Pt(),0,muPosCorr.Phi(),0);
                 mupos_blaCentral.SetPtEtaPhiM(muPosCorrCentral.Pt(),0,muPosCorrCentral.Phi(),0);
                 WlikePos_met = muneg_bla + Z_met;
