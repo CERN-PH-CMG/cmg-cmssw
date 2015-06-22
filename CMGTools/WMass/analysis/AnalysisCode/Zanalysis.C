@@ -664,29 +664,30 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             // << " WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_["<<RecoilCorrVarDiagoParU1orU2fromDATAorMC<<"]= " 
             // << WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC]
             // <<endl;
-          for(int m=m_start; m<m_end; m++){
-            
-            TString toys_str = "";
-            if(m>0) toys_str = Form("_RecoilCorrVar%d",m);
-            // cout << toys_str << endl;
 
-            for(int n=0; n<WMass::KalmanNvariations; n++){
-            
-              TString Kalmantoys_str = "";
-              if(WMass::KalmanNvariations>1) Kalmantoys_str = Form("_KalmanVar%d",n);
-            
-              //------------------------------------------------------
-              // start reco event selection
-              //------------------------------------------------------
-              if( evtHasGoodVtx && evtHasTrg && MuPos_pt>0
-                // CUTS ADDED TO SPEED UP THE CODE
-                && TMath::Abs(muPosCorrCentral.Eta())<WMass::etaMaxMuons[i] 
-                && TMath::Abs(muNegCorrCentral.Eta())<2.4 
-                && MuPos_charge != MuNeg_charge
-                && MuPosTrg
-                && MuPosIsTight && MuPosRelIso<0.12 && MuPos_dxy<0.02
-                && MuNegIsTight && MuNegRelIso<0.5 && MuNeg_dxy<0.02
+	  //------------------------------------------------------
+	  // start reco event selection
+	  //------------------------------------------------------
+	  if( evtHasGoodVtx && evtHasTrg && MuPos_pt>0
+	      // CUTS ADDED TO SPEED UP THE CODE
+	      && TMath::Abs(muPosCorrCentral.Eta())<WMass::etaMaxMuons[i]
+	      && TMath::Abs(muNegCorrCentral.Eta())<2.4
+	      && MuPos_charge != MuNeg_charge
+	      && MuPosTrg
+	      && MuPosIsTight && MuPosRelIso<0.12 && MuPos_dxy<0.02
+	      && MuNegIsTight && MuNegRelIso<0.5 && MuNeg_dxy<0.02
               ){ // good reco event
+
+	    for(int m=m_start; m<m_end; m++){
+
+	      TString toys_str = "";
+	      if(m>0) toys_str = Form("_RecoilCorrVar%d",m);
+	      // cout << toys_str << endl;
+
+	      for(int n=0; n<WMass::KalmanNvariations; n++){
+
+		TString Kalmantoys_str = "";
+		if(WMass::KalmanNvariations>1) Kalmantoys_str = Form("_KalmanVar%d",n);
 
                 //------------------------------------------------------------------------------------------------
                 // Apply muon corrections
