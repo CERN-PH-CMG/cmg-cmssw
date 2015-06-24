@@ -34,6 +34,7 @@ TLorentzVector Z_met,Z_metCentral,WlikePos_met,WlikePos_metCentral;
 TLorentzVector WlikePos,WlikePosCentral;
 
 
+
 HTransformToHelicityFrame *GoToHXframe;
 double costh_HX = -1e10, phi_HX = -1e10;
 double costh_HX_gen = -1e10, phi_HX_gen = -1e10;
@@ -803,16 +804,19 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   }
                   
                   TLorentzVector met_preRecoilCorr; met_preRecoilCorr.SetPtEtaPhiM(pfmet_bla,0,pfmetphi_bla,0);
+
+		  /*
                   TLorentzVector muposmet_preMuCorr; muposmet_preMuCorr.SetPtEtaPhiM(MuPos_pt,0,MuPos_phi,0);
                   TLorentzVector munegmet_preMuCorr; munegmet_preMuCorr.SetPtEtaPhiM(MuNeg_pt,0,MuNeg_phi,0);
                   TLorentzVector muposmet_postMuCorr; muposmet_postMuCorr.SetPtEtaPhiM(muPosCorr.Pt(),0,muPosCorr.Phi(),0);
                   TLorentzVector munegmet_postMuCorr; munegmet_postMuCorr.SetPtEtaPhiM(muNegCorr.Pt(),0,muNegCorr.Phi(),0);
                   
-                  // cout << "PRE MUON CORRECTION= " << pfmet_bla << " " << pfmetphi_bla << endl;
-                  met_preRecoilCorr = met_preRecoilCorr + muposmet_preMuCorr + munegmet_preMuCorr - muposmet_postMuCorr - munegmet_postMuCorr;
+                  // cout << "PRE MUON CORRECTION (raw recoil + rawMuon)= " << pfmet_bla << " " << pfmetphi_bla << endl;
+                  met_preRecoilCorr = met_preRecoilCorr + muPosNoCorr + muNegNoCorr - muPosNoCorr - muNegNoCorr;
                   pfmet_bla = met_preRecoilCorr.Pt();
                   pfmetphi_bla = met_preRecoilCorr.Phi();
                   // cout << "POST MUON CORRECTION= " << pfmet_bla << " " << pfmetphi_bla << endl;
+		  */
                   
                   // cout
                   // << "m= " << m 
@@ -855,29 +859,29 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                     // << endl;
                     // cout << "correcting pfmet" << endl;
                     correctorRecoil_Z->CorrectMET3gaus(pfmet_bla,pfmetphi_bla,
-                               ZGen_pt,ZGen_phi,
-                               Zcorr.Pt(),Zcorr.Phi(), // <<<<<<-------- THIS IS THE CORRECT THING
-                               // ZNocorr.Pt(),ZNocorr.Phi(), // <<<<<<---- THIS IS WRONG
-                               u1_dummy, u2_dummy,
-                               RecoilCorrVarDiagoParU1orU2fromDATAorMC, m, RecoilCorrVarDiagoParSigmas,
-                               // WMass::RecoilCorrVarDiagoParU1orU2fromDATAorMC_[m], WMass::RecoilCorrVarDiagoParN_[m], RecoilCorrVarDiagoParSigmas,
-                               vtxBin,doSingleGauss,1);
+						       ZGen_pt,ZGen_phi,
+						       // Zcorr.Pt(),Zcorr.Phi(),
+						       ZNocorr.Pt(),ZNocorr.Phi(),
+						       u1_dummy, u2_dummy,
+						       RecoilCorrVarDiagoParU1orU2fromDATAorMC, m, RecoilCorrVarDiagoParSigmas,
+						       // WMass::RecoilCorrVarDiagoParU1orU2fromDATAorMC_[m], WMass::RecoilCorrVarDiagoParN_[m], RecoilCorrVarDiagoParSigmas,
+						       vtxBin,doSingleGauss,1);
                     // return;
                     if(first_time_in_the_event && m==m_start && n==0){
                       // cout << "correcting pfmet_Central" << endl;
                       correctorRecoil_Z->CorrectMET3gaus(pfmet_blaCentral,pfmetphi_blaCentral,
-                                 ZGen_pt,ZGen_phi,
-                                 ZNocorr.Pt(),ZNocorr.Phi(),
-                                 u1_dummy, u2_dummy,
-                                 0, 0, 0,
-                                 vtxBin,doSingleGauss,1);
+							 ZGen_pt,ZGen_phi,
+							 ZNocorr.Pt(),ZNocorr.Phi(),
+							 u1_dummy, u2_dummy,
+							 0, 0, 0,
+							 vtxBin,doSingleGauss,1);
                                  
                       // evt_weight*= correctorRecoil_Z->NonClosure_weight(pfmet_bla,pfmetphi_bla,
                                                                        // ZGen_pt,ZGen_phi,ZGen_rap,
                                                                        // Zcorr.Pt(),Zcorr.Phi());
                       correctorRecoil_Z->NonClosure_scale(pfmet_bla,pfmetphi_bla,
-                                                           ZGen_pt,ZGen_phi,ZGen_rap,
-                                                           Zcorr.Pt(),Zcorr.Phi());
+							  ZGen_pt,ZGen_phi,ZGen_rap,
+							  Zcorr.Pt(),Zcorr.Phi());
                     }
                     
                   }
