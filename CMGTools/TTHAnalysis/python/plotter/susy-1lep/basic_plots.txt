@@ -1,0 +1,32 @@
+MET:     MET                                : 40,0,999.9999;  XTitle="MET [GeV]", Logy
+HT:     HT                                : 40,0,2999.9999;  XTitle="H_{T} [GeV]", Logy
+ST:     ST  : 40,0,1599.9999;  XTitle="S_{T} [GeV]", Logy
+nJet:       nCentralJet30                            : 20,0,20   ;  XTitle="jet multiplicity", Logy
+nBJet:      nBJetMedium30                          : 10,0,10   ;  XTitle="b-jet multiplicity (Med)", Logy
+dPhiLepW:   fabs(DeltaPhiLepW)                        : 60,0,3.141   ; XTitle="#Delta #varphi (lep\,W)", IncludeOverflows=False, Logy
+MT2W:   MT2W              : 20,0,500; XTitle="MT2W", Logy, MoreY=100
+Lp:   	Lp      : 30,-1,2   ; XTitle="Lp /#Delta #varphi (lep\,W)", IncludeOverflows=False
+Lp_log:	Lp      : 30,-1,2   ; XTitle="Lp /#Delta #varphi (lep\,W)", IncludeOverflows=False, Logy
+# Leptons
+LepPt:     LepGood_pt[tightLepsIdx[0]]  : 40,0,599.9999;  XTitle="Lep p_{T} [GeV]", Logy
+# Eta
+EtaLep:     LepGood_eta[tightLepsIdx[0]]  : 40,-2.4,2.4 ;  XTitle="Lep #eta", Logy, MoreY=100
+EtaMu:     LepGood_eta[tightMuIdx[0]]  : 40,-2.4,2.4 ;  XTitle="Mu #eta", Logy, MoreY=100
+EtaEl:     LepGood_eta[tightElIdx[0]]  : 40,-2.4,2.4 ;  XTitle="Ele #eta", Logy, MoreY=100
+
+nTopTag : nHighPtTopTag : 5,-0.5,4.5; XTitle="nTopTag", Logy
+nTopTagTau : nHighPtTopTagPlusTau23 : 5,-0.5,4.5; XTitle="nTopTagPlusTau23", Logy
+
+
+#STvsTop:      ST\:Topness : 40,-10,20,40,200,2000;  YTitle="S_{T} [GeV]", XTitle="Topness", Logz
+
+# Top
+Topness:   Topness              : 15,-10,20; XTitle="Topness", Logy, MoreY=100
+TopMass:   TopVarsMtopMin[0]: 40,0,1000; XTitle="min(Mtop)", Logy
+TopEt:   TopEt[0]: 40,0,1000; XTitle="min(top E_{T})", Logy
+TopPt:   TopPt[0]: 40,0,1000; XTitle="min(top P_{T})", Logy
+Top_METovM:   TopVarsMETovTopMin[0]: 40,0,5; XTitle="min(MET/Mtop)", Logy
+
+#Stopness: (TopVarsMETovTopMin[0]-0.5)/0.5+(TopVarsMtopMin[0]-175)/175 : 40,-5,10; XTitle="STopness", Logy, MoreY=100
+
+#DEMOfunctionscc_deltaPhiLepMET:  fabs(deltaPhi(LepGood_phi[tightLepsIdx[0]],met_phi)) : 40,0,3.141 ; XTitle = "#Delta #varphi (lep\,met)", Logy

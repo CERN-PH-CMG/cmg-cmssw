@@ -1,0 +1,2 @@
+relIso:     LepGood_relIso03  : 40,0,2 ;  XTitle="RelIso03", Logy, MoreY=100
+miniIso:     LepGood_miniRelIso  : 40,0,0.4 ;  XTitle="MiniIso", Logy, MoreY=100

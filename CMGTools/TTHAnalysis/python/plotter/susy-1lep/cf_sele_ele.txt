@@ -1,0 +1,12 @@
+#== 1 hard ele: nTightLeps == 1 && nTightEl == 1 && LepGood1_pt > 25
+ST > 200: ST > 200
+== 1 hard lep: nTightLeps == 1 && LepGood1_pt > 25
+Selected: Selected == 1
+#AntiSelected: Selected == -1
+no VetoLeps: nVetoLeps==0
+Nj >= 6: nCentralJet30 >= 6
+lead Jpt > 80: LSLjetptGT80==1
+HT > 500: HT > 500
+ST > 200: ST > 200
+#0b medium: nBJetMedium30 == 0
+1b medium: nBJetMedium30 >= 1

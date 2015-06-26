@@ -1,0 +1,11 @@
+== 1 tight lepton: nTightLeps == 1
+hard lepton: LepGood1_pt > 25
+#soft lepton: LepGood1_pt < 25
+no VetoLeps: nVetoLeps==0
+geq 6j: nCentralJet30>=6
+leading/subleading > 80: LSLjetptGT80==1
+ht500: HT >500
+st200: ST > 200
+1b medium: nBJetMedium30>=1
+dphi>1: fabs(DeltaPhiLepW)> 1
+#lepEta < 2.1: fabs(LepGood_eta[tightLepsIdx[0]]) < 2.1

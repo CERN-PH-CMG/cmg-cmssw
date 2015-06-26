@@ -1,0 +1,10 @@
+Topness:   Topness              : 15,-10,20; XTitle="Topness"
+#TopnessLogy:   Topness              : 15,-10,20; XTitle="Topness", Logy, MoreY=100
+SingleTopness : (TopVarsMETovTopMin[0]-0.5)/0.5+(TopVarsMtopMin[0]-175)/175 : 30,-5,10; XTitle="Single Topness"
+#SingleTopnessLogy : (TopVarsMETovTopMin[0]-0.5)/0.5+(TopVarsMtopMin[0]-175)/175 : 30,-5,10; XTitle="Single Topness", Logy, MoreY=100
+
+hdPhiLepW:   fabs(DeltaPhiLepW)                        : 20,0,3.141   ; XTitle="#Delta #varphi (lep\,W)"
+
+#TopnessVsSingleTopness
+#TopnessVsDeltaPhi:   Topness\:fabs(DeltaPhiLepW)              : 20,0,3.141,15,-10,20; YTitle="Topness", XTitle="#Delta #varphi (lep\,W)", IncludeOverflows=False, Profile1D=True, 
+SingleTopnessVsDeltaPhi:   (TopVarsMETovTopMin[0]-0.5)/0.5+(TopVarsMtopMin[0]-175)/175\:fabs(DeltaPhiLepW)              : 20,0,3.141,20,-2,7; YTitle="Single Topness", XTitle="#Delta #varphi (lep\,W)"
