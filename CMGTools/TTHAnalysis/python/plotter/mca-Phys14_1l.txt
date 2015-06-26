@@ -1,0 +1,66 @@
+#Cross sections need to be double-checked
+
+
+#Signal samples
+#T5qqqqWW_Gl1200_Chi1000_LSP800+ : SMS_T5qqqqWW_Gl1200_Chi1000_LSP800 : 0.0856418 ; FillColor=ROOT.kYellow-3, Label ="T5q^{4} 1.2/1/0.8"
+#T5qqqqWW_Gl1200_Chi1000_LSP800+ : T5qqqqWW_mGo1200_mCh1000_mChi800 : 0.0856418 ; FillColor=ROOT.kYellow-3, Label ="T5q^{4} 1.2/1/0.8"
+#T1tttt_SqGl15_20_01+: SMS_SqGl_T1tttt_2J_mGl1500_mSq_2000_mLSP100 : 0.0162 ; FillColor=ROOT.kRed,   Label="T1t^{4}_{\#tilde{q}\#tilde{g} }1.5/2.0/0.1"
+T1tttt_HM_1200_800+: SMS_T1tttt_2J_mGl1200_mLSP800 : 0.0856418 ; FillColor=ROOT.kBlack,   Label="T1t^{4} 1.2/0.8" 
+T1tttt_HL_1500_100+: SMS_T1tttt_2J_mGl1500_mLSP100 : 0.0141903 ; FillColor=ROOT.kMagenta,   Label="T1t^{4} 1.5/0.1" 
+#T1ttbbWW_1300_300_290+: T1ttbbWW_mGo1300_mCh300_mChi290 : 0.0460525 ; FillColor = ROOT.kRed, Label="T12^{tbW} 1.3/0.3/0.290"
+#T1ttbbWW_1300_300_295+: T1ttbbWW_mGo1300_mCh300_mChi295 : 0.0460525 ; FillColor = ROOT.kRed+3, Label="T12^{tbW} 1.3/0.3/0.295"
+#T5ttttDeg_1300_300_280+: T5ttttDeg_mGo1300_mStop300_mChi280 : 0.0460525 ; FillColor = ROOT.kYellow-3, Label ="T5t^{4} 1.3/0.3/0.28"
+
+
+#Background
+TT 	 : TTJets : 809.1 ; FillColor=ROOT.kBlue-2, Label="t\#bar{t}", NormSystematic=0.5
+#TT_DiLep 	 : TTJets : 809.1 : ngenLepFromTau+ngenLep ==2 ; FillColor=ROOT.kBlue, Label="t\#bar{t} dileptonic", NormSystematic=0.5
+#TT_SemiLep 	 : TTJets : 809.1 : ngenLepFromTau+ngenLep ==1 ; FillColor=ROOT.kBlue+1, Label="t\#bar{t} l+jets", NormSystematic=0.5
+#TT_FullHad 	 : TTJets : 809.1 : ngenLep+ngenTau ==0 ; FillColor=ROOT.kBlue+2, Label="t\#bar{t} alljets", NormSystematic=0.5
+#TT_HadTau 	 : TTJets : 809.1 : ngenLep==0 && ngenLepFromTau==0 && ngenTau>0  ; FillColor=ROOT.kBlue+3, Label="t\#bar{t} had. \#tau", NormSystematic=0.5
+
+#TT_DiLep 	 : TTJets : 809.1 : ngenTau+ngenLep ==2 ; FillColor=ROOT.kBlue, Label="t\#bar{t} dileptonic", NormSystematic=0.5
+#TT_SemiLep 	 : TTJets : 809.1 : ngenTau+ngenLep ==1 ; FillColor=ROOT.kBlue+1, Label="t\#bar{t} l+jets", NormSystematic=0.5
+#TT_FullHad 	 : TTJets : 809.1 : ngenLep+ngenTau ==0 ; FillColor=ROOT.kBlue+2, Label="t\#bar{t} alljets", NormSystematic=0.5
+
+
+SingleT  :TToLeptons_tch	  :             136.05*0.108*3	;FillColor = ROOT.kViolet+5, Label= "t/\#bar{t}", NormSystematic=0.5
+SingleT  :TToLeptons_sch	  :             7.20*0.108*3	;FillColor = ROOT.kViolet+5, Label= "t/\#bar{t}", NormSystematic=0.5
+SingleT  :TBarToLeptons_tch   :             	80.97*0.108*3   ;FillColor = ROOT.kViolet+5, Label= "t/\#bar{t}", NormSystematic=0.5
+SingleT  :TBarToLeptons_sch   :             	4.16*0.108*3	;FillColor = ROOT.kViolet+5, Label= "t/\#bar{t}", NormSystematic=0.5
+SingleT  :TBar_tWch           : 35.6             ;FillColor = ROOT.kViolet+5, Label= "t/\#bar{t}", NormSystematic=0.5
+SingleT  :T_tWch              : 35.6             ;FillColor = ROOT.kViolet+5, Label= "t/\#bar{t}", NormSystematic=0.5
+
+
+WJets    : WJetsToLNu_HT100to200 :  1817.0  * 1.23  ; Label="W+jets", FillColor=ROOT.kGreen-2, NormSystematic=0.5
+WJets    : WJetsToLNu_HT200to400 :   471.6  * 1.23  ; Label="W+jets", FillColor=ROOT.kGreen-2, NormSystematic=0.5
+WJets    : WJetsToLNu_HT400to600 :    55.61 * 1.23  ; Label="W+jets", FillColor=ROOT.kGreen-2, NormSystematic=0.5
+WJets    : WJetsToLNu_HT600toInf :    18.81 * 1.23  ; Label="W+jets", FillColor=ROOT.kGreen-2, NormSystematic=0.5
+
+# HT bins: cross sections for DYJets taken from McM LO times inclusive k-factor from FEWZ(2008 pb x3)/McM(4746)
+DY       : DYJetsToLL_M50_HT100to200 :  194.3   * 1.27; Label="DY+jets", FillColor=ROOT.kRed-6, NormSystematic=0.5
+DY       : DYJetsToLL_M50_HT200to400 :   52.24  * 1.27; Label="DY+jets", FillColor=ROOT.kRed-6, NormSystematic=0.5
+DY       : DYJetsToLL_M50_HT400to600 :    6.546 * 1.27; Label="DY+jets", FillColor=ROOT.kRed-6, NormSystematic=0.5
+DY       : DYJetsToLL_M50_HT600toInf :    2.179 * 1.27; Label="DY+jets", FillColor=ROOT.kRed-6, NormSystematic=0.5
+
+# cross sections are from 13 TeV MG5_aMC@NLO v2.2.1, NNPDF 2.3nlo, fixed scale = mtop + 0.5*mv
+TTV : TTZJets : 0.8565 ; FillColor=ROOT.kOrange-3, Label="ttV(W/Z/H)", NormSystematic=0.2
+TTV : TTWJets : 0.6647 ; FillColor=ROOT.kOrange-3, Label="ttV(W/Z/H)", NormSystematic=0.2
+#double-check x-section values, especially for TTH
+TTV     : TTH : 0.5085 ; FillColor=ROOT.kOrange-3, Label="ttV(W/Z/H)", NormSystematic=0.2
+
+
+#
+##100-250HT-bin not considered
+QCD      : QCD_HT_250To500          : xsec ; Label ="QCD", FillColor=ROOT.kCyan-6, NormSystematic=0.5
+QCD      : QCD_HT_500To1000         : xsec ; Label ="QCD", FillColor=ROOT.kCyan-6, NormSystematic=0.5
+QCD      : QCD_HT_1000ToInf         : xsec ; Label ="QCD", FillColor=ROOT.kCyan-6, NormSystematic=0.5
+#QCD      : QCD_HT_250To500          : 670500   ; Label ="QCD", FillColor=ROOT.kCyan-6, NormSystematic=0.5
+#QCD      : QCD_HT_500To1000         : 26740    ; Label ="QCD", FillColor=ROOT.kCyan-6, NormSystematic=0.5
+#QCD      : QCD_HT_1000ToInf         : 769.7    ; Label ="QCD", FillColor=ROOT.kCyan-6, NormSystematic=0.5
+
+# GJets
+#GJets	: GJets_HT100to200 : xsec ; Label="\gamma+jets", FillColor=ROOT.kYellow, NormSystematic=0.5
+#GJets	: GJets_HT200to400 : xsec ; Label="\gamma+jets", FillColor=ROOT.kYellow, NormSystematic=0.5
+#GJets	: GJets_HT400to600 : xsec ; Label="\gamma+jets", FillColor=ROOT.kYellow, NormSystematic=0.5
+#GJets	: GJets_HT600toInf : xsec ; Label="\gamma+jets", FillColor=ROOT.kYellow, NormSystematic=0.5
