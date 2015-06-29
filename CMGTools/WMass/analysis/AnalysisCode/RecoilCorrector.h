@@ -9,6 +9,7 @@
 #include "TTree.h"
 #include "TCanvas.h"
 #include "TH1F.h"
+#include "TH2D.h"
 #include "TGraph.h"
 #include "TLegend.h"
 #include "TProfile.h"
@@ -40,7 +41,7 @@ class RecoilCorrector
 {
   
 public:
-  RecoilCorrector(string iNameZDat, int iSeed=0xDEADBEEF);
+  RecoilCorrector(string iNameZDat, int iSeed=0xDEADBEEF,TString model_name = "fitresult_Add", TString fNonClosure_name = "");
   RecoilCorrector(string iNameZDat1, string iPrefix, int iSeed=0xDEADBEEF);
   ~RecoilCorrector();
   void CorrectAll(double &met, double &metphi, double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double &iU1,double &iU2,double iFluc,double iScale=0,int njet=0);
@@ -51,8 +52,12 @@ public:
   void CorrectMET3gaus(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int njet=0,bool doSingleGauss=false, int mytype=0);
   void CorrectU1U2(double &pfu1, double &pfu2, double &trku1, double &trku2, 
   double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double iFluc,double iScale=0,int njet=0);
-  void addDataFile(std::string iNameDat/* , int RecoilCorrVarDiagoParU1orU2=1, int RecoilCorrU1VarDiagoParN=0, int RecoilCorrVarDiagoParSigmas=0 */);
-  void addMCFile  (std::string iNameMC);
+  void addDataFile(std::string iNameDat,/* , int RecoilCorrVarDiagoParU1orU2=1, int RecoilCorrU1VarDiagoParN=0, int RecoilCorrVarDiagoParSigmas=0 */
+  TString model_name = "fitresult_Add");
+  void addMCFile  (std::string iNameMC,TString model_name = "fitresult_Add");
+  double NonClosure_weight(double iMet,double iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi);
+  double NonClosure_scale(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi);
+
 protected:
   enum Recoil { 
     PFU1,
@@ -83,7 +88,7 @@ protected:
                      std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,
                      std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2RMS3Fit,
 		     std::vector<TF1*> &iU2FracFit,std::vector<TF1*> &iU2Mean1Fit, std::vector<TF1*> &iU2Mean2Fit,//std::vector<TF1*> &iU2Sig3Fit,
-                     std::string iFName,std::string iPrefix,int vtxBin, int mytype=0/* , int RecoilCorrVarDiagoParU1orU2=1, int RecoilCorrU1VarDiagoParN=0, int RecoilCorrVarDiagoParSigmas=0 */);
+                     std::string iFName,std::string iPrefix,int vtxBin, int mytype=0,/* , int RecoilCorrVarDiagoParU1orU2=1, int RecoilCorrU1VarDiagoParN=0, int RecoilCorrVarDiagoParSigmas=0 */TString model_name = "fitresult_Add");
                      
   void readCorr(std::string iName,//int iType=2,
   std::vector<TF1*> &iF1U1U2Corr  ,std::vector<TF1*> &iF2U1U2Corr,std::vector<TF1*> &iF1F2U1Corr,std::vector<TF1*> &iF1F2U2Corr,
@@ -211,6 +216,8 @@ protected:
   RooAbsReal *pdfU1Cdf[3][lNBins],*pdfU2Cdf[3][lNBins];
   RooFitResult* frU1[3][lNBins];
   RooFitResult* frU2[3][lNBins];
+  TFile *fNonClosure; 
+  TH2D *hNonClosure[2][2]; 
   TRandom3 *fRandom; 
   vector<TF1*> fF1U1Fit; vector<TF1*> fF1U1RMSSMFit; vector<TF1*> fF1U1RMS1Fit; vector<TF1*> fF1U1RMS2Fit, fF1U1RMS3Fit, fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit; 
   vector<TF1*> fF1U2Fit; vector<TF1*> fF1U2RMSSMFit; vector<TF1*> fF1U2RMS1Fit; vector<TF1*> fF1U2RMS2Fit, fF1U2RMS3Fit, fF1U2FracFit, fF1U2Mean1Fit, fF1U2Mean2Fit;; 

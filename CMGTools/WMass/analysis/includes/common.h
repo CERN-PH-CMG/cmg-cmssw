@@ -12,10 +12,10 @@ namespace WMass{
   static const int WMassCentral_MeV = 80398;
   
   static const int WMassSkipNSteps = 5;
-  static const int WMassNSteps = 0;
+  static const int WMassNSteps = 5;
   
-  static const int Wmass_values_array[2*WMassNSteps+1] = {80398};
-  static const int Zmass_values_array[2*WMassNSteps+1] = {91188};
+  static const int Wmass_values_array[2*WMassNSteps+1] = {80348,80358,80368,80378,80388,80398,80408,80418,80428,80438,80448};
+  static const int Zmass_values_array[2*WMassNSteps+1] = {91138,91148,91158,91168,91178,91188,91198,91208,91218,91228,91238};
   
   static const int PtSFNSteps = 1;
   static const int PtSFtype[PtSFNSteps] = { -1 };
@@ -28,7 +28,7 @@ namespace WMass{
   TString FitVar_str[NFitVar] = {"Pt","Mt","MET"};
   static const int PDF_sets = 229800;
   static const int PDF_members = 1;
-  static const int NVarRecoilCorr = 30;
+  static const int NVarRecoilCorr = 18;
   
   static const int WpTcut = 15;
   
@@ -73,28 +73,4 @@ namespace WMass{
   // }
 
 
-void plotAndSaveHisto1D(TFile*f1, TString str1, TFile*f2, TString str2, int logx, int logy, int logz, int normalized){
-
-  TH1D*h1=(TH1D*)f1->Get(str1.Data());
-  h1->SetLineColor(2);
-  TH1D*h2=(TH1D*)f2->Get(str2.Data());
-  
-  TCanvas *c1 = new TCanvas("c"+str1);
-  c1->SetLogx(logx);
-  c1->SetLogy(logy);
-  c1->SetLogz(logz);
-  
-  if(normalized){
-    h1->DrawNormalized();
-    h2->DrawNormalized("same");
-  }else{
-    h1->Draw();
-    h2->Draw("same");    
-  }
-  
-  c1->SaveAs(str1+".png");
-  
-}
-
-  
 }

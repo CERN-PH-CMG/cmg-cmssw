@@ -289,7 +289,8 @@ class WAnalyzer( Analyzer ):
         # if not (event.passedVertexAnalyzer and event.passedTriggerAnalyzer):
         ##------------
         # reco events must have good reco vertex
-        if not (event.passedVertexAnalyzer):
+        # if not (event.passedVertexAnalyzer):
+        if (not event.passedVertexAnalyzer) or (event.vertices[0] != event.goodVertices[0]):
           return keepFailingEvents
         ##------------
         # ...and at lest one reco muon...

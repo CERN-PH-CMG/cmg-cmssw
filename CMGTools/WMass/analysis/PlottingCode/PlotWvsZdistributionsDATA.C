@@ -1,4 +1,5 @@
 #include "../includes/common.h"
+#include "../AnalysisCode/common_stuff.C"
 
 void PlotWvsZdistributionsDATA(TString folderZ="",TString folderW=""){
 
@@ -23,12 +24,12 @@ void PlotWvsZdistributionsDATA(TString folderZ="",TString folderW=""){
   // cZlepPt1VsPt2->SetLogz();
   // cZlepPt1VsPt2->SaveAs("ZlepPt1VsPt2.png");
 
-  // WMass::plotAndSaveHisto1D(fZ,"hpfMET_Z",fW,"hpfMET_WPos", /*logxyz*/ 0,1,0, /*normalized*/ 1);
-  WMass::plotAndSaveHisto1D(fZ,"hpfMET_WlikePos_Sig_eta2p1",fW,"hpfMET_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
+  // common_stuff::plotAndSaveHisto1D(fZ,"hpfMET_Z",fW,"hpfMET_WPos", /*logxyz*/ 0,1,0, /*normalized*/ 1);
+  common_stuff::plotAndSaveHisto1D(fZ,"hpfMET_WlikePos_Sig_eta2p1",fW,"hpfMET_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
     
-  WMass::plotAndSaveHisto1D(fZ,"hpfMETphi_Z_Sig_eta2p1",fW,"hpfMETphi_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
+  common_stuff::plotAndSaveHisto1D(fZ,"hpfMETphi_Z_Sig_eta2p1",fW,"hpfMETphi_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
 
-  WMass::plotAndSaveHisto1D(fZ,"hpfMETphi_Z_Sig_eta2p1",fW,"hpfMETphi_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
+  common_stuff::plotAndSaveHisto1D(fZ,"hpfMETphi_Z_Sig_eta2p1",fW,"hpfMETphi_WPos_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
     
   TCanvas*chWpt=new TCanvas("chWpt","chWpt");
   TH1D*hWlikePos_pt=(TH1D*)fZ->Get("hWlikePos_pt_Sig_eta2p1");
@@ -43,7 +44,7 @@ void PlotWvsZdistributionsDATA(TString folderZ="",TString folderW=""){
   hWlikePos_pt->Draw("same");
   chWpt->SaveAs("hWVsWlikePos_pt.png");
     
-  WMass::plotAndSaveHisto1D(fZ,"hWlikePos_phi_Sig_eta2p1",fW,"hWPos_phi_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
+  common_stuff::plotAndSaveHisto1D(fZ,"hWlikePos_phi_Sig_eta2p1",fW,"hWPos_phi_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
   
   
   // TCanvas*chWmt=new TCanvas("chWmt","chWmt");
@@ -54,7 +55,7 @@ void PlotWvsZdistributionsDATA(TString folderZ="",TString folderW=""){
   // hWlikePos_mt->DrawNormalized("same");
   // chWmt->SaveAs("hWVsWlikePos_mt.png");
 
-  WMass::plotAndSaveHisto1D(fZ,"hWlikePos_mt_Sig_eta2p1",fW,"hWPos_mt_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
+  common_stuff::plotAndSaveHisto1D(fZ,"hWlikePos_mt_Sig_eta2p1",fW,"hWPos_mt_Sig_eta2p1", /*logxyz*/ 0,1,0, /*normalized*/ 1);
   
   TCanvas*chmuWpt=new TCanvas("chmuWpt","chmuWpt");
   chmuWpt->SetLogy();
