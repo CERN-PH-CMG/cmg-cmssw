@@ -54,6 +54,9 @@ metAna.recalibrate = False #should be false in susycore, already
 
 isoTrackAna.setOff=False
 
+# store all taus by default
+genAna.allGenTaus = True
+
 from CMGTools.TTHAnalysis.analyzers.ttHLepEventAnalyzer import ttHLepEventAnalyzer
 ttHEventAna = cfg.Analyzer(
 	ttHLepEventAnalyzer, name="ttHLepEventAnalyzer",
