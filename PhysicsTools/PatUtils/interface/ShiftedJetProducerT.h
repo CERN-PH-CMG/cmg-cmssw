@@ -77,6 +77,7 @@ template <typename T, typename Textractor>
       jetCorrLabelUpToL3Res_ = cfg.getParameter<edm::InputTag>("jetCorrLabelUpToL3Res");
       jetCorrTokenUpToL3Res_ = mayConsume<reco::JetCorrector>(jetCorrLabelUpToL3Res_);
     }
+    
     jetCorrEtaMax_ = ( cfg.exists("jetCorrEtaMax") ) ?
       cfg.getParameter<double>("jetCorrEtaMax") : 9.9;
 
@@ -108,7 +109,9 @@ template <typename T, typename Textractor>
     edm::Handle<reco::JetCorrector> jetCorrUpToL3;
     evt.getByToken(jetCorrTokenUpToL3_, jetCorrUpToL3);
     edm::Handle<reco::JetCorrector> jetCorrUpToL3Res;
-    evt.getByToken(jetCorrTokenUpToL3Res_, jetCorrUpToL3Res);
+    if ( evt.isRealData() && addResidualJES_ ) {
+      evt.getByToken(jetCorrTokenUpToL3Res_, jetCorrUpToL3Res);
+    }
 
     std::auto_ptr<JetCollection> shiftedJets(new JetCollection);
 
