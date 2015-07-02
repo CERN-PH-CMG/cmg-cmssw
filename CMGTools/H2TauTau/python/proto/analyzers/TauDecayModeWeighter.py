@@ -26,11 +26,12 @@ class TauDecayModeWeighter( Analyzer ):
         
         # Not strictly correct, but this was agreed upon for Summer 2013
         # JAN: Should update to gen-matched taus
-        if self.cfg_comp.isEmbed or 'Higgs' in self.cfg_comp.name or ('DY' in self.cfg_comp.name and event.isFake == 0):
-            for leg in legs :
-                decayMode = getattr(event.diLepton, leg)().decayMode()
-                if decayMode == 0:
-                    self.weight *= self.oneProngNoPiZeroWeight
+        if self.cfg_comp.isEmbed or 'Higgs' in self.cfg_comp.name or ('DY' in self.cfg_comp.name):
+            for leg in legs:
+                if getattr(event.diLepton, leg)().isTauHad:
+                    decayMode = getattr(event.diLepton, leg)().decayMode()
+                    if decayMode == 0:
+                        self.weight *= self.oneProngNoPiZeroWeight
 
             # print decayMode, self.weight, self.cfg_comp.name
             

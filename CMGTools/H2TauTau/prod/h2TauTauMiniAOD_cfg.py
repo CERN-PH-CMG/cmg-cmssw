@@ -18,7 +18,7 @@ debugEventContent = False
 
 # choose from 'tau-mu' 'di-tau' 'tau-ele' 'mu-ele' 'all-separate', 'all'
 # channel = 'all'
-channel = 'di-tau'
+channel = 'tau-mu'
 
 # runSVFit enables the svfit mass reconstruction used for the H->tau tau analysis.
 # if false, no mass calculation is carried out
@@ -97,22 +97,28 @@ if addAK4:
     addAK4Jets(process)
     process.mvaMetInputPath.insert(0, process.jetSequenceAK4)
 
+
 # if '25' in dataset_name:
 #     print 'Using 25 ns MVA MET training'
-#     for mvaMetCfg in [process.mvaMETTauMu, process.mvaMETTauEle, process.mvaMETDiTau,
-#                       process.mvaMETMuEle, process.mvaMETDiMu]:
-#         mvaMetCfg.inputFileNames = cms.PSet(
-#             U     = cms.FileInPath('RecoMET/METPUSubtraction/data/gbrmet_7_2_X_MINIAOD_BX25PU20_Mar2015.root'),
-#             DPhi  = cms.FileInPath('RecoMET/METPUSubtraction/data/gbrphi_7_2_X_MINIAOD_BX25PU20_Mar2015.root'),
-#             CovU1 = cms.FileInPath('RecoMET/METPUSubtraction/data/gbru1cov_7_2_X_MINIAOD_BX25PU20_Mar2015.root'),
-#             CovU2 = cms.FileInPath('RecoMET/METPUSubtraction/data/gbru2cov_7_2_X_MINIAOD_BX25PU20_Mar2015.root')
-#         )
-#         mvaMetCfg.inputRecords = cms.PSet(
-#             U = cms.string("RecoilCor"),
-#             DPhi = cms.string("PhiCorrection"),
-#             CovU1 = cms.string("CovU1"),
-#             CovU2 = cms.string("CovU2")
-#         )
+#     process.mvaMETTauMu.iinputFileNames = cms.PSet(
+#         U     = cms.FileInPath('RecoMET/METPUSubtraction/data/gbrmet_7_2_X_MINIAOD_BX25PU20_Mar2015.root'),
+#         DPhi  = cms.FileInPath('RecoMET/METPUSubtraction/data/gbrphi_7_2_X_MINIAOD_BX25PU20_Mar2015.root'),
+#         CovU1 = cms.FileInPath('RecoMET/METPUSubtraction/data/gbru1cov_7_2_X_MINIAOD_BX25PU20_Mar2015.root'),
+#         CovU2 = cms.FileInPath('RecoMET/METPUSubtraction/data/gbru2cov_7_2_X_MINIAOD_BX25PU20_Mar2015.root')
+#     )
+#     # process.mvaMETTauMu.inputRecords = cms.PSet(
+#     #     U = cms.string("U1Correction"),
+#     #     DPhi = cms.string("PhiCorrection"),
+#     #     CovU1 = cms.string("CovU1"),
+#     #     CovU2 = cms.string("CovU2")
+#     # )
+#     # process.mvaMETTauMu.inputFileNames = cms.PSet(
+#     #     U     = cms.FileInPath('RecoMET/METPUSubtraction/data/gbrmet_53_Sep2013_type1.root'),
+#     #     DPhi  = cms.FileInPath('RecoMET/METPUSubtraction/data/gbrmetphi_53_June2013_type1.root'),
+#     #     CovU1 = cms.FileInPath('RecoMET/METPUSubtraction/data/gbru1cov_53_Dec2012.root'),
+#     #     CovU2 = cms.FileInPath('RecoMET/METPUSubtraction/data/gbru2cov_53_Dec2012.root')
+#     # )
+
 
 
 

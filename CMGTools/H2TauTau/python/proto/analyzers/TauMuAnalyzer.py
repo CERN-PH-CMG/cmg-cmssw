@@ -1,4 +1,4 @@
-import operator
+# import operator
 
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.physicsobjects.Muon import Muon
@@ -106,8 +106,8 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
         # RIC: 9 March 2015
         return ( (tau.tauID('decayModeFinding')         > 0.5  or
                   tau.tauID('decayModeFindingNewDMs')   > 0.5) and
-                 tau.tauID('againstElectronVLooseMVA5') > 0.5  and
-                 tau.tauID('againstMuonTight3')         > 0.5  and
+                 # tau.tauID('againstElectronVLooseMVA5') > 0.5  and
+                 # tau.tauID('againstMuonTight3')         > 0.5  and
                  self.testTauVertex(tau) )
         # https://twiki.cern.ch/twiki/bin/view/CMS/TauIDRecommendation13TeV
         # return tau.tauID('decayModeFinding') > 0.5 and \
@@ -176,17 +176,20 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
 
 
 
-    def leptonAccept(self, leptons):
+    def leptonAccept(self, leptons, event):
         '''Di-lepton veto: returns false if >= 1 OS same flavour lepton pair,
         e.g. >= 1 OS mu pair in the mu tau channel'''
         looseLeptons = [muon for muon in leptons if
                         self.testLegKine(muon, ptcut=15, etacut=2.4) and
                         muon.isGlobalMuon() and
                         muon.isTrackerMuon() and
-                        muon.userFloat('isPFMuon') and
+                        muon.isPFMuon() and
                         abs(muon.dz()) < 0.2 and
                         self.testLeg2Iso(muon, 0.3)
                        ]
+
+        if event.leg2 not in looseLeptons:
+            looseLeptons.append(event.leg2)
 
         if any(l.charge() > 0 for l in looseLeptons) and \
            any(l.charge() < 0 for l in looseLeptons):
@@ -199,9 +202,44 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
         '''Returns the best diLepton (1st precedence opposite-sign, 2nd precedence
         highest pt1 + pt2).'''
 
-        osDiLeptons = [dl for dl in diLeptons if dl.leg1().charge() != dl.leg2().charge()]
-        if osDiLeptons:
-            return max(osDiLeptons, key=operator.methodcaller('sumPt'))
-        else:
-            return max(diLeptons, key=operator.methodcaller('sumPt'))
+        if len(diLeptons) == 1:
+            return diLeptons[0]
+
+        minRelIso = min(d.leg2().relIso(dBetaFactor=0.5, allCharged=0) for d in diLeptons)
+
+        diLeps = [dil for dil in diLeptons if dil.leg2().relIso(dBetaFactor=0.5, allCharged=0) == minRelIso]
+
+        if len(diLeps) == 1:
+            return diLeps[0]
+
+        maxPt = max(d.leg2().pt() for d in diLeps)
+
+        diLeps = [dil for dil in diLeps if dil.leg2().pt() == maxPt]
+
+        if len(diLeps) == 1:
+            return diLeps[0]
+
+        minIso = min(d.leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") for d in diLeps)
+
+        diLeps = [dil for dil in diLeps if dil.leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") == minIso]
+
+        if len(diLeps) == 1:
+            return diLeps[0]
+
+        maxPt = max(d.leg1().pt() for d in diLeps)
+
+        diLeps = [dil for dil in diLeps if dil.leg1().pt() == maxPt]
+
+        if len(diLeps) != 1:
+            print 'ERROR in finding best dilepton', diLeps
+            import pdb; pdb.set_trace()
+
+        return diLeps[0]
+        
+
+        # osDiLeptons = [dl for dl in diLeptons if dl.leg1().charge() != dl.leg2().charge()]
+        # if osDiLeptons:
+        #     return max(osDiLeptons, key=operator.methodcaller('sumPt'))
+        # else:
+        #     return max(diLeptons, key=operator.methodcaller('sumPt'))
 
