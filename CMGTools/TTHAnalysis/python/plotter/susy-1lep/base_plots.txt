@@ -6,6 +6,12 @@ nBJet:      nBJetMedium30                          : 10,0,10   ;  XTitle="b-jet 
 dPhiLepW:   fabs(DeltaPhiLepW)                        : 60,0,3.141   ; XTitle="#Delta #varphi (lep\,W)", IncludeOverflows=False, Logy
 Lp:     Lp      : 30,-0.5,2.5   ; XTitle="L_{p}", IncludeOverflows=False
 
+Jet1pt: Jet_pt[centralJet30idx[0]] : 50,0,1000; XTitle = "Lead Jet pt"
+Jet2pt: Jet_pt[centralJet30idx[1]] : 50,0,1000; XTitle = "2. Lead Jet pt"
+
+Jet1pt_log: Jet_pt[centralJet30idx[0]] : 50,0,1000; XTitle = "Lead Jet pt", Logy
+Jet2pt_log: Jet_pt[centralJet30idx[1]] : 50,0,1000; XTitle = "2. Lead Jet pt", Logy
+
 # Leptons
 LepPt:     LepGood_pt[tightLepsIdx[0]]  : 40,0,600;  XTitle="Lep p_{T} [GeV]", Logy
 # Eta
