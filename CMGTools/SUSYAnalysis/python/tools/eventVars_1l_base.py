@@ -23,8 +23,8 @@ class EventVars1L_base:
             ("nTightEl","I"),("tightElIdx","I",10,"nTightEl"),("nVetoEl","I"),("vetoElIdx","I",10,"nVetoEl"),
             ("nTightMu","I"),("tightMuIdx","I",10,"nTightMu"),("nVetoMu","I"),("vetoMuIdx","I",10,"nVetoMu"),
             'LepGood1_pdgId','LepGood1_eta','LepGood1_phi','Lp',
-            "MET", "DeltaPhiLepW",
-            'HT','ST','LepGood1_pt',
+            "MET", "DeltaPhiLepW", 'dPhi',
+            'HT','ST','LT','LepGood1_pt',
             ("nCentralJet30","I"),("centralJet30idx","I",100,"nCentralJet30"),("centralJet30_DescFlag","F",100,"nCentralJet30"),
             ("nBJetMedium30","I"),("BJetMedium30idx","I",50,"nBJetMedium30"),
             "nGoodBJets_allJets", "nGoodBJets",
@@ -310,8 +310,9 @@ class EventVars1L_base:
         ## L: 0.423, M: 0.814, T: 0.941
         ## from: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideBTagging#Preliminary_working_or_operating
 
-        bTagWP = 0.814 # MediumWP for CSVv2
-        #bTagWP = 0.732 # MediumWP for CMVA
+        bTagWP = 0.890 # MediumWP for CSVv2 -- Sprin15 50ns
+        #bTagWP = 0.814 # MediumWP for CSVv2 -- PHYS14
+        #bTagWP = 0.732 # MediumWP for CMVA -- PHYS14
 
         BJetMedium30 = []
         BJetMedium30idx = []
@@ -343,7 +344,9 @@ class EventVars1L_base:
             ST = tightLeps[0].pt + event.met_pt
 
         ret["DeltaPhiLepW"] = dPhiLepW
+        ret['dPhi'] = dPhiLepW
         ret['ST'] = ST
+        ret['LT'] = ST
         ret['Lp'] = Lp
 
         centralJet30_DescFlag = []
