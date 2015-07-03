@@ -88,7 +88,7 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
             # trying to get a dilepton from the control region.
             # it must have well id'ed and trig matched legs,
             # di-lepton and tri-lepton veto must pass
-            result = self.selectionSequence(event, fillCounter=False,
+            result = self.selectionSequence(event, fillCounter=True,
                                             leg1IsoCut=self.cfg_ana.looseiso1,
                                             leg2IsoCut=self.cfg_ana.looseiso2)
             if result is False:
@@ -132,7 +132,8 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
         '''Tests vertex constraints, for tau'''
         # Just checks if the primary vertex the tau was reconstructed with
         # corresponds to the one used in the analysis
-        isPV = lepton.vertex().z() == lepton.associatedVertex.z()
+        # isPV = lepton.vertex().z() == lepton.associatedVertex.z()
+        isPV = abs(lepton.vertex().z() - lepton.associatedVertex.z()) < 0.2
         return isPV
 
 

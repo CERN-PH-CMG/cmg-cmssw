@@ -71,18 +71,18 @@ def comparisonPlots(u_names, trees, titles, pname='sync.pdf'):
 
     c.Print(pname+']')
 
-def interSect(tree1, tree2, var='evt', common=False):
+def interSect(tree1, tree2, var='evt', common=False, save=False,  titles=[]):
     # run, lumi, evt
     tlist1 = ROOT.TEntryList()
     tlist2 = ROOT.TEntryList()
     
     tree1.Draw(var)
     r_evt1 = tree1.GetV1()
-    evt1 = np.array([r_evt1[i] for i in xrange(tree1.GetEntries())])
+    evt1 = np.array([r_evt1[i] for i in xrange(tree1.GetEntries())], dtype=int)
 
     tree2.Draw(var)
     r_evt2 = tree2.GetV1()
-    evt2 = np.array([r_evt2[i] for i in xrange(tree2.GetEntries())])
+    evt2 = np.array([r_evt2[i] for i in xrange(tree2.GetEntries())], dtype=int)
 
     if common:
         indices1 = np.nonzero(np.in1d(evt1, evt2))
@@ -91,6 +91,12 @@ def interSect(tree1, tree2, var='evt', common=False):
         indices1 = np.nonzero(np.in1d(evt1, evt2) == 0)
         indices2 = np.nonzero(np.in1d(evt2, evt1) == 0)
 
+    if save:
+        if len(titles) < 2:
+            titles = ['tree1', 'tree2']
+
+        evt1[indices1].tofile(titles[0]+'.csv', sep=',', format='%d')
+        evt2[indices2].tofile(titles[1]+'.csv', sep=',', format='%d')
 
     for ind1 in indices1[0]:
         tlist1.Enter(ind1)
@@ -135,10 +141,11 @@ if __name__ == '__main__':
     comparisonPlots(u_names, trees, titles)
 
     if len(trees) == 2 and options.do_intersect:
-        intersect = interSect(trees[0], trees[1])
+        intersect = interSect(trees[0], trees[1], save=True, titles=titles)
         trees[0].SetEntryList(intersect[0])
         trees[1].SetEntryList(intersect[1])
         comparisonPlots(u_names, trees, titles, 'intersect.pdf')
+
 
     if len(trees) == 2:
         intersect = interSect(trees[0], trees[1], common=True)

@@ -134,11 +134,6 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
         '''Tests vertex constraints, for mu'''
         return abs(lepton.dxy()) < 0.045 and abs(lepton.dz()) < 0.2
 
-    def testTauVertex(self, lepton):
-        '''Tests vertex constraints, for tau'''
-        isPV = lepton.vertex().z() == lepton.associatedVertex.z()
-        return isPV
-
     def testLeg1ID(self, tau):
         # Don't apply anti-e discriminator for relaxed tau ID
         # RIC: 9 March 2015
@@ -233,11 +228,39 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
         return True
 
     def bestDiLepton(self, diLeptons):
-        '''Returns the best diLepton (1st precedence opposite-sign, 2nd precedence
-        highest pt1 + pt2).'''
+        '''Returns the best diLepton according to Andrew's prescription.'''
 
-        osDiLeptons = [dl for dl in diLeptons if dl.leg1().charge() != dl.leg2().charge()]
-        if osDiLeptons:
-            return max(osDiLeptons, key=operator.methodcaller('sumPt'))
-        else:
-            return max(diLeptons, key=operator.methodcaller('sumPt'))
+        if len(diLeptons) == 1:
+            return diLeptons[0]
+
+        minRelIso = min(d.leg2().relIso(dBetaFactor=0.5, allCharged=0) for d in diLeptons)
+
+        diLeps = [dil for dil in diLeptons if dil.leg2().relIso(dBetaFactor=0.5, allCharged=0) == minRelIso]
+
+        if len(diLeps) == 1:
+            return diLeps[0]
+
+        maxPt = max(d.leg2().pt() for d in diLeps)
+
+        diLeps = [dil for dil in diLeps if dil.leg2().pt() == maxPt]
+
+        if len(diLeps) == 1:
+            return diLeps[0]
+
+        minIso = min(d.leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") for d in diLeps)
+
+        diLeps = [dil for dil in diLeps if dil.leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") == minIso]
+
+        if len(diLeps) == 1:
+            return diLeps[0]
+
+        maxPt = max(d.leg1().pt() for d in diLeps)
+
+        diLeps = [dil for dil in diLeps if dil.leg1().pt() == maxPt]
+
+        if len(diLeps) != 1:
+            print 'ERROR in finding best dilepton', diLeps
+            import pdb; pdb.set_trace()
+
+        return diLeps[0]
+        
