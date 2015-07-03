@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
 
 import urllib, urlparse, string, time, os, shutil, sys, math, subprocess
 
