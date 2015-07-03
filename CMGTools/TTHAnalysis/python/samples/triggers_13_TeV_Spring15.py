@@ -3,6 +3,9 @@
 triggers_ref_mu = ["HLT_IsoMu27_v*"]
 triggers_ref_el = ["HLT_Ele27_eta2p1_WP75_Gsf_v*","HLT_Ele32_eta2p1_WP75_Gsf_v*"]
 
+trigger_mu45 = ['HLT_Mu45_eta2p1_v*']
+trigger_ele105 = ['HLT_Ele105_CaloIdVT_GsfTrkIdT_v*']
+
 ### ----> for the 1L dPhi analysis
 
 ## muons
