@@ -643,7 +643,7 @@ class PlotMaker:
                     if pspec.hasOption('YMin'):
                         tmpMin = pspec.getOption('YMin',1.0)
                     total.SetMinimum(tmpMin)
-                    tmpMax = total.GetBinContent(total.GetMaximumBin())
+                    tmpMax = total.GetMaximum()#total.GetBinContent(total.GetMaximumBin())
                     relHistHeight = 1- (ROOT.gStyle.GetPadTopMargin() + ROOT.gStyle.GetPadBottomMargin() + 0.03*len(options.extraLabel.split("\\n")))
                     if islog: maximum = tmpMin * pow(tmpMax/tmpMin,1./relHistHeight);
                     else: maximum = (tmpMax-tmpMin)/relHistHeight + tmpMin
