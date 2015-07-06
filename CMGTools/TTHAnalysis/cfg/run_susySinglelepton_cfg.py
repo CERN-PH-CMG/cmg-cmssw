@@ -83,8 +83,22 @@ ttHReclusterJets = cfg.Analyzer(
 	etaSubJet = 5.0,
 			)
 
+from CMGTools.RootTools.samples.triggers_13_TeV_Spring15_1l import *
+
 triggerFlagsAna.triggerBits = {
 #put trigger here for data
+	'HT350' : triggers_HT350,
+	'HT900' : triggers_HT900,
+	'MET170' : triggers_MET170,
+	'HTMET' : triggers_HTMET,
+	'SingleMu' : triggers_ref_mu,
+	'SingleEl' : triggers_ref_el,
+	'MuHT600' : triggers_mu_ht600,
+	'MuHT400MET70' : triggers_mu_ht400_met70,
+	'MuMET120' : triggers_mu_met120,
+	'EleHT600' : triggers_el_ht600,
+	'EleHT400MET70' : triggers_el_ht400_met70,
+	'EleHT200' :triggers_el_ht200
 }
 
 # Tree Producer
@@ -116,7 +130,7 @@ selectedComponents = [
 #TTJets,
 #TTJets_50ns
 TTJets_LO,
-TTJets_LO_50ns
+#TTJets_LO_50ns
 ]
 
 
@@ -131,7 +145,7 @@ sequence = cfg.Sequence(susyCoreSequence+[
 
 
 #-------- HOW TO RUN
-test = "data"
+test = 3
 if test==1:
 	# test a single component, using a single thread.
 	comp = TTJets
