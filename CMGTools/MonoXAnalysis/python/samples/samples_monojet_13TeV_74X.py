@@ -45,8 +45,11 @@ privDataSamples_0T = [ privEGamma2015A_0T, privDoubleEG2015A_0T, privHLTPhysics2
 dataSamples = privDataSamples_0T
 
 ### ----------------------------- summary ----------------------------------------     
-mcSamples += RelVals741
+mcSamples_monojet_Asymptotic25ns = TTs + SingleTop + [WJetsToLNu, DYJetsToLL_M50, DYJetsToLL_M10to50 ] + WJetsToLNuHT + GJetsHT + QCDPt + DiBosons
 
+mcSamples_monojet_Asymptotic50ns = [ TTJets_50ns, TTJets_LO_50ns, DYJetsToLL_M50_50ns, WJetsToLNu_50ns ] + QCDPt_50ns
+
+mcSamples_monojet = RelVals740 + RelVals741 + mcSamples_monojet_Asymptotic25ns + mcSamples_monojet_Asymptotic50ns
 
 from CMGTools.TTHAnalysis.setup.Efficiencies import *
 dataDir = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data"
@@ -68,5 +71,5 @@ for comp in dataSamples:
 if __name__ == "__main__":
    import sys
    if "test" in sys.argv:
-       from CMGTools.TTHAnalysis.samples.ComponentCreator import testSamples
+       from CMGTools.RootTools.samples.ComponentCreator import testSamples
        testSamples(mcSamples)
