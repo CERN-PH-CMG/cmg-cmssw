@@ -101,10 +101,10 @@ mc_higgs_tth = [
     HiggsTTHInclusive125
 ]
 
-mc_higgs = copy.copy( mc_higgs_vbf )
-mc_higgs.extend( mc_higgs_ggh )
-mc_higgs.extend( mc_higgs_vh )
-mc_higgs.extend( mc_higgs_tth )
+mc_higgs = copy.copy(mc_higgs_vbf)
+mc_higgs.extend(mc_higgs_ggh)
+mc_higgs.extend(mc_higgs_vh)
+mc_higgs.extend(mc_higgs_tth)
 
 
 pattern = re.compile('Higgs(\D+)(\d+)')

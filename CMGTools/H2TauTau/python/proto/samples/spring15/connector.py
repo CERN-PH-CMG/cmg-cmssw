@@ -6,6 +6,7 @@ import re
 from CMGTools.RootTools.utils.splitFactor                   import splitFactor
 
 from CMGTools.H2TauTau.proto.samples.spring15.higgs           import mc_higgs
+from CMGTools.H2TauTau.proto.samples.spring15.higgs_susy      import mc_higgs_susy
 from CMGTools.H2TauTau.proto.samples.spring15.ewk             import mc_ewk
 from CMGTools.H2TauTau.proto.samples.spring15.diboson         import mc_diboson
 from CMGTools.H2TauTau.proto.samples.spring15.qcd             import mc_qcd
@@ -37,6 +38,7 @@ class httConnector(object):
         self.MC_list         = []
         self.aliases = {
             '/GluGluToHToTauTau.*Spring15DR.*'            : 'HiggsGGH'         ,
+            '/SUSYGluGluToHToTauTau.*Spring15DR.*'        : 'HiggsSUSYGG'         ,
             '/VBF_HToTauTau.*Spring15DR.*'                : 'HiggsVBF'         ,
             '/DYJetsToLL.*Spring15DR.*'                   : 'DYJets'           ,
             '/TTJets.*Spring15DR.*'                       : 'TTJets'           ,
@@ -58,7 +60,7 @@ class httConnector(object):
 
     def dictionarize_(self):
         ''' '''
-        for s in mc_higgs + mc_ewk + mc_diboson + mc_qcd:
+        for s in mc_higgs + mc_higgs_susy + mc_ewk + mc_diboson + mc_qcd:
             self.mc_dict[s.name] = s
 
     def listify_(self):
