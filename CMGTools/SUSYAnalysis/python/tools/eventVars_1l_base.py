@@ -22,7 +22,7 @@ class EventVars1L_base:
             ("tightLeps_DescFlag","I",10,"nTightLeps"),
             ("nTightEl","I"),("tightElIdx","I",10,"nTightEl"),("nVetoEl","I"),("vetoElIdx","I",10,"nVetoEl"),
             ("nTightMu","I"),("tightMuIdx","I",10,"nTightMu"),("nVetoMu","I"),("vetoMuIdx","I",10,"nVetoMu"),
-            'LepGood1_pdgId','LepGood1_eta','LepGood1_phi','Lp',
+            'LepGood1_pdgId','LepGood1_eta','LepGood1_phi','Lp','Selected',
             "MET", "DeltaPhiLepW", 'dPhi',
             'HT','ST','LT','LepGood1_pt',
             ("nCentralJet30","I"),("centralJet30idx","I",100,"nCentralJet30"),("centralJet30_DescFlag","F",100,"nCentralJet30"),
@@ -274,8 +274,10 @@ class EventVars1L_base:
         ret['nVetoMu'] = len(vetoMu)
         ret['vetoMuIdx'] = vetoMuIdx
 
-        # save leading lepton vars
+        # save dummy selected label
+        ret['Selected'] = 1
 
+        # save leading lepton vars
         if len(tightLeps) > 0:
             ret['LepGood1_pt'] = tightLeps[0].pt
             ret['LepGood1_eta'] = tightLeps[0].eta
