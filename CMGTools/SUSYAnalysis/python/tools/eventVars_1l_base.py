@@ -346,7 +346,7 @@ class EventVars1L_base:
             ST = tightLeps[0].pt + event.met_pt
 
         ret["DeltaPhiLepW"] = dPhiLepW
-        ret['dPhi'] = dPhiLepW
+        ret['dPhi'] = abs(dPhiLepW) # nickname for absolute dPhiLepW
         ret['ST'] = ST
         ret['LT'] = ST
         ret['Lp'] = Lp
