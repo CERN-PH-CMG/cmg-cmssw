@@ -8,7 +8,8 @@ from ROOT import *
 from array import array
 
 _canvStore = []
-_histStore = []
+_histStore = {}
+_hEffStore = {}
 
 _colorList = [2,3,4,6,7,8,9]
 
@@ -25,6 +26,8 @@ def setColors(histList):
 def getHists(tree, var = 'MET'):
 
     # variable
+    histPrefix = 'h' + var + '_'
+
     # cut
     cuts = 'nTightLeps == 1 && nVetoLeps == 0'#HLT_SingleMu'#'MET > 250'
     # plot option
@@ -32,17 +35,16 @@ def getHists(tree, var = 'MET'):
 
     refTrig = ''#HLT_SingleMu'
     #testTrig = ['HLT_SingleMu','HLT_SingleEl','HLT_HT350','HLT_MET170']
-    testTrig = ['HLT_HT900','HLT_HT350','HLT_MET170','HLT_MuHT400MET70']
+    #testTrig = ['HLT_HT900','HLT_HT350','HLT_MET170','HLT_MuHT400MET70']
+    testTrig = ['HLT_HT900']
 
     # names
     if refTrig != '':
         refName = refTrig.replace('HLT_','')
     else:
-        refName = 'Reference'
+        refName = 'Ref'
 
-    refName += var
-
-    rname = 'h' + refName
+    rname = histPrefix + refName
     cname = 'canv_Ref' + refName + var
     ctitle = 'Plots for reference:' + refTrig
 
@@ -65,13 +67,13 @@ def getHists(tree, var = 'MET'):
     # make reference plot
     tree.Draw(var + '>>' + hRef.GetName(),cuts,plotOpt)
 
-    _histStore.append(hRef)
+    _histStore[hRef.GetName()] = hRef
 
     # loop over test triggers:
     for ind, trig in enumerate(testTrig):
 
         trigName = trig.replace('HLT_','')
-        hname = 'h' + trigName
+        hname = 'h' + var + '_' + trigName
 
         hTest = hRef.Clone(hname)
         hTest.SetTitle(trigName)
@@ -89,7 +91,7 @@ def getHists(tree, var = 'MET'):
 
         #hTest.Divide(hRef)
 
-        _histStore.append(hTest)
+        _histStore[hTest.GetName()] = hTest
 
     # axis set up
     hRef.SetStats(0)
@@ -107,9 +109,13 @@ def getHists(tree, var = 'MET'):
 
     return 1
 
-def plotEff():
+def plotEff(var = 'HT'):
 
-    hRef = _histStore[0]
+    # variable
+    histPrefix = 'h' + var + '_'
+    refName = histPrefix + 'Ref'
+
+    hRef = _histStore[refName]#.Clone(refName+'c')
     hRefEff = hRef.Clone(hRef.GetName()+'Eff')
     # set reference eff to 1
     hRefEff.Divide(hRef)
@@ -123,9 +129,35 @@ def plotEff():
     hRefEff.Draw()
     plotOpt = 'same'
 
+    nameList = []
+
+    for hname in _histStore.keys():
+
+        obj = _histStore[hname]
+
+        hname = str(hname)
+        print hname, obj.ClassName()
+
+        if 'TH1' not in obj.ClassName(): continue
+
+        # filter out hists
+        if histPrefix not in hname: continue
+        if 'Ref' in hname: continue
+
+        nameList.append(hname)
+
     # loop over test
-    for ind,hist in enumerate(_histStore[1:]):
-        hname = (hist.GetName()).replace('h','hEff')
+    for ind,hname in enumerate(nameList):
+
+        hist = _histStore[hname]
+
+        # filter out hists
+        #if histPrefix not in hname: continue
+        #if 'Ref' in hname: continue
+
+        hname = hname.replace('h','hEff')
+
+        print 'Drawing', hname, 'from', hRef.GetName()
 
         #hEff = hist.Clone(hname)
         #hEff.Divide(hRef)
@@ -137,11 +169,10 @@ def plotEff():
         hEff.SetLineColor(_colorList[ind])
         hEff.SetFillColor(0)
 
-        print 'Drawing', hname, plotOpt
         hEff.Draw(plotOpt)
         if 'same' not in plotOpt: plotOpt += 'same'
 
-        _histStore.append(hEff)
+        _hEffStore[hname] = hEff
 
     # legend
     leg = canv.BuildLegend()
@@ -154,7 +185,7 @@ def plotEff():
     #canv.SetLogy()
 
 
-    _histStore.append(hRef)
+    _hEffStore[hRefEff.GetName] = hRefEff
     _canvStore.append(canv)
 
     gPad.Update()
@@ -193,14 +224,13 @@ if __name__ == "__main__":
 
     print 'Entries in tree:', tree.GetEntries()
 
-    getHists(tree,'ST')
-    plotEff()
-
-    print _histStore
+    for var in ['HT','MET']:
+        getHists(tree,var)
+        #print 'Store', _histStore
+        plotEff(var)
 
     ## wait
     answ = raw_input("Enter 'q' to exit: ")
-
 
     ## save canvases to file
     for canv in _canvStore:
