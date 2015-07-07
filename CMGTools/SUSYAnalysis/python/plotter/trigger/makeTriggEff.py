@@ -22,55 +22,11 @@ def setColors(histList):
         hist.SetLineColor(colorList[ind])
         hist.SetMarkerColor(colorList[ind])
 
-def custHists():
-    ## loop over all saved hists
-    for hist in _histListCR+_histListSR:
-
-        hname = hist.GetName()
-        ## common settings
-        hist.SetStats(0)
-        hist.SetFillColor(0)
-        hist.SetLineWidth(2)
-        hist.SetMarkerStyle(0)
-
-        ## rebin
-        hist.Rebin(2)
-
-        htitle = ''
-        ## NJ bins
-        if 'NJ45'in hname:
-            htitle = 'Nj #in [4,5] '
-        elif 'NJ6i'in hname:
-            htitle = 'Nj #geq 6 '
-        elif 'NJ68'in hname:
-            htitle = 'Nj #in [6,8] '
-        elif 'NJ9i'in hname:
-            htitle = 'Nj #geq 9 '
-
-        ## HT bins
-        if 'HT500750'in hname:
-            htitle += '500 < HT < 750'
-        elif 'HT7501250'in hname:
-            htitle += '750 < HT < 1250'
-        elif 'HT1250'in hname:
-            htitle += 'HT > 1250'
-        elif 'HT500'in hname:
-            htitle += 'HT > 500'
-
-        hist.SetTitle(htitle)
-
-        print hname, htitle
-
-        setColors(_histListSR)
-        setColors(_histListCR)
-
-    return 1
-
 def getHists(tree, var = 'MET'):
 
     # variable
     # cut
-    cuts = 'HLT_SingleMu'#'MET > 250'
+    cuts = 'nTightLeps == 1 && nVetoLeps == 0'#HLT_SingleMu'#'MET > 250'
     # plot option
     plotOpt = 'e1'
 
@@ -93,7 +49,7 @@ def getHists(tree, var = 'MET'):
     if cuts != '':
         ctitle += ' cut: ' + cuts
 
-    htitle = ctitle
+    htitle = 'Reference' + refTrig#ctitle
 
     # make canvas
     canv = TCanvas(cname,ctitle,800,800)
@@ -175,6 +131,7 @@ def plotEff():
         #hEff.Divide(hRef)
         hEff = TEfficiency(hist,hRef)
         hEff.SetName(hname)
+        hEff.SetTitle((hEff.GetTitle()).replace('Eff',''))
 
         # style
         hEff.SetLineColor(_colorList[ind])
@@ -228,11 +185,15 @@ if __name__ == "__main__":
         print "Couldn't open the file"
         exit(0)
 
+    # for friend trees
     tree = tfile.Get('sf/t')
+
+    # for cmg trees
+    #tree = tfile.Get('tree')
 
     print 'Entries in tree:', tree.GetEntries()
 
-    getHists(tree,'HT')
+    getHists(tree,'ST')
     plotEff()
 
     print _histStore
