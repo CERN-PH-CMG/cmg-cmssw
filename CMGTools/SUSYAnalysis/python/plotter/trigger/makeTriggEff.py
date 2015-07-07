@@ -23,20 +23,25 @@ def setColors(histList):
         hist.SetLineColor(colorList[ind])
         hist.SetMarkerColor(colorList[ind])
 
-def getHists(tree, var = 'MET'):
+def getHists(tree, var = 'MET', cuts = '', refTrig = ''):
 
     # variable
     histPrefix = 'h' + var + '_'
 
     # cut
-    cuts = 'nTightLeps == 1 && nVetoLeps == 0'#HLT_SingleMu'#'MET > 250'
+    #cuts = 'nTightLeps == 1 && nVetoLeps == 0'#HLT_SingleMu'#'MET > 250'
+    cuts = 'HLT_SingleMu'
+
     # plot option
     plotOpt = 'e1'
 
-    refTrig = ''#HLT_SingleMu'
+    refTrig = ''
     #testTrig = ['HLT_SingleMu','HLT_SingleEl','HLT_HT350','HLT_MET170']
     #testTrig = ['HLT_HT900','HLT_HT350','HLT_MET170','HLT_MuHT400MET70']
-    testTrig = ['HLT_HT900']
+    testTrig = ['HT900', 'MuHad']
+
+    # prepend HLT name
+    testTrig = ['HLT_'+name for name in testTrig]
 
     # names
     if refTrig != '':
@@ -99,6 +104,8 @@ def getHists(tree, var = 'MET'):
     #hRef.GetYaxis().SetRangeUser(0,2)
     canv.SetLogy()
 
+    #hRef.SetTitle(ctitle)
+
     # legend
     leg = canv.BuildLegend()
     leg.SetFillColor(0)
@@ -109,13 +116,15 @@ def getHists(tree, var = 'MET'):
 
     return 1
 
-def plotEff(var = 'HT'):
+def plotEff(var = 'HT', refName = 'Ref'):
 
     # variable
     histPrefix = 'h' + var + '_'
-    refName = histPrefix + 'Ref'
+    refName = histPrefix + refName
 
-    hRef = _histStore[refName]#.Clone(refName+'c')
+    print refName
+
+    hRef = _histStore[refName]
     hRefEff = hRef.Clone(hRef.GetName()+'Eff')
     # set reference eff to 1
     hRefEff.Divide(hRef)
@@ -125,6 +134,12 @@ def plotEff(var = 'HT'):
 
     # make canvas
     canv = TCanvas(cname,ctitle,800,800)
+
+
+    # set reference eff to 1
+    for bin in range(1,hRefEff.GetNbinsX()+1):
+        hRefEff.SetBinContent(bin,1)
+        hRefEff.SetBinError(bin,0)
 
     hRefEff.Draw()
     plotOpt = 'same'
@@ -136,13 +151,13 @@ def plotEff(var = 'HT'):
         obj = _histStore[hname]
 
         hname = str(hname)
-        print hname, obj.ClassName()
+        #print hname, obj.ClassName()
 
         if 'TH1' not in obj.ClassName(): continue
 
         # filter out hists
         if histPrefix not in hname: continue
-        if 'Ref' in hname: continue
+        if refName in hname: continue
 
         nameList.append(hname)
 
@@ -155,15 +170,19 @@ def plotEff(var = 'HT'):
         #if histPrefix not in hname: continue
         #if 'Ref' in hname: continue
 
+        htitle = hname.replace(histPrefix,'')
         hname = hname.replace('h','hEff')
 
         print 'Drawing', hname, 'from', hRef.GetName()
 
+        ## Divide
         #hEff = hist.Clone(hname)
         #hEff.Divide(hRef)
+
+        ## TEfficiency
         hEff = TEfficiency(hist,hRef)
         hEff.SetName(hname)
-        hEff.SetTitle((hEff.GetTitle()).replace('Eff',''))
+        hEff.SetTitle(htitle)
 
         # style
         hEff.SetLineColor(_colorList[ind])
@@ -173,6 +192,9 @@ def plotEff(var = 'HT'):
         if 'same' not in plotOpt: plotOpt += 'same'
 
         _hEffStore[hname] = hEff
+
+    # remove refEff
+    #gPad.GetListOfPrimitives().Remove(hRef)
 
     # legend
     leg = canv.BuildLegend()
@@ -184,6 +206,7 @@ def plotEff(var = 'HT'):
     hRefEff.GetYaxis().SetRangeUser(0,1.5)
     #canv.SetLogy()
 
+    #leg.GetListOfPrimitives().Remove(hRefEff)
 
     _hEffStore[hRefEff.GetName] = hRefEff
     _canvStore.append(canv)
@@ -193,6 +216,10 @@ def plotEff(var = 'HT'):
     return 1
 
 if __name__ == "__main__":
+
+    ## remove '-b' option
+    if '-b' in sys.argv:
+        sys.argv.remove('-b')
 
     if len(sys.argv) > 1:
         fileName = sys.argv[1]
@@ -224,10 +251,13 @@ if __name__ == "__main__":
 
     print 'Entries in tree:', tree.GetEntries()
 
-    for var in ['HT','MET']:
+    for var in ['HT','MET','ST']:
         getHists(tree,var)
         #print 'Store', _histStore
         plotEff(var)
+
+    #print 'HistStore', _histStore
+    #print 'HEffStore', _hEffStore
 
     ## wait
     answ = raw_input("Enter 'q' to exit: ")
