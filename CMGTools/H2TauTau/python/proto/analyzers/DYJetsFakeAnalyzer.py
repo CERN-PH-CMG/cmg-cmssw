@@ -73,7 +73,7 @@ class DYJetsFakeAnalyzer(Analyzer):
         self.genMatch(event, self.l2)
 
         if 'Higgs' in self.cfg_comp.name:
-            theZs = [bos for bos in event.genHiggsBosons if bos.pdgId() in (25, 35, 36, 37)]
+            theZs = [bos for bos in event.generatorSummary if abs(bos.pdgId()) in (25, 35, 36, 37)]
         elif 'DY' in self.cfg_comp.name:
             theZs = [bos for bos in event.genVBosons if bos.pdgId() == 23]
         elif 'W' in self.cfg_comp.name:
