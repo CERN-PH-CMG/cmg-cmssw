@@ -29,19 +29,20 @@ def getHists(tree, var = 'MET', cuts = '', refTrig = ''):
     histPrefix = 'h' + var + '_'
 
     # cut
-    #cuts = 'nTightLeps == 1 && nVetoLeps == 0'#HLT_SingleMu'#'MET > 250'
-    cuts = 'HLT_SingleMu'
+    cuts = 'nTightEl == 1 && nVetoLeps == 0 && LepGood1_pt > 25'
 
     # plot option
     plotOpt = 'e1'
 
     refTrig = ''
-    #testTrig = ['HLT_SingleMu','HLT_SingleEl','HLT_HT350','HLT_MET170']
-    #testTrig = ['HLT_HT900','HLT_HT350','HLT_MET170','HLT_MuHT400MET70']
-    testTrig = ['HT900', 'MuHad']
+    #testTrig = ['SingleMu','SingleEl','HT350','MET170']
+    #testTrig = ['HT350','HT900','HTMET','MET170']#,'MuHT400MET70']
+    #testTrig = ['HT900', 'MuHad']
+    #testTrig = ['HLT_SingleMu', 'HLT_MuNoIso', 'HLT_MuHad', 'HLT_MuHT600', 'HLT_MuHT400MET70','HLT_MuMET120', 'HLT_MuHT400B']
+    testTrig = ['HLT_SingleEl', 'HLT_ElNoIso', 'HLT_ElHad', 'HLT_EleHT600','HLT_EleHT400MET70','HLT_EleHT200', 'HLT_EleHT400B']
 
     # prepend HLT name
-    testTrig = ['HLT_'+name for name in testTrig]
+    testTrig = ['HLT_'+name.replace('HLT_','') for name in testTrig]
 
     # names
     if refTrig != '':
@@ -218,8 +219,11 @@ def plotEff(var = 'HT', refName = 'Ref'):
 if __name__ == "__main__":
 
     ## remove '-b' option
+    _batchMode = False
+
     if '-b' in sys.argv:
         sys.argv.remove('-b')
+        _batchMode = True
 
     if len(sys.argv) > 1:
         fileName = sys.argv[1]
@@ -260,12 +264,15 @@ if __name__ == "__main__":
     #print 'HEffStore', _hEffStore
 
     ## wait
-    answ = raw_input("Enter 'q' to exit: ")
+    if not _batchMode:
+        answ = raw_input("Enter 'q' to exit: ")
+
+    prefix = 'RefEle'
 
     ## save canvases to file
     for canv in _canvStore:
         pdir = 'plots/'
-        canv.SaveAs(pdir+canv.GetName()+'.pdf')
+        canv.SaveAs(pdir+prefix+canv.GetName()+'.png')
         canv.Write()
 
     tfile.Close()
