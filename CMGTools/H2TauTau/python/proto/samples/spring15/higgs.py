@@ -85,17 +85,17 @@ HiggsVHtoWW125 = cfg.MCComponent(
 mc_higgs_vbf = [
     HiggsVBF125,
     HiggsVBFtoWW125,
-    ]
+]
 
 mc_higgs_ggh = [
     HiggsGGH125,
     HiggsGGHtoWW125,
-    ]
+]
 
 mc_higgs_vh = [
     HiggsVH125,
     HiggsVHtoWW125
-    ]
+]
 
 mc_higgs_tth = [
     HiggsTTHInclusive125
@@ -103,6 +103,7 @@ mc_higgs_tth = [
 
 mc_higgs = copy.copy(mc_higgs_vbf)
 mc_higgs.extend(mc_higgs_ggh)
+
 mc_higgs.extend(mc_higgs_vh)
 mc_higgs.extend(mc_higgs_tth)
 
