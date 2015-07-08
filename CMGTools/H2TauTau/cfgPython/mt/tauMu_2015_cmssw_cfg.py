@@ -127,6 +127,11 @@ my_connect = httConnector('TAUMU_743_TEST1', 'htautau_group',
 my_connect.connect()
 MC_list = my_connect.MC_list
 
+from CMGTools.TTHAnalysis.samples.ComponentCreator import ComponentCreator
+creator = ComponentCreator()
+ggh160 = creator.makeMCComponent("GGH160", "/SUSYGluGluToHToTauTau_M-160_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 1.0)
+MC_list = [ggh160]
+
 ###################################################
 ###              ASSIGN PU to MC                ###
 ###################################################
@@ -169,12 +174,16 @@ if pick_events:
 ###################################################
 if not production:
     cache = True
-    comp = my_connect.mc_dict['HiggsSUSYGG160']
+    # comp = my_connect.mc_dict['HiggsSUSYGG160']
+    comp = MC_list[0]
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.fineSplitFactor = 1
     # comp.files = comp.files[]
 
+
+from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
+preprocessor = CmsswPreprocessor("../../prod/h2TauTauMiniAOD_cfg.py")
 
 # the following is declared in case this cfg is used in input to the
 # heppy.py script
@@ -182,6 +191,7 @@ from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
 config = cfg.Config(components=selectedComponents,
                     sequence=sequence,
                     services=[],
+                    preprocessor=preprocessor,
                     events_class=Events
                     )
 
