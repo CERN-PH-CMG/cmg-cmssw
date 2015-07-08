@@ -13,6 +13,16 @@ _hEffStore = {}
 
 _colorList = [2,3,4,6,7,8,9]
 
+def cutsToString(cutList):
+
+    cutstr = ''
+
+    for i, cut in enumerate(cutList):
+        cutstr += cut
+
+        if i != len(cutList)-1: cutstr += ' && '
+
+    return cutstr
 
 def setColors(histList):
 
@@ -48,7 +58,7 @@ def getHists(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', maxEntri
         refName = 'Ref'
 
     rname = histPrefix + refName
-    cname = 'canv_Ref' + refName + var
+    cname = 'canv_' + refName + var
     ctitle = 'Plots for reference:' + refTrig
 
     if cuts != '':
@@ -64,14 +74,14 @@ def getHists(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', maxEntri
     canv = TCanvas(cname,ctitle,800,800)
 
     # make hist
-    nbins = 100
+    nbins = 50
 
     if var == 'MET':
         hRef = TH1F(rname,htitle,nbins,0,1000)
     elif var == 'HT':
         hRef = TH1F(rname,htitle,nbins,0,3000)
     elif 'pt' in var:
-        hRef = TH1F(rname,htitle,nbins,0,500)
+        hRef = TH1F(rname,htitle,nbins,0,200)
     elif 'eta' in var:
         hRef = TH1F(rname,htitle,nbins,-2.5,2.5)
     else:
@@ -122,6 +132,7 @@ def getHists(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', maxEntri
     # legend
     leg = canv.BuildLegend()
     leg.SetFillColor(0)
+    #leg.SetHeader(ctitle.replace('&&','\n'));
 
     gPad.Update()
 
@@ -278,7 +289,7 @@ if __name__ == "__main__":
 
     # reference trigger (without HLT_)
     #refTrig = 'MuNoIso'
-    refTrig = ''
+    refTrig = 'HTMET'
 
     # TEST triggers
     #testTrig = ['SingleMu','SingleEl','HT350','MET170']
@@ -286,30 +297,33 @@ if __name__ == "__main__":
     #testTrig = ['HT900', 'MuHad']
     #testTrig = ['HLT_SingleMu', 'HLT_MuNoIso', 'HLT_MuHad', 'HLT_MuHT600', 'HLT_MuHT400MET70','HLT_MuMET120', 'HLT_MuHT400B']
     #testTrig = ['HLT_SingleEl', 'HLT_ElNoIso', 'HLT_ElHad', 'HLT_EleHT600','HLT_EleHT400MET70','HLT_EleHT200', 'HLT_EleHT400B']
-    testTrig = ['HT350','HLT_SingleEl','HLT_EleHT600']
+    testTrig = ['HLT_SingleEl','HLT_ElNoIso','HLT_EleHT600']
 
     # cuts
     #cuts = 'nTightEl == 1 && nVetoLeps == 0 && LepGood1_pt > 25'
-    cuts = 'nTightEl >= 1 && LepGood1_pt > 25 && abs(LepGood1_eta) < 2.1'
+    cuts = 'nTightEl >= 1 && LepGood1_pt > 25 && abs(LepGood1_eta) < 2.5 && HT > 600 && MET > 200'
+
+    #print 'Split cuts:', cuts.split('&&')
+    #print 'ReSplit cuts:', cutsToString(cuts.split('&&'))
 
     # max entries to process
-    maxEntries = -1#1000000
+    maxEntries = -1
 
     for var in varList:
         getHists(tree,var,refTrig, cuts, testTrig, maxEntries)
         plotEff(var,refTrig)
 
     ## save canvases to file
-    prefix = 'refEl_'
+    prefix = 'ref' + refTrig + '_'
 
     for canv in _canvStore:
         pdir = 'plots/'
         canv.SaveAs(pdir+prefix+canv.GetName()+'.png')
         canv.Write()
 
+    tfile.Close()
     ## wait
     if not _batchMode:
         answ = raw_input("Enter 'q' to exit: ")
 
-    tfile.Close()
     outfile.Close()
