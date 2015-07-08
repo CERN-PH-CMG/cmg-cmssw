@@ -132,7 +132,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                   // likelihood_val = (double) (str_icol.Atof());
                   // if(likelihood_val<0) result->SetPoint(npoint,jWmass,likelihood_val);
 
-                  cout << Form(" dummy_datacard_Wmass_MuPos_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log ",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,(WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
+                  cout << Form("dummy_datacard_Wmass_MuPos_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log ",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,(WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
                   TString test1 = Form("dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,(WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
                   // cout << test1 << endl;
                   std::ifstream fileNames_NonScaled(test1.Data());
@@ -152,7 +152,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                   TString str_icol = ((TObjString *)LineColumns->At(4))->GetString();
                   likelihood_val = (double) (str_icol.Atof());
                   // cout << jWmass << " LIKELIHOOD VALUE= "<<likelihood_val << " lmin= " << lmin << " lmax=" << lmax << endl;
-                  cout << " " << jWmass << " LIKELIHOOD VALUE= "<<likelihood_val; fflush(stdout);
+                  cout << " " << jWmass << " LIKELIHOOD VALUE= "<< likelihood_val << endl;
                   l_res.push_back(likelihood_val);
                   if(likelihood_val<lmin) lmin=likelihood_val;
                   if(likelihood_val>lmax) lmax=likelihood_val;
