@@ -23,23 +23,20 @@ def setColors(histList):
         hist.SetLineColor(colorList[ind])
         hist.SetMarkerColor(colorList[ind])
 
-def getHists(tree, var = 'MET', cuts = '', refTrig = ''):
+def getHists(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', maxEntries = -1):
 
-    # variable
+    # maximum number of entries to process
+    if maxEntries == -1:
+        maxEntries = tree.GetEntries()
+
+    # histogram name prefix
     histPrefix = 'h' + var + '_'
-
-    # cut
-    cuts = 'nTightEl == 1 && nVetoLeps == 0 && LepGood1_pt > 25'
 
     # plot option
     plotOpt = 'e1'
 
-    refTrig = ''
-    #testTrig = ['SingleMu','SingleEl','HT350','MET170']
-    #testTrig = ['HT350','HT900','HTMET','MET170']#,'MuHT400MET70']
-    #testTrig = ['HT900', 'MuHad']
-    #testTrig = ['HLT_SingleMu', 'HLT_MuNoIso', 'HLT_MuHad', 'HLT_MuHT600', 'HLT_MuHT400MET70','HLT_MuMET120', 'HLT_MuHT400B']
-    testTrig = ['HLT_SingleEl', 'HLT_ElNoIso', 'HLT_ElHad', 'HLT_EleHT600','HLT_EleHT400MET70','HLT_EleHT200', 'HLT_EleHT400B']
+    # histogram list
+    histList = []
 
     # prepend HLT name
     testTrig = ['HLT_'+name.replace('HLT_','') for name in testTrig]
@@ -57,23 +54,36 @@ def getHists(tree, var = 'MET', cuts = '', refTrig = ''):
     if cuts != '':
         ctitle += ' cut: ' + cuts
 
-    htitle = 'Reference' + refTrig#ctitle
+    if refTrig != '':
+        cuts += ' && HLT_' + refTrig.replace('HLT_','')
+        htitle = 'Ref: ' + refTrig
+    else:
+        htitle = 'Reference'
 
     # make canvas
     canv = TCanvas(cname,ctitle,800,800)
 
     # make hist
+    nbins = 100
+
     if var == 'MET':
-        hRef = TH1F(rname,htitle,100,0,1000)
+        hRef = TH1F(rname,htitle,nbins,0,1000)
     elif var == 'HT':
-        hRef = TH1F(rname,htitle,100,0,3000)
+        hRef = TH1F(rname,htitle,nbins,0,3000)
+    elif 'pt' in var:
+        hRef = TH1F(rname,htitle,nbins,0,500)
+    elif 'eta' in var:
+        hRef = TH1F(rname,htitle,nbins,-2.5,2.5)
     else:
-        hRef = TH1F(rname,htitle,100,0,1000)
+        hRef = TH1F(rname,htitle,nbins,0,1000)
 
     # make reference plot
-    tree.Draw(var + '>>' + hRef.GetName(),cuts,plotOpt)
+    print 'Drawing', hRef.GetName(), 'with cuts', cuts
+
+    tree.Draw(var + '>>' + hRef.GetName(),cuts,plotOpt, maxEntries)
 
     _histStore[hRef.GetName()] = hRef
+    histList.append(hRef)
 
     # loop over test triggers:
     for ind, trig in enumerate(testTrig):
@@ -89,15 +99,17 @@ def getHists(tree, var = 'MET', cuts = '', refTrig = ''):
         # cuts
 
         if cuts != '':
-            tcuts = cuts +  '&&' + trig
+            tcuts = cuts + ' && ' + trig
         else:
             tcuts = trig
 
-        tree.Draw(var + '>>' + hTest.GetName(),tcuts,plotOpt+'same')
+        print 'Drawing', hTest.GetName(), 'with cuts', tcuts
+        tree.Draw(var + '>>' + hTest.GetName(),tcuts,plotOpt+'same', maxEntries)
 
         #hTest.Divide(hRef)
 
         _histStore[hTest.GetName()] = hTest
+        histList.append(hTest)
 
     # axis set up
     hRef.SetStats(0)
@@ -115,9 +127,12 @@ def getHists(tree, var = 'MET', cuts = '', refTrig = ''):
 
     _canvStore.append(canv)
 
-    return 1
+    return histList
 
 def plotEff(var = 'HT', refName = 'Ref'):
+
+    if refName == '':
+        refName = 'Ref'
 
     # variable
     histPrefix = 'h' + var + '_'
@@ -186,7 +201,7 @@ def plotEff(var = 'HT', refName = 'Ref'):
         hEff.SetTitle(htitle)
 
         # style
-        hEff.SetLineColor(_colorList[ind])
+        hEff.SetLineColor(hist.GetLineColor())#_colorList[ind])
         hEff.SetFillColor(0)
 
         hEff.Draw(plotOpt)
@@ -253,27 +268,48 @@ if __name__ == "__main__":
     # for cmg trees
     #tree = tfile.Get('tree')
 
-    print 'Entries in tree:', tree.GetEntries()
+    nentries = tree.GetEntries()
+    print 'Entries in tree:', nentries
 
-    for var in ['HT','MET','ST']:
-        getHists(tree,var)
-        #print 'Store', _histStore
-        plotEff(var)
+    ## DEFINE plots
+    # variable list
+    #varList = ['HT']#,'MET','ST']
+    varList = ['HT','LepGood1_pt','LepGood1_eta']
 
-    #print 'HistStore', _histStore
-    #print 'HEffStore', _hEffStore
+    # reference trigger (without HLT_)
+    #refTrig = 'MuNoIso'
+    refTrig = ''
 
-    ## wait
-    if not _batchMode:
-        answ = raw_input("Enter 'q' to exit: ")
+    # TEST triggers
+    #testTrig = ['SingleMu','SingleEl','HT350','MET170']
+    #testTrig = ['HT350','HT900','HTMET','MET170']#,'MuHT400MET70']
+    #testTrig = ['HT900', 'MuHad']
+    #testTrig = ['HLT_SingleMu', 'HLT_MuNoIso', 'HLT_MuHad', 'HLT_MuHT600', 'HLT_MuHT400MET70','HLT_MuMET120', 'HLT_MuHT400B']
+    #testTrig = ['HLT_SingleEl', 'HLT_ElNoIso', 'HLT_ElHad', 'HLT_EleHT600','HLT_EleHT400MET70','HLT_EleHT200', 'HLT_EleHT400B']
+    testTrig = ['HT350','HLT_SingleEl','HLT_EleHT600']
 
-    prefix = 'RefEle'
+    # cuts
+    #cuts = 'nTightEl == 1 && nVetoLeps == 0 && LepGood1_pt > 25'
+    cuts = 'nTightEl >= 1 && LepGood1_pt > 25 && abs(LepGood1_eta) < 2.1'
+
+    # max entries to process
+    maxEntries = -1#1000000
+
+    for var in varList:
+        getHists(tree,var,refTrig, cuts, testTrig, maxEntries)
+        plotEff(var,refTrig)
 
     ## save canvases to file
+    prefix = 'refEl_'
+
     for canv in _canvStore:
         pdir = 'plots/'
         canv.SaveAs(pdir+prefix+canv.GetName()+'.png')
         canv.Write()
+
+    ## wait
+    if not _batchMode:
+        answ = raw_input("Enter 'q' to exit: ")
 
     tfile.Close()
     outfile.Close()
