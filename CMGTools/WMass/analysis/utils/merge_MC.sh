@@ -1,4 +1,9 @@
-#!/bin/sh
+#!/bin/bash
+
+#foldername=${1}
+#resubmit=${2}
+#queue=${3}
+useBatch=${4}
 
 echo "merging chunks (if they exist)"
 
@@ -30,9 +35,14 @@ for (( id_sample=0; id_sample<${#samples[@]}; id_sample++ ))
             if [[ ${2} == 1 ]]
             then
               cd ${1}/test_numbers_${samples[id_sample]}/
-              # bsub -q ${3} -u pippo123 -J run${analyses[id_ana]} run${analyses[id_ana]}_${samples[id_sample]}_${i}.sh
-              sh run${analyses[id_ana]}_${samples[id_sample]}_${i}.sh
               # echo "RESUBMITTING "${i}
+              if [[ $useBatch == 1 ]]
+              then
+                echo "bsub -q ${3} -J run${analyses[id_ana]} run${analyses[id_ana]}_${samples[id_sample]}_${i}.sh"
+                bsub -q ${3} -u pippo123 -J run${analyses[id_ana]} run${analyses[id_ana]}_${samples[id_sample]}_${i}.sh
+              else
+                sh run${analyses[id_ana]}_${samples[id_sample]}_${i}.sh
+              fi
               cd -
             fi
             # echo $ARRAY
@@ -41,7 +51,8 @@ for (( id_sample=0; id_sample<${#samples[@]}; id_sample++ ))
         printf "%s "  "${ARRAY[@]}"
         echo ""
         # echo ${ARRAY}
-        read -p " PRESS 1 TO EXIT, 0 TO CONTINUE? : " n1
+        echo "List of the chunks rebuilt (the eventual batch jobs may or may not be finished)"
+        read -p "PRESS 1 TO EXIT, 0 TO CONTINUE THE MERGE: " n1
         if [[ ${n1} == 1 ]]
         then
           exit 1

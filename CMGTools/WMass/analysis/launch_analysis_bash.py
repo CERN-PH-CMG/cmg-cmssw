@@ -689,7 +689,7 @@ if (ExtractNumbers or run_BuildSimpleTemplates):
             
 if(mergeSigEWKbkg):
     os.chdir("utils/");
-    os.system("sh merge_MC.sh \"../JobOutputs/"+foldername+"/\" "+str(resubmit)+" "+str(batchQueue));
+    os.system("./merge_MC.sh \"../JobOutputs/"+foldername+"/\" "+str(resubmit)+" "+str(batchQueue)+" "+str(useBatch and parallelize));
     os.chdir("../");
 
 
