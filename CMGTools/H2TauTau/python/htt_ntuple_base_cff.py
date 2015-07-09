@@ -69,6 +69,7 @@ jetAna = cfg.Analyzer(
     jetPt=20.,
     jetEta=4.7,
     relaxJetId=False,
+    relaxPuJetId=True,
     jerCorr=False,
     #jesCorr = 1.,
     puJetIDDisc='pileupJetIdFull:full53xDiscriminant',
@@ -77,7 +78,7 @@ jetAna = cfg.Analyzer(
 vbfAna = cfg.Analyzer(
     VBFAnalyzer,
     name='VBFAnalyzer',
-    cjvPtCut=30.,
+    cjvPtCut=20.,
     Mjj=500.,
     deltaEta=3.5
 )

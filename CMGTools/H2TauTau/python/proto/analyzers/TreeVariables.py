@@ -171,7 +171,8 @@ geninfo_vars = [
 vbf_vars = [
     Variable('mjj'),
     Variable('deta'),
-    Variable('n_central', lambda vbf : len(vbf.centralJets), int),
+    Variable('n_central20', lambda vbf : len(vbf.centralJets), int),
+    Variable('n_central', lambda vbf : sum([1 for j in vbf.centralJets if j.pt() > 30.]), int),
     Variable('jdphi', lambda vbf : vbf.dphi),
     Variable('dijetpt'),
     Variable('dijetphi'),
