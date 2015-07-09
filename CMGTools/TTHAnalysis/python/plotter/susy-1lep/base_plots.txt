@@ -1,6 +1,8 @@
-MET:     MET                                : 40,0,1200;  XTitle="MET [GeV]", Logy
-HT:     HT                                : 40,0,3000;  XTitle="H_{T} [GeV]", Logy
-ST:     ST  : 40,0,1200;  XTitle="S_{T} [GeV]", Logy
+MET:     MET                                : 40,0,1200;  XTitle="MET [GeV]"
+MET_log:     MET                                : 40,0,1200;  XTitle="MET [GeV]", Logy
+HT:     HT                                : 40,0,3000;  XTitle="H_{T} [GeV]"
+HT_log:     HT                                : 40,0,3000;  XTitle="H_{T} [GeV]", Logy
+#ST:     ST  : 40,0,1200;  XTitle="S_{T} [GeV]", Logy
 LT:     ST  : 40,0,1200;  XTitle="L_{T} [GeV]", Logy
 nJet:       nCentralJet30                            : 20,0,20   ;  XTitle="jet multiplicity"
 nJet_log:       nCentralJet30                            : 20,0,20   ;  XTitle="jet multiplicity", Logy
@@ -8,6 +10,7 @@ nBJet:      nBJetMedium30                          : 10,0,10   ;  XTitle="b-jet 
 dPhiLepW:   fabs(DeltaPhiLepW)                        : 60,0,3.141   ; XTitle="#Delta #varphi (lep\,W)", IncludeOverflows=False
 dPhiLepW_log:   fabs(DeltaPhiLepW)                        : 60,0,3.141   ; XTitle="#Delta #varphi (lep\,W)", IncludeOverflows=False, Logy, YMin=1e1
 Lp:     Lp      : 30,-0.5,2.5   ; XTitle="L_{p}", IncludeOverflows=False
+Lp_log:     Lp      : 30,-0.5,2.5   ; XTitle="L_{p}", IncludeOverflows=False, Logy
 
 Jet1pt: Jet_pt[centralJet30idx[0]] : 40,0,800; XTitle = "Lead Jet pt"
 Jet2pt: Jet_pt[centralJet30idx[1]] : 40,0,800; XTitle = "2. Lead Jet pt"
@@ -16,7 +19,8 @@ Jet1pt_log: Jet_pt[centralJet30idx[0]] : 40,0,800; XTitle = "Lead Jet pt", Logy
 Jet2pt_log: Jet_pt[centralJet30idx[1]] : 40,0,800; XTitle = "2. Lead Jet pt", Logy
 
 # Leptons
-LepPt:     LepGood_pt[tightLepsIdx[0]]  : 40,0,600;  XTitle="Lep p_{T} [GeV]", Logy
+LepPt:     LepGood_pt[tightLepsIdx[0]]  : 40,0,600;  XTitle="Lep p_{T} [GeV]"
+LepPt_log:     LepGood_pt[tightLepsIdx[0]]  : 40,0,600;  XTitle="Lep p_{T} [GeV]", Logy
 # Eta
 EtaLep:     LepGood_eta[tightLepsIdx[0]]  : 40,-2.4,2.4 ;  XTitle="Lep #eta", Logy, MoreY=100
 EtaMu:     LepGood_eta[tightMuIdx[0]]  : 40,-2.4,2.4 ;  XTitle="Mu #eta", Logy, MoreY=100
