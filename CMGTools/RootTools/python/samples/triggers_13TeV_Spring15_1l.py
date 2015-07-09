@@ -9,7 +9,8 @@ triggers_1mu = ["HLT_IsoMu27_v*"]
 triggers_1el = ["HLT_Ele32_eta2p1_WP75_Gsf_v*"]
 
 ### non-iso single lepton
-trigger_1mu_noiso = ['HLT_Mu45_eta2p1_v*']
+trigger_1mu_noiso_r = ['HLT_Mu45_eta2p1_v*']
+trigger_1mu_noiso_w = ['HLT_Mu50_v*']
 trigger_1el_noiso = ['HLT_Ele105_CaloIdVT_GsfTrkIdT_v*']
 
 ## muons

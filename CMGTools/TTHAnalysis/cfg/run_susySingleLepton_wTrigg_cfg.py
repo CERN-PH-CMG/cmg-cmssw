@@ -50,7 +50,7 @@ jetAna.mcGT = "Summer15_V5_MC"
 jetAna.doQG = True
 jetAna.smearJets = False #should be false in susycore, already
 jetAna.recalibrateJets = True #should be true in susycore, already
-metAna.recalibrate = False #should be false in susycore, already
+metAna.recalibrate = True #should be false in susycore, already
 
 isoTrackAna.setOff=False
 
@@ -90,7 +90,8 @@ triggerFlagsAna.triggerBits = {
         'Had' : triggers_had,
         ## muon
         'SingleMu' : triggers_1mu,
-        'MuNoIso' : trigger_1mu_noiso,
+        'Mu45NoIso' : trigger_1mu_noiso_r,
+        'Mu50NoIso' : trigger_1mu_noiso_w,
         'MuHT600' : triggers_mu_ht600,
         'MuHT400MET70' : triggers_mu_ht400_met70,
         'MuMET120' : triggers_mu_met120,
@@ -137,7 +138,7 @@ selectedComponents = [
         #TTJets_50ns
         #TTJets_LO,
         TTJets_LO_50ns,
-	#TTJets_LO_25ns
+	TTJets_LO_25ns
         ]
 
 
