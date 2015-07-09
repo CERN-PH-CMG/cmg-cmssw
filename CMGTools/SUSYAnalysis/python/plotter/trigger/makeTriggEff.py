@@ -11,7 +11,29 @@ _canvStore = []
 _histStore = {}
 _hEffStore = {}
 
-_colorList = [2,3,4,6,7,8,9]
+_colorList = [2,3,4,6,7,8,9] + range(10,50)
+
+def turnon_func(x, par):
+
+    halfpoint = par[0]
+    #slope = max(par[1],0.00001)
+    width = par[1]
+    plateau = par[2]
+
+    #offset = par[3]
+    #plateau = 1.0
+    offset = 0
+
+    pt = TMath.Max(x[0],0.000001)
+
+    arg = 0
+    #print pt, halfpoint, width
+    #arg = (pt - halfpoint)/(TMath.Sqrt(pt)*slope)
+    arg = (pt - halfpoint) * width
+
+    fitval = offset + 0.5 * plateau * (1 + TMath.Erf(arg))
+
+    return fitval
 
 def cutsToString(cutList):
 
@@ -24,6 +46,17 @@ def cutsToString(cutList):
 
     return cutstr
 
+def varBinSize():
+
+    bins = '[10,15,20,50,80]'
+    edges = [ float(f) for f in bins[1:-1].split(",") ]
+
+    histo = ROOT.TH1F("dummy","dummy",len(edges)-1,array('f',edges))
+
+    print edges
+
+    return histo
+
 def setColors(histList):
 
     #    colorList = [3,2,ROOT.kGreen-2,1]
@@ -33,7 +66,7 @@ def setColors(histList):
         hist.SetLineColor(colorList[ind])
         hist.SetMarkerColor(colorList[ind])
 
-def getHists(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', maxEntries = -1):
+def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', maxEntries = -1):
 
     # maximum number of entries to process
     if maxEntries == -1:
@@ -76,12 +109,18 @@ def getHists(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', maxEntri
     # make hist
     nbins = 50
 
+    varBinSize = False
+
     if var == 'MET':
         hRef = TH1F(rname,htitle,nbins,0,1000)
     elif var == 'HT':
         hRef = TH1F(rname,htitle,nbins,0,3000)
     elif 'pt' in var:
-        hRef = TH1F(rname,htitle,nbins,0,200)
+        xbins = range(5,50,5) + range(50,100,10) + range (100,225,25)#[10,20,30,40,60,80,100,150,200]
+        hRef = TH1F(rname,htitle,len(xbins)-1,array('f',xbins))
+
+        varBinSize = True
+        #hRef = TH1F(rname,htitle,nbins,0,200)
     elif 'eta' in var:
         hRef = TH1F(rname,htitle,nbins,-2.5,2.5)
     else:
@@ -91,6 +130,8 @@ def getHists(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', maxEntri
     print 'Drawing', hRef.GetName(), 'with cuts', cuts
 
     tree.Draw(var + '>>' + hRef.GetName(),cuts,plotOpt, maxEntries)
+
+    gPad.Update()
 
     _histStore[hRef.GetName()] = hRef
     histList.append(hRef)
@@ -116,10 +157,24 @@ def getHists(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', maxEntri
         print 'Drawing', hTest.GetName(), 'with cuts', tcuts
         tree.Draw(var + '>>' + hTest.GetName(),tcuts,plotOpt+'same', maxEntries)
 
+        gPad.Update()
+
         #hTest.Divide(hRef)
 
         _histStore[hTest.GetName()] = hTest
         histList.append(hTest)
+
+    # if var bin sizes
+    if varBinSize:
+        for hist in histList:
+            for bin in range(1,hist.GetNbinsX()+1):
+                binC = hist.GetBinContent(bin)
+                binW = hist.GetBinWidth(bin)
+
+                binV = binC/binW
+                #print binC, binW, binV
+
+                hist.SetBinContent(bin, binV)
 
     # axis set up
     hRef.SetStats(0)
@@ -140,28 +195,34 @@ def getHists(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', maxEntri
 
     return histList
 
-def plotEff(var = 'HT', refName = 'Ref'):
+def plotEff(histList, var = 'HT', refName = 'Ref'):
+
+    ## histList: [hReference, hTest1, hTest2,...]
 
     if refName == '':
         refName = 'Ref'
+    else:
+        print refName
 
     # variable
     histPrefix = 'h' + var + '_'
     refName = histPrefix + refName
 
-    print refName
+    # reference hist should be first
+    hRef = histList[0]
 
-    hRef = _histStore[refName]
+    #hRef = _histStore[refName]
     hRefEff = hRef.Clone(hRef.GetName()+'Eff')
     # set reference eff to 1
     hRefEff.Divide(hRef)
+
+    #hRefEff.GetYaxis().SetTitel("Efficiency")
 
     cname = 'canv_Eff_Ref' + hRefEff.GetName()
     ctitle = 'Eff for reference:' + hRefEff.GetName()
 
     # make canvas
     canv = TCanvas(cname,ctitle,800,800)
-
 
     # set reference eff to 1
     for bin in range(1,hRefEff.GetNbinsX()+1):
@@ -171,27 +232,34 @@ def plotEff(var = 'HT', refName = 'Ref'):
     hRefEff.Draw()
     plotOpt = 'same'
 
-    nameList = []
+    gPad.Update()
 
+    '''
+    nameList = []
+    #for hname in _histStore.keys():
     for hname in _histStore.keys():
 
-        obj = _histStore[hname]
+    obj = _histStore[hname]
 
-        hname = str(hname)
-        #print hname, obj.ClassName()
+    hname = str(hname)
+    #print hname, obj.ClassName()
 
-        if 'TH1' not in obj.ClassName(): continue
+    if 'TH1' not in obj.ClassName(): continue
 
-        # filter out hists
-        if histPrefix not in hname: continue
-        if refName in hname: continue
+    # filter out hists
+    if histPrefix not in hname: continue
+    if refName in hname: continue
 
-        nameList.append(hname)
+    nameList.append(hname)
+
+    '''
 
     # loop over test
-    for ind,hname in enumerate(nameList):
+    #for ind,hname in enumerate(nameList):
+    for ind,hist in enumerate(histList[1:]):
 
-        hist = _histStore[hname]
+        #hist = _histStore[hname]
+        hname = hist.GetName()
 
         # filter out hists
         #if histPrefix not in hname: continue
@@ -208,7 +276,7 @@ def plotEff(var = 'HT', refName = 'Ref'):
 
         ## TEfficiency
         hEff = TEfficiency(hist,hRef)
-        hEff.SetName(hname)
+        hEff.SetName(hname+';'+var+';Efficiency')
         hEff.SetTitle(htitle)
 
         # style
@@ -217,6 +285,26 @@ def plotEff(var = 'HT', refName = 'Ref'):
 
         hEff.Draw(plotOpt)
         if 'same' not in plotOpt: plotOpt += 'same'
+
+        gPad.Update()
+
+        #SetOwnership(hEff,0)
+
+        fturn = TF1("turnon",turnon_func,0,200,3)
+        fturn.SetParameters(30,1,0)
+        fturn.SetParNames('halfpoint','width','plateau')
+
+        # get painted graph and fit with turn-on
+        gEff = hEff.GetPaintedGraph()
+        fitr = gEff.Fit(fturn,'S')
+
+        SetOwnership(gEff,0)
+
+        halfpoint = fitr.Value(0)
+        width = fitr.Value(1)
+        plateau = fitr.Value(2)
+
+        print 'Fit result: halfpoint = %5.2f, width = %5.2f, plateau = %5.2f' % (halfpoint, width, plateau)
 
         _hEffStore[hname] = hEff
 
@@ -285,11 +373,11 @@ if __name__ == "__main__":
     ## DEFINE plots
     # variable list
     #varList = ['HT']#,'MET','ST']
-    varList = ['HT','LepGood1_pt','LepGood1_eta']
+    #varList = ['HT','LepGood1_pt','LepGood1_eta']
+    varList = ['LepGood1_pt']
 
     # reference trigger (without HLT_)
-    #refTrig = 'MuNoIso'
-    refTrig = 'HTMET'
+    refTrig = ''
 
     # TEST triggers
     #testTrig = ['SingleMu','SingleEl','HT350','MET170']
@@ -297,24 +385,26 @@ if __name__ == "__main__":
     #testTrig = ['HT900', 'MuHad']
     #testTrig = ['HLT_SingleMu', 'HLT_MuNoIso', 'HLT_MuHad', 'HLT_MuHT600', 'HLT_MuHT400MET70','HLT_MuMET120', 'HLT_MuHT400B']
     #testTrig = ['HLT_SingleEl', 'HLT_ElNoIso', 'HLT_ElHad', 'HLT_EleHT600','HLT_EleHT400MET70','HLT_EleHT200', 'HLT_EleHT400B']
-    testTrig = ['HLT_SingleEl','HLT_ElNoIso','HLT_EleHT600']
+    #testTrig = ['HLT_SingleEl','HLT_ElNoIso','HLT_EleHT600']
+    #testTrig = ['HLT_SingleMu','HLT_MuNoIso','HLT_MuHT600']
+    testTrig = ['HLT_SingleEl']
 
     # cuts
     #cuts = 'nTightEl == 1 && nVetoLeps == 0 && LepGood1_pt > 25'
-    cuts = 'nTightEl >= 1 && LepGood1_pt > 25 && abs(LepGood1_eta) < 2.5 && HT > 600 && MET > 200'
+    cuts = 'nTightEl == 1 && LepGood1_pt > 15 && abs(LepGood1_eta) < 2.1'
 
     #print 'Split cuts:', cuts.split('&&')
     #print 'ReSplit cuts:', cutsToString(cuts.split('&&'))
 
     # max entries to process
-    maxEntries = -1
+    maxEntries = -1#100000
 
     for var in varList:
-        getHists(tree,var,refTrig, cuts, testTrig, maxEntries)
-        plotEff(var,refTrig)
+        histList = getHistsFromTree(tree,var,refTrig, cuts, testTrig, maxEntries)
+        plotEff(histList, var,refTrig)
 
     ## save canvases to file
-    prefix = 'ref' + refTrig + '_'
+    prefix = 'test_' + refTrig + '_'
 
     for canv in _canvStore:
         pdir = 'plots/'
