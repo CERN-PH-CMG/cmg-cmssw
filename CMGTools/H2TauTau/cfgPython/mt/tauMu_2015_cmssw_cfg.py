@@ -131,6 +131,10 @@ from CMGTools.TTHAnalysis.samples.ComponentCreator import ComponentCreator
 creator = ComponentCreator()
 ggh160 = creator.makeMCComponent("GGH160", "/SUSYGluGluToHToTauTau_M-160_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 1.0)
 MC_list = [ggh160]
+from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauMu  import mc_triggers as mc_triggers_mt
+
+for sample in MC_list:
+    sample.triggers = mc_triggers_mt
 
 ###################################################
 ###              ASSIGN PU to MC                ###
@@ -178,12 +182,13 @@ if not production:
     comp = MC_list[0]
     selectedComponents = [comp]
     comp.splitFactor = 1
-    comp.fineSplitFactor = 1
+    comp.splitFactor = 8
+    comp.fineSplitFactor = 4
     # comp.files = comp.files[]
 
 
 from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
-preprocessor = CmsswPreprocessor("../../prod/h2TauTauMiniAOD_cfg.py")
+preprocessor = CmsswPreprocessor("$CMSSW_BASE/src/CMGTools/H2TauTau/prod/h2TauTauMiniAOD_cfg.py")
 
 # the following is declared in case this cfg is used in input to the
 # heppy.py script
