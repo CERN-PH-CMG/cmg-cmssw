@@ -39,6 +39,9 @@ class DYJetsFakeAnalyzer(Analyzer):
         event.geninfo_has_z = False
         event.geninfo_has_w = False
 
+        if self.cfg_comp.isData:
+            return True
+
         # gen MET as sum of the neutrino 4-momenta
         neutrinos = [
             p for p in event.genParticles if abs(p.pdgId()) in (12, 14, 16)]

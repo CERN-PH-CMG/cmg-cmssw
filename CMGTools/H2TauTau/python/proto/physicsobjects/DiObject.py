@@ -34,7 +34,7 @@ class DiObject(object):
     def __str__(self):
         header = '{cls}: mvis={mvis}, sumpT={sumpt}'.format(
             cls=self.__class__.__name__,
-            mvis=self.diobject.mass(),
+            mvis=self.mass(),
             sumpt=self.sumPt())
         return '\n'.join([header,
                           '\t'+str(self.leg1()),
