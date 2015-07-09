@@ -20,7 +20,7 @@ from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJets
 
 # production = True run on batch, production = False (or unset) run locally
 production = getHeppyOption('production')
-production = False
+production = True
 
 # mu-tau specific configuration settings
 
@@ -122,21 +122,21 @@ svfitProducer = cfg.Analyzer(
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
-my_connect = httConnector('TAUMU_743_TEST1', 'htautau_group',
-                          '.*root', 'mt', production=production, 
-                          splitFactor=1e5)
-my_connect.connect()
-MC_list = my_connect.MC_list
+# my_connect = httConnector('TAUMU_743_TEST1', 'htautau_group',
+#                           '.*root', 'mt', production=production, 
+#                           splitFactor=1e5)
+# my_connect.connect()
+# MC_list = my_connect.MC_list
 
 from CMGTools.RootTools.utils.splitFactor import splitFactor
 from CMGTools.TTHAnalysis.samples.ComponentCreator import ComponentCreator
-from CMGTools.TTHAnalysis.samples.samples_13TeV_74X import TTJets, DYJetsToLL_M50, WJetsToLNu
+from CMGTools.TTHAnalysis.samples.samples_13TeV_74X import TTJets_LO, DYJetsToLL_M50, WJetsToLNu
 from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauMu  import mc_triggers as mc_triggers_mt
 
 creator = ComponentCreator()
 ggh160 = creator.makeMCComponent("GGH160", "/SUSYGluGluToHToTauTau_M-160_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 1.0)
 
-MC_list = [ggh160, TTJets, DYJetsToLL_M50, WJetsToLNu]
+MC_list = [ggh160, TTJets_LO, DYJetsToLL_M50, WJetsToLNu]
 
 
 first_data = cfg.DataComponent(
@@ -148,7 +148,7 @@ first_data = cfg.DataComponent(
 )
 
 
-split_factor = 10000
+split_factor = 1e5
 
 for sample in MC_list:
     sample.triggers = mc_triggers_mt
@@ -203,7 +203,7 @@ if not production:
     # comp = my_connect.mc_dict['HiggsSUSYGG160']
     # selectedComponents = [comp]
     # comp = selectedComponents[0]
-    comp = first_data
+    comp = TTJets_LO
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.fineSplitFactor = 1
