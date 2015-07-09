@@ -139,7 +139,7 @@ TTJets_LO,
 sequence = cfg.Sequence(susyCoreSequence+[
 	ttHEventAna,
 	#ttHSTSkimmer,
-	ttHReclusterJets,
+	#ttHReclusterJets,
 	treeProducer,
 	])
 

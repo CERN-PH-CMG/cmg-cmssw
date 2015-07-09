@@ -50,7 +50,7 @@ jetAna.mcGT = "Summer15_V5_MC"
 jetAna.doQG = True
 jetAna.smearJets = False #should be false in susycore, already
 jetAna.recalibrateJets = True #should be true in susycore, already
-metAna.recalibrate = True #should be false in susycore, already
+metAna.recalibrate = False #should be false in susycore, already
 
 isoTrackAna.setOff=False
 
@@ -74,13 +74,6 @@ from CMGTools.TTHAnalysis.analyzers.ttHSTSkimmer import ttHSTSkimmer
 ttHSTSkimmer = cfg.Analyzer(
         ttHSTSkimmer, name='ttHSTSkimmer',
         minST = 200,
-        )
-
-from CMGTools.TTHAnalysis.analyzers.ttHReclusterJetsAnalyzer import ttHReclusterJetsAnalyzer
-ttHReclusterJets = cfg.Analyzer(
-        ttHReclusterJetsAnalyzer, name="ttHReclusterJetsAnalyzer",
-        pTSubJet = 30,
-        etaSubJet = 5.0,
         )
 
 #from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import * # central trigger list
@@ -143,8 +136,8 @@ selectedComponents = [
         #TTJets,
         #TTJets_50ns
         #TTJets_LO,
-        #TTJets_LO_50ns,
-	TTJets_LO_25ns
+        TTJets_LO_50ns,
+	#TTJets_LO_25ns
         ]
 
 
@@ -153,7 +146,7 @@ selectedComponents = [
 sequence = cfg.Sequence(susyCoreSequence+[
                 ttHEventAna,
                 #ttHSTSkimmer,
-                ttHReclusterJets,
+                #ttHReclusterJets,
                 treeProducer,
                 ])
 
