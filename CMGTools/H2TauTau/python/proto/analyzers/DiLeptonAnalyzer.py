@@ -4,7 +4,7 @@ from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Lepton
 from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaR2
 
-from CMGTools.H2TauTau.proto.physicsobjects.DiObject import DiObject
+from CMGTools.H2TauTau.proto.physicsobjects.DiObject import DiObject, DirectDiTau
 
 
 class DiLeptonAnalyzer(Analyzer):
@@ -28,6 +28,7 @@ class DiLeptonAnalyzer(Analyzer):
         iso2=0.1,
         m_min=10, # mass range
         m_max=99999,
+        from_single_objects=True, #O if 
         dR_min=0.5, #O min delta R between the two legs
         allTriggerObjMatched=False,
         verbose=False #from base Analyzer class
@@ -66,6 +67,14 @@ class DiLeptonAnalyzer(Analyzer):
         to be overloaded if needed.'''
         return map(self.__class__.DiObjectClass, cmgDiLeptons)
 
+    def buildDiLeptonsSingle(self, leptons, event):
+        di_objects = []
+        for leg1 in leptons:
+            for leg2 in leptons:
+                if leg1 != leg2:
+                    di_objects.append(DirectDiTau(leg1, leg2, self.handles['met'].product()[0]))
+        return di_objects
+
     def buildLeptons(self, cmgLeptons, event):
         '''Creates python Leptons from the leptons read from the disk.
         to be overloaded if needed.'''
@@ -79,8 +88,11 @@ class DiLeptonAnalyzer(Analyzer):
     def process(self, event):
         self.readCollections(event.input)
 
-        event.diLeptons = self.buildDiLeptons(
-            self.handles['diLeptons'].product(), event)
+        if hasattr(self.cfg_ana, 'from_single_objects') and self.cfg_ana.from_single_objects:
+            event.diLeptons = self.buildDiLeptonsSingle(self.handles['leptons'].product(), event)
+        else:
+            event.diLeptons = self.buildDiLeptons(
+                self.handles['diLeptons'].product(), event)
         event.leptons = self.buildLeptons(
             self.handles['leptons'].product(), event)
         event.otherLeptons = self.buildOtherLeptons(

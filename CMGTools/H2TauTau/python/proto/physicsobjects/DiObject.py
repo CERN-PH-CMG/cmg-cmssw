@@ -169,6 +169,13 @@ class DirectDiTau(DiTau):
         self.leg1_ = leg1
         self.leg2_ = leg2
         self.met_ = met
+        self.p4_ = (leg1.p4() + leg2.p4())
+
+    def mass(self):
+        return self.p4_.mass()
+
+    def p4(self):
+        return self.p4_
 
     def leg1(self):
         return self.leg1_
@@ -196,6 +203,10 @@ class DirectDiTau(DiTau):
 
     def svfitPhi(self):
         return -999.
+
+    def __getattr__(self, name):
+        '''Redefine getattr to original version.'''
+        raise AttributeError
 
 
 class DiMuon(DiTau):
