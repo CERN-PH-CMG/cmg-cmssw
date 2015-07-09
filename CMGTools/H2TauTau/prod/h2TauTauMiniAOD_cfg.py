@@ -11,7 +11,7 @@ sep_line = '-'*70
 
 process = cms.Process("H2TAUTAU")
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
+process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(-1))
 
 numberOfFilesToProcess = -1
 debugEventContent = False
@@ -34,12 +34,12 @@ print 'runSVFit', runSVFit
 
 # Input & JSON             -------------------------------------------------
 
-# dataset_user = 'htautau_group' 
+# dataset_user = 'htautau_group'
 # dataset_name = '/VBF_HToTauTau_M-125_13TeV-powheg-pythia6/Spring14dr-PU20bx25_POSTLS170_V5-v1/AODSIM/SS14/'
 # dataset_files = 'miniAOD-prod_PAT_.*root'
 
 dataset_user = 'CMS'
-dataset_name = '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/MINIAODSIM'
+dataset_name = '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/MINIAODSIM'
 
 dataset_files = '.*root'
 
@@ -48,20 +48,20 @@ process.source = datasetToSource(
     dataset_user,
     dataset_name,
     dataset_files,
-    )
-
-process.source.inputCommands=cms.untracked.vstring(
-    'keep *'
-    )
-
-process.options = cms.untracked.PSet(
-        allowUnscheduled = cms.untracked.bool(True)
 )
 
-if numberOfFilesToProcess>0:
+process.source.inputCommands = cms.untracked.vstring(
+    'keep *'
+)
+
+process.options = cms.untracked.PSet(
+    allowUnscheduled=cms.untracked.bool(True)
+)
+
+if numberOfFilesToProcess > 0:
     process.source.fileNames = process.source.fileNames[:numberOfFilesToProcess]
 
-runOnMC = process.source.fileNames[0].find('Run201')==-1 and process.source.fileNames[0].find('embedded')==-1
+runOnMC = process.source.fileNames[0].find('Run201') == -1 and process.source.fileNames[0].find('embedded') == -1
 
 if runOnMC == False:
     json = setupJSON(process)
@@ -79,6 +79,7 @@ process.load('CMGTools.H2TauTau.h2TauTau_cff')
 
 isEmbedded = setupEmbedding(process, channel)
 addAK4 = True
+addPuppi = True
 
 # Adding jet collection
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
@@ -97,6 +98,26 @@ if addAK4:
     addAK4Jets(process)
     process.mvaMetInputPath.insert(0, process.jetSequenceAK4)
 
+if addPuppi:
+    process.load('CommonTools/PileupAlgos/Puppi_cff')
+
+    process.puppi.candName = cms.InputTag('packedPFCandidates')
+    process.puppi.vertexName = cms.InputTag('offlineSlimmedPrimaryVertices')
+
+    process.packedPFCandidatesWoMuon = cms.EDFilter("CandPtrSelector", src=cms.InputTag("packedPFCandidates"), cut=cms.string("fromPV>=2 && abs(pdgId)!=13 "))
+    process.particleFlowNoMuonPUPPI = process.puppi.clone()
+    process.particleFlowNoMuonPUPPI.candName = 'packedPFCandidatesWoMuon'
+
+    from RecoMET.METProducers.PFMET_cfi import pfMet
+    process.pfMetPuppi = pfMet.clone()
+    process.pfMetPuppi.src = cms.InputTag('puppi')
+
+    process.puppiPath = cms.Path(
+        process.puppi +
+        process.packedPFCandidatesWoMuon +
+        process.particleFlowNoMuonPUPPI +
+        process.pfMetPuppi
+    )
 
 # if '25' in dataset_name:
 #     print 'Using 25 ns MVA MET training'
@@ -120,8 +141,6 @@ if addAK4:
 #     # )
 
 
-
-
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()
 
@@ -129,71 +148,74 @@ process.outpath = cms.EndPath()
 # JAN: In 2015, we should finally make sure that we apply the correction to all
 # generator-matched taus, regardless of the process
 
-# 2012: don't apply Tau ES corrections for data (but do for embedded) or 
+# 2012: don't apply Tau ES corrections for data (but do for embedded) or
 # processes not containing real taus
 
 # signalTauProcess = (process.source.fileNames[0].find('HToTauTau') != -1) or (process.source.fileNames[0].find('DY') != -1) or isEmbedded
 
-if channel=='all' or channel=='all-separate':
+if channel == 'all' or channel == 'all-separate':
     process.schedule = cms.Schedule(
         process.mvaMetInputPath,
         process.tauMuPath,
         process.tauElePath,
-        process.muElePath,    
+        process.muElePath,
         process.diTauPath,
         process.outpath
-        )
-elif channel=='tau-mu':
+    )
+elif channel == 'tau-mu':
     process.schedule = cms.Schedule(
         process.mvaMetInputPath,
         process.tauMuPath,
         process.outpath
-        )
-elif channel=='tau-ele':
+    )
+elif channel == 'tau-ele':
     process.schedule = cms.Schedule(
         process.mvaMetInputPath,
         process.tauElePath,
         process.outpath
-        )
-elif channel=='di-tau':
+    )
+elif channel == 'di-tau':
     process.schedule = cms.Schedule(
         process.mvaMetInputPath,
         process.diTauPath,
         process.outpath
-        )
-elif channel=='mu-ele':
+    )
+elif channel == 'mu-ele':
     process.schedule = cms.Schedule(
         process.mvaMetInputPath,
         process.muElePath,
         process.outpath
-        )
-elif channel=='di-mu':
+    )
+elif channel == 'di-mu':
     process.schedule = cms.Schedule(
         process.mvaMetInputPath,
         process.diMuPath,
         process.outpath
-        )
+    )
 else:
-    raise ValueError('unrecognized channel')    
+    raise ValueError('unrecognized channel')
 
-### Enable printouts like this:
+if addPuppi:
+    process.schedule.insert(-1, process.puppiPath)
+
+# Enable printouts like this:
 # process.cmgTauMuCorSVFitPreSel.verbose = True
 
-if channel=='tau-mu' or 'all' in channel:
-    addTauMuOutput(process, debugEventContent, addPreSel=False, oneFile=(channel=='all'))
-if channel=='tau-ele' or 'all' in channel:
-    addTauEleOutput(process, debugEventContent, addPreSel=False, oneFile=(channel=='all'))
-if channel=='mu-ele' or 'all' in channel:
-    addMuEleOutput(process, debugEventContent, addPreSel=False, oneFile=(channel=='all'))
-if channel=='di-mu' or 'all' in channel:
-    addDiMuOutput(process, debugEventContent, addPreSel=False, oneFile=(channel=='all'))
-if channel=='di-tau' or 'all' in channel:
-    addDiTauOutput(process, debugEventContent, addPreSel=False, oneFile=(channel=='all'))
+if channel == 'tau-mu' or 'all' in channel:
+    addTauMuOutput(process, debugEventContent, addPreSel=False, oneFile=(channel == 'all'))
+if channel == 'tau-ele' or 'all' in channel:
+    addTauEleOutput(process, debugEventContent, addPreSel=False, oneFile=(channel == 'all'))
+if channel == 'mu-ele' or 'all' in channel:
+    addMuEleOutput(process, debugEventContent, addPreSel=False, oneFile=(channel == 'all'))
+if channel == 'di-mu' or 'all' in channel:
+    addDiMuOutput(process, debugEventContent, addPreSel=False, oneFile=(channel == 'all'))
+if channel == 'di-tau' or 'all' in channel:
+    addDiTauOutput(process, debugEventContent, addPreSel=False, oneFile=(channel == 'all'))
 
 # Message logger setup.
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = reportInterval
-process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(False))
+process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(False))
 
 if runSVFit:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 2
@@ -218,4 +240,4 @@ print sep_line
 print 'PROCESSING'
 print sep_line
 print 'runOnMC:', runOnMC
-print 
+print
