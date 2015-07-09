@@ -11,13 +11,37 @@ _canvStore = []
 _histStore = {}
 _hEffStore = {}
 
+_fitrStore = []
+
 _colorList = [2,3,4,6,7,8,9] + range(10,50)
+
+
+def getLegend(pos = 'ne'):
+    if pos == 'ne':
+        leg = TLegend(0.4,0.7,0.9,0.9)
+    elif pos == 'log':
+        leg = TLegend(0.6,0.8,0.99,0.99)
+    elif pos == 'roc':
+        leg = TLegend(0.15,0.2,0.7,0.4)
+    elif pos == 'fit':
+        leg = TLegend(0.15,0.65,0.5,0.8)
+
+    leg.SetBorderSize(1)
+    leg.SetTextFont(62)
+    leg.SetTextSize(0.03321678)
+    leg.SetLineColor(1)
+    leg.SetLineStyle(1)
+    leg.SetLineWidth(1)
+    leg.SetFillColor(0)
+    leg.SetFillStyle(1001)
+
+    return leg
 
 def turnon_func(x, par):
 
     halfpoint = par[0]
     #slope = max(par[1],0.00001)
-    width = par[1]
+    width = max(par[1],1)
     plateau = par[2]
 
     #offset = par[3]
@@ -29,11 +53,25 @@ def turnon_func(x, par):
     arg = 0
     #print pt, halfpoint, width
     #arg = (pt - halfpoint)/(TMath.Sqrt(pt)*slope)
-    arg = (pt - halfpoint) * width
+    arg = (pt - halfpoint) / (width * TMath.Sqrt(2))
 
-    fitval = offset + 0.5 * plateau * (1 + TMath.Erf(arg))
+    fitval = offset + plateau * 0.5 * (1 + TMath.Erf(arg))
+    #fitval = offset + plateau * TMath.Erfc(arg)
 
     return fitval
+
+def textBox():
+
+    pt = TPaveText(.05,.1,.95,.8);
+
+    pt.AddText("A TPaveText can contain severals line of text.");
+    pt.AddText("They are added to the pave using the AddText method.");
+    pt.AddLine(.0,.5,1.,.5);
+    pt.AddText("Even complex TLatex formulas can be added:");
+    pt.AddText("F(t) = #sum_{i=-#infty}^{#infty}A(i)cos#[]{#frac{i}{t+i}}");
+
+    return pt
+
 
 def cutsToString(cutList):
 
@@ -67,6 +105,8 @@ def setColors(histList):
         hist.SetMarkerColor(colorList[ind])
 
 def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', maxEntries = -1):
+
+    gStyle.SetOptStat(0)
 
     # maximum number of entries to process
     if maxEntries == -1:
@@ -131,6 +171,12 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
 
     tree.Draw(var + '>>' + hRef.GetName(),cuts,plotOpt, maxEntries)
 
+    # axis set up
+    hRef.SetStats(0)
+    hRef.GetXaxis().SetTitle(var)
+    #hRef.GetYaxis().SetRangeUser(0,2)
+    canv.SetLogy()
+
     gPad.Update()
 
     _histStore[hRef.GetName()] = hRef
@@ -176,12 +222,6 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
 
                 hist.SetBinContent(bin, binV)
 
-    # axis set up
-    hRef.SetStats(0)
-    hRef.GetXaxis().SetTitle(var)
-    #hRef.GetYaxis().SetRangeUser(0,2)
-    canv.SetLogy()
-
     #hRef.SetTitle(ctitle)
 
     # legend
@@ -195,34 +235,31 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
 
     return histList
 
-def plotEff(histList, var = 'HT', refName = 'Ref'):
+def plotEff(histList, var = 'HT', doFit = True):
+
+    gStyle.SetOptTitle(0)
 
     ## histList: [hReference, hTest1, hTest2,...]
 
-    if refName == '':
-        refName = 'Ref'
-    else:
-        print refName
-
-    # variable
+    # hist prefix
     histPrefix = 'h' + var + '_'
-    refName = histPrefix + refName
 
     # reference hist should be first
     hRef = histList[0]
-
-    #hRef = _histStore[refName]
     hRefEff = hRef.Clone(hRef.GetName()+'Eff')
     # set reference eff to 1
     hRefEff.Divide(hRef)
 
-    #hRefEff.GetYaxis().SetTitel("Efficiency")
+    hRefEff.GetYaxis().SetTitle("Efficiency")
 
     cname = 'canv_Eff_Ref' + hRefEff.GetName()
     ctitle = 'Eff for reference:' + hRefEff.GetName()
 
-    # make canvas
+    ## make canvas
     canv = TCanvas(cname,ctitle,800,800)
+
+    ## legend
+    leg = getLegend('fit')
 
     # set reference eff to 1
     for bin in range(1,hRefEff.GetNbinsX()+1):
@@ -230,29 +267,11 @@ def plotEff(histList, var = 'HT', refName = 'Ref'):
         hRefEff.SetBinError(bin,0)
 
     hRefEff.Draw()
+    #leg.AddEntry(hRefEff,hRefEff.GetTitle(),'lp')
+
     plotOpt = 'same'
 
     gPad.Update()
-
-    '''
-    nameList = []
-    #for hname in _histStore.keys():
-    for hname in _histStore.keys():
-
-    obj = _histStore[hname]
-
-    hname = str(hname)
-    #print hname, obj.ClassName()
-
-    if 'TH1' not in obj.ClassName(): continue
-
-    # filter out hists
-    if histPrefix not in hname: continue
-    if refName in hname: continue
-
-    nameList.append(hname)
-
-    '''
 
     # loop over test
     #for ind,hname in enumerate(nameList):
@@ -271,49 +290,77 @@ def plotEff(histList, var = 'HT', refName = 'Ref'):
         print 'Drawing', hname, 'from', hRef.GetName()
 
         ## Divide
-        #hEff = hist.Clone(hname)
-        #hEff.Divide(hRef)
+        hEff = hist.Clone(hname)
+        hEff.Divide(hRef)
 
         ## TEfficiency
-        hEff = TEfficiency(hist,hRef)
-        hEff.SetName(hname+';'+var+';Efficiency')
-        hEff.SetTitle(htitle)
+        tEff = TEfficiency(hist,hRef)
+        tEff.SetName(hname);#+';'+var+';Efficiency')
+        tEff.SetTitle(htitle)
 
         # style
-        hEff.SetLineColor(hist.GetLineColor())#_colorList[ind])
-        hEff.SetFillColor(0)
+        tEff.SetLineColor(hist.GetLineColor())#_colorList[ind])
+        tEff.SetFillColor(0)
 
-        hEff.Draw(plotOpt)
+        tEff.Draw(plotOpt)
+        leg.AddEntry(tEff,tEff.GetTitle(),'l')
+
         if 'same' not in plotOpt: plotOpt += 'same'
 
         gPad.Update()
 
-        #SetOwnership(hEff,0)
+        #SetOwnership(tEff,0)
 
-        fturn = TF1("turnon",turnon_func,0,200,3)
-        fturn.SetParameters(30,1,0)
-        fturn.SetParNames('halfpoint','width','plateau')
+        if doFit:
+            ## Fitting turn on curve
+            print 'Fitting...'
 
-        # get painted graph and fit with turn-on
-        gEff = hEff.GetPaintedGraph()
-        fitr = gEff.Fit(fturn,'S')
+            fturn = TF1("turnon",turnon_func,0,5000,3)
+            fturn.SetParNames('halfpoint','width','plateau')
+            fturn.SetParLimits(0,0,10000)
+            fturn.SetParLimits(1,1,10000)
+            fturn.SetParLimits(2,0,1)
 
-        SetOwnership(gEff,0)
+            ## get painted graph and fit with turn-on
+            gEff = tEff.GetPaintedGraph()
+            #gEff = hEff
 
-        halfpoint = fitr.Value(0)
-        width = fitr.Value(1)
-        plateau = fitr.Value(2)
+            ## get estimate of parameters
+            expPlateau = hEff.GetMaximum()
+            expHalfP = hEff.GetBinCenter(hEff.FindFirstBinAbove(0.1))
+            expWidth = expHalfP/2
 
-        print 'Fit result: halfpoint = %5.2f, width = %5.2f, plateau = %5.2f' % (halfpoint, width, plateau)
+            #fturn.SetParameters(300,100,1)
+            fturn.SetParameters(expHalfP,expWidth,expPlateau)
 
-        _hEffStore[hname] = hEff
+            ## do fit
+            fitr = gEff.Fit(fturn,'S EX0')#EX0
+
+            SetOwnership(gEff,0)
+
+            halfpoint = fitr.Value(0)
+            width = fitr.Value(1)
+            plateau = fitr.Value(2)
+
+            print 'Expected values: halfpoint = %5.2f, width = %5.2f, plateau = %5.2f' % (expHalfP, expWidth, expPlateau)
+            print 'Fit result: halfpoint = %5.2f, width = %5.2f, plateau = %5.2f' % (halfpoint, width, plateau)
+
+            gStyle.SetOptFit()
+            #gStyle.SetOption("Show Fit Parameters")
+            gPad.Update()
+
+            _fitrStore.append((hname,halfpoint, width, plateau))
+
+        _hEffStore[hname] = tEff
 
     # remove refEff
     #gPad.GetListOfPrimitives().Remove(hRef)
 
     # legend
-    leg = canv.BuildLegend()
-    leg.SetFillColor(0)
+    #leg = canv.BuildLegend()
+    #leg.SetFillColor(0)
+    leg.Draw()
+    SetOwnership( leg, 0 )
 
     # axis set up
     hRefEff.SetStats(0)
@@ -323,10 +370,10 @@ def plotEff(histList, var = 'HT', refName = 'Ref'):
 
     #leg.GetListOfPrimitives().Remove(hRefEff)
 
+    gPad.Update()
+
     _hEffStore[hRefEff.GetName] = hRefEff
     _canvStore.append(canv)
-
-    gPad.Update()
 
     return 1
 
@@ -372,9 +419,9 @@ if __name__ == "__main__":
 
     ## DEFINE plots
     # variable list
-    #varList = ['HT']#,'MET','ST']
-    #varList = ['HT','LepGood1_pt','LepGood1_eta']
-    varList = ['LepGood1_pt']
+    varList = ['HT']#,'MET','ST']
+    #varList = ['HT','LepGood1_pt']#,'LepGood1_eta']
+    #varList = ['LepGood1_pt']
 
     # reference trigger (without HLT_)
     refTrig = ''
@@ -382,16 +429,19 @@ if __name__ == "__main__":
     # TEST triggers
     #testTrig = ['SingleMu','SingleEl','HT350','MET170']
     #testTrig = ['HT350','HT900','HTMET','MET170']#,'MuHT400MET70']
+    #testTrig = ['HT350','HT600','HT900']
+    testTrig = ['HT350']
     #testTrig = ['HT900', 'MuHad']
     #testTrig = ['HLT_SingleMu', 'HLT_MuNoIso', 'HLT_MuHad', 'HLT_MuHT600', 'HLT_MuHT400MET70','HLT_MuMET120', 'HLT_MuHT400B']
     #testTrig = ['HLT_SingleEl', 'HLT_ElNoIso', 'HLT_ElHad', 'HLT_EleHT600','HLT_EleHT400MET70','HLT_EleHT200', 'HLT_EleHT400B']
     #testTrig = ['HLT_SingleEl','HLT_ElNoIso','HLT_EleHT600']
     #testTrig = ['HLT_SingleMu','HLT_MuNoIso','HLT_MuHT600']
-    testTrig = ['HLT_SingleEl']
+    #testTrig = ['HLT_SingleEl']
 
     # cuts
+    cuts = ''
     #cuts = 'nTightEl == 1 && nVetoLeps == 0 && LepGood1_pt > 25'
-    cuts = 'nTightEl == 1 && LepGood1_pt > 15 && abs(LepGood1_eta) < 2.1'
+    #cuts = 'nTightEl == 1 && LepGood1_pt > 15 && abs(LepGood1_eta) < 2.1'
 
     #print 'Split cuts:', cuts.split('&&')
     #print 'ReSplit cuts:', cutsToString(cuts.split('&&'))
@@ -399,12 +449,14 @@ if __name__ == "__main__":
     # max entries to process
     maxEntries = -1#100000
 
+    doFit = True
+
     for var in varList:
         histList = getHistsFromTree(tree,var,refTrig, cuts, testTrig, maxEntries)
-        plotEff(histList, var,refTrig)
+        plotEff(histList, var, doFit)
 
     ## save canvases to file
-    prefix = 'test_' + refTrig + '_'
+    prefix = 'fit_' + testTrig[0]+ refTrig + '_'
 
     for canv in _canvStore:
         pdir = 'plots/'
