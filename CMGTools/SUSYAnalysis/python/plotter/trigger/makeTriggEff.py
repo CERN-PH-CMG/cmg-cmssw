@@ -128,10 +128,10 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
     if refTrig != '':
         refName = refTrig.replace('HLT_','')
     else:
-        refName = 'Ref'
+        refName = 'PreSel'
 
     rname = histPrefix + refName
-    cname = 'canv_' + refName + var
+    cname = var + '_' + refName
     ctitle = 'Plots for reference:' + refTrig
 
     if cuts != '':
@@ -141,7 +141,7 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
         cuts += ' && HLT_' + refTrig.replace('HLT_','')
         htitle = 'Ref: ' + refTrig
     else:
-        htitle = 'Reference'
+        htitle = 'Preselection'
 
     # make canvas
     canv = TCanvas(cname,ctitle,800,800)
@@ -156,7 +156,7 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
     elif var == 'HT':
         hRef = TH1F(rname,htitle,nbins,0,3000)
     elif 'pt' in var:
-        xbins = range(5,50,5) + range(50,100,10) + range (100,225,25)#[10,20,30,40,60,80,100,150,200]
+        xbins = range(5,25,1) + range(25,70,5) + range(70,150,10) + range (150,225,25)#[10,20,30,40,60,80,100,150,200]
         hRef = TH1F(rname,htitle,len(xbins)-1,array('f',xbins))
 
         varBinSize = True
@@ -252,7 +252,7 @@ def plotEff(histList, var = 'HT', doFit = True):
 
     hRefEff.GetYaxis().SetTitle("Efficiency")
 
-    cname = 'canv_Eff_Ref' + hRefEff.GetName()
+    cname = hRef.GetName().replace('h'+var+'_',var + '_Eff_')
     ctitle = 'Eff for reference:' + hRefEff.GetName()
 
     ## make canvas
@@ -267,6 +267,8 @@ def plotEff(histList, var = 'HT', doFit = True):
         hRefEff.SetBinError(bin,0)
 
     hRefEff.Draw()
+    #leg.AddEntry(0,'Reference: ' + hRefEff.GetName(),'')
+    leg.SetHeader('Reference: ' + hRef.GetName().replace('h'+var+'_',''))
     #leg.AddEntry(hRefEff,hRefEff.GetTitle(),'lp')
 
     plotOpt = 'same'
@@ -318,8 +320,10 @@ def plotEff(histList, var = 'HT', doFit = True):
             fturn = TF1("turnon",turnon_func,0,5000,3)
             fturn.SetParNames('halfpoint','width','plateau')
             fturn.SetParLimits(0,0,10000)
-            fturn.SetParLimits(1,1,10000)
+            fturn.SetParLimits(1,0.1,10000)
             fturn.SetParLimits(2,0,1)
+
+            fturn.SetLineColor(hEff.GetLineColor())
 
             ## get painted graph and fit with turn-on
             gEff = tEff.GetPaintedGraph()
@@ -327,7 +331,7 @@ def plotEff(histList, var = 'HT', doFit = True):
 
             ## get estimate of parameters
             expPlateau = hEff.GetMaximum()
-            expHalfP = hEff.GetBinCenter(hEff.FindFirstBinAbove(0.1))
+            expHalfP = hEff.GetBinCenter(hEff.FindFirstBinAbove(0.45))
             expWidth = expHalfP/2
 
             #fturn.SetParameters(300,100,1)
@@ -377,6 +381,26 @@ def plotEff(histList, var = 'HT', doFit = True):
 
     return 1
 
+def fitEff(histList):
+
+    # hist prefix
+    histPrefix = 'h' + var + '_'
+
+    # reference hist should be first
+    hRefEff = histList[0]
+
+    cname = 'c_FitEff_Test' + hRefEff.GetName()
+    ctitle = 'Eff for reference:' + hRefEff.GetName()
+
+    ## make canvas
+    canv = TCanvas(cname,ctitle,800,800)
+
+    ## legend
+    leg = getLegend('fit')
+
+    return 1
+
+
 if __name__ == "__main__":
 
     ## remove '-b' option
@@ -419,9 +443,9 @@ if __name__ == "__main__":
 
     ## DEFINE plots
     # variable list
-    varList = ['HT']#,'MET','ST']
+    #varList = ['HT']#,'MET','ST']
     #varList = ['HT','LepGood1_pt']#,'LepGood1_eta']
-    #varList = ['LepGood1_pt']
+    varList = ['LepGood1_pt']
 
     # reference trigger (without HLT_)
     refTrig = ''
@@ -430,17 +454,18 @@ if __name__ == "__main__":
     #testTrig = ['SingleMu','SingleEl','HT350','MET170']
     #testTrig = ['HT350','HT900','HTMET','MET170']#,'MuHT400MET70']
     #testTrig = ['HT350','HT600','HT900']
-    testTrig = ['HT350']
+    #testTrig = ['MuHT400MET70']
     #testTrig = ['HT900', 'MuHad']
     #testTrig = ['HLT_SingleMu', 'HLT_MuNoIso', 'HLT_MuHad', 'HLT_MuHT600', 'HLT_MuHT400MET70','HLT_MuMET120', 'HLT_MuHT400B']
     #testTrig = ['HLT_SingleEl', 'HLT_ElNoIso', 'HLT_ElHad', 'HLT_EleHT600','HLT_EleHT400MET70','HLT_EleHT200', 'HLT_EleHT400B']
     #testTrig = ['HLT_SingleEl','HLT_ElNoIso','HLT_EleHT600']
     #testTrig = ['HLT_SingleMu','HLT_MuNoIso','HLT_MuHT600']
-    #testTrig = ['HLT_SingleEl']
+    #testTrig = ['SingleMu','ElNoIso']
+    testTrig = ['SingleMu','Mu50NoIso']
 
     # cuts
     cuts = ''
-    #cuts = 'nTightEl == 1 && nVetoLeps == 0 && LepGood1_pt > 25'
+    cuts = 'nTightMu == 1 && LepGood1_pt > 5 && HT > 500 && MET > 200'#  && abs(LepGood1_eta) < 2.1'
     #cuts = 'nTightEl == 1 && LepGood1_pt > 15 && abs(LepGood1_eta) < 2.1'
 
     #print 'Split cuts:', cuts.split('&&')
@@ -456,16 +481,18 @@ if __name__ == "__main__":
         plotEff(histList, var, doFit)
 
     ## save canvases to file
-    prefix = 'fit_' + testTrig[0]+ refTrig + '_'
+    prefix = 'fit/'# + refTrig #+ '_'
+    suffix = '_' + testTrig[0]
+    suffix += '.png'
 
-    for canv in _canvStore:
-        pdir = 'plots/'
-        canv.SaveAs(pdir+prefix+canv.GetName()+'.png')
-        canv.Write()
-
-    tfile.Close()
     ## wait
     if not _batchMode:
         answ = raw_input("Enter 'q' to exit: ")
 
+    for canv in _canvStore:
+        pdir = 'plots/'
+        canv.SaveAs(pdir+prefix+canv.GetName()+suffix)
+        canv.Write()
+
+    tfile.Close()
     outfile.Close()
