@@ -363,8 +363,6 @@ if not os.path.exists("JobOutputs/"+foldername):
     os.makedirs("JobOutputs/"+foldername)
 shutil.copyfile(os.path.basename(__file__), file_dest)
 
-# os.system("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh")
-
 if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates):
     
     if(useLHAPDF and os.environ.get('LHAPATH') == lhapdf_folder+"share/lhapdf/PDFsets"):
@@ -468,9 +466,9 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates):
         os.chdir("AnalysisCode/");
 
 
-        if parallelize and (runWanalysis or runZanalysis) and counter>1:
+        if not useBatch and parallelize and (runWanalysis or runZanalysis) and counter>1:
             print "waiting 10 sec to 20 sec (if W and Z are launched) before to proceed with the next sample to let the compilation finish"
-            if(not useBatch): os.system("sleep 3");
+            os.system("sleep 3");
         
         if(runWanalysis):
             
