@@ -4,8 +4,19 @@ import sys
 import os
 #sys.argv.append( '-b' )
 
+#import pystyle.CMS_lumi
+import CMS_lumi
+
+CMS_lumi.writeExtraText = 1
+CMS_lumi.extraText = "t#bar{t} LO, 25ns"#"Spring15 MC"
+
+
 from ROOT import *
 from array import array
+
+gStyle.SetOptTitle(0)
+gStyle.SetOptStat(0)
+gStyle.SetPadTopMargin(0.05)
 
 _canvStore = []
 _histStore = {}
@@ -13,8 +24,20 @@ _hEffStore = {}
 
 _fitrStore = []
 
-_colorList = [2,3,4,6,7,8,9] + range(10,50)
+_colorList = [2,8,4,9,7,3,6] + range(10,50)
 
+def varToLabel(var):
+
+    label = var
+
+    if 'pt' in var:
+        label = 'p_{T}(lep)'
+    elif 'MET' in var:
+        label = 'E_{T}^{miss}'
+    elif 'T' in var:
+        label = var.replace('T','_{T}')
+
+    return label
 
 def getLegend(pos = 'ne'):
     if pos == 'ne':
@@ -24,7 +47,7 @@ def getLegend(pos = 'ne'):
     elif pos == 'roc':
         leg = TLegend(0.15,0.2,0.7,0.4)
     elif pos == 'fit':
-        leg = TLegend(0.15,0.65,0.5,0.8)
+        leg = TLegend(0.15,0.75,0.5,0.9)
 
     leg.SetBorderSize(1)
     leg.SetTextFont(62)
@@ -106,8 +129,6 @@ def setColors(histList):
 
 def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', maxEntries = -1):
 
-    gStyle.SetOptStat(0)
-
     # maximum number of entries to process
     if maxEntries == -1:
         maxEntries = tree.GetEntries()
@@ -116,7 +137,7 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
     histPrefix = 'h' + var + '_'
 
     # plot option
-    plotOpt = 'e1'
+    plotOpt = 'e1ex0'
 
     # histogram list
     histList = []
@@ -139,7 +160,7 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
 
     if refTrig != '':
         cuts += ' && HLT_' + refTrig.replace('HLT_','')
-        htitle = 'Ref: ' + refTrig
+        htitle = refTrig.replace('HLT_','')#'Ref: ' + refTrig
     else:
         htitle = 'Preselection'
 
@@ -171,9 +192,11 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
 
     tree.Draw(var + '>>' + hRef.GetName(),cuts,plotOpt, maxEntries)
 
+    hRef.SetLineColor(1)
     # axis set up
     hRef.SetStats(0)
-    hRef.GetXaxis().SetTitle(var)
+    hRef.GetXaxis().SetTitle(varToLabel(var))
+    hRef.GetYaxis().SetTitle('Events')
     #hRef.GetYaxis().SetRangeUser(0,2)
     canv.SetLogy()
 
@@ -229,6 +252,12 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
     leg.SetFillColor(0)
     #leg.SetHeader(ctitle.replace('&&','\n'));
 
+    ## CMS LUMI
+    lumi = 1
+
+    CMS_lumi.lumi_13TeV = str(lumi) + ' fb^{-1}'
+    CMS_lumi.CMS_lumi(canv, 4, 11)
+
     gPad.Update()
 
     _canvStore.append(canv)
@@ -237,7 +266,6 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
 
 def plotEff(histList, var = 'HT', doFit = True):
 
-    gStyle.SetOptTitle(0)
 
     ## histList: [hReference, hTest1, hTest2,...]
 
@@ -257,6 +285,7 @@ def plotEff(histList, var = 'HT', doFit = True):
 
     ## make canvas
     canv = TCanvas(cname,ctitle,800,800)
+    ## style
 
     ## legend
     leg = getLegend('fit')
@@ -338,7 +367,7 @@ def plotEff(histList, var = 'HT', doFit = True):
             fturn.SetParameters(expHalfP,expWidth,expPlateau)
 
             ## do fit
-            fitr = gEff.Fit(fturn,'S EX0')#EX0
+            fitr = gEff.Fit(fturn,'S Q EX0')#EX0
 
             SetOwnership(gEff,0)
 
@@ -348,6 +377,7 @@ def plotEff(histList, var = 'HT', doFit = True):
 
             print 'Expected values: halfpoint = %5.2f, width = %5.2f, plateau = %5.2f' % (expHalfP, expWidth, expPlateau)
             print 'Fit result: halfpoint = %5.2f, width = %5.2f, plateau = %5.2f' % (halfpoint, width, plateau)
+            print 80*'#'
 
             gStyle.SetOptFit()
             #gStyle.SetOption("Show Fit Parameters")
@@ -401,36 +431,7 @@ def fitEff(histList):
     return 1
 
 
-if __name__ == "__main__":
-
-    ## remove '-b' option
-    _batchMode = False
-
-    if '-b' in sys.argv:
-        sys.argv.remove('-b')
-        _batchMode = True
-
-    if len(sys.argv) > 1:
-        fileName = sys.argv[1]
-        print '#fileName is', fileName
-    else:
-        print '#No file names given'
-        exit(0)
-
-    tfile  = TFile(fileName, "READ")
-
-    if len(sys.argv) > 2:
-        outName = sys.argv[2]
-    else:
-        print '#No out file name is given'
-        outName = (os.path.basename(fileName)).replace('.root','_plots.root')
-        print '#> Out file name is', outName
-
-    outfile = TFile(outName, "RECREATE")
-
-    if not tfile:
-        print "Couldn't open the file"
-        exit(0)
+def makeEffPlots(tfile):
 
     # for friend trees
     tree = tfile.Get('sf/t')
@@ -448,7 +449,7 @@ if __name__ == "__main__":
     varList = ['LepGood1_pt']
 
     # reference trigger (without HLT_)
-    refTrig = ''
+    refTrig = 'HTMET'
 
     # TEST triggers
     #testTrig = ['SingleMu','SingleEl','HT350','MET170']
@@ -461,7 +462,7 @@ if __name__ == "__main__":
     #testTrig = ['HLT_SingleEl','HLT_ElNoIso','HLT_EleHT600']
     #testTrig = ['HLT_SingleMu','HLT_MuNoIso','HLT_MuHT600']
     #testTrig = ['SingleMu','ElNoIso']
-    testTrig = ['SingleMu','Mu50NoIso']
+    testTrig = ['SingleMu','Mu50NoIso','HLT_MuHT400MET70']
 
     # cuts
     cuts = ''
@@ -493,6 +494,42 @@ if __name__ == "__main__":
         pdir = 'plots/'
         canv.SaveAs(pdir+prefix+canv.GetName()+suffix)
         canv.Write()
+
+    return 1
+
+
+if __name__ == "__main__":
+
+    ## remove '-b' option
+    _batchMode = False
+
+    if '-b' in sys.argv:
+        sys.argv.remove('-b')
+        _batchMode = True
+
+    if len(sys.argv) > 1:
+        fileName = sys.argv[1]
+        print '#fileName is', fileName
+    else:
+        print '#No file names given'
+        exit(0)
+
+    tfile  = TFile(fileName, "READ")
+
+    if len(sys.argv) > 2:
+        outName = sys.argv[2]
+    else:
+        print '#No out file name is given'
+        outName = (os.path.basename(fileName)).replace('.root','_plots.root')
+        print '#> Out file name is', outName
+
+    outfile = TFile(outName, "RECREATE")
+
+    if not tfile:
+        print "Couldn't open the file"
+        exit(0)
+
+    makeEffPlots(tfile)
 
     tfile.Close()
     outfile.Close()
