@@ -45,7 +45,7 @@ void prepareDatacardsFast(TString folder, TString syst_folder, TString SignalSam
     
     // LOAD ALL THE HISTOS FROM THE VARIOUS FILES IN MEMORY
     for(int isample=0; isample<Nsamples;isample++){
-      finTemplatesW[isample] = new TFile(Form("%s/test_numbers_%s/%sanalysisOnDATA.root",folder.Data(),samples_str[isample].Data(),WorZ.Data()));
+      finTemplatesW[isample] = new TFile(Form("%s/output_%s/%sanalysisOnDATA.root",folder.Data(),samples_str[isample].Data(),WorZ.Data()));
       finTemplatesW[isample]->Print();
       for(int ieta=0; ieta<WMass::etaMuonNSteps; ieta++){
         TString eta_str = Form("%.1f",WMass::etaMaxMuons[ieta]); eta_str.ReplaceAll(".","p");

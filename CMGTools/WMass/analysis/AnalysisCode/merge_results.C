@@ -8,7 +8,7 @@
 #include "TGraph.h"
 #include "TGraphErrors.h"
 #include "TRandom3.h"
-#include "../test_numbers_DATA/common.h"
+#include "../output_DATA/common.h"
 #include "../../../includes/common2.h"
 
 void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W"){

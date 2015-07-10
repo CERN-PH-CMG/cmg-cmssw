@@ -54,8 +54,8 @@ void prepareDatacards(TString folder, TString syst_folder, TString sample, int g
     // LOAD ALL THE HISTOS FROM THE VARIOUS FILES IN MEMORY
     for(int isample=0; isample<Nsamples;isample++){
       // samples_str.push_back( ((TObjString *)samples_obj->At(isample))->GetString() );
-      // finTemplatesZ[isample] = new TFile(Form("%s/test_numbers_%s/WSimpleTemplates.root",folder.Data(),samples_str[isample].Data()));
-      finTemplatesW[isample] = new TFile(Form("%s/test_numbers_%s/%sanalysisOnDATA.root",folder.Data(),samples_str[isample].Data(),WorZ.Data()));
+      // finTemplatesZ[isample] = new TFile(Form("%s/output_%s/WSimpleTemplates.root",folder.Data(),samples_str[isample].Data()));
+      finTemplatesW[isample] = new TFile(Form("%s/output_%s/%sanalysisOnDATA.root",folder.Data(),samples_str[isample].Data(),WorZ.Data()));
       // finTemplatesZ[isample]->Print();
       finTemplatesW[isample]->Print();
       for(int ieta=0; ieta<WMass::etaMuonNSteps; ieta++){

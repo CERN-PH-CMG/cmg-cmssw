@@ -394,7 +394,7 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
         counter=counter+1
         
         if(IS_MC_CLOSURE_TEST and (sample[i]!="WJetsMadSig" and sample[i]!="DYJetsPow" and sample[i]!="DYJetsMadSig")): continue; # TEMPORARY
-        jobID= "test_numbers_"+sample[i];
+        jobID= "output_"+sample[i];
         
         print ''    
         print "ANALYZING jobID=", jobID ;
@@ -667,8 +667,8 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
         
 if (ExtractNumbers or run_BuildSimpleTemplates):
     for dir in os.listdir("JobOutputs/"+foldername):
-        if os.path.isdir("JobOutputs/"+foldername+"/"+dir) and ("test_numbers_" in dir) :
-            dataset_item = dir.replace("test_numbers_","");
+        if os.path.isdir("JobOutputs/"+foldername+"/"+dir) and ("output_" in dir) :
+            dataset_item = dir.replace("output_","");
 
             if(ExtractNumbers):
                 os.chdir("AnalysisCode/");
@@ -710,12 +710,12 @@ if(runPrepareDataCards):
 
 if(runPrepareDataCardsFast):
     if(DataCards_systFromFolder!=""):
-      common1 = str(os.popen("ls JobOutputs/"+DataCards_systFromFolder+"/test_numbers_*/common.h |head -n1").read()).replace('\n','')
+      common1 = str(os.popen("ls JobOutputs/"+DataCards_systFromFolder+"/output_*/common.h |head -n1").read()).replace('\n','')
       shutil.copyfile(common1,"includes/common2.h");
     else:
-      common1 = str(os.popen("ls JobOutputs/"+foldername+"/test_numbers_*/common.h |head -n1").read()).replace('\n','')
+      common1 = str(os.popen("ls JobOutputs/"+foldername+"/output_*/common.h |head -n1").read()).replace('\n','')
       shutil.copyfile(common1,"includes/common2.h");
-    common2 = str(os.popen("ls JobOutputs/"+foldername+"/test_numbers_*/common.h |head -n1").read()).replace('\n','')
+    common2 = str(os.popen("ls JobOutputs/"+foldername+"/output_*/common.h |head -n1").read()).replace('\n','')
     shutil.copyfile(common2,"includes/common.h");
     os.system("sed -i 's/.*namespace WMass{.*/namespace WMass2{/' includes/common2.h")
     
@@ -734,12 +734,12 @@ if(runDataCardsParametrization):
 
 if(runClosureTestLikeLihoodRatioAnsMergeResults):
     if(DataCards_systFromFolder!=""):
-      common1 = str(os.popen("ls JobOutputs/"+DataCards_systFromFolder+"/test_numbers_*/common.h |head -n1").read()).replace('\n','')
+      common1 = str(os.popen("ls JobOutputs/"+DataCards_systFromFolder+"/output_*/common.h |head -n1").read()).replace('\n','')
       shutil.copyfile(common1,"includes/common2.h");
     else:
-      common1 = str(os.popen("ls JobOutputs/"+foldername+"/test_numbers_*/common.h |head -n1").read()).replace('\n','')
+      common1 = str(os.popen("ls JobOutputs/"+foldername+"/output_*/common.h |head -n1").read()).replace('\n','')
       shutil.copyfile(common1,"includes/common2.h");
-    common2 = str(os.popen("ls JobOutputs/"+foldername+"/test_numbers_*/common.h |head -n1").read()).replace('\n','')
+    common2 = str(os.popen("ls JobOutputs/"+foldername+"/output_*/common.h |head -n1").read()).replace('\n','')
     shutil.copyfile(common2,"includes/common.h");
     os.system("sed -i 's/.*namespace WMass{.*/namespace WMass2{/' includes/common2.h")
 
@@ -762,12 +762,12 @@ if(runClosureTestLikeLihoodRatioAnsMergeResults):
 
 if((runClosureTestLikeLihoodRatioAnsMergeResults and useBatch==0) or mergeResults):
     if(DataCards_systFromFolder!=""):
-      common1 = str(os.popen("ls JobOutputs/"+DataCards_systFromFolder+"/test_numbers_*/common.h |head -n1").read()).replace('\n','')
+      common1 = str(os.popen("ls JobOutputs/"+DataCards_systFromFolder+"/output_*/common.h |head -n1").read()).replace('\n','')
       shutil.copyfile(common1,"includes/common2.h");
     else:
-      common1 = str(os.popen("ls JobOutputs/"+foldername+"/test_numbers_*/common.h |head -n1").read()).replace('\n','')
+      common1 = str(os.popen("ls JobOutputs/"+foldername+"/output_*/common.h |head -n1").read()).replace('\n','')
       shutil.copyfile(common1,"includes/common2.h");
-    common2 = str(os.popen("ls JobOutputs/"+foldername+"/test_numbers_*/common.h |head -n1").read()).replace('\n','')
+    common2 = str(os.popen("ls JobOutputs/"+foldername+"/output_*/common.h |head -n1").read()).replace('\n','')
     shutil.copyfile(common2,"includes/common.h");
     os.system("sed -i 's/.*namespace WMass{.*/namespace WMass2{/' includes/common2.h")
     
@@ -783,11 +783,11 @@ if((runClosureTestLikeLihoodRatioAnsMergeResults and useBatch==0) or mergeResult
 if(run_Z_MCandDATAcomparisons_stack):
     os.chdir("PlottingCode/");  
     if not os.path.exists("../JobOutputs/"+foldername+"/ZcomparisonPlots_MCvsDATA"): os.makedirs("../JobOutputs/"+foldername+"/ZcomparisonPlots_MCvsDATA")
-    jobIDMCsig= "../JobOutputs/"+foldername+"/test_numbers_"+sample[DYJetsPow]
-    jobIDMCEWK= "../JobOutputs/"+foldername+"/test_numbers_EWK"
-    jobIDMCTT= "../JobOutputs/"+foldername+"/test_numbers_"+sample[TTJets]
-    jobIDMCQCD= "../JobOutputs/"+foldername+"/test_numbers_"+sample[QCD]
-    jobIDDATA= "../JobOutputs/"+foldername+"/test_numbers_"+sample[DATA]
+    jobIDMCsig= "../JobOutputs/"+foldername+"/output_"+sample[DYJetsPow]
+    jobIDMCEWK= "../JobOutputs/"+foldername+"/output_EWK"
+    jobIDMCTT= "../JobOutputs/"+foldername+"/output_"+sample[TTJets]
+    jobIDMCQCD= "../JobOutputs/"+foldername+"/output_"+sample[QCD]
+    jobIDDATA= "../JobOutputs/"+foldername+"/output_"+sample[DATA]
     os.system("root -l -b -q \'PlotZdistributionsMCvsDATA_stack.C(\""+jobIDMCsig+"/\",\""+jobIDMCEWK+"/\",\""+jobIDMCTT+"/\",\""+jobIDMCQCD+"/\",\""+jobIDDATA+"/\")\' ");
     os.system("mv *.png ../JobOutputs/"+foldername+"/ZcomparisonPlots_MCvsDATA");
     os.system("cp PlotZdistributionsMCvsDATA_stack.C ../JobOutputs/"+foldername+"/ZcomparisonPlots_MCvsDATA");
@@ -795,11 +795,11 @@ if(run_Z_MCandDATAcomparisons_stack):
 if(run_W_MCandDATAcomparisons_stack):
     os.chdir("PlottingCode/");  
     if not os.path.exists("../JobOutputs/"+foldername+"/WcomparisonPlots_MCvsDATA"): os.makedirs("../JobOutputs/"+foldername+"/WcomparisonPlots_MCvsDATA")
-    jobIDMCsig= "../JobOutputs/"+foldername+"/test_numbers_"+sample[WJetsMadSig]
-    jobIDMCEWK= "../JobOutputs/"+foldername+"/test_numbers_EWK"
-    jobIDMCTT= "../JobOutputs/"+foldername+"/test_numbers_"+sample[TTJets]
-    jobIDMCQCD= "../JobOutputs/"+foldername+"/test_numbers_"+sample[QCD]
-    jobIDDATA= "../JobOutputs/"+foldername+"/test_numbers_"+sample[DATA]
+    jobIDMCsig= "../JobOutputs/"+foldername+"/output_"+sample[WJetsMadSig]
+    jobIDMCEWK= "../JobOutputs/"+foldername+"/output_EWK"
+    jobIDMCTT= "../JobOutputs/"+foldername+"/output_"+sample[TTJets]
+    jobIDMCQCD= "../JobOutputs/"+foldername+"/output_"+sample[QCD]
+    jobIDDATA= "../JobOutputs/"+foldername+"/output_"+sample[DATA]
     os.system("root -l -b -q \'PlotWdistributionsMCvsDATA_stack.C(\""+jobIDMCsig+"/\",\""+jobIDMCEWK+"/\",\""+jobIDMCTT+"/\",\""+jobIDMCQCD+"/\",\""+jobIDDATA+"/\")\' ");
     os.system("mv *.png ../JobOutputs/"+foldername+"/WcomparisonPlots_MCvsDATA");
     os.system("cp PlotWdistributionsMCvsDATA_stack.C ../JobOutputs/"+foldername+"/WcomparisonPlots_MCvsDATA");
@@ -807,11 +807,11 @@ if(run_W_MCandDATAcomparisons_stack):
 if(run_PhiStarEta_MCandDATAcomparisons_stack):
     os.chdir("PlottingCode/");  
     if not os.path.exists("../JobOutputs/"+foldername+"/PhiStarEtacomparisonPlots_MCvsDATA"): os.makedirs("../JobOutputs/"+foldername+"/PhiStarEtacomparisonPlots_MCvsDATA")
-    jobIDMCsig= "../JobOutputs/"+foldername+"/test_numbers_"+sample[DYJetsPow]
-    jobIDMCEWK= "../JobOutputs/"+foldername+"/test_numbers_EWK"
-    jobIDMCTT= "../JobOutputs/"+foldername+"/test_numbers_"+sample[TTJets]
-    jobIDMCQCD= "../JobOutputs/"+foldername+"/test_numbers_"+sample[QCD]
-    jobIDDATA= "../JobOutputs/"+foldername+"/test_numbers_"+sample[DATA]
+    jobIDMCsig= "../JobOutputs/"+foldername+"/output_"+sample[DYJetsPow]
+    jobIDMCEWK= "../JobOutputs/"+foldername+"/output_EWK"
+    jobIDMCTT= "../JobOutputs/"+foldername+"/output_"+sample[TTJets]
+    jobIDMCQCD= "../JobOutputs/"+foldername+"/output_"+sample[QCD]
+    jobIDDATA= "../JobOutputs/"+foldername+"/output_"+sample[DATA]
     os.system("root -l -b -q \'PlotPhiStarEtadistributionsMCvsDATA_stack.C(\""+jobIDMCsig+"/\",\""+jobIDMCEWK+"/\",\""+jobIDMCTT+"/\",\""+jobIDMCQCD+"/\",\""+jobIDDATA+"/\")\' ");
     os.system("mv *.png ../JobOutputs/"+foldername+"/PhiStarEtacomparisonPlots_MCvsDATA");
     os.system("cp PlotPhiStarEtadistributionsMCvsDATA_stack.C ../JobOutputs/"+foldername+"/PhiStarEtacomparisonPlots_MCvsDATA");
