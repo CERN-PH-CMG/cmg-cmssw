@@ -229,9 +229,21 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
     for ind, trig in enumerate(testTrig):
 
         # for OR and AND test triggers
+        if '||' in trig:
+            tnames = trig.replace('HLT_','').split('||')
+            trigName = tnames[0]
+            trig = '(' + 'HLT_'+tnames[0].replace('HLT_','')
 
+            for name in tnames[1:]:
+                trigName += '_' + name
+                trig += '||' + 'HLT_'+name.replace('HLT_','')
+            trig += ')'
 
-        trigName = trig.replace('HLT_','')
+            print trigName
+            print trig
+        else:
+            trigName = trig.replace('HLT_','')
+
         hname = 'h' + var + '_' + trigName
 
         hTest = hRef.Clone(hname)
@@ -484,7 +496,7 @@ def makeEffPlots(tree, lumi = -1, maxEntries = -1, doFit = False, varList = [], 
     # make suffix from testTrigNames
     suffix = 'test'
     for trig in testTrig:
-        suffix +=  '_' + trig
+        suffix +=  'Or' + trig.replace('||','OR')
 
     for var in varList:
         #for ref in refTrig[:1]:
@@ -618,7 +630,6 @@ if __name__ == "__main__":
     '''
 
 
-    '''
     #############
     # LT: Muon
     #############
@@ -626,8 +637,20 @@ if __name__ == "__main__":
     varList = ['LT']
     cuts = 'nTightMu == 1 && LepGood1_pt > 25 && HT > 500'
     refTrig = ''
-    testTrig = ['Mu50NoIso||Mu50NoIso']
+    testTrig = ['Mu50NoIso','MuHT400MET70','Mu50NoIso||MuHT400MET70']
+    #makeEffPlots(tree, lumi, maxEntries, doFit, varList, refTrig, testTrig, cuts)
+
+
+    #############
+    # LT: Electron
+    #############
+
+    varList = ['LT']
+    cuts = 'nTightEl == 1 && LepGood1_pt > 25 && HT > 500'
+    refTrig = ''
+    testTrig = ['ElNoIso','EleHT400MET70','ElNoIso||EleHT400MET70']
     makeEffPlots(tree, lumi, maxEntries, doFit, varList, refTrig, testTrig, cuts)
+
     '''
 
     #############
@@ -667,7 +690,7 @@ if __name__ == "__main__":
     refTrig = 'SingleMu'
     testTrig = ['MuHT400MET70']#,'MuHT600']
     makeEffPlots(tree, lumi, maxEntries, doFit, varList, refTrig, testTrig, cuts)
-
+    '''
 
     tfile.Close()
     #outfile.Close()
