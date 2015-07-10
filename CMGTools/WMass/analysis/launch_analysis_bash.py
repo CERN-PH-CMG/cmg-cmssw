@@ -116,7 +116,6 @@ runZSigBkgFit = 0;
 
 run_Z_MCandDATAcomparisons_stack = 0;
 run_W_MCandDATAcomparisons_stack = 0;
-run_PhiStarEta_MCandDATAcomparisons_stack = 0;
 run_Z_MCandDATAcomparison = 0;
 run_W_MCandDATAcomparison = 0;
 
@@ -148,8 +147,6 @@ runDataCardsParametrization = 0; # NOT REALLY USED
 runR_WdivZ= 0;
 ## PRODUCE TEMPLATES, i.e. Z(DATA)*R(X)
 run_BuildSimpleTemplates= 0;
-
-runPhiStarEta = 0;
 
 ## END STEERING PARAMETERS
 ## ============================================================== #
@@ -368,7 +365,7 @@ shutil.copyfile(os.path.basename(__file__), file_dest)
 
 # os.system("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh")
 
-if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
+if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates):
     
     if(useLHAPDF and os.environ.get('LHAPATH') == lhapdf_folder+"share/lhapdf/PDFsets"):
         print "ENVIRONMENT VARIABLES OK"
@@ -471,7 +468,7 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
         os.chdir("AnalysisCode/");
 
 
-        if parallelize and (runWanalysis or runZanalysis or runPhiStarEta) and counter>1:
+        if parallelize and (runWanalysis or runZanalysis) and counter>1:
             print "waiting 10 sec to 20 sec (if W and Z are launched) before to proceed with the next sample to let the compilation finish"
             if(not useBatch): os.system("sleep 3");
         
@@ -632,29 +629,6 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
                 if(not useBatch): os.system("sleep 3");
                 else: os.system("usleep 100000");
 
-            
-        if(runPhiStarEta):
-
-            zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+filename_outputdir+"\","+str(useMomentumCorr)+","+str(GlobalSscaleMuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(0)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrNonClosure)+","+str(RecoilCorrVarDiagoParSigmas)
-            
-            if(counter<2):
-                if(useLHAPDF):
-                    os.system("sed -i 's/.*\#define\ LHAPDF_ON.*/\#define\ LHAPDF_ON/' runPhiStarEtaAnalysis.C")
-                    print("c++ -o PhiStarEtaAnalysis.o `root-config --glibs --libs --cflags`  -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include   -lm runPhiStarEtaAnalysis.C rochcor_44X_v3.C common_stuff.C ../includes/common.h RecoilCorrector.cc KalmanCalibrator.cc PdfDiagonalizer.cc HTransformToHelicityFrame.c PhiStarEtaAnalysis.C")
-                    os.system("rm PhiStarEtaAnalysis.o; c++ -o PhiStarEtaAnalysis.o `root-config --glibs --libs --cflags`  -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include   -lm runPhiStarEtaAnalysis.C rochcor_44X_v3.C common_stuff.C ../includes/common.h RecoilCorrector.cc KalmanCalibrator.cc PdfDiagonalizer.cc HTransformToHelicityFrame.c PhiStarEtaAnalysis.C")                    
-                else:
-                    os.system("sed -i 's/.*\#define\ LHAPDF_ON.*/\/\/\#define\ LHAPDF_ON/' runPhiStarEtaAnalysis.C")
-                    print("c++ -o PhiStarEtaAnalysis.o `root-config --glibs --libs --cflags`   -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include  -lm runPhiStarEtaAnalysis.C rochcor_44X_v3.C common_stuff.C ../includes/common.h RecoilCorrector.cc KalmanCalibrator.cc PdfDiagonalizer.cc HTransformToHelicityFrame.c PhiStarEtaAnalysis.C")
-                    os.system("rm PhiStarEtaAnalysis.o; c++ -o PhiStarEtaAnalysis.o `root-config --glibs --libs --cflags`   -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include  -lm runPhiStarEtaAnalysis.C rochcor_44X_v3.C common_stuff.C ../includes/common.h RecoilCorrector.cc KalmanCalibrator.cc PdfDiagonalizer.cc HTransformToHelicityFrame.c PhiStarEtaAnalysis.C")
-
-            print zstring
-            if not parallelize:
-                os.system("./PhiStarEtaAnalysis.o "+zstring)
-
-            else:
-                if(runWanalysis): os.system("sleep 3");
-                os.system("./PhiStarEtaAnalysis.o "+zstring+" > ../"+filename_outputdir+"Zlog.log 2>&1 &")
-
         if(run_BuildEvByEvTemplates):
             zTemplstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+filename_outputdir+"\","+str(useMomentumCorr)+","+str(GlobalSscaleMuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(run_BuildEvByEvTemplates)+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrNonClosure)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)
             if not parallelize:
@@ -803,18 +777,6 @@ if(run_W_MCandDATAcomparisons_stack):
     os.system("root -l -b -q \'PlotWdistributionsMCvsDATA_stack.C(\""+jobIDMCsig+"/\",\""+jobIDMCEWK+"/\",\""+jobIDMCTT+"/\",\""+jobIDMCQCD+"/\",\""+jobIDDATA+"/\")\' ");
     os.system("mv *.png ../JobOutputs/"+foldername+"/WcomparisonPlots_MCvsDATA");
     os.system("cp PlotWdistributionsMCvsDATA_stack.C ../JobOutputs/"+foldername+"/WcomparisonPlots_MCvsDATA");
-
-if(run_PhiStarEta_MCandDATAcomparisons_stack):
-    os.chdir("PlottingCode/");  
-    if not os.path.exists("../JobOutputs/"+foldername+"/PhiStarEtacomparisonPlots_MCvsDATA"): os.makedirs("../JobOutputs/"+foldername+"/PhiStarEtacomparisonPlots_MCvsDATA")
-    jobIDMCsig= "../JobOutputs/"+foldername+"/output_"+sample[DYJetsPow]
-    jobIDMCEWK= "../JobOutputs/"+foldername+"/output_EWK"
-    jobIDMCTT= "../JobOutputs/"+foldername+"/output_"+sample[TTJets]
-    jobIDMCQCD= "../JobOutputs/"+foldername+"/output_"+sample[QCD]
-    jobIDDATA= "../JobOutputs/"+foldername+"/output_"+sample[DATA]
-    os.system("root -l -b -q \'PlotPhiStarEtadistributionsMCvsDATA_stack.C(\""+jobIDMCsig+"/\",\""+jobIDMCEWK+"/\",\""+jobIDMCTT+"/\",\""+jobIDMCQCD+"/\",\""+jobIDDATA+"/\")\' ");
-    os.system("mv *.png ../JobOutputs/"+foldername+"/PhiStarEtacomparisonPlots_MCvsDATA");
-    os.system("cp PlotPhiStarEtadistributionsMCvsDATA_stack.C ../JobOutputs/"+foldername+"/PhiStarEtacomparisonPlots_MCvsDATA");
 
 if(runWSigBkgFit):
       os.chdir("SignalExtraction/");  
