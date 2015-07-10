@@ -8,8 +8,10 @@ import os
 import CMS_lumi
 
 CMS_lumi.writeExtraText = 1
-CMS_lumi.extraText = "t#bar{t} LO, 25ns"#"Spring15 MC"
-
+#CMS_lumi.extraText = "t#bar{t} LO, 25ns"#"Spring15 MC"
+CMS_lumi.extraText = "Simulation"#"Spring15 MC"
+iPos = 0
+if( iPos==0 ): CMS_lumi.relPosX = 0.12
 
 from ROOT import *
 from array import array
@@ -197,6 +199,7 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
         hRef.GetYaxis().SetTitle('MC counts')
     else:
         hRef.GetYaxis().SetTitle('Events')
+        hRef.GetYaxis().SetTitleOffset(1.2)
         hRef.Sumw2()
 
         wt = 1000*lumi/float(maxEntries)
@@ -206,7 +209,7 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
         print 'Drawing', hRef.GetName(), 'with cuts', wcuts
 
         tree.Draw(var + '>>' + hRef.GetName(),wcuts,plotOpt, maxEntries)
-        hRef.SetMaximum(hRef.GetMaximum() * 10)
+        hRef.SetMaximum(hRef.GetMaximum() * 2)
 
     hRef.SetLineColor(1)
     # axis set up
@@ -278,7 +281,7 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
         CMS_lumi.lumi_13TeV = str(lumi) + ' fb^{-1}'
     else:
         CMS_lumi.lumi_13TeV = 'MC'
-    CMS_lumi.CMS_lumi(canv, 4, 1)
+    CMS_lumi.CMS_lumi(canv, 4, iPos)
 
     gPad.Update()
 
@@ -286,7 +289,7 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
 
     return histList
 
-def plotEff(histList, var = 'HT', doFit = True):
+def plotEff(histList, var = 'HT', doFit = False):
 
 
     ## histList: [hReference, hTest1, hTest2,...]
@@ -497,7 +500,7 @@ def makeEffPlots(tfile):
     # max entries to process
     maxEntries = -1#100000
 
-    doFit = False
+    doFit = True#False
     lumi = 1
 
     for var in varList:
