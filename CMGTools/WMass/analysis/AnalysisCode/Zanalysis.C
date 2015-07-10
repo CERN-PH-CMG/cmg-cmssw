@@ -7,7 +7,7 @@
 
 #define Zanalysis_cxx
 #include "Zanalysis.h"
-#include "../includes/common.h"
+#include "common.h"
 // #include "rochcor_42X.h"
 //#include "common_stuff.h"
 #include "rochcor_44X_v3.h"
