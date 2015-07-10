@@ -70,15 +70,15 @@ etaMuonNSteps = "1"; # 5
 etaMaxMuons = "0.9"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
 # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
-# resumbit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" 
-resumbit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
-# resumbit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
-#resumbit_sample = "DATA, DYJetsMadSig"
-#resumbit_sample = "DATA, DYJetsMadSig ,DYJetsPow"
-# resumbit_sample = "DATA"
-#resumbit_sample = "DATA, DYJetsPow"
-#resumbit_sample = "WJetsMadSig"#WJetsPowPlus"
-#resumbit_sample = "WJetsPowPlus"
+# resubmit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" 
+resubmit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
+# resubmit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
+#resubmit_sample = "DATA, DYJetsMadSig"
+#resubmit_sample = "DATA, DYJetsMadSig ,DYJetsPow"
+# resubmit_sample = "DATA"
+#resubmit_sample = "DATA, DYJetsPow"
+#resubmit_sample = "WJetsMadSig"#WJetsPowPlus"
+#resubmit_sample = "WJetsPowPlus"
 
 parallelize = 0;
 useBatch = 0;
@@ -386,9 +386,9 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
     counter=0
     for i in range(0, nsamples):
         
-        if (resumbit_sample!=""):
-            if not sample[i] in resumbit_sample: 
-                print "skipping ",sample[i]," which is not",resumbit_sample;
+        if (resubmit_sample!=""):
+            if not sample[i] in resubmit_sample: 
+                print "skipping ",sample[i]," which is not",resubmit_sample;
                 continue;
           
         counter=counter+1
