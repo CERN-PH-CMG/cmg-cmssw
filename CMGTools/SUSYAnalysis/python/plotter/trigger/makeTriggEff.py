@@ -367,7 +367,7 @@ def plotEff(histList, var = 'HT', doFit = False):
 
         #SetOwnership(tEff,0)
 
-        if doFit:
+        if doFit and hEff.GetEntries() > 0:
             ## Fitting turn on curve
             print 'Fitting...'
 
@@ -384,7 +384,7 @@ def plotEff(histList, var = 'HT', doFit = False):
             #gEff = hEff
 
             ## get estimate of parameters
-            expPlateau = hEff.GetMaximum()
+            expPlateau = min(hEff.GetMaximum(),1)
             expHalfP = hEff.GetBinCenter(hEff.FindFirstBinAbove(0.45))
             expWidth = expHalfP/2
 
@@ -456,16 +456,7 @@ def fitEff(histList):
     return 1
 
 
-def makeEffPlots(tfile):
-
-    # for friend trees
-    tree = tfile.Get('sf/t')
-
-    # for cmg trees
-    #tree = tfile.Get('tree')
-
-    nentries = tree.GetEntries()
-    print 'Entries in tree:', nentries
+def makeEffPlots(tree, lumi = -1, maxEntries = -1, doFit = False):
 
     ## DEFINE plots
     # variable list
@@ -487,7 +478,8 @@ def makeEffPlots(tfile):
     #testTrig = ['HLT_SingleEl','HLT_ElNoIso','HLT_EleHT600']
     #testTrig = ['HLT_SingleMu','HLT_MuNoIso','HLT_MuHT600']
     #testTrig = ['SingleMu','ElNoIso']
-    testTrig = ['SingleMu','Mu50NoIso','HLT_MuHT400MET70']
+    #testTrig = ['SingleMu','Mu50NoIso','HLT_MuHT400MET70']
+    testTrig = ['SingleMu']
 
     # cuts
     cuts = ''
@@ -497,29 +489,46 @@ def makeEffPlots(tfile):
     #print 'Split cuts:', cuts.split('&&')
     #print 'ReSplit cuts:', cutsToString(cuts.split('&&'))
 
-    # max entries to process
-    maxEntries = -1#100000
-
-    doFit = True#False
-    lumi = 1
 
     for var in varList:
         histList = getHistsFromTree(tree,var,refTrig, cuts, testTrig, maxEntries, lumi)
         plotEff(histList, var, doFit)
 
+    saveCanvases('',testTrig[0])
+
+    return 1
+
+def saveCanvases(pdir = '', extraName = ''):
+
     ## save canvases to file
+    extList = ['.png','.pdf']
+
+    pdir = 'plots/'
     prefix = 'fit/'# + refTrig #+ '_'
-    suffix = '_' + testTrig[0]
-    suffix += '.png'
+    suffix = '_' + extraName
+    #suffix += '.png'
 
     ## wait
     if not _batchMode:
-        answ = raw_input("Enter 'q' to exit: ")
+        answ = raw_input("Enter 'q' to proceed: ")
+
+    cdir = os.path.dirname(pdir + prefix)
+    print 'Canvas dir is', cdir
+
+    if not os.path.exists(cdir):
+        os.makedirs(cdir)
 
     for canv in _canvStore:
-        pdir = 'plots/'
-        canv.SaveAs(pdir+prefix+canv.GetName()+suffix)
+        for ext in extList:
+            cname = pdir + prefix + canv.GetName()+ suffix + ext
+            canv.SaveAs(cname)
         canv.Write()
+
+    # empty stores for further use
+    del _canvStore[:]
+    _histStore.clear()
+    _hEffStore.clear()
+    del _fitrStore[:]
 
     return 1
 
@@ -555,7 +564,22 @@ if __name__ == "__main__":
         print "Couldn't open the file"
         exit(0)
 
-    makeEffPlots(tfile)
+    ## Get tree from file
+    # for friend trees
+    tree = tfile.Get('sf/t')
+    # for cmg trees
+    #tree = tfile.Get('tree')
+
+    nentries = tree.GetEntries()
+    print 'Entries in tree:', nentries
+
+    # max entries to process
+    maxEntries = -1#100000
+
+    doFit = True#False
+    lumi = 1
+
+    makeEffPlots(tree, lumi, maxEntries, doFit)
 
     tfile.Close()
     outfile.Close()
