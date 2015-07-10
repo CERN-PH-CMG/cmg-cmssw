@@ -206,16 +206,18 @@ class CoreTreeProducer( TreeAnalyzerNumpy ):
     def declareCoreVariables(self, isMC):
         tr = self.tree
 
-        # if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
-          # var( tr, 'run', int)
-          # var( tr, 'lumi', int)
-          # var( tr, 'evt', int)
+        if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
+            var( tr, 'run', int)
+            var( tr, 'lumi', int)
+            var( tr, 'evt', int)
+            if isMC:
+                var( tr, 'xsec', float)
 
         var( tr, 'nvtx', int)
         if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
-          var( tr, 'evtHasGoodVtx', int)
-          var( tr, 'Vtx_ndof', int)
-          # var( tr, 'firstVtxIsGood', int)
+            var( tr, 'evtHasGoodVtx', int)
+            var( tr, 'Vtx_ndof', int)
+            # var( tr, 'firstVtxIsGood', int)
 
         ###--------------------------- BOOK MC infos ------------------------------
         
@@ -274,9 +276,11 @@ class CoreTreeProducer( TreeAnalyzerNumpy ):
 
     def fillCoreVariables(self, tr, iEvent, event, isMC):
 
-        # fill( tr, 'run', event.run)
-        # fill( tr, 'lumi',event.lumi)
-        # fill( tr, 'evt', event.eventId)
+        fill( tr, 'run', event.run)
+        fill( tr, 'lumi',event.lumi)
+        fill( tr, 'evt', event.eventId)
+        if isMC:
+            fill( tr, 'xsec',getattr(self.cfg_comp,'xSection',1.0))
 
         fill( tr, 'nvtx', len(event.goodVertices))
         if not (hasattr(self.cfg_ana,'superslimNtuples') and self.cfg_ana.superslimNtuples):
