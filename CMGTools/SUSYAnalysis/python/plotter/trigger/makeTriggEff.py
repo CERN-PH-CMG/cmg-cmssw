@@ -137,7 +137,7 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
     histPrefix = 'h' + var + '_'
 
     # plot option
-    plotOpt = 'e1ex0'
+    plotOpt = 'e1'
 
     # histogram list
     histList = []
@@ -367,7 +367,7 @@ def plotEff(histList, var = 'HT', doFit = True):
             fturn.SetParameters(expHalfP,expWidth,expPlateau)
 
             ## do fit
-            fitr = gEff.Fit(fturn,'S Q EX0')#EX0
+            fitr = gEff.Fit(fturn,'S Q')#EX0
 
             SetOwnership(gEff,0)
 
