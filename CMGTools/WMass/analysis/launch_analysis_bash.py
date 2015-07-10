@@ -139,14 +139,8 @@ elif(use_PForNoPUorTKmet==2): # 0:PF, 1:NOPU, 2:TK
     sysfoldmet="_tkmet";
 # DataCards_systFromFolder=foldername_orig+sysfoldmet+"_RochCorr_RecoilCorr_EffHeinerSFCorr_PileupSFCorr" # evaluate systematics wrt folder (or leave it empty)
 
-ExtractNumbers = 0; # NOT REALLY USED
 run_BuildEvByEvTemplates= 0; # NOT REALLY USED
 runDataCardsParametrization = 0; # NOT REALLY USED
-
-## PRODUCE R(X)=W/Z DISTRIBUTION TO REWEIGHT Z in DATA
-runR_WdivZ= 0;
-## PRODUCE TEMPLATES, i.e. Z(DATA)*R(X)
-run_BuildSimpleTemplates= 0;
 
 ## END STEERING PARAMETERS
 ## ============================================================== #
@@ -630,42 +624,12 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates):
                 os.system("root -l -b -q \'runZanalysis.C("+zTemplstring+")\' > ../"+filename_outputdir+"/ZEvByEvTemplog.log 2>&1 &");
                 
         os.chdir("../");
-        
-if (ExtractNumbers or run_BuildSimpleTemplates):
-    for dir in os.listdir("JobOutputs/"+foldername):
-        if os.path.isdir("JobOutputs/"+foldername+"/"+dir) and ("output_" in dir) :
-            dataset_item = dir.replace("output_","");
 
-            if(ExtractNumbers):
-                os.chdir("AnalysisCode/");
-                isample = -1
-                if (dataset_item in sample): isample = sample.index(dataset_item)
-                if isample > -1: tot_N_evts = Nevts[isample];
-                else: tot_N_evts =1
-                
-                print "root -l -b -q \'R_WdivZ.C(\"../JobOutputs/"+foldername+"/"+dir+"\",1,"+str(tot_N_evts)+")\' > ../JobOutputs/"+foldername+"/"+dir+"/numbers.txt";
-                os.system("root -l -b -q \'R_WdivZ.C(\"../JobOutputs/"+foldername+"/"+dir+"\",1,"+str(tot_N_evts)+")\' > ../JobOutputs/"+foldername+"/"+dir+"/numbers.txt");
-                shutil.copyfile("R_WdivZ.C","../JobOutputs/"+foldername+"/"+dir+"/R_WdivZ.C");
-                os.chdir("../");
-                
-            if(run_BuildSimpleTemplates):
-                os.chdir("AnalysisCode/");
-                os.system("root -l -b -q \' BuildSimpleTemplates.C( \"../JobOutputs/"+foldername+"/"+dir+"\" ) \' ");
-                os.chdir("../");
-            
 if(mergeSigEWKbkg):
     os.chdir("utils/");
     os.system("./merge_MC.sh \"../JobOutputs/"+foldername+"/\" "+str(resubmit)+" "+str(batchQueue)+" "+str(useBatch and parallelize));
     os.chdir("../");
 
-
-if(runR_WdivZ):
-    os.chdir("AnalysisCode/");
-    os.system("eval `scramv1 runtime -sh`")
-    os.system("root -l -b -q \'R_WdivZ.C(\"../JobOutputs/"+foldername+"\",0,1,"+str(LHAPDF_reweighting_sets)+")\'");
-    os.system("mv *.root ../JobOutputs/"+foldername+"/");
-    os.system("cp R_WdivZ.C ../JobOutputs/"+foldername+"/");
-    os.chdir("../");
 
 if(runPrepareDataCards):
     os.chdir("AnalysisCode/");
