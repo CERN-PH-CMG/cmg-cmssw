@@ -153,9 +153,15 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
     else:
         refName = 'PreSel'
 
+    ## name replacement
+    refName = refName.replace('SingleMu','IsoMu27')
+    refName = refName.replace('SingleEl','El32')
+    refName = refName.replace('HTMET','HT350MET120')
+
     rname = histPrefix + refName
+
     cname = var + '_' + refName
-    ctitle = 'Plots for reference:' + refTrig
+    ctitle = 'Plots for reference:' + refName
 
     if cuts != '':
         ctitle += ' cut: ' + cuts
@@ -181,10 +187,11 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
     elif var == 'HT':
         hRef = TH1F(rname,htitle,nbins,0,3000)
     elif 'pt' in var:
-        xbins = range(5,25,1) + range(25,70,5) + range(70,150,10) + range (150,225,25)#[10,20,30,40,60,80,100,150,200]
-        hRef = TH1F(rname,htitle,len(xbins)-1,array('f',xbins))
-
+        #xbins = range(5,25,1) + range(25,70,5) + range(70,150,10) + range (150,225,25)#[10,20,30,40,60,80,100,150,200]
+        xbins = range(6,30,2) + range(30,70,5) + range(70,150,10) + range (150,225,25)
         varBinSize = True
+
+        hRef = TH1F(rname,htitle,len(xbins)-1,array('f',xbins))
         #hRef = TH1F(rname,htitle,nbins,0,200)
     elif 'eta' in var:
         hRef = TH1F(rname,htitle,nbins,-2.5,2.5)
@@ -278,6 +285,11 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
 
     # if var bin sizes
     if varBinSize:
+
+        # add /bin in Y axis label
+        hRef.GetYaxis().SetTitle(hRef.GetYaxis().GetTitle() + '/bin')
+
+
         for hist in histList:
             for bin in range(1,hist.GetNbinsX()+1):
                 binC = hist.GetBinContent(bin)
@@ -378,11 +390,13 @@ def plotEff(histList, var = 'HT', doFit = False):
         tEff.SetTitle(htitle)
 
         # style
-        tEff.SetLineColor(hist.GetLineColor())#_colorList[ind])
+        tEff.SetLineColor(hist.GetLineColor())
         tEff.SetFillColor(0)
+        tEff.SetMarkerStyle(20)
+        tEff.SetMarkerColor(hist.GetLineColor())
 
         tEff.Draw(plotOpt)
-        leg.AddEntry(tEff,tEff.GetTitle(),'l')
+        leg.AddEntry(tEff,tEff.GetTitle(),'lp')
 
         if 'same' not in plotOpt: plotOpt += 'same'
 
@@ -455,6 +469,9 @@ def plotEff(histList, var = 'HT', doFit = False):
 
     #leg.GetListOfPrimitives().Remove(hRefEff)
 
+    ## CMS lumi
+    CMS_lumi.CMS_lumi(canv, 4, iPos)
+
     gPad.Update()
 
     _hEffStore[hRefEff.GetName] = hRefEff
@@ -496,7 +513,7 @@ def makeEffPlots(tree, lumi = -1, maxEntries = -1, doFit = False, varList = [], 
     # make suffix from testTrigNames
     suffix = 'test'
     for trig in testTrig:
-        suffix +=  'Or' + trig.replace('||','OR')
+        suffix +=  '_' + trig.replace('||','OR')
 
     for var in varList:
         #for ref in refTrig[:1]:
@@ -518,7 +535,7 @@ def saveCanvases(pdir = '', extraName = ''):
 
     ## wait
     if not _batchMode:
-        answ = raw_input("Enter 'q' to proceed: ")
+        answ = raw_input("'Enter' to proceed: ")
 
     cdir = os.path.dirname(pdir + prefix)
     print 'Canvas dir is', cdir
@@ -593,9 +610,12 @@ if __name__ == "__main__":
     print 'Entries in tree:', nentries
 
     ## SETTINGS
-    maxEntries = -1#100000     # max entries to process
-    doFit = True#False # do efficiency fit
-    lumi = 1 # luminosity scaling, -1 takes MC counts
+    # max entries to process
+    maxEntries = -1#100000
+    # do efficiency fit
+    doFit = True#False
+    # luminosity scaling, -1 takes MC counts
+    lumi = 3
 
     '''
     ## DEFINE plots
@@ -629,7 +649,6 @@ if __name__ == "__main__":
     #cuts = 'nTightEl == 1 && LepGood1_pt > 15 && abs(LepGood1_eta) < 2.1'
     '''
 
-
     #############
     # LT: Muon
     #############
@@ -637,9 +656,9 @@ if __name__ == "__main__":
     varList = ['LT']
     cuts = 'nTightMu == 1 && LepGood1_pt > 25 && HT > 500'
     refTrig = ''
-    testTrig = ['Mu50NoIso','MuHT400MET70','Mu50NoIso||MuHT400MET70']
-    #makeEffPlots(tree, lumi, maxEntries, doFit, varList, refTrig, testTrig, cuts)
-
+    #testTrig = ['Mu50NoIso','MuHT400MET70','Mu50NoIso||MuHT400MET70']
+    testTrig = ['Mu50NoIso||MuHT400MET70']
+    makeEffPlots(tree, lumi, maxEntries, doFit, varList, refTrig, testTrig, cuts)
 
     #############
     # LT: Electron
@@ -648,24 +667,50 @@ if __name__ == "__main__":
     varList = ['LT']
     cuts = 'nTightEl == 1 && LepGood1_pt > 25 && HT > 500'
     refTrig = ''
-    testTrig = ['ElNoIso','EleHT400MET70','ElNoIso||EleHT400MET70']
+    #testTrig = ['ElNoIso','EleHT400MET70','ElNoIso||EleHT400MET70']
+    testTrig = ['ElNoIso||EleHT400MET70']
     makeEffPlots(tree, lumi, maxEntries, doFit, varList, refTrig, testTrig, cuts)
-
-    '''
 
     #############
     # Lepton legs
     #############
 
+    ## muons
     varList = ['LepGood1_pt']
     cuts = 'nTightMu == 1 && LepGood1_pt > 5 && HT > 500 && MET > 200'
     refTrig = ''
     testTrig = ['Mu50NoIso','MuHT400MET70']
     makeEffPlots(tree, lumi, maxEntries, doFit, varList, refTrig, testTrig, cuts)
 
+    varList = ['LepGood1_pt']
+    cuts = 'nTightMu == 1 && LepGood1_pt > 5 && HT > 500 && MET > 200'
+    refTrig = 'HTMET'
+    testTrig = ['Mu50NoIso','MuHT400MET70']
+    makeEffPlots(tree, lumi, maxEntries, doFit, varList, refTrig, testTrig, cuts)
+
+    ## electrons
+    varList = ['LepGood1_pt']
+    cuts = 'nTightEl == 1 && LepGood1_pt > 5 && HT > 500 && MET > 200'
+    refTrig = ''
+    testTrig = ['ElNoIso','EleHT400MET70']
+    makeEffPlots(tree, lumi, maxEntries, doFit, varList, refTrig, testTrig, cuts)
+
+    varList = ['LepGood1_pt']
+    cuts = 'nTightEl == 1 && LepGood1_pt > 5 && HT > 500 && MET > 200'
+    refTrig = 'HTMET'
+    testTrig = ['ElNoIso','EleHT400MET70']
+    makeEffPlots(tree, lumi, maxEntries, doFit, varList, refTrig, testTrig, cuts)
+
     ###############
     # Hadronic legs: Muon
     ###############
+
+    varList = ['HT']
+    cuts = 'nTightMu == 1 && LepGood1_pt > 55 && MET > 200'
+    refTrig = ''
+    testTrig = ['SingleMu','Mu50NoIso', 'MuHT400MET70']
+    makeEffPlots(tree, lumi, maxEntries, False, varList, refTrig, testTrig, cuts)
+
     varList = ['HT']
     cuts = 'nTightMu == 1 && LepGood1_pt > 25 && MET > 200'
     refTrig = ''
@@ -690,7 +735,40 @@ if __name__ == "__main__":
     refTrig = 'SingleMu'
     testTrig = ['MuHT400MET70']#,'MuHT600']
     makeEffPlots(tree, lumi, maxEntries, doFit, varList, refTrig, testTrig, cuts)
-    '''
+
+    ###############
+    # Hadronic legs: Electron
+    ###############
+
+    varList = ['HT']
+    cuts = 'nTightEl == 1 && LepGood1_pt > 120 && MET > 200'
+    refTrig = ''
+    testTrig = ['SingleEl','ElNoIso', 'EleHT400MET70']
+    makeEffPlots(tree, lumi, maxEntries, False, varList, refTrig, testTrig, cuts)
+
+    varList = ['HT']
+    cuts = 'nTightEl == 1 && LepGood1_pt > 25 && MET > 200'
+    refTrig = ''
+    testTrig = ['EleHT400MET70']
+    makeEffPlots(tree, lumi, maxEntries, doFit, varList, refTrig, testTrig, cuts)
+
+    varList = ['MET']
+    cuts = 'nTightEl == 1 && LepGood1_pt > 25 && HT  > 500'
+    refTrig = ''
+    testTrig = ['EleHT400MET70']
+    makeEffPlots(tree, lumi, maxEntries, doFit, varList, refTrig, testTrig, cuts)
+
+    varList = ['HT']
+    cuts = 'nTightEl == 1 && LepGood1_pt > 25 && MET > 200'
+    refTrig = 'SingleEl'
+    testTrig = ['EleHT400MET70']
+    makeEffPlots(tree, lumi, maxEntries, doFit, varList, refTrig, testTrig, cuts)
+
+    varList = ['MET']
+    cuts = 'nTightEl == 1 && LepGood1_pt > 25 && HT  > 500'
+    refTrig = 'SingleEl'
+    testTrig = ['EleHT400MET70']
+    makeEffPlots(tree, lumi, maxEntries, doFit, varList, refTrig, testTrig, cuts)
 
     tfile.Close()
     #outfile.Close()
