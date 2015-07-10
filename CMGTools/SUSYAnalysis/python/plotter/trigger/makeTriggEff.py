@@ -127,7 +127,7 @@ def setColors(histList):
         hist.SetLineColor(colorList[ind])
         hist.SetMarkerColor(colorList[ind])
 
-def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', maxEntries = -1):
+def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', maxEntries = -1, lumi = -1):
 
     # maximum number of entries to process
     if maxEntries == -1:
@@ -188,16 +188,30 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
         hRef = TH1F(rname,htitle,nbins,0,1000)
 
     # make reference plot
-    print 'Drawing', hRef.GetName(), 'with cuts', cuts
+    # lumi scale. -1 means use MC counts
+    doLumi = True if lumi != -1 else False
 
-    tree.Draw(var + '>>' + hRef.GetName(),cuts,plotOpt, maxEntries)
+    if not doLumi:
+        tree.Draw(var + '>>' + hRef.GetName(),cuts,plotOpt, maxEntries)
+        print 'Drawing', hRef.GetName(), 'with cuts', cuts
+        hRef.GetYaxis().SetTitle('MC counts')
+    else:
+        hRef.GetYaxis().SetTitle('Events')
+        hRef.Sumw2()
+
+        wt = 1000*lumi/float(maxEntries)
+        print 'Weight for %f lumi and maxEntries %f is %f' %(lumi, maxEntries,wt)
+        weight = str(wt) + ' * Xsec *'
+        wcuts = weight + '(' + cuts + ')'
+        print 'Drawing', hRef.GetName(), 'with cuts', wcuts
+
+        tree.Draw(var + '>>' + hRef.GetName(),wcuts,plotOpt, maxEntries)
+        hRef.SetMaximum(hRef.GetMaximum() * 10)
 
     hRef.SetLineColor(1)
     # axis set up
     hRef.SetStats(0)
     hRef.GetXaxis().SetTitle(varToLabel(var))
-    hRef.GetYaxis().SetTitle('Events')
-    #hRef.GetYaxis().SetRangeUser(0,2)
     canv.SetLogy()
 
     gPad.Update()
@@ -224,7 +238,14 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
             tcuts = trig
 
         print 'Drawing', hTest.GetName(), 'with cuts', tcuts
-        tree.Draw(var + '>>' + hTest.GetName(),tcuts,plotOpt+'same', maxEntries)
+
+        # lumi scale
+        if not doLumi:
+            tree.Draw(var + '>>' + hTest.GetName(),tcuts,plotOpt+'same', maxEntries)
+        else:
+            #hTest.Sumw2()
+            wtcuts = weight + '(' + tcuts + ')'
+            tree.Draw(var + '>>' + hTest.GetName(),wtcuts,plotOpt+'same', maxEntries)
 
         gPad.Update()
 
@@ -253,10 +274,11 @@ def getHistsFromTree(tree, var = 'MET', refTrig = '', cuts = '', testTrig = '', 
     #leg.SetHeader(ctitle.replace('&&','\n'));
 
     ## CMS LUMI
-    lumi = 1
-
-    CMS_lumi.lumi_13TeV = str(lumi) + ' fb^{-1}'
-    CMS_lumi.CMS_lumi(canv, 4, 11)
+    if lumi != -1:
+        CMS_lumi.lumi_13TeV = str(lumi) + ' fb^{-1}'
+    else:
+        CMS_lumi.lumi_13TeV = 'MC'
+    CMS_lumi.CMS_lumi(canv, 4, 1)
 
     gPad.Update()
 
@@ -367,7 +389,7 @@ def plotEff(histList, var = 'HT', doFit = True):
             fturn.SetParameters(expHalfP,expWidth,expPlateau)
 
             ## do fit
-            fitr = gEff.Fit(fturn,'S Q')#EX0
+            fitr = gEff.Fit(fturn,'S Q EX0')#EX0
 
             SetOwnership(gEff,0)
 
@@ -475,10 +497,11 @@ def makeEffPlots(tfile):
     # max entries to process
     maxEntries = -1#100000
 
-    doFit = True
+    doFit = False
+    lumi = 1
 
     for var in varList:
-        histList = getHistsFromTree(tree,var,refTrig, cuts, testTrig, maxEntries)
+        histList = getHistsFromTree(tree,var,refTrig, cuts, testTrig, maxEntries, lumi)
         plotEff(histList, var, doFit)
 
     ## save canvases to file
