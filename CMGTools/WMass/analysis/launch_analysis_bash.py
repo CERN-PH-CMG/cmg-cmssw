@@ -83,7 +83,7 @@ resumbit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig, 
 parallelize = 0;
 useBatch = 0;
 batchQueue = "1nh";
-WMassNSteps = "5"; # 60
+WMassNSteps = "5"; # 60 -- N of mass steps above and below the central
 # WMassNSteps = "0"; # 60
 
 runWanalysis = 0;
@@ -101,9 +101,12 @@ runPrepareDataCardsFast = 0; # ALTERNATIVE FAST WAY: TEMPLATES ARE IN THE SYsT F
 DataCards_systFromFolder="" # evaluate systematics wrt folder (or leave it empty)
 
 ## NEW FIT
-print "if it doesn't work, try with this first: cd /afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_5_3_3_patch3/src; SCRAM_ARCH slc5_amd64_gcc462;cmsenv; cd -";
 runClosureTestLikeLihoodRatioAnsMergeResults = 0;
 mergeResults = 0;
+
+print "If it doesn't work, try with this first:"
+print "cd /afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_5_3_3_patch3/src;"
+print "SCRAM_ARCH slc5_amd64_gcc462;cmsenv; cd -\n";
 
 #######################
 ### PLOTTING ###
@@ -159,6 +162,7 @@ runPhiStarEta = 0;
 if RecoilCorrVarDiagoParU1orU2fromDATAorMC != "0" or LHAPDF_reweighting_members !="1":
   WMassNSteps = "0"
 
+# Why this is printed, I don't know
 print "cd /afs/cern.ch/work/p/perrozzi/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;eval `scramv1 runtime -sh`; cd -;"
 
 if(use_PForNoPUorTKmet==0): # 0:PF, 1:NOPU, 2:TK 
@@ -350,8 +354,13 @@ fZana_str = [
   ntuple_folder+"SingleTop/Tbar_tW/ZTreeProducer_tree.root"
 ];
 
+print "Working in:"
 print os.getcwd()
-print ".! cp "+os.path.basename(__file__)+" JobOutputs/"+foldername;
+print
+print "Copying script over:"
+print "cp "+os.path.basename(__file__)+" JobOutputs/"+foldername;
+print
+
 file_dest="JobOutputs/"+foldername+"/"+os.path.basename(__file__);
 if not os.path.exists("JobOutputs/"+foldername):
     os.makedirs("JobOutputs/"+foldername)
@@ -388,7 +397,7 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
         jobID= "test_numbers_"+sample[i];
         
         print ''    
-        print "ANALYZING jobID= ", jobID ;
+        print "ANALYZING jobID=", jobID ;
         
         WfileDATA= fWana_str[i];
         ZfileDATA= fZana_str[i];
@@ -418,7 +427,7 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
         
         # WfileDATA_lumi_SF = ((intLumi_MC_fb/int_lumi_fb[i]) if indip_normalization_lumi_MC==1 else 1) if IS_MC_CLOSURE_TEST==1 else int_lumi_fb[DATA]/int_lumi_fb[i];
         # ZfileDATA_lumi_SF = ((intLumi_MC_fb/int_lumi_fb[i]) if indip_normalization_lumi_MC==1 else 1) if IS_MC_CLOSURE_TEST==1 else int_lumi_fb[DATA]/int_lumi_fb[i];
-        print "lumi_SF= ",ZfileDATA_lumi_SF
+        print "lumi_SF=",ZfileDATA_lumi_SF
 
         #########################################/
         ## END OF STEERING PARAMETERS
@@ -737,13 +746,18 @@ if(runClosureTestLikeLihoodRatioAnsMergeResults):
     # os.system("rm "+os.getcwd()+"/ClosureTest_fits.C")
     shutil.copyfile("AnalysisCode/ClosureTest_fits_likelihoodratio.C","JobOutputs/"+foldername+"/DataCards/ClosureTest_fits.C");
     os.chdir("JobOutputs/"+foldername+"/DataCards");
-    print os.getcwd()
+    print "We are working in:\n" + os.getcwd() + "\n"
     os.system("rm "+os.getcwd()+"/ClosureTest_fits_C.*")
-    os.system("cd /afs/cern.ch/work/p/perrozzi/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;eval `scramv1 runtime -sh`; cd -; source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh; root -l -b -q \'ClosureTest_fits.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+",\""+os.getcwd()+"\","+RecoilCorrVarDiagoParU1orU2fromDATAorMC+")\'")
+    os.system("user=$(whoami);"
+              "cd /afs/cern.ch/work/${user:0:1}/${user}/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;"
+              "eval `scramv1 runtime -sh`;"
+              "cd -;"
+              "source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh;"
+              "root -l -b -q \'ClosureTest_fits.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+",\""+os.getcwd()+"\","+RecoilCorrVarDiagoParU1orU2fromDATAorMC+")\'")
     # proc=subprocess.Popen("ls "+os.getcwd()+"/submit_datacard_*", shell=True, stdout=subprocess.PIPE, )
     # a = proc.communicate()[0].rstrip().split('\n')
     # print a
-    # os.system("cd /afs/cern.ch/work/p/perrozzi/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;eval `scramv1 runtime -sh`; cd -; source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh; root -l -b -q \'ClosureTest_fits.C++(1,0,\""+str(fit_W_or_Z)+"\")\'")
+    # os.system("user=$(whoami); cd /afs/cern.ch/work/${user:0:1}/${user}/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;eval `scramv1 runtime -sh`; cd -; source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh; root -l -b -q \'ClosureTest_fits.C++(1,0,\""+str(fit_W_or_Z)+"\")\'")
     os.chdir("../../../");
 
 if((runClosureTestLikeLihoodRatioAnsMergeResults and useBatch==0) or mergeResults):
