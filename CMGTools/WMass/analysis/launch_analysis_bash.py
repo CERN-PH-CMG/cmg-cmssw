@@ -135,7 +135,6 @@ elif(use_PForNoPUorTKmet==2): # 0:PF, 1:NOPU, 2:TK
     sysfoldmet="_tkmet";
 # DataCards_systFromFolder=foldername_orig+sysfoldmet+"_RochCorr_RecoilCorr_EffHeinerSFCorr_PileupSFCorr" # evaluate systematics wrt folder (or leave it empty)
 
-run_BuildEvByEvTemplates= 0; # NOT REALLY USED
 runDataCardsParametrization = 0; # NOT REALLY USED
 
 ## END STEERING PARAMETERS
@@ -352,7 +351,7 @@ if not os.path.exists("JobOutputs/"+foldername):
     os.makedirs("JobOutputs/"+foldername)
 shutil.copyfile(os.path.basename(__file__), file_dest)
 
-if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates):
+if(runWanalysis or runZanalysis):
     
     if(useLHAPDF and os.environ.get('LHAPATH') == lhapdf_folder+"share/lhapdf/PDFsets"):
         print "ENVIRONMENT VARIABLES OK"
@@ -610,14 +609,6 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates):
                 if(not useBatch): os.system("sleep 3");
                 else: os.system("usleep 100000");
 
-        if(run_BuildEvByEvTemplates):
-            zTemplstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+filename_outputdir+"\","+str(useMomentumCorr)+","+str(GlobalSscaleMuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(run_BuildEvByEvTemplates)+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrNonClosure)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)
-            if not parallelize:
-                os.system("root -l -b -q \'runZanalysis.C("+zTemplstring+")\'");
-            else:
-                if(runWanalysis): os.system("sleep 3");
-                os.system("root -l -b -q \'runZanalysis.C("+zTemplstring+")\' > ../"+filename_outputdir+"/ZEvByEvTemplog.log 2>&1 &");
-                
         os.chdir(base_dir);
 
 if(mergeSigEWKbkg):
