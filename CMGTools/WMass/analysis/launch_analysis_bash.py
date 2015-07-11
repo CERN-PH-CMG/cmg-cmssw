@@ -649,17 +649,6 @@ if(runDataCardsParametrization):
 
 
 if(runClosureTestLikeLihoodRatioAnsMergeResults):
-    if(DataCards_templateFromFolder!=""):
-      common1 = str(os.popen("ls JobOutputs/"+DataCards_templateFromFolder+"/output_*/common.h |head -n1").read()).replace('\n','')
-      shutil.copyfile(common1,"includes/common2.h");
-    else:
-      common1 = str(os.popen("ls JobOutputs/"+foldername+"/output_*/common.h |head -n1").read()).replace('\n','')
-      shutil.copyfile(common1,"includes/common2.h");
-    common2 = str(os.popen("ls JobOutputs/"+foldername+"/output_*/common.h |head -n1").read()).replace('\n','')
-    shutil.copyfile(common2,"includes/common.h");
-    os.system("sed -i 's/.*namespace WMass{.*/namespace WMass2{/' includes/common2.h")
-
-    # os.system("rm "+os.getcwd()+"/ClosureTest_fits.C")
     shutil.copyfile("AnalysisCode/ClosureTest_fits_likelihoodratio.C","JobOutputs/"+foldername+"/DataCards/ClosureTest_fits.C");
     os.chdir("JobOutputs/"+foldername+"/DataCards");
     print "We are working in:\n" + os.getcwd() + "\n"
@@ -674,19 +663,9 @@ if(runClosureTestLikeLihoodRatioAnsMergeResults):
     # a = proc.communicate()[0].rstrip().split('\n')
     # print a
     # os.system("user=$(whoami); cd /afs/cern.ch/work/${user:0:1}/${user}/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;eval `scramv1 runtime -sh`; cd -; source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh; root -l -b -q \'ClosureTest_fits.C++(1,0,\""+str(fit_W_or_Z)+"\")\'")
-    os.chdir("../../../");
+    os.chdir(base_dir);
 
 if((runClosureTestLikeLihoodRatioAnsMergeResults and useBatch==0) or mergeResults):
-    if(DataCards_systFromFolder!=""):
-      common1 = str(os.popen("ls JobOutputs/"+DataCards_systFromFolder+"/output_*/common.h |head -n1").read()).replace('\n','')
-      shutil.copyfile(common1,"includes/common2.h");
-    else:
-      common1 = str(os.popen("ls JobOutputs/"+foldername+"/output_*/common.h |head -n1").read()).replace('\n','')
-      shutil.copyfile(common1,"includes/common2.h");
-    common2 = str(os.popen("ls JobOutputs/"+foldername+"/output_*/common.h |head -n1").read()).replace('\n','')
-    shutil.copyfile(common2,"includes/common.h");
-    os.system("sed -i 's/.*namespace WMass{.*/namespace WMass2{/' includes/common2.h")
-    
     os.system("cp AnalysisCode/merge_results.C JobOutputs/"+foldername+"/DataCards/merge_results.C");
     os.chdir("JobOutputs/"+foldername+"/DataCards");
     print os.getcwd();
