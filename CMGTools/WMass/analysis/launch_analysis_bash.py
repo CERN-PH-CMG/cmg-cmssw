@@ -98,15 +98,11 @@ fit_W_or_Z = "Z" # "W,Z" or "W" or "Z"
 
 usePowOrMadForSig = "POWHEG"; # use "POWHEG" or use "MADGRAPH"
 runPrepareDataCardsFast = 0; # ALTERNATIVE FAST WAY: TEMPLATES ARE IN THE SYsT FOLDER, PSEUDO-DATA IN THE LOCAL FOLDER
-DataCards_systFromFolder="" # evaluate systematics wrt folder (or leave it empty)
+DataCards_systFromFolder="" # evaluate systematics wrt folder (or leave it empty) -- full template folder
 
 ## NEW FIT
 runClosureTestLikeLihoodRatioAnsMergeResults = 0;
 mergeResults = 0;
-
-print "If it doesn't work, try with this first:"
-print "cd /afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_5_3_3_patch3/src;"
-print "SCRAM_ARCH slc5_amd64_gcc462;cmsenv; cd -\n";
 
 #######################
 ### PLOTTING ###
@@ -593,7 +589,6 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates):
                         text_file = open("runZanalysis_"+sample[i]+"_"+str(x)+".sh", "w")
                         text_file.write("cd "+os.getcwd()+"\n")
                         text_file.write("eval `scramv1 runtime -sh`\n")
-                        # text_file.write("source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh \n")
                         text_file.write("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh \n")
                         text_file.write("cd "+start_dir+"\n")
                         text_file.write(base_dir+"/JobOutputs/"+foldername+"/runZanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+zstring)
@@ -611,7 +606,7 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates):
                     elif(not useBatch): os.system("sleep 3");
                 else:
                     os.system(base_dir+"/JobOutputs/"+foldername+"/runZanalysis.o 0,0,"+str(nEntries)+","+zstring+" > ../"+filename_outputdir+"Zlog.log 2>&1 &")
-                    
+                
                 if(not useBatch): os.system("sleep 3");
                 else: os.system("usleep 100000");
 
@@ -623,12 +618,12 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates):
                 if(runWanalysis): os.system("sleep 3");
                 os.system("root -l -b -q \'runZanalysis.C("+zTemplstring+")\' > ../"+filename_outputdir+"/ZEvByEvTemplog.log 2>&1 &");
                 
-        os.chdir("../");
+        os.chdir(base_dir);
 
 if(mergeSigEWKbkg):
     os.chdir("utils/");
     os.system("./merge_MC.sh \"../JobOutputs/"+foldername+"/\" "+str(resubmit)+" "+str(batchQueue)+" "+str(useBatch and parallelize));
-    os.chdir("../");
+    os.chdir(base_dir);
 
 
 if(runPrepareDataCards):
@@ -636,7 +631,7 @@ if(runPrepareDataCards):
     if not os.path.exists("../JobOutputs/"+foldername+"/DataCards"): os.makedirs("../JobOutputs/"+foldername+"/DataCards")
     print "running .x prepareDatacards.C++(\"../JobOutputs/"+foldername+"\",\"../JobOutputs/"+DataCards_systFromFolder+"\",\"\",1,1,\""+str(fit_W_or_Z)+"\")\'"
     os.system("root -l -b -q \'prepareDatacards.C++(\"../JobOutputs/"+foldername+"\",\"../JobOutputs/"+DataCards_systFromFolder+"\",\"\",1,1,\""+str(fit_W_or_Z)+"\")\'")
-    os.chdir("../");
+    os.chdir(base_dir);
 
 if(runPrepareDataCardsFast):
     if(DataCards_systFromFolder!=""):
@@ -653,13 +648,13 @@ if(runPrepareDataCardsFast):
     if not os.path.exists("../JobOutputs/"+foldername+"/DataCards"): os.makedirs("../JobOutputs/"+foldername+"/DataCards")
     print "running .x prepareDatacardsFast.C++(\"../JobOutputs/"+foldername+"\",\"../JobOutputs/"+DataCards_systFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\")\'"
     os.system("root -l -b -q \'prepareDatacardsFast.C++(\"../JobOutputs/"+foldername+"\",\"../JobOutputs/"+DataCards_systFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\")\'")
-    os.chdir("../");
+    os.chdir(base_dir);
 
 if(runDataCardsParametrization):
     os.chdir("AnalysisCode/");
     print "running .x DataCardsParametrization.C(\"../JobOutputs/"+foldername+"\",\"\")"
     os.system("root -l -b -q \'DataCardsParametrization.C(\"../JobOutputs/"+foldername+"\",\"\")\'")
-    os.chdir("../");
+    os.chdir(base_dir);
 
 
 if(runClosureTestLikeLihoodRatioAnsMergeResults):
@@ -701,13 +696,12 @@ if((runClosureTestLikeLihoodRatioAnsMergeResults and useBatch==0) or mergeResult
     shutil.copyfile(common2,"includes/common.h");
     os.system("sed -i 's/.*namespace WMass{.*/namespace WMass2{/' includes/common2.h")
     
-    # print "ciao"
     os.system("cp AnalysisCode/merge_results.C JobOutputs/"+foldername+"/DataCards/merge_results.C");
     os.chdir("JobOutputs/"+foldername+"/DataCards");
     print os.getcwd();
     os.system("rm -rf LSF*; rm output_W*.root");
     os.system("root -l -b -q \'merge_results.C++(1,0,\""+str(fit_W_or_Z)+"\")\'");
-    os.chdir("../");
+    os.chdir(base_dir);
 
 
 if(run_Z_MCandDATAcomparisons_stack):
@@ -737,15 +731,13 @@ if(run_W_MCandDATAcomparisons_stack):
 if(runWSigBkgFit):
       os.chdir("SignalExtraction/");  
       os.system("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.28.00h/x86_64-slc5-gcc43-opt/root/bin/thisroot.sh; root -l -b -q rootlogon.C fitWm.C+\(\\\""+foldername+"/\\\"\)");
-      os.chdir("../");  
+      os.chdir(base_dir);
 
 if(runZSigBkgFit):
     os.chdir("SignalExtraction/");  
     print ("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.28.00h/x86_64-slc5-gcc43-opt/root/bin/thisroot.sh; root -l -b -q rootlogon.C fitZmm.C+\(\\\""+foldername+"/\\\"\)");
     os.system("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.28.00h/x86_64-slc5-gcc43-opt/root/bin/thisroot.sh; root -l -b -q rootlogon.C fitZmm.C+\(\\\""+foldername+"/\\\"\)");
-    os.chdir("../");  
-
-
+    os.chdir(base_dir);
 
 
 print ''
