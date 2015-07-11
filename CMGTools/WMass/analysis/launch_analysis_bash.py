@@ -625,21 +625,18 @@ if(runPrepareDataCards):
     os.chdir(base_dir);
 
 if(runPrepareDataCardsFast):
-    if(DataCards_systFromFolder!=""):
-      common1 = str(os.popen("ls JobOutputs/"+DataCards_systFromFolder+"/output_*/common.h |head -n1").read()).replace('\n','')
-      shutil.copyfile(common1,"includes/common2.h");
-    else:
-      common1 = str(os.popen("ls JobOutputs/"+foldername+"/output_*/common.h |head -n1").read()).replace('\n','')
-      shutil.copyfile(common1,"includes/common2.h");
-    common2 = str(os.popen("ls JobOutputs/"+foldername+"/output_*/common.h |head -n1").read()).replace('\n','')
-    shutil.copyfile(common2,"includes/common.h");
-    os.system("sed -i 's/.*namespace WMass{.*/namespace WMass2{/' includes/common2.h")
+    # common.h  is already in place, as is the one for the systematic
+    # common2.h is got from the template folder, specified by the variable
+    shutil.copyfile("JobOutputs/"+DataCards_systFromFolder+"/common.h", "JobOutputs/"+foldername+"/common2.h");
+    os.system("sed -i 's/.*namespace WMass{.*/namespace WMass2{/' JobOutputs/"+foldername+"/common2.h")
     
-    os.chdir("AnalysisCode/");
-    if not os.path.exists("../JobOutputs/"+foldername+"/DataCards"): os.makedirs("../JobOutputs/"+foldername+"/DataCards")
-    print "running .x prepareDatacardsFast.C++(\"../JobOutputs/"+foldername+"\",\"../JobOutputs/"+DataCards_systFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\")\'"
-    os.system("root -l -b -q \'prepareDatacardsFast.C++(\"../JobOutputs/"+foldername+"\",\"../JobOutputs/"+DataCards_systFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\")\'")
+    if not os.path.exists("JobOutputs/"+foldername+"/DataCards"): os.makedirs("JobOutputs/"+foldername+"/DataCards")
+    shutil.copyfile(base_dir+"/AnalysisCode/prepareDatacardsFast.C", base_dir+"/JobOutputs/"+foldername+"/prepareDatacardsFast.C");
+    os.chdir("JobOutputs/"+foldername);
+    print "running .x "+base_dir+"/AnalysisCode/prepareDatacardsFast.C++(\".\",\"../"+DataCards_systFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\")\'"
+    os.system("root -l -b -q \'prepareDatacardsFast.C++(\".\",\"../"+DataCards_systFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\")\'")
     os.chdir(base_dir);
+
 
 if(runDataCardsParametrization):
     os.chdir("AnalysisCode/");
