@@ -98,7 +98,7 @@ fit_W_or_Z = "Z" # "W,Z" or "W" or "Z"
 
 usePowOrMadForSig = "POWHEG"; # use "POWHEG" or use "MADGRAPH"
 runPrepareDataCardsFast = 0; # ALTERNATIVE FAST WAY: TEMPLATES ARE IN THE SYsT FOLDER, PSEUDO-DATA IN THE LOCAL FOLDER
-DataCards_systFromFolder="" # evaluate systematics wrt folder (or leave it empty) -- full template folder
+DataCards_templateFromFolder="" # evaluate systematics wrt folder (or leave it empty) -- full template folder
 
 ## NEW FIT
 runClosureTestLikeLihoodRatioAnsMergeResults = 0;
@@ -134,6 +134,9 @@ elif(use_PForNoPUorTKmet==1): # 0:PF, 1:NOPU, 2:TK
 elif(use_PForNoPUorTKmet==2): # 0:PF, 1:NOPU, 2:TK 
     sysfoldmet="_tkmet";
 # DataCards_systFromFolder=foldername_orig+sysfoldmet+"_RochCorr_RecoilCorr_EffHeinerSFCorr_PileupSFCorr" # evaluate systematics wrt folder (or leave it empty)
+# Old code sections use DataCards_systFromFolder (like runPrepareDataCards),
+# in which you put the full systematics folder.
+# New sections use DataCards_templateFromFolder in which you put the full template folder
 
 runDataCardsParametrization = 0; # NOT REALLY USED
 
@@ -627,14 +630,14 @@ if(runPrepareDataCards):
 if(runPrepareDataCardsFast):
     # common.h  is already in place, as is the one for the systematic
     # common2.h is got from the template folder, specified by the variable
-    shutil.copyfile("JobOutputs/"+DataCards_systFromFolder+"/common.h", "JobOutputs/"+foldername+"/common2.h");
+    shutil.copyfile("JobOutputs/"+DataCards_templateFromFolder+"/common.h", "JobOutputs/"+foldername+"/common2.h");
     os.system("sed -i 's/.*namespace WMass{.*/namespace WMass2{/' JobOutputs/"+foldername+"/common2.h")
     
     if not os.path.exists("JobOutputs/"+foldername+"/DataCards"): os.makedirs("JobOutputs/"+foldername+"/DataCards")
     shutil.copyfile(base_dir+"/AnalysisCode/prepareDatacardsFast.C", base_dir+"/JobOutputs/"+foldername+"/prepareDatacardsFast.C");
     os.chdir("JobOutputs/"+foldername);
-    print "running .x "+base_dir+"/AnalysisCode/prepareDatacardsFast.C++(\".\",\"../"+DataCards_systFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\")\'"
-    os.system("root -l -b -q \'prepareDatacardsFast.C++(\".\",\"../"+DataCards_systFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\")\'")
+    print "running .x prepareDatacardsFast.C++(\".\",\"../"+DataCards_templateFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\")\'"
+    os.system("root -l -b -q \'prepareDatacardsFast.C++(\".\",\"../"+DataCards_templateFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\")\'")
     os.chdir(base_dir);
 
 
@@ -646,8 +649,8 @@ if(runDataCardsParametrization):
 
 
 if(runClosureTestLikeLihoodRatioAnsMergeResults):
-    if(DataCards_systFromFolder!=""):
-      common1 = str(os.popen("ls JobOutputs/"+DataCards_systFromFolder+"/output_*/common.h |head -n1").read()).replace('\n','')
+    if(DataCards_templateFromFolder!=""):
+      common1 = str(os.popen("ls JobOutputs/"+DataCards_templateFromFolder+"/output_*/common.h |head -n1").read()).replace('\n','')
       shutil.copyfile(common1,"includes/common2.h");
     else:
       common1 = str(os.popen("ls JobOutputs/"+foldername+"/output_*/common.h |head -n1").read()).replace('\n','')
