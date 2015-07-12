@@ -147,6 +147,15 @@ runDataCardsParametrization = 0; # NOT REALLY USED
 ## ============================================================== #
 ## ============================================================== #
 
+# Check if it's running from the correct dir
+base_dir = os.getcwd()
+if os.path.dirname(os.path.realpath(__file__)) == base_dir:
+    print "Working in:"
+    print base_dir
+else:
+    print "You need to execute this script from the 'analysis' directory"
+    sys.exit(1)
+
 # if RecoilCorrNVarAll != 0 or usePhiMETCorr != 0 \
     # or useRecoilCorr != 1 or RecoilCorrVarDiagoParSigmas != "0" or RecoilCorrNonClosure != "0" \
     # or syst_ewk_Alcaraz != "0" 
@@ -346,10 +355,6 @@ fZana_str = [
   ntuple_folder+"SingleTop/Tbar_tW/ZTreeProducer_tree.root"
 ];
 
-base_dir = os.getcwd()
-print "Working in:"
-print base_dir
-print
 print "Copying script over:"
 print "cp "+os.path.basename(__file__)+" JobOutputs/"+foldername;
 print
