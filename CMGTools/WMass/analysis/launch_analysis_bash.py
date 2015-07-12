@@ -147,11 +147,14 @@ runDataCardsParametrization = 0; # NOT REALLY USED
 ## ============================================================== #
 ## ============================================================== #
 
-# if RecoilCorrNVarAll != 0 or GlobalSscaleMuonCorrNsigma != 0 or usePhiMETCorr != 0 \
+# if RecoilCorrNVarAll != 0 or usePhiMETCorr != 0 \
     # or useRecoilCorr != 1 or RecoilCorrVarDiagoParSigmas != "0" or RecoilCorrNonClosure != "0" \
     # or syst_ewk_Alcaraz != "0" 
-if RecoilCorrVarDiagoParU1orU2fromDATAorMC != "0" or LHAPDF_reweighting_members !="1":
-  WMassNSteps = "0"
+if RecoilCorrVarDiagoParU1orU2fromDATAorMC != "0" or \
+   LHAPDF_reweighting_members !="1" or \
+   GlobalSscaleMuonCorrNsigma != 0 :
+    print "Computing a systematic: number of mass steps is set to 0\n"
+    WMassNSteps = "0"
 
 
 if(use_PForNoPUorTKmet==0): # 0:PF, 1:NOPU, 2:TK 
