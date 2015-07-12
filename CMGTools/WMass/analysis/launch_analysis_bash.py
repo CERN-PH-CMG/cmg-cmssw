@@ -1,6 +1,6 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
 
-import urllib, urlparse, string, time, os, shutil, sys, math, subprocess
+import string, os, shutil, sys, subprocess
 
 ## ==============================================================
 ## STEERING PARAMETERS
@@ -70,20 +70,20 @@ etaMuonNSteps = "1"; # 5
 etaMaxMuons = "0.9"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
 # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
-# resumbit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" 
-resumbit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
-# resumbit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
-#resumbit_sample = "DATA, DYJetsMadSig"
-#resumbit_sample = "DATA, DYJetsMadSig ,DYJetsPow"
-# resumbit_sample = "DATA"
-#resumbit_sample = "DATA, DYJetsPow"
-#resumbit_sample = "WJetsMadSig"#WJetsPowPlus"
-#resumbit_sample = "WJetsPowPlus"
+# resubmit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW" 
+resubmit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
+# resubmit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
+#resubmit_sample = "DATA, DYJetsMadSig"
+#resubmit_sample = "DATA, DYJetsMadSig ,DYJetsPow"
+# resubmit_sample = "DATA"
+#resubmit_sample = "DATA, DYJetsPow"
+#resubmit_sample = "WJetsMadSig"#WJetsPowPlus"
+#resubmit_sample = "WJetsPowPlus"
 
 parallelize = 0;
 useBatch = 0;
 batchQueue = "1nh";
-WMassNSteps = "5"; # 60
+WMassNSteps = "5"; # 60 -- N of mass steps above and below the central
 # WMassNSteps = "0"; # 60
 
 runWanalysis = 0;
@@ -98,10 +98,9 @@ fit_W_or_Z = "Z" # "W,Z" or "W" or "Z"
 
 usePowOrMadForSig = "POWHEG"; # use "POWHEG" or use "MADGRAPH"
 runPrepareDataCardsFast = 0; # ALTERNATIVE FAST WAY: TEMPLATES ARE IN THE SYsT FOLDER, PSEUDO-DATA IN THE LOCAL FOLDER
-DataCards_systFromFolder="" # evaluate systematics wrt folder (or leave it empty)
+DataCards_templateFromFolder="" # evaluate systematics wrt folder (or leave it empty) -- full template folder
 
 ## NEW FIT
-print "if it doesn't work, try with this first: cd /afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_5_3_3_patch3/src; SCRAM_ARCH slc5_amd64_gcc462;cmsenv; cd -";
 runClosureTestLikeLihoodRatioAnsMergeResults = 0;
 mergeResults = 0;
 
@@ -113,7 +112,6 @@ runZSigBkgFit = 0;
 
 run_Z_MCandDATAcomparisons_stack = 0;
 run_W_MCandDATAcomparisons_stack = 0;
-run_PhiStarEta_MCandDATAcomparisons_stack = 0;
 run_Z_MCandDATAcomparison = 0;
 run_W_MCandDATAcomparison = 0;
 
@@ -135,18 +133,13 @@ elif(use_PForNoPUorTKmet==1): # 0:PF, 1:NOPU, 2:TK
     sysfoldmet="_pfnopu";
 elif(use_PForNoPUorTKmet==2): # 0:PF, 1:NOPU, 2:TK 
     sysfoldmet="_tkmet";
-# DataCards_systFromFolder=foldername_orig+sysfoldmet+"_RochCorr_RecoilCorr_EffHeinerSFCorr_PileupSFCorr" # evaluate systematics wrt folder (or leave it empty)
 
-ExtractNumbers = 0; # NOT REALLY USED
-run_BuildEvByEvTemplates= 0; # NOT REALLY USED
+DataCards_systFromFolder=foldername_orig+sysfoldmet+"_RochCorr_RecoilCorr_EffHeinerSFCorr_PileupSFCorr" # evaluate systematics wrt folder (or leave it empty)
+# Old code sections use DataCards_systFromFolder (like runPrepareDataCards),
+# in which you put the full systematics folder.
+# New sections use DataCards_templateFromFolder in which you put the full template folder
+
 runDataCardsParametrization = 0; # NOT REALLY USED
-
-## PRODUCE R(X)=W/Z DISTRIBUTION TO REWEIGHT Z in DATA
-runR_WdivZ= 0;
-## PRODUCE TEMPLATES, i.e. Z(DATA)*R(X)
-run_BuildSimpleTemplates= 0;
-
-runPhiStarEta = 0;
 
 ## END STEERING PARAMETERS
 ## ============================================================== #
@@ -159,7 +152,6 @@ runPhiStarEta = 0;
 if RecoilCorrVarDiagoParU1orU2fromDATAorMC != "0" or LHAPDF_reweighting_members !="1":
   WMassNSteps = "0"
 
-print "cd /afs/cern.ch/work/p/perrozzi/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;eval `scramv1 runtime -sh`; cd -;"
 
 if(use_PForNoPUorTKmet==0): # 0:PF, 1:NOPU, 2:TK 
     foldername+="_pfmet";
@@ -350,24 +342,26 @@ fZana_str = [
   ntuple_folder+"SingleTop/Tbar_tW/ZTreeProducer_tree.root"
 ];
 
-print os.getcwd()
-print ".! cp "+os.path.basename(__file__)+" JobOutputs/"+foldername;
+base_dir = os.getcwd()
+print "Working in:"
+print base_dir
+print
+print "Copying script over:"
+print "cp "+os.path.basename(__file__)+" JobOutputs/"+foldername;
+print
+
 file_dest="JobOutputs/"+foldername+"/"+os.path.basename(__file__);
 if not os.path.exists("JobOutputs/"+foldername):
     os.makedirs("JobOutputs/"+foldername)
 shutil.copyfile(os.path.basename(__file__), file_dest)
 
-# os.system("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh")
-
-if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
+if(runWanalysis or runZanalysis):
     
     if(useLHAPDF and os.environ.get('LHAPATH') == lhapdf_folder+"share/lhapdf/PDFsets"):
         print "ENVIRONMENT VARIABLES OK"
     else:
         print "REMEMBER TO SET ENVIRONMENT VARIABLES (MUST RUN ON LXPLUS):"
-        # print "/afs/cern.ch/project/eos/installation/0.2.30/bin/eos.select -b fuse mount ~/eos"
-        # print "source /afs/cern.ch/sw/lcg/external/gcc/4.3.2/x86_64-slc5/setup.sh"
-        # print "source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.05/x86_64-slc5-gcc43-opt/root/bin/thisroot.sh"
+        # "cmsenv" and "source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.05/x86_64-slc5-gcc43-opt/root/bin/thisroot.sh"
         if(useLHAPDF):
           print ("export PATH="+lhapdf_folder+"bin/:$PATH")
           print ("export LD_LIBRARY_PATH="+lhapdf_folder+"lib/:$LD_LIBRARY_PATH")
@@ -377,18 +371,18 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
     counter=0
     for i in range(0, nsamples):
         
-        if (resumbit_sample!=""):
-            if not sample[i] in resumbit_sample: 
-                print "skipping ",sample[i]," which is not",resumbit_sample;
+        if (resubmit_sample!=""):
+            if not sample[i] in resubmit_sample: 
+                print "skipping ",sample[i]," which is not",resubmit_sample;
                 continue;
           
         counter=counter+1
         
         if(IS_MC_CLOSURE_TEST and (sample[i]!="WJetsMadSig" and sample[i]!="DYJetsPow" and sample[i]!="DYJetsMadSig")): continue; # TEMPORARY
-        jobID= "test_numbers_"+sample[i];
+        jobID= "output_"+sample[i];
         
         print ''    
-        print "ANALYZING jobID= ", jobID ;
+        print "ANALYZING jobID=", jobID ;
         
         WfileDATA= fWana_str[i];
         ZfileDATA= fZana_str[i];
@@ -418,7 +412,7 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
         
         # WfileDATA_lumi_SF = ((intLumi_MC_fb/int_lumi_fb[i]) if indip_normalization_lumi_MC==1 else 1) if IS_MC_CLOSURE_TEST==1 else int_lumi_fb[DATA]/int_lumi_fb[i];
         # ZfileDATA_lumi_SF = ((intLumi_MC_fb/int_lumi_fb[i]) if indip_normalization_lumi_MC==1 else 1) if IS_MC_CLOSURE_TEST==1 else int_lumi_fb[DATA]/int_lumi_fb[i];
-        print "lumi_SF= ",ZfileDATA_lumi_SF
+        print "lumi_SF=",ZfileDATA_lumi_SF
 
         #########################################/
         ## END OF STEERING PARAMETERS
@@ -451,40 +445,40 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
           PAR_PDF_MEMBERS = "1"
           
         if( dir_check ==0 ): # if the output folder existed use the same common.h
-            print "using JobOutputs/"+foldername+"/"+outputdir+"/common.h"
-            shutil.copyfile(("JobOutputs/"+foldername+"/"+outputdir+"/common.h"), "includes/common.h")
+            print "using JobOutputs/"+foldername+"/common.h"
         else: # otherwise build it from this cfg
-            print "creating JobOutputs/"+foldername+"/"+outputdir+"/common.h from includes/common.h.bkp"
-            shutil.copyfile("includes/common.h.bkp", "includes/common.h");
-            os.system("sh "+os.getcwd()+"/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMuonNSteps+" \""+etaMaxMuons+"\" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(RecoilCorrNVarAll)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrToys))
-            shutil.copyfile("includes/common.h","JobOutputs/"+foldername+"/"+outputdir+"/common.h");
-            # sys.exit()
-        os.chdir("AnalysisCode/");
+            print "creating JobOutputs/"+foldername+"/common.h from includes/common.h.bkp"
+            # Copy template to dest folder
+            shutil.copyfile("includes/common.h.bkp", "JobOutputs/"+foldername+"/common.h");
+            # Edit template
+            os.system("sh "+base_dir+"/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMuonNSteps+" \""+etaMaxMuons+"\" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(RecoilCorrNVarAll)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrToys)+" "+"JobOutputs/"+foldername+"/common.h")
 
+        os.chdir("JobOutputs/"+foldername);
+        code_dir = base_dir + "/AnalysisCode/"
 
-        if parallelize and (runWanalysis or runZanalysis or runPhiStarEta) and counter>1:
+        if not useBatch and parallelize and (runWanalysis or runZanalysis) and counter>1:
             print "waiting 10 sec to 20 sec (if W and Z are launched) before to proceed with the next sample to let the compilation finish"
-            if(not useBatch): os.system("sleep 3");
+            os.system("sleep 3");
         
         if(runWanalysis):
             
             wstring="\""+WfileDATA+"\","+str(WfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+filename_outputdir+"\","+str(useMomentumCorr)+","+str(GlobalSscaleMuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrNonClosure)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])
             if(counter<2):
                 if(useLHAPDF):
-                    os.system("sed -i 's/.*\#define\ LHAPDF_ON.*/\#define\ LHAPDF_ON/' Wanalysis.C")
-                    print("c++ -o runWanalysis.o `root-config --glibs --libs --cflags`  -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include   -lm Wanalysis.C rochcor_44X_v3.C common_stuff.C RecoilCorrector.cc KalmanCalibrator.cc PdfDiagonalizer.cc runWanalysis.C")
-                    os.system("rm runWanalysis.o; c++ -o runWanalysis.o `root-config --glibs --libs --cflags`  -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include   -lm Wanalysis.C rochcor_44X_v3.C common_stuff.C RecoilCorrector.cc KalmanCalibrator.cc PdfDiagonalizer.cc runWanalysis.C")
+                    print("c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+" "+code_dir+"Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
+                    os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+" "+code_dir+"Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
                 else:
-                    os.system("sed -i 's/.*\#define\ LHAPDF_ON.*/\/\/\#define\ LHAPDF_ON/' Wanalysis.C")
-                    print("c++ -o runWanalysis.o `root-config --glibs --libs --cflags`   -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm Wanalysis.C rochcor_44X_v3.C common_stuff.C RecoilCorrector.cc KalmanCalibrator.cc PdfDiagonalizer.cc runWanalysis.C")
-                    os.system("rm runWanalysis.o; c++ -o runWanalysis.o `root-config --glibs --libs --cflags`   -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include  -lm Wanalysis.C common_stuff.C rochcor_44X_v3.C RecoilCorrector.cc KalmanCalibrator.cc PdfDiagonalizer.cc runWanalysis.C")
+                    print("c++ -O2 -o runWanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+" "+code_dir+"Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
+                    os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+" "+code_dir+"Wanalysis.C "+code_dir+"common_stuff.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
             
             print " "
-            line = os.popen("./runWanalysis.o -1,0,0,"+wstring).read()
+            # Run it in the code dir to have all the relative paths work
+            os.chdir(code_dir)
+            line = os.popen(base_dir+"/JobOutputs/"+foldername+"/runWanalysis.o -1,0,0,"+wstring).read()
             nEntries = [int(s) for s in line.split() if s.isdigit()][0]
             # print wstring
             if not parallelize:
-                os.system("./runWanalysis.o 0,0,"+str(nEntries)+","+wstring)
+                os.system(base_dir+"/JobOutputs/"+foldername+"/runWanalysis.o 0,0,"+str(nEntries)+","+wstring)
             else:
                 nevents = 2e5
                 # if (("DYJetsMadSig" in sample[i]  or "DYJetsPow" in sample[i]) and float(LHAPDF_reweighting_members)>1):
@@ -512,7 +506,7 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
                       ev_fin= int(nevents*(x)-1)
                     print x,ev_ini,ev_fin
                     if(not useBatch):
-                      os.system("./runWanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+wstring+" > ../"+filename_outputdir+"Wlog_"+str(x)+".log 2>&1 &")
+                      os.system(base_dir+"/JobOutputs/"+foldername+"/runWanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+wstring+" > ../"+filename_outputdir+"Wlog_"+str(x)+".log 2>&1 &")
                     else:
                       start_dir = os.getcwd()
                       os.chdir(os.getcwd()+"/../"+filename_outputdir)
@@ -523,12 +517,12 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
                         # text_file.write("source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh \n")
                         text_file.write("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh \n")
                         text_file.write("cd "+start_dir+"\n")
-                        text_file.write("./runWanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+wstring)
+                        text_file.write(base_dir+"/JobOutputs/"+foldername+"/runWanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+wstring)
                         text_file.close()
                         # print 'file created, launching bsub'
                         os.system("chmod 755 runWanalysis_"+sample[i]+"_"+str(x)+".sh")
                       if not resubmit or not os.path.isfile("Wanalysis_chunk"+str(x)+".root"):
-                        os.system("rm core.*")
+                        os.system("rm -f core.*")
                         print ("bsub -C 0 -q "+batchQueue+" -J runWanalysis runWanalysis_"+sample[i]+"_"+str(x)+".sh")
                         os.system("bsub -C 0 -u pippo123 -o ./ -q "+batchQueue+" -J runWanalysis runWanalysis_"+sample[i]+"_"+str(x)+".sh")
                       os.chdir(start_dir)
@@ -536,7 +530,7 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
                     if(WMassNSteps=="0" and not useBatch): os.system("sleep 1");
                     elif(not useBatch): os.system("sleep 3");
                 else:
-                    os.system("./runWanalysis.o 0,0,"+str(nEntries)+","+wstring+" > ../"+filename_outputdir+"Wlog.log 2>&1 &")
+                    os.system(base_dir+"/JobOutputs/"+foldername+"/runWanalysis.o 0,0,"+str(nEntries)+","+wstring+" > ../"+filename_outputdir+"Wlog.log 2>&1 &")
                 
                 if(not useBatch): os.system("sleep 3");
                 else: os.system("usleep 100000");
@@ -547,21 +541,19 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
             
             if(counter<2 and not resubmit):
                 if(useLHAPDF):
-                    os.system("sed -i 's/.*\#define\ LHAPDF_ON.*/\#define\ LHAPDF_ON/' Zanalysis.C")
-                    print("c++ -o runZanalysis.o `root-config --glibs --libs --cflags`  -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include   -lm Zanalysis.C rochcor_44X_v3.C common_stuff.C ../includes/common.h RecoilCorrector.cc KalmanCalibrator.cc PdfDiagonalizer.cc runZanalysis.C")
-                    os.system("rm runZanalysis.o; c++ -o runZanalysis.o `root-config --glibs --libs --cflags`  -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include   -lm Zanalysis.C rochcor_44X_v3.C common_stuff.C ../includes/common.h RecoilCorrector.cc KalmanCalibrator.cc PdfDiagonalizer.cc runZanalysis.C")                    
+                    print("c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags`  -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+" "+code_dir+"Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+                    os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+" "+code_dir+"Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
                 else:
-                    os.system("sed -i 's/.*\#define\ LHAPDF_ON.*/\/\/\#define\ LHAPDF_ON/' Zanalysis.C")
-                    print("c++ -o runZanalysis.o `root-config --glibs --libs --cflags`   -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include  -lm Zanalysis.C rochcor_44X_v3.C common_stuff.C ../includes/common.h RecoilCorrector.cc KalmanCalibrator.cc PdfDiagonalizer.cc runZanalysis.C")
-                    os.system("rm runZanalysis.o; c++ -o runZanalysis.o `root-config --glibs --libs --cflags`   -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include  -lm Zanalysis.C rochcor_44X_v3.C common_stuff.C ../includes/common.h RecoilCorrector.cc KalmanCalibrator.cc PdfDiagonalizer.cc runZanalysis.C")
-                os.system("cp runZanalysis.o ../"+filename_outputdir+"../")
-                os.system("chmod 755 ../"+filename_outputdir+"../runZanalysis.o")
+                    print("c++ -O2 -o runZanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+" "+code_dir+"Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+                    os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+" "+code_dir+"Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
                 
             print " "
-            line = os.popen("./runZanalysis.o -1,0,0,"+zstring).read();
+            # Run it in the code dir to have all the relative paths work
+            os.chdir(code_dir)
+            line = os.popen(base_dir+"/JobOutputs/"+foldername+"/runZanalysis.o -1,0,0,"+zstring).read();
             nEntries = [int(s) for s in line.split() if s.isdigit()][0]
             if not parallelize:
-                os.system("./runZanalysis.o 0,0,"+str(nEntries)+","+zstring)
+                os.system(base_dir+"/JobOutputs/"+foldername+"/runZanalysis.o 0,0,"+str(nEntries)+","+zstring)
             else:
                 nevents = 1e5
                 if ("DYJetsMadSig" in sample[i]  or "DYJetsPow" in sample[i]):
@@ -592,7 +584,7 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
                       ev_fin= int(nevents*(x)-1)
                     print x,ev_ini,ev_fin
                     if(not useBatch):
-                      os.system("./runZanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+zstring+" > ../"+filename_outputdir+"Zlog_"+str(x)+".log 2>&1 &")
+                      os.system(base_dir+"/JobOutputs/"+foldername+"/runZanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+zstring+" > ../"+filename_outputdir+"Zlog_"+str(x)+".log 2>&1 &")
                     else:
                       start_dir = os.getcwd()
                       os.chdir(os.getcwd()+"/../"+filename_outputdir)
@@ -600,17 +592,15 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
                         text_file = open("runZanalysis_"+sample[i]+"_"+str(x)+".sh", "w")
                         text_file.write("cd "+os.getcwd()+"\n")
                         text_file.write("eval `scramv1 runtime -sh`\n")
-                        # text_file.write("source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh \n")
                         text_file.write("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh \n")
                         text_file.write("cd "+start_dir+"\n")
-                        # text_file.write("../"+filename_outputdir+"../runZanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+zstring)
-                        text_file.write("./runZanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+zstring)
+                        text_file.write(base_dir+"/JobOutputs/"+foldername+"/runZanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+zstring)
                         text_file.close()
                         # print 'file created, launching bsub'
                         os.system("chmod 755 runZanalysis_"+sample[i]+"_"+str(x)+".sh")
                       # print 'checking file',"Zanalysis_chunk"+str(x)+".root",'path is',os.getcwd(),'check is',os.path.isfile("Zanalysis_chunk"+str(x)+".root")
                       if not resubmit or not os.path.isfile("Zanalysis_chunk"+str(x)+".root"):
-                        os.system("rm core.*")
+                        os.system("rm -f core.*")
                         print ("bsub -C 0 -q "+batchQueue+" -J runZanalysis runZanalysis_"+sample[i]+"_"+str(x)+".sh")
                         os.system("bsub -C 0 -u pippo123 -o ./ -q "+batchQueue+" -J runZanalysis runZanalysis_"+sample[i]+"_"+str(x)+".sh")
                       os.chdir(start_dir)
@@ -618,162 +608,81 @@ if(runWanalysis or runZanalysis or run_BuildEvByEvTemplates or runPhiStarEta):
                     if(WMassNSteps=="0" and not useBatch): os.system("sleep 1");
                     elif(not useBatch): os.system("sleep 3");
                 else:
-                    os.system("./runZanalysis.o 0,0,"+str(nEntries)+","+zstring+" > ../"+filename_outputdir+"Zlog.log 2>&1 &")
-                    
+                    os.system(base_dir+"/JobOutputs/"+foldername+"/runZanalysis.o 0,0,"+str(nEntries)+","+zstring+" > ../"+filename_outputdir+"Zlog.log 2>&1 &")
+                
                 if(not useBatch): os.system("sleep 3");
                 else: os.system("usleep 100000");
 
-            
-        if(runPhiStarEta):
+        os.chdir(base_dir);
 
-            zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+filename_outputdir+"\","+str(useMomentumCorr)+","+str(GlobalSscaleMuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(0)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrNonClosure)+","+str(RecoilCorrVarDiagoParSigmas)
-            
-            if(counter<2):
-                if(useLHAPDF):
-                    os.system("sed -i 's/.*\#define\ LHAPDF_ON.*/\#define\ LHAPDF_ON/' runPhiStarEtaAnalysis.C")
-                    print("c++ -o PhiStarEtaAnalysis.o `root-config --glibs --libs --cflags`  -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include   -lm runPhiStarEtaAnalysis.C rochcor_44X_v3.C common_stuff.C ../includes/common.h RecoilCorrector.cc KalmanCalibrator.cc PdfDiagonalizer.cc HTransformToHelicityFrame.c PhiStarEtaAnalysis.C")
-                    os.system("rm PhiStarEtaAnalysis.o; c++ -o PhiStarEtaAnalysis.o `root-config --glibs --libs --cflags`  -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include   -lm runPhiStarEtaAnalysis.C rochcor_44X_v3.C common_stuff.C ../includes/common.h RecoilCorrector.cc KalmanCalibrator.cc PdfDiagonalizer.cc HTransformToHelicityFrame.c PhiStarEtaAnalysis.C")                    
-                else:
-                    os.system("sed -i 's/.*\#define\ LHAPDF_ON.*/\/\/\#define\ LHAPDF_ON/' runPhiStarEtaAnalysis.C")
-                    print("c++ -o PhiStarEtaAnalysis.o `root-config --glibs --libs --cflags`   -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include  -lm runPhiStarEtaAnalysis.C rochcor_44X_v3.C common_stuff.C ../includes/common.h RecoilCorrector.cc KalmanCalibrator.cc PdfDiagonalizer.cc HTransformToHelicityFrame.c PhiStarEtaAnalysis.C")
-                    os.system("rm PhiStarEtaAnalysis.o; c++ -o PhiStarEtaAnalysis.o `root-config --glibs --libs --cflags`   -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include  -lm runPhiStarEtaAnalysis.C rochcor_44X_v3.C common_stuff.C ../includes/common.h RecoilCorrector.cc KalmanCalibrator.cc PdfDiagonalizer.cc HTransformToHelicityFrame.c PhiStarEtaAnalysis.C")
-
-            print zstring
-            if not parallelize:
-                os.system("./PhiStarEtaAnalysis.o "+zstring)
-
-            else:
-                if(runWanalysis): os.system("sleep 3");
-                os.system("./PhiStarEtaAnalysis.o "+zstring+" > ../"+filename_outputdir+"Zlog.log 2>&1 &")
-
-        if(run_BuildEvByEvTemplates):
-            zTemplstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+filename_outputdir+"\","+str(useMomentumCorr)+","+str(GlobalSscaleMuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(run_BuildEvByEvTemplates)+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrNonClosure)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)
-            if not parallelize:
-                os.system("root -l -b -q \'runZanalysis.C("+zTemplstring+")\'");
-            else:
-                if(runWanalysis): os.system("sleep 3");
-                os.system("root -l -b -q \'runZanalysis.C("+zTemplstring+")\' > ../"+filename_outputdir+"/ZEvByEvTemplog.log 2>&1 &");
-                
-        os.chdir("../");
-        
-if (ExtractNumbers or run_BuildSimpleTemplates):
-    for dir in os.listdir("JobOutputs/"+foldername):
-        if os.path.isdir("JobOutputs/"+foldername+"/"+dir) and ("test_numbers_" in dir) :
-            dataset_item = dir.replace("test_numbers_","");
-
-            if(ExtractNumbers):
-                os.chdir("AnalysisCode/");
-                isample = -1
-                if (dataset_item in sample): isample = sample.index(dataset_item)
-                if isample > -1: tot_N_evts = Nevts[isample];
-                else: tot_N_evts =1
-                
-                print "root -l -b -q \'R_WdivZ.C(\"../JobOutputs/"+foldername+"/"+dir+"\",1,"+str(tot_N_evts)+")\' > ../JobOutputs/"+foldername+"/"+dir+"/numbers.txt";
-                os.system("root -l -b -q \'R_WdivZ.C(\"../JobOutputs/"+foldername+"/"+dir+"\",1,"+str(tot_N_evts)+")\' > ../JobOutputs/"+foldername+"/"+dir+"/numbers.txt");
-                shutil.copyfile("R_WdivZ.C","../JobOutputs/"+foldername+"/"+dir+"/R_WdivZ.C");
-                os.chdir("../");
-                
-            if(run_BuildSimpleTemplates):
-                os.chdir("AnalysisCode/");
-                os.system("root -l -b -q \' BuildSimpleTemplates.C( \"../JobOutputs/"+foldername+"/"+dir+"\" ) \' ");
-                os.chdir("../");
-            
 if(mergeSigEWKbkg):
     os.chdir("utils/");
-    os.system("sh merge_MC.sh \"../JobOutputs/"+foldername+"/\" "+str(resubmit)+" "+str(batchQueue));
-    os.chdir("../");
+    os.system("./merge_MC.sh \"../JobOutputs/"+foldername+"/\" "+str(resubmit)+" "+str(batchQueue)+" "+str(useBatch and parallelize));
+    os.chdir(base_dir);
 
-
-if(runR_WdivZ):
-    os.chdir("AnalysisCode/");
-    os.system("eval `scramv1 runtime -sh`")
-    os.system("root -l -b -q \'R_WdivZ.C(\"../JobOutputs/"+foldername+"\",0,1,"+str(LHAPDF_reweighting_sets)+")\'");
-    os.system("mv *.root ../JobOutputs/"+foldername+"/");
-    os.system("cp R_WdivZ.C ../JobOutputs/"+foldername+"/");
-    os.chdir("../");
 
 if(runPrepareDataCards):
     os.chdir("AnalysisCode/");
     if not os.path.exists("../JobOutputs/"+foldername+"/DataCards"): os.makedirs("../JobOutputs/"+foldername+"/DataCards")
     print "running .x prepareDatacards.C++(\"../JobOutputs/"+foldername+"\",\"../JobOutputs/"+DataCards_systFromFolder+"\",\"\",1,1,\""+str(fit_W_or_Z)+"\")\'"
     os.system("root -l -b -q \'prepareDatacards.C++(\"../JobOutputs/"+foldername+"\",\"../JobOutputs/"+DataCards_systFromFolder+"\",\"\",1,1,\""+str(fit_W_or_Z)+"\")\'")
-    os.chdir("../");
+    os.chdir(base_dir);
 
 if(runPrepareDataCardsFast):
-    if(DataCards_systFromFolder!=""):
-      common1 = str(os.popen("ls JobOutputs/"+DataCards_systFromFolder+"/test_numbers_*/common.h |head -n1").read()).replace('\n','')
-      shutil.copyfile(common1,"includes/common2.h");
-    else:
-      common1 = str(os.popen("ls JobOutputs/"+foldername+"/test_numbers_*/common.h |head -n1").read()).replace('\n','')
-      shutil.copyfile(common1,"includes/common2.h");
-    common2 = str(os.popen("ls JobOutputs/"+foldername+"/test_numbers_*/common.h |head -n1").read()).replace('\n','')
-    shutil.copyfile(common2,"includes/common.h");
-    os.system("sed -i 's/.*namespace WMass{.*/namespace WMass2{/' includes/common2.h")
+    # common.h  is already in place, as is the one for the systematic
+    # common2.h is got from the template folder, specified by the variable
+    shutil.copyfile("JobOutputs/"+DataCards_templateFromFolder+"/common.h", "JobOutputs/"+foldername+"/common2.h");
+    os.system("sed -i 's/.*namespace WMass{.*/namespace WMass2{/' JobOutputs/"+foldername+"/common2.h")
     
-    os.chdir("AnalysisCode/");
-    if not os.path.exists("../JobOutputs/"+foldername+"/DataCards"): os.makedirs("../JobOutputs/"+foldername+"/DataCards")
-    print "running .x prepareDatacardsFast.C++(\"../JobOutputs/"+foldername+"\",\"../JobOutputs/"+DataCards_systFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\")\'"
-    os.system("root -l -b -q \'prepareDatacardsFast.C++(\"../JobOutputs/"+foldername+"\",\"../JobOutputs/"+DataCards_systFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\")\'")
-    os.chdir("../");
+    if not os.path.exists("JobOutputs/"+foldername+"/DataCards"): os.makedirs("JobOutputs/"+foldername+"/DataCards")
+    shutil.copyfile(base_dir+"/AnalysisCode/prepareDatacardsFast.C", base_dir+"/JobOutputs/"+foldername+"/prepareDatacardsFast.C");
+    os.chdir("JobOutputs/"+foldername);
+    print "running .x prepareDatacardsFast.C++(\".\",\"../"+DataCards_templateFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\")\'"
+    os.system("root -l -b -q \'prepareDatacardsFast.C++(\".\",\"../"+DataCards_templateFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\")\'")
+    os.chdir(base_dir);
+
 
 if(runDataCardsParametrization):
     os.chdir("AnalysisCode/");
     print "running .x DataCardsParametrization.C(\"../JobOutputs/"+foldername+"\",\"\")"
     os.system("root -l -b -q \'DataCardsParametrization.C(\"../JobOutputs/"+foldername+"\",\"\")\'")
-    os.chdir("../");
+    os.chdir(base_dir);
 
 
 if(runClosureTestLikeLihoodRatioAnsMergeResults):
-    if(DataCards_systFromFolder!=""):
-      common1 = str(os.popen("ls JobOutputs/"+DataCards_systFromFolder+"/test_numbers_*/common.h |head -n1").read()).replace('\n','')
-      shutil.copyfile(common1,"includes/common2.h");
-    else:
-      common1 = str(os.popen("ls JobOutputs/"+foldername+"/test_numbers_*/common.h |head -n1").read()).replace('\n','')
-      shutil.copyfile(common1,"includes/common2.h");
-    common2 = str(os.popen("ls JobOutputs/"+foldername+"/test_numbers_*/common.h |head -n1").read()).replace('\n','')
-    shutil.copyfile(common2,"includes/common.h");
-    os.system("sed -i 's/.*namespace WMass{.*/namespace WMass2{/' includes/common2.h")
-
-    # os.system("rm "+os.getcwd()+"/ClosureTest_fits.C")
     shutil.copyfile("AnalysisCode/ClosureTest_fits_likelihoodratio.C","JobOutputs/"+foldername+"/DataCards/ClosureTest_fits.C");
     os.chdir("JobOutputs/"+foldername+"/DataCards");
-    print os.getcwd()
-    os.system("rm "+os.getcwd()+"/ClosureTest_fits_C.*")
-    os.system("cd /afs/cern.ch/work/p/perrozzi/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;eval `scramv1 runtime -sh`; cd -; source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh; root -l -b -q \'ClosureTest_fits.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+",\""+os.getcwd()+"\","+RecoilCorrVarDiagoParU1orU2fromDATAorMC+")\'")
+    print "We are working in:\n" + os.getcwd() + "\n"
+    os.system("rm -f "+os.getcwd()+"/ClosureTest_fits_C.*")
+    os.system("user=$(whoami);"
+              "cd /afs/cern.ch/work/${user:0:1}/${user}/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;"
+              "eval `scramv1 runtime -sh`;"
+              "cd -;"
+              "source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh;"
+              "root -l -b -q \'ClosureTest_fits.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+",\""+os.getcwd()+"\","+RecoilCorrVarDiagoParU1orU2fromDATAorMC+")\'")
     # proc=subprocess.Popen("ls "+os.getcwd()+"/submit_datacard_*", shell=True, stdout=subprocess.PIPE, )
     # a = proc.communicate()[0].rstrip().split('\n')
     # print a
-    # os.system("cd /afs/cern.ch/work/p/perrozzi/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;eval `scramv1 runtime -sh`; cd -; source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh; root -l -b -q \'ClosureTest_fits.C++(1,0,\""+str(fit_W_or_Z)+"\")\'")
-    os.chdir("../../../");
+    # os.system("user=$(whoami); cd /afs/cern.ch/work/${user:0:1}/${user}/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;eval `scramv1 runtime -sh`; cd -; source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh; root -l -b -q \'ClosureTest_fits.C++(1,0,\""+str(fit_W_or_Z)+"\")\'")
+    os.chdir(base_dir);
 
 if((runClosureTestLikeLihoodRatioAnsMergeResults and useBatch==0) or mergeResults):
-    if(DataCards_systFromFolder!=""):
-      common1 = str(os.popen("ls JobOutputs/"+DataCards_systFromFolder+"/test_numbers_*/common.h |head -n1").read()).replace('\n','')
-      shutil.copyfile(common1,"includes/common2.h");
-    else:
-      common1 = str(os.popen("ls JobOutputs/"+foldername+"/test_numbers_*/common.h |head -n1").read()).replace('\n','')
-      shutil.copyfile(common1,"includes/common2.h");
-    common2 = str(os.popen("ls JobOutputs/"+foldername+"/test_numbers_*/common.h |head -n1").read()).replace('\n','')
-    shutil.copyfile(common2,"includes/common.h");
-    os.system("sed -i 's/.*namespace WMass{.*/namespace WMass2{/' includes/common2.h")
-    
-    # print "ciao"
     os.system("cp AnalysisCode/merge_results.C JobOutputs/"+foldername+"/DataCards/merge_results.C");
     os.chdir("JobOutputs/"+foldername+"/DataCards");
     print os.getcwd();
     os.system("rm -rf LSF*; rm output_W*.root");
     os.system("root -l -b -q \'merge_results.C++(1,0,\""+str(fit_W_or_Z)+"\")\'");
-    os.chdir("../");
+    os.chdir(base_dir);
 
 
 if(run_Z_MCandDATAcomparisons_stack):
     os.chdir("PlottingCode/");  
     if not os.path.exists("../JobOutputs/"+foldername+"/ZcomparisonPlots_MCvsDATA"): os.makedirs("../JobOutputs/"+foldername+"/ZcomparisonPlots_MCvsDATA")
-    jobIDMCsig= "../JobOutputs/"+foldername+"/test_numbers_"+sample[DYJetsPow]
-    jobIDMCEWK= "../JobOutputs/"+foldername+"/test_numbers_EWK"
-    jobIDMCTT= "../JobOutputs/"+foldername+"/test_numbers_"+sample[TTJets]
-    jobIDMCQCD= "../JobOutputs/"+foldername+"/test_numbers_"+sample[QCD]
-    jobIDDATA= "../JobOutputs/"+foldername+"/test_numbers_"+sample[DATA]
+    jobIDMCsig= "../JobOutputs/"+foldername+"/output_"+sample[DYJetsPow]
+    jobIDMCEWK= "../JobOutputs/"+foldername+"/output_EWK"
+    jobIDMCTT= "../JobOutputs/"+foldername+"/output_"+sample[TTJets]
+    jobIDMCQCD= "../JobOutputs/"+foldername+"/output_"+sample[QCD]
+    jobIDDATA= "../JobOutputs/"+foldername+"/output_"+sample[DATA]
     os.system("root -l -b -q \'PlotZdistributionsMCvsDATA_stack.C(\""+jobIDMCsig+"/\",\""+jobIDMCEWK+"/\",\""+jobIDMCTT+"/\",\""+jobIDMCQCD+"/\",\""+jobIDDATA+"/\")\' ");
     os.system("mv *.png ../JobOutputs/"+foldername+"/ZcomparisonPlots_MCvsDATA");
     os.system("cp PlotZdistributionsMCvsDATA_stack.C ../JobOutputs/"+foldername+"/ZcomparisonPlots_MCvsDATA");
@@ -781,39 +690,25 @@ if(run_Z_MCandDATAcomparisons_stack):
 if(run_W_MCandDATAcomparisons_stack):
     os.chdir("PlottingCode/");  
     if not os.path.exists("../JobOutputs/"+foldername+"/WcomparisonPlots_MCvsDATA"): os.makedirs("../JobOutputs/"+foldername+"/WcomparisonPlots_MCvsDATA")
-    jobIDMCsig= "../JobOutputs/"+foldername+"/test_numbers_"+sample[WJetsMadSig]
-    jobIDMCEWK= "../JobOutputs/"+foldername+"/test_numbers_EWK"
-    jobIDMCTT= "../JobOutputs/"+foldername+"/test_numbers_"+sample[TTJets]
-    jobIDMCQCD= "../JobOutputs/"+foldername+"/test_numbers_"+sample[QCD]
-    jobIDDATA= "../JobOutputs/"+foldername+"/test_numbers_"+sample[DATA]
+    jobIDMCsig= "../JobOutputs/"+foldername+"/output_"+sample[WJetsMadSig]
+    jobIDMCEWK= "../JobOutputs/"+foldername+"/output_EWK"
+    jobIDMCTT= "../JobOutputs/"+foldername+"/output_"+sample[TTJets]
+    jobIDMCQCD= "../JobOutputs/"+foldername+"/output_"+sample[QCD]
+    jobIDDATA= "../JobOutputs/"+foldername+"/output_"+sample[DATA]
     os.system("root -l -b -q \'PlotWdistributionsMCvsDATA_stack.C(\""+jobIDMCsig+"/\",\""+jobIDMCEWK+"/\",\""+jobIDMCTT+"/\",\""+jobIDMCQCD+"/\",\""+jobIDDATA+"/\")\' ");
     os.system("mv *.png ../JobOutputs/"+foldername+"/WcomparisonPlots_MCvsDATA");
     os.system("cp PlotWdistributionsMCvsDATA_stack.C ../JobOutputs/"+foldername+"/WcomparisonPlots_MCvsDATA");
 
-if(run_PhiStarEta_MCandDATAcomparisons_stack):
-    os.chdir("PlottingCode/");  
-    if not os.path.exists("../JobOutputs/"+foldername+"/PhiStarEtacomparisonPlots_MCvsDATA"): os.makedirs("../JobOutputs/"+foldername+"/PhiStarEtacomparisonPlots_MCvsDATA")
-    jobIDMCsig= "../JobOutputs/"+foldername+"/test_numbers_"+sample[DYJetsPow]
-    jobIDMCEWK= "../JobOutputs/"+foldername+"/test_numbers_EWK"
-    jobIDMCTT= "../JobOutputs/"+foldername+"/test_numbers_"+sample[TTJets]
-    jobIDMCQCD= "../JobOutputs/"+foldername+"/test_numbers_"+sample[QCD]
-    jobIDDATA= "../JobOutputs/"+foldername+"/test_numbers_"+sample[DATA]
-    os.system("root -l -b -q \'PlotPhiStarEtadistributionsMCvsDATA_stack.C(\""+jobIDMCsig+"/\",\""+jobIDMCEWK+"/\",\""+jobIDMCTT+"/\",\""+jobIDMCQCD+"/\",\""+jobIDDATA+"/\")\' ");
-    os.system("mv *.png ../JobOutputs/"+foldername+"/PhiStarEtacomparisonPlots_MCvsDATA");
-    os.system("cp PlotPhiStarEtadistributionsMCvsDATA_stack.C ../JobOutputs/"+foldername+"/PhiStarEtacomparisonPlots_MCvsDATA");
-
 if(runWSigBkgFit):
       os.chdir("SignalExtraction/");  
       os.system("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.28.00h/x86_64-slc5-gcc43-opt/root/bin/thisroot.sh; root -l -b -q rootlogon.C fitWm.C+\(\\\""+foldername+"/\\\"\)");
-      os.chdir("../");  
+      os.chdir(base_dir);
 
 if(runZSigBkgFit):
     os.chdir("SignalExtraction/");  
     print ("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.28.00h/x86_64-slc5-gcc43-opt/root/bin/thisroot.sh; root -l -b -q rootlogon.C fitZmm.C+\(\\\""+foldername+"/\\\"\)");
     os.system("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.28.00h/x86_64-slc5-gcc43-opt/root/bin/thisroot.sh; root -l -b -q rootlogon.C fitZmm.C+\(\\\""+foldername+"/\\\"\)");
-    os.chdir("../");  
-
-
+    os.chdir(base_dir);
 
 
 print ''

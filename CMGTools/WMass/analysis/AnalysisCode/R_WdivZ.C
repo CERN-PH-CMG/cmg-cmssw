@@ -37,8 +37,8 @@ void R_WdivZ(TString folder="", int OnlyCounts=0, int tot_N_evts=1, int generate
 
   TFile *fout;
   if(!OnlyCounts) fout=new TFile("R_WdivZ_OnMC.root","RECREATE");
-  TFile *Wana=new TFile(OnlyCounts ? Form("%s/WanalysisOnDATA.root",folder.Data()) : Form("%s/test_numbers_WJetsSig/WanalysisOnDATA.root",folder.Data()));
-  TFile *Zana=new TFile(OnlyCounts ? Form("%s/ZanalysisOnDATA.root",folder.Data()) : Form("%s/test_numbers_DYJetsSig/ZanalysisOnDATA.root",folder.Data()));
+  TFile *Wana=new TFile(OnlyCounts ? Form("%s/WanalysisOnDATA.root",folder.Data()) : Form("%s/output_WJetsSig/WanalysisOnDATA.root",folder.Data()));
+  TFile *Zana=new TFile(OnlyCounts ? Form("%s/ZanalysisOnDATA.root",folder.Data()) : Form("%s/output_DYJetsSig/ZanalysisOnDATA.root",folder.Data()));
 
   
   for(int i=0; i<WMass::etaMuonNSteps; i++){
@@ -210,7 +210,7 @@ void R_WdivZ(TString folder="", int OnlyCounts=0, int tot_N_evts=1, int generate
 
   // TFile *foutTemplates=new TFile("Wtemplates.root","RECREATE");
   // // TFile *Zana=new TFile(Form("%s/ZanalysisOnMC.root",folder.Data()));
-  // // TFile *Zana=new TFile(OnlyCounts ? Form("%s/ZanalysisOnDATA.root",folder.Data()) : Form("%s/test_numbers_DYJetsSig/ZanalysisOnDATA.root",folder.Data()));
+  // // TFile *Zana=new TFile(OnlyCounts ? Form("%s/ZanalysisOnDATA.root",folder.Data()) : Form("%s/output_DYJetsSig/ZanalysisOnDATA.root",folder.Data()));
  // // TFile *R_WdivZ=new TFile("R_WdivZ_OnMC.root");
 
   // for(int i=0; i<WMass::etaMuonNSteps; i++){

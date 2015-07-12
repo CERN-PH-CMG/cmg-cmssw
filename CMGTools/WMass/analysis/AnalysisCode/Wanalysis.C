@@ -7,7 +7,7 @@
 
 #define Wanalysis_cxx
 #include "Wanalysis.h"
-#include "../includes/common.h"
+#include "common.h"
 //#include "common_stuff.h"
 #include "RecoilCorrector.h"
 // #include "rochcor_42X.h"

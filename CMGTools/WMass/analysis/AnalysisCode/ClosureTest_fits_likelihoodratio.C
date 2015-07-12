@@ -4,8 +4,8 @@
 #include <TROOT.h>
 #include <TString.h>
 #include <TObjString.h>
-#include "../test_numbers_DATA/common.h"
-#include "../../../includes/common2.h"
+#include "../common.h"
+#include "../common2.h"
 
 void ClosureTest_fits(int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int useBatch=0, TString currentdir_str="", int start_at_half=0, int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0){
 
