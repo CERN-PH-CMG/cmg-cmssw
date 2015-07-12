@@ -4,6 +4,7 @@
 #resubmit=${2}
 #queue=${3}
 useBatch=${4}
+removeChunks=${5}
 
 echo "merging chunks (if they exist)"
 
@@ -60,8 +61,11 @@ for (( id_sample=0; id_sample<${#samples[@]}; id_sample++ ))
         fi
       fi
       hadd -f ${1}/output_${samples[id_sample]}/${analyses[id_ana]}OnDATA.root ${1}/output_${samples[id_sample]}/${analyses[id_ana]}_chunk*.root 
-# Commented to prevent chunks deletion on merge
-#      rm ${1}/output_${samples[id_sample]}/${analyses[id_ana]}_chunk*.root 
+      # Remove chunks only if asked
+      if [[ $removeChunks == 1 ]]
+      then
+        rm ${1}/output_${samples[id_sample]}/${analyses[id_ana]}_chunk*.root
+      fi
       rm -rf ${1}/output_${samples[id_sample]}/LSFJOB_*
       rm -rf ${1}/output_${samples[id_sample]}/*.out
     fi

@@ -92,6 +92,7 @@ resubmit = 0;
 controlplots = 0;
 
 mergeSigEWKbkg = 0;
+removeChunks = 0; # 0: Don't remove chuncks after merge - 1: Remove them
 
 ## PERFORM W or Z MASS FIT
 fit_W_or_Z = "Z" # "W,Z" or "W" or "Z"
@@ -617,9 +618,13 @@ if(runWanalysis or runZanalysis):
 
 if(mergeSigEWKbkg):
     os.chdir("utils/");
-    os.system("./merge_MC.sh \"../JobOutputs/"+foldername+"/\" "+str(resubmit)+" "+str(batchQueue)+" "+str(useBatch and parallelize));
+    os.system("./merge_MC.sh \"../JobOutputs/"+foldername+"/\" "+str(resubmit)+" "+str(batchQueue)+" "+str(useBatch and parallelize)+str(removeChunks));
     os.chdir(base_dir);
 
+if(removeChunks and not mergeSigEWKbkg):
+    print "Removing chunks from JobOutputs/"+foldername
+    os.system("find JobOutputs/"+foldername+"/output_* -type f -name [WZ]analysis_chunk*.root -delete");
+    os.chdir(base_dir);
 
 if(runPrepareDataCards):
     os.chdir("AnalysisCode/");
