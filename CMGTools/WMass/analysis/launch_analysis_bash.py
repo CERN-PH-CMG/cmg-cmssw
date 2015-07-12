@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import urllib, urlparse, string, time, os, shutil, sys, math, subprocess
+import string, os, shutil, sys, subprocess
 
 ## ==============================================================
 ## STEERING PARAMETERS
@@ -133,7 +133,8 @@ elif(use_PForNoPUorTKmet==1): # 0:PF, 1:NOPU, 2:TK
     sysfoldmet="_pfnopu";
 elif(use_PForNoPUorTKmet==2): # 0:PF, 1:NOPU, 2:TK 
     sysfoldmet="_tkmet";
-# DataCards_systFromFolder=foldername_orig+sysfoldmet+"_RochCorr_RecoilCorr_EffHeinerSFCorr_PileupSFCorr" # evaluate systematics wrt folder (or leave it empty)
+
+DataCards_systFromFolder=foldername_orig+sysfoldmet+"_RochCorr_RecoilCorr_EffHeinerSFCorr_PileupSFCorr" # evaluate systematics wrt folder (or leave it empty)
 # Old code sections use DataCards_systFromFolder (like runPrepareDataCards),
 # in which you put the full systematics folder.
 # New sections use DataCards_templateFromFolder in which you put the full template folder
