@@ -6,7 +6,7 @@
 #include "common.h"
 #include "common2.h"
 
-void prepareDatacardsFast(TString folder, TString template_folder, TString SignalSample, int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W"){
+void prepareDatacardsFast(TString folder, TString template_folder, TString SignalSample, int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0){
 
   TString original;
   std::vector<TString> tokenized;
@@ -20,6 +20,17 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
     // cout << "tokenized["<<j<<"]= " << tokenized[j] << endl;
   }
   
+  int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
+  int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
+  cout << "h= " <<WMass::PDF_members
+       << " m= "<<WMass::NVarRecoilCorr
+       << " n= "<<WMass::KalmanNvariations
+       <<" k= " << WMass::NFitVar 
+       <<" RecoilCorrVarDiagoParU1orU2fromDATAorMC= " << RecoilCorrVarDiagoParU1orU2fromDATAorMC 
+       <<" m_start= " << m_start 
+       <<" m_end= " << m_end 
+       << endl;
+
   for(unsigned int itoken=0; itoken<tokenized.size(); itoken++){
 
     static const int Nsamples=23;
@@ -45,6 +56,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
     
     // LOAD ALL THE HISTOS FROM THE VARIOUS FILES IN MEMORY
     for(int isample=0; isample<Nsamples;isample++){
+      cout << "finTemplatesW[isample]=" << Form("%s/output_%s/%sanalysisOnDATA.root",folder.Data(),samples_str[isample].Data(),WorZ.Data()) << endl;
       finTemplatesW[isample] = new TFile(Form("%s/output_%s/%sanalysisOnDATA.root",folder.Data(),samples_str[isample].Data(),WorZ.Data()));
       finTemplatesW[isample]->Print();
       for(int ieta=0; ieta<WMass::etaMuonNSteps; ieta++){
@@ -54,7 +66,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
           int jWmass = WorZ.Contains("Z")? WMass::Zmass_values_array[jmass] : WMass::Wmass_values_array[jmass];
           
           for(int h=0; h<WMass::PDF_members; h++){
-            for(int m=0; m<WMass::NVarRecoilCorr; m++){
+            for(int m=m_start; m<m_end; m++){
               for(int n=0; n<WMass::KalmanNvariations; n++){
                 for(int k=0;k<WMass::NFitVar;k++){
                   for(int c=0;c<charges;c++){
@@ -73,7 +85,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
       for(int ieta=0; ieta<WMass::etaMuonNSteps; ieta++){
         for(int jmass=0; jmass<2*WMass::WMassNSteps+1; jmass++){
           for(int h=0; h<WMass::PDF_members; h++){
-            for(int m=0; m<WMass::NVarRecoilCorr; m++){
+            for(int m=m_start; m<m_end; m++){
               for(int n=0; n<WMass::KalmanNvariations; n++){
                 for(int k=0;k<WMass::NFitVar;k++){
                   for(int c=0;c<charges;c++){
@@ -97,6 +109,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
 
     // return;
     // PROCESS THE HISTOS AND STORE THEM IN A SUITABLE FILE, STORE NORMALIZATIONS IN A SEPARATE TEXT FILE
+    cout << "foutDATA= " << Form("%s/DataCards/datacards_DATA%s.root",folder.Data(),WorZ.Contains("W")?"":"_Wlike") << endl;
     TFile *foutDATA = new TFile(Form("%s/DataCards/datacards_DATA%s.root",folder.Data(),WorZ.Contains("W")?"":"_Wlike"),"RECREATE");
     
     for(int c=0; c<charges; c++){
@@ -129,7 +142,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
 
           for(int h=0; h<WMass::PDF_members; h++){
             cout << " PDF " << (WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets)<<"-"<<h; fflush(stdout);
-            for(int m=0; m<WMass::NVarRecoilCorr; m++){
+            for(int m=m_start; m<m_end; m++){
               for(int n=0; n<WMass::KalmanNvariations; n++){
                 if(WMass::NVarRecoilCorr>1) cout << " Recoil eigen " << m; fflush(stdout);
                 if(WMass::KalmanNvariations>1) cout << " MomScale toy " << n; fflush(stdout);
@@ -218,7 +231,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
           // int jWmass = WMass2::WMassCentral_MeV-(WMass2::WMassNSteps-jmass)*WMass2::WMassStep_MeV;
           int jWmass = WorZ.Contains("Z")? WMass2::Zmass_values_array[jmass] : WMass2::Wmass_values_array[jmass];
           for(int h=0; h<WMass::PDF_members; h++){
-            for(int m=0; m<WMass::NVarRecoilCorr; m++){
+            for(int m=m_start; m<m_end; m++){
               for(int n=0; n<WMass::KalmanNvariations; n++){
                   
                 // // PREPARE DUMMY DATACARD
