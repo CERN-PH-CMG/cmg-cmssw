@@ -34,7 +34,30 @@ class ComponentCreator(object):
          )
 
          return component
-    
+
+    def makePrivateMCComponentFromDir(self,name,dataset,filedir,pattern,xSec=1):
+        import glob
+
+        globpath = filedir+dataset+pattern
+        files = glob.glob(globpath)
+
+        if len(files) == 0:
+            raise RuntimeError, "Trying to make a component %s with no files" % name
+        # prefix filenames with dataset unless they start with "/"
+        #dprefix = dataset +"/" if files[0][0] != "/" else ""
+
+        component = cfg.MCComponent(
+            dataset=dataset,
+            name = name,
+            files = files,#[filedir+'%s%s' % (dprefix,f) for f in files],
+            xSection = xSec,
+            nGenEvents = 1,
+            triggers = [],
+            effCorrFactor = 1,
+            )
+
+        return component
+
     def makePrivateDataComponent(self,name,dataset,files,json,xSec=1):
          if len(files) == 0:
             raise RuntimeError, "Trying to make a component %s with no files" % name
