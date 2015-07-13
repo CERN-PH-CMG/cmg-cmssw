@@ -31,7 +31,8 @@ vars['rho'] = {'std': 'rho', 'sync': 'rho'}
 
 # Lepton vetoes
 vars['veto_dilepton'] = {'std':'veto_dilepton', 'sync':'dilepton_veto'}
-vars['veto_thirdlepton'] = {'std':'veto_thirdlepton', 'sync':'thirdlepton_veto'}
+vars['veto_thirdlepton'] = {'std':'veto_thirdlepton', 'sync':'extramuon_veto'}
+vars['veto_otherlepton'] = {'std':'veto_otherlepton', 'sync':'extraelec_veto'}
 
 
 # Leg 1 (tau, mu, ele)
@@ -180,7 +181,7 @@ vars['bjet1_pt'] = {'std': 'bjet1_pt', 'sync': 'bpt_1'}
 vars['bjet1_eta'] = {'std': 'bjet1_eta', 'sync': 'beta_1'}
 vars['bjet1_phi'] = {'std': 'bjet1_phi', 'sync': 'bphi_1'}
 vars['bjet1_rawfactor'] = {'std': 'bjet1_rawfactor', 'sync': 'brawf_1'}
-vars['bjet1_mva_pu'] = {'std': 'bjet1_mva_pu', 'sync': 'bjva_1'}
+vars['bjet1_mva_pu'] = {'std': 'bjet1_mva_pu', 'sync': 'bmva_1'}
 vars['bjet1_id_loose'] = {'std': 'bjet1_id_loose', 'sync': 'bpfid_1'}
 vars['bjet1_id_pu'] = {'std': 'bjet1_id_pu', 'sync': 'bpuid_1'}
 vars['bjet1_csv'] = {'std': 'bjet1_csv', 'sync': 'bcsv_1'}

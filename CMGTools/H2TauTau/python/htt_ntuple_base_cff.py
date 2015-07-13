@@ -42,7 +42,6 @@ triggerAna = cfg.Analyzer(
 vertexAna = cfg.Analyzer(
     VertexAnalyzer,
     name='VertexAnalyzer',
-    goodVertices='offlinePrimaryVertices',
     fixedWeight=1,
     verbose=False
 )
@@ -72,7 +71,7 @@ jetAna = cfg.Analyzer(
     relaxPuJetId=True,
     jerCorr=False,
     #jesCorr = 1.,
-    puJetIDDisc='pileupJetIdFull:full53xDiscriminant',
+    puJetIDDisc='pileupJetId:fullDiscriminant',
 )
 
 vbfAna = cfg.Analyzer(

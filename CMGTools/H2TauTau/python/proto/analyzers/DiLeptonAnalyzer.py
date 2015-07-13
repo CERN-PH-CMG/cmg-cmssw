@@ -49,6 +49,7 @@ class DiLeptonAnalyzer(Analyzer):
         count.register('all events')
         count.register('> 0 di-lepton')
         count.register('third lepton veto')
+        count.register('other lepton veto')
         if hasattr(self.cfg_ana, 'dR_min'):
             count.register('dR > {min:3.1f}'.format(min=self.cfg_ana.dR_min))
         count.register('leg1 offline cuts passed')
@@ -107,6 +108,12 @@ class DiLeptonAnalyzer(Analyzer):
             if fillCounter:
                 self.counters.counter('DiLepton').inc('third lepton veto')
             event.thirdLeptonVeto = True
+
+        event.otherLeptonVeto = False
+        if self.otherLeptonVeto(event.leptons, event.otherLeptons):
+            if fillCounter:
+                self.counters.counter('DiLepton').inc('other lepton veto')
+            event.otherLeptonVeto = True
 
         # delta R cut
         if hasattr(self.cfg_ana, 'dR_min'):
@@ -193,6 +200,10 @@ class DiLeptonAnalyzer(Analyzer):
         return True
 
     def thirdLeptonVeto(self, leptons, otherLeptons, isoCut=0.3):
+        '''Should implement a default version running on event.leptons.'''
+        return True
+
+    def otherLeptonVeto(self, leptons, otherLeptons, isoCut=0.3):
         '''Should implement a default version running on event.leptons.'''
         return True
 
