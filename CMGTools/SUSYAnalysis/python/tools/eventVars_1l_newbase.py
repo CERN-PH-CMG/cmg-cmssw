@@ -368,12 +368,26 @@ class EventVars1L_base:
             Lp = tightLeps[0].pt / recoWp4.Pt() * cos(dPhiLepW)
 
         ret["DeltaPhiLepW"] = dPhiLepW
-        ret['dPhi'] = abs(dPhiLepW) # nickname for absolute dPhiLepW
+        dPhi = abs(dPhiLepW) # nickname for absolute dPhiLepW
+        ret['dPhi'] = dPhi
         ret['ST'] = LT
         ret['LT'] = LT
         ret['Lp'] = Lp
 
+        #############
         ## Playground
+        #############
+
+        ## Signal region flag
+        # isSR SR vs CR flag
+        isSR = 0
+
+        if LT < 200:   isSR = 0
+        elif LT < 350: isSR = dPhi > 1.0
+        elif LT < 600: isSR = dPhi > 0.75
+        elif LT > 600: isST = dPhi > 0.5
+
+        ret['isSR'] = isSR
 
         # di-lepton mass: opposite-sign, same flavour
         Mll = 0
