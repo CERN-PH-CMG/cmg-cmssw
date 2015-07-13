@@ -11,7 +11,7 @@ class EventVars1L_triggers:
     def __init__(self):
         self.branches = [
             'HLT_HT350', 'HLT_HT600', 'HLT_HT900', 'HLT_MET170','HLT_HTMET', 'HLT_Had',
-            'HLT_SingleMu', 'HLT_MuNoIso', 'HLT_MuHad',
+            'HLT_SingleMu', 'HLT_Mu45NoIso', 'HLT_Mu50NoIso', 'HLT_MuHad',
             'HLT_MuHT600', 'HLT_MuHT400MET70','HLT_MuMET120', 'HLT_MuHT400B',
             'HLT_SingleEl', 'HLT_ElNoIso', 'HLT_ElHad',
             'HLT_EleHT600','HLT_EleHT400MET70','HLT_EleHT200', 'HLT_ElHT400B'
