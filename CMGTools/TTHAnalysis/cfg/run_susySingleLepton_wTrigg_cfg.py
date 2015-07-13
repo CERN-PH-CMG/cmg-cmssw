@@ -46,7 +46,7 @@ ttHLepSkim.maxLeptons = 999
 # --- JET-LEPTON CLEANING ---
 jetAna.minLepPt = 10
 
-jetAna.mcGT = "Summer15_V5_MC"
+jetAna.mcGT = "Summer15_V5_p6_MC"
 jetAna.doQG = True
 jetAna.smearJets = False #should be false in susycore, already
 jetAna.recalibrateJets = True #should be true in susycore, already
@@ -137,8 +137,8 @@ selectedComponents = [
         #TTJets,
         #TTJets_50ns
         #TTJets_LO,
-        TTJets_LO_50ns,
-	TTJets_LO_25ns
+        #TTJets_LO_50ns,
+	#TTJets_LO_25ns
         ]
 
 
@@ -153,7 +153,7 @@ sequence = cfg.Sequence(susyCoreSequence+[
 
 
 #-------- HOW TO RUN
-test = 3
+test = "data"
 if test==1:
         # test a single component, using a single thread.
         comp = TTJets
@@ -172,13 +172,23 @@ elif test==3:
                 comp.splitFactor = len(comp.files)
 
 elif test=="data":
-        from CMGTools.RootTools.samples.samples_13TeV_Data import *
-        selectedComponents = [ privEGamma2015A ]
+        #from CMGTools.RootTools.samples.samples_13TeV_Data import *
+        #selectedComponents = [ privEGamma2015A ]
+	from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
+	selectedComponents = [ SingleElectron_Run2015B ]
+
+	eventFlagsAna.processName = 'HLT'
+	jetAna.recalibrateJets = False
+
+	for comp in dataSamples:
+		comp.isMC = False
+		comp.isData = True
+
 
         for comp in selectedComponents:
                 comp.splitFactor = 1
-                comp.fineSplitFactor = 1
-                comp.files = comp.files[:1]
+                comp.fineSplitFactor = 10
+                #comp.files = comp.files[:1]
 
 
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
