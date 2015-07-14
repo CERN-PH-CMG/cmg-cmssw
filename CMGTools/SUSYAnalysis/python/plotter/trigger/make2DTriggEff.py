@@ -336,7 +336,7 @@ def plot2DEff(histList,  tvar = ('MET','HT')):
     for ind,hist in enumerate(histList[1:]):
 
         hname = hist.GetName()
-        cname = hname.replace('h'+var+'_',var) + '_Eff_'
+        cname = hname.replace('h'+var,var) + '_Eff_Ref'+ hRef.GetName().replace('h'+var,'')
 
         ctitle = 'Eff for reference:' + hRef.GetName()
 
@@ -395,6 +395,7 @@ def make2DEffPlots(tree, lumi = -1, maxEntries = -1, varList = [], refTrig = '',
     suffix = 'test'
     for trig in testTrig:
         suffix +=  '_' + trig.replace('||','OR')
+    suffix = ''
 
     for var in varList:
         #for ref in refTrig[:1]:
@@ -509,9 +510,6 @@ if __name__ == "__main__":
     #varList = ['HT','LepGood1_pt']#,'LepGood1_eta']
     varList = ['LepGood1_pt']
 
-    # reference trigger (without HLT_)
-    refTrig = 'HTMET'
-
     # TEST triggers
     #testTrig = ['SingleMu','SingleEl','HT350','MET170']
     #testTrig = ['HT350','HT900','HTMET','MET170']#,'MuHT400MET70']
@@ -522,24 +520,24 @@ if __name__ == "__main__":
     #testTrig = ['HLT_SingleEl', 'HLT_ElNoIso', 'HLT_ElHad', 'HLT_EleHT600','HLT_EleHT400MET70','HLT_EleHT200', 'HLT_EleHT400B']
     #testTrig = ['HLT_SingleEl','HLT_ElNoIso','HLT_EleHT600']
     #testTrig = ['HLT_SingleMu','HLT_MuNoIso','HLT_MuHT600']
-    #testTrig = ['SingleMu','ElNoIso']
-    testTrig = ['SingleMu','Mu50NoIso','HLT_MuHT400MET70']
-    #testTrig = ['SingleMu']
-
-    # replace HLT from names
-    testTrig = [trig.replace('HLT_','') for trig in testTrig]
-
-    # cuts
-    cuts = 'nTightMu == 1 && LepGood1_pt > 5 && HT > 500 && MET > 200'#  && abs(LepGood1_eta) < 2.1'
-    #cuts = 'nTightEl == 1 && LepGood1_pt > 15 && abs(LepGood1_eta) < 2.1'
     '''
 
+    # muon
     cuts = 'nTightMu >= 1 && LepGood1_pt > 25'
     refTrig = 'SingleMu'
-    testTrig = ['HTMET']
+    testTrig = ['HTMET','MuHT400MET70']
     var = ('MET','HT')
     varList = [var]
     #make2DEffPlots(tree, lumi, maxEntries, varList, refTrig, testTrig, cuts)
+
+    # electron
+    cuts = 'nTightEl >= 1 && LepGood1_pt > 25'
+    refTrig = 'SingleEl'
+    testTrig = ['HTMET','EleHT400MET70']
+    var = ('MET','HT')
+    varList = [var]
+    make2DEffPlots(tree, lumi, maxEntries, varList, refTrig, testTrig, cuts)
+
 
     ## LepPt vs MET
     var = ('MET','LepGood1_pt')
@@ -549,9 +547,7 @@ if __name__ == "__main__":
     cuts = 'nTightMu >= 1 && LepGood1_pt > 5 && HT > 500'
     refTrig = ''
     testTrig = ['Mu50NoIso||MuHT400MET70','Mu50NoIso','MuHT400MET70']
-
-    var = ('MET','LepGood1_pt')
-    make2DEffPlots(tree, lumi, maxEntries, varList, refTrig, testTrig, cuts)
+    #make2DEffPlots(tree, lumi, maxEntries, varList, refTrig, testTrig, cuts)
 
     ## Electrons
     cuts = 'nTightEl >= 1 && LepGood1_pt > 5 && HT > 500'
