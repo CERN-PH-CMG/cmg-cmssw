@@ -1,5 +1,6 @@
 import ROOT
 
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.HeppyCore.utils.deltar import bestMatch
 
@@ -15,6 +16,10 @@ class DYJetsFakeAnalyzer(Analyzer):
     set the lepton type as leptonType in the configuration.
     In case of VH events, only the Higgs is considered.
     '''
+    def declareHandles(self):
+        super(DYJetsFakeAnalyzer, self).declareHandles()
+
+        self.mchandles['genJets'] = AutoHandle('slimmedGenJets', 'std::vector<reco::GenJet>')
 
     def process(self, event):
 
@@ -41,6 +46,9 @@ class DYJetsFakeAnalyzer(Analyzer):
 
         if self.cfg_comp.isData:
             return True
+
+        self.readCollections(event.input)
+        event.genJets = self.mchandles['genJets'].product()
 
         # gen MET as sum of the neutrino 4-momenta
         neutrinos = [
@@ -153,6 +161,15 @@ class DYJetsFakeAnalyzer(Analyzer):
             l1match, dR2best = bestMatch(leg, self.ptSelGenSummary)
             if dR2best < dR2:
                 leg.genp = l1match
+
+            # Now this may be a pileup lepton, or one whose ancestor doesn't
+            # appear in the gen summary because it's an unclear case in Pythia 8
+            # To check the latter, match against jets as well...
+            if leg.genp == None:
+                l1match, dR2best = bestMatch(leg, event.genJets)
+                # Check if there's a gen jet with pT > 10 GeV (otherwise it's PU)
+                if dR2best < dR2 and l1match.pt() > 10.:
+                    leg.genp = l1match
 
 
     def getGenType(self, event):
