@@ -8,9 +8,8 @@ import shutil
 import pickle
 import math
 
-from CMGTools.Production.batchmanager import BatchManager
-#from PhysicsTools.HeppyCore.utils.batchmanager import BatchManager
-from PhysicsTools.HeppyCore.framework.heppy import split
+from PhysicsTools.HeppyCore.utils.batchmanager import BatchManager
+from PhysicsTools.HeppyCore.framework.heppy_loop import split
 
 def batchScriptNAF( jobDir='/nfs/dust/cms/user/lobanov/SUSY/Run2/CMG/CMSSW_7_0_6_patch1/src/CMGTools/TTHAnalysis/cfg/output_Directory/TTJets_PU20bx25_V52'):
    '''prepare the NAF version of the batch script, to run on NAF'''
