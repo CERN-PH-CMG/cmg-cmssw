@@ -20,7 +20,7 @@ from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJets
 
 # production = True run on batch, production = False (or unset) run locally
 production = getHeppyOption('production')
-production = True
+production = False
 
 # mu-tau specific configuration settings
 
@@ -49,13 +49,13 @@ dyJetsFakeAna.channel = 'mt'
 tauMuAna = cfg.Analyzer(
     TauMuAnalyzer,
     name='TauMuAnalyzer',
-    pt1=20,
-    eta1=2.3,
-    iso1=1.5,
+    pt1=18,
+    eta1=2.1,
+    iso1=0.1,
     looseiso1=9999.,
-    pt2=18,
-    eta2=2.1,
-    iso2=0.1,
+    pt2=20,
+    eta2=2.3,
+    iso2=1.5,
     looseiso2=9999.,
     m_min=10,
     m_max=99999,
@@ -79,7 +79,7 @@ tauWeighter = cfg.Analyzer(
     name='LeptonWeighter_tau',
     effWeight=None,
     effWeightMC=None,
-    lepton='leg1',
+    lepton='leg2',
     verbose=False,
     disable=True,
 )
@@ -89,7 +89,7 @@ muonWeighter = cfg.Analyzer(
     name='LeptonWeighter_mu',
     effWeight=None,
     effWeightMC=None,
-    lepton='leg2',
+    lepton='leg1',
     verbose=False,
     disable=True,
     idWeight=None,
@@ -192,7 +192,7 @@ if syncntuple:
 ###################################################
 
 if pick_events:
-    eventSelector.toSelect = []
+    eventSelector.toSelect = [456471,47173,157585,147731,210457,432728,371706,364607,157184,165203,182572,240489,269584,307460,326678,328122,353889,376943,112525,113692,491647]
     sequence.insert(0, eventSelector)
 
 ###################################################

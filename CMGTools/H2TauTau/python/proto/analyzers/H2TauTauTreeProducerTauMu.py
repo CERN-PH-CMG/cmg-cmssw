@@ -28,8 +28,8 @@ class H2TauTauTreeProducerTauMu(H2TauTauTreeProducer):
 
         super(H2TauTauTreeProducerTauMu, self).process(event)
 
-        tau = event.diLepton.leg1()
-        muon = event.diLepton.leg2()
+        tau = event.diLepton.leg2()
+        muon = event.diLepton.leg1()
 
         self.fillTau(self.tree, 'l2', tau)
         self.fillMuon(self.tree, 'l1', muon)
