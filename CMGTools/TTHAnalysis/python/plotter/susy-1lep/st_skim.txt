@@ -1,0 +1,3 @@
+== 1 hard lep: nTightLeps == 1 && LepGood1_pt > 25 && Selected == 1
+no VetoLeps: nVetoLeps==0
+ST > 200: ST > 200

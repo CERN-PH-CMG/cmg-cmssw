@@ -1,0 +1,8 @@
+
+#TT_NLO_25ns	 : TTJets_NLO_25ns : 831.76 ; FillColor=ROOT.kBlue-2, Label="t\#bar{t} 25ns NLO", NormSystematic=0.5
+#TT_NLO_50ns	 : TTJets_NLO_50ns : 831.76 ; LineStyle=2, FillColor=ROOT.kBlue-2, Label="t\#bar{t} 50ns NLO", NormSystematic=0.5
+
+TT_LO_25ns	 : TTJets_LO_25ns : 809.1 ; FillColor=ROOT.kBlue-2, Label="t\#bar{t} 25ns LO", NormSystematic=0.5
+TT_LO_50ns	 : TTJets_LO_50ns : 809.1 ; LineStyle=2,FillColor=ROOT.kRed-6, Label="t\#bar{t} 50ns LO", NormSystematic=0.5
+
+TT_Phys14	 : TTJets_Phys14 : 809.1 ; FillColor=ROOT.kGreen-2, Label="t\#bar{t} PHYS14", NormSystematic=0.5

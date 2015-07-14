@@ -8,9 +8,8 @@ import shutil
 import pickle
 import math
 
-from CMGTools.Production.batchmanager import BatchManager
-#from PhysicsTools.HeppyCore.utils.batchmanager import BatchManager
-from PhysicsTools.HeppyCore.framework.heppy import split
+from PhysicsTools.HeppyCore.utils.batchmanager import BatchManager
+from PhysicsTools.HeppyCore.framework.heppy_loop import split
 
 def batchScriptNAF( jobDir='/nfs/dust/cms/user/lobanov/SUSY/Run2/CMG/CMSSW_7_0_6_patch1/src/CMGTools/TTHAnalysis/cfg/output_Directory/TTJets_PU20bx25_V52'):
    '''prepare the NAF version of the batch script, to run on NAF'''
@@ -20,7 +19,7 @@ def batchScriptNAF( jobDir='/nfs/dust/cms/user/lobanov/SUSY/Run2/CMG/CMSSW_7_0_6
 ## the cpu time for this job
 #$ -l h_rt=02:59:00
 ## the maximum memory usage of this job
-#$ -l h_vmem=1900M
+#$ -l h_vmem=3900M
 ## operating system
 #$ -l distro=sld6
 ## architecture
@@ -28,7 +27,7 @@ def batchScriptNAF( jobDir='/nfs/dust/cms/user/lobanov/SUSY/Run2/CMG/CMSSW_7_0_6
 ## stderr and stdout are merged together to stdout
 #$ -j y
 ##(send mail on job's end and abort)
-##$ -m a
+#$ -m a
 #$ -l site=hh
 ## transfer env var from submission host
 #$ -V
@@ -46,12 +45,13 @@ def batchScriptNAF( jobDir='/nfs/dust/cms/user/lobanov/SUSY/Run2/CMG/CMSSW_7_0_6
    script += """/logs"""
    script += """
 #start of script
+export XRD_ENABLEFORKHANDLERS=1
 echo job start at `date`
 echo "Running on machine" `uname -a`
 echo $(lsb_release -a | grep Description)
 echo "Locating in" `pwd`
 
-#cd $CMSSW_BASE/src
+cd $CMSSW_BASE/src
 eval `/cvmfs/cms.cern.ch/common/scramv1 runtime -sh`
 echo "CMSSW version:" $CMSSW_VERSION
 echo "CMSSW base:" $CMSSW_BASE
@@ -65,7 +65,42 @@ echo "Changing to job dir" $JobDir
 cd $JobDir
 
 echo 'Running in dir' `pwd`
+
+if [ -f processing ]; then
+    echo "Already processing that chunk now"
+    exit 0
+fi
+
+if [ -f processed ]; then
+    echo "Already processed that chunk"
+    exit 0
+fi
+
+touch processing
 python $CMSSW_BASE/src/PhysicsTools/HeppyCore/python/framework/looper.py pycfg.py config.pck
+# >& looper.log
+mv Loop/* ./
+rm -r Loop
+rm processing
+
+# check output quality
+root -b -q treeProducerSusySingleLepton/tree.root 2>&1 > .filetest
+
+if grep -r "Error" .filetest ; then
+   echo "Job failed!"
+   touch failed
+elif grep -r "0x0" .filetest ; then
+   echo "Job failed!"
+   touch failed
+elif grep -r "File" .filetest; then
+   echo "Successfully" $log
+   touch processed
+   rm .filetest
+else
+   echo "Job failed!"
+   touch failed
+fi
+
 echo
 echo job end at `date`
 """

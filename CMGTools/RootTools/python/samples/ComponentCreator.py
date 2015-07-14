@@ -34,7 +34,30 @@ class ComponentCreator(object):
          )
 
          return component
-    
+
+    def makePrivateMCComponentFromDir(self,name,dataset,filedir,pattern,xSec=1):
+        import glob
+
+        globpath = filedir+dataset+pattern
+        files = glob.glob(globpath)
+
+        if len(files) == 0:
+            raise RuntimeError, "Trying to make a component %s with no files" % name
+        # prefix filenames with dataset unless they start with "/"
+        #dprefix = dataset +"/" if files[0][0] != "/" else ""
+
+        component = cfg.MCComponent(
+            dataset=dataset,
+            name = name,
+            files = files,#[filedir+'%s%s' % (dprefix,f) for f in files],
+            xSection = xSec,
+            nGenEvents = 1,
+            triggers = [],
+            effCorrFactor = 1,
+            )
+
+        return component
+
     def makePrivateDataComponent(self,name,dataset,files,json,xSec=1):
          if len(files) == 0:
             raise RuntimeError, "Trying to make a component %s with no files" % name
@@ -109,6 +132,26 @@ class ComponentCreator(object):
             effCorrFactor = 1,
         )
         return component
+
+    def getFilesFromDESY(self, dataset, user, pattern):
+        # print 'getting files for', dataset,user,pattern
+        ds = createDataset( user, dataset, pattern, True )
+        files = ds.listOfGoodFiles()
+        mapping = 'dcap://dcache-cms-dcap.desy.de/pnfs/desy.de/cms/tier2/%s'
+        return [ mapping % f for f in files]
+
+    def makeMCComponentFromDESY(self,name,dataset,path,pattern=".*root",xSec=1):
+        component = cfg.MCComponent(
+            dataset=dataset,
+            name = name,
+            files = self.getFilesFromDESY(dataset,path,pattern),
+            xSection = xSec,
+            nGenEvents = 1,
+            triggers = [],
+            effCorrFactor = 1,
+        )
+        return component
+
 
     def getFilesFromIC(self, dataset, user, pattern):
         # print 'getting files for', dataset,user,pattern
@@ -216,4 +259,3 @@ def testSamples(mcSamples):
             print "\tSample is accessible? ",("events" in check_output(["edmFileUtil","--ls",X.files[0]]))
         except CalledProcessError:
             print "\tERROR trying to access ",X.files[0]
-

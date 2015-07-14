@@ -1,0 +1,11 @@
+##== 1 hard ele: nTightLeps == 1 && nTightEl == 1 && LepGood1_pt > 25
+== 1 hard lep: nTightLeps == 1 && LepGood1_pt > 25 && Selected == 1
+#Selected: Selected == 1
+#AntiSelected: Selected == -1
+no VetoLeps: nVetoLeps==0
+geq 6j: nCentralJet30>=6
+leading/subleading > 80: LSLjetptGT80==1
+ht500: HT >500
+st200: ST > 200
+1b medium: nBJetMedium30>=1
+#dphi>1: fabs(DeltaPhiLepW)> 1

@@ -1,0 +1,10 @@
+== 1 tight lepton: nTightLeps ==1&&LepGood_pt[tightLepsIdx[0]]>25
+no VetoLeps: nVetoLeps==0
+geq 6j: nCentralJet30>=6
+leading/subleading > 80: LSLjetptGT80==1
+ht500: HT >500
+st200: ST > 200
+1b medium: nBJetMedium30>=1
+topnesses: (TopVarsMETovTopMin[0]-0.5)/0.5+(TopVarsMtopMin[0]-175)/175>1.25&&Topness>5
+dphi>0.5: fabs(DeltaPhiLepW)>0.5
+
