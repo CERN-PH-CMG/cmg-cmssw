@@ -12,12 +12,14 @@ void ClosureTest_fits(int generated_PDF_set=1, int generated_PDF_member=0, TStri
   int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
   int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
 
+  cout << "TEST VERSION" << endl;
+  
   cout << "currentdir_str= " << currentdir_str << endl;
   TString original;
   std::vector<TString> tokenized;
   original = WorZ;
   TString     WCharge_str[]={"Pos","Neg"};
-      
+  
   TObjArray* LineColumns = original.Tokenize(",");
   
   for(int j=0;j<LineColumns->GetEntriesFast();j++)
@@ -28,7 +30,6 @@ void ClosureTest_fits(int generated_PDF_set=1, int generated_PDF_member=0, TStri
   
   for(unsigned int itoken=0; itoken<tokenized.size(); itoken++){
 
-    // TString WorZ = "Z"; // "Z" or "W"
     WorZ = tokenized.at(itoken); // "Z" or "W"
     TString Wlike = WorZ.Contains("W")?"":"like";
     int charges = WorZ.Contains("W")?2:1;
@@ -42,100 +43,54 @@ void ClosureTest_fits(int generated_PDF_set=1, int generated_PDF_member=0, TStri
         for(int i=0; i<WMass::etaMuonNSteps; i++){
           TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
           cout << "preparing pdf eta bin= " << i; fflush(stdout);
-          // for(int m=0; m<WMass::NVarRecoilCorr; m++){
           for(int m=m_start; m<m_end; m++){
-            if(WMass::NVarRecoilCorr>1) cout << " MomCorr toy " << m; fflush(stdout);
+            if(m>0) cout << " Recoil eigenvar " << m; fflush(stdout);
             cout << "preparing recoil corr variation= " << i; fflush(stdout);
             int KalmanNvariations_start=0;
             int KalmanNvariations_end=WMass::KalmanNvariations;
-            // if(start_at_half==1){
-            // KalmanNvariations_start=WMass::KalmanNvariations/2;
-            // KalmanNvariations_start=190;
-            // KalmanNvariations_end=WMass::KalmanNvariations;             
-            // }
             for(int n=KalmanNvariations_start; n<KalmanNvariations_end; n++){
               for(int j=0; j<2*WMass2::WMassNSteps+1; j++){
-                // for(int j=WMass2::WMassNSteps-3; j<WMass2::WMassNSteps+3; j++){
-                  // int jWmass = WMass2::WMassCentral_MeV-(WMass2::WMassNSteps-j)*WMass2::WMassStep_MeV;
-                  int jWmass = WorZ.Contains("Z")? WMass2::Zmass_values_array[j] : WMass2::Wmass_values_array[j];
-                  cout << " mass value= " << jWmass; fflush(stdout);
-                    // gROOT->ProcessLine(Form(".! combine -M MaxLikelihoodFit --saveNorm --justFit dummy_datacard_Wmass_MuPos_eta%s_%d.txt  -v10 -m %d  > dummy_datacard_Wmass_MuPos_eta%s_%d.log 2>&1",eta_str.Data(),jWmass,jWmass,eta_str.Data(),jWmass));
-                    // gROOT->ProcessLine(Form(".! combine -M MaxLikelihoodFit --saveNorm --justFit dummy_datacard_Wmass_MuPos_eta%s_%d_NonScaled.txt  -v10 -m %d  > dummy_datacard_Wmass_MuPos_eta%s_%d_NonScaled.log 2>&1",eta_str.Data(),jWmass,jWmass,eta_str.Data(),jWmass));
-                    // gROOT->ProcessLine(Form(".! combine -m %d -M HybridNew --testStat=TEV --singlePoint 1 --onlyTestStat -t 10000 output_eta%s_%d.root   >> dummy_datacard_Wmass_MuPos_eta%s_%d_NonScaled.log 2>&1",jWmass,eta_str.Data(),jWmass,eta_str.Data(),jWmass));
-                    for(int k=0;k<WMass::NFitVar;k++){
-                      counter++;
-                      if(counter>1 && (WMass::KalmanNvariations>1 || WMass::PDF_members>1) && useBatch==0) gROOT->ProcessLine(".! sleep 1");
-                      else if(counter>1 && useBatch==0) gROOT->ProcessLine(".! usleep 300000");
-                      else if(useBatch==1) gROOT->ProcessLine(".! usleep 100");
-                      // if(counter%5==0) gROOT->ProcessLine(".! sleep 1");
-                      // uncomment lines below
-                      // gROOT->ProcessLine(Form(".!  text2workspace.py -P HiggsAnalysis.CombinedLimit.HiggsJPC:twoHypothesisHiggs dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.txt -o output_W%s%s_%s_pdf%d-%d%s%s_eta%s_%d.root -m %d  > dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log 2>&1 &",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data(),Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data()));
-                      TString text2workspace_str = Form("text2workspace.py -P HiggsAnalysis.CombinedLimit.HiggsJPC:twoHypothesisHiggs dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.txt -o output_W%s%s_%s_pdf%d-%d%s%s_eta%s_%d.root -m %d  > dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log 2>&1",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data(),Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
-                      TString combine_str = Form("combine -m %d -M HybridNew --testStat=TEV --singlePoint 1 --onlyTestStat output_W%s%s_%s_pdf%d-%d%s%s_eta%s_%d.root   >> dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log 2>&1 ",jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
-                      TString outfilename_str = Form("submit_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.sh",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
-                      if(WMass::KalmanNvariations<10 || WMass::PDF_members<10){
-                        gROOT->ProcessLine(".! "+text2workspace_str);
-                        // gROOT->ProcessLine(Form(".! combine -m %d -M HybridNew --testStat=TEV --singlePoint 1 --onlyTestStat output_eta%s_%d.root   >> dummy_datacard_Wmass_MuPos_eta%s_%d_NonScaled.log 2>&1",jWmass,eta_str.Data(),jWmass,eta_str.Data(),jWmass));
-                        gROOT->ProcessLine(".! "+combine_str+" &");
-                      }else{
-                        ofstream outTXTfile;
-                        cout << "creating " << outfilename_str << endl;
-                        outTXTfile.open(outfilename_str);
-                        outTXTfile << "cd /afs/cern.ch/work/p/perrozzi/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;eval `scramv1 runtime -sh`; cd -; source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh;\n";
-                        outTXTfile << "cd "<<currentdir_str<<"\n";
-                        outTXTfile << text2workspace_str << endl;
-                        outTXTfile << combine_str << endl;
-                        outTXTfile.close();
-                        gROOT->ProcessLine(".! ls -lrt "+outfilename_str);
-                        gROOT->ProcessLine(".! chmod 755 "+outfilename_str);
-                        gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J runMfit "+outfilename_str);
+                int jWmass = WorZ.Contains("Z")? WMass2::Zmass_values_array[j] : WMass2::Wmass_values_array[j];
+                cout << " mass value= " << jWmass; fflush(stdout);
+                for(int k=0;k<WMass::NFitVar;k++){
+                  counter++;
+                  // if(counter>1 && (WMass::KalmanNvariations>1 || WMass::PDF_members>1) && useBatch==0) gROOT->ProcessLine(".! sleep 1");
+                  // else if(counter>1 && useBatch==0) gROOT->ProcessLine(".! usleep 300000");
+                  // else if(useBatch==1) gROOT->ProcessLine(".! usleep 100");
+                  TString text2workspace_str = Form("text2workspace.py -P HiggsAnalysis.CombinedLimit.HiggsJPC:twoHypothesisHiggs dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.txt -o output_W%s%s_%s_pdf%d-%d%s%s_eta%s_%d.root -m %d  > dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log 2>&1",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data(),Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
+                  TString combine_str = Form("combine -m %d -M HybridNew --testStat=TEV --singlePoint 1 --onlyTestStat output_W%s%s_%s_pdf%d-%d%s%s_eta%s_%d.root   >> dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log 2>&1 ",jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
+                  TString outfilename_str = Form("submit_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.sh",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
+                  // if(WMass::KalmanNvariations<10 && WMass::PDF_members<10 && m_end<2){
+                    // gROOT->ProcessLine(".! "+text2workspace_str);
+                    // gROOT->ProcessLine(".! "+combine_str+" &");
+                  // }else{
+                    ofstream outTXTfile;
+                    cout << "creating " << outfilename_str << endl;
+                    outTXTfile.open(outfilename_str);
+                    outTXTfile << "cd /afs/cern.ch/work/p/perrozzi/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;eval `scramv1 runtime -sh`; cd -; source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh;\n";
+                    outTXTfile << "cd "<<currentdir_str<<"\n";
+                    outTXTfile << text2workspace_str << endl;
+                    outTXTfile << combine_str << endl;
+                    outTXTfile.close();
+                    gROOT->ProcessLine(".! usleep 200");
+                    // gROOT->ProcessLine(".! ls -lrt "+outfilename_str);
+                    gROOT->ProcessLine(".! chmod 755 "+outfilename_str);
+                    gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J runMfit "+outfilename_str);
+                    gROOT->ProcessLine(".! rm -rf LSF* ");
 
-                      }
-                    }
-                // }
+                  // }
+                }
               }
-               cout << endl;
+              cout << endl;
             }
           }
         }
-      // }
-      
-      if(useBatch==0) gROOT->ProcessLine(".! sleep 3");
-      else gROOT->ProcessLine(".! usleep 100");
-      
-        // for(int i=0; i<WMass::etaMuonNSteps; i++){
-          // TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
-          // cout << "fitting eta bin= " << i ; fflush(stdout);
-          // // for(int m=0; m<WMass::NVarRecoilCorr; m++){
-          // for(int m=m_start; m<m_end; m++){
-            // for(int n=0; n<WMass::KalmanNvariations; n++){
-              // if(WMass::NVarRecoilCorr>1) cout << " MomCorr toy " << m; fflush(stdout);        
-              // for(int j=0; j<2*WMass2::WMassNSteps+1; j++){
-                // // for(int j=WMass2::WMassNSteps-3; j<WMass2::WMassNSteps+3; j++){
-                // // int jWmass = WMass2::WMassCentral_MeV-(WMass2::WMassNSteps-j)*WMass2::WMassStep_MeV;
-                // int jWmass = WorZ.Contains("Z")? WMass2::Zmass_values_array[j] : WMass2::Wmass_values_array[j];
-                // cout << " mass value= " << jWmass; fflush(stdout);
-                // // gROOT->ProcessLine(Form(".! combine -M MaxLikelihoodFit --saveNorm --justFit dummy_datacard_Wmass_MuPos_eta%s_%d.txt  -v10 -m %d  > dummy_datacard_Wmass_MuPos_eta%s_%d.log 2>&1",eta_str.Data(),jWmass,jWmass,eta_str.Data(),jWmass));
-                // // gROOT->ProcessLine(Form(".! combine -M MaxLikelihoodFit --saveNorm --justFit dummy_datacard_Wmass_MuPos_eta%s_%d_NonScaled.txt  -v10 -m %d  > dummy_datacard_Wmass_MuPos_eta%s_%d_NonScaled.log 2>&1",eta_str.Data(),jWmass,jWmass,eta_str.Data(),jWmass));
-                // // gROOT->ProcessLine(Form(".! combine -m %d -M HybridNew --testStat=TEV --singlePoint 1 --onlyTestStat -t 10000 output_eta%s_%d.root   >> dummy_datacard_Wmass_MuPos_eta%s_%d_NonScaled.log 2>&1",jWmass,eta_str.Data(),jWmass,eta_str.Data(),jWmass));
-                // for(int k=0;k<WMass::NFitVar;k++){
-                  // counter++;
-                  // // if(counter>1) gROOT->ProcessLine(".! sleep 1");
-                  // if(counter>1 && WMass::PDF_members>1) gROOT->ProcessLine(".! sleep 1");
-                    // else if(counter>1)  gROOT->ProcessLine(".! usleep 300000");
-                  // // if(counter%5==0) gROOT->ProcessLine(".! sleep 1");
-                  // // uncomment lines below
-                  // // gROOT->ProcessLine(Form(".!  text2workspace.py -P HiggsAnalysis.CombinedLimit.HiggsJPC:twoHypothesisHiggs dummy_datacard_Wmass_MuPos_eta%s_%d_NonScaled.txt -o output_eta%s_%d.root -m %d  > dummy_datacard_Wmass_MuPos_eta%s_%d_NonScaled.log 2>&1",eta_str.Data(),jWmass,eta_str.Data(),jWmass,jWmass,eta_str.Data(),jWmass));
-                  // gROOT->ProcessLine(Form(".! combine -m %d -M HybridNew --testStat=TEV --singlePoint 1 --onlyTestStat output_W%s%s_%s_pdf%d-%d%s%s_eta%s_%d.root   >> dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log 2>&1 &",jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,WMass::NVarRecoilCorr>1?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data()));
-                // }
-              // }
-            // }
-          // }
-        // }
-        // cout << endl;
-      
+        
+        // // if(useBatch==0) gROOT->ProcessLine(".! sleep 3");
+        // // else gROOT->ProcessLine(".! usleep 100");
+        
       }
     }
   }
-     // gROOT->ProcessLine(".! sleep 3");
+  gROOT->ProcessLine(".! rm -rf LSF* ");
 }
