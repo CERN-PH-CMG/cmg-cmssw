@@ -43,7 +43,7 @@ void ClosureTest_fits(int generated_PDF_set=1, int generated_PDF_member=0, TStri
           cout << "preparing pdf eta bin= " << i; fflush(stdout);
           for(int m=m_start; m<m_end; m++){
             if(m>0) cout << " Recoil eigenvar " << m; fflush(stdout);
-            cout << "preparing recoil corr variation= " << i; fflush(stdout);
+            cout << "preparing recoil corr variation= " << m << " "; fflush(stdout);
             int KalmanNvariations_start=0;
             int KalmanNvariations_end=WMass::KalmanNvariations;
             for(int n=KalmanNvariations_start; n<KalmanNvariations_end; n++){
