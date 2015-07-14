@@ -637,8 +637,8 @@ if(runPrepareDataCardsFast):
     if not os.path.exists("JobOutputs/"+foldername+"/DataCards"): os.makedirs("JobOutputs/"+foldername+"/DataCards")
     shutil.copyfile(base_dir+"/AnalysisCode/prepareDatacardsFast.C", base_dir+"/JobOutputs/"+foldername+"/prepareDatacardsFast.C");
     os.chdir("JobOutputs/"+foldername);
-    print "running .x prepareDatacardsFast.C++(\".\",\"../"+DataCards_templateFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\")\'"
-    os.system("root -l -b -q \'prepareDatacardsFast.C++(\".\",\"../"+DataCards_templateFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\")\'")
+    print "running .x prepareDatacardsFast.C++(\"./\",\"../"+DataCards_templateFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\","+RecoilCorrVarDiagoParU1orU2fromDATAorMC+")\'"
+    os.system("root -l -b -q \'prepareDatacardsFast.C++(\"./\",\"../"+DataCards_templateFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\","+RecoilCorrVarDiagoParU1orU2fromDATAorMC+")\'")
     os.chdir(base_dir);
 
 
@@ -659,7 +659,7 @@ if(runClosureTestLikeLihoodRatioAnsMergeResults):
               "eval `scramv1 runtime -sh`;"
               "cd -;"
               "source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh;"
-              "root -l -b -q \'ClosureTest_fits.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+",\""+os.getcwd()+"\","+RecoilCorrVarDiagoParU1orU2fromDATAorMC+")\'")
+              "root -l -b -q \'ClosureTest_fits.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+",\""+os.getcwd()+"\",0,"+RecoilCorrVarDiagoParU1orU2fromDATAorMC+")\'")
     # proc=subprocess.Popen("ls "+os.getcwd()+"/submit_datacard_*", shell=True, stdout=subprocess.PIPE, )
     # a = proc.communicate()[0].rstrip().split('\n')
     # print a
@@ -671,7 +671,7 @@ if((runClosureTestLikeLihoodRatioAnsMergeResults and useBatch==0) or mergeResult
     os.chdir("JobOutputs/"+foldername+"/DataCards");
     print os.getcwd();
     os.system("rm -rf LSF*; rm output_W*.root");
-    os.system("root -l -b -q \'merge_results.C++(1,0,\""+str(fit_W_or_Z)+"\")\'");
+    os.system("root -l -b -q \'merge_results.C++(1,0,\""+str(fit_W_or_Z)+"\","+RecoilCorrVarDiagoParU1orU2fromDATAorMC+")\'");
     os.chdir(base_dir);
 
 
