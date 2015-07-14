@@ -70,7 +70,8 @@ void ClosureTest_fits(int generated_PDF_set=1, int generated_PDF_member=0, TStri
                     outTXTfile << text2workspace_str << endl;
                     outTXTfile << combine_str << endl;
                     outTXTfile.close();
-                    gROOT->ProcessLine(".! usleep 200");
+                    // gROOT->ProcessLine(".! usleep 200");
+                    gROOT->ProcessLine(".! sleep 1");
                     // gROOT->ProcessLine(".! ls -lrt "+outfilename_str);
                     gROOT->ProcessLine(".! chmod 755 "+outfilename_str);
                     gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J runMfit "+outfilename_str);

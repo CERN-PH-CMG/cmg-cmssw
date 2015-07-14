@@ -67,7 +67,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
                     // TemplatesW[c][m][n][h][k][isample][ieta][jmass] = (TH1D*) finTemplatesW[isample]->Get(Form("hW%s%s_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, m>0?Form("_RecoilCorrVar%d",m):"",eta_str.Data(),jWmass));
                     
                     TemplatesW_NonScaled[c][m][n][h][k][isample][ieta][jmass] = (TH1D*) finTemplatesW[isample]->Get(Form("hW%s%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass));
-                    // if(TemplatesW_NonScaled[c][m][n][h][k][isample][ieta][jmass]) TemplatesW_NonScaled[c][m][n][h][k][isample][ieta][jmass]->Print();
+                    if(TemplatesW_NonScaled[c][m][n][h][k][isample][ieta][jmass]) TemplatesW_NonScaled[c][m][n][h][k][isample][ieta][jmass]->Print();
                   }
                 }
               }
@@ -87,9 +87,11 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
                   for(int c=0;c<charges;c++){
                     
                     if(TemplatesW_NonScaled[c][m][n][h][k][isample][ieta][jmass]){
-                      double int_hist_data = TemplatesW_NonScaled[c][0][0][0][k][isample][ieta][WMass::WMassNSteps]->Integral();
+                      double int_hist_data = 0; 
+                      if(TemplatesW_NonScaled[c][0][0][0][k][isample][ieta][WMass::WMassNSteps])
+                        int_hist_data =TemplatesW_NonScaled[c][0][0][0][k][isample][ieta][WMass::WMassNSteps]->Integral();
                       double int_hist_mcdatalike = TemplatesW_NonScaled[c][m][n][h][k][isample][ieta][jmass]->Integral();
-                      double norm_factor_to_match_data = int_hist_mcdatalike>0 ? int_hist_data/int_hist_mcdatalike : 1;
+                      double norm_factor_to_match_data = int_hist_mcdatalike>0 && int_hist_data>0 ? int_hist_data/int_hist_mcdatalike : 1;
                       
                       TemplatesW_NonScaled[c][m][n][h][k][isample][ieta][jmass]->Scale(norm_factor_to_match_data);
                       cout <<"c "<<c<<" m "<<m<<" n "<<n<<" h "<<" "<<h<<" k "<<k<<" isample "<<samples_str[isample]<<" ieta "<<ieta<<" jmass "<<jmass<<" norm "<<norm_factor_to_match_data<<endl;
