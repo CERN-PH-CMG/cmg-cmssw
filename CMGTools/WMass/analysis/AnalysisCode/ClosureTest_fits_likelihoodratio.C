@@ -12,8 +12,6 @@ void ClosureTest_fits(int generated_PDF_set=1, int generated_PDF_member=0, TStri
   int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
   int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
 
-  cout << "TEST VERSION" << endl;
-  
   cout << "currentdir_str= " << currentdir_str << endl;
   TString original;
   std::vector<TString> tokenized;
