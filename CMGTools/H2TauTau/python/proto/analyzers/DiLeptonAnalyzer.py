@@ -185,8 +185,7 @@ class DiLeptonAnalyzer(Analyzer):
         event.selectedLeptons = [event.leg1, event.leg2]
 
         event.leptonAccept = False
-        #if self.leptonAccept(event.leptons, event): # RIC: why?!
-        if self.leptonAccept(event.leptons):
+        if self.leptonAccept(event.leptons, event):
             if fillCounter:
                 self.counters.counter('DiLepton').inc('lepton accept')
             event.leptonAccept = True
@@ -196,7 +195,7 @@ class DiLeptonAnalyzer(Analyzer):
     def declareHandles(self):
         super(DiLeptonAnalyzer, self).declareHandles()
 
-    def leptonAccept(self, leptons):
+    def leptonAccept(self, *args, **kwargs):
         '''Should implement a default version running on event.leptons.'''
         return True
 
