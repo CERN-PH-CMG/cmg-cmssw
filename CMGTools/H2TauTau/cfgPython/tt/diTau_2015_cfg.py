@@ -20,7 +20,7 @@ production = False
 
 # local switches
 syncntuple   = True
-computeSVfit = True
+computeSVfit = False
 pick_events  = False
 
 dyJetsFakeAna.channel = 'tt'
@@ -48,6 +48,7 @@ tauTauAna = cfg.Analyzer(
   jetEta       = 4.7                         ,
   relaxJetId   = False                       ,
   verbose      = False                       ,
+  from_single_objects = True                 ,
   )
 
 tauDecayModeWeighter = cfg.Analyzer(
@@ -114,26 +115,30 @@ from CMGTools.TTHAnalysis.samples.samples_13TeV_74X           import TTJets_LO, 
 from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauTau import mc_triggers as mc_triggers_tt
 
 creator = ComponentCreator()
-ggh160 = creator.makeMCComponent('GGH160', '/SUSYGluGluToHToTauTau_M-160_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM', 'CMS', '.*root', 1.0)
+ggh160   = creator.makeMCComponent  ("GGH160", 
+                                     "/SUSYGluGluToHToTauTau_M-160_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", 
+                                     "CMS", 
+                                     ".*root", 
+                                     1.0)
+run2015B = creator.makeDataComponent("DataRun2015B", 
+                                     ["/Tau/Run2015B-PromptReco-v1/MINIAOD"], 
+                                     "CMS", 
+                                     ".*root", 
+                                     "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/DCSOnly/json_DCSONLY_Run2015B.txt"
+                                     )
 
 MC_list = [ggh160, TTJets_LO, DYJetsToLL_M50, WJetsToLNu]
 
-
-first_data = cfg.DataComponent(
-    name='first2pb',
-    intLumi='2.0', # in pb
-    files=['/afs/cern.ch/user/g/gpetrucc/public/miniAOD-express_PAT_251168.root'],
-    triggers=mc_triggers_tt,
-    json=None
-)
+run2015B.intLumi  = '2.0' # in pb
+run2015B.triggers = mc_triggers_tt
 
 split_factor = 1e5
 
 for sample in MC_list:
     sample.triggers = mc_triggers_tt
     sample.splitFactor = splitFactor(sample, split_factor)
-
-data_list = [first_data]
+    
+data_list = [run2015B]
 
 ###################################################
 ###              ASSIGN PU to MC                ###
@@ -167,7 +172,7 @@ if syncntuple:
 ###             CHERRY PICK EVENTS              ###
 ###################################################
 if pick_events:
-    eventSelector.toSelect = []
+    eventSelector.toSelect = [39467225]
     sequence.insert(0, eventSelector)
 
 ###################################################
@@ -176,11 +181,17 @@ if pick_events:
 if not production:
   cache                = True
 #   comp                 = my_connect.mc_dict['HiggsGGH125']
-  comp                 = DYJetsToLL_M50
-  selectedComponents   = [comp]
-  comp.splitFactor     = 1
-  comp.fineSplitFactor = 1
-  comp.files           = comp.files[:1]
+#   comp                 = DYJetsToLL_M50
+#   comp                 = run2015B
+#   selectedComponents   = [comp]
+#   comp.splitFactor     = 1
+#   comp.fineSplitFactor = 1
+  #comp.files           = comp.files[:1]
+  for comp in selectedComponents:
+    comp.splitFactor     = 1
+    comp.fineSplitFactor = 4
+    
+
 
 # the following is declared in case this cfg is used in input to the
 # heppy.py script

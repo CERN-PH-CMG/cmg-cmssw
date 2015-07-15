@@ -82,13 +82,15 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
     # RIC: patch to adapt it to the di-tau case. Need to talk to Jan
     di_objects = []
     taus = self.handles['taus'].product()
+    met  = self.handles['met' ].product()[0]
     for leg1 in taus:
       for leg2 in taus:
         if leg1 != leg2:
-          di_objects.append(
-            DirectDiTau(leg1, leg2, 
-            self.handles['met'].product()[0])
-          )
+          di_tau = DirectDiTau(Tau(leg1), Tau(leg2), met)
+          di_tau.leg2().associatedVertex = event.goodVertices[0]
+          di_tau.leg1().associatedVertex = event.goodVertices[0]
+          di_tau.mvaMetSig = None
+          di_objects.append(di_tau)
     return di_objects
 
   def buildLeptons(self, cmgLeptons, event):
