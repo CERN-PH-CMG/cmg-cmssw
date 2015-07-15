@@ -185,7 +185,8 @@ class DiLeptonAnalyzer(Analyzer):
         event.selectedLeptons = [event.leg1, event.leg2]
 
         event.leptonAccept = False
-        if self.leptonAccept(event.leptons, event):
+        #if self.leptonAccept(event.leptons, event): # RIC: why?!
+        if self.leptonAccept(event.leptons):
             if fillCounter:
                 self.counters.counter('DiLepton').inc('lepton accept')
             event.leptonAccept = True
