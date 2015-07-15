@@ -30,7 +30,7 @@ RelVals741 = [ ADD_MJ, TTLep, TTbar, RSGravGaGa ]
 ### ----------------------------- Zero Tesla run  ----------------------------------------
 ### for ECAL - EGM studies
 dataDir = "$CMSSW_BASE/src/CMGTools/MonoXAnalysis/data"
-json=dataDir+'/json/Cert_246908-248005_13TeV_PromptReco_Collisions15_ZeroTesla_JSON.txt'
+json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/DCSOnly/json_DCSONLY_Run2015B.txt"
 
 privEGamma2015Afiles = [ f.strip() for f in open("%s/src/CMGTools/MonoXAnalysis/python/samples/privEGamma_2015A_MINIAOD.txt"  % os.environ['CMSSW_BASE'], "r") ]
 privDoubleEG2015Afiles = [ f.strip() for f in open("%s/src/CMGTools/MonoXAnalysis/python/samples/privDoubleEG_2015A_MINIAOD.txt"  % os.environ['CMSSW_BASE'], "r") ]
@@ -39,10 +39,34 @@ def _grep(x,l): return [ i for i in l if x in i ]
 privEGamma2015A_0T = kreator.makePrivateDataComponent('EGamma2015A', '/store/group/dpg_ecal/comm_ecal/data13TeV/EGamma/MINIAOD', _grep('2015A', privEGamma2015Afiles), json )
 privDoubleEG2015A_0T = kreator.makePrivateDataComponent('DoubleEG', '/store/group/dpg_ecal/comm_ecal/data13TeV/DoubleEG/MINIAOD', _grep('PAT', privDoubleEG2015Afiles), json )
 privHLTPhysics2015A_0T = kreator.makePrivateDataComponent('HLTPhysics2015A', '/store/group/dpg_ecal/comm_ecal/data13TeV/HLTPhysics/MINIAOD', _grep('HLTPhysics', privHLTPhysics2015Afiles), json )
-
 privDataSamples_0T = [ privEGamma2015A_0T, privDoubleEG2015A_0T, privHLTPhysics2015A_0T ]
 
-dataSamples = privDataSamples_0T
+### ---------------------------- 3.8T data ----------------------------------------
+DoubleEG_Run2015B = cfg.DataComponent(
+    name = 'DoubleEG_2015B',
+    files = kreator.getFiles('/DoubleEG/Run2015B-PromptReco-v1/MINIAOD', 'CMS', '.*root'),
+    intLumi = 1, triggers = [], json = json
+    )
+
+DoubleMuon_Run2015B = cfg.DataComponent(
+    name = 'DoubleMuon_2015B',
+    files = kreator.getFiles('/DoubleMuon/Run2015B-PromptReco-v1/MINIAOD', 'CMS', '.*root'),
+    intLumi = 1, triggers = [], json = json
+    )
+
+SingleMuon_Run2015B = cfg.DataComponent(
+    name = 'SingleMuon_2015B',
+    files = kreator.getFiles('/SingleMuon/Run2015B-PromptReco-v1/MINIAOD', 'CMS', '.*root'),
+    intLumi = 1, triggers = [], json = json
+    )
+    
+MET_Run2015B = cfg.DataComponent(
+    name = 'MET_2015B',
+    files = kreator.getFiles('/MET/Run2015B-PromptReco-v1/MINIAOD', 'CMS', '.*root'),
+    intLumi = 1, triggers = [], json = json
+    )
+
+dataSamples = [SingleMuon_Run2015B, DoubleMuon_Run2015B, DoubleEG_Run2015B, MET_Run2015B]
 
 ### ----------------------------- summary ----------------------------------------     
 mcSamples_monojet_Asymptotic25ns = TTs + SingleTop + [WJetsToLNu, DYJetsToLL_M50, DYJetsToLL_M10to50 ] + WJetsToLNuHT + GJetsHT + QCDPt + DiBosons

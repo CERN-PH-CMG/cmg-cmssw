@@ -84,7 +84,7 @@ dmMonoJet_globalVariables = dmCore_globalVariables + [
     ##--------------------------------------------------
     # Generator variables
     ##--------------------------------------------------
-    NTupleVariable("LHEorigWeight",    lambda ev: ev.LHE_originalWeight, float, help="Central LHE weight of the sample"),
+    # NTupleVariable("LHEorigWeight",    lambda ev: ev.LHE_originalWeight, float, help="Central LHE weight of the sample"),
 
 
 ]
@@ -113,7 +113,7 @@ dmMonoJet_collections.update({
             ##------------------------------------------------
             #"selectedIsoTrack"    : NTupleCollection("isoTrack", isoTrackType, 50, help="isoTrack, sorted by pt"),
             ##------------------------------------------------
-            "LHE_weights"    : NTupleCollection("LHEweight",  weightsInfoType, 1000, help="LHE weight info"),
+            #"LHE_weights"    : NTupleCollection("LHEweight",  weightsInfoType, 1000, help="LHE weight info"),
             ##------------------------------------------------
             #"genBHadrons"  : NTupleCollection("GenBHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level B hadrons"),
             #"genDHadrons"  : NTupleCollection("GenDHad", heavyFlavourHadronType, 20, mcOnly=True, help="Gen-level D hadrons"),

@@ -11,7 +11,7 @@ from PhysicsTools.Heppy.analyzers.objects.METAnalyzer import *
 # Redefine what I need
 
 # --- MONOJET SKIMMING ---
-monoJetSkim.metCut = 200
+monoJetSkim.metCut = 0
 monoJetSkim.jetPtCuts = []
 
 # --- W->munu control sample SKIMMING ---
@@ -103,14 +103,6 @@ treeProducer = cfg.Analyzer(
 # dmCoreSequence.insert(dmCoreSequence.index(skimAnalyzer),
 #                       dmCounter)
 
-#-------- SAMPLES AND TRIGGERS -----------
-from CMGTools.MonoXAnalysis.samples.samples_monojet_13TeV_PHYS14 import triggers_monojet
-triggerFlagsAna.triggerBits = {
-    'MonoJet' : triggers_monojet,
-}
-
-from CMGTools.MonoXAnalysis.samples.samples_monojet_13TeV_PHYS14 import *
-
 #signalSamples = MonojetSignalSamples
 #backgroundSamples =  WJetsToLNuHT + ZJetsToNuNuHT + SingleTop + [TTJets] + DYJetsM50HT + GJetsHT + QCDHT
 #selectedComponents = backgroundSamples + signalSamples
@@ -128,7 +120,7 @@ sequence = cfg.Sequence(dmCoreSequence+[
     ])
 
 #-------- HOW TO RUN ----------- 
-from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
+from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 test = getHeppyOption('test')
 if test == '1':
     monoJetSkim.metCut = 0
@@ -263,6 +255,9 @@ elif test == '74X-Data':
         photonAna.gammaID = "POG_PHYS14_25ns_Loose_NoIso"
         monoJetCtrlLepSkim.minLeptons = 1
         monoJetSkim.metCut = 0
+    elif what == "DoubleEG":
+        selectedComponents = [ DoubleEG_Run2015B ]
+        monoJetCtrlLepSkim.minLeptons = 2
     else:
         selectedComponents = dataSamples742
     for comp in selectedComponents:
