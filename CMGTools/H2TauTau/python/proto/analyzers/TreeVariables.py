@@ -161,6 +161,7 @@ geninfo_vars = [
     Variable('geninfo_has_w', type=int),
     Variable('geninfo_has_z', type=int),
     Variable('geninfo_mass'),
+    Variable('weight_gen'),
     Variable('genmet_pt'),
     Variable('genmet_eta'),
     Variable('genmet_e'),

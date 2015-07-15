@@ -3,6 +3,7 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 # import all analysers:
 # Heppy analyzers
 from PhysicsTools.Heppy.analyzers.core.JSONAnalyzer import JSONAnalyzer
+from PhysicsTools.Heppy.analyzers.core.SkimAnalyzerCount import SkimAnalyzerCount
 from PhysicsTools.Heppy.analyzers.core.EventSelector import EventSelector
 from PhysicsTools.Heppy.analyzers.objects.VertexAnalyzer import VertexAnalyzer
 from PhysicsTools.Heppy.analyzers.core.PileUpAnalyzer import PileUpAnalyzer
@@ -30,6 +31,12 @@ jsonAna = cfg.Analyzer(
     JSONAnalyzer,
     name='JSONAnalyzer',
 )
+
+skimAna = cfg.Analyzer(
+    SkimAnalyzerCount,
+    name='SkimAnalyzerCount'
+)
+
 
 triggerAna = cfg.Analyzer(
     TriggerAnalyzer,
@@ -107,6 +114,7 @@ higgsWeighter = cfg.Analyzer(
 ###################################################
 commonSequence = cfg.Sequence([
     # jsonAna,
+    skimAna,
     triggerAna,
     vertexAna,
     genAna,

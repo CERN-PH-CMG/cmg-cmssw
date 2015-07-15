@@ -19,6 +19,7 @@ class DYJetsFakeAnalyzer(Analyzer):
     def declareHandles(self):
         super(DYJetsFakeAnalyzer, self).declareHandles()
 
+        self.mchandles['genInfo'] = AutoHandle(('generator','',''), 'GenEventInfoProduct' )
         self.mchandles['genJets'] = AutoHandle('slimmedGenJets', 'std::vector<reco::GenJet>')
 
     def process(self, event):
@@ -43,12 +44,16 @@ class DYJetsFakeAnalyzer(Analyzer):
         event.genmet_phi = -99.
         event.geninfo_has_z = False
         event.geninfo_has_w = False
+        event.weight_gen = 1.
 
         if self.cfg_comp.isData:
             return True
 
         self.readCollections(event.input)
         event.genJets = self.mchandles['genJets'].product()
+
+        event.weight_gen = self.mchandles['genInfo'].product().weight()
+        event.eventWeight *= event.weight_gen
 
         # gen MET as sum of the neutrino 4-momenta
         neutrinos = [
