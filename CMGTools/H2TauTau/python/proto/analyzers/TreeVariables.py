@@ -93,7 +93,8 @@ lepton_vars = [
 
 # electron
 electron_vars = [
-    Variable('eid_nontrigmva_loose', lambda ele : ele.mvaIDRun2("NonTrigPhys14", "Loose")),
+    # Variable('eid_nontrigmva_loose', lambda ele : ele.mvaIDRun2("NonTrigPhys14", "Loose")),
+    Variable('eid_nontrigmva_loose', lambda ele : ele.mvaRun2('NonTrigPhys14')),
     Variable('eid_nontrigmva_tight', lambda ele : ele.mvaIDRun2("NonTrigPhys14", "Tight")),
     Variable('eid_veto', lambda ele : ele.cutBasedId('POG_PHYS14_25ns_v1_Veto')),
     Variable('eid_loose', lambda ele : ele.cutBasedId('POG_PHYS14_25ns_v1_Loose')),

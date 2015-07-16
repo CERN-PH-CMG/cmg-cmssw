@@ -12,8 +12,8 @@ class DYLLReweighterTauEle( Analyzer ):
         if not self.cfg_comp.isMC:
             return True
 
-        # do nothing in all cases, but the DY -> ll
-        if event.isFake != 1 or self.cfg_comp.name.find('DY') == -1 :
+        # Only apply corrections for leptons giving rise to fake hadronic taus
+        if event.geninfo_fakeid not in [1, 3] or self.cfg_comp.name.find('DY') == -1 :
             return True
             
         tau = event.diLepton.leg1()

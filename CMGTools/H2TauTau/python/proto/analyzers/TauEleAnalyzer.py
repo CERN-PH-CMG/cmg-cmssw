@@ -1,11 +1,10 @@
-import operator
-
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.physicsobjects.Muon import Muon
 from PhysicsTools.Heppy.physicsobjects.Electron import Electron
+from PhysicsTools.Heppy.physicsobjects.Tau import Tau
 
 from CMGTools.H2TauTau.proto.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
-from CMGTools.H2TauTau.proto.physicsobjects.DiObject import TauElectron
+from CMGTools.H2TauTau.proto.physicsobjects.DiObject import TauElectron, DirectDiTau
 
 
 class TauEleAnalyzer(DiLeptonAnalyzer):
@@ -16,10 +15,21 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
 
     def declareHandles(self):
         super(TauEleAnalyzer, self).declareHandles()
-        self.handles['diLeptons'] = AutoHandle(
-            'cmgTauEleCorSVFitFullSel',
-            'std::vector<pat::CompositeCandidate>'
-        )
+
+        if hasattr(self.cfg_ana, 'from_single_objects') and self.cfg_ana.from_single_objects:
+            self.handles['taus'] = AutoHandle(
+                'slimmedTaus',
+                'std::vector<pat::Tau>'
+            )
+            self.handles['met'] = AutoHandle(
+                'slimmedMETs',
+                'std::vector<pat::MET>'
+            )
+        else:
+            self.handles['diLeptons'] = AutoHandle(
+                'cmgTauEleCorSVFitFullSel',
+                'std::vector<pat::CompositeCandidate>'
+            )
 
         self.handles['otherLeptons'] = AutoHandle(
             'slimmedMuons',
@@ -34,9 +44,6 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
         self.mchandles['genParticles'] = AutoHandle('prunedGenParticles',
                                                     'std::vector<reco::GenParticle>')
 
-        self.relaxEleId = False
-        self.relaxTauId = False
-
     def buildDiLeptons(self, cmgDiLeptons, event):
         '''Build di-leptons, associate best vertex to both legs,
         select di-leptons with a tight ID electron.
@@ -45,12 +52,28 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
         diLeptons = []
         for index, dil in enumerate(cmgDiLeptons):
             pydil = self.__class__.DiObjectClass(dil)
-            pydil.leg1().associatedVertex = event.goodVertices[0]
             pydil.leg2().associatedVertex = event.goodVertices[0]
-            pydil.leg2().rho = event.rho
+            pydil.leg1().associatedVertex = event.goodVertices[0]
+            pydil.leg1().rho = event.rho
             pydil.mvaMetSig = pydil.met().getSignificanceMatrix()
             diLeptons.append(pydil)
         return diLeptons
+
+    def buildDiLeptonsSingle(self, leptons, event):
+        di_leptons = []
+        met = self.handles['met'].product()[0]
+        for pat_ele in leptons:
+            ele = self.__class__.LeptonClass(pat_ele)
+            for pat_tau in self.handles['taus'].product():
+                tau = Tau(pat_tau)
+                di_tau = DirectDiTau(ele, tau, met)
+                di_tau.leg2().associatedVertex = event.goodVertices[0]
+                di_tau.leg1().associatedVertex = event.goodVertices[0]
+                di_tau.leg1().rho = event.rho
+
+                di_tau.mvaMetSig = None
+                di_leptons.append(di_tau)
+        return di_leptons
 
     def buildLeptons(self, cmgLeptons, event):
         '''Build electrons for veto, associate best vertex, select loose ID electrons.
@@ -91,66 +114,56 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
         return otherLeptons
 
     def process(self, event):
-
+        # FIXME - JAN - for current 2015 sync, but shall we really discard
+        # the vertex cuts?
+        event.goodVertices = event.vertices
+        
         result = super(TauEleAnalyzer, self).process(event)
-        import pdb; pdb.set_trace()
 
         event.isSignal = False
-
-        if result is False:
+        if result:
+            event.isSignal = True
+        # if result is False:
             # trying to get a dilepton from the control region.
             # it must have well id'ed and trig matched legs,
             # and di-lepton veto must pass
             # i.e. only the iso requirement is relaxed
 
-            # Also relax IDs for sideband studies without changing the
-            # dilepton selectionSequence
-            self.relaxEleId = True
-            self.relaxTauId = True
-            result = self.selectionSequence(event, fillCounter=False,
-                                            leg1IsoCut=self.cfg_ana.looseiso1,
-                                            leg2IsoCut=self.cfg_ana.looseiso2)
-            self.relaxEleId = False
-            self.relaxTauId = False
+        result = self.selectionSequence(event, fillCounter=True,
+                                        leg2IsoCut=self.cfg_ana.looseiso1,
+                                        leg1IsoCut=self.cfg_ana.looseiso2)
+        if result is False:
+            # really no way to find a suitable di-lepton,
+            # even in the control region
+            return False
 
-            if result is False:
-                # really no way to find a suitable di-lepton,
-                # even in the control region
-                return False
-            event.isSignal = False
-        else:
-            event.isSignal = event.leptonAccept and event.thirdLeptonVeto
+        event.isSignal = event.isSignal and event.leptonAccept and event.thirdLeptonVeto
 
         return True
 
-    def testTauVertex(self, lepton):
+    def testTauVertex(self, tau):
         '''Tests vertex constraints, for tau'''
         # Just checks if the primary vertex the tau was reconstructed with
         # corresponds to the one used in the analysis
-        isPV = lepton.vertex().z() == lepton.associatedVertex.z()
+        # isPV = tau.vertex().z() == lepton.associatedVertex.z()
+        isPV = abs(tau.leadChargedHadrCand().dz()) < 0.2
         return isPV
 
     def testVertex(self, lepton):
         '''Tests vertex constraints, for mu'''
         return abs(lepton.dxy()) < 0.045 and abs(lepton.dz()) < 0.2
 
-    def testLeg1ID(self, tau):
+    def testLeg2ID(self, tau):
         # Don't apply anti-e discriminator for relaxed tau ID
         # RIC: 9 March 2015
-        if self.relaxTauId:
-            return ( (tau.tauID('decayModeFinding')         > 0.5  or
-                      tau.tauID('decayModeFindingNewDMs')   > 0.5) and
-                     tau.tauID('againstMuonLoose3')         > 0.5  and
-                     (tau.zImpact() > 0.5 or tau.zImpact() < -1.5) and
-                     self.testTauVertex(tau) )
         return ( (tau.tauID('decayModeFinding')         > 0.5  or
                   tau.tauID('decayModeFindingNewDMs')   > 0.5) and
-                 tau.tauID('againstElectronTightMVA5')  > 0.5  and
-                 tau.tauID('againstMuonLoose3')         > 0.5  and
-                 (tau.zImpact() > 0.5 or tau.zImpact() < -1.5) and
+                 # tau.tauID('againstElectronTightMVA5')  > 0.5  and
+                 # tau.tauID('againstMuonLoose3')         > 0.5  and
+                 # (tau.zImpact() > 0.5 or tau.zImpact() < -1.5) and
                  self.testTauVertex(tau) )
 
-    def testLeg1Iso(self, tau, isocut):
+    def testLeg2Iso(self, tau, isocut):
         '''if isocut is None, returns true if three-hit iso cut is passed.
         Otherwise, returns true if iso MVA > isocut.'''
         if isocut is None:
@@ -161,19 +174,37 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
             # RIC: 9 March 2015
             return tau.tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") < isocut
 
-    def testLeg2ID(self, electron):
+    def testTightElectronID(self, electron):
+        mva = electron.mvaRun2('NonTrigPhys14')
+        eta = abs(electron.superCluster().eta())
+        if eta < 0.8:
+            return mva > 0.965
+        elif eta < 1.479:
+            return mva > 0.917
+        return mva > 0.683
+
+    def testElectronID(self, electron):
+        mva = electron.mvaRun2('NonTrigPhys14')
+        eta = abs(electron.superCluster().eta())
+        if eta < 0.8:
+            return mva > 0.933
+        elif eta < 1.479:
+            return mva > 0.825
+        return mva > 0.337
+
+    def testLeg1ID(self, electron):
         '''Tight electron selection, no isolation requirement.
            Electron ID: NonTrigPhys14, Tight
         '''
-        return electron.electronID('POG_MVA_ID_Run2_NonTrig_Tight') and \
-            self.testVertex(electron)
+        # return electron.electronID('POG_MVA_ID_Run2_NonTrig_Tight') and \
+        return self.testTightElectronID(electron) and self.testVertex(electron)
 
-    def testLeg2Iso(self, leg, isocut):  # electron
+    def testLeg1Iso(self, leg, isocut):  # electron
         if isocut is None:
             isocut = self.cfg_ana.iso2
         return leg.relIso(dBetaFactor=0.5, allCharged=0) < isocut
 
-    def testLooseLeg2(self, leg):  # electrons
+    def testLooseleg1(self, leg):  # electrons
         ''' pt, eta and isolation selection for electrons
             used in the di-electron veto.
             POG_PHYS14_25ns_v1_Veto
@@ -196,27 +227,42 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
             muon.relIso(dBetaFactor=0.5, allCharged=0) < 0.3
 
 
-    def thirdLeptonVeto(self, leptons, otherLeptons, isoCut=0.3):
-        # count electrons (leg 2)
-        vLeptons = [electron for electron in leptons if
-                      self.testLegKine(electron, ptcut=10, etacut=2.5) and
-                      self.testVertex(electron) and
-                      electron.electronID('POG_Cuts_ID_PHYS14_25ns_v1_ConvVeto_Veto') and
-                      self.testLeg2Iso(electron, isoCut)]
-
+    def otherLeptonVeto(self, leptons, otherLeptons, isoCut=0.3):
         # count tight muons
         vOtherLeptons = [muon for muon in otherLeptons if
-                           self.testTightOtherLepton(muon)]
+                    muon.muonID('POG_ID_Medium') and
+                    self.testVertex(muon) and
+                    self.testLegKine(muon, ptcut=10, etacut=2.4) and
+                    muon.relIso(dBetaFactor=0.5, allCharged=0) < 0.3]
 
-        if len(vLeptons) + len(vOtherLeptons) > 1:
+        if len(vOtherLeptons) > 0:
             return False
 
         return True
 
-    def leptonAccept(self, leptons):
+
+    def thirdLeptonVeto(self, leptons, otherLeptons, isoCut=0.3):
+        # count electrons
+        vLeptons = [electron for electron in leptons if
+                         self.testLegKine(electron, ptcut=10, etacut=2.5) and
+                         self.testVertex(electron) and
+                         self.testElectronID(electron) and
+                         # electron.cutBasedId('POG_PHYS14_25ns_v1_Veto') and
+                         electron.relIso(dBetaFactor=0.5, allCharged=0) < 0.3]
+
+        if len(vLeptons) > 1:
+            return False
+
+        return True
+
+    def leptonAccept(self, leptons, event):
         '''Returns True if the additional lepton veto is successful'''
-        looseLeptons = filter(self.testLooseLeg2, leptons)
+        looseLeptons = filter(self.testLooseleg1, leptons)
         nLeptons = len(looseLeptons)
+
+        if event.leg1 not in looseLeptons:
+            looseLeptons.append(event.leg1)
+
         if nLeptons < 2:
             return True
 
@@ -233,23 +279,9 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
         if len(diLeptons) == 1:
             return diLeptons[0]
 
-        minRelIso = min(d.leg2().relIso(dBetaFactor=0.5, allCharged=0) for d in diLeptons)
+        minRelIso = min(d.leg1().relIso(dBetaFactor=0.5, allCharged=0) for d in diLeptons)
 
-        diLeps = [dil for dil in diLeptons if dil.leg2().relIso(dBetaFactor=0.5, allCharged=0) == minRelIso]
-
-        if len(diLeps) == 1:
-            return diLeps[0]
-
-        maxPt = max(d.leg2().pt() for d in diLeps)
-
-        diLeps = [dil for dil in diLeps if dil.leg2().pt() == maxPt]
-
-        if len(diLeps) == 1:
-            return diLeps[0]
-
-        minIso = min(d.leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") for d in diLeps)
-
-        diLeps = [dil for dil in diLeps if dil.leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") == minIso]
+        diLeps = [dil for dil in diLeptons if dil.leg1().relIso(dBetaFactor=0.5, allCharged=0) == minRelIso]
 
         if len(diLeps) == 1:
             return diLeps[0]
@@ -257,6 +289,20 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
         maxPt = max(d.leg1().pt() for d in diLeps)
 
         diLeps = [dil for dil in diLeps if dil.leg1().pt() == maxPt]
+
+        if len(diLeps) == 1:
+            return diLeps[0]
+
+        minIso = min(d.leg2().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") for d in diLeps)
+
+        diLeps = [dil for dil in diLeps if dil.leg2().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits") == minIso]
+
+        if len(diLeps) == 1:
+            return diLeps[0]
+
+        maxPt = max(d.leg2().pt() for d in diLeps)
+
+        diLeps = [dil for dil in diLeps if dil.leg2().pt() == maxPt]
 
         if len(diLeps) != 1:
             print 'ERROR in finding best dilepton', diLeps
