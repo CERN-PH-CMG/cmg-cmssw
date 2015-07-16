@@ -8,7 +8,6 @@ class PileUpReWeighter:
         self.puFileData = puFileData
         self.puFileMC = puFileMC
 
-        if self.isdata: return 1.0
         assert( os.path.isfile(os.path.expandvars(self.puFileMC)) )
         assert( os.path.isfile(os.path.expandvars(self.puFileData)) )
 
@@ -29,6 +28,7 @@ class PileUpReWeighter:
 
 
     def getWeight(self,nvtx):
+        if self.isdata: return 1.0
         vertexWeight = 1
         bin = self.datahist.FindBin(nvtx)
         if bin<1 or bin>self.datahist.GetNbinsX():

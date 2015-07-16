@@ -54,9 +54,8 @@ class EventVarsMonojet:
         return ret
     def __call__(self,event):
         # prepare output
-        #ret = dict([(name,0.0) for name in self.branches])
         ret = {}; jetret = {}; tauret = {}
-        ret['weight'] = event.xsec * 1000 / self.sample_nevt
+        ret['weight'] = event.xsec * 1000 / self.sample_nevt if event.run == 1 else 1.0
         leps = [l for l in Collection(event,"LepGood","nLepGood")]
         ret['nMu10V'] = sum([(abs(l.pdgId)==13 and int(self.lepIdVeto(l))) for l in leps ])
         ret['nMu20T'] = sum([(abs(l.pdgId)==13 and int(self.lepIdTight(l))) for l in leps ])
