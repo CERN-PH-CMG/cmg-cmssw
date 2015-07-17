@@ -94,6 +94,8 @@ def doTinyCmsPrelim(textLeft="_default_",textRight="_default_",hasExpo=False,tex
     if textRight not in ['', None]:
         if "%(lumi)" in textRight: 
             textRight = textRight % { 'lumi':lumi }
+        elif "%(lumipb)" in textRight:
+            textRight = textRight % { 'lumipb':lumi*1000 }
         doSpam(textRight,.68+xoffs, .955, .99+xoffs, .995, align=32, textSize=textSize)
 
 def reMax(hist,hist2,islog,factorLin=1.3,factorLog=2.0):
