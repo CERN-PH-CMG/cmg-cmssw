@@ -8,7 +8,7 @@
 
 # ---- Spring15 50ns samples -------
 # -- Z->ll (inclusive) -- 
-DYJets+  : DYJetsToLL_M50_50ns : xsec; FillColor=ROOT.kOrange+8, Label="Z(ll)+jets", NormSystematic=0.2 
+DYJets+  : DYJetsToLL_M50_50ns : xsec; FillColor=ROOT.kAzure+6, Label="Z(ll)+jets", NormSystematic=0.2 
 
 # -- W+jets --
 WJets    : WJetsToLNu_50ns : xsec;  FillColor=ROOT.kAzure+3, NormSystematic=0.2
@@ -32,5 +32,5 @@ QCD      : QCD_Pt3200_50ns       : xsec; FillColor=ROOT.kGray, Label="QCD", Norm
 
 
 # -- data --
-#data     : Express2015B
-data     : DoubleEG2015B
+data     : DoubleMuon_2015B
+data     : DoubleEG_2015B

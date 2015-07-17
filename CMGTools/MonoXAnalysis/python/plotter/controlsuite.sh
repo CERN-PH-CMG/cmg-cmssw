@@ -10,21 +10,39 @@ else
     J=6;
 fi
 
-COREOPT="-P $T --s2v -j $J -l 0.0017"
+LUMI="0.0195"
+OPTCAPTION="--rspam '#sqrt{s} = 13 TeV, L = %(lumipb).1f pb^{-1}' "
+
+COREOPT="-P $T --s2v -j $J -l $LUMI -W vtxW "
 COREY="mcAnalysis.py ${COREOPT} -G "
 COREP="mcPlots.py  ${COREOPT} -f --poisson "
-#FEV=" -F mjvars/t \"$T/0_eventvars_mj_v1/evVarFriend_{cname}.root\" "
+FEV=" -F mjvars/t \"$T/0_eventvars_mj_v1/evVarFriend_{cname}.root\" "
 
 ROOT="plots/Run2015B/v1.0/$WHAT"
 
 RUNY="${COREY} mca-74X.txt "
-RUNY2L="${RUNY} control-samples/zmumu.txt "
+RUNY2MU="${RUNY} control-samples/zmumuincl.txt "
+RUNY2E="${RUNY} control-samples/zeeincl.txt "
 
-PLOT="${COREP} mca-74X.txt "
-PLOT2L="${PLOT} control-samples/zmumu.txt control-samples/zmumu-plots.txt "
+PLOT="${COREP} mca-74X.txt $OPTCAPTION "
+PLOT2MU="${PLOT} control-samples/zmumu.txt control-samples/zmumu-plots.txt "
+PLOT2E="${PLOT} control-samples/zee.txt control-samples/zee-plots.txt "
 
 case $WHAT in
 zmumu)
-        echo "python ${RUNY2L} --sp DYJets "
-        echo "python ${PLOT2L} --sp DYJets --pdir plots/Run2015B_Zmm "
+        echo "python ${RUNY2MU} $FEV --sp DYJets "
+        echo "python ${PLOT2MU} $FEV --sp DYJets --pdir plots/Run2015B_Zmm "
+;;
+zee)
+        echo "python ${RUNY2E} $FEV --sp DYJets "
+        echo "python ${PLOT2E} $FEV --sp DYJets --pdir plots/Run2015B_Zee "
+;;
+zee_bb)
+        echo "python ${RUNY2E} $FEV --sp DYJets -A muVeto ebeb 'abs(LepGood1_eta) < 1.479 && abs(LepGood2_eta) < 1.479' "
+        echo "python ${PLOT2E} $FEV --sp DYJets -A muVeto ebeb 'abs(LepGood1_eta) < 1.479 && abs(LepGood2_eta) < 1.479' --pdir plots/Run2015B_Zee_EBEB --print=pdf,png,C,root --scaleSigToData "
+;;
+zee_ee)
+        echo "python ${RUNY2E} $FEV --sp DYJets -A muVeto ebeb 'abs(LepGood1_eta) > 1.479 && abs(LepGood2_eta) > 1.479' "
+        echo "python ${PLOT2E} $FEV --sp DYJets -A muVeto ebeb 'abs(LepGood1_eta) > 1.479 && abs(LepGood2_eta) > 1.479' --pdir plots/Run2015B_Zee_EEEE --print=pdf,png,C,root --scaleSigToData "
+;;
 esac;
