@@ -643,7 +643,11 @@ if(runPrepareDataCards):
 
 if(runPrepareDataCardsFast):
     # common.h  is already in place, as is the one for the systematic
-    # common2.h is got from the template folder, specified by the variable
+    # common2.h is got from the template folder, specified by the variable (same folder if empty)
+    if (DataCards_templateFromFolder != ""):
+        shutil.copyfile("JobOutputs/"+DataCards_templateFromFolder+"/common.h", "JobOutputs/"+foldername+"/common2.h");
+    else:
+        shutil.copyfile("JobOutputs/"+foldername+"/common.h", "JobOutputs/"+foldername+"/common2.h");
     shutil.copyfile("JobOutputs/"+DataCards_templateFromFolder+"/common.h", "JobOutputs/"+foldername+"/common2.h");
     os.system("sed -i 's/.*namespace WMass{.*/namespace WMass2{/' JobOutputs/"+foldername+"/common2.h")
     
