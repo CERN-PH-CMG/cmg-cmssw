@@ -388,5 +388,5 @@ dmCoreSequence = [
     monoJetSkim,
     monoJetCtrlLepSkim,
     triggerFlagsAna,
-    eventFlagsAna,
+#    eventFlagsAna,
 ]
