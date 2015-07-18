@@ -280,8 +280,8 @@ void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt
   // fD1U2Mean1Fit[fJet], fM1U2Mean1Fit[fJet],
   // fD1U2Mean2Fit[fJet], fM1U2Mean2Fit[fJet],
 
-  // iU1,iU2,
   RecoilCorrVarDiagoParU1orU2fromDATAorMC,RecoilCorrVarDiagoParN,RecoilCorrVarDiagoParSigmas, mytype, fJet
+  ,iU1,iU2
   // , doSingleGauss 
   );
   
@@ -308,6 +308,7 @@ TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
 //                     RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1, 
 //                     RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2 
 int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas, int mytype, int fJet
+,double &pU1,double &pU2
 ) {
 
   bool dodebug=false;
@@ -347,8 +348,10 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
 
   /////
   
-  double pU1   = pU*pCos;
-  double pU2   = pU*pSin;
+  // double pU1   = pU*pCos;
+  pU1   = pU*pCos;
+  // double pU2   = pU*pSin;
+  pU2   = pU*pSin;
   double pU1Diff  = pU1-pDefU1;
   double pU2Diff  = pU2;
 

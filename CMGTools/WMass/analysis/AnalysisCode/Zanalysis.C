@@ -416,24 +416,24 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     //------------------------------------------------------
 
     bool first_time_in_the_event = true;
-    double pfmet_bla,pfmetphi_bla,pfmet_blaCentral,pfmetphi_blaCentral;
-    // double pfmet_bla,pfmetphi_bla,pfmet_blaCentral,pfmetphi_blaCentral;
+    double pfmet_trasv,pfmetphi_trasv,pfmet_trasvCentral,pfmetphi_trasvCentral;
+    // double pfmet_trasv,pfmetphi_trasv,pfmet_trasvCentral,pfmetphi_trasvCentral;
     if(use_PForNoPUorTKmet==0){
-      pfmet_bla = pfmet;
-      pfmetphi_bla = pfmet_phi;
+      pfmet_trasv = pfmet;
+      pfmetphi_trasv = pfmet_phi;
     }else if(use_PForNoPUorTKmet==1){
-      pfmet_bla = nopumet;
-      pfmetphi_bla = nopumet_phi;
+      pfmet_trasv = nopumet;
+      pfmetphi_trasv = nopumet_phi;
     }else if(use_PForNoPUorTKmet==2){
-      pfmet_bla = tkmet;
-      pfmetphi_bla = tkmet_phi;
+      pfmet_trasv = tkmet;
+      pfmetphi_trasv = tkmet_phi;
     }else{
       cout << "MET TYPE OPTION use_PForNoPUorTKmet: " << use_PForNoPUorTKmet << " NOT DEFINED, USE 0:PF, 1:NOPU, 2:TK" << endl;
       return;
     }
     
-    pfmet_blaCentral = pfmet_bla;
-    pfmetphi_blaCentral = pfmetphi_bla;
+    pfmet_trasvCentral = pfmet_trasv;
+    pfmetphi_trasvCentral = pfmetphi_trasv;
 
     muPosNoCorr.SetPtEtaPhiM(MuPos_pt,MuPos_eta,MuPos_phi,MuPos_mass);
     muNegNoCorr.SetPtEtaPhiM(MuNeg_pt,MuNeg_eta,MuNeg_phi,MuNeg_mass);
@@ -795,29 +795,29 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                     && use_PForNoPUorTKmet<3 && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){ // use MET corrections if required
                   
                   if(use_PForNoPUorTKmet==0){
-                    pfmet_bla = pfmet;
-                    pfmetphi_bla = pfmet_phi;
+                    pfmet_trasv = pfmet;
+                    pfmetphi_trasv = pfmet_phi;
                   }else if(use_PForNoPUorTKmet==1){
-                    pfmet_bla = nopumet;
-                    pfmetphi_bla = nopumet_phi;
+                    pfmet_trasv = nopumet;
+                    pfmetphi_trasv = nopumet_phi;
                   }else if(use_PForNoPUorTKmet==2){
-                    pfmet_bla = tkmet;
-                    pfmetphi_bla = tkmet_phi;
+                    pfmet_trasv = tkmet;
+                    pfmetphi_trasv = tkmet_phi;
                   }
                   
 		  /*
-                  TLorentzVector met_preRecoilCorr; met_preRecoilCorr.SetPtEtaPhiM(pfmet_bla,0,pfmetphi_bla,0);
+                  TLorentzVector met_preRecoilCorr; met_preRecoilCorr.SetPtEtaPhiM(pfmet_trasv,0,pfmetphi_trasv,0);
 
                   TLorentzVector muposmet_preMuCorr; muposmet_preMuCorr.SetPtEtaPhiM(MuPos_pt,0,MuPos_phi,0);
                   TLorentzVector munegmet_preMuCorr; munegmet_preMuCorr.SetPtEtaPhiM(MuNeg_pt,0,MuNeg_phi,0);
                   TLorentzVector muposmet_postMuCorr; muposmet_postMuCorr.SetPtEtaPhiM(muPosCorr.Pt(),0,muPosCorr.Phi(),0);
                   TLorentzVector munegmet_postMuCorr; munegmet_postMuCorr.SetPtEtaPhiM(muNegCorr.Pt(),0,muNegCorr.Phi(),0);
                   
-                  // cout << "PRE MUON CORRECTION (raw recoil + rawMuon)= " << pfmet_bla << " " << pfmetphi_bla << endl;
+                  // cout << "PRE MUON CORRECTION (raw recoil + rawMuon)= " << pfmet_trasv << " " << pfmetphi_trasv << endl;
                   met_preRecoilCorr = met_preRecoilCorr + muPosNoCorr + muNegNoCorr - muPosNoCorr - muNegNoCorr;
-                  pfmet_bla = met_preRecoilCorr.Pt();
-                  pfmetphi_bla = met_preRecoilCorr.Phi();
-                  // cout << "POST MUON CORRECTION= " << pfmet_bla << " " << pfmetphi_bla << endl;
+                  pfmet_trasv = met_preRecoilCorr.Pt();
+                  pfmetphi_trasv = met_preRecoilCorr.Phi();
+                  // cout << "POST MUON CORRECTION= " << pfmet_trasv << " " << pfmetphi_trasv << endl;
 		  */
                   
                   // cout
@@ -826,20 +826,20 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   // << " par " << WMass::RecoilCorrVarDiagoParN_[m] 
                   // << " first_time_in_the_event " << first_time_in_the_event << endl;
                   // cout
-                  // << " pfmet_bla before=" << pfmet_bla
-                  // << " pfmetphi_bla before=" << pfmetphi_bla
-                  // << " pfmet_blaCentral before=" << pfmet_blaCentral
-                  // << " pfmetphi_blaCentral before=" << pfmetphi_blaCentral
+                  // << " pfmet_trasv before=" << pfmet_trasv
+                  // << " pfmetphi_trasv before=" << pfmetphi_trasv
+                  // << " pfmet_trasvCentral before=" << pfmet_trasvCentral
+                  // << " pfmetphi_trasvCentral before=" << pfmetphi_trasvCentral
                   // << endl;
                   if(useRecoilCorr==1){ // use MET corrections if required
-                    // correctorRecoil_Z->CorrectType2( pfmet_bla, pfmetphi_bla,
+                    // correctorRecoil_Z->CorrectType2( pfmet_trasv, pfmetphi_trasv,
                     // ZGen_pt, ZGen_phi,
                     // ZNocorr.Pt(), ZNocorr.Phi(),
                     // u1_dummy, u2_dummy,
                     // RecoilCorrVarDiagoParU1orU2fromDATAorMC, RecoilCorrNonClosure, RecoilCorrVarDiagoParSigmas,
                     // vtxBin,doSingleGauss);
                                 
-                                // correctorRecoil_Z->CorrectType2( pfmet_blaCentral, pfmetphi_blaCentral,
+                                // correctorRecoil_Z->CorrectType2( pfmet_trasvCentral, pfmetphi_trasvCentral,
                     // ZGen_pt, ZGen_phi,
                     // ZNocorr.Pt(), ZNocorr.Phi(),
                     // u1_dummy, u2_dummy,
@@ -859,8 +859,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                     // << " vtxBin=" << vtxBin
                     // << Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,0,toys_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV)
                     // << endl;
-		    //		    cout << "correcting pfmet= " << pfmet_bla;
-                    correctorRecoil_Z->CorrectMET3gaus(pfmet_bla,pfmetphi_bla,
+		    //		    cout << "correcting pfmet= " << pfmet_trasv;
+                    correctorRecoil_Z->CorrectMET3gaus(pfmet_trasv,pfmetphi_trasv,
 						       ZGen_pt,ZGen_phi,
 						       // Zcorr.Pt(),Zcorr.Phi(),
 						       ZNocorr.Pt(),ZNocorr.Phi(),
@@ -868,30 +868,30 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 						       RecoilCorrVarDiagoParU1orU2fromDATAorMC, m, RecoilCorrVarDiagoParSigmas,
 						       // WMass::RecoilCorrVarDiagoParU1orU2fromDATAorMC_[m], WMass::RecoilCorrVarDiagoParN_[m], RecoilCorrVarDiagoParSigmas,
 						       vtxBin,doSingleGauss,1);
-		    //		    cout << " after recoilCorrVariation="<< m << " pfmet= " << pfmet_bla << endl;
+		    //		    cout << " after recoilCorrVariation="<< m << " pfmet= " << pfmet_trasv << endl;
                     // return;
                     if(first_time_in_the_event && m==m_start && n==0){
-		      //		      cout << "correcting pfmet_Central= " << pfmet_blaCentral ;
-                      correctorRecoil_Z->CorrectMET3gaus(pfmet_blaCentral,pfmetphi_blaCentral,
+		      //		      cout << "correcting pfmet_Central= " << pfmet_trasvCentral ;
+                      correctorRecoil_Z->CorrectMET3gaus(pfmet_trasvCentral,pfmetphi_trasvCentral,
 							 ZGen_pt,ZGen_phi,
 							 ZNocorr.Pt(),ZNocorr.Phi(),
 							 u1_dummy, u2_dummy,
 							 0, 0, 0,
 							 vtxBin,doSingleGauss,1);
-		      //		      cout << " after recoilCorr pfmet_Central= " << pfmet_blaCentral << endl;
-                      // evt_weight*= correctorRecoil_Z->NonClosure_weight(pfmet_bla,pfmetphi_bla,
+		      //		      cout << " after recoilCorr pfmet_Central= " << pfmet_trasvCentral << endl;
+                      // evt_weight*= correctorRecoil_Z->NonClosure_weight(pfmet_trasv,pfmetphi_trasv,
                                                                        // ZGen_pt,ZGen_phi,ZGen_rap,
                                                                        // Zcorr.Pt(),Zcorr.Phi());
-                      correctorRecoil_Z->NonClosure_scale(pfmet_bla,pfmetphi_bla,
+                      correctorRecoil_Z->NonClosure_scale(pfmet_trasv,pfmetphi_trasv,
 							  ZGen_pt,ZGen_phi,ZGen_rap,
 							  Zcorr.Pt(),Zcorr.Phi());
                     }
                   }
                   // cout
-                  // << "pfmet_bla after=" << pfmet_bla
-                  // << " pfmetphi_bla after=" << pfmetphi_bla
-                  // << " pfmet_blaCentral after=" << pfmet_blaCentral
-                  // << " pfmetphi_blaCentral after=" << pfmetphi_blaCentral
+                  // << "pfmet_trasv after=" << pfmet_trasv
+                  // << " pfmetphi_trasv after=" << pfmetphi_trasv
+                  // << " pfmet_trasvCentral after=" << pfmet_trasvCentral
+                  // << " pfmetphi_trasvCentral after=" << pfmetphi_trasvCentral
                   // << endl;
                 }
 
@@ -900,27 +900,29 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 // Apply met phi corrections
                 //------------------------------------------------------
                 if(first_time_in_the_event && usePhiMETCorr==1 && m==m_start && n==0){ // use MET Phi correction if required
-                  pair<double, double> pfmet_phicorr = common_stuff::getPhiCorrMET( pfmet_bla, pfmetphi_bla, nvtx, !sampleName.Contains("DATA"));
-                  pfmet_bla = pfmet_phicorr.first;
-                  pfmetphi_bla = pfmet_phicorr.second;
+                  pair<double, double> pfmet_phicorr = common_stuff::getPhiCorrMET( pfmet_trasv, pfmetphi_trasv, nvtx, !sampleName.Contains("DATA"));
+                  pfmet_trasv = pfmet_phicorr.first;
+                  pfmetphi_trasv = pfmet_phicorr.second;
                 }
                 //------------------------------------------------------
                 // Define mu+, mu-, Z
                 //------------------------------------------------------
-                TLorentzVector mupos_bla,mupos_blaCentral,muneg_bla,muneg_blaCentral;
+                TLorentzVector mupos_trasv,mupos_trasvCentral,mupos_trasvNoCorr,muneg_trasv,muneg_trasvCentral;
                 
-                Z_met.SetPtEtaPhiM(pfmet_bla,0,pfmetphi_bla,0);
-                Z_metCentral.SetPtEtaPhiM(pfmet_blaCentral,0,pfmetphi_blaCentral,0);
-                muneg_bla.SetPtEtaPhiM(muNegNoCorr.Pt(),0,muNegNoCorr.Phi(),0); // correction only one one muon for Wlike
-                muneg_blaCentral.SetPtEtaPhiM(muNegNoCorr.Pt(),0,muNegNoCorr.Phi(),0); // correction only one one muon for Wlike
-                mupos_bla.SetPtEtaPhiM(muPosCorr.Pt(),0,muPosCorr.Phi(),0);
-                mupos_blaCentral.SetPtEtaPhiM(muPosCorrCentral.Pt(),0,muPosCorrCentral.Phi(),0);
-                WlikePos_met = muneg_bla + Z_met;
-                WlikePos_metCentral = muneg_blaCentral + Z_metCentral;
-                WlikePos_met.SetPtEtaPhiM(WlikePos_met.Pt(),0,WlikePos_met.Phi(),0);
-                WlikePos_metCentral.SetPtEtaPhiM(WlikePos_metCentral.Pt(),0,WlikePos_metCentral.Phi(),0);
-                WlikePos = mupos_bla + WlikePos_met;
-                WlikePosCentral = mupos_blaCentral + WlikePos_metCentral;
+                Z_met.SetPtEtaPhiM(pfmet_trasv,0,pfmetphi_trasv,0);
+                Z_metCentral.SetPtEtaPhiM(pfmet_trasvCentral,0,pfmetphi_trasvCentral,0);
+                muneg_trasv.SetPtEtaPhiM(muNegNoCorr.Pt(),0,muNegNoCorr.Phi(),0); // correction only one one muon for Wlike
+                muneg_trasvCentral.SetPtEtaPhiM(muNegNoCorr.Pt(),0,muNegNoCorr.Phi(),0); // correction only one one muon for Wlike
+                mupos_trasv.SetPtEtaPhiM(muPosCorr.Pt(),0,muPosCorr.Phi(),0);
+                mupos_trasvCentral.SetPtEtaPhiM(muPosCorrCentral.Pt(),0,muPosCorrCentral.Phi(),0);
+                mupos_trasvNoCorr.SetPtEtaPhiM(muPosNoCorr.Pt(),0,muPosNoCorr.Phi(),0);
+
+                WlikePos_met = muneg_trasv + Z_met + mupos_trasvNoCorr - mupos_trasv; // taking into account muon correction into W_met
+                WlikePos_metCentral = muneg_trasvCentral + Z_metCentral + mupos_trasvNoCorr - mupos_trasvCentral;  // taking into account muon correction into W_met
+                WlikePos_met.SetPtEtaPhiM(WlikePos_met.Pt(),0,WlikePos_met.Phi(),0); // just to be sure
+                WlikePos_metCentral.SetPtEtaPhiM(WlikePos_metCentral.Pt(),0,WlikePos_metCentral.Phi(),0); // just to be sure
+                WlikePos = mupos_trasv + WlikePos_met;
+                WlikePosCentral = mupos_trasvCentral + WlikePos_metCentral;
               
                 double coeff=2;
                 double MTFirstOrder_central = common_stuff::getMTFirstOrder(muPosCorrCentral.Pt(), muPosCorrCentral.Phi(), WlikePos_metCentral.Pt() ,WlikePos_metCentral.Phi(), coeff);

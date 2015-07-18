@@ -186,7 +186,7 @@ protected:
 		     //                     RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1, 
 		     //                     RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2 
          int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas, 
-         int mytype, int fJet
+         int mytype, int fJet, double &pU1, double &pU2
 		     );
   double calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2);
   double diGausInvGraph(double iPVal,double iFracMC,double iSigma1MC,double iSigma2MC,double iFracDATA,double iSigma1DATA,double iSigma2DATA);

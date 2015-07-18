@@ -92,6 +92,7 @@ resubmit = 0;
 controlplots = 0;
 
 mergeSigEWKbkg = 0;
+removeChunks = 0; # 0: Don't remove chuncks after merge - 1: Remove them
 
 ## PERFORM W or Z MASS FIT
 fit_W_or_Z = "Z" # "W,Z" or "W" or "Z"
@@ -146,11 +147,23 @@ runDataCardsParametrization = 0; # NOT REALLY USED
 ## ============================================================== #
 ## ============================================================== #
 
-# if RecoilCorrNVarAll != 0 or GlobalSscaleMuonCorrNsigma != 0 or usePhiMETCorr != 0 \
+# Check if it's running from the correct dir
+base_dir = os.getcwd()
+if os.path.dirname(os.path.realpath(__file__)) == base_dir:
+    print "Working in:"
+    print base_dir
+else:
+    print "You need to execute this script from the 'analysis' directory"
+    sys.exit(1)
+
+# if RecoilCorrNVarAll != 0 or usePhiMETCorr != 0 \
     # or useRecoilCorr != 1 or RecoilCorrVarDiagoParSigmas != "0" or RecoilCorrNonClosure != "0" \
     # or syst_ewk_Alcaraz != "0" 
-if RecoilCorrVarDiagoParU1orU2fromDATAorMC != "0" or LHAPDF_reweighting_members !="1":
-  WMassNSteps = "0"
+if RecoilCorrVarDiagoParU1orU2fromDATAorMC != "0" or \
+   LHAPDF_reweighting_members !="1" or \
+   GlobalSscaleMuonCorrNsigma != 0 :
+    print "Computing a systematic: number of mass steps is set to 0\n"
+    WMassNSteps = "0"
 
 
 if(use_PForNoPUorTKmet==0): # 0:PF, 1:NOPU, 2:TK 
@@ -342,10 +355,6 @@ fZana_str = [
   ntuple_folder+"SingleTop/Tbar_tW/ZTreeProducer_tree.root"
 ];
 
-base_dir = os.getcwd()
-print "Working in:"
-print base_dir
-print
 print "Copying script over:"
 print "cp "+os.path.basename(__file__)+" JobOutputs/"+foldername;
 print
@@ -617,9 +626,13 @@ if(runWanalysis or runZanalysis):
 
 if(mergeSigEWKbkg):
     os.chdir("utils/");
-    os.system("./merge_MC.sh \"../JobOutputs/"+foldername+"/\" "+str(resubmit)+" "+str(batchQueue)+" "+str(useBatch and parallelize));
+    os.system("./merge_MC.sh \"../JobOutputs/"+foldername+"/\" "+str(resubmit)+" "+str(batchQueue)+" "+str(useBatch and parallelize)+str(removeChunks));
     os.chdir(base_dir);
 
+if(removeChunks and not mergeSigEWKbkg):
+    print "Removing chunks from JobOutputs/"+foldername
+    os.system("find JobOutputs/"+foldername+"/output_* -type f -name [WZ]analysis_chunk*.root -delete");
+    os.chdir(base_dir);
 
 if(runPrepareDataCards):
     os.chdir("AnalysisCode/");
@@ -630,7 +643,11 @@ if(runPrepareDataCards):
 
 if(runPrepareDataCardsFast):
     # common.h  is already in place, as is the one for the systematic
-    # common2.h is got from the template folder, specified by the variable
+    # common2.h is got from the template folder, specified by the variable (same folder if empty)
+    if (DataCards_templateFromFolder != ""):
+        shutil.copyfile("JobOutputs/"+DataCards_templateFromFolder+"/common.h", "JobOutputs/"+foldername+"/common2.h");
+    else:
+        shutil.copyfile("JobOutputs/"+foldername+"/common.h", "JobOutputs/"+foldername+"/common2.h");
     shutil.copyfile("JobOutputs/"+DataCards_templateFromFolder+"/common.h", "JobOutputs/"+foldername+"/common2.h");
     os.system("sed -i 's/.*namespace WMass{.*/namespace WMass2{/' JobOutputs/"+foldername+"/common2.h")
     

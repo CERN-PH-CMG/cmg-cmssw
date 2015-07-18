@@ -4,18 +4,19 @@
 #resubmit=${2}
 #queue=${3}
 useBatch=${4}
+removeChunks=${5}
 
 echo "merging chunks (if they exist)"
 
 samples=("DATA"   "WJetsPowPlus"  "WJetsPowNeg"  "WJetsMadSig"  "WJetsMadFake"  "DYJetsPow"  "DYJetsMadSig"  "DYJetsMadFake"   "TTJets"   "ZZJets"   "WWJets"  "WZJets"    "QCD"  "T_s"  "T_t"  "T_tW"  "Tbar_s"  "Tbar_t"  "Tbar_tW")
-# analyses=("Wanalysis" "Zanalysis" "PhiStarEtaAnalysis")
 analyses=("Wanalysis" "Zanalysis" )
 
 for (( id_sample=0; id_sample<${#samples[@]}; id_sample++ ))
   do
   for (( id_ana=0; id_ana<${#analyses[@]}; id_ana++ ))
     do
-    
+    # Delete empty chunks before counting
+    find ${1}/output_${samples[id_sample]} -size 0 -type f -name ${analyses[id_ana]}_chunk*.root -delete
     nchunks=$(ls ${1}/output_${samples[id_sample]}/${analyses[id_ana]}_chunk*.root |wc -l)
     nchunks_planned=$(more ${1}/output_${samples[id_sample]}/${analyses[id_ana]}_nChuncks.log)
     if [ $nchunks -gt 0 ]
@@ -48,10 +49,9 @@ for (( id_sample=0; id_sample<${#samples[@]}; id_sample++ ))
             # echo $ARRAY
           fi
         done
+        echo "List of the missing chunks (the eventual resubmit batch jobs may or may not be finished)"
         printf "%s "  "${ARRAY[@]}"
         echo ""
-        # echo ${ARRAY}
-        echo "List of the chunks rebuilt (the eventual batch jobs may or may not be finished)"
         read -p "PRESS 1 TO EXIT, 0 TO CONTINUE THE MERGE: " n1
         if [[ ${n1} == 1 ]]
         then
@@ -60,8 +60,11 @@ for (( id_sample=0; id_sample<${#samples[@]}; id_sample++ ))
         fi
       fi
       hadd -f ${1}/output_${samples[id_sample]}/${analyses[id_ana]}OnDATA.root ${1}/output_${samples[id_sample]}/${analyses[id_ana]}_chunk*.root 
-# Commented to prevent chunks deletion on merge
-#      rm ${1}/output_${samples[id_sample]}/${analyses[id_ana]}_chunk*.root 
+      # Remove chunks only if asked
+      if [[ $removeChunks == 1 ]]
+      then
+        rm ${1}/output_${samples[id_sample]}/${analyses[id_ana]}_chunk*.root
+      fi
       rm -rf ${1}/output_${samples[id_sample]}/LSFJOB_*
       rm -rf ${1}/output_${samples[id_sample]}/*.out
     fi
