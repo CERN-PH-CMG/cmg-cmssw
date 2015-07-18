@@ -5,7 +5,7 @@
   gStyle->SetOptStat(0);
   
   TFile *fout=new TFile("polarization_data_powheg.root","RECREATE");
-  TFile *fin=new TFile("fout_mass_allGenEvts.root");
+  TFile *fin=new TFile("fout_mass_allGenEvts_highqedstat1.root");
   const int fitcoeff = 6;
   
   const int nrapbins = 2;
@@ -81,6 +81,7 @@
   
   // TF2 *fpol = new TF2("fpol","[5]*0.5*(1-3*x*x)+[0]*sin(2*acos(x))*cos(y)+[1]*0.5*sin(acos(x))*sin(acos(x))*cos(2*y)+[2]*sin(acos(x))*cos(y)+[3]*x + [4]*(1+x*x)",-1,1,0,TMath::Pi());
   TF2 *fpol = new TF2("fpol","[6]*([0]*0.5*(1-3*x*x)+[1]*sin(2*acos(x))*cos(y)+[2]*0.5*sin(acos(x))*sin(acos(x))*cos(2*y)+[3]*sin(acos(x))*cos(y)+[4]*x + 1*(1+x*x))",-1,1,0,TMath::Pi());
+  fpol->SetParameter(5,0);
   fpol->SetParameter(6,100);
   
   for(int irap=0; irap<nrapbins; irap++){
