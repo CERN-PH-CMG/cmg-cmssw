@@ -10,6 +10,7 @@
 #include "TRandom3.h"
 #include "../common.h"
 #include "../common2.h"
+#include <TROOT.h>
 
 void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0){
 
@@ -153,8 +154,11 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                   if(!TStringFromFile.Contains("-2 ln Q_{TEV}")){
                     cout << "\nTStringFromFile= " << TStringFromFile << endl;
                     cout << "\n ERROR: COULDN'T FIND FIT RESULT IN "<< 
-                    Form("dummy_datacard_Wmass_MuPos_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log ",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,(m>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data())                      
-                    << endl;
+                    Form("dummy_datacard_Wmass_MuPos_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log ",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,(m>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data())
+                    << " resubmitting and quitting" << endl;
+                    TString outfilename_str = Form("submit_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.sh",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
+                    gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J runMfit "+outfilename_str);                    
+                    // gROOT->ProcessLine(".! sh "+outfilename_str);                    
                     return;
                   }
                   LineColumns = TStringFromFile.Tokenize(" ");
