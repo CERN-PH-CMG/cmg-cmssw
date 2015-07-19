@@ -165,6 +165,11 @@ if RecoilCorrVarDiagoParU1orU2fromDATAorMC != "0" or \
     print "Computing a systematic: number of mass steps is set to 0\n"
     WMassNSteps = "0"
 
+if RecoilCorrVarDiagoParU1orU2fromDATAorMC != "0" and \
+   RecoilCorrVarDiagoParSigmas == "0" :
+    print "ERROR: Selected recoil correction set " + RecoilCorrVarDiagoParU1orU2fromDATAorMC + " with 0 sigmas"
+    print "Check the 'RecoilCorrVarDiagoParSigmas' variable"
+    sys.exit(1)
 
 if(use_PForNoPUorTKmet==0): # 0:PF, 1:NOPU, 2:TK 
     foldername+="_pfmet";
