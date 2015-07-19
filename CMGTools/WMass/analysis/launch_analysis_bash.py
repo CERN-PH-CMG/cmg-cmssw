@@ -102,7 +102,7 @@ runPrepareDataCardsFast = 0; # ALTERNATIVE FAST WAY: TEMPLATES ARE IN THE SYsT F
 DataCards_templateFromFolder="" # evaluate systematics wrt folder (or leave it empty) -- full template folder
 
 ## NEW FIT
-runClosureTestLikeLihoodRatioAnsMergeResults = 0;
+runClosureTestLikeLihoodRatio = 0; # 1: also executes merge if not using batch jobs
 mergeResults = 0;
 
 #######################
@@ -665,7 +665,7 @@ if(runDataCardsParametrization):
     os.chdir(base_dir);
 
 
-if(runClosureTestLikeLihoodRatioAnsMergeResults):
+if(runClosureTestLikeLihoodRatio):
     shutil.copyfile("AnalysisCode/ClosureTest_fits_likelihoodratio.C","JobOutputs/"+foldername+"/DataCards/ClosureTest_fits.C");
     os.chdir("JobOutputs/"+foldername+"/DataCards");
     print "We are working in:\n" + os.getcwd() + "\n"
@@ -682,11 +682,11 @@ if(runClosureTestLikeLihoodRatioAnsMergeResults):
     # os.system("user=$(whoami); cd /afs/cern.ch/work/${user:0:1}/${user}/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;eval `scramv1 runtime -sh`; cd -; source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh; root -l -b -q \'ClosureTest_fits.C++(1,0,\""+str(fit_W_or_Z)+"\")\'")
     os.chdir(base_dir);
 
-if((runClosureTestLikeLihoodRatioAnsMergeResults and useBatch==0) or mergeResults):
+if(mergeResults or (runClosureTestLikeLihoodRatio and useBatch==0)):
     os.system("cp AnalysisCode/merge_results.C JobOutputs/"+foldername+"/DataCards/merge_results.C");
     os.chdir("JobOutputs/"+foldername+"/DataCards");
     print os.getcwd();
-    os.system("rm -rf LSF*; rm output_W*.root");
+    os.system("rm -rf LSF*; rm -f output_W*.root");
     os.system("root -l -b -q \'merge_results.C++(1,0,\""+str(fit_W_or_Z)+"\","+RecoilCorrVarDiagoParU1orU2fromDATAorMC+")\'");
     os.chdir(base_dir);
 
