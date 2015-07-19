@@ -5,6 +5,7 @@
 #queue=${3}
 useBatch=${4}
 removeChunks=${5}
+doEWKMerge=1
 
 echo "merging chunks (if they exist)"
 
@@ -58,11 +59,11 @@ do
         echo "List of the missing chunks (the eventual resubmit batch jobs may or may not be finished)"
         printf "%s "  "${ARRAY[@]}"
         echo ""
-        read -p "PRESS 1 TO EXIT, 0 TO CONTINUE THE MERGE: " n1
+        read -p "PRESS 1 TO SKIP, 0 TO CONTINUE THE MERGE: " n1
         if [[ ${n1} == 1 ]]
         then
-          exit 1
-          # continue
+          doEWKMerge=0
+          continue
         fi
       fi
       hadd -f ${1}/output_${samples[id_sample]}/${analyses[id_ana]}OnDATA.root ${1}/output_${samples[id_sample]}/${analyses[id_ana]}_chunk*.root 
@@ -78,11 +79,14 @@ do
   done
 done
 
-# exit 1
+if [ ${doEWKMerge} == 0 ]
+then
+  exit 1
+fi
 
 echo 'EWK ONLY (EWK)'
 # EWK ONLY
-mkdir ${1}/output_EWK
+mkdir -p ${1}/output_EWK
 echo 'Z analysis (W+Jets sig+fake, DY+Jets fake, ZZ, WZ, WW)'
 hadd -f ${1}/output_EWK/ZanalysisOnDATA.root ${1}/output_WJetsMadFake/ZanalysisOnDATA.root ${1}/output_DYJetsMadFake/ZanalysisOnDATA.root ${1}/output_ZZJets/ZanalysisOnDATA.root ${1}/output_WZJets/ZanalysisOnDATA.root ${1}/output_WWJets/ZanalysisOnDATA.root 
 echo 'W analysis (W+Jets fake, DY+Jets sig+fake, ZZ, WZ, WW)'
@@ -90,7 +94,7 @@ hadd -f ${1}/output_EWK/WanalysisOnDATA.root ${1}/output_WJetsMadFake/WanalysisO
 
 echo 'EWK + TT + Single Top (EWKTT)'
 # EWK + TT
-mkdir ${1}/output_EWKTT
+mkdir -p ${1}/output_EWKTT
 echo 'Z analysis'
 hadd -f ${1}/output_EWKTT/ZanalysisOnDATA.root ${1}/output_EWK/ZanalysisOnDATA.root ${1}/output_TTJets/ZanalysisOnDATA.root ${1}/output_T_s/ZanalysisOnDATA.root ${1}/output_T_t/ZanalysisOnDATA.root ${1}/output_T_tW/ZanalysisOnDATA.root ${1}/output_Tbar_s/ZanalysisOnDATA.root ${1}/output_Tbar_t/ZanalysisOnDATA.root ${1}/output_Tbar_tW/ZanalysisOnDATA.root
 echo 'W analysis'
@@ -98,7 +102,7 @@ hadd -f ${1}/output_EWKTT/WanalysisOnDATA.root ${1}/output_EWK/WanalysisOnDATA.r
 
 echo 'EWK + TT + Single Top + SIG POWHEG (MCDATALIKEPOW)'
 # EWK + TT + SIG
-mkdir ${1}/output_MCDATALIKEPOW
+mkdir -p ${1}/output_MCDATALIKEPOW
 echo 'Z analysis'
 hadd -f ${1}/output_MCDATALIKEPOW/ZanalysisOnDATA.root ${1}/output_EWKTT/ZanalysisOnDATA.root ${1}/output_DYJetsPow/ZanalysisOnDATA.root
 echo 'W analysis'
@@ -106,7 +110,7 @@ hadd -f ${1}/output_MCDATALIKEPOW/WanalysisOnDATA.root ${1}/output_EWKTT/Wanalys
 
 echo 'EWK + TT + Single Top + SIG MADGRAPH (MCDATALIKEMAD)'
 # EWK + TT + SIG
-mkdir ${1}/output_MCDATALIKEMAD
+mkdir -p ${1}/output_MCDATALIKEMAD
 echo 'Z analysis'
 hadd -f ${1}/output_MCDATALIKEMAD/ZanalysisOnDATA.root ${1}/output_EWKTT/ZanalysisOnDATA.root ${1}/output_DYJetsMadSig/ZanalysisOnDATA.root
 echo 'W analysis'
