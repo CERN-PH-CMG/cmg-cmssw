@@ -12,9 +12,15 @@ samples=("DATA"   "WJetsPowPlus"  "WJetsPowNeg"  "WJetsMadSig"  "WJetsMadFake"  
 analyses=("Wanalysis" "Zanalysis" )
 
 for (( id_sample=0; id_sample<${#samples[@]}; id_sample++ ))
-  do
+do
+  # Check if dir exists
+  if [ ! -d "${1}/output_${samples[id_sample]}" ];
+  then
+    echo "No output_${samples[id_sample]} directory found, continuing..."
+    continue
+  fi
   for (( id_ana=0; id_ana<${#analyses[@]}; id_ana++ ))
-    do
+  do
     # Delete empty chunks before counting
     find ${1}/output_${samples[id_sample]} -size 0 -type f -name ${analyses[id_ana]}_chunk*.root -delete
     nchunks=$(ls ${1}/output_${samples[id_sample]}/${analyses[id_ana]}_chunk*.root |wc -l)
