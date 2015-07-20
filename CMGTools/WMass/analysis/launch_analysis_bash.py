@@ -35,7 +35,7 @@ usePileupSF = 1; # 0=no, 1=yes
 useEffSF = 2; # 0=no, 1=MuonPOG, 2=Heiner
 # usePtSF = sys.argv[1]; # Boson pT reweighting: 0=no, 1=yes
 usePtSF = 0; # Boson pT reweighting: -1=none, 0=data, 1...=other options
-useMomentumCorr = 3; # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector
+useMomentumCorr = 4; # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector, 3=KalmanCorrectorParam
 GlobalSscaleMuonCorrNsigma = 0;
 MuonCorrToys = 0;
 usePhiMETCorr = 0; # 0=none, 1=yes
@@ -201,8 +201,11 @@ if(useMomentumCorr==1):
   if(GlobalSscaleMuonCorrNsigma!=0): 
     foldername+=str(GlobalSscaleMuonCorrNsigma)+"s_smear";
 elif(useMomentumCorr==2): foldername+="_MuscleFitCorr";
-elif(useMomentumCorr==3): 
-  foldername+="_KalmanCorr";
+elif(useMomentumCorr==3 or useMomentumCorr==4): 
+  if(useMomentumCorr==3):
+    foldername+="_KalmanCorr";
+  else:
+    foldername+="_KalmanCorrParam";
   if(MuonCorrToys>1): 
     foldername+="Toys";
   if(GlobalSscaleMuonCorrNsigma!=0): 
@@ -482,11 +485,11 @@ if(runWanalysis or runZanalysis):
             wstring="\""+WfileDATA+"\","+str(WfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+filename_outputdir+"\","+str(useMomentumCorr)+","+str(GlobalSscaleMuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrNonClosure)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])
             if(counter<2):
                 if(useLHAPDF):
-                    print("c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
-                    os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
+                    print("c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
+                    os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
                 else:
-                    print("c++ -O2 -o runWanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
-                    os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"common_stuff.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
+                    print("c++ -O2 -o runWanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
+                    os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"common_stuff.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
             
             print " "
             # Run it in the code dir to have all the relative paths work
@@ -561,11 +564,11 @@ if(runWanalysis or runZanalysis):
             
             if(counter<2 and not resubmit):
                 if(useLHAPDF):
-                    print("c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags`  -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
-                    os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+                    print("c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags`  -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+                    os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_folder+"/include -L "+lhapdf_folder+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
                 else:
-                    print("c++ -O2 -o runZanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
-                    os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+                    print("c++ -O2 -o runZanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+                    os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
                 
             print " "
             # Run it in the code dir to have all the relative paths work

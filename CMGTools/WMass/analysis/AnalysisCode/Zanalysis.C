@@ -12,6 +12,7 @@
 //#include "common_stuff.h"
 #include "rochcor_44X_v3.h"
 #include "KalmanCalibrator.h"
+#include "KalmanCalibratorParam.h"
 #include "MuScleFitCorrector.h"
 #include "RecoilCorrector.h"
 #include "HTransformToHelicityFrame.c"
@@ -321,6 +322,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   if(useMomentumCorr==3){
     cout << "using Kalman Calibrator" << endl;
     corrector_Kalman = new KalmanCalibrator(isMCorDATA==0?false:true); // True for data , //False for MC
+  }
+  KalmanCalibratorParam *corrector_KalmanParam = new KalmanCalibratorParam(isMCorDATA==0?false:true); // True for data , //False for MC
+  if(useMomentumCorr==4){
+    cout << "using Kalman Calibrator Param" << endl;
+    corrector_KalmanParam = new KalmanCalibratorParam(isMCorDATA==0?false:true); // True for data , //False for MC
   }
 
   //------------------------------------------------------
@@ -764,6 +770,56 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                       // if(varyGlobalScaleMuonCorrNsigma!=0){
                         // corrector_Kalman->applyPtBias(muPosCorr,1e-3*varyGlobalScaleMuonCorrNsigma); //returns the corrected pt 
                         // // corrector_Kalman->applyPtBias(muNegCorr,1e-3*varyGlobalScaleMuonCorrNsigma); //returns the corrected pt 
+                      // }
+                      // cout << "muPosCorr after muon correction" << endl; 
+                      // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
+                      // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
+                    // }
+                  }else if(useMomentumCorr==4){ // use Momentum scale corrections from KalmanParam calibrator if required
+                    
+                      // cout << "muPosCorr before muon correction" << endl; 
+                      // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
+                      // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
+
+                      if(n==0){
+                        corrector_KalmanParam->getCorrectedPt(muPosCorrCentral,MuPos_charge); //returns the corrected pt 
+                        corrector_KalmanParam->getCorrectedPt(muNegCorrCentral,MuNeg_charge); //returns the corrected pt 
+                        corrector_KalmanParam->smear(muPosCorrCentral);
+                        corrector_KalmanParam->smear(muNegCorrCentral);
+                      }
+                      if(varyGlobalScaleMuonCorrNsigma!=0){
+                        if(WMass::KalmanNvariations==1){
+                          corrector_KalmanParam->varyClosure(varyGlobalScaleMuonCorrNsigma);
+                        }else{
+                          muPosCorr = muPosNoCorr;
+                          muNegCorr = muNegNoCorr;
+                          corrector_KalmanParam->reset(); 
+                          corrector_KalmanParam->vary(n,varyGlobalScaleMuonCorrNsigma);
+                        }
+                      }
+                      corrector_KalmanParam->getCorrectedPt(muPosCorr,MuPos_charge); //returns the corrected pt 
+                      corrector_KalmanParam->getCorrectedPt(muNegCorr,MuNeg_charge); //returns the corrected pt 
+                      corrector_KalmanParam->smear(muPosCorr);
+                      corrector_KalmanParam->smear(muNegCorr);
+                      // corrector_KalmanParam->getCorrectedPt(muNegCorrCentral,MuNeg_charge); //returns the corrected pt 
+                        
+                      // cout << "muPosCorr after scale correction, varyGlobalScaleMuonCorrNsigma=" << varyGlobalScaleMuonCorrNsigma << endl; 
+                      // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
+                      // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
+                      // muPosCorr.Print();
+                      
+                      // if(isMCorDATA==0){ // Applies smearing to the MC to match the data-returns the smeared pt -> Only for MC .
+                        // corrector_KalmanParam->smear(muPosCorrCentral);
+                        // corrector_KalmanParam->smear(muNegCorrCentral);
+                      // }
+                      // cout << "corrector_KalmanParam->getN()= " << corrector_KalmanParam->getN() << endl;
+                      
+                      // cout << "muPosCorr after smear correction, varyGlobalScaleMuonCorrNsigma=" << varyGlobalScaleMuonCorrNsigma << endl; 
+                      // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
+                      // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
+                      // if(varyGlobalScaleMuonCorrNsigma!=0){
+                        // corrector_KalmanParam->applyPtBias(muPosCorr,1e-3*varyGlobalScaleMuonCorrNsigma); //returns the corrected pt 
+                        // // corrector_KalmanParam->applyPtBias(muNegCorr,1e-3*varyGlobalScaleMuonCorrNsigma); //returns the corrected pt 
                       // }
                       // cout << "muPosCorr after muon correction" << endl; 
                       // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;

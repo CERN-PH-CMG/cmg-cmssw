@@ -195,38 +195,40 @@ void KalmanCalibratorParam::getCorrectedPt(TLorentzVector &muon,int charge) {
 
   ///// 1.4 ETA PROTECTION
 
-  if (fabs(eta)>1.4)
-  return 1.0/curvature;
+  if (fabs(eta)>1.4){
+    pt = 1.0/curvature;
+  }else{
+    double e = shifted_e->GetBinContent(scale_e->GetBin(1,scale_e->GetYaxis()->FindBin(eta),1));
+    double sinTheta  = sin(2*atan(exp(-eta))); 
+    double A1 = shifted_A1->GetBinContent(13);
+    double A2 = shifted_A2->GetBinContent(13);
+    //    double L = fabs(shifted_L->GetBinContent(13));
 
-  double e = shifted_e->GetBinContent(scale_e->GetBin(1,scale_e->GetYaxis()->FindBin(eta),1));
-  double sinTheta  = sin(2*atan(exp(-eta))); 
-  double A1 = shifted_A1->GetBinContent(13);
-  double A2 = shifted_A2->GetBinContent(13);
-  //    double L = fabs(shifted_L->GetBinContent(13));
+    double B0 = shifted_B0->GetBinContent(scale_B0->GetBin(1,scale_B0->GetYaxis()->FindBin(eta),1));
+    double B1 = shifted_B1->GetBinContent(scale_B1->GetBin(1,scale_B1->GetYaxis()->FindBin(eta),1));
+    double B2 = shifted_B2->GetBinContent(scale_B2->GetBin(1,scale_B2->GetYaxis()->FindBin(eta),1));
+    double C1 = shifted_C1->GetBinContent(scale_C1->GetBin(1,scale_C1->GetYaxis()->FindBin(eta),1));
+    double C2 = shifted_C2->GetBinContent(scale_C2->GetBin(1,scale_C2->GetYaxis()->FindBin(eta),1));
+    
+    double B = B0+B1*sin(phi)+B2*sin(2*phi)+C1*cos(phi)+C2*cos(2*phi);
+    double mag=A1+A2*eta*eta;
+    // if (fabs(eta)<L)
+    //   mag=A1;
+    // else if (eta>L)
+    //   mag=A1+A2*(eta-L)*(eta-L);
+    // else if (eta<-L)
+    //   mag=A1+A2*(eta+L)*(eta+L);
+    curvature = mag*curvature -e*sinTheta*curvature*curvature+charge*B;
+    
+    // return (1.0/curvature)*(1.0+varyClosure_*closure(pt,eta));
+    pt = (1.0/curvature)*(1.0+varyClosure_*closure(pt,eta));
+    // std::cout << "final pt= " << pt << " eta= " << eta << " phi= " << phi << " mass= " << mass << std::endl; 
 
-  double B0 = shifted_B0->GetBinContent(scale_B0->GetBin(1,scale_B0->GetYaxis()->FindBin(eta),1));
-  double B1 = shifted_B1->GetBinContent(scale_B1->GetBin(1,scale_B1->GetYaxis()->FindBin(eta),1));
-  double B2 = shifted_B2->GetBinContent(scale_B2->GetBin(1,scale_B2->GetYaxis()->FindBin(eta),1));
-  double C1 = shifted_C1->GetBinContent(scale_C1->GetBin(1,scale_C1->GetYaxis()->FindBin(eta),1));
-  double C2 = shifted_C2->GetBinContent(scale_C2->GetBin(1,scale_C2->GetYaxis()->FindBin(eta),1));
+    // std::cout << "muon inside KalmanCalibratorParam::getCorrectedPt()" << std::endl;
+    // muon.Print();
+  }
   
-  double B = B0+B1*sin(phi)+B2*sin(2*phi)+C1*cos(phi)+C2*cos(2*phi);
-  double mag=A1+A2*eta*eta;
-  // if (fabs(eta)<L)
-  //   mag=A1;
-  // else if (eta>L)
-  //   mag=A1+A2*(eta-L)*(eta-L);
-  // else if (eta<-L)
-  //   mag=A1+A2*(eta+L)*(eta+L);
-  curvature = mag*curvature -e*sinTheta*curvature*curvature+charge*B;
-  
-  // return (1.0/curvature)*(1.0+varyClosure_*closure(pt,eta));
-  pt = (1.0/curvature)*(1.0+varyClosure_*closure(pt,eta));
-  // std::cout << "final pt= " << pt << " eta= " << eta << " phi= " << phi << " mass= " << mass << std::endl; 
-
   muon.SetPtEtaPhiM(pt,eta,phi,mass);
-  // std::cout << "muon inside KalmanCalibrator::getCorrectedPt()" << std::endl;
-  // muon.Print();
 
 }
 
@@ -336,7 +338,7 @@ void KalmanCalibratorParam::vary(int ii,int sigmas) {
 }
 
 //-----------------------------------------------------------------------------------//
-void KalmanCalibrator::smear(TLorentzVector &muon) {
+void KalmanCalibratorParam::smear(TLorentzVector &muon) {
   double pt=muon.Pt(); double eta=muon.Eta(); double phi=muon.Phi(); double mass=muon.M(); 
 
   Int_t binx = smearing_->GetXaxis()->FindBin(1.0/pt);
@@ -345,11 +347,11 @@ void KalmanCalibrator::smear(TLorentzVector &muon) {
   Int_t biny = smearing_->GetYaxis()->FindBin(eta);
   Int_t bin = smearing_->GetBin(binx,biny);
   Double_t factor = smearing_->GetBinContent(bin);
-  if (factor<0.0)
-    return pt;
-
-  factor = sqrt(factor);
-
-  pt+=random_->Gaus(0.0,factor*pt);
+  if (factor<0.0){
+    pt=pt; // made by Luca P. what a statement!!!
+  }else{
+    factor = sqrt(factor);
+    pt+=random_->Gaus(0.0,factor*pt);
+  }
   muon.SetPtEtaPhiM(pt,eta,phi,mass);
 }
