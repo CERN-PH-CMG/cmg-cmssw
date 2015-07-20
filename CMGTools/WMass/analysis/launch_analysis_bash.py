@@ -626,7 +626,7 @@ if(runWanalysis or runZanalysis):
 
 if(mergeSigEWKbkg):
     os.chdir("utils/");
-    os.system("./merge_MC.sh \"../JobOutputs/"+foldername+"/\" "+str(resubmit)+" "+str(batchQueue)+" "+str(useBatch and parallelize)+str(removeChunks));
+    os.system("./merge_MC.sh \"../JobOutputs/"+foldername+"/\" "+str(resubmit)+" "+str(batchQueue)+" "+str(useBatch and parallelize)+" "+str(removeChunks));
     os.chdir(base_dir);
 
 if(removeChunks and not mergeSigEWKbkg):
