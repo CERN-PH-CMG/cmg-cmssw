@@ -52,7 +52,7 @@ cfo = imp.load_source("heppy_config", "heppy_config.py", handle)
 config = cfo.config
 handle.close()
 
-from PhysicsTools.HeppyCore.framework.heppy import split
+from PhysicsTools.HeppyCore.framework.heppy_loop import split
 # pick right component from dataset and file from jobID
 selectedComponents = []
 for comp in config.components:
