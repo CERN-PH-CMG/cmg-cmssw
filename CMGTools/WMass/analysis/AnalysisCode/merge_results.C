@@ -81,8 +81,8 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
       
       for(int h=0; h<WMass::PDF_members; h++){
         for(int m=m_start; m<m_end; m++){
-            TString toys_str = "";
-            if(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0) toys_str = Form("_RecoilCorrVar%d",m);
+            TString Kalmantoys_str = "";
+            if(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0) Kalmantoys_str = Form("_RecoilCorrVar%d",m);
             cout << Form("fitting RecoilCorrVar%d",m) << endl;
           for(int n=0; n<WMass::KalmanNvariations; n++){
             // for(int i=0; i<WMass::etaMuonNSteps; i++){
@@ -105,8 +105,8 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                 // result->SetTitle(Form("likelihood_results_%s_eta%s",WMass::FitVar_str[k].Data(),eta_str.Data()));
 
                 result_NonScaled[i][m-m_start][h][k][c] = new TGraph();
-                result_NonScaled[i][m-m_start][h][k][c]->SetName(Form("likelihood_result_W%s%s_%sNonScaled_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()));
-                result_NonScaled[i][m-m_start][h][k][c]->SetTitle(Form("likelihood_result_W%s%s_%sNonScaled_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()));
+                result_NonScaled[i][m-m_start][h][k][c]->SetName(Form("likelihood_result_W%s%s_%sNonScaled_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,Kalmantoys_str.Data(),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()));
+                result_NonScaled[i][m-m_start][h][k][c]->SetTitle(Form("likelihood_result_W%s%s_%sNonScaled_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,Kalmantoys_str.Data(),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()));
 
                 std::vector<double> l_res;
                 double lmin=0, lmax=0, deriv1=0, deriv2=0, deriv3=0;
