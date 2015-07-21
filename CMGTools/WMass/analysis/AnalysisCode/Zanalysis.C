@@ -152,7 +152,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   TFile*finZmassSF;
   TH1D*hZmassSF;
   if(use_syst_ewk_Alcaraz>-1 && use_syst_ewk_Alcaraz!=100){
-    finZmassSF = new TFile("../utils/fout_invariant_mass_qed.root"); // used only to build templates
+    // finZmassSF = new TFile("../utils/fout_invariant_mass_qed.root"); // used only to build templates
+    finZmassSF = new TFile("../utils/fout_invariant_mass_qed_higstat.root"); // used only to build templates
     if(use_syst_ewk_Alcaraz==0){
       hZmassSF=(TH1D*)finZmassSF->Get("ewk_p8std_div_ewk_p8bad"); hZmassSF->Sumw2();
     }else if(use_syst_ewk_Alcaraz==1){
@@ -163,7 +164,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       hZmassSF=(TH1D*)finZmassSF->Get("ewk_p8photos_div_ewk_p8bad"); hZmassSF->Sumw2();
     }
     if(!finZmassSF){
-      cout << "file " << Form("../utils/Zpt_reweighting.root") << " is missing, impossible to retrieve ZPt reweighting factors" << endl;
+      cout << "file " << Form("../utils/fout_invariant_mass_qed_higstat.root") << " is missing, impossible to retrieve invariant mass SF (for EWK)" << endl;
       return;
     }    
   }
@@ -200,25 +201,26 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   TFile*finZPtSF,*finZPtSFbase;
   TH1D*hZPtSF,*hZPtSFbase;
 
-  if(usePtSF!=-1 && usePtSF!=0 && usePtSF!=1 &&usePtSF!=2 && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){
-    cout << "REWEIGHTING Z PT" << endl;
-    // finZPtSF = new TFile(Form("../utils/Zpt_reweighting.root")); // used only to build templates
-    // cout << Form("hzpt_atlas_mc_ren%d_fac%d_0p5GeVsteps",/* usePtSF<1000?30: */1030,/* usePtSF<1000?30: */1030) << endl;
-    finZPtSFbase = new TFile(Form("/afs/cern.ch/work/p/perrozzi/private/git/CMSSW_5_3_22/src/BosonPT/serious_stuff/resbos/dyres/ZNLOpt_scales_%d.root",/* usePtSF<1000?30: */1030)); // used only to build templates
-    // finZPtSFbase->ls();
-    // cout << Form("hzpt_atlas_mc_ren%d_fac%d_0p5GeVsteps",usePtSF,usePtSF) << endl;
-    finZPtSF = new TFile(Form("/afs/cern.ch/work/p/perrozzi/private/git/CMSSW_5_3_22/src/BosonPT/serious_stuff/resbos/dyres/ZNLOpt_scales_%d.root",usePtSF)); // used only to build templates
-    // finZPtSF->ls();
-    if(!finZPtSF){
-      cout << "file " << Form("../utils/Zpt_reweighting.root") << " is missing, impossible to retrieve ZPt reweighting factors" << endl;
-      return;
-    }else{
-      // hZPtSF=(TH1D*)finZPtSF->Get("hZ_pt_Sig_eta0p6");
-      hZPtSFbase=(TH1D*)finZPtSFbase->Get(Form("hzpt_atlas_mc_ren%d_fac%d",/* usePtSF<1000?30: */1030,/* usePtSF<1000?30: */1030)); hZPtSFbase->Sumw2();
-      hZPtSF=(TH1D*)finZPtSF->Get(Form("hzpt_atlas_mc_ren%d_fac%d",usePtSF,usePtSF)); hZPtSF->Sumw2();
-      hZPtSF->Divide(hZPtSFbase);
-    }
-  } else if(usePtSF==0){
+  // if(usePtSF!=-1 && usePtSF!=0 && usePtSF!=1 &&usePtSF!=2 && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){
+    // cout << "REWEIGHTING Z PT" << endl;
+    // // finZPtSF = new TFile(Form("../utils/Zpt_reweighting.root")); // used only to build templates
+    // // cout << Form("hzpt_atlas_mc_ren%d_fac%d_0p5GeVsteps",/* usePtSF<1000?30: */1030,/* usePtSF<1000?30: */1030) << endl;
+    // finZPtSFbase = new TFile(Form("/afs/cern.ch/work/p/perrozzi/private/git/CMSSW_5_3_22/src/BosonPT/serious_stuff/resbos/dyres/ZNLOpt_scales_%d.root",/* usePtSF<1000?30: */1030)); // used only to build templates
+    // // finZPtSFbase->ls();
+    // // cout << Form("hzpt_atlas_mc_ren%d_fac%d_0p5GeVsteps",usePtSF,usePtSF) << endl;
+    // finZPtSF = new TFile(Form("/afs/cern.ch/work/p/perrozzi/private/git/CMSSW_5_3_22/src/BosonPT/serious_stuff/resbos/dyres/ZNLOpt_scales_%d.root",usePtSF)); // used only to build templates
+    // // finZPtSF->ls();
+    // if(!finZPtSF){
+      // cout << "file " << Form("../utils/Zpt_reweighting.root") << " is missing, impossible to retrieve ZPt reweighting factors" << endl;
+      // return;
+    // }else{
+      // // hZPtSF=(TH1D*)finZPtSF->Get("hZ_pt_Sig_eta0p6");
+      // hZPtSFbase=(TH1D*)finZPtSFbase->Get(Form("hzpt_atlas_mc_ren%d_fac%d",/* usePtSF<1000?30: */1030,/* usePtSF<1000?30: */1030)); hZPtSFbase->Sumw2();
+      // hZPtSF=(TH1D*)finZPtSF->Get(Form("hzpt_atlas_mc_ren%d_fac%d",usePtSF,usePtSF)); hZPtSF->Sumw2();
+      // hZPtSF->Divide(hZPtSFbase);
+    // }
+  // } else 
+  if(usePtSF==0){
     // finZPtSFbase = new TFile(Form("/afs/cern.ch/work/p/perrozzi/private/git/CMSSW_5_3_22/src/BosonPT/serious_stuff/resbos/dyres/ZNLOpt_scales_%d.root",/* usePtSF<1000?30: */1030)); // used only to build templates
     finZPtSF = new TFile("../utils/fptout_ZdataMC.root"); // used only to build templates
     hZPtSF=(TH1D*)finZPtSF->Get("hWlikePos_ZpT_8_JetCut_pdf229800-0_eta0p9_91188_smooth"); hZPtSF->Sumw2();
