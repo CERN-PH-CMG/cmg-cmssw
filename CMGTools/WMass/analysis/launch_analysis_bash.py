@@ -90,6 +90,7 @@ runWanalysis = 0;
 runZanalysis = 1;
 resubmit = 0;
 noLSFJobOutput = 1;
+recreateSubScripts = 0;
 controlplots = 0;
 
 mergeSigEWKbkg = 0;
@@ -531,7 +532,7 @@ if(runWanalysis or runZanalysis):
                     else:
                       start_dir = os.getcwd()
                       os.chdir(os.getcwd()+"/../"+filename_outputdir)
-                      if not resubmit or not os.path.isfile("runWanalysis_"+sample[i]+"_"+str(x)+".sh"):
+                      if recreateSubScripts>0 or (not resubmit or not os.path.isfile("runWanalysis_"+sample[i]+"_"+str(x)+".sh") or (not os.path.getsize("runWanalysis_"+sample[i]+"_"+str(x)+".sh")>0)):
                         text_file = open("runWanalysis_"+sample[i]+"_"+str(x)+".sh", "w")
                         text_file.write("cd "+os.getcwd()+"\n")
                         text_file.write("eval `scramv1 runtime -sh`\n")
@@ -615,7 +616,7 @@ if(runWanalysis or runZanalysis):
                     else:
                       start_dir = os.getcwd()
                       os.chdir(os.getcwd()+"/../"+filename_outputdir)
-                      if not resubmit or not os.path.isfile("runZanalysis_"+sample[i]+"_"+str(x)+".sh"):
+                      if recreateSubScripts>0 or (not resubmit or not os.path.isfile("runZanalysis_"+sample[i]+"_"+str(x)+".sh") or (not os.path.getsize("runZanalysis_"+sample[i]+"_"+str(x)+".sh")>0)):
                         text_file = open("runZanalysis_"+sample[i]+"_"+str(x)+".sh", "w")
                         text_file.write("cd "+os.getcwd()+"\n")
                         text_file.write("eval `scramv1 runtime -sh`\n")
