@@ -168,19 +168,6 @@ ttHZskim = cfg.Analyzer(
 ##  PRODUCER
 ##------------------------------------------
 
-#from CMGTools.RootTools.samples.triggers_13TeV_PHYS14 import triggers_HT900, triggers_MET170, triggers_HTMET, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_mue, triggers_1mu, triggers_photon155,triggers_1mu_isolow
-#
-#triggerFlagsAna.triggerBits = {
-#            'HT900' : triggers_HT900,
-#            'MET170' : triggers_MET170,
-#            'ht350met120' : triggers_HTMET,
-#            'SingleMu' : triggers_1mu_isolow,
-#            'DoubleMu' : triggers_MT2_mumu,
-#            'DoubleEl' : triggers_MT2_ee,
-#            'MuEG'     : triggers_MT2_mue,
-#            'htXprescale' : triggers_HTMET,
-#            'Photons'  : triggers_photon155
-#}
 
 
 from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_HT900, triggers_HT800, triggers_MET170, triggers_HTMET100, triggers_HTMET120, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_e, triggers_MT2_mu, triggers_dijet, triggers_ht350, triggers_ht475, triggers_photon75, triggers_photon90, triggers_photon120, triggers_photon75ps, triggers_photon90ps, triggers_photon120ps, triggers_photon155, triggers_photon165_HE10, triggers_photon175
@@ -256,8 +243,8 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 
 #-------- HOW TO RUN
 # choose 2 for full production
-test = 3
-isData = False
+test = 0
+isData = True
 doSpecialSettingsForMECCA = 1
 if test==0:
     # ------------------------------------------------------------------------------------------- #
