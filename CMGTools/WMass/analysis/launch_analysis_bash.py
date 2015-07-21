@@ -35,7 +35,7 @@ usePileupSF = 1; # 0=no, 1=yes
 useEffSF = 2; # 0=no, 1=MuonPOG, 2=Heiner
 # usePtSF = sys.argv[1]; # Boson pT reweighting: 0=no, 1=yes
 usePtSF = 0; # Boson pT reweighting: -1=none, 0=data, 1...=other options
-useMomentumCorr = 4; # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector, 3=KalmanCorrectorParam
+useMomentumCorr = 3; # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector, 4=KalmanCorrectorParam
 GlobalSscaleMuonCorrNsigma = 0;
 MuonCorrToys = 0;
 usePhiMETCorr = 0; # 0=none, 1=yes
@@ -89,6 +89,7 @@ WMassNSteps = "5"; # 60 -- N of mass steps above and below the central
 runWanalysis = 0;
 runZanalysis = 1;
 resubmit = 0;
+noLSFJobOutput = 1;
 controlplots = 0;
 
 mergeSigEWKbkg = 0;
@@ -530,7 +531,7 @@ if(runWanalysis or runZanalysis):
                     else:
                       start_dir = os.getcwd()
                       os.chdir(os.getcwd()+"/../"+filename_outputdir)
-                      if not resubmit:
+                      if not resubmit or not os.path.isfile("runWanalysis_"+sample[i]+"_"+str(x)+".sh"):
                         text_file = open("runWanalysis_"+sample[i]+"_"+str(x)+".sh", "w")
                         text_file.write("cd "+os.getcwd()+"\n")
                         text_file.write("eval `scramv1 runtime -sh`\n")
@@ -543,8 +544,11 @@ if(runWanalysis or runZanalysis):
                         os.system("chmod 755 runWanalysis_"+sample[i]+"_"+str(x)+".sh")
                       if not resubmit or not os.path.isfile("Wanalysis_chunk"+str(x)+".root"):
                         os.system("rm -f core.*")
-                        print ("bsub -C 0 -q "+batchQueue+" -J runWanalysis runWanalysis_"+sample[i]+"_"+str(x)+".sh")
-                        os.system("bsub -C 0 -u pippo123 -o ./ -q "+batchQueue+" -J runWanalysis runWanalysis_"+sample[i]+"_"+str(x)+".sh")
+                        LSFJobOutput = ''
+                        if noLSFJobOutput>0:
+                          LSFJobOutput = '-o /dev/null'
+                        print ("bsub -C 0 "+LSFJobOutput+" -q "+batchQueue+" -J runWanalysis runWanalysis_"+sample[i]+"_"+str(x)+".sh")
+                        os.system("bsub -C 0 "+LSFJobOutput+" -u pippo123 -o ./ -q "+batchQueue+" -J runWanalysis runWanalysis_"+sample[i]+"_"+str(x)+".sh")
                       os.chdir(start_dir)
                       
                     if(WMassNSteps=="0" and not useBatch): os.system("sleep 1");
@@ -611,7 +615,7 @@ if(runWanalysis or runZanalysis):
                     else:
                       start_dir = os.getcwd()
                       os.chdir(os.getcwd()+"/../"+filename_outputdir)
-                      if not resubmit:
+                      if not resubmit or not os.path.isfile("runZanalysis_"+sample[i]+"_"+str(x)+".sh"):
                         text_file = open("runZanalysis_"+sample[i]+"_"+str(x)+".sh", "w")
                         text_file.write("cd "+os.getcwd()+"\n")
                         text_file.write("eval `scramv1 runtime -sh`\n")
@@ -624,8 +628,11 @@ if(runWanalysis or runZanalysis):
                       # print 'checking file',"Zanalysis_chunk"+str(x)+".root",'path is',os.getcwd(),'check is',os.path.isfile("Zanalysis_chunk"+str(x)+".root")
                       if not resubmit or not os.path.isfile("Zanalysis_chunk"+str(x)+".root"):
                         os.system("rm -f core.*")
-                        print ("bsub -C 0 -q "+batchQueue+" -J runZanalysis runZanalysis_"+sample[i]+"_"+str(x)+".sh")
-                        os.system("bsub -C 0 -u pippo123 -o ./ -q "+batchQueue+" -J runZanalysis runZanalysis_"+sample[i]+"_"+str(x)+".sh")
+                        LSFJobOutput = ''
+                        if noLSFJobOutput>0:
+                          LSFJobOutput = '-o /dev/null'
+                        print ("bsub -C 0 "+LSFJobOutput+" -q "+batchQueue+" -J runZanalysis runZanalysis_"+sample[i]+"_"+str(x)+".sh")
+                        os.system("bsub -C 0 "+LSFJobOutput+" -u pippo123 -o ./ -q "+batchQueue+" -J runZanalysis runZanalysis_"+sample[i]+"_"+str(x)+".sh")
                       os.chdir(start_dir)
                     
                     if(WMassNSteps=="0" and not useBatch): os.system("sleep 1");
