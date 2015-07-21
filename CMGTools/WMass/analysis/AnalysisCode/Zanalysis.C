@@ -290,7 +290,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   }
   */
 
-  // the following variables are dummy, but necessary to call the corrector.
+  // the following variables will get the recoil components from the corrector
   double u1_dummy = 0;
   double u2_dummy = 0;
   
@@ -1165,25 +1165,40 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                    // << endl;
                               common_stuff::plot1D(Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
                                                     MuPos_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
+                            }
 
-			    }
+                            //------------------------------
+                            // Recoil plots: u1, u2 and uVec
+                            //------------------------------
+                            common_stuff::calculateU1U2(pfmet_trasv,  pfmetphi_trasv, ZGen_pt,   ZGen_phi,
+                                                        ZNocorr.Pt(), ZNocorr.Phi(),  u1_dummy, u2_dummy);
 
-			    //------------------------------------------------------------------------------------------------
-			    // PLOTS FOR GIGI's TEST see 11 apr 2014 (CMG presentations)
-			    //------------------------------------------------------------------------------------------------
+                            common_stuff::plot1D(Form("hWlikePos_u1minusZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
+                              u1_dummy-ZNocorr.Pt(), evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 80, -20, 20 );
 
-			    if(controlplots){
-			      //			      cout << "filling control plot RecoilVar=" << RecoilVar_str.Data() << endl;
-			      common_stuff::plot1D(Form("deltaMT_WlikePos_8_JetCut_pdf%d-%d%s_kalman%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
-						   WlikePos.Mt() - WlikePosCentral.Mt(),
-						     evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d,
-						   200,-0.1,0.1 );
+                            common_stuff::plot1D(Form("hWlikePos_u2_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
+                              u2_dummy, evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 80, -20, 20 );
 
-			      common_stuff::plot1D(Form("deltaMET_WlikePos_8_JetCut_pdf%d-%d%s_kalman%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
-						   WlikePos_met.Pt() - WlikePos_metCentral.Pt() ,
-						   evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d,
-						   200,-0.1,0.1 );
-			    }
+                            common_stuff::plot2D(Form("hWlikePos_u1vsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
+                              ZNocorr.Pt(),u1_dummy, evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_2d, 50, 0, 50, 80, -20, 20 );
+
+
+                            //------------------------------------------------------------------------------------------------
+                            // PLOTS FOR GIGI's TEST see 11 apr 2014 (CMG presentations)
+                            //------------------------------------------------------------------------------------------------
+
+                            if(controlplots){
+                              //      cout << "filling control plot RecoilVar=" << RecoilVar_str.Data() << endl;
+                              common_stuff::plot1D(Form("deltaMT_WlikePos_8_JetCut_pdf%d-%d%s_kalman%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
+                                      WlikePos.Mt() - WlikePosCentral.Mt(),
+                                      evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d,
+                                      200,-0.1,0.1 );
+
+                              common_stuff::plot1D(Form("deltaMET_WlikePos_8_JetCut_pdf%d-%d%s_kalman%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
+                                      WlikePos_met.Pt() - WlikePos_metCentral.Pt() ,
+                                      evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d,
+                                      200,-0.1,0.1 );
+                            }
 
                             //------------------------------------------------------------------------------------------------
                             // EXTRA PLOTS
