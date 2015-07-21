@@ -15,6 +15,9 @@ cfg.Analyzer.nosubdir = True
 ### jet pt treshold for mt2 calculation
 mt2JPt = 30.0
 
+#JSON
+jsonAna.useLumiBlocks = True
+
 #Vertex
 vertexAna.keepFailingEvents = True # keep events with no good vertices
 
@@ -362,20 +365,8 @@ elif test==3:
     # run on data
     isData = True
     from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
-#    from CMGTools.TTHAnalysis.samples.samples_13TeV_DATA2015 import *
-#    selectedComponents = [ jetHT_0T ]
-#    selectedComponents = [ Jet_Run2015B ]
+    selectedComponents = [JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B, SingleElectron_Run2015B, SingleMuon_Run2015B, SinglePhoton_Run2015B, DoubleEG_Run2015B, DoubleMuon_Run2015B]
 
-#    for comp in selectedComponents:
-#        comp.files = comp.files[:]
-    #, JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B, SingleElectron_Run2015B, SingleMu_Run2015B, SingleMuon_Run2015B, SinglePhoton_Run2015B, EGamma_Run2015B, DoubleEG_Run2015B, MuonEG_Run2015B, DoubleMuon_Run2015B, minBias_Run2015B, zeroBias_Run2015B]
-
-    comp = JetHT_Run2015B
-    comp.files = ['root://xrootd-cms.infn.it//store/data/Run2015B/JetHT/MINIAOD/PromptReco-v1/000/251/244/00000/741C7214-1B28-E511-A528-02163E013406.root']
-#    comp.files = ['/shome/mmasciov/741C7214-1B28-E511-A528-02163E013406.root']
-#    comp.files = ['/shome/mmasciov/EA306540-E928-E511-B726-02163E0143C0.root']
-    selectedComponents = [comp]
-    
 # ------------------------------------------------------------------------------------------- #
 
 

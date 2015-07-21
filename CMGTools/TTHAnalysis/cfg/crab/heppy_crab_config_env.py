@@ -48,9 +48,11 @@ except NameError:
 else:
     config.JobType.scriptArgs += ["nevents="+str(NEVENTS)]
 
-try: 
-    JSON
-except NameError:
-    pass
-else:
-    config.JobType.scriptArgs += ["json="+JSON]
+#try: 
+#    JSON
+#except NameError:
+#    pass
+#else:
+#    config.JobType.scriptArgs += ["json="+JSON]
+
+#print config.JobType.scriptArgs
