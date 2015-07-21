@@ -691,9 +691,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
 	    for(int m=m_start; m<m_end; m++){
 
-	      TString toys_str = "";
-	      if(m>0) toys_str = Form("_RecoilCorrVar%d",m);
-	      // cout << toys_str << endl;
+	      TString RecoilVar_str = "";
+	      if(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0) RecoilVar_str = Form("_RecoilCorrVar%d",m);
+	      // cout << RecoilVar_str << endl;
 
 	      for(int n=0; n<WMass::KalmanNvariations; n++){
 
@@ -849,7 +849,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 // int vtxBin=1;
                 int vtxBin=rapBin;
 
-                if( ((first_time_in_the_event || m>0) && n==0)
+                if( ((first_time_in_the_event || RecoilCorrVarDiagoParU1orU2fromDATAorMC>0) && n==0)
                     && use_PForNoPUorTKmet<3 && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){ // use MET corrections if required
                   
                   if(use_PForNoPUorTKmet==0){
@@ -915,7 +915,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                     // << " m=" << m
                     // << " RecoilCorrVarDiagoParSigmas=" << RecoilCorrVarDiagoParSigmas
                     // << " vtxBin=" << vtxBin
-                    // << Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,0,toys_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV)
+                    // << Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,0,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV)
                     // << endl;
 		    //		    cout << "correcting pfmet= " << pfmet_trasv;
                     correctorRecoil_Z->CorrectMET3gaus(pfmet_trasv,pfmetphi_trasv,
@@ -1142,20 +1142,20 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                             );
                             } else if(contains_LHE_weights){
                               // if(m==m_start && n==0 && WMass::WMassNSteps==j)
-                                // common_stuff::plot2D(Form("hCorrPDFweights_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
+                                // common_stuff::plot2D(Form("hCorrPDFweights_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
                                               // lha_weight,LHE_weight[PDF_reweighting_central_Index+h], 1, 
                                               // h_2d, 200,0.9,1.1,200,0.9,1.1);
                               
                               lha_weight = LHE_weight[PDF_reweighting_central_Index+h];
                             }
                             
-                            // cout << Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV) << endl;
+                            // cout << Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV) << endl;
                             
                             //------------------------------------------------------
                             // "MONEY" PLOTS OF FIT VARIABLES WITHIN THE FIT RANGE
                             //------------------------------------------------------
                             for(int k=0;k<WMass::NFitVar;k++){
-                              // cout << Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV) 
+                              // cout << Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV) 
                                    // << " " << MuPos_var_NotScaled[k] 
                                    // << " " << evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight 
                                    // // << " " << h_1d 
@@ -1163,7 +1163,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                    // << " " << WMass::fit_xmin[k]*ZWmassRatio 
                                    // << " " <<  WMass::fit_xmax[k]*ZWmassRatio 
                                    // << endl;
-                              common_stuff::plot1D(Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
+                              common_stuff::plot1D(Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
                                                     MuPos_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
 
 			    }
@@ -1173,13 +1173,13 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 			    //------------------------------------------------------------------------------------------------
 
 			    if(controlplots){
-			      //			      cout << "filling control plot RecoilVar=" << toys_str.Data() << endl;
-			      common_stuff::plot1D(Form("deltaMT_WlikePos_8_JetCut_pdf%d-%d%s_kalman%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
+			      //			      cout << "filling control plot RecoilVar=" << RecoilVar_str.Data() << endl;
+			      common_stuff::plot1D(Form("deltaMT_WlikePos_8_JetCut_pdf%d-%d%s_kalman%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
 						   WlikePos.Mt() - WlikePosCentral.Mt(),
 						     evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d,
 						   200,-0.1,0.1 );
 
-			      common_stuff::plot1D(Form("deltaMET_WlikePos_8_JetCut_pdf%d-%d%s_kalman%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
+			      common_stuff::plot1D(Form("deltaMET_WlikePos_8_JetCut_pdf%d-%d%s_kalman%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
 						   WlikePos_met.Pt() - WlikePos_metCentral.Pt() ,
 						   evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d,
 						   200,-0.1,0.1 );
@@ -1189,25 +1189,25 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             // EXTRA PLOTS
                             //------------------------------------------------------------------------------------------------ 
                             if(m==m_start && n==0 && controlplots && WMass::WMassNSteps==j){
-                              common_stuff::plot1D(Form("hWlikePos_ZpT_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
+                              common_stuff::plot1D(Form("hWlikePos_ZpT_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
                                                     ZcorrCentral.Pt(), evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 200, 0, 100 );
-                              common_stuff::plot1D(Form("hWlikePos_Zmass_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
+                              common_stuff::plot1D(Form("hWlikePos_Zmass_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
                                                     ZcorrCentral.M(), evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 200, 50, 150 );
                             // }
                             // if(m==m_start && n==0 && controlplots && WMass::WMassNSteps==j){
-                              common_stuff::plot1D(Form("hWlikePos_Recoil_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
+                              common_stuff::plot1D(Form("hWlikePos_Recoil_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
                                                   WlikePos.Pt(), evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, 0, 25 );
                             // }
                             // if(m==m_start && n==0 && controlplots && WMass::WMassNSteps==j){
-                              common_stuff::plot2D(Form("hWlikePos_MtLinVsMt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
+                              common_stuff::plot2D(Form("hWlikePos_MtLinVsMt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
                                                 MuPos_var_NotScaled[1],MuPos_var_NotScaled[3], 1,
                                                 h_2d, 50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio,
                                                 50, WMass::fit_xmin[3]*ZWmassRatio, WMass::fit_xmax[3]*ZWmassRatio );
-                              common_stuff::plot2D(Form("hWlikePos_MtLinVsGenZPt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
+                              common_stuff::plot2D(Form("hWlikePos_MtLinVsGenZPt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
                                                 ZGen_pt,MuPos_var_NotScaled[3], 1,
                                                 h_2d, 40, 0,20,
                                                 50, WMass::fit_xmin[3]*ZWmassRatio, WMass::fit_xmax[3]*ZWmassRatio );
-                              common_stuff::plot2D(Form("hWlikePos_MtVsGenZPt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
+                              common_stuff::plot2D(Form("hWlikePos_MtVsGenZPt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
                                                 ZGen_pt,MuPos_var_NotScaled[1], 1,
                                                 h_2d, 40, 0,20,
                                                 50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio );
@@ -1291,19 +1291,19 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             for(int h=0; h<WMass::PDF_members; h++){
               // for(int m=0; m<WMass::NVarRecoilCorr; m++){
               for(int m=m_start; m<m_end; m++){
-                TString toys_str = "";
-                if(m>0) toys_str = Form("_RecoilCorrVar%d",m);
+                TString RecoilVar_str = "";
+                if(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0) RecoilVar_str = Form("_RecoilCorrVar%d",m);
 
                 for(int n=0; n<WMass::KalmanNvariations; n++){
                 
                   TString Kalmantoys_str = "";
                   if(WMass::KalmanNvariations>1) Kalmantoys_str = Form("_KalmanVar%d",n);
                   
-                    common_stuff::cloneHisto1D(Form("hWlikePos_%sScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV), 
-                                                Form("hWlikePos_%sScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV), 
+                    common_stuff::cloneHisto1D(Form("hWlikePos_%sScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV), 
+                                                Form("hWlikePos_%sScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV), 
                                                 h_1d);
-                    common_stuff::cloneHisto1D(Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV), 
-                                                Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,toys_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV), 
+                    common_stuff::cloneHisto1D(Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV), 
+                                                Form("hWlikePos_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV), 
                                                 h_1d);
                 }
               }

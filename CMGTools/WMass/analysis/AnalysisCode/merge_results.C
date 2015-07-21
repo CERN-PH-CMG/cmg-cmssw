@@ -82,7 +82,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
       for(int h=0; h<WMass::PDF_members; h++){
         for(int m=m_start; m<m_end; m++){
             TString toys_str = "";
-            if(m>0) toys_str = Form("_RecoilCorrVar%d",m);
+            if(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0) toys_str = Form("_RecoilCorrVar%d",m);
             cout << Form("fitting RecoilCorrVar%d",m) << endl;
           for(int n=0; n<WMass::KalmanNvariations; n++){
             // for(int i=0; i<WMass::etaMuonNSteps; i++){
@@ -137,8 +137,8 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                   // likelihood_val = (double) (str_icol.Atof());
                   // if(likelihood_val<0) result->SetPoint(npoint,jWmass,likelihood_val);
 
-                  cout << Form("dummy_datacard_Wmass_MuPos_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log ",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,(m>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
-                  TString test1 = Form("dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,(m>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
+                  cout << Form("dummy_datacard_Wmass_MuPos_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log ",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
+                  TString test1 = Form("dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
                   // cout << test1 << endl;
                   std::ifstream fileNames_NonScaled(test1.Data());
                   // string StringFromFile;
@@ -154,9 +154,9 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                   if(!TStringFromFile.Contains("-2 ln Q_{TEV}")){
                     cout << "\nTStringFromFile= " << TStringFromFile << endl;
                     cout << "\n ERROR: COULDN'T FIND FIT RESULT IN "<< 
-                    Form("dummy_datacard_Wmass_MuPos_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log ",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,(m>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data())
+                    Form("dummy_datacard_Wmass_MuPos_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log ",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data())
                     << " resubmitting and quitting" << endl;
-                    TString outfilename_str = Form("submit_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.sh",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
+                    TString outfilename_str = Form("submit_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.sh",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
                     gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J runMfit "+outfilename_str);                    
                     // gROOT->ProcessLine(".! sh "+outfilename_str);                    
                     return;
@@ -204,15 +204,15 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                 result_NonScaled[i][m-m_start][h][k][c]->SetMarkerSize(1);
                 result_NonScaled[i][m-m_start][h][k][c]->Write();
                 
-                c_chi2=new TCanvas(Form("c_chi2_W%s%s_%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),Form("c_chi2_W%s_%s_pdf%d-%d%s%s_eta%s",WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()));
-                ffit[i][k][c]=new TF1(Form("ffit_W%s%s_%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),Form("[0]+TMath::Power((x-[1])/[2],2)"),70,100);
+                c_chi2=new TCanvas(Form("c_chi2_W%s%s_%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),Form("c_chi2_W%s_%s_pdf%d-%d%s%s_eta%s",WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()));
+                ffit[i][k][c]=new TF1(Form("ffit_W%s%s_%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),Form("[0]+TMath::Power((x-[1])/[2],2)"),70,100);
                 ffit[i][k][c]->SetParameter(0,result_NonScaled[i][m-m_start][h][k][c]->GetMinimum());
                 ffit[i][k][c]->SetParameter(1,WorZ.Contains("W")?80410:91170);
                 ffit[i][k][c]->SetParameter(2,10); // IF FIT DOES NOT CONVERGE, CHANGE THIS PARAMETER BY LOOKING AT THE CHI2 VS MASS DISTRIBUTION (~value for which Delta_chi2 = 1)
                 // ffit[i][k]->SetParameter(2,1e4); // IF FIT DOES NOT CONVERGE, CHANGE THIS PARAMETER BY LOOKING AT THE CHI2 VS MASS DISTRIBUTION (~value for which Delta_chi2 = 1)
                 ffit[i][k][c]->SetLineColor(2);
                 ffit[i][k][c]->SetLineWidth(1);
-                int fires = result_NonScaled[i][m-m_start][h][k][c]->Fit(Form("ffit_W%s%s_%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),"WEM");
+                int fires = result_NonScaled[i][m-m_start][h][k][c]->Fit(Form("ffit_W%s%s_%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),"WEM");
                 cout << "fitres= " << fires << " chi2= " << ffit[i][k][c]->GetChisquare() << " ndof= " << ffit[i][k][c]->GetNDF() << " chi2/ndof= " << (ffit[i][k][c]->GetChisquare()/ffit[i][k][c]->GetNDF()) << endl;
                 int attempts=0;
                 while((ffit[i][k][c]->GetChisquare()/ ffit[i][k][c]->GetNDF())>1*(WorZ.Contains("W")?1:3) && attempts<5){
@@ -222,7 +222,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                   ffit[i][k][c]->SetParameter(2,TMath::Abs(initmass->Gaus(0, 1+5*(WorZ.Contains("W")?attempts-1:attempts/5)))); // IF FIT DOES NOT CONVERGE, CHANGE THIS PARAMETER BY LOOKING AT THE CHI2 VS MASS DISTRIBUTION (~value for which Delta_chi2 = 1)
                   ffit[i][k][c]->SetLineColor(2);
                   ffit[i][k][c]->SetLineWidth(1);
-                  result_NonScaled[i][m-m_start][h][k][c]->Fit(Form("ffit_W%s%s_%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),"WEM");
+                  result_NonScaled[i][m-m_start][h][k][c]->Fit(Form("ffit_W%s%s_%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),"WEM");
                   cout << "refitted with init mass: " << rmass << " chi2 norm: " << (ffit[i][k][c]->GetChisquare()/ ffit[i][k][c]->GetNDF()) << endl;
                   attempts++;
                 }
@@ -230,10 +230,10 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                   if((ffit[i][k][c]->GetChisquare()/ ffit[i][k][c]->GetNDF())>1e3 || TMath::Abs(ffit[i][k][c]->GetParameter(1) - (massCentral_MeV))>1e5 ){
                     // ffit[i][k][c]->SetParameter(0,result_NonScaled[i][m-m_start][h][k][c]->GetMinimum());
                     // ffit[i][k][c]->SetParameter(1, initmass->Gaus(80410, 200); );
-                    result_NonScaled[i][m-m_start][h][k][c]->Fit(Form("ffit_W%s%s_%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),"QWEM");
+                    result_NonScaled[i][m-m_start][h][k][c]->Fit(Form("ffit_W%s%s_%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),"QWEM");
                     }
                 }
-                result_NonScaled[i][m-m_start][h][k][c]->Fit(Form("ffit_W%s%s_%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),"WEM");
+                result_NonScaled[i][m-m_start][h][k][c]->Fit(Form("ffit_W%s%s_%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),"WEM");
                 
                 result_NonScaled[i][m-m_start][h][k][c]->Draw("ap");
                 TLatex *text,*text2;
@@ -259,10 +259,10 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                 
               }
          
-              TCanvas *c_summary=new TCanvas(Form("c_summary_W%s%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),Form("c_summary_pdf%d-%d%s%s_eta%s",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data())); 
+              TCanvas *c_summary=new TCanvas(Form("c_summary_W%s%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),Form("c_summary_pdf%d-%d%s%s_eta%s",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data())); 
               c_summary->SetGridy();
               c_summary->SetGridx();
-              TH2D*frame=new TH2D("frame",Form("pdf %d-%d %s eta %s;M_{W%s} (MeV); -2ln(L/L_{ref})",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),Wlike.Data()),2*WMass2::WMassNSteps+1,WorZ.Contains("Z")? WMass2::Zmass_values_array[0] : WMass2::Wmass_values_array[0],WorZ.Contains("Z")? WMass2::Zmass_values_array[2*WMass2::WMassNSteps] : WMass2::Wmass_values_array[2*WMass2::WMassNSteps],10,0,5);
+              TH2D*frame=new TH2D("frame",Form("pdf %d-%d %s eta %s;M_{W%s} (MeV); -2ln(L/L_{ref})",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),Wlike.Data()),2*WMass2::WMassNSteps+1,WorZ.Contains("Z")? WMass2::Zmass_values_array[0] : WMass2::Wmass_values_array[0],WorZ.Contains("Z")? WMass2::Zmass_values_array[2*WMass2::WMassNSteps] : WMass2::Wmass_values_array[2*WMass2::WMassNSteps],10,0,5);
               frame->Draw();
               TLine *l=new TLine((massCentral_MeV),0,(massCentral_MeV),5);
               l->SetLineStyle(6);
@@ -279,7 +279,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
               for(int k=0;k<WMass::NFitVar;k++){
                 // cout << result_NonScaled[i][h][k]->GetParameter(1) << " " << ffit[i][k]->GetParameter(2) << endl;
                 // ffit[i][k]->Draw("");
-                f[k] = (TF1*) result_NonScaled[i][m-m_start][h][k][c]->GetFunction(Form("ffit_W%s%s_%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,m>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()));
+                f[k] = (TF1*) result_NonScaled[i][m-m_start][h][k][c]->GetFunction(Form("ffit_W%s%s_%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()));
                 f[k]->SetLineColor(k+1);
                 f[k]->SetLineWidth(2);
                 f[k]->Draw("same");
@@ -293,7 +293,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                 if(deltaM[i][m-m_start][h][k][c]<deltaMmin[i][k][c]) deltaMmin[i][k][c]=deltaM[i][m-m_start][h][k][c];
                 if(deltaM[i][m-m_start][h][k][c]>deltaMmax[i][k][c]) deltaMmax[i][k][c]=deltaM[i][m-m_start][h][k][c];
 
-                if(h>0 || m>0){
+                if(h>0 || RecoilCorrVarDiagoParU1orU2fromDATAorMC>0){
                   if(deltaM[i][m-m_start][h][k][c]<0) deltaMnegSummed[i][k][c] = TMath::Sqrt(deltaMnegSummed[i][k][c]*deltaMnegSummed[i][k][c] + deltaM[i][m-m_start][h][k][c]*deltaM[i][m-m_start][h][k][c]);
                   if(deltaM[i][m-m_start][h][k][c]>0) deltaMposSummed[i][k][c] = TMath::Sqrt(deltaMposSummed[i][k][c]*deltaMposSummed[i][k][c] + deltaM[i][m-m_start][h][k][c]*deltaM[i][m-m_start][h][k][c]);
                   deltaMSummed[i][k][c] = TMath::Sqrt(deltaMSummed[i][k][c]*deltaMSummed[i][k][c] + deltaM[i][m-m_start][h][k][c]*deltaM[i][m-m_start][h][k][c]);
