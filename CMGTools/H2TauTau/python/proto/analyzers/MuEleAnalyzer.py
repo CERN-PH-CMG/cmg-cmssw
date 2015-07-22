@@ -7,20 +7,44 @@ from PhysicsTools.Heppy.physicsobjects.PhysicsObjects   import Muon, GenParticle
 from PhysicsTools.Heppy.physicsobjects.Electron         import Electron
 
 from CMGTools.H2TauTau.proto.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
-from CMGTools.H2TauTau.proto.physicsobjects.DiObject    import MuonElectron
+from CMGTools.H2TauTau.proto.physicsobjects.DiObject    import MuonElectron, DirectDiTau
+import ROOT
 
 class MuEleAnalyzer( DiLeptonAnalyzer ):
 
     DiObjectClass    = MuonElectron
-    LeptonClass      = Muon
-    OtherLeptonClass = Electron
+    LeptonClass      = Electron
+    OtherLeptonClass = Muon
 
     def declareHandles(self):
         super(MuEleAnalyzer, self).declareHandles()
-        self.handles  ['diLeptons'   ] = AutoHandle('cmgMuEleCorSVFitFullSel', 'std::vector<pat::CompositeCandidate>')
-        self.handles  ['otherLeptons'] = AutoHandle('slimmedElectrons'       , 'std::vector<pat::Electron>'          )
-        self.handles  ['leptons'     ] = AutoHandle('slimmedMuons'           , 'std::vector<pat::Muon>'              )
-        self.mchandles['genParticles'] = AutoHandle('prunedGenParticles'     , 'std::vector<reco::GenParticle>'      )
+
+        if hasattr(self.cfg_ana, 'from_single_objects') and self.cfg_ana.from_single_objects:
+            self.handles['met'] = AutoHandle(
+                'slimmedMETs',
+                'std::vector<pat::MET>'
+            )
+        else:
+            self.handles['diLeptons'] = AutoHandle(
+                'cmgMuEleCorSVFitFullSel', 
+                'std::vector<pat::CompositeCandidate>'
+                )
+
+
+        self.handles['leptons'] = AutoHandle(
+            'slimmedElectrons',
+            'std::vector<pat::Electron>'          
+            )
+
+        self.handles['otherLeptons'] = AutoHandle(
+            'slimmedMuons',
+            'std::vector<pat::Muon>'              
+            )
+
+        self.mchandles['genParticles'] = AutoHandle(
+            'prunedGenParticles',
+            'std::vector<reco::GenParticle>'      
+            )
 
     def buildDiLeptons(self, cmgDiLeptons, event):
         '''Build di-leptons, associate best vertex to both legs,
@@ -31,16 +55,39 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
         diLeptons = []
         for index, dil in enumerate(cmgDiLeptons):
             pydil = self.__class__.DiObjectClass(dil)
-            # pydil = MuonElectron(dil)
             pydil.leg1().associatedVertex = event.goodVertices[0]
             pydil.leg2().associatedVertex = event.goodVertices[0]
-            pydil.leg2().rho = event.rho
-            if not self.testLeg2( pydil.leg2(), 999999 ):
+#            pydil.leg2().rho = event.rho
+            pydil.leg1().rho = event.rho
+#            if not self.testLeg2( pydil.leg2(), 999999 ):
+            if not self.testLeg1( pydil.leg1(), 999999 ):
                 continue
             # pydil.mvaMetSig = pydil.met().getSignificanceMatrix()
             diLeptons.append( pydil )
             pydil.mvaMetSig = pydil.met().getSignificanceMatrix()
         return diLeptons
+
+    def buildDiLeptonsSingle(self, leptons, event):
+        di_leptons = []
+        met = self.handles['met'].product()[0]
+
+#        import pdb; pdb.set_trace()
+        for pat_e in leptons:
+            electron = self.__class__.LeptonClass(pat_e)
+            for pat_mu in self.handles['otherLeptons'].product():
+                muon = self.__class__.OtherLeptonClass(pat_mu)
+                di_tau = DirectDiTau(electron, muon, met)
+                di_tau.leg1().associatedVertex = event.goodVertices[0]
+                di_tau.leg2().associatedVertex = event.goodVertices[0]
+                di_tau.leg1().rho = event.rho
+
+                if not self.testLeg1(di_tau.leg1(), 99999):
+                    continue
+
+                di_tau.mvaMetSig = None
+                di_leptons.append(di_tau)
+        return di_leptons
+
 
     def buildLeptons(self, cmgLeptons, event):
         '''Build muons for veto, associate best vertex, select loose ID muons.
@@ -68,6 +115,9 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
 
     def process(self, event):
 
+        event.goodVertices = event.vertices
+
+#        import pdb; pdb.set_trace()
         result = super(MuEleAnalyzer, self).process(event)
 
         if result is False:
@@ -85,63 +135,79 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
         else:
             event.isSignal = True
 
-        event.genMatched = None
-        if self.cfg_comp.isMC:
-            # print event.eventId
-            genParticles = self.mchandles['genParticles'].product()
-            event.genParticles = map( GenParticle, genParticles)
-            leg1DeltaR, leg2DeltaR = event.diLepton.match( event.genParticles )
-            if leg1DeltaR>-1 and leg1DeltaR < 0.1 and \
-               leg2DeltaR>-1 and leg2DeltaR < 0.1:
-                event.genMatched = True
-            else:
-                event.genMatched = False
-
         return True
 
-    def testLeg1ID(self, muon):
+    def testLeg2ID(self, muon):
         '''Tight muon selection, no isolation requirement'''
-        # RIC: 9 March 2015
-        return muon.muonID('POG_ID_Medium')
+        return muon.muonID('POG_ID_Medium') and self.testVertex(muon)
 
-    def testLeg1Iso(self, muon, isocut):
+    def testLeg2Iso(self, muon, isocut):
         '''Muon isolation to be implemented'''
-        # RIC: this leg is the muon,
-        # needs to be implemented here
-        # For now taken straight from mt channel
         if isocut is None:
-            isocut = self.cfg_ana.iso1
+            isocut = self.cfg_ana.iso2
+
         return muon.relIso(dBetaFactor=0.5, allCharged=0)<isocut
 
     def testVertex(self, lepton):
         '''Tests vertex constraints, for mu and electron'''
         return abs(lepton.dxy()) < 0.045 and abs(lepton.dz ()) < 0.2
 
-    def testLeg2ID(self, electron):
+    def testLeg1ID(self, electron):
         '''Electron ID. To be implemented'''
-        # RIC: this leg is the electron,
-        # needs to be implemented here
-        # For now taken straight from et channel
-        return electron.electronID('POG_MVA_ID_Run2_NonTrig_Tight') and \
-            self.testVertex(electron)
 
-    def testLeg2Iso(self, electron, isocut):
+        return self.testElectronID(electron) and self.testVertex(electron)
+
+#    electron.electronID('POG_MVA_ID_Run2_NonTrig_Tight') and \
+
+
+    def testLeg1Iso(self, electron, isocut):
         '''Electron Isolation. Relative isolation
            dB corrected factor 0.5
            all charged aprticles
         '''
-        # RIC: this leg is the electron,
-        # needs to be implemented here
-        # For now taken straight from et channel
         if isocut is None:
             isocut = self.cfg_ana.iso2
         return electron.relIso(dBetaFactor=0.5, allCharged=0) < isocut
 
     def thirdLeptonVeto(self, leptons, otherLeptons, ptcut = 10, isocut = 0.3) :
         '''The tri-lepton veto. To be implemented'''
+
+        # count electrons (leg 2)
+        vOtherLeptons = [electron for electron in leptons if
+                         self.testLegKine(electron, ptcut=10, etacut=2.5) and
+                         self.testVertex(electron) and
+                         electron.cutBasedId('POG_PHYS14_25ns_v1_Veto') and
+                         electron.relIso(dBetaFactor=0.5, allCharged=0) < 0.3]
+
+        # count tight muons
+        vLeptons = [muon for muon in otherLeptons if
+                    muon.muonID('POG_ID_Medium') and
+                    self.testVertex(muon) and
+                    self.testLegKine(muon, ptcut=10, etacut=2.4) and
+                    muon.relIso(dBetaFactor=0.5, allCharged=0) < 0.3]
+
+        if len(vLeptons) + len(vOtherLeptons) > 1:
+            return False
+
         return True
 
-    def leptonAccept(self, leptons):
+    def testElectronID(self, electron):
+        mva = electron.mvaRun2('NonTrigPhys14')
+        eta = abs(electron.superCluster().eta())
+
+#        import pdb; pdb.set_trace()
+        cVeto = electron.passConversionVeto()
+        mHits = electron.gsfTrack().hitPattern().numberOfHits(ROOT.reco.HitPattern.MISSING_INNER_HITS) <= 1
+
+
+        if eta < 0.8:
+            return mva > 0.965 and (cVeto and mHits)
+        elif eta < 1.479:
+            return mva > 0.917 and (cVeto and mHits)
+        return mva > 0.683 and (cVeto and mHits)
+
+
+    def leptonAccept(self, leptons, event):
         '''The di-lepton veto, returns false if > one lepton.
         e.g. > 1 mu in the mu tau channel.
         To be implemented.'''
@@ -154,3 +220,48 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
         if osDiLeptons : return max( osDiLeptons, key=operator.methodcaller( 'sumPt' ) )
         else           : return max(   diLeptons, key=operator.methodcaller( 'sumPt' ) )
 
+
+    def trigMatched(self, event, diL, requireAllMatched=False):
+        '''Check that at least one trigger object per pgdId from a given trigger 
+        has a matched leg with the same pdg ID. If requireAllMatched is True, 
+        requires that each single trigger object has a match.'''
+        matched = False
+        legs = [diL.leg1(), diL.leg2()]
+        event.matchedPaths = set()
+
+        for info in event.trigger_infos:
+            if not info.fired:
+                continue
+
+            matchedIds = set()
+            allMatched = True
+            for to in info.objects:
+                if self.trigObjMatched(to, legs):
+                    matchedIds.add(abs(to.pdgId()))
+                else:
+                    allMatched = False
+
+            if matchedIds == info.objIds:
+                if requireAllMatched and not allMatched:
+                    matched = False
+                else:
+                    matched = True
+                    event.matchedPaths.add(info.name)
+        
+        Mu23_flag = any([mp.find('Mu23')!=-1 for mp in event.matchedPaths])
+        Ele23_flag = any([mp.find('Ele23')!=-1 for mp in event.matchedPaths])
+
+#        print event.matchedPaths, diL.leg1().pt(), diL.leg2().pt(), Mu23_flag, Ele23_flag, matched
+
+        if all([Mu23_flag, Ele23_flag]): 
+#            print '--> all', matched and (diL.leg1().pt() > 24 or diL.leg2().pt() > 24)
+            return matched and (diL.leg1().pt() > 24 or diL.leg2().pt() > 24)
+        elif Ele23_flag and not Mu23_flag:
+#            print '--> e-only', matched and diL.leg1().pt() > 24
+            return matched and diL.leg1().pt() > 24
+        elif Mu23_flag and not Ele23_flag:
+#            print '--> mu-only', matched and diL.leg2().pt() > 24
+            return matched and diL.leg2().pt() > 24
+        else:
+            print 'This maens, no trigger fired'
+            return matched
