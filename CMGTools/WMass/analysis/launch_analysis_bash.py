@@ -8,15 +8,6 @@ import string, os, shutil, sys, subprocess
 
 useLHAPDF = False
 
-# foldername = "test2_zm_pdf";
-# foldername = "test_efficiencies";
-# foldername = "test_bosonpt";
-# foldername = "test_newstd";
-# foldername = "test_nnpdf23x0";
-# foldername = "test_RecApr12";
-# foldername = "test_Recoil13Apr";
-# foldername = "test_Recoil13Aprnobkg";
-# foldername = "test_preapproval_norecoil";
 foldername = "test_metfix3_nosmooth";
 foldername_orig=foldername
 
@@ -549,7 +540,7 @@ if(runWanalysis or runZanalysis):
                         if noLSFJobOutput>0:
                           LSFJobOutput = '-o /dev/null'
                         print ("bsub -C 0 "+LSFJobOutput+" -q "+batchQueue+" -J runWanalysis runWanalysis_"+sample[i]+"_"+str(x)+".sh")
-                        os.system("bsub -C 0 "+LSFJobOutput+" -u pippo123 -o ./ -q "+batchQueue+" -J runWanalysis runWanalysis_"+sample[i]+"_"+str(x)+".sh")
+                        os.system("bsub -C 0 "+LSFJobOutput+" -u pippo123 -q "+batchQueue+" -J runWanalysis runWanalysis_"+sample[i]+"_"+str(x)+".sh")
                       os.chdir(start_dir)
                       
                     if(WMassNSteps=="0" and not useBatch): os.system("sleep 1");
@@ -633,7 +624,7 @@ if(runWanalysis or runZanalysis):
                         if noLSFJobOutput>0:
                           LSFJobOutput = '-o /dev/null'
                         print ("bsub -C 0 "+LSFJobOutput+" -q "+batchQueue+" -J runZanalysis runZanalysis_"+sample[i]+"_"+str(x)+".sh")
-                        os.system("bsub -C 0 "+LSFJobOutput+" -u pippo123 -o ./ -q "+batchQueue+" -J runZanalysis runZanalysis_"+sample[i]+"_"+str(x)+".sh")
+                        os.system("bsub -C 0 "+LSFJobOutput+" -u pippo123 -q "+batchQueue+" -J runZanalysis runZanalysis_"+sample[i]+"_"+str(x)+".sh")
                       os.chdir(start_dir)
                     
                     if(WMassNSteps=="0" and not useBatch): os.system("sleep 1");
