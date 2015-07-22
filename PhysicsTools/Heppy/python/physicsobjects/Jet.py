@@ -1,4 +1,6 @@
 from PhysicsTools.Heppy.physicsobjects.PhysicsObject import *
+from PhysicsTools.HeppyCore.utils.deltar import deltaPhi
+import math
 
 loose_WP = [
     (0, 2.5, -0.8),
@@ -16,21 +18,21 @@ loose_53X_WP = [
     ]
 
 _btagWPs = {
-    "TCHEL": ("trackCountingHighEffBJetTags", 1.7),
-    "TCHEM": ("trackCountingHighEffBJetTags", 3.3),
-    "TCHPT": ("trackCountingHighPurBJetTags", 3.41),
-    "JPL": ("jetProbabilityBJetTags", 0.275),
-    "JPM": ("jetProbabilityBJetTags", 0.545),
-    "JPT": ("jetProbabilityBJetTags", 0.790),
+    "TCHEL": ("pfTrackCountingHighEffBJetTags", 1.7),
+    "TCHEM": ("pfTrackCountingHighEffBJetTags", 3.3),
+    "TCHPT": ("pfTrackCountingHighPurBJetTags", 3.41),
+    "JPL": ("pfJetProbabilityBJetTags", 0.275),
+    "JPM": ("pfJetProbabilityBJetTags", 0.545),
+    "JPT": ("pfJetProbabilityBJetTags", 0.790),
     "CSVL": ("combinedSecondaryVertexBJetTags", 0.244),
     "CSVM": ("combinedSecondaryVertexBJetTags", 0.679),
     "CSVT": ("combinedSecondaryVertexBJetTags", 0.898),
-    "CSVv2IVFL": ("combinedInclusiveSecondaryVertexV2BJetTags", 0.423),
-    "CSVv2IVFM": ("combinedInclusiveSecondaryVertexV2BJetTags", 0.814),
-    "CSVv2IVFT": ("combinedInclusiveSecondaryVertexV2BJetTags", 0.941),
-    "CMVAL": ("combinedMVABJetTags", 0.630), # for same b-jet efficiency of CSVv2IVFL on ttbar MC, jet pt > 30
-    "CMVAM": ("combinedMVABJetTags", 0.732), # for same b-jet efficiency of CSVv2IVFM on ttbar MC, jet pt > 30
-    "CMVAT": ("combinedMVABJetTags", 0.813), # for same b-jet efficiency of CSVv2IVFT on ttbar MC, jet pt > 30
+    "CSVv2IVFL": ("pfCombinedInclusiveSecondaryVertexV2BJetTags", 0.423),
+    "CSVv2IVFM": ("pfCombinedInclusiveSecondaryVertexV2BJetTags", 0.814),
+    "CSVv2IVFT": ("pfCombinedInclusiveSecondaryVertexV2BJetTags", 0.941),
+    "CMVAL": ("pfCombinedMVABJetTags", 0.630), # for same b-jet efficiency of CSVv2IVFL on ttbar MC, jet pt > 30
+    "CMVAM": ("pfCombinedMVABJetTags", 0.732), # for same b-jet efficiency of CSVv2IVFM on ttbar MC, jet pt > 30
+    "CMVAT": ("pfCombinedMVABJetTags", 0.813), # for same b-jet efficiency of CSVv2IVFT on ttbar MC, jet pt > 30
 
 }
 
@@ -97,12 +99,15 @@ class Jet(PhysicsObject):
         self._rawFactorMultiplier = factor/self.jecFactor('Uncorrected')
 
     def btag(self,name):
-        return self.bDiscriminator(name) 
+        ret = self.bDiscriminator(name)
+        if ret == -1000 and name.startswith("pf"):
+            ret = self.bDiscriminator(name[2].lower()+name[3:])
+        return ret
  
     def btagWP(self,name):
         global _btagWPs
         (disc,val) = _btagWPs[name]
-        return self.bDiscriminator(disc) > val
+        return self.btag(disc) > val
 
     def leadingTrack(self):
         if self._leadingTrackSearched :
@@ -119,6 +124,87 @@ class Jet(PhysicsObject):
              return lt.pt()
         else :
              return 0. 
+    def qgl(self) :
+       if not hasattr(self,"qgl_value") :
+	  if hasattr(self,"qgl_rho") : #check if qgl calculator is configured
+              self.computeQGvars()
+              self.qgl_value=self.qgl_calc(self,self.qgl_rho)
+	  else :
+              self.qgl_value=0. #if no qgl calculator configured
+		  
+       return self.qgl_value
+
+    def computeQGvars(self):
+       #return immediately if qgvars already computed or if qgl is disabled
+       if not hasattr(self,"qgl_rho") or getattr(self,"hasQGVvars",False) :
+	  return self
+       self.hasQGvars = True
+	 
+       jet = self
+       jet.mult = 0
+       sum_weight = 0.
+       sum_pt = 0.    
+       sum_deta = 0.  
+       sum_dphi = 0.  
+       sum_deta2 = 0. 
+       sum_detadphi = 0.
+       sum_dphi2 = 0.   
+
+
+
+       for ii in range(0, jet.numberOfDaughters()) :
+
+         part = jet.daughter(ii)
+
+         if part.charge() == 0 : # neutral particles 
+
+           if part.pt() < 1.: continue
+
+         else : # charged particles
+
+           if part.trackHighPurity()==False: continue
+           if part.fromPV()<=1: continue             
+
+
+         jet.mult += 1
+
+         deta = part.eta() - jet.eta()
+         dphi = deltaPhi(part.phi(), jet.phi())
+         partPt = part.pt()                    
+         weight = partPt*partPt                
+         sum_weight += weight                  
+         sum_pt += partPt                      
+         sum_deta += deta*weight               
+         sum_dphi += dphi*weight               
+         sum_deta2 += deta*deta*weight         
+         sum_detadphi += deta*dphi*weight      
+         sum_dphi2 += dphi*dphi*weight         
+
+
+
+
+       a = 0.
+       b = 0.
+       c = 0.
+
+       if sum_weight > 0 :
+         jet.ptd = math.sqrt(sum_weight)/sum_pt
+         ave_deta = sum_deta/sum_weight        
+         ave_dphi = sum_dphi/sum_weight        
+         ave_deta2 = sum_deta2/sum_weight      
+         ave_dphi2 = sum_dphi2/sum_weight      
+         a = ave_deta2 - ave_deta*ave_deta     
+         b = ave_dphi2 - ave_dphi*ave_dphi     
+         c = -(sum_detadphi/sum_weight - ave_deta*ave_dphi)
+       else: jet.ptd = 0.                                  
+
+       delta = math.sqrt(math.fabs((a-b)*(a-b)+4.*c*c))
+
+       if a+b-delta > 0: jet.axis2 = -math.log(math.sqrt(0.5*(a+b-delta)))
+       else: jet.axis2 = -1.                                              
+       return jet	
+   
+
 
 class GenJet( PhysicsObject):
     pass
