@@ -256,7 +256,8 @@ if test==0:
     samples=[testComponent]
 
     dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data"
-    json=dataDir+'/json/Cert_Run2012ABCD_22Jan2013ReReco.json'
+    #json=dataDir+'/json/Cert_Run2012ABCD_22Jan2013ReReco.json'
+    json=dataDir+'/json/json_DCSONLY_Run2015B.txt'
     from CMGTools.TTHAnalysis.setup.Efficiencies import *
 
     for comp in samples:
@@ -276,7 +277,8 @@ if test==0:
     #comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTspring/ttbar25nsmad_1ECE44F9-5F02-E511-9A65-02163E00EA1F.root']
     # 74X 
     #comp.files = ['/afs/cern.ch/user/d/dalfonso/public/74samples/QCD_Pt_1000to1400_Asympt25ns/0AF8E723-53F9-E411-86B4-0025905C2CBA.root']
-    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/74samples/JetHT_GR_R_74_V12_19May_RelVal/1294BDDB-B7FE-E411-8028-002590596490.root']
+    #comp.files = ['/afs/cern.ch/user/d/dalfonso/public/74samples/JetHT_GR_R_74_V12_19May_RelVal/1294BDDB-B7FE-E411-8028-002590596490.root']
+    comp.files = ['/afs/cern.ch/user/m/mangano/public/MECCA/dataset/74X/data/JetHT_promptReco_Run2015B.root']
 
 
     selectedComponents = [comp]
@@ -299,6 +301,7 @@ elif test==1:
 #    #comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/TTJets_miniAOD_fixPhoton_forSynch.root']
 #    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTspring/ttbar25nsmad_1ECE44F9-5F02-E511-9A65-02163E00EA1F.root']
 #    #comp.files = ['/afs/cern.ch/user/d/dalfonso/public/74samples/JetHT_GR_R_74_V12_19May_RelVal/1294BDDB-B7FE-E411-8028-002590596490.root']
+#    comp.files = ['/afs/cern.ch/user/m/mangano/public/MECCA/dataset/74X/data/JetHT_promptReco_Run2015B.root']
 
     comp=TTJets
     comp.files = comp.files[:1]
