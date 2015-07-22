@@ -543,7 +543,7 @@ if(runWanalysis or runZanalysis):
                         text_file.close()
                         # print 'file created, launching bsub'
                         os.system("chmod 755 runWanalysis_"+sample[i]+"_"+str(x)+".sh")
-                      if not resubmit or not os.path.isfile("Wanalysis_chunk"+str(x)+".root"):
+                      if not resubmit or not os.path.isfile("Wanalysis_chunk"+str(x)+".root") or (not os.path.getsize("Zanalysis_chunk"+str(x)+".root")>0):
                         os.system("rm -f core.*")
                         LSFJobOutput = ''
                         if noLSFJobOutput>0:
@@ -627,7 +627,7 @@ if(runWanalysis or runZanalysis):
                         # print 'file created, launching bsub'
                         os.system("chmod 755 runZanalysis_"+sample[i]+"_"+str(x)+".sh")
                       # print 'checking file',"Zanalysis_chunk"+str(x)+".root",'path is',os.getcwd(),'check is',os.path.isfile("Zanalysis_chunk"+str(x)+".root")
-                      if not resubmit or not os.path.isfile("Zanalysis_chunk"+str(x)+".root"):
+                      if not resubmit or not os.path.isfile("Zanalysis_chunk"+str(x)+".root") or (not os.path.getsize("Zanalysis_chunk"+str(x)+".root")>0):
                         os.system("rm -f core.*")
                         LSFJobOutput = ''
                         if noLSFJobOutput>0:
