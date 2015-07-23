@@ -65,13 +65,11 @@ EOF
 
 cd ../python/plotter/
 
-#if [[ "$isData" -eq "-data" ]]; then
-#    python mcPlots.py -f --tree mt2  -P $workingDir/$outputFolder  $workingDir/$outputFolder/inputs.txt susy-mT2/validation_MT2.txt susy-mT2/validation_plots_MT2.data.txt --pdir $workingDir/$outputFolder/plots -p ref_ttHWWdata,ttHWWdata -u -e --plotmode=norm --showRatio --maxRatioRange 0.65 1.35 --flagDifferences
-#else
-#    python mcPlots.py -f --tree mt2  -P $workingDir/$outputFolder  $workingDir/$outputFolder/inputs.txt susy-mT2/validation_MT2.txt susy-mT2/validation_plots_MT2.txt --pdir $workingDir/$outputFolder/plots -p ref_ttHWWdata,ttHWWdata -u -e --plotmode=norm --showRatio --maxRatioRange 0.65 1.35 --flagDifferences
-#fi;
-
-python mcPlots.py -f --tree mt2  -P $workingDir/$outputFolder  $workingDir/$outputFolder/inputs.txt susy-mT2/validation_MT2.txt susy-mT2/validation_plots_MT2.data.txt --pdir $workingDir/$outputFolder/plots -p ref_ttHWWdata,ttHWWdata -u -e --plotmode=norm --showRatio --maxRatioRange 0.65 1.35 --flagDifferences
+if [[ "$isData" -eq "-data" ]]; then
+    python mcPlots.py -f --tree mt2  -P $workingDir/$outputFolder  $workingDir/$outputFolder/inputs.txt susy-mT2/validation_MT2.txt susy-mT2/validation_plots_MT2.data.txt --pdir $workingDir/$outputFolder/plots -p ref_ttHWWdata,ttHWWdata -u -e --plotmode=norm --showRatio --maxRatioRange 0.65 1.35 --flagDifferences
+else
+    python mcPlots.py -f --tree mt2  -P $workingDir/$outputFolder  $workingDir/$outputFolder/inputs.txt susy-mT2/validation_MT2.txt susy-mT2/validation_plots_MT2.txt --pdir $workingDir/$outputFolder/plots -p ref_ttHWWdata,ttHWWdata -u -e --plotmode=norm --showRatio --maxRatioRange 0.65 1.35 --flagDifferences
+fi;
 
 cd $OLDPWD
 
