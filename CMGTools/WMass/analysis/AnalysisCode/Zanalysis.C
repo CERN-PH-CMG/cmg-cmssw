@@ -65,7 +65,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   TString chunk_str = chunk>0? Form("_chunk%d",chunk) : "";
   // ofstream outTXTfile;
   // outTXTfile.open(Form("%s/Zanalysis_EVlog%s.log",outputdir.Data(),chunk_str.Data()));
-  if(!outputdir.Contains("../")) outputdir = "../"+outputdir;
+  // if(!outputdir.Contains("../")) outputdir = "../"+outputdir;
   cout << "output filename= " << Form("%s/Zanalysis%s.root",outputdir.Data(),chunk_str.Data()) << endl;
   
   //------------------------------------------------------
@@ -362,6 +362,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     std::string fileZmmMC =     Form("../RecoilCode/MAY25/recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
     // std::string fileZmmData =   Form("../RecoilCode/MAY25/recoilfit_MAY25_DATA_bkg_tkmet_eta21_MZ81101_pol4_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root"); int model_name_idx=1;
     std::string fileZmmData =   Form("../RecoilCode/MAY25/recoilfit_MAY25_DATA_tkmet_eta21_MZ81101_pol4_type2_doubleGauss_triGauss_halfStat_corrKalman_UNBINNED_3G_53X.root"); int model_name_idx=0; 
+    // // TEMPORARY TO STUDY THE RECOIL CORRECTIONS!!!!!!!!!!
+    // std::string fileZmmData =   Form("../RecoilCode/MAY25/recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root"); int model_name_idx=0; 
 
     //    recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_recoParam_UNBINNED_3G_53X_powheg.root
     //    recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root
@@ -396,7 +398,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   cout << "couts every " << cout_freq << " events" << endl;
   Long64_t nbytes = 0, nb = 0;
   for(Long64_t jentry=first_entry; jentry<nentries;jentry++) {
-    // for (Long64_t jentry=0; jentry<1e1;jentry++) { // TEMP !!!
+    // for (Long64_t jentry=0; jentry<1e2;jentry++) { // TEMP !!!
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;

@@ -104,8 +104,8 @@ int main(int argc, char ** argv)
   TString chunk_str = GetEntriesOrNchunck>0? Form("_chunk%d",GetEntriesOrNchunck) : "";
   TString outputfilename = run_BuildEvByEvTemplates ? "WEvByEvTemplates" : "ZanalysisOnDATA";
   if(GetEntriesOrNchunck==0)
-    gROOT->ProcessLine(Form(".! mv ../%s/Zanalysis%s.root ../%s/%s.root",filename_outputdir.Data(),chunk_str.Data(),filename_outputdir.Data(),outputfilename.Data()));
-  gROOT->ProcessLine(Form(".! cp Zanalysis.* ../%s/",filename_outputdir.Data()));
+    gROOT->ProcessLine(Form(".! mv %s/Zanalysis%s.root %s/%s.root",filename_outputdir.Data(),chunk_str.Data(),filename_outputdir.Data(),outputfilename.Data()));
+  gROOT->ProcessLine(Form(".! cp Zanalysis.* %s/",filename_outputdir.Data()));
   
   
 }
