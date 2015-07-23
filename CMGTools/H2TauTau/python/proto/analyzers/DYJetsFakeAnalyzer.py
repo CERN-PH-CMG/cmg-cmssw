@@ -85,8 +85,8 @@ class DYJetsFakeAnalyzer(Analyzer):
         self.l1 = event.diLepton.leg1()
         self.l2 = event.diLepton.leg2()
 
-        self.genMatch(event, self.l1)
-        self.genMatch(event, self.l2)
+        self.genMatch(event, self.l1, self.ptSelGentauleps, self.ptSelGenleps, self.ptSelGenSummary)
+        self.genMatch(event, self.l2, self.ptSelGentauleps, self.ptSelGenleps, self.ptSelGenSummary)
 
         if 'Higgs' in self.cfg_comp.name:
             theZs = [bos for bos in event.generatorSummary if abs(bos.pdgId()) in (25, 35, 36, 37)]
@@ -130,7 +130,9 @@ class DYJetsFakeAnalyzer(Analyzer):
         if self.cfg_ana.channel == 'em':
             self.isFakeEMu(event)
 
-    def genMatch(self, event, leg, dR=0.3, matchAll=True):
+    @staticmethod
+    def genMatch(event, leg, ptSelGentauleps, ptSelGenleps, ptSelGenSummary, 
+                 dR=0.3, matchAll=True):
 
         dR2 = dR * dR
 
@@ -148,14 +150,14 @@ class DYJetsFakeAnalyzer(Analyzer):
             return
 
         # to generated leptons from taus
-        l1match, dR2best = bestMatch(leg, self.ptSelGentauleps)
+        l1match, dR2best = bestMatch(leg, ptSelGentauleps)
         if dR2best < dR2:
             leg.genp = l1match
             leg.isTauLep = True
             return
 
         # to generated prompt leptons
-        l1match, dR2best = bestMatch(leg, self.ptSelGenleps)
+        l1match, dR2best = bestMatch(leg, ptSelGenleps)
         if dR2best < dR2:
             leg.genp = l1match
             leg.isPromptLep = True
@@ -163,7 +165,7 @@ class DYJetsFakeAnalyzer(Analyzer):
 
         # match with any other relevant gen particle
         if matchAll:
-            l1match, dR2best = bestMatch(leg, self.ptSelGenSummary)
+            l1match, dR2best = bestMatch(leg, ptSelGenSummary)
             if dR2best < dR2:
                 leg.genp = l1match
 
