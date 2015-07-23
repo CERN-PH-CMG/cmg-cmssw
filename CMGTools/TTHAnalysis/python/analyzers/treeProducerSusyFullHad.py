@@ -6,7 +6,7 @@ susyFullHad_globalVariables = susyCore_globalVariables + [
     ## Generator information
     ##--------------------------------------------------
 ##    NTupleVariable("genQScale", lambda ev : ev.genQScale, help="Generator level binning quantity, QScale"),
-    NTupleVariable("LHEweight_original", lambda ev: ev.LHE_originalWeight if  hasattr(ev,'LHE_originalWeight') else  0, help="original LHE weight"),
+    NTupleVariable("LHEweight_original", lambda ev: ev.LHE_originalWeight if  hasattr(ev,'LHE_originalWeight') else  0, mcOnly=True, help="original LHE weight"),
     
     ##--------------------------------------------------
     ## energy sums
@@ -106,7 +106,7 @@ susyFullHad_globalVariables = susyCore_globalVariables + [
     NTupleVariable("mt2_had", lambda ev: ev.mt2_Xj_had, float, help="mt2(j1,j2,met) with jets "),
     NTupleVariable("mt2ViaKt_had", lambda ev: ev.mt2ViaKt_Xj_had, float, help="mt2(j1,j2,met) with jets with KT pseudo jets"),
     NTupleVariable("mt2_bb", lambda ev: ev.mt2bb_Xj, float, help="mt2(b1,b2,met) with jets "),
-    NTupleVariable("mt2_gen", lambda ev: ev.mt2_Xj_gen, float, help="mt2(j1,j2,met) with jets at genInfo"),
+    NTupleVariable("mt2_gen", lambda ev: ev.mt2_Xj_gen, float, mcOnly=True, help="mt2(j1,j2,met) with jets at genInfo"),
     NTupleVariable("mt2", lambda ev: ev.mt2_Xj, float, help="mt2(j1,j2,met) with jets and leptons"),
     NTupleVariable("gamma_mt2", lambda ev: ev.gamma_mt2_Xj, float, help="mt2(j1,j2,met) with photons added to met"),
     NTupleVariable("zll_mt2", lambda ev: ev.zll_mt2_Xj, float, help="mt2(j1,j2,met) with zll added to met, only hadrons"),

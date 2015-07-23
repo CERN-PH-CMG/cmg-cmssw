@@ -24,23 +24,26 @@ count_nElectrons10 : nElectrons10 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5]; XTitle="N(el
 count_nTaus20 : nTaus20 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5]; XTitle="N(#tau\, p_{T} > 20)"
 count_nGammas20 : nGammas20 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5]; XTitle="N(#gamma\, p_{T} > 20)"
 
+count_nJet30 : nJet30 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(jet\, p_{T} > 30)'
 count_nJet40 : nJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(jet\, p_{T} > 40)'
+
 count_nBJet40 : nBJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\, p_{T} > 40\, CSVM)'
-count_nBJet25 : nBJet25 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\, p_{T} > 25\, CSVM)'
+count_nBJet30 : nBJet30 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\, p_{T} > 30\, CSVM)'
 count_nBJet20 : nBJet20 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\, p_{T} > 20\, CSVM)'
 
 ##count_ngenParticles: ngenPart : 500,0,500  ; XTitle="nGenParticles"
 
 ##### TRIGGERS
 
-HLT_ht350met120: HLT_ht350met120: [-0.5,0.5,1.5]; XTitle="HLT"
-HLT_MET170     : HLT_MET170     : [-0.5,0.5,1.5]; XTitle="HLT" 
-HLT_HT900      : HLT_HT900      : [-0.5,0.5,1.5]; XTitle="HLT"
+HLT_PFHT350_PFMET100: HLT_PFHT350_PFMET100: [-0.5,0.5,1.5]; XTitle="HLT"
+HLT_PFMET170     : HLT_PFMET170     : [-0.5,0.5,1.5]; XTitle="HLT" 
+HLT_PFHT800      : HLT_PFHT800      : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_SingleMu   : HLT_SingleMu   : [-0.5,0.5,1.5]; XTitle="HLT"
+HLT_SingleEl   : HLT_SingleEl   : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_DoubleMu   : HLT_DoubleMu   : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_DoubleEl   : HLT_DoubleEl   : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_MuEG       : HLT_MuEG       : [-0.5,0.5,1.5]; XTitle="HLT"
-HLT_Photons    : HLT_Photons    : [-0.5,0.5,1.5]; XTitle="HLT"
+HLT_Photon165_HE10    : HLT_Photon165_HE10    : [-0.5,0.5,1.5]; XTitle="HLT"
 ###HLT_htXprescale: HLT_htXprescale: [-0.5,0.5,1.5]; XTitle="HLT"
 
 Flag_EcalDeadCellTriggerPrimitiveFilter : Flag_EcalDeadCellTriggerPrimitiveFilter: [-0.5,0.5,1.5]; XTitle="metFilter"
@@ -60,8 +63,6 @@ Flag_METFilters : Flag_METFilters: [-0.5,0.5,1.5]; XTitle="metFilter"
 ##### MT2
 
 mt2:   mt2: 16,0,800    ; XTitle="MT2  [GeV]"
-
-mt2_gen:   mt2_gen: 16,0,800    ; XTitle="MT2 gen  [GeV]"
 
 pseudoJet1_pt: pseudoJet1_pt: 16,0,800    ; XTitle="PseJet1  p_{T}  [GeV]", Legend='TR'
 pseudoJet1_phi: pseudoJet1_phi: 8,-3.15,3.15    ; XTitle="PseJet1 phi"
@@ -131,15 +132,6 @@ tau_Charge:  tau_charge: [-1.5,-0.5,0.5,1.5];  Legend='TL'
 
 tau_isoCI3hit: tau_isoCI3hit: 100,0,0.5    ; XTitle="tau ISO  [GeV]"   
 tau_idCI3hit: tau_idCI3hit: 10,0,10.    ; XTitle="tau ID "
-
-##### genCounting
-
-#genLep_pdgId : genLep_pdgId : [10.5,11.5,12.5,13.5,14.5,15.5,16.5] ; XTitle='PDG_ID genLep'
-
-#genLepFromTau_pdgId : genLepFromTau_pdgId : [10.5,11.5,12.5,13.5,14.5,15.5,16.5] ; XTitle='PDG_ID genLepFromTau'
-
-#genTau_pdgId : genTau_pdgId : [10.5,11.5,12.5,13.5,14.5,15.5,16.5] ; XTitle='PDG_ID genTau'
-
 
 ##### PHOTONS
 
