@@ -56,8 +56,9 @@ jetAna.doQG = True
 jetAna.jetEta = 4.7
 jetAna.jetEtaCentral = 2.5
 jetAna.jetPt = 10.
-#jetAna.mcGT = "PHYS14_V4_MC" # jec corrections
-jetAna.recalibrateJets = False
+#jetAna.mcGT     = "Summer15_50nsV2_MC", # jec corrections
+#jetAna.dataGT   = "Summer15_50nsV2_MC", # jec corrections
+jetAna.recalibrateJets = True
 jetAna.jetLepDR = 0.4
 jetAna.smearJets = False
 jetAna.jetGammaDR = 0.4
@@ -402,8 +403,6 @@ if doSpecialSettingsForMECCA:
 
 if isData:
     eventFlagsAna.processName = 'HLT'
-    jetAna.recalibrateJets = False
-    photonAna.do_mc_match = False
     for comp in samples:
         comp.isMC = False
         comp.isData = True
