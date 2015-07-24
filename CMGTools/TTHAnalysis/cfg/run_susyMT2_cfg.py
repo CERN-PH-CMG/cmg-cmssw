@@ -47,7 +47,7 @@ lepAna.ele_isoCorr = "deltaBeta"
 lepAna.ele_tightId = "Cuts_PHYS14_25ns_v1_ConvVetoDxyDz"
 lepAna.notCleaningElectrons = True
 lepAna.doMiniIsolation = True
-lepAna.miniIsolationPUCorr = 'raw'
+lepAna.miniIsolationPUCorr = 'rhoArea'
 
 # JET (for event variables do apply the jetID and not PUID yet)
 jetAna.relaxJetId = False
@@ -169,8 +169,7 @@ ttHZskim = cfg.Analyzer(
 ##------------------------------------------
 
 
-
-from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_HT900, triggers_HT800, triggers_MET170, triggers_HTMET100, triggers_HTMET120, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_e, triggers_MT2_mu, triggers_dijet, triggers_ht350, triggers_ht475, triggers_photon75, triggers_photon90, triggers_photon120, triggers_photon75ps, triggers_photon90ps, triggers_photon120ps, triggers_photon155, triggers_photon165_HE10, triggers_photon175
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_HT900, triggers_HT800, triggers_MET170, triggers_HTMET100, triggers_HTMET120, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_e, triggers_MT2_mu, triggers_MT2_mue, triggers_dijet, triggers_dijet70met120, triggers_dijet55met110, triggers_ht350, triggers_ht475,  triggers_ht600, triggers_photon75, triggers_photon90, triggers_photon120, triggers_photon75ps, triggers_photon90ps, triggers_photon120ps, triggers_photon155, triggers_photon165_HE10, triggers_photon175
 
 triggerFlagsAna.triggerBits = {
 'PFHT900' : triggers_HT900,
@@ -182,6 +181,13 @@ triggerFlagsAna.triggerBits = {
 'SingleEl' : triggers_MT2_e,
 'DoubleMu' : triggers_MT2_mumu,
 'DoubleEl' : triggers_MT2_ee,
+'MuEG' : triggers_MT2_mue,
+'DiCentralPFJet70_PFMET120' : triggers_dijet70met120,
+'DiCentralPFJet55_PFMET110' : triggers_dijet55met110,
+##
+'PFHT350_Prescale' : triggers_ht350,
+'PFHT475_Prescale' : triggers_ht475,
+'PFHT600_Prescale'  : triggers_ht600,
 #'MuEG' : triggers_MT2_mue,
 'DiJet' : triggers_dijet,
 'ht350prescale' : triggers_ht350,
@@ -243,6 +249,7 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 
 #-------- HOW TO RUN
 # choose 2 for full production
+
 test = 0
 isData = True
 doSpecialSettingsForMECCA = 1
@@ -303,9 +310,10 @@ elif test==1:
 #    #comp.files = ['/afs/cern.ch/user/d/dalfonso/public/74samples/JetHT_GR_R_74_V12_19May_RelVal/1294BDDB-B7FE-E411-8028-002590596490.root']
 #    comp.files = ['/afs/cern.ch/user/m/mangano/public/MECCA/dataset/74X/data/JetHT_promptReco_Run2015B.root']
 
-    comp=TTJets
-    comp.files = comp.files[:1]
-
+    #synche file MC
+    comp=comp=TTJets_LO_50ns
+    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/SYNCHfiles/0066F143-F8FD-E411-9A0B-D4AE526A0D2E.root']
+   
     selectedComponents = [comp]
     comp.splitFactor = 1
 #    comp.triggers = triggers_HT900 + triggers_HTMET + triggers_photon155 + triggers_1mu_isolow + triggers_MT2_mumu + triggers_MT2_ee + triggers_MT2_mue # to apply trigger skimming
@@ -368,8 +376,21 @@ elif test==3:
     # run on data
     isData = True
     from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
-    selectedComponents = [JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B, SingleElectron_Run2015B, SingleMuon_Run2015B, SinglePhoton_Run2015B, DoubleEG_Run2015B, DoubleMuon_Run2015B]
+#    from CMGTools.TTHAnalysis.samples.samples_13TeV_DATA2015 import *
+#    selectedComponents = [ jetHT_0T ]
+#    selectedComponents = [ Jet_Run2015B ]
 
+#    for comp in selectedComponents:
+#        comp.files = comp.files[:]
+    #, JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B, SingleElectron_Run2015B, SingleMu_Run2015B, SingleMuon_Run2015B, SinglePhoton_Run2015B, EGamma_Run2015B, DoubleEG_Run2015B, MuonEG_Run2015B, DoubleMuon_Run2015B, minBias_Run2015B, zeroBias_Run2015B]
+
+    #synche file DATA
+    comp = JetHT_Run2015B
+    comp.files = ['/afs/cern.ch/user/m/mangano/public/MECCA/dataset/74X/data/JetHT_promptReco_Run2015B.root']
+
+    selectedComponents = [comp]
+    #selectedComponents = [JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B, SingleElectron_Run2015B, SingleMuon_Run2015B, SinglePhoton_Run2015B, DoubleEG_Run2015B, DoubleMuon_Run2015B]
+    
 # ------------------------------------------------------------------------------------------- #
 
 
