@@ -1,4 +1,4 @@
-# import operator
+import ROOT
 
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.physicsobjects.Muon import Muon
@@ -60,7 +60,6 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
             pydil = self.__class__.DiObjectClass(dil)
             pydil.leg2().associatedVertex = event.goodVertices[0]
             pydil.leg1().associatedVertex = event.goodVertices[0]
-            pydil.leg1().setTrackForDxyDz('innerTrack')
             if not self.testLeg1(pydil.leg1(), 99999):
                 continue
             # JAN: This crashes. Waiting for idea how to fix this; may have
@@ -81,7 +80,6 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
                 di_tau = DirectDiTau(muon, tau, met)
                 di_tau.leg2().associatedVertex = event.goodVertices[0]
                 di_tau.leg1().associatedVertex = event.goodVertices[0]
-                di_tau.leg1().setTrackForDxyDz('innerTrack')
                 if not self.testLeg1(di_tau.leg1(), 99999):
                     continue
 
@@ -139,6 +137,7 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
                  tau.tauID('decayModeFindingNewDMs') > 0.5) and
                 # tau.tauID('againstElectronVLooseMVA5') > 0.5  and
                 # tau.tauID('againstMuonTight3')         > 0.5  and
+                abs(tau.charge()) == 1. and
                 self.testTauVertex(tau))
         # https://twiki.cern.ch/twiki/bin/view/CMS/TauIDRecommendation13TeV
 
@@ -199,14 +198,21 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
             return mva > 0.825
         return mva > 0.337
 
+    def tempEleIso(self, ele):
+        iso_sum = ele.chargedHadronIsoR(R=0.3) + max(ele.photonIsoR(R=0.3) + ele.neutralHadronIsoR(R=0.3) - 0.5 * ele.puChargedHadronIsoR(R=0.3), 0.)
+        return iso_sum/ele.pt()
+
     def otherLeptonVeto(self, leptons, otherLeptons, isoCut=0.3):
         # count electrons
         vOtherLeptons = [electron for electron in otherLeptons if
                          self.testLegKine(electron, ptcut=10, etacut=2.5) and
                          self.testVertex(electron) and
                          self.testElectronID(electron) and
+                         electron.passConversionVeto() and
+                         electron.physObj.gsfTrack().hitPattern().numberOfHits(ROOT.reco.HitPattern.MISSING_INNER_HITS) <= 1 and
                          # electron.cutBasedId('POG_PHYS14_25ns_v1_Veto') and
-                         electron.relIso(dBetaFactor=0.5, allCharged=0) < 0.3]
+                         # electron.relIso(dBetaFactor=0.5, allCharged=0) < 0.3]
+                         self.tempEleIso(electron) < 0.3]
 
         if len(vOtherLeptons) > 0:
             return False
@@ -233,6 +239,15 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
             return False
 
         return True
+
+    def trigMatched(self, event, diL, requireAllMatched=False):
+        
+        matched = super(TauMuAnalyzer, self).trigMatched(event, diL, requireAllMatched=requireAllMatched)
+
+        if matched and len(diL.matchedPaths) == 1 and diL.leg1().pt() < 25. and 'IsoMu24' in list(diL.matchedPaths)[0]:
+            matched = False
+
+        return matched
 
     def bestDiLepton(self, diLeptons):
         '''Returns the best diLepton (1st precedence opposite-sign, 2nd precedence
