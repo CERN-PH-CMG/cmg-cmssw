@@ -269,7 +269,7 @@ class DiLeptonAnalyzer(Analyzer):
         requires that each single trigger object has a match.'''
         matched = False
         legs = [diL.leg1(), diL.leg2()]
-        event.matchedPaths = set()
+        diL.matchedPaths = set()
 
         for info in event.trigger_infos:
             if not info.fired:
@@ -288,7 +288,7 @@ class DiLeptonAnalyzer(Analyzer):
                     matched = False
                 else:
                     matched = True
-                    event.matchedPaths.add(info.name)
+                    diL.matchedPaths.add(info.name)
 
         return matched
 
