@@ -17,7 +17,6 @@ class ComponentCreator(object):
          )
 
          component.dataset_entries = self.getPrimaryDatasetEntries(dataset,user,pattern,useAAA=useAAA)
-
          return component
 
     def makePrivateMCComponent(self,name,dataset,files,xSec=1):
