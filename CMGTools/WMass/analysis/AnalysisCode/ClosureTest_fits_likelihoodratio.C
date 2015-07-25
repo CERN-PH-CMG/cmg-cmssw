@@ -65,7 +65,7 @@ void ClosureTest_fits(int generated_PDF_set=1, int generated_PDF_member=0, TStri
                     ofstream outTXTfile;
                     cout << "creating " << outfilename_str << endl;
                     outTXTfile.open(outfilename_str);
-                    outTXTfile << "user=$(whoami); cd /afs/cern.ch/work/${user:0:1}/${user}/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462; eval `scramv1 runtime -sh`; cd -;\n"
+                    outTXTfile << "user=$(whoami); cd /afs/cern.ch/work/${user:0:1}/${user}/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462; eval `scramv1 runtime -sh`; cd -;\n";
                     outTXTfile << "source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh;\n";
                     outTXTfile << "cd "<<currentdir_str<<"\n";
                     outTXTfile << text2workspace_str << endl;
