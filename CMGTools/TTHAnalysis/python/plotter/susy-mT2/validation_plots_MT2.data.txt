@@ -3,9 +3,6 @@
 met:   met_pt: 16,0,800    ; XTitle="E_{T}^{miss}  [GeV]"
 met_phi:   met_phi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
 
-genmet:   met_genPt: 16,0,800    ; XTitle="E_{T}^{miss}  [GeV]"
-genmet_phi:   met_genPhi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
-
 rawmet: met_rawPt: 16,0,800    ; XTitle="E_{T}^{miss}  [GeV]" 
 rawmet_phi: met_rawPhi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
 
@@ -18,7 +15,6 @@ diffMetMht: diffMetMht: 100,0,500    ; XTitle="|MET-MHT|"
 ht: ht:  16,0,800    ; XTitle="H_{T}  [GeV]"
 
 rho: rho: 10,0,1  ; XTitle="rho"
-nTrueInt: nTrueInt: 100,0,100  ; XTitle="nTrueInt"
 nVert: nVert: 100,0,100  ; XTitle="nVert"
 
 ######### COUNTER
@@ -39,9 +35,9 @@ count_nBJet20 : nBJet20 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\,
 
 ##### TRIGGERS
 
-HLT_PFHT350_PFMET120: HLT_PFHT350_PFMET120: [-0.5,0.5,1.5]; XTitle="HLT"
+HLT_PFHT350_PFMET100: HLT_PFHT350_PFMET100: [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_PFMET170     : HLT_PFMET170     : [-0.5,0.5,1.5]; XTitle="HLT" 
-HLT_PFHT900      : HLT_PFHT900      : [-0.5,0.5,1.5]; XTitle="HLT"
+HLT_PFHT800      : HLT_PFHT800      : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_SingleMu   : HLT_SingleMu   : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_SingleEl   : HLT_SingleEl   : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_DoubleMu   : HLT_DoubleMu   : [-0.5,0.5,1.5]; XTitle="HLT"
@@ -67,8 +63,6 @@ Flag_METFilters : Flag_METFilters: [-0.5,0.5,1.5]; XTitle="metFilter"
 ##### MT2
 
 mt2:   mt2: 16,0,800    ; XTitle="MT2  [GeV]"
-
-mt2_gen:   mt2_gen: 16,0,800    ; XTitle="MT2 gen  [GeV]"
 
 pseudoJet1_pt: pseudoJet1_pt: 16,0,800    ; XTitle="PseJet1  p_{T}  [GeV]", Legend='TR'
 pseudoJet1_phi: pseudoJet1_phi: 8,-3.15,3.15    ; XTitle="PseJet1 phi"
@@ -96,9 +90,6 @@ jet_mass: jet_mass: 20,0,400.    ; XTitle="jet mass [GeV]"
 jet_csv: jet_btagCSV: 100,-11.,2.    ; XTitle="jet csv"
 
 jet_rawPt: jet_rawPt: 200, 0, 200     ; XTitle="jet raw pt"
-jet_mcPt: jet_mcPt: 200, 0, 200     ; XTitle="jet mc pt"
-
-jet_mcFlavour: jet_mcFlavour: 100, 0,100 ; XTitle="jet mc flavour"
 jet_area: jet_area: 100, 0,100 ; XTitle="jet mc area"
 
 jet_id: jet_id: [-0.5,0.5,1.5,2.5,3.5] ; XTitle="jet id"
@@ -142,18 +133,6 @@ tau_Charge:  tau_charge: [-1.5,-0.5,0.5,1.5];  Legend='TL'
 tau_isoCI3hit: tau_isoCI3hit: 100,0,0.5    ; XTitle="tau ISO  [GeV]"   
 tau_idCI3hit: tau_idCI3hit: 10,0,10.    ; XTitle="tau ID "
 
-##### genCounting
-
-ngenLep : ngenLep : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5] ; XTitle='N(ngenLep)'
-#genLep_pdgId : genLep_pdgId : [10.5,11.5,12.5,13.5,14.5,15.5,16.5] ; XTitle='PDG_ID genLep'
-
-ngenLepFromTau : ngenLepFromTau : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5] ; XTitle='N(genLepFromTau)'
-#genLepFromTau_pdgId : genLepFromTau_pdgId : [10.5,11.5,12.5,13.5,14.5,15.5,16.5] ; XTitle='PDG_ID genLepFromTau'
-
-ngenTau : ngenTau : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5] ; XTitle='N(ngenTau)'
-#genTau_pdgId : genTau_pdgId : [10.5,11.5,12.5,13.5,14.5,15.5,16.5] ; XTitle='PDG_ID genTau'
-
-
 ##### PHOTONS
 
 gamma_ngamma : ngamma : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5] ; XTitle='N(gamma\, p_{T} > 10\, |#eta| < 2.4 )'
@@ -170,7 +149,6 @@ gamma_sigmaIetaIeta: gamma_sigmaIetaIeta: 100,0,0.1    ; XTitle="gamma sigmaIeta
 gamma_r9: gamma_r9: 100,0,1.    ; XTitle="gamma r9"
 gamma_hOverE: gamma_hOverE: 100,0,0.1    ; XTitle="gamma hOverE"
 gamma_idCutBased: gamma_idCutBased: 10,0,10.    ; XTitle="gamma ID Cut based"
-gamma_mcMatchId:  gamma_mcMatchId: 28,-1.5,26.5;  Legend='TR'
 
 #gamma_genIso: gamma_genIso: 100,0,0.5    ; XTitle="ph gamma ISO  [GeV]"
 
