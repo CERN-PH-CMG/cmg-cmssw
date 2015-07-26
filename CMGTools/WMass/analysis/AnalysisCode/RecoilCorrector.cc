@@ -356,7 +356,7 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
   double pU2Diff  = pU2;
 
   //  cout << " ------------------------------------------------------- " << endl;
-   // cout << " initial pU1 = " << pU1 << " pU2 = " << pU2 << endl;
+  // cout << " initial pU1 = " << pU1 << " pU2 = " << pU2 << endl;
 
   double p1Charge        = pU1Diff/fabs(pU1Diff);
   double p2Charge        = pU2Diff/fabs(pU2Diff);
@@ -460,10 +460,10 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
     // << " pdfU2Cdf[2]["<<fJet<<"]->getVal()= " << pdfU2Cdf[2][fJet]->getVal()
     // << " pdfU2Cdf[1]["<<fJet<<"]->getVal()= " << pdfU2Cdf[1][fJet]->getVal()
     // << endl;
-    pdfU1Cdf[2][fJet]->getVal();
-    pdfU1Cdf[1][fJet]->getVal();
-    pdfU2Cdf[2][fJet]->getVal();
-    pdfU2Cdf[1][fJet]->getVal();
+  pdfU1Cdf[2][fJet]->getVal();
+  pdfU1Cdf[1][fJet]->getVal();
+  pdfU2Cdf[2][fJet]->getVal();
+  pdfU2Cdf[1][fJet]->getVal();
   
   // cout << "triGausInvGraphPDF U1" << endl;
   pU1ValD = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[2][fJet],pdfU1Cdf[1][fJet],wU1[2][fJet],wU1[1][fJet]);
