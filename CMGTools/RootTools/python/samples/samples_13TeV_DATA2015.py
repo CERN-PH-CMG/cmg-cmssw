@@ -43,12 +43,34 @@ DoubleMuon_Run2015B     = kreator.makeDataComponent("DoubleMuon_Run2015B"    , "
 minBias_Run2015B  = kreator.makeDataComponent("minBias_Run2015B" , "/MinimumBias/Run2015B-PromptReco-v1/MINIAOD", "CMS", ".*root", json)
 zeroBias_Run2015B = kreator.makeDataComponent("zeroBias_Run2015B", "/ZeroBias/Run2015B-PromptReco-v1/MINIAOD"   , "CMS", ".*root", json)
 
-### ----------------------------- summary ----------------------------------------
 
 
 #dataSamples = [jetHT_0T]
+### ----------------------------- summary ----------------------------------------
  
-dataSamples = [Jet_Run2015B, JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B, SingleElectron_Run2015B, SingleMu_Run2015B, SingleMuon_Run2015B, SinglePhoton_Run2015B, EGamma_Run2015B, DoubleEG_Run2015B, MuonEG_Run2015B, DoubleMuon_Run2015B, minBias_Run2015B, zeroBias_Run2015B]
+dataSamples_Run2015B = [Jet_Run2015B, JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B, SingleElectron_Run2015B, SingleMu_Run2015B, SingleMuon_Run2015B, SinglePhoton_Run2015B, EGamma_Run2015B, DoubleEG_Run2015B, MuonEG_Run2015B, DoubleMuon_Run2015B, minBias_Run2015B, zeroBias_Run2015B]
+
+### ----------------------------- summary ----------------------------------------
+# https://twiki.cern.ch/twiki/bin/view/CMS/PdmVDataReprocessing747reMiniAod2015B
+
+Jet_17Jul2015            = kreator.makeDataComponent("Jet_17Jul2015"           , "/Jet/Run2015B-17Jul2015-v1/MINIAOD"           , "CMS", ".*root", json, useAAA=True)
+JetHT_17Jul2015          = kreator.makeDataComponent("JetHT_17Jul2015"         , "/JetHT/Run2015B-17Jul2015-v1/MINIAOD"         , "CMS", ".*root", json, useAAA=True)
+HTMHT_17Jul2015          = kreator.makeDataComponent("HTMHT_17Jul2015"         , "/HTMHT/Run2015B-17Jul2015-v1/MINIAOD"         , "CMS", ".*root", json, useAAA=True)
+MET_17Jul2015            = kreator.makeDataComponent("MET_17Jul2015"           , "/MET/Run2015B-17Jul2015-v1/MINIAOD"           , "CMS", ".*root", json, useAAA=True)
+SingleElectron_17Jul2015 = kreator.makeDataComponent("SingleElectron_17Jul2015", "/SingleElectron/Run2015B-17Jul2015-v1/MINIAOD", "CMS", ".*root", json, useAAA=True)
+SingleMu_17Jul2015       = kreator.makeDataComponent("SingleMu_17Jul2015"      , "/SingleMu/Run2015B-17Jul2015-v1/MINIAOD"      , "CMS", ".*root", json, useAAA=True)
+SingleMuon_17Jul2015     = kreator.makeDataComponent("SingleMuon_17Jul2015"    , "/SingleMuon/Run2015B-17Jul2015-v1/MINIAOD"    , "CMS", ".*root", json, useAAA=True)
+SinglePhoton_17Jul2015   = kreator.makeDataComponent("SinglePhoton_17Jul2015"  , "/SinglePhoton/Run2015B-17Jul2015-v1/MINIAOD"  , "CMS", ".*root", json, useAAA=True)
+EGamma_17Jul2015         = kreator.makeDataComponent("EGamma_17Jul2015"        , "/EGamma/Run2015B-17Jul2015-v1/MINIAOD"        , "CMS", ".*root", json, useAAA=True)
+DoubleEG_17Jul2015       = kreator.makeDataComponent("DoubleEG_17Jul2015"      , "/DoubleEG/Run2015B-17Jul2015-v1/MINIAOD"      , "CMS", ".*root", json, useAAA=True)
+MuonEG_17Jul2015         = kreator.makeDataComponent("MuonEG_17Jul2015"        , "/MuonEG/Run2015B-17Jul2015-v1/MINIAOD"        , "CMS", ".*root", json, useAAA=True)
+DoubleMuon_17Jul2015     = kreator.makeDataComponent("DoubleMuon_17Jul2015"    , "/DoubleMuon/Run2015B-17Jul2015-v1/MINIAOD"    , "CMS", ".*root", json, useAAA=True)
+
+
+dataSamples_17Jul2015 = [Jet_17Jul2015, JetHT_17Jul2015, HTMHT_17Jul2015, MET_17Jul2015, SingleElectron_17Jul2015, SingleMu_17Jul2015, SingleMuon_17Jul2015, SinglePhoton_17Jul2015, EGamma_17Jul2015, DoubleEG_17Jul2015, MuonEG_17Jul2015, DoubleMuon_17Jul2015]
+
+
+dataSamples = dataSamples_Run2015B + dataSamples_17Jul2015
 
 samples = dataSamples
 
