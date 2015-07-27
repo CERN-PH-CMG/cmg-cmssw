@@ -155,7 +155,10 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
     def testLeg1ID(self, electron):
         '''Electron ID. To be implemented'''
 
-        return self.testElectronID(electron) and self.testVertex(electron)
+        cVeto = electron.passConversionVeto()
+        mHits = electron.gsfTrack().hitPattern().numberOfHits(ROOT.reco.HitPattern.MISSING_INNER_HITS) <= 1
+
+        return self.testElectronID(electron) and self.testVertex(electron) and (cVeto and mHits)
 
 #    electron.electronID('POG_MVA_ID_Run2_NonTrig_Tight') and \
 
@@ -195,16 +198,11 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
         mva = electron.mvaRun2('NonTrigPhys14')
         eta = abs(electron.superCluster().eta())
 
-#        import pdb; pdb.set_trace()
-        cVeto = electron.passConversionVeto()
-        mHits = electron.gsfTrack().hitPattern().numberOfHits(ROOT.reco.HitPattern.MISSING_INNER_HITS) <= 1
-
-
         if eta < 0.8:
-            return mva > 0.965 and (cVeto and mHits)
+            return mva > 0.965
         elif eta < 1.479:
-            return mva > 0.917 and (cVeto and mHits)
-        return mva > 0.683 and (cVeto and mHits)
+            return mva > 0.917
+        return mva > 0.683
 
 
     def leptonAccept(self, leptons, event):
@@ -233,9 +231,29 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
             if not info.fired:
                 continue
 
+            print '[DBG] HLT_path = ', info.name
+
             matchedIds = set()
             allMatched = True
             for to in info.objects:
+
+                print '[DBG] \t match =', self.trigObjMatched(to, legs)
+
+                for yuta in to.pathNames(True, True):
+                    print '[DBG] \t\t pathNames(True, True) = ', yuta
+
+                for yuta in to.pathNames(True, False):
+                    print '[DBG] \t\t pathNames(True, False) = ', yuta
+
+                for yuta in to.pathNames(False, True):
+                    print '[DBG] \t\t pathNames(False, True) = ', yuta
+
+                for yuta in to.pathNames(False, False):
+                    print '[DBG] \t\t pathNames(False, False) = ', yuta
+
+                for yuta in to.filterLabels():
+                    print '[DBG] \t\t filter name = ', yuta
+
                 if self.trigObjMatched(to, legs):
                     matchedIds.add(abs(to.pdgId()))
                 else:

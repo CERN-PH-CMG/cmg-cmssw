@@ -67,6 +67,7 @@ tauMuAna = cfg.Analyzer(
 tauDecayModeWeighter = cfg.Analyzer(
     TauDecayModeWeighter,
     name='TauDecayModeWeighter',
+    legs=['leg2']
 )
 
 tauFakeRateWeighter = cfg.Analyzer(
@@ -142,6 +143,7 @@ qcd_flat = creator.makeMCComponent("QCDflat", "/QCD_Pt-15to7000_TuneCUETP8M1_Fla
 samples = [qcd_flat, TT_pow, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf]
 
 samples = [qcd_flat, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf]
+samples = [DYJetsToLL_M50]
 
 
 first_data = cfg.DataComponent(

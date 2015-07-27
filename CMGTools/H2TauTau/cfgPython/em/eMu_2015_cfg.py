@@ -16,8 +16,8 @@ from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJets
 # local switches
 syncntuple   = True
 computeSVfit = False
-production   = True  # production = True run on batch, production = False run locally
-#production   = False  # production = True run on batch, production = False run locally
+#production   = True  # production = True run on batch, production = False run locally
+production   = False  # production = True run on batch, production = False run locally
 
 dyJetsFakeAna.channel = 'em'
 
@@ -143,8 +143,8 @@ if syncntuple:
 ###################################################
 ###             CHERRY PICK EVENTS              ###
 ###################################################
-#eventSelector.toSelect = []
-#sequence.insert(0, eventSelector)
+eventSelector.toSelect = [133381]
+sequence.insert(0, eventSelector)
 
 ###################################################
 ###            SET BATCH OR LOCAL               ###

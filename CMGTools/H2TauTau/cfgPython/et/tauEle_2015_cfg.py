@@ -13,6 +13,8 @@ from CMGTools.H2TauTau.proto.analyzers.SVfitProducer import SVfitProducer
 # common configuration and sequence
 from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC, eventSelector
 
+from CMGTools.H2TauTau.proto.samples.spring15.connector import httConnector
+
 # e-tau specific configuration settings
 
 # 'Nom', 'Up', 'Down', or None
@@ -20,6 +22,8 @@ shift = None
 syncntuple = True
 computeSVfit = False
 production = False  # production = True run on batch, production = False run locally
+
+#production = True  # production = True run on batch, production = False run locally
 
 # When ready, include weights from CMGTools.H2TauTau.proto.weights.weighttable
 
@@ -131,15 +135,16 @@ svfitProducer = cfg.Analyzer(
 # my_connect.connect()
 # MC_list = my_connect.MC_list
 
+from CMGTools.RootTools.samples.ComponentCreator import ComponentCreator 
 from CMGTools.RootTools.utils.splitFactor import splitFactor
-from CMGTools.TTHAnalysis.samples.ComponentCreator import ComponentCreator
-from CMGTools.TTHAnalysis.samples.samples_13TeV_74X import TTJets_LO, DYJetsToLL_M50, WJetsToLNu, TTJets
+#from CMGTools.TTHAnalysis.samples.samples_13TeV_74X import TTJets_LO, DYJetsToLL_M50, WJetsToLNu, TTJets
+
 from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauEle import mc_triggers as mc_triggers_et
 
 creator = ComponentCreator()
 ggh160 = creator.makeMCComponent("GGH160", "/SUSYGluGluToHToTauTau_M-160_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 1.0)
 
-MC_list = [ggh160, TTJets_LO, DYJetsToLL_M50, WJetsToLNu, TTJets]
+MC_list = [ggh160]
 
 
 first_data = cfg.DataComponent(
@@ -151,7 +156,7 @@ first_data = cfg.DataComponent(
 )
 
 
-split_factor = 1e5
+split_factor = 2e4
 
 for sample in MC_list:
     sample.triggers = mc_triggers_et
@@ -170,8 +175,8 @@ for mc in MC_list:
 ###################################################
 ###             SET COMPONENTS BY HAND          ###
 ###################################################
-selectedComponents = MC_list + data_list
-selectedComponents = [TTJets]
+selectedComponents = MC_list
+# selectedComponents = [TTJets]
 # selectedComponents = mc_dict['HiggsGGH125']
 # for c in selectedComponents : c.splitFactor *= 5
 
@@ -194,8 +199,8 @@ if syncntuple:
 ###################################################
 ###             CHERRY PICK EVENTS              ###
 ###################################################
-# eventSelector.toSelect = []
-# sequence.insert(0, eventSelector)
+eventSelector.toSelect = [8089]
+sequence.insert(0, eventSelector)
 
 ###################################################
 ###            SET BATCH OR LOCAL               ###
@@ -205,9 +210,9 @@ if not production:
     # comp = my_connect.mc_dict['HiggsGGH125']
     comp = ggh160
     selectedComponents = [comp]
-    comp.splitFactor = 4
+    comp.splitFactor = 1
     comp.fineSplitFactor = 1
-    # comp.files = comp.files[:1]
+#    comp.files = comp.files[:1]
 
 
 # the following is declared in case this cfg is used in input to the

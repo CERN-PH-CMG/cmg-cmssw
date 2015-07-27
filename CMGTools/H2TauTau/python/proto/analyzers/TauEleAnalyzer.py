@@ -5,7 +5,7 @@ from PhysicsTools.Heppy.physicsobjects.Tau import Tau
 
 from CMGTools.H2TauTau.proto.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.H2TauTau.proto.physicsobjects.DiObject import TauElectron, DirectDiTau
-
+import ROOT
 
 class TauEleAnalyzer(DiLeptonAnalyzer):
 
@@ -75,6 +75,17 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
                 di_leptons.append(di_tau)
         return di_leptons
 
+
+    def relIsop3(self, electron, dbeta=0.5):
+
+#        import pdb; pdb.set_trace()
+        iso = (electron.pfIsolationVariables().sumChargedHadronPt + max(
+                electron.pfIsolationVariables().sumNeutralHadronEt +
+                electron.pfIsolationVariables().sumPhotonEt - 
+                dbeta * electron.pfIsolationVariables().sumPUPt, 0.0)) / electron.pt()
+        
+        return iso
+
     def buildLeptons(self, cmgLeptons, event):
         '''Build electrons for veto, associate best vertex, select loose ID electrons.
         Since the electrons are used for veto, the 0.3 default isolation cut is left there,
@@ -86,7 +97,9 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
             pyl.rho = event.rho
             # if not pyl.looseIdForEleTau():
             #     continue
-            if pyl.relIso(dBetaFactor=0.5, allCharged=0) > 0.3:
+#            if pyl.relIso(dBetaFactor=0.5, allCharged=0) > 0.3:
+
+            if self.relIsop3(pyl) > 0.3:
                 continue
             leptons.append(pyl)
         return leptons
@@ -114,6 +127,9 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
         return otherLeptons
 
     def process(self, event):
+
+#        import pdb; pdb.set_trace()
+
         # FIXME - JAN - for current 2015 sync, but shall we really discard
         # the vertex cuts?
         event.goodVertices = event.vertices
@@ -138,6 +154,8 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
             return False
 
         event.isSignal = event.isSignal and event.leptonAccept and event.thirdLeptonVeto
+
+#        import pdb; pdb.set_trace()
 
         return True
 
@@ -197,12 +215,18 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
            Electron ID: NonTrigPhys14, Tight
         '''
         # return electron.electronID('POG_MVA_ID_Run2_NonTrig_Tight') and \
-        return self.testTightElectronID(electron) and self.testVertex(electron)
+
+        cVeto = electron.passConversionVeto()
+        mHits = electron.gsfTrack().hitPattern().numberOfHits(ROOT.reco.HitPattern.MISSING_INNER_HITS) <= 1
+
+        return self.testTightElectronID(electron) and self.testVertex(electron) and (cVeto and mHits)
+
 
     def testLeg1Iso(self, leg, isocut):  # electron
         if isocut is None:
             isocut = self.cfg_ana.iso2
-        return leg.relIso(dBetaFactor=0.5, allCharged=0) < isocut
+#        return leg.relIso(dBetaFactor=0.5, allCharged=0) < isocut
+        return self.relIsop3(leg) < isocut
 
     def testLooseleg1(self, leg):  # electrons
         ''' pt, eta and isolation selection for electrons
@@ -210,7 +234,8 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
             POG_PHYS14_25ns_v1_Veto
             pt 15, eta 2.5, dB relIso 0.3
         '''
-        if (leg.relIso(dBetaFactor=0.5, allCharged=0) > 0.3 or
+#        if (leg.relIso(dBetaFactor=0.5, allCharged=0) > 0.3 or
+        if (self.relIsop3(leg) > 0.3 or
             abs(leg.eta()) > 2.5 or
             leg.pt() < 15 or
             leg.cutBasedId('POG_PHYS14_25ns_v1_Veto') == False or
@@ -248,7 +273,8 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
                          self.testVertex(electron) and
                          self.testElectronID(electron) and
                          # electron.cutBasedId('POG_PHYS14_25ns_v1_Veto') and
-                         electron.relIso(dBetaFactor=0.5, allCharged=0) < 0.3]
+                         self.relIsop3(electron) < 0.3]
+#                         electron.relIso(dBetaFactor=0.5, allCharged=0) < 0.3]
 
         if len(vLeptons) > 1:
             return False
@@ -279,9 +305,9 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
         if len(diLeptons) == 1:
             return diLeptons[0]
 
-        minRelIso = min(d.leg1().relIso(dBetaFactor=0.5, allCharged=0) for d in diLeptons)
+        minRelIso = min(self.relIsop3(d.leg1()) for d in diLeptons)
 
-        diLeps = [dil for dil in diLeptons if dil.leg1().relIso(dBetaFactor=0.5, allCharged=0) == minRelIso]
+        diLeps = [dil for dil in diLeptons if self.relIsop3(dil.leg1()) == minRelIso]
 
         if len(diLeps) == 1:
             return diLeps[0]
@@ -310,3 +336,68 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
 
         return diLeps[0]
         
+
+
+    def trigMatched(self, event, diL, requireAllMatched=False):
+        '''Check that at least one trigger object per pgdId from a given trigger 
+        has a matched leg with the same pdg ID. If requireAllMatched is True, 
+        requires that each single trigger object has a match.'''
+
+        matched = False
+        legs = [diL.leg1(), diL.leg2()]
+        event.matchedPaths = set()
+
+        for info in event.trigger_infos:
+            if not info.fired:
+                continue
+
+            print '[DBG] HLT_path = ', info.name
+
+            matchedIds = set()
+            allMatched = True
+            for to in info.objects:
+
+                print '[DBG] \t match =', self.trigObjMatched(to, legs)
+
+                for yuta in to.pathNames(True, True):
+                    print '[DBG] \t\t pathNames(True, True) = ', yuta
+
+                for yuta in to.pathNames(True, False):
+                    print '[DBG] \t\t pathNames(True, False) = ', yuta
+
+                for yuta in to.pathNames(False, True):
+                    print '[DBG] \t\t pathNames(False, True) = ', yuta
+
+                for yuta in to.pathNames(False, False):
+                    print '[DBG] \t\t pathNames(False, False) = ', yuta
+
+                for yuta in to.filterLabels():
+                    print '[DBG] \t\t filter name = ', yuta
+
+                if self.trigObjMatched(to, legs):
+                    matchedIds.add(abs(to.pdgId()))
+                else:
+                    allMatched = False
+
+            if matchedIds == info.objIds:
+                if requireAllMatched and not allMatched:
+                    matched = False
+                else:
+                    matched = True
+                    event.matchedPaths.add(info.name)
+        
+
+        flag = any([(mp.find('Ele22')!=-1 and mp.find('PFTau20')!=-1) for mp in event.matchedPaths])
+        flag_single = any([mp.find('Ele32')!=-1 for mp in event.matchedPaths])
+
+#        print event.matchedPaths, flag, flag_single, matched, diL.leg1().pt()
+
+        if flag:
+#            print 'This is not single trigger ... passed'
+            return matched
+        elif flag_single:
+#            print 'This is only single trigger ... require 33 GeV'
+            return matched and diL.leg1().pt() > 33
+        else:
+#            print 'This maens, no trigger fired'
+            return matched
