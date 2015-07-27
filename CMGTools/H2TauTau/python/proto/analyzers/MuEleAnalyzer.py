@@ -231,28 +231,32 @@ class MuEleAnalyzer( DiLeptonAnalyzer ):
             if not info.fired:
                 continue
 
-            print '[DBG] HLT_path = ', info.name
+
+            if self.cfg_ana.verbose:
+                print '[DBG] HLT_path = ', info.name
 
             matchedIds = set()
             allMatched = True
             for to in info.objects:
 
-                print '[DBG] \t match =', self.trigObjMatched(to, legs)
+                if self.cfg_ana.verbose:
+                    print '[DBG] \t match =', self.trigObjMatched(to, legs)
 
-                for yuta in to.pathNames(True, True):
-                    print '[DBG] \t\t pathNames(True, True) = ', yuta
+                    for ipath in to.pathNames(True, True):
+                        print '[DBG] \t\t pathNames(True, True) = ', ipath
 
-                for yuta in to.pathNames(True, False):
-                    print '[DBG] \t\t pathNames(True, False) = ', yuta
+                    for ipath in to.pathNames(True, False):
+                        print '[DBG] \t\t pathNames(True, False) = ', ipath
 
-                for yuta in to.pathNames(False, True):
-                    print '[DBG] \t\t pathNames(False, True) = ', yuta
+                    for ipath in to.pathNames(False, True):
+                        print '[DBG] \t\t pathNames(False, True) = ', ipath
 
-                for yuta in to.pathNames(False, False):
-                    print '[DBG] \t\t pathNames(False, False) = ', yuta
+                    for ipath in to.pathNames(False, False):
+                        print '[DBG] \t\t pathNames(False, False) = ', ipath
 
-                for yuta in to.filterLabels():
-                    print '[DBG] \t\t filter name = ', yuta
+                    for ipath in to.filterLabels():
+                        print '[DBG] \t\t filter name = ', ipath
+
 
                 if self.trigObjMatched(to, legs):
                     matchedIds.add(abs(to.pdgId()))
