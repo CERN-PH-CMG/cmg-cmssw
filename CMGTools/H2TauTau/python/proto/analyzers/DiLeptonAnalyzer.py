@@ -301,7 +301,7 @@ class DiLeptonAnalyzer(Analyzer):
         to.matched = False
         for leg in legs:
             # JAN - Single-ele trigger filter has pdg ID 0, to be understood
-            if pdgId == 0 or pdgId == abs(leg.pdgId()):
+            if pdgId == abs(leg.pdgId()) or (pdgId == 0 and abs(leg.pdgId()) == 11):
                 if deltaR2(eta, phi, leg.eta(), leg.phi()) < dR2Max:
                     to.matched = True
                     # leg.trigMatched = True
