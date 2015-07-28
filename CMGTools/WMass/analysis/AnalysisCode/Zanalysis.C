@@ -928,24 +928,24 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             ZNocorr.Pt(),ZNocorr.Phi(),
                             u1_recoil, u2_recoil,
                             RecoilCorrVarDiagoParU1orU2fromDATAorMC, m, RecoilCorrVarDiagoParSigmas,
-                            // WMass::RecoilCorrVarDiagoParU1orU2fromDATAorMC_[m], WMass::RecoilCorrVarDiagoParN_[m], RecoilCorrVarDiagoParSigmas,
                             vtxBin,doSingleGauss,1);
-                    // cout << "After correction: " << m << " - " << pfmet_trasv << " - " << pfmetphi_trasv << endl;
+
                     if(first_time_in_the_event && m==m_start && n==0){
+                      pfmet_trasvCentral    = pfmet_trasv;
+                      pfmetphi_trasvCentral = pfmetphi_trasv;
+                      if(RecoilCorrVarDiagoParU1orU2fromDATAorMC!=0|| m!=0 || RecoilCorrVarDiagoParSigmas!=0)
+                      ){
                       // cout << "correcting pfmet_Central= " << pfmet_trasvCentral ;
-                      correctorRecoil_Z->CorrectMET3gaus(pfmet_trasvCentral,pfmetphi_trasvCentral,
-                              ZGen_pt,ZGen_phi,
-                              ZNocorr.Pt(),ZNocorr.Phi(),
-                              u1_recoil, u2_recoil,
-                              0, 0, 0,
-                              vtxBin,doSingleGauss,1);
-                      // cout << " after recoilCorr pfmet_Central= " << pfmet_trasvCentral << endl;
-                      // evt_weight*= correctorRecoil_Z->NonClosure_weight(pfmet_trasv,pfmetphi_trasv,
-                                                                     // ZGen_pt,ZGen_phi,ZGen_rap,
-                                                                     // Zcorr.Pt(),Zcorr.Phi());
-                      correctorRecoil_Z->NonClosure_scale(pfmet_trasv,pfmetphi_trasv,
-                              ZGen_pt,ZGen_phi,ZGen_rap,
-                              Zcorr.Pt(),Zcorr.Phi());
+                        correctorRecoil_Z->CorrectMET3gaus(pfmet_trasvCentral,pfmetphi_trasvCentral,
+                                ZGen_pt,ZGen_phi,
+                                ZNocorr.Pt(),ZNocorr.Phi(),
+                                u1_recoil, u2_recoil,
+                                0, 0, 0,
+                                vtxBin,doSingleGauss,1);
+                      }
+                      // correctorRecoil_Z->NonClosure_scale(pfmet_trasv,pfmetphi_trasv,
+                      //        ZGen_pt,ZGen_phi,ZGen_rap,
+                      //        Zcorr.Pt(),Zcorr.Phi());
                     }
                   }
                   // cout
@@ -1176,8 +1176,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             common_stuff::calculateU1U2(pfmet_trasv,  pfmetphi_trasv, ZGen_pt,   ZGen_phi,
                                                         ZNocorr.Pt(), ZNocorr.Phi(),  u1_recoil, u2_recoil);
 
-                            // common_stuff::plot1D(Form("hWlikePos_u1minusZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
-                              // u1_recoil, evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 80, -20, 20 );
+                            common_stuff::plot1D(Form("hWlikePos_u1_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
+                              u1_recoil, evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 80, -20, 20 );
 
                             common_stuff::plot1D(Form("hWlikePos_u2_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
                               u2_recoil, evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 80, -20, 20 );
