@@ -115,20 +115,20 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
 
         result = super(TauMuAnalyzer, self).process(event)
 
-        if result is False:
-            # trying to get a dilepton from the control region.
-            # it must have well id'ed and trig matched legs,
-            # di-lepton and tri-lepton veto must pass
-            result = self.selectionSequence(event, fillCounter=True,
-                                            leg1IsoCut=self.cfg_ana.looseiso1,
-                                            leg2IsoCut=self.cfg_ana.looseiso2)
-            if result is False:
-                # really no way to find a suitable di-lepton,
-                # even in the control region
-                return False
-            event.isSignal = False
-        else:
+        event.isSignal = False
+        if result:
             event.isSignal = True
+        
+        # trying to get a dilepton from the control region.
+        # it must have well id'ed and trig matched legs,
+        # di-lepton and tri-lepton veto must pass
+        result = self.selectionSequence(event, fillCounter=True,
+                                        leg1IsoCut=self.cfg_ana.looseiso1,
+                                        leg2IsoCut=self.cfg_ana.looseiso2)
+        if result is False:
+            # really no way to find a suitable di-lepton,
+            # even in the control region
+            return False
 
         return True
 
@@ -173,7 +173,7 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
         if isocut is None:
             isocut = self.cfg_ana.iso2
 
-        return muon.relIso(dBetaFactor=0.5, allCharged=0) < isocut
+        return muon.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=False) < isocut
 
     def thirdLeptonVeto(self, leptons, otherLeptons, isoCut=0.3):
         # count tight muons
@@ -181,7 +181,7 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
                     muon.muonID('POG_ID_Medium') and
                     self.testVertex(muon) and
                     self.testLegKine(muon, ptcut=10, etacut=2.4) and
-                    muon.relIso(dBetaFactor=0.5, allCharged=0) < 0.3]
+                    muon.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=False) < 0.3]
 
         if len(vLeptons) > 1:
             return False
@@ -198,10 +198,6 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
             return mva > 0.825
         return mva > 0.337
 
-    def tempEleIso(self, ele):
-        iso_sum = ele.chargedHadronIsoR(R=0.3) + max(ele.photonIsoR(R=0.3) + ele.neutralHadronIsoR(R=0.3) - 0.5 * ele.puChargedHadronIsoR(R=0.3), 0.)
-        return iso_sum/ele.pt()
-
     def otherLeptonVeto(self, leptons, otherLeptons, isoCut=0.3):
         # count electrons
         vOtherLeptons = [electron for electron in otherLeptons if
@@ -211,8 +207,7 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
                          electron.passConversionVeto() and
                          electron.physObj.gsfTrack().hitPattern().numberOfHits(ROOT.reco.HitPattern.MISSING_INNER_HITS) <= 1 and
                          # electron.cutBasedId('POG_PHYS14_25ns_v1_Veto') and
-                         # electron.relIso(dBetaFactor=0.5, allCharged=0) < 0.3]
-                         self.tempEleIso(electron) < 0.3]
+                         electron.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0) < 0.3]
 
         if len(vOtherLeptons) > 0:
             return False
@@ -256,9 +251,9 @@ class TauMuAnalyzer(DiLeptonAnalyzer):
         if len(diLeptons) == 1:
             return diLeptons[0]
 
-        minRelIso = min(d.leg1().relIso(dBetaFactor=0.5, allCharged=0) for d in diLeptons)
+        minRelIso = min(d.leg1().relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0) for d in diLeptons)
 
-        diLeps = [dil for dil in diLeptons if dil.leg1().relIso(dBetaFactor=0.5, allCharged=0) == minRelIso]
+        diLeps = [dil for dil in diLeptons if dil.leg1().relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0) == minRelIso]
 
         if len(diLeps) == 1:
             return diLeps[0]

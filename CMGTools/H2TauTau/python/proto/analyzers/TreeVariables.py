@@ -81,7 +81,7 @@ particle_vars = [
 
 # generic lepton
 lepton_vars = [
-    Variable('reliso05', lambda lep : lep.relIso(dBetaFactor=0.5, allCharged=0)),
+    Variable('reliso05', lambda lep : lep.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0)),
     Variable('dxy', lambda lep : lep.dxy()),
     Variable('dz', lambda lep : lep.dz()),
     Variable('weight'),

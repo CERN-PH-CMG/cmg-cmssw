@@ -139,12 +139,11 @@ class TauEleAnalyzer(DiLeptonAnalyzer):
         event.isSignal = False
         if result:
             event.isSignal = True
-        # if result is False:
-            # trying to get a dilepton from the control region.
-            # it must have well id'ed and trig matched legs,
-            # and di-lepton veto must pass
-            # i.e. only the iso requirement is relaxed
 
+        # trying to get a dilepton from the control region.
+        # it must have well id'ed and trig matched legs,
+        # and di-lepton veto must pass
+        # i.e. only the iso requirement is relaxed
         result = self.selectionSequence(event, fillCounter=True,
                                         leg2IsoCut=self.cfg_ana.looseiso1,
                                         leg1IsoCut=self.cfg_ana.looseiso2)
