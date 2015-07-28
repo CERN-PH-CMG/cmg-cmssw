@@ -8,7 +8,7 @@ import string, os, shutil, sys, subprocess
 
 useLHAPDF = False
 
-outfolder_prefix="test_newKalman";
+outfolder_prefix="PREFIX";
 
 ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
 ntuple_basepath_8TeV_ABC = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_8TeV/";
@@ -26,10 +26,10 @@ useEffSF = 2; # 0=no, 1=MuonPOG, 2=Heiner
 # usePtSF = sys.argv[1]; # Boson pT reweighting: 0=no, 1=yes
 usePtSF = 0; # Boson pT reweighting: -1=none, 0=data, 1...=other options
 useMomentumCorr = 4; # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector, 4=KalmanCorrectorParam
-GlobalSscaleMuonCorrNsigma = 1;
+GlobalSscaleMuonCorrNsigma = 0;
 MuonCorrToys = 0;
 usePhiMETCorr = 0; # 0=none, 1=yes
-useRecoilCorr = 0; # 0=none, 1=yes, 2=PDFw3gaus
+useRecoilCorr = 2; # 0=none, 1=yes, 2=PDFw3gaus
 RecoilCorrNVarAll = 1;
 # RecoilCorrNVarAll = 0;
 RecoilCorrVarDiagoParU1orU2fromDATAorMC = "0"; # SYST VARIATIONS: 0=NONE, 1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p1, 6= U1 MC p1
@@ -64,32 +64,32 @@ resubmit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadFake,
 # resubmit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 # resubmit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
 
-parallelize = 1;
+parallelize = 0;
 useBatch = 0;
 batchQueue = "1nh";
-# WMassNSteps = "5"; # 60 -- N of mass steps above and below the central
-WMassNSteps = "0"; # 60
+WMassNSteps = "5"; # 60 -- N of mass steps above and below the central
+# WMassNSteps = "0"; # 60
 
 runWanalysis = 0;
-runZanalysis = 0;
+runZanalysis = 1;
+controlplots = 0;
 resubmit = 0;
 noLSFJobOutput = 0; # NOT YET WORKING, LEAVE IT TO 0
 recreateSubScripts = 0;
-controlplots = 0;
 
 mergeSigEWKbkg = 0;
-removeChunks = 0; # 0: Don't remove chuncks after merge - 1: Remove them
+removeChunks = 0; # 0: Don't remove chunks after merge - 1: Remove them
 
 ## PERFORM W or Z MASS FIT
 fit_W_or_Z = "Z" # "W,Z" or "W" or "Z"
 
 usePowOrMadForSig = "POWHEG"; # use "POWHEG" or use "MADGRAPH"
-runPrepareDataCardsFast = 0; # ALTERNATIVE FAST WAY: TEMPLATES ARE IN THE SYsT FOLDER, PSEUDO-DATA IN THE LOCAL FOLDER
-DataCards_templateFromFolder="test_newKalman_tkmet_ewk-1_KalmanCorrParam_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr" # evaluate systematics wrt folder (or leave it empty) -- full template folder
+runPrepareDataCardsFast = 0; # ALTERNATIVE FAST WAY: TEMPLATES ARE IN THE TEMPLATE FOLDER, PSEUDO-DATA IN THE LOCAL FOLDER
+DataCards_templateFromFolder="" # evaluate systematics wrt folder (or leave it empty) -- full template folder
 
 ## NEW FIT
 runClosureTestLikeLihoodRatio = 0; # 1: also executes merge if not using batch jobs
-mergeResults = 1;
+mergeResults = 0;
 
 #######################
 ### PLOTTING ###
@@ -530,12 +530,11 @@ if(runWanalysis or runZanalysis):
                         # print 'file created, launching bsub'
                         os.system("chmod 755 runWanalysis_"+sample[i]+"_"+str(x)+".sh")
                       if not resubmit or not os.path.isfile("Wanalysis_chunk"+str(x)+".root") or (not os.path.getsize("Zanalysis_chunk"+str(x)+".root")>0):
-                        os.system("rm -f core.*")
                         LSFJobOutput = ''
                         if noLSFJobOutput>0:
-                          LSFJobOutput = '-o /pippo/pluto'
-                        print ("bsub -C 0 "+LSFJobOutput+" -q "+batchQueue+" -J runWanalysis runWanalysis_"+sample[i]+"_"+str(x)+".sh")
-                        os.system("bsub -C 0 "+LSFJobOutput+" -u pippo123 -q "+batchQueue+" -J runWanalysis runWanalysis_"+sample[i]+"_"+str(x)+".sh")
+                          LSFJobOutput = '-o /dev/null'
+                        print ("bsub -C 0 "+LSFJobOutput+" -q "+batchQueue+" -J Wanalysis_"+sample[i]+"_"+str(x)+" runWanalysis_"+sample[i]+"_"+str(x)+".sh")
+                        os.system("bsub -C 0 "+LSFJobOutput+" -u pippo123 -q "+batchQueue+" -J Wanalysis_"+sample[i]+"_"+str(x)+" runWanalysis_"+sample[i]+"_"+str(x)+".sh")
                       os.chdir(start_dir)
                       
                     if(WMassNSteps=="0" and not useBatch): os.system("sleep 1");
@@ -614,12 +613,11 @@ if(runWanalysis or runZanalysis):
                         os.system("chmod 755 runZanalysis_"+sample[i]+"_"+str(x)+".sh")
                       # print 'checking file',"Zanalysis_chunk"+str(x)+".root",'path is',os.getcwd(),'check is',os.path.isfile("Zanalysis_chunk"+str(x)+".root")
                       if not resubmit or not os.path.isfile("Zanalysis_chunk"+str(x)+".root") or (not os.path.getsize("Zanalysis_chunk"+str(x)+".root")>0):
-                        os.system("rm -f core.*")
                         LSFJobOutput = ''
                         if noLSFJobOutput>0:
-                          LSFJobOutput = '-o /pippo/pluto'
-                        print ("bsub -C 0 "+LSFJobOutput+" -q "+batchQueue+" -J runZanalysis runZanalysis_"+sample[i]+"_"+str(x)+".sh")
-                        os.system("bsub -C 0 "+LSFJobOutput+" -u pippo123 -q "+batchQueue+" -J runZanalysis runZanalysis_"+sample[i]+"_"+str(x)+".sh")
+                          LSFJobOutput = '-o /dev/null'
+                        print ("bsub -C 0 "+LSFJobOutput+" -q "+batchQueue+" -J Zanalysis_"+sample[i]+"_"+str(x)+" runZanalysis_"+sample[i]+"_"+str(x)+".sh")
+                        os.system("bsub -C 0 "+LSFJobOutput+" -u pippo123 -q "+batchQueue+" -J Zanalysis_"+sample[i]+"_"+str(x)+" runZanalysis_"+sample[i]+"_"+str(x)+".sh")
                       os.chdir(start_dir)
                     
                     if(WMassNSteps=="0" and not useBatch): os.system("sleep 1");
