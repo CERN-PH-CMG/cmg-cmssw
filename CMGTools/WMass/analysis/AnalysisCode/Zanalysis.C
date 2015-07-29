@@ -931,10 +931,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             vtxBin,doSingleGauss,1);
 
                     if(first_time_in_the_event && m==m_start && n==0){
-                      pfmet_trasvCentral    = pfmet_trasv;
-                      pfmetphi_trasvCentral = pfmetphi_trasv;
-                      if(RecoilCorrVarDiagoParU1orU2fromDATAorMC!=0|| m!=0 || RecoilCorrVarDiagoParSigmas!=0)
-                      ){
+                      if(RecoilCorrVarDiagoParU1orU2fromDATAorMC!=0|| m!=0 || RecoilCorrVarDiagoParSigmas!=0){
                       // cout << "correcting pfmet_Central= " << pfmet_trasvCentral ;
                         correctorRecoil_Z->CorrectMET3gaus(pfmet_trasvCentral,pfmetphi_trasvCentral,
                                 ZGen_pt,ZGen_phi,
@@ -942,6 +939,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                 u1_recoil, u2_recoil,
                                 0, 0, 0,
                                 vtxBin,doSingleGauss,1);
+                      }else{
+                        pfmet_trasvCentral    = pfmet_trasv;
+                        pfmetphi_trasvCentral = pfmetphi_trasv;
                       }
                       // correctorRecoil_Z->NonClosure_scale(pfmet_trasv,pfmetphi_trasv,
                       //        ZGen_pt,ZGen_phi,ZGen_rap,
