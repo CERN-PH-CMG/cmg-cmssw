@@ -28,7 +28,8 @@ common = [
     'keep patPackedCandidates_packedPFCandidates__PAT',
     'keep *_puppi_*_*',
     'keep *_particleFlowNoMuonPUPPI_*_*',
-    'keep *_pfMetPuppi_*_*'
+    'keep *_pfMetPuppi_*_*',
+    'keep *_generator_*_*'
     ]
 
 commonDebug = copy.deepcopy(common) 
