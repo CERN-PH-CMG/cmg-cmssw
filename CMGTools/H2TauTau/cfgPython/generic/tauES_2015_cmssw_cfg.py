@@ -11,6 +11,7 @@ from CMGTools.H2TauTau.proto.analyzers.FileCleaner import FileCleaner
 from CMGTools.H2TauTau.proto.analyzers.JetAnalyzer import JetAnalyzer
 
 from CMGTools.RootTools.samples.ComponentCreator import ComponentCreator
+from CMGTools.RootTools.utils.splitFactor import splitFactor
 
 # common configuration and sequence
 from CMGTools.H2TauTau.htt_ntuple_base_cff import genAna, vertexAna
@@ -111,6 +112,9 @@ samples = [qcd_flat, TT_pow, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, 
 # my_connect.connect()
 # ggh160 = my_connect.MC_list[0]
 
+split_factor = 2e4
+for sample in samples:
+    sample.splitFactor = splitFactor(sample, split_factor)
 
 ###################################################
 ###             SET COMPONENTS BY HAND          ###

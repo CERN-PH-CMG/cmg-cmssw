@@ -13,8 +13,6 @@ from CMGTools.H2TauTau.proto.analyzers.SVfitProducer import SVfitProducer
 # common configuration and sequence
 from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJetsFakeAna, puFileData, puFileMC, eventSelector
 
-from CMGTools.H2TauTau.proto.samples.spring15.connector import httConnector
-
 # e-tau specific configuration settings
 
 # 'Nom', 'Up', 'Down', or None
@@ -199,7 +197,7 @@ if syncntuple:
 ###################################################
 ###             CHERRY PICK EVENTS              ###
 ###################################################
-eventSelector.toSelect = [8089]
+eventSelector.toSelect = [186583]
 sequence.insert(0, eventSelector)
 
 ###################################################

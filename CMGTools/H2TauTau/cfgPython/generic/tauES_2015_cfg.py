@@ -1,20 +1,16 @@
-import os
-os.system("source /afs/cern.ch/cms/slc6_amd64_gcc491/external/py2-cx-oracle/5.1-cms/etc/profile.d/init.sh")
-
-import cx_Oracle as db
-
 import PhysicsTools.HeppyCore.framework.config as cfg
 from PhysicsTools.HeppyCore.framework.config import printComps
-from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
+from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 
 from PhysicsTools.Heppy.analyzers.objects.TauAnalyzer import TauAnalyzer
 
 from CMGTools.H2TauTau.proto.analyzers.TauTreeProducer import TauTreeProducer
 from CMGTools.H2TauTau.proto.analyzers.TauGenTreeProducer import TauGenTreeProducer
+from CMGTools.H2TauTau.proto.analyzers.TauIsolationCalculator import TauIsolationCalculator
 
 # from CMGTools.H2TauTau.proto.samples.phys14.connector import httConnector
-from CMGTools.TTHAnalysis.samples.samples_13TeV_74X import DYJetsToLL_M50
-from CMGTools.TTHAnalysis.samples.ComponentCreator import ComponentCreator
+from CMGTools.RootTools.samples.samples_13TeV_74X import DYJetsToLL_M50
+from CMGTools.RootTools.samples.ComponentCreator import ComponentCreator
 
 # common configuration and sequence
 from CMGTools.H2TauTau.htt_ntuple_base_cff import genAna, vertexAna
@@ -64,6 +60,11 @@ tauAna = cfg.Analyzer(
     inclusive_tauAntiElectronID = "",
 )
 
+tauIsoCalc = cfg.Analyzer(
+    TauIsolationCalculator,
+    name='TauIsolationCalculator'
+)
+
 # ###################################################
 # ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 # ###################################################
@@ -94,7 +95,8 @@ sequence = cfg.Sequence([
     vertexAna,
     tauAna,
     treeProducer,
-    genTreeProducer
+    genTreeProducer,
+    tauIsoCalc
 ])
 
 if not production:
