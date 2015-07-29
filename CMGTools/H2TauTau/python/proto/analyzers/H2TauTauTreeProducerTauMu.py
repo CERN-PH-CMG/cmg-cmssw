@@ -24,6 +24,22 @@ class H2TauTauTreeProducerTauMu(H2TauTauTreeProducer):
         self.var(self.tree, 'l2_weight_fakerate_up')
         self.var(self.tree, 'l2_weight_fakerate_down')
 
+        if hasattr(self.cfg_ana, 'addIsoInfo') and self.cfg_ana.addIsoInfo:
+            self.var(self.tree, 'l1_puppi_iso_pt')
+            self.var(self.tree, 'l1_puppi_iso04_pt')
+            self.var(self.tree, 'l1_puppi_iso03_pt')
+
+            self.var(self.tree, 'l1_puppi_no_muon_iso_pt')
+            self.var(self.tree, 'l1_puppi_no_muon_iso04_pt')
+            self.var(self.tree, 'l1_puppi_no_muon_iso03_pt')
+
+            self.var(self.tree, 'l2_puppi_iso_pt')
+            self.var(self.tree, 'l2_puppi_iso04_pt')
+            self.var(self.tree, 'l2_puppi_iso03_pt')
+
+            self.var(self.tree, 'l1_mini_iso')
+            self.var(self.tree, 'l1_mini_reliso')
+
     def process(self, event):
 
         super(H2TauTauTreeProducerTauMu, self).process(event)
@@ -50,5 +66,18 @@ class H2TauTauTreeProducerTauMu(H2TauTauTreeProducer):
         self.fill(self.tree, 'l2_weight_fakerate', event.tauFakeRateWeightUp)
         self.fill(self.tree, 'l2_weight_fakerate_up', event.tauFakeRateWeightDown)
         self.fill(self.tree, 'l2_weight_fakerate_down', event.tauFakeRateWeight)
+
+        if hasattr(self.cfg_ana, 'addIsoInfo') and self.cfg_ana.addIsoInfo:
+            self.fill(self.tree, 'l1_puppi_iso_pt', muon.puppi_iso_pt)
+            self.fill(self.tree, 'l1_puppi_iso04_pt', muon.puppi_iso04_pt)
+            self.fill(self.tree, 'l1_puppi_iso03_pt', muon.puppi_iso03_pt)
+            self.fill(self.tree, 'l1_puppi_no_muon_iso_pt', muon.puppi_no_muon_iso_pt)
+            self.fill(self.tree, 'l1_puppi_no_muon_iso04_pt', muon.puppi_no_muon_iso04_pt)
+            self.fill(self.tree, 'l1_puppi_no_muon_iso03_pt', muon.puppi_no_muon_iso03_pt)
+            self.fill(self.tree, 'l2_puppi_iso_pt', tau.puppi_iso_pt)
+            self.fill(self.tree, 'l2_puppi_iso04_pt', tau.puppi_iso04_pt)
+            self.fill(self.tree, 'l2_puppi_iso03_pt', tau.puppi_iso03_pt)
+            self.fill(self.tree, 'l1_mini_iso', muon.miniAbsIso)
+            self.fill(self.tree, 'l1_mini_reliso', muon.miniRelIso)
 
         self.fillTree(event)
