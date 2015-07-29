@@ -106,9 +106,7 @@ metAna.recalibrate = False
 genAna.allGenTaus = True
 
 # Core Analyzer
-#ttHCoreEventAna.mhtForBiasedDPhi = "mhtJet40jvec"
 ttHCoreEventAna.mhtForBiasedDPhi = "mhtJetXjvec"
-#ttHCoreEventAna.jetPt = 40.
 ttHCoreEventAna.jetPt = mt2JPt ### jet pt 30: this will change ht and mht
 
 # switch off the SV and MC matching
@@ -122,8 +120,7 @@ from CMGTools.TTHAnalysis.analyzers.ttHMT2Control import ttHMT2Control
 
 ttHMT2Control = cfg.Analyzer(
             ttHMT2Control, name = 'ttHMT2Control',
-#            jetPt = 40.,
-            jetPt = mt2JPt, ### jet pt 30: this will change control variables (gamma_ and zll_)
+            jetPt = mt2JPt, ### this will change control variables (gamma_ and zll_)
             )
 
 ##------------------------------------------
@@ -135,8 +132,7 @@ from CMGTools.TTHAnalysis.analyzers.ttHTopoVarAnalyzer import ttHTopoVarAnalyzer
 ttHTopoJetAna = cfg.Analyzer(
             ttHTopoVarAnalyzer, name = 'ttHTopoVarAnalyzer',
             doOnlyDefault = True,
-#            jetPt = 40.,
-            jetPt = mt2JPt, ### jet pt 30: this will change diffMetMht and deltaPhiMin
+            jetPt = mt2JPt, ### this will change diffMetMht and deltaPhiMin
             )
 
 from PhysicsTools.Heppy.analyzers.eventtopology.MT2Analyzer import MT2Analyzer
@@ -144,8 +140,7 @@ from PhysicsTools.Heppy.analyzers.eventtopology.MT2Analyzer import MT2Analyzer
 MT2Ana = cfg.Analyzer(
     MT2Analyzer, name = 'MT2Analyzer',
     doOnlyDefault = True,
-#    jetPt = 40.,
-    jetPt = mt2JPt, ### jet pt 30: this will change MT2 and pseudo-jets
+    jetPt = mt2JPt, ### this will change MT2 and pseudo-jets
     )
 
 ##------------------------------------------
@@ -252,7 +247,7 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 # choose 2 for full production
 
 test = 0
-isData = True
+isData = False
 doSpecialSettingsForMECCA = 1
 if test==0:
     # ------------------------------------------------------------------------------------------- #
@@ -281,12 +276,10 @@ if test==0:
     #eventSelector.toSelect = [ 442430994 ]
     #sequence = cfg.Sequence([eventSelector] + sequence)
     comp=testComponent
-    #comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/gjets_ht200to400_miniaodsim_fix.root']
-    #comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTspring/ttbar25nsmad_1ECE44F9-5F02-E511-9A65-02163E00EA1F.root']
-    # 74X 
-    #comp.files = ['/afs/cern.ch/user/d/dalfonso/public/74samples/QCD_Pt_1000to1400_Asympt25ns/0AF8E723-53F9-E411-86B4-0025905C2CBA.root']
-    #comp.files = ['/afs/cern.ch/user/d/dalfonso/public/74samples/JetHT_GR_R_74_V12_19May_RelVal/1294BDDB-B7FE-E411-8028-002590596490.root']
-    comp.files = ['/afs/cern.ch/user/m/mangano/public/MECCA/dataset/74X/data/JetHT_promptReco_Run2015B.root']
+    # 74X TTbar
+    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/SYNCHfiles/0066F143-F8FD-E411-9A0B-D4AE526A0D2E.root']
+    # 74X Data
+    #comp.files = ['/afs/cern.ch/user/m/mangano/public/MECCA/dataset/74X/data/JetHT_promptReco_Run2015B.root']
 
 
     selectedComponents = [comp]
