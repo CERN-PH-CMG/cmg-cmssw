@@ -3,6 +3,11 @@
 from CMGTools.TTHAnalysis.plotter.mcAnalysis import *
 import itertools
 
+if "/bin2Dto1Dlib_cc.so" not in ROOT.gSystem.GetLibraries():
+    ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/TTHAnalysis/python/plotter/bin2Dto1Dlib.cc+" % os.environ['CMSSW_BASE']);
+if "/fakeRate_cc.so" not in ROOT.gSystem.GetLibraries(): 
+    ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/TTHAnalysis/python/plotter/fakeRate.cc+" % os.environ['CMSSW_BASE']);
+
 SAFE_COLOR_LIST=[
 ROOT.kBlack, ROOT.kRed, ROOT.kGreen+2, ROOT.kBlue, ROOT.kMagenta+1, ROOT.kOrange+7, ROOT.kCyan+1, ROOT.kGray+2, ROOT.kViolet+5, ROOT.kSpring+5, ROOT.kAzure+1, ROOT.kPink+7, ROOT.kOrange+3, ROOT.kBlue+3, ROOT.kMagenta+3, ROOT.kRed+2,
 ]
@@ -72,6 +77,22 @@ def getDataPoissonErrors(h, drawZeroBins=False, drawXbars=False):
     ret.SetMarkerColor(h.GetMarkerColor())
     ret.SetMarkerStyle(h.GetMarkerStyle())
     return ret
+
+def PrintHisto(h):
+    if not h:
+        return
+    print h.GetName()
+    c=[]
+    if "TH1" in h.ClassName():
+        for i in xrange(h.GetNbinsX()):
+            c.append((h.GetBinContent(i+1),h.GetBinError(i+1)))
+    elif "TH2" in h.ClassName():
+        for i in xrange(h.GetNbinsX()):
+            for j in xrange(h.GetNbinsY()):
+                c.append((h.GetBinContent(i+1,j+1),h.GetBinError(i+1,j+1)))
+    else:
+        print 'not th1 or th2'
+    print c
 
 def doSpam(text,x1,y1,x2,y2,align=12,fill=False,textSize=0.033,_noDelete={}):
     cmsprel = ROOT.TPaveText(x1,y1,x2,y2,"NDC");
@@ -728,7 +749,7 @@ class PlotMaker:
                                     plot = pmap[p]
                                     c1.SetRightMargin(0.20)
                                     plot.SetContour(100)
-                                    plot.Draw("COLZ")
+                                    plot.Draw("COLZ TEXT45")
                                     c1.Print("%s/%s_%s.%s" % (fdir, pspec.name, p, ext))
                             else:
                                 c1.Print("%s/%s.%s" % (fdir, pspec.name, ext))

@@ -1,6 +1,5 @@
 #include <cmath>
 #include "Math/GenVector/LorentzVector.h"
-#include "Math/GenVector/PtEtaPhiM4D.h"
 
 //// UTILITY FUNCTIONS NOT IN TFORMULA ALREADY
 
@@ -92,4 +91,21 @@ float mtw_wz3l(float pt1, float eta1, float phi1, float m1, float pt2, float eta
     if (abs(mZ1 - mass_2(pt2,eta2,phi2,m2,pt3,eta3,phi3,m3)) < 0.01) return mt_2(pt1,phi1,met,metphi);
     return 0;
 }
+
+float relax_cut_in_eta_bins(float val, float eta, float eta1, float eta2, float eta3, float val1, float val2, float val3, float val1t, float val2t, float val3t){
+
+  if (abs(eta)<eta1){
+    if (val>=val1) return val1t;
+  }
+  else if (abs(eta)<eta2){
+    if (val>=val2) return val2t;
+  }
+  else if (abs(eta)<eta3){
+    if (val>=val3) return val3t;
+  }
+  return val;
+
+}
+
+
 void functions() {}

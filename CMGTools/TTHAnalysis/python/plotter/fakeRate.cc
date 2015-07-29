@@ -18,6 +18,32 @@ TH2 * FR5_el = 0;
 TH2 * QF_el = 0;
 TH2 * FRi_mu[6], *FRi_el[6];
 
+TH2 * FR_mu_FO1_QCD    = 0;
+TH2 * FR_mu_FO1_insitu = 0;
+TH2 * FR_mu_FO2_QCD    = 0;
+TH2 * FR_mu_FO2_insitu = 0;
+TH2 * FR_mu_FO3_QCD    = 0;
+TH2 * FR_mu_FO3_insitu = 0;
+TH2 * FR_mu_FO4_QCD    = 0;
+TH2 * FR_mu_FO4_insitu = 0;
+TH2 * FR_el_FO1_QCD    = 0;
+TH2 * FR_el_FO1_insitu = 0;
+TH2 * FR_el_FO2_QCD    = 0;
+TH2 * FR_el_FO2_insitu = 0;
+TH2 * FR_el_FO3_QCD    = 0;
+TH2 * FR_el_FO3_insitu = 0;
+TH2 * FR_el_FO4_QCD    = 0;
+TH2 * FR_el_FO4_insitu = 0;
+TH2 * FRi_FO_mu[8];
+TH2 * FRi_FO_el[8];
+
+TH2 * FR_ABC_mu_alpha;
+TH2 * FR_ABC_mu_beta;
+TH2 * FR_ABC_el_alpha;
+TH2 * FR_ABC_el_beta;
+TH2 * FR_ABC_mu[2];
+TH2 * FR_ABC_el[2];
+
 
 bool loadFRHisto(const std::string &histoName, const char *file, const char *name) {
     TH2 **histo = 0, **hptr2 = 0;
@@ -32,12 +58,35 @@ bool loadFRHisto(const std::string &histoName, const char *file, const char *nam
     else if (histoName == "FR5_mu") { histo = & FR5_mu; hptr2 = & FRi_mu[5]; }
     else if (histoName == "FR5_el") { histo = & FR5_el; hptr2 = & FRi_el[5]; }
     else if (histoName == "QF_el") histo = & QF_el;
+    else if (histoName == "FR_mu_FO1_QCD")  { histo = &FR_mu_FO1_QCD ;  hptr2 = & FRi_FO_mu[0]; }
+    else if (histoName == "FR_mu_FO1_insitu")  { histo = &FR_mu_FO1_insitu ;  hptr2 = & FRi_FO_mu[1]; }
+    else if (histoName == "FR_mu_FO2_QCD")  { histo = &FR_mu_FO2_QCD ;  hptr2 = & FRi_FO_mu[2]; }
+    else if (histoName == "FR_mu_FO2_insitu")  { histo = &FR_mu_FO2_insitu ;  hptr2 = & FRi_FO_mu[3]; }
+    else if (histoName == "FR_mu_FO3_QCD")  { histo = &FR_mu_FO3_QCD ;  hptr2 = & FRi_FO_mu[4]; }
+    else if (histoName == "FR_mu_FO3_insitu")  { histo = &FR_mu_FO3_insitu ;  hptr2 = & FRi_FO_mu[5]; }
+    else if (histoName == "FR_mu_FO4_QCD")  { histo = &FR_mu_FO4_QCD ;  hptr2 = & FRi_FO_mu[6]; }
+    else if (histoName == "FR_mu_FO4_insitu")  { histo = &FR_mu_FO4_insitu ;  hptr2 = & FRi_FO_mu[7]; }
+    else if (histoName == "FR_el_FO1_QCD")  { histo = &FR_el_FO1_QCD ;  hptr2 = & FRi_FO_el[0]; }
+    else if (histoName == "FR_el_FO1_insitu")  { histo = &FR_el_FO1_insitu ;  hptr2 = & FRi_FO_el[1]; }
+    else if (histoName == "FR_el_FO2_QCD")  { histo = &FR_el_FO2_QCD ;  hptr2 = & FRi_FO_el[2]; }
+    else if (histoName == "FR_el_FO2_insitu")  { histo = &FR_el_FO2_insitu ;  hptr2 = & FRi_FO_el[3]; }
+    else if (histoName == "FR_el_FO3_QCD")  { histo = &FR_el_FO3_QCD ;  hptr2 = & FRi_FO_el[4]; }
+    else if (histoName == "FR_el_FO3_insitu")  { histo = &FR_el_FO3_insitu ;  hptr2 = & FRi_FO_el[5]; }
+    else if (histoName == "FR_el_FO4_QCD")  { histo = &FR_el_FO4_QCD ;  hptr2 = & FRi_FO_el[6]; }
+    else if (histoName == "FR_el_FO4_insitu")  { histo = &FR_el_FO4_insitu ;  hptr2 = & FRi_FO_el[7]; }
+    else if (histoName == "FR_ABC_mu_alpha")  { histo = &FR_ABC_mu_alpha ;  hptr2 = & FR_ABC_mu[0]; }
+    else if (histoName == "FR_ABC_mu_beta")  { histo = &FR_ABC_mu_beta ;  hptr2 = & FR_ABC_mu[1]; }
+    else if (histoName == "FR_ABC_el_alpha")  { histo = &FR_ABC_el_alpha ;  hptr2 = & FR_ABC_el[0]; }
+    else if (histoName == "FR_ABC_el_beta")  { histo = &FR_ABC_el_beta ;  hptr2 = & FR_ABC_el[1]; }
     if (histo == 0)  {
         std::cerr << "ERROR: histogram " << histoName << " is not defined in fakeRate.cc." << std::endl;
         return 0;
     }
 
-    if (*histo != 0) delete *histo;
+    if (*histo != 0) {
+      std::cerr << "WARNING: overwriting histogram " << (*histo)->GetName() << std::endl;
+      delete *histo;
+    }
     TFile *f = TFile::Open(file);
     if (f->Get(name) == 0) {
         std::cerr << "ERROR: could not find " << name << " in " << file << std::endl;
@@ -670,6 +719,101 @@ float fakeRateBin_Muons_pt(float bin) {
     return (ibin/5)*5.0 + 2.5;
 }
 
+
+float fakeRateReader_2lss_FO(float l1eta, float l1pt, float l2eta, float l2pt, int l1pdgId, int l2pdgId, int pass1, int pass2, int fo123, int isinsitu)
+{
+  assert (fo123==1 || fo123==2 || fo123==3 || fo123==4);
+  assert (isinsitu==0 || isinsitu==1);
+  int ind = 2*(fo123-1)+isinsitu;
+  int nfail = 2-pass1-pass2;
+    switch (nfail) {
+        case 1: {
+            double fpt,feta; int fid;
+            if (pass2)   { fpt = l1pt; feta = std::abs(l1eta); fid = abs(l1pdgId); }
+            else         { fpt = l2pt; feta = std::abs(l2eta); fid = abs(l2pdgId); }
+            TH2 *hist = (fid == 11 ? FRi_FO_el[ind] : FRi_FO_mu[ind]);
+	    if (!hist){
+	      std::cout << "Error: FR histo not filled " << fid << " " << ind << std::endl;
+	      assert(false);
+	    }
+	    int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(fpt)));
+	    int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(feta)));
+	    double fr = hist->GetBinContent(ptbin,etabin);
+            return fr/(1-fr);
+        }
+      case 2: {
+            TH2 *hist1 = (abs(l1pdgId) == 11 ? FRi_FO_el[ind] : FRi_FO_mu[ind]);
+	    int ptbin1  = std::max(1, std::min(hist1->GetNbinsX(), hist1->GetXaxis()->FindBin(l1pt)));
+	    int etabin1 = std::max(1, std::min(hist1->GetNbinsY(), hist1->GetYaxis()->FindBin(std::abs(l1eta))));
+	    double fr1 = hist1->GetBinContent(ptbin1,etabin1);
+           TH2 *hist2 = (abs(l2pdgId) == 11 ? FRi_FO_el[ind] : FRi_FO_mu[ind]);
+	   int ptbin2  = std::max(1, std::min(hist2->GetNbinsX(), hist2->GetXaxis()->FindBin(l2pt)));
+	   int etabin2 = std::max(1, std::min(hist2->GetNbinsY(), hist2->GetYaxis()->FindBin(std::abs(l2eta))));
+	   double fr2 = hist2->GetBinContent(ptbin2,etabin2);
+            return -fr1*fr2/((1-fr1)*(1-fr2));
+      }
+        default: return 0;
+    }
+}
+
+typedef struct {
+  float eta;
+  float pt;
+  int pdgId;
+  int ABC;
+} lepton_for_ABC_fakerate;
+
+float fakeRateReader_2lss_FO_ABC(float l1eta, float l1pt, float l2eta, float l2pt, int l1pdgId, int l2pdgId, int l1ABC, int l2ABC)
+{
+
+  //  std::cout << "called " << l1ABC << " " << l2ABC << std::endl;
+
+  if (l1ABC<0 || l2ABC<0) return 0;
+
+  int dibin = 3*l1ABC+l2ABC+1;
+  assert (dibin>0 && dibin<10);
+
+  float res = 0;
+  if (l1ABC==0 && l2ABC==0) return 0;
+  else if (l1ABC>0 && l2ABC>0) res = -1;
+  else res = 1;
+
+  lepton_for_ABC_fakerate lep[2];
+  lep[0].eta = fabs(l1eta);
+  lep[0].pt = l1pt;
+  lep[0].pdgId = abs(l1pdgId);
+  lep[0].ABC = l1ABC;
+  lep[1].eta = fabs(l2eta);
+  lep[1].pt = l2pt;
+  lep[1].pdgId = abs(l2pdgId);
+  lep[1].ABC = l2ABC;
+
+  for (int i=0; i<2; i++){
+    int aorb = -1;
+    if (lep[i].ABC==0) continue;
+    else if (lep[i].ABC==1) aorb = 0;
+    else if (lep[i].ABC==2) aorb = 1;
+    assert (aorb>-1);
+    assert (lep[i].pdgId==11 || lep[i].pdgId==13);
+    int muorel = (lep[i].pdgId==11);
+    TH2 *hist = muorel ? FR_ABC_el[aorb] : FR_ABC_mu[aorb];
+    int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(lep[i].pt)));
+    int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(lep[i].eta)));
+    double fr = hist->GetBinContent(ptbin,etabin);
+    res *= fr;
+  }
+
+
+//  if (fabs(res)>5){
+//    std::cout << "large weight " << res << endl;
+//    std::cout << l1eta << " " <<  l1pt<< " " << l2eta<< " " << l2pt<< " " <<  l1pdgId<< " " <<  l2pdgId<< " " <<  l1ABC<< " " <<  l2ABC << std::endl;
+//  }
+
+  //  std::cout << "returning " << res << std::endl;
+  return res;
+}
+
+
 namespace WP {
     enum WPId { V=0, VL=0, VVL=-1, L=1, M=2, T=3, VT=4, HT=5 } ;
 }
@@ -706,9 +850,43 @@ float multiIso_multiWP(int LepGood_pdgId, float LepGood_pt, float LepGood_eta, f
             abort();
     }
 }
-float multiIso_multiWP(int LepGood_pdgId, float LepGood_pt, float LepGood_eta, float LepGood_miniRelIso, float LepGood_jetPtRatio, float LepGood_jetPtRel, int wp) {
-    return multiIso_multiWP(LepGood_pdgId,LepGood_pt,LepGood_eta,LepGood_miniRelIso,LepGood_jetPtRatio,LepGood_jetPtRel,WP::WPId(wp));
+
+float multiIso_singleWP_relaxFO3(int LepGood_pdgId, float LepGood_pt, float LepGood_CorrConePt, float LepGood_eta, float LepGood_miniRelIso, float LepGood_jetPtRatio, float LepGood_jetPtRel, WP::WPId wp) {
+  assert (wp==2);
+  return multiIso_multiWP(LepGood_pdgId,LepGood_pt,LepGood_eta,(LepGood_miniRelIso>=0.4),LepGood_CorrConePt/LepGood_pt*LepGood_jetPtRatio,LepGood_jetPtRel,wp)>0;
 }
 
+float multiIso_singleWP_relaxFO4(int LepGood_pdgId, float LepGood_pt, float LepGood_eta, float LepGood_miniRelIso, float LepGood_jetPtRatio, float LepGood_jetPtRel, WP::WPId wp) {
+  assert (wp==2);
+  if (abs(LepGood_pdgId)==13) return (LepGood_miniRelIso<0.4 && (1/LepGood_jetPtRatio < (1/0.7 + LepGood_miniRelIso)));
+  else if (abs(LepGood_pdgId)==11) return (LepGood_miniRelIso<0.4 && (1/LepGood_jetPtRatio < (1/0.68 + LepGood_miniRelIso)));
+  else assert(false);
+}
+
+int getABCRegion(float LepGood_miniRelIso, int LepGood_multiIso, float LepGood_sip3d, float sipcut, float sipcutlow, float sipcuthigh){
+
+  int r = -1;
+
+  if (LepGood_miniRelIso<0.4 && LepGood_multiIso && LepGood_sip3d<sipcut) r = 0;
+  else if (LepGood_miniRelIso<0.4 && LepGood_sip3d>sipcutlow && LepGood_sip3d<sipcuthigh) r = 1;
+  else if (LepGood_miniRelIso<0.4 && LepGood_sip3d<sipcut) r = 2;
+  else r = -1;
+
+  return r;
+
+}
+
+int getRelaxedABCRegion(float LepGood_miniRelIso, int LepGood_multiIso, float LepGood_sip3d, float sipcut, float sipcutlow, float sipcuthigh){
+
+  int r = -1;
+
+  if (LepGood_miniRelIso<0.4 && LepGood_multiIso && LepGood_sip3d<sipcut) r = 0;
+  else if (LepGood_miniRelIso<0.4 && LepGood_sip3d>sipcutlow && LepGood_sip3d<sipcuthigh) r = 0;
+  else if (LepGood_miniRelIso<0.4 && LepGood_sip3d<sipcut) r = 0;
+  else r = -1;
+
+  return r;
+
+}
 
 void fakeRate() {}
