@@ -57,7 +57,16 @@ class TreeToYield:
         if 'SkipDefaultMCCorrections' in settings: ## unless requested to 
             self._mcCorrs = []                     ##  skip them
         if self._isdata: 
-            self._mcCorrs = [c for c in self._mcCorrs if c.alsoData] ## most don't apply to data, some do 
+# bug: does not work
+#            self._mcCorrs = [c for c in self._mcCorrs if c.alsoData] ## most don't apply to data, some do 
+            newcorrs=[]
+            for corr in self._mcCorrs:
+                newcorr = copy(corr)
+                newlist = copy(newcorr._corrections)
+                newlist = [icorr for icorr in newlist if icorr.alsoData]
+                newcorr._corrections = newlist
+                newcorrs.append(newcorr)
+            self._mcCorrs=newcorrs
         if 'MCCorrections' in settings:
             self._mcCorrs = self._mcCorrs[:] # make copy
             for cfile in settings['MCCorrections'].split(','): 
@@ -262,6 +271,8 @@ class TreeToYield:
         if self._weight:
             if self._isdata: cut = "(%s)     *(%s)*(%s)" % (self._weightString,                    self._scaleFactor, self.adaptExpr(cut,cut=True))
             else:            cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, self.adaptExpr(cut,cut=True))
+        else:
+            cut = self.adaptExpr(cut,cut=True)
         expr = self.adaptExpr(expr)
         if self._options.doS2V:
             cut  = scalarToVector(cut)
