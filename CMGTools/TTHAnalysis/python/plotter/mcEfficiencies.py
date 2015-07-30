@@ -172,7 +172,7 @@ if __name__ == "__main__":
     options.globalRebin = 1
     options.allowNegative = True # with the fine bins used in ROCs, one otherwise gets nonsensical results
     mca  = MCAnalysis(args[0],options)
-    procs = mca.listSignals()+mca.listBackgrounds()
+    procs = mca.listProcesses()
     cut = CutsFile(args[1],options).allCuts()
     ids   = PlotFile(args[2],options).plots()
     xvars = PlotFile(args[3],options).plots()

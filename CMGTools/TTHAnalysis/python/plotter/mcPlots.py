@@ -744,7 +744,7 @@ class PlotMaker:
                             dump.close()
                         else:
                             if "TH2" in total.ClassName() or "TProfile2D" in total.ClassName():
-                                for p in mca.listSignals(allProcs=True) + mca.listBackgrounds(allProcs=True) + ["signal", "background"]:
+                                for p in mca.listSignals(allProcs=True) + mca.listBackgrounds(allProcs=True) + ["signal", "background", "data"]:
                                     if p not in pmap: continue
                                     plot = pmap[p]
                                     c1.SetRightMargin(0.20)

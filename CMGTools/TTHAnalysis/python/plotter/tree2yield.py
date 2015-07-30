@@ -137,7 +137,7 @@ class TreeToYield:
         friendOpts += (self._options.friendTreesData if self._isdata else self._options.friendTreesMC)
         if 'Friends' in self._settings: friendOpts += self._settings['Friends']
         for tf_tree,tf_file in friendOpts:
-            print 'Adding friend',tf_tree,tf_file
+#            print 'Adding friend',tf_tree,tf_file
             tf = self._tree.AddFriend(tf_tree, tf_file.format(name=self._name, cname=self._cname, P=getattr(self._options,'path',''))),
             self._friends.append(tf)
         self._isInit = True
