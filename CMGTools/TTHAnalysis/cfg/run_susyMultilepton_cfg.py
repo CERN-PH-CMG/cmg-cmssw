@@ -183,9 +183,9 @@ triggerFlagsAna.triggerBits = {
     'DoubleMu_8TeV' : triggers_mumu_8TeV + triggers_mumu_run1,
     'MuEG_8TeV'     : triggers_mue_8TeV + triggers_mue_run1,
     'DoubleEl_8TeV' : triggers_ee_8TeV + triggers_ee_run1,
-    'MonoJet80MET90' : triggers_SOS_Jet80MET90,
-    'MonoJet80MET120' : triggers_SOS_Jet80MET120,
-    'METMu5' : triggers_SOS_MET120Mu5,
+    'MonoJet80MET90' : triggers_Jet80MET90,
+    'MonoJet80MET120' : triggers_Jet80MET120,
+    'METMu5' : triggers_MET120Mu5,
 }
 
 from CMGTools.RootTools.samples.samples_13TeV_74X import *
@@ -213,7 +213,7 @@ if True: # For running on data
     selectedComponents = []; vetos = []  
  
     if SOS == True:
-        DatasetsAndTriggers.append( ("MET", triggers_SOS_Jet80MET90 + triggers_SOS_Jet80MET120 + triggers_SOS_MET120Mu5 ) )
+        DatasetsAndTriggers.append( ("MET", triggers_Jet80MET90 + triggers_Jet80MET120 + triggers_MET120Mu5 ) )
         #DatasetsAndTriggers.append( ("SingleMuon", triggers_1mu_iso + triggers_1mu_iso_50ns + triggers_1mu_noniso) )
     else:
         DatasetsAndTriggers.append( ("DoubleMuon", triggers_mumu_iso + triggers_mumu_ss + triggers_mumu_ht + triggers_3mu + triggers_3mu_alt) )
