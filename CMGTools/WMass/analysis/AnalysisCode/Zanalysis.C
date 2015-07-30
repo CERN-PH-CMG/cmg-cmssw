@@ -398,7 +398,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // nentries=100;
   cout << "couts every " << cout_freq << " events" << endl;
   Long64_t nbytes = 0, nb = 0;
-  for(Long64_t jentry=first_entry; jentry<nentries;jentry++) {
+  for(Long64_t jentry=first_entry; jentry<=nentries; jentry++) {
     // for (Long64_t jentry=0; jentry<1e2;jentry++) { // TEMP !!!
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;

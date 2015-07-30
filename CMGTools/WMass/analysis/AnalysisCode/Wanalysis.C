@@ -248,7 +248,7 @@ void Wanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // start the actual event loop
   //------------------------------------------------------
   Long64_t nbytes = 0, nb = 0;
-  for (Long64_t jentry=first_entry; jentry<nentries;jentry++) {
+  for (Long64_t jentry=first_entry; jentry<=nentries; jentry++) {
   // for (Long64_t jentry=0; jentry<5e4;jentry++) { // for testing purposes
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
