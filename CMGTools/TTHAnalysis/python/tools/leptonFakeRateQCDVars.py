@@ -28,7 +28,7 @@ class LeptonFakeRateQCDVars:
             #print "lepton pt %6.1f eta %+5.2f phi %+5.2f  matched with jet  pt %6.1f eta %+5.2f phi %+5.2f  " % (
             #    lep.pt, lep.eta, lep.phi, jet.pt, jet.eta, jet.phi )
             for var in self.jetvars:
-                if var=="mcFlavour" and not isMC:
+                if var=="mcFlavour" and hasattr(jet,var)==False:
                     ret["LepGood_awayJet%s_%s"%(self.label,var)][il] = 0
                     continue
                 ret["LepGood_awayJet%s_%s"%(self.label,var)][il] = getattr(jet,var) 
