@@ -352,7 +352,7 @@ void KalmanCalibratorParam::smear(TLorentzVector &muon) {
   Int_t biny = smearing_->GetYaxis()->FindBin(fabs(eta));
   Int_t bin = smearing_->GetBin(binx,biny,1);
   Double_t factor = smearing_->GetBinContent(bin);
-  if ((isData_ && factor>0) || ((!isData_) && factor<0))
+  if ((isData_ && factor>0) || ((!isData_) && factor<0)){
     pt=pt; 
   }else{
     factor = sqrt(fabs(factor));
