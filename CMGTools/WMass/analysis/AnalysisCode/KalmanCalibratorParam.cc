@@ -9,12 +9,12 @@ KalmanCalibratorParam::KalmanCalibratorParam(bool isData) {
   random_ = new TRandom3(10101982);
 
   if (isData) {
-    std::string path("../utils/kalmanCalibration_data_19072015.root");
+    std::string path("../utils/kalmanCalibration_data_31072015.root");
     file_ = new TFile(path.c_str());
     magnetic = (TH2F*)file_->Get("magnetic");
   }
   else {
-    std::string path("../utils/kalmanCalibration_mc_19072015.root");
+    std::string path("../utils/kalmanCalibration_mc_31072015.root");
     file_ = new TFile(path.c_str());
   }
   // file_->ls();
@@ -60,7 +60,7 @@ KalmanCalibratorParam::KalmanCalibratorParam(bool isData) {
   a2_ = (TH1F*)file_->Get("a2"); 
   b2_ = (TH1F*)file_->Get("b2");
 
-  smearing_ = (TProfile2D*)file_->Get("smearing");
+  smearing_ = (TH3F*)file_->Get("smearing");
   
 
 
@@ -148,9 +148,9 @@ double KalmanCalibratorParam::closure(double pt,double eta) {
   return 0.0;
 
   Int_t bin = closure_->GetBin(
-  closure_->GetXaxis()->FindBin(pt),	       
-  closure_->GetYaxis()->FindBin(fabs(eta)),
-  1);
+                              closure_->GetXaxis()->FindBin(pt),	       
+                              closure_->GetYaxis()->FindBin(fabs(eta)),
+                              1);
   return closure_->GetBinContent(bin)-1.0;
 }
 
@@ -236,9 +236,9 @@ void KalmanCalibratorParam::getCorrectedPt(TLorentzVector &muon,int charge) {
 double KalmanCalibratorParam::getCorrectedPtMag(double pt,double eta,double phi) {
   double magneticMapFactor=1.0;
   if (isData_)
-  magneticMapFactor = magnetic->GetBinContent(magnetic->GetBin(
-  magnetic->GetXaxis()->FindBin(phi),
-  magnetic->GetYaxis()->FindBin(eta)));
+    magneticMapFactor = magnetic->GetBinContent(magnetic->GetBin(
+                                  magnetic->GetXaxis()->FindBin(phi),
+                                  magnetic->GetYaxis()->FindBin(eta)));
 
   //double sinTheta  = sin(2*atan(exp(-eta))); 
   //    double e = shifted_e->GetBinContent(scale_e->GetXaxis()->FindBin(eta));
@@ -341,16 +341,21 @@ void KalmanCalibratorParam::vary(int ii,int sigmas) {
 void KalmanCalibratorParam::smear(TLorentzVector &muon) {
   double pt=muon.Pt(); double eta=muon.Eta(); double phi=muon.Phi(); double mass=muon.M(); 
 
-  Int_t binx = smearing_->GetXaxis()->FindBin(1.0/pt);
-  if (binx==0)
-  binx=1;
-  Int_t biny = smearing_->GetYaxis()->FindBin(eta);
-  Int_t bin = smearing_->GetBin(binx,biny);
+  Int_t binx = smearing_->GetXaxis()->FindBin(pt);
+  if (binx==0){
+    binx=1;
+  }
+  if (binx==smearing_->GetNbinsX()+1){
+    binx=smearing_->GetNbinsX();
+  }
+
+  Int_t biny = smearing_->GetYaxis()->FindBin(fabs(eta));
+  Int_t bin = smearing_->GetBin(binx,biny,1);
   Double_t factor = smearing_->GetBinContent(bin);
-  if (factor<0.0){
-    pt=pt; // made by Luca P. what a statement!!!
+  if ((isData_ && factor>0) || ((!isData_) && factor<0))
+    pt=pt; 
   }else{
-    factor = sqrt(factor);
+    factor = sqrt(fabs(factor));
     pt+=random_->Gaus(0.0,factor*pt);
   }
   muon.SetPtEtaPhiM(pt,eta,phi,mass);
