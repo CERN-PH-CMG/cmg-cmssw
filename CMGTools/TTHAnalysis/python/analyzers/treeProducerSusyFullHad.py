@@ -7,6 +7,11 @@ susyFullHad_globalVariables = susyCore_globalVariables + [
     ##--------------------------------------------------
 ##    NTupleVariable("genQScale", lambda ev : ev.genQScale, help="Generator level binning quantity, QScale"),
     NTupleVariable("LHEweight_original", lambda ev: ev.LHE_originalWeight if  hasattr(ev,'LHE_originalWeight') else  0, mcOnly=True, help="original LHE weight"),
+
+    ##--------------------------------------------------
+    ## MET filter information (temporary)
+    ##--------------------------------------------------
+    NTupleVariable("Flag_HBHENoiseFilter", lambda ev: ev.hbheFilterNew, help="HBEHE temporary filter decision"),
     
     ##--------------------------------------------------
     ## energy sums
