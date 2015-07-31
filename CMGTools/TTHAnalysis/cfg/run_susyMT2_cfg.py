@@ -124,7 +124,7 @@ ttHMT2Control = cfg.Analyzer(
             )
 
 ##------------------------------------------
-##  TOLOLOGIAL VARIABLES: minMT, MT2
+##  TOPOLOGICAL VARIABLES: minMT, MT2
 ##------------------------------------------
 
 from CMGTools.TTHAnalysis.analyzers.ttHTopoVarAnalyzer import ttHTopoVarAnalyzer
@@ -158,6 +158,11 @@ ttHZskim = cfg.Analyzer(
             doZGen = False,
             doZReco = True
             )
+
+from CMGTools.TTHAnalysis.analyzers.hbheAnalyzer import hbheAnalyzer
+hbheFilterAna = cfg.Analyzer(
+    hbheAnalyzer, name = 'hbheAnalyzer',
+)
 
 
 ##------------------------------------------
@@ -199,6 +204,24 @@ triggerFlagsAna.triggerBits = {
 'Photon175' : triggers_photon175,
 }
 
+### Temporary replacement for hbheFilter
+eventFlagsAna.triggerBits = {
+    #        "HBHENoiseFilter" : [ "Flag_HBHENoiseFilter" ], ### hbheFilter temporary replaced
+    "CSCTightHaloFilter" : [ "Flag_CSCTightHaloFilter" ],
+    "hcalLaserEventFilter" : [ "Flag_hcalLaserEventFilter" ],
+    "EcalDeadCellTriggerPrimitiveFilter" : [ "Flag_EcalDeadCellTriggerPrimitiveFilter" ],
+    "goodVertices" : [ "Flag_goodVertices" ],
+    "trackingFailureFilter" : [ "Flag_trackingFailureFilter" ],
+    "eeBadScFilter" : [ "Flag_eeBadScFilter" ],
+    "ecalLaserCorrFilter" : [ "Flag_ecalLaserCorrFilter" ],
+    "trkPOGFilters" : [ "Flag_trkPOGFilters" ],
+    "trkPOG_manystripclus53X" : [ "Flag_trkPOG_manystripclus53X" ],
+    "trkPOG_toomanystripclus53X" : [ "Flag_trkPOG_toomanystripclus53X" ],
+    "trkPOG_logErrorTooManyClusters" : [ "Flag_trkPOG_logErrorTooManyClusters" ],
+    "METFilters" : [ "Flag_METFilters" ],
+}
+
+
 #-------- SEQUENCE
 
 from CMGTools.TTHAnalysis.analyzers.treeProducerSusyFullHad import *
@@ -231,6 +254,7 @@ sequence = cfg.Sequence(
     MT2Ana,
     ttHTopoJetAna,
     ttHFatJetAna,
+    hbheFilterAna,
     treeProducer,
     ])
 
@@ -247,7 +271,7 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 # choose 2 for full production
 
 test = 0
-isData = False
+isData = True
 doSpecialSettingsForMECCA = 1
 if test==0:
     # ------------------------------------------------------------------------------------------- #
@@ -264,8 +288,10 @@ if test==0:
     from CMGTools.TTHAnalysis.setup.Efficiencies import *
 
     for comp in samples:
-        comp.isMC = True
-        comp.isData = False
+#        comp.isMC = True
+#        comp.isData = False
+        comp.isMC = False
+        comp.isData = True
         comp.splitFactor = 250 
         comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
         comp.puFileData=dataDir+"/puProfile_Data12.root"
@@ -277,13 +303,15 @@ if test==0:
     #sequence = cfg.Sequence([eventSelector] + sequence)
     comp=testComponent
     # 74X TTbar
-    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/SYNCHfiles/0066F143-F8FD-E411-9A0B-D4AE526A0D2E.root']
+    #comp.files = ['/afs/cern.ch/user/d/dalfonso/public/SYNCHfiles/0066F143-F8FD-E411-9A0B-D4AE526A0D2E.root']
     # 74X Data
     #comp.files = ['/afs/cern.ch/user/m/mangano/public/MECCA/dataset/74X/data/JetHT_promptReco_Run2015B.root']
+    #comp.files = ['root://xrootd-cms.infn.it//store/data/Run2015B/JetHT/MINIAOD/PromptReco-v1/000/251/562/00000/508117F0-9C2A-E511-A71B-02163E014241.root']
+    comp.files = ['root://xrootd-cms.infn.it//store/data/Run2015B/JetHT/MINIAOD/PromptReco-v1/000/251/643/00000/0AF95D60-992C-E511-8D36-02163E0146A4.root']
 
 
     selectedComponents = [comp]
-    comp.splitFactor = 10
+    comp.splitFactor = 1
 #    comp.fineSplitFactor = 100
 
 elif test==1:
@@ -380,8 +408,8 @@ elif test==3:
 
     #synche file DATA
     comp = JetHT_Run2015B
-    comp.files = ['/afs/cern.ch/user/m/mangano/public/MECCA/dataset/74X/data/JetHT_promptReco_Run2015B.root']
-
+#    comp.files = ['/afs/cern.ch/user/m/mangano/public/MECCA/dataset/74X/data/JetHT_promptReco_Run2015B.root']
+    comp.files = ['root://xrootd-cms.infn.it//store/data/Run2015B/JetHT/MINIAOD/PromptReco-v1/000/251/643/00000/0AF95D60-992C-E511-8D36-02163E0146A4.root']
     selectedComponents = [comp]
     #selectedComponents = [JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B, SingleElectron_Run2015B, SingleMuon_Run2015B, SinglePhoton_Run2015B, DoubleEG_Run2015B, DoubleMuon_Run2015B]
     
@@ -392,10 +420,7 @@ if doSpecialSettingsForMECCA:
     jetAna.doQG = False
     photonAna.do_randomCone = False
 
-
-
 if isData:
-    eventFlagsAna.processName = 'HLT'
     for comp in samples:
         comp.isMC = False
         comp.isData = True

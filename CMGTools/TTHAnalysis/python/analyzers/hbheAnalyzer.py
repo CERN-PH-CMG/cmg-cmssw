@@ -41,7 +41,8 @@ class hbheAnalyzer( Analyzer ):
 
         event.hbheFilterNew = 1
 
-        if event.hbheMaxHPDHits >= 17: event.hbheFilterNew = 0
+        if event.hbheMaxHPDHits >= 17: 
+            event.hbheFilterNew = 0
         if event.hbheMaxHPDNoOtherHits >= 10 or (event.hbheHasBadRBXTS4TS5 and not event.hbheGoodJetFoundInLowBVRegion): 
             event.hbheFilterNew = 0
 
