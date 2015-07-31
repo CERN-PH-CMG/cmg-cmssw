@@ -271,7 +271,7 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 # choose 2 for full production
 
 test = 0
-isData = True
+isData = False
 doSpecialSettingsForMECCA = 1
 if test==0:
     # ------------------------------------------------------------------------------------------- #
@@ -288,10 +288,8 @@ if test==0:
     from CMGTools.TTHAnalysis.setup.Efficiencies import *
 
     for comp in samples:
-#        comp.isMC = True
-#        comp.isData = False
-        comp.isMC = False
-        comp.isData = True
+        comp.isMC = True
+        comp.isData = False
         comp.splitFactor = 250 
         comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
         comp.puFileData=dataDir+"/puProfile_Data12.root"
@@ -311,7 +309,7 @@ if test==0:
 
 
     selectedComponents = [comp]
-    comp.splitFactor = 1
+    comp.splitFactor = 10
 #    comp.fineSplitFactor = 100
 
 elif test==1:
