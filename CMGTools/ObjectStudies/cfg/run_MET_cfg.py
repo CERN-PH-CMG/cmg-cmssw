@@ -206,7 +206,6 @@ globalTag = 'MCRUN2_74_V9A::All'
 jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV2_MC.db'
 jecEra    = 'Summer15_50nsV2_MC'
 preprocessorFile = "$CMSSW_BASE/src/CMGTools/ObjectStudies/cfg/MetType1_GT_%s_jec_%s.py"%(globalTag.replace('::All',''),jecEra)
-print preprocessorFile
 subprocess.call(['python', 
   os.path.expandvars('$CMSSW_BASE/src/CMGTools/ObjectStudies/cfg/corMETMiniAOD_cfgCreator.py'),\
   '--GT='+globalTag, 
