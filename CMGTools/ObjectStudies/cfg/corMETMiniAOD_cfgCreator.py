@@ -10,9 +10,11 @@ from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("--outputFile", dest="outputFile", default="MetType1_dump.py", type="string", action="store", help="output file")
 parser.add_option("--GT", dest="GT", default='MCRUN2_74_V9A::All', type="string", action="store", help="Global Tag")
+parser.add_option("--jecDBFile", dest="jecDBFile", default="", type="string", action="store", help="jec DB File")
+parser.add_option("--jecEra", dest="jecEra", default='', type="string", action="store", help="jecEra")
 (options, args) = parser.parse_args()
 
-print options.outputFile, options.GT
+#print options.outputFile, options.GT
 
 # Define the CMSSW process
 process = cms.Process("RERUN")
@@ -40,25 +42,24 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 ### =====================================================================================================
-usePrivateSQlite = True
 
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 process.GlobalTag.globaltag = options.GT
 
+usePrivateSQlite = options.jecDBFile!=''
 if usePrivateSQlite:
     from CondCore.DBCommon.CondDBSetup_cfi import *
-    era = 'Summer15_V5_MC'
     process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
-                               connect = cms.string('sqlite_file:'+os.path.expandvars('$CMSSW_BASE/src/CMGTools/RootTools/data/jec/'+era+'.db')),
+                               connect = cms.string('sqlite_file:'+os.path.expandvars(options.jecDBFile)),
                                toGet =  cms.VPSet(
             cms.PSet(
                 record = cms.string("JetCorrectionsRecord"),
-                tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PF"),
+                tag = cms.string("JetCorrectorParametersCollection_"+options.jecEra+"_AK4PF"),
                 label= cms.untracked.string("AK4PF")
                 ),
             cms.PSet(
                 record = cms.string("JetCorrectionsRecord"),
-                tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PFchs"),
+                tag = cms.string("JetCorrectorParametersCollection_"+options.jecEra+"_AK4PFchs"),
                 label= cms.untracked.string("AK4PFchs")
                 ),
             )
@@ -142,10 +143,10 @@ process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
 )
 
 
-process.MINIAODSIMoutput_step = cms.EndPath(process.MINIAODSIMoutput)
+process.endpath = cms.EndPath(process.MINIAODSIMoutput)
 
 
-dumpFile  = open(options.outputFile, "w")
+dumpFile  = open(os.path.expandvars(options.outputFile), "w")
 dumpFile.write(process.dumpPython())
 dumpFile.close()
-print "Written preprocessor cfg to %s"%options.outputFile
+print "Written preprocessor cfg to %s"%dumpFile

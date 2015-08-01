@@ -195,9 +195,17 @@ if getHeppyOption("nofetch"):
 
 # -------------------- Running pre-processor
 import subprocess
-globalTag='MCRUN2_74_V9A::All'
-preprocessorFile = os.path.expandvars("$CMSSW_BASE/src/CMGTools/ObjectStudies/cfg/MetType1_%s.py"%(globalTag.replace('::All','')))
-subprocess.call(['python', os.path.expandvars('$CMSSW_BASE/src/CMGTools/ObjectStudies/cfg/corMETMiniAOD_cfgCreator.py'),'--GT='+globalTag, '--outputFile='+preprocessorFile])
+globalTag = 'MCRUN2_74_V9A::All'
+jecDBFile = 'Summer15_V5_p6_MC'
+jecEra    = 'Summer15_V5_MC'
+preprocessorFile = "$CMSSW_BASE/src/CMGTools/ObjectStudies/cfg/MetType1_GT_%s_jec_%s.py"%(globalTag.replace('::All',''),jecEra)
+subprocess.call(['python', 
+  os.path.expandvars('$CMSSW_BASE/src/CMGTools/ObjectStudies/cfg/corMETMiniAOD_cfgCreator.py'),\
+  '--GT='+globalTag, 
+  '--outputFile='+preprocessorFile, 
+  '--jecDBFile=$CMSSW_BASE/src/CMGTools/RootTools/data/jec/'+jecDBFile+'.db',
+  '--jecEra='+jecEra
+])
 from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
 preprocessor = CmsswPreprocessor(preprocessorFile)
 
@@ -205,9 +213,9 @@ preprocessor = CmsswPreprocessor(preprocessorFile)
 config = cfg.Config( components = selectedComponents,
                      sequence = metSequence,
                      services = [output_service],
-#                     preprocessor=preprocessor, # comment if pre-processor non needed
-                     events_class = event_class)
-#                     events_class = Events)
+                     preprocessor=preprocessor, # comment if pre-processor non needed
+#                     events_class = event_class)
+                     events_class = Events)
 
 #printComps(config.components, True)
         
