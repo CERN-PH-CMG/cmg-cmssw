@@ -84,53 +84,28 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 ### =====================================================================================================
+from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
 
-from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMETCorrectionsAndUncertainties
+#default configuration for miniAOD reprocessing, change the isData flag to run on data
+runMetCorAndUncFromMiniAOD(process, isData=False)
 
-#recomputation only available for T1 and Txy. T0 is copied from the miniAOD, and smearing is not consudered
-# necessitates both T1 and T1Txy in the recomputation
-
-#MET T1 uncertainties
-runMETCorrectionsAndUncertainties(process, metType="PF",
-                                  correctionLevel=["T1"],
-                                  computeUncertainties=True,
-                                  produceIntermediateCorrections=False,
-                                  addToPatDefaultSequence=False,
-                                  jetCollection="selectedPatJets",
-                                  electronCollection="slimmedElectrons",
-                                  muonCollection="slimmedMuons",
-                                  tauCollection="slimmedTaus",
-                                  reclusterJets = True,
-                                  pfCandCollection = "packedPFCandidates",
-                                  onMiniAOD=True,
-                                  postfix="",
-                                  )
-
-##MET T1+Txy
-#runMETCorrectionsAndUncertainties(process, metType="PF",
-#                                  correctionLevel=["T1","Txy"],
-#                                  computeUncertainties=False,
-#                                  produceIntermediateCorrections=False,
-#                                  addToPatDefaultSequence=False,
-#                                  jetCollection="selectedPatJets",
-#                                  electronCollection="slimmedElectrons",
-#                                  muonCollection="slimmedMuons",
-#                                  tauCollection="slimmedTaus",
-#                                  reclusterJets = True,
-#                                  pfCandCollection = "packedPFCandidates",
-#                                  onMiniAOD=True,
-#                                  postfix="",
-#                                  )
+### -------------------------------------------------------------------
+### the lines below remove the L2L3 residual uncertainties when processing data
+### -------------------------------------------------------------------
+process.patPFMetT1T2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+process.patPFMetT1T2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+process.patPFMetT2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+process.patPFMetT2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+process.shiftedPatJetEnDown.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+process.shiftedPatJetEnUp.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
 
 
 process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
     compressionLevel = cms.untracked.int32(4),
     compressionAlgorithm = cms.untracked.string('LZMA'),
     eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
-    outputCommands = cms.untracked.vstring( "keep *_patPFMetT1Txy_*_RERUN",
-                                            "keep *_patPFMetT1Txy*En*_*_RERUN",
-                                            "keep *_patPFMetT1Txy*Res*_*_RERUN",
-                                            "keep *_slimmedMETs_*_*",
+    outputCommands = cms.untracked.vstring( "keep *_slimmedMETs_*_*",
+                                            "keep *_patPFMetT1Txy_*_*",
                                             ),
     fileName = cms.untracked.string('corMETMiniAOD.root'),
     dataset = cms.untracked.PSet(
