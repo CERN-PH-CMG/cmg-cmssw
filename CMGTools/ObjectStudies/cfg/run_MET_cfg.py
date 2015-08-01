@@ -16,7 +16,7 @@ is1L=False
 
 #-------- HOW TO RUN
 
-test = 3
+test = 2
 
 if test==0:
     selectedComponents = [DoubleMu_742, DoubleMu_740p9]
@@ -47,6 +47,13 @@ elif test==1:
 
 
    # ----------------------- Summer15 options -------------------------------------------------------------------- #
+elif test==2:
+    selectedComponents = [ DYJetsToLL_M50_50ns ]
+    isZSkim=True
+    for comp in selectedComponents:
+        comp.triggers = triggers_mumu
+        comp.splitFactor = 1
+        comp.files = comp.files[:1]
 
 elif test==3:
     selectedComponents = [ DYJetsToLL_M50_50ns,TTJets_50ns ]
@@ -196,14 +203,15 @@ if getHeppyOption("nofetch"):
 # -------------------- Running pre-processor
 import subprocess
 globalTag = 'MCRUN2_74_V9A::All'
-jecDBFile = 'Summer15_V5_p6_MC'
-jecEra    = 'Summer15_V5_MC'
+jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV2_MC.db'
+jecEra    = 'Summer15_50nsV2_MC'
 preprocessorFile = "$CMSSW_BASE/src/CMGTools/ObjectStudies/cfg/MetType1_GT_%s_jec_%s.py"%(globalTag.replace('::All',''),jecEra)
+print preprocessorFile
 subprocess.call(['python', 
   os.path.expandvars('$CMSSW_BASE/src/CMGTools/ObjectStudies/cfg/corMETMiniAOD_cfgCreator.py'),\
   '--GT='+globalTag, 
   '--outputFile='+preprocessorFile, 
-  '--jecDBFile=$CMSSW_BASE/src/CMGTools/RootTools/data/jec/'+jecDBFile+'.db',
+  '--jecDBFile='+jecDBFile,
   '--jecEra='+jecEra
 ])
 from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
