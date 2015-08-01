@@ -55,7 +55,7 @@ eventFlagsAna = cfg.Analyzer(
     processName = 'PAT',
     outprefix   = 'Flag',
     triggerBits = {
-        "HBHENoiseFilter" : [ "Flag_HBHENoiseFilter" ],
+###        "HBHENoiseFilter" : [ "Flag_HBHENoiseFilter" ], ## temporary replacement
         "CSCTightHaloFilter" : [ "Flag_CSCTightHaloFilter" ],
         "hcalLaserEventFilter" : [ "Flag_hcalLaserEventFilter" ],
         "EcalDeadCellTriggerPrimitiveFilter" : [ "Flag_EcalDeadCellTriggerPrimitiveFilter" ],
@@ -70,6 +70,12 @@ eventFlagsAna = cfg.Analyzer(
         "METFilters" : [ "Flag_METFilters" ],
     }
     )
+
+
+from CMGTools.TTHAnalysis.analyzers.hbheAnalyzer import hbheAnalyzer
+hbheFilterAna = cfg.Analyzer(
+    hbheAnalyzer, name = 'hbheAnalyzer',
+)
 
 # Select a list of good primary vertices (generic)
 vertexAna = cfg.Analyzer(
@@ -258,8 +264,8 @@ jetAna = cfg.Analyzer(
     recalibrateJets = True, #'MC', # True, False, 'MC', 'Data'
     applyL2L3Residual = False, # Switch to 'Data' when they will become available for Data
     recalibrationType = "AK4PFchs",
-    mcGT     = "Summer15_V5_p6_MC",
-    dataGT   = "Summer15_V5_p6_MC",
+    mcGT     = "Summer15_V2_MC",
+    dataGT   = "Summer15_V2_MC",
     jecPath = "${CMSSW_BASE}/src/CMGTools/RootTools/data/jec/",
     shiftJEC = 0, # set to +1 or -1 to apply +/-1 sigma shift to the nominal jet energies
     addJECShifts = False, # if true, add  "corr", "corrJECUp", and "corrJECDown" for each jet (requires uncertainties to be available!)
@@ -310,6 +316,7 @@ metCoreSequence = [
 ##### met modules below
     metAna,
     eventFlagsAna,
+    hbheFilterAna,
 ##### tree
 ##    treeProducer,
 ]

@@ -84,11 +84,13 @@ elif test==13:
     isZSkim=True
     selectedComponents = [ DoubleMuon_Run2015B ]
     for comp in selectedComponents:
-        comp.splitFactor = 1000
-        comp.files = comp.files[:]
+#        comp.splitFactor = 1000
+#        comp.files = comp.files[:]
+        comp.splitFactor = 1
+        comp.files = comp.files[:1]
         comp.triggers = triggers_mumu
-        comp.json = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251252_13TeV_PromptReco_Collisions15_JSON.json"
-        comp.lumi= 0.0056
+        comp.json = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
+        comp.lumi= 0.04003
         print comp
 
 ### this is for the Wskim
@@ -98,8 +100,8 @@ elif test==14:
     for comp in selectedComponents:
         comp.splitFactor = 1000
         comp.files = comp.files[:]
-        comp.json = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251252_13TeV_PromptReco_Collisions15_JSON.json"
-        comp.lumi= 0.0056
+        comp.json = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
+        comp.lumi= 0.04003
 
 ### this is for the QCDlike
 elif test==15:
@@ -108,8 +110,8 @@ elif test==15:
     for comp in selectedComponents:
         comp.splitFactor = 1000
         comp.files = comp.files[:]
-        comp.json = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251252_13TeV_PromptReco_Collisions15_JSON.json"
-        comp.lumi= 0.0056
+        comp.json = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
+        comp.lumi= 0.04003
 
 # ------------------------------------------------------------------------------------------- #
 
@@ -213,16 +215,17 @@ subprocess.call(['python',
   '--jecDBFile='+jecDBFile,
   '--jecEra='+jecEra
 ])
+
 from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
-preprocessor = CmsswPreprocessor(preprocessorFile)
+#preprocessor = CmsswPreprocessor(preprocessorFile)
 
 #printComps(config.components, True)               
 config = cfg.Config( components = selectedComponents,
                      sequence = metSequence,
                      services = [output_service],
-                     preprocessor=preprocessor, # comment if pre-processor non needed
-#                     events_class = event_class)
-                     events_class = Events)
+#                     preprocessor=preprocessor, # comment if pre-processor non needed
+                     events_class = event_class)
+#                     events_class = Events)
 
 #printComps(config.components, True)
         

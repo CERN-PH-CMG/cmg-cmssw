@@ -17,7 +17,11 @@ met_globalVariables = [
     NTupleVariable("zll_phi", lambda ev : ev.zll_p4.Phi() if  hasattr(ev,'zll_p4') else  0, help="Phi of di-lepton system"),
     NTupleVariable("zll_mass", lambda ev : ev.zll_p4.M() if  hasattr(ev,'zll_p4') else  0, help="Invariant mass of di-lepton system"),
 
-   # ----------------------- dedicated met info -------------------------------------------------------------------- #     
+   # ----------------------- MET filter information (temporary)  -------------------------------------------------------------------- #
+
+    NTupleVariable("Flag_HBHENoiseFilter", lambda ev: ev.hbheFilterNew, help="HBEHE temporary filter decision"),
+
+   # ----------------------- dedicated met info -------------------------------------------------------------------- #
 
     NTupleVariable("met_uPara_zll", lambda ev : ev.met.upara_zll if  hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
     NTupleVariable("met_uPerp_zll", lambda ev : ev.met.uperp_zll if  hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
