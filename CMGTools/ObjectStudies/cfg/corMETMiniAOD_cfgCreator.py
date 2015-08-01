@@ -6,6 +6,16 @@ import os
 # https://twiki.cern.ch/twiki/bin/view/CMS/MissingETUncertaintyPrescription#Instructions_for_7_4_X 
 ##
 
+from optparse import OptionParser
+parser = OptionParser()
+parser.add_option("--outputFile", dest="outputFile", default="MetType1_dump.py", type="string", action="store", help="output file")
+parser.add_option("--GT", dest="GT", default='MCRUN2_74_V9A::All', type="string", action="store", help="Global Tag")
+parser.add_option("--jecDBFile", dest="jecDBFile", default="", type="string", action="store", help="jec DB File")
+parser.add_option("--jecEra", dest="jecEra", default='', type="string", action="store", help="jecEra")
+(options, args) = parser.parse_args()
+
+#print options.outputFile, options.GT
+
 # Define the CMSSW process
 process = cms.Process("RERUN")
 
@@ -32,25 +42,24 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 ### =====================================================================================================
-usePrivateSQlite = True
 
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-process.GlobalTag.globaltag = 'MCRUN2_74_V9A::All'   # for Simulation #same globalTag
+process.GlobalTag.globaltag = options.GT
 
+usePrivateSQlite = options.jecDBFile!=''
 if usePrivateSQlite:
     from CondCore.DBCommon.CondDBSetup_cfi import *
-    era = 'Summer15_V5_MC'
     process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
-                               connect = cms.string('sqlite_file:'+os.path.expandvars('$CMSSW_BASE/src/CMGTools/RootTools/data/jec/'+era+'.db')),
+                               connect = cms.string('sqlite_file:'+os.path.expandvars(options.jecDBFile)),
                                toGet =  cms.VPSet(
             cms.PSet(
                 record = cms.string("JetCorrectionsRecord"),
-                tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PF"),
+                tag = cms.string("JetCorrectorParametersCollection_"+options.jecEra+"_AK4PF"),
                 label= cms.untracked.string("AK4PF")
                 ),
             cms.PSet(
                 record = cms.string("JetCorrectionsRecord"),
-                tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PFchs"),
+                tag = cms.string("JetCorrectorParametersCollection_"+options.jecEra+"_AK4PFchs"),
                 label= cms.untracked.string("AK4PFchs")
                 ),
             )
@@ -75,53 +84,28 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 ### =====================================================================================================
+from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
 
-from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMETCorrectionsAndUncertainties
+#default configuration for miniAOD reprocessing, change the isData flag to run on data
+runMetCorAndUncFromMiniAOD(process, isData=False)
 
-#recomputation only available for T1 and Txy. T0 is copied from the miniAOD, and smearing is not consudered
-# necessitates both T1 and T1Txy in the recomputation
-
-#MET T1 uncertainties
-runMETCorrectionsAndUncertainties(process, metType="PF",
-                                  correctionLevel=["T1"],
-                                  computeUncertainties=True,
-                                  produceIntermediateCorrections=False,
-                                  addToPatDefaultSequence=False,
-                                  jetCollection="selectedPatJets",
-                                  electronCollection="slimmedElectrons",
-                                  muonCollection="slimmedMuons",
-                                  tauCollection="slimmedTaus",
-                                  reclusterJets = True,
-                                  pfCandCollection = "packedPFCandidates",
-                                  onMiniAOD=True,
-                                  postfix="",
-                                  )
-
-##MET T1+Txy
-#runMETCorrectionsAndUncertainties(process, metType="PF",
-#                                  correctionLevel=["T1","Txy"],
-#                                  computeUncertainties=False,
-#                                  produceIntermediateCorrections=False,
-#                                  addToPatDefaultSequence=False,
-#                                  jetCollection="selectedPatJets",
-#                                  electronCollection="slimmedElectrons",
-#                                  muonCollection="slimmedMuons",
-#                                  tauCollection="slimmedTaus",
-#                                  reclusterJets = True,
-#                                  pfCandCollection = "packedPFCandidates",
-#                                  onMiniAOD=True,
-#                                  postfix="",
-#                                  )
+### -------------------------------------------------------------------
+### the lines below remove the L2L3 residual uncertainties when processing data
+### -------------------------------------------------------------------
+process.patPFMetT1T2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+process.patPFMetT1T2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+process.patPFMetT2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+process.patPFMetT2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+process.shiftedPatJetEnDown.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+process.shiftedPatJetEnUp.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
 
 
 process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
     compressionLevel = cms.untracked.int32(4),
     compressionAlgorithm = cms.untracked.string('LZMA'),
     eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
-    outputCommands = cms.untracked.vstring( "keep *_patPFMetT1Txy_*_RERUN",
-                                            "keep *_patPFMetT1Txy*En*_*_RERUN",
-                                            "keep *_patPFMetT1Txy*Res*_*_RERUN",
-                                            "keep *_slimmedMETs_*_*",
+    outputCommands = cms.untracked.vstring( "keep *_slimmedMETs_*_*",
+                                            "keep *_patPFMetT1Txy_*_*",
                                             ),
     fileName = cms.untracked.string('corMETMiniAOD.root'),
     dataset = cms.untracked.PSet(
@@ -134,9 +118,10 @@ process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
 )
 
 
-process.MINIAODSIMoutput_step = cms.EndPath(process.MINIAODSIMoutput)
+process.endpath = cms.EndPath(process.MINIAODSIMoutput)
 
 
-dumpFile  = open("MetType1_dump.py", "w")
+dumpFile  = open(os.path.expandvars(options.outputFile), "w")
 dumpFile.write(process.dumpPython())
 dumpFile.close()
+print "Written preprocessor cfg to %s"%dumpFile
