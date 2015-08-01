@@ -194,9 +194,12 @@ if getHeppyOption("nofetch"):
 
 
 # -------------------- Running pre-processor
-
+import subprocess
+globalTag='MCRUN2_74_V9A::All'
+preprocessorFile = os.path.expandvars("$CMSSW_BASE/src/CMGTools/ObjectStudies/cfg/MetType1_%s.py"%(globalTag.replace('::All','')))
+subprocess.call(['python', os.path.expandvars('$CMSSW_BASE/src/CMGTools/ObjectStudies/cfg/corMETMiniAOD_cfgCreator.py'),'--GT='+globalTag, '--outputFile='+preprocessorFile])
 from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
-preprocessor = CmsswPreprocessor("$CMSSW_BASE/src/CMGTools/ObjectStudies/cfg/MetType1_dump.py")
+preprocessor = CmsswPreprocessor(preprocessorFile)
 
 #printComps(config.components, True)               
 config = cfg.Config( components = selectedComponents,
