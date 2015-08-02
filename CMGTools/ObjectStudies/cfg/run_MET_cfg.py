@@ -14,6 +14,7 @@ isDiJet=False
 isZSkim=False
 is1L=False
 isEle = False # default is diMuon
+isEarlyRun = True # to be used for the filters
 
 #-------- HOW TO RUN
 
@@ -98,7 +99,7 @@ elif test==13:
         else:
             comp.triggers = triggers_mumu
         comp.json = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
-        comp.lumi= 0.04003
+        comp.intLumi= 0.04003
         print comp
 
 ### this is for the Wskim
@@ -109,18 +110,25 @@ elif test==14:
         comp.splitFactor = 1000
         comp.files = comp.files[:]
         comp.json = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
-        comp.lumi= 0.04003
+        comp.intLumi= 0.04003
 
 ### this is for the QCDlike
 elif test==15:
     isDiJet=True
-    selectedComponents = [ JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B ]
+    if isEarlyRun:
+        selectedComponents = [ JetHT_Run2015B_17Jul, HTMHT_Run2015B_17Jul, MET_Run2015B_17Jul ]
+    else:
+        selectedComponents = [ JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B ]
     for comp in selectedComponents:
         comp.splitFactor = 1000
         comp.files = comp.files[:]
         comp.json = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
-        comp.lumi= 0.04003
-
+        comp.intLumi= 0.04003
+#        if isEarlyRun:
+#            comp.run_range=[ (251027,251585) ] # in 17july runInJSON: 251244,251251,251252,251561,251562
+#        else:
+#            comp.run_range=[ (251585,251883) ] # in promptReco runInJSON: 251643,251721,251883
+        print comp
 # ------------------------------------------------------------------------------------------- #
 
 from CMGTools.ObjectStudies.analyzers.metCoreModules_cff import *
@@ -175,8 +183,11 @@ if is1L:
     ttHLepSkim.minLeptons = 1
     metSequence.insert(metSequence.index(lepAna)+1,ttHLepSkim)
 
-if comp.isData :
-    eventFlagsAna.processName = 'HLT'
+if comp.isData and not isEarlyRun:
+    eventFlagsAna.processName = 'RECO'
+
+if comp.isData and comp.json is None:
+    metSequence.remove(jsonAna)
 
 # --------------------
 
