@@ -117,6 +117,7 @@ process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
 process.endpath = cms.EndPath(process.MINIAODSIMoutput)
 
 ofile = os.path.expandvars(options.outputFile)
+os.remove(dumpFile)
 dumpFile  = open(ofile, "w")
 dumpFile.write(process.dumpPython())
 dumpFile.close()
