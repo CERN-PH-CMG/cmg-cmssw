@@ -26,7 +26,7 @@ class SampleCfg(object):
     def __init__(self, name='Default', dir_name=None, ana_dir='', 
         tree_prod_name='H2TauTauTreeProducerTauMu', tree_name=None,
         scale=1., weight_expr=None, norm_cut=None, shape_cut=None, 
-        is_signal=False, is_data=False):
+        xsec=1., sumweights=1., is_signal=False, is_data=False):
         self.name = name
         self.dir_name = name if dir_name is None else dir_name
         self.ana_dir = ana_dir
@@ -39,6 +39,9 @@ class SampleCfg(object):
         self.norm_cut = norm_cut
         self.shape_cut = shape_cut
 
+        self.xsec = xsec
+        self.sumweights = sumweights
+
         self.is_signal = is_signal # To e.g. draw as separate curve (not stack)
         self.is_data = is_data # Will be drawn as data
 
@@ -48,13 +51,14 @@ class HistogramCfg(object):
 
     A histogram can in turn have a sub-contribution from another histogram cfg. 
     '''
-    def __init__(self, name='Default', var=None, cfgs=None, cut='', 
+    def __init__(self, name='Default', var=None, cfgs=None, cut='', lumi=1.,
                  weight='weight', shape_cfgs=None, use_signal_for_stack=False):
         self.name = name # e.g. 'vbf tight'
         self.var = VariableCfg() if var is None else var # e.g. 'm_svfit'
         self.cfgs = [] if cfgs is None else cfgs # List of sample and/or histogram cfgs
         self.shape_cfgs = shape_cfgs # If the shape is constructed in a different way
         self.cut = cut
+        self.lumi = lumi
         self.weight = weight
         self.use_signal_for_stack = use_signal_for_stack
 
