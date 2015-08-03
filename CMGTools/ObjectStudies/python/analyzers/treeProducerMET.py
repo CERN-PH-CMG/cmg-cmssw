@@ -3,9 +3,6 @@ from PhysicsTools.Heppy.analyzers.core.AutoFillTreeProducer  import *
 met_globalVariables = [
     NTupleVariable("rho",  lambda ev: ev.rho, float, help="kt6PFJets rho"),
     NTupleVariable("nVert",  lambda ev: len(ev.goodVertices), int, help="Number of good vertices"),
-
-    NTupleVariable("met_genPt", lambda ev : ev.met_genPtDef, help="gen E_{T}^{miss} pt from patch of Matthieus recipe which doesn't store genmet"),
-    NTupleVariable("met_genPhi", lambda ev : ev.met_genPhiDef, help="gen E_{T}^{miss} phi from patch of Matthieus recipe which doesn't store genmet"),
 ##    NTupleVariable("nPU",  lambda ev: ev.nPU, long, help="getPU_NumInteractions"),
 
 ##    NTupleVariable("ntracksPV",  lambda ev: ev.goodVertices[0].tracksSize() , int, help="Number of tracks (with weight > 0.5)"),
