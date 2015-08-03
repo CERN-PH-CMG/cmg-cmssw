@@ -14,7 +14,7 @@ isDiJet=False
 isZSkim=False
 is1L=False
 isEle = False # default is diMuon
-isEarlyRun = True # to be used for the filters
+isEarlyRun = False # to be used for the filters
 
 #-------- HOW TO RUN
 
@@ -124,10 +124,10 @@ elif test==15:
         comp.files = comp.files[:]
         comp.json = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
         comp.intLumi= 0.04003
-#        if isEarlyRun:
-#            comp.run_range=[ (251027,251585) ] # in 17july runInJSON: 251244,251251,251252,251561,251562
-#        else:
-#            comp.run_range=[ (251585,251883) ] # in promptReco runInJSON: 251643,251721,251883
+        if isEarlyRun:
+            comp.run_range=(251027,251585) # in 17july runInJSON: 251244,251251,251252,251561,251562
+        else:
+            comp.run_range=(251585,251883) # in promptReco runInJSON: 251643,251721,251883
         print comp
 # ------------------------------------------------------------------------------------------- #
 
