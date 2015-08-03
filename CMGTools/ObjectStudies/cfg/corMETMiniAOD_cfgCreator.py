@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 import os
 
 ##
-# This file is taken from 
+# This file corresponds to 
 # https://twiki.cern.ch/twiki/bin/view/CMS/MissingETUncertaintyPrescription#Instructions_for_7_4_X 
 ##
 
@@ -12,6 +12,7 @@ parser.add_option("--outputFile", dest="outputFile", default="MetType1_dump.py",
 parser.add_option("--GT", dest="GT", default='MCRUN2_74_V9A::All', type="string", action="store", help="Global Tag")
 parser.add_option("--jecDBFile", dest="jecDBFile", default="", type="string", action="store", help="jec DB File")
 parser.add_option("--jecEra", dest="jecEra", default='', type="string", action="store", help="jecEra")
+parser.add_option("--maxEvents", dest="maxEvents", default=-1, type="int", action="store", help="maxEvents")
 (options, args) = parser.parse_args()
 
 #print options.outputFile, options.GT
@@ -38,7 +39,7 @@ process.options = cms.untracked.PSet(
 
 # How many events to process
 process.maxEvents = cms.untracked.PSet( 
-   input = cms.untracked.int32(10000)
+   input = cms.untracked.int32(options.maxEvents)
 )
 
 ### =====================================================================================================
@@ -76,12 +77,6 @@ process.source = cms.Source("PoolSource",
     ])
 )
 
-#process.load('listDY')
-#process.load('listW')                                                                                                                                                                           
-# How many events to process
-process.maxEvents = cms.untracked.PSet(
-   input = cms.untracked.int32(-1)
-)
 
 ### =====================================================================================================
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
@@ -106,6 +101,7 @@ process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
     eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
     outputCommands = cms.untracked.vstring( "keep *_slimmedMETs_*_*",
                                             "keep *_patPFMetT1Txy_*_*",
+#                                            "keep patJets_*_*_RERUN", #for debugging only
                                             ),
     fileName = cms.untracked.string('corMETMiniAOD.root'),
     dataset = cms.untracked.PSet(
@@ -120,8 +116,9 @@ process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
 
 process.endpath = cms.EndPath(process.MINIAODSIMoutput)
 
-
-dumpFile  = open(os.path.expandvars(options.outputFile), "w")
+ofile = os.path.expandvars(options.outputFile)
+if os.path.isfile(ofile): os.remove(ofile)
+dumpFile  = open(ofile, "w")
 dumpFile.write(process.dumpPython())
 dumpFile.close()
-print "Written preprocessor cfg to %s"%dumpFile
+print "Written preprocessor cfg to %s"%ofile
