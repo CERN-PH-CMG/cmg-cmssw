@@ -6,13 +6,15 @@ from CMGTools.ObjectStudies.samples.samples_METPOG_private import * #<-- this on
 from CMGTools.RootTools.samples.samples_13TeV_74X import *
 from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
 
-from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_1mu_iso_50ns, triggers_mumu
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_1mu_iso_50ns, triggers_mumu, triggers_ee
 
 #-------- INITIAL FLAG
 
 isDiJet=False
 isZSkim=False
 is1L=False
+isEle = False # default is diMuon
+isEarlyRun = False # to be used for the filters
 
 #-------- HOW TO RUN
 
@@ -56,10 +58,13 @@ elif test==2:
         comp.files = comp.files[:1]
 
 elif test==3:
-    selectedComponents = [ DYJetsToLL_M50_50ns,TTJets_50ns ]
     isZSkim=True
+    selectedComponents = [ DYJetsToLL_M50_50ns,TTJets_50ns ]
     for comp in selectedComponents:
-        comp.triggers = triggers_mumu
+        if isEle:
+            comp.triggers = triggers_ee
+        else:
+            comp.triggers = triggers_mumu
         comp.splitFactor = 1000
         comp.files = comp.files[:]
 
@@ -82,13 +87,19 @@ elif test==5:
 ### this is for the Zskim
 elif test==13:
     isZSkim=True
-    selectedComponents = [ DoubleMuon_Run2015B ]
+    if isEle:
+        selectedComponents = [ DoubleEG_Run2015B ]
+    else:
+        selectedComponents = [ DoubleMuon_Run2015B ]
     for comp in selectedComponents:
         comp.splitFactor = 1000
         comp.files = comp.files[:]
-        comp.triggers = triggers_mumu
-        comp.json = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251252_13TeV_PromptReco_Collisions15_JSON.json"
-        comp.lumi= 0.0056
+        if isEle:
+            comp.triggers = triggers_ee
+        else:
+            comp.triggers = triggers_mumu
+        comp.json = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
+        comp.intLumi= 0.04003
         print comp
 
 ### this is for the Wskim
@@ -98,19 +109,26 @@ elif test==14:
     for comp in selectedComponents:
         comp.splitFactor = 1000
         comp.files = comp.files[:]
-        comp.json = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251252_13TeV_PromptReco_Collisions15_JSON.json"
-        comp.lumi= 0.0056
+        comp.json = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
+        comp.intLumi= 0.04003
 
 ### this is for the QCDlike
 elif test==15:
     isDiJet=True
-    selectedComponents = [ JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B ]
+    if isEarlyRun:
+        selectedComponents = [ JetHT_Run2015B_17Jul, HTMHT_Run2015B_17Jul, MET_Run2015B_17Jul ]
+    else:
+        selectedComponents = [ JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B ]
     for comp in selectedComponents:
         comp.splitFactor = 1000
         comp.files = comp.files[:]
-        comp.json = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251252_13TeV_PromptReco_Collisions15_JSON.json"
-        comp.lumi= 0.0056
-
+        comp.json = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
+        comp.intLumi= 0.04003
+        if isEarlyRun:
+            comp.run_range=(251027,251585) # in 17july runInJSON: 251244,251251,251252,251561,251562
+        else:
+            comp.run_range=(251585,251883) # in promptReco runInJSON: 251643,251721,251883
+        print comp
 # ------------------------------------------------------------------------------------------- #
 
 from CMGTools.ObjectStudies.analyzers.metCoreModules_cff import *
@@ -144,7 +162,7 @@ metAna.doTkMet = True
 metAna.doSpecialMet = False
 
 metSequence = cfg.Sequence(
-    metCoreSequence +[treeProducer]
+    metCoreSequence + [treeProducer]
     )
 
 ###---- to switch off the comptrssion
@@ -155,6 +173,9 @@ metSequence = cfg.Sequence(
 if isZSkim:
     ttHLepSkim.ptCuts = [20,10]
     ttHLepSkim.minLeptons = 2
+    if isZSkim and isEle:
+        ttHLepSkim.ptCuts = [25,15]
+        ttHZskim.lepId=[11] ## default is set To Muons
     metSequence.insert(metSequence.index(lepAna)+1,ttHLepSkim)
     metSequence.insert(metSequence.index(lepAna)+2,ttHZskim)
 
@@ -162,14 +183,18 @@ if is1L:
     ttHLepSkim.minLeptons = 1
     metSequence.insert(metSequence.index(lepAna)+1,ttHLepSkim)
 
-if comp.isData :
-    eventFlagsAna.processName = 'HLT'
+if comp.isData and not isEarlyRun:
+    eventFlagsAna.processName = 'RECO'
+
+if comp.isData and comp.json is None:
+    metSequence.remove(jsonAna)
 
 # --------------------
 
 triggerFlagsAna.triggerBits = {
-            'SingleMu' : triggers_1mu_iso_50ns, # [ 'HLT_IsoMu17_eta2p1_v*', 'HLT_IsoTkMu17_eta2p1_v*'  ] + [ 'HLT_IsoMu20_v*', 'HLT_IsoTkMu20_v*'  ] $
-            'DoubleMu' : triggers_mumu, # [ "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*" ]                    $
+            'SingleMu' : triggers_1mu_iso_50ns, # [ 'HLT_IsoMu17_eta2p1_v*', 'HLT_IsoTkMu17_eta2p1_v*'  ] + [ 'HLT_IsoMu20_v*', 'HLT_IsoTkMu20_v*'  ]
+            'DoubleMu' : triggers_mumu, # [ "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*" ]
+            'DoubleEG' : triggers_ee, # [ "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*" ]
 }
 
 
@@ -213,16 +238,17 @@ subprocess.call(['python',
   '--jecDBFile='+jecDBFile,
   '--jecEra='+jecEra
 ])
+
 from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
-preprocessor = CmsswPreprocessor(preprocessorFile)
+#preprocessor = CmsswPreprocessor(preprocessorFile)
 
 #printComps(config.components, True)               
 config = cfg.Config( components = selectedComponents,
                      sequence = metSequence,
                      services = [output_service],
-                     preprocessor=preprocessor, # comment if pre-processor non needed
-#                     events_class = event_class)
-                     events_class = Events)
+#                     preprocessor=preprocessor, # comment if pre-processor non needed
+                     events_class = event_class)
+#                     events_class = Events)
 
 #printComps(config.components, True)
         
