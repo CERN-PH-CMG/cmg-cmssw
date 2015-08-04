@@ -61,6 +61,19 @@ WJetsToLNu_HT400to600,
 WJetsToLNu_HT600toInf,
 ]
 
+
+### ZJets
+ZJetsToNuNu_HT200to400 = kreator.makeMCComponent("ZJetsToNuNu_HT200to400", "/ZJetsToNuNu_HT-200To400_13TeV-madgraph/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root",26.12)
+ZJetsToNuNu_HT400to600 = kreator.makeMCComponent("ZJetsToNuNu_HT400to600", "/ZJetsToNuNu_HT-400To600_13TeV-madgraph/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root",3.648)
+ZJetsToNuNu_HT600toInf = kreator.makeMCComponent("ZJetsToNuNu_HT600toInf", "/ZJetsToNuNu_HT-600ToInf_13TeV-madgraph/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root",1.401)
+ZJetsToNuNuHT = [
+ZJetsToNuNu_HT200to400,
+ZJetsToNuNu_HT400to600,
+ZJetsToNuNu_HT600toInf,
+]
+
+
+
 ### GJets
 GJets_HT400to600 = kreator.makeMCComponent("GJets_HT400to600", "/GJets_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root",62.05)
 GJets_HT600toInf = kreator.makeMCComponent("GJets_HT600toInf", "/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root",20.87)
@@ -255,8 +268,10 @@ QCD_Mu5_50ns = [ QCD_Pt15to20_Mu5_50ns, QCD_Pt20to30_Mu5_50ns, QCD_Pt30to50_Mu5_
             QCD_Pt470to600_Mu5_50ns, QCD_Pt600to800_Mu5_50ns, QCD_Pt800to1000_Mu5_50ns, QCD_Pt1000toInf_Mu5_50ns ]
 QCD_MuX_50ns = [ QCD_Mu15_50ns ] + QCD_Mu5_50ns
 
-
-
+WprimeToWZ_M2000 =  kreator.makeMCComponent("WprimeToWZ_M2000", "/WprimeToWZ_M-2000_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/MINIAODSIM", "CMS", ".*root", 1.0, useAAA=True)
+BulkGravToZZToZlepZhad_narrow_M2000 = kreator.makeMCComponent("BulkGravToZZToZlepZhad_narrow_M2000", "/BulkGravToZZToZlepZhad_narrow_M-2000_13TeV-madgraph/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/MINIAODSIM", "CMS", ".*root", 1.0, useAAA=True)
+RSGravToZZ_kMpl01_M2000 = kreator.makeMCComponent("RSGravToZZ_kMpl01_M2000", "/RSGravToZZ_kMpl01_M-2000_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/MINIAODSIM", "CMS", ".*root", 1.0, useAAA=True)
+SignalEXO_50ns = [ WprimeToWZ_M2000, BulkGravToZZToZlepZhad_narrow_M2000, RSGravToZZ_kMpl01_M2000 ]
 
 
 ### ----------------------------- Zero Tesla run  ----------------------------------------
@@ -277,9 +292,9 @@ jetHT_0T = cfg.DataComponent(
 
 ### ----------------------------- summary ----------------------------------------
 
-mcSamples_Asymptotic25ns = TTs + SingleTop + VJets + WJetsToLNuHT + GJetsHT + QCDPt + DiBosons + Higgs + QCD_ElX
+mcSamples_Asymptotic25ns = TTs + SingleTop + VJets + WJetsToLNuHT + GJetsHT + ZJetsToNuNuHT + QCDPt + DiBosons + Higgs + QCD_ElX
 
-mcSamples_Asymptotic50ns = [ TTJets_50ns, TTJets_LO_50ns, WJetsToLNu_50ns, DYJetsToLL_M10to50_50ns, DYJetsToLL_M50_50ns ] + QCDPt_50ns + SingleTop_50ns + DiBosons_50ns + QCD_MuX_50ns
+mcSamples_Asymptotic50ns = [ TTJets_50ns, TTJets_LO_50ns, WJetsToLNu_50ns, DYJetsToLL_M10to50_50ns, DYJetsToLL_M50_50ns ] + QCDPt_50ns + SingleTop_50ns + DiBosons_50ns + QCD_MuX_50ns + SignalEXO_50ns
 
 mcSamples = RelVals740 + mcSamples_Asymptotic25ns + mcSamples_Asymptotic50ns
 
