@@ -3,28 +3,36 @@ import re
 import PhysicsTools.HeppyCore.framework.config as cfg
 from CMGTools.RootTools.yellowreport.YRParser import yrparser13TeV
 # from CMGTools.H2TauTau.proto.samples.sampleShift import sampleShift
+from CMGTools.RootTools.samples.ComponentCreator import ComponentCreator
 
+creator = ComponentCreator()
 
-HiggsVBF125 = cfg.MCComponent(
-    name = 'HiggsVBF125',
-    files = [],
-    xSection = None, 
-    nGenEvents = 0,
-    triggers = [],
-    effCorrFactor = 1 )
+HiggsGGH125 = creator.makeMCComponent("HiggsGGH125", "/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 1.0)
+
+HiggsVBF125 = creator.makeMCComponent("HiggsVBF125", "/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 1.0)
+
+HiggsTTH125 = creator.makeMCComponent("HiggsTTH125", "/ttHJetToTT_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 1.0)
+
+# HiggsVBF125 = cfg.MCComponent(
+#     name = 'HiggsVBF125',
+#     files = [],
+#     xSection = None, 
+#     nGenEvents = 0,
+#     triggers = [],
+#     effCorrFactor = 1 )
 
 
 
 ############# Gluon fusion ###############
 
 
-HiggsGGH125 = cfg.MCComponent(
-    name = 'HiggsGGH125',
-    files = [],
-    xSection = None, 
-    nGenEvents = 0,
-    triggers = [],
-    effCorrFactor = 1 )
+# HiggsGGH125 = cfg.MCComponent(
+#     name = 'HiggsGGH125',
+#     files = [],
+#     xSection = None, 
+#     nGenEvents = 0,
+#     triggers = [],
+#     effCorrFactor = 1 )
 
 
 

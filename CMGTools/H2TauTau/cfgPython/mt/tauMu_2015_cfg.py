@@ -1,14 +1,17 @@
 import PhysicsTools.HeppyCore.framework.config as cfg
 
-from tauMu_2015_base_cfg import sequence
+from CMGTools.H2TauTau.tauMu_2015_base_cfg import sequence
 
 from PhysicsTools.HeppyCore.framework.config import printComps
 from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 
 from CMGTools.RootTools.utils.splitFactor import splitFactor
 from CMGTools.RootTools.samples.ComponentCreator import ComponentCreator
-from CMGTools.RootTools.samples.samples_13TeV_74X import TT_pow, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8
-from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauMu  import mc_triggers as mc_triggers_mt
+from CMGTools.RootTools.samples.samples_13TeV_74X import TT_pow, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8, SingleTop
+from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import SingleMuon_Run2015B_17Jul, SingleMuon_Run2015B
+from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauMu import mc_triggers as mc_triggers_mt
+from CMGTools.H2TauTau.proto.samples.spring15.triggers_tauMu import data_triggers as data_triggers_mt
+from CMGTools.H2TauTau.proto.samples.spring15.higgs import HiggsGGH125, HiggsVBF125, HiggsTTH125
 
 from CMGTools.H2TauTau.htt_ntuple_base_cff import puFileData, puFileMC, eventSelector
 
@@ -25,30 +28,29 @@ ggh160 = creator.makeMCComponent("GGH160", "/SUSYGluGluToHToTauTau_M-160_TuneCUE
 
 qcd_flat = creator.makeMCComponent("QCDflat", "/QCD_Pt-15to7000_TuneCUETP8M1_Flat_13TeV_pythia8/RunIISpring15DR74-Asympt25nsRaw_MCRUN2_74_V9-v3/MINIAODSIM", "CMS", ".*root", 2022100000.)
 
+ggh125 = creator.makeMCComponent("GGH125", "//GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 1.0)
+
+
 
 samples = [qcd_flat, TT_pow, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600toInf]
 
-samples = [qcd_flat, TT_pow, DYJetsToLL_M50, WJetsToLNu, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8]
+samples = [TT_pow, DYJetsToLL_M50, WJetsToLNu, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8]
 
+samples = [HiggsGGH125, HiggsVBF125, HiggsTTH125] + SingleTop
 
-first_data = cfg.DataComponent(
-    name='first2pb',
-    intLumi='2.0', # in pb
-    files=['/afs/cern.ch/user/g/gpetrucc/public/miniAOD-express_PAT_251168.root'],
-    triggers=mc_triggers_mt,
-    json=None
-)
-
-
-split_factor = 5e4
+split_factor = 1e5
 
 for sample in samples:
     sample.triggers = mc_triggers_mt
     sample.splitFactor = splitFactor(sample, split_factor)
 
+data_list = [SingleMuon_Run2015B_17Jul, SingleMuon_Run2015B]
 
-
-data_list = [first_data]
+for sample in data_list:
+    sample.triggers = data_triggers_mt
+    sample.splitFactor = splitFactor(sample, 1e6)
+    sample.json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.txt'
+    sample.lumi = 40.03
 
 ###################################################
 ###              ASSIGN PU to MC                ###
@@ -61,9 +63,8 @@ for mc in samples:
 ###             SET COMPONENTS BY HAND          ###
 ###################################################
 selectedComponents = samples + data_list
-# selectedComponents = [TT_pow]
-# selectedComponents = mc_dict['HiggsGGH125']
-# for c in selectedComponents : c.splitFactor *= 5
+# selectedComponents = data_list
+# selectedComponents = samples
 
 
 ###################################################
@@ -86,10 +87,10 @@ if not production:
     # comp = my_connect.mc_dict['HiggsSUSYGG160']
     # selectedComponents = [comp]
     # comp = selectedComponents[0]
-    comp = ggh160
+    comp = data_list[0]
     selectedComponents = [comp]
-    comp.splitFactor = 5
-    comp.fineSplitFactor = 1
+    comp.splitFactor = 1
+    comp.fineSplitFactor = 4
     # comp.files = comp.files[]
 
 
