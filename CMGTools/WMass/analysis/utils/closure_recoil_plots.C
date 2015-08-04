@@ -7,6 +7,9 @@
 
 using namespace std;
 
+double xaxislimit = 17;
+int fillstyle = 3001;
+
 void syst_recoil_one(TString recstr="u2")
 {
   const int nhists = 6;
@@ -39,6 +42,7 @@ void syst_recoil_one(TString recstr="u2")
   TCanvas* c=new TCanvas("c_"+recstr, "c_"+recstr);
   c->cd();
 
+  hcentral->GetYaxis()->SetRangeUser(0.8,1.2);
   hcentral->Draw();
 
   TFile* fin[nhists];
@@ -89,16 +93,19 @@ void syst_recoil_one(TString recstr="u2")
   TCanvas *c_closure = new TCanvas("c_closure_"+recstr, "c_closure_"+recstr);
   c_closure->cd();
 
-  herr->SetAxisRange(-17, +17, "X");
+  herr->SetAxisRange(-xaxislimit, +xaxislimit, "X");
   herr->SetAxisRange(0.8, 1.2, "Y");
-  herr->SetFillColor(kYellow);
+  herr->SetFillColor(kCyan-2);
+  herr->SetFillStyle(fillstyle);
   herr->Draw("E3");
   hstat->SetFillColor(kGreen);
+  hstat->SetFillStyle(fillstyle);
   hstat->Draw("same E3");
   hcentral->SetFillColor(kRed);
+  hcentral->SetFillStyle(fillstyle);
   hcentral->Draw("same E3");
 
-  TLine *line = new TLine(-20,1,20,1);
+  TLine *line = new TLine(-xaxislimit,1,xaxislimit,1);
   line->Draw("same");
 
 
