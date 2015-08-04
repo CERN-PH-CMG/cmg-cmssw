@@ -53,6 +53,16 @@ class MCCorrections:
     def __repr__(self): 
         return "MCCorrections('%s')" % self._file
 
+def printcorrections(myglob):
+    print 'summary of MC corrections'
+    print myglob
+    for c in myglob:
+        print str(c)
+        print len(c._corrections)
+        for corr in c._corrections:
+            print '%s -> %s   --- data=%s'%(corr._find.pattern,corr._replace,corr.alsoData)
+            
+    
 _corrections = []; _corrections_init = []
 def loadMCCorrections(options):
     if options not in _corrections_init:

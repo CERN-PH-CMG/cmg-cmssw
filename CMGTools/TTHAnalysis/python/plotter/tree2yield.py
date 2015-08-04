@@ -14,6 +14,7 @@ ROOT.gROOT.SetBatch(True)
 
 from copy import *
 
+from CMGTools.TTHAnalysis.plotter.cutsFile import *
 from CMGTools.TTHAnalysis.plotter.mcCorrections import *
 from CMGTools.TTHAnalysis.plotter.fakeRate import *
 
@@ -25,94 +26,6 @@ def scalarToVector(x):
     x = re.sub(r"(LepGood|Lep|JetFwd|Jet|GenTop|SV)(\d)_(\w+)", lambda m : "%s_%s[%d]" % (m.group(1),m.group(3),int(m.group(2))-1), x)
     x = re.sub(r"\bmet\b", "met_pt", x)
     return x
-
-class CutsFile:
-    def __init__(self,txtfileOrCuts,options=None):
-        if type(txtfileOrCuts) == list:
-            self._cuts = deepcopy(txtfileOrCuts[:])
-        elif isinstance(txtfileOrCuts,CutsFile):
-            self._cuts = deepcopy(txtfileOrCuts.cuts())
-        else:
-            self._cuts = []
-            file = open(txtfileOrCuts, "r")
-            if not file: raise RuntimeError, "Cannot open "+txtfileOrCuts+"\n"
-            for cr,cn,cv in options.cutsToAdd:
-                if re.match(cr,"entry point"): self._cuts.append((cn,cv))
-            for line in file:
-              try:
-                if len(line.strip()) == 0 or line.strip()[0] == '#': continue
-                while line.strip()[-1] == "\\":
-                    line = line.strip()[:-1] + file.next()
-                (name,cut) = [x.strip().replace(";",":") for x in line.replace("\:",";").split(":")]
-                if name == "entry point" and cut == "1": continue
-                if options.startCut and not re.search(options.startCut,name): continue
-                if options.startCut and re.search(options.startCut,name): options.startCut = None
-                self._cuts.append((name,cut))
-                for cr,cn,cv in options.cutsToAdd:
-                    if re.match(cr,name): self._cuts.append((cn,cv))
-                if options.upToCut and re.search(options.upToCut,name):
-                    break
-              except ValueError, e:
-                print "Error parsing cut line [%s]" % line.strip()
-                raise 
-            for ci in options.cutsToInvert:  self.invert(ci)
-            for ci in options.cutsToExclude: self.remove(ci)
-            for cr,cn,cv in options.cutsToReplace: self.replace(cr,cn,cv)
-    def __str__(self):
-        newstring = ""
-        for cut in self._cuts:
-            newstring += "{0} : {1}\n".format(cut[0],cut[1])
-        return newstring[:-1]
-    def remove(self,cut):
-        self._cuts = [(cn,cv) for (cn,cv) in self._cuts if not re.search(cut,cn)]
-        return self
-    def invert(self,cut):
-        for i,(cn,cv) in enumerate(self._cuts[:]):
-            if re.search(cut,cn):
-                if cn.startswith("not ") and re.match(r"!\(.*\)", cv):
-                    self._cuts[i] = (cn[4:], cv[2:-1])
-                else:
-                    self._cuts[i] = ("not "+cn, "!("+cv+")")
-        return self
-    def replace(self,cut,newname,newcut):       
-        for i,(cn,cv) in enumerate(self._cuts[:]):
-            if re.search(cut,cn):
-                self._cuts[i] = (newname, newcut)
-        return self
-    def cuts(self):
-        return self._cuts[:]
-    def sequentialCuts(self):
-        if len(self._cuts) == 0: return []
-        ret = [ (self._cuts[0][0], "(%s)" % self._cuts[0][1]) ]
-        for (cn,cv) in self._cuts[1:]:
-            ret.append( ( cn, "%s && (%s)" % (ret[-1][1], cv) ) )
-        return ret
-    def nMinusOne(self):
-        return CutsFile(self.nMinusOneCuts())
-    def nMinusOneCuts(self):
-        ret = []
-        for cn,cv in self._cuts[1:]:
-            nm1 = " && ".join("(%s)" % cv1 for cn1,cv1 in self._cuts if cn1 != cn)
-            ret.append(("all but "+cn, nm1))
-        return ret
-    def allCuts(self,n=-1):
-        return " && ".join("(%s)" % x[1] for x in (self._cuts[0:n+1] if n != -1 and n+1 < len(self._cuts) else self._cuts))
-    def addAfter(self,cut,newname,newcut):
-        for i,(cn,cv) in enumerate(self._cuts[:]):
-            if re.search(cut,cn):
-                self._cuts.insert(i+1,(newname, newcut))
-                break
-        return self
-    def insert(self,index,newname,newcut):
-        self._cuts.insert(index,(newname, newcut))
-        return self
-    def add(self,newname,newcut):
-        self._cuts.append((newname,newcut))
-        return self
-    def setParams(self,paramMap):
-        self._cuts = [ (cn.format(**paramMap), cv.format(**paramMap)) for (cn,cv) in self._cuts ]
-    def cartesianProduct(self,other):
-        return CutsFile( [ ("%s && %s" % (cn1,cn2), "(%s) && (%s)" % (cv1,cv2)) for (cn1,cv1) in self._cuts for (cn2,cv2) in other.cuts() ] )
 
 class PlotSpec:
     def __init__(self,name,expr,bins,opts):
@@ -144,7 +57,16 @@ class TreeToYield:
         if 'SkipDefaultMCCorrections' in settings: ## unless requested to 
             self._mcCorrs = []                     ##  skip them
         if self._isdata: 
-            self._mcCorrs = [c for c in self._mcCorrs if c.alsoData] ## most don't apply to data, some do 
+# bug: does not work
+#            self._mcCorrs = [c for c in self._mcCorrs if c.alsoData] ## most don't apply to data, some do 
+            newcorrs=[]
+            for corr in self._mcCorrs:
+                newcorr = copy(corr)
+                newlist = copy(newcorr._corrections)
+                newlist = [icorr for icorr in newlist if icorr.alsoData]
+                newcorr._corrections = newlist
+                newcorrs.append(newcorr)
+            self._mcCorrs=newcorrs
         if 'MCCorrections' in settings:
             self._mcCorrs = self._mcCorrs[:] # make copy
             for cfile in settings['MCCorrections'].split(','): 
@@ -153,7 +75,7 @@ class TreeToYield:
             # apply MC corrections to the scale factor
             self._scaleFactor = self.adaptExpr(self._scaleFactor, cut=True)
         if 'FakeRate' in settings:
-            self._FR = FakeRate(settings['FakeRate'])
+            self._FR = FakeRate(settings['FakeRate'],self._options.lumi)
             ## add additional weight correction.
             ## note that the weight receives the other mcCorrections, but not itself
             self._weightString += "* (" + self.adaptExpr(self._FR.weight(), cut=True) + ")"
@@ -215,6 +137,7 @@ class TreeToYield:
         friendOpts += (self._options.friendTreesData if self._isdata else self._options.friendTreesMC)
         if 'Friends' in self._settings: friendOpts += self._settings['Friends']
         for tf_tree,tf_file in friendOpts:
+#            print 'Adding friend',tf_tree,tf_file
             tf = self._tree.AddFriend(tf_tree, tf_file.format(name=self._name, cname=self._cname, P=getattr(self._options,'path',''))),
             self._friends.append(tf)
         self._isInit = True
@@ -285,9 +208,10 @@ class TreeToYield:
             else:            cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, self.adaptExpr(cut,cut=True))
             if self._options.doS2V:
                 cut  = scalarToVector(cut)
+#            print cut
             ROOT.gROOT.cd()
             if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
-            histo = ROOT.TH1F("dummy","dummy",1,0.0,1.0); histo.Sumw2()
+            histo = ROOT.TH1D("dummy","dummy",1,0.0,1.0); histo.Sumw2()
             nev = tree.Draw("0.5>>dummy", cut, "goff", self._options.maxEntries)
             self.negativeCheck(histo)
             return [ histo.GetBinContent(1), histo.GetBinError(1) ]
@@ -343,14 +267,18 @@ class TreeToYield:
         unbinnedData2D = plotspec.getOption('UnbinnedData2D',False) if plotspec != None else False
         profile1D      = plotspec.getOption('Profile1D',False) if plotspec != None else False
         profile2D      = plotspec.getOption('Profile2D',False) if plotspec != None else False
-        if self._options.doS2V:
-            expr = scalarToVector(expr)
         if not self._isInit: self._init()
         if self._weight:
             if self._isdata: cut = "(%s)     *(%s)*(%s)" % (self._weightString,                    self._scaleFactor, self.adaptExpr(cut,cut=True))
             else:            cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, self.adaptExpr(cut,cut=True))
+        else:
+            cut = self.adaptExpr(cut,cut=True)
+        expr = self.adaptExpr(expr)
         if self._options.doS2V:
             cut  = scalarToVector(cut)
+            expr = scalarToVector(expr)
+#        print cut
+#        print expr
         if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
         histo = None
         canKeys = False
@@ -361,13 +289,13 @@ class TreeToYield:
                 if profile1D: 
                     histo = ROOT.TProfile("dummy","dummy",len(edges)-1,array('f',edges))
                 else:
-                    histo = ROOT.TH1F("dummy","dummy",len(edges)-1,array('f',edges))
+                    histo = ROOT.TH1D("dummy","dummy",len(edges)-1,array('f',edges))
             else:
                 (nb,xmin,xmax) = bins.split(",")
                 if profile1D:
                     histo = ROOT.TProfile("dummy","dummy",int(nb),float(xmin),float(xmax))
                 else:
-                    histo = ROOT.TH1F("dummy","dummy",int(nb),float(xmin),float(xmax))
+                    histo = ROOT.TH1D("dummy","dummy",int(nb),float(xmin),float(xmax))
                     canKeys = True
             unbinnedData2D = False
         elif nvars == 2 or (nvars == 3 and profile2D):
@@ -405,19 +333,19 @@ class TreeToYield:
             raise RuntimeError, "Can't make a plot with %d dimensions" % nvars
         histo.Sumw2()
         if unbinnedData2D:
-            self._tree.Draw("%s" % (self.adaptExpr(expr)), cut, "", self._options.maxEntries)
+            self._tree.Draw("%s" % expr, cut, "", self._options.maxEntries)
             graph = ROOT.gROOT.FindObject("Graph").Clone(name)
             return graph
         drawOpt = "goff"
         if profile1D or profile2D: drawOpt += " PROF";
-        self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummy"), cut, drawOpt, self._options.maxEntries)
+        self._tree.Draw("%s>>%s" % (expr,"dummy"), cut, drawOpt, self._options.maxEntries)
         if canKeys and histo.GetEntries() > 0 and histo.GetEntries() < self.getOption('KeysPdfMinN',100) and not self._isdata and self.getOption("KeysPdf",False):
             #print "Histogram for %s/%s has %d entries, so will use KeysPdf " % (self._cname, self._name, histo.GetEntries())
             if "/TH1Keys_cc.so" not in ROOT.gSystem.GetLibraries(): 
                 ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/TTHAnalysis/python/plotter/TH1Keys.cc+" % os.environ['CMSSW_BASE']);
             (nb,xmin,xmax) = bins.split(",")
             histo = ROOT.TH1KeysNew("dummyk","dummyk",int(nb),float(xmin),float(xmax))
-            self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummyk"), cut, "goff", self._options.maxEntries)
+            self._tree.Draw("%s>>%s" % (expr,"dummyk"), cut, "goff", self._options.maxEntries)
             self.negativeCheck(histo)
             return histo.GetHisto().Clone(name)
         #elif not self._isdata and self.getOption("KeysPdf",False):
