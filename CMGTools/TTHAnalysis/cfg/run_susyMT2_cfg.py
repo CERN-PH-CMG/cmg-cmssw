@@ -169,8 +169,11 @@ hbheFilterAna = cfg.Analyzer(
 ##  PRODUCER
 ##------------------------------------------
 
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_HT900, triggers_HT800, triggers_MET170, triggers_HTMET100, triggers_HTMET120, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_emu, triggers_MT2_mue, triggers_MT2_e, triggers_MT2_mu, triggers_dijet, triggers_ht350, triggers_ht475,triggers_photon75, triggers_photon90, triggers_photon120, triggers_photon75ps, triggers_photon90ps, triggers_photon120ps, triggers_photon155, triggers_photon165_HE10, triggers_photon175
 
-from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_HT900, triggers_HT800, triggers_MET170, triggers_HTMET100, triggers_HTMET120, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_e, triggers_MT2_mu, triggers_MT2_mue, triggers_dijet, triggers_dijet70met120, triggers_dijet55met110, triggers_ht350, triggers_ht475,  triggers_ht600, triggers_photon75, triggers_photon90, triggers_photon120, triggers_photon75ps, triggers_photon90ps, triggers_photon120ps, triggers_photon155, triggers_photon165_HE10, triggers_photon175
+
+
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_HT900, triggers_HT800, triggers_MET170, triggers_HTMET100, triggers_HTMET120, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_e, triggers_MT2_mu, triggers_MT2_emu, triggers_MT2_mue, triggers_dijet, triggers_dijet70met120, triggers_dijet55met110, triggers_ht350, triggers_ht475,  triggers_ht600, triggers_photon75, triggers_photon90, triggers_photon120, triggers_photon75ps, triggers_photon90ps, triggers_photon120ps, triggers_photon155, triggers_photon165_HE10, triggers_photon175
 
 triggerFlagsAna.triggerBits = {
 'PFHT900' : triggers_HT900,
@@ -182,14 +185,15 @@ triggerFlagsAna.triggerBits = {
 'SingleEl' : triggers_MT2_e,
 'DoubleMu' : triggers_MT2_mumu,
 'DoubleEl' : triggers_MT2_ee,
-'MuEG' : triggers_MT2_mue,
+'MuX_Ele12' : triggers_MT2_emu,
+'Mu8_EleX'  : triggers_MT2_mue,
+#'MuEG' : triggers_MT2_mue,
 'DiCentralPFJet70_PFMET120' : triggers_dijet70met120,
 'DiCentralPFJet55_PFMET110' : triggers_dijet55met110,
 ##
 'PFHT350_Prescale' : triggers_ht350,
 'PFHT475_Prescale' : triggers_ht475,
 'PFHT600_Prescale'  : triggers_ht600,
-#'MuEG' : triggers_MT2_mue,
 'DiJet' : triggers_dijet,
 'ht350prescale' : triggers_ht350,
 'ht475prescale' : triggers_ht475,
@@ -268,11 +272,12 @@ sequence = cfg.Sequence(
 from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 
 #-------- HOW TO RUN
-# choose 2 for full production
+# choose 2 for full mc production
+# choose 3 for data production
 
-test = 0
-isData = False
-doSpecialSettingsForMECCA = 1
+test = 3
+isData = False # will be changed accordingly if chosen to run on data
+doSpecialSettingsForMECCA = 0 # set to 1 for comparisons with americans
 if test==0:
     # ------------------------------------------------------------------------------------------- #
     # --- all this lines taken from CMGTools.RootTools.samples.samples_13TeV_PHYS14
@@ -396,21 +401,16 @@ elif test==3:
     # run on data
     isData = True
     from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
-#    from CMGTools.TTHAnalysis.samples.samples_13TeV_DATA2015 import *
-#    selectedComponents = [ jetHT_0T ]
-#    selectedComponents = [ Jet_Run2015B ]
-
-#    for comp in selectedComponents:
-#        comp.files = comp.files[:]
-    #, JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B, SingleElectron_Run2015B, SingleMu_Run2015B, SingleMuon_Run2015B, SinglePhoton_Run2015B, EGamma_Run2015B, DoubleEG_Run2015B, MuonEG_Run2015B, DoubleMuon_Run2015B, minBias_Run2015B, zeroBias_Run2015B]
 
     #synche file DATA
-    comp = JetHT_Run2015B
-#    comp.files = ['/afs/cern.ch/user/m/mangano/public/MECCA/dataset/74X/data/JetHT_promptReco_Run2015B.root']
-    comp.files = ['root://xrootd-cms.infn.it//store/data/Run2015B/JetHT/MINIAOD/PromptReco-v1/000/251/643/00000/0AF95D60-992C-E511-8D36-02163E0146A4.root']
-    selectedComponents = [comp]
-    #selectedComponents = [JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B, SingleElectron_Run2015B, SingleMuon_Run2015B, SinglePhoton_Run2015B, DoubleEG_Run2015B, DoubleMuon_Run2015B]
-    
+    #comp = JetHT_Run2015B_PromptReco
+    #comp.files = ['/afs/cern.ch/user/m/mangano/public/MECCA/dataset/74X/data/JetHT_promptReco_Run2015B.root']
+    #comp.files = ['root://eoscms.cern.ch//eos/cms/store/data/Run2015B/JetHT/MINIAOD/PromptReco-v1/000/251/643/00000/0AF95D60-992C-E511-8D36-02163E0146A4.root']
+    #selectedComponents = [comp]
+
+    #selectedComponents = [JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B, SingleElectron_Run2015B, SingleMuon_Run2015B, SinglePhoton_Run2015B, DoubleEG_Run2015B, DoubleMuon_Run2015B, MuonEG_Run2015B]
+    selectedComponents = [JetHT_Run2015B_17Jul2015, HTMHT_Run2015B_17Jul2015, MET_Run2015B_17Jul2015, SingleElectron_Run2015B_17Jul2015, SingleMuon_Run2015B_17Jul2015, SinglePhoton_Run2015B_17Jul2015, DoubleEG_Run2015B_17Jul2015, MuonEG_Run2015B_17Jul2015, DoubleMuon_Run2015B_17Jul2015, JetHT_Run2015B_PromptReco, HTMHT_Run2015B_PromptReco, MET_Run2015B_PromptReco, SingleElectron_Run2015B_PromptReco, SingleMuon_Run2015B_PromptReco, SinglePhoton_Run2015B_PromptReco, DoubleEG_Run2015B_PromptReco, MuonEG_Run2015B_PromptReco, DoubleMuon_Run2015B_PromptReco]
+
 # ------------------------------------------------------------------------------------------- #
 
 

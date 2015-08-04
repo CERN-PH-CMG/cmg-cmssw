@@ -48,6 +48,7 @@ except NameError:
 else:
     config.JobType.scriptArgs += ["nevents="+str(NEVENTS)]
 
+# the option to set JSON at CRAB submission level is still under development
 #try: 
 #    JSON
 #except NameError:
