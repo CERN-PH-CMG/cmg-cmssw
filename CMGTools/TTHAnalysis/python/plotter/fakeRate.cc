@@ -37,14 +37,6 @@ TH2 * FR_el_FO4_insitu = 0;
 TH2 * FRi_FO_mu[8];
 TH2 * FRi_FO_el[8];
 
-TH2 * FR_ABC_mu_alpha;
-TH2 * FR_ABC_mu_beta;
-TH2 * FR_ABC_el_alpha;
-TH2 * FR_ABC_el_beta;
-TH2 * FR_ABC_mu[2];
-TH2 * FR_ABC_el[2];
-
-
 bool loadFRHisto(const std::string &histoName, const char *file, const char *name) {
     TH2 **histo = 0, **hptr2 = 0;
     if      (histoName == "FR_mu")  { histo = & FR_mu;  hptr2 = & FRi_mu[0]; }
@@ -74,10 +66,6 @@ bool loadFRHisto(const std::string &histoName, const char *file, const char *nam
     else if (histoName == "FR_el_FO3_insitu")  { histo = &FR_el_FO3_insitu ;  hptr2 = & FRi_FO_el[5]; }
     else if (histoName == "FR_el_FO4_QCD")  { histo = &FR_el_FO4_QCD ;  hptr2 = & FRi_FO_el[6]; }
     else if (histoName == "FR_el_FO4_insitu")  { histo = &FR_el_FO4_insitu ;  hptr2 = & FRi_FO_el[7]; }
-    else if (histoName == "FR_ABC_mu_alpha")  { histo = &FR_ABC_mu_alpha ;  hptr2 = & FR_ABC_mu[0]; }
-    else if (histoName == "FR_ABC_mu_beta")  { histo = &FR_ABC_mu_beta ;  hptr2 = & FR_ABC_mu[1]; }
-    else if (histoName == "FR_ABC_el_alpha")  { histo = &FR_ABC_el_alpha ;  hptr2 = & FR_ABC_el[0]; }
-    else if (histoName == "FR_ABC_el_beta")  { histo = &FR_ABC_el_beta ;  hptr2 = & FR_ABC_el[1]; }
     if (histo == 0)  {
         std::cerr << "ERROR: histogram " << histoName << " is not defined in fakeRate.cc." << std::endl;
         return 0;
@@ -756,64 +744,6 @@ float fakeRateReader_2lss_FO(float l1eta, float l1pt, float l2eta, float l2pt, i
     }
 }
 
-typedef struct {
-  float eta;
-  float pt;
-  int pdgId;
-  int ABC;
-} lepton_for_ABC_fakerate;
-
-float fakeRateReader_2lss_FO_ABC(float l1eta, float l1pt, float l2eta, float l2pt, int l1pdgId, int l2pdgId, int l1ABC, int l2ABC)
-{
-
-  //  std::cout << "called " << l1ABC << " " << l2ABC << std::endl;
-
-  if (l1ABC<0 || l2ABC<0) return 0;
-
-  int dibin = 3*l1ABC+l2ABC+1;
-  assert (dibin>0 && dibin<10);
-
-  float res = 0;
-  if (l1ABC==0 && l2ABC==0) return 0;
-  else if (l1ABC>0 && l2ABC>0) res = -1;
-  else res = 1;
-
-  lepton_for_ABC_fakerate lep[2];
-  lep[0].eta = fabs(l1eta);
-  lep[0].pt = l1pt;
-  lep[0].pdgId = abs(l1pdgId);
-  lep[0].ABC = l1ABC;
-  lep[1].eta = fabs(l2eta);
-  lep[1].pt = l2pt;
-  lep[1].pdgId = abs(l2pdgId);
-  lep[1].ABC = l2ABC;
-
-  for (int i=0; i<2; i++){
-    int aorb = -1;
-    if (lep[i].ABC==0) continue;
-    else if (lep[i].ABC==1) aorb = 0;
-    else if (lep[i].ABC==2) aorb = 1;
-    assert (aorb>-1);
-    assert (lep[i].pdgId==11 || lep[i].pdgId==13);
-    int muorel = (lep[i].pdgId==11);
-    TH2 *hist = muorel ? FR_ABC_el[aorb] : FR_ABC_mu[aorb];
-    int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(lep[i].pt)));
-    int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(lep[i].eta)));
-    double fr = hist->GetBinContent(ptbin,etabin);
-    res *= fr;
-  }
-
-
-//  if (fabs(res)>5){
-//    std::cout << "large weight " << res << endl;
-//    std::cout << l1eta << " " <<  l1pt<< " " << l2eta<< " " << l2pt<< " " <<  l1pdgId<< " " <<  l2pdgId<< " " <<  l1ABC<< " " <<  l2ABC << std::endl;
-//  }
-
-  //  std::cout << "returning " << res << std::endl;
-  return res;
-}
-
-
 namespace WP {
     enum WPId { V=0, VL=0, VVL=-1, L=1, M=2, T=3, VT=4, HT=5 } ;
 }
@@ -864,32 +794,6 @@ float multiIso_singleWP_relaxFO4(int LepGood_pdgId, float LepGood_pt, float LepG
   if (abs(LepGood_pdgId)==13) return (LepGood_miniRelIso<0.4 && (1/LepGood_jetPtRatio < (1/0.7 + LepGood_miniRelIso)));
   else if (abs(LepGood_pdgId)==11) return (LepGood_miniRelIso<0.4 && (1/LepGood_jetPtRatio < (1/0.68 + LepGood_miniRelIso)));
   else assert(false);
-}
-
-int getABCRegion(float LepGood_miniRelIso, int LepGood_multiIso, float LepGood_sip3d, float sipcut, float sipcutlow, float sipcuthigh){
-
-  int r = -1;
-
-  if (LepGood_miniRelIso<0.4 && LepGood_multiIso && LepGood_sip3d<sipcut) r = 0;
-  else if (LepGood_miniRelIso<0.4 && LepGood_sip3d>sipcutlow && LepGood_sip3d<sipcuthigh) r = 1;
-  else if (LepGood_miniRelIso<0.4 && LepGood_sip3d<sipcut) r = 2;
-  else r = -1;
-
-  return r;
-
-}
-
-int getRelaxedABCRegion(float LepGood_miniRelIso, int LepGood_multiIso, float LepGood_sip3d, float sipcut, float sipcutlow, float sipcuthigh){
-
-  int r = -1;
-
-  if (LepGood_miniRelIso<0.4 && LepGood_multiIso && LepGood_sip3d<sipcut) r = 0;
-  else if (LepGood_miniRelIso<0.4 && LepGood_sip3d>sipcutlow && LepGood_sip3d<sipcuthigh) r = 0;
-  else if (LepGood_miniRelIso<0.4 && LepGood_sip3d<sipcut) r = 0;
-  else r = -1;
-
-  return r;
-
 }
 
 void fakeRate() {}
