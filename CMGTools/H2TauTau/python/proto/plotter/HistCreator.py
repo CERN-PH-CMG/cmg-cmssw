@@ -17,7 +17,8 @@ def createHistogram(hist_cfg):
     '''Method to create actual histogram (DataMCPlot) instance from histogram 
     config.
     '''
-    plot = DataMCPlot(hist_cfg.name)
+    plot = DataMCPlot(hist_cfg.var.name)
+    plot.lumi = hist_cfg.lumi
     vcfg = hist_cfg.var
     for cfg in hist_cfg.cfgs:
         # First check whether it's a sub-histo or not
@@ -48,9 +49,12 @@ def createHistogram(hist_cfg):
             if cfg.shape_cut:
                 shape_cut = cfg.shape_cut
 
+            weight = cfg.weight_expr if cfg.weight_expr else hist_cfg.weight
+
             if hist_cfg.weight:
-                norm_cut = '({c}) * {we}'.format(c=norm_cut, we=hist_cfg.weight)
-                shape_cut = '({c}) * {we}'.format(c=shape_cut, we=hist_cfg.weight)
+                norm_cut = '({c}) * {we}'.format(c=norm_cut, we=weight)
+                shape_cut = '({c}) * {we}'.format(c=shape_cut, we=weight)
+
 
             ttree.Project(hname, vcfg.name, norm_cut)
 

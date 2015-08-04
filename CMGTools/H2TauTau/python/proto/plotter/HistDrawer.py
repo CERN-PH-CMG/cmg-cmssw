@@ -71,7 +71,7 @@ class HistDrawer:
         # except KeyError:
         #     lumi = plot.weights['TTJetsSemiLept'].intLumi/1e3
         year = '2015'
-        lumi = 2.
+        lumi = plot.lumi if hasattr(plot, 'lumi') else 0.
         unit = 'pb'
         energy = 13
         return year, lumi, energy, unit
@@ -104,7 +104,8 @@ class HistDrawer:
     keeper = []
 
     @staticmethod
-    def draw(plot, do_ratio=True, channel='TauMu', plotprefix=None, SetLogy=0, mssm=False,
+    def draw(plot, do_ratio=True, channel='TauMu', plot_dir='plots', 
+             plot_name=None, SetLogy=0, mssm=False,
              blindxmin=None, blindxmax=None, unit=None):
         print plot
         Stack.STAT_ERRORS = True
@@ -191,7 +192,9 @@ class HistDrawer:
         elif channel == 'TauEle':
             HistDrawer.CMSPrelim(plot, pad, '#tau_{e}#tau_{h}')
         can.cd()
-        plotname = 'test'
+
+        plotname = plot_dir + '/'
+        plotname += plot_name if plot_name else plot.name
         can.SaveAs(plotname + '.png')
         pad.SetLogy(0)
         return ratio
