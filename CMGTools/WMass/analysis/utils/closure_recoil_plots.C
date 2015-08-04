@@ -90,16 +90,22 @@ void syst_recoil_one(TString recstr="u2")
   
   hsigmas->Draw("histo");
   
-  TFile* fout = new TFile("u2.root", "RECREATE");
+  TFile* fout = new TFile(recstr+".root", "RECREATE");
   fout->cd();
   c->Write();
   c_tot->Write();
   c_sigmas->Write();
 }
 
-int syst_recoil()
+int closure_recoil_plots()
 {
-  syst_recoil_one("u1minusZpt");
+  syst_recoil_one("u1");
   syst_recoil_one("u2");
   return 0;
-} 
+}
+
+int main()
+{
+  closure_recoil_plots();
+  return 0;
+}

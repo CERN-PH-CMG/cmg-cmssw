@@ -119,7 +119,7 @@ void syst_recoil_one(TString recstr)
   c_pull->cd();
   hpull->Draw();
   
-  TFile* fout = new TFile("u1.root", "RECREATE");
+  TFile* fout = new TFile(recstr+".root", "RECREATE");
   fout->cd();
   c_mad->Write();
   c_tot->Write();
@@ -127,14 +127,15 @@ void syst_recoil_one(TString recstr)
   c_pull->Write();
 }
 
-int syst_recoil2()
+int closure_recoil_plots2d()
 {
   syst_recoil_one("u1vsZpt");
+  syst_recoil_one("u2vsZpt");
   return 0;
 } 
 
 int main()
 {
-  syst_recoil2();
+  closure_recoil_plots2d();
   return 0;
 }
