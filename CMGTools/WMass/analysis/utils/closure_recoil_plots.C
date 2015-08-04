@@ -10,6 +10,7 @@ using namespace std;
 void syst_recoil_one(TString recstr="u2")
 {
   const int nhists = 6;
+  const int ntotsysts = 60;
 
   int IniVar[nhists] = {0,  9,  0, 0,  9,  0 };
   int NVar[nhists]   = {9, 18, 12, 9, 18, 12 };
@@ -41,7 +42,7 @@ void syst_recoil_one(TString recstr="u2")
   hcentral->Draw();
 
   TFile* fin[nhists];
-  TH1D* hsyst[60];
+  TH1D* hsyst[ntotsysts];
 
   int nsyst=0;
   for(int i=0; i<6; i++){
@@ -61,30 +62,49 @@ void syst_recoil_one(TString recstr="u2")
     }
   }
 
-  TH1D* hclosure = (TH1D*)hcentral->Clone("hclosure");
-  hclosure->SetName("hclosure");
-  hclosure->SetTitle("hclosure");
-  for(int i=1;i<hclosure->GetNbinsX()+1; i++){
-    double error = hclosure->GetBinError(i);
-    for(int j=0; j<60; j++){
+  TH1D* hsystfit = (TH1D*)hcentral->Clone("hsystfit");
+  for(int i=1;i<hsystfit->GetNbinsX()+1; i++){
+    double error = 0;
+    for(int j=0; j<ntotsysts; j++){
       error = sqrt(error*error+(hsyst[j]->GetBinContent(i)-1)*(hsyst[j]->GetBinContent(i)-1));
     }
-    hclosure->SetBinError(i, error);
+    hsystfit->SetBinError(i, error);
+  }
+
+  TH1D* hstat = (TH1D*)hcentral->Clone("hstat");
+  for(int i=1;i<hstat->GetNbinsX()+1; i++){
+    double errcentral = hcentral ->GetBinError(i);
+    double errmad     = hmadgraph->GetBinError(i);
+    hstat->SetBinError(i, sqrt(errcentral*errcentral + errmad*errmad));
+  }
+
+  TH1D* herr = (TH1D*)hcentral->Clone("herr");
+  herr->SetTitle("Pow2Mad closure");
+  for(int i=1;i<herr->GetNbinsX()+1; i++){
+    double errstat = hstat   ->GetBinError(i);
+    double errfit  = hsystfit->GetBinError(i);
+    herr->SetBinError(i, sqrt(errstat*errstat + errfit*errfit));
   }
 
   TCanvas *c_closure = new TCanvas("c_closure_"+recstr, "c_closure_"+recstr);
   c_closure->cd();
-  hclosure->SetFillColor(2);
-  hclosure->SetFillStyle(3002);
-  hclosure->GetYaxis()->SetRangeUser(0,2);
-  hclosure->Draw("E4");
+
+  herr->SetAxisRange(-17, +17, "X");
+  herr->SetAxisRange(0.8, 1.2, "Y");
+  herr->SetFillColor(kYellow);
+  herr->Draw("E3");
+  hstat->SetFillColor(kGreen);
+  hstat->Draw("same E3");
+  hcentral->SetFillColor(kRed);
+  hcentral->Draw("same E3");
 
   TLine *line = new TLine(-20,1,20,1);
   line->Draw("same");
 
+
   hmadgraph->SetLineWidth(2);
   hmadgraph->SetLineColor(4);
-  hmadgraph->Draw("histo same e");
+  hmadgraph->Draw("histo same");
 
 
   TH1D* hsigmas = (TH1D*)hmadgraph->Clone("hsigmas");
@@ -94,7 +114,7 @@ void syst_recoil_one(TString recstr="u2")
   TH1D* hpull = new TH1D("hpull", "hpull", 50, -4, 4);
 
   for(int i=1; i<hsigmas->GetNbinsX()+1; i++){
-    double ratio = (hmadgraph->GetBinContent(i)-1)/hclosure->GetBinError(i);
+    double ratio = (hmadgraph->GetBinContent(i)-1)/herr->GetBinError(i);
     hsigmas->SetBinContent(i, ratio);
     hpull->Fill(ratio);
   }
