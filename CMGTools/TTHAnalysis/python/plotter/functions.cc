@@ -95,6 +95,10 @@ float mtw_wz3l(float pt1, float eta1, float phi1, float m1, float pt2, float eta
 
 float relax_cut_in_eta_bins(float val, float eta, float eta1, float eta2, float eta3, float val1, float val2, float val3, float val1t, float val2t, float val3t){
 
+// Return a new value of val (variable on which a cut is applied), in such a way that the thresholds (val1,val2,val3)
+// initially valid in regions of abs(eta)<(eta1,eta2,eta3) become effectively (val1t,val2t,val3t).
+// The cut must be of the form val>=valN, and the condition valNt>valN must hold.
+
   if (abs(eta)<eta1){
     if (val>=val1) return val1t;
   }
