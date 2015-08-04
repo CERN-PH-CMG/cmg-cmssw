@@ -234,22 +234,22 @@ class DYJetsFakeAnalyzer(Analyzer):
 
     def isFakeMuTau(self, event):
         '''Define the criteria to label a given mt ZTT event as fake'''
-        if self.l1.isTauHad and self.l2.isTauLep and event.geninfo_mt:
+        if self.l2.isTauHad and self.l1.isTauLep and event.geninfo_mt:
             event.geninfo_fakeid = 0
-        elif self.l1.isPromptLep and self.l2.isPromptLep and event.geninfo_LL:
+        elif self.l2.isPromptLep and self.l1.isPromptLep and event.geninfo_LL:
             event.geninfo_fakeid = 1
-        elif self.l1.isTauLep and self.l2.isTauLep:
+        elif self.l2.isTauLep and self.l1.isTauLep:
             event.geninfo_fakeid = 3
         else:
             event.geninfo_fakeid = 2
 
     def isFakeETau(self, event):
         '''Define the criteria to label a given et ZTT event as fake'''
-        if self.l1.isTauHad and self.l2.isTauLep and event.geninfo_et:
+        if self.l2.isTauHad and self.l1.isTauLep and event.geninfo_et:
             event.geninfo_fakeid = 0
-        elif self.l1.isPromptLep and self.l2.isPromptLep and event.geninfo_LL:
+        elif self.l2.isPromptLep and self.l1.isPromptLep and event.geninfo_LL:
             event.geninfo_fakeid = 1
-        elif self.l1.isTauLep and self.l2.isTauLep:
+        elif self.l2.isTauLep and self.l1.isTauLep:
             event.geninfo_fakeid = 3
         else:
             event.geninfo_fakeid = 2
@@ -262,7 +262,7 @@ class DYJetsFakeAnalyzer(Analyzer):
             event.geninfo_fakeid = 0
         elif self.l1.isPromptLep and self.l2.isPromptLep and event.geninfo_LL:
             event.geninfo_fakeid = 1
-        elif self.l1.isTauHad and self.l2.isTauLep:
+        elif self.l1.isTauHad and self.l2.isTauLep or self.l2.isTauHad and self.l1.isTauLep:
             event.geninfo_fakeid = 3
         else:
             event.geninfo_fakeid = 2
