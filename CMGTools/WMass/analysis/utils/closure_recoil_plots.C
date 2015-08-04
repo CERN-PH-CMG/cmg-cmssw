@@ -3,6 +3,7 @@
 #include "TCanvas.h"
 #include "TLine.h"
 #include "TString.h"
+#include "TLegend.h"
 #include <iostream>
 
 using namespace std;
@@ -114,7 +115,15 @@ void syst_recoil_one(TString recstr="u2")
   hmadgraph->Draw("histo same");
 
 
-  TH1D* hsigmas = (TH1D*)hmadgraph->Clone("hsigmas");
+  TLegend *leg = new TLegend(0.1,0.7,0.48,0.9);
+  // leg->SetHeader("The Legend Title");
+  leg->AddEntry(hmadgraph,"madgraph / (powheg morphed to madgraph)","l");
+  leg->AddEntry(hcentral,"powheg stat unc","f");
+  leg->AddEntry(hstat,"madgraph stat unc","f");
+  leg->AddEntry(herr,"propagation of recoil fit stat unc","f");
+  leg->Draw();
+
+   TH1D* hsigmas = (TH1D*)hmadgraph->Clone("hsigmas");
   hsigmas->SetName("hsigmas");
   hsigmas->SetTitle("hsigmas");
 
