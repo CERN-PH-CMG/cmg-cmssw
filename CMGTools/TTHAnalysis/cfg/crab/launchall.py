@@ -9,7 +9,8 @@ cmg_version = 'MT2_CMGTools-from-CMSSW_7_4_7'
 debug  = False
 useAAA = True
 
-JSON = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/json_DCSONLY_Run2015B.txt"
+# the option to set JSON at CRAB submission level is still under development
+#JSON = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/json_DCSONLY_Run2015B.txt"
 #JSON = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251252_13TeV_PromptReco_Collisions15_JSON.txt"
 #JSON = dataDir+'$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.txt' # golden json 40.03/pb
 
