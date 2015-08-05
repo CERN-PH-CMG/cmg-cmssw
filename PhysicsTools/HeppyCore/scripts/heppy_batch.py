@@ -9,7 +9,7 @@ import pickle
 import math
 from PhysicsTools.HeppyCore.utils.batchmanager import BatchManager
 
-from PhysicsTools.HeppyCore.framework.heppy import split
+from PhysicsTools.HeppyCore.framework.heppy_loop import split
 
 def batchScriptPADOVA( index, jobDir='./'):
    '''prepare the LSF version of the batch script, to run on LSF'''
@@ -76,6 +76,7 @@ def batchScriptCERN( jobDir, remoteDir=''):
    '''prepare the LSF version of the batch script, to run on LSF'''
    
    dirCopy = """echo 'sending the logs back'  # will send also root files if copy failed
+rm Loop/cmsswPreProcessing.root
 cp -r Loop/* $LS_SUBCWD
 if [ $? -ne 0 ]; then
    echo 'ERROR: problem copying job directory back'
@@ -248,7 +249,8 @@ def batchScriptLocal(  remoteDir, index ):
 
    script = """#!/bin/bash
 echo 'running'
-python $CMSSW_BASE/src/PhysicsTools/HeppyCore/python/framework/looper.py pycfg.py config.pck                   echo
+python $CMSSW_BASE/src/PhysicsTools/HeppyCore/python/framework/looper.py pycfg.py config.pck                   
+echo
 echo 'sending the job directory back'
 mv Loop/* ./
 """ 
@@ -306,6 +308,7 @@ if __name__ == '__main__':
     cfgFileName = args[0]
 
     handle = open(cfgFileName, 'r')
+    # import pdb; pdb.set_trace()
     cfo = imp.load_source("pycfg", cfgFileName, handle)
     config = cfo.config
     handle.close()
