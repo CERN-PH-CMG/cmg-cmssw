@@ -9,19 +9,17 @@ import os
 from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("--outputFile", dest="outputFile", default="MetType1_dump.py", type="string", action="store", help="output file")
-parser.add_option("--mcGT", dest="mcGT", default='MCRUN2_74_V9A::All', type="string", action="store", help="Global Tag for MC")
-parser.add_option("--dataGT", dest="dataGT", default='74X_dataRun2_Prompt_v1', type="string", action="store", help="Global Tag for Data")
+parser.add_option("--GT", dest="GT", default='MCRUN2_74_V9A', type="string", action="store", help="Global Tag")
 parser.add_option("--jecDBFile", dest="jecDBFile", default="", type="string", action="store", help="jec DB File")
 parser.add_option("--jecEra", dest="jecEra", default='', type="string", action="store", help="jecEra")
 parser.add_option("--maxEvents", dest="maxEvents", default=-1, type="int", action="store", help="maxEvents")
-parser.add_option("--isData", dest="isData", action="store_true", default=False, help="is data?") 
 parser.add_option("--removeResiduals", dest="removeResiduals", action="store_true", default=False, help="remove residual JEC?") 
+parser.add_option("--isData", dest="isData", action="store_true", default=False, help="is data?") 
 (options, args) = parser.parse_args()
 
-GT =  options.dataGT if options.isData else options.mcGT
+print "cmsswPreprocessor options: isData: %s, GT:%s, removeResiduals: %s jecEra: %s"%(options.isData, options.GT,  options.removeResiduals, options.jecEra)
 
-print "cmsswPreprocessor options: isData: %s, GT:%s (mcGT: %s dataGT: %s), removeResiduals: %s jecEra: %s"%(options.isData, GT, options.mcGT, options.dataGT, options.removeResiduals, options.jecEra)
-print "JEC file: %s"%options.jecDBFile
+#print options.outputFile, options.GT
 
 # Define the CMSSW process
 process = cms.Process("RERUN")
@@ -52,7 +50,7 @@ process.maxEvents = cms.untracked.PSet(
 ### =====================================================================================================
 
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-process.GlobalTag.globaltag = GT
+process.GlobalTag.globaltag = options.GT
 
 usePrivateSQlite = options.jecDBFile!=''
 if usePrivateSQlite:

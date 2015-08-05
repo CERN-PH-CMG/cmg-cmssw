@@ -235,24 +235,25 @@ if getHeppyOption("nofetch"):
 
 # -------------------- Running pre-processor
 import subprocess
-mcGlobalTag   = 'MCRUN2_74_V9A'
-dataGlobalTag = '74X_dataRun2_Prompt_v1'
 jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV2_MC.db'
 jecEra    = 'Summer15_50nsV2_MC'
 preprocessorFile = "$CMSSW_BASE/src/CMGTools/ObjectStudies/cfg/MetType1_jec_%s.py"%(jecEra)
 extraArgs=[]
-if isData:extraArgs.append('--isData')
+if isData:
+  extraArgs.append('--isData')
+  GT= '74X_dataRun2_Prompt_v1'
+else:
+  GT= 'MCRUN2_74_V9A'
 if removeResiduals:extraArgs.append('--removeResiduals')
 args = ['python', 
   os.path.expandvars('$CMSSW_BASE/src/CMGTools/ObjectStudies/cfg/corMETMiniAOD_cfgCreator.py'),\
-  '--mcGT='+mcGlobalTag, 
-  '--dataGT='+dataGlobalTag, 
+  '--GT='+GT, 
   '--outputFile='+preprocessorFile, 
   '--jecDBFile='+jecDBFile,
   '--jecEra='+jecEra
   ] + extraArgs 
-print "Making pre-processorfile:"
-print " ".join(args)
+#print "Making pre-processorfile:"
+#print " ".join(args)
 subprocess.call(args)
 from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
 preprocessor = CmsswPreprocessor(preprocessorFile)
