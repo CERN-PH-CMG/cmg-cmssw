@@ -19,7 +19,7 @@ from CMGTools.H2TauTau.htt_ntuple_base_cff import puFileData, puFileMC, eventSel
 
 # production = True run on batch, production = False (or unset) run locally
 production = getHeppyOption('production')
-production = True
+production = False
 pick_events = False
 syncntuple = False
 
@@ -36,7 +36,7 @@ samples = [qcd_flat, TT_pow, DYJetsToLL_M50, WJetsToLNu, WJetsToLNu_HT100to200, 
 
 samples = [TT_pow, DYJetsToLL_M50, WJetsToLNu, QCD_Mu15, WWTo2L2Nu, ZZp8, WZp8]
 
-samples = [HiggsGGH125, HiggsVBF125, HiggsTTH125] + SingleTop
+# samples = [HiggsGGH125, HiggsVBF125, HiggsTTH125] + SingleTop
 
 split_factor = 1e5
 
@@ -48,7 +48,7 @@ data_list = [SingleMuon_Run2015B_17Jul, SingleMuon_Run2015B]
 
 for sample in data_list:
     sample.triggers = data_triggers_mt
-    sample.splitFactor = splitFactor(sample, 1e6)
+    sample.splitFactor = splitFactor(sample, split_factor)
     sample.json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.txt'
     sample.lumi = 40.03
 
@@ -63,7 +63,7 @@ for mc in samples:
 ###             SET COMPONENTS BY HAND          ###
 ###################################################
 selectedComponents = samples + data_list
-# selectedComponents = data_list
+selectedComponents = data_list
 # selectedComponents = samples
 
 
@@ -87,10 +87,11 @@ if not production:
     # comp = my_connect.mc_dict['HiggsSUSYGG160']
     # selectedComponents = [comp]
     # comp = selectedComponents[0]
-    comp = data_list[0]
+    # comp = data_list[0]
+    comp = QCD_Mu15
     selectedComponents = [comp]
     comp.splitFactor = 1
-    comp.fineSplitFactor = 4
+    comp.fineSplitFactor = 1
     # comp.files = comp.files[]
 
 
