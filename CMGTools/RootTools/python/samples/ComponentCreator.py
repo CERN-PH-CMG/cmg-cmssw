@@ -164,7 +164,7 @@ class ComponentCreator(object):
             json = json
             )
         component.vetoTriggers = vetoTriggers
-        
+        component.dataset_entries = self.getPrimaryDatasetEntries(dataset,user,pattern)
         return component
 
     def getFiles(self, dataset, user, pattern, useAAA=False, run_range=None):
