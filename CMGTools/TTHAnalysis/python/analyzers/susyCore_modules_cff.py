@@ -51,6 +51,7 @@ triggerFlagsAna = cfg.Analyzer(
 eventFlagsAna = cfg.Analyzer(
     TriggerBitAnalyzer, name="EventFlags",
     processName = 'PAT',
+    fallbackProcessName = 'RECO', 
     outprefix   = 'Flag',
     triggerBits = {
         "HBHENoiseFilter" : [ "Flag_HBHENoiseFilter" ],
@@ -263,8 +264,9 @@ isoTrackAna = cfg.Analyzer(
     dzPartMax = 0.1,
     maxAbsIso = 8,
     #####
-    MaxIsoSum = 0.1, ### unused
-    MaxIsoSumEMU = 0.2, ### unused
+    doRelIsolation = False,
+    MaxIsoSum = 0.1, ### unused if not rel iso
+    MaxIsoSumEMU = 0.2, ### unused if not rel iso
     doSecondVeto = False,
     #####
     doPrune = True
@@ -287,9 +289,11 @@ jetAna = cfg.Analyzer(
     minLepPt = 10,
     relaxJetId = False,  
     doPuId = False, # Not commissioned in 7.0.X
-    recalibrateJets = True, # True, False, 'MC', 'Data'
+    recalibrateJets = True, #'MC', # True, False, 'MC', 'Data'
+    applyL2L3Residual = False, # Switch to 'Data' when they will become available for Data
     recalibrationType = "AK4PFchs",
-    mcGT     = "Summer15_V5_p6_MC",
+    mcGT     = "Summer15_50nsV2_MC",
+    dataGT   = "Summer15_50nsV2_MC",
     jecPath = "${CMSSW_BASE}/src/CMGTools/RootTools/data/jec/",
     shiftJEC = 0, # set to +1 or -1 to apply +/-1 sigma shift to the nominal jet energies
     addJECShifts = False, # if true, add  "corr", "corrJECUp", and "corrJECDown" for each jet (requires uncertainties to be available!)
@@ -362,6 +366,7 @@ ttHCoreEventAna = cfg.Analyzer(
     maxLeps = 4, ## leptons to consider
     mhtForBiasedDPhi = "mhtJet40jvec",
     jetForBiasedDPhi = "cleanJets",
+    jetPt = 40.,
     )
 
 ## Jet-MET based Skim (generic, but requirements depend on the final state)
