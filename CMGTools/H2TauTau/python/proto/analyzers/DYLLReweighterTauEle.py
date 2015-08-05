@@ -15,8 +15,8 @@ class DYLLReweighterTauEle( Analyzer ):
         # Only apply corrections for leptons giving rise to fake hadronic taus
         if event.geninfo_fakeid not in [1, 3] or self.cfg_comp.name.find('DY') == -1 :
             return True
-            
-        tau = event.diLepton.leg1()
+
+        tau = event.diLepton.leg2()
         if tau.decayMode() == 0 :   # 1prong 0pi
             if abs (tau.eta()) < 1.5 :
                 event.zllWeight = self.cfg_ana.W1p0PB 

@@ -21,8 +21,8 @@ class TauDecayModeWeighter( Analyzer ):
         self.weight = 1
         
         # RIC: let the user decide which leg needs to be corrected. In tt is both.
-        # Default is leg1, so that for mt and et this modification is transparent 
-        legs = self.cfg_ana.legs if hasattr(self.cfg_ana, 'legs') else ['leg1']
+        # Default is leg2, so that for mt and et this modification is transparent 
+        legs = self.cfg_ana.legs if hasattr(self.cfg_ana, 'legs') else ['leg2']
         
         # Not strictly correct, but this was agreed upon for Summer 2013
         # JAN: Should update to gen-matched taus
