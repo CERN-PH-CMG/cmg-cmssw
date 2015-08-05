@@ -1,3 +1,4 @@
+#include <TStyle.h>
 #include "TFile.h"
 #include "TH1.h"
 #include "TCanvas.h"
@@ -13,6 +14,8 @@ int fillstyle = 3001;
 
 void syst_recoil_one(TString recstr="u2")
 {
+  gStyle->SetOptFit(111);
+
   const int nhists = 6;
   const int ntotsysts = 60;
 
@@ -84,7 +87,8 @@ void syst_recoil_one(TString recstr="u2")
   }
 
   TH1D* herr = (TH1D*)hcentral->Clone("herr");
-  herr->SetTitle("Pow2Mad closure; u2; N");
+  herr->SetTitle("Pow2Mad closure; " +recstr+ "; N");
+  herr->SetStats(kFALSE);
   for(int i=1;i<herr->GetNbinsX()+1; i++){
     double errstat = hstat   ->GetBinError(i);
     double errfit  = hsystfit->GetBinError(i);
@@ -125,7 +129,7 @@ void syst_recoil_one(TString recstr="u2")
 
   TH1D* hsigmas = (TH1D*)hmadgraph->Clone("hsigmas");
   hsigmas->SetName("hsigmas");
-  hsigmas->SetTitle("hsigmas");
+  hsigmas->SetTitle("hsigmas; " + recstr + "; N");
 
   TH1D* hpull = new TH1D("hpull", "; pull value; N", 40, -6, 6);
 
@@ -144,8 +148,7 @@ void syst_recoil_one(TString recstr="u2")
   TCanvas *c_pull = new TCanvas("c_pull_"+recstr, "c_pull_"+recstr);
   c_pull->cd();
 
-  hpull->Draw("histo");
-
+  hpull->Fit("gaus", "L");
 
   TFile* fout = new TFile(recstr+".root", "RECREATE");
   fout->cd();
@@ -153,11 +156,15 @@ void syst_recoil_one(TString recstr="u2")
   c_closure->Write();
   c_sigmas->Write();
   c_pull->Write();
+  // c->SaveAs(".png");
+  // c_closure->SaveAs(".png");
+  // c_sigmas->SaveAs(".png");
+  // c_pull->SaveAs(".png");
 }
 
 int closure_recoil_plots()
 {
-  // syst_recoil_one("u1");
+  syst_recoil_one("u1");
   syst_recoil_one("u2");
   return 0;
 }
