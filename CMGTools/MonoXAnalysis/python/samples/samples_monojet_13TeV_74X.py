@@ -30,8 +30,8 @@ RelVals741 = [ ADD_MJ, TTLep, TTbar, RSGravGaGa ]
 ### ----------------------------- Zero Tesla run  ----------------------------------------
 ### for ECAL - EGM studies
 dataDir = "$CMSSW_BASE/src/CMGTools/MonoXAnalysis/data"
-#json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/DCSOnly/json_DCSONLY_Run2015B.txt"
-json = dataDir+"/json/Cert_Run2015B_DCSONLY_Alpha_JSON.txt"
+#json = dataDir+"/json/Cert_Run2015B_DCSONLY_Alpha_JSON.txt"
+json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.txt"
 
 privEGamma2015Afiles = [ f.strip() for f in open("%s/src/CMGTools/MonoXAnalysis/python/samples/privEGamma_2015A_MINIAOD.txt"  % os.environ['CMSSW_BASE'], "r") ]
 privDoubleEG2015Afiles = [ f.strip() for f in open("%s/src/CMGTools/MonoXAnalysis/python/samples/privDoubleEG_2015A_MINIAOD.txt"  % os.environ['CMSSW_BASE'], "r") ]
