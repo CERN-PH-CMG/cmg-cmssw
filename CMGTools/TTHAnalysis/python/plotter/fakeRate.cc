@@ -18,6 +18,24 @@ TH2 * FR5_el = 0;
 TH2 * QF_el = 0;
 TH2 * FRi_mu[6], *FRi_el[6];
 
+TH2 * FR_mu_FO1_QCD    = 0;
+TH2 * FR_mu_FO1_insitu = 0;
+TH2 * FR_mu_FO2_QCD    = 0;
+TH2 * FR_mu_FO2_insitu = 0;
+TH2 * FR_mu_FO3_QCD    = 0;
+TH2 * FR_mu_FO3_insitu = 0;
+TH2 * FR_mu_FO4_QCD    = 0;
+TH2 * FR_mu_FO4_insitu = 0;
+TH2 * FR_el_FO1_QCD    = 0;
+TH2 * FR_el_FO1_insitu = 0;
+TH2 * FR_el_FO2_QCD    = 0;
+TH2 * FR_el_FO2_insitu = 0;
+TH2 * FR_el_FO3_QCD    = 0;
+TH2 * FR_el_FO3_insitu = 0;
+TH2 * FR_el_FO4_QCD    = 0;
+TH2 * FR_el_FO4_insitu = 0;
+TH2 * FRi_FO_mu[8];
+TH2 * FRi_FO_el[8];
 
 bool loadFRHisto(const std::string &histoName, const char *file, const char *name) {
     TH2 **histo = 0, **hptr2 = 0;
@@ -32,12 +50,31 @@ bool loadFRHisto(const std::string &histoName, const char *file, const char *nam
     else if (histoName == "FR5_mu") { histo = & FR5_mu; hptr2 = & FRi_mu[5]; }
     else if (histoName == "FR5_el") { histo = & FR5_el; hptr2 = & FRi_el[5]; }
     else if (histoName == "QF_el") histo = & QF_el;
+    else if (histoName == "FR_mu_FO1_QCD")  { histo = &FR_mu_FO1_QCD ;  hptr2 = & FRi_FO_mu[0]; }
+    else if (histoName == "FR_mu_FO1_insitu")  { histo = &FR_mu_FO1_insitu ;  hptr2 = & FRi_FO_mu[1]; }
+    else if (histoName == "FR_mu_FO2_QCD")  { histo = &FR_mu_FO2_QCD ;  hptr2 = & FRi_FO_mu[2]; }
+    else if (histoName == "FR_mu_FO2_insitu")  { histo = &FR_mu_FO2_insitu ;  hptr2 = & FRi_FO_mu[3]; }
+    else if (histoName == "FR_mu_FO3_QCD")  { histo = &FR_mu_FO3_QCD ;  hptr2 = & FRi_FO_mu[4]; }
+    else if (histoName == "FR_mu_FO3_insitu")  { histo = &FR_mu_FO3_insitu ;  hptr2 = & FRi_FO_mu[5]; }
+    else if (histoName == "FR_mu_FO4_QCD")  { histo = &FR_mu_FO4_QCD ;  hptr2 = & FRi_FO_mu[6]; }
+    else if (histoName == "FR_mu_FO4_insitu")  { histo = &FR_mu_FO4_insitu ;  hptr2 = & FRi_FO_mu[7]; }
+    else if (histoName == "FR_el_FO1_QCD")  { histo = &FR_el_FO1_QCD ;  hptr2 = & FRi_FO_el[0]; }
+    else if (histoName == "FR_el_FO1_insitu")  { histo = &FR_el_FO1_insitu ;  hptr2 = & FRi_FO_el[1]; }
+    else if (histoName == "FR_el_FO2_QCD")  { histo = &FR_el_FO2_QCD ;  hptr2 = & FRi_FO_el[2]; }
+    else if (histoName == "FR_el_FO2_insitu")  { histo = &FR_el_FO2_insitu ;  hptr2 = & FRi_FO_el[3]; }
+    else if (histoName == "FR_el_FO3_QCD")  { histo = &FR_el_FO3_QCD ;  hptr2 = & FRi_FO_el[4]; }
+    else if (histoName == "FR_el_FO3_insitu")  { histo = &FR_el_FO3_insitu ;  hptr2 = & FRi_FO_el[5]; }
+    else if (histoName == "FR_el_FO4_QCD")  { histo = &FR_el_FO4_QCD ;  hptr2 = & FRi_FO_el[6]; }
+    else if (histoName == "FR_el_FO4_insitu")  { histo = &FR_el_FO4_insitu ;  hptr2 = & FRi_FO_el[7]; }
     if (histo == 0)  {
         std::cerr << "ERROR: histogram " << histoName << " is not defined in fakeRate.cc." << std::endl;
         return 0;
     }
 
-    if (*histo != 0) delete *histo;
+    if (*histo != 0) {
+      std::cerr << "WARNING: overwriting histogram " << (*histo)->GetName() << std::endl;
+      delete *histo;
+    }
     TFile *f = TFile::Open(file);
     if (f->Get(name) == 0) {
         std::cerr << "ERROR: could not find " << name << " in " << file << std::endl;
@@ -670,6 +707,43 @@ float fakeRateBin_Muons_pt(float bin) {
     return (ibin/5)*5.0 + 2.5;
 }
 
+
+float fakeRateReader_2lss_FO(float l1eta, float l1pt, float l2eta, float l2pt, int l1pdgId, int l2pdgId, int pass1, int pass2, int fo123, int isinsitu)
+{
+  assert (fo123==1 || fo123==2 || fo123==3 || fo123==4);
+  assert (isinsitu==0 || isinsitu==1);
+  int ind = 2*(fo123-1)+isinsitu;
+  int nfail = 2-pass1-pass2;
+    switch (nfail) {
+        case 1: {
+            double fpt,feta; int fid;
+            if (pass2)   { fpt = l1pt; feta = std::abs(l1eta); fid = abs(l1pdgId); }
+            else         { fpt = l2pt; feta = std::abs(l2eta); fid = abs(l2pdgId); }
+            TH2 *hist = (fid == 11 ? FRi_FO_el[ind] : FRi_FO_mu[ind]);
+	    if (!hist){
+	      std::cout << "Error: FR histo not filled " << fid << " " << ind << std::endl;
+	      assert(false);
+	    }
+	    int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(fpt)));
+	    int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(feta)));
+	    double fr = hist->GetBinContent(ptbin,etabin);
+            return fr/(1-fr);
+        }
+      case 2: {
+            TH2 *hist1 = (abs(l1pdgId) == 11 ? FRi_FO_el[ind] : FRi_FO_mu[ind]);
+	    int ptbin1  = std::max(1, std::min(hist1->GetNbinsX(), hist1->GetXaxis()->FindBin(l1pt)));
+	    int etabin1 = std::max(1, std::min(hist1->GetNbinsY(), hist1->GetYaxis()->FindBin(std::abs(l1eta))));
+	    double fr1 = hist1->GetBinContent(ptbin1,etabin1);
+           TH2 *hist2 = (abs(l2pdgId) == 11 ? FRi_FO_el[ind] : FRi_FO_mu[ind]);
+	   int ptbin2  = std::max(1, std::min(hist2->GetNbinsX(), hist2->GetXaxis()->FindBin(l2pt)));
+	   int etabin2 = std::max(1, std::min(hist2->GetNbinsY(), hist2->GetYaxis()->FindBin(std::abs(l2eta))));
+	   double fr2 = hist2->GetBinContent(ptbin2,etabin2);
+            return -fr1*fr2/((1-fr1)*(1-fr2));
+      }
+        default: return 0;
+    }
+}
+
 namespace WP {
     enum WPId { V=0, VL=0, VVL=-1, L=1, M=2, T=3, VT=4, HT=5 } ;
 }
@@ -710,5 +784,16 @@ float multiIso_multiWP(int LepGood_pdgId, float LepGood_pt, float LepGood_eta, f
     return multiIso_multiWP(LepGood_pdgId,LepGood_pt,LepGood_eta,LepGood_miniRelIso,LepGood_jetPtRatio,LepGood_jetPtRel,WP::WPId(wp));
 }
 
+float multiIso_singleWP_relaxFO3(int LepGood_pdgId, float LepGood_pt, float LepGood_CorrConePt, float LepGood_eta, float LepGood_miniRelIso, float LepGood_jetPtRatio, float LepGood_jetPtRel, WP::WPId wp) {
+  assert (wp==2);
+  return multiIso_multiWP(LepGood_pdgId,LepGood_pt,LepGood_eta,(LepGood_miniRelIso>=0.4),LepGood_CorrConePt/LepGood_pt*LepGood_jetPtRatio,LepGood_jetPtRel,wp)>0;
+}
+
+float multiIso_singleWP_relaxFO4(int LepGood_pdgId, float LepGood_pt, float LepGood_eta, float LepGood_miniRelIso, float LepGood_jetPtRatio, float LepGood_jetPtRel, WP::WPId wp) {
+  assert (wp==2);
+  if (abs(LepGood_pdgId)==13) return (LepGood_miniRelIso<0.4 && (1/LepGood_jetPtRatio < (1/0.7 + LepGood_miniRelIso)));
+  else if (abs(LepGood_pdgId)==11) return (LepGood_miniRelIso<0.4 && (1/LepGood_jetPtRatio < (1/0.68 + LepGood_miniRelIso)));
+  else assert(false);
+}
 
 void fakeRate() {}

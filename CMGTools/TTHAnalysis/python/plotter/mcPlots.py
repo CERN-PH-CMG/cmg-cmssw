@@ -3,6 +3,11 @@
 from CMGTools.TTHAnalysis.plotter.mcAnalysis import *
 import itertools
 
+if "/bin2Dto1Dlib_cc.so" not in ROOT.gSystem.GetLibraries():
+    ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/TTHAnalysis/python/plotter/bin2Dto1Dlib.cc+" % os.environ['CMSSW_BASE']);
+if "/fakeRate_cc.so" not in ROOT.gSystem.GetLibraries(): 
+    ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/TTHAnalysis/python/plotter/fakeRate.cc+" % os.environ['CMSSW_BASE']);
+
 SAFE_COLOR_LIST=[
 ROOT.kBlack, ROOT.kRed, ROOT.kGreen+2, ROOT.kBlue, ROOT.kMagenta+1, ROOT.kOrange+7, ROOT.kCyan+1, ROOT.kGray+2, ROOT.kViolet+5, ROOT.kSpring+5, ROOT.kAzure+1, ROOT.kPink+7, ROOT.kOrange+3, ROOT.kBlue+3, ROOT.kMagenta+3, ROOT.kRed+2,
 ]
@@ -73,6 +78,22 @@ def getDataPoissonErrors(h, drawZeroBins=False, drawXbars=False):
     ret.SetMarkerStyle(h.GetMarkerStyle())
     return ret
 
+def PrintHisto(h):
+    if not h:
+        return
+    print h.GetName()
+    c=[]
+    if "TH1" in h.ClassName():
+        for i in xrange(h.GetNbinsX()):
+            c.append((h.GetBinContent(i+1),h.GetBinError(i+1)))
+    elif "TH2" in h.ClassName():
+        for i in xrange(h.GetNbinsX()):
+            for j in xrange(h.GetNbinsY()):
+                c.append((h.GetBinContent(i+1,j+1),h.GetBinError(i+1,j+1)))
+    else:
+        print 'not th1 or th2'
+    print c
+
 def doSpam(text,x1,y1,x2,y2,align=12,fill=False,textSize=0.033,_noDelete={}):
     cmsprel = ROOT.TPaveText(x1,y1,x2,y2,"NDC");
     cmsprel.SetTextSize(textSize);
@@ -92,11 +113,17 @@ def doTinyCmsPrelim(textLeft="_default_",textRight="_default_",hasExpo=False,tex
     if textLeft  == "_default_": textLeft  = options.lspam
     if textRight == "_default_": textRight = options.rspam
     if lumi      == None       : lumi      = options.lumi
+    if   lumi > 3.54e+1: lumitext = "%.0f fb^{-1}" % lumi
+    elif lumi > 3.54e+0: lumitext = "%.1f fb^{-1}" % lumi
+    elif lumi > 3.54e-1: lumitext = "%.2f fb^{-1}" % lumi
+    elif lumi > 3.54e-2: lumitext = "%.0f pb^{-1}" % (lumi*1000)
+    elif lumi > 3.54e-3: lumitext = "%.1f pb^{-1}" % (lumi*1000)
+    else               : lumitext = "%.2f pb^{-1}" % (lumi*1000)
+    textLeft = textLeft.replace("%(lumi)",lumitext)
+    textRight = textRight.replace("%(lumi)",lumitext)
     if textLeft not in ['', None]:
         doSpam(textLeft, (.28 if hasExpo else .17)+xoffs, .955, .60+xoffs, .995, align=12, textSize=textSize)
     if textRight not in ['', None]:
-        if "%(lumi)" in textRight: 
-            textRight = textRight % { 'lumi':lumi }
         doSpam(textRight,.68+xoffs, .955, .99+xoffs, .995, align=32, textSize=textSize)
 
 def reMax(hist,hist2,islog,factorLin=1.3,factorLog=2.0):
@@ -236,7 +263,7 @@ def doNormFit(pspec,pmap,mca):
         pdfs.add(hpdf); dontDelete.append(hpdf)
         if mca.getProcessOption(p,'FreeFloat',False):
             syst = mca.getProcessOption(p,'NormSystematic',0.0)
-            normterm = w.factory('syst_%s[%g,%g,%g]' % (p, pmap[p].Integral(), 0.2*pmap[p].Integral(), 5*pmap[p].Integral() ))
+            normterm = w.factory('prod::norm_%s(%g,syst_%s[1,%g,%g])' % (p, pmap[p].Integral(), p, 0.2, 5))
             dontDelete.append((normterm,))
             coeffs.add(normterm)
             procNormMap[p] = normterm
@@ -717,12 +744,12 @@ class PlotMaker:
                             dump.close()
                         else:
                             if "TH2" in total.ClassName() or "TProfile2D" in total.ClassName():
-                                for p in mca.listSignals(allProcs=True) + mca.listBackgrounds(allProcs=True) + ["signal", "background"]:
+                                for p in mca.listSignals(allProcs=True) + mca.listBackgrounds(allProcs=True) + ["signal", "background", "data"]:
                                     if p not in pmap: continue
                                     plot = pmap[p]
                                     c1.SetRightMargin(0.20)
                                     plot.SetContour(100)
-                                    plot.Draw("COLZ")
+                                    plot.Draw("COLZ TEXT45")
                                     c1.Print("%s/%s_%s.%s" % (fdir, pspec.name, p, ext))
                             else:
                                 c1.Print("%s/%s.%s" % (fdir, pspec.name, ext))
@@ -732,7 +759,7 @@ def addPlotMakerOptions(parser):
     parser.add_option("--ss",  "--scale-signal", dest="signalPlotScale", default=1.0, type="float", help="scale the signal in the plots by this amount");
     #parser.add_option("--lspam", dest="lspam",   type="string", default="CMS Simulation", help="Spam text on the right hand side");
     parser.add_option("--lspam", dest="lspam",   type="string", default="CMS Preliminary", help="Spam text on the right hand side");
-    parser.add_option("--rspam", dest="rspam",   type="string", default="#sqrt{s} = 13 TeV, L = %(lumi).1f fb^{-1}", help="Spam text on the right hand side");
+    parser.add_option("--rspam", dest="rspam",   type="string", default="#sqrt{s} = 13 TeV, L = %(lumi)", help="Spam text on the right hand side");
     parser.add_option("--print", dest="printPlots", type="string", default="png,pdf,txt", help="print out plots in this format or formats (e.g. 'png,pdf,txt')");
     parser.add_option("--pdir", "--print-dir", dest="printDir", type="string", default="plots", help="print out plots in this directory");
     parser.add_option("--showSigShape", dest="showSigShape", action="store_true", default=False, help="Superimpose a normalized signal shape")
