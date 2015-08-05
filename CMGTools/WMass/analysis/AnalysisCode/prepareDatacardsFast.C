@@ -138,11 +138,11 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
           mass_dir->cd();
 
           for(int h=0; h<WMass::PDF_members; h++){
-            cout << " PDF " << (WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets)<<"-"<<h; fflush(stdout);
+            cout << " PDF " << (WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets) << "-" << h << endl;
             for(int m=m_start; m<m_end; m++){
               for(int n=0; n<WMass::KalmanNvariations; n++){
-                if(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0) cout << " Recoil eigen " << m; fflush(stdout);
-                if(WMass::KalmanNvariations>1) cout << " MomScale toy " << n; fflush(stdout);
+                if(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0) cout << "Recoil eigen " << m << '\t'; fflush(stdout);
+                if(WMass::KalmanNvariations>1) cout << "KalmanVar " << n << '\t'; fflush(stdout);
                 // gDirectory->pwd();
                 outTXTfile << "-----------------------" << endl;
                 outTXTfile << "Mass hypothesis  " << jWmass << " PDF " << Form("%d-%d%s",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form(" RecoilCorrVar%d",m):"") << endl;
