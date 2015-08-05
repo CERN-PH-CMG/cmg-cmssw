@@ -9,13 +9,19 @@ import os
 from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("--outputFile", dest="outputFile", default="MetType1_dump.py", type="string", action="store", help="output file")
-parser.add_option("--GT", dest="GT", default='MCRUN2_74_V9A::All', type="string", action="store", help="Global Tag")
+parser.add_option("--mcGT", dest="mcGT", default='MCRUN2_74_V9A::All', type="string", action="store", help="Global Tag for MC")
+parser.add_option("--dataGT", dest="dataGT", default='74X_dataRun2_Prompt_v1', type="string", action="store", help="Global Tag for Data")
 parser.add_option("--jecDBFile", dest="jecDBFile", default="", type="string", action="store", help="jec DB File")
 parser.add_option("--jecEra", dest="jecEra", default='', type="string", action="store", help="jecEra")
 parser.add_option("--maxEvents", dest="maxEvents", default=-1, type="int", action="store", help="maxEvents")
+parser.add_option("--isData", dest="isData", action="store_true", help="is data?") 
+parser.add_option("--removeResiduals", dest="removeResiduals", action="store_true", help="remove residual JEC?") 
 (options, args) = parser.parse_args()
 
-#print options.outputFile, options.GT
+GT =  options.dataGT if options.isData else options.mcGT
+
+print "cmsswPreprocessor options: isData: %s, GT:%s (mcGT: %s dataGT: %s), removeResiduals: %s jecEra: %s"%(options.isData, GT, options.mcGT, options.dataGT, options.removeResiduals, options.jecEra)
+print "JEC file: %s"%options.jecDBFile
 
 # Define the CMSSW process
 process = cms.Process("RERUN")
@@ -24,7 +30,8 @@ process = cms.Process("RERUN")
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.GeometryDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+#process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 
 # Message Logger settings
 process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -45,7 +52,7 @@ process.maxEvents = cms.untracked.PSet(
 ### =====================================================================================================
 
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-process.GlobalTag.globaltag = options.GT
+process.GlobalTag.globaltag = GT
 
 usePrivateSQlite = options.jecDBFile!=''
 if usePrivateSQlite:
@@ -82,17 +89,18 @@ process.source = cms.Source("PoolSource",
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
 
 #default configuration for miniAOD reprocessing, change the isData flag to run on data
-runMetCorAndUncFromMiniAOD(process, isData=False)
+runMetCorAndUncFromMiniAOD(process, isData=options.isData)
 
 ### -------------------------------------------------------------------
 ### the lines below remove the L2L3 residual uncertainties when processing data
 ### -------------------------------------------------------------------
-process.patPFMetT1T2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
-process.patPFMetT1T2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
-process.patPFMetT2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
-process.patPFMetT2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
-process.shiftedPatJetEnDown.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
-process.shiftedPatJetEnUp.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+if options.removeResiduals:
+  process.patPFMetT1T2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+  process.patPFMetT1T2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+  process.patPFMetT2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+  process.patPFMetT2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+  process.shiftedPatJetEnDown.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+  process.shiftedPatJetEnUp.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
 
 
 process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
