@@ -168,15 +168,47 @@ class DYJetsFakeAnalyzer(Analyzer):
             l1match, dR2best = bestMatch(leg, ptSelGenSummary)
             if dR2best < dR2:
                 leg.genp = l1match
+                return
+
+            # Ok do one more Pythia 8 trick...
+            # This is to overcome that the GenAnalyzer doesn't like particles
+            # that have daughters with same pdgId and status 71
+            if not hasattr(event, 'pythiaQuarksGluons'):
+                event.pythiaQuarksGluons = []
+                for gen in event.genParticles:
+                    pdg = abs(gen.pdgId())
+                    status = gen.status()
+                    if pdg in [1, 2, 3, 4, 5, 21] and status > 3:
+                        if status != 71 and not any((gen.daughter(j2).pdgId() == gen.pdgId() and gen.daughter(j2).status() != 71) for j2 in xrange(gen.numberOfDaughters())):
+                            event.pythiaQuarksGluons.append(gen)
+
+            
+            l1match, dR2best = bestMatch(leg, event.pythiaQuarksGluons)
+            if dR2best < dR2:
+                leg.genp = l1match
 
             # Now this may be a pileup lepton, or one whose ancestor doesn't
             # appear in the gen summary because it's an unclear case in Pythia 8
             # To check the latter, match against jets as well...
-            if leg.genp == None:
-                l1match, dR2best = bestMatch(leg, event.genJets)
-                # Check if there's a gen jet with pT > 10 GeV (otherwise it's PU)
-                if dR2best < dR2 and l1match.pt() > 10.:
+            l1match, dR2best = bestMatch(leg, event.genJets)
+            # Check if there's a gen jet with pT > 10 GeV (otherwise it's PU)
+            if dR2best < dR2 and l1match.pt() > 10.:
+                leg.genp = l1match
+
+                # Now we know there must be gen particles, so let's also 
+                # consider the funny direct status-71 radiation off the
+                # protons if they ahve significant pT
+                event.status71pt10 = []
+                for gen in event.genParticles:                     
+                    pdg = abs(gen.pdgId())
+                    status = gen.status()
+                    if status == 71 and gen.mother(0).pdgId() == 2212 and gen.pt() > 10.:
+                        event.status71pt10.append(gen)
+                l1match, dR2best = bestMatch(leg, event.pythiaQuarksGluons)
+                if dR2best < dR2:
                     leg.genp = l1match
+                else:
+                    import pdb; pdb.set_trace()
 
 
     def getGenType(self, event):
