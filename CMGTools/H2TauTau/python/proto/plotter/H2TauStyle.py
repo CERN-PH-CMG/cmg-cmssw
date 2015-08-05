@@ -1,4 +1,4 @@
-from ROOT import kViolet, kMagenta, kOrange, kRed, kBlue, TColor
+from ROOT import TColor, kViolet, kBlue
 
 class Style:
 
@@ -56,7 +56,7 @@ wcol = TColor.GetColor(222,90,106)
 sHTT_WJets = Style(lineColor=1, markerColor=wcol, fillColor=wcol)
 ttcol = TColor.GetColor(155,152,204)
 sHTT_TTJets = Style(lineColor=1, markerColor=ttcol, fillColor=ttcol)
-sHTT_Higgs = Style(lineColor=TColor.kBlue, markerColor=2, lineStyle=2, fillColor=0)
+sHTT_Higgs = Style(lineColor=kBlue, markerColor=2, lineStyle=2, fillColor=0)
 zlcol = TColor.GetColor(100,182,232)
 sHTT_ZL = Style(lineColor=1, markerColor=zlcol, fillColor=zlcol)
 dibosoncol = TColor.GetColor(222,90,106)
@@ -87,6 +87,7 @@ histPref['Ztt'] = {'style':sHTT_DYJets, 'layer':4, 'legend':'Z#rightarrow#tau#ta
 histPref['embed_*'] = {'style':sViolet, 'layer':4.1, 'legend':None}
 histPref['TTJets*'] = {'style':sHTT_TTJets, 'layer':1, 'legend':'t#bar{t}'} 
 histPref['T*tW*'] = {'style':sHTT_TTJets, 'layer':1, 'legend':'Single t'} 
+histPref['TTo*'] = {'style':sHTT_TTJets, 'layer':1, 'legend':'Single t'} 
 histPref['WW*'] = {'style':sHTT_VV, 'layer':0.9, 'legend':'Diboson'} 
 histPref['WZ*'] = {'style':sHTT_VV, 'layer':0.8, 'legend':'Diboson'} 
 histPref['ZZ*'] = {'style':sHTT_VV, 'layer':0.7, 'legend':'Diboson'} 

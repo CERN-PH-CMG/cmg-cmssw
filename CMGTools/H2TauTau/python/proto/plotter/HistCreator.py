@@ -13,7 +13,7 @@ def initHist(hist, vcfg):
     hist.GetXaxis().SetTitle(xtitle)
     hist.SetStats(False)
 
-def createHistogram(hist_cfg):
+def createHistogram(hist_cfg, all_stack=False):
     '''Method to create actual histogram (DataMCPlot) instance from histogram 
     config.
     '''
@@ -23,7 +23,9 @@ def createHistogram(hist_cfg):
     for cfg in hist_cfg.cfgs:
         # First check whether it's a sub-histo or not
         if isinstance(cfg, HistogramCfg):
-            hist = createHistogram(cfg)
+            hist = createHistogram(cfg, all_stack=True)
+            hist._BuildStack(hist._SortedHistograms(), ytitle='Events')
+            plot.AddHistogram(cfg.name, hist.stack.totalHist.weighted, stack=True)
         else:
             # It's a sample cfg
             hname = hist_cfg.name + ' ' + cfg.name + ' ' + vcfg.name
@@ -63,7 +65,9 @@ def createHistogram(hist_cfg):
                 ttree.Project(hname, vcfg.name, shape_cut)
                 hist.Scale(scale/hist.Integral())
 
-            stack = not cfg.is_data and not cfg.is_signal
+            stack = all_stack or (not cfg.is_data and not cfg.is_signal)
+
+            hist.Scale(cfg.scale)
 
             plot_hist = plot.AddHistogram(cfg.name, hist, stack=stack)
 
@@ -74,7 +78,7 @@ def createHistogram(hist_cfg):
     return plot
 
 def setSumWeights(sample):
-    if sample.is_data:
+    if isinstance(sample, HistogramCfg) or sample.is_data:
         return
 
     pckfile = '/'.join([sample.ana_dir, sample.dir_name, 'SkimAnalyzerCount', 'SkimReport.pck'])
