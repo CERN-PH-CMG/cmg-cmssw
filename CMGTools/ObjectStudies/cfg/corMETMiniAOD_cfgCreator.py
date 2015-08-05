@@ -14,8 +14,8 @@ parser.add_option("--dataGT", dest="dataGT", default='74X_dataRun2_Prompt_v1', t
 parser.add_option("--jecDBFile", dest="jecDBFile", default="", type="string", action="store", help="jec DB File")
 parser.add_option("--jecEra", dest="jecEra", default='', type="string", action="store", help="jecEra")
 parser.add_option("--maxEvents", dest="maxEvents", default=-1, type="int", action="store", help="maxEvents")
-parser.add_option("--isData", dest="isData", action="store_true", help="is data?") 
-parser.add_option("--removeResiduals", dest="removeResiduals", action="store_true", help="remove residual JEC?") 
+parser.add_option("--isData", dest="isData", action="store_true", default=False, help="is data?") 
+parser.add_option("--removeResiduals", dest="removeResiduals", action="store_true", default=False, help="remove residual JEC?") 
 (options, args) = parser.parse_args()
 
 GT =  options.dataGT if options.isData else options.mcGT
