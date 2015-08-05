@@ -3,14 +3,14 @@
 WHAT=$1; if [[ "$1" == "" ]]; then echo "monojet.sh <what>"; exit 1; fi
 
 if [[ "$HOSTNAME" == "cmsphys06" ]]; then
-    T="/data1/emanuele/monox/TREES_SPRING15_50ns_2LEPSKIM_10JUL2015";
+    T="/data1/emanuele/monox/TREES_1LEPSKIM_30July2015";
     J=6;
 else
-    T="/cmshome/dimarcoe/TREES_SPRING15_50ns_2LEPSKIM_10JUL2015";
+    T="/cmshome/dimarcoe/TREES_1LEPSKIM_30July2015";
     J=6;
 fi
 
-LUMI="0.0195"
+LUMI="0.04024"
 OPTCAPTION="--rspam '#sqrt{s} = 13 TeV, L = %(lumipb).1f pb^{-1}' "
 
 COREOPT="-P $T --s2v -j $J -l $LUMI -W vtxW "
@@ -21,12 +21,16 @@ FEV=" -F mjvars/t \"$T/0_eventvars_mj_v1/evVarFriend_{cname}.root\" "
 ROOT="plots/Run2015B/v1.0/$WHAT"
 
 RUNY="${COREY} mca-74X.txt "
-RUNY2MU="${RUNY} control-samples/zmumuincl.txt "
-RUNY2E="${RUNY} control-samples/zeeincl.txt "
+SEL2MU="control-samples/zmumuincl.txt "
+SEL2E="control-samples/zeeincl.txt "
+
+
+RUNY2MU="${RUNY} ${SEL2MU} "
+RUNY2E="${RUNY} ${SEL2E} "
 
 PLOT="${COREP} mca-74X.txt $OPTCAPTION "
-PLOT2MU="${PLOT} control-samples/zmumu.txt control-samples/zmumu-plots.txt "
-PLOT2E="${PLOT} control-samples/zee.txt control-samples/zee-plots.txt "
+PLOT2MU="${PLOT} ${SEL2MU} control-samples/zmumu-plots.txt "
+PLOT2E="${PLOT} ${SEL2E} control-samples/zee-plots.txt "
 
 case $WHAT in
 zmumu)
