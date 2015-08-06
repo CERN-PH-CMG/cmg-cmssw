@@ -1,3 +1,8 @@
+# Add the following to your cfg file to calculate the fastjet sigma in the preprocessor
+#from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
+#preprocessor = CmsswPreprocessor("%s/src/CMGTools/RootTools/test/run_fastjet_sigma.py" % os.environ['CMSSW_BASE'])
+#susyMultilepton_globalVariables.append(NTupleVariable("sigma",  lambda ev: ev.sigma, float, help="fixedGridSigmaFastjetAll sigma"))
+
 # Auto generated configuration file
 # using: 
 # Revision: 1.19 
@@ -66,7 +71,7 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'MCRUN2_74_V9A', '')
 #process.fixedGridRhoFastjetAll = fixedGridRhoFastjetAll.clone()
 #process.p = cms.Path(process.fixedGridRhoFastjetAll)
 
-from RecoJets.JetProducers.fixedGridSigmaProducerFastjet_cfi import fixedGridSigmaFastjetAll
+from CMGTools.RootTools.modules.fixedGridSigmaProducerFastjet_cfi import fixedGridSigmaFastjetAll
 process.fixedGridSigmaFastjetAll = fixedGridSigmaFastjetAll.clone()
 process.p = cms.Path(process.fixedGridSigmaFastjetAll)
 

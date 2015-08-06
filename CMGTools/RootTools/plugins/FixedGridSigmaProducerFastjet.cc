@@ -1,4 +1,6 @@
-#include "RecoJets/JetProducers/plugins/FixedGridSigmaProducerFastjet.h"
+// adapted from FixedGridRhoProducerFastjet in the RecoJets/JetProducers CMSSW package
+
+#include "CMGTools/RootTools/plugins/FixedGridSigmaProducerFastjet.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "DataFormats/Common/interface/View.h"
 #include "FWCore/Framework/interface/MakerMacros.h"

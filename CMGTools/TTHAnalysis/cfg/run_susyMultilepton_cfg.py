@@ -389,11 +389,6 @@ elif test == "express":
     from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
     preprocessor = CmsswPreprocessor("miniAOD-data_PAT.py")
 
-# to calculate the fastjet sigma in the preprocessor
-#from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
-#preprocessor = CmsswPreprocessor("%s/src/CMGTools/TTHAnalysis/cfg/run_fastjet_sigma.py" % os.environ['CMSSW_BASE'])
-#susyMultilepton_globalVariables.append(NTupleVariable("sigma",  lambda ev: ev.sigma, float, help="fixedGridSigmaFastjetAll sigma"))
-
 ## output histogram
 outputService=[]
 from PhysicsTools.HeppyCore.framework.services.tfile import TFileService

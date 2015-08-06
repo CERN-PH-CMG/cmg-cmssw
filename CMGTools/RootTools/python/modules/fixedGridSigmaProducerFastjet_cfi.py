@@ -1,3 +1,5 @@
+# adapted from FixedGridRhoProducerFastjet in the RecoJets/JetProducers CMSSW package
+
 import FWCore.ParameterSet.Config as cms
 
 fixedGridSigmaFastjetAll = cms.EDProducer("FixedGridSigmaProducerFastjet",

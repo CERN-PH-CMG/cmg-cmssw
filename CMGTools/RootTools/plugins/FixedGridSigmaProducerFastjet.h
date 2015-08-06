@@ -1,5 +1,7 @@
-#ifndef RecoJets_JetProducers_plugins_FixedGridSigmaProducerFastjet_h
-#define RecoJets_JetProducers_plugins_FixedGridSigmaProducerFastjet_h
+// adapted from FixedGridRhoProducerFastjet in the RecoJets/JetProducers CMSSW package
+
+#ifndef CMGTools_RootTools_plugins_FixedGridSigmaProducerFastjet_h
+#define CMGTools_RootTools_plugins_FixedGridSigmaProducerFastjet_h
 
 #include "FWCore/Framework/interface/stream/EDProducer.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
