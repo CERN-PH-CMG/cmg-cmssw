@@ -24,6 +24,7 @@ lepAna.doMiniIsolation = True
 lepAna.packedCandidates = 'packedPFCandidates'
 lepAna.miniIsolationPUCorr = 'rhoArea'
 lepAna.miniIsolationVetoLeptons = None # use 'inclusive' to veto inclusive leptons and their footprint in all isolation cones
+lepAna.doIsolationScan = False
 
 # Lepton Preselection
 lepAna.loose_electron_id = "POG_MVA_ID_Run2_NonTrig_VLoose"
@@ -387,6 +388,11 @@ elif test == "express":
     #    sed -i 's/process.MINIAODoutput_step/process.endpath/' miniAOD-data_PAT.py
     from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
     preprocessor = CmsswPreprocessor("miniAOD-data_PAT.py")
+
+# to calculate the fastjet sigma in the preprocessor
+#from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
+#preprocessor = CmsswPreprocessor("%s/src/CMGTools/TTHAnalysis/cfg/run_fastjet_sigma.py" % os.environ['CMSSW_BASE'])
+#susyMultilepton_globalVariables.append(NTupleVariable("sigma",  lambda ev: ev.sigma, float, help="fixedGridSigmaFastjetAll sigma"))
 
 ## output histogram
 outputService=[]
