@@ -14,6 +14,8 @@
 
 void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0){
 
+  bool some_fit_failed = false;
+  
   int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
   int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
 
@@ -158,8 +160,9 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                     << " resubmitting and quitting" << endl;
                     TString outfilename_str = Form("submit_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.sh",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
                     gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J runMfit "+outfilename_str);                    
-                    // gROOT->ProcessLine(".! sh "+outfilename_str);                    
-                    return;
+                    // gROOT->ProcessLine(".! sh "+outfilename_str);
+                    some_fit_failed = true;
+                    continue;
                   }
                   LineColumns = TStringFromFile.Tokenize(" ");
                   ncol = LineColumns->GetEntries();
@@ -179,6 +182,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                   npoint++;
               
                 }
+                if(some_fit_failed) continue;
                 cout << endl;
 
                 double l_offset;
@@ -258,6 +262,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                 // result->Delete();
                 
               }
+              if(some_fit_failed) continue;
          
               TCanvas *c_summary=new TCanvas(Form("c_summary_W%s%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),Form("c_summary_pdf%d-%d%s%s_eta%s",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data())); 
               c_summary->SetGridy();
@@ -319,6 +324,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
           }
         }
       }
+      if(some_fit_failed) continue;
       
       for(int i=0; i<WMass::etaMuonNSteps; i++){
         TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
@@ -414,6 +420,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
       fout->Delete();
   }
   
+  if(some_fit_failed) cout << "\nTHERE WERE SOME FAILED FITS, WHICH HAVE BEEN RESUBMITTED. RUN AGAIN THE MERGING STEP WHEN THEY FINISH" << endl;
   // outTXTfile.Close();
   // outTXTfile2.Close();
 }
