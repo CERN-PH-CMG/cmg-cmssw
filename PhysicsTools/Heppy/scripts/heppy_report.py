@@ -20,6 +20,11 @@ def root2map(dir,ana,treename):
             jsonind[run] = [lumi]
         else:
             jsonind[run].append(lumi)
+
+    # remove duplicates
+    for run in jsonind:
+        jsonind[run] =  list(set(jsonind[run]))
+
     nruns = len(jsonind)
     nlumis = sum(len(v) for v in jsonind.itervalues())
     jsonmap = {}
@@ -29,7 +34,7 @@ def root2map(dir,ana,treename):
         ranges = [ [ lumis[0], lumis[0] ] ]
         for lumi in lumis[1:]:
             if lumi == ranges[-1][1] + 1:
-                ranges[1][1] = lumi
+                ranges[-1][1] = lumi
             else:
                 ranges.append([lumi,lumi])
         jsonmap[r] = ranges
