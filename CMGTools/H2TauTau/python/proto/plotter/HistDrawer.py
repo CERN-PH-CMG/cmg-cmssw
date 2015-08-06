@@ -1,4 +1,5 @@
 import re
+import os
 import copy
 
 from math import log10, floor
@@ -10,6 +11,10 @@ from CMGTools.H2TauTau.proto.plotter.CMS_lumi import CMS_lumi
 
 from CMGTools.H2TauTau.proto.plotter.officialStyle import officialStyle
 officialStyle(gStyle)
+
+def ensureDir(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
 class HistDrawer:
     ocan = None
@@ -60,24 +65,14 @@ class HistDrawer:
     @staticmethod
     def datasetInfo(plot):
         year = ''
-        # if plot.dataComponents[0].find('2012') != -1:
-        #     year = '2012'
-        #     energy = 8
-        # elif plot.dataComponents[0].find('2011') != -1:
-        #     year = '2011'
-        #     energy = 7
-        # try:
-        #     lumi = plot.weights['TTJets'].intLumi/1e3
-        # except KeyError:
-        #     lumi = plot.weights['TTJetsSemiLept'].intLumi/1e3
         year = '2015'
         lumi = plot.lumi if hasattr(plot, 'lumi') else 0.
-        unit = 'pb'
-        energy = 13
+        unit = plot.lumi_unit if hasattr(plot, 'lumi_unit') else 'pb'
+        energy = plot.com_energy if hasattr(plot, 'com_energy') else 13
         return year, lumi, energy, unit
 
     @staticmethod
-    def CMSPrelim(plot, pad, channel):
+    def CMSPrelim(plot, pad, channel, legend='right'):
         pad.cd()
         year, lumi, energy, unit = HistDrawer.datasetInfo(plot)
         theStr = '{lumi:3.3} {unit}^{{-1}} ({energy:d} TeV)'.format(year=year, unit=unit, lumi=lumi, energy=energy)
@@ -88,8 +83,13 @@ class HistDrawer:
         r = pad.GetRightMargin()
         l = pad.GetLeftMargin()
         posX = l + 0.045*(1-l-r)
+        posXhigh = 0.25
 
-        plot.chan = TPaveText(posX, lowY, 0.25, lowY+0.18, "NDC")
+        if legend == 'left':
+            posX = 1. - r - 0.08
+            posXhigh = 1. - r - 0.02
+
+        plot.chan = TPaveText(posX, lowY, posXhigh, lowY+0.18, "NDC")
         plot.chan.SetBorderSize(0)
         plot.chan.SetFillStyle(0)
         plot.chan.SetTextAlign(12)
@@ -188,12 +188,13 @@ class HistDrawer:
             HistDrawer.keeper.append(box)
         print channel
         if channel == 'TauMu':
-            HistDrawer.CMSPrelim(plot, pad, '#tau_{#mu}#tau_{h}')
+            HistDrawer.CMSPrelim(plot, pad, '#tau_{#mu}#tau_{h}', legend=plot.legendPos)
         elif channel == 'TauEle':
-            HistDrawer.CMSPrelim(plot, pad, '#tau_{e}#tau_{h}')
+            HistDrawer.CMSPrelim(plot, pad, '#tau_{e}#tau_{h}', legend=plot.legendPos)
         can.cd()
 
         plotname = plot_dir + '/'
+        ensureDir(plot_dir)
         plotname += plot_name if plot_name else plot.name
         can.SaveAs(plotname + '.png')
         pad.SetLogy(0)

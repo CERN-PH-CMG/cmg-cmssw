@@ -6,11 +6,20 @@ from CMGTools.H2TauTau.proto.plotter.HistCreator import createHistogram, setSumW
 from CMGTools.H2TauTau.proto.plotter.HistDrawer import HistDrawer
 from CMGTools.H2TauTau.proto.plotter.Variables import all_vars
 
-example_cut = '&&'.join([cat_Inc])# , cat_VBF])
-example_cut += '&& l2_decayModeFinding && l1_charge != l2_charge && mt<40'
 
-samesign_cut = '&&'.join([cat_Inc])
-samesign_cut += '&& l2_decayModeFinding && l1_charge == l2_charge && mt<40'
+cuts = {}
+
+inc_cut = '&&'.join([cat_Inc])
+inc_cut += '&& l2_decayModeFinding'
+
+cuts['OSlowMT'] = inc_cut + '&& l1_charge != l2_charge && mt<40'
+cuts['SSlowMT'] = inc_cut + '&& l1_charge == l2_charge && mt<40'
+
+cuts['OShighMT'] = inc_cut + '&& l1_charge != l2_charge && mt>40'
+cuts['SShighMT'] = inc_cut + '&& l1_charge == l2_charge && mt>40'
+
+
+qcd_from_same_sign = False
 
 # -> Command line
 analysis_dir = '/afs/cern.ch/user/s/steggema/work/746_pre6/CMSSW_7_4_6_patch6/src/CMGTools/H2TauTau/cfgPython/mt/Prod2015B'
@@ -35,7 +44,7 @@ samples = [
     SampleCfg(name='ZZ', dir_name='ZZp8', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=ZZp8.xSection, sumweights=ZZp8.nGenEvents),
     SampleCfg(name='WZ', dir_name='WZp8', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=WZp8.xSection, sumweights=WZp8.nGenEvents),
     SampleCfg(name='WW', dir_name='WWTo2L2Nu', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=WWTo2L2Nu.xSection, sumweights=WWTo2L2Nu.nGenEvents),
-    # SampleCfg(name='QCD', dir_name='QCD_Mu15', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=QCD_Mu15.xSection),
+    SampleCfg(name='QCD', dir_name='QCD_Mu15', ana_dir=analysis_dir, tree_prod_name=tree_prod_name, xsec=QCD_Mu15.xSection),
     SampleCfg(name='Data', dir_name='SingleMuon_Run2015B', ana_dir=data_dir, tree_prod_name=tree_prod_name, is_data=True),
 ]
 
@@ -43,30 +52,39 @@ samples = [
 for sample in samples:
     setSumWeights(sample)
 
-samples_ss = copy.deepcopy(samples)
+if qcd_from_same_sign:
+    samples_ss = copy.deepcopy(samples)
 
-for sample in samples_ss:
-    if sample.name != 'Data':
-        # Subtract background from data
-        sample.scale = -1.
+    samples = [s for s in samples if sample.name != 'QCD']
 
-qcd = HistogramCfg(name='QCD', var=None, cfgs=samples_ss, cut=samesign_cut, lumi=40.0)
+    for sample in samples_ss:
+        if sample.name != 'Data':
+            # Subtract background from data
+            sample.scale = -1.
 
-samples.append(qcd)
+    qcd = HistogramCfg(name='QCD', var=None, cfgs=samples_ss, cut=inc_cut, lumi=40.0)
+
+    samples.append(qcd)
 
 # Taken from Variables.py, can get subset with e.g. getVars(['mt', 'mvis'])
 variables = all_vars
 
-cfg_example = HistogramCfg(name='example', var=None, cfgs=samples, cut=example_cut, lumi=40.0)
+cfg_example = HistogramCfg(name='example', var=None, cfgs=samples, cut=inc_cut, lumi=40.0)
 
 
-for variable in variables:
-    cfg_example.var = variable
-    qcd.var = variable # Can put into function but we will not want it by default if we take normalisations from e.g. high MT
-    
-    plot = createHistogram(cfg_example)
-    plot.Group('Diboson', ['ZZ', 'WZ', 'WW'])
-    plot.Group('Single t', ['T_tWch', 'TBar_tWch', 'TToLeptons_sch', 'TToLeptons_tch'])
-    HistDrawer.draw(plot)
-    # HistDrawer.drawRatio(plot)
+for cut_name in cuts:
+    cfg_example.cut = cuts[cut_name]
+    if qcd_from_same_sign and 'OS' in cut_name:
+        qcd.cut = cuts[cut_name].replace('l1_charge != l2_charge', 'l1_charge == l2_charge')
+
+    for variable in variables:
+        cfg_example.var = variable
+        if qcd_from_same_sign:
+            qcd.var = variable # Can put into function but we will not want it by default if we take normalisations from e.g. high MT
+        
+        plot = createHistogram(cfg_example, verbose=True)
+        plot.Group('Diboson', ['ZZ', 'WZ', 'WW'])
+        plot.Group('Single t', ['T_tWch', 'TBar_tWch', 'TToLeptons_sch', 'TToLeptons_tch'])
+        plot.Group('ZLL', ['Ztt_ZL', 'Ztt_ZJ'], style=plot.Hist('Ztt_ZL').style)
+        HistDrawer.draw(plot, plot_dir='plots/'+cut_name)
 

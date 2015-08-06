@@ -34,7 +34,7 @@ class SampleCfg(object):
         self.tree_name = 'tree' if tree_name is None else tree_name
 >>>>>>> dc73afd... Merge remote-tracking branch 'origin/CMGTools-from-CMSSW_7_4_3_AddH2Tau' into CMGTools-from-CMSSW_7_4_3__746Test
         self.scale = scale # generic scale, e.g. scale signal by factor 5
-        # a sample-specific extra weight as saved in a tree
+        # a sample-specific weight expression (e.g. extra cut))
         self.weight_expr = weight_expr 
         self.norm_cut = norm_cut
         self.shape_cut = shape_cut
@@ -52,13 +52,18 @@ class HistogramCfg(object):
     A histogram can in turn have a sub-contribution from another histogram cfg. 
     '''
     def __init__(self, name='Default', var=None, cfgs=None, cut='', lumi=1.,
-                 weight='weight', shape_cfgs=None, use_signal_for_stack=False):
+                 weight='weight', norm_cfg=None, use_signal_for_stack=False,
+                 total_scale=None):
         self.name = name # e.g. 'vbf tight'
         self.var = VariableCfg() if var is None else var # e.g. 'm_svfit'
         self.cfgs = [] if cfgs is None else cfgs # List of sample and/or histogram cfgs
-        self.shape_cfgs = shape_cfgs # If the shape is constructed in a different way
         self.cut = cut
         self.lumi = lumi
         self.weight = weight
         self.use_signal_for_stack = use_signal_for_stack
+
+        # The following two parameters are only used if this is used as a 
+        # sub-contribution in a different histogram
+        self.norm_cfg = norm_cfg # Different histogram cfg for normalisation
+        self.total_scale = total_scale
 

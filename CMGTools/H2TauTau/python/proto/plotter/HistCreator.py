@@ -13,7 +13,7 @@ def initHist(hist, vcfg):
     hist.GetXaxis().SetTitle(xtitle)
     hist.SetStats(False)
 
-def createHistogram(hist_cfg, all_stack=False):
+def createHistogram(hist_cfg, all_stack=False, verbose=False):
     '''Method to create actual histogram (DataMCPlot) instance from histogram 
     config.
     '''
@@ -25,7 +25,16 @@ def createHistogram(hist_cfg, all_stack=False):
         if isinstance(cfg, HistogramCfg):
             hist = createHistogram(cfg, all_stack=True)
             hist._BuildStack(hist._SortedHistograms(), ytitle='Events')
-            plot.AddHistogram(cfg.name, hist.stack.totalHist.weighted, stack=True)
+
+            total_hist = plot.AddHistogram(cfg.name, hist.stack.totalHist.weighted, stack=True)
+
+            if cfg.norm_cfg is not None:
+                norm_hist = createHistogram(cfg.norm_cfg, all_stack=True)
+                norm_hist._BuildStack(norm_hist._SortedHistograms(), ytitle='Events')
+                total_hist.Scale(hist.stack.integral/total_hist.Yield())
+
+            if cfg.total_scale is not None:
+                total_hist.Scale(cfg.total_scale)
         else:
             # It's a sample cfg
             hname = hist_cfg.name + ' ' + cfg.name + ' ' + vcfg.name
@@ -40,7 +49,8 @@ def createHistogram(hist_cfg, all_stack=False):
             file_name = '/'.join([cfg.ana_dir, cfg.dir_name, cfg.tree_prod_name, 'tree.root'])
 
             ttree = plot.readTree(file_name, cfg.tree_name)
-            print 'read tree', ttree, 'from file', file_name
+            if verbose:
+                print 'read tree', ttree, 'from file', file_name
 
             norm_cut = hist_cfg.cut
             shape_cut = hist_cfg.cut

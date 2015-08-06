@@ -88,13 +88,16 @@ histPref['embed_*'] = {'style':sViolet, 'layer':4.1, 'legend':None}
 histPref['TTJets*'] = {'style':sHTT_TTJets, 'layer':1, 'legend':'t#bar{t}'} 
 histPref['T*tW*'] = {'style':sHTT_TTJets, 'layer':1, 'legend':'Single t'} 
 histPref['TTo*'] = {'style':sHTT_TTJets, 'layer':1, 'legend':'Single t'} 
+histPref['Single t'] = {'style':sHTT_TTJets, 'layer':1, 'legend':'Single t'} 
 histPref['WW*'] = {'style':sHTT_VV, 'layer':0.9, 'legend':'Diboson'} 
 histPref['WZ*'] = {'style':sHTT_VV, 'layer':0.8, 'legend':'Diboson'} 
 histPref['ZZ*'] = {'style':sHTT_VV, 'layer':0.7, 'legend':'Diboson'} 
+histPref['Diboson'] = {'style':sHTT_VV, 'layer':0.7, 'legend':'Diboson'} 
 histPref['QCD*'] = {'style':sHTT_QCD, 'layer':2, 'legend':'QCD multijet'}
 histPref['WJets*'] = {'style':sHTT_WJets, 'layer':3, 'legend':'W+jets'}  
 histPref['Ztt_ZJ'] = {'style':sHTT_ZL, 'layer':3.1, 'legend':'Z#rightarrow#tau#tau/Z#rightarrow ll, j#rightarrow#tau'}
 histPref['Ztt_ZL'] = {'style':sHTT_ZL, 'layer':3.2, 'legend':'Z#rightarrow ll'}
+histPref['ZLL'] = {'style':sHTT_ZL, 'layer':3.2, 'legend':'Z#rightarrow ll'}
 histPref['Ztt_TL'] = {'style':sViolet, 'layer':4.1, 'legend':'Z#rightarrow#tau#tau/Z#rightarrow ll, j#rightarrow#tau'}
 histPref['Higgs*'] = {'style':sHTT_Higgs, 'layer':1001, 'legend':None}
 

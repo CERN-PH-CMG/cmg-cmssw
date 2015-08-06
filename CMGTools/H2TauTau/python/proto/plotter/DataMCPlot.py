@@ -38,7 +38,8 @@ class DataMCPlot(object):
         self.stack = None
         self.legendOn = True
         self.legend = None
-        self.legendBorders = 0.17, 0.46, 0.44, 0.89
+        self.legendBorders = 0.20, 0.46, 0.44, 0.89
+        self.legendPos = 'left'
         # self.lastDraw = None
         # self.lastDrawArgs = None
         self.nostack = None
@@ -103,6 +104,9 @@ class DataMCPlot(object):
         if groupHist:
             self.groups[groupName] = actualNamesInGroup
             groupHist.realName = ','.join(realNames)
+            if style is not None:
+                groupHist.SetStyle(style)
+            self._ApplyPrefs()
 
     def UnGroup(self, groupName):
         '''Ungroup groupName, recover the histograms in the group'''
@@ -378,6 +382,7 @@ class DataMCPlot(object):
 
         if self.supportHist.weighted.GetMaximumBin() < self.supportHist.weighted.GetNbinsX()/2:
             self.legendBorders = 0.62, 0.46, 0.88, 0.89
+            self.legendPos = 'right'
 
         self.DrawLegend()
         if TPad.Pad():
