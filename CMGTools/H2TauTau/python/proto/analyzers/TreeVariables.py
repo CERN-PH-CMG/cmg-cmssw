@@ -82,6 +82,7 @@ particle_vars = [
 # generic lepton
 lepton_vars = [
     Variable('reliso05', lambda lep : lep.relIsoR(R=0.3, dBetaFactor=0.5, allCharged=0)),
+    Variable('reliso05_04', lambda lep : lep.relIsoR(R=0.4, dBetaFactor=0.5, allCharged=0)),
     Variable('dxy', lambda lep : lep.dxy()),
     Variable('dz', lambda lep : lep.dz()),
     Variable('weight'),
@@ -111,12 +112,15 @@ muon_vars = [
     Variable('muonid_tight', lambda muon : muon.muonID('POG_ID_Tight')),
     Variable('muonid_tightnovtx', lambda muon : muon.muonID('POG_ID_TightNoVtx')),
     Variable('muonid_highpt', lambda muon : muon.muonID('POG_ID_HighPt')),
+    Variable('dxy_innertrack', lambda muon : muon.innerTrack().dxy(muon.associatedVertex.position())),
+    Variable('dz_innertrack', lambda muon : muon.innerTrack().dz(muon.associatedVertex.position())),
 ]
 
 # tau
 tau_vars = [
     Variable('decayMode', lambda tau : tau.decayMode()),
-    Variable('zImpact', lambda tau : tau.zImpact())
+    Variable('zImpact', lambda tau : tau.zImpact()),
+    Variable('z_selfvertex', lambda tau : tau.vertex().z())
 ]
 for tau_id in tauIDs:
     if type(tau_id) is str:

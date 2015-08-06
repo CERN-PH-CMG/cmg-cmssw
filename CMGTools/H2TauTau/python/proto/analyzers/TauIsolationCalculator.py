@@ -37,17 +37,25 @@ class TauIsolationCalculator(Analyzer):
                     isoPtSumOld += tau.isolationCands()[i_iso].pt()
                     eta = tau.isolationCands()[i_iso].eta()
                     phi = tau.isolationCands()[i_iso].phi()
+                    n_p = 0
                     for c_p in puppi:
                         if abs(eta - c_p.eta()) < 0.00001 and \
                            abs(deltaPhi(phi, c_p.phi())) < 0.00001:
+                            pdgId = c_p.pdgId()
+                            if abs(pdgId) not in [22, 211]:
+                                print 'Found puppi particle with pdgID', pdgId, 'ignoring...'
+                                continue
+                                
                             puppi_iso_cands.append(c_p)
+                            n_p += 1
                             dr = deltaR(c_p.eta(), c_p.phi(), tau_eta, tau_phi)
                             if dr < 0.4:
                                 puppi_iso_cands_04.append(c_p)
                             if dr < 0.3:
                                 puppi_iso_cands_03.append(c_p)
+                    if n_p > 1:
+                        print 'WARNING, found more than 2 matching puppi particles'
 
-            #  = sum(iso.pt() for iso in tau.isolationCands())
             tau.puppi_iso_pt = sum(c_p.pt() for c_p in puppi_iso_cands)
             tau.puppi_iso04_pt = sum(c_p.pt() for c_p in puppi_iso_cands_04)
             tau.puppi_iso03_pt = sum(c_p.pt() for c_p in puppi_iso_cands_03)
