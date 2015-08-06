@@ -4,6 +4,7 @@ from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.HeppyCore.utils.deltar import bestMatch
 
+from PhysicsTools.Heppy.physicsobjects.PhysicsObject import PhysicsObject
 
 class DYJetsFakeAnalyzer(Analyzer):
 
@@ -21,6 +22,8 @@ class DYJetsFakeAnalyzer(Analyzer):
 
         self.mchandles['genInfo'] = AutoHandle(('generator','',''), 'GenEventInfoProduct' )
         self.mchandles['genJets'] = AutoHandle('slimmedGenJets', 'std::vector<reco::GenJet>')
+
+        self.handles['jets'] = AutoHandle('slimmedJets', 'std::vector<pat::Jet>')
 
     def process(self, event):
 
@@ -51,6 +54,7 @@ class DYJetsFakeAnalyzer(Analyzer):
 
         self.readCollections(event.input)
         event.genJets = self.mchandles['genJets'].product()
+        event.jets = self.handles['jets'].product()
 
         event.weight_gen = self.mchandles['genInfo'].product().weight()
         event.eventWeight *= event.weight_gen
@@ -179,13 +183,14 @@ class DYJetsFakeAnalyzer(Analyzer):
                     pdg = abs(gen.pdgId())
                     status = gen.status()
                     if pdg in [1, 2, 3, 4, 5, 21] and status > 3:
-                        if status != 71 and not any((gen.daughter(j2).pdgId() == gen.pdgId() and gen.daughter(j2).status() != 71) for j2 in xrange(gen.numberOfDaughters())):
+                        if gen.isMostlyLikePythia6Status3():
                             event.pythiaQuarksGluons.append(gen)
 
             
             l1match, dR2best = bestMatch(leg, event.pythiaQuarksGluons)
             if dR2best < dR2:
                 leg.genp = l1match
+                return
 
             # Now this may be a pileup lepton, or one whose ancestor doesn't
             # appear in the gen summary because it's an unclear case in Pythia 8
@@ -193,22 +198,14 @@ class DYJetsFakeAnalyzer(Analyzer):
             l1match, dR2best = bestMatch(leg, event.genJets)
             # Check if there's a gen jet with pT > 10 GeV (otherwise it's PU)
             if dR2best < dR2 and l1match.pt() > 10.:
-                leg.genp = l1match
+                leg.genp = PhysicsObject(l1match)
 
-                # Now we know there must be gen particles, so let's also 
-                # consider the funny direct status-71 radiation off the
-                # protons if they ahve significant pT
-                event.status71pt10 = []
-                for gen in event.genParticles:                     
-                    pdg = abs(gen.pdgId())
-                    status = gen.status()
-                    if status == 71 and gen.mother(0).pdgId() == 2212 and gen.pt() > 10.:
-                        event.status71pt10.append(gen)
-                l1match, dR2best = bestMatch(leg, event.pythiaQuarksGluons)
+                jet, dR2best = bestMatch(l1match, event.jets)
+
                 if dR2best < dR2:
-                    leg.genp = l1match
+                    leg.genp.detFlavour = jet.partonFlavour()
                 else:
-                    import pdb; pdb.set_trace()
+                    print 'no match found', leg.pt(), leg.eta()
 
 
     def getGenType(self, event):
