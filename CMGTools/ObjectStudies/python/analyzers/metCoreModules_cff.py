@@ -228,6 +228,27 @@ metNoHFAna = cfg.Analyzer(
     metCollection     = "slimmedMETsNoHF",
     noPUMetCollection = "slimmedMETsNoHF",    
     copyMETsByValue = False,
+<<<<<<< HEAD
+=======
+    doTkMet = False,
+    doMetNoPU = True,
+    doMetNoMu = False,
+    doMetNoEle = False,
+    doMetNoPhoton = False,
+    recalibrate = False,
+    jetAnalyzerCalibrationPostFix = "",
+    candidates='packedPFCandidates',
+    candidatesTypes='std::vector<pat::PackedCandidate>',
+    dzMax = 0.1,
+    collectionPostFix = "NoHF",
+    )
+
+metAnaDef = cfg.Analyzer(
+    METAnalyzer, name="metAnalyzerDef",
+    metCollection     = ("slimmedMETs","", "PAT"),
+    noPUMetCollection = ("slimmedMETs","", "PAT"),    
+    copyMETsByValue = True,
+>>>>>>> 0fe36ad... adding metNoHF to metCore and treePdocucerMet
     doTkMet = False,
     doMetNoPU = True,
     doMetNoMu = False,
