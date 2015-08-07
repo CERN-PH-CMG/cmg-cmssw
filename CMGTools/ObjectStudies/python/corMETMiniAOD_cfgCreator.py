@@ -31,6 +31,11 @@ process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 
+#configurable options =======================================================================
+usePrivateSQlite=True #use external JECs (sqlite file)
+applyResiduals=False #application of residual corrections. Have to be set to True once the 13 TeV residual corrections are available. False to be kept meanwhile. Can be kept to False later for private tests or for analysis checks and developments (not the official recommendation!).
+#===================================================================
+
 # Message Logger settings
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.destinations = ['cout', 'cerr']
@@ -82,23 +87,50 @@ process.source = cms.Source("PoolSource",
     ])
 )
 
+### ---------------------------------------------------------------------------
+### Removing the HF from the MET computation
+### ---------------------------------------------------------------------------
+process.noHFCands = cms.EDFilter("CandPtrSelector",
+                                 src=cms.InputTag("packedPFCandidates"),
+                                 cut=cms.string("abs(pdgId)!=1 && abs(pdgId)!=2 && abs(eta)<3.0")
+                                 )
+
+
 
 ### =====================================================================================================
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
 
 #default configuration for miniAOD reprocessing, change the isData flag to run on data
-runMetCorAndUncFromMiniAOD(process, isData=options.isData)
+#for a full met computation, remove the pfCandColl input
+runMetCorAndUncFromMiniAOD(process,
+                           isData=options.isData,
+                           )
+
+runMetCorAndUncFromMiniAOD(process,
+                           isData=options.isData,
+                           pfCandColl=cms.InputTag("noHFCands"),
+                           postfix="NoHF"
+                           )
 
 ### -------------------------------------------------------------------
-### the lines below remove the L2L3 residual uncertainties when processing data
+### the lines below remove the L2L3 residual corrections when processing data
 ### -------------------------------------------------------------------
 if options.removeResiduals:
-  process.patPFMetT1T2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
-  process.patPFMetT1T2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
-  process.patPFMetT2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
-  process.patPFMetT2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
-  process.shiftedPatJetEnDown.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
-  process.shiftedPatJetEnUp.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+    process.patPFMetT1T2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+    process.patPFMetT1T2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+    process.patPFMetT2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+    process.patPFMetT2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+    process.shiftedPatJetEnDown.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+    process.shiftedPatJetEnUp.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+
+    process.patPFMetT1T2CorrNoHF.jetCorrLabelRes = cms.InputTag("L3Absolute")
+    process.patPFMetT1T2SmearCorrNoHF.jetCorrLabelRes = cms.InputTag("L3Absolute")
+    process.patPFMetT2CorrNoHF.jetCorrLabelRes = cms.InputTag("L3Absolute")
+    process.patPFMetT2SmearCorrNoHF.jetCorrLabelRes = cms.InputTag("L3Absolute")
+    process.shiftedPatJetEnDownNoHF.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+    process.shiftedPatJetEnUpNoHF.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+### ------------------------------------------------------------------
+
 
 
 process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
@@ -108,6 +140,8 @@ process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
     outputCommands = cms.untracked.vstring( "keep *_slimmedMETs_*_*",
                                             "keep *_patPFMetT1Txy_*_*",
 #                                            "keep patJets_*_*_RERUN", #for debugging only
+                                            "keep *_slimmedMETsNoHF_*_*",
+                                            "keep *_patPFMetT1TxyNoHF_*_*",
                                             ),
     fileName = cms.untracked.string('corMETMiniAOD.root'),
     dataset = cms.untracked.PSet(
