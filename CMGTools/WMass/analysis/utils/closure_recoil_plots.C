@@ -132,6 +132,7 @@ void syst_recoil_one(TString recstr="u2")
   hsigmas->SetTitle("hsigmas; " + recstr + "; N");
 
   TH1D* hpull = new TH1D("hpull", "; pull value; N", 40, -6, 6);
+  hpull->StatOverflows(kTRUE);
 
   for(int i=1; i<hsigmas->GetNbinsX()+1; i++){
     double ratio = (hmadgraph->GetBinContent(i)-1)/herr->GetBinError(i);

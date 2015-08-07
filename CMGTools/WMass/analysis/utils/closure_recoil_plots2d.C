@@ -5,6 +5,7 @@
 #include "TCanvas.h"
 #include "TLine.h"
 #include "TString.h"
+#include "TGraph.h"
 #include "TLegend.h"
 #include <iostream>
 
@@ -42,6 +43,10 @@ void syst_recoil_one(TString recstr="u1")
       nsyst++;
     }
   }
+
+  int Zptbins = hcentral2->GetNbinsX()+2;
+  double means[Zptbins];
+  double rmss[Zptbins];
 
   TFile* fout = new TFile(recstr+"vsZpt.root", "RECREATE");
 
@@ -154,12 +159,16 @@ void syst_recoil_one(TString recstr="u1")
     hsigmas->SetTitle("hsigmas_bin" + binstr + "; " + recstr + "; N");
 
     TH1D* hpull = new TH1D("hpull_bin" + binstr, "bin" + binstr + "; pull value; N", 40, -6, 6);
+    hpull->StatOverflows(kTRUE);
 
     for(int i=1; i<hsigmas->GetNbinsX()+1; i++){
       double ratio = (hmadgraph->GetBinContent(i)-1)/herr->GetBinError(i);
       hsigmas->SetBinContent(i, ratio);
       hpull->Fill(ratio);
     }
+
+    means[bin] = hpull->GetMean();
+    rmss[bin] = hpull->GetRMS();
 
     TCanvas *c_sigmas = new TCanvas("c_sigmas_"+recstr+"_bin"+binstr, "c_sigmas_"+recstr+"_bin"+binstr);
     c_sigmas->cd();
@@ -183,6 +192,40 @@ void syst_recoil_one(TString recstr="u1")
     // c_pull->SaveAs(".png");
 
   }
+
+  double numbers[Zptbins];
+  for (int i=0; i<Zptbins; ++i) {
+    numbers[i] = i;
+  }
+
+  TGraph* gmean =  new TGraph(Zptbins-2, numbers, means); // last 2 make no sense
+  gmean->SetTitle("Mean "+recstr+"; Zpt; Mean");
+
+  TCanvas *c_mean = new TCanvas("c_mean_"+recstr, "c_mean_"+recstr);
+  c_mean->cd();
+
+  gmean->SetMarkerColor(2);
+  gmean->SetMarkerSize(1);
+  gmean->SetMarkerStyle(22);
+
+  gmean->Draw("ACP");
+
+  TGraph* grms =  new TGraph(Zptbins-2, numbers, rmss);
+  grms->SetTitle("RMS "+recstr+"; Zpt; RMS");
+
+  TCanvas *c_rms = new TCanvas("c_rms_"+recstr, "c_rms_"+recstr);
+  c_rms->cd();
+
+  grms->SetMarkerColor(1);
+  grms->SetMarkerSize(1);
+  grms->SetMarkerStyle(20);
+
+  grms->Draw("ACP");
+
+  c_mean->Write();
+  c_rms->Write();
+  c_mean->SaveAs(".png");
+  c_rms->SaveAs(".png");
 }
 
 int closure_recoil_plots2d()
