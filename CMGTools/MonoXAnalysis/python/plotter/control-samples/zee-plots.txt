@@ -1,0 +1,25 @@
+#htJet40 : htJet40 : 100,0,2000 ; XTitle="H_{T} (lepton and jets)  [GeV]",Logy,LegendCutoff=1e-3, YMin=1, YMax=1e4 
+htJet40j : htJet40j : 100,0,1000 ; XTitle="H_{T} (jets only)  [GeV]",Logy,LegendCutoff=1e-3, YMin=1, YMax=1e4 
+#htJet40ja : htJet40 : 100,0,2000 ; XTitle="H_{T} (jets only, up to abs(#eta)=4.7)  [GeV]",Logy,LegendCutoff=1e-3, YMin=1, YMax=1e4 
+mhtJet40 : mhtJet40 : 50,0,500 ; XTitle="H_{T}^{miss}  [GeV]",Logy,LegendCutoff=1e-3, YMin=1, YMax=1e5 
+nJet30 : nJetClean30 : 8,-0.5,7.5 ; XTitle='N(jet\, p_{T} > 30)',Logy,LegendCutoff=1e-3, YMin=1, YMax=1e6
+nBJetMedium30 : nBJetMedium30 : 8,-0.5,7.5 ; XTitle='N(jet\, p_{T} > 30)',Logy,LegendCutoff=1e-3, YMin=1, YMax=1e5
+nvtx: nVert: 40,0.5,40.5 ; XTitle="N(vertices)", Legend='TR'
+met: met_pt: 60,0,300    ; XTitle="E_{T}^{miss}  [GeV]",Logy,LegendCutoff=1e-3, YMin=1, YMax=1e4
+sumEt: met_sumEt: 60,100,1000    ; XTitle="Sum(E_{T}^{miss})  [GeV]",Logy,LegendCutoff=1e-3, YMin=1, YMax=1e4
+metnomu: metNoMu_pt: 60,0,300    ; XTitle="no-mu E_{T}^{miss}  [GeV]",Logy,LegendCutoff=1e-3, YMin=1, YMax=1e4
+mZ1: mZ1: 60,60,120 ; XTitle="best m(e^{+}e^{-})  [GeV]", Legend='TL'
+iso1: LepGood1_relIso04: 50,0,0.12; Logy, LegendCutoff=1e-3, YMin=1, YMax=1e4
+iso2: LepGood2_relIso04: 50,0,1.0; XTitle="e_{2} PF rel. isolation", Logy, LegendCutoff=1e-3, YMin=1, YMax=1e4
+sieie2: LepGood2_sigmaIEtaIEta: 50,0,0.04; XTitle="e_{2} #sigma_{i#etai#eta}", Legend='TL'
+deta2: LepGood2_dEtaScTrkIn: 50,-0.01,0.01; XTitle="e_{2} #Delta#eta", Legend='TL' 
+dphi2: LepGood2_dPhiScTrkIn: 50,-0.05,0.05; XTitle="e_{2} #Delta#phi", Legend='TL' 
+hoe: LepGood2_hadronicOverEm: 50,0,0.1; XTitle="e_{2} H/E", Logy, LegendCutoff=1e-3, YMin=1, YMax=1e4
+eInvMinusPInv: LepGood2_eInvMinusPInv: 50,-0.1,0.02; XTitle="e_{2} 1/E-1/P", Legend='TL'
+j1pt: JetClean1_pt: [110,160,210,260,310,360,410,500,650,800,1000]; XTitle="Leading jet p_{T}  [GeV]", Legend='TR',Logy,LegendCutoff=1e-3, YMin=1, YMax=1e5
+j2pt: JetClean2_pt: [30,80,130,180,230,300,400,550,700,1000]; XTitle="Trailing jet p_{T}  [GeV]", Legend='TR',Logy,LegendCutoff=1e-3, YMin=1, YMax=1e5
+j1qgl: Jet1_qgl: 40,0.0,1.0; XTitle="Leading jet QGL", Legend='TR'
+j2qgl: Jet2_qgl: 40,0.0,1.0; XTitle="Trailing jet QGL", Legend='TR'
+j1chHEF: Jet1_chHEF: 40,0.0,1.0; XTitle="Leading jet charged E.F.", Legend='TR'
+j1neHEF: Jet1_neHEF: 40,0.0,1.0; XTitle="Leading jet neutral hadron E.F.", Legend='TR'
+j1phHEF: Jet1_phHEF: 40,0.0,1.0; XTitle="Leading jet photon E.F.", Legend='TR'

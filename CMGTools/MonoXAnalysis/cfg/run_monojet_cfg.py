@@ -11,7 +11,7 @@ from PhysicsTools.Heppy.analyzers.objects.METAnalyzer import *
 # Redefine what I need
 
 # --- MONOJET SKIMMING ---
-monoJetSkim.metCut = 200
+monoJetSkim.metCut = 0
 monoJetSkim.jetPtCuts = []
 
 # --- W->munu control sample SKIMMING ---
@@ -103,17 +103,9 @@ treeProducer = cfg.Analyzer(
 # dmCoreSequence.insert(dmCoreSequence.index(skimAnalyzer),
 #                       dmCounter)
 
-#-------- SAMPLES AND TRIGGERS -----------
-from CMGTools.MonoXAnalysis.samples.samples_monojet_13TeV_PHYS14 import triggers_monojet
-triggerFlagsAna.triggerBits = {
-    'MonoJet' : triggers_monojet,
-}
-
-from CMGTools.MonoXAnalysis.samples.samples_monojet_13TeV_PHYS14 import *
-
-signalSamples = MonojetSignalSamples
-backgroundSamples =  WJetsToLNuHT + ZJetsToNuNuHT + SingleTop + [TTJets] + DYJetsM50HT + GJetsHT + QCDHT
-selectedComponents = backgroundSamples + signalSamples
+#signalSamples = MonojetSignalSamples
+#backgroundSamples =  WJetsToLNuHT + ZJetsToNuNuHT + SingleTop + [TTJets] + DYJetsM50HT + GJetsHT + QCDHT
+#selectedComponents = backgroundSamples + signalSamples
 
 #-------- SEQUENCE
 sequence = cfg.Sequence(dmCoreSequence+[
@@ -127,13 +119,8 @@ sequence = cfg.Sequence(dmCoreSequence+[
    treeProducer,
     ])
 
-# -- fine splitting, for some private MC samples with a single file
-#for comp in selectedComponents:
-#    comp.splitFactor = 1
-#    comp.fineSplitFactor = 40
-
 #-------- HOW TO RUN ----------- 
-from PhysicsTools.HeppyCore.framework.heppy import getHeppyOption
+from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 test = getHeppyOption('test')
 if test == '1':
     monoJetSkim.metCut = 0
@@ -148,7 +135,7 @@ elif test == '2':
         comp.splitFactor = 1
         comp.fineSplitFactor = 1
 elif test == 'EOS':
-    comp = DYJetsToLL_M50#TTJets
+    comp = DYJetsToLL_M50
     comp.files = comp.files[:1]
     if getHeppyOption('Wigner'):
         print "Will read from WIGNER"
@@ -233,12 +220,14 @@ elif test == '74X-MC':
     what = getHeppyOption("sample")
     if what == "TT":
         monoJetCtrlLepSkim.minLeptons = 0
-        selectedComponents = [ TT_bx25 ]
+        selectedComponents = TTJets_LO_50ns
     elif what == "Z":
         monoJetCtrlLepSkim.minLeptons = 0
         monoJetSkim.metCut = 0
-        #selectedComponents = [ ZEE_bx25, ZMM_bx25, ZTT_bx25 ]
-        selectedComponents = [ ZEE_bx25 ]
+        selectedComponents = [ DYJetsToLL_M50_50ns ]
+    elif what == "WJets":
+        monoJetSkim.metCut = 0
+        selectedComponents = [ WJetsToLNu_50ns ]
     else:
         selectedComponents = RelVals740
     if not getHeppyOption("all"):
@@ -264,15 +253,18 @@ elif test == '74X-Data':
         lepAna.loose_electron_id = ""
         lepAna.loose_electron_relIso = 1000.
         photonAna.gammaID = "POG_PHYS14_25ns_Loose_NoIso"
-        monoJetCtrlLepSkim.minLeptons = 0
+        monoJetCtrlLepSkim.minLeptons = 1
         monoJetSkim.metCut = 0
+    elif what == "DoubleEG":
+        selectedComponents = [ DoubleEG_Run2015B ]
+        monoJetCtrlLepSkim.minLeptons = 2
     else:
         selectedComponents = dataSamples742
     for comp in selectedComponents:
+        comp.splitFactor = 1
+        comp.fineSplitFactor = 1 if getHeppyOption("single") else 6
         if not getHeppyOption("all"):
             comp.files = comp.files[:1]
-            comp.splitFactor = 1
-            comp.fineSplitFactor = 1 if getHeppyOption("single") else 8
 
 ## output histogram
 outputService=[]

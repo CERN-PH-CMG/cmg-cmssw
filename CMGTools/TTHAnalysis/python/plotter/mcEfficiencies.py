@@ -2,6 +2,8 @@
 #from mcPlots import *
 from CMGTools.TTHAnalysis.plotter.mcPlots import *
 
+if "/bin2Dto1Dlib_cc.so" not in ROOT.gSystem.GetLibraries():
+    ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/TTHAnalysis/python/plotter/bin2Dto1Dlib.cc+" % os.environ['CMSSW_BASE']);
 
 def addROCMakerOptions(parser):
     addMCAnalysisOptions(parser)
@@ -125,18 +127,27 @@ def doEffRatio(x,effs,options):
 
     
 
-def makeEff(mca,cut,idplot,xvarplot):
+def makeEff(mca,cut,idplot,xvarplot,notDoProfile=False):
     import copy
     is2D = (":" in xvarplot.expr.replace("::","--"))
     options = copy.copy(idplot.opts)
     options.update(xvarplot.opts)
-    if is2D: options['Profile2D']=True
-    else:    options['Profile1D']=True
+    mybins = copy.copy(xvarplot.bins)
+    if not notDoProfile:
+        if is2D: options['Profile2D']=True
+        else:    options['Profile1D']=True
+    else:
+        if xvarplot.bins[0] == "[":
+            mybins += "*[-0.5,0.5,1.5]"
+        else:
+            mybins += ",2,-0.5,1.5"
     pspec = PlotSpec("%s_vs_%s"  % (idplot.name, xvarplot.name), 
                      "%s:%s" % (idplot.expr,xvarplot.expr),
-                     xvarplot.bins,
+                     mybins,
                      options) 
     print pspec.name
+    print mybins
+    print options
     return mca.getPlots(pspec,cut,makeSummary=True)
 
 if __name__ == "__main__":
@@ -156,11 +167,12 @@ if __name__ == "__main__":
     parser.add_option("--legend",  dest="legend",  default="TR",  type="string", help="Legend position (BR, TR)")
     parser.add_option("--showRatio", dest="showRatio", action="store_true", default=False, help="Add a data/sim ratio plot at the bottom")
     parser.add_option("--rr", "--ratioRange", dest="ratioRange", type="float", nargs=2, default=(-1,-1), help="Min and max for the ratio")
+    parser.add_option("--normEffUncToLumi", dest="normEffUncToLumi", action="store_true", default=False, help="Normalize the dataset to the given lumi for the uncertainties on the calculated efficiency")
     (options, args) = parser.parse_args()
     options.globalRebin = 1
     options.allowNegative = True # with the fine bins used in ROCs, one otherwise gets nonsensical results
     mca  = MCAnalysis(args[0],options)
-    procs = mca.listSignals()+mca.listBackgrounds()
+    procs = mca.listProcesses()
     cut = CutsFile(args[1],options).allCuts()
     ids   = PlotFile(args[2],options).plots()
     xvars = PlotFile(args[3],options).plots()
@@ -174,17 +186,71 @@ if __name__ == "__main__":
     ROOT.gROOT.ProcessLine(".x tdrstyle.cc")
     ROOT.gStyle.SetErrorX(0.5)
     ROOT.gStyle.SetOptStat(0)
-    effplots = [ (y,x,makeEff(mca,cut,y,x)) for y in ids for x in xvars ]
+    effplots = [ (y,x,makeEff(mca,cut,y,x,options.normEffUncToLumi)) for y in ids for x in xvars ]
     for (y,x,pmap) in effplots:
         for proc in procs:
             eff = pmap[proc]
             if not eff: continue
+            eff.Print()
+#            PrintHisto(eff)
             if options.xcut:
                 ax = eff.GetXaxis()
                 for b in xrange(1,eff.GetNbinsX()+1):
                     if ax.GetBinCenter(b) < options.xcut[0] or ax.GetBinCenter(b) > options.xcut[1]:
                         eff.SetBinContent(b,0)
                         eff.SetBinError(b,0)
+
+            if options.normEffUncToLumi:
+                assert (("TH3" in eff.ClassName()) or ("TH2" in eff.ClassName()))
+                is1d = "TH3" not in eff.ClassName()
+                eff.Print()
+                print 'is1d is ',is1d
+                binsfail = []
+                binspass = []
+                if is1d:
+                    binsfail = [eff.GetBin(i1,1) for i1 in range(1,eff.GetNbinsX()+1)]
+                    binspass = [eff.GetBin(i1,2) for i1 in range(1,eff.GetNbinsX()+1)]
+                else:
+                    binsfail = [eff.GetBin(i1,i2,1) for i1 in range(1,eff.GetNbinsX()+1) for i2 in range(1,eff.GetNbinsY()+1)]
+                    binspass = [eff.GetBin(i1,i2,2) for i1 in range(1,eff.GetNbinsX()+1) for i2 in range(1,eff.GetNbinsY()+1)]
+
+                for bin in binspass+binsfail:
+                    eff.SetBinError(bin,sqrt(eff.GetBinContent(bin)))
+
+                outfile.WriteTObject(eff)
+
+                effratio = eff.ProjectionX("_px") if is1d else eff.Project3D("yx")
+                effratio.Reset()
+
+                eff.Print()
+                effratio.Print()
+
+                for b1 in xrange(len(binsfail)):
+                    passing = eff.GetBinContent(binspass[b1])
+                    failing = eff.GetBinContent(binsfail[b1])
+                    bx = ROOT.Long(0)
+                    by = ROOT.Long(0)
+                    bz = ROOT.Long(0)
+                    eff.GetBinXYZ(binspass[b1],bx,by,bz)
+                    if is1d:
+                        ratiobin = effratio.FindBin(eff.GetXaxis().GetBinCenter(bx))
+                    else:
+                        ratiobin = effratio.FindBin(eff.GetXaxis().GetBinCenter(bx),eff.GetYaxis().GetBinCenter(by))
+                    effratio.SetBinContent(ratiobin,passing/(passing+failing))
+                    effratio.SetBinError(ratiobin,sqrt(passing*failing*((passing+failing)**(-3))))
+#                    print 'bx',ROOT.Long(bx)
+#                    print 'num',passing
+#                    print 'den',passing+failing
+#                    print 'ratio',effratio.GetBinContent(ratiobin)
+#                    print 'err',effratio.GetBinError(ratiobin)
+#                    print 'relerr',effratio.GetBinError(ratiobin)/effratio.GetBinContent(ratiobin)
+                eff = effratio
+                pmap[proc] = effratio
+#            else:
+#                for bx in xrange(eff.GetNbinsX()):
+#                    print bx
+#                    print eff.GetBinContent(bx+1)
+#                    print eff.GetBinError(bx+1)
             eff.SetName("_".join([y.name,x.name,proc]))
             outfile.WriteTObject(eff)
     if len(procs)>=1 and "cut" in options.groupBy:
