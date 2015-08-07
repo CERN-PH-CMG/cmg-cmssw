@@ -91,7 +91,7 @@ for D in glob(args[0]+"/*"):
             for dm in  options.datasetMatches:
                 if re.match(dm,short): found = True
             if not found: continue
-        data = ("DoubleMu" in short or "MuEG" in short or "DoubleElectron" in short or "SingleMu" in short)
+        data = ("DoubleMu" in short or "MuEG" in short or "DoubleEG" in short or "SingleMu" in short)
         pckobj  = pickle.load(open(pckfile,'r'))
         counters = dict(pckobj)
         if ('Sum Weights' in counters):

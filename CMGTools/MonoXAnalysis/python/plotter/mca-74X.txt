@@ -1,7 +1,36 @@
 # relvals for sync
-ADD+:     ADD_MJ           : 1.0; FillColor=ROOT.kRed-9, Label="ADD RelVal"
-TTLep:    TTLep            : 1.0; FillColor=ROOT.kGreen-7, Label="tt lep RelVal"
-TTbar:    TTbar            : 1.0; FillColor=ROOT.kBlue-7, Label="tt RelVal"
-DYLL:     DYJetsToLL_M50_50ns : 1.0; FillColor=ROOT.kCyan+1, Label="DYLL"
-WJets:    WJetsToLNu_HT400to600 : 1.0; FillColor=ROOT.kGreen+1, Label="WJets"
-RSGravGaGa: RSGravGaGa          : 1.0; FillColor=ROOT.kGreen+2, Label="RS Graviton -> gam gam"
+# ADD+:     ADD_MJ           : 1.0; FillColor=ROOT.kRed-9, Label="ADD RelVal"
+# TTLep:    TTLep            : 1.0; FillColor=ROOT.kGreen-7, Label="tt lep RelVal"
+# TTbar:    TTbar            : 1.0; FillColor=ROOT.kBlue-7, Label="tt RelVal"
+# DYLL:     DYJetsToLL_M50_50ns : 1.0; FillColor=ROOT.kCyan+1, Label="DYLL"
+# WJets:    WJetsToLNu_HT400to600 : 1.0; FillColor=ROOT.kGreen+1, Label="WJets"
+# RSGravGaGa: RSGravGaGa          : 1.0; FillColor=ROOT.kGreen+2, Label="RS Graviton -> gam gam"
+
+# ---- Spring15 50ns samples -------
+# -- Z->ll (inclusive) -- 
+DYJets+  : DYJetsToLL_M50_50ns : xsec; FillColor=ROOT.kAzure+6, Label="Z(ll)+jets"
+
+# -- W+jets --
+WJets    : WJetsToLNu_50ns : xsec;  FillColor=ROOT.kAzure+3, NormSystematic=0.2
+
+# -- Top --
+Top      : TTJets_LO_50ns : xsec; FillColor=ROOT.kGreen+3, Label="top", NormSystematic=0.5
+
+# -- QCD --
+#QCD      : QCD_Pt80to120_50ns    : xsec; FillColor=ROOT.kGray, Label="QCD", NormSystematic=1.0
+#QCD      : QCD_Pt120to170_50ns   : xsec; FillColor=ROOT.kGray, Label="QCD", NormSystematic=1.0
+#QCD      : QCD_Pt170to300_50ns   : xsec; FillColor=ROOT.kGray, Label="QCD", NormSystematic=1.0
+#QCD      : QCD_Pt300to470_50ns   : xsec; FillColor=ROOT.kGray, Label="QCD", NormSystematic=1.0
+#QCD      : QCD_Pt470to600_50ns   : xsec; FillColor=ROOT.kGray, Label="QCD", NormSystematic=1.0
+#QCD      : QCD_Pt600to800_50ns   : xsec; FillColor=ROOT.kGray, Label="QCD", NormSystematic=1.0
+#QCD      : QCD_Pt800to1000_50ns  : xsec; FillColor=ROOT.kGray, Label="QCD", NormSystematic=1.0
+##QCD      : QCD_Pt1000to1400_50ns : xsec; FillColor=ROOT.kGray, Label="QCD", NormSystematic=1.0
+#QCD      : QCD_Pt1400to1800_50ns : xsec; FillColor=ROOT.kGray, Label="QCD", NormSystematic=1.0
+#QCD      : QCD_Pt1800to2400_50ns : xsec; FillColor=ROOT.kGray, Label="QCD", NormSystematic=1.0
+#QCD      : QCD_Pt2400to3200_50ns : xsec; FillColor=ROOT.kGray, Label="QCD", NormSystematic=1.0
+#QCD      : QCD_Pt3200_50ns       : xsec; FillColor=ROOT.kGray, Label="QCD", NormSystematic=1.0
+
+
+# -- data --
+data     : DoubleMuon_2015B
+data     : DoubleEG_2015B
