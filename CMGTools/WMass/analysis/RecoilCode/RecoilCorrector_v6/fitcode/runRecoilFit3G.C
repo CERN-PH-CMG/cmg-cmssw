@@ -92,6 +92,9 @@ sleep 20
 #include "RooFitResult.h"
 #include "RooDataHist.h"
 #include "RooHistPdf.h"
+#include "RooKeysPdf.h"
+#include "Roo2DKeysPdf.h"
+#include "RooDoubleCBFast.h"
 #include "RooAddition.h"
 #include "RooCustomizer.h"
 #include "RooWorkspace.h"
@@ -256,6 +259,8 @@ bool dodebug = false;
 bool doPrint = true; // save the unbinned Mean Scale and RMS ; the results of rootFit unbinned fit; the extra plots
 bool doPrintAll = true; // when this is set to true, do the binned
 
+bool doKeys = false;
+
 /// BELOW FLAGS to set the fits
 bool usePol3 = false;
 bool usePol4 = true;
@@ -264,6 +269,7 @@ bool useErfPol2ScaleU1 = false;
 
 bool doDegenerateSigma = false;
 bool do3G=true;
+bool do1CB2G=false;
 
 /// BELOW FLOAGS for the inversion
 bool invGraph = true;
@@ -2883,9 +2889,13 @@ RooAddPdf * lGAdd;
 RooGaussian * lGaus1;
 RooGaussian * lGaus2;
 RooGaussian * lGaus3;
+RooDoubleCBFast * lCB;
+
 RooGaussian * lRGaus1;
 RooGaussian * lRGaus2;
 RooGaussian * lRGaus3;
+RooDoubleCBFast * lRCB;
+
 
 RooRealVar  lR1Mean("Rmean",  "Rmean",0,-10.,10.);
 RooRealVar  lR1MeanLarge("RmeanLarge",  "RmeanLarge",0,-10.,10.);
@@ -2897,6 +2907,11 @@ RooRealVar  lR3Sigma("Rsigma3","RSigma3",0,0.,10.);
 //RooRealVar l1Sigma("sigma1","sigma1",0,0.,10.);
 //RooRealVar l2Sigma("sigma2","sigma2",0,0.,10.);
 //RooRealVar l3Sigma("sigma3","sigma3",0,0.,10.);
+
+RooRealVar lRAlpha1("RAlpha1","Alpha1",0,0.,10.);
+RooRealVar lRN1("RN1","RN1",0,0.,10.);
+RooRealVar lRAlpha2("RAlpha2","RAlpha2",0,0.,10.);
+RooRealVar lRN2("RN2","RN2",0,0.,10.);
 
 RooFormulaVar * l1Sigma;
 RooFormulaVar * l2Sigma;
@@ -2914,11 +2929,17 @@ RooRealVar lCbkgFrac("CbkgFrac","CbkgFrac",0.,-10.,10.);
 RooRealVar lDbkgFrac("DbkgFrac","DbkgFrac",0.,-10.,10.);
 
 RooRealVar lRAFrac("RAFrac","RAFrac",0.,-5.,5.);
+RooRealVar lRBFrac("RAFrac","RAFrac",0.,-5.,5.);
 
 RooRealVar lAFrac("AFrac","AFrac",0.,0.,5.);
 RooRealVar lBFrac("BFrac","BFrac",0.,-5.,5.);
 RooRealVar lCFrac("CFrac","CFrac",0.,-5.,5.);
 RooRealVar lDFrac("DFrac","DFrac",0.,-5.,5.);
+
+RooRealVar lA1Frac("A1Frac","A1Frac",0.,0.,5.);
+RooRealVar lB1Frac("B1Frac","B1Frac",0.,-5.,5.);
+RooRealVar lC1Frac("C1Frac","C1Frac",0.,-5.,5.);
+RooRealVar lD1Frac("D1Frac","D1Frac",0.,-5.,5.);
 
 RooRealVar lA1Sig("a1sig","a1sig",0.,  0.,10.);
 RooRealVar lB1Sig("b1sig","b1sig",0.,-10.,10.);
@@ -2938,6 +2959,12 @@ RooRealVar lD3Sig("d3sig","d3sig",0.,-10.,10.);
 double startSigma1, minSigma1, maxSigma1;
 double startSigma2, minSigma2, maxSigma2;
 double startSigma3, minSigma3, maxSigma3; 
+
+// CB variables
+double startAlpha1, minAlpha1, maxAlpha1;
+double startN1,minN1,maxN1;
+double startAlpha2, minAlpha2, maxAlpha2;
+double startN2,minN2,maxN2;
 
 double minFrac, maxFrac;
 
@@ -3188,6 +3215,27 @@ void constructPDF(double lPar) {
 
   if(do3G) {
 
+    startSigma1=0.4;
+    minSigma1=0.2;
+    maxSigma1=1.2;
+
+    startSigma2=1.2;
+    minSigma2=0.6;
+    maxSigma2=2.;
+
+    startSigma3 = 2.1; //2.
+    minSigma3 = 1.5;
+    maxSigma3 = 6.; //12
+
+    minFrac = 0.;
+    maxFrac = 1.;
+    if(lPar!=fU1) maxFrac = 0.6;
+
+  }
+
+  if(do1CB2G) {
+
+    // Those are CHRIstos initial values
     startSigma1=0.4; 
     minSigma1=0.2; 
     maxSigma1=1.2;
@@ -3203,6 +3251,22 @@ void constructPDF(double lPar) {
     minFrac = 0.;
     maxFrac = 1.;
     if(lPar!=fU1) maxFrac = 0.6;
+
+    startAlpha1=2.; //----|CHRISTOS:
+    minAlpha1=2.; //-------|INITIAL
+    maxAlpha1=2.; //------|VALUES
+    //---------------------|FOR THE
+    startN1=4.6; //--------|RooRealVar
+    minN1=4.4; //----------|PARAMETERS
+    maxN1=5.2; //----------|OF
+    //---------------------|THE
+    startAlpha2=2.; //----|DOUBLE
+    minAlpha2=2.; //------|CRYSTAL
+    maxAlpha2=2.; //------|BALL
+    //---------------------|IN THE
+    startN2=6.7; //--------|WANTED
+    minN2=6.5; //----------|FIT
+    maxN2=7.2; //----------|1CB+2GAUSSIANS
 
   }
 
@@ -3222,22 +3286,40 @@ void constructPDF(double lPar) {
   if(lPar!=fU1) lR1MeanVeryLarge.setConstant(kTRUE);
 
   lRAFrac.setRange(minFrac,maxFrac); lRAFrac.setVal(0.35);
+  lRBFrac.setRange(minFrac,maxFrac); lRBFrac.setVal(0.35);
+
+  lRAlpha1.setRange(minAlpha1, maxAlpha1); lRAlpha1.setVal(startAlpha1);
+  lRAlpha2.setRange(minAlpha2, maxAlpha2); lRAlpha2.setVal(startAlpha2);
+
+  lRN1.setRange(minN1, maxN1); lRN1.setVal(startN1);
+  lRN2.setRange(minN2, maxN2); lRN2.setVal(startN2);
 
   lR1Sigma.setRange(minSigma1, maxSigma1); lR1Sigma.setVal(startSigma1);
   lR2Sigma.setRange(minSigma2, maxSigma2); lR2Sigma.setVal(startSigma2);
   lR3Sigma.setRange(minSigma3, maxSigma3); lR3Sigma.setVal(startSigma3);
 
-  lRGaus1= new RooGaussian("Rgaus1","Rgaus1",lRXVar,lR1Mean,lR1Sigma);
-  lRGaus2= new RooGaussian("Rgaus2","Rgaus2",lRXVar,lR1MeanLarge,lR2Sigma);
-  lRGaus3= new RooGaussian("Rgaus3","Rgaus3",lRXVar,lR1MeanLarge,lR3Sigma);
-  //  lRGaus3= new RooGaussian("Rgaus3","Rgaus3",lRXVar,lR1MeanVeryLarge,lR3Sigma);
+  // ===> Functions and FRACTION
 
-  // ===> FRACTION
-  if(do3G) {
+  if(do1CB2G) {
+    lRCB= new RooDoubleCBFast("RCB1","RCB1",lRXVar,lR1Mean,lR1Sigma,lRAlpha1,lRN1,lRAlpha2,lRN2); //CHRISTOS : lRGaus1 -> lRCB (NOTE! DON'T CHANGE THE "RGaus1" OTHERWISE NO CHI2 WILL BE GIVEN
+    lRGaus2= new RooGaussian("Rgaus2","Rgaus2",lRXVar,lR1MeanLarge,lR2Sigma);
+    lRGaus3= new RooGaussian("Rgaus3","Rgaus3",lRXVar,lR1MeanVeryLarge,lR3Sigma);
+
+    lR1Frac= new RooFormulaVar("R1frac","@0",RooArgSet(lRAFrac));
+    lRFrac= new RooFormulaVar("Rfrac","@0",RooArgSet(lRBFrac));
+    lRGAdd= new RooAddPdf("RAdd","RAdd",RooArgList(*lRCB,*lRGaus2,*lRGaus3),RooArgList(*lR1Frac,*lRFrac),kTRUE); //CHRISTOS: lRGaus1 -> lRCB
+  } else if(do3G) {
     ///<+++++ 3G 
+
+    lRGaus1= new RooGaussian("Rgaus1","Rgaus1",lRXVar,lR1Mean,lR1Sigma);
+    lRGaus2= new RooGaussian("Rgaus2","Rgaus2",lRXVar,lR1MeanLarge,lR2Sigma);
+    lRGaus3= new RooGaussian("Rgaus3","Rgaus3",lRXVar,lR1MeanLarge,lR3Sigma);
+    //  lRGaus3= new RooGaussian("Rgaus3","Rgaus3",lRXVar,lR1MeanVeryLarge,lR3Sigma);
+
     // lR1Frac= new RooFormulaVar("R1frac","@0+@1*@3+@2*@3*@3+@4*@3*@3*@3",RooArgSet(lAFrac,lBFrac,lCFrac,lRPt,lDFrac));
     lR1Frac= new RooFormulaVar("R1frac","@0",RooArgSet(lRAFrac));
     lRFrac= new RooFormulaVar("Rfrac"  ,"(-(-@0*@1+@0*@3-@3+1)/((@0-1)*(@2-@3)))",RooArgSet(*lR1Frac,lR1Sigma,lR2Sigma,lR3Sigma)); 
+    //    lRFrac= new RooFormulaVar("Rfrac","@0",RooArgSet(lRBFrac));
     //    RooFormulaVar lR1Frac_("R1frac","@0+@1*@3+@2*@3*@3+@4*@3*@3*@3",RooArgSet(lAFrac,lBFrac,lCFrac,lRPt,lDFrac));
     //    RooFormulaVar lRFrac_("Rfrac"  ,"-(-@0*@1+@0*@3-@3+1)/((@0-1)*(@2-@3))",RooArgSet(lR1Frac,lR1Sigma,lR2Sigma,lR3Sigma)); 
     lRGAdd= new RooAddPdf("RAdd","RAdd",RooArgList(*lRGaus1,*lRGaus2,*lRGaus3),RooArgList(*lR1Frac,*lRFrac),kTRUE);
@@ -3411,6 +3493,7 @@ void constructPDF2d(TF1 * FitSigma1, TF1 * FitSigma2, TF1 * FitSigma3,  TF1 * Fi
     l1Frac= new RooFormulaVar("frac1","@0+@1*@3+@2*@3*@3+@4*@3*@3*@3",RooArgSet(lAFrac,lBFrac,lCFrac,lRPt,lDFrac));
     //    l1Frac= new RooFormulaVar("frac1","@0",RooArgSet(lAFrac));
     lFrac= new RooFormulaVar("frac"  ,"(-(-@0*@1+@0*@3-@3+1)/((@0-1)*(@2-@3)))",RooArgSet(*l1Frac,*l1Sigma,*l2Sigma,*l3Sigma)); // free parameter for the doAbsolute=true
+    //    lFrac= new RooFormulaVar("frac","@0+@1*@3+@2*@3*@3+@4*@3*@3*@3",RooArgSet(lA1Frac,lB1Frac,lC1Frac,lRPt,lD1Frac));
     //  RooAddPdf lGAdd("Add","Add",RooArgList(lGaus1,lGaus2,lGaus3),RooArgList(l1Frac,lFrac),kTRUE);
     if(lPar==fU1 && fId==1) lGAdd = new RooAddPdf("AddU1Y1","AddU1Y1",RooArgList(*lGaus1,*lGaus2,*lGaus3),RooArgList(*l1Frac,*lFrac),kTRUE);
     if(lPar!=fU1 && fId==1) lGAdd = new RooAddPdf("AddU2Y1","AddU2Y1",RooArgList(*lGaus1,*lGaus2,*lGaus3),RooArgList(*l1Frac,*lFrac),kTRUE);
@@ -4395,7 +4478,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   if(do8TeV)  fileName2D += "_8TeV";
   if(doRecoParam) fileName2D += "_doRecoParam";
   if(doLepProjAbsolute) fileName2D += "_doLepProjAbsolute";
-  fileName2D += "_MAY2";
+  fileName2D += "_AUG7";
   fileName2D += ".root";
   
   if(doPrint) {
@@ -4524,15 +4607,26 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   std::vector<RooDataSet> lResidVals; 
   //  std::vector<RooDataHist> lResidVals; 
 
+  std::vector<RooKeysPdf> lResidValsKeys;
+
   //http://roofit.sourceforge.net/docs/tutorial/intro/roofit_tutorial_intro.pdf
   // RooDataSet - unbinned (weighted & unweighted) but very slow
   // RooDataHist - binned
   //  std::vector<RooDataSet> lResidVals2D; 
-  std::vector<RooDataHist> lResidVals2D; 
+
+  std::vector<Roo2DKeysPdf> lResidVals2DKeys;
+  std::stringstream pkey; pkey << "Crapsky" << 0;
+  if(lPar==fU1) pkey << "_U1_";
+  if(lPar!=fU1) pkey << "_U2_";
+  pkey << "2D";
+
+  std::vector<RooDataHist> lResidVals2D;
   std::stringstream pSS; pSS << "Crapsky" << 0;
   if(lPar==fU1) pSS << "_U1_";
   if(lPar!=fU1) pSS << "_U2_";
   pSS << "2D"; RooDataHist lData2D(pSS.str().c_str(),pSS.str().c_str(),RooArgSet(lRXVar,lRPt));
+  //  Roo2DKeysPdf pdf_keys2D(pkey.str().c_str(), pkey.str().c_str(), lRXVar, lRPt, lData2D);
+
   //  pSS << "2D"; RooDataSet *lData2D = new RooDataSet(pSS.str().c_str(),pSS.str().c_str(),RooArgSet(lRXVar,lRPt));
   //  int lNBins = 10;
   //  int lNBins = 25;
@@ -4547,7 +4641,9 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     if(fId==1) pSS1 << "_1_";
     if(fId==2) pSS1 << "_2_";
     pSS1 << i0;
+
     RooDataSet lData(pSS1.str().c_str(),pSS1.str().c_str(),RooArgSet(lRXVar)); 
+
     //    RooDataSet lData_1(pSS1.str().c_str(),pSS1.str().c_str(),RooArgSet(lRXVar)); 
     //    RooDataSet * lData_2 = (RooDataSet*) lData_1.reduce("XVar>-4.");
     //    RooDataSet * lData   = (RooDataSet*) lData_2->reduce("XVar<4."); 
@@ -4573,6 +4669,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   } else {
     //    lResidVals2D.push_back(*lData2D);
     lResidVals2D.push_back(lData2D);
+    //    lResidVals2DKeys.push_back(pdf_keys2D);
   }
 
   // not sure those will be used (!)
@@ -4618,6 +4715,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     //    RooDataSet lData_1(RooArgSet(lRXVar)); 
     //    lResidVals[pId].add(RooArgSet(lRXVar)/*,lRWeight.getVal()*/); //Fill the Double Gaussian
     lResidVals[pId].add(RooArgSet(lRXVar),lRWeight.getVal()); //Fill the 1D Double Gaussian
+
     //    lResidVals[pId].reduce("XVar>-4.");
     //    lResidVals[pId].reduce("XVar<4."); 
     //    RooDataSet * lData_2 = (RooDataSet*) lData_1.reduce("XVar>-4.");
@@ -4630,7 +4728,6 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   }
 
   cout << "Size binned Datasets: " << lResidVals.size() << " range_min=" << range_min << " range_max=" << range_max << endl;
-
 
   /// swith off Minos to speed up 
   //  RooFitResult *pFR = lGAdd.fitTo(lResidVals2D[0],Save(kTRUE),ConditionalObservables(lRPt),NumCPU(2),Minos());//,Minos());//,Minos()); //Double Gaussian fit
@@ -4671,7 +4768,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   */
 
   TString fileName2DFIT="file2Dfit_";
-  fileName2DFIT += "MAY2_";
+  fileName2DFIT += "AUG7_";
   if(!fData && (!doPosW && doNegW) && !doBKG) fileName2DFIT += "Wneg";
   if(!fData && (doPosW && !doNegW) && !doBKG) fileName2DFIT += "Wpos";
   if(!fData && (!doPosW && !doNegW) && !doBKG) fileName2DFIT += "Z";
@@ -4867,8 +4964,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       cout << "------------"<< endl;
       cout << "------------"<< endl;
       
-      TString legVPT = "Zpt = ";
-      legVPT += i0;      
+      TString legVPT = Form("Zpt = %d",i0);
 	
       RooFitResult *fr= 0;
       if(doBKG && fData) {
@@ -4888,6 +4984,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 	//model->plotOn(xframe,Components("bkg_pdf,RAdd"),LineColor(kGreen),LineStyle(kDotted),FillColor(kGreen),DrawOption("F")) ;
   	model->plotOn(xframe,Components("bkg_pdf")     ,LineColor(kBlack)  ,LineStyle(kDashed),FillColor(kRed)  ,DrawOption("F")) ;
 	lResidVals[i0].plotOn(xframe) ;
+
 
 	TString nameCanvasOn="PLOT/CanvasBKG_";
 	if(lPar==fU1) nameCanvasOn += "U1_";
@@ -4942,6 +5039,24 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       cout << "====================" << endl;
 
       lResidVals[i0].plotOn(lFrame1,MarkerColor(kRed));
+
+      if(doKeys) {
+
+	std::stringstream pKey1;
+	pKey1 << "Keys";
+	if(lPar==fU1) pKey1 << "_U1";
+	if(lPar!=fU1) pKey1 << "_U2";
+	if(fId==1) pKey1 << "_1_";
+	if(fId==2) pKey1 << "_2_";
+	pKey1 << i0;
+	//	cout << "filling keys " << pKey1.str().c_str() << endl;
+	RooKeysPdf pdf_keys(pKey1.str().c_str(), pKey1.str().c_str(), lRXVar, lResidVals[i0] , RooKeysPdf::MirrorBoth,2);
+	///      lResidValsKeys.push_back(pdf_keys);
+
+	pdf_keys.plotOn(lFrame1,LineColor(kGray)) ;
+
+      }
+
       //see slide 18 in http://roofit.sourceforge.net/docs/tutorial/plot/roofit_tutorial_plot.pdf
       // drawing options in http://root.cern.ch/root/html/tutorials/roofit/rf610_visualerror.C.html
       // results of drawing options https://www.slac.stanford.edu/grp/eg/minos/ROOTSYS/cvs/roofit/doc/v524/
@@ -4953,11 +5068,12 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 	//	lRGAdd->plotOn(lFrame1,ProjWData(lRXVar,lResidVals[i0]),RooFit::LineColor(kBlue));
 	lRGAdd->plotOn(lFrame1,FillColor(7),VisualizeError(*fr,1),RooFit::Components(*lRGAdd)); // 1 sigma band  
 	// draw 1 sigma vand
-	lRGAdd->plotOn(lFrame1,FillColor(kOrange-3),VisualizeError(*fr,1),RooFit::Components(*lRGaus1)); // 1 sigma band
+	if(do3G) lRGAdd->plotOn(lFrame1,FillColor(kOrange-3),VisualizeError(*fr,1),RooFit::Components(*lRGaus1)); // 1 sigma band
+	if(do1CB2G) lRGAdd->plotOn(lFrame1,FillColor(kOrange-3),VisualizeError(*fr,1),RooFit::Components(*lRCB)); // 1 sigma band
 	//      lRGAdd.plotOn(lFrame1,LineStyle(kDashed),LineColor(kRed),LineWidth(2),VisualizeError(*fr,1,kFALSE),DrawOption("L"),RooFit::Components(lRGaus1));
 	lRGAdd->plotOn(lFrame1,FillColor(kMagenta-9),VisualizeError(*fr,1),RooFit::Components(*lRGaus2)); // 1 sigma band
 	//      lRGAdd.plotOn(lFrame1,LineStyle(kDashed),LineColor(kViolet),LineWidth(2),VisualizeError(*fr,1),DrawOption("L"),RooFit::Components(lRGaus2));
-	if(do3G) lRGAdd->plotOn(lFrame1,FillColor(kGreen+2),VisualizeError(*fr,1),RooFit::Components(*lRGaus3)); // 1 sigma band
+	if(do3G || do1CB2G) lRGAdd->plotOn(lFrame1,FillColor(kGreen+2),VisualizeError(*fr,1),RooFit::Components(*lRGaus3)); // 1 sigma band
 	//      lRGAdd.plotOn(lFrame1,LineStyle(kDashed),LineColor(kViolet),LineWidth(2),VisualizeError(*fr,1),DrawOption("L"),RooFit::Components(lRGaus2));
 	// draw central value
 	lRGAdd->plotOn(lFrame1,RooFit::LineColor(kBlue));   
@@ -5043,8 +5159,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       lFrame1->Print(); 
 
       if(fr) {
-	TString nameRooHist="h_";
-	nameRooHist+=lResidVals[i0].GetName();
+
+	TString nameRooHist=Form("h_%s",lResidVals[i0].GetName());
 	TString nameRooCurve="RAdd_Norm[XVar]";
 	
 	//	TString chi2str = "0";
@@ -5059,28 +5175,30 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
 	//      TString chi2str = Form("chi2/ndof = %.2f",lFrame1->chiSquare(fr->floatParsFinal().getSize()));
 	latexLabel.DrawLatex(0.65, 0.8, chi2str);
+	TString statusstr = Form("status = %d",fr->status());
+	latexLabel.DrawLatex(0.65, 0.75, statusstr);
+
+	/*
+	// OPTIONAL PRINTING
 	TString frac1str = Form("frac1 = %.2f",lR1Frac->getVal());
-	latexLabel.DrawLatex(0.65, 0.75, frac1str);
+	latexLabel.DrawLatex(0.65, 0.7, frac1str);
 	if(do3G) {
 	  TString frac2str = Form("frac2 = %.2f",lRFrac->getVal()*(1-lR1Frac->getVal()));
-	  latexLabel.DrawLatex(0.65, 0.7, frac2str);
+	  latexLabel.DrawLatex(0.65, 0.65, frac2str);
 	  TString frac3str = Form("frac3 = %.2f",(1-lR1Frac->getVal())*(1-lRFrac->getVal()));
-	  latexLabel.DrawLatex(0.65, 0.65, frac3str);
+	  latexLabel.DrawLatex(0.65, 0.6, frac3str);
 	} 
 	TString rms1str = Form("sigma1 = %.2f",lR1Sigma.getVal());
-	latexLabel.DrawLatex(0.65, 0.6, rms1str);
+	latexLabel.DrawLatex(0.65, 0.55, rms1str);
 	TString rms2str = Form("sigma2 = %.2f",lR2Sigma.getVal());
-	latexLabel.DrawLatex(0.65, 0.55, rms2str);
+	latexLabel.DrawLatex(0.65, 0.5, rms2str);
 	TString rms3str = Form("sigma3 = %.2f",lR3Sigma.getVal());
-	latexLabel.DrawLatex(0.65, 0.5, rms3str);
+	latexLabel.DrawLatex(0.65, 0.45, rms3str);
 	TString meanstr = Form("mean = %.2f",lR1Mean.getVal());
-	latexLabel.DrawLatex(0.65, 0.45, meanstr);
-	TString statusstr = Form("status = %d",fr->status());
-	latexLabel.DrawLatex(0.65, 0.4, statusstr);
+	latexLabel.DrawLatex(0.65, 0.4, meanstr);
+	*/
 
       }
-	
-      //      cout << "arrived here" << endl;
 
       ///////
 
@@ -5113,10 +5231,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
       test += labeling.Data();
 
-      TString testPDF=test.Data();
-
+      TString testPDF=Form("%s.pdf",test.Data());
       test += ".png";
-      testPDF += ".pdf";
       
       iC->SaveAs(test.Data());
       if(i0==5 || i0==10 || i0==15) iC->Print(testPDF.Data());
@@ -5338,13 +5454,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     ////
     TString pSS5="PLOTNOTE/chi2Plot";
     pSS5 += labeling.Data();
-
-    TString pSS5pdf="";
-    pSS5pdf=pSS5.Data();
-
+    TString pSS5pdf=Form("%s.pdf",pSS5.Data());
     pSS5 += ".png";
-    pSS5pdf += ".pdf";
-
     gPad->SaveAs(pSS5.Data());
     gPad->Print(pSS5pdf.Data());
 
@@ -5368,19 +5479,12 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     latexLabel.DrawLatex(0.20, 0.3, legU1U2);
 
     TString pSS0="PLOTNOTE/G0";
-    
     pSS0 += labeling.Data();
-
-    TString pSS0pdf="";
-    pSS0pdf=pSS0.Data();
-
+    TString pSS0pdf=Form("%s.pdf",pSS0.Data());
     pSS0 += ".png";
-    pSS0pdf += ".pdf";
-
     iC->SaveAs(pSS0.Data());
     iC->Print(pSS0pdf.Data());
 
-    
     //////
     //// cin.get();
     //////
@@ -5408,6 +5512,9 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     //    TF1 *lFitPullMean3  = new TF1("lFitPullMean3",   "pol2");
     //    TF1 *iMean3Fit  = new TF1("iMean3Fit",   "pol10"); // this need to be large to store the errors from the computeFitErrors
     //    TFitResultPtr  lFitPtrM0Verylarge = lM0Verylarge->Fit(lFitPullMean3,"SRE","", range_min , range_max); //"EXO"
+
+
+    if(do1CB2G) return; //CHRISTOS
 
     cout << "============" << endl;
     cout << "============" << endl;
@@ -5589,17 +5696,10 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     lineMin->Draw("same");
     lineMax->Draw("same");
 
-
     TString pSS1="PLOTNOTE/pG1";
-
     pSS1 += labeling.Data();
-    
-    TString pSS1pdf="";
-    pSS1pdf=pSS1.Data();
-
+    TString pSS1pdf=Form("%s.pdf",pSS1.Data());
     pSS1 += ".png";
-    pSS1pdf += ".pdf";
-
     iC->SaveAs(pSS1.Data());
     iC->Print(pSS1pdf.Data());
 
@@ -5646,18 +5746,11 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     lineMax->Draw("same");
 
     TString pSS2="PLOTNOTE/pG2";
-
     pSS2 += labeling.Data();
-    
-    TString pSS2pdf="";
-    pSS2pdf=pSS2.Data();
-
+    TString pSS2pdf=Form("%s.pdf",pSS2.Data());
     pSS2 += ".png";
-    pSS2pdf += ".pdf";
-
     iC->SaveAs(pSS2.Data());
     iC->Print(pSS2pdf.Data());
-
 
     //////
     //// cin.get();
@@ -5707,15 +5800,9 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     lineMax->Draw("same");
 
     TString pSS3="PLOTNOTE/pG3";
-
     pSS3 += labeling.Data();
-    
-    TString pSS3pdf="";
-    pSS3pdf=pSS3.Data();
-
+    TString pSS3pdf=Form("%s.pdf",pSS3.Data());
     pSS3 += ".png";
-    pSS3pdf += ".pdf";
-
     iC->SaveAs(pSS3.Data());
     iC->Print(pSS3pdf.Data());
 
@@ -5821,15 +5908,9 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     lineMax->Draw("same");
 
     TString pSS4="PLOTNOTE/pGFrac";
-    
     pSS4 += labeling.Data();
-    
-    TString pSS4pdf="";
-    pSS4pdf=pSS4.Data();
-
+    TString pSS4pdf=Form("%s.pdf",pSS4.Data());
     pSS4 += ".png";
-    pSS4pdf += ".pdf";
-
     gPad->SaveAs(pSS4.Data());
     gPad->Print(pSS4pdf.Data());
 
@@ -5870,15 +5951,9 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     latexLabel.DrawLatex(0.20, 0.3, legU1U2);
 
     TString pMM0="PLOTNOTE/M0";
-
     pMM0 += labeling.Data();
-
-    TString pMM0pdf="";
-    pMM0pdf=pMM0.Data();
-
+    TString pMM0pdf=Form("%s.pdf",pMM0.Data());
     pMM0 += ".png";
-    pMM0pdf += ".pdf";
-
     iC->SaveAs(pMM0.Data());
     iC->Print(pMM0pdf.Data());
 
@@ -6840,7 +6915,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
   //  TString name="recoilfits/recoilfit_JAN22_MADtoMAD";
   //  TString name="recoilfits/recoilfit_JAN22_POWtoMAD";
   //  TString name="recoilfits/recoilfit_JAN28";
-  TString name="recoilfits/recoilfit_MAY2";
+  TString name="recoilfits/recoilfit_AUG7";
   if(do8TeV) name +="_8TeV";
   if(doABC) name +="_ABC";
 
@@ -6866,6 +6941,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
     // 44X
     //    fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");
     // 53X
+
     if(doMad && !do8TeV )  fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root");
     if(!doMad && !do8TeV ) fDataFile = TFile::Open("root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root");
 
@@ -6876,7 +6952,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
       /**/
       //      fDataFile = TFile::Open(Form("TREE/skimmedTree_Y%d_mad%d_doKalmanCorr1_iter0_writeTree_1.root",fId,doMad));
       //   cout << " reading TREE/skimmedTree_Y" << fId << "_mad" << doMad << "_doKalmanCorr1_iter0_writeTree_1.root" << endl;
-    } 
+    }
 
     /*
     if(doClosure && !do8TeV)   {
@@ -6923,7 +6999,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 			    ////			    "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
 			    //			    "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
 			    //			    "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
-			    "../../recoilfit_MAY2_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
+			    "../../recoilfit_AUG7_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
 
       if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,lZMU1RMS3Fit,lZMU1FracFit,lZMU1Mean1Fit, lZMU1Mean2Fit,
 			   lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,lZMU2RMS3Fit,lZMU2FracFit,lZMU2Mean1Fit, lZMU2Mean2Fit,
@@ -6931,7 +7007,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 			   //			   "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 			   //			   "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 			   //			   "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
-			   "../../recoilfit_MAY2_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
+			   "../../recoilfit_AUG7_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 
       isMC=false;
   
@@ -6952,7 +7028,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 		 //		 "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 		 //		 "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 		 //		 "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
-		 "../../recoilfit_MAY2_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
+		 "../../recoilfit_AUG7_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
       /*
       // POWHEG as DATA closure
       if(!doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,lZDU1Mean1Fit, lZDU1Mean2Fit,
