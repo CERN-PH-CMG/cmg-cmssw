@@ -228,8 +228,6 @@ metNoHFAna = cfg.Analyzer(
     metCollection     = "slimmedMETsNoHF",
     noPUMetCollection = "slimmedMETsNoHF",    
     copyMETsByValue = False,
-<<<<<<< HEAD
-=======
     doTkMet = False,
     doMetNoPU = True,
     doMetNoMu = False,
@@ -248,7 +246,6 @@ metAnaDef = cfg.Analyzer(
     metCollection     = ("slimmedMETs","", "PAT"),
     noPUMetCollection = ("slimmedMETs","", "PAT"),    
     copyMETsByValue = True,
->>>>>>> 0fe36ad... adding metNoHF to metCore and treePdocucerMet
     doTkMet = False,
     doMetNoPU = True,
     doMetNoMu = False,
