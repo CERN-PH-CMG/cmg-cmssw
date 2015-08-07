@@ -1,9 +1,10 @@
 from CMGTools.TTHAnalysis.treeReAnalyzer import *
+from CMGTools.MonoXAnalysis.tools.PileUpReWeighter import PileUpReWeighter
 
 class EventVarsMonojet:
     def __init__(self):
         self.branches = [ "nMu10V", "nMu20T", "nEle10V", "nEle20T", "nTau18V", "nGamma15V", "nGamma175T",
-                          "dphijj", "weight", "jetclean1", "jetclean2", "phmet_pt", "phmet_phi"
+                          "dphijj", "weight", "jetclean1", "jetclean2", "phmet_pt", "phmet_phi", "vtxW"
                           ]
     def initSampleNormalization(self,sample_nevt):
         self.sample_nevt = sample_nevt        
@@ -53,9 +54,8 @@ class EventVarsMonojet:
         return ret
     def __call__(self,event):
         # prepare output
-        #ret = dict([(name,0.0) for name in self.branches])
         ret = {}; jetret = {}; tauret = {}
-        ret['weight'] = event.xsec * 1000 / self.sample_nevt
+        ret['weight'] = event.xsec * 1000 / self.sample_nevt if event.run == 1 else 1.0
         leps = [l for l in Collection(event,"LepGood","nLepGood")]
         ret['nMu10V'] = sum([(abs(l.pdgId)==13 and int(self.lepIdVeto(l))) for l in leps ])
         ret['nMu20T'] = sum([(abs(l.pdgId)==13 and int(self.lepIdTight(l))) for l in leps ])
@@ -77,6 +77,11 @@ class EventVarsMonojet:
         phmet = self.metNoPh(metp4,photonsT)
         ret['phmet_pt'] = phmet.Pt()
         ret['phmet_phi'] = phmet.Phi()
+
+        ### temporary nvtx reweighting
+        puweighter = PileUpReWeighter('$CMSSW_BASE/src/CMGTools/MonoXAnalysis/data/pileup/nvtxData.root','$CMSSW_BASE/src/CMGTools/MonoXAnalysis/data/pileup/nvtxMC.root',event.run)
+        ret['vtxW'] = puweighter.getWeight(event.nVert)
+
         ### muon-jet cleaning
         # Define the loose muons to be cleaned
         ret["iM"] = []

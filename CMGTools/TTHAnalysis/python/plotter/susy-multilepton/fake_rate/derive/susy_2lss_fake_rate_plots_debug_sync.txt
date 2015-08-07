@@ -1,0 +1,26 @@
+den_eta_pt: abs(LepGood_eta)\:LepGood_ConePt : [10,15,25,35,50,70]*[0,1,2,2.5] ; XTitle="Pt", YTitle="Eta"
+den_eta_corrconept: abs(LepGood_eta)\:LepGood_CorrConePt : [10,15,25,35,50,70]*[0,1,2,2.5] ; XTitle="CorrConePt", YTitle="Eta"
+
+
+#eta_pt: bin2Dto1D(LepGood_pt,abs(LepGood_eta),0) : 15,0.5,15.5 ; XTitle="FR 3x5 eta_pt bin",Density=True
+#eta_conept: bin2Dto1D(LepGood_ConePt,abs(LepGood_eta),0) : 15,0.5,15.5 ; XTitle="FR 3x5 eta_conept bin",Density=True
+#eta_jetpt: bin2Dto1D(LepGood_pt/LepGood_jetPtRatio,abs(LepGood_eta),0) : 15,0.5,15.5 ; XTitle="FR 3x5 eta_jetpt bin",Density=True
+#
+#lep_pt:     LepGood_pt: [ 0,5,7,10,13,16,20,25,30,35,45,60,90,120 ] ; XTitle="pt"
+#pdgId:	    abs(LepGood_pdgId): 7,9.5,16.5 ; XTitle="pdgId"
+#eta:	    LepGood_eta: 52,-2.6,2.6; XTitle="eta"
+#miniiso:    LepGood_miniRelIso: 50,0,1; XTitle="miniiso"
+#jetPtRatio: LepGood_jetPtRatio : 60,0,1.2 ; XTitle="jetPtRatio"
+#jetPtRel:   LepGood_jetPtRel : 60,0,20 ; XTitle="jetPtRel"
+#sip:	    LepGood_sip3d: 10,0,10; XTitle="sip",Logy=True
+#dxy:	    abs(LepGood_dxy): 2,0,0.1; XTitle="dxy",Logy=True
+#dz:	    abs(LepGood_dz): 2,0,0.2; XTitle="dz",Logy=True
+#muMediumID: (abs(LepGood_pdgId)==13) && LepGood_mediumMuonId : 2,-0.5,1.5; XTitle="muonIDM"
+#elMVAloose: ((abs(LepGood_pdgId)==11) && (LepGood_mvaIdPhys14 > -0.11+(-0.35+0.11)*(abs(LepGood_eta)>0.8)+(-0.55+0.35)*(abs(LepGood_eta)>1.479))) : 2,-0.5,1.5; XTitle="mvaloose"
+#elMVAtight: ((abs(LepGood_pdgId)==11) && (LepGood_mvaIdPhys14 > 0.73+(0.57-0.73)*(abs(LepGood_eta)>0.8)+(+0.05-0.57)*(abs(LepGood_eta)>1.479))) : 2,-0.5,1.5; XTitle="mvatight"
+#
+#multiiso:   multiIso_multiWP(LepGood_pdgId,LepGood_pt,LepGood_eta,LepGood_miniRelIso,LepGood_jetPtRatio,LepGood_jetPtRel,2) > 0 : 2,-0.5,1.5; XTitle="multiiso"
+#
+#multiiso_AND_elMVAtight:  multiIso_multiWP(LepGood_pdgId,LepGood_pt,LepGood_eta,LepGood_miniRelIso,LepGood_jetPtRatio,LepGood_jetPtRel,2) > 0 && ((abs(LepGood_pdgId)!=11) || (LepGood_mvaIdPhys14 >=0.73+(0.57-0.73)*(abs(LepGood_eta)>0.8)+(+0.05-0.57)*(abs(LepGood_eta)>1.479))) : 2,-0.5,1.5;   Title="multiIso + elMVAtight"
+#
+#multiiso_relaxed_miniiso_conept: (multiIso_multiWP(LepGood_pdgId,LepGood_pt,LepGood_eta,(LepGood_miniRelIso>=0.4),LepGood_jetPtRatio*LepGood_CorrConePt/LepGood_pt,LepGood_jetPtRel,2) > 0) : 2,-0.5,1.5;  XTitle="multiiso_relaxed_miniiso_conept"

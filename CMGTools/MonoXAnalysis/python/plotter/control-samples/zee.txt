@@ -1,0 +1,4 @@
+2 E SF/OS: nLepGood == 2 && LepGood1_pdgId == -LepGood2_pdgId && abs(LepGood1_pdgId) == 11
+tightTag: LepGood1_relIso04 < 0.12
+mll: mZ1 > 60 && mZ1 < 120
+

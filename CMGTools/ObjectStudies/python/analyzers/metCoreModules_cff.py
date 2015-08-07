@@ -55,7 +55,7 @@ eventFlagsAna = cfg.Analyzer(
     processName = 'PAT',
     outprefix   = 'Flag',
     triggerBits = {
-        "HBHENoiseFilter" : [ "Flag_HBHENoiseFilter" ],
+###        "HBHENoiseFilter" : [ "Flag_HBHENoiseFilter" ], ## temporary replacement
         "CSCTightHaloFilter" : [ "Flag_CSCTightHaloFilter" ],
         "hcalLaserEventFilter" : [ "Flag_hcalLaserEventFilter" ],
         "EcalDeadCellTriggerPrimitiveFilter" : [ "Flag_EcalDeadCellTriggerPrimitiveFilter" ],
@@ -70,6 +70,12 @@ eventFlagsAna = cfg.Analyzer(
         "METFilters" : [ "Flag_METFilters" ],
     }
     )
+
+
+from CMGTools.TTHAnalysis.analyzers.hbheAnalyzer import hbheAnalyzer
+hbheFilterAna = cfg.Analyzer(
+    hbheAnalyzer, name = 'hbheAnalyzer',
+)
 
 # Select a list of good primary vertices (generic)
 vertexAna = cfg.Analyzer(
@@ -150,14 +156,14 @@ lepAna = cfg.Analyzer(
     loose_muon_relIso = 0.5,
     muon_dxydz_track = "innerTrack",
     # inclusive very loose electron selection
-    inclusive_electron_id  = "",
+    inclusive_electron_id  = "POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Veto_full5x5",
     inclusive_electron_pt  = 10,
     inclusive_electron_eta = 2.5,
     inclusive_electron_dxy = 0.5,
     inclusive_electron_dz  = 1.0,
     inclusive_electron_lostHits = 1.0,
     # loose electron selection
-    loose_electron_id     = "POG_Cuts_ID_2012_Veto_full5x5",
+    loose_electron_id     = "POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Veto_full5x5",
     loose_electron_pt     = 10,
     loose_electron_eta    = 2.4,
     loose_electron_dxy    = 0.05,
@@ -170,7 +176,7 @@ lepAna = cfg.Analyzer(
     # electron isolation correction method (can be "rhoArea" or "deltaBeta")
     ele_isoCorr = "rhoArea" ,
     el_effectiveAreas = "Phys14_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1')
-    ele_tightId = "Cuts_2012" ,
+    ele_tightId = "Cuts_PHYS14_25ns_v1_ConvVetoDxyDz" ,
     # Mini-isolation, with pT dependent cone: will fill in the miniRelIso, miniRelIsoCharged, miniRelIsoNeutral variables of the leptons (see https://indico.cern.ch/event/368826/ )
     doMiniIsolation = False, # off by default since it requires access to all PFCandidates 
     packedCandidates = 'packedPFCandidates',
@@ -228,7 +234,7 @@ from CMGTools.TTHAnalysis.analyzers.ttHmllSkimmer import ttHmllSkimmer
 ttHZskim = cfg.Analyzer(
             ttHmllSkimmer, name='ttHmllSkimmer',
             lepId=[13],
-            maxLeps=4,
+            maxLeps=10,
             massMin=81,
             massMax=101,
             doZGen = False,
@@ -258,8 +264,8 @@ jetAna = cfg.Analyzer(
     recalibrateJets = True, #'MC', # True, False, 'MC', 'Data'
     applyL2L3Residual = False, # Switch to 'Data' when they will become available for Data
     recalibrationType = "AK4PFchs",
-    mcGT     = "Summer15_V5_p6_MC",
-    dataGT   = "Summer15_V5_p6_MC",
+    mcGT     = "Summer15_V2_MC",
+    dataGT   = "Summer15_V2_MC",
     jecPath = "${CMSSW_BASE}/src/CMGTools/RootTools/data/jec/",
     shiftJEC = 0, # set to +1 or -1 to apply +/-1 sigma shift to the nominal jet energies
     addJECShifts = False, # if true, add  "corr", "corrJECUp", and "corrJECDown" for each jet (requires uncertainties to be available!)
@@ -310,6 +316,7 @@ metCoreSequence = [
 ##### met modules below
     metAna,
     eventFlagsAna,
+    hbheFilterAna,
 ##### tree
 ##    treeProducer,
 ]
