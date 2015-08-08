@@ -98,6 +98,7 @@ met_globalVariables = [
 
 met_globalObjects = {
     "met" : NTupleObject("met", metType, help="PF E_{T}^{miss}, after type 1 corrections"),
+    "metNoHF" : NTupleObject("metNoHF", metType, help="PF E_{T}^{miss}, after type 1 corrections (NoHF)"),
 #    "metraw" : NTupleObject("metraw", metType, help="PF E_{T}^{miss}"),
 #    "metType1chs" : NTupleObject("metType1chs", metType, help="PF E_{T}^{miss}, after type 1 CHS jets"),
     #"tkMet" : NTupleObject("tkmet", metType, help="TK PF E_{T}^{miss}"),

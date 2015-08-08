@@ -223,6 +223,23 @@ metAna = cfg.Analyzer(
     dzMax = 0.1,
     collectionPostFix = "",
     )
+metNoHFAna = cfg.Analyzer(
+    METAnalyzer, name="metAnalyzer",
+    metCollection     = "slimmedMETsNoHF",
+    noPUMetCollection = "slimmedMETsNoHF",    
+    copyMETsByValue = False,
+    doTkMet = False,
+    doMetNoPU = True,
+    doMetNoMu = False,
+    doMetNoEle = False,
+    doMetNoPhoton = False,
+    recalibrate = False,
+    jetAnalyzerCalibrationPostFix = "",
+    candidates='packedPFCandidates',
+    candidatesTypes='std::vector<pat::PackedCandidate>',
+    dzMax = 0.1,
+    collectionPostFix = "NoHF",
+    )
 
 
 ##------------------------------------------
@@ -264,8 +281,8 @@ jetAna = cfg.Analyzer(
     recalibrateJets = True, #'MC', # True, False, 'MC', 'Data'
     applyL2L3Residual = False, # Switch to 'Data' when they will become available for Data
     recalibrationType = "AK4PFchs",
-    mcGT     = "Summer15_V2_MC",
-    dataGT   = "Summer15_V2_MC",
+    mcGT     = "Summer15_50nsV2_MC",
+    dataGT   = "Summer15_50nsV2_MC",
     jecPath = "${CMSSW_BASE}/src/CMGTools/RootTools/data/jec/",
     shiftJEC = 0, # set to +1 or -1 to apply +/-1 sigma shift to the nominal jet energies
     addJECShifts = False, # if true, add  "corr", "corrJECUp", and "corrJECDown" for each jet (requires uncertainties to be available!)
@@ -315,6 +332,7 @@ metCoreSequence = [
    #jetAna,
 ##### met modules below
     metAna,
+    metNoHFAna,
     eventFlagsAna,
     hbheFilterAna,
 ##### tree
