@@ -70,7 +70,7 @@ MET_Run2015B = cfg.DataComponent(
 dataSamples = [SingleMuon_Run2015B, DoubleMuon_Run2015B, DoubleEG_Run2015B, MET_Run2015B]
 
 ### ----------------------------- summary ----------------------------------------     
-mcSamples_monojet_Asymptotic25ns = TTs + SingleTop + [WJetsToLNu, DYJetsToLL_M50, DYJetsToLL_M10to50 ] + WJetsToLNuHT + GJetsHT + QCDPt + DiBosons
+mcSamples_monojet_Asymptotic25ns = TTs + SingleTop + [WJetsToLNu, DYJetsToLL_M50, DYJetsToLL_M10to50 ] + ZJetsToNuNuHT + DYJetsM50HT + WJetsToLNuHT + GJetsHT + QCDHT + DiBosons
 
 mcSamples_monojet_Asymptotic50ns = [ TTJets_50ns, TTJets_LO_50ns, DYJetsToLL_M50_50ns, WJetsToLNu_50ns ] + QCDPt_50ns
 
