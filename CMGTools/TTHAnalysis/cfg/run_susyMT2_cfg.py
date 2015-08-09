@@ -140,9 +140,20 @@ from PhysicsTools.Heppy.analyzers.eventtopology.MT2Analyzer import MT2Analyzer
 
 MT2Ana = cfg.Analyzer(
     MT2Analyzer, name = 'MT2Analyzer',
+    metCollection     = "slimmedMETs",
+    doOnlyDefault = True,
+    #    jetPt = 40.,
+    jetPt = mt2JPt, ### jet pt 30: this will change MT2 and pseudo-jets
+    collectionPostFix = "",
+    )
+
+MT2AnaNoHF = cfg.Analyzer(
+    MT2Analyzer, name = 'MT2Analyzer',
+    metCollection     = "slimmedMETsNoHF",
     doOnlyDefault = True,
 #    jetPt = 40.,
     jetPt = mt2JPt, ### jet pt 30: this will change MT2 and pseudo-jets
+    collectionPostFix = "NoHF",
     )
 
 ##------------------------------------------
@@ -241,9 +252,6 @@ susyCoreSequence.insert(susyCoreSequence.index(skimAnalyzer),
 #                        ttHSVAna)
 
 
-susyCoreSequence.insert(susyCoreSequence.index(metAna),
-                        metNoHFAna)
-
 sequence = cfg.Sequence(
     susyCoreSequence+[
     ttHMT2Control,
@@ -252,6 +260,14 @@ sequence = cfg.Sequence(
     ttHFatJetAna,
     treeProducer,
     ])
+
+## NoHF add on
+
+sequence.insert(sequence.index(metAna),
+                metNoHFAna)
+sequence.insert(sequence.index(MT2Ana),
+                MT2AnaNoHF)
+
 
 ###---- to switch off the compression
 #treeProducer.isCompressed = 0
