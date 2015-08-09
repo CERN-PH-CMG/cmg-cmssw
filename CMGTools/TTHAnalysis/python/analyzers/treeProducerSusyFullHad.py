@@ -45,9 +45,9 @@ susyFullHad_globalVariables = susyCore_globalVariables + [
     # Met definitions
     ##--------------------------------------------------
 
-    NTupleVariable("metNoHF_rawPt", lambda ev : ev.metNoHF.uncorrectedPt() if  hasattr(ev,'metNoHF') else  0, help="raw noHF met p_{T}"),
-    NTupleVariable("metNoHF_rawPhi", lambda ev : ev.metNoHF.uncorrectedPhi() if  hasattr(ev,'metNoHF') else  0, help="raw noHF met phi"),
-    NTupleVariable("metNoHF_rawSumEt", lambda ev : ev.metNoHF.uncorrectedSumEt() if  hasattr(ev,'metNoHF') else  0, help="raw noHF met sumEt"),
+    NTupleVariable("metNoHF_rawPt", lambda ev : ev.metNoHF.uncorrectedPt() if  hasattr(ev,'metNoHF') else  0, help="raw NoHF met p_{T}"),
+    NTupleVariable("metNoHF_rawPhi", lambda ev : ev.metNoHF.uncorrectedPhi() if  hasattr(ev,'metNoHF') else  0, help="raw NoHF met phi"),
+    NTupleVariable("metNoHF_rawSumEt", lambda ev : ev.metNoHF.uncorrectedSumEt() if  hasattr(ev,'metNoHF') else  0, help="raw NoHF met sumEt"),
 
     NTupleVariable("met_rawPt", lambda ev : ev.met.uncorrectedPt(), help="raw met p_{T}"),
     NTupleVariable("met_rawPhi", lambda ev : ev.met.uncorrectedPhi(), help="raw met phi"),

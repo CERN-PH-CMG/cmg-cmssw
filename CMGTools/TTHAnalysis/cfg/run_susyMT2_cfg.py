@@ -423,8 +423,12 @@ elif test==3:
 if doSpecialSettingsForMECCA:
     jetAna.doQG = False
     photonAna.do_randomCone = False
-
-
+    # Below slow things note: it will in any case try it only on MC, not on data
+#    photonAna.do_mc_match = False
+#    jetAna.do_mc_match = False
+#    lepAna.do_mc_match = False
+#    isoTrackAna.do_mc_match = False
+#    genAna.makeLHEweights = False
 
 if isData:
     eventFlagsAna.processName = 'HLT'
