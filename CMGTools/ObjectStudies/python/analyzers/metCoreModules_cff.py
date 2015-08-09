@@ -112,7 +112,7 @@ genAna = cfg.Analyzer(
     makeSplittedGenLists = True,
     allGenTaus = False,
     # Save LHE weights from LHEEventProduct
-    makeLHEweights = True,
+    makeLHEweights = False,
     # Print out debug information
     verbose = False,
     )
@@ -202,6 +202,20 @@ ttHLepSkim = cfg.Analyzer(
     #ptCuts = [20,10],                # can give a set of pt cuts on the leptons
     )
 
+## Photon Analyzer (generic)
+photonAna = cfg.Analyzer(
+    PhotonAnalyzer, name='photonAnalyzer',
+    photons='slimmedPhotons',
+    ptMin = 30,
+    etaMax = 2.5,
+    gammaID = "POG_PHYS14_25ns_Loose",
+    rhoPhoton = 'fixedGridRhoFastjetAll',
+    gamma_isoCorr = 'rhoArea',
+    do_mc_match = False,
+    do_randomCone = False,
+)
+
+
 ##------------------------------------------
 ##  MET
 ##------------------------------------------
@@ -212,7 +226,7 @@ metAna = cfg.Analyzer(
     noPUMetCollection = "slimmedMETs",    
     copyMETsByValue = False,
     doTkMet = False,
-    doMetNoPU = True,
+    doMetNoPU = False,
     doMetNoMu = False,
     doMetNoEle = False,
     doMetNoPhoton = False,
@@ -229,7 +243,7 @@ metNoHFAna = cfg.Analyzer(
     noPUMetCollection = "slimmedMETsNoHF",    
     copyMETsByValue = False,
     doTkMet = False,
-    doMetNoPU = True,
+    doMetNoPU = False,
     doMetNoMu = False,
     doMetNoEle = False,
     doMetNoPhoton = False,
@@ -293,7 +307,9 @@ jetAna = cfg.Analyzer(
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
     doQG = False,
-    cleanGenJetsFromPhoton = False
+    do_mc_match = False,
+    cleanGenJetsFromPhoton = False,
+    collectionPostFix = ""
     )
 
 # Jet-MET based Skim (generic, but requirements depend on the final state)
@@ -328,6 +344,8 @@ metCoreSequence = [
     lepAna,
    #ttHLepSkim,
    #ttHZskim,
+##### photon modules below
+   #photonAna,
 ##### jet modules below
    #jetAna,
 ##### met modules below

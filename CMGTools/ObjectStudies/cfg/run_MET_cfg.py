@@ -6,7 +6,7 @@ from CMGTools.ObjectStudies.samples.samples_METPOG_private import * #<-- this on
 from CMGTools.RootTools.samples.samples_13TeV_74X import *
 from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
 
-from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_1mu_iso_50ns, triggers_mumu, triggers_ee
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_1mu_iso_50ns, triggers_mumu, triggers_ee, triggers_photon30, triggers_photon50, triggers_photon75
 
 #-------- INITIAL FLAG
 isDiJet=False
@@ -137,6 +137,20 @@ elif test==15:
         else:
             comp.run_range=(251585,251883) # in promptReco runInJSON: 251643,251721,251883
         print comp
+
+### this is for the PhotonSkim
+elif test==16:
+    isData = True
+    is1PH=True
+    selectedComponents = [ SinglePhoton_Run2015B ]
+    for comp in selectedComponents:
+        comp.triggers = triggers_photon30
+        comp.splitFactor = 1
+        comp.files = comp.files[:]
+        comp.json = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
+        comp.intLumi= 0.04003
+
+
 # ------------------------------------------------------------------------------------------- #
 
 from CMGTools.ObjectStudies.analyzers.metCoreModules_cff import *
@@ -203,6 +217,7 @@ triggerFlagsAna.triggerBits = {
             'SingleMu' : triggers_1mu_iso_50ns, # [ 'HLT_IsoMu17_eta2p1_v*', 'HLT_IsoTkMu17_eta2p1_v*'  ] + [ 'HLT_IsoMu20_v*', 'HLT_IsoTkMu20_v*'  ]
             'DoubleMu' : triggers_mumu, # [ "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*" ]
             'DoubleEG' : triggers_ee, # [ "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*" ]
+            'Photon30' : triggers_photon30, #["HLT_Photon30_R9Id90_HE10_IsoM_v*"]
 }
 
 
