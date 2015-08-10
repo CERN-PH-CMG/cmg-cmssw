@@ -61,7 +61,7 @@ class DYJetsFakeAnalyzer(Analyzer):
 
         # gen MET as sum of the neutrino 4-momenta
         neutrinos = [
-            p for p in event.genParticles if abs(p.pdgId()) in (12, 14, 16)]
+            p for p in event.genParticles if abs(p.pdgId()) in (12, 14, 16) and p.status() == 1]
 
         genmet = ROOT.math.XYZTLorentzVectorD()
         for nu in neutrinos:
