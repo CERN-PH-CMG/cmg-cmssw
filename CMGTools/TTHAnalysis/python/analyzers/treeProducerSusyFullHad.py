@@ -50,9 +50,9 @@ susyFullHad_globalVariables = susyCore_globalVariables + [
     # Met definitions
     ##--------------------------------------------------
 
-    NTupleVariable("metNoHF_rawPt", lambda ev : ev.metNoHF.uncorrectedPt() if  hasattr(ev,'metNoHF') else  0, help="raw NoHF met p_{T}"),
-    NTupleVariable("metNoHF_rawPhi", lambda ev : ev.metNoHF.uncorrectedPhi() if  hasattr(ev,'metNoHF') else  0, help="raw NoHF met phi"),
-    NTupleVariable("metNoHF_rawSumEt", lambda ev : ev.metNoHF.uncorrectedSumEt() if  hasattr(ev,'metNoHF') else  0, help="raw NoHF met sumEt"),
+#BM    NTupleVariable("metNoHF_rawPt", lambda ev : ev.metNoHF.uncorrectedPt() if  hasattr(ev,'metNoHF') else  0, help="raw NoHF met p_{T}"),
+#BM    NTupleVariable("metNoHF_rawPhi", lambda ev : ev.metNoHF.uncorrectedPhi() if  hasattr(ev,'metNoHF') else  0, help="raw NoHF met phi"),
+#BM    NTupleVariable("metNoHF_rawSumEt", lambda ev : ev.metNoHF.uncorrectedSumEt() if  hasattr(ev,'metNoHF') else  0, help="raw NoHF met sumEt"),
 
     NTupleVariable("met_rawPt", lambda ev : ev.met.uncorrectedPt(), help="raw met p_{T}"),
     NTupleVariable("met_rawPhi", lambda ev : ev.met.uncorrectedPhi(), help="raw met phi"),
@@ -120,8 +120,8 @@ susyFullHad_globalVariables = susyCore_globalVariables + [
     NTupleVariable("gamma_mt2", lambda ev: ev.mt2_Xj_gamma, float, help="mt2(j1,j2,met) with photons added to met"),
     NTupleVariable("zll_mt2", lambda ev: ev.mt2_Xj_zll, float, help="mt2(j1,j2,met) with zll added to met, only hadrons"),
 
-    NTupleVariable("mt2NoHF", lambda ev: ev.mt2NoHF_Xj if  hasattr(ev,'mt2NoHF_Xj') else 0, float, help="mt2(j1,j2,met) with jets and leptons and metNoHF"),
-    NTupleVariable("mt2NoHF_had", lambda ev: ev.mt2NoHF_Xj_had if  hasattr(ev,'mt2NoHF_Xj_had') else 0, float, help="mt2(j1,j2,met) with jets and metNoHF"),
+#BM    NTupleVariable("mt2NoHF", lambda ev: ev.mt2NoHF_Xj if  hasattr(ev,'mt2NoHF_Xj') else 0, float, help="mt2(j1,j2,met) with jets and leptons and metNoHF"),
+#BM    NTupleVariable("mt2NoHF_had", lambda ev: ev.mt2NoHF_Xj_had if  hasattr(ev,'mt2NoHF_Xj_had') else 0, float, help="mt2(j1,j2,met) with jets and metNoHF"),
 
     ##--------------------------------------------------
     #            NTupleVariable("minMWjj", lambda ev: ev.minMWjj, int, help="minMWjj"),
@@ -208,8 +208,8 @@ susyFullHad_globalObjects.update({
             "pseudoViaKtJet1_Xj_had"       : NTupleObject("pseudoViaKtJet1_had",     fourVectorType, help="full pseudoJet1 for hemishphere via KT"),
             "pseudoViaKtJet2_Xj_had"       : NTupleObject("pseudoViaKtJet2_had",     fourVectorType, help="full pseudoJet2 for hemishphere via KT"),
             #
-            "pseudoJet1NoHF_Xj"       : NTupleObject("pseudoJet1NoHF",     fourVectorType, help="pseudoJet1 for hemishphere, including leptons and metNoHF"),
-            "pseudoJet2NoHF_Xj"       : NTupleObject("pseudoJet2NoHF",     fourVectorType, help="pseudoJet2 for hemishphere, including leptons and metNoHF"),
+#BM            "pseudoJet1NoHF_Xj"       : NTupleObject("pseudoJet1NoHF",     fourVectorType, help="pseudoJet1 for hemishphere, including leptons and metNoHF"),
+#BM            "pseudoJet2NoHF_Xj"       : NTupleObject("pseudoJet2NoHF",     fourVectorType, help="pseudoJet2 for hemishphere, including leptons and metNoHF"),
 ##
             "gamma_met" : NTupleObject("gamma_met", fourVectorType, help="PF E_{T}^{miss}, plus photon, after type 1 corrections"),
 ##            "gamma_metNoPU" : NTupleObject("gamma_metNoPU", fourVectorType, help="PF noPU E_{T}^{miss}, plus photon"),
@@ -217,7 +217,7 @@ susyFullHad_globalObjects.update({
 ##            "gamma_pseudoJet1"       : NTupleObject("gamma_pseudoJet1",     fourVectorType, help="pseudoJet1 for hemishphere, with photon addition"),
 ##            "gamma_pseudoJet2"       : NTupleObject("gamma_pseudoJet2",     fourVectorType, help="pseudoJet2 for hemishphere, with photon addition"),
             ###
-            "metNoHF" : NTupleObject("metNoHF", metType, help="PF E_{T}^{miss}, after type 1 corrections (NoHF)"),
+#BM            "metNoHF" : NTupleObject("metNoHF", metType, help="PF E_{T}^{miss}, after type 1 corrections (NoHF)"),
 
 })
 
