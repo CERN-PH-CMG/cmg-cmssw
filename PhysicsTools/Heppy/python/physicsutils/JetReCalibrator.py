@@ -10,25 +10,25 @@ class JetReCalibrator:
            It will apply the L1,L2,L3 and possibly the residual corrections to the jets."""
         # Make base corrections
         path = os.path.expandvars(jecPath) #"%s/src/CMGTools/RootTools/data/jec" % os.environ['CMSSW_BASE'];
-        self.L1JetPar  = ROOT.JetCorrectorParameters("%s/%s_L1FastJet_%s.txt" % (path,globalTag,jetFlavour),"");
-        self.L2JetPar  = ROOT.JetCorrectorParameters("%s/%s_L2Relative_%s.txt" % (path,globalTag,jetFlavour),"");
-        self.L3JetPar  = ROOT.JetCorrectorParameters("%s/%s_L3Absolute_%s.txt" % (path,globalTag,jetFlavour),"");
+        self.L1JetPar  = ROOT.JetCorrectorParameters("%s/%s_MC_L1FastJet_%s.txt" % (path,globalTag,jetFlavour),"");
+        self.L2JetPar  = ROOT.JetCorrectorParameters("%s/%s_MC_L2Relative_%s.txt" % (path,globalTag,jetFlavour),"");
+        self.L3JetPar  = ROOT.JetCorrectorParameters("%s/%s_MC_L3Absolute_%s.txt" % (path,globalTag,jetFlavour),"");
         self.vPar = ROOT.vector(ROOT.JetCorrectorParameters)()
         self.vPar.push_back(self.L1JetPar);
         if upToLevel >= 2: self.vPar.push_back(self.L2JetPar);
         if upToLevel >= 3: self.vPar.push_back(self.L3JetPar);
         # Add residuals if needed
         if doResidualJECs : 
-            self.ResJetPar = ROOT.JetCorrectorParameters("%s/%s_L2L3Residual_%s.txt" % (path,globalTag,jetFlavour))
+            self.ResJetPar = ROOT.JetCorrectorParameters("%s/%s_DATA_L2L3Residual_%s.txt" % (path,globalTag,jetFlavour))
             self.vPar.push_back(self.ResJetPar);
         #Step3 (Construct a FactorizedJetCorrector object) 
         self.JetCorrector = ROOT.FactorizedJetCorrector(self.vPar)
-        if os.path.exists("%s/%s_Uncertainty_%s.txt" % (path,globalTag,jetFlavour)):
-            self.JetUncertainty = ROOT.JetCorrectionUncertainty("%s/%s_Uncertainty_%s.txt" % (path,globalTag,jetFlavour));
+        if os.path.exists("%s/%s_DATA_Uncertainty_%s.txt" % (path,globalTag,jetFlavour)):
+            self.JetUncertainty = ROOT.JetCorrectionUncertainty("%s/%s_DATA_Uncertainty_%s.txt" % (path,globalTag,jetFlavour));
         elif os.path.exists("%s/Uncertainty_FAKE.txt" % path):
             self.JetUncertainty = ROOT.JetCorrectionUncertainty("%s/Uncertainty_FAKE.txt" % path);
         else:
-            print 'Missing JEC uncertainty file "%s/%s_Uncertainty_%s.txt", so jet energy uncertainties will not be available' % (path,globalTag,jetFlavour)
+            print 'Missing JEC uncertainty file "%s/%s_DATA_Uncertainty_%s.txt", so jet energy uncertainties will not be available' % (path,globalTag,jetFlavour)
             self.JetUncertainty = None
     def correctAll(self,jets,rho,delta=0,metShift=[0,0]):
         """Applies 'correct' to all the jets, discard the ones that have bad corrections (corrected pt <= 0)"""
@@ -89,20 +89,20 @@ class Type1METCorrection:
            It will make the Type1 MET."""
         # Make base corrections
         path = "%s/src/CMGTools/RootTools/data/jec" % os.environ['CMSSW_BASE'];
-        self.L1JetPar  = ROOT.JetCorrectorParameters("%s/%s_L1FastJet_%s.txt" % (path,globalTag,jetFlavour));
-        self.L2JetPar  = ROOT.JetCorrectorParameters("%s/%s_L2Relative_%s.txt" % (path,globalTag,jetFlavour));
-        self.L3JetPar  = ROOT.JetCorrectorParameters("%s/%s_L3Absolute_%s.txt" % (path,globalTag,jetFlavour));
+        self.L1JetPar  = ROOT.JetCorrectorParameters("%s/%s_MC_L1FastJet_%s.txt" % (path,globalTag,jetFlavour));
+        self.L2JetPar  = ROOT.JetCorrectorParameters("%s/%s_MC_L2Relative_%s.txt" % (path,globalTag,jetFlavour));
+        self.L3JetPar  = ROOT.JetCorrectorParameters("%s/%s_MC_L3Absolute_%s.txt" % (path,globalTag,jetFlavour));
         self.vPar = ROOT.vector(ROOT.JetCorrectorParameters)()
         self.vPar.push_back(self.L1JetPar);
         self.vPar.push_back(self.L2JetPar);
         self.vPar.push_back(self.L3JetPar);
         # Add residuals if needed
         if doResidualJECs : 
-            self.ResJetPar = ROOT.JetCorrectorParameters("%s/%s_L2L3Residual_%s.txt" % (path,globalTag,jetFlavour))
+            self.ResJetPar = ROOT.JetCorrectorParameters("%s/%s_DATA_L2L3Residual_%s.txt" % (path,globalTag,jetFlavour))
             self.vPar.push_back(self.ResJetPar);
         #Step3 (Construct a FactorizedJetCorrector object) 
         self.JetCorrector = ROOT.FactorizedJetCorrector(self.vPar)
-        self.JetUncertainty = ROOT.JetCorrectionUncertainty("%s/%s_Uncertainty_%s.txt" % (path,globalTag,jetFlavour));
+        self.JetUncertainty = ROOT.JetCorrectionUncertainty("%s/%s_DATA_Uncertainty_%s.txt" % (path,globalTag,jetFlavour));
         self.vPar1 = ROOT.vector(ROOT.JetCorrectorParameters)()
         self.vPar1.push_back(self.L1JetPar);
         self.JetCorrectorL1 = ROOT.FactorizedJetCorrector(self.vPar1)
