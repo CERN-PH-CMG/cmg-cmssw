@@ -45,7 +45,7 @@ double costh_CS = -1e10, phi_CS = -1e10;
 double costh_CS_gen_pietro = -1e10, phi_CS_gen_pietro = -1e10;
 double costh_CS_gen = -1e10, phi_CS_gen = -1e10;
 
-void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, int buildTemplates, int useMomentumCorr, int varyGlobalScaleMuonCorrNsigma, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int usePhiMETCorr, int useRecoilCorr, int RecoilCorrNonClosure, int RecoilCorrVarDiagoParSigmas, int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights)
+void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, int buildTemplates, int useMomentumCorr, int varyMuonCorrNsigma, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int usePhiMETCorr, int useRecoilCorr, int RecoilCorrNonClosure, int RecoilCorrVarDiagoParSigmas, int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights)
 {
 
   if (fChain == 0) return;
@@ -708,14 +708,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 if(first_time_in_the_event && m==m_start){ // use rochester corrections if required
                   if(useMomentumCorr==1){ // use rochester corrections if required
                     if(IS_MC_CLOSURE_TEST || isMCorDATA==0){
-                      rmcor44X->momcor_mc(muPosCorr, MuPos_charge, varyGlobalScaleMuonCorrNsigma/* , runopt */);
-                      rmcor44X->momcor_mc(muNegCorr, MuNeg_charge, varyGlobalScaleMuonCorrNsigma/* , runopt */);
+                      rmcor44X->momcor_mc(muPosCorr, MuPos_charge, varyMuonCorrNsigma/* , runopt */);
+                      rmcor44X->momcor_mc(muNegCorr, MuNeg_charge, varyMuonCorrNsigma/* , runopt */);
                       rmcor44X->momcor_mc(muPosCorrCentral, MuPos_charge, 0/* , runopt */);
                       rmcor44X->momcor_mc(muNegCorrCentral, MuNeg_charge, 0/* , runopt */);
                     }
                     else{
-                      rmcor44X->momcor_data(muPosCorr, MuPos_charge, varyGlobalScaleMuonCorrNsigma , run<175832 ? 0 : 1 );
-                      rmcor44X->momcor_data(muNegCorr, MuNeg_charge, varyGlobalScaleMuonCorrNsigma , run<175832 ? 0 : 1 );
+                      rmcor44X->momcor_data(muPosCorr, MuPos_charge, varyMuonCorrNsigma , run<175832 ? 0 : 1 );
+                      rmcor44X->momcor_data(muNegCorr, MuNeg_charge, varyMuonCorrNsigma , run<175832 ? 0 : 1 );
                       rmcor44X->momcor_data(muPosCorrCentral, MuPos_charge, 0 , run<175832 ? 0 : 1 );
                       rmcor44X->momcor_data(muNegCorrCentral, MuNeg_charge, 0 , run<175832 ? 0 : 1 );
                     }
@@ -741,14 +741,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                         corrector_Kalman->smear(muPosCorrCentral);
                         corrector_Kalman->smear(muNegCorrCentral);
                       }
-                      if(varyGlobalScaleMuonCorrNsigma!=0){
+                      if(varyMuonCorrNsigma!=0){
                         if(WMass::KalmanNvariations==1){
-                          corrector_Kalman->varyClosure(varyGlobalScaleMuonCorrNsigma);
+                          corrector_Kalman->varyClosure(varyMuonCorrNsigma);
                         }else{
                           muPosCorr = muPosNoCorr;
                           muNegCorr = muNegNoCorr;
                           corrector_Kalman->reset(); 
-                          corrector_Kalman->vary(n,varyGlobalScaleMuonCorrNsigma);
+                          corrector_Kalman->vary(n,varyMuonCorrNsigma);
                         }
                       }
                       corrector_Kalman->getCorrectedPt(muPosCorr,MuPos_charge); //returns the corrected pt 
@@ -757,7 +757,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                       corrector_Kalman->smear(muNegCorr);
                       // corrector_Kalman->getCorrectedPt(muNegCorrCentral,MuNeg_charge); //returns the corrected pt 
                         
-                      // cout << "muPosCorr after scale correction, varyGlobalScaleMuonCorrNsigma=" << varyGlobalScaleMuonCorrNsigma << endl; 
+                      // cout << "muPosCorr after scale correction, varyMuonCorrNsigma=" << varyMuonCorrNsigma << endl;
                       // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
                       // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
                       // muPosCorr.Print();
@@ -768,12 +768,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                       // }
                       // cout << "corrector_Kalman->getN()= " << corrector_Kalman->getN() << endl;
                       
-                      // cout << "muPosCorr after smear correction, varyGlobalScaleMuonCorrNsigma=" << varyGlobalScaleMuonCorrNsigma << endl; 
+                      // cout << "muPosCorr after smear correction, varyMuonCorrNsigma=" << varyMuonCorrNsigma << endl;
                       // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
                       // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
-                      // if(varyGlobalScaleMuonCorrNsigma!=0){
-                        // corrector_Kalman->applyPtBias(muPosCorr,1e-3*varyGlobalScaleMuonCorrNsigma); //returns the corrected pt 
-                        // // corrector_Kalman->applyPtBias(muNegCorr,1e-3*varyGlobalScaleMuonCorrNsigma); //returns the corrected pt 
+                      // if(varyMuonCorrNsigma!=0){
+                        // corrector_Kalman->applyPtBias(muPosCorr,1e-3*varyMuonCorrNsigma); //returns the corrected pt
+                        // // corrector_Kalman->applyPtBias(muNegCorr,1e-3*varyMuonCorrNsigma); //returns the corrected pt
                       // }
                       // cout << "muPosCorr after muon correction" << endl; 
                       // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
@@ -791,14 +791,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                         corrector_KalmanParam->smear(muPosCorrCentral);
                         corrector_KalmanParam->smear(muNegCorrCentral);
                       }
-                      if(varyGlobalScaleMuonCorrNsigma!=0){
-                        if(WMass::KalmanNvariations==1){
-                          corrector_KalmanParam->varyClosure(varyGlobalScaleMuonCorrNsigma);
-                        }else{
+                      if(varyMuonCorrNsigma!=0){
+                        if(WMass::KalmanNvariations==1){ // vary global scale (just once)
+                          corrector_KalmanParam->varyClosure(varyMuonCorrNsigma);
+                        }else{ // vary n-th fit eigen
                           muPosCorr = muPosNoCorr;
                           muNegCorr = muNegNoCorr;
                           corrector_KalmanParam->reset(); 
-                          corrector_KalmanParam->vary(n,varyGlobalScaleMuonCorrNsigma);
+                          corrector_KalmanParam->vary(n,varyMuonCorrNsigma);
                         }
                       }
                       corrector_KalmanParam->getCorrectedPt(muPosCorr,MuPos_charge); //returns the corrected pt 
@@ -807,7 +807,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                       corrector_KalmanParam->smear(muNegCorr);
                       // corrector_KalmanParam->getCorrectedPt(muNegCorrCentral,MuNeg_charge); //returns the corrected pt 
                         
-                      // cout << "muPosCorr after scale correction, varyGlobalScaleMuonCorrNsigma=" << varyGlobalScaleMuonCorrNsigma << endl; 
+                      // cout << "muPosCorr after scale correction, varyMuonCorrNsigma=" << varyMuonCorrNsigma << endl;
                       // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
                       // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
                       // muPosCorr.Print();
@@ -818,12 +818,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                       // }
                       // cout << "corrector_KalmanParam->getN()= " << corrector_KalmanParam->getN() << endl;
                       
-                      // cout << "muPosCorr after smear correction, varyGlobalScaleMuonCorrNsigma=" << varyGlobalScaleMuonCorrNsigma << endl; 
+                      // cout << "muPosCorr after smear correction, varyMuonCorrNsigma=" << varyMuonCorrNsigma << endl;
                       // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
                       // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
-                      // if(varyGlobalScaleMuonCorrNsigma!=0){
-                        // corrector_KalmanParam->applyPtBias(muPosCorr,1e-3*varyGlobalScaleMuonCorrNsigma); //returns the corrected pt 
-                        // // corrector_KalmanParam->applyPtBias(muNegCorr,1e-3*varyGlobalScaleMuonCorrNsigma); //returns the corrected pt 
+                      // if(varyMuonCorrNsigma!=0){
+                        // corrector_KalmanParam->applyPtBias(muPosCorr,1e-3*varyMuonCorrNsigma); //returns the corrected pt
+                        // // corrector_KalmanParam->applyPtBias(muNegCorr,1e-3*varyMuonCorrNsigma); //returns the corrected pt
                       // }
                       // cout << "muPosCorr after muon correction" << endl; 
                       // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
