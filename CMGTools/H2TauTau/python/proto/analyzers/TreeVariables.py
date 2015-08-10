@@ -21,7 +21,9 @@ event_vars = [
     Variable('veto_thirdlepton', lambda ev : not ev.thirdLeptonVeto, type=int),
     Variable('veto_otherlepton', lambda ev : not ev.otherLeptonVeto, type=int),
     Variable('n_jets', lambda ev : len(ev.cleanJets30), type=int),
+    Variable('n_jets_puid', lambda ev : sum(1 for j in ev.cleanJets30 if j.puJetId()), type=int),
     Variable('n_jets_20', lambda ev : len(ev.cleanJets), type=int),
+    Variable('n_jets_20_puid', lambda ev : sum(1 for j in ev.cleanJets if j.puJetId()), type=int),
     Variable('n_bjets', lambda ev : len(ev.cleanBJets), type=int),
     Variable('n_jets_csvl', lambda ev : sum(1 for jet in ev.cleanJets if jet.btagWP('CSVv2IVFL')), type=int),
     Variable('n_vertices', lambda ev : len(ev.vertices), type=int),
@@ -120,7 +122,7 @@ muon_vars = [
 tau_vars = [
     Variable('decayMode', lambda tau : tau.decayMode()),
     Variable('zImpact', lambda tau : tau.zImpact()),
-    Variable('z_selfvertex', lambda tau : tau.vertex().z())
+    Variable('dz_selfvertex', lambda tau : tau.vertex().z() - tau.associatedVertex.position().z())
 ]
 for tau_id in tauIDs:
     if type(tau_id) is str:
