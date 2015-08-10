@@ -26,6 +26,9 @@ met_globalVariables = [
     NTupleVariable("met_uPara_zll", lambda ev : ev.met.upara_zll if  hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
     NTupleVariable("met_uPerp_zll", lambda ev : ev.met.uperp_zll if  hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
 
+    NTupleVariable("metNoHF_uPara_zll", lambda ev : ev.metNoHF.upara_zll if hasattr(ev,'metNoHF') and hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
+    NTupleVariable("metNoHF_uPerp_zll", lambda ev : ev.metNoHF.uperp_zll if hasattr(ev,'metNoHF') and hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
+
     NTupleVariable("met_rawPt", lambda ev : ev.met.uncorrectedPt(), help="raw met p_{T}"),
     NTupleVariable("met_rawPhi", lambda ev : ev.met.uncorrectedPhi(), help="raw met phi"),
     NTupleVariable("met_rawSumEt", lambda ev : ev.met.uncorrectedSumEt(), help="raw met sumEt"),
@@ -98,6 +101,7 @@ met_globalVariables = [
 
 met_globalObjects = {
     "met" : NTupleObject("met", metType, help="PF E_{T}^{miss}, after type 1 corrections"),
+    "metNoHF" : NTupleObject("metNoHF", metType, help="PF E_{T}^{miss}, after type 1 corrections (NoHF)"),
 #    "metraw" : NTupleObject("metraw", metType, help="PF E_{T}^{miss}"),
 #    "metType1chs" : NTupleObject("metType1chs", metType, help="PF E_{T}^{miss}, after type 1 CHS jets"),
     #"tkMet" : NTupleObject("tkmet", metType, help="TK PF E_{T}^{miss}"),
@@ -110,4 +114,5 @@ met_collections = {
     "gentaus"         : NTupleCollection("genTau",     genParticleWithLinksType, 10, help="Generated leptons (tau) from W/Z decays"),                            
     "generatorSummary" : NTupleCollection("GenPart", genParticleWithLinksType, 100 , help="Hard scattering particles, with ancestry and links"),
 #    "selectedLeptons" : NTupleCollection("lep", leptonType, 50, help="Leptons after the preselection", filter=lambda l : l.pt()>10 ),
+    "selectedPhotons"    : NTupleCollection("gamma", photonType, 50, help="photons with pt>20 and loose cut based ID"),
     }

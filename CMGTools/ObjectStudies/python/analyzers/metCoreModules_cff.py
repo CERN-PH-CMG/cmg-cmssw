@@ -112,7 +112,7 @@ genAna = cfg.Analyzer(
     makeSplittedGenLists = True,
     allGenTaus = False,
     # Save LHE weights from LHEEventProduct
-    makeLHEweights = True,
+    makeLHEweights = False,
     # Print out debug information
     verbose = False,
     )
@@ -202,6 +202,20 @@ ttHLepSkim = cfg.Analyzer(
     #ptCuts = [20,10],                # can give a set of pt cuts on the leptons
     )
 
+## Photon Analyzer (generic)
+photonAna = cfg.Analyzer(
+    PhotonAnalyzer, name='photonAnalyzer',
+    photons='slimmedPhotons',
+    ptMin = 30,
+    etaMax = 2.5,
+    gammaID = "POG_PHYS14_25ns_Loose",
+    rhoPhoton = 'fixedGridRhoFastjetAll',
+    gamma_isoCorr = 'rhoArea',
+    do_mc_match = False,
+    do_randomCone = False,
+)
+
+
 ##------------------------------------------
 ##  MET
 ##------------------------------------------
@@ -212,7 +226,7 @@ metAna = cfg.Analyzer(
     noPUMetCollection = "slimmedMETs",    
     copyMETsByValue = False,
     doTkMet = False,
-    doMetNoPU = True,
+    doMetNoPU = False,
     doMetNoMu = False,
     doMetNoEle = False,
     doMetNoPhoton = False,
@@ -222,6 +236,23 @@ metAna = cfg.Analyzer(
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,
     collectionPostFix = "",
+    )
+metNoHFAna = cfg.Analyzer(
+    METAnalyzer, name="metAnalyzer",
+    metCollection     = "slimmedMETsNoHF",
+    noPUMetCollection = "slimmedMETsNoHF",    
+    copyMETsByValue = False,
+    doTkMet = False,
+    doMetNoPU = False,
+    doMetNoMu = False,
+    doMetNoEle = False,
+    doMetNoPhoton = False,
+    recalibrate = False,
+    jetAnalyzerCalibrationPostFix = "",
+    candidates='packedPFCandidates',
+    candidatesTypes='std::vector<pat::PackedCandidate>',
+    dzMax = 0.1,
+    collectionPostFix = "NoHF",
     )
 
 
@@ -264,8 +295,8 @@ jetAna = cfg.Analyzer(
     recalibrateJets = True, #'MC', # True, False, 'MC', 'Data'
     applyL2L3Residual = False, # Switch to 'Data' when they will become available for Data
     recalibrationType = "AK4PFchs",
-    mcGT     = "Summer15_V2_MC",
-    dataGT   = "Summer15_V2_MC",
+    mcGT     = "Summer15_50nsV2_MC",
+    dataGT   = "Summer15_50nsV2_MC",
     jecPath = "${CMSSW_BASE}/src/CMGTools/RootTools/data/jec/",
     shiftJEC = 0, # set to +1 or -1 to apply +/-1 sigma shift to the nominal jet energies
     addJECShifts = False, # if true, add  "corr", "corrJECUp", and "corrJECDown" for each jet (requires uncertainties to be available!)
@@ -276,7 +307,9 @@ jetAna = cfg.Analyzer(
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
     doQG = False,
-    cleanGenJetsFromPhoton = False
+    do_mc_match = False,
+    cleanGenJetsFromPhoton = False,
+    collectionPostFix = ""
     )
 
 # Jet-MET based Skim (generic, but requirements depend on the final state)
@@ -311,10 +344,13 @@ metCoreSequence = [
     lepAna,
    #ttHLepSkim,
    #ttHZskim,
+##### photon modules below
+   #photonAna,
 ##### jet modules below
    #jetAna,
 ##### met modules below
     metAna,
+    metNoHFAna,
     eventFlagsAna,
     hbheFilterAna,
 ##### tree
