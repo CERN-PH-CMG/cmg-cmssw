@@ -269,7 +269,8 @@ isoTrackAna = cfg.Analyzer(
     MaxIsoSumEMU = 0.2, ### unused if not rel iso
     doSecondVeto = False,
     #####
-    doPrune = True
+    doPrune = True,
+    do_mc_match = False # note: it will in any case try it only on MC, not on data
     )
 
 
@@ -304,7 +305,9 @@ jetAna = cfg.Analyzer(
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
     doQG = False,
-    cleanGenJetsFromPhoton = False
+    do_mc_match = True,
+    cleanGenJetsFromPhoton = False,
+    collectionPostFix = ""
     )
 
 ## Fat Jets Analyzer (generic)
@@ -358,6 +361,25 @@ metAna = cfg.Analyzer(
     dzMax = 0.1,
     collectionPostFix = "",
     )
+
+metNoHFAna = cfg.Analyzer(
+    METAnalyzer, name="metAnalyzer",
+    metCollection     = "slimmedMETsNoHF",
+    noPUMetCollection = "slimmedMETsNoHF",
+    copyMETsByValue = False,
+    doTkMet = False,
+    doMetNoPU = True,
+    doMetNoMu = False,
+    doMetNoEle = False,
+    doMetNoPhoton = False,
+    recalibrate = False,
+    jetAnalyzerCalibrationPostFix = "",
+    candidates='packedPFCandidates',
+    candidatesTypes='std::vector<pat::PackedCandidate>',
+    dzMax = 0.1,
+    collectionPostFix = "NoHF",
+    )
+
 
 # Core Event Analyzer (computes basic quantities like HT, dilepton masses)
 from CMGTools.TTHAnalysis.analyzers.ttHCoreEventAnalyzer import ttHCoreEventAnalyzer
