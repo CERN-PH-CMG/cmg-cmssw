@@ -88,7 +88,6 @@ noLSFJobOutput = 0; # 1: Puts all the batch logs in a single file
 recreateSubScripts = 0;
 
 mergeSigEWKbkg = 0;
-resubmit = 0;
 removeChunks = 0; # 0: Don't remove chunks after merge - 1: Remove them
 
 ## PERFORM W or Z MASS FIT
@@ -647,12 +646,15 @@ if(runWanalysis or runZanalysis):
 
 if(mergeSigEWKbkg):
   os.chdir("utils/");
-  os.system("./merge_MC.sh \"../JobOutputs/"+outfolder_name+"/\" "+str(resubmit)+" "+str(batchQueue)+" "+str(useBatch and parallelize)+" "+str(removeChunks));
+  os.system("./merge_MC.sh \"../JobOutputs/"+outfolder_name+"/\"")
+  os.system("find JobOutputs/"+outfolder_name+"/output_* -type d -name LSFJOB_* -delete")
   os.chdir(base_path);
 
-if(removeChunks and not mergeSigEWKbkg):
+if(removeChunks):
   print "Removing chunks from JobOutputs/"+outfolder_name
-  os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name [WZ]analysis_chunk*.root -delete");
+  os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name [WZ]analysis_chunk*.root -delete")
+  os.system("find JobOutputs/"+outfolder_name+"/output_* -type d -name LSFJOB_* -delete")
+  os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name batch_logs_* -delete")
   os.chdir(base_path);
 
 if(runPrepareDataCards):
