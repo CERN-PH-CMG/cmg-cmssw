@@ -14,18 +14,28 @@ debugEventContent = False
 # choose from 'tau-mu' 'di-tau' 'tau-ele' 'mu-ele' 'all-separate', 'all'
 # channel = 'all'
 channel = 'all'
-s = 'miniAOD-prod_PAT_.*root'
 
-dataset_user = 'CMS'
-dataset_name = '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/MINIAODSIM'
+local_run = False
+if local_run:
 
-dataset_files = '.*root'
+    dataset_user = 'CMS'
+    dataset_name = '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/MINIAODSIM'
 
-process.source = datasetToSource(
-    dataset_user,
-    dataset_name,
-    dataset_files,
-)
+    dataset_files = '.*root'
+
+    process.source = datasetToSource(
+        dataset_user,
+        dataset_name,
+        dataset_files,
+    )
+
+else:
+    process.source = cms.Source(
+        "PoolSource",
+        noEventSort = cms.untracked.bool(True),
+        duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
+        fileNames = cms.untracked.vstring('/store/mc/RunIISpring15DR74/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v3/10000/8CF409BF-6A14-E511-A190-0025905964C2.root')
+    )
 
 process.source.inputCommands = cms.untracked.vstring(
     'keep *'
