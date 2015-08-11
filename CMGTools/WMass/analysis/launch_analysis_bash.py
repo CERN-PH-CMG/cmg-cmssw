@@ -461,7 +461,7 @@ if(runWanalysis or runZanalysis):
             # Copy template to dest folder
             shutil.copyfile("includes/common.h.bkp", "JobOutputs/"+foldername+"/common.h");
             # Edit template
-            os.system("sh "+base_dir+"/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMuonNSteps+" \""+etaMaxMuons+"\" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(RecoilCorrNVarAll)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrToys)+" "+"JobOutputs/"+foldername+"/common.h")
+            os.system("sh "+base_dir+"/utils/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMuonNSteps+" \""+etaMaxMuons+"\" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(RecoilCorrNVarAll)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrToys)+" "+"JobOutputs/"+foldername+"/common.h")
 
         os.chdir("JobOutputs/"+foldername);
         code_dir = base_dir + "/AnalysisCode/"
