@@ -452,8 +452,8 @@ def createDataset( user, dataset, pattern, readcache=False,
         rr = "_run%s_%s" % (run_range[0], run_range[1]) if run_range else ""
         return '{user}%{name}{rr}%{pattern}.pck'.format( user = user, name = data.replace('/','_'), pattern = pattern, rr=rr)
 
-    def writeCache(dataset, run_range):
-        writeDatasetToCache( cacheFileName(dataset.name, dataset.user, dataset.pattern, run_range), dataset )
+    def writeCache(dataset, data, user, pattern, run_range):
+        writeDatasetToCache( cacheFileName(data, user, pattern, run_range), dataset )
 
     def readCache(data, user, pattern, run_range):
         return getDatasetFromCache( cacheFileName(data, user, pattern, run_range) )
@@ -473,7 +473,7 @@ def createDataset( user, dataset, pattern, readcache=False,
             info = False
         else:
             data = Dataset( dataset, user, pattern)
-        writeCache(data, run_range)
+        writeCache(data, dataset, user, pattern, run_range)
     return data
 
 ### MM
