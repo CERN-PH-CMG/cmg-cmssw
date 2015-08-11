@@ -1183,10 +1183,10 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               u2_recoil, evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 80, -20, 20 );
 
                             common_stuff::plot2D(Form("hWlikePos_u1vsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
-                              ZNocorr.Pt(), u1_recoil, evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_2d, 50, 0, 50, 80, -20, 20 );
+                              ZNocorr.Pt(), u1_recoil, evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_2d, 80, 0, 80, 80, -20, 20 );
                               
                             common_stuff::plot2D(Form("hWlikePos_u2vsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),Kalmantoys_str.Data(),eta_str.Data(),jZmass_MeV),
-                              ZNocorr.Pt(), u2_recoil, evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_2d, 50, 0, 50, 80, -20, 20 );
+                              ZNocorr.Pt(), u2_recoil, evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_2d, 80, 0, 80, 80, -20, 20 );
 
 
                             //------------------------------------------------------------------------------------------------
