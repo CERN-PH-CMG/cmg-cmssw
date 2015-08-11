@@ -85,7 +85,7 @@ runWanalysis = 0;
 runZanalysis = 1;
 controlplots = 0;
 noLSFJobOutput = 0; # 1: Puts all the batch logs in a single file
-recreateSubScripts = 0;
+recreateSubPrograms = 0; # 1: Recompiles run?analysis.o and remakes run?analysis.sh
 
 mergeSigEWKbkg = 0;
 removeChunks = 0; # 0: Don't remove chunks after merge - 1: Remove them
@@ -479,12 +479,9 @@ if(runWanalysis or runZanalysis):
 
     if(runWanalysis):
 
-      # Copy Wanalysis.C in the dest folder (it has some parameters)
-      shutil.copyfile(code_dir+"/Wanalysis.C", "Wanalysis.C");
-
-      wstring="\""+WfileDATA+"\","+str(WfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(MuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrNonClosure)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])
-
-      if(counter==1 and not file_exists_and_is_not_empty("runWanalysis.o")):
+      if counter==1 and (recreateSubPrograms or not file_exists_and_is_not_empty("runWanalysis.o")):
+        # Copy Wanalysis.C in the dest folder (it has some parameters)
+        shutil.copyfile(code_dir+"/Wanalysis.C", "Wanalysis.C");
         if(useLHAPDF):
           print("c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
           os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
@@ -495,6 +492,9 @@ if(runWanalysis or runZanalysis):
       print ""
       # Run it in the code dir to have all the relative paths work
       os.chdir(code_dir)
+
+      wstring="\""+WfileDATA+"\","+str(WfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(MuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrNonClosure)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])
+
       line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o -1,0,0,"+wstring).read()
       nEntries = [int(s) for s in line.split() if s.isdigit()][0]
 
@@ -518,7 +518,7 @@ if(runWanalysis or runZanalysis):
         text_file.close()
 
         # Create script if needed
-        if useBatch and (recreateSubScripts>0 or not file_exists_and_is_not_empty("runWanalysis.sh")):
+        if useBatch and (recreateSubPrograms>0 or not file_exists_and_is_not_empty("runWanalysis.sh")):
           text_file = open("runWanalysis.sh", "w")
           text_file.write("# x=$1; ev_ini=$2; ev_fin=$3\n")
           text_file.write("cd "+code_dir+"\n")
@@ -559,12 +559,9 @@ if(runWanalysis or runZanalysis):
 
     if(runZanalysis):
 
-      # Copy Zanalysis.C in the dest folder (it has some parameters)
-      shutil.copyfile(code_dir+"/Zanalysis.C", "Zanalysis.C");
-
-      zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(MuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(0)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrNonClosure)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])
-
-      if(counter==1 and not file_exists_and_is_not_empty("runZanalysis.o")):
+      if counter==1 and (recreateSubPrograms or not file_exists_and_is_not_empty("runZanalysis.o")):
+        # Copy Zanalysis.C in the dest folder (it has some parameters)
+        shutil.copyfile(code_dir+"/Zanalysis.C", "Zanalysis.C")
         if(useLHAPDF):
           print("c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags`  -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
           os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
@@ -575,6 +572,9 @@ if(runWanalysis or runZanalysis):
       print ""
       # Run it in the code dir to have all the relative paths work
       os.chdir(code_dir)
+
+      zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(MuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(0)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(RecoilCorrNonClosure)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])
+
       line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o -1,0,0,"+zstring).read();
       nEntries = [int(s) for s in line.split() if s.isdigit()][0]
 
@@ -603,7 +603,7 @@ if(runWanalysis or runZanalysis):
         text_file.close()
 
         # Create script if needed
-        if useBatch and (recreateSubScripts>0 or not file_exists_and_is_not_empty("runZanalysis.sh")):
+        if useBatch and (recreateSubPrograms>0 or not file_exists_and_is_not_empty("runZanalysis.sh")):
           text_file = open("runZanalysis.sh", "w")
           text_file.write("# x=$1; ev_ini=$2; ev_fin=$3\n")
           text_file.write("cd "+code_dir+"\n")
@@ -616,7 +616,7 @@ if(runWanalysis or runZanalysis):
         print "nChuncks ",nChuncks-1
         if useBatch or (nChuncks>2  and (("DYJetsPow" in sample[i] or "DYJetsMadSig" in sample[i]) or ("DATA" in sample[i]))):
           for x in xrange(1, nChuncks):
-            ev_ini=int(nevents*(x-1))
+            ev_ini= int(nevents*(x-1))
             ev_fin= int(nevents*(x)-1)
             if (x==nChuncks-1):
               ev_fin= nEntries
