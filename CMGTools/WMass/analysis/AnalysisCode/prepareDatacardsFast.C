@@ -192,7 +192,6 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
               }
             }
           }
-          cout << endl;
         }
         cout << endl;
         outTXTfile << endl;
@@ -248,8 +247,6 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
                   Datacard << Form("process        W%s%s_%sJets%s_%sNonScaled_pdf%d-%d%s        W%s%s_%sJets%s_%sNonScaled_ALT        W%s%s_EWKTT_%sNonScaled_pdf%d-%d%s        ",Wlike.Data(),WCharge_str[c].Data(),WorZ.Contains("W")?"W":"DY",SigSample_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,0, "",Wlike.Data(),WCharge_str[c].Data(),WorZ.Contains("W")?"W":"DY",SigSample_str.Data(),WMass::FitVar_str[k].Data(),Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,0, "") << endl;
                   Datacard << "process              -1                            0                            1" << endl;
                   Datacard << "rate                 -1                           -1                           -1" << endl;
-                  Datacard << "---------------------------------------------------------------------------------" << endl;
-                  Datacard << "lumi    lnN           1                            1                            1" << endl;
                   Datacard.close();
 
                   dcardcounter++;
