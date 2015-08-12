@@ -45,7 +45,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
 
     // TOKENIZE SAMPLES
     TFile* finTemplatesW[Nsamples];
-    TH1D *TemplatesW_NonScaled[2][m_end-m_start][WMass::KalmanNvariations][WMass::PDF_members][WMass::NFitVar][Nsamples][WMass::etaMuonNSteps][2*WMass::WMassNSteps+1];
+    TH1D *TemplatesW_NonScaled[2][m_end][WMass::KalmanNvariations][WMass::PDF_members][WMass::NFitVar][Nsamples][WMass::etaMuonNSteps][2*WMass::WMassNSteps+1];
 
     // LOAD ALL THE HISTOS FROM THE VARIOUS FILES IN MEMORY
     for(int isample=0; isample<Nsamples;isample++){
@@ -86,8 +86,8 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
 
                     if(TemplatesW_NonScaled[c][m][n][h][k][isample][ieta][jmass]){
                       double int_hist_data = 0;
-                      if(TemplatesW_NonScaled[c][0][0][0][k][isample][ieta][WMass::WMassNSteps])
-                        int_hist_data =TemplatesW_NonScaled[c][0][0][0][k][isample][ieta][WMass::WMassNSteps]->Integral();
+                      if(TemplatesW_NonScaled[c][m_start][0][0][k][isample][ieta][WMass::WMassNSteps])
+                        int_hist_data =TemplatesW_NonScaled[c][m_start][0][0][k][isample][ieta][WMass::WMassNSteps]->Integral();
                       double int_hist_mcdatalike = TemplatesW_NonScaled[c][m][n][h][k][isample][ieta][jmass]->Integral();
                       double norm_factor_to_match_data = int_hist_mcdatalike>0 && int_hist_data>0 ? int_hist_data/int_hist_mcdatalike : 1;
 
