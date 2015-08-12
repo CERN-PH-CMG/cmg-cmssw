@@ -8,9 +8,12 @@
 #include "TGraph.h"
 #include "TGraphErrors.h"
 #include "TRandom3.h"
+#include "TObjString.h"
 #include "../common.h"
 #include "../common2.h"
 #include <TROOT.h>
+
+using namespace std;
 
 void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0){
 
@@ -51,7 +54,6 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
     
     TFile *fout = new TFile(Form("likelihood_results_W%s.root",Wlike.Data()),"RECREATE");
     
-      TGraph *result;
       TCanvas*c_chi2;
       TF1*ffit[WMass::etaMuonNSteps][WMass::NFitVar][2];
       // TGraph *result_NonScaled[WMass::PDF_members][WMass::NFitVar];
@@ -154,13 +156,24 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                     }
                   }
                   if(!TStringFromFile.Contains("-2 ln Q_{TEV}")){
-                    cout << "\nTStringFromFile= " << TStringFromFile << endl;
-                    cout << "\n ERROR: COULDN'T FIND FIT RESULT IN "<< 
-                    Form("dummy_datacard_Wmass_MuPos_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log ",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data())
-                    << " resubmitting and quitting" << endl;
+                    cout << "\nERROR: COULDN'T FIND FIT RESULT IN "<< 
+                    Form("dummy_datacard_Wmass_MuPos_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log ",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data()) <<endl;
+
                     TString outfilename_str = Form("submit_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.sh",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
-                    gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J runMfit "+outfilename_str);                    
-                    // gROOT->ProcessLine(".! sh "+outfilename_str);
+                    
+                    ofstream outTXTfile;
+                    cout << "Creating and submitting " << outfilename_str << endl;
+                    outTXTfile.open(outfilename_str);
+                    outTXTfile << "user=$(whoami); cd /afs/cern.ch/work/${user:0:1}/${user}/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462; eval `scramv1 runtime -sh`; cd -;\n";
+                    outTXTfile << "source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh;\n";
+                    outTXTfile << "cd "<<currentdir_str<<"\n";
+                    outTXTfile << text2workspace_str << endl;
+                    outTXTfile << combine_str << endl;
+                    outTXTfile.close();
+                    gROOT->ProcessLine(".! chmod 755 "+outfilename_str);
+                    gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J runMfit "+outfilename_str);
+                    gROOT->ProcessLine(".! rm -rf LSF* ");
+
                     some_fit_failed = true;
                     continue;
                   }
