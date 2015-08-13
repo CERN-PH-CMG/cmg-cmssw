@@ -153,11 +153,11 @@ class ComponentCreator(object):
         )
         return component
 
-    def makeDataComponent(self,name,dataset,user,pattern,json=None,run_range=None,triggers=[],vetoTriggers=[]):
+    def makeDataComponent(self,name,dataset,user,pattern,json=None,run_range=None,triggers=[],vetoTriggers=[],useAAA=False):
         component = cfg.DataComponent(
             #dataset = dataset,
             name = name,
-            files = self.getFiles(dataset,user,pattern,run_range=run_range),
+            files = self.getFiles(dataset,user,pattern,run_range=run_range,useAAA=useAAA),
             intLumi = 1,
             triggers = triggers,
             json = json

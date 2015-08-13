@@ -16,6 +16,17 @@ class IntegrityCheckError(Exception):
     def __str__(self):
         return repr(self.value)
 
+def _dasPopen(dbs):
+    if 'LSB_JOBID' in os.environ:
+        raise RuntimeError, "Trying to do a DAS query while in a LXBatch job (env variable LSB_JOBID defined)\nquery was: %s" % dbs
+    #--- this below fails also locally, so it's off for the moment; to be improved ---
+    #if 'GLOBUS_GRAM_JOB_CONTACT':
+    #    raise RuntimeError, "Trying to do a DAS query while in a Grid job (env variable GLOBUS_GRAM_JOB_CONTACT defined)\nquery was: %s" % dbs
+    if 'X509_USER_PROXY' in os.environ:
+        dbs += " --key {0} --cert {0}".format(os.environ['X509_USER_PROXY'])
+    print 'dbs\t: %s' % dbs
+    return os.popen(dbs)
+
 class BaseDataset( object ):
     
     ### def __init__(self, name, user, pattern='.*root', run_range=None):
@@ -129,7 +140,7 @@ class CMSDataset( BaseDataset ):
         super(CMSDataset, self).__init__( name, 'CMS', run_range=run_range)
 
     def buildListOfFilesDBS(self, pattern, begin=-1, end=-1):
-        print 'buildListOfFilesDBS',begin,end
+        #print 'buildListOfFilesDBS',begin,end
         sampleName = self.name.rstrip('/')
         query, qwhat = sampleName, "dataset"
         if "#" in sampleName: qwhat = "block"
@@ -146,8 +157,7 @@ class CMSDataset( BaseDataset ):
             dbs += ' --limit %d' % (end-begin+1)
         else:
             dbs += ' --limit 0' 
-        print 'dbs\t: %s' % dbs
-        dbsOut = os.popen(dbs)
+        dbsOut = _dasPopen(dbs)
         files = []
         for line in dbsOut:
             if line.find('/store')==-1:
@@ -187,7 +197,7 @@ class CMSDataset( BaseDataset ):
                 print "WARNING: queries with run ranges are slow in DAS"
                 query = "%s run between [%d, %d]" % (query,runmin if runmin > 0 else 1, runmax if runmax > 0 else 999999)
         dbs='das_client.py --query="summary %s=%s"'%(qwhat,query)
-        dbsOut = os.popen(dbs).readlines()
+        dbsOut = _dasPopen(dbs).readlines()
 
         entries = []
         for line in dbsOut:
@@ -210,7 +220,7 @@ class CMSDataset( BaseDataset ):
                 print "WARNING: queries with run ranges are slow in DAS"
                 query = "%s run between [%d, %d]" % (query,runmin if runmin > 0 else 1, runmax if runmax > 0 else 999999)
         dbs='das_client.py --query="summary %s=%s"'%(qwhat,query)
-        dbsOut = os.popen(dbs).readlines()
+        dbsOut = _dasPopen(dbs).readlines()
 
         entries = []
         for line in dbsOut:
@@ -246,7 +256,7 @@ class LocalDataset( BaseDataset ):
                 self.files.append( '/'.join([sampleDir, file]) )
                 # print file
 ##         dbs = 'dbs search --query="find file where dataset like %s"' % sampleName
-##         dbsOut = os.popen(dbs)
+##         dbsOut = _dasPopen(dbs)
 ##         self.files = []
 ##         for line in dbsOut:
 ##             if line.find('/store')==-1:
@@ -350,7 +360,7 @@ class PrivateDataset ( BaseDataset ):
         entries = self.findPrimaryDatasetNumFiles(name, dbsInstance, -1, -1)
         files = []
         dbs = 'das_client.py --query="file dataset=%s instance=prod/%s" --limit=%s' % (name, dbsInstance, entries)
-        dbsOut = os.popen(dbs)
+        dbsOut = _dasPopen(dbs)
         for line in dbsOut:
             if line.find('/store')==-1:
                 continue
@@ -376,7 +386,7 @@ class PrivateDataset ( BaseDataset ):
                 print "WARNING: queries with run ranges are slow in DAS"
                 query = "%s run between [%d, %d]" % (query,runmin if runmin > 0 else 1, runmax if runmax > 0 else 999999)
         dbs='das_client.py --query="summary %s=%s instance=prod/%s"'%(qwhat, query, dbsInstance)
-        dbsOut = os.popen(dbs).readlines()
+        dbsOut = _dasPopen(dbs).readlines()
 
         entries = []
         for line in dbsOut:
@@ -400,7 +410,7 @@ class PrivateDataset ( BaseDataset ):
                 print "WARNING: queries with run ranges are slow in DAS"
                 query = "%s run between [%d, %d]" % (query,runmin if runmin > 0 else 1, runmax if runmax > 0 else 999999)
         dbs='das_client.py --query="summary %s=%s instance=prod/%s"'%(qwhat, query, dbsInstance)
-        dbsOut = os.popen(dbs).readlines()
+        dbsOut = _dasPopen(dbs).readlines()
         
         entries = []
         for line in dbsOut:
@@ -435,14 +445,15 @@ def writeDatasetToCache( cachename, dataset ):
 
 def createDataset( user, dataset, pattern, readcache=False, 
                    basedir = None, run_range = None):
-    
+    if user == 'CMS' and pattern != ".*root":
+        raise RuntimeError, "For 'CMS' datasets, the pattern must be '.*root', while you configured '%s' for %s, %s" % (pattern, name, dataset)
 
     def cacheFileName(data, user, pattern, run_range):
         rr = "_run%s_%s" % (run_range[0], run_range[1]) if run_range else ""
         return '{user}%{name}{rr}%{pattern}.pck'.format( user = user, name = data.replace('/','_'), pattern = pattern, rr=rr)
 
-    def writeCache(dataset, run_range):
-        writeDatasetToCache( cacheFileName(dataset.name, dataset.user, dataset.pattern, run_range), dataset )
+    def writeCache(dataset, data, user, pattern, run_range):
+        writeDatasetToCache( cacheFileName(data, user, pattern, run_range), dataset )
 
     def readCache(data, user, pattern, run_range):
         return getDatasetFromCache( cacheFileName(data, user, pattern, run_range) )
@@ -453,7 +464,7 @@ def createDataset( user, dataset, pattern, readcache=False,
         except IOError:
             readcache = False
     if not readcache:
-        print "CreateDataset called: '%s', '%s', '%s', run_range %r" % (user, dataset, pattern, run_range) 
+        #print "CreateDataset called: '%s', '%s', '%s', run_range %r" % (user, dataset, pattern, run_range) 
         if user == 'CMS':
             data = CMSDataset( dataset, run_range = run_range)
             info = False
@@ -462,7 +473,7 @@ def createDataset( user, dataset, pattern, readcache=False,
             info = False
         else:
             data = Dataset( dataset, user, pattern)
-        writeCache(data, run_range)
+        writeCache(data, dataset, user, pattern, run_range)
     return data
 
 ### MM
