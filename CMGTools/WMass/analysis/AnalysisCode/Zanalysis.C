@@ -52,15 +52,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
   std::map<std::string, TH1D*> h_1d;
   std::map<std::string, TH2D*> h_2d;
-  int counter=0;
 
   cout << "generated_PDF_set= "<<generated_PDF_set
        << " generated_PDF_member= " << generated_PDF_member
        << " contains_PDF_reweight= " << contains_PDF_reweight
        << " WMass::NVarRecoilCorr= " << WMass::NVarRecoilCorr
        << endl;
-
-  TRandom3 *r = new TRandom3(0);
 
   TString chunk_str = chunk>0? Form("_chunk%d",chunk) : "";
   // ofstream outTXTfile;
@@ -110,7 +107,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // retrieve efficiencies SF
   //------------------------------------------------------
   TFile*finEffSF;
-  TGraphAsymmErrors*hEffSF_MuId_eta_2011[2],*hEffSF_Iso_eta_2011[2],*hEffSF_HLT_eta_2011/* ,*hEffSF_Iso_vtx_2011A,*hEffSF_Iso_vtx_2011B*/;
+  // TGraphAsymmErrors*hEffSF_MuId_eta_2011[2],*hEffSF_Iso_eta_2011[2],*hEffSF_HLT_eta_2011/* ,*hEffSF_Iso_vtx_2011A,*hEffSF_Iso_vtx_2011B*/;
   TH3F *SF_HLT;
   TH2F *SF_TIGHT_ISO;
   TH2F *SF_TIGHT_PT10;
@@ -467,9 +464,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     //------------------------------------------------------
 
     //---------------- MUON weight
-    int runopt = r->Rndm()<0.457451 ? 0 : 1;
+    // int runopt = r->Rndm()<0.457451 ? 0 : 1;
     double TRG_TIGHT_ISO_muons_SF = 1;
-    double MuNeg_tight_muon_SF = 1;
+    // double MuNeg_tight_muon_SF = 1;
 
     // if(nTrgMuons>2) continue; // NOT (YET) REQUIRED WHILE MAKING NTUPLES!!!! <<---------- it sohuld be already fixed in the ntuples now
     costh_HX = -1e10;     phi_HX = -1e10;
@@ -865,21 +862,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                     pfmetphi_trasv = tkmet_phi;
                   }
                   
-                  /*
-                  TLorentzVector met_preRecoilCorr; met_preRecoilCorr.SetPtEtaPhiM(pfmet_trasv,0,pfmetphi_trasv,0);
-
-                  TLorentzVector muposmet_preMuCorr; muposmet_preMuCorr.SetPtEtaPhiM(MuPos_pt,0,MuPos_phi,0);
-                  TLorentzVector munegmet_preMuCorr; munegmet_preMuCorr.SetPtEtaPhiM(MuNeg_pt,0,MuNeg_phi,0);
-                  TLorentzVector muposmet_postMuCorr; muposmet_postMuCorr.SetPtEtaPhiM(muPosCorr.Pt(),0,muPosCorr.Phi(),0);
-                  TLorentzVector munegmet_postMuCorr; munegmet_postMuCorr.SetPtEtaPhiM(muNegCorr.Pt(),0,muNegCorr.Phi(),0);
-                  
-                  // cout << "PRE MUON CORRECTION (raw recoil + rawMuon)= " << pfmet_trasv << " " << pfmetphi_trasv << endl;
-                  met_preRecoilCorr = met_preRecoilCorr + muPosNoCorr + muNegNoCorr - muPosNoCorr - muNegNoCorr;
-                  pfmet_trasv = met_preRecoilCorr.Pt();
-                  pfmetphi_trasv = met_preRecoilCorr.Phi();
-                  // cout << "POST MUON CORRECTION= " << pfmet_trasv << " " << pfmetphi_trasv << endl;
-                  */
-                  
                   // cout
                   // << "m= " << m 
                   // << " u1u2 " << WMass::RecoilCorrVarDiagoParU1orU2fromDATAorMC_[m]
@@ -991,7 +973,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 //------------------------------------------------------
                 // Variables to fill the histos (pT, mT, MET)
                 //------------------------------------------------------
-                double MuPos_var_jacobian[WMass::NFitVar] = {2*muPosCorr.Pt()/WMass::ZMassCentral_MeV*1e3,WlikePos.Mt()/WMass::ZMassCentral_MeV*1e3,2*WlikePos_met.Pt()/WMass::ZMassCentral_MeV*1e3,MTFirstOrder/WMass::ZMassCentral_MeV*1e3};
+                // double MuPos_var_jacobian[WMass::NFitVar] = {2*muPosCorr.Pt()/WMass::ZMassCentral_MeV*1e3,WlikePos.Mt()/WMass::ZMassCentral_MeV*1e3,2*WlikePos_met.Pt()/WMass::ZMassCentral_MeV*1e3,MTFirstOrder/WMass::ZMassCentral_MeV*1e3};
                 double MuPos_var_NotScaled[WMass::NFitVar] = {muPosCorr.Pt(),WlikePos.Mt(),WlikePos_met.Pt(),MTFirstOrder};
                 // double MuPos_var_NotScaled[WMass::NFitVar] = {muPosCorr.Pt(),Zcorr.M() ,WlikePos_met.Pt(),MTFirstOrder}; // Zcorr would be TEMP !!!!
                 //------------------------------------------------------
