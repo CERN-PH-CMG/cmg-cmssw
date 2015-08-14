@@ -53,8 +53,8 @@ jetAna.doQG = True
 jetAna.jetEta = 4.7
 jetAna.jetEtaCentral = 2.5
 jetAna.jetPt = 10.
-#jetAna.mcGT     = "Summer15_50nsV2_MC", # jec corrections
-#jetAna.dataGT   = "Summer15_50nsV2_MC", # jec corrections
+#jetAna.mcGT     = "Summer15_50nsV4_MC", # jec corrections
+#jetAna.dataGT   = "Summer15_50nsV4_DATA", # jec corrections
 jetAna.recalibrateJets = True
 jetAna.jetLepDR = 0.4
 jetAna.smearJets = False
@@ -462,12 +462,17 @@ if getHeppyOption("nofetch"):
 
 
 
-removeResiduals = True
+removeResiduals = False
 
 # -------------------- Running pre-processor
 import subprocess
-jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV2_MC.db'
-jecEra    = 'Summer15_50nsV2_MC'
+
+if isData:
+    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA.db'
+    jecEra    = 'Summer15_50nsV4_DATA'
+else:
+    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_MC.db'
+    jecEra    = 'Summer15_50nsV4_MC'
 preprocessorFile = "$CMSSW_BASE/tmp/MetType1_jec_%s.py"%(jecEra)
 extraArgs=[]
 if isData:
