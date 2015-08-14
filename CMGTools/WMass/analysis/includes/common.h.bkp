@@ -28,7 +28,9 @@ namespace WMass{
   TString FitVar_str[NFitVar] = {"Pt","Mt","MET","MtLin"};
   static const int PDF_sets = PAR_PDF_SETS;
   static const int PDF_members = PAR_PDF_MEMBERS;
-  static const int NVarRecoilCorr = PAR_NVAR_RECOILCORR;
+  static const int NVarRecoilCorr = 1; // not used in main chain anymore
+  
+  static const int WlikeCharge = PAR_WLIKE_CHARGE;
   
   static const int WpTcut = 15;
   

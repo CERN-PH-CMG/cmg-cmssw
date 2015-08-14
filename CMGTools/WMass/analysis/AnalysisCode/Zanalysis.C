@@ -56,7 +56,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   cout << "generated_PDF_set= "<<generated_PDF_set
        << " generated_PDF_member= " << generated_PDF_member
        << " contains_PDF_reweight= " << contains_PDF_reweight
-       << " WMass::NVarRecoilCorr= " << WMass::NVarRecoilCorr
+       << " WMass::WlikeCharge= " << WMass::WlikeCharge
        << endl;
 
   TString chunk_str = chunk>0? Form("_chunk%d",chunk) : "";
@@ -244,9 +244,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   //------------------------------------------------------
   //To get the central value of the momentum correction
   // rochcor42X *rmcor42X = new rochcor42X();  // make the pointer of rochcor class
-  int random_seed_start=67525;
-  // rochcor_44X_v3 *rmcor44X = WMass::NVarRecoilCorr>1? new rochcor_44X_v3(random_seed_start) : new rochcor_44X_v3();  // make the pointer of rochcor class
-  rochcor_44X_v3 *rmcor44X = new rochcor_44X_v3(random_seed_start);  // make the pointer of rochcor class
+  //int random_seed_start=67525;
+  //rochcor_44X_v3 *rmcor44X = new rochcor_44X_v3(random_seed_start);  // make the pointer of rochcor class
   TString MuscleCard = (IS_MC_CLOSURE_TEST || isMCorDATA==0) ? "MuScleFit_2011_MC_44X" : "MuScleFit_2011_DATA_44X";
   TString fitParametersFile = MuscleCard+".txt";
   MuScleFitCorrector *corrector;
@@ -598,12 +597,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         } // end gen stuff 
 
         if(!useGenVar || Z_mass>0){ // dummy thing to separate signal and background in DY+Jets (useless)
-          // for(int m=0; m<WMass::NVarRecoilCorr; m++){
-            // cout <<"WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_["<<RecoilCorrVarDiagoParU1orU2fromDATAorMC<<"]= "
-            // << WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC]
-            // << " WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_["<<RecoilCorrVarDiagoParU1orU2fromDATAorMC<<"]= " 
-            // << WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC]
-            // <<endl;
+          // cout <<"WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_["<<RecoilCorrVarDiagoParU1orU2fromDATAorMC<<"]= "
+          // << WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC]
+          // << " WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_["<<RecoilCorrVarDiagoParU1orU2fromDATAorMC<<"]= " 
+          // << WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC]
+          // <<endl;
 
           //------------------------------------------------------
           // start reco event selection
@@ -633,20 +631,21 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 // Apply muon corrections
                 //------------------------------------------------------------------------------------------------
                 if(first_time_in_the_event && m==m_start){ // use rochester corrections if required
-                  if(useMomentumCorr==1){ // use rochester corrections if required
-                    if(IS_MC_CLOSURE_TEST || isMCorDATA==0){
-                      rmcor44X->momcor_mc(muPosCorr, MuPos_charge, varyMuonCorrNsigma/* , runopt */);
-                      rmcor44X->momcor_mc(muNegCorr, MuNeg_charge, varyMuonCorrNsigma/* , runopt */);
-                      rmcor44X->momcor_mc(muPosCorrCentral, MuPos_charge, 0/* , runopt */);
-                      rmcor44X->momcor_mc(muNegCorrCentral, MuNeg_charge, 0/* , runopt */);
-                    }
-                    else{
-                      rmcor44X->momcor_data(muPosCorr, MuPos_charge, varyMuonCorrNsigma , run<175832 ? 0 : 1 );
-                      rmcor44X->momcor_data(muNegCorr, MuNeg_charge, varyMuonCorrNsigma , run<175832 ? 0 : 1 );
-                      rmcor44X->momcor_data(muPosCorrCentral, MuPos_charge, 0 , run<175832 ? 0 : 1 );
-                      rmcor44X->momcor_data(muNegCorrCentral, MuNeg_charge, 0 , run<175832 ? 0 : 1 );
-                    }
-                  }else if(useMomentumCorr==2){ // use Momentum scale corrections if required
+                  //if(useMomentumCorr==1){ // use rochester corrections if required
+                    //if(IS_MC_CLOSURE_TEST || isMCorDATA==0){
+                      //rmcor44X->momcor_mc(muPosCorr, MuPos_charge, varyMuonCorrNsigma/* , runopt */);
+                      //rmcor44X->momcor_mc(muNegCorr, MuNeg_charge, varyMuonCorrNsigma/* , runopt */);
+                      //rmcor44X->momcor_mc(muPosCorrCentral, MuPos_charge, 0/* , runopt */);
+                      //rmcor44X->momcor_mc(muNegCorrCentral, MuNeg_charge, 0/* , runopt */);
+                    //}
+                    //else{
+                      //rmcor44X->momcor_data(muPosCorr, MuPos_charge, varyMuonCorrNsigma , run<175832 ? 0 : 1 );
+                      //rmcor44X->momcor_data(muNegCorr, MuNeg_charge, varyMuonCorrNsigma , run<175832 ? 0 : 1 );
+                      //rmcor44X->momcor_data(muPosCorrCentral, MuPos_charge, 0 , run<175832 ? 0 : 1 );
+                      //rmcor44X->momcor_data(muNegCorrCentral, MuNeg_charge, 0 , run<175832 ? 0 : 1 );
+                    //}
+                  //}
+                  if(useMomentumCorr==2){ // use Momentum scale corrections if required
                     corrector->applyPtCorrection(muPosCorr,MuPos_charge);
                     corrector->applyPtCorrection(muNegCorr,MuNeg_charge);
                     corrector->applyPtCorrection(muPosCorrCentral,MuPos_charge);
@@ -803,6 +802,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   // << " pfmet_trasvCentral before=" << pfmet_trasvCentral
                   // << " pfmetphi_trasvCentral before=" << pfmetphi_trasvCentral
                   // << endl;
+                  //if(useRecoilCorr==1){}
                   if(useRecoilCorr==2){
                     // cout
                     // << "ZGen_pt=" << ZGen_pt
@@ -1195,7 +1195,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
           int jZmass_MeV = WMass::Zmass_values_array[j];
           for(int k=0;k<WMass::NFitVar;k++){
             for(int h=0; h<WMass::PDF_members; h++){
-              // for(int m=0; m<WMass::NVarRecoilCorr; m++){
               for(int m=m_start; m<m_end; m++){
                 TString RecoilVar_str = "";
                 if(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0) RecoilVar_str = Form("_RecoilCorrVar%d",m);
