@@ -98,15 +98,20 @@ process.noHFCands = cms.EDFilter("CandPtrSelector",
 ### =====================================================================================================
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
 
+#uncertainty file
+jecUncertaintyFile="$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt"
+
 #default configuration for miniAOD reprocessing, change the isData flag to run on data
 #for a full met computation, remove the pfCandColl input
 runMetCorAndUncFromMiniAOD(process,
                            isData=options.isData,
+                           jecUncFile=jecUncertaintyFile
                            )
 
 runMetCorAndUncFromMiniAOD(process,
                            isData=options.isData,
                            pfCandColl=cms.InputTag("noHFCands"),
+                           jecUncFile=jecUncertaintyFile,
                            postfix="NoHF"
                            )
 
