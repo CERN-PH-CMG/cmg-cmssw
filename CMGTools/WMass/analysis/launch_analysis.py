@@ -33,14 +33,14 @@ useMomentumCorr = 4; # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector, 4=Ka
 MuonCorrGlobalScaleNsigma = 0; # vary global muon scale    (0=no)
 MuonCorrKalmanNvarsNsigma = 0; # vary each muon fit eigenv (0=no)
 
-usePhiMETCorr = 0; # 0=none, 1=yes
+WlikeCharge = 1; # Charge of the Wlike (+1,-1)
 
 ### RECOIL
 useRecoilCorr = 2; # 0=none, 1=yes, 2=PDFw3gaus
 RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0; # SYST VARIATIONS: 0=NONE, 1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p1, 6= U1 MC p1
 RecoilCorrVarDiagoParSigmas = 0; # Number of sigmas for recoil syst
 
-RecoilCorrNVarAll = 1;         # obsolete
+usePhiMETCorr = 0; # 0=none, 1=yes
 
 ### EWK CORR
 syst_ewk_Alcaraz = -1; # -1=none, 0=fixed POWHEG QCD+EWK NLO
@@ -167,6 +167,11 @@ and RecoilCorrVarDiagoParSigmas == 0 :
   print "Check the 'RecoilCorrVarDiagoParSigmas' variable"
   sys.exit(1)
 
+if (WlikeCharge != 1) or (WlikeCharge != -1) :
+  print "ERROR: Asked for a Wlike of charge", WlikeCharge
+  print "Check the 'WlikeCharge' variable"
+  sys.exit(1)
+
 # Muon internal (Zanalisys wants them this way)
 MuonCorrNsigma = 0
 MuonCorrKalmanNparameters = 1; # number of muon fit params (1: no eigen var - 45: KalmanCorrectorParam)
@@ -216,9 +221,6 @@ if(useMomentumCorr!=0):
 
 if(usePhiMETCorr==1):
   outfolder_name+="_phiMETcorr";
-
-if(RecoilCorrNVarAll<1):
-  RecoilCorrNVarAll=1
 
 if(useRecoilCorr>0):
   outfolder_name+="_RecoilCorr"+str(useRecoilCorr);
@@ -412,7 +414,7 @@ if(runWanalysis or runZanalysis):
     print "Creating JobOutputs/"+outfolder_name+"/common.h from includes/common.h.bkp"
     shutil.copyfile("includes/common.h.bkp", "JobOutputs/"+outfolder_name+"/common.h");
     # Edit template
-    os.system("sh "+base_path+"/utils/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMuonNSteps+" \""+etaMaxMuons+"\" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(RecoilCorrNVarAll)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrKalmanNparameters)+" "+"JobOutputs/"+outfolder_name+"/common.h")
+    os.system("sh "+base_path+"/utils/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMuonNSteps+" \""+etaMaxMuons+"\" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(WlikeCharge)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrKalmanNparameters)+" "+"JobOutputs/"+outfolder_name+"/common.h")
 
   counter=0
   for i in range(0, nsamples):
