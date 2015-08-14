@@ -45,7 +45,7 @@ double costh_CS = -1e10, phi_CS = -1e10;
 double costh_CS_gen_pietro = -1e10, phi_CS_gen_pietro = -1e10;
 double costh_CS_gen = -1e10, phi_CS_gen = -1e10;
 
-void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, int buildTemplates, int useMomentumCorr, int varyMuonCorrNsigma, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int usePhiMETCorr, int useRecoilCorr, int RecoilCorrNonClosure, int RecoilCorrVarDiagoParSigmas, int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights)
+void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, /* unused*/ int buildTemplates, int useMomentumCorr, int varyMuonCorrNsigma, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int usePhiMETCorr, int useRecoilCorr, /* unused*/ int RecoilCorrNonClosure, int RecoilCorrVarDiagoParSigmas, int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights)
 {
 
   if (fChain == 0) return;
@@ -224,69 +224,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     
   } else hZPtSF = new TH1D("hZPtSF","hZPtSF",10,0,1);
 
-  //------------------------------------------------------
-  // Old scaled tempate code
-  //------------------------------------------------------
-  TH1D*hWlikePos_R_WdivZ[WMass::PDF_members][WMass::NFitVar][WMass::etaMuonNSteps][2*WMass::WMassNSteps+1]; // used only to build templates
-
-  TFile*finTemplates;
-  if(buildTemplates){
-    finTemplates = new TFile(Form("%s/../R_WdivZ_OnMC.root",outputdir.Data())); // used only to build templates
-    if(!finTemplates){
-      cout << "file R_WdivZ_OnMC.root is missing, impossible to build templates" << endl;
-      return;
-    }
-  }
-  
-  // static const int nbins=75;
-  // double bins_scaled[3][nbins+1]={{0.}};
-  // double bins_Notscaled[3][nbins+1]={{0.}};
-  // double binsize1=0.01,binsize2=0.04;
-  // double binsize;
-  // double xmin=0.6,xmax=1.8, x;
-  // for(int k=0;k<WMass::NFitVar;k++){
-    // x=xmin;
-    // binsize=binsize1;
-    // for(int i=0;i<nbins;i++){
-      // bins_scaled[k][i]=x;
-      // bins_Notscaled[k][i]=x*80/(k==1 ? 1 : 2); // mT has double range wrt pt, met
-      // if(x>1.2-binsize) binsize=binsize2;
-      // x+=binsize;
-      // // cout << "bins_scaled["<<k<<"]["<<i<<"]= "<< bins_scaled[k][i] << endl;
-      // // cout << "bins_Notscaled["<<k<<"]["<<i<<"]= "<< bins_Notscaled[k][i] << endl;
-    // }
-    // bins_scaled[k][nbins]=xmax;
-    // bins_Notscaled[k][nbins]=xmax*80/(k==1 ? 1 : 2);
-    // // cout << "bins_scaled["<<k<<"]["<<nbins<<"]= " <<bins_scaled[k][nbins] << endl;
-    // // cout << "bins_Notscaled["<<k<<"]["<<nbins<<"]= " <<bins_Notscaled[k][nbins] << endl;
-    // // cout << endl;
-  // }
-  
-  /*
-  for(int i=0; i<WMass::etaMuonNSteps; i++){
-    TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
-            
-    for(int j=0; j<2*WMass::WMassNSteps+1; j++){
-      
-      if(!(sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")) && WMass::WMassNSteps!=j) continue;
-      
-      // int jZmass_MeV = WMass::WMassCentral_MeV-(WMass::WMassNSteps-j)*WMass::WMass_SkipNSteps;
-      int jZmass_MeV = WMass::Zmass_values_array[j];
-
-      // for(int k=0;k<WMass::NFitVar;k++){
-        // for(int h=0; h<WMass::PDF_members; h++){
-          // if(buildTemplates){
-            // cout << Form("hR_WdivZ_WlikePos_%s_8_JetCut_pdf%d-%d_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,eta_str.Data(),jZmass_MeV) << endl;
-            // hWlikePos_R_WdivZ[h][k][i][j]=(TH1D*)finTemplates->Get(Form("hR_WdivZ_WlikePos_%s_8_JetCut_pdf%d-%d_eta%s_%d",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,eta_str.Data(),jZmass_MeV));
-            // hWlikePos_R_WdivZ[h][k][i][j]->Print();
-          // }
-        // }
-      // }
-    
-    }
-  }
-  */
-
   // the following variables will get the recoil components from the corrector
   double u1_recoil = 0;
   double u2_recoil = 0;
@@ -336,7 +273,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
 
   // int use_PForNoPUorTKmet = 0; // 0:PF, 1:NOPU, 2:TK // TO BE CHANGED BY HAND FOR THE MOMENT!!!
-  bool use_InclusiveAB_RecoilCorr = true; // TO BE CHANGED BY HAND FOR THE MOMENT!!!
+  // bool use_InclusiveAB_RecoilCorr = true; // TO BE CHANGED BY HAND FOR THE MOMENT!!!
   bool use_InclusiveNVTX_RecoilCorr = true; // TO BE CHANGED BY HAND FOR THE MOMENT!!!
   TString InclusiveNVTXSuffix="";
   if(use_InclusiveNVTX_RecoilCorr) InclusiveNVTXSuffix="_inclusiveNvtx";
@@ -375,8 +312,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;
     correctorRecoil_Z = new RecoilCorrector(fileCorrectTo.c_str(),123456,model_name[0],"../RecoilCode/MAY25/nonClosureMAY25.root");
     cout << "INITIALIZING RECOIL Z DATA FILE" << endl;
-    correctorRecoil_Z->addDataFile(fileZmmData.c_str(),/* ,RecoilCorrVarDiagoParU1orU2fromDATAorMC, RecoilCorrNonClosure, RecoilCorrVarDiagoParSigmas */
-    model_name[model_name_idx]);
+    correctorRecoil_Z->addDataFile(fileZmmData.c_str(),model_name[model_name_idx]);
     cout << "INITIALIZING RECOIL Z MC FILE" << endl;
     correctorRecoil_Z->addMCFile(fileZmmMC.c_str(),model_name[0]);
   }
@@ -396,17 +332,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   cout << "couts every " << cout_freq << " events" << endl;
   Long64_t nbytes = 0, nb = 0;
   for(Long64_t jentry=first_entry; jentry<=nentries; jentry++) {
-    // for (Long64_t jentry=0; jentry<1e2;jentry++) { // TEMP !!!
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;
     // if (Cut(ientry) < 0) continue;
-    // if(jentry%250000==0) 
-        // cout <<"Analyzed entry "<<jentry<<"/"<<nentries<<endl;
-    // cout << endl;
     if(jentry%cout_freq==0){
-      // cout <<"Analyzed entry "<<jentry<<"/"<<nentries<<endl;
-      // if(jentry%50000==0){
       time_t now = time(0);
       TString dt = ctime(&now); dt.ReplaceAll("\n"," ");
       // outTXTfile << dt << "\t - \t Analyzed entry "<<jentry<<"/"<<nentries<<endl;
@@ -582,13 +512,13 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         //------------------------------------------------------
         // compute weight for mass hypotheses wiht Breit-Wigner reweighting or LHE
         //------------------------------------------------------
-        double weight_i=1,bweight_i=1,lheweight_i=1;
+        double weight_i=1; // bweight_i=1,lheweight_i=1;
         if(useGenVar){
           if(!contains_LHE_weights){
 
             double gamma=2.141; /*HARD CODED TO PDG VALUE*/
             weight_i = common_stuff::BWweight(ZGen_mass, iZmass_GeV, gen_mass_value_MeV, gamma);
-            bweight_i = weight_i;
+            // bweight_i = weight_i;
 
           }else{
             // cout << "LHE weight= " << (LHE_weight [ (WMass::LHE_mass_central_index + ( -WMass::WMassNSteps + j)*WMass::WMassSkipNSteps) ]) << " weight_i= " << weight_i << endl;
@@ -597,7 +527,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             // h_2d, 200,0.9,1.1,200,0.9,1.1 );
 
             weight_i = LHE_weight [ (WMass::LHE_mass_central_index + ( -WMass::WMassNSteps + j)*WMass::WMassSkipNSteps) ];
-            lheweight_i = weight_i;
+            // lheweight_i = weight_i;
             // cout << "jZmass_MeV= " << jZmass_MeV << " j= " << j << " index= " << (WMass::LHE_mass_central_index + ( -WMass::WMassNSteps + j)*WMass::WMassSkipNSteps) << endl;
           }
         }
@@ -873,22 +803,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   // << " pfmet_trasvCentral before=" << pfmet_trasvCentral
                   // << " pfmetphi_trasvCentral before=" << pfmetphi_trasvCentral
                   // << endl;
-                  if(useRecoilCorr==1){ // use MET corrections if required
-                    // correctorRecoil_Z->CorrectType2( pfmet_trasv, pfmetphi_trasv,
-                    // ZGen_pt, ZGen_phi,
-                    // ZNocorr.Pt(), ZNocorr.Phi(),
-                    // u1_recoil, u2_recoil,
-                    // RecoilCorrVarDiagoParU1orU2fromDATAorMC, RecoilCorrNonClosure, RecoilCorrVarDiagoParSigmas,
-                    // vtxBin,doSingleGauss);
-                                
-                                // correctorRecoil_Z->CorrectType2( pfmet_trasvCentral, pfmetphi_trasvCentral,
-                    // ZGen_pt, ZGen_phi,
-                    // ZNocorr.Pt(), ZNocorr.Phi(),
-                    // u1_recoil, u2_recoil,
-                    // RecoilCorrVarDiagoParU1orU2fromDATAorMC, RecoilCorrNonClosure, RecoilCorrVarDiagoParSigmas,
-                    // vtxBin,doSingleGauss);
-
-                  }else if(useRecoilCorr==2){
+                  if(useRecoilCorr==2){
                     // cout
                     // << "ZGen_pt=" << ZGen_pt
                     // << " ZGen_phi=" << ZGen_phi
@@ -897,7 +812,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                     // << endl
                     // << " first_time_in_the_event=" << first_time_in_the_event
                     // << " RecoilCorrVarDiagoParU1orU2fromDATAorMC=" << RecoilCorrVarDiagoParU1orU2fromDATAorMC
-                    // << " RecoilCorrNonClosure=" << RecoilCorrNonClosure
                     // << " m=" << m
                     // << " RecoilCorrVarDiagoParSigmas=" << RecoilCorrVarDiagoParSigmas
                     // << " vtxBin=" << vtxBin
@@ -913,7 +827,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             vtxBin,doSingleGauss,1);
 
                     if(first_time_in_the_event && m==m_start && n==0){
-                      if(RecoilCorrVarDiagoParU1orU2fromDATAorMC!=0|| m!=0 || RecoilCorrVarDiagoParSigmas!=0){
+                      if(RecoilCorrVarDiagoParU1orU2fromDATAorMC!=0 || m!=0 || RecoilCorrVarDiagoParSigmas!=0){
                       // cout << "correcting pfmet_Central= " << pfmet_trasvCentral ;
                         correctorRecoil_Z->CorrectMET3gaus(pfmet_trasvCentral,pfmetphi_trasvCentral,
                                 ZGen_pt,ZGen_phi,
@@ -1193,12 +1107,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             //------------------------------------------------------------------------------------------------ 
                             if(m==m_start && n==0 && controlplots && WMass::WMassNSteps==j){
                               common_stuff::plot1D(Form("hWlikePos_ZpT_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                                    ZcorrCentral.Pt(), evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 200, 0, 100 );
+                                                ZcorrCentral.Pt(), evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 200, 0, 100 );
                               common_stuff::plot1D(Form("hWlikePos_Zmass_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                                    ZcorrCentral.M(), evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 200, 50, 150 );
+                                                ZcorrCentral.M(), evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight, h_1d, 200, 50, 150 );
 
                               common_stuff::plot1D(Form("hWlikePos_Recoil_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                                  WlikePos.Pt(), evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, 0, 25 );
+                                                WlikePos.Pt(), evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, 0, 25 );
 
                               common_stuff::plot2D(Form("hWlikePos_MtLinVsMt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                                 MuPos_var_NotScaled[1],MuPos_var_NotScaled[3], 1,
@@ -1213,15 +1127,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                                 h_2d, 40, 0,20,
                                                 50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio );
                             }
-                            // templates for "scaled observable method" as of Martina's thesis can be also built by multiplying histos, the result is the same (CHECKED!)
-                            // if(buildTemplates && m==m_start && n==0){
-                              // for(int k=0;k<WMass::NFitVar;k++){
-                                // double R_WdivZ_weight=hWlikePos_R_WdivZ[h][k][i][j]->GetBinContent(hWlikePos_R_WdivZ[h][k][i][j]->GetXaxis()->FindBin(MuPos_var_jacobian[k]));
-                                // common_stuff::plot1D(Form("hWlikePos_%sScaled_RWeighted_Templates_eta%s_%d",WMass::FitVar_str[k].Data(),eta_str.Data(),jZmass_MeV),
-                                            // MuPos_var_jacobian[k],R_WdivZ_weight*evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, nbins, bins_scaled[k] );
-                              // }
-                            // }
-
                           } // end loop PDF
                           
                           //------------------------------------------------------------------------------------------------
