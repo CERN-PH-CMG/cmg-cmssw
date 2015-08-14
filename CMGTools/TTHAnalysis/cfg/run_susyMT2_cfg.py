@@ -468,9 +468,11 @@ removeResiduals = False
 import subprocess
 
 if isData:
+    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
     jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA.db'
     jecEra    = 'Summer15_50nsV4_DATA'
 else:
+    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
     jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_MC.db'
     jecEra    = 'Summer15_50nsV4_MC'
 preprocessorFile = "$CMSSW_BASE/tmp/MetType1_jec_%s.py"%(jecEra)
@@ -486,6 +488,7 @@ args = ['python',
   '--GT='+GT,
   '--outputFile='+preprocessorFile,
   '--jecDBFile='+jecDBFile,
+  '--uncFile='+uncFile,
   '--jecEra='+jecEra
   ] + extraArgs
 #print "Making pre-processorfile:"
