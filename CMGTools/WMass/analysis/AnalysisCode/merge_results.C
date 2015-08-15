@@ -15,7 +15,7 @@
 
 using namespace std;
 
-void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0){
+void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int useBatch=0, int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0){
 
   bool some_fit_failed = false;
   
@@ -125,7 +125,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                   string StringFromFile;
                   TString TStringFromFile;
                   double likelihood_val;
-                  int ncol;
+                  // int ncol;
                   // while (!fileNames.eof()){
                     // getline (fileNames,StringFromFile);
                     // TStringFromFile = StringFromFile.c_str();
@@ -160,27 +160,17 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                   if(!TStringFromFile.Contains("-2 ln Q_{TEV}")){
                     cout << "\nERROR: COULDN'T FIND FIT RESULT IN "<< 
                     Form("dummy_datacard_Wmass_Mu%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log ",WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data()) <<endl;
-
-                    TString outfilename_str = Form("submit_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.sh",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
-                    
-                    ofstream outTXTfile;
-                    cout << "Creating and submitting " << outfilename_str << endl;
-                    outTXTfile.open(outfilename_str);
-                    outTXTfile << "user=$(whoami); cd /afs/cern.ch/work/${user:0:1}/${user}/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462; eval `scramv1 runtime -sh`; cd -;\n";
-                    outTXTfile << "source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh;\n";
-                    outTXTfile << "cd "<<currentdir_str<<"\n";
-                    outTXTfile << text2workspace_str << endl;
-                    outTXTfile << combine_str << endl;
-                    outTXTfile.close();
-                    gROOT->ProcessLine(".! chmod 755 "+outfilename_str);
-                    gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J runMfit "+outfilename_str);
-                    gROOT->ProcessLine(".! rm -rf LSF* ");
-
+                    if (useBatch) {
+                      TString outfilename_str = Form("submit_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.sh",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
+                      gROOT->ProcessLine(".! chmod 755 "+outfilename_str);
+                      gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J runMfit "+outfilename_str);
+                      gROOT->ProcessLine(".! rm -rf LSF* ");
+                    }
                     some_fit_failed = true;
                     continue;
                   }
                   LineColumns = TStringFromFile.Tokenize(" ");
-                  ncol = LineColumns->GetEntries();
+                  // ncol = LineColumns->GetEntries();
                   // str_icol = ((TObjString *)LineColumns->At(3))->GetString();
                   TString str_icol = ((TObjString *)LineColumns->At(4))->GetString();
                   likelihood_val = (double) (str_icol.Atof());
@@ -282,7 +272,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
               TCanvas *c_summary=new TCanvas(Form("c_summary_W%s%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),Form("c_summary_pdf%d-%d%s%s_eta%s",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data())); 
               c_summary->SetGridy();
               c_summary->SetGridx();
-              TH2D*frame=new TH2D("frame",Form("pdf %d-%d %s eta %s;M_{W%s} (MeV); -2ln(L/L_{ref})",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),Wlike.Data()),2*WMass2::WMassNSteps+1,WorZ.Contains("Z")? WMass2::Zmass_values_array[0] : WMass2::Wmass_values_array[0],WorZ.Contains("Z")? WMass2::Zmass_values_array[2*WMass2::WMassNSteps] : WMass2::Wmass_values_array[2*WMass2::WMassNSteps],10,0,5);
+              TH2D*frame=new TH2D("frame",Form("pdf %d-%d %s %s eta %s;M_{W%s} (MeV); -2ln(L/L_{ref})",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),Wlike.Data()),2*WMass2::WMassNSteps+1,WorZ.Contains("Z")? WMass2::Zmass_values_array[0] : WMass2::Wmass_values_array[0],WorZ.Contains("Z")? WMass2::Zmass_values_array[2*WMass2::WMassNSteps] : WMass2::Wmass_values_array[2*WMass2::WMassNSteps],10,0,5);
               frame->Draw();
               TLine *l=new TLine((massCentral_MeV),0,(massCentral_MeV),5);
               l->SetLineStyle(6);
