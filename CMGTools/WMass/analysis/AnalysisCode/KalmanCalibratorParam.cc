@@ -357,7 +357,7 @@ void KalmanCalibratorParam::smear(TLorentzVector &muon) {
     pt=pt; 
   }else{
     factor = sqrt(fabs(factor));
-    TRandom * random_ = new TRandom3(int(TMath::Abs(phi)*1e9 + TMath::Abs(eta)*1e6 + pt*1e3);
+    TRandom * random_ = new TRandom3(int(TMath::Abs(phi)*1e9 + TMath::Abs(eta)*1e6 + pt*1e3));
     pt+=random_->Gaus(0.0,factor*pt);
   }
   muon.SetPtEtaPhiM(pt,eta,phi,mass);
