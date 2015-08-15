@@ -240,7 +240,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   if(usePtSF==0){
     // finZPtSFbase = new TFile(Form("/afs/cern.ch/work/p/perrozzi/private/git/CMSSW_5_3_22/src/BosonPT/serious_stuff/resbos/dyres/ZNLOpt_scales_%d.root",/* usePtSF<1000?30: */1030)); // used only to build templates
     finZPtSF = new TFile("../utils/fptout_ZdataMC.root"); // used only to build templates
-    hZPtSF=(TH1D*)finZPtSF->Get(Form("hWlike%s_ZpT_8_JetCut_pdf229800-0_eta0p9_91188_smooth", WCharge_str.Data())); hZPtSF->Sumw2();
+    // hZPtSF=(TH1D*)finZPtSF->Get(Form("hWlike%s_ZpT_8_JetCut_pdf229800-0_eta0p9_91188_smooth", WCharge_str.Data())); hZPtSF->Sumw2();
+    // TEMP !!! WE HAVE ONLY THE POS HISTO, BUT SHOULD NOT MATTER MUCH
+    hZPtSF=(TH1D*)finZPtSF->Get("hWlikePos_ZpT_8_JetCut_pdf229800-0_eta0p9_91188_smooth"); hZPtSF->Sumw2();
     
   } else hZPtSF = new TH1D("hZPtSF","hZPtSF",10,0,1);
 
