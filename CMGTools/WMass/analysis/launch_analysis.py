@@ -648,12 +648,17 @@ if(mergeSigEWKbkg):
   os.system("./merge_MC.sh \"../JobOutputs/"+outfolder_name+"/\"")
   os.chdir(base_path);
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type d -name LSFJOB_* -exec rm -rf {} +")
+  os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name batch_logs_* -delete")
 
 if(removeChunks):
-  print "Removing chunks from JobOutputs/"+outfolder_name
-  os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name [WZ]analysis_chunk*.root -delete")
-  os.system("find JobOutputs/"+outfolder_name+"/output_* -type d -name LSFJOB_* -exec rm -rf {} +")
-  os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name batch_logs_* -delete")
+  if file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEMAD/WanalysisOnDATA.root") \
+  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEMAD/ZanalysisOnDATA.root") \
+  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEPOW/WanalysisOnDATA.root") \
+  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEPOW/ZanalysisOnDATA.root") :
+    print "Removing chunks from JobOutputs/"+outfolder_name
+    os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name [WZ]analysis_chunk*.root -delete")
+  else
+    print "Cannot find any merged histogram in "+outfolder_name+", not deleting chunks"
   os.chdir(base_path);
 
 if(runPrepareDataCards):
