@@ -7,9 +7,13 @@
 // #include "rochcor_44X_v3.h"
 
 using namespace std;
+
 int main(int argc, char ** argv) 
 {
-
+  if (argc != 2) {
+    cout << "ERROR: " << argc-1 << " arguments provided instead of 1";
+    exit(1);
+  }
   const int Nvars=29;
   TString original, tokenized[Nvars];
   original = Form("%s",argv[1]);
@@ -52,7 +56,7 @@ int main(int argc, char ** argv)
   int usePileupSF=tokenized[14].Atof();
   if(GetEntriesOrNchunck>-1) cout << " usePileupSF= " << usePileupSF;
   int run_BuildEvByEvTemplates=tokenized[15].Atof();
-  if(GetEntriesOrNchunck>-1) cout << " run_BuildEvByEvTemplates= " << run_BuildEvByEvTemplates;
+  if(GetEntriesOrNchunck>-1) cout << " run_BuildEvByEvTemplates= " << run_BuildEvByEvTemplates; // not used
   int controlplots=tokenized[16].Atof();
   if(GetEntriesOrNchunck>-1) cout << " controlplots= " << controlplots;
   int generated_PDF_set=tokenized[17].Atof();
@@ -65,8 +69,8 @@ int main(int argc, char ** argv)
   if(GetEntriesOrNchunck>-1) cout << " usePhiMETCorr= " << usePhiMETCorr;
   int useRecoilCorr=tokenized[21].Atof();
   if(GetEntriesOrNchunck>-1) cout << " useRecoilCorr= " << useRecoilCorr;
-  int RecoilCorrVarDiagoParN=tokenized[22].Atof();
-  if(GetEntriesOrNchunck>-1) cout << " RecoilCorrVarDiagoParN= " << RecoilCorrVarDiagoParN;
+  int RecoilCorrNonClosure=tokenized[22].Atof();
+  if(GetEntriesOrNchunck>-1) cout << " RecoilCorrNonClosure= " << RecoilCorrNonClosure; // not used
   int RecoilCorrVarDiagoParSigmas=tokenized[23].Atof();
   if(GetEntriesOrNchunck>-1) cout << " RecoilCorrVarDiagoParSigmas= " << RecoilCorrVarDiagoParSigmas;
   int RecoilCorrVarDiagoParU1orU2=tokenized[24].Atof();
@@ -91,7 +95,7 @@ int main(int argc, char ** argv)
   if(GetEntriesOrNchunck>-1) cout << "processing line "<< Form("Zanalysis zDATA(\"%s\",%f,%d)",ZfileDATA.Data(),ZfileDATA_lumi_SF,(sample.Contains("DYJetsPow") || sample.Contains("DYJetsMadSig"))?useAlsoGenPforSig:0) << endl;
   Zanalysis zDATA(ZfileDATA.Data(),ZfileDATA_lumi_SF,(sample.Contains("DYJetsPow") || sample.Contains("DYJetsMadSig"))?useAlsoGenPforSig:0);
                              
-  if(GetEntriesOrNchunck>-1) cout << "processing line "<< Form("zDATA.Loop(%d,%d,\"../%s\",%d,%d,%d,%d,%d,%d,\"%s\",%d,%d,%d,%d,%d,%d,%d)",IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight,usePhiMETCorr,useRecoilCorr,RecoilCorrVarDiagoParN,RecoilCorrVarDiagoParSigmas,RecoilCorrVarDiagoParU1orU2,use_PForNoPUorTKmet,use_syst_ewk_Alcaraz,gen_mass_value_MeV,contains_LHE_weights) << endl;
+  if(GetEntriesOrNchunck>-1) cout << "processing line "<< Form("zDATA.Loop(%d,%d,\"../%s\",%d,%d,%d,%d,%d,%d,\"%s\",%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)",IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight,usePhiMETCorr,useRecoilCorr,RecoilCorrNonClosure,RecoilCorrVarDiagoParSigmas,RecoilCorrVarDiagoParU1orU2,use_PForNoPUorTKmet,use_syst_ewk_Alcaraz,gen_mass_value_MeV,contains_LHE_weights) << endl;
   int nEntries;
   if(GetEntriesOrNchunck==-1){
     nEntries = zDATA.NumEntries();
@@ -100,13 +104,12 @@ int main(int argc, char ** argv)
   }
   
   cout<< "chunk " << GetEntriesOrNchunck << " Entry_ini= " << Entry_ini << " Entry_fin= " << Entry_fin << endl;
-  zDATA.Loop(GetEntriesOrNchunck,Entry_ini,Entry_fin,IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),run_BuildEvByEvTemplates,useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight,usePhiMETCorr,useRecoilCorr,RecoilCorrVarDiagoParN,RecoilCorrVarDiagoParSigmas,RecoilCorrVarDiagoParU1orU2,use_PForNoPUorTKmet,use_syst_ewk_Alcaraz,gen_mass_value_MeV,contains_LHE_weights);
+  zDATA.Loop(GetEntriesOrNchunck,Entry_ini,Entry_fin,IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),run_BuildEvByEvTemplates,useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight,usePhiMETCorr,useRecoilCorr,RecoilCorrNonClosure,RecoilCorrVarDiagoParSigmas,RecoilCorrVarDiagoParU1orU2,use_PForNoPUorTKmet,use_syst_ewk_Alcaraz,gen_mass_value_MeV,contains_LHE_weights);
   TString chunk_str = GetEntriesOrNchunck>0? Form("_chunk%d",GetEntriesOrNchunck) : "";
-  TString outputfilename = run_BuildEvByEvTemplates ? "WEvByEvTemplates" : "ZanalysisOnDATA";
+  TString outputfilename = "ZanalysisOnDATA";
   if(GetEntriesOrNchunck==0)
     gROOT->ProcessLine(Form(".! mv %s/Zanalysis%s.root %s/%s.root",filename_outputdir.Data(),chunk_str.Data(),filename_outputdir.Data(),outputfilename.Data()));
   gROOT->ProcessLine(Form(".! cp Zanalysis.* %s/",filename_outputdir.Data()));
-  
   
 }
 

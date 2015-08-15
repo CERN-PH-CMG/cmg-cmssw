@@ -28,11 +28,13 @@ namespace WMass{
   TString FitVar_str[NFitVar] = {"Pt","Mt","MET","MtLin"};
   static const int PDF_sets = PAR_PDF_SETS;
   static const int PDF_members = PAR_PDF_MEMBERS;
-  static const int NVarRecoilCorr = PAR_TOYS_MOMCORR;
+  static const int NVarRecoilCorr = 1; // not used in main chain anymore
+  
+  static const int WlikeCharge = PAR_WLIKE_CHARGE;
   
   static const int WpTcut = 15;
   
-  static const int KalmanNvariations = PAR_KALMAN_VARIATIONS; //200;
+  static const int KalmanNvariations = PAR_KALMAN_VARIATIONS; // 1 or 45
   
   // static const double sel_xmin[3]={30,  60, 30};
   static const double sel_xmin[NFitVar]={30,  60, 30,  60};
