@@ -12,7 +12,6 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
 
   int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
   int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
-  // int m_end = 9;
 
   cout << "m_start= " << m_start << " m_end= " << m_end << endl;
 
@@ -40,7 +39,8 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
 
     WorZ = tokenized.at(itoken); // "Z" or "W"
     TString Wlike = WorZ.Contains("W")?"":"like";
-    int charges = WorZ.Contains("W")?2:1;
+    int charge_start = (WMass::WlikeCharge==1 || WorZ.Contains("W"))?0:1;
+    int charge_end   = (WMass::WlikeCharge==1)                      ?1:2;
     cout << "WorZ= " << WorZ << endl;
 
     // TOKENIZE SAMPLES
@@ -61,7 +61,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
             for(int m=m_start; m<m_end; m++){
               for(int n=0; n<WMass::KalmanNvariations; n++){
                 for(int k=0;k<WMass::NFitVar;k++){
-                  for(int c=0;c<charges;c++){
+                  for(int c=charge_start;c<charge_end;c++){
                     // TemplatesW[c][m][n][h][k][isample][ieta][jmass] = (TH1D*) finTemplatesW[isample]->Get(Form("hW%s%s_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",eta_str.Data(),jWmass));
 
                     TemplatesW_NonScaled[c][m][n][h][k][isample][ieta][jmass] = (TH1D*) finTemplatesW[isample]->Get(Form("hW%s%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass));
@@ -82,7 +82,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
             for(int m=m_start; m<m_end; m++){
               for(int n=0; n<WMass::KalmanNvariations; n++){
                 for(int k=0;k<WMass::NFitVar;k++){
-                  for(int c=0;c<charges;c++){
+                  for(int c=charge_start;c<charge_end;c++){
 
                     if(TemplatesW_NonScaled[c][m][n][h][k][isample][ieta][jmass]){
                       double int_hist_data = 0;
@@ -109,7 +109,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
     // PROCESS THE HISTOS AND STORE THEM IN A SUITABLE FILE, STORE NORMALIZATIONS IN A SEPARATE TEXT FILE
     TFile *foutDATA = new TFile(Form("%s/DataCards/datacards_DATA%s.root",folder.Data(),WorZ.Contains("W")?"":"_Wlike"),"RECREATE");
 
-    for(int c=0; c<charges; c++){
+    for(int c=charge_start; c<charge_end; c++){
       ofstream outTXTfile;
       outTXTfile.open(Form("%s/DataCards/datacard_Wmass_Mu%s%s_normalizations.txt",folder.Data(),Wlike.Data(),WCharge_str[c].Data()));
 
