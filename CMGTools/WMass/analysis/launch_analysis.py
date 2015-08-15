@@ -648,12 +648,17 @@ if(mergeSigEWKbkg):
   os.system("./merge_MC.sh \"../JobOutputs/"+outfolder_name+"/\"")
   os.chdir(base_path);
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type d -name LSFJOB_* -exec rm -rf {} +")
+  os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name batch_logs_* -delete")
 
 if(removeChunks):
-  print "Removing chunks from JobOutputs/"+outfolder_name
-  os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name [WZ]analysis_chunk*.root -delete")
-  os.system("find JobOutputs/"+outfolder_name+"/output_* -type d -name LSFJOB_* -exec rm -rf {} +")
-  os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name batch_logs_* -delete")
+  if file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEMAD/WanalysisOnDATA.root") \
+  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEMAD/ZanalysisOnDATA.root") \
+  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEPOW/WanalysisOnDATA.root") \
+  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEPOW/ZanalysisOnDATA.root") :
+    print "Removing chunks from JobOutputs/"+outfolder_name
+    os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name [WZ]analysis_chunk*.root -delete")
+  else
+    print "Cannot find any merged histogram in "+outfolder_name+", not deleting chunks"
   os.chdir(base_path);
 
 if(runPrepareDataCards):
@@ -688,7 +693,7 @@ if(runDataCardsParametrization):
 
 
 if(runClosureTestLikeLihoodRatio):
-  shutil.copyfile("AnalysisCode/ClosureTest_fits_likelihoodratio.C","JobOutputs/"+outfolder_name+"/DataCards/ClosureTest_fits.C");
+  shutil.copyfile("AnalysisCode/ClosureTest_fits_likelihoodratio.C","JobOutputs/"+outfolder_name+"/DataCards/ClosureTest_fits_likelihoodratio.C");
   os.chdir("JobOutputs/"+outfolder_name+"/DataCards");
   print "We are working in:\n" + os.getcwd() + "\n"
   os.system("rm -f "+os.getcwd()+"/ClosureTest_fits_C.*")
@@ -697,7 +702,7 @@ if(runClosureTestLikeLihoodRatio):
         "eval `scramv1 runtime -sh`;"
         "cd -;"
         "source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh;"
-        "root -l -b -q \'ClosureTest_fits.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+",\""+os.getcwd()+"\",0,"+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+")\'")
+        "root -l -b -q \'ClosureTest_fits_likelihoodratio.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+",\""+os.getcwd()+"\",0,"+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+")\'")
   # proc=subprocess.Popen("ls "+os.getcwd()+"/submit_datacard_*", shell=True, stdout=subprocess.PIPE, )
   # a = proc.communicate()[0].rstrip().split('\n')
   # print a
@@ -709,7 +714,7 @@ if(mergeResults or (runClosureTestLikeLihoodRatio and useBatch==0)):
   os.chdir("JobOutputs/"+outfolder_name+"/DataCards");
   print os.getcwd();
   os.system("rm -rf LSF*; rm -f output_W*.root");
-  os.system("root -l -b -q \'merge_results.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+")\'");
+  os.system("root -l -b -q \'merge_results.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+")\'");
   os.chdir(base_path);
 
 

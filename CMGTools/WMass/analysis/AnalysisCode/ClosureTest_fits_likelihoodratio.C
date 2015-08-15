@@ -32,9 +32,10 @@ void ClosureTest_fits(int generated_PDF_set=1, int generated_PDF_member=0, TStri
 
     WorZ = tokenized.at(itoken); // "Z" or "W"
     TString Wlike = WorZ.Contains("W")?"":"like";
-    int charges = WorZ.Contains("W")?2:1;
+    int charge_start = (WMass::WlikeCharge==1 || WorZ.Contains("W"))?0:1;
+    int charge_end   = (WMass::WlikeCharge==1)                      ?1:2;
     
-    for(int c=0; c<charges; c++){
+    for(int c=charge_start; c<charge_end; c++){
       cout << "Analyzing W"<<Wlike<<" " << WCharge_str[c].Data() << endl;
       for(int h=0; h<WMass::PDF_members; h++){
         cout << "using pdf " << (WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets) << "-"<<h<< endl;
