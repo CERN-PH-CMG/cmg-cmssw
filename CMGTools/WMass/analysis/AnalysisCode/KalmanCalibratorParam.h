@@ -28,7 +28,6 @@ class KalmanCalibratorParam {
 
  private:
   double closure(double,double);
-  TRandom * random_;
   void resetHisto(TH1*,const TH1* );
   int varyClosure_;
 
