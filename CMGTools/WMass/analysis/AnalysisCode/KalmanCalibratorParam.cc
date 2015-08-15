@@ -6,6 +6,8 @@
 //-----------------------------------------------------------------------------------//
 KalmanCalibratorParam::KalmanCalibratorParam(bool isData) {
 
+  random_ = new TRandom3(10101982);
+
   if (isData) {
     std::string path("../utils/kalmanCalibration_data_31072015.root");
     file_ = new TFile(path.c_str());
@@ -92,7 +94,7 @@ void KalmanCalibratorParam::reset() {
 void KalmanCalibratorParam::randomize() {
   reset();
 
-  TRandom * random_ = new TRandom3(10101982);
+  random_->SetSeed(10101982);
 
   //create random gaussian vector
   int N = cholesky_->GetNrows();
@@ -357,7 +359,7 @@ void KalmanCalibratorParam::smear(TLorentzVector &muon) {
     pt=pt; 
   }else{
     factor = sqrt(fabs(factor));
-    TRandom * random_ = new TRandom3(int(TMath::Abs(phi)*1e9 + TMath::Abs(eta)*1e6 + pt*1e3));
+    random_->SetSeed(UInt_t(TMath::Abs(phi)*1e9 + TMath::Abs(eta)*1e6 + TMath::Abs(pt)*1e3));
     pt+=random_->Gaus(0.0,factor*pt);
   }
   muon.SetPtEtaPhiM(pt,eta,phi,mass);
