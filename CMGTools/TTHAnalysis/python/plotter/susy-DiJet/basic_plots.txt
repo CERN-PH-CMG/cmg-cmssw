@@ -1,0 +1,12 @@
+nLep: nLepGood10: [1.5,2.5,3.5,4.5,5.5]; XTitle="N(lep)", Logy=True
+nPFLep5LowMT:  nPFLep5LowMT: [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(PFLep\, p_{T} > 5\, M_{T} < 100)'
+nPFHad10LowMT: nPFHad10LowMT: [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(PFHad\, p_{T} > 10\, M_{T} < 100)'
+nLepLowMT:  nLepLowMT: [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(Lep(POG+isoTrack)\, M_{T} < 100)'
+met:   met_pt: 34,0,1000    ; XTitle="E_{T}^{miss}  [GeV]", Logy=True
+nJet40 : nJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5] ; XTitle='N(jet\, p_{T} > 40)', Logy=True
+ht_had:   ht_had: 20,0,2000    ; XTitle="H_{T}(jet p_{T} > 40)  [GeV]", Logy=True
+jet1_pt:   jet1_pt: 20,0,2000    ; XTitle="Leading-jet p_{T}   [GeV]", Logy=True
+jet2_pt:   jet2_pt: 20,0,2000    ; XTitle="Next to Leading-jet p_{T}   [GeV]", Logy=True
+mht_pt:   mht_pt: 32,0,800    ; XTitle="H_{T}^{miss}(jet p_{T} > 40)  [GeV]", Logy=True
+minMT:   minMT: 32,0,800    ; XTitle="M_{T}  [GeV]", Logy=True
+nBJet40 : nBJetMedium40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\, p_{T} > 40\, CSVM)', Logy=True
