@@ -312,23 +312,20 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   if(useRecoilCorr>0){
     TString model_name[2]={"fitresult_Add","fitresult_model2D"};
     
-    /// TKMET type2
-    std::string fileCorrectTo = Form("../RecoilCode/MAY25/recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
-    std::string fileZmmMC =     Form("../RecoilCode/MAY25/recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
-    // std::string fileZmmData =   Form("../RecoilCode/MAY25/recoilfit_MAY25_DATA_bkg_tkmet_eta21_MZ81101_pol4_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root"); int model_name_idx=1;
-    std::string fileZmmData =   Form("../RecoilCode/MAY25/recoilfit_MAY25_DATA_tkmet_eta21_MZ81101_pol4_type2_doubleGauss_triGauss_halfStat_corrKalman_UNBINNED_3G_53X.root"); int model_name_idx=0; 
-    //std::string fileZmmData =   Form("../RecoilCode/MAY25/recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root"); int model_name_idx=0;
-    // // TEMPORARY TO STUDY THE RECOIL CORRECTIONS!!!!!!!!!!
-    // std::string fileZmmData =   Form("../RecoilCode/MAY25/recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root"); int model_name_idx=0; 
-
-    //    recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_recoParam_UNBINNED_3G_53X_powheg.root
-    //    recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root
-    //    recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root
-    //    recoilfit_MAY25_DATA_tkmet_eta21_MZ81101_pol4_type2_doubleGauss_triGauss_x2Stat_runB_corrKalman_UNBINNED_3G_53X.root
-    //    recoilfit_MAY25_DATA_tkmet_eta21_MZ81101_pol4_type2_doubleGauss_triGauss_x2Stat_runA_corrKalman_UNBINNED_3G_53X.root
-    //    recoilfit_MAY25_DATA_tkmet_eta21_MZ81101_pol4_type2_doubleGauss_triGauss_x2Stat_corrKalman_UNBINNED_3G_53X.root
-    //    recoilfit_MAY25_DATA_tkmet_eta21_MZ81101_pol4_type2_doubleGauss_triGauss_halfStat_corrKalman_UNBINNED_3G_53X.root
-    //    recoilfit_MAY25_DATA_bkg_tkmet_eta21_MZ81101_pol4_type2_doubleGauss_triGauss_halfStat_corrKalman_UNBINNED_3G_53X.root
+    // TKMET type2
+    int model_name_idx=0;
+    std::string fileCorrectTo = /*POW */ Form("../RecoilCode/AUG16/recoilfit_AUG16_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
+    std::string fileZmmMC =     /*POW */ Form("../RecoilCode/AUG16/recoilfit_AUG16_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
+    std::string fileZmmData =   /*DATA*/ Form("../RecoilCode/AUG16/recoilfit_AUG16_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root");
+    // std::string fileZmmData =   /*POW */ Form("../RecoilCode/MAY25/recoilfit_AUG16_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
+    // std::string fileZmmData =   /*MAD */ Form("../RecoilCode/MAY25/recoilfit_AUG16_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root");
+    
+    // Old MAY25 histos
+    // std::string fileCorrectTo = Form("../RecoilCode/MAY25/recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
+    // std::string fileZmmMC =     Form("../RecoilCode/MAY25/recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
+    // std::string fileZmmData =   Form("../RecoilCode/MAY25/recoilfit_MAY25_DATA_tkmet_eta21_MZ81101_pol4_type2_doubleGauss_triGauss_halfStat_corrKalman_UNBINNED_3G_53X.root");
+    // std::string fileZmmData =   Form("../RecoilCode/MAY25/recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
+    // std::string fileZmmData =   Form("../RecoilCode/MAY25/recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root");
 
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;
     correctorRecoil_Z = new RecoilCorrector(fileCorrectTo.c_str(),123456,model_name[0],"../RecoilCode/MAY25/nonClosureMAY25.root");
