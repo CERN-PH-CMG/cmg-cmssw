@@ -1,3 +1,4 @@
+#include <TStyle.h>
 #include "TFile.h"
 #include "TH1.h"
 #include "TCanvas.h"
@@ -13,6 +14,8 @@ int fillstyle = 3001;
 
 void syst_recoil_one(TString recstr="u2")
 {
+  gStyle->SetOptFit(111);
+
   const int nhists = 6;
   const int ntotsysts = 60;
 
@@ -29,7 +32,7 @@ void syst_recoil_one(TString recstr="u2")
 
   TH1D* hcentral_noerr = (TH1D*)hcentral->Clone("hcentral_noerr");
   for(int i=1;i<hcentral_noerr->GetNbinsX()+1; i++){
-    //hcentral_noerr->SetBinError(i, 0);
+    hcentral_noerr->SetBinError(i, 0);
   }
   hcentral_noerr ->Scale(1/hcentral->Integral());
 
@@ -50,7 +53,7 @@ void syst_recoil_one(TString recstr="u2")
   TH1D* hsyst[ntotsysts];
 
   int nsyst=0;
-  for(int i=0; i<6; i++){
+  for(int i=0; i<nhists; i++){
     fin[i]=new TFile(Form("%d.root", i+1));
     for(int j=IniVar[i]; j<NVar[i]; j++){
       hsyst[nsyst]=(TH1D*)fin[i]->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_RecoilCorrVar%d_eta0p9_91188", recstr.Data(), j));
@@ -84,7 +87,8 @@ void syst_recoil_one(TString recstr="u2")
   }
 
   TH1D* herr = (TH1D*)hcentral->Clone("herr");
-  herr->SetTitle("Pow2Mad closure");
+  herr->SetTitle("Pow2Mad closure; " +recstr+ "; N");
+  herr->SetStats(kFALSE);
   for(int i=1;i<herr->GetNbinsX()+1; i++){
     double errstat = hstat   ->GetBinError(i);
     double errfit  = hsystfit->GetBinError(i);
@@ -98,13 +102,13 @@ void syst_recoil_one(TString recstr="u2")
   herr->SetAxisRange(0.8, 1.2, "Y");
   herr->SetFillColor(kCyan-2);
   herr->SetFillStyle(fillstyle);
-  herr->Draw("E3");
+  herr->Draw("E2");
   hstat->SetFillColor(kGreen);
   hstat->SetFillStyle(fillstyle);
-  hstat->Draw("same E3");
+  hstat->Draw("same E2");
   hcentral->SetFillColor(kRed);
   hcentral->SetFillStyle(fillstyle);
-  hcentral->Draw("same E3");
+  hcentral->Draw("same E2");
 
   TLine *line = new TLine(-xaxislimit,1,xaxislimit,1);
   line->Draw("same");
@@ -123,11 +127,12 @@ void syst_recoil_one(TString recstr="u2")
   leg->AddEntry(herr,"propagation of recoil fit stat unc","f");
   leg->Draw();
 
-   TH1D* hsigmas = (TH1D*)hmadgraph->Clone("hsigmas");
+  TH1D* hsigmas = (TH1D*)hmadgraph->Clone("hsigmas");
   hsigmas->SetName("hsigmas");
-  hsigmas->SetTitle("hsigmas");
+  hsigmas->SetTitle("hsigmas; " + recstr + "; N");
 
-  TH1D* hpull = new TH1D("hpull", "hpull", 50, -4, 4);
+  TH1D* hpull = new TH1D("hpull", "; pull value; N", 40, -6, 6);
+  hpull->StatOverflows(kTRUE);
 
   for(int i=1; i<hsigmas->GetNbinsX()+1; i++){
     double ratio = (hmadgraph->GetBinContent(i)-1)/herr->GetBinError(i);
@@ -144,8 +149,7 @@ void syst_recoil_one(TString recstr="u2")
   TCanvas *c_pull = new TCanvas("c_pull_"+recstr, "c_pull_"+recstr);
   c_pull->cd();
 
-  hpull->Draw("histo");
-
+  hpull->Fit("gaus", "L");
 
   TFile* fout = new TFile(recstr+".root", "RECREATE");
   fout->cd();
@@ -153,11 +157,15 @@ void syst_recoil_one(TString recstr="u2")
   c_closure->Write();
   c_sigmas->Write();
   c_pull->Write();
+  // c->SaveAs(".png");
+  // c_closure->SaveAs(".png");
+  // c_sigmas->SaveAs(".png");
+  // c_pull->SaveAs(".png");
 }
 
 int closure_recoil_plots()
 {
-  // syst_recoil_one("u1");
+  syst_recoil_one("u1");
   syst_recoil_one("u2");
   return 0;
 }

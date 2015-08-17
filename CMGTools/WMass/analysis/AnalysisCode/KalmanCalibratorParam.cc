@@ -93,12 +93,15 @@ void KalmanCalibratorParam::reset() {
 //-----------------------------------------------------------------------------------//
 void KalmanCalibratorParam::randomize() {
   reset();
+
+  random_->SetSeed(10101982);
+
   //create random gaussian vector
   int N = cholesky_->GetNrows();
   TVectorD vec(N);
-  for (int i=0;i<N;++i)
-  vec[i] = random_->Gaus(0,1);
-
+  for (int i=0;i<N;++i){
+    vec[i] = random_->Gaus(0,1);
+  }
   TVectorD correlated = (*cholesky_)*vec;
   for (int i=0;i<N;++i) {
     int histo = covHistoMap_->GetBinContent(i+1);
@@ -356,6 +359,7 @@ void KalmanCalibratorParam::smear(TLorentzVector &muon) {
     pt=pt; 
   }else{
     factor = sqrt(fabs(factor));
+    random_->SetSeed(UInt_t(TMath::Abs(phi)*1e9 + TMath::Abs(eta)*1e6 + TMath::Abs(pt)*1e3));
     pt+=random_->Gaus(0.0,factor*pt);
   }
   muon.SetPtEtaPhiM(pt,eta,phi,mass);
