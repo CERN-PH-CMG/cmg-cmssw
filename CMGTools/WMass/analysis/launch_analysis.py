@@ -141,8 +141,6 @@ runDataCardsParametrization = 0; # NOT REALLY USED
 ## ============================================================== #
 ## ============================================================== #
 
-outfolder_name = outfolder_prefix
-
 # Check if it's running from the correct dir
 base_path = os.getcwd()
 if os.path.dirname(os.path.realpath(__file__)) == base_path:
@@ -167,7 +165,7 @@ and RecoilCorrVarDiagoParSigmas == 0 :
   print "Check the 'RecoilCorrVarDiagoParSigmas' variable"
   sys.exit(1)
 
-if (WlikeCharge != 1) or (WlikeCharge != -1) :
+if (WlikeCharge != 1) and (WlikeCharge != -1) :
   print "ERROR: Asked for a Wlike of charge", WlikeCharge
   print "Check the 'WlikeCharge' variable"
   sys.exit(1)
@@ -184,6 +182,15 @@ if(MuonCorrGlobalScaleNsigma!=0):
 if(MuonCorrKalmanNvarsNsigma!=0):
   MuonCorrKalmanNparameters=45
   MuonCorrNsigma = MuonCorrKalmanNvarsNsigma
+
+# Build outfolder name
+
+outfolder_name = outfolder_prefix
+
+if (WlikeCharge == 1):
+  outfolder_name+="_muPos"
+else:
+  outfolder_name+="_muNeg"
 
 if(use_PForNoPUorTKmet==0): # 0:PF, 1:NOPU, 2:TK
   outfolder_name+="_pfmet";
@@ -540,6 +547,7 @@ if(runWanalysis or runZanalysis):
             print x,ev_ini,ev_fin
             if not file_exists_and_is_not_empty("Wanalysis_chunk"+str(x)+".root"):
               if(not useBatch):
+                os.chdir(code_dir)
                 os.system(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+wstring+" > "+outputSamplePath+"Wlog_"+str(x)+".log 2>&1 &")
                 os.system("sleep 3")
               else:
@@ -582,19 +590,13 @@ if(runWanalysis or runZanalysis):
       if not parallelize:
         os.system(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o 0,0,"+str(nEntries)+","+zstring)
       else:
-        nevents = 1e5
+        nevents = 2e5
         if ("DYJetsMadSig" in sample[i]  or "DYJetsPow" in sample[i]):
-          nevents = 2.5e4
+          nevents = 3e4
           if useRecoilCorr>0 and RecoilCorrVarDiagoParSigmas!=0:
-            nevents = 1e4
-          if (MuonCorrKalmanNvarsNsigma>1):
-            nevents = nevents/5
-        if ("DATA" in sample[i]):
-          nevents = 2e5
-          if (MuonCorrKalmanNvarsNsigma>1):
-            nevents = nevents/5
-        # if (WMassNSteps=="0"):
-          # nevents = 1e6
+            nevents = nevents/3
+          if (MuonCorrKalmanNvarsNsigma!=0):
+            nevents = nevents/3
 
         os.chdir(outputSamplePath)
 
@@ -624,6 +626,7 @@ if(runWanalysis or runZanalysis):
             print x,ev_ini,ev_fin
             if not file_exists_and_is_not_empty("Zanalysis_chunk"+str(x)+".root"):
               if(not useBatch):
+                os.chdir(code_dir)
                 os.system(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+zstring+" > "+outputSamplePath+"Zlog_"+str(x)+".log 2>&1 &")
                 os.system("sleep 3");
               else:
@@ -657,7 +660,7 @@ if(removeChunks):
   or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEPOW/ZanalysisOnDATA.root") :
     print "Removing chunks from JobOutputs/"+outfolder_name
     os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name [WZ]analysis_chunk*.root -delete")
-  else
+  else:
     print "Cannot find any merged histogram in "+outfolder_name+", not deleting chunks"
   os.chdir(base_path);
 
