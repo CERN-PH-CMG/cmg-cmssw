@@ -60,6 +60,7 @@ lepAna.loose_muon_dxy     = 0.3
 lepAna.loose_muon_dz      = 20.0
 
 
+jetAna.recalibrateJets = False
 
 ##########################################################
 ######################Isolation###########################
