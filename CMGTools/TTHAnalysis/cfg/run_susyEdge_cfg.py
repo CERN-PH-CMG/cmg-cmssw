@@ -60,6 +60,7 @@ lepAna.loose_muon_dxy     = 0.3
 lepAna.loose_muon_dz      = 20.0
 
 
+jetAna.recalibrateJets = False
 
 ##########################################################
 ######################Isolation###########################
@@ -188,7 +189,7 @@ susyCoreSequence.insert(susyCoreSequence.index(skimAnalyzer),
 ##########################################################
 ############Trigger Definition and bits  #################
 ##########################################################
-from CMGTools.RootTools.samples.triggers_13TeV_Spring15_edge import *
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import *
 #from CMGTools.RootTools.samples.triggers_8TeV import triggers_1mu_8TeV, triggers_mumu_8TeV, triggers_mue_8TeV, triggers_ee_8TeV;
 triggerFlagsAna.triggerBits = {
     'mu17mu8' : triggers_mu17mu8,
@@ -215,15 +216,13 @@ triggerFlagsAna.triggerBits = {
     'DoubleMu' : triggers_mumu,
     #'DoubleMuNoIso' : triggers_mumu_noniso,
     'DoubleEl' : triggers_ee,
-    'MuEG'     : triggers_emu,
-    'DoubleMuHT'     : triggers_mumuht,
-    'DoubleElHT'     : triggers_elelht,
-    'MuEGHT'     : triggers_elmuht,
-    'SingleMu' : triggers_1mu,
-    'SingleEl' : triggers_1el,
-    'HT' : triggers_ht,
-    'HTnoPF' : triggers_htnopf,
-    'HTMET' : triggers_htmet,
+    'MuEG'     : triggers_mue,
+    'DoubleMuHT'     : triggers_mumu_ht,
+    'DoubleElHT'     : triggers_ee_ht,
+    'MuEGHT'     : triggers_mue_ht,
+    'SingleMu' : triggers_1mu_iso,
+    'SingleEl' : triggers_FR_1e_iso,
+    'HTMET' : triggers_HTMET120,
     'HTJet' : triggers_htjet,
 }
 
