@@ -275,12 +275,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     cout << "using MuscleFit card " << fitParametersFile << endl;
     corrector = new MuScleFitCorrector(fitParametersFile);
   }
-  KalmanCalibrator *corrector_Kalman = new KalmanCalibrator(isMCorDATA==0?false:true); // True for data , //False for MC
+  KalmanCalibrator *corrector_Kalman; // True for data , //False for MC
   if(useMomentumCorr==3){
     cout << "using Kalman Calibrator" << endl;
     corrector_Kalman = new KalmanCalibrator(isMCorDATA==0?false:true); // True for data , //False for MC
   }
-  KalmanCalibratorParam *corrector_KalmanParam = new KalmanCalibratorParam(isMCorDATA==0?false:true); // True for data , //False for MC
+  KalmanCalibratorParam *corrector_KalmanParam; // True for data , //False for MC
   if(useMomentumCorr==4){
     cout << "using Kalman Calibrator Param" << endl;
     corrector_KalmanParam = new KalmanCalibratorParam(isMCorDATA==0?false:true); // True for data , //False for MC
@@ -317,8 +317,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     std::string fileCorrectTo = /*POW */ Form("../RecoilCode/AUG16/recoilfit_AUG16_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
     std::string fileZmmMC =     /*POW */ Form("../RecoilCode/AUG16/recoilfit_AUG16_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
     std::string fileZmmData =   /*DATA*/ Form("../RecoilCode/AUG16/recoilfit_AUG16_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root");
-    // std::string fileZmmData =   /*POW */ Form("../RecoilCode/MAY25/recoilfit_AUG16_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
-    // std::string fileZmmData =   /*MAD */ Form("../RecoilCode/MAY25/recoilfit_AUG16_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root");
+    // std::string fileZmmData =   /*POW */ Form("../RecoilCode/AUG16/recoilfit_AUG16_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
+    // std::string fileZmmData =   /*MAD */ Form("../RecoilCode/AUG16/recoilfit_AUG16_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root");
     
     // Old MAY25 histos
     // std::string fileCorrectTo = Form("../RecoilCode/MAY25/recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
