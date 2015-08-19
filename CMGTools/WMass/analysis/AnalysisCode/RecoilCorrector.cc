@@ -394,23 +394,23 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
     }
   }
   if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==2 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==5){
-    if(RecoilCorrVarDiagoParN < 9 || RecoilCorrVarDiagoParN > 17){
+    if(RecoilCorrVarDiagoParN < 9 || RecoilCorrVarDiagoParN > 20){
       cout << "ERROR !!!!! RecoilCorrVarDiagoParU1orU2fromDATAorMC= " << RecoilCorrVarDiagoParU1orU2fromDATAorMC << " RecoilCorrVarDiagoParN= " << RecoilCorrVarDiagoParN << endl;
     }
   }
   if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==3 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==6){
-    if(RecoilCorrVarDiagoParN < 0 || RecoilCorrVarDiagoParN > 11){
+    if(RecoilCorrVarDiagoParN < 0 || RecoilCorrVarDiagoParN > 14){
       cout << "ERROR !!!!! RecoilCorrVarDiagoParU1orU2fromDATAorMC= " << RecoilCorrVarDiagoParU1orU2fromDATAorMC << " RecoilCorrVarDiagoParN= " << RecoilCorrVarDiagoParN << endl;
     }
   }
   
   // reset all to zero
-  for(int ipar=0; ipar<18; ipar++){
+  for(int ipar=0; ipar<21; ipar++){
     TString eig = Form("eig_eig%d",ipar);
     wU1[1][fJet]->var(eig)->setVal(0);
     wU1[2][fJet]->var(eig)->setVal(0);
   }
-  for(int ipar=0; ipar<12; ipar++){
+  for(int ipar=0; ipar<15; ipar++){
     TString eig = Form("eig_eig%d",ipar);
     wU2[1][fJet]->var(eig)->setVal(0);
     wU2[2][fJet]->var(eig)->setVal(0);
