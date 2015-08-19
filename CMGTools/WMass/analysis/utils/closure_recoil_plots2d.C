@@ -26,9 +26,15 @@ void syst_recoil_one(TString recstr="u1")
 
   TFile* fcentral = new TFile(Form("0.root"));
   TH2D* hcentral2 =(TH2D*)fcentral->Get(Form("hWlikePos_%svsZpt_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
+  hcentral2->SetTitle(Form("hWlikePos_%svsZpt_8_JetCut_pdf229800-0_eta0p9_91188_pow2madcentral", recstr.Data()));
 
   TFile* fmadgraph = new TFile(Form("madnocorr.root"));
   TH2D* hmadgraph2 = (TH2D*)fmadgraph->Get(Form("hWlikePos_%svsZpt_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
+  hmadgraph2->SetTitle(Form("hWlikePos_%svsZpt_8_JetCut_pdf229800-0_eta0p9_91188_madgraph", recstr.Data()));
+
+  TH2D*h2dratio = (TH2D*) hcentral2->Clone("h2dratio");
+  TH2D*h2dratio_toterr = (TH2D*) hcentral2->Clone("h2dratio_toterr");
+  TH2D*h2dratio_sigmas = (TH2D*) hcentral2->Clone("h2dratio_sigmas");
 
   TFile* fin[nhists];
   TH2D* hsyst2[ntotsysts];
@@ -49,8 +55,10 @@ void syst_recoil_one(TString recstr="u1")
   double rmss[Zptbins];
 
   TFile* fout = new TFile(recstr+"vsZpt.root", "RECREATE");
+  hcentral2->Write();
+  hmadgraph2->Write();
 
-  for (int bin = 5; bin < hcentral2->GetNbinsX()+2; ++bin){
+  for (int bin = 1; bin < hcentral2->GetNbinsX()+2; ++bin){
 
     TString binstr = Form("%d", bin);
 
@@ -120,7 +128,11 @@ void syst_recoil_one(TString recstr="u1")
       double errstat = hstat   ->GetBinError(i);
       double errfit  = hsystfit->GetBinError(i);
       herr->SetBinError(i, sqrt(errstat*errstat + errfit*errfit));
+      h2dratio->SetBinContent(bin,i,hmadgraph->GetBinContent(i));
+      h2dratio_toterr->SetBinContent(bin,i,herr->GetBinError(i));
+      h2dratio_sigmas->SetBinContent(bin,i,(1-hmadgraph->GetBinContent(i))/herr->GetBinError(i));
     }
+    
 
     TCanvas *c_closure = new TCanvas("c_closure_"+recstr+"_bin"+binstr, "c_closure_"+recstr+"_bin"+binstr);
     c_closure->cd();
@@ -180,7 +192,7 @@ void syst_recoil_one(TString recstr="u1")
     c_pull->cd();
 
     hpull->Fit("gaus", "L");
-
+    
     fout->cd();
     c->Write();
     c_closure->Write();
@@ -192,6 +204,11 @@ void syst_recoil_one(TString recstr="u1")
     // c_pull->SaveAs(".png");
 
   }
+  
+  fout->cd();
+  h2dratio->Write();
+  h2dratio_toterr->Write();
+  h2dratio_sigmas->Write();
 
   double numbers[Zptbins];
   for (int i=0; i<Zptbins; ++i) {
