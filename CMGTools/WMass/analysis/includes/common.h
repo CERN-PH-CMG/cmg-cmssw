@@ -55,7 +55,7 @@ namespace WMass{
   // static const int RecoilCorrVarDiagoParN_[]                  = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
   
   static const int RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[] = {0, 0,  9,  0, 0,  9,  0 };
-  static const int RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[]   = {1, 9, 18, 12, 9, 18, 12 };
+  static const int RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[]   = {1, 9, 21, 15, 9, 21, 15 };
   
   // static const int RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[] = {1, 18, 12, 18, 12 };
   static const int RecoilCorrVarDiagoParN_[]                  = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
