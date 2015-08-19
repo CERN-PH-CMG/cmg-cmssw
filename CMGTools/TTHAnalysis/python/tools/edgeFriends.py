@@ -241,12 +241,12 @@ def _susyEdge(lep):
         if abs(lep.pdgId) == 11:
           if (abs(lep.etaSc) > 1.4442 and abs(lep.etaSc) < 1.566) : return False
           if (lep.convVeto == 0) or (lep.lostHits > 0) : return False
-          ## this is tight if (abs(lep.eta) < 0.8 and lep.mvaIdPhys14 < 0.73) : return False
-          ## this is tight if (abs(lep.eta) > 0.8 and abs(lep.eta) < 1.479 and lep.mvaIdPhys14 < 0.57) : return False
-          ## this is tight if (abs(lep.eta) > 1.479 and lep.mvaIdPhys14 < 0.05) : return False
-          if (abs(lep.eta) < 0.8 and lep.mvaIdPhys14 < 0.35) : return False
-          if (abs(lep.eta) > 0.8 and abs(lep.eta) < 1.479 and lep.mvaIdPhys14 < 0.20) : return False
-          if (abs(lep.eta) > 1.479 and lep.mvaIdPhys14 < -0.52) : return False
+          if (abs(lep.eta) < 0.8 and lep.mvaIdPhys14 < 0.73) : return False
+          if (abs(lep.eta) > 0.8 and abs(lep.eta) < 1.479 and lep.mvaIdPhys14 < 0.57) : return False
+          if (abs(lep.eta) > 1.479 and lep.mvaIdPhys14 < 0.05) : return False
+          ## loose id if (abs(lep.eta) < 0.8 and lep.mvaIdPhys14 < 0.35) : return False
+          ## loose id if (abs(lep.eta) > 0.8 and abs(lep.eta) < 1.479 and lep.mvaIdPhys14 < 0.20) : return False
+          ## loose id if (abs(lep.eta) > 1.479 and lep.mvaIdPhys14 < -0.52) : return False
         if lep.miniRelIso > 0.1: return False
         return True
 
