@@ -24,25 +24,40 @@ class hbheAnalyzer( Analyzer ):
 
     def declareHandles(self):
         super(hbheAnalyzer, self).declareHandles()
-        self.mchandles['hcalnoise'] = AutoHandle( 'hcalnoise', 'HcalNoiseSummary' )
+        self.handles['hcalnoise'] = AutoHandle( 'hcalnoise', 'HcalNoiseSummary' )
 
     def beginLoop(self, setup):
         super(hbheAnalyzer,self).beginLoop( setup )
 
     def process(self, event):
         self.readCollections( event.input )
-        self.mchandles['hcalnoise'].Load(event.input )
       
-        event.hbheMaxZeros          = self.mchandles['hcalnoise'].product().maxZeros()
-        event.hbheMaxHPDHits        = self.mchandles['hcalnoise'].product().maxHPDHits()
-        event.hbheMaxHPDNoOtherHits = self.mchandles['hcalnoise'].product().maxHPDNoOtherHits()
-        event.hbheHasBadRBXTS4TS5   = self.mchandles['hcalnoise'].product().HasBadRBXTS4TS5()
-        event.hbheGoodJetFoundInLowBVRegion = self.mchandles['hcalnoise'].product().goodJetFoundInLowBVRegion()
+        event.hbheMaxZeros          = self.handles['hcalnoise'].product().maxZeros()
+        event.hbheMaxHPDHits        = self.handles['hcalnoise'].product().maxHPDHits()
+        event.hbheMaxHPDNoOtherHits = self.handles['hcalnoise'].product().maxHPDNoOtherHits()
+        event.hbheHasBadRBXTS4TS5   = self.handles['hcalnoise'].product().HasBadRBXTS4TS5()
+        event.hbheHasBadRBXRechitR45Tight   = self.handles['hcalnoise'].product().HasBadRBXRechitR45Tight()
+        event.hbheGoodJetFoundInLowBVRegion = self.handles['hcalnoise'].product().goodJetFoundInLowBVRegion()
+        event.hbhenumIsolatedNoiseChannels  = self.handles['hcalnoise'].product().numIsolatedNoiseChannels()
+        event.hbheisolatedNoiseSumE         = self.handles['hcalnoise'].product().isolatedNoiseSumE()
+        event.hbheisolatedNoiseSumEt        = self.handles['hcalnoise'].product().isolatedNoiseSumEt()
 
-        event.hbheFilterNew = 1
+        event.hbheFilterNew25ns = 1
+        event.hbheFilterNew50ns = 1
 
-        if event.hbheMaxHPDHits >= 17: event.hbheFilterNew = 0
+        if event.hbheMaxHPDHits >= 17: 
+            event.hbheFilterNew25ns = 0
+            event.hbheFilterNew50ns = 0
         if event.hbheMaxHPDNoOtherHits >= 10 or (event.hbheHasBadRBXTS4TS5 and not event.hbheGoodJetFoundInLowBVRegion): 
-            event.hbheFilterNew = 0
+            event.hbheFilterNew50ns = 0
+        if event.hbheMaxHPDNoOtherHits >= 10 or (event.hbheHasBadRBXRechitR45Tight and not event.hbheGoodJetFoundInLowBVRegion): 
+            event.hbheFilterNew25ns = 0
+
+        event.hbheFilterIso = 1
+        if event.hbhenumIsolatedNoiseChannels >= 10: event.hbheFilterIso = 0
+        if event.hbheisolatedNoiseSumE        >= 50: event.hbheFilterIso = 0
+        if event.hbheisolatedNoiseSumEt       >= 25: event.hbheFilterIso = 0 
+
+        event.hbheFilterNew = event.hbheFilterNew50ns # to be updated later with automatic choice based on PileupSummaryInfo or run number
 
         return True
