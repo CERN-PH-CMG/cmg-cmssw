@@ -33,10 +33,17 @@ class PlotSpec:
         self.expr = expr
         self.bins = bins
         self.opts = opts
+        self.logs = {}
     def hasOption(self,name):
         return (name in self.opts)
     def getOption(self,name,default=None):
         return self.opts[name] if (name in self.opts) else default
+    def setOption(self,name,value):
+        self.opts[name] = value
+    def setLog(self,name,value):
+        self.logs[name] = value
+    def allLogs(self):
+        return self.logs.iteritems()
 
 class TreeToYield:
     def __init__(self,root,options,scaleFactor=1.0,name=None,cname=None,settings={},treename=None):

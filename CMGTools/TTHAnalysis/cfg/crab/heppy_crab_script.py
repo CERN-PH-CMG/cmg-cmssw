@@ -13,7 +13,6 @@ total = 0  # total number of jobs for given dataset, not used at the moment
 nevents = None # this means run all events
 nprint  = 0 # quiet printout, change if you want to print the first nprint events
 useAAA = True # use xrootd by default
-json = None
 
 def XrootdRedirector():
     americas     = ["CO", "MX","US"]
@@ -38,9 +37,6 @@ for arg in sys.argv[2:]:
     elif arg.split("=")[0] == "useAAA":
         useAAA = not (arg.split("=")[1] == 'False') # 'True' by default
         if useAAA: print "chosen to run via xrootd"
-    elif arg.split("=")[0] == "json":
-        json = arg.split("=")[1]
-        print "run on json:", json
 
 print "dataset:", dataset
 print "job", job , " out of", total
@@ -57,8 +53,6 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import split
 selectedComponents = []
 for comp in config.components:
     if comp.name == dataset:
-        if comp.isData and json != None:
-            comp.json = json
         # this selects the files and events and changes the name to _ChunkX according to fineSplitFactor and splitFactor
         newComp = split([comp])[job-1] # first job number is 1
         if useAAA:
