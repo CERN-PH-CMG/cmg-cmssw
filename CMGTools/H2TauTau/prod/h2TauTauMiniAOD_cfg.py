@@ -69,6 +69,11 @@ process.options = cms.untracked.PSet(
     allowUnscheduled=cms.untracked.bool(True)
 )
 
+process.genEvtWeightsCounter = cms.EDProducer(
+    'GenEvtWeightCounter',
+    verbose = cms.untracked.bool(False)
+)
+
 if numberOfFilesToProcess > 0:
     process.source.fileNames = process.source.fileNames[:numberOfFilesToProcess]
 
@@ -205,6 +210,11 @@ elif channel == 'di-mu':
     )
 else:
     raise ValueError('unrecognized channel')
+
+if runOnMC:
+    
+    process.genEvtWeightsCounterPath = cms.Path(process.genEvtWeightsCounter)
+    process.schedule.insert(0, process.genEvtWeightsCounterPath)
 
 if addPuppi:
     process.schedule.insert(-1, process.puppiPath)

@@ -155,6 +155,7 @@ jet_vars = [
 
 # gen info
 geninfo_vars = [
+    Variable('geninfo_mcweight', lambda ev : ev.mcweight if hasattr(ev, 'mcweight') else 1., type=int),
     Variable('geninfo_nup', lambda ev : ev.NUP if hasattr(ev, 'NUP') else -1, type=int),
     Variable('geninfo_tt', type=int),
     Variable('geninfo_mt', type=int),
