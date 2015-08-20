@@ -283,25 +283,30 @@ class DiLeptonAnalyzer(Analyzer):
         legs = [diL.leg1(), diL.leg2()]
         diL.matchedPaths = set()
 
+        sameFlavour = (abs(legs[0].pdgId()) == abs(legs[1].pdgId()))
+
         for info in event.trigger_infos:
+            
             if not info.fired:
                 continue
 
-            matchedIds = set()
+            matchedIds = []
             allMatched = True
+            
             for to in info.objects:
                 if self.trigObjMatched(to, legs):
-                    matchedIds.add(abs(to.pdgId()))
+                    matchedIds.append(abs(to.pdgId()))
                 else:
                     allMatched = False
 
-            if matchedIds == info.objIds:
+            if set(matchedIds) == info.objIds and \
+               len(matchedIds) >= len(legs) * sameFlavour:
                 if requireAllMatched and not allMatched:
                     matched = False
                 else:
                     matched = True
                     diL.matchedPaths.add(info.name)
-
+        
         return matched
 
     def trigObjMatched(self, to, legs, dR2Max=0.25):  # dR2Max=0.089999
@@ -313,9 +318,11 @@ class DiLeptonAnalyzer(Analyzer):
         to.matched = False
         for leg in legs:
             # JAN - Single-ele trigger filter has pdg ID 0, to be understood
-            if pdgId == abs(leg.pdgId()) or (pdgId == 0 and abs(leg.pdgId()) == 11):
+            # RIC - same seems to happen with di-tau
+            if pdgId == abs(leg.pdgId()) or \
+               (pdgId == 0 and abs(leg.pdgId()) == 11) or \
+               (pdgId == 0 and abs(leg.pdgId()) == 15):
                 if deltaR2(eta, phi, leg.eta(), leg.phi()) < dR2Max:
-                    to.matched = True
-                    # leg.trigMatched = True
+                    to.matched = True                  
 
         return to.matched
