@@ -44,10 +44,10 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
       # it must have well id'ed and trig matched legs,
       # di-lepton and tri-lepton veto must pass
       result = self.selectionSequence( event,
-                                       fillCounter = False                  ,
+                                       fillCounter = True                   ,
                                        leg1IsoCut  = self.cfg_ana.looseiso1 ,
                                        leg2IsoCut  = self.cfg_ana.looseiso2 )
-
+      
       if result is False:
           # really no way to find a suitable di-lepton,
           # even in the control region
@@ -57,8 +57,16 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
     if not ( hasattr(event, 'leg1') and hasattr(event, 'leg2') ) :
       return False
 
-    # make sure that the legs are sorted by pt
-    if event.leg1.pt() < event.leg2.pt() :
+#     # RIC: agreed to sort by isolation 19/8/2015 
+#     # make sure that the legs are sorted by pt
+#     if event.leg1.pt() < event.leg2.pt() :
+#       event.leg1 = event.diLepton.leg2()
+#       event.leg2 = event.diLepton.leg1()
+#       event.selectedLeptons = [event.leg2, event.leg1]
+
+    # RIC: agreed with Adinda to sort taus by isolation
+    iso = self.cfg_ana.isolation
+    if event.leg1.tauID(iso) > event.leg2.tauID(iso) :
       event.leg1 = event.diLepton.leg2()
       event.leg2 = event.diLepton.leg1()
       event.selectedLeptons = [event.leg2, event.leg1]
@@ -121,14 +129,24 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
 
   def testLeg(self, leg, leg_pt, leg_eta, iso, isocut):
     '''requires loose isolation, pt, eta and minimal tauID cuts'''
-    return ( self.testTauVertex(leg)                          and
-             leg.tauID(iso)                         < isocut  and
-             leg.pt()                               > leg_pt  and
-             abs(leg.eta())                         < leg_eta and
-             (leg.tauID('decayModeFinding')         > 0.5     or
-              leg.tauID('decayModeFindingNewDMs')   > 0.5)    and
-             leg.tauID('againstElectronVLooseMVA5') > 0.5     and
-             leg.tauID('againstMuonLoose3')         > 0.5       )
+#     return ( self.testTauVertex(leg)                          and
+#              leg.tauID(iso)                         < isocut  and
+#              leg.pt()                               > leg_pt  and
+#              abs(leg.eta())                         < leg_eta and
+#              (leg.tauID('decayModeFinding')         > 0.5     or
+#               leg.tauID('decayModeFindingNewDMs')   > 0.5)    and
+#              leg.tauID('againstElectronVLooseMVA5') > 0.5     and
+#              leg.tauID('againstMuonLoose3')         > 0.5       )
+#              leg.tauID('againstElectronVLooseMVA5') > 0.5     and
+#              leg.tauID('againstMuonLoose3')         > 0.5       )
+    
+    # RIC: relaxed
+    return ( abs(leg.charge())                  == 1       and # RIC: ensure that taus have abs(charge) == 1
+             self.testTauVertex(leg)                       and
+             leg.tauID(iso)                      < isocut  and
+             leg.pt()                            > leg_pt  and
+             abs(leg.eta())                      < leg_eta and
+             leg.tauID('decayModeFindingNewDMs') > 0.5     )
 
   def testLeg1(self, leg, isocut):
     leg_pt  = self.cfg_ana.pt1
