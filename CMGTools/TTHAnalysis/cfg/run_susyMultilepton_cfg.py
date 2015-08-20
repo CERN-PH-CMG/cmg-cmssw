@@ -3,6 +3,7 @@
 ## skim condition: >= 2 loose leptons, no pt cuts or id ##
 ##########################################################
 import PhysicsTools.HeppyCore.framework.config as cfg
+import re
 
 
 #-------- LOAD ALL ANALYZERS -----------
@@ -24,6 +25,7 @@ lepAna.doMiniIsolation = True
 lepAna.packedCandidates = 'packedPFCandidates'
 lepAna.miniIsolationPUCorr = 'rhoArea'
 lepAna.miniIsolationVetoLeptons = None # use 'inclusive' to veto inclusive leptons and their footprint in all isolation cones
+lepAna.doIsolationScan = False
 
 # Lepton Preselection
 lepAna.loose_electron_id = "POG_MVA_ID_Run2_NonTrig_VLoose"
@@ -191,24 +193,29 @@ triggerFlagsAna.triggerBits = {
 from CMGTools.RootTools.samples.samples_13TeV_74X import *
 from CMGTools.RootTools.samples.samples_13TeV_74X_susySignalsPriv import *
 from CMGTools.RootTools.samples.samples_8TeVReReco_74X import *
+from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
 
 selectedComponents = [ SingleMu_742, MuEG_742, DoubleMu_742 ] 
 selectedComponents = [ TTJets, TTJets_LO, WJetsToLNu, DYJetsToLL_M10to50,  DYJetsToLL_M50,  ] + SingleTop + DiBosons
-selectedComponents = mcSamplesPriv 
+selectedComponents = [ DYJetsToLL_M10to50_50ns, DYJetsToLL_M50_50ns, TBar_tWch_50ns, TTJets_LO_50ns, TToLeptons_tch_50ns, T_tWch_50ns, WJetsToLNu_50ns, WWTo2L2Nu_50ns, WZp8_50ns, ZZp8_50ns, TTJets_50ns ]
+selectedComponents = [ TT_pow_50ns ]
 
-if False: # select only a subset of a sample, corresponding to a given luminosity (assuming ~30k events per MiniAOD file, which is ok for central production)
-    target_lumi = 5000 # in inverse picobarns
+if True: # select only a subset of a sample, corresponding to a given luminosity (assuming ~30k events per MiniAOD file, which is ok for central production)
+    target_lumi = 1000 # in inverse picobarns
     for c in selectedComponents:
+        if not c.isMC: continue
         nfiles = int(min(ceil(target_lumi * c.xSection / 30e3), len(c.files)))
-        print "For component %s, will want %d/%d files" % (c.name, nfiles, len(c.files))
+        #if nfiles < 50: nfiles = min(4*nfiles, len(c.files))
+        print "For component %s, will want %d/%d files; AAA %s" % (c.name, nfiles, len(c.files), "eoscms" not in c.files[0])
         c.files = c.files[:nfiles]
         c.splitFactor = len(c.files)
+        #c.splitFactor = 1; c.fineSplitFactor = 4
 
-if True: # For running on data
-    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/DCSOnly/json_DCSONLY_Run2015B.txt"; 
-    processing = "Run2015B-PromptReco-v1"; short = "Run2015B_v1"; 
-    run_ranges = [ (251027, 251883) ]
-    #run_ranges = [ (251244,251244), (251251,251252), (251559,251562), (251636,251636), (251638,251638), (251640,251640), (251643,251643), (251721,251721), (251883,251883) ]
+if False: # For running on data
+    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON.txt"; 
+    #processing = "Run2015B-PromptReco-v1"; short = "Run2015B_v1"; run_ranges = [ (251643,251883) ]; useAAA=False
+    processing = "Run2015B-17Jul2015-v1"; short = "Run2015B_17Jul2015"; run_ranges = [ (251244, 251562) ]; useAAA=True
+    compSelection = ""; compVeto = ""
     DatasetsAndTriggers = []
     selectedComponents = []; vetos = []  
  
@@ -244,16 +251,22 @@ if True: # For running on data
     for pd,triggers in DatasetsAndTriggers:
         for run_range in run_ranges:
             label = "runs_%d_%d" % run_range if run_range[0] != run_range[1] else "run_%d" % (run_range[0],)
-            comp = kreator.makeDataComponent(pd+"_"+short+"_"+label, 
+            compname = pd+"_"+short+"_"+label
+            if ((compSelection and not re.search(compSelection, compname)) or
+                (compVeto      and     re.search(compVeto,      compname))):
+                    print "Will skip %s" % (compname)
+                    continue
+            comp = kreator.makeDataComponent(compname, 
                                              "/"+pd+"/"+processing+"/MINIAOD", 
                                              "CMS", ".*root", 
                                              json=json, 
                                              run_range=run_range, 
-                                             triggers=triggers[:], vetoTriggers = vetos[:])
+                                             triggers=triggers[:], vetoTriggers = vetos[:],
+                                             useAAA=useAAA)
             print "Will process %s (%d files)" % (comp.name, len(comp.files))
 #            print "\ttrigger sel %s, veto %s" % (triggers, vetos)
-            comp.splitFactor = 1 #len(comp.files)
-            comp.fineSplitFactor = 4
+            comp.splitFactor = len(comp.files)
+            comp.fineSplitFactor = 1
             selectedComponents.append( comp )
         vetos += triggers
     if json is None:
@@ -371,6 +384,18 @@ elif test == 'PromptReco':
         else:
             comp.fineSplitFactor = 2
     if jsonAna in sequence: sequence.remove(jsonAna)
+elif test == "rereco":
+    selectedComponents = [ MuEG_740p9 ]
+    comp = selectedComponents[0]
+    comp.files = [ '/afs/cern.ch/work/g/gpetrucc/CMSSW_7_4_7/src/output.root' ]
+    comp.name  = 'ReRecoNewAlignment_251168'
+    comp.triggers = []
+    comp.json     = None
+    jetAna.recalibrateJets = False 
+    jetAna.smearJets       = False 
+    ttHLepSkim.minLeptons = 2
+    if jsonAna in sequence: sequence.remove(jsonAna)
+    if eventFlagsAna in sequence: sequence.remove(eventFlagsAna)
 elif test == "express":
     selectedComponents = [ MuEG_740p9 ]
     comp = selectedComponents[0]
@@ -404,6 +429,7 @@ outputService.append(output_service)
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
 from CMGTools.TTHAnalysis.tools.EOSEventsWithDownload import EOSEventsWithDownload
 event_class = EOSEventsWithDownload
+EOSEventsWithDownload.aggressive = 2 # always fetch if running on Wigner
 if getHeppyOption("nofetch"):
     event_class = Events 
 config = cfg.Config( components = selectedComponents,

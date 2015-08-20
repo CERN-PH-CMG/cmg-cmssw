@@ -40,6 +40,14 @@ float mass_2(float pt1, float eta1, float phi1, float m1, float pt2, float eta2,
     return (p41+p42).M();
 }
 
+float phi_2(float pt1, float phi1, float pt2, float phi2) {
+    float px1 = pt1 * std::cos(phi1);
+    float py1 = pt1 * std::sin(phi1);
+    float px2 = pt2 * std::cos(phi2);
+    float py2 = pt2 * std::sin(phi2);
+    return std::atan2(py1+py2,px1+px2);
+}
+
 float pt_3(float pt1, float phi1, float pt2, float phi2, float pt3, float phi3) {
     phi2 -= phi1;
     phi3 -= phi1;

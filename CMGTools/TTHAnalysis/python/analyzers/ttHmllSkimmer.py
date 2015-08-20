@@ -6,6 +6,8 @@ from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 class ttHmllSkimmer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHmllSkimmer,self).__init__(cfg_ana,cfg_comp,looperName)
+        self.idCut = cfg_ana.idCut if (getattr(cfg_ana, 'idCut', '') != '') else "True"
+        self.idFunc = eval("lambda lepton : "+self.idCut);
 
     def declareHandles(self):
         super(ttHmllSkimmer, self).declareHandles()
@@ -21,10 +23,15 @@ class ttHmllSkimmer( Analyzer ):
     def makeZs(self, event, maxLeps, lepId):
         event.bestZ = [ 0., -1,-1 ]
         nlep = len(event.selectedLeptons)
+
         for i,l1 in enumerate(event.selectedLeptons):
             for j in range(i+1,nlep):
                 if j >= maxLeps: break
                 l2 = event.selectedLeptons[j]
+                if not self.idFunc(l2):
+                    continue
+                if not self.idFunc(l1):
+                    continue
                 if l1.pdgId() == -l2.pdgId() and abs(l1.pdgId()) in lepId:
                     zmass = (l1.p4() + l2.p4()).M()
                     if event.bestZ[0] == 0 or abs(zmass - 91.188) < abs(event.bestZ[0] - 91.188):

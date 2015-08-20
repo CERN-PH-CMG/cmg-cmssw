@@ -159,6 +159,7 @@ do
       rm Loop/$ff.root
    fi
 done
+rm Loop/cmsswPreProcessing.root
 cp -r Loop/* $SUBMISIONDIR""".format(idx=index, srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")])
    else:
        print "remote directory not supported yet: ", remoteDir

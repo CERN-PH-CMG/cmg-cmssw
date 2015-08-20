@@ -30,7 +30,7 @@ def propagateMEtUncertainties(process, particleCollection, particleType,
             applyType1Corrections = cms.bool(True),
             applyType2Corrections = cms.bool(False),
             src = cms.InputTag(metProducer.label()),
-            srcType1Corrections = cms.VInputTag(cms.InputTag(moduleMETcorrShiftUpName))
+            srcCorrections = cms.VInputTag(cms.InputTag(moduleMETcorrShiftUpName))
     )
     metProducerLabel = metProducer.label()
     if postfix != "":
@@ -43,7 +43,7 @@ def propagateMEtUncertainties(process, particleCollection, particleType,
     setattr(process, moduleMETshiftUpName, moduleMETshiftUp)
     sequence += moduleMETshiftUp
     moduleMETshiftDown = moduleMETshiftUp.clone(
-        srcType1Corrections = cms.VInputTag(
+        srcCorrections = cms.VInputTag(
             cms.InputTag(moduleMETcorrShiftDownName)
         )
     )
@@ -178,9 +178,9 @@ def createPatMETModules(process, metType, metPatSequence, applyT1Cor=False,
 
     #Type0 for pfT1 and pfT1T2 MET
     if metType == "PF":
-        patMetCorrectionsCentralValue = [ cms.InputTag('patPFJetMETtype1p2Corr' + postfix, 'type1') ]
+        patMetCorrectionsCentralValue = [ cms.InputTag('patPFMetT1T2Corr' + postfix, 'type1') ]
         if applyT0pcCor :
-            patMetCorrectionsCentralValue.extend([ cms.InputTag('patPFMETtype0Corr' + postfix) ])
+            patMetCorrectionsCentralValue.extend([ cms.InputTag('patPFMetT0Corr' + postfix) ])
 
 
     # compute XY shift correction if asked, and configure the tool accordingly
@@ -198,9 +198,9 @@ def createPatMETModules(process, metType, metPatSequence, applyT1Cor=False,
 
     #finalize T1/T2 correction process
     if applyT1Cor :
-        getattr(process, metModNameT1 + postfix).srcType1Corrections = cms.VInputTag(patMetCorrectionsCentralValue)
+        getattr(process, metModNameT1 + postfix).srcCorrections = cms.VInputTag(patMetCorrectionsCentralValue)
     if applyT2Cor :
-        getattr(process, metModNameT1T2 + postfix).srcType1Corrections = cms.VInputTag(patMetCorrectionsCentralValue)
+        getattr(process, metModNameT1T2 + postfix).srcCorrections = cms.VInputTag(patMetCorrectionsCentralValue)
 
 
     # Apply unclustered energy calibration on pfMET T1T2 if asked -> discard type2 and replace it with 

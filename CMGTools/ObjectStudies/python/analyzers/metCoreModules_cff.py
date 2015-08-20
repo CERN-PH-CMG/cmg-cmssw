@@ -265,6 +265,7 @@ from CMGTools.TTHAnalysis.analyzers.ttHmllSkimmer import ttHmllSkimmer
 ttHZskim = cfg.Analyzer(
             ttHmllSkimmer, name='ttHmllSkimmer',
             lepId=[13],
+            idCut  = "lepton.relIso03 < 0.2", # can give a cut
             maxLeps=10,
             massMin=81,
             massMax=101,
@@ -345,7 +346,7 @@ metCoreSequence = [
    #ttHLepSkim,
    #ttHZskim,
 ##### photon modules below
-   #photonAna,
+    photonAna,
 ##### jet modules below
    #jetAna,
 ##### met modules below

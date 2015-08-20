@@ -1,0 +1,6 @@
+==0  lepton: nLepGood10 == 0
+>=2  njets: nJet40 >=2 
+<4  njets: nJet40 < 4 
+minMT > 175 GeV: minMT > 175 
+==0 IsoTrk: nLepLowMT ==0
+#hard lepton: LepGood1_pt > 25
