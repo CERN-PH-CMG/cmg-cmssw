@@ -76,6 +76,11 @@ susyFullHad_globalVariables = susyCore_globalVariables + [
     NTupleVariable("nBJetMedium20", lambda ev: sum([j.btagWP("CSVv2IVFM") for j in ev.bjetsMedium if j.pt() > 20]), int, help="Number of jets with pt > 20 passing CSV medium"),
     NTupleVariable("nBJetTight20", lambda ev: sum([j.btagWP("CSVv2IVFT") for j in ev.bjetsMedium if j.pt() > 20]), int, help="Number of jets with pt > 20 passing CSV tight"),
 
+    NTupleVariable("nJet20FailId", lambda ev: sum([j.pt() > 20 for j in ev.cleanJetsFailIdAll]), int, help="Number of jets after photon-cleaning with pt > 20, |eta|<4.7"),
+    NTupleVariable("nJet25FailId", lambda ev: sum([j.pt() > 25 for j in ev.cleanJetsFailIdAll]), int, help="Number of jets after photon-cleaning with pt > 25, |eta|<4.7"),
+    NTupleVariable("nJet30FailId", lambda ev: sum([j.pt() > 30 for j in ev.cleanJetsFailIdAll]), int, help="Number of jets after photon-cleaning with pt > 30, |eta|<4.7"),
+    NTupleVariable("nJet100FailId", lambda ev: sum([j.pt() > 100 for j in ev.cleanJetsFailIdAll]), int, help="Number of jets after photon-cleaning with pt > 100, |eta|<4.7"),
+
     NTupleVariable("nBJet40", lambda ev: sum([j.btagWP("CSVv2IVFM") for j in ev.cleanJets if j.pt() > 40]), int, help="Number of jets with pt > 40 passing CSV medium"),
     NTupleVariable("nBJet30", lambda ev: sum([j.btagWP("CSVv2IVFM") for j in ev.cleanJets if j.pt() > 30]), int, help="Number of jets with pt > 25 passing CSV medium"),
     NTupleVariable("nBJet25", lambda ev: sum([j.btagWP("CSVv2IVFM") for j in ev.cleanJets if j.pt() > 25]), int, help="Number of jets with pt > 25 passing CSV medium"),
@@ -119,6 +124,7 @@ susyFullHad_globalVariables = susyCore_globalVariables + [
     NTupleVariable("mt2", lambda ev: ev.mt2_Xj, float, help="mt2(j1,j2,met) with jets and leptons"),
     NTupleVariable("gamma_mt2", lambda ev: ev.mt2_Xj_gamma, float, help="mt2(j1,j2,met) with photons added to met"),
     NTupleVariable("zll_mt2", lambda ev: ev.mt2_Xj_zll, float, help="mt2(j1,j2,met) with zll added to met, only hadrons"),
+    NTupleVariable("zllmt_mt2", lambda ev: ev.mt2_Xj_zllmt, float, help="mt2(j1,j2,met) with zll (1 lepton only)  added to met, only hadrons"),
 
 #BM    NTupleVariable("mt2NoHF", lambda ev: ev.mt2NoHF_Xj if  hasattr(ev,'mt2NoHF_Xj') else 0, float, help="mt2(j1,j2,met) with jets and leptons and metNoHF"),
 #BM    NTupleVariable("mt2NoHF_had", lambda ev: ev.mt2NoHF_Xj_had if  hasattr(ev,'mt2NoHF_Xj_had') else 0, float, help="mt2(j1,j2,met) with jets and metNoHF"),
@@ -142,6 +148,13 @@ susyFullHad_globalVariables = susyCore_globalVariables + [
     NTupleVariable("gamma_nBJet25", lambda ev: sum([j.btagWP("CSVv2IVFM") for j in ev.gamma_cleanJets if j.pt() > 25]), int, help="Number jets after photon-cleaning  with pt > 25 passing CSV medium"),
     NTupleVariable("gamma_nBJet30", lambda ev: sum([j.btagWP("CSVv2IVFM") for j in ev.gamma_cleanJets if j.pt() > 30]), int, help="Number jets after photon-cleaning  with pt > 25 passing CSV medium"),
     NTupleVariable("gamma_nBJet40", lambda ev: sum([j.btagWP("CSVv2IVFM") for j in ev.gamma_cleanJets if j.pt() > 40]), int, help="Number jets after photon-cleaning  with pt > 40 passing CSV medium"),
+
+    NTupleVariable("gamma_nJet20FailId", lambda ev: sum([j.pt() > 20 for j in ev.gamma_cleanJetsFailIdAll]), int, help="Number of jets after photon-cleaning with pt > 20, |eta|<4.7"),
+    NTupleVariable("gamma_nJet25FailId", lambda ev: sum([j.pt() > 25 for j in ev.gamma_cleanJetsFailIdAll]), int, help="Number of jets after photon-cleaning with pt > 25, |eta|<4.7"),
+    NTupleVariable("gamma_nJet30FailId", lambda ev: sum([j.pt() > 30 for j in ev.gamma_cleanJetsFailIdAll]), int, help="Number of jets after photon-cleaning with pt > 30, |eta|<4.7"),
+    NTupleVariable("gamma_nJet100FailId", lambda ev: sum([j.pt() > 100 for j in ev.gamma_cleanJetsFailIdAll]), int, help="Number of jets after photon-cleaning with pt > 100, |eta|<4.7"),
+
+
 
 #    NTupleVariable("gamma_ht", lambda ev : ev.gamma_htJet40j, help="H_{T} computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
 #    NTupleVariable("gamma_deltaPhiMin", lambda ev : ev.gamma_deltaPhiMin_had, help="minimal deltaPhi between the MET and the four leading jets with pt>40 and eta<2.4"),
@@ -182,6 +195,22 @@ susyFullHad_globalVariables = susyCore_globalVariables + [
     NTupleVariable("zll_phi", lambda ev : ev.zll_p4.Phi() if ev.zll_p4.P()!=0 else -999., help="Phi of di-lepton system"),
     NTupleVariable("zll_mass", lambda ev : ev.zll_p4.M() if ev.zll_p4.P()!=0 else -999., help="Invariant mass of di-lepton system"),
     NTupleVariable("zll_minMTBMet", lambda ev: ev.zll_minMTBMet, float, help="min Mt(b,met) for zll, same as in main search"),
+
+    # ZllMT variables
+    NTupleVariable("zllmt_deltaPhiMin", lambda ev : ev.zllmt_deltaPhiMin_Xj, help="minimal deltaPhi between the zll MET and the four leading jets with pt>X and eta<2.4"),
+    NTupleVariable("zllmt_diffMetMht", lambda ev : ev.zllmt_diffMetMht_Xj, help="abs( vec(mht) - vec(met) ) - only jets for mht, jets plus 2 leptons for met"),
+    NTupleVariable("zllmt_mht_pt", lambda ev : ev.zllmt_mhtJetXj, help="H_{T}^{miss} computed from only jets (with |eta|<2.5, pt > X GeV)"),
+    NTupleVariable("zllmt_mht_phi", lambda ev : ev.zllmt_mhtPhiJetXj, help="H_{T}^{miss} #phi computed from only jets (with |eta|<2.5, pt > X GeV)"),
+    NTupleVariable("zllmt_met_pt", lambda ev : ev.zllmt_met_pt, help="E_{T}^{miss} computed from jets (with |eta|<2.5, pt > X GeV) + 2 leptons"),
+    NTupleVariable("zllmt_met_phi", lambda ev : ev.zllmt_met_phi, help="E_{T}^{miss} #phi computed from jets (with |eta|<2.5, pt > X GeV) + 2 leptons"),
+    NTupleVariable("zllmt_ht", lambda ev: ev.zllmt_ht_Xj, float, help="H_{T} computed from only jets (with |eta|<2.5, pt > X GeV)"),
+
+    NTupleVariable("zllmt_pt", lambda ev : ev.zllmt_p4.Pt() if ev.zllmt_p4.P()!=0 else -999., help="Pt of di-lepton system"),
+    NTupleVariable("zllmt_eta", lambda ev : ev.zllmt_p4.Eta() if ev.zllmt_p4.P()!=0 else -999., help="Eta of di-lepton system"),
+    NTupleVariable("zllmt_phi", lambda ev : ev.zllmt_p4.Phi() if ev.zllmt_p4.P()!=0 else -999., help="Phi of di-lepton system"),
+    NTupleVariable("zllmt_mass", lambda ev : ev.zllmt_p4.M() if ev.zllmt_p4.P()!=0 else -999., help="Invariant mass of di-lepton system"),
+    NTupleVariable("zllmt_minMTBMet", lambda ev: ev.zllmt_minMTBMet, float, help="min Mt(b,met) for zll, same as in main search"),
+    NTupleVariable("zllmt_mt", lambda ev: ev.zllmt_mt, float, help="Mt(l,met) for zll (1 lepton only)"),
 
     ###
 ]
@@ -227,7 +256,8 @@ susyFullHad_collections.update({
 ##        "gennus"         : NTupleCollection("genNu",     genParticleWithSourceType, 10, help="Generated neutrinos (nue/numu/nutau) from W/Z decays"),
         "selectedLeptons" : NTupleCollection("lep", leptonType, 50, help="Leptons after the preselection", filter=lambda l : l.pt()>10 ),
         "selectedTaus"    : NTupleCollection("tau", tauTypeSusy, 50, help="Taus after the preselection"),
-        "cleanJetsAll"       : NTupleCollection("jet",     jetTypeSusyExtra, 100, help="all jets (w/ x-cleaning, w/ ID applied w/o PUID applied pt>20 |eta|<5.2) , sorted by pt", filter=lambda l : l.pt()>20  ),
+        "cleanJetsAll"       : NTupleCollection("jet", jetTypeSusyExtra, 100, help="all jets (w/ x-cleaning, w/ ID applied w/o PUID applied pt>20 |eta|<5.2) , sorted by pt", filter=lambda l : l.pt()>20  ),
+        "cleanJetsFailIdAll"       : NTupleCollection("jetFailId", jetTypeSusyExtra, 100, help="all jets (w/ x-cleaning, w/o ID applied w/o PUID applied pt>20 |eta|<5.2) , sorted by pt"),
 ##        "cleanJetsAll"       : NTupleCollection("jet",   jetTypeExtra, 100, help="all jets (w/ x-cleaning, w/ ID applied w/o PUID applied pt>10 |eta|<5.2) , sorted by pt", filter=lambda l : l.pt()>25  ),
         "fatJets"         : NTupleCollection("fatJet", fatJetType, 15, help="Cental jets after full selection and cleaning, sorted by pt"),
         "selectedPhotons"    : NTupleCollection("gamma", photonTypeSusy, 50, help="photons with pt>20 and loose cut based ID"),
