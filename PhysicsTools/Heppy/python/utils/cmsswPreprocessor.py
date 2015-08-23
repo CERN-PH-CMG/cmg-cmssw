@@ -3,7 +3,9 @@ import re
 import imp
 import timeit
 import subprocess
+from math import ceil
 from PhysicsTools.HeppyCore.framework.config import CFG
+from PhysicsTools.Heppy.utils.edmUtils import edmFileLs
 class CmsswPreprocessor :
 	def __init__(self,configFile,command="cmsRun",prefetch=False) :
 		self.configFile=configFile
@@ -42,8 +44,18 @@ class CmsswPreprocessor :
 		    os.remove(fname)
 		component._preprocessor_tempFiles = []
 	def run(self,component,wd,firstEvent,nEvents):
-		print wd,firstEvent,nEvents
 		if firstEvent != 0: raise RuntimeError, "The preprocessor can't skip events at the moment"
+                fineSplitIndex, fineSplitFactor = getattr(component, 'fineSplit', (1,1))
+                if fineSplitFactor > 1:
+                    if len(component.files) != 1:
+                        raise RuntimeError, "Any component with fineSplit > 1 is supposed to have just a single file, while %s has %s" % (component.name, component.files)
+                    evtsInFile = edmFileLs(component.files[0])['events']
+                    if nEvents in (None, -1) or nEvents > evtsInFile: nEvents =  evtsInFile
+                    nEvents = int(ceil(nEvents/float(fineSplitFactor)))
+                    firstEvent = fineSplitIndex * nEvents
+                    # Now we will run on these events, and the output will contain only those
+                    # Thus, we switch off fine-split in the component
+                    component.fineSplit = (1,1)
 		if nEvents is None:
 			nEvents = -1
 		self.maybePrefetchFiles(component)
@@ -54,7 +66,8 @@ class CmsswPreprocessor :
 				fn="file:"+fn
 			inputfiles.append(fn)
 		cmsswConfig.process.source.fileNames = inputfiles
-		cmsswConfig.process.maxEvents.input=nEvents
+		cmsswConfig.process.maxEvents.input = nEvents
+		cmsswConfig.process.source.skipEvents = cmsswConfig.cms.untracked.uint32(firstEvent)
 		#fixme: implement skipEvent / firstevent
 
 		outfilename=wd+"/cmsswPreProcessing.root"
