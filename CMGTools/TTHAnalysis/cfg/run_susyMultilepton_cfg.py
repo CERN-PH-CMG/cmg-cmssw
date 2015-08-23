@@ -535,7 +535,8 @@ from CMGTools.TTHAnalysis.tools.EOSEventsWithDownload import EOSEventsWithDownlo
 event_class = EOSEventsWithDownload if not preprocessor else Events
 EOSEventsWithDownload.aggressive = 2 # always fetch if running on Wigner
 if getHeppyOption("nofetch"):
-    event_class = Events 
+    event_class = Events
+    if preprocessor: preprocessor.prefetch = False
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence,
                      services = outputService, 
