@@ -92,6 +92,17 @@ else:
 # Switch off slow photon MC matching
 photonAna.do_mc_match = False
 
+# Loose Tau configuration
+tauAna.loose_decayModeID = "decayModeFinding"
+tauAna.loose_ptMin = 20
+tauAna.loose_etaMax = 2.3
+# Current ra7 config (but not ttH)
+#tauAna.loose_vetoLeptonsPOG = True
+#tauAna.loose_tauAntiMuonID = "againstMuonTight"
+#tauAna.loose_tauAntiElectronID = "againstElectronLoose"
+if False: #if cleaning jet-loose tau cleaning
+    jetAna.cleanJetsFromTaus = True
+
 
 #-------- ADDITIONAL ANALYZERS -----------
 
@@ -205,7 +216,7 @@ selectedComponents = mcSamplesPriv
 selectedComponents = [ DYJetsToLL_M10to50_50ns, DYJetsToLL_M50_50ns, TBar_tWch_50ns, TTJets_LO_50ns, TToLeptons_tch_50ns, T_tWch_50ns, WJetsToLNu_50ns, WWTo2L2Nu_50ns, WZp8_50ns, ZZp8_50ns, TTJets_50ns ]
 selectedComponents = [ TT_pow_50ns ]
 
-if True: # select only a subset of a sample, corresponding to a given luminosity (assuming ~30k events per MiniAOD file, which is ok for central production)
+if False: # select only a subset of a sample, corresponding to a given luminosity (assuming ~30k events per MiniAOD file, which is ok for central production)
     target_lumi = 1000 # in inverse picobarns
     for c in selectedComponents:
         if not c.isMC: continue
