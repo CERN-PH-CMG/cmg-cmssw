@@ -44,7 +44,7 @@ double costh_CS = -1e10, phi_CS = -1e10;
 double costh_CS_gen_pietro = -1e10, phi_CS_gen_pietro = -1e10;
 double costh_CS_gen = -1e10, phi_CS_gen = -1e10;
 
-void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, /* unused*/ int buildTemplates, int useMomentumCorr, int varyMuonCorrNsigma, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int usePhiMETCorr, int useRecoilCorr, /* unused*/ int RecoilCorrNonClosure, int RecoilCorrVarDiagoParSigmas, int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights)
+void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, /* unused*/ int buildTemplates, int useMomentumCorr, int varyMuonCorrNsigma, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int usePhiMETCorr, int useRecoilCorr, int correctToMadgraph, int RecoilCorrVarDiagoParSigmas, int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights)
 {
 
   if (fChain == 0) return;
@@ -308,12 +308,13 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     
     // TKMET type2
     int model_name_idx=0;
-    string fileCorrectTo = /*POW */ Form("../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
-    string fileZmmMC =     /*POW */ Form("../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
-    string fileZmmData =   /*DATA*/ Form("../RecoilCode/AUG19/recoilfit_AUG19_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root");
-    // string fileZmmData =   /*POW */ Form("../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
-    // string fileZmmData =   /*MAD */ Form("../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root");
-    
+    string fileCorrectTo = /*POW */ "../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
+    string fileZmmMC =     /*POW */ "../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
+    string fileZmmData =   /*DATA*/ "../RecoilCode/AUG19/recoilfit_AUG19_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
+    if(correctToMadgraph) fileZmmData = /*MAD */ "../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
+    // string fileZmmData =   /*POW */ "../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
+    // string fileZmmData =   /*MAD */ "../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
+
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;
     correctorRecoil_Z = new RecoilCorrector(fileCorrectTo.c_str(),123456,model_name[0],"../RecoilCode/MAY25/nonClosureMAY25.root");
     cout << "INITIALIZING RECOIL Z DATA FILE" << endl;

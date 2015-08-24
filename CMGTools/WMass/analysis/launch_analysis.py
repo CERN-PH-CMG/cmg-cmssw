@@ -39,6 +39,7 @@ WlikeCharge = 1; # Charge of the Wlike (+1,-1)
 useRecoilCorr = 2; # 0=none, 1=yes, 2=PDFw3gaus
 RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0; # SYST VARIATIONS: 0=NONE, 1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p1, 6= U1 MC p1
 RecoilCorrVarDiagoParSigmas = 0; # Number of sigmas for recoil syst
+correctToMadgraph = 0; # 0: uses DATA as target - 1: uses Madgraph as target
 
 usePhiMETCorr = 0; # 0=none, 1=yes
 
@@ -231,6 +232,8 @@ if(usePhiMETCorr==1):
 
 if(useRecoilCorr>0):
   outfolder_name+="_RecoilCorr"+str(useRecoilCorr);
+  if(correctToMadgraph):
+    outfolder_name+="_toMad";
   if  (RecoilCorrVarDiagoParU1orU2fromDATAorMC==1):
     outfolder_name+="_U1Datap1";
   elif(RecoilCorrVarDiagoParU1orU2fromDATAorMC==2):
@@ -244,7 +247,7 @@ if(useRecoilCorr>0):
   elif(RecoilCorrVarDiagoParU1orU2fromDATAorMC==6):
     outfolder_name+="_U2MC";
   if  (RecoilCorrVarDiagoParSigmas!=0):
-    outfolder_name+="_RecCorrVarSigma_"+str(RecoilCorrVarDiagoParSigmas)
+    outfolder_name+="_RecCorrNSigma_"+str(RecoilCorrVarDiagoParSigmas)
 
 if(useEffSF==1): outfolder_name+="_EffSFCorr";
 if(useEffSF==2): outfolder_name+="_EffHeinerSFCorr";
@@ -488,9 +491,9 @@ if(runWanalysis or runZanalysis):
     if(runWanalysis):
 
       if counter==1:
-        # Copy Wanalysis.C in the dest folder (it has some parameters)
-        shutil.copyfile(code_dir+"/Wanalysis.C", "Wanalysis.C");
         if recreateSubPrograms or not file_exists_and_is_not_empty("runWanalysis.o"):
+          # Copy Wanalysis.C in the dest folder (it has some parameters)
+          shutil.copyfile(code_dir+"/Wanalysis.C", "Wanalysis.C")
           if(useLHAPDF):
             print("c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
             os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
@@ -568,9 +571,9 @@ if(runWanalysis or runZanalysis):
     if(runZanalysis):
 
       if counter==1:
-        # Copy Zanalysis.C in the dest folder (it has some parameters)
-        shutil.copyfile(code_dir+"/Zanalysis.C", "Zanalysis.C")
         if recreateSubPrograms or not file_exists_and_is_not_empty("runZanalysis.o"):
+          # Copy Zanalysis.C in the dest folder (it has some parameters)
+          shutil.copyfile(code_dir+"/Zanalysis.C", "Zanalysis.C")
           if(useLHAPDF):
             print("c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags`  -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
             os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
@@ -582,7 +585,7 @@ if(runWanalysis or runZanalysis):
       # Run it in the code dir to have all the relative paths work
       os.chdir(code_dir)
 
-      zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(MuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(0)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(0)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])
+      zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(MuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(0)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(correctToMadgraph)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])
 
       line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o -1,0,0,"+zstring).read();
       nEntries = [int(s) for s in line.split() if s.isdigit()][0]
