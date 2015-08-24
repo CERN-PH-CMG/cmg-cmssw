@@ -45,8 +45,6 @@ T2ttDeg_mStop350_mChi330_4bodydec_lepOnly = kreator.makeMCComponentFromEOS('T2tt
 T2ttDeg = [ T2ttDeg_mStop350_mChi330_4bodydec, T2ttDeg_mStop350_mChi330_4bodydec_lepOnly ]
 
 
-/store/cmst3/group/susy/gpetrucc/13TeV/RunIISpring15DR74/T2tt_arxiv1507.01601
-
 ## T5qqqqWW
 ## ------------------------------------------------------
 T5qqqqWW_mGo1200_mCh1000_mChi800_dilep = kreator.makeMCComponentFromEOS('T5qqqqWW_mGo1200_mCh1000_mChi800_dilep', '/T5qqqqWW_mGo1200_mCh1000_mChi800_dilep/', '/store/cmst3/group/susy/gpetrucc/13TeV/RunIISpring15DR74/%s',".*root", 0.0856418*(3*0.108)*(3*0.108)) 
