@@ -269,7 +269,8 @@ isoTrackAna = cfg.Analyzer(
     MaxIsoSumEMU = 0.2, ### unused if not rel iso
     doSecondVeto = False,
     #####
-    doPrune = True
+    doPrune = True,
+    do_mc_match = False # note: it will in any case try it only on MC, not on data
     )
 
 
@@ -290,10 +291,10 @@ jetAna = cfg.Analyzer(
     relaxJetId = False,  
     doPuId = False, # Not commissioned in 7.0.X
     recalibrateJets = True, #'MC', # True, False, 'MC', 'Data'
-    applyL2L3Residual = False, # Switch to 'Data' when they will become available for Data
+    applyL2L3Residual = True, # Switch to 'Data' when they will become available for Data
     recalibrationType = "AK4PFchs",
-    mcGT     = "Summer15_50nsV2_MC",
-    dataGT   = "Summer15_50nsV2_MC",
+    mcGT     = "Summer15_50nsV4_MC",
+    dataGT   = "Summer15_50nsV4_DATA",
     jecPath = "${CMSSW_BASE}/src/CMGTools/RootTools/data/jec/",
     shiftJEC = 0, # set to +1 or -1 to apply +/-1 sigma shift to the nominal jet energies
     addJECShifts = False, # if true, add  "corr", "corrJECUp", and "corrJECDown" for each jet (requires uncertainties to be available!)
@@ -304,7 +305,9 @@ jetAna = cfg.Analyzer(
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
     doQG = False,
-    cleanGenJetsFromPhoton = False
+    do_mc_match = True,
+    cleanGenJetsFromPhoton = False,
+    collectionPostFix = ""
     )
 
 ## Fat Jets Analyzer (generic)
@@ -358,6 +361,25 @@ metAna = cfg.Analyzer(
     dzMax = 0.1,
     collectionPostFix = "",
     )
+
+metNoHFAna = cfg.Analyzer(
+    METAnalyzer, name="metAnalyzer",
+    metCollection     = "slimmedMETsNoHF",
+    noPUMetCollection = "slimmedMETsNoHF",
+    copyMETsByValue = False,
+    doTkMet = False,
+    doMetNoPU = True,
+    doMetNoMu = False,
+    doMetNoEle = False,
+    doMetNoPhoton = False,
+    recalibrate = False,
+    jetAnalyzerCalibrationPostFix = "",
+    candidates='packedPFCandidates',
+    candidatesTypes='std::vector<pat::PackedCandidate>',
+    dzMax = 0.1,
+    collectionPostFix = "NoHF",
+    )
+
 
 # Core Event Analyzer (computes basic quantities like HT, dilepton masses)
 from CMGTools.TTHAnalysis.analyzers.ttHCoreEventAnalyzer import ttHCoreEventAnalyzer

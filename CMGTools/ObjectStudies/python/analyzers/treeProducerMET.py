@@ -26,9 +26,16 @@ met_globalVariables = [
     NTupleVariable("met_uPara_zll", lambda ev : ev.met.upara_zll if  hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
     NTupleVariable("met_uPerp_zll", lambda ev : ev.met.uperp_zll if  hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
 
+    NTupleVariable("metNoHF_uPara_zll", lambda ev : ev.metNoHF.upara_zll if hasattr(ev,'metNoHF') and hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
+    NTupleVariable("metNoHF_uPerp_zll", lambda ev : ev.metNoHF.uperp_zll if hasattr(ev,'metNoHF') and hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
+
     NTupleVariable("met_rawPt", lambda ev : ev.met.uncorrectedPt(), help="raw met p_{T}"),
     NTupleVariable("met_rawPhi", lambda ev : ev.met.uncorrectedPhi(), help="raw met phi"),
     NTupleVariable("met_rawSumEt", lambda ev : ev.met.uncorrectedSumEt(), help="raw met sumEt"),
+
+    NTupleVariable("metNoHF_rawPt", lambda ev : ev.metNoHF.uncorrectedPt() if hasattr(ev,'metNoHF') else -999, help="raw met p_{T}"),
+    NTupleVariable("metNoHF_rawPhi", lambda ev : ev.metNoHF.uncorrectedPhi() if hasattr(ev,'metNoHF') else -999, help="raw met phi"),
+    NTupleVariable("metNoHF_rawSumEt", lambda ev : ev.metNoHF.uncorrectedSumEt() if hasattr(ev,'metNoHF') else -999, help="raw met sumEt"),
 
     NTupleVariable("met_raw_uPara_zll", lambda ev : ev.met_raw.upara_zll if  hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
     NTupleVariable("met_raw_uPerp_zll", lambda ev : ev.met_raw.uperp_zll if  hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
@@ -39,16 +46,19 @@ met_globalVariables = [
 
    # ----------------------- type1met studies info -------------------------------------------------------------------- #     
 
-    NTupleVariable("metType1_Pt", lambda ev : ev.metType1.pt() if  hasattr(ev,'metType1') else  0 , help="type1, V5, pt"),
-    NTupleVariable("metType1_Phi", lambda ev : ev.metType1.phi() if  hasattr(ev,'metType1') else  0 , help="type1, V5, phi"),
+    NTupleVariable("met_JetEnUp_Pt", lambda ev : ev.met_shifted_0.pt(), help="type1, JetEnUp, pt"),
+    NTupleVariable("met_JetEnUp_Phi", lambda ev : ev.met_shifted_0.phi(), help="type1, JetEnUp, phi"),
 
-    NTupleVariable("metType1D_Pt", lambda ev : ev.metType1D.pt() if  hasattr(ev,'metType1D') else  0 , help="type1, V5, pt"),
-    NTupleVariable("metType1D_Phi", lambda ev : ev.metType1D.phi() if  hasattr(ev,'metType1D') else  0 , help="type1, V5, phi"),
+    NTupleVariable("met_JetEnDown_Pt", lambda ev : ev.met_shifted_1.pt(), help="type1, JetEnDown, pt"),
+    NTupleVariable("met_JetEnDown_Phi", lambda ev : ev.met_shifted_1.phi(), help="type1, JetEnDown, phi"),
 
-    NTupleVariable("metType1U_Pt", lambda ev : ev.metType1U.pt() if  hasattr(ev,'metType1U') else  0 , help="type1, V5, pt"),
-    NTupleVariable("metType1U_Phi", lambda ev : ev.metType1U.phi() if  hasattr(ev,'metType1U') else  0 , help="type1, V5, phi"),
+    NTupleVariable("metNoHF_JetEnUp_Pt", lambda ev : ev.met_shifted_0.pt() if hasattr(ev,'metNoHF') else -999, help="type1 noHF , JetEnUp, pt"),
+    NTupleVariable("metNoHF_JetEnUp_Phi", lambda ev : ev.met_shifted_0.phi() if hasattr(ev,'metNoHF') else -999, help="type1 noHF , JetEnUp, phi"),
 
-   # -------------
+    NTupleVariable("metNoHF_JetEnDown_Pt", lambda ev : ev.met_shifted_1.pt() if hasattr(ev,'metNoHF') else -999, help="type1 noHF , JetEnDown, pt"),
+    NTupleVariable("metNoHF_JetEnDown_Phi", lambda ev : ev.met_shifted_1.phi() if hasattr(ev,'metNoHF') else -999, help="type1 noHF , JetEnDown, phi"),
+
+   # --------------------------------------------------------
 
     NTupleVariable("ak4MET_Pt", lambda ev : ev.ak4MET.pt() if  hasattr(ev,'ak4MET') else  0 , help="type1, V4, pt"),
     NTupleVariable("ak4MET_Phi", lambda ev : ev.ak4MET.phi() if  hasattr(ev,'ak4MET') else  0 , help="type1, V4, phi"),
@@ -111,4 +121,5 @@ met_collections = {
     "gentaus"         : NTupleCollection("genTau",     genParticleWithLinksType, 10, help="Generated leptons (tau) from W/Z decays"),                            
     "generatorSummary" : NTupleCollection("GenPart", genParticleWithLinksType, 100 , help="Hard scattering particles, with ancestry and links"),
 #    "selectedLeptons" : NTupleCollection("lep", leptonType, 50, help="Leptons after the preselection", filter=lambda l : l.pt()>10 ),
+    "selectedPhotons"    : NTupleCollection("gamma", photonType, 50, help="photons with pt>20 and loose cut based ID"),
     }
