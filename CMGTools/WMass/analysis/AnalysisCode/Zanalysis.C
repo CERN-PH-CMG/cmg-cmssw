@@ -320,18 +320,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     // std::string fileZmmData =   /*POW */ Form("../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
     // std::string fileZmmData =   /*MAD */ Form("../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root");
     
-    // Old AUG16 histos
-    // std::string fileCorrectTo = /*POW */ Form("../RecoilCode/AUG16/recoilfit_AUG16_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
-    // std::string fileZmmMC =     /*POW */ Form("../RecoilCode/AUG16/recoilfit_AUG16_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
-    // std::string fileZmmData =   /*DATA*/ Form("../RecoilCode/AUG16/recoilfit_AUG16_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X.root");
-    
-    // Old MAY25 histos
-    // std::string fileCorrectTo = Form("../RecoilCode/MAY25/recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
-    // std::string fileZmmMC =     Form("../RecoilCode/MAY25/recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
-    // std::string fileZmmData =   Form("../RecoilCode/MAY25/recoilfit_MAY25_DATA_tkmet_eta21_MZ81101_pol4_type2_doubleGauss_triGauss_halfStat_corrKalman_UNBINNED_3G_53X.root");
-    // std::string fileZmmData =   Form("../RecoilCode/MAY25/recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root");
-    // std::string fileZmmData =   Form("../RecoilCode/MAY25/recoilfit_MAY25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root");
-
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;
     correctorRecoil_Z = new RecoilCorrector(fileCorrectTo.c_str(),123456,model_name[0],"../RecoilCode/MAY25/nonClosureMAY25.root");
     cout << "INITIALIZING RECOIL Z DATA FILE" << endl;
