@@ -145,7 +145,7 @@ class JetAnalyzer( Analyzer ):
                     self.jetsIdOnly.append(jet)
                 else:
                     self.jetsFailId.append(jet)
-            elif self.testJetID (jet ):
+            elif self.testJetID ( jet ):
                 self.jetsIdOnly.append(jet)
 
         ## Clean Jets from leptons
