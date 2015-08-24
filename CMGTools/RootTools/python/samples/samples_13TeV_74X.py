@@ -345,7 +345,7 @@ jetHT_0T = cfg.DataComponent(
 
 ### ----------------------------- summary ----------------------------------------
 
-mcSamples_Asymptotic25ns = TTs + SingleTop + VJets + DYJetsM50HT + WJetsToLNuHT + ZJetsToNuNuHT + GJetsHT + QCDPt + DiBosons + Higgs + QCD_ElX
+mcSamples_Asymptotic25ns = TTs + SingleTop + VJets + DYJetsM50HT + WJetsToLNuHT + ZJetsToNuNuHT + GJetsHT + QCDPt + DiBosons + Higgs + QCD_ElX + QCD_MuX
 
 mcSamples_Asymptotic50ns = [ TTJets_50ns, TTJets_LO_50ns, TT_pow_50ns, WJetsToLNu_50ns, DYJetsToLL_M10to50_50ns, DYJetsToLL_M50_50ns ] + DYJetsM50HT_50ns + QCDPt_50ns + SingleTop_50ns + DiBosons_50ns + QCD_MuX_50ns
 

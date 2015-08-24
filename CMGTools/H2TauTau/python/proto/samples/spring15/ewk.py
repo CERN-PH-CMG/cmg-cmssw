@@ -1,5 +1,4 @@
 import CMGTools.RootTools.fwlite.Config as cfg
-# from CMGTools.H2TauTau.proto.samples.sampleShift import sampleShift
 
 DYJets = cfg.MCComponent(
     name = 'DYJets',

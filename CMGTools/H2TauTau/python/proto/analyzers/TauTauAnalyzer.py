@@ -1,10 +1,10 @@
-from PhysicsTools.HeppyCore.statistics.counter              import Counters
-from PhysicsTools.Heppy.analyzers.core.AutoHandle           import AutoHandle
-from PhysicsTools.Heppy.physicsobjects.PhysicsObjects       import Tau, Muon, Jet, GenParticle
-from PhysicsTools.Heppy.physicsobjects.Electron             import Electron
+from PhysicsTools.HeppyCore.statistics.counter          import Counters
+from PhysicsTools.Heppy.analyzers.core.AutoHandle       import AutoHandle
+from PhysicsTools.Heppy.physicsobjects.PhysicsObjects   import Tau, Muon, Jet, GenParticle
+from PhysicsTools.Heppy.physicsobjects.Electron         import Electron
 
-from CMGTools.H2TauTau.proto.analyzers.DiLeptonAnalyzer     import DiLeptonAnalyzer
-from CMGTools.H2TauTau.proto.physicsobjects.DiObject        import TauTau
+from CMGTools.H2TauTau.proto.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
+from CMGTools.H2TauTau.proto.physicsobjects.DiObject    import TauTau, DirectDiTau
 
 class TauTauAnalyzer( DiLeptonAnalyzer ) :
 
@@ -14,10 +14,15 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
 
   def declareHandles(self):
     super(TauTauAnalyzer, self).declareHandles()
-    self.handles['diLeptons'    ] = AutoHandle( 'cmgDiTauCorSVFitFullSel', 'std::vector<pat::CompositeCandidate>' )
-    self.handles['otherLeptons' ] = AutoHandle( 'slimmedElectrons'       , 'std::vector<pat::Electron>'           )
-    self.handles['leptons'      ] = AutoHandle( 'slimmedMuons'           , 'std::vector<pat::Muon>'               )
-    self.handles['jets'         ] = AutoHandle( 'slimmedJets'            , 'std::vector<pat::Jet>'                )
+    if hasattr(self.cfg_ana, 'from_single_objects') and self.cfg_ana.from_single_objects:
+        self.handles['taus'] = AutoHandle('slimmedTaus', 'std::vector<pat::Tau>')
+        self.handles['met' ] = AutoHandle('slimmedMETs', 'std::vector<pat::MET>')
+    else:
+        self.handles['diLeptons'] = AutoHandle('cmgDiTauCorSVFitFullSel', 'std::vector<pat::CompositeCandidate>')
+    
+    self.handles['otherLeptons'] = AutoHandle('slimmedElectrons'  , 'std::vector<pat::Electron>'    )
+    self.handles['leptons'     ] = AutoHandle('slimmedMuons'      , 'std::vector<pat::Muon>'        )
+    self.handles['jets'        ] = AutoHandle('slimmedJets'       , 'std::vector<pat::Jet>'         )
 
   def process(self, event):
 
@@ -29,7 +34,7 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
     # applies the trigger matching to the two signal leptons
     # choses the best di-tau pair, with the bestDiLepton method
     # as implemented here
-
+        
     result = super(TauTauAnalyzer, self).process(event)
 
     if result :
@@ -39,10 +44,10 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
       # it must have well id'ed and trig matched legs,
       # di-lepton and tri-lepton veto must pass
       result = self.selectionSequence( event,
-                                       fillCounter = False                  ,
+                                       fillCounter = True                   ,
                                        leg1IsoCut  = self.cfg_ana.looseiso1 ,
                                        leg2IsoCut  = self.cfg_ana.looseiso2 )
-
+      
       if result is False:
           # really no way to find a suitable di-lepton,
           # even in the control region
@@ -52,8 +57,16 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
     if not ( hasattr(event, 'leg1') and hasattr(event, 'leg2') ) :
       return False
 
-    # make sure that the legs are sorted by pt
-    if event.leg1.pt() < event.leg2.pt() :
+#     # RIC: agreed to sort by isolation 19/8/2015 
+#     # make sure that the legs are sorted by pt
+#     if event.leg1.pt() < event.leg2.pt() :
+#       event.leg1 = event.diLepton.leg2()
+#       event.leg2 = event.diLepton.leg1()
+#       event.selectedLeptons = [event.leg2, event.leg1]
+
+    # RIC: agreed with Adinda to sort taus by isolation
+    iso = self.cfg_ana.isolation
+    if event.leg1.tauID(iso) > event.leg2.tauID(iso) :
       event.leg1 = event.diLepton.leg2()
       event.leg2 = event.diLepton.leg1()
       event.selectedLeptons = [event.leg2, event.leg1]
@@ -70,6 +83,23 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
       diLeptons.append( pydil )
       pydil.mvaMetSig = pydil.met().getSignificanceMatrix()
     return diLeptons
+
+  def buildDiLeptonsSingle(self, leptons, event):
+    '''
+    '''
+    # RIC: patch to adapt it to the di-tau case. Need to talk to Jan
+    di_objects = []
+    taus = self.handles['taus'].product()
+    met  = self.handles['met' ].product()[0]
+    for leg1 in taus:
+      for leg2 in taus:
+        if leg1 != leg2:
+          di_tau = DirectDiTau(Tau(leg1), Tau(leg2), met)
+          di_tau.leg2().associatedVertex = event.goodVertices[0]
+          di_tau.leg1().associatedVertex = event.goodVertices[0]
+          di_tau.mvaMetSig = None
+          di_objects.append(di_tau)
+    return di_objects
 
   def buildLeptons(self, cmgLeptons, event):
     '''Build muons for veto, associate best vertex, select loose ID muons.
@@ -99,14 +129,24 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
 
   def testLeg(self, leg, leg_pt, leg_eta, iso, isocut):
     '''requires loose isolation, pt, eta and minimal tauID cuts'''
-    return ( self.testTauVertex(leg)                          and
-             leg.tauID(iso)                         < isocut  and
-             leg.pt()                               > leg_pt  and
-             abs(leg.eta())                         < leg_eta and
-             (leg.tauID('decayModeFinding')         > 0.5     or
-              leg.tauID('decayModeFindingNewDMs')   > 0.5)    and
-             leg.tauID('againstElectronVLooseMVA5') > 0.5     and
-             leg.tauID('againstMuonLoose3')         > 0.5       )
+#     return ( self.testTauVertex(leg)                          and
+#              leg.tauID(iso)                         < isocut  and
+#              leg.pt()                               > leg_pt  and
+#              abs(leg.eta())                         < leg_eta and
+#              (leg.tauID('decayModeFinding')         > 0.5     or
+#               leg.tauID('decayModeFindingNewDMs')   > 0.5)    and
+#              leg.tauID('againstElectronVLooseMVA5') > 0.5     and
+#              leg.tauID('againstMuonLoose3')         > 0.5       )
+#              leg.tauID('againstElectronVLooseMVA5') > 0.5     and
+#              leg.tauID('againstMuonLoose3')         > 0.5       )
+    
+    # RIC: relaxed
+    return ( abs(leg.charge())                  == 1       and # RIC: ensure that taus have abs(charge) == 1
+             self.testTauVertex(leg)                       and
+             leg.tauID(iso)                      < isocut  and
+             leg.pt()                            > leg_pt  and
+             abs(leg.eta())                      < leg_eta and
+             leg.tauID('decayModeFindingNewDMs') > 0.5     )
 
   def testLeg1(self, leg, isocut):
     leg_pt  = self.cfg_ana.pt1
@@ -120,9 +160,12 @@ class TauTauAnalyzer( DiLeptonAnalyzer ) :
     iso     = self.cfg_ana.isolation
     return self.testLeg(leg, leg_pt, leg_eta, iso, isocut)
 
-  def testTauVertex(self, lepton):
+  def testTauVertex(self, tau):
     '''Tests vertex constraints, for tau'''
-    isPV = lepton.vertex().z() == lepton.associatedVertex.z()
+    # Just checks if the primary vertex the tau was reconstructed with
+    # corresponds to the one used in the analysis
+    # isPV = abs(tau.vertex().z() - tau.associatedVertex.z()) < 0.2
+    isPV = abs(tau.leadChargedHadrCand().dz()) < 0.2
     return isPV
 
   def testVertex(self, lepton, dxy = 0.045, dz = 0.2):
