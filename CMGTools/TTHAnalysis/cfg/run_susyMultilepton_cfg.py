@@ -195,8 +195,13 @@ from CMGTools.RootTools.samples.samples_13TeV_74X_susySignalsPriv import *
 from CMGTools.RootTools.samples.samples_8TeVReReco_74X import *
 from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
 
+
+## 8TeV data 74X ReReco
 selectedComponents = [ SingleMu_742, MuEG_742, DoubleMu_742 ] 
-selectedComponents = [ TTJets, TTJets_LO, WJetsToLNu, DYJetsToLL_M10to50,  DYJetsToLL_M50,  ] + SingleTop + DiBosons
+## 25 ns 74X MC samples
+selectedComponents = [ TTJets, TTJets_LO, WJetsToLNu, DYJetsToLL_M10to50,  DYJetsToLL_M50,  ] + SingleTop + DiBosons + TTV + Higgs
+selectedComponents = mcSamplesPriv 
+## 50 ns 74X MC samples
 selectedComponents = [ DYJetsToLL_M10to50_50ns, DYJetsToLL_M50_50ns, TBar_tWch_50ns, TTJets_LO_50ns, TToLeptons_tch_50ns, T_tWch_50ns, WJetsToLNu_50ns, WWTo2L2Nu_50ns, WZp8_50ns, ZZp8_50ns, TTJets_50ns ]
 selectedComponents = [ TT_pow_50ns ]
 
