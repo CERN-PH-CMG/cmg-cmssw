@@ -126,7 +126,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   //------------------------------------------------------
   // retrieve efficiencies SF
   //------------------------------------------------------
-  TFile*finEffSF;
   // TGraphAsymmErrors*hEffSF_MuId_eta_2011[2],*hEffSF_Iso_eta_2011[2],*hEffSF_HLT_eta_2011/* ,*hEffSF_Iso_vtx_2011A,*hEffSF_Iso_vtx_2011B*/;
   TH3F *SF_HLT;
   TH2F *SF_TIGHT_ISO;
@@ -135,7 +134,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   
   if(useEffSF==2 && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
     
-    finEffSF = new TFile("../utils/MuonEfficiencies_SF_2011_53X_DataMC_Heiner.root"); // used only to build templates
+    TFile* finEffSF = new TFile("../utils/MuonEfficiencies_SF_2011_53X_DataMC_Heiner.root"); // used only to build templates
     if(!finEffSF){
       cout << "file MuonEfficiencies_SF_2011_53X_DataMC_Heiner.root is missing, impossible to retrieve efficiency scale factors" << endl;
       return;
@@ -151,26 +150,29 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   //------------------------------------------------------
   // retrieve pileup SF
   //------------------------------------------------------
-  TH1D*hPileupSF; TFile*finPileupSF;
+  TH1D*hPileupSF;
+
   if(useVtxSF && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
     TString vtx_str = sampleName; vtx_str.ReplaceAll("Sig",""); vtx_str.ReplaceAll("Fake","");
     // finPileupSF = new TFile(Form("../utils/pileup_reweighting_%s.root",vtx_str.Data())); // used only to build templates
-    finPileupSF = new TFile(Form("../utils/pileup/pileup_reweighting_Fall11.root")); // used only to build templates
+    TFile* finPileupSF = new TFile(Form("../utils/pileup/pileup_reweighting_Fall11.root")); // used only to build templates
     if(!finPileupSF){
       cout << "file " << Form("../utils/pileup/pileup_reweighting_Fall11.root") << " is missing, impossible to retrieve pileup reweighting factors" << endl;
       return;
-    }else{
-      hPileupSF=(TH1D*)finPileupSF->Get("hpileup_reweighting_Fall11");
     }
+    hPileupSF=(TH1D*)finPileupSF->Get("hpileup_reweighting_Fall11");
   }
   //------------------------------------------------------
   // retrieve invariant mass SF (for EWK)
   //------------------------------------------------------
-  TFile*finZmassSF;
   TH1D*hZmassSF;
+
   if(use_syst_ewk_Alcaraz>-1 && use_syst_ewk_Alcaraz!=100){
-    // finZmassSF = new TFile("../utils/fout_invariant_mass_qed.root"); // used only to build templates
-    finZmassSF = new TFile("../utils/fout_invariant_mass_qed_higstat.root"); // used only to build templates
+    TFile* finZmassSF = new TFile("../utils/fout_invariant_mass_qed_higstat.root"); // used only to build templates
+    if(!finZmassSF){
+      cout << "file " << Form("../utils/fout_invariant_mass_qed_higstat.root") << " is missing, impossible to retrieve invariant mass SF (for EWK)" << endl;
+      return;
+    }
     if(use_syst_ewk_Alcaraz==0){
       hZmassSF=(TH1D*)finZmassSF->Get("ewk_p8std_div_ewk_p8bad"); hZmassSF->Sumw2();
     }else if(use_syst_ewk_Alcaraz==1){
@@ -180,10 +182,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     }else if(use_syst_ewk_Alcaraz==3){
       hZmassSF=(TH1D*)finZmassSF->Get("ewk_p8photos_div_ewk_p8bad"); hZmassSF->Sumw2();
     }
-    if(!finZmassSF){
-      cout << "file " << Form("../utils/fout_invariant_mass_qed_higstat.root") << " is missing, impossible to retrieve invariant mass SF (for EWK)" << endl;
-      return;
-    }    
   }
   //------------------------------------------------------
   // retrieve angular coefficients SF (for POWHEG vs DATA)
@@ -195,37 +193,33 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   TH1D *hrapbins = new TH1D("hrapbins","hrapbins",nrapbins,rapbins);
   double ptbins[nptbins+1] = {0.1,10,20,35,55,80,120,200,1000};
   TH1D *hptbins = new TH1D("hptbins","hptbins",nptbins,ptbins);
-  TFile*finAngCoefSF;
   TH1D *hratioAngCoefSF[nrapbins][fitcoeff];
   if(true){
-    finAngCoefSF = new TFile("../utils/polarization_data_powheg.root"); // used only to build templates
-    // finAngCoefSF->ls();
+    TFile* finAngCoefSF = new TFile("../utils/polarization_data_powheg.root"); // used only to build templates
+    if(!finAngCoefSF){
+      cout << "file " << Form("../utils/polarization_data_powheg.root") << " is missing, impossible to retrieve Angular coefficients reweighting factors" << endl;
+      return;
+    }
     for(int irap=0; irap<nrapbins; irap++){
       for(int ipt=0; ipt<nptbins; ipt++){
         hratioAngCoefSF[irap][ipt] = (TH1D*) finAngCoefSF->Get(Form("ratio_phi_vs_costh_CS_pietro_ptbin%d_rapbin%d_POWHEG_over_data",ipt+1,irap+1));
         // cout << Form("ratio_phi_vs_costh_CS_pietro_ptbin%d_rapbin%d_POWHEG_over_data",ipt,irap) << endl;
         // hratioAngCoefSF[irap][ipt]->Print();
       }
-    }
-    if(!finAngCoefSF){
-      cout << "file " << Form("../utils/polarization_data_powheg.root") << " is missing, impossible to retrieve Angular coefficients reweighting factors" << endl;
-      return;
     }    
   }
   //------------------------------------------------------
   // retrieve boson pT SF
   //------------------------------------------------------
-  TFile*finZPtSF,*finZPtSFbase;
-  TH1D*hZPtSF,*hZPtSFbase;
-
+  TH1D* hZPtSF;
+  // TH1D*hZPtSFbase;
   // if(usePtSF!=-1 && usePtSF!=0 && usePtSF!=1 &&usePtSF!=2 && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){
     // cout << "REWEIGHTING Z PT" << endl;
-    // // finZPtSF = new TFile(Form("../utils/Zpt_reweighting.root")); // used only to build templates
+    // // TFile* finZPtSF = new TFile(Form("../utils/Zpt_reweighting.root")); // used only to build templates
     // // cout << Form("hzpt_atlas_mc_ren%d_fac%d_0p5GeVsteps",/* usePtSF<1000?30: */1030,/* usePtSF<1000?30: */1030) << endl;
-    // finZPtSFbase = new TFile(Form("/afs/cern.ch/work/p/perrozzi/private/git/CMSSW_5_3_22/src/BosonPT/serious_stuff/resbos/dyres/ZNLOpt_scales_%d.root",/* usePtSF<1000?30: */1030)); // used only to build templates
-    // // finZPtSFbase->ls();
+    // TFile* finZPtSFbase = new TFile(Form("/afs/cern.ch/work/p/perrozzi/private/git/CMSSW_5_3_22/src/BosonPT/serious_stuff/resbos/dyres/ZNLOpt_scales_%d.root",/* usePtSF<1000?30: */1030)); // used only to build templates
     // // cout << Form("hzpt_atlas_mc_ren%d_fac%d_0p5GeVsteps",usePtSF,usePtSF) << endl;
-    // finZPtSF = new TFile(Form("/afs/cern.ch/work/p/perrozzi/private/git/CMSSW_5_3_22/src/BosonPT/serious_stuff/resbos/dyres/ZNLOpt_scales_%d.root",usePtSF)); // used only to build templates
+    // TFile* finZPtSF = new TFile(Form("/afs/cern.ch/work/p/perrozzi/private/git/CMSSW_5_3_22/src/BosonPT/serious_stuff/resbos/dyres/ZNLOpt_scales_%d.root",usePtSF)); // used only to build templates
     // // finZPtSF->ls();
     // if(!finZPtSF){
       // cout << "file " << Form("../utils/Zpt_reweighting.root") << " is missing, impossible to retrieve ZPt reweighting factors" << endl;
@@ -238,8 +232,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     // }
   // } else 
   if(usePtSF==0){
-    // finZPtSFbase = new TFile(Form("/afs/cern.ch/work/p/perrozzi/private/git/CMSSW_5_3_22/src/BosonPT/serious_stuff/resbos/dyres/ZNLOpt_scales_%d.root",/* usePtSF<1000?30: */1030)); // used only to build templates
-    finZPtSF = new TFile("../utils/fptout_ZdataMC.root"); // used only to build templates
+    TFile* finZPtSF = new TFile("../utils/fptout_ZdataMC.root"); // used only to build templates
     // hZPtSF=(TH1D*)finZPtSF->Get(Form("hWlike%s_ZpT_8_JetCut_pdf229800-0_eta0p9_91188_smooth", WCharge_str.Data())); hZPtSF->Sumw2();
     // TEMP !!! WE HAVE ONLY THE POS HISTO, BUT SHOULD NOT MATTER MUCH
     hZPtSF=(TH1D*)finZPtSF->Get("hWlikePos_ZpT_8_JetCut_pdf229800-0_eta0p9_91188_smooth"); hZPtSF->Sumw2();
@@ -275,12 +268,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     cout << "using MuscleFit card " << fitParametersFile << endl;
     corrector = new MuScleFitCorrector(fitParametersFile);
   }
-  KalmanCalibrator *corrector_Kalman; // True for data , //False for MC
+  KalmanCalibrator *corrector_Kalman;
   if(useMomentumCorr==3){
     cout << "using Kalman Calibrator" << endl;
     corrector_Kalman = new KalmanCalibrator(isMCorDATA==0?false:true); // True for data , //False for MC
   }
-  KalmanCalibratorParam *corrector_KalmanParam; // True for data , //False for MC
+  KalmanCalibratorParam *corrector_KalmanParam;
   if(useMomentumCorr==4){
     cout << "using Kalman Calibrator Param" << endl;
     corrector_KalmanParam = new KalmanCalibratorParam(isMCorDATA==0?false:true); // True for data , //False for MC
@@ -294,15 +287,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
 
   // int use_PForNoPUorTKmet = 0; // 0:PF, 1:NOPU, 2:TK // TO BE CHANGED BY HAND FOR THE MOMENT!!!
-  // bool use_InclusiveAB_RecoilCorr = true; // TO BE CHANGED BY HAND FOR THE MOMENT!!!
-  bool use_InclusiveNVTX_RecoilCorr = true; // TO BE CHANGED BY HAND FOR THE MOMENT!!!
-  TString InclusiveNVTXSuffix="";
-  if(use_InclusiveNVTX_RecoilCorr) InclusiveNVTXSuffix="_inclusiveNvtx";
+  // bool use_InclusiveNVTX_RecoilCorr = true; // TO BE CHANGED BY HAND FOR THE MOMENT!!!
+  // TString InclusiveNVTXSuffix="";
+  // if(use_InclusiveNVTX_RecoilCorr) InclusiveNVTXSuffix="_inclusiveNvtx";
 
-  TString metSuffix=use_PForNoPUorTKmet==1?"_pfnoPU":"";
-  if(use_PForNoPUorTKmet==2) metSuffix="_tkmet";
-  //  if(use_PForNoPUorTKmet==0) metSuffix="_tkmet";
+  TString metSuffix;
   if(use_PForNoPUorTKmet==0) metSuffix="_pfmet"; // this doesn't work since we do no have the pfmet as of JAN25
+  if(use_PForNoPUorTKmet==1) metSuffix="_pfnoPU";
+  if(use_PForNoPUorTKmet==2) metSuffix="_tkmet";
   
   TString generatorSuffix="_powheg";
   if (sampleName.Contains("DYJetsMadSig"))
@@ -329,7 +321,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   }
   bool doSingleGauss=false;
 
-  double ZWmassRatio = ((float)WMass::ZMassCentral_MeV)/((float)WMass::WMassCentral_MeV);
+  double ZWmassRatio = ((double)WMass::ZMassCentral_MeV)/((double)WMass::WMassCentral_MeV);
   
   GoToHXframe = new HTransformToHelicityFrame();
   GoToCSframe = new HTransformToCS();
@@ -365,24 +357,25 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     //------------------------------------------------------
 
     bool first_time_in_the_event = true;
-    double pfmet_trasv,pfmetphi_trasv,pfmet_trasvCentral,pfmetphi_trasvCentral;
-    // double pfmet_trasv,pfmetphi_trasv,pfmet_trasvCentral,pfmetphi_trasvCentral;
+    double met_trasv,metphi_trasv;
+    double met_trasvCentral,metphi_trasvCentral;
+    
     if(use_PForNoPUorTKmet==0){
-      pfmet_trasv = pfmet;
-      pfmetphi_trasv = pfmet_phi;
+      met_trasv = pfmet;
+      metphi_trasv = pfmet_phi;
     }else if(use_PForNoPUorTKmet==1){
-      pfmet_trasv = nopumet;
-      pfmetphi_trasv = nopumet_phi;
+      met_trasv = nopumet;
+      metphi_trasv = nopumet_phi;
     }else if(use_PForNoPUorTKmet==2){
-      pfmet_trasv = tkmet;
-      pfmetphi_trasv = tkmet_phi;
+      met_trasv = tkmet;
+      metphi_trasv = tkmet_phi;
     }else{
       cout << "MET TYPE OPTION use_PForNoPUorTKmet: " << use_PForNoPUorTKmet << " NOT DEFINED, USE 0:PF, 1:NOPU, 2:TK" << endl;
       return;
     }
     
-    pfmet_trasvCentral = pfmet_trasv;
-    pfmetphi_trasvCentral = pfmetphi_trasv;
+    met_trasvCentral = met_trasv;
+    metphi_trasvCentral = metphi_trasv;
 
     muPosNoCorr.SetPtEtaPhiM(MuPos_pt,MuPos_eta,MuPos_phi,MuPos_mass);
     muNegNoCorr.SetPtEtaPhiM(MuNeg_pt,MuNeg_eta,MuNeg_phi,MuNeg_mass);
@@ -409,7 +402,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     double TRG_TIGHT_ISO_muons_SF = 1;
     // double MuNeg_tight_muon_SF = 1;
 
-    // if(nTrgMuons>2) continue; // NOT (YET) REQUIRED WHILE MAKING NTUPLES!!!! <<---------- it sohuld be already fixed in the ntuples now
     costh_HX = -1e10;     phi_HX = -1e10;
     costh_HX_gen = -1e10; phi_HX_gen = -1e10;
     costh_CS = -1e10;     phi_CS = -1e10;
@@ -790,14 +782,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                     && use_PForNoPUorTKmet<3 && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){ // use MET corrections if required
                   
                   if(use_PForNoPUorTKmet==0){
-                    pfmet_trasv = pfmet;
-                    pfmetphi_trasv = pfmet_phi;
+                    met_trasv = pfmet;
+                    metphi_trasv = pfmet_phi;
                   }else if(use_PForNoPUorTKmet==1){
-                    pfmet_trasv = nopumet;
-                    pfmetphi_trasv = nopumet_phi;
+                    met_trasv = nopumet;
+                    metphi_trasv = nopumet_phi;
                   }else if(use_PForNoPUorTKmet==2){
-                    pfmet_trasv = tkmet;
-                    pfmetphi_trasv = tkmet_phi;
+                    met_trasv = tkmet;
+                    metphi_trasv = tkmet_phi;
                   }
                   
                   // cout
@@ -806,10 +798,10 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   // << " par " << WMass::RecoilCorrVarDiagoParN_[m] 
                   // << " first_time_in_the_event " << first_time_in_the_event << endl;
                   // cout
-                  // << " pfmet_trasv before=" << pfmet_trasv
-                  // << " pfmetphi_trasv before=" << pfmetphi_trasv
-                  // << " pfmet_trasvCentral before=" << pfmet_trasvCentral
-                  // << " pfmetphi_trasvCentral before=" << pfmetphi_trasvCentral
+                  // << " met_trasv before=" << met_trasv
+                  // << " metphi_trasv before=" << metphi_trasv
+                  // << " met_trasvCentral before=" << met_trasvCentral
+                  // << " metphi_trasvCentral before=" << metphi_trasvCentral
                   // << endl;
                   //if(useRecoilCorr==1){}
                   if(useRecoilCorr==2){
@@ -826,8 +818,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                     // << " vtxBin=" << vtxBin
                     // << Form("hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,0,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV)
                     // << endl;
-                    // cout << "Before correction:" << m << " - " << pfmet_trasv << " - " << pfmetphi_trasv << endl;
-                    correctorRecoil_Z->CorrectMET3gaus(pfmet_trasv,pfmetphi_trasv,
+                    // cout << "Before correction:" << m << " - " << met_trasv << " - " << metphi_trasv << endl;
+                    correctorRecoil_Z->CorrectMET3gaus(met_trasv,metphi_trasv,
                             ZGen_pt,ZGen_phi,
                             // Zcorr.Pt(),Zcorr.Phi(),
                             ZNocorr.Pt(),ZNocorr.Phi(),
@@ -837,27 +829,27 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
                     if(first_time_in_the_event && m==m_start && n==0){
                       if(RecoilCorrVarDiagoParU1orU2fromDATAorMC!=0 || m!=0 || RecoilCorrVarDiagoParSigmas!=0){
-                      // cout << "correcting pfmet_Central= " << pfmet_trasvCentral ;
-                        correctorRecoil_Z->CorrectMET3gaus(pfmet_trasvCentral,pfmetphi_trasvCentral,
+                      // cout << "correcting met_Central= " << met_trasvCentral ;
+                        correctorRecoil_Z->CorrectMET3gaus(met_trasvCentral,metphi_trasvCentral,
                                 ZGen_pt,ZGen_phi,
                                 ZNocorr.Pt(),ZNocorr.Phi(),
                                 u1_recoil, u2_recoil,
                                 0, 0, 0,
                                 vtxBin,doSingleGauss,1);
                       }else{
-                        pfmet_trasvCentral    = pfmet_trasv;
-                        pfmetphi_trasvCentral = pfmetphi_trasv;
+                        met_trasvCentral    = met_trasv;
+                        metphi_trasvCentral = metphi_trasv;
                       }
-                      // correctorRecoil_Z->NonClosure_scale(pfmet_trasv,pfmetphi_trasv,
+                      // correctorRecoil_Z->NonClosure_scale(met_trasv,metphi_trasv,
                       //        ZGen_pt,ZGen_phi,ZGen_rap,
                       //        Zcorr.Pt(),Zcorr.Phi());
                     }
                   }
                   // cout
-                  // << "pfmet_trasv after=" << pfmet_trasv
-                  // << " pfmetphi_trasv after=" << pfmetphi_trasv
-                  // << " pfmet_trasvCentral after=" << pfmet_trasvCentral
-                  // << " pfmetphi_trasvCentral after=" << pfmetphi_trasvCentral
+                  // << "met_trasv after=" << met_trasv
+                  // << " metphi_trasv after=" << metphi_trasv
+                  // << " met_trasvCentral after=" << met_trasvCentral
+                  // << " metphi_trasvCentral after=" << metphi_trasvCentral
                   // << endl;
                 }
 
@@ -866,17 +858,17 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 // Apply met phi corrections
                 //------------------------------------------------------
                 if(first_time_in_the_event && usePhiMETCorr==1 && m==m_start && n==0){ // use MET Phi correction if required
-                  pair<double, double> pfmet_phicorr = common_stuff::getPhiCorrMET( pfmet_trasv, pfmetphi_trasv, nvtx, !sampleName.Contains("DATA"));
-                  pfmet_trasv = pfmet_phicorr.first;
-                  pfmetphi_trasv = pfmet_phicorr.second;
+                  pair<double, double> met_phicorr = common_stuff::getPhiCorrMET( met_trasv, metphi_trasv, nvtx, !sampleName.Contains("DATA"));
+                  met_trasv = met_phicorr.first;
+                  metphi_trasv = met_phicorr.second;
                 }
                 //------------------------------------------------------
                 // Define mu+, mu-, Z
                 //------------------------------------------------------
                 TLorentzVector mu_trasv,mu_trasvCentral,mu_trasvNoCorr,neutrino_trasv,neutrino_trasvCentral;
                 
-                Z_met.SetPtEtaPhiM(pfmet_trasv,0,pfmetphi_trasv,0);
-                Z_metCentral.SetPtEtaPhiM(pfmet_trasvCentral,0,pfmetphi_trasvCentral,0);
+                Z_met.SetPtEtaPhiM(met_trasv,0,metphi_trasv,0);
+                Z_metCentral.SetPtEtaPhiM(met_trasvCentral,0,metphi_trasvCentral,0);
                 neutrino_trasv.SetPtEtaPhiM(neutrinoNoCorr.Pt(),0,neutrinoNoCorr.Phi(),0); // correction only one one muon for Wlike
                 neutrino_trasvCentral.SetPtEtaPhiM(neutrinoNoCorr.Pt(),0,neutrinoNoCorr.Phi(),0); // correction only one one muon for Wlike
                 mu_trasv.SetPtEtaPhiM(muCorr.Pt(),0,muCorr.Phi(),0);
@@ -1078,7 +1070,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             //---------------------------------------
                             // Recoil plots: u1, u2, u1vsZpt, u2vsZpt
                             //---------------------------------------
-                            common_stuff::calculateU1U2(pfmet_trasv,  pfmetphi_trasv, ZGen_pt,   ZGen_phi,
+                            common_stuff::calculateU1U2(met_trasv, metphi_trasv,  ZGen_pt, ZGen_phi,
                                                         ZNocorr.Pt(), ZNocorr.Phi(),  u1_recoil, u2_recoil);
 
                             common_stuff::plot1D(Form("hWlike%s_u1_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
