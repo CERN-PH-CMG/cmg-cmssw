@@ -307,7 +307,50 @@ void common_stuff::plot2D(std::string title, double xval, double yval, double we
 
 ///////////////////////////////////////////////////////////////
 
-void common_stuff::writeOutHistos(TFile *fout, std::map<std::string, TH1D*> h_1d, std::map<std::string, TH2D*> h_2d)
+void common_stuff::plot3D(std::string title, double xval, double yval, double zval, double weight, std::map<std::string, TH3D*> &allhistos, int numbinsx, double xmin, double xmax, int numbinsy, double ymin, double ymax, int numbinsz, double zmin, double zmax)
+{
+
+  std::map<std::string, TH3D*>::iterator iter= allhistos.find(title);
+  if(iter == allhistos.end()) //no histo for this yet, so make a new one
+    {
+      TH3D* currentHisto= new TH3D(((TString)common_stuff::getCompleteTitleReturnName(title)).Data(), title.c_str(), numbinsx, xmin, xmax, numbinsy, ymin, ymax, numbinsz, zmin, zmax);
+      currentHisto->Sumw2();
+      currentHisto->Fill(xval, yval, zval, weight);
+      allhistos.insert(std::pair<std::string, TH3D*> (title,currentHisto) );
+    }
+  else // exists already, so just fill it
+    {
+      (*iter).second->Fill(xval, yval, zval, weight);
+    }
+
+  return;
+
+}
+
+///////////////////////////////////////////////////////////////
+
+void common_stuff::plot3D(std::string title, double xval, double yval, double zval, double weight, std::map<std::string, TH3D*> &allhistos, int numbinsx, double *xarray, int numbinsy, double *yarray, int numbinsz, double *zarray)
+{
+
+  std::map<std::string, TH3D*>::iterator iter= allhistos.find(title);
+  if(iter == allhistos.end()) //no histo for this yet, so make a new one
+    {
+      TH3D* currentHisto= new TH3D(((TString)common_stuff::getCompleteTitleReturnName(title)).Data(), title.c_str(), numbinsx, xarray, numbinsy, yarray, numbinsz, zarray);
+      currentHisto->Sumw2();
+      currentHisto->Fill(xval, yval, zval, weight);
+      allhistos.insert(std::pair<std::string, TH3D*> (title,currentHisto) );
+    }
+  else // exists already, so just fill it
+    {
+      (*iter).second->Fill(xval, yval, zval, weight);
+    }
+
+  return;
+
+}
+///////////////////////////////////////////////////////////////
+
+void common_stuff::writeOutHistos(TFile *fout, std::map<std::string, TH1D*> h_1d, std::map<std::string, TH2D*> h_2d, std::map<std::string, TH3D*> h_3d)
 {
 
   fout->cd();
@@ -323,7 +366,12 @@ void common_stuff::writeOutHistos(TFile *fout, std::map<std::string, TH1D*> h_1d
     it2d->second->Write(); 
     delete it2d->second;
   }
- 
+
+  std::map<std::string, TH3D*>::iterator it3d;
+  for(it3d=h_3d.begin(); it3d!=h_3d.end(); it3d++) {
+    it3d->second->Write(); 
+    delete it3d->second;
+  }
 
 }
 
