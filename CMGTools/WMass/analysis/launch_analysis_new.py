@@ -74,7 +74,6 @@ resubmit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadFake,
 # resubmit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 # resubmit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
 
-parallelize = 0;
 useBatch = 0;
 batchQueue = "1nh";
 WMassNSteps = "5"; # 60 -- N of mass steps above and below the central
@@ -505,7 +504,7 @@ if(runWanalysis or runZanalysis):
       line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o -1,0,0,"+wstring).read()
       nEntries = [int(s) for s in line.split() if s.isdigit()][0]
 
-      if not parallelize:
+      if not useBatch:
         os.chdir(code_dir)
         os.system(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o 0,0,"+str(nEntries)+","+wstring)
       else:
@@ -526,7 +525,7 @@ if(runWanalysis or runZanalysis):
         text_file.close()
 
         # Create script if needed
-        if useBatch and (recreateSubPrograms>0 or not file_exists_and_is_not_empty("runWanalysis.sh")):
+        if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runWanalysis.sh"):
           text_file = open("runWanalysis.sh", "w")
           text_file.write("# x=$1; ev_ini=$2; ev_fin=$3\n")
           text_file.write("cd "+code_dir+"\n")
@@ -537,32 +536,21 @@ if(runWanalysis or runZanalysis):
           os.system("chmod 755 runWanalysis.sh")
 
         print "nChuncks ",nChuncks-1
-        if useBatch or (nChuncks>2  and (("WJetsMadSig" in sample[i]  or "WJetsPow" in sample[i]) or ("DATA" in sample[i]) or (("TTJets" in sample[i]) and WMassNSteps=="0"))):
-          for x in xrange(1, nChuncks):
-            ev_ini= int(nevents*(x-1))
-            ev_fin= int(nevents*(x)-1)
-            if (x==nChuncks-1):
-              ev_fin= nEntries
-            print x,ev_ini,ev_fin
-            if not file_exists_and_is_not_empty("Wanalysis_chunk"+str(x)+".root"):
-              if(not useBatch):
-                os.chdir(code_dir)
-                os.system(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+wstring+" > "+outputSamplePath+"Wlog_"+str(x)+".log 2>&1 &")
-                os.system("sleep 3")
-              else:
-                LSFJobOutput = ''
-                if noLSFJobOutput>0:
-                  #LSFJobOutput = '-o /dev/null'
-                  LSFJobOutput = "-o "+outputSamplePath+"/batch_logs_W.txt"
-                jobname = "Wanalysis_"+outfolder_name+"_"+sample[i]+"_"+str(x)
-                print "Submitting job: "+jobname
-                os.system("bsub -C 0 "+LSFJobOutput+" -u pippo123 -q "+batchQueue+" -J "+jobname+" runWanalysis.sh "+str(x)+" "+str(ev_ini)+" "+str(ev_fin))
-                os.system("usleep 10000");
-        else:
-          os.system(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o 0,0,"+str(nEntries)+","+wstring+" > "+outputSamplePath+"Wlog.log 2>&1 &")
-          os.system("sleep 3");
-
-        os.chdir(code_dir)
+        for x in xrange(1, nChuncks):
+          ev_ini= int(nevents*(x-1))
+          ev_fin= int(nevents*(x)-1)
+          if (x==nChuncks-1):
+            ev_fin= nEntries
+          print x,ev_ini,ev_fin
+          if not file_exists_and_is_not_empty("Wanalysis_chunk"+str(x)+".root"):
+            LSFJobOutput = ''
+            if noLSFJobOutput>0:
+              #LSFJobOutput = '-o /dev/null'
+              LSFJobOutput = "-o "+outputSamplePath+"/batch_logs_W.txt"
+            jobname = "Wanalysis_"+outfolder_name+"_"+sample[i]+"_"+str(x)
+            print "Submitting job: "+jobname
+            os.system("bsub -C 0 "+LSFJobOutput+" -u pippo123 -q "+batchQueue+" -J "+jobname+" runWanalysis.sh "+str(x)+" "+str(ev_ini)+" "+str(ev_fin))
+            os.system("usleep 10000");
 
     if(runZanalysis):
 
@@ -571,7 +559,7 @@ if(runWanalysis or runZanalysis):
       line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o -1,0,0,"+zstring).read();
       nEntries = [int(s) for s in line.split() if s.isdigit()][0]
 
-      if not parallelize:
+      if not useBatch:
         os.chdir(code_dir)
         os.system(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o 0,0,"+str(nEntries)+","+zstring)
       else:
@@ -591,7 +579,7 @@ if(runWanalysis or runZanalysis):
         text_file.close()
 
         # Create script if needed
-        if useBatch and (recreateSubPrograms>0 or not file_exists_and_is_not_empty("runZanalysis.sh")):
+        if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runZanalysis.sh"):
           text_file = open("runZanalysis.sh", "w")
           text_file.write("# x=$1; ev_ini=$2; ev_fin=$3\n")
           text_file.write("cd "+code_dir+"\n")
@@ -602,32 +590,21 @@ if(runWanalysis or runZanalysis):
           os.system("chmod 755 runZanalysis.sh")
 
         print "nChuncks ",nChuncks-1
-        if useBatch or (nChuncks>2  and (("DYJetsPow" in sample[i] or "DYJetsMadSig" in sample[i]) or ("DATA" in sample[i]))):
-          for x in xrange(1, nChuncks):
-            ev_ini= int(nevents*(x-1))
-            ev_fin= int(nevents*(x)-1)
-            if (x==nChuncks-1):
-              ev_fin= nEntries
-            print x,ev_ini,ev_fin
-            if not file_exists_and_is_not_empty("Zanalysis_chunk"+str(x)+".root"):
-              if(not useBatch):
-                os.chdir(code_dir)
-                os.system(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+zstring+" > "+outputSamplePath+"Zlog_"+str(x)+".log 2>&1 &")
-                os.system("sleep 3");
-              else:
-                LSFJobOutput = ''
-                if noLSFJobOutput>0:
-                  #LSFJobOutput = '-o /dev/null'
-                  LSFJobOutput = "-o "+outputSamplePath+"/batch_logs_Z.txt"
-                jobname = "Zanalysis_"+outfolder_name+"_"+sample[i]+"_"+str(x)
-                print "Submitting job: "+jobname
-                os.system("bsub -C 0 "+LSFJobOutput+" -u pippo123 -q "+batchQueue+" -J "+jobname+" runZanalysis.sh "+str(x)+" "+str(ev_ini)+" "+str(ev_fin))
-                os.system("usleep 10000");
-        else:
-          os.system(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o 0,0,"+str(nEntries)+","+zstring+" > "+outputSamplePath+"Zlog.log 2>&1 &")
-          os.system("sleep 3");
-
-        os.chdir(code_dir)
+        for x in xrange(1, nChuncks):
+          ev_ini= int(nevents*(x-1))
+          ev_fin= int(nevents*(x)-1)
+          if (x==nChuncks-1):
+            ev_fin= nEntries
+          print x,ev_ini,ev_fin
+          if not file_exists_and_is_not_empty("Zanalysis_chunk"+str(x)+".root"):
+            LSFJobOutput = ''
+            if noLSFJobOutput>0:
+              #LSFJobOutput = '-o /dev/null'
+              LSFJobOutput = "-o "+outputSamplePath+"/batch_logs_Z.txt"
+            jobname = "Zanalysis_"+outfolder_name+"_"+sample[i]+"_"+str(x)
+            print "Submitting job: "+jobname
+            os.system("bsub -C 0 "+LSFJobOutput+" -u pippo123 -q "+batchQueue+" -J "+jobname+" runZanalysis.sh "+str(x)+" "+str(ev_ini)+" "+str(ev_fin))
+            os.system("usleep 10000");
 
     os.chdir(base_path);
 
