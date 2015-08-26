@@ -16,6 +16,7 @@ parser.add_option("--jecEra", dest="jecEra", default='', type="string", action="
 parser.add_option("--maxEvents", dest="maxEvents", default=-1, type="int", action="store", help="maxEvents")
 parser.add_option("--removeResiduals", dest="removeResiduals", action="store_true", default=False, help="remove residual JEC?") 
 parser.add_option("--isData", dest="isData", action="store_true", default=False, help="is data?") 
+parser.add_option("--addReclusterTrackJetsAK4", dest="reclusterTrackJets", action="store_true", default=False, help="recluster AK4 track jets") 
 (options, args) = parser.parse_args()
 
 print "cmsswPreprocessor options: isData: %s, GT:%s, removeResiduals: %s jecEra: %s"%(options.isData, options.GT,  options.removeResiduals, options.jecEra)
@@ -156,6 +157,32 @@ process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
     fastCloning = cms.untracked.bool(False),
     overrideInputFileSplitLevels = cms.untracked.bool(True)
 )
+
+if options.reclusterTrackJets:
+    process.MessageLogger.destinations = ['cerr'] # temporarily avoid a lot of printouts
+    process.MessageLogger.cerr.threshold = cms.untracked.string('ERROR') # temporarily avoid a lot of printouts
+    process.pfChargedCHS = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedPFCandidates"), cut = cms.string("fromPV && charge!=0"))
+    from RecoJets.JetProducers.ak4PFJets_cfi import ak4PFJets
+    process.ak4PFChargedJetsCHS = ak4PFJets.clone(src = 'pfChargedCHS', doAreaFastjet = True)
+    from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
+    addJetCollection(
+        process,
+        postfix = "",
+        labelName = 'AK4ChargedPFCHS',
+        jetSource = cms.InputTag('ak4PFChargedJetsCHS'),
+        pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
+        pfCandidates = cms.InputTag('packedPFCandidates'),
+        svSource = cms.InputTag('slimmedSecondaryVertices'),
+        btagDiscriminators = ['None'],
+        jetCorrections = ('AK4PFchs', [], 'None'),
+        genJetCollection = cms.InputTag('slimmedGenJets'),
+        genParticles = cms.InputTag('prunedGenParticles'),
+        algo = 'AK',
+        rParam = 0.4
+        )
+    process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+    process.MINIAODSIMoutput.outputCommands.append("keep patJets_patJetsAK4ChargedPFCHS__RERUN")
+    process.p = cms.Path(process.pfChargedCHS*process.ak4PFChargedJetsCHS*process.patJetsAK4ChargedPFCHS)
 
 
 process.endpath = cms.EndPath(process.MINIAODSIMoutput)

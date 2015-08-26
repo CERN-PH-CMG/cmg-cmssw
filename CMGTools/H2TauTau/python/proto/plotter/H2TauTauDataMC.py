@@ -1,15 +1,10 @@
-import os
-from fnmatch import fnmatch
 import copy
 import re
 
-from ROOT import TFile, TH1F, TPaveText
+from ROOT import TFile, TH1F
 
 from CMGTools.RootTools.DataMC.AnalysisDataMCPlot import AnalysisDataMC
-from CMGTools.RootTools.fwlite.Weight import Weight
-from CMGTools.RootTools.fwlite.Weight import printWeights
 from CMGTools.RootTools.Style import *
-from PhysicsTools.Heppy.utils.cmsswRelease import isNewerThan
 
 class H2TauTauDataMC( AnalysisDataMC ):
 

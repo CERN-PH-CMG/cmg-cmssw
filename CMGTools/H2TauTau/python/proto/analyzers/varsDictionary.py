@@ -8,16 +8,16 @@ vars['lumi'] = {'std': 'lumi', 'sync': 'lumi'}
 vars['event'] = {'std': 'event', 'sync': 'evt'}
 
 # Generator info
-vars['geninfo_tt'] = {'std': 'geninfo_tt', 'sync': 'geninfo_tt'}
-vars['geninfo_mt'] = {'std': 'geninfo_mt', 'sync': 'geninfo_mt'}
-vars['geninfo_et'] = {'std': 'geninfo_et', 'sync': 'geninfo_et'}
-vars['geninfo_ee'] = {'std': 'geninfo_ee', 'sync': 'geninfo_ee'}
-vars['geninfo_mm'] = {'std': 'geninfo_mm', 'sync': 'geninfo_mm'}
-vars['geninfo_em'] = {'std': 'geninfo_em', 'sync': 'geninfo_em'}
-vars['geninfo_EE'] = {'std': 'geninfo_EE', 'sync': 'geninfo_EE'}
-vars['geninfo_MM'] = {'std': 'geninfo_MM', 'sync': 'geninfo_MM'}
-vars['geninfo_LL'] = {'std': 'geninfo_LL', 'sync': 'geninfo_LL'}
-vars['geninfo_fakeid'] = {'std': 'geninfo_fakeid', 'sync': 'geninfo_fakeid'}
+vars['geninfo_tt'] = {'std': 'geninfo_tt', 'sync': 'isZtt'}
+vars['geninfo_mt'] = {'std': 'geninfo_mt', 'sync': 'isZmt'}
+vars['geninfo_et'] = {'std': 'geninfo_et', 'sync': 'isZet'}
+vars['geninfo_ee'] = {'std': 'geninfo_ee', 'sync': 'isZee'}
+vars['geninfo_mm'] = {'std': 'geninfo_mm', 'sync': 'isZmm'}
+vars['geninfo_em'] = {'std': 'geninfo_em', 'sync': 'isZem'}
+vars['geninfo_EE'] = {'std': 'geninfo_EE', 'sync': 'isZEE'}
+vars['geninfo_MM'] = {'std': 'geninfo_MM', 'sync': 'isZMM'}
+vars['geninfo_LL'] = {'std': 'geninfo_LL', 'sync': 'isZLL'}
+vars['geninfo_fakeid'] = {'std': 'geninfo_fakeid', 'sync': 'isFake'}
 
 # Weights
 vars['weight'] = {'std': 'weight', 'sync': 'weight'}
@@ -28,6 +28,12 @@ vars['geninfo_nup'] = {'geninfo_nup': 'NUP', 'sync': 'NUP'}
 vars['n_vertices'] = {'std': 'n_vertices', 'sync': 'npv'}
 vars['npu'] = {'std': 'npu', 'sync': 'npu'}
 vars['rho'] = {'std': 'rho', 'sync': 'rho'}
+
+# Lepton vetoes
+vars['veto_dilepton'] = {'std':'veto_dilepton', 'sync':'dilepton_veto'}
+vars['veto_thirdlepton'] = {'std':'veto_thirdlepton', 'sync':'extramuon_veto'}
+vars['veto_otherlepton'] = {'std':'veto_otherlepton', 'sync':'extraelec_veto'}
+
 
 # Leg 1 (tau, mu, ele)
 vars['l1_pt'] = {'std': 'l1_pt', 'sync': 'pt_1'}
@@ -45,7 +51,7 @@ vars['l1_muonid_tight'] = {'std': 'l1_muonid_tight', 'sync': 'id_m_tight_1'}
 vars['l1_muonid_tightnovtx'] = {'std': 'l1_muonid_tightnovtx', 'sync': 'id_m_tightnovtx_1'}
 vars['l1_muonid_highpt'] = {'std': 'l1_muonid_highpt', 'sync': 'id_m_highpt_1'}
 vars['l1_eid_nontrigmva_loose'] = {'std': 'l1_eid_nontrigmva_loose', 'sync': 'id_e_mva_nt_loose_1'}
-vars['l1_eid_nontrigmva_tight'] = {'std': 'l1_eid_nontrigmva_tight', 'sync': 'id_e_mva_nt_loose_1'}
+vars['l1_eid_nontrigmva_tight'] = {'std': 'l1_eid_nontrigmva_tight', 'sync': 'id_e_mva_nt_tight_1'}
 vars['l1_eid_veto'] = {'std': 'l1_eid_veto', 'sync': 'id_e_cut_veto_1'}
 vars['l1_eid_loose'] = {'std': 'l1_eid_loose', 'sync': 'id_e_cut_loose_1'}
 vars['l1_eid_medium'] = {'std': 'l1_eid_medium', 'sync': 'id_e_cut_medium_1'}
@@ -64,7 +70,7 @@ vars['l1_byIsolationMVA3oldDMwoLTraw'] = {'std': 'l1_byIsolationMVA3oldDMwoLTraw
 vars['l1_byIsolationMVA3newDMwLTraw'] = {'std': 'l1_byIsolationMVA3newDMwLTraw', 'sync': 'byIsolationMVA3newDMwLTraw_1'}
 vars['l1_byIsolationMVA3oldDMwLTraw'] = {'std': 'l1_byIsolationMVA3oldDMwLTraw', 'sync': 'byIsolationMVA3oldDMwLTraw_1'}
 vars['l1_chargedIsoPtSum'] = {'std': 'l1_chargedIsoPtSum', 'sync': 'chargedIsoPtSum_1'}
-vars['l1_decayModeFinding'] = {'std': 'l1_decayModeFinding', 'sync': 'decayModeFinding_1'}
+vars['l1_decayModeFinding'] = {'std': 'l1_decayModeFinding', 'sync': 'decayModeFindingOldDMs_1'}
 vars['l1_decayModeFindingNewDMs'] = {'std': 'l1_decayModeFindingNewDMs', 'sync': 'decayModeFindingNewDMs_1'}
 vars['l1_neutralIsoPtSum'] = {'std': 'l1_neutralIsoPtSum', 'sync': 'neutralIsoPtSum_1'}
 vars['l1_puCorrPtSum'] = {'std': 'l1_puCorrPtSum', 'sync': 'puCorrPtSum_1'}
@@ -104,13 +110,13 @@ vars['l2_byIsolationMVA3oldDMwoLTraw'] = {'std': 'l2_byIsolationMVA3oldDMwoLTraw
 vars['l2_byIsolationMVA3newDMwLTraw'] = {'std': 'l2_byIsolationMVA3newDMwLTraw', 'sync': 'byIsolationMVA3newDMwLTraw_2'}
 vars['l2_byIsolationMVA3oldDMwLTraw'] = {'std': 'l2_byIsolationMVA3oldDMwLTraw', 'sync': 'byIsolationMVA3oldDMwLTraw_2'}
 vars['l2_chargedIsoPtSum'] = {'std': 'l2_chargedIsoPtSum', 'sync': 'chargedIsoPtSum_2'}
-vars['l2_decayModeFinding'] = {'std': 'l2_decayModeFinding', 'sync': 'decayModeFinding_2'}
+vars['l2_decayModeFinding'] = {'std': 'l2_decayModeFinding', 'sync': 'decayModeFindingOldDMs_2'}
 vars['l2_decayModeFindingNewDMs'] = {'std': 'l2_decayModeFindingNewDMs', 'sync': 'decayModeFindingNewDMs_2'}
 vars['l2_neutralIsoPtSum'] = {'std': 'l2_neutralIsoPtSum', 'sync': 'neutralIsoPtSum_2'}
 vars['l2_puCorrPtSum'] = {'std': 'l2_puCorrPtSum', 'sync': 'puCorrPtSum_2'}
 
 # di-tau pair
-vars['pthiggs'] = {'std': 'pthiggs', 'sync': 'pth'}
+vars['pthiggs'] = {'std': 'pthiggs', 'sync': 'pt_tt'}
 vars['visMass'] = {'std': 'visMass', 'sync': 'm_vis'}
 vars['svfit_mass'] = {'std': 'svfit_mass', 'sync': 'm_sv'}
 vars['svfit_pt'] = {'std': 'svfit_pt', 'sync': 'pt_sv'}
@@ -134,7 +140,8 @@ vars['met_cov11'] = {'std': 'met_cov11', 'sync': 'mvacov11'}
 # VBF
 vars['ditau_mjj'] = {'std': 'ditau_mjj', 'sync': 'mjj'}
 vars['ditau_deta'] = {'std': 'ditau_deta', 'sync': 'jdeta'}
-vars['ditau_nCentral'] = {'std': 'ditau_nCentral', 'sync': 'njetingap'}
+vars['ditau_nCentral'] = {'std': 'ditau_n_central', 'sync': 'njetingap'}
+vars['ditau_nCentral'] = {'std': 'ditau_n_central20', 'sync': 'njetingap20'}
 vars['ditau_mva'] = {'std': 'ditau_mva', 'sync': 'mva'}
 
 vars['ditau_jdphi'] = {'std': 'ditau_jdphi', 'sync': 'jdphi'}
@@ -170,21 +177,21 @@ vars['jet2_id_pu'] = {'std': 'jet2_id_pu', 'sync': 'jpuid_2'}
 vars['jet2_csv'] = {'std': 'jet2_csv', 'sync': 'jcsv_2'}
 
 # bJet 1
-vars['bjet1_pt'] = {'std': 'bjet1_pt', 'sync': 'bjpt_1'}
-vars['bjet1_eta'] = {'std': 'bjet1_eta', 'sync': 'bjeta_1'}
-vars['bjet1_phi'] = {'std': 'bjet1_phi', 'sync': 'bjphi_1'}
-vars['bjet1_rawfactor'] = {'std': 'bjet1_rawfactor', 'sync': 'bjrawf_1'}
-vars['bjet1_mva_pu'] = {'std': 'bjet1_mva_pu', 'sync': 'bjmva_1'}
-vars['bjet1_id_loose'] = {'std': 'bjet1_id_loose', 'sync': 'bjpfid_1'}
-vars['bjet1_id_pu'] = {'std': 'bjet1_id_pu', 'sync': 'bjpuid_1'}
-vars['bjet1_csv'] = {'std': 'bjet1_csv', 'sync': 'bjcsv_1'}
+vars['bjet1_pt'] = {'std': 'bjet1_pt', 'sync': 'bpt_1'}
+vars['bjet1_eta'] = {'std': 'bjet1_eta', 'sync': 'beta_1'}
+vars['bjet1_phi'] = {'std': 'bjet1_phi', 'sync': 'bphi_1'}
+vars['bjet1_rawfactor'] = {'std': 'bjet1_rawfactor', 'sync': 'brawf_1'}
+vars['bjet1_mva_pu'] = {'std': 'bjet1_mva_pu', 'sync': 'bmva_1'}
+vars['bjet1_id_loose'] = {'std': 'bjet1_id_loose', 'sync': 'bpfid_1'}
+vars['bjet1_id_pu'] = {'std': 'bjet1_id_pu', 'sync': 'bpuid_1'}
+vars['bjet1_csv'] = {'std': 'bjet1_csv', 'sync': 'bcsv_1'}
 
 # bJet 2
-vars['bjet2_pt'] = {'std': 'bjet2_pt', 'sync': 'bjpt_2'}
-vars['bjet2_eta'] = {'std': 'bjet2_eta', 'sync': 'bjeta_2'}
-vars['bjet2_phi'] = {'std': 'bjet2_phi', 'sync': 'bjphi_2'}
-vars['bjet2_rawfactor'] = {'std': 'bjet2_rawfactor', 'sync': 'bjrawf_2'}
-vars['bjet2_mva_pu'] = {'std': 'bjet2_mva_pu', 'sync': 'bjmva_2'}
-vars['bjet2_id_loose'] = {'std': 'bjet2_id_loose', 'sync': 'bjpfid_2'}
-vars['bjet2_id_pu'] = {'std': 'bjet2_id_pu', 'sync': 'bjpuid_2'}
-vars['bjet2_csv'] = {'std': 'bjet2_csv', 'sync': 'bjcsv_2'}
+vars['bjet2_pt'] = {'std': 'bjet2_pt', 'sync': 'bpt_2'}
+vars['bjet2_eta'] = {'std': 'bjet2_eta', 'sync': 'beta_2'}
+vars['bjet2_phi'] = {'std': 'bjet2_phi', 'sync': 'bphi_2'}
+vars['bjet2_rawfactor'] = {'std': 'bjet2_rawfactor', 'sync': 'brawf_2'}
+vars['bjet2_mva_pu'] = {'std': 'bjet2_mva_pu', 'sync': 'bmva_2'}
+vars['bjet2_id_loose'] = {'std': 'bjet2_id_loose', 'sync': 'bpfid_2'}
+vars['bjet2_id_pu'] = {'std': 'bjet2_id_pu', 'sync': 'bpuid_2'}
+vars['bjet2_csv'] = {'std': 'bjet2_csv', 'sync': 'bcsv_2'}

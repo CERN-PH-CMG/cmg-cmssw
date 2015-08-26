@@ -45,6 +45,7 @@ class JetAnalyzer(Analyzer):
       btagSFseed = 0xdeadbeef,
       # if True, the PF and PU jet ID are not applied, and the jets get flagged
       relaxJetId = False,
+      relaxPuJetId = False,
     )
     """
 
@@ -205,10 +206,9 @@ class JetAnalyzer(Analyzer):
     def testJetID(self, jet):
         jet.puJetIdPassed = jet.puJetId()
         jet.pfJetIdPassed = jet.jetID("POG_PFID_Loose")
-        if self.cfg_ana.relaxJetId:
-            return True
-        else:
-            return jet.puJetIdPassed and jet.pfJetIdPassed
+        puJetId = self.cfg_ana.relaxPuJetId or jet.puJetIdPassed 
+        pfJetId = self.cfg_ana.relaxJetId or jet.pfJetIdPassed 
+        return puJetId and pfJetId
 
     def testJet(self, jet):
         return jet.pt() > self.cfg_ana.jetPt and \
@@ -218,8 +218,9 @@ class JetAnalyzer(Analyzer):
     def testBJet(self, jet):
         # medium csv working point
         # https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagPerformanceOP#B_tagging_Operating_Points_for_3
-        jet.btagMVA = jet.btag('combinedInclusiveSecondaryVertexV2BJetTags')
-        jet.btagFlag = jet.btagWP('CSVv2IVFM')
+        jet.btagMVA = jet.btag('pfCombinedInclusiveSecondaryVertexV2BJetTags')
+        # jet.btagFlag = jet.btagWP('CSVv2IVFM')
+        jet.btagFlag = jet.btagMVA > 0.814
         # jet.btagFlag = self.btagSF.isbtagged(
         #     jet.pt(),
         #     jet.eta(),
