@@ -65,9 +65,7 @@ useAlsoGenPforSig= 1;
 
 ZMassCentral_MeV = "91188"; # 91.1876
 WMassCentral_MeV = "80398"; # 80.385
-WMassSkipNSteps = "5"; # 15
-etaMuonNSteps = "1"; # 5
-etaMaxMuons = "0.9"; # 0.6, 0.8, 1.2, 1.6, 2.1
+WMassSkipNSteps = "5"; # 15 -- used for next to nothing, at the moment
 
 # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 resubmit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
@@ -76,8 +74,10 @@ resubmit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadFake,
 
 useBatch = 0;
 batchQueue = "1nh";
+
 WMassNSteps = "5"; # 60 -- N of mass steps above and below the central
-# WMassNSteps = "0"; # 60
+etaMuonNSteps = "1"; # 5
+etaMaxMuons = "0.9"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
 runWanalysis = 0;
 runZanalysis = 1;
@@ -508,8 +508,8 @@ if(runWanalysis or runZanalysis):
         os.chdir(code_dir)
         os.system(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o 0,0,"+str(nEntries)+","+wstring)
       else:
+        jobfirst = 1
         nevents = 2e5
-        # if (("DYJetsMadSig" in sample[i]  or "DYJetsPow" in sample[i]) and float(LHAPDF_reweighting_members)>1):
         # if ("WJetsMadSig" in sample[i]  or "WJetsPow" in sample[i]):
           # nevents = 3e4
         if ("DATA" in sample[i]):
@@ -524,33 +524,44 @@ if(runWanalysis or runZanalysis):
         text_file.write(str(nChuncks-1))
         text_file.close()
 
-        # Create script if needed
-        if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runWanalysis.sh"):
-          text_file = open("runWanalysis.sh", "w")
-          text_file.write("# x=$1; ev_ini=$2; ev_fin=$3\n")
-          text_file.write("cd "+code_dir+"\n")
-          text_file.write("eval `scramv1 runtime -sh`\n")
-          text_file.write("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh \n")
-          text_file.write(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o ${1},${2},${3},"+wstring)
-          text_file.close()
-          os.system("chmod 755 runWanalysis.sh")
-
         print "nChuncks ",nChuncks-1
-        for x in xrange(1, nChuncks):
-          ev_ini= int(nevents*(x-1))
-          ev_fin= int(nevents*(x)-1)
-          if (x==nChuncks-1):
+        for chunk in xrange(1, nChuncks):
+          ev_ini= int(nevents*(chunk-1))
+          ev_fin= int(nevents*(chunk)-1)
+          if (chunk==nChuncks-1):
             ev_fin= nEntries
-          print x,ev_ini,ev_fin
-          if not file_exists_and_is_not_empty("Wanalysis_chunk"+str(x)+".root"):
-            LSFJobOutput = ''
-            if noLSFJobOutput>0:
-              #LSFJobOutput = '-o /dev/null'
-              LSFJobOutput = "-o "+outputSamplePath+"/batch_logs_W.txt"
-            jobname = "Wanalysis_"+outfolder_name+"_"+sample[i]+"_"+str(x)
-            print "Submitting job: "+jobname
-            os.system("bsub -C 0 "+LSFJobOutput+" -u pippo123 -q "+batchQueue+" -J "+jobname+" runWanalysis.sh "+str(x)+" "+str(ev_ini)+" "+str(ev_fin))
-            os.system("usleep 10000");
+          print chunk,ev_ini,ev_fin
+          if not file_exists_and_is_not_empty("Wanalysis_chunk"+str(chunk)+".root"):
+            # Create script if needed
+            if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runWanalysis.sh"):
+              text_file = open("runWanalysis_"+str(chunk)+".sh", "w")
+              text_file.write("cd "+code_dir+"\n")
+              text_file.write("eval `scramv1 runtime -sh`\n")
+              text_file.write("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh \n")
+              text_file.write(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o "+str(chunk)+","+str(ev_ini)+","+str(ev_fin)+","+wstring)
+              text_file.close()
+              os.system("chmod 755 runWanalysis.sh")
+            # Send array if we reached maximum capacity (1000) or last chunk
+            if chunk-jobfirst == 999 or chunk == nChuncks-1:
+              joblist = str(jobfirst)+"-"+str(chunk)
+              jobname = "Wanalysis_"+outfolder_name+"_"+sample[i]+"["+joblist+"]"
+              LSFJobOutput = ''
+              if noLSFJobOutput>0:
+                LSFJobOutput = "-o "+outputSamplePath+"/batch_logs_W.txt "
+              print "Submitting job: "+jobname
+              os.system("bsub -C 0 "+LSFJobOutput+"-u noEmail -q "+batchQueue+" -J "+jobname+" runWanalysis_\${LSB_JOBINDEX}.sh")
+              jobfirst = chunk +1
+          else:
+            # Send array if there is a block waiting
+            if chunk - jobfirst > 0:
+              joblist = str(jobfirst)+"-"+str(chunk-1)
+              jobname = "Wanalysis_"+outfolder_name+"_"+sample[i]+"["+joblist+"]"
+              LSFJobOutput = ''
+              if noLSFJobOutput>0:
+                LSFJobOutput = "-o "+outputSamplePath+"/batch_logs_W.txt "
+              print "Submitting job: "+jobname
+              os.system("bsub -C 0 "+LSFJobOutput+"-u noEmail -q "+batchQueue+" -J "+jobname+" runWanalysis_\${LSB_JOBINDEX}.sh")
+            jobfirst = chunk +1
 
     if(runZanalysis):
 
@@ -563,6 +574,7 @@ if(runWanalysis or runZanalysis):
         os.chdir(code_dir)
         os.system(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o 0,0,"+str(nEntries)+","+zstring)
       else:
+        jobfirst = 1
         nevents = 2e5
         if ("DYJetsMadSig" in sample[i]  or "DYJetsPow" in sample[i]):
           nevents = 3e4
@@ -578,33 +590,44 @@ if(runWanalysis or runZanalysis):
         text_file.write(str(nChuncks-1))
         text_file.close()
 
-        # Create script if needed
-        if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runZanalysis.sh"):
-          text_file = open("runZanalysis.sh", "w")
-          text_file.write("# x=$1; ev_ini=$2; ev_fin=$3\n")
-          text_file.write("cd "+code_dir+"\n")
-          text_file.write("eval `scramv1 runtime -sh`\n")
-          text_file.write("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh \n")
-          text_file.write(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o ${1},${2},${3},"+zstring)
-          text_file.close()
-          os.system("chmod 755 runZanalysis.sh")
-
         print "nChuncks ",nChuncks-1
-        for x in xrange(1, nChuncks):
-          ev_ini= int(nevents*(x-1))
-          ev_fin= int(nevents*(x)-1)
-          if (x==nChuncks-1):
+        for chunk in xrange(1, nChuncks):
+          ev_ini= int(nevents*(chunk-1))
+          ev_fin= int(nevents*(chunk)-1)
+          if (chunk==nChuncks-1):
             ev_fin= nEntries
-          print x,ev_ini,ev_fin
-          if not file_exists_and_is_not_empty("Zanalysis_chunk"+str(x)+".root"):
-            LSFJobOutput = ''
-            if noLSFJobOutput>0:
-              #LSFJobOutput = '-o /dev/null'
-              LSFJobOutput = "-o "+outputSamplePath+"/batch_logs_Z.txt"
-            jobname = "Zanalysis_"+outfolder_name+"_"+sample[i]+"_"+str(x)
-            print "Submitting job: "+jobname
-            os.system("bsub -C 0 "+LSFJobOutput+" -u pippo123 -q "+batchQueue+" -J "+jobname+" runZanalysis.sh "+str(x)+" "+str(ev_ini)+" "+str(ev_fin))
-            os.system("usleep 10000");
+          print chunk,ev_ini,ev_fin
+          if not file_exists_and_is_not_empty("Zanalysis_chunk"+str(chunk)+".root"):
+            # Create scripts if needed
+            if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runZanalysis_"+str(chunk)+".sh"):
+              text_file = open("runZanalysis_"+str(chunk)+".sh", "w")
+              text_file.write("cd "+code_dir+"\n")
+              text_file.write("eval `scramv1 runtime -sh`\n")
+              text_file.write("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh \n")
+              text_file.write(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o "+str(chunk)+","+str(ev_ini)+","+str(ev_fin)+","+zstring)
+              text_file.close()
+              os.system("chmod 755 runZanalysis_"+str(chunk)+".sh")
+            # Send array if we reached maximum capacity (1000) or last chunk
+            if chunk-jobfirst == 999 or chunk == nChuncks-1:
+              joblist = str(jobfirst)+"-"+str(chunk)
+              jobname = "Zanalysis_"+outfolder_name+"_"+sample[i]+"["+joblist+"]"
+              LSFJobOutput = ''
+              if noLSFJobOutput>0:
+                LSFJobOutput = "-o "+outputSamplePath+"/batch_logs_Z.txt "
+              print "Submitting job: "+jobname
+              os.system("bsub -C 0 "+LSFJobOutput+"-u noEmail -q "+batchQueue+" -J "+jobname+" runZanalysis_\${LSB_JOBINDEX}.sh")
+              jobfirst = chunk +1
+          else:
+            # Send array if there is a block waiting
+            if chunk - jobfirst > 0:
+              joblist = str(jobfirst)+"-"+str(chunk-1)
+              jobname = "Zanalysis_"+outfolder_name+"_"+sample[i]+"["+joblist+"]"
+              LSFJobOutput = ''
+              if noLSFJobOutput>0:
+                LSFJobOutput = "-o "+outputSamplePath+"/batch_logs_Z.txt "
+              print "Submitting job: "+jobname
+              os.system("bsub -C 0 "+LSFJobOutput+"-u noEmail -q "+batchQueue+" -J "+jobname+" runZanalysis_\${LSB_JOBINDEX}.sh")
+            jobfirst = chunk +1
 
     os.chdir(base_path);
 
