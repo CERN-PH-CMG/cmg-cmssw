@@ -708,7 +708,7 @@ if(runClosureTestLikeLihoodRatio):
         "eval `scramv1 runtime -sh`;"
         "cd -;"
         "source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh;"
-        "root -l -b -q \'ClosureTest_fits_likelihoodratio.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+",\""+os.getcwd()+"\",0,"+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+")\'")
+        "root -l -b -q \'ClosureTest_fits_likelihoodratio.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+",\""+os.getcwd()+"\","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+")\'")
   # proc=subprocess.Popen("ls "+os.getcwd()+"/submit_datacard_*", shell=True, stdout=subprocess.PIPE, )
   # a = proc.communicate()[0].rstrip().split('\n')
   # print a
