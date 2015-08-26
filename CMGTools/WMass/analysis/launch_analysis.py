@@ -65,20 +65,19 @@ useAlsoGenPforSig= 1;
 
 ZMassCentral_MeV = "91188"; # 91.1876
 WMassCentral_MeV = "80398"; # 80.385
-WMassSkipNSteps = "5"; # 15
-etaMuonNSteps = "1"; # 5
-etaMaxMuons = "0.9"; # 0.6, 0.8, 1.2, 1.6, 2.1
+WMassSkipNSteps = "5"; # 15 -- used for next to nothing, at the moment
 
 # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 resubmit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
 # resubmit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 # resubmit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
 
-parallelize = 0;
 useBatch = 0;
 batchQueue = "1nh";
+
 WMassNSteps = "5"; # 60 -- N of mass steps above and below the central
-# WMassNSteps = "0"; # 60
+etaMuonNSteps = "1"; # 5
+etaMaxMuons = "0.9"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
 runWanalysis = 0;
 runZanalysis = 1;
@@ -108,14 +107,6 @@ runZSigBkgFit = 0;
 
 run_Z_MCandDATAcomparisons_stack = 0;
 run_W_MCandDATAcomparisons_stack = 0;
-run_Z_MCandDATAcomparison = 0;
-run_W_MCandDATAcomparison = 0;
-
-run_ZvsWlike_comparisonMC   = 0;
-run_ZvsWlike_comparisonDATA = 0;
-
-runWandZcomparisonMC   = 0;
-runWandZcomparisonDATA = 0;
 
 #######################
 ## OBSOLETE STUFF
@@ -154,6 +145,7 @@ else:
 # if usePhiMETCorr != 0 \
 # or syst_ewk_Alcaraz != 0
 if RecoilCorrVarDiagoParU1orU2fromDATAorMC != 0 \
+or correctToMadgraph !=0 \
 or LHAPDF_reweighting_members !="1" \
 or MuonCorrGlobalScaleNsigma != 0 \
 or MuonCorrKalmanNvarsNsigma != 0 :
@@ -283,9 +275,6 @@ if(use_LHE_weights==0):
 ### FROM THE POWHEG CONFIGURATION FILE ###
 # ZMassCentral_MeV = "91.188"; # 91.1876
 # WMassCentral_MeV = "80419"; # 80385
-
-Zmass_Steps = []
-Wmass_Steps = []
 
 dummy_deltaM_MeV = []
 dummy_deltaM_MeV_central_Index = 0
@@ -426,15 +415,39 @@ if(runWanalysis or runZanalysis):
     # Edit template
     os.system("sh "+base_path+"/utils/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMuonNSteps+" \""+etaMaxMuons+"\" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(WlikeCharge)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrKalmanNparameters)+" "+"JobOutputs/"+outfolder_name+"/common.h")
 
-  counter=0
+  print ""
+
+  os.chdir(base_path+"/JobOutputs/"+outfolder_name);
+  code_dir = base_path + "/AnalysisCode/"
+
+  ### Compiling run?analysis.o (if needed)
+
+  if runWanalysis and (recreateSubPrograms or not file_exists_and_is_not_empty("runWanalysis.o")):
+    # Copy Wanalysis.C in the dest folder (it has some parameters)
+    shutil.copyfile(code_dir+"/Wanalysis.C", "Wanalysis.C")
+    if(useLHAPDF):
+      print("c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
+      os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
+    else:
+      print("c++ -O2 -o runWanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
+      os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"common_stuff.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
+
+  if runZanalysis and (recreateSubPrograms or not file_exists_and_is_not_empty("runZanalysis.o")):
+    # Copy Zanalysis.C in the dest folder (it has some parameters)
+    shutil.copyfile(code_dir+"/Zanalysis.C", "Zanalysis.C")
+    if(useLHAPDF):
+      print("c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags`  -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+      os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+    else:
+      print("c++ -O2 -o runZanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+      os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+  
   for i in range(0, nsamples):
 
     if (resubmit_sample!=""):
       if not sample[i] in resubmit_sample:
         print "skipping",sample[i],"\twhich is not in {",resubmit_sample,"}"
         continue
-
-    counter=counter+1
 
     if(IS_MC_CLOSURE_TEST and (sample[i]!="WJetsMadSig" and sample[i]!="DYJetsPow" and sample[i]!="DYJetsMadSig")):
       continue; # TEMPORARY
@@ -485,36 +498,19 @@ if(runWanalysis or runZanalysis):
     if not os.path.exists(outputSamplePath):
       os.makedirs(outputSamplePath)
 
-    os.chdir(base_path+"/JobOutputs/"+outfolder_name);
-    code_dir = base_path + "/AnalysisCode/"
-
     if(runWanalysis):
-
-      if counter==1:
-        if recreateSubPrograms or not file_exists_and_is_not_empty("runWanalysis.o"):
-          # Copy Wanalysis.C in the dest folder (it has some parameters)
-          shutil.copyfile(code_dir+"/Wanalysis.C", "Wanalysis.C")
-          if(useLHAPDF):
-            print("c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
-            os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
-          else:
-            print("c++ -O2 -o runWanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
-            os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"common_stuff.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
-
-      print ""
-      # Run it in the code dir to have all the relative paths work
-      os.chdir(code_dir)
 
       wstring="\""+WfileDATA+"\","+str(WfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(MuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(0)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])
 
       line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o -1,0,0,"+wstring).read()
       nEntries = [int(s) for s in line.split() if s.isdigit()][0]
 
-      if not parallelize:
+      if not useBatch:
+        os.chdir(code_dir)
         os.system(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o 0,0,"+str(nEntries)+","+wstring)
       else:
+        jobfirst = 1
         nevents = 2e5
-        # if (("DYJetsMadSig" in sample[i]  or "DYJetsPow" in sample[i]) and float(LHAPDF_reweighting_members)>1):
         # if ("WJetsMadSig" in sample[i]  or "WJetsPow" in sample[i]):
           # nevents = 3e4
         if ("DATA" in sample[i]):
@@ -529,70 +525,57 @@ if(runWanalysis or runZanalysis):
         text_file.write(str(nChuncks-1))
         text_file.close()
 
-        # Create script if needed
-        if useBatch and (recreateSubPrograms>0 or not file_exists_and_is_not_empty("runWanalysis.sh")):
-          text_file = open("runWanalysis.sh", "w")
-          text_file.write("# x=$1; ev_ini=$2; ev_fin=$3\n")
-          text_file.write("cd "+code_dir+"\n")
-          text_file.write("eval `scramv1 runtime -sh`\n")
-          text_file.write("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh \n")
-          text_file.write(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o ${1},${2},${3},"+wstring)
-          text_file.close()
-          os.system("chmod 755 runWanalysis.sh")
-
         print "nChuncks ",nChuncks-1
-        if useBatch or (nChuncks>2  and (("WJetsMadSig" in sample[i]  or "WJetsPow" in sample[i]) or ("DATA" in sample[i]) or (("TTJets" in sample[i]) and WMassNSteps=="0"))):
-          for x in xrange(1, nChuncks):
-            ev_ini= int(nevents*(x-1))
-            ev_fin= int(nevents*(x)-1)
-            if (x==nChuncks-1):
-              ev_fin= nEntries
-            print x,ev_ini,ev_fin
-            if not file_exists_and_is_not_empty("Wanalysis_chunk"+str(x)+".root"):
-              if(not useBatch):
-                os.chdir(code_dir)
-                os.system(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+wstring+" > "+outputSamplePath+"Wlog_"+str(x)+".log 2>&1 &")
-                os.system("sleep 3")
-              else:
-                LSFJobOutput = ''
-                if noLSFJobOutput>0:
-                  #LSFJobOutput = '-o /dev/null'
-                  LSFJobOutput = "-o "+outputSamplePath+"/batch_logs_W.txt"
-                jobname = "Wanalysis_"+outfolder_name+"_"+sample[i]+"_"+str(x)
-                print "Submitting job: "+jobname
-                os.system("bsub -C 0 "+LSFJobOutput+" -u pippo123 -q "+batchQueue+" -J "+jobname+" runWanalysis.sh "+str(x)+" "+str(ev_ini)+" "+str(ev_fin))
-                os.system("usleep 10000");
-        else:
-          os.system(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o 0,0,"+str(nEntries)+","+wstring+" > "+outputSamplePath+"Wlog.log 2>&1 &")
-          os.system("sleep 3");
-
-        os.chdir(code_dir)
+        for chunk in xrange(1, nChuncks):
+          ev_ini= int(nevents*(chunk-1))
+          ev_fin= int(nevents*(chunk)-1)
+          if (chunk==nChuncks-1):
+            ev_fin= nEntries
+          print chunk,ev_ini,ev_fin
+          if not file_exists_and_is_not_empty("Wanalysis_chunk"+str(chunk)+".root"):
+            # Create script if needed
+            if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runWanalysis.sh"):
+              text_file = open("runWanalysis_"+str(chunk)+".sh", "w")
+              text_file.write("cd "+code_dir+"\n")
+              text_file.write("eval `scramv1 runtime -sh`\n")
+              text_file.write("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh \n")
+              text_file.write(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o "+str(chunk)+","+str(ev_ini)+","+str(ev_fin)+","+wstring)
+              text_file.close()
+              os.system("chmod 755 runWanalysis.sh")
+            # Send array if we reached maximum capacity (1000) or last chunk
+            if chunk-jobfirst == 999 or chunk == nChuncks-1:
+              joblist = str(jobfirst)+"-"+str(chunk)
+              jobname = "Wanalysis_"+outfolder_name+"_"+sample[i]+"["+joblist+"]"
+              LSFJobOutput = ''
+              if noLSFJobOutput>0:
+                LSFJobOutput = "-o "+outputSamplePath+"/batch_logs_W.txt "
+              print "Submitting job: "+jobname
+              os.system("bsub -C 0 "+LSFJobOutput+"-u noEmail -q "+batchQueue+" -J "+jobname+" runWanalysis_\${LSB_JOBINDEX}.sh")
+              jobfirst = chunk +1
+          else:
+            # Send array if there is a block waiting
+            if chunk - jobfirst > 0:
+              joblist = str(jobfirst)+"-"+str(chunk-1)
+              jobname = "Wanalysis_"+outfolder_name+"_"+sample[i]+"["+joblist+"]"
+              LSFJobOutput = ''
+              if noLSFJobOutput>0:
+                LSFJobOutput = "-o "+outputSamplePath+"/batch_logs_W.txt "
+              print "Submitting job: "+jobname
+              os.system("bsub -C 0 "+LSFJobOutput+"-u noEmail -q "+batchQueue+" -J "+jobname+" runWanalysis_\${LSB_JOBINDEX}.sh")
+            jobfirst = chunk +1
 
     if(runZanalysis):
-
-      if counter==1:
-        if recreateSubPrograms or not file_exists_and_is_not_empty("runZanalysis.o"):
-          # Copy Zanalysis.C in the dest folder (it has some parameters)
-          shutil.copyfile(code_dir+"/Zanalysis.C", "Zanalysis.C")
-          if(useLHAPDF):
-            print("c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags`  -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
-            os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
-          else:
-            print("c++ -O2 -o runZanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
-            os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
-
-      print ""
-      # Run it in the code dir to have all the relative paths work
-      os.chdir(code_dir)
 
       zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(MuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(0)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(correctToMadgraph)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])
 
       line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o -1,0,0,"+zstring).read();
       nEntries = [int(s) for s in line.split() if s.isdigit()][0]
 
-      if not parallelize:
+      if not useBatch:
+        os.chdir(code_dir)
         os.system(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o 0,0,"+str(nEntries)+","+zstring)
       else:
+        jobfirst = 1
         nevents = 2e5
         if ("DYJetsMadSig" in sample[i]  or "DYJetsPow" in sample[i]):
           nevents = 3e4
@@ -608,44 +591,44 @@ if(runWanalysis or runZanalysis):
         text_file.write(str(nChuncks-1))
         text_file.close()
 
-        # Create script if needed
-        if useBatch and (recreateSubPrograms>0 or not file_exists_and_is_not_empty("runZanalysis.sh")):
-          text_file = open("runZanalysis.sh", "w")
-          text_file.write("# x=$1; ev_ini=$2; ev_fin=$3\n")
-          text_file.write("cd "+code_dir+"\n")
-          text_file.write("eval `scramv1 runtime -sh`\n")
-          text_file.write("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh \n")
-          text_file.write(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o ${1},${2},${3},"+zstring)
-          text_file.close()
-          os.system("chmod 755 runZanalysis.sh")
-
         print "nChuncks ",nChuncks-1
-        if useBatch or (nChuncks>2  and (("DYJetsPow" in sample[i] or "DYJetsMadSig" in sample[i]) or ("DATA" in sample[i]))):
-          for x in xrange(1, nChuncks):
-            ev_ini= int(nevents*(x-1))
-            ev_fin= int(nevents*(x)-1)
-            if (x==nChuncks-1):
-              ev_fin= nEntries
-            print x,ev_ini,ev_fin
-            if not file_exists_and_is_not_empty("Zanalysis_chunk"+str(x)+".root"):
-              if(not useBatch):
-                os.chdir(code_dir)
-                os.system(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o "+str(x)+","+str(ev_ini)+","+str(ev_fin)+","+zstring+" > "+outputSamplePath+"Zlog_"+str(x)+".log 2>&1 &")
-                os.system("sleep 3");
-              else:
-                LSFJobOutput = ''
-                if noLSFJobOutput>0:
-                  #LSFJobOutput = '-o /dev/null'
-                  LSFJobOutput = "-o "+outputSamplePath+"/batch_logs_Z.txt"
-                jobname = "Zanalysis_"+outfolder_name+"_"+sample[i]+"_"+str(x)
-                print "Submitting job: "+jobname
-                os.system("bsub -C 0 "+LSFJobOutput+" -u pippo123 -q "+batchQueue+" -J "+jobname+" runZanalysis.sh "+str(x)+" "+str(ev_ini)+" "+str(ev_fin))
-                os.system("usleep 10000");
-        else:
-          os.system(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o 0,0,"+str(nEntries)+","+zstring+" > "+outputSamplePath+"Zlog.log 2>&1 &")
-          os.system("sleep 3");
-
-        os.chdir(code_dir)
+        for chunk in xrange(1, nChuncks):
+          ev_ini= int(nevents*(chunk-1))
+          ev_fin= int(nevents*(chunk)-1)
+          if (chunk==nChuncks-1):
+            ev_fin= nEntries
+          print chunk,ev_ini,ev_fin
+          if not file_exists_and_is_not_empty("Zanalysis_chunk"+str(chunk)+".root"):
+            # Create scripts if needed
+            if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runZanalysis_"+str(chunk)+".sh"):
+              text_file = open("runZanalysis_"+str(chunk)+".sh", "w")
+              text_file.write("cd "+code_dir+"\n")
+              text_file.write("eval `scramv1 runtime -sh`\n")
+              text_file.write("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh \n")
+              text_file.write(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o "+str(chunk)+","+str(ev_ini)+","+str(ev_fin)+","+zstring)
+              text_file.close()
+              os.system("chmod 755 runZanalysis_"+str(chunk)+".sh")
+            # Send array if we reached maximum capacity (1000) or last chunk
+            if chunk-jobfirst == 999 or chunk == nChuncks-1:
+              joblist = str(jobfirst)+"-"+str(chunk)
+              jobname = "Zanalysis_"+outfolder_name+"_"+sample[i]+"["+joblist+"]"
+              LSFJobOutput = ''
+              if noLSFJobOutput>0:
+                LSFJobOutput = "-o "+outputSamplePath+"/batch_logs_Z.txt "
+              print "Submitting job: "+jobname
+              os.system("bsub -C 0 "+LSFJobOutput+"-u noEmail -q "+batchQueue+" -J "+jobname+" runZanalysis_\${LSB_JOBINDEX}.sh")
+              jobfirst = chunk +1
+          else:
+            # Send array if there is a block waiting
+            if chunk - jobfirst > 0:
+              joblist = str(jobfirst)+"-"+str(chunk-1)
+              jobname = "Zanalysis_"+outfolder_name+"_"+sample[i]+"["+joblist+"]"
+              LSFJobOutput = ''
+              if noLSFJobOutput>0:
+                LSFJobOutput = "-o "+outputSamplePath+"/batch_logs_Z.txt "
+              print "Submitting job: "+jobname
+              os.system("bsub -C 0 "+LSFJobOutput+"-u noEmail -q "+batchQueue+" -J "+jobname+" runZanalysis_\${LSB_JOBINDEX}.sh")
+            jobfirst = chunk +1
 
     os.chdir(base_path);
 
@@ -704,11 +687,11 @@ if(runClosureTestLikeLihoodRatio):
   print "We are working in:\n" + os.getcwd() + "\n"
   os.system("rm -f "+os.getcwd()+"/ClosureTest_fits_C.*")
   os.system("user=$(whoami);"
-        "cd /afs/cern.ch/work/${user:0:1}/${user}/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;"
-        "eval `scramv1 runtime -sh`;"
-        "cd -;"
-        "source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh;"
-        "root -l -b -q \'ClosureTest_fits_likelihoodratio.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+",\""+os.getcwd()+"\","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+")\'")
+            "cd /afs/cern.ch/work/${user:0:1}/${user}/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462;"
+            "eval `scramv1 runtime -sh`;"
+            "cd -;"
+            "source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh;"
+            "root -l -b -q \'ClosureTest_fits_likelihoodratio.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+",\""+os.getcwd()+"\","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+")\'")
   # proc=subprocess.Popen("ls "+os.getcwd()+"/submit_datacard_*", shell=True, stdout=subprocess.PIPE, )
   # a = proc.communicate()[0].rstrip().split('\n')
   # print a
