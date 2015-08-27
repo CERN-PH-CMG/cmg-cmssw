@@ -5,6 +5,7 @@ import copy
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.HeppyCore.statistics.counter import Counter, Counters
+import PhysicsTools.HeppyCore.framework.config as cfg
 
 # New filter parameters taken from slide 11 of 
 # https://indico.cern.ch/event/433302/contribution/0/attachments/1126451/1608346/2015-07-15_slides_v3.pdf
@@ -21,6 +22,7 @@ class hbheAnalyzer( Analyzer ):
 
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(hbheAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
+        self.IgnoreTS4TS5ifJetInLowBVRegion = cfg_ana.IgnoreTS4TS5ifJetInLowBVRegion
 
     def declareHandles(self):
         super(hbheAnalyzer, self).declareHandles()
@@ -37,7 +39,8 @@ class hbheAnalyzer( Analyzer ):
         event.hbheMaxHPDHits        = self.mchandles['hcalnoise'].product().maxHPDHits()
         event.hbheMaxHPDNoOtherHits = self.mchandles['hcalnoise'].product().maxHPDNoOtherHits()
         event.hbheHasBadRBXTS4TS5   = self.mchandles['hcalnoise'].product().HasBadRBXTS4TS5()
-        event.hbheGoodJetFoundInLowBVRegion = self.mchandles['hcalnoise'].product().goodJetFoundInLowBVRegion()
+        event.hbheGoodJetFoundInLowBVRegion = False
+        if self.IgnoreTS4TS5ifJetInLowBVRegion: event.hbheGoodJetFoundInLowBVRegion = self.mchandles['hcalnoise'].product().goodJetFoundInLowBVRegion()
 
         event.hbheFilterNew = 1
 
@@ -47,3 +50,9 @@ class hbheAnalyzer( Analyzer ):
             event.hbheFilterNew = 0
 
         return True
+
+setattr(hbheAnalyzer,"defaultConfig", cfg.Analyzer(
+        class_object = hbheAnalyzer,
+        IgnoreTS4TS5ifJetInLowBVRegion = False,
+        )
+)

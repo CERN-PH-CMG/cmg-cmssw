@@ -59,9 +59,10 @@ jetAna.doQG = True
 jetAna.jetEta = 4.7
 jetAna.jetEtaCentral = 2.5
 jetAna.jetPt = 10.
-#jetAna.mcGT     = "Summer15_50nsV4_MC", # jec corrections
-#jetAna.dataGT   = "Summer15_50nsV4_DATA", # jec corrections
+jetAna.mcGT     = "Summer15_50nsV4_MC" # jec corrections
+jetAna.dataGT   = "Summer15_50nsV4_DATA" # jec corrections
 jetAna.recalibrateJets = True
+jetAna.applyL2L3Residual = 'Data'
 jetAna.jetLepDR = 0.4
 jetAna.smearJets = False
 jetAna.jetGammaDR = 0.4
@@ -179,6 +180,7 @@ ttHZskim = cfg.Analyzer(
 from CMGTools.TTHAnalysis.analyzers.hbheAnalyzer import hbheAnalyzer
 hbheFilterAna = cfg.Analyzer(
     hbheAnalyzer, name = 'hbheAnalyzer',
+    IgnoreTS4TS5ifJetInLowBVRegion=False,
 )
 
 
