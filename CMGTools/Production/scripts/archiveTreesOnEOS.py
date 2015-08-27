@@ -5,8 +5,24 @@ import CMGTools.Production.eostools as eostools
 from optparse import OptionParser
 
 if __name__ == "__main__":
-	
-	parser = OptionParser(usage="%prog localdir remoteEOSdir")
+
+	usage="""%prog [options] localdir remoteEOSdir
+
+# This script can be used to archive the flat trees produced by a module to EOS.
+#
+# If the trees are in mybasedir/TREE_PRODUCTION_XYZ/myTreeProducer/tree.root,
+# you should navigate to mybasedir and execute from there:
+# archiveTreesOnEOS.py -t myTreeProducer TREE_PRODUCTION_XYZ /eos/cms/store/user/myusername/mytreesdirectory
+#
+# The friend tree files of the format mybasedir/TREE_PRODUCTION_XYZ/somename/*evVarFriend* are also archived.
+# See the options for customization of the file name format.
+#
+# This script will not erase the local trees, but you will be provided with the commands to do so.
+# Be sure that the copy was successful before doing so! The checksums of local and remote files are compared to help you.
+
+"""
+
+	parser = OptionParser(usage=usage)
 	parser.add_option("-t", dest="treeproducername", type='string', default="myTreeProducer", help='Name of the tree producer module')
 	parser.add_option("-f", dest="friendtreestring", type='string', default="evVarFriend", help='String identifying friend trees (must be contained in the root file name)')
 	parser.add_option("-T", dest="treename", type='string', default="tree.root", help='Name of the tree file')
@@ -72,5 +88,8 @@ if __name__ == "__main__":
 	if problem:
 		raise RuntimeError, 'CHECKSUM ERROR DETECTED !!!'
 	else:
-		print '\nALL CHECKSUMS OK\n\nIf you want, you can delete the local root files:\n'
-		for task in tocopy: print 'rm %s'%task[0]
+		print '\nALL CHECKSUMS OK\n'
+		print '\nIf you want, you can rename the local root files to force usage of the remote EOS copy for testing:\n'
+		for task in tocopy: print 'mv -n %s %s.transferred'%(task[0],task[0])
+		print '\nIf the testing is successful, you can delete the local root files:\n'
+		for task in tocopy: print 'rm -v %s.transferred'%task[0]
