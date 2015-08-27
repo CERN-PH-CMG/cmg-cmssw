@@ -14,6 +14,7 @@ isZSkim=False
 is1L=False
 isEle = False # default is diMuon
 isEarlyRun = False # to be used for the filters
+is25ns = False
 
 #-------- HOW TO RUN
 
@@ -94,12 +95,19 @@ elif test==13:
     isData = True
     isZSkim=True
     if isEle:
-        selectedComponents = [ DoubleEG_Run2015B ]
+        if is25ns:
+            selectedComponents = [ DoubleEG_Run2015C ]
+        else:
+            selectedComponents = [ DoubleEG_Run2015B ]
     else:
-        selectedComponents = [ DoubleMuon_Run2015B ]
+        if is25ns:
+            selectedComponents = [ DoubleMuon_Run2015C ]
+        else:
+            selectedComponents = [ DoubleMuon_Run2015B ]
+
     for comp in selectedComponents:
 #        comp.splitFactor = 1
-#        comp.files = comp.files[5:10]
+#        comp.files = comp.files[:]
 #        comp.fineSplitFactor = 1
         comp.splitFactor = 1000
         comp.files = comp.files[:]
@@ -107,7 +115,7 @@ elif test==13:
             comp.triggers = triggers_ee
         else:
             comp.triggers = triggers_mumu
-        comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
+        comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-254879_13TeV_PromptReco_Collisions15_JSON.json"
         comp.intLumi= 0.04003
         print comp
 
@@ -119,7 +127,7 @@ elif test==14:
     for comp in selectedComponents:
         comp.splitFactor = 1000
         comp.files = comp.files[:]
-        comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
+        comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-254879_13TeV_PromptReco_Collisions15_JSON.json"
         comp.intLumi= 0.04003
 
 ### this is for the QCDlike
@@ -133,7 +141,7 @@ elif test==15:
     for comp in selectedComponents:
         comp.splitFactor = 1000
         comp.files = comp.files[:]
-        comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
+        comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-254879_13TeV_PromptReco_Collisions15_JSON.json"
         comp.intLumi= 0.04003
         if isEarlyRun:
             comp.run_range=(251027,251585) # in 17july runInJSON: 251244,251251,251252,251561,251562
@@ -150,11 +158,30 @@ elif test==16:
         comp.triggers = triggers_photon30
         comp.splitFactor = 1
         comp.files = comp.files[:]
-        comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
+        comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-254879_13TeV_PromptReco_Collisions15_JSON.json"
         comp.intLumi= 0.04003
 
 
-# ------------------------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------------------------- #
+    #        --> 25ns here
+
+elif test==23:
+    isData = False
+    isZSkim=True
+    is25ns=True
+    selectedComponents = [ DYJetsToLL_M50 ]
+    for comp in selectedComponents:
+        if isEle:
+            comp.triggers = triggers_ee
+        else:
+            comp.triggers = triggers_mumu
+#        comp.splitFactor = 1
+#        comp.files = comp.files[:1]
+        comp.splitFactor = 1000
+        comp.files = comp.files[:]
+
+    # ------------------------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------------------------- #
 
 from CMGTools.ObjectStudies.analyzers.metCoreModules_cff import *
 
@@ -252,17 +279,24 @@ if getHeppyOption("nofetch"):
 
 
 # -------------------- Running pre-processor
-removeResiduals = False
-
 import subprocess
 if isData:
+    removeResiduals = False
     uncFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
     jecDBFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA.db'
     jecEra    = 'Summer15_50nsV4_DATA'
 else:
-    uncFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
-    jecDBFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_MC.db'
-    jecEra    = 'Summer15_50nsV4_MC'
+    if not is25ns:
+        removeResiduals = False
+        uncFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_MC_UncertaintySources_AK4PFchs.txt'
+        jecDBFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_MC.db'
+        jecEra    = 'Summer15_50nsV4_MC'
+    else:
+        removeResiduals = True
+        uncFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_25nsV2_MC_UncertaintySources_AK4PFchs.txt'
+        jecDBFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_25nsV2_MC.db'
+        jecEra    = 'Summer15_25nsV2_MC'
+
 preprocessorFile = "$CMSSW_BASE/tmp/MetType1_jec_%s.py"%(jecEra)
 extraArgs=[]
 if isData:
