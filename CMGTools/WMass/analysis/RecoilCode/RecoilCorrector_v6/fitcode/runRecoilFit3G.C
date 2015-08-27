@@ -3363,15 +3363,17 @@ void constructPDF(double lPar) {
     lRGaus3= new RooGaussian("Rgaus3","Rgaus3",lRXVar,lR1MeanLarge,lR3Sigma);
     //  lRGaus3= new RooGaussian("Rgaus3","Rgaus3",lRXVar,lR1MeanVeryLarge,lR3Sigma);
 
+    /*
     // defaults
     lR1Frac= new RooFormulaVar("R1frac","@0",RooArgSet(lRAFrac));
     lRFrac= new RooFormulaVar("Rfrac"  ,"(-(-@0*@1+@0*@3-@3+1)/((@0-1)*(@2-@3)))",RooArgSet(*lR1Frac,lR1Sigma,lR2Sigma,lR3Sigma)); 
-    
-    /*
-    lR1Frac= new RooFormulaVar("R1frac","@0",RooArgSet(lRAFrac));
-    if(lPar==fU1) lRFrac= new RooFormulaVar("Rfrac","@0",RooArgSet(lRBFrac));
-    if(lPar!=fU1) lRFrac= new RooFormulaVar("Rfrac"  ,"(-(-@0*@1+@0*@3-@3+1)/((@0-1)*(@2-@3)))",RooArgSet(*lR1Frac,lR1Sigma,lR2Sigma,lR3Sigma));
     */
+    
+    lR1Frac= new RooFormulaVar("R1frac","@0",RooArgSet(lRAFrac));
+    lRFrac= new RooFormulaVar("Rfrac","@0",RooArgSet(lRBFrac));
+    //    if(lPar==fU1) lRFrac= new RooFormulaVar("Rfrac","@0",RooArgSet(lRBFrac));
+    //    if(lPar!=fU1) lRFrac= new RooFormulaVar("Rfrac"  ,"(-(-@0*@1+@0*@3-@3+1)/((@0-1)*(@2-@3)))",RooArgSet(*lR1Frac,lR1Sigma,lR2Sigma,lR3Sigma));
+
     //    RooFormulaVar lR1Frac_("R1frac","@0+@1*@3+@2*@3*@3+@4*@3*@3*@3",RooArgSet(lAFrac,lBFrac,lCFrac,lRPt,lDFrac));
     //    RooFormulaVar lRFrac_("Rfrac"  ,"-(-@0*@1+@0*@3-@3+1)/((@0-1)*(@2-@3))",RooArgSet(lR1Frac,lR1Sigma,lR2Sigma,lR3Sigma)); 
     lRGAdd= new RooAddPdf("RAdd","RAdd",RooArgList(*lRGaus1,*lRGaus2,*lRGaus3),RooArgList(*lR1Frac,*lRFrac),kTRUE);
@@ -3549,9 +3551,14 @@ void constructPDF2d(TF1 * FitSigma1, TF1 * FitSigma2, TF1 * FitSigma3,  TF1 * Fi
   if(do3G) {
     ///<+++++ 3G 
 
+    /*
     // default
     l1Frac= new RooFormulaVar("frac1","@0+@1*@3+@2*@3*@3+@4*@3*@3*@3",RooArgSet(lAFrac,lBFrac,lCFrac,lRPt,lDFrac));
     lFrac= new RooFormulaVar("frac"  ,"(-(-@0*@1+@0*@3-@3+1)/((@0-1)*(@2-@3)))",RooArgSet(*l1Frac,*l1Sigma,*l2Sigma,*l3Sigma));
+    */
+
+    l1Frac= new RooFormulaVar("frac1","@0+@1*@3+@2*@3*@3+@4*@3*@3*@3",RooArgSet(lAFrac,lBFrac,lCFrac,lRPt,lDFrac));
+    lFrac= new RooFormulaVar("frac","@0+@1*@3+@2*@3*@3+@4*@3*@3*@3",RooArgSet(lA1Frac,lB1Frac,lC1Frac,lRPt,lD1Frac));
 
     /*   
     l1Frac= new RooFormulaVar("frac1","@0+@1*@3+@2*@3*@3+@4*@3*@3*@3",RooArgSet(lAFrac,lBFrac,lCFrac,lRPt,lDFrac));
@@ -4552,7 +4559,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   if(do8TeV)  fileName2D += "_8TeV";
   if(doRecoParam) fileName2D += "_doRecoParam";
   if(doLepProjAbsolute) fileName2D += "_doLepProjAbsolute";
-  fileName2D += "_AUG16";
+  fileName2D += "_AUG19";
   fileName2D += ".root";
   
   if(doPrint) {
@@ -4686,22 +4693,17 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   //http://roofit.sourceforge.net/docs/tutorial/intro/roofit_tutorial_intro.pdf
   // RooDataSet - unbinned (weighted & unweighted) but very slow
   // RooDataHist - binned
-  //  std::vector<RooDataSet> lResidVals2D; 
 
-  std::vector<Roo2DKeysPdf> lResidVals2DKeys;
-  std::stringstream pkey; pkey << "Crapsky" << 0;
-  if(lPar==fU1) pkey << "_U1_";
-  if(lPar!=fU1) pkey << "_U2_";
-  pkey << "2D";
-
+  //  std::vector<RooDataSet> lResidVals2D;
   std::vector<RooDataHist> lResidVals2D;
   std::stringstream pSS; pSS << "Crapsky" << 0;
   if(lPar==fU1) pSS << "_U1_";
   if(lPar!=fU1) pSS << "_U2_";
-  pSS << "2D"; RooDataHist lData2D(pSS.str().c_str(),pSS.str().c_str(),RooArgSet(lRXVar,lRPt));
-  //  Roo2DKeysPdf pdf_keys2D(pkey.str().c_str(), pkey.str().c_str(), lRXVar, lRPt, lData2D);
+  pSS << "2D";
 
-  //  pSS << "2D"; RooDataSet *lData2D = new RooDataSet(pSS.str().c_str(),pSS.str().c_str(),RooArgSet(lRXVar,lRPt));
+  RooDataHist lData2D(pSS.str().c_str(),pSS.str().c_str(),RooArgSet(lRXVar,lRPt));
+  //  RooDataSet lData2D(pSS.str().c_str(),pSS.str().c_str(),RooArgSet(lRXVar,lRPt));
+  //  RooDataSet *lData2D = new RooDataSet(pSS.str().c_str(),pSS.str().c_str(),RooArgSet(lRXVar,lRPt));
   //  int lNBins = 10;
   //  int lNBins = 25;
   ///////  int lNBins = 50;
@@ -4741,8 +4743,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     //    lResidVals2D.push_back(wData2D);
     lResidVals2D.push_back(lData2D);
   } else {
-    //    lResidVals2D.push_back(*lData2D);
-    lResidVals2D.push_back(lData2D);
+    //    lResidVals2D.push_back(*lData2D); // RooDataSet
+    lResidVals2D.push_back(lData2D);  // RooDataHist
     //    lResidVals2DKeys.push_back(pdf_keys2D);
   }
 
@@ -4842,7 +4844,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   */
 
   TString fileName2DFIT="file2Dfit_";
-  fileName2DFIT += "AUG16_";
+  fileName2DFIT += "AUG19_";
   if(!fData && (!doPosW && doNegW) && !doBKG) fileName2DFIT += "Wneg";
   if(!fData && (doPosW && !doNegW) && !doBKG) fileName2DFIT += "Wpos";
   if(!fData && (!doPosW && !doNegW) && !doBKG) fileName2DFIT += "Z";
@@ -4925,10 +4927,10 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     }
 
     // HISTOs from dataset (this create both 2D and other projections)
-    //    TH1* hh  = lResidVals2D[0].createHistogram(nameHisto,lRPt,Binning(1000),YVar(lRXVar,Binning(100)));
-    //    if(hh) cout << " ===>>>>> CREATED 2D HISTOGRAM FILE from dataset" << hh << endl;
+    TH1* hh  = lResidVals2D[0].createHistogram(nameHisto,lRPt,Binning(1000),YVar(lRXVar,Binning(100)));
+    if(hh) cout << " ===>>>>> CREATED 2D HISTOGRAM FILE from dataset" << hh << endl;
 
-    //    if(hh) hh->Write();
+    if(hh) hh->Write();
     //    if(hh1_) hh1_->Write();
     //    if(hh2_) hh2_->Write();
     //    if(hh3_) hh3_->Write();
@@ -5128,11 +5130,11 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 	if(fId==1) pKey1 << "_1_";
 	if(fId==2) pKey1 << "_2_";
 	pKey1 << i0;
-	//	cout << "filling keys " << pKey1.str().c_str() << endl;
+       	cout << "filling keys " << pKey1.str().c_str() << endl;
 	RooKeysPdf pdf_keys(pKey1.str().c_str(), pKey1.str().c_str(), lRXVar, lResidVals[i0] , RooKeysPdf::MirrorBoth,2);
 	///      lResidValsKeys.push_back(pdf_keys);
 
-	pdf_keys.plotOn(lFrame1,LineColor(kGray)) ;
+	pdf_keys.plotOn(lFrame1,LineColor(kGray+1)) ;
 
       }
 
@@ -5618,6 +5620,32 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     //    constructPDF2d(lFitS1,lFitS2,lFitS3,lFitFrac,lFitPullMean1,lFitPullMean2,lFitPullMean3,lPar);
     constructPDF2d(lFitS1,lFitS2,lFitS3,lFitFrac,lFitFrac2,lFitPullMean1,lFitPullMean2,lPar);
 
+    /*
+    if(doKeys) {
+
+      TFile f16(rootFileNameFrame.c_str(),"UPDATE");
+      lResidVals2D[0].Write();
+      f16.Write();
+      f16.Close();
+
+      std::stringstream pKey2D;
+      pKey2D << "Keys";
+      if(lPar==fU1) pKey2D << "_U1";
+      if(lPar!=fU1) pKey2D << "_U2";
+      if(fId==1) pKey2D << "_1_";
+      if(fId==2) pKey2D << "_2_";
+      cout << "filling keys " << pKey2D.str().c_str() << endl;
+      //      Roo2DKeysPdf pdf_keys2D(pKey2D.str().c_str(), pKey2D.str().c_str(), lRXVar, lRPt, lResidVals2D[0],RooKeysPdf::MirrorBoth,2);
+      Roo2DKeysPdf pdf_keys2D(pKey2D.str().c_str(), pKey2D.str().c_str(), lRXVar, lRPt, lResidVals2D[0],"av");
+
+      TFile f17(rootFileNameFrame.c_str(),"UPDATE");
+      pdf_keys2D.Write();
+      f17.Write();
+      f17.Close();
+
+    }
+    */
+
     if(fData && doBKG) {
 
       constructPDFbkg2D(lPar);
@@ -5658,15 +5686,15 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     
     f15.Write();
     f15.Close();
-    
-  /*
+
+    /*    
     // HISTOs from fitted pdf
     TH1* hh_ = lGAdd->createHistogram(nameHistoFit,lRPt,Binning(100),YVar(lRXVar,Binning(100)));
     TH1* hh1_ = lGaus1->createHistogram(nameHistoFitG1,lRPt,Binning(1000),YVar(lRXVar,Binning(100)));
     TH1* hh2_ = lGaus2->createHistogram(nameHistoFitG2,lRPt,Binning(1000),YVar(lRXVar,Binning(100)));
     TH1* hh3_ = lGaus3->createHistogram(nameHistoFitG3,lRPt,Binning(1000),YVar(lRXVar,Binning(100)));
     if(hh1_ && hh2_ && hh3_) cout << " ===>>>>> CREATED 2D HISTOGRAM FILE from fitted PDF" << hh1_ << " " << hh2_ << " " << hh3_<< endl;
-  */
+    */
 
     cout << "====================" << endl;
     cout << "== FILL correlation coefficient histograms " << endl;
@@ -7058,7 +7086,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
   //  TString name="recoilfits/recoilfit_JAN22_MADtoMAD";
   //  TString name="recoilfits/recoilfit_JAN22_POWtoMAD";
   //  TString name="recoilfits/recoilfit_JAN28";
-  TString name="recoilfits/recoilfit_AUG16";
+  TString name="recoilfits/recoilfit_AUG19";
   if(do8TeV) name +="_8TeV";
   if(doABC) name +="_ABC";
 
@@ -7144,7 +7172,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 			    ////			    "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
 			    //			    "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
 			    //			    "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
-			    "../../recoilfit_AUG16_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
+			    "../../recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
 
       if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,lZMU1RMS3Fit,lZMU1FracFit,lZMU1Mean1Fit, lZMU1Mean2Fit,
 			   lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,lZMU2RMS3Fit,lZMU2FracFit,lZMU2Mean1Fit, lZMU2Mean2Fit,
@@ -7152,7 +7180,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 			   //			   "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 			   //			   "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 			   //			   "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
-			   "../../recoilfit_AUG16_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
+			   "../../recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 
       isMC=false;
   
@@ -7173,7 +7201,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 		 //		 "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 		 //		 "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 		 //		 "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
-		 "../../recoilfit_AUG16_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
+		 "../../recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
       /*
       // POWHEG as DATA closure
       if(!doMad) readRecoil(lZDSumEt,lZDU1Fit,lZDU1RMSSMFit,lZDU1RMS1Fit,lZDU1RMS2Fit,lZDU1RMS3Fit,lZDU1FracFit,lZDU1Mean1Fit, lZDU1Mean2Fit,

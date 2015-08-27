@@ -29,6 +29,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
 
   ofstream outTXTfile,outTXTfile2;
   outTXTfile.open(Form("results.log"));
+  outTXTfile << "# Syst\tStat" << endl;
   outTXTfile2.open(Form("results_chi2.log"));
       
   TObjArray* LineColumns = original.Tokenize(",");
@@ -162,7 +163,6 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                     Form("dummy_datacard_Wmass_Mu%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log ",WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data()) <<endl;
                     if (useBatch) {
                       TString outfilename_str = Form("submit_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.sh",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
-                      gROOT->ProcessLine(".! chmod 755 "+outfilename_str);
                       gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J runMfit "+outfilename_str);
                       gROOT->ProcessLine(".! rm -rf LSF* ");
                     }
@@ -257,7 +257,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                 // text2->Draw();
                 cout << Form("Best M_W%s value with %s = %.1f +/- %.1f MeV,\t DeltaM_W%s = %.1f +/- %.1f MeV,\t chi2/ndof= %.2f",Wlike.Data(),WMass::FitVar_str[k].Data(), ffit[i][k][c]->GetParameter(1), ffit[i][k][c]->GetParameter(2),Wlike.Data(), (ffit[i][k][c]->GetParameter(1) - (massCentral_MeV)), ffit[i][k][c]->GetParameter(2),(ffit[i][k][c]->GetChisquare()/ffit[i][k][c]->GetNDF())) << endl;
                 outTXTfile2 << Form("Best M_W%s %s value with %s = %.1f +/- %.1f MeV,\t DeltaM_W%s = %.1f +/- %.1f MeV,\t chi2/ndof= %.2f",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(), ffit[i][k][c]->GetParameter(1), ffit[i][k][c]->GetParameter(2),Wlike.Data(), (ffit[i][k][c]->GetParameter(1) - (massCentral_MeV)), ffit[i][k][c]->GetParameter(2),(ffit[i][k][c]->GetChisquare()/ffit[i][k][c]->GetNDF())) << endl;
-                outTXTfile << Form("%.1f\t +/-\t %.1f",(ffit[i][k][c]->GetParameter(1) - (massCentral_MeV)), TMath::Abs(ffit[i][k][c]->GetParameter(2))) << endl;
+                outTXTfile << Form("%.2g\t%.2g",(ffit[i][k][c]->GetParameter(1) - (massCentral_MeV)), TMath::Abs(ffit[i][k][c]->GetParameter(2))) << endl;
                 // cout << "Best chi2 ratio value = " << ffit[i][k]->GetParameter(0) << endl;
                 // cout << "Measured mass points chi2 min = " << chi2min << " max = " << chi2max << endl;
                 
@@ -421,11 +421,15 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
     }
       
       fout->Write();
-      
       fout->Delete();
   }
   
-  if(some_fit_failed) cout << "\nTHERE WERE SOME FAILED FITS, WHICH HAVE BEEN RESUBMITTED. RUN AGAIN THE MERGING STEP WHEN THEY FINISH" << endl;
+  if(some_fit_failed) {
+    cout << "\nTHERE WERE SOME FAILED FITS, ";
+    if(useBatch) cout << "WHICH HAVE BEEN RESUBMITTED.";
+    else cout << "RERUN THEM MANUALLY.";
+    cout << endl << "RUN AGAIN THE MERGING STEP WHEN THEY FINISH" << endl;
+  }
   // outTXTfile.Close();
   // outTXTfile2.Close();
 }
