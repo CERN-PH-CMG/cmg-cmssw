@@ -51,6 +51,7 @@ triggerFlagsAna = cfg.Analyzer(
 eventFlagsAna = cfg.Analyzer(
     TriggerBitAnalyzer, name="EventFlags",
     processName = 'PAT',
+    fallbackProcessName = 'RECO',
     outprefix   = 'Flag',
     triggerBits = {
         "HBHENoiseFilter" : [ "Flag_HBHENoiseFilter" ],
@@ -156,7 +157,7 @@ lepAna = cfg.Analyzer(
     inclusive_electron_dz  = 1.0,
     inclusive_electron_lostHits = 5.0,
     # veto electron selection
-    loose_electron_id     = "POG_Cuts_ID_PHYS14_25ns_v2_ConvVetoDxyDz_Veto_full5x5",
+    loose_electron_id     = "POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Veto_full5x5",
     loose_electron_pt     = 10,
     loose_electron_eta    = 2.5,
     loose_electron_dxy    = 0.5,
@@ -167,8 +168,8 @@ lepAna = cfg.Analyzer(
     mu_isoCorr = "deltaBeta" ,
     mu_effectiveAreas = "Phys14_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1')
     # electron isolation correction method (can be "rhoArea" or "deltaBeta")
-    ele_isoCorr = "deltaBeta" ,
-    el_effectiveAreas = "Phys14_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1')
+    ele_isoCorr = "rhoArea" ,
+    el_effectiveAreas = "Spring15_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1' or 'Spring15_25ns_v1' or 'Spring15_50ns_v1')
     ele_tightId = "Cuts_2012" ,
     # Mini-isolation, with pT dependent cone: will fill in the miniRelIso, miniRelIsoCharged, miniRelIsoNeutral variables of the leptons (see https://indico.cern.ch/event/368826/ )
     doMiniIsolation = False, # off by default since it requires access to all PFCandidates 
@@ -292,9 +293,11 @@ jetAna = cfg.Analyzer(
     minLepPt = 10,
     relaxJetId = False,  
     doPuId = True, # Not commissioned in 7.0.X, use the Run1 training for the time being
-    recalibrateJets = "MC", # True, False, 'MC', 'Data'
+    recalibrateJets = True, # "MC", # True, False, 'MC', 'Data'
+    applyL2L3Residual = True, # Switch to 'Data' when they will become available for Data
     recalibrationType = "AK4PFchs",
-    mcGT     = "MCRUN2_74_V9",
+    mcGT     = "Summer15_50nsV4_MC",
+    dataGT   = "Summer15_50nsV4_DATA",
     jecPath = "%s/src/CMGTools/RootTools/data/jec/" % os.environ['CMSSW_BASE'],
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     addJECShifts = False, # if true, add  "corr", "corrJECUp", and "corrJECDown" for each jet (requires uncertainties to be available!)
@@ -305,7 +308,8 @@ jetAna = cfg.Analyzer(
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
     doQG = True,
-    cleanGenJetsFromPhoton = False
+    cleanGenJetsFromPhoton = False,
+    collectionPostFix = ""
     )
 
 ## Fat Jets Analyzer (generic)
@@ -315,6 +319,7 @@ ttHFatJetAna = cfg.Analyzer(
     jetCol = 'slimmedJetsAK8',
     jetPt = 100.,
     jetEta = 2.4,
+    jetLepDR = 0.4,
     # v--- not implemented for AK8
     #jetLepDR = 0.4,
     #minLepPt = 10,
@@ -330,6 +335,7 @@ ttHFatJetAna = cfg.Analyzer(
 from CMGTools.TTHAnalysis.analyzers.ttHSVAnalyzer import ttHSVAnalyzer
 ttHSVAna = cfg.Analyzer(
     ttHSVAnalyzer, name="ttHSVAnalyzer",
+    do_mc_match = True,
 )
 
 # Secondary vertex analyzer
@@ -364,6 +370,7 @@ ttHCoreEventAna = cfg.Analyzer(
     maxLeps = 4, ## leptons to consider
     mhtForBiasedDPhi = "mhtJet40jvec",
     jetForBiasedDPhi = "cleanJets",
+    jetPt = 40.,
     )
 
 # Core sequence of all common modules
