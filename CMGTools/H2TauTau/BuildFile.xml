@@ -9,6 +9,7 @@
 <use name="DataFormats/PatCandidates"/>
 <use name="PhysicsTools/FWLite"/>
 <use name="TauAnalysis/SVfitStandalone"/>
+<use name="SimDataFormats/GeneratorProducts"/>
 <export>
   <lib   name="1"/>
 </export>

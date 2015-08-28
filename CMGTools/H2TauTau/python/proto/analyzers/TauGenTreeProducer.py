@@ -78,7 +78,7 @@ class TauGenTreeProducer(H2TauTauTreeProducerBase):
             self.fill(self.tree, 'tau{i}_gen_decayMode'.format(i=n_gen_tau+1), tauDecayModes.genDecayModeInt([d for d in TauGenTreeProducer.finalDaughters(gen_tau) if abs(d.pdgId()) not in [12, 14, 16]]))
 
             for tau in event.selectedTaus:
-                if tau.mcTau == gen_tau:
+                if tau.genp == gen_tau:
                     # import pdb; pdb.set_trace()
                     self.fillTau(self.tree, 'tau{i}'.format(i=n_gen_tau+1), tau)
                     # if tau.genJet():

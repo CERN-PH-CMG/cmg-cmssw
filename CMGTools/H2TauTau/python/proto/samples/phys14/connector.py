@@ -18,7 +18,7 @@ class httConnector(object):
 
     def __init__(self, tier, user, pattern, triggers,
                  production=False, splitFactor=10e4,
-                 fineSplitFactor=4, cache=True, verbose=False):
+                 fineSplitFactor=1, cache=True, verbose=False):
         ''' '''
         if tier.startswith('%'):
             self.tier = tier
@@ -35,7 +35,7 @@ class httConnector(object):
         self.homedir         = os.getenv('HOME')
         self.mc_dict         = {}
         self.MC_list         = []
-        self.aliases         = aliases =  {
+        self.aliases         = {
                                           '/GluGluToHToTauTau.*Phys14DR.*'            : 'HiggsGGH'         ,
                                           '/VBF_HToTauTau.*Phys14DR.*'                : 'HiggsVBF'         ,
                                           '/DYJetsToLL.*Phys14DR.*'                   : 'DYJets'           ,
@@ -98,6 +98,8 @@ class httConnector(object):
             self.connect_by_db_()
 
         self.pruneSampleList_()
+        for sample in self.MC_list:
+            sample.splitFactor = splitFactor(sample, self.splitFactor)
 
     def connect_by_db_(self):
         ''' '''

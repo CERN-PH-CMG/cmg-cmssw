@@ -20,13 +20,14 @@ from CMGTools.H2TauTau.htt_ntuple_base_cff import commonSequence, genAna, dyJets
 
 # production = True run on batch, production = False (or unset) run locally
 production = getHeppyOption('production')
+production = False
 
 # mu-tau specific configuration settings
 
 # 'Nom', 'Up', 'Down', or None
 shift = None
 syncntuple = True
-computeSVfit = True
+computeSVfit = False
 
 
 # When ready, include weights from CMGTools.H2TauTau.proto.weights.weighttable
@@ -103,7 +104,7 @@ syncTreeProducer = cfg.Analyzer(
     H2TauTauTreeProducerTauMu,
     name='H2TauTauSyncTreeProducerTauMu',
     varStyle='sync',
-    skimFunction='event.isSignal'
+    # skimFunction='event.isSignal'
 )
 
 svfitProducer = cfg.Analyzer(
@@ -120,8 +121,9 @@ svfitProducer = cfg.Analyzer(
 ###################################################
 ### CONNECT SAMPLES TO THEIR ALIASES AND FILES  ###
 ###################################################
-my_connect = httConnector('htt_6mar15_manzoni_nom', 'htautau_group',
-                          '.*root', 'mt', production=production)
+my_connect = httConnector('TAUMU_MINIAOD_SYNCTEST', 'htautau_group',
+                          '.*root', 'mt', production=production, 
+                          splitFactor=1e5)
 my_connect.connect()
 MC_list = my_connect.MC_list
 
@@ -165,12 +167,15 @@ if syncntuple:
 ###################################################
 if not production:
     cache = True
-    comp = my_connect.mc_dict['TTJets']
+    comp = my_connect.mc_dict['HiggsVBF125']
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.fineSplitFactor = 1
-    comp.files = comp.files[:1]
+    # comp.files = comp.files[]
 
+
+# selectedComponents = [my_connect.mc_dict['TTJets']]
+# selectedComponents[0].splitFactor = 200
 
 # the following is declared in case this cfg is used in input to the
 # heppy.py script
