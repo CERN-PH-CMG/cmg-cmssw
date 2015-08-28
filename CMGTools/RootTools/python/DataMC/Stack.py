@@ -34,7 +34,7 @@ class Stack:
         self.integral += hist.Yield( weighted=True )
         if self.totalHist is None:
             self.totalHist = copy.deepcopy( hist )
-        elif hist.layer<1000:
+        else:
             self.totalHist.Add( hist )
         
     def Draw(self, opt='',

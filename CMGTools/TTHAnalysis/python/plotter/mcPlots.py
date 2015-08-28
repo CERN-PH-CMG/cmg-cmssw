@@ -823,6 +823,10 @@ if __name__ == "__main__":
         os.system("mkdir -p "+os.path.dirname(outname))
         if os.path.exists("/afs/cern.ch"): os.system("cp /afs/cern.ch/user/g/gpetrucc/php/index.php "+os.path.dirname(outname))
     print "Will save plots to ",outname
+    fcmd = open(re.sub("\.root$","",outname)+"_command.txt","w")
+    fcmd.write("%s\n\n" % " ".join(sys.argv))
+    fcmd.write("%s\n%s\n" % (args,options))
+    fcmd.close()
     fcut = open(re.sub("\.root$","",outname)+"_cuts.txt","w")
     fcut.write("%s\n" % cuts); fcut.close()
     os.system("cp %s %s " % (args[2], re.sub("\.root$","",outname)+"_plots.txt"))

@@ -3,7 +3,6 @@ import copy
 import ROOT
 
 from CMGTools.H2TauTau.proto.plotter.rootutils import *
-from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
 from plot_H2TauTauDataMC_TauEle_All import *
 

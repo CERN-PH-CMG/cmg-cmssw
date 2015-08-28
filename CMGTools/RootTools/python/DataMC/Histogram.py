@@ -97,11 +97,14 @@ class Histogram( object ):
 
     def AddEntry(self, legend, legendLine=None):
         '''By default the legend entry is set to self.legendLine of the histogram.'''
-        if legendLine == None:
+        if legendLine is None:
             legendLine = self.legendLine
+            if legendLine is None:
+                legendLine = self.name
         opt = 'f'
         if self.weighted.GetFillStyle()==0:
             opt = 'p'
+
         legend.AddEntry(self.obj, legendLine, opt)
 
     def Draw(self, opt='', weighted=True):

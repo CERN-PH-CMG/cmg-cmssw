@@ -8,7 +8,6 @@ from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents
 from CMGTools.H2TauTau.proto.plotter.rootutils import *
 from CMGTools.H2TauTau.proto.plotter.categories_TauMu import *
 from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass_finer, binning_svfitMass, binning_svfitMass_mssm2013, binning_svfitMass_mssm, binning_svfitMass_mssm_nobtag
-from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
 from CMGTools.H2TauTau.proto.plotter.datacards import *
 from CMGTools.H2TauTau.proto.plotter.plotinfo import plots_All, plots_All_sorted_indices
