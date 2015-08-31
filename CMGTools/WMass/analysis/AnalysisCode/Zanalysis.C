@@ -821,14 +821,24 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                     // cout << "Before correction:" << m << " - " << met_trasv << " - " << metphi_trasv << endl;
                     correctorRecoil_Z->reset(WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[2],
                                              WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[3]);
-                    correctorRecoil_Z->CorrectMET3gaus(
-                            met_trasv,metphi_trasv,
-                            ZGen_pt,ZGen_phi,
-                            ZNocorr.Pt(),ZNocorr.Phi(),
-                            u1_recoil, u2_recoil,
-                            RecoilCorrVarDiagoParU1orU2fromDATAorMC, m, RecoilCorrVarDiagoParSigmas,
-                            rapBin,doSingleGauss,1);
-
+                    if( (RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 && rapBin==0) || (RecoilCorrVarDiagoParU1orU2fromDATAorMC > 6 && rapBin==1)){
+                      correctorRecoil_Z->CorrectMET3gaus(
+                              met_trasv,metphi_trasv,
+                              ZGen_pt,ZGen_phi,
+                              ZNocorr.Pt(),ZNocorr.Phi(),
+                              u1_recoil, u2_recoil,
+                              RecoilCorrVarDiagoParU1orU2fromDATAorMC, m, RecoilCorrVarDiagoParSigmas,
+                              rapBin,doSingleGauss,1);
+                    }else{
+                      correctorRecoil_Z->CorrectMET3gaus(
+                              met_trasv,metphi_trasv,
+                              ZGen_pt,ZGen_phi,
+                              ZNocorr.Pt(),ZNocorr.Phi(),
+                              u1_recoil, u2_recoil,
+                              0, 0, 0,
+                              rapBin,doSingleGauss,1);
+                      
+                    }
                     if(first_time_in_the_event && m==m_start && n==0){
                       if(RecoilCorrVarDiagoParU1orU2fromDATAorMC!=0 || m!=0 || RecoilCorrVarDiagoParSigmas!=0){
                         correctorRecoil_Z->reset(WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[2],

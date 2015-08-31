@@ -37,7 +37,7 @@ WlikeCharge = 1; # Charge of the Wlike (+1,-1)
 
 ### RECOIL
 useRecoilCorr = 2; # 0=none, 1=yes, 2=PDFw3gaus
-RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0; # SYST VARIATIONS: 0=NONE, 1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p1, 6= U1 MC p1
+RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0; # SYST VARIATIONS: 0=NONE, RAPBIN 1 (1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p1, 6= U1 MC p1) RAPBIN 2 (7= U1 DATA p1, 8= U1 DATA p2, 9= U2 DATA, 10= U1 MC p1, 11= U1 MC p1, 12= U1 MC p1)
 RecoilCorrVarDiagoParSigmas = 0; # Number of sigmas for recoil syst
 correctToMadgraph = 0; # 0: uses DATA as target - 1: uses Madgraph as target
 
