@@ -62,6 +62,7 @@ IS_MC_CLOSURE_TEST= 0;
 indip_normalization_lumi_MC = 0; # independent normalization of MC in fb-1 (otherwise normalized to DATA)
 intLumi_MC_fb = 81293448/31314/1e3;# data = 4.7499 fb-1 prescaled trigger, 5.1 fb-1 unprescaled; works only if indip_normalization_lumi_MC is TRUE
 useAlsoGenPforSig= 1;
+normalize_MC_to_half_of_the_data = 1 # useful for W-like because we use half of it to calibrate the recoil
 
 ZMassCentral_MeV = "91188"; # 91.1876
 WMassCentral_MeV = "80398"; # 80.385
@@ -470,6 +471,8 @@ if(runWanalysis or runZanalysis):
 
     if indip_normalization_lumi_MC:
       WfileDATA_lumi_SF = intLumi_MC_fb/int_lumi_fb[i]
+    elif int(normalize_MC_to_half_of_the_data)>0 and sample[i]!="DATA":
+      WfileDATA_lumi_SF = (int_lumi_fb[DATA]/2)/int_lumi_fb[i]
     else:
       WfileDATA_lumi_SF = int_lumi_fb[DATA]/int_lumi_fb[i]
 
