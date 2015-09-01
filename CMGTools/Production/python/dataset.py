@@ -30,11 +30,12 @@ def _dasPopen(dbs):
 class BaseDataset( object ):
     
     ### def __init__(self, name, user, pattern='.*root', run_range=None):
-    def __init__(self, name, user, pattern='.*root', run_range=None, dbsInstance=None):
+    def __init__(self, name, user, pattern='.*root', run_range=None, dbsInstance=None, json=None):
         self.name = name
         self.user = user
         self.pattern = pattern
         self.run_range = run_range
+        self.json = json
         ### MM
         self.dbsInstance = dbsInstance
         ### MM
@@ -136,8 +137,8 @@ class BaseDataset( object ):
 
 class CMSDataset( BaseDataset ):
 
-    def __init__(self, name, run_range = None):
-        super(CMSDataset, self).__init__( name, 'CMS', run_range=run_range)
+    def __init__(self, name, run_range = None, json = None):
+        super(CMSDataset, self).__init__( name, 'CMS', run_range=run_range, json=json)
 
     def buildListOfFilesDBS(self, pattern, begin=-1, end=-1):
         #print 'buildListOfFilesDBS',begin,end
@@ -173,8 +174,12 @@ class CMSDataset( BaseDataset ):
             runs = self.run_range
         num_files=self.findPrimaryDatasetNumFiles(self.name.rstrip('/'),
                                                   runs[0],runs[1])
+
         limit = 10000
         if num_files > limit:
+            if self.json is not None:
+                print "WARNING: the json file will be ignored for this data set. (to be implemented)"
+
             num_steps = int(num_files/limit)+1
             self.files = []
             for i in xrange(num_steps):
@@ -182,8 +187,41 @@ class CMSDataset( BaseDataset ):
                                                   i*limit,
                                                   ((i+1)*limit)-1)
                 self.files.extend(DBSFiles)
-        else:
-            self.files = self.buildListOfFilesDBS(pattern)
+            return
+
+        if self.json is not None:
+            import json
+            j = json.load(open(os.path.expandvars(self.json)))
+            certified_runs = [int(r) for r in sorted(j.keys())]
+            if self.run_range is not None:
+                certified_runs = [r for r in certified_runs if self.run_range[0] <= r <= self.run_range[1]]
+            run_range_list = [ ]
+            run_range = None
+            for run in certified_runs:
+                if run_range is None:
+                    run_range = [run, run]
+                elif run == run_range[1] + 1:
+                    run_range[1] = run
+                else:
+                    run_range_list.append(run_range)
+                    run_range = [run, run]
+            else:
+                if run_range is not None:
+                    run_range_list.append(run_range)
+
+            run_range_org = self.run_range
+
+            self.files = []
+            for run_range in run_range_list:
+                self.run_range = run_range
+                DBSFiles = self.buildListOfFilesDBS(pattern)
+                DBSFiles = [f for f in DBSFiles if f not in self.files]
+                self.files.extend(DBSFiles)
+
+            self.run_range = run_range_org
+            return
+
+        self.files = self.buildListOfFilesDBS(pattern)
             
     @staticmethod
     def findPrimaryDatasetEntries(dataset, runmin, runmax):
@@ -444,36 +482,37 @@ def writeDatasetToCache( cachename, dataset ):
     pickle.dump(dataset, pckfile)
 
 def createDataset( user, dataset, pattern, readcache=False, 
-                   basedir = None, run_range = None):
+                   basedir = None, run_range = None, json = None):
     if user == 'CMS' and pattern != ".*root":
         raise RuntimeError, "For 'CMS' datasets, the pattern must be '.*root', while you configured '%s' for %s, %s" % (pattern, name, dataset)
 
-    def cacheFileName(data, user, pattern, run_range):
+    def cacheFileName(data, user, pattern, run_range, json):
         rr = "_run%s_%s" % (run_range[0], run_range[1]) if run_range else ""
-        return '{user}%{name}{rr}%{pattern}.pck'.format( user = user, name = data.replace('/','_'), pattern = pattern, rr=rr)
+        jj = ('%' + os.path.splitext(os.path.basename(json))[0]) if json is not None else ""
+        return '{user}%{name}{rr}%{pattern}{jj}.pck'.format( user = user, name = data.replace('/','_'), pattern = pattern, rr=rr, jj=jj)
 
-    def writeCache(dataset, data, user, pattern, run_range):
-        writeDatasetToCache( cacheFileName(data, user, pattern, run_range), dataset )
+    def writeCache(dataset, data, user, pattern, run_range, json):
+        writeDatasetToCache( cacheFileName(data, user, pattern, run_range, json), dataset )
 
-    def readCache(data, user, pattern, run_range):
-        return getDatasetFromCache( cacheFileName(data, user, pattern, run_range) )
+    def readCache(data, user, pattern, run_range, json):
+        return getDatasetFromCache( cacheFileName(data, user, pattern, run_range, json) )
 
     if readcache:
         try:
-            data = readCache(dataset, user, pattern, run_range)
+            data = readCache(dataset, user, pattern, run_range, json)
         except IOError:
             readcache = False
     if not readcache:
         #print "CreateDataset called: '%s', '%s', '%s', run_range %r" % (user, dataset, pattern, run_range) 
         if user == 'CMS':
-            data = CMSDataset( dataset, run_range = run_range)
+            data = CMSDataset( dataset, run_range = run_range, json = json)
             info = False
         elif user == 'LOCAL':
             data = LocalDataset( dataset, basedir, pattern)
             info = False
         else:
             data = Dataset( dataset, user, pattern)
-        writeCache(data, dataset, user, pattern, run_range)
+        writeCache(data, dataset, user, pattern, run_range, json)
     return data
 
 ### MM
