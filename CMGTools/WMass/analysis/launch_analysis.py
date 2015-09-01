@@ -319,12 +319,6 @@ for i in xrange(-int(WMassNSteps),int(WMassNSteps)+1):
 # print Wmass_values_array
 # print Zmass_values_array
 
-##################################################
-### TEMP: WAITING TO RECOVER THE FULL DATASET ####
-##################################################
-Nevts[DYJetsPow] /= 2
-##################################################
-
 fWana_str = [
   ntuple_basepath+"DATA/WTreeProducer_tree_RecoSkimmed.root",
   ntuple_basepath+"WPlusPOWHEG/WTreeProducer_tree.root",
