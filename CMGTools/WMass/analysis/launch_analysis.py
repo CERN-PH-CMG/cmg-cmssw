@@ -144,16 +144,16 @@ else:
 
 # if usePhiMETCorr != 0 \
 # or syst_ewk_Alcaraz != 0
-if RecoilCorrVarDiagoParU1orU2fromDATAorMC != 0 \
-or correctToMadgraph !=0 \
+if int(RecoilCorrVarDiagoParU1orU2fromDATAorMC) != 0 \
+or int(correctToMadgraph) !=0 \
 or LHAPDF_reweighting_members !="1" \
-or MuonCorrGlobalScaleNsigma != 0 \
-or MuonCorrKalmanNvarsNsigma != 0 :
+or int(MuonCorrGlobalScaleNsigma) != 0 \
+or int(MuonCorrKalmanNvarsNsigma) != 0 :
   print "Computing a systematic: number of mass steps is set to 0\n"
   WMassNSteps = "0"
 
-if RecoilCorrVarDiagoParU1orU2fromDATAorMC != 0 \
-and RecoilCorrVarDiagoParSigmas == 0 :
+if int(RecoilCorrVarDiagoParU1orU2fromDATAorMC) != 0 \
+and int(RecoilCorrVarDiagoParSigmas) == 0 :
   print "ERROR: Selected recoil correction set " + str(RecoilCorrVarDiagoParU1orU2fromDATAorMC) + " with 0 sigmas"
   print "Check the 'RecoilCorrVarDiagoParSigmas' variable"
   sys.exit(1)
@@ -166,13 +166,13 @@ if (WlikeCharge != 1) and (WlikeCharge != -1) :
 # Muon internal (Zanalisys wants them this way)
 MuonCorrNsigma = 0
 MuonCorrKalmanNparameters = 1; # number of muon fit params (1: no eigen var - 45: KalmanCorrectorParam)
-if(MuonCorrGlobalScaleNsigma!=0 and MuonCorrKalmanNvarsNsigma!=0):
+if(int(MuonCorrGlobalScaleNsigma)!=0 and int(MuonCorrKalmanNvarsNsigma)!=0):
   print "Muon global scale and fit eigenvalues cannot be varied simultaneously (with the current Zanalysis.C)"
   sys.exit(1)
-if(MuonCorrGlobalScaleNsigma!=0):
+if(int(MuonCorrGlobalScaleNsigma)!=0):
   MuonCorrKalmanNparameters = 1
   MuonCorrNsigma = MuonCorrGlobalScaleNsigma
-if(MuonCorrKalmanNvarsNsigma!=0):
+if(int(MuonCorrKalmanNvarsNsigma)!=0):
   MuonCorrKalmanNparameters=45
   MuonCorrNsigma = MuonCorrKalmanNvarsNsigma
 
