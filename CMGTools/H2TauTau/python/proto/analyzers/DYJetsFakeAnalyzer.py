@@ -1,8 +1,10 @@
 import ROOT
 
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.HeppyCore.utils.deltar import bestMatch
 
+from PhysicsTools.Heppy.physicsobjects.PhysicsObject import PhysicsObject
 
 class DYJetsFakeAnalyzer(Analyzer):
 
@@ -15,6 +17,13 @@ class DYJetsFakeAnalyzer(Analyzer):
     set the lepton type as leptonType in the configuration.
     In case of VH events, only the Higgs is considered.
     '''
+    def declareHandles(self):
+        super(DYJetsFakeAnalyzer, self).declareHandles()
+
+        self.mchandles['genInfo'] = AutoHandle(('generator','',''), 'GenEventInfoProduct' )
+        self.mchandles['genJets'] = AutoHandle('slimmedGenJets', 'std::vector<reco::GenJet>')
+
+        self.handles['jets'] = AutoHandle('slimmedJets', 'std::vector<pat::Jet>')
 
     def process(self, event):
 
@@ -38,10 +47,21 @@ class DYJetsFakeAnalyzer(Analyzer):
         event.genmet_phi = -99.
         event.geninfo_has_z = False
         event.geninfo_has_w = False
+        event.weight_gen = 1.
+
+        if self.cfg_comp.isData:
+            return True
+
+        self.readCollections(event.input)
+        event.genJets = self.mchandles['genJets'].product()
+        event.jets = self.handles['jets'].product()
+
+        event.weight_gen = self.mchandles['genInfo'].product().weight()
+        event.eventWeight *= event.weight_gen
 
         # gen MET as sum of the neutrino 4-momenta
         neutrinos = [
-            p for p in event.genParticles if abs(p.pdgId()) in (12, 14, 16)]
+            p for p in event.genParticles if abs(p.pdgId()) in (12, 14, 16) and p.status() == 1]
 
         genmet = ROOT.math.XYZTLorentzVectorD()
         for nu in neutrinos:
@@ -69,11 +89,11 @@ class DYJetsFakeAnalyzer(Analyzer):
         self.l1 = event.diLepton.leg1()
         self.l2 = event.diLepton.leg2()
 
-        self.genMatch(event, self.l1)
-        self.genMatch(event, self.l2)
+        self.genMatch(event, self.l1, self.ptSelGentauleps, self.ptSelGenleps, self.ptSelGenSummary)
+        self.genMatch(event, self.l2, self.ptSelGentauleps, self.ptSelGenleps, self.ptSelGenSummary)
 
         if 'Higgs' in self.cfg_comp.name:
-            theZs = [bos for bos in event.genHiggsBosons if bos.pdgId() in (25, 35, 36, 37)]
+            theZs = [bos for bos in event.generatorSummary if abs(bos.pdgId()) in (25, 35, 36, 37)]
         elif 'DY' in self.cfg_comp.name:
             theZs = [bos for bos in event.genVBosons if bos.pdgId() == 23]
         elif 'W' in self.cfg_comp.name:
@@ -114,7 +134,9 @@ class DYJetsFakeAnalyzer(Analyzer):
         if self.cfg_ana.channel == 'em':
             self.isFakeEMu(event)
 
-    def genMatch(self, event, leg, dR=0.3, matchAll=True):
+    @staticmethod
+    def genMatch(event, leg, ptSelGentauleps, ptSelGenleps, ptSelGenSummary, 
+                 dR=0.3, matchAll=True):
 
         dR2 = dR * dR
 
@@ -132,14 +154,14 @@ class DYJetsFakeAnalyzer(Analyzer):
             return
 
         # to generated leptons from taus
-        l1match, dR2best = bestMatch(leg, self.ptSelGentauleps)
+        l1match, dR2best = bestMatch(leg, ptSelGentauleps)
         if dR2best < dR2:
             leg.genp = l1match
             leg.isTauLep = True
             return
 
         # to generated prompt leptons
-        l1match, dR2best = bestMatch(leg, self.ptSelGenleps)
+        l1match, dR2best = bestMatch(leg, ptSelGenleps)
         if dR2best < dR2:
             leg.genp = l1match
             leg.isPromptLep = True
@@ -147,9 +169,43 @@ class DYJetsFakeAnalyzer(Analyzer):
 
         # match with any other relevant gen particle
         if matchAll:
-            l1match, dR2best = bestMatch(leg, self.ptSelGenSummary)
+            l1match, dR2best = bestMatch(leg, ptSelGenSummary)
             if dR2best < dR2:
                 leg.genp = l1match
+                return
+
+            # Ok do one more Pythia 8 trick...
+            # This is to overcome that the GenAnalyzer doesn't like particles
+            # that have daughters with same pdgId and status 71
+            if not hasattr(event, 'pythiaQuarksGluons'):
+                event.pythiaQuarksGluons = []
+                for gen in event.genParticles:
+                    pdg = abs(gen.pdgId())
+                    status = gen.status()
+                    if pdg in [1, 2, 3, 4, 5, 21] and status > 3:
+                        if gen.isMostlyLikePythia6Status3():
+                            event.pythiaQuarksGluons.append(gen)
+
+            
+            l1match, dR2best = bestMatch(leg, event.pythiaQuarksGluons)
+            if dR2best < dR2:
+                leg.genp = l1match
+                return
+
+            # Now this may be a pileup lepton, or one whose ancestor doesn't
+            # appear in the gen summary because it's an unclear case in Pythia 8
+            # To check the latter, match against jets as well...
+            l1match, dR2best = bestMatch(leg, event.genJets)
+            # Check if there's a gen jet with pT > 10 GeV (otherwise it's PU)
+            if dR2best < dR2 and l1match.pt() > 10.:
+                leg.genp = PhysicsObject(l1match)
+
+                jet, dR2best = bestMatch(l1match, event.jets)
+
+                if dR2best < dR2:
+                    leg.genp.detFlavour = jet.partonFlavour()
+                else:
+                    print 'no match found', leg.pt(), leg.eta()
 
 
     def getGenType(self, event):
@@ -207,22 +263,22 @@ class DYJetsFakeAnalyzer(Analyzer):
 
     def isFakeMuTau(self, event):
         '''Define the criteria to label a given mt ZTT event as fake'''
-        if self.l1.isTauHad and self.l2.isTauLep and event.geninfo_mt:
+        if self.l2.isTauHad and self.l1.isTauLep and event.geninfo_mt:
             event.geninfo_fakeid = 0
-        elif self.l1.isPromptLep and self.l2.isPromptLep and event.geninfo_LL:
+        elif self.l2.isPromptLep and self.l1.isPromptLep and event.geninfo_LL:
             event.geninfo_fakeid = 1
-        elif self.l1.isTauLep and self.l2.isTauLep:
+        elif self.l2.isTauLep and self.l1.isTauLep:
             event.geninfo_fakeid = 3
         else:
             event.geninfo_fakeid = 2
 
     def isFakeETau(self, event):
         '''Define the criteria to label a given et ZTT event as fake'''
-        if self.l1.isTauHad and self.l2.isTauLep and event.geninfo_et:
+        if self.l2.isTauHad and self.l1.isTauLep and event.geninfo_et:
             event.geninfo_fakeid = 0
-        elif self.l1.isPromptLep and self.l2.isPromptLep and event.geninfo_LL:
+        elif self.l2.isPromptLep and self.l1.isPromptLep and event.geninfo_LL:
             event.geninfo_fakeid = 1
-        elif self.l1.isTauLep and self.l2.isTauLep:
+        elif self.l2.isTauLep and self.l1.isTauLep:
             event.geninfo_fakeid = 3
         else:
             event.geninfo_fakeid = 2
@@ -235,7 +291,7 @@ class DYJetsFakeAnalyzer(Analyzer):
             event.geninfo_fakeid = 0
         elif self.l1.isPromptLep and self.l2.isPromptLep and event.geninfo_LL:
             event.geninfo_fakeid = 1
-        elif self.l1.isTauHad and self.l2.isTauLep:
+        elif self.l1.isTauHad and self.l2.isTauLep or self.l2.isTauHad and self.l1.isTauLep:
             event.geninfo_fakeid = 3
         else:
             event.geninfo_fakeid = 2

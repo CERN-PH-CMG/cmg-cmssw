@@ -29,6 +29,18 @@ do
     cp -r $i/* $CMSSW_BASE/$i
 done
 
+# copy python files to src/ and create soft links in python/
+# due to problem with PhysicsTools.PatAlgos.tools.jetTools where FWCore.GuiBrowsers.ConfigToolBase looks for a '/src/' string
+# do it only for PatAlgos and PatUtils so far... extend to others if necessary
+if [ -d "$CMSSW_BASE/python/PhysicsTools/PatAlgos" ]; then
+    mv $CMSSW_BASE/python/PhysicsTools/PatAlgos $CMSSW_BASE/src/PhysicsTools/PatAlgos/python
+    ln -s $CMSSW_BASE/src/PhysicsTools/PatAlgos/python $CMSSW_BASE/python/PhysicsTools/PatAlgos
+fi
+if [ -d "$CMSSW_BASE/python/PhysicsTools/PatUtils" ]; then
+    mv $CMSSW_BASE/python/PhysicsTools/PatUtils $CMSSW_BASE/src/PhysicsTools/PatUtils/python
+    ln -s $CMSSW_BASE/src/PhysicsTools/PatUtils/python $CMSSW_BASE/python/PhysicsTools/PatUtils
+fi
+
 #ls -lR 
 
 python heppy_crab_script.py $@

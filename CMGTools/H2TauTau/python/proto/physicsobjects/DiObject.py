@@ -1,12 +1,12 @@
 import math
 
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Muon, Tau
-# from PhysicsTools.Heppy.physicsobjects.HTauTauElectron import HTauTauElectron
 from PhysicsTools.Heppy.physicsobjects.Electron import Electron
 from PhysicsTools.HeppyCore.utils.deltar import deltaR2
 from ROOT import TVector3
 
-class DiObject( object ):
+
+class DiObject(object):
 
     def __init__(self, diobject):
         self.diobject = diobject
@@ -33,15 +33,16 @@ class DiObject( object ):
 
     def __str__(self):
         header = '{cls}: mvis={mvis}, sumpT={sumpt}'.format(
-            cls = self.__class__.__name__,
-            mvis = self.diobject.mass(),
-            sumpt = self.sumPt() )
-        return '\n'.join( [header,
-                           '\t'+str(self.leg1()),
-                           '\t'+str(self.leg2())] )
+            cls=self.__class__.__name__,
+            mvis=self.mass(),
+            sumpt=self.sumPt())
+        return '\n'.join([header,
+                          '\t'+str(self.leg1()),
+                          '\t'+str(self.leg2())])
 
 
-class DiTau( DiObject ):
+class DiTau(DiObject):
+
     def __init__(self, diobject):
         super(DiTau, self).__init__(diobject)
 
@@ -121,102 +122,160 @@ class DiTau( DiObject ):
         pt = cand1.pt() + cand2.pt()
         px = cand1.px() + cand2.px()
         py = cand1.py() + cand2.py()
-        return math.sqrt( pt*pt - px*px - py*py)
+        return math.sqrt(pt*pt - px*px - py*py)
 
     def match(self, genParticles):
-        #TODO review matching algorithm
-        #TODO move matching stuff even higher?
+        # TODO review matching algorithm
+        # TODO move matching stuff even higher?
         # print self
         genTaus = []
         ZorPhotonorHiggs = [22, 23, 25, 35, 36, 37]
         for gen in genParticles:
             # print '\t', gen
-            if abs(gen.pdgId())==15 and gen.mother().pdgId() in ZorPhotonorHiggs:
-                genTaus.append( gen )
+            if abs(gen.pdgId()) == 15 and gen.mother().pdgId() in ZorPhotonorHiggs:
+                genTaus.append(gen)
         # print 'Gen taus: '
         # print '\n'.join( map( str, genTaus ) )
-        if len(genTaus)!=2:
-            #COLIN what about WW, ZZ?
+        if len(genTaus) != 2:
+            # COLIN what about WW, ZZ?
             return (-1, -1)
         else:
-            dR2leg1Min, self.leg1Gen = ( float('inf'), None)
-            dR2leg2Min, self.leg2Gen = ( float('inf'), None)
+            dR2leg1Min, self.leg1Gen = (float('inf'), None)
+            dR2leg2Min, self.leg2Gen = (float('inf'), None)
             for genTau in genTaus:
                 dR2leg1 = deltaR2(self.leg1().eta(), self.leg1().phi(),
-                                  genTau.eta(), genTau.phi() )
+                                  genTau.eta(), genTau.phi())
                 dR2leg2 = deltaR2(self.leg2().eta(), self.leg2().phi(),
-                                  genTau.eta(), genTau.phi() )
-                if dR2leg1 <  dR2leg1Min:
+                                  genTau.eta(), genTau.phi())
+                if dR2leg1 < dR2leg1Min:
                     dR2leg1Min, self.leg1Gen = (dR2leg1, genTau)
-                if dR2leg2 <  dR2leg2Min:
+                if dR2leg2 < dR2leg2Min:
                     dR2leg2Min, self.leg2Gen = (dR2leg2, genTau)
             # print dR2leg1Min, dR2leg2Min
             # print self.leg1Gen
             # print self.leg2Gen
-            self.leg1DeltaR = math.sqrt( dR2leg1Min )
-            self.leg2DeltaR = math.sqrt( dR2leg2Min )
+            self.leg1DeltaR = math.sqrt(dR2leg1Min)
+            self.leg2DeltaR = math.sqrt(dR2leg2Min)
             return (self.leg1DeltaR, self.leg2DeltaR)
 
-class DiMuon( DiTau ):
+
+class DirectDiTau(DiTau):
+
+    ''' A di-tau directly created from input leptons and MET.
+    Does not have SVfit or MVA MET precalculated.
+    '''
+
+    def __init__(self, leg1, leg2, met):
+        self.leg1_ = leg1
+        self.leg2_ = leg2
+        self.met_ = met
+        self.p4_ = (leg1.p4() + leg2.p4())
+
+    def mass(self):
+        return self.p4_.mass()
+
+    def p4(self):
+        return self.p4_
+
+    def leg1(self):
+        return self.leg1_
+
+    def leg2(self):
+        return self.leg2_
+
+    def met(self):
+        return self.met_
+
+    def svfitMass(self):
+        return -999.
+
+    def svfitMassError(self):
+        return -999.
+
+    def svfitPt(self):
+        return -999.
+
+    def svfitPtError(self):
+        return -999.
+
+    def svfitEta(self):
+        return -999.
+
+    def svfitPhi(self):
+        return -999.
+
+    def __getattr__(self, name):
+        '''Redefine getattr to original version.'''
+        raise AttributeError
+
+
+class DiMuon(DiTau):
+
     def __init__(self, diobject):
         super(DiMuon, self).__init__(diobject)
-        self.mu1 = Muon( super(DiMuon, self).leg1() )
-        self.mu2 = Muon( super(DiMuon, self).leg2() )
+        self.mu1 = Muon(super(DiMuon, self).leg1())
+        self.mu2 = Muon(super(DiMuon, self).leg2())
 
     def __str__(self):
         header = 'DiMuon: mvis=%3.2f, sumpT=%3.2f' \
                  % (self.diobject.mass(),
-                    self.sumPt() )
-        return '\n'.join( [header] )
+                    self.sumPt())
+        return '\n'.join([header])
 
 
-class TauMuon( DiTau ):
+class TauMuon(DiTau):
+
     def __init__(self, diobject):
         super(TauMuon, self).__init__(diobject)
-        self.tau = Tau( super(TauMuon, self).leg1() )
-        self.mu = Muon( super(TauMuon, self).leg2() )
-
-    def leg1(self):
-        return self.tau
+        self.tau = Tau(super(TauMuon, self).leg1())
+        self.mu = Muon(super(TauMuon, self).leg2())
 
     def leg2(self):
+        return self.tau
+
+    def leg1(self):
         return self.mu
 
-class TauElectron( DiTau ):
+
+class TauElectron(DiTau):
+
     def __init__(self, diobject):
         super(TauElectron, self).__init__(diobject)
-        self.tau = Tau( super(TauElectron, self).leg1() )
-        self.ele = Electron( super(TauElectron, self).leg2() )
+        self.tau = Tau(super(TauElectron, self).leg1())
+        self.ele = Electron(super(TauElectron, self).leg2())
 #         self.ele = HTauTauElectron( super(TauElectron, self).leg2() )
 
-    def leg1(self):
+    def leg2(self):
         return self.tau
 
-    def leg2(self):
+    def leg1(self):
         return self.ele
 
-class MuonElectron( DiTau ):
+
+class MuonElectron(DiTau):
+
     def __init__(self, diobject):
         super(MuonElectron, self).__init__(diobject)
-        self.mu = Muon( super(MuonElectron, self).leg1() )
-        self.ele = Electron( super(MuonElectron, self).leg2() )
+        self.mu = Muon(super(MuonElectron, self).leg1())
+        self.ele = Electron(super(MuonElectron, self).leg2())
 #         self.ele = HTauTauElectron( super(MuonElectron, self).leg2() )
 
-    def leg1(self):
+    def leg2(self):
         return self.mu
 
-    def leg2(self):
+    def leg1(self):
         return self.ele
 
-class TauTau( DiTau ):
+
+class TauTau(DiTau):
+
     def __init__(self, diobject):
         super(TauTau, self).__init__(diobject)
-        self.tau  = Tau( super(TauTau, self).leg1() )
-        self.tau2 = Tau( super(TauTau, self).leg2() )
+        self.tau = Tau(super(TauTau, self).leg1())
+        self.tau2 = Tau(super(TauTau, self).leg2())
 
     def leg1(self):
         return self.tau
 
     def leg2(self):
         return self.tau2
-

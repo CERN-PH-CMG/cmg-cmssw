@@ -25,7 +25,12 @@ common = [
     'keep recoSuperClusters_*_*_*', # for electron MVA ID
     'keep recoGenJets_slimmedGenJets_*_*',
     'keep *_slimmedSecondaryVertices_*_*',
-    'keep patPackedCandidates_packedPFCandidates__PAT'
+    'keep patPackedCandidates_packedPFCandidates__PAT',
+    'keep *_puppi_*_*',
+    'keep *_particleFlowNoMuonPUPPI_*_*',
+    'keep *_pfMetPuppi_*_*',
+    'keep *_generator_*_*',
+    'keep *_genEvtWeightsCounter_*_*'
     ]
 
 commonDebug = copy.deepcopy(common) 

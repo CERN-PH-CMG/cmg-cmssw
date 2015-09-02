@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 muonPreSelection = cms.EDFilter(
     "PATMuonSelector",
     src = cms.InputTag("slimmedMuons"),
-    cut = cms.string('pt > 20. && abs(eta) < 2.5 && isPFMuon && (isGlobalMuon || isTrackerMuon)') 
+    cut = cms.string('pt > 18. && abs(eta) < 2.5 && isPFMuon && (isGlobalMuon || isTrackerMuon)') 
     )
 
 
