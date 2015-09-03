@@ -3,7 +3,12 @@
 import string, os, shutil, sys, subprocess
 
 def file_exists_and_is_not_empty(fpath):
-  return (os.path.isfile(fpath) and (os.path.getsize(fpath) > 0))
+  if not (os.path.isfile(fpath) and (os.path.getsize(fpath) > 0)): return False
+  if fpath.endswith('.root'):
+    f = ROOT.TFile(fpath)
+    if f.GetNkeys() == 0 or f.TestBit(ROOT.TFile.kRecovered) or f.IsZombie():
+      return False
+  return True
 
 ## ==============================================================
 ## STEERING PARAMETERS
