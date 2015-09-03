@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import string, os, shutil, sys, subprocess
+import string, os, shutil, sys, subprocess, ROOT
 
 def file_exists_and_is_not_empty(fpath):
   if not (os.path.isfile(fpath) and (os.path.getsize(fpath) > 0)): return False
