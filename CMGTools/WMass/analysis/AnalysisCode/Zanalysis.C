@@ -333,8 +333,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // start the event loop
   //------------------------------------------------------
   int cout_freq=TMath::Min(1+(nentries-first_entry)/10,(Long64_t) 25000);
-  // cout_freq=1;
-  // nentries=100;
+  // cout_freq=1; // FOR DEBUGGING PURPOSE
+  // nentries=100; // FOR DEBUGGING PURPOSE
   cout << "couts every " << cout_freq << " events" << endl;
   Long64_t nbytes = 0, nb = 0;
   for(Long64_t jentry=first_entry; jentry<=nentries; jentry++) {
@@ -816,12 +816,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                     // << " m=" << m
                     // << " RecoilCorrVarDiagoParSigmas=" << RecoilCorrVarDiagoParSigmas
                     // << " rapBin=" << rapBin
-                    // << Form("hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,0,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV)
+                    // << Form(" hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,0,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV)
                     // << endl;
                     // cout << "Before correction:" << m << " - " << met_trasv << " - " << metphi_trasv << endl;
                     correctorRecoil_Z->reset(WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[2],
                                              WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[3]);
-                    if( (RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 && rapBin==0) || (RecoilCorrVarDiagoParU1orU2fromDATAorMC > 6 && rapBin==1)){
+                    if( (RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 && rapBin==1) || (RecoilCorrVarDiagoParU1orU2fromDATAorMC > 6 && rapBin==2)){
                       correctorRecoil_Z->CorrectMET3gaus(
                               met_trasv,metphi_trasv,
                               ZGen_pt,ZGen_phi,
@@ -840,7 +840,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                       
                     }
                     if(first_time_in_the_event && m==m_start && n==0){
-                      if(RecoilCorrVarDiagoParU1orU2fromDATAorMC!=0 || m!=0 || RecoilCorrVarDiagoParSigmas!=0){
+                      // cout << "before setting met_trasvCentral "<< RecoilCorrVarDiagoParU1orU2fromDATAorMC<< " " << m << " " << RecoilCorrVarDiagoParSigmas << endl;
+                      if(
+                          (RecoilCorrVarDiagoParU1orU2fromDATAorMC!=0 || m!=0 || RecoilCorrVarDiagoParSigmas!=0)
+                          && ((RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 && rapBin==1) || (RecoilCorrVarDiagoParU1orU2fromDATAorMC > 6 && rapBin==2))
+                        ){
+                        // cout << " setting met_trasvCentral to central" << endl;
                         correctorRecoil_Z->reset(WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[2],
                                                  WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[3]);
                         correctorRecoil_Z->CorrectMET3gaus(
@@ -851,6 +856,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                 0, 0, 0,
                                 rapBin,doSingleGauss,1);
                       }else{
+                        // cout << " met_trasvCentral = met_trasv" << endl;
                         met_trasvCentral    = met_trasv;
                         metphi_trasvCentral = metphi_trasv;
                       }
