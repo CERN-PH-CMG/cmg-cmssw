@@ -2,6 +2,16 @@
 
 import string, os, shutil, sys, subprocess, ROOT
 
+def batch_job_is_running(jobname,chunk):
+  job_running = os.popen("bjobs -w | grep "+jobname).read()
+  job_running = job_running.replace("[","_")
+  job_running = job_running.replace("]","_")
+  jobname = jobname+"_"+chunk+"_"
+  if jobname in job_running:
+    return True
+  else: 
+    return False
+
 def file_exists_and_is_not_empty(fpath):
   if not (os.path.isfile(fpath) and (os.path.getsize(fpath) > 0)): return False
   if fpath.endswith('.root'):
@@ -92,7 +102,7 @@ noLSFJobOutput = 0; # 1: Puts all the batch logs in a single file
 recreateSubPrograms = 0; # 1: Recompiles run?analysis.o and remakes run?analysis.sh
 
 mergeSigEWKbkg = 0;
-removeChunks = 0; # 0: Don't remove chunks after merge - 1: Remove them
+removeChunks = 0; # 0: Don't remove chunks after merge --- 1: Remove them
 
 ## PERFORM W or Z MASS FIT
 fit_W_or_Z = "Z" # "W,Z" or "W" or "Z"
@@ -120,11 +130,11 @@ run_W_MCandDATAcomparisons_stack = 0;
 
 ## OLD FIT
 runPrepareDataCards = 0;     # TEMPLATES ARE IN THE LOCAL FOLDER, PSEUDO-DATA IN THE SYsT FOLDER
-if  (use_PForNoPUorTKmet==0): # 0:PF, 1:NOPU, 2:TK
+if  (int(use_PForNoPUorTKmet)==0): # 0:PF, 1:NOPU, 2:TK
   sysfoldmet="_pfmet";
-elif(use_PForNoPUorTKmet==1): # 0:PF, 1:NOPU, 2:TK
+elif(int(use_PForNoPUorTKmet)==1): # 0:PF, 1:NOPU, 2:TK
   sysfoldmet="_pfnopu";
-elif(use_PForNoPUorTKmet==2): # 0:PF, 1:NOPU, 2:TK
+elif(int(use_PForNoPUorTKmet)==2): # 0:PF, 1:NOPU, 2:TK
   sysfoldmet="_tkmet";
 
 DataCards_systFromFolder=outfolder_prefix+sysfoldmet+"_RochCorr_RecoilCorr_EffHeinerSFCorr_PileupSFCorr" # evaluate systematics wrt folder (or leave it empty)
@@ -152,7 +162,7 @@ else:
 # or syst_ewk_Alcaraz != 0
 if int(RecoilCorrVarDiagoParU1orU2fromDATAorMC) != 0 \
 or int(correctToMadgraph) !=0 \
-or LHAPDF_reweighting_members !="1" \
+or str(LHAPDF_reweighting_members) !="1" \
 or int(MuonCorrGlobalScaleNsigma) != 0 \
 or int(MuonCorrKalmanNvarsNsigma) != 0 :
   print "Computing a systematic: number of mass steps is set to 0\n"
@@ -164,14 +174,14 @@ and int(RecoilCorrVarDiagoParSigmas) == 0 :
   print "Check the 'RecoilCorrVarDiagoParSigmas' variable"
   sys.exit(1)
 
-if (WlikeCharge != 1) and (WlikeCharge != -1) :
+if (int(WlikeCharge) != 1) and (int(WlikeCharge) != -1) :
   print "ERROR: Asked for a Wlike of charge", WlikeCharge
   print "Check the 'WlikeCharge' variable"
   sys.exit(1)
 
 # Muon internal (Zanalisys wants them this way)
 MuonCorrNsigma = 0
-MuonCorrKalmanNparameters = 1; # number of muon fit params (1: no eigen var - 45: KalmanCorrectorParam)
+MuonCorrKalmanNparameters = 1; # number of muon fit params (1: no eigen var --- 45: KalmanCorrectorParam)
 if(int(MuonCorrGlobalScaleNsigma)!=0 and int(MuonCorrKalmanNvarsNsigma)!=0):
   print "Muon global scale and fit eigenvalues cannot be varied simultaneously (with the current Zanalysis.C)"
   sys.exit(1)
@@ -186,71 +196,73 @@ if(int(MuonCorrKalmanNvarsNsigma)!=0):
 
 outfolder_name = outfolder_prefix
 
-if (WlikeCharge == 1):
+if (int(WlikeCharge) == 1):
   outfolder_name+="_muPos"
 else:
   outfolder_name+="_muNeg"
 
-if(use_PForNoPUorTKmet==0): # 0:PF, 1:NOPU, 2:TK
+if(int(use_PForNoPUorTKmet)==0): # 0:PF, 1:NOPU, 2:TK
   outfolder_name+="_pfmet";
-elif(use_PForNoPUorTKmet==1): # 0:PF, 1:NOPU, 2:TK
+elif(int(use_PForNoPUorTKmet)==1): # 0:PF, 1:NOPU, 2:TK
   outfolder_name+="_pfnopu";
-elif(use_PForNoPUorTKmet==2): # 0:PF, 1:NOPU, 2:TK
+elif(int(use_PForNoPUorTKmet)==2): # 0:PF, 1:NOPU, 2:TK
   outfolder_name+="_tkmet";
 
-if(use_LHE_weights==1):
+if(int(use_LHE_weights)==1):
   outfolder_name+="_LHEweights";
 
-if(IS_MC_CLOSURE_TEST==1):
+if(int(IS_MC_CLOSURE_TEST)==1):
   outfolder_name+="_MCclosureTest";
   # useEffSF=0;
   # usePtSF=0;
   # usePileupSF=0;
 
-if(syst_ewk_Alcaraz>-1):
+if(int(syst_ewk_Alcaraz)>-1):
   outfolder_name+="_ewk"+str(syst_ewk_Alcaraz);
 
-if  (useMomentumCorr==1):
+if  (int(useMomentumCorr)==1):
   outfolder_name+="_RochCorr";
-elif(useMomentumCorr==2):
+elif(int(useMomentumCorr)==2):
   outfolder_name+="_MuscleFitCorr";
-elif(useMomentumCorr==3):
+elif(int(useMomentumCorr)==3):
   outfolder_name+="_KalmanCorr";
-elif(useMomentumCorr==4):
+elif(int(useMomentumCorr)==4):
   outfolder_name+="_KalmanCorrParam";
 
-if(useMomentumCorr!=0):
-  if(MuonCorrGlobalScaleNsigma != 0):
+if(int(useMomentumCorr)!=0):
+  if(int(MuonCorrGlobalScaleNsigma) != 0):
     outfolder_name+="_globalScaleSigma"+str(MuonCorrGlobalScaleNsigma)
-  if(MuonCorrKalmanNvarsNsigma != 0):
+  if(int(MuonCorrKalmanNvarsNsigma) != 0):
     outfolder_name+="_KalmanVarsNSigma"+str(MuonCorrKalmanNvarsNsigma)
 
-if(usePhiMETCorr==1):
+if(int(usePhiMETCorr)==1):
   outfolder_name+="_phiMETcorr";
 
-if(useRecoilCorr>0):
+if(int(useRecoilCorr)>0):
   outfolder_name+="_RecoilCorr"+str(useRecoilCorr);
-  if(correctToMadgraph):
+  if(int(correctToMadgraph)):
     outfolder_name+="_toMad";
-  if  (RecoilCorrVarDiagoParU1orU2fromDATAorMC==1):
+  if  (int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)==1):
     outfolder_name+="_U1Datap1";
-  elif(RecoilCorrVarDiagoParU1orU2fromDATAorMC==2):
+  elif(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)==2):
     outfolder_name+="_U1Datap2";
-  elif(RecoilCorrVarDiagoParU1orU2fromDATAorMC==3):
+  elif(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)==3):
     outfolder_name+="_U2Data";
-  elif(RecoilCorrVarDiagoParU1orU2fromDATAorMC==4):
+  elif(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)==4):
     outfolder_name+="_U1MCp1";
-  elif(RecoilCorrVarDiagoParU1orU2fromDATAorMC==5):
+  elif(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)==5):
     outfolder_name+="_U1MCp2";
-  elif(RecoilCorrVarDiagoParU1orU2fromDATAorMC==6):
+  elif(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)==6):
     outfolder_name+="_U2MC";
-  if  (RecoilCorrVarDiagoParSigmas!=0):
+  if  (int(RecoilCorrVarDiagoParSigmas)!=0):
+    if(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)<7): outfolder_name+="_Rap1";
+    else: outfolder_name+="_Rap2";
     outfolder_name+="_RecCorrNSigma_"+str(RecoilCorrVarDiagoParSigmas)
 
-if(useEffSF==1): outfolder_name+="_EffSFCorr";
-if(useEffSF==2): outfolder_name+="_EffHeinerSFCorr";
+if(int(useEffSF)==1): outfolder_name+="_EffSFCorr";
+if(int(useEffSF)==2): outfolder_name+="_EffHeinerSFCorr";
 if(int(usePtSF)!=-1): outfolder_name+="_PtSFCorr"+str(usePtSF);
-if(usePileupSF==1): outfolder_name+="_PileupSFCorr";
+if(int(usePileupSF)==1): outfolder_name+="_PileupSFCorr";
 
 ## END INITIAL CHECKS AND FOLDERNAME BUILDING
 ## ============================================================== #
@@ -274,7 +286,7 @@ gen_mass_value_MeV  =   [  0  ,  80398 ,        80398 ,         80419,          
 contains_LHE_weights =  [  0  ,      1 ,            1 ,             0,                0 ,           1,             0 ,              0 ,        0 ,         0,         0,        0,       0,     0,      0,     0,        0,        0,        0 ];
 nsamples=len(sample);
 
-if(use_LHE_weights==0):
+if(int(use_LHE_weights)==0):
   for i in range(len(contains_LHE_weights)):
     contains_LHE_weights[i] = 0
 
@@ -449,7 +461,7 @@ if(runWanalysis or runZanalysis):
         print "skipping",sample[i],"\twhich is not in {",resubmit_sample,"}"
         continue
 
-    if(IS_MC_CLOSURE_TEST and (sample[i]!="WJetsMadSig" and sample[i]!="DYJetsPow" and sample[i]!="DYJetsMadSig")):
+    if(int(IS_MC_CLOSURE_TEST) and (sample[i]!="WJetsMadSig" and sample[i]!="DYJetsPow" and sample[i]!="DYJetsMadSig")):
       continue; # TEMPORARY
 
     sampleID= "output_"+sample[i];
@@ -459,9 +471,9 @@ if(runWanalysis or runZanalysis):
 
     WfileDATA= fWana_str[i];
     ZfileDATA= fZana_str[i];
-    if( ("WJetsMadSig" in sample[i] or "WJetsPow" in sample[i]) and useAlsoGenPforSig): WfileDATA.replace("_SignalRecoSkimmed","");
+    if( ("WJetsMadSig" in sample[i] or "WJetsPow" in sample[i]) and int(useAlsoGenPforSig)): WfileDATA.replace("_SignalRecoSkimmed","");
     else:
-      if( ("DYJetsPow" in sample[i]  or "DYJetsMadSig" in sample[i]) and useAlsoGenPforSig): ZfileDATA.replace("_SignalRecoSkimmed","");
+      if( ("DYJetsPow" in sample[i]  or "DYJetsMadSig" in sample[i]) and int(useAlsoGenPforSig)): ZfileDATA.replace("_SignalRecoSkimmed","");
 
     if(CS_pb[i] >0): int_lumi_fb[i] = Nevts[i]/CS_pb[i]/1e3;
 
@@ -474,7 +486,7 @@ if(runWanalysis or runZanalysis):
       # WfileDATA_lumi_SF = int_lumi_fb[DATA]/int_lumi_fb[i]
     # if IS_MC_CLOSURE_TEST:
 
-    if indip_normalization_lumi_MC:
+    if int(indip_normalization_lumi_MC):
       WfileDATA_lumi_SF = intLumi_MC_fb/int_lumi_fb[i]
     elif int(normalize_MC_to_half_of_the_data)>0 and sample[i]!="DATA":
       WfileDATA_lumi_SF = (int_lumi_fb[DATA]/2)/int_lumi_fb[i]
@@ -534,9 +546,9 @@ if(runWanalysis or runZanalysis):
           if (chunk==nChuncks-1):
             ev_fin= nEntries
           print chunk,ev_ini,ev_fin
-          if not file_exists_and_is_not_empty("Wanalysis_chunk"+str(chunk)+".root"):
+          if not file_exists_and_is_not_empty("Wanalysis_chunk"+str(chunk)+".root") and not batch_job_is_running("Wanalysis_"+outfolder_name+"_"+sample[i],str(chunk)):
             # Create script if needed
-            if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runWanalysis.sh"):
+            if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runWanalysis_"+str(chunk)+".sh"):
               text_file = open("runWanalysis_"+str(chunk)+".sh", "w")
               text_file.write("cd "+code_dir+"\n")
               text_file.write("eval `scramv1 runtime -sh`\n")
@@ -581,9 +593,9 @@ if(runWanalysis or runZanalysis):
         nevents = 2e5
         if ("DYJetsMadSig" in sample[i]  or "DYJetsPow" in sample[i]):
           nevents = 3e4
-          if useRecoilCorr>0 and RecoilCorrVarDiagoParSigmas!=0:
+          if int(useRecoilCorr)>0 and int(RecoilCorrVarDiagoParSigmas)!=0:
             nevents = nevents/3
-          if (MuonCorrKalmanNvarsNsigma!=0):
+          if (int(MuonCorrKalmanNvarsNsigma)!=0):
             nevents = nevents/3
 
         os.chdir(outputSamplePath)
@@ -600,7 +612,7 @@ if(runWanalysis or runZanalysis):
           if (chunk==nChuncks-1):
             ev_fin= nEntries
           print chunk,ev_ini,ev_fin
-          if not file_exists_and_is_not_empty("Zanalysis_chunk"+str(chunk)+".root"):
+          if not file_exists_and_is_not_empty("Zanalysis_chunk"+str(chunk)+".root") and not batch_job_is_running("Zanalysis_"+outfolder_name+"_"+sample[i],str(chunk)):
             # Create scripts if needed
             if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runZanalysis_"+str(chunk)+".sh"):
               text_file = open("runZanalysis_"+str(chunk)+".sh", "w")
