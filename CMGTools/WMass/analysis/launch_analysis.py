@@ -40,7 +40,7 @@ lhapdf_path="/afs/cern.ch/work/p/perrozzi/private/WMassMC/lhapdf/"
 use_PForNoPUorTKmet = 2; # 0:PF, 1:NOPU, 2:TK
 use_LHE_weights = 0; # 0=no, 1=yes
 usePileupSF = 1; # 0=no, 1=yes
-useEffSF = 2; # 0=no, 1=MuonPOG, 2=Heiner
+useEffSF = 2; # 0=no, 1=MuonPOG, 2=Heiner all, 3=Heiner no tight, 4=Heiner no iso, 5=Heiner no tight subleading mu, 6=Heiner no hlt
 usePtSF = 0; # Boson pT reweighting: -1=none, 0=data, 1...=other options
 
 ### MUON
@@ -260,7 +260,11 @@ if(int(useRecoilCorr)>0):
     outfolder_name+="_RecCorrNSigma_"+str(RecoilCorrVarDiagoParSigmas)
 
 if(int(useEffSF)==1): outfolder_name+="_EffSFCorr";
-if(int(useEffSF)==2): outfolder_name+="_EffHeinerSFCorr";
+if(int(useEffSF)>=2): outfolder_name+="_EffHeinerSFCorr";
+  if(int(useEffSF)==3): outfolder_name+="_noTight";
+  if(int(useEffSF)==4): outfolder_name+="_noIso";
+  if(int(useEffSF)==5): outfolder_name+="_noTightSub";
+  if(int(useEffSF)==6): outfolder_name+="_noHLT";
 if(int(usePtSF)!=-1): outfolder_name+="_PtSFCorr"+str(usePtSF);
 if(int(usePileupSF)==1): outfolder_name+="_PileupSFCorr";
 

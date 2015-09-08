@@ -134,7 +134,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   TH2F *SF_TIGHT_PT10;
   TH3F *SF_ISO05_PT10;
   
-  if(useEffSF==2 && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
+  if(useEffSF>=2 && useEffSF<=6 && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
     
     TFile* finEffSF = new TFile("../utils/MuonEfficiencies_SF_2011_53X_DataMC_Heiner.root"); // used only to build templates
     if(!finEffSF){
@@ -403,6 +403,10 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     //---------------- MUON weight
     // int runopt = r->Rndm()<0.457451 ? 0 : 1;
     double TRG_TIGHT_ISO_muons_SF = 1;
+    double eff_TIGHT_SF = 1;
+    double eff_TIGHT_subleading_SF = 1;
+    double eff_ISO_SF = 1;
+    double eff_TRG_SF = 1;
     // double MuNeg_tight_muon_SF = 1;
 
     costh_HX = -1e10;     phi_HX = -1e10;
@@ -413,13 +417,27 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     if(MuPosGen_pt>0 && MuNegGen_pt>0) ComputeHXVarAndPhiStarEta(muPosGen_status3,muNegGen_status3,true);
     if(MuPos_pt>0 && MuNeg_pt>0) ComputeHXVarAndPhiStarEta(muPosNoCorr,muNegNoCorr,false);
 
-    if(useEffSF==2 && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
-      // TRG_TIGHT_ISO_muons_SF = hEffSF_MuId_eta_2011[runopt]->Eval(MuPos_eta)*hEffSF_Iso_eta_2011[runopt]->Eval(MuPos_eta)*hEffSF_HLT_eta_2011->Eval(MuPos_eta);
-      // MuNeg_tight_muon_SF = hEffSF_MuId_eta_2011[runopt]->Eval(MuNeg_eta)*hEffSF_Iso_eta_2011[runopt]->Eval(MuNeg_eta)*hEffSF_HLT_eta_2011->Eval(MuPos_eta);
-      TRG_TIGHT_ISO_muons_SF = SF_HLT->GetBinContent(SF_HLT->FindBin(1,MuPos_eta,MuPos_pt))
-                           *SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(MuPos_eta,MuPos_pt))
-                           *SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(MuNeg_eta,MuNeg_pt))
-                           *SF_ISO05_PT10->GetBinContent(SF_ISO05_PT10->FindBin(costh_HX,TMath::Abs(phi_HX),ZNocorr.Pt()));
+    if(useEffSF>=2 && useEffSF<=6 && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
+      if(useEffSF==2 || useEffSF!=3){
+        cout << "eff_TIGHT_SF"<<endl;
+        eff_TIGHT_SF            = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt,MuNeg_pt));
+        TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_SF;
+      }
+      if(useEffSF==2 || useEffSF!=4){
+        cout << "eff_ISO_SF"<<endl;
+        eff_ISO_SF              = SF_ISO05_PT10->GetBinContent(SF_ISO05_PT10->FindBin(costh_HX,TMath::Abs(phi_HX),ZNocorr.Pt()));
+        TRG_TIGHT_ISO_muons_SF  *= eff_ISO_SF;
+      }
+      if(useEffSF==2 || useEffSF!=5){
+        cout << "eff_TIGHT_subleading_SF"<<endl;
+        eff_TIGHT_subleading_SF = SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(isChargePos?MuNeg_eta:MuPos_eta,isChargePos?MuNeg_pt:MuPos_pt));
+        TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
+      }
+      if(useEffSF==2 || useEffSF!=6){
+        cout << "eff_TRG_SF"<<endl;
+        eff_TRG_SF              = SF_HLT->GetBinContent(SF_HLT->FindBin(1,isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt,MuNeg_pt));
+        TRG_TIGHT_ISO_muons_SF  *= eff_TRG_SF;
+      }
     }
     // cout << "TRG_TIGHT_ISO_muons_SF= " << TRG_TIGHT_ISO_muons_SF << endl;
 
