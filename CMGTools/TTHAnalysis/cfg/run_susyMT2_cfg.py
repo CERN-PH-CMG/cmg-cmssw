@@ -59,8 +59,10 @@ jetAna.doQG = True
 jetAna.jetEta = 4.7
 jetAna.jetEtaCentral = 2.5
 jetAna.jetPt = 10.
-jetAna.mcGT     = "Summer15_50nsV4_MC" # jec corrections
-jetAna.dataGT   = "Summer15_50nsV4_DATA" # jec corrections
+#jetAna.mcGT     = "Summer15_50nsV4_MC" # jec corrections
+#jetAna.dataGT   = "Summer15_50nsV4_DATA" # jec corrections
+jetAna.mcGT     = "Summer15_25nsV2_MC" # jec corrections
+jetAna.dataGT   = "Summer15_25nsV2_DATA" # jec corrections
 jetAna.recalibrateJets = True
 jetAna.applyL2L3Residual = 'Data'
 jetAna.jetLepDR = 0.4
@@ -304,9 +306,9 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 # choose 2 for full mc production
 # choose 3 for data production
 
-test = 0
-isData = False # will be changed accordingly if chosen to run on data
-doSpecialSettingsForMECCA = 1 # set to 1 for comparisons with americans
+test = 3
+isData = True # will be changed accordingly if chosen to run on data
+doSpecialSettingsForMECCA = 0 # set to 1 for comparisons with americans
 
 if test==0:
     # ------------------------------------------------------------------------------------------- #
@@ -439,8 +441,11 @@ elif test==3:
     #comp.files = ['root://eoscms.cern.ch//eos/cms/store/data/Run2015B/JetHT/MINIAOD/PromptReco-v1/000/251/643/00000/0AF95D60-992C-E511-8D36-02163E0146A4.root']
     #selectedComponents = [comp]
 
-    #selectedComponents = [JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B, SingleElectron_Run2015B, SingleMuon_Run2015B, SinglePhoton_Run2015B, DoubleEG_Run2015B, DoubleMuon_Run2015B, MuonEG_Run2015B]
-    selectedComponents = [JetHT_Run2015B_17Jul2015, HTMHT_Run2015B_17Jul2015, MET_Run2015B_17Jul2015, SingleElectron_Run2015B_17Jul2015, SingleMuon_Run2015B_17Jul2015, SinglePhoton_Run2015B_17Jul2015, DoubleEG_Run2015B_17Jul2015, MuonEG_Run2015B_17Jul2015, DoubleMuon_Run2015B_17Jul2015, JetHT_Run2015B_PromptReco, HTMHT_Run2015B_PromptReco, MET_Run2015B_PromptReco, SingleElectron_Run2015B_PromptReco, SingleMuon_Run2015B_PromptReco, SinglePhoton_Run2015B_PromptReco, DoubleEG_Run2015B_PromptReco, MuonEG_Run2015B_PromptReco, DoubleMuon_Run2015B_PromptReco]
+    ##selectedComponents = [JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B, SingleElectron_Run2015B, SingleMuon_Run2015B, SinglePhoton_Run2015B, DoubleEG_Run2015B, DoubleMuon_Run2015B, MuonEG_Run2015B]
+    #selectedComponents = [JetHT_Run2015B_17Jul2015, HTMHT_Run2015B_17Jul2015, MET_Run2015B_17Jul2015, SingleElectron_Run2015B_17Jul2015, SingleMuon_Run2015B_17Jul2015, SinglePhoton_Run2015B_17Jul2015, DoubleEG_Run2015B_17Jul2015, MuonEG_Run2015B_17Jul2015, DoubleMuon_Run2015B_17Jul2015, JetHT_Run2015B_PromptReco, HTMHT_Run2015B_PromptReco, MET_Run2015B_PromptReco, SingleElectron_Run2015B_PromptReco, SingleMuon_Run2015B_PromptReco, SinglePhoton_Run2015B_PromptReco, DoubleEG_Run2015B_PromptReco, MuonEG_Run2015B_PromptReco, DoubleMuon_Run2015B_PromptReco]
+
+#    selectedComponents = [ JetHT_Run2015C, HTMHT_Run2015C, MET_Run2015C, SingleElectron_Run2015C, SingleMuon_Run2015C, SinglePhoton_Run2015C, DoubleEG_Run2015C, MuonEG_Run2015C, DoubleMuon_Run2015C ]
+    selectedComponents = [ HTMHT_Run2015C ]
 
 # ------------------------------------------------------------------------------------------- #
 
