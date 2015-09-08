@@ -3,10 +3,10 @@ import imp, os
 # datasets to run as defined from run_susyMT2.cfg
 # number of jobs to run per dataset decided based on splitFactor and fineSplitFactor from cfg file
 # in principle one only needs to modify the following two lines:
-production_label = "prod747mc_Spring15_test"
+production_label = "prod747mc_Spring15"
 cmg_version = 'MT2_CMGTools-from-CMSSW_7_4_7'
 
-debug  = True
+debug  = False
 useAAA = True
 
 
@@ -28,13 +28,12 @@ os.environ["DEBUG"]       = str(debug)
 os.environ["USEAAA"]      = str(useAAA)
 
 from PhysicsTools.HeppyCore.framework.heppy_loop import split
-for ncomp,comp in enumerate(conf.components):
+for comp in conf.components:
     # get splitting from config file according to splitFactor and fineSplitFactor (priority given to the latter)
     NJOBS = len(split([comp]))
     os.environ["NJOBS"] = str(NJOBS)
     os.environ["DATASET"] = str(comp.name)
-    if debug and ncomp==0:
-        os.system("crab submit -c heppy_crab_config_env.py")
+    os.system("crab submit -c heppy_crab_config_env.py")
 
 os.system("rm -f python.tar.gz")
 os.system("rm -f cmgdataset.tar.gz")

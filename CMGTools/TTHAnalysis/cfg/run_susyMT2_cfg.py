@@ -413,7 +413,6 @@ WJetsToLNu_HT200to400,
 WJetsToLNu_HT400to600,
 WJetsToLNu_HT600toInf,
 ] + SingleTop + SignalSUSY + SignalEXO ### Full SM BG Spring15 + Singnal Spring15
-
     
     # test all components (1 thread per component).
     for comp in selectedComponents:
@@ -485,7 +484,7 @@ if getHeppyOption("nofetch"):
 
 
 
-removeResiduals = True
+removeResiduals = False
 
 # -------------------- Running pre-processor
 import subprocess
