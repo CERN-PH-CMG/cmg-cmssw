@@ -53,9 +53,13 @@ triggers_FR_1e_iso   = [ "HLT_Ele%d_CaloIdL_TrackIdL_IsoVL_PFJet30_v*" % pt for 
 
 triggers_HT900 = ["HLT_PFHT900_v*"]
 triggers_HT800 = ["HLT_PFHT800_v*"]
-triggers_MET170 = ["HLT_PFMET170_NoiseCleaned_v*"]
+triggers_MET170 = ["HLT_PFMET170_NoiseCleaned_v*", "HLT_PFMET170_JetIdCleaned_v*"]
+#triggers_MET170_jetIdCleaned = ["HLT_PFMET170_JetIdCleaned_v*"]
+#triggers_MET170_noiseCleaned = ["HLT_PFMET170_NoiseCleaned_v*"]
 triggers_HTMET120 = ["HLT_PFHT350_PFMET120_NoiseCleaned_v*"]
-triggers_HTMET100 = ["HLT_PFHT350_PFMET100_JetIdCleaned*"]
+#triggers_HTMET100 = ["HLT_PFHT350_PFMET100_NoiseCleaned_v*"]
+triggers_HTMET100 = ["HLT_PFHT350_PFMET100_JetIdCleaned_v*"]
+#triggers_HTMET100_noiseCleaned = ["HLT_PFHT350_PFMET100_NoiseCleaned_v*"]
 triggers_ht350 = ["HLT_PFHT350_v*"] # prescaled
 triggers_ht475 = ["HLT_PFHT475_v*"] # prescaled
 triggers_ht600 = ["HLT_PFHT600_v*"] # prescaled
