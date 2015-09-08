@@ -33,13 +33,15 @@ class hbheAnalyzer( Analyzer ):
 
     def process(self, event):
         self.readCollections( event.input )
-      
+
+        event.hbheGoodJetFoundInLowBVRegion = False
+
         event.hbheMaxZeros          = self.handles['hcalnoise'].product().maxZeros()
         event.hbheMaxHPDHits        = self.handles['hcalnoise'].product().maxHPDHits()
         event.hbheMaxHPDNoOtherHits = self.handles['hcalnoise'].product().maxHPDNoOtherHits()
         event.hbheHasBadRBXTS4TS5   = self.handles['hcalnoise'].product().HasBadRBXTS4TS5()
         event.hbheHasBadRBXRechitR45Tight   = self.handles['hcalnoise'].product().HasBadRBXRechitR45Tight()
-        event.hbheGoodJetFoundInLowBVRegion = self.handles['hcalnoise'].product().goodJetFoundInLowBVRegion()
+        if self.IgnoreTS4TS5ifJetInLowBVRegion: event.hbheGoodJetFoundInLowBVRegion = self.handles['hcalnoise'].product().goodJetFoundInLowBVRegion()
         event.hbhenumIsolatedNoiseChannels  = self.handles['hcalnoise'].product().numIsolatedNoiseChannels()
         event.hbheisolatedNoiseSumE         = self.handles['hcalnoise'].product().isolatedNoiseSumE()
         event.hbheisolatedNoiseSumEt        = self.handles['hcalnoise'].product().isolatedNoiseSumEt()
@@ -61,7 +63,8 @@ class hbheAnalyzer( Analyzer ):
         if event.hbheisolatedNoiseSumEt       >= 25: event.hbheFilterIso = 0 
 
 
-        event.hbheFilterNew = event.hbheFilterNew50ns # to be updated later with automatic choice based on PileupSummaryInfo or run number
+#        event.hbheFilterNew = event.hbheFilterNew50ns # to be updated later with automatic choice based on PileupSummaryInfo or run number
+        event.hbheFilterNew = event.hbheFilterNew25ns # to be updated later with automatic choice based on PileupSummaryInfo or run number
 
 
         return True
