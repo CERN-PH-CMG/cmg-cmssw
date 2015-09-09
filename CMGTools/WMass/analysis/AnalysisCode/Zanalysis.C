@@ -419,23 +419,23 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
     if(useEffSF>=2 && useEffSF<=6 && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
       if(useEffSF==2 || useEffSF!=3){
-        cout << "eff_TIGHT_SF"<<endl;
-        eff_TIGHT_SF            = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt,MuNeg_pt));
+        // cout << "eff_TIGHT_SF"<<endl;
+        eff_TIGHT_SF            = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt:MuNeg_pt));
         TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_SF;
       }
       if(useEffSF==2 || useEffSF!=4){
-        cout << "eff_ISO_SF"<<endl;
+        // cout << "eff_ISO_SF"<<endl;
         eff_ISO_SF              = SF_ISO05_PT10->GetBinContent(SF_ISO05_PT10->FindBin(costh_HX,TMath::Abs(phi_HX),ZNocorr.Pt()));
         TRG_TIGHT_ISO_muons_SF  *= eff_ISO_SF;
       }
       if(useEffSF==2 || useEffSF!=5){
-        cout << "eff_TIGHT_subleading_SF"<<endl;
+        // cout << "eff_TIGHT_subleading_SF"<<endl;
         eff_TIGHT_subleading_SF = SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(isChargePos?MuNeg_eta:MuPos_eta,isChargePos?MuNeg_pt:MuPos_pt));
         TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
       }
       if(useEffSF==2 || useEffSF!=6){
-        cout << "eff_TRG_SF"<<endl;
-        eff_TRG_SF              = SF_HLT->GetBinContent(SF_HLT->FindBin(1,isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt,MuNeg_pt));
+        // cout << "eff_TRG_SF"<<endl;
+        eff_TRG_SF              = SF_HLT->GetBinContent(SF_HLT->FindBin(1,isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt:MuNeg_pt));
         TRG_TIGHT_ISO_muons_SF  *= eff_TRG_SF;
       }
     }
