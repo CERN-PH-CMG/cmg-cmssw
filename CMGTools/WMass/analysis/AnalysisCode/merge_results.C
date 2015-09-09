@@ -28,9 +28,9 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
   TString     WCharge_str[]={"Pos","Neg"};
 
   ofstream outTXTfile,outTXTfile2;
-  outTXTfile.open(Form("results.log"));
+  outTXTfile.open(Form("../fit_results.log"));
   outTXTfile << "# Syst\tStat" << endl;
-  outTXTfile2.open(Form("results_chi2.log"));
+  outTXTfile2.open(Form("../fit_results_chi2.log"));
       
   TObjArray* LineColumns = original.Tokenize(",");
   
