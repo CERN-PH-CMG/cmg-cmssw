@@ -845,7 +845,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               ZGen_pt,ZGen_phi,
                               ZNocorr.Pt(),ZNocorr.Phi(),
                               u1_recoil, u2_recoil,
-                              RecoilCorrVarDiagoParU1orU2fromDATAorMC, m, RecoilCorrVarDiagoParSigmas,
+                              RecoilCorrVarDiagoParU1orU2fromDATAorMC>6?RecoilCorrVarDiagoParU1orU2fromDATAorMC-6:RecoilCorrVarDiagoParU1orU2fromDATAorMC, m, RecoilCorrVarDiagoParSigmas,
                               rapBin,doSingleGauss,1);
                     }else{
                       correctorRecoil_Z->CorrectMET3gaus(
