@@ -1,3 +1,0 @@
-Counter SkimReport :
-	 All Events                                      57 	 1.00 	 1.0000
-

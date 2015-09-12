@@ -1,3 +1,0 @@
-Counter events :
-	 all events                                       7 	 1.00 	 1.0000
-

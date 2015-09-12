@@ -1,2 +1,0 @@
-number of events processed: 22
-
