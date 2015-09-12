@@ -1,0 +1,29 @@
+12-Sep-2015 15:35:15 CEST  Initiating request to open file root://eoscms.cern.ch//eos/cms/store/data/Run2015B/SinglePhoton/MINIAOD/PromptReco-v1/000/251/716/00000/BCC3BD84-2F2C-E511-96D3-02163E011B19.root
+12-Sep-2015 15:35:18 CEST  Successfully opened file root://eoscms.cern.ch//eos/cms/store/data/Run2015B/SinglePhoton/MINIAOD/PromptReco-v1/000/251/716/00000/BCC3BD84-2F2C-E511-96D3-02163E011B19.root
+Reading JEC parameters = SubTotalMC from file = /afs/cern.ch/user/a/asantra/public/METResolution/Data_FinalCorrection/CMSSW_7_4_7_test/src/PhysicsTools/PatUtils/data/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt.
+Reading JEC parameters = SubTotalMC from file = /afs/cern.ch/user/a/asantra/public/METResolution/Data_FinalCorrection/CMSSW_7_4_7_test/src/PhysicsTools/PatUtils/data/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt.
+Reading JEC parameters = SubTotalMC from file = /afs/cern.ch/user/a/asantra/public/METResolution/Data_FinalCorrection/CMSSW_7_4_7_test/src/PhysicsTools/PatUtils/data/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt.
+Reading JEC parameters = SubTotalMC from file = /afs/cern.ch/user/a/asantra/public/METResolution/Data_FinalCorrection/CMSSW_7_4_7_test/src/PhysicsTools/PatUtils/data/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt.
+12-Sep-2015 15:36:38 CEST  Closed file root://eoscms.cern.ch//eos/cms/store/data/Run2015B/SinglePhoton/MINIAOD/PromptReco-v1/000/251/716/00000/BCC3BD84-2F2C-E511-96D3-02163E011B19.root
+12-Sep-2015 15:36:38 CEST  Initiating request to open file root://eoscms.cern.ch//eos/cms/store/data/Run2015B/SinglePhoton/MINIAOD/PromptReco-v1/000/251/721/00000/284B19B0-462C-E511-9BDF-02163E011861.root
+12-Sep-2015 15:36:40 CEST  Successfully opened file root://eoscms.cern.ch//eos/cms/store/data/Run2015B/SinglePhoton/MINIAOD/PromptReco-v1/000/251/721/00000/284B19B0-462C-E511-9BDF-02163E011861.root
+Begin processing the 1st record. Run 251721, Event 761281, LumiSection 1 at 12-Sep-2015 15:37:06.869 CEST
+12-Sep-2015 15:37:36 CEST  Closed file root://eoscms.cern.ch//eos/cms/store/data/Run2015B/SinglePhoton/MINIAOD/PromptReco-v1/000/251/721/00000/284B19B0-462C-E511-9BDF-02163E011861.root
+
+=============================================
+
+MessageLogger Summary
+
+ type     category        sev    module        subroutine        count    total
+ ---- -------------------- -- ---------------- ----------------  -----    -----
+    1 fileAction           -s file_close                             2        2
+    2 fileAction           -s file_open                              4        4
+
+ type    category    Examples: run/evt        run/evt          run/evt
+ ---- -------------------- ---------------- ---------------- ----------------
+    1 fileAction           PostBeginLumi    PostEndRun       
+    2 fileAction           pre-events       pre-events       PostBeginLumi
+
+Severity    # Occurrences   Total Occurrences
+--------    -------------   -----------------
+System                  6                   6

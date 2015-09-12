@@ -1,0 +1,1 @@
+Average vertexWeight   : undefined (call Average.add)

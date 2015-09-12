@@ -1,0 +1,26 @@
+12-Sep-2015 15:35:09 CEST  Initiating request to open file root://eoscms.cern.ch//eos/cms/store/data/Run2015B/SinglePhoton/MINIAOD/PromptReco-v1/000/251/561/00000/F6777C76-152A-E511-A06F-02163E013553.root
+12-Sep-2015 15:35:12 CEST  Successfully opened file root://eoscms.cern.ch//eos/cms/store/data/Run2015B/SinglePhoton/MINIAOD/PromptReco-v1/000/251/561/00000/F6777C76-152A-E511-A06F-02163E013553.root
+Reading JEC parameters = SubTotalMC from file = /afs/cern.ch/user/a/asantra/public/METResolution/Data_FinalCorrection/CMSSW_7_4_7_test/src/PhysicsTools/PatUtils/data/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt.
+Reading JEC parameters = SubTotalMC from file = /afs/cern.ch/user/a/asantra/public/METResolution/Data_FinalCorrection/CMSSW_7_4_7_test/src/PhysicsTools/PatUtils/data/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt.
+Reading JEC parameters = SubTotalMC from file = /afs/cern.ch/user/a/asantra/public/METResolution/Data_FinalCorrection/CMSSW_7_4_7_test/src/PhysicsTools/PatUtils/data/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt.
+Reading JEC parameters = SubTotalMC from file = /afs/cern.ch/user/a/asantra/public/METResolution/Data_FinalCorrection/CMSSW_7_4_7_test/src/PhysicsTools/PatUtils/data/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt.
+Begin processing the 1st record. Run 251561, Event 463768, LumiSection 1 at 12-Sep-2015 15:36:35.008 CEST
+12-Sep-2015 15:37:20 CEST  Closed file root://eoscms.cern.ch//eos/cms/store/data/Run2015B/SinglePhoton/MINIAOD/PromptReco-v1/000/251/561/00000/F6777C76-152A-E511-A06F-02163E013553.root
+
+=============================================
+
+MessageLogger Summary
+
+ type     category        sev    module        subroutine        count    total
+ ---- -------------------- -- ---------------- ----------------  -----    -----
+    1 fileAction           -s file_close                             1        1
+    2 fileAction           -s file_open                              2        2
+
+ type    category    Examples: run/evt        run/evt          run/evt
+ ---- -------------------- ---------------- ---------------- ----------------
+    1 fileAction           PostEndRun                        
+    2 fileAction           pre-events       pre-events       
+
+Severity    # Occurrences   Total Occurrences
+--------    -------------   -----------------
+System                  3                   3

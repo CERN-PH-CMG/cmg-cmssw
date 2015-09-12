@@ -1,0 +1,4 @@
+Counter JSON :
+	 All Lumis                                     1509 	 1.00 	 1.0000
+	 Passed Lumis                                   400 	 0.27 	 0.2651
+

@@ -1,0 +1,35 @@
+12-Sep-2015 15:33:22 CEST  Initiating request to open file root://eoscms.cern.ch//eos/cms/store/data/Run2015B/SinglePhoton/MINIAOD/PromptReco-v1/000/251/500/00000/1838372C-2329-E511-8E7B-02163E011BD1.root
+12-Sep-2015 15:33:24 CEST  Successfully opened file root://eoscms.cern.ch//eos/cms/store/data/Run2015B/SinglePhoton/MINIAOD/PromptReco-v1/000/251/500/00000/1838372C-2329-E511-8E7B-02163E011BD1.root
+Reading JEC parameters = SubTotalMC from file = /afs/cern.ch/user/a/asantra/public/METResolution/Data_FinalCorrection/CMSSW_7_4_7_test/src/PhysicsTools/PatUtils/data/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt.
+Reading JEC parameters = SubTotalMC from file = /afs/cern.ch/user/a/asantra/public/METResolution/Data_FinalCorrection/CMSSW_7_4_7_test/src/PhysicsTools/PatUtils/data/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt.
+Reading JEC parameters = SubTotalMC from file = /afs/cern.ch/user/a/asantra/public/METResolution/Data_FinalCorrection/CMSSW_7_4_7_test/src/PhysicsTools/PatUtils/data/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt.
+Reading JEC parameters = SubTotalMC from file = /afs/cern.ch/user/a/asantra/public/METResolution/Data_FinalCorrection/CMSSW_7_4_7_test/src/PhysicsTools/PatUtils/data/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt.
+12-Sep-2015 15:34:15 CEST  Closed file root://eoscms.cern.ch//eos/cms/store/data/Run2015B/SinglePhoton/MINIAOD/PromptReco-v1/000/251/500/00000/1838372C-2329-E511-8E7B-02163E011BD1.root
+12-Sep-2015 15:34:15 CEST  Initiating request to open file root://eoscms.cern.ch//eos/cms/store/data/Run2015B/SinglePhoton/MINIAOD/PromptReco-v1/000/251/521/00000/9A3A76CA-6629-E511-8B2E-02163E011EE9.root
+12-Sep-2015 15:34:16 CEST  Successfully opened file root://eoscms.cern.ch//eos/cms/store/data/Run2015B/SinglePhoton/MINIAOD/PromptReco-v1/000/251/521/00000/9A3A76CA-6629-E511-8B2E-02163E011EE9.root
+%MSG-w XrdAdaptor:  (NoModuleName) 12-Sep-2015 15:34:23 CEST pre-events
+Data is now served from cern.ch instead of previous 
+%MSG
+Begin processing the 1st record. Run 251521, Event 210144, LumiSection 1 at 12-Sep-2015 15:34:24.346 CEST
+12-Sep-2015 15:34:41 CEST  Closed file root://eoscms.cern.ch//eos/cms/store/data/Run2015B/SinglePhoton/MINIAOD/PromptReco-v1/000/251/521/00000/9A3A76CA-6629-E511-8B2E-02163E011EE9.root
+
+=============================================
+
+MessageLogger Summary
+
+ type     category        sev    module        subroutine        count    total
+ ---- -------------------- -- ---------------- ----------------  -----    -----
+    1 XrdAdaptor           -w (NoModuleName)                         1        1
+    2 fileAction           -s file_close                             2        2
+    3 fileAction           -s file_open                              4        4
+
+ type    category    Examples: run/evt        run/evt          run/evt
+ ---- -------------------- ---------------- ---------------- ----------------
+    1 XrdAdaptor           pre-events                        
+    2 fileAction           PostBeginLumi    PostEndRun       
+    3 fileAction           pre-events       pre-events       PostBeginLumi
+
+Severity    # Occurrences   Total Occurrences
+--------    -------------   -----------------
+Warning                 1                   1
+System                  6                   6
