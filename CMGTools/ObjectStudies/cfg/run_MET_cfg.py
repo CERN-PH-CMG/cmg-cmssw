@@ -1,26 +1,27 @@
 import PhysicsTools.HeppyCore.framework.config as cfg
 
 #-------- SAMPLES AND TRIGGERS -----------
-from CMGTools.RootTools.samples.samples_8TeVReReco_74X import * # <-- this one for the official sample
-from CMGTools.ObjectStudies.samples.samples_METPOG_private import * #<-- this one for the private re-reco
+#from CMGTools.RootTools.samples.samples_8TeVReReco_74X import * # <-- this one for the official sample
+#from CMGTools.ObjectStudies.samples.samples_METPOG_private import * #<-- this one for the private re-reco
 from CMGTools.RootTools.samples.samples_13TeV_74X import *
 from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
 
-from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_1mu_iso_50ns, triggers_mumu, triggers_ee, triggers_photon30, triggers_photon50, triggers_photon75, triggers_photon90, triggers_photon120
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import * #triggers_1mu_iso_50ns, triggers_mumu, triggers_ee, triggers_photon30, triggers_photon50, triggers_photon75
 
 #-------- INITIAL FLAG
 isDiJet=False
 isZSkim=False
+isData=False
 is1L=False
 isEle = False # default is diMuon
 isEarlyRun = False # to be used for the filters
-is25ns = False
 
 #-------- HOW TO RUN
 
-test = 13
+test = 16
 
 if test==0:
+    isData = True
     selectedComponents = [DoubleMu_742, DoubleMu_740p9]
 #    selectedComponents = [ DoubleMuParked_1Apr_RelVal_dm2012D_v2_newPFHCalib , DoubleMuParked_1Apr_RelVal_dm2012D_v2_oldPFHCalib , DoubleMuparked_1Apr_RelVal_dm2012D_v2 ]
     for comp in selectedComponents:
@@ -29,6 +30,7 @@ if test==0:
         comp.triggers = triggers_8TeV_mumu
 
 elif test==1:
+    isData = False
     selectedComponents = [ RelValZMM_7_4_1,RelValZMM_7_4_0_pre9 ]
 #    selectedComponents = [RelVal_741_Philfixes]
 #    selectedComponents = relValkate
@@ -50,6 +52,7 @@ elif test==1:
 
    # ----------------------- Summer15 options -------------------------------------------------------------------- #
 elif test==2:
+    isData = False
     selectedComponents = [ DYJetsToLL_M50_50ns ]
     isZSkim=True
     for comp in selectedComponents:
@@ -58,6 +61,7 @@ elif test==2:
         comp.files = comp.files[:1]
 
 elif test==3:
+    isData = False
     isZSkim=True
     selectedComponents = [ DYJetsToLL_M50_50ns,TTJets_50ns ]
     for comp in selectedComponents:
@@ -69,39 +73,48 @@ elif test==3:
         comp.files = comp.files[:]
 
 elif test==4:
-    is1L=False
+    isData = False
     selectedComponents = [ WJetsToLNu_50ns ]
+    is1L=False
     for comp in selectedComponents:
         comp.splitFactor = 1000
         comp.files = comp.files[:]
 
 elif test==5:
+    isData = False
     selectedComponents = QCDPt_50ns
     isDiJet=True
     for comp in selectedComponents:
         comp.splitFactor = 1000
         comp.files = comp.files[:]
-        comp.fineSplitFactor = 5
+        
+elif test==6:
+    isData = False
+    selectedComponents = [ GJets_Pt15to6000 ]
+    for comp in selectedComponents:
+        comp.splitFactor = 100
+        comp.files = comp.files[:]
+        
+elif test==7:
+    isData = False
+    selectedComponents = QCDPt_50ns_Special
+    for comp in selectedComponents:
+        comp.splitFactor = 100
+        comp.files = comp.files[:]
 
     # ------------------------------------------------------------------------------------------- #
 
 ### this is for the Zskim
 elif test==13:
+    isData = True
     isZSkim=True
     if isEle:
-        if is25ns:
-            selectedComponents = [ DoubleEG_Run2015C ]
-        else:
-            selectedComponents = [ DoubleEG_Run2015B ]
+        selectedComponents = [ DoubleEG_Run2015B ]
     else:
-        if is25ns:
-            selectedComponents = [ DoubleMuon_Run2015C ]
-        else:
-            selectedComponents = [ DoubleMuon_Run2015B ]
-
+        selectedComponents = [ DoubleMuon_Run2015B ]
     for comp in selectedComponents:
 #        comp.splitFactor = 1
-#        comp.files = comp.files[:]
+#        comp.files = comp.files[5:10]
 #        comp.fineSplitFactor = 1
         comp.splitFactor = 1000
         comp.files = comp.files[:]
@@ -109,22 +122,24 @@ elif test==13:
             comp.triggers = triggers_ee
         else:
             comp.triggers = triggers_mumu
-        comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-254879_13TeV_PromptReco_Collisions15_JSON.json"
+        comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
         comp.intLumi= 0.04003
         print comp
 
 ### this is for the Wskim
 elif test==14:
+    isData = True
     is1L=False
     selectedComponents = [ SingleMuon_Run2015B ]
     for comp in selectedComponents:
         comp.splitFactor = 1000
         comp.files = comp.files[:]
-        comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-254879_13TeV_PromptReco_Collisions15_JSON.json"
+        comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
         comp.intLumi= 0.04003
 
 ### this is for the QCDlike
 elif test==15:
+    isData = True
     isDiJet=True
     if isEarlyRun:
         selectedComponents = [ JetHT_Run2015B_17Jul, HTMHT_Run2015B_17Jul, MET_Run2015B_17Jul ]
@@ -133,7 +148,7 @@ elif test==15:
     for comp in selectedComponents:
         comp.splitFactor = 1000
         comp.files = comp.files[:]
-        comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-254879_13TeV_PromptReco_Collisions15_JSON.json"
+        comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
         comp.intLumi= 0.04003
         if isEarlyRun:
             comp.run_range=(251027,251585) # in 17july runInJSON: 251244,251251,251252,251561,251562
@@ -141,36 +156,20 @@ elif test==15:
             comp.run_range=(251585,251883) # in promptReco runInJSON: 251643,251721,251883
         print comp
 
-### this is for the PhotonSkim
+### this is for the PhotonSkim, used for data
 elif test==16:
-    is1PH=True
+    isData = True
+    is1PH = True
     selectedComponents = [ SinglePhoton_Run2015B ]
     for comp in selectedComponents:
-        comp.triggers = triggers_photon30 + triggers_photon50 + triggers_photon75 + triggers_photon90 + triggers_photon120
-        comp.splitFactor = 1
+        comp.triggers = triggers_photon30 or triggers_photon50 or triggers_photon75 or triggers_photon90
+        comp.splitFactor = 30
         comp.files = comp.files[:]
-        comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-254879_13TeV_PromptReco_Collisions15_JSON.json"
+        comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON_v2.json"
         comp.intLumi= 0.04003
 
-    # ------------------------------------------------------------------------------------------- #
-    #        --> 25ns here
 
-elif test==23:
-    isZSkim=True
-    is25ns=True
-    selectedComponents = [ DYJetsToLL_M50 ]
-    for comp in selectedComponents:
-        if isEle:
-            comp.triggers = triggers_ee
-        else:
-            comp.triggers = triggers_mumu
-#        comp.splitFactor = 1
-#        comp.files = comp.files[:1]
-        comp.splitFactor = 1000
-        comp.files = comp.files[:]
-
-    # ------------------------------------------------------------------------------------------- #
-    # ------------------------------------------------------------------------------------------- #
+# ------------------------------------------------------------------------------------------- #
 
 from CMGTools.ObjectStudies.analyzers.metCoreModules_cff import *
 
@@ -224,11 +223,6 @@ if is1L:
     ttHLepSkim.minLeptons = 1
     metSequence.insert(metSequence.index(lepAna)+1,ttHLepSkim)
 
-if isDiJet:
-    metSequence.insert(metSequence.index(photonAna)+1,jetAna)
-    metSequence.insert(metSequence.index(photonAna)+2,ttHJetMETSkim)
-
-
 if comp.isData and not isEarlyRun:
     eventFlagsAna.processName = 'RECO'
 
@@ -273,27 +267,20 @@ if getHeppyOption("nofetch"):
 
 
 # -------------------- Running pre-processor
+removeResiduals = False
+
 import subprocess
-if comp.isData:
-    removeResiduals = False
+if isData:
     uncFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
     jecDBFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA.db'
     jecEra    = 'Summer15_50nsV4_DATA'
 else:
-    if not is25ns:
-        removeResiduals = False
-        uncFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_MC_UncertaintySources_AK4PFchs.txt'
-        jecDBFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_MC.db'
-        jecEra    = 'Summer15_50nsV4_MC'
-    else:
-        removeResiduals = True
-        uncFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_25nsV2_MC_UncertaintySources_AK4PFchs.txt'
-        jecDBFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_25nsV2_MC.db'
-        jecEra    = 'Summer15_25nsV2_MC'
-
+    uncFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
+    jecDBFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_MC.db'
+    jecEra    = 'Summer15_50nsV4_MC'
 preprocessorFile = "$CMSSW_BASE/tmp/MetType1_jec_%s.py"%(jecEra)
 extraArgs=[]
-if comp.isData:
+if isData:
   extraArgs.append('--isData')
   GT= '74X_dataRun2_Prompt_v1'
 else:
