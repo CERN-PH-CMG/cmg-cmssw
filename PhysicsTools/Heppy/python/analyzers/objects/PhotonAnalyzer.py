@@ -34,9 +34,9 @@ class PhotonAnalyzer( Analyzer ):
         super(PhotonAnalyzer, self).declareHandles()
         self.handles['rhoPhoton'] = AutoHandle( self.cfg_ana.rhoPhoton, 'double')
 
-    #----------------------------------------                                                                                                                                   
-    # DECLARATION OF HANDLES OF PHOTONS STUFF                                                                                                                                   
-    #----------------------------------------     
+    #-----------------------------------------#                                                                                                                                   
+    # DECLARATION OF HANDLES OF PHOTONS STUFF #                                                                                                                                   
+    #-----------------------------------------#     
 
         self.handles['photons'] = AutoHandle( self.cfg_ana.photons,'std::vector<pat::Photon>')
         self.mchandles['packedGen'] = AutoHandle( 'packedGenParticles', 'std::vector<pat::PackedGenParticle>' )
@@ -72,14 +72,28 @@ class PhotonAnalyzer( Analyzer ):
             foundPhoton = True
 
             gamma.rho = float(self.handles['rhoPhoton'].product()[0])
+            
             # https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2#Selection_implementation_details
-            if   abs(gamma.eta()) < 1.0:   gamma.EffectiveArea03 = [ 0.0234, 0.0053, 0.078  ]
-            elif abs(gamma.eta()) < 1.479: gamma.EffectiveArea03 = [ 0.0189, 0.0103, 0.0629 ]
-            elif abs(gamma.eta()) < 2.0:   gamma.EffectiveArea03 = [ 0.0171, 0.0057, 0.0264 ]
-            elif abs(gamma.eta()) < 2.2:   gamma.EffectiveArea03 = [ 0.0129, 0.0070, 0.0462 ]
-            elif abs(gamma.eta()) < 2.3:   gamma.EffectiveArea03 = [ 0.0110, 0.0152, 0.0740 ]
-            elif abs(gamma.eta()) < 2.4:   gamma.EffectiveArea03 = [ 0.0074, 0.0232, 0.0924 ]
-            else:                          gamma.EffectiveArea03 = [ 0.0035, 0.1709, 0.1484 ]
+            if self.cfg_ana.gammaID=="PhotonCutBasedIDLoose_CSA14" or self.cfg_ana.gammaID=="PhotonCutBasedIDLoose_PHYS14" or self.cfg_ana.gammaID=="POG_PHYS14_25ns_Loose" or self.cfg_ana.gammaID=="POG_PHYS14_25ns_Loose_old" or self.cfg_ana.gammaID=="POG_PHYS14_25ns_Medium" or self.cfg_ana.gammaID=="POG_PHYS14_25ns_Tight" or self.cfg_ana.gammaID=="POG_CSA14_25ns_Loose" or self.cfg_ana.gammaID=="POG_CSA14_25ns_Medium" or self.cfg_ana.gammaID=="POG_CSA14_25ns_Tight" :
+            
+              if   abs(gamma.eta()) < 1.0:   gamma.EffectiveArea03 = [ 0.0234, 0.0053, 0.0784 ]
+              elif abs(gamma.eta()) < 1.479: gamma.EffectiveArea03 = [ 0.0189, 0.0103, 0.0629 ]
+              elif abs(gamma.eta()) < 2.0:   gamma.EffectiveArea03 = [ 0.0171, 0.0057, 0.0264 ]
+              elif abs(gamma.eta()) < 2.2:   gamma.EffectiveArea03 = [ 0.0129, 0.0070, 0.0462 ]
+              elif abs(gamma.eta()) < 2.3:   gamma.EffectiveArea03 = [ 0.0110, 0.0152, 0.0740 ]
+              elif abs(gamma.eta()) < 2.4:   gamma.EffectiveArea03 = [ 0.0074, 0.0232, 0.0924 ]
+              else:                          gamma.EffectiveArea03 = [ 0.0035, 0.1709, 0.1484 ]
+            
+            # https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedPhotonIdentificationRun2#SPRING15_selections_bunch_crossi  ## spring 50ns added
+            if self.cfg_ana.gammaID=="POG_SPRING15_50ns_Loose":
+            
+              if   abs(gamma.eta()) < 1.0:   gamma.EffectiveArea03 = [ 0.0157, 0.0143, 0.0725 ]
+              elif abs(gamma.eta()) < 1.479: gamma.EffectiveArea03 = [ 0.0143, 0.0210, 0.0604 ]
+              elif abs(gamma.eta()) < 2.0:   gamma.EffectiveArea03 = [ 0.0115, 0.0148, 0.0320 ]
+              elif abs(gamma.eta()) < 2.2:   gamma.EffectiveArea03 = [ 0.0094, 0.0082, 0.0512 ]
+              elif abs(gamma.eta()) < 2.3:   gamma.EffectiveArea03 = [ 0.0095, 0.0124, 0.0766 ]
+              elif abs(gamma.eta()) < 2.4:   gamma.EffectiveArea03 = [ 0.0068, 0.0186, 0.0949 ]
+              else:                          gamma.EffectiveArea03 = [ 0.0053, 0.0320, 0.1160 ]
 
             if self.doFootprintRemovedIsolation:
                 self.attachFootprintRemovedIsolation(gamma)
@@ -93,7 +107,7 @@ class PhotonAnalyzer( Analyzer ):
                 if gamma.photonID(X%"Loose"):
                     id=1
                 #if gamma.photonID(X%"Medium"):
-                #    id=2 
+                    #id=2 
                 if gamma.photonID(X%"Tight"):
                     id=3
                 return id
@@ -105,7 +119,7 @@ class PhotonAnalyzer( Analyzer ):
 
             if self.cfg_ana.gammaID=="PhotonCutBasedIDLoose_CSA14" or self.cfg_ana.gammaID=="PhotonCutBasedIDLoose_PHYS14" :
                 gamma.idCutBased = gamma.photonIDCSA14(self.cfg_ana.gammaID) 
-                # we're keeing sigmaietaieta sidebands:
+                # we're keeping sigmaietaieta sidebands:
                 keepThisPhoton   = gamma.photonIDCSA14(self.cfg_ana.gammaID, True) 
 
                 if gamma.hasPixelSeed():
@@ -298,7 +312,7 @@ class PhotonAnalyzer( Analyzer ):
     def printInfo(self, event):
         print '----------------'
         if len(event.selectedPhotons)>0:
-            print 'lenght: ',len(event.selectedPhotons)
+            print 'length: ',len(event.selectedPhotons)
             print 'gamma candidate pt: ',event.selectedPhotons[0].pt()
             print 'gamma candidate eta: ',event.selectedPhotons[0].eta()
             print 'gamma candidate phi: ',event.selectedPhotons[0].phi()

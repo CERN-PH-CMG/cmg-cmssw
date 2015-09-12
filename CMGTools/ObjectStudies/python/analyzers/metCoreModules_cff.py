@@ -208,7 +208,7 @@ photonAna = cfg.Analyzer(
     photons='slimmedPhotons',
     ptMin = 30,
     etaMax = 2.5,
-    gammaID = "POG_PHYS14_25ns_Loose",
+    gammaID = "POG_SPRING15_50ns_Loose", #"PhotonCutBasedIDLoose_CSA14",#"POG_PHYS14_25ns_Loose",
     rhoPhoton = 'fixedGridRhoFastjetAll',
     gamma_isoCorr = 'rhoArea',
     do_mc_match = False,
@@ -330,7 +330,7 @@ ttHJetMETSkim = cfg.Analyzer(
 
 #-------- SEQUENCE
 
-
+### photon ana added
 metCoreSequence = [
     susyCounter,
     skimAnalyzer,

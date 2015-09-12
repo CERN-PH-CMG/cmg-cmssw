@@ -207,35 +207,30 @@ QCD_Pt_250toInf_bcToE
 ]
 QCD_ElX = QCDPtEMEnriched + QCDPtbcToE
 
-###DiBosons
-
 # cross section from StandardModelCrossSectionsat13TeV NNLO times BR=(3*0.108)**2
 WWTo2L2Nu = kreator.makeMCComponent("WWTo2L2Nu", "/WWTo2L2Nu_13TeV-powheg/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 118.7*((3*0.108)**2) )
+
 # cross section from StandardModelCrossSectionsat13TeV (NLO MCFM, mll > 12); to be checked if it's really m(ll) > 12 also for Pythia sample
 ZZp8 = kreator.makeMCComponent("ZZp8", "/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/MINIAODSIM", "CMS", ".*root", 31.8)
+
 # cros section from StandardModelCrossSectionsat13TeV (NLO MCFM, mll > 12); to be checked if it's really m(ll) > 12 also for Pythia sample
 WZp8 = kreator.makeMCComponent("WZp8", "/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", (40.2+25.9))
 
 DiBosons = [ WWTo2L2Nu, ZZp8, WZp8 ] 
 
-###TTV
-TTWToLNu = kreator.makeMCComponent("TTWToLNu", "/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 0.2043)
-TTZToLLNuNu = kreator.makeMCComponent("TTZToLLNuNu","/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 0.2529)
-
-TTV = [TTWToLNu, TTZToLLNuNu]
-
 # Higgs
 # TTH cross section from LHC Higgs XS WG: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt1314TeV?rev=15
 TTHnobb = kreator.makeMCComponent("TTHnobb", "/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/MINIAODSIM", "CMS", ".*root",0.5085*(1-0.577))
-TTHnobb_pow = kreator.makeMCComponent("TTHnobb_pow", "/ttHToNonbb_M125_13TeV_powheg_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/MINIAODSIM", "CMS", ".*root",0.5085*(1-0.577))
 
-Higgs = [ TTHnobb, TTHnobb_pow ]
-
+Higgs = [ TTHnobb ]
 
 ### ==============  50 ns ========================
 TTJets_50ns = kreator.makeMCComponent("TTJets_50ns", "/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/MINIAODSIM", "CMS", ".*root", 831.76,)
 TTJets_LO_50ns = kreator.makeMCComponent("TTJets_LO_50ns", "/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/MINIAODSIM", "CMS", ".*root", 831.76)
 TT_pow_50ns = kreator.makeMCComponent("TT_pow_50ns", "/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v4/MINIAODSIM", "CMS", ".*root", 831.76, useAAA=True)
+
+### Gamma+Jet for Spring 15, added by Arka
+GJets_Pt15to6000 = kreator.makeMCComponent("GJets_Pt15to6000", "/GJet_Pt-15To6000_TuneCUETP8M1-Flat_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v3/MINIAODSIM", "CMS", ".*root", 365896)
 
 ### V+jets inclusive
 DYJetsToLL_M50_50ns = kreator.makeMCComponent("DYJetsToLL_M50_50ns","/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/MINIAODSIM", "CMS", ".*root", 2008.*3)
@@ -313,6 +308,15 @@ QCD_Pt2400to3200_50ns,
 QCD_Pt3200toInf_50ns
 ]
 
+
+### specially made for low Pt photons
+QCDPt_50ns_Special = [
+QCD_Pt30to50_50ns,
+QCD_Pt50to80_50ns,
+QCD_Pt80to120_50ns,
+QCD_Pt120to170_50ns
+]
+
 # Muon-enriched QCD, 50 ns
 QCD_Mu15_50ns = kreator.makeMCComponent("QCD_Mu15_50ns", "/QCD_Pt-20toInf_MuEnrichedPt15_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/MINIAODSIM", "CMS", ".*root", 720.65e6*0.00042)
 QCD_Pt15to20_Mu5_50ns = kreator.makeMCComponent("QCD_Pt15to20_Mu5_50ns", "/QCD_Pt-15to20_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v3/MINIAODSIM", "CMS", ".*root", 1273190000*0.003)
@@ -354,8 +358,7 @@ jetHT_0T = cfg.DataComponent(
 
 ### ----------------------------- summary ----------------------------------------
 
-
-mcSamples_Asymptotic25ns = TTs + SingleTop + VJets + DYJetsM50HT + WJetsToLNuHT + ZJetsToNuNuHT + GJetsHT + QCDPt + DiBosons + TTV + Higgs + QCD_ElX + QCD_MuX
+mcSamples_Asymptotic25ns = TTs + SingleTop + VJets + DYJetsM50HT + WJetsToLNuHT + ZJetsToNuNuHT + GJetsHT + QCDPt + DiBosons + Higgs + QCD_ElX + QCD_MuX
 
 mcSamples_Asymptotic50ns = [ TTJets_50ns, TTJets_LO_50ns, TT_pow_50ns, WJetsToLNu_50ns, DYJetsToLL_M10to50_50ns, DYJetsToLL_M50_50ns ] + DYJetsM50HT_50ns + QCDPt_50ns + SingleTop_50ns + DiBosons_50ns + QCD_MuX_50ns
 
