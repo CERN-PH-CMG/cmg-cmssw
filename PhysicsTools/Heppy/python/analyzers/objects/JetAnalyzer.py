@@ -8,6 +8,7 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 
 from PhysicsTools.Heppy.physicsutils.QGLikelihoodCalculator import QGLikelihoodCalculator
 
+import copy
 def cleanNearestJetOnly(jets,leptons,deltaR):
     dr2 = deltaR**2
     good = [ True for j in jets ]
@@ -70,7 +71,7 @@ class JetAnalyzer( Analyzer ):
         self.lepSelCut = getattr(self.cfg_ana, 'lepSelCut', lambda lep : True)
         self.jetGammaDR =  getattr(self.cfg_ana, 'jetGammaDR', 0.4)
         if(self.cfg_ana.doQG):
-            qgdefname="{CMSSW_BASE}/src/PhysicsTools/Heppy/data/pdfQG_AK4chs_antib_13TeV_v1.root"
+            qgdefname="{CMSSW_BASE}/src/PhysicsTools/Heppy/data/pdfQG_AK4chs_13TeV_v2b.root"
             self.qglcalc = QGLikelihoodCalculator(getattr(self.cfg_ana,"QGpath",qgdefname).format(CMSSW_BASE= os.environ['CMSSW_BASE']))
         if not hasattr(self.cfg_ana ,"collectionPostFix"):self.cfg_ana.collectionPostFix=""
 
@@ -83,7 +84,7 @@ class JetAnalyzer( Analyzer ):
     
     def beginLoop(self, setup):
         super(JetAnalyzer,self).beginLoop(setup)
-        
+
     def process(self, event):
         self.readCollections( event.input )
         rho  = float(self.handles['rho'].product()[0])
@@ -96,16 +97,35 @@ class JetAnalyzer( Analyzer ):
         else: 
           allJets = map(Jet, self.handles['jets'].product()) 
 
+        #store jets with corr<0
+        badjets = []
+
         self.deltaMetFromJEC = [0.,0.]
 #        print "before. rho",self.rho,self.cfg_ana.collectionPostFix,'allJets len ',len(allJets),'pt', [j.pt() for j in allJets]
         if self.doJEC:
-#            print "\nCalibrating jets %s for lumi %d, event %d" % (self.cfg_ana.jetCol, event.lumi, event.eventId)
-            self.jetReCalibrator.correctAll(allJets, rho, delta=self.shiftJEC, metShift=self.deltaMetFromJEC)
+            for delta, shift in [(1.0, "JECUp"), (0.0, ""), (-1.0, "JECDown")]:
+                for j1 in allJets:
+                    corr = self.jetReCalibrator.getCorrection(j1, rho, delta, self.deltaMetFromJEC)
+                    setattr(j1, "corr"+shift, corr)
+            #apply nominal corrections on jets
+            for jet in allJets:
+                corr = jet.corr
+                if corr > 0:
+                    jet.setP4(jet.p4() * (corr * jet.rawFactor()))
+                    jet.setRawFactor(1.0/corr)
+                else:
+                    badjets += [jet]
+        #remove jet as in JetRecalibrator.correctAll
+        for jet in badjets:
+            allJets.remove(jet)
+
         self.allJetsUsedForMET = allJets
 #        print "after. rho",self.rho,self.cfg_ana.collectionPostFix,'allJets len ',len(allJets),'pt', [j.pt() for j in allJets]
 
         if self.cfg_comp.isMC:
             self.genJets = [ x for x in self.handles['genJet'].product() ]
+            for igj, gj in enumerate(self.genJets):
+                gj.index = igj
             self.matchJets(event, allJets)
             if getattr(self.cfg_ana, 'smearJets', False):
                 self.smearJets(event, allJets)
@@ -123,8 +143,8 @@ class JetAnalyzer( Analyzer ):
                 if self.testJetID (jet ):
                     
                     if(self.cfg_ana.doQG):
-                        self.computeQGvars(jet)
-                        jet.qgl = self.qglcalc.computeQGLikelihood(jet, rho)
+                        jet.qgl_calc =  self.qglcalc.computeQGLikelihood
+                        jet.qgl_rho =  rho
 
 
                     self.jets.append(jet)
@@ -255,71 +275,6 @@ class JetAnalyzer( Analyzer ):
         return jet.pt() > self.cfg_ana.jetPt and \
                abs( jet.eta() ) < self.cfg_ana.jetEta;
 
-    def computeQGvars(self, jet):
-
-       jet.mult = 0
-       sum_weight = 0.
-       sum_pt = 0.
-       sum_deta = 0.
-       sum_dphi = 0.
-       sum_deta2 = 0.
-       sum_detadphi = 0.
-       sum_dphi2 = 0.
-
-
-
-       for ii in range(0, jet.numberOfDaughters()) :
-
-         part = jet.daughter(ii)
-
-         if part.charge() == 0 : # neutral particles 
-
-           if part.pt() < 1.: continue
-
-         else : # charged particles
-
-           if part.trackHighPurity()==False: continue
-           if part.fromPV()<=1: continue
-
-
-         jet.mult += 1
-
-         deta = part.eta() - jet.eta()
-         dphi = deltaPhi(part.phi(), jet.phi())
-         partPt = part.pt()
-         weight = partPt*partPt
-         sum_weight += weight
-         sum_pt += partPt
-         sum_deta += deta*weight
-         sum_dphi += dphi*weight
-         sum_deta2 += deta*deta*weight
-         sum_detadphi += deta*dphi*weight
-         sum_dphi2 += dphi*dphi*weight
-
-
-
-
-       a = 0.
-       b = 0.
-       c = 0.
-
-       if sum_weight > 0 :
-         jet.ptd = math.sqrt(sum_weight)/sum_pt
-         ave_deta = sum_deta/sum_weight
-         ave_dphi = sum_dphi/sum_weight
-         ave_deta2 = sum_deta2/sum_weight
-         ave_dphi2 = sum_dphi2/sum_weight
-         a = ave_deta2 - ave_deta*ave_deta
-         b = ave_dphi2 - ave_dphi*ave_dphi
-         c = -(sum_detadphi/sum_weight - ave_deta*ave_dphi)
-       else: jet.ptd = 0.
-
-       delta = math.sqrt(math.fabs((a-b)*(a-b)+4.*c*c))
-
-       if a+b-delta > 0: jet.axis2 = -math.log(math.sqrt(0.5*(a+b-delta)))
-       else: jet.axis2 = -1.
-
-
     def jetFlavour(self,event):
         def isFlavour(x,f):
             id = abs(x.pdgId())
@@ -355,7 +310,6 @@ class JetAnalyzer( Analyzer ):
 
         self.heaviestQCDFlavour = 5 if len(self.bqObjects) else (4 if len(self.cqObjects) else 1);
  
-
     def matchJets(self, event, jets):
         match = matchObjectCollection2(jets,
                                        event.genbquarks + event.genwzquarks,
@@ -373,7 +327,7 @@ class JetAnalyzer( Analyzer ):
             jet.mcJet = match[jet]
 
 
- 
+  
     def smearJets(self, event, jets):
         # https://twiki.cern.ch/twiki/bin/viewauth/CMS/TWikiTopRefSyst#Jet_energy_resolution
        for jet in jets:
