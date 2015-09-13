@@ -5,6 +5,7 @@ import copy
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.HeppyCore.statistics.counter import Counter, Counters
+import PhysicsTools.HeppyCore.framework.config as cfg
 
 # New filter parameters taken from slide 11 of 
 # https://indico.cern.ch/event/433302/contribution/0/attachments/1126451/1608346/2015-07-15_slides_v3.pdf
@@ -21,6 +22,7 @@ class hbheAnalyzer( Analyzer ):
 
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(hbheAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
+        self.IgnoreTS4TS5ifJetInLowBVRegion = cfg_ana.IgnoreTS4TS5ifJetInLowBVRegion
 
     def declareHandles(self):
         super(hbheAnalyzer, self).declareHandles()
@@ -31,13 +33,15 @@ class hbheAnalyzer( Analyzer ):
 
     def process(self, event):
         self.readCollections( event.input )
-      
+
+        event.hbheGoodJetFoundInLowBVRegion = False
+
         event.hbheMaxZeros          = self.handles['hcalnoise'].product().maxZeros()
         event.hbheMaxHPDHits        = self.handles['hcalnoise'].product().maxHPDHits()
         event.hbheMaxHPDNoOtherHits = self.handles['hcalnoise'].product().maxHPDNoOtherHits()
         event.hbheHasBadRBXTS4TS5   = self.handles['hcalnoise'].product().HasBadRBXTS4TS5()
         event.hbheHasBadRBXRechitR45Tight   = self.handles['hcalnoise'].product().HasBadRBXRechitR45Tight()
-        event.hbheGoodJetFoundInLowBVRegion = self.handles['hcalnoise'].product().goodJetFoundInLowBVRegion()
+        if self.IgnoreTS4TS5ifJetInLowBVRegion: event.hbheGoodJetFoundInLowBVRegion = self.handles['hcalnoise'].product().goodJetFoundInLowBVRegion()
         event.hbhenumIsolatedNoiseChannels  = self.handles['hcalnoise'].product().numIsolatedNoiseChannels()
         event.hbheisolatedNoiseSumE         = self.handles['hcalnoise'].product().isolatedNoiseSumE()
         event.hbheisolatedNoiseSumEt        = self.handles['hcalnoise'].product().isolatedNoiseSumEt()
@@ -58,6 +62,15 @@ class hbheAnalyzer( Analyzer ):
         if event.hbheisolatedNoiseSumE        >= 50: event.hbheFilterIso = 0
         if event.hbheisolatedNoiseSumEt       >= 25: event.hbheFilterIso = 0 
 
+
         event.hbheFilterNew = event.hbheFilterNew50ns # to be updated later with automatic choice based on PileupSummaryInfo or run number
+###        event.hbheFilterNew = event.hbheFilterNew25ns # hbhe filter at 25 ns
+
 
         return True
+
+setattr(hbheAnalyzer,"defaultConfig", cfg.Analyzer(
+        class_object = hbheAnalyzer,
+        IgnoreTS4TS5ifJetInLowBVRegion = False,
+        )
+)
