@@ -101,6 +101,21 @@ float mtw_wz3l(float pt1, float eta1, float phi1, float m1, float pt2, float eta
     return 0;
 }
 
+float u1_2(float met_pt, float met_phi, float ref_pt, float ref_phi) 
+{
+    float met_px = met_pt*std::cos(met_phi), met_py = met_pt*std::sin(met_phi);
+    float ref_px = ref_pt*std::cos(ref_phi), ref_py = ref_pt*std::sin(ref_phi);
+    float ux = - met_px + ref_px, uy = - met_px + ref_px;
+    return (ux*ref_px + uy*ref_py)/ref_pt;
+}
+float u2_2(float met_pt, float met_phi, float ref_pt, float ref_phi)
+{
+    float met_px = met_pt*std::cos(met_phi), met_py = met_pt*std::sin(met_phi);
+    float ref_px = ref_pt*std::cos(ref_phi), ref_py = ref_pt*std::sin(ref_phi);
+    float ux = - met_px + ref_px, uy = - met_px + ref_px;
+    return (ux*ref_py - uy*ref_px)/ref_pt;
+}
+
 float relax_cut_in_eta_bins(float val, float eta, float eta1, float eta2, float eta3, float val1, float val2, float val3, float val1t, float val2t, float val3t){
 
 // Return a new value of val (variable on which a cut is applied), in such a way that the thresholds (val1,val2,val3)
