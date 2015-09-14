@@ -65,9 +65,6 @@ class JetCorrExtractorT
       modJet.setP4(modJetP4);
 
       jetCorrFactor = getCorrection(modJet, jetCorr);
-      if(jetCorrFactor<0) {
-	edm::LogWarning("JetCorrExtractor") << "Negative jet energy scale correction noticed" << ".\n";
-      }
     }
 
     reco::Candidate::LorentzVector corrJetP4 = rawJetP4;

@@ -55,7 +55,6 @@ namespace PFJetMETcorrInputProducer_namespace
   template <typename T>
   class RawJetExtractorT // this template is neccessary to support pat::Jets
                          // (because pat::Jet->p4() returns the JES corrected, not the raw, jet momentum)
-    // But it does not handle the muon removal!!!!! MM
   {
     public:
 
@@ -83,10 +82,8 @@ class PFJetMETcorrInputProducerT : public edm::EDProducer
       offsetCorrLabel_ = cfg.getParameter<edm::InputTag>("offsetCorrLabel");
       offsetCorrToken_ = consumes<reco::JetCorrector>(offsetCorrLabel_);
     }
-    jetCorrLabel_ = cfg.getParameter<edm::InputTag>("jetCorrLabel"); //for MC
-    jetCorrLabelRes_ = cfg.getParameter<edm::InputTag>("jetCorrLabelRes"); //for data
+    jetCorrLabel_ = cfg.getParameter<edm::InputTag>("jetCorrLabel");
     jetCorrToken_ = consumes<reco::JetCorrector>(jetCorrLabel_);
-    jetCorrResToken_ = consumes<reco::JetCorrector>(jetCorrLabelRes_);
 
     jetCorrEtaMax_ = ( cfg.exists("jetCorrEtaMax") ) ?
       cfg.getParameter<double>("jetCorrEtaMax") : 9.9;
@@ -136,7 +133,6 @@ class PFJetMETcorrInputProducerT : public edm::EDProducer
 
   void produce(edm::Event& evt, const edm::EventSetup& es)
   {
-
     std::auto_ptr<CorrMETData> type1Correction(new CorrMETData());
     for ( typename std::vector<type2BinningEntryType*>::iterator type2BinningEntry = type2Binning_.begin();
 	  type2BinningEntry != type2Binning_.end(); ++type2BinningEntry ) {
@@ -145,13 +141,7 @@ class PFJetMETcorrInputProducerT : public edm::EDProducer
     }
 
     edm::Handle<reco::JetCorrector> jetCorr;
-    //automatic switch for residual corrections
-    if(evt.isRealData() ) {
-      jetCorrLabel_ = jetCorrLabelRes_;
-      evt.getByToken(jetCorrResToken_, jetCorr);
-    } else {
-      evt.getByToken(jetCorrToken_, jetCorr);
-    }
+    evt.getByToken(jetCorrToken_, jetCorr);
 
     typedef std::vector<T> JetCollection;
     edm::Handle<JetCollection> jets;
@@ -159,18 +149,18 @@ class PFJetMETcorrInputProducerT : public edm::EDProducer
 
     int numJets = jets->size();
     for ( int jetIndex = 0; jetIndex < numJets; ++jetIndex ) {
-      const T& jet = jets->at(jetIndex);
+      const T& rawJet = jets->at(jetIndex);
 
-      const static PFJetMETcorrInputProducer_namespace::InputTypeCheckerT<T, Textractor> checkInputType {};
-      checkInputType(jet);
+      static PFJetMETcorrInputProducer_namespace::InputTypeCheckerT<T, Textractor> checkInputType;
+      checkInputType(rawJet);
 
-      double emEnergyFraction = jet.chargedEmEnergyFraction() + jet.neutralEmEnergyFraction();
+      double emEnergyFraction = rawJet.chargedEmEnergyFraction() + rawJet.neutralEmEnergyFraction();
       if ( skipEM_ && emEnergyFraction > skipEMfractionThreshold_ ) continue;
 
-      const static PFJetMETcorrInputProducer_namespace::RawJetExtractorT<T> rawJetExtractor {};
-      reco::Candidate::LorentzVector rawJetP4 = rawJetExtractor(jet);
+      static PFJetMETcorrInputProducer_namespace::RawJetExtractorT<T> rawJetExtractor;
+      reco::Candidate::LorentzVector rawJetP4 = rawJetExtractor(rawJet);
       if ( skipMuons_ ) {
-	const std::vector<reco::CandidatePtr> & cands = jet.daughterPtrVector();
+	const std::vector<reco::CandidatePtr> & cands = rawJet.daughterPtrVector();
 	for ( std::vector<reco::CandidatePtr>::const_iterator cand = cands.begin();
 	      cand != cands.end(); ++cand ) {
           const reco::PFCandidate *pfcand = dynamic_cast<const reco::PFCandidate *>(cand->get());
@@ -183,21 +173,21 @@ class PFJetMETcorrInputProducerT : public edm::EDProducer
       }
 
       reco::Candidate::LorentzVector corrJetP4;
-      if ( checkInputType.isPatJet(jet) )
-        corrJetP4 = jetCorrExtractor_(jet, jetCorrLabel_.label(), jetCorrEtaMax_, &rawJetP4);
+      if ( checkInputType.isPatJet(rawJet) )
+        corrJetP4 = jetCorrExtractor_(rawJet, jetCorrLabel_.label(), jetCorrEtaMax_, &rawJetP4);
       else
-        corrJetP4 = jetCorrExtractor_(jet, jetCorr.product(), jetCorrEtaMax_, &rawJetP4);
-      
+        corrJetP4 = jetCorrExtractor_(rawJet, jetCorr.product(), jetCorrEtaMax_, &rawJetP4);
+
       if ( corrJetP4.pt() > type1JetPtThreshold_ ) {
 
 	reco::Candidate::LorentzVector rawJetP4offsetCorr = rawJetP4;
 	if ( !offsetCorrLabel_.label().empty() ) {
           edm::Handle<reco::JetCorrector> offsetCorr;
           evt.getByToken(offsetCorrToken_, offsetCorr);
-          if ( checkInputType.isPatJet(jet) )
-            rawJetP4offsetCorr = jetCorrExtractor_(jet, offsetCorrLabel_.label(), jetCorrEtaMax_, &rawJetP4);
+          if ( checkInputType.isPatJet(rawJet) )
+            rawJetP4offsetCorr = jetCorrExtractor_(rawJet, offsetCorrLabel_.label(), jetCorrEtaMax_, &rawJetP4);
           else
-	    rawJetP4offsetCorr = jetCorrExtractor_(jet, offsetCorr.product(), jetCorrEtaMax_, &rawJetP4);
+	    rawJetP4offsetCorr = jetCorrExtractor_(rawJet, offsetCorr.product(), jetCorrEtaMax_, &rawJetP4);
 
 	  for ( typename std::vector<type2BinningEntryType*>::iterator type2BinningEntry = type2Binning_.begin();
 		type2BinningEntry != type2Binning_.end(); ++type2BinningEntry ) {
@@ -246,9 +236,7 @@ class PFJetMETcorrInputProducerT : public edm::EDProducer
   edm::InputTag offsetCorrLabel_;
   edm::EDGetTokenT<reco::JetCorrector> offsetCorrToken_; // e.g. 'ak5CaloJetL1Fastjet'
   edm::InputTag jetCorrLabel_;
-  edm::InputTag jetCorrLabelRes_;
   edm::EDGetTokenT<reco::JetCorrector> jetCorrToken_;    // e.g. 'ak5CaloJetL1FastL2L3' (MC) / 'ak5CaloJetL1FastL2L3Residual' (Data)
-  edm::EDGetTokenT<reco::JetCorrector> jetCorrResToken_;    // e.g. 'ak5CaloJetL1FastL2L3' (MC) / 'ak5CaloJetL1FastL2L3Residual' (Data)
   Textractor jetCorrExtractor_;
 
   double jetCorrEtaMax_; // do not use JEC factors for |eta| above this threshold

@@ -1,70 +1,48 @@
-// -*- C++ -*-
 
-//____________________________________________________________________________||
-#include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/stream/EDProducer.h"
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DataFormats/Candidate/interface/Candidate.h"
-#include "FWCore/Utilities/interface/InputTag.h"
+/** \class CorrectedCaloMETProducer
+ *
+ * Instantiate CorrectedMETProducer template for CaloMET
+ *
+ * NOTE: This file also defines concrete implementation of CorrectedMETFactory template
+ *       specific to CaloMET
+ *
+ *
+ * \authors Michael Schmitt, Richard Cavanaugh, The University of Florida
+ *          Florent Lacroix, University of Illinois at Chicago
+ *          Christian Veelken, LLR
+ *
+ *
+ *
+ */
 
 #include "DataFormats/METReco/interface/CaloMET.h"
 #include "DataFormats/METReco/interface/CorrMETData.h"
 
-#include "JetMETCorrections/Type1MET/interface/AddCorrectionsToGenericMET.h"
+#include "JetMETCorrections/Type1MET/interface/CorrectedMETProducerT.h"
 
-#include <vector>
-
-//____________________________________________________________________________||
-class CorrectedCaloMETProducer : public edm::stream::EDProducer<>
+namespace CorrectedMETProducer_namespace
 {
-
-public:
-
-  explicit CorrectedCaloMETProducer(const edm::ParameterSet& cfg)
-    : corrector(),
-      token_(consumes<METCollection>(cfg.getParameter<edm::InputTag>("src")))
+  template <>
+  class CorrectedMETFactoryT<reco::CaloMET>
   {
-    std::vector<edm::InputTag> corrInputTags = cfg.getParameter<std::vector<edm::InputTag> >("srcCorrections");
-    std::vector<edm::EDGetTokenT<CorrMETData> > corrTokens;
-    for (std::vector<edm::InputTag>::const_iterator inputTag = corrInputTags.begin(); inputTag != corrInputTags.end(); ++inputTag) {
-      corrTokens.push_back(consumes<CorrMETData>(*inputTag));
+   public:
+
+    reco::CaloMET operator()(const reco::CaloMET& rawMEt, const CorrMETData& correction) const
+    {
+      std::vector<CorrMETData> corrections = rawMEt.mEtCorr();
+      corrections.push_back(correction);
+      return reco::CaloMET(rawMEt.getSpecific(), 
+			   correctedSumEt(rawMEt, correction), 
+			   corrections,
+			   correctedP4(rawMEt, correction), 
+			   rawMEt.vertex());
     }
-    
-    corrector.setCorTokens(corrTokens);
+  };
+}
 
-    produces<METCollection>("");
-  }
+typedef CorrectedMETProducerT<reco::CaloMET> CorrectedCaloMETProducer;
 
-  ~CorrectedCaloMETProducer() { }
-
-private:
-
-  AddCorrectionsToGenericMET corrector;
-
-  typedef std::vector<reco::CaloMET> METCollection;
-
-  edm::EDGetTokenT<METCollection> token_;
- 
-
-  void produce(edm::Event& evt, const edm::EventSetup& es) override
-  {
-    edm::Handle<METCollection> srcMETCollection;
-    evt.getByToken(token_, srcMETCollection);
-
-    const reco::CaloMET& srcMET = (*srcMETCollection)[0];
-    
-    reco::CaloMET outMET = corrector.getCorrectedCaloMET(srcMET, evt, es);
-
-    std::auto_ptr<METCollection> product(new METCollection);
-    product->push_back(outMET);
-    evt.put(product);
-  }
-
-};
-
-//____________________________________________________________________________||
+#include "FWCore/Framework/interface/MakerMacros.h"
 
 DEFINE_FWK_MODULE(CorrectedCaloMETProducer);
+
