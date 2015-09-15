@@ -59,8 +59,10 @@ jetAna.doQG = True
 jetAna.jetEta = 4.7
 jetAna.jetEtaCentral = 2.5
 jetAna.jetPt = 10.
-jetAna.mcGT     = "Summer15_50nsV4_MC" # jec corrections
-jetAna.dataGT   = "Summer15_50nsV4_DATA" # jec corrections
+#jetAna.mcGT     = "Summer15_50nsV4_MC" # jec corrections
+#jetAna.dataGT   = "Summer15_50nsV4_DATA" # jec corrections
+jetAna.mcGT     = "Summer15_25nsV2_MC" # jec corrections
+jetAna.dataGT   = "Summer15_25nsV2_DATA" # jec corrections
 jetAna.recalibrateJets = True
 jetAna.applyL2L3Residual = 'Data'
 jetAna.jetLepDR = 0.4
@@ -283,7 +285,6 @@ sequence = cfg.Sequence(
     ])
 
 ## NoHF add on
-
 #sequence.insert(sequence.index(metAna),
 #                metNoHFAna)
 #sequence.insert(sequence.index(MT2Ana),
@@ -303,10 +304,9 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 # choose 0 for quick validations tests. It doesn't require to load the sample files
 # choose 2 for full mc production
 # choose 3 for data production
-
-test = 0
+test = 2
 isData = False # will be changed accordingly if chosen to run on data
-doSpecialSettingsForMECCA = 1 # set to 1 for comparisons with americans
+doSpecialSettingsForMECCA = 0 # set to 1 for comparisons with americans
 
 if test==0:
     # ------------------------------------------------------------------------------------------- #
@@ -323,8 +323,8 @@ if test==0:
     from CMGTools.TTHAnalysis.setup.Efficiencies import *
 
     for comp in samples:
-        comp.isMC = True
-        comp.isData = False
+#        comp.isMC = True
+#        comp.isData = False
         comp.splitFactor = 250 
         comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
         comp.puFileData=dataDir+"/puProfile_Data12.root"
@@ -336,16 +336,17 @@ if test==0:
     #sequence = cfg.Sequence([eventSelector] + sequence)
     comp=testComponent
     # 74X TTbar
-    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/SYNCHfiles/0066F143-F8FD-E411-9A0B-D4AE526A0D2E.root']
+    #comp.files = ['/afs/cern.ch/user/d/dalfonso/public/SYNCHfiles/0066F143-F8FD-E411-9A0B-D4AE526A0D2E.root']
 
     # 74X GJets
     #comp.files = ['root://xrootd.unl.edu//store/mc/RunIISpring15DR74/GJets_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/00000/16E31BE7-7C18-E511-A551-00266CF2454C.root']
 
     # 74X Data
-    #comp.files = ['/afs/cern.ch/user/m/mangano/public/MECCA/dataset/74X/data/JetHT_promptReco_Run2015B.root']
+    comp.files = ['/afs/cern.ch/user/m/mangano/public/MECCA/dataset/74X/data/JetHT_promptReco_Run2015B.root']
+    #comp.files = ['/afs/cern.ch/work/m/mmasciov/CMSSW_7_4_7_MT2/src/CMGTools/TTHAnalysis/cfg/pickevents.root']
 
     selectedComponents = [comp]
-    comp.splitFactor = 10
+#    comp.splitFactor = 10
 #    comp.fineSplitFactor = 100
 
 elif test==1:
@@ -399,24 +400,19 @@ elif test==2:
 #QCD_Pt80to120, QCD_Pt120to170, QCD_Pt300to470, QCD_Pt470to600, QCD_Pt1000to1400, QCD_Pt1400to1800, QCD_Pt1800to2400, QCD_Pt2400to3200, QCD_Pt3200toInf, # QCD_Pt
 #]
 
-### 50 ns
-    selectedComponents = [ 
-TTJets_LO_50ns, 
-WJetsToLNu_50ns, 
-DYJetsToLL_M50_50ns,
-QCD_Pt80to120_50ns,
-QCD_Pt120to170_50ns,
-QCD_Pt170to300_50ns,
-QCD_Pt300to470_50ns,
-QCD_Pt470to600_50ns,
-QCD_Pt600to800_50ns,
-QCD_Pt800to1000_50ns,
-QCD_Pt1000to1400_50ns,
-QCD_Pt1400to1800_50ns,
-QCD_Pt1800to2400_50ns,
-QCD_Pt2400to3200_50ns,
-QCD_Pt3200toInf_50ns,
-]
+### 25
+#    selectedComponents = SignalSUSY + SignalEXO ### Signal Spring15
+    selectedComponents = ZJetsToNuNuHT + DYJetsM50HT + QCDPt + QCDHT + [ 
+GJets_HT100to200,
+GJets_HT200to400,
+GJets_HT400to600,
+GJets_HT600toInf,
+TTJets_LO, 
+WJetsToLNu_HT100to200,
+WJetsToLNu_HT200to400,
+WJetsToLNu_HT400to600,
+WJetsToLNu_HT600toInf,
+] + SingleTop + SignalSUSY + SignalEXO ### Full SM BG Spring15 + Singnal Spring15
     
     # test all components (1 thread per component).
     for comp in selectedComponents:
@@ -439,8 +435,10 @@ elif test==3:
     #comp.files = ['root://eoscms.cern.ch//eos/cms/store/data/Run2015B/JetHT/MINIAOD/PromptReco-v1/000/251/643/00000/0AF95D60-992C-E511-8D36-02163E0146A4.root']
     #selectedComponents = [comp]
 
-    #selectedComponents = [JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B, SingleElectron_Run2015B, SingleMuon_Run2015B, SinglePhoton_Run2015B, DoubleEG_Run2015B, DoubleMuon_Run2015B, MuonEG_Run2015B]
-    selectedComponents = [JetHT_Run2015B_17Jul2015, HTMHT_Run2015B_17Jul2015, MET_Run2015B_17Jul2015, SingleElectron_Run2015B_17Jul2015, SingleMuon_Run2015B_17Jul2015, SinglePhoton_Run2015B_17Jul2015, DoubleEG_Run2015B_17Jul2015, MuonEG_Run2015B_17Jul2015, DoubleMuon_Run2015B_17Jul2015, JetHT_Run2015B_PromptReco, HTMHT_Run2015B_PromptReco, MET_Run2015B_PromptReco, SingleElectron_Run2015B_PromptReco, SingleMuon_Run2015B_PromptReco, SinglePhoton_Run2015B_PromptReco, DoubleEG_Run2015B_PromptReco, MuonEG_Run2015B_PromptReco, DoubleMuon_Run2015B_PromptReco]
+    ##selectedComponents = [JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B, SingleElectron_Run2015B, SingleMuon_Run2015B, SinglePhoton_Run2015B, DoubleEG_Run2015B, DoubleMuon_Run2015B, MuonEG_Run2015B]
+    #selectedComponents = [JetHT_Run2015B_17Jul2015, HTMHT_Run2015B_17Jul2015, MET_Run2015B_17Jul2015, SingleElectron_Run2015B_17Jul2015, SingleMuon_Run2015B_17Jul2015, SinglePhoton_Run2015B_17Jul2015, DoubleEG_Run2015B_17Jul2015, MuonEG_Run2015B_17Jul2015, DoubleMuon_Run2015B_17Jul2015, JetHT_Run2015B_PromptReco, HTMHT_Run2015B_PromptReco, MET_Run2015B_PromptReco, SingleElectron_Run2015B_PromptReco, SingleMuon_Run2015B_PromptReco, SinglePhoton_Run2015B_PromptReco, DoubleEG_Run2015B_PromptReco, MuonEG_Run2015B_PromptReco, DoubleMuon_Run2015B_PromptReco]
+
+    selectedComponents = [ JetHT_Run2015C, HTMHT_Run2015C, MET_Run2015C, SingleElectron_Run2015C, SingleMuon_Run2015C, SinglePhoton_Run2015C, DoubleEG_Run2015C, MuonEG_Run2015C, DoubleMuon_Run2015C ]
 
 # ------------------------------------------------------------------------------------------- #
 
@@ -496,9 +494,12 @@ if isData:
     jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA.db'
     jecEra    = 'Summer15_50nsV4_DATA'
 else:
-    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
-    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_MC.db'
-    jecEra    = 'Summer15_50nsV4_MC'
+#    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
+#    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_MC.db'
+#    jecEra    = 'Summer15_50nsV4_MC'
+    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV2_MC_UncertaintySources_AK4PFchs.txt'
+    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV2_MC.db'
+    jecEra    = 'Summer15_25nsV2_MC'
 preprocessorFile = "$CMSSW_BASE/tmp/MetType1_jec_%s.py"%(jecEra)
 extraArgs=[]
 if isData:
@@ -525,7 +526,7 @@ preprocessor = CmsswPreprocessor(preprocessorFile)
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence,
                      services = [output_service],
-#                     preprocessor=preprocessor, # comment if pre-processor non needed
+                     preprocessor=preprocessor, # comment if pre-processor non needed
 #                     events_class = event_class)
                      events_class = Events)
 #printComps(config.components, True)
