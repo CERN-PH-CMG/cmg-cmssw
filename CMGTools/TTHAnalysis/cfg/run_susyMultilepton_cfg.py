@@ -257,8 +257,8 @@ if doMETpreprocessor:
     susyCoreSequence.insert(susyCoreSequence.index(metAna)+1,metNoHFAna)
     metNoHFAna.doTkMet = True
     treeProducer.globalObjects.update({"metNoHF"  : NTupleObject("metNoHF", metType, help="PF E_{T}^{miss}, after type 1 corrections (NoHF)")})
-    treeProducer.globalVariables.append(NTupleVariable("metNoHF_rawPt", lambda ev : ev.metNoHF.uncorrectedPt() if  hasattr(ev,'metNoHF') else  0, help="raw NoHF met p_{T}"))
-    treeProducer.globalVariables.append(NTupleVariable("metNoHF_rawPhi", lambda ev : ev.metNoHF.uncorrectedPhi() if  hasattr(ev,'metNoHF') else  0, help="raw NoHF met phi"))
+    treeProducer.globalVariables.append(NTupleVariable("metNoHF_rawPt", lambda ev : ev.metNoHF.uncorPt() if  hasattr(ev,'metNoHF') else  0, help="raw NoHF met p_{T}"))
+    treeProducer.globalVariables.append(NTupleVariable("metNoHF_rawPhi", lambda ev : ev.metNoHF.uncorPhi() if  hasattr(ev,'metNoHF') else  0, help="raw NoHF met phi"))
     treeProducer.globalVariables.append(NTupleVariable("metNoHF_trkPt", lambda ev : ev.tkMetNoHF.pt() if  hasattr(ev,'tkMetNoHF') else  0, help="tkmetNoHF p_{T}"))
     treeProducer.globalVariables.append(NTupleVariable("metNoHF_trkPhi", lambda ev : ev.tkMetNoHF.phi() if  hasattr(ev,'tkMetNoHF') else  0, help="tkmetNoHF phi"))
 if doAK4PFCHSchargedJets:
