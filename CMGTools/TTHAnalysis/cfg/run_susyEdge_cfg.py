@@ -60,7 +60,8 @@ lepAna.loose_muon_dxy     = 0.3
 lepAna.loose_muon_dz      = 20.0
 
 
-jetAna.recalibrateJets = False
+#jetAna.recalibrateJets = False
+jetAna.calculateSeparateCorrections=True
 
 ##########################################################
 ######################Isolation###########################
@@ -203,11 +204,12 @@ triggerFlagsAna.triggerBits = {
     'pfht200' : triggers_pfht200,
     'pfht250' : triggers_pfht250,
     'pfht300' : triggers_pfht300,
-    'pfht350' : triggers_pfht350,
+    'pfht350' : triggers_ht350,
     'pfht400' : triggers_pfht400,
-    'pfht475' : triggers_pfht475,
-    'pfht600' : triggers_pfht600,
-    'pfht800' : triggers_pfht800,
+    'pfht475' : triggers_ht475,
+    'pfht600' : triggers_ht600,
+    'pfht800' : triggers_HT800,
+    'pfht900' : triggers_HT900,
     'at57' : triggers_at57,
     'at55' : triggers_at55,
     'at53' : triggers_at53,
@@ -253,7 +255,8 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 test = getHeppyOption('test')
 selectedComponents = [] 
 
-selectedComponents = TTs + [ DYJetsToLL_M50, DYJetsToLL_M10to50]
+selectedComponents = [ TTJets_50ns, TTJets_LO_50ns, DYJetsToLL_M50_50ns, DYJetsToLL_M10to50_50ns]
+#selectedComponents = TTs + [ DYJetsToLL_M50, DYJetsToLL_M10to50]
 #selectedComponents = [ TTJets, TTJets_LO, WJetsToLNu, DYJetsToLL_M10to50,  DYJetsToLL_M50  ]
 
 
@@ -267,19 +270,19 @@ if test == 'synch':
     print 'I\'m in the synch test thing here!!'
     comp = TTJets
     selectedComponents = [comp]
-    comp.files = comp.files[:1]
+    #comp.files = comp.files[:1]
     comp.files = [
     '/afs/cern.ch/work/m/mdunser/public/synchFiles/022B08C4-C702-E511-9995-D4856459AC30.root',
-    '/afs/cern.ch/work/m/mdunser/public/synchFiles/027A951D-4103-E511-8B6B-A0040420FE80.root',
-    '/afs/cern.ch/work/m/mdunser/public/synchFiles/10950426-4103-E511-8E6B-0025905A60DA.root',
-    '/afs/cern.ch/work/m/mdunser/public/synchFiles/143E401F-4103-E511-85AC-B083FED0FFCF.root',
-    '/afs/cern.ch/work/m/mdunser/public/synchFiles/16AC5033-A302-E511-88B1-0025905B855E.root',
-    '/afs/cern.ch/work/m/mdunser/public/synchFiles/181280CD-B202-E511-B632-842B2B2922E2.root',
-    '/afs/cern.ch/work/m/mdunser/public/synchFiles/1EE4C617-9F02-E511-A57E-008CFA1CBB34.root',
-    '/afs/cern.ch/work/m/mdunser/public/synchFiles/1EFCABAE-A602-E511-85C3-00259074AE80.root',
-    '/afs/cern.ch/work/m/mdunser/public/synchFiles/2021DBC4-8F02-E511-8636-0025905AA9CC.root',
-    '/afs/cern.ch/work/m/mdunser/public/synchFiles/24142626-D302-E511-AB2A-0CC47A13CBEA.root'
-     ]
+    ##'/afs/cern.ch/work/m/mdunser/public/synchFiles/027A951D-4103-E511-8B6B-A0040420FE80.root',
+    ##'/afs/cern.ch/work/m/mdunser/public/synchFiles/10950426-4103-E511-8E6B-0025905A60DA.root',
+    ##'/afs/cern.ch/work/m/mdunser/public/synchFiles/143E401F-4103-E511-85AC-B083FED0FFCF.root',
+    ##'/afs/cern.ch/work/m/mdunser/public/synchFiles/16AC5033-A302-E511-88B1-0025905B855E.root',
+    ##'/afs/cern.ch/work/m/mdunser/public/synchFiles/181280CD-B202-E511-B632-842B2B2922E2.root',
+    ##'/afs/cern.ch/work/m/mdunser/public/synchFiles/1EE4C617-9F02-E511-A57E-008CFA1CBB34.root',
+    ##'/afs/cern.ch/work/m/mdunser/public/synchFiles/1EFCABAE-A602-E511-85C3-00259074AE80.root',
+    ##'/afs/cern.ch/work/m/mdunser/public/synchFiles/2021DBC4-8F02-E511-8636-0025905AA9CC.root',
+    ##'/afs/cern.ch/work/m/mdunser/public/synchFiles/24142626-D302-E511-AB2A-0CC47A13CBEA.root'
+    ]
     #comp.finesplitFactor = 10
     #comp.finesplitFactor = 4
 elif test == '74X-MC':
