@@ -7,6 +7,8 @@ import os
 import re
 import pprint
 import shutil
+import io
+import zlib
 
 def setCAFPath():
     """Hack to get the CAF scripts on the PYTHONPATH"""
@@ -223,6 +225,25 @@ def eosDirSize(path):
             pass
     return size/1024/1024/1024
 
+def fileChecksum(path):
+    '''Returns the checksum of a file (local or on EOS).'''
+    checksum='ERROR'
+    if not fileExists(path): raise RuntimeError, 'File does not exist.'
+    if isEOS(path):
+        lfn = eosToLFN(path)
+        res = runEOSCommand(lfn, 'find', '--checksum')
+        output = res[0].split('\n')[0]
+        checksum = output.split('=')[2]
+    else:
+        f = io.open(path,'r+b')
+        checksum = 1
+        buf = ''
+        while True:
+            buf = f.read(1024*1024*10) # 10 MB buffer
+            if len(buf)==0: break # EOF reached
+            checksum = zlib.adler32(buf,checksum)
+        checksum = str(hex(checksum & 0xffffffff))[2:]
+    return checksum.rjust(8,'0')
 
 def createEOSDir( path ):
     """Makes a directory in EOS
