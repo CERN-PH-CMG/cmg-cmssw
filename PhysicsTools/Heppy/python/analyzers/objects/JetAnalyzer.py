@@ -114,7 +114,7 @@ class JetAnalyzer( Analyzer ):
               for j1 in allJets:
                 corr = self.jetReCalibrator.getCorrection(j1, rho, delta, self.deltaMetFromJEC if delta == 0 else [0,0])
                 setattr(j1, "corr"+shift, corr)
-            for jet in allJets:
+           for jet in allJets:
                 corr = jet.corr
                 if corr > 0:
                     jet.setP4(jet.p4() * (corr * jet.rawFactor()))
