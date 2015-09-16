@@ -61,9 +61,13 @@ void pat::PackedCandidate::packVtx(bool unpackAfterwards) {
 }
 
 void pat::PackedCandidate::unpack() const {
-    p4_ = PolarLorentzVector(MiniFloatConverter::float16to32(packedPt_),
+    float pt = MiniFloatConverter::float16to32(packedPt_);
+    double shift = (pt<1. ? 0.1*pt : 0.1/pt); // shift particle phi to break degeneracies in angular separations
+    double sign = ( ( int(pt*10) % 2 == 0 ) ? 1 : -1 ); // introduce a pseudo-random sign of the shift
+    double phi = int16_t(packedPhi_)*3.2f/std::numeric_limits<int16_t>::max() + sign*shift*3.2/std::numeric_limits<int16_t>::max();
+    p4_ = PolarLorentzVector(pt,
                              int16_t(packedEta_)*6.0f/std::numeric_limits<int16_t>::max(),
-                             int16_t(packedPhi_)*3.2f/std::numeric_limits<int16_t>::max(),
+                             phi,
                              MiniFloatConverter::float16to32(packedM_));
     p4c_ = p4_;
     unpacked_ = true;
@@ -269,7 +273,13 @@ bool pat::PackedCandidate::longLived() const {return false;}
 bool pat::PackedCandidate::massConstraint() const {return false;}
 
 // puppiweight
-void pat::PackedCandidate::setPuppiWeight(float p) { packedPuppiweight_ = pack8logClosed((p-0.5)*2,-2,0,64);}
+// puppiweight
+void pat::PackedCandidate::setPuppiWeight(float p, float p_nolep) {
+  // Set both weights at once to avoid misconfigured weights if called in the wrong order
+  packedPuppiweight_ = pack8logClosed((p-0.5)*2,-2,0,64);
+  packedPuppiweightNoLepDiff_ = pack8logClosed((p_nolep-0.5)*2,-2,0,64) - packedPuppiweight_;
+}
 
 float pat::PackedCandidate::puppiWeight() const { return unpack8logClosed(packedPuppiweight_,-2,0,64)/2. + 0.5;}
 
+float pat::PackedCandidate::puppiWeightNoLep() const { return unpack8logClosed(packedPuppiweightNoLepDiff_+packedPuppiweight_,-2,0,64)/2. + 0.5;}
