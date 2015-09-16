@@ -52,7 +52,10 @@ ttHTopoJetAna = cfg.Analyzer(
 from PhysicsTools.Heppy.analyzers.eventtopology.MT2Analyzer import MT2Analyzer
 monoXMT2Ana = cfg.Analyzer(
     MT2Analyzer, name = 'MT2Analyzer',
-    doOnlyDefault = False
+    metCollection     = "slimmedMETs",
+    doOnlyDefault = False,
+    jetPt = 40.,
+    collectionPostFix = "",
     )
 
 ##------------------------------------------
