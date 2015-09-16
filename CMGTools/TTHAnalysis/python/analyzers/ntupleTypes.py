@@ -21,10 +21,7 @@ leptonTypeSusy = NTupleObjectType("leptonSusy", baseObjectTypes = [ leptonType ]
     NTupleVariable("jetPtRatio", lambda lepton : lepton.pt()/lepton.jet.pt() if hasattr(lepton,'jet') else -1, help="pt(lepton)/pt(nearest jet)"),
     NTupleVariable("jetPtRatio_Raw", lambda lepton : -1 if not hasattr(lepton,'jet') else lepton.pt()/lepton.jet.pt() if not hasattr(lepton.jet,'rawFactor') else lepton.pt()/(lepton.jet.pt()*lepton.jet.rawFactor()), help="pt(lepton)/rawpt(nearest jet)"),
     NTupleVariable("jetPtRatio_LepAwareJEC", lambda lepton : -1 if not hasattr(lepton,'jet') else lepton.pt()/lepton.jet.pt() if not hasattr(lepton.jet,'rawFactor') else lepton.pt()/( (lepton.jet.pt()*lepton.jet.rawFactor()-lepton.pt())/lepton.jet.rawFactor()+lepton.pt() ), help="pt(lepton)/[pt(lepton)+pt(nearest jet-lepton)"),
-    NTupleVariable("jetPtRatio_LepAwareJECv2", lambda lepton: lepton.pt()/jetLepAwareJEC(lepton).Pt() if hasattr(lepton,'jet') else -1, help="pt(lepton)/[rawpt(jet-PU-lep)*L2L3Res+pt(lepton)]"),
     NTupleVariable("jetPtRel", lambda lepton : ptRelv1(lepton.p4(),lepton.jet.p4()) if hasattr(lepton,'jet') else -1, help="pt of the lepton transverse to the jet axis (subtracting the lepton)"),
-    NTupleVariable("jetPtRelv2", lambda lepton : ptRelv2(lepton) if hasattr(lepton,'jet') else -1, help="pt of the lepton transverse to the jet axis (subtracting the lepton) - v2"),
-    NTupleVariable("jetPtRelHv2", lambda lepton : ptRelHv2(lepton) if hasattr(lepton,'jet') else -1, help="pt of the jet (subtracting the lepton) transverse to the lepton axis - v2"),
     NTupleVariable("jetBTagCSV", lambda lepton : lepton.jet.btag('pfCombinedInclusiveSecondaryVertexV2BJetTags') if hasattr(lepton,'jet') and hasattr(lepton.jet, 'btag') else -99, help="CSV btag of nearest jet"),
     NTupleVariable("jetBTagCMVA", lambda lepton : lepton.jet.btag('pfCombinedMVABJetTags') if hasattr(lepton,'jet') and hasattr(lepton.jet, 'btag') else -99, help="CMA btag of nearest jet"),
     NTupleVariable("jetDR",      lambda lepton : deltaR(lepton.eta(),lepton.phi(),lepton.jet.eta(),lepton.jet.phi()) if hasattr(lepton,'jet') else -1, help="deltaR(lepton, nearest jet)"),
@@ -223,7 +220,7 @@ def ptRelv1(p4,axis):
     a = ROOT.TVector3(axis.Vect().X(),axis.Vect().Y(),axis.Vect().Z())
     o = ROOT.TLorentzVector(p4.Px(),p4.Py(),p4.Pz(),p4.E())
     return o.Perp(a)
-def jetLepAwareJEC(lep):
+def jetLepAwareJEC(lep): # use only if jetAna.calculateSeparateCorrections==True
     p4l = lep.p4()
     l = ROOT.TLorentzVector(p4l.Px(),p4l.Py(),p4l.Pz(),p4l.E())
     if not hasattr(lep.jet,'rawFactor'): return l # if lep==jet (matched to lepton object itself)
@@ -232,13 +229,13 @@ def jetLepAwareJEC(lep):
     if ((j*lep.jet.rawFactor()-l).Rho()<1e-4): return l # matched to jet containing only the lepton
     j = (j*lep.jet.rawFactor()-l*(1.0/lep.jet.CorrFactor_L1))*lep.jet.CorrFactor_L1L2L3Res+l
     return j
-def ptRelv2(lep):
+def ptRelv2(lep): # use only if jetAna.calculateSeparateCorrections==True
     m = jetLepAwareJEC(lep)
     p4l = lep.p4()
     l = ROOT.TLorentzVector(p4l.Px(),p4l.Py(),p4l.Pz(),p4l.E())
     if ((m-l).Rho()<1e-4): return 0 # lep.jet==lep (no match) or jet containing only the lepton
     return l.Perp((m-l).Vect())
-def ptRelHv2(lep):
+def ptRelHv2(lep): # use only if jetAna.calculateSeparateCorrections==True
     m = jetLepAwareJEC(lep)
     p4l = lep.p4()
     l = ROOT.TLorentzVector(p4l.Px(),p4l.Py(),p4l.Pz(),p4l.E())
