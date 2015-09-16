@@ -94,7 +94,7 @@ class H2TauTauTreeProducerBase(TreeAnalyzerNumpy):
 
     def fillGenParticle(self, tree, p_name, particle):
         self.fillParticle(tree, p_name, particle)
-        self.fill(tree, '{p_name}_pdgId'.format(p_name=p_name), particle.pdgId())
+        self.fill(tree, '{p_name}_pdgId'.format(p_name=p_name), particle.pdgId() if not hasattr(particle, 'detFlavour') else particle.detFlavour)
 
     # di-tau
     def bookDiLepton(self, tree):
