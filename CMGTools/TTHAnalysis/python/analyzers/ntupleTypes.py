@@ -220,3 +220,24 @@ def ptRelv1(p4,axis):
     a = ROOT.TVector3(axis.Vect().X(),axis.Vect().Y(),axis.Vect().Z())
     o = ROOT.TLorentzVector(p4.Px(),p4.Py(),p4.Pz(),p4.E())
     return o.Perp(a)
+def jetLepAwareJEC(lep): # use only if jetAna.calculateSeparateCorrections==True
+    p4l = lep.p4()
+    l = ROOT.TLorentzVector(p4l.Px(),p4l.Py(),p4l.Pz(),p4l.E())
+    if not hasattr(lep.jet,'rawFactor'): return l # if lep==jet (matched to lepton object itself)
+    p4j = lep.jet.p4()
+    j = ROOT.TLorentzVector(p4j.Px(),p4j.Py(),p4j.Pz(),p4j.E())
+    if ((j*lep.jet.rawFactor()-l).Rho()<1e-4): return l # matched to jet containing only the lepton
+    j = (j*lep.jet.rawFactor()-l*(1.0/lep.jet.CorrFactor_L1))*lep.jet.CorrFactor_L1L2L3Res+l
+    return j
+def ptRelv2(lep): # use only if jetAna.calculateSeparateCorrections==True
+    m = jetLepAwareJEC(lep)
+    p4l = lep.p4()
+    l = ROOT.TLorentzVector(p4l.Px(),p4l.Py(),p4l.Pz(),p4l.E())
+    if ((m-l).Rho()<1e-4): return 0 # lep.jet==lep (no match) or jet containing only the lepton
+    return l.Perp((m-l).Vect())
+def ptRelHv2(lep): # use only if jetAna.calculateSeparateCorrections==True
+    m = jetLepAwareJEC(lep)
+    p4l = lep.p4()
+    l = ROOT.TLorentzVector(p4l.Px(),p4l.Py(),p4l.Pz(),p4l.E())
+    return (m-l).Perp(l.Vect())
+   
