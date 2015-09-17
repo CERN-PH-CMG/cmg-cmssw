@@ -240,7 +240,6 @@ tauAna = cfg.Analyzer(
     loose_vetoLeptonsPOG = False, # If True, the following two IDs are required
     loose_tauAntiMuonID = "againstMuonLoose3",
     loose_tauAntiElectronID = "againstElectronLooseMVA5",
-    loose_tauLooseID = "decayModeFindingNewDMs"
 
 )
 
@@ -269,7 +268,8 @@ isoTrackAna = cfg.Analyzer(
     MaxIsoSumEMU = 0.2, ### unused if not rel iso
     doSecondVeto = False,
     #####
-    doPrune = True
+    doPrune = True,
+    do_mc_match = False # note: it will in any case try it only on MC, not on data
     )
 
 
@@ -290,10 +290,10 @@ jetAna = cfg.Analyzer(
     relaxJetId = False,  
     doPuId = False, # Not commissioned in 7.0.X
     recalibrateJets = True, #'MC', # True, False, 'MC', 'Data'
-    applyL2L3Residual = False, # Switch to 'Data' when they will become available for Data
+    applyL2L3Residual = True, # Switch to 'Data' when they will become available for Data
     recalibrationType = "AK4PFchs",
-    mcGT     = "Summer15_50nsV2_MC",
-    dataGT   = "Summer15_50nsV2_MC",
+    mcGT     = "Summer15_25nsV2_MC",
+    dataGT   = "Summer15_25nsV2_DATA",
     jecPath = "${CMSSW_BASE}/src/CMGTools/RootTools/data/jec/",
     shiftJEC = 0, # set to +1 or -1 to apply +/-1 sigma shift to the nominal jet energies
     addJECShifts = False, # if true, add  "corr", "corrJECUp", and "corrJECDown" for each jet (requires uncertainties to be available!)
@@ -304,7 +304,45 @@ jetAna = cfg.Analyzer(
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
     doQG = False,
-    cleanGenJetsFromPhoton = False
+    do_mc_match = True,
+    cleanGenJetsFromPhoton = False,
+    collectionPostFix = ""
+    )
+
+#PFcharged jets analyzer
+pfChargedCHSjetAna = cfg.Analyzer(
+    JetAnalyzer, name='pfChargedCHSJetAnalyzer',
+    jetCol = 'patJetsAK4ChargedPFCHS',
+    copyJetsByValue = False,      #Whether or not to copy the input jets or to work with references (should be 'True' if JetAnalyzer is run more than once)
+    genJetCol = 'slimmedGenJets',
+    rho = ('fixedGridRhoFastjetAll','',''),
+    jetPt = 25.,
+    jetEta = 4.7,
+    jetEtaCentral = 2.4,
+    jetLepDR = 0.4,
+    jetLepArbitration = (lambda jet,lepton : lepton), # you can decide which to keep in case of overlaps; e.g. if the jet is b-tagged you might want to keep the jet
+    cleanSelectedLeptons = True, #Whether to clean 'selectedLeptons' after disambiguation. Treat with care (= 'False') if running Jetanalyzer more than once
+    minLepPt = 10,
+    relaxJetId = False,  
+    doPuId = False, # Not commissioned in 7.0.X
+    recalibrateJets = False, #'MC', # True, False, 'MC', 'Data'
+    applyL2L3Residual = False, # Switch to 'Data' when they will become available for Data
+    recalibrationType = "AK4PFchs",
+    mcGT     = "Summer15_25nsV2_MC",
+    dataGT   = "Summer15_25nsV2_DATA",
+    jecPath = "${CMSSW_BASE}/src/CMGTools/RootTools/data/jec/",
+    shiftJEC = 0, # set to +1 or -1 to apply +/-1 sigma shift to the nominal jet energies
+    addJECShifts = False, # if true, add  "corr", "corrJECUp", and "corrJECDown" for each jet (requires uncertainties to be available!)
+    smearJets = False,
+    shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts  
+    alwaysCleanPhotons = False,
+    cleanJetsFromFirstPhoton = False,
+    cleanJetsFromTaus = False,
+    cleanJetsFromIsoTracks = False,
+    doQG = False,
+    do_mc_match = True,
+    cleanGenJetsFromPhoton = False,
+    collectionPostFix = "PFChargedCHS"
     )
 
 ## Fat Jets Analyzer (generic)
@@ -358,6 +396,25 @@ metAna = cfg.Analyzer(
     dzMax = 0.1,
     collectionPostFix = "",
     )
+
+metNoHFAna = cfg.Analyzer(
+    METAnalyzer, name="metNoHFAnalyzer",
+    metCollection     = "slimmedMETsNoHF",
+    noPUMetCollection = "slimmedMETsNoHF",
+    copyMETsByValue = False,
+    doTkMet = False,
+    doMetNoPU = True,
+    doMetNoMu = False,
+    doMetNoEle = False,
+    doMetNoPhoton = False,
+    recalibrate = False,
+    jetAnalyzerCalibrationPostFix = "",
+    candidates='packedPFCandidates',
+    candidatesTypes='std::vector<pat::PackedCandidate>',
+    dzMax = 0.1,
+    collectionPostFix = "NoHF",
+    )
+
 
 # Core Event Analyzer (computes basic quantities like HT, dilepton masses)
 from CMGTools.TTHAnalysis.analyzers.ttHCoreEventAnalyzer import ttHCoreEventAnalyzer

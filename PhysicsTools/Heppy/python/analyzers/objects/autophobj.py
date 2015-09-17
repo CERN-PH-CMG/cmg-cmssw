@@ -25,6 +25,12 @@ fourVectorType = NTupleObjectType("fourVector", variables = [
     NTupleVariable("p4",    lambda x : x, "TLorentzVector", default=ROOT.reco.Particle.LorentzVector(0.,0.,0.,0.), filler = lambda vector, obj: vector.SetPtEtaPhiM(obj.pt(), obj.eta(), obj.phi(), obj.mass())),
     #               ^^^^------- Note: p4 normally is not saved unless 'saveTLorentzVectors' is enabled in the tree producer
 ])
+tlorentzFourVectorType = NTupleObjectType("tlorentzFourVectorType", variables = [
+    NTupleVariable("pt",    lambda x : x.Pt()),
+    NTupleVariable("eta",   lambda x : x.Eta()),
+    NTupleVariable("phi",   lambda x : x.Phi()),
+    NTupleVariable("energy",  lambda x : x.E()),
+])
 particleType = NTupleObjectType("particle", baseObjectTypes = [ fourVectorType ], variables = [
     NTupleVariable("pdgId",   lambda x : x.pdgId(), int),
 ])
@@ -63,8 +69,8 @@ leptonType = NTupleObjectType("lepton", baseObjectTypes = [ particleType ], vari
     NTupleVariable("tightCharge",  lambda lepton : ( lepton.isGsfCtfScPixChargeConsistent() + lepton.isGsfScPixChargeConsistent() ) if abs(lepton.pdgId()) == 11 else 2*(lepton.innerTrack().ptError()/lepton.innerTrack().pt() < 0.2), int, help="Tight charge criteria: for electrons, 2 if isGsfCtfScPixChargeConsistent, 1 if only isGsfScPixChargeConsistent, 0 otherwise; for muons, 2 if ptError/pt < 0.20, 0 otherwise "),
     # MC-match info
     NTupleVariable("mcMatchId",  lambda x : getattr(x, 'mcMatchId', -99), int, mcOnly=True, help="Match to source from hard scatter (pdgId of heaviest particle in chain, 25 for H, 6 for t, 23/24 for W/Z), zero if non-prompt or fake"),
-    NTupleVariable("mcMatchAny", lambda x : x.mcMatchAny, int, mcOnly=True, help="Match to any final state leptons: 0 if unmatched, 1 if light flavour (including prompt), 4 if charm, 5 if bottom"),
-    NTupleVariable("mcMatchTau", lambda x : x.mcMatchTau, int, mcOnly=True, help="True if the leptons comes from a tau"),
+    NTupleVariable("mcMatchAny", lambda x : getattr(x, 'mcMatchAny', -99), int, mcOnly=True, help="Match to any final state leptons: 0 if unmatched, 1 if light flavour (including prompt), 4 if charm, 5 if bottom"),
+    NTupleVariable("mcMatchTau", lambda x : getattr(x, 'mcMatchTau', -99), int, mcOnly=True, help="True if the leptons comes from a tau"),
     NTupleVariable("mcPt",   lambda x : x.mcLep.pt() if getattr(x,"mcLep",None) else 0., mcOnly=True, help="p_{T} of associated gen lepton"),
     NTupleVariable("mediumMuonId",   lambda x : x.muonID("POG_ID_Medium") if abs(x.pdgId())==13 else 1, int, help="Muon POG Medium id"),
 ])
@@ -192,9 +198,9 @@ jetTypeExtra = NTupleObjectType("jetExtra",  baseObjectTypes = [ jetType ], vari
   
 metType = NTupleObjectType("met", baseObjectTypes = [ fourVectorType ], variables = [
     NTupleVariable("sumEt", lambda x : x.sumEt() ),
-    NTupleVariable("genPt",  lambda x : x.genMET().pt() , mcOnly=True ),
-    NTupleVariable("genPhi", lambda x : x.genMET().phi(), mcOnly=True ),
-    NTupleVariable("genEta", lambda x : x.genMET().eta(), mcOnly=True ),
+    NTupleVariable("genPt",  lambda x : x.genMET().pt() if x.genMET() else 0 , mcOnly=True ),
+    NTupleVariable("genPhi", lambda x : x.genMET().phi() if x.genMET() else 0, mcOnly=True ),
+    NTupleVariable("genEta", lambda x : x.genMET().eta() if x.genMET() else 0, mcOnly=True ),
 ])
 
 ##------------------------------------------  

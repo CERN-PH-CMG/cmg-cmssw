@@ -67,10 +67,10 @@ def hist2ROC2d(hsig,hbg):
 def makeROC(plotmap,mca,sname="signal",bname="background"):
     sig = plotmap[sname]
     bkg = plotmap[bname]
-    if sig.ClassName() == "TH1F":
+    if sig.ClassName() in [ "TH1F","TH1D" ]:
         ret = hist2ROC1d(sig,bkg)
         if not ret: return ret
-    elif sig.ClassName() == "TH2F":
+    elif sig.ClassName() in [ "TH2F", "TH2D" ]:
         ret = hist2ROC2d(sig,bkg)
         if not ret: return ret
     else: raise RuntimeError, "Can't make a ROC from a "+sig.ClassName()

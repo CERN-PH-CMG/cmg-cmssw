@@ -5,7 +5,7 @@ tauPreSelection = cms.EDFilter(
     "PATTauSelector",
     src = cms.InputTag("slimmedTaus"),
     # The tau disriminators are defined here http://cmslxr.fnal.gov/lxr/source/PhysicsTools/PatAlgos/python/producersLayer1/tauProducer_cfi.py
-    cut = cms.string('pt > 15. && abs(eta) < 2.5 && tauID("decayModeFinding") > 0.5') 
+    cut = cms.string('pt > 18. && abs(eta) < 2.5 && tauID("decayModeFindingNewDMs") > 0.5') 
     # againstMuonLooseMVA, againstElectronLooseMVA5: could be in pre-selection 
     # as well
     )

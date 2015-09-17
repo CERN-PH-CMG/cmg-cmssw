@@ -123,6 +123,7 @@ class TauAnalyzer( Analyzer ):
         for lep in event.inclusiveTaus:
             gen = match[lep]
             lep.mcMatchId = 1 if gen else 0
+            lep.genp = gen
 
     def process(self, event):
         self.readCollections( event.input )
@@ -165,7 +166,6 @@ setattr(TauAnalyzer,"defaultConfig",cfg.Analyzer(
     loose_tauID = "byLooseCombinedIsolationDeltaBetaCorr3Hits",
     loose_vetoLeptonsPOG = False, # If True, the following two IDs are required
     loose_tauAntiMuonID = "againstMuonLoose3",
-    loose_tauAntiElectronID = "againstElectronLooseMVA5",
-    loose_tauLooseID = "decayModeFindingNewDMs"
+    loose_tauAntiElectronID = "againstElectronLooseMVA5"
   )
 )
