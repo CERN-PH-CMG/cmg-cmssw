@@ -249,11 +249,10 @@ class LocalDataset( BaseDataset ):
 class EOSDataset(BaseDataset): 
     '''A dataset located in any given eos directory'''
 
-    def __init__(self, directory, pattern):
-        self.castorDir = directory
+    def __init__(self, name, basedir, pattern):
+        self.castorDir = '/'.join([basedir, name])
         if not castortools.isEOSDir(self.castorDir):
             raise ValueError('directory should be a directory on EOS.')
-        name = directory
         super(EOSDataset, self).__init__( name, 'EOS', pattern)
 
     def buildListOfFiles(self, pattern='.*root'):
@@ -285,7 +284,8 @@ class Dataset( BaseDataset ):
 
         file_mask = castortools.matchingFiles(self.castorDir, '^%s_.*\.txt$' % mask)
         if file_mask:
-            from CMGTools.Production.edmIntegrityCheck import PublishToFileSystem
+            # here to avoid circular dependency
+            from edmIntegrityCheck import PublishToFileSystem
             p = PublishToFileSystem(mask)
             report = p.get(self.castorDir)
             if report is not None and report:
@@ -446,6 +446,9 @@ def createDataset( user, dataset, pattern, readcache=False,
             info = False
         elif user == 'LOCAL':
             data = LocalDataset( dataset, basedir, pattern)
+            info = False
+        elif user == 'EOS':
+            data = EOSDataset(dataset, basedir, pattern)
             info = False
         else:
             data = Dataset( dataset, user, pattern)
