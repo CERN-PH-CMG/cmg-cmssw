@@ -39,7 +39,7 @@ SingleMuon_Run2015B.vetoTriggers = []
 SingleElectron_Run2015B.triggers = triggers_1e_50ns+triggers_1e_noniso
 SingleElectron_Run2015B.vetoTriggers = triggers_1mu_noniso+triggers_1mu_iso_50ns
 
-JetHT_Run2015B.triggers = triggers_HT800+triggersHT900+triggers_dijet_fat
+JetHT_Run2015B.triggers = triggers_HT800+triggers_HT900+triggers_dijet_fat
 JetHT_Run2015B.vetoTriggers = triggers_1mu_noniso+triggers_1mu_iso_50ns+triggers_1e_50ns+triggers_1e_noniso
 
 
