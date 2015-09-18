@@ -37,7 +37,8 @@ triggerFlagsAna.triggerBits ={
     "ISOELE":triggers_1e,
     "ISOELE_50ns":triggers_1e_50ns,
     "ELE":triggers_1e_noniso,
-    "HT":triggers_HT,
+    "HT800":triggers_HT800,
+    "HT900":triggers_HT900,
     "JJ":triggers_dijet_fat  
 }
 

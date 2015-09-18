@@ -280,7 +280,7 @@ coreSequence = [
    #eventSelector,
     skimAnalyzer,
     jsonAna,
-#    triggerAna,
+    triggerAna,
     pileUpAna,
     genAna,
 #    pdfwAna,
