@@ -49,6 +49,25 @@ class MergedPlotter(PlotterBase):
         return h
 
 
+    def drawProfile(self,var,cuts,lumi,binsx,minx,maxx,miny,maxy,titlex = "",unitsx = "",titley = "",unitsy = "",drawStyle = "COLZ"):
+        h=None
+        for plotter in self.plotters:
+            if h is None:
+                h=plotter.drawProfile(var,cuts,lumi,binsx,minx,maxx,miny,maxy,titlex,unitsx,titley,unitsy,drawStyle)
+            else:
+                h.Add(plotter.drawProfile(var,cuts,lumi,binsx,minx,maxx,miny,maxy,titlex,unitsx,titley,unitsy,drawStyle))
+
+#        h.SetLineStyle(self.linestyle)
+#        h.SetLineColor(self.linecolor)
+#        h.SetLineWidth(self.linewidth)
+        h.SetFillStyle(self.fillstyle)
+        h.SetFillColor(self.fillcolor)
+        h.SetMarkerStyle(self.markerstyle)
+        h.GetXaxis().SetTitle(titlex+ " ["+unitsx+"]")
+        h.GetYaxis().SetTitle(titley+ " ["+unitsy+"]")
+        return h
+
+
     def drawTH3(self,var,cuts,lumi,binsx,minx,maxx,binsy,miny,maxy,binsz,minz,maxz,titlex = "",unitsx = "",titley = "",unitsy = "",drawStyle = "COLZ"):
         h=None
         for plotter in self.plotters:
