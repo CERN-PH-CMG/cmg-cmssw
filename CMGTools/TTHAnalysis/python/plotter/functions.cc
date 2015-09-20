@@ -4,6 +4,11 @@
 
 //// UTILITY FUNCTIONS NOT IN TFORMULA ALREADY
 
+float myratio(float num, float denom) {
+  if(denom==0) return 0;
+  return num/denom;
+}
+
 float deltaPhi(float phi1, float phi2) {
     float result = phi1 - phi2;
     while (result > float(M_PI)) result -= float(2*M_PI);
