@@ -45,10 +45,6 @@ dmMonoJet_globalVariables = dmCore_globalVariables + [
     NTupleVariable("r_gen", lambda ev: ev.r_gen, float, help="r(j1,j2,met) with jets at genInfo"),
     NTupleVariable("r", lambda ev: ev.r, float, help="r(j1,j2,met) with jets and leptons"),
     ##-------------------------------------------------- 
-    ## AlphaT
-    ##-------------------------------------------------- 
-    NTupleVariable("alphaT",        lambda ev: ev.alphaT, help="AlphaT computed using jets with pt > 50, |eta|<3"),
-    ##-------------------------------------------------- 
     ## MonoJet specific ones
     ##-------------------------------------------------- 
     NTupleVariable("apcjetmetmin",  lambda ev: ev.apcjetmetmin, help="apcjetmetmin computed using jets with pt > 50, |eta|<3"),
