@@ -9,10 +9,22 @@ import re
 #-------- LOAD ALL ANALYZERS -----------
 
 from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
+from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 
-#-------- REDEFINE WHAT I NEED -----------
+#-------- SET OPTIONS AND REDEFINE CONFIGURATIONS -----------
 
-SOS = False ## switch True to overwrite settings for SOS skim (N.B. default settings are those from multilepton preselection)
+is50ns = getHeppyOption("is50ns",False)
+runData = getHeppyOption("runData",False)
+runDataQCD = getHeppyOption("runDataQCD",False)
+runFRMC = getHeppyOption("runFRMC",False)
+scaleProdToLumi = getHeppyOption("scaleProdToLumi",-1) # produce rough equivalent of X /pb for MC datasets
+SOS = getHeppyOption("SOS",False) ## switch True to overwrite settings for SOS skim (N.B. default settings are those from multilepton preselection)
+saveSuperClusterVariables = getHeppyOption("saveSuperClusterVariables",False)
+removeSeparateJetCorrections = getHeppyOption("removeSeparateJetCorrections",False)
+doMETpreprocessor = getHeppyOption("doMETpreprocessor",False)
+doAK4PFCHSchargedJets = getHeppyOption("doAK4PFCHSchargedJets",False)
+forcedSplitFactor = getHeppyOption("splitFactor",-1)
+forcedFineSplitFactor = getHeppyOption("fineSplitFactor",-1)
 
 # Lepton Skimming
 ttHLepSkim.minLeptons = 2
@@ -171,7 +183,6 @@ if lepAna.doIsolationScan:
             ])
 
 # for electron scale and resolution checks
-saveSuperClusterVariables=False
 if saveSuperClusterVariables:
     leptonTypeSusyExtra.addVariables([
             NTupleVariable("e5x5", lambda x: x.e5x5() if (abs(x.pdgId())==11 and hasattr(x,"e5x5")) else -999, help="Electron e5x5"),
@@ -195,7 +206,7 @@ if saveSuperClusterVariables:
             NTupleVariable("superCluster_seed.energy", lambda x: x.superCluster().seed().energy() if (abs(x.pdgId())==11 and hasattr(x,"superCluster")) else -999, help="Electron superCluster.seed.energy"),
 ])
 
-jetAna.calculateSeparateCorrections=True
+jetAna.calculateSeparateCorrections = (not removeSeparateJetCorrections)
 if jetAna.calculateSeparateCorrections:
     jetTypeSusyExtra.addVariables([
             NTupleVariable("CorrFactor_L1", lambda x: x.CorrFactor_L1 if hasattr(x,'CorrFactor_L1') else 0, help="L1 correction factor"),
@@ -253,9 +264,6 @@ treeProducer.globalVariables.append(NTupleVariable("met_trkPt", lambda ev : ev.t
 treeProducer.globalVariables.append(NTupleVariable("met_trkPhi", lambda ev : ev.tkMet.phi() if  hasattr(ev,'tkMet') else  0, help="tkmet phi"))
 
 # MET preprocessor and ak4PFchs charged-only jets
-doMETpreprocessor = True
-doAK4PFCHSchargedJets = False
-
 if doMETpreprocessor:
     susyCoreSequence.insert(susyCoreSequence.index(metAna)+1,metNoHFAna)
     metNoHFAna.doTkMet = True
@@ -307,7 +315,7 @@ from CMGTools.RootTools.samples.samples_13TeV_74X_susySignalsPriv import *
 from CMGTools.RootTools.samples.samples_8TeVReReco_74X import *
 from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
 
-selectedComponents = []; is50ns = False
+selectedComponents = [];
 
 ### 8TeV data 74X ReReco
 #selectedComponents = [ SingleMu_742, MuEG_742, DoubleMu_742 ] ; is50ns = True
@@ -321,8 +329,8 @@ selectedComponents = []; is50ns = False
 
 isData = False
 
-if False: # select only a subset of a sample, corresponding to a given luminosity (assuming ~30k events per MiniAOD file, which is ok for central production)
-    target_lumi = 1000 # in inverse picobarns
+if scaleProdToLumi>0: # select only a subset of a sample, corresponding to a given luminosity (assuming ~30k events per MiniAOD file, which is ok for central production)
+    target_lumi = scaleProdToLumi # in inverse picobarns
     for c in selectedComponents:
         if not c.isMC: continue
         nfiles = int(min(ceil(target_lumi * c.xSection / 30e3), len(c.files)))
@@ -331,9 +339,9 @@ if False: # select only a subset of a sample, corresponding to a given luminosit
         c.files = c.files[:nfiles]
         c.splitFactor = len(c.files)
         c.fineSplitFactor = 1
-        #c.splitFactor = 1; c.fineSplitFactor = 4
 
-if False: # For running on data
+
+if runData: # For running on data
     isData = True
 
 #    # low-PU 50ns run (251721)
@@ -365,7 +373,7 @@ if False: # For running on data
         DatasetsAndTriggers.append( ("SingleMuon", triggers_1mu_iso + triggers_1mu_iso_50ns + triggers_1mu_noniso) )
         DatasetsAndTriggers.append( ("SingleElectron", triggers_1e + triggers_1e_50ns) )
 
-        if False: # for fake rate measurements in data
+        if runDataQCD: # for fake rate measurements in data
             lepAna.loose_muon_dxy = 999
             lepAna.loose_electron_dxy = 999
             ttHLepSkim.minLeptons = 1
@@ -409,7 +417,7 @@ if False: # For running on data
     if json is None:
         susyCoreSequence.remove(jsonAna)
 
-if False: # QCD
+if runFRMC: # QCD
     selectedComponents = QCD_MuX_50ns + QCD_ElX + [DYJetsToLL_M50_50ns, WJetsToLNu_50ns, TTJets_50ns]
     lepAna.loose_muon_dxy = 999
     lepAna.loose_electron_dxy = 999
@@ -432,6 +440,12 @@ if is50ns:
     jetAna.dataGT   = "Summer15_50nsV5_DATA"
     pfChargedCHSjetAna.mcGT     = "Summer15_50nsV5_MC"
     pfChargedCHSjetAna.dataGT   = "Summer15_50nsV5_DATA"
+
+if forcedSplitFactor>0 or forcedFineSplitFactor>0:
+    if forcedFineSplitFactor>0 and forcedSplitFactor!=1: raise RuntimeError, 'splitFactor must be 1 if setting fineSplitFactor'
+    for c in selectedComponents:
+        if forcedSplitFactor>0: c.splitFactor = forcedSplitFactor
+        if forcedFineSplitFactor>0: c.fineSplitFactor = forcedFineSplitFactor
 
 #trigMatchExample = cfg.Analyzer(
 #    TriggerMatchAnalyzer, name="TriggerMatchAllObjects",
@@ -492,20 +506,19 @@ if doMETpreprocessor:
 
 #-------- HOW TO RUN -----------
 
-from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 test = getHeppyOption('test')
 if test == '1':
     comp = DYJetsToLL_M50_50ns
+    if not is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
     comp.files = comp.files[:1]
-    print comp.files
     comp.splitFactor = 1
     if not getHeppyOption('single'):
         comp.fineSplitFactor = 4
     selectedComponents = [ comp ]
 elif test == '125':
     comp = TTJets
+    if is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
     comp.files = comp.files[:1]
-    print comp.files
     comp.splitFactor = 1
     if not getHeppyOption('single'):
         comp.fineSplitFactor = 4
@@ -515,11 +528,6 @@ elif test == '2':
         comp.files = comp.files[:1]
         comp.splitFactor = 1
         comp.fineSplitFactor = 1
-elif test == 'SingleMu':
-    comp = SingleMu
-    comp.files = comp.files[:1]
-    comp.splitFactor = 1
-    selectedComponents = [ comp ]
 elif test == '3':
     for comp in selectedComponents:
         comp.files = comp.files[:1]
@@ -530,22 +538,13 @@ elif test == '5':
         comp.files = comp.files[:5]
         comp.splitFactor = 1
         comp.fineSplitFactor = 5
-elif test == '2lss-sync': # sync
-    #eventSelector.toSelect = [ 11809 ]
-    #sequence = cfg.Sequence([eventSelector] + susyCoreSequence+[ ttHEventAna, treeProducer, ])
-    jetAna.recalibrateJets = False 
-    jetAna.smearJets       = False 
-    comp = SMS_T1tttt_2J_mGl1200_mLSP800
-    comp.files = [ 'root://eoscms//eos/cms/store/mc/Phys14DR/SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/0CD15D7F-4E6B-E411-AEB4-002590DB9216.root' ]
-    comp.splitFactor = 1
-    comp.fineSplitFactor = 10
-    selectedComponents = [ comp ]
 elif test == '74X-MC':
     what = getHeppyOption("sample")
     if what == "TTLep":
         selectedComponents = [ TTLep_pow ]
         comp = selectedComponents[0]
         comp.files = [ '/store/mc/RunIISpring15DR74/TTTo2L2Nu_13TeV-powheg/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/50000/0C1B984D-F408-E511-872E-0002C90B7F2E.root' ]
+        if is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
         tmpfil = os.path.expandvars("/tmp/$USER/0C1B984D-F408-E511-872E-0002C90B7F2E.root")
         if not os.path.exists(tmpfil):
             os.system("xrdcp root://eoscms//eos/cms%s %s" % (comp.files[0],tmpfil))
@@ -553,10 +552,13 @@ elif test == '74X-MC':
     elif what == "TT":
         ttHLepSkim.minLeptons = 0
         selectedComponents = [ TT_bx25 ]
+        if is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
     elif what == "Z":
         selectedComponents = [ ZEE_bx25, ZMM_bx25, ZTT_bx25 ]
+        if is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
     else:
         selectedComponents = RelVals740
+        if is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
     if not getHeppyOption("all"):
         for comp in selectedComponents:
             comp.files = comp.files[:1]
@@ -574,6 +576,7 @@ elif test == 'PromptReco':
                         run_range = (251252,251252),
                         triggers = triggers_ee)
     selectedComponents = [ DoubleMuon, DoubleEG ]
+    if not is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
     for comp in selectedComponents:
         comp.splitFactor = 1
         if getHeppyOption("single"):
@@ -582,34 +585,32 @@ elif test == 'PromptReco':
         else:
             comp.fineSplitFactor = 2
     if jsonAna in sequence: sequence.remove(jsonAna)
-elif test == "rereco":
-    selectedComponents = [ MuEG_740p9 ]
-    comp = selectedComponents[0]
-    comp.files = [ '/afs/cern.ch/work/g/gpetrucc/CMSSW_7_4_7/src/output.root' ]
-    comp.name  = 'ReRecoNewAlignment_251168'
-    comp.triggers = []
-    comp.json     = None
-    jetAna.recalibrateJets = False 
-    jetAna.smearJets       = False 
-    ttHLepSkim.minLeptons = 2
-    if jsonAna in sequence: sequence.remove(jsonAna)
-    if eventFlagsAna in sequence: sequence.remove(eventFlagsAna)
 elif test == "express":
-    selectedComponents = [ MuEG_740p9 ]
-    comp = selectedComponents[0]
-    comp.files = [ 'root://eoscms//eos/cms/store/express/Run2015A/ExpressPhysics/FEVT/Express-v1/000/246/908/00000/04B152E7-DE09-E511-8B18-02163E011D4A.root' ]
-    comp.name  = 'ExpressPhysics'
+
+#    # beware of cmgdataset caching!!!
+#    comp = kreator.makeDataComponent("ExpressRun2015D",
+#                                     "/ExpressPhysics/Run2015D-Express-v3/FEVT",
+#                                     "CMS", ".*root",
+#                                     json=None,
+#                                     run_range=(256673,256677),
+#                                     triggers=triggers_ee_run1[:], vetoTriggers = [],
+#                                     useAAA=False)
+#    comp.splitFactor = 200
+#    selectedComponents = [ comp ]
+
+    comp = cfg.DataComponent( files = ["root://eoscms//store/express/Run2015D/ExpressPhysics/FEVT/Express-v3/000/256/675/00000/ACC501C8-E95C-E511-A432-02163E014147.root"], name="ExpressPhysics_2015D", intLumi=1 )
     comp.triggers = []
     comp.json     = None
-    jetAna.recalibrateJets = False 
-    jetAna.smearJets       = False 
+    selectedComponents = [ comp ]
     ttHLepSkim.minLeptons = 0
+
     sequence.remove(jsonAna)
+    if is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
     # preprocessor cfg to be created with
-    #    cmsDriver.py miniAOD-data -s PAT --data --runUnscheduled --eventcontent MINIAOD --conditions GR_P_V56 --no_exec
+    #    cmsDriver.py miniAOD-data -s PAT --data --runUnscheduled --eventcontent MINIAOD --conditions 74X_dataRun2_Prompt_v2 --no_exec
     #    sed -i 's/process.MINIAODoutput_step/process.endpath/' miniAOD-data_PAT.py
     from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
-    preprocessor = CmsswPreprocessor("miniAOD-data_PAT.py")
+    preprocessor = CmsswPreprocessor("$CMSSW_BASE/src/CMGTools/TTHAnalysis/cfg/miniAOD-data_PAT.py",prefetch=True)
 
 
 ## output histogram
@@ -629,7 +630,7 @@ from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
 from CMGTools.TTHAnalysis.tools.EOSEventsWithDownload import EOSEventsWithDownload
 event_class = EOSEventsWithDownload if not preprocessor else Events
 EOSEventsWithDownload.aggressive = 2 # always fetch if running on Wigner
-if getHeppyOption("nofetch"):
+if getHeppyOption("nofetch") or getHeppyOption("isCrab"):
     event_class = Events
     if preprocessor: preprocessor.prefetch = False
 config = cfg.Config( components = selectedComponents,
