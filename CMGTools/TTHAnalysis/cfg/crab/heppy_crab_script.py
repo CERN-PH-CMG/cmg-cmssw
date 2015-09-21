@@ -98,11 +98,11 @@ looper.write()
 #os.system("ls -lR") # for debugging
 
 # assign the right name
+os.system("rm Output/cmsswPreProcessing.root")
 if _filestounpack!="": filestounpack=_filestounpack.split(',')
 for mytree in filestounpack:
     os.rename("Output/"+mytree, './'+mytree.replace('/','_'))
 os.system("tar czf heppyOutput.tgz Output/")
-os.system("touch dummyOutput.root")
 
 # print in crab log file the content of the job log files, so one can see it from 'crab getlog'
 print "-"*25

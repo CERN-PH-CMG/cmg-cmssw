@@ -17,6 +17,7 @@ g2.add_option("-l", "--production-label", dest="production_label", help="heppy_c
 g2.add_option("-v", "--cmg-version", dest="cmg_version", help="CMGTools version used", default="myCMGTools-from-CMSSW_X_Y_Z")
 g2.add_option("-u", "--unpackFile", dest="filesToUnpack", type="string", action="append", default=[], help="Files to unpack when staging out (relative to output directory)")
 parser.add_option_group(g2)
+g2.add_option("--only-unpacked", dest="only_unpacked", default=False, action="store_true", help="Only return the unpacked files, not the whole compressed output directory")
 
 parser.add_option("-n", "--dryrun", dest="dryrun", action="store_true",default=False, help="dryrun")
 parser.add_option("-w", "--siteWhitelist", dest="siteWhitelist", type="string", action="append", default=[], help="Sites whitelist (default is using the one in heppy_crab_config.py)")
@@ -40,14 +41,14 @@ optjsonfile = open('options.json','w')
 optjsonfile.write(json.dumps(_heppyGlobalOptions))
 optjsonfile.close()
 
-os.system("tar czf python.tar.gz --dereference --directory $CMSSW_BASE python")
-os.system("tar czf cmgdataset.tar.gz --directory $HOME .cmgdataset")
-os.system("tar czf cafpython.tar.gz --directory /afs/cern.ch/cms/caf/ python")
-
 handle = open(options.cfg_file, 'r')
 cfo = imp.load_source(options.cfg_file.split('/')[-1].rstrip(".py"), options.cfg_file, handle)
 conf = cfo.config
 handle.close()
+
+os.system("tar czf python.tar.gz --dereference --directory $CMSSW_BASE python")
+os.system("tar czf cmgdataset.tar.gz --directory $HOME .cmgdataset")
+os.system("tar czf cafpython.tar.gz --directory /afs/cern.ch/cms/caf/ python")
 
 os.environ["PROD_LABEL"]  = options.production_label
 os.environ["CMG_VERSION"] = options.cmg_version
@@ -59,6 +60,7 @@ if len(options.siteWhitelist)>0: os.environ["WHITESITES"] = ','.join(options.sit
 if len(options.filesToUnpack)>0: os.environ["FILESTOUNPACK"] = ','.join(options.filesToUnpack)
 if len(options.filesToShip)>0: os.environ["FILESTOSHIP"] = ','.join(options.filesToShip)
 if options.maxevents>0: os.environ["MAXNUMEVENTS"] = str(options.maxevents)
+os.environ["ONLYUNPACKED"] = str(options.only_unpacked)
 
 from PhysicsTools.HeppyCore.framework.heppy_loop import split
 for comp in conf.components:

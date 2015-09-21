@@ -25,6 +25,7 @@ try:
     config.JobType.outputFiles.extend([x.replace("/","_") for x in os.environ["FILESTOUNPACK"].split(',')])
     config.JobType.scriptArgs.append("filestounpack="+os.environ["FILESTOUNPACK"])
 except KeyError: pass
+if os.environ["ONLYUNPACKED"]!="True": config.JobType.outputFiles.append("heppyOutput.tgz")
 
 #final output: /store/user/$USER/output_dir/cmg_version/production_label/dataset/$date_$time/0000/foo.bar
 config.Data.outLFNDirBase += '/' + os.environ["STAGEOUTREMDIR"] + '/' + os.environ["CMG_VERSION"]
