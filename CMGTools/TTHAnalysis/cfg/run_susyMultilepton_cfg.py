@@ -481,7 +481,6 @@ if doMETpreprocessor:
     tempfile.tempdir=os.environ['CMSSW_BASE']+'/tmp'
     tfile, tpath = tempfile.mkstemp(suffix='.py',prefix='MET_preproc_')
     os.close(tfile)
-    preprocessorFile = tpath
     extraArgs=[]
     if isData:
       extraArgs.append('--isData')
@@ -493,13 +492,21 @@ if doMETpreprocessor:
     args = ['python',
       os.path.expandvars('$CMSSW_BASE/python/CMGTools/ObjectStudies/corMETMiniAOD_cfgCreator.py'),\
       '--GT='+GT,
-      '--outputFile='+preprocessorFile,
+      '--outputFile='+tpath,
       '--jecDBFile='+jecDBFile,
       '--jecEra='+jecEra
       ] + extraArgs
     #print "Making pre-processorfile:"
     #print " ".join(args)
     subprocess.call(args)
+    staticname=tempfile.tempdir+"/MET_preproc_%s_%s_%s_%s.py"%(jecEra,GT,"nores" if removeResiduals else "","AK4PFCHSchargedJets" if doAK4PFCHSchargedJets else "")
+    import filecmp
+    if os.path.isfile(staticname) and filecmp.cmp(tpath,staticname):
+        os.system("rm %s"%tpath)
+    else:
+        os.system("mv %s %s"%(tpath,staticname))
+    preprocessorFile=staticname
+    print 'Using preprocessor file: %s'%preprocessorFile
     from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
     preprocessor = CmsswPreprocessor(preprocessorFile,prefetch=True) # prefetching input file for preprocessor
 
