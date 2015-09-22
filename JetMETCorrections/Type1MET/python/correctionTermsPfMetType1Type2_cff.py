@@ -14,8 +14,7 @@ pfJetsPtrForMetCorr = cms.EDProducer("PFJetFwdPtrProducer",
    src = cms.InputTag("ak4PFJets")
 )
 # this one is needed only if the input file doesn't have it
-# solved automatically with unscheduled execution
-from RecoParticleFlow.PFProducer.pfLinker_cff import particleFlowPtrs
+#from RecoParticleFlow.PFProducer.pfLinker_cff import particleFlowPtrs
 # particleFlowPtrs = cms.EDProducer("PFCandidateFwdPtrProducer",
 #    src = cms.InputTag("particleFlow")
 # )
@@ -33,9 +32,10 @@ pfCandsNotInJetsForMetCorr = cms.EDProducer("PFCandidateFromFwdPtrProducer",
 ##____________________________________________________________________________||
 corrPfMetType1 = cms.EDProducer(
     "PFJetMETcorrInputProducer",
-    src = cms.InputTag('ak4PFJets'),
-    offsetCorrLabel = cms.InputTag("ak4PFL1FastjetCorrector"),
-    jetCorrLabel = cms.InputTag("ak4PFL1FastL2L3Corrector"), # NOTE: use "ak4PFL1FastL2L3Corrector" for MC / "ak4PFL1FastL2L3ResidualCorrector" for Data
+    src = cms.InputTag('ak4PFJetsCHS'),
+    offsetCorrLabel = cms.InputTag("ak4PFCHSL1FastjetCorrector"),
+    jetCorrLabel = cms.InputTag("ak4PFCHSL1FastL2L3Corrector"), #for MC
+    jetCorrLabelRes = cms.InputTag("ak4PFCHSL1FastL2L3ResidualCorrector"), # for data, automatic switch
     jetCorrEtaMax = cms.double(9.9),
     type1JetPtThreshold = cms.double(10.0),
     skipEM = cms.bool(True),
@@ -67,11 +67,12 @@ corrPfMetType2 = cms.EDProducer(
 ##____________________________________________________________________________||
 correctionTermsPfMetType1Type2 = cms.Sequence(
     pfJetsPtrForMetCorr +
-    particleFlowPtrs +
+    #particleFlowPtrs +
     pfCandsNotInJetsPtrForMetCorr +
     pfCandsNotInJetsForMetCorr +
     pfCandMETcorr +
-    ak4PFL1FastL2L3CorrectorChain + # NOTE: use "ak4PFL1FastL2L3CorrectorChain" for MC / "ak4PFL1FastL2L3ResidualCorrectorChain" for Data
+    ak4PFCHSL1FastL2L3ResidualCorrectorChain + #Data full chain
+    ak4PFCHSL1FastL2L3Corrector + #MC last corrector, previous are already in the data chain
     corrPfMetType1 +
     corrPfMetType2
     )
