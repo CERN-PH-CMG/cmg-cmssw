@@ -14,9 +14,9 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 from CMGTools.VVResonances.analyzers.core_cff import * 
 
 #-------- SAMPLES AND TRIGGERS -----------
-from CMGTools.VVResonances.samples.loadSamples import mcSamples,dataSamples,signalSamples
+from CMGTools.VVResonances.samples.loadSamples import *
 
-selectedComponents = mcSamples+dataSamples
+selectedComponents = mcSamples+dataSamples_50ns
 #selectedComponents = dataSamples
 
 #-------- Analyzer
@@ -44,7 +44,7 @@ triggerFlagsAna.triggerBits ={
 
 
 #-------- HOW TO RUN
-test = 3
+test = 0
 if test==1:
     # test a single component, using a single thread.
     selectedComponents = [signalSamples[7]]
