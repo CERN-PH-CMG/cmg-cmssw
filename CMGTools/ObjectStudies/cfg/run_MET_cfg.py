@@ -83,6 +83,20 @@ elif test==5:
         comp.files = comp.files[:]
         comp.fineSplitFactor = 5
 
+elif test==6:
+    selectedComponents = [ GJets_Pt15to6000_50ns ]
+    is1PH=True
+    for comp in selectedComponents:
+        comp.splitFactor = 100
+        comp.files = comp.files[:]
+
+elif test==7:
+    selectedComponents = [QCD_Pt30to50_50ns, QCD_Pt50to80_50ns, QCD_Pt80to120_50ns, QCD_Pt120to170_50ns]
+    is1PH=True
+    for comp in selectedComponents:
+        comp.splitFactor = 100
+        comp.files = comp.files[:]
+
     # ------------------------------------------------------------------------------------------- #
 
 ### this is for the Zskim
