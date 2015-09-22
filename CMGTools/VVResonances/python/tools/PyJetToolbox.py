@@ -6,14 +6,56 @@ ROOT.AutoLibraryLoader.enable()
 class PyJet(object):
     def __init__(self,p4):
         self.LV = ROOT.math.XYZTLorentzVector(p4.px(),p4.py(),p4.pz(),p4.energy())
-        self.rawFactor = 1.0
+        self.rawF = 1.0
         self.matched=0
+        
+        self.chargedHadronEnergy = 0.0
+        self.neutralHadronEnergy = 0.0
+        self.photonEnergy = 0.0
+        self.hfEMEnergy = 0.0
+        self.hfHADEnergy = 0.0
+        self.muonEnergy = 0.0
+        self.electronEnergy = 0.0
+        self.btag=0.0
+
+    def chargedHadronEnergyFraction(self):
+        return self.chargedHadronEnergy/(self.LV.energy()*self.rawF)
+
+    def neutralHadronEnergyFraction(self):
+        return self.neutralHadronEnergy/((self.LV.energy()*self.rawF))
+
+    def photonEnergyFraction(self):
+        return self.photonEnergy/((self.LV.energy()*self.rawF))
+
+    def HFHadronEnergyFraction(self):
+        return self.hfHADEnergy/((self.LV.energy()*self.rawF))
+
+    def HFEMEnergyFraction(self):
+        return self.hfEMEnergy/((self.LV.energy()*self.rawF))
+
+    def muonEnergyFraction(self):
+        return self.muonEnergy/((self.LV.energy()*self.rawF))
+
+    def electronEnergyFraction(self):
+        return self.electronEnergy/((self.LV.energy()*self.rawF))
+
+    def leptonEnergyFraction(self):
+        return (self.electronEnergy+self.muonEnergy)/((self.LV.energy()*self.rawF))
+
+
     def setConstituents(self,constituents):
         self.constituents = constituents
 
+    def bTag(self):
+        return self.btag
+        
 
     def p4(self):
         return self.LV
+
+
+    def setP4(self,p4):
+        self.LV = p4
 
     def numberOfDaughters(self):
         return len(constituents)
@@ -25,7 +67,10 @@ class PyJet(object):
             return None
 
     def rawFactor(self):
-        return self.rawFactor
+        return self.rawF
+
+    def setRawFactor(self,factor):
+        self.rawF=factor
 
 
     def jetArea(self):
@@ -50,7 +95,6 @@ class PyJetToolbox(object):
         self.doSubjets = False
         self.doSoftDrop = False
         self.doNTau = False
-
     def setInterface(self,doArea,ktpower,rparam,active_area_repeats=1,ghost_area = 0.01,ghost_eta_max = 5.0,rho_eta_max = 4.4):        
         if doArea:
             self.interface = ROOT.cmg.FastJetInterface(self.p4s,ktpower,rparam,active_area_repeats,ghost_area,ghost_eta_max,rho_eta_max)
@@ -72,7 +116,7 @@ class PyJetToolbox(object):
         self.doPrunning = activate       
         self.prunning = {'zcut':zcut,'rcutfactor':rcutfactor}
 
-    def setSoftDrop(self,activate,beta=0.0,zcut=0.1,R0=0.4):
+    def setSoftDrop(self,activate,beta=0.0,zcut=0.1,R0=0.8):
         self.doSoftDrop = activate
         self.softdrop = {'beta':beta,'zcut':zcut,'R0':R0}
 
@@ -92,14 +136,30 @@ class PyJetToolbox(object):
             jet.constituents=[]
             constituents = self.interface.getConstituents(isJet,i)
             for c in constituents:
-                jet.constituents.append(self.collection[c])
+                constituent = self.collection[c]
+                jet.constituents.append(constituent)
+                if abs(constituent.pdgId()) ==211:
+                    jet.chargedHadronEnergy=jet.chargedHadronEnergy+constituent.energy()
+                elif constituent.pdgId() ==22:
+                    jet.photonEnergy=jet.photonEnergy+constituent.energy()
+                elif constituent.pdgId() ==130:
+                    jet.neutralHadronEnergy=jet.neutralHadronEnergy+constituent.energy()
+                elif constituent.pdgId() ==1:
+                    jet.hfHADEnergy=jet.hfHADEnergy+constituent.energy()
+
+                elif constituent.pdgId() ==2:
+                    jet.hfEMEnergy=jet.hfEMEnergy+constituent.energy()
+                elif abs(constituent.pdgId())==11:
+                    jet.electronEnergy=jet.electronEnergy+constituent.energy()
+                elif abs(constituent.pdgId())==13:
+                    jet.muonEnergy=jet.muonEnergy+constituent.energy()                  
             if isFat:
                 if self.doPrunning:
                     self.interface.prune(isJet,self.prunning['zcut'],self.prunning['rcutfactor'])
                     jet.prunedJet = self.convert(self.interface.get(isJet),False,isJet)
                 if self.doSoftDrop:
-                    self.interface.softDrop(isJet,self.softdrop['beta'],self.softdrop['zcut'],self.softdrop['R0'])
-                    jet.softDropJet = self.convert(self.interface.get(not isJet),False,isJet)[i]
+                    self.interface.softDrop(True,self.softdrop['beta'],self.softdrop['zcut'],self.softdrop['R0'])
+                    jet.softDropJet = self.convert(self.interface.get(False),False,True)[i]
                 if self.doSubjets:
                     if self.subjets['style'] == 'inc':
                         self.interface.makeSubJets(i,self.subjets['setting'])
@@ -137,30 +197,52 @@ class PyJetToolbox(object):
 
 #pfH = Handle('std::vector<pat::PackedCandidate')
 #jetsH = Handle('std::vector<pat::Jet')
-
+#
 #events=Events(
 #'root://eoscms//eos/cms/store/cmst3/user/bachtis/CMG/vv.root'
 #)
-
-
-
+#
+#
+#
+#from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi
+#
+#
 #for ev in events:
 #    ev.getByLabel('packedPFCandidates',pfH)
-#    ev.getByLabel('slimmedJetsAK8',jetsH)
+#    ev.getByLabel('slimmedJets',jetsH)
 #    pf = pfH.product()
 #    pfCHS = filter(lambda x: x.fromPV(0) , pf)
 #    jetsDefault = jetsH.product()
 #    if len(jetsDefault)==0:
 #        continue
 #    toolbox  = PyJetToolbox(pfCHS)
-#    toolbox.setInterface(True,-1.0,0.8)
-#    toolbox.setMassDrop(True)
-#    toolbox.setSubjets(True,'inc',2)
+#
+#
+#    toolbox.setInterface(True,-1.0,0.4)
+#    toolbox.setMassDrop(False)
+#    toolbox.setSubjets(False,'inc',2)
 #    toolbox.setPruning(False)
-#    toolbox.setNtau(True)
-#    toolbox.setSoftDrop(True)
-#    jets=toolbox.inclusiveJets(100.0)
-#    import pdb;pdb.set_trace()
+#    toolbox.setNtau(False)
+#    toolbox.setSoftDrop(False)
+#    jets=toolbox.inclusiveJets(30.0)
+
+
+#    print 'OLD VS NEW'
+#    print '----------'
+#    for new in jets:
+#        for old in jetsDefault:
+#            if deltaR(new.eta(),new.phi(),old.eta(),old.phi())<0.2:
+#                print 'New',new.pt(),new.eta(),new.phi(),new.mass(),new.jetArea(),'Old',old.pt(),old.eta(),old.phi(),old.mass(),old.jetArea(),'Uncorrected',old.correctedP4('Uncorrected').pt(),'L1',old.correctedP4('L1FastJet').pt(),'L2',old.correctedP4('L2Relative').pt(),'L3',old.correctedP4('L3Absolute').pt()
+#                for s in  old.availableJECLevels():
+#                    print s
+
+#    print 'NEW VS OLD'
+#    print '----------'
+#    for old in jetsDefault:
+#        for new in jets:
+#            if deltaR(new.eta(),new.phi(),old.eta(),old.phi())<0.2:
+#                print 'New',new.pt(),new.eta(),new.phi(),new.mass(),new.jetArea(),'Old',old.pt(),old.eta(),old.phi(),old.mass(),old.jetArea(),'Uncorrected',old.correctedP4('Uncorrected').pt(),'L1',old.correctedP4('L1FastJet').pt(),'L2',old.correctedP4('L2Relative').pt(),'L3',old.correctedP4('L3Absolute').pt()
+
        
 
 

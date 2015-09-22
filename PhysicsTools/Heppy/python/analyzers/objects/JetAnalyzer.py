@@ -77,7 +77,7 @@ class JetAnalyzer( Analyzer ):
         self.lepSelCut = getattr(self.cfg_ana, 'lepSelCut', lambda lep : True)
         self.jetGammaDR =  getattr(self.cfg_ana, 'jetGammaDR', 0.4)
         if(self.cfg_ana.doQG):
-            qgdefname="{CMSSW_BASE}/src/PhysicsTools/Heppy/data/pdfQG_AK4chs_antib_13TeV_v1.root"
+            qgdefname="{CMSSW_BASE}/src/PhysicsTools/Heppy/data/pdfQG_AK4chs_13TeV_v2b.root"
             self.qglcalc = QGLikelihoodCalculator(getattr(self.cfg_ana,"QGpath",qgdefname).format(CMSSW_BASE= os.environ['CMSSW_BASE']))
         if not hasattr(self.cfg_ana ,"collectionPostFix"):self.cfg_ana.collectionPostFix=""
 
@@ -106,21 +106,15 @@ class JetAnalyzer( Analyzer ):
         self.deltaMetFromJEC = [0.,0.]
 #        print "before. rho",self.rho,self.cfg_ana.collectionPostFix,'allJets len ',len(allJets),'pt', [j.pt() for j in allJets]
         if self.doJEC:
-#            print "\nCalibrating jets %s for lumi %d, event %d" % (self.cfg_ana.jetCol, event.lumi, event.eventId)
-            self.jetReCalibrator.correctAll(allJets, rho, delta=self.shiftJEC, metShift=self.deltaMetFromJEC)
-
-        if self.addJECShifts:
-           for delta, shift in [(1.0, "JECUp"), (0.0, ""), (-1.0, "JECDown")]:
-              for j1 in allJets:
-                corr = self.jetReCalibrator.getCorrection(j1, rho, delta, self.deltaMetFromJEC)
-                setattr(j1, "corr"+shift, corr)
-
+            self.jetReCalibrator.correctAll(allJets, rho, delta=self.shiftJEC, metShift=self.deltaMetFromJEC, addCorr=True, addShifts=self.addJECShifts)           
         self.allJetsUsedForMET = allJets
 #        print "after. rho",self.rho,self.cfg_ana.collectionPostFix,'allJets len ',len(allJets),'pt', [j.pt() for j in allJets]
 
         if self.cfg_comp.isMC:
             self.genJets = [ x for x in self.handles['genJet'].product() ]
             if self.cfg_ana.do_mc_match:
+                for igj, gj in enumerate(self.genJets):
+                    gj.index = igj
                 self.matchJets(event, allJets)
             if getattr(self.cfg_ana, 'smearJets', False):
                 self.smearJets(event, allJets)
@@ -341,11 +335,15 @@ class JetAnalyzer( Analyzer ):
             if gen != None:
                genpt, jetpt, aeta = gen.pt(), jet.pt(), abs(jet.eta())
                # from https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
-               factor = 1.052 + self.shiftJER*math.hypot(0.012,0.062);
-               if   aeta > 2.3: factor = 1.288 + self.shiftJER*math.hypot(0.127,0.154)
-               elif aeta > 1.7: factor = 1.134 + self.shiftJER*math.hypot(0.035,0.066)
-               elif aeta > 1.1: factor = 1.096 + self.shiftJER*math.hypot(0.017,0.063)
-               elif aeta > 0.5: factor = 1.057 + self.shiftJER*math.hypot(0.012,0.056)
+               #8 TeV tables
+               
+               factor = 1.079 + self.shiftJER*0.026
+               if   aeta > 3.2: factor = 1.056 + self.shiftJER * 0.191
+               elif aeta > 2.8: factor = 1.395 + self.shiftJER * 0.063
+               elif aeta > 2.3: factor = 1.254 + self.shiftJER * 0.062
+               elif aeta > 1.7: factor = 1.208 + self.shiftJER * 0.046
+               elif aeta > 1.1: factor = 1.121 + self.shiftJER * 0.029
+               elif aeta > 0.5: factor = 1.099 + self.shiftJER * 0.028
                ptscale = max(0.0, (jetpt + (factor-1)*(jetpt-genpt))/jetpt)
                #print "get with pt %.1f (gen pt %.1f, ptscale = %.3f)" % (jetpt,genpt,ptscale)
                jet.deltaMetFromJetSmearing = [ -(ptscale-1)*jet.rawFactor()*jet.px(), -(ptscale-1)*jet.rawFactor()*jet.py() ]
