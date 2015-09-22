@@ -1,4 +1,4 @@
-#include <smearer.h>
+#include "smearer.h"
 #include <cmath>
 using std::abs;
 using std::exp;

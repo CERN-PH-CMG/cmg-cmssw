@@ -90,15 +90,14 @@ void PVFitter::initialize(const edm::ParameterSet& iConfig,
 
   // preset quality cut to "infinite"
   dynamicQualityCut_ = 1.e30;
-
+  
   hPVx = new TH2F("hPVx","PVx vs PVz distribution",200,-maxVtxR_, maxVtxR_, 200, -maxVtxZ_, maxVtxZ_);
   hPVy = new TH2F("hPVy","PVy vs PVz distribution",200,-maxVtxR_, maxVtxR_, 200, -maxVtxZ_, maxVtxZ_);
 }
 
 PVFitter::~PVFitter() {
-
+  
 }
-
 
 void PVFitter::readEvent(const edm::Event& iEvent)
 {
@@ -147,7 +146,6 @@ void PVFitter::readEvent(const edm::Event& iEvent)
           if ( pv->isFake() || pv->tracksSize()==0 )  continue;
           if ( pv->ndof() < minVtxNdf_ || (pv->ndof()+3.)/pv->tracksSize()<2*minVtxWgt_ )  continue;
           //---
-
           hPVx->Fill( pv->x(), pv->z() );
           hPVy->Fill( pv->y(), pv->z() );
 
@@ -235,17 +233,17 @@ bool PVFitter::runBXFitter() {
     // fit parameters: positions, widths, x-y correlations, tilts in xz and yz
     //
     MnUserParameters upar;
-    upar.Add("x", 0., 0.02, -10., 10.);       // 0
-    upar.Add("y", 0., 0.02, -10., 10.);       // 1
-    upar.Add("z", 0., 0.20, -30., 30.);       // 2
-    upar.Add("ex", 0.015, 0.01, 0., 10.);     // 3
-    upar.Add("corrxy", 0., 0.02, -1., 1.);    // 4
-    upar.Add("ey", 0.015, 0.01, 0., 10.);     // 5
-    upar.Add("dxdz", 0., 0.0002, -0.1, 0.1);  // 6
-    upar.Add("dydz", 0., 0.0002, -0.1, 0.1);  // 7
-    upar.Add("ez", 1., 0.1, 0., 30.);         // 8
-    upar.Add("scale", errorScale_, errorScale_/10.,
-             errorScale_/2., errorScale_*2.); // 9
+    upar.Add("x"     , 0.   , 0.02  , -10., 10.);  // 0
+    upar.Add("y"     , 0.   , 0.02  , -10., 10.);  // 1
+    upar.Add("z"     , 0.   , 0.20  , -30., 30.);  // 2
+    upar.Add("ex"    , 0.015, 0.01  , 0.  , 10.);  // 3
+    upar.Add("corrxy", 0.   , 0.02  , -1. , 1. );  // 4
+    upar.Add("ey"    , 0.015, 0.01  , 0.  , 10.);  // 5
+    upar.Add("dxdz"  , 0.   , 0.0002, -0.1, 0.1);  // 6
+    upar.Add("dydz"  , 0.   , 0.0002, -0.1, 0.1);  // 7
+    upar.Add("ez"    , 1.   , 0.1   , 0.  , 30.);  // 8
+    upar.Add("scale", errorScale_   , errorScale_/10.,
+                      errorScale_/2., errorScale_*2.);      // 9
     MnMigrad migrad(*fcn, upar);
 
     //
@@ -255,7 +253,7 @@ bool PVFitter::runBXFitter() {
     upar.Fix(6);
     upar.Fix(7);
     upar.Fix(9);
-    FunctionMinimum ierr = migrad();
+    FunctionMinimum ierr = migrad(0,1.);
     if ( !ierr.IsValid() ) {
         edm::LogInfo("PVFitter") << "3D beam spot fit failed in 1st iteration" << std::endl;
 	fit_ok = false;
@@ -270,7 +268,7 @@ bool PVFitter::runBXFitter() {
 		   upar.Value(1)+sigmaCut_*upar.Value(5),
 		   upar.Value(2)-sigmaCut_*upar.Value(8),
 		   upar.Value(2)+sigmaCut_*upar.Value(8));
-    ierr = migrad();
+    ierr = migrad(0,1.);
     if ( !ierr.IsValid() ) {
       edm::LogInfo("PVFitter") << "3D beam spot fit failed in 2nd iteration" << std::endl;
       fit_ok = false;
@@ -282,7 +280,7 @@ bool PVFitter::runBXFitter() {
     upar.Release(4);
     upar.Release(6);
     upar.Release(7);
-    ierr = migrad();
+    ierr = migrad(0,1.);
     if ( !ierr.IsValid() ) {
         edm::LogInfo("PVFitter") << "3D beam spot fit failed in 3rd iteration" << std::endl;
 	fit_ok = false;
@@ -341,28 +339,36 @@ bool PVFitter::runFitter() {
 
     //bool fit_ok = false;
 
+    TH1F *h1PVx = (TH1F*) hPVx->ProjectionX("h1PVx", 0, -1, "e");
+    TH1F *h1PVy = (TH1F*) hPVy->ProjectionX("h1PVy", 0, -1, "e");
+    TH1F *h1PVz = (TH1F*) hPVx->ProjectionY("h1PVz", 0, -1, "e");
+
+    //Use our own copy for thread safety
+    TF1 gaus("localGaus","gaus");
+
+    h1PVx->Fit(&gaus,"QLM0");
+    h1PVy->Fit(&gaus,"QLM0");
+    h1PVz->Fit(&gaus,"QLM0");
+
+    TF1 *gausx  = h1PVx->GetFunction("localGaus");
+    TF1 *gausy  = h1PVy->GetFunction("localGaus");
+    TF1 *gausz  = h1PVz->GetFunction("localGaus");
+
+    fwidthX     = gausx->GetParameter(2);
+    fwidthY     = gausy->GetParameter(2);
+    fwidthZ     = gausz->GetParameter(2);
+    fwidthXerr  = gausx->GetParError(2);
+    fwidthYerr  = gausy->GetParError(2);
+    fwidthZerr  = gausz->GetParError(2);
+    
+    double estX = gausx->GetParameter(1);
+    double estY = gausy->GetParameter(1); 
+    double estZ = gausz->GetParameter(1);
+    double errX = fwidthX*3.;
+    double errY = fwidthY*3.; 
+    double errZ = fwidthZ*3.;
+
     if ( ! do3DFit_ ) {
-      TH1F *h1PVx = (TH1F*) hPVx->ProjectionX("h1PVx", 0, -1, "e");
-      TH1F *h1PVy = (TH1F*) hPVy->ProjectionX("h1PVy", 0, -1, "e");
-      TH1F *h1PVz = (TH1F*) hPVx->ProjectionY("h1PVz", 0, -1, "e");
-
-      //Use our own copy for thread safety
-      TF1 gaus("localGaus","gaus");
-
-      h1PVx->Fit(&gaus,"QLM0");
-      h1PVy->Fit(&gaus,"QLM0");
-      h1PVz->Fit(&gaus,"QLM0");
-
-      TF1 *gausx = h1PVx->GetFunction("localGaus");
-      TF1 *gausy = h1PVy->GetFunction("localGaus");
-      TF1 *gausz = h1PVz->GetFunction("localGaus");
-
-      fwidthX = gausx->GetParameter(2);
-      fwidthY = gausy->GetParameter(2);
-      fwidthZ = gausz->GetParameter(2);
-      fwidthXerr = gausx->GetParError(2);
-      fwidthYerr = gausy->GetParError(2);
-      fwidthZerr = gausz->GetParError(2);
 
       reco::BeamSpot::CovarianceMatrix matrix;
       matrix(2,2) = gausz->GetParError(1) * gausz->GetParError(1);
@@ -390,9 +396,9 @@ bool PVFitter::runFitter() {
       // fit parameters: positions, widths, x-y correlations, tilts in xz and yz
       //
       MnUserParameters upar;
-      upar.Add("x"     , 0.   	    , 0.02  	     , -10. 	    , 10. 	    ); // 0
-      upar.Add("y"     , 0.   	    , 0.02  	     , -10. 	    , 10. 	    ); // 1
-      upar.Add("z"     , 0.   	    , 0.20  	     , -30. 	    , 30. 	    ); // 2
+      upar.Add("x"     , estX       , errX	     , -10.	    , 10.	    ); // 0
+      upar.Add("y"     , estY       , errY	     , -10.	    , 10.	    ); // 1
+      upar.Add("z"     , estZ       , errZ	     , -30.	    , 30.	    ); // 2
       upar.Add("ex"    , 0.015	    , 0.01  	     , 0.   	    , 10. 	    ); // 3
       upar.Add("corrxy", 0.   	    , 0.02  	     , -1.  	    , 1.  	    ); // 4
       upar.Add("ey"    , 0.015	    , 0.01  	     , 0.   	    , 10. 	    ); // 5
@@ -408,7 +414,7 @@ bool PVFitter::runFitter() {
       migrad.Fix(6);
       migrad.Fix(7);
       migrad.Fix(9);
-      FunctionMinimum ierr = migrad();
+      FunctionMinimum ierr = migrad(0,1.);
       if ( !ierr.IsValid() ) {
           edm::LogWarning("PVFitter") << "3D beam spot fit failed in 1st iteration" << std::endl;
           return false;
@@ -428,7 +434,7 @@ bool PVFitter::runFitter() {
                      results[1]+sigmaCut_*results[5],
                      results[2]-sigmaCut_*results[8],
                      results[2]+sigmaCut_*results[8]);
-      ierr = migrad();
+      ierr = migrad(0,1.);
       if ( !ierr.IsValid() ) {
           edm::LogWarning("PVFitter") << "3D beam spot fit failed in 2nd iteration" << std::endl;
           return false;
@@ -439,7 +445,7 @@ bool PVFitter::runFitter() {
       migrad.Release(4);
       migrad.Release(6);
       migrad.Release(7);
-      ierr = migrad();
+      ierr = migrad(0,1.);
       if ( !ierr.IsValid() ) {
           edm::LogWarning("PVFitter") << "3D beam spot fit failed in 3rd iteration" << std::endl;
           return false;
@@ -584,4 +590,3 @@ PVFitter::pvQuality (const BeamSpotFitPVData& pv) const
   double ey = pv.posError[1];
   return ex*ex*ey*ey*(1-pv.posCorr[0]*pv.posCorr[0]);
 }
-
