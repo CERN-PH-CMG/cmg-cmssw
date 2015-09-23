@@ -9,13 +9,20 @@ from CMGTools.MonoXAnalysis.analyzers.dmCore_modules_cff import *
 from PhysicsTools.Heppy.analyzers.objects.METAnalyzer import *
 
 # Redefine what I need
+signalSkim = False
+diLepSkim = False
+singleLepSkim = False
 
 # --- MONOJET SKIMMING ---
-monoJetSkim.metCut = 0
-monoJetSkim.jetPtCuts = []
+if signalSkim == True:
+    monoJetSkim.metCut = 200
+    monoJetSkim.jetPtCuts = []
 
-# --- W->munu control sample SKIMMING ---
-monoJetCtrlLepSkim.minLeptons = 0
+# --- Z->ll control sample SKIMMING ---
+if diLepSkim == True:
+    monoJetCtrlLepSkim.minLeptons = 2
+if singleLepSkim == True:
+    monoJetCtrlLepSkim.minLeptons = 1
 
 # run miniIso
 lepAna.doMiniIsolation = True
@@ -121,9 +128,17 @@ treeProducer = cfg.Analyzer(
 # dmCoreSequence.insert(dmCoreSequence.index(skimAnalyzer),
 #                       dmCounter)
 
-#signalSamples = MonojetSignalSamples
-#backgroundSamples =  WJetsToLNuHT + ZJetsToNuNuHT + SingleTop + [TTJets] + DYJetsM50HT + GJetsHT + QCDHT
-#selectedComponents = backgroundSamples + signalSamples
+# HBHE new filter
+from CMGTools.TTHAnalysis.analyzers.hbheAnalyzer import hbheAnalyzer
+hbheAna = cfg.Analyzer(
+    hbheAnalyzer, name="hbheAnalyzer", IgnoreTS4TS5ifJetInLowBVRegion=False
+    )
+dmCoreSequence.insert(dmCoreSequence.index(ttHCoreEventAna),hbheAna)
+treeProducer.globalVariables.append(NTupleVariable("hbheFilterNew50ns", lambda ev: ev.hbheFilterNew50ns, int, help="new HBHE filter for 50 ns"))
+treeProducer.globalVariables.append(NTupleVariable("hbheFilterNew25ns", lambda ev: ev.hbheFilterNew25ns, int, help="new HBHE filter for 25 ns"))
+treeProducer.globalVariables.append(NTupleVariable("hbheFilterIso", lambda ev: ev.hbheFilterIso, int, help="HBHE iso-based noise filter"))
+
+
 
 #-------- SEQUENCE
 sequence = cfg.Sequence(dmCoreSequence+[
@@ -134,6 +149,98 @@ sequence = cfg.Sequence(dmCoreSequence+[
    MonoJetEventAna,
    treeProducer,
     ])
+
+
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import *
+from CMGTools.RootTools.samples.triggers_8TeV import triggers_1mu_8TeV, triggers_mumu_8TeV, triggers_mue_8TeV, triggers_ee_8TeV;
+triggerFlagsAna.triggerBits = {
+    'DoubleMu' : triggers_mumu_iso,
+    'DoubleMuSS' : triggers_mumu_ss,
+    'DoubleMuNoIso' : triggers_mumu_noniso,
+    'DoubleEl' : triggers_ee,
+    'MuEG'     : triggers_mue,
+    'DoubleMuHT' : triggers_mumu_ht,
+    'DoubleElHT' : triggers_ee_ht,
+    'MuEGHT' : triggers_mue_ht,
+    'TripleEl' : triggers_3e,
+    'TripleMu' : triggers_3mu,
+    'TripleMuA' : triggers_3mu_alt,
+    'DoubleMuEl' : triggers_2mu1e,
+    'DoubleElMu' : triggers_2e1mu,
+    'SingleMu' : triggers_1mu_iso,
+    'SingleMu50ns' : triggers_1mu_iso_50ns,
+    'SingleEl'     : triggers_1e,
+    'SingleEl50ns' : triggers_1e_50ns,
+    'SingleMu_8TeV' : triggers_1mu_8TeV + triggers_1mu_iso_r,
+    'DoubleMu_8TeV' : triggers_mumu_8TeV + triggers_mumu_run1,
+    'MuEG_8TeV'     : triggers_mue_8TeV + triggers_mue_run1,
+    'DoubleEl_8TeV' : triggers_ee_8TeV + triggers_ee_run1,
+    'MonoJet80MET90' : triggers_Jet80MET90,
+    'MonoJet80MET120' : triggers_Jet80MET120,
+    'METMu5' : triggers_MET120Mu5,
+}
+
+from CMGTools.MonoXAnalysis.samples.samples_monojet_13TeV_74X import *
+
+selectedComponents = []; is50ns = False
+
+### 25 ns 74X MC samples
+selectedComponents = mcSamples_monojet_Asymptotic25ns ; is50ns = False
+### 50 ns 74X MC samples
+#selectedComponents = mcSamples_monojet_Asymptotic50ns ; is50ns = True
+
+isData = False
+
+if False: # For running on data
+    isData = True
+    # Run2015C (Golden) + Run2015D (DCS) up to run 256941 , 25 ns, 3.8T     
+    json = "$CMSSW_BASE/src/CMGTools/MonoXAnalysis/python/samples/Golden_246908-255031_13TeV_PromptReco_Collisions15_25ns_v2_OR_DCS_254914_256941_JSON.txt"
+    processing = "Run2015D-PromptReco-v1"; short = "Run2015D_v1"; run_ranges = [ (256584,256842) ]; useAAA=False; is50ns=False
+
+    compSelection = ""
+    DatasetsAndTriggers = []
+    selectedComponents = []; vetos = []
+
+    if dilepSkim == True:
+        DatasetsAndTriggers.append( ("DoubleMuon", triggers_mumu_iso + triggers_mumu_ss + triggers_mumu_ht + triggers_3mu + triggers_3mu_alt) )
+        DatasetsAndTriggers.append( ("DoubleEG",   triggers_ee + triggers_ee_ht + triggers_3e) )
+    if singleLepSkim == True:
+        DatasetsAndTriggers.append( ("SingleMuon", triggers_1mu_iso + triggers_1mu_iso_50ns + triggers_1mu_noniso) )
+        DatasetsAndTriggers.append( ("SingleElectron", triggers_1e + triggers_1e_50ns) )
+    if signalSkim == True:
+        DatasetsAndTriggers.append( ("MET", triggers_Jet80MET90 + triggers_Jet80MET120 + triggers_MET120Mu5 ) )
+
+    for pd,triggers in DatasetsAndTriggers:
+        for run_range in run_ranges:
+            label = "runs_%d_%d" % run_range if run_range[0] != run_range[1] else "run_%d" % (run_range[0],)
+            compname = pd+"_"+short+"_"+label
+            if ((compSelection and not re.search(compSelection, compname))):
+                    print "Will skip %s" % (compname)
+                    continue
+            comp = kreator.makeDataComponent(compname, 
+                                             "/"+pd+"/"+processing+"/MINIAOD", 
+                                             "CMS", ".*root", 
+                                             json=json, 
+                                             run_range=run_range, 
+                                             triggers=triggers[:], vetoTriggers = vetos[:],
+                                             useAAA=useAAA)
+            print "Will process %s (%d files)" % (comp.name, len(comp.files))
+#            print "\ttrigger sel %s, veto %s" % (triggers, vetos)
+            comp.splitFactor = len(comp.files)
+            comp.fineSplitFactor = 1
+            selectedComponents.append( comp )
+        vetos += triggers
+    if json is None:
+        dmCoreSequence.remove(jsonAna)
+
+
+
+if False: # MC all
+    selectedComponents = mcSamples_monojet_Asymptotic25ns
+    for comp in selectedComponents:
+        comp.splitFactor = 20
+        comp.fineSplitFactor = 1
+
 
 #-------- HOW TO RUN ----------- 
 from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
