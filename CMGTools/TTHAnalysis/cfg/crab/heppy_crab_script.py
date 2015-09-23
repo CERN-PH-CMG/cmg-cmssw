@@ -11,12 +11,18 @@ dataset = ""
 total = 0  # total number of jobs for given dataset, not used at the moment
 nevents = None # this means run all events
 nprint  = 0 # quiet printout, change if you want to print the first nprint events
-useAAA = True # use xrootd by default
+useAAA = ""
 cfgfile=""
 _filestounpack=""
 filestounpack=[]
 
 def XrootdRedirector():
+    americas     = ["CO", "MX","US"]
+    oldcontinent = ["AT", "BE", "CH", "DE", "EE", "ES", "FR", "GR", "HU", "IT", "RU", "UK"]
+    region = os.environ["GLIDEIN_CMSSite"].split("_")[1] if "GLIDEIN_CMSSite" in os.environ else ""
+    return  "xrootd-cms.infn.it/" if region in oldcontinent else "cmsxrootd.fnal.gov/" if region in americas else "cms-xrd-global.cern.ch/" 
+def LocalFilePrefix():
+    TODO
     americas     = ["CO", "MX","US"]
     oldcontinent = ["AT", "BE", "CH", "DE", "EE", "ES", "FR", "GR", "HU", "IT", "RU", "UK"]
     region = os.environ["GLIDEIN_CMSSite"].split("_")[1] if "GLIDEIN_CMSSite" in os.environ else ""
@@ -37,12 +43,16 @@ for arg in sys.argv[2:]:
         nevents = int(arg.split("=")[1])
         print "selected to run over", nevents, "events"
     elif arg.split("=")[0] == "useAAA":
-        useAAA = not (arg.split("=")[1] == 'False') # 'True' by default
-        if useAAA: print "chosen to run via xrootd"
+        useAAA = arg.split("=")[1]
     elif arg.split("=")[0] == "cfgfile":
         cfgfile = arg.split("=")[1]
     elif arg.split("=")[0] == "filestounpack":
         _filestounpack = arg.split("=")[1]
+
+if useAAA=="full": print 'Chosen free usage of AAA to access remote files'
+elif useAAA=="eos": print 'Forcing usage of AAA to access data from EOS'
+elif useAAA=="local": print 'Using local file access on the remote site without AAA'
+else: raise RuntimeError, 'Unknown or unspecified AAA configuration parameter'
 
 print "dataset:", dataset
 print "job", job , " out of", total
@@ -64,12 +74,21 @@ handle.close()
 from PhysicsTools.HeppyCore.framework.heppy_loop import split
 # pick right component from dataset and file from jobID
 selectedComponents = []
+localPrefix = ""
 for comp in config.components:
     if comp.name == dataset:
         # this selects the files and events and changes the name to _ChunkX according to fineSplitFactor and splitFactor
         newComp = split([comp])[job-1] # first job number is 1
-        if useAAA:
-            newComp.files = [x.replace("root://eoscms.cern.ch//eos/cms","root://" + XrootdRedirector()) for x in newComp.files]
+        if useAAA=="full": newComp.files = [x.replace("root://eoscms.cern.ch//eos/cms","root://" + XrootdRedirector()) for x in newComp.files]
+        elif useAAA=="local":
+            if localPrefix=="" and len(newComp.files)>0:
+                myfile = newComp.files[0].replace("root://eoscms.cern.ch//eos/cms","") # == /store/...
+                mycheck = subprocess.check_output(["edmFileUtil","-d",myfile]).split('\n') # == root://storage/store/....root?...
+                if len(mycheck)>0:
+                    localPrefix = mycheck.split('?')[0].replace(myfile,"") # == root://storage
+                    print 'Will use %s as local file prefix'%localPrefix
+            newComp.files = [x.replace("root://eoscms.cern.ch//eos/cms",localPrefix) for x in newComp.files]
+        elif useAAA=="eos": pass
         selectedComponents.append(newComp)
 
 # check selectedComponents

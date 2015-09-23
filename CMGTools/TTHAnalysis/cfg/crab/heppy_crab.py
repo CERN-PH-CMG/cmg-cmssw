@@ -7,7 +7,7 @@ parser = OptionParser()
 g1 = OptionGroup(parser,"Heppy options")
 g1.add_option("-c", "--cfg-file", dest="cfg_file", help="heppy .cfg file to use", default="myHeppyCrabProdDummy")
 g1.add_option("-o", "--option", dest="extraOptions", type="string", action="append", default=[], help="heppy options to use for task preparation and in remote jobs (the isCrab option is automatically set, can be used in the .cfg to configure it for running on crab)")
-g1.add_option("--noAAA", dest="noAAA", action="store_true",default=False, help="do not use AAA redirection for data access in remote job (will force reading from eoscms via AAA)")
+g1.add_option("--AAAconfig", dest="AAAconfig", default="full", help="AAA configuration: full (free AAA access via redirector), local (force reading from local site, will turn AAA and ignoreLocality off), eos (force reading from EOS via AAA)")
 parser.add_option_group(g1)
 
 g2 = OptionGroup(parser,"Stageout options")
@@ -52,7 +52,7 @@ os.system("tar czf cafpython.tar.gz --directory /afs/cern.ch/cms/caf/ python")
 
 os.environ["PROD_LABEL"]  = options.production_label
 os.environ["CMG_VERSION"] = options.cmg_version
-os.environ["USEAAA"]      = str(not options.noAAA)
+os.environ["USEAAA"]      = options.AAAconfig
 os.environ["STAGEOUTREMDIR"] = options.outputDir
 os.environ["CFG_FILE"] = options.cfg_file
 os.environ["OUTSITE"] = options.storageSite
@@ -64,7 +64,7 @@ os.environ["ONLYUNPACKED"] = str(options.only_unpacked)
 
 from PhysicsTools.HeppyCore.framework.heppy_loop import split
 for comp in conf.components:
-    if getattr(comp,"useAAA",False) and (not options.noAAA):
+    if getattr(comp,"useAAA",False):
         raise RuntimeError, 'Components should have useAAA disabled in the cfg when running on crab - tune the behaviour of AAA in the crab submission instead!'
     os.environ["DATASET"] = str(comp.name)
     os.environ["NJOBS"] = str(len(split([comp])))
