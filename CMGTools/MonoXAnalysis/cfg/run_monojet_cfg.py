@@ -10,7 +10,7 @@ from PhysicsTools.Heppy.analyzers.objects.METAnalyzer import *
 
 # Redefine what I need
 signalSkim = False
-diLepSkim = False
+diLepSkim = True
 singleLepSkim = False
 
 # --- MONOJET SKIMMING ---
@@ -184,24 +184,19 @@ from CMGTools.MonoXAnalysis.samples.samples_monojet_13TeV_74X import *
 
 selectedComponents = []; is50ns = False
 
-### 25 ns 74X MC samples
-selectedComponents = mcSamples_monojet_Asymptotic25ns ; is50ns = False
-### 50 ns 74X MC samples
-#selectedComponents = mcSamples_monojet_Asymptotic50ns ; is50ns = True
+isData = True
 
-isData = False
-
-if False: # For running on data
+if True: # For running on data
     isData = True
     # Run2015C (Golden) + Run2015D (DCS) up to run 256941 , 25 ns, 3.8T     
     json = "$CMSSW_BASE/src/CMGTools/MonoXAnalysis/python/samples/Golden_246908-255031_13TeV_PromptReco_Collisions15_25ns_v2_OR_DCS_254914_256941_JSON.txt"
-    processing = "Run2015D-PromptReco-v1"; short = "Run2015D_v1"; run_ranges = [ (256584,256842) ]; useAAA=False; is50ns=False
+    processing = "Run2015D-PromptReco-v3"; short = "Run2015D_v3"; run_ranges = [ (256584,256842) ]; useAAA=False; is50ns=False
 
     compSelection = ""
     DatasetsAndTriggers = []
     selectedComponents = []; vetos = []
 
-    if dilepSkim == True:
+    if diLepSkim == True:
         DatasetsAndTriggers.append( ("DoubleMuon", triggers_mumu_iso + triggers_mumu_ss + triggers_mumu_ht + triggers_3mu + triggers_3mu_alt) )
         DatasetsAndTriggers.append( ("DoubleEG",   triggers_ee + triggers_ee_ht + triggers_3e) )
     if singleLepSkim == True:
@@ -236,7 +231,10 @@ if False: # For running on data
 
 
 if False: # MC all
-    selectedComponents = mcSamples_monojet_Asymptotic25ns
+### 25 ns 74X MC samples
+#selectedComponents = mcSamples_monojet_Asymptotic25ns ; is50ns = False
+### 50 ns 74X MC samples
+#selectedComponents = mcSamples_monojet_Asymptotic50ns ; is50ns = True
     for comp in selectedComponents:
         comp.splitFactor = 20
         comp.fineSplitFactor = 1
