@@ -649,18 +649,14 @@ class PlotMaker:
                 else:       ROOT.gStyle.SetPaperSize(20.,20.)
                 # create canvas
                 c1 = ROOT.TCanvas(pspec.name+"_canvas", pspec.name, 600, (750 if doRatio else 600))
-                print "c1 top margin: ",c1.GetTopMargin()
                 c1.SetTopMargin(c1.GetTopMargin()*options.topSpamSize);
-                print "c1 top margin: ",c1.GetTopMargin()
                 c1.Draw()
                 p1, p2 = c1, None # high and low panes
                 # set borders, if necessary create subpads
                 if doRatio:
                     c1.SetWindowSize(600 + (600 - c1.GetWw()), (750 + (750 - c1.GetWh())));
                     p1 = ROOT.TPad("pad1","pad1",0,0.31,1,1);
-                    print "p1 top margin: ",p1.GetTopMargin()
                     p1.SetTopMargin(p1.GetTopMargin()*options.topSpamSize);
-                    print "p1 top margin: ",p1.GetTopMargin()
                     p1.SetBottomMargin(0);
                     p1.Draw();
                     p2 = ROOT.TPad("pad2","pad2",0,0,1,0.31);
@@ -843,6 +839,10 @@ if __name__ == "__main__":
         os.system("mkdir -p "+os.path.dirname(outname))
         if os.path.exists("/afs/cern.ch"): os.system("cp /afs/cern.ch/user/g/gpetrucc/php/index.php "+os.path.dirname(outname))
     print "Will save plots to ",outname
+    fcmd = open(re.sub("\.root$","",outname)+"_command.txt","w")
+    fcmd.write("%s\n\n" % " ".join(sys.argv))
+    fcmd.write("%s\n%s\n" % (args,options))
+    fcmd.close()
     fcut = open(re.sub("\.root$","",outname)+"_cuts.txt","w")
     fcut.write("%s\n" % cuts); fcut.close()
     os.system("cp %s %s " % (args[2], re.sub("\.root$","",outname)+"_plots.txt"))
