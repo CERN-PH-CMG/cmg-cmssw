@@ -22,6 +22,7 @@ SOS = getHeppyOption("SOS",False) ## switch True to overwrite settings for SOS s
 saveSuperClusterVariables = getHeppyOption("saveSuperClusterVariables",False)
 removeSeparateJetCorrections = getHeppyOption("removeSeparateJetCorrections",False)
 doMETpreprocessor = getHeppyOption("doMETpreprocessor",False)
+doMETNoHF = getHeppyOption("doMETNoHF",True)
 doAK4PFCHSchargedJets = getHeppyOption("doAK4PFCHSchargedJets",False)
 forcedSplitFactor = getHeppyOption("splitFactor",-1)
 forcedFineSplitFactor = getHeppyOption("fineSplitFactor",-1)
@@ -264,7 +265,7 @@ treeProducer.globalVariables.append(NTupleVariable("met_trkPt", lambda ev : ev.t
 treeProducer.globalVariables.append(NTupleVariable("met_trkPhi", lambda ev : ev.tkMet.phi() if  hasattr(ev,'tkMet') else  0, help="tkmet phi"))
 
 # MET preprocessor and ak4PFchs charged-only jets
-if doMETpreprocessor:
+if doMETpreprocessor or doMETNoHF:
     susyCoreSequence.insert(susyCoreSequence.index(metAna)+1,metNoHFAna)
     metNoHFAna.doTkMet = True
     treeProducer.globalObjects.update({"metNoHF"  : NTupleObject("metNoHF", metType, help="PF E_{T}^{miss}, after type 1 corrections (NoHF)")})
@@ -355,9 +356,14 @@ if runData: # For running on data
 #    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_254833_13TeV_PromptReco_Collisions15_JSON.txt"; # taken at 50 ns with 25 ns reconstruction
 #    processing = "Run2015C-PromptReco-v1"; short = "Run2015C_v1"; run_ranges = [ (254833,254833) ]; useAAA=False; is50ns=True
 
-    # Run2015C, 25 ns, 3.8T
-    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_25ns_JSON_v2.txt"
-    processing = "Run2015C-PromptReco-v1"; short = "Run2015C_v1"; run_ranges = [ (254231,254907) ]; useAAA=False; is50ns=False
+#    # Run2015C, 25 ns, 3.8T
+#    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_25ns_JSON_v2.txt"
+#    processing = "Run2015C-PromptReco-v1"; short = "Run2015C_v1"; run_ranges = [ (254231,254907) ]; useAAA=False; is50ns=False
+
+    # Run2015D, fills 4376-4386, DCS only json - WARNING: CACHING
+    # brilcalc lumi --normtag /afs/cern.ch/user/c/cmsbril/public/normtag_json/OfflineNormtagV1.json -i ../data/json/json_DCSONLY_4376_4386.txt = 151.16/pb recorded
+    json = "/afs/cern.ch/user/p/peruzzi/work/cmgtools/CMSSW_7_4_12_patch4/src/CMGTools/TTHAnalysis/data/json/json_DCSONLY_4376_4386.txt"
+    processing = "Run2015D-PromptReco-v3"; short = "Run2015D_v3"; run_ranges = [ (256630,256801) ]; useAAA=False; is50ns=False
 
     compSelection = ""; compVeto = ""
     DatasetsAndTriggers = []
@@ -618,6 +624,14 @@ elif test == "express":
     #    sed -i 's/process.MINIAODoutput_step/process.endpath/' miniAOD-data_PAT.py
     from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
     preprocessor = CmsswPreprocessor("$CMSSW_BASE/src/CMGTools/TTHAnalysis/cfg/miniAOD-data_PAT.py",prefetch=True)
+elif test == "prompt2015D":
+    comp = cfg.DataComponent( files = ["root://eoscms.cern.ch//store/data/Run2015D/DoubleEG/MINIAOD/PromptReco-v3/000/256/676/00000/E6FC61D6-C55F-E511-88D2-02163E011BE0.root"], name="Prompt_2015D", intLumi=1 )
+    comp.triggers = []
+    comp.json     = None
+    selectedComponents = [ comp ]
+    ttHLepSkim.minLeptons = 0
+    sequence.remove(jsonAna)
+    if is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
 
 
 ## output histogram
