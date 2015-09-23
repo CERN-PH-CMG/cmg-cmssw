@@ -13,8 +13,11 @@ from CMGTools.VVResonances.samples.signal_13TeV_74X import signalSamples,RSGravT
 signalSamples=[RSGravToWWToLNQQ_kMpl01_2500]
 ###
 
-mcSamples = background_25ns+background_50ns+signalSamples
+mcSamples_25ns = background_25ns+signalSamples
+mcSamples_50ns=background_50ns
 
+
+mcSamples=mcSamples_25ns+mcSamples_50ns
 
 #load triggers
 from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import *
@@ -70,7 +73,7 @@ jsonFile_50ns = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions1
 
 
 #Define splitting
-for comp in mcSamples:
+for comp in mcSamples_25ns:
     comp.isMC = True
     comp.isData = False
     comp.splitFactor = 500   
@@ -78,16 +81,32 @@ for comp in mcSamples:
     comp.puFileData=dataDir+"/puProfile_Data12.root"
     comp.efficiency = eff2012
     comp.triggers=triggers_1mu_noniso+triggers_1mu_iso_50ns+triggers_1e_50ns+triggers_1e_noniso+triggers_HT800+triggers_HT900+triggers_dijet_fat
+    comp.globalTag = "Summer15_25nsV2_MC"
+
+for comp in mcSamples_50ns:
+    comp.isMC = True
+    comp.isData = False
+    comp.splitFactor = 500   
+    comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
+    comp.puFileData=dataDir+"/puProfile_Data12.root"
+    comp.efficiency = eff2012
+    comp.triggers=triggers_1mu_noniso+triggers_1mu_iso_50ns+triggers_1e_50ns+triggers_1e_noniso+triggers_HT800+triggers_HT900+triggers_dijet_fat
+    comp.globalTag = "Summer15_50nsV5_MC"
+
+
+
 
 for comp in dataSamples_50ns:
     comp.splitFactor = 1000
     comp.isMC = False
     comp.isData = True
     comp.json = jsonFile_50ns
+    comp.globalTag = "Summer15_50nsV5_DATA"
 
 for comp in dataSamples_25ns:
     comp.splitFactor = 2000
     comp.isMC = False
     comp.isData = True
     comp.json = jsonFile_50ns
+    comp.globalTag = "Summer15_25nsV2_DATA"
 

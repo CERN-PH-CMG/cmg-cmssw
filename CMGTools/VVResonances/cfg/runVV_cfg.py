@@ -44,7 +44,7 @@ triggerFlagsAna.triggerBits ={
 
 
 #-------- HOW TO RUN
-test = 0
+test = 3
 if test==1:
     # test a single component, using a single thread.
     selectedComponents = [signalSamples[7]]
