@@ -48,21 +48,21 @@ privDataSamples_0T = [ privEGamma2015A_0T, privDoubleEG2015A_0T, privHLTPhysics2
 
 ### ----------------------------- Run2015D ----------------------------------------
 
-Jet_Run2015D            = kreator.makeDataComponent("Jet_Run2015D"           , "/Jet/Run2015D-PromptReco-v1/MINIAOD"           , "CMS", ".*root", json)
-JetHT_Run2015D          = kreator.makeDataComponent("JetHT_Run2015D"         , "/JetHT/Run2015D-PromptReco-v1/MINIAOD"         , "CMS", ".*root", json)
-HTMHT_Run2015D          = kreator.makeDataComponent("HTMHT_Run2015D"         , "/HTMHT/Run2015D-PromptReco-v1/MINIAOD"         , "CMS", ".*root", json)
-MET_Run2015D            = kreator.makeDataComponent("MET_Run2015D"           , "/MET/Run2015D-PromptReco-v1/MINIAOD"           , "CMS", ".*root", json)
-SingleElectron_Run2015D = kreator.makeDataComponent("SingleElectron_Run2015D", "/SingleElectron/Run2015D-PromptReco-v1/MINIAOD", "CMS", ".*root", json)
-SingleMu_Run2015D       = kreator.makeDataComponent("SingleMu_Run2015D"      , "/SingleMu/Run2015D-PromptReco-v1/MINIAOD"      , "CMS", ".*root", json)
-SingleMuon_Run2015D     = kreator.makeDataComponent("SingleMuon_Run2015D"    , "/SingleMuon/Run2015D-PromptReco-v1/MINIAOD"    , "CMS", ".*root", json)
-SinglePhoton_Run2015D   = kreator.makeDataComponent("SinglePhoton_Run2015D"  , "/SinglePhoton/Run2015D-PromptReco-v1/MINIAOD"  , "CMS", ".*root", json)
-EGamma_Run2015D         = kreator.makeDataComponent("EGamma_Run2015D"        , "/EGamma/Run2015D-PromptReco-v1/MINIAOD"        , "CMS", ".*root", json)
-DoubleEG_Run2015D       = kreator.makeDataComponent("DoubleEG_Run2015D"      , "/DoubleEG/Run2015D-PromptReco-v1/MINIAOD"      , "CMS", ".*root", json)
-MuonEG_Run2015D         = kreator.makeDataComponent("MuonEG_Run2015D"        , "/MuonEG/Run2015D-PromptReco-v1/MINIAOD"        , "CMS", ".*root", json)
-DoubleMuon_Run2015D     = kreator.makeDataComponent("DoubleMuon_Run2015D"    , "/DoubleMuon/Run2015D-PromptReco-v1/MINIAOD"    , "CMS", ".*root", json)
+Jet_Run2015D            = kreator.makeDataComponent("Jet_Run2015D"           , "/Jet/Run2015D-PromptReco-v3/MINIAOD"           , "CMS", ".*root", json)
+JetHT_Run2015D          = kreator.makeDataComponent("JetHT_Run2015D"         , "/JetHT/Run2015D-PromptReco-v3/MINIAOD"         , "CMS", ".*root", json)
+HTMHT_Run2015D          = kreator.makeDataComponent("HTMHT_Run2015D"         , "/HTMHT/Run2015D-PromptReco-v3/MINIAOD"         , "CMS", ".*root", json)
+MET_Run2015D            = kreator.makeDataComponent("MET_Run2015D"           , "/MET/Run2015D-PromptReco-v3/MINIAOD"           , "CMS", ".*root", json)
+SingleElectron_Run2015D = kreator.makeDataComponent("SingleElectron_Run2015D", "/SingleElectron/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json)
+SingleMu_Run2015D       = kreator.makeDataComponent("SingleMu_Run2015D"      , "/SingleMu/Run2015D-PromptReco-v3/MINIAOD"      , "CMS", ".*root", json)
+SingleMuon_Run2015D     = kreator.makeDataComponent("SingleMuon_Run2015D"    , "/SingleMuon/Run2015D-PromptReco-v3/MINIAOD"    , "CMS", ".*root", json)
+SinglePhoton_Run2015D   = kreator.makeDataComponent("SinglePhoton_Run2015D"  , "/SinglePhoton/Run2015D-PromptReco-v3/MINIAOD"  , "CMS", ".*root", json)
+EGamma_Run2015D         = kreator.makeDataComponent("EGamma_Run2015D"        , "/EGamma/Run2015D-PromptReco-v3/MINIAOD"        , "CMS", ".*root", json)
+DoubleEG_Run2015D       = kreator.makeDataComponent("DoubleEG_Run2015D"      , "/DoubleEG/Run2015D-PromptReco-v3/MINIAOD"      , "CMS", ".*root", json)
+MuonEG_Run2015D         = kreator.makeDataComponent("MuonEG_Run2015D"        , "/MuonEG/Run2015D-PromptReco-v3/MINIAOD"        , "CMS", ".*root", json)
+DoubleMuon_Run2015D     = kreator.makeDataComponent("DoubleMuon_Run2015D"    , "/DoubleMuon/Run2015D-PromptReco-v3/MINIAOD"    , "CMS", ".*root", json)
 
-minBias_Run2015D  = kreator.makeDataComponent("minBias_Run2015D" , "/MinimumBias/Run2015D-PromptReco-v1/MINIAOD", "CMS", ".*root", json)
-zeroBias_Run2015D = kreator.makeDataComponent("zeroBias_Run2015D", "/ZeroBias/Run2015D-PromptReco-v1/MINIAOD"   , "CMS", ".*root", json)
+minBias_Run2015D  = kreator.makeDataComponent("minBias_Run2015D" , "/MinimumBias/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json)
+zeroBias_Run2015D = kreator.makeDataComponent("zeroBias_Run2015D", "/ZeroBias/Run2015D-PromptReco-v3/MINIAOD"   , "CMS", ".*root", json)
 
 dataSamples_Run2015D = [Jet_Run2015D, JetHT_Run2015D, HTMHT_Run2015D, MET_Run2015D, SingleElectron_Run2015D, SingleMu_Run2015D, SingleMuon_Run2015D, SinglePhoton_Run2015D, EGamma_Run2015D, DoubleEG_Run2015D, MuonEG_Run2015D, DoubleMuon_Run2015D, minBias_Run2015D, zeroBias_Run2015D]
 
