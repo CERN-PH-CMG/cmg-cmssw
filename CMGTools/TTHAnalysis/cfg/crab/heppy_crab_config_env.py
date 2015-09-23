@@ -31,7 +31,8 @@ if os.environ["ONLYUNPACKED"]!="True": config.JobType.outputFiles.append("heppyO
 config.Data.outLFNDirBase += '/' + os.environ["STAGEOUTREMDIR"] + '/' + os.environ["CMG_VERSION"]
 config.Data.primaryDataset =  os.environ["PROD_LABEL"]
 config.Data.publishDataName = os.environ["DATASET"]
-config.Data.ignoreLocality = (os.environ["useAAA"]!="local") # "full" or "eos"
+config.Data.ignoreLocality = (os.environ["USEAAA"]!="local") # "full" or "eos"
+if (os.environ["USEAAA"]=="local"): config.Site.whitelist = [] # to be checked: this or unset?
 
 config.Site.storageSite = os.environ["OUTSITE"]
 
