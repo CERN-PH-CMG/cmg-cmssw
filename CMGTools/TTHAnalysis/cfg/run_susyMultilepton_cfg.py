@@ -284,6 +284,32 @@ if doAK4PFCHSchargedJets:
 
 from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import *
 from CMGTools.RootTools.samples.triggers_8TeV import triggers_1mu_8TeV, triggers_mumu_8TeV, triggers_mue_8TeV, triggers_ee_8TeV;
+#triggerFlagsAna.triggerBits = {
+#    'DoubleMu' : triggers_mumu_iso,
+#    'DoubleMuSS' : triggers_mumu_ss,
+#    'DoubleMuNoIso' : triggers_mumu_noniso,
+#    'DoubleEl' : triggers_ee,
+#    'MuEG'     : triggers_mue,
+#    'DoubleMuHT' : triggers_mumu_ht,
+#    'DoubleElHT' : triggers_ee_ht,
+#    'MuEGHT' : triggers_mue_ht,
+#    'TripleEl' : triggers_3e,
+#    'TripleMu' : triggers_3mu,
+#    'TripleMuA' : triggers_3mu_alt,
+#    'DoubleMuEl' : triggers_2mu1e,
+#    'DoubleElMu' : triggers_2e1mu,
+#    'SingleMu' : triggers_1mu_iso,
+#    'SingleMu50ns' : triggers_1mu_iso_50ns,
+#    'SingleEl'     : triggers_1e,
+#    'SingleEl50ns' : triggers_1e_50ns,
+#    'SingleMu_8TeV' : triggers_1mu_8TeV + triggers_1mu_iso_r,
+#    'DoubleMu_8TeV' : triggers_mumu_8TeV + triggers_mumu_run1,
+#    'MuEG_8TeV'     : triggers_mue_8TeV + triggers_mue_run1,
+#    'DoubleEl_8TeV' : triggers_ee_8TeV + triggers_ee_run1,
+#    'MonoJet80MET90' : triggers_Jet80MET90,
+#    'MonoJet80MET120' : triggers_Jet80MET120,
+#    'METMu5' : triggers_MET120Mu5,
+#}
 triggerFlagsAna.triggerBits = {
     'DoubleMu' : triggers_mumu_iso,
     'DoubleMuSS' : triggers_mumu_ss,
@@ -299,17 +325,11 @@ triggerFlagsAna.triggerBits = {
     'DoubleMuEl' : triggers_2mu1e,
     'DoubleElMu' : triggers_2e1mu,
     'SingleMu' : triggers_1mu_iso,
-    'SingleMu50ns' : triggers_1mu_iso_50ns,
     'SingleEl'     : triggers_1e,
-    'SingleEl50ns' : triggers_1e_50ns,
-    'SingleMu_8TeV' : triggers_1mu_8TeV + triggers_1mu_iso_r,
-    'DoubleMu_8TeV' : triggers_mumu_8TeV + triggers_mumu_run1,
-    'MuEG_8TeV'     : triggers_mue_8TeV + triggers_mue_run1,
-    'DoubleEl_8TeV' : triggers_ee_8TeV + triggers_ee_run1,
-    'MonoJet80MET90' : triggers_Jet80MET90,
-    'MonoJet80MET120' : triggers_Jet80MET120,
-    'METMu5' : triggers_MET120Mu5,
 }
+triggerFlagsAna.fallbackProcessName = 'RECO'
+triggerFlagsAna.unrollbits = True
+triggerFlagsAna.saveIsUnprescaled = True
 
 from CMGTools.RootTools.samples.samples_13TeV_74X import *
 from CMGTools.RootTools.samples.samples_13TeV_74X_susySignalsPriv import *
