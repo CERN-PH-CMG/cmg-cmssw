@@ -33,9 +33,15 @@ class EventInterpretationBase( Analyzer ):
         self.doJEC = self.recalibrateJets or (self.shiftJEC != 0)
         if self.doJEC:
           if self.cfg_comp.isMC:
-            self.jetReCalibrator = JetReCalibrator(mcGT,self.cfg_ana.recalibrationType, False,cfg_ana.jecPath)
+              if hasattr(self.cfg_comp,'globalTag'):
+                  self.jetReCalibrator = JetReCalibrator(self.cfg_comp.globalTag,self.cfg_ana.recalibrationType, False,cfg_ana.jecPath)
+              else:
+                  self.jetReCalibrator = JetReCalibrator(mcGT,self.cfg_ana.recalibrationType, False,cfg_ana.jecPath)
           else:
-            self.jetReCalibrator = JetReCalibrator(dataGT,self.cfg_ana.recalibrationType, True,cfg_ana.jecPath)
+              if hasattr(self.cfg_comp,'globalTag'):
+                  self.jetReCalibrator = JetReCalibrator(self.cfg_comp.globalTag,self.cfg_ana.recalibrationType, True,cfg_ana.jecPath)
+              else:    
+                  self.jetReCalibrator = JetReCalibrator(dataGT,self.cfg_ana.recalibrationType, True,cfg_ana.jecPath)
 
         self.attachBTag = cfg_ana.attachBTag    
         if self.attachBTag:
