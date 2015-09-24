@@ -63,8 +63,8 @@ class hbheAnalyzer( Analyzer ):
         if event.hbheisolatedNoiseSumEt       >= 25: event.hbheFilterIso = 0 
 
 
-        event.hbheFilterNew = event.hbheFilterNew50ns # to be updated later with automatic choice based on PileupSummaryInfo or run number
-###        event.hbheFilterNew = event.hbheFilterNew25ns # hbhe filter at 25 ns
+#        event.hbheFilterNew = event.hbheFilterNew50ns # to be updated later with automatic choice based on PileupSummaryInfo or run number
+        event.hbheFilterNew = event.hbheFilterNew25ns # to be updated later with automatic choice based on PileupSummaryInfo or run number
 
 
         return True

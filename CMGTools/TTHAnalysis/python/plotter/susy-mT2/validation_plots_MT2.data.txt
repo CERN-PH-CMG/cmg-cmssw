@@ -27,6 +27,9 @@ count_nGammas20 : nGammas20 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5]; XTitle="N(#gamma\,
 count_nJet30 : nJet30 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(jet\, p_{T} > 30)'
 count_nJet40 : nJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(jet\, p_{T} > 40)'
 
+count_nJet30FailId : nJet30FailId : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(jet\, p_{T} > 30)'
+count_nJet100FailId : nJet100FailId : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5] ; XTitle='N(jet\, p_{T} > 100)'
+
 count_nBJet40 : nBJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\, p_{T} > 40\, CSVM)'
 count_nBJet30 : nBJet30 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\, p_{T} > 30\, CSVM)'
 count_nBJet20 : nBJet20 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\, p_{T} > 20\, CSVM)'
@@ -35,6 +38,7 @@ count_nBJet20 : nBJet20 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5] ; XTitle='N(b-jet\,
 
 ##### TRIGGERS
 
+
 HLT_PFHT350_PFMET100: HLT_PFHT350_PFMET100: [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_PFMET170     : HLT_PFMET170     : [-0.5,0.5,1.5]; XTitle="HLT" 
 HLT_PFHT800      : HLT_PFHT800      : [-0.5,0.5,1.5]; XTitle="HLT"
@@ -42,8 +46,10 @@ HLT_SingleMu   : HLT_SingleMu   : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_SingleEl   : HLT_SingleEl   : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_DoubleMu   : HLT_DoubleMu   : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_DoubleEl   : HLT_DoubleEl   : [-0.5,0.5,1.5]; XTitle="HLT"
-HLT_MuEG       : HLT_MuEG       : [-0.5,0.5,1.5]; XTitle="HLT"
+HLT_Mu8_EleX   : HLT_Mu8_EleX       : [-0.5,0.5,1.5]; XTitle="HLT"
+HLT_MuX_Ele12   : HLT_MuX_Ele12       : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_Photon165_HE10    : HLT_Photon165_HE10    : [-0.5,0.5,1.5]; XTitle="HLT"
+
 ###HLT_htXprescale: HLT_htXprescale: [-0.5,0.5,1.5]; XTitle="HLT"
 
 Flag_EcalDeadCellTriggerPrimitiveFilter : Flag_EcalDeadCellTriggerPrimitiveFilter: [-0.5,0.5,1.5]; XTitle="metFilter"
@@ -141,9 +147,9 @@ gamma_phi: gamma_phi: 8,-3.15,3.15    ; XTitle="gamma phi"
 gamma_eta: gamma_eta: 10,-5.,5.    ; XTitle="gamma eta"
 gamma_mass: gamma_mass: 20,0,400.    ; XTitle="gamma mass"
 
-gamma_chHadIso: gamma_chHadIso: 100,0,0.5    ; XTitle="ch gamma ISO  [GeV]"   
-gamma_neuHadIso: gamma_neuHadIso: 100,0,0.5    ; XTitle="neu gamma ISO  [GeV]"   
-gamma_phIso: gamma_phIso: 100,0,0.5    ; XTitle="ph gamma ISO  [GeV]"   
+gamma_chHadIso: gamma_chHadIso: 100,0,100.    ; XTitle="ch gamma ISO  [GeV]"   
+gamma_neuHadIso: gamma_neuHadIso: 100,0,30.    ; XTitle="neu gamma ISO  [GeV]"   
+gamma_phIso: gamma_phIso: 100,0,50.    ; XTitle="ph gamma ISO  [GeV]"   
 
 gamma_sigmaIetaIeta: gamma_sigmaIetaIeta: 100,0,0.1    ; XTitle="gamma sigmaIetaIeta"
 gamma_r9: gamma_r9: 100,0,1.    ; XTitle="gamma r9"
