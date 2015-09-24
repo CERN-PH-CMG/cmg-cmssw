@@ -32,7 +32,7 @@ config.Data.outLFNDirBase += '/' + os.environ["STAGEOUTREMDIR"] + '/' + os.envir
 config.Data.primaryDataset =  os.environ["PROD_LABEL"]
 config.Data.publishDataName = os.environ["DATASET"]
 config.Data.ignoreLocality = (os.environ["USEAAA"]!="local") # "full" or "eos"
-if (os.environ["USEAAA"]=="local"): config.Site.whitelist = [] # to be checked: this or unset?
+if (os.environ["USEAAA"]!="local"): config.Site.whitelist = ["T2_CH_CSCS", "T2_IT_Legnaro", "T2_UK_London_IC", "T2_UK_SGrid_Bristol", "T2_DE_DESY", "T2_ES_CIEMAT", "T2_IT_Rome", "T2_AT_Vienna","T2_DE_RWTH","T2_FR_GRIF_IRFU", "T2_HU_Budapest", "T2_FR_IPHC", "T2_BE_IIHE", "T2_IT_Pisa", "T2_ES_IFCA", "T2_UK_London_Brunel", "T2_US_Purdue", "T2_UA_KIPT", "T2_US_MIT", "T2_US_Wisconsin", "T2_US_UCSD", "T2_US_Vanderbilt", "T2_US_Caltech"]
 
 config.Site.storageSite = os.environ["OUTSITE"]
 
