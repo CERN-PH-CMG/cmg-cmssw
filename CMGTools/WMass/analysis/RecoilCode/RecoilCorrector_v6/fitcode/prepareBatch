@@ -1,0 +1,13 @@
+#!/bin/bash
+
+i=0
+
+while [  $i -lt 21 ]; do
+
+echo The counter i is $i
+sed 's/$1/'$i'/g' < batch.sh | bsub -q 1nh -J job_$i
+
+let i=i+1
+
+
+done
