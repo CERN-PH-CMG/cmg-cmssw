@@ -77,7 +77,7 @@ for comp in config.components:
         elif useAAA=="local":
             if localPrefix=="" and len(newComp.files)>0:
                 myfile = newComp.files[0].replace("root://eoscms.cern.ch//eos/cms","") # == /store/...
-                mycheck = subprocess.check_output(["edmFileUtil","-d",myfile]).split('\n') # == root://storage/store/....root?...
+                mycheck = subprocess.check_output(["edmFileUtil","-d",myfile]).split('\n')[0] # == root://storage/store/....root?...
                 if len(mycheck)>0:
                     localPrefix = mycheck.split('?')[0].replace(myfile,"") # == root://storage
                     print 'Will use %s as local file prefix'%localPrefix
@@ -110,16 +110,17 @@ looper.write()
 
 #os.system("ls -lR") # for debugging
 
+# print in crab log file the content of the job log files, so one can see it from 'crab getlog'
+print "-"*25
+print "printing output txt and log files"
+os.system('for i in Output/*.txt; do echo $i; cat $i; echo "---------"; done')
+os.system('for i in Output/*.log; do echo $i; cat $i; echo "---------"; done')
+
 # assign the right name
 os.system("rm Output/cmsswPreProcessing.root")
 if _filestounpack!="": filestounpack=_filestounpack.split(',')
 for mytree in filestounpack:
     os.rename("Output/"+mytree, './'+mytree.replace('/','_'))
 os.system("tar czf heppyOutput.tgz Output/")
-
-# print in crab log file the content of the job log files, so one can see it from 'crab getlog'
-print "-"*25
-print "printing output txt files"
-os.system('for i in Output/*.txt; do echo $i; cat $i; echo "---------"; done')
 
 print "---> job successful <---"

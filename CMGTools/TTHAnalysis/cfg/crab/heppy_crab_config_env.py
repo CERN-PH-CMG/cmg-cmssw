@@ -11,6 +11,7 @@ print "Will send dataset", os.environ["DATASET"], "with", os.environ["NJOBS"], "
 
 config.General.requestName = os.environ["DATASET"] + "_" + os.environ["CMG_VERSION"] # task name
 config.General.workArea = 'crab_' + os.environ["DATASET"] # crab dir name
+config.Data.inputDataset = os.environ["DATASET"] # necessary to have crab choose remote sites
 
 # this will divide task in *exactly* NJOBS jobs (for this we need JobType.pluginName = 'PrivateMC' and Data.splitting = 'EventBased')
 config.Data.unitsPerJob = 10
