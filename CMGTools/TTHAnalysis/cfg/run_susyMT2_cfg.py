@@ -81,8 +81,10 @@ tauAna.inclusive_dzMax = 99999.
 tauAna.inclusive_vetoLeptons = False
 tauAna.inclusive_vetoLeptonsPOG = True
 tauAna.inclusive_decayModeID = "byLooseCombinedIsolationDeltaBetaCorr3Hits" # ignored if not set or ""
-tauAna.inclusive_tauAntiMuonID = "againstMuonTight"
-tauAna.inclusive_tauAntiElectronID = "againstElectronLoose"
+#tauAna.inclusive_tauAntiMuonID = "againstMuonTight"
+tauAna.inclusive_tauAntiMuonID = "againstMuonTight3"
+#tauAna.inclusive_tauAntiElectronID = "againstElectronLoose"
+tauAna.inclusive_tauAntiElectronID = "againstElectronLooseMVA5"
 
 tauAna.loose_ptMin = 20.0
 tauAna.loose_etaMax = 2.3
@@ -91,9 +93,10 @@ tauAna.loose_dzMax = 99999.
 tauAna.loose_vetoLeptons = False
 tauAna.loose_vetoLeptonsPOG = True
 tauAna.loose_decayModeID = "byLooseCombinedIsolationDeltaBetaCorr3Hits" # ignored if not set or ""
-tauAna.loose_tauAntiMuonID = "againstMuonTight"
-tauAna.loose_tauAntiElectronID = "againstElectronLoose"
-
+#tauAna.loose_tauAntiMuonID = "againstMuonTight"
+tauAna.loose_tauAntiMuonID = "againstMuonTight3"
+#tauAna.loose_tauAntiElectronID = "againstElectronLoose"
+tauAna.loose_tauAntiElectronID = "againstElectronLooseMVA5"
 
 # Photon
 photonAna.etaCentral = 2.5
@@ -319,7 +322,8 @@ if test==0:
 
     dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data"
     #json=dataDir+'/json/Cert_Run2012ABCD_22Jan2013ReReco.json'
-    json=dataDir+'/json/json_DCSONLY_Run2015B.txt'
+    #json=dataDir+'/json/json_DCSONLY_Run2015B.txt'
+    json=dataDir+'/json/json_DCSONLY.txt'
     from CMGTools.TTHAnalysis.setup.Efficiencies import *
 
     for comp in samples:
@@ -341,9 +345,13 @@ if test==0:
     # 74X GJets
     #comp.files = ['root://xrootd.unl.edu//store/mc/RunIISpring15DR74/GJets_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/00000/16E31BE7-7C18-E511-A551-00266CF2454C.root']
 
-    # 74X Data
+    # 747 Data
     #comp.files = ['/afs/cern.ch/user/m/mangano/public/MECCA/dataset/74X/data/JetHT_promptReco_Run2015B.root']
     #comp.files = ['/afs/cern.ch/work/m/mmasciov/CMSSW_7_4_7_MT2/src/CMGTools/TTHAnalysis/cfg/pickevents.root']
+
+    # 7_4_12 data
+    #isData = True
+    #comp.files = ['/afs/cern.ch/user/c/casal/public/synch/86ACFECD-3C5F-E511-B8F2-02163E014374.root']
 
     selectedComponents = [comp]
 #    comp.splitFactor = 10
