@@ -21,12 +21,6 @@ def XrootdRedirector():
     oldcontinent = ["AT", "BE", "CH", "DE", "EE", "ES", "FR", "GR", "HU", "IT", "RU", "UK"]
     region = os.environ["GLIDEIN_CMSSite"].split("_")[1] if "GLIDEIN_CMSSite" in os.environ else ""
     return  "xrootd-cms.infn.it/" if region in oldcontinent else "cmsxrootd.fnal.gov/" if region in americas else "cms-xrd-global.cern.ch/" 
-def LocalFilePrefix():
-    TODO
-    americas     = ["CO", "MX","US"]
-    oldcontinent = ["AT", "BE", "CH", "DE", "EE", "ES", "FR", "GR", "HU", "IT", "RU", "UK"]
-    region = os.environ["GLIDEIN_CMSSite"].split("_")[1] if "GLIDEIN_CMSSite" in os.environ else ""
-    return  "xrootd-cms.infn.it/" if region in oldcontinent else "cmsxrootd.fnal.gov/" if region in americas else "cms-xrd-global.cern.ch/" 
 
 # arguments of scriptExe
 print "ARGV:",sys.argv
