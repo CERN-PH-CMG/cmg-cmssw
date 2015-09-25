@@ -41,8 +41,8 @@ class MultShiftMETcorrInputProducer : public edm::stream::EDProducer<>
   static int translateTypeToAbsPdgId( reco::PFCandidate::ParticleType type );
 
 
-  edm::InputTag pflow_;
-  edm::InputTag vertices_;
+  edm::EDGetTokenT<edm::View<reco::Candidate> > pflow_;
+  edm::EDGetTokenT<edm::View<reco::Vertex>> vertices_;
   std::string moduleLabel_;
 
   std::vector<edm::ParameterSet> cfgCorrParameters_;
@@ -51,7 +51,7 @@ class MultShiftMETcorrInputProducer : public edm::stream::EDProducer<>
   std::vector<int> type_, counts_, varType_;
   std::vector<double> sumPt_;
   std::vector<std::unique_ptr<TF1> > formula_x_;
-  std::vector<std::unique_ptr<TF1> > formula_y_;
+  std::vector<std::unique_ptr< TF1> > formula_y_;
 };
 
 #endif

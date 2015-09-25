@@ -98,19 +98,83 @@ process.noHFCands = cms.EDFilter("CandPtrSelector",
 
 
 ### =====================================================================================================
-from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+def runMetCorAndUncFromMiniAOD_74Xv1(process, metType="PF",
+                               jetCollUnskimmed="patJets",
+                               jetColl="selectedPatJets",
+                               photonColl="slimmedPhotons",
+                               electronColl="slimmedElectrons",
+                               muonColl="slimmedMuons",
+                               tauColl="slimmedTaus",
+                               pfCandColl = "packedPFCandidates",
+                               jetFlav="AK4PFchs",
+                               jetCleaning="LepClean",
+                               isData=False,
+                               jetConfig=False,
+                               jetCorLabelL3=cms.InputTag('ak4PFCHSL1FastL2L3Corrector'),
+                               jetCorLabelRes=cms.InputTag('ak4PFCHSL1FastL2L3ResidualCorrector'),
+                               jecUncFile="CondFormats/JetMETObjects/data/Summer15_50nsV5_DATA_UncertaintySources_AK4PFchs.txt",
+                               postfix=""):
+    from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import RunMETCorrectionsAndUncertainties
+    runMETCorrectionsAndUncertainties = RunMETCorrectionsAndUncertainties()
+    #MET T1 uncertainties
+    runMETCorrectionsAndUncertainties(process, metType="PF",
+                                      correctionLevel=["T1"],
+                                      computeUncertainties=True,
+                                      produceIntermediateCorrections=False,
+                                      addToPatDefaultSequence=False,
+                                      jetCollection=jetColl,
+                                      electronCollection=electronColl,
+                                      muonCollection=muonColl,
+                                      tauCollection=tauColl,
+                                      photonCollection=photonColl,
+                                      pfCandCollection =pfCandColl,
+                                      runOnData=isData,
+                                      onMiniAOD=True,
+                                      repro74X=True,
+                                      autoJetCleaning=jetCleaning,
+                                      manualJetConfig=jetConfig,
+                                      jetFlavor=jetFlav,
+                                      jetCorLabelUpToL3=jetCorLabelL3,
+                                      jetCorLabelL3Res=jetCorLabelRes,
+                                      jecUncertaintyFile=jecUncFile,
+                                      postfix=postfix,
+                                      )
+    
+    #MET T1+Txy
+    runMETCorrectionsAndUncertainties(process, metType="PF",
+                                      correctionLevel=["T1","Txy"],
+                                      computeUncertainties=False,
+                                      produceIntermediateCorrections=True,
+                                      addToPatDefaultSequence=False,
+                                      jetCollection=jetColl,
+                                      electronCollection=electronColl,
+                                      muonCollection=muonColl,
+                                      tauCollection=tauColl,
+                                      photonCollection=photonColl,
+                                      pfCandCollection =pfCandColl,
+                                      runOnData=isData,
+                                      onMiniAOD=True,
+                                      repro74X=True,
+                                      autoJetCleaning=jetCleaning,
+                                      manualJetConfig=jetConfig,
+                                      jetFlavor=jetFlav,
+                                      jetCorLabelUpToL3=jetCorLabelL3,
+                                      jetCorLabelL3Res=jetCorLabelRes,
+                                      jecUncertaintyFile=jecUncFile,
+                                      postfix=postfix,
+                                      )
 
 #uncertainty file
 ###jecUncertaintyFile="$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt"
 
 #default configuration for miniAOD reprocessing, change the isData flag to run on data
 #for a full met computation, remove the pfCandColl input
-runMetCorAndUncFromMiniAOD(process,
+runMetCorAndUncFromMiniAOD_74Xv1(process,
                            isData=options.isData,
 #                           jecUncFile=uncFile
                            )
 
-runMetCorAndUncFromMiniAOD(process,
+runMetCorAndUncFromMiniAOD_74Xv1(process,
                            isData=options.isData,
                            pfCandColl=cms.InputTag("noHFCands"),
 #                           jecUncFile=uncFile,

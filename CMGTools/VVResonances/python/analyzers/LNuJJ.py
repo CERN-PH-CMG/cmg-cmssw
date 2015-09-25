@@ -12,11 +12,11 @@ class LNuJJ( EventInterpretationBase ):
         #read the W
         for w in event.LNu:
             leptons = [w.leg1]
-            cleanedPackedCandidates=self.removeLeptonFootPrint(leptons,event.packedCandidatesForJets)
+
+            cleanedPackedCandidates = self.removeLeptonFootPrint(leptons,event.packedCandidatesForJets)
+
             if self.cfg_ana.doCHS:
                 cleanedPackedCandidates = filter(lambda x: x.fromPV(0) ,cleanedPackedCandidates)
-
-
             #apply selections
             selectedFatJets = self.makeFatJets(cleanedPackedCandidates)
             if self.isMC:
@@ -33,6 +33,7 @@ class LNuJJ( EventInterpretationBase ):
                     output.append(selected)                   
 #                    import pdb;pdb.set_trace()
         if len(output)>0:
-            output = sorted(output,key = lambda x: x['pair'].mass(),reverse=True)
+            output = sorted(output,key = lambda x: x['pair'].leg2.pt(),reverse=True)
+#            print 'Masses',output[0]['pair'].p4().M(),(output[0]['pair'].leg1.alternateLV+output[0]['pair'].leg2.p4()).M() , 'Delta',abs(output[0]['pair'].leg1.pz()+output[0]['pair'].leg2.pz()),abs(output[0]['pair'].leg1.alternateLV.pz()+output[0]['pair'].leg2.pz())
         setattr(event,'LNuJJ'+self.cfg_ana.suffix,output)
         return True
