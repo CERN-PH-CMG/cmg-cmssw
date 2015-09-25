@@ -62,6 +62,23 @@ class TreePlotter(PlotterBase):
 
         return h
 
+    def drawProfile(self,var,cuts,lumi,binsx,minx,maxx,miny,maxy,titlex = "",unitsx = "",titley="",unitsy="", drawStyle = "COLZ"):
+        h = ROOT.TProfile("tmpTH2","",binsx,minx,maxx,miny,maxy)
+        h.Sumw2()
+        h.SetFillStyle(self.fillstyle)
+        h.SetFillColor(self.fillcolor)
+        h.GetXaxis().SetTitle(titlex+ " ["+unitsx+"]")
+        h.GetYaxis().SetTitle(titley+ " ["+unitsy+"]")
+
+        #Apply correction factors
+        corrString='1'
+        for corr in self.corrFactors:
+                corrString = corrString+"*"+str(corr['value']) 
+        self.tree.Draw(var+">>tmpTH2","("+cuts+")*"+lumi+"*"+self.weight+"*("+corrString+")","goff")
+
+        return h
+
+
 
 
     def drawTH3(self,var,cuts,lumi,binsx,minx,maxx,binsy,miny,maxy,binsz,minz,maxz,titlex = "",unitsx = "",titley="",unitsy="", drawStyle = "COLZ"):

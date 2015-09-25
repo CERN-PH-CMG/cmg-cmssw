@@ -115,6 +115,7 @@ public:
    void addTo(FWConfiguration&) const;
    void setFrom(const FWConfiguration&);
    void setWindowInfoFrom(const FWConfiguration& iFrom, TGMainFrame* iFrame);
+   void initEmpty();
 
    TGVerticalFrame* createList(TGCompositeFrame *p);
    void createViews(TEveWindowSlot *slot);
@@ -126,6 +127,7 @@ public:
    ///Allowed values are -1 or ones from FWDataCategories enum
    void showEDIFrame(int iInfoToShow=-1);
    
+   void open3DRegion();
    void showCommonPopup();
    
    void createModelPopup();

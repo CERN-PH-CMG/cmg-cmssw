@@ -16,18 +16,32 @@ from CMGTools.VVResonances.analyzers.core_cff import *
 #-------- SAMPLES AND TRIGGERS -----------
 from CMGTools.VVResonances.samples.samples_13TeV_Spring15 import * 
 
-selectedComponents = [RSGravToWWToLNQQ_2000]
+#selectedComponents = WJetsToLNuHT+QCDPt
+selectedComponents = QCDPt
 
 #-------- Analyzer
 from CMGTools.VVResonances.analyzers.tree_cff import * 
 
 #-------- SEQUENCE
 
-sequence = cfg.Sequence(coreSequence+[leptonTreeProducer])
+
+coreSequence = [
+   #eventSelector,
+    jsonAna,
+    triggerAna,
+    pileUpAna,
+    genAna,
+#    pdfwAna,
+    vertexAna,
+    lepAna
+]
+
+
+sequence = cfg.Sequence(coreSequence+[leptonSkimmer,leptonTreeProducer])
 
 
 #-------- HOW TO RUN
-test = 1
+test = 0
 if test==1:
     # test a single component, using a single thread.
     comp = RSGravToWWToLNQQ_2000
@@ -52,7 +66,7 @@ output_service = cfg.Service(
     TFileService,
     'outputfile',
     name="outputfile",
-    fname='leptonTreeProducer/tree.root',
+    fname='vvTreeProducer/tree.root',
     option='recreate'
     )    
 outputService.append(output_service)

@@ -1,4 +1,5 @@
-import os                                                               
+import os 
+import sys                                                              
 import re 
 import imp
 import timeit
@@ -7,12 +8,14 @@ from math import ceil
 from PhysicsTools.HeppyCore.framework.config import CFG
 from PhysicsTools.Heppy.utils.edmUtils import edmFileLs
 class CmsswPreprocessor :
-	def __init__(self,configFile,command="cmsRun", addOrigAsSecondary=True, prefetch=False) :
+	def __init__(self,configFile,command="cmsRun", addOrigAsSecondary=True, prefetch=False, options={}) :
 		self.configFile=configFile
 		self.command=command
 		self.addOrigAsSecondary=addOrigAsSecondary
 		self.prefetch=prefetch
 		self.garbageFiles=[]
+                self.options=options
+	
 	def prefetchOneXrootdFile(self,fname):
 		tmpdir = os.environ['TMPDIR'] if 'TMPDIR' in os.environ else "/tmp"
 		rndchars  = "".join([hex(ord(i))[2:] for i in os.urandom(8)])
@@ -66,6 +69,28 @@ class CmsswPreprocessor :
 			if not re.match("file:.*",fn) and not re.match("root:.*",fn) :
 				fn="file:"+fn
 			inputfiles.append(fn)
+
+                # Four cases: 
+                # - no options, cmsswConfig with initialize function
+                #     run initialize with default parameters
+                # - filled options, cmsswConfig with initialize function
+                #     pass on options to initialize
+                # - no options, classic cmsswConfig
+                #     legacy mode
+                # - filled options, classic cmsswConfig
+                #     legacy mode but warn that options are not passed on
+
+                if hasattr(cmsswConfig, "initialize"):
+                        if len(self.options) == 0:                                
+                                cmsswConfig.process = cmsswConfig.initialize()                                 
+                        else:                                
+                                cmsswConfig.process = cmsswConfig.initialize(**self.options)                                 
+                else:
+                        if len(self.options) == 0:                             
+                                pass
+                        else:
+                                print "WARNING: cmsswPreprocessor received options but can't pass on to cmsswConfig"
+                
 		cmsswConfig.process.source.fileNames = inputfiles
 		# cmsRun will not create the output file if maxEvents==0, leading to crash of the analysis downstream.
 		# Thus, we set nEvents = 1 if the input file is empty (the output file will be empty as well).
