@@ -37,7 +37,6 @@ triggers_FR_1mu_noiso = [ "HLT_Mu%d_v*" % pt for pt in (8,17,24,34) ]
 triggers_FR_1e_noiso = [ "HLT_Ele%d_CaloIdM_TrackIdM_PFJet30_v*" % pt for pt in (8,12,18,23,33) ]
 triggers_FR_1e_iso   = [ "HLT_Ele%d_CaloIdL_TrackIdL_IsoVL_PFJet30_v*" % pt for pt in (12,18,23,33) ] #note: no 8
 
-### GP: did not look at anything below this
 
 ### Mike ---> for the VV analysis 
 triggers_dijet_fat=["HLT_PFHT650_WideJetMJJ900DEtaJJ1p5_v*","HLT_PFHT650_WideJetMJJ950DEtaJJ1p5_v*"]
