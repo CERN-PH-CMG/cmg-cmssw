@@ -307,6 +307,7 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 # choose 0 for quick validations tests. It doesn't require to load the sample files
 # choose 2 for full mc production
 # choose 3 for data production
+# choose 4 for signal production
 test = 3
 isData = False # will be changed accordingly if chosen to run on data
 doSpecialSettingsForMECCA = 1 # set to 1 for comparisons with americans
@@ -447,6 +448,21 @@ elif test==3:
     #selectedComponents = [JetHT_Run2015B_17Jul2015, HTMHT_Run2015B_17Jul2015, MET_Run2015B_17Jul2015, SingleElectron_Run2015B_17Jul2015, SingleMuon_Run2015B_17Jul2015, SinglePhoton_Run2015B_17Jul2015, DoubleEG_Run2015B_17Jul2015, MuonEG_Run2015B_17Jul2015, DoubleMuon_Run2015B_17Jul2015, JetHT_Run2015B_PromptReco, HTMHT_Run2015B_PromptReco, MET_Run2015B_PromptReco, SingleElectron_Run2015B_PromptReco, SingleMuon_Run2015B_PromptReco, SinglePhoton_Run2015B_PromptReco, DoubleEG_Run2015B_PromptReco, MuonEG_Run2015B_PromptReco, DoubleMuon_Run2015B_PromptReco]
 
     selectedComponents = [JetHT_Run2015D, HTMHT_Run2015D, MET_Run2015D, SingleElectron_Run2015D, SingleMuon_Run2015D, SinglePhoton_Run2015D, DoubleEG_Run2015D, MuonEG_Run2015D, DoubleMuon_Run2015D]
+
+elif test==4:
+
+    from CMGTools.RootTools.samples.samples_13TeV_signals import *
+
+### 25
+    selectedComponents = SignalSUSY + SignalEXO ### Signal Spring15
+    
+    # test all components (1 thread per component).
+    for comp in selectedComponents:
+        comp.splitFactor = 1200
+        #comp.fineSplitFactor = 2 # to run two jobs per file
+        comp.files = comp.files[:]
+        # triggers on MC
+        #comp.triggers = triggers_HT900 + triggers_HTMET + triggers_photon155 + triggers_1mu_isolow + triggers_MT2_mumu + triggers_MT2_ee + triggers_MT2_mue # to apply trigger skimming
 
 # ------------------------------------------------------------------------------------------- #
 
