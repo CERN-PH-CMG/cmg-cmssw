@@ -1,0 +1,5 @@
+filters : hbheFilterNew25ns==1 && Flag_CSCTightHaloFilter==1 && Flag_eeBadScFilter==1
+trigger : HLT_DoubleMu || HLT_BIT_HLT_IsoMu20_v || HLT_DoubleEl || HLT_BIT_HLT_Ele27_WPLoose_Gsf_v || HLT_BIT_HLT_Ele27_WP85_Gsf_v
+2L SF/OS : nLepGood >= 2 && LepGood1_pdgId == -LepGood2_pdgId
+pt2515eta21: LepGood1_pt > 25 && LepGood2_pt > 15 && max(abs(LepGood1_eta),abs(LepGood2_eta)) < 2.1
+mll>60 : 60 < mZ1 && mZ1 < 120

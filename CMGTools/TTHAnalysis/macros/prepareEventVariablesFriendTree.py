@@ -98,6 +98,10 @@ MODULES.append ( ('leptonFakeRateFO4InSitu', ObjTagger('FO4InSitu','LepGood',
                 lambda lep : lep.sip3d>=4,
             ]) ) )
 
+#from CMGTools.TTHAnalysis.tools.vertexWeightFriend import VertexWeightFriend
+#pufile="../path/to/nvtx/file.root"
+#MODULES.append ( ('puWeights', VertexWeightFriend(pufile,pufile,"nvtx_signal","nvtx_data",verbose=True) ) )
+
 #from CMGTools.TTHAnalysis.tools.finalMVA_2lss import FinalMVA_2LSS
 #MODULES.append( ('2lss_mva', FinalMVA_2LSS()) )
 #from CMGTools.TTHAnalysis.tools.finalMVA_3l import FinalMVA_3L
