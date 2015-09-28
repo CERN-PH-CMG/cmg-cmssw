@@ -421,7 +421,7 @@ WJetsToLNu_HT100to200,
 WJetsToLNu_HT200to400,
 WJetsToLNu_HT400to600,
 WJetsToLNu_HT600toInf,
-] + SingleTop + SignalSUSY + SignalEXO ### Full SM BG Spring15 + Singnal Spring15
+] + SingleTop ### Full SM BG Spring15
     
     # test all components (1 thread per component).
     for comp in selectedComponents:
