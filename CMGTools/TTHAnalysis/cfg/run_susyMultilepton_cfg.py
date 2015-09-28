@@ -22,7 +22,7 @@ SOS = getHeppyOption("SOS",False) ## switch True to overwrite settings for SOS s
 saveSuperClusterVariables = getHeppyOption("saveSuperClusterVariables",False)
 removeSeparateJetCorrections = getHeppyOption("removeSeparateJetCorrections",False)
 doMETpreprocessor = getHeppyOption("doMETpreprocessor",False)
-doMETNoHF = getHeppyOption("doMETNoHF",True)
+noMETNoHF = getHeppyOption("noMETNoHF",False)
 doAK4PFCHSchargedJets = getHeppyOption("doAK4PFCHSchargedJets",False)
 forcedSplitFactor = getHeppyOption("splitFactor",-1)
 forcedFineSplitFactor = getHeppyOption("fineSplitFactor",-1)
@@ -181,6 +181,9 @@ if lepAna.doIsolationScan:
             NTupleVariable("scanAbsIsoNeutral02", lambda x : x.ScanAbsIsoNeutral02 if hasattr(x,'ScanAbsIsoNeutral02') else -999, help="PF abs neutral+photon isolation dR=0.2, no pile-up correction"),
             NTupleVariable("scanAbsIsoNeutral03", lambda x : x.ScanAbsIsoNeutral03 if hasattr(x,'ScanAbsIsoNeutral03') else -999, help="PF abs neutral+photon isolation dR=0.3, no pile-up correction"),
             NTupleVariable("scanAbsIsoNeutral04", lambda x : x.ScanAbsIsoNeutral04 if hasattr(x,'ScanAbsIsoNeutral04') else -999, help="PF abs neutral+photon isolation dR=0.4, no pile-up correction"),
+            NTupleVariable("miniIsoR", lambda x: getattr(x,'miniIsoR',-999), help="miniIso cone size"),
+            NTupleVariable("effArea", lambda x: getattr(x,'EffectiveArea03',-999), help="effective area used for PU subtraction"),
+            NTupleVariable("rhoForEA", lambda x: getattr(x,'rho',-999), help="rho used for EA PU subtraction")
             ])
 
 # for electron scale and resolution checks
@@ -265,7 +268,7 @@ treeProducer.globalVariables.append(NTupleVariable("met_trkPt", lambda ev : ev.t
 treeProducer.globalVariables.append(NTupleVariable("met_trkPhi", lambda ev : ev.tkMet.phi() if  hasattr(ev,'tkMet') else  0, help="tkmet phi"))
 
 # MET preprocessor and ak4PFchs charged-only jets
-if doMETpreprocessor or doMETNoHF:
+if doMETpreprocessor or (not noMETNoHF):
     susyCoreSequence.insert(susyCoreSequence.index(metAna)+1,metNoHFAna)
     metNoHFAna.doTkMet = True
     treeProducer.globalObjects.update({"metNoHF"  : NTupleObject("metNoHF", metType, help="PF E_{T}^{miss}, after type 1 corrections (NoHF)")})
@@ -326,6 +329,9 @@ triggerFlagsAna.triggerBits = {
     'DoubleElMu' : triggers_2e1mu,
     'SingleMu' : triggers_1mu_iso,
     'SingleEl'     : triggers_1e,
+    'MonoJet80MET90' : triggers_Jet80MET90,
+    'MonoJet80MET120' : triggers_Jet80MET120,
+    'METMu5' : triggers_MET120Mu5,
 }
 triggerFlagsAna.fallbackProcessName = 'RECO'
 triggerFlagsAna.unrollbits = True
@@ -348,7 +354,6 @@ selectedComponents = [];
 #selectedComponents = [ TT_pow_50ns ] ; is50ns = True
 #selectedComponents = [ DYJetsToLL_LO_M50_50ns ] ; is50ns = True
 
-isData = False
 
 if scaleProdToLumi>0: # select only a subset of a sample, corresponding to a given luminosity (assuming ~30k events per MiniAOD file, which is ok for central production)
     target_lumi = scaleProdToLumi # in inverse picobarns
@@ -363,7 +368,6 @@ if scaleProdToLumi>0: # select only a subset of a sample, corresponding to a giv
 
 
 if runData: # For running on data
-    isData = True
 
 #    # low-PU 50ns run (251721)
 #    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-252126_13TeV_PromptReco_Collisions15_LOWPU_50ns_JSON.txt";
@@ -377,13 +381,13 @@ if runData: # For running on data
 #    processing = "Run2015C-PromptReco-v1"; short = "Run2015C_v1"; run_ranges = [ (254833,254833) ]; useAAA=False; is50ns=True
 
 #    # Run2015C, 25 ns, 3.8T
-#    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_25ns_JSON_v2.txt"
-#    processing = "Run2015C-PromptReco-v1"; short = "Run2015C_v1"; run_ranges = [ (254231,254907) ]; useAAA=False; is50ns=False
+#    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-256869_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
+#    processing = "Run2015C-PromptReco-v1"; short = "Run2015C_v1"; run_ranges = [ (254231,254914) ]; useAAA=False; is50ns=False
 
-    # Run2015D, fills 4376-4386, DCS only json - WARNING: CACHING
-    # brilcalc lumi --normtag /afs/cern.ch/user/c/cmsbril/public/normtag_json/OfflineNormtagV1.json -i ../data/json/json_DCSONLY_4376_4386.txt = 151.16/pb recorded
-    json = "/afs/cern.ch/user/p/peruzzi/work/cmgtools/CMSSW_7_4_12_patch4/src/CMGTools/TTHAnalysis/data/json/json_DCSONLY_4376_4386.txt"
-    processing = "Run2015D-PromptReco-v3"; short = "Run2015D_v3"; run_ranges = [ (256630,256801) ]; useAAA=False; is50ns=False
+    # Run2015D, fills 4376-4391 - WARNING: beware of CACHING in .cmgdataset
+    # normalize with: brilcalc lumi --normtag /afs/cern.ch/user/c/cmsbril/public/normtag_json/OfflineNormtagV1.json -i jsonfile.txt
+    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-256869_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
+    processing = "Run2015D-PromptReco-v3"; short = "Run2015D_v3"; run_ranges = [ (256630,256843) ]; useAAA=False; is50ns=False
 
     compSelection = ""; compVeto = ""
     DatasetsAndTriggers = []
@@ -502,13 +506,13 @@ if doMETpreprocessor:
     import tempfile
     # -------------------- Running pre-processor
     import subprocess
-    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_%s_%s.db'%('50nsV5' if is50ns else '25nsV2','DATA' if isData else 'MC')
-    jecEra    = 'Summer15_%s_%s'%('50nsV5' if is50ns else '25nsV2', 'DATA'if isData else 'MC')
+    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_%s_%s.db'%('50nsV5' if is50ns else '25nsV2','DATA' if runData else 'MC')
+    jecEra    = 'Summer15_%s_%s'%('50nsV5' if is50ns else '25nsV2', 'DATA'if runData else 'MC')
     tempfile.tempdir=os.environ['CMSSW_BASE']+'/tmp'
     tfile, tpath = tempfile.mkstemp(suffix='.py',prefix='MET_preproc_')
     os.close(tfile)
     extraArgs=[]
-    if isData:
+    if runData:
       extraArgs.append('--isData')
       GT= '74X_dataRun2_v2'
     else:
