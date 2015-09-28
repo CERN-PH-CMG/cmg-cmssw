@@ -48,9 +48,7 @@ lepAna.ele_tightId = "Cuts_PHYS14_25ns_v1_ConvVetoDxyDz"
 lepAna.notCleaningElectrons = True
 lepAna.doMiniIsolation = True
 lepAna.miniIsolationPUCorr = 'rhoArea'
-lepAna.doIsoAnulus = True
-lepAna.isoAnPUCorr = 'deltaBeta'
-lepAna.anDeltaR = 0.4
+lepAna.doIsoAnnulus = True
 
 # JET (for event variables do apply the jetID and not PUID yet)
 jetAna.relaxJetId = False
@@ -107,9 +105,7 @@ photonAna.do_mc_match = True
 
 # Isolated Track
 isoTrackAna.setOff=False
-isoTrackAna.doIsoAnulus = True
-isoTrackAna.isoAnPUCorr = 'deltaBeta'
-isoTrackAna.anDeltaR = 0.4
+isoTrackAna.doIsoAnnulus = True
 
 # recalibrate MET
 metAna.recalibrate = False
