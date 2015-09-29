@@ -333,9 +333,9 @@ triggerFlagsAna.triggerBits = {
     'MonoJet80MET120' : triggers_Jet80MET120,
     'METMu5' : triggers_MET120Mu5,
 }
-triggerFlagsAna.fallbackProcessName = 'RECO'
 triggerFlagsAna.unrollbits = True
 triggerFlagsAna.saveIsUnprescaled = True
+triggerFlagsAna.checkL1Prescale = True
 
 from CMGTools.RootTools.samples.samples_13TeV_74X import *
 from CMGTools.RootTools.samples.samples_13TeV_74X_susySignalsPriv import *
@@ -371,18 +371,18 @@ if runData: # For running on data
 
 #    # low-PU 50ns run (251721)
 #    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-252126_13TeV_PromptReco_Collisions15_LOWPU_50ns_JSON.txt";
-#    processing = "Run2015B-PromptReco-v1"; short = "Run2015B_v1"; run_ranges = [ (251721,251721) ]; useAAA=False; is50ns=True
+#    processing = "Run2015B-PromptReco-v1"; short = "Run2015B_v1"; run_ranges = [ (251721,251721) ]; useAAA=False; is50ns=True; triggerFlagsAna.checkL1Prescale = False;
 
 #    # Run2015B, 50 ns, 3.8T + one run at 50 ns in Run2015C
 #    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON.txt";
-#    processing = "Run2015B-17Jul2015-v1"; short = "Run2015B_17Jul2015"; run_ranges = [ (251244, 251562) ]; useAAA=False; is50ns=True
-#    processing = "Run2015B-PromptReco-v1"; short = "Run2015B_v1"; run_ranges = [ (251643,251883) ]; useAAA=False; is50ns=True
+#    processing = "Run2015B-17Jul2015-v1"; short = "Run2015B_17Jul2015"; run_ranges = [ (251244, 251562) ]; useAAA=False; is50ns=True; triggerFlagsAna.checkL1Prescale = False;
+#    processing = "Run2015B-PromptReco-v1"; short = "Run2015B_v1"; run_ranges = [ (251643,251883) ]; useAAA=False; is50ns=True; triggerFlagsAna.checkL1Prescale = False;
 #    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_254833_13TeV_PromptReco_Collisions15_JSON.txt"; # taken at 50 ns with 25 ns reconstruction
-#    processing = "Run2015C-PromptReco-v1"; short = "Run2015C_v1"; run_ranges = [ (254833,254833) ]; useAAA=False; is50ns=True
+#    processing = "Run2015C-PromptReco-v1"; short = "Run2015C_v1"; run_ranges = [ (254833,254833) ]; useAAA=False; is50ns=True; triggerFlagsAna.checkL1Prescale = False;
 
 #    # Run2015C, 25 ns, 3.8T
 #    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-256869_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
-#    processing = "Run2015C-PromptReco-v1"; short = "Run2015C_v1"; run_ranges = [ (254231,254914) ]; useAAA=False; is50ns=False
+#    processing = "Run2015C-PromptReco-v1"; short = "Run2015C_v1"; run_ranges = [ (254231,254914) ]; useAAA=False; is50ns=False; triggerFlagsAna.checkL1Prescale = False;
 
     # Run2015D, fills 4376-4391 - WARNING: beware of CACHING in .cmgdataset
     # normalize with: brilcalc lumi --normtag /afs/cern.ch/user/c/cmsbril/public/normtag_json/OfflineNormtagV1.json -i jsonfile.txt
@@ -656,7 +656,14 @@ elif test == "prompt2015D":
     ttHLepSkim.minLeptons = 0
     sequence.remove(jsonAna)
     if is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
-
+elif test == 'miniAODv2':
+    comp = cfg.DataComponent( files = ["root://eoscms.cern.ch//store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/00000/0014DC94-DC5C-E511-82FB-7845C4FC39F5.root"], name="TTJets_miniAODv2", intLumi=1 )
+    comp.triggers = []
+    comp.json     = None
+    selectedComponents = [ comp ]
+    ttHLepSkim.minLeptons = 0
+    sequence.remove(jsonAna)
+    if is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
 
 ## output histogram
 outputService=[]
