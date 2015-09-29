@@ -102,6 +102,25 @@ MODULES.append ( ('leptonFakeRateFO4InSitu', ObjTagger('FO4InSitu','LepGood',
 #pufile="../path/to/nvtx/file.root"
 #MODULES.append ( ('puWeights', VertexWeightFriend(pufile,pufile,"nvtx_signal","nvtx_data",verbose=True) ) )
 
+
+from CMGTools.TTHAnalysis.tools.objFloatCalc import ObjFloatCalc
+from CMGTools.TTHAnalysis.tools.friendLepAwareVars import *
+MODULES.append ( ('recalcLepAwareVars',ObjFloatCalc("recalcLepAwareVars","LepGood",{
+                "jetPtRatio_LepAwareJECv2_p0": (lambda lep : friendPtRatiov2(lep)),
+                "jetPtRelv2_p0": (lambda lep : friendPtRelv2(lep)),
+                "jetPtRatio_LepAwareJECv2_p1": (lambda lep : friendPtRatiov2(lep,1.01)),
+                "jetPtRelv2_p1": (lambda lep : friendPtRelv2(lep,1.01)),
+                "jetPtRatio_LepAwareJECv2_p2": (lambda lep : friendPtRatiov2(lep,1.02)),
+                "jetPtRelv2_p2": (lambda lep : friendPtRelv2(lep,1.02)),
+                "jetPtRatio_LepAwareJECv2_p3": (lambda lep : friendPtRatiov2(lep,1.03)),
+                "jetPtRelv2_p3": (lambda lep : friendPtRelv2(lep,1.03)),
+                "jetPtRatio_LepAwareJECv2_p4": (lambda lep : friendPtRatiov2(lep,1.04)),
+                "jetPtRelv2_p4": (lambda lep : friendPtRelv2(lep,1.04)),
+                "jetPtRatio_LepAwareJECv2_p5": (lambda lep : friendPtRatiov2(lep,1.05)),
+                "jetPtRelv2_p5": (lambda lep : friendPtRelv2(lep,1.05)),
+                })) )
+
+
 #from CMGTools.TTHAnalysis.tools.finalMVA_2lss import FinalMVA_2LSS
 #MODULES.append( ('2lss_mva', FinalMVA_2LSS()) )
 #from CMGTools.TTHAnalysis.tools.finalMVA_3l import FinalMVA_3L
