@@ -120,6 +120,17 @@ MODULES.append ( ('recalcLepAwareVars',ObjFloatCalc("recalcLepAwareVars","LepGoo
                 "jetPtRelv2_p5": (lambda lep : friendPtRelv2(lep,1.05)),
                 })) )
 
+#from CMGTools.TTHAnalysis.tools.MultiIsoMVAFriend import MultiIsoMVAFriend
+#MODULES.append ( ('newMultiIsoMVAtraining_2015',
+#                  MultiIsoMVAFriend("2015",
+#                                    (os.environ["CMSSW_BASE"]+"/src/CMGTools/TTHAnalysis/python/plotter/ttH-multilepton/train-MVA-Iso/weights/2015_%s_BDTG.weights.xml",
+#                                     os.environ["CMSSW_BASE"]+"/src/CMGTools/TTHAnalysis/python/plotter/ttH-multilepton/train-MVA-Iso/weights/2015_%s_BDTG.weights.xml"),
+#                                    label="MultiIso2015")) )
+#MODULES.append ( ('newMultiIsoMVAtraining_2015v2',
+#                  MultiIsoMVAFriend("2015v2",
+#                                    (os.environ["CMSSW_BASE"]+"/src/CMGTools/TTHAnalysis/python/plotter/ttH-multilepton/train-MVA-Iso/weights/2015v2_%s_BDTG.weights.xml",
+#                                     os.environ["CMSSW_BASE"]+"/src/CMGTools/TTHAnalysis/python/plotter/ttH-multilepton/train-MVA-Iso/weights/2015v2_%s_BDTG.weights.xml"),
+#                                    label="MultiIso2015v2")) )
 
 #from CMGTools.TTHAnalysis.tools.finalMVA_2lss import FinalMVA_2LSS
 #MODULES.append( ('2lss_mva', FinalMVA_2LSS()) )
