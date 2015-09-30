@@ -73,18 +73,20 @@ if __name__=="__main__":
 
    f = ROOT.TFile("/data1/p/peruzzi/TREES_74X_230915_MiniIso_7_4_12/%s/treeProducerSusyMultilepton/tree.root"%dataset)
    t = f.tree
-   t.AddFriend("sf/t","/data1/p/peruzzi/TREES_74X_230915_MiniIso_7_4_12/1_lepAwareJECShifts_v1/evVarFriend_%s.root"%dataset)
+   t.AddFriend("sf/t","/data1/p/peruzzi/TREES_74X_230915_MiniIso_7_4_12/2_multiIsoMVAtraining2015_v1/evVarFriend_%s.root"%dataset)
 
    h_temp=ROOT.TH1F("dummy","dummy",2,-0.5,1.5)
 
-   params = [("miniIsoCut",0.05,0.2),("ptRatioCut",0.5,0.95),("ptRelCut",5,15)]
+   params = [("miniIsoCut",0.05,0.2),("ptRatioCut",0.6,0.8),("ptRelCut",5,15)]
 
    targetEff = 0.9
 
-   print 'training 2015'
-   mIso = "LepGood_miniRelIso<miniIsoCut && (LepGood_jetPtRatio>ptRatioCut || LepGood_jetPtRel>ptRelCut)"
-   optimize_Eff_ND(t,t,mIso,targetEff,params,"genWeight*(LepGood_mcMatchId!=0)","genWeight*(LepGood_mcMatchId==0)",algo="Scan",scanPointsND=1000)
-
-   print 'training 2015v2'
-   mIso = "LepGood_miniRelIso<miniIsoCut && (LepGood_jetPtRatio_LepAwareJECv2>ptRatioCut || LepGood_jetPtRelv2>ptRelCut)"
-   optimize_Eff_ND(t,t,mIso,targetEff,params,"genWeight*(LepGood_mcMatchId!=0)","genWeight*(LepGood_mcMatchId==0)",algo="Scan",scanPointsND=1000)
+   import sys
+   if sys.argv[1]=="1":
+       print 'training 2015'
+       mIso = "LepGood_miniRelIso<miniIsoCut && (LepGood_jetPtRatio>ptRatioCut || LepGood_jetPtRel>ptRelCut)"
+       optimize_Eff_ND(t,t,mIso,targetEff,params,"genWeight*(LepGood_mcMatchId!=0)","genWeight*(LepGood_mcMatchId==0)",algo="Scan",scanPointsND=1000)
+   elif sys.argv[1]=="2":
+       print 'training 2015v2'
+       mIso = "LepGood_miniRelIso<miniIsoCut && (LepGood_jetPtRatio_LepAwareJECv2>ptRatioCut || LepGood_jetPtRelv2>ptRelCut)"
+       optimize_Eff_ND(t,t,mIso,targetEff,params,"genWeight*(LepGood_mcMatchId!=0)","genWeight*(LepGood_mcMatchId==0)",algo="Scan",scanPointsND=1000)
