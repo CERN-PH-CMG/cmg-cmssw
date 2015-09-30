@@ -9,7 +9,7 @@ import re
 import pprint
 import time
 
-import eostools as castortools
+#import eostools as castortools
 
 class BatchManager:
     """
@@ -250,19 +250,22 @@ class BatchManager:
         hostName = os.environ['HOSTNAME']
 
         onLxplus = hostName.startswith('lxplus')
-        onPSI    = hostName.startswith('t3ui')
-        onNAF =  hostName.startswith('naf')
+        onPSI    = hostName.startswith('t3ui'  )
+        onPADOVA = ( hostName.startswith('t2-ui') and re.match('.*pd.infn.*',hostName) ) or ( hostName.startswith('t2-cld') and re.match('.*lnl.infn.*',hostName) )
 
         batchCmd = batch.split()[0]
 
         if batchCmd == 'bsub':
-            if not onLxplus:
+            if not (onLxplus or onPADOVA) :
                 err = 'Cannot run %s on %s' % (batchCmd, hostName)
                 raise ValueError( err )
+            elif onPADOVA:
+                print 'running on LSF padova: %s from %s' % (batchCmd, hostName)
+                return 'PADOVA'
             else:
-                print 'running on LSF : %s from %s' % (batchCmd, hostName)
+                print 'running on LSF lxplus: %s from %s' % (batchCmd, hostName)
                 return 'LXPLUS'
-
+            
         elif batchCmd == "qsub":
             if onPSI:
                 print 'running on SGE : %s from %s' % (batchCmd, hostName)

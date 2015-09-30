@@ -86,27 +86,27 @@ class Photon(PhysicsObject ):
         # recommeneded PHYS14 working points from POG
         WPs = {
         # https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedPhotonIdentificationRun2#Pointers_for_PHYS14_selection_im
-        "POG_PHYS14_25ns_Loose": {"conversionVeto": [True,True], "H/E":[0.028,0.093],"sigmaIEtaIEta":[0.0107,0.0272],
+        "POG_PHYS14_25ns_Loose": {"conversionVeto": [False,False], "H/E":[0.028,0.093],"sigmaIEtaIEta":[0.0107,0.0272],
         "chaHadIso":[2.67,1.79],"neuHadIso":[[7.23,0.0028,0.5408],[8.89,0.01725]],"phoIso":[[2.11,0.0014],[3.09,0.0091]]},
         
         # https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2?rev=11
-        "POG_PHYS14_25ns_Loose_old": {"conversionVeto": [True,True], "H/E":[0.048,0.069],"sigmaIEtaIEta":[0.0106,0.0266],
+        "POG_PHYS14_25ns_Loose_old": {"conversionVeto": [False,False], "H/E":[0.048,0.069],"sigmaIEtaIEta":[0.0106,0.0266],
         "chaHadIso":[2.56,3.12],"neuHadIso":[[3.74,0.0025,0.],[17.11,0.0118,0.]],"phoIso":[[2.68,0.001],[2.70,0.0059]]},
         
-        "POG_PHYS14_25ns_Medium": {"conversionVeto": [True,True], "H/E":[0.012,0.023],"sigmaIEtaIEta":[0.0100,0.0267],
+        "POG_PHYS14_25ns_Medium": {"conversionVeto": [False,False], "H/E":[0.012,0.023],"sigmaIEtaIEta":[0.0100,0.0267],
         "chaHadIso":[1.79,1.09],"neuHadIso":[[0.16,0.0028,0.5408],[4.31,0.0172]],"phoIso":[[1.90,0.0014],[1.90,0.0091]]},
         
-        "POG_PHYS14_25ns_Tight": {"conversionVeto": [True,True], "H/E":[0.010,0.015],"sigmaIEtaIEta":[0.0100,0.0265],
+        "POG_PHYS14_25ns_Tight": {"conversionVeto": [False,False], "H/E":[0.010,0.015],"sigmaIEtaIEta":[0.0100,0.0265],
         "chaHadIso":[1.66,1.04],"neuHadIso":[[0.14,0.0028,0.5408],[3.89,0.0172]],"phoIso":[[1.40,0.0014],[1.40,0.0091]]},
 
         # https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedPhotonIdentificationRun2#CSA14_selections_for_20_bx_25_sc
-        "POG_CSA14_25ns_Loose": {"conversionVeto": [True,True], "H/E":[0.553,0.062],"sigmaIEtaIEta":[0.0099,0.0284],
+        "POG_CSA14_25ns_Loose": {"conversionVeto": [False,False], "H/E":[0.553,0.062],"sigmaIEtaIEta":[0.0099,0.0284],
         "chaHadIso":[2.49,1.04],"neuHadIso":[[15.43,0.007],[19.71,0.0129]],"phoIso":[[9.42,0.0033],[11.88,0.0108]]},
         
-        "POG_CSA14_25ns_Medium": {"conversionVeto": [True,True], "H/E":[0.058,0.020],"sigmaIEtaIEta":[0.0099,0.0268],
+        "POG_CSA14_25ns_Medium": {"conversionVeto": [False,False], "H/E":[0.058,0.020],"sigmaIEtaIEta":[0.0099,0.0268],
         "chaHadIso":[1.91,0.82],"neuHadIso":[[4.66,0.007],[14.65,0.0129]],"phoIso":[[4.29,0.0033],[4.06,0.0108]]},
         
-        "POG_CSA14_25ns_Tight": {"conversionVeto": [True,True], "H/E":[0.019,0.016],"sigmaIEtaIEta":[0.0099,0.0263],
+        "POG_CSA14_25ns_Tight": {"conversionVeto": [False,False], "H/E":[0.019,0.016],"sigmaIEtaIEta":[0.0099,0.0263],
         "chaHadIso":[1.61,0.69],"neuHadIso":[[3.98,0.007],[4.52,0.0129]],"phoIso":[[3.01,0.0033],[3.61,0.0108]]},
         }
         

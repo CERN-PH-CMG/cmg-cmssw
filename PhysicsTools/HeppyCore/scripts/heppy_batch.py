@@ -14,7 +14,7 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import split
 def batchScriptPADOVA( index, jobDir='./'):
    '''prepare the LSF version of the batch script, to run on LSF'''
    script = """#!/bin/bash
-#BSUB -q local
+#BSUB -q local-cms-short
 #BSUB -J test
 #BSUB -o test.log
 cd {jdir}
