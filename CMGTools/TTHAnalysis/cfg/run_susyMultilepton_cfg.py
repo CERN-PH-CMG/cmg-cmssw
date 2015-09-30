@@ -664,6 +664,14 @@ elif test == 'miniAODv2':
     ttHLepSkim.minLeptons = 0
     sequence.remove(jsonAna)
     if is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
+elif test == "ttH-sync":
+#    TTHnobb_mWCutfix_ch0.files = ["/data/p/peruzzi/088378DB-3D24-E511-8B0E-20CF3027A589.root"]
+    TTHnobb_mWCutfix_ch0.files = ["root://eoscms.cern.ch//store/mc/RunIISpring15DR74/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/30000/088378DB-3D24-E511-8B0E-20CF3027A589.root"]
+    selectedComponents = [TTHnobb_mWCutfix_ch0]
+    for comp in selectedComponents:
+        comp.splitFactor=1
+        comp.fineSplitFactor=30
+    ttHLepSkim.minLeptons = 0
 
 ## output histogram
 outputService=[]
