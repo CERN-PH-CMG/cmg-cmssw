@@ -219,9 +219,15 @@ if options.listModules:
         print "   '%s': %s" % (n,x)
     exit()
 
-if len(args) != 2 or not os.path.isdir(args[0]) or not os.path.isdir(args[1]): 
+if "{P}" in args[1]: args[1] = args[1].replace("{P}",args[0])
+if len(args) != 2 or not os.path.isdir(args[0]):
     print "Usage: program <TREE_DIR> <OUT>"
     exit()
+if not os.path.isdir(args[1]): 
+    os.system("mkdir -p "+args[1])
+    if not os.path.isdir(args[1]): 
+        print "Could not create output directory"
+        exit()
 if len(options.chunks) != 0 and len(options.datasets) != 1:
     print "must specify a single dataset with -d if using -c to select chunks"
     exit()
