@@ -3,7 +3,6 @@ from math import exp
 import re
 
 import ROOT
-# comment
 
 class Photon(PhysicsObject ):
 
