@@ -64,6 +64,22 @@ def hist2ROC2d(hsig,hbg):
     ret.dim=2
     return ret
 
+def refineRoc2dim(graph):
+    # partially taken from https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Monotone_chain#Python
+    points = [ (graph.GetX()[i],graph.GetY()[i]) for i in xrange(graph.GetN()) if graph.GetX()[i] != 1 ]
+    points.sort(key = lambda (x,y) : -x)
+    final = []
+    def cross(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    for p in points:
+        while len(final) >= 2 and cross(final[-2],final[-1],p) <= 0:
+            final.pop()
+        final.append(p)
+    ret = ROOT.TGraph(len(final))
+    for i,(x,y) in enumerate(final):
+        ret.SetPoint(i,x,y)
+    return ret
+
 def makeROC(plotmap,mca,sname="signal",bname="background"):
     sig = plotmap[sname]
     bkg = plotmap[bname]
@@ -113,6 +129,8 @@ def stackRocks(outname,outfile,rocs,xtit,ytit,options):
         frame.GetYaxis().SetTitle(ytit)
         frame.GetYaxis().SetRangeUser(options.yrange[0], options.yrange[1])
         frame.GetYaxis().SetDecimals(True)
+        if options.logx and options.xrange[1]/options.xrange[0] < 100: frame.GetXaxis().SetMoreLogLabels(True)
+        if options.logx: frame.GetXaxis().SetTitleOffset(1.0)
         frame.Draw();
         for title,roc in rocs:
             roc.Draw(roc.style+" SAME")
@@ -206,6 +224,19 @@ if __name__ == "__main__":
                 roc = makeROC(pmap,mca,sname=sig,bname=bkg)
                 if not roc: continue
                 if roc.GetN() > 1 and roc.dim == 1 and not plot.getOption("Discrete",False):
+                    roc.SetLineColor(plot.getOption("LineColor",SAFE_COLOR_LIST[i]))
+                    roc.SetMarkerColor(plot.getOption("LineColor",SAFE_COLOR_LIST[i]))
+                    roc.SetLineWidth(2)
+                    roc.SetMarkerStyle(0)
+                    roc.style = "L"
+                elif roc.dim == 2 and not plot.getOption("Discrete",False):
+                    #roc.SetMarkerColor(plot.getOption("MarkerColor",SAFE_COLOR_LIST[i]))
+                    #roc.SetMarkerStyle(plot.getOption("MarkerStyle",7))
+                    #roc.SetMarkerSize(plot.getOption("MarkerSize",1.0))
+                    #roc.style = "P"
+                    #roc.SetName(plot.name)
+                    #rocs.append((plot.getOption("Title",plot.name),roc))
+                    roc = refineRoc2dim(roc)
                     roc.SetLineColor(plot.getOption("LineColor",SAFE_COLOR_LIST[i]))
                     roc.SetMarkerColor(plot.getOption("LineColor",SAFE_COLOR_LIST[i]))
                     roc.SetLineWidth(2)
