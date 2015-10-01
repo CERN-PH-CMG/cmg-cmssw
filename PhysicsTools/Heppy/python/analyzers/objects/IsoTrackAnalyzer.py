@@ -80,7 +80,7 @@ class IsoTrackAnalyzer( Analyzer ):
 
         charged = [ p for p in patcands if ( p.charge() != 0 and abs(p.dz())<=self.cfg_ana.dzMax ) ]
 
-        self.IsoTrackIsolationComputer.setPackedCandidates(patcands, -1, 0.1, True)
+        self.IsoTrackIsolationComputer.setPackedCandidates(patcands, -1, self.cfg_ana.dzPartMax, 9999., True)
 
         alltrack = map( IsoTrack, charged )
 
@@ -105,7 +105,12 @@ class IsoTrackAnalyzer( Analyzer ):
 
             isoSum = self.IsoTrackIsolationComputer.chargedAbsIso(track.physObj, self.cfg_ana.isoDR, 0., self.cfg_ana.ptPartMin)
 
-            if(isoSum > (self.cfg_ana.maxAbsIso + track.pt())): continue
+            if self.cfg_ana.doRelIsolation:
+                relIso = (isoSum-track.pt())/track.pt()
+                if ( (abs(track.pdgId())!=11) and (abs(track.pdgId())!=13) and (relIso > self.cfg_ana.MaxIsoSum) ): continue
+                elif((relIso > self.cfg_ana.MaxIsoSumEMU)): continue
+            else:
+                if(isoSum > (self.cfg_ana.maxAbsIso + track.pt())): continue
 
 
             #if abs(track.pdgId())==211 :
@@ -115,7 +120,7 @@ class IsoTrackAnalyzer( Analyzer ):
             #event.preIsoTrack.append(track)
             
 #            if (isoSum < minIsoSum ) :
-            if(track.absIso < min(0.2*track.pt(), self.cfg_ana.maxAbsIso)): 
+            if self.cfg_ana.doRelIsolation or (track.absIso < min(0.2*track.pt(), self.cfg_ana.maxAbsIso)): 
                 event.selectedIsoTrack.append(track)
 
                 if self.cfg_ana.doPrune:
@@ -270,7 +275,7 @@ class IsoTrackAnalyzer( Analyzer ):
         if not self.cfg_comp.isMC:
             return True
 
-        if hasattr(event, 'gentaus') and hasattr(event, 'gentauleps') and hasattr(event, 'genleps') :
+        if hasattr(event, 'gentaus') and hasattr(event, 'gentauleps') and hasattr(event, 'genleps') and self.cfg_ana.do_mc_match :
             self.matchIsoTrack(event)        
 
 ###        self.printInfo(event)
@@ -304,10 +309,12 @@ setattr(IsoTrackAnalyzer,"defaultConfig",cfg.Analyzer(
     dzPartMax = 0.1,
     maxAbsIso = 8,
     #####
+    doRelIsolation = False,
     MaxIsoSum = 0.1, ### unused
     MaxIsoSumEMU = 0.2, ### unused
     doSecondVeto = False,
     #####
     doPrune = True,
+    do_mc_match = True, # note: it will in any case try it only on MC, not on data
   )
 )

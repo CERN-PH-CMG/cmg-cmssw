@@ -82,7 +82,7 @@ class TauAnalyzer( Analyzer ):
             tau.idMVA = id6(tau, "by%sIsolationMVA3oldDMwLT")
             tau.idMVANewDM = id6(tau, "by%sIsolationMVA3newDMwLT")
             tau.idCI3hit = id3(tau, "by%sCombinedIsolationDeltaBetaCorr3Hits")
-            tau.idAntiMu = tau.tauID("againstMuonLoose") + tau.tauID("againstMuonTight")
+            tau.idAntiMu = tau.tauID("againstMuonLoose3") + tau.tauID("againstMuonTight3")
             tau.idAntiE = id5(tau, "againstElectron%sMVA5")
             #print "Tau pt %5.1f: idMVA2 %d, idCI3hit %d, %s, %s" % (tau.pt(), tau.idMVA2, tau.idCI3hit, tau.tauID(self.cfg_ana.tauID), tau.tauID(self.cfg_ana.tauLooseID))
             
@@ -123,6 +123,7 @@ class TauAnalyzer( Analyzer ):
         for lep in event.inclusiveTaus:
             gen = match[lep]
             lep.mcMatchId = 1 if gen else 0
+            lep.genp = gen
 
     def process(self, event):
         self.readCollections( event.input )
@@ -165,7 +166,6 @@ setattr(TauAnalyzer,"defaultConfig",cfg.Analyzer(
     loose_tauID = "byLooseCombinedIsolationDeltaBetaCorr3Hits",
     loose_vetoLeptonsPOG = False, # If True, the following two IDs are required
     loose_tauAntiMuonID = "againstMuonLoose3",
-    loose_tauAntiElectronID = "againstElectronLooseMVA5",
-    loose_tauLooseID = "decayModeFindingNewDMs"
+    loose_tauAntiElectronID = "againstElectronLooseMVA5"
   )
 )

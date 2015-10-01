@@ -27,9 +27,10 @@ _btagWPs = {
     "CSVL": ("combinedSecondaryVertexBJetTags", 0.244),
     "CSVM": ("combinedSecondaryVertexBJetTags", 0.679),
     "CSVT": ("combinedSecondaryVertexBJetTags", 0.898),
-    "CSVv2IVFL": ("pfCombinedInclusiveSecondaryVertexV2BJetTags", 0.423),
-    "CSVv2IVFM": ("pfCombinedInclusiveSecondaryVertexV2BJetTags", 0.814),
-    "CSVv2IVFT": ("pfCombinedInclusiveSecondaryVertexV2BJetTags", 0.941),
+###https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation74X50ns
+    "CSVv2IVFL": ("pfCombinedInclusiveSecondaryVertexV2BJetTags", 0.605),
+    "CSVv2IVFM": ("pfCombinedInclusiveSecondaryVertexV2BJetTags", 0.890),
+    "CSVv2IVFT": ("pfCombinedInclusiveSecondaryVertexV2BJetTags", 0.990),
     "CMVAL": ("pfCombinedMVABJetTags", 0.630), # for same b-jet efficiency of CSVv2IVFL on ttbar MC, jet pt > 30
     "CMVAM": ("pfCombinedMVABJetTags", 0.732), # for same b-jet efficiency of CSVv2IVFM on ttbar MC, jet pt > 30
     "CMVAT": ("pfCombinedMVABJetTags", 0.813), # for same b-jet efficiency of CSVv2IVFT on ttbar MC, jet pt > 30
@@ -62,10 +63,11 @@ class Jet(PhysicsObject):
         #    import pdb; pdb.set_trace()
         if name == "POG_PFID":  
             if   self.jetID("POG_PFID_Tight")  : return 3;
-            elif self.jetID("POG_PFID_Medium") : return 2;
+            #elif self.jetID("POG_PFID_Medium") : return 2;  commented this line because this working point doesn't exist anymore (as 12/05/15)
             elif self.jetID("POG_PFID_Loose")  : return 1;
             else                               : return 0;
         
+        # jetID from here: https://twiki.cern.ch/twiki/bin/view/CMS/JetID#Recommendations_for_8_TeV_data_a
         if name == "POG_PFID_Loose":    return (npr>1 and phf<0.99 and nhf<0.99 and muf < 0.8) and (eta>2.4 or (elf<0.99 and chf>0 and chm>0));
         if name == "POG_PFID_Medium":   return (npr>1 and phf<0.95 and nhf<0.95 and muf < 0.8) and (eta>2.4 or (elf<0.99 and chf>0 and chm>0));
         if name == "POG_PFID_Tight":    return (npr>1 and phf<0.90 and nhf<0.90 and muf < 0.8) and (eta>2.4 or (elf<0.90 and chf>0 and chm>0));
@@ -92,6 +94,7 @@ class Jet(PhysicsObject):
             if not(eta>=etamin and eta<etamax):
                 continue
             return puMva>cut
+        return -99
         
     def rawFactor(self):
         return self.jecFactor('Uncorrected') * self._rawFactorMultiplier
