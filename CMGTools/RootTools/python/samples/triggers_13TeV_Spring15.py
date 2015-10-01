@@ -57,6 +57,13 @@ triggers_dijet_fat=["HLT_PFHT650_WideJetMJJ900DEtaJJ1p5_v*","HLT_PFHT650_WideJet
 triggers_HT900 = ["HLT_PFHT900_v*"]
 triggers_HT800 = ["HLT_PFHT800_v*"]
 triggers_MET170 = ["HLT_PFMET170_NoiseCleaned_v*"]
+#other paths added in data:
+triggers_MET170_NotCleaned = ["HLT_PFMET170_v*"]
+triggers_MET170_HBHECleaned = ["HLT_PFMET170_HBHECleaned_v*"]
+triggers_MET170_JetIdCleaned = ["HLT_PFMET170_JetIdCleaned_v*"]
+triggers_AllMET170 = triggers_MET170 + triggers_MET170_NotCleaned + triggers_MET170_HBHECleaned + triggers_MET170_JetIdCleaned
+
+
 triggers_HTMET120 = ["HLT_PFHT350_PFMET120_NoiseCleaned_v*"]
 triggers_HTMET100 = ["HLT_PFHT350_PFMET100_NoiseCleaned_v*"]
 triggers_ht350 = ["HLT_PFHT350_v*"] # prescaled
