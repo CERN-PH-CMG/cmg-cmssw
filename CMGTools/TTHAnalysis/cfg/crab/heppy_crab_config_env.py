@@ -10,7 +10,7 @@ config = cfg.config
 print "Will send dataset", os.environ["DATASET"], "with", os.environ["NJOBS"], "jobs"
 
 config.General.requestName = os.environ["DATASET"] + "_" + os.environ["CMG_VERSION"] # task name
-config.General.workArea = 'crab_' + os.environ["DATASET"] # crab dir name
+config.General.workArea = 'crab_' + os.environ["DATASET"] + "_" + os.environ["PROD_LABEL"] # crab dir name
 
 # this will divide task in *exactly* NJOBS jobs (for this we need JobType.pluginName = 'PrivateMC' and Data.splitting = 'EventBased')
 config.Data.unitsPerJob = 10
