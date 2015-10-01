@@ -54,7 +54,7 @@ class METNoHFAnalyzer( Analyzer ):
             px += deltaMetJEC[0]
             py += deltaMetJEC[1]
 
-        event.metNoHF = ROOT.reco.Particle.LorentzVector(px, py, 0, math.hypot(px, py)) 
+        event.metNoHF = ROOT.reco.Particle.LorentzVector(-px, -py, 0, math.hypot(px, py)) 
     
     
     
