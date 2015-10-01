@@ -101,7 +101,7 @@ datasamples = {
         'dcap://t2-srm-02.lnl.infn.it/pnfs/lnl.infn.it/data/cms//store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/869/00000/72B30BE7-1261-E511-A4A5-02163E011D35.root',
         ],
         'xsec' : 1.,
-        'nevents' : 0.,
+        'nevents' : 6000000.,
     },
 
 #--- SingleElectron
@@ -250,7 +250,7 @@ datasamples = {
         'dcap://t2-srm-02.lnl.infn.it/pnfs/lnl.infn.it/data/cms//store/data/Run2015D/SingleElectron/MINIAOD/PromptReco-v3/000/256/869/00000/0C5CE49F-1B61-E511-9E64-02163E013557.root',
         ],
         'xsec' : 1.,
-        'nevents' : 0.,
+        'nevents' : 10000000.,
     },
 
 #--- DoubleMuon
@@ -324,7 +324,7 @@ datasamples = {
         'dcap://t2-srm-02.lnl.infn.it/pnfs/lnl.infn.it/data/cms//store/data/Run2015D/DoubleMuon/MINIAOD/PromptReco-v3/000/256/869/00000/B80BECCA-1461-E511-AFF4-02163E01427C.root',
         ],
         'xsec' : 1.,
-        'nevents' : 0.,
+        'nevents' : 4000000.,
     },
 
 #--- DoubleEG
@@ -451,7 +451,7 @@ datasamples = {
         'dcap://t2-srm-02.lnl.infn.it/pnfs/lnl.infn.it/data/cms//store/data/Run2015D/DoubleEG/MINIAOD/PromptReco-v3/000/256/869/00000/24534D8A-1D61-E511-8795-02163E0146D0.root',
         ],
         'xsec' : 1.,
-        'nevents' : 0.,
+        'nevents' : 10000000.,
     },
 
 #--- MET
@@ -500,7 +500,7 @@ datasamples = {
         'dcap://t2-srm-02.lnl.infn.it/pnfs/lnl.infn.it/data/cms//store/data/Run2015D/MET/MINIAOD/PromptReco-v3/000/256/869/00000/90FFEAC8-1461-E511-9EE3-02163E012798.root',
         ],
         'xsec' : 1.,
-        'nevents' : 0.,
+        'nevents' : 3000000.,
     },
 
 ########################
