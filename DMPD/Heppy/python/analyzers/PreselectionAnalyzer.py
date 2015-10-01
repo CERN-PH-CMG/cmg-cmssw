@@ -158,11 +158,12 @@ class PreselectionAnalyzer( Analyzer ):
 #        event.xcleanJetsJERDown    = event.cleanJetsJERDown
 #        event.xcleanJetsAK8JERDown = event.cleanJetsAK8JERDown
         
-        # Swap MET and MET3.0 collections
+        # Swap MET and METraw (uncorrected) collections
         event.pfmet = copy.deepcopy(event.met)
-        #if hasattr(event, "metNoHF"): 
-        event.met.setP4(event.metNoHF)
-        
+        px_ = event.met.uncorPx()
+        py_ = event.met.uncorPy()
+        event.met.setP4(ROOT.reco.Particle.LorentzVector(px_, py_, 0, math.hypot(px_, py_)))
+
         self.addJetVariables(event)
         #self.addJESUncertainty(event)
         
