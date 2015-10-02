@@ -454,6 +454,7 @@ SRAnalyzer = cfg.Analyzer(
     class_object = SRAnalyzer,
     jetAlgo = "ak8PFJetsCHSPrunedMass",
     met_pt = 200.,
+    fatjet_pt = 200.,
     )
 
 from DMPD.Heppy.analyzers.XZhAnalyzer import XZhAnalyzer
@@ -564,9 +565,9 @@ SignalRegionTreeProducer= cfg.Analyzer(
     ],
     globalObjects = {
         'genV'      : NTupleObject('genV', particleType, help='Gen Boson'),
-        'theX'      : NTupleObject('X', candidateFullType, help='Heavy resonance candidate'),
         'met'       : NTupleObject('met',  metFullType, help='PF MET without type 1 corrections'),
         'pfmet'     : NTupleObject('pfmet',  metType, help='PF MET, after default type 1 corrections'),
+        'theX'      : NTupleObject('X', candidateFullType, help='Heavy resonance candidate'),
         #'tkMetPVchs': NTupleObject('met_tk',  metType, help='Tracker MET'),
         #'V'         : NTupleObject('V', candidateType, help='Boson candidate'),
         #'A'         : NTupleObject('A', candidateFullType, help='Resonance candidate'),
@@ -748,7 +749,8 @@ XZhTreeProducer= cfg.Analyzer(
     globalObjects = {
         'X'         : NTupleObject('X', candidateFullType, help='Heavy resonance candidate'),
         'Z'         : NTupleObject('Z', candidateType, help='Z boson candidate'),
-        'met'       : NTupleObject('met',  metType, help='PF MET, after default type 1 corrections'),
+        'met'       : NTupleObject('met',  metType, help='PF MET without corrections'),
+        'pfmet'     : NTupleObject('pfmet',  metType, help='PF MET, after default type 1 corrections'),
         },
     collections = {
         'highptLeptons' : NTupleCollection('lepton', leptonType, 2, help='Muons and Electrons after the preselection'),
