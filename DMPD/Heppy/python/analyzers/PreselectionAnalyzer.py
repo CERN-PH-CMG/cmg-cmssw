@@ -141,6 +141,8 @@ class PreselectionAnalyzer( Analyzer ):
         event.isWtoEN = False
         event.isWtoMN = False
         
+        event.genV = event.genVBosons[0] if hasattr(event, "genVBosons") and len(event.genVBosons) > 0 else ROOT.reco.GenParticle()
+        
         if self.cfg_comp.isMC: 
             event.eventWeight = abs(event.LHE_originalWeight)/event.LHE_originalWeight
         else:
@@ -163,7 +165,7 @@ class PreselectionAnalyzer( Analyzer ):
         px_ = event.met.uncorPx()
         py_ = event.met.uncorPy()
         event.met.setP4(ROOT.reco.Particle.LorentzVector(px_, py_, 0, math.hypot(px_, py_)))
-
+        
         self.addJetVariables(event)
         #self.addJESUncertainty(event)
         
