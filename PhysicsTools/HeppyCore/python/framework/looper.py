@@ -10,6 +10,7 @@ from math import ceil
 from event import Event
 import timeit
 import resource
+import json
 
 class Setup(object):
     '''The Looper creates a Setup object to hold information relevant during 
@@ -265,17 +266,31 @@ if __name__ == '__main__':
     import pickle
     import sys
     import os
-    if len(sys.argv) == 2 :
-        cfgFileName = sys.argv[1]
+    from PhysicsTools.HeppyCore.framework.heppy_loop import _heppyGlobalOptions
+    from optparse import OptionParser
+    parser = OptionParser(usage='%prog cfgFileName compFileName [--options=optFile.json]')
+    parser.add_option('--options',dest='options',default='',help='options json file')
+    (options,args) = parser.parse_args()
+
+    if options.options!='':
+        jsonfilename = options.options
+        jfile = open (jsonfilename, 'r')
+        opts=json.loads(jfile.readline())
+        for k,v in opts.iteritems():
+            _heppyGlobalOptions[k]=v
+        jfile.close()
+
+    if len(args) == 1 :
+        cfgFileName = args[0]
         pckfile = open( cfgFileName, 'r' )
         config = pickle.load( pckfile )
         comp = config.components[0]
         events_class = config.events_class
-    elif len(sys.argv) == 3 :
-        cfgFileName = sys.argv[1]
+    elif len(args) == 2 :
+        cfgFileName = args[0]
         file = open( cfgFileName, 'r' )
         cfg = imp.load_source( 'cfg', cfgFileName, file)
-        compFileName = sys.argv[2]
+        compFileName = args[1]
         pckfile = open( compFileName, 'r' )
         comp = pickle.load( pckfile )
         cfg.config.components=[comp]
