@@ -55,7 +55,7 @@ triggerAnalyzer= cfg.Analyzer(
     # v* can be used to ignore the version of a path
     triggerBits={
         'SingleMu'       : ['HLT_IsoMu24_eta2p1_v*', 'HLT_IsoMu27_v*', 'HLT_Mu45_eta2p1_v*', 'HLT_Mu50_v*'],
-        'SingleElectron' : ['HLT_Ele105_CaloIdVT_GsfTrkIdT_v*'],#'HLT_Ele23_WPLoose_Gsf_v*', 'HLT_Ele27_eta2p1_WPLoose_Gsf_v*', 'HLT_Ele32_eta2p1_WPLoose_Gsf_v*', 'HLT_Ele23_CaloIdL_TrackIdL_IsoVL_v*', 
+        'SingleElectron' : ['HLT_Ele105_CaloIdVT_GsfTrkIdT_v*', 'HLT_Ele27_eta2p1_WPLoose_Gsf_v*'],#'HLT_Ele23_WPLoose_Gsf_v*', 'HLT_Ele27_eta2p1_WPLoose_Gsf_v*', 'HLT_Ele32_eta2p1_WPLoose_Gsf_v*', 'HLT_Ele23_CaloIdL_TrackIdL_IsoVL_v*', 
         'DoubleMu'       : ['HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*','HLT_Mu30_TkMu11_v*'],
         'DoubleElectron' : ['HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*', 'HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*'],
         'MET'            : ['HLT_PFMET120_NoiseCleaned_BTagCSV07_v*', 'HLT_PFHT350_PFMET120_NoiseCleaned_v*', 'HLT_PFMET170_NoiseCleaned_v*'],
@@ -453,7 +453,7 @@ SRAnalyzer = cfg.Analyzer(
     verbose = False,
     class_object = SRAnalyzer,
     jetAlgo = "ak8PFJetsCHSPrunedMass",
-    met_pt = 0.,#200.,
+    met_pt = 200.,
     )
 
 from DMPD.Heppy.analyzers.XZhAnalyzer import XZhAnalyzer
@@ -563,6 +563,7 @@ SignalRegionTreeProducer= cfg.Analyzer(
         NTupleVariable('isZtoNN',  lambda x: x.isZ2NN, int, help='Z -> nu nu flag'),
     ],
     globalObjects = {
+        'genV'      : NTupleObject('genV', particleType, help='Gen Boson'),
         'theX'      : NTupleObject('X', candidateFullType, help='Heavy resonance candidate'),
         'met'       : NTupleObject('met',  metFullType, help='PF MET without type 1 corrections'),
         'pfmet'     : NTupleObject('pfmet',  metType, help='PF MET, after default type 1 corrections'),
@@ -948,9 +949,9 @@ from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
 
 
 ### DATA ###
-selectedComponents = [
+#selectedComponents = [
 #### Run2015D
-   sample['SingleMuon_Run2015D_PromptReco_v3'],
+   #sample['SingleMuon_Run2015D_PromptReco_v3'],
    #sample['SingleElectron_Run2015D_PromptReco_v3'],
    #sample['DoubleMuon_Run2015D_PromptReco_v3'],
    #sample['DoubleEG_Run2015D_PromptReco_v3'],
@@ -972,11 +973,11 @@ selectedComponents = [
    #sample['DoubleMuon_Run2015B_17Jul2015_v1'],
    #sample['DoubleEG_Run2015B_17Jul2015_v1'],
    #sample['MET_Run2015B_17Jul2015_v1'],
-]
-filterAnalyzer.processName = 'RECO'
+#]
+#filterAnalyzer.processName = 'RECO'
 
 
-#selectedComponents = [sample['ZprimeToZhToZlephbb_narrow_M2000_madgraph_v1'],]
+selectedComponents = [sample['ZprimeToZhToZlephbb_narrow_M2000_madgraph_v1'],]
 #selectedComponents = [sample['BBbarDMJets_pseudoscalar_Mchi-10_Mphi-100_madgraphMLM_pythia8_v1'],]
 
 #selectedComponents = [
@@ -1125,7 +1126,7 @@ if __name__ == '__main__':
         'DM',
         config,
         nPrint = 1,
-        nEvents=1e99,
+        nEvents=1000,
         )
     looper.loop()
     looper.write()
