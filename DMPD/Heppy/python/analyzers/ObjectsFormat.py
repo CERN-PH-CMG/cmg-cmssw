@@ -6,6 +6,10 @@ from PhysicsTools.Heppy.analyzers.objects.autophobj  import *
 
 lorentzVectorType = NTupleObjectType("lorentzVector", baseObjectTypes = [ fourVectorType ], variables = [])
 
+particleType = NTupleObjectType("particle", baseObjectTypes = [ fourVectorType ], variables = [
+    NTupleVariable("pdgId",   lambda x : x.pdgId(), int, help="particle Id"),
+])
+
 candidateType = NTupleObjectType("candidate", baseObjectTypes = [ fourVectorType ], variables = [
     NTupleVariable("tmass",   lambda x : getattr(x, "mT", -1.), int, help="transverse mass"),
     NTupleVariable("charge",   lambda x : getattr(x, "charge", -9.), int, help="charge"),
