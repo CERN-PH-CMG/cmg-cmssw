@@ -381,13 +381,13 @@ if runData: # For running on data
 #    processing = "Run2015C-PromptReco-v1"; short = "Run2015C_v1"; run_ranges = [ (254833,254833) ]; useAAA=False; is50ns=True; triggerFlagsAna.checkL1Prescale = False;
 
 #    # Run2015C, 25 ns, 3.8T
-#    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-256869_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
+#    json = os.environ['CMSSW_BASE']+'/src/CMGTools/TTHAnalysis/data/json/Cert_246908-257599_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
 #    processing = "Run2015C-PromptReco-v1"; short = "Run2015C_v1"; run_ranges = [ (254231,254914) ]; useAAA=False; is50ns=False; triggerFlagsAna.checkL1Prescale = False;
 
-    # Run2015D, fills 4376-4391 - WARNING: beware of CACHING in .cmgdataset
+    # Run2015D, fills 4376-4426 - WARNING: beware of CACHING in .cmgdataset
     # normalize with: brilcalc lumi --normtag /afs/cern.ch/user/c/cmsbril/public/normtag_json/OfflineNormtagV1.json -i jsonfile.txt
-    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-256869_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
-    processing = "Run2015D-PromptReco-v3"; short = "Run2015D_v3"; run_ranges = [ (256630,256843) ]; useAAA=False; is50ns=False
+    json = os.environ['CMSSW_BASE']+'/src/CMGTools/TTHAnalysis/data/json/Cert_246908-257599_13TeV_PromptReco_Collisions15_25ns_JSON.txt' # and Run2015D = 209.2/pb
+    processing = "Run2015D-PromptReco-v3"; short = "Run2015D_v3"; run_ranges = [ (256630,257599) ]; useAAA=False; is50ns=False
 
     compSelection = ""; compVeto = ""
     DatasetsAndTriggers = []
