@@ -58,6 +58,7 @@ triggerAnalyzer= cfg.Analyzer(
         'SingleElectron' : ['HLT_Ele105_CaloIdVT_GsfTrkIdT_v*', 'HLT_Ele27_WPLoose_Gsf_v*'],
         'DoubleMu'       : ['HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*','HLT_Mu30_TkMu11_v*'],
         'DoubleElectron' : ['HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*', 'HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*'],
+        'MuonEG'         : ['HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*'],
         'MET'            : ['HLT_PFMET120_JetIdCleaned_BTagCSV0p72_v*', 'HLT_PFHT350_PFMET100_JetIdCleaned_v*', 'HLT_PFMET170_NoiseCleaned_v*', 'HLT_PFMET170_JetIdCleaned_v*', 'HLT_PFMET170_v*'], #HLT_PFMET120_NoiseCleaned_BTagCSV07_v
         #'JET'            : ['HLT_PFJet260_v*'],
     },
