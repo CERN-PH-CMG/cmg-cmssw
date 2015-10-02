@@ -54,11 +54,11 @@ triggerAnalyzer= cfg.Analyzer(
     #grouping several paths into a single flag
     # v* can be used to ignore the version of a path
     triggerBits={
-        'SingleMu'       : ['HLT_IsoMu24_eta2p1_v*', 'HLT_IsoMu27_v*', 'HLT_Mu45_eta2p1_v*', 'HLT_Mu50_v*'],
-        'SingleElectron' : ['HLT_Ele105_CaloIdVT_GsfTrkIdT_v*', 'HLT_Ele27_eta2p1_WPLoose_Gsf_v*'],#'HLT_Ele23_WPLoose_Gsf_v*', 'HLT_Ele27_eta2p1_WPLoose_Gsf_v*', 'HLT_Ele32_eta2p1_WPLoose_Gsf_v*', 'HLT_Ele23_CaloIdL_TrackIdL_IsoVL_v*', 
+        'SingleMu'       : ['HLT_IsoMu22_v*', 'HLT_IsoMu27_v*', 'HLT_Mu45_eta2p1_v*', 'HLT_Mu50_v*'],
+        'SingleElectron' : ['HLT_Ele105_CaloIdVT_GsfTrkIdT_v*', 'HLT_Ele27_WPLoose_Gsf_v*'],
         'DoubleMu'       : ['HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*','HLT_Mu30_TkMu11_v*'],
         'DoubleElectron' : ['HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*', 'HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*'],
-        'MET'            : ['HLT_PFMET120_NoiseCleaned_BTagCSV07_v*', 'HLT_PFHT350_PFMET120_NoiseCleaned_v*', 'HLT_PFMET170_NoiseCleaned_v*'],
+        'MET'            : ['HLT_PFMET120_JetIdCleaned_BTagCSV0p72_v*', 'HLT_PFHT350_PFMET100_JetIdCleaned_v*', 'HLT_PFMET170_NoiseCleaned_v*', 'HLT_PFMET170_JetIdCleaned_v*', 'HLT_PFMET170_v*'], #HLT_PFMET120_NoiseCleaned_BTagCSV07_v
         #'JET'            : ['HLT_PFJet260_v*'],
     },
 #   processName='HLT',
@@ -845,9 +845,9 @@ for i in mcsamples:
     sample[i] = cfg.MCComponent(
         files   = mcsamples[i]['files'],
         name    = i,
-	    isMC    = True,
-	    isEmbed = False,
-	    splitFactor = int(mcsamples[i]['nevents']/(maxlsftime*3600*eventspersec)),
+        isMC    = True,
+        isEmbed = False,
+        splitFactor = int(mcsamples[i]['nevents']/(maxlsftime*3600*eventspersec)),
     )
 
 ##############################
@@ -976,8 +976,8 @@ from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
 #]
 #filterAnalyzer.processName = 'RECO'
 
-
-selectedComponents = [sample['ZprimeToZhToZlephbb_narrow_M2000_madgraph_v1'],]
+#selectedComponents = [sample['ZprimeToZhToZlephbb_narrow_M2000_madgraph_v1'],]
+selectedComponents = [sample['ZprimeToZhToZinvhbb_narrow_M2000_madgraph_v1'],]
 #selectedComponents = [sample['BBbarDMJets_pseudoscalar_Mchi-10_Mphi-100_madgraphMLM_pythia8_v1'],]
 
 #selectedComponents = [
