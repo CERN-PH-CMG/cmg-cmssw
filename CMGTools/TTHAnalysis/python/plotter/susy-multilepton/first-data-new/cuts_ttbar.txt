@@ -1,0 +1,9 @@
+filters : hbheFilterNew25ns==1 && Flag_CSCTightHaloFilter==1 && Flag_eeBadScFilter==1
+trigger : HLT_DoubleMu || HLT_DoubleEl || HLT_MuEG
+nL : nLepGood >= 2
+EE_MuMu_MuE : LepGood1_pdgId == -LepGood2_pdgId || abs(LepGood1_pdgId+LepGood2_pdgId)==2
+pt2515 : LepGood1_pt>25 && LepGood2_pt>15
+mll > 12 : minMllAFAS > 12
+nJet40 : nJet40 >= 2
+nBJetMedium25 : nBJetMedium25 >= 1 || nBJetLoose25 == 2
+Z peak : abs(mZ1-91.2) > 10

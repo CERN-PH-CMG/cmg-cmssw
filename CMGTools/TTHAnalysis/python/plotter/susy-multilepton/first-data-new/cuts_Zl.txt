@@ -1,0 +1,10 @@
+filters : hbheFilterNew25ns==1 && Flag_CSCTightHaloFilter==1 && Flag_eeBadScFilter==1
+trigger : HLT_DoubleMu || HLT_DoubleEl || HLT_MuEG
+3L : nLepGood == 3
+SF/OS : LepGood1_pdgId == -LepGood2_pdgId
+lep3_pt30 : LepGood3_pt < 50
+lep3_pt10 : nLepGood10 == 3
+mll > 12 : minMllAFAS > 12
+Z peak : abs(mZ1-91.2) < 15
+mt_2 : mt_2(LepGood3_pt, LepGood3_phi, metNoHF_pt, metNoHF_phi) < 55
+met : metNoHF_pt < 60

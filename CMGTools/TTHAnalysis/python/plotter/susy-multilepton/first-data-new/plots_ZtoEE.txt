@@ -1,0 +1,37 @@
+nvtx: nVert: 40,0.5,40.5 ; XTitle="N(vertices)", Legend='TR'
+
+el_pt:  LepGood_pt: 24,0,150; XTitle="Electron p_{T}  [GeV]", Legend='TR', LegendCutoff=1e-2
+el_eta:  LepGood_eta: 24,-2.5,2.5;    XTitle="Electron #eta", Legend='TR', LegendCutoff=1e-2
+el_miniRelIso: LepGood_miniRelIso: 20,0,.4; XTitle="Electron Isolation", LegendCutoff=1e-2
+el_miniRelIso_log: LepGood_miniRelIso: 20,0,.4; Logy, XTitle="Electron Isolation", LegendCutoff=1e-4
+el_sip3d: LepGood_sip3d: 40,0,5 ; XTitle="Electron SIP_{3D}", Legend='TR', LegendCutoff=1e-2
+el_sip3d_log: LepGood_sip3d: 40,0,5 ; XTitle="Electron SIP_{3D}", Logy,  Legend='TR', LegendCutoff=1e-2
+el_dxy:abs(LepGood_dxy)*10000: 40,0.0,100. ; XTitle="Electron d_{xy} [#mum]", Legend='TR', LegendCutoff=1e-2
+el_dxy_log: abs(LepGood_dxy)*10000: 40,0.0,100. ; XTitle="Electron d_{xy} [#mum]",Logy ,  Legend='TR', LegendCutoff=1e-4
+el_dz: abs(LepGood_dz)*10000: 40,0.0,500. ; XTitle="Electron d_{z} [#mum]", Legend='TR', LegendCutoff=1e-2
+el_dz_log: abs(LepGood_dz)*10000: 40,0.0,500. ; XTitle="Electron d_{z} [#mum]",Logy ,Legend='TR', LegendCutoff=1e-4
+el_jetPtRel: LepGood_jetPtRel: 40,0,40; XTitle="Electron Jet p_{T} Rel  [GeV]", Legend='TR', LegendCutoff=1e-2
+el_jetPtRelv2:  LepGood_jetPtRelv2: 40,0,40; XTitle="Electron Jet p_{T} Relv2  [GeV]", Legend='TR', LegendCutoff=1e-2
+el_jetPtRatio: LepGood_jetPtRatio: 40,0,1.2; XTitle="Electron Jet p_{T} Ratio ", Legend='TL', LegendCutoff=1e-2
+el_jetPtRatio_Raw: LepGood_jetPtRatio_Raw: 40,0,1.2; XTitle="Electron Jet p_{T} Ratio (Raw)", Legend='TL', LegendCutoff=1e-2
+el_jetPtRatio_LepAwareJEC: LepGood_jetPtRatio_LepAwareJEC: 40,0,1.2; XTitle="Electron Jet p_{T} Ratio (LepAware JEC)", Legend='TL', LegendCutoff=1e-2
+el_jetPtRatio_LepAwareJECv2: LepGood_jetPtRatio_LepAwareJECv2: 40,0,1.2; XTitle="Electron Jet p_{T} Ratio (LepAware JECv2)", Legend='TL', LegendCutoff=1e-2
+el_jetPtRatioL1Corr: LepGood_jetPtRatioL1Corr: 40,0,1.2; XTitle="Electron Jet p_{T} (L1Corr)", Legend='TL', LegendCutoff=1e-2
+el_mvaIdPhys14: LepGood_mvaIdPhys14: 40,-1,1; XTitle="Electron mvaIdPhys14", Legend='TR', LegendCutoff=1e-2
+el_mvaIdPhys14_log: LepGood_mvaIdPhys14: 40,-1,1; Logy, XTitle="Electron mvaIdPhys14", Legend='TL', LegendCutoff=1e-4
+el_pixelLayers: LepGood_pixelLayers: 24,0,10; XTitle="Pixel Layers", Legend='TR', LegendCutoff=1e-2
+el_trackerLayers: LepGood_trackerLayers: 24,0,20; XTitle="Tracker Layers", Legend='TL', LegendCutoff=1e-2
+el_lostHits: LepGood_lostHits: 24,-4,4; XTitle="Lost hits on inner track", Legend='TR', LegendCutoff=1e-2
+el_jetBTagCSV: LepGood_jetBTagCSV: 40,0,1; XTitle="CSV btag of nearest jet ", Legend='TR', LegendCutoff=1e-2
+
+metWithHF: met_pt: 24,0,200    ; XTitle="E_{T}^{miss}  [GeV]",Logy,LegendCutoff=1e-4 
+metNoHF: metNoHF_pt: 24,0,200    ; XTitle="E_{T}^{miss} (no HF) [GeV]",Logy,LegendCutoff=1e-4 
+
+mZ1: m2l: 24,60,120 ; XTitle="best m(e^{+}e^{-})  [GeV]", Legend='TR', LegendCutoff=1e-2,  MoreY=1.5
+mZ1_log: m2l: 24,60,120 ; XTitle="best m(e^{+}e^{-})  [GeV]", Legend='TR', LegendCutoff=1e-2,  MoreY=1.5, Logy
+
+
+
+
+
+
