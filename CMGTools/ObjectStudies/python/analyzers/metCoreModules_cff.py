@@ -56,6 +56,7 @@ eventFlagsAna = cfg.Analyzer(
     outprefix   = 'Flag',
     triggerBits = {
 ###        "HBHENoiseFilter" : [ "Flag_HBHENoiseFilter" ], ## temporary replacement
+        "HBHENoiseIsoFilter" : [ "Flag_HBHENoiseIsoFilter" ],
         "CSCTightHaloFilter" : [ "Flag_CSCTightHaloFilter" ],
         "hcalLaserEventFilter" : [ "Flag_hcalLaserEventFilter" ],
         "EcalDeadCellTriggerPrimitiveFilter" : [ "Flag_EcalDeadCellTriggerPrimitiveFilter" ],
@@ -242,7 +243,7 @@ metAna = cfg.Analyzer(
     collectionPostFix = "",
     )
 metNoHFAna = cfg.Analyzer(
-    METAnalyzer, name="metAnalyzer",
+    METAnalyzer, name="metNoHFAnalyzer",
     metCollection     = "slimmedMETsNoHF",
     noPUMetCollection = "slimmedMETsNoHF",    
     copyMETsByValue = False,
@@ -260,6 +261,28 @@ metNoHFAna = cfg.Analyzer(
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,
     collectionPostFix = "NoHF",
+    )
+
+
+metPuppiAna = cfg.Analyzer(
+    METAnalyzer, name="metPuppiAnalyzer",
+    metCollection     = "slimmedMETsPuppi",
+    noPUMetCollection = "slimmedMETsPuppi",    
+    copyMETsByValue = False,
+    doTkMet = False,
+    includeTkMetCHS = False,
+    includeTkMetPVLoose = False,
+    includeTkMetPVTight = False,
+    doMetNoPU = False,
+    doMetNoMu = False,
+    doMetNoEle = False,
+    doMetNoPhoton = False,
+    recalibrate = False,
+    jetAnalyzerCalibrationPostFix = "",
+    candidates='packedPFCandidates',
+    candidatesTypes='std::vector<pat::PackedCandidate>',
+    dzMax = 0.1,
+    collectionPostFix = "Puppi",
     )
 
 
@@ -301,10 +324,10 @@ jetAna = cfg.Analyzer(
     relaxJetId = False,
     doPuId = False, # Not commissioned in 7.0.X
     recalibrateJets = True, #'MC', # True, False, 'MC', 'Data'
-    applyL2L3Residual = False, # Switch to 'Data' when they will become available for Data
+    applyL2L3Residual = True, # Switch to 'Data' when they will become available for Data
     recalibrationType = "AK4PFchs",
     mcGT     = "Summer15_50nsV2_MC",
-    dataGT   = "Summer15_50nsV2_MC",
+    dataGT   = "Summer15_50nsV5_MC",
     jecPath = "${CMSSW_BASE}/src/CMGTools/RootTools/data/jec/",
     shiftJEC = 0, # set to +1 or -1 to apply +/-1 sigma shift to the nominal jet energies
     addJECShifts = False, # if true, add  "corr", "corrJECUp", and "corrJECDown" for each jet (requires uncertainties to be available!)
@@ -359,6 +382,7 @@ metCoreSequence = [
 ##### met modules below
     metAna,
     metNoHFAna,
+    metPuppiAna,
     eventFlagsAna,
     hbheFilterAna,
 ##### tree
