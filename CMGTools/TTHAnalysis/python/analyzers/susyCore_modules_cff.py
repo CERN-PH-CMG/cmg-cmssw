@@ -307,7 +307,8 @@ jetAna = cfg.Analyzer(
     doQG = False,
     do_mc_match = True,
     cleanGenJetsFromPhoton = False,
-    collectionPostFix = ""
+    collectionPostFix = "",
+    calculateSeparateCorrections = True
     )
 
 #PFcharged jets analyzer
@@ -343,7 +344,8 @@ pfChargedCHSjetAna = cfg.Analyzer(
     doQG = False,
     do_mc_match = True,
     cleanGenJetsFromPhoton = False,
-    collectionPostFix = "PFChargedCHS"
+    collectionPostFix = "PFChargedCHS",
+    calculateSeparateCorrections = False
     )
 
 ## Fat Jets Analyzer (generic)

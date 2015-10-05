@@ -20,7 +20,6 @@ runFRMC = getHeppyOption("runFRMC",False)
 scaleProdToLumi = float(getHeppyOption("scaleProdToLumi",-1)) # produce rough equivalent of X /pb for MC datasets
 SOS = getHeppyOption("SOS",False) ## switch True to overwrite settings for SOS skim (N.B. default settings are those from multilepton preselection)
 saveSuperClusterVariables = getHeppyOption("saveSuperClusterVariables",False)
-removeSeparateJetCorrections = getHeppyOption("removeSeparateJetCorrections",False)
 doMETpreprocessor = getHeppyOption("doMETpreprocessor",False)
 noMETNoHF = getHeppyOption("noMETNoHF",False)
 doAK4PFCHSchargedJets = getHeppyOption("doAK4PFCHSchargedJets",False)
@@ -209,32 +208,6 @@ if saveSuperClusterVariables:
             NTupleVariable("superCluster_clustersSize", lambda x: x.superCluster().clustersSize() if (abs(x.pdgId())==11 and hasattr(x,"superCluster")) else -999, help="Electron superCluster.clustersSize"),
             NTupleVariable("superCluster_seed.energy", lambda x: x.superCluster().seed().energy() if (abs(x.pdgId())==11 and hasattr(x,"superCluster")) else -999, help="Electron superCluster.seed.energy"),
 ])
-
-jetAna.calculateSeparateCorrections = (not removeSeparateJetCorrections)
-if jetAna.calculateSeparateCorrections:
-    jetTypeSusyExtra.addVariables([
-            NTupleVariable("CorrFactor_L1", lambda x: x.CorrFactor_L1 if hasattr(x,'CorrFactor_L1') else 0, help="L1 correction factor"),
-            NTupleVariable("CorrFactor_L1L2", lambda x: x.CorrFactor_L1L2 if hasattr(x,'CorrFactor_L1L2') else 0, help="L1L2 correction factor"),
-            NTupleVariable("CorrFactor_L1L2L3", lambda x: x.CorrFactor_L1L2L3 if hasattr(x,'CorrFactor_L1L2L3') else 0, help="L1L2L3 correction factor"),
-            NTupleVariable("CorrFactor_L1L2L3Res", lambda x: x.CorrFactor_L1L2L3Res if hasattr(x,'CorrFactor_L1L2L3Res') else 0, help="L1L2L3Res correction factor")
-            ])
-    leptonTypeSusyExtra.addVariables([
-            NTupleVariable("jetPt", lambda x: x.jet.pt() if x.jet!=x else x.pt(), help="matched jet corrected pt"),
-            NTupleVariable("jetRawPt", lambda x: x.jet.pt() * x.jet.rawFactor() if x.jet!=x else x.pt(), help="matched jet raw pt"),
-            NTupleVariable("jetEta", lambda x: x.jet.eta() if x.jet!=x else x.eta(), help="matched jet eta"),
-            NTupleVariable("jetPhi", lambda x: x.jet.phi() if x.jet!=x else x.phi(), help="matched jet phi"),
-            NTupleVariable("jetE", lambda x: x.jet.energy() if x.jet!=x else x.energy(), help="matched jet energy"),
-            NTupleVariable("jetCorrFactor_L1", lambda x: x.jet.CorrFactor_L1 if hasattr(x.jet,'CorrFactor_L1') else 1, help="matched jet L1 correction factor"),
-            NTupleVariable("jetCorrFactor_L1L2", lambda x: x.jet.CorrFactor_L1L2 if hasattr(x.jet,'CorrFactor_L1L2') else 1, help="matched jet L1L2 correction factor"),
-            NTupleVariable("jetCorrFactor_L1L2L3", lambda x: x.jet.CorrFactor_L1L2L3 if hasattr(x.jet,'CorrFactor_L1L2L3') else 1, help="matched jet L1L2L3 correction factor"),
-            NTupleVariable("jetCorrFactor_L1L2L3Res", lambda x: x.jet.CorrFactor_L1L2L3Res if hasattr(x.jet,'CorrFactor_L1L2L3Res') else 1, help="matched jet L1L2L3Res correction factor"),        
-            NTupleVariable("jetPtRatio_LepAwareJECv2", lambda lepton: lepton.pt()/jetLepAwareJEC(lepton).Pt() if hasattr(lepton,'jet') else -1, help="pt(lepton)/[rawpt(jet-PU-lep)*L2L3Res+pt(lepton)]"),
-            NTupleVariable("jetPtRelv2", lambda lepton : ptRelv2(lepton) if hasattr(lepton,'jet') else -1, help="pt of the lepton transverse to the jet axis (subtracting the lepton) - v2"),
-            NTupleVariable("jetPtRelHv2", lambda lepton : ptRelHv2(lepton) if hasattr(lepton,'jet') else -1, help="pt of the jet (subtracting the lepton) transverse to the lepton axis - v2"),
-            ])
-    leptonTypeSusyExtra.addSubObjects([
-            NTupleSubObject("jetLepAwareJEC",lambda x: jetLepAwareJEC(x), tlorentzFourVectorType)
-            ])
 
 ## Tree Producer
 treeProducer = cfg.Analyzer(
@@ -506,15 +479,18 @@ if doMETpreprocessor:
     import tempfile
     # -------------------- Running pre-processor
     import subprocess
-    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_%s_%s.db'%('50nsV5' if is50ns else '25nsV2','DATA' if runData else 'MC')
-    jecEra    = 'Summer15_%s_%s'%('50nsV5' if is50ns else '25nsV2', 'DATA'if runData else 'MC')
+    if is50ns: jectag = '50nsV5'
+    else: jectag = '25nsV5' if runData else '25nsV2'
+    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_%s_%s.db'%(jectag,'DATA' if runData else 'MC')
+    jecEra    = 'Summer15_%s_%s'%(jectag, 'DATA'if runData else 'MC')
     tempfile.tempdir=os.environ['CMSSW_BASE']+'/tmp'
     tfile, tpath = tempfile.mkstemp(suffix='.py',prefix='MET_preproc_')
     os.close(tfile)
     extraArgs=[]
     if runData:
       extraArgs.append('--isData')
-      GT= '74X_dataRun2_v2'
+      if is50ns: GT= '74X_dataRun2_v2'
+      else: raise RuntimeError,'GT for 25ns data with 25nsV5 JEC is to be announced'
     else:
       GT= '74X_mcRun2_startup_v2' if is50ns else '74X_mcRun2_asymptotic_v2'
     if removeResiduals: extraArgs.append('--removeResiduals')
