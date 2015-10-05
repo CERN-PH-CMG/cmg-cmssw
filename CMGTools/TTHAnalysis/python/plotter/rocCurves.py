@@ -99,8 +99,12 @@ def addROCMakerOptions(parser):
     parser.add_option("--select-plot", "--sP", dest="plotselect", action="append", default=[], help="Select only these plots out of the full file")
     parser.add_option("--exclude-plot", "--xP", dest="plotexclude", action="append", default=[], help="Exclude these plots from the full file")
 
-def doLegend(rocs,textSize=0.035):
-        (x1,y1,x2,y2) = (.6, .30 + textSize*max(len(rocs)-3,0), .93, .18)
+def doLegend(rocs,textSize=0.035,placement='BR'):
+        if placement == 'BR':
+            (x1,y1,x2,y2) = (.68, .25 + textSize*max(len(rocs)-3,0), .962, .13)
+        elif placement == 'TL':
+            (x1,y1,x2,y2) = (.21, .83 - textSize*max(len(rocs)-3,0), .492, .95)
+        else: raise RuntimeError, "Unsupported placement %r" % placement
         leg = ROOT.TLegend(x1,y1,x2,y2)
         leg.SetFillColor(0)
         leg.SetShadowColor(0)
@@ -133,6 +137,7 @@ def stackRocks(outname,outfile,rocs,xtit,ytit,options):
         if options.logx: frame.GetXaxis().SetTitleOffset(1.0)
         frame.Draw();
         for title,roc in rocs:
+            if (roc.GetN() == 0): print "No points in "+title
             roc.Draw(roc.style+" SAME")
     else:
         allrocs.Draw("APL");
@@ -143,7 +148,7 @@ def stackRocks(outname,outfile,rocs,xtit,ytit,options):
             allrocs.GetXaxis().SetRangeUser(options.xrange[0], options.xrange[1])
         if options.yrange:
             allrocs.GetYaxis().SetRangeUser(options.yrange[0], options.yrange[1])
-    leg = doLegend(rocs)
+    leg = doLegend(rocs,placement=options.legendPlace)
     if options.fontsize: leg.SetTextSize(options.fontsize)
     c1.Print(outname.replace(".root","")+".png")
     outfile.WriteTObject(c1,"roc_canvas")
@@ -157,6 +162,7 @@ if __name__ == "__main__":
     parser.add_option("--yrange", dest="yrange", default=None, nargs=2, type='float', help="X axis range");
     parser.add_option("--xtitle", dest="xtitle", default="Eff Background", type='string', help="X axis title");
     parser.add_option("--ytitle", dest="ytitle", default="Eff Signal", type='string', help="Y axis title");
+    parser.add_option("--legendPlace", dest="legendPlace", default="BR", type='string', help="Legend place: BR, TL");
     parser.add_option("--fontsize", dest="fontsize", default=0, type='float', help="Legend font size");
     parser.add_option("--splitSig", dest="splitSig", default=False, action="store_true", help="Make one ROC per signal")
     parser.add_option("--splitBkg", dest="splitBkg", default=False, action="store_true", help="Make one ROC per background")
