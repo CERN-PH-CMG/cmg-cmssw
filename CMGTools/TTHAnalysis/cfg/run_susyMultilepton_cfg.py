@@ -385,7 +385,7 @@ if runData: # For running on data
                 tShort = t.replace("HLT_","FR_").replace("_v*","")
                 triggerFlagsAna.triggerBits[tShort] = [ t ]
                 FRTrigs_mu = triggers_FR_1mu_iso + triggers_FR_1mu_noiso
-                FRTrigs_el = triggers_FR_1e_noiso + triggers_FR_1e_iso
+                FRTrigs_el = triggers_FR_1e_noiso + triggers_FR_1e_iso + triggers_FR_1e_b2g
                 DatasetsAndTriggers = [ (pd,trig) for pd,trig in DatasetsAndTriggers if pd in ['DoubleMuon','DoubleEG'] ]
                 for pd,trig in DatasetsAndTriggers:
                     if pd in ['DoubleMuon','SingleMuon']:
