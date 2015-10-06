@@ -734,7 +734,7 @@ class PlotMaker:
                     ref = pmap['background']
                     if "TH1" in new.ClassName():
                         for b in xrange(1,new.GetNbinsX()+1):
-                            if new.GetBinContent(b) != ref.GetBinContent(b):
+                            if abs(new.GetBinContent(b) - ref.GetBinContent(b)) > options.toleranceForDiff*ref.GetBinContent(b):
                                 print "Plot: difference found in %s, bin %d" % (pspec.name, b)
                                 p1.SetFillColor(ROOT.kYellow-10)
                                 if p2: p2.SetFillColor(ROOT.kYellow-10)
@@ -821,6 +821,7 @@ def addPlotMakerOptions(parser):
     parser.add_option("--legendBorder", dest="legendBorder", type="int", default=0, help="Use a border in the legend (1=yes, 0=no)")
     parser.add_option("--legendFontSize", dest="legendFontSize", type="float", default=-1, help="Font size in the legend (if <=0, use the default)")
     parser.add_option("--flagDifferences", dest="flagDifferences", action="store_true", default=False, help="Flag plots that are different (when using only two processes, and plotmode nostack")
+    parser.add_option("--toleranceForDiff", dest="toleranceForDiff", default=0.0, type="float", help="set numerical tollerance to define when two histogram bins are considered different");
     parser.add_option("--pseudoData", dest="pseudoData", type="string", default=None, help="If set to 'background' or 'all', it will plot also a pseudo-dataset made from background (or signal+background) with Poisson fluctuations in each bin.")
 
 if __name__ == "__main__":
