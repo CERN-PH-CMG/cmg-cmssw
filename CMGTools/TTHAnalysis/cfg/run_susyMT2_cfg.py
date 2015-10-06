@@ -197,7 +197,15 @@ hbheFilterAna = cfg.Analyzer(
 ##  PRODUCER
 ##------------------------------------------
 
-from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_HT900, triggers_HT800, triggers_AllMET170, triggers_HTMET100, triggers_HTMET120, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_e, triggers_MT2_mu, triggers_MT2_emu, triggers_MT2_mue, triggers_dijet, triggers_dijet70met120, triggers_dijet55met110, triggers_ht350, triggers_ht475,  triggers_ht600, triggers_photon75, triggers_photon90, triggers_photon120, triggers_photon75ps, triggers_photon90ps, triggers_photon120ps, triggers_photon155, triggers_photon165_HE10, triggers_photon175
+
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_HT900, triggers_HT800, triggers_AllMET170, triggers_HTMET100, triggers_HTMET120
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_e, triggers_MT2_mu, triggers_MT2_emu, triggers_MT2_mue 
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_dijet, triggers_dijet70met120, triggers_dijet55met110, triggers_ht350, triggers_ht475,  triggers_ht600 
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_photon75, triggers_photon90, triggers_photon120, triggers_photon75ps, 
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_photon90ps, triggers_photon120ps, triggers_photon155, triggers_photon165_HE10, triggers_photon175
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_met90_mht90, triggers_metNoMu90_mhtNoMu90, triggers_Jet80MET90
+
+
 
 triggerFlagsAna.triggerBits = {
 'PFHT900' : triggers_HT900,
@@ -230,6 +238,9 @@ triggerFlagsAna.triggerBits = {
 'Photon155' : triggers_photon155,
 'Photon165_HE10' : triggers_photon165_HE10,
 'Photon175' : triggers_photon175,
+'PFMET90_PFMHT90' : triggers_met90_mht90,
+'PFMETNoMu90_PFMHTNoMu90' : triggers_metNoMu90_mhtNoMu90,
+'Monojet80_PFMET90' : triggers_Jet80MET90, 
 }
 
 ### Temporary replacement for hbheFilter
@@ -409,20 +420,25 @@ elif test==2:
 #QCD_Pt80to120, QCD_Pt120to170, QCD_Pt300to470, QCD_Pt470to600, QCD_Pt1000to1400, QCD_Pt1400to1800, QCD_Pt1800to2400, QCD_Pt2400to3200, QCD_Pt3200toInf, # QCD_Pt
 #]
 
-### 25
-#    selectedComponents = SignalSUSY + SignalEXO ### Signal Spring15
-    selectedComponents = ZJetsToNuNuHT + DYJetsM50HT + QCDPt + QCDHT + [ 
+### 25    
+#    selectedComponents = [DYJetsToLL_M50_Zpt150toInf_LO]
+
+    selectedComponents = ZJetsToNuNuHT + DYJetsM50HT + QCDPt + QCDHT + [
+TTJets_SingleLeptonFromT, TTJets_SingleLeptonFromTbar, TTJets_DiLepton,
+TTV, TToLeptons_tch, TbarToLeptons_tch, 
+TTJets_LO,
+#                                                                                                                                                                      
 GJets_HT100to200,
 GJets_HT200to400,
 GJets_HT400to600,
 GJets_HT600toInf,
-TTJets_LO, 
+#
 WJetsToLNu_HT100to200,
 WJetsToLNu_HT200to400,
 WJetsToLNu_HT400to600,
 WJetsToLNu_HT600toInf,
-] + SingleTop ### Full SM BG Spring15
-    
+] ### Full SM BG Spring15
+
     # test all components (1 thread per component).
     for comp in selectedComponents:
         comp.splitFactor = 1200
@@ -438,6 +454,8 @@ elif test==3:
     isData = True
     from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
 
+    dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data"
+    json=dataDir+'/json/json_DCSONLY.txt'
     #synche file DATA
     #comp = JetHT_Run2015B_PromptReco
     #comp.files = ['/afs/cern.ch/user/m/mangano/public/MECCA/dataset/74X/data/JetHT_promptReco_Run2015B.root']
@@ -448,13 +466,17 @@ elif test==3:
     #selectedComponents = [JetHT_Run2015B_17Jul2015, HTMHT_Run2015B_17Jul2015, MET_Run2015B_17Jul2015, SingleElectron_Run2015B_17Jul2015, SingleMuon_Run2015B_17Jul2015, SinglePhoton_Run2015B_17Jul2015, DoubleEG_Run2015B_17Jul2015, MuonEG_Run2015B_17Jul2015, DoubleMuon_Run2015B_17Jul2015, JetHT_Run2015B_PromptReco, HTMHT_Run2015B_PromptReco, MET_Run2015B_PromptReco, SingleElectron_Run2015B_PromptReco, SingleMuon_Run2015B_PromptReco, SinglePhoton_Run2015B_PromptReco, DoubleEG_Run2015B_PromptReco, MuonEG_Run2015B_PromptReco, DoubleMuon_Run2015B_PromptReco]
 
     selectedComponents = [JetHT_Run2015D, HTMHT_Run2015D, MET_Run2015D, SingleElectron_Run2015D, SingleMuon_Run2015D, SinglePhoton_Run2015D, DoubleEG_Run2015D, MuonEG_Run2015D, DoubleMuon_Run2015D]
+    
+    for comp in selectedComponents:
+        comp.json=json
+        
 
 elif test==4:
 
     from CMGTools.RootTools.samples.samples_13TeV_signals import *
 
 ### 25
-    selectedComponents = SignalSUSY + SignalEXO ### Signal Spring15
+    selectedComponents = + SignalSUSY + SignalEXO #+ SignalSUSYFullScan ###Signal Spring15
     
     # test all components (1 thread per component).
     for comp in selectedComponents:
@@ -514,16 +536,19 @@ removeResiduals = False
 import subprocess
 
 if isData:
-    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
-    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA.db'
-    jecEra    = 'Summer15_50nsV4_DATA'
+#    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
+#    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA.db'
+#    jecEra    = 'Summer15_50nsV4_DATA'
+    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_DATA_UncertaintySources_AK4PFchs.txt'
+    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_DATA.db'
+    jecEra    = 'Summer15_25nsV5_DATA'
 else:
 #    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
 #    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_MC.db'
 #    jecEra    = 'Summer15_50nsV4_MC'
-    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV2_MC_UncertaintySources_AK4PFchs.txt'
-    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV2_MC.db'
-    jecEra    = 'Summer15_25nsV2_MC'
+    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_MC_UncertaintySources_AK4PFchs.txt'
+    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_MC.db'
+    jecEra    = 'Summer15_25nsV5_MC'
 preprocessorFile = "$CMSSW_BASE/tmp/MetType1_jec_%s.py"%(jecEra)
 extraArgs=[]
 if isData:
@@ -550,7 +575,7 @@ preprocessor = CmsswPreprocessor(preprocessorFile)
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence,
                      services = [output_service],
-                     #preprocessor=preprocessor, # comment if pre-processor non needed
+                     preprocessor=preprocessor, # comment if pre-processor non needed
 #                     events_class = event_class)
                      events_class = Events)
 #printComps(config.components, True)
