@@ -6,5 +6,7 @@ lep3_pt30 : LepGood3_pt < 50
 lep3_pt10 : nLepGood10 == 3
 mll > 12 : minMllAFAS > 12
 Z peak : abs(mZ1-91.2) < 15
-mt_2 : mt_2(LepGood3_pt, LepGood3_phi, metNoHF_pt, metNoHF_phi) < 55
-met : metNoHF_pt < 60
+mt_2 : mt_2(LepGood3_pt, LepGood3_phi, met_pt, met_phi) < 55
+#mt_2 : mt_2(LepGood3_pt, LepGood3_phi, metNoHF_pt, metNoHF_phi) < 55
+met : met_pt < 60
+#met : metNoHF_pt < 60
