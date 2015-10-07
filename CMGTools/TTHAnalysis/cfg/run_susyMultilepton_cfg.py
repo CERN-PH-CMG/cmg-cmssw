@@ -633,9 +633,8 @@ elif test == "prompt2015D":
     sequence.remove(jsonAna)
     if is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
 elif test == 'miniAODv2':
-    comp = cfg.DataComponent( files = ["root://eoscms.cern.ch//store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/00000/0014DC94-DC5C-E511-82FB-7845C4FC39F5.root"], name="TTJets_miniAODv2", intLumi=1 )
+    comp = cfg.MCComponent( files = ["root://eoscms.cern.ch//store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/00000/0014DC94-DC5C-E511-82FB-7845C4FC39F5.root"], name="TTJets_miniAODv2" )
     comp.triggers = []
-    comp.json     = None
     selectedComponents = [ comp ]
     ttHLepSkim.minLeptons = 0
     sequence.remove(jsonAna)
