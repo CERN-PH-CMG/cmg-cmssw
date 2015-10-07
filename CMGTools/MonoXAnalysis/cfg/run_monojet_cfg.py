@@ -9,13 +9,20 @@ from CMGTools.MonoXAnalysis.analyzers.dmCore_modules_cff import *
 from PhysicsTools.Heppy.analyzers.objects.METAnalyzer import *
 
 # Redefine what I need
+signalSkim = False
+diLepSkim = True
+singleLepSkim = False
 
 # --- MONOJET SKIMMING ---
-monoJetSkim.metCut = 0
-monoJetSkim.jetPtCuts = []
+if signalSkim == True:
+    monoJetSkim.metCut = 200
+    monoJetSkim.jetPtCuts = []
 
-# --- W->munu control sample SKIMMING ---
-monoJetCtrlLepSkim.minLeptons = 0
+# --- Z->ll control sample SKIMMING ---
+if diLepSkim == True:
+    monoJetCtrlLepSkim.minLeptons = 2
+if singleLepSkim == True:
+    monoJetCtrlLepSkim.minLeptons = 1
 
 # run miniIso
 lepAna.doMiniIsolation = True
@@ -58,18 +65,6 @@ monoXMT2Ana = cfg.Analyzer(
     collectionPostFix = "",
     )
 
-##------------------------------------------
-##  TOLOLOGIAL VARIABLES: ALPHAT
-##------------------------------------------
-from CMGTools.TTHAnalysis.analyzers.ttHAlphaTVarAnalyzer import ttHAlphaTVarAnalyzer
-ttHAlphaTAna = cfg.Analyzer(
-    ttHAlphaTVarAnalyzer, name = 'ttHAlphaTVarAnalyzer',
-    )
-
-from CMGTools.TTHAnalysis.analyzers.ttHAlphaTControlAnalyzer import ttHAlphaTControlAnalyzer
-ttHAlphaTControlAna = cfg.Analyzer(
-    ttHAlphaTVarAnalyzer, name = 'ttHAlphaTControlAnalyzer',
-    )
 ##-----------------------------------------------
 ##  TOLOLOGIAL VARIABLES: MONOJET SPECIFIC ONES
 ##-----------------------------------------------
@@ -89,6 +84,33 @@ MonoJetEventAna = cfg.Analyzer(
 
 
 from CMGTools.MonoXAnalysis.analyzers.treeProducerDarkMatterMonoJet import * 
+
+# for electron scale and resolution checks
+saveSuperClusterVariables=True
+if saveSuperClusterVariables:
+    leptonTypeExtra.addVariables([
+            NTupleVariable("e5x5", lambda x: x.e5x5() if (abs(x.pdgId())==11 and hasattr(x,"e5x5")) else -999, help="Electron e5x5"),
+            NTupleVariable("r9", lambda x: x.r9() if (abs(x.pdgId())==11 and hasattr(x,"r9")) else -999, help="Electron r9"),
+            NTupleVariable("sigmaIetaIeta", lambda x: x.sigmaIetaIeta() if (abs(x.pdgId())==11 and hasattr(x,"sigmaIetaIeta")) else -999, help="Electron sigmaIetaIeta"),
+            NTupleVariable("sigmaIphiIphi", lambda x: x.sigmaIphiIphi() if (abs(x.pdgId())==11 and hasattr(x,"sigmaIphiIphi")) else -999, help="Electron sigmaIphiIphi"),
+            NTupleVariable("hcalOverEcal", lambda x: x.hcalOverEcal() if (abs(x.pdgId())==11 and hasattr(x,"hcalOverEcal")) else -999, help="Electron hcalOverEcal"),
+            NTupleVariable("full5x5_e5x5", lambda x: x.full5x5_e5x5() if (abs(x.pdgId())==11 and hasattr(x,"full5x5_e5x5")) else -999, help="Electron full5x5_e5x5"),
+            NTupleVariable("full5x5_r9", lambda x: x.full5x5_r9() if (abs(x.pdgId())==11 and hasattr(x,"full5x5_r9")) else -999, help="Electron full5x5_r9"),
+            NTupleVariable("full5x5_sigmaIetaIeta", lambda x: x.full5x5_sigmaIetaIeta() if (abs(x.pdgId())==11 and hasattr(x,"full5x5_sigmaIetaIeta")) else -999, help="Electron full5x5_sigmaIetaIeta"),
+            NTupleVariable("full5x5_sigmaIphiIphi", lambda x: x.full5x5_sigmaIphiIphi() if (abs(x.pdgId())==11 and hasattr(x,"full5x5_sigmaIphiIphi")) else -999, help="Electron full5x5_sigmaIphiIphi"),
+            NTupleVariable("full5x5_hcalOverEcal", lambda x: x.full5x5_hcalOverEcal() if (abs(x.pdgId())==11 and hasattr(x,"full5x5_hcalOverEcal")) else -999, help="Electron full5x5_hcalOverEcal"),
+            NTupleVariable("correctedEcalEnergy", lambda x: x.correctedEcalEnergy() if (abs(x.pdgId())==11 and hasattr(x,"correctedEcalEnergy")) else -999, help="Electron correctedEcalEnergy"),
+            NTupleVariable("eSuperClusterOverP", lambda x: x.eSuperClusterOverP() if (abs(x.pdgId())==11 and hasattr(x,"eSuperClusterOverP")) else -999, help="Electron eSuperClusterOverP"),
+            NTupleVariable("ecalEnergy", lambda x: x.ecalEnergy() if (abs(x.pdgId())==11 and hasattr(x,"ecalEnergy")) else -999, help="Electron ecalEnergy"),
+            NTupleVariable("superCluster_rawEnergy", lambda x: x.superCluster().rawEnergy() if (abs(x.pdgId())==11 and hasattr(x,"superCluster")) else -999, help="Electron superCluster.rawEnergy"),
+            NTupleVariable("superCluster_preshowerEnergy", lambda x: x.superCluster().preshowerEnergy() if (abs(x.pdgId())==11 and hasattr(x,"superCluster")) else -999, help="Electron superCluster.preshowerEnergy"),
+            NTupleVariable("superCluster_correctedEnergy", lambda x: x.superCluster().correctedEnergy() if (abs(x.pdgId())==11 and hasattr(x,"superCluster")) else -999, help="Electron superCluster.correctedEnergy"),
+            NTupleVariable("superCluster_energy", lambda x: x.superCluster().energy() if (abs(x.pdgId())==11 and hasattr(x,"superCluster")) else -999, help="Electron superCluster.energy"),
+            NTupleVariable("superCluster_clustersSize", lambda x: x.superCluster().clustersSize() if (abs(x.pdgId())==11 and hasattr(x,"superCluster")) else -999, help="Electron superCluster.clustersSize"),
+            NTupleVariable("superCluster_seed.energy", lambda x: x.superCluster().seed().energy() if (abs(x.pdgId())==11 and hasattr(x,"superCluster")) else -999, help="Electron superCluster.seed.energy"),
+])
+
+
 ## Tree Producer
 treeProducer = cfg.Analyzer(
      AutoFillTreeProducer, name='treeProducerDarkMatterMonoJet',
@@ -106,21 +128,117 @@ treeProducer = cfg.Analyzer(
 # dmCoreSequence.insert(dmCoreSequence.index(skimAnalyzer),
 #                       dmCounter)
 
-#signalSamples = MonojetSignalSamples
-#backgroundSamples =  WJetsToLNuHT + ZJetsToNuNuHT + SingleTop + [TTJets] + DYJetsM50HT + GJetsHT + QCDHT
-#selectedComponents = backgroundSamples + signalSamples
+# HBHE new filter
+from CMGTools.TTHAnalysis.analyzers.hbheAnalyzer import hbheAnalyzer
+hbheAna = cfg.Analyzer(
+    hbheAnalyzer, name="hbheAnalyzer", IgnoreTS4TS5ifJetInLowBVRegion=False
+    )
+dmCoreSequence.insert(dmCoreSequence.index(ttHCoreEventAna),hbheAna)
+treeProducer.globalVariables.append(NTupleVariable("hbheFilterNew50ns", lambda ev: ev.hbheFilterNew50ns, int, help="new HBHE filter for 50 ns"))
+treeProducer.globalVariables.append(NTupleVariable("hbheFilterNew25ns", lambda ev: ev.hbheFilterNew25ns, int, help="new HBHE filter for 25 ns"))
+treeProducer.globalVariables.append(NTupleVariable("hbheFilterIso", lambda ev: ev.hbheFilterIso, int, help="HBHE iso-based noise filter"))
+
+
 
 #-------- SEQUENCE
 sequence = cfg.Sequence(dmCoreSequence+[
    monoXRazorAna,
    monoXMT2Ana,
    ttHFatJetAna,
-   ttHAlphaTAna,
-   ttHAlphaTControlAna,
    monoJetVarAna,
    MonoJetEventAna,
    treeProducer,
     ])
+
+
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import *
+from CMGTools.RootTools.samples.triggers_8TeV import triggers_1mu_8TeV, triggers_mumu_8TeV, triggers_mue_8TeV, triggers_ee_8TeV;
+triggerFlagsAna.triggerBits = {
+    'DoubleMu' : triggers_mumu_iso,
+    'DoubleMuSS' : triggers_mumu_ss,
+    'DoubleMuNoIso' : triggers_mumu_noniso,
+    'DoubleEl' : triggers_ee,
+    'MuEG'     : triggers_mue,
+    'DoubleMuHT' : triggers_mumu_ht,
+    'DoubleElHT' : triggers_ee_ht,
+    'MuEGHT' : triggers_mue_ht,
+    'TripleEl' : triggers_3e,
+    'TripleMu' : triggers_3mu,
+    'TripleMuA' : triggers_3mu_alt,
+    'DoubleMuEl' : triggers_2mu1e,
+    'DoubleElMu' : triggers_2e1mu,
+    'SingleMu' : triggers_1mu_iso,
+    'SingleMu50ns' : triggers_1mu_iso_50ns,
+    'SingleEl'     : triggers_1e,
+    'SingleEl50ns' : triggers_1e_50ns,
+    'SingleMu_8TeV' : triggers_1mu_8TeV + triggers_1mu_iso_r,
+    'DoubleMu_8TeV' : triggers_mumu_8TeV + triggers_mumu_run1,
+    'MuEG_8TeV'     : triggers_mue_8TeV + triggers_mue_run1,
+    'DoubleEl_8TeV' : triggers_ee_8TeV + triggers_ee_run1,
+    'MonoJet80MET90' : triggers_Jet80MET90,
+    'MonoJet80MET120' : triggers_Jet80MET120,
+    'METMu5' : triggers_MET120Mu5,
+}
+
+from CMGTools.MonoXAnalysis.samples.samples_monojet_13TeV_74X import *
+
+selectedComponents = []; is50ns = False
+
+isData = True
+
+if True: # For running on data
+    isData = True
+    # Run2015C (Golden) + Run2015D (DCS) up to run 256941 , 25 ns, 3.8T     
+    json = "$CMSSW_BASE/src/CMGTools/MonoXAnalysis/python/samples/Golden_246908-255031_13TeV_PromptReco_Collisions15_25ns_v2_OR_DCS_254914_256941_JSON.txt"
+    processing = "Run2015D-PromptReco-v3"; short = "Run2015D_v3"; run_ranges = [ (256584,256842) ]; useAAA=False; is50ns=False
+
+    compSelection = ""
+    DatasetsAndTriggers = []
+    selectedComponents = []; vetos = []
+
+    if diLepSkim == True:
+        DatasetsAndTriggers.append( ("DoubleMuon", triggers_mumu_iso + triggers_mumu_ss + triggers_mumu_ht + triggers_3mu + triggers_3mu_alt) )
+        DatasetsAndTriggers.append( ("DoubleEG",   triggers_ee + triggers_ee_ht + triggers_3e) )
+    if singleLepSkim == True:
+        DatasetsAndTriggers.append( ("SingleMuon", triggers_1mu_iso + triggers_1mu_iso_50ns + triggers_1mu_noniso) )
+        DatasetsAndTriggers.append( ("SingleElectron", triggers_1e + triggers_1e_50ns) )
+    if signalSkim == True:
+        DatasetsAndTriggers.append( ("MET", triggers_Jet80MET90 + triggers_Jet80MET120 + triggers_MET120Mu5 ) )
+
+    for pd,triggers in DatasetsAndTriggers:
+        for run_range in run_ranges:
+            label = "runs_%d_%d" % run_range if run_range[0] != run_range[1] else "run_%d" % (run_range[0],)
+            compname = pd+"_"+short+"_"+label
+            if ((compSelection and not re.search(compSelection, compname))):
+                    print "Will skip %s" % (compname)
+                    continue
+            comp = kreator.makeDataComponent(compname, 
+                                             "/"+pd+"/"+processing+"/MINIAOD", 
+                                             "CMS", ".*root", 
+                                             json=json, 
+                                             run_range=run_range, 
+                                             triggers=triggers[:], vetoTriggers = vetos[:],
+                                             useAAA=useAAA)
+            print "Will process %s (%d files)" % (comp.name, len(comp.files))
+#            print "\ttrigger sel %s, veto %s" % (triggers, vetos)
+            comp.splitFactor = len(comp.files)
+            comp.fineSplitFactor = 1
+            selectedComponents.append( comp )
+        vetos += triggers
+    if json is None:
+        dmCoreSequence.remove(jsonAna)
+
+
+
+if False: # MC all
+### 25 ns 74X MC samples
+#selectedComponents = mcSamples_monojet_Asymptotic25ns ; is50ns = False
+### 50 ns 74X MC samples
+#selectedComponents = mcSamples_monojet_Asymptotic50ns ; is50ns = True
+    for comp in selectedComponents:
+        comp.splitFactor = 20
+        comp.fineSplitFactor = 1
+
 
 #-------- HOW TO RUN ----------- 
 from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption

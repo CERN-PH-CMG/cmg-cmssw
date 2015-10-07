@@ -245,8 +245,8 @@ tauAna = cfg.Analyzer(
     loose_decayModeID = "decayModeFinding", # ignored if not set or ""
     loose_tauID = "decayModeFinding",
     loose_vetoLeptonsPOG = False, # If True, the following two IDs are required
-    loose_tauAntiMuonID = "",
-    loose_tauAntiElectronID = "",
+    loose_tauAntiMuonID = "againstMuonLoose3",
+    loose_tauAntiElectronID = "againstElectronLooseMVA5",
     loose_tauLooseID = "decayModeFinding"
 )
 

@@ -14,9 +14,9 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 from CMGTools.VVResonances.analyzers.core_cff import * 
 
 #-------- SAMPLES AND TRIGGERS -----------
-from CMGTools.VVResonances.samples.loadSamples import mcSamples,dataSamples,signalSamples
+from CMGTools.VVResonances.samples.loadSamples import *
 
-selectedComponents = mcSamples+dataSamples
+selectedComponents = mcSamples+dataSamples_50ns
 #selectedComponents = dataSamples
 
 #-------- Analyzer

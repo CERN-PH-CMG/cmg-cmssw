@@ -33,7 +33,7 @@ if [[ "$#" -eq 1 ]]; then
 
 fi;
 
-if [[ "$#" -ge 5 ]]; then
+if [[ "$#" -eq 6 ]]; then
 eval `scramv1 runtime -sh`
 workingDir="$PWD"
 
@@ -43,7 +43,7 @@ fileB="$2"
 labelA="$3"
 labelB="$4"
 outputFolder="$5"
-isData="$6"
+isDataMC="$6"
 
 if [ -d $outputFolder ]; then
     echo "output folder " $outputFolder " already exists. Exiting.."
@@ -65,10 +65,10 @@ EOF
 
 cd ../python/plotter/
 
-if [[ "$isData" -eq "-data" ]]; then
-    python mcPlots.py -f --tree mt2  -P $workingDir/$outputFolder  $workingDir/$outputFolder/inputs.txt susy-mT2/validation_MT2.txt susy-mT2/validation_plots_MT2.data.txt --pdir $workingDir/$outputFolder/plots -p ref_ttHWWdata,ttHWWdata -u -e --plotmode=norm --showRatio --maxRatioRange 0.65 1.35 --flagDifferences
-else
-    python mcPlots.py -f --tree mt2  -P $workingDir/$outputFolder  $workingDir/$outputFolder/inputs.txt susy-mT2/validation_MT2.txt susy-mT2/validation_plots_MT2.txt --pdir $workingDir/$outputFolder/plots -p ref_ttHWWdata,ttHWWdata -u -e --plotmode=norm --showRatio --maxRatioRange 0.65 1.35 --flagDifferences
+if [[ "$isDataMC" == "-data" ]]; then
+    python mcPlots.py -f --tree mt2  -P $workingDir/$outputFolder  $workingDir/$outputFolder/inputs.txt susy-mT2/validation_MT2.txt susy-mT2/validation_plots_MT2.data.txt --pdir $workingDir/$outputFolder/plots -p ref_ttHWWdata,ttHWWdata -u -e --plotmode=norm --showRatio --maxRatioRange 0.65 1.35 --flagDifferences --toleranceForDiff 0.005
+elif [[ "$isDataMC" == "-mc" ]]; then
+    python mcPlots.py -f --tree mt2  -P $workingDir/$outputFolder  $workingDir/$outputFolder/inputs.txt susy-mT2/validation_MT2.txt susy-mT2/validation_plots_MT2.txt --pdir $workingDir/$outputFolder/plots -p ref_ttHWWdata,ttHWWdata -u -e --plotmode=norm --showRatio --maxRatioRange 0.65 1.35 --flagDifferences --toleranceForDiff 0.005
 fi;
 
 cd $OLDPWD
