@@ -1,0 +1,15 @@
+filters : hbheFilterNew25ns==1 && Flag_CSCTightHaloFilter==1 && Flag_eeBadScFilter==1
+Trigger : HLT_BIT_HLT_IsoMu20_v || HLT_BIT_HLT_Ele27_WPLoose_Gsf_v || HLT_BIT_HLT_Ele27_WP85_Gsf_v
+2L : nLepGood == 2
+SS/OF : LepGood1_charge*LepGood2_charge > 0
+lep2_pt10 : nLepGood10 == 2
+tight charge : LepGood1_tightCharge > (abs(LepGood1_pdgId) == 11) && LepGood2_tightCharge > (abs(LepGood2_pdgId) == 11)
+relIso : LepGood1_relIso03 < 0.05
+miniIso : LepGood1_miniRelIso < 0.05
+sip : LepGood1_sip3d < 4
+nBJetMedium25 : nBJetMedium25 == 0
+mt_2 : mt_2(LepGood1_pt, LepGood1_phi, met_pt, met_phi) > 40
+#mt_2 : mt_2(LepGood1_pt, LepGood1_phi, metNoHF_pt, metNoHF_phi) > 40
+met : met_pt > 30
+#met : metNoHF_pt > 30
+mll : abs(LepGood1_pdgId+LepGood2_pdgId) != 22 || abs(m2l - 91.2) > 15

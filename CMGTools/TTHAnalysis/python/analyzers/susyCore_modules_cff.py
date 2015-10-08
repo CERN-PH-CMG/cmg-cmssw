@@ -55,6 +55,7 @@ eventFlagsAna = cfg.Analyzer(
     outprefix   = 'Flag',
     triggerBits = {
         "HBHENoiseFilter" : [ "Flag_HBHENoiseFilter" ],
+        "HBHENoiseIsoFilter" : [ "Flag_HBHENoiseIsoFilter" ],
         "CSCTightHaloFilter" : [ "Flag_CSCTightHaloFilter" ],
         "hcalLaserEventFilter" : [ "Flag_hcalLaserEventFilter" ],
         "EcalDeadCellTriggerPrimitiveFilter" : [ "Flag_EcalDeadCellTriggerPrimitiveFilter" ],
@@ -134,8 +135,8 @@ lepAna = cfg.Analyzer(
     # input collections
     muons='slimmedMuons',
     electrons='slimmedElectrons',
-    rhoMuon= 'fixedGridRhoFastjetAll',
-    rhoElectron = 'fixedGridRhoFastjetAll',
+    rhoMuon= 'fixedGridRhoFastjetCentralNeutral',
+    rhoElectron = 'fixedGridRhoFastjetCentralNeutral',
     # energy scale corrections and ghost muon suppression (off by default)
     doMuScleFitCorrections=False, # "rereco"
     doRochesterCorrections=False,
@@ -172,10 +173,10 @@ lepAna = cfg.Analyzer(
     loose_electron_lostHits = 1.0,
     # muon isolation correction method (can be "rhoArea" or "deltaBeta")
     mu_isoCorr = "rhoArea" ,
-    mu_effectiveAreas = "Phys14_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1')
+    mu_effectiveAreas = "Spring15_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1' or 'Spring15_25ns_v1')
     # electron isolation correction method (can be "rhoArea" or "deltaBeta")
     ele_isoCorr = "rhoArea" ,
-    el_effectiveAreas = "Phys14_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1')
+    ele_effectiveAreas = "Spring15_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1' or 'Spring15_25ns_v1')
     ele_tightId = "Cuts_2012" ,
     # Mini-isolation, with pT dependent cone: will fill in the miniRelIso, miniRelIsoCharged, miniRelIsoNeutral variables of the leptons (see https://indico.cern.ch/event/368826/ )
     doMiniIsolation = False, # off by default since it requires access to all PFCandidates 
@@ -293,7 +294,7 @@ jetAna = cfg.Analyzer(
     applyL2L3Residual = True, # Switch to 'Data' when they will become available for Data
     recalibrationType = "AK4PFchs",
     mcGT     = "Summer15_25nsV2_MC",
-    dataGT   = "Summer15_25nsV2_DATA",
+    dataGT   = "Summer15_25nsV5_DATA",
     jecPath = "${CMSSW_BASE}/src/CMGTools/RootTools/data/jec/",
     shiftJEC = 0, # set to +1 or -1 to apply +/-1 sigma shift to the nominal jet energies
     addJECShifts = False, # if true, add  "corr", "corrJECUp", and "corrJECDown" for each jet (requires uncertainties to be available!)
@@ -306,7 +307,8 @@ jetAna = cfg.Analyzer(
     doQG = False,
     do_mc_match = True,
     cleanGenJetsFromPhoton = False,
-    collectionPostFix = ""
+    collectionPostFix = "",
+    calculateSeparateCorrections = True
     )
 
 #PFcharged jets analyzer
@@ -342,7 +344,8 @@ pfChargedCHSjetAna = cfg.Analyzer(
     doQG = False,
     do_mc_match = True,
     cleanGenJetsFromPhoton = False,
-    collectionPostFix = "PFChargedCHS"
+    collectionPostFix = "PFChargedCHS",
+    calculateSeparateCorrections = False
     )
 
 ## Fat Jets Analyzer (generic)
