@@ -1,0 +1,9 @@
+muon : abs(LepGood_pdgId) == 13
+pt25: LepGood_pt > 25 
+iso: multiIso_multiWP(LepGood_pdgId,LepGood_pt,LepGood_eta,LepGood_miniRelIso,LepGood_jetPtRatio,LepGood_jetPtRel,2) > 0 
+mu-id: LepGood_mediumMuonId > 0 
+el-cuts: (abs(LepGood_pdgId) == 13 || (LepGood_convVeto && LepGood_lostHits == 0))  
+el-id: ( LepGood_mvaIdPhys14 >=0.73+(0.57-0.73)*(abs(LepGood_eta)>0.8)+(+0.05-0.57)*(abs(LepGood_eta)>1.479) || abs(LepGood_pdgId) == 13)  
+sip: LepGood_sip3d < 4
+tight-charge: LepGood_tightCharge > (abs(LepGood_pdgId) == 11)
+
