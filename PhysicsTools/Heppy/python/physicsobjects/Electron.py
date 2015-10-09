@@ -176,21 +176,24 @@ class Electron( Lepton ):
         if self._mvaNonTrigV0[full5x5] == None:
             if self.associatedVertex == None: raise RuntimeError, "You need to set electron.associatedVertex before calling any MVA"
             if self.rho              == None: raise RuntimeError, "You need to set electron.rho before calling any MVA"
-            self._mvaNonTrigV0[full5x5] = ElectronMVAID_NonTrig(self.physObj, self.associatedVertex, self.rho, full5x5, debug)
+            if self.event            == None: raise RuntimeError, "You need to set electron.event before calling any MVA"
+            self._mvaNonTrigV0[full5x5] = ElectronMVAID_NonTrig(self.physObj, self.associatedVertex, self.event, self.rho, full5x5, debug)
         return self._mvaNonTrigV0[full5x5]
 
     def mvaTrigV0( self, full5x5=False, debug = False ):
         if self._mvaTrigV0[full5x5] == None:
             if self.associatedVertex == None: raise RuntimeError, "You need to set electron.associatedVertex before calling any MVA"
             if self.rho              == None: raise RuntimeError, "You need to set electron.rho before calling any MVA"
-            self._mvaTrigV0[full5x5] = ElectronMVAID_Trig(self.physObj, self.associatedVertex, self.rho, full5x5, debug)
+            if self.event            == None: raise RuntimeError, "You need to set electron.event before calling any MVA"
+            self._mvaTrigV0[full5x5] = ElectronMVAID_Trig(self.physObj, self.associatedVertex, self.event, self.rho, full5x5, debug)
         return self._mvaTrigV0[full5x5]
 
     def mvaTrigNoIPV0( self, full5x5=False, debug = False ):
         if self._mvaTrigNoIPV0[full5x5] == None:
             if self.associatedVertex == None: raise RuntimeError, "You need to set electron.associatedVertex before calling any MVA"
             if self.rho              == None: raise RuntimeError, "You need to set electron.rho before calling any MVA"
-            self._mvaTrigNoIPV0[full5x5] = ElectronMVAID_TrigNoIP(self.physObj, self.associatedVertex, self.rho, full5x5, debug)
+            if self.event            == None: raise RuntimeError, "You need to set electron.event before calling any MVA"
+            self._mvaTrigNoIPV0[full5x5] = ElectronMVAID_TrigNoIP(self.physObj, self.associatedVertex, self.event, self.rho, full5x5, debug)
         return self._mvaTrigNoIPV0[full5x5]
 
     def mvaRun2( self, name, debug = False ):
@@ -198,7 +201,8 @@ class Electron( Lepton ):
             if name not in ElectronMVAID_ByName: raise RuntimeError, "Unknown electron run2 mva id %s (known ones are: %s)\n" % (name, ElectronMVAID_ByName.keys())
             if self.associatedVertex == None: raise RuntimeError, "You need to set electron.associatedVertex before calling any MVA"
             if self.rho              == None: raise RuntimeError, "You need to set electron.rho before calling any MVA"
-            self._mvaRun2[name] = ElectronMVAID_ByName[name](self.physObj, self.associatedVertex, self.rho, True, debug)
+            if self.event            == None: raise RuntimeError, "You need to set electron.event before calling any MVA"
+            self._mvaRun2[name] = ElectronMVAID_ByName[name](self.physObj, self.associatedVertex, self.event, self.rho, True, debug)
         return self._mvaRun2[name]
 
     def mvaIDTight(self, full5x5=False):
