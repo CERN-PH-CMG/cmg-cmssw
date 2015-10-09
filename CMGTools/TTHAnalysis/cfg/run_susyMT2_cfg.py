@@ -48,6 +48,14 @@ lepAna.ele_tightId = "Cuts_PHYS14_25ns_v1_ConvVetoDxyDz"
 lepAna.notCleaningElectrons = True
 lepAna.doMiniIsolation = True
 lepAna.miniIsolationPUCorr = 'rhoArea'
+lepAna.ele_effectiveAreas = 'Phys14_25ns_v1' 
+lepAna.mu_effectiveAreas = 'Phys14_25ns_v1'
+lepAna.rhoMuon= 'fixedGridRhoFastjetAll',                  #what we used with SnT       
+lepAna.rhoElectron = 'fixedGridRhoFastjetAll',             #what we used with SnT   
+#lepAna.rhoMuon= 'fixedGridRhoFastjetCentralNeutral',      #new default
+#lepAna.rhoElectron = 'fixedGridRhoFastjetCentralNeutral', #new default
+
+
 lepAna.doIsoAnnulus = True
 
 # JET (for event variables do apply the jetID and not PUID yet)
@@ -61,7 +69,7 @@ jetAna.jetPt = 10.
 #jetAna.dataGT   = "Summer15_50nsV4_DATA" # jec corrections
 jetAna.mcGT     = "Summer15_25nsV2_MC" # jec corrections
 jetAna.dataGT   = "Summer15_25nsV2_DATA" # jec corrections
-jetAna.recalibrateJets = False # True
+jetAna.recalibrateJets = True # True
 jetAna.applyL2L3Residual = False # 'Data'
 jetAna.jetLepDR = 0.4
 jetAna.smearJets = False
@@ -189,16 +197,12 @@ hbheFilterAna = cfg.Analyzer(
 ##  PRODUCER
 ##------------------------------------------
 
-from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_HT900, triggers_HT800, triggers_MET170, triggers_HTMET100, triggers_HTMET120, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_emu, triggers_MT2_mue, triggers_MT2_e, triggers_MT2_mu, triggers_dijet, triggers_ht350, triggers_ht475,triggers_photon75, triggers_photon90, triggers_photon120, triggers_photon75ps, triggers_photon90ps, triggers_photon120ps, triggers_photon155, triggers_photon165_HE10, triggers_photon175
-
-
-
-from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_HT900, triggers_HT800, triggers_MET170, triggers_HTMET100, triggers_HTMET120, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_e, triggers_MT2_mu, triggers_MT2_emu, triggers_MT2_mue, triggers_dijet, triggers_dijet70met120, triggers_dijet55met110, triggers_ht350, triggers_ht475,  triggers_ht600, triggers_photon75, triggers_photon90, triggers_photon120, triggers_photon75ps, triggers_photon90ps, triggers_photon120ps, triggers_photon155, triggers_photon165_HE10, triggers_photon175
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_HT900, triggers_HT800, triggers_AllMET170, triggers_HTMET100, triggers_HTMET120, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_e, triggers_MT2_mu, triggers_MT2_emu, triggers_MT2_mue, triggers_dijet, triggers_dijet70met120, triggers_dijet55met110, triggers_ht350, triggers_ht475,  triggers_ht600, triggers_photon75, triggers_photon90, triggers_photon120, triggers_photon75ps, triggers_photon90ps, triggers_photon120ps, triggers_photon155, triggers_photon165_HE10, triggers_photon175
 
 triggerFlagsAna.triggerBits = {
 'PFHT900' : triggers_HT900,
 'PFHT800' : triggers_HT800,
-'PFMET170' : triggers_MET170,
+'PFMET170' : triggers_AllMET170,
 'PFHT350_PFMET100' : triggers_HTMET100,
 'PFHT350_PFMET120' : triggers_HTMET120,
 'SingleMu' : triggers_MT2_mu,
@@ -304,7 +308,7 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 # choose 2 for full mc production
 # choose 3 for data production
 # choose 4 for signal production
-test = 3
+test = 0
 isData = False # will be changed accordingly if chosen to run on data
 doSpecialSettingsForMECCA = 1 # set to 1 for comparisons with americans
 

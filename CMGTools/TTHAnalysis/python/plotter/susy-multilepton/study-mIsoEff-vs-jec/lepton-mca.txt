@@ -1,0 +1,91 @@
+# vim: ft=sh
+TTH_true+:  TTHnobb_pow: 1: LepGood_mcMatchId != 0 && (GenHiggsDecayMode == 25 || GenHiggsDecayMode == 24 || GenHiggsDecayMode == 15) ; FillColor=ROOT.kOrange+7, Label="prompt (ttH)"
+TTH_true_top+: TTHnobb_pow: 1: LepGood_mcMatchId == 6  && (GenHiggsDecayMode == 23 || GenHiggsDecayMode == 24 || GenHiggsDecayMode == 15) ; FillColor=ROOT.kRed+2, Label="ttH\, t\#rightarrowl\#nub"
+TTH_true_ww+:  TTHnobb_pow: 1: LepGood_mcMatchId == 25 && (GenHiggsDecayMode == 24) ; FillColor=ROOT.kOrange+10, Label="ttH\, H\#rightarrowWW"
+TTH_true_zz+:  TTHnobb_pow: 1: LepGood_mcMatchId == 25 && (GenHiggsDecayMode == 23) ; FillColor=ROOT.kOrange+7, Label="ttH\, H\#rightarrowZZ"
+TTH_true_tau+: TTHnobb_pow: 1: LepGood_mcMatchId == 25 && (GenHiggsDecayMode == 15) ; FillColor=ROOT.kPink+7, Label="ttH\, H\#rightarrow\#tau\#tau"
+T1tttt_true+:  T1tttt_mGo1500_mChi100: 1: LepGood_mcMatchId != 0 ; FillColor=ROOT.kGreen+2, Label="prompt\, T1t^{4}"
+TT_true+:  TT_pow: 1: LepGood_mcMatchId != 0 ; FillColor=ROOT.kGreen+2, Label="prompt\, tt"
+TT_red:  TT_pow: 1: LepGood_mcMatchId == 0 ; FillColor=ROOT.kGray+2, Label="non-pr\, tt"
+TT_bjets: TT_pow: xsec: LepGood_mcMatchAny == 5 ; FillColor=ROOT.kBlue-2, Label="tt\, b\#rightarrowl"
+TT_cjets: TT_pow: xsec: LepGood_mcMatchAny == 4 ; FillColor=ROOT.kGray+2, Label="tt\, c\#rightarrowl"
+TT_ljets: TT_pow: xsec: LepGood_mcMatchId == 0 && LepGood_mcMatchAny != 5 && LepGood_mcMatchAny != 4 ; FillColor=ROOT.kTeal+2, Label="tt\, j\#rightarrowl_{true}"
+TT_fake: TT_pow: 1: LepGood_mcMatchAny == 0 ; FillColor=ROOT.kGray+3, Label="tt\, j\#rightarrowl_{fake}"
+
+
+#u_TTH_true+:  TTHnobb_pow: 1: LepGood_mcMatchId != 0 && (GenHiggsDecayMode == 25 || GenHiggsDecayMode == 24 || GenHiggsDecayMode == 15) ; FillColor=ROOT.kOrange-3, Label="ttH raw"
+#w_TTH_true+:  TTHnobb_pow: exp(-min(max(LepGood_pt,10),25)/17): LepGood_mcMatchId != 0 && (GenHiggsDecayMode == 25 || GenHiggsDecayMode == 24 || GenHiggsDecayMode == 15) ; FillColor=ROOT.kOrange+10, Label="ttH wgt"
+#u_TT_red:  TT_pow: 1: LepGood_mcMatchId == 0 ; FillColor=ROOT.kGray+2, Label="tt raw"
+#w_TT_red:  TT_pow: exp(min(max(LepGood_pt,10),25)/17): LepGood_mcMatchId == 0 ; FillColor=ROOT.kGray+3, Label="tt wgt"
+
+#  Note: things match only if one requires at least one jet, otherwise QCD_Mu5 yields a ~30% higher rate (from the 15-20 bin)
+QCDMu_red1  : QCD_Mu15      :      xsec*(LepGood_pt>15.5) : 1; FillColor=ROOT.kPink-2, Label="all (QCD\#mu)"
+QCDMu_red2  : QCD_Pt15to20_Mu5   : xsec*(LepGood_pt<15.5) : 1; FillColor=ROOT.kOrange-1, Label="all (QCD\#mu 15)"
+QCDMu_red3  : QCD_Pt20to30_Mu5   : xsec*(LepGood_pt<15.5) : 1; FillColor=ROOT.kPink-1, Label="all (QCD\#mu 20)"
+QCDMu_red4  : QCD_Pt30to50_Mu5   : xsec*(LepGood_pt<15.5) : 1; FillColor=ROOT.kPink-6, Label="all (QCD\#mu 30)"
+QCDMu_red4  : QCD_Pt50to80_Mu5   : xsec*(LepGood_pt<15.5) : 1; FillColor=ROOT.kPink+1, Label="all (QCD\#mu 50)"
+QCDMu_red5  : QCD_Pt80to120_Mu5  : xsec*(LepGood_pt<15.5) : 1; FillColor=ROOT.kGreen-2, Label="all (QCD\#mu 80)"
+#QCDMu_redE  : QCD_Pt120to170_Mu5 : xsec*(LepGood_pt<15.5) : 1; FillColor=ROOT.kBlue-2, Label="all (QCD\#mu 120)"
+QCDMu_bjets: QCD_Mu15     :      xsec*(LepGood_pt>15.5) : LepGood_mcMatchAny == 5; FillColor=ROOT.kPink+5, Label="b-jets (QCD\#mu)"
+QCDMu_bjets: QCD_Pt15to20_Mu5  : xsec*(LepGood_pt<15.5) : LepGood_mcMatchAny == 5; FillColor=ROOT.kPink+5, Label="b-jets (QCD\#mu)"
+QCDMu_bjets: QCD_Pt20to30_Mu5  : xsec*(LepGood_pt<15.5) : LepGood_mcMatchAny == 5; FillColor=ROOT.kPink+5, Label="b-jets (QCD\#mu)"
+QCDMu_bjets: QCD_Pt30to50_Mu5  : xsec*(LepGood_pt<15.5) : LepGood_mcMatchAny == 5; FillColor=ROOT.kPink+5, Label="b-jets (QCD\#mu)"
+QCDMu_bjets: QCD_Pt50to80_Mu5  : xsec*(LepGood_pt<15.5) : LepGood_mcMatchAny == 5; FillColor=ROOT.kPink+5, Label="b-jets (QCD\#mu)"
+QCDMu_bjets: QCD_Pt80to120_Mu5 : xsec*(LepGood_pt<15.5) : LepGood_mcMatchAny == 5; FillColor=ROOT.kPink+5, Label="b-jets (QCD\#mu)"
+QCDMu_cjets: QCD_Mu15     :      xsec*(LepGood_pt>15.5) : LepGood_mcMatchAny == 4; FillColor=ROOT.kRed-3, Label="c-jets (QCD\#mu)"
+QCDMu_cjets: QCD_Pt15to20_Mu5  : xsec*(LepGood_pt<15.5) : LepGood_mcMatchAny == 4; FillColor=ROOT.kRed-3, Label="c-jets (QCD\#mu)"
+QCDMu_cjets: QCD_Pt20to30_Mu5  : xsec*(LepGood_pt<15.5) : LepGood_mcMatchAny == 4; FillColor=ROOT.kRed-3, Label="c-jets (QCD\#mu)"
+QCDMu_cjets: QCD_Pt30to50_Mu5  : xsec*(LepGood_pt<15.5) : LepGood_mcMatchAny == 4; FillColor=ROOT.kRed-3, Label="c-jets (QCD\#mu)"
+QCDMu_cjets: QCD_Pt50to80_Mu5  : xsec*(LepGood_pt<15.5) : LepGood_mcMatchAny == 4; FillColor=ROOT.kRed-3, Label="c-jets (QCD\#mu)"
+QCDMu_cjets: QCD_Pt80to120_Mu5 : xsec*(LepGood_pt<15.5) : LepGood_mcMatchAny == 4; FillColor=ROOT.kRed-3, Label="c-jets (QCD\#mu)"
+QCDMu_ljets: QCD_Mu15     :      xsec*(LepGood_pt>15.5) : LepGood_mcMatchAny != 5 && LepGood_mcMatchAny != 4; FillColor=ROOT.kOrange-3, Label="l-jets (QCD\#mu)"
+QCDMu_ljets: QCD_Pt15to20_Mu5  : xsec*(LepGood_pt<15.5) : LepGood_mcMatchAny != 5 && LepGood_mcMatchAny != 4; FillColor=ROOT.kOrange-3, Label="l-jets (QCD\#mu)"
+QCDMu_ljets: QCD_Pt20to30_Mu5  : xsec*(LepGood_pt<15.5) : LepGood_mcMatchAny != 5 && LepGood_mcMatchAny != 4; FillColor=ROOT.kOrange-3, Label="l-jets (QCD\#mu)"
+QCDMu_ljets: QCD_Pt30to50_Mu5  : xsec*(LepGood_pt<15.5) : LepGood_mcMatchAny != 5 && LepGood_mcMatchAny != 4; FillColor=ROOT.kOrange-3, Label="l-jets (QCD\#mu)"
+QCDMu_ljets: QCD_Pt50to80_Mu5  : xsec*(LepGood_pt<15.5) : LepGood_mcMatchAny != 5 && LepGood_mcMatchAny != 4; FillColor=ROOT.kOrange-3, Label="l-jets (QCD\#mu)"
+QCDMu_ljets: QCD_Pt80to120_Mu5 : xsec*(LepGood_pt<15.5) : LepGood_mcMatchAny != 5 && LepGood_mcMatchAny != 4; FillColor=ROOT.kOrange-3, Label="l-jets (QCD\#mu)"
+
+#QCD_red:   QCD_HT_100To250 : xsec :  (LepGood_mcMatchId != 0); FillColor=ROOT.kAzure-2, Label="Non-prompt QCD"
+#QCD_bjets: QCD_HT_100To250 : xsec :  LepGood_mcMatchAny == 5;  FillColor=ROOT.kAzure-2, Label="b-jets (QCD)"
+#QCD_red:   QCD_HT_250To500 : xsec*(0.66/2.66) :  (LepGood_mcMatchId != 0); FillColor=ROOT.kAzure-2, Label="Non-prompt QCD"
+#QCD_bjets: QCD_HT_250To500 : xsec*(0.66/2.66) :  LepGood_mcMatchAny == 5;  FillColor=ROOT.kAzure-2, Label="b-jets (QCD)"
+#QCD_red:   QCD_HT_250To500_ext1 : xsec*(2.00/2.66) :  (LepGood_mcMatchId != 0); FillColor=ROOT.kAzure-2, Label="Non-prompt QCD"
+#QCD_bjets: QCD_HT_250To500_ext1 : xsec*(2.00/2.66) :  LepGood_mcMatchAny == 5;  FillColor=ROOT.kAzure-2, Label="b-jets (QCD)"
+
+QCDEl_red: QCD_Pt15to20_EMEnriched : xsec : 1 ; FillColor=ROOT.kPink-2, Label="all (QCDe)"
+QCDEl_red: QCD_Pt_15to20_bcToE : xsec : 1 ; FillColor=ROOT.kPink-2, Label="all (QCDe)"
+QCDEl_red: QCD_Pt20to30_EMEnriched : xsec : 1 ; FillColor=ROOT.kPink-2, Label="all (QCDe)"
+QCDEl_red: QCD_Pt_20to30_bcToE : xsec : 1 ; FillColor=ROOT.kPink-2, Label="all (QCDe)"
+QCDEl_red: QCD_Pt30to50_EMEnriched : xsec : 1 ; FillColor=ROOT.kPink-2, Label="all (QCDe)"
+QCDEl_red: QCD_Pt50to80_EMEnriched : xsec : 1 ; FillColor=ROOT.kPink-2, Label="all (QCDe)"
+QCDEl_red: QCD_Pt_30to80_bcToE : xsec : 1 ; FillColor=ROOT.kPink-2, Label="all (QCDe)"
+QCDEl_red: QCD_Pt80to120_EMEnriched : xsec : 1 ; FillColor=ROOT.kPink-2, Label="all (QCDe)"
+QCDEl_red: QCD_Pt120to170_EMEnriched : xsec : 1 ; FillColor=ROOT.kPink-2, Label="all (QCDe)"
+QCDEl_red: QCD_Pt_80to170_bcToE : xsec : 1 ; FillColor=ROOT.kPink-2, Label="all (QCDe)"
+#QCDEl_red: QCD_Pt170toInf_bcToE : xsec : 1 ; FillColor=ROOT.kPink-2, Label="all (QCDe)"  
+QCDEl_bjets: QCD_Pt_15to20_bcToE   : xsec : LepGood_mcMatchAny == 5 ; FillColor=ROOT.kPink+5, Label="b-jets (QCDe)"
+QCDEl_bjets: QCD_Pt_20to30_bcToE   : xsec : LepGood_mcMatchAny == 5 ; FillColor=ROOT.kPink+5, Label="b-jets (QCDe)"
+QCDEl_bjets: QCD_Pt_30to80_bcToE   : xsec : LepGood_mcMatchAny == 5 ; FillColor=ROOT.kPink+5, Label="b-jets (QCDe)"
+QCDEl_bjets: QCD_Pt_80to170_bcToE  : xsec : LepGood_mcMatchAny == 5 ; FillColor=ROOT.kPink+5, Label="b-jets (QCDe)"
+#QCDEl_bjets: QCD_Pt170toInf_bcToE : xsec : LepGood_mcMatchAny == 5 ; FillColor=ROOT.kPink+5, Label="b-jets (QCDe)"
+
+
+TT_light    :  TT_pow                   : xsec : (LepGood_mcMatchId == 0)&&(LepGood_mcMatchAny != 5); Label="tt\, j\#rightarrowl",  FillColor=ROOT.kOrange+4, NormSystematic=0.5
+VJets_light : DYJetsToLL_M50_HT100to200 : xsec : (LepGood_mcMatchId == 0)&&(LepGood_mcMatchAny != 5); Label="light jets (w/z)", FillColor=ROOT.kCyan, NormSystematic=0.5
+VJets_light : DYJetsToLL_M50_HT200to400 : xsec : (LepGood_mcMatchId == 0)&&(LepGood_mcMatchAny != 5); Label="light jets (w/z)", FillColor=ROOT.kCyan, NormSystematic=0.5
+VJets_light : DYJetsToLL_M50_HT400to600 : xsec : (LepGood_mcMatchId == 0)&&(LepGood_mcMatchAny != 5); Label="light jets (w/z)", FillColor=ROOT.kCyan, NormSystematic=0.5
+VJets_light : DYJetsToLL_M50_HT600toInf : xsec : (LepGood_mcMatchId == 0)&&(LepGood_mcMatchAny != 5); Label="light jets (w/z)", FillColor=ROOT.kCyan, NormSystematic=0.5
+VJets_light : WJetsToLNu_HT100to200     : xsec : (LepGood_mcMatchId == 0)&&(LepGood_mcMatchAny != 5); Label="light jets (w/z)", FillColor=ROOT.kCyan, NormSystematic=0.5
+VJets_light : WJetsToLNu_HT200to400     : xsec : (LepGood_mcMatchId == 0)&&(LepGood_mcMatchAny != 5); Label="light jets (w/z)", FillColor=ROOT.kCyan, NormSystematic=0.5
+VJets_light : WJetsToLNu_HT400to600     : xsec : (LepGood_mcMatchId == 0)&&(LepGood_mcMatchAny != 5); Label="light jets (w/z)", FillColor=ROOT.kCyan, NormSystematic=0.5
+VJets_light : WJetsToLNu_HT600toInf     : xsec : (LepGood_mcMatchId == 0)&&(LepGood_mcMatchAny != 5); Label="light jets (w/z)", FillColor=ROOT.kCyan, NormSystematic=0.5
+
+#VJets_red : DYJetsToLL_M50_HT100to200 : xsec : (LepGood_mcMatchId == 0); Label="non-pro (v+j)", FillColor=ROOT.kCyan, NormSystematic=0.5
+#VJets_red : DYJetsToLL_M50_HT200to400 : xsec : (LepGood_mcMatchId == 0); Label="non-pro (v+j)", FillColor=ROOT.kCyan, NormSystematic=0.5
+#VJets_red : DYJetsToLL_M50_HT400to600 : xsec : (LepGood_mcMatchId == 0); Label="non-pro (v+j)", FillColor=ROOT.kCyan, NormSystematic=0.5
+#VJets_red : DYJetsToLL_M50_HT600toInf : xsec : (LepGood_mcMatchId == 0); Label="non-pro (v+j)", FillColor=ROOT.kCyan, NormSystematic=0.5
+VJets_red : WJetsToLNu_HT100to200     : xsec : (LepGood_mcMatchId == 0); Label="non-pr (v+j)", FillColor=ROOT.kOrange+4, NormSystematic=0.5
+VJets_red : WJetsToLNu_HT200to400     : xsec : (LepGood_mcMatchId == 0); Label="non-pr (v+j)", FillColor=ROOT.kOrange+4, NormSystematic=0.5
+VJets_red : WJetsToLNu_HT400to600     : xsec : (LepGood_mcMatchId == 0); Label="non-pr (v+j)", FillColor=ROOT.kOrange+4, NormSystematic=0.5
+VJets_red : WJetsToLNu_HT600toInf     : xsec : (LepGood_mcMatchId == 0); Label="non-pr (v+j)", FillColor=ROOT.kOrange+4, NormSystematic=0.5
+

@@ -1,0 +1,10 @@
+lep2_pt: LepGood2_pt: 24,0,200; XTitle="Subleading lepton p_{T}  [GeV]", Legend='TR', LegendCutoff=1e-2
+lep2_miniRelIso:     LepGood2_miniRelIso: [0.025,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4]; XTitle="Subleading Lepton Isolation", LegendCutoff=1e-2
+lep2_miniRelIso_log: LepGood2_miniRelIso: [0.025,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4]; Logy, XTitle="Subleading Lepton Isolation", LegendCutoff=1e-2
+lep2_jetPtRel: LepGood2_jetPtRel: 20,0,12; XTitle="Subleading Lepton Jet p_{T} Rel  [GeV]", Legend='TR', LegendCutoff=1e-2
+lep2_jetPtRelv2:  LepGood2_jetPtRelv2: 20,0,12; XTitle="Subleading Lepton Jet p_{T} Relv2  [GeV]", Legend='TR', LegendCutoff=1e-2
+lep2_jetPtRatio: LepGood2_jetPtRatio: 12,0,1.2; XTitle="Subleading Lepton Jet p_{T} Ratio ", Legend='TL', LegendCutoff=1e-2
+lep2_jetPtRatio_Raw: LepGood2_jetPtRatio_Raw: 12,0,1.2; XTitle="Subleading Lepton Jet p_{T} Ratio (Raw)", Legend='TL', LegendCutoff=1e-2
+lep2_jetPtRatio_LepAwareJEC: LepGood2_jetPtRatio_LepAwareJEC: 12,0,1.2; XTitle="Subleading Lepton Jet p_{T} Ratio (LepAware JEC)", Legend='TL', LegendCutoff=1e-2
+lep2_jetPtRatio_LepAwareJECv2: LepGood2_jetPtRatio_LepAwareJECv2: 12,0,1.2; XTitle="Subleading Lepton Jet p_{T} Ratio (LepAware JECv2)", Legend='TL', LegendCutoff=1e-2
+lep2_jetPtRatioL1Corr: LepGood2_jetPtRatioL1Corr: 12,0,1.2; XTitle="Subleading Lepton Jet p_{T} (L1Corr)", Legend='TL', LegendCutoff=1e-2

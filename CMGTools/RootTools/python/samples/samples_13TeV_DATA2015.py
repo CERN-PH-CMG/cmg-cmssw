@@ -9,10 +9,9 @@ kreator = ComponentCreator()
 ### ----------------------------- Zero Tesla run  ----------------------------------------
 
 dataDir = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data"  # use environmental variable, useful for instance to run on CRAB
-#json=dataDir+'/json/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON.txt'
-#json=dataDir+'/json/Cert_246908-255031_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
-json=dataDir+'/json/json_DCSONLY.txt'
-# https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2446.html
+json=dataDir+'/json/Cert_246908-256869_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
+#https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2496.html
+#golden JSON 166.37/pb 
 
 
 #jetHT_0T = cfg.DataComponent(

@@ -29,6 +29,9 @@ met_globalVariables = [
     NTupleVariable("metNoHF_uPara_zll", lambda ev : ev.metNoHF.upara_zll if hasattr(ev,'metNoHF') and hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
     NTupleVariable("metNoHF_uPerp_zll", lambda ev : ev.metNoHF.uperp_zll if hasattr(ev,'metNoHF') and hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
 
+    NTupleVariable("metPuppi_uPara_zll", lambda ev : ev.metPuppi.upara_zll if hasattr(ev,'metPuppi') and hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
+    NTupleVariable("metPuppi_uPerp_zll", lambda ev : ev.metPuppi.uperp_zll if hasattr(ev,'metPuppi') and hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
+
     NTupleVariable("met_rawPt", lambda ev : ev.met.uncorPt(), help="raw met p_{T}"),
     NTupleVariable("met_rawPhi", lambda ev : ev.met.uncorPhi(), help="raw met phi"),
     NTupleVariable("met_rawSumEt", lambda ev : ev.met.uncorSumEt(), help="raw met sumEt"),
@@ -36,6 +39,10 @@ met_globalVariables = [
     NTupleVariable("metNoHF_rawPt", lambda ev : ev.metNoHF.uncorPt() if hasattr(ev,'metNoHF') else -999, help="raw met p_{T}"),
     NTupleVariable("metNoHF_rawPhi", lambda ev : ev.metNoHF.uncorPhi() if hasattr(ev,'metNoHF') else -999, help="raw met phi"),
     NTupleVariable("metNoHF_rawSumEt", lambda ev : ev.metNoHF.uncorSumEt() if hasattr(ev,'metNoHF') else -999, help="raw met sumEt"),
+
+    NTupleVariable("metPuppi_rawPt", lambda ev : ev.metPuppi.uncorPt() if hasattr(ev,'metPuppi') else -999, help="puppi met p_{T}"),
+    NTupleVariable("metPuppi_rawPhi", lambda ev : ev.metPuppi.uncorPhi() if hasattr(ev,'metPuppi') else -999, help="puppi met phi"),
+    NTupleVariable("metPuppi_rawSumEt", lambda ev : ev.metPuppi.uncorSumEt() if hasattr(ev,'metPuppi') else -999, help="pupppi met sumEt"),
 
     NTupleVariable("met_raw_uPara_zll", lambda ev : ev.met_raw.upara_zll if  hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
     NTupleVariable("met_raw_uPerp_zll", lambda ev : ev.met_raw.uperp_zll if  hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
@@ -109,6 +116,7 @@ met_globalVariables = [
 met_globalObjects = {
     "met" : NTupleObject("met", metType, help="PF E_{T}^{miss}, after type 1 corrections"),
     "metNoHF" : NTupleObject("metNoHF", metType, help="PF E_{T}^{miss}, after type 1 corrections (NoHF)"),
+    "metPuppi" : NTupleObject("metPuppi", metType, help="PF E_{T}^{miss}, after type 1 corrections (Puppi)"),
 #    "metraw" : NTupleObject("metraw", metType, help="PF E_{T}^{miss}"),
 #    "metType1chs" : NTupleObject("metType1chs", metType, help="PF E_{T}^{miss}, after type 1 CHS jets"),
     #"tkMet" : NTupleObject("tkmet", metType, help="TK PF E_{T}^{miss}"),
