@@ -48,6 +48,8 @@ lepAna.ele_tightId = "Cuts_PHYS14_25ns_v1_ConvVetoDxyDz"
 lepAna.notCleaningElectrons = True
 lepAna.doMiniIsolation = True
 lepAna.miniIsolationPUCorr = 'rhoArea'
+lepAna.ele_effectiveAreas = 'Phys14_25ns_v1' 
+lepAna.mu_effectiveAreas = 'Phys14_25ns_v1'
 lepAna.doIsoAnnulus = True
 
 # JET (for event variables do apply the jetID and not PUID yet)
