@@ -308,7 +308,7 @@ jetAna = cfg.Analyzer(
     doQG = False,
     do_mc_match = True,
     collectionPostFix = "",
-    calculateSeparateCorrections = True,
+    calculateSeparateCorrections = True, # should be True if recalibrateJets is True, otherwise L1s will be inconsistent
     calculateType1METCorrection  = False,
     type1METParams = { 'jetPtThreshold':15., 'skipEMfractionThreshold':0.9, 'skipMuons':True },
     )
