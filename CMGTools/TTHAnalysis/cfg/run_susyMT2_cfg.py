@@ -201,7 +201,7 @@ hbheFilterAna = cfg.Analyzer(
 from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_HT900, triggers_HT800, triggers_AllMET170, triggers_HTMET100, triggers_HTMET120
 from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_e, triggers_MT2_mu, triggers_MT2_emu, triggers_MT2_mue 
 from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_dijet, triggers_dijet70met120, triggers_dijet55met110, triggers_ht350, triggers_ht475,  triggers_ht600 
-from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_photon75, triggers_photon90, triggers_photon120, triggers_photon75ps, 
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_photon75, triggers_photon90, triggers_photon120, triggers_photon75ps 
 from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_photon90ps, triggers_photon120ps, triggers_photon155, triggers_photon165_HE10, triggers_photon175
 from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_met90_mht90, triggers_metNoMu90_mhtNoMu90, triggers_Jet80MET90
 
@@ -322,6 +322,7 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 test = 0
 isData = False # will be changed accordingly if chosen to run on data
 doSpecialSettingsForMECCA = 1 # set to 1 for comparisons with americans
+runPreprocessor = False
 
 if test==0:
     # ------------------------------------------------------------------------------------------- #
@@ -529,53 +530,60 @@ if getHeppyOption("nofetch"):
     event_class = Events
 
 
+if runPreprocessor:
+    removeResiduals = False
+    # -------------------- Running pre-processor
+    import subprocess
 
-removeResiduals = False
+    if isData:
+        #    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
+        #    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA.db'
+        #    jecEra    = 'Summer15_50nsV4_DATA'
+        uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_DATA_UncertaintySources_AK4PFchs.txt'
+        jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_DATA.db'
+        jecEra    = 'Summer15_25nsV5_DATA'
+    else:
+        #    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
+        #    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_MC.db'
+        #    jecEra    = 'Summer15_50nsV4_MC'
+        uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_MC_UncertaintySources_AK4PFchs.txt'
+        jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_MC.db'
+        jecEra    = 'Summer15_25nsV5_MC'
+    preprocessorFile = "$CMSSW_BASE/tmp/MetType1_jec_%s.py"%(jecEra)
+    extraArgs=[]
+    if isData:
+        extraArgs.append('--isData')
+        GT= '74X_dataRun2_Prompt_v1'
+    else:
+        GT= 'MCRUN2_74_V9A'
+    if removeResiduals:extraArgs.append('--removeResiduals')
+    args = ['python',
+            os.path.expandvars('$CMSSW_BASE/python/CMGTools/ObjectStudies/corMETMiniAOD_cfgCreator.py'),\
+                '--GT='+GT,
+            '--outputFile='+preprocessorFile,
+            '--jecDBFile='+jecDBFile,
+            '--uncFile='+uncFile,
+            '--jecEra='+jecEra
+            ] + extraArgs
+    #print "Making pre-processorfile:"
+    #print " ".join(args)
+    subprocess.call(args)
+    from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
+    preprocessor = CmsswPreprocessor(preprocessorFile)
 
-# -------------------- Running pre-processor
-import subprocess
 
-if isData:
-#    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
-#    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA.db'
-#    jecEra    = 'Summer15_50nsV4_DATA'
-    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_DATA_UncertaintySources_AK4PFchs.txt'
-    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_DATA.db'
-    jecEra    = 'Summer15_25nsV5_DATA'
+    config = cfg.Config( components = selectedComponents,
+                         sequence = sequence,
+                         services = [output_service],
+                         preprocessor=preprocessor, # comment if pre-processor non needed
+                         #                     events_class = event_class)
+                         events_class = Events)
 else:
-#    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
-#    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_MC.db'
-#    jecEra    = 'Summer15_50nsV4_MC'
-    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_MC_UncertaintySources_AK4PFchs.txt'
-    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_MC.db'
-    jecEra    = 'Summer15_25nsV5_MC'
-preprocessorFile = "$CMSSW_BASE/tmp/MetType1_jec_%s.py"%(jecEra)
-extraArgs=[]
-if isData:
-  extraArgs.append('--isData')
-  GT= '74X_dataRun2_Prompt_v1'
-else:
-  GT= 'MCRUN2_74_V9A'
-if removeResiduals:extraArgs.append('--removeResiduals')
-args = ['python',
-  os.path.expandvars('$CMSSW_BASE/python/CMGTools/ObjectStudies/corMETMiniAOD_cfgCreator.py'),\
-  '--GT='+GT,
-  '--outputFile='+preprocessorFile,
-  '--jecDBFile='+jecDBFile,
-  '--uncFile='+uncFile,
-  '--jecEra='+jecEra
-  ] + extraArgs
-#print "Making pre-processorfile:"
-#print " ".join(args)
-subprocess.call(args)
-from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
-preprocessor = CmsswPreprocessor(preprocessorFile)
+    config = cfg.Config( components = selectedComponents,
+                         sequence = sequence,
+                         services = [output_service],
+                         #                     events_class = event_class)
+                         events_class = Events)
 
 
-config = cfg.Config( components = selectedComponents,
-                     sequence = sequence,
-                     services = [output_service],
-                     preprocessor=preprocessor, # comment if pre-processor non needed
-#                     events_class = event_class)
-                     events_class = Events)
 #printComps(config.components, True)
