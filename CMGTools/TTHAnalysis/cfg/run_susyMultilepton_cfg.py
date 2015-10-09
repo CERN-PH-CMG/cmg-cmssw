@@ -23,6 +23,7 @@ saveSuperClusterVariables = getHeppyOption("saveSuperClusterVariables",False)
 removeJetReCalibration = getHeppyOption("removeJetReCalibration",False)
 doMETpreprocessor = getHeppyOption("doMETpreprocessor",False)
 doT1METCorr = getHeppyOption("doT1METCorr",False)
+old74XMiniAODs  = (getHeppyOption("old74XMiniAODs", not runData) != "False")
 noMETNoHF = getHeppyOption("noMETNoHF",False)
 doAK4PFCHSchargedJets = getHeppyOption("doAK4PFCHSchargedJets",False)
 forcedSplitFactor = getHeppyOption("splitFactor",-1)
@@ -255,7 +256,7 @@ if doT1METCorr:
         print "WARNING: you're running the MET preprocessor and also Type1 MET corrections. This is probably not intended."
     jetAna.calculateType1METCorrection = True
     metAna.recalibrate = "type1"
-    metAna.old74XMiniAODs = (getHeppyOption("old74XMiniAODs", not runData) != "False")
+    metAna.old74XMiniAODs = old74XMiniAODs
 
 if doAK4PFCHSchargedJets:
     if not doMETpreprocessor: raise RuntimeError, "ak4PFchs charged-only jets are reclustered in the MET preprocessor, but this configuration is not going to run it"

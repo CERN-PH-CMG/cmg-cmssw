@@ -44,7 +44,7 @@ function do_plot {
 
 case $WHAT in
     Data)
-        $RUN && do_run $DIR -o test=PromptReco  -N 5000 -o runData -o is50ns  -o doT1METCorr -o noMETNoHF;
+        $RUN && do_run $DIR -o test=PromptReco  -N 5000 -o runData -o is50ns  -o doT1METCorr -o noMETNoHF -o old74XMiniAODs=True ;
         do_plot DoubleMuon_Run2015B_run251252 DoubleMuon_Run2015B_run251252
         do_plot DoubleEG_Run2015B_run251252 DoubleEG_Run2015B_run251252
         ;;
