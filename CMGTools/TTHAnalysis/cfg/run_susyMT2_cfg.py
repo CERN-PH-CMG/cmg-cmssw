@@ -50,6 +50,12 @@ lepAna.doMiniIsolation = True
 lepAna.miniIsolationPUCorr = 'rhoArea'
 lepAna.ele_effectiveAreas = 'Phys14_25ns_v1' 
 lepAna.mu_effectiveAreas = 'Phys14_25ns_v1'
+lepAna.rhoMuon= 'fixedGridRhoFastjetAll',                  #what we used with SnT       
+lepAna.rhoElectron = 'fixedGridRhoFastjetAll',             #what we used with SnT   
+#lepAna.rhoMuon= 'fixedGridRhoFastjetCentralNeutral',      #new default
+#lepAna.rhoElectron = 'fixedGridRhoFastjetCentralNeutral', #new default
+
+
 lepAna.doIsoAnnulus = True
 
 # JET (for event variables do apply the jetID and not PUID yet)
