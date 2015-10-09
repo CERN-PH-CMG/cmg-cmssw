@@ -62,6 +62,7 @@ jetAna.jetPt = 10.
 jetAna.mcGT     = "Summer15_25nsV2_MC" # jec corrections
 jetAna.dataGT   = "Summer15_25nsV2_DATA" # jec corrections
 jetAna.recalibrateJets = False # True
+jetAna.calculateSeparateCorrections = False # True
 jetAna.applyL2L3Residual = False # 'Data'
 jetAna.jetLepDR = 0.4
 jetAna.smearJets = False
@@ -300,7 +301,7 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 # choose 2 for full mc production
 # choose 3 for data production
 # choose 4 for signal production
-test = 3
+test = int(getHeppyOption('test',3))
 isData = False # will be changed accordingly if chosen to run on data
 doSpecialSettingsForMECCA = 1 # set to 1 for comparisons with americans
 
