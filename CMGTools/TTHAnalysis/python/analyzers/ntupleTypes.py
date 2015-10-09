@@ -240,7 +240,7 @@ def jetLepAwareJEC(lep): # use only if jetAna.calculateSeparateCorrections==True
     p4j = lep.jet.p4()
     j = ROOT.TLorentzVector(p4j.Px(),p4j.Py(),p4j.Pz(),p4j.E())
     if ((j*lep.jet.rawFactor()-l).Rho()<1e-4): return l # matched to jet containing only the lepton
-    j = (j*lep.jet.rawFactor()-l*(1.0/lep.jet.CorrFactor_L1))*lep.jet.CorrFactor_L1L2L3Res+l
+    j = (j*lep.jet.rawFactor()-l*(1.0/lep.jet.l1corrFactor()))*lep.jet.corrFactor()+l
     return j
 def ptRelv2(lep): # use only if jetAna.calculateSeparateCorrections==True
     m = jetLepAwareJEC(lep)
