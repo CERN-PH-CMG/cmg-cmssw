@@ -6,9 +6,9 @@
 
 void makeNvtx(bool ismc=false) {
 
-  TString treeDir = "/data1/emanuele/monox/TREES_SPRING15_50ns_2LEPSKIM_10JUL2015/";
-  TString dataDir = treeDir+"DoubleEG2015B";
-  TString mcDir = treeDir+"DYJetsToLL_M50_50ns";
+  TString treeDir = "/afs/cern.ch/work/e/emanuele/monox/heppy/CMSSW_7_4_12/src/CMGTools/MonoXAnalysis/cfg/TREES_SPRING15_25ns_2LEPSKIM_06Oct2015/";
+  TString dataDir = treeDir+"DoubleEG_Run2015D_v3_runs_246908_257599";
+  TString mcDir = treeDir+"DYJetsToLL_M50";
 
 
   if(!ismc) {
