@@ -125,6 +125,7 @@ susyFullHad_globalVariables = susyCore_globalVariables + [
     NTupleVariable("gamma_mt2", lambda ev: ev.mt2_Xj_gamma, float, help="mt2(j1,j2,met) with photons added to met"),
     NTupleVariable("zll_mt2", lambda ev: ev.mt2_Xj_zll, float, help="mt2(j1,j2,met) with zll added to met, only hadrons"),
     NTupleVariable("zllmt_mt2", lambda ev: ev.mt2_Xj_zllmt, float, help="mt2(j1,j2,met) with zll (1 lepton only)  added to met, only hadrons"),
+    NTupleVariable("rl_mt2", lambda ev: ev.mt2_Xj_rl, float, help="mt2(j1,j2,met) with 1 lepton added to met, only hadrons"),
 
 #BM    NTupleVariable("mt2NoHF", lambda ev: ev.mt2NoHF_Xj if  hasattr(ev,'mt2NoHF_Xj') else 0, float, help="mt2(j1,j2,met) with jets and leptons and metNoHF"),
 #BM    NTupleVariable("mt2NoHF_had", lambda ev: ev.mt2NoHF_Xj_had if  hasattr(ev,'mt2NoHF_Xj_had') else 0, float, help="mt2(j1,j2,met) with jets and metNoHF"),
@@ -195,6 +196,22 @@ susyFullHad_globalVariables = susyCore_globalVariables + [
     NTupleVariable("zll_phi", lambda ev : ev.zll_p4.Phi() if ev.zll_p4.P()!=0 else -999., help="Phi of di-lepton system"),
     NTupleVariable("zll_mass", lambda ev : ev.zll_p4.M() if ev.zll_p4.P()!=0 else -999., help="Invariant mass of di-lepton system"),
     NTupleVariable("zll_minMTBMet", lambda ev: ev.zll_minMTBMet, float, help="min Mt(b,met) for zll, same as in main search"),
+
+    # rl variables
+    NTupleVariable("rl_deltaPhiMin", lambda ev : ev.rl_deltaPhiMin_Xj, help="minimal deltaPhi between the rl MET and the four leading jets with pt>40 and eta<2.4"),
+    NTupleVariable("rl_diffMetMht", lambda ev : ev.rl_diffMetMht_Xj, help="abs( vec(mht) - vec(met) ) - only jets for mht, jets plus 2 leptons for met"),
+    NTupleVariable("rl_mht_pt", lambda ev : ev.rl_mhtJetXj, help="H_{T}^{miss} computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
+    NTupleVariable("rl_mht_phi", lambda ev : ev.rl_mhtPhiJetXj, help="H_{T}^{miss} #phi computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
+    NTupleVariable("rl_met_pt", lambda ev : ev.rl_met_pt, help="E_{T}^{miss} computed from jets (with |eta|<2.5, pt > 40 GeV) + 2 leptons"),
+    NTupleVariable("rl_met_phi", lambda ev : ev.rl_met_phi, help="E_{T}^{miss} #phi computed from jets (with |eta|<2.5, pt > 40 GeV) + 2 leptons"),
+    NTupleVariable("rl_ht", lambda ev: ev.rl_ht_Xj, float, help="H_{T} computed from only jets (with |eta|<2.5, pt > 40 GeV)"),
+
+    NTupleVariable("rl_pt", lambda ev : ev.rl_p4.Pt() if ev.rl_p4.P()!=0 else -999., help="Pt of di-lepton system"),
+    NTupleVariable("rl_eta", lambda ev : ev.rl_p4.Eta() if ev.rl_p4.P()!=0 else -999., help="Eta of di-lepton system"),
+    NTupleVariable("rl_phi", lambda ev : ev.rl_p4.Phi() if ev.rl_p4.P()!=0 else -999., help="Phi of di-lepton system"),
+    NTupleVariable("rl_mass", lambda ev : ev.rl_p4.M() if ev.rl_p4.P()!=0 else -999., help="Invariant mass of di-lepton system"),
+    NTupleVariable("rl_minMTBMet", lambda ev: ev.rl_minMTBMet, float, help="min Mt(b,met) for zll, same as in main search"),
+    NTupleVariable("rl_mt", lambda ev: ev.rl_mt, float, help="Mt(l,met) for 1 lepton only"),
 
     # ZllMT variables
     NTupleVariable("zllmt_deltaPhiMin", lambda ev : ev.zllmt_deltaPhiMin_Xj, help="minimal deltaPhi between the zll MET and the four leading jets with pt>X and eta<2.4"),
