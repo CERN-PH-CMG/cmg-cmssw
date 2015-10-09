@@ -20,11 +20,14 @@ runFRMC = getHeppyOption("runFRMC",False)
 scaleProdToLumi = float(getHeppyOption("scaleProdToLumi",-1)) # produce rough equivalent of X /pb for MC datasets
 SOS = getHeppyOption("SOS",False) ## switch True to overwrite settings for SOS skim (N.B. default settings are those from multilepton preselection)
 saveSuperClusterVariables = getHeppyOption("saveSuperClusterVariables",False)
+removeJetReCalibration = getHeppyOption("removeJetReCalibration",False)
 doMETpreprocessor = getHeppyOption("doMETpreprocessor",False)
+doT1METCorr = getHeppyOption("doT1METCorr",False)
 noMETNoHF = getHeppyOption("noMETNoHF",False)
 doAK4PFCHSchargedJets = getHeppyOption("doAK4PFCHSchargedJets",False)
 forcedSplitFactor = getHeppyOption("splitFactor",-1)
 forcedFineSplitFactor = getHeppyOption("fineSplitFactor",-1)
+isTest = getHeppyOption("test",None) != None and not re.match("^\d+$",getHeppyOption("test"))
 
 # Lepton Skimming
 ttHLepSkim.minLeptons = 2
@@ -245,10 +248,15 @@ if doMETpreprocessor or (not noMETNoHF):
     susyCoreSequence.insert(susyCoreSequence.index(metAna)+1,metNoHFAna)
     metNoHFAna.doTkMet = True
     treeProducer.globalObjects.update({"metNoHF"  : NTupleObject("metNoHF", metType, help="PF E_{T}^{miss}, after type 1 corrections (NoHF)")})
-    treeProducer.globalVariables.append(NTupleVariable("metNoHF_rawPt", lambda ev : ev.metNoHF.uncorPt() if  hasattr(ev,'metNoHF') else  0, help="raw NoHF met p_{T}"))
-    treeProducer.globalVariables.append(NTupleVariable("metNoHF_rawPhi", lambda ev : ev.metNoHF.uncorPhi() if  hasattr(ev,'metNoHF') else  0, help="raw NoHF met phi"))
     treeProducer.globalVariables.append(NTupleVariable("metNoHF_trkPt", lambda ev : ev.tkMetNoHF.pt() if  hasattr(ev,'tkMetNoHF') else  0, help="tkmetNoHF p_{T}"))
     treeProducer.globalVariables.append(NTupleVariable("metNoHF_trkPhi", lambda ev : ev.tkMetNoHF.phi() if  hasattr(ev,'tkMetNoHF') else  0, help="tkmetNoHF phi"))
+if doT1METCorr:
+    if doMETpreprocessor: 
+        print "WARNING: you're running the MET preprocessor and also Type1 MET corrections. This is probably not intended."
+    jetAna.calculateType1METCorrection = True
+    metAna.recalibrate = "type1"
+    metAna.old74XMiniAODs = (getHeppyOption("old74XMiniAODs", not runData) != "False")
+
 if doAK4PFCHSchargedJets:
     if not doMETpreprocessor: raise RuntimeError, "ak4PFchs charged-only jets are reclustered in the MET preprocessor, but this configuration is not going to run it"
     treeProducer.collections["cleanJetsPFChargedCHS"] = NTupleCollection("JetPFChargedCHS", jetTypeSusyExtra, 15, help="Central PFChargedCHS jets after full selection and cleaning, sorted by pt") # ak4PFchs charged-only jets
@@ -340,7 +348,7 @@ if scaleProdToLumi>0: # select only a subset of a sample, corresponding to a giv
         c.fineSplitFactor = 1
 
 
-if runData: # For running on data
+if runData and not isTest: # For running on data
 
 #    # low-PU 50ns run (251721)
 #    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-252126_13TeV_PromptReco_Collisions15_LOWPU_50ns_JSON.txt";
@@ -444,6 +452,11 @@ if is50ns:
     pfChargedCHSjetAna.mcGT     = "Summer15_50nsV5_MC"
     pfChargedCHSjetAna.dataGT   = "Summer15_50nsV5_DATA"
 
+if removeJetReCalibration:
+    ## NOTE: jets will still be recalibrated, since calculateSeparateCorrections is True,
+    ##       however the code will check that the output 4-vector is unchanged.
+    jetAna.recalibrateJets = False
+
 if forcedSplitFactor>0 or forcedFineSplitFactor>0:
     if forcedFineSplitFactor>0 and forcedSplitFactor!=1: raise RuntimeError, 'splitFactor must be 1 if setting fineSplitFactor'
     for c in selectedComponents:
@@ -521,20 +534,10 @@ if doMETpreprocessor:
 
 test = getHeppyOption('test')
 if test == '1':
-    comp = DYJetsToLL_M50_50ns
-    if not is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
+    comp = selectedComponents[0]
     comp.files = comp.files[:1]
     comp.splitFactor = 1
-    if not getHeppyOption('single'):
-        comp.fineSplitFactor = 4
-    selectedComponents = [ comp ]
-elif test == '125':
-    comp = TTJets
-    if is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
-    comp.files = comp.files[:1]
-    comp.splitFactor = 1
-    if not getHeppyOption('single'):
-        comp.fineSplitFactor = 4
+    comp.fineSplitFactor = 1
     selectedComponents = [ comp ]
 elif test == '2':
     for comp in selectedComponents:
@@ -587,7 +590,7 @@ elif test == 'PromptReco':
                         "/DoubleEG/Run2015B-PromptReco-v1/MINIAOD", 
                         "CMS", ".*root",
                         run_range = (251252,251252),
-                        triggers = triggers_ee)
+                        triggers = [ "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*" ])
     selectedComponents = [ DoubleMuon, DoubleEG ]
     if not is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
     for comp in selectedComponents:
