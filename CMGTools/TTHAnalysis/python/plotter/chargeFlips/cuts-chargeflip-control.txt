@@ -1,0 +1,12 @@
+filters      : hbheFilterNew25ns==1 && Flag_CSCTightHaloFilter==1 && Flag_eeBadScFilter==1
+trigger      : HLT_DoubleEl || HLT_BIT_HLT_Ele27_WPLoose_Gsf_v || HLT_BIT_HLT_Ele27_WP85_Gsf_v
+
+3rdlepveto   : nLepGood10 == 2
+pt2010       : LepGood_pt[0]>20 && LepGood_pt[1]>10
+
+elel         : abs(LepGood_pdgId[0]) == 11 && abs(LepGood_pdgId[1]) == 11
+
+leptonMVA    : min(LepGood_mvaTTH[0],LepGood_mvaTTH[1])> 0.9
+
+minMllAFAS   : (minMllAFAS > 60 && minMllAFAS < 120)
+tight-charge : LepGood_tightCharge[0] > 1 && LepGood_tightCharge[1] > 1
