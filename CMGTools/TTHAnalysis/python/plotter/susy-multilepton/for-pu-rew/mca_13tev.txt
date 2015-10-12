@@ -1,0 +1,10 @@
+DY : DYJetsToLL_M50: xsec ; FillColor=ROOT.kCyan
+
+# 2015D 25ns data
+
+data: DoubleMuon_Run2015D_v3_runs_256630_256843
+data: DoubleEG_Run2015D_v3_runs_256630_256843
+data: MuonEG_Run2015D_v3_runs_256630_256843
+data: SingleMuon_Run2015D_v3_runs_256630_256843
+data: SingleElectron_Run2015D_v3_runs_256630_256843
+
