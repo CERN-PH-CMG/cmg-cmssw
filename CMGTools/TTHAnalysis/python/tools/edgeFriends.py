@@ -172,6 +172,7 @@ class edgeFriends:
             if j.btagCSV>0.423: ret["nBJetLoose35"] += 1
             if j.btagCSV>0.814: ret["nBJetMedium35"] += 1
         #
+        ## compute mlb for the two leptons
         ### attach labels and return
         fullret = {}
         for k,v in ret.iteritems(): 
