@@ -1,22 +1,8 @@
-import operator 
-import itertools
-import copy
+from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 
-from ROOT import TLorentzVector
-
-from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.fwlite.Event import Event
-from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.Lepton import Lepton
-from CMGTools.RootTools.physicsobjects.Photon import Photon
-from CMGTools.RootTools.physicsobjects.Electron import Electron
-from CMGTools.RootTools.physicsobjects.Muon import Muon
-from CMGTools.RootTools.physicsobjects.Jet import Jet
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
-
-from CMGTools.RootTools.utils.DeltaR import deltaR,deltaPhi
-from CMGTools.RootTools.physicsobjects.genutils import *
+from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi
+from PhysicsTools.Heppy.physicsutils.genutils import *
 
 class LeptonFromGen:
     def __init__(self, physObj):
@@ -25,11 +11,12 @@ class LeptonFromGen:
         if hasattr(self.physObj, attr):
             return getattr(self.physObj, attr)
         raise RuntimeError, "Missing attribute '%s'" % attr
+
 class JetFromGen:
     def __init__(self, physObj):
         self.physObj = physObj
         self.btag = False
-    def btagCSV(self,tag):
+    def btagWP(self,tag):
         return self.btag
     def __getattr__(self, attr):
         if hasattr(self.physObj, attr):
@@ -42,54 +29,84 @@ class ttHGenLevelOnlyStudy( Analyzer ):
     """
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHGenLevelOnlyStudy,self).__init__(cfg_ana,cfg_comp,looperName)
-        self.doPDFWeights = hasattr(self.cfg_ana, "PDFWeights") and len(self.cfg_ana.PDFWeights) > 0
-        if self.doPDFWeights:
-            self.pdfWeightInit = False
+
     #---------------------------------------------
     # DECLARATION OF HANDLES OF GEN LEVEL OBJECTS 
     #---------------------------------------------
-        
-
     def declareHandles(self):
         super(ttHGenLevelOnlyStudy, self).declareHandles()
-        self.mchandles['genParticles'] = AutoHandle( 'genParticles', 'std::vector<reco::GenParticle>' )
-        self.mchandles['jets'] = AutoHandle( 'ak5GenJets', 'std::vector<reco::GenJet>' )
-        self.mchandles['met'] = AutoHandle( 'genMetTrue', 'std::vector<reco::GenMET>' )
-        if self.doPDFWeights:
-            self.mchandles['pdfstuff'] = AutoHandle( 'generator', 'GenEventInfoProduct' )
+        self.mchandles['genParticles'] = AutoHandle( 'genParticles', 'std::vector<reco::GenParticle>', fallbackLabel="prunedGenParticles" )
+        self.mchandles['jets'] = AutoHandle( 'ak4GenJets', 'std::vector<reco::GenJet>', mayFail=True, lazy=False )
+        self.mchandles['jetsNoNu'] = AutoHandle( 'slimmedGenJets', 'std::vector<reco::GenJet>', mayFail=True, lazy=False )
+        self.mchandles['met'] = AutoHandle( 'genMetTrue', 'std::vector<reco::GenMET>', mayFail=True, lazy=False )
+        self.mchandles['patmet'] = AutoHandle( 'slimmedMETs', 'std::vector<pat::MET>', mayFail=True, lazy=False )
 
-    def beginLoop(self):
-        super(ttHGenLevelOnlyStudy,self).beginLoop()
+    def beginLoop(self, setup):
+        super(ttHGenLevelOnlyStudy,self).beginLoop(setup)
 
-    def doLeptons(self,iEvent,event):
+    def doLeptons(self,event):
             
         event.selectedLeptons = []
+        event.genLeptons = []
         for l in event.genParticles: 
-            if abs(l.pdgId()) not in [11,13] or l.status() != 1: continue
+            if (abs(l.pdgId()) not in [11,13]) or l.status() != 1: continue
+            if not isNotFromHadronicShower(l):
+                continue
+            event.genLeptons.append(LeptonFromGen(l))
             if abs(l.pdgId()) == 13:
                 if l.pt() <= 5 or abs(l.eta()) > 2.4: continue
             if abs(l.pdgId()) == 11:
                 if l.pt() <= 7 or abs(l.eta()) > 2.5: continue
+            #print "selected lepton pdgId %d, status %d, pt %.1f, eta %.2f" % (l.pdgId(),l.status(),l.pt(),l.eta())
+            event.selectedLeptons.append(LeptonFromGen(l))
+        event.selectedLeptons.sort(key = lambda l : -l.pt())
+        event.genLeptons.sort(key = lambda l : -l.pt())
+
+        event.selectedNeutrinos = []
+        for l in event.genParticles: 
+            if abs(l.pdgId()) not in [12,14,16] or l.status() != 1: continue
             if not isNotFromHadronicShower(l):
                 continue
-            event.selectedLeptons.append(LeptonFromGen(l))
+            event.selectedNeutrinos.append(l)
+        event.selectedNeutrinos.sort(key = lambda l : -l.pt())
 
-    def doJets(self,iEvent,event):
+    def doJets(self,event):
         event.cleanJetsAll = []
         event.cleanJetsFwd = []
         event.cleanJets = []
-        for j in self.mchandles['jets'].product(): 
+        if self.mchandles['jetsNoNu'].isValid():
+            jets = [j for j in self.mchandles['jetsNoNu'].product()]
+        else:
+            jets = []
+            for j in self.mchandles['jets'].product(): 
+                #print "(pass 0) gen jet pt %7.1f eta %+5.2f phi %+5.2f invEnF %.3f " %  (j.pt(), j.eta(), j.phi(), j.invisibleEnergy()/j.energy())
+                if j.invisibleEnergy() > 0:
+                    p4noNu = j.p4()
+                    for idau in xrange(j.numberOfDaughters()):
+                        dau = j.daughter(idau)
+                        if abs(dau.pdgId()) in [12,14,16]:
+                            p4noNu -= dau.p4()
+                    j.setP4(p4noNu)
+                    #print "          w/o nu pt %7.1f eta %+5.2f phi %+5.2f " %  (j.pt(), j.eta(), j.phi())
+                jets.append(j)
+        jets.sort(key = lambda l : -l.pt())
+        for j in jets: 
+            good = True
             if j.pt() < 25: continue
+            #print "(pass 1) gen jet pt %7.1f eta %+5.2f phi %+5.2f" %  (j.pt(), j.eta(), j.phi())
             for l in event.selectedLeptons:
-                if l.pt() > 10 and deltaR(l.eta(),l.phi(),j.eta(),j.phi()) < 0.5:
-                    continue
+                if l.pt() > 10 and deltaR(l.eta(),l.phi(),j.eta(),j.phi()) < 0.4:
+                    #print "          ov lep pt %7.1f eta %+5.2f phi %+5.2f dr %.3f" %  (l.pt(), l.eta(), l.phi(), deltaR(l.eta(),l.phi(),j.eta(),j.phi()))
+                    good = False; 
+                    break
+            if not good: continue
             jo = JetFromGen(j)
             event.cleanJetsAll.append(jo)
             if abs(j.eta()) < 2.4:
-                event.cleanJetsAll.append(jo)
+                event.cleanJets.append(jo)
             else:
                 event.cleanJetsFwd.append(jo)
-    def doBTag(self,iEvent,event):
+    def doBTag(self,event):
         bs = []
         for gp in event.genParticles:
             if gp.status() != 2: continue
@@ -100,8 +117,11 @@ class ttHGenLevelOnlyStudy( Analyzer ):
             for gp in bs:
                 if deltaR(gp.eta(),gp.phi(),j.eta(),j.phi()) < 0.4:
                     gp.btag = True
-    def doMET(self,iEvent,event):
-        event.met = self.mchandles['met'].product().front()
+    def doMET(self,event):
+        if self.mchandles['met'].isValid():
+            event.met = self.mchandles['met'].product().front()
+        else:
+            event.met = self.mchandles['patmet'].product().front().genMET()
 
     def makeZs(self, event, maxLeps):
         event.bestZ1 = [ 0., -1,-1 ]
@@ -190,24 +210,7 @@ class ttHGenLevelOnlyStudy( Analyzer ):
         return pairs
 
 
-    def initPDFWeights(self):
-        from ROOT import PdfWeightProducerTool
-        self.pdfWeightInit = True
-        self.pdfWeightTool = PdfWeightProducerTool()
-        for pdf in self.cfg_ana.PDFWeights:
-            self.pdfWeightTool.addPdfSet(pdf+".LHgrid")
-        self.pdfWeightTool.beginJob()
-
-    def makePDFWeights(self, event):
-        if not self.pdfWeightInit: self.initPDFWeights()
-        self.pdfWeightTool.processEvent(self.mchandles['pdfstuff'].product())
-        event.pdfWeights = {}
-        for pdf in self.cfg_ana.PDFWeights:
-            ws = self.pdfWeightTool.getWeights(pdf+".LHgrid")
-            event.pdfWeights[pdf] = [w for w in ws]
-            #print "Produced %d weights for %s: %s" % (len(ws),pdf,event.pdfWeights[pdf])
-
-    def doHT(self, iEvent, event):
+    def doHT(self, event):
         import ROOT
 
         objects25 = [ j for j in event.cleanJets if j.pt() > 25 ] + event.selectedLeptons
@@ -235,8 +238,8 @@ class ttHGenLevelOnlyStudy( Analyzer ):
         event.mhtJet40j = event.mhtJet40jvec.pt()
         event.mhtPhiJet40j = event.mhtJet40jvec.phi()
 
-    def process(self, iEvent, event):
-        self.readCollections( iEvent )
+    def process(self, event):
+        self.readCollections( event.input )
 
         # if not MC, nothing to do
         if not self.cfg_comp.isMC: 
@@ -245,19 +248,18 @@ class ttHGenLevelOnlyStudy( Analyzer ):
         event.genParticles = [ gp for gp in self.mchandles['genParticles'].product() ]
 
         event.eventWeigth = 1.0
-        event.run = iEvent.eventAuxiliary().id().run()
-        event.lumi = iEvent.eventAuxiliary().id().luminosityBlock()
-        event.eventId = iEvent.eventAuxiliary().id().event()
+        event.run = event.input.eventAuxiliary().id().run()
+        event.lumi = event.input.eventAuxiliary().id().luminosityBlock()
+        event.eventId = event.input.eventAuxiliary().id().event()
         
-        self.doLeptons(iEvent,event)
+        self.doLeptons(event)
         self.makeZs(event, 4)
         self.makeMlls(event, 4)
-        self.doJets(iEvent,event)
-        self.doBTag(iEvent,event)
-        self.doMET(iEvent,event)
-        self.doHT(iEvent,event)
+        self.doJets(event)
+        self.doBTag(event)
+        self.doMET(event)
+        self.doHT(event)
 
-        # do PDF weights, if requested
-        if self.doPDFWeights:
-            self.makePDFWeights(event)
+        event.genTops = [ gp for gp in event.genParticles if abs(gp.pdgId()) == 6 and lastGenCopy(gp) ]
+
         return True
