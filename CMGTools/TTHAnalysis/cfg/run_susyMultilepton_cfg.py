@@ -282,10 +282,7 @@ treeProducer.globalVariables.append(NTupleVariable("met_trkPhi", lambda ev : ev.
 # MET preprocessor and ak4PFchs charged-only jets
 if doMETpreprocessor or (not noMETNoHF):
     susyCoreSequence.insert(susyCoreSequence.index(metAna)+1,metNoHFAna)
-    metNoHFAna.doTkMet = True
     treeProducer.globalObjects.update({"metNoHF"  : NTupleObject("metNoHF", metType, help="PF E_{T}^{miss}, after type 1 corrections (NoHF)")})
-    treeProducer.globalVariables.append(NTupleVariable("metNoHF_trkPt", lambda ev : ev.tkMetNoHF.pt() if  hasattr(ev,'tkMetNoHF') else  0, help="tkmetNoHF p_{T}"))
-    treeProducer.globalVariables.append(NTupleVariable("metNoHF_trkPhi", lambda ev : ev.tkMetNoHF.phi() if  hasattr(ev,'tkMetNoHF') else  0, help="tkmetNoHF phi"))
 if doT1METCorr:
     if doMETpreprocessor: 
         print "WARNING: you're running the MET preprocessor and also Type1 MET corrections. This is probably not intended."
