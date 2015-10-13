@@ -53,7 +53,7 @@ class VertexWeightFriend:
         return [ (self.name,'F') ]
     def __call__(self,event):
         nvtx = int(event.nVert)
-        weight = self.weights[nvtx] if nvtx <= len(self.weights) else 1
+        weight = self.weights[nvtx] if nvtx < len(self.weights) else 1
         return { self.name: weight }
 
 if __name__ == '__main__':

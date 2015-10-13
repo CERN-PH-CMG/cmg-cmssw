@@ -184,13 +184,12 @@ from CMGTools.MonoXAnalysis.samples.samples_monojet_13TeV_74X import *
 
 selectedComponents = []; is50ns = False
 
-isData = True
+isData = False
 
-if True: # For running on data
-    isData = True
+if isData==True: # For running on data
     # Run2015C (Golden) + Run2015D (DCS) up to run 256941 , 25 ns, 3.8T     
-    json = "$CMSSW_BASE/src/CMGTools/MonoXAnalysis/python/samples/Golden_246908-255031_13TeV_PromptReco_Collisions15_25ns_v2_OR_DCS_254914_256941_JSON.txt"
-    processing = "Run2015D-PromptReco-v3"; short = "Run2015D_v3"; run_ranges = [ (256584,256842) ]; useAAA=False; is50ns=False
+    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-257599_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
+    processing = "Run2015D-PromptReco-v3"; short = "Run2015D_v3"; run_ranges = [ (246908,257599) ]; useAAA=False; is50ns=False
 
     compSelection = ""
     DatasetsAndTriggers = []
@@ -230,14 +229,15 @@ if True: # For running on data
 
 
 
-if False: # MC all
+if isData==False: # MC all
 ### 25 ns 74X MC samples
 #selectedComponents = mcSamples_monojet_Asymptotic25ns ; is50ns = False
 ### 50 ns 74X MC samples
 #selectedComponents = mcSamples_monojet_Asymptotic50ns ; is50ns = True
     for comp in selectedComponents:
-        comp.splitFactor = 20
+        comp.splitFactor = 100
         comp.fineSplitFactor = 1
+
 
 
 #-------- HOW TO RUN ----------- 
