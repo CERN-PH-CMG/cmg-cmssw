@@ -117,6 +117,7 @@ isoTrackAna.doIsoAnnulus = True
 
 # recalibrate MET
 metAna.recalibrate = False
+metAna.old74XMiniAODs = True # get right Raw MET on old 74X MiniAODs
 
 # store all taus by default
 genAna.allGenTaus = True
@@ -319,7 +320,7 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 # choose 2 for full mc production
 # choose 3 for data production
 # choose 4 for signal production
-test = 0
+test = int(getHeppyOption('test',0))
 isData = False # will be changed accordingly if chosen to run on data
 doSpecialSettingsForMECCA = 1 # set to 1 for comparisons with americans
 runPreprocessor = False
