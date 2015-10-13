@@ -691,6 +691,38 @@ elif test == '74X-MC':
             comp.files = comp.files[:1]
             comp.splitFactor = 1
             comp.fineSplitFactor = 1 if getHeppyOption("single") else 4
+elif test == '74Xv2-MC':
+    what = getHeppyOption("sample", "TTLep")
+    #susyCounter.doLHE = False
+    if what == "TTLep":
+        selectedComponents = [ TTLep_pow ]
+        comp = selectedComponents[0]
+        comp.files = [ '/store/mc/RunIISpring15MiniAODv2/TTTo2L2Nu_13TeV-powheg/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/004613BA-C46D-E511-9EB6-001E67248732.root' ]
+        if is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
+        if old74XMiniAODs: raise RuntimeError, 'Incorrect old74XMiniAODs configuration'
+        if doT1METCorr or doMETpreprocessor or noMETNoHF or not removeJetReCalibration: 
+            print "WARNING: running some option which is not needed on miniAOD v2 out of the box" 
+        tmpfil = os.path.expandvars("/tmp/$USER/004613BA-C46D-E511-9EB6-001E67248732.root")
+        if not os.path.exists(tmpfil):
+            os.system("xrdcp root://eoscms//eos/cms%s %s" % (comp.files[0],tmpfil))
+        comp.files = [ tmpfil ]
+    elif what == "TTJets":
+        selectedComponents = [ TTJets_LO ]
+        comp = selectedComponents[0]
+        comp.files = [ '/store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/30000/001F4F14-786E-E511-804F-0025905A60FE.root' ]
+        if is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
+        if old74XMiniAODs: raise RuntimeError, 'Incorrect old74XMiniAODs configuration'
+        if doT1METCorr or doMETpreprocessor or noMETNoHF or not removeJetReCalibration: 
+            print "WARNING: running some option which is not needed on miniAOD v2 out of the box" 
+        tmpfil = os.path.expandvars("/tmp/$USER/001F4F14-786E-E511-804F-0025905A60FE.root")
+        if not os.path.exists(tmpfil):
+            os.system("xrdcp root://eoscms//eos/cms%s %s" % (comp.files[0],tmpfil))
+        comp.files = [ tmpfil ]
+    else: raise RuntimeError, "Unknown sample: "+what
+    for comp in selectedComponents:
+        comp.files = comp.files[:1]
+        comp.splitFactor = 1
+        comp.fineSplitFactor = 1 if getHeppyOption("single") else 4
 elif test == 'PromptReco':
     DoubleMuon = kreator.makeDataComponent("DoubleMuon_Run2015B_run251252",
                         "/DoubleMuon/Run2015B-PromptReco-v1/MINIAOD", 
@@ -734,7 +766,6 @@ elif test == 'PromptRecoD':
         else:
             comp.splitFactor = len(comp.files)
 elif test == "express":
-
 #    # beware of cmgdataset caching!!!
 #    comp = kreator.makeDataComponent("ExpressRun2015D",
 #                                     "/ExpressPhysics/Run2015D-Express-v3/FEVT",
@@ -745,7 +776,6 @@ elif test == "express":
 #                                     useAAA=False)
 #    comp.splitFactor = 200
 #    selectedComponents = [ comp ]
-
     comp = cfg.DataComponent( files = ["root://eoscms//store/express/Run2015D/ExpressPhysics/FEVT/Express-v3/000/256/675/00000/ACC501C8-E95C-E511-A432-02163E014147.root"], name="ExpressPhysics_2015D", intLumi=1 )
     comp.triggers = []
     comp.json     = None
