@@ -20,7 +20,9 @@ class edgeFriends:
                  ("lepsMll"+label, "F"), ("lepsJZB"+label, "F"), ("lepsDR"+label, "F"), ("lepsMETRec"+label, "F"), ("lepsZPt"+label, "F"),
                  ("Lep1_pt"+label, "F"), ("Lep1_eta"+label, "F"), ("Lep1_phi"+label, "F"), ("Lep1_miniRelIso"+label, "F"), ("Lep1_pdgId"+label, "I"), ("Lep1_mvaIdPhys14"+label, "F"),
                  ("Lep2_pt"+label, "F"), ("Lep2_eta"+label, "F"), ("Lep2_phi"+label, "F"), ("Lep2_miniRelIso"+label, "F"), ("Lep2_pdgId"+label, "I"), ("Lep2_mvaIdPhys14"+label, "F"),
-                 ("PileupW"+label, "F")
+                 ("PileupW"+label, "F"),
+                 ("min_mlb1"+label, "F"),
+                 ("min_mlb2"+label, "F")
                  ]
         ## for lfloat in 'pt eta phi miniRelIso pdgId'.split():
         ##     if lfloat == 'pdgId':
@@ -46,6 +48,7 @@ class edgeFriends:
         metp4.SetPtEtaPhiM(met,0,metphi,0)
         ret = {}; jetret = {}; 
         lepret = {}
+        
         #
         ### Define tight leptons
         ret["iLT"] = []; ret["nLepGood20T"] = 0
@@ -97,7 +100,9 @@ class edgeFriends:
         ret['lepsZPt'] = iL1iL2[6] 
 
         #print 'new event =================================================='
-
+        l1 = ROOT.TLorentzVector()
+        l2 = ROOT.TLorentzVector()
+        ltlvs = [l1, l2]
         for lfloat in 'pt eta phi miniRelIso pdgId mvaIdPhys14'.split():
             if lfloat == 'pdgId':
                 lepret["Lep1_"+lfloat+self.label] = -99
@@ -105,8 +110,9 @@ class edgeFriends:
             else:
                 lepret["Lep1_"+lfloat+self.label] = -42.
                 lepret["Lep2_"+lfloat+self.label] = -42.
-        if ret['iL1T'] != -999 and ret['iL1T'] != -999:
+        if ret['iL1T'] != -999 and ret['iL2T'] != -999:
             ret['nPairLep'] = 2
+#            print 'index of lepton 1 %d index of lepton 2 %d' %( ret['iL1T'], ret['iL2T'])
             ## for lfloat in 'pt eta phi miniRelIso pdgId'.split():
             ##     lepret["Lep1_"+lfloat+label] = -42.
             ##     lepret["Lep2_"+lfloat+label] = -42.
@@ -118,12 +124,12 @@ class edgeFriends:
                 #    lepret[lfloat].append( getattr(lep,lfloat) )
                 for lfloat in 'pt eta phi miniRelIso pdgId mvaIdPhys14'.split():
                     lepret["Lep"+str(lcount)+"_"+lfloat+self.label] = getattr(lep,lfloat)
+                ltlvs[lcount-1].SetPtEtaPhiM(lep.pt, lep.eta, lep.phi, 0.0005 if lep.pdgId == 11 else 0.106)
                 lcount += 1
-                #print 'good lepton', getattr(lep,'pt'), getattr(lep,'eta'), getattr(lep,'phi'), getattr(lep,'pdgId')
+                #print 'good lepton', getattr(lep,'pt'), getattr(lep,'eta'), getattr(lep,'phi'), getattr(lep,'pdgId') 
         else:
             ret['nPairLep'] = 0
             
-
         ### Define jets
         ret["iJ"] = []
         # 0. mark each jet as clean
@@ -139,6 +145,7 @@ class edgeFriends:
                     j._clean = False
 
         # 2. compute the jet list
+        
         for ijc,j in enumerate(jetsc):
             if not j._clean: continue
             ret["iJ"].append(ijc)
@@ -148,9 +155,11 @@ class edgeFriends:
         ret['nJetSel'] = len(ret["iJ"])
 
         # 3. sort the jets by pt
+        
         ret["iJ"].sort(key = lambda idx : jetsc[idx].pt if idx >= 0 else jetsd[-1-idx].pt, reverse = True)
 
         # 4. compute the variables
+        
         for jfloat in "pt eta phi mass btagCSV rawPt".split():
             jetret[jfloat] = []
         if self.isMC:
@@ -163,17 +172,51 @@ class edgeFriends:
             if self.isMC:
                 for jmc in "mcPt mcFlavour mcMatchId".split():
                     jetret[jmc].append( getattr(jet,jmc) )
-
+        
         # 5. compute the sums
+        
         ret["nJet35"] = 0; ret["htJet35j"] = 0; ret["nBJetLoose35"] = 0; ret["nBJetMedium35"] = 0
         for j in jetsc+jetsd:
             if not j._clean: continue
             ret["nJet35"] += 1; ret["htJet35j"] += j.pt; 
             if j.btagCSV>0.423: ret["nBJetLoose35"] += 1
             if j.btagCSV>0.814: ret["nBJetMedium35"] += 1
-        #
-        ## compute mlb for the two leptons
-        ### attach labels and return
+        ## compute mlb for the two lepton  
+        jet = ROOT.TLorentzVector()	
+        min_mlq1 = 1e6
+        min_mlq2 = 1e6
+        lepindex, jetindex = -999, -999
+        paired_with_b = False
+        for j in jetsc+jetsd:
+            if ret["nJetSel"] < 1: continue
+            if ret['nPairLep'] < 2: continue
+            if not j._clean: continue
+            jet.SetPtEtaPhiM(j.pt, j.eta, j.phi, j.mass)           
+            tmp = (l1+jet).M()  
+            if j.btagCSV>0.814:  
+                if tmp < min_mlq1: 
+                     min_mlq1  = tmp
+                     paired_with_b = True 
+                     jetindex = j 
+            else:
+                 if tmp < min_mlq1 and paired_with_b == False:
+                     min_mlq1 = tmp 
+        for j in jetsc+jetsd: 
+            if ret["nPairLep"] < 2: continue
+            if ret["nJetSel"] < 1: continue
+            if not j._clean: continue
+            jet.SetPtEtaPhiM(j.pt, j.eta, j.phi, j.mass)           
+            tmp = (l2+jet).M()
+            if j.btagCSV>0.814:  
+                if tmp < min_mlq2: 
+                    min_mlq2  = tmp
+                    paired_with_b = True    
+            else:
+                if tmp < min_mlq2 and paired_with_b == False:
+                    min_mlq2 = tmp            
+        ret["min_mlb1"] = min(min_mlq1,min_mlq2) if min(min_mlq1, min_mlq2) < 1e6 else -1.
+        ret["min_mlb2"] = max(min_mlq1,min_mlq2) if max(min_mlq1, min_mlq2) < 1e6 else -1.
+       ### attach labels and return
         fullret = {}
         for k,v in ret.iteritems(): 
             fullret[k+self.label] = v
