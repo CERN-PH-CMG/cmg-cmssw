@@ -20,7 +20,7 @@ twoLeptonEventSkimmer = cfg.Analyzer(
 
 twoLeptonTreeProducer = cfg.Analyzer(
      AutoFillTreeProducer, name='twoLeptonTreeProducer',
-     vectorTree = False,
+     vectorTree = True,
      saveTLorentzVectors = False,  # can set to True to get also the TLorentzVectors, but trees will be bigger
      globalVariables = hzz_globalVariables, # rho, nvertices, njets
      globalObjects = hzz_globalObjects, # met
@@ -28,7 +28,7 @@ twoLeptonTreeProducer = cfg.Analyzer(
          "bestIsoZ"        : NTupleCollection("z",   ZType, 1, help="Four Lepton Candidates"),    
          "selectedLeptons" : NTupleCollection("Lep", leptonTypeHZZ, 10, help="Leptons after the preselection"),
          "cleanJets"       : NTupleCollection("Jet", jetTypeExtra, 10, help="Cental jets after full selection and cleaning, sorted by pt"),
-         "fsrPhotonsNoIso" : NTupleCollection("FSR", fsrPhotonTypeHZZ, 10, help="Photons for FSR recovery (isolation not applied)"),
+         #"fsrPhotonsNoIso" : NTupleCollection("FSR", fsrPhotonTypeHZZ, 10, help="Photons for FSR recovery (isolation not applied)"),
      },
      defaultFloatType = 'F',
 )
@@ -37,9 +37,10 @@ twoLeptonTreeProducer = cfg.Analyzer(
 #-------- SEQUENCE
 sequence = cfg.Sequence([
     skimAnalyzer,
-    genAna,
     jsonAna,
     triggerAna,
+    fastSkim2L,
+    genAna,
     pileUpAna,
     vertexAna,
     lepAna,
@@ -47,7 +48,7 @@ sequence = cfg.Sequence([
     jetAna,
     metAna,
     triggerFlagsAna,
-    fsrPhotonMaker,
+    #fsrPhotonMaker,
     twoLeptonAnalyzer, 
     twoLeptonEventSkimmer, 
     twoLeptonTreeProducer 
@@ -55,41 +56,33 @@ sequence = cfg.Sequence([
 
 #-------- SAMPLES AND TRIGGERS -----------
 from CMGTools.HToZZ4L.samples.samples_13TeV_Spring15 import *
-selectedComponents = mcSamples + dataSamples
-selectedComponents = [ DYJetsToLL_M50, SingleMu_742 ]
-for comp in mcSamples:
-    comp.triggers = triggers_1mu_iso
-    comp.vetoTriggers = []
+dataSamples = [ d for d in dataSamples if 'Double' in d.name ]
+for d in dataSamples:
+    d.triggers = triggers_mumu if 'Muon' in d.name else triggers_ee
+    d.vetoTriggers = []
+    d.splitFactor = len(d.files)/4
+    
+mcSamples = [ DYJetsToLL_M50_v2 ]
+for d in mcSamples:
+    d.triggers = triggers_mumu + triggers_ee
+    d.vetoTriggers = []
+    d.splitFactor = len(d.files)/2
+    
+selectedComponents = dataSamples + mcSamples
 
-## Example of running on data, runs 251251-251252
-if True: # For running on data
-    json = None; 
-    processing = "Run2015B-PromptReco-v1"; short = "Run2015B_v1"; 
-    run_ranges = [ (251251,251252) ]
-    DatasetsAndTriggers = []
-    DatasetsAndTriggers.append( ("DoubleMuon", triggers_mumu) ) # + triggers_3mu) )
-    DatasetsAndTriggers.append( ("DoubleEG",   triggers_ee) ) # + triggers_3e) )
-    #DatasetsAndTriggers.append( ("MuonEG",     triggers_mue + triggers_2mu1e + triggers_2e1mu) )
-    #DatasetsAndTriggers.append( ("SingleElectron", triggers_1e) )
-    #DatasetsAndTriggers.append( ("SingleMuon", triggers_1mu_iso) )
-    selectedComponents = []; vetos = []
-    for pd,triggers in DatasetsAndTriggers:
-        for run_range in run_ranges:
-            label = "runs_%d_%d" % run_range if run_range[0] != run_range[1] else "run_%d" % (run_range[0],)
-            comp = kreator.makeDataComponent(pd+"_"+short+"_"+label, 
-                                             "/"+pd+"/"+processing+"/MINIAOD", 
-                                             "CMS", ".*root", 
-                                             json=json, 
-                                             run_range=run_range, 
-                                             triggers=triggers[:], vetoTriggers = vetos[:])
-            print "Will process %s (%d files)" % (comp.name, len(comp.files))
-            # print "\ttrigger sel %s, veto %s"i % (triggers, vetos)
-            comp.splitFactor = 1 #len(comp.files)
-            comp.fineSplitFactor = 1
-            selectedComponents.append( comp )
-        vetos += triggers
-    if json is None:
-        sequence.remove(jsonAna)
+if True:
+    import re
+    from CMGTools.Production import changeComponentAccessMode
+    from CMGTools.Production.localityChecker import LocalityChecker
+    tier2Checker = LocalityChecker("T2_CH_CERN", datasets="/*/*/MINIAOD*")
+    for comp in selectedComponents:
+        if not hasattr(comp,'dataset'): continue
+        if not re.match("/[^/]+/[^/]+/MINIAOD(SIM)?", comp.dataset): continue
+        if "/store/" not in comp.files[0]: continue
+        if re.search("/store/(group|user|cmst3)/", comp.files[0]): continue
+        if not tier2Checker.available(comp.dataset):
+            print "Dataset %s is not available, will use AAA" % comp.dataset
+            changeComponentAccessMode.convertComponent(comp, "root://cms-xrd-global.cern.ch/%s")
 
 
 from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
@@ -118,9 +111,13 @@ elif test == '3':
 
 # the following is declared in case this cfg is used in input to the heppy.py script
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
+from CMGTools.TTHAnalysis.tools.EOSEventsWithDownload import EOSEventsWithDownload
+event_class = EOSEventsWithDownload
+EOSEventsWithDownload.aggressive = 2 # always fetch if running on Wigner
+if getHeppyOption("nofetch") or getHeppyOption("isCrab"):
+    event_class = Events
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence,
                      services = [],  
-                     events_class = Events)
-
+                     events_class = event_class)
 
