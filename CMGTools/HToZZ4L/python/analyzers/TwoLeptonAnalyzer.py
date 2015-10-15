@@ -33,7 +33,7 @@ class TwoLeptonAnalyzer( Analyzer ):
         tight_leptons = [ lep for lep in event.selectedLeptons if self.leptonID_tight(lep) ]
 
         # make dilepton pairs, possibly attach FSR photons (the latter not yet implemented)
-        event.allPairs = self.findOSSFPairs(tight_leptons, event.fsrPhotons)
+        event.allPairs = self.findOSSFPairs(tight_leptons, []) #event.fsrPhotons)
 
         # count them, for the record
         for p in event.allPairs:

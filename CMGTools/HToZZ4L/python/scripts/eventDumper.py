@@ -119,7 +119,7 @@ class BaseDumper(Module):
         print "run %6d lumi %4d event %11d (id: %d:%d:%d) " % (ev.run, ev.lumi, ev.evt, ev.run, ev.lumi, ev.evt)
         for i,l in enumerate(leps):
             print "    lepton %d: id %+2d pt %5.1f eta %+4.2f phi %+4.2f   tightId %d relIso %5.3f sip3d %5.2f dxy %+4.3f dz %+4.3f bdt %+5.3f lostHits %1d" % (
-                    i+1, l.pdgId,l.pt,l.eta,l.phi, l.tightId, l.relIso04, l.sip3d, l.dxy, l.dz, l.mvaIdPhys14, l.lostHits),
+                    i+1, l.pdgId,l.pt,l.eta,l.phi, l.tightId, l.relIso04, l.sip3d, l.dxy, l.dz, l.mvaIdSpring15, l.lostHits),
             if self.options.ismore:
                 print " iso ch %5.2f nh %5.2f ph %5.2f pu %5.2f rho %5.2f ea %4.3f " % ( l.chargedHadIso04, l.neutralHadIso04, l.photonIso04, l.puChargedHadIso04, l.rho, l.EffectiveArea04 ),
             if self.options.ismc:
@@ -156,7 +156,7 @@ class BaseDumper(Module):
                         )
         print "    met %6.2f (phi %+4.2f)" % (ev.met_pt, ev.met_phi)
         print "    vertices %d" % (ev.nVert)
-        print "    HLT: ", " ".join([t for t in "DoubleMu DoubleEl TripleEl MuEG".split() if getattr(ev,"HLT_"+t)])
+        print "    HLT: ", " ".join([t for t in "DoubleMu DoubleEl MuEG TripleEl TripleMu DoubleMuEl DoubleElMu SingleEl SingleMu DoubleMuSync DoubleElSync MuEGSync SingleElSync Signal SignalSync ".split() if getattr(ev,"HLT_"+t)])
         print ""
 
 cut = None
@@ -165,8 +165,8 @@ if options.cut:
 if options.events:
     rles = []
     for ids in options.events:
-        for i in ids.split():
-            (r,l,e) = map(int, i.split(":"))
+        for i in ids.split(","):
+            (r,l,e) = map(int, i.strip().split(":"))
             rles.append((r,l,e))
     options.events = rles
 file = ROOT.TFile.Open(args[0])

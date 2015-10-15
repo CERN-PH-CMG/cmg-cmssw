@@ -12,13 +12,21 @@ from CMGTools.HToZZ4L.analyzers.FourLeptonEventSkimmer import *
 from CMGTools.HToZZ4L.analyzers.FSRPhotonMaker import *
 from CMGTools.HToZZ4L.analyzers.GenFSRAnalyzer import *
 from CMGTools.HToZZ4L.analyzers.fourLeptonTree import *
-from CMGTools.HToZZ4L.samples.samples_13TeV_Spring15 import triggers_mumu, triggers_ee, triggers_mue, triggers_3e, triggers_3mu, triggers_2mu1e, triggers_2e1mu, triggers_mumu_run1, triggers_ee_run1, triggers_mue_run1, triggers_1mu_iso
-from CMGTools.RootTools.samples.triggers_8TeV import triggers_1mu_8TeV, triggers_mumu_8TeV, triggers_mue_8TeV, triggers_ee_8TeV
+from CMGTools.HToZZ4L.samples.samples_13TeV_Spring15 import *
+
+from CMGTools.TTHAnalysis.analyzers.ttHFastLepSkimmer import ttHFastLepSkimmer
+fastSkim2L = cfg.Analyzer( ttHFastLepSkimmer, name="fastLepSkimmer2L",
+        muons = 'slimmedMuons', muCut = lambda mu : mu.pt() > 5 and abs(mu.dB(mu.PV3D) / mu.edB(mu.PV3D)) < 4,
+        electrons = 'slimmedElectrons', eleCut = lambda ele : ele.pt() > 7,
+        minLeptons = 2,
+)
+fastSkim4L = cfg.Analyzer( ttHFastLepSkimmer, name="fastLepSkimmer4L",
+        muons = 'slimmedMuons', muCut = lambda mu : mu.pt() > 5 and abs(mu.dB(mu.PV3D) / mu.edB(mu.PV3D)) < 4,
+        electrons = 'slimmedElectrons', eleCut = lambda ele : ele.pt() > 7,
+        minLeptons = 4,
+)
 
 import os
-
-
-PDFWeights = []
 
 genAna = cfg.Analyzer(
     GeneratorAnalyzer, name="GeneratorAnalyzer",
@@ -70,6 +78,11 @@ triggerAna = cfg.Analyzer(
 triggerFlagsAna = cfg.Analyzer(
     TriggerBitAnalyzer, name="TriggerFlags",
     processName = 'HLT',
+    prescaleProcessName = 'PAT',
+    prescaleFallbackProcessName = 'RECO',
+    unrollbits = False,
+    saveIsUnprescaled = False,
+    checkL1prescale = False,
     triggerBits = {
         # Doubles
         'DoubleMu' : triggers_mumu,
@@ -81,12 +94,16 @@ triggerFlagsAna = cfg.Analyzer(
         'DoubleMuEl' : triggers_2mu1e,
         'DoubleElMu' : triggers_2e1mu,
         # Singles
-        'SingleMu' : triggers_1mu_iso,
-        # 8 TeV (and closest equivalent in spring 15 mc)
-        'SingleMu_8TeV' : triggers_1mu_8TeV + triggers_1mu_iso,
-        'DoubleMu_8TeV' : triggers_mumu_8TeV + triggers_mumu_run1,
-        'MuEG_8TeV'     : triggers_mue_8TeV + triggers_mue_run1,
-        'DoubleEl_8TeV' : triggers_ee_8TeV + triggers_ee_run1,
+        'SingleEl' : triggers_1e,
+        'SingleMu' : triggers_1mu,
+        # Old Sync
+        'DoubleMuSync' : triggers_mumu_sync,
+        'DoubleElSync' : triggers_ee_sync,
+        'MuEGSync'     : triggers_mue_sync,
+        'SingleElSync' : triggers_1e_sync,
+        # Summaries 
+        'Signal' : triggers_signal_real,
+        'SignalSync' : triggers_signal_sync,
         }
     )
 
@@ -106,13 +123,6 @@ pileUpAna = cfg.Analyzer(
     true = True,  # use number of true interactions for reweighting
     makeHists=False
     )
-
-pdfwAna = cfg.Analyzer(
-    PDFWeightsAnalyzer, name="PDFWeightsAnalyzer",
-    PDFWeights = [ pdf for pdf,num in PDFWeights ]
-    )
-
-
 
 lepAna = cfg.Analyzer(
     LeptonAnalyzer, name="leptonAnalyzer",
@@ -147,7 +157,7 @@ lepAna = cfg.Analyzer(
     inclusive_electron_eta = 2.5,
     inclusive_electron_dxy = 0.5,
     inclusive_electron_dz  = 1.0,
-    inclusive_electron_lostHits = 1.0,
+    inclusive_electron_lostHits = 10000.0,
     # loose electron selection
     loose_electron_id     = "",
     loose_electron_pt     = 7,
@@ -155,15 +165,15 @@ lepAna = cfg.Analyzer(
     loose_electron_dxy    = 0.5,
     loose_electron_dz     = 1.0,
     loose_electron_isoCut = lambda x: x.sip3D() < 4,
-    loose_electron_lostHits = 1.0,
+    loose_electron_lostHits = 1000.0,
     # muon isolation correction method (can be "rhoArea" or "deltaBeta")
     mu_isoCorr = "deltaBeta" ,
     mu_effectiveAreas = "Phys14_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1')
     mu_tightId = "POG_ID_Loose",
     # electron isolation correction method (can be "rhoArea" or "deltaBeta")
     ele_isoCorr = "rhoArea" ,
-    el_effectiveAreas = "Phys14_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1')
-    ele_tightId = "MVA_ID_NonTrig_Phys14Fix_HZZ",
+    ele_effectiveAreas = "Phys14_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1')
+    ele_tightId = "MVA_ID_NonTrig_Spring15_HZZ",
     # Mini-isolation, with pT dependent cone: will fill in the miniRelIso, miniRelIsoCharged, miniRelIsoNeutral variables of the leptons (see https://indico.cern.ch/event/368826/ )
     doMiniIsolation = False, # off by default since it requires access to all PFCandidates 
     packedCandidates = 'packedPFCandidates',
@@ -202,19 +212,26 @@ jetAna = cfg.Analyzer(
     relaxJetId = False,  
     doPuId = True,
     recalibrateJets = False, # True, False, 'MC', 'Data'
+    applyL2L3Residual = True, # Switch to 'Data' when they will become available for Data
     recalibrationType = "AK4PFchs",
-    mcGT     = "Summer15_V5_p6_MC",
+    mcGT     = "Summer15_25nsV2_MC",
+    dataGT   = "Summer15_25nsV5_DATA",
     jecPath = "${CMSSW_BASE}/src/CMGTools/RootTools/data/jec/",
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     addJECShifts = False,
     smearJets = False,
     shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts  
     alwaysCleanPhotons = False,
+    cleanGenJetsFromPhoton = False,
     cleanJetsFromFirstPhoton = False,
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
     doQG = False,
-    cleanGenJetsFromPhoton = False,
+    do_mc_match = True,
+    collectionPostFix = "",
+    calculateSeparateCorrections = False,
+    calculateType1METCorrection  = False,
+    type1METParams = { 'jetPtThreshold':15., 'skipEMfractionThreshold':0.9, 'skipMuons':True },
     )
 
 
@@ -228,8 +245,10 @@ metAna = cfg.Analyzer(
     doMetNoMu = False,
     doMetNoEle = False,
     doMetNoPhoton = False,
-    recalibrate = False,
-    jetAnalyzerCalibrationPostFix = "",
+    recalibrate = False, #"type1", # or "type1", or True
+    applyJetSmearing = False, # does nothing unless the jet smearing is turned on in the jet analyzer
+    old74XMiniAODs = False, # set to True to get the correct Raw MET when running on old 74X MiniAODs
+    jetAnalyzerPostFix = "",
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,
@@ -283,6 +302,12 @@ fourLeptonEventSkimmer = cfg.Analyzer(
 
 )
 
+from PhysicsTools.HeppyCore.framework.services.tfile import TFileService
+output_service = cfg.Service( TFileService, 'outputfile', name="outputfile",
+    fname='tree.root',
+    option='recreate'
+    )    
+
 treeProducer = cfg.Analyzer(
      AutoFillTreeProducer, name='fourLeptonTreeProducer',
      vectorTree = False,
@@ -299,11 +324,10 @@ treeProducer = cfg.Analyzer(
 # Core sequence of all common modules
 hzz4lCoreSequence = [
     skimAnalyzer,
-    genAna,
-#    genFSRAna,
-   #eventSelector,
     jsonAna,
     triggerAna,
+    fastSkim4L,
+    genAna,
     pileUpAna,
     vertexAna,
     lepAna,
