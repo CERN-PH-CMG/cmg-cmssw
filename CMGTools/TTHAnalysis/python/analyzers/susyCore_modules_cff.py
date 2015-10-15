@@ -301,14 +301,16 @@ jetAna = cfg.Analyzer(
     smearJets = False,
     shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts  
     alwaysCleanPhotons = False,
+    cleanGenJetsFromPhoton = False,
     cleanJetsFromFirstPhoton = False,
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
     doQG = False,
     do_mc_match = True,
-    cleanGenJetsFromPhoton = False,
     collectionPostFix = "",
-    calculateSeparateCorrections = True
+    calculateSeparateCorrections = True, # should be True if recalibrateJets is True, otherwise L1s will be inconsistent
+    calculateType1METCorrection  = False,
+    type1METParams = { 'jetPtThreshold':15., 'skipEMfractionThreshold':0.9, 'skipMuons':True },
     )
 
 #PFcharged jets analyzer
@@ -345,7 +347,8 @@ pfChargedCHSjetAna = cfg.Analyzer(
     do_mc_match = True,
     cleanGenJetsFromPhoton = False,
     collectionPostFix = "PFChargedCHS",
-    calculateSeparateCorrections = False
+    calculateSeparateCorrections = False,
+    calculateType1METCorrection  = False,
     )
 
 ## Fat Jets Analyzer (generic)
@@ -392,8 +395,10 @@ metAna = cfg.Analyzer(
     doMetNoMu = False,
     doMetNoEle = False,
     doMetNoPhoton = False,
-    recalibrate = False,
-    jetAnalyzerCalibrationPostFix = "",
+    recalibrate = False, # or "type1", or True
+    applyJetSmearing = False, # does nothing unless the jet smearing is turned on in the jet analyzer
+    old74XMiniAODs = False, # set to True to get the correct Raw MET when running on old 74X MiniAODs
+    jetAnalyzerPostFix = "",
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,
@@ -411,7 +416,9 @@ metNoHFAna = cfg.Analyzer(
     doMetNoEle = False,
     doMetNoPhoton = False,
     recalibrate = False,
-    jetAnalyzerCalibrationPostFix = "",
+    applyJetSmearing = False, # does nothing unless the jet smearing is turned on in the jet analyzer
+    old74XMiniAODs = False,   # can't be true, since MET NoHF wasn't there in old 74X MiniAODs
+    jetAnalyzerPostFix = "",
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,
