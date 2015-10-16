@@ -197,10 +197,6 @@ treeProducer.globalVariables.append(NTupleVariable("hbheFilterNew50ns", lambda e
 treeProducer.globalVariables.append(NTupleVariable("hbheFilterNew25ns", lambda ev: ev.hbheFilterNew25ns, int, help="new HBHE filter for 25 ns"))
 treeProducer.globalVariables.append(NTupleVariable("hbheFilterIso", lambda ev: ev.hbheFilterIso, int, help="HBHE iso-based noise filter"))
 
-HLT_Mu27_TkMu8\_v*
-HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v*
-HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*
-
 
 
 ##########################################################
