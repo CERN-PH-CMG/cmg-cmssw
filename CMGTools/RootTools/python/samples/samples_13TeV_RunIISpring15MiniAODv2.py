@@ -159,19 +159,16 @@ QCD_Pt800to1000_Mu5 = kreator.makeMCComponent("QCD_Pt800to1000_Mu5" , "/QCD_Pt-8
 QCD_Pt1000toInf_Mu5 = kreator.makeMCComponent("QCD_Pt1000toInf_Mu5" , "/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM"   , "CMS" , ".*root" , 10.4305*0.15544)
 
 QCD_Mu5 = [
-QCD_Pt15to20_Mu5,    
-QCD_Pt20to30_Mu5,    
-
-QCD_Pt50to80_Mu5,    
-QCD_Pt80to120_Mu5,   
-QCD_Pt120to170_Mu5,  
-
-QCD_Pt300to470_Mu5,  
+QCD_Pt15to20_Mu5,
+QCD_Pt20to30_Mu5,
+QCD_Pt50to80_Mu5,
+QCD_Pt80to120_Mu5,
+QCD_Pt120to170_Mu5,
+QCD_Pt300to470_Mu5,
 QCD_Pt470to600_Mu5,
-
 QCD_Pt800to1000_Mu5,
 QCD_Pt1000toInf_Mu5
-}
+]
 
 # qcd emenr
 QCD_Pt20to30_EMEnriched   = kreator.makeMCComponent("QCD_Pt20to30_EMEnriched"  ,"/QCD_Pt-20to30_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM"  , "CMS", ".*root", 557600000*0.0096)
