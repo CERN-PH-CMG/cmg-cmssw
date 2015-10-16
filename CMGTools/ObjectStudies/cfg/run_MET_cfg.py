@@ -3,7 +3,9 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 #-------- SAMPLES AND TRIGGERS -----------
 from CMGTools.RootTools.samples.samples_8TeVReReco_74X import * # <-- this one for the official sample
 from CMGTools.ObjectStudies.samples.samples_METPOG_private import * #<-- this one for the private re-reco
-from CMGTools.RootTools.samples.samples_13TeV_74X import *
+from CMGTools.RootTools.samples.samples_13TeV_74X import * #<--miniAOD v1
+from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import * #<--miniAOD v2
+
 from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
 
 from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_1mu_iso_50ns, triggers_mumu, triggers_ee, triggers_photon30, triggers_photon50, triggers_photon75, triggers_photon90, triggers_photon120
@@ -13,7 +15,7 @@ isDiJet=False
 isZSkim=False
 is1L=False
 isEle = False # default is diMuon
-isEarlyRun = False # to be used for the filters
+isEarlyRun = True # to be used for the filters
 is25ns = True
 
 #-------- HOW TO RUN
@@ -60,6 +62,11 @@ elif test==2:
 elif test==3:
     isZSkim=True
     selectedComponents = [ DYJetsToLL_M50_50ns,TTJets_50ns ]
+
+    comp=comp=TTJets_LO
+    comp.files = ['/afs/cern.ch/work/d/dalfonso/public/001F4F14-786E-E511-804F-0025905A60FE.root']
+    selectedComponents = [comp]
+
     for comp in selectedComponents:
         if isEle:
             comp.triggers = triggers_ee
@@ -67,6 +74,8 @@ elif test==3:
             comp.triggers = triggers_mumu
         comp.splitFactor = 1000
         comp.files = comp.files[:]
+#        comp.splitFactor = 1
+#        comp.files = comp.files[:1]
 
 elif test==4:
     is1L=False
@@ -104,17 +113,20 @@ elif test==13:
     isZSkim=True
     if isEle:
         if is25ns:
-#            selectedComponents = [ DoubleEG_Run2015C ]
-            selectedComponents = [ DoubleEG_Run2015D ]
+            if isEarlyRun:
+                selectedComponents = [ DoubleEG_Run2015D_05Oct ]
+            else:
+                selectedComponents = [ DoubleEG_Run2015D_Promptv4 ]
         else:
-            selectedComponents = [ DoubleEG_Run2015B ]
+            selectedComponents = [ DoubleEG_Run2015B_05Oct ]
     else:
         if is25ns:
-#            selectedComponents = [ DoubleMuon_Run2015C ]
-            selectedComponents = [ DoubleMuon_Run2015D ]
+           if isEarlyRun:
+               selectedComponents = [ DoubleMuon_Run2015D_05Oct ]
+           else:
+               selectedComponents = [ DoubleMuon_Run2015D_Promptv4 ]
         else:
-            selectedComponents = [ DoubleMuon_Run2015B ]
-
+            selectedComponents = [ DoubleMuon_Run2015B_05Oct ]
     for comp in selectedComponents:
 #        comp.splitFactor = 1
 #        comp.files = comp.files[:]
@@ -145,10 +157,13 @@ elif test==14:
 ### this is for the QCDlike
 elif test==15:
     isDiJet=True
-    if isEarlyRun:
-        selectedComponents = [ JetHT_Run2015B_17Jul, HTMHT_Run2015B_17Jul, MET_Run2015B_17Jul ]
+    if is25ns:
+        if isEarlyRun:
+            selectedComponents = [ JetHT_Run2015D_05Oct, HTMHT_Run2015D_05Oct, MET_Run2015D_05Oct ]
+        else:
+            selectedComponents = [ JetHT_Run2015D_Promptv4,HTMHT_Run2015D_Promptv4, MET_Run2015D_Promptv4 ]
     else:
-        selectedComponents = [ JetHT_Run2015B, HTMHT_Run2015B, MET_Run2015B ]
+        selectedComponents = [ JetHT_Run2015B_05Oct ]
     for comp in selectedComponents:
         comp.splitFactor = 1000
         comp.files = comp.files[:]
@@ -168,11 +183,12 @@ elif test==15:
 elif test==16:
     is1PH=True
     if is25ns:
-#        selectedComponents = [ SinglePhoton_Run2015C ]
-        selectedComponents = [ SinglePhoton_Run2015D ]
+        if isEarlyRun:
+            selectedComponents = [ SinglePhoton_Run2015D_05Oct ]
+        else:
+            selectedComponents = [ SinglePhoton_Run2015D_Promptv4 ]
     else:
-        selectedComponents = [ SinglePhoton_Run2015B ]
-
+            selectedComponents = [ SinglePhoton_Run2015B_05Oct ]
     for comp in selectedComponents:
         comp.triggers = triggers_photon30 + triggers_photon50 + triggers_photon75 + triggers_photon90 + triggers_photon120
         comp.splitFactor = 1
@@ -366,7 +382,7 @@ preprocessor = CmsswPreprocessor(preprocessorFile)
 config = cfg.Config( components = selectedComponents,
                      sequence = metSequence,
                      services = [output_service],
-                     preprocessor=preprocessor, # comment if pre-processor non needed
+#                     preprocessor=preprocessor, # comment if pre-processor non needed
 #                     events_class = event_class)
                      events_class = Events)
 
