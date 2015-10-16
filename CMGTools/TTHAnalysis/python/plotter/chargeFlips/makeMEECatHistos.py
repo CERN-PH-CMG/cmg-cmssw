@@ -84,14 +84,25 @@ def makePlotAndCutSpecs():
 
 def main():
     from pprint import pprint
-    for name, pspec, cspec in makePlotAndCutSpecs():
-        print '... processing', name
+
+    ofile = ROOT.TFile.Open("meecathistos.root","RECREATE")
+    ofile.cd()
+
+    allspecs = makePlotAndCutSpecs()
+    for n,(name, pspec, cspec) in enumerate(allspecs):
+        print '... processing %d/%d: %s' %(n,len(allspecs),name)
 
         pmap = mca.getPlots(pspec,cspec.allCuts(),makeSummary=False)
+        for proc in ['DY', 'data']:
+            ofile.cd()
+            hname = "%s_%s"%(proc,name)
+            ohisto = pmap[proc].Clone(hname)
+            ohisto.SetDirectory(0)
+            ohisto.Write(hname, ROOT.TObject.kOverwrite)
 
-        print type(pmap['data'])
-        print pmap['DY'].GetEntries()
-        break
+    ofile.Write()
+    ofile.Close()
+
     return 0
 
 

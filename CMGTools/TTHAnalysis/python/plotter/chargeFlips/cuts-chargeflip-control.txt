@@ -6,7 +6,7 @@ pt2010       : LepGood_pt[0]>20 && LepGood_pt[1]>10
 
 elel         : abs(LepGood_pdgId[0]) == 11 && abs(LepGood_pdgId[1]) == 11
 
-leptonMVA    : min(LepGood_mvaTTH[0],LepGood_mvaTTH[1])> 0.9
+leptonMVA    : LepGood_mvaTTH[0]>0.9 &&  LepGood_mvaTTH[1]>0.9
 
 minMllAFAS   : (minMllAFAS > 60 && minMllAFAS < 120)
 tight-charge : LepGood_tightCharge[0] > 1 && LepGood_tightCharge[1] > 1
