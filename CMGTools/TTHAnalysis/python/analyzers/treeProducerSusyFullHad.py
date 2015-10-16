@@ -11,7 +11,8 @@ susyFullHad_globalVariables = susyCore_globalVariables + [
     ##--------------------------------------------------
     ## MET filter information (temporary)
     ##--------------------------------------------------
-    NTupleVariable("Flag_HBHENoiseFilter", lambda ev: ev.hbheFilterNew, help="HBEHE temporary filter decision"),
+    NTupleVariable("Flag_HBHENoiseFilter", lambda ev: ev.hbheFilterNew, help="HBEHE baseline temporary filter decision"),
+    NTupleVariable("Flag_HBHEIsoNoiseFilter", lambda ev: ev.hbheFilterIso, help="HBEHE isolation temporary filter decision"),
     
     ##--------------------------------------------------
     ## energy sums
