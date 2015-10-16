@@ -317,6 +317,34 @@ class MT2Analyzer( Analyzer ):
             
                 self.zll_mt2_Xj = self.getMT2Hemi(event,objectsXjc,event.zll_met,self.cfg_ana.collectionPostFix,"_Xj_zll")
 
+
+## ===> rl_MT2
+        
+        setattr(event, "mt2"+self.cfg_ana.collectionPostFix+"_rl", -999)
+        setattr(event, "pseudoJet1"+self.cfg_ana.collectionPostFix+"_rl", ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 ))
+        setattr(event, "pseudoJet2"+self.cfg_ana.collectionPostFix+"_rl", ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 ))
+                
+        if hasattr(event, 'rl_met'):
+
+            csLeptons = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta()) < 2.5 ]
+            
+            if len(csLeptons)==1 and len(objects40jc)>=2:
+            
+                self.rl_mt2 = self.getMT2Hemi(event,objects40jc,event.rl_met,self.cfg_ana.collectionPostFix,"_rl")
+
+        setattr(event, "mt2"+self.cfg_ana.collectionPostFix+"_Xj_rl", -999)
+        setattr(event, "pseudoJet1"+self.cfg_ana.collectionPostFix+"_Xj_rl", ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 ))
+        setattr(event, "pseudoJet2"+self.cfg_ana.collectionPostFix+"_Xj_rl", ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 ))
+
+        if hasattr(event, 'rl_met'):
+
+            csLeptons = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta()) < 2.5 ]
+            
+            if len(csLeptons)==1 and len(objectsXjc)>=2:
+            
+                self.rl_mt2_Xj = self.getMT2Hemi(event,objectsXjc,event.rl_met,self.cfg_ana.collectionPostFix,"_Xj_rl")
+
+
 ## ===> zllmt_MT2
         
         setattr(event, "mt2"+self.cfg_ana.collectionPostFix+"_zllmt", -999)
