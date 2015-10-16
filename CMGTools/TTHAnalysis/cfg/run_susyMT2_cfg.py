@@ -325,10 +325,8 @@ if test==0:
     testComponent = kreator.makeMCComponent("testComponent", "/GJets_HT-200to400_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",489.9)
     samples=[testComponent]
 
-    dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data"
-    #json=dataDir+'/json/Cert_Run2012ABCD_22Jan2013ReReco.json'
-    #json=dataDir+'/json/json_DCSONLY_Run2015B.txt'
-    json=dataDir+'/json/json_DCSONLY.txt'
+    json='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/DCSOnly/json_DCSONLY.txt'
+
     from CMGTools.TTHAnalysis.setup.Efficiencies import *
 
     for comp in samples:
@@ -371,6 +369,7 @@ elif test==1:
 #    from CMGTools.RootTools.samples.samples_13TeV_74X import *
     from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import *
 #    from CMGTools.RootTools.samples.samples_8TeVReReco_74X import *
+    from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
 
 #    comp=GJets_HT200to400
 #    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/gjets_ht200to400_miniaodsim_fix.root']
@@ -386,9 +385,13 @@ elif test==1:
 #    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/SYNCHfiles/0066F143-F8FD-E411-9A0B-D4AE526A0D2E.root']
 
     #synche file MC (v2 of the miniAOD)
-    comp=comp=TTJets_LO
-    comp.files = ['/afs/cern.ch/work/d/dalfonso/public/001F4F14-786E-E511-804F-0025905A60FE.root']
+#    comp=TTJets_LO
+#    comp.files = ['/afs/cern.ch/work/d/dalfonso/public/001F4F14-786E-E511-804F-0025905A60FE.root']
    
+    comp=JetHT_Run2015D_Promptv4
+    comp.files = ['/afs/cern.ch/work/d/dalfonso/public/8ED4BA45-706D-E511-8D36-02163E014418.root']
+    comp.json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/DCSOnly/json_DCSONLY.txt'
+
     selectedComponents = [comp]
     comp.splitFactor = 1
 #    comp.triggers = triggers_HT900 + triggers_HTMET + triggers_photon155 + triggers_1mu_isolow + triggers_MT2_mumu + triggers_MT2_ee + triggers_MT2_mue # to apply trigger skimming
