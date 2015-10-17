@@ -76,7 +76,7 @@ useBatch = 0;
 batchQueue = "1nh";
 
 WMassNSteps = "5"; # 60 -- N of mass steps above and below the central
-etaMuonNSteps = "1"; # 5
+etaMuonNSteps = "1"; # 5 <-- lenght of the etaMaxMuons
 etaMaxMuons = "0.9"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
 runWanalysis = 0;
@@ -87,6 +87,10 @@ recreateSubPrograms = 0; # 1: Recompiles run?analysis.o and remakes run?analysis
 
 mergeSigEWKbkg = 0;
 removeChunks = 0; # 0: Don't remove chunks after merge - 1: Remove them
+
+#######################
+### FIT ###
+#######################
 
 ## PERFORM W or Z MASS FIT
 fit_W_or_Z = "Z" # "W,Z" or "W" or "Z"
@@ -109,7 +113,7 @@ run_Z_MCandDATAcomparisons_stack = 0;
 run_W_MCandDATAcomparisons_stack = 0;
 
 #######################
-## OBSOLETE STUFF
+## OBSOLETE STEERING PARAMETERS
 #######################
 
 ## OLD FIT
