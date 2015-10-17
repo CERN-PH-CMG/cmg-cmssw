@@ -1,9 +1,24 @@
 #!/usr/bin/env python
 
-import string, os, shutil, sys, subprocess
+import string, os, shutil, sys, subprocess, ROOT
+
+def batch_job_is_running(jobname,chunk):
+  job_running = os.popen("bjobs -w | grep "+jobname).read()
+  job_running = job_running.replace("[","_")
+  job_running = job_running.replace("]","_")
+  jobname = jobname+"_"+chunk+"_"
+  if jobname in job_running:
+    return True
+  else: 
+    return False
 
 def file_exists_and_is_not_empty(fpath):
-  return (os.path.isfile(fpath) and (os.path.getsize(fpath) > 0))
+  if not (os.path.isfile(fpath) and (os.path.getsize(fpath) > 0)): return False
+  if fpath.endswith('.root'):
+    f = ROOT.TFile(fpath)
+    if f.GetNkeys() == 0 or f.TestBit(ROOT.TFile.kRecovered) or f.IsZombie():
+      return False
+  return True
 
 ## ==============================================================
 ## STEERING PARAMETERS
@@ -25,7 +40,7 @@ lhapdf_path="/afs/cern.ch/work/p/perrozzi/private/WMassMC/lhapdf/"
 use_PForNoPUorTKmet = 2; # 0:PF, 1:NOPU, 2:TK
 use_LHE_weights = 0; # 0=no, 1=yes
 usePileupSF = 1; # 0=no, 1=yes
-useEffSF = 2; # 0=no, 1=MuonPOG, 2=Heiner
+useEffSF = 2; # 0=no, 1=MuonPOG, 2=Heiner all, 3=Heiner no tight, 4=Heiner no iso, 5=Heiner no tight subleading mu, 6=Heiner no hlt
 usePtSF = 0; # Boson pT reweighting: -1=none, 0=data, 1...=other options
 
 ### MUON
@@ -37,9 +52,9 @@ WlikeCharge = 1; # Charge of the Wlike (+1,-1)
 
 ### RECOIL
 useRecoilCorr = 2; # 0=none, 1=yes, 2=PDFw3gaus
-RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0; # SYST VARIATIONS: 0=NONE, 1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p1, 6= U1 MC p1
+RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0; # SYST VARIATIONS: 0=NONE, RAPBIN 1 (1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p1, 6= U1 MC p1) RAPBIN 2 (7= U1 DATA p1, 8= U1 DATA p2, 9= U2 DATA, 10= U1 MC p1, 11= U1 MC p1, 12= U1 MC p1)
 RecoilCorrVarDiagoParSigmas = 0; # Number of sigmas for recoil syst
-correctToMadgraph = 0; # 0: uses DATA as target - 1: uses Madgraph as target
+correctToMadgraph = 0; # 0: uses DATA as target --- 1: uses Madgraph as target (also needed for madNoCorr)
 
 usePhiMETCorr = 0; # 0=none, 1=yes
 
@@ -62,6 +77,7 @@ IS_MC_CLOSURE_TEST= 0;
 indip_normalization_lumi_MC = 0; # independent normalization of MC in fb-1 (otherwise normalized to DATA)
 intLumi_MC_fb = 81293448/31314/1e3;# data = 4.7499 fb-1 prescaled trigger, 5.1 fb-1 unprescaled; works only if indip_normalization_lumi_MC is TRUE
 useAlsoGenPforSig= 1;
+normalize_MC_to_half_of_the_data = 1 # useful for W-like because we use half of it to calibrate the recoil
 
 ZMassCentral_MeV = "91188"; # 91.1876
 WMassCentral_MeV = "80398"; # 80.385
@@ -86,7 +102,7 @@ noLSFJobOutput = 0; # 1: Puts all the batch logs in a single file
 recreateSubPrograms = 0; # 1: Recompiles run?analysis.o and remakes run?analysis.sh
 
 mergeSigEWKbkg = 0;
-removeChunks = 0; # 0: Don't remove chunks after merge - 1: Remove them
+removeChunks = 0; # 0: Don't remove chunks after merge --- 1: Remove them
 
 #######################
 ### FIT ###
@@ -118,11 +134,11 @@ run_W_MCandDATAcomparisons_stack = 0;
 
 ## OLD FIT
 runPrepareDataCards = 0;     # TEMPLATES ARE IN THE LOCAL FOLDER, PSEUDO-DATA IN THE SYsT FOLDER
-if  (use_PForNoPUorTKmet==0): # 0:PF, 1:NOPU, 2:TK
+if  (int(use_PForNoPUorTKmet)==0): # 0:PF, 1:NOPU, 2:TK
   sysfoldmet="_pfmet";
-elif(use_PForNoPUorTKmet==1): # 0:PF, 1:NOPU, 2:TK
+elif(int(use_PForNoPUorTKmet)==1): # 0:PF, 1:NOPU, 2:TK
   sysfoldmet="_pfnopu";
-elif(use_PForNoPUorTKmet==2): # 0:PF, 1:NOPU, 2:TK
+elif(int(use_PForNoPUorTKmet)==2): # 0:PF, 1:NOPU, 2:TK
   sysfoldmet="_tkmet";
 
 DataCards_systFromFolder=outfolder_prefix+sysfoldmet+"_RochCorr_RecoilCorr_EffHeinerSFCorr_PileupSFCorr" # evaluate systematics wrt folder (or leave it empty)
@@ -148,35 +164,35 @@ else:
 
 # if usePhiMETCorr != 0 \
 # or syst_ewk_Alcaraz != 0
-if RecoilCorrVarDiagoParU1orU2fromDATAorMC != 0 \
-or correctToMadgraph !=0 \
-or LHAPDF_reweighting_members !="1" \
-or MuonCorrGlobalScaleNsigma != 0 \
-or MuonCorrKalmanNvarsNsigma != 0 :
+if int(RecoilCorrVarDiagoParU1orU2fromDATAorMC) != 0 \
+or int(correctToMadgraph) !=0 \
+or str(LHAPDF_reweighting_members) !="1" \
+or int(MuonCorrGlobalScaleNsigma) != 0 \
+or int(MuonCorrKalmanNvarsNsigma) != 0 :
   print "Computing a systematic: number of mass steps is set to 0\n"
   WMassNSteps = "0"
 
-if RecoilCorrVarDiagoParU1orU2fromDATAorMC != 0 \
-and RecoilCorrVarDiagoParSigmas == 0 :
+if int(RecoilCorrVarDiagoParU1orU2fromDATAorMC) != 0 \
+and int(RecoilCorrVarDiagoParSigmas) == 0 :
   print "ERROR: Selected recoil correction set " + str(RecoilCorrVarDiagoParU1orU2fromDATAorMC) + " with 0 sigmas"
   print "Check the 'RecoilCorrVarDiagoParSigmas' variable"
   sys.exit(1)
 
-if (WlikeCharge != 1) and (WlikeCharge != -1) :
+if (int(WlikeCharge) != 1) and (int(WlikeCharge) != -1) :
   print "ERROR: Asked for a Wlike of charge", WlikeCharge
   print "Check the 'WlikeCharge' variable"
   sys.exit(1)
 
 # Muon internal (Zanalisys wants them this way)
 MuonCorrNsigma = 0
-MuonCorrKalmanNparameters = 1; # number of muon fit params (1: no eigen var - 45: KalmanCorrectorParam)
-if(MuonCorrGlobalScaleNsigma!=0 and MuonCorrKalmanNvarsNsigma!=0):
+MuonCorrKalmanNparameters = 1; # number of muon fit params (1: no eigen var --- 45: KalmanCorrectorParam)
+if(int(MuonCorrGlobalScaleNsigma)!=0 and int(MuonCorrKalmanNvarsNsigma)!=0):
   print "Muon global scale and fit eigenvalues cannot be varied simultaneously (with the current Zanalysis.C)"
   sys.exit(1)
-if(MuonCorrGlobalScaleNsigma!=0):
+if(int(MuonCorrGlobalScaleNsigma)!=0):
   MuonCorrKalmanNparameters = 1
   MuonCorrNsigma = MuonCorrGlobalScaleNsigma
-if(MuonCorrKalmanNvarsNsigma!=0):
+if(int(MuonCorrKalmanNvarsNsigma)!=0):
   MuonCorrKalmanNparameters=45
   MuonCorrNsigma = MuonCorrKalmanNvarsNsigma
 
@@ -184,71 +200,77 @@ if(MuonCorrKalmanNvarsNsigma!=0):
 
 outfolder_name = outfolder_prefix
 
-if (WlikeCharge == 1):
+if (int(WlikeCharge) == 1):
   outfolder_name+="_muPos"
 else:
   outfolder_name+="_muNeg"
 
-if(use_PForNoPUorTKmet==0): # 0:PF, 1:NOPU, 2:TK
+if(int(use_PForNoPUorTKmet)==0): # 0:PF, 1:NOPU, 2:TK
   outfolder_name+="_pfmet";
-elif(use_PForNoPUorTKmet==1): # 0:PF, 1:NOPU, 2:TK
+elif(int(use_PForNoPUorTKmet)==1): # 0:PF, 1:NOPU, 2:TK
   outfolder_name+="_pfnopu";
-elif(use_PForNoPUorTKmet==2): # 0:PF, 1:NOPU, 2:TK
+elif(int(use_PForNoPUorTKmet)==2): # 0:PF, 1:NOPU, 2:TK
   outfolder_name+="_tkmet";
 
-if(use_LHE_weights==1):
+if(int(use_LHE_weights)==1):
   outfolder_name+="_LHEweights";
 
-if(IS_MC_CLOSURE_TEST==1):
+if(int(IS_MC_CLOSURE_TEST)==1):
   outfolder_name+="_MCclosureTest";
   # useEffSF=0;
   # usePtSF=0;
   # usePileupSF=0;
 
-if(syst_ewk_Alcaraz>-1):
+if(int(syst_ewk_Alcaraz)>-1):
   outfolder_name+="_ewk"+str(syst_ewk_Alcaraz);
 
-if  (useMomentumCorr==1):
+if  (int(useMomentumCorr)==1):
   outfolder_name+="_RochCorr";
-elif(useMomentumCorr==2):
+elif(int(useMomentumCorr)==2):
   outfolder_name+="_MuscleFitCorr";
-elif(useMomentumCorr==3):
+elif(int(useMomentumCorr)==3):
   outfolder_name+="_KalmanCorr";
-elif(useMomentumCorr==4):
+elif(int(useMomentumCorr)==4):
   outfolder_name+="_KalmanCorrParam";
 
-if(useMomentumCorr!=0):
-  if(MuonCorrGlobalScaleNsigma != 0):
+if(int(useMomentumCorr)!=0):
+  if(int(MuonCorrGlobalScaleNsigma) != 0):
     outfolder_name+="_globalScaleSigma"+str(MuonCorrGlobalScaleNsigma)
-  if(MuonCorrKalmanNvarsNsigma != 0):
+  if(int(MuonCorrKalmanNvarsNsigma) != 0):
     outfolder_name+="_KalmanVarsNSigma"+str(MuonCorrKalmanNvarsNsigma)
 
-if(usePhiMETCorr==1):
+if(int(usePhiMETCorr)==1):
   outfolder_name+="_phiMETcorr";
 
-if(useRecoilCorr>0):
+if(int(useRecoilCorr)>0):
   outfolder_name+="_RecoilCorr"+str(useRecoilCorr);
-  if(correctToMadgraph):
+  if(int(correctToMadgraph)):
     outfolder_name+="_toMad";
-  if  (RecoilCorrVarDiagoParU1orU2fromDATAorMC==1):
+  if  (int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)==1):
     outfolder_name+="_U1Datap1";
-  elif(RecoilCorrVarDiagoParU1orU2fromDATAorMC==2):
+  elif(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)==2):
     outfolder_name+="_U1Datap2";
-  elif(RecoilCorrVarDiagoParU1orU2fromDATAorMC==3):
+  elif(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)==3):
     outfolder_name+="_U2Data";
-  elif(RecoilCorrVarDiagoParU1orU2fromDATAorMC==4):
+  elif(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)==4):
     outfolder_name+="_U1MCp1";
-  elif(RecoilCorrVarDiagoParU1orU2fromDATAorMC==5):
+  elif(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)==5):
     outfolder_name+="_U1MCp2";
-  elif(RecoilCorrVarDiagoParU1orU2fromDATAorMC==6):
+  elif(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)==6):
     outfolder_name+="_U2MC";
-  if  (RecoilCorrVarDiagoParSigmas!=0):
+  if  (int(RecoilCorrVarDiagoParSigmas)!=0):
+    if(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)<7): outfolder_name+="_Rap1";
+    else: outfolder_name+="_Rap2";
     outfolder_name+="_RecCorrNSigma_"+str(RecoilCorrVarDiagoParSigmas)
 
-if(useEffSF==1): outfolder_name+="_EffSFCorr";
-if(useEffSF==2): outfolder_name+="_EffHeinerSFCorr";
+if(int(useEffSF)==1): outfolder_name+="_EffSFCorr";
+if(int(useEffSF)>=2): outfolder_name+="_EffHeinerSFCorr";
+  if(int(useEffSF)==3): outfolder_name+="_noTight";
+  if(int(useEffSF)==4): outfolder_name+="_noIso";
+  if(int(useEffSF)==5): outfolder_name+="_noTightSub";
+  if(int(useEffSF)==6): outfolder_name+="_noHLT";
 if(int(usePtSF)!=-1): outfolder_name+="_PtSFCorr"+str(usePtSF);
-if(usePileupSF==1): outfolder_name+="_PileupSFCorr";
+if(int(usePileupSF)==1): outfolder_name+="_PileupSFCorr";
 
 ## END INITIAL CHECKS AND FOLDERNAME BUILDING
 ## ============================================================== #
@@ -272,7 +294,7 @@ gen_mass_value_MeV  =   [  0  ,  80398 ,        80398 ,         80419,          
 contains_LHE_weights =  [  0  ,      1 ,            1 ,             0,                0 ,           1,             0 ,              0 ,        0 ,         0,         0,        0,       0,     0,      0,     0,        0,        0,        0 ];
 nsamples=len(sample);
 
-if(use_LHE_weights==0):
+if(int(use_LHE_weights)==0):
   for i in range(len(contains_LHE_weights)):
     contains_LHE_weights[i] = 0
 
@@ -322,12 +344,6 @@ for i in xrange(-int(WMassNSteps),int(WMassNSteps)+1):
 
 # print Wmass_values_array
 # print Zmass_values_array
-
-##################################################
-### TEMP: WAITING TO RECOVER THE FULL DATASET ####
-##################################################
-Nevts[DYJetsPow] /= 2
-##################################################
 
 fWana_str = [
   ntuple_basepath+"DATA/WTreeProducer_tree_RecoSkimmed.root",
@@ -453,7 +469,7 @@ if(runWanalysis or runZanalysis):
         print "skipping",sample[i],"\twhich is not in {",resubmit_sample,"}"
         continue
 
-    if(IS_MC_CLOSURE_TEST and (sample[i]!="WJetsMadSig" and sample[i]!="DYJetsPow" and sample[i]!="DYJetsMadSig")):
+    if(int(IS_MC_CLOSURE_TEST) and (sample[i]!="WJetsMadSig" and sample[i]!="DYJetsPow" and sample[i]!="DYJetsMadSig")):
       continue; # TEMPORARY
 
     sampleID= "output_"+sample[i];
@@ -463,9 +479,9 @@ if(runWanalysis or runZanalysis):
 
     WfileDATA= fWana_str[i];
     ZfileDATA= fZana_str[i];
-    if( ("WJetsMadSig" in sample[i] or "WJetsPow" in sample[i]) and useAlsoGenPforSig): WfileDATA.replace("_SignalRecoSkimmed","");
+    if( ("WJetsMadSig" in sample[i] or "WJetsPow" in sample[i]) and int(useAlsoGenPforSig)): WfileDATA.replace("_SignalRecoSkimmed","");
     else:
-      if( ("DYJetsPow" in sample[i]  or "DYJetsMadSig" in sample[i]) and useAlsoGenPforSig): ZfileDATA.replace("_SignalRecoSkimmed","");
+      if( ("DYJetsPow" in sample[i]  or "DYJetsMadSig" in sample[i]) and int(useAlsoGenPforSig)): ZfileDATA.replace("_SignalRecoSkimmed","");
 
     if(CS_pb[i] >0): int_lumi_fb[i] = Nevts[i]/CS_pb[i]/1e3;
 
@@ -478,8 +494,10 @@ if(runWanalysis or runZanalysis):
       # WfileDATA_lumi_SF = int_lumi_fb[DATA]/int_lumi_fb[i]
     # if IS_MC_CLOSURE_TEST:
 
-    if indip_normalization_lumi_MC:
+    if int(indip_normalization_lumi_MC):
       WfileDATA_lumi_SF = intLumi_MC_fb/int_lumi_fb[i]
+    elif int(normalize_MC_to_half_of_the_data)>0 and sample[i]!="DATA":
+      WfileDATA_lumi_SF = (int_lumi_fb[DATA]/2)/int_lumi_fb[i]
     else:
       WfileDATA_lumi_SF = int_lumi_fb[DATA]/int_lumi_fb[i]
 
@@ -536,9 +554,9 @@ if(runWanalysis or runZanalysis):
           if (chunk==nChuncks-1):
             ev_fin= nEntries
           print chunk,ev_ini,ev_fin
-          if not file_exists_and_is_not_empty("Wanalysis_chunk"+str(chunk)+".root"):
+          if not file_exists_and_is_not_empty("Wanalysis_chunk"+str(chunk)+".root") and not batch_job_is_running("Wanalysis_"+outfolder_name+"_"+sample[i],str(chunk)):
             # Create script if needed
-            if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runWanalysis.sh"):
+            if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runWanalysis_"+str(chunk)+".sh"):
               text_file = open("runWanalysis_"+str(chunk)+".sh", "w")
               text_file.write("cd "+code_dir+"\n")
               text_file.write("eval `scramv1 runtime -sh`\n")
@@ -583,9 +601,9 @@ if(runWanalysis or runZanalysis):
         nevents = 2e5
         if ("DYJetsMadSig" in sample[i]  or "DYJetsPow" in sample[i]):
           nevents = 3e4
-          if useRecoilCorr>0 and RecoilCorrVarDiagoParSigmas!=0:
+          if int(useRecoilCorr)>0 and int(RecoilCorrVarDiagoParSigmas)!=0:
             nevents = nevents/3
-          if (MuonCorrKalmanNvarsNsigma!=0):
+          if (int(MuonCorrKalmanNvarsNsigma)!=0):
             nevents = nevents/3
 
         os.chdir(outputSamplePath)
@@ -602,7 +620,7 @@ if(runWanalysis or runZanalysis):
           if (chunk==nChuncks-1):
             ev_fin= nEntries
           print chunk,ev_ini,ev_fin
-          if not file_exists_and_is_not_empty("Zanalysis_chunk"+str(chunk)+".root"):
+          if not file_exists_and_is_not_empty("Zanalysis_chunk"+str(chunk)+".root") and not batch_job_is_running("Zanalysis_"+outfolder_name+"_"+sample[i],str(chunk)):
             # Create scripts if needed
             if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runZanalysis_"+str(chunk)+".sh"):
               text_file = open("runZanalysis_"+str(chunk)+".sh", "w")

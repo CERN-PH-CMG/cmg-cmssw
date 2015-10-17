@@ -247,6 +247,22 @@ double RecoilCorrector::calculate(int iMet,double iEPt,double iEPhi,double iWPhi
   return lMY;
 
 }
+
+void RecoilCorrector::reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2)
+{
+  // reset all to zero
+  for(int ipar=0; ipar<RecoilCorrParMaxU1; ipar++){
+    TString eig = Form("eig_eig%d",ipar);
+    wU1[1][fJet]->var(eig)->setVal(0);
+    wU1[2][fJet]->var(eig)->setVal(0);
+  }
+  for(int ipar=0; ipar<RecoilCorrParMaxU2; ipar++){
+    TString eig = Form("eig_eig%d",ipar);
+    wU2[1][fJet]->var(eig)->setVal(0);
+    wU2[2][fJet]->var(eig)->setVal(0);
+  }
+}
+
 //-----------------------------------------------------------------------------------------------------------------------------------------
 void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int njet, bool doSingleGauss, int mytype) {
 
@@ -307,20 +323,21 @@ TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
 TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
 //                     RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1, 
 //                     RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2 
-int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas, int mytype, int fJet
-,double &pU1,double &pU2
+int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,
+int mytype, int fJet,
+double &pU1,double &pU2
 ) {
 
-  bool dodebug=false;
-  bool doIterativeMet = false;
-  bool invGraph = true;
-  bool doSingleGauss = false;
-  bool doTriGauss = true;
-  bool doApplyCorr = false; // smearing along the recoil vector
-  bool doOnlyU1 = false;
-  bool doOnlyU2 = true;
-  bool writeTree = false;
-  bool doClosure = false;
+  //bool dodebug=false;
+  //bool doIterativeMet = false;
+  //bool invGraph = true;
+  //bool doSingleGauss = false;
+  //bool doTriGauss = true;
+  //bool doApplyCorr = false; // smearing along the recoil vector
+  //bool doOnlyU1 = false;
+  //bool doOnlyU2 = true;
+  //bool writeTree = false;
+  //bool doClosure = false;
 
   double lRescale  = sqrt((TMath::Pi())/2.);
   //  double lRescale  = 1;     // for squares
@@ -387,34 +404,6 @@ int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int Recoi
     // << " RecoilCorrVarDiagoParN=="<<RecoilCorrVarDiagoParN
     // << " RecoilCorrVarDiagoParSigmas=="<<RecoilCorrVarDiagoParSigmas
     // <<endl;
-
-  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==1 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==4){
-    if(RecoilCorrVarDiagoParN < 0 || RecoilCorrVarDiagoParN > 8){
-      cout << "ERROR !!!!! RecoilCorrVarDiagoParU1orU2fromDATAorMC= " << RecoilCorrVarDiagoParU1orU2fromDATAorMC << " RecoilCorrVarDiagoParN= " << RecoilCorrVarDiagoParN << endl;
-    }
-  }
-  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==2 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==5){
-    if(RecoilCorrVarDiagoParN < 9 || RecoilCorrVarDiagoParN > 20){
-      cout << "ERROR !!!!! RecoilCorrVarDiagoParU1orU2fromDATAorMC= " << RecoilCorrVarDiagoParU1orU2fromDATAorMC << " RecoilCorrVarDiagoParN= " << RecoilCorrVarDiagoParN << endl;
-    }
-  }
-  if(RecoilCorrVarDiagoParU1orU2fromDATAorMC==3 || RecoilCorrVarDiagoParU1orU2fromDATAorMC==6){
-    if(RecoilCorrVarDiagoParN < 0 || RecoilCorrVarDiagoParN > 14){
-      cout << "ERROR !!!!! RecoilCorrVarDiagoParU1orU2fromDATAorMC= " << RecoilCorrVarDiagoParU1orU2fromDATAorMC << " RecoilCorrVarDiagoParN= " << RecoilCorrVarDiagoParN << endl;
-    }
-  }
-  
-  // reset all to zero
-  for(int ipar=0; ipar<21; ipar++){
-    TString eig = Form("eig_eig%d",ipar);
-    wU1[1][fJet]->var(eig)->setVal(0);
-    wU1[2][fJet]->var(eig)->setVal(0);
-  }
-  for(int ipar=0; ipar<15; ipar++){
-    TString eig = Form("eig_eig%d",ipar);
-    wU2[1][fJet]->var(eig)->setVal(0);
-    wU2[2][fJet]->var(eig)->setVal(0);
-  }
 
   uint DataOrMcMap[] = {0,1,1,1,2,2,2};
   uint DataOrMc = DataOrMcMap[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
