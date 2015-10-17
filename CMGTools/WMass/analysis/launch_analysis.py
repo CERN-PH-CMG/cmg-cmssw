@@ -265,10 +265,10 @@ if(int(useRecoilCorr)>0):
 
 if(int(useEffSF)==1): outfolder_name+="_EffSFCorr";
 if(int(useEffSF)>=2): outfolder_name+="_EffHeinerSFCorr";
-  if(int(useEffSF)==3): outfolder_name+="_noTight";
-  if(int(useEffSF)==4): outfolder_name+="_noIso";
-  if(int(useEffSF)==5): outfolder_name+="_noTightSub";
-  if(int(useEffSF)==6): outfolder_name+="_noHLT";
+if(int(useEffSF)==3): outfolder_name+="_noTight";
+if(int(useEffSF)==4): outfolder_name+="_noIso";
+if(int(useEffSF)==5): outfolder_name+="_noTightSub";
+if(int(useEffSF)==6): outfolder_name+="_noHLT";
 if(int(usePtSF)!=-1): outfolder_name+="_PtSFCorr"+str(usePtSF);
 if(int(usePileupSF)==1): outfolder_name+="_PileupSFCorr";
 
