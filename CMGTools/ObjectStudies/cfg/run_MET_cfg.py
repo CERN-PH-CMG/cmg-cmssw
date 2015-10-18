@@ -3,7 +3,7 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 #-------- SAMPLES AND TRIGGERS -----------
 from CMGTools.RootTools.samples.samples_8TeVReReco_74X import * # <-- this one for the official sample
 from CMGTools.ObjectStudies.samples.samples_METPOG_private import * #<-- this one for the private re-reco
-from CMGTools.RootTools.samples.samples_13TeV_74X import * #<--miniAOD v1
+###from CMGTools.RootTools.samples.samples_13TeV_74X import * #<--miniAOD v1
 from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import * #<--miniAOD v2
 
 from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
@@ -129,7 +129,7 @@ elif test==13:
             selectedComponents = [ DoubleMuon_Run2015B_05Oct ]
     for comp in selectedComponents:
 #        comp.splitFactor = 1
-#        comp.files = comp.files[:]
+#        comp.files = comp.files[5:10]
 #        comp.fineSplitFactor = 1
         comp.splitFactor = 1000
         comp.files = comp.files[:]
@@ -138,7 +138,7 @@ elif test==13:
         else:
             comp.triggers = triggers_mumu
         if is25ns:
-            comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-257599_13TeV_PromptReco_Collisions15_25ns_JSON.json"
+            comp.json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258714_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
         else:
             comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON_v2.txt"
         comp.intLumi= 0.04003
@@ -168,7 +168,7 @@ elif test==15:
         comp.splitFactor = 1000
         comp.files = comp.files[:]
         if is25ns:
-            comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-257599_13TeV_PromptReco_Collisions15_25ns_JSON.json"
+            comp.json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258714_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
         else:
             comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON_v2.txt"
         comp.intLumi= 0.04003
@@ -194,7 +194,7 @@ elif test==16:
         comp.splitFactor = 1
         comp.files = comp.files[:]
         if is25ns:
-            comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-257599_13TeV_PromptReco_Collisions15_25ns_JSON.json"
+            comp.json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258714_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
         else:
             comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON_v2.txt"
         comp.intLumi= 0.04003
@@ -205,7 +205,7 @@ elif test==16:
 elif test==23:
     isZSkim=True
     is25ns=True
-    selectedComponents = [ DYJetsToLL_M50 ]
+    selectedComponents = [ DYJetsToLL_M50, TTJets_DiLepton ]
     for comp in selectedComponents:
         if isEle:
             comp.triggers = triggers_ee
