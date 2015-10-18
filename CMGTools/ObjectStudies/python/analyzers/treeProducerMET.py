@@ -20,6 +20,7 @@ met_globalVariables = [
    # ----------------------- MET filter information (temporary)  -------------------------------------------------------------------- #
 
     NTupleVariable("Flag_HBHENoiseFilter", lambda ev: ev.hbheFilterNew, help="HBEHE temporary filter decision"),
+    NTupleVariable("Flag_HBHEIsoNoiseFilter", lambda ev: ev.hbheFilterIso, help="HBEHE isolation temporary filter decision"),
 
    # ----------------------- dedicated met info -------------------------------------------------------------------- #
 
@@ -31,18 +32,6 @@ met_globalVariables = [
 
     NTupleVariable("metPuppi_uPara_zll", lambda ev : ev.metPuppi.upara_zll if hasattr(ev,'metPuppi') and hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
     NTupleVariable("metPuppi_uPerp_zll", lambda ev : ev.metPuppi.uperp_zll if hasattr(ev,'metPuppi') and hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
-
-    NTupleVariable("met_rawPt", lambda ev : ev.met.uncorPt(), help="raw met p_{T}"),
-    NTupleVariable("met_rawPhi", lambda ev : ev.met.uncorPhi(), help="raw met phi"),
-    NTupleVariable("met_rawSumEt", lambda ev : ev.met.uncorSumEt(), help="raw met sumEt"),
-
-    NTupleVariable("metNoHF_rawPt", lambda ev : ev.metNoHF.uncorPt() if hasattr(ev,'metNoHF') else -999, help="raw met p_{T}"),
-    NTupleVariable("metNoHF_rawPhi", lambda ev : ev.metNoHF.uncorPhi() if hasattr(ev,'metNoHF') else -999, help="raw met phi"),
-    NTupleVariable("metNoHF_rawSumEt", lambda ev : ev.metNoHF.uncorSumEt() if hasattr(ev,'metNoHF') else -999, help="raw met sumEt"),
-
-    NTupleVariable("metPuppi_rawPt", lambda ev : ev.metPuppi.uncorPt() if hasattr(ev,'metPuppi') else -999, help="puppi met p_{T}"),
-    NTupleVariable("metPuppi_rawPhi", lambda ev : ev.metPuppi.uncorPhi() if hasattr(ev,'metPuppi') else -999, help="puppi met phi"),
-    NTupleVariable("metPuppi_rawSumEt", lambda ev : ev.metPuppi.uncorSumEt() if hasattr(ev,'metPuppi') else -999, help="pupppi met sumEt"),
 
     NTupleVariable("met_raw_uPara_zll", lambda ev : ev.met_raw.upara_zll if  hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
     NTupleVariable("met_raw_uPerp_zll", lambda ev : ev.met_raw.uperp_zll if  hasattr(ev,'zll_p4') else -999 , help="recoil MET"),
