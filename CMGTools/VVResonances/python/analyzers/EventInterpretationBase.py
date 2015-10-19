@@ -111,7 +111,10 @@ class EventInterpretationBase( Analyzer ):
         toolboxFat.setSubjets(True,'inc',self.cfg_ana.subjets)
         toolboxFat.setPruning(self.cfg_ana.prunning)
         toolboxFat.setNtau(True)
-        toolboxFat.setSoftDrop(self.cfg_ana.softdrop)
+        if hasattr(self.cfg_ana,'softdrop_beta'):
+            toolboxFat.setSoftDrop(self.cfg_ana.softdrop,self.cfg_ana.softdrop_beta,self.cfg_ana.softdrop_zeta)
+        else:
+            toolboxFat.setSoftDrop(self.cfg_ana.softdrop)
         # Lets cluster !! Fat jets first
         fatJets=toolboxFat.inclusiveJets(100.0,True)
         filtered = filter(self.selectFat,fatJets)

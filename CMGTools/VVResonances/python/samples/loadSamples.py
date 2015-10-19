@@ -5,7 +5,6 @@ import os
 from CMGTools.RootTools.samples.samples_13TeV_74X import *
 background_25ns = QCDPt+WJetsToLNuHT+GJetsHT+TTs+DYJetsM50HT+DiBosons
 background_50ns = [TTJets_50ns,TTJets_LO_50ns,WJetsToLNu_50ns]+QCDPt_50ns+DYJetsM50HT_50ns+DiBosons_50ns
-
 #Load signal from here 
 from CMGTools.VVResonances.samples.signal_13TeV_74X import signalSamples,RSGravToWWToLNQQ_kMpl01_2500
 
