@@ -219,10 +219,10 @@ triggerFlagsAna.triggerBits = {
     'pfht200' : triggers_pfht200,
     'pfht250' : triggers_pfht250,
     'pfht300' : triggers_pfht300,
-    'pfht350' : triggers_ht350,
+    'pfht350' : triggers_HT350,
     'pfht400' : triggers_pfht400,
-    'pfht475' : triggers_ht475,
-    'pfht600' : triggers_ht600,
+    'pfht475' : triggers_HT475,
+    'pfht600' : triggers_HT600,
     'pfht800' : triggers_HT800,
     'pfht900' : triggers_HT900,
     'at57' : triggers_at57,
@@ -239,7 +239,7 @@ triggerFlagsAna.triggerBits = {
     'MuEGHT'     : triggers_mue_ht,
     'SingleMu' : triggers_1mu_iso,
     'SingleEl' : triggers_FR_1e_iso,
-    'HTMET' : triggers_HTMET120,
+    'HTMET' : triggers_HT350_MET120,
     'HTJet' : triggers_htjet,
 }
 
@@ -289,7 +289,7 @@ if runData:
     DatasetsAndTriggers = []
     selectedComponents = []; vetos = []  
  
-    hadtriggers = triggers_pfht200 + triggers_pfht250 + triggers_pfht300 + triggers_ht350 + triggers_pfht400 + triggers_ht475 + triggers_ht600 + triggers_HT800 + triggers_HT900 + triggers_at57 + triggers_at55 + triggers_at53 + triggers_at52 + triggers_at51
+    hadtriggers = triggers_pfht200 + triggers_pfht250 + triggers_pfht300 + triggers_HT350 + triggers_pfht400 + triggers_HT475 + triggers_HT600 + triggers_HT800 + triggers_HT900 + triggers_at57 + triggers_at55 + triggers_at53 + triggers_at52 + triggers_at51
     DatasetsAndTriggers.append( ("DoubleMuon", triggers_mu17mu8 + triggers_mu17mu8_dz + triggers_mu17tkmu8_dz + triggers_mumu_noniso_50ns) )
     DatasetsAndTriggers.append( ("DoubleEG",   triggers_el17el12_dz + triggers_el23el12_dz + triggers_doubleele33) )
     DatasetsAndTriggers.append( ("MuonEG",     triggers_mu8el17 + triggers_mu8el23 + triggers_mu17el12 + triggers_mu30ele30) )
