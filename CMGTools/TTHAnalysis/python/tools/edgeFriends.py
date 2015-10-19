@@ -6,7 +6,7 @@ class edgeFriends:
         self.tightLeptonSel = tightLeptonSel
         self.cleanJet = cleanJet
         self.isMC = isMC
-        self.puFile = open("/afs/cern.ch/work/m/mdunser/public/puWeighting/puWeights.txt","r")
+        self.puFile = open("/afs/cern.ch/work/m/mdunser/public/puWeighting/puWeightsVince.txt","r")
         self.pu_dict = eval(self.puFile.read())
         self.puFile.close()
     def listBranches(self):
@@ -17,12 +17,12 @@ class edgeFriends:
                  ("nLepGood20"+label, "I"), ("nLepGood20T"+label, "I"),
                  ("nJet35"+label, "I"), ("htJet35j"+label), ("nBJetLoose35"+label, "I"), ("nBJetMedium35"+label, "I"), 
                  ("iL1T"+label, "I"), ("iL2T"+label, "I"), 
-                 ("lepsMll"+label, "F"), ("lepsJZB"+label, "F"), ("lepsDR"+label, "F"), ("lepsMETRec"+label, "F"), ("lepsZPt"+label, "F"),
-                 ("Lep1_pt"+label, "F"), ("Lep1_eta"+label, "F"), ("Lep1_phi"+label, "F"), ("Lep1_miniRelIso"+label, "F"), ("Lep1_pdgId"+label, "I"), ("Lep1_mvaIdPhys14"+label, "F"),
-                 ("Lep2_pt"+label, "F"), ("Lep2_eta"+label, "F"), ("Lep2_phi"+label, "F"), ("Lep2_miniRelIso"+label, "F"), ("Lep2_pdgId"+label, "I"), ("Lep2_mvaIdPhys14"+label, "F"),
+                 ("lepsMll"+label, "F"), ("lepsJZB"+label, "F"), ("lepsDR"+label, "F"), ("lepsMETRec"+label, "F"), ("lepsZPt"+label, "F"), 
                  ("PileupW"+label, "F"),
                  ("min_mlb1"+label, "F"),
-                 ("min_mlb2"+label, "F")
+                 ("min_mlb2"+label, "F"),
+                 ("Lep1_pt"+label, "F"), ("Lep1_eta"+label, "F"), ("Lep1_phi"+label, "F"), ("Lep1_miniRelIso"+label, "F"), ("Lep1_pdgId"+label, "I"), ("Lep1_mvaIdSpring15"+label, "F"),
+                 ("Lep2_pt"+label, "F"), ("Lep2_eta"+label, "F"), ("Lep2_phi"+label, "F"), ("Lep2_miniRelIso"+label, "F"), ("Lep2_pdgId"+label, "I"), ("Lep2_mvaIdSpring15"+label, "F")
                  ]
         ## for lfloat in 'pt eta phi miniRelIso pdgId'.split():
         ##     if lfloat == 'pdgId':
@@ -57,7 +57,7 @@ class edgeFriends:
         # do pileupReweighting
         # ====================
         puWt = self.pu_dict[nvtx] if self.isMC else 1.
-        if puWt > 3: puWt = 3.
+        if puWt > 10: puWt = 10.
         ret["PileupW"] = puWt
 
         # ===============================
@@ -103,7 +103,8 @@ class edgeFriends:
         l1 = ROOT.TLorentzVector()
         l2 = ROOT.TLorentzVector()
         ltlvs = [l1, l2]
-        for lfloat in 'pt eta phi miniRelIso pdgId mvaIdPhys14'.split():
+
+        for lfloat in 'pt eta phi miniRelIso pdgId mvaIdSpring15'.split():
             if lfloat == 'pdgId':
                 lepret["Lep1_"+lfloat+self.label] = -99
                 lepret["Lep2_"+lfloat+self.label] = -99
@@ -122,7 +123,7 @@ class edgeFriends:
                 lep = leps[idx] if idx >= 0 else lepso[-1-idx]
                 #for lfloat in 'pt eta phi miniRelIso pdgId'.split():
                 #    lepret[lfloat].append( getattr(lep,lfloat) )
-                for lfloat in 'pt eta phi miniRelIso pdgId mvaIdPhys14'.split():
+                for lfloat in 'pt eta phi miniRelIso pdgId mvaIdSpring15'.split():
                     lepret["Lep"+str(lcount)+"_"+lfloat+self.label] = getattr(lep,lfloat)
                 ltlvs[lcount-1].SetPtEtaPhiM(lep.pt, lep.eta, lep.phi, 0.0005 if lep.pdgId == 11 else 0.106)
                 lcount += 1
@@ -258,18 +259,20 @@ def _susyEdge(lep):
         if abs(lep.dz ) > 0.10: return False
         if abs(lep.eta) > 1.4 and abs(lep.eta) < 1.6: return False
         # marc aug07 if abs(lep.pdgId) == 13 and lep.muonMediumId != 1: return False
-        if abs(lep.pdgId) == 13 and lep.mediumMuonId != 1: return False
+        if abs(lep.pdgId) == 13:
+          if lep.mediumMuonId != 1: return False
+          if lep.miniRelIso > 0.2: return False
         #if abs(lep.pdgId) == 11 and (lep.tightId < 1 or (abs(lep.etaSc) > 1.4442 and abs(lep.etaSc) < 1.566)) : return False
         if abs(lep.pdgId) == 11:
           if (abs(lep.etaSc) > 1.4442 and abs(lep.etaSc) < 1.566) : return False
           if (lep.convVeto == 0) or (lep.lostHits > 0) : return False
-          if (abs(lep.eta) < 0.8 and lep.mvaIdPhys14 < 0.73) : return False
-          if (abs(lep.eta) > 0.8 and abs(lep.eta) < 1.479 and lep.mvaIdPhys14 < 0.57) : return False
-          if (abs(lep.eta) > 1.479 and lep.mvaIdPhys14 < 0.05) : return False
-          ## loose id if (abs(lep.eta) < 0.8 and lep.mvaIdPhys14 < 0.35) : return False
-          ## loose id if (abs(lep.eta) > 0.8 and abs(lep.eta) < 1.479 and lep.mvaIdPhys14 < 0.20) : return False
-          ## loose id if (abs(lep.eta) > 1.479 and lep.mvaIdPhys14 < -0.52) : return False
-        if lep.miniRelIso > 0.1: return False
+          ## phys14 training if (abs(lep.eta) < 0.8 and lep.mvaIdPhys14 < 0.73) : return False
+          ## phys14 training if (abs(lep.eta) > 0.8 and abs(lep.eta) < 1.479 and lep.mvaIdPhys14 < 0.57) : return False
+          ## phys14 training if (abs(lep.eta) > 1.479 and lep.mvaIdPhys14 < 0.05) : return False
+          if (abs(lep.eta) < 0.8 and lep.mvaIdSpring15 < 0.87) : return False
+          if (abs(lep.eta) > 0.8 and abs(lep.eta) < 1.479 and lep.mvaIdSpring15 < 0.60) : return False
+          if (abs(lep.eta) > 1.479 and lep.mvaIdSpring15 < 0.17) : return False
+          if lep.miniRelIso > 0.1: return False
         return True
 
 if __name__ == '__main__':

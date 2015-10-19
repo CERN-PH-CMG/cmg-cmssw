@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-MYTREEDIR="~/work/ra5trees/TREES_74X_230915_MiniIso_7_4_12"
-MYLUMI="0.12163"
+MYTREEDIR="~/work/ra5trees/TREES_74X_061015_MiniIso_7_4_12_JECv5_noPreProc"
+MYLUMI="0.2092"
 
 EXE="python mcPlots.py"
 WDIR="susy-multilepton/for-pu-rew"

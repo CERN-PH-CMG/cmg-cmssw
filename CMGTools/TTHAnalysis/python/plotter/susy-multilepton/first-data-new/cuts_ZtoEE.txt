@@ -1,0 +1,10 @@
+filters : hbheFilterNew25ns==1 && Flag_CSCTightHaloFilter==1 && Flag_eeBadScFilter==1
+trigger : HLT_DoubleEl || HLT_BIT_HLT_Ele27_WPLoose_Gsf_v || HLT_BIT_HLT_Ele27_WP85_Gsf_v
+2L SF/OS : nLepGood >= 2 && LepGood1_pdgId == -LepGood2_pdgId
+lep2015: LepGood1_pt>20 && LepGood2_pt>15
+best mll[60,120] : (60 < mZ1 && mZ1 < 120)
+unwrap : LepGood_pt > 0
+isoneofZ : (abs(LepGood_pt/LepGood1_pt-1)<1e-4 || abs(LepGood_pt/LepGood2_pt-1)<1e-4)
+electron: abs(LepGood_pdgId)==11
+pt : LepGood_pt > 15
+reliso : LepGood_relIso03 < 0.2

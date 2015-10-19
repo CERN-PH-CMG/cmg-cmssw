@@ -7,7 +7,11 @@ MODULES = []
 
 from CMGTools.MonoXAnalysis.tools.eventVars_monojet import EventVarsMonojet
 MODULES.append( ('vars_mj', EventVarsMonojet()) )
- 
+
+from CMGTools.TTHAnalysis.tools.vertexWeightFriend import VertexWeightFriend
+pufile="/afs/cern.ch/work/e/emanuele/public/monox/pileup/nvtx_profile_runs_246908_257599.root"
+MODULES.append ( ('puWeights', VertexWeightFriend(pufile,pufile,"nvtx_signal","nvtx_data",verbose=True) ) )
+
 class VariableProducer(Module):
     def __init__(self,name,booker,sample_nevt,modules):
         Module.__init__(self,name,booker)
@@ -17,7 +21,8 @@ class VariableProducer(Module):
         self.t = PyTree(self.book("TTree","t","t"))
         self.branches = {}
         for name,mod in self._modules:
-            mod.initSampleNormalization(self._sample_nevt)
+            if name == "vars_mj": 
+                mod.initSampleNormalization(self._sample_nevt)
             for B in mod.listBranches():
                 # don't add the same branch twice
                 if B in self.branches: 

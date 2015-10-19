@@ -1,0 +1,4 @@
+LepGood1_jetPtRatioL1Corr : LepGood1_pt/(LepGood1_jetRawPt*LepGood1_jetCorrFactor_L1); AlsoData
+LepGood2_jetPtRatioL1Corr : LepGood2_pt/(LepGood2_jetRawPt*LepGood2_jetCorrFactor_L1); AlsoData
+LepGood3_jetPtRatioL1Corr : LepGood3_pt/(LepGood3_jetRawPt*LepGood3_jetCorrFactor_L1); AlsoData
+LepGood_jetPtRatioL1Corr: LepGood_pt/(LepGood_jetRawPt*LepGood_jetCorrFactor_L1); AlsoData
