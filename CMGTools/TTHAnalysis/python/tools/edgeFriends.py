@@ -17,10 +17,12 @@ class edgeFriends:
                  ("nLepGood20"+label, "I"), ("nLepGood20T"+label, "I"),
                  ("nJet35"+label, "I"), ("htJet35j"+label), ("nBJetLoose35"+label, "I"), ("nBJetMedium35"+label, "I"), 
                  ("iL1T"+label, "I"), ("iL2T"+label, "I"), 
-                 ("lepsMll"+label, "F"), ("lepsJZB"+label, "F"), ("lepsDR"+label, "F"), ("lepsMETRec"+label, "F"), ("lepsZPt"+label, "F"),
+                 ("lepsMll"+label, "F"), ("lepsJZB"+label, "F"), ("lepsDR"+label, "F"), ("lepsMETRec"+label, "F"), ("lepsZPt"+label, "F"), 
+                 ("PileupW"+label, "F"),
+                 ("min_mlb1"+label, "F"),
+                 ("min_mlb2"+label, "F"),
                  ("Lep1_pt"+label, "F"), ("Lep1_eta"+label, "F"), ("Lep1_phi"+label, "F"), ("Lep1_miniRelIso"+label, "F"), ("Lep1_pdgId"+label, "I"), ("Lep1_mvaIdSpring15"+label, "F"),
-                 ("Lep2_pt"+label, "F"), ("Lep2_eta"+label, "F"), ("Lep2_phi"+label, "F"), ("Lep2_miniRelIso"+label, "F"), ("Lep2_pdgId"+label, "I"), ("Lep2_mvaIdSpring15"+label, "F"),
-                 ("PileupW"+label, "F")
+                 ("Lep2_pt"+label, "F"), ("Lep2_eta"+label, "F"), ("Lep2_phi"+label, "F"), ("Lep2_miniRelIso"+label, "F"), ("Lep2_pdgId"+label, "I"), ("Lep2_mvaIdSpring15"+label, "F")
                  ]
         ## for lfloat in 'pt eta phi miniRelIso pdgId'.split():
         ##     if lfloat == 'pdgId':
@@ -46,6 +48,7 @@ class edgeFriends:
         metp4.SetPtEtaPhiM(met,0,metphi,0)
         ret = {}; jetret = {}; 
         lepret = {}
+        
         #
         ### Define tight leptons
         ret["iLT"] = []; ret["nLepGood20T"] = 0
@@ -97,6 +100,9 @@ class edgeFriends:
         ret['lepsZPt'] = iL1iL2[6] 
 
         #print 'new event =================================================='
+        l1 = ROOT.TLorentzVector()
+        l2 = ROOT.TLorentzVector()
+        ltlvs = [l1, l2]
 
         for lfloat in 'pt eta phi miniRelIso pdgId mvaIdSpring15'.split():
             if lfloat == 'pdgId':
@@ -105,8 +111,9 @@ class edgeFriends:
             else:
                 lepret["Lep1_"+lfloat+self.label] = -42.
                 lepret["Lep2_"+lfloat+self.label] = -42.
-        if ret['iL1T'] != -999 and ret['iL1T'] != -999:
+        if ret['iL1T'] != -999 and ret['iL2T'] != -999:
             ret['nPairLep'] = 2
+#            print 'index of lepton 1 %d index of lepton 2 %d' %( ret['iL1T'], ret['iL2T'])
             ## for lfloat in 'pt eta phi miniRelIso pdgId'.split():
             ##     lepret["Lep1_"+lfloat+label] = -42.
             ##     lepret["Lep2_"+lfloat+label] = -42.
@@ -118,12 +125,12 @@ class edgeFriends:
                 #    lepret[lfloat].append( getattr(lep,lfloat) )
                 for lfloat in 'pt eta phi miniRelIso pdgId mvaIdSpring15'.split():
                     lepret["Lep"+str(lcount)+"_"+lfloat+self.label] = getattr(lep,lfloat)
+                ltlvs[lcount-1].SetPtEtaPhiM(lep.pt, lep.eta, lep.phi, 0.0005 if lep.pdgId == 11 else 0.106)
                 lcount += 1
-                #print 'good lepton', getattr(lep,'pt'), getattr(lep,'eta'), getattr(lep,'phi'), getattr(lep,'pdgId')
+                #print 'good lepton', getattr(lep,'pt'), getattr(lep,'eta'), getattr(lep,'phi'), getattr(lep,'pdgId') 
         else:
             ret['nPairLep'] = 0
             
-
         ### Define jets
         ret["iJ"] = []
         # 0. mark each jet as clean
@@ -139,6 +146,7 @@ class edgeFriends:
                     j._clean = False
 
         # 2. compute the jet list
+        
         for ijc,j in enumerate(jetsc):
             if not j._clean: continue
             ret["iJ"].append(ijc)
@@ -148,9 +156,11 @@ class edgeFriends:
         ret['nJetSel'] = len(ret["iJ"])
 
         # 3. sort the jets by pt
+        
         ret["iJ"].sort(key = lambda idx : jetsc[idx].pt if idx >= 0 else jetsd[-1-idx].pt, reverse = True)
 
         # 4. compute the variables
+        
         for jfloat in "pt eta phi mass btagCSV rawPt".split():
             jetret[jfloat] = []
         if self.isMC:
@@ -163,16 +173,60 @@ class edgeFriends:
             if self.isMC:
                 for jmc in "mcPt mcFlavour mcMatchId".split():
                     jetret[jmc].append( getattr(jet,jmc) )
-
+        
         # 5. compute the sums
+        
         ret["nJet35"] = 0; ret["htJet35j"] = 0; ret["nBJetLoose35"] = 0; ret["nBJetMedium35"] = 0
         for j in jetsc+jetsd:
             if not j._clean: continue
             ret["nJet35"] += 1; ret["htJet35j"] += j.pt; 
             if j.btagCSV>0.423: ret["nBJetLoose35"] += 1
             if j.btagCSV>0.814: ret["nBJetMedium35"] += 1
-        #
-        ### attach labels and return
+        ## compute mlb for the two lepton  
+	
+        jet = ROOT.TLorentzVector()
+        min_mlb = 1e6
+        max_mlb = 1e6
+        _lind, _jind = -99, -99
+        leplist = [l1, l2]
+        # find the global minimum mlb (or mlj)
+        jetIsB = False
+        for lepton in leplist:
+            if ret['nPairLep'] < 2: continue
+            for j in jetsc+jetsd:
+                if not j._clean: continue
+                jet.SetPtEtaPhiM(j.pt, j.eta, j.phi, j.mass)           
+                tmp = (lepton+jet).M()
+                if j.btagCSV>0.814:   
+                   if tmp < min_mlb: 
+                         min_mlb  = tmp
+                         jetisB = True 
+                         _lind = leplist.index(lepton)
+                         _jind = j
+                else:
+                     if tmp < min_mlb and jetIsB == False:
+                         min_mlb = tmp
+                         _lind = leplist.index(lepton)
+                         _jind = j
+        
+        # compute the minimum mlb (or mlj) for the other lepton
+        jetIsB = False
+        if ret['nPairLep'] < 2: continue 
+            for j in jetsc+jetsd: 
+            if not j._clean: continue
+            if j == _jind: continue
+            jet.SetPtEtaPhiM(j.pt, j.eta, j.phi, j.mass)           
+            tmp = ( (l1 if _lind == 1 else l2) +jet).M()
+            if j.btagCSV>0.814:  
+                if tmp < max_mlb: 
+                        max_mlb  = tmp
+                        jetIsB = True
+            else:
+                if tmp < max_mlb and jetIsB == False:
+                    max_mlb = tmp   
+        ret["min_mlb1"] = min_mlb if min_mlb < 1e6  else -1.
+        ret["min_mlb2"] = max_mlb if max_mlb < 1e6  else -1.
+       
         fullret = {}
         for k,v in ret.iteritems(): 
             fullret[k+self.label] = v

@@ -60,9 +60,11 @@ lepAna.loose_muon_dxy     = 0.3
 lepAna.loose_muon_dz      = 20.0
 
 
+
 jetAna.recalibrateJets = False
 jetAna.calculateSeparateCorrections = False
 metAna.recalibrate = False
+
 
 ##########################################################
 ######################Isolation###########################
@@ -266,7 +268,12 @@ preprocessor = None
 ##########################################################
 selectedComponents = [] 
 
+
+
+#selectedComponents = TTs + [ DYJetsToLL_M50, DYJetsToLL_M10to50]
+#selectedComponents = [ TTJets, TTJets_LO, WJetsToLNu, DYJetsToLL_M10to50,  DYJetsToLL_M50  ]
 selectedComponents = [ TTLep_pow]
+
 
 
 for comp in selectedComponents:
