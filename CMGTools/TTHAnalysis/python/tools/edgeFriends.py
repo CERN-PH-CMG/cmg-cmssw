@@ -182,41 +182,50 @@ class edgeFriends:
             if j.btagCSV>0.423: ret["nBJetLoose35"] += 1
             if j.btagCSV>0.814: ret["nBJetMedium35"] += 1
         ## compute mlb for the two lepton  
-        jet = ROOT.TLorentzVector()	
-        min_mlq1 = 1e6
-        min_mlq2 = 1e6
-        lepindex, jetindex = -999, -999
-        paired_with_b = False
-        for j in jetsc+jetsd:
-            if ret["nJetSel"] < 1: continue
+	
+        jet = ROOT.TLorentzVector()
+        min_mlb = 1e6
+        max_mlb = 1e6
+        _lind, _jind = -99, -99
+        leplist = [l1, l2]
+        # find the global minimum mlb (or mlj)
+        jetIsB = False
+        for lepton in leplist:
             if ret['nPairLep'] < 2: continue
+            for j in jetsc+jetsd:
+                if not j._clean: continue
+                jet.SetPtEtaPhiM(j.pt, j.eta, j.phi, j.mass)           
+                tmp = (lepton+jet).M()
+                if j.btagCSV>0.814:   
+                   if tmp < min_mlb: 
+                         min_mlb  = tmp
+                         jetisB = True 
+                         _lind = leplist.index(lepton)
+                         _jind = j
+                else:
+                     if tmp < min_mlb and jetIsB == False:
+                         min_mlb = tmp
+                         _lind = leplist.index(lepton)
+                         _jind = j
+        
+        # compute the minimum mlb (or mlj) for the other lepton
+        jetIsB = False
+        if ret['nPairLep'] < 2: continue 
+            for j in jetsc+jetsd: 
             if not j._clean: continue
+            if j == _jind: continue
             jet.SetPtEtaPhiM(j.pt, j.eta, j.phi, j.mass)           
-            tmp = (l1+jet).M()  
+            tmp = ( (l1 if _lind == 1 else l2) +jet).M()
             if j.btagCSV>0.814:  
-                if tmp < min_mlq1: 
-                     min_mlq1  = tmp
-                     paired_with_b = True 
-                     jetindex = j 
+                if tmp < max_mlb: 
+                        max_mlb  = tmp
+                        jetIsB = True
             else:
-                 if tmp < min_mlq1 and paired_with_b == False:
-                     min_mlq1 = tmp 
-        for j in jetsc+jetsd: 
-            if ret["nPairLep"] < 2: continue
-            if ret["nJetSel"] < 1: continue
-            if not j._clean: continue
-            jet.SetPtEtaPhiM(j.pt, j.eta, j.phi, j.mass)           
-            tmp = (l2+jet).M()
-            if j.btagCSV>0.814:  
-                if tmp < min_mlq2: 
-                    min_mlq2  = tmp
-                    paired_with_b = True    
-            else:
-                if tmp < min_mlq2 and paired_with_b == False:
-                    min_mlq2 = tmp            
-        ret["min_mlb1"] = min(min_mlq1,min_mlq2) if min(min_mlq1, min_mlq2) < 1e6 else -1.
-        ret["min_mlb2"] = max(min_mlq1,min_mlq2) if max(min_mlq1, min_mlq2) < 1e6 else -1.
-       ### attach labels and return
+                if tmp < max_mlb and jetIsB == False:
+                    max_mlb = tmp   
+        ret["min_mlb1"] = min_mlb if min_mlb < 1e6  else -1.
+        ret["min_mlb2"] = max_mlb if max_mlb < 1e6  else -1.
+       
         fullret = {}
         for k,v in ret.iteritems(): 
             fullret[k+self.label] = v
