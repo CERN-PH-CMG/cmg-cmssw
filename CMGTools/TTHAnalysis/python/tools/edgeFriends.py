@@ -6,6 +6,9 @@ class edgeFriends:
         self.tightLeptonSel = tightLeptonSel
         self.cleanJet = cleanJet
         self.isMC = isMC
+        self.puFile = open("/afs/cern.ch/work/m/mdunser/public/puWeighting/puWeightsVince.txt","r")
+        self.pu_dict = eval(self.puFile.read())
+        self.puFile.close()
     def listBranches(self):
         label = self.label
         biglist = [ ("nLepTight"+label, "I"), ("nJetSel"+label, "I"), ("nPairLep"+label, "I"),
@@ -15,8 +18,9 @@ class edgeFriends:
                  ("nJet35"+label, "I"), ("htJet35j"+label), ("nBJetLoose35"+label, "I"), ("nBJetMedium35"+label, "I"), 
                  ("iL1T"+label, "I"), ("iL2T"+label, "I"), 
                  ("lepsMll"+label, "F"), ("lepsJZB"+label, "F"), ("lepsDR"+label, "F"), ("lepsMETRec"+label, "F"), ("lepsZPt"+label, "F"),
-                 ("Lep1_pt"+label, "F"), ("Lep1_eta"+label, "F"), ("Lep1_phi"+label, "F"), ("Lep1_miniRelIso"+label, "F"), ("Lep1_pdgId"+label, "I"), ("Lep1_mvaIdPhys14"+label, "F"),
-                 ("Lep2_pt"+label, "F"), ("Lep2_eta"+label, "F"), ("Lep2_phi"+label, "F"), ("Lep2_miniRelIso"+label, "F"), ("Lep2_pdgId"+label, "I"), ("Lep2_mvaIdPhys14"+label, "F")
+                 ("Lep1_pt"+label, "F"), ("Lep1_eta"+label, "F"), ("Lep1_phi"+label, "F"), ("Lep1_miniRelIso"+label, "F"), ("Lep1_pdgId"+label, "I"), ("Lep1_mvaIdSpring15"+label, "F"),
+                 ("Lep2_pt"+label, "F"), ("Lep2_eta"+label, "F"), ("Lep2_phi"+label, "F"), ("Lep2_miniRelIso"+label, "F"), ("Lep2_pdgId"+label, "I"), ("Lep2_mvaIdSpring15"+label, "F"),
+                 ("PileupW"+label, "F")
                  ]
         ## for lfloat in 'pt eta phi miniRelIso pdgId'.split():
         ##     if lfloat == 'pdgId':
@@ -36,6 +40,8 @@ class edgeFriends:
         jetsc = [j for j in Collection(event,"Jet","nJet")]
         jetsd = [j for j in Collection(event,"DiscJet","nDiscJet")]
         (met, metphi)  = event.met_pt, event.met_phi
+        ##ntrue = event.nTrueInt
+        nvtx = event.nVert
         metp4 = ROOT.TLorentzVector()
         metp4.SetPtEtaPhiM(met,0,metphi,0)
         ret = {}; jetret = {}; 
@@ -44,30 +50,16 @@ class edgeFriends:
         ### Define tight leptons
         ret["iLT"] = []; ret["nLepGood20T"] = 0
 
-        ## old sorting marc aug09 # good leptons
-        ## old sorting marc aug09 for il,lep in enumerate(leps):
-        ## old sorting marc aug09     clean = True
-        ## old sorting marc aug09     if abs(lep.pdgId) == 11:
-        ## old sorting marc aug09         for jl,lep2 in enumerate(leps):
-        ## old sorting marc aug09             if jl == il: continue
-        ## old sorting marc aug09             if abs(lep2.pdgId) == 13 and self.tightLeptonSel(lep2) and deltaR(lep, lep2) < 0.05:
-        ## old sorting marc aug09                 clean = False
-        ## old sorting marc aug09     if self.tightLeptonSel(lep) and clean:
-        ## old sorting marc aug09         ret["iLT"].append(il)
-        ## old sorting marc aug09         if lep.pt > 20: ret["nLepGood20T"] += 1
-        ## old sorting marc aug09 # other leptons, negative indices
-        ## old sorting marc aug09 for il,lep in enumerate(lepso):
-        ## old sorting marc aug09     clean = True
-        ## old sorting marc aug09     if abs(lep.pdgId) == 11:
-        ## old sorting marc aug09         for jl,lep2 in enumerate(leps):
-        ## old sorting marc aug09             if jl == il: continue
-        ## old sorting marc aug09             if abs(lep2.pdgId) == 13 and self.tightLeptonSel(lep2) and deltaR(lep, lep2) < 0.05:
-        ## old sorting marc aug09                 clean = False
-        ## old sorting marc aug09     if self.tightLeptonSel(lep) and clean:
-        ## old sorting marc aug09         ret["iLT"].append(-1-il)
-        ## old sorting marc aug09         if lep.pt > 20: ret["nLepGood20T"] += 1
+        # ====================
+        # do pileupReweighting
+        # ====================
+        puWt = self.pu_dict[nvtx] if self.isMC else 1.
+        if puWt > 10: puWt = 10.
+        ret["PileupW"] = puWt
 
-        # new, simpler sorting, don't do any flavor dependent stuff here
+        # ===============================
+        # new, simpler sorting of leptons
+        # ===============================
         for il,lep in enumerate(leps):
             clean = True
             if self.tightLeptonSel(lep) and clean:
@@ -106,7 +98,7 @@ class edgeFriends:
 
         #print 'new event =================================================='
 
-        for lfloat in 'pt eta phi miniRelIso pdgId mvaIdPhys14'.split():
+        for lfloat in 'pt eta phi miniRelIso pdgId mvaIdSpring15'.split():
             if lfloat == 'pdgId':
                 lepret["Lep1_"+lfloat+self.label] = -99
                 lepret["Lep2_"+lfloat+self.label] = -99
@@ -124,7 +116,7 @@ class edgeFriends:
                 lep = leps[idx] if idx >= 0 else lepso[-1-idx]
                 #for lfloat in 'pt eta phi miniRelIso pdgId'.split():
                 #    lepret[lfloat].append( getattr(lep,lfloat) )
-                for lfloat in 'pt eta phi miniRelIso pdgId mvaIdPhys14'.split():
+                for lfloat in 'pt eta phi miniRelIso pdgId mvaIdSpring15'.split():
                     lepret["Lep"+str(lcount)+"_"+lfloat+self.label] = getattr(lep,lfloat)
                 lcount += 1
                 #print 'good lepton', getattr(lep,'pt'), getattr(lep,'eta'), getattr(lep,'phi'), getattr(lep,'pdgId')
@@ -204,29 +196,6 @@ class edgeFriends:
             [mll, jzb, dr, metrec, zpt] = self.getMll_JZB(lepst[0].p4(), lepst[1].p4(), metp4)
             ret = (0, 1, mll, jzb, dr, metrec, zpt)
         return ret
-    ## def findPair(self,lepst):
-    ##     ret = (-999,-999,-999.)
-    ##     if len(lepst) == 2:
-    ##         if lepst[0].pt < 25 or deltaR(lepst[0], lepst[1]) < 0.3:#  or lepst[0].charge == lepst[1].charge:  
-    ##             ret=(-999,-999,-999.)
-    ##         else: 
-    ##             ret = (0, 1, (lepst[0].p4() + lepst[1].p4()).M() )
-    ##     elif len(lepst) > 2:
-    ##         pairs = []
-    ##         for il1 in xrange(len(lepst)-1):
-    ##             for il2 in xrange(il1+1,len(lepst)): 
-    ##                 l1 = lepst[il1]
-    ##                 l2 = lepst[il2]
-    ##                 #if l1.pt < 20 or l2.pt < 20: continue
-    ##                 if l1.pt < 25: continue
-    ##                 if deltaR(l1,l2) > 0.3: #l1.charge != l2.charge and deltaR(l1,l2) > 0.3 :
-    ##                     sumpt   = l1.pt + l2.pt
-    ##                     mll  = (l1.p4() + l2.p4()).M()
-    ##                     pairs.append( (-sumpt,il1,il2,mll) )
-    ##         if len(pairs):
-    ##             pairs.sort()
-    ##             ret = (pairs[0][1],pairs[0][2],pairs[0][3])
-    ##     return ret
 
 
 def _susyEdge(lep):
@@ -236,18 +205,20 @@ def _susyEdge(lep):
         if abs(lep.dz ) > 0.10: return False
         if abs(lep.eta) > 1.4 and abs(lep.eta) < 1.6: return False
         # marc aug07 if abs(lep.pdgId) == 13 and lep.muonMediumId != 1: return False
-        if abs(lep.pdgId) == 13 and lep.mediumMuonId != 1: return False
+        if abs(lep.pdgId) == 13:
+          if lep.mediumMuonId != 1: return False
+          if lep.miniRelIso > 0.2: return False
         #if abs(lep.pdgId) == 11 and (lep.tightId < 1 or (abs(lep.etaSc) > 1.4442 and abs(lep.etaSc) < 1.566)) : return False
         if abs(lep.pdgId) == 11:
           if (abs(lep.etaSc) > 1.4442 and abs(lep.etaSc) < 1.566) : return False
           if (lep.convVeto == 0) or (lep.lostHits > 0) : return False
-          if (abs(lep.eta) < 0.8 and lep.mvaIdPhys14 < 0.73) : return False
-          if (abs(lep.eta) > 0.8 and abs(lep.eta) < 1.479 and lep.mvaIdPhys14 < 0.57) : return False
-          if (abs(lep.eta) > 1.479 and lep.mvaIdPhys14 < 0.05) : return False
-          ## loose id if (abs(lep.eta) < 0.8 and lep.mvaIdPhys14 < 0.35) : return False
-          ## loose id if (abs(lep.eta) > 0.8 and abs(lep.eta) < 1.479 and lep.mvaIdPhys14 < 0.20) : return False
-          ## loose id if (abs(lep.eta) > 1.479 and lep.mvaIdPhys14 < -0.52) : return False
-        if lep.miniRelIso > 0.1: return False
+          ## phys14 training if (abs(lep.eta) < 0.8 and lep.mvaIdPhys14 < 0.73) : return False
+          ## phys14 training if (abs(lep.eta) > 0.8 and abs(lep.eta) < 1.479 and lep.mvaIdPhys14 < 0.57) : return False
+          ## phys14 training if (abs(lep.eta) > 1.479 and lep.mvaIdPhys14 < 0.05) : return False
+          if (abs(lep.eta) < 0.8 and lep.mvaIdSpring15 < 0.87) : return False
+          if (abs(lep.eta) > 0.8 and abs(lep.eta) < 1.479 and lep.mvaIdSpring15 < 0.60) : return False
+          if (abs(lep.eta) > 1.479 and lep.mvaIdSpring15 < 0.17) : return False
+          if lep.miniRelIso > 0.1: return False
         return True
 
 if __name__ == '__main__':

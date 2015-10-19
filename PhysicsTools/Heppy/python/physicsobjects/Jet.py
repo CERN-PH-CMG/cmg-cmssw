@@ -44,6 +44,7 @@ class Jet(PhysicsObject):
 
     def _physObjInit(self):
         self._rawFactorMultiplier = 1.0
+        self._recalibrated = False
         self._leadingTrack = None
         self._leadingTrackSearched = False
 
@@ -59,21 +60,28 @@ class Jet(PhysicsObject):
         elf = self.chargedEmEnergy()/energy;
         chm = self.chargedHadronMultiplicity();
         npr = self.chargedMultiplicity() + self.neutralMultiplicity();
+        npn = self.neutralMultiplicity();
         #if npr != self.nConstituents():
         #    import pdb; pdb.set_trace()
         if name == "POG_PFID":  
+
+            if   self.jetID("PAG_monoID_Tight") and self.jetID("POG_PFID_Tight") : return 5;
+            if   self.jetID("PAG_monoID_Loose") and self.jetID("POG_PFID_Tight") : return 4;
             if   self.jetID("POG_PFID_Tight")  : return 3;
             #elif self.jetID("POG_PFID_Medium") : return 2;  commented this line because this working point doesn't exist anymore (as 12/05/15)
             elif self.jetID("POG_PFID_Loose")  : return 1;
             else                               : return 0;
         
-        # jetID from here: https://twiki.cern.ch/twiki/bin/view/CMS/JetID#Recommendations_for_8_TeV_data_a
-        if name == "POG_PFID_Loose":    return (npr>1 and phf<0.99 and nhf<0.99 and muf < 0.8) and (eta>2.4 or (elf<0.99 and chf>0 and chm>0));
+        # jetID from here: https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
+        if name == "POG_PFID_Loose":    return ((eta<3.0 and ((npr>1 and phf<0.99 and nhf<0.99) and (eta>2.4 or (elf<0.99 and chf>0 and chm>0)))) or (eta>3.0 and (phf<0.90 and npn>10)));
         if name == "POG_PFID_Medium":   return (npr>1 and phf<0.95 and nhf<0.95 and muf < 0.8) and (eta>2.4 or (elf<0.99 and chf>0 and chm>0));
-        if name == "POG_PFID_Tight":    return (npr>1 and phf<0.90 and nhf<0.90 and muf < 0.8) and (eta>2.4 or (elf<0.90 and chf>0 and chm>0));
+        if name == "POG_PFID_Tight":    return ((eta<3.0 and ((npr>1 and phf<0.90 and nhf<0.90) and (eta>2.4 or (elf<0.99 and chf>0 and chm>0)))) or (eta>3.0 and (phf<0.90 and npn>10)));
         if name == "VBFHBB_PFID_Loose":  return (npr>1 and phf<0.99 and nhf<0.99);
         if name == "VBFHBB_PFID_Medium": return (npr>1 and phf<0.99 and nhf<0.99) and ((eta<=2.4 and nhf<0.9 and phf<0.9 and elf<0.99 and muf<0.99 and chf>0 and chm>0) or eta>2.4);
         if name == "VBFHBB_PFID_Tight":  return (npr>1 and phf<0.99 and nhf<0.99) and ((eta<=2.4 and nhf<0.9 and phf<0.9 and elf<0.70 and muf<0.70 and chf>0 and chm>0) or eta>2.4);
+        if name == "PAG_monoID_Loose":    return (eta<3.0 and chf>0.05 and nhf<0.7 and phf<0.8);
+        if name == "PAG_monoID_Tight":    return (eta<3.0 and chf>0.2 and nhf<0.7 and phf<0.7);
+
         raise RuntimeError, "jetID '%s' not supported" % name
 
     def looseJetId(self):
@@ -98,8 +106,29 @@ class Jet(PhysicsObject):
         
     def rawFactor(self):
         return self.jecFactor('Uncorrected') * self._rawFactorMultiplier
+
     def setRawFactor(self, factor):
         self._rawFactorMultiplier = factor/self.jecFactor('Uncorrected')
+
+    def corrFactor(self):
+        return 1.0/self.rawFactor()
+
+    def setCorrP4(self,newP4):
+        self._recalibrated = True
+        corr = newP4.Pt() / (self.pt() * self.rawFactor()) 
+        self.setP4(newP4);
+        self.setRawFactor(1.0/corr);
+
+    def l1corrFactor(self):
+        if hasattr(self, 'CorrFactor_L1'):
+            return self.CorrFactor_L1
+        if self._recalibrated:
+            raise RuntimeError, "The jet was recalibrated, but without calculateSeparateCorrections. L1 is not available"
+        jecLevels = self.physObj.availableJECLevels()
+        for level in jecLevels:
+            if "L1" in level:
+                return self.physObj.jecFactor(level)/self.physObj.jecFactor('Uncorrected')
+        return 1.0 # Jet does not have any L1 correction
 
     def btag(self,name):
         ret = self.bDiscriminator(name)

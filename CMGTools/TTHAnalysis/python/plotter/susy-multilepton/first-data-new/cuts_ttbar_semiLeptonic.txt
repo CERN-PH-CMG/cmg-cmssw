@@ -1,0 +1,11 @@
+Trigger : HLT_BIT_HLT_IsoMu20_v || HLT_BIT_HLT_Ele27_WPLoose_Gsf_v || HLT_BIT_HLT_Ele27_WP85_Gsf_v
+2L : nLepGood >= 2
+lep2_pt10 : nLepGood10 == 2
+same-sign : LepGood1_charge*LepGood2_charge > 0
+lep MVA : LepGood1_mvaTTH > 0.6
+mllv : minMllAFAS > 12
+miniIso : LepGood1_miniRelIso < 0.05
+sip : LepGood1_sip3d < 4
+tight charge : LepGood1_tightCharge > (abs(LepGood1_pdgId) == 11)
+lep_tight : ((abs(LepGood1_pdgId) == 11 && LepGood1_pt > 30 ) || ( abs(LepGood1_pdgId) == 13  && LepGood1_pt > 20 ) )&& abs(LepGood1_eta) < 2.1
+nJet/bJet : nJet25 >= 3 && nBJetMedium25 >= 1

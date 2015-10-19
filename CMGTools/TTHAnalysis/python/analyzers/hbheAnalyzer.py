@@ -40,7 +40,7 @@ class hbheAnalyzer( Analyzer ):
         event.hbheMaxHPDHits        = self.handles['hcalnoise'].product().maxHPDHits()
         event.hbheMaxHPDNoOtherHits = self.handles['hcalnoise'].product().maxHPDNoOtherHits()
         event.hbheHasBadRBXTS4TS5   = self.handles['hcalnoise'].product().HasBadRBXTS4TS5()
-        event.hbheHasBadRBXRechitR45Tight   = self.handles['hcalnoise'].product().HasBadRBXRechitR45Tight()
+        event.hbheHasBadRBXRechitR45Loose   = self.handles['hcalnoise'].product().HasBadRBXRechitR45Loose()
         if self.IgnoreTS4TS5ifJetInLowBVRegion: event.hbheGoodJetFoundInLowBVRegion = self.handles['hcalnoise'].product().goodJetFoundInLowBVRegion()
         event.hbhenumIsolatedNoiseChannels  = self.handles['hcalnoise'].product().numIsolatedNoiseChannels()
         event.hbheisolatedNoiseSumE         = self.handles['hcalnoise'].product().isolatedNoiseSumE()
@@ -54,7 +54,7 @@ class hbheAnalyzer( Analyzer ):
             event.hbheFilterNew50ns = 0
         if event.hbheMaxHPDNoOtherHits >= 10 or (event.hbheHasBadRBXTS4TS5 and not event.hbheGoodJetFoundInLowBVRegion): 
             event.hbheFilterNew50ns = 0
-        if event.hbheMaxHPDNoOtherHits >= 10 or (event.hbheHasBadRBXRechitR45Tight and not event.hbheGoodJetFoundInLowBVRegion): 
+        if event.hbheMaxHPDNoOtherHits >= 10 or (event.hbheHasBadRBXRechitR45Loose and not event.hbheGoodJetFoundInLowBVRegion): 
             event.hbheFilterNew25ns = 0
 
         event.hbheFilterIso = 1
@@ -63,8 +63,8 @@ class hbheAnalyzer( Analyzer ):
         if event.hbheisolatedNoiseSumEt       >= 25: event.hbheFilterIso = 0 
 
 
-        event.hbheFilterNew = event.hbheFilterNew50ns # to be updated later with automatic choice based on PileupSummaryInfo or run number
-###        event.hbheFilterNew = event.hbheFilterNew25ns # hbhe filter at 25 ns
+#        event.hbheFilterNew = event.hbheFilterNew50ns # to be updated later with automatic choice based on PileupSummaryInfo or run number
+        event.hbheFilterNew = event.hbheFilterNew25ns # to be updated later with automatic choice based on PileupSummaryInfo or run number
 
 
         return True

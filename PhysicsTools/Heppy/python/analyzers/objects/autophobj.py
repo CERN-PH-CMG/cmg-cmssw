@@ -65,6 +65,7 @@ leptonType = NTupleObjectType("lepton", baseObjectTypes = [ particleType ], vari
     NTupleVariable("relIso03",  lambda x : x.relIso03, help="PF Rel Iso, R=0.3, pile-up corrected"),
     NTupleVariable("relIso04",  lambda x : x.relIso04, help="PF Rel Iso, R=0.4, pile-up corrected"),
     NTupleVariable("miniRelIso",  lambda x : x.miniRelIso if hasattr(x,'miniRelIso') else  -999, help="PF Rel miniRel, pile-up corrected"),
+    NTupleVariable("relIsoAn04",  lambda x : x.relIsoAn04 if hasattr(x,'relIsoAn04') else  -999, help="PF Activity Annulus, pile-up corrected"),
     # Charge flip rejection criteria
     NTupleVariable("tightCharge",  lambda lepton : ( lepton.isGsfCtfScPixChargeConsistent() + lepton.isGsfScPixChargeConsistent() ) if abs(lepton.pdgId()) == 11 else 2*(lepton.innerTrack().ptError()/lepton.innerTrack().pt() < 0.2), int, help="Tight charge criteria: for electrons, 2 if isGsfCtfScPixChargeConsistent, 1 if only isGsfScPixChargeConsistent, 0 otherwise; for muons, 2 if ptError/pt < 0.20, 0 otherwise "),
     # MC-match info
@@ -107,6 +108,8 @@ leptonTypeExtra = NTupleObjectType("leptonExtra", baseObjectTypes = [ leptonType
     NTupleVariable("dPhiScTrkIn",    lambda x : x.deltaPhiSuperClusterTrackAtVtx() if abs(x.pdgId())==11 else 0, help="Electron deltaPhiSuperClusterTrackAtVtx (without absolute value!)"),
     NTupleVariable("hadronicOverEm", lambda x : x.hadronicOverEm() if abs(x.pdgId())==11 else 0, help="Electron hadronicOverEm"),
     NTupleVariable("eInvMinusPInv",  lambda x : ((1.0/x.ecalEnergy() - x.eSuperClusterOverP()/x.ecalEnergy()) if x.ecalEnergy()>0. else 9e9) if abs(x.pdgId())==11 else 0, help="Electron 1/E - 1/p  (without absolute value!)"),
+#    new version used by EGM in Spring15, 7_4_14:
+    NTupleVariable("eInvMinusPInv_tkMom", lambda x: ((1.0/x.ecalEnergy()) - (1.0 / x.trackMomentumAtVtx().R() ) if (x.ecalEnergy()>0. and x.trackMomentumAtVtx().R()>0.) else 9e9) if abs(x.pdgId())==11 else 0, help="Electron 1/E - 1/p_tk_vtx  (without absolute value!)"),
     NTupleVariable("etaSc", lambda x : x.superCluster().eta() if abs(x.pdgId())==11 else -100, help="Electron supercluster pseudorapidity"),
 ])
  
@@ -140,6 +143,7 @@ isoTrackType = NTupleObjectType("isoTrack",  baseObjectTypes = [ particleType ],
     NTupleVariable("charge",   lambda x : x.charge(), int),
     NTupleVariable("dz",    lambda x : x.dz() , help="d_{z} of lead track with respect to PV, in cm (with sign)"),
     NTupleVariable("absIso",  lambda x : x.absIso, float, mcOnly=False, help="abs charged iso with condition for isolation such that Min(0.2*pt, 8 GeV)"),
+    NTupleVariable("relIsoAn04",  lambda x : x.relIsoAn04 if hasattr(x,'relIsoAn04') else  -999, help="PF Activity Annulus, pile-up corrected"),
     NTupleVariable("mcMatchId",  lambda x : getattr(x, 'mcMatchId', -99), int, mcOnly=True, help="Match to source from hard scatter (pdgId of heaviest particle in chain, 25 for H, 6 for t, 23/24 for W/Z), zero if non-prompt or fake"),
 ])
 
@@ -154,9 +158,12 @@ photonType = NTupleObjectType("gamma", baseObjectTypes = [ particleType ], varia
     NTupleVariable("r9",  lambda x : x.full5x5_r9(), float, help="r9 for photons"),
     NTupleVariable("sigmaIetaIeta",  lambda x : x.full5x5_sigmaIetaIeta(), float, help="sigmaIetaIeta for photons"),
     NTupleVariable("chHadIso04",  lambda x : x.chargedHadronIso(), float, help="chargedHadronIsolation for photons (PAT method, deltaR = 0.4)"),
-    NTupleVariable("chHadIso", lambda x : x.chargedHadronIso('rhoArea'), float, help="chargedHadronIsolation for photons with footprint removal and pile-up correction"),
-    NTupleVariable("phIso", lambda x : x.photonIso('rhoArea'), float, help="gammaIsolation for photons with footprint removal and pile-up correction"),
-    NTupleVariable("neuHadIso", lambda x : x.neutralHadronIso('rhoArea'), float, help="neutralHadronIsolation for photons with footprint removal and pile-up correction"),
+#    NTupleVariable("chHadIso", lambda x : x.chargedHadronIso('rhoArea'), float, help="chargedHadronIsolation for photons with footprint removal and pile-up correction"),
+#    NTupleVariable("phIso", lambda x : x.photonIso('rhoArea'), float, help="gammaIsolation for photons with footprint removal and pile-up correction"),
+#    NTupleVariable("neuHadIso", lambda x : x.neutralHadronIso('rhoArea'), float, help="neutralHadronIsolation for photons with footprint removal and pile-up correction"),
+    NTupleVariable("chHadIso", lambda x : x.chargedHadronIso(), float, help="chargedHadronIsolation for photons with footprint removal"),
+    NTupleVariable("phIso", lambda x : x.photonIso(), float, help="gammaIsolation for photons with footprint removal"),
+    NTupleVariable("neuHadIso", lambda x : x.neutralHadronIso(), float, help="neutralHadronIsolation for photons with footprint removal"),
     NTupleVariable("relIso", lambda x : x.ftprRelIso03 if hasattr(x,'ftprRelIso03') else x.relIso, float, help="relativeIsolation for photons with footprint removal and pile-up correction"),
     NTupleVariable("mcMatchId",  lambda x : getattr(x, 'mcMatchId', -99), int, mcOnly=True, help="Match to source from hard scatter (pdgId of heaviest particle in chain, 25 for H, 6 for t, 23/24 for W/Z), zero if non-prompt or fake"),
     NTupleVariable("mcPt",   lambda x : x.mcGamma.pt() if getattr(x,"mcGamma",None) else 0., mcOnly=True, help="p_{T} of associated gen photon"),
@@ -198,6 +205,9 @@ jetTypeExtra = NTupleObjectType("jetExtra",  baseObjectTypes = [ jetType ], vari
   
 metType = NTupleObjectType("met", baseObjectTypes = [ fourVectorType ], variables = [
     NTupleVariable("sumEt", lambda x : x.sumEt() ),
+    NTupleVariable("rawPt",  lambda x : x.uncorPt() ),
+    NTupleVariable("rawPhi", lambda x : x.uncorPhi() ),
+    NTupleVariable("rawSumEt", lambda x : x.uncorSumEt() ),
     NTupleVariable("genPt",  lambda x : x.genMET().pt() if x.genMET() else 0 , mcOnly=True ),
     NTupleVariable("genPhi", lambda x : x.genMET().phi() if x.genMET() else 0, mcOnly=True ),
     NTupleVariable("genEta", lambda x : x.genMET().eta() if x.genMET() else 0, mcOnly=True ),
