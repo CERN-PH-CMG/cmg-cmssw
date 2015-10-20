@@ -6,7 +6,7 @@ from CMGTools.RootTools.samples.ComponentCreator import ComponentCreator
 kreator = ComponentCreator()
 
 ### common MC samples
-from CMGTools.RootTools.samples.samples_13TeV_74X import *
+from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import *
 from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
 
 ### additional MC samples
@@ -74,8 +74,11 @@ dataSamples = dataSamples_Run2015B + dataSamples_17Jul + dataSamples_Run2015C + 
 
 ### --- mc ---
 mcSamples_monojet_Asymptotic25ns = TTs + SingleTop + [WJetsToLNu, DYJetsToLL_M50, DYJetsToLL_M10to50 ] + ZJetsToNuNuHT + DYJetsM50HT + WJetsToLNuHT + GJetsHT + QCDHT + DiBosons
-mcSamples_monojet_Asymptotic50ns = [ TTJets_50ns, TTJets_LO_50ns, DYJetsToLL_M50_50ns, WJetsToLNu_50ns ] + QCDPt_50ns
-mcSamples_monojet = RelVals740 + RelVals741 + mcSamples_monojet_Asymptotic25ns + mcSamples_monojet_Asymptotic50ns
+mcSamples_monojet = mcSamples_monojet_Asymptotic25ns 
+# 50ns not in miniAOD v2
+#mcSamples_monojet_Asymptotic50ns = [ TTJets_50ns, TTJets_LO_50ns, DYJetsToLL_M50_50ns, WJetsToLNu_50ns ] + QCDPt_50ns
+#mcSamples_monojet = RelVals740 + RelVals741 + mcSamples_monojet_Asymptotic25ns + mcSamples_monojet_Asymptotic50ns
+
 
 from CMGTools.TTHAnalysis.setup.Efficiencies import *
 dataDir = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data"
