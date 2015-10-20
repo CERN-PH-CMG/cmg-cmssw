@@ -15,8 +15,14 @@ DY : DYJetsToLL_M50:     xsec ; FillColor=ROOT.kCyan, Label="DY"
 
 # 209.2 /pb
 #data: DoubleMuon_Run2015D_v3_runs_256630_257599
-data: DoubleEG_Run2015D_v3_runs_256630_257599
+#data: DoubleEG_Run2015D_v3_runs_256630_257599
 #data: MuonEG_Run2015D_v3_runs_256630_257599
 #data: SingleMuon_Run2015D_v3_runs_256630_257599
-data: SingleElectron_Run2015D_v3_runs_256630_257599
+#data: SingleElectron_Run2015D_v3_runs_256630_257599
 
+# 832.31 /pb
+#data: DoubleMuon_Run2015D_v4_runs_258159_258714
+data: DoubleEG_Run2015D_v4_runs_258159_258714
+#data: MuonEG_Run2015D_v4_runs_258159_258714
+#data: SingleMuon_Run2015D_v4_runs_258159_258714
+data: SingleElectron_Run2015D_v4_runs_258159_258714

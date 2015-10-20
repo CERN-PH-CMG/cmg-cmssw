@@ -16,7 +16,8 @@ addPlotMakerOptions(parser)
 
 ## Some default options (too lazy to give them on the command line)
 options.tree = 'treeProducerSusyMultilepton'
-options.lumi = 0.2092
+#options.lumi = 0.2092
+options.lumi = 0.83231
 
 try:
     print "Processing %s" % args[1]
@@ -31,8 +32,10 @@ except IndexError:
 def makeLeptonCategories():
     from itertools import product
 
-    ptbins  = list(reversed([(10,25), (25,50), (50,100), (100, 1e5)]))
-    etabins = [(0,0.8), (0.8,1.479), (1.479,2.5)]
+    ptbins  = list(reversed([(10,25), (25,50), (50,1e5)]))
+    etabins = [(0,1.479), (1.479,2.5)]
+    # ptbins  = list(reversed([(10,25), (25,50), (50,100), (100, 1e5)]))
+    # etabins = [(0,0.8), (0.8,1.479), (1.479,2.5)]
     allbins = list(product(ptbins,etabins))
 
     ptcut  = ("LepGood_pt[{index}]>={ptlo}&&"
