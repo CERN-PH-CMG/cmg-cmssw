@@ -4,11 +4,21 @@
 ##########################################################
 import PhysicsTools.HeppyCore.framework.config as cfg
 
-#Load all analyzers
+# Load all analyzers
 from CMGTools.MonoXAnalysis.analyzers.dmCore_modules_cff import * 
-from PhysicsTools.Heppy.analyzers.objects.METAnalyzer import *
+from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 
-# Redefine what I need
+#-------- SET OPTIONS AND REDEFINE CONFIGURATIONS -----------
+
+is50ns = getHeppyOption("is50ns",False)
+runData = getHeppyOption("runData",False)
+scaleProdToLumi = float(getHeppyOption("scaleProdToLumi",-1)) # produce rough equivalent of X /pb for MC datasets
+saveSuperClusterVariables = getHeppyOption("saveSuperClusterVariables",False)
+removeJetReCalibration = getHeppyOption("removeJetReCalibration",False)
+forcedSplitFactor = getHeppyOption("splitFactor",-1)
+forcedFineSplitFactor = getHeppyOption("fineSplitFactor",-1)
+
+# Define skims
 signalSkim = False
 diLepSkim = True
 singleLepSkim = False
@@ -86,7 +96,6 @@ MonoJetEventAna = cfg.Analyzer(
 from CMGTools.MonoXAnalysis.analyzers.treeProducerDarkMatterMonoJet import * 
 
 # for electron scale and resolution checks
-saveSuperClusterVariables=True
 if saveSuperClusterVariables:
     leptonTypeExtra.addVariables([
             NTupleVariable("e5x5", lambda x: x.e5x5() if (abs(x.pdgId())==11 and hasattr(x,"e5x5")) else -999, help="Electron e5x5"),
@@ -179,17 +188,29 @@ triggerFlagsAna.triggerBits = {
     'MonoJet80MET120' : triggers_Jet80MET120,
     'METMu5' : triggers_MET120Mu5,
 }
+triggerFlagsAna.unrollbits = True
+triggerFlagsAna.saveIsUnprescaled = True
+triggerFlagsAna.checkL1Prescale = True
 
 from CMGTools.MonoXAnalysis.samples.samples_monojet_13TeV_74X import *
 
-selectedComponents = []; is50ns = False
+selectedComponents = [];
 
-isData = False
+if scaleProdToLumi>0: # select only a subset of a sample, corresponding to a given luminosity (assuming ~30k events per MiniAOD file, which is ok for central production)
+    target_lumi = scaleProdToLumi # in inverse picobarns
+    for c in selectedComponents:
+        if not c.isMC: continue
+        nfiles = int(min(ceil(target_lumi * c.xSection / 30e3), len(c.files)))
+        #if nfiles < 50: nfiles = min(4*nfiles, len(c.files))
+        print "For component %s, will want %d/%d files; AAA %s" % (c.name, nfiles, len(c.files), "eoscms" not in c.files[0])
+        c.files = c.files[:nfiles]
+        c.splitFactor = len(c.files)
+        c.fineSplitFactor = 1
 
-if isData==True: # For running on data
+if runData: # For running on data
     # Run2015C (Golden) + Run2015D (DCS) up to run 256941 , 25 ns, 3.8T     
-    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-257599_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
-    processing = "Run2015D-PromptReco-v3"; short = "Run2015D_v3"; run_ranges = [ (246908,257599) ]; useAAA=False; is50ns=False
+    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258159_13TeV_PromptReco_Collisions15_25ns_JSON_v2.txt"
+    processing = "Run2015D-PromptReco-v3"; short = "Run2015D_v3"; run_ranges = [ (257600,258159) ]; useAAA=False; is50ns=False
 
     compSelection = ""
     DatasetsAndTriggers = []
@@ -227,11 +248,26 @@ if isData==True: # For running on data
     if json is None:
         dmCoreSequence.remove(jsonAna)
 
+if is50ns:
+    jetAna.mcGT     = "Summer15_50nsV5_MC"
+    jetAna.dataGT   = "Summer15_50nsV5_DATA"
+    pfChargedCHSjetAna.mcGT     = "Summer15_50nsV5_MC"
+    pfChargedCHSjetAna.dataGT   = "Summer15_50nsV5_DATA"
 
+if removeJetReCalibration:
+    ## NOTE: jets will still be recalibrated, since calculateSeparateCorrections is True,
+    ##       however the code will check that the output 4-vector is unchanged.
+    jetAna.recalibrateJets = False
 
-if isData==False: # MC all
-### 25 ns 74X MC samples
-#selectedComponents = mcSamples_monojet_Asymptotic25ns ; is50ns = False
+if forcedSplitFactor>0 or forcedFineSplitFactor>0:
+    if forcedFineSplitFactor>0 and forcedSplitFactor!=1: raise RuntimeError, 'splitFactor must be 1 if setting fineSplitFactor'
+    for c in selectedComponents:
+        if forcedSplitFactor>0: c.splitFactor = forcedSplitFactor
+        if forcedFineSplitFactor>0: c.fineSplitFactor = forcedFineSplitFactor
+
+if runData==False: # MC all
+    ### 25 ns 74X MC samples
+    selectedComponents = mcSamples_monojet_Asymptotic25ns ; is50ns = False
 ### 50 ns 74X MC samples
 #selectedComponents = mcSamples_monojet_Asymptotic50ns ; is50ns = True
     for comp in selectedComponents:
@@ -241,7 +277,6 @@ if isData==False: # MC all
 
 
 #-------- HOW TO RUN ----------- 
-from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 test = getHeppyOption('test')
 if test == '1':
     monoJetSkim.metCut = 0
