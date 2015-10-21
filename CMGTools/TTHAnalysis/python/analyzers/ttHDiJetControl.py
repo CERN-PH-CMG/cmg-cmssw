@@ -41,6 +41,14 @@ class ttHDiJetControl( Analyzer ):
             if len(event.selectedIsoTrack)>0:
                 for myTrack in event.selectedIsoTrack:
                     event.mtwIsoTrack = mtw(myTrack, event.met)      
+##number of PF leptons (e,mu) with pt > 5, reliso < 0.2 
+#number of PF hadrons with pt > 10, reliso < 0.1                        
+                    if abs(myTrack.pdgId()) == 11 or abs(myTrack.pdgId()) == 13:
+                       if myTrack.pt()>5 and myTrack.absIso/myTrack.pt()<0.2:
+                          event.nPFLep5 += 1                           
+                    if abs(myTrack.pdgId()) == 211:
+                       if myTrack.pt()>10 and myTrack.absIso/myTrack.pt()<0.1:
+                          event.nPFHad10 += 1                            
 ##number of PF leptons (e,mu) with pt > 5, reliso < 0.2, MT < 100 
 #number of PF hadrons with pt > 10, reliso < 0.1, MT < 100                        
                     if event.mtwIsoTrack < 100:
@@ -105,7 +113,7 @@ class ttHDiJetControl( Analyzer ):
             objects40ja = [ j for j in event.cleanJets if j.pt() > 40]
             event.zll_ht = sum([x.pt() for x in objects40jc])
             for n,j in enumerate(objects40ja):
-                if n>2:  break
+                if n>3:  break
                 thisDeltaPhi = abs( deltaPhi( j.phi(), event.zll_met.phi() ) )
                 if thisDeltaPhi < event.zll_deltaPhiMin : event.zll_deltaPhiMin = thisDeltaPhi
 
@@ -114,7 +122,7 @@ class ttHDiJetControl( Analyzer ):
             objectsXja = [ j for j in event.cleanJets if j.pt() > self.jetPt]
             event.zll_ht_Xj = sum([x.pt() for x in objectsXjc])
             for n,j in enumerate(objectsXja):
-                if n>2:  break
+                if n>3:  break
                 thisDeltaPhi = abs( deltaPhi( j.phi(), event.zll_met.phi() ) )
                 if thisDeltaPhi < event.zll_deltaPhiMin_Xj : event.zll_deltaPhiMin_Xj = thisDeltaPhi
 
@@ -139,7 +147,9 @@ class ttHDiJetControl( Analyzer ):
         event.nLepLowMT =0
         event.nPFLep5LowMT = 0
         event.nPFHad10LowMT = 0
-
+        event.nPFLep5 = 0
+        event.nPFHad10 = 0
+        event.mtwIsoTrack = 0
 
         self.makeMT(event)
 
