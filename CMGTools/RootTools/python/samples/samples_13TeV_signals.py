@@ -29,6 +29,8 @@ ZprimeToZhToZinvhbb_narrow_M2000 = kreator.makeMCComponent("ZprimeToZhToZinvhbb_
 ZprimeToZhToZinvhbb_narrow_M3000 = kreator.makeMCComponent("ZprimeToZhToZinvhbb_narrow_M3000", "/ZprimeToZhToZinvhbb_narrow_M-3000_13TeV-madgraph/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 1.0, useAAA=True)
 ZprimeToZhToZinvhbb_narrow_M4500 = kreator.makeMCComponent("ZprimeToZhToZinvhbb_narrow_M4500", "/ZprimeToZhToZinvhbb_narrow_M-4500_13TeV-madgraph/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 1.0, useAAA=True)
 
+ZprimeToMuMu_M5000 = kreator.makeMCComponent("ZprimeToMuMu_M5000","/ZprimeToMuMu_M-5000_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 1.0, useAAA=True)
+
 WprimeToMuNu_M2000 = kreator.makeMCComponent("WprimeToMuNu_M2000", "/WprimeToMuNu_M-2000_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/MINIAODSIM", "CMS", ".*root", 1.0, useAAA=True)
 WprimeToENu_M2000 = kreator.makeMCComponent("WprimeToENu_M2000", "/WprimeToENu_M-2000_TuneCUETP8M1_13TeV-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 1.0, useAAA=True)
 WprimeToTauNu_M2000 = kreator.makeMCComponent("WprimeToTauNu_M2000", "/WprimeToTauNu_M-2000_TuneCUETP8M1_13TeV-pythia8-tauola/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 1.0, useAAA=True)
