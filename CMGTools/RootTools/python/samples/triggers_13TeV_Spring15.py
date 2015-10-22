@@ -57,6 +57,16 @@ triggers_FR_1e_b2g = [ "HLT_Ele17_CaloIdL_TrkIdL_IsoVL_v*", "HLT_Ele12_CaloIdL_T
 triggers_dijet_fat=["HLT_PFHT650_WideJetMJJ900DEtaJJ1p5_v*","HLT_PFHT650_WideJetMJJ950DEtaJJ1p5_v*"]
 ### ----> for the MT2 analysis
 
+triggers_MT2_mumu = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
+triggers_MT2_ee = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*"]
+triggers_MT2_emu = ["HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*", "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*"]
+triggers_MT2_mue = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*", "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*"]
+
+#triggers_MT2_mue = triggers_mue + ["HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*", "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*"]
+
+triggers_MT2_mu = ["HLT_IsoMu17_eta2p1_v*","HLT_IsoMu20_eta2p1_v*", "HLT_IsoMu20_v*", "HLT_IsoTkMu20_v*"]
+triggers_MT2_e = ["HLT_Ele23_WPLoose_Gsf_v*", "HLT_Ele22_eta2p1_WPLoose_Gsf_v*","HLT_Ele22_eta2p1_WP75_Gsf_v*", "HLT_Ele23_WP75_Gsf_v*"]
+
 triggers_HT900 = ["HLT_PFHT900_v*"]
 triggers_HT800 = ["HLT_PFHT800_v*"]
 triggers_MET170 = ["HLT_PFMET170_NoiseCleaned_v*"]
@@ -66,14 +76,13 @@ triggers_MET170_HBHECleaned = ["HLT_PFMET170_HBHECleaned_v*"]
 triggers_MET170_JetIdCleaned = ["HLT_PFMET170_JetIdCleaned_v*"]
 triggers_AllMET170 = triggers_MET170 + triggers_MET170_NotCleaned + triggers_MET170_HBHECleaned + triggers_MET170_JetIdCleaned
 
-
-triggers_HTMET120 = ["HLT_PFHT350_PFMET120_NoiseCleaned_v*"]
+triggers_HT350_MET120 = ["HLT_PFHT350_PFMET120_NoiseCleaned_v*"]
 #triggers_HTMET100 = ["HLT_PFHT350_PFMET100_NoiseCleaned_v*"]
-triggers_HTMET100 = ["HLT_PFHT350_PFMET100_JetIdCleaned_v*"]
-#triggers_HTMET100_noiseCleaned = ["HLT_PFHT350_PFMET100_NoiseCleaned_v*"]
-triggers_ht350 = ["HLT_PFHT350_v*"] # prescaled
-triggers_ht475 = ["HLT_PFHT475_v*"] # prescaled
-triggers_ht600 = ["HLT_PFHT600_v*"] # prescaled
+triggers_HT350_MET100 = ["HLT_PFHT350_PFMET100_JetIdCleaned_v*","HLT_PFHT350_PFMET100_NoiseCleaned_v*","HLT_PFHT350_PFMET100_v"]
+
+triggers_HT350 = ["HLT_PFHT350_v*"] # prescaled
+triggers_HT475 = ["HLT_PFHT475_v*"] # prescaled
+triggers_HT600 = ["HLT_PFHT600_v*"] # prescaled
 
 triggers_dijet = ["HLT_DiPFJetAve40_v*", "HLT_DiPFJetAve60_v*"]
 
@@ -92,25 +101,14 @@ triggers_photon155 = ["HLT_Photon155_v*"]
 triggers_photon175 = ["HLT_Photon175_v*"]
 triggers_photon165_HE10 = ["HLT_Photon165_HE10_v*"]
 
-triggers_MT2_mumu = ["HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*"]
 
-triggers_MT2_ee = ["HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*"]
-
-
-triggers_MT2_emu = ["HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*", "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*"]
-triggers_MT2_mue = ["HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*", "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*"]
-
-triggers_met90_mht90 = ["HLT_PFMET90_PFMHT90_IDTight_v*"]
-triggers_metNoMu90_mhtNoMu90 = ["HLT_PFMETNoMu90_JetIdCleaned_PFMHTNoMu90_IDTight_v1"]
-
-#triggers_MT2_mue = triggers_mue + ["HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*", "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v*"]
-
-triggers_MT2_mu = ["HLT_IsoMu17_eta2p1_v*","HLT_IsoMu20_eta2p1_v*", "HLT_IsoMu20_v*", "HLT_IsoTkMu20_v*"]
-triggers_MT2_e = ["HLT_Ele23_WPLoose_Gsf_v*", "HLT_Ele27_eta2p1_WPLoose_Gsf_v*", "HLT_Ele32_eta2p1_WPLoose_Gsf_v*","HLT_Ele23_WP75_Gsf_v*", "HLT_Ele27_eta2p1_WP75_Gsf_v*", "HLT_Ele32_eta2p1_WP75_Gsf_v*"]
-
-
-triggers_Jet80MET90 = ["HLT_MonoCentralPFJet80_PFMETNoMu90_NoiseCleaned_PFMHTNoMu90_IDTight_v*"]
-triggers_Jet80MET120 = ["HLT_MonoCentralPFJet80_PFMETNoMu120_NoiseCleaned_PFMHTNoMu120_IDTight_v*"]
+# monojets triggers
+#MC is NoiseCleaned but data will be JetIdCleaned
+triggers_met90_mht90 = ["HLT_PFMET90_PFMHT90_IDTight_v*","HLT_PFMET90_PFMHT90_IDLoose_v*"]
+triggers_metNoMu90_mhtNoMu90 = ["HLT_PFMETNoMu90_NoiseCleaned_PFMHTNoMu90_IDTight_v*","HLT_PFMETNoMu90_JetIdCleaned_PFMHTNoMu90_IDTight_v*"]
+triggers_metNoMu120_mhtNoMu120 = ["HLT_PFMETNoMu120_NoiseCleaned_PFMHTNoMu120_IDTight_v*","HLT_PFMETNoMu120_JetIdCleaned_PFMHTNoMu120_IDTight_v*"]
+triggers_Jet80MET90 = ["HLT_MonoCentralPFJet80_PFMETNoMu90_NoiseCleaned_PFMHTNoMu90_IDTight_v*","HLT_MonoCentralPFJet80_PFMETNoMu90_JetIdCleaned_PFMHTNoMu90_IDTight_v*"]
+triggers_Jet80MET120 = ["HLT_MonoCentralPFJet80_PFMETNoMu120_NoiseCleaned_PFMHTNoMu120_IDTight_v*","HLT_MonoCentralPFJet80_PFMETNoMu90_JetIdCleaned_PFMHTNoMu120_IDTight_v*"]
 triggers_MET120Mu5 = ["HLT_PFMET120_NoiseCleaned_Mu5_v*"]
 
 ### ----> for the edgeZ analysis. 
@@ -140,3 +138,5 @@ triggers_at52         = ['HLT_PFHT350_DiPFJet90_PFAlphaT0p52_v*']
 triggers_at51         = ['HLT_PFHT400_DiPFJet90_PFAlphaT0p51_v*']
 triggers_htmet        = ['HLT_PFHT350_PFMET120_NoiseCleaned_v*']
 triggers_htjet        = ['HLT_PFHT550_4Jet_v*', 'HLT_PFHT650_4Jet_v*', 'HLT_PFHT750_4Jet_v*']
+triggers_mu30ele30    = ['HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v*']
+triggers_doubleele33  = ['HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*']

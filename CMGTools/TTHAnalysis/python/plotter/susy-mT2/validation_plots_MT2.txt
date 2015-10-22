@@ -53,6 +53,11 @@ HLT_Mu8_EleX   : HLT_Mu8_EleX       : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_MuX_Ele12   : HLT_MuX_Ele12       : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_Photon165_HE10    : HLT_Photon165_HE10    : [-0.5,0.5,1.5]; XTitle="HLT"
 ###HLT_htXprescale: HLT_htXprescale: [-0.5,0.5,1.5]; XTitle="HLT"
+HLT_PFMET90_PFMHT90    : HLT_PFMET90_PFMHT90     : [-0.5,0.5,1.5]; XTitle="HLT"
+HLT_PFMETNoMu90_PFMHTNoMu90    : HLT_PFMETNoMu90_PFMHTNoMu90     : [-0.5,0.5,1.5]; XTitle="HLT"
+HLT_PFMETNoMu120_PFMHTNoMu120    : HLT_PFMETNoMu120_PFMHTNoMu120     : [-0.5,0.5,1.5]; XTitle="HLT"
+HLT_MonoCentralPFJet80_PFMETNoMu90_PFMHTNoMu90    : HLT_MonoCentralPFJet80_PFMETNoMu90_PFMHTNoMu90     : [-0.5,0.5,1.5]; XTitle="HLT"
+
 
 Flag_EcalDeadCellTriggerPrimitiveFilter : Flag_EcalDeadCellTriggerPrimitiveFilter: [-0.5,0.5,1.5]; XTitle="metFilter"
 Flag_trkPOG_manystripclus53X : Flag_trkPOG_manystripclus53X: [-0.5,0.5,1.5]; XTitle="metFilter"
@@ -64,6 +69,7 @@ Flag_trkPOGFilters : Flag_trkPOGFilters : [-0.5,0.5,1.5]; XTitle="metFilter"
 Flag_trackingFailureFilter : Flag_trackingFailureFilter: [-0.5,0.5,1.5]; XTitle="metFilter"
 Flag_CSCTightHaloFilter : Flag_CSCTightHaloFilter: [-0.5,0.5,1.5]; XTitle="metFilter"
 Flag_HBHENoiseFilter : Flag_HBHENoiseFilter : [-0.5,0.5,1.5]; XTitle="metFilter"
+Flag_HBHEIsoNoiseFilter : Flag_HBHEIsoNoiseFilter : [-0.5,0.5,1.5]; XTitle="metFilter"
 Flag_goodVertices : Flag_goodVertices: [-0.5,0.5,1.5]; XTitle="metFilter"
 Flag_eeBadScFilter : Flag_eeBadScFilter: [-0.5,0.5,1.5]; XTitle="metFilter"
 Flag_METFilters : Flag_METFilters: [-0.5,0.5,1.5]; XTitle="metFilter"
@@ -105,7 +111,7 @@ jet_mcPt: jet_mcPt: 200, 0, 200     ; XTitle="jet mc pt"
 jet_mcFlavour: jet_mcFlavour: 100, 0,100 ; XTitle="jet mc flavour"
 jet_area: jet_area: 100, 0,100 ; XTitle="jet mc area"
 
-jet_id: jet_id: [-0.5,0.5,1.5,2.5,3.5] ; XTitle="jet id"
+jet_id: jet_id: [-0.5,0.5,1.5,2.5,3.5,4.5,5.5] ; XTitle="jet id"
 jet_puId: jet_puId: [-0.5,0.5,1.5] ; XTitle="jet PU id"
 jet_qgl: jet_qgl: 60,-0.5,1.0 ; XTitle="jet qgl"
 
@@ -241,6 +247,29 @@ cr_zllmt_deltaPhiMin: zllmt_deltaPhiMin: 70,0,3.15    ; XTitle="dphi_{min}(jet\,
 cr_zllmt_diffMetMht: zllmt_diffMetMht: 100,0,500    ; XTitle="|MET-MHT|"
 
 cr_zllmt_mt: zllmt_mt: 16,0,600    ; XTitle="Z p_{T}  [GeV]"
+
+
+##### lepton removed plots
+
+cr_rl_mt2:   rl_mt2: 16,0,800    ; XTitle="MT2  [GeV]"
+
+cr_rl_met:   rl_met_pt: 16,0,800    ; XTitle="E_{T}^{miss}  [GeV]"
+cr_rl_met_phi:   rl_met_phi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
+
+cr_rl_ht: rl_ht:  16,0,800    ; XTitle="H_{T}  [GeV]"
+
+cr_rl_mht:   rl_mht_pt: 16,0,800    ; XTitle="H_{T}^{miss}  [GeV]"
+cr_rl_mht_phi:   rl_mht_phi: 8,-3.15,3.15    ; XTitle="phi of H_{T}^{miss}"
+
+cr_rl_deltaPhiMin: rl_deltaPhiMin: 70,0,3.15    ; XTitle="dphi_{min}(jet\,E_{T}^{miss})"
+cr_rl_diffMetMht: rl_diffMetMht: 100,0,500    ; XTitle="|MET-MHT|"
+
+cr_rl_pt: rl_pt: 16,0,600    ; XTitle="Zlike p_{T}  [GeV]"
+cr_rl_phi: rl_phi: 8,-3.15,3.15    ; XTitle="Zlike phi"
+cr_rl_eta: rl_eta: 10,-5.,5.    ; XTitle="Zlike eta"
+cr_rl_mass: rl_mass: 20,0,400.    ; XTitle="Zlike mass [GeV]"
+
+cr_rl_minMTBMet: rl_minMTBMet: 16,0,800    ; XTitle="min M_{T}(B\,met)"
 
 
 ##### LEPTON
