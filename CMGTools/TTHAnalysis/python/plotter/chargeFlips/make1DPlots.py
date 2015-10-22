@@ -29,6 +29,7 @@ def make2DPlot(histo, outname='probmap'):
     c = ROOT.TCanvas("c", "C", 800, 600)
     c.SetRightMargin(0.15)
     c.SetLogx(1)
+    histo.SetMinimum(0.)
     histo.SetMaximum(0.005)
     histo.Draw("colz text")
 
@@ -46,28 +47,56 @@ def make1DPlots(hist_data, hist_mc):
     for n,(hda,hmc) in enumerate(zip(xhists_da, xhists_mc)):
         hda.SetLineWidth(2)
         hda.SetLineColor(ROOT.kBlack)
-        hda.SetMarkerStyle(22)
+        hda.SetMarkerStyle(20)
+        hda.SetMarkerSize(1.5)
 
-        hmc.SetLineWidth(1)
+        hda.GetYaxis().SetTitle("Charge MisId. Prob.")
+        hda.GetYaxis().SetTitleOffset(1.6)
+        hda.GetXaxis().SetTitleOffset(1.25)
+
+        hmc.SetLineWidth(2)
         hmc.SetLineColor(ROOT.kAzure+2)
         hmc.SetFillColor(ROOT.kAzure+2)
         hmc.SetFillStyle(3004)
+        hmc.SetMarkerStyle(4)
+        hmc.SetMarkerSize(1.5)
+        hmc.SetMarkerColor(ROOT.kAzure+2)
 
         hmc.SetMinimum(0.000)
         hda.SetMinimum(0.000)
-        ymax = 0.01 if n==1 else 0.001
+        ymax = 0.02 if n==1 else 0.002
         hmc.SetMaximum(ymax)
         hda.SetMaximum(ymax)
 
+        leg = ROOT.TLegend(0.70, 0.65, 0.90, 0.85)
+        leg.SetBorderSize(0)
+        leg.SetFillColor(0)
+        leg.SetFillStyle(0)
+        leg.SetShadowColor(0)
+        leg.SetTextFont(43)
+        leg.SetTextSize(20)
+        leg.AddEntry(hda, "Data 0.83 fb^{-1}", "P")
+        leg.AddEntry(hmc, "DY MC", "F")
+
         c = ROOT.TCanvas("c", "C", 800, 600)
+        c.SetRightMargin(0.05)
+        c.SetLeftMargin(0.15)
         c.SetLogx(1)
         hda.Draw("PE")
         hmc.Draw("E2 same")
+        leg.Draw()
+
+        tlat = ROOT.TLatex()
+        tlat.SetNDC(1)
+        tlat.SetTextFont(43)
+        tlat.SetTextSize(20)
+        label = 'Barrel' if n == 0 else 'Endcaps'
+        tlat.DrawLatex(0.20, 0.83, label)
 
         hda.GetXaxis().SetMoreLogLabels()
 
         for ext in ['.pdf', '.png']:
-            c.SaveAs("proj_%d%s" % (n, ext))
+            c.SaveAs("chmid_prob_proj_%d%s" % (n, ext))
 
     return 0
 
@@ -115,9 +144,9 @@ def main():
         return -1
 
 
-    make2DPlot(histo_da, outname='probmap_'+BASENAME1)
-    make2DPlot(histo_mc, outname='probmap_'+BASENAME2)
-    # make1DPlots(histo_da, histo_mc)
+    make2DPlot(histo_da, outname='chmid_prob_map_'+BASENAME1)
+    make2DPlot(histo_mc, outname='chmid_prob_map_'+BASENAME2)
+    make1DPlots(histo_da, histo_mc)
     printTable(histo_da,title='Data')
     printTable(histo_mc,title='MC')
 
