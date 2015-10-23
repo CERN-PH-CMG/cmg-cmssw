@@ -83,7 +83,7 @@ class JetAnalyzer( Analyzer ):
           if   doResidual == "MC":   doResidual = self.cfg_comp.isMC
           elif doResidual == "Data": doResidual = not self.cfg_comp.isMC
           elif doResidual not in [True,False]: raise RuntimeError, "If specified, applyL2L3Residual must be any of { True, False, 'MC', 'Data'(default)}"
-          GT = mcGT if self.cfg_comp.isMC else dataGT
+          GT = getattr(cfg_comp, 'jecGT', mcGT if self.cfg_comp.isMC else dataGT)
           # Now take care of the optional arguments
           kwargs = { 'calculateSeparateCorrections':calculateSeparateCorrections,
                      'calculateType1METCorrection' :calculateType1METCorrection, }
