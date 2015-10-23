@@ -28,6 +28,7 @@ class MCAnalysis:
         self._rank        = {} ## keep ranks as in the input text file
         self._projection  = Projections(options.project, options) if options.project != None else None
         self._premap = []
+        defaults = {}
         for premap in options.premap:
             to,fro = premap.split("=")
             if to[-1] == ":": to = to[:-1]
@@ -47,6 +48,16 @@ class MCAnalysis:
                         extra[key] = eval(val)
                     else: extra[setting] = True
             field = [f.strip() for f in line.split(':')]
+            if len(field) == 1 and field[0] == "*":
+                if len(self._allData): raise RuntimeError, "MCA defaults ('*') can be specified only before all processes"
+                print "Setting the following defaults for all samples: "
+                for k,v in extra.iteritems():
+                    print "\t%s: %r" % (k,v)
+                    defaults[k] = v
+                continue
+            else:
+                for k,v in defaults.iteritems():
+                    if k not in extra: extra[k] = v
             if len(field) <= 1: continue
             if "SkipMe" in extra and extra["SkipMe"] == True and not options.allProcesses: continue
             signal = False
