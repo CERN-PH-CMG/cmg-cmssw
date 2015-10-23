@@ -56,6 +56,12 @@ elif test == '2':
         comp.files = comp.files[:1]
         comp.splitFactor = 1
         comp.fineSplitFactor = 1
+elif test == "data":
+    comp = DoubleMuon_Run2015D_05Oct2015_25ns
+    comp.files = [ 'root://eoscms//eos/cms/store/data/Run2015D/DoubleMuon/MINIAOD/05Oct2015-v1/40000/006906D0-646F-E511-B01E-0025905A6118.root' ]
+    comp.splitFactor = 1
+    comp.fineSplitFactor = 1
+    selectedComponents = [ comp ]
 elif test=="sync":
     comp = GGHZZ4L
     comp.name = 'HZZ4L'

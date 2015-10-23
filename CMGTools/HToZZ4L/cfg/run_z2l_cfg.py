@@ -2,6 +2,7 @@
 ##       CONFIGURATION FOR HZZ4L TREES                  ##
 ##########################################################
 import PhysicsTools.HeppyCore.framework.config as cfg
+import re
 
 #Load all analyzers
 from CMGTools.HToZZ4L.analyzers.hzz4lCore_modules_cff import * 
@@ -88,7 +89,7 @@ if True:
 from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 test = getHeppyOption('test')
 if test == "1":
-    comp = DYJetsToLL_M50
+    comp = DYJetsToLL_M50_v2
     comp.files = comp.files[:1]
     comp.splitFactor = 1
     comp.fineSplitFactor = 1 if getHeppyOption('single') else 5
