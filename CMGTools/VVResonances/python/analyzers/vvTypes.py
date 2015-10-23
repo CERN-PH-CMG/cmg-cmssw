@@ -110,3 +110,16 @@ JJType = NTupleObjectType("JJType", baseObjectTypes=[VVType], variables = [
 ])
 
 
+
+NuNuJJType = NTupleObjectType("NuNuJJType", baseObjectTypes=[VVType], variables = [
+    NTupleSubObject("rawLV",  lambda x : x['pair'].leg1.rawP4()+x['pair'].leg2.p4(),fourVectorType),
+    NTupleSubObject("met",  lambda x : x['pair'].leg1,metType),
+    NTupleSubObject("jet",  lambda x : x['pair'].leg2,FatJetType),
+    NTupleSubObject("softDrop",  lambda x : x['pair'].leg2.softDropJet,JetType),
+    NTupleSubObject("s1",  lambda x : x['pair'].leg2.subjets[0],JetType),
+    NTupleVariable("s1_matched",   lambda x : x['pair'].leg2.subjets[0].matched, int),       
+    NTupleSubObject("s2",  lambda x : x['pair'].leg2.subjets[1],JetType),          
+    NTupleVariable("s2_matched",   lambda x : x['pair'].leg2.subjets[1].matched, int),       
+])
+
+

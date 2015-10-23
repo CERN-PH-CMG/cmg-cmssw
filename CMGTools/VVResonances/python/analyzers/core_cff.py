@@ -205,7 +205,6 @@ tauAna = cfg.Analyzer(
 
 
 
-
 metAna = cfg.Analyzer(
     METAnalyzer, name="metAnalyzer",
     metCollection     = "slimmedMETs",
@@ -216,14 +215,15 @@ metAna = cfg.Analyzer(
     doMetNoMu = False,
     doMetNoEle = False,
     doMetNoPhoton = False,
-    recalibrate = False,
-    jetAnalyzerCalibrationPostFix = "",
+    recalibrate = False, # or "type1", or True
+    applyJetSmearing = False, # does nothing unless the jet smearing is turned on in the jet analyzer
+    old74XMiniAODs = False, # set to True to get the correct Raw MET when running on old 74X MiniAODs
+    jetAnalyzerPostFix = "",
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,
     collectionPostFix = "",
     )
-
 
 
 leptonicVAna = cfg.Analyzer(
@@ -258,6 +258,7 @@ multiStateAna = cfg.Analyzer(
     selectPairLL = (lambda x: x.mass()>200.0 and x.deltaPhi()>1.5 ),
     selectPairLNu = (lambda x: x.mass()>200.0 and x.deltaPhi()>1.5 ),
     selectPairJJ = (lambda x: x.mass()>1000.0 and x.deltaPhi()>1.5 ),
+    selectPairJJNuNu = (lambda x: x.leg1.pt()>300 and x.deltaPhi()>1.0 ),
     suffix = '',
     recalibrateJets = True, # True, False, 'MC', 'Data'
     recalibrationType = "AK4PFchs",

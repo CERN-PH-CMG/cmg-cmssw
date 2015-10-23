@@ -17,6 +17,7 @@ class EventInterpretationBase( Analyzer ):
         self.selectPairLNu = self.cfg_ana.selectPairLNu
         self.selectPairLL = self.cfg_ana.selectPairLL
         self.selectPairJJ = self.cfg_ana.selectPairJJ
+        self.selectPairJJNuNu = self.cfg_ana.selectPairJJNuNu
         self.isMC =cfg_comp.isMC
         if hasattr(cfg_ana,'matchDR'):
             self.matchDR = cfg_ana.matchDR
@@ -63,6 +64,7 @@ class EventInterpretationBase( Analyzer ):
             self.handles['subjets'] = AutoHandle( (self.cfg_ana.subJets,'SubJets'), 'std::vector<pat::Jet>' )
 
 
+
             
 
     def removeLeptonFootPrint(self,leptons,cands):
@@ -85,7 +87,7 @@ class EventInterpretationBase( Analyzer ):
                         s.mcquark = g
                         break;
 
-    def skim(self,leptons):
+    def skim(self,leptons,met):
         cleanedJets = []
         for jet in self.handles['fatjets'].product():
             overlap=False
@@ -97,7 +99,7 @@ class EventInterpretationBase( Analyzer ):
                 cleanedJets.append(jet)
         nJets = len(cleanedJets)        
         nLeptons = len(leptons)
-        if (nLeptons>0 and nJets>0) or nJets>1:
+        if (nLeptons>0 and nJets>0) or nJets>1 or (nJets>0 and met.pt()>300):
             return True
         return False
                 
@@ -151,7 +153,7 @@ class EventInterpretationBase( Analyzer ):
                             break
 
         if self.jetReCalibrator is not None:
-            self.jetReCalibrator.correctAll(unfiltered, self.rho, delta=self.shiftJEC)
+            self.jetReCalibrator.correctAll(unfiltered, self.rho, self.shiftJEC,True,False,[0.,0.],[0.,0.,0.])
             return filter(lambda x: x.pt()>30, unfiltered)
         else:
             return unfiltered
