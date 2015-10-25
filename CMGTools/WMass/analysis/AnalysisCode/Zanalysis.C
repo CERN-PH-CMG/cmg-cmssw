@@ -312,7 +312,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     string fileZmmMC =     /*POW */ "../RecoilCode/OCT25/recoilfit_OCT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
     // need to add the half stat
     string fileZmmData =   /*DATA*/ "../RecoilCode/OCT25/recoilfit_OCT25_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
-    if(correctToMadgraph) fileZmmData = /*MAD */ "../RecoilCode/OCT25/recoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
+    if(correctToMadgraph) fileZmmData = /*MAD */ "../RecoilCode/OCT25/recoilfit_OCT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
     // string fileZmmData =   /*POW */ "../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
     // string fileZmmData =   /*MAD */ "../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
 
@@ -1117,24 +1117,24 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                                           ZNocorr.Pt(), ZNocorr.Phi(),  u1_recoil, u2_recoil);
 
                               common_stuff::plot1D(Form("hWlike%s_u1_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                u1_recoil, weight, h_1d, 80, -20, 20 );
+                                u1_recoil, weight, h_1d, 60, -20, 20 );
                               common_stuff::plot1D(Form("hWlike%s_u2_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                u2_recoil, weight, h_1d, 80, -20, 20 );
+                                u2_recoil, weight, h_1d, 60, -20, 20 );
 
                               common_stuff::plot2D(Form("hWlike%s_u1vsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                ZNocorr.Pt(), u1_recoil, weight, h_2d, 80, 0, 80, 80, -20, 20 );
+                                ZNocorr.Pt(), u1_recoil, weight, h_2d, 60, 0, 60, 60, -20, 20 );
                               common_stuff::plot2D(Form("hWlike%s_u2vsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                ZNocorr.Pt(), u2_recoil, weight, h_2d, 80, 0, 80, 80, -20, 20 );
+                                ZNocorr.Pt(), u2_recoil, weight, h_2d, 60, 0, 60, 60, -20, 20 );
 
                               common_stuff::plot2D(Form("hWlike%s_u1vsZrap_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                ZGen_status3.Rapidity(), u1_recoil, weight, h_2d, 80, -4, +4, 80, -20, 20 );
+                                ZGen_status3.Rapidity(), u1_recoil, weight, h_2d, 60, -4, +4, 60, -20, 20 );
                               common_stuff::plot2D(Form("hWlike%s_u2vsZrap_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                ZGen_status3.Rapidity(), u2_recoil, weight, h_2d, 80, -4, +4, 80, -20, 20 );
+                                ZGen_status3.Rapidity(), u2_recoil, weight, h_2d, 60, -4, +4, 60, -20, 20 );
 
                               common_stuff::plot3D(Form("hWlike%s_u1vsZptvsZrap_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                ZNocorr.Pt(), ZGen_status3.Rapidity(), u1_recoil, weight, h_3d, 80, 0, 80, 80, -4, +4, 80, -20, 20 );
+                                ZNocorr.Pt(), ZGen_status3.Rapidity(), u1_recoil, weight, h_3d, 60, 0, 60, 60, -4, +4, 60, -20, 20 );
                               common_stuff::plot3D(Form("hWlike%s_u2vsZptvsZrap_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                ZNocorr.Pt(), ZGen_status3.Rapidity(), u2_recoil, weight, h_3d, 80, 0, 80, 80, -4, +4, 80, -20, 20 );
+                                ZNocorr.Pt(), ZGen_status3.Rapidity(), u2_recoil, weight, h_3d, 60, 0, 60, 60, -4, +4, 60, -20, 20 );
                             }
                             
                             //------------------------------------------------------------------------------------------------

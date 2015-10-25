@@ -18,11 +18,13 @@ void syst_recoil_one(TString recstr="u1")
 {
   gStyle->SetOptFit(111);
 
-  const int nhists = 6;
-  const int ntotsysts = 60;
+  const int nhists = 12;
 
-  int IniVar[nhists] = {0,  9,  0, 0,  9,  0 };
-  int NVar[nhists]   = {9, 18, 12, 9, 18, 12 };
+  int IniVar[nhists] = {0,  9,  0, 0,  9,  0, 0,  9,  0, 0,  9,  0};
+  int NVars[nhists]  = {9, 21, 15, 9, 21, 15, 9, 21, 15, 9, 21, 15};
+
+  int ntotsysts = 0;
+  for (int i=0; i<nhists; ++i) ntotsysts+=(NVars[i]-IniVar[i]);
 
   TFile* fcentral = new TFile(Form("0.root"));
   TH2D* hcentral2 =(TH2D*)fcentral->Get(Form("hWlikePos_%svsZpt_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
@@ -42,7 +44,7 @@ void syst_recoil_one(TString recstr="u1")
   int nsyst=0;
   for(int i=0; i<nhists; i++){
     fin[i]=new TFile(Form("%d.root", i+1));
-    for(int j=IniVar[i]; j<NVar[i]; j++){
+    for(int j=IniVar[i]; j<NVars[i]; j++){
       hsyst2[nsyst]=(TH2D*)fin[i]->Get(Form("hWlikePos_%svsZpt_8_JetCut_pdf229800-0_RecoilCorrVar%d_eta0p9_91188", recstr.Data(), j));
       hsyst2[nsyst]->SetName(Form("hWlikePos_%svsZpt_8_JetCut_pdf229800-0_RecoilCorrVar%d_eta0p9_91188", recstr.Data(), nsyst));
       hsyst2[nsyst]->SetTitle(Form("hWlikePos_%svsZpt_8_JetCut_pdf229800-0_RecoilCorrVar%d_eta0p9_91188", recstr.Data(), nsyst));
@@ -244,7 +246,7 @@ void syst_recoil_one(TString recstr="u1")
   c_mean->SaveAs(".png");
   c_rms->SaveAs(".png");
   
-  int nbindiv = 25;
+  int nbindiv = 20;
   for (int i=0; i<Zptbins/nbindiv; ++i) {
     int bin_ini = (i+0)*nbindiv;
     int bin_fin = (i+1)*nbindiv;
