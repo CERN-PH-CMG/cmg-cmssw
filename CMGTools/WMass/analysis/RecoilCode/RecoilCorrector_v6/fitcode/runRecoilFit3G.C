@@ -4219,11 +4219,10 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   /////
   /////
 
-  /*
   /// temporary fix
   if(lPar!=fU1) fZPtMax=50;
-  if(lPar==fU1) fZPtMax=30;
-  */
+  if(lPar==fU1) fZPtMax=20;
+
 
   //RooFit Build a double Gaussian
   TRandom lRand(0xDEADBEEF);
@@ -4567,7 +4566,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   if(doRecoParam) fileName2D += "_doRecoParam";
   if(doLepProjAbsolute) fileName2D += "_doLepProjAbsolute";
   if(doKeys) fileName2D += "_keys";
-  fileName2D += "_OCT17";
+  fileName2D += "_OCT25";
   fileName2D += ".root";
   
   if(doPrint /*&& !doKeys*/) {
@@ -4852,7 +4851,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   */
 
   TString fileName2DFIT="file2Dfit_";
-  fileName2DFIT += "OCT17_";
+  fileName2DFIT += "OCT25_";
   if(!fData && (!doPosW && doNegW) && !doBKG) fileName2DFIT += "Wneg";
   if(!fData && (doPosW && !doNegW) && !doBKG) fileName2DFIT += "Wpos";
   if(!fData && (!doPosW && !doNegW) && !doBKG) fileName2DFIT += "Z";
@@ -7141,7 +7140,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
   //  TString name="recoilfits/recoilfit_JAN22_MADtoMAD";
   //  TString name="recoilfits/recoilfit_JAN22_POWtoMAD";
   //  TString name="recoilfits/recoilfit_JAN28";
-  TString name="recoilfits/recoilfit_OCT17";
+  TString name="recoilfits/recoilfit_OCT25";
   if(do8TeV) name +="_8TeV";
   if(doABC) name +="_ABC";
 
@@ -7151,8 +7150,8 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
   //  fNJetSelect = -1; fMetMax = 500; fZPtMin = 0; fZPtMax = 21; 
   //  fNJetSelect = -1; fMetMax = 500; fZPtMin = 1; fZPtMax = 20;
   //  fNJetSelect = -1; fMetMax = 500; fZPtMin = 1; fZPtMax = 30;
-  //  fNJetSelect = -1; fMetMax = 500; fZPtMin = 1; fZPtMax = 50;
-  fNJetSelect = -1; fMetMax = 500; fZPtMin = 1; fZPtMax = 20;
+  fNJetSelect = -1; fMetMax = 500; fZPtMin = 0; fZPtMax = 50;
+  //  fNJetSelect = -1; fMetMax = 500; fZPtMin = 1; fZPtMax = 20;
   ///// process Type is used inside the checkPDF
   pType=processType;
   ///// fId is used inside the rapidity bin
@@ -7223,8 +7222,8 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 			    ////			    "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
 			    //			    "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
 			    //			    "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
-			    "../../SEPT25/recoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root",
-			    "../../SEPT25/keysrecoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root","PF",fId);
+			    "../../OCT25/recoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root",
+			    "../../OCT25/keysrecoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root","PF",fId);
 
       if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,lZMU1RMS3Fit,lZMU1FracFit,lZMU1Mean1Fit, lZMU1Mean2Fit,
 			   lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,lZMU2RMS3Fit,lZMU2FracFit,lZMU2Mean1Fit, lZMU2Mean2Fit,
@@ -7232,8 +7231,8 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 			   //			   "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 			   //			   "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 			   //			   "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
-			   "../../SEPT25/recoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root",
-			   "../../SEPT25/keysrecoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root","PF",fId);
+			   "../../OCT25/recoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root",
+			   "../../OCT25/keysrecoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root","PF",fId);
       isMC=false;
   
       /*
@@ -7253,8 +7252,8 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 		 //		 "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 		 //		 "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 		 //		 "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
-		 "../../SEPT25/recoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root",
-		 "../../SEPT25/keysrecoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root","PF",fId);
+		 "../../OCT25/recoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root",
+		 "../../OCT25/keysrecoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root","PF",fId);
 
       /*
       // POWHEG as DATA closures
