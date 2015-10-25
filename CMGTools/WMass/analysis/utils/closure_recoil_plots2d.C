@@ -18,10 +18,10 @@ void syst_recoil_one(TString recstr="u1")
 {
   gStyle->SetOptFit(111);
 
-  const int nhists = 6;
+  const int nhists = 12;
 
-  int IniVar[nhists] = {0,  9,  0, 0,  9,  0 };
-  int NVars[nhists]  = {9, 21, 15, 9, 21, 15 };
+  int IniVar[nhists] = {0,  9,  0, 0,  9,  0, 0,  9,  0, 0,  9,  0};
+  int NVars[nhists]  = {9, 21, 15, 9, 21, 15, 9, 21, 15, 9, 21, 15};
 
   int ntotsysts = 0;
   for (int i=0; i<nhists; ++i) ntotsysts+=(NVars[i]-IniVar[i]);
