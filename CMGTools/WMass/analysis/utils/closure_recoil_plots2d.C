@@ -246,7 +246,7 @@ void syst_recoil_one(TString recstr="u1")
   c_mean->SaveAs(".png");
   c_rms->SaveAs(".png");
   
-  int nbindiv = 25;
+  int nbindiv = 20;
   for (int i=0; i<Zptbins/nbindiv; ++i) {
     int bin_ini = (i+0)*nbindiv;
     int bin_fin = (i+1)*nbindiv;
