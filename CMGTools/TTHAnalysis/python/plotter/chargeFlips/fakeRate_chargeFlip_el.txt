@@ -1,0 +1,8 @@
+## Flip the charge of the second lepton
+# careful with the square brackets
+change: LepGood_charge\[1\] : (-LepGood_charge[1])
+## define the FR weight
+weight: chargeFlipWeight_2lss(LepGood_pt[0],LepGood_eta[0],LepGood_pdgId[0],LepGood_pt[1],LepGood_eta[1],LepGood_pdgId[1])
+## load histograms
+load-histo: QF_el : $DATA/fakerate/QF_data_el.root : chargeMisId
+
