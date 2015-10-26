@@ -11,9 +11,9 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 #-------- SET OPTIONS AND REDEFINE CONFIGURATIONS -----------
 
 is50ns = getHeppyOption("is50ns",False)
-runData = getHeppyOption("runData",False)
+runData = getHeppyOption("runData",True)
 scaleProdToLumi = float(getHeppyOption("scaleProdToLumi",-1)) # produce rough equivalent of X /pb for MC datasets
-saveSuperClusterVariables = getHeppyOption("saveSuperClusterVariables",False)
+saveSuperClusterVariables = getHeppyOption("saveSuperClusterVariables",True)
 removeJetReCalibration = getHeppyOption("removeJetReCalibration",False)
 forcedSplitFactor = getHeppyOption("splitFactor",-1)
 forcedFineSplitFactor = getHeppyOption("fineSplitFactor",-1)
@@ -208,14 +208,17 @@ if scaleProdToLumi>0: # select only a subset of a sample, corresponding to a giv
         c.fineSplitFactor = 1
 
 if runData: # For running on data
-    # Run2015C (Golden) + Run2015D (DCS) up to run 256941 , 25 ns, 3.8T     
-    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258159_13TeV_PromptReco_Collisions15_25ns_JSON_v2.txt"
-    processing = "Run2015D-PromptReco-v3"; short = "Run2015D_v3"; run_ranges = [ (257600,258159) ]; useAAA=False; is50ns=False
+    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258750_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
+    run_ranges = [ (246908,258750) ]; useAAA=False; is50ns=False
 
     compSelection = ""
     DatasetsAndTriggers = []
     selectedComponents = []; vetos = []
-
+    ProcessingsAndRunRanges = []; Shorts = []
+    ProcessingsAndRunRanges.append( ("Run2015C_25ns-05Oct2015-v1", [254227,255031] ) ); Shorts.append("Run2015C_05Oct")
+    ProcessingsAndRunRanges.append( ("Run2015D-05Oct2015-v1", [256630,258158] ) ); Shorts.append("Run2015D_05Oct")
+    ProcessingsAndRunRanges.append( ("Run2015D-PromptReco-v4", [258159,999999] ) ); Shorts.append("Run2015D_v4")
+    
     if diLepSkim == True:
         DatasetsAndTriggers.append( ("DoubleMuon", triggers_mumu_iso + triggers_mumu_ss + triggers_mumu_ht + triggers_3mu + triggers_3mu_alt) )
         DatasetsAndTriggers.append( ("DoubleEG",   triggers_ee + triggers_ee_ht + triggers_3e) )
@@ -226,27 +229,35 @@ if runData: # For running on data
         DatasetsAndTriggers.append( ("MET", triggers_Jet80MET90 + triggers_Jet80MET120 + triggers_MET120Mu5 ) )
 
     for pd,triggers in DatasetsAndTriggers:
-        for run_range in run_ranges:
-            label = "runs_%d_%d" % run_range if run_range[0] != run_range[1] else "run_%d" % (run_range[0],)
-            compname = pd+"_"+short+"_"+label
-            if ((compSelection and not re.search(compSelection, compname))):
+        iproc=0 
+        for processing,run_dslimits in ProcessingsAndRunRanges:
+            for run_range in run_ranges:
+                run_min = max(run_range[0],run_dslimits[0])
+                run_max = min(run_range[1],run_dslimits[1])
+                this_run_range = (run_min,run_max)
+                label = "runs_%d_%d" % this_run_range if this_run_range[0] != this_run_range[1] else "run_%d" % (this_run_range[0],)
+                compname = pd+"_"+Shorts[iproc]+"_"+label
+                if ((compSelection and not re.search(compSelection, compname))):
                     print "Will skip %s" % (compname)
+
                     continue
-            comp = kreator.makeDataComponent(compname, 
-                                             "/"+pd+"/"+processing+"/MINIAOD", 
-                                             "CMS", ".*root", 
-                                             json=json, 
-                                             run_range=run_range, 
-                                             triggers=triggers[:], vetoTriggers = vetos[:],
-                                             useAAA=useAAA)
-            print "Will process %s (%d files)" % (comp.name, len(comp.files))
-#            print "\ttrigger sel %s, veto %s" % (triggers, vetos)
-            comp.splitFactor = len(comp.files)
-            comp.fineSplitFactor = 1
-            selectedComponents.append( comp )
-        vetos += triggers
-    if json is None:
-        dmCoreSequence.remove(jsonAna)
+                print "Building component ",compname," with run range ",label, "\n"
+                comp = kreator.makeDataComponent(compname, 
+                                                 "/"+pd+"/"+processing+"/MINIAOD", 
+                                                 "CMS", ".*root", 
+                                                 json=json, 
+                                                 run_range=run_range, 
+                                                 triggers=triggers[:], vetoTriggers = vetos[:],
+                                                 useAAA=useAAA)
+                print "Will process %s (%d files)" % (comp.name, len(comp.files))
+            #            print "\ttrigger sel %s, veto %s" % (triggers, vetos)
+                comp.splitFactor = len(comp.files)
+                comp.fineSplitFactor = 1
+                selectedComponents.append( comp )
+                vetos += triggers
+                iproc += 1
+                if json is None:
+                    dmCoreSequence.remove(jsonAna)
 
 if is50ns:
     jetAna.mcGT     = "Summer15_50nsV5_MC"
@@ -268,10 +279,11 @@ if forcedSplitFactor>0 or forcedFineSplitFactor>0:
 if runData==False: # MC all
     ### 25 ns 74X MC samples
     selectedComponents = mcSamples_monojet_Asymptotic25ns ; is50ns = False
+
 ### 50 ns 74X MC samples
 #selectedComponents = mcSamples_monojet_Asymptotic50ns ; is50ns = True
     for comp in selectedComponents:
-        comp.splitFactor = 100
+        comp.splitFactor = len(comp.files)/4
         comp.fineSplitFactor = 1
 
 
