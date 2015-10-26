@@ -7,7 +7,6 @@ kreator = ComponentCreator()
 
 ### common MC samples
 from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import *
-from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
 
 ### additional MC samples
 
@@ -28,7 +27,9 @@ RelVals741 = [ ADD_MJ, TTLep, TTbar, RSGravGaGa ]
 
 
 #-----------DATA--------------- 
-json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_25ns_JSON_v2.txt"
+from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
+
+json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258750_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
 
 ### ---- private samples ----
 privEGamma2015Afiles = [ f.strip() for f in open("%s/src/CMGTools/MonoXAnalysis/python/samples/privEGamma_2015A_MINIAOD.txt"  % os.environ['CMSSW_BASE'], "r") ]
@@ -44,36 +45,14 @@ privReRecoDoubleEG2015C = kreator.makePrivateDataComponent('DoubleEG2015C', '/st
 privExpress2015D = kreator.makePrivateDataComponent('Express2015D', '/store/group/dpg_ecal/comm_ecal/localreco/data2015D_zskim/miniaod/ExpressPhysics/256/843', _grep('Express', privExpress2015Dfiles), json )
 privDataSamples_0T = [ privEGamma2015A_0T, privDoubleEG2015A_0T, privHLTPhysics2015A_0T ]
 
-### ---------------------------- 3.8T data ----------------------------------------
-
-### ----------------------------- Run2015D ----------------------------------------
-
-Jet_Run2015D            = kreator.makeDataComponent("Jet_Run2015D"           , "/Jet/Run2015D-PromptReco-v3/MINIAOD"           , "CMS", ".*root", json)
-JetHT_Run2015D          = kreator.makeDataComponent("JetHT_Run2015D"         , "/JetHT/Run2015D-PromptReco-v3/MINIAOD"         , "CMS", ".*root", json)
-HTMHT_Run2015D          = kreator.makeDataComponent("HTMHT_Run2015D"         , "/HTMHT/Run2015D-PromptReco-v3/MINIAOD"         , "CMS", ".*root", json)
-MET_Run2015D            = kreator.makeDataComponent("MET_Run2015D"           , "/MET/Run2015D-PromptReco-v3/MINIAOD"           , "CMS", ".*root", json)
-SingleElectron_Run2015D = kreator.makeDataComponent("SingleElectron_Run2015D", "/SingleElectron/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json)
-SingleMu_Run2015D       = kreator.makeDataComponent("SingleMu_Run2015D"      , "/SingleMu/Run2015D-PromptReco-v3/MINIAOD"      , "CMS", ".*root", json)
-SingleMuon_Run2015D     = kreator.makeDataComponent("SingleMuon_Run2015D"    , "/SingleMuon/Run2015D-PromptReco-v3/MINIAOD"    , "CMS", ".*root", json)
-SinglePhoton_Run2015D   = kreator.makeDataComponent("SinglePhoton_Run2015D"  , "/SinglePhoton/Run2015D-PromptReco-v3/MINIAOD"  , "CMS", ".*root", json)
-EGamma_Run2015D         = kreator.makeDataComponent("EGamma_Run2015D"        , "/EGamma/Run2015D-PromptReco-v3/MINIAOD"        , "CMS", ".*root", json)
-DoubleEG_Run2015D       = kreator.makeDataComponent("DoubleEG_Run2015D"      , "/DoubleEG/Run2015D-PromptReco-v3/MINIAOD"      , "CMS", ".*root", json)
-MuonEG_Run2015D         = kreator.makeDataComponent("MuonEG_Run2015D"        , "/MuonEG/Run2015D-PromptReco-v3/MINIAOD"        , "CMS", ".*root", json)
-DoubleMuon_Run2015D     = kreator.makeDataComponent("DoubleMuon_Run2015D"    , "/DoubleMuon/Run2015D-PromptReco-v3/MINIAOD"    , "CMS", ".*root", json)
-
-minBias_Run2015D  = kreator.makeDataComponent("minBias_Run2015D" , "/MinimumBias/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json)
-zeroBias_Run2015D = kreator.makeDataComponent("zeroBias_Run2015D", "/ZeroBias/Run2015D-PromptReco-v3/MINIAOD"   , "CMS", ".*root", json)
-
-dataSamples_Run2015D = [Jet_Run2015D, JetHT_Run2015D, HTMHT_Run2015D, MET_Run2015D, SingleElectron_Run2015D, SingleMu_Run2015D, SingleMuon_Run2015D, SinglePhoton_Run2015D, EGamma_Run2015D, DoubleEG_Run2015D, MuonEG_Run2015D, DoubleMuon_Run2015D, minBias_Run2015D, zeroBias_Run2015D]
-
-
 ### ----------------------------- summary ----------------------------------------     
 
 ### --- data ---
-dataSamples = dataSamples_Run2015B + dataSamples_17Jul + dataSamples_Run2015C + dataSamples_Run2015D
+dataSamples = dataSamples_Run2015D_v4 + dataSamples_Run2015B_05Oct + dataSamples_Run2015D_05Oct
 
 ### --- mc ---
-mcSamples_monojet_Asymptotic25ns = TTs + SingleTop + [WJetsToLNu, DYJetsToLL_M50, DYJetsToLL_M10to50 ] + ZJetsToNuNuHT + DYJetsM50HT + WJetsToLNuHT + GJetsHT + QCDHT + DiBosons
+#mcSamples_monojet_Asymptotic25ns = TTs + SingleTop + [WJetsToLNu, DYJetsToLL_M50, DYJetsToLL_M10to50 ] + ZJetsToNuNuHT + DYJetsM50HT + WJetsToLNuHT + GJetsHT + QCDHT + DiBosons
+mcSamples_monojet_Asymptotic25ns = [ TTJets_LO ] + [WJetsToLNu, DYJetsToLL_M50, DYJetsToLL_M10to50] + ZJetsToNuNuHT + DYJetsM50HT + WJetsToLNuHT + DiBosons
 mcSamples_monojet = mcSamples_monojet_Asymptotic25ns 
 # 50ns not in miniAOD v2
 #mcSamples_monojet_Asymptotic50ns = [ TTJets_50ns, TTJets_LO_50ns, DYJetsToLL_M50_50ns, WJetsToLNu_50ns ] + QCDPt_50ns
