@@ -446,7 +446,7 @@ def writeDatasetToCache( cachename, dataset ):
 def createDataset( user, dataset, pattern, readcache=False, 
                    basedir = None, run_range = None):
     if user == 'CMS' and pattern != ".*root":
-        raise RuntimeError, "For 'CMS' datasets, the pattern must be '.*root', while you configured '%s' for %s, %s" % (pattern, name, dataset)
+        raise RuntimeError, "For 'CMS' datasets, the pattern must be '.*root', while you configured '%s' for %s, %s" % (pattern, dataset.name, dataset)
 
     def cacheFileName(data, user, pattern, run_range):
         rr = "_run%s_%s" % (run_range[0], run_range[1]) if run_range else ""
