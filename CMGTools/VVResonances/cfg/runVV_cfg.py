@@ -44,8 +44,8 @@ triggerFlagsAna.triggerBits ={
 
 
 #-------- HOW TO RUN
-test = 0
-if test==1:
+test = 3
+if test==3:
     # test a single component, using a single thread.
     selectedComponents = [ZJetsToNuNu_HT100to200]
     for c in selectedComponents:
