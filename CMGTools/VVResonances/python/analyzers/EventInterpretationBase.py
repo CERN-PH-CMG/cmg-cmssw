@@ -178,19 +178,32 @@ class EventInterpretationBase( Analyzer ):
         NL = 0     
         NM = 0     
         NT = 0     
-       
+
+
+        bestBTag=None
+        minDR=1000.0
         for s in obj['satelliteJets']:
            btag = s.bTag()
            if btag>0.423:
                NL=NL+1
+               DR=deltaR(obj['pair'].eta(),obj['pair'].phi(),s.eta(),s.phi())
+               if DR<minDR:
+                   bestBTag=s
+                   minDR=DR
            if btag>0.814:
                NM=NM+1
            if btag>0.941:
                NT=NT+1
         obj['nLooseBTags'] = NL        
         obj['nMediumBTags'] = NM        
-        obj['nTightBTags'] = NT        
-    
+        obj['nTightBTags'] = NT    
+
+        
+        if bestBTag==None:
+            obj['topMass'] = -1
+        else:    
+            obj['topMass'] = (bestBTag.p4()+s.p4()).mass()
+
     def beginLoop(self, setup):
         super(EventInterpretationBase,self).beginLoop(setup)
 

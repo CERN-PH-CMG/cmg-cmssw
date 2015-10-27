@@ -5,14 +5,8 @@ import os
 from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import *
 
 
-QCDHT=[
-QCD_HT700to1000,
-QCD_HT1000to1500,
-QCD_HT1500to2000,
-QCD_HT2000toInf
-]
 
-background = TTs+DYJetsM50HT+WJetsToLNuHT+GJetsHT+QCDHT+DiBosons
+background = TTs+DYJetsM50HT+WJetsToLNuHT+GJetsHT+QCDHT+QCDPt+DiBosons
 
 #background_50ns = [TTJets_50ns,TTJets_LO_50ns,WJetsToLNu_50ns]+QCDPt_50ns+DYJetsM50HT_50ns+DiBosons_50ns
 #Load signal from here 
@@ -60,7 +54,7 @@ dataSamples=SingleMuon+SingleElectron+JetHT+MET
 
 
 from CMGTools.TTHAnalysis.setup.Efficiencies import *
-dataDir = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data"
+dataDir = "$CMSSW_BASE/src/CMGTools/VVResonances/data"
 
 
 
@@ -69,7 +63,7 @@ dataDir = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data"
 
 
 #Load JSON
-jsonFile = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258714_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
+jsonFile = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258750_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
 
 
 #Define splitting
@@ -77,15 +71,15 @@ jsonFile = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13T
 for comp in mcSamples:
     comp.isMC = True
     comp.isData = False
-    comp.splitFactor = 200   
-    comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
-    comp.puFileData=dataDir+"/puProfile_Data12.root"
+    comp.splitFactor = 250   
+    comp.puFileMC=dataDir+"/pileup_MC.root"
+    comp.puFileData=dataDir+"/pileup_DATA.root"
     comp.efficiency = eff2012
     comp.triggers=triggers_1mu_noniso+triggers_1mu_iso+triggers_1e+triggers_1e_noniso+triggers_HT800+triggers_HT900+triggers_dijet_fat+triggers_Jet80MET90+triggers_Jet80MET120
     comp.globalTag = "Summer15_25nsV2_MC"
 
 for comp in dataSamples:
-    comp.splitFactor = 200
+    comp.splitFactor = 250
     comp.isMC = False
     comp.isData = True
     comp.json = jsonFile

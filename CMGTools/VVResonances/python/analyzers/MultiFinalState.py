@@ -13,7 +13,7 @@ class MultiFinalState( EventInterpretationBase ):
         LLJJ =[]
         JJ=[]
         JJNuNu=[]
-
+        TopCR=[]
 
         if self.doSkim and not self.skim(event.selectedLeptons,event.met):
             return False
@@ -28,6 +28,30 @@ class MultiFinalState( EventInterpretationBase ):
         if self.isMC:
             self.matchSubJets(selectedFatJets,event.genwzquarks)
                
+
+
+        #Before the signal selection lets look at the top control region
+        #This can have overlap with the signal region    
+        if len(event.LNu)>0:
+            bestW = max(event.LNu,key = lambda x: x.leg1.pt())
+            #find the jets in the opposite hemisphere of the lepton
+            oppositeHemishereJets=[]
+            for jet in selectedFatJets:
+                if jet.pt()>200 and deltaPhi(jet.phi(),bestW.leg1.phi())>3.14/2. and jet.softDropJet.mass()>40 and jet.softDropJet.mass()<130:
+                    oppositeHemishereJets.append(jet)
+
+            if len(oppositeHemishereJets)>0:        
+                bestJet = max(oppositeHemishereJets,key=lambda x: x.softDropJet.mass())
+                VV=Pair(bestW,bestJet)
+                selected = {'pair':VV}
+                remainingCands =self.removeJetFootPrint([bestJet],cleanedPackedCandidates)
+                selected['satelliteJets']=self.makeSatelliteJets(remainingCands)
+                self.topology(selected)
+                TopCR.append(selected)  
+                
+                    
+
+
 
         finished= False
         #OK lets start from LL+JJ that has the highest purity
@@ -102,4 +126,5 @@ class MultiFinalState( EventInterpretationBase ):
         setattr(event,'JJ'+self.cfg_ana.suffix,JJ)
         setattr(event,'LLJJ'+self.cfg_ana.suffix,LLJJ)
         setattr(event,'JJNuNu'+self.cfg_ana.suffix,JJNuNu)
+        setattr(event,'TopCR'+self.cfg_ana.suffix,TopCR)
 
