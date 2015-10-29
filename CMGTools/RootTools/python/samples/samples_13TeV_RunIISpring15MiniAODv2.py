@@ -33,7 +33,7 @@ TTHnobb_pow = kreator.makeMCComponent("TTHnobb_pow", "/ttHToNonbb_M125_13TeV_pow
 TTHnobb_mWCutfix = kreator.makeMCComponent("TTHnobb_mWCutfix", "/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 0.5085*(1-0.577))
 
 TTHnobb_mWCutfix = [TTHnobb_mWCutfix]
-Higgs = [TTHnobb_pow] + TTHnobb_mWCutfix
+Higgs = [TTHnobb, TTHnobb_pow] + TTHnobb_mWCutfix
 
 TTHbb       = kreator.makeMCComponent("TTHbb",      "/ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 0.5085*(0.577))
 TTHbb_ext1   = kreator.makeMCComponent("TTHbb_ext1",  "/ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2_ext1-v1/MINIAODSIM", "CMS", ".*root",  0.5085*(0.577))
@@ -309,7 +309,7 @@ TTZToLLNuNu = kreator.makeMCComponent("TTZToLLNuNu","/TTZToLLNuNu_M-10_TuneCUETP
 
 TTGJets = kreator.makeMCComponent("TTGJets","/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 3.697)
 
-TTV = [TTWToLNu, TTWToQQ, TTZToQQ, TTGJets]
+TTV = [TTWToLNu, TTWToQQ, TTZToQQ, TTZToLLNuNu, TTGJets]
 
 ### ----------------------------- summary ----------------------------------------
 
