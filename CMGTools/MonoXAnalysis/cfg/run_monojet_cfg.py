@@ -177,13 +177,7 @@ triggerFlagsAna.triggerBits = {
     'DoubleMuEl' : triggers_2mu1e,
     'DoubleElMu' : triggers_2e1mu,
     'SingleMu' : triggers_1mu_iso,
-    'SingleMu50ns' : triggers_1mu_iso_50ns,
     'SingleEl'     : triggers_1e,
-    'SingleEl50ns' : triggers_1e_50ns,
-    'SingleMu_8TeV' : triggers_1mu_8TeV + triggers_1mu_iso_r,
-    'DoubleMu_8TeV' : triggers_mumu_8TeV + triggers_mumu_run1,
-    'MuEG_8TeV'     : triggers_mue_8TeV + triggers_mue_run1,
-    'DoubleEl_8TeV' : triggers_ee_8TeV + triggers_ee_run1,
     'MonoJet80MET90' : triggers_Jet80MET90,
     'MonoJet80MET120' : triggers_Jet80MET120,
     'METMu5' : triggers_MET120Mu5,
@@ -193,6 +187,7 @@ triggerFlagsAna.saveIsUnprescaled = True
 triggerFlagsAna.checkL1Prescale = True
 
 from CMGTools.MonoXAnalysis.samples.samples_monojet_13TeV_74X import *
+from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
 
 selectedComponents = [];
 
@@ -246,18 +241,18 @@ if runData: # For running on data
                                                  "/"+pd+"/"+processing+"/MINIAOD", 
                                                  "CMS", ".*root", 
                                                  json=json, 
-                                                 run_range=run_range, 
-                                                 triggers=triggers[:], vetoTriggers = vetos[:],
+                                                 run_range=this_run_range, 
+                                                 #triggers=triggers[:], vetoTriggers = vetos[:],
                                                  useAAA=useAAA)
                 print "Will process %s (%d files)" % (comp.name, len(comp.files))
-            #            print "\ttrigger sel %s, veto %s" % (triggers, vetos)
-                comp.splitFactor = len(comp.files)
+                print "\ttrigger sel %s, veto %s" % (triggers, vetos)
+                comp.splitFactor = len(comp.files)/4
                 comp.fineSplitFactor = 1
                 selectedComponents.append( comp )
-                vetos += triggers
-                iproc += 1
-                if json is None:
-                    dmCoreSequence.remove(jsonAna)
+            iproc += 1
+        vetos += triggers
+    if json is None:
+        dmCoreSequence.remove(jsonAna)
 
 if is50ns:
     jetAna.mcGT     = "Summer15_50nsV5_MC"
