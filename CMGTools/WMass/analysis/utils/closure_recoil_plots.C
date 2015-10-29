@@ -142,12 +142,6 @@ void syst_recoil_one(TString recstr="u2")
     hpull->Fill(ratio);
   }
 
-  TCanvas *c_sigmas = new TCanvas("c_sigmas_"+recstr, "c_sigmas_"+recstr);
-  c_sigmas->cd();
-
-  hsigmas->Draw("histo");
-
-
   TCanvas *c_pull = new TCanvas("c_pull_"+recstr, "c_pull_"+recstr);
   c_pull->cd();
 
@@ -155,13 +149,13 @@ void syst_recoil_one(TString recstr="u2")
 
   TFile* fout = new TFile(recstr+".root", "RECREATE");
   fout->cd();
-  c->Write();
+  // c->Write();
   c_closure->Write();
-  c_sigmas->Write();
+  hsigmas->Write();
   c_pull->Write();
   // c->SaveAs(".png");
   // c_closure->SaveAs(".png");
-  // c_sigmas->SaveAs(".png");
+  // hsigmas->SaveAs(".png");
   // c_pull->SaveAs(".png");
 }
 
