@@ -287,6 +287,7 @@ coreSequence = [
     skimAnalyzer,
     jsonAna,
     triggerAna,
+    eventFlagsAna,
     pileUpAna,
     genAna,
 #    pdfwAna,
@@ -298,6 +299,5 @@ coreSequence = [
     triggerFlagsAna,
     packedAna,
     multiStateAna
-#    eventFlagsAna
     
 ]

@@ -21,7 +21,9 @@ JTopologyType = NTupleObjectType("JTopologyType", baseObjectTypes=[], variables 
     NTupleVariable("nLooseBTags",   lambda x : x['nLooseBTags'], int),
     NTupleVariable("nMediumBTags",   lambda x : x['nMediumBTags'], int),
     NTupleVariable("nTightBTags",   lambda x : x['nTightBTags'], int),
-    NTupleVariable("nJets",   lambda x : len(x['satelliteJets']), int)
+    NTupleVariable("nJets",   lambda x : len(x['satelliteJets']), int),
+    NTupleVariable("topMass",   lambda x : x['topMass'], float),
+
 ])
 
 
@@ -115,7 +117,7 @@ JJType = NTupleObjectType("JJType", baseObjectTypes=[VVType], variables = [
 NuNuJJType = NTupleObjectType("NuNuJJType", baseObjectTypes=[VVType], variables = [
     NTupleSubObject("met",  lambda x : x['pair'].leg1,metType),
     NTupleSubObject("jet",  lambda x : x['pair'].leg2,FatJetType),
-    NTupleSubObject("softDrop",  lambda x : x['pair'].leg2.softDropJet,JetType),
+    NTupleSubObject("jet_softDrop",  lambda x : x['pair'].leg2.softDropJet,JetType),
     NTupleSubObject("s1",  lambda x : x['pair'].leg2.subjets[0],JetType),
     NTupleVariable("s1_matched",   lambda x : x['pair'].leg2.subjets[0].matched, int),       
     NTupleSubObject("s2",  lambda x : x['pair'].leg2.subjets[1],JetType),          

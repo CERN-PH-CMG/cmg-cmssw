@@ -38,13 +38,13 @@ triggerFlagsAna.triggerBits ={
     "HT800":triggers_HT800,
     "HT900":triggers_HT900,
     "JJ":triggers_dijet_fat,  
-    "MET90":triggers_Jet80MET90,
-    "MET120":triggers_Jet80MET120
+    "MET90":triggers_met90_mht90+triggers_metNoMu90_mhtNoMu90,
+    "MET120":triggers_metNoMu120_mhtNoMu120
 }
 
 
 #-------- HOW TO RUN
-test = 3
+test = 0
 if test==3:
     # test a single component, using a single thread.
     selectedComponents = [ZJetsToNuNu_HT100to200]
