@@ -2,7 +2,7 @@ from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.physicsutils.genutils import isNotFromHadronicShower, realGenMothers, realGenDaughters
 
-def interestingPdgId(id,includeLeptons=False):        
+def interestingPdgId(id,includeLeptons=False):
     id = abs(id)
     return id in [6,7,8,17,18] or (includeLeptons and 11 <= id and id < 16) or (22 <= id and id < 40) or id > 1000000
 
@@ -15,13 +15,13 @@ class GeneratorAnalyzer( Analyzer ):
        In the default configuration, leptons, light quarks and gluons are saved before FSR (a la status 3).
        Everything else is saved after any radiation, i.e. immediately before the decay.
 
-       Particles are saved in a list event.generatorSummary, with the index of their mothers ('motherIndex') 
+       Particles are saved in a list event.generatorSummary, with the index of their mothers ('motherIndex')
        if the mother is also in the list, and with the pdgId of the mother ('motherId') and grand-mother
        ('grandmotherId'). Particles also carry their index in the miniAOD genparticles collection ('rawIndex')
        In addition, a 'sourceId' is set to the pdgId of the heaviest ancestor (or of the particle itself)
        i.e.  in  top -> W -> lepton: the lepton sourceId will be 6
              in  tt+W with W -> lepton, the sourceId of the lepton will be 24.
-       sourceId will be 99 for paricles from hard scattering whose mother is light 
+       sourceId will be 99 for paricles from hard scattering whose mother is light
 
        If requested, the full list of genParticles is also produced in event.genParticles (with indices
        aligned to the miniAOD one). For particles that are in the generatorSummary, the same object is used.
@@ -36,18 +36,15 @@ class GeneratorAnalyzer( Analyzer ):
             event.genleps    = []  # leptons from direct decays
             event.gentauleps = []  # leptons from prompt taus
             event.gentaus    = []  # hadronically-decaying taus (if allGenTaus is False) or all taus (if allGenTaus is True)
-            event.gentopquarks  = [] 
+            event.gentopquarks  = []
             event.genbquarks    = [] # b quarks from hard event (e.g. from top decays)
             event.genwzquarks   = [] # quarks from W,Z decays
             event.genbquarksFromTop = []
             event.genbquarksFromH   = []
             event.genlepsFromTop = [] #mu/ele that have a t->W chain as ancestor, also contained in event.genleps
-       event.genwzquarks and event.genbquarks, might have overlaps 
+       event.genwzquarks and event.genbquarks, might have overlaps
        event.genbquarksFromTop and event.genbquarksFromH are all contained in event.genbquarks
-       
-       In addition to genParticles, if makeLHEweights is set to True, the list WeightsInfo objects of the LHE branch
-       is stored in event.LHE_weights
-       
+
        """
 
     def __init__(self, cfg_ana, cfg_comp, looperName ):
@@ -57,20 +54,17 @@ class GeneratorAnalyzer( Analyzer ):
         self.makeAllGenParticles   = cfg_ana.makeAllGenParticles
         self.makeSplittedGenLists  = cfg_ana.makeSplittedGenLists
         self.allGenTaus            = cfg_ana.allGenTaus if self.makeSplittedGenLists else False
-	self.makeLHEweights  = cfg_ana.makeLHEweights
- 
+
     def declareHandles(self):
         super(GeneratorAnalyzer, self).declareHandles()
         self.mchandles['genParticles'] = AutoHandle( 'prunedGenParticles', 'std::vector<reco::GenParticle>' )
-	if self.makeLHEweights:
-		self.mchandles['LHEweights'] = AutoHandle( 'externalLHEProducer', 'LHEEventProduct', mayFail = True, fallbackLabel = 'source', lazy = False )
-                
+
     def beginLoop(self,setup):
         super(GeneratorAnalyzer,self).beginLoop(setup)
 
     def makeMCInfo(self, event):
         verbose = getattr(self.cfg_ana, 'verbose', False)
-        rawGenParticles = self.mchandles['genParticles'].product() 
+        rawGenParticles = self.mchandles['genParticles'].product()
         good = []; keymap = {};
         allGenParticles = []
         for rawIndex,p in enumerate(rawGenParticles):
@@ -84,8 +78,8 @@ class GeneratorAnalyzer( Analyzer ):
                         continue
             # a particle must not be decaying into itself
             #print "  test %6d  : %+8d  %3d :  %8.2f   %+5.2f   %+5.2f : %d %d : %+8d {%6d}: %s" % ( rawIndex,
-            #        p.pdgId(), p.status(), p.pt(), p.eta(), p.phi(), p.numberOfMothers(), p.numberOfDaughters(), 
-            #        p.motherRef(0).pdgId() if p.numberOfMothers() > 0 else -999, p.motherRef(0).key()   if p.numberOfMothers() > 0 else -999, 
+            #        p.pdgId(), p.status(), p.pt(), p.eta(), p.phi(), p.numberOfMothers(), p.numberOfDaughters(),
+            #        p.motherRef(0).pdgId() if p.numberOfMothers() > 0 else -999, p.motherRef(0).key()   if p.numberOfMothers() > 0 else -999,
             #        "  ".join("%d[%d]" % (p.daughter(i).pdgId(), p.daughter(i).status()) for i in xrange(p.numberOfDaughters())))
             if id in self.savePreFSRParticleIds:
                 # for light objects, we want them pre-radiation
@@ -98,9 +92,9 @@ class GeneratorAnalyzer( Analyzer ):
                     #print "    fail auto-decay"
                     continue
             # FIXME find a better criterion to discard there
-            if status == 71: 
+            if status == 71:
                 #drop QCD radiation with unclear parentage
-                continue 
+                continue
             # is it an interesting particle?
             ok = False
             if interestingPdgId(id):
@@ -127,8 +121,8 @@ class GeneratorAnalyzer( Analyzer ):
                     # so we'd like to be included
                     ok = True
                 if not ok and p.pt() > 10 and id in [1,2,3,4,5,21,22] and any(interestingPdgId(d.pdgId()) for d in realGenDaughters(mom)):
-                    # interesting for being a parton brother of an interesting particle (to get the extra jets in ME+PS) 
-                    ok = True 
+                    # interesting for being a parton brother of an interesting particle (to get the extra jets in ME+PS)
+                    ok = True
             if ok:
                 gp = p
                 gp.rawIndex = rawIndex # remember its index, so that we can set the mother index later
@@ -170,7 +164,7 @@ class GeneratorAnalyzer( Analyzer ):
                 p.grandmotherId = -9999
             if verbose:
                 print "%3d  {%6d}: %+8d  %3d :  %8.2f   %+5.2f   %+5.2f : %d %2d : %+8d {%3d}: %s" % ( ip,p.rawIndex,
-                        p.pdgId(), p.status(), p.pt(), p.eta(), p.phi(), len(moms), p.numberOfDaughters(), 
+                        p.pdgId(), p.status(), p.pt(), p.eta(), p.phi(), len(moms), p.numberOfDaughters(),
                         p.motherId, p.motherIndex,
                         "  ".join("%d[%d]" % (p.daughter(i).pdgId(), p.daughter(i).status()) for i in xrange(p.numberOfDaughters())))
         if verbose:
@@ -195,7 +189,7 @@ class GeneratorAnalyzer( Analyzer ):
             event.genlepsFromTop = []
             for p in event.generatorSummary:
                 id = abs(p.pdgId())
-                if id == 25: 
+                if id == 25:
                     event.genHiggsBosons.append(p)
                 elif id in {23,24}:
                     event.genVBosons.append(p)
@@ -245,20 +239,11 @@ class GeneratorAnalyzer( Analyzer ):
                 if id <= 5 and any([abs(m.pdgId()) in {23,24} for m in realGenMothers(p)]):
                     event.genwzquarks.append(p)
 
-        #Add LHE weight info
-	event.LHE_weights = []
-        event.LHE_originalWeight=1.0
-	if self.makeLHEweights:
-	    if self.mchandles['LHEweights'].isValid():
-	    	event.LHE_originalWeight=self.mchandles['LHEweights'].product().originalXWGTUP()
-                for w in self.mchandles['LHEweights'].product().weights():
-	        	event.LHE_weights.append(w)
-
     def process(self, event):
         self.readCollections( event.input )
 
         # if not MC, nothing to do
-        if not self.cfg_comp.isMC: 
+        if not self.cfg_comp.isMC:
             return True
         # do MC level analysis
         self.makeMCInfo(event)
@@ -268,7 +253,7 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 setattr(GeneratorAnalyzer,"defaultConfig",
     cfg.Analyzer(GeneratorAnalyzer,
         # BSM particles that can appear with status <= 2 and should be kept
-        stableBSMParticleIds = [ 1000022 ], 
+        stableBSMParticleIds = [ 1000022 ],
         # Particles of which we want to save the pre-FSR momentum (a la status 3).
         # Note that for quarks and gluons the post-FSR doesn't make sense,
         # so those should always be in the list
@@ -277,9 +262,7 @@ setattr(GeneratorAnalyzer,"defaultConfig",
         makeAllGenParticles = True,
         # Make also the splitted lists
         makeSplittedGenLists = True,
-        allGenTaus = False, 
-        # Save LHE weights in LHEEventProduct
-        makeLHEweights = True,
+        allGenTaus = False,
         # Print out debug information
         verbose = False,
     )
