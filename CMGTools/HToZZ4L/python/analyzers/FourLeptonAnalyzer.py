@@ -35,7 +35,7 @@ class FourLeptonAnalyzer( FourLeptonAnalyzerBase ):
 
 
         #Create Four Lepton Candidates
-        subevent.fourLeptonPreCands = self.findOSSFQuads(cutFlow.obj1,event.fsrPhotons)
+        subevent.fourLeptonPreCands = self.findOSSFQuads(cutFlow.obj1)
         cutFlow.setSource1(subevent.fourLeptonPreCands)
 
         #Apply isolation on all legs
@@ -59,8 +59,13 @@ class FourLeptonAnalyzer( FourLeptonAnalyzerBase ):
         #smart cut
         passed=cutFlow.applyCut(self.stupidCut,'Smart cut',1,'fourLeptonsFinal')
 
+        #attach jets
+        for quad in subevent.fourLeptonsFinal:
+            self.attachJets(quad,event.cleanJets)
+        
         #compute MELA
-        passed=cutFlow.applyCut(self.fillMEs,'Fill MEs',1,'fourLeptonsWithME')
+        for quad in subevent.fourLeptonsFinal:
+            self.fillMEs(quad,quad.cleanJets)
 
         #Save the best
         if len(subevent.fourLeptonsFinal)>0:

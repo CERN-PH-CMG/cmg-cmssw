@@ -18,8 +18,8 @@ hzz_collections = {
     "bestFourLeptonsSS"      : NTupleCollection("zzSS",  ZZType, 1, help="Four Lepton Candidates SS"),   
     "bestFourLeptonsRelaxIdIso" : NTupleCollection("zzRelII",  ZZType, 8, help="Four Lepton Candidates (relax id, iso)"),   
     # ---------------
-    "selectedLeptons" : NTupleCollection("Lep",    leptonTypeHZZ, 10, help="Leptons after the preselection"),
-    "cleanJets"       : NTupleCollection("Jet",     jetTypeExtra, 10, help="Cental jets after full selection and cleaning, sorted by pt"),
+    "selectedLeptons" : NTupleCollection("Lep",    leptonTypeHZZ, 20, help="Leptons after the preselection"),
+    "cleanJets"       : NTupleCollection("Jet",     jetTypeExtra, 20, help="Cental jets after full selection and cleaning, sorted by pt"),
     "discardedJets"   : NTupleCollection("DiscJet", jetTypeExtra,  5, help="Jets discarted in the jet-lepton cleaning"),
-    "fsrPhotonsNoIso" : NTupleCollection("FSR",    fsrPhotonTypeHZZ, 10, help="Photons for FSR recovery (isolation not applied)"),
+    "fsrPhotonsNoIso" : NTupleCollection("FSR",    fsrPhotonTypeHZZ, 20, help="Photons for FSR recovery (isolation not applied)"),
 }

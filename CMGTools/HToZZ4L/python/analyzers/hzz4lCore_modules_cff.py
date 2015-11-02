@@ -194,6 +194,15 @@ eleMuClean = cfg.Analyzer(
     mustClean = lambda ele, mu, dr: dr < 0.05
 )
 
+fsrRecovery = cfg.Analyzer(
+    FSRPhotonMaker, name="fsrPhotonMaker",
+    leptons="selectedLeptons",
+    electronID = lambda x: True, #x.electronID("POG_MVA_ID_Run2_NonTrig_HZZ")
+    electronVeto = "superclusterEta", # alternatives: "electronEta" and in the future "pfCandReference"
+    drOverET2Cut = 0.012,
+    relIsoCut = 1.8, 
+)
+
 ## Jets Analyzer (generic)
 jetAna = cfg.Analyzer(
     JetAnalyzer, name='jetAnalyzer',
@@ -206,9 +215,9 @@ jetAna = cfg.Analyzer(
     jetEtaCentral = 4.7,
     jetLepDR = 0.4,
     jetLepArbitration = (lambda jet,lepton : lepton), # you can decide which to keep in case of overlaps; e.g. if the jet is b-tagged you might want to keep the jet
-    cleanSelectedLeptons = True, #Whether to clean 'selectedLeptons' after disambiguation. Treat with care (= 'False') if running Jetanalyzer more than once
+    cleanSelectedLeptons = False, #Whether to clean 'selectedLeptons' after disambiguation. Treat with care (= 'False') if running Jetanalyzer more than once
     minLepPt = 0,
-    lepSelCut = lambda lepton : lepton.tightId() and lepton.relIso04 < (0.4 if abs(lepton.pdgId())==13 else 0.5),
+    lepSelCut = lambda lepton : lepton.tightId() and lepton.relIsoAfterFSR < (0.4 if abs(lepton.pdgId())==13 else 0.5),
     relaxJetId = False,  
     doPuId = True,
     recalibrateJets = False, # True, False, 'MC', 'Data'
@@ -221,7 +230,7 @@ jetAna = cfg.Analyzer(
     addJECShifts = False,
     smearJets = False,
     shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts  
-    alwaysCleanPhotons = False,
+    alwaysCleanPhotons = True,
     cleanGenJetsFromPhoton = False,
     cleanJetsFromFirstPhoton = False,
     cleanJetsFromTaus = False,
@@ -255,14 +264,6 @@ metAna = cfg.Analyzer(
     collectionPostFix = "",
     )
 
-
-
-fsrPhotonMaker = cfg.Analyzer(
-    FSRPhotonMaker, name="fsrPhotonMaker",
-    leptons="selectedLeptons",
-    electronID = lambda x: True, #x.electronID("POG_MVA_ID_Run2_NonTrig_HZZ")
-    electronVeto = "superclusterEta", # alternatives: "electronEta" and in the future "pfCandReference"
-)
 
 
 fourLeptonAnalyzerSignal = cfg.Analyzer(
@@ -332,10 +333,10 @@ hzz4lCoreSequence = [
     vertexAna,
     lepAna,
     eleMuClean,
+    fsrRecovery,
     jetAna,
     metAna,
     triggerFlagsAna,
-    fsrPhotonMaker,
     fourLeptonAnalyzerSignal, 
     fourLeptonAnalyzer2P2F,
     fourLeptonAnalyzer3P1F,

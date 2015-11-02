@@ -26,15 +26,9 @@ class FourLeptonAnalyzer2P2F( FourLeptonAnalyzer ):
 
     def fourLeptonIsolation(self,fourLepton):
         ##Fancy! Here require that Z1 leptons pass tight ID and isolationand the two other leptons fail ID or isolation
-        leptons = fourLepton.daughterLeptons()
-        photons = fourLepton.daughterPhotons()
         for l in [fourLepton.leg1.leg1,fourLepton.leg1.leg2]:
             if not self.leptonID_tight(l):
                 return False
-            l.fsrPhotons=[]
-            for g in photons:
-                if deltaR(g.eta(),g.phi(),l.eta(),l.phi())<0.4:
-                    l.fsrPhotons.append(g)
             if abs(l.pdgId())==11:
                 if not (self.electronIsolation(l)):
                     return False
@@ -47,10 +41,6 @@ class FourLeptonAnalyzer2P2F( FourLeptonAnalyzer ):
             if not self.leptonID_tight(l):
                 nFail += 1
                 continue
-            l.fsrPhotons=[]
-            for g in photons:
-                if deltaR(g.eta(),g.phi(),l.eta(),l.phi())<0.4:
-                    l.fsrPhotons.append(g)
             if abs(l.pdgId())==11:
                 if not self.electronIsolation(l):
                     nFail += 1
