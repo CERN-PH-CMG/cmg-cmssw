@@ -47,7 +47,8 @@ class EventVars2LSS:
 if __name__ == '__main__':
     from sys import argv
     file = ROOT.TFile(argv[1])
-    tree = file.Get("ttHLepTreeProducerBase")
+    tree = file.Get("tree")
+    tree.vectorTree = True
     class Tester(Module):
         def __init__(self, name):
             Module.__init__(self,name,None)
