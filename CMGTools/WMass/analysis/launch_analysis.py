@@ -3,10 +3,8 @@
 import string, os, shutil, sys, subprocess, ROOT
 
 def batch_job_is_running(jobname,chunk):
-  job_running = os.popen("bjobs -w | grep "+jobname).read()
-  job_running = job_running.replace("[","_")
-  job_running = job_running.replace("]","_")
-  jobname = jobname+"_"+chunk+"_"
+  job_running = subprocess.Popen("bjobs -w", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.read()
+  jobname = jobname+"["+chunk+"]"
   if jobname in job_running:
     return True
   else: 
@@ -52,9 +50,9 @@ WlikeCharge = 1; # Charge of the Wlike (+1,-1)
 
 ### RECOIL
 useRecoilCorr = 2; # 0=none, 1=yes, 2=PDFw3gaus
-RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0; # SYST VARIATIONS: 0=NONE, RAPBIN 1 (1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p1, 6= U1 MC p1) RAPBIN 2 (7= U1 DATA p1, 8= U1 DATA p2, 9= U2 DATA, 10= U1 MC p1, 11= U1 MC p1, 12= U1 MC p1)
+RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0; # SYST VARIATIONS: 0=NONE, RAPBIN 1 (1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p2, 6= U2 MC) RAPBIN 2 (7= U1 DATA p1, 8= U1 DATA p2, 9= U2 DATA, 10= U1 MC p1, 11= U1 MC p2, 12= U2 MC)
 RecoilCorrVarDiagoParSigmas = 0; # Number of sigmas for recoil syst
-correctToMadgraph = 0; # 0: uses DATA as target --- 1: uses Madgraph as target (also needed for madNoCorr)
+correctToMadgraph = 0; # 0: uses DATA as target -- 1: uses Madgraph as target (also needed to write recoil closure plots)
 
 usePhiMETCorr = 0; # 0=none, 1=yes
 
@@ -92,7 +90,7 @@ useBatch = 0;
 batchQueue = "1nh";
 
 WMassNSteps = "5"; # 60 -- N of mass steps above and below the central
-etaMuonNSteps = "1"; # 5
+etaMuonNSteps = "1"; # 5 <-- lenght of the etaMaxMuons
 etaMaxMuons = "0.9"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
 runWanalysis = 0;
@@ -103,6 +101,10 @@ recreateSubPrograms = 0; # 1: Recompiles run?analysis.o and remakes run?analysis
 
 mergeSigEWKbkg = 0;
 removeChunks = 0; # 0: Don't remove chunks after merge --- 1: Remove them
+
+#######################
+### FIT ###
+#######################
 
 ## PERFORM W or Z MASS FIT
 fit_W_or_Z = "Z" # "W,Z" or "W" or "Z"
@@ -125,7 +127,7 @@ run_Z_MCandDATAcomparisons_stack = 0;
 run_W_MCandDATAcomparisons_stack = 0;
 
 #######################
-## OBSOLETE STUFF
+## OBSOLETE STEERING PARAMETERS
 #######################
 
 ## OLD FIT
@@ -242,29 +244,34 @@ if(int(useRecoilCorr)>0):
   outfolder_name+="_RecoilCorr"+str(useRecoilCorr);
   if(int(correctToMadgraph)):
     outfolder_name+="_toMad";
-  if  (int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)==1):
-    outfolder_name+="_U1Datap1";
-  elif(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)==2):
-    outfolder_name+="_U1Datap2";
-  elif(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)==3):
-    outfolder_name+="_U2Data";
-  elif(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)==4):
-    outfolder_name+="_U1MCp1";
-  elif(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)==5):
-    outfolder_name+="_U1MCp2";
-  elif(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)==6):
-    outfolder_name+="_U2MC";
-  if  (int(RecoilCorrVarDiagoParSigmas)!=0):
-    if(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)<7): outfolder_name+="_Rap1";
-    else: outfolder_name+="_Rap2";
-    outfolder_name+="_RecCorrNSigma_"+str(RecoilCorrVarDiagoParSigmas)
+  if(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)>0):
+    RecoilCorrVarDiagoParBlock = int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)
+    if(int(RecoilCorrVarDiagoParBlock)<7):
+      outfolder_name+="_Rap1";
+    else:
+      RecoilCorrVarDiagoParBlock = RecoilCorrVarDiagoParBlock - 6
+      outfolder_name+="_Rap2";
+    if  (int(RecoilCorrVarDiagoParBlock)==1):
+      outfolder_name+="_U1Datap1";
+    elif(int(RecoilCorrVarDiagoParBlock)==2):
+      outfolder_name+="_U1Datap2";
+    elif(int(RecoilCorrVarDiagoParBlock)==3):
+      outfolder_name+="_U2Data";
+    elif(int(RecoilCorrVarDiagoParBlock)==4):
+      outfolder_name+="_U1MCp1";
+    elif(int(RecoilCorrVarDiagoParBlock)==5):
+      outfolder_name+="_U1MCp2";
+    elif(int(RecoilCorrVarDiagoParBlock)==6):
+      outfolder_name+="_U2MC";
+    if  (int(RecoilCorrVarDiagoParSigmas)!=0):
+      outfolder_name+="_RecCorrNSigma_"+str(RecoilCorrVarDiagoParSigmas)
 
 if(int(useEffSF)==1): outfolder_name+="_EffSFCorr";
 if(int(useEffSF)>=2): outfolder_name+="_EffHeinerSFCorr";
-  if(int(useEffSF)==3): outfolder_name+="_noTight";
-  if(int(useEffSF)==4): outfolder_name+="_noIso";
-  if(int(useEffSF)==5): outfolder_name+="_noTightSub";
-  if(int(useEffSF)==6): outfolder_name+="_noHLT";
+if(int(useEffSF)==3): outfolder_name+="_noTight";
+if(int(useEffSF)==4): outfolder_name+="_noIso";
+if(int(useEffSF)==5): outfolder_name+="_noTightSub";
+if(int(useEffSF)==6): outfolder_name+="_noHLT";
 if(int(usePtSF)!=-1): outfolder_name+="_PtSFCorr"+str(usePtSF);
 if(int(usePileupSF)==1): outfolder_name+="_PileupSFCorr";
 

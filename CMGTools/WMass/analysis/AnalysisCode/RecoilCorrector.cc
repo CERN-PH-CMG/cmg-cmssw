@@ -248,18 +248,18 @@ double RecoilCorrector::calculate(int iMet,double iEPt,double iEPhi,double iWPhi
 
 }
 
-void RecoilCorrector::reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2)
+void RecoilCorrector::reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int rapBinCorr)
 {
   // reset all to zero
   for(int ipar=0; ipar<RecoilCorrParMaxU1; ipar++){
     TString eig = Form("eig_eig%d",ipar);
-    wU1[1][fJet]->var(eig)->setVal(0);
-    wU1[2][fJet]->var(eig)->setVal(0);
+    wU1[1][rapBinCorr]->var(eig)->setVal(0);
+    wU1[2][rapBinCorr]->var(eig)->setVal(0);
   }
   for(int ipar=0; ipar<RecoilCorrParMaxU2; ipar++){
     TString eig = Form("eig_eig%d",ipar);
-    wU2[1][fJet]->var(eig)->setVal(0);
-    wU2[2][fJet]->var(eig)->setVal(0);
+    wU2[1][rapBinCorr]->var(eig)->setVal(0);
+    wU2[2][rapBinCorr]->var(eig)->setVal(0);
   }
 }
 
