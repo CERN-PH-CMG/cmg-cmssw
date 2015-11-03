@@ -145,9 +145,9 @@ def makeEff(mca,cut,idplot,xvarplot,notDoProfile=False):
                      "%s:%s" % (idplot.expr,xvarplot.expr),
                      mybins,
                      options) 
-    print pspec.name
-    print mybins
-    print options
+    #print pspec.name
+    #print mybins
+    #print options
     return mca.getPlots(pspec,cut,makeSummary=True)
 
 if __name__ == "__main__":
@@ -191,7 +191,7 @@ if __name__ == "__main__":
         for proc in procs:
             eff = pmap[proc]
             if not eff: continue
-            eff.Print()
+            #eff.Print()
 #            PrintHisto(eff)
             if options.xcut:
                 ax = eff.GetXaxis()
@@ -203,8 +203,8 @@ if __name__ == "__main__":
             if options.normEffUncToLumi:
                 assert (("TH3" in eff.ClassName()) or ("TH2" in eff.ClassName()))
                 is1d = "TH3" not in eff.ClassName()
-                eff.Print()
-                print 'is1d is ',is1d
+                #eff.Print()
+                #print 'is1d is ',is1d
                 binsfail = []
                 binspass = []
                 if is1d:
@@ -222,8 +222,8 @@ if __name__ == "__main__":
                 effratio = eff.ProjectionX("_px") if is1d else eff.Project3D("yx")
                 effratio.Reset()
 
-                eff.Print()
-                effratio.Print()
+                #eff.Print()
+                #effratio.Print()
 
                 for b1 in xrange(len(binsfail)):
                     passing = eff.GetBinContent(binspass[b1])

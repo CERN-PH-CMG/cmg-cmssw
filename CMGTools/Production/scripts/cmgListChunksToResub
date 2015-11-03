@@ -7,6 +7,12 @@ if [[ "$1" == "" || "$1" == "-h" || "$1" == "--help" ]]; then
     exit 1;
 fi
 
+LSFL=0
+if [[ "$1" == "-d" ]]; then
+    LSFL=1; shift; 
+    echo "# Will check for a LSFJOB_ dir "
+fi;
+
 F=JSONAnalyzer/JSON.pck
 if [[ "$1" == "-t" ]]; then
     F=$2; shift; shift;
@@ -38,8 +44,11 @@ fi
 echo "# Will print out the commands to resubmit the chunks that failed "
 for D in *_Chunk[0-9]*; do
     if test \! -s $D/$F; then
-         echo "cmgResubChunk -q $Q ${BASE}${D} "; 
-         continue;
+        if [[ "${LSFL}" == "0"  ]] || find $D -maxdepth 1 -type d -name 'LSFJOB_*' | grep -q LSFJ; then
+            echo "cmgResubChunk -q $Q ${BASE}${D} "; 
+        else
+            echo "# Chunk ${BASE}${D} does not have a LSFJOB directory, maybe still running? "; 
+        fi;
     fi;
 done;
 if [[ "$Z" != "0" ]]; then

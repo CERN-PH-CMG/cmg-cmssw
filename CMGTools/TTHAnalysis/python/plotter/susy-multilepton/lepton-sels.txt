@@ -1,0 +1,25 @@
+#miniRelIso005Sip4: LepGood_miniRelIso<0.05 && LepGood_sip3d < 4:  2,-0.5,1.5;   Title="MI 0.05 Sip 4", MarkerColor=ROOT.kGray,  MarkerStyle=21, MarkerSize=1.3
+
+multiMVA: LepGood_mvaNewMultiIso2015: 2000,-1.01,+1.01; Title="MultiIso MVA v1", Legend='TR', LineColor=ROOT.kBlack
+multiIsoOld_L:  multiIso_singleWP(LepGood_miniRelIso,LepGood_jetPtRatio,LepGood_jetPtRel,1) > 0: 2,-0.5,1.5 ; Title="MultiIso v1 L", MarkerColor=ROOT.kOrange-3,   MarkerStyle=ROOT.kFullSquare, MarkerSize=1.9
+multiIsoOld_M:  multiIso_singleWP(LepGood_miniRelIso,LepGood_jetPtRatio,LepGood_jetPtRel,2) > 0: 2,-0.5,1.5 ; Title="MultiIso v1 M", MarkerColor=ROOT.kGreen+0,    MarkerStyle=ROOT.kFullSquare, MarkerSize=1.9 
+multiIsoOld_T:  multiIso_singleWP(LepGood_miniRelIso,LepGood_jetPtRatio,LepGood_jetPtRel,3) > 0: 2,-0.5,1.5 ; Title="MultiIso v1 T", MarkerColor=ROOT.kAzure+1,    MarkerStyle=ROOT.kFullSquare, MarkerSize=1.9
+multiIsoOld_VT:  multiIso_singleWP(LepGood_miniRelIso,LepGood_jetPtRatio,LepGood_jetPtRel,4) > 0: 2,-0.5,1.5 ; Title="MultiIso v1 VT", MarkerColor=ROOT.kViolet-4, MarkerStyle=ROOT.kFullSquare, MarkerSize=1.9
+ 
+multiMVAv2: LepGood_mvaNewMultiIso2015v2: 2000,-1.01,+1.01; Title="MultiIso MVA v2", Legend='TR', LineColor=ROOT.kRed+0
+#multiIsov2_L:  LepGood_miniRelIso<0.25  && (LepGood_jetPtRatio_LepAwareJECv2>0.75 || LepGood_jetPtRelv2>4.7) : 2,-0.5,1.5 ; Title="MultiIso v2 L",  MarkerColor=ROOT.kRed+1,   MarkerStyle=ROOT.kFullCircle, MarkerSize=1.5
+#multiIsov2_M:  LepGood_miniRelIso<0.21  && (LepGood_jetPtRatio_LepAwareJECv2>0.80 || LepGood_jetPtRelv2>6.9) : 2,-0.5,1.5 ; Title="MultiIso v2 M",  MarkerColor=ROOT.kGreen+2, MarkerStyle=ROOT.kFullCircle, MarkerSize=1.5
+#multiIsov2_T:  LepGood_miniRelIso<0.13  && (LepGood_jetPtRatio_LepAwareJECv2>0.81 || LepGood_jetPtRelv2>7.2) : 2,-0.5,1.5 ; Title="MultiIso v2 T",  MarkerColor=ROOT.kAzure-1, MarkerStyle=ROOT.kFullCircle, MarkerSize=1.5
+#multiIsov2_VT: LepGood_miniRelIso<0.088 && (LepGood_jetPtRatio_LepAwareJECv2>0.84 || LepGood_jetPtRelv2>7.2) : 2,-0.5,1.5 ; Title="MultiIso v2 VT", MarkerColor=ROOT.kViolet-6, MarkerStyle=ROOT.kFullCircle, MarkerSize=1.5
+multiIsov2_L:  LepGood_miniRelIso<0.20  && (LepGood_jetPtRatio_LepAwareJECv2>0.69 || LepGood_jetPtRelv2>6.0) : 2,-0.5,1.5 ; Title="MultiIso v2 L",  MarkerColor=ROOT.kRed+1,   MarkerStyle=ROOT.kFullCircle, MarkerSize=1.5
+multiIsov2_M:  LepGood_miniRelIso<0.16  && (LepGood_jetPtRatio_LepAwareJECv2>0.76 || LepGood_jetPtRelv2>7.2) : 2,-0.5,1.5 ; Title="MultiIso v2 M",  MarkerColor=ROOT.kGreen+2, MarkerStyle=ROOT.kFullCircle, MarkerSize=1.5
+multiIsov2_T:  LepGood_miniRelIso<0.12  && (LepGood_jetPtRatio_LepAwareJECv2>0.80 || LepGood_jetPtRelv2>7.2) : 2,-0.5,1.5 ; Title="MultiIso v2 T",  MarkerColor=ROOT.kAzure-1, MarkerStyle=ROOT.kFullCircle, MarkerSize=1.5
+multiIsov2_VT: LepGood_miniRelIso<0.09  && (LepGood_jetPtRatio_LepAwareJECv2>0.84 || LepGood_jetPtRelv2>7.2) : 2,-0.5,1.5 ; Title="MultiIso v2 VT", MarkerColor=ROOT.kViolet-6, MarkerStyle=ROOT.kFullCircle, MarkerSize=1.5
+
+miniRelIso:  LepGood_miniRelIso: 2000,0,0.4; Title="MiniIso", Legend='TR', LineColor=ROOT.kGray+1
+sip3d:  LepGood_sip3d: 2000,0,8; XTitle="lepton miniIso/p_{T} ", Legend='TR'
+jetBTag:  max(LepGood_jetBTagCSV,0):   2000,0,1;  XTitle="lepton's jet b-tag disc.", Legend='TL', MoreY=1.45
+jetPtF:   min(LepGood_jetPtRatio,1.5): 2000,0,1.2; XTitle="lepton p_{T}(l)/p_{T}(jet)", Legend='TL'
+jetPtFv2:   min(LepGood_jetPtRatio_LepAwareJECv2,1.5): 2000,0,1.2; XTitle="lepton p_{T}(l)/p_{T}(jet)\, v2", Legend='TL'
+jetPtRel:   LepGood_jetPtRel: 2000,0,12; XTitle="lepton p_{T}^{rel}(l) wrt jet\, v1", Legend='TR'
+jetPtRelv2: LepGood_jetPtRelv2: 2000,0,20; XTitle="lepton p_{T}^{rel}(l) wrt jet\, v2", Legend='TL'
