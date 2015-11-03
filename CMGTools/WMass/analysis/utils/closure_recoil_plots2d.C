@@ -18,11 +18,13 @@ void syst_recoil_one(TString recstr="u1")
 {
   gStyle->SetOptFit(111);
 
-  const int nhists = 6;
-  const int ntotsysts = 60;
+  const int nhists = 12;
 
-  int IniVar[nhists] = {0,  9,  0, 0,  9,  0 };
-  int NVar[nhists]   = {9, 18, 12, 9, 18, 12 };
+  int IniVar[nhists] = {0,  9,  0, 0,  9,  0, 0,  9,  0, 0,  9,  0};
+  int NVars[nhists]  = {9, 21, 15, 9, 21, 15, 9, 21, 15, 9, 21, 15};
+
+  int ntotsysts = 0;
+  for (int i=0; i<nhists; ++i) ntotsysts+=(NVars[i]-IniVar[i]);
 
   TFile* fcentral = new TFile(Form("0.root"));
   TH2D* hcentral2 =(TH2D*)fcentral->Get(Form("hWlikePos_%svsZpt_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
@@ -42,7 +44,7 @@ void syst_recoil_one(TString recstr="u1")
   int nsyst=0;
   for(int i=0; i<nhists; i++){
     fin[i]=new TFile(Form("%d.root", i+1));
-    for(int j=IniVar[i]; j<NVar[i]; j++){
+    for(int j=IniVar[i]; j<NVars[i]; j++){
       hsyst2[nsyst]=(TH2D*)fin[i]->Get(Form("hWlikePos_%svsZpt_8_JetCut_pdf229800-0_RecoilCorrVar%d_eta0p9_91188", recstr.Data(), j));
       hsyst2[nsyst]->SetName(Form("hWlikePos_%svsZpt_8_JetCut_pdf229800-0_RecoilCorrVar%d_eta0p9_91188", recstr.Data(), nsyst));
       hsyst2[nsyst]->SetTitle(Form("hWlikePos_%svsZpt_8_JetCut_pdf229800-0_RecoilCorrVar%d_eta0p9_91188", recstr.Data(), nsyst));
@@ -50,7 +52,9 @@ void syst_recoil_one(TString recstr="u1")
     }
   }
 
-  int Zptbins = hcentral2->GetNbinsX()+2;
+  int Zptbins = hcentral2->GetNbinsX()+1;
+  double ncentral[Zptbins];
+  double nmadgraph[Zptbins];
   double means[Zptbins];
   double rmss[Zptbins];
 
@@ -58,7 +62,7 @@ void syst_recoil_one(TString recstr="u1")
   hcentral2->Write();
   hmadgraph2->Write();
 
-  for (int bin = 1; bin < hcentral2->GetNbinsX()+2; ++bin){
+  for (int bin = 1; bin < hcentral2->GetNbinsX()+1; ++bin){
 
     TString binstr = Form("%d", bin);
 
@@ -179,14 +183,10 @@ void syst_recoil_one(TString recstr="u1")
       h2dratio_sigmas->SetBinContent(bin,i,ratio);
     }
 
+    ncentral[bin] = hcentral->GetEntries()/hcentral2->GetEntries();
+    nmadgraph[bin] = hmadgraph->GetEntries()/hmadgraph2->GetEntries();
     means[bin] = hpull->GetMean();
     rmss[bin] = hpull->GetRMS();
-
-    TCanvas *c_sigmas = new TCanvas("c_sigmas_"+recstr+"_bin"+binstr, "c_sigmas_"+recstr+"_bin"+binstr);
-    c_sigmas->cd();
-
-    hsigmas->Draw("histo");
-
 
     TCanvas *c_pull = new TCanvas("c_pull_"+recstr+"_bin"+binstr, "c_pull_"+recstr+"_bin"+binstr);
     c_pull->cd();
@@ -194,13 +194,13 @@ void syst_recoil_one(TString recstr="u1")
     hpull->Fit("gaus", "L");
     
     fout->cd();
-    c->Write();
+    // c->Write();
     c_closure->Write();
-    c_sigmas->Write();
+    hsigmas->Write();
     c_pull->Write();
     // c->SaveAs(".png");
     // c_closure->SaveAs(".png");
-    // c_sigmas->SaveAs(".png");
+    // hsigmas->SaveAs(".png");
     // c_pull->SaveAs(".png");
 
   }
@@ -215,7 +215,32 @@ void syst_recoil_one(TString recstr="u1")
     numbers[i] = i;
   }
 
-  TGraph* gmean =  new TGraph(Zptbins-2, numbers, means); // last 2 make no sense
+  TGraph* gcentral  = new TGraph(Zptbins-1, numbers+1, ncentral+1);
+  TGraph* gmadgraph = new TGraph(Zptbins-1, numbers+1, nmadgraph+1);
+  gmadgraph->SetTitle("Nevt "+recstr+"; Zpt; Nevt");
+
+  TCanvas *c_nevt = new TCanvas("c_nevt_"+recstr, "c_nevt_"+recstr);
+  c_nevt->cd();
+
+  gcentral->SetMarkerColor(3);
+  gcentral->SetLineColor(3);
+  gcentral->SetMarkerSize(1);
+  gcentral->SetMarkerStyle(23);
+  gmadgraph->SetMarkerColor(2);
+  gmadgraph->SetLineColor(2);
+  gmadgraph->SetMarkerSize(1);
+  gmadgraph->SetMarkerStyle(22);
+
+  gmadgraph->Draw("APL");
+  gcentral->Draw("PL");
+
+  TLegend *legevts = new TLegend(0.7,0.7,0.9,0.9);
+  // leg->SetHeader("The Legend Title");
+  legevts->AddEntry(gmadgraph,"madgraph","p");
+  legevts->AddEntry(gcentral,"powheg","p");
+  legevts->Draw();
+
+  TGraph* gmean =  new TGraph(Zptbins-1, numbers+1, means+1);
   gmean->SetTitle("Mean "+recstr+"; Zpt; Mean");
 
   TCanvas *c_mean = new TCanvas("c_mean_"+recstr, "c_mean_"+recstr);
@@ -227,7 +252,7 @@ void syst_recoil_one(TString recstr="u1")
 
   gmean->Draw("ACP");
 
-  TGraph* grms =  new TGraph(Zptbins-2, numbers, rmss);
+  TGraph* grms =  new TGraph(Zptbins-1, numbers+1, rmss+1);
   grms->SetTitle("RMS "+recstr+"; Zpt; RMS");
 
   TCanvas *c_rms = new TCanvas("c_rms_"+recstr, "c_rms_"+recstr);
@@ -239,12 +264,15 @@ void syst_recoil_one(TString recstr="u1")
 
   grms->Draw("ACP");
 
+
+  c_nevt->Write();
+  c_nevt->SaveAs(".png");
   c_mean->Write();
-  c_rms->Write();
   c_mean->SaveAs(".png");
+  c_rms->Write();
   c_rms->SaveAs(".png");
   
-  int nbindiv = 25;
+  int nbindiv = 20;
   for (int i=0; i<Zptbins/nbindiv; ++i) {
     int bin_ini = (i+0)*nbindiv;
     int bin_fin = (i+1)*nbindiv;
@@ -364,25 +392,19 @@ void syst_recoil_one(TString recstr="u1")
       hpull->Fill(ratio);
     }
 
-    TCanvas *c_sigmas = new TCanvas("c_sigmas_"+recstr+"_bin"+binstr, "c_sigmas_"+recstr+"_bin"+binstr);
-    c_sigmas->cd();
-
-    hsigmas->Draw("histo");
-
-
     TCanvas *c_pull = new TCanvas("c_pull_"+recstr+"_bin"+binstr, "c_pull_"+recstr+"_bin"+binstr);
     c_pull->cd();
 
     hpull->Fit("gaus", "L");
     
     fout->cd();
-    c->Write();
+    // c->Write();
     c_closure->Write();
-    c_sigmas->Write();
+    hsigmas->Write();
     c_pull->Write();
     // c->SaveAs(".png");
     // c_closure->SaveAs(".png");
-    // c_sigmas->SaveAs(".png");
+    // hsigmas->SaveAs(".png");
     // c_pull->SaveAs(".png");
 
   }
