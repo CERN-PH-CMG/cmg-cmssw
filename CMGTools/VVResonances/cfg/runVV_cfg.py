@@ -45,29 +45,23 @@ triggerFlagsAna.triggerBits ={
 
 #-------- HOW TO RUN
 test = 0
-if test==3:
+if test==1:
     # test a single component, using a single thread.
-    selectedComponents = [ZJetsToNuNu_HT100to200]
-    for c in selectedComponents:
-        c.splitFactor = 1
-
-elif test==2:    
-    # test all components (1 thread per component).
-    selectedComponents = [dataSamples[0]]
-    for comp in selectedComponents:
-        comp.splitFactor = 1
-#        comp.files = comp.files[:1]
-
-elif test==3:
-    # test a single component, using a single thread.
-    selectedComponents = [signalSamples[0]]
+    selectedComponents = [RSGravToWWToLNQQ_kMpl01_2500]
     for c in selectedComponents:
         c.files = c.files[:1]
         c.splitFactor = 1
-
-
-
-
+elif test==2:    
+    # test all components (1 thread per component).
+    selectedComponents = [BulkGravToWW_narrow_2500]
+    for comp in selectedComponents:
+        comp.splitFactor = 1
+#        comp.files = comp.files[:1]
+elif test==3:    
+    # test all components (1 thread per component).
+    selectedComponents = [DYJetsToLL_M50_HT600toInf]
+    for comp in selectedComponents:
+        comp.splitFactor = 1
 
 ## output histogram
 outputService=[]

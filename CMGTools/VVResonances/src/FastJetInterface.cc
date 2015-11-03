@@ -99,62 +99,70 @@ void  FastJetInterface::makeExclusiveJetsUpTo( int njets ) {
 }
 
 
-void FastJetInterface::makeSubJets( unsigned int i, double dcut) {
+void FastJetInterface::makeSubJets(bool jet, unsigned int i, double dcut) {
+  const std::vector<fastjet::PseudoJet>& input = jet ? jets_ : subjets_;
 
   std::vector<fastjet::PseudoJet> empty;
-  if (i>jets_.size()-1) {
+  if (i>input.size()-1) {
     printf("Make Subjets(dcut)Collection size smaller than the requested jet\n");
     subjets_ = empty;
     return;
   }
   
-  subjets_ = sorted_by_pt(jets_[i].exclusive_subjets(dcut));
+  subjets_ = sorted_by_pt(input[i].exclusive_subjets(dcut));
 }
 
 
-void FastJetInterface::makeSubJets( unsigned int i) {
+void FastJetInterface::makeSubJets( bool jet,unsigned int i) {
 
+  const std::vector<fastjet::PseudoJet>& input = jet ? jets_ : subjets_;
+
+  
   std::vector<fastjet::PseudoJet> empty;
-  if (i>jets_.size()-1) {
+  if (i>input.size()-1) {
     printf("MakeSubjets(pieces)Collection size smaller than the requested jet\n");
     subjets_ = empty;
     return;
   }
-  if(jets_[i].has_pieces())
-    subjets_ = sorted_by_pt(jets_[i].pieces());
+  if(input[i].has_pieces())
+    subjets_ = sorted_by_pt(input[i].pieces());
   else
     subjets_=empty;
 }
 
 
-void FastJetInterface::makeSubJets( unsigned int i, int N) {
+  void FastJetInterface::makeSubJets(bool jet, unsigned int i, int N) {
+
+  const std::vector<fastjet::PseudoJet>& input = jet ? jets_ : subjets_;
+
+
   std::vector<fastjet::PseudoJet> empty;
-  if (i>jets_.size()-1) {
+  if (i>input.size()-1) {
     printf("MakeSubJets(N): Collection size smaller than the requested jet\n");
     return;
   }
 
-  if (jets_[i].constituents().size()<unsigned(N))
+  if (input[i].constituents().size()<unsigned(N))
     subjets_ = empty;
   else
-    subjets_ = sorted_by_pt(jets_[i].exclusive_subjets(N));
-}
+    subjets_ = sorted_by_pt(input[i].exclusive_subjets(N));
+  }
 
 
 
-void FastJetInterface::makeSubJetsUpTo( unsigned int i, int njets) {
+void FastJetInterface::makeSubJetsUpTo( bool jet,unsigned int i, int njets) {
+  const std::vector<fastjet::PseudoJet>& input = jet ? jets_ : subjets_;
 
-  if (i>jets_.size()-1) {
+  if (i>input.size()-1) {
     printf("MakeSubJetsUpTo(N) :Collection size smaller than the requested jet\n");
     return;
   }
-  subjets_ = sorted_by_pt(jets_[i].exclusive_subjets_up_to(njets));
+  subjets_ = sorted_by_pt(input[i].exclusive_subjets_up_to(njets));
 }
 
 
-
-std::vector<math::XYZTLorentzVector> FastJetInterface::get(bool subjets) {
- const std::vector<fastjet::PseudoJet>& output = subjets ? subjets_ : jets_;
+std::vector<math::XYZTLorentzVector> FastJetInterface::get(bool jet) {
+  const std::vector<fastjet::PseudoJet>& output = jet ?jets_ : subjets_;
  return makeP4s(output);
 }
 
@@ -176,9 +184,7 @@ std::vector< unsigned int> FastJetInterface::getConstituents(bool jet, unsigned 
 }
 
 double FastJetInterface::getArea(bool jet, unsigned int i) {
-
   const std::vector<fastjet::PseudoJet>& output = jet ? jets_ : subjets_;
-
   if (i>output.size()-1) {
     printf("Area: Collection size smaller than the requested jet\n");
     return 0.0;
@@ -211,36 +217,39 @@ bool FastJetInterface::massDropTag( unsigned int i,double& mu, double& y) {
 
 
 
-void FastJetInterface::prune(bool jet, double zcut,double rcutfactor ) {
+void FastJetInterface::prune(bool jet,unsigned int i, double zcut,double rcutfactor ) {
 
   const std::vector<fastjet::PseudoJet>& input = jet ? jets_ : subjets_;
   fastjet::Pruner pruner(fastjet::cambridge_algorithm, zcut, rcutfactor);
 
   std::vector<fastjet::PseudoJet> output;
-  for (unsigned int i=0;i<input.size();++i) {
+
+  if (i>input.size()-1) {
+    printf("Area: Collection size smaller than the requested jet\n");
+  }
+  else {
     output.push_back(pruner(input[i]));
   }
-
-  if(jet)
-    jets_ = output;
-  else
-    subjets_ = output;
+  subjets_ = output;
 }
 
-void FastJetInterface::softDrop(bool jet, double beta, double zcut,double R0 ) {
+void FastJetInterface::softDrop(bool jet,unsigned int i, double beta, double zcut,double R0 ) {
+
+
 
   const std::vector<fastjet::PseudoJet>& input = jet ? jets_ : subjets_;
   fastjet::contrib::SoftDrop softdrop(beta, zcut, R0);
 
   std::vector<fastjet::PseudoJet> output;
-  for (unsigned int i=0;i<input.size();++i) {
+
+
+  if (i>input.size()-1) {
+    printf("Area: Collection size smaller than the requested jet\n");
+  }
+  else {
     output.push_back(softdrop(input[i]));
   }
-
-  if(jet)
-    jets_ = output;
-  else
-    subjets_ = output;
+  subjets_ = output;
 }
 
 

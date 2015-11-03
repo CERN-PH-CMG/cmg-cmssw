@@ -36,13 +36,18 @@ class EventInterpretationBase( Analyzer ):
           if self.cfg_comp.isMC:
               if hasattr(self.cfg_comp,'globalTag'):
                   self.jetReCalibrator = JetReCalibrator(self.cfg_comp.globalTag,self.cfg_ana.recalibrationType, False,cfg_ana.jecPath)
+                  self.jetReCalibratorFAT = JetReCalibrator(self.cfg_comp.globalTag,self.cfg_ana.recalibrationTypeFAT, False,cfg_ana.jecPath)
+
               else:
                   self.jetReCalibrator = JetReCalibrator(mcGT,self.cfg_ana.recalibrationType, False,cfg_ana.jecPath)
+                  self.jetReCalibratorFAT = JetReCalibrator(mcGT,self.cfg_ana.recalibrationTypeFAT, False,cfg_ana.jecPath)
           else:
               if hasattr(self.cfg_comp,'globalTag'):
                   self.jetReCalibrator = JetReCalibrator(self.cfg_comp.globalTag,self.cfg_ana.recalibrationType, True,cfg_ana.jecPath)
+                  self.jetReCalibratorFAT = JetReCalibrator(self.cfg_comp.globalTag,self.cfg_ana.recalibrationTypeFAT, True,cfg_ana.jecPath)
               else:    
                   self.jetReCalibrator = JetReCalibrator(dataGT,self.cfg_ana.recalibrationType, True,cfg_ana.jecPath)
+                  self.jetReCalibratorFAT = JetReCalibrator(dataGT,self.cfg_ana.recalibrationTypeFAT, True,cfg_ana.jecPath)          
 
         self.attachBTag = cfg_ana.attachBTag    
         if self.attachBTag:
@@ -78,7 +83,7 @@ class EventInterpretationBase( Analyzer ):
 
     def matchSubJets(self,jets,genquarks):
         for j in jets:
-            for s in j.subjets:
+            for s in j.subjets_SD+j.subjets_PR:
                 s.mcquark = None
                 s.matched=0
                 for g in genquarks:
@@ -118,16 +123,27 @@ class EventInterpretationBase( Analyzer ):
         else:
             toolboxFat.setSoftDrop(self.cfg_ana.softdrop)
         # Lets cluster !! Fat jets first
-        fatJets=toolboxFat.inclusiveJets(100.0,True)
+        fatJets=toolboxFat.inclusiveJets(200.0,True)
         filtered = filter(self.selectFat,fatJets)
 
+        ##Apply JECS in SoftDrop and Pruned:
+        if self.jetReCalibratorFAT is not None:
+
+            prunedJets=[]
+            for j in fatJets:
+                prunedJets.append(j.softDropJet)
+                prunedJets.append(j.prunedJet)
+                
+            self.jetReCalibratorFAT.correctAll(prunedJets, self.rho, self.shiftJEC,True,False,[0.,0.],[0.,0.,0.])
+            for p in prunedJets:
+                p.setRawFactor(1.0/p.corr)
         standardFatJets = self.handles['fatjets'].product()
 
         if self.attachBTag:
             for fat in filtered:
                 for standardFat in standardFatJets:
                     fat.btag = standardFat.bDiscriminator(self.btagDiscriminator)
-                for j in fat.subjets:
+                for j in fat.subjets_SD+fat.subjets_PR:
                     for standard in self.handles['subjets'].product():
                         if deltaR(j.eta(),j.phi(),standard.eta(),standard.phi())<0.1:
                             j.btag = standard.bDiscriminator(self.btagDiscriminator)
@@ -142,8 +158,7 @@ class EventInterpretationBase( Analyzer ):
         toolbox.setSubjets(False,'inc',2)
         toolbox.setPruning(False)
         toolbox.setNtau(False)
-        toolbox.setSoftDrop(False)
-        
+        toolbox.setSoftDrop(False)       
         unfiltered =  toolbox.inclusiveJets(30.0,False)
         if self.attachBTag:
             for j in unfiltered:
@@ -154,6 +169,9 @@ class EventInterpretationBase( Analyzer ):
 
         if self.jetReCalibrator is not None:
             self.jetReCalibrator.correctAll(unfiltered, self.rho, self.shiftJEC,True,False,[0.,0.],[0.,0.,0.])
+            for p in unfiltered:
+                p.setRawFactor(1.0/p.corr)
+
             return filter(lambda x: x.pt()>30, unfiltered)
         else:
             return unfiltered
