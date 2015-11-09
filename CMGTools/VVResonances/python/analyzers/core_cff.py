@@ -48,12 +48,15 @@ triggerFlagsAna = cfg.Analyzer(
 
 
 # Create flags for MET filter bits
+
 eventFlagsAna = cfg.Analyzer(
     TriggerBitAnalyzer, name="EventFlags",
     processName = 'PAT',
+    fallbackProcessName = 'RECO', 
     outprefix   = 'Flag',
     triggerBits = {
         "HBHENoiseFilter" : [ "Flag_HBHENoiseFilter" ],
+        "HBHENoiseIsoFilter" : [ "Flag_HBHENoiseIsoFilter" ],
         "CSCTightHaloFilter" : [ "Flag_CSCTightHaloFilter" ],
         "hcalLaserEventFilter" : [ "Flag_hcalLaserEventFilter" ],
         "EcalDeadCellTriggerPrimitiveFilter" : [ "Flag_EcalDeadCellTriggerPrimitiveFilter" ],
@@ -164,7 +167,7 @@ lepAna = cfg.Analyzer(
     # Mini-isolation, with pT dependent cone: will fill in the miniRelIso, miniRelIsoCharged, miniRelIsoNeutral variables of the leptons (see https://indico.cern.ch/event/368826/ )
     doMiniIsolation = True, # off by default since it requires access to all PFCandidates 
     packedCandidates = 'packedPFCandidates',
-    miniIsolationPUCorr = 'weights', # Allowed options: 'rhoArea' (EAs for 03 cone scaled by R^2), 'deltaBeta', 'raw' (uncorrected), 'weights' (delta beta weights; not validated)
+    miniIsolationPUCorr = 'deltaBeta', # Allowed options: 'rhoArea' (EAs for 03 cone scaled by R^2), 'deltaBeta', 'raw' (uncorrected), 'weights' (delta beta weights; not validated)
     miniIsolationVetoLeptons = 'inclusive', # use 'inclusive' to veto inclusive leptons and their footprint in all isolation cones
     # minimum deltaR between a loose electron and a loose muon (on overlaps, discard the electron)
     min_dr_electron_muon = 0.1,
@@ -205,7 +208,6 @@ tauAna = cfg.Analyzer(
 
 
 
-
 metAna = cfg.Analyzer(
     METAnalyzer, name="metAnalyzer",
     metCollection     = "slimmedMETs",
@@ -216,14 +218,15 @@ metAna = cfg.Analyzer(
     doMetNoMu = False,
     doMetNoEle = False,
     doMetNoPhoton = False,
-    recalibrate = False,
-    jetAnalyzerCalibrationPostFix = "",
+    recalibrate = False, # or "type1", or True
+    applyJetSmearing = False, # does nothing unless the jet smearing is turned on in the jet analyzer
+    old74XMiniAODs = False, # set to True to get the correct Raw MET when running on old 74X MiniAODs
+    jetAnalyzerPostFix = "",
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,
     collectionPostFix = "",
     )
-
 
 
 leptonicVAna = cfg.Analyzer(
@@ -250,12 +253,15 @@ multiStateAna = cfg.Analyzer(
     doCHS = True,
     prunning=False,
     softdrop = True,
-    selectFat = (lambda x: x.pt()>100.0 and abs(x.eta())<2.4 and len(x.subjets)==2 and x.softDropJet.mass()>10.0) ,
+    softdrop_beta=0.0,
+    softdrop_zeta=0.1,
+    selectFat = (lambda x: x.pt()>100.0 and abs(x.eta())<2.4 and len(x.subjets)==2 and x.softDropJet.mass()>0.0) ,
     ktPower=-1.0,
     r = 0.4,
     selectPairLL = (lambda x: x.mass()>200.0 and x.deltaPhi()>1.5 ),
     selectPairLNu = (lambda x: x.mass()>200.0 and x.deltaPhi()>1.5 ),
     selectPairJJ = (lambda x: x.mass()>1000.0 and x.deltaPhi()>1.5 ),
+    selectPairJJNuNu = (lambda x: x.leg1.pt()>300 and x.deltaPhi()>1.0 ),
     suffix = '',
     recalibrateJets = True, # True, False, 'MC', 'Data'
     recalibrationType = "AK4PFchs",

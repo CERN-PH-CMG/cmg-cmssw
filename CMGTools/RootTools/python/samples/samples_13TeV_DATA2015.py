@@ -165,7 +165,7 @@ SingleElectron_Run2015D_05Oct = kreator.makeDataComponent("SingleElectron_Run201
 SingleMuon_Run2015D_05Oct     = kreator.makeDataComponent("SingleMuon_Run2015D_05Oct"    , "/SingleMuon/Run2015D-05Oct2015-v1/MINIAOD"    , "CMS", ".*root", json)
 SinglePhoton_Run2015D_05Oct   = kreator.makeDataComponent("SinglePhoton_Run2015D_05Oct"  , "/SinglePhoton/Run2015D-05Oct2015-v1/MINIAOD"  , "CMS", ".*root", json)
 DoubleEG_Run2015D_05Oct       = kreator.makeDataComponent("DoubleEG_Run2015D_05Oct"      , "/DoubleEG/Run2015D-05Oct2015-v1/MINIAOD"      , "CMS", ".*root", json)
-MuonEG_Run2015D_05Oct         = kreator.makeDataComponent("MuonEG_Run2015D_05Oct"        , "/MuonEG/Run2015D-05Oct2015-v1/MINIAOD"        , "CMS", ".*root", json)
+MuonEG_Run2015D_05Oct         = kreator.makeDataComponent("MuonEG_Run2015D_05Oct"        , "/MuonEG/Run2015D-05Oct2015-v2/MINIAOD"        , "CMS", ".*root", json)
 DoubleMuon_Run2015D_05Oct     = kreator.makeDataComponent("DoubleMuon_Run2015D_05Oct"    , "/DoubleMuon/Run2015D-05Oct2015-v1/MINIAOD"    , "CMS", ".*root", json)
 
 dataSamples_Run2015D_05Oct = [JetHT_Run2015D_05Oct, HTMHT_Run2015D_05Oct, MET_Run2015D_05Oct, SingleElectron_Run2015D_05Oct, SingleMuon_Run2015D_05Oct, SinglePhoton_Run2015D_05Oct, DoubleEG_Run2015D_05Oct, MuonEG_Run2015D_05Oct, DoubleMuon_Run2015D_05Oct]

@@ -125,7 +125,8 @@ class LeptonicVMaker( Analyzer ):
             pair = Pair(l1,MET,l1.charge()*24)
             mt=pair.mt()
             if self.selectLNuPair(pair):
-                self.defaultWKinematicFit(pair)
+#                self.defaultWKinematicFit(pair)
+                self.simpleWKinematicFit(pair)
                 output.append(pair)
         return output            
 

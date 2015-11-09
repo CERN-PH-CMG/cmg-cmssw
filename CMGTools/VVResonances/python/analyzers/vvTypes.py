@@ -57,6 +57,7 @@ VVType = NTupleObjectType("VVType", baseObjectTypes=[], variables = [
   NTupleSubObject("LV",  lambda x : x['pair'],fourVectorType),
   NTupleVariable("deltaPhi",   lambda x : x['pair'].deltaPhi(), float),       
   NTupleVariable("deltaR",   lambda x : x['pair'].deltaR(), float),       
+  NTupleVariable("mt",   lambda x : x['pair'].mt(), float),       
   NTupleSubObject("event",  lambda x : x,JTopologyType),
 ])
 
@@ -107,6 +108,18 @@ JJType = NTupleObjectType("JJType", baseObjectTypes=[VVType], variables = [
     NTupleVariable("l2_s1_matched",   lambda x : x['pair'].leg2.subjets[0].matched, int),       
     NTupleSubObject("l2_s2",  lambda x : x['pair'].leg2.subjets[1],JetType),          
     NTupleVariable("l2_s2_matched",   lambda x : x['pair'].leg2.subjets[1].matched, int),       
+])
+
+
+
+NuNuJJType = NTupleObjectType("NuNuJJType", baseObjectTypes=[VVType], variables = [
+    NTupleSubObject("met",  lambda x : x['pair'].leg1,metType),
+    NTupleSubObject("jet",  lambda x : x['pair'].leg2,FatJetType),
+    NTupleSubObject("softDrop",  lambda x : x['pair'].leg2.softDropJet,JetType),
+    NTupleSubObject("s1",  lambda x : x['pair'].leg2.subjets[0],JetType),
+    NTupleVariable("s1_matched",   lambda x : x['pair'].leg2.subjets[0].matched, int),       
+    NTupleSubObject("s2",  lambda x : x['pair'].leg2.subjets[1],JetType),          
+    NTupleVariable("s2_matched",   lambda x : x['pair'].leg2.subjets[1].matched, int),       
 ])
 
 

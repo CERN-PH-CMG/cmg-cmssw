@@ -18,6 +18,13 @@ class PyJet(object):
         self.electronEnergy = 0.0
         self.btag=0.0
 
+
+    def neutralEmEnergy(self):
+        return self.photonEnergy+self.hfEMEnergy
+    def chargedEmEnergy(self):
+        return self.electronEnergy
+
+
     def chargedHadronEnergyFraction(self):
         return self.chargedHadronEnergy/(self.LV.energy()*self.rawF)
 
@@ -57,12 +64,16 @@ class PyJet(object):
     def setP4(self,p4):
         self.LV = p4
 
+    def setCorrP4(self,p4):
+        self.LV = p4
+
+
     def numberOfDaughters(self):
-        return len(constituents)
+        return len(self.constituents)
 
     def daughter(self,i):
-        if i<len(constituents):
-            return constituents[i]
+        if i<len(self.constituents):
+            return self.constituents[i]
         else:
             return None
 
@@ -76,7 +87,11 @@ class PyJet(object):
     def jetArea(self):
             return self.area
 
+
+
     def __getattr__(self, name):
+        if name =='physObj':
+            return self
         return getattr(self.LV,name)
 
 

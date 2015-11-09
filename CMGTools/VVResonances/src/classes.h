@@ -2,7 +2,7 @@
 
 namespace cmg{
 
-  struct cmg_dictionary {
+  struct cmg_vvresonances_dictionary {
     cmg::FastJetInterface fastjetInterface;
   };
 }
