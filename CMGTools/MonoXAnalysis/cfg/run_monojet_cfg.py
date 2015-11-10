@@ -3,6 +3,7 @@
 ## skim condition:   MET > 200 GeV                      ##
 ##########################################################
 import PhysicsTools.HeppyCore.framework.config as cfg
+import re
 
 # Load all analyzers
 from CMGTools.MonoXAnalysis.analyzers.dmCore_modules_cff import * 
@@ -17,6 +18,7 @@ saveSuperClusterVariables = getHeppyOption("saveSuperClusterVariables",True)
 removeJetReCalibration = getHeppyOption("removeJetReCalibration",False)
 forcedSplitFactor = getHeppyOption("splitFactor",-1)
 forcedFineSplitFactor = getHeppyOption("fineSplitFactor",-1)
+isTest = getHeppyOption("test",None) != None and not re.match("^\d+$",getHeppyOption("test"))
 
 # Define skims
 signalSkim = False
@@ -202,7 +204,7 @@ if scaleProdToLumi>0: # select only a subset of a sample, corresponding to a giv
         c.splitFactor = len(c.files)
         c.fineSplitFactor = 1
 
-if runData: # For running on data
+if runData and not isTest: # For running on data
     json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258750_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
     run_ranges = [ (246908,258750) ]; useAAA=False; is50ns=False
 
@@ -271,7 +273,7 @@ if forcedSplitFactor>0 or forcedFineSplitFactor>0:
         if forcedSplitFactor>0: c.splitFactor = forcedSplitFactor
         if forcedFineSplitFactor>0: c.fineSplitFactor = forcedFineSplitFactor
 
-if runData==False: # MC all
+if runData==False and not isTest: # MC all
     ### 25 ns 74X MC samples
     is50ns = False
     mcSamples = mcSamples_monojet_Asymptotic25ns
@@ -352,7 +354,7 @@ elif test == 'synch-74X': # sync
     jetAna.smearJets       = False
     for comp in selectedComponents:
         comp.splitFactor = 1
-        comp.fineSplitFactor = 8
+        comp.fineSplitFactor = 1 if getHeppyOption("single") else 4
 elif test == '74X-Data':
     what = getHeppyOption("sample")
     if what == "DoubleEG":
