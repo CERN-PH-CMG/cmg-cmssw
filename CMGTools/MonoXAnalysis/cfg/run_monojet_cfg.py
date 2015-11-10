@@ -16,6 +16,7 @@ runData = getHeppyOption("runData",True)
 scaleProdToLumi = float(getHeppyOption("scaleProdToLumi",-1)) # produce rough equivalent of X /pb for MC datasets
 saveSuperClusterVariables = getHeppyOption("saveSuperClusterVariables",True)
 removeJetReCalibration = getHeppyOption("removeJetReCalibration",False)
+doT1METCorr = getHeppyOption("doT1METCorr",True)
 forcedSplitFactor = getHeppyOption("splitFactor",-1)
 forcedFineSplitFactor = getHeppyOption("fineSplitFactor",-1)
 isTest = getHeppyOption("test",None) != None and not re.match("^\d+$",getHeppyOption("test"))
@@ -149,6 +150,14 @@ treeProducer.globalVariables.append(NTupleVariable("hbheFilterNew50ns", lambda e
 treeProducer.globalVariables.append(NTupleVariable("hbheFilterNew25ns", lambda ev: ev.hbheFilterNew25ns, int, help="new HBHE filter for 25 ns"))
 treeProducer.globalVariables.append(NTupleVariable("hbheFilterIso", lambda ev: ev.hbheFilterIso, int, help="HBHE iso-based noise filter"))
 
+#additional MET quantities
+metAna.doTkMet = True
+treeProducer.globalVariables.append(NTupleVariable("met_trkPt", lambda ev : ev.tkMet.pt() if  hasattr(ev,'tkMet') else  0, help="tkmet p_{T}"))
+treeProducer.globalVariables.append(NTupleVariable("met_trkPhi", lambda ev : ev.tkMet.phi() if  hasattr(ev,'tkMet') else  0, help="tkmet phi"))
+if doT1METCorr:
+    jetAna.calculateType1METCorrection = True
+    metAna.recalibrate = "type1"
+    metAna.old74XMiniAODs = False
 
 
 #-------- SEQUENCE
@@ -350,7 +359,6 @@ elif test == 'synch-74X': # sync
         selectedComponents = [ comp ]
     else:
         selectedComponents = RelVals741
-    jetAna.recalibrateJets = True
     jetAna.smearJets       = False
     for comp in selectedComponents:
         comp.splitFactor = 1
