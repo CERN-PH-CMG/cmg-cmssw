@@ -273,7 +273,11 @@ if forcedSplitFactor>0 or forcedFineSplitFactor>0:
 
 if runData==False: # MC all
     ### 25 ns 74X MC samples
-    selectedComponents = mcSamples_monojet_Asymptotic25ns ; is50ns = False
+    is50ns = False
+    mcSamples = mcSamples_monojet_Asymptotic25ns
+    if signalSkim:
+        mcSamples += mcSamples_monojet_Asymptotic25ns_signals
+    selectedComponents = mcSamples 
 
 ### 50 ns 74X MC samples
 #selectedComponents = mcSamples_monojet_Asymptotic50ns ; is50ns = True
@@ -285,18 +289,14 @@ if runData==False: # MC all
 
 #-------- HOW TO RUN ----------- 
 test = getHeppyOption('test')
-if test == '1':
+if test == 'DYJets':
     monoJetSkim.metCut = 0
+    monoJetCtrlLepSkim.minLeptons = 2
     comp = DYJetsToLL_M50_HT100to200
     comp.files = comp.files[:1]
     comp.splitFactor = 1
     comp.fineSplitFactor = 1
     selectedComponents = [ comp ]
-elif test == '2':
-    for comp in selectedComponents:
-        comp.files = comp.files[:1]
-        comp.splitFactor = 1
-        comp.fineSplitFactor = 1
 elif test == 'EOS':
     comp = DYJetsToLL_M50
     comp.files = comp.files[:1]
@@ -320,49 +320,31 @@ elif test == '5':
         comp.files = comp.files[:5]
         comp.splitFactor = 1
         comp.fineSplitFactor = 5
-elif test == '6':
-    # test data
-    comp = DoubleElectronAB; comp.name = "dataSamplesAll"
-    comp.triggers = []
-    jetAna.recalibrateJets = False 
-    jetAna.smearJets       = False 
-    comp.files = [ '/afs/cern.ch/work/e/emanuele/monox/heppy/CMSSW_7_2_3_patch1/src/step5.root' ]
-    comp.isMC = False
-    comp.splitFactor = 1
-    comp.fineSplitFactor = 1
-    monoJetSkim.metCut = 0
-    selectedComponents = [ comp ]
 elif test == 'synch-74X': # sync
-    from CMGTools.MonoXAnalysis.samples.samples_monojet_13TeV_74X import *
     #eventSelector.toSelect = [ 11809 ]
     #sequence = cfg.Sequence([eventSelector] + dmCoreSequence+[ ttHEventAna, treeProducer, ])
     monoJetCtrlLepSkim.minLeptons = 0
     monoJetSkim.metCut = 0  
     what = getHeppyOption("sample")
-    if what == "ADD":
-        comp = ADD_MJ
-        comp.files = [ 'root://eoscms//eos/cms/store/relval/CMSSW_7_4_1/RelValADDMonoJet_d3MD3_13/MINIAODSIM/MCRUN2_74_V9_gensim71X-v1/00000/80CF5456-B9EC-E411-93DA-002618FDA248.root' ]
+    if what == "DMS":
+        comp = DMS_Mchi_100_gSM_1p0_gDM_1p0
+        comp.files = [ 'root://eoscms//eos/cms/store/mc/RunIISpring15MiniAODv2/DMS_NNPDF30_Scalar_Mphi-300_Mchi-100_gSM-1p0_gDM-1p0_13TeV-powheg/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/6872703C-7972-E511-8228-0CC47A009E26.root' ]
         selectedComponents = [ comp ]
     elif what == "TTLep":
-        comp = TTLep
-        comp.files = [ 'root://eoscms//eos/cms/store/relval/CMSSW_7_4_1/RelValProdTTbar_13/MINIAODSIM/MCRUN2_74_V9_gensim71X-v1/00000/0A9E2CED-C9EC-E411-A8E4-003048FFCBA8.root' ]
+        comp = TTLep_pow
+        comp.files = [ 'root://eoscms//eos/cms/store/mc/RunIISpring15MiniAODv2/TTTo2L2Nu_13TeV-powheg/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/60000/F8910E89-C56D-E511-BD90-003048F35244.root' ]
         selectedComponents = [ comp ]
     elif what == "DYJets":
-        comp = DYJetsToLL_M50_50ns
-        comp.files = [ 'root://eoscms//eos/cms/store/mc/RunIISpring15DR74/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/Asympt50ns_MCRUN2_74_V9A-v2/60000/04963444-D107-E511-B245-02163E00F339.root' ]
-        jetAna.mcGT = "MCRUN2_74_V9A"
+        comp = DYJetsToLL_M50
+        comp.files = [ 'root://eoscms//eos/cms/store/mc/RunIISpring15MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/50000/00759690-D16E-E511-B29E-00261894382D.root' ]
         selectedComponents = [ comp ]
-    elif what == "TTbar":
-        comp = TTbar
-        comp.files = [ 'root://eoscms//eos/cms/store/relval/CMSSW_7_4_1/RelValProdTTbar_13/MINIAODSIM/MCRUN2_74_V9_gensim71X-v1/00000/0A9E2CED-C9EC-E411-A8E4-003048FFCBA8.root' ]
+    elif what == "TTJets":
+        comp = TJets_LO
+        comp.files = [ 'root://eoscms//eos/cms/store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/30000/001F4F14-786E-E511-804F-0025905A60FE.root' ]
         selectedComponents = [ comp ]
     elif what == "WJets":
-        comp = WJetsToLNu_HT400to600
-        comp.files = [ 'root://eoscms//eos/cms/store/mc/RunIISpring15DR74/WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v3/00000/6408230F-9F08-E511-A1A6-D4AE526A023A.root' ]
-        selectedComponents = [ comp ]
-    elif what == "RSGrav":
-        comp = RSGravGaGa
-        comp.files = [ 'root://eoscms//eos/cms/store/relval/CMSSW_7_4_1/RelValRSGravitonToGaGa_13TeV/MINIAODSIM/MCRUN2_74_V9_gensim71X-v1/00000/189277BA-DCEC-E411-B3B8-0025905B859E.root' ]
+        comp = WJetsToLNu_HT100to200
+        comp.files = [ 'root://eoscms//eos/cms/store/mc/RunIISpring15MiniAODv2/WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/003F1529-D36D-E511-9E33-001E6724816F.root' ]
         selectedComponents = [ comp ]
     else:
         selectedComponents = RelVals741
@@ -370,59 +352,21 @@ elif test == 'synch-74X': # sync
     jetAna.smearJets       = False
     for comp in selectedComponents:
         comp.splitFactor = 1
-        comp.fineSplitFactor = 10
-elif test == 'SR':
-    selectedComponents = backgroundSamples + signalSamples
-    #selectedComponents = backgroundSamples
-    monoJetSkim.metCut = 200
-    monoJetCtrlLepSkim.minLeptons = 0
-    for comp in selectedComponents:
-        comp.splitFactor = 350
-elif test == '74X-MC':
-    from CMGTools.MonoXAnalysis.samples.samples_monojet_13TeV_74X import *
-    what = getHeppyOption("sample")
-    if what == "TT":
-        monoJetCtrlLepSkim.minLeptons = 0
-        selectedComponents = TTJets_LO_50ns
-    elif what == "Z":
-        monoJetCtrlLepSkim.minLeptons = 0
-        monoJetSkim.metCut = 0
-        selectedComponents = [ DYJetsToLL_M50_50ns ]
-    elif what == "WJets":
-        monoJetSkim.metCut = 0
-        selectedComponents = [ WJetsToLNu_50ns ]
-    else:
-        selectedComponents = RelVals740
-    if not getHeppyOption("all"):
-        for comp in selectedComponents:
-            comp.files = comp.files[:1]
-            comp.splitFactor = 1
-            comp.fineSplitFactor = 1 if getHeppyOption("single") else 4
+        comp.fineSplitFactor = 8
 elif test == '74X-Data':
-    from CMGTools.MonoXAnalysis.samples.samples_monojet_13TeV_74X import *
-    from CMGTools.MonoXAnalysis.samples.samples_8TeVReReco_74X import *
     what = getHeppyOption("sample")
-    if what == "JetHT":
-        monoJetSkim.metCut = 0
-        selectedComponents = [ JetHT_742 ]
-    elif what == "Z":
+    if what == "DoubleEG":
+        comp = DoubleEG_Run2015D_05Oct
+        comp.files = [ 'root://eoscms//eos/cms/store/data/Run2015D/DoubleEG/MINIAOD/05Oct2015-v1/50000/0014E86F-656F-E511-9D3F-002618943831.root' ]
+        selectedComponents = [ comp ]
         monoJetCtrlLepSkim.minLeptons = 2
-        monoJetSkim.metCut = 0
-        selectedComponents = [ SingleMuZ_742, DoubleElectronZ_742 ]
-    elif what == "MuEG":
-        selectedComponents = [ MuEG_742 ]
-    elif what == "EGamma":
-        selectedComponents = [ privEGamma2015A ]
-        lepAna.loose_electron_id = ""
-        lepAna.loose_electron_relIso = 1000.
-        photonAna.gammaID = "POG_PHYS14_25ns_Loose_NoIso"
-        monoJetCtrlLepSkim.minLeptons = 1
-        monoJetSkim.metCut = 0
-    elif what == "DoubleEG":
-        selectedComponents = [ DoubleEG_Run2015B ]
+    elif what == "DoubleMuon":
+        comp = DoubleMuon_Run2015D_05Oct
+        comp.files = [ 'root://eoscms//eos/cms/store/data/Run2015D/DoubleMuon/MINIAOD/05Oct2015-v1/30000/04008DF6-8A6F-E511-B034-0025905A6136.root' ]
+        selectedComponents = [ comp ]
         monoJetCtrlLepSkim.minLeptons = 2
     else:
-        selectedComponents = dataSamples742
+        selectedComponents = dataSamples_Run2015D_05Oct
     for comp in selectedComponents:
         comp.splitFactor = 1
         comp.fineSplitFactor = 1 if getHeppyOption("single") else 6
@@ -445,7 +389,8 @@ outputService.append(output_service)
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
 from CMGTools.TTHAnalysis.tools.EOSEventsWithDownload import EOSEventsWithDownload
 event_class = EOSEventsWithDownload
-if getHeppyOption("nofetch"):
+EOSEventsWithDownload.aggressive = 2 # always fetch if running on Wigner
+if getHeppyOption("nofetch")  or getHeppyOption("isCrab"):
     event_class = Events
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence,
