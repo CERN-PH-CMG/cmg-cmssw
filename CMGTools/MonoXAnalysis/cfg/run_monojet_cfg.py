@@ -337,7 +337,10 @@ elif test == 'synch-74X': # sync
     monoJetCtrlLepSkim.minLeptons = 0
     monoJetSkim.metCut = 0  
     what = getHeppyOption("sample")
-    if what == "DMS":
+    if what == "TTbarDM":
+        comp = kreator.makeMCComponent("TTbarDM","/TTbarDMJets_pseudoscalar_Mchi-1_Mphi-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 1.0, useAAA=True)
+        selectedComponents = [ comp ]
+    elif what == "DMS":
         comp = DMS_Mchi_100_gSM_1p0_gDM_1p0
         comp.files = [ 'root://eoscms//eos/cms/store/mc/RunIISpring15MiniAODv2/DMS_NNPDF30_Scalar_Mphi-300_Mchi-100_gSM-1p0_gDM-1p0_13TeV-powheg/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/6872703C-7972-E511-8228-0CC47A009E26.root' ]
         selectedComponents = [ comp ]
@@ -358,7 +361,7 @@ elif test == 'synch-74X': # sync
         comp.files = [ 'root://eoscms//eos/cms/store/mc/RunIISpring15MiniAODv2/WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/003F1529-D36D-E511-9E33-001E6724816F.root' ]
         selectedComponents = [ comp ]
     else:
-        selectedComponents = RelVals741
+        selectedComponents = mcSamples_monojet_Asymptotic25ns
     jetAna.smearJets       = False
     for comp in selectedComponents:
         comp.splitFactor = 1
