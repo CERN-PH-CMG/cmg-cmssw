@@ -2,22 +2,6 @@
 
 import string, os, shutil, sys, subprocess, ROOT
 
-def batch_job_is_running(jobname,chunk):
-  job_running = subprocess.Popen("bjobs -w", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.read()
-  jobname = jobname+"["+chunk+"]"
-  if jobname in job_running:
-    return True
-  else: 
-    return False
-
-def file_exists_and_is_not_empty(fpath):
-  if not (os.path.isfile(fpath) and (os.path.getsize(fpath) > 0)): return False
-  if fpath.endswith('.root'):
-    f = ROOT.TFile(fpath)
-    if f.GetNkeys() == 0 or f.TestBit(ROOT.TFile.kRecovered) or f.IsZombie():
-      return False
-  return True
-
 ## ==============================================================
 ## STEERING PARAMETERS
 ## ==============================================================
@@ -57,7 +41,7 @@ correctToMadgraph = 0; # 0: uses DATA as target -- 1: uses Madgraph as target (a
 usePhiMETCorr = 0; # 0=none, 1=yes
 
 ### EWK CORR
-syst_ewk_Alcaraz = -1; # -1=none, 0=fixed POWHEG QCD+EWK NLO
+syst_ewk_Alcaraz = 0; # -1=none, 0=fixed POWHEG QCD+EWK NLO
 
 # LHAPDF_reweighting_sets="11200"  # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
 # LHAPDF_reweighting_members="51"  # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
@@ -86,16 +70,17 @@ resubmit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadFake,
 # resubmit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 # resubmit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
 
-useBatch = 0;
+useBatch = 1;
 batchQueue = "1nh";
 
 WMassNSteps = "5"; # 60 -- N of mass steps above and below the central
+# WMassNSteps = "0"; # 60 -- N of mass steps above and below the central
 etaMuonNSteps = "1"; # 5 <-- lenght of the etaMaxMuons
 etaMaxMuons = "0.9"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
 runWanalysis = 0;
-runZanalysis = 1;
-controlplots = 0;
+runZanalysis = 0;
+controlplots = 1;
 noLSFJobOutput = 0; # 1: Puts all the batch logs in a single file
 recreateSubPrograms = 0; # 1: Recompiles run?analysis.o and remakes run?analysis.sh
 
@@ -123,7 +108,7 @@ mergeResults = 0;
 runWSigBkgFit = 0;
 runZSigBkgFit = 0;
 
-run_Z_MCandDATAcomparisons_stack = 0;
+run_Z_MCandDATAcomparisons_stack = 0; # <<<<--------- USE THIS FLAG TO GENERATE PRE-UNBLINDING PLOTS AFTER mergeSigEWKbkg
 run_W_MCandDATAcomparisons_stack = 0;
 
 #######################
@@ -146,11 +131,34 @@ DataCards_systFromFolder=outfolder_prefix+sysfoldmet+"_RochCorr_RecoilCorr_EffHe
 
 runDataCardsParametrization = 0; # NOT REALLY USED
 
+## ============================================================== #
 ## END STEERING PARAMETERS
 ## ============================================================== #
+
 ## ============================================================== #
+## START FUNCTION DEFINITIONS
 ## ============================================================== #
 
+def batch_job_is_running(jobname,chunk):
+  job_running = subprocess.Popen("bjobs -w", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.read()
+  jobname = jobname+"["+chunk+"]"
+  if jobname in job_running:
+    return True
+  else: 
+    return False
+
+def file_exists_and_is_not_empty(fpath):
+  if not (os.path.isfile(fpath) and (os.path.getsize(fpath) > 0)): return False
+  if fpath.endswith('.root'):
+    f = ROOT.TFile(fpath)
+    if f.GetNkeys() == 0 or f.TestBit(ROOT.TFile.kRecovered) or f.IsZombie():
+      return False
+  return True
+
+## ============================================================== #
+## END FUNCTION DEFINITIONS
+## ============================================================== #
+  
 # Check if it's running from the correct dir
 base_path = os.getcwd()
 if os.path.dirname(os.path.realpath(__file__)) == base_path:
@@ -733,16 +741,19 @@ if(mergeResults or (runClosureTestLikeLihoodRatio and useBatch==0)):
 
 
 if(run_Z_MCandDATAcomparisons_stack):
-  os.chdir("PlottingCode/");
-  if not os.path.exists("../JobOutputs/"+outfolder_name+"/ZcomparisonPlots_MCvsDATA"): os.makedirs("../JobOutputs/"+outfolder_name+"/ZcomparisonPlots_MCvsDATA")
-  sampleIDMCsig= "../JobOutputs/"+outfolder_name+"/output_"+sample[DYJetsPow]
-  sampleIDMCEWK= "../JobOutputs/"+outfolder_name+"/output_EWK"
-  sampleIDMCTT= "../JobOutputs/"+outfolder_name+"/output_"+sample[TTJets]
-  sampleIDMCQCD= "../JobOutputs/"+outfolder_name+"/output_"+sample[QCD]
-  sampleIDDATA= "../JobOutputs/"+outfolder_name+"/output_"+sample[DATA]
-  os.system("root -l -b -q \'PlotZdistributionsMCvsDATA_stack.C(\""+sampleIDMCsig+"/\",\""+sampleIDMCEWK+"/\",\""+sampleIDMCTT+"/\",\""+sampleIDMCQCD+"/\",\""+sampleIDDATA+"/\")\' ");
-  os.system("mv *.png ../JobOutputs/"+outfolder_name+"/ZcomparisonPlots_MCvsDATA");
-  os.system("cp PlotZdistributionsMCvsDATA_stack.C ../JobOutputs/"+outfolder_name+"/ZcomparisonPlots_MCvsDATA");
+  if not os.path.exists("JobOutputs/"+outfolder_name+"/ZcomparisonPlots_MCvsDATA"): os.makedirs("JobOutputs/"+outfolder_name+"/ZcomparisonPlots_MCvsDATA")
+  os.system("cp PlottingCode/PlotZdistributionsMCvsDATA_stack.C JobOutputs/"+outfolder_name+"/ZcomparisonPlots_MCvsDATA");
+  os.chdir("JobOutputs/"+outfolder_name+"/ZcomparisonPlots_MCvsDATA/");
+  print 'os.getcwd()',os.getcwd()
+  sampleIDMCsig= "../output_"+sample[DYJetsPow]
+  sampleIDMCEWK= "../output_EWK"
+  sampleIDMCTT= "../output_"+sample[TTJets]
+  sampleIDMCQCD= "../output_"+sample[QCD]
+  sampleIDDATA= "../output_"+sample[DATA]
+  print("root -l -b -q \'PlotZdistributionsMCvsDATA_stack.C(\""+sampleIDMCsig+"/\",\""+sampleIDMCEWK+"/\",\""+sampleIDMCTT+"/\",\""+sampleIDMCQCD+"/\",\""+sampleIDDATA+"/\")\' ");
+  # sys.exit()
+  os.system("root -l -b -q \'PlotZdistributionsMCvsDATA_stack.C+(\""+sampleIDMCsig+"/\",\""+sampleIDMCEWK+"/\",\""+sampleIDMCTT+"/\",\""+sampleIDMCQCD+"/\",\""+sampleIDDATA+"/\")\' ");
+  # os.system("mv *.png ../ZcomparisonPlots_MCvsDATA");
 
 if(run_W_MCandDATAcomparisons_stack):
   os.chdir("PlottingCode/");
