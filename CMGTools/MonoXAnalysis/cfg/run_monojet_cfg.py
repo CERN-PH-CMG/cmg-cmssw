@@ -162,8 +162,8 @@ if doT1METCorr:
 
 #-------- SEQUENCE
 sequence = cfg.Sequence(dmCoreSequence+[
-   monoXRazorAna,
-   monoXMT2Ana,
+#   monoXRazorAna,
+#   monoXMT2Ana,
    ttHFatJetAna,
    monoJetVarAna,
    MonoJetEventAna,
@@ -365,7 +365,7 @@ elif test == 'synch-74X': # sync
     jetAna.smearJets       = False
     for comp in selectedComponents:
         comp.splitFactor = 1
-        comp.fineSplitFactor = 1 if getHeppyOption("single") else 4
+        comp.fineSplitFactor = 1 if getHeppyOption("single") else 2
 elif test == '74X-Data':
     what = getHeppyOption("sample")
     if what == "DoubleEG":
@@ -382,7 +382,7 @@ elif test == '74X-Data':
         selectedComponents = dataSamples_Run2015D_05Oct
     for comp in selectedComponents:
         comp.splitFactor = 1
-        comp.fineSplitFactor = 1 if getHeppyOption("single") else 6
+        comp.fineSplitFactor = 1 if getHeppyOption("single") else 4
         if not getHeppyOption("all"):
             comp.files = comp.files[:1]
 

@@ -22,28 +22,28 @@ dmMonoJet_globalVariables = dmCore_globalVariables + [
     ##--------------------------------------------------
     # MT2
     ##--------------------------------------------------
-    NTupleVariable("mt2_had", lambda ev: ev.mt2_had, float, help="mt2(j1,j2,met) with jets "),
-    NTupleVariable("mt2_bb", lambda ev: ev.mt2bb, float, help="mt2(b1,b2,met) with jets "),
-    NTupleVariable("mt2_gen", lambda ev: ev.mt2_gen, float, help="mt2(j1,j2,met) with jets at genInfo"),
-    NTupleVariable("mt2", lambda ev: ev.mt2, float, help="mt2(j1,j2,met) with jets and leptons"),
+    # NTupleVariable("mt2_had", lambda ev: ev.mt2_had, float, help="mt2(j1,j2,met) with jets "),
+    # NTupleVariable("mt2_bb", lambda ev: ev.mt2bb, float, help="mt2(b1,b2,met) with jets "),
+    # NTupleVariable("mt2_gen", lambda ev: ev.mt2_gen, float, help="mt2(j1,j2,met) with jets at genInfo"),
+    # NTupleVariable("mt2", lambda ev: ev.mt2, float, help="mt2(j1,j2,met) with jets and leptons"),
     ##--------------------------------------------------
     # RAZOR
     ##--------------------------------------------------
-    NTupleVariable("mr_had", lambda ev: ev.mr_had, float, help="mr(j1,j2,met) with jets "),
-    NTupleVariable("mr_bb", lambda ev: ev.mr_bb, float, help="mr(b1,b2,met) with jets "),
-    NTupleVariable("mr_lept", lambda ev: ev.mr_lept, float, help="mr(j1,j2,met) with leptons"),
-    NTupleVariable("mr_gen", lambda ev: ev.mr_gen, float, help="mr(j1,j2,met) with jets at genInfo"),
-    NTupleVariable("mr", lambda ev: ev.mr, float, help="mr(j1,j2,met) with jets and leptons"),
-    NTupleVariable("mtr_had", lambda ev: ev.mtr_had, float, help="mtr(j1,j2,met) with jets "),
-    NTupleVariable("mtr_bb", lambda ev: ev.mtr_bb, float, help="mtr(b1,b2,met) with jets "),
-    NTupleVariable("mtr_lept", lambda ev: ev.mtr_lept, float, help="mtr(j1,j2,met) with leptons"),
-    NTupleVariable("mtr_gen", lambda ev: ev.mtr_gen, float, help="mtr(j1,j2,met) with jets at genInfo"),
-    NTupleVariable("mtr", lambda ev: ev.mtr, float, help="mtr(j1,j2,met) with jets and leptons"),
-    NTupleVariable("r_had", lambda ev: ev.r_had, float, help="r(j1,j2,met) with jets "),
-    NTupleVariable("r_bb", lambda ev: ev.r_bb, float, help="r(b1,b2,met) with jets "),
-    NTupleVariable("r_lept", lambda ev: ev.r_lept, float, help="r(j1,j2,met) with leptons"),
-    NTupleVariable("r_gen", lambda ev: ev.r_gen, float, help="r(j1,j2,met) with jets at genInfo"),
-    NTupleVariable("r", lambda ev: ev.r, float, help="r(j1,j2,met) with jets and leptons"),
+    # NTupleVariable("mr_had", lambda ev: ev.mr_had, float, help="mr(j1,j2,met) with jets "),
+    # NTupleVariable("mr_bb", lambda ev: ev.mr_bb, float, help="mr(b1,b2,met) with jets "),
+    # NTupleVariable("mr_lept", lambda ev: ev.mr_lept, float, help="mr(j1,j2,met) with leptons"),
+    # NTupleVariable("mr_gen", lambda ev: ev.mr_gen, float, help="mr(j1,j2,met) with jets at genInfo"),
+    # NTupleVariable("mr", lambda ev: ev.mr, float, help="mr(j1,j2,met) with jets and leptons"),
+    # NTupleVariable("mtr_had", lambda ev: ev.mtr_had, float, help="mtr(j1,j2,met) with jets "),
+    # NTupleVariable("mtr_bb", lambda ev: ev.mtr_bb, float, help="mtr(b1,b2,met) with jets "),
+    # NTupleVariable("mtr_lept", lambda ev: ev.mtr_lept, float, help="mtr(j1,j2,met) with leptons"),
+    # NTupleVariable("mtr_gen", lambda ev: ev.mtr_gen, float, help="mtr(j1,j2,met) with jets at genInfo"),
+    # NTupleVariable("mtr", lambda ev: ev.mtr, float, help="mtr(j1,j2,met) with jets and leptons"),
+    # NTupleVariable("r_had", lambda ev: ev.r_had, float, help="r(j1,j2,met) with jets "),
+    # NTupleVariable("r_bb", lambda ev: ev.r_bb, float, help="r(b1,b2,met) with jets "),
+    # NTupleVariable("r_lept", lambda ev: ev.r_lept, float, help="r(j1,j2,met) with leptons"),
+    # NTupleVariable("r_gen", lambda ev: ev.r_gen, float, help="r(j1,j2,met) with jets at genInfo"),
+    # NTupleVariable("r", lambda ev: ev.r, float, help="r(j1,j2,met) with jets and leptons"),
     ##-------------------------------------------------- 
     ## MonoJet specific ones
     ##-------------------------------------------------- 
