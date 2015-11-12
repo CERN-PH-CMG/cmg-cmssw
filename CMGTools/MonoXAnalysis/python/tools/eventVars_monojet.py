@@ -3,8 +3,8 @@ from CMGTools.MonoXAnalysis.tools.PileUpReWeighter import PileUpReWeighter
 
 class EventVarsMonojet:
     def __init__(self):
-        self.branches = [ "nMu10V", "nMu20T", "nEle10V", "nEle20T", "nTau18V", "nGamma15V", "nGamma175T",
-                          "dphijj", "weight", "jetclean1", "jetclean2", "phmet_pt", "phmet_phi"
+        self.branches = [ "nMu10V", "nMu20T", "nEle10V", "nEle20T", "nTau18V", "nGamma15V", "nGamma175T", "nBTag15",
+                          "dphijj", "weight", "events_ntot", "phmet_pt", "phmet_phi"
                           ]
     def initSampleNormalization(self,sample_nevt):
         self.sample_nevt = sample_nevt        
@@ -12,7 +12,7 @@ class EventVarsMonojet:
         biglist = [ ("nJetClean", "I"), ("nTauClean", "I"), ("nMuSel", "I"),
                     ("iM","I",8,"nMuSel"), ("iJ","I",10,"nJetClean"), ("iT","I",3,"nTauClean"),
                     ("nJetClean30", "I"), ("nTauClean18V", "I") ] 
-        for jfloat in "pt eta phi mass btagCSV rawPt".split():
+        for jfloat in "pt eta phi mass btagCSV rawPt leadClean".split():
             biglist.append( ("JetClean"+"_"+jfloat,"F",10,"nJetClean") )
         for tfloat in "pt eta phi".split():
             biglist.append( ("TauClean"+"_"+tfloat,"F",3,"nTauClean") )
@@ -46,6 +46,8 @@ class EventVarsMonojet:
         return gamma.pt > 15 and abs(gamma.eta) < 2.5
     def gammaIdTight(self,gamma):
         return gamma.pt > 175 and abs(gamma.eta) < 2.5
+    def leadJetCleaning(self,jet):
+        return jet.chHEF > 0.1 and jet.neHEF < 0.8
     def metNoPh(self,met,photons):
         px = met.Px() + sum([p.p4().Px() for p in photons])
         py = met.Py() + sum([p.p4().Py() for p in photons])
@@ -56,6 +58,7 @@ class EventVarsMonojet:
         # prepare output
         ret = {}; jetret = {}; tauret = {}
         ret['weight'] = event.xsec * 1000 / self.sample_nevt if event.run == 1 else 1.0
+        ret['events_ntot'] = self.sample_nevt
         leps = [l for l in Collection(event,"LepGood","nLepGood")]
         ret['nMu10V'] = sum([(abs(l.pdgId)==13 and int(self.lepIdVeto(l))) for l in leps ])
         ret['nMu20T'] = sum([(abs(l.pdgId)==13 and int(self.lepIdTight(l))) for l in leps ])
@@ -87,8 +90,8 @@ class EventVarsMonojet:
         ret["nMuSel"] = len(ret["iM"])
         # Define cleaned jets 
         ret["iJ"] = []; 
-        # 0. mark each jet as clean
-        for j in jets: j._clean = True
+        # 0. mark each identified jet as clean
+        for j in jets: j._clean = True if (j.puId > 0.5 and j.id > 0.5) else False
         # 1. associate to each loose lepton its nearest jet 
         for il in ret["iM"]:
             lep = leps[il]
@@ -105,7 +108,7 @@ class EventVarsMonojet:
         # 3. sort the jets by pt
         ret["iJ"].sort(key = lambda idx : jets[idx].pt, reverse = True)
         # 4. compute the variables
-        for jfloat in "pt eta phi mass btagCSV rawPt".split():
+        for jfloat in "pt eta phi mass btagCSV rawPt leadClean".split():
             jetret[jfloat] = []
         dphijj = 999
         ijc = 0
@@ -113,17 +116,19 @@ class EventVarsMonojet:
             jet = jets[idx]
             for jfloat in "pt eta phi mass btagCSV rawPt".split():
                 jetret[jfloat].append( getattr(jet,jfloat) )
-            if   ijc==0: ret['jetclean1'] = jet.chHEF > 0.2 and jet.neHEF < 0.7 and jet.phEF < 0.7
-            elif ijc==1: ret['jetclean2'] = jet.neHEF < 0.7 and jet.phEF < 0.9
+            jetret["leadClean"].append( self.leadJetCleaning(jet) )
             if ijc==1: dphijj = deltaPhi(jets[ret["iJ"][0]],jet)
             ijc += 1
         ret["nJetClean"] = len(ret['iJ'])
         # 5. compute the sums 
         ret["nJetClean30"] = 0
+        ret["nBTag15"] = 0
         for j in jets:
             if not j._clean: continue
             if j.pt > 30:
                 ret["nJetClean30"] += 1
+            if j.pt > 15  and j.btagCSV > 0.89:
+                ret["nBTag15"] += 1
         ret['dphijj'] = dphijj
 
         ### muon-tau cleaning
