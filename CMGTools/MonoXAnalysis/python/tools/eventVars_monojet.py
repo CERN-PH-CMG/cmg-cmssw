@@ -4,7 +4,7 @@ from CMGTools.MonoXAnalysis.tools.PileUpReWeighter import PileUpReWeighter
 class EventVarsMonojet:
     def __init__(self):
         self.branches = [ "nMu10V", "nMu20T", "nEle10V", "nEle20T", "nTau18V", "nGamma15V", "nGamma175T", "nBTag15",
-                          "dphijj", "weight", "events_ntot", "phmet_pt", "phmet_phi"
+                          "dphijj", "dphijm", "weight", "events_ntot", "phmet_pt", "phmet_phi"
                           ]
     def initSampleNormalization(self,sample_nevt):
         self.sample_nevt = sample_nevt        
@@ -71,6 +71,8 @@ class EventVarsMonojet:
         ret['nGamma175T'] = sum([(int(self.gammaIdTight(p))) for p in photons ])
         # event variables for the monojet analysis
         jets = [j for j in Collection(event,"Jet","nJet")]
+        jetsFwd = [j for j in Collection(event,"JetFwd","nJetFwd")]
+        alljets = jets + jetsFwd
         njet = len(jets)
         photonsT = [p for p in photons if self.gammaIdTight(p)]
         #print "check photonsT size is ", len(photonsT), " and nGamma175T = ",ret['nGamma175T']
@@ -91,45 +93,56 @@ class EventVarsMonojet:
         # Define cleaned jets 
         ret["iJ"] = []; 
         # 0. mark each identified jet as clean
-        for j in jets: j._clean = True if (j.puId > 0.5 and j.id > 0.5) else False
+        for j in alljets: 
+            j._clean = True if (j.puId > 0.5 and j.id > 0.5) else False
+            j._central = True if (abs(j.eta) < 2.5) else False
         # 1. associate to each loose lepton its nearest jet 
         for il in ret["iM"]:
             lep = leps[il]
             best = None; bestdr = 0.4
-            for j in jets:
+            for j in alljets:
                 dr = deltaR(lep,j)
                 if dr < bestdr:
                     best = j; bestdr = dr
             if best is not None: best._clean = False
         # 2. compute the jet list
-        for ij,j in enumerate(jets):
+        nJetCleanCentral=0
+        for ij,j in enumerate(alljets):
             if not j._clean: continue
             ret["iJ"].append(ij)
+            if j._central: nJetCleanCentral += 1
         # 3. sort the jets by pt
-        ret["iJ"].sort(key = lambda idx : jets[idx].pt, reverse = True)
+        ret["iJ"].sort(key = lambda idx : alljets[idx].pt, reverse = True)
         # 4. compute the variables
         for jfloat in "pt eta phi mass btagCSV rawPt leadClean".split():
             jetret[jfloat] = []
         dphijj = 999
+        dphijm = 999
         ijc = 0
+        nAllJets30 = 0
         for idx in ret["iJ"]:
-            jet = jets[idx]
+            jet = alljets[idx]
             for jfloat in "pt eta phi mass btagCSV rawPt".split():
                 jetret[jfloat].append( getattr(jet,jfloat) )
-            jetret["leadClean"].append( self.leadJetCleaning(jet) )
-            if ijc==1: dphijj = deltaPhi(jets[ret["iJ"][0]],jet)
+            jetret["leadClean"].append( jet._central and self.leadJetCleaning(jet) )
+            if ijc==1 and jet._central: dphijj = deltaPhi(alljets[ret["iJ"][0]],jet)
+            # use both central and fwd jets to compute this
+            if jet.pt > 30: 
+                nAllJets30 += 1
+                if nAllJets30 < 5: dphijm = min(dphijm,abs(deltaPhi(j,met)))
             ijc += 1
-        ret["nJetClean"] = len(ret['iJ'])
+        ret["nJetClean"] = nJetCleanCentral
+        ret['dphijj'] = dphijj
+        ret['dphijm'] = dphijm
         # 5. compute the sums 
         ret["nJetClean30"] = 0
         ret["nBTag15"] = 0
-        for j in jets:
+        for j in jets: # these are all central
             if not j._clean: continue
             if j.pt > 30:
                 ret["nJetClean30"] += 1
             if j.pt > 15  and j.btagCSV > 0.89:
                 ret["nBTag15"] += 1
-        ret['dphijj'] = dphijj
 
         ### muon-tau cleaning
         # Define cleaned taus
