@@ -316,12 +316,19 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     // string fileZmmData =   /*POW */ "../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
     // string fileZmmData =   /*MAD */ "../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
 
+    string fileZmmKeysCorrectTo = "../RecoilCode/OCT25/keysrecoilfit_OCT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
+    string fileZmmKeysMC = "../RecoilCode/OCT25/keysrecoilfit_OCT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
+    // need to add the half stat
+    string fileZmmKeysData = "../RecoilCode/OCT25/keysrecoilfit_OCT25_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
+    if(correctToMadgraph) fileZmmKeysData = "../RecoilCode/OCT25/keysrecoilfit_OCT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
+
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;
-    correctorRecoil_Z = new RecoilCorrector(fileCorrectTo.c_str(),123456,model_name[0],"../RecoilCode/MAY25/nonClosureMAY25.root");
+    correctorRecoil_Z = new RecoilCorrector(fileCorrectTo.c_str(),fileZmmKeysCorrectTo.c_str(),123456,model_name[0],"../RecoilCode/MAY25/nonClosureMAY25.root");
     cout << "INITIALIZING RECOIL Z DATA FILE" << endl;
-    correctorRecoil_Z->addDataFile(fileZmmData.c_str(),model_name[model_name_idx]);
+    correctorRecoil_Z->addDataFile(fileZmmData.c_str(), fileZmmKeysData.c_str(), model_name[model_name_idx] );
     cout << "INITIALIZING RECOIL Z MC FILE" << endl;
-    correctorRecoil_Z->addMCFile(fileZmmMC.c_str(),model_name[0]);
+    correctorRecoil_Z->addMCFile(fileZmmMC.c_str(), fileZmmKeysMC.c_str(), model_name[0]);
+
   }
   bool doSingleGauss=false;
 
@@ -823,6 +830,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   // << " metphi_trasvCentral before=" << metphi_trasvCentral
                   // << endl;
                   //if(useRecoilCorr==1){}
+
+		  bool doKeys=false;
+
                   if(useRecoilCorr==2){
                     // cout
                     // << "ZGen_pt=" << ZGen_pt
@@ -848,7 +858,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               ZNocorr.Pt(),ZNocorr.Phi(),
                               u1_recoil, u2_recoil,
                               RecoilCorrVarDiagoParU1orU2fromDATAorMC>6?RecoilCorrVarDiagoParU1orU2fromDATAorMC-6:RecoilCorrVarDiagoParU1orU2fromDATAorMC, m, RecoilCorrVarDiagoParSigmas,
-                              rapBin,doSingleGauss,1);
+                              rapBin,doSingleGauss,1,doKeys);
                     }else{
                       correctorRecoil_Z->CorrectMET3gaus(
                               met_trasv,metphi_trasv,
@@ -856,8 +866,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               ZNocorr.Pt(),ZNocorr.Phi(),
                               u1_recoil, u2_recoil,
                               0, 0, 0,
-                              rapBin,doSingleGauss,1);
-                      
+                              rapBin,doSingleGauss,1,doKeys);
                     }
                     if(first_time_in_the_event && m==m_start && n==0){
                       // cout << "before setting met_trasvCentral "<< RecoilCorrVarDiagoParU1orU2fromDATAorMC<< " " << m << " " << RecoilCorrVarDiagoParSigmas << endl;
@@ -875,7 +884,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                 ZNocorr.Pt(),ZNocorr.Phi(),
                                 u1_recoil, u2_recoil,
                                 0, 0, 0,
-                                rapBin,doSingleGauss,1);
+                                rapBin,doSingleGauss,1,doKeys);
                       }else{
                         // cout << " met_trasvCentral = met_trasv" << endl;
                         met_trasvCentral    = met_trasv;
