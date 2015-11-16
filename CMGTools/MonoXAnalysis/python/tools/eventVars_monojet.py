@@ -9,8 +9,8 @@ class EventVarsMonojet:
     def initSampleNormalization(self,sample_nevt):
         self.sample_nevt = sample_nevt        
     def listBranches(self):
-        biglist = [ ("nJetClean", "I"), ("nTauClean", "I"), ("nMuSel", "I"),
-                    ("iM","I",8,"nMuSel"), ("iJ","I",10,"nJetClean"), ("iT","I",3,"nTauClean"),
+        biglist = [ ("nJetClean", "I"), ("nTauClean", "I"), ("nLepSel", "I"),
+                    ("iL","I",8,"nLepSel"), ("iJ","I",10,"nJetClean"), ("iT","I",3,"nTauClean"),
                     ("nJetClean30", "I"), ("nTauClean18V", "I") ] 
         for jfloat in "pt eta phi mass btagCSV rawPt leadClean".split():
             biglist.append( ("JetClean"+"_"+jfloat,"F",10,"nJetClean") )
@@ -83,13 +83,13 @@ class EventVarsMonojet:
         ret['phmet_pt'] = phmet.Pt()
         ret['phmet_phi'] = phmet.Phi()
 
-        ### muon-jet cleaning
-        # Define the loose muons to be cleaned
-        ret["iM"] = []
+        ### lepton-jet cleaning
+        # Define the loose leptons to be cleaned
+        ret["iL"] = []
         for il,lep in enumerate(leps):
-            if abs(lep.pdgId)==13 and self.lepIdVeto(lep):
-                ret["iM"].append(il)
-        ret["nMuSel"] = len(ret["iM"])
+            if self.lepIdVeto(lep):
+                ret["iL"].append(il)
+        ret["nLepSel"] = len(ret["iL"])
         # Define cleaned jets 
         ret["iJ"] = []; 
         # 0. mark each identified jet as clean
@@ -97,7 +97,7 @@ class EventVarsMonojet:
             j._clean = True if (j.puId > 0.5 and j.id > 0.5) else False
             j._central = True if (abs(j.eta) < 2.5) else False
         # 1. associate to each loose lepton its nearest jet 
-        for il in ret["iM"]:
+        for il in ret["iL"]:
             lep = leps[il]
             best = None; bestdr = 0.4
             for j in alljets:
@@ -150,7 +150,7 @@ class EventVarsMonojet:
         # 0. mark each tau as clean
         for t in taus: t._clean = True
         # 1. associate to each loose lepton its nearest tau 
-        for il in ret["iM"]:
+        for il in ret["iL"]:
             lep = leps[il]
             best = None; bestdr = 0.4
             for t in taus:
