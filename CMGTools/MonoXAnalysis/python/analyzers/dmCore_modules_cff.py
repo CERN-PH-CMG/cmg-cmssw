@@ -167,7 +167,7 @@ lepAna = cfg.Analyzer(
     loose_electron_lostHits = 5.0,
     # muon isolation correction method (can be "rhoArea" or "deltaBeta")
     mu_isoCorr = "deltaBeta" ,
-    mu_effectiveAreas = "Phys14_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1')
+    mu_effectiveAreas = "Spring15_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1' or 'Spring15_25ns_v1')
     # electron isolation correction method (can be "rhoArea" or "deltaBeta")
     ele_isoCorr = "rhoArea" ,
     ele_effectiveAreas = "Spring15_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1' or 'Spring15_25ns_v1' or 'Spring15_50ns_v1')
