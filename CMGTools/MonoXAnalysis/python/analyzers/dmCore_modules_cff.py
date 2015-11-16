@@ -55,6 +55,7 @@ eventFlagsAna = cfg.Analyzer(
     outprefix   = 'Flag',
     triggerBits = {
         "HBHENoiseFilter" : [ "Flag_HBHENoiseFilter" ],
+        "HBHENoiseIsoFilter" : [ "Flag_HBHENoiseIsoFilter" ],
         "CSCTightHaloFilter" : [ "Flag_CSCTightHaloFilter" ],
         "hcalLaserEventFilter" : [ "Flag_hcalLaserEventFilter" ],
         "EcalDeadCellTriggerPrimitiveFilter" : [ "Flag_EcalDeadCellTriggerPrimitiveFilter" ],
@@ -414,12 +415,12 @@ dmCoreSequence = [
     lepAna,
     photonAna,
     tauAna,
- #   isoTrackAna,
+    isoTrackAna,
     jetAna,
     metAna,
     ttHCoreEventAna,
     monoJetSkim,
     monoJetCtrlLepSkim,
     triggerFlagsAna,
-#    eventFlagsAna,
+    eventFlagsAna,
 ]
