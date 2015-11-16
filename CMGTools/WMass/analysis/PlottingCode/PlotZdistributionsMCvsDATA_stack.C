@@ -38,88 +38,101 @@ void PlotZdistributionsMCvsDATA_stack(TString folderMCsig="",TString folderMCEWK
   TString MuCharge_str[2] = {"Pos" ,"Neg"};
   
   TString LegendEvTypeTeX=Form("WlikePos#rightarrow#mu#nu");
-  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hnvtx_Sig_eta0p9_91188"),0,0,0,1,Form(";Mass [GeV];Counts"),70,110,1,1);
-  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("Zmass_Sig_eta0p9_91188"),0,0,0,1,Form(";Mass [GeV];Counts"),70,110,1,1);
-  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("Zmass_zoomed_Sig_eta0p9_91188"),0,0,0,1,Form(";Mass [GeV];Counts"),70,110,20,1);
-  return;
-  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_Zmass_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Mass [GeV];Counts"),70,110,1,1);
-  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("ZDeltaEtaMuNegJet_Sig_eta0p9_91188"),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("ZDeltaPhiMuNegJet_Sig_eta0p9_91188"),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("ZlepDeltaEta_Sig_eta0p9_91188"),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("ZlepDeltaPhi_Sig_eta0p9_91188"),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("ZlepDeltaPt_Sig_eta0p9_91188"),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("ZlepDeltaR_Sig_eta0p9_91188"),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hJeteta_WlikePos_Sig_eta0p9_91188"),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMuMETeta_WlikePos_Sig_eta0p9_91188"),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMueta_WlikePos_Sig_eta0p9_91188"),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_Recoil_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_ZpT_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
+  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hnvtx_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,0,0,1,Form(";Number of vertices;Counts"),70,110,1,1);
+  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("Zmass_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,0,0,1,Form(";Dimuon mass [GeV];Counts"),70,110,1,1);
+  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("Zmass_zoomed_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,0,0,1,Form(";Dimuon mass [GeV];Counts"),70,110,20,1);
+  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("Zrap_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,0,0,1,Form(";Dimuon rapidity;Counts"),-1,-1,1,1);
+  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_Zmass_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Dimuon mass [GeV];Counts"),70,110,1,1);
+  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("ZDeltaEtaMuNegJet_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,1,0,1,Form(";#eta_{#mu-}-#eta_{leading jet};Counts"),-1,-1,1,1);
+  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("ZDeltaPhiMuNegJet_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,1,0,1,Form(";#phi_{#mu-}-#phi_{leading jet} [rad];Counts"),-1,-1,1,1);
+  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("ZDeltaEtaMuPosJet_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,1,0,1,Form(";#eta_{#mu+}-#eta_{leading jet};Counts"),-1,-1,1,1);
+  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("ZDeltaPhiMuPosJet_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,1,0,1,Form(";#phi_{#mu+}-#phi_{leading jet} [rad];Counts"),-1,-1,1,1);
+  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("ZlepDeltaEta_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,0,0,1,Form(";#eta_{#mu+}-#eta_{#mu-};Counts"),-1,-1,1,1);
+  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("ZlepDeltaPhi_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,1,0,1,Form(";#phi_{#mu+}-#phi_{#mu-} [rad];Counts"),-1,-1,1,1);
+  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("ZlepDeltaPt_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,0,0,1,Form(";pT_{#mu+}-pT_{#mu-} [GeV];Counts"),-1,-1,1,1);
+  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("ZlepDeltaR_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,1,0,1,Form(";#Delta R(#mu+,#mu-);Counts"),1.6,4.4,2,1);
+  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hJeteta_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,0,0,1,Form(";Leading jet #eta;Counts"),-1,-1,1,1);
+  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMuMETeta_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,0,0,1,Form(";#eta_{#mu-};Counts"),-1,-1,1,1);
+  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMueta_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,0,0,1,Form(";#eta_{#mu+};Counts"),-1,-1,1,1);
+  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_Recoil_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Recoil [GeV];Counts"),-1,-1,1,1);
+  common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_ZpT_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Z pT [GeV];Counts"),0,50,1,1);
   for(int i=1;i<21;i++){
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_met_VTX%d_tk",i),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_metphi_VTX%d_tk",i),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_ptZ_VTX%d_tk",i),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_u_VTX%d_tk",i),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_u1_VTX%d_tk",i),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_u2_VTX%d_tk",i),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_met_VTX%d_tk",i),0,0,0,1,Form(";MET [GeV] for nvtx=%d;Counts",i),0,50,2,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_metphi_VTX%d_tk",i),0,0,0,1,Form(";MET #phi [rad] for nvtx=%d;Counts",i),-1,-1,4,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_ptZ_VTX%d_tk",i),0,0,0,1,Form(";Z pT [GeV] for nvtx=%d;Counts",i),-1,-1,2,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_u_VTX%d_tk",i),0,0,0,1,Form(";Recoil [GeV] for nvtx=%d ;Counts",i),-1,-1,2,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_u1_VTX%d_tk",i),0,0,0,1,Form(";u1 [GeV] for nvtx=%d;Counts",i),-30,30,2,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_u2_VTX%d_tk",i),0,0,0,1,Form(";u2 [GeV] for nvtx=%d;Counts",i),-30,30,2,1);
   }
-  TString zpt_range[13] = {"02","1012","1214","1416","1618","1820","2030","24","3050","46","50","68","810"};
-  for(int i=0;i<13;i++){
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_met_Zpt%s_tk",zpt_range[i].Data()),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_u_Zpt%s_tk",zpt_range[i].Data()),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_u1_Zpt%s_tk",zpt_range[i].Data()),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_u2_Zpt%s_tk",zpt_range[i].Data()),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
+  TString zpt_range_name[13] = {"[0,2]","[10,12]","[12,14]","[14,16]","[16,18]","[18,20]","[20,30]","[2,4]","[4,6]","[6,8]","[8,10]","[30,50]","[50,inf]"};
+  TString zpt_range[13] = {"02","1012","1214","1416","1618","1820","2030","24","46","68","810","3050","50"};
+  // for(int i=0;i<13;i++){ // commented out after Zpt<30
+  for(int i=0;i<11;i++){
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_met_Zpt%s_tk",zpt_range[i].Data()),0,0,0,1,Form(";MET [GeV] for Z pT=%s;Counts",zpt_range_name[i].Data()),0,50,1,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_u_Zpt%s_tk",zpt_range[i].Data()),0,0,0,1,Form(";Recoil [rad] for Z pT=%s;Counts",zpt_range_name[i].Data()),-1,-1,1,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_u1_Zpt%s_tk",zpt_range[i].Data()),0,0,0,1,Form(";u1 [GeV] for Z pT=%s;Counts",zpt_range_name[i].Data()),-30,30,1,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_u2_Zpt%s_tk",zpt_range[i].Data()),0,0,0,1,Form(";u2 [GeV] for Z pT=%s;Counts",zpt_range_name[i].Data()),-30,30,1,1);
   }
-  TString zy_range[13] = {"0005","0500","0510","1005","1015","1510","1520","2015"};
-  for(int i=0;i<13;i++){
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_met_Zy%s_tk",zy_range[i].Data()),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_u_Zy%s_tk",zy_range[i].Data()),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_u1_Zy%s_tk",zy_range[i].Data()),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_u2_Zy%s_tk",zy_range[i].Data()),0,0,0,1,Form(";Mass [GeV];Counts"),-1,-1,1,1);
+  TString zy_range_name[8] = {"[0.0,0.5]","[-0.5,0.0]","[0.5,1.0]","[1.0,0.5]","[1.0,1.5]","[1.5,1.0]","[1.5,2.0]","[2.0,1.5]"};
+  TString zy_range[8] = {"0005","0500","0510","1005","1015","1510","1520","2015"};
+  // for(int i=0;i<8;i++){ // commented out after Zpt<30
+  for(int i=0;i<6;i++){
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_met_Zy%s_tk",zy_range[i].Data()),0,0,0,1,Form(";MET [GeV] for Z rapidity=%s;Counts",zy_range_name[i].Data()),0,50,1,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_u_Zy%s_tk",zy_range[i].Data()),0,0,0,1,Form(";Recoil [rad] for Z rapidity=%s;Counts",zy_range_name[i].Data()),-1,-1,1,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_u1_Zy%s_tk",zy_range[i].Data()),0,0,0,1,Form(";u1 [GeV] for Z rapidity=%s;Counts",zy_range_name[i].Data()),-30,30,1,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_u2_Zy%s_tk",zy_range[i].Data()),0,0,0,1,Form(";u2 [GeV] for Z rapidity=%s;Counts",zy_range_name[i].Data()),-30,30,1,1);
   }
-  
-  return;
-  
-  for(int c=0; c<1; c++){
-    TString LegendEvTypeTeX=Form("Wlike%s#rightarrow#mu#nu",MuCharge_str[c].Data());
-    
-    for(int i=0; i<WMass::etaMuonNSteps; i++){
-      TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
-      for(int j=0; j<2*WMass::WMassNSteps+1; j++){
-        int jWmass = WMass::WMassCentral_MeV-(WMass::WMassNSteps-j)*WMass::ZMassCentral_MeV;
-
-        for(int k=0;k<WMass::NFitVar;k++){
-          common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets,0,"",eta_str.Data(),jWmass),0,0,0,1,Form(";%s [GeV];Counts",WMass::FitVar_str[k].Data()),-1,-1,1,1);
-          
-        }
-        // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("Zmass_Sig_eta%s_%d",eta_str.Data(),jWmass),0,0,0,1,";Z mass [GeV];Counts",50,-1,1);
-        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("Zmass_QCD_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";Z mass [GeV];Counts",50,-1,1);
-        // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hpfMET_WlikePos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos MET [GeV];Counts",25,-1,1);
-        // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hpfMET_WlikePos_QCD_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos MET [GeV];Counts",25,-1,1);
-        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hpfMET_WlikePos_QCD_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos MET [GeV];Counts",25,-1,1);
-        // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_mt_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
-        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_mt_QCD_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
-        // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_mt_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
-        // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMupt_WlikePos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos muon p_{T} [GeV];Counts",20,-1,1);
-        // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMueta_WlikePos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,0,0,1,";WlikePos muon p_{T} [GeV];Counts",20,-1,1);
-        // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hnvtx_Sig_eta%s_%d",eta_str.Data(),jWmass),0,0,0,1,";number of vertices;Counts",-1,-1,1);
-        // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hu1_WlikePos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";u1 (GeV);Counts",-1,-1,1);
-        // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hu2_WlikePos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";u2 (GeV);Counts",-1,-1,1);
-
-      }
-      // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"Zmass_Sig_eta0p6",0,0,0,1,";Z mass [GeV];Counts",50,-1,1);
-      // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"Zmass_zoomed_Sig_eta0p6",0,0,0,1,";Z mass [GeV];Counts",80,100,10);
-      // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hpfMET_WlikePos_Sig_eta0p6",0,1,0,1,";WlikePos MET [GeV];Counts",25,-1,1);
-      // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hpfMET_WlikePos_QCD_eta0p6",0,1,0,1,";WlikePos MET [GeV];Counts",25,-1,1);
-      // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hWlikePos_mt_Sig_eta0p6",0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
-      // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hWlikePos_mt_Sig_eta0p6",0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
-      // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hMupt_WlikePos_Sig_eta0p6",0,1,0,1,";WlikePos muon p_{T} [GeV];Counts",20,-1,1);
-      // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hMueta_WlikePos_Sig_eta0p6",0,0,0,1,";WlikePos muon p_{T} [GeV];Counts",20,-1,1);
-      // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hu1_WlikePos_Sig_eta0p6",0,1,0,1,";u1 (GeV);Counts",-1,-1,1);
-      // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hu2_WlikePos_Sig_eta0p6",0,1,0,1,";u2 (GeV);Counts",-1,-1,1);
-
+  for(int i=0;i<2;i++){
+    for(int j=0;j<7;j++){
+      // if(j>4) continue; // commented out after Zpt<30
+      if(j>2) continue;
+      // if(i==1 && j==6) continue;
+      common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("costh_CS_rapbin%d_ptbin%d_WlikePos_8_JetCut_pdf229800-0_kalman_eta0p9_91188",i,j),0,0,0,1,Form(";#cos{#theta^{*}_{CS}} for Z rapidity bin %d, Z pT bin %d;Counts",i,j),-1,-1,1,1);
+      common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("phi_CS_rapbin%d_ptbin%d_WlikePos_8_JetCut_pdf229800-0_kalman_eta0p9_91188",i,j),0,0,0,1,Form(";#phi^{*}_{CS} [rad] for Z rapidity bin %d, Z pT bin %d;Counts;Counts",i,j),-1,-1,1,1);
     }
   }
-  return;
+  
+  // for(int c=0; c<1; c++){
+    // TString LegendEvTypeTeX=Form("Wlike%s#rightarrow#mu#nu",MuCharge_str[c].Data());
+    
+    // for(int i=0; i<WMass::etaMuonNSteps; i++){
+      // TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
+      // for(int j=0; j<2*WMass::WMassNSteps+1; j++){
+        // int jWmass = WMass::WMassCentral_MeV-(WMass::WMassNSteps-j)*WMass::ZMassCentral_MeV;
+
+        // for(int k=0;k<WMass::NFitVar;k++){
+          // common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s_eta%s_%d",MuCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets,0,"",eta_str.Data(),jWmass),0,0,0,1,Form(";%s [GeV];Counts",WMass::FitVar_str[k].Data()),-1,-1,1,1);
+          
+        // }
+        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("Zmass_Sig_eta%s_%d",eta_str.Data(),jWmass),0,0,0,1,";Z mass [GeV];Counts",50,-1,1);
+        // // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("Zmass_QCD_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";Z mass [GeV];Counts",50,-1,1);
+        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hpfMET_WlikePos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos MET [GeV];Counts",25,-1,1);
+        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hpfMET_WlikePos_QCD_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos MET [GeV];Counts",25,-1,1);
+        // // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hpfMET_WlikePos_QCD_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos MET [GeV];Counts",25,-1,1);
+        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_mt_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
+        // // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_mt_QCD_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
+        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_mt_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
+        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMupt_WlikePos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos muon p_{T} [GeV];Counts",20,-1,1);
+        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMueta_WlikePos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,0,0,1,";WlikePos muon p_{T} [GeV];Counts",20,-1,1);
+        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hnvtx_Sig_eta%s_%d",eta_str.Data(),jWmass),0,0,0,1,";number of vertices;Counts",-1,-1,1);
+        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hu1_WlikePos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";u1 (GeV);Counts",-1,-1,1);
+        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hu2_WlikePos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";u2 (GeV);Counts",-1,-1,1);
+
+      // }
+      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"Zmass_Sig_eta0p6",0,0,0,1,";Z mass [GeV];Counts",50,-1,1);
+      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"Zmass_zoomed_Sig_eta0p6",0,0,0,1,";Z mass [GeV];Counts",80,100,10);
+      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hpfMET_WlikePos_Sig_eta0p6",0,1,0,1,";WlikePos MET [GeV];Counts",25,-1,1);
+      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hpfMET_WlikePos_QCD_eta0p6",0,1,0,1,";WlikePos MET [GeV];Counts",25,-1,1);
+      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hWlikePos_mt_Sig_eta0p6",0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
+      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hWlikePos_mt_Sig_eta0p6",0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
+      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hMupt_WlikePos_Sig_eta0p6",0,1,0,1,";WlikePos muon p_{T} [GeV];Counts",20,-1,1);
+      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hMueta_WlikePos_Sig_eta0p6",0,0,0,1,";WlikePos muon p_{T} [GeV];Counts",20,-1,1);
+      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hu1_WlikePos_Sig_eta0p6",0,1,0,1,";u1 (GeV);Counts",-1,-1,1);
+      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hu2_WlikePos_Sig_eta0p6",0,1,0,1,";u2 (GeV);Counts",-1,-1,1);
+
+    // }
+  // }
+  // return;
   
 
 
