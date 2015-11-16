@@ -316,11 +316,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     // string fileZmmData =   /*POW */ "../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
     // string fileZmmData =   /*MAD */ "../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
 
-    string fileZmmKeysCorrectTo = "../RecoilCode/OCT25/keysrecoilfit_OCT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
-    string fileZmmKeysMC = "../RecoilCode/OCT25/keysrecoilfit_OCT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
+    string fileZmmKeysCorrectTo = "root://eoscms//eos/cms//store/group/phys_smp/Wmass/dalfonso/RecoilFiles/OCT25/keysrecoilfit_OCT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
+    string fileZmmKeysMC = "root://eoscms//eos/cms//store/group/phys_smp/Wmass/dalfonso/RecoilFiles/OCT25/keysrecoilfit_OCT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
     // need to add the half stat
-    string fileZmmKeysData = "../RecoilCode/OCT25/keysrecoilfit_OCT25_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
-    if(correctToMadgraph) fileZmmKeysData = "../RecoilCode/OCT25/keysrecoilfit_OCT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
+    string fileZmmKeysData = "root://eoscms//eos/cms//store/group/phys_smp/Wmass/dalfonso/RecoilFiles//OCT25/keysrecoilfit_OCT25_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
+    if(correctToMadgraph) fileZmmKeysData = "root://eoscms//eos/cms//store/group/phys_smp/Wmass/dalfonso/RecoilFiles/OCT25//keysrecoilfit_OCT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
 
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;
     correctorRecoil_Z = new RecoilCorrector(fileCorrectTo.c_str(),fileZmmKeysCorrectTo.c_str(),123456,model_name[0],"../RecoilCode/MAY25/nonClosureMAY25.root");

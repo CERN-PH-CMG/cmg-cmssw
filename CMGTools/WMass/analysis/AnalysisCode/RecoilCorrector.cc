@@ -555,7 +555,7 @@ double RecoilCorrector::triGausInvGraphKeys(double iPVal, double Zpt, std::vecto
   int Zptbin=int(Zpt);
   //  if(int(Zpt)==0) Zptbin=0;
   if(int(Zpt)>49) Zptbin=49;
-  if(isU1 && int(Zpt)>19) Zptbin=19;
+  if(isU1 && int(Zpt)>29) Zptbin=29;
 
   /*
   int Zptbin=int(Zpt)-1;
@@ -585,19 +585,10 @@ void RecoilCorrector::makeKeysVec(RooWorkspace *w, TFile * lFileKeys, TString fi
 
   //  lFileKeys->ls();
 
-  int Zmax=19;
+  int Zmax=29;
   if(!isU1) Zmax=49;
 
   for(int Zpt=0; Zpt<=Zmax; Zpt++) {
-
-    /*
-    if(Zpt==15) continue;
-    if(Zpt==31) continue;
-    if(Zpt==37) continue;
-    if(Zpt==38) continue;
-    if(Zpt==43) continue;
-    if(Zpt==46) continue;
-    */
 
     RooAbsPdf* pdfKey = (RooKeysPdf*) lFileKeys->Get(Form("%s_%d",fit.Data(),Zpt));
 
@@ -607,7 +598,6 @@ void RecoilCorrector::makeKeysVec(RooWorkspace *w, TFile * lFileKeys, TString fi
     w->import(*pdfKey, RooFit::RecycleConflictNodes(),RooFit::Silence());
 
     RooAbsReal * iKeyPdf = pdfKey->createCdf(*myX1);
-    //    cout << "CDF done " << " Zpt " << Zpt << endl;
     pdfUiCdf.push_back(iKeyPdf);
     w->import(*iKeyPdf, RooFit::RecycleConflictNodes(),RooFit::Silence());
   }
