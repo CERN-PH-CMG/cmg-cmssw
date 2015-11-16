@@ -175,27 +175,15 @@ from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import *
 from CMGTools.RootTools.samples.triggers_8TeV import triggers_1mu_8TeV, triggers_mumu_8TeV, triggers_mue_8TeV, triggers_ee_8TeV;
 triggerFlagsAna.triggerBits = {
     'DoubleMu' : triggers_mumu_iso,
-    'DoubleMuSS' : triggers_mumu_ss,
-    'DoubleMuNoIso' : triggers_mumu_noniso,
     'DoubleEl' : triggers_ee,
-    'MuEG'     : triggers_mue,
-    'DoubleMuHT' : triggers_mumu_ht,
-    'DoubleElHT' : triggers_ee_ht,
-    'MuEGHT' : triggers_mue_ht,
-    'TripleEl' : triggers_3e,
-    'TripleMu' : triggers_3mu,
-    'TripleMuA' : triggers_3mu_alt,
-    'DoubleMuEl' : triggers_2mu1e,
-    'DoubleElMu' : triggers_2e1mu,
     'SingleMu' : triggers_1mu_iso,
     'SingleEl'     : triggers_1e,
-    'MonoJet80MET90' : triggers_Jet80MET90,
-    'MonoJet80MET120' : triggers_Jet80MET120,
-    'METMu5' : triggers_MET120Mu5,
+    'MonoJetMetNoMuMHT90' : triggers_metNoMu90_mhtNoMu90,
+    'MonoJetMetNoMuMHT120' : triggers_metNoMu120_mhtNoMu120,
 }
 triggerFlagsAna.unrollbits = True
-triggerFlagsAna.saveIsUnprescaled = True
-triggerFlagsAna.checkL1Prescale = True
+triggerFlagsAna.saveIsUnprescaled = False
+triggerFlagsAna.checkL1Prescale = False
 
 from CMGTools.MonoXAnalysis.samples.samples_monojet_13TeV_74X import *
 from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
@@ -213,9 +201,9 @@ if scaleProdToLumi>0: # select only a subset of a sample, corresponding to a giv
         c.splitFactor = len(c.files)
         c.fineSplitFactor = 1
 
+json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
 if runData and not isTest: # For running on data
-    json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258750_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
-    run_ranges = [ (246908,258750) ]; useAAA=False; is50ns=False
+    run_ranges = [ (246908,260627) ]; useAAA=False; is50ns=False
 
     compSelection = ""
     DatasetsAndTriggers = []
@@ -232,7 +220,7 @@ if runData and not isTest: # For running on data
         DatasetsAndTriggers.append( ("SingleMuon", triggers_1mu_iso + triggers_1mu_iso_50ns + triggers_1mu_noniso) )
         DatasetsAndTriggers.append( ("SingleElectron", triggers_1e + triggers_1e_50ns) )
     if signalSkim == True:
-        DatasetsAndTriggers.append( ("MET", triggers_Jet80MET90 + triggers_Jet80MET120 + triggers_MET120Mu5 ) )
+        DatasetsAndTriggers.append( ("MET", triggers_metNoMu90_mhtNoMu90 + triggers_metNoMu120_mhtNoMu120 ) )
 
     for pd,triggers in DatasetsAndTriggers:
         iproc=0 
@@ -253,7 +241,7 @@ if runData and not isTest: # For running on data
                                                  "CMS", ".*root", 
                                                  json=json, 
                                                  run_range=this_run_range, 
-                                                 #triggers=triggers[:], vetoTriggers = vetos[:],
+                                                 triggers=triggers[:], vetoTriggers = vetos[:],
                                                  useAAA=useAAA)
                 print "Will process %s (%d files)" % (comp.name, len(comp.files))
                 print "\ttrigger sel %s, veto %s" % (triggers, vetos)
@@ -261,7 +249,7 @@ if runData and not isTest: # For running on data
                 comp.fineSplitFactor = 1
                 selectedComponents.append( comp )
             iproc += 1
-        vetos += triggers
+        # vetos += triggers # no need of this for monojet, since there are not overlapping datasets for signal region
     if json is None:
         dmCoreSequence.remove(jsonAna)
 
@@ -287,7 +275,10 @@ if runData==False and not isTest: # MC all
     is50ns = False
     mcSamples = mcSamples_monojet_Asymptotic25ns
     if signalSkim:
-        mcSamples += mcSamples_monojet_Asymptotic25ns_signals
+        # full signal scan (many datasets!)
+        # mcSamples += mcSamples_monojet_Asymptotic25ns_signals
+        monojet_signals_cherrypick = [ DMS_Mphi_2000_Mchi_1_gSM_1p0_gDM_1p0, DMPS_Mphi_2000_Mchi_1_gSM_1p0_gDM_1p0, DMAV_Mphi_2000_Mchi_1_gSM_0p25_gDM_1p0]
+        mcSamples += monojet_signals_cherrypick
     selectedComponents = mcSamples 
 
 ### 50 ns 74X MC samples
@@ -372,19 +363,20 @@ elif test == '74X-Data':
         comp = DoubleEG_Run2015D_05Oct
         comp.files = [ 'root://eoscms//eos/cms/store/data/Run2015D/DoubleEG/MINIAOD/05Oct2015-v1/50000/0014E86F-656F-E511-9D3F-002618943831.root' ]
         selectedComponents = [ comp ]
-        monoJetCtrlLepSkim.minLeptons = 2
     elif what == "DoubleMuon":
         comp = DoubleMuon_Run2015D_05Oct
         comp.files = [ 'root://eoscms//eos/cms/store/data/Run2015D/DoubleMuon/MINIAOD/05Oct2015-v1/30000/04008DF6-8A6F-E511-B034-0025905A6136.root' ]
         selectedComponents = [ comp ]
-        monoJetCtrlLepSkim.minLeptons = 2
     else:
         selectedComponents = dataSamples_Run2015D_05Oct
     for comp in selectedComponents:
+        comp.json = json
         comp.splitFactor = 1
         comp.fineSplitFactor = 1 if getHeppyOption("single") else 4
         if not getHeppyOption("all"):
             comp.files = comp.files[:1]
+    dmCoreSequence.remove(jsonAna)
+
 
 ## output histogram
 outputService=[]
