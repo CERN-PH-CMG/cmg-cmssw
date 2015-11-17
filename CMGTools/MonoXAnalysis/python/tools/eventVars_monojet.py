@@ -57,7 +57,7 @@ class EventVarsMonojet:
     def __call__(self,event):
         # prepare output
         ret = {}; jetret = {}; tauret = {}
-        ret['weight'] = event.xsec * 1000 / self.sample_nevt if event.run == 1 else 1.0
+        ret['weight'] = event.xsec * 1000 * event.genWeight / self.sample_nevt if event.run == 1 else 1.0
         ret['events_ntot'] = self.sample_nevt
         leps = [l for l in Collection(event,"LepGood","nLepGood")]
         ret['nMu10V'] = sum([(abs(l.pdgId)==13 and int(self.lepIdVeto(l))) for l in leps ])
