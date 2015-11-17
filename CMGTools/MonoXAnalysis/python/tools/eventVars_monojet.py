@@ -26,19 +26,22 @@ class EventVarsMonojet:
             return lep.relIso04 < 0.2
         elif abs(lep.pdgId) == 11:
             if abs(lep.eta) > 2.5: return False
-            if lep.relIso03 > (0.164369 if abs(lep.eta)<1.479 else 0.212604): return False
-            if lep.dxy > (0.060279 if abs(lep.eta)<1.479 else 0.273097): return False
-            if lep.dz > (0.800538 if abs(lep.eta)<1.479 else 0.885860): return False
+            if lep.relIso03 > (0.126 if abs(lep.etaSc)<1.479 else 0.144): return False
+            if lep.dxy > (0.0564 if abs(lep.etaSc)<1.479 else 0.222): return False
+            if lep.dz > (0.472 if abs(lep.etaSc)<1.479 else 0.921): return False
             if not lep.convVeto: return False
-            return lep.lostHits <= (2 if abs(lep.eta)<1.479 else 3)
+            return lep.lostHits <= (2 if abs(lep.etaSc)<1.479 else 3)
     def lepIdTight(self,lep):
-        if lep.pt <= 20: return False
         if abs(lep.pdgId) == 13:
+            if lep.pt <= 20: return False
             return abs(lep.eta) < 2.4 and lep.tightId > 0 and lep.relIso04 < 0.12
         elif abs(lep.pdgId) == 11:
-            if lep.dxy > (0.009924 if abs(lep.eta)<1.479 else 0.027261): return False
-            if lep.dz > (0.015310 if abs(lep.eta)<1.479 else 0.147154): return False
-            return abs(lep.eta) < 2.5 and lep.tightId > 0 and lep.convVeto and lep.lostHits <= 1 and lep.relIso04 < 0.12
+            if lep.pt <= 40: return False
+            if lep.relIso03 > (0.0354 if abs(lep.etaSc)<1.479 else 0.0646): return False
+            if lep.dxy > (0.0111 if abs(lep.etaSc)<1.479 else 0.0351): return False
+            if lep.dz > (0.0466 if abs(lep.etaSc)<1.479 else 0.417): return False
+            if lep.lostHits > (2 if abs(lep.etaSc)<1.479 else 1): return False
+            return abs(lep.eta) < 2.5 and lep.tightId > 0 and lep.convVeto
     def tauIdVeto(self,tau):
         if tau.pt <= 18 or abs(tau.eta) > 2.3: return False
         return tau.idDecayMode > 0.5 and tau.isoCI3hit < 5.0
