@@ -198,11 +198,11 @@ monoJetSkim = cfg.Analyzer(
 from CMGTools.MonoXAnalysis.analyzers.monoJetCtrlLepSkimmer import monoJetCtrlLepSkimmer
 monoJetCtrlLepSkim = cfg.Analyzer(
     monoJetCtrlLepSkimmer, name='monoJetCtrlLepSkimmer',
-    minLeptons = 1,
+    minLeptons = 0,
     maxLeptons = 999,
     #idCut  = "lepton.relIso03 < 0.2" # can give a cut
-    idCut = 'lepton.muonID("POG_ID_Medium") if abs(lepton.pdgId())==13 else lepton.electronID("POG_Cuts_ID_PHYS14_25ns_v1_Veto_full5x5")',
-    ptCuts = [20],                # can give a set of pt cuts on the leptons
+    idCut = 'lepton.muonID("POG_ID_Loose") if abs(lepton.pdgId())==13 else lepton.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Veto_full5x5")',
+    ptCuts = [10],                # can give a set of pt cuts on the leptons
     )
 
 ## Photon Analyzer (generic)
