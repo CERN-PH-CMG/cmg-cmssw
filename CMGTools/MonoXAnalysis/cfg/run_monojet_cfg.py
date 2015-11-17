@@ -23,7 +23,7 @@ isTest = getHeppyOption("test",None) != None and not re.match("^\d+$",getHeppyOp
 
 # Define skims
 signalSkim = False
-diLepSkim = True
+diLepSkim = False
 singleLepSkim = False
 
 # --- MONOJET SKIMMING ---
@@ -36,6 +36,9 @@ if diLepSkim == True:
     monoJetCtrlLepSkim.minLeptons = 2
 if singleLepSkim == True:
     monoJetCtrlLepSkim.minLeptons = 1
+    monoJetCtrlLepSkim.idCut = '(lepton.muonID("POG_ID_Tight") and lepton.relIso04 < 0.12) if abs(lepton.pdgId())==13 else 
+                                (lepton.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Tight_full5x5") and (lepton.relIso03<0.0354 if abs(lepton.superCluster().eta())<1.479 else lepton.relIso03<0.0646))'
+     monoJetCtrlLepSkim.ptCuts = [20]
 
 # run miniIso
 lepAna.doMiniIsolation = True
