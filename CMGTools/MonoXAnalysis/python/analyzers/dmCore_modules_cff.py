@@ -217,6 +217,7 @@ photonAna = cfg.Analyzer(
     doFootprintRemovedIsolation = True,
     packedCandidates = 'packedPFCandidates',
     footprintRemovedIsolationPUCorr = 'rhoArea',
+    conversionSafe_eleVeto = True,
     do_mc_match = True,
     do_randomCone = False,
 )
