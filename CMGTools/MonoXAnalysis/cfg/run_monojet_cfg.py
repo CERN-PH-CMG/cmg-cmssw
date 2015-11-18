@@ -36,9 +36,8 @@ if diLepSkim == True:
     monoJetCtrlLepSkim.minLeptons = 2
 if singleLepSkim == True:
     monoJetCtrlLepSkim.minLeptons = 1
-    monoJetCtrlLepSkim.idCut = '(lepton.muonID("POG_ID_Tight") and lepton.relIso04 < 0.12) if abs(lepton.pdgId())==13 else 
-                                (lepton.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Tight_full5x5") and (lepton.relIso03<0.0354 if abs(lepton.superCluster().eta())<1.479 else lepton.relIso03<0.0646))'
-     monoJetCtrlLepSkim.ptCuts = [20]
+    monoJetCtrlLepSkim.idCut = '(lepton.muonID("POG_ID_Tight") and lepton.relIso04 < 0.12) if abs(lepton.pdgId())==13 else (lepton.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Tight_full5x5") and (lepton.relIso03<0.0354 if abs(lepton.superCluster().eta())<1.479 else lepton.relIso03<0.0646))'
+    monoJetCtrlLepSkim.ptCuts = [20]
 
 # run miniIso
 lepAna.doMiniIsolation = True
@@ -359,7 +358,7 @@ elif test == 'synch-74X': # sync
     jetAna.smearJets       = False
     for comp in selectedComponents:
         comp.splitFactor = 1
-        comp.fineSplitFactor = 1 if getHeppyOption("single") else 2
+        comp.fineSplitFactor = 1 if getHeppyOption("single") else 4
 elif test == '74X-Data':
     what = getHeppyOption("sample")
     if what == "DoubleEG":
@@ -375,7 +374,7 @@ elif test == '74X-Data':
     for comp in selectedComponents:
         comp.json = json
         comp.splitFactor = 1
-        comp.fineSplitFactor = 1 if getHeppyOption("single") else 4
+        comp.fineSplitFactor = 1 if getHeppyOption("single") else 8
         if not getHeppyOption("all"):
             comp.files = comp.files[:1]
     dmCoreSequence.remove(jsonAna)
