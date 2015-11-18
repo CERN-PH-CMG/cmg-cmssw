@@ -18,14 +18,17 @@ def returnString(func):
 
 parser = optparse.OptionParser()
 parser.add_option("-s","--sample",dest="sample",default='',help="Type of sample")
-parser.add_option("-c","--cut",dest="cut",help="Cut to apply",default='')
+parser.add_option("-c","--cutShape",dest="cutShape",help="Cut to apply for shape",default='')
+parser.add_option("-C","--cutYield",dest="cutYield",help="Cut to apply for yield",default='')
 parser.add_option("-o","--output",dest="output",help="Output JSON",default='')
 parser.add_option("-v","--MJJ",dest="mjj",help="mjj variable",default='')
 parser.add_option("-V","--MVV",dest="mvv",help="mVV variable",default='')
+parser.add_option("-p","--particle",dest="boson",help="particle",default='W')
 
 
 parser.add_option("-m","--minMJJ",dest="minMJJ",type=float,help="minimum MJJ",default=20.0)
 parser.add_option("-M","--maxMJJ",dest="maxMJJ",type=float,help="maximum MJJ",default=1700.0)
+parser.add_option("-b","--BR",dest="BR",type=float,help="branching ratio",default=1)
 
 #    parser.add_option("-x","--minMVV",dest="minMVV",type=float,help="minimum MVV",default=1000.0)
 #    parser.add_option("-X","--maxMVV",dest="maxMVV",type=float,help="maximum MVV",default=13000.0)
@@ -67,43 +70,46 @@ for filename in os.listdir(args[0]):
 #Now we have the samples: Sort the masses and run the fits
 N=0
 for mass in sorted(samples.keys()):
+    if mass<999:
+        continue
+
     print 'fitting',str(mass) 
     plotter=TreePlotter(args[0]+'/'+samples[mass]+'.root','tree')
     plotter.setupFromFile(args[0]+'/'+samples[mass]+'.pck')
-    plotter.addCorrectionFactor('genWeight','genWeight',0.0,'lnN')
-    plotter.addCorrectionFactor('xsec','xsec',0.0,'lnN')
-    plotter.addCorrectionFactor('puWeight','puWeight',0.0,'lnN')
+    plotter.addCorrectionFactor('genWeight','tree')
+    plotter.addCorrectionFactor('xsec','tree')
+    plotter.addCorrectionFactor('puWeight','tree')
         
         
     fitter=Fitter(['m','M'])
-    fitter.signal2D('model')
+    fitter.signal2D('model',options.boson)
     fitter.w.var("MH").setVal(mass)
 
 
-    histo = plotter.drawTH2(options.mjj+":"+options.mvv,options.cut,"1",130,0,13000,50,20,120)
+    histo = plotter.drawTH2(options.mjj+":"+options.mvv,options.cutShape,"1",500,0,13000,120,60,140)
+    histoYield = plotter.drawTH2(options.mjj+":"+options.mvv,options.cutYield,"1",130,0,13000,100,25,165)
     fitter.importBinnedData(histo,['M','m'],'data')
     fitter.fit('model','data',[ROOT.RooFit.SumW2Error(1)])
 
     #create the yield
-    fitter.w.var('m').setMin(options.minMJJ)
     fitter.w.var('m').setMax(options.maxMJJ)
-
-
+    fitter.w.var('m').setMin(options.minMJJ)
     integral = fitter.w.pdf("model").createIntegral(ROOT.RooArgSet(fitter.w.var("m"),fitter.w.var("M")))
-    fullIntegral=integral.getVal()
-    fitter.w.var('m').setMin(20)
+
+    analysisIntegral=integral.getVal()
+    fitter.w.var('m').setMin(40)
     fitter.w.var('m').setMax(120)
-    
     integral = fitter.w.pdf("model").createIntegral(ROOT.RooArgSet(fitter.w.var("m"),fitter.w.var("M")))
-    smallIntegral=integral.getVal()
+    fitRangeIntegral=integral.getVal()
 
-    events=histo.Integral()
+
+    events=histoYield.Integral()*options.BR*analysisIntegral/fitRangeIntegral
 
     
-    graphs['yield'].SetPoint(N,mass,events*fullIntegral/smallIntegral)
+    graphs['yield'].SetPoint(N,mass,events)
 
-    fitter.projection("model","data","m","fitjj_"+str(mass)+".pdf")
-    fitter.projection("model","data","M","fitVV_"+str(mass)+".pdf")
+    fitter.projection("model","data","m","fitjj_"+str(mass)+".root")
+    fitter.projection("model","data","M","fitVV_"+str(mass)+".root")
 
     
 
@@ -135,91 +141,91 @@ parameterization={}
 c=ROOT.TCanvas("param","param")
 
 
-graphs['yield'].Fit(pol5)
-parameterization['yield']=returnString(pol5)
+graphs['yield'].Fit(pol3)
+parameterization['yield']=returnString(pol3)
 c.cd()
 graphs['yield'].Draw("AP")
-c.SaveAs("yield.pdf")
+c.SaveAs("interpyield.root")
 
 
 graphs['scale'].Fit(pol3)
 parameterization['scale']=returnString(pol3)
 c.cd()
 graphs['scale'].Draw("AP")
-c.SaveAs("scale.pdf")
+c.SaveAs("interpscale.root")
 
 
 graphs['sigma'].Fit(pol3)
 parameterization['sigma']=returnString(pol3)
 c.cd()
 graphs['sigma'].Draw("AP")
-c.SaveAs("sigma.pdf")
+c.SaveAs("interpsigma.root")
 
 
 graphs['n1'].Fit(pol0)
 parameterization['n1']=returnString(pol0)
 c.cd()
 graphs['n1'].Draw("AP")
-c.SaveAs("n1.pdf")
+c.SaveAs("interpn1.root")
 
 
 graphs['n2'].Fit(pol0)
 parameterization['n2']=returnString(pol0)
 c.cd()
 graphs['n2'].Draw("AP")
-c.SaveAs("n2.pdf")
+c.SaveAs("interpn2.root")
 
 graphs['alpha1'].Fit(pol0)
 parameterization['alpha1']=returnString(pol0)
 c.cd()
 graphs['alpha1'].Draw("AP")
-c.SaveAs("alpha1.pdf")
+c.SaveAs("interpalpha1.root")
 
 graphs['alpha2'].Fit(pol0)
 parameterization['alpha2']=returnString(pol0)
 c.cd()
 graphs['alpha2'].Draw("AP")
-c.SaveAs("alpha2.pdf")
+c.SaveAs("interpalpha2.root")
 
 
 graphs['SCALE'].Fit(pol3)
 parameterization['SCALE']=returnString(pol3)
 c.cd()
 graphs['SCALE'].Draw("AP")
-c.SaveAs("SCALE.pdf")
+c.SaveAs("interpSCALE.root")
 
 
 graphs['SIGMA'].Fit(pol3)
 parameterization['SIGMA']=returnString(pol3)
 c.cd()
 graphs['SIGMA'].Draw("AP")
-c.SaveAs("SIGMA.pdf")
+c.SaveAs("interpSIGMA.root")
 
 graphs['N1'].Fit(pol0)
 parameterization['N1']=returnString(pol0)
 c.cd()
 graphs['N1'].Draw("AP")
-c.SaveAs("N1.pdf")
+c.SaveAs("interpN1.root")
 
 graphs['N2'].Fit(pol0)
 parameterization['N2']=returnString(pol0)
 c.cd()
 graphs['N2'].Draw("AP")
-c.SaveAs("N2.pdf")
+c.SaveAs("interpN2.root")
 
 
 graphs['ALPHA1'].Fit(pol0)
 parameterization['ALPHA1']=returnString(pol0)
 c.cd()
 graphs['ALPHA1'].Draw("AP")
-c.SaveAs("ALPHA1.pdf")
+c.SaveAs("interpALPHA1.root")
     
 
 graphs['ALPHA2'].Fit(pol0)
 parameterization['ALPHA2']=returnString(pol0)
 c.cd()
 graphs['ALPHA2'].Draw("AP")
-c.SaveAs("ALPHA2.pdf")
+c.SaveAs("interpALPHA2.root")
 
 f=open(options.output,"w")
 json.dump(parameterization,f)

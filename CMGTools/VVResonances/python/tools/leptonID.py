@@ -51,7 +51,7 @@ def isolationZ(z):
 #Isolation for Z
 def isolationW(z):
     if abs(z.leg1.pdgId())==13:
-        return ((z.leg1.cleanedChargedIso+z.leg1.cleanedNeutralIsoDB)/z.leg1.pt()<0.3)
+        return ((z.leg1.cleanedChargedIso+z.leg1.cleanedNeutralIsoDB)/z.leg1.pt()<0.2)
     if abs(z.leg1.pdgId())==11:
         return ((z.leg1.cleanedChargedIso+z.leg1.cleanedNeutralIsoRho)/z.leg1.pt()<0.2)
 

@@ -20,7 +20,7 @@ class TreePlotter(PlotterBase):
         f=open(filename)
         data=pickle.load(f)
         weightinv = float(data['events'])
-        self.addCorrectionFactor("mcWeight",1./weightinv,0.0,'lnN')
+        self.addCorrectionFactor(1./weightinv,'flat')
 
             
     def applySmoothing(self):

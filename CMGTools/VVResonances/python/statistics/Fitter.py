@@ -25,7 +25,7 @@ class Fitter(object):
 
         cList = ROOT.RooArgList()
         for i in range(0,order):
-            self.w.factory("c_"+str(i)+"[1,-100,100]")
+            self.w.factory("c_"+str(i)+"[0,100]")
             cList.add(self.w.var("c_"+str(i)))
         bernsteinPDF = ROOT.RooBernsteinFast(order)(name,name,self.w.var(poi),cList)
         getattr(self.w,'import')(bernsteinPDF,ROOT.RooFit.Rename(name))
@@ -44,6 +44,17 @@ class Fitter(object):
         getattr(self.w,'import')(bernsteinPDF,ROOT.RooFit.Rename(name+"B"))
 
         self.w.factory("SUM::"+name+"(c_2[0.5,0,1]*"+name+"G,"+name+"B)")
+
+
+
+    def expo(self,name = 'model',poi='x'):
+        ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
+        self.w.factory("RooExponential::"+name+"(x,c_0[-1,-1000,0])")
+
+    def bifur(self,name = 'model',poi='x'):
+        self.w.factory("RooBifurGauss::"+name+"("+poi+",c_0[0,300],c_1[0,1000],c_2[0,1000])")
+
+
 
 
 
@@ -139,17 +150,15 @@ class Fitter(object):
 
 
 
-    def softDropInt(self,name = 'model',poi='x'):
+    def doublePol(self,name = 'model',poi='x'):
         ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
 
-        self.w.factory("c_0[0.004,-1000,1000]")
-        self.w.factory("c_1[1,-1000,1000]")
-        self.w.factory("c_2[1,-1000,1000]")
-        self.w.factory("c_3[100,0,500]")
-        self.w.factory("c_4[38,0,500]")
-        self.w.factory("c_5[30,1,1000]")
+        self.w.factory("c_0[0,-1,1]")
+        self.w.factory("c_1[0,-100,100]")
+        self.w.factory("c_2[0,-1000,1000]")
+        self.w.factory("c_3[0]")
 
-        softDrop = ROOT.RooSoftDropPdf(name,name,self.w.var(poi),self.w.var("c_0"),self.w.var("c_1"),self.w.var("c_2"),self.w.var("c_3"),self.w.var("c_4"),self.w.var("c_5"))
+        softDrop = ROOT.RooDoublePolPdf(name,name,self.w.var(poi),self.w.var("c_0"),self.w.var("c_1"),self.w.var("c_2"),self.w.var("c_3"))
         getattr(self.w,'import')(softDrop,ROOT.RooFit.Rename(name))
 
 
@@ -190,36 +199,93 @@ class Fitter(object):
 
 
 
-    def softDropNarrow(self):
+    def bifurTimesQCD(self):
+        ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
+
+        self.w.factory("M[1000,200000]")
+        self.w.factory("m[25,165]")
+
+
+
+        self.w.factory("alpha_0[-35.661,-40,-30]")
+        self.w.factory("alpha_1[15.882,10,35]")
+        self.w.factory("expr::alpha('alpha_0+alpha_1*log(M)',alpha_0,alpha_1,M)")
+
+        self.w.factory("beta_0[19.5,0,35]")
+        self.w.factory("beta_1[0.0101766,0,0.05]")
+        self.w.factory("expr::beta('beta_0+beta_1*M',beta_0,beta_1,M)")       
+
+        self.w.factory("gamma[62.6,40,80]")
+
+        self.w.factory("RooBifurGauss::modelJJ(m,alpha,beta,gamma)")
+
+
+        self.w.factory("p0[33,0,100]")
+        self.w.factory("p1[0.5,0,10]")
+        self.w.factory("p2[0.001,0,10]")
+
+        qcd = ROOT.RooQCDPdf("modelQ","",self.w.var("M"),self.w.var("p0"),self.w.var("p1"),self.w.var("p2"))
+        getattr(self.w,'import')(qcd,ROOT.RooFit.Rename("modelQ"))
+        self.w.factory("PROD::model(modelJJ|M,modelQ)")
+
+    def expoTimesQCD(self):
+        ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
+
+        self.w.factory("M[1000,200000]")
+        self.w.factory("m[25,165]")
+
+
+
+        self.w.factory("alpha_0[-35.661,-40,-30]")
+        self.w.factory("alpha_1[15.882,10,35]")
+        self.w.factory("expr::alpha('alpha_0+alpha_1*(M)',alpha_0,alpha_1,M)")
+
+        self.w.factory("RooExponential::modelJJ(m,alpha)")
+
+
+        self.w.factory("p0[33,0,100]")
+        self.w.factory("p1[0.5,0,10]")
+        self.w.factory("p2[0.001,0,10]")
+
+        qcd = ROOT.RooQCDPdf("modelQ","",self.w.var("M"),self.w.var("p0"),self.w.var("p1"),self.w.var("p2"))
+        getattr(self.w,'import')(qcd,ROOT.RooFit.Rename("modelQ"))
+        self.w.factory("PROD::model(modelJJ|M,modelQ)")
+
+
+
+
+    def backgroundFast(self):
         ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
 
         self.w.factory("M[1000,20000]")
-        self.w.factory("m[20,170]")
+        self.w.factory("m[25,175]")
 
 
 
-        self.w.factory("alpha[0.1,0,100]")
-        self.w.factory("beta_0[0.8,0,100]")
-        self.w.factory("beta_1[-8e-5,-0.1,0]")
-        self.w.factory("expr::beta('beta_0+beta_1*M',beta_0,beta_1,M)")
-        
-        self.w.factory("gamma[0.15,0,1]")
+        self.w.factory("alpha_0[7,0,100]")
+        self.w.factory("alpha_1[0,-0.1,0.1]")
+        self.w.factory("expr::alpha('alpha_0+alpha_1*M',alpha_0,alpha_1,M)")
 
-        self.w.factory("delta_0[0.15,0,1]")
-        self.w.factory("delta_1[1000,0,4000]")
-        self.w.factory("delta_2[400,0,1000]")
-        self.w.factory("expr::delta('delta_0*(0.5+0.5*TMath::Erf((M-delta_1)/delta_2))',delta_0,delta_1,delta_2,M)")
+        self.w.factory("beta_0[6,0,100]")
+        self.w.factory("beta_1[0,-0.1,0.1]")
+        self.w.factory("expr::beta('beta_0+beta_1*M',beta_0,beta_1,M)")       
+
+        self.w.factory("gamma_0[1,0,100]")
+        self.w.factory("gamma_1[0,-0.1,0.1]")
+        self.w.factory("expr::gamma('gamma_0+gamma_1*M',gamma_0,gamma_1,M)")       
+        self.w.factory("delta[1.4,0,1000]")
+
 
         cList = ROOT.RooArgList()
-        cList.add(self.w.var("alpha"))
+        cList.add(self.w.function("alpha"))
         cList.add(self.w.function("beta"))
-        cList.add(self.w.var("gamma"))
-        cList.add(self.w.function("delta"))
+        cList.add(self.w.function("gamma"))
+        cList.add(self.w.var("delta"))
 
 
         softDrop = ROOT.RooBernsteinFast(4)("modelJJ","modelJJ",self.w.var('m'),cList)
         getattr(self.w,'import')(softDrop,ROOT.RooFit.Rename("modelJJ"))
-        self.w.factory("p0[1,0,100]")
+        self.w.factory("p0[20,0,100]")
         self.w.factory("p1[0.5,0,100]")
         self.w.factory("p2[0.0001,0,10]")
 

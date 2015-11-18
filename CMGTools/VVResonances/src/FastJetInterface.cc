@@ -295,7 +295,7 @@ std::vector<double> FastJetInterface::nSubJettiness(unsigned int i ,int NMAX,uns
   fastjet::contrib::UnnormalizedCutoffMeasure  unnormalizedCutoffMeasure(beta,Rcutoff);
   fastjet::contrib::GeometricCutoffMeasure     geometricCutoffMeasure   (beta,Rcutoff);
 
-  fastjet::contrib::MeasureDefinition const * measureDef = 0;
+JetToolbox  fastjet::contrib::MeasureDefinition const * measureDef = 0;
   switch ( measureDefinition ) {
   case UnnormalizedMeasure : measureDef = &unnormalizedMeasure; break;
   case GeometricMeasure    : measureDef = &geometricMeasure; break;

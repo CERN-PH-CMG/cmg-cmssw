@@ -1,6 +1,6 @@
 import ROOT
+import math
 from TreePlotter import TreePlotter
-
 
 def convertToPoisson(h):
     graph = ROOT.TGraphAsymmErrors()
@@ -32,12 +32,13 @@ def convertToPoisson(h):
     return graph    
 
 class StackPlotter(object):
-    def __init__(self):
+    def __init__(self,defaultCut="1"):
         self.plotters = []
         self.types    = []
         self.labels   = []
         self.names    = []
         self.log=False
+        self.defaultCut=defaultCut
 
     def setLog(self,doLog):
         self.log=doLog
@@ -73,12 +74,17 @@ class StackPlotter(object):
         
         signal=0
         background=0
+        backgroundErr=0
         
         data=None
         dataG=None
+        error=ROOT.Double(0.0)
+
+        cutL="("+self.defaultCut+")*("+cut+")"
+
         for (plotter,typeP,label,name) in zip(self.plotters,self.types,self.labels,self.names):
             if typeP == "signal" or typeP =="background":
-                hist = plotter.drawTH1(var,cut,lumi,bins,mini,maxi,titlex,units)
+                hist = plotter.drawTH1(var,cutL,lumi,bins,mini,maxi,titlex,units)
                 hist.SetName(name)
                 stack.Add(hist)
                 hists.append(hist)
@@ -87,11 +93,11 @@ class StackPlotter(object):
                 if typeP == "signal" :
                     signal+=hist.Integral()
                 if typeP == "background" :
-                    background+=hist.Integral()
-
+                    background+=hist.IntegralAndError(1,hist.GetNbinsX(),error)
+                    backgroundErr+=error*error
        
             if typeP =="data":
-                hist = plotter.drawTH1(var,cut,"1",bins,mini,maxi,titlex,units)
+                hist = plotter.drawTH1(var,cutL,"1",bins,mini,maxi,titlex,units)
                 hist.SetName(hist.GetName()+label)
                 hists.append(hist)
                 data=hist
@@ -181,6 +187,9 @@ class StackPlotter(object):
         print "Bkg    = %f" %(background)
         if data is not None:
             print "Observed = %f"%(data.Integral())
+            integral = data.IntegralAndError(1,data.GetNbinsX(),error)
+            if background>0.0:
+                print "Data/Bkg= {ratio} +- {err}".format(ratio=integral/background,err=math.sqrt(error*error/(background*background)+integral*integral*backgroundErr/(background*background*background*background)))
 
 	pt =ROOT.TPaveText(0.1577181,0.9562937,0.9580537,0.9947552,"brNDC")
 	pt.SetBorderSize(0)

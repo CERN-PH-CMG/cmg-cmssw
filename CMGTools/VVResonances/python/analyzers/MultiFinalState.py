@@ -37,11 +37,11 @@ class MultiFinalState( EventInterpretationBase ):
             #find the jets in the opposite hemisphere of the lepton
             oppositeHemishereJets=[]
             for jet in selectedFatJets:
-                if jet.pt()>200 and deltaPhi(jet.phi(),bestW.leg1.phi())>3.14/2. and jet.softDropJet.mass()>40 and jet.softDropJet.mass()<130:
+                if jet.pt()>200 and deltaPhi(jet.phi(),bestW.leg1.phi())>3.14/2.:
                     oppositeHemishereJets.append(jet)
 
             if len(oppositeHemishereJets)>0:        
-                bestJet = max(oppositeHemishereJets,key=lambda x: x.softDropJet.mass())
+                bestJet = max(oppositeHemishereJets,key=lambda x: x.prunedJet.mass())
                 VV=Pair(bestW,bestJet)
                 selected = {'pair':VV}
                 remainingCands =self.removeJetFootPrint([bestJet],cleanedPackedCandidates)
