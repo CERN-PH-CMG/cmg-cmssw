@@ -252,6 +252,15 @@ tauAna = cfg.Analyzer(
     loose_tauLooseID = "decayModeFinding"
 )
 
+## isolation for monojet tau veto
+from CMGTools.MonoXAnalysis.analyzers.objects.MonoXTauAnalyzer import MonoXTauAnalyzer
+monoxTauAna = cfg.Analyzer(
+    MonoXTauAnalyzer, name='monoXTauAnalyzer',
+    tauIsolation = "byCombinedIsolationDeltaBetaCorrRaw3Hits",
+    isolationMax = 5.0 # GeV
+)
+
+
 ##------------------------------------------
 ###  ISOLATED TRACK
 ###------------------------------------------                                                                                                                                                                
@@ -418,6 +427,7 @@ dmCoreSequence = [
     lepAna,
     photonAna,
     tauAna,
+    monoxTauAna,
     isoTrackAna,
     jetAna,
     metAna,

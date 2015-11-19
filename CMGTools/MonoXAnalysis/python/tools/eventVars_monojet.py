@@ -10,7 +10,7 @@ class EventVarsMonojet:
         self.sample_nevt = sample_nevt        
     def listBranches(self):
         biglist = [ ("nJetClean", "I"), ("nTauClean", "I"), ("nLepSel", "I"),
-                    ("iL","I",8,"nLepSel"), ("iJ","I",10,"nJetClean"), ("iT","I",3,"nTauClean"),
+                    ("iL","I",10,"nLepSel"), ("iJ","I",10,"nJetClean"), ("iT","I",3,"nTauClean"),
                     ("nJetClean30", "I"), ("nTauClean18V", "I") ] 
         for jfloat in "pt eta phi mass btagCSV rawPt leadClean".split():
             biglist.append( ("JetClean"+"_"+jfloat,"F",10,"nJetClean") )
