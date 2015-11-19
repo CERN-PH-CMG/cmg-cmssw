@@ -171,7 +171,7 @@ lepAna = cfg.Analyzer(
     miniIsolationPUCorr = 'deltaBeta', # Allowed options: 'rhoArea' (EAs for 03 cone scaled by R^2), 'deltaBeta', 'raw' (uncorrected), 'weights' (delta beta weights; not validated)
     miniIsolationVetoLeptons = 'inclusive', # use 'inclusive' to veto inclusive leptons and their footprint in all isolation cones
     # minimum deltaR between a loose electron and a loose muon (on overlaps, discard the electron)
-    min_dr_electron_muon = 0.1,
+    min_dr_electron_muon = 0.0,
     # do MC matching 
     do_mc_match = True, # note: it will in any case try it only on MC, not on data
     match_inclusiveLeptons = False, # match to all inclusive leptons
@@ -233,14 +233,15 @@ metAna = cfg.Analyzer(
 leptonicVAna = cfg.Analyzer(
     LeptonicVMaker,
     name='leptonicVMaker',
-    selectLNuPair=(lambda x:  isolationW(x) and leptonIDW(x) and x.pt()>200 and ((abs(x.leg1.pdgId())==11 and x.leg2.pt()>80) or (abs(x.leg1.pdgId())==13 and x.leg2.pt()>40))),
-    selectLLPair=(lambda x: x.mass()>60.0 and x.mass()<120.0 and isolationZ(x) and x.pt()>200  and ((abs(x.leg1.pdgId())==11 and max(x.leg1.pt(),x.leg2.pt())>80) or (abs(x.leg1.pdgId())==13 and max(x.leg1.pt(),x.leg2.pt())>50)))
+    selectLNuPair=(lambda x:  isolationW(x) and leptonIDW(x) ),
+    selectLLPair=(lambda x: x.mass()>60.0 and x.mass()<120.0 and isolationZ(x) )
     )
 
 
 packedAna = cfg.Analyzer(
     PackedCandidateLoader,
-    name = 'PackedCandidateLoader'
+    name = 'PackedCandidateLoader',
+    select=lambda x: x.pt()<13000.0
 
 )
 
@@ -256,11 +257,11 @@ multiStateAna = cfg.Analyzer(
     softdrop = True,
     softdrop_beta=0.0,
     softdrop_zeta=0.1,
-    selectFat = (lambda x: x.pt()>200.0 and abs(x.eta())<2.4 and x.prunedJet.mass()>0.0 and len(x.subjets_PR)>1 and x.looseID),
+    selectFat = (lambda x: x.pt()>200.0 and abs(x.eta())<2.4 and x.prunedJet.mass()>0.0 and len(x.subjets)>1 and x.looseID),
     ktPower=-1.0,
     r = 0.4,
-    selectPairLL = (lambda x:  x.mass()>0 ),
-    selectPairLNu = (lambda x: x.deltaPhi()>1.5),
+    selectPairLL = (lambda x:  x.mass()>0 and x.deltaPhi()>1.5 and x.leg1.pt()>200  and ((abs(x.leg1.leg1.pdgId())==11 and max(x.leg1.leg1.pt(),x.leg1.leg2.pt())>80) or (abs(x.leg1.leg1.pdgId())==13 and max(x.leg1.leg1.pt(),x.leg1.leg2.pt())>50))),
+    selectPairLNu = (lambda x: x.deltaPhi()>1.5 and x.leg1.pt()>200 and ((abs(x.leg1.leg1.pdgId())==11 and x.leg1.leg2.pt()>80) or (abs(x.leg1.leg1.pdgId())==13 and x.leg1.leg2.pt()>40))),
     selectPairJJ = (lambda x:  x.mass()>1000 and x.leg1.tightID and x.leg2.tightID),
     selectPairJJNuNu = (lambda x: x.leg1.pt()>200 and x.deltaPhi()>1.5 ),
     suffix = '',

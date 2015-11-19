@@ -34,7 +34,7 @@ JTopologyType = NTupleObjectType("JTopologyType", baseObjectTypes=[], variables 
     NTupleVariable("nTightBTags",   lambda x : x['nTightBTags'], int),
     NTupleVariable("nJets",   lambda x : len(x['satelliteJets']), int),
     NTupleVariable("topMass",   lambda x : x['topMass'], float),
-
+    NTupleVariable("otherLeptons",   lambda x : len(x['otherLeptons']), int)
 ])
 
 
@@ -46,7 +46,6 @@ JetType = NTupleObjectType("SubJetType", baseObjectTypes=[fourVectorType], varia
     NTupleVariable("nConstituents",   lambda x : len(x.constituents), int),           
     NTupleVariable("looseID",   lambda x : x.looseID, int),           
     NTupleVariable("tightID",   lambda x : x.tightID, int),           
-
     NTupleVariable("chargedHadronEnergyFraction",   lambda x : x.chargedHadronEnergyFraction(), float),       
     NTupleVariable("neutralHadronEnergyFraction",   lambda x : x.neutralHadronEnergyFraction(), float),       
     NTupleVariable("photonEnergyFraction",   lambda x : x.photonEnergyFraction(), float),       
@@ -88,14 +87,10 @@ LNuJJType = NTupleObjectType("LNuJJType", baseObjectTypes=[VVType], variables = 
     NTupleSubObject("l2",  lambda x : x['pair'].leg2,FatJetType),
     NTupleSubObject("l2_softDrop",  lambda x : x['pair'].leg2.softDropJet,JetType),
     NTupleSubObject("l2_pruned",  lambda x : x['pair'].leg2.prunedJet,JetType),
-#    NTupleSubObject("l2_softDrop_s1",  lambda x : x['pair'].leg2.subjets_SD[0],JetType),
-#    NTupleVariable("l2_softDrop_s1_matched",   lambda x : x['pair'].leg2.subjets_SD[0].matched, int),       
-#    NTupleSubObject("l2_softDrop_s2",  lambda x : x['pair'].leg2.subjets_SD[1],JetType),          
-#    NTupleVariable("l2_softDrop_s2_matched",   lambda x : x['pair'].leg2.subjets_SD[1].matched, int),       
-    NTupleSubObject("l2_pruned_s1",  lambda x : x['pair'].leg2.subjets_PR[0],JetType),
-    NTupleVariable("l2_pruned_s1_matched",   lambda x : x['pair'].leg2.subjets_PR[0].matched, int),       
-    NTupleSubObject("l2_pruned_s2",  lambda x : x['pair'].leg2.subjets_PR[1],JetType),          
-    NTupleVariable("l2_pruned_s2_matched",   lambda x : x['pair'].leg2.subjets_PR[1].matched, int),       
+    NTupleSubObject("l2_pruned_s1",  lambda x : x['pair'].leg2.subjets[0],JetType),
+    NTupleVariable("l2_pruned_s1_matched",   lambda x : x['pair'].leg2.subjets[0].matched, int),       
+    NTupleSubObject("l2_pruned_s2",  lambda x : x['pair'].leg2.subjets[1],JetType),          
+    NTupleVariable("l2_pruned_s2_matched",   lambda x : x['pair'].leg2.subjets[1].matched, int),       
 ])
 
 
@@ -106,14 +101,10 @@ LLJJType = NTupleObjectType("LLJJType", baseObjectTypes=[VVType], variables = [
     NTupleSubObject("l2",  lambda x : x['pair'].leg2,FatJetType),
     NTupleSubObject("l2_softDrop",  lambda x : x['pair'].leg2.softDropJet,JetType),
     NTupleSubObject("l2_pruned",  lambda x : x['pair'].leg2.prunedJet,JetType),
-#    NTupleSubObject("l2_softDrop_s1",  lambda x : x['pair'].leg2.subjets_SD[0],JetType),
-#    NTupleVariable("l2_softDrop_s1_matched",   lambda x : x['pair'].leg2.subjets_SD[0].matched, int),       
-#    NTupleSubObject("l2_softDrop_s2",  lambda x : x['pair'].leg2.subjets_SD[1],JetType),          
-#    NTupleVariable("l2_softDrop_s2_matched",   lambda x : x['pair'].leg2.subjets_SD[1].matched, int),       
-    NTupleSubObject("l2_pruned_s1",  lambda x : x['pair'].leg2.subjets_PR[0],JetType),
-    NTupleVariable("l2_pruned_s1_matched",   lambda x : x['pair'].leg2.subjets_PR[0].matched, int),       
-    NTupleSubObject("l2_pruned_s2",  lambda x : x['pair'].leg2.subjets_PR[1],JetType),          
-    NTupleVariable("l2_pruned_s2_matched",   lambda x : x['pair'].leg2.subjets_PR[1].matched, int),       
+    NTupleSubObject("l2_pruned_s1",  lambda x : x['pair'].leg2.subjets[0],JetType),
+    NTupleVariable("l2_pruned_s1_matched",   lambda x : x['pair'].leg2.subjets[0].matched, int),       
+    NTupleSubObject("l2_pruned_s2",  lambda x : x['pair'].leg2.subjets[1],JetType),          
+    NTupleVariable("l2_pruned_s2_matched",   lambda x : x['pair'].leg2.subjets[1].matched, int),       
 ])
 
 
@@ -122,26 +113,17 @@ JJType = NTupleObjectType("JJType", baseObjectTypes=[VVType], variables = [
     NTupleSubObject("l2",  lambda x : x['pair'].leg2,FatJetType),
     NTupleSubObject("l2_softDrop",  lambda x : x['pair'].leg2.softDropJet,JetType),
     NTupleSubObject("l2_pruned",  lambda x : x['pair'].leg2.prunedJet,JetType),
-#    NTupleSubObject("l2_softDrop_s1",  lambda x : x['pair'].leg2.subjets_SD[0],JetType),
-#    NTupleVariable("l2_softDrop_s1_matched",   lambda x : x['pair'].leg2.subjets_SD[0].matched, int),       
-#    NTupleSubObject("l2_softDrop_s2",  lambda x : x['pair'].leg2.subjets_SD[1],JetType),          
-#    NTupleVariable("l2_softDrop_s2_matched",   lambda x : x['pair'].leg2.subjets_SD[1].matched, int),       
-    NTupleSubObject("l2_pruned_s1",  lambda x : x['pair'].leg2.subjets_PR[0],JetType),
-    NTupleVariable("l2_pruned_s1_matched",   lambda x : x['pair'].leg2.subjets_PR[0].matched, int),       
-    NTupleSubObject("l2_pruned_s2",  lambda x : x['pair'].leg2.subjets_PR[1],JetType),          
-    NTupleVariable("l2_pruned_s2_matched",   lambda x : x['pair'].leg2.subjets_PR[1].matched, int),       
-
+    NTupleSubObject("l2_pruned_s1",  lambda x : x['pair'].leg2.subjets[0],JetType),
+    NTupleVariable("l2_pruned_s1_matched",   lambda x : x['pair'].leg2.subjets[0].matched, int),       
+    NTupleSubObject("l2_pruned_s2",  lambda x : x['pair'].leg2.subjets[1],JetType),          
+    NTupleVariable("l2_pruned_s2_matched",   lambda x : x['pair'].leg2.subjets[1].matched, int),       
     NTupleSubObject("l1",  lambda x : x['pair'].leg1,FatJetType),
     NTupleSubObject("l1_softDrop",  lambda x : x['pair'].leg1.softDropJet,JetType),
     NTupleSubObject("l1_pruned",  lambda x : x['pair'].leg1.prunedJet,JetType),
- #   NTupleSubObject("l1_softDrop_s1",  lambda x : x['pair'].leg1.subjets_SD[0],JetType),
- #   NTupleVariable("l1_softDrop_s1_matched",   lambda x : x['pair'].leg1.subjets_SD[0].matched, int),       
- #   NTupleSubObject("l1_softDrop_s2",  lambda x : x['pair'].leg1.subjets_SD[1],JetType),          
- #   NTupleVariable("l1_softDrop_s2_matched",   lambda x : x['pair'].leg1.subjets_SD[1].matched, int),       
-    NTupleSubObject("l1_pruned_s1",  lambda x : x['pair'].leg1.subjets_PR[0],JetType),
-    NTupleVariable("l1_pruned_s1_matched",   lambda x : x['pair'].leg1.subjets_PR[0].matched, int),       
-    NTupleSubObject("l1_pruned_s2",  lambda x : x['pair'].leg1.subjets_PR[1],JetType),          
-    NTupleVariable("l1_pruned_s2_matched",   lambda x : x['pair'].leg1.subjets_PR[1].matched, int),       
+    NTupleSubObject("l1_pruned_s1",  lambda x : x['pair'].leg1.subjets[0],JetType),
+    NTupleVariable("l1_pruned_s1_matched",   lambda x : x['pair'].leg1.subjets[0].matched, int),       
+    NTupleSubObject("l1_pruned_s2",  lambda x : x['pair'].leg1.subjets[1],JetType),          
+    NTupleVariable("l1_pruned_s2_matched",   lambda x : x['pair'].leg1.subjets[1].matched, int),       
 ])
 
 
@@ -150,15 +132,11 @@ NuNuJJType = NTupleObjectType("NuNuJJType", baseObjectTypes=[VVType], variables 
     NTupleSubObject("met",  lambda x : x['pair'].leg1,metType),
     NTupleSubObject("jet",  lambda x : x['pair'].leg2,FatJetType),
     NTupleSubObject("jet_softDrop",  lambda x : x['pair'].leg2.softDropJet,JetType),
-#    NTupleSubObject("jet_softDrop_s1",  lambda x : x['pair'].leg2.subjets_SD[0],JetType),
-#    NTupleVariable("jet_softDrop_s1_matched",   lambda x : x['pair'].leg2.subjets_SD[0].matched, int),       
-#    NTupleSubObject("jet_softDrop_s2",  lambda x : x['pair'].leg2.subjets_SD[1],JetType),
-#    NTupleVariable("jet_softDrop_s2_matched",   lambda x : x['pair'].leg2.subjets_SD[1].matched, int),       
     NTupleSubObject("jet_pruned",  lambda x : x['pair'].leg2.prunedJet,JetType),
-    NTupleSubObject("jet_pruned_s1",  lambda x : x['pair'].leg2.subjets_PR[0],JetType),
-    NTupleVariable("jet_pruned_s1_matched",   lambda x : x['pair'].leg2.subjets_PR[0].matched, int),       
-    NTupleSubObject("jet_pruned_s2",  lambda x : x['pair'].leg2.subjets_PR[1],JetType),
-    NTupleVariable("jet_pruned_s2_matched",   lambda x : x['pair'].leg2.subjets_PR[1].matched, int)       
+    NTupleSubObject("jet_pruned_s1",  lambda x : x['pair'].leg2.subjets[0],JetType),
+    NTupleVariable("jet_pruned_s1_matched",   lambda x : x['pair'].leg2.subjets[0].matched, int),       
+    NTupleSubObject("jet_pruned_s2",  lambda x : x['pair'].leg2.subjets[1],JetType),
+    NTupleVariable("jet_pruned_s2_matched",   lambda x : x['pair'].leg2.subjets[1].matched, int)       
 ])
 
 

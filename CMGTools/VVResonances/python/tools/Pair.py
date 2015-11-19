@@ -7,7 +7,7 @@ class Pair(object):
     def __init__(self,leg1,leg2,pdg = 0):
         self.leg1 = leg1
         self.leg2 = leg2
-        self.pdgId = pdg
+        self.pdg = pdg
         self.LV = leg1.p4()+leg2.p4()
         et1 = math.sqrt(leg1.mass()*leg1.mass()+leg1.pt()*leg1.pt())
         et2 = math.sqrt(leg2.mass()*leg2.mass()+leg2.pt()*leg2.pt())
@@ -26,7 +26,7 @@ class Pair(object):
         return self.LV.mass()
     
     def pdgId(self):
-        return self.pdgId
+        return self.pdg
     
     def mt2(self):
         return self.MT*self.MT

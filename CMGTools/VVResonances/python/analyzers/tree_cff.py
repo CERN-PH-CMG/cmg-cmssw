@@ -42,7 +42,9 @@ vvTreeProducer = cfg.Analyzer(
         "TopCR" : NTupleCollection("topCR",LNuJJType ,5, help="Top control region candidate with a lepton neutrino and a fat jet"),                                                   
         "JJ" : NTupleCollection("jj",JJType ,5, help="VV candidate with two fat jets"),                                       
         "LLJJ" : NTupleCollection("lljj",LLJJType ,5, help="VV candidate with two leptons and a fat jet"),                                       
-        "JJNuNu" : NTupleCollection("nunujj",NuNuJJType ,5, help="VV candidate with  fat jet and MET")                                       
+        "JJNuNu" : NTupleCollection("nunujj",NuNuJJType ,5, help="VV candidate with  fat jet and MET")                                      
+#        "leadJetConstituents" : NTupleCollection("jetConstituents",     particleType, 500, help="Constituents"),                                                                                                
+
 #            "genVBosons" : NTupleCollection("genV",     genParticleWithLinksType, 10, help="Generated V bosons"),                                                                                                
      }
 )

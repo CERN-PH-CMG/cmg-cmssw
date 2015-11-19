@@ -246,14 +246,18 @@ class LeptonicVMaker( Analyzer ):
         
         
         #now make Z first . for the remaining leptons after Z make W
-        leptonsSet = set(event.selectedLeptons)
+        leptons=list(event.selectedLeptons)
         used = []
+
+
         for z in event.LL:
             used.extend([z.leg1,z.leg2])
-        usedSet = set(used)
 
-        remaining = leptonsSet-usedSet
-        event.LNu = self.makeLeptonsMET(list(remaining),event.met)
+        for u in used:
+            leptons.remove(u)
+
+
+        event.LNu = self.makeLeptonsMET(leptons,event.met)
         return True
 
 

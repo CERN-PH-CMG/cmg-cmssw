@@ -25,6 +25,9 @@ class PyJet(object):
     def chargedEmEnergy(self):
         return self.electronEnergy
 
+    def pdgId(self):
+        return 1
+
 
     def chargedHadronEnergyFraction(self):
         return self.chargedHadronEnergy/(self.LV.energy()*self.rawF)
@@ -196,10 +199,10 @@ class PyJetToolbox(object):
                     if self.doSubjets:
                         if self.subjets['style'] == 'inc':
                             self.interface.makeSubJets(False,0,self.subjets['setting'])
-                            jet.subjets_PR = self.convert(self.interface.get(False),False,False)
+                            jet.subjets = self.convert(self.interface.get(False),False,False)
                         else:    
                             self.interface.makeSubJetsUpTo(False,0,self.subjets['setting'])
-                            jet.subjets_PR = self.convert(self.interface.get(False),False,False)
+                            jet.subjets = self.convert(self.interface.get(False),False,False)
                 if self.doSoftDrop:
                     self.interface.softDrop(isJet,i,self.softdrop['beta'],self.softdrop['zcut'],self.softdrop['R0'])
                     jet.softDropJet = self.convert(self.interface.get(False),False,False)[0]
