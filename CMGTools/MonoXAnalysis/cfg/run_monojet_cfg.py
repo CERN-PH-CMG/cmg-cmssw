@@ -325,13 +325,14 @@ elif test == '5':
         comp.splitFactor = 1
         comp.fineSplitFactor = 5
 elif test == 'synch-74X': # sync
-    #eventSelector.toSelect = [ 11809 ]
-    #sequence = cfg.Sequence([eventSelector] + dmCoreSequence+[ ttHEventAna, treeProducer, ])
+    #eventSelector.toSelect = [ (1,1,139), ]
+    #sequence = cfg.Sequence([eventSelector] + dmCoreSequence + [ ttHFatJetAna, monoJetVarAna, MonoJetEventAna, treeProducer, ])
     monoJetCtrlLepSkim.minLeptons = 0
     monoJetSkim.metCut = 0  
     what = getHeppyOption("sample")
     if what == "TTbarDM":
         comp = kreator.makeMCComponent("TTbarDM","/TTbarDMJets_pseudoscalar_Mchi-1_Mphi-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 1.0, useAAA=True)
+        #comp.files = [ '/tmp/emanuele/1486FE25-A16D-E511-93F2-001EC9ADE672.root' ]
         selectedComponents = [ comp ]
     elif what == "DMS":
         comp = DMS_Mchi_100_gSM_1p0_gDM_1p0
