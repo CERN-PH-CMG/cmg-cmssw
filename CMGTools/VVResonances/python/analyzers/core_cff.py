@@ -9,7 +9,8 @@ from CMGTools.VVResonances.analyzers.MultiFinalState  import *
 from CMGTools.VVResonances.analyzers.PackedCandidateLoader import *
 from CMGTools.VVResonances.analyzers.LeptonicVMaker import *
 from CMGTools.VVResonances.analyzers.Skimmer import *
-from CMGTools.VVResonances.tools.leptonID  import muonID,electronID
+from CMGTools.VVResonances.tools.leptonID  import *
+from PhysicsTools.HeppyCore.utils.deltar import *
 import os
 
 
@@ -130,47 +131,47 @@ lepAna = cfg.Analyzer(
     doSegmentBasedMuonCleaning=False,
     # inclusive very loose muon selection
     inclusive_muon_id  = "",
-    inclusive_muon_pt  = 35.0,
+    inclusive_muon_pt  = 15.0,
     inclusive_muon_eta = 2.4,
     inclusive_muon_dxy = 0.2,
     inclusive_muon_dz  = 0.2,
     muon_dxydz_track = "innerTrack",
     # loose muon selection
     loose_muon_id     = "",
-    loose_muon_pt     = 35.0,
+    loose_muon_pt     = 20.0,
     loose_muon_eta    = 2.4,
     loose_muon_dxy    = 0.02,
     loose_muon_dz     = 0.2,
-    loose_muon_isoCut = muonID,
+    loose_muon_isoCut = muonIDCommon,
     # inclusive very loose electron selection
     inclusive_electron_id  = "",
-    inclusive_electron_pt  = 35.0,
+    inclusive_electron_pt  = 15.0,
     inclusive_electron_eta = 2.5,
-    inclusive_electron_dxy = 0.02,
+    inclusive_electron_dxy = 0.2,
     inclusive_electron_dz  = 0.2,
     inclusive_electron_lostHits = 1.0,
     # loose electron selection
     loose_electron_id     = "",
     loose_electron_pt     = 35.0,
     loose_electron_eta    = 2.5,
-    loose_electron_dxy    = 0.02,
+    loose_electron_dxy    = 0.2,
     loose_electron_dz     = 0.2,
     loose_electron_isoCut = electronID,
     loose_electron_lostHits = 1.0,
     # muon isolation correction method (can be "rhoArea" or "deltaBeta")
     mu_isoCorr = "deltaBeta",
-    mu_effectiveAreas = "Phys14_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1')
+    mu_effectiveAreas = "Spring15_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1')
     # electron isolation correction method (can be "rhoArea" or "deltaBeta")
     ele_isoCorr = "rhoArea" ,
-    el_effectiveAreas = "Phys14_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1')
-    ele_tightId = "Cuts_2012" ,
+    el_effectiveAreas = "Spring15_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1')
+    ele_tightId = "" ,
     # Mini-isolation, with pT dependent cone: will fill in the miniRelIso, miniRelIsoCharged, miniRelIsoNeutral variables of the leptons (see https://indico.cern.ch/event/368826/ )
-    doMiniIsolation = True, # off by default since it requires access to all PFCandidates 
+    doMiniIsolation = False, # off by default since it requires access to all PFCandidates 
     packedCandidates = 'packedPFCandidates',
     miniIsolationPUCorr = 'deltaBeta', # Allowed options: 'rhoArea' (EAs for 03 cone scaled by R^2), 'deltaBeta', 'raw' (uncorrected), 'weights' (delta beta weights; not validated)
     miniIsolationVetoLeptons = 'inclusive', # use 'inclusive' to veto inclusive leptons and their footprint in all isolation cones
     # minimum deltaR between a loose electron and a loose muon (on overlaps, discard the electron)
-    min_dr_electron_muon = 0.1,
+    min_dr_electron_muon = 0.0,
     # do MC matching 
     do_mc_match = True, # note: it will in any case try it only on MC, not on data
     match_inclusiveLeptons = False, # match to all inclusive leptons
@@ -232,14 +233,15 @@ metAna = cfg.Analyzer(
 leptonicVAna = cfg.Analyzer(
     LeptonicVMaker,
     name='leptonicVMaker',
-    selectLNuPair=(lambda x: x.pt()>200.0),
-    selectLLPair=(lambda x: x.mass()>70.0 and x.mass()<110.0 and x.pt()>100.0)
+    selectLNuPair=(lambda x:  isolationW(x) and leptonIDW(x) ),
+    selectLLPair=(lambda x: x.mass()>60.0 and x.mass()<120.0 and isolationZ(x) )
     )
 
 
 packedAna = cfg.Analyzer(
     PackedCandidateLoader,
-    name = 'PackedCandidateLoader'
+    name = 'PackedCandidateLoader',
+    select=lambda x: x.pt()<13000.0
 
 )
 
@@ -251,22 +253,21 @@ multiStateAna = cfg.Analyzer(
     massdrop=True,
     subjets=2,
     doCHS = True,
-    prunning=False,
+    prunning=True,
     softdrop = True,
     softdrop_beta=0.0,
     softdrop_zeta=0.1,
-    selectFat = (lambda x: x.pt()>100.0 and abs(x.eta())<2.4 and len(x.subjets)==2 and x.softDropJet.mass()>0.0) ,
+    selectFat = (lambda x: x.pt()>200.0 and abs(x.eta())<2.4 and x.prunedJet.mass()>0.0 and len(x.subjets)>1 and x.looseID),
     ktPower=-1.0,
     r = 0.4,
-    selectPairLL = (lambda x: x.mass()>200.0 and x.deltaPhi()>1.5 ),
-    selectPairLNu = (lambda x: x.mass()>200.0 and x.deltaPhi()>1.5 ),
-    selectPairJJ = (lambda x: x.mass()>1000.0 and x.deltaPhi()>1.5 ),
-    selectPairJJNuNu = (lambda x: x.leg1.pt()>300 and x.deltaPhi()>1.0 ),
+    selectPairLL = (lambda x:  x.mass()>0 and x.deltaPhi()>1.5 and x.leg1.pt()>200  and ((abs(x.leg1.leg1.pdgId())==11 and max(x.leg1.leg1.pt(),x.leg1.leg2.pt())>80) or (abs(x.leg1.leg1.pdgId())==13 and max(x.leg1.leg1.pt(),x.leg1.leg2.pt())>50))),
+    selectPairLNu = (lambda x: x.deltaPhi()>1.5 and x.leg1.pt()>200 and ((abs(x.leg1.leg1.pdgId())==11 and x.leg1.leg2.pt()>80) or (abs(x.leg1.leg1.pdgId())==13 and x.leg1.leg2.pt()>40))),
+    selectPairJJ = (lambda x:  x.mass()>1000 and x.leg1.tightID and x.leg2.tightID),
+    selectPairJJNuNu = (lambda x: x.leg1.pt()>200 and x.deltaPhi()>1.5 ),
     suffix = '',
     recalibrateJets = True, # True, False, 'MC', 'Data'
     recalibrationType = "AK4PFchs",
-#    mcGT     = "Summer15_50nsV5_MC",
-#    dataGT     = "Summer15_50nsV5_DATA",
+    recalibrationTypeFAT = "AK8PFchs",
     jecPath = "%s/src/CMGTools/RootTools/data/jec/" % os.environ['CMSSW_BASE'],
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     rho = ('fixedGridRhoFastjetAll','',''),
@@ -294,10 +295,9 @@ coreSequence = [
     lepAna,
     metAna,
     leptonicVAna,
-    tauAna,
-    triggerFlagsAna,
+#    tauAna,
     packedAna,
-    multiStateAna
-#    eventFlagsAna
-    
+    multiStateAna,
+    eventFlagsAna,
+    triggerFlagsAna    
 ]

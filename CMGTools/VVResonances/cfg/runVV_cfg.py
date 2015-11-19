@@ -38,36 +38,36 @@ triggerFlagsAna.triggerBits ={
     "HT800":triggers_HT800,
     "HT900":triggers_HT900,
     "JJ":triggers_dijet_fat,  
-    "MET90":triggers_Jet80MET90,
-    "MET120":triggers_Jet80MET120
+    "MET90":triggers_met90_mht90+triggers_metNoMu90_mhtNoMu90,
+    "MET120":triggers_metNoMu120_mhtNoMu120
 }
 
 
 #-------- HOW TO RUN
-test = 0
+test = 1
 if test==1:
     # test a single component, using a single thread.
-    selectedComponents = [ZJetsToNuNu_HT100to200]
-    for c in selectedComponents:
-        c.splitFactor = 1
-
-elif test==2:    
-    # test all components (1 thread per component).
-    selectedComponents = [dataSamples[0]]
-    for comp in selectedComponents:
-        comp.splitFactor = 1
-#        comp.files = comp.files[:1]
-
-elif test==3:
-    # test a single component, using a single thread.
-    selectedComponents = [signalSamples[0]]
+    selectedComponents = [VBF_RadionToZZ_narrow_4500]
     for c in selectedComponents:
         c.files = c.files[:1]
         c.splitFactor = 1
+elif test==2:    
+    # test all components (1 thread per component).
+    selectedComponents = [BulkGravToWW_narrow_2500]
+    for comp in selectedComponents:
+        comp.splitFactor = 1
+#        comp.files = comp.files[:1]
+elif test==3:    
+    # test all components (1 thread per component).
+    selectedComponents = [DYJetsToLL_M50_HT600toInf]
+    for comp in selectedComponents:
+        comp.splitFactor = 1
 
-
-
-
+elif test==4:    
+    # test all components (1 thread per component).
+    selectedComponents = [RSGravToWWToLNQQ_kMpl01_4500]
+    for comp in selectedComponents:
+        comp.splitFactor = 20
 
 ## output histogram
 outputService=[]
