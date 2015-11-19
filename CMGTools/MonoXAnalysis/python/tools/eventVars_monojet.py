@@ -125,15 +125,17 @@ class EventVarsMonojet:
         nAllJets30 = 0
         for idx in ret["iJ"]:
             jet = alljets[idx]
-            for jfloat in "pt eta phi mass btagCSV rawPt".split():
-                jetret[jfloat].append( getattr(jet,jfloat) )
-            jetret["leadClean"].append( jet._central and self.leadJetCleaning(jet) )
-            if ijc==1 and jet._central: dphijj = deltaPhi(alljets[ret["iJ"][0]].phi,jet.phi)
-            # use both central and fwd jets to compute this
-            if jet.pt > 30 and jet._clean: 
-                nAllJets30 += 1
-                if nAllJets30 < 5: dphijm = min(dphijm,abs(deltaPhi(jet.phi,metphi)))
-            ijc += 1
+            # only save in the jetClean collection the central jets with pt > 30 GeV
+            if jet.pt < 30: continue
+            nAllJets30 += 1
+            if jet._central:
+                for jfloat in "pt eta phi mass btagCSV rawPt".split():
+                    jetret[jfloat].append( getattr(jet,jfloat) )
+                jetret["leadClean"].append( self.leadJetCleaning(jet) )
+                if ijc==1 and jet._central: dphijj = deltaPhi(alljets[ret["iJ"][0]].phi,jet.phi)
+                ijc += 1
+            # use both central and fwd jets to compute deltaphi(jet,met)_min
+            if nAllJets30 < 5: dphijm = min(dphijm,abs(deltaPhi(jet.phi,metphi)))
         ret["nJetClean"] = nJetCleanCentral
         ret['dphijj'] = dphijj
         ret['dphijm'] = dphijm
