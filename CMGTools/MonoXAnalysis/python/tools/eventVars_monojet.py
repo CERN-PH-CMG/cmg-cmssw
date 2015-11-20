@@ -79,7 +79,7 @@ class EventVarsMonojet:
         njet = len(jets)
         photonsT = [p for p in photons if self.gammaIdTight(p)]
         #print "check photonsT size is ", len(photonsT), " and nGamma175T = ",ret['nGamma175T']
-        (met, metphi)  = event.met_pt, event.met_phi
+        (met, metphi)  = event.metNoMu_pt, event.metNoMu_phi
         metp4 = ROOT.TLorentzVector()
         metp4.SetPtEtaPhiM(met,0,metphi,0)
         phmet = self.metNoPh(metp4,photonsT)
