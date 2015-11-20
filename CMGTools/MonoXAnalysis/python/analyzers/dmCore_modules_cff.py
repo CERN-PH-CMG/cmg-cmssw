@@ -140,15 +140,16 @@ lepAna = cfg.Analyzer(
     inclusive_muon_id  = "POG_ID_Loose",
     inclusive_muon_pt  = 3,
     inclusive_muon_eta = 2.4,
-    inclusive_muon_dxy = 0.5,
-    inclusive_muon_dz  = 1.0,
+    inclusive_muon_dxy = 1000,
+    inclusive_muon_dz  = 1000,
     muon_dxydz_track = "innerTrack",
     # veto muon selection
     loose_muon_id     = "POG_ID_Loose",
     loose_muon_pt     = 10,
     loose_muon_eta    = 2.4,
-    loose_muon_dxy    = 0.2,
-    loose_muon_dz     = 0.5,
+    loose_muon_dxy    = 1000,
+    loose_muon_dz     = 1000,
+    loose_muon_isoCut = (lambda mu : ( mu.relIso04 <= 0.4)), # this is not to apply loose_muon_relIso which is on DR=0.3
     loose_muon_relIso = 0.4,
     # inclusive very loose electron selection
     inclusive_electron_id  = "",
