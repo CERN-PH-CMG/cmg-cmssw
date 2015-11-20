@@ -426,6 +426,7 @@ dmCoreSequence = [
     pdfwAna,
     vertexAna,
     lepAna,
+    monoJetCtrlLepSkim,
     photonAna,
     tauAna,
     monoxTauAna,
@@ -434,7 +435,6 @@ dmCoreSequence = [
     metAna,
     ttHCoreEventAna,
     monoJetSkim,
-    monoJetCtrlLepSkim,
     triggerFlagsAna,
     eventFlagsAna,
 ]
