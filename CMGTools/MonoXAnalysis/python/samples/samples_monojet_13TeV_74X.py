@@ -13,8 +13,8 @@ from CMGTools.RootTools.samples.samples_monojet_13TeV_74X_signals import *
 ### --- mc ---
 
 # --- 25 ns background samples ---
-DYJetsToNuNu_MJ = [ DYJetsToNuNu_M50, ZJetsToNuNuHT ]
-VJets_MJ        = [ WJetsToLNuHT, WJetsToLNu ] + [ DYJetsM50HT, DYJetsToLL_M50, DYJetsToLL_M10to50 ]
+DYJetsToNuNu_MJ = [ DYJetsToNuNu_M50 ] + ZJetsToNuNuHT
+VJets_MJ        = [ WJetsToLNu ] + WJetsToLNuHT + DYJetsM50HT + [ DYJetsToLL_M50, DYJetsToLL_M10to50 ]
 Top_MJ          = [ TTJets_LO, TToLeptons_tch_amcatnlo, TToLeptons_tch_amcatnlo_ext, TBar_tWch, T_tWch ]
 DiBosons_MJ     = [ WW, WZ, ZZ ]
 
