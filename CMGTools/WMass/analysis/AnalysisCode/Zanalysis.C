@@ -1121,9 +1121,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               string mettype="_tk";
                               
                               double u1_scale=0;
-                              plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, tag_zPtcut.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps, jZmass_MeV);
-                              plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, tag_VTX.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps, jZmass_MeV);
-                              plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, tag_y.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps , jZmass_MeV);
+                              plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, "closure", tag_zPtcut.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps, jZmass_MeV);
+                              plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, "closure", tag_VTX.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps, jZmass_MeV);
+                              plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, "closure", tag_y.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps , jZmass_MeV);
                             }
                             //---------------------------------------------------------------------
                             // Recoil plots: u1, u2, u1vsZpt, u2vsZpt, u1vsZptvsZrap, u2vsZptvsZrap
@@ -1225,7 +1225,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                           //------------------------------------------------------------------------------------------------ 
                           if(TMath::Abs(jZmass_MeV - WMass::ZMassCentral_MeV) > 1)  continue;
 
-                          if(controlplots && m==m_start && n==0) fillControlPlots(Zcorr, Z_met, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, jZmass_MeV , eta_str, WMass::nSigOrQCD_str[0]);
+                          if(controlplots && m==m_start && n==0) fillControlPlots(Zcorr, Z_met, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, jZmass_MeV , eta_str, WMass::nSigOrQCD_str[0],Form("Wlike%s_8_JetCut",WCharge_str.Data()));
 
                         }
                       }
@@ -1256,7 +1256,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                       // QCD distributions for central W mass
                       //------------------------------------------------------
 
-                      fillControlPlots(Zcorr, Z_met, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, jZmass_MeV , eta_str, WMass::nSigOrQCD_str[1]);
+                      fillControlPlots(Zcorr, Z_met, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, jZmass_MeV , eta_str, WMass::nSigOrQCD_str[1],Form("Wlike%s_8_JetCut",WCharge_str.Data()));
 
                     } // end if for qcd enriched
                   } // end else for muon cuts (sig or qcd enriched)
