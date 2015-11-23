@@ -81,7 +81,7 @@ class BaseDumper(Module):
         for i,l in enumerate(allleps):
             if i in ils: 
                 lepsS.append(l)
-            elif l.tightId and l.relIso04 < (0.4 if abs(l.pdgId)==13 else 0.5) and l.sip3d < 4:
+            elif l.tightId and l.relIsoAfterFSR < (0.4 if abs(l.pdgId)==13 else 0.5) and l.sip3d < 4:
                 lepsS.append(l)
         ev.nLepSel = len(lepsS)
         ev.mjj = (jets[0].p4()+jets[1].p4()).M() if len(jets) >= 2 else 0

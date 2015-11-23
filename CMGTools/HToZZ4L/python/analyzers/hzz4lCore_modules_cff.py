@@ -15,18 +15,17 @@ from CMGTools.HToZZ4L.analyzers.fourLeptonTree import *
 from CMGTools.HToZZ4L.samples.samples_13TeV_Spring15 import *
 
 from CMGTools.TTHAnalysis.analyzers.ttHFastLepSkimmer import ttHFastLepSkimmer
-fastSkim2L = cfg.Analyzer( ttHFastLepSkimmer, name="fastLepSkimmer2L",
-        muons = 'slimmedMuons', muCut = lambda mu : mu.pt() > 5 and abs(mu.dB(mu.PV3D) / mu.edB(mu.PV3D)) < 4,
+fastSkim2LnoSip = cfg.Analyzer( ttHFastLepSkimmer, name="fastLepSkimmer2L",
+        muons = 'slimmedMuons', muCut = lambda mu : mu.pt() > 5,
         electrons = 'slimmedElectrons', eleCut = lambda ele : ele.pt() > 7,
         minLeptons = 2,
 )
-fastSkim4L = cfg.Analyzer( ttHFastLepSkimmer, name="fastLepSkimmer4L",
+fastSkim2L = fastSkim2LnoSip.clone(
         muons = 'slimmedMuons', muCut = lambda mu : mu.pt() > 5 and abs(mu.dB(mu.PV3D) / mu.edB(mu.PV3D)) < 4,
-        electrons = 'slimmedElectrons', eleCut = lambda ele : ele.pt() > 7,
-        minLeptons = 4,
+        electrons = 'slimmedElectrons', eleCut = lambda ele : ele.pt() > 7 and abs(ele.dB(ele.PV3D) / ele.edB(ele.PV3D)) < 4,
 )
-
-import os
+fastSkim3L = fastSkim2L.clone(minLeptons = 3)
+fastSkim4L = fastSkim2L.clone(minLeptons = 4)
 
 genAna = cfg.Analyzer(
     GeneratorAnalyzer, name="GeneratorAnalyzer",
@@ -219,7 +218,7 @@ jetAna = cfg.Analyzer(
     minLepPt = 0,
     lepSelCut = lambda lepton : lepton.tightId() and lepton.relIsoAfterFSR < (0.4 if abs(lepton.pdgId())==13 else 0.5),
     relaxJetId = False,  
-    doPuId = True,
+    doPuId = False,
     recalibrateJets = False, # True, False, 'MC', 'Data'
     applyL2L3Residual = True, # Switch to 'Data' when they will become available for Data
     recalibrationType = "AK4PFchs",
@@ -263,6 +262,13 @@ metAna = cfg.Analyzer(
     dzMax = 0.1,
     collectionPostFix = "",
     )
+metNoHFAna = metAna.clone( 
+    name="metNoHFAnalyzer",
+    metCollection     = "slimmedMETsNoHF",
+    noPUMetCollection = "slimmedMETsNoHF",
+    collectionPostFix = "NoHF",
+    )
+
 
 
 
@@ -323,11 +329,12 @@ treeProducer = cfg.Analyzer(
 
 
 # Core sequence of all common modules
-hzz4lCoreSequence = [
+hzz4lPreSequence = [
     skimAnalyzer,
     jsonAna,
     triggerAna,
-    fastSkim4L,
+]
+hzz4lObjSequence = [
     genAna,
     pileUpAna,
     vertexAna,
@@ -336,7 +343,10 @@ hzz4lCoreSequence = [
     fsrRecovery,
     jetAna,
     metAna,
+    metNoHFAna,
     triggerFlagsAna,
+]
+hzz4lCoreSequence = hzz4lPreSequence +  [ fastSkim4L ] + hzz4lObjSequence + [
     fourLeptonAnalyzerSignal, 
     fourLeptonAnalyzer2P2F,
     fourLeptonAnalyzer3P1F,

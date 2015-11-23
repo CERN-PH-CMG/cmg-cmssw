@@ -1,0 +1,61 @@
+def autoAAA(selectedComponents):
+    import re
+    from CMGTools.Production import changeComponentAccessMode
+    from CMGTools.Production.localityChecker import LocalityChecker
+    tier2Checker = LocalityChecker("T2_CH_CERN", datasets="/*/*/MINIAOD*")
+    for comp in selectedComponents:
+        if not hasattr(comp,'dataset'): continue
+        if not re.match("/[^/]+/[^/]+/MINIAOD(SIM)?", comp.dataset): continue
+        if "/store/" not in comp.files[0]: continue
+        if re.search("/store/(group|user|cmst3)/", comp.files[0]): continue
+        if not tier2Checker.available(comp.dataset):
+            print "Dataset %s is not available, will use AAA" % comp.dataset
+            changeComponentAccessMode.convertComponent(comp, "root://cms-xrd-global.cern.ch/%s")
+
+def autoConfig(selectedComponents,sequence,services=[],xrd_aggressive=2):
+    import PhysicsTools.HeppyCore.framework.config as cfg
+    from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
+    from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
+    from CMGTools.TTHAnalysis.tools.EOSEventsWithDownload import EOSEventsWithDownload
+    event_class = EOSEventsWithDownload
+    EOSEventsWithDownload.aggressive = xrd_aggressive 
+    if getHeppyOption("nofetch") or getHeppyOption("isCrab"):
+        event_class = Events
+    return cfg.Config( components = selectedComponents,
+                     sequence = sequence,
+                     services = services,  
+                     events_class = event_class)
+
+def insertEventSelector(sequence):
+    if not sequence: raise RuntimeError, "to apply an event selection, I need a sequence"
+    from CMGTools.HToZZ4L.analyzers.hzz4lCore_modules_cff import eventSelector
+    eventSelector.toSelect = [ eval("("+x.replace(":",",")+")") for x in getHeppyOption('events').split(",") ]
+    sequence.insert(0, eventSelector)
+    print "Will select events ",eventSelector.toSelect
+
+def doTest1(comp, url=None, sequence=None, cache=False):
+    from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
+    comp.files = [ url if url else comp.files[0] ]
+    if cache:
+        import os
+        tmpfil = os.path.expandvars("/tmp/$USER/%s" % os.path.basename(comp.files[0]))
+        if not os.path.exists(tmpfil):
+            os.system("xrdcp %s %s" % (comp.files[0],tmpfil))
+        comp.files = [ tmpfil ]
+    comp.splitFactor = 1
+    comp.fineSplitFactor = 1 if getHeppyOption('single') else 5
+    if getHeppyOption('events'): insertEventSelector(sequence)
+    return [ comp ]
+
+def doTestN(test, selectedComponents):
+    if test == '2':
+        for comp in selectedComponents:
+            comp.files = comp.files[:1]
+            comp.splitFactor = 1
+            comp.fineSplitFactor = 1
+    elif test == '3':
+        for comp in selectedComponents:
+            comp.files = comp.files[:3]
+            comp.splitFactor = 1
+            comp.fineSplitFactor = 3
+ 

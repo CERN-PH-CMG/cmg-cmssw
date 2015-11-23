@@ -37,6 +37,30 @@ triggers_signal_real = triggers_mumu + triggers_ee + triggers_mue + triggers_tri
 triggers_signal_sync = triggers_mumu_sync + triggers_ee_sync + triggers_mue_sync + triggers_trilep + triggers_1e_sync
 triggers_any = list(set(triggers_signal_real+triggers_signal_sync+triggers_1mu))
 
+triggers_jpsi2mu = [
+    "HLT_Dimuon0er16_Jpsi_NoOS_NoVertexing_v*",
+    "HLT_Dimuon0er16_Jpsi_NoVertexing_v*",
+    "HLT_Dimuon10_Jpsi_Barrel_v*",
+    "HLT_Dimuon16_Jpsi_v*",
+    "HLT_Dimuon20_Jpsi_v*",
+    "HLT_Dimuon6_Jpsi_NoVertexing_v*",
+    "HLT_DoubleMu4_3_Jpsi_Displaced_v*",
+    "HLT_DoubleMu4_JpsiTrk_Displaced_v*",
+    "HLT_Mu7p5_L2Mu2_Jpsi_v*",
+    "HLT_Mu7p5_Track2_Jpsi_v*",
+    "HLT_Mu7p5_Track3p5_Jpsi_v*",
+    "HLT_Mu7p5_Track7_Jpsi_v*",
+]
+triggers_upsilon2mu = [
+    "HLT_Dimuon0_Upsilon_Muon_v*",
+    "HLT_Dimuon13_Upsilon_v*",
+    "HLT_Dimuon8_Upsilon_Barrel_v*",
+    "HLT_Mu7p5_L2Mu2_Upsilon_v*",
+    "HLT_Mu7p5_Track2_Upsilon_v*",
+    "HLT_Mu7p5_Track3p5_Upsilon_v*",
+    "HLT_Mu7p5_Track7_Upsilon_v*",
+]
+
 from CMGTools.RootTools.samples.ComponentCreator import ComponentCreator
 kreator = ComponentCreator()
 
@@ -53,71 +77,56 @@ TTHZZ4LF = kreator.makeMCComponent("TTHZZ4LF", "/ttH_HToZZ_4LFilter_M125_13TeV_p
 H4L = [ GGHZZ4L, QQHZZ4L, WpHZZ4L, WmHZZ4L, ZHZZ4LF ]
 
 # cross section from McM (powheg) 
-ZZTo4L = kreator.makeMCComponent("ZZTo4L","/ZZTo4L_13TeV_powheg_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 1.256)
-ZZTo4L_amc_v2 = kreator.makeMCComponent("ZZTo4L_amc_v2","/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 1.256)
+ZZTo4L = kreator.makeMCComponent("ZZTo4L","/ZZTo4L_13TeV_powheg_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v2/MINIAODSIM", "CMS", ".*root", 1.256)
+ZZTo4L_aMC = kreator.makeMCComponent("ZZTo4L_aMC","/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 1.256)
 
-# cross section from McM (MCFM)
-GGZZTo2e2mu = kreator.makeMCComponent("GGZZTo2e2mu", "/GluGluToZZTo2e2mu_BackgroundOnly_13TeV_MCFM/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 0.00319364)
-GGZZTo2e2tau = kreator.makeMCComponent("GGZZTo2e2tau", "/GluGluToZZTo2e2tau_BackgroundOnly_13TeV_MCFM/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 0.00319364)
-GGZZTo2mu2tau = kreator.makeMCComponent("GGZZTo2mu2tau", "/GluGluToZZTo2mu2tau_BackgroundOnly_13TeV_MCFM/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 0.00319364)
-GGZZTo4e = kreator.makeMCComponent("GGZZTo4e", "/GluGluToZZTo4e_BackgroundOnly_13TeV_MCFM/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 0.00158582)
-GGZZTo4mu = kreator.makeMCComponent("GGZZTo4mu", "/GluGluToZZTo4mu_BackgroundOnly_13TeV_MCFM/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 0.00158582)
-GGZZTo4tau = kreator.makeMCComponent("GGZZTo4tau", "/GluGluToZZTo4tau_BackgroundOnly_13TeV_MCFM/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 0.00158582)
-
-GGZZTo2e2mu_v2 = kreator.makeMCComponent("GGZZTo2e2mu_v2", "/GluGluToZZTo2e2mu_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 0.00319364)
-GGZZTo2e2tau_v2 = kreator.makeMCComponent("GGZZTo2e2tau_v2", "/GluGluToZZTo2e2tau_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 0.00319364)
-GGZZTo2mu2tau_v2 = kreator.makeMCComponent("GGZZTo2mu2tau_v2", "/GluGluToZZTo2mu2tau_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 0.00319364)
-GGZZTo4e_v2 = kreator.makeMCComponent("GGZZTo4e_v2", "/GluGluToZZTo4e_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 0.00158582)
-#GGZZTo4mu_v2 = kreator.makeMCComponent("GGZZTo4mu_v2", "/GluGluToZZTo4mu_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 0.00158582)
-GGZZTo4tau_v2 = kreator.makeMCComponent("GGZZTo4tau_v2", "/GluGluToZZTo4tau_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 0.00158582)
+GGZZTo2e2mu = kreator.makeMCComponent("GGZZTo2e2mu", "/GluGluToZZTo2e2mu_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic-v1/MINIAODSIM", "CMS", ".*root", 0.00319364)
+GGZZTo2e2tau = kreator.makeMCComponent("GGZZTo2e2tau", "/GluGluToZZTo2e2tau_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic-v1/MINIAODSIM", "CMS", ".*root", 0.00319364)
+GGZZTo2mu2tau = kreator.makeMCComponent("GGZZTo2mu2tau", "/GluGluToZZTo2mu2tau_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic-v1/MINIAODSIM", "CMS", ".*root", 0.00319364)
+GGZZTo4e = kreator.makeMCComponent("GGZZTo4e", "/GluGluToZZTo4e_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic-v1/MINIAODSIM", "CMS", ".*root", 0.00158582)
+GGZZTo4mu = kreator.makeMCComponent("GGZZTo4mu", "/GluGluToZZTo4mu_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic-v1/MINIAODSIM", "CMS", ".*root", 0.00158582)
+GGZZTo4tau = kreator.makeMCComponent("GGZZTo4tau", "/GluGluToZZTo4tau_BackgroundOnly_13TeV_MCFM/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic-v1/MINIAODSIM", "CMS", ".*root", 0.00158582)
 
 
-GGZZTo4L = [ GGZZTo4mu, #GGZZTo2e2mu, GGZZTo2e2tau, GGZZTo2mu2tau, GGZZTo4e, GGZZTo4tau,
-             GGZZTo2e2mu_v2, GGZZTo2e2tau_v2, GGZZTo2mu2tau_v2, GGZZTo4e_v2, GGZZTo4tau_v2 ] # GGZZTo4mu_v2
+GGZZTo4L = [ GGZZTo2e2mu, GGZZTo2e2tau, GGZZTo2mu2tau, GGZZTo4e, GGZZTo4mu, GGZZTo4tau ] 
 
 
 ### Z+jets inclusive (from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat13TeV)
-DYJetsToLL_M50 = kreator.makeMCComponent("DYJetsToLL_M50", "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/MINIAODSIM", "CMS", ".*root", 2008.*3)
-DYJetsToLL_M50_v2 = kreator.makeMCComponent("DYJetsToLL_M50_v2", "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 2008.*3)
-DYJetsToLL_LO_M50 = kreator.makeMCComponent("DYJetsToLL_LO_M50", "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 2008.*3)
-DYJetsToLL_LO_M50_50ns = kreator.makeMCComponent("DYJetsToLL_LO_M50_50ns", "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/MINIAODSIM", "CMS", ".*root", 2008.*3)
+DYJetsToLL_M50 = kreator.makeMCComponent("DYJetsToLL_M50", "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 2008.*3)
+DYJetsToLL_LO_M50 = kreator.makeMCComponent("DYJetsToLL_LO_M50", "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 2008.*3)
+DYJetsToLL_LO_M50_50ns = kreator.makeMCComponent("DYJetsToLL_LO_M50_50ns", "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-Asympt50ns_74X_mcRun2_asymptotic50ns_v0-v1/MINIAODSIM", "CMS", ".*root", 2008.*3)
 
 ## Cross section from McM (aMC@NLO)
-DYJetsToLL_M10to50 = kreator.makeMCComponent("DYJetsToLL_M10to50", "/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 18610)
-DYJets = [ DYJetsToLL_M50, DYJetsToLL_M10to50 ]
+DYJetsToLL_M10to50 = kreator.makeMCComponent("DYJetsToLL_M10to50", "/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 18610)
+DYJets = [ DYJetsToLL_M50, DYJetsToLL_M10to50, DYJetsToLL_LO_M50, DYJetsToLL_LO_M50_50ns ]
 
 # cross section from McM (powheg)
-WZTo3LNu = kreator.makeMCComponent("WZTo3LNu", "/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 4.42965)
+WZTo3LNu = kreator.makeMCComponent("WZTo3LNu", "/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 4.42965)
 
 # cross section from StandardModelCrossSectionsat13TeV NNLO times BR=(3*0.108)**2
-WWTo2L2Nu = kreator.makeMCComponent("WWTo2L2Nu", "/WWTo2L2Nu_13TeV-powheg/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 118.7*((3*0.108)**2) )
+WWTo2L2Nu = kreator.makeMCComponent("WWTo2L2Nu", "/WWTo2L2Nu_13TeV-powheg/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 118.7*((3*0.108)**2) )
 
 # TTbar cross section: MCFM with dynamic scale, StandardModelCrossSectionsat13TeV
-TTLep = kreator.makeMCComponent("TTLep", "/TTTo2L2Nu_13TeV-powheg/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 831.76*((3*0.108)**2))
-TTLep_v2 = kreator.makeMCComponent("TTLep_v2", "/TTTo2L2Nu_13TeV-powheg/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 831.76*((3*0.108)**2))
+TTLep = kreator.makeMCComponent("TTLep", "/TTTo2L2Nu_13TeV-powheg/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 831.76*((3*0.108)**2))
 
-# Single top cross sections: https://twiki.cern.ch/twiki/bin/viewauth/CMS/SingleTopSigma
-TToLeptons_tch = kreator.makeMCComponent("TToLeptons_tch", "/ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", (136.05+80.97)*0.108*3) 
-TToLeptons_sch = kreator.makeMCComponent("TToLeptons_sch", "/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", (7.20+4.16)*0.108*3)
-TBar_tWch = kreator.makeMCComponent("TBar_tWch", "/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root",35.6)
-T_tWch = kreator.makeMCComponent("T_tWch", "/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root",35.6)
-SingleTop = [ TToLeptons_tch, TToLeptons_sch, TBar_tWch, T_tWch ]
+TBar_tWch = kreator.makeMCComponent("TBar_tWch", "/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root",35.6)   
+T_tWch = kreator.makeMCComponent("T_tWch", "/ST_tW_top_5f_DS_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root",35.6)
+SingleTop = [ TBar_tWch, T_tWch ]
 
 ### W+jets inclusive (from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat13TeV)
-WJetsToLNu = kreator.makeMCComponent("WJetsToLNu","/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM", "CMS", ".*root", 20508.9*3)
+WJetsToLNu = kreator.makeMCComponent("WJetsToLNu","/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 20508.9*3)
+WJetsToLNu_LO = kreator.makeMCComponent("WJetsToLNu","/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 20508.9*3)
 
-mcSamples_25ns =  H4L + [ ZZTo4L ] + GGZZTo4L + DYJets + [ WZTo3LNu, WWTo2L2Nu, TTLep ] + SingleTop + [ WJetsToLNu ]
+mcSamples_25ns =  H4L + [ ZZTo4L ] + GGZZTo4L + DYJets + [ WZTo3LNu, WWTo2L2Nu, TTLep ] + SingleTop + [ WJetsToLNu, WJetsToLNu_LO ]
 
-### ===== 50ns samples ====
-DYJetsToLL_M50_50ns = kreator.makeMCComponent("DYJetsToLL_M50_50ns","/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/MINIAODSIM", "CMS", ".*root", 2008.*3)
-DYJetsToLL_M10to50_50ns = kreator.makeMCComponent("DYJetsToLL_M10to50_50ns", "/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/MINIAODSIM", "CMS", ".*root", 18610)
-TTJets_50ns = kreator.makeMCComponent("TTJets_50ns", "/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/MINIAODSIM", "CMS", ".*root", 831.76)
-TTLep_50ns = kreator.makeMCComponent("TTLep_50ns", "/TTTo2L2Nu_13TeV-powheg/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/MINIAODSIM", "CMS", ".*root", 831.76*((3*0.108)**2))
-WJetsToLNu_50ns = kreator.makeMCComponent("WJetsToLNu_50ns","/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/MINIAODSIM", "CMS", ".*root", 20508.9*3)
+### ===== Onia ======
+#JpsiToMuMuPt7 = kreator.makeMCComponent("JpsiToMuMuPt7","/JpsiToMuMu_JPsiPt7_13TeV-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 1.0)
+JpsiToMuMuPt8 = kreator.makeMCComponent("JpsiToMuMuPt8","/JpsiToMuMu_JpsiPt8_TuneCUEP8M1_13TeV-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 1.0)
+UpsToMuMuPt6 = kreator.makeMCComponent("UpsToMuMuPt6", "/UpsilonMuMu_UpsilonPt6_TuneCUEP8M1_13TeV-pythia8-evtgen/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 1.0)
 
-mcSamples_50ns = [ DYJetsToLL_M50_50ns, DYJetsToLL_M10to50_50ns, TTJets_50ns, TTLep_50ns, WJetsToLNu_50ns ]
+mcSamples_onia = [ JpsiToMuMuPt8, UpsToMuMuPt6 ]
 
-mcSamples = mcSamples_25ns + mcSamples_50ns
+mcSamples = mcSamples_25ns + mcSamples_onia
 
 #-----------DATA---------------
 dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data"
@@ -125,7 +134,10 @@ dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data"
 json=dataDir+'/json/Cert_Run2012ABCD_22Jan2013ReReco.json'
 from CMGTools.TTHAnalysis.setup.Efficiencies import eff2012
 
-json_25ns = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258714_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
+#json_25ns = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258714_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
+json_25ns = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
+json_25ns_sex = '/afs/cern.ch/user/g/gpetrucc/public/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_Silver_Only.txt'
+#json_25ns = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_Silver.txt
 json_50ns = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON_v2.txt'
 
 DoubleMuon_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("DoubleMuon_Run2015B_05Oct2015_50ns", "/DoubleMuon/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
@@ -133,35 +145,45 @@ DoubleEG_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("DoubleEG_Run2015B_
 MuonEG_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("MuonEG_Run2015B_05Oct2015_50ns", "/MuonEG/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
 SingleMuon_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("SingleMuon_Run2015B_05Oct2015_50ns", "/SingleMuon/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
 SingleElectron_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("SingleElectron_Run2015B_05Oct2015_50ns", "/SingleElectron/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
+Charmonium_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("Charmonium_Run2015B_05Oct2015_50ns", "/Charmonium/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
+SingleElectron_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("SingleElectron_Run2015B_05Oct2015_50ns", "/SingleElectron/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
+MuOnia_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("MuOnia_Run2015B_05Oct2015_50ns", "/MuOnia/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
 
 DoubleEG_Run2015B_Prompt_50ns = kreator.makeDataComponent("DoubleEG_Run2015B_Prompt_50ns", "/DoubleEG/Run2015B-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
 DoubleMuon_Run2015B_Prompt_50ns = kreator.makeDataComponent("DoubleMuon_Run2015B_Prompt_50ns", "/DoubleMuon/Run2015B-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
 MuonEG_Run2015B_Prompt_50ns = kreator.makeDataComponent("MuonEG_Run2015B_Prompt_50ns", "/MuonEG/Run2015B-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
 SingleMuon_Run2015B_Prompt_50ns = kreator.makeDataComponent("SingleMuon_Run2015B_Prompt_50ns", "/SingleMuon/Run2015B-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
 SingleElectron_Run2015B_Prompt_50ns = kreator.makeDataComponent("SingleElectron_Run2015B_Prompt_50ns", "/SingleElectron/Run2015B-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
+# Forget about Onia
 
 DoubleMuon_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("DoubleMuon_Run2015C_05Oct2015_50ns", "/DoubleMuon/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
 DoubleEG_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("DoubleEG_Run2015C_05Oct2015_50ns", "/DoubleEG/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
 MuonEG_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("MuonEG_Run2015C_05Oct2015_50ns", "/MuonEG/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
 SingleMuon_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("SingleMuon_Run2015C_05Oct2015_50ns", "/SingleMuon/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
 SingleElectron_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("SingleElectron_Run2015C_05Oct2015_50ns", "/SingleElectron/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
+Charmonium_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("Charmonium_Run2015C_05Oct2015_50ns", "/Charmonium/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
+MuOnia_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("MuOnia_Run2015C_05Oct2015_50ns", "/MuOnia/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
 
 DoubleEG_Run2015C_Prompt_50ns = kreator.makeDataComponent("DoubleEG_Run2015C_Prompt_50ns", "/DoubleEG/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
 DoubleMuon_Run2015C_Prompt_50ns = kreator.makeDataComponent("DoubleMuon_Run2015C_Prompt_50ns", "/DoubleMuon/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
 MuonEG_Run2015C_Prompt_50ns = kreator.makeDataComponent("MuonEG_Run2015C_Prompt_50ns", "/MuonEG/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
 SingleMuon_Run2015C_Prompt_50ns = kreator.makeDataComponent("SingleMuon_Run2015C_Prompt_50ns", "/SingleMuon/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
 SingleElectron_Run2015C_Prompt_50ns = kreator.makeDataComponent("SingleElectron_Run2015C_Prompt_50ns", "/SingleElectron/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
+# Forget about Onia
 
 data_50ns_05Oct2015 = [ 
     DoubleMuon_Run2015B_05Oct2015_50ns, DoubleEG_Run2015B_05Oct2015_50ns, MuonEG_Run2015B_05Oct2015_50ns, SingleMuon_Run2015B_05Oct2015_50ns, SingleElectron_Run2015B_05Oct2015_50ns,
     DoubleMuon_Run2015C_05Oct2015_50ns, DoubleEG_Run2015C_05Oct2015_50ns, MuonEG_Run2015C_05Oct2015_50ns, SingleMuon_Run2015C_05Oct2015_50ns, SingleElectron_Run2015C_05Oct2015_50ns
+]
+data_50ns_onia = [ 
+    Charmonium_Run2015B_05Oct2015_50ns, Charmonium_Run2015C_05Oct2015_50ns, MuOnia_Run2015B_05Oct2015_50ns, MuOnia_Run2015C_05Oct2015_50ns,
 ]
 data_50ns_prompt = [
     DoubleMuon_Run2015B_Prompt_50ns, DoubleEG_Run2015B_Prompt_50ns, MuonEG_Run2015B_Prompt_50ns, SingleMuon_Run2015B_Prompt_50ns, SingleElectron_Run2015B_Prompt_50ns,
     DoubleMuon_Run2015C_Prompt_50ns, DoubleEG_Run2015C_Prompt_50ns, MuonEG_Run2015C_Prompt_50ns, SingleMuon_Run2015C_Prompt_50ns, SingleElectron_Run2015C_Prompt_50ns
 ]
 data_50ns = data_50ns_05Oct2015
-data_50ns_all = data_50ns + data_50ns_prompt
+data_50ns_all = data_50ns + data_50ns_prompt + data_50ns_onia
 
 DoubleEG_Run2015C_Prompt_25ns = kreator.makeDataComponent("DoubleEG_Run2015C_Prompt_25ns", "/DoubleEG/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_25ns)
 DoubleMuon_Run2015C_Prompt_25ns = kreator.makeDataComponent("DoubleMuon_Run2015C_Prompt_25ns", "/DoubleMuon/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_25ns)
@@ -174,30 +196,63 @@ DoubleEG_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("DoubleEG_Run2015D_
 MuonEG_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("MuonEG_Run2015D_05Oct2015_25ns", "/MuonEG/Run2015D-05Oct2015-v2/MINIAOD", "CMS", ".*root", json=json_25ns)
 SingleMuon_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("SingleMuon_Run2015D_05Oct2015_25ns", "/SingleMuon/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns)
 SingleElectron_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("SingleElectron_Run2015D_05Oct2015_25ns", "/SingleElectron/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns)
+Charmonium_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("Charmonium_Run2015D_05Oct2015_25ns", "/Charmonium/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns)
+MuOnia_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("MuOnia_Run2015D_05Oct2015_25ns", "/MuOnia/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns)
+
+DoubleMuon_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("DoubleMuon_Run2015D_Silver_05Oct2015_25ns", "/DoubleMuon/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns_sex)
+DoubleEG_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("DoubleEG_Run2015D_Silver_05Oct2015_25ns", "/DoubleEG/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns_sex)
+MuonEG_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("MuonEG_Run2015D_Silver_05Oct2015_25ns", "/MuonEG/Run2015D-05Oct2015-v2/MINIAOD", "CMS", ".*root", json=json_25ns_sex)
+SingleMuon_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("SingleMuon_Run2015D_Silver_05Oct2015_25ns", "/SingleMuon/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns_sex)
+SingleElectron_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("SingleElectron_Run2015D_Silver_05Oct2015_25ns", "/SingleElectron/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns_sex)
+Charmonium_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("Charmonium_Run2015D_Silver_05Oct2015_25ns", "/Charmonium/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns_sex)
+MuOnia_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("MuOnia_Run2015D_Silver_05Oct2015_25ns", "/MuOnia/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns_sex)
+
 
 MuonEG_Run2015D_PromptV3_25ns = kreator.makeDataComponent("MuonEG_Run2015D_PromptV3_25ns", "/MuonEG/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json=json_25ns)
 DoubleEG_Run2015D_PromptV3_25ns = kreator.makeDataComponent("DoubleEG_Run2015D_PromptV3_25ns", "/DoubleEG/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json=json_25ns)
 DoubleMuon_Run2015D_PromptV3_25ns = kreator.makeDataComponent("DoubleMuon_Run2015D_PromptV3_25ns", "/DoubleMuon/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json=json_25ns)
 SingleMuon_Run2015D_PromptV3_25ns = kreator.makeDataComponent("SingleMuon_Run2015D_PromptV3_25ns", "/SingleMuon/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json=json_25ns)
 SingleElectron_Run2015D_PromptV3_25ns = kreator.makeDataComponent("SingleElectron_Run2015D_PromptV3_25ns", "/SingleElectron/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json=json_25ns)
+Charmonium_Run2015D_PromptV3_25ns = kreator.makeDataComponent("Charmonium_Run2015D_PromptV3_25ns", "/Charmonium/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json=json_25ns)
+MuOnia_Run2015D_PromptV3_25ns = kreator.makeDataComponent("MuOnia_Run2015D_PromptV3_25ns", "/MuOnia/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json=json_25ns)
 
-run_range = [ 258159, 258714 ]
+#run_range = [ 258159, 258714 ]
+run_range = None
 DoubleMuon_Run2015D_PromptV4_25ns = kreator.makeDataComponent("DoubleMuon_Run2015D_PromptV4_25ns", "/DoubleMuon/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns, run_range=run_range)
 DoubleEG_Run2015D_PromptV4_25ns = kreator.makeDataComponent("DoubleEG_Run2015D_PromptV4_25ns", "/DoubleEG/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns, run_range=run_range)
 MuonEG_Run2015D_PromptV4_25ns = kreator.makeDataComponent("MuonEG_Run2015D_PromptV4_25ns", "/MuonEG/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns, run_range=run_range)
 SingleMuon_Run2015D_PromptV4_25ns = kreator.makeDataComponent("SingleMuon_Run2015D_PromptV4_25ns", "/SingleMuon/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns, run_range=run_range)
 SingleElectron_Run2015D_PromptV4_25ns = kreator.makeDataComponent("SingleElectron_Run2015D_PromptV4_25ns", "/SingleElectron/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns, run_range=run_range)
+Charmonium_Run2015D_PromptV4_25ns = kreator.makeDataComponent("Charmonium_Run2015D_PromptV4_25ns", "/Charmonium/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns, run_range=run_range)
+MuOnia_Run2015D_PromptV4_25ns = kreator.makeDataComponent("MuOnia_Run2015D_PromptV4_25ns", "/MuOnia/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns, run_range=run_range)
+
+run_range = [258443,258443]
+DoubleMuon_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("DoubleMuon_Run2015D_Silver_PromptV4_25ns", "/DoubleMuon/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns_sex, run_range=run_range)
+DoubleEG_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("DoubleEG_Run2015D_Silver_PromptV4_25ns", "/DoubleEG/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns_sex, run_range=run_range)
+MuonEG_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("MuonEG_Run2015D_Silver_PromptV4_25ns", "/MuonEG/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns_sex, run_range=run_range)
+SingleMuon_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("SingleMuon_Run2015D_Silver_PromptV4_25ns", "/SingleMuon/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns_sex, run_range=run_range)
+SingleElectron_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("SingleElectron_Run2015D_Silver_PromptV4_25ns", "/SingleElectron/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns_sex, run_range=run_range)
+Charmonium_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("Charmonium_Run2015D_Silver_PromptV4_25ns", "/Charmonium/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns_sex, run_range=run_range)
+MuOnia_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("MuOnia_Run2015D_Silver_PromptV4_25ns", "/MuOnia/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns_sex, run_range=run_range)
+
+
 
 data_25ns = [
     DoubleMuon_Run2015D_05Oct2015_25ns, DoubleEG_Run2015D_05Oct2015_25ns, SingleMuon_Run2015D_05Oct2015_25ns, SingleElectron_Run2015D_05Oct2015_25ns, MuonEG_Run2015D_05Oct2015_25ns,
     DoubleMuon_Run2015D_PromptV4_25ns, DoubleEG_Run2015D_PromptV4_25ns, MuonEG_Run2015D_PromptV4_25ns, SingleMuon_Run2015D_PromptV4_25ns, SingleElectron_Run2015D_PromptV4_25ns,
+    DoubleMuon_Run2015D_Silver_05Oct2015_25ns, DoubleEG_Run2015D_Silver_05Oct2015_25ns, SingleMuon_Run2015D_Silver_05Oct2015_25ns, SingleElectron_Run2015D_Silver_05Oct2015_25ns, MuonEG_Run2015D_Silver_05Oct2015_25ns,
+    DoubleMuon_Run2015D_Silver_PromptV4_25ns, DoubleEG_Run2015D_Silver_PromptV4_25ns, MuonEG_Run2015D_Silver_PromptV4_25ns, SingleMuon_Run2015D_Silver_PromptV4_25ns, SingleElectron_Run2015D_Silver_PromptV4_25ns,
 ]
-data_25ns_all = data_25ns + [
-    MuonEG_Run2015D_PromptV3_25ns,
-    DoubleMuon_Run2015D_PromptV3_25ns, DoubleEG_Run2015D_PromptV3_25ns, SingleElectron_Run2015D_PromptV3_25ns, SingleMuon_Run2015D_PromptV3_25ns,
+data_25ns_onia = [
+    Charmonium_Run2015D_05Oct2015_25ns, MuOnia_Run2015D_05Oct2015_25ns, 
+    Charmonium_Run2015D_PromptV4_25ns, MuOnia_Run2015D_PromptV4_25ns, 
+]
+data_25ns_all = data_25ns + data_25ns_onia + [
+    MuonEG_Run2015D_PromptV3_25ns, DoubleMuon_Run2015D_PromptV3_25ns, DoubleEG_Run2015D_PromptV3_25ns, SingleElectron_Run2015D_PromptV3_25ns, SingleMuon_Run2015D_PromptV3_25ns,
 ]
 
 dataSamples = data_50ns + data_25ns
+dataSamples_onia = data_50ns_onia + data_25ns_onia
 dataSamples_all = data_50ns_all + data_25ns_all
 
 #Define splitting
