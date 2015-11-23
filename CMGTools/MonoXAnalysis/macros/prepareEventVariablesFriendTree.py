@@ -12,17 +12,24 @@ from CMGTools.TTHAnalysis.tools.vertexWeightFriend import VertexWeightFriend
 pufile="/afs/cern.ch/work/e/emanuele/public/monox/pileup/nvtx_profile_runs_246908_257599.root"
 MODULES.append ( ('puWeights', VertexWeightFriend(pufile,pufile,"nvtx_signal","nvtx_data",verbose=True) ) )
 
+pathvetolists="/afs/cern.ch/work/e/emanuele/public/monox/met_vetolists/"
+vetoLists= ["cscfilter", "ecalfilter"]
+
+from CMGTools.MonoXAnalysis.tools.eventVetoListChecker import EventVetoListChecker
+MODULES.append( ('eventVetoChecker', EventVetoListChecker(pathvetolists,vetoLists)) )
+
 class VariableProducer(Module):
-    def __init__(self,name,booker,sample_nevt,modules):
+    def __init__(self,name,booker,sample_nevt,dataset,modules):
         Module.__init__(self,name,booker)
         self._modules = modules
         self._sample_nevt = sample_nevt
+        self.dataset = dataset
     def beginJob(self):
         self.t = PyTree(self.book("TTree","t","t"))
         self.branches = {}
         for name,mod in self._modules:
-            if name == "vars_mj": 
-                mod.initSampleNormalization(self._sample_nevt)
+            if name == "eventVetoChecker": mod.initDataset(self.dataset)
+            if name == "vars_mj": mod.initSampleNormalization(self._sample_nevt)
             for B in mod.listBranches():
                 # don't add the same branch twice
                 if B in self.branches: 
@@ -183,7 +190,7 @@ def _runIt(myargs):
                 if re.match(pat,m):
                     toRun[m] = True 
         modulesToRun = [ (m,v) for (m,v) in MODULES if m in toRun ]
-    el = EventLoop([ VariableProducer(options.treeDir,booker,sample_nevt,modulesToRun), ])
+    el = EventLoop([ VariableProducer(options.treeDir,booker,sample_nevt,short,modulesToRun), ])
     el.loop([tb], eventRange=range)
     booker.done()
     fb.Close()
