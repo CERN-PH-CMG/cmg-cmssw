@@ -23,6 +23,10 @@ leptonTypeHZZ = NTupleObjectType("leptonHZZ", baseObjectTypes = [ leptonTypeExtr
     NTupleSubObject("p4WithFSR", lambda x : x.p4WithFSR(), fourVectorType),
     # ----------------------
     NTupleVariable("ptErr",   lambda x : x.ptErr(), help="Lepton p_{T} error"),
+    # ----------------------
+    NTupleVariable("r9",   lambda x : x.r9() if abs(x.pdgId())==11 else 1.0, help="electron r9"),
+    NTupleVariable("fbrem",   lambda x : x.fbrem() if abs(x.pdgId())==11 else 0.0, help="electron fbrem"),
+    NTupleVariable("eleClass",   lambda x : x.classification() if abs(x.pdgId())==11 else -1, int, help="electron classification"),
 ])
 
 fsrPhotonTypeHZZ = NTupleObjectType("fsrPhotonHZZ", baseObjectTypes = [ particleType ], variables = [
