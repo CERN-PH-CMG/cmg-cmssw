@@ -102,15 +102,15 @@ class BaseDumper(Module):
           ev.category = 2
         elif ev.nLepSel == 4 and ev.nJet40c >= 2 and (60 < ev.mjj40c and ev.mjj40c < 120) and zz.pt > zz.mass:
           ev.category = 4
-        elif ev.nLepSel == 4 and ev.nJet30 == 2 and ev.nB == 2:
+        elif ev.nLepSel == 4 and ev.nJet30ZZ == 2 and ev.nB == 2:
           ev.category = 4
-        elif ev.nLepSel >= 5 and ev.nJet30 <= 2 and ev.nB == 0:
+        elif ev.nLepSel >= 5 and ev.nJet30ZZ <= 2 and ev.nB == 0:
           ev.category = 3
-        elif ev.nJet30 >= 3 and ev.nB >= 1:
+        elif ev.nJet30ZZ >= 3 and ev.nB >= 1:
           ev.category = 5
         elif ev.nLepSel >= 5:
           ev.category = 5
-        elif ev.nJet30 >= 1:
+        elif ev.nJet30ZZ >= 1:
           ev.category = 1
         else:
           ev.category = 0
