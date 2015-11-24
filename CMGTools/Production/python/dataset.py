@@ -140,17 +140,18 @@ class CMSDataset( BaseDataset ):
     def __init__(self, name, run_range = None, json = None):
         super(CMSDataset, self).__init__( name, 'CMS', run_range=run_range, json=json)
 
-    def buildListOfFilesDBS(self, pattern, begin=-1, end=-1):
+    def buildListOfFilesDBS(self, pattern, begin=-1, end=-1, run_range="self"):
         #print 'buildListOfFilesDBS',begin,end
         sampleName = self.name.rstrip('/')
         query, qwhat = sampleName, "dataset"
         if "#" in sampleName: qwhat = "block"
-        if self.run_range is not None and self.run_range != (-1,-1):
-            if self.run_range[0] == self.run_range[1]:
-                query += "   run=%s" % self.run_range[0]
+        if run_range == "self": run_range = self.run_range
+        if run_range is not None and run_range != (-1,-1):
+            if run_range[0] == run_range[1]:
+                query += "   run=%s" % run_range[0]
             else:
                 print "WARNING: queries with run ranges are slow in DAS"
-                query += "   run between [%s,%s]" % ( self.run_range[0],self.run_range[1] )
+                query += "   run between [%s,%s]" % ( run_range[0],run_range[1] )
         dbs='das_client.py --query="file %s=%s"'%(qwhat,query)
         if begin >= 0:
             dbs += ' --index %d' % begin
@@ -209,16 +210,12 @@ class CMSDataset( BaseDataset ):
                 if run_range is not None:
                     run_range_list.append(run_range)
 
-            run_range_org = self.run_range
-
             self.files = []
             for run_range in run_range_list:
-                self.run_range = run_range
-                DBSFiles = self.buildListOfFilesDBS(pattern)
+                DBSFiles = self.buildListOfFilesDBS(pattern, run_range=run_range)
                 DBSFiles = [f for f in DBSFiles if f not in self.files]
                 self.files.extend(DBSFiles)
 
-            self.run_range = run_range_org
             return
 
         self.files = self.buildListOfFilesDBS(pattern)
