@@ -1,7 +1,8 @@
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
 
-from CMGTools.HToZZ4L.tools.DiObject import DiObject, ZLepObject
+from CMGTools.HToZZ4L.tools.DiObject import DiObject
+from CMGTools.HToZZ4L.tools.ZLepObject import ZLepObject
 
 import ROOT
 
@@ -34,7 +35,7 @@ class ThreeLeptonAnalyzer( Analyzer ):
         leps = filter(self.lep3Sel, event.selectedLeptons)
         cands = []
         for z in zeds:
-            for l3 in self.leps:
+            for l3 in leps:
                 if deltaR(z.leg1.eta(),z.leg1.phi(),l3.eta(),l3.phi())<0.02:
                     continue
                 if deltaR(z.leg2.eta(),z.leg2.phi(),l3.eta(),l3.phi())<0.02:

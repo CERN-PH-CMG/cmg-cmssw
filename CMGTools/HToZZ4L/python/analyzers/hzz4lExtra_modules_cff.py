@@ -2,6 +2,7 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 
 from PhysicsTools.Heppy.analyzers.core.AutoFillTreeProducer import AutoFillTreeProducer
 from CMGTools.HToZZ4L.analyzers.TwoLeptonAnalyzer import TwoLeptonAnalyzer
+from CMGTools.HToZZ4L.analyzers.ThreeLeptonAnalyzer import ThreeLeptonAnalyzer
 from CMGTools.HToZZ4L.analyzers.FourLeptonEventSkimmer import FourLeptonEventSkimmer
 from CMGTools.HToZZ4L.analyzers.ZTagAndProbeAnalyzer import ZTagAndProbeAnalyzer
 from CMGTools.HToZZ4L.analyzers.fourLeptonTree import *
@@ -55,4 +56,26 @@ twoLeptonTreeProducerOnia = cfg.Analyzer(
 )
 
 
+threeLeptonAnalyzer = cfg.Analyzer(
+    ThreeLeptonAnalyzer, name="threeLeptonAnalyzer",
+    srcZ = "bestIsoZ",
+    lep3Sel = lambda lep : True,
+)
 
+threeLeptonEventSkimmer = cfg.Analyzer(
+    FourLeptonEventSkimmer, name="threeLeptonEventSkimmer",
+    required = ['zlepCands']
+)
+
+threeLeptonTreeProducer = cfg.Analyzer(
+     AutoFillTreeProducer, name='threeLeptonTreeProducer',
+     vectorTree = True,
+     saveTLorentzVectors = False,  # can set to True to get also the TLorentzVectors, but trees will be bigger
+     globalVariables = hzz_globalVariables, # rho, nvertices, njets
+     globalObjects = hzz_globalObjects, # met
+     collections = {
+         "zlepCands"       : NTupleCollection("WZ",  WZType, 1, help="Dilepton Candidates"),    
+         "cleanJets"       : NTupleCollection("Jet", jetTypeExtra, 10, help="Cental jets after full selection and cleaning, sorted by pt"),
+     },
+     defaultFloatType = 'F',
+)
