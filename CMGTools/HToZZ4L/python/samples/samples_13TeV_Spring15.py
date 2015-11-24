@@ -285,6 +285,7 @@ for comp in mcSamples:
 
 for comp in dataSamples_all:
     comp.splitFactor = max(len(comp.files)/20,1)
+    if "Single" in comp.name: comp.splitFactor = max(1,comp.splitFactor/3)
     comp.fineSplitFactor = 1
 
 DatasetsAndTriggers = []

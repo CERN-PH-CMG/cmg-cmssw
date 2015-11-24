@@ -12,17 +12,27 @@ def autoAAA(selectedComponents):
             print "Dataset %s is not available, will use AAA" % comp.dataset
             changeComponentAccessMode.convertComponent(comp, "root://cms-xrd-global.cern.ch/%s")
 
+def redefineRunRange(selectedComponents,run_range):
+    from CMGTools.HToZZ4L.samples.samples_13TeV_Spring15 import kreator
+    from math import ceil
+    for comp in selectedComponents:
+        if comp.isMC or not hasattr(comp, 'dataset') or comp.dataset.count("/") != 3: continue
+        pre = len(comp.files)
+        comp.files = kreator.getFiles(comp.dataset,"CMS",".*root",run_range=run_range)
+        comp.splitFactor = max(1, int(ceil(comp.splitFactor * len(comp.files)/float(pre))) )
+
 def printSummary(selectedComponents):
-    print "%-55s | %8s %12s | %7s | %8s %11s" % ("Component", "N(files)", "N(k ev)", "N(jobs)", "file/job", "k ev/job")
-    print "%-55s | %8s %12s | %7s | %8s %11s" % (55*"-", 8*"-", 12*"-", 7*"-", 8*"-", 11*"-")
+    print "%-55s | %8s %12s | %7s | %8s %11s | %11s" % ("Component", "N(files)", "N(k ev)", "N(jobs)", "file/job", "k ev/job", "lumi eq [1/fb]")
+    print "%-55s | %8s %12s | %7s | %8s %11s | %11s" % (55*"-", 8*"-", 12*"-", 7*"-", 8*"-", 11*"-", 11*"-")
     totj, totf, tote = (0,0,0);
     for comp in sorted(selectedComponents, key = lambda c:c.name):
         njobs = min(comp.splitFactor,len(comp.files)) if getattr(comp,'fineSplitFactor',1) == 1 else comp.fineSplitFactor*len(comp.files) 
         nev   = getattr(comp, 'dataset_entries', 0)
+        lumi  = nev/(1.e3 * comp.xSection) if comp.isMC and getattr(comp,'xSection',0) > 0 else 0
         totj += njobs; totf += len(comp.files); tote += nev     
-        print "%-55s | %8d %12.3f | %7d | %8.2f %11.3f" % (comp.name, len(comp.files), nev/1000., njobs, len(comp.files)/float(njobs), (nev/njobs if njobs else 0)/1000.)
-    print "%-55s | %8s %12s | %7s | %8s %11s" % (55*"-", 8*"-", 12*"-", 7*"-", 8*"-", 11*"-")
-    print "%-55s | %8d %12.3f | %7d | %8.2f %11.3f" % ("TOTAL", totf, tote/1000., totj, totf/totj, tote/totj/1000.)
+        print "%-55s | %8d %12.3f | %7d | %8.2f %11.3f | %11.3f " % (comp.name, len(comp.files), nev/1000., njobs, len(comp.files)/float(njobs), (nev/njobs if njobs else 0)/1000, lumi)
+    print "%-55s | %8s %12s | %7s | %8s %11s | %11s" % (55*"-", 8*"-", 12*"-", 7*"-", 8*"-", 11*"-", 11*"-")
+    print "%-55s | %8d %12.3f | %7d | %8.2f %11.3f |" % ("TOTAL", totf, tote/1000., totj, totf/totj, tote/totj/1000.)
 
 def autoConfig(selectedComponents,sequence,services=[],xrd_aggressive=2):
     import PhysicsTools.HeppyCore.framework.config as cfg

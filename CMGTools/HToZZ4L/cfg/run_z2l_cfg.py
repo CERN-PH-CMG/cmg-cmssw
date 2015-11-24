@@ -2,7 +2,6 @@
 ##       CONFIGURATION FOR HZZ4L TREES                  ##
 ##########################################################
 import PhysicsTools.HeppyCore.framework.config as cfg
-import re
 
 #Load all analyzers
 from CMGTools.HToZZ4L.analyzers.hzz4lCore_modules_cff import * 
