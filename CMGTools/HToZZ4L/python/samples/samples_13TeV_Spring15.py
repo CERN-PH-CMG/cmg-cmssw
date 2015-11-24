@@ -148,36 +148,37 @@ json_25ns = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13
 json_25ns_sex = '/afs/cern.ch/user/g/gpetrucc/public/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_Silver_Only.txt'
 #json_25ns = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_Silver.txt
 json_50ns = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON_v2.txt'
+jsonFilter = False
 
-DoubleMuon_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("DoubleMuon_Run2015B_05Oct2015_50ns", "/DoubleMuon/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-DoubleEG_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("DoubleEG_Run2015B_05Oct2015_50ns", "/DoubleEG/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-MuonEG_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("MuonEG_Run2015B_05Oct2015_50ns", "/MuonEG/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-SingleMuon_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("SingleMuon_Run2015B_05Oct2015_50ns", "/SingleMuon/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-SingleElectron_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("SingleElectron_Run2015B_05Oct2015_50ns", "/SingleElectron/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-Charmonium_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("Charmonium_Run2015B_05Oct2015_50ns", "/Charmonium/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-SingleElectron_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("SingleElectron_Run2015B_05Oct2015_50ns", "/SingleElectron/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-MuOnia_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("MuOnia_Run2015B_05Oct2015_50ns", "/MuOnia/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
+DoubleMuon_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("DoubleMuon_Run2015B_05Oct2015_50ns", "/DoubleMuon/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+DoubleEG_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("DoubleEG_Run2015B_05Oct2015_50ns", "/DoubleEG/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+MuonEG_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("MuonEG_Run2015B_05Oct2015_50ns", "/MuonEG/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+SingleMuon_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("SingleMuon_Run2015B_05Oct2015_50ns", "/SingleMuon/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+SingleElectron_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("SingleElectron_Run2015B_05Oct2015_50ns", "/SingleElectron/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+Charmonium_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("Charmonium_Run2015B_05Oct2015_50ns", "/Charmonium/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+SingleElectron_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("SingleElectron_Run2015B_05Oct2015_50ns", "/SingleElectron/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+MuOnia_Run2015B_05Oct2015_50ns = kreator.makeDataComponent("MuOnia_Run2015B_05Oct2015_50ns", "/MuOnia/Run2015B-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
 
-DoubleEG_Run2015B_Prompt_50ns = kreator.makeDataComponent("DoubleEG_Run2015B_Prompt_50ns", "/DoubleEG/Run2015B-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-DoubleMuon_Run2015B_Prompt_50ns = kreator.makeDataComponent("DoubleMuon_Run2015B_Prompt_50ns", "/DoubleMuon/Run2015B-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-MuonEG_Run2015B_Prompt_50ns = kreator.makeDataComponent("MuonEG_Run2015B_Prompt_50ns", "/MuonEG/Run2015B-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-SingleMuon_Run2015B_Prompt_50ns = kreator.makeDataComponent("SingleMuon_Run2015B_Prompt_50ns", "/SingleMuon/Run2015B-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-SingleElectron_Run2015B_Prompt_50ns = kreator.makeDataComponent("SingleElectron_Run2015B_Prompt_50ns", "/SingleElectron/Run2015B-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
+DoubleEG_Run2015B_Prompt_50ns = kreator.makeDataComponent("DoubleEG_Run2015B_Prompt_50ns", "/DoubleEG/Run2015B-PromptReco-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+DoubleMuon_Run2015B_Prompt_50ns = kreator.makeDataComponent("DoubleMuon_Run2015B_Prompt_50ns", "/DoubleMuon/Run2015B-PromptReco-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+MuonEG_Run2015B_Prompt_50ns = kreator.makeDataComponent("MuonEG_Run2015B_Prompt_50ns", "/MuonEG/Run2015B-PromptReco-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+SingleMuon_Run2015B_Prompt_50ns = kreator.makeDataComponent("SingleMuon_Run2015B_Prompt_50ns", "/SingleMuon/Run2015B-PromptReco-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+SingleElectron_Run2015B_Prompt_50ns = kreator.makeDataComponent("SingleElectron_Run2015B_Prompt_50ns", "/SingleElectron/Run2015B-PromptReco-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
 # Forget about Onia
 
-DoubleMuon_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("DoubleMuon_Run2015C_05Oct2015_50ns", "/DoubleMuon/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-DoubleEG_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("DoubleEG_Run2015C_05Oct2015_50ns", "/DoubleEG/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-MuonEG_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("MuonEG_Run2015C_05Oct2015_50ns", "/MuonEG/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-SingleMuon_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("SingleMuon_Run2015C_05Oct2015_50ns", "/SingleMuon/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-SingleElectron_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("SingleElectron_Run2015C_05Oct2015_50ns", "/SingleElectron/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-Charmonium_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("Charmonium_Run2015C_05Oct2015_50ns", "/Charmonium/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-MuOnia_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("MuOnia_Run2015C_05Oct2015_50ns", "/MuOnia/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
+DoubleMuon_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("DoubleMuon_Run2015C_05Oct2015_50ns", "/DoubleMuon/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+DoubleEG_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("DoubleEG_Run2015C_05Oct2015_50ns", "/DoubleEG/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+MuonEG_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("MuonEG_Run2015C_05Oct2015_50ns", "/MuonEG/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+SingleMuon_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("SingleMuon_Run2015C_05Oct2015_50ns", "/SingleMuon/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+SingleElectron_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("SingleElectron_Run2015C_05Oct2015_50ns", "/SingleElectron/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+Charmonium_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("Charmonium_Run2015C_05Oct2015_50ns", "/Charmonium/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+MuOnia_Run2015C_05Oct2015_50ns = kreator.makeDataComponent("MuOnia_Run2015C_05Oct2015_50ns", "/MuOnia/Run2015C_50ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
 
-DoubleEG_Run2015C_Prompt_50ns = kreator.makeDataComponent("DoubleEG_Run2015C_Prompt_50ns", "/DoubleEG/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-DoubleMuon_Run2015C_Prompt_50ns = kreator.makeDataComponent("DoubleMuon_Run2015C_Prompt_50ns", "/DoubleMuon/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-MuonEG_Run2015C_Prompt_50ns = kreator.makeDataComponent("MuonEG_Run2015C_Prompt_50ns", "/MuonEG/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-SingleMuon_Run2015C_Prompt_50ns = kreator.makeDataComponent("SingleMuon_Run2015C_Prompt_50ns", "/SingleMuon/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
-SingleElectron_Run2015C_Prompt_50ns = kreator.makeDataComponent("SingleElectron_Run2015C_Prompt_50ns", "/SingleElectron/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_50ns)
+DoubleEG_Run2015C_Prompt_50ns = kreator.makeDataComponent("DoubleEG_Run2015C_Prompt_50ns", "/DoubleEG/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+DoubleMuon_Run2015C_Prompt_50ns = kreator.makeDataComponent("DoubleMuon_Run2015C_Prompt_50ns", "/DoubleMuon/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+MuonEG_Run2015C_Prompt_50ns = kreator.makeDataComponent("MuonEG_Run2015C_Prompt_50ns", "/MuonEG/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+SingleMuon_Run2015C_Prompt_50ns = kreator.makeDataComponent("SingleMuon_Run2015C_Prompt_50ns", "/SingleMuon/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
+SingleElectron_Run2015C_Prompt_50ns = kreator.makeDataComponent("SingleElectron_Run2015C_Prompt_50ns", "/SingleElectron/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_50ns)
 # Forget about Onia
 
 data_50ns_05Oct2015 = [ 
@@ -194,59 +195,70 @@ data_50ns_prompt = [
 data_50ns = data_50ns_05Oct2015
 data_50ns_all = data_50ns + data_50ns_prompt + data_50ns_onia
 
-DoubleEG_Run2015C_Prompt_25ns = kreator.makeDataComponent("DoubleEG_Run2015C_Prompt_25ns", "/DoubleEG/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_25ns)
-DoubleMuon_Run2015C_Prompt_25ns = kreator.makeDataComponent("DoubleMuon_Run2015C_Prompt_25ns", "/DoubleMuon/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_25ns)
-MuonEG_Run2015C_Prompt_25ns = kreator.makeDataComponent("MuonEG_Run2015C_Prompt_25ns", "/MuonEG/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_25ns)
-SingleMuon_Run2015C_Prompt_25ns = kreator.makeDataComponent("SingleMuon_Run2015C_Prompt_25ns", "/SingleMuon/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_25ns)
-SingleElectron_Run2015C_Prompt_25ns = kreator.makeDataComponent("SingleElectron_Run2015C_Prompt_25ns", "/SingleElectron/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", json=json_25ns)
+DoubleEG_Run2015C_Prompt_25ns = kreator.makeDataComponent("DoubleEG_Run2015C_Prompt_25ns", "/DoubleEG/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+DoubleMuon_Run2015C_Prompt_25ns = kreator.makeDataComponent("DoubleMuon_Run2015C_Prompt_25ns", "/DoubleMuon/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+MuonEG_Run2015C_Prompt_25ns = kreator.makeDataComponent("MuonEG_Run2015C_Prompt_25ns", "/MuonEG/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+SingleMuon_Run2015C_Prompt_25ns = kreator.makeDataComponent("SingleMuon_Run2015C_Prompt_25ns", "/SingleMuon/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+SingleElectron_Run2015C_Prompt_25ns = kreator.makeDataComponent("SingleElectron_Run2015C_Prompt_25ns", "/SingleElectron/Run2015C-PromptReco-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
 
-DoubleMuon_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("DoubleMuon_Run2015D_05Oct2015_25ns", "/DoubleMuon/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns)
-DoubleEG_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("DoubleEG_Run2015D_05Oct2015_25ns", "/DoubleEG/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns)
-MuonEG_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("MuonEG_Run2015D_05Oct2015_25ns", "/MuonEG/Run2015D-05Oct2015-v2/MINIAOD", "CMS", ".*root", json=json_25ns)
-SingleMuon_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("SingleMuon_Run2015D_05Oct2015_25ns", "/SingleMuon/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns)
-SingleElectron_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("SingleElectron_Run2015D_05Oct2015_25ns", "/SingleElectron/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns)
-Charmonium_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("Charmonium_Run2015D_05Oct2015_25ns", "/Charmonium/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns)
-MuOnia_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("MuOnia_Run2015D_05Oct2015_25ns", "/MuOnia/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns)
+DoubleMuon_Run2015C_05Oct2015_25ns = kreator.makeDataComponent("DoubleMuon_Run2015C_05Oct2015_25ns", "/DoubleMuon/Run2015C_25ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+DoubleEG_Run2015C_05Oct2015_25ns = kreator.makeDataComponent("DoubleEG_Run2015C_05Oct2015_25ns", "/DoubleEG/Run2015C_25ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+MuonEG_Run2015C_05Oct2015_25ns = kreator.makeDataComponent("MuonEG_Run2015C_05Oct2015_25ns", "/MuonEG/Run2015C_25ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+SingleMuon_Run2015C_05Oct2015_25ns = kreator.makeDataComponent("SingleMuon_Run2015C_05Oct2015_25ns", "/SingleMuon/Run2015C_25ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+SingleElectron_Run2015C_05Oct2015_25ns = kreator.makeDataComponent("SingleElectron_Run2015C_05Oct2015_25ns", "/SingleElectron/Run2015C_25ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+#Charmonium_Run2015C_05Oct2015_25ns = kreator.makeDataComponent("Charmonium_Run2015C_05Oct2015_25ns", "/Charmonium/Run2015C_25ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+#MuOnia_Run2015C_05Oct2015_25ns = kreator.makeDataComponent("MuOnia_Run2015C_05Oct2015_25ns", "/MuOnia/Run2015C_25ns-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
 
-DoubleMuon_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("DoubleMuon_Run2015D_Silver_05Oct2015_25ns", "/DoubleMuon/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns_sex)
-DoubleEG_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("DoubleEG_Run2015D_Silver_05Oct2015_25ns", "/DoubleEG/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns_sex)
-MuonEG_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("MuonEG_Run2015D_Silver_05Oct2015_25ns", "/MuonEG/Run2015D-05Oct2015-v2/MINIAOD", "CMS", ".*root", json=json_25ns_sex)
-SingleMuon_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("SingleMuon_Run2015D_Silver_05Oct2015_25ns", "/SingleMuon/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns_sex)
-SingleElectron_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("SingleElectron_Run2015D_Silver_05Oct2015_25ns", "/SingleElectron/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns_sex)
-Charmonium_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("Charmonium_Run2015D_Silver_05Oct2015_25ns", "/Charmonium/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns_sex)
-MuOnia_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("MuOnia_Run2015D_Silver_05Oct2015_25ns", "/MuOnia/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", json=json_25ns_sex)
+DoubleMuon_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("DoubleMuon_Run2015D_05Oct2015_25ns", "/DoubleMuon/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+DoubleEG_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("DoubleEG_Run2015D_05Oct2015_25ns", "/DoubleEG/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+MuonEG_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("MuonEG_Run2015D_05Oct2015_25ns", "/MuonEG/Run2015D-05Oct2015-v2/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+SingleMuon_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("SingleMuon_Run2015D_05Oct2015_25ns", "/SingleMuon/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+SingleElectron_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("SingleElectron_Run2015D_05Oct2015_25ns", "/SingleElectron/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+Charmonium_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("Charmonium_Run2015D_05Oct2015_25ns", "/Charmonium/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+MuOnia_Run2015D_05Oct2015_25ns = kreator.makeDataComponent("MuOnia_Run2015D_05Oct2015_25ns", "/MuOnia/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
 
+jsonFilter = False # here JSON filtering can substantially reduce the number of files
+DoubleMuon_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("DoubleMuon_Run2015D_Silver_05Oct2015_25ns", "/DoubleMuon/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns_sex)
+DoubleEG_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("DoubleEG_Run2015D_Silver_05Oct2015_25ns", "/DoubleEG/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns_sex)
+MuonEG_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("MuonEG_Run2015D_Silver_05Oct2015_25ns", "/MuonEG/Run2015D-05Oct2015-v2/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns_sex)
+SingleMuon_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("SingleMuon_Run2015D_Silver_05Oct2015_25ns", "/SingleMuon/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns_sex)
+SingleElectron_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("SingleElectron_Run2015D_Silver_05Oct2015_25ns", "/SingleElectron/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns_sex)
+Charmonium_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("Charmonium_Run2015D_Silver_05Oct2015_25ns", "/Charmonium/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns_sex)
+MuOnia_Run2015D_Silver_05Oct2015_25ns = kreator.makeDataComponent("MuOnia_Run2015D_Silver_05Oct2015_25ns", "/MuOnia/Run2015D-05Oct2015-v1/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns_sex)
+jsonFilter = False
 
-MuonEG_Run2015D_PromptV3_25ns = kreator.makeDataComponent("MuonEG_Run2015D_PromptV3_25ns", "/MuonEG/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json=json_25ns)
-DoubleEG_Run2015D_PromptV3_25ns = kreator.makeDataComponent("DoubleEG_Run2015D_PromptV3_25ns", "/DoubleEG/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json=json_25ns)
-DoubleMuon_Run2015D_PromptV3_25ns = kreator.makeDataComponent("DoubleMuon_Run2015D_PromptV3_25ns", "/DoubleMuon/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json=json_25ns)
-SingleMuon_Run2015D_PromptV3_25ns = kreator.makeDataComponent("SingleMuon_Run2015D_PromptV3_25ns", "/SingleMuon/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json=json_25ns)
-SingleElectron_Run2015D_PromptV3_25ns = kreator.makeDataComponent("SingleElectron_Run2015D_PromptV3_25ns", "/SingleElectron/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json=json_25ns)
-Charmonium_Run2015D_PromptV3_25ns = kreator.makeDataComponent("Charmonium_Run2015D_PromptV3_25ns", "/Charmonium/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json=json_25ns)
-MuOnia_Run2015D_PromptV3_25ns = kreator.makeDataComponent("MuOnia_Run2015D_PromptV3_25ns", "/MuOnia/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", json=json_25ns)
+MuonEG_Run2015D_PromptV3_25ns = kreator.makeDataComponent("MuonEG_Run2015D_PromptV3_25ns", "/MuonEG/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+DoubleEG_Run2015D_PromptV3_25ns = kreator.makeDataComponent("DoubleEG_Run2015D_PromptV3_25ns", "/DoubleEG/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+DoubleMuon_Run2015D_PromptV3_25ns = kreator.makeDataComponent("DoubleMuon_Run2015D_PromptV3_25ns", "/DoubleMuon/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+SingleMuon_Run2015D_PromptV3_25ns = kreator.makeDataComponent("SingleMuon_Run2015D_PromptV3_25ns", "/SingleMuon/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+SingleElectron_Run2015D_PromptV3_25ns = kreator.makeDataComponent("SingleElectron_Run2015D_PromptV3_25ns", "/SingleElectron/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+Charmonium_Run2015D_PromptV3_25ns = kreator.makeDataComponent("Charmonium_Run2015D_PromptV3_25ns", "/Charmonium/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
+MuOnia_Run2015D_PromptV3_25ns = kreator.makeDataComponent("MuOnia_Run2015D_PromptV3_25ns", "/MuOnia/Run2015D-PromptReco-v3/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns)
 
 #run_range = [ 258159, 258714 ]
-run_range = None
-DoubleMuon_Run2015D_PromptV4_25ns = kreator.makeDataComponent("DoubleMuon_Run2015D_PromptV4_25ns", "/DoubleMuon/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns, run_range=run_range)
-DoubleEG_Run2015D_PromptV4_25ns = kreator.makeDataComponent("DoubleEG_Run2015D_PromptV4_25ns", "/DoubleEG/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns, run_range=run_range)
-MuonEG_Run2015D_PromptV4_25ns = kreator.makeDataComponent("MuonEG_Run2015D_PromptV4_25ns", "/MuonEG/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns, run_range=run_range)
-SingleMuon_Run2015D_PromptV4_25ns = kreator.makeDataComponent("SingleMuon_Run2015D_PromptV4_25ns", "/SingleMuon/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns, run_range=run_range)
-SingleElectron_Run2015D_PromptV4_25ns = kreator.makeDataComponent("SingleElectron_Run2015D_PromptV4_25ns", "/SingleElectron/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns, run_range=run_range)
-Charmonium_Run2015D_PromptV4_25ns = kreator.makeDataComponent("Charmonium_Run2015D_PromptV4_25ns", "/Charmonium/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns, run_range=run_range)
-MuOnia_Run2015D_PromptV4_25ns = kreator.makeDataComponent("MuOnia_Run2015D_PromptV4_25ns", "/MuOnia/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns, run_range=run_range)
+run_range = None; jsonFilter = True
+DoubleMuon_Run2015D_PromptV4_25ns = kreator.makeDataComponent("DoubleMuon_Run2015D_PromptV4_25ns", "/DoubleMuon/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns, run_range=run_range)
+DoubleEG_Run2015D_PromptV4_25ns = kreator.makeDataComponent("DoubleEG_Run2015D_PromptV4_25ns", "/DoubleEG/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns, run_range=run_range)
+jsonFilter = False
+MuonEG_Run2015D_PromptV4_25ns = kreator.makeDataComponent("MuonEG_Run2015D_PromptV4_25ns", "/MuonEG/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns, run_range=run_range)
+SingleMuon_Run2015D_PromptV4_25ns = kreator.makeDataComponent("SingleMuon_Run2015D_PromptV4_25ns", "/SingleMuon/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns, run_range=run_range)
+SingleElectron_Run2015D_PromptV4_25ns = kreator.makeDataComponent("SingleElectron_Run2015D_PromptV4_25ns", "/SingleElectron/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns, run_range=run_range)
+Charmonium_Run2015D_PromptV4_25ns = kreator.makeDataComponent("Charmonium_Run2015D_PromptV4_25ns", "/Charmonium/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns, run_range=run_range)
+MuOnia_Run2015D_PromptV4_25ns = kreator.makeDataComponent("MuOnia_Run2015D_PromptV4_25ns", "/MuOnia/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns, run_range=run_range)
 
 run_range = [258443,258443]
-DoubleMuon_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("DoubleMuon_Run2015D_Silver_PromptV4_25ns", "/DoubleMuon/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns_sex, run_range=run_range)
-DoubleEG_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("DoubleEG_Run2015D_Silver_PromptV4_25ns", "/DoubleEG/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns_sex, run_range=run_range)
-MuonEG_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("MuonEG_Run2015D_Silver_PromptV4_25ns", "/MuonEG/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns_sex, run_range=run_range)
-SingleMuon_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("SingleMuon_Run2015D_Silver_PromptV4_25ns", "/SingleMuon/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns_sex, run_range=run_range)
-SingleElectron_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("SingleElectron_Run2015D_Silver_PromptV4_25ns", "/SingleElectron/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns_sex, run_range=run_range)
-Charmonium_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("Charmonium_Run2015D_Silver_PromptV4_25ns", "/Charmonium/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns_sex, run_range=run_range)
-MuOnia_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("MuOnia_Run2015D_Silver_PromptV4_25ns", "/MuOnia/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", json=json_25ns_sex, run_range=run_range)
+DoubleMuon_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("DoubleMuon_Run2015D_Silver_PromptV4_25ns", "/DoubleMuon/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns_sex, run_range=run_range)
+DoubleEG_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("DoubleEG_Run2015D_Silver_PromptV4_25ns", "/DoubleEG/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns_sex, run_range=run_range)
+MuonEG_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("MuonEG_Run2015D_Silver_PromptV4_25ns", "/MuonEG/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns_sex, run_range=run_range)
+SingleMuon_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("SingleMuon_Run2015D_Silver_PromptV4_25ns", "/SingleMuon/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns_sex, run_range=run_range)
+SingleElectron_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("SingleElectron_Run2015D_Silver_PromptV4_25ns", "/SingleElectron/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns_sex, run_range=run_range)
+Charmonium_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("Charmonium_Run2015D_Silver_PromptV4_25ns", "/Charmonium/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns_sex, run_range=run_range)
+MuOnia_Run2015D_Silver_PromptV4_25ns = kreator.makeDataComponent("MuOnia_Run2015D_Silver_PromptV4_25ns", "/MuOnia/Run2015D-PromptReco-v4/MINIAOD", "CMS", ".*root", jsonFilter=jsonFilter, json=json_25ns_sex, run_range=run_range)
 
 
 
 data_25ns = [
+    DoubleMuon_Run2015C_05Oct2015_25ns, DoubleEG_Run2015C_05Oct2015_25ns, MuonEG_Run2015C_05Oct2015_25ns, SingleMuon_Run2015C_05Oct2015_25ns, SingleElectron_Run2015C_05Oct2015_25ns,
     DoubleMuon_Run2015D_05Oct2015_25ns, DoubleEG_Run2015D_05Oct2015_25ns, SingleMuon_Run2015D_05Oct2015_25ns, SingleElectron_Run2015D_05Oct2015_25ns, MuonEG_Run2015D_05Oct2015_25ns,
     DoubleMuon_Run2015D_PromptV4_25ns, DoubleEG_Run2015D_PromptV4_25ns, MuonEG_Run2015D_PromptV4_25ns, SingleMuon_Run2015D_PromptV4_25ns, SingleElectron_Run2015D_PromptV4_25ns,
     DoubleMuon_Run2015D_Silver_05Oct2015_25ns, DoubleEG_Run2015D_Silver_05Oct2015_25ns, SingleMuon_Run2015D_Silver_05Oct2015_25ns, SingleElectron_Run2015D_Silver_05Oct2015_25ns, MuonEG_Run2015D_Silver_05Oct2015_25ns,
