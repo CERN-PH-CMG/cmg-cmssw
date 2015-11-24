@@ -158,7 +158,7 @@ class ComponentCreator(object):
         component = cfg.DataComponent(
             #dataset = dataset,
             name = name,
-            files = self.getFiles(dataset,user,pattern,run_range=run_range,useAAA=useAAA),
+            files = self.getFiles(dataset,user,pattern,run_range=run_range,useAAA=useAAA,json=json),
             intLumi = 1,
             triggers = triggers,
             json = json
@@ -167,9 +167,9 @@ class ComponentCreator(object):
         component.dataset_entries = self.getPrimaryDatasetEntries(dataset,user,pattern)
         return component
 
-    def getFiles(self, dataset, user, pattern, useAAA=False, run_range=None):
+    def getFiles(self, dataset, user, pattern, useAAA=False, run_range=None, json=None):
         # print 'getting files for', dataset,user,pattern
-        ds = createDataset( user, dataset, pattern, readcache=True, run_range=run_range )
+        ds = createDataset( user, dataset, pattern, readcache=True, run_range=run_range, json=json )
         files = ds.listOfGoodFiles()
         mapping = 'root://eoscms.cern.ch//eos/cms%s'
         if useAAA: mapping = 'root://cms-xrd-global.cern.ch/%s'
