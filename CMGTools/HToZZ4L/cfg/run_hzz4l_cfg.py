@@ -21,8 +21,7 @@ for comp in mcSamples:
     comp.triggers = triggers_any
     comp.vetoTriggers = []
 
-for comp in selectedComponents:
-    print comp.name, min(comp.splitFactor,len(comp.files)) if comp.fineSplitFactor == 1 else comp.fineSplitFactor*len(comp.files)
+printSummary(selectedComponents)
 
 if True: autoAAA(selectedComponents)
 

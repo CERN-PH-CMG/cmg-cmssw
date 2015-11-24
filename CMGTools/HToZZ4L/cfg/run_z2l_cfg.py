@@ -22,16 +22,16 @@ dataSamples = [ d for d in dataSamples if 'Double' in d.name ]
 for d in dataSamples:
     d.triggers = triggers_mumu if 'Muon' in d.name else triggers_ee
     d.vetoTriggers = []
-    d.splitFactor = len(d.files)/4
+    d.splitFactor = (len(d.files)+4)/7
     
-mcSamples = [ DYJetsToLL_M50_v2 ]
+mcSamples = [ DYJetsToLL_LO_M50 ]
 for d in mcSamples:
     d.triggers = triggers_mumu + triggers_ee
     d.vetoTriggers = []
-    d.splitFactor = len(d.files)/2
+    d.splitFactor = len(d.files)/5
 
-dataSamples = [ d for d in dataSamples if 'Muon' not in d.name ]    
 selectedComponents = dataSamples + mcSamples
+printSummary(selectedComponents)
 
 if True: autoAAA(selectedComponents)
 
@@ -39,7 +39,7 @@ if True: autoAAA(selectedComponents)
 from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 test = getHeppyOption('test')
 if test == "1":
-    selectedComponents = doTest1( DYJetsToLL_M50_v2, sequence=sequence )
+    selectedComponents = doTest1( DYJetsToLL_M50, sequence=sequence )
 elif test in ('2','3','5'):
     doTestN(test,selectedComponents)
 

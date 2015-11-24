@@ -263,7 +263,7 @@ for comp in mcSamples:
     comp.efficiency = eff2012
 
 for comp in dataSamples_all:
-    comp.splitFactor = len(comp.files)/20
+    comp.splitFactor = max(len(comp.files)/20,1)
     comp.fineSplitFactor = 1
 
 DatasetsAndTriggers = []
