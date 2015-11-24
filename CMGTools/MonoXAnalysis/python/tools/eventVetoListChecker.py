@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import array
 import ROOT
+import os.path
 
 class EventVetoListChecker:
     _store={}
@@ -12,8 +13,9 @@ class EventVetoListChecker:
         self.dataset = dataset
         for veto in self.vetoes: 
             fname = self.pathtofiles+'/'+dataset+'_'+veto+'.txt'
-            self.loadFile(veto,fname)
-            print 'Initialized CheckEventVetoList from %s'%fname
+            if os.path.isfile(fname): 
+                self.loadFile(veto,fname)
+                print 'Initialized CheckEventVetoList from %s'%fname
             self.name = veto
     def loadFile(self,veto,fname):
         with open(fname, 'r') as f:
