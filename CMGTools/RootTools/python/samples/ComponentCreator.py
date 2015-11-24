@@ -154,15 +154,16 @@ class ComponentCreator(object):
         )
         return component
 
-    def makeDataComponent(self,name,dataset,user,pattern,json=None,run_range=None,triggers=[],vetoTriggers=[],useAAA=False):
+    def makeDataComponent(self,name,dataset,user,pattern,json=None,run_range=None,triggers=[],vetoTriggers=[],useAAA=False,jsonFilter=False):
         component = cfg.DataComponent(
             #dataset = dataset,
             name = name,
-            files = self.getFiles(dataset,user,pattern,run_range=run_range,useAAA=useAAA,json=json),
+            files = self.getFiles(dataset,user,pattern,run_range=run_range,useAAA=useAAA,json=(json if jsonFilter else None)),
             intLumi = 1,
             triggers = triggers,
-            json = json
+            json = (json if jsonFilter else None)
             )
+        component.json = json
         component.vetoTriggers = vetoTriggers
         component.dataset_entries = self.getPrimaryDatasetEntries(dataset,user,pattern)
         return component
