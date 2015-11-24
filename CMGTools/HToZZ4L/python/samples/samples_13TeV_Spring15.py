@@ -113,11 +113,20 @@ TBar_tWch = kreator.makeMCComponent("TBar_tWch", "/ST_tW_antitop_5f_inclusiveDec
 T_tWch = kreator.makeMCComponent("T_tWch", "/ST_tW_top_5f_DS_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root",35.6)
 SingleTop = [ TBar_tWch, T_tWch ]
 
+
+### TriBosons
+# cross section from https://twiki.cern.ch/twiki/bin/view/CMS/SummaryTable1G25ns#Triboson
+WWZ = kreator.makeMCComponent("WWZ", "/WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root",  0.1651 )
+WZZ = kreator.makeMCComponent("WZZ", "/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root",  0.05565 )
+ZZZ = kreator.makeMCComponent("ZZZ", "/ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root",  0.01398 )
+
+TriBosons = [ WWZ, WZZ, ZZZ ]
+
 ### W+jets inclusive (from https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat13TeV)
 WJetsToLNu = kreator.makeMCComponent("WJetsToLNu","/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 20508.9*3)
 WJetsToLNu_LO = kreator.makeMCComponent("WJetsToLNu","/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 20508.9*3)
 
-mcSamples_25ns =  H4L + [ ZZTo4L ] + GGZZTo4L + DYJets + [ WZTo3LNu, WWTo2L2Nu, TTLep ] + SingleTop + [ WJetsToLNu, WJetsToLNu_LO ]
+mcSamples_25ns =  H4L + [ ZZTo4L, ZZTo4L_aMC ] + GGZZTo4L + DYJets + [ WZTo3LNu, WWTo2L2Nu, TTLep ] + SingleTop + [ WJetsToLNu, WJetsToLNu_LO ] + TriBosons
 
 ### ===== Onia ======
 #JpsiToMuMuPt7 = kreator.makeMCComponent("JpsiToMuMuPt7","/JpsiToMuMu_JPsiPt7_13TeV-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 1.0)
