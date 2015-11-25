@@ -10,9 +10,9 @@ class EventVetoListChecker:
         self.vetoes = vetoes
         self.name = ''
     def initDataset(self,dataset):
-        self.dataset = dataset
+        self.dataset = dataset.strip().split('_')[0] if "Run20" in dataset else dataset
         for veto in self.vetoes: 
-            fname = self.pathtofiles+'/'+dataset+'_'+veto+'.txt'
+            fname = self.pathtofiles+'/'+self.dataset+'_'+veto+'.txt'
             if os.path.isfile(fname): 
                 self.loadFile(veto,fname)
                 print 'Initialized CheckEventVetoList from %s'%fname
