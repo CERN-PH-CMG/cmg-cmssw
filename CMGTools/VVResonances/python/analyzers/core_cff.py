@@ -241,7 +241,7 @@ leptonicVAna = cfg.Analyzer(
 packedAna = cfg.Analyzer(
     PackedCandidateLoader,
     name = 'PackedCandidateLoader',
-    select=lambda x: x.pt()<13000.0
+    cut=lambda x: x.pt()<13000.0 or x.pt()!=float('Inf')
 
 )
 

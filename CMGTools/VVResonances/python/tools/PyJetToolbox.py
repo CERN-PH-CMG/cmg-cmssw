@@ -1,6 +1,4 @@
 import ROOT
-ROOT.gSystem.Load("libFWCoreFWLite")
-ROOT.AutoLibraryLoader.enable()
 
 
 class PyJet(object):
@@ -109,6 +107,8 @@ class PyJetToolbox(object):
         self.collection = collection
         self.p4s = ROOT.std.vector("math::XYZTLorentzVector")()
         for p in collection:
+            if p.pt()>1000:
+                print 'TEV candidate',p.pt(),p.eta(),p.phi(),p.pdgId()
             self.p4s.push_back(p.p4())
 
 
