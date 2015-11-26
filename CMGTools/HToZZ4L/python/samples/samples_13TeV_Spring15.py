@@ -31,7 +31,7 @@ triggers_trilep = triggers_3e + triggers_3mu + triggers_2mu1e + triggers_2e1mu
 triggers_1e      = [ 'HLT_Ele27_WP85_Gsf_v*', 'HLT_Ele27_WPLoose_Gsf_v*'  ]
 triggers_1e_sync = [ "HLT_Ele32_eta2p1_WP75_Gsf_v*", "HLT_Ele32_eta2p1_WPLoose_Gsf_v*" ]
 
-triggers_1mu     = [ 'HLT_IsoMu24_eta2p1_v*', 'HLT_IsoTkMu24_eta2p1_v*'  ]
+triggers_1mu     = [ 'HLT_IsoMu24_eta2p1_v*', 'HLT_IsoTkMu24_eta2p1_v*', 'HLT_IsoMu22_v*', 'HLT_IsoMu20_v*'  ]
 
 triggers_signal_real = triggers_mumu + triggers_ee + triggers_mue + triggers_trilep + triggers_1e
 triggers_signal_sync = triggers_mumu_sync + triggers_ee_sync + triggers_mue_sync + triggers_trilep + triggers_1e_sync
