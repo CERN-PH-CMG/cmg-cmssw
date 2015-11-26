@@ -32,12 +32,12 @@ class ZTagAndProbeAnalyzer( Analyzer ):
         event.allPairs = self.findOSSFPairs(tags, probes) 
 
         if self.mode == "Z":
-            event.zTnP = filter(event.allPairs, self.zMassFilter)
+            event.zTnP = filter(self.zMassFilter, event.allPairs)
             event.zTnP.sort(key = lambda dilep : abs(dilep.mass() - 91.1876))
-            for p in event.oniaTnP: 
+            for p in event.zTnP: 
                 self.counters.counter('ZTagAndProbe').inc('all pairs')
         elif self.mode == "Onia":
-            event.oniaTnP = filter(event.allPairs, self.oniaMassFilter)
+            event.oniaTnP = filter(self.oniaMassFilter, event.allPairs)
             event.oniaTnP = filter(self.tagSelection, event.oniaTnP)
             for p in event.oniaTnP: 
                 self.counters.counter('ZTagAndProbe').inc('all pairs')
@@ -54,7 +54,7 @@ class ZTagAndProbeAnalyzer( Analyzer ):
            Include FSR if in cfg file
         '''
         out = []
-        for l1, l2 in itertools.permutations(leptons, 2):
+        for l1, l2 in [ (t,p) for t in tags for p in probes ]:
             if (l1.pdgId()+l2.pdgId())!=0: 
                 continue;
             twoObject = DiObject(l1, l2, doSort=False)
