@@ -21,8 +21,6 @@ class ttHhistoCounterAnalyzer( Analyzer ):
 
     def declareHandles(self):
         super(ttHhistoCounterAnalyzer, self).declareHandles()
-        if self.doLHE: 
-            self.mchandles['LHEweights'] = AutoHandle( 'externalLHEProducer', 'LHEEventProduct', mayFail = True, fallbackLabel = 'source', lazy = False )
         self.mchandles['GenInfo'] = AutoHandle( ('generator','',''), 'GenEventInfoProduct' )
 
     def beginLoop(self, setup):
@@ -35,7 +33,7 @@ class ttHhistoCounterAnalyzer( Analyzer ):
             self.inputCounter = ROOT.TH1D("Count","Count",1,0,2)
             if self.cfg_comp.isMC:
                 if self.doLHE:
-                    self.inputLHE = ROOT.TH1D("CountLHE","CountLHE",10001,-0.5,10000.5)
+                    self.inputLHE = ROOT.TH1D("CountLHE","CountLHE",20001,-0.5,20000.5)
                 self.inputGenWeights = ROOT.TH1D("SumGenWeights","SumGenWeights",1,0,2)
 
     def process(self, event):
@@ -44,8 +42,7 @@ class ttHhistoCounterAnalyzer( Analyzer ):
         
         if self.cfg_comp.isMC:
             if self.doLHE:
-              if self.mchandles['LHEweights'].isValid():
-                for w in self.mchandles['LHEweights'].product().weights():
+              for w in event.LHE_weights:
                     id_ = float(w.id)
                     wgt_ = float(w.wgt)
                     self.inputLHE.Fill(id_, wgt_)
