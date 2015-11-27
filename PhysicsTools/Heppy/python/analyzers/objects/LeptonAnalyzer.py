@@ -65,6 +65,12 @@ class LeptonAnalyzer( Analyzer ):
                 self.IsolationComputer = heppy.IsolationComputer(0.4)
             else:
                 self.IsolationComputer = heppy.IsolationComputer()
+
+        self.doIsoAnnulus = getattr(cfg_ana, 'doIsoAnnulus', False)
+        if self.doIsoAnnulus:
+            if not self.doMiniIsolation:
+                self.IsolationComputer = heppy.IsolationComputer()
+            
         self.doIsolationScan = getattr(cfg_ana, 'doIsolationScan', False)
         if self.doIsolationScan:
             if self.doMiniIsolation:
@@ -151,6 +157,10 @@ class LeptonAnalyzer( Analyzer ):
                     self.IsolationComputer.addVeto(lep)
             for lep in event.inclusiveLeptons:
                 self.attachMiniIsolation(lep)
+        
+        if self.doIsoAnnulus:
+            for lep in event.inclusiveLeptons:
+                self.attachIsoAnnulus04(lep)
 
         if self.doIsolationScan:
             for lep in event.inclusiveLeptons:
@@ -428,6 +438,18 @@ class LeptonAnalyzer( Analyzer ):
         mu.miniRelIso = mu.miniAbsIso/mu.pt()
 
 
+    def attachIsoAnnulus04(self, mu):  # annulus isolation with outer cone of 0.4 and delta beta PU correction
+        mu.miniIsoR = 10.0/min(max(mu.pt(), 50),200)
+        mu.absIsoAnCharged = self.IsolationComputer.chargedAbsIso      (mu.physObj, 0.4, mu.miniIsoR, 0.0, self.IsolationComputer.selfVetoNone)
+        mu.absIsoAnPho     = self.IsolationComputer.photonAbsIsoRaw    (mu.physObj, 0.4, mu.miniIsoR, 0.0, self.IsolationComputer.selfVetoNone) 
+        mu.absIsoAnNHad    = self.IsolationComputer.neutralHadAbsIsoRaw(mu.physObj, 0.4, mu.miniIsoR, 0.0, self.IsolationComputer.selfVetoNone) 
+        mu.absIsoAnPU      = self.IsolationComputer.puAbsIso           (mu.physObj, 0.4, mu.miniIsoR, 0.0, self.IsolationComputer.selfVetoNone)
+        mu.absIsoAnNeutral = max(0.0, mu.absIsoAnPho + mu.absIsoAnNHad - 0.5*mu.absIsoAnPU)
+
+        mu.absIsoAn04 = mu.absIsoAnCharged + mu.absIsoAnNeutral
+        mu.relIsoAn04 = mu.absIsoAn04/mu.pt()
+
+
     def attachIsolationScan(self, mu):
 
         what = "mu" if (abs(mu.pdgId()) == 13) else ("eleB" if mu.isEB() else "eleE")
@@ -587,6 +609,8 @@ setattr(LeptonAnalyzer,"defaultConfig",cfg.Analyzer(
     miniIsolationPUCorr = 'rhoArea', # Allowed options: 'rhoArea' (EAs for 03 cone scaled by R^2), 'deltaBeta', 'raw' (uncorrected), 'weights' (delta beta weights; not validated)
                                      # Choose None to just use the individual object's PU correction
     miniIsolationVetoLeptons = None, # use 'inclusive' to veto inclusive leptons and their footprint in all isolation cones
+    # Activity Annulus
+    doIsoAnnulus = False, # off by default since it requires access to all PFCandidates 
     # do MC matching 
     do_mc_match = True, # note: it will in any case try it only on MC, not on data
     match_inclusiveLeptons = False, # match to all inclusive leptons
