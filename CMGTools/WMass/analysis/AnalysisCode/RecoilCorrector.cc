@@ -547,7 +547,8 @@ double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal 
 
 double RecoilCorrector::triGausInvGraphKeys(double iPVal, double Zpt, std::vector<RooAbsReal*> pdfKeyMCcdf, std::vector<RooAbsReal*> pdfKeyDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA, bool isU1) {
 
-  if(TMath::Abs(iPVal)>=50) return iPVal;
+  // add protection for outlier since I tabulated up to 5
+  if(TMath::Abs(iPVal)>=5) return iPVal;
 
   int U1U2=1;
   if(!isU1) U1U2=2;
@@ -573,7 +574,7 @@ double RecoilCorrector::triGausInvGraphKeys(double iPVal, double Zpt, std::vecto
   double pVal=pdfKeyDATAcdf[Zptbin]->findRoot(*myXdCDF, myXdCDF->getMin(), myXdCDF->getMax(), pdfKeyMCcdf[Zptbin]->getVal());
 
   // add protection for outlier since I tabulated up to 5
-  if(TMath::Abs(pVal)>=50) pVal=iPVal;
+  if(TMath::Abs(pVal)>=5) pVal=iPVal;
 
   return pVal;
 

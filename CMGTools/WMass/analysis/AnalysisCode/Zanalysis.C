@@ -316,11 +316,17 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     // string fileZmmData =   /*POW */ "../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
     // string fileZmmData =   /*MAD */ "../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
 
-    string fileZmmKeysCorrectTo = "root://eoscms//eos/cms//store/group/phys_smp/Wmass/dalfonso/RecoilFiles/OCT25/keysrecoilfit_OCT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
-    string fileZmmKeysMC = "root://eoscms//eos/cms//store/group/phys_smp/Wmass/dalfonso/RecoilFiles/OCT25/keysrecoilfit_OCT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
+    string fileZmmKeysCorrectTo = "~/eos/cms/store/group/phys_smp/Wmass/dalfonso/RecoilFiles/NOV25/keysrecoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
+    string fileZmmKeysMC = "~/eos/cms/store/group/phys_smp/Wmass/dalfonso/RecoilFiles/NOV25/keysrecoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
     // need to add the half stat
-    string fileZmmKeysData = "root://eoscms//eos/cms//store/group/phys_smp/Wmass/dalfonso/RecoilFiles//OCT25/keysrecoilfit_OCT25_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
-    if(correctToMadgraph) fileZmmKeysData = "root://eoscms//eos/cms//store/group/phys_smp/Wmass/dalfonso/RecoilFiles/OCT25//keysrecoilfit_OCT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
+    string fileZmmKeysData = "~/eos/cms/store/group/phys_smp/Wmass/dalfonso/RecoilFiles/NOV25/keysrecoilfit_NOV25_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
+    if(correctToMadgraph) fileZmmKeysData = "~/eos/cms/store/group/phys_smp/Wmass/dalfonso/RecoilFiles/NOV25/keysrecoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
+
+    //    string fileZmmKeysCorrectTo = "../RecoilCode/NOV25/recoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
+    //    string fileZmmKeysMC = "../RecoilCode/NOV25/recoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
+    //    // need to add the half stat
+    //    string fileZmmKeysData = "../RecoilCode/NOV25/keysrecoilfit_NOV25_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
+    //    if(correctToMadgraph) fileZmmKeysData = "../RecoilCode/NOV25/recoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
 
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;
     correctorRecoil_Z = new RecoilCorrector(fileCorrectTo.c_str(),fileZmmKeysCorrectTo.c_str(),123456,model_name[0],"../RecoilCode/MAY25/nonClosureMAY25.root");
@@ -835,6 +841,10 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   //if(useRecoilCorr==1){}
 
 		  bool doKeys=false;
+                  if(useRecoilCorr==3){
+		    useRecoilCorr=2;
+		    doKeys=true;
+		  }
 
                   if(useRecoilCorr==2){
                     // cout
@@ -1136,6 +1146,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                 u1_recoil, weight, h_1d, 60, -20, 20 );
                               common_stuff::plot1D(Form("hWlike%s_u2_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                 u2_recoil, weight, h_1d, 60, -20, 20 );
+                              common_stuff::plot1D(Form("hWlike%s_u_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+				sqrt(u2_recoil*u2_recoil+u1_recoil*u1_recoil), weight, h_1d, 60, -20, 20 );
 
                               common_stuff::plot2D(Form("hWlike%s_u1vsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                 ZNocorr.Pt(), u1_recoil, weight, h_2d, 60, 0, 60, 60, -20, 20 );
