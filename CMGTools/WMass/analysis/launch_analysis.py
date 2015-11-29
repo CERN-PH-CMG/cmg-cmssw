@@ -33,7 +33,7 @@ MuonCorrKalmanNvarsNsigma = 0; # vary each muon fit eigenv (0=no)
 WlikeCharge = 1; # Charge of the Wlike (+1,-1)
 
 ### RECOIL
-useRecoilCorr = 2; # 0=none, 1=yes, 2=PDFw3gaus
+useRecoilCorr = 2; # 0=none, 1=yes, 2=PDFw3gaus, 3=RooKeys
 RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0; # SYST VARIATIONS: 0=NONE, RAPBIN 1 (1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p2, 6= U2 MC) RAPBIN 2 (7= U1 DATA p1, 8= U1 DATA p2, 9= U2 DATA, 10= U1 MC p1, 11= U1 MC p2, 12= U2 MC)
 RecoilCorrVarDiagoParSigmas = 0; # Number of sigmas for recoil syst
 correctToMadgraph = 0; # 0: uses DATA as target -- 1: uses Madgraph as target (also needed to write recoil closure plots)

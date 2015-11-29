@@ -323,12 +323,25 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     // string fileZmmData =   /*POW */ "../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
     // string fileZmmData =   /*MAD */ "../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
 
+    string fileZmmKeysCorrectTo = "~/eos/cms/store/group/phys_smp/Wmass/dalfonso/RecoilFiles/NOV25/keysrecoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
+    string fileZmmKeysMC = "~/eos/cms/store/group/phys_smp/Wmass/dalfonso/RecoilFiles/NOV25/keysrecoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
+    // need to add the half stat
+    string fileZmmKeysData = "~/eos/cms/store/group/phys_smp/Wmass/dalfonso/RecoilFiles/NOV25/keysrecoilfit_NOV25_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
+    if(correctToMadgraph) fileZmmKeysData = "~/eos/cms/store/group/phys_smp/Wmass/dalfonso/RecoilFiles/NOV25/keysrecoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
+
+    //    string fileZmmKeysCorrectTo = "../RecoilCode/NOV25/recoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
+    //    string fileZmmKeysMC = "../RecoilCode/NOV25/recoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
+    //    // need to add the half stat
+    //    string fileZmmKeysData = "../RecoilCode/NOV25/keysrecoilfit_NOV25_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
+    //    if(correctToMadgraph) fileZmmKeysData = "../RecoilCode/NOV25/recoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
+
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;
-    correctorRecoil_Z = new RecoilCorrector(fileCorrectTo.c_str(),123456,model_name[0],"../RecoilCode/MAY25/nonClosureMAY25.root");
+    correctorRecoil_Z = new RecoilCorrector(fileCorrectTo.c_str(),fileZmmKeysCorrectTo.c_str(),123456,model_name[0],"../RecoilCode/MAY25/nonClosureMAY25.root");
     cout << "INITIALIZING RECOIL Z DATA FILE" << endl;
-    correctorRecoil_Z->addDataFile(fileZmmData.c_str(),model_name[model_name_idx]);
+    correctorRecoil_Z->addDataFile(fileZmmData.c_str(), fileZmmKeysData.c_str(), model_name[model_name_idx] );
     cout << "INITIALIZING RECOIL Z MC FILE" << endl;
-    correctorRecoil_Z->addMCFile(fileZmmMC.c_str(),model_name[0]);
+    correctorRecoil_Z->addMCFile(fileZmmMC.c_str(), fileZmmKeysMC.c_str(), model_name[0]);
+
   }
   bool doSingleGauss=false;
 
@@ -833,6 +846,13 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   // << " metphi_trasvCentral before=" << metphi_trasvCentral
                   // << endl;
                   //if(useRecoilCorr==1){}
+
+		  bool doKeys=false;
+                  if(useRecoilCorr==3){
+		    useRecoilCorr=2;
+		    doKeys=true;
+		  }
+
                   if(useRecoilCorr==2){
                     // cout
                     // << "ZGen_pt=" << ZGen_pt
@@ -858,7 +878,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               ZNocorr.Pt(),ZNocorr.Phi(),
                               u1_recoil, u2_recoil,
                               RecoilCorrVarDiagoParU1orU2fromDATAorMC>6?RecoilCorrVarDiagoParU1orU2fromDATAorMC-6:RecoilCorrVarDiagoParU1orU2fromDATAorMC, m, RecoilCorrVarDiagoParSigmas,
-                              rapBin,doSingleGauss,1);
+                              rapBin,doSingleGauss,1,doKeys);
                     }else{
                       correctorRecoil_Z->CorrectMET3gaus(
                               met_trasv,metphi_trasv,
@@ -866,8 +886,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               ZNocorr.Pt(),ZNocorr.Phi(),
                               u1_recoil, u2_recoil,
                               0, 0, 0,
-                              rapBin,doSingleGauss,1);
-                      
+                              rapBin,doSingleGauss,1,doKeys);
                     }
                     if(first_time_in_the_event && m==m_start && n==0){
                       // cout << "before setting met_trasvCentral "<< RecoilCorrVarDiagoParU1orU2fromDATAorMC<< " " << m << " " << RecoilCorrVarDiagoParSigmas << endl;
@@ -885,7 +904,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                 ZNocorr.Pt(),ZNocorr.Phi(),
                                 u1_recoil, u2_recoil,
                                 0, 0, 0,
-                                rapBin,doSingleGauss,1);
+                                rapBin,doSingleGauss,1,doKeys);
                       }else{
                         // cout << " met_trasvCentral = met_trasv" << endl;
                         met_trasvCentral    = met_trasv;
@@ -1133,9 +1152,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               string mettype="_tk";
                               
                               double u1_scale=0;
-                              plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, tag_zPtcut.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps, jZmass_MeV);
-                              plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, tag_VTX.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps, jZmass_MeV);
-                              plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, tag_y.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps , jZmass_MeV);
+                              plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, "closure", tag_zPtcut.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps, jZmass_MeV);
+                              plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, "closure", tag_VTX.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps, jZmass_MeV);
+                              plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, "closure", tag_y.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps , jZmass_MeV);
                             }
                             //---------------------------------------------------------------------
                             // Recoil plots: u1, u2, u1vsZpt, u2vsZpt, u1vsZptvsZrap, u2vsZptvsZrap
@@ -1148,6 +1167,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                 u1_recoil, weight, h_1d, 60, -20, 20 );
                               common_stuff::plot1D(Form("hWlike%s_u2_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                 u2_recoil, weight, h_1d, 60, -20, 20 );
+                              common_stuff::plot1D(Form("hWlike%s_u_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+				sqrt(u2_recoil*u2_recoil+u1_recoil*u1_recoil), weight, h_1d, 60, -20, 20 );
 
                               common_stuff::plot2D(Form("hWlike%s_u1vsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                 ZNocorr.Pt(), u1_recoil, weight, h_2d, 60, 0, 60, 60, -20, 20 );
@@ -1237,7 +1258,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                           //------------------------------------------------------------------------------------------------ 
                           if(TMath::Abs(jZmass_MeV - WMass::ZMassCentral_MeV) > 1)  continue;
 
-                          if(controlplots && m==m_start && n==0) fillControlPlots(Zcorr, Z_met, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, jZmass_MeV , eta_str, WMass::nSigOrQCD_str[0]);
+                          if(controlplots && m==m_start && n==0) fillControlPlots(Zcorr, Z_met, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, jZmass_MeV , eta_str, WMass::nSigOrQCD_str[0],Form("Wlike%s_8_JetCut",WCharge_str.Data()));
 
                         }
                       }
@@ -1268,7 +1289,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                       // QCD distributions for central W mass
                       //------------------------------------------------------
 
-                      fillControlPlots(Zcorr, Z_met, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, jZmass_MeV , eta_str, WMass::nSigOrQCD_str[1]);
+                      fillControlPlots(Zcorr, Z_met, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, jZmass_MeV , eta_str, WMass::nSigOrQCD_str[1],Form("Wlike%s_8_JetCut",WCharge_str.Data()));
 
                     } // end if for qcd enriched
                   } // end else for muon cuts (sig or qcd enriched)
