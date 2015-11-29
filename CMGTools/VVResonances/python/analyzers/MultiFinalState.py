@@ -15,12 +15,28 @@ class MultiFinalState( EventInterpretationBase ):
         JJNuNu=[]
         TopCR=[]
 
-        if self.doSkim and not self.skim(event.selectedLeptons,event.met):
+
+        leadJetConstituents=[]
+
+        #clean leptons from reconstructed W->lnu and Z-> LL and make jets
+        goldenLeptonsList=[]
+        for W in event.LNu:
+            goldenLeptonsList.append(W.leg1)
+        for Z in event.LL:
+            goldenLeptonsList.append(Z.leg1)
+            goldenLeptonsList.append(Z.leg2)
+
+
+        goldenLeptonsSet=set(goldenLeptonsList)
+        goldenLeptons=list(goldenLeptonsSet)
+
+
+        if self.doSkim and not self.skim(goldenLeptons,event.met):
             return False
 
 
-        #clean leptons and make jets
-        cleanedPackedCandidates = self.removeLeptonFootPrint(event.selectedLeptons,event.packedCandidatesForJets)
+        cleanedPackedCandidates = self.removeLeptonFootPrint(goldenLeptons,event.packedCandidatesForJets)
+
         if self.cfg_ana.doCHS:
             cleanedPackedCandidates = filter(lambda x: x.fromPV(0) ,cleanedPackedCandidates)
           
@@ -37,13 +53,18 @@ class MultiFinalState( EventInterpretationBase ):
             #find the jets in the opposite hemisphere of the lepton
             oppositeHemishereJets=[]
             for jet in selectedFatJets:
-                if jet.pt()>200 and deltaPhi(jet.phi(),bestW.leg1.phi())>3.14/2. and jet.softDropJet.mass()>40 and jet.softDropJet.mass()<130:
+                if jet.pt()>200 and deltaPhi(jet.phi(),bestW.phi())>3.14/2.:
                     oppositeHemishereJets.append(jet)
 
             if len(oppositeHemishereJets)>0:        
-                bestJet = max(oppositeHemishereJets,key=lambda x: x.softDropJet.mass())
+                bestJet = max(oppositeHemishereJets,key=lambda x: x.prunedJet.mass())
+                
                 VV=Pair(bestW,bestJet)
                 selected = {'pair':VV}
+
+                #Additional leptons
+                selected['otherLeptons'] = list(goldenLeptonsSet-set([VV.leg1.leg1]))
+
                 remainingCands =self.removeJetFootPrint([bestJet],cleanedPackedCandidates)
                 selected['satelliteJets']=self.makeSatelliteJets(remainingCands)
                 self.topology(selected)
@@ -64,6 +85,12 @@ class MultiFinalState( EventInterpretationBase ):
                     selected = {'pair':VV}
                     remainingCands =self.removeJetFootPrint([jet],cleanedPackedCandidates)
                     selected['satelliteJets']=self.makeSatelliteJets(remainingCands)
+                    
+                    leadJetConstituents=jet.prunedJet.constituents
+
+                    #Additional leptons
+                    selected['otherLeptons'] = list(goldenLeptonsSet-set([VV.leg1.leg1,VV.leg1.leg2]))
+
                     #add VBF info
                     self.topology(selected)
                     LLJJ.append(selected)                   
@@ -80,6 +107,11 @@ class MultiFinalState( EventInterpretationBase ):
                     selected = {'pair':VV}
                     remainingCands =self.removeJetFootPrint([jet],cleanedPackedCandidates)
                     selected['satelliteJets']=self.makeSatelliteJets(remainingCands)
+                    leadJetConstituents=jet.prunedJet.constituents
+
+                    #Additional leptons
+                    selected['otherLeptons'] = list(goldenLeptonsSet-set([VV.leg1.leg1]))
+
                     #add VBF info
                     self.topology(selected)
                     LNuJJ.append(selected)                   
@@ -96,10 +128,16 @@ class MultiFinalState( EventInterpretationBase ):
                 selected = {'pair':VV}
                 remainingCands =self.removeJetFootPrint([jet],cleanedPackedCandidates)
                 selected['satelliteJets']=self.makeSatelliteJets(remainingCands)
+                leadJetConstituents=jet.prunedJet.constituents
+
+               #Additional leptons
+                selected['otherLeptons'] = goldenLeptons
+
                 #add VBF info
                 self.topology(selected)
                 JJNuNu.append(selected)                   
                 finished=True
+
 
         #Now look for jet+jet
         if len(selectedFatJets)>1 and not finished:
@@ -111,6 +149,11 @@ class MultiFinalState( EventInterpretationBase ):
                 selected = {'pair':VV}
                 remainingCands =self.removeJetFootPrint([jet1,jet2],cleanedPackedCandidates)
                 selected['satelliteJets']=self.makeSatelliteJets(remainingCands)
+                leadJetConstituents=jet1.prunedJet.constituents
+
+               #Additional leptons
+                selected['otherLeptons'] = goldenLeptons
+
                 #add VBF info
                 self.topology(selected)
                 JJ.append(selected)                   
@@ -118,13 +161,10 @@ class MultiFinalState( EventInterpretationBase ):
                 
 
 
-
-
-
-
         setattr(event,'LNuJJ'+self.cfg_ana.suffix,LNuJJ)
         setattr(event,'JJ'+self.cfg_ana.suffix,JJ)
         setattr(event,'LLJJ'+self.cfg_ana.suffix,LLJJ)
         setattr(event,'JJNuNu'+self.cfg_ana.suffix,JJNuNu)
         setattr(event,'TopCR'+self.cfg_ana.suffix,TopCR)
+        setattr(event,'leadJetConstituents'+self.cfg_ana.suffix,leadJetConstituents)
 

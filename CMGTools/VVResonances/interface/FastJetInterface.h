@@ -30,12 +30,12 @@ class FastJetInterface {
   void makeExclusiveJets( int);
   void makeExclusiveJets( double);
   void makeExclusiveJetsUpTo(int);
-  void makeSubJets(unsigned int);
-  void makeSubJets(unsigned int, double);
-  void makeSubJets(unsigned int, int);
-  void makeSubJetsUpTo(unsigned int, int);
-  void prune(bool,double zcut,double rcutfactor);
-  void softDrop(bool,double beta,double zcut,double R0);
+  void makeSubJets(bool,unsigned int);
+  void makeSubJets(bool,unsigned int, double);
+  void makeSubJets(bool,unsigned int, int);
+  void makeSubJetsUpTo(bool,unsigned int, int);
+  void prune(bool,unsigned int ,double zcut,double rcutfactor);
+  void softDrop(bool,unsigned int,double beta,double zcut,double R0);
   bool  massDropTag( unsigned int, double&,double&);
 
 

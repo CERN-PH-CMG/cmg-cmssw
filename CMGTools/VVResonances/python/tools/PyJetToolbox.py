@@ -10,6 +10,7 @@ class PyJet(object):
         self.matched=0
         
         self.chargedHadronEnergy = 0.0
+        self.chargedMult = 0.0
         self.neutralHadronEnergy = 0.0
         self.photonEnergy = 0.0
         self.hfEMEnergy = 0.0
@@ -24,9 +25,15 @@ class PyJet(object):
     def chargedEmEnergy(self):
         return self.electronEnergy
 
+    def pdgId(self):
+        return 1
+
 
     def chargedHadronEnergyFraction(self):
         return self.chargedHadronEnergy/(self.LV.energy()*self.rawF)
+
+    def chargedMultiplicity(self):
+        return self.chargedMult
 
     def neutralHadronEnergyFraction(self):
         return self.neutralHadronEnergy/((self.LV.energy()*self.rawF))
@@ -110,6 +117,7 @@ class PyJetToolbox(object):
         self.doSubjets = False
         self.doSoftDrop = False
         self.doNTau = False
+
     def setInterface(self,doArea,ktpower,rparam,active_area_repeats=1,ghost_area = 0.01,ghost_eta_max = 5.0,rho_eta_max = 4.4):        
         if doArea:
             self.interface = ROOT.cmg.FastJetInterface(self.p4s,ktpower,rparam,active_area_repeats,ghost_area,ghost_eta_max,rho_eta_max)
@@ -141,6 +149,18 @@ class PyJetToolbox(object):
         self.ntau = {'NMAX':NMAX,'measureDef':measureDef,'axesDef':axesDef, 'beta':beta,'R0':R0,'Rcutoff':Rcutoff,'akAxesR0':-999.0, 'nPass':-999}
         
 
+
+    def attachJetID(self,jet):
+        constituents=len(jet.constituents)
+        looseIDAll = constituents>1 and jet.neutralHadronEnergyFraction()<0.99 and (jet.photonEnergyFraction()+jet.HFEMEnergyFraction())<0.99
+        tightIDAll = constituents>1 and jet.neutralHadronEnergyFraction()<0.90 and (jet.photonEnergyFraction()+jet.HFEMEnergyFraction())<0.9
+        IDInner = abs(jet.eta())>2.4 or (jet.chargedMultiplicity()>0 and jet.chargedHadronEnergyFraction()>0 and jet.electronEnergyFraction()<0.99)
+        IDOuter = abs(jet.eta())<3.0 or (constituents>10 and (jet.photonEnergyFraction()+jet.HFEMEnergyFraction())<0.9)
+        
+        jet.looseID = looseIDAll and IDInner and IDOuter
+        jet.tightID = tightIDAll and IDInner and IDOuter                                        
+
+
     def convert(self,lorentzVectors,isFat = False,isJet=True):
         output = []
 
@@ -155,35 +175,46 @@ class PyJetToolbox(object):
                 jet.constituents.append(constituent)
                 if abs(constituent.pdgId()) ==211:
                     jet.chargedHadronEnergy=jet.chargedHadronEnergy+constituent.energy()
+                    jet.chargedMult=jet.chargedMult+1
                 elif constituent.pdgId() ==22:
                     jet.photonEnergy=jet.photonEnergy+constituent.energy()
                 elif constituent.pdgId() ==130:
                     jet.neutralHadronEnergy=jet.neutralHadronEnergy+constituent.energy()
                 elif constituent.pdgId() ==1:
                     jet.hfHADEnergy=jet.hfHADEnergy+constituent.energy()
-
                 elif constituent.pdgId() ==2:
                     jet.hfEMEnergy=jet.hfEMEnergy+constituent.energy()
                 elif abs(constituent.pdgId())==11:
                     jet.electronEnergy=jet.electronEnergy+constituent.energy()
+                    jet.chargedMult=jet.chargedMult+1
+
                 elif abs(constituent.pdgId())==13:
                     jet.muonEnergy=jet.muonEnergy+constituent.energy()                  
+                    jet.chargedMult=jet.chargedMult+1
+            self.attachJetID(jet)
             if isFat:
                 if self.doPrunning:
-                    self.interface.prune(isJet,self.prunning['zcut'],self.prunning['rcutfactor'])
-                    jet.prunedJet = self.convert(self.interface.get(isJet),False,isJet)
+                    self.interface.prune(isJet,i,self.prunning['zcut'],self.prunning['rcutfactor'])
+                    jet.prunedJet = self.convert(self.interface.get(False),False,False)[0]
+                    if self.doSubjets:
+                        if self.subjets['style'] == 'inc':
+                            self.interface.makeSubJets(False,0,self.subjets['setting'])
+                            jet.subjets = self.convert(self.interface.get(False),False,False)
+                        else:    
+                            self.interface.makeSubJetsUpTo(False,0,self.subjets['setting'])
+                            jet.subjets = self.convert(self.interface.get(False),False,False)
                 if self.doSoftDrop:
-                    self.interface.softDrop(True,self.softdrop['beta'],self.softdrop['zcut'],self.softdrop['R0'])
-                    jet.softDropJet = self.convert(self.interface.get(False),False,True)[i]
-                if self.doSubjets:
-                    if self.subjets['style'] == 'inc':
-                        self.interface.makeSubJets(i,self.subjets['setting'])
-                        jet.subjets = self.convert(self.interface.get(True),False,False)
-                    else:    
-                        self.interface.makeSubJetsUpTo(i,self.subjets['setting'])
-                        jet.subjets = self.convert(self.interface.get(True),False,False)
-                    if self.doNTau:
-                        jet.Ntau = self.interface.nSubJettiness(i,self.ntau['NMAX'],self.ntau['measureDef'],self.ntau['axesDef'],self.ntau['beta'],self.ntau['R0'],self.ntau['Rcutoff'],self.ntau['akAxesR0'],self.ntau['nPass'])
+                    self.interface.softDrop(isJet,i,self.softdrop['beta'],self.softdrop['zcut'],self.softdrop['R0'])
+                    jet.softDropJet = self.convert(self.interface.get(False),False,False)[0]
+                    if self.doSubjets:
+                        if self.subjets['style'] == 'inc':
+                            self.interface.makeSubJets(False,0,self.subjets['setting'])
+                            jet.subjets_SD = self.convert(self.interface.get(False),False,False)
+                        else:    
+                            self.interface.makeSubJetsUpTo(False,0,self.subjets['setting'])
+                            jet.subjets_SD = self.convert(self.interface.get(False),False,False)
+                if self.doNTau:
+                    jet.Ntau = self.interface.nSubJettiness(i,self.ntau['NMAX'],self.ntau['measureDef'],self.ntau['axesDef'],self.ntau['beta'],self.ntau['R0'],self.ntau['Rcutoff'],self.ntau['akAxesR0'],self.ntau['nPass'])
                 if self.doMassDrop:
                     mu= ROOT.Double(self.massdrop['mu'])
                     y= ROOT.Double(self.massdrop['y'])
@@ -193,15 +224,18 @@ class PyJetToolbox(object):
             
     def inclusiveJets(self,ptmin = 0.0,isFat=True):
         self.interface.makeInclusiveJets(ptmin)
-        return self.convert(self.interface.get(False),isFat)
+        return self.convert(self.interface.get(True),isFat)
 
     def exclusiveJets(self,r =0.1,isFat = True):
         self.interface.makeExclusiveJets(r)
-        return self.convert(self.interface.get(False),isFat)
+        return self.convert(self.interface.get(True),isFat)
 
     def exclusiveJetsUpTo(self,N=2,isFat = True ):
         self.interface.makeExclusiveJetsUpTo(N)
-        return self.convert(self.interface.get(False),isFat)
+        return self.convert(self.interface.get(True),isFat)
+
+
+
 
 
 
