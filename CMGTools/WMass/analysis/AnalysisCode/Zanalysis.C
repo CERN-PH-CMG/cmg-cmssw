@@ -158,6 +158,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     TString vtx_str = sampleName; vtx_str.ReplaceAll("Sig",""); vtx_str.ReplaceAll("Fake","");
     // finPileupSF = new TFile(Form("../utils/pileup_reweighting_%s.root",vtx_str.Data())); // used only to build templates
     TFile* finPileupSF = new TFile(Form("../utils/pileup/pileup_reweighting_Fall11.root")); // used only to build templates
+    // TFile* finPileupSF = new TFile(Form("../utils/pileup/pileup_reweighting_Fall11_7TeV_Markus.root")); // used only to build templates
     if(!finPileupSF){
       cout << "file " << Form("../utils/pileup/pileup_reweighting_Fall11.root") << " is missing, impossible to retrieve pileup reweighting factors" << endl;
       return;
@@ -281,6 +282,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     corrector_KalmanParam = new KalmanCalibratorParam(isMCorDATA==0?false:true); // True for data , //False for MC
   }
 
+  //------------------------------------------------------
+  // Closure test reweighting for recoil corrections
+  //------------------------------------------------------
+  TFile *f_u_reweighting = new TFile("/afs/cern.ch/work/p/perrozzi/private/git/v5_18_0/common_maria/CMSSW_5_3_22_patch1/src/CMGTools/WMass/analysis/utils/pre_unblinding5_recoil_ratiomc_div_data.root");
+  TH1D*pre_unblinding5_recoil_ratiomc_div_data = (TH1D*)f_u_reweighting->Get("pre_unblinding5_recoil_ratiomc_div_data");
+  
   //------------------------------------------------------
   // Initialize recoil corrections
   //------------------------------------------------------
@@ -1043,6 +1050,20 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             
                             // WEIGHT DEFINITION
                             double weight = evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight;
+
+                            // RECOIL PRE-UNBLINDING REWEIGHTING
+                            bool reweight_recoil_pre_unblinding = false; // CHANGE THIS IF NOT NEEDED!!!!!!!!!!!
+                            if(reweight_recoil_pre_unblinding && sampleName.Contains("DYJetsPow")){
+                              double weight_pre_unblinding_rew = weight;
+                              weight *= pre_unblinding5_recoil_ratiomc_div_data->Interpolate(Wlike.Pt())>0?pre_unblinding5_recoil_ratiomc_div_data->Interpolate(Wlike.Pt()):1;
+                              // if(Wlike.Pt()<2) {
+                                // cout << "Wlike.Pt()= " << Wlike.Pt();
+                                // cout << " histo_ratio= " << pre_unblinding5_recoil_ratiomc_div_data->Interpolate(Wlike.Pt());
+                                // cout << " weight before= " << weight_pre_unblinding_rew;
+                                // cout << " weight after/before= " << weight/weight_pre_unblinding_rew;
+                                // cout << endl;
+                              // }
+                            }
                             
                             //------------------------------------------------------
                             // "MONEY" PLOTS OF FIT VARIABLES WITHIN THE FIT RANGE
