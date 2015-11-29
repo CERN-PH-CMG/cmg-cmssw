@@ -1,11 +1,10 @@
 #include "RecoilCorrector.h"
 
 // mytype: 0 = target file , 1 = DATA , 2 = Z MC
-
-RecoilCorrector::RecoilCorrector(string iNameZ, int iSeed,TString model_name, TString fNonClosure_name) {
+RecoilCorrector::RecoilCorrector(string iNameZ, string iNameZ_key, int iSeed,TString model_name, TString fNonClosure_name) {
 
   fRandom = new TRandom3(iSeed);
-  readRecoil(fF1U1Fit,fF1U1RMSSMFit,fF1U1RMS1Fit,fF1U1RMS2Fit,fF1U1RMS3Fit,fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit, fF1U2Fit,fF1U2RMSSMFit,fF1U2RMS1Fit,fF1U2RMS2Fit,fF1U2RMS3Fit,fF1U2FracFit,fF1U2Mean1Fit, fF1U2Mean2Fit,iNameZ,"PF",1,0,model_name);  
+  readRecoil(fF1U1Fit,fF1U1RMSSMFit,fF1U1RMS1Fit,fF1U1RMS2Fit,fF1U1RMS3Fit,fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit, fF1U2Fit,fF1U2RMSSMFit,fF1U2RMS1Fit,fF1U2RMS2Fit,fF1U2RMS3Fit,fF1U2FracFit,fF1U2Mean1Fit, fF1U2Mean2Fit,iNameZ,iNameZ_key,"PF",1,0,model_name);  
   fNonClosure = new TFile(fNonClosure_name.Data());
   hNonClosure[0][0] = (TH2D*) fNonClosure->Get("mean_U1_y1");
   hNonClosure[0][1] = (TH2D*) fNonClosure->Get("mean_U1_y2");
@@ -22,16 +21,16 @@ RecoilCorrector::RecoilCorrector(string iNameZ, int iSeed,TString model_name, TS
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector::addDataFile(std::string iNameData,/* ,int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int RecoilCorrU1VarDiagoParN, int RecoilCorrVarDiagoParSigmas */TString model_name) { 
-  readRecoil(fD1U1Fit,fD1U1RMSSMFit,fD1U1RMS1Fit,fD1U1RMS2Fit,fD1U1RMS3Fit,fD1U1FracFit, fD1U1Mean1Fit, fD1U1Mean2Fit, fD1U2Fit,fD1U2RMSSMFit,fD1U2RMS1Fit,fD1U2RMS2Fit,fD1U2RMS3Fit,fD1U2FracFit,fD1U2Mean1Fit, fD1U2Mean2Fit,iNameData,"PF",1,1,/* , RecoilCorrVarDiagoParU1orU2fromDATAorMC,RecoilCorrU1VarDiagoParN, RecoilCorrVarDiagoParSigmas */
+void RecoilCorrector::addDataFile(std::string iNameData, std::string iNameData_key, /* ,int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int RecoilCorrU1VarDiagoParN, int RecoilCorrVarDiagoParSigmas */TString model_name) {
+  readRecoil(fD1U1Fit,fD1U1RMSSMFit,fD1U1RMS1Fit,fD1U1RMS2Fit,fD1U1RMS3Fit,fD1U1FracFit, fD1U1Mean1Fit, fD1U1Mean2Fit, fD1U2Fit,fD1U2RMSSMFit,fD1U2RMS1Fit,fD1U2RMS2Fit,fD1U2RMS3Fit,fD1U2FracFit,fD1U2Mean1Fit, fD1U2Mean2Fit,iNameData, iNameData_key, "PF",1,1,/* , RecoilCorrVarDiagoParU1orU2fromDATAorMC,RecoilCorrU1VarDiagoParN, RecoilCorrVarDiagoParSigmas */
   model_name
 );  
   // fId++;   
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector::addMCFile  (std::string iNameMC,TString model_name) { 
+void RecoilCorrector::addMCFile(std::string iNameMC, std::string iNameMC_key, TString model_name) {
   // fId++;
-  readRecoil(fM1U1Fit,fM1U1RMSSMFit,fM1U1RMS1Fit,fM1U1RMS2Fit,fM1U1RMS3Fit,fM1U1FracFit, fM1U1Mean1Fit, fM1U1Mean2Fit, fM1U2Fit,fM1U2RMSSMFit,fM1U2RMS1Fit,fM1U2RMS2Fit,fM1U2RMS3Fit,fM1U2FracFit,fM1U2Mean1Fit, fM1U2Mean2Fit,iNameMC,"PF",1,2,model_name
+  readRecoil(fM1U1Fit,fM1U1RMSSMFit,fM1U1RMS1Fit,fM1U1RMS2Fit,fM1U1RMS3Fit,fM1U1FracFit, fM1U1Mean1Fit, fM1U1Mean2Fit, fM1U2Fit,fM1U2RMSSMFit,fM1U2RMS1Fit,fM1U2RMS2Fit,fM1U2RMS3Fit,fM1U2FracFit,fM1U2Mean1Fit, fM1U2Mean2Fit,iNameMC,iNameMC_key, "PF",1,2,model_name
 );  
   
 }
@@ -44,17 +43,20 @@ std::vector<TF1*> &iU1FracFit,std::vector<TF1*> &iU1Mean1Fit, std::vector<TF1*> 
 std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,
 std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2RMS3Fit,
 std::vector<TF1*> &iU2FracFit,std::vector<TF1*> &iU2Mean1Fit, std::vector<TF1*> &iU2Mean2Fit,//std::vector<TF1*> &iU2Sig3Fit,
-std::string iFName ,std::string iPrefix,int vtxBin, int mytype,/* , int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int RecoilCorrU1VarDiagoParN, int RecoilCorrVarDiagoParSigmas */
+std::string iFName , std::string iFKeyName , std::string iPrefix,int vtxBin, int mytype,/* , int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int RecoilCorrU1VarDiagoParN, int RecoilCorrVarDiagoParSigmas */
 TString model_name
 ) {
 
   //type=1 read U1; type=2 read U2;
   cout << "inside readRecoil" << iFName.c_str() << endl;
+  cout << "inside readRecoil Key " << iFKeyName.c_str() << endl;
+
   if(mytype==0) cout << " read target"   << endl;
   if(mytype==1) cout << " read DATA"  << endl;
   if(mytype==2) cout << " read MC"  << endl;
 
   TFile *lFile  = new TFile(iFName.c_str());
+  TFile *lFileKeys  = new TFile(iFKeyName.c_str());
   // lFile->ls();
 
   // now defined in the .h
@@ -103,6 +105,9 @@ TString model_name
     // wU1[mytype][i0]->Print();
     runDiago(wU1[mytype][i0],frU1[mytype][i0],Form("AddU1Y%d",i0),pdfU1Cdf[mytype][i0]);
 
+    //    cout << "reading recoilKeys " << endl;
+    makeKeysVec(wU1[mytype][i0], lFileKeys, Form("Keys_U1_%d",i0), pdfKeyU1Cdf[mytype][i0],true);
+
     //    RooRealVar* myptU1=wU1[mytype][i0]->var("pt");
     //    myptU1->setVal(10);
     //    cout <<  "U1cdf=" << pdfU1Cdf[mytype][i0]->getVal()    << endl;
@@ -118,6 +123,8 @@ TString model_name
     // wU2diago[mytype][i0] = wU2[mytype][i0];
     runDiago(wU2[mytype][i0],frU2[mytype][i0],Form("AddU2Y%d",i0),pdfU2Cdf[mytype][i0]);
     
+    makeKeysVec(wU2[mytype][i0], lFileKeys, Form("Keys_U2_%d",i0), pdfKeyU2Cdf[mytype][i0],false);
+
     //    RooRealVar* myptU2=wU2[mytype][i0]->var("pt");
     //    myptU2->setVal(10);
     //    cout <<  "U2cdf= " << pdfU2Cdf[mytype][i0]->getVal()    << endl;
@@ -127,7 +134,7 @@ TString model_name
 
   }
 
-  cout << "read U1 size: " << iU1Fit.size() << endl;
+  //  cout << "read U1 size: " << iU1Fit.size() << endl;
   
   
   lFile->Close();
@@ -139,7 +146,7 @@ TString model_name
 
 double RecoilCorrector::NonClosure_weight(double iMet,double iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi) {
   
-  // cout 
+  // cout
   // << "iMet= " << iMet
   // << " iMPhi= " << iMPhi
   // << " iGenPt= " << iGenPt
@@ -189,7 +196,7 @@ double RecoilCorrector::NonClosure_weight(double iMet,double iMPhi,double iGenPt
 //-----------------------------------------------------------------------------------------------------------------------------------------
 double RecoilCorrector::NonClosure_scale(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi) {
   
-  // cout 
+  // cout
   // << "iMet= " << iMet
   // << " iMPhi= " << iMPhi
   // << " iGenPt= " << iGenPt
@@ -264,7 +271,9 @@ void RecoilCorrector::reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int 
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int njet, bool doSingleGauss, int mytype) {
+void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int njet, bool doSingleGauss, int mytype, bool key) {
+
+  doKeys=key;
 
   // cout << "TYPE2: nVTX " << njet << " function size "<< fD1U1Fit.size() << endl;
   fJet = njet; 
@@ -375,8 +384,8 @@ double &pU1,double &pU2
   //  cout << " ------------------------------------------------------- " << endl;
   // cout << " initial pU1 = " << pU1 << " pU2 = " << pU2 << endl;
 
-  double p1Charge        = pU1Diff/fabs(pU1Diff);
-  double p2Charge        = pU2Diff/fabs(pU2Diff);
+  //  double p1Charge        = pU1Diff/fabs(pU1Diff);
+  //  double p2Charge        = pU2Diff/fabs(pU2Diff);
 
   double pU1ValD = 0 ;
   double pU2ValD = 0;
@@ -396,8 +405,6 @@ double &pU1,double &pU2
   // // cout << newpdf->getVal() << endl;
   // // v->Print();
   // // cout << newpdf->getVal() << endl;
-
-  pU1Diff = pU1Diff/pMRMSU1;
 
   // cout 
     // << "RecoilCorrVarDiagoParU1orU2fromDATAorMC=="<<RecoilCorrVarDiagoParU1orU2fromDATAorMC
@@ -441,35 +448,51 @@ double &pU1,double &pU2
   pdfU1Cdf[1][fJet]->getVal();
   pdfU2Cdf[2][fJet]->getVal();
   pdfU2Cdf[1][fJet]->getVal();
+
+  pU1Diff = pU1Diff/pMRMSU1;
+  pU2Diff = pU2Diff/pMRMSU2;
   
-  // cout << "triGausInvGraphPDF U1" << endl;
-  pU1ValD = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[2][fJet],pdfU1Cdf[1][fJet],wU1[2][fJet],wU1[1][fJet]);
+
+  //  std::cout << "================= " << std::endl;
+  //  std::cout << " Before: pU1Diff " << pU1Diff << " pU2Diff " << pU2Diff << std::endl;
+
+  if(doKeys) {
+    //    triGausInvGraphKeys
+    pU1ValD = triGausInvGraphKeys(pU1Diff,iGenPt,pdfKeyU1Cdf[2][fJet],pdfKeyU1Cdf[1][fJet],wU1[2][fJet],wU1[1][fJet],true);
+    pU2ValD = triGausInvGraphKeys(pU2Diff,iGenPt,pdfKeyU2Cdf[2][fJet],pdfKeyU2Cdf[1][fJet],wU2[2][fJet],wU2[1][fJet],false);
+  } else {
+    // cout << "triGausInvGraphPDF U1" << endl;
+    pU1ValD = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[2][fJet],pdfU1Cdf[1][fJet],wU1[2][fJet],wU1[1][fJet]);
+    pU2ValD = triGausInvGraphPDF(pU2Diff,iGenPt,pdfU2Cdf[2][fJet],pdfU2Cdf[1][fJet],wU2[2][fJet],wU2[1][fJet]);
+  }
+
+  //  std::cout << " After: pU1ValD " << pU1ValD << " pU2ValD " << pU2ValD  << std::endl;
+
   pU1ValD = pU1ValD*pDRMSU1;
   pDefU1 *= (pDU1/pMU1);
 
-  // cout 
-    // << "after triGausInvGraphPDF U1"
-    // << " pdfU1Cdf[2]["<<fJet<<"]->getVal()= " << pdfU1Cdf[2][fJet]->getVal()
-    // << " pdfU1Cdf[1]["<<fJet<<"]->getVal()= " << pdfU1Cdf[1][fJet]->getVal()
-    // << " pdfU2Cdf[2]["<<fJet<<"]->getVal()= " << pdfU2Cdf[2][fJet]->getVal()
-    // << " pdfU2Cdf[1]["<<fJet<<"]->getVal()= " << pdfU2Cdf[1][fJet]->getVal()
-    // << endl;
-
-  pU2Diff = pU2Diff/pMRMSU2;
-  // cout << "triGausInvGraphPDF U2" << endl;
-  pU2ValD = triGausInvGraphPDF(fabs(pU2Diff),iGenPt,pdfU2Cdf[2][fJet],pdfU2Cdf[1][fJet],wU2[2][fJet],wU2[1][fJet]);
   pU2ValD = pU2ValD*pDRMSU2;
+  //  pU2ValD*=p2Charge; // removed the ABS value on the argument of the triGausInvGraphPDF
 
   // cout 
-    // << "after triGausInvGraphPDF U2"
-    // << " pdfU1Cdf[2]["<<fJet<<"]->getVal()= " << pdfU1Cdf[2][fJet]->getVal()
-    // << " pdfU1Cdf[1]["<<fJet<<"]->getVal()= " << pdfU1Cdf[1][fJet]->getVal()
-    // << " pdfU2Cdf[2]["<<fJet<<"]->getVal()= " << pdfU2Cdf[2][fJet]->getVal()
-    // << " pdfU2Cdf[1]["<<fJet<<"]->getVal()= " << pdfU2Cdf[1][fJet]->getVal()
-    // << endl;
+  // << "after triGausInvGraphPDF U1"
+  // << " pdfU1Cdf[2]["<<fJet<<"]->getVal()= " << pdfU1Cdf[2][fJet]->getVal()
+  // << " pdfU1Cdf[1]["<<fJet<<"]->getVal()= " << pdfU1Cdf[1][fJet]->getVal()
+  // << " pdfU2Cdf[2]["<<fJet<<"]->getVal()= " << pdfU2Cdf[2][fJet]->getVal()
+  // << " pdfU2Cdf[1]["<<fJet<<"]->getVal()= " << pdfU2Cdf[1][fJet]->getVal()
+  // << endl;
 
-    // pU1ValD*=p1Charge;
-  pU2ValD*=p2Charge;
+  // cout << "triGausInvGraphPDF U2" << endl;
+
+  // cout 
+  // << "after triGausInvGraphPDF U2"
+  // << " pdfU1Cdf[2]["<<fJet<<"]->getVal()= " << pdfU1Cdf[2][fJet]->getVal()
+  // << " pdfU1Cdf[1]["<<fJet<<"]->getVal()= " << pdfU1Cdf[1][fJet]->getVal()
+  // << " pdfU2Cdf[2]["<<fJet<<"]->getVal()= " << pdfU2Cdf[2][fJet]->getVal()
+  // << " pdfU2Cdf[1]["<<fJet<<"]->getVal()= " << pdfU2Cdf[1][fJet]->getVal()
+  // << endl;
+
+  // pU1ValD*=p1Charge;
 
   //  cout << "       pU1Diff=" << pU1Diff << "  pU1ValD=" << pU1ValD << "  pMRMSU1=" << pMRMSU1 << "  pDRMSU1=" << pDRMSU1  << endl;
   //  cout << "       pU2Diff=" << pU2Diff << "  pU2ValD=" << pU2ValD << "  pMRMSU2=" << pMRMSU2 << "  pDRMSU2=" << pDRMSU2  << endl;
@@ -513,7 +536,6 @@ double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal 
   if(TMath::Abs(pVal)>=5) pVal=iPVal;
   // if(TMath::Abs(iPVal)>=5) pVal=5;
 
-
   myptd->setVal(1);
   myptm->setVal(1);
   myXm->setVal(0);
@@ -522,6 +544,70 @@ double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal 
   return pVal;
 
 }
+
+double RecoilCorrector::triGausInvGraphKeys(double iPVal, double Zpt, std::vector<RooAbsReal*> pdfKeyMCcdf, std::vector<RooAbsReal*> pdfKeyDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA, bool isU1) {
+
+  // add protection for outlier since I tabulated up to 5
+  if(TMath::Abs(iPVal)>=5) return iPVal;
+
+  int U1U2=1;
+  if(!isU1) U1U2=2;
+
+  int Zptbin=int(Zpt);
+  //  if(int(Zpt)==0) Zptbin=0;
+  if(int(Zpt)>49) Zptbin=49;
+  if(isU1 && int(Zpt)>29) Zptbin=29;
+
+  /*
+  int Zptbin=int(Zpt)-1;
+  if(int(Zpt)==0) Zptbin=0;
+  if(int(Zpt)>49) Zptbin=49;
+  */
+
+  //  cout << "Zptbin=" << Zptbin << " Zpt=" << Zpt << " pdfKeyMCcdf.size()=" << pdfKeyMCcdf.size() << " pdfKeyDATAcdf.size()=" << pdfKeyDATAcdf.size() << endl;
+  RooRealVar* myXmCDF = (RooRealVar*) pdfKeyMCcdf[Zptbin]->getVariables()->find("XVar");
+  RooRealVar* myXdCDF = (RooRealVar*) pdfKeyDATAcdf[Zptbin]->getVariables()->find("XVar");
+
+  //  cout << "iPVal" << iPVal << " myXmCDF=" << myXmCDF->getVal() << " myXdCDF=" << myXdCDF->getVal() << endl;
+
+  myXmCDF->setVal(iPVal);
+  double pVal=pdfKeyDATAcdf[Zptbin]->findRoot(*myXdCDF, myXdCDF->getMin(), myXdCDF->getMax(), pdfKeyMCcdf[Zptbin]->getVal());
+
+  // add protection for outlier since I tabulated up to 5
+  if(TMath::Abs(pVal)>=5) pVal=iPVal;
+
+  return pVal;
+
+}
+
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
+void RecoilCorrector::makeKeysVec(RooWorkspace *w, TFile * lFileKeys, TString fit, std::vector<RooAbsReal*> &pdfUiCdf, bool isU1) {
+
+  //  lFileKeys->ls();
+
+  int Zmax=29;
+  if(!isU1) Zmax=49;
+
+  for(int Zpt=0; Zpt<=Zmax; Zpt++) {
+
+    RooAbsPdf* pdfKey = (RooKeysPdf*) lFileKeys->Get(Form("%s_%d",fit.Data(),Zpt));
+
+    RooRealVar* myX1=w->var("XVar");
+
+    //    cout << "CDF pointer " << pdfKey->createCdf(*myX1) << endl;
+    w->import(*pdfKey, RooFit::RecycleConflictNodes(),RooFit::Silence());
+
+    RooAbsReal * iKeyPdf = pdfKey->createCdf(*myX1);
+    pdfUiCdf.push_back(iKeyPdf);
+    w->import(*iKeyPdf, RooFit::RecycleConflictNodes(),RooFit::Silence());
+  }
+
+  // w->Print();
+  return;
+
+}
+
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 void RecoilCorrector::runDiago(RooWorkspace *w, RooFitResult *result, TString fit, RooAbsReal *&pdfUiCdf) {
