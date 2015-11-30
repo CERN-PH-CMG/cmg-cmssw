@@ -40,14 +40,14 @@ class EventInterpretationBase( Analyzer ):
 
               else:
                   self.jetReCalibrator = JetReCalibrator(mcGT,self.cfg_ana.recalibrationType, False,cfg_ana.jecPath)
-                  self.jetReCalibratorFAT = JetReCalibrator(mcGT,self.cfg_ana.recalibrationTypeFAT, False,cfg_ana.jecPath)
+                  self.jetReCalibratorFAT = JetReCalibrator(mcGT,self.cfg_ana.recalibrationTypeFAT, False,cfg_ana.jecPath,3,True)
           else:
               if hasattr(self.cfg_comp,'globalTag'):
                   self.jetReCalibrator = JetReCalibrator(self.cfg_comp.globalTag,self.cfg_ana.recalibrationType, True,cfg_ana.jecPath)
                   self.jetReCalibratorFAT = JetReCalibrator(self.cfg_comp.globalTag,self.cfg_ana.recalibrationTypeFAT, True,cfg_ana.jecPath)
               else:    
                   self.jetReCalibrator = JetReCalibrator(dataGT,self.cfg_ana.recalibrationType, True,cfg_ana.jecPath)
-                  self.jetReCalibratorFAT = JetReCalibrator(dataGT,self.cfg_ana.recalibrationTypeFAT, True,cfg_ana.jecPath)          
+                  self.jetReCalibratorFAT = JetReCalibrator(dataGT,self.cfg_ana.recalibrationTypeFAT, True,cfg_ana.jecPath)
 
         self.attachBTag = cfg_ana.attachBTag    
         if self.attachBTag:
@@ -71,7 +71,6 @@ class EventInterpretationBase( Analyzer ):
 
 
             
-
     def removeLeptonFootPrint(self,leptons,cands):
         toRemove=[]
         cList=list(cands)
@@ -132,17 +131,28 @@ class EventInterpretationBase( Analyzer ):
         fatJets=toolboxFat.inclusiveJets(200.0,True)
         filtered = filter(self.selectFat,fatJets)
 
-        ##Apply JECS in SoftDrop and Pruned:
+        ##Apply JECS in original,SoftDrop and pruned:
         if self.jetReCalibratorFAT is not None:
 
             prunedJets=[]
+            originalJets=[]
             for j in fatJets:
+                originalJets.append(j)
                 prunedJets.append(j.softDropJet)
                 prunedJets.append(j.prunedJet)
                 
-            self.jetReCalibratorFAT.correctAll(prunedJets, self.rho, self.shiftJEC,True,False,[0.,0.],[0.,0.,0.])
+            #for pruned jets do not apply L1 corrections:rho=0.0
+            self.jetReCalibratorFAT.correctAll(prunedJets, 0.0, self.shiftJEC,True,False,[0.,0.],[0.,0.,0.])
+            self.jetReCalibratorFAT.correctAll(originalJets, self.rho, self.shiftJEC,True,False,[0.,0.],[0.,0.,0.])
+            
             for p in prunedJets:
                 p.setRawFactor(1.0/p.corr)
+
+            for p in originalJets:
+                p.setRawFactor(1.0/p.corr)
+                
+
+
         standardFatJets = self.handles['fatjets'].product()
 
         if self.attachBTag:
