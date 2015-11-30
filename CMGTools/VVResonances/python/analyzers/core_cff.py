@@ -134,15 +134,15 @@ lepAna = cfg.Analyzer(
     inclusive_muon_pt  = 15.0,
     inclusive_muon_eta = 2.4,
     inclusive_muon_dxy = 0.2,
-    inclusive_muon_dz  = 0.2,
+    inclusive_muon_dz  = 0.5,
     muon_dxydz_track = "innerTrack",
     # loose muon selection
     loose_muon_id     = "",
     loose_muon_pt     = 20.0,
     loose_muon_eta    = 2.4,
-    loose_muon_dxy    = 0.02,
-    loose_muon_dz     = 0.2,
-    loose_muon_isoCut = muonIDCommon,
+    loose_muon_dxy    = 0.2,
+    loose_muon_dz     = 0.5,
+    loose_muon_isoCut = lambda x:True,
     # inclusive very loose electron selection
     inclusive_electron_id  = "",
     inclusive_electron_pt  = 15.0,
@@ -156,8 +156,9 @@ lepAna = cfg.Analyzer(
     loose_electron_eta    = 2.5,
     loose_electron_dxy    = 0.2,
     loose_electron_dz     = 0.2,
-    loose_electron_isoCut = electronID,
     loose_electron_lostHits = 1.0,
+    loose_electron_isoCut = lambda x:True,
+
     # muon isolation correction method (can be "rhoArea" or "deltaBeta")
     mu_isoCorr = "deltaBeta",
     mu_effectiveAreas = "Spring15_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1')
@@ -234,7 +235,7 @@ leptonicVAna = cfg.Analyzer(
     LeptonicVMaker,
     name='leptonicVMaker',
     selectLNuPair=(lambda x:  isolationW(x) and leptonIDW(x) ),
-    selectLLPair=(lambda x: x.mass()>60.0 and x.mass()<120.0 and isolationZ(x) )
+    selectLLPair=(lambda x: x.mass()>60.0 and x.mass()<120.0 and isolationZ(x) and leptonIDZ(x) )
     )
 
 
@@ -260,8 +261,8 @@ multiStateAna = cfg.Analyzer(
     selectFat = (lambda x: x.pt()>200.0 and abs(x.eta())<2.4 and x.prunedJet.mass()>0.0 and len(x.subjets)>1 and x.looseID),
     ktPower=-1.0,
     r = 0.4,
-    selectPairLL = (lambda x:  x.mass()>0 and x.deltaPhi()>1.5 and x.leg1.pt()>200  and ((abs(x.leg1.leg1.pdgId())==11 and max(x.leg1.leg1.pt(),x.leg1.leg2.pt())>80) or (abs(x.leg1.leg1.pdgId())==13 and max(x.leg1.leg1.pt(),x.leg1.leg2.pt())>50))),
-    selectPairLNu = (lambda x: x.deltaPhi()>1.5 and x.leg1.pt()>200 and ((abs(x.leg1.leg1.pdgId())==11 and x.leg1.leg2.pt()>80) or (abs(x.leg1.leg1.pdgId())==13 and x.leg1.leg2.pt()>40))),
+    selectPairLL = (lambda x:  x.mass()>0 and x.deltaPhi()>1.5 and x.leg1.pt()>200),
+    selectPairLNu = (lambda x: x.deltaPhi()>1.5 and x.leg1.pt()>200 and  x.leg1.leg2.pt()>40),
     selectPairJJ = (lambda x:  x.mass()>1000 and x.leg1.tightID and x.leg2.tightID),
     selectPairJJNuNu = (lambda x: x.leg1.pt()>200 and x.deltaPhi()>1.5 ),
     suffix = '',

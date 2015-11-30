@@ -47,7 +47,7 @@ triggerFlagsAna.triggerBits ={
 
 
 #-------- HOW TO RUN
-test = 3
+test = 4
 if test==1:
     # test a single component, using a single thread.
     selectedComponents = [VBF_RadionToZZ_narrow_4500]
@@ -73,11 +73,6 @@ elif test==4:
         comp.splitFactor = 1
 
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
-from CMGTools.TTHAnalysis.tools.EOSEventsWithDownload import EOSEventsWithDownload
-
-
-
-
 event_class = Events
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence,

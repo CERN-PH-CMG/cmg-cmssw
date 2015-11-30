@@ -135,20 +135,16 @@ class EventInterpretationBase( Analyzer ):
         if self.jetReCalibratorFAT is not None:
 
             prunedJets=[]
-            originalJets=[]
             for j in fatJets:
-                originalJets.append(j)
+                prunedJets.append(j)
                 prunedJets.append(j.softDropJet)
                 prunedJets.append(j.prunedJet)
                 
-            #for pruned jets do not apply L1 corrections:rho=0.0
+            #do not apply L1 corrections:rho=0.0
             self.jetReCalibratorFAT.correctAll(prunedJets, 0.0, self.shiftJEC,True,False,[0.,0.],[0.,0.,0.])
-            self.jetReCalibratorFAT.correctAll(originalJets, self.rho, self.shiftJEC,True,False,[0.,0.],[0.,0.,0.])
+#            self.jetReCalibratorFAT.correctAll(originalJets, self.rho, self.shiftJEC,True,False,[0.,0.],[0.,0.,0.])
             
             for p in prunedJets:
-                p.setRawFactor(1.0/p.corr)
-
-            for p in originalJets:
                 p.setRawFactor(1.0/p.corr)
                 
 
