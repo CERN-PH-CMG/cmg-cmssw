@@ -344,6 +344,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
   }
   bool doSingleGauss=false;
+  bool doKeys= useRecoilCorr==3 ? true : false;
 
   double ZWmassRatio = ((double)WMass::ZMassCentral_MeV)/((double)WMass::WMassCentral_MeV);
   
@@ -847,13 +848,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   // << endl;
                   //if(useRecoilCorr==1){}
 
-                  bool doKeys=false;
-                  if(useRecoilCorr==3){
-                    useRecoilCorr=2;
-                    doKeys=true;
-                  }
-
-                  if(useRecoilCorr==2){
+                  if(useRecoilCorr==2 || useRecoilCorr==3){
                     // cout
                     // << "ZGen_pt=" << ZGen_pt
                     // << " ZGen_phi=" << ZGen_phi
