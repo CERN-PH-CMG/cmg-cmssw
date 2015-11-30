@@ -56,31 +56,34 @@ void PlotZdistributionsMCvsDATA_stack(TString folderMCsig="",TString folderMCEWK
   common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMueta_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,0,0,1,Form(";#eta_{#mu+};Counts"),-1,-1,1,1);
   common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_Recoil_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Recoil [GeV];Counts"),-1,-1,1,1);
   common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_ZpT_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Z pT [GeV];Counts"),0,50,1,1);
+  
+  TString string = "closure"; //"_8_JetCut"
+  
   for(int i=1;i<21;i++){
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_met_VTX%d_tk",i),0,0,0,1,Form(";MET [GeV] for nvtx=%d;Counts",i),0,50,2,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_metphi_VTX%d_tk",i),0,0,0,1,Form(";MET #phi [rad] for nvtx=%d;Counts",i),-1,-1,4,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_ptZ_VTX%d_tk",i),0,0,0,1,Form(";Z pT [GeV] for nvtx=%d;Counts",i),-1,-1,2,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_u_VTX%d_tk",i),0,0,0,1,Form(";Recoil [GeV] for nvtx=%d ;Counts",i),-1,-1,2,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_u1_VTX%d_tk",i),0,0,0,1,Form(";u1 [GeV] for nvtx=%d;Counts",i),-30,30,2,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_u2_VTX%d_tk",i),0,0,0,1,Form(";u2 [GeV] for nvtx=%d;Counts",i),-30,30,2,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_met_VTX%d_tk",string.Data(),i),0,0,0,1,Form(";MET [GeV] for nvtx=%d;Counts",i),0,50,2,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_metphi_VTX%d_tk",string.Data(),i),0,0,0,1,Form(";MET #phi [rad] for nvtx=%d;Counts",i),-1,-1,4,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_ptZ_VTX%d_tk",string.Data(),i),0,0,0,1,Form(";Z pT [GeV] for nvtx=%d;Counts",i),-1,-1,2,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_u_VTX%d_tk",string.Data(),i),0,0,0,1,Form(";Recoil [GeV] for nvtx=%d ;Counts",i),-1,-1,2,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_u1_VTX%d_tk",string.Data(),i),0,0,0,1,Form(";u1 [GeV] for nvtx=%d;Counts",i),-30,30,2,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_u2_VTX%d_tk",string.Data(),i),0,0,0,1,Form(";u2 [GeV] for nvtx=%d;Counts",i),-30,30,2,1);
   }
   TString zpt_range_name[13] = {"[0,2]","[10,12]","[12,14]","[14,16]","[16,18]","[18,20]","[20,30]","[2,4]","[4,6]","[6,8]","[8,10]","[30,50]","[50,inf]"};
   TString zpt_range[13] = {"02","1012","1214","1416","1618","1820","2030","24","46","68","810","3050","50"};
   // for(int i=0;i<13;i++){ // commented out after Zpt<30
   for(int i=0;i<11;i++){
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_met_Zpt%s_tk",zpt_range[i].Data()),0,0,0,1,Form(";MET [GeV] for Z pT=%s;Counts",zpt_range_name[i].Data()),0,50,1,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_u_Zpt%s_tk",zpt_range[i].Data()),0,0,0,1,Form(";Recoil [rad] for Z pT=%s;Counts",zpt_range_name[i].Data()),-1,-1,1,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_u1_Zpt%s_tk",zpt_range[i].Data()),0,0,0,1,Form(";u1 [GeV] for Z pT=%s;Counts",zpt_range_name[i].Data()),-30,30,1,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_u2_Zpt%s_tk",zpt_range[i].Data()),0,0,0,1,Form(";u2 [GeV] for Z pT=%s;Counts",zpt_range_name[i].Data()),-30,30,1,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_met_Zpt%s_tk",string.Data(),zpt_range[i].Data()),0,0,0,1,Form(";MET [GeV] for Z pT=%s;Counts",zpt_range_name[i].Data()),0,50,1,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_u_Zpt%s_tk",string.Data(),zpt_range[i].Data()),0,0,0,1,Form(";Recoil [rad] for Z pT=%s;Counts",zpt_range_name[i].Data()),-1,-1,1,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_u1_Zpt%s_tk",string.Data(),zpt_range[i].Data()),0,0,0,1,Form(";u1 [GeV] for Z pT=%s;Counts",zpt_range_name[i].Data()),-30,30,1,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_u2_Zpt%s_tk",string.Data(),zpt_range[i].Data()),0,0,0,1,Form(";u2 [GeV] for Z pT=%s;Counts",zpt_range_name[i].Data()),-30,30,1,1);
   }
   TString zy_range_name[8] = {"[0.0,0.5]","[-0.5,0.0]","[0.5,1.0]","[1.0,0.5]","[1.0,1.5]","[1.5,1.0]","[1.5,2.0]","[2.0,1.5]"};
   TString zy_range[8] = {"0005","0500","0510","1005","1015","1510","1520","2015"};
   // for(int i=0;i<8;i++){ // commented out after Zpt<30
   for(int i=0;i<6;i++){
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_met_Zy%s_tk",zy_range[i].Data()),0,0,0,1,Form(";MET [GeV] for Z rapidity=%s;Counts",zy_range_name[i].Data()),0,50,1,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_u_Zy%s_tk",zy_range[i].Data()),0,0,0,1,Form(";Recoil [rad] for Z rapidity=%s;Counts",zy_range_name[i].Data()),-1,-1,1,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_u1_Zy%s_tk",zy_range[i].Data()),0,0,0,1,Form(";u1 [GeV] for Z rapidity=%s;Counts",zy_range_name[i].Data()),-30,30,1,1);
-    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_WlikePos_8_JetCut_u2_Zy%s_tk",zy_range[i].Data()),0,0,0,1,Form(";u2 [GeV] for Z rapidity=%s;Counts",zy_range_name[i].Data()),-30,30,1,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_met_Zy%s_tk",string.Data(),zy_range[i].Data()),0,0,0,1,Form(";MET [GeV] for Z rapidity=%s;Counts",zy_range_name[i].Data()),0,50,1,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_u_Zy%s_tk",string.Data(),zy_range[i].Data()),0,0,0,1,Form(";Recoil [rad] for Z rapidity=%s;Counts",zy_range_name[i].Data()),-1,-1,1,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_u1_Zy%s_tk",string.Data(),zy_range[i].Data()),0,0,0,1,Form(";u1 [GeV] for Z rapidity=%s;Counts",zy_range_name[i].Data()),-30,30,1,1);
+    common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_u2_Zy%s_tk",string.Data(),zy_range[i].Data()),0,0,0,1,Form(";u2 [GeV] for Z rapidity=%s;Counts",zy_range_name[i].Data()),-30,30,1,1);
   }
   for(int i=0;i<2;i++){
     for(int j=0;j<7;j++){
