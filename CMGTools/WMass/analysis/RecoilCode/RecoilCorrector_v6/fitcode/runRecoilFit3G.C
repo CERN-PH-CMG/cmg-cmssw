@@ -76,6 +76,7 @@ sleep 20
 #include "TRandom3.h"
 #include "TGraphErrors.h"
 #include "TMultiGraph.h"
+#include "RooBinning.h"
 #include "RooRealVar.h"
 #include "RooFormulaVar.h"
 #include "RooPolynomial.h"
@@ -679,7 +680,7 @@ const int readRecoil(std::vector<double> &iSumEt,
 
     cout << "reading keys U1" << endl;
     if(doKeys) {
-      for(int Zpt=1; Zpt<=19; Zpt++) {
+      for(int Zpt=0; Zpt<=29; Zpt++) {
 	//      RooAbsReal * & iKeyPdfU1,
 	RooAbsPdf* pdfKeyU1 = (RooKeysPdf*) lFileKeys->Get(Form("Keys_U1_%d_%d",i0,Zpt));
 	//	cout << "Zpt " << Zpt << endl;
@@ -726,7 +727,7 @@ const int readRecoil(std::vector<double> &iSumEt,
 
     cout << "reading keys U2 " << endl;
     if(doKeys) {
-      for(int Zpt=1; Zpt<=19; Zpt++) {
+      for(int Zpt=1; Zpt<=49; Zpt++) {
 	//      RooAbsReal * & iKeyPdfU1,
 	RooAbsPdf* pdfKeyU2 = (RooKeysPdf*) lFileKeys->Get(Form("Keys_U2_%d_%d",i0,Zpt));
 	cout << "Zpt " << Zpt << endl;
@@ -4221,8 +4222,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
   /// temporary fix
   if(lPar!=fU1) fZPtMax=50;
-  if(lPar==fU1) fZPtMax=20;
-
+  if(lPar==fU1) fZPtMax=30;
 
   //RooFit Build a double Gaussian
   TRandom lRand(0xDEADBEEF);
@@ -4232,12 +4232,14 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   range_min=fZPtMin;
   range_max=fZPtMax;
 
+  //  if(doKeys) rangeMinXVar=-50.;
+  //  if(doKeys) rangeMaxXVar=50.;
+
   minRangeSigma = rangeMinXVar;
   maxRangeSigma = rangeMaxXVar;
 
   if(doAbsolute) minRangeSigma = -50.;
   if(doAbsolute) maxRangeSigma = 50.;
-
 
   lRPt.setVal(0);     lRPt.setRange(range_min,range_max);
   lRXVar.setVal(0);   lRXVar.setRange(minRangeSigma,maxRangeSigma);
@@ -4566,10 +4568,11 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   if(doRecoParam) fileName2D += "_doRecoParam";
   if(doLepProjAbsolute) fileName2D += "_doLepProjAbsolute";
   if(doKeys) fileName2D += "_keys";
-  fileName2D += "_OCT25";
+  fileName2D += "_NOV25";
   fileName2D += ".root";
   
-  if(doPrint /*&& !doKeys*/) {
+  //  if(doPrint /*&& !doKeys*/) {
+  if(doPrint && !doKeys) {
 
     pGraphA->Draw("ap");
     drawErrorBands(iFit,fZPtMax);
@@ -4851,7 +4854,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   */
 
   TString fileName2DFIT="file2Dfit_";
-  fileName2DFIT += "OCT25_";
+  fileName2DFIT += "NOV25_";
   if(!fData && (!doPosW && doNegW) && !doBKG) fileName2DFIT += "Wneg";
   if(!fData && (doPosW && !doNegW) && !doBKG) fileName2DFIT += "Wpos";
   if(!fData && (!doPosW && !doNegW) && !doBKG) fileName2DFIT += "Z";
@@ -5127,6 +5130,13 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       cout << "== plot the results of the binned fit " << i0 << " -- keyN " << keyN << endl;
       cout << "====================" << endl;
 
+
+      // fancy Binning here https://root.cern.ch/root/html/tutorials/roofit/rf108_plotbinning.C.html#67
+      RooBinning tbins(rangeMinXVar, rangeMaxXVar) ;
+      tbins.addUniform(100,-5.,5.) ;
+      tbins.addUniform(45,-50.,5.) ;
+      tbins.addUniform(45, 5.,50.) ;
+
       lResidVals[i0].plotOn(lFrame1,MarkerColor(kRed));
 
       //see slide 18 in http://roofit.sourceforge.net/docs/tutorial/plot/roofit_tutorial_plot.pdf
@@ -5183,7 +5193,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 	pKey1 << i0;
 	cout << "filling keys " << pKey1.str().c_str() << endl;
 	//	RooKeysPdf pdf_keys
-	RooKeysPdf * pdf_keys = new RooKeysPdf(pKey1.str().c_str(), pKey1.str().c_str(), lRXVar, lResidVals[i0] , RooKeysPdf::MirrorBoth,2);
+	RooKeysPdf * pdf_keys = new RooKeysPdf(pKey1.str().c_str(), pKey1.str().c_str(), lRXVar, lResidVals[i0] , RooKeysPdf::NoMirror,2);
 	///      lResidValsKeys.push_back(pdf_keys);
 
 	if(pdf_keys && fr) {
@@ -5657,7 +5667,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     //    TF1 *iMean3Fit  = new TF1("iMean3Fit",   "pol10"); // this need to be large to store the errors from the computeFitErrors
     //    TFitResultPtr  lFitPtrM0Verylarge = lM0Verylarge->Fit(lFitPullMean3,"SRE","", range_min , range_max); //"EXO"
 
-
+    if(doKeys) return; // non need to do the unbinned for the rooKeys
     if(do1CB2G) return; //CHRISTOS
 
     cout << "============" << endl;
@@ -7128,6 +7138,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
   bool thisISDATA=true;
   if(MCtype!=2)  thisISDATA=false;
   if(thisISDATA) doKalman_corr=true;
+  if(thisISDATA) doHalfStat=true;
   if(doKalman_corr) setUpMuonCorrection(thisISDATA);
  
   startTreeEntries = startEntries;
@@ -7140,7 +7151,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
   //  TString name="recoilfits/recoilfit_JAN22_MADtoMAD";
   //  TString name="recoilfits/recoilfit_JAN22_POWtoMAD";
   //  TString name="recoilfits/recoilfit_JAN28";
-  TString name="recoilfits/recoilfit_OCT25";
+  TString name="recoilfits/recoilfit_NOV25";
   if(do8TeV) name +="_8TeV";
   if(doABC) name +="_ABC";
 
@@ -7222,8 +7233,8 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 			    ////			    "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
 			    //			    "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
 			    //			    "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root" ,"PF",fId);
-			    "../../OCT25/recoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root",
-			    "../../OCT25/keysrecoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root","PF",fId);
+			    "../../NOV25/recoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root",
+			    "../../NOV25/keysrecoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root","PF",fId);
 
       if(doMad) readRecoil(lZMSumEt,lZMU1Fit,lZMU1RMSSMFit,lZMU1RMS1Fit,lZMU1RMS2Fit,lZMU1RMS3Fit,lZMU1FracFit,lZMU1Mean1Fit, lZMU1Mean2Fit,
 			   lZMU2Fit,lZMU2RMSSMFit,lZMU2RMS1Fit,lZMU2RMS2Fit,lZMU2RMS3Fit,lZMU2FracFit,lZMU2Mean1Fit, lZMU2Mean2Fit,
@@ -7231,8 +7242,8 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 			   //			   "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 			   //			   "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 			   //			   "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
-			   "../../OCT25/recoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root",
-			   "../../OCT25/keysrecoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root","PF",fId);
+			   "../../NOV25/recoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root",
+			   "../../NOV25/keysrecoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root","PF",fId);
       isMC=false;
   
       /*
@@ -7252,8 +7263,8 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
 		 //		 "recoilfits/recoilfit_JAN25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 		 //		 "../../recoilfit_MARCH25_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
 		 //		 "/afs/cern.ch/user/d/dalfonso/public/recoilfit_APR13_genZ_tkmet_eta21_MZ81101_PDF-1_pol4_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root" ,"PF",fId);
-		 "../../OCT25/recoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root",
-		 "../../OCT25/keysrecoilfit_SEPT25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root","PF",fId);
+		 "../../NOV25/recoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root",
+		 "../../NOV25/keysrecoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root","PF",fId);
 
       /*
       // POWHEG as DATA closures
