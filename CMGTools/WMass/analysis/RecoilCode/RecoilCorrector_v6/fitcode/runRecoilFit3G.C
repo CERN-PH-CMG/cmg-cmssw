@@ -3326,11 +3326,13 @@ void constructPDF(double lPar) {
 
     startSigma3 = 2.1; //2.
     minSigma3 = 1.;
+    if(lPar!=fU1) minSigma3 = 0.5;
     maxSigma3 = 5.; //12
 
     minFrac = 0.;
     maxFrac = 1.;
     minFrac2 = 0.4;
+    if(lPar!=fU1) minFrac2 = 0.;
     maxFrac2 = 1.;
     //    if(lPar!=fU1) maxFrac = 0.6;
 
@@ -4568,7 +4570,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   if(doRecoParam) fileName2D += "_doRecoParam";
   if(doLepProjAbsolute) fileName2D += "_doLepProjAbsolute";
   if(doKeys) fileName2D += "_keys";
-  fileName2D += "_NOV25";
+  fileName2D += "_NOV30";
   fileName2D += ".root";
   
   //  if(doPrint /*&& !doKeys*/) {
@@ -4854,7 +4856,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   */
 
   TString fileName2DFIT="file2Dfit_";
-  fileName2DFIT += "NOV25_";
+  fileName2DFIT += "NOV30_";
   if(!fData && (!doPosW && doNegW) && !doBKG) fileName2DFIT += "Wneg";
   if(!fData && (doPosW && !doNegW) && !doBKG) fileName2DFIT += "Wpos";
   if(!fData && (!doPosW && !doNegW) && !doBKG) fileName2DFIT += "Z";
@@ -7151,7 +7153,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
   //  TString name="recoilfits/recoilfit_JAN22_MADtoMAD";
   //  TString name="recoilfits/recoilfit_JAN22_POWtoMAD";
   //  TString name="recoilfits/recoilfit_JAN28";
-  TString name="recoilfits/recoilfit_NOV25";
+  TString name="recoilfits/recoilfit_NOV30";
   if(do8TeV) name +="_8TeV";
   if(doABC) name +="_ABC";
 
