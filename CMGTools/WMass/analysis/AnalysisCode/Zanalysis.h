@@ -527,7 +527,7 @@ void Zanalysis::fillControlPlots(TLorentzVector Zcorr, TLorentzVector met, TLore
   common_stuff::plot2D(Form("ZlepPt1VsPt2_%s_%s_eta%s_%d",phaseSpace_str.Data(),SigOrQCD_str.Data(),eta_str.Data(),jZmass_MeV),
 		       muPosCorr.Pt(),muNegCorr.Pt(),weight,
 		       h_2d, 200,0,200,200,0,200 );
-  common_stuff::plot2D(Form("ZlepDeltaPtVsPt1_%s_%s_eta%s_%d",SigOrQCD_str.Data(),eta_str.Data(),jZmass_MeV),
+  common_stuff::plot2D(Form("ZlepDeltaPtVsPt1_%s_%s_eta%s_%d",phaseSpace_str.Data(),SigOrQCD_str.Data(),eta_str.Data(),jZmass_MeV),
 		       muPosCorr.Pt(),muPosCorr.Pt()-muNegCorr.Pt(),weight,
 		       h_2d, 200,0,200,100,-50,50 );
   common_stuff::plot1D(Form("ZlepDeltaPhi_%s_%s_eta%s_%d",phaseSpace_str.Data(),SigOrQCD_str.Data(),eta_str.Data(),jZmass_MeV),
