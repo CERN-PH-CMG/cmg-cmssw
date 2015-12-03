@@ -16,31 +16,29 @@ FEV=" -F mjvars/t \"$T/friends/evVarFriend_{cname}.root\" "
 
 ROOT="plots/Summer15/v1.0/$WHAT"
 
-RUNY=""
+MCA=""
 if [ "$WHAT" == "zmmI" ] || [ "$WHAT" == "zeeI" ] ; then
-    RUNY="${COREY} mca-74X.txt --s2v "
+    MCA="mca-74X.txt "
+elif [ "$WHAT" == "wmnI" ] || [ "$WHAT" == "wenI" ] ; then
+    MCA="mca-74X-singleLep.txt "
 else
-    RUNY="${COREY} mca-74X-analysis.txt --s2v "
+    MCA="mca-74X-analysis.txt "
 fi
 
-RUNYSR="${RUNY} sync/monojet_twiki.txt "
-RUNY2M="${RUNY} sync/zmumu_twiki.txt "
-RUNY2E="${RUNY} sync/zee_twiki.txt "
-RUNY1M="${RUNY} sync/wmunu_twiki.txt "
-RUNY1G="${RUNY} sync/gjets_twiki.txt "
+RUNYSR="${COREY} ${MCA} sync/monojet_twiki.txt "
+RUNY2M="${COREY} ${MCA} sync/zmumu_twiki.txt "
+RUNY2E="${COREY} ${MCA} sync/zee_twiki.txt "
+RUNY1M="${COREY} ${MCA} sync/wmunu_twiki.txt "
+RUNY1G="${COREY} ${MCA} sync/gjets_twiki.txt "
 
-PLOT="${COREP} mca-74X.txt --s2v "
+PLOT="${COREP} ${MCA} "
 PLOTSR="${PLOT} sr/monojet.txt sr/monojet-plots.txt --noStackSig --showSigShape "
 
 case $WHAT in
 sr)
         SF=" "
         echo "python ${RUNYSR} $FEV $SF "
-        echo "python ${PLOTSR}  $FEV $SF --pdir plots/sr "
-;;
-wmunu)
-        echo "python ${RUNY} control-samples/w_munu.txt $FEV --sp WJets --xp M10V "
-        echo "python ${PLOT} control-samples/w_munu.txt control-samples/w_munu-plots.txt $FEV --sp WJets --xp M10V --pdir plots/wmunu "
+        echo "python ${PLOTSR}  $FEV $SF --pdir ${ROOT} --showRatio "
 ;;
 zmm)
         echo "python ${RUNY2M} $FEV --sp DYJetsHT "
@@ -57,5 +55,13 @@ zmmI)
 zeeI)
         echo "python ${RUNY2E} -X recoil -X jet100 -X jetclean -X dphijm $FEV --sp DYJets "
         echo "python ${PLOT} sync/zee_twiki.txt sync/zee_incl_plots.txt -X recoil -X jet100 -X jetclean -X dphijm $FEV --sp DYJets --pdir ${ROOT} --showRatio --scaleSigToData "
+;;
+wmnI)
+        echo "python ${RUNY1M} $FEV --sp WJets --xp DYJetsHT --xp WJetsHT -X recoil -X jet100 -X jetclean -X dphijm "
+        echo "python ${PLOT} sync/wmunu_twiki.txt sync/wmunu_incl_plots.txt $FEV --sp WJets  --xp DYJetsHT --xp WJetsHT -X recoil -X jet100 -X jetclean -X dphijm --pdir ${ROOT} --showRatio --scaleSigToData "
+;;
+wmn)
+        echo "python ${RUNY1M} $FEV --sp WJetsHT --xp WJets --xp DYJets "
+        echo "python ${PLOT} sync/wmunu_twiki.txt sync/wmunu_incl_plots.txt $FEV --sp WJetsHT --xp WJets --xp DYJets -X recoil -X jet100 -X jetclean -X dphijm --pdir ${ROOT} --showRatio --scaleSigToData "
 ;;
 esac;
