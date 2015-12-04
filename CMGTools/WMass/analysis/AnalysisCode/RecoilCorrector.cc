@@ -457,21 +457,33 @@ double &pU1,double &pU2
   //  std::cout << " Before: pU1Diff " << pU1Diff << " pU2Diff " << pU2Diff << std::endl;
 
   if(doKeys) {
-    //    triGausInvGraphKeys
-    pU1ValD = triGausInvGraphKeys(pU1Diff,iGenPt,pdfKeyU1Cdf[2][fJet],pdfKeyU1Cdf[1][fJet],wU1[2][fJet],wU1[1][fJet],true);
-    pU2ValD = triGausInvGraphKeys(pU2Diff,iGenPt,pdfKeyU2Cdf[2][fJet],pdfKeyU2Cdf[1][fJet],wU2[2][fJet],wU2[1][fJet],false);
+    // triGausInvGraphKeys
+    // this need the absolute space
+    pU1ValD = triGausInvGraphKeys(pU1,iGenPt,pdfKeyU1Cdf[2][fJet],pdfKeyU1Cdf[1][fJet],wU1[2][fJet],wU1[1][fJet],true);
+    pU2ValD = triGausInvGraphKeys(pU2,iGenPt,pdfKeyU2Cdf[2][fJet],pdfKeyU2Cdf[1][fJet],wU2[2][fJet],wU2[1][fJet],false);
+
+    pU1=pU1ValD;
+    pU2=pU2ValD;
+
   } else {
     // cout << "triGausInvGraphPDF U1" << endl;
+    // this need the reduced space
     pU1ValD = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[2][fJet],pdfU1Cdf[1][fJet],wU1[2][fJet],wU1[1][fJet]);
     pU2ValD = triGausInvGraphPDF(pU2Diff,iGenPt,pdfU2Cdf[2][fJet],pdfU2Cdf[1][fJet],wU2[2][fJet],wU2[1][fJet]);
+
+    pU1ValD = pU1ValD*pDRMSU1;
+    pDefU1 *= (pDU1/pMU1);
+
+    pU2ValD = pU2ValD*pDRMSU2;
+
+    pU1   = pDefU1             + pU1ValD;
+    pU2   =                      pU2ValD;
+
+
   }
 
   //  std::cout << " After: pU1ValD " << pU1ValD << " pU2ValD " << pU2ValD  << std::endl;
 
-  pU1ValD = pU1ValD*pDRMSU1;
-  pDefU1 *= (pDU1/pMU1);
-
-  pU2ValD = pU2ValD*pDRMSU2;
   //  pU2ValD*=p2Charge; // removed the ABS value on the argument of the triGausInvGraphPDF
 
   // cout 
@@ -498,8 +510,6 @@ double &pU1,double &pU2
   //  cout << "       pU2Diff=" << pU2Diff << "  pU2ValD=" << pU2ValD << "  pMRMSU2=" << pMRMSU2 << "  pDRMSU2=" << pDRMSU2  << endl;
 
 
-  pU1   = pDefU1             + pU1ValD;
-  pU2   =                      pU2ValD;
   iMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
   iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
 
@@ -547,8 +557,8 @@ double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal 
 
 double RecoilCorrector::triGausInvGraphKeys(double iPVal, double Zpt, std::vector<RooAbsReal*> pdfKeyMCcdf, std::vector<RooAbsReal*> pdfKeyDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA, bool isU1) {
 
-  // add protection for outlier since I tabulated up to 5
-  if(TMath::Abs(iPVal)>=5) return iPVal;
+  // add protection for outlier since I tabulated up to 30
+  if(TMath::Abs(iPVal)>=30) return iPVal;
 
   int U1U2=1;
   if(!isU1) U1U2=2;
@@ -573,8 +583,8 @@ double RecoilCorrector::triGausInvGraphKeys(double iPVal, double Zpt, std::vecto
   myXmCDF->setVal(iPVal);
   double pVal=pdfKeyDATAcdf[Zptbin]->findRoot(*myXdCDF, myXdCDF->getMin(), myXdCDF->getMax(), pdfKeyMCcdf[Zptbin]->getVal());
 
-  // add protection for outlier since I tabulated up to 5
-  if(TMath::Abs(pVal)>=5) pVal=iPVal;
+  // add protection for outlier since I tabulated up to 30
+  if(TMath::Abs(pVal)>=30) pVal=iPVal;
 
   return pVal;
 
@@ -590,6 +600,7 @@ void RecoilCorrector::makeKeysVec(RooWorkspace *w, TFile * lFileKeys, TString fi
   if(!isU1) Zmax=49;
 
   for(int Zpt=0; Zpt<=Zmax; Zpt++) {
+
 
     RooAbsPdf* pdfKey = (RooKeysPdf*) lFileKeys->Get(Form("%s_%d",fit.Data(),Zpt));
 
