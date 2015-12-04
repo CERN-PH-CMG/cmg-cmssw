@@ -282,7 +282,7 @@ bool doOnlyU2 = false;
 bool doIterativeMet = false; // <-- together
 bool writeTree = false; // <-- together
 bool doClosure = false;
-bool doAbsolute = false;
+bool doAbsolute = false; // <-- true for rooKeys
 
 bool doLepProjAbsolute = false;
 
@@ -877,7 +877,7 @@ double diGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2) {
     }
   }
 
-  if(lId==-99) { return iPVal; cout << "nothing here " << endl; } 
+  if(lId==-99) { return iPVal; cout << "nothing here " << endl; }
 
   //  cout << "-- Final Val "  <<  (lMin + (lId-0.5)*lDiff/lN2) << " -- " << lId << endl;
   return (lMin + (lId-0.5)*lDiff/lN2);
@@ -2413,7 +2413,7 @@ bool runWSelection(bool doPos, bool doMet) {
    
    return false;
    
- }         
+ }
 
 bool passMatching() { 
 
@@ -4237,11 +4237,17 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   //  if(doKeys) rangeMinXVar=-50.;
   //  if(doKeys) rangeMaxXVar=50.;
 
+  if(doAbsolute) rangeMinXVar = -30.;
+  if(doAbsolute) rangeMaxXVar = 30.;
+
   minRangeSigma = rangeMinXVar;
   maxRangeSigma = rangeMaxXVar;
 
-  if(doAbsolute) minRangeSigma = -50.;
-  if(doAbsolute) maxRangeSigma = 50.;
+  //  if(doAbsolute) minRangeSigma = -50.;
+  //  if(doAbsolute) maxRangeSigma = 50.;
+
+  //  if(doAbsolute) minRangeSigma = -15.;
+  //  if(doAbsolute) maxRangeSigma = 15.;
 
   lRPt.setVal(0);     lRPt.setRange(range_min,range_max);
   lRXVar.setVal(0);   lRXVar.setRange(minRangeSigma,maxRangeSigma);
@@ -4785,7 +4791,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
     // clean the under/overflow
     if(!doAbsolute && (vlYTVals_all[lPar!=fU1][iRMS][i0]/(lYTest)<rangeMinXVar || vlYTVals_all[lPar!=fU1][iRMS][i0]/(lYTest)>rangeMaxXVar)) continue;
-    if(doAbsolute && (vlYTVals_all[lPar!=fU1][iRMS][i0]<-50. || vlYTVals_all[lPar!=fU1][iRMS][i0]>50.)) continue;
+    if(doAbsolute && (vlYTVals_all[lPar!=fU1][iRMS][i0]<rangeMinXVar || vlYTVals_all[lPar!=fU1][iRMS][i0]>rangeMaxXVar)) continue;
 
     // MARIA: here the switch for pull or GeV
     if(!doAbsolute) lRXVar.setVal(vlYTVals_all[lPar!=fU1][iRMS][i0]/(lYTest)); // residual  for the Pull
@@ -4954,7 +4960,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
   if(writeTree) return;
   //  if(doBKG) return;
-  if(doClosure || doAbsolute) return;
+  if(doClosure) return;
   //  if(doAbsolute) return;
 
   //// AFTER here set up for the 1D fit                                                                                                                    
@@ -5109,7 +5115,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       }   else  {
 
 	//	constructPDF(lPar);
-	fr= lRGAdd->fitTo(lResidVals[i0],Warnings(kTRUE),Save(kTRUE),NumCPU(4),Minimizer("Minuit2","migrad"),Strategy(2)/*,Minos()*/);//,Minos()); //Double Gaussian fit for the binned fit
+	if(!doAbsolute) fr= lRGAdd->fitTo(lResidVals[i0],Warnings(kTRUE),Save(kTRUE),NumCPU(4),Minimizer("Minuit2","migrad"),Strategy(2)/*,Minos()*/);//,Minos()); //Double Gaussian fit for the binned fit
 
       }
       
@@ -5198,7 +5204,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 	RooKeysPdf * pdf_keys = new RooKeysPdf(pKey1.str().c_str(), pKey1.str().c_str(), lRXVar, lResidVals[i0] , RooKeysPdf::NoMirror,2);
 	///      lResidValsKeys.push_back(pdf_keys);
 
-	if(pdf_keys && fr) {
+	if(pdf_keys) {
 	  pdf_keys->plotOn(lFrame1,LineColor(kGray+1)) ;
 	  TFile f16(Form("%s%d%s","keys",i0,rootFileNameFrame.c_str()),"UPDATE");
 	  //	  TFile f16(Form("%s%s","keys",rootFileNameFrame.c_str()),"UPDATE");
@@ -5210,7 +5216,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
       }
 
-      if(i0==5 || i0==10 || i0==15 || i0==20 || i0==25) {
+      if((i0==5 || i0==10 || i0==15 || i0==20 || i0==25) && fr) {
 	TString nameHistoOn="hh_plotOn_U1";
 	if(lPar!=fU1) nameHistoOn="hh_plotOn_U2";
 	nameHistoOn  += "_";
@@ -5370,75 +5376,73 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
       // 1D - central values
 
-      if(!fr->status()) {
-	// overall RMS
-	lY0[i0-int(range_min)] = (lR1Frac->getVal()*lR1Sigma.getVal() + (1.-lR1Frac->getVal())*lR2Sigma.getVal()); 
-	if(do3G) lY0[i0-int(range_min)] = (lR1Frac->getVal()*lR1Sigma.getVal() + lRFrac->getVal()*(1.-lR1Frac->getVal())*lR2Sigma.getVal() + (1.-lR1Frac->getVal())*(1.-lRFrac->getVal())*lR3Sigma.getVal()); 
-	lEY0[i0-int(range_min)]  = 0;
-	// sigma 1,2,3
-	lY1[i0-int(range_min)] = lR1Sigma.getVal();///sqrt(2*3.14159265)*2.;
-	lY2[i0-int(range_min)] = lR2Sigma.getVal();///sqrt(2*3.14159265)*2.;
-	if(do3G) lY3[i0-int(range_min)] = lR3Sigma.getVal();///sqrt(2*3.14159265)*2.;
-	lEY1[i0-int(range_min)] = lR1Sigma.getError();///sqrt(2*3.14159265)*2.;
-	lEY2[i0-int(range_min)] = lR2Sigma.getError();///sqrt(2*3.14159265)*2.;
-	if(do3G) lEY3[i0-int(range_min)] = lR3Sigma.getError();///sqrt(2*3.14159265)*2.;
-	// mean
-	myMean[i0-int(range_min)] = lR1Mean.getVal();
-	myMeanE[i0-int(range_min)] = lR1Mean.getError();
-	myMeanLarge[i0-int(range_min)] = lR1MeanLarge.getVal();
-	myMeanLargeE[i0-int(range_min)] = lR1MeanLarge.getError();
-	myMeanVeryLarge[i0-int(range_min)] = lR1MeanVeryLarge.getVal();
-	myMeanVeryLargeE[i0-int(range_min)] = lR1MeanVeryLarge.getError();
-	// fraction
-	myFrac[i0-int(range_min)] = lRFrac->getVal();
-        myFracE[i0-int(range_min)] = lRFrac->getPropagatedError(*fr) ;
-	myFrac2[i0-int(range_min)] = lR1Frac->getVal(); // second fraction
-        myFrac2E[i0-int(range_min)] = lR1Frac->getPropagatedError(*fr) ;
+      if(fr) {
+	if(!fr->status()) {
+	  // overall RMS
+	  lY0[i0-int(range_min)] = (lR1Frac->getVal()*lR1Sigma.getVal() + (1.-lR1Frac->getVal())*lR2Sigma.getVal());
+	  if(do3G) lY0[i0-int(range_min)] = (lR1Frac->getVal()*lR1Sigma.getVal() + lRFrac->getVal()*(1.-lR1Frac->getVal())*lR2Sigma.getVal() + (1.-lR1Frac->getVal())*(1.-lRFrac->getVal())*lR3Sigma.getVal());
+	  lEY0[i0-int(range_min)]  = 0;
+	  // sigma 1,2,3
+	  lY1[i0-int(range_min)] = lR1Sigma.getVal();///sqrt(2*3.14159265)*2.;
+	  lY2[i0-int(range_min)] = lR2Sigma.getVal();///sqrt(2*3.14159265)*2.;
+	  if(do3G) lY3[i0-int(range_min)] = lR3Sigma.getVal();///sqrt(2*3.14159265)*2.;
+	  lEY1[i0-int(range_min)] = lR1Sigma.getError();///sqrt(2*3.14159265)*2.;
+	  lEY2[i0-int(range_min)] = lR2Sigma.getError();///sqrt(2*3.14159265)*2.;
+	  if(do3G) lEY3[i0-int(range_min)] = lR3Sigma.getError();///sqrt(2*3.14159265)*2.;
+	  // mean
+	  myMean[i0-int(range_min)] = lR1Mean.getVal();
+	  myMeanE[i0-int(range_min)] = lR1Mean.getError();
+	  myMeanLarge[i0-int(range_min)] = lR1MeanLarge.getVal();
+	  myMeanLargeE[i0-int(range_min)] = lR1MeanLarge.getError();
+	  myMeanVeryLarge[i0-int(range_min)] = lR1MeanVeryLarge.getVal();
+	  myMeanVeryLargeE[i0-int(range_min)] = lR1MeanVeryLarge.getError();
+	  // fraction
+	  myFrac[i0-int(range_min)] = lRFrac->getVal();
+	  myFracE[i0-int(range_min)] = lRFrac->getPropagatedError(*fr) ;
+	  myFrac2[i0-int(range_min)] = lR1Frac->getVal(); // second fraction
+	  myFrac2E[i0-int(range_min)] = lR1Frac->getPropagatedError(*fr) ;
 
-	if(myFrac[i0-int(range_min)]==minFrac || myFrac[i0-int(range_min)]==maxFrac
-	   || myFrac2[i0-int(range_min)]==minFrac2 || myFrac2[i0-int(range_min)]==maxFrac2
-	   || lY1[i0-int(range_min)] == minSigma1 || lY1[i0-int(range_min)] == maxSigma1
-	   || lY2[i0-int(range_min)] == minSigma2 || lY2[i0-int(range_min)] == maxSigma2
-	   || lY3[i0-int(range_min)] == minSigma3 || lY3[i0-int(range_min)] == maxSigma3
-	   ) {
-	  // HERE FITS stuck at the initial values
+	  if(myFrac[i0-int(range_min)]==minFrac || myFrac[i0-int(range_min)]==maxFrac
+	     || myFrac2[i0-int(range_min)]==minFrac2 || myFrac2[i0-int(range_min)]==maxFrac2
+	     || lY1[i0-int(range_min)] == minSigma1 || lY1[i0-int(range_min)] == maxSigma1
+	     || lY2[i0-int(range_min)] == minSigma2 || lY2[i0-int(range_min)] == maxSigma2
+	     || lY3[i0-int(range_min)] == minSigma3 || lY3[i0-int(range_min)] == maxSigma3
+	     ) {
+	    // HERE FITS stuck at the initial values
+	    myFrac[i0-int(range_min)] = 0;
+	    myFrac2[i0-int(range_min)] = 0;
+	    myFracE[i0-int(range_min)] = 999.;
+	    myFrac2E[i0-int(range_min)] = 999.;
+	    lY1[i0-int(range_min)] = 0;
+	    lEY1[i0-int(range_min)] = 999.;
+	    lY2[i0-int(range_min)] = 0;
+	    lEY2[i0-int(range_min)] = 999.;
+	    lY3[i0-int(range_min)] = 0;
+	    lEY3[i0-int(range_min)] = 999.;
+	  }
+	  //	if(do3G) myFracSecond[i0-int(range_min)] = lRFrac->getVal()*(1-lR1Frac->getVal());
+	  //	if(do3G && pFR) myFracSecond2D[i0-int(range_min)] = lFrac->getVal()*(1-l1Frac->getVal());
+	} else {
+	  // if the fit fail set the value to zero and with large error
+	  lY0[i0-int(range_min)] = 0;
+	  lY1[i0-int(range_min)] = 0;
+	  lY2[i0-int(range_min)] = 0;
+	  lY3[i0-int(range_min)] = 0;
+	  myMean[i0-int(range_min)] = 0;
+	  myMeanLarge[i0-int(range_min)] = 0;
+	  myMeanVeryLarge[i0-int(range_min)] = 0;
 	  myFrac[i0-int(range_min)] = 0;
 	  myFrac2[i0-int(range_min)] = 0;
+	  lEY0[i0-int(range_min)] = 999.;
+	  lEY1[i0-int(range_min)] = 999.;
+	  lEY2[i0-int(range_min)] = 999.;
+	  lEY3[i0-int(range_min)] = 999.;
+	  myMeanE[i0-int(range_min)] = 999.;
+	  myMeanLargeE[i0-int(range_min)] = 999.;
+	  myMeanVeryLargeE[i0-int(range_min)] = 999.;
 	  myFracE[i0-int(range_min)] = 999.;
 	  myFrac2E[i0-int(range_min)] = 999.;
-	  lY1[i0-int(range_min)] = 0;
-	  lEY1[i0-int(range_min)] = 999.;
-	  lY2[i0-int(range_min)] = 0;
-	  lEY2[i0-int(range_min)] = 999.;
-	  lY3[i0-int(range_min)] = 0;
-	  lEY3[i0-int(range_min)] = 999.;
 	}
-	//	if(do3G) myFracSecond[i0-int(range_min)] = lRFrac->getVal()*(1-lR1Frac->getVal());
-	//	if(do3G && pFR) myFracSecond2D[i0-int(range_min)] = lFrac->getVal()*(1-l1Frac->getVal());
-      } else {
-	// if the fit fail set the value to zero and with large error
-	lY0[i0-int(range_min)] = 0;
-	lY1[i0-int(range_min)] = 0;
-	lY2[i0-int(range_min)] = 0;
-	lY3[i0-int(range_min)] = 0;
-	myMean[i0-int(range_min)] = 0;
-	myMeanLarge[i0-int(range_min)] = 0;
-	myMeanVeryLarge[i0-int(range_min)] = 0;
-	myFrac[i0-int(range_min)] = 0;
-	myFrac2[i0-int(range_min)] = 0;
-	lEY0[i0-int(range_min)] = 999.;
-	lEY1[i0-int(range_min)] = 999.;
-	lEY2[i0-int(range_min)] = 999.;
-	lEY3[i0-int(range_min)] = 999.;
-	myMeanE[i0-int(range_min)] = 999.;
-	myMeanLargeE[i0-int(range_min)] = 999.;
-	myMeanVeryLargeE[i0-int(range_min)] = 999.;
-	myFracE[i0-int(range_min)] = 999.;
-	myFrac2E[i0-int(range_min)] = 999.;
-      }
-    TLine *lineSS1_min = new TLine(range_min,minSigma1,range_max,minSigma1);
-    TLine *lineSS1_cen = new TLine(range_min,startSigma1,range_max,startSigma1);
-    TLine *lineSS1_max = new TLine(range_min,maxSigma1,range_max,maxSigma1);
 
 
       // errors
@@ -5475,7 +5479,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       }
       */
      
- 
+      }
     }
 
 
