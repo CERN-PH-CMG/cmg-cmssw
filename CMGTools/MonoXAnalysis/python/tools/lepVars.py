@@ -26,12 +26,15 @@ class residualCalibratedEcalEnergyFriend:
         for efloat in "pt energy eta phi mass".split():
             eleret[efloat] = []
         calibrator = EcalEnergyCalibrator( (event.run == 1), False)
+        iel=0
         for el in eles:
             for efloat in "eta phi mass".split():
                 eleret[efloat].append( getattr(el,efloat) )  
-            calibenergy = calibrator.calibrate(el.correctedEcalEnergy, el.etaSc, el.r9)
+            seed = event.run * event.lumi + event.evt + iel
+            calibenergy = calibrator.calibrate(el.correctedEcalEnergy, el.etaSc, el.r9, seed)
             eleret["energy"].append( calibenergy )
             eleret["pt"].append( calibenergy/cosh(el.eta) )
+            iel+=1
             
         ### return
         fullret = {}

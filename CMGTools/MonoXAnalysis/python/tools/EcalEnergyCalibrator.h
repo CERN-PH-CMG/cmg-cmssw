@@ -13,7 +13,7 @@ class EcalEnergyCalibrator {
         ~EcalEnergyCalibrator() ;
     
         /// Correct this electron. 
-        double calibrate(double energy, double aeta, double r9) ;
+        double calibrate(double energy, double aeta, double r9, unsigned int seed) ;
 
     protected:    
         // whatever data will be needed
@@ -21,7 +21,7 @@ class EcalEnergyCalibrator {
         TRandom3 *rng_;
    
         /// If synchronization is set to true, it returns a fixed number (1.0)
-        double gauss() const ;
+        double gauss(unsigned int seed) const ;
 };
 
 #endif

@@ -1,4 +1,5 @@
 #include "EcalEnergyCalibrator.h"
+#include <iostream>
 
 EcalEnergyCalibrator::EcalEnergyCalibrator(bool isMC, bool synchronization) :
     isMC_(isMC), synchronization_(synchronization)
@@ -10,7 +11,7 @@ EcalEnergyCalibrator::~EcalEnergyCalibrator()
 {
 }
 
-double EcalEnergyCalibrator::calibrate(double energy, double eta, double r9)
+double EcalEnergyCalibrator::calibrate(double energy, double eta, double r9, unsigned int seed)
 {
     float smear = 0.0, scale = 1.0;
     bool bad = (r9 < 0.94), gold = !bad;
@@ -29,7 +30,7 @@ double EcalEnergyCalibrator::calibrate(double energy, double eta, double r9)
     else if (1.4442 <= aeta && aeta < 1.566  && gold) { smear = 0.027289; scale = 0.99536; } 
     double newEcalEnergy;
     if (isMC_) {
-        double corr = 1.0 + smear * gauss();
+        double corr = 1.0 + smear * gauss(seed);
         newEcalEnergy      = energy * corr;
     } else {
         newEcalEnergy      = energy / scale;
@@ -37,9 +38,10 @@ double EcalEnergyCalibrator::calibrate(double energy, double eta, double r9)
     return newEcalEnergy;
 }
 
-double EcalEnergyCalibrator::gauss() const 
+double EcalEnergyCalibrator::gauss(unsigned int seed) const 
 {
     if (synchronization_) return 1.0;
+    rng_->SetSeed(seed);
     return rng_->Gaus();
 }
 
