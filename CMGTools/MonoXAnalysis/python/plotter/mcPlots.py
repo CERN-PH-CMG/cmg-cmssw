@@ -377,14 +377,14 @@ def doRatioHists(pspec,pmap,total,totalSyst,maxRange,fitRatio=None,errorsOnRef=T
     if rmax > maxRange[1]: rmax = maxRange[1];
     if (rmax > 3 and rmax <= 3.4): rmax = 3.4
     if (rmax > 2 and rmax <= 2.4): rmax = 2.4
-    unity.SetFillStyle(1001);
-    unity.SetFillColor(ROOT.kCyan);
+    unity.SetFillStyle(3001);
+    unity.SetFillColor(ROOT.kAzure+2);
     unity.SetMarkerStyle(1);
-    unity.SetMarkerColor(ROOT.kCyan);
-    unity0.SetFillStyle(1001);
-    unity0.SetFillColor(53);
+    unity.SetMarkerColor(ROOT.kAzure+2);
+    unity0.SetFillStyle(3001);
+    unity0.SetFillColor(ROOT.kAzure+2);
     unity0.SetMarkerStyle(1);
-    unity0.SetMarkerColor(53);
+    unity0.SetMarkerColor(ROOT.kAzure+2);
     ROOT.gStyle.SetErrorX(0.5);
     if errorsOnRef:
         unity.Draw("E2");
@@ -408,7 +408,7 @@ def doRatioHists(pspec,pmap,total,totalSyst,maxRange,fitRatio=None,errorsOnRef=T
     unity.GetYaxis().SetLabelSize(0.11)
     unity.GetYaxis().SetNdivisions(505)
     unity.GetYaxis().SetDecimals(True)
-    unity.GetYaxis().SetTitle("Data/Pred.")
+    unity.GetYaxis().SetTitle("Data/Sim.")
     unity.GetYaxis().SetTitleOffset(0.52);
     total.GetXaxis().SetLabelOffset(999) ## send them away
     total.GetXaxis().SetTitleOffset(999) ## in outer space
