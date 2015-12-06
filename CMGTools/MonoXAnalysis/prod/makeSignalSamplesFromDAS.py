@@ -24,8 +24,8 @@ def main():
     components = []
     for line in inputdatasets:
         dataset = line.rstrip('\n')
-        matchObj = re.match( r'.*_M(.*)_13TeV.*/(.*)/MINIAODSIM', dataset )
-        pdname = (opt.prefix+"_M"+matchObj.group(1)).replace("-","_")
+        matchObj = re.match( r'.*_Mphi(.*)_13TeV.*/(.*)/MINIAODSIM', dataset )
+        pdname = (opt.prefix+"_Mphi"+matchObj.group(1)).replace("-","_")
 
         compKreatorLine = pdname + " = kreator.makeMCComponent(\"" + pdname + "\",\"" + dataset + "\", \"CMS\", \".*root\", 1.0, useAAA=True)"
         print compKreatorLine

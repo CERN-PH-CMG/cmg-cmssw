@@ -55,6 +55,7 @@ eventFlagsAna = cfg.Analyzer(
     outprefix   = 'Flag',
     triggerBits = {
         "HBHENoiseFilter" : [ "Flag_HBHENoiseFilter" ],
+        "HBHENoiseIsoFilter" : [ "Flag_HBHENoiseIsoFilter" ],
         "CSCTightHaloFilter" : [ "Flag_CSCTightHaloFilter" ],
         "hcalLaserEventFilter" : [ "Flag_hcalLaserEventFilter" ],
         "EcalDeadCellTriggerPrimitiveFilter" : [ "Flag_EcalDeadCellTriggerPrimitiveFilter" ],
@@ -101,8 +102,6 @@ genAna = cfg.Analyzer(
     # Make also the splitted lists
     makeSplittedGenLists = True,
     allGenTaus = False,
-    # Save LHE weights from LHEEventProduct
-    makeLHEweights = True,
     # Print out debug information
     verbose = False,
     )
@@ -116,6 +115,11 @@ genHFAna = cfg.Analyzer(
     status2Only = False,
     bquarkPtCut = 15.0,
 )
+
+lheWeightAna = cfg.Analyzer(
+    LHEWeightAnalyzer, name="LHEWeightAnalyzer",
+)
+
 pdfwAna = cfg.Analyzer(
     PDFWeightsAnalyzer, name="PDFWeightsAnalyzer",
     PDFWeights = [ pdf for pdf,num in PDFWeights ],
@@ -139,15 +143,16 @@ lepAna = cfg.Analyzer(
     inclusive_muon_id  = "POG_ID_Loose",
     inclusive_muon_pt  = 3,
     inclusive_muon_eta = 2.4,
-    inclusive_muon_dxy = 0.5,
-    inclusive_muon_dz  = 1.0,
+    inclusive_muon_dxy = 1000,
+    inclusive_muon_dz  = 1000,
     muon_dxydz_track = "innerTrack",
     # veto muon selection
     loose_muon_id     = "POG_ID_Loose",
     loose_muon_pt     = 10,
     loose_muon_eta    = 2.4,
-    loose_muon_dxy    = 0.2,
-    loose_muon_dz     = 0.5,
+    loose_muon_dxy    = 1000,
+    loose_muon_dz     = 1000,
+    loose_muon_isoCut = (lambda mu : ( mu.relIso04 <= 0.4)), # this is not to apply loose_muon_relIso which is on DR=0.3
     loose_muon_relIso = 0.4,
     # inclusive very loose electron selection
     inclusive_electron_id  = "",
@@ -166,7 +171,7 @@ lepAna = cfg.Analyzer(
     loose_electron_lostHits = 5.0,
     # muon isolation correction method (can be "rhoArea" or "deltaBeta")
     mu_isoCorr = "deltaBeta" ,
-    mu_effectiveAreas = "Phys14_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1')
+    mu_effectiveAreas = "Spring15_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1' or 'Spring15_25ns_v1')
     # electron isolation correction method (can be "rhoArea" or "deltaBeta")
     ele_isoCorr = "rhoArea" ,
     ele_effectiveAreas = "Spring15_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1' or 'Spring15_25ns_v1' or 'Spring15_50ns_v1')
@@ -197,11 +202,11 @@ monoJetSkim = cfg.Analyzer(
 from CMGTools.MonoXAnalysis.analyzers.monoJetCtrlLepSkimmer import monoJetCtrlLepSkimmer
 monoJetCtrlLepSkim = cfg.Analyzer(
     monoJetCtrlLepSkimmer, name='monoJetCtrlLepSkimmer',
-    minLeptons = 1,
+    minLeptons = 0,
     maxLeptons = 999,
     #idCut  = "lepton.relIso03 < 0.2" # can give a cut
-    idCut = 'lepton.muonID("POG_ID_Medium") if abs(lepton.pdgId())==13 else lepton.electronID("POG_Cuts_ID_PHYS14_25ns_v1_Veto_full5x5")',
-    ptCuts = [20],                # can give a set of pt cuts on the leptons
+    idCut = 'lepton.muonID("POG_ID_Loose") if abs(lepton.pdgId())==13 else lepton.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Veto_full5x5")',
+    ptCuts = [10],                # can give a set of pt cuts on the leptons
     )
 
 ## Photon Analyzer (generic)
@@ -216,6 +221,7 @@ photonAna = cfg.Analyzer(
     doFootprintRemovedIsolation = True,
     packedCandidates = 'packedPFCandidates',
     footprintRemovedIsolationPUCorr = 'rhoArea',
+    conversionSafe_eleVeto = True,
     do_mc_match = True,
     do_randomCone = False,
 )
@@ -250,6 +256,15 @@ tauAna = cfg.Analyzer(
     loose_tauLooseID = "decayModeFinding"
 )
 
+## isolation for monojet tau veto
+from CMGTools.MonoXAnalysis.analyzers.objects.MonoXTauAnalyzer import MonoXTauAnalyzer
+monoxTauAna = cfg.Analyzer(
+    MonoXTauAnalyzer, name='monoXTauAnalyzer',
+    tauIsolation = "byCombinedIsolationDeltaBetaCorrRaw3Hits",
+    isolationMax = 5.0 # GeV
+)
+
+
 ##------------------------------------------
 ###  ISOLATED TRACK
 ###------------------------------------------                                                                                                                                                                
@@ -270,11 +285,13 @@ isoTrackAna = cfg.Analyzer(
     dzPartMax = 0.1,
     maxAbsIso = 8,
     #####
-    MaxIsoSum = 0.1, ### unused
-    MaxIsoSumEMU = 0.2, ### unused
+    doRelIsolation = False,
+    MaxIsoSum = 0.1, ### unused if not rel iso
+    MaxIsoSumEMU = 0.2, ### unused if not rel iso
     doSecondVeto = False,
     #####
-    doPrune = True
+    doPrune = True,
+    do_mc_match = False # note: it will in any case try it only on MC, not on data
     )
 
 ## Jets Analyzer (generic)
@@ -401,6 +418,7 @@ ttHCoreEventAna = cfg.Analyzer(
 
 # Core sequence of all common modules
 dmCoreSequence = [
+    lheWeightAna,
     skimAnalyzer,
    #eventSelector,
     jsonAna,
@@ -412,14 +430,15 @@ dmCoreSequence = [
     pdfwAna,
     vertexAna,
     lepAna,
+    monoJetCtrlLepSkim,
     photonAna,
     tauAna,
- #   isoTrackAna,
+    monoxTauAna,
+    isoTrackAna,
     jetAna,
     metAna,
     ttHCoreEventAna,
     monoJetSkim,
-    monoJetCtrlLepSkim,
     triggerFlagsAna,
-#    eventFlagsAna,
+    eventFlagsAna,
 ]

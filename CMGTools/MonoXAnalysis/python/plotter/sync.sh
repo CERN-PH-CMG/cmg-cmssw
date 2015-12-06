@@ -23,13 +23,13 @@ RUNY1G="${RUNY} sync/gjets_twiki.txt "
 
 case $WHAT in
 sr)
-        echo "python ${RUNYSR} $FEV --sp TTbarDM --xp DYLL --xp WJets "
+        echo "python ${RUNYSR} $FEV --sp TTbarDM "
 ;;
 wmunu)
-        echo "python ${RUNY1M} $FEV --sp WJets --xp ADD --xp TTLep --xp TTbar --xp DYLL --xp RSGravGaGa "
+        echo "python ${RUNY1M} $FEV --sp TTbarDM "
 ;;
 zmumu)
-        echo "python ${RUNY2M} $FEV --sp DYLL --xp ADD --xp TTLep --xp TTbar --xp WJets --xp RSGravGaGa "
+        echo "python ${RUNY2M} $FEV --sp TTbarDM "
 ;;
 gjets)
         echo "python ${RUNY1G} $FEV --sp DYLL --xp ADD --xp TTLep --xp TTbar --xp WJets --xp DYLL "
