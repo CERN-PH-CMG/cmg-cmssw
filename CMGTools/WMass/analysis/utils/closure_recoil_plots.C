@@ -25,7 +25,7 @@ void syst_recoil_one(TString recstr="u2")
   for (int i=0; i<nhists; ++i) ntotsysts+=(NVars[i]-IniVar[i]);
 
   TFile* fcentral = new TFile(Form("0.root"));
-  TH1D* hcentral=(TH1D*)fcentral->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
+  TH1D* hcentral = (TH1D*)fcentral->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
 
   TFile* fmadgraph = new TFile(Form("madnocorr.root"));
   TH1D* hmadgraph = (TH1D*)fmadgraph->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
@@ -72,6 +72,12 @@ void syst_recoil_one(TString recstr="u2")
     }
   }
 
+  TFile* frookeys = new TFile(Form("rookeys.root"));
+  TH1D*  hrookeys = (TH1D*)frookeys->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
+
+  hrookeys ->Scale(1/hcentral->Integral());
+  hrookeys ->Divide(hcentral_noerr);
+
   TH1D* hsystfit = (TH1D*)hcentral->Clone("hsystfit");
   for(int i=1;i<hsystfit->GetNbinsX()+1; i++){
     double error = 0;
@@ -89,22 +95,32 @@ void syst_recoil_one(TString recstr="u2")
   }
 
   TH1D* herr = (TH1D*)hcentral->Clone("herr");
-  herr->SetTitle("Pow2Mad closure; " +recstr+ "; N");
-  herr->SetStats(kFALSE);
   for(int i=1;i<herr->GetNbinsX()+1; i++){
     double errstat = hstat   ->GetBinError(i);
     double errfit  = hsystfit->GetBinError(i);
     herr->SetBinError(i, sqrt(errstat*errstat + errfit*errfit));
   }
 
+  TH1D* hclosure = (TH1D*)hcentral->Clone("herr");
+  hclosure->SetTitle("Pow2Mad closure; " +recstr+ "; N");
+  hclosure->SetStats(kFALSE);
+  for(int i=1;i<hclosure->GetNbinsX()+1; i++){
+    double errstatfit = herr->GetBinError(i);
+    double errclosure = hrookeys->GetBinContent(i)-1;
+    hclosure->SetBinError(i, sqrt(errstatfit*errstatfit + errclosure*errclosure));
+  }
+
   TCanvas *c_closure = new TCanvas("c_closure_"+recstr, "c_closure_"+recstr);
   c_closure->cd();
 
-  herr->SetAxisRange(-xaxislimit, +xaxislimit, "X");
-  herr->SetAxisRange(0.8, 1.2, "Y");
+  hclosure->SetAxisRange(-xaxislimit, +xaxislimit, "X");
+  hclosure->SetAxisRange(0.8, 1.2, "Y");
+  hclosure->SetFillColor(kBlue);
+  hclosure->SetFillStyle(fillstyle);
+  hclosure->Draw("E2");
   herr->SetFillColor(kCyan-2);
   herr->SetFillStyle(fillstyle);
-  herr->Draw("E2");
+  herr->Draw("same E2");
   hstat->SetFillColor(kGreen);
   hstat->SetFillStyle(fillstyle);
   hstat->Draw("same E2");
@@ -123,10 +139,11 @@ void syst_recoil_one(TString recstr="u2")
 
   TLegend *leg = new TLegend(0.1,0.7,0.48,0.9);
   // leg->SetHeader("The Legend Title");
-  leg->AddEntry(hmadgraph,"madgraph / (powheg morphed to madgraph)","l");
-  leg->AddEntry(hcentral,"powheg stat unc","f");
-  leg->AddEntry(hstat,"madgraph stat unc","f");
-  leg->AddEntry(herr,"propagation of recoil fit stat unc","f");
+  leg->AddEntry(hmadgraph, "madgraph / (powheg morphed to madgraph)", "l");
+  leg->AddEntry(hcentral,  "powheg stat unc",                         "f");
+  leg->AddEntry(hstat,     "madgraph stat unc",                       "f");
+  leg->AddEntry(herr,      "propagation of recoil fit stat unc",      "f");
+  leg->AddEntry(hclosure,  "difference against RK->RK morphing",      "f");
   leg->Draw();
 
   TH1D* hsigmas = (TH1D*)hmadgraph->Clone("hsigmas");
@@ -137,7 +154,7 @@ void syst_recoil_one(TString recstr="u2")
   hpull->StatOverflows(kTRUE);
 
   for(int i=1; i<hsigmas->GetNbinsX()+1; i++){
-    double ratio = (hmadgraph->GetBinContent(i)-1)/herr->GetBinError(i);
+    double ratio = (hmadgraph->GetBinContent(i)-1)/hclosure->GetBinError(i);
     hsigmas->SetBinContent(i, ratio);
     hpull->Fill(ratio);
   }
@@ -163,6 +180,7 @@ int closure_recoil_plots()
 {
   syst_recoil_one("u1");
   syst_recoil_one("u2");
+  syst_recoil_one("u");
   return 0;
 }
 
