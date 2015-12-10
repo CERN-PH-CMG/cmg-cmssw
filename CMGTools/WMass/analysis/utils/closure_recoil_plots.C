@@ -16,7 +16,7 @@ void syst_recoil_one(TString recstr="u2")
 {
   gStyle->SetOptFit(111);
 
-  const int nhists = 12;
+  const int nhists = 2;
 
   int IniVar[] = {0,  9,  0, 0,  9,  0, 0,  9,  0, 0,  9,  0};
   int NVars[]  = {9, 21, 15, 9, 21, 15, 9, 21, 15, 9, 21, 15};
@@ -25,13 +25,14 @@ void syst_recoil_one(TString recstr="u2")
   for (int i=0; i<nhists; ++i) ntotsysts+=(NVars[i]-IniVar[i]);
 
   TFile* fcentral = new TFile(Form("0.root"));
-  TH1D* hcentral = (TH1D*)fcentral->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
-
+  TFile* frookeys = new TFile(Form("rookeys.root"));
   TFile* fmadgraph = new TFile(Form("madnocorr.root"));
-  TH1D* hmadgraph = (TH1D*)fmadgraph->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
-  hmadgraph->SetTitle("Madgraph");
-  hmadgraph->SetName("madgraph");
 
+  TH1D* hcentral = (TH1D*)fcentral->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
+  TH1D* hrookeys = (TH1D*)frookeys->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
+  TH1D* hmadgraph = (TH1D*)fmadgraph->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
+
+  
   TH1D* hcentral_noerr = (TH1D*)hcentral->Clone("hcentral_noerr");
   for(int i=1;i<hcentral_noerr->GetNbinsX()+1; i++){
     hcentral_noerr->SetBinError(i, 0);
@@ -41,9 +42,11 @@ void syst_recoil_one(TString recstr="u2")
   hcentral ->Scale(1/hcentral->Integral());
   hcentral ->Divide(hcentral_noerr);
 
+  hrookeys->Scale(1/hrookeys->Integral());
+  hrookeys->Divide(hcentral_noerr);
+
   hmadgraph->Scale(1/hmadgraph->Integral());
   hmadgraph->Divide(hcentral_noerr);
-
 
   TCanvas* c=new TCanvas("c_"+recstr, "c_"+recstr);
   c->cd();
@@ -60,8 +63,6 @@ void syst_recoil_one(TString recstr="u2")
     fin[i]=new TFile(Form("%d.root", i+1));
     for(int j=IniVar[i]; j<NVars[i]; j++){
       hsyst[nsyst]=(TH1D*)fin[i]->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_RecoilCorrVar%d_eta0p9_91188", recstr.Data(), j));
-      hsyst[nsyst]->SetName(Form("hWlikePos_%s_8_JetCut_pdf229800-0_RecoilCorrVar%d_eta0p9_91188", recstr.Data(), nsyst));
-      hsyst[nsyst]->SetTitle(Form("hWlikePos_%s_8_JetCut_pdf229800-0_RecoilCorrVar%d_eta0p9_91188", recstr.Data(), nsyst));
       hsyst[nsyst]->Scale(1/hsyst[nsyst]->Integral());
       hsyst[nsyst]->Divide(hcentral_noerr);
       hsyst[nsyst]->SetLineColor(nsyst);
@@ -72,12 +73,6 @@ void syst_recoil_one(TString recstr="u2")
       nsyst++;
     }
   }
-
-  TFile* frookeys = new TFile(Form("rookeys.root"));
-  TH1D*  hrookeys = (TH1D*)frookeys->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
-
-  hrookeys->Scale(1/hrookeys->Integral());
-  hrookeys->Divide(hcentral_noerr);
 
   TH1D* hsystfit = (TH1D*)hcentral->Clone("hsystfit");
   for(int i=1;i<hsystfit->GetNbinsX()+1; i++){
