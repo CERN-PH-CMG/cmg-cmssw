@@ -18,8 +18,8 @@ void syst_recoil_one(TString recstr="u2")
 
   const int nhists = 12;
 
-  int IniVar[nhists] = {0,  9,  0, 0,  9,  0, 0,  9,  0, 0,  9,  0};
-  int NVars[nhists]  = {9, 21, 15, 9, 21, 15, 9, 21, 15, 9, 21, 15};
+  int IniVar[] = {0,  9,  0, 0,  9,  0, 0,  9,  0, 0,  9,  0};
+  int NVars[]  = {9, 21, 15, 9, 21, 15, 9, 21, 15, 9, 21, 15};
 
   int ntotsysts = 0;
   for (int i=0; i<nhists; ++i) ntotsysts+=(NVars[i]-IniVar[i]);
@@ -49,6 +49,7 @@ void syst_recoil_one(TString recstr="u2")
   c->cd();
 
   hcentral->GetYaxis()->SetRangeUser(0.8,1.2);
+  hcentral->SetStats(kFALSE);
   hcentral->Draw();
 
   TFile* fin[nhists];
@@ -75,8 +76,8 @@ void syst_recoil_one(TString recstr="u2")
   TFile* frookeys = new TFile(Form("rookeys.root"));
   TH1D*  hrookeys = (TH1D*)frookeys->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
 
-  hrookeys ->Scale(1/hcentral->Integral());
-  hrookeys ->Divide(hcentral_noerr);
+  hrookeys->Scale(1/hrookeys->Integral());
+  hrookeys->Divide(hcentral_noerr);
 
   TH1D* hsystfit = (TH1D*)hcentral->Clone("hsystfit");
   for(int i=1;i<hsystfit->GetNbinsX()+1; i++){
@@ -101,9 +102,8 @@ void syst_recoil_one(TString recstr="u2")
     herr->SetBinError(i, sqrt(errstat*errstat + errfit*errfit));
   }
 
-  TH1D* hclosure = (TH1D*)hcentral->Clone("herr");
+  TH1D* hclosure = (TH1D*)hcentral->Clone("hclosure");
   hclosure->SetTitle("Pow2Mad closure; " +recstr+ "; N");
-  hclosure->SetStats(kFALSE);
   for(int i=1;i<hclosure->GetNbinsX()+1; i++){
     double errstatfit = herr->GetBinError(i);
     double errclosure = hrookeys->GetBinContent(i)-1;
@@ -115,7 +115,7 @@ void syst_recoil_one(TString recstr="u2")
 
   hclosure->SetAxisRange(-xaxislimit, +xaxislimit, "X");
   hclosure->SetAxisRange(0.8, 1.2, "Y");
-  hclosure->SetFillColor(kBlue);
+  hclosure->SetFillColor(kBlue+1);
   hclosure->SetFillStyle(fillstyle);
   hclosure->Draw("E2");
   herr->SetFillColor(kCyan-2);

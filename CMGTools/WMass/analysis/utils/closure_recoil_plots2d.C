@@ -20,14 +20,14 @@ void syst_recoil_one(TString recstr="u1")
 
   const int nhists = 12;
 
-  int IniVar[nhists] = {0,  9,  0, 0,  9,  0, 0,  9,  0, 0,  9,  0};
-  int NVars[nhists]  = {9, 21, 15, 9, 21, 15, 9, 21, 15, 9, 21, 15};
+  int IniVar[] = {0,  9,  0, 0,  9,  0, 0,  9,  0, 0,  9,  0};
+  int NVars[]  = {9, 21, 15, 9, 21, 15, 9, 21, 15, 9, 21, 15};
 
   int ntotsysts = 0;
   for (int i=0; i<nhists; ++i) ntotsysts+=(NVars[i]-IniVar[i]);
 
   TFile* fcentral = new TFile(Form("0.root"));
-  TH2D* hcentral2 =(TH2D*)fcentral->Get(Form("hWlikePos_%svsZpt_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
+  TH2D* hcentral2 = (TH2D*)fcentral->Get(Form("hWlikePos_%svsZpt_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
   hcentral2->SetTitle(Form("hWlikePos_%svsZpt_8_JetCut_pdf229800-0_eta0p9_91188_pow2madcentral", recstr.Data()));
 
   TFile* fmadgraph = new TFile(Form("madnocorr.root"));
@@ -51,6 +51,9 @@ void syst_recoil_one(TString recstr="u1")
       nsyst++;
     }
   }
+
+  TFile* frookeys = new TFile(Form("rookeys.root"));
+  TH1D* hrookeys2 = (TH2D*)frookeys->Get(Form("hWlikePos_%svsZpt_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
 
   int Zptbins = hcentral2->GetNbinsX()+1;
   double ncentral[Zptbins];
@@ -92,6 +95,7 @@ void syst_recoil_one(TString recstr="u1")
     c->cd();
 
     hcentral->GetYaxis()->SetRangeUser(0.8,1.2);
+    hcentral->SetStats(kFALSE);
     hcentral->Draw();
 
     TH1D* hsyst[ntotsysts];
@@ -108,6 +112,8 @@ void syst_recoil_one(TString recstr="u1")
       hsyst[nsyst]->SetMarkerColor(nsyst);
       hsyst[nsyst]->Draw("same");
     }
+
+    TH1D* hrookeys = hrookeys2->ProjectionY("hrookeys_bin" + binstr, bin, bin+1, "e");
 
     TH1D* hsystfit = (TH1D*)hcentral->Clone("hsystfit_bin" + binstr);
     for(int i=1;i<hsystfit->GetNbinsX()+1; i++){
