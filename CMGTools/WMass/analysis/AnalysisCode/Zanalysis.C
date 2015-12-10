@@ -44,6 +44,8 @@ double costh_CS = -1e10, phi_CS = -1e10;
 double costh_CS_gen_pietro = -1e10, phi_CS_gen_pietro = -1e10;
 double costh_CS_gen = -1e10, phi_CS_gen = -1e10;
 
+const double ZPt_cut = 30; // ADDED DURING PLOTS PRE-UNBLINDING
+
 void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, /* unused*/ int buildTemplates, int useMomentumCorr, int varyMuonCorrNsigma, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int usePhiMETCorr, int useRecoilCorr, int correctToMadgraph, int RecoilCorrVarDiagoParSigmas, int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights, int reweight_polarization)
 {
 
@@ -514,16 +516,16 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       // cout << "mass= " << ZGen_PostFSR_mass << " ewk weight= " << (ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200?hZmassSF->Interpolate(ZGen_PostFSR_mass):1) << endl;
     }
     //---------------- PT weight
-    if(usePtSF!=-1  && usePtSF!=1 &&usePtSF!=2 /* && ZGen_pt<30 */ && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")))
+    if(usePtSF!=-1  && usePtSF!=1 &&usePtSF!=2 /* && ZGen_pt<ZPt_cut */ && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")))
       // evt_weight_original*=hZPtSF->GetBinContent(hZPtSF->GetXaxis()->FindBin(/* Z_pt>0?Z_pt: */ZGen_pt));
       evt_weight_original*=hZPtSF->Interpolate(ZGen_pt)>0?hZPtSF->Interpolate(ZGen_pt):1;
-    else if(usePtSF==1 && ZGen_pt<30 && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){
+    else if(usePtSF==1 && ZGen_pt<ZPt_cut && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){
       evt_weight_original*=TMath::Min(1+0.1*(25-ZGen_pt)/25,0.5);
       common_stuff::plot2D(Form("weight1_vs_genpT"),
                                       ZGen_pt,(1+0.1*(25-ZGen_pt)/25), 1, 
                                           h_2d, 50,0,50,50,0,2 );
     }
-    else if(usePtSF==2 && ZGen_pt<30 && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){
+    else if(usePtSF==2 && ZGen_pt<ZPt_cut && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){
       evt_weight_original*=(1+0.1*(ZGen_pt-25)/25);
       common_stuff::plot2D(Form("weight2_vs_genpT"),
                                       ZGen_pt,(1+0.1*(25-ZGen_pt)/25), 1, 
@@ -1008,7 +1010,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                       // cut on W recoil (BY DEFAULT IS 15)
                       //------------------------------------------------------
                       if(WlikeCentral.Pt()<WMass::WpTcut*ZWmassRatio
-                          && Zcorr.Pt() < 30 // ADDED DURING PLOTS PRE-UNBLINDING
+                          && Zcorr.Pt() < ZPt_cut // ADDED DURING PLOTS PRE-UNBLINDING
                          ){
                         for(int k=0;k<WMass::NFitVar;k++)
                           if(m==m_start && n==0 && WMass::WMassNSteps==j) common_stuff::plot1D(Form("hWlike%s_%sNonScaled_7_RecoilCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jZmass_MeV),
@@ -1156,6 +1158,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             // Recoil plots: u1, u2, u1vsZpt, u2vsZpt, u1vsZptvsZrap, u2vsZptvsZrap
                             //---------------------------------------------------------------------
                             if(correctToMadgraph || controlplots){
+                              double u_recoil = sqrt(u2_recoil*u2_recoil+u1_recoil*u1_recoil);
+                              
                               common_stuff::calculateU1U2(met_trasv, metphi_trasv,  ZGen_pt, ZGen_phi,
                                                           ZNocorr.Pt(), ZNocorr.Phi(),  u1_recoil, u2_recoil);
 
@@ -1164,12 +1168,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               common_stuff::plot1D(Form("hWlike%s_u2_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                 u2_recoil, weight, h_1d, 60, -20, 20 );
                               common_stuff::plot1D(Form("hWlike%s_u_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                sqrt(u2_recoil*u2_recoil+u1_recoil*u1_recoil), weight, h_1d, 60, -20, 20 );
+                                 u_recoil, weight, h_1d, 60, +00, 20 );
 
                               common_stuff::plot2D(Form("hWlike%s_u1vsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                ZNocorr.Pt(), u1_recoil, weight, h_2d, 60, 0, 60, 60, -20, 20 );
+                                ZNocorr.Pt(), u1_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, -20, 20 );
                               common_stuff::plot2D(Form("hWlike%s_u2vsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                ZNocorr.Pt(), u2_recoil, weight, h_2d, 60, 0, 60, 60, -20, 20 );
+                                ZNocorr.Pt(), u2_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, -20, 20 );
+                              common_stuff::plot2D(Form("hWlike%s_u2vsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+                                ZNocorr.Pt(),  u_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, +00, 20 );
 
                               common_stuff::plot2D(Form("hWlike%s_u1vsZrap_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                 ZGen_status3.Rapidity(), u1_recoil, weight, h_2d, 60, -4, +4, 60, -20, 20 );
@@ -1177,9 +1183,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                 ZGen_status3.Rapidity(), u2_recoil, weight, h_2d, 60, -4, +4, 60, -20, 20 );
 
                               common_stuff::plot3D(Form("hWlike%s_u1vsZptvsZrap_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                ZNocorr.Pt(), ZGen_status3.Rapidity(), u1_recoil, weight, h_3d, 60, 0, 60, 60, -4, +4, 60, -20, 20 );
+                                ZNocorr.Pt(), ZGen_status3.Rapidity(), u1_recoil, weight, h_3d, 60, 0, ZPt_cut, 60, -4, +4, 60, -20, 20 );
                               common_stuff::plot3D(Form("hWlike%s_u2vsZptvsZrap_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                ZNocorr.Pt(), ZGen_status3.Rapidity(), u2_recoil, weight, h_3d, 60, 0, 60, 60, -4, +4, 60, -20, 20 );
+                                ZNocorr.Pt(), ZGen_status3.Rapidity(), u2_recoil, weight, h_3d, 60, 0, ZPt_cut, 60, -4, +4, 60, -20, 20 );
                             }
                             
                             //////////////////////////////////////////////
