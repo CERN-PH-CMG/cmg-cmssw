@@ -199,9 +199,9 @@ protected:
   void makeKeysVec(RooWorkspace *w, TFile *file, TString fit, std::vector<RooAbsReal*> &pdfUiCdfm, bool isU1);
   double diGausPVal(double iVal, double iFrac,double iSimga1,double iSigma2);
   double triGausInvGraph(double iPVal, /**/ double meanRMSMC, double iMean1MC, double iMean2MC, double iFrac1MC,double iSigma1MC,double iSigma2MC,double iSigma3MC,/**/ double meanRMSDATA, double iMean1DATA, double iMean2DATA,double iFrac1DATA,double iSigma1DATA,double iSigma2DATA,double iSigma3DATA);
-  double triGausInvGraphKeys(double iPVal, double Zpt, std::vector<RooAbsReal*> pdfKeyMCcdf, std::vector<RooAbsReal*> pdfKeyDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA, bool isU1);
+  double triGausInvGraphKeys(double iPVal, double Zpt, std::vector<RooAbsReal*> pdfKeyMCcdf, std::vector<RooAbsReal*> pdfKeyDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA, bool isU1, double max);
   // double triGausInvGraphPDF(double iPVal, double Zpt, RooAddPdf *pdfMC, RooAddPdf *pdfDATA, RooWorkspace *wMC, RooWorkspace *wDATA);
-  double triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsReal *pdfDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA);
+  double triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsReal *pdfDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA, double max);
   double diGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2);
   double oneGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2);
   double getError(double iVal,TF1 *iZDatFit,Recoil iType);
@@ -216,6 +216,7 @@ protected:
   
   static const int lNBins = 2;//lGraph->GetN();                   
   RooWorkspace *wU1[3][lNBins],*wU2[3][lNBins],*wU1diago[3][lNBins],*wU2diago[3][lNBins];
+  RooWorkspace *wU1key[3][lNBins],*wU2key[3][lNBins];
   RooAddPdf *pdfU1[3][lNBins],*pdfU2[3][lNBins];
   RooAbsReal *pdfU1Cdf[3][lNBins],*pdfU2Cdf[3][lNBins];
   vector<RooAbsReal*> pdfKeyU1Cdf[3][lNBins], pdfKeyU2Cdf[3][lNBins];

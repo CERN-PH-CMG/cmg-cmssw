@@ -105,8 +105,9 @@ TString model_name
     // wU1[mytype][i0]->Print();
     runDiago(wU1[mytype][i0],frU1[mytype][i0],Form("AddU1Y%d",i0),pdfU1Cdf[mytype][i0]);
 
+    wU1key[mytype][i0] = new RooWorkspace("wU1key","wU1key");
     //    cout << "reading recoilKeys " << endl;
-    makeKeysVec(wU1[mytype][i0], lFileKeys, Form("Keys_U1_%d",i0), pdfKeyU1Cdf[mytype][i0],true);
+    makeKeysVec(wU1key[mytype][i0], lFileKeys, Form("Keys_U1_%d",i0), pdfKeyU1Cdf[mytype][i0],true);
 
     //    RooRealVar* myptU1=wU1[mytype][i0]->var("pt");
     //    myptU1->setVal(10);
@@ -123,7 +124,8 @@ TString model_name
     // wU2diago[mytype][i0] = wU2[mytype][i0];
     runDiago(wU2[mytype][i0],frU2[mytype][i0],Form("AddU2Y%d",i0),pdfU2Cdf[mytype][i0]);
     
-    makeKeysVec(wU2[mytype][i0], lFileKeys, Form("Keys_U2_%d",i0), pdfKeyU2Cdf[mytype][i0],false);
+    wU2key[mytype][i0] = new RooWorkspace("wU2key","wU2key");
+    makeKeysVec(wU2key[mytype][i0], lFileKeys, Form("Keys_U2_%d",i0), pdfKeyU2Cdf[mytype][i0],false);
 
     //    RooRealVar* myptU2=wU2[mytype][i0]->var("pt");
     //    myptU2->setVal(10);
@@ -456,21 +458,30 @@ double &pU1,double &pU2
   //  std::cout << "================= " << std::endl;
   //  std::cout << " Before: pU1Diff " << pU1Diff << " pU2Diff " << pU2Diff << std::endl;
 
-  if(doKeys) {
+  bool doAbsolute=false;
+
+  if(doKeys && doAbsolute) {
     // triGausInvGraphKeys
     // this need the absolute space
-    pU1ValD = triGausInvGraphKeys(pU1,iGenPt,pdfKeyU1Cdf[2][fJet],pdfKeyU1Cdf[1][fJet],wU1[2][fJet],wU1[1][fJet],true);
-    pU2ValD = triGausInvGraphKeys(pU2,iGenPt,pdfKeyU2Cdf[2][fJet],pdfKeyU2Cdf[1][fJet],wU2[2][fJet],wU2[1][fJet],false);
+    pU1ValD = triGausInvGraphKeys(pU1,iGenPt,pdfKeyU1Cdf[2][fJet],pdfKeyU1Cdf[1][fJet],wU1key[2][fJet],wU1key[1][fJet],true, 30);
+    pU2ValD = triGausInvGraphKeys(pU2,iGenPt,pdfKeyU2Cdf[2][fJet],pdfKeyU2Cdf[1][fJet],wU2key[2][fJet],wU2key[1][fJet],false, 30);
 
     pU1=pU1ValD;
     pU2=pU2ValD;
 
   } else {
-    // cout << "triGausInvGraphPDF U1" << endl;
-    // this need the reduced space
-    pU1ValD = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[2][fJet],pdfU1Cdf[1][fJet],wU1[2][fJet],wU1[1][fJet]);
-    pU2ValD = triGausInvGraphPDF(pU2Diff,iGenPt,pdfU2Cdf[2][fJet],pdfU2Cdf[1][fJet],wU2[2][fJet],wU2[1][fJet]);
 
+    if(doKeys) {
+      // triGausInvGraphKeys
+      // this need the relative space
+      pU1ValD = triGausInvGraphKeys(pU1Diff,iGenPt,pdfKeyU1Cdf[2][fJet],pdfKeyU1Cdf[1][fJet],wU1[2][fJet],wU1[1][fJet],true,5);
+      pU2ValD = triGausInvGraphKeys(pU2Diff,iGenPt,pdfKeyU2Cdf[2][fJet],pdfKeyU2Cdf[1][fJet],wU2[2][fJet],wU2[1][fJet],false,5);
+    } else {
+      // cout << "triGausInvGraphPDF U1" << endl;
+      // this need the reduced space
+      pU1ValD = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[2][fJet],pdfU1Cdf[1][fJet],wU1[2][fJet],wU1[1][fJet],5);
+      pU2ValD = triGausInvGraphPDF(pU2Diff,iGenPt,pdfU2Cdf[2][fJet],pdfU2Cdf[1][fJet],wU2[2][fJet],wU2[1][fJet],5);
+    }
     pU1ValD = pU1ValD*pDRMSU1;
     pDefU1 *= (pDU1/pMU1);
 
@@ -520,9 +531,9 @@ double &pU1,double &pU2
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------
 // double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAddPdf *pdfMC, RooAddPdf *pdfDATA, RooWorkspace *wMC, RooWorkspace *wDATA) {
-double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsReal *pdfDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA) {
+double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsReal *pdfDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA, double max) {
 
-  if(TMath::Abs(iPVal)>=5) return iPVal;
+  if(TMath::Abs(iPVal)>=max) return iPVal;
 
   // fix pt for CDF
   RooRealVar* myptmCDF = (RooRealVar*) pdfMCcdf->getVariables()->find("pt");
@@ -543,7 +554,7 @@ double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal 
   double pVal=pdfDATAcdf->findRoot(*myXd,myXd->getMin(),myXd->getMax(),pdfMCcdf->getVal());
 
   // add protection for outlier since I tabulated up to 5
-  if(TMath::Abs(pVal)>=5) pVal=iPVal;
+  if(TMath::Abs(pVal)>=max) pVal=iPVal;
   // if(TMath::Abs(iPVal)>=5) pVal=5;
 
   myptd->setVal(1);
@@ -555,10 +566,10 @@ double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal 
 
 }
 
-double RecoilCorrector::triGausInvGraphKeys(double iPVal, double Zpt, std::vector<RooAbsReal*> pdfKeyMCcdf, std::vector<RooAbsReal*> pdfKeyDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA, bool isU1) {
+double RecoilCorrector::triGausInvGraphKeys(double iPVal, double Zpt, std::vector<RooAbsReal*> pdfKeyMCcdf, std::vector<RooAbsReal*> pdfKeyDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA, bool isU1, double max) {
 
   // add protection for outlier since I tabulated up to 30
-  if(TMath::Abs(iPVal)>=30) return iPVal;
+  if(TMath::Abs(iPVal)>=max) return iPVal;
 
   int U1U2=1;
   if(!isU1) U1U2=2;
@@ -584,7 +595,7 @@ double RecoilCorrector::triGausInvGraphKeys(double iPVal, double Zpt, std::vecto
   double pVal=pdfKeyDATAcdf[Zptbin]->findRoot(*myXdCDF, myXdCDF->getMin(), myXdCDF->getMax(), pdfKeyMCcdf[Zptbin]->getVal());
 
   // add protection for outlier since I tabulated up to 30
-  if(TMath::Abs(pVal)>=30) pVal=iPVal;
+  if(TMath::Abs(pVal)>=max) pVal=iPVal;
 
   return pVal;
 
