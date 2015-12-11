@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <TStyle.h>
 #include "TFile.h"
 #include "TH1.h"
@@ -7,7 +9,6 @@
 #include "TString.h"
 #include "TGraph.h"
 #include "TLegend.h"
-#include <iostream>
 
 using namespace std;
 
@@ -17,8 +18,9 @@ int fillstyle = 3001;
 void syst_recoil_one(TString recstr="u1")
 {
   gStyle->SetOptFit(111);
+  gStyle->SetLegendBorderSize(0);
 
-  const int nhists = 2;
+  const int nhists = 6;
 
   int IniVar[] = {0,  9,  0, 0,  9,  0, 0,  9,  0, 0,  9,  0};
   int NVars[]  = {9, 21, 15, 9, 21, 15, 9, 21, 15, 9, 21, 15};
@@ -172,11 +174,11 @@ void syst_recoil_one(TString recstr="u1")
 
     TLegend *leg = new TLegend(0.1,0.7,0.48,0.9);
     // leg->SetHeader("The Legend Title");
-    leg->AddEntry(hmadgraph, "madgraph / (powheg morphed to madgraph)", "l");
-    leg->AddEntry(hcentral,  "powheg stat unc",                         "f");
-    leg->AddEntry(hstat,     "madgraph stat unc",                       "f");
-    leg->AddEntry(herr,      "propagation of recoil fit stat unc",      "f");
-    leg->AddEntry(hclosure,  "difference against RK->RK morphing",      "f");
+    leg->AddEntry(hmadgraph, "madgraph / (powheg morphed to madgraph 3G->3G)", "l");
+    leg->AddEntry(hcentral,  "powheg stat unc",                                "f");
+    leg->AddEntry(hstat,     "madgraph stat unc",                              "f");
+    leg->AddEntry(herr,      "3G->3G statistical uncertainty",                 "f");
+    leg->AddEntry(hclosure,  "difference against RK->RK morphing",             "f");
     leg->Draw();
 
     TH1D* hsigmas = (TH1D*)hmadgraph->Clone("hsigmas_bin" + binstr);

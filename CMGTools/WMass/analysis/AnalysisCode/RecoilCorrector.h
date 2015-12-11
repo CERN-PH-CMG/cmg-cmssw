@@ -42,7 +42,7 @@ class RecoilCorrector
 {
   
 public:
-  RecoilCorrector(string iNameZDat, string iNameZ_key, int iSeed=0xDEADBEEF,TString model_name = "fitresult_Add", TString fNonClosure_name = "");
+  RecoilCorrector(bool doKeys, string iNameZDat, string iNameZ_key, int iSeed=0xDEADBEEF,TString model_name = "fitresult_Add", TString fNonClosure_name = "");
   RecoilCorrector(string iNameZDat1, string iPrefix, int iSeed=0xDEADBEEF);
   ~RecoilCorrector();
   void CorrectAll(double &met, double &metphi, double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double &iU1,double &iU2,double iFluc,double iScale=0,int njet=0);

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <TStyle.h>
 #include "TFile.h"
 #include "TH1.h"
@@ -5,7 +7,6 @@
 #include "TLine.h"
 #include "TString.h"
 #include "TLegend.h"
-#include <iostream>
 
 using namespace std;
 
@@ -15,8 +16,9 @@ int fillstyle = 3001;
 void syst_recoil_one(TString recstr="u2")
 {
   gStyle->SetOptFit(111);
+  gStyle->SetLegendBorderSize(0);
 
-  const int nhists = 2;
+  const int nhists = 6;
 
   int IniVar[] = {0,  9,  0, 0,  9,  0, 0,  9,  0, 0,  9,  0};
   int NVars[]  = {9, 21, 15, 9, 21, 15, 9, 21, 15, 9, 21, 15};
@@ -48,7 +50,7 @@ void syst_recoil_one(TString recstr="u2")
   hmadgraph->Scale(1/hmadgraph->Integral());
   hmadgraph->Divide(hcentral_noerr);
 
-  TCanvas* c=new TCanvas("c_"+recstr, "c_"+recstr);
+  TCanvas* c=new TCanvas("c_"+recstr, "c_"+recstr, 800, 800);
   c->cd();
 
   hcentral->GetYaxis()->SetRangeUser(0.8,1.2);
@@ -105,7 +107,7 @@ void syst_recoil_one(TString recstr="u2")
     hclosure->SetBinError(i, sqrt(errstatfit*errstatfit + errclosure*errclosure));
   }
 
-  TCanvas *c_closure = new TCanvas("c_closure_"+recstr, "c_closure_"+recstr);
+  TCanvas* c_closure = new TCanvas("c_closure_"+recstr, "c_closure_"+recstr, 800, 800);
   c_closure->cd();
 
   hclosure->SetAxisRange(-xaxislimit, +xaxislimit, "X");
@@ -113,7 +115,7 @@ void syst_recoil_one(TString recstr="u2")
   hclosure->SetFillColor(kBlue+1);
   hclosure->SetFillStyle(fillstyle);
   hclosure->Draw("E2");
-  herr->SetFillColor(kCyan-2);
+  herr->SetFillColor(kCyan);
   herr->SetFillStyle(fillstyle);
   herr->Draw("same E2");
   hstat->SetFillColor(kGreen);
@@ -132,13 +134,13 @@ void syst_recoil_one(TString recstr="u2")
   hmadgraph->Draw("histo same");
 
 
-  TLegend *leg = new TLegend(0.1,0.7,0.48,0.9);
+  TLegend *leg = new TLegend(0.3,0.7,0.7,0.9);
   // leg->SetHeader("The Legend Title");
-  leg->AddEntry(hmadgraph, "madgraph / (powheg morphed to madgraph)", "l");
-  leg->AddEntry(hcentral,  "powheg stat unc",                         "f");
-  leg->AddEntry(hstat,     "madgraph stat unc",                       "f");
-  leg->AddEntry(herr,      "propagation of recoil fit stat unc",      "f");
-  leg->AddEntry(hclosure,  "difference against RK->RK morphing",      "f");
+  leg->AddEntry(hmadgraph, "madgraph / (powheg morphed to madgraph 3G->3G)", "l");
+  leg->AddEntry(hcentral,  "powheg stat unc",                                "f");
+  leg->AddEntry(hstat,     "madgraph stat unc",                              "f");
+  leg->AddEntry(herr,      "3G->3G statistical uncertainty",                 "f");
+  leg->AddEntry(hclosure,  "difference against RK->RK morphing",             "f");
   leg->Draw();
 
   TH1D* hsigmas = (TH1D*)hmadgraph->Clone("hsigmas");
@@ -154,7 +156,7 @@ void syst_recoil_one(TString recstr="u2")
     hpull->Fill(ratio);
   }
 
-  TCanvas *c_pull = new TCanvas("c_pull_"+recstr, "c_pull_"+recstr);
+  TCanvas *c_pull = new TCanvas("c_pull_"+recstr, "c_pull_"+recstr, 800, 800);
   c_pull->cd();
 
   hpull->Fit("gaus", "L");
