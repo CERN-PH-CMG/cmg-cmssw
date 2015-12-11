@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <TStyle.h>
 #include "TFile.h"
 #include "TH1.h"
@@ -5,7 +7,6 @@
 #include "TLine.h"
 #include "TString.h"
 #include "TLegend.h"
-#include <iostream>
 
 using namespace std;
 
@@ -15,23 +16,25 @@ int fillstyle = 3001;
 void syst_recoil_one(TString recstr="u2")
 {
   gStyle->SetOptFit(111);
+  gStyle->SetLegendBorderSize(0);
 
-  const int nhists = 12;
+  const int nhists = 6;
 
-  int IniVar[nhists] = {0,  9,  0, 0,  9,  0, 0,  9,  0, 0,  9,  0};
-  int NVars[nhists]  = {9, 21, 15, 9, 21, 15, 9, 21, 15, 9, 21, 15};
+  int IniVar[] = {0,  9,  0, 0,  9,  0, 0,  9,  0, 0,  9,  0};
+  int NVars[]  = {9, 21, 15, 9, 21, 15, 9, 21, 15, 9, 21, 15};
 
   int ntotsysts = 0;
   for (int i=0; i<nhists; ++i) ntotsysts+=(NVars[i]-IniVar[i]);
 
   TFile* fcentral = new TFile(Form("0.root"));
-  TH1D* hcentral=(TH1D*)fcentral->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
-
+  TFile* frookeys = new TFile(Form("rookeys.root"));
   TFile* fmadgraph = new TFile(Form("madnocorr.root"));
-  TH1D* hmadgraph = (TH1D*)fmadgraph->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
-  hmadgraph->SetTitle("Madgraph");
-  hmadgraph->SetName("madgraph");
 
+  TH1D* hcentral = (TH1D*)fcentral->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
+  TH1D* hrookeys = (TH1D*)frookeys->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
+  TH1D* hmadgraph = (TH1D*)fmadgraph->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_eta0p9_91188", recstr.Data()));
+
+  
   TH1D* hcentral_noerr = (TH1D*)hcentral->Clone("hcentral_noerr");
   for(int i=1;i<hcentral_noerr->GetNbinsX()+1; i++){
     hcentral_noerr->SetBinError(i, 0);
@@ -41,14 +44,17 @@ void syst_recoil_one(TString recstr="u2")
   hcentral ->Scale(1/hcentral->Integral());
   hcentral ->Divide(hcentral_noerr);
 
+  hrookeys->Scale(1/hrookeys->Integral());
+  hrookeys->Divide(hcentral_noerr);
+
   hmadgraph->Scale(1/hmadgraph->Integral());
   hmadgraph->Divide(hcentral_noerr);
 
-
-  TCanvas* c=new TCanvas("c_"+recstr, "c_"+recstr);
+  TCanvas* c=new TCanvas("c_"+recstr, "c_"+recstr, 800, 800);
   c->cd();
 
   hcentral->GetYaxis()->SetRangeUser(0.8,1.2);
+  hcentral->SetStats(kFALSE);
   hcentral->Draw();
 
   TFile* fin[nhists];
@@ -59,8 +65,6 @@ void syst_recoil_one(TString recstr="u2")
     fin[i]=new TFile(Form("%d.root", i+1));
     for(int j=IniVar[i]; j<NVars[i]; j++){
       hsyst[nsyst]=(TH1D*)fin[i]->Get(Form("hWlikePos_%s_8_JetCut_pdf229800-0_RecoilCorrVar%d_eta0p9_91188", recstr.Data(), j));
-      hsyst[nsyst]->SetName(Form("hWlikePos_%s_8_JetCut_pdf229800-0_RecoilCorrVar%d_eta0p9_91188", recstr.Data(), nsyst));
-      hsyst[nsyst]->SetTitle(Form("hWlikePos_%s_8_JetCut_pdf229800-0_RecoilCorrVar%d_eta0p9_91188", recstr.Data(), nsyst));
       hsyst[nsyst]->Scale(1/hsyst[nsyst]->Integral());
       hsyst[nsyst]->Divide(hcentral_noerr);
       hsyst[nsyst]->SetLineColor(nsyst);
@@ -89,22 +93,31 @@ void syst_recoil_one(TString recstr="u2")
   }
 
   TH1D* herr = (TH1D*)hcentral->Clone("herr");
-  herr->SetTitle("Pow2Mad closure; " +recstr+ "; N");
-  herr->SetStats(kFALSE);
   for(int i=1;i<herr->GetNbinsX()+1; i++){
     double errstat = hstat   ->GetBinError(i);
     double errfit  = hsystfit->GetBinError(i);
     herr->SetBinError(i, sqrt(errstat*errstat + errfit*errfit));
   }
 
-  TCanvas *c_closure = new TCanvas("c_closure_"+recstr, "c_closure_"+recstr);
+  TH1D* hclosure = (TH1D*)hcentral->Clone("hclosure");
+  hclosure->SetTitle("Pow2Mad closure; " +recstr+ "; N");
+  for(int i=1;i<hclosure->GetNbinsX()+1; i++){
+    double errstatfit = herr->GetBinError(i);
+    double errclosure = hrookeys->GetBinContent(i)-1;
+    hclosure->SetBinError(i, sqrt(errstatfit*errstatfit + errclosure*errclosure));
+  }
+
+  TCanvas* c_closure = new TCanvas("c_closure_"+recstr, "c_closure_"+recstr, 800, 800);
   c_closure->cd();
 
-  herr->SetAxisRange(-xaxislimit, +xaxislimit, "X");
-  herr->SetAxisRange(0.8, 1.2, "Y");
-  herr->SetFillColor(kCyan-2);
+  hclosure->SetAxisRange(-xaxislimit, +xaxislimit, "X");
+  hclosure->SetAxisRange(0.8, 1.2, "Y");
+  hclosure->SetFillColor(kBlue+1);
+  hclosure->SetFillStyle(fillstyle);
+  hclosure->Draw("E2");
+  herr->SetFillColor(kCyan);
   herr->SetFillStyle(fillstyle);
-  herr->Draw("E2");
+  herr->Draw("same E2");
   hstat->SetFillColor(kGreen);
   hstat->SetFillStyle(fillstyle);
   hstat->Draw("same E2");
@@ -121,12 +134,13 @@ void syst_recoil_one(TString recstr="u2")
   hmadgraph->Draw("histo same");
 
 
-  TLegend *leg = new TLegend(0.1,0.7,0.48,0.9);
+  TLegend *leg = new TLegend(0.3,0.7,0.7,0.9);
   // leg->SetHeader("The Legend Title");
-  leg->AddEntry(hmadgraph,"madgraph / (powheg morphed to madgraph)","l");
-  leg->AddEntry(hcentral,"powheg stat unc","f");
-  leg->AddEntry(hstat,"madgraph stat unc","f");
-  leg->AddEntry(herr,"propagation of recoil fit stat unc","f");
+  leg->AddEntry(hmadgraph, "madgraph / (powheg morphed to madgraph 3G->3G)", "l");
+  leg->AddEntry(hcentral,  "powheg stat unc",                                "f");
+  leg->AddEntry(hstat,     "madgraph stat unc",                              "f");
+  leg->AddEntry(herr,      "3G->3G statistical uncertainty",                 "f");
+  leg->AddEntry(hclosure,  "difference against RK->RK morphing",             "f");
   leg->Draw();
 
   TH1D* hsigmas = (TH1D*)hmadgraph->Clone("hsigmas");
@@ -137,12 +151,12 @@ void syst_recoil_one(TString recstr="u2")
   hpull->StatOverflows(kTRUE);
 
   for(int i=1; i<hsigmas->GetNbinsX()+1; i++){
-    double ratio = (hmadgraph->GetBinContent(i)-1)/herr->GetBinError(i);
+    double ratio = (hmadgraph->GetBinContent(i)-1)/hclosure->GetBinError(i);
     hsigmas->SetBinContent(i, ratio);
     hpull->Fill(ratio);
   }
 
-  TCanvas *c_pull = new TCanvas("c_pull_"+recstr, "c_pull_"+recstr);
+  TCanvas *c_pull = new TCanvas("c_pull_"+recstr, "c_pull_"+recstr, 800, 800);
   c_pull->cd();
 
   hpull->Fit("gaus", "L");
@@ -163,6 +177,7 @@ int closure_recoil_plots()
 {
   syst_recoil_one("u1");
   syst_recoil_one("u2");
+  syst_recoil_one("u");
   return 0;
 }
 
