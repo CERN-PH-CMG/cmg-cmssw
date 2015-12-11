@@ -312,6 +312,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     generatorSuffix="_madgraph";
 
   RecoilCorrector*  correctorRecoil_Z; // TYPE2
+  bool doSingleGauss=false;
+  bool doKeys= useRecoilCorr==3 ? true : false;
   if(useRecoilCorr>0){
     TString model_name[2]={"fitresult_Add","fitresult_model2D"};
     
@@ -339,15 +341,13 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     //    if(correctToMadgraph) fileZmmKeysData = "../RecoilCode/NOV25/keysrecoilfit_NOV25_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
 
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;
-    correctorRecoil_Z = new RecoilCorrector(fileCorrectTo.c_str(),fileZmmKeysCorrectTo.c_str(),123456,model_name[0],"../RecoilCode/MAY25/nonClosureMAY25.root");
+    correctorRecoil_Z = new RecoilCorrector(doKeys, fileCorrectTo.c_str(),fileZmmKeysCorrectTo.c_str(),123456,model_name[0],"../RecoilCode/MAY25/nonClosureMAY25.root");
     cout << "INITIALIZING RECOIL Z DATA FILE" << endl;
     correctorRecoil_Z->addDataFile(fileZmmData.c_str(), fileZmmKeysData.c_str(), model_name[model_name_idx] );
     cout << "INITIALIZING RECOIL Z MC FILE" << endl;
     correctorRecoil_Z->addMCFile(fileZmmMC.c_str(), fileZmmKeysMC.c_str(), model_name[0]);
 
   }
-  bool doSingleGauss=false;
-  bool doKeys= useRecoilCorr==3 ? true : false;
 
   double ZWmassRatio = ((double)WMass::ZMassCentral_MeV)/((double)WMass::WMassCentral_MeV);
   

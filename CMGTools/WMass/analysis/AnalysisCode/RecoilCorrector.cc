@@ -1,8 +1,9 @@
 #include "RecoilCorrector.h"
 
 // mytype: 0 = target file , 1 = DATA , 2 = Z MC
-RecoilCorrector::RecoilCorrector(string iNameZ, string iNameZ_key, int iSeed,TString model_name, TString fNonClosure_name) {
+RecoilCorrector::RecoilCorrector(bool doKeys, string iNameZ, string iNameZ_key, int iSeed,TString model_name, TString fNonClosure_name) {
 
+  RecoilCorrector::doKeys = doKeys;
   fRandom = new TRandom3(iSeed);
   readRecoil(fF1U1Fit,fF1U1RMSSMFit,fF1U1RMS1Fit,fF1U1RMS2Fit,fF1U1RMS3Fit,fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit, fF1U2Fit,fF1U2RMSSMFit,fF1U2RMS1Fit,fF1U2RMS2Fit,fF1U2RMS3Fit,fF1U2FracFit,fF1U2Mean1Fit, fF1U2Mean2Fit,iNameZ,iNameZ_key,"PF",1,0,model_name);  
   fNonClosure = new TFile(fNonClosure_name.Data());
@@ -56,7 +57,8 @@ TString model_name
   if(mytype==2) cout << " read MC"  << endl;
 
   TFile *lFile  = new TFile(iFName.c_str());
-  TFile *lFileKeys  = new TFile(iFKeyName.c_str());
+  TFile *lFileKeys;
+  if (doKeys) lFileKeys = new TFile(iFKeyName.c_str());
   // lFile->ls();
 
   // now defined in the .h
@@ -107,7 +109,7 @@ TString model_name
 
     wU1key[mytype][i0] = new RooWorkspace("wU1key","wU1key");
     //    cout << "reading recoilKeys " << endl;
-    makeKeysVec(wU1key[mytype][i0], lFileKeys, Form("Keys_U1_%d",i0), pdfKeyU1Cdf[mytype][i0],true);
+    if (doKeys) makeKeysVec(wU1key[mytype][i0], lFileKeys, Form("Keys_U1_%d",i0), pdfKeyU1Cdf[mytype][i0],true);
 
     //    RooRealVar* myptU1=wU1[mytype][i0]->var("pt");
     //    myptU1->setVal(10);
@@ -125,7 +127,7 @@ TString model_name
     runDiago(wU2[mytype][i0],frU2[mytype][i0],Form("AddU2Y%d",i0),pdfU2Cdf[mytype][i0]);
     
     wU2key[mytype][i0] = new RooWorkspace("wU2key","wU2key");
-    makeKeysVec(wU2key[mytype][i0], lFileKeys, Form("Keys_U2_%d",i0), pdfKeyU2Cdf[mytype][i0],false);
+    if (doKeys) makeKeysVec(wU2key[mytype][i0], lFileKeys, Form("Keys_U2_%d",i0), pdfKeyU2Cdf[mytype][i0],false);
 
     //    RooRealVar* myptU2=wU2[mytype][i0]->var("pt");
     //    myptU2->setVal(10);
