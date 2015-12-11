@@ -474,8 +474,8 @@ double &pU1,double &pU2
     if(doKeys) {
       // triGausInvGraphKeys
       // this need the relative space
-      pU1ValD = triGausInvGraphKeys(pU1Diff,iGenPt,pdfKeyU1Cdf[2][fJet],pdfKeyU1Cdf[1][fJet],wU1[2][fJet],wU1[1][fJet],true,5);
-      pU2ValD = triGausInvGraphKeys(pU2Diff,iGenPt,pdfKeyU2Cdf[2][fJet],pdfKeyU2Cdf[1][fJet],wU2[2][fJet],wU2[1][fJet],false,5);
+      pU1ValD = triGausInvGraphKeys(pU1Diff,iGenPt,pdfKeyU1Cdf[2][fJet],pdfKeyU1Cdf[1][fJet],wU1key[2][fJet],wU1key[1][fJet],true,5);
+      pU2ValD = triGausInvGraphKeys(pU2Diff,iGenPt,pdfKeyU2Cdf[2][fJet],pdfKeyU2Cdf[1][fJet],wU2key[2][fJet],wU2key[1][fJet],false,5);
     } else {
       // cout << "triGausInvGraphPDF U1" << endl;
       // this need the reduced space
@@ -571,8 +571,8 @@ double RecoilCorrector::triGausInvGraphKeys(double iPVal, double Zpt, std::vecto
   // add protection for outlier since I tabulated up to 30
   if(TMath::Abs(iPVal)>=max) return iPVal;
 
-  int U1U2=1;
-  if(!isU1) U1U2=2;
+  //  int U1U2=1;
+  //  if(!isU1) U1U2=2;
 
   int Zptbin=int(Zpt);
   //  if(int(Zpt)==0) Zptbin=0;
@@ -586,6 +586,7 @@ double RecoilCorrector::triGausInvGraphKeys(double iPVal, double Zpt, std::vecto
   */
 
   //  cout << "Zptbin=" << Zptbin << " Zpt=" << Zpt << " pdfKeyMCcdf.size()=" << pdfKeyMCcdf.size() << " pdfKeyDATAcdf.size()=" << pdfKeyDATAcdf.size() << endl;
+
   RooRealVar* myXmCDF = (RooRealVar*) pdfKeyMCcdf[Zptbin]->getVariables()->find("XVar");
   RooRealVar* myXdCDF = (RooRealVar*) pdfKeyDATAcdf[Zptbin]->getVariables()->find("XVar");
 
@@ -612,13 +613,12 @@ void RecoilCorrector::makeKeysVec(RooWorkspace *w, TFile * lFileKeys, TString fi
 
   for(int Zpt=0; Zpt<=Zmax; Zpt++) {
 
-
     RooAbsPdf* pdfKey = (RooKeysPdf*) lFileKeys->Get(Form("%s_%d",fit.Data(),Zpt));
-
+    w->import(*pdfKey, RooFit::RecycleConflictNodes(),RooFit::Silence());
     RooRealVar* myX1=w->var("XVar");
 
+    //    RooRealVar* myX1 = (RooRealVar*) pdfKey->getVariables()->find("XVar");
     //    cout << "CDF pointer " << pdfKey->createCdf(*myX1) << endl;
-    w->import(*pdfKey, RooFit::RecycleConflictNodes(),RooFit::Silence());
 
     RooAbsReal * iKeyPdf = pdfKey->createCdf(*myX1);
     pdfUiCdf.push_back(iKeyPdf);
