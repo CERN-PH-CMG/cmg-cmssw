@@ -6,6 +6,7 @@
 
 #include <TH1D.h>
 #include <TH2D.h>
+#include <TH3D.h>
 #include <TString.h>
 #include <string>
 #include <TSystem.h>
@@ -30,12 +31,15 @@ class common_stuff {
   static void plot2D(std::string title, double xval, double yval, double weight, std::map<std::string, TH2D*> &allhistos, int numbinsx, double xmin, double xmax, int numbinsy, double ymin, double ymax);
   static void plot2D(std::string title, double xval, double yval, double weight, std::map<std::string, TH2D*> &allhistos, int numbinsx, double *xarray, int numbinsy, double *yarray);
   
+  static void plot3D(std::string title, double xval, double yval, double zval, double weight, std::map<std::string, TH3D*> &allhistos, int numbinsx, double xmin, double xmax, int numbinsy, double ymin, double ymax, int numbinsz, double zmin, double zmax);
+  static void plot3D(std::string title, double xval, double yval, double zval, double weight, std::map<std::string, TH3D*> &allhistos, int numbinsx, double *xarray, int numbinsy, double *yarray, int numbinsz, double *zarray);
+  
   static void cloneHisto1D(std::string title_old, std::string title_new, std::map<std::string, TH1D*> &allhistos);
   static void cloneHisto2D(std::string title_old, std::string title_new, std::map<std::string, TH2D*> &allhistos);
 
   static void makeRatioHisto1D(std::string title1, std::string title2, std::string title_ratio, std::map<std::string, TH1D*> &allhistos);
   
-  static void writeOutHistos(TFile *fout, std::map<std::string, TH1D*> h_1d, std::map<std::string, TH2D*> h_2d);
+  static void writeOutHistos(TFile *fout, std::map<std::string, TH1D*> h_1d, std::map<std::string, TH2D*> h_2d, std::map<std::string, TH3D*> h_3d);
   
   static std::pair<double,double> getPhiCorrMET( double met, double metphi, int nvtx, bool ismc );
   

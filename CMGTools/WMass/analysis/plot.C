@@ -201,7 +201,7 @@ TGraph * getGraph(TString fileName, TString dirName, TString histoName, int colo
   if(!doZPt) binMax=35; // vtx 
 
   if(fileName.Contains("7TeV")) binMax=20;
-  if(fileName.Contains("test_numbers_DYJetsMadSig")) binMax=20;
+  if(fileName.Contains("output_DYJetsMadSig")) binMax=20;
 
   TString histo = "";
 
@@ -1109,9 +1109,9 @@ void drawRatio(const char * histoName) {
   double rebin=1;
   TString histo = histoName;
   
-  TString fileNameDATA  = "JobOutputs/test_7TeV_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DATA/ZanalysisOnDATA.root";
-  TString fileNameMCmad = "JobOutputs/test_7TeV_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DYJetsMadSig/ZanalysisOnDATA.root";
-  TString fileNameMCpow = "JobOutputs/test_7TeV_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DYJetsPow/ZanalysisOnDATA.root";  
+  TString fileNameDATA  = "JobOutputs/test_7TeV_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DATA/ZanalysisOnDATA.root";
+  TString fileNameMCmad = "JobOutputs/test_7TeV_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DYJetsMadSig/ZanalysisOnDATA.root";
+  TString fileNameMCpow = "JobOutputs/test_7TeV_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DYJetsPow/ZanalysisOnDATA.root";  
 
   TH1 *data = getHisto(fileNameDATA,dirName,histo,1,1,rebin);
   TH1 *MC_raw = getHisto(fileNameMCmad,dirName,histo,2,1,rebin);
@@ -1220,34 +1220,34 @@ TPad * testClosureRMS(const char * histoName, int rebin, bool doLog, int type, b
   /////
   /////
 
-  TString fileNameDATA_8TeV_A  = "JobOutputs/test_8TeV_runA_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DATA/ZanalysisOnDATA.root";
-  TString fileNameDATA_8TeV_B  = "JobOutputs/test_8TeV_runB_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DATA/ZanalysisOnDATA.root";
-  TString fileNameDATA_8TeV_C  = "JobOutputs/test_8TeV_runC_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DATA/ZanalysisOnDATA.root";
-  TString fileNameDATA_8TeV_D  = "JobOutputs/test_8TeV_runD_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DATA/ZanalysisOnDATA.root";
+  TString fileNameDATA_8TeV_A  = "JobOutputs/test_8TeV_runA_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DATA/ZanalysisOnDATA.root";
+  TString fileNameDATA_8TeV_B  = "JobOutputs/test_8TeV_runB_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DATA/ZanalysisOnDATA.root";
+  TString fileNameDATA_8TeV_C  = "JobOutputs/test_8TeV_runC_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DATA/ZanalysisOnDATA.root";
+  TString fileNameDATA_8TeV_D  = "JobOutputs/test_8TeV_runD_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DATA/ZanalysisOnDATA.root";
 
-  TString fileNameDATA_8TeV  = "JobOutputs/test_8TeV_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DATA/ZanalysisOnDATA.root";
-  TString fileNameDATA  = "JobOutputs/test_7TeV_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DATA/ZanalysisOnDATA.root";
+  TString fileNameDATA_8TeV  = "JobOutputs/test_8TeV_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DATA/ZanalysisOnDATA.root";
+  TString fileNameDATA  = "JobOutputs/test_7TeV_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DATA/ZanalysisOnDATA.root";
 
-//  TString fileNameDATA  = "JobOutputs/test_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DATA/ZanalysisOnDATA.root";
-  TString fileNameMC    = "JobOutputs/test_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DYJetsPow/ZanalysisOnDATA.root";
-  TString fileNameMCmad = "JobOutputs/test_7TeV_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DYJetsMadSig/ZanalysisOnDATA.root";
-  TString fileNameMCmad_8TeV = "JobOutputs/test_8TeV_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DYJetsMadSig/ZanalysisOnDATA.root";
+//  TString fileNameDATA  = "JobOutputs/test_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DATA/ZanalysisOnDATA.root";
+  TString fileNameMC    = "JobOutputs/test_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DYJetsPow/ZanalysisOnDATA.root";
+  TString fileNameMCmad = "JobOutputs/test_7TeV_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DYJetsMadSig/ZanalysisOnDATA.root";
+  TString fileNameMCmad_8TeV = "JobOutputs/test_8TeV_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DYJetsMadSig/ZanalysisOnDATA.root";
 
-  TString fileNameDATA_pf  = "JobOutputs/test_pfmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DATA/ZanalysisOnDATA.root";
-  TString fileNameMC_pf    = "JobOutputs/test_pfmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DYJetsPow/ZanalysisOnDATA.root";
+  TString fileNameDATA_pf  = "JobOutputs/test_pfmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DATA/ZanalysisOnDATA.root";
+  TString fileNameMC_pf    = "JobOutputs/test_pfmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DYJetsPow/ZanalysisOnDATA.root";
 
-  TString fileNameMCcorr    = "JobOutputs/test_tkmet_RochCorr_RecoilCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DYJetsPow/ZanalysisOnDATA.root";
-  TString fileNameMCcorrScaleUp    = "JobOutputs/test_tkmet_RochCorr_RecoilCorr_Scale_U1_1_EffHeinerSFCorr_PileupSFCorr/test_numbers_DYJetsPow/ZanalysisOnDATA.root";
-  TString fileNameMCcorrScaleDWN    = "JobOutputs/test_tkmet_RochCorr_RecoilCorr_Scale_U1_-1_EffHeinerSFCorr_PileupSFCorr/test_numbers_DYJetsPow/ZanalysisOnDATA.root";
-  TString fileNameMCcorrU1Up    = "JobOutputs/test_tkmet_RochCorr_RecoilCorr_Resol_U1_1_U2_0_EffHeinerSFCorr_PileupSFCorr/test_numbers_DYJetsPow/ZanalysisOnDATA.root";
-  TString fileNameMCcorrU1DWN    = "JobOutputs/test_tkmet_RochCorr_RecoilCorr_Resol_U1_-1_U2_0_EffHeinerSFCorr_PileupSFCorr/test_numbers_DYJetsPow/ZanalysisOnDATA.root";
-  TString fileNameMCcorrU2Up    = "JobOutputs/test_tkmet_RochCorr_RecoilCorr_Resol_U1_0_U2_1_EffHeinerSFCorr_PileupSFCorr/test_numbers_DYJetsPow/ZanalysisOnDATA.root";
-  TString fileNameMCcorrU2DWN    = "JobOutputs/test_tkmet_RochCorr_RecoilCorr_Resol_U1_0_U2_-1_EffHeinerSFCorr_PileupSFCorr/test_numbers_DYJetsPow/ZanalysisOnDATA.root";
+  TString fileNameMCcorr    = "JobOutputs/test_tkmet_RochCorr_RecoilCorr_EffHeinerSFCorr_PileupSFCorr/output_DYJetsPow/ZanalysisOnDATA.root";
+  TString fileNameMCcorrScaleUp    = "JobOutputs/test_tkmet_RochCorr_RecoilCorr_Scale_U1_1_EffHeinerSFCorr_PileupSFCorr/output_DYJetsPow/ZanalysisOnDATA.root";
+  TString fileNameMCcorrScaleDWN    = "JobOutputs/test_tkmet_RochCorr_RecoilCorr_Scale_U1_-1_EffHeinerSFCorr_PileupSFCorr/output_DYJetsPow/ZanalysisOnDATA.root";
+  TString fileNameMCcorrU1Up    = "JobOutputs/test_tkmet_RochCorr_RecoilCorr_Resol_U1_1_U2_0_EffHeinerSFCorr_PileupSFCorr/output_DYJetsPow/ZanalysisOnDATA.root";
+  TString fileNameMCcorrU1DWN    = "JobOutputs/test_tkmet_RochCorr_RecoilCorr_Resol_U1_-1_U2_0_EffHeinerSFCorr_PileupSFCorr/output_DYJetsPow/ZanalysisOnDATA.root";
+  TString fileNameMCcorrU2Up    = "JobOutputs/test_tkmet_RochCorr_RecoilCorr_Resol_U1_0_U2_1_EffHeinerSFCorr_PileupSFCorr/output_DYJetsPow/ZanalysisOnDATA.root";
+  TString fileNameMCcorrU2DWN    = "JobOutputs/test_tkmet_RochCorr_RecoilCorr_Resol_U1_0_U2_-1_EffHeinerSFCorr_PileupSFCorr/output_DYJetsPow/ZanalysisOnDATA.root";
 
-  TString fileNameMC_pt0    = "JobOutputs/test_8TeV_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DYJetsMadSig/ZanalysisOnDATA.root";
-  TString fileNameMC_pt050  = "JobOutputs/test_8TeV_tkmet050_tkmet050_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DYJetsMadSig/ZanalysisOnDATA.root";
-  TString fileNameMC_pt075  = "JobOutputs/test_8TeV_tkmet075_tkmet075_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DYJetsMadSig/ZanalysisOnDATA.root";
-  TString fileNameMC_pt100  = "JobOutputs/test_8TeV_tkmet100_tkmet100_RochCorr_EffHeinerSFCorr_PileupSFCorr/test_numbers_DYJetsMadSig/ZanalysisOnDATA.root";
+  TString fileNameMC_pt0    = "JobOutputs/test_8TeV_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DYJetsMadSig/ZanalysisOnDATA.root";
+  TString fileNameMC_pt050  = "JobOutputs/test_8TeV_tkmet050_tkmet050_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DYJetsMadSig/ZanalysisOnDATA.root";
+  TString fileNameMC_pt075  = "JobOutputs/test_8TeV_tkmet075_tkmet075_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DYJetsMadSig/ZanalysisOnDATA.root";
+  TString fileNameMC_pt100  = "JobOutputs/test_8TeV_tkmet100_tkmet100_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DYJetsMadSig/ZanalysisOnDATA.root";
 
   /////
   /////

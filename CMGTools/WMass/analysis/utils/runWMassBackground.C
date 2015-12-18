@@ -89,7 +89,7 @@ void runWMassBackground(){
     gROOT->ProcessLine(Form(".! cp JobOutputs/%s/common.h includes/common.h",outputdir.Data()));
   else{ // otherwise build it from this cfg
     gROOT->ProcessLine(Form(".! cp includes/common.h.bkp includes/common.h"));
-    gROOT->ProcessLine(Form(".! sh manipulate_parameters.sh \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" ",ZMass.Data(),WMassCentral_MeV.Data(),WMassStep_MeV.Data(),WMassNSteps.Data(),etaMuonNSteps.Data(),etaMaxMuons.Data()));
+    gROOT->ProcessLine(Form(".! sh utils/manipulate_parameters.sh \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" ",ZMass.Data(),WMassCentral_MeV.Data(),WMassStep_MeV.Data(),WMassNSteps.Data(),etaMuonNSteps.Data(),etaMaxMuons.Data()));
     gROOT->ProcessLine(Form(".! cp includes/common.h JobOutputs/%s/common.h",outputdir.Data()));
   }
   

@@ -16,6 +16,7 @@ PdfDiagonalizer::PdfDiagonalizer(const char *name, RooWorkspace *w, RooFitResult
     
     TMatrixDSym cov(result.covarianceMatrix()); 
     TMatrixDSymEigen eigen(cov);
+    // eigen.GetEigenVectors().Print();
 
     const TMatrixD& vectors = eigen.GetEigenVectors();
     const TVectorD& values  = eigen.GetEigenValues();

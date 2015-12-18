@@ -2,7 +2,7 @@ void compute_Zpt_SF(){
 
   static const int nsamples=7;
 
-  TFile*finZptDATA = new TFile("/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_5/src/CMGTools/WMass/analysis/JobOutputs/test_ptreweighting1_RochCorr_EffSFCorr_PileupSFCorr/test_numbers_DATA/ZanalysisOnDATA.root");
+  TFile*finZptDATA = new TFile("/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_5/src/CMGTools/WMass/analysis/JobOutputs/test_ptreweighting1_RochCorr_EffSFCorr_PileupSFCorr/output_DATA/ZanalysisOnDATA.root");
   TH1D*hDATA=(TH1D*)finZptDATA->Get("hZ_pt_Sig_eta0p6_80419");
   hDATA->Sumw2();
   hDATA->Rebin();
@@ -24,7 +24,7 @@ void compute_Zpt_SF(){
   // for(int i=0; i<nsamples; i++){
   
     // TFile*finZptMC = new TFile(Form("%s",fWana_str[i].Data()));
-    TFile*finZptMC = new TFile("/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_5/src/CMGTools/WMass/analysis/JobOutputs/test_ptreweighting1_RochCorr_EffSFCorr_PileupSFCorr/test_numbers_DYJetsSig/ZanalysisOnDATA.root");
+    TFile*finZptMC = new TFile("/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_5/src/CMGTools/WMass/analysis/JobOutputs/test_ptreweighting1_RochCorr_EffSFCorr_PileupSFCorr/output_DYJetsSig/ZanalysisOnDATA.root");
     finZptMC->Print();
     TH1D*hMC=(TH1D*)finZptMC->Get("hZ_pt_Sig_eta0p6_80419");
     hMC->Sumw2();

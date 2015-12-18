@@ -81,7 +81,7 @@ int main(int argc, char ** argv)
   
   if(GetEntriesOrNchunck>-1) cout << "processing line "<< Form("Wanalysis wDATA(\"%s\",%f,%d)",WfileDATA.Data(),WfileDATA_lumi_SF,sample.Contains("WJets") && !sample.Contains("Fake")?useAlsoGenPforSig:0) << endl;
   Wanalysis wDATA(WfileDATA.Data(),WfileDATA_lumi_SF,sample.Contains("WJets") && !sample.Contains("Fake")?useAlsoGenPforSig:0);
-  if(GetEntriesOrNchunck>-1) cout << "processing line "<< Form("wDATA.Loop(%d,%d,\"../%s\",%d,%d,%d,%d,%d,%d,\"%s\",%d,%d,%d,%d,%d)",IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight,usePhiMETCorr,useRecoilCorr,RecoilCorrVarDiagoParN,RecoilCorrVarDiagoParSigmas,RecoilCorrVarDiagoParU1orU2,use_PForNoPUorTKmet,use_syst_ewk_Alcaraz,gen_mass_value_MeV,contains_LHE_weights) << endl;
+  if(GetEntriesOrNchunck>-1) cout << "processing line "<< Form("wDATA.Loop(%d,%d,\"%s\",%d,%d,%d,%d,%d,%d,\"%s\",%d,%d,%d,%d,%d)",IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight,usePhiMETCorr,useRecoilCorr,RecoilCorrVarDiagoParN,RecoilCorrVarDiagoParSigmas,RecoilCorrVarDiagoParU1orU2,use_PForNoPUorTKmet,use_syst_ewk_Alcaraz,gen_mass_value_MeV,contains_LHE_weights) << endl;
   int nEntries;
   if(GetEntriesOrNchunck==-1){
     nEntries = wDATA.NumEntries();
@@ -93,7 +93,7 @@ int main(int argc, char ** argv)
   wDATA.Loop(GetEntriesOrNchunck,Entry_ini,Entry_fin,IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight,usePhiMETCorr,useRecoilCorr,RecoilCorrVarDiagoParN,RecoilCorrVarDiagoParSigmas,RecoilCorrVarDiagoParU1orU2,use_PForNoPUorTKmet,use_syst_ewk_Alcaraz,gen_mass_value_MeV,contains_LHE_weights);
   TString chunk_str = GetEntriesOrNchunck>0? Form("_chunk%d",GetEntriesOrNchunck) : "";
   if(GetEntriesOrNchunck==0)
-    gROOT->ProcessLine(Form(".! mv ../%s/Wanalysis%s.root ../%s/WanalysisOnDATA.root",filename_outputdir.Data(),chunk_str.Data(),filename_outputdir.Data()));
-  gROOT->ProcessLine(Form(".! cp Wanalysis.* ../%s/",filename_outputdir.Data()));
+    gROOT->ProcessLine(Form(".! mv %s/Wanalysis%s.root %s/WanalysisOnDATA.root",filename_outputdir.Data(),chunk_str.Data(),filename_outputdir.Data()));
+  gROOT->ProcessLine(Form(".! cp Wanalysis.* %s/",filename_outputdir.Data()));
 
 }

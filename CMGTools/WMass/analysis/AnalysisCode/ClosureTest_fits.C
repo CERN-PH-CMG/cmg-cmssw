@@ -1,4 +1,4 @@
-#include "../test_numbers_DATA/common.h"
+#include "../output_DATA/common.h"
 
 void ClosureTest_fits(){
 

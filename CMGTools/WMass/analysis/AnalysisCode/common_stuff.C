@@ -307,7 +307,50 @@ void common_stuff::plot2D(std::string title, double xval, double yval, double we
 
 ///////////////////////////////////////////////////////////////
 
-void common_stuff::writeOutHistos(TFile *fout, std::map<std::string, TH1D*> h_1d, std::map<std::string, TH2D*> h_2d)
+void common_stuff::plot3D(std::string title, double xval, double yval, double zval, double weight, std::map<std::string, TH3D*> &allhistos, int numbinsx, double xmin, double xmax, int numbinsy, double ymin, double ymax, int numbinsz, double zmin, double zmax)
+{
+
+  std::map<std::string, TH3D*>::iterator iter= allhistos.find(title);
+  if(iter == allhistos.end()) //no histo for this yet, so make a new one
+    {
+      TH3D* currentHisto= new TH3D(((TString)common_stuff::getCompleteTitleReturnName(title)).Data(), title.c_str(), numbinsx, xmin, xmax, numbinsy, ymin, ymax, numbinsz, zmin, zmax);
+      currentHisto->Sumw2();
+      currentHisto->Fill(xval, yval, zval, weight);
+      allhistos.insert(std::pair<std::string, TH3D*> (title,currentHisto) );
+    }
+  else // exists already, so just fill it
+    {
+      (*iter).second->Fill(xval, yval, zval, weight);
+    }
+
+  return;
+
+}
+
+///////////////////////////////////////////////////////////////
+
+void common_stuff::plot3D(std::string title, double xval, double yval, double zval, double weight, std::map<std::string, TH3D*> &allhistos, int numbinsx, double *xarray, int numbinsy, double *yarray, int numbinsz, double *zarray)
+{
+
+  std::map<std::string, TH3D*>::iterator iter= allhistos.find(title);
+  if(iter == allhistos.end()) //no histo for this yet, so make a new one
+    {
+      TH3D* currentHisto= new TH3D(((TString)common_stuff::getCompleteTitleReturnName(title)).Data(), title.c_str(), numbinsx, xarray, numbinsy, yarray, numbinsz, zarray);
+      currentHisto->Sumw2();
+      currentHisto->Fill(xval, yval, zval, weight);
+      allhistos.insert(std::pair<std::string, TH3D*> (title,currentHisto) );
+    }
+  else // exists already, so just fill it
+    {
+      (*iter).second->Fill(xval, yval, zval, weight);
+    }
+
+  return;
+
+}
+///////////////////////////////////////////////////////////////
+
+void common_stuff::writeOutHistos(TFile *fout, std::map<std::string, TH1D*> h_1d, std::map<std::string, TH2D*> h_2d, std::map<std::string, TH3D*> h_3d)
 {
 
   fout->cd();
@@ -323,7 +366,12 @@ void common_stuff::writeOutHistos(TFile *fout, std::map<std::string, TH1D*> h_1d
     it2d->second->Write(); 
     delete it2d->second;
   }
- 
+
+  std::map<std::string, TH3D*>::iterator it3d;
+  for(it3d=h_3d.begin(); it3d!=h_3d.end(); it3d++) {
+    it3d->second->Write(); 
+    delete it3d->second;
+  }
 
 }
 
@@ -425,29 +473,39 @@ void common_stuff::plotAndSaveHisto1D_stack(TString LegendEvTypeTeX, TFile*fMCsi
 
   std::cout << "retrieving hMCsig= " << HistoName_st.Data() << std::endl;
   TH1D*hMCsig=(TH1D*)fMCsig->Get(HistoName_st.Data());
-  fMCsig->Print();
+  // fMCsig->Print();
   hMCsig->Rebin(rebinfactor);
   // std::cout << "hMCsig= " << hMCsig->Print() << std::endl;
   hMCsig->SetLineColor(kOrange-3);
+  TH1D*hMCdummy=new TH1D("hMCdummy","hMCdummy",hMCsig->GetNbinsX(),hMCsig->GetXaxis()->GetXmin(),hMCsig->GetXaxis()->GetXmax());
+  std::cout << "retrieving hMCsig2= " << HistoName_st.Data() << std::endl;
   TH1D*hMCsig2=(TH1D*)hMCsig->Clone("hMCsig2");
   hMCsig2->SetFillColor(kOrange-2);
   hMCsig2->SetLineStyle(2);
   hMCsig2->SetLineWidth(2);
+  std::cout << "retrieving hMCEWK= " << HistoName_st.Data() << std::endl;
   TH1D*hMCEWK=(TH1D*)fMCEWK->Get(HistoName_st.Data());
   // std::cout << "hMCEWK= " << hMCEWK->Print() << std::endl;
   hMCEWK->SetFillColor(kOrange+7);
   hMCEWK->SetLineColor(kOrange+10);
   hMCEWK->Rebin(rebinfactor);
+  std::cout << "retrieving hMCTT= " << HistoName_st.Data() << std::endl;
   TH1D*hMCTT=(TH1D*)fMCTT->Get(HistoName_st.Data());
   // std::cout << "hMCTT= " << hMCTT->Print() << std::endl;
   hMCTT->SetFillColor(kGreen);
   hMCTT->SetLineColor(kGreen+2);
   hMCTT->Rebin(rebinfactor);
+  std::cout << "retrieving hMCQCD= " << HistoName_st.Data() << std::endl;
   TH1D*hMCQCD=(TH1D*)fMCQCD->Get(HistoName_st.Data());
-  // std::cout << "hMCQCD= " << hMCQCD->Print() << std::endl;
+  if(!hMCQCD) hMCQCD = hMCdummy;
+  std::cout << "hMCQCD= " << hMCQCD << std::endl;
+  // hMCQCD->Print();
   hMCQCD->SetFillColor(kViolet-5);
   hMCQCD->SetLineColor(kViolet+2);
   hMCQCD->Rebin(rebinfactor);
+  std::cout << "retrieving hDATA= " << HistoName_st.Data() << std::endl;
+  // fDATA->Print();
+  std::cout << "ciao" << std::endl;
   TH1D*hDATA=(TH1D*)fDATA->Get(HistoName_st.Data());
   hDATA->SetMarkerColor(1);
   hDATA->SetLineColor(1);
@@ -521,8 +579,8 @@ void common_stuff::plotAndSaveHisto1D_stack(TString LegendEvTypeTeX, TFile*fMCsi
   hDATA->GetXaxis()->SetRangeUser(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin,xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax);
   hDATA->GetYaxis()->SetTitle(Form("Counts / %.2f",hDATA->GetBinWidth(1)));
   hDATA->Draw("pe");
-  hs->Draw("same");
-  hMCsig2->Draw("same");
+  hs->Draw("hist same");
+  hMCsig2->Draw("hist same");
   hDATA->Draw("same pe");
   pad1->RedrawAxis();
   
@@ -535,7 +593,7 @@ void common_stuff::plotAndSaveHisto1D_stack(TString LegendEvTypeTeX, TFile*fMCsi
   leg->SetFillColor(0);
   leg->SetFillStyle(1001);
   leg->AddEntry(hDATA,"DATA","pl");
-  leg->AddEntry(hMCsig,Form("%s (%.1f \%%)",LegendEvTypeTeX.Data(), fsig),"f");
+  leg->AddEntry(hMCsig2,Form("%s (%.1f \%%)",LegendEvTypeTeX.Data(), fsig),"f");
   leg->AddEntry(hMCEWK,Form("EWK (%.1f \%%)",fewk),"f");
   leg->AddEntry(hMCQCD,Form("QCD (%.1f \%%)",fqcd),"f");
   leg->AddEntry(hMCTT,Form("TT (%.1f \%%)",ftt),"f");
@@ -569,12 +627,12 @@ void common_stuff::plotAndSaveHisto1D_stack(TString LegendEvTypeTeX, TFile*fMCsi
     hPullOrRatio->GetYaxis()->SetRangeUser(0.8,1.2);
   
   hPullOrRatio->Draw("p");
-  TLine*l0=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin,0,xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax,0);l0->SetLineColor(kGray);
-  TLine*lp5=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin,5,xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax,5);lp5->SetLineColor(kGray);
-  TLine*lm5=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin,-5,xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax,-5);lm5->SetLineColor(kGray);
-  l0->Draw("same");
-  lp5->Draw("same");
-  lm5->Draw("same");
+  TLine*l0=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin,PullOrRatio==0?0:1,xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax,PullOrRatio==0?0:1);l0->SetLineColor(kGray);
+  TLine*lp5=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin,PullOrRatio==0?5:1.05,xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax,PullOrRatio==0?5:1.05);lp5->SetLineColor(kGray);
+  TLine*lm5=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin,PullOrRatio==0?-5:0.95,xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax,PullOrRatio==0?-5:0.95);lm5->SetLineColor(kGray);
+  l0->Draw("histo same");
+  lp5->Draw("histo same");
+  lm5->Draw("histo same");
   hPullOrRatio->Draw("p same");
   
   TString extra_ouput_str = "";
@@ -585,6 +643,7 @@ void common_stuff::plotAndSaveHisto1D_stack(TString LegendEvTypeTeX, TFile*fMCsi
   if(xmin!=-1)extra_ouput_str+=Form("_xmin%.f",xmin);
   if(xmax!=-1)extra_ouput_str+=Form("_xmax%.f",xmax);
   c1->SaveAs(HistoName_st+extra_ouput_str+".png");
+  c1->SaveAs(HistoName_st+extra_ouput_str+".root");
 }
 
 

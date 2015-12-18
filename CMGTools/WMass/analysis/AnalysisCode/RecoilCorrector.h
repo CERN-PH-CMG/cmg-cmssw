@@ -21,6 +21,7 @@
 #include "RooWorkspace.h"
 #include "RooAddPdf.h"
 #include "RooAbsReal.h"
+#include "RooKeysPdf.h"
 
 //
 // ** apply phil's recoil corrections **
@@ -41,7 +42,7 @@ class RecoilCorrector
 {
   
 public:
-  RecoilCorrector(string iNameZDat, int iSeed=0xDEADBEEF,TString model_name = "fitresult_Add", TString fNonClosure_name = "");
+  RecoilCorrector(bool doKeys, string iNameZDat, string iNameZ_key, int iSeed=0xDEADBEEF,TString model_name = "fitresult_Add", TString fNonClosure_name = "");
   RecoilCorrector(string iNameZDat1, string iPrefix, int iSeed=0xDEADBEEF);
   ~RecoilCorrector();
   void CorrectAll(double &met, double &metphi, double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double &iU1,double &iU2,double iFluc,double iScale=0,int njet=0);
@@ -49,12 +50,13 @@ public:
   double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double iFluc    ,double iScale=0,int njet=0);
   void CorrectType1(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFlucU2,double iFlucU1,double iScale=0,int njet=0);
   void CorrectType2(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFlucU2,double iFlucU1,double iScale=0,int njet=0,bool doSingleGauss=false);
-  void CorrectMET3gaus(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int njet=0,bool doSingleGauss=false, int mytype=0);
+  void reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int rapBinCorr);
+  void CorrectMET3gaus(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int njet=0,bool doSingleGauss=false, int mytype=0,bool key=false);
   void CorrectU1U2(double &pfu1, double &pfu2, double &trku1, double &trku2, 
   double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double iFluc,double iScale=0,int njet=0);
-  void addDataFile(std::string iNameDat,/* , int RecoilCorrVarDiagoParU1orU2=1, int RecoilCorrU1VarDiagoParN=0, int RecoilCorrVarDiagoParSigmas=0 */
-  TString model_name = "fitresult_Add");
-  void addMCFile  (std::string iNameMC,TString model_name = "fitresult_Add");
+  void addDataFile(std::string iNameDat, std::string iNameKeyDat, /* , int RecoilCorrVarDiagoParU1orU2=1, int RecoilCorrU1VarDiagoParN=0, int RecoilCorrVarDiagoParSigmas=0 */
+		   TString model_name = "fitresult_Add");
+  void addMCFile  (std::string iNameMC, std::string iNameKeyMC, TString model_name = "fitresult_Add");
   double NonClosure_weight(double iMet,double iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi);
   double NonClosure_scale(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi);
 
@@ -88,7 +90,7 @@ protected:
                      std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,
                      std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2RMS3Fit,
 		     std::vector<TF1*> &iU2FracFit,std::vector<TF1*> &iU2Mean1Fit, std::vector<TF1*> &iU2Mean2Fit,//std::vector<TF1*> &iU2Sig3Fit,
-                     std::string iFName,std::string iPrefix,int vtxBin, int mytype=0,/* , int RecoilCorrVarDiagoParU1orU2=1, int RecoilCorrU1VarDiagoParN=0, int RecoilCorrVarDiagoParSigmas=0 */TString model_name = "fitresult_Add");
+                     std::string iFName,std::string iFKeyName, std::string iPrefix,int vtxBin, int mytype=0,/* , int RecoilCorrVarDiagoParU1orU2=1, int RecoilCorrU1VarDiagoParN=0, int RecoilCorrVarDiagoParSigmas=0 */TString model_name = "fitresult_Add");
                      
   void readCorr(std::string iName,//int iType=2,
   std::vector<TF1*> &iF1U1U2Corr  ,std::vector<TF1*> &iF2U1U2Corr,std::vector<TF1*> &iF1F2U1Corr,std::vector<TF1*> &iF1F2U2Corr,
@@ -186,7 +188,7 @@ protected:
 		     //                     RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1, 
 		     //                     RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2 
          int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas, 
-         int mytype, int fJet
+         int mytype, int fJet, double &pU1, double &pU2
 		     );
   double calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2);
   double diGausInvGraph(double iPVal,double iFracMC,double iSigma1MC,double iSigma2MC,double iFracDATA,double iSigma1DATA,double iSigma2DATA);
@@ -194,10 +196,12 @@ protected:
   double getFrac2gauss(double RMS, double sigma1, double sigma2);
   double getFrac3gauss(double RMS, double f1, double sigma1, double sigma2, double sigma3);
   void runDiago(RooWorkspace *w,RooFitResult *result, TString fit, RooAbsReal *&pdfUiCdf);
+  void makeKeysVec(RooWorkspace *w, TFile *file, TString fit, std::vector<RooAbsReal*> &pdfUiCdfm, bool isU1);
   double diGausPVal(double iVal, double iFrac,double iSimga1,double iSigma2);
   double triGausInvGraph(double iPVal, /**/ double meanRMSMC, double iMean1MC, double iMean2MC, double iFrac1MC,double iSigma1MC,double iSigma2MC,double iSigma3MC,/**/ double meanRMSDATA, double iMean1DATA, double iMean2DATA,double iFrac1DATA,double iSigma1DATA,double iSigma2DATA,double iSigma3DATA);
+  double triGausInvGraphKeys(double iPVal, double Zpt, std::vector<RooAbsReal*> pdfKeyMCcdf, std::vector<RooAbsReal*> pdfKeyDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA, bool isU1, double max);
   // double triGausInvGraphPDF(double iPVal, double Zpt, RooAddPdf *pdfMC, RooAddPdf *pdfDATA, RooWorkspace *wMC, RooWorkspace *wDATA);
-  double triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsReal *pdfDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA);
+  double triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsReal *pdfDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA, double max);
   double diGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2);
   double oneGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2);
   double getError(double iVal,TF1 *iZDatFit,Recoil iType);
@@ -212,8 +216,10 @@ protected:
   
   static const int lNBins = 2;//lGraph->GetN();                   
   RooWorkspace *wU1[3][lNBins],*wU2[3][lNBins],*wU1diago[3][lNBins],*wU2diago[3][lNBins];
+  RooWorkspace *wU1key[3][lNBins],*wU2key[3][lNBins];
   RooAddPdf *pdfU1[3][lNBins],*pdfU2[3][lNBins];
   RooAbsReal *pdfU1Cdf[3][lNBins],*pdfU2Cdf[3][lNBins];
+  vector<RooAbsReal*> pdfKeyU1Cdf[3][lNBins], pdfKeyU2Cdf[3][lNBins];
   RooFitResult* frU1[3][lNBins];
   RooFitResult* frU2[3][lNBins];
   TFile *fNonClosure; 
@@ -242,6 +248,8 @@ protected:
   vector<TF1*> fM1M2U1Corr;     vector<TF1*> fM1M2U2Corr;
   vector<TF1*> fM1M2U1U2Corr;   vector<TF1*> fM1M2U2U1Corr;
   int fId; int fJet;
+
+  bool doKeys;
 
 };
 
