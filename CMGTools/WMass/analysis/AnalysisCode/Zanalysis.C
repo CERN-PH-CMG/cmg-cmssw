@@ -170,7 +170,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   //------------------------------------------------------
   // retrieve invariant mass SF (for EWK)
   //------------------------------------------------------
-  TH1D*hZmassSF;
+  TH1D*hZmassSF_central,*hZmassSF_syst;
 
   if(use_syst_ewk_Alcaraz>-1 && use_syst_ewk_Alcaraz!=100){
     TFile* finZmassSF = new TFile("../utils/fout_invariant_mass_qed_higstat.root"); // used only to build templates
@@ -178,14 +178,16 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       cout << "file " << Form("../utils/fout_invariant_mass_qed_higstat.root") << " is missing, impossible to retrieve invariant mass SF (for EWK)" << endl;
       return;
     }
-    if(use_syst_ewk_Alcaraz==0){
-      hZmassSF=(TH1D*)finZmassSF->Get("ewk_p8std_div_ewk_p8bad"); hZmassSF->Sumw2();
-    }else if(use_syst_ewk_Alcaraz==1){
-      hZmassSF=(TH1D*)finZmassSF->Get("ewk_p8photos_div_ewk_p8std"); hZmassSF->Sumw2();
-    }else if(use_syst_ewk_Alcaraz==2){
-      hZmassSF=(TH1D*)finZmassSF->Get("noewk_p8std_div_ewk_p8std"); hZmassSF->Sumw2();
-    }else if(use_syst_ewk_Alcaraz==3){
-      hZmassSF=(TH1D*)finZmassSF->Get("ewk_p8photos_div_ewk_p8bad"); hZmassSF->Sumw2();
+    cout << "hZmassSF_central = ewk_p8std_div_ewk_p8bad" << endl;
+    hZmassSF_central=(TH1D*)finZmassSF->Get("ewk_p8std_div_ewk_p8bad"); hZmassSF_central->Sumw2();
+    // }else if(use_syst_ewk_Alcaraz==1){
+      // hZmassSF_central=(TH1D*)finZmassSF->Get("ewk_p8photos_div_ewk_p8bad"); hZmassSF_central->Sumw2();
+    if(use_syst_ewk_Alcaraz==1 || use_syst_ewk_Alcaraz==31){
+      cout << "hZmassSF_syst = ewk_p8photos_div_ewk_p8std" << endl;
+      hZmassSF_syst=(TH1D*)finZmassSF->Get("ewk_p8photos_div_ewk_p8std"); hZmassSF_syst->Sumw2();
+    }else if(use_syst_ewk_Alcaraz==2 || use_syst_ewk_Alcaraz==32){
+      cout << "hZmassSF_syst = noewk_p8std_div_ewk_p8std" << endl;
+      hZmassSF_syst=(TH1D*)finZmassSF->Get("noewk_p8std_div_ewk_p8std"); hZmassSF_syst->Sumw2();
     }
   }
   //------------------------------------------------------
@@ -282,6 +284,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   if(useMomentumCorr==4){
     cout << "using Kalman Calibrator Param" << endl;
     corrector_KalmanParam = new KalmanCalibratorParam(isMCorDATA==0?false:true); // True for data , //False for MC
+    // corrector_KalmanParam = new KalmanCalibratorParam(true); // TEST, THIS IS A TEST!!!!!
   }
 
   //------------------------------------------------------
@@ -517,14 +520,27 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       // cout << "ang corr weight= " << AngCoef_sf 
            // << endl;
       evt_weight_original*= AngCoef_sf!=0 ? AngCoef_sf : 1;
-      // hZmassSF->Print();
+      // hZmassSF_central->Print();
     }
     
     //---------------- Invariant Mass weight
+    // cout << "mass= " << ZGen_PostFSR_mass << " use_syst_ewk_Alcaraz = "<< use_syst_ewk_Alcaraz << endl;
     if(use_syst_ewk_Alcaraz>-1 && use_syst_ewk_Alcaraz!=100 && sampleName.Contains("DYJetsPow")){
-      evt_weight_original*=ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200?hZmassSF->Interpolate(ZGen_PostFSR_mass):1;
-      // hZmassSF->Print();
-      // cout << "mass= " << ZGen_PostFSR_mass << " ewk weight= " << (ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200?hZmassSF->Interpolate(ZGen_PostFSR_mass):1) << endl;
+      double ewk_weight_central=ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200?hZmassSF_central->Interpolate(ZGen_PostFSR_mass):1;
+      // cout << "ewk_weight_central = ewk_weight_central ("<<ewk_weight_central<<")" << endl;
+      evt_weight_original*=ewk_weight_central;
+      if(use_syst_ewk_Alcaraz>0){
+        double ewk_weight_syst=ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200?hZmassSF_syst->Interpolate(ZGen_PostFSR_mass):1;
+        // cout << "evt_weight_original *= ewk_weight_syst ("<<ewk_weight_syst<<")" << endl;
+          evt_weight_original*=ewk_weight_syst;
+        if(use_syst_ewk_Alcaraz>30){ // 3 times the corrections (3 sigmas)
+          // cout << "evt_weight_original *= (ewk_weight_syst*ewk_weight_syst)" << endl;
+          evt_weight_original*=(ewk_weight_syst*ewk_weight_syst);
+      
+        // hZmassSF_central->Print();
+        // cout << "mass= " << ZGen_PostFSR_mass << " ewk weight= " << (ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200?hZmassSF_central->Interpolate(ZGen_PostFSR_mass):1) << endl;
+        }
+      }
     }
     //---------------- PT weight
     if(usePtSF!=-1  && usePtSF!=1 &&usePtSF!=2 /* && ZGen_pt<ZPt_cut */ && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")))
@@ -1159,6 +1175,13 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               Zgen.SetPtEtaPhiM(ZGen_pt,0,ZGen_phi,0);
 
                               string mettype="_tk";
+                              
+                              // bool plot_vtx_binned_Wlike_var_NotScaled = true;
+                              // if(plot_vtx_binned_Wlike_var_NotScaled){
+                                // for(int k=0;k<WMass::NFitVar;k++)
+                                  // common_stuff::plot1D(Form("hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d%s",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV,tag_VTX.c_str()),
+                                                    // Wlike_var_NotScaled[k], weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
+                              // }
                               
                               double u1_scale=0;
                               plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, "closure", tag_zPtcut.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps, jZmass_MeV);
