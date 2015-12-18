@@ -41,7 +41,7 @@ correctToMadgraph = 0; # 0: uses DATA as target -- 1: uses Madgraph as target (a
 usePhiMETCorr = 0; # 0=none, 1=yes
 
 ### EWK CORR
-syst_ewk_Alcaraz = 0; # -1=none, 0=fixed POWHEG QCD+EWK NLO
+syst_ewk_Alcaraz = 0; # -1=none, 0=POWHEG QCD+EWK NLO (bug-fixed), 1= 0 +syst photos vs pythia (31 = 3 times), 2= 0 +syst no nloewk vs nloewk (32 = 3 times)
 ### REWEIGHT POLARIZATION
 reweight_polarization = 1; # 0 = none, 1 = reweight POWHEG QCD+EWK NLO TO 8 TeV DATA
 
@@ -176,8 +176,8 @@ if int(RecoilCorrVarDiagoParU1orU2fromDATAorMC) != 0 \
 or int(correctToMadgraph) !=0 \
 or str(LHAPDF_reweighting_members) !="1" \
 or int(MuonCorrGlobalScaleNsigma) != 0 \
-or int(MuonCorrKalmanNvarsNsigma) != 0 \
-or int(controlplots) != 0 :
+or int(MuonCorrKalmanNvarsNsigma) != 0 :
+# or int(controlplots) != 0 :
   print "Computing a systematic: number of mass steps is set to 0\n"
   WMassNSteps = "0"
 
