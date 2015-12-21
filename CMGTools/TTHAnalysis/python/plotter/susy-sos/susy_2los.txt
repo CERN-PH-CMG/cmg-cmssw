@@ -1,0 +1,81 @@
+####### test cut flow (for PHYS14) -R.C.
+
+jets with pT>30 : nJet30>0
+jet acceptance : Jet1_pt>150.0 && abs(Jet1_eta)<2.4
+met : met_pt > 200
+2 exclusive leptons: nLepGood == 2
+opposite-sign leptons: LepGood1_charge*LepGood2_charge < 0
+mm or em: fabs(LepGood1_pdgId*LepGood2_pdgId)!=121
+
+### Lepton1 acceptance
+lep1 accept: (abs(LepGood1_pdgId)==11 && LepGood1_pt > 7 && \
+LepGood1_pt < 25 && abs(LepGood1_eta)<1.5 ) || \ 
+(abs(LepGood1_pdgId)==13 && LepGood1_pt >5 && \ 
+LepGood1_pt < 25 && abs(LepGood1_eta)<1.5)
+
+### Lepton2 acceptance
+lep2 accept: (abs(LepGood2_pdgId) == 11 && LepGood2_pt > 7 && \
+LepGood2_pt <15 && abs(LepGood2_eta)<1.5 ) || \ 
+(abs(LepGood2_pdgId) ==13 && LepGood2_pt >5 && \ 
+LepGood2_pt <15 && abs(LepGood2_eta)<1.5)
+
+lep dxy dz: abs(LepGood1_dxy) < 0.01 && abs(LepGood1_dz) < 0.01 &&
+abs(LepGood2_dxy) < 0.01 && abs(LepGood2_dz) < 0.01
+
+### Lepton1 ID
+lep1 ID : (abs(LepGood1_pdgId) == 13 && LepGood1_softMuonId>0) ||\
+(abs(LepGood1_pdgId) == 11 && \
+(LepGood1_pt < = 10 && (\
+(abs(LepGood1_etaSc)<0.8    && LepGood1_mvaIdPhys14 > -0.202) || \
+(abs(LepGood1_etaSc)>=0.8   && abs(LepGood1_etaSc)<1.479 &&
+LepGood1_mvaIdPhys14 > -0.444) ||\
+(abs(LepGood1_etaSc)>=1.479 && LepGood1_mvaIdPhys14 >  0.264)))\
+||\
+(LepGood1_pt>10  && (\
+(abs(LepGood1_etaSc)<0.8    && LepGood1_mvaIdPhys14 >-0.110) || \
+(abs(LepGood1_etaSc)>=0.8   && abs(LepGood1_etaSc)<1.479 &&
+LepGood1_mvaIdPhys14 > -0.284) || \
+(abs(LepGood1_etaSc)>=1.479 && LepGood1_mvaIdPhys14 >-0.212))))
+
+### Lepton 2 ID
+lep2 ID : (abs(LepGood2_pdgId) == 13 && LepGood2_softMuonId>0) ||\
+(abs(LepGood2_pdgId) == 11 && \
+(LepGood2_pt < = 10 && (\
+(abs(LepGood2_etaSc)<0.8    && LepGood2_mvaIdPhys14 > -0.202) || \
+(abs(LepGood2_etaSc)>=0.8   && abs(LepGood2_etaSc)<1.479 &&
+LepGood2_mvaIdPhys14 > -0.444) ||\
+(abs(LepGood2_etaSc)>=1.479 && LepGood2_mvaIdPhys14 >  0.264)))\
+||\
+(LepGood2_pt>10  && (\
+(abs(LepGood2_etaSc)<0.8    && LepGood2_mvaIdPhys14 >-0.110) || \
+(abs(LepGood2_etaSc)>=0.8   && abs(LepGood2_etaSc)<1.479 &&
+LepGood2_mvaIdPhys14 > -0.284) || \
+(abs(LepGood2_etaSc)>=1.479 && LepGood2_mvaIdPhys14 >-0.212))))
+
+### Lepton 1 isolation
+lep1 iso1ation: (LepGood1_relIso03 < 0.5&&LepGood1_relIso03*LepGood1_pt<5 && abs(LepGood1_pdgId) == 11) ||(LepGood1_relIso03 < 0.5 && LepGood1_relIso03*LepGood1_pt<5 && abs(LepGood1_pdgId) ==13)
+
+### Lepton 2 isolation 
+lep2 iso1ation: (LepGood2_relIso03 < 0.5 &&LepGood2_relIso03*LepGood2_pt<5 && abs(LepGood2_pdgId) == 11) ||(LepGood2_relIso03 < 0.5 && LepGood2_relIso03*LepGood2_pt<5 &&abs(LepGood2_pdgId) == 13)
+ 
+### lepton invariant mass cut
+m ll cut : mass_2(LepGood1_pt,LepGood1_eta,LepGood1_phi,LepGood1_mass,LepGood2_pt,LepGood2_eta,LepGood2_phi,LepGood2_mass)>5
+
+### jet energy fraction
+jet energy frac : Jet1_chHEF >0.2 && Jet1_neHEF <0.7 && Jet1_phEF <0.7 && (Jet1_eEF + Jet1_muEF)<0.5
+
+### 3rd-jet veto
+3rd-jet veto: if3(nJet>3,Jet3_pt,0)<60
+
+### b-jet veto
+b-jet veto: nBJetMedium30 == 0
+
+### Invariant mass of tau pair (to be revised, commented for the moment)
+#m tautau cut : if3(LepGood1_pdgId==15 && LepGood2_pdgId==15,\
+#mass_2(LepGood1_pt,LepGood1_eta,LepGood1_phi,LepGood1_mass,LepGood2_pt,LepGood2_eta,LepGood2_phi,LepGood2_mass),161)>160\
+#||\ 
+#if3(LepGood1_pdgId==15 && LepGood2_pdgId==15,\
+#mass_2(LepGood1_pt,LepGood1_eta,LepGood1_phi,LepGood1_mass,LepGood2_pt,LepGood2_eta,LepGood2_phi,LepGood2_mass),-1)<0
+
+### MET/HT (to be revised)
+#met/het : met_pt/htJet25 > 2/3
