@@ -12,6 +12,12 @@ import os
 from CMGTools.TTHAnalysis.analyzers.ttHhistoCounterAnalyzer import ttHhistoCounterAnalyzer
 susyCounter = cfg.Analyzer(
     ttHhistoCounterAnalyzer, name="ttHhistoCounterAnalyzer",
+    SMS_max_mass = 3000, # maximum mass allowed in the scan
+    SMS_mass_1 = 'genSusyMScan1', # first scanned mass
+    SMS_mass_2 = 'genSusyMScan2', # second scanned mass
+    SMS_varying_masses = [], # other mass variables that are expected to change in the tree (e.g., in T1tttt it should be set to ['genSusyMGluino','genSusyMNeutralino'])
+    SMS_regexp_evtGenMass = 'genSusyM.+',
+    bypass_trackMass_check = True # bypass check that non-scanned masses are the same in all events
     )
 
 PDFWeights = []
