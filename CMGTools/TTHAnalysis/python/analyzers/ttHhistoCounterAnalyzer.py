@@ -75,7 +75,7 @@ class ttHhistoCounterAnalyzer( Analyzer ):
         self.readCollections( event.input )
         self.inputCounter.Fill(1)
 
-        isSMS = self.cfg_comp.isMC and event.susyModel
+        isSMS = self.cfg_comp.isMC and getattr(event,'susyModel',False)
 
         if isSMS:
 
