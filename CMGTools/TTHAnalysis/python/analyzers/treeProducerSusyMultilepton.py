@@ -135,6 +135,8 @@ susyMultilepton_globalVariables = susyCore_globalVariables + [
 
 susyMultilepton_globalObjects = susyCore_globalObjects.copy()
 susyMultilepton_globalObjects.update({
+        "met_jecUp" : NTupleObject("met_jecUp", metType, help="PF E_{T}^{miss}, after type 1 corrections (JEC plus 1sigma)"),
+        "met_jecDown" : NTupleObject("met_jecDown", metType, help="PF E_{T}^{miss}, after type 1 corrections (JEC minus 1sigma)"),
             # put more here
 })
 
@@ -148,10 +150,14 @@ susyMultilepton_collections.update({
             "otherLeptons"    : NTupleCollection("LepOther", leptonTypeSusyExtra, 8, help="Leptons after the preselection"),
             ##------------------------------------------------
             "cleanJets"       : NTupleCollection("Jet",     jetTypeSusyExtra, 15, help="Cental jets after full selection and cleaning, sorted by pt"),
+            "cleanJets_jecUp"       : NTupleCollection("Jet_jecUp",     jetTypeSusyExtra, 15, help="Cental jets after full selection and cleaning, sorted by pt (JEC plus 1sigma)"),
+            "cleanJets_jecDown"       : NTupleCollection("Jet_jecDown",     jetTypeSusyExtra, 15, help="Cental jets after full selection and cleaning, sorted by pt (JEC minus 1sigma)"),
             "cleanJetsFwd"    : NTupleCollection("JetFwd",  jetTypeSusy,  6, help="Forward jets after full selection and cleaning, sorted by pt"),            
             "fatJets"         : NTupleCollection("FatJet",  fatJetType,  15, help="AK8 jets, sorted by pt"),
             ##------------------------------------------------
             "discardedJets"    : NTupleCollection("DiscJet", jetTypeSusy, 15, help="Jets discarted in the jet-lepton cleaning"),
+            "discardedJets_jecUp"    : NTupleCollection("DiscJet_jecUp", jetTypeSusy, 15, help="Jets discarted in the jet-lepton cleaning (JEC +1sigma)"),
+            "discardedJets_jecDown"    : NTupleCollection("DiscJet_jecDown", jetTypeSusy, 15, help="Jets discarted in the jet-lepton cleaning (JEC -1sigma)"),
             "discardedLeptons" : NTupleCollection("DiscLep", leptonTypeSusyExtra, 8, help="Leptons discarded in the jet-lepton cleaning"),
             #"recoveredJets"    : NTupleCollection("RecJet", jetTypeSusy, 15, help="Jets recovered declustering in the jet-lepton cleaning"),
             #"recoveredSplitJets" : NTupleCollection("RecSplitJet", jetTypeSusy, 15, help="Jets recovered declustering in the jet-lepton cleaning, split"),
