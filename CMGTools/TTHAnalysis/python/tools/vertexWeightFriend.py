@@ -1,11 +1,12 @@
 from CMGTools.TTHAnalysis.treeReAnalyzer import *
 
 class VertexWeightFriend:
-    def __init__(self,myfile,targetfile,myhist="pileup",targethist="pileup",name="vtxWeight",verbose=False):
+    def __init__(self,myfile,targetfile,myhist="pileup",targethist="pileup",name="vtxWeight",verbose=False,vtx_coll_to_reweight="nVert"):
         self.name = name
         self.verbose = verbose
         self.myvals = self.load(myfile,myhist)
         self.targetvals = self.load(targetfile,targethist)
+        self.vtxCollectionInEvent = vtx_coll_to_reweight
         def w2(t,m):
             if t == 0: return (0 if m else 1)
             return (t/m if m else 1)
@@ -52,7 +53,7 @@ class VertexWeightFriend:
     def listBranches(self):
         return [ (self.name,'F') ]
     def __call__(self,event):
-        nvtx = int(event.nVert)
+        nvtx = int(getattr(event,self.vtxCollectionInEvent))
         weight = self.weights[nvtx] if nvtx < len(self.weights) else 1
         return { self.name: weight }
 
