@@ -2,6 +2,8 @@
 #include "Math/GenVector/LorentzVector.h"
 #include "Math/GenVector/PtEtaPhiM4D.h"
 #include "Math/GenVector/PxPyPzM4D.h"
+#include "Math/GenVector/Boost.h"
+#include "TLorentzVector.h"
 
 //// UTILITY FUNCTIONS NOT IN TFORMULA ALREADY
 
@@ -143,6 +145,15 @@ float mtop_lvb(float ptl, float etal, float phil, float ml, float met, float met
     return (p4l+p4b+p4v).M();
 }
 
+float DPhi_CMLep_Zboost(float l_pt, float l_eta, float l_phi, float l_M, float l_other_pt, float l_other_eta, float l_other_phi, float l_other_M){
+  typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > PtEtaPhiMVector;
+  PtEtaPhiMVector l1(l_pt,l_eta,l_phi,l_M);
+  PtEtaPhiMVector l2(l_other_pt,l_other_eta,l_other_phi,l_other_M);
+  PtEtaPhiMVector Z = l1+l2;
+  ROOT::Math::Boost boost(Z.BoostToCM());
+  l1 = boost*l1;
+  return deltaPhi(l1.Phi(),Z.Phi());
+}
 
 float relax_cut_in_eta_bins(float val, float eta, float eta1, float eta2, float eta3, float val1, float val2, float val3, float val1t, float val2t, float val3t){
 
@@ -163,5 +174,86 @@ float relax_cut_in_eta_bins(float val, float eta, float eta1, float eta2, float 
 
 }
 
+int regroupSignalRegions(int SR){
+
+  int rgr[66+1];
+  rgr[0]=0; //unused
+  if (SR<1 || SR>66) return 0;
+
+  // HH
+  rgr[1]=1;
+  rgr[2]=2;
+  rgr[3]=3;
+  rgr[4]=4;
+  rgr[5]=5;
+  rgr[6]=5;
+  rgr[7]=5;
+  rgr[8]=5;
+  rgr[9]=6;
+  rgr[10]=7;
+  rgr[11]=8;
+  rgr[12]=9;
+  rgr[13]=10;
+  rgr[14]=10;
+  rgr[15]=10;
+  rgr[16]=10;
+  rgr[17]=11;
+  rgr[18]=12;
+  rgr[19]=13;
+  rgr[20]=14;
+  rgr[21]=15;
+  rgr[22]=15;
+  rgr[23]=15;
+  rgr[24]=15;
+  rgr[25]=16;
+  rgr[26]=16;
+  rgr[27]=16;
+  rgr[28]=16;
+  rgr[29]=16;
+  rgr[30]=16;
+  rgr[31]=17;
+  rgr[32]=18;
+
+  // HL
+  rgr[32+1]=18+1;
+  rgr[32+2]=18+2;
+  rgr[32+3]=18+3;
+  rgr[32+4]=18+4;
+  rgr[32+5]=18+4;
+  rgr[32+6]=18+4;
+  rgr[32+7]=18+5;
+  rgr[32+8]=18+6;
+  rgr[32+9]=18+7;
+  rgr[32+10]=18+8;
+  rgr[32+11]=18+8;
+  rgr[32+12]=18+8;
+  rgr[32+13]=18+9;
+  rgr[32+14]=18+10;
+  rgr[32+15]=18+11;
+  rgr[32+16]=18+12;
+  rgr[32+17]=18+12;
+  rgr[32+18]=18+12;
+  rgr[32+19]=18+13;
+  rgr[32+20]=18+13;
+  rgr[32+21]=18+13;
+  rgr[32+22]=18+13;
+  rgr[32+23]=18+14;
+  rgr[32+24]=18+14;
+  rgr[32+25]=18+14;
+  rgr[32+26]=18+15;
+
+  // LL (UCSx proposal)
+  rgr[58+1]=18+15+1;
+  rgr[58+2]=18+15+2;
+  rgr[58+3]=18+15+1;
+  rgr[58+4]=18+15+2;
+  rgr[58+5]=18+15+3;
+  rgr[58+6]=18+15+3;
+  rgr[58+7]=18+15+3;
+  rgr[58+8]=18+15+3;
+
+  return rgr[SR]; // between 1 and 36
+
+}
 
 void functions() {}
