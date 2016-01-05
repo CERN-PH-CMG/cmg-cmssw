@@ -223,6 +223,77 @@ class ttHMT2Control( Analyzer ):
                 event.zll_p4 += l.p4()
                 ###event.zll_invmass = zll_p4.M()
 
+    def makeRLObjects(self, event):
+
+        import ROOT
+
+        vetoLeptons = [ l for l in event.selectedLeptons if l.pt() > 10 and abs(l.eta()) < 2.5 ]
+
+        # MET + rl                                                                                                                                                                                                               
+        event.rl_ht = -999.
+        event.rl_deltaPhiMin = -999.
+        event.rl_met_pt = -999.
+        event.rl_met_phi = -999.
+        event.rl_diffMetMht = -999.
+        event.rl_mhtJet40j = -999.
+        event.rl_mhtPhiJet40j = -999.
+        event.rl_p4 = ROOT.reco.Particle.LorentzVector( 0, 0, 0, 0 )
+        event.rl_mt = -999.
+        
+        event.rl_ht_Xj = -999.
+        event.rl_deltaPhiMin_Xj = -999.
+        event.rl_diffMetMht_Xj = -999.
+        event.rl_mhtJetXj = -999.
+        event.rl_mhtPhiJetXj = -999.
+
+        if len(vetoLeptons)==1:
+            event.rl_met = ROOT.reco.Particle.LorentzVector( event.met.px(), event.met.py(), 0, 0 )
+            for l in vetoLeptons:
+                event.rl_met = ROOT.reco.Particle.LorentzVector( event.rl_met.px() + l.px(), event.rl_met.py() + l.py() , 0, 0 )
+
+            event.rl_met_pt = event.rl_met.pt()
+            event.rl_met_phi = event.rl_met.phi()
+
+            # defining mht as hadronic mht                                                                                                                                                                                        
+            event.rl_mhtJet40j = event.mhtJet40j
+            event.rl_mhtPhiJet40j = event.mhtPhiJet40j
+
+            event.rl_mhtJetXj = event.mhtJetXj
+            event.rl_mhtPhiJetXj = event.mhtPhiJetXj
+
+            # look for minimal deltaPhi between MET and four leading jets with pt>40 and |eta|<2.4                                                                                                                                
+            event.rl_deltaPhiMin = 999.
+            objects40jc = [ j for j in event.cleanJets if j.pt() > 40 and abs(j.eta())<2.5 ]
+            objects40ja = [ j for j in event.cleanJets if j.pt() > 40]
+            event.rl_ht = sum([x.pt() for x in objects40jc])
+            for n,j in enumerate(objects40ja):
+                if n>3:  break
+                thisDeltaPhi = abs( deltaPhi( j.phi(), event.rl_met.phi() ) )
+                if thisDeltaPhi < event.rl_deltaPhiMin : event.rl_deltaPhiMin = thisDeltaPhi
+
+            event.rl_deltaPhiMin_Xj = 999.
+            objectsXjc = [ j for j in event.cleanJets if j.pt() > self.jetPt and abs(j.eta())<2.5 ]
+            objectsXja = [ j for j in event.cleanJets if j.pt() > self.jetPt]
+            event.rl_ht_Xj = sum([x.pt() for x in objectsXjc])
+            for n,j in enumerate(objectsXja):
+                if n>3:  break
+                thisDeltaPhi = abs( deltaPhi( j.phi(), event.rl_met.phi() ) )
+                if thisDeltaPhi < event.rl_deltaPhiMin_Xj : event.rl_deltaPhiMin_Xj = thisDeltaPhi
+
+            # absolute value of the vectorial difference between met and mht                                                                                                                                                      
+            rl_diffMetMht_vec = ROOT.reco.Particle.LorentzVector(event.mhtJet40jvec.px()-event.rl_met.px(), event.mhtJet40jvec.py()-event.rl_met.py(), 0, 0 )
+            event.rl_diffMetMht = sqrt( rl_diffMetMht_vec.px()*rl_diffMetMht_vec.px() + rl_diffMetMht_vec.py()*rl_diffMetMht_vec.py() )
+
+            rl_diffMetMht_Xj_vec = ROOT.reco.Particle.LorentzVector(event.mhtJetXjvec.px()-event.rl_met.px(), event.mhtJetXjvec.py()-event.rl_met.py(), 0, 0 )
+            event.rl_diffMetMht_Xj = sqrt( rl_diffMetMht_Xj_vec.px()*rl_diffMetMht_Xj_vec.px() + rl_diffMetMht_Xj_vec.py()*rl_diffMetMht_Xj_vec.py() )
+
+            # di-lepton invariant mass                                                                                                                                                                                            
+            for l in vetoLeptons:
+                event.rl_p4 += l.p4()
+                event.rl_mt = mtw(l, event.rl_met)
+                ###event.rl_invmass = rl_p4.M()
+
+
     def makeZllMTObjects(self, event):
 
         import ROOT
@@ -308,6 +379,8 @@ class ttHMT2Control( Analyzer ):
         
         self.makeGammaObjects(event)                                                                                                                                                                                             
         self.makeZllObjects(event)
+
+        self.makeRLObjects(event)
         
         self.makeZllMTObjects(event)
 

@@ -108,6 +108,8 @@ leptonTypeExtra = NTupleObjectType("leptonExtra", baseObjectTypes = [ leptonType
     NTupleVariable("dPhiScTrkIn",    lambda x : x.deltaPhiSuperClusterTrackAtVtx() if abs(x.pdgId())==11 else 0, help="Electron deltaPhiSuperClusterTrackAtVtx (without absolute value!)"),
     NTupleVariable("hadronicOverEm", lambda x : x.hadronicOverEm() if abs(x.pdgId())==11 else 0, help="Electron hadronicOverEm"),
     NTupleVariable("eInvMinusPInv",  lambda x : ((1.0/x.ecalEnergy() - x.eSuperClusterOverP()/x.ecalEnergy()) if x.ecalEnergy()>0. else 9e9) if abs(x.pdgId())==11 else 0, help="Electron 1/E - 1/p  (without absolute value!)"),
+#    new version used by EGM in Spring15, 7_4_14:
+    NTupleVariable("eInvMinusPInv_tkMom", lambda x: ((1.0/x.ecalEnergy()) - (1.0 / x.trackMomentumAtVtx().R() ) if (x.ecalEnergy()>0. and x.trackMomentumAtVtx().R()>0.) else 9e9) if abs(x.pdgId())==11 else 0, help="Electron 1/E - 1/p_tk_vtx  (without absolute value!)"),
     NTupleVariable("etaSc", lambda x : x.superCluster().eta() if abs(x.pdgId())==11 else -100, help="Electron supercluster pseudorapidity"),
 ])
  
@@ -156,9 +158,12 @@ photonType = NTupleObjectType("gamma", baseObjectTypes = [ particleType ], varia
     NTupleVariable("r9",  lambda x : x.full5x5_r9(), float, help="r9 for photons"),
     NTupleVariable("sigmaIetaIeta",  lambda x : x.full5x5_sigmaIetaIeta(), float, help="sigmaIetaIeta for photons"),
     NTupleVariable("chHadIso04",  lambda x : x.chargedHadronIso(), float, help="chargedHadronIsolation for photons (PAT method, deltaR = 0.4)"),
-    NTupleVariable("chHadIso", lambda x : x.chargedHadronIso('rhoArea'), float, help="chargedHadronIsolation for photons with footprint removal and pile-up correction"),
-    NTupleVariable("phIso", lambda x : x.photonIso('rhoArea'), float, help="gammaIsolation for photons with footprint removal and pile-up correction"),
-    NTupleVariable("neuHadIso", lambda x : x.neutralHadronIso('rhoArea'), float, help="neutralHadronIsolation for photons with footprint removal and pile-up correction"),
+#    NTupleVariable("chHadIso", lambda x : x.chargedHadronIso('rhoArea'), float, help="chargedHadronIsolation for photons with footprint removal and pile-up correction"),
+#    NTupleVariable("phIso", lambda x : x.photonIso('rhoArea'), float, help="gammaIsolation for photons with footprint removal and pile-up correction"),
+#    NTupleVariable("neuHadIso", lambda x : x.neutralHadronIso('rhoArea'), float, help="neutralHadronIsolation for photons with footprint removal and pile-up correction"),
+    NTupleVariable("chHadIso", lambda x : x.chargedHadronIso(), float, help="chargedHadronIsolation for photons with footprint removal"),
+    NTupleVariable("phIso", lambda x : x.photonIso(), float, help="gammaIsolation for photons with footprint removal"),
+    NTupleVariable("neuHadIso", lambda x : x.neutralHadronIso(), float, help="neutralHadronIsolation for photons with footprint removal"),
     NTupleVariable("relIso", lambda x : x.ftprRelIso03 if hasattr(x,'ftprRelIso03') else x.relIso, float, help="relativeIsolation for photons with footprint removal and pile-up correction"),
     NTupleVariable("mcMatchId",  lambda x : getattr(x, 'mcMatchId', -99), int, mcOnly=True, help="Match to source from hard scatter (pdgId of heaviest particle in chain, 25 for H, 6 for t, 23/24 for W/Z), zero if non-prompt or fake"),
     NTupleVariable("mcPt",   lambda x : x.mcGamma.pt() if getattr(x,"mcGamma",None) else 0., mcOnly=True, help="p_{T} of associated gen photon"),
@@ -176,6 +181,7 @@ jetType = NTupleObjectType("jet",  baseObjectTypes = [ fourVectorType ], variabl
     NTupleVariable("rawPt",  lambda x : x.pt() * x.rawFactor(), help="p_{T} before JEC"),
     NTupleVariable("mcPt",   lambda x : x.mcJet.pt() if getattr(x,"mcJet",None) else 0., mcOnly=True, help="p_{T} of associated gen jet"),
     NTupleVariable("mcFlavour", lambda x : x.partonFlavour(), int,     mcOnly=True, help="parton flavour (physics definition, i.e. including b's from shower)"),
+    NTupleVariable("hadronFlavour", lambda x : x.hadronFlavour(), int,     mcOnly=True, help="hadron flavour (ghost matching to B/C hadrons)"),
     NTupleVariable("mcMatchId",  lambda x : getattr(x, 'mcMatchId', -99), int, mcOnly=True, help="Match to source from hard scatter (pdgId of heaviest particle in chain, 25 for H, 6 for t, 23/24 for W/Z), zero if non-prompt or fake"),
     NTupleVariable("corr_JECUp",  lambda x : getattr(x, 'corrJECUp', -99), float, mcOnly=True, help=""),
     NTupleVariable("corr_JECDown",  lambda x : getattr(x, 'corrJECDown', -99), float, mcOnly=True, help=""),
@@ -200,6 +206,9 @@ jetTypeExtra = NTupleObjectType("jetExtra",  baseObjectTypes = [ jetType ], vari
   
 metType = NTupleObjectType("met", baseObjectTypes = [ fourVectorType ], variables = [
     NTupleVariable("sumEt", lambda x : x.sumEt() ),
+    NTupleVariable("rawPt",  lambda x : x.uncorPt() ),
+    NTupleVariable("rawPhi", lambda x : x.uncorPhi() ),
+    NTupleVariable("rawSumEt", lambda x : x.uncorSumEt() ),
     NTupleVariable("genPt",  lambda x : x.genMET().pt() if x.genMET() else 0 , mcOnly=True ),
     NTupleVariable("genPhi", lambda x : x.genMET().phi() if x.genMET() else 0, mcOnly=True ),
     NTupleVariable("genEta", lambda x : x.genMET().eta() if x.genMET() else 0, mcOnly=True ),

@@ -1,0 +1,34 @@
+Wjets    : WJetsToLNu    : xsec : LepGood2_mcMatchId == 0 && LepGood2_mcMatchAny <= 4  ;  FillColor=ROOT.kBlue-8, Label="W + j\#rightarrowl"
+Wb       : WJetsToLNu    : xsec : LepGood2_mcMatchId == 0 && LepGood2_mcMatchAny == 5  ;  FillColor=ROOT.kBlue-5, Label="W + b\#rightarrowl"
+W        : WJetsToLNu 	 : xsec : LepGood2_mcMatchId != 0;  FillColor=ROOT.kBlue-10, Label="W (prompt)"
+
+TTT2l: TT_pow: xsec : LepGood2_mcMatchId !=0;    FillColor=ROOT.kGray,    Label="tt\, prompt"
+TTTj : TT_pow: xsec : LepGood2_mcMatchId ==0 && LepGood2_mcMatchAny <= 4 ;    FillColor=ROOT.kGreen-8, Label="tt\, j\#rightarrowl)"
+TTTb : TT_pow: xsec : LepGood2_mcMatchId ==0 && LepGood2_mcMatchAny == 5;    FillColor=ROOT.kGreen-5,    Label="tt\, b\#rightarrowl"
+
+DY       : DYJetsToLL_M10to50 : xsec      : LepGood2_mcMatchId != 0;  FillColor=ROOT.kCyan, Label="DY"
+DY       : DYJetsToLL_M50 :     xsec      : LepGood2_mcMatchId != 0;  FillColor=ROOT.kCyan, Label="DY"
+DYjets   : DYJetsToLL_M10to50 : xsec      : LepGood2_mcMatchId == 0 && LepGood2_mcMatchAny <= 4;  FillColor=ROOT.kCyan+2, Label="DY\, j\#rightarrowl"
+DYjets   : DYJetsToLL_M50 :     xsec      : LepGood2_mcMatchId == 0 && LepGood2_mcMatchAny <= 4;  FillColor=ROOT.kCyan+2, Label="DY\, j\#rightarrowl"
+DYbb     : DYJetsToLL_M10to50 : xsec      : LepGood2_mcMatchId == 0 && LepGood2_mcMatchAny == 5;   FillColor=ROOT.kCyan+3, Label="DY\, b\#rightarrowl"
+DYbb     : DYJetsToLL_M50 :     xsec      : LepGood2_mcMatchId == 0 && LepGood2_mcMatchAny == 5;   FillColor=ROOT.kCyan+3, Label="DY\, b\#rightarrowl"
+
+VV : WZp8: xsec ; FillColor=ROOT.kViolet-4
+VV : ZZp8: xsec ; FillColor=ROOT.kViolet-4
+VV : WWTo2L2Nu: xsec ; FillColor=ROOT.kViolet-4
+
+TW : T_tWch: xsec; FillColor=ROOT.kGray+2
+TW : TBar_tWch: xsec; FillColor=ROOT.kGray+2
+
+Single top    : TToLeptons_tch:     xsec ;  FillColor=ROOT.kGray+2
+Single top    : TToLeptons_sch:     xsec ;  FillColor=ROOT.kGray+2
+
+
+# 2015D 25ns data
+
+data: DoubleMuon_Run2015D_v3_runs_256630_256843
+data: DoubleEG_Run2015D_v3_runs_256630_256843
+data: MuonEG_Run2015D_v3_runs_256630_256843
+data: SingleMuon_Run2015D_v3_runs_256630_256843
+data: SingleElectron_Run2015D_v3_runs_256630_256843
+

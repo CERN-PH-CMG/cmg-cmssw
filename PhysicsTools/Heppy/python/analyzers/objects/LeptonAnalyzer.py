@@ -52,8 +52,8 @@ class LeptonAnalyzer( Analyzer ):
 
 
 
-        self.eleEffectiveArea = getattr(cfg_ana, 'ele_effectiveAreas', "Phys14_25ns_v1")
-        self.muEffectiveArea  = getattr(cfg_ana, 'mu_effectiveAreas',  "Phys14_25ns_v1")
+        self.eleEffectiveArea = getattr(cfg_ana, 'ele_effectiveAreas', "Spring15_25ns_v1")
+        self.muEffectiveArea  = getattr(cfg_ana, 'mu_effectiveAreas',  "Spring15_25ns_v1")
         # MiniIsolation
         self.doMiniIsolation = getattr(cfg_ana, 'doMiniIsolation', False)
         if self.doMiniIsolation:
@@ -125,9 +125,9 @@ class LeptonAnalyzer( Analyzer ):
         if self.doMiniIsolation:
             if self.miniIsolationVetoLeptons == "any":
                 for lep in self.handles['muons'].product(): 
-                    self.IsolationComputer.addVetos(lep.physObj)
+                    self.IsolationComputer.addVetos(lep)
                 for lep in self.handles['electrons'].product(): 
-                    self.IsolationComputer.addVetos(lep.physObj)
+                    self.IsolationComputer.addVetos(lep)
 
         #muons
         allmuons = self.makeAllMuons(event)
@@ -255,7 +255,15 @@ class LeptonAnalyzer( Analyzer ):
               elif aeta < 2.000: mu.EffectiveArea04 = 0.0913
               elif aeta < 2.200: mu.EffectiveArea04 = 0.1212
               else:              mu.EffectiveArea04 = 0.2085
-          else: raise RuntimeError,  "Unsupported value for mu_effectiveAreas: can only use Data2012 (rho: ?) and Phys14_v1 (rho: fixedGridRhoFastjetAll)"
+          elif self.muEffectiveArea == "Spring15_25ns_v1":
+              aeta = abs(mu.eta())
+              if   aeta < 0.800: mu.EffectiveArea03 = 0.0735
+              elif aeta < 1.300: mu.EffectiveArea03 = 0.0619
+              elif aeta < 2.000: mu.EffectiveArea03 = 0.0465
+              elif aeta < 2.200: mu.EffectiveArea03 = 0.0433
+              else:              mu.EffectiveArea03 = 0.0577
+              mu.EffectiveArea04 = 0 # not computed
+          else: raise RuntimeError,  "Unsupported value for mu_effectiveAreas: can only use Data2012 (rho: ?) and Phys14_25ns_v1 or Spring15_25ns_v1 (rho: fixedGridRhoFastjetAll)"
         # Attach the vertex to them, for dxy/dz calculation
         for mu in allmuons:
             mu.associatedVertex = event.goodVertices[0] if len(event.goodVertices)>0 else event.vertices[0]
@@ -300,6 +308,7 @@ class LeptonAnalyzer( Analyzer ):
         # fill EA for rho-corrected isolation
         for ele in allelectrons:
           ele.rho = float(self.handles['rhoEle'].product()[0])
+          ele.event = event
           if self.eleEffectiveArea == "Data2012":
               # https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaEARhoCorrection?rev=14
               SCEta = abs(ele.superCluster().eta())
@@ -330,28 +339,28 @@ class LeptonAnalyzer( Analyzer ):
               elif aeta < 2.200: ele.EffectiveArea04 = 0.1565 
               else:              ele.EffectiveArea04 = 0.2680
           elif self.eleEffectiveArea == "Spring15_50ns_v1":
-              aeta = abs(ele.eta())
+              SCEta = abs(ele.superCluster().eta())
               ## ----- https://github.com/ikrav/cmssw/blob/egm_id_747_v2/RecoEgamma/ElectronIdentification/data/Spring15/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_50ns.txt
-              if   aeta < 0.800: ele.EffectiveArea03 = 0.0973
-              elif aeta < 1.300: ele.EffectiveArea03 = 0.0954
-              elif aeta < 2.000: ele.EffectiveArea03 = 0.0632
-              elif aeta < 2.200: ele.EffectiveArea03 = 0.0727
+              if   SCEta < 0.800: ele.EffectiveArea03 = 0.0973
+              elif SCEta < 1.300: ele.EffectiveArea03 = 0.0954
+              elif SCEta < 2.000: ele.EffectiveArea03 = 0.0632
+              elif SCEta < 2.200: ele.EffectiveArea03 = 0.0727
               else:              ele.EffectiveArea03 = 0.1337
               # warning: EAs not computed for cone DR=0.4 yet. Do not correct
               ele.EffectiveArea04 = 0.0
           elif self.eleEffectiveArea == "Spring15_25ns_v1":
-              aeta = abs(ele.eta())
+              SCEta = abs(ele.superCluster().eta())
               ## ----- https://github.com/ikrav/cmssw/blob/egm_id_747_v2/RecoEgamma/ElectronIdentification/data/Spring15/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_25ns.txt
-              if   aeta < 1.000: ele.EffectiveArea03 = 0.1752
-              elif aeta < 1.479: ele.EffectiveArea03 = 0.1862
-              elif aeta < 2.000: ele.EffectiveArea03 = 0.1411
-              elif aeta < 2.200: ele.EffectiveArea03 = 0.1534
-              elif aeta < 2.300: ele.EffectiveArea03 = 0.1903
-              elif aeta < 2.400: ele.EffectiveArea03 = 0.2243
+              if   SCEta < 1.000: ele.EffectiveArea03 = 0.1752
+              elif SCEta < 1.479: ele.EffectiveArea03 = 0.1862
+              elif SCEta < 2.000: ele.EffectiveArea03 = 0.1411
+              elif SCEta < 2.200: ele.EffectiveArea03 = 0.1534
+              elif SCEta < 2.300: ele.EffectiveArea03 = 0.1903
+              elif SCEta < 2.400: ele.EffectiveArea03 = 0.2243
               else:              ele.EffectiveArea03 = 0.2687
               # warning: EAs not computed for cone DR=0.4 yet. Do not correct
               ele.EffectiveArea04 = 0.0
-          else: raise RuntimeError,  "Unsupported value for ele_effectiveAreas: can only use Data2012 (rho: ?) and Phys14_v1 (rho: fixedGridRhoFastjetAll)"
+          else: raise RuntimeError,  "Unsupported value for ele_effectiveAreas: can only use Data2012 (rho: ?), Phys14_v1 and Spring15_v1 (rho: fixedGridRhoFastjetAll)"
 
         # Electron scale calibrations
         if self.cfg_ana.doElectronScaleCorrections:
@@ -595,7 +604,7 @@ setattr(LeptonAnalyzer,"defaultConfig",cfg.Analyzer(
     loose_electron_lostHits = 1.0,
     # muon isolation correction method (can be "rhoArea" or "deltaBeta")
     mu_isoCorr = "rhoArea" ,
-    mu_effectiveAreas = "Phys14_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1')
+    mu_effectiveAreas = "Spring15_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1' or 'Spring15_25ns_v1')
     mu_tightId = "POG_ID_Tight" ,
     # electron isolation correction method (can be "rhoArea" or "deltaBeta")
     ele_isoCorr = "rhoArea" ,

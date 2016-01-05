@@ -22,8 +22,8 @@ jsonAna.useLumiBlocks = True
 vertexAna.keepFailingEvents = True # keep events with no good vertices
 
 #Lepton
-lepAna.loose_muon_dxy = 0.5
-lepAna.loose_muon_dz  = 1.0
+lepAna.loose_muon_dxy = 0.2
+lepAna.loose_muon_dz  = 0.5
 lepAna.loose_muon_relIso  = 0.15
 lepAna.loose_muon_isoCut = lambda muon :muon.miniRelIso < 0.2
 
@@ -32,12 +32,12 @@ lepAna.loose_electron_eta    = 2.4
 lepAna.loose_electron_relIso = 0.15
 lepAna.loose_electron_isoCut = lambda electron : electron.miniRelIso < 0.1
 
-lepAna.loose_electron_id  = "POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Veto_full5x5"
+lepAna.loose_electron_id  = "POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Veto_full5x5"
 lepAna.loose_electron_lostHits = 999. # no cut
 lepAna.loose_electron_dxy    = 999.
 lepAna.loose_electron_dz     = 999.
 
-lepAna.inclusive_electron_id  = "POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Veto_full5x5"
+lepAna.inclusive_electron_id  = "POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Veto_full5x5"
 lepAna.inclusive_electron_lostHits = 999. # no cut since embedded in ID
 lepAna.inclusive_electron_dxy    = 999. # no cut since embedded in ID
 lepAna.inclusive_electron_dz     = 999. # no cut since embedded in ID
@@ -48,6 +48,16 @@ lepAna.ele_tightId = "Cuts_PHYS14_25ns_v1_ConvVetoDxyDz"
 lepAna.notCleaningElectrons = True
 lepAna.doMiniIsolation = True
 lepAna.miniIsolationPUCorr = 'rhoArea'
+#lepAna.ele_effectiveAreas = 'Phys14_25ns_v1'              #what we used with SnT       
+#lepAna.mu_effectiveAreas = 'Phys14_25ns_v1'               #what we used with SnT
+lepAna.ele_effectiveAreas = 'Spring15_25ns_v1'             #new default 
+lepAna.mu_effectiveAreas = 'Spring15_25ns_v1'              #new default
+#lepAna.rhoMuon= 'fixedGridRhoFastjetAll',                  #what we used with SnT       
+#lepAna.rhoElectron = 'fixedGridRhoFastjetAll',             #what we used with SnT   
+lepAna.rhoMuon= 'fixedGridRhoFastjetCentralNeutral',      #new default
+lepAna.rhoElectron = 'fixedGridRhoFastjetCentralNeutral', #new default
+
+
 lepAna.doIsoAnnulus = True
 
 # JET (for event variables do apply the jetID and not PUID yet)
@@ -57,12 +67,11 @@ jetAna.doQG = True
 jetAna.jetEta = 4.7
 jetAna.jetEtaCentral = 2.5
 jetAna.jetPt = 10.
-#jetAna.mcGT     = "Summer15_50nsV4_MC" # jec corrections
-#jetAna.dataGT   = "Summer15_50nsV4_DATA" # jec corrections
 jetAna.mcGT     = "Summer15_25nsV2_MC" # jec corrections
-jetAna.dataGT   = "Summer15_25nsV2_DATA" # jec corrections
+jetAna.dataGT   = "Summer15_25nsV5_DATA" # jec corrections
 jetAna.recalibrateJets = False # True
 jetAna.applyL2L3Residual = False # 'Data'
+jetAna.calculateSeparateCorrections = False
 jetAna.jetLepDR = 0.4
 jetAna.smearJets = False
 jetAna.jetGammaDR = 0.4
@@ -77,29 +86,21 @@ tauAna.inclusive_etaMax = 2.3
 tauAna.inclusive_dxyMax = 99999.
 tauAna.inclusive_dzMax = 99999.
 tauAna.inclusive_vetoLeptons = False
-tauAna.inclusive_vetoLeptonsPOG = True
-tauAna.inclusive_decayModeID = "byLooseCombinedIsolationDeltaBetaCorr3Hits" # ignored if not set or ""
-#tauAna.inclusive_tauAntiMuonID = "againstMuonTight"
-tauAna.inclusive_tauAntiMuonID = "againstMuonTight3"
-#tauAna.inclusive_tauAntiElectronID = "againstElectronLoose"
-tauAna.inclusive_tauAntiElectronID = "againstElectronLooseMVA5"
+tauAna.inclusive_vetoLeptonsPOG = False
+#tauAna.inclusive_decayModeID = "byLooseCombinedIsolationDeltaBetaCorr3Hits" # ignored if not set or ""
 
 tauAna.loose_ptMin = 20.0
 tauAna.loose_etaMax = 2.3
 tauAna.loose_dxyMax = 99999.
 tauAna.loose_dzMax = 99999.
 tauAna.loose_vetoLeptons = False
-tauAna.loose_vetoLeptonsPOG = True
-tauAna.loose_decayModeID = "byLooseCombinedIsolationDeltaBetaCorr3Hits" # ignored if not set or ""
-#tauAna.loose_tauAntiMuonID = "againstMuonTight"
-tauAna.loose_tauAntiMuonID = "againstMuonTight3"
-#tauAna.loose_tauAntiElectronID = "againstElectronLoose"
-tauAna.loose_tauAntiElectronID = "againstElectronLooseMVA5"
+tauAna.loose_vetoLeptonsPOG = False
+#tauAna.loose_decayModeID = "byLooseCombinedIsolationDeltaBetaCorr3Hits" # ignored if not set or ""
 
 # Photon
 photonAna.etaCentral = 2.5
 photonAna.ptMin = 20
-photonAna.gammaID = "POG_PHYS14_25ns_Loose_old_looseSieie_NoIso"
+photonAna.gammaID = "POG_SPRING15_50ns_Loose_looseSieie_NoIso"
 photonAna.do_randomCone = True
 photonAna.do_mc_match = True
 
@@ -109,6 +110,7 @@ isoTrackAna.doIsoAnnulus = True
 
 # recalibrate MET
 metAna.recalibrate = False
+metAna.old74XMiniAODs = False # get right Raw MET on old 74X MiniAODs
 
 # store all taus by default
 genAna.allGenTaus = True
@@ -189,14 +191,20 @@ hbheFilterAna = cfg.Analyzer(
 ##  PRODUCER
 ##------------------------------------------
 
-from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_HT900, triggers_HT800, triggers_AllMET170, triggers_HTMET100, triggers_HTMET120, triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_e, triggers_MT2_mu, triggers_MT2_emu, triggers_MT2_mue, triggers_dijet, triggers_dijet70met120, triggers_dijet55met110, triggers_ht350, triggers_ht475,  triggers_ht600, triggers_photon75, triggers_photon90, triggers_photon120, triggers_photon75ps, triggers_photon90ps, triggers_photon120ps, triggers_photon155, triggers_photon165_HE10, triggers_photon175
+
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_HT900, triggers_HT800, triggers_AllMET170, triggers_HT350_MET100, triggers_HT350_MET120
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_MT2_mumu, triggers_MT2_ee, triggers_MT2_e, triggers_MT2_mu, triggers_MT2_emu, triggers_MT2_mue 
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_dijet, triggers_dijet70met120, triggers_dijet55met110, triggers_HT350, triggers_HT475,  triggers_HT600
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_photon75, triggers_photon90, triggers_photon120, triggers_photon75ps 
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_photon90ps, triggers_photon120ps, triggers_photon155, triggers_photon165_HE10, triggers_photon175
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_met90_mht90, triggers_metNoMu90_mhtNoMu90, triggers_metNoMu120_mhtNoMu120, triggers_Jet80MET90
 
 triggerFlagsAna.triggerBits = {
 'PFHT900' : triggers_HT900,
 'PFHT800' : triggers_HT800,
 'PFMET170' : triggers_AllMET170,
-'PFHT350_PFMET100' : triggers_HTMET100,
-'PFHT350_PFMET120' : triggers_HTMET120,
+'PFHT350_PFMET100' : triggers_HT350_MET100,
+'PFHT350_PFMET120' : triggers_HT350_MET120,
 'SingleMu' : triggers_MT2_mu,
 'SingleEl' : triggers_MT2_e,
 'DoubleMu' : triggers_MT2_mumu,
@@ -207,12 +215,10 @@ triggerFlagsAna.triggerBits = {
 'DiCentralPFJet70_PFMET120' : triggers_dijet70met120,
 'DiCentralPFJet55_PFMET110' : triggers_dijet55met110,
 ##
-'PFHT350_Prescale' : triggers_ht350,
-'PFHT475_Prescale' : triggers_ht475,
-'PFHT600_Prescale'  : triggers_ht600,
+'PFHT350_Prescale' : triggers_HT350,
+'PFHT475_Prescale' : triggers_HT475,
+'PFHT600_Prescale'  : triggers_HT600,
 'DiJet' : triggers_dijet,
-'ht350prescale' : triggers_ht350,
-'ht475prescale' : triggers_ht475,
 'Photon75_R9Id90_HE10_IsoM' : triggers_photon75,
 'Photon90_R9Id90_HE10_IsoM' : triggers_photon90,
 'Photon120_R9Id90_HE10_IsoM' : triggers_photon120,
@@ -222,6 +228,11 @@ triggerFlagsAna.triggerBits = {
 'Photon155' : triggers_photon155,
 'Photon165_HE10' : triggers_photon165_HE10,
 'Photon175' : triggers_photon175,
+## monojet triggers
+'PFMET90_PFMHT90' : triggers_met90_mht90,
+'PFMETNoMu90_PFMHTNoMu90' : triggers_metNoMu90_mhtNoMu90,
+'PFMETNoMu120_PFMHTNoMu120' : triggers_metNoMu120_mhtNoMu120,
+'MonoCentralPFJet80_PFMETNoMu90_PFMHTNoMu90' : triggers_Jet80MET90,
 }
 
 ### Temporary replacement for hbheFilter
@@ -300,9 +311,10 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 # choose 2 for full mc production
 # choose 3 for data production
 # choose 4 for signal production
-test = 3
+test = int(getHeppyOption('test',1))
 isData = False # will be changed accordingly if chosen to run on data
 doSpecialSettingsForMECCA = 1 # set to 1 for comparisons with americans
+runPreprocessor = False
 
 if test==0:
     # ------------------------------------------------------------------------------------------- #
@@ -313,10 +325,8 @@ if test==0:
     testComponent = kreator.makeMCComponent("testComponent", "/GJets_HT-200to400_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root",489.9)
     samples=[testComponent]
 
-    dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data"
-    #json=dataDir+'/json/Cert_Run2012ABCD_22Jan2013ReReco.json'
-    #json=dataDir+'/json/json_DCSONLY_Run2015B.txt'
-    json=dataDir+'/json/json_DCSONLY.txt'
+    json='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/DCSOnly/json_DCSONLY.txt'
+
     from CMGTools.TTHAnalysis.setup.Efficiencies import *
 
     for comp in samples:
@@ -356,8 +366,10 @@ elif test==1:
     #sequence = cfg.Sequence([eventSelector] + sequence)
     
 #    from CMGTools.RootTools.samples.samples_13TeV_PHYS14 import *
-    from CMGTools.RootTools.samples.samples_13TeV_74X import *
+#    from CMGTools.RootTools.samples.samples_13TeV_74X import *
+    from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import *
 #    from CMGTools.RootTools.samples.samples_8TeVReReco_74X import *
+    from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
 
 #    comp=GJets_HT200to400
 #    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TESTfilesPHY14/gjets_ht200to400_miniaodsim_fix.root']
@@ -368,10 +380,18 @@ elif test==1:
 #    #comp.files = ['/afs/cern.ch/user/d/dalfonso/public/74samples/JetHT_GR_R_74_V12_19May_RelVal/1294BDDB-B7FE-E411-8028-002590596490.root']
 #    comp.files = ['/afs/cern.ch/user/m/mangano/public/MECCA/dataset/74X/data/JetHT_promptReco_Run2015B.root']
 
-    #synche file MC
-    comp=comp=TTJets_LO_50ns
-    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/SYNCHfiles/0066F143-F8FD-E411-9A0B-D4AE526A0D2E.root']
+#    #synche file MC (v1 of the miniAOD)
+#    comp=comp=TTJets_LO_50ns
+#    comp.files = ['/afs/cern.ch/user/d/dalfonso/public/SYNCHfiles/0066F143-F8FD-E411-9A0B-D4AE526A0D2E.root']
+
+    #synche file MC (v2 of the miniAOD)
+#    comp=TTJets_LO
+#    comp.files = ['/afs/cern.ch/work/d/dalfonso/public/001F4F14-786E-E511-804F-0025905A60FE.root']
    
+    comp=JetHT_Run2015D_Promptv4
+    comp.files = ['/afs/cern.ch/work/d/dalfonso/public/8ED4BA45-706D-E511-8D36-02163E014418.root']
+    comp.json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/DCSOnly/json_DCSONLY.txt'
+
     selectedComponents = [comp]
     comp.splitFactor = 1
 #    comp.triggers = triggers_HT900 + triggers_HTMET + triggers_photon155 + triggers_1mu_isolow + triggers_MT2_mumu + triggers_MT2_ee + triggers_MT2_mue # to apply trigger skimming
@@ -401,20 +421,25 @@ elif test==2:
 #QCD_Pt80to120, QCD_Pt120to170, QCD_Pt300to470, QCD_Pt470to600, QCD_Pt1000to1400, QCD_Pt1400to1800, QCD_Pt1800to2400, QCD_Pt2400to3200, QCD_Pt3200toInf, # QCD_Pt
 #]
 
-### 25
-#    selectedComponents = SignalSUSY + SignalEXO ### Signal Spring15
-    selectedComponents = ZJetsToNuNuHT + DYJetsM50HT + QCDPt + QCDHT + [ 
+### 25    
+#    selectedComponents = [DYJetsToLL_M50_Zpt150toInf_LO]
+
+    selectedComponents = ZJetsToNuNuHT + DYJetsM50HT + QCDPt + QCDHT + [
+TTJets_SingleLeptonFromT, TTJets_SingleLeptonFromTbar, TTJets_DiLepton,
+TTV, TToLeptons_tch, TbarToLeptons_tch, 
+TTJets_LO,
+#                                                                                                                                                                      
 GJets_HT100to200,
 GJets_HT200to400,
 GJets_HT400to600,
 GJets_HT600toInf,
-TTJets_LO, 
+#
 WJetsToLNu_HT100to200,
 WJetsToLNu_HT200to400,
 WJetsToLNu_HT400to600,
 WJetsToLNu_HT600toInf,
-] + SingleTop ### Full SM BG Spring15
-    
+] ### Full SM BG Spring15
+
     # test all components (1 thread per component).
     for comp in selectedComponents:
         comp.splitFactor = 1200
@@ -430,6 +455,8 @@ elif test==3:
     isData = True
     from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
 
+    dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data"
+    json=dataDir+'/json/json_DCSONLY.txt'
     #synche file DATA
     #comp = JetHT_Run2015B_PromptReco
     #comp.files = ['/afs/cern.ch/user/m/mangano/public/MECCA/dataset/74X/data/JetHT_promptReco_Run2015B.root']
@@ -440,13 +467,17 @@ elif test==3:
     #selectedComponents = [JetHT_Run2015B_17Jul2015, HTMHT_Run2015B_17Jul2015, MET_Run2015B_17Jul2015, SingleElectron_Run2015B_17Jul2015, SingleMuon_Run2015B_17Jul2015, SinglePhoton_Run2015B_17Jul2015, DoubleEG_Run2015B_17Jul2015, MuonEG_Run2015B_17Jul2015, DoubleMuon_Run2015B_17Jul2015, JetHT_Run2015B_PromptReco, HTMHT_Run2015B_PromptReco, MET_Run2015B_PromptReco, SingleElectron_Run2015B_PromptReco, SingleMuon_Run2015B_PromptReco, SinglePhoton_Run2015B_PromptReco, DoubleEG_Run2015B_PromptReco, MuonEG_Run2015B_PromptReco, DoubleMuon_Run2015B_PromptReco]
 
     selectedComponents = [JetHT_Run2015D, HTMHT_Run2015D, MET_Run2015D, SingleElectron_Run2015D, SingleMuon_Run2015D, SinglePhoton_Run2015D, DoubleEG_Run2015D, MuonEG_Run2015D, DoubleMuon_Run2015D]
+    
+    for comp in selectedComponents:
+        comp.json=json
+        
 
 elif test==4:
 
     from CMGTools.RootTools.samples.samples_13TeV_signals import *
 
 ### 25
-    selectedComponents = SignalSUSY + SignalEXO ### Signal Spring15
+    selectedComponents = + SignalSUSY + SignalEXO #+ SignalSUSYFullScan ###Signal Spring15
     
     # test all components (1 thread per component).
     for comp in selectedComponents:
@@ -499,50 +530,60 @@ if getHeppyOption("nofetch"):
     event_class = Events
 
 
+if runPreprocessor:
+    removeResiduals = False
+    # -------------------- Running pre-processor
+    import subprocess
 
-removeResiduals = False
+    if isData:
+        #    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
+        #    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA.db'
+        #    jecEra    = 'Summer15_50nsV4_DATA'
+        uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_DATA_UncertaintySources_AK4PFchs.txt'
+        jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_DATA.db'
+        jecEra    = 'Summer15_25nsV5_DATA'
+    else:
+        #    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
+        #    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_MC.db'
+        #    jecEra    = 'Summer15_50nsV4_MC'
+        uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_MC_UncertaintySources_AK4PFchs.txt'
+        jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_MC.db'
+        jecEra    = 'Summer15_25nsV5_MC'
+    preprocessorFile = "$CMSSW_BASE/tmp/MetType1_jec_%s.py"%(jecEra)
+    extraArgs=[]
+    if isData:
+        extraArgs.append('--isData')
+        GT= '74X_dataRun2_Prompt_v1'
+    else:
+        GT= 'MCRUN2_74_V9A'
+    if removeResiduals:extraArgs.append('--removeResiduals')
+    args = ['python',
+            os.path.expandvars('$CMSSW_BASE/python/CMGTools/ObjectStudies/corMETMiniAOD_cfgCreator.py'),\
+                '--GT='+GT,
+            '--outputFile='+preprocessorFile,
+            '--jecDBFile='+jecDBFile,
+            '--uncFile='+uncFile,
+            '--jecEra='+jecEra
+            ] + extraArgs
+    #print "Making pre-processorfile:"
+    #print " ".join(args)
+    subprocess.call(args)
+    from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
+    preprocessor = CmsswPreprocessor(preprocessorFile)
 
-# -------------------- Running pre-processor
-import subprocess
 
-if isData:
-    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
-    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA.db'
-    jecEra    = 'Summer15_50nsV4_DATA'
+    config = cfg.Config( components = selectedComponents,
+                         sequence = sequence,
+                         services = [output_service],
+                         preprocessor=preprocessor, # comment if pre-processor non needed
+                         #                     events_class = event_class)
+                         events_class = Events)
 else:
-#    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
-#    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_MC.db'
-#    jecEra    = 'Summer15_50nsV4_MC'
-    uncFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV2_MC_UncertaintySources_AK4PFchs.txt'
-    jecDBFile = '$CMSSW_BASE/src/CMGTools/RootTools/data/jec/Summer15_25nsV2_MC.db'
-    jecEra    = 'Summer15_25nsV2_MC'
-preprocessorFile = "$CMSSW_BASE/tmp/MetType1_jec_%s.py"%(jecEra)
-extraArgs=[]
-if isData:
-  extraArgs.append('--isData')
-  GT= '74X_dataRun2_Prompt_v1'
-else:
-  GT= 'MCRUN2_74_V9A'
-if removeResiduals:extraArgs.append('--removeResiduals')
-args = ['python',
-  os.path.expandvars('$CMSSW_BASE/python/CMGTools/ObjectStudies/corMETMiniAOD_cfgCreator.py'),\
-  '--GT='+GT,
-  '--outputFile='+preprocessorFile,
-  '--jecDBFile='+jecDBFile,
-  '--uncFile='+uncFile,
-  '--jecEra='+jecEra
-  ] + extraArgs
-#print "Making pre-processorfile:"
-#print " ".join(args)
-subprocess.call(args)
-from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
-preprocessor = CmsswPreprocessor(preprocessorFile)
+    config = cfg.Config( components = selectedComponents,
+                         sequence = sequence,
+                         services = [output_service],
+                         #                     events_class = event_class)
+                         events_class = Events)
 
 
-config = cfg.Config( components = selectedComponents,
-                     sequence = sequence,
-                     services = [output_service],
-                     #preprocessor=preprocessor, # comment if pre-processor non needed
-#                     events_class = event_class)
-                     events_class = Events)
 #printComps(config.components, True)

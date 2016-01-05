@@ -49,8 +49,11 @@ HLT_DoubleEl   : HLT_DoubleEl   : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_Mu8_EleX   : HLT_Mu8_EleX       : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_MuX_Ele12   : HLT_MuX_Ele12       : [-0.5,0.5,1.5]; XTitle="HLT"
 HLT_Photon165_HE10    : HLT_Photon165_HE10    : [-0.5,0.5,1.5]; XTitle="HLT"
-
 ###HLT_htXprescale: HLT_htXprescale: [-0.5,0.5,1.5]; XTitle="HLT"
+HLT_PFMET90_PFMHT90    : HLT_PFMET90_PFMHT90     : [-0.5,0.5,1.5]; XTitle="HLT"
+HLT_PFMETNoMu90_PFMHTNoMu90    : HLT_PFMETNoMu90_PFMHTNoMu90     : [-0.5,0.5,1.5]; XTitle="HLT"
+HLT_PFMETNoMu120_PFMHTNoMu120    : HLT_PFMETNoMu120_PFMHTNoMu120     : [-0.5,0.5,1.5]; XTitle="HLT"
+HLT_MonoCentralPFJet80_PFMETNoMu90_PFMHTNoMu90    : HLT_MonoCentralPFJet80_PFMETNoMu90_PFMHTNoMu90     : [-0.5,0.5,1.5]; XTitle="HLT"
 
 Flag_EcalDeadCellTriggerPrimitiveFilter : Flag_EcalDeadCellTriggerPrimitiveFilter: [-0.5,0.5,1.5]; XTitle="metFilter"
 Flag_trkPOG_manystripclus53X : Flag_trkPOG_manystripclus53X: [-0.5,0.5,1.5]; XTitle="metFilter"
@@ -62,6 +65,7 @@ Flag_trkPOGFilters : Flag_trkPOGFilters : [-0.5,0.5,1.5]; XTitle="metFilter"
 Flag_trackingFailureFilter : Flag_trackingFailureFilter: [-0.5,0.5,1.5]; XTitle="metFilter"
 Flag_CSCTightHaloFilter : Flag_CSCTightHaloFilter: [-0.5,0.5,1.5]; XTitle="metFilter"
 Flag_HBHENoiseFilter : Flag_HBHENoiseFilter : [-0.5,0.5,1.5]; XTitle="metFilter"
+Flag_HBHEIsoNoiseFilter : Flag_HBHEIsoNoiseFilter : [-0.5,0.5,1.5]; XTitle="metFilter"
 Flag_goodVertices : Flag_goodVertices: [-0.5,0.5,1.5]; XTitle="metFilter"
 Flag_eeBadScFilter : Flag_eeBadScFilter: [-0.5,0.5,1.5]; XTitle="metFilter"
 Flag_METFilters : Flag_METFilters: [-0.5,0.5,1.5]; XTitle="metFilter"
@@ -202,6 +206,52 @@ cr_zll_eta: zll_eta: 10,-5.,5.    ; XTitle="Z eta"
 cr_zll_mass: zll_mass: 20,0,400.    ; XTitle="Z mass [GeV]"
 
 cr_zll_minMTBMet: zll_minMTBMet: 16,0,800    ; XTitle="min M_{T}(B\,met)"
+
+
+##### ZLL control variables (MT)
+
+cr_zllmt_mt2:   zllmt_mt2: 16,0,800    ; XTitle="MT2  [GeV]"
+
+cr_zllmt_met:   zllmt_met_pt: 16,0,800    ; XTitle="E_{T}^{miss}  [GeV]"
+cr_zllmt_met_phi:   zllmt_met_phi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
+
+cr_zllmt_ht: zllmt_ht:  16,0,800    ; XTitle="H_{T}  [GeV]"
+
+cr_zllmt_mht:   zllmt_mht_pt: 16,0,800    ; XTitle="H_{T}^{miss}  [GeV]"
+cr_zllmt_mht_phi:   zllmt_mht_phi: 8,-3.15,3.15    ; XTitle="phi of H_{T}^{miss}"
+
+cr_zllmt_deltaPhiMin: zllmt_deltaPhiMin: 70,0,3.15    ; XTitle="dphi_{min}(jet\,E_{T}^{miss})"
+cr_zllmt_diffMetMht: zllmt_diffMetMht: 100,0,500    ; XTitle="|MET-MHT|"
+
+cr_zllmt_pt: zllmt_pt: 16,0,600    ; XTitle="Z p_{T}  [GeV]"
+cr_zllmt_phi: zllmt_phi: 8,-3.15,3.15    ; XTitle="Z phi"
+cr_zllmt_eta: zllmt_eta: 10,-5.,5.    ; XTitle="Z eta"
+cr_zllmt_mass: zllmt_mass: 20,0,400.    ; XTitle="Z mass [GeV]"
+
+cr_zllmt_minMTBMet: zllmt_minMTBMet: 16,0,800    ; XTitle="min M_{T}(B\,met)"
+
+
+##### lepton removed plots
+
+cr_rl_mt2:   rl_mt2: 16,0,800    ; XTitle="MT2  [GeV]"
+
+cr_rl_met:   rl_met_pt: 16,0,800    ; XTitle="E_{T}^{miss}  [GeV]"
+cr_rl_met_phi:   rl_met_phi: 8,-3.15,3.15    ; XTitle="phi of E_{T}^{miss}"
+
+cr_rl_ht: rl_ht:  16,0,800    ; XTitle="H_{T}  [GeV]"
+
+cr_rl_mht:   rl_mht_pt: 16,0,800    ; XTitle="H_{T}^{miss}  [GeV]"
+cr_rl_mht_phi:   rl_mht_phi: 8,-3.15,3.15    ; XTitle="phi of H_{T}^{miss}"
+
+cr_rl_deltaPhiMin: rl_deltaPhiMin: 70,0,3.15    ; XTitle="dphi_{min}(jet\,E_{T}^{miss})"
+cr_rl_diffMetMht: rl_diffMetMht: 100,0,500    ; XTitle="|MET-MHT|"
+
+cr_rl_pt: rl_pt: 16,0,600    ; XTitle="Zlike p_{T}  [GeV]"
+cr_rl_phi: rl_phi: 8,-3.15,3.15    ; XTitle="Zlike phi"
+cr_rl_eta: rl_eta: 10,-5.,5.    ; XTitle="Zlike eta"
+cr_rl_mass: rl_mass: 20,0,400.    ; XTitle="Zlike mass [GeV]"
+
+cr_rl_minMTBMet: rl_minMTBMet: 16,0,800    ; XTitle="min M_{T}(B\,met)"
 
 ##### LEPTON
 

@@ -7,17 +7,32 @@ MODULES = []
 
 from CMGTools.MonoXAnalysis.tools.eventVars_monojet import EventVarsMonojet
 MODULES.append( ('vars_mj', EventVarsMonojet()) )
- 
+
+from CMGTools.TTHAnalysis.tools.vertexWeightFriend import VertexWeightFriend
+pufile="/afs/cern.ch/work/e/emanuele/public/monox/pileup/nvtx_profile_runs_254227_260627.root"
+MODULES.append ( ('puWeights', VertexWeightFriend(pufile,pufile,"nvtx_signal","nvtx_data",verbose=True) ) )
+
+pathvetolists="/afs/cern.ch/work/e/emanuele/public/monox/met_vetolists/"
+vetoLists= ["cscfilter", "ecalfilter"]
+
+from CMGTools.MonoXAnalysis.tools.eventVetoListChecker import EventVetoListChecker
+MODULES.append( ('eventVetoChecker', EventVetoListChecker(pathvetolists,vetoLists)) )
+
+from CMGTools.MonoXAnalysis.tools.lepVars import residualCalibratedEcalEnergyFriend
+MODULES.append ( ('lepvars', residualCalibratedEcalEnergyFriend()) )
+
 class VariableProducer(Module):
-    def __init__(self,name,booker,sample_nevt,modules):
+    def __init__(self,name,booker,sample_nevt,dataset,modules):
         Module.__init__(self,name,booker)
         self._modules = modules
         self._sample_nevt = sample_nevt
+        self.dataset = dataset
     def beginJob(self):
         self.t = PyTree(self.book("TTree","t","t"))
         self.branches = {}
         for name,mod in self._modules:
-            mod.initSampleNormalization(self._sample_nevt)
+            if name == "eventVetoChecker": mod.initDataset(self.dataset)
+            if name == "vars_mj": mod.initSampleNormalization(self._sample_nevt)
             for B in mod.listBranches():
                 # don't add the same branch twice
                 if B in self.branches: 
@@ -91,7 +106,7 @@ for D in glob(args[0]+"/*"):
             for dm in  options.datasetMatches:
                 if re.match(dm,short): found = True
             if not found: continue
-        data = ("DoubleMu" in short or "MuEG" in short or "DoubleEG" in short or "SingleMu" in short)
+        data = any(x in short for x in "DoubleMu DoubleEl DoubleEG MuEG MuonEG SingleMu SingleEl MET".split())
         pckobj  = pickle.load(open(pckfile,'r'))
         counters = dict(pckobj)
         if ('Sum Weights' in counters):
@@ -178,7 +193,7 @@ def _runIt(myargs):
                 if re.match(pat,m):
                     toRun[m] = True 
         modulesToRun = [ (m,v) for (m,v) in MODULES if m in toRun ]
-    el = EventLoop([ VariableProducer(options.treeDir,booker,sample_nevt,modulesToRun), ])
+    el = EventLoop([ VariableProducer(options.treeDir,booker,sample_nevt,short,modulesToRun), ])
     el.loop([tb], eventRange=range)
     booker.done()
     fb.Close()

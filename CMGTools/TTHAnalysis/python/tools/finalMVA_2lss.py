@@ -6,8 +6,8 @@ class FinalMVA_2LSS:
         self._MVAs = {}
         self._vars_1_6 = [ 
                 #MVAVar("lep2AbsEta", func = lambda ev : min(abs(ev.LepGood1_eta),abs(ev.LepGood2_eta))),
-                MVAVar("lep2AbsEta", func = lambda ev : abs(ev.LepGood2_eta)),
-                MVAVar("lep2Pt",     func = lambda ev : ev.LepGood2_pt),
+                MVAVar("lep2AbsEta", func = lambda ev : abs(ev.LepGood_eta[1]) if ev.nLepGood >= 2 else 0),
+                MVAVar("lep2Pt",     func = lambda ev : ev.LepGood_pt[1] if ev.nLepGood >= 2 else 0),
                 MVAVar("MHT",        func = lambda ev : ev.mhtJet25),
                 MVAVar("mindr_lep2_jet", func = lambda ev : ev.mindr_lep2_jet),
                 MVAVar("MT_met_lep1",    func = lambda ev : ev.MT_met_lep1),
@@ -41,17 +41,17 @@ class FinalMVA_2LSS:
         self._MVAs["MVA_2LSS_4j_10var"] = MVATool("MVA_2LSS_4j_10var", 
             P+"SS_ge4jge1t_useSide_2_10var_test/TMVAClassification_BDTG.weights.xml",
             self._vars_1_6 + self._vars_7_9 + self._var_10)
-        self._MVAs["MVA_2LSS_4j_15var"] = MVATool("MVA_2LSS_4j_15var", 
-            P+"SS_ge4jge1t_useSide_2_15var_test/TMVAClassification_BDTG.weights.xml",
-            self._vars_1_6 + self._vars_7_9 + self._var_10 + self._vars_11_15)
-        self._MVAs["MVA_2LSS_4j_6var_cat"] = CategorizedMVA(
-            [ ( lambda ev: abs(ev.LepGood1_pdgId) == 11 and abs(ev.LepGood2_pdgId) == 11,
-                    MVATool("ee", P+"SS_ge4jge1t_useSide_2_6var_TwoEle/TMVAClassification_BDTG.weights.xml", self._vars_1_6) ),
-              ( lambda ev: abs(ev.LepGood1_pdgId) == 13 and abs(ev.LepGood2_pdgId) == 13,
-                    MVATool("ee", P+"SS_ge4jge1t_useSide_2_6var_TwoMuon/TMVAClassification_BDTG.weights.xml", self._vars_1_6) ),
-              ( lambda ev: abs(ev.LepGood1_pdgId) != abs(ev.LepGood2_pdgId),
-                    MVATool("ee", P+"SS_ge4jge1t_useSide_2_6var_MuonEle/TMVAClassification_BDTG.weights.xml", self._vars_1_6) ) ]
-        )
+#        self._MVAs["MVA_2LSS_4j_15var"] = MVATool("MVA_2LSS_4j_15var", 
+#            P+"SS_ge4jge1t_useSide_2_15var_test/TMVAClassification_BDTG.weights.xml",
+#            self._vars_1_6 + self._vars_7_9 + self._var_10 + self._vars_11_15)
+#        self._MVAs["MVA_2LSS_4j_6var_cat"] = CategorizedMVA(
+#            [ ( lambda ev: abs(ev.LepGood1_pdgId) == 11 and abs(ev.LepGood2_pdgId) == 11,
+#                    MVATool("ee", P+"SS_ge4jge1t_useSide_2_6var_TwoEle/TMVAClassification_BDTG.weights.xml", self._vars_1_6) ),
+#              ( lambda ev: abs(ev.LepGood1_pdgId) == 13 and abs(ev.LepGood2_pdgId) == 13,
+#                    MVATool("ee", P+"SS_ge4jge1t_useSide_2_6var_TwoMuon/TMVAClassification_BDTG.weights.xml", self._vars_1_6) ),
+#              ( lambda ev: abs(ev.LepGood1_pdgId) != abs(ev.LepGood2_pdgId),
+#                    MVATool("ee", P+"SS_ge4jge1t_useSide_2_6var_MuonEle/TMVAClassification_BDTG.weights.xml", self._vars_1_6) ) ]
+#        )
     def listBranches(self):
         return self._MVAs.keys()
     def __call__(self,event):
@@ -60,7 +60,7 @@ class FinalMVA_2LSS:
 if __name__ == '__main__':
     from sys import argv
     file = ROOT.TFile(argv[1])
-    tree = file.Get("ttHLepTreeProducerBase")
+    tree = file.Get("tree")
     tree.AddFriend("sf/t", argv[2])
     class Tester(Module):
         def __init__(self, name):

@@ -11,6 +11,10 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 class PackedCandidateLoader( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(PackedCandidateLoader,self).__init__(cfg_ana, cfg_comp, looperName)
+        if hasattr(cfg_ana,'cut'):
+            self.select = cfg_ana.cut
+        else:
+            self.select = None
             
     def declareHandles(self):
         super(PackedCandidateLoader, self).declareHandles()
@@ -19,8 +23,10 @@ class PackedCandidateLoader( Analyzer ):
     def process(self, event):
         self.readCollections( event.input )
         cands = self.handles['packed'].product()
-        event.packedCandidatesForJets = cands
-            
+        if self.select==None:
+            event.packedCandidatesForJets = cands
+        else:    
+            event.packedCandidatesForJets = filter(self.select,cands)
 
         
 

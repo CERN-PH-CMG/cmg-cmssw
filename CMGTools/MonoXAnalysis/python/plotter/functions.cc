@@ -33,6 +33,19 @@ float mt_2(float pt1, float phi1, float pt2, float phi2) {
     return std::sqrt(2*pt1*pt2*(1-std::cos(phi1-phi2)));
 }
 
+float mass_2_ene(float ene1, float eta1, float phi1, float m1, float ene2, float eta2, float phi2, float m2) {
+    typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > PtEtaPhiMVector;
+    PtEtaPhiMVector unitp41(1.0,eta1,phi1,m1);
+    PtEtaPhiMVector unitp42(1.0,eta2,phi2,m2);
+    double theta1 = unitp41.Theta();
+    double theta2 = unitp42.Theta();
+    double pt1 = ene1*fabs(sin(theta1));
+    double pt2 = ene2*fabs(sin(theta2));
+    PtEtaPhiMVector p41(pt1,eta1,phi1,m1);
+    PtEtaPhiMVector p42(pt2,eta2,phi2,m2);
+    return (p41+p42).M();
+}
+
 float mass_2(float pt1, float eta1, float phi1, float m1, float pt2, float eta2, float phi2, float m2) {
     typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > PtEtaPhiMVector;
     PtEtaPhiMVector p41(pt1,eta1,phi1,m1);
@@ -92,4 +105,21 @@ float mtw_wz3l(float pt1, float eta1, float phi1, float m1, float pt2, float eta
     if (abs(mZ1 - mass_2(pt2,eta2,phi2,m2,pt3,eta3,phi3,m3)) < 0.01) return mt_2(pt1,phi1,met,metphi);
     return 0;
 }
+
+float u1_2(float met_pt, float met_phi, float ref_pt, float ref_phi) 
+{
+    float met_px = met_pt*std::cos(met_phi), met_py = met_pt*std::sin(met_phi);
+    float ref_px = ref_pt*std::cos(ref_phi), ref_py = ref_pt*std::sin(ref_phi);
+    float ux = - met_px + ref_px, uy = - met_px + ref_px;
+    return (ux*ref_px + uy*ref_py)/ref_pt;
+}
+float u2_2(float met_pt, float met_phi, float ref_pt, float ref_phi)
+{
+    float met_px = met_pt*std::cos(met_phi), met_py = met_pt*std::sin(met_phi);
+    float ref_px = ref_pt*std::cos(ref_phi), ref_py = ref_pt*std::sin(ref_phi);
+    float ux = - met_px + ref_px, uy = - met_px + ref_px;
+    return (ux*ref_py - uy*ref_px)/ref_pt;
+}
+
+
 void functions() {}

@@ -2,111 +2,76 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 import os
 
 #Load backgrounds from common place
-from CMGTools.RootTools.samples.samples_13TeV_74X import *
-background_25ns = QCDPt+WJetsToLNuHT+GJetsHT+TTs+DYJetsM50HT+DiBosons
-background_50ns = [TTJets_50ns,TTJets_LO_50ns,WJetsToLNu_50ns]+QCDPt_50ns+DYJetsM50HT_50ns+DiBosons_50ns
+from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import *
 
+####
+####
+
+TTs = [ TTJets, TTJets_SingleLeptonFromTbar, TTJets_SingleLeptonFromTbar_ext, TTJets_SingleLeptonFromT, TTJets_SingleLeptonFromT_ext]+SingleTop
+
+
+background = TTs+DYJetsM50HT+WJetsToLNuHT+ZJetsToNuNuHT+GJetsHT+QCDHT+QCDPt+DiBosons
+
+
+#background_50ns = [TTJets_50ns,TTJets_LO_50ns,WJetsToLNu_50ns]+QCDPt_50ns+DYJetsM50HT_50ns+DiBosons_50ns
 #Load signal from here 
-from CMGTools.VVResonances.samples.signal_13TeV_74X import signalSamples,RSGravToWWToLNQQ_kMpl01_2500
+from CMGTools.VVResonances.samples.signal_13TeV_74X import *
 
-###
-signalSamples=[RSGravToWWToLNQQ_kMpl01_2500]
-###
-
-mcSamples_25ns = background_25ns+signalSamples
-mcSamples_50ns=background_50ns
-
-
-mcSamples=mcSamples_25ns+mcSamples_50ns
-
+mcSamples = background+signalSamples
 #load triggers
 from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import *
 
-
 #Load Data samples
-from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import JetHT_Run2015B,SingleElectron_Run2015B,SingleMuon_Run2015B
+from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
 
-dataSamples_50ns= [JetHT_Run2015B,SingleElectron_Run2015B,SingleMuon_Run2015B]
 
-#assign triggers to data 
-SingleMuon_Run2015B.triggers = triggers_1mu_noniso+triggers_1mu_iso_50ns
-SingleMuon_Run2015B.vetoTriggers = []
 
-SingleElectron_Run2015B.triggers = triggers_1e_50ns+triggers_1e_noniso
-SingleElectron_Run2015B.vetoTriggers = triggers_1mu_noniso+triggers_1mu_iso_50ns
 
-JetHT_Run2015B.triggers = triggers_HT800+triggers_HT900+triggers_dijet_fat
-JetHT_Run2015B.vetoTriggers = triggers_1mu_noniso+triggers_1mu_iso_50ns+triggers_1e_50ns+triggers_1e_noniso
+SingleMuon=[SingleMuon_Run2015D_Promptv4,SingleMuon_Run2015D_05Oct]
+SingleElectron=[SingleElectron_Run2015D_Promptv4,SingleElectron_Run2015D_05Oct]
+JetHT=[JetHT_Run2015D_Promptv4,JetHT_Run2015D_05Oct]
+MET=[MET_Run2015D_Promptv4,MET_Run2015D_05Oct]
 
-from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import JetHT_Run2015C,SingleElectron_Run2015C,SingleMuon_Run2015C
 
-dataSamples_25ns= [JetHT_Run2015C,SingleElectron_Run2015C,SingleMuon_Run2015C]
 
-#assign triggers to data 
-SingleMuon_Run2015C.triggers = triggers_1mu_noniso+triggers_1mu_iso
-SingleMuon_Run2015C.vetoTriggers = []
 
-SingleElectron_Run2015C.triggers = triggers_1e+triggers_1e_noniso
-SingleElectron_Run2015C.vetoTriggers = triggers_1mu_noniso+triggers_1mu_iso
+for s in SingleMuon:
+    s.triggers = triggers_1mu_noniso+triggers_1mu_iso
+    s.vetoTriggers = []
+for s in SingleElectron:
+    s.triggers = triggers_1e_noniso+triggers_1e
+    s.vetoTriggers = triggers_1mu_noniso+triggers_1mu_iso
+for s in JetHT:
+    s.triggers = triggers_HT800+triggers_HT900+triggers_dijet_fat
+    s.vetoTriggers = triggers_1mu_noniso+triggers_1mu_iso+triggers_1e_noniso+triggers_1e
+for s in MET:
+    s.triggers = triggers_met90_mht90+triggers_metNoMu90_mhtNoMu90+triggers_metNoMu120_mhtNoMu120
+    s.vetoTriggers = triggers_1mu_noniso+triggers_1mu_iso+triggers_1e_noniso+triggers_1e+triggers_HT800+triggers_HT900+triggers_dijet_fat
 
-JetHT_Run2015C.triggers = triggers_HT800+triggers_HT900+triggers_dijet_fat
-JetHT_Run2015C.vetoTriggers = triggers_1mu_noniso+triggers_1mu_iso+triggers_1e+triggers_1e_noniso
-
-dataSamples=dataSamples_50ns+dataSamples_25ns
-
+dataSamples=SingleMuon+SingleElectron+JetHT+MET
 
 
 from CMGTools.TTHAnalysis.setup.Efficiencies import *
-dataDir = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data"
-
-
-
-
-
+dataDir = "$CMSSW_BASE/src/CMGTools/VVResonances/data"
 
 
 #Load JSON
-jsonFile_50ns = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON.txt'
-
-
-
-
-
+jsonFile='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_Silver.txt'
 #Define splitting
-for comp in mcSamples_25ns:
+
+for comp in mcSamples:
     comp.isMC = True
     comp.isData = False
-    comp.splitFactor = 500   
-    comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
-    comp.puFileData=dataDir+"/puProfile_Data12.root"
+    comp.splitFactor = 250   
+    comp.puFileMC=dataDir+"/pileup_MC.root"
+    comp.puFileData=dataDir+"/pileup_DATA.root"
     comp.efficiency = eff2012
-    comp.triggers=triggers_1mu_noniso+triggers_1mu_iso_50ns+triggers_1e_50ns+triggers_1e_noniso+triggers_HT800+triggers_HT900+triggers_dijet_fat
-    comp.globalTag = "Summer15_25nsV2_MC"
+    comp.triggers=triggers_1mu_noniso+triggers_1mu_iso+triggers_1e+triggers_1e_noniso+triggers_HT800+triggers_HT900+triggers_dijet_fat+triggers_met90_mht90+triggers_metNoMu90_mhtNoMu90+triggers_metNoMu120_mhtNoMu120
+    comp.globalTag = "Summer15_25nsV6_MC"
 
-for comp in mcSamples_50ns:
-    comp.isMC = True
-    comp.isData = False
-    comp.splitFactor = 500   
-    comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
-    comp.puFileData=dataDir+"/puProfile_Data12.root"
-    comp.efficiency = eff2012
-    comp.triggers=triggers_1mu_noniso+triggers_1mu_iso_50ns+triggers_1e_50ns+triggers_1e_noniso+triggers_HT800+triggers_HT900+triggers_dijet_fat
-    comp.globalTag = "Summer15_50nsV5_MC"
-
-
-
-
-for comp in dataSamples_50ns:
-    comp.splitFactor = 1000
+for comp in dataSamples:
+    comp.splitFactor = 250
     comp.isMC = False
     comp.isData = True
-    comp.json = jsonFile_50ns
-    comp.globalTag = "Summer15_50nsV5_DATA"
-
-for comp in dataSamples_25ns:
-    comp.splitFactor = 2000
-    comp.isMC = False
-    comp.isData = True
-    comp.json = jsonFile_50ns
-    comp.globalTag = "Summer15_25nsV2_DATA"
-
+    comp.json = jsonFile
+    comp.globalTag = "Summer15_25nsV6_DATA"

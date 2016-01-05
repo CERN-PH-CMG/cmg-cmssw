@@ -6,7 +6,7 @@ from PhysicsTools.Heppy.physicsutils.JetReCalibrator import JetReCalibrator
 from PhysicsTools.HeppyCore.utils.deltar import *
 import PhysicsTools.HeppyCore.framework.config as cfg
 from CMGTools.VVResonances.tools.PyJetToolbox import *
-
+from copy import copy
 
 
 
@@ -17,6 +17,7 @@ class EventInterpretationBase( Analyzer ):
         self.selectPairLNu = self.cfg_ana.selectPairLNu
         self.selectPairLL = self.cfg_ana.selectPairLL
         self.selectPairJJ = self.cfg_ana.selectPairJJ
+        self.selectPairJJNuNu = self.cfg_ana.selectPairJJNuNu
         self.isMC =cfg_comp.isMC
         if hasattr(cfg_ana,'matchDR'):
             self.matchDR = cfg_ana.matchDR
@@ -35,13 +36,18 @@ class EventInterpretationBase( Analyzer ):
           if self.cfg_comp.isMC:
               if hasattr(self.cfg_comp,'globalTag'):
                   self.jetReCalibrator = JetReCalibrator(self.cfg_comp.globalTag,self.cfg_ana.recalibrationType, False,cfg_ana.jecPath)
+                  self.jetReCalibratorFAT = JetReCalibrator(self.cfg_comp.globalTag,self.cfg_ana.recalibrationTypeFAT, False,cfg_ana.jecPath)
+
               else:
                   self.jetReCalibrator = JetReCalibrator(mcGT,self.cfg_ana.recalibrationType, False,cfg_ana.jecPath)
+                  self.jetReCalibratorFAT = JetReCalibrator(mcGT,self.cfg_ana.recalibrationTypeFAT, False,cfg_ana.jecPath)
           else:
               if hasattr(self.cfg_comp,'globalTag'):
                   self.jetReCalibrator = JetReCalibrator(self.cfg_comp.globalTag,self.cfg_ana.recalibrationType, True,cfg_ana.jecPath)
+                  self.jetReCalibratorFAT = JetReCalibrator(self.cfg_comp.globalTag,self.cfg_ana.recalibrationTypeFAT, True,cfg_ana.jecPath)
               else:    
                   self.jetReCalibrator = JetReCalibrator(dataGT,self.cfg_ana.recalibrationType, True,cfg_ana.jecPath)
+                  self.jetReCalibratorFAT = JetReCalibrator(dataGT,self.cfg_ana.recalibrationTypeFAT, True,cfg_ana.jecPath)          
 
         self.attachBTag = cfg_ana.attachBTag    
         if self.attachBTag:
@@ -63,20 +69,27 @@ class EventInterpretationBase( Analyzer ):
             self.handles['subjets'] = AutoHandle( (self.cfg_ana.subJets,'SubJets'), 'std::vector<pat::Jet>' )
 
 
+
             
 
     def removeLeptonFootPrint(self,leptons,cands):
         toRemove=[]
+        cList=list(cands)
         for lepton in leptons:
+
             for p in range(0,lepton.numberOfSourceCandidatePtrs()):
                 index = lepton.sourceCandidatePtr(p).key()
-                toRemove.append(cands[index])
-        return list(set(cands)-set(toRemove))
+                if not cands[index] in toRemove: 
+                    toRemove.append(cands[index])
+
+        for r in toRemove:
+            cList.remove(r)
+        return cList
 
 
     def matchSubJets(self,jets,genquarks):
         for j in jets:
-            for s in j.subjets:
+            for s in j.subjets_SD+j.subjets:
                 s.mcquark = None
                 s.matched=0
                 for g in genquarks:
@@ -85,7 +98,7 @@ class EventInterpretationBase( Analyzer ):
                         s.mcquark = g
                         break;
 
-    def skim(self,leptons):
+    def skim(self,leptons,met):
         cleanedJets = []
         for jet in self.handles['fatjets'].product():
             overlap=False
@@ -97,7 +110,7 @@ class EventInterpretationBase( Analyzer ):
                 cleanedJets.append(jet)
         nJets = len(cleanedJets)        
         nLeptons = len(leptons)
-        if (nLeptons>0 and nJets>0) or nJets>1:
+        if (nLeptons>0 and nJets>0) or nJets>1 or (nJets>0 and met.pt()>300):
             return True
         return False
                 
@@ -111,23 +124,39 @@ class EventInterpretationBase( Analyzer ):
         toolboxFat.setSubjets(True,'inc',self.cfg_ana.subjets)
         toolboxFat.setPruning(self.cfg_ana.prunning)
         toolboxFat.setNtau(True)
-        toolboxFat.setSoftDrop(self.cfg_ana.softdrop)
+        if hasattr(self.cfg_ana,'softdrop_beta'):
+            toolboxFat.setSoftDrop(self.cfg_ana.softdrop,self.cfg_ana.softdrop_beta,self.cfg_ana.softdrop_zeta)
+        else:
+            toolboxFat.setSoftDrop(self.cfg_ana.softdrop)
         # Lets cluster !! Fat jets first
-        fatJets=toolboxFat.inclusiveJets(100.0,True)
+        fatJets=toolboxFat.inclusiveJets(200.0,True)
         filtered = filter(self.selectFat,fatJets)
 
+        ##Apply JECS in SoftDrop and Pruned:
+        if self.jetReCalibratorFAT is not None:
+
+            prunedJets=[]
+            for j in fatJets:
+                prunedJets.append(j.softDropJet)
+                prunedJets.append(j.prunedJet)
+                
+            self.jetReCalibratorFAT.correctAll(prunedJets, self.rho, self.shiftJEC,True,False,[0.,0.],[0.,0.,0.])
+            for p in prunedJets:
+                p.setRawFactor(1.0/p.corr)
         standardFatJets = self.handles['fatjets'].product()
 
         if self.attachBTag:
             for fat in filtered:
                 for standardFat in standardFatJets:
                     fat.btag = standardFat.bDiscriminator(self.btagDiscriminator)
-                for j in fat.subjets:
+                for j in fat.subjets_SD+fat.subjets:
                     for standard in self.handles['subjets'].product():
                         if deltaR(j.eta(),j.phi(),standard.eta(),standard.phi())<0.1:
                             j.btag = standard.bDiscriminator(self.btagDiscriminator)
                             break
 
+
+            
         return filtered
 
     def makeSatelliteJets(self,cands):
@@ -137,9 +166,12 @@ class EventInterpretationBase( Analyzer ):
         toolbox.setSubjets(False,'inc',2)
         toolbox.setPruning(False)
         toolbox.setNtau(False)
-        toolbox.setSoftDrop(False)
-        
+        toolbox.setSoftDrop(False)       
         unfiltered =  toolbox.inclusiveJets(30.0,False)
+
+
+
+
         if self.attachBTag:
             for j in unfiltered:
                     for standard in self.handles['jets'].product():
@@ -148,19 +180,64 @@ class EventInterpretationBase( Analyzer ):
                             break
 
         if self.jetReCalibrator is not None:
-            self.jetReCalibrator.correctAll(unfiltered, self.rho, delta=self.shiftJEC)
-            return filter(lambda x: x.pt()>30, unfiltered)
+            self.jetReCalibrator.correctAll(unfiltered, self.rho, self.shiftJEC,True,False,[0.,0.],[0.,0.,0.])
+            for p in unfiltered:
+                p.setRawFactor(1.0/p.corr)
+
+
+            filtered=filter(lambda x: x.pt()>30, unfiltered)    
+            return filtered
         else:
             return unfiltered
 
     def removeJetFootPrint(self,jets,cands):
+
+
         toRemove=[]
         for j in jets:
             toRemove.extend(j.constituents)
-        return list(set(cands)-set(toRemove))
+        out=list(set(cands)-set(toRemove))
+        return out
 
 
     def topology(self,obj):
+
+        #first clean nicely the jets from leptons and subjets
+        objToClean=[]
+        if abs(obj['pair'].leg1.pdgId())==23:
+            objToClean.extend([obj['pair'].leg1.leg1,obj['pair'].leg1.leg2])
+#            print 'Z->ll', obj['pair'].leg1.leg1.pt(),obj['pair'].leg1.leg1.eta(),obj['pair'].leg1.leg1.phi(),obj['pair'].leg1.leg2.pt(),obj['pair'].leg1.leg2.eta(),obj['pair'].leg1.leg2.phi()
+        if abs(obj['pair'].leg1.pdgId())==24:
+            objToClean.extend([obj['pair'].leg1.leg1])
+#            print 'W->lnu', obj['pair'].leg1.leg1.pt(),obj['pair'].leg1.leg1.eta(),obj['pair'].leg1.leg1.phi()
+
+        if abs(obj['pair'].leg1.pdgId())==1:
+            objToClean.extend(obj['pair'].leg1.subjets)
+
+        if abs(obj['pair'].leg2.pdgId())==23:
+            objToClean.extend([obj['pair'].leg2.leg1,obj['pair'].leg2.leg2])
+        if abs(obj['pair'].leg2.pdgId())==24:
+            objToClean.extend([obj['pair'].leg2.leg1])
+        if abs(obj['pair'].leg2.pdgId())==1:
+            objToClean.extend(obj['pair'].leg2.subjets)
+#            print 'jet', obj['pair'].leg2.pt(),obj['pair'].leg2.eta(),obj['pair'].leg2.phi()
+
+        newJets=[]    
+        for j in  obj['satelliteJets']:
+            keep=True
+            for c in objToClean:
+                dr=deltaR(j.eta(),j.phi(),c.eta(),c.phi())
+#                print 'dr=',dr
+                if dr<0.4:
+                    keep=False
+                    break
+            if keep:
+#                print 'filtered satellite jet',j.pt(),j.eta(),j.phi() 
+                newJets.append(j)
+
+
+        obj['satelliteJets']=newJets            
+
         if len(obj['satelliteJets'])<2:
             obj['vbfDEta'] = -1.0
             obj['vbfMJJ'] = -1.0
@@ -173,19 +250,32 @@ class EventInterpretationBase( Analyzer ):
         NL = 0     
         NM = 0     
         NT = 0     
-       
+
+
+        bestBTag=None
+        minDR=1000.0
         for s in obj['satelliteJets']:
            btag = s.bTag()
            if btag>0.423:
                NL=NL+1
+               DR=deltaR(obj['pair'].eta(),obj['pair'].phi(),s.eta(),s.phi())
+               if DR<minDR:
+                   bestBTag=s
+                   minDR=DR
            if btag>0.814:
                NM=NM+1
            if btag>0.941:
                NT=NT+1
         obj['nLooseBTags'] = NL        
         obj['nMediumBTags'] = NM        
-        obj['nTightBTags'] = NT        
-    
+        obj['nTightBTags'] = NT    
+
+        
+        if bestBTag==None:
+            obj['topMass'] = -1
+        else:    
+            obj['topMass'] = (bestBTag.p4()+s.p4()).mass()
+
     def beginLoop(self, setup):
         super(EventInterpretationBase,self).beginLoop(setup)
 

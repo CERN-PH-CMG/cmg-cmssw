@@ -11,7 +11,7 @@ from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
 
 # Lepton Preselection
 # ele
-lepAna.loose_electron_id = "POG_MVA_ID_Run2_NonTrig_Loose"
+lepAna.loose_electron_id = "POG_MVA_ID_Phys14_NonTrig_Loose"
 lepAna.loose_electron_pt  = 5
 # mu
 lepAna.loose_muon_pt  = 5

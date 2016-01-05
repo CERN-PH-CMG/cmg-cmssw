@@ -1,6 +1,7 @@
 #include <cmath>
 #include "Math/GenVector/LorentzVector.h"
 #include "Math/GenVector/PtEtaPhiM4D.h"
+#include "Math/GenVector/PxPyPzM4D.h"
 
 //// UTILITY FUNCTIONS NOT IN TFORMULA ALREADY
 
@@ -120,6 +121,28 @@ float u2_2(float met_pt, float met_phi, float ref_pt, float ref_phi)
     float ux = - met_px + ref_px, uy = - met_px + ref_px;
     return (ux*ref_py - uy*ref_px)/ref_pt;
 }
+
+// reconstructs a top from lepton, met, b-jet, applying the W mass constraint and taking the smallest neutrino pZ
+float mtop_lvb(float ptl, float etal, float phil, float ml, float met, float metphi, float ptb, float etab, float phib, float mb) 
+{
+    typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > PtEtaPhiMVector;
+    typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzM4D<double> > PxPyPzMVector;
+    PtEtaPhiMVector p4l(ptl,etal,phil,ml);
+    PtEtaPhiMVector p4b(ptb,etab,phib,mb);
+    double MW=80.4;
+    double a = (1 - std::pow(p4l.Z()/p4l.E(), 2));
+    double ppe    = met * ptl * std::cos(phil - metphi)/p4l.E();
+    double brk    = MW*MW / (2*p4l.E()) + ppe;
+    double b      = (p4l.Z()/p4l.E()) * brk;
+    double c      = met*met - brk*brk;
+    double delta   = b*b - a*c;
+    double sqdelta = delta > 0 ? std::sqrt(delta) : 0;
+    double pz1 = (b + sqdelta)/a, pz2 = (b - sqdelta)/a;
+    double pznu = (abs(pz1) <= abs(pz2) ? pz1 : pz2);
+    PxPyPzMVector p4v(met*std::cos(metphi),met*std::sin(metphi),pznu,0);
+    return (p4l+p4b+p4v).M();
+}
+
 
 float relax_cut_in_eta_bins(float val, float eta, float eta1, float eta2, float eta3, float val1, float val2, float val3, float val1t, float val2t, float val3t){
 

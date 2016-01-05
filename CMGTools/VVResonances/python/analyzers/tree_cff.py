@@ -6,7 +6,7 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 vvSkimmer = cfg.Analyzer(
     Skimmer,
     name='vvSkimmer',
-    required = ['LNuJJ','JJ','LLJJ']
+    required = ['LNuJJ','JJ','LLJJ','JJNuNu','TopCR']
 )
 
 leptonSkimmer = cfg.Analyzer(
@@ -27,6 +27,9 @@ vvTreeProducer = cfg.Analyzer(
         NTupleVariable("nAllLL",lambda ev: len(ev.allLL) , int),       
         NTupleVariable("nLL",lambda ev: len(ev.LL) , int),       
         NTupleVariable("nLNu",lambda ev: len(ev.LNu) , int),       
+        NTupleVariable("rho",  lambda ev: ev.rho, float, help="kt6PFJets rho"),
+        NTupleVariable("rhoCN",  lambda ev: ev.rhoCN, float, help="fixed grid rho central neutral"),
+        NTupleVariable("nVert",  lambda ev: len(ev.goodVertices), int, help="Number of good vertices"), 
      ],
      globalObjects =  {
             "met" : NTupleObject("met", metType, help="PF E_{T}^{miss}, after type 1 corrections"),
@@ -36,8 +39,12 @@ vvTreeProducer = cfg.Analyzer(
 #            "genleps"          : NTupleCollection("gen",     genParticleWithLinksType, 10, help="Generated leptons (e/mu) from W/Z decays"),                                                                                                
 #            "inclusiveLeptons" : NTupleCollection("l",    leptonTypeExtra, 10, help="Inclusive Leptons"),                                                                                                
         "LNuJJ" : NTupleCollection("lnujj",LNuJJType ,5, help="VV candidate with a lepton neutrino and a fat jet"),                                                   
+        "TopCR" : NTupleCollection("topCR",LNuJJType ,5, help="Top control region candidate with a lepton neutrino and a fat jet"),                                                   
         "JJ" : NTupleCollection("jj",JJType ,5, help="VV candidate with two fat jets"),                                       
-        "LLJJ" : NTupleCollection("lljj",LLJJType ,5, help="VV candidate with two leptons and a fat jet")                                       
+        "LLJJ" : NTupleCollection("lljj",LLJJType ,5, help="VV candidate with two leptons and a fat jet"),                                       
+        "JJNuNu" : NTupleCollection("nunujj",NuNuJJType ,5, help="VV candidate with  fat jet and MET")                                      
+#        "leadJetConstituents" : NTupleCollection("jetConstituents",     particleType, 500, help="Constituents"),                                                                                                
+
 #            "genVBosons" : NTupleCollection("genV",     genParticleWithLinksType, 10, help="Generated V bosons"),                                                                                                
      }
 )

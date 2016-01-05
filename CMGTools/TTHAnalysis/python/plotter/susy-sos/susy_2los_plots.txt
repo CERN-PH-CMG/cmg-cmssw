@@ -1,0 +1,21 @@
+### Example of few basic plots ##########
+lep1Pt:  LepGood1_pt: 25,0,50; XTitle="Leading lepton p_{T}  [GeV]",Legend='TR'
+lep2Pt:  LepGood2_pt: 12,0,25; XTitle="Second lepton p_{T}  [GeV]", Legend='TR'
+lepEta:  LepGood_eta: 50,-5,5; XTitle="Lepton #eta",Legend='TR'
+lepPhi:  LepGood_phi: 80,-4,4; XTitle="Lepton #phi",Legend='TR'
+mll : mass_2(LepGood1_pt,LepGood1_eta,LepGood1_phi,LepGood1_mass,LepGood2_pt,LepGood2_eta,LepGood2_phi,LepGood2_mass):15,0,300; XTitle="m(ll) [GeV]"
+ptll : pt_2(LepGood1_pt,LepGood1_phi, LepGood2_pt,LepGood2_phi):18,0,240; XTitle="p_{T}(ll) [GeV]"
+drll : deltaR(LepGood1_eta,LepGood1_phi, LepGood2_eta,LepGood2_phi):8,0,4; XTitle="#DeltaR(ll)", MoreY=1.3, Legend='TL'
+dphill : abs(deltaPhi(LepGood1_phi, LepGood2_phi)): 6,0,3.1416;XTitle="#Delta#phi(ll)", MoreY=1.5, Legend='TL'
+met:   met_pt: 18,0,800 ; XTitle="E_{T}^{miss}  [GeV]"
+jet1Pt: Jet1_pt: 45,0,900; XTitle="Leading jet p_{T} [GeV]",Legend='TR'
+jet2Pt: Jet2_pt: 60,0,600; XTitle="Second jet p_{T} [GeV]",Legend='TR'
+jet3Pt: Jet3_pt: 30,0,300; XTitle="Third jet p_{T} [GeV]", Legend='TR'
+jetPhi: Jet_phi: 80,-4,4; XTitle="Leading jet #phi",Legend='TR'
+jetEta: Jet_eta: 50,-5,5; XTitle="Leading jet #eta",Legend='TR'
+nJet : nJet:[-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5,11.5,12.5,13.5] ; XTitle='N_{jet}'
+nJet25 : nJet25 :[-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5,11.5,12.5,13.5] ;XTitle='N(jet\, p_{T} > 25)'
+nJet40 : nJet40 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5]; XTitle='N(jet\, p_{T} > 40)'
+htJet40:   htJet40: 18,0,2000    ; XTitle="H_{T}(lep + jet p_{T} > 40)[GeV]"
+htJet40j:   htJet40j: 18,0,2000    ; XTitle="H_{T}(jet p_{T} > 40)[GeV]"
+nBJet30 : nBJetMedium30 : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5];XTitle='N(b-jet\, p_{T} > 25\, CSVM)'

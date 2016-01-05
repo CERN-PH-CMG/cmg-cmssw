@@ -10,11 +10,9 @@ class PlotterBase(object):
         self.markerstyle=20
         self.corrFactors=[]
 
-    def addCorrectionFactor(self,name,value,error,model):
+    def addCorrectionFactor(self,value,model):
         corr=dict()
         corr['value']=value
-        corr['error']=error
-        corr['name']=name
         corr['model']=model
         self.corrFactors.append(corr)
 

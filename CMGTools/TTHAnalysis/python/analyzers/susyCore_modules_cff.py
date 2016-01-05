@@ -43,6 +43,11 @@ triggerAna = cfg.Analyzer(
 triggerFlagsAna = cfg.Analyzer(
     TriggerBitAnalyzer, name="TriggerFlags",
     processName = 'HLT',
+    prescaleProcessName = 'PAT',
+    prescaleFallbackProcessName = 'RECO',
+    unrollbits = False,
+    saveIsUnprescaled = False,
+    checkL1prescale = False,
     triggerBits = {
         # "<name>" : [ 'HLT_<Something>_v*', 'HLT_<SomethingElse>_v*' ] 
     }
@@ -102,8 +107,6 @@ genAna = cfg.Analyzer(
     # Make also the splitted lists
     makeSplittedGenLists = True,
     allGenTaus = False,
-    # Save LHE weights from LHEEventProduct
-    makeLHEweights = True,
     # Print out debug information
     verbose = False,
     )
@@ -117,6 +120,11 @@ genHFAna = cfg.Analyzer(
     status2Only = False,
     bquarkPtCut = 15.0,
 )
+
+lheWeightAna = cfg.Analyzer(
+    LHEWeightAnalyzer, name="LHEWeightAnalyzer",
+)
+
 pdfwAna = cfg.Analyzer(
     PDFWeightsAnalyzer, name="PDFWeightsAnalyzer",
     PDFWeights = [ pdf for pdf,num in PDFWeights ]
@@ -135,8 +143,8 @@ lepAna = cfg.Analyzer(
     # input collections
     muons='slimmedMuons',
     electrons='slimmedElectrons',
-    rhoMuon= 'fixedGridRhoFastjetAll',
-    rhoElectron = 'fixedGridRhoFastjetAll',
+    rhoMuon= 'fixedGridRhoFastjetCentralNeutral',
+    rhoElectron = 'fixedGridRhoFastjetCentralNeutral',
     # energy scale corrections and ghost muon suppression (off by default)
     doMuScleFitCorrections=False, # "rereco"
     doRochesterCorrections=False,
@@ -173,10 +181,10 @@ lepAna = cfg.Analyzer(
     loose_electron_lostHits = 1.0,
     # muon isolation correction method (can be "rhoArea" or "deltaBeta")
     mu_isoCorr = "rhoArea" ,
-    mu_effectiveAreas = "Phys14_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1')
+    mu_effectiveAreas = "Spring15_25ns_v1", #(can be 'Data2012' or 'Phys14_25ns_v1' or 'Spring15_25ns_v1')
     # electron isolation correction method (can be "rhoArea" or "deltaBeta")
     ele_isoCorr = "rhoArea" ,
-    el_effectiveAreas = "Phys14_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1')
+    ele_effectiveAreas = "Spring15_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1' or 'Spring15_25ns_v1')
     ele_tightId = "Cuts_2012" ,
     # Mini-isolation, with pT dependent cone: will fill in the miniRelIso, miniRelIsoCharged, miniRelIsoNeutral variables of the leptons (see https://indico.cern.ch/event/368826/ )
     doMiniIsolation = False, # off by default since it requires access to all PFCandidates 
@@ -209,6 +217,7 @@ photonAna = cfg.Analyzer(
     gammaID = "POG_PHYS14_25ns_Loose",
     rhoPhoton = 'fixedGridRhoFastjetAll',
     gamma_isoCorr = 'rhoArea',
+    conversionSafe_eleVeto = False,
     do_mc_match = True,
     do_randomCone = False,
 )
@@ -301,13 +310,16 @@ jetAna = cfg.Analyzer(
     smearJets = False,
     shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts  
     alwaysCleanPhotons = False,
+    cleanGenJetsFromPhoton = False,
     cleanJetsFromFirstPhoton = False,
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
     doQG = False,
     do_mc_match = True,
-    cleanGenJetsFromPhoton = False,
-    collectionPostFix = ""
+    collectionPostFix = "",
+    calculateSeparateCorrections = True, # should be True if recalibrateJets is True, otherwise L1s will be inconsistent
+    calculateType1METCorrection  = False,
+    type1METParams = { 'jetPtThreshold':15., 'skipEMfractionThreshold':0.9, 'skipMuons':True },
     )
 
 #PFcharged jets analyzer
@@ -343,7 +355,9 @@ pfChargedCHSjetAna = cfg.Analyzer(
     doQG = False,
     do_mc_match = True,
     cleanGenJetsFromPhoton = False,
-    collectionPostFix = "PFChargedCHS"
+    collectionPostFix = "PFChargedCHS",
+    calculateSeparateCorrections = False,
+    calculateType1METCorrection  = False,
     )
 
 ## Fat Jets Analyzer (generic)
@@ -390,8 +404,10 @@ metAna = cfg.Analyzer(
     doMetNoMu = False,
     doMetNoEle = False,
     doMetNoPhoton = False,
-    recalibrate = False,
-    jetAnalyzerCalibrationPostFix = "",
+    recalibrate = False, # or "type1", or True
+    applyJetSmearing = False, # does nothing unless the jet smearing is turned on in the jet analyzer
+    old74XMiniAODs = False, # set to True to get the correct Raw MET when running on old 74X MiniAODs
+    jetAnalyzerPostFix = "",
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,
@@ -409,7 +425,9 @@ metNoHFAna = cfg.Analyzer(
     doMetNoEle = False,
     doMetNoPhoton = False,
     recalibrate = False,
-    jetAnalyzerCalibrationPostFix = "",
+    applyJetSmearing = False, # does nothing unless the jet smearing is turned on in the jet analyzer
+    old74XMiniAODs = False,   # can't be true, since MET NoHF wasn't there in old 74X MiniAODs
+    jetAnalyzerPostFix = "",
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,
@@ -444,6 +462,7 @@ ttHCoreEventAna = cfg.Analyzer(
 
 # Core sequence of all common modules
 susyCoreSequence = [
+    lheWeightAna,
     skimAnalyzer,
    #eventSelector,
     jsonAna,

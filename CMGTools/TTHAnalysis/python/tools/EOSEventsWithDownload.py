@@ -94,9 +94,13 @@ class EOSEventsWithDownload(object):
                     break
         self.events.to(iEv - self._files[self._fileindex][1])
         return self
-    def __del__(self):
-        todelete = getattr(self,'_localCopy',None)
+    def endLoop(self):
+        if '_localCopy' not in self.__dict__:
+            return
+        todelete = self.__dict__['_localCopy']
         if todelete:
             print "Removing local cache file ",todelete
             os.remove(todelete)
+    def __del__(self):
+        self.endLoop()
 
