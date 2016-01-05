@@ -53,16 +53,6 @@ susyCoreSequence.insert(susyCoreSequence.index(jetAna)+1, jetAnaScaleDown)
 susyCoreSequence.insert(susyCoreSequence.index(jetAna)+1, jetAnaScaleUp)
 susyCoreSequence.insert(susyCoreSequence.index(metAna)+1, metAnaScaleDown)
 susyCoreSequence.insert(susyCoreSequence.index(metAna)+1, metAnaScaleUp)
-susyMultilepton_globalObjects.update({
-        "met_jecUp" : NTupleObject("met_jecUp", metType, help="PF E_{T}^{miss}, after type 1 corrections (JEC plus 1sigma)"),
-        "met_jecDown" : NTupleObject("met_jecDown", metType, help="PF E_{T}^{miss}, after type 1 corrections (JEC minus 1sigma)"),
-        })
-susyMultilepton_collections.update({
-            "cleanJets_jecUp"       : NTupleCollection("Jet_jecUp",     jetTypeSusyExtra, 15, help="Cental jets after full selection and cleaning, sorted by pt (JEC plus 1sigma)"),
-            "cleanJets_jecDown"     : NTupleCollection("Jet_jecDown",     jetTypeSusyExtra, 15, help="Cental jets after full selection and cleaning, sorted by pt (JEC minus 1sigma)"),
-            "discardedJets_jecUp"   : NTupleCollection("DiscJet_jecUp", jetTypeSusy, 15, help="Jets discarted in the jet-lepton cleaning (JEC +1sigma)"),
-            "discardedJets_jecDown" : NTupleCollection("DiscJet_jecDown", jetTypeSusy, 15, help="Jets discarted in the jet-lepton cleaning (JEC -1sigma)"),
-            })
 
 
 if SOS == True:
@@ -230,6 +220,17 @@ if saveSuperClusterVariables:
             NTupleVariable("superCluster_clustersSize", lambda x: x.superCluster().clustersSize() if (abs(x.pdgId())==11 and hasattr(x,"superCluster")) else -999, help="Electron superCluster.clustersSize"),
             NTupleVariable("superCluster_seed.energy", lambda x: x.superCluster().seed().energy() if (abs(x.pdgId())==11 and hasattr(x,"superCluster")) else -999, help="Electron superCluster.seed.energy"),
 ])
+
+susyMultilepton_globalObjects.update({
+        "met_jecUp" : NTupleObject("met_jecUp", metType, help="PF E_{T}^{miss}, after type 1 corrections (JEC plus 1sigma)"),
+        "met_jecDown" : NTupleObject("met_jecDown", metType, help="PF E_{T}^{miss}, after type 1 corrections (JEC minus 1sigma)"),
+        })
+susyMultilepton_collections.update({
+            "cleanJets_jecUp"       : NTupleCollection("Jet_jecUp",     jetTypeSusyExtra, 15, help="Cental jets after full selection and cleaning, sorted by pt (JEC plus 1sigma)"),
+            "cleanJets_jecDown"     : NTupleCollection("Jet_jecDown",     jetTypeSusyExtra, 15, help="Cental jets after full selection and cleaning, sorted by pt (JEC minus 1sigma)"),
+            "discardedJets_jecUp"   : NTupleCollection("DiscJet_jecUp", jetTypeSusy, 15, help="Jets discarted in the jet-lepton cleaning (JEC +1sigma)"),
+            "discardedJets_jecDown" : NTupleCollection("DiscJet_jecDown", jetTypeSusy, 15, help="Jets discarted in the jet-lepton cleaning (JEC -1sigma)"),
+            })
 
 ## Tree Producer
 treeProducer = cfg.Analyzer(
