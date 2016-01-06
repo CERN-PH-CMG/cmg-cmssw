@@ -15,9 +15,9 @@ class angular_vars:
         # make python lists as Collection does not support indexing in slices
 	leps = [l for l in Collection(event,"LepGood","nLepGood",4)]
         jets = [j for j in Collection(event,"Jet","nJet25",8)]
-	bloose  = [j for j in jets if j.btagCSV > 0.423]
-        bmedium = [j for j in jets if j.btagCSV > 0.814]
-	btight = [j for j in jets if j.btagCSV > 0.941]
+	bloose  = [j for j in jets if j.btagCSV > 0.605]
+        bmedium = [j for j in jets if j.btagCSV > 0.890]
+	btight = [j for j in jets if j.btagCSV > 0.970]
 	(met, metphi)  = event.met_pt, event.met_phi
 	njet = len(jets); nlep = len(leps); nbloose = len(bloose); nbmedium = len(bmedium); nbtight = len(btight);
 	ret = dict([(name,0.0) for name in self.branches])
