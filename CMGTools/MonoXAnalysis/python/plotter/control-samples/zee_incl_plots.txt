@@ -1,0 +1,17 @@
+#nJet30 : nJetClean30 : 8,-0.5,7.5 ; XTitle='N(jet\, p_{T} > 30)',Logy,LegendCutoff=1e-4, YMin=1, YMax=1e7
+#nvtx: nVert: 40,0.5,40.5 ; XTitle="N(vertices)", Legend='TR'
+mass_e5x5: mass_2_ene(LepGood1_full5x5_e5x5,LepGood1_eta,LepGood1_phi,LepGood1_mass, LepGood2_full5x5_e5x5,LepGood2_eta,LepGood2_phi,LepGood2_mass): 80,50,130; XTitle="m(e^{+}e^{-})_{5x5} [GeV]", IncludeOverflows=False
+mass_ScRaw: mass_2_ene(LepGood1_superCluster_rawEnergy,LepGood1_eta,LepGood1_phi,LepGood1_mass, LepGood2_superCluster_rawEnergy,LepGood2_eta,LepGood2_phi,LepGood2_mass): 80,50,130; XTitle="m(e^{+}e^{-})_{raw}  [GeV]", IncludeOverflows=False
+mass_ScRawES: mass_2_ene(LepGood1_superCluster_rawEnergy+LepGood1_superCluster_preshowerEnergy,LepGood1_eta,LepGood1_phi,LepGood1_mass, LepGood2_superCluster_rawEnergy+LepGood2_superCluster_preshowerEnergy,LepGood2_eta,LepGood2_phi,LepGood2_mass): 80,50,130; XTitle="m(e^{+}e^{-})_{rawES}  [GeV]", IncludeOverflows=False
+mass_corrEcEnergy: mass_2_ene(LepGood1_correctedEcalEnergy,LepGood1_eta,LepGood1_phi,LepGood1_mass, LepGood2_correctedEcalEnergy,LepGood2_eta,LepGood2_phi,LepGood2_mass): 40,70,110; XTitle="m(e^{+}e^{-})_{corr ECAL} [GeV]", IncludeOverflows=False
+mass_corrEcEnergy_calib: mass_2_ene(CalibEle1_energy,CalibEle1_eta,CalibEle1_phi,CalibEle1_mass, CalibEle2_energy,CalibEle2_eta,CalibEle2_phi,CalibEle2_mass): 60,75,105; XTitle="m(e^{+}e^{-}) [GeV]", IncludeOverflows=False
+mZ1: mZ1: 80,50,130 ; XTitle="m(e^{+}e^{-})  [GeV]", Legend='TL', IncludeOverflows=False, IncludeOverflows=False
+#met: met_pt: 100,0,300    ; XTitle="E_{T}^{miss}  [GeV]",Logy,LegendCutoff=1e-4, YMin=1, YMax=1e6
+#metnoeleBin: pt_3(met_pt,met_phi,LepGood1_pt,LepGood1_phi,LepGood2_pt,LepGood2_phi): [200,250,300,350,400,500,650,1000]  ; XTitle="Recoil [GeV]",Logy,LegendCutoff=1e-3, YMin=1e-1, YMax=1e4
+#metnoele: pt_3(met_pt,met_phi,LepGood1_pt,LepGood1_phi,LepGood2_pt,LepGood2_phi): 80,200,1000  ; XTitle="Recoil [GeV]",Logy,LegendCutoff=1e-3, YMin=1e-1, YMax=1e4
+#ptZ: pt_2(LepGood1_pt,LepGood1_phi,LepGood2_pt,LepGood2_phi): [0,20,40,60,80,100,125,150,200,250,300,350,400,500,650,1000] ; XTitle="di-lep p_{T} [GeV]", Logy, LegendCutoff=1e-4, YMin=1, YMax=1e6
+#j1pt: JetClean1_pt: 22,100,1200; XTitle="Leading jet p_{T}  [GeV]", Legend='TR',Logy,LegendCutoff=1e-4, YMin=1, YMax=1e7
+#j2pt: JetClean2_pt: 23,50,1200; XTitle="Trailing jet p_{T}  [GeV]", Legend='TR',Logy,LegendCutoff=1e-4, YMin=1, YMax=1e7
+#j1qgl: Jet1_qgl: 40,0.0,1.0; XTitle="Leading jet QGL", Legend='TR'
+#j2qgl: Jet2_qgl: 40,0.0,1.0; XTitle="Trailing jet QGL", Legend='TR'
+
