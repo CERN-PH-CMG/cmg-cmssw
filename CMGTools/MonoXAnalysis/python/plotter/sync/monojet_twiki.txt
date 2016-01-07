@@ -1,9 +1,0 @@
-lepveto: nMu10V==0 && nEle10V==0
-tauveto: nTauClean18V==0
-photonveto: nGamma15V==0
-btagveto: nBTag15==0
-MET>200: metNoMu_pt > 200
-jet100: nJetClean30 >= 1 && JetClean1_pt > 100
-jetclean: JetClean1_leadClean > 0.5
-dphijm: abs(dphijm) > 0.5
-
