@@ -1,0 +1,47 @@
+### SIGNAL AND CONTROL SAMPLES
+
+# ---- Spring15 25ns samples -------
+# inclusive V+jets
+DYJets: DYJetsToLL_M10to50: xsec ; FillColor=ROOT.kCyan, Label="DY+jets"
+DYJets: DYJetsToLL_M50: xsec ; FillColor=ROOT.kCyan, Label="DY+jets"
+WJets    : WJetsToLNu : xsec;  FillColor=ROOT.kAzure+3, NormSystematic=0.2
+
+# Z+jets HT-binned
+DYJetsHT: DYJetsToLL_M50_HT100to200 :  xsec; FillColor=ROOT.kBlue+2,  Label="ZJets"
+DYJetsHT: DYJetsToLL_M50_HT200to400 :  xsec; FillColor=ROOT.kBlue+2,  Label="ZJets"
+DYJetsHT: DYJetsToLL_M50_HT400to600 :  xsec; FillColor=ROOT.kBlue+2,  Label="ZJets"
+DYJetsHT: DYJetsToLL_M50_HT600toInf :  xsec; FillColor=ROOT.kBlue+2,  Label="ZJets"
+
+# W+jets HT-binned
+WJetsHT: WJetsToLNu_HT100to200 :  xsec; FillColor=ROOT.kCyan+2,  Label="WJets"
+WJetsHT: WJetsToLNu_HT200to400 :  xsec; FillColor=ROOT.kCyan+2,  Label="WJets"
+WJetsHT: WJetsToLNu_HT400to600 :  xsec; FillColor=ROOT.kCyan+2,  Label="WJets"
+WJetsHT: WJetsToLNu_HT600toInf :  xsec; FillColor=ROOT.kCyan+2,  Label="WJets"
+
+# -- Top --
+Top      : TTJets_LO : xsec; FillColor=ROOT.kGreen+3, Label="top", NormSystematic=0.5
+Top      : T_tWch    : xsec; FillColor=ROOT.kGreen+3, Label="top", NormSystematic=0.5
+Top      : TBar_tWch : xsec; FillColor=ROOT.kGreen+3, Label="top", NormSystematic=0.5
+Top      : TToLeptons_tch_amcatnlo : xsec; FillColor=ROOT.kGreen+3, Label="top", NormSystematic=0.5
+
+# -- DiBosons --
+DiBosons  : WW : xsec; FillColor=ROOT.kRed+3, Label="VV"
+DiBosons  : WZ : xsec; FillColor=ROOT.kRed+3, Label="VV"
+DiBosons  : ZZ : xsec; FillColor=ROOT.kRed+3, Label="VV"
+
+# -- QCD --
+QCD      : QCD_HT100to200   : xsec; FillColor=ROOT.kGray+1, Label="QCD", NormSystematic=1.0
+QCD      : QCD_HT200to300   : xsec; FillColor=ROOT.kGray+1, Label="QCD", NormSystematic=1.0
+QCD      : QCD_HT300to500   : xsec; FillColor=ROOT.kGray+1, Label="QCD", NormSystematic=1.0
+QCD      : QCD_HT500to700   : xsec; FillColor=ROOT.kGray+1, Label="QCD", NormSystematic=1.0
+QCD      : QCD_HT700to1000  : xsec; FillColor=ROOT.kGray+1, Label="QCD", NormSystematic=1.0
+QCD      : QCD_HT1000to1500 : xsec; FillColor=ROOT.kGray+1, Label="QCD", NormSystematic=1.0
+QCD      : QCD_HT1500to2000 : xsec; FillColor=ROOT.kGray+1, Label="QCD", NormSystematic=1.0
+QCD      : QCD_HT2000toInf  : xsec; FillColor=ROOT.kGray+1, Label="QCD", NormSystematic=1.0
+
+
+# 2015 25ns data
+data: MET_Run2015C_05Oct_runs_254227_255031 ;  Label="Data"
+data: MET_Run2015D_05Oct_runs_256630_258158 ;  Label="Data"
+data: MET_Run2015D_v4_runs_258159_260627 ;  Label="Data"
+

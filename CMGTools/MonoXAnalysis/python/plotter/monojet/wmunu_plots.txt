@@ -1,0 +1,8 @@
+nJet30 : nJetClean30 : 7,0.5,7.5  ; XTitle='N(jet\, p_{T} > 30 GeV)', Legend='TR'
+nvtx   : nVert       : 40,0.5,40.5 ; XTitle="N_{vtx}", Legend='TR'
+HT     : htJet25     : 100,0,4000  ; XTitle="H_{T}^{jet 25 GeV} [GeV]",Logy, Legend='TR'
+mt     : mt_2(LepGood1_pt,LepGood1_phi,met_pt,met_phi): 60,0,200    ; XTitle="M_{T}  [GeV]", Legend='TR'
+j1pt   : JetClean1_pt: 22,100,1200 ; XTitle="Leading jet p_{T}  [GeV]" ,  Legend='TR',Logy,LegendCutoff=1e-4, YMin=1, YMax=1e5
+j2pt   : JetClean2_pt: 23,50, 1200 ; XTitle="Trailing jet p_{T}  [GeV]", Legend='TR', Logy,LegendCutoff=1e-4, YMin=1, YMax=1e5
+metnomu: metNoMu_pt  : [200,250,300,350,400,500,650,1000]  ; XTitle="Recoil [GeV]",Logy, LegendCutoff=1e-3, YMin=1, YMax=1e5
+
