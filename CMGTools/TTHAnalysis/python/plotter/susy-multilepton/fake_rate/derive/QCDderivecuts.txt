@@ -1,0 +1,3 @@
+metLT20: met_pt<20
+mtLT20: mt_2(LepGood_pt,LepGood_phi,met_pt,met_phi)<20
+jetaway40: ((LepGood_awayJet_pt>40) && (deltaR(LepGood_eta,LepGood_phi,LepGood_awayJet_eta,LepGood_awayJet_phi)>1.0))

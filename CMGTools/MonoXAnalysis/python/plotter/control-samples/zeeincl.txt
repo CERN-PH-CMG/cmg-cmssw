@@ -1,0 +1,5 @@
+2 E SF/OS: nLepGood == 2 && LepGood1_pdgId == -LepGood2_pdgId && abs(LepGood1_pdgId) == 11
+tightTag: LepGood1_relIso04 < 0.12 && LepGood1_tightId > 0.5 && LepGood1_lostHits <= 1 && LepGood1_chargedHadRelIso03 < 0.2
+tightProbe: LepGood2_relIso04 < 0.12 && LepGood2_tightId > 0.5 && LepGood2_lostHits <= 1 && LepGood2_chargedHadRelIso03 < 0.2 
+mll: mZ1 > 60 && mZ1 < 120 && mass_2_ene(LepGood1_superCluster_rawEnergy,LepGood1_eta,LepGood1_phi,LepGood1_mass, LepGood2_superCluster_rawEnergy,LepGood2_eta,LepGood2_phi,LepGood2_mass) > 60 && mass_2_ene(LepGood1_superCluster_rawEnergy,LepGood1_eta,LepGood1_phi,LepGood1_mass, LepGood2_superCluster_rawEnergy,LepGood2_eta,LepGood2_phi,LepGood2_mass) < 120
+

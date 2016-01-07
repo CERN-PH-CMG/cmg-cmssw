@@ -1,0 +1,41 @@
+#baseline_region: if3(nBJetMedium25>3,3,nBJetMedium25) : 4,-0.5,3.5 ; XTitle="baseline region"
+
+leplead_pt:     if3(LepGood1_pt>LepGood2_pt,LepGood1_pt,LepGood2_pt): 30,0,150 ; XTitle="lead lepton p_{T} (GeV)"
+leptrail_pt:     if3(LepGood1_pt>LepGood2_pt,LepGood2_pt,LepGood1_pt): 30,0,150 ; XTitle="trail lepton p_{T} (GeV)"
+leplead_ConePt:     if3(LepGood1_ConePt>LepGood2_ConePt,LepGood1_ConePt,LepGood2_ConePt): 30,0,150 ; XTitle="lead lepton p_{T} (GeV)"
+leptrail_ConePt:     if3(LepGood1_ConePt>LepGood2_ConePt,LepGood2_ConePt,LepGood1_ConePt): 30,0,150 ; XTitle="trail lepton p_{T} (GeV)"
+#htJet40j:   htJet40j: 20,0,1000    ; XTitle="H_{T}(jet p_{T} > 40)  [GeV]"
+#met:   met_pt: 20,0,200    ; XTitle="E_{T}^{miss}  [GeV]"
+#mtWmin: min(mt_2(LepGood1_pt,LepGood1_phi,met_pt,met_phi),mt_2(LepGood2_pt,LepGood2_phi,met_pt,met_phi)) : 20,0,200; XTitle="min M_{T}(l_{i}\,E_{T}^{miss}) [GeV]"
+
+
+##
+##pdgIds_debug: abs(LepGood1_pdgId)\:abs(LepGood2_pdgId) : 5,10.5,15.5,5,10.5,15.5 ; XTitle="pdgId lep1",YTitle="pdgId lep2"
+#nLepGood_FO1 : nLepGood_FO1 : 5,-0.5,4.5 ; XTitle="nLepGood_FO1"
+#nLepGood_FO3 : nLepGood_FO3 : 5,-0.5,4.5 ; XTitle="nLepGood_FO3"
+#LepGood_fake : (LepGood_mcMatchId==0) : 2,-0.5,1.5 ; XTitle="isfake"
+
+
+
+#
+#eta_pt: bin2Dto1D(LepGood_pt,abs(LepGood_eta),0) : 15,0.5,15.5 ; XTitle="FR 3x5 eta_pt bin",Density=True
+#eta_conept: bin2Dto1D(LepGood_ConePt,abs(LepGood_eta),0) : 15,0.5,15.5 ; XTitle="FR 3x5 eta_conept bin",Density=True
+#eta_jetpt: bin2Dto1D(LepGood_pt/LepGood_jetPtRatio,abs(LepGood_eta),0) : 15,0.5,15.5 ; XTitle="FR 3x5 eta_jetpt bin",Density=True
+#jetPtRatio: LepGood_jetPtRatio : 60,0,1.2 ; XTitle="jetPtRatio"
+#jetPtRel: LepGood_jetPtRel : 60,0,20 ; XTitle="jetPtRel"
+#lep_pt:     LepGood_pt: [ 0,5,7,10,13,16,20,25,30,35,45,60,90,120 ] ; XTitle="pt"
+#pdgId:	    abs(LepGood_pdgId): 7,9.5,16.5 ; XTitle="pdgId"
+#eta:	    LepGood_eta: 52,-2.6,2.6; XTitle="eta"
+#miniiso:    LepGood_miniRelIso: 50,0,1; XTitle="miniiso"
+#sip:	    LepGood_sip3d: 10,0,10; XTitle="sip",Logy=True
+#dxy:	    abs(LepGood_dxy): 2,0,0.1; XTitle="dxy",Logy=True
+#dz:	    abs(LepGood_dz): 2,0,0.2; XTitle="dz",Logy=True
+#muMediumID: (abs(LepGood_pdgId)==13) && LepGood_mediumMuonId : 2,-0.5,1.5; XTitle="muonIDM"
+#elMVAloose: ((abs(LepGood_pdgId)==11) && (LepGood_mvaIdPhys14 > -0.11+(-0.35+0.11)*(abs(LepGood_eta)>0.8)+(-0.55+0.35)*(abs(LepGood_eta)>1.479))) : 2,-0.5,1.5; XTitle="mvaloose"
+#elMVAtight: ((abs(LepGood_pdgId)==11) && (LepGood_mvaIdPhys14 > 0.73+(0.57-0.73)*(abs(LepGood_eta)>0.8)+(+0.05-0.57)*(abs(LepGood_eta)>1.479))) : 2,-0.5,1.5; XTitle="mvatight"
+#
+#multiiso:   multiIso_multiWP(LepGood_pdgId,LepGood_pt,LepGood_eta,LepGood_miniRelIso,LepGood_jetPtRatio,LepGood_jetPtRel,2) > 0 : 2,-0.5,1.5; XTitle="multiiso"
+#
+#multiiso_AND_elMVAtight:  multiIso_multiWP(LepGood_pdgId,LepGood_pt,LepGood_eta,LepGood_miniRelIso,LepGood_jetPtRatio,LepGood_jetPtRel,2) > 0 && ((abs(LepGood_pdgId)!=11) || (LepGood_mvaIdPhys14 >=0.73+(0.57-0.73)*(abs(LepGood_eta)>0.8)+(+0.05-0.57)*(abs(LepGood_eta)>1.479))) : 2,-0.5,1.5; XTitle="multiIso + elMVAtight"
+#
+#multiiso_relaxed_miniiso_conept: (multiIso_multiWP(LepGood_pdgId,LepGood_pt,LepGood_eta,(LepGood_miniRelIso>=0.4),LepGood_jetPtRatio*LepGood_CorrConePt/LepGood_pt,LepGood_jetPtRel,2) > 0) : 2,-0.5,1.5;  XTitle="multiiso_relaxed_miniiso_conept"

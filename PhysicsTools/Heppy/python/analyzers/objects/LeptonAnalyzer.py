@@ -308,6 +308,7 @@ class LeptonAnalyzer( Analyzer ):
         # fill EA for rho-corrected isolation
         for ele in allelectrons:
           ele.rho = float(self.handles['rhoEle'].product()[0])
+          ele.event = event
           if self.eleEffectiveArea == "Data2012":
               # https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaEARhoCorrection?rev=14
               SCEta = abs(ele.superCluster().eta())

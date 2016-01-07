@@ -1,0 +1,7 @@
+cut-change: LepGood_miniRelIso(\[\w+\]): if3(LepGood_passFO4fake\1,0,LepGood_miniRelIso\1)
+cut-change: LepGood_jetPtRatio(\[\w+\]): if3(LepGood_passFO4fake\1,1,LepGood_jetPtRatio\1)
+cut-change: LepGood_jetPtRel(\[\w+\]): if3(LepGood_passFO4fake\1,999,LepGood_jetPtRel\1)
+weight: fakeRateReader_2lss_FO(LepGood1_eta,LepGood1_pt/LepGood1_jetPtRatio,LepGood2_eta,LepGood2_pt/LepGood2_jetPtRatio,LepGood1_pdgId,LepGood2_pdgId,(multiIso_multiWP(LepGood1_pdgId,LepGood1_pt,LepGood1_eta,LepGood1_miniRelIso,LepGood1_jetPtRatio,LepGood1_jetPtRel,2) > 0),(multiIso_multiWP(LepGood2_pdgId,LepGood2_pt,LepGood2_eta,LepGood2_miniRelIso,LepGood2_jetPtRatio,LepGood2_jetPtRel,2) > 0),4,1)
+load-histo: FR_mu_FO4_insitu: susy-multilepton/fake_rate/fr_histos/FR_FO4_Mu_eta_jetpt_insitu.root : FR_FO4_Mu_eta_jetpt_insitu
+load-histo: FR_el_FO4_insitu: susy-multilepton/fake_rate/fr_histos/FR_FO4_El_eta_jetpt_insitu.root : FR_FO4_El_eta_jetpt_insitu
+cut-change: LepGood_passFO4fake(\[\w+\]): if3(multiIso_singleWP_relaxFO4(LepGood_pdgId\1,LepGood_pt\1,LepGood_eta\1,LepGood_miniRelIso\1,LepGood_jetPtRatio\1,LepGood_jetPtRel\1,2)>0 && LepGood_mcMatchId\1 == 0,1,0)

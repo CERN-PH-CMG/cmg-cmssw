@@ -1,0 +1,5 @@
+*_cc.d
+*_cc.so
+*.o
+*.log
+*.root

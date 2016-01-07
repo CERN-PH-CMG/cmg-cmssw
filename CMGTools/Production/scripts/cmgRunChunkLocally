@@ -1,0 +1,13 @@
+#!/bin/bash
+test -f $1/batchScript.sh || echo "Missing $1/batchScript.sh";
+test -f $1/batchScript.sh || exit 1;
+
+cd $1
+NAME=$(basename $PWD)
+rename LSFJ OLD_LSFJ *; 
+export LS_SUBCWD=$PWD
+cd /tmp
+WORK=$(mktemp --tmpdir -d chunk-${NAME}-XXXXXXXXXX)
+cd $WORK
+( bash $LS_SUBCWD/batchScript.sh > log.txt 2>&1 & )
+echo "Running: look at $WORK/log.txt"

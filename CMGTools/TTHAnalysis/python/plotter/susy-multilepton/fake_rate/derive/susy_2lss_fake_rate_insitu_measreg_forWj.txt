@@ -1,0 +1,30 @@
+# this goes before any usage of indices 1,2
+at least 2 good leptons: nLepGood10 >= 2
+
+promptfake: ((LepGood1_mcMatchId!=0 && LepGood2_mcMatchId==0) || (LepGood2_mcMatchId!=0 && LepGood1_mcMatchId==0))
+
+minMllAS8:  minMllAFAS > 8
+#exclusive:  nLepGood10 == 2
+
+anyll: abs(LepGood1_pdgId) > 0 && abs(LepGood2_pdgId) > 0
+same-sign: LepGood1_charge*LepGood2_charge > 0
+
+lep12_pt10: (LepGood1_ConePt > 10 && LepGood2_ConePt > 10)
+
+lep1_qual_always: ( ( LepGood1_mediumMuonId > 0 || abs(LepGood1_pdgId) == 11) && (abs(LepGood1_pdgId) == 13 || (LepGood1_convVeto && LepGood1_lostHits == 0)) && (abs(LepGood1_pdgId) != 11 || abs(LepGood1_eta)<1.4442 || abs(LepGood1_eta)>1.566) && (LepGood1_tightCharge > (abs(LepGood1_pdgId) == 11)) && abs(LepGood1_dz)<0.1 )
+lep2_qual_always: ( ( LepGood2_mediumMuonId > 0 || abs(LepGood2_pdgId) == 11) && (abs(LepGood2_pdgId) == 13 || (LepGood2_convVeto && LepGood2_lostHits == 0)) && (abs(LepGood2_pdgId) != 11 || abs(LepGood2_eta)<1.4442 || abs(LepGood2_eta)>1.566) && (LepGood2_tightCharge > (abs(LepGood2_pdgId) == 11)) && abs(LepGood2_dz)<0.1)
+
+lep1_qual_ifprompt: ( (LepGood1_mcMatchId==0) || ( multiIso_multiWP(LepGood1_pdgId,LepGood1_pt,LepGood1_eta,LepGood1_miniRelIso,LepGood1_jetPtRatio,LepGood1_jetPtRel,2)>0 && ( LepGood1_mvaIdPhys14 >=0.73+(0.57-0.73)*(abs(LepGood1_eta)>0.8)+(+0.05-0.57)*(abs(LepGood1_eta)>1.479) || abs(LepGood1_pdgId) == 13) && LepGood1_sip3d<4 && abs(LepGood1_dxy)<0.05 ) )
+lep2_qual_ifprompt: ( (LepGood2_mcMatchId==0) || ( multiIso_multiWP(LepGood2_pdgId,LepGood2_pt,LepGood2_eta,LepGood2_miniRelIso,LepGood2_jetPtRatio,LepGood2_jetPtRel,2)>0 && ( LepGood2_mvaIdPhys14 >=0.73+(0.57-0.73)*(abs(LepGood2_eta)>0.8)+(+0.05-0.57)*(abs(LepGood2_eta)>1.479) || abs(LepGood2_pdgId) == 13) && LepGood2_sip3d<4 && abs(LepGood2_dxy)<0.05 ) )
+
+#ht: htJet40j > 80
+met: met_pt > 30 || htJet40j > 500
+#njet: nJet40 >=2
+#nBjet: nBJetMedium25 >= 0
+
+
+#unwrapper
+alwaystrue: (LepGood_pt>-1)
+
+isthefake: LepGood_mcMatchId==0 && (LepGood1_mcMatchId!=0 || abs(LepGood1_pt/LepGood_pt-1)<0.001) && (LepGood2_mcMatchId!=0 || abs(LepGood2_pt/LepGood_pt-1)<0.001)
+

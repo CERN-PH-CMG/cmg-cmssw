@@ -1,0 +1,6 @@
+eta_pt: bin2Dto1D(LepGood_pt,abs(LepGood_eta),0) : 15,0.5,15.5 ; XTitle="FR 3x5 eta_pt bin"
+eta_jetpt: bin2Dto1D(LepGood_pt/LepGood_jetPtRatio,abs(LepGood_eta),0) : 15,0.5,15.5 ; XTitle="FR 3x5 eta_jetpt bin"
+
+#eta_conept: bin2Dto1D(LepGood_ConePt,abs(LepGood_eta),0) : 15,0.5,15.5 ; XTitle="FR 3x5 eta_conept bin"
+eta_conept: LepGood_ConePt : [10,15,20,25,30,35,45,60,90] ; XTitle="Lepton p_{T} (GeV)"
+

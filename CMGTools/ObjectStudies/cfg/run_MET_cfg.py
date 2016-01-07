@@ -1,0 +1,390 @@
+import PhysicsTools.HeppyCore.framework.config as cfg
+
+#-------- SAMPLES AND TRIGGERS -----------
+from CMGTools.RootTools.samples.samples_8TeVReReco_74X import * # <-- this one for the official sample
+from CMGTools.ObjectStudies.samples.samples_METPOG_private import * #<-- this one for the private re-reco
+###from CMGTools.RootTools.samples.samples_13TeV_74X import * #<--miniAOD v1
+from CMGTools.RootTools.samples.samples_13TeV_RunIISpring15MiniAODv2 import * #<--miniAOD v2
+
+from CMGTools.RootTools.samples.samples_13TeV_DATA2015 import *
+
+from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_1mu_iso_50ns, triggers_mumu, triggers_ee, triggers_photon30, triggers_photon50, triggers_photon75, triggers_photon90, triggers_photon120
+
+#-------- INITIAL FLAG
+isDiJet=False
+isZSkim=False
+is1L=False
+isEle = False # default is diMuon
+isEarlyRun = True # to be used for the filters
+is25ns = True
+
+#-------- HOW TO RUN
+
+test = 13
+
+if test==0:
+    selectedComponents = [DoubleMu_742, DoubleMu_740p9]
+#    selectedComponents = [ DoubleMuParked_1Apr_RelVal_dm2012D_v2_newPFHCalib , DoubleMuParked_1Apr_RelVal_dm2012D_v2_oldPFHCalib , DoubleMuparked_1Apr_RelVal_dm2012D_v2 ]
+    for comp in selectedComponents:
+        comp.splitFactor = 251
+        comp.files = comp.files[:]
+        comp.triggers = triggers_8TeV_mumu
+
+elif test==1:
+    selectedComponents = [ RelValZMM_7_4_1,RelValZMM_7_4_0_pre9 ]
+#    selectedComponents = [RelVal_741_Philfixes]
+#    selectedComponents = relValkate
+    for comp in selectedComponents:
+#        comp.splitFactor = 1
+        comp.splitFactor = 100
+        comp.files = comp.files[:]
+
+#elif test==2:
+#    selectedComponents = [ TTJets_50ns ]
+#    isZSkim=True
+#    for comp in selectedComponents:
+#        comp.triggers = triggers_mumu
+#        comp.splitFactor = 1
+#        comp.files = ['/afs/cern.ch/user/d/dalfonso/public/TTbarMadP850ns/0066F143-F8FD-E411-9A0B-D4AE526A0D2E.root']
+##        comp.files = comp.files[:1]
+
+
+
+   # ----------------------- Summer15 options -------------------------------------------------------------------- #
+elif test==2:
+    selectedComponents = [ DYJetsToLL_M50_50ns ]
+    isZSkim=True
+    for comp in selectedComponents:
+        comp.triggers = triggers_mumu
+        comp.splitFactor = 1
+        comp.files = comp.files[:1]
+
+elif test==3:
+    isZSkim=True
+    selectedComponents = [ DYJetsToLL_M50_50ns,TTJets_50ns ]
+
+    comp=comp=TTJets_LO
+    comp.files = ['/afs/cern.ch/work/d/dalfonso/public/001F4F14-786E-E511-804F-0025905A60FE.root']
+    selectedComponents = [comp]
+
+    for comp in selectedComponents:
+        if isEle:
+            comp.triggers = triggers_ee
+        else:
+            comp.triggers = triggers_mumu
+        comp.splitFactor = 1000
+        comp.files = comp.files[:]
+#        comp.splitFactor = 1
+#        comp.files = comp.files[:1]
+
+elif test==4:
+    is1L=False
+    selectedComponents = [ WJetsToLNu_50ns ]
+    for comp in selectedComponents:
+        comp.splitFactor = 1000
+        comp.files = comp.files[:]
+
+elif test==5:
+    selectedComponents = QCDPt_50ns
+    isDiJet=True
+    for comp in selectedComponents:
+        comp.splitFactor = 1000
+        comp.files = comp.files[:]
+        comp.fineSplitFactor = 5
+
+elif test==6:
+    selectedComponents = [ GJets_Pt15to6000_50ns ]
+    is1PH=True
+    for comp in selectedComponents:
+        comp.splitFactor = 100
+        comp.files = comp.files[:]
+
+elif test==7:
+    selectedComponents = [QCD_Pt30to50_50ns, QCD_Pt50to80_50ns, QCD_Pt80to120_50ns, QCD_Pt120to170_50ns]
+    is1PH=True
+    for comp in selectedComponents:
+        comp.splitFactor = 100
+        comp.files = comp.files[:]
+
+    # ------------------------------------------------------------------------------------------- #
+
+### this is for the Zskim
+elif test==13:
+    isZSkim=True
+    if isEle:
+        if is25ns:
+            if isEarlyRun:
+                selectedComponents = [ DoubleEG_Run2015D_05Oct ]
+            else:
+                selectedComponents = [ DoubleEG_Run2015D_Promptv4 ]
+        else:
+            selectedComponents = [ DoubleEG_Run2015B_05Oct ]
+    else:
+        if is25ns:
+           if isEarlyRun:
+               selectedComponents = [ DoubleMuon_Run2015D_05Oct ]
+           else:
+               selectedComponents = [ DoubleMuon_Run2015D_Promptv4 ]
+        else:
+            selectedComponents = [ DoubleMuon_Run2015B_05Oct ]
+    for comp in selectedComponents:
+#        comp.splitFactor = 1
+#        comp.files = comp.files[5:10]
+#        comp.fineSplitFactor = 1
+        comp.splitFactor = 1000
+        comp.files = comp.files[:]
+        if isEle:
+            comp.triggers = triggers_ee
+        else:
+            comp.triggers = triggers_mumu
+        if is25ns:
+            comp.json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258714_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
+        else:
+            comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON_v2.txt"
+        comp.intLumi= 0.04003
+        print comp
+
+### this is for the Wskim
+elif test==14:
+    is1L=False
+    selectedComponents = [ SingleMuon_Run2015B ]
+    for comp in selectedComponents:
+        comp.splitFactor = 1000
+        comp.files = comp.files[:]
+        comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-254879_13TeV_PromptReco_Collisions15_JSON.json"
+        comp.intLumi= 0.04003
+
+### this is for the QCDlike
+elif test==15:
+    isDiJet=True
+    if is25ns:
+        if isEarlyRun:
+            selectedComponents = [ JetHT_Run2015D_05Oct, HTMHT_Run2015D_05Oct, MET_Run2015D_05Oct ]
+        else:
+            selectedComponents = [ JetHT_Run2015D_Promptv4,HTMHT_Run2015D_Promptv4, MET_Run2015D_Promptv4 ]
+    else:
+        selectedComponents = [ JetHT_Run2015B_05Oct ]
+    for comp in selectedComponents:
+        comp.splitFactor = 1000
+        comp.files = comp.files[:]
+        if is25ns:
+            comp.json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258714_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
+        else:
+            comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON_v2.txt"
+        comp.intLumi= 0.04003
+        if isEarlyRun:
+            comp.run_range=(251027,251585) # in 17july runInJSON: 251244,251251,251252,251561,251562
+        else:
+            comp.run_range=(251585,251883) # in promptReco runInJSON: 251643,251721,251883
+
+        print comp
+
+### this is for the PhotonSkim
+elif test==16:
+    is1PH=True
+    if is25ns:
+        if isEarlyRun:
+            selectedComponents = [ SinglePhoton_Run2015D_05Oct ]
+        else:
+            selectedComponents = [ SinglePhoton_Run2015D_Promptv4 ]
+    else:
+            selectedComponents = [ SinglePhoton_Run2015B_05Oct ]
+    for comp in selectedComponents:
+        comp.triggers = triggers_photon30 + triggers_photon50 + triggers_photon75 + triggers_photon90 + triggers_photon120
+        comp.splitFactor = 1
+        comp.files = comp.files[:]
+        if is25ns:
+            comp.json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258714_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
+        else:
+            comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON_v2.txt"
+        comp.intLumi= 0.04003
+
+    # ------------------------------------------------------------------------------------------- #
+    #        --> 25ns MC here
+
+elif test==23:
+    isZSkim=True
+    is25ns=True
+    selectedComponents = [ DYJetsToLL_M50, TTJets_DiLepton ]
+    for comp in selectedComponents:
+        if isEle:
+            comp.triggers = triggers_ee
+        else:
+            comp.triggers = triggers_mumu
+#        comp.splitFactor = 1
+#        comp.files = comp.files[:1]
+        comp.splitFactor = 1000
+        comp.files = comp.files[:]
+
+    # ------------------------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------------------------- #
+
+from CMGTools.ObjectStudies.analyzers.metCoreModules_cff import *
+
+cfg.Analyzer.nosubdir = True
+
+##------------------------------------------
+##  PRODUCER
+##------------------------------------------
+
+
+from CMGTools.ObjectStudies.analyzers.treeProducerMET import *
+
+treeProducer = cfg.Analyzer(
+     AutoFillTreeProducer, name='treeProducerMET',
+     vectorTree = True,
+     saveTLorentzVectors = False,  # can set to True to get also the TLorentzVectors, but trees will be bigger
+     PDFWeights = PDFWeights,
+     globalVariables = met_globalVariables,
+     globalObjects = met_globalObjects,
+     collections = met_collections,
+     defaultFloatType = 'F',
+     treename = 'METtree'
+)
+
+##------------------------------------------
+##  SEQUENCE
+##------------------------------------------
+
+metSequence = cfg.Sequence(
+    metCoreSequence + [treeProducer]
+    )
+
+###---- to switch off the comptrssion
+#treeProducer.isCompressed = 0
+
+# -------------------- lepton modules below needed for the Muon Selection
+
+if isZSkim:
+    ttHLepSkim.ptCuts = [20,10]
+    ttHLepSkim.minLeptons = 2
+    if isZSkim and isEle:
+        ttHLepSkim.ptCuts = [25,15]
+        ttHZskim.lepId=[11] ## default is set To Muons
+    metSequence.insert(metSequence.index(lepAna)+1,ttHLepSkim)
+    metSequence.insert(metSequence.index(lepAna)+2,ttHZskim)
+
+if is1L:
+    ttHLepSkim.minLeptons = 1
+    metSequence.insert(metSequence.index(lepAna)+1,ttHLepSkim)
+
+if isDiJet:
+    metSequence.insert(metSequence.index(photonAna)+1,jetAna)
+    metSequence.insert(metSequence.index(photonAna)+2,ttHJetMETSkim)
+    jetAna.recalibrateJets = True,
+    if not is25ns:
+        #50ns runD residuals in hands
+        jetAna.applyL2L3Residual = True
+        jetAna.mcGT     = "Summer15_50nsV4_MC",
+        jetAna.dataGT   = "Summer15_50nsV4_DATA",
+    else:
+        #25ns runD residuals not ready yet
+        jetAna.applyL2L3Residual = False
+        jetAna.mcGT     = "Summer15_25nsV2_MC",
+        jetAna.dataGT   = "Summer15_25nsV2_DATA",
+
+if comp.isData and not isEarlyRun:
+    eventFlagsAna.processName = 'RECO'
+
+if comp.isData and comp.json is None:
+    metSequence.remove(jsonAna)
+
+# --------------------
+
+triggerFlagsAna.triggerBits = {
+            'SingleMu' : triggers_1mu_iso_50ns, # [ 'HLT_IsoMu17_eta2p1_v*', 'HLT_IsoTkMu17_eta2p1_v*'  ] + [ 'HLT_IsoMu20_v*', 'HLT_IsoTkMu20_v*'  ]
+            'DoubleMu' : triggers_mumu, # [ "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*" ]
+            'DoubleEG' : triggers_ee, # [ "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*" ]
+            'Photon30' : triggers_photon30, #["HLT_Photon30_R9Id90_HE10_IsoM_v*"]
+}
+
+
+# ------------------------------------------------------------------------------------------- #
+##------------------------------------------
+##  SERVICES
+##------------------------------------------
+
+from PhysicsTools.HeppyCore.framework.services.tfile import TFileService 
+output_service = cfg.Service(
+      TFileService,
+      'outputfile',
+      name="outputfile",
+      fname='METtree.root',
+      option='recreate'
+    )
+
+
+# the following is declared in case this cfg is used in input to the heppy.py script                                                                                           
+from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
+
+# -------------------- Running Download from EOS
+
+from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
+from CMGTools.TTHAnalysis.tools.EOSEventsWithDownload import EOSEventsWithDownload
+event_class = EOSEventsWithDownload
+if getHeppyOption("nofetch"):
+    event_class = Events 
+
+
+# -------------------- Running pre-processor
+import subprocess
+if comp.isData:
+    if not is25ns:
+        removeResiduals = False
+        uncFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt'
+        jecDBFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_DATA.db'
+        jecEra    = 'Summer15_50nsV4_DATA'
+    else:
+        ## DATA 25ns
+        ## runD residuals not yet available
+        removeResiduals = False
+        uncFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_DATA_UncertaintySources_AK4PFchs.txt'
+        jecDBFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_25nsV5_DATA.db'
+        jecEra    = 'Summer15_25nsV5_DATA'
+else:
+    if not is25ns:
+        removeResiduals = False
+        uncFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_MC_UncertaintySources_AK4PFchs.txt'
+        jecDBFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_50nsV4_MC.db'
+        jecEra    = 'Summer15_50nsV4_MC'
+    else:
+        ## MC 25ns
+        removeResiduals = True
+        uncFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_25nsV2_MC_UncertaintySources_AK4PFchs.txt'
+        jecDBFile = os.environ['CMSSW_BASE']+'/src/CMGTools/RootTools/data/jec/Summer15_25nsV2_MC.db'
+        jecEra    = 'Summer15_25nsV2_MC'
+
+preprocessorFile = "$CMSSW_BASE/tmp/MetType1_jec_%s.py"%(jecEra)
+extraArgs=[]
+if comp.isData:
+    extraArgs.append('--isData')
+    GT= '74X_dataRun2_Prompt_v2'
+else:
+    if not is25ns:
+        GT= 'MCRUN2_74_V9A'
+    else:
+        GT= 'MCRUN2_74_V9'
+if removeResiduals:extraArgs.append('--removeResiduals')
+args = ['python', 
+  os.path.expandvars(os.environ['CMSSW_BASE']+'/python/CMGTools/ObjectStudies/corMETMiniAOD_cfgCreator.py'),\
+  '--GT='+GT, 
+  '--outputFile='+preprocessorFile, 
+  '--jecDBFile='+jecDBFile,
+  '--jecEra='+jecEra
+  ] + extraArgs 
+#print "Making pre-processorfile:"
+#print " ".join(args)
+subprocess.call(args)
+from PhysicsTools.Heppy.utils.cmsswPreprocessor import CmsswPreprocessor
+preprocessor = CmsswPreprocessor(preprocessorFile)
+
+#printComps(config.components, True)               
+config = cfg.Config( components = selectedComponents,
+                     sequence = metSequence,
+                     services = [output_service],
+#                     preprocessor=preprocessor, # comment if pre-processor non needed
+#                     events_class = event_class)
+                     events_class = Events)
+
+#printComps(config.components, True)
+        
