@@ -16,8 +16,8 @@ def setCAFPath():
 
     if caf not in sys.path:
         sys.path.append(caf)
-    setCAFPath()
-    import cmsIO
+setCAFPath()
+import cmsIO
 
 def runXRDCommand(path, cmd, *args):
     """Run an xrd command.
