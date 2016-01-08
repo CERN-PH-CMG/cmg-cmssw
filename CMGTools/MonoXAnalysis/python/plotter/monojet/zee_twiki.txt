@@ -1,12 +1,14 @@
 2 loose ele: nEle10V == 2
->=1 tight ele: nEle20T > 0
+>=1 tight ele: nEle20T > 0 && LepGood1_pt > 40 && abs(LepGood1_pdgId)==11 
 SF/OS: LepGood1_pdgId == -LepGood2_pdgId
 mass: mZ1 > 60 && mZ1 < 120
+#mass: mass_2_ene(CalibEle1_energy,CalibEle1_eta,CalibEle1_phi,CalibEle1_mass, CalibEle2_energy,CalibEle2_eta,CalibEle2_phi,CalibEle2_mass) > 60 && mass_2_ene(CalibEle1_energy,CalibEle1_eta,CalibEle1_phi,CalibEle1_mass, CalibEle2_energy,CalibEle2_eta,CalibEle2_phi,CalibEle2_mass) < 120
 mu veto: nMu10V==0
 tau veto: nTauClean18V==0
 photonveto: nGamma15V==0
 btagveto: nBTag15==0
 recoil>200: pt_3(met_pt,met_phi,LepGood1_pt,LepGood1_phi,LepGood2_pt,LepGood2_phi) > 200
+#recoil>200: pt_3(met_pt,met_phi,CalibEle1_pt,CalibEle1_phi,CalibEle2_pt,CalibEle2_phi) > 200
 jet100: nJetClean30 >= 1 && JetClean1_pt > 100
 jetclean: JetClean1_leadClean > 0.5
 dphijm: abs(dphijm) > 0.5

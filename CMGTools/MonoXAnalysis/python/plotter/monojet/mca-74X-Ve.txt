@@ -35,9 +35,7 @@ QCD      : QCD_HT1000to1500 : xsec; FillColor=ROOT.kGray+1, Label="QCD", NormSys
 QCD      : QCD_HT1500to2000 : xsec; FillColor=ROOT.kGray+1, Label="QCD", NormSystematic=1.0
 QCD      : QCD_HT2000toInf  : xsec; FillColor=ROOT.kGray+1, Label="QCD", NormSystematic=1.0
 
-
 # 2015 25ns data
-data: MET_Run2015C_05Oct_runs_254227_255031 ;  Label="Data"
-data: MET_Run2015D_05Oct_runs_256630_258158 ;  Label="Data"
-data: MET_Run2015D_v4_runs_258159_260627 ;  Label="Data"
-
+data: SingleElectron_Run2015C_05Oct_runs_254227_255031 ;  Label="Data"
+data: SingleElectron_Run2015D_05Oct_runs_256630_258158 ;  Label="Data"
+data: SingleElectron_Run2015D_v4_runs_258159_260627 ;  Label="Data"
