@@ -220,6 +220,8 @@ photonAna = cfg.Analyzer(
     conversionSafe_eleVeto = False,
     do_mc_match = True,
     do_randomCone = False,
+    effectiveAreas = 'PHYS14_25ns_v1',
+    checkGen=False,
 )
 
 
