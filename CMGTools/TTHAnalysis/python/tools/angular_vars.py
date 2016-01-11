@@ -62,13 +62,13 @@ class angular_vars:
 
 	if nbloose >= 1:
 	   if leps[1].relIso03 < 0.1:
-              ret["DR_l_b_loose2"] = min([deltaR(q,leps[1]) for q in bloose]) if nlep >= 1 else 0;
+              ret["DR_l_b_loose2"] = min([deltaR(q,leps[1]) for q in bloose]) if nlep >= 2 else 0;
 	if nbmedium >= 1:
 	   if leps[1].relIso03 < 0.1:
-	      ret["DR_l_b_medium2"] = min([deltaR(r,leps[1]) for r in bmedium]) if nlep >= 1 else 0;
+	      ret["DR_l_b_medium2"] = min([deltaR(r,leps[1]) for r in bmedium]) if nlep >= 2 else 0;
 	if nbtight >= 1:
 	   if leps[1].relIso03 < 0.1:
-	      ret["DR_l_b_tight2"] = min([deltaR(s,leps[1]) for s in btight]) if nlep >= 1 else 0;
+	      ret["DR_l_b_tight2"] = min([deltaR(s,leps[1]) for s in btight]) if nlep >= 2 else 0;
 
 	#pTl_DR_l_b_1:
 
@@ -86,13 +86,13 @@ class angular_vars:
 
 	if nbloose >= 1:
 	   if leps[1].relIso03 < 0.1:
-              ret["pTl_DR_l_b_loose2"] = leps[1].pt * min([deltaR(w,leps[1]) for w in bloose]) if nlep >= 1 else 0;
+              ret["pTl_DR_l_b_loose2"] = leps[1].pt * min([deltaR(w,leps[1]) for w in bloose]) if nlep >= 2 else 0;
 	if nbmedium >= 1:
 	   if leps[1].relIso03 < 0.1:
-	      ret["pTl_DR_l_b_medium2"] = leps[1].pt * min([deltaR(x,leps[1]) for x in bmedium]) if nlep >= 1 else 0;
+	      ret["pTl_DR_l_b_medium2"] = leps[1].pt * min([deltaR(x,leps[1]) for x in bmedium]) if nlep >= 2 else 0;
 	if nbtight >= 1:
 	   if leps[1].relIso03 < 0.1:
-	      ret["pTl_DR_l_b_tight2"] = leps[1].pt * min([deltaR(y,leps[1]) for y in btight]) if nlep >= 1 else 0;
+	      ret["pTl_DR_l_b_tight2"] = leps[1].pt * min([deltaR(y,leps[1]) for y in btight]) if nlep >= 2 else 0;
 
 	#L_pt:
 
