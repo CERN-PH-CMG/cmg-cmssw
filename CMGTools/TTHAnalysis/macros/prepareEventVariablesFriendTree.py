@@ -156,6 +156,12 @@ MODULES.append ( ('recalcLepAwareVars',ObjFloatCalc("recalcLepAwareVars","LepGoo
 #                                               "/afs/cern.ch/work/g/gpetrucc/TREES_70X_240914/0_lepMVA_v1/SV_%s_BDTG.weights.xml",),
 #                                               training="muMVAId_SV", label="SV")) )
 
+#MODULES.append( ('LepMVAFriend', lambda: LepMVAFriend(("/afs/cern.ch/user/p/peruzzi/work/cmgtools/CMSSW_7_4_14/src/CMGTools/TTHAnalysis/macros/leptons/weights/forMoriond16%s_BDTG.weights.xml",
+#                                               "/afs/cern.ch/user/p/peruzzi/work/cmgtools/CMSSW_7_4_14/src/CMGTools/TTHAnalysis/macros/leptons/weights/forMoriond16%s_BDTG.weights.xml",),
+#                                               training="forMoriond16", label="TTHMoriond16")) )
+#MODULES.append( ('LepMVAFriend', lambda: LepMVAFriend(("/afs/cern.ch/user/p/peruzzi/work/cmgtools/CMSSW_7_4_14/src/CMGTools/TTHAnalysis/macros/leptons/weights/forMoriond16%s_BDTG.weights.xml",
+#                                               "/afs/cern.ch/user/p/peruzzi/work/cmgtools/CMSSW_7_4_14/src/CMGTools/TTHAnalysis/macros/leptons/weights/forMoriond16%smvaIdPhys14_BDTG.weights.xml",),
+#                                               training="forMoriond16elmvaIdPhys14", label="TTHMoriond16mvaIdPhys14")) )
 
 #from CMGTools.TTHAnalysis.tools.eventVars_MT2 import EventVarsMT2 
 #MODULES.append( ('MT2', EventVarsMT2()) ) 
