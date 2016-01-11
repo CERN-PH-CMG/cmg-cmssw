@@ -9,6 +9,10 @@ from CMGTools.TTHAnalysis.tools.eventVars_2lss import EventVars2LSS
 MODULES.append( ('ttH2lss', lambda : EventVars2LSS()) )
 from CMGTools.TTHAnalysis.tools.susyVars_2lssInc import SusyVars2LSSInc 
 MODULES.append( ('susy2lss', lambda : SusyVars2LSSInc()) )
+from CMGTools.TTHAnalysis.tools.angular_vars import angular_vars 
+MODULES.append( ('angular_vars', angular_vars()) )
+from CMGTools.TTHAnalysis.tools.sort_3l import Sort3L 
+MODULES.append( ('sort_3l', Sort3L()) )
 from CMGTools.TTHAnalysis.tools.leptonJetReCleaner import LeptonJetReCleaner,_susy2lss_lepId_CB,_susy2lss_lepId_CBloose,_susy2lss_multiIso,_tthlep_lepId
 #--- TTH instances
 MODULES.append( ('leptonJetReCleanerTTH', lambda : LeptonJetReCleaner("I03Sip8", 
