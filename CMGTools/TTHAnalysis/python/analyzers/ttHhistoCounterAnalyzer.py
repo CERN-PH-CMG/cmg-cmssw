@@ -35,16 +35,17 @@ class ttHhistoCounterAnalyzer( Analyzer ):
             setup.services["outputfile"].file.cd()
             self.inputCounter = ROOT.TH1D("Count","Count",1,0,2)
             if self.cfg_comp.isMC:
-                self.maxSMSmass = getattr(self.cfg_ana, 'SMS_max_mass', 3000)
-                self.inputCounterSMS = ROOT.TH3D("CountSMS","CountSMS",int(self.maxSMSmass+1),-0.5,self.maxSMSmass+0.5,int(self.maxSMSmass+1),-0.5,self.maxSMSmass+0.5,1,0,2)
                 if self.doLHE:
                     self.inputLHE = ROOT.TH1D("CountLHE","CountLHE",20001,-0.5,20000.5)
-#                    self.inputLHESMS = ROOT.TH3D("CountLHESMS","CountLHESMS",int(self.maxSMSmass+1),-0.5,self.maxSMSmass+0.5,int(self.maxSMSmass+1),-0.5,self.maxSMSmass+0.5,10001,-0.5,10000.5) ### too big!
                 self.inputGenWeights = ROOT.TH1D("SumGenWeights","SumGenWeights",1,0,2)
-                self.inputGenWeightsSMS = ROOT.TH3D("SumGenWeightsSMS","SumGenWeightsSMS",int(self.maxSMSmass+1),-0.5,self.maxSMSmass+0.5,int(self.maxSMSmass+1),-0.5,self.maxSMSmass+0.5,1,0,2)
+
 
     def initSMS(self,event):
-        if self.isInitSMS: raise RuntimeError, 'Trying to initSMS twice!'
+        if self.isInitSMS or (not self.cfg_comp.isMC): raise RuntimeError, 'Trying to initSMS twice or to call it on data!'
+        self.maxSMSmass = getattr(self.cfg_ana, 'SMS_max_mass', 3000)
+        self.inputCounterSMS = ROOT.TH3D("CountSMS","CountSMS",int(self.maxSMSmass+1),-0.5,self.maxSMSmass+0.5,int(self.maxSMSmass+1),-0.5,self.maxSMSmass+0.5,1,0,2)
+#        if self.doLHE: self.inputLHESMS = ROOT.TH3D("CountLHESMS","CountLHESMS",int(self.maxSMSmass+1),-0.5,self.maxSMSmass+0.5,int(self.maxSMSmass+1),-0.5,self.maxSMSmass+0.5,10001,-0.5,10000.5) ### too big!
+        self.inputGenWeightsSMS = ROOT.TH3D("SumGenWeightsSMS","SumGenWeightsSMS",int(self.maxSMSmass+1),-0.5,self.maxSMSmass+0.5,int(self.maxSMSmass+1),-0.5,self.maxSMSmass+0.5,1,0,2)        
         self.massfill1 = getattr(self.cfg_ana, 'SMS_mass_1', 'genSusyMScan1')
         self.massfill2 = getattr(self.cfg_ana, 'SMS_mass_2', 'genSusyMScan2')
         self.masses_to_track = [self.massfill1,self.massfill2]
