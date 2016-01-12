@@ -73,31 +73,31 @@ MODULES.append( ('leptonFakeRateQCDVarsTTH', lambda : LeptonFakeRateQCDVars(
                 lambda lep : lep.sip3d < 8, # and lep.relIso03 < 0.5 and _tthlep_lepId(lep),
                 lambda jet, lep, dr : jet.pt > (20 if abs(jet.eta)<2.4 else 30) and dr > 0.7) ) )
 #--- Susy multilep instances
-MODULES.append( ('leptonFakeRateQCDVarsSusy', LeptonFakeRateQCDVars(
+MODULES.append( ('leptonFakeRateQCDVarsSusy', lambda : LeptonFakeRateQCDVars(
                 lambda lep : lep.miniRelIso < 0.4 and _susy2lss_lepId_CBloose(lep) and _susy2lss_lepId_loosestFO(lep) and _susy2lss_lepId_IPcuts(lep),
                 lambda jet, lep, dr : jet.pt > 40 and abs(jet.eta)<2.4 and dr > 1.0 and jet.id ) ) )
 
 #from CMGTools.TTHAnalysis.tools.leptonJetReCleaner import _susy2lss_multiIso_withMiniIsoRelaxed_ConePtJetPtRatio,_susy2lss_multiIso_withMiniIsoRelaxed_CutForFO4
 
 from CMGTools.TTHAnalysis.tools.objTagger import ObjTagger
-MODULES.append ( ('leptonFakeRateFO2', ObjTagger('FO2','LepGood',[
+MODULES.append ( ('leptonFakeRateFO2', lambda: ObjTagger('FO2','LepGood',[
                 lambda lep: lep.miniRelIso<0.4,
                 lambda lep: _susy2lss_lepId_CBloose(lep),
                 lambda lep: _susy2lss_lepId_loosestFO(lep),
                 lambda lep: _susy2lss_lepId_IPcuts(lep),
                 ] ) ) )
-MODULES.append ( ('leptonFakeRateFO2iso', ObjTagger('FO2iso','LepGood',[
+MODULES.append ( ('leptonFakeRateFO2iso', lambda: ObjTagger('FO2iso','LepGood',[
                 lambda lep: lep.miniRelIso<0.4,
                 lambda lep: _susy2lss_lepId_CBloose(lep),
                 lambda lep: _susy2lss_lepId_tighterFO(lep),
                 lambda lep: _susy2lss_lepId_IPcuts(lep),
                 ] ) ) )
-MODULES.append ( ('leptonFakeRateFO2InSitu', ObjTagger('FO2InSitu','LepGood',[
+MODULES.append ( ('leptonFakeRateFO2InSitu', lambda: ObjTagger('FO2InSitu','LepGood',[
                 lambda lep: lep.miniRelIso<0.4,
                 lambda lep: _susy2lss_lepId_CBloose(lep),
                 lambda lep: _susy2lss_lepId_loosestFO(lep),
                 ] ) ) )
-MODULES.append ( ('leptonFakeRateFO2isoInSitu', ObjTagger('FO2isoInSitu','LepGood',[
+MODULES.append ( ('leptonFakeRateFO2isoInSitu', lambda: ObjTagger('FO2isoInSitu','LepGood',[
                 lambda lep: lep.miniRelIso<0.4,
                 lambda lep: _susy2lss_lepId_CBloose(lep),
                 lambda lep: _susy2lss_lepId_tighterFO(lep),
