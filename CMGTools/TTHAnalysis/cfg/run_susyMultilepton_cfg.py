@@ -276,6 +276,8 @@ if doT1METCorr:
     jetAna.calculateType1METCorrection = True
     metAna.recalibrate = "type1"
     metAna.old74XMiniAODs = old74XMiniAODs
+    metAnaScaleDown.old74XMiniAODs = old74XMiniAODs
+    metAnaScaleUp.old74XMiniAODs = old74XMiniAODs
 
 if doAK4PFCHSchargedJets:
     if not doMETpreprocessor: raise RuntimeError, "ak4PFchs charged-only jets are reclustered in the MET preprocessor, but this configuration is not going to run it"
