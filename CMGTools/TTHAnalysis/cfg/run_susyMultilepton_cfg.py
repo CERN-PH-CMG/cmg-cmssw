@@ -25,7 +25,7 @@ doMETpreprocessor = getHeppyOption("doMETpreprocessor",False)
 doT1METCorr = getHeppyOption("doT1METCorr",False)
 old74XMiniAODs  = (getHeppyOption("old74XMiniAODs", not runData) != "False")
 noMETNoHF = getHeppyOption("noMETNoHF",False)
-doAK4PFCHSchargedJets = getHeppyOption("doAK4PFCHSchargedJets",False)
+#doAK4PFCHSchargedJets = getHeppyOption("doAK4PFCHSchargedJets",False)
 forcedSplitFactor = getHeppyOption("splitFactor",-1)
 forcedFineSplitFactor = getHeppyOption("fineSplitFactor",-1)
 isTest = getHeppyOption("test",None) != None and not re.match("^\d+$",getHeppyOption("test"))
@@ -279,10 +279,10 @@ if doT1METCorr:
     metAnaScaleDown.old74XMiniAODs = old74XMiniAODs
     metAnaScaleUp.old74XMiniAODs = old74XMiniAODs
 
-if doAK4PFCHSchargedJets:
-    if not doMETpreprocessor: raise RuntimeError, "ak4PFchs charged-only jets are reclustered in the MET preprocessor, but this configuration is not going to run it"
-    treeProducer.collections["cleanJetsPFChargedCHS"] = NTupleCollection("JetPFChargedCHS", jetTypeSusyExtra, 15, help="Central PFChargedCHS jets after full selection and cleaning, sorted by pt") # ak4PFchs charged-only jets
-    susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), pfChargedCHSjetAna)
+#if doAK4PFCHSchargedJets:
+#    if not doMETpreprocessor: raise RuntimeError, "ak4PFchs charged-only jets are reclustered in the MET preprocessor, but this configuration is not going to run it"
+#    treeProducer.collections["cleanJetsPFChargedCHS"] = NTupleCollection("JetPFChargedCHS", jetTypeSusyExtra, 15, help="Central PFChargedCHS jets after full selection and cleaning, sorted by pt") # ak4PFchs charged-only jets
+#    susyCoreSequence.insert(susyCoreSequence.index(ttHCoreEventAna), pfChargedCHSjetAna)
 #treeProducer.collections["jetsAllNoID"] = NTupleCollection("AllJet", jetTypeSusyExtra, 15, help="Central jets, sorted by pt") # warning, increases tree size considerably
 
 #-------- SAMPLES AND TRIGGERS -----------
@@ -471,8 +471,9 @@ if runFRMC: # QCD
 if is50ns:
     jetAna.mcGT     = "Summer15_50nsV5_MC"
     jetAna.dataGT   = "Summer15_50nsV5_DATA"
-    pfChargedCHSjetAna.mcGT     = "Summer15_50nsV5_MC"
-    pfChargedCHSjetAna.dataGT   = "Summer15_50nsV5_DATA"
+#    if doAK4PFCHSchargedJets:
+#        pfChargedCHSjetAna.mcGT     = "Summer15_50nsV5_MC"
+#        pfChargedCHSjetAna.dataGT   = "Summer15_50nsV5_DATA"
 
 if removeJetReCalibration:
     ## NOTE: jets will still be recalibrated, since calculateSeparateCorrections is True,
@@ -529,7 +530,7 @@ if doMETpreprocessor:
     else:
       GT= '74X_mcRun2_startup_v2' if is50ns else '74X_mcRun2_asymptotic_v2'
     if removeResiduals: extraArgs.append('--removeResiduals')
-    if doAK4PFCHSchargedJets: extraArgs.append('--addReclusterTrackJetsAK4')
+#    if doAK4PFCHSchargedJets: extraArgs.append('--addReclusterTrackJetsAK4')
     args = ['python',
       os.path.expandvars('$CMSSW_BASE/python/CMGTools/ObjectStudies/corMETMiniAOD_cfgCreator.py'),\
       '--GT='+GT,
@@ -540,7 +541,7 @@ if doMETpreprocessor:
     #print "Making pre-processorfile:"
     #print " ".join(args)
     subprocess.call(args)
-    staticname=tempfile.tempdir+"/MET_preproc_%s_%s_%s_%s.py"%(jecEra,GT,"nores" if removeResiduals else "","AK4PFCHSchargedJets" if doAK4PFCHSchargedJets else "")
+    staticname=tempfile.tempdir+"/MET_preproc_%s_%s_%s_%s.py"%(jecEra,GT,"nores" if removeResiduals else "","") #"AK4PFCHSchargedJets" if doAK4PFCHSchargedJets else "")
     import filecmp
     if os.path.isfile(staticname) and filecmp.cmp(tpath,staticname):
         os.system("rm %s"%tpath)
