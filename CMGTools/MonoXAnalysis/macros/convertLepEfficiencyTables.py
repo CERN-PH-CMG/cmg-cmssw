@@ -3,13 +3,11 @@ import ROOT, os, re
 from array import array
 from math import sqrt
 
-
-lepType="muon"
-
 class tableToHisto2DConverter:
-    def __init__(self,lepType,idType,tables):
-        self.fout = ROOT.TFile.Open("eff_%s_%sid.root" % (lepType,idType), "RECREATE")
-        self.tables = tables
+    def __init__(self,lepType,idType,foption):
+        self.fout = ROOT.TFile.Open("eff_%s.root" % lepType, foption)
+        self.idType = idType
+        self.tables = [ "eff_%s_%s_%s.txt" %(lepType,idType,submodule) for submodule in ["barrel","endcap"] ]        
         if(lepType=="muon"): self.etabin_edges = [0,1.2,2.5]
         else: self.etabin_edges = [0,1.479,2.5]
 
@@ -40,12 +38,12 @@ class tableToHisto2DConverter:
 
             ptbin_edges.append(float(bin.split('-')[1]))
 
-            if ROOT.gROOT.FindObject("effmc") == None:
-                hist2dmc = ROOT.TH2D("effmc","effmc",len(ptbin_edges)-1,array('d',ptbin_edges),len(self.etabin_edges)-1,array('d',self.etabin_edges))
-                hist2ddata1 = ROOT.TH2D("effdata1","effdata1",len(ptbin_edges)-1,array('d',ptbin_edges),len(self.etabin_edges)-1,array('d',self.etabin_edges))
-                hist2ddata2 = ROOT.TH2D("effdata2","effdata2",len(ptbin_edges)-1,array('d',ptbin_edges),len(self.etabin_edges)-1,array('d',self.etabin_edges))
-                hist2dsf1 = ROOT.TH2D("sf1","sf1",len(ptbin_edges)-1,array('d',ptbin_edges),len(self.etabin_edges)-1,array('d',self.etabin_edges))
-                hist2dsf2 = ROOT.TH2D("sf2","sf2",len(ptbin_edges)-1,array('d',ptbin_edges),len(self.etabin_edges)-1,array('d',self.etabin_edges))
+            if "barrel" in table:
+                hist2dmc = ROOT.TH2D("Lep%sEffmc" % self.idType,"effmc",len(ptbin_edges)-1,array('d',ptbin_edges),len(self.etabin_edges)-1,array('d',self.etabin_edges))
+                hist2ddata1 = ROOT.TH2D("Lep%sEffdata1" % self.idType,"effdata1",len(ptbin_edges)-1,array('d',ptbin_edges),len(self.etabin_edges)-1,array('d',self.etabin_edges))
+                hist2ddata2 = ROOT.TH2D("Lep%sEffdata2" % self.idType,"effdata2",len(ptbin_edges)-1,array('d',ptbin_edges),len(self.etabin_edges)-1,array('d',self.etabin_edges))
+                hist2dsf1 = ROOT.TH2D("Lep%sSF1" % self.idType,"sf1",len(ptbin_edges)-1,array('d',ptbin_edges),len(self.etabin_edges)-1,array('d',self.etabin_edges))
+                hist2dsf2 = ROOT.TH2D("Lep%sSF2" % self.idType,"sf2",len(ptbin_edges)-1,array('d',ptbin_edges),len(self.etabin_edges)-1,array('d',self.etabin_edges))
 
             for pb in xrange(1,len(ptbin_edges)):
                 hist2dmc.SetBinContent(pb,eb,mc_effs[pb-1][0])
@@ -76,15 +74,19 @@ class tableToHisto2DConverter:
 
 if __name__ == "__main__":
     from optparse import OptionParser
-    parser = OptionParser(usage="%prog [options] barreltable endcaptable")
+    parser = OptionParser(usage="%prog [options]")
     parser.add_option("-l", "--lepType", dest="lepType", default='muon', help="lepton type (muon or electron)");
-    parser.add_option("-i", "--idType", dest="idType", default='loose', help="lepton id type (loose or tight for muons, veto or tight for electrons)");
     (options, args) = parser.parse_args()
-    if len(args) != 2:
-        print "You must specify the barrel and endcap efficiency tables"
-        exit()
 
     ROOT.gROOT.SetBatch(True)
-    converter = tableToHisto2DConverter(options.lepType,options.idType,args)
-    converter.convertTable()
+    if options.lepType == "muon": idTypes = ["Loose", "Tight"]
+    elif options.lepType == "electron": idTypes = ["Veto", "Tight"]
+    else:
+        print "lepType should be either muon or electron. Exiting"
+        sys.exit(0)
+    foption = "recreate"
+    for idt in idTypes:
+        converter = tableToHisto2DConverter(options.lepType,idt,foption)
+        converter.convertTable()
+        foption = "update"
     print "Done."
