@@ -1,6 +1,8 @@
 import ROOT
 import os, sys
 
+# this script returns the fraction of events that pass a cut in a tree + friend tree
+#
 # usage: python fractionCutTree.py BIGTREE_DIR FTREE_DIR CUT_STRING DATASET_NAME ...
 
 dsets = sys.argv[4:]

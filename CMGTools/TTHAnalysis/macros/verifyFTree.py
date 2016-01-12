@@ -1,6 +1,9 @@
 import ROOT
 import os, sys
 
+# this script can be used to verify that a friend tree has the same number of entries as the main tree
+# (useful to check that all chunks in the friend tree production have been done successfully)
+#
 # usage: python verifyFTree BIGTREE_DIR FTREE_DIR DATASET_NAME ...
 
 dsets = sys.argv[3:]

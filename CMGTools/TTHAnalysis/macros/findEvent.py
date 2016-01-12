@@ -1,6 +1,9 @@
 import sys
 import ROOT
 
+# this script can be used to count how many entries in a list of tree or friend tree files satisfy a certain requirement
+# (useful to look for event numbers)
+
 for myf in sys.argv[2:]:
     f = ROOT.TFile(myf)
     t = f.Get("tree")
