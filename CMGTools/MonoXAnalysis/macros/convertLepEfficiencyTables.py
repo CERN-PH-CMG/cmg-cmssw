@@ -80,7 +80,7 @@ if __name__ == "__main__":
 
     ROOT.gROOT.SetBatch(True)
     if options.lepType == "muon": idTypes = ["Loose", "Tight"]
-    elif options.lepType == "electron": idTypes = ["Veto", "Tight"]
+    elif options.lepType == "electron": idTypes = ["Loose", "Tight"]
     else:
         print "lepType should be either muon or electron. Exiting"
         sys.exit(0)
