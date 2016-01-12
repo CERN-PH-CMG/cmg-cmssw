@@ -3,7 +3,7 @@ from CMGTools.MonoXAnalysis.tools.PileUpReWeighter import PileUpReWeighter
 
 class EventVarsMonojet:
     def __init__(self):
-        self.branches = [ "nMu10V", "nMu20T", "nEle10V", "nEle20T", "nTau18V", "nGamma15V", "nGamma175T", "nBTag15",
+        self.branches = [ "nMu10V", "nMu20T", "nEle10V", "nEle40T", "nTau18V", "nGamma15V", "nGamma175T", "nBTag15",
                           "dphijj", "dphijm", "weight", "events_ntot", "phmet_pt", "phmet_phi"
                           ]
     def initSampleNormalization(self,sample_nevt):
@@ -33,7 +33,7 @@ class EventVarsMonojet:
             return lep.lostHits <= (2 if abs(lep.etaSc)<1.479 else 3)
     def lepIdTight(self,lep):
         if abs(lep.pdgId) == 13:
-            if lep.pt <= 20: return False
+            if lep.pt <= 40: return False
             return abs(lep.eta) < 2.4 and lep.tightId > 0 and lep.relIso04 < 0.12
         elif abs(lep.pdgId) == 11:
             if lep.pt <= 40: return False
@@ -66,7 +66,7 @@ class EventVarsMonojet:
         ret['nMu10V'] = sum([(abs(l.pdgId)==13 and int(self.lepIdVeto(l))) for l in leps ])
         ret['nMu20T'] = sum([(abs(l.pdgId)==13 and int(self.lepIdTight(l))) for l in leps ])
         ret['nEle10V'] = sum([(abs(l.pdgId)==11 and int(self.lepIdVeto(l))) for l in leps ])
-        ret['nEle20T'] = sum([(abs(l.pdgId)==11 and int(self.lepIdTight(l))) for l in leps ])
+        ret['nEle40T'] = sum([(abs(l.pdgId)==11 and int(self.lepIdTight(l))) for l in leps ])
         taus = [t for t in Collection(event,"TauGood","nTauGood")]
         ret['nTau18V'] = sum([(int(self.tauIdVeto(t))) for t in taus ])
         photons = [p for p in Collection(event,"GammaGood","nGammaGood")]
