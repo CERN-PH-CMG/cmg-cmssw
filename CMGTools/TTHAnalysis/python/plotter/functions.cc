@@ -174,7 +174,7 @@ float relax_cut_in_eta_bins(float val, float eta, float eta1, float eta2, float 
 
 }
 
-int regroupSignalRegions(int SR){
+int regroupSignalRegions_RA5(int SR){
 
   int rgr[66+1];
   rgr[0]=0; //unused

@@ -169,7 +169,7 @@ if __name__ == '__main__':
 #        x = SRptreg(x,LPt)
 ##        x1 = add(x,"--AP --doPrintOutNev 'SR'")
 ##        runIt(x1,'dataPrediction_withsig_allprocesses_fordatacard_SR_'+LPt,['SR_%s'%LPt])
-##        x2 = add(x,"--AP --doPrintOutNev 'regroupSignalRegions(SR)'")
+##        x2 = add(x,"--AP --doPrintOutNev 'regroupSignalRegions_RA5(SR)'")
 ##        runIt(x2,'dataPrediction_withsig_allprocesses_fordatacard_SR_'+LPt,['SR_%s_regrouped'%LPt])
         
 

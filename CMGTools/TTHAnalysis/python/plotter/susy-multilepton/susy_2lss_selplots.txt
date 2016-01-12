@@ -11,10 +11,10 @@ SR_hl_log: SR-32 : 26,0.5,26.5; XTitle="HL signal region", Legend='TR', LegendCu
 SR_ll_log: SR-58 : 8,0.5,8.5; XTitle="LL signal region", Legend='TR', LegendCutoff=1e-4, Logy
 SR_ii_log: SR: 66,0.5,66.5; XTitle="Signal region", Legend='TR', LegendCutoff=1e-4, Logy
 
-SR_hh_regrouped : regroupSignalRegions(SR) : 36,0.5,36.5; XTitle="HH regrouped signal region", Legend='TR', LegendCutoff=1e-4
-SR_hl_regrouped : regroupSignalRegions(SR)-18 : 36,0.5,36.5; XTitle="HL regrouped signal region", Legend='TR', LegendCutoff=1e-4
-SR_ll_regrouped : regroupSignalRegions(SR)-33 : 36,0.5,36.5; XTitle="LL regrouped signal region", Legend='TR', LegendCutoff=1e-4
-SR_ii_regrouped : regroupSignalRegions(SR) : 36,0.5,36.5; XTitle="Regrouped signal region", Legend='TR', LegendCutoff=1e-4
+SR_hh_regrouped : regroupSignalRegions_RA5(SR) : 36,0.5,36.5; XTitle="HH regrouped signal region", Legend='TR', LegendCutoff=1e-4
+SR_hl_regrouped : regroupSignalRegions_RA5(SR)-18 : 36,0.5,36.5; XTitle="HL regrouped signal region", Legend='TR', LegendCutoff=1e-4
+SR_ll_regrouped : regroupSignalRegions_RA5(SR)-33 : 36,0.5,36.5; XTitle="LL regrouped signal region", Legend='TR', LegendCutoff=1e-4
+SR_ii_regrouped : regroupSignalRegions_RA5(SR) : 36,0.5,36.5; XTitle="Regrouped signal region", Legend='TR', LegendCutoff=1e-4
 
 one: 1 : 1,0.5,1.5; XTitle="Total weight", Legend='TR', LegendCutoff=1e-4
 
