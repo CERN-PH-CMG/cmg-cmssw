@@ -533,25 +533,25 @@ metAnaScaleDown = cfg.Analyzer(
     collectionPostFix = "_jecDown",
     )
 
-#metNoHFAna = cfg.Analyzer(
-#    METAnalyzer, name="metNoHFAnalyzer",
-#    metCollection     = "slimmedMETsNoHF",
-#    noPUMetCollection = "slimmedMETsNoHF",
-#    copyMETsByValue = False,
-#    doTkMet = False,
-#    doMetNoPU = True,
-#    doMetNoMu = False,
-#    doMetNoEle = False,
-#    doMetNoPhoton = False,
-#    recalibrate = False,
-#    applyJetSmearing = False, # does nothing unless the jet smearing is turned on in the jet analyzer
-#    old74XMiniAODs = False,   # can't be true, since MET NoHF wasn't there in old 74X MiniAODs
-#    jetAnalyzerPostFix = "",
-#    candidates='packedPFCandidates',
-#    candidatesTypes='std::vector<pat::PackedCandidate>',
-#    dzMax = 0.1,
-#    collectionPostFix = "NoHF",
-#    )
+metNoHFAna = cfg.Analyzer(
+    METAnalyzer, name="metNoHFAnalyzer",
+    metCollection     = "slimmedMETsNoHF",
+    noPUMetCollection = "slimmedMETsNoHF",
+    copyMETsByValue = False,
+    doTkMet = False,
+    doMetNoPU = True,
+    doMetNoMu = False,
+    doMetNoEle = False,
+    doMetNoPhoton = False,
+    recalibrate = False,
+    applyJetSmearing = False, # does nothing unless the jet smearing is turned on in the jet analyzer
+    old74XMiniAODs = False,   # can't be true, since MET NoHF wasn't there in old 74X MiniAODs
+    jetAnalyzerPostFix = "",
+    candidates='packedPFCandidates',
+    candidatesTypes='std::vector<pat::PackedCandidate>',
+    dzMax = 0.1,
+    collectionPostFix = "NoHF",
+    )
 
 
 # Core Event Analyzer (computes basic quantities like HT, dilepton masses)
