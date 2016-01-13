@@ -43,7 +43,7 @@ triggers_1mu_iso      = triggers_1mu_iso_r + triggers_1mu_iso_w
 
 # note: here the WP75 is th name in MC, WPLoose and WPTight should be in data
 triggers_1e_50ns = [ "HLT_Ele27_eta2p1_WP75_Gsf_v*", "HLT_Ele27_eta2p1_WPLoose_Gsf_v*", "HLT_Ele27_eta2p1_WPTight_Gsf_v*" ]
-triggers_1e      = [ "HLT_Ele23_WPLoose_Gsf_v*", "HLT_Ele27_WPLoose_Gsf_v*", "HLT_Ele27_eta2p1_WPLoose_Gsf_v*", "HLT_Ele32_eta2p1_WPLoose_Gsf_v*", "HLT_Ele27_WP85_Gsf_v*", "HLT_Ele27_eta2p1_WP75_Gsf_v*", "HLT_Ele32_eta2p1_WP75_Gsf_v*" ]
+triggers_1e      = [ "HLT_Ele23_WPLoose_Gsf_v*", "HLT_Ele23_CaloIdL_TrackIdL_IsoVL_v*", "HLT_Ele27_WPLoose_Gsf_v*", "HLT_Ele27_eta2p1_WPLoose_Gsf_v*", "HLT_Ele32_eta2p1_WPLoose_Gsf_v*", "HLT_Ele27_WP85_Gsf_v*", "HLT_Ele27_eta2p1_WP75_Gsf_v*", "HLT_Ele32_eta2p1_WP75_Gsf_v*" ]
 triggers_1e_noniso      = [ "HLT_Ele105_CaloIdVT_GsfTrkIdT_v*"]
 
 # Lepton fake rate triggers (prescaled)
