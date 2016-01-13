@@ -5,6 +5,7 @@ from PhysicsTools.Heppy.analyzers.objects.autophobj import  *
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
 
 from CMGTools.TTHAnalysis.signedSip import *
+from CMGTools.TTHAnalysis.tools.emulateElectronTriggerCuts import _susy2lss_idEmu_cuts,_susy2lss_idIsoEmu_cuts
 
 ##------------------------------------------  
 ## LEPTON
@@ -78,6 +79,8 @@ leptonTypeSusyExtra = NTupleObjectType("leptonSusyExtra", baseObjectTypes = [ le
     NTupleVariable("hcalPFClusterIso", lambda lepton :  lepton.hcalPFClusterIso() if abs(lepton.pdgId())==11 else -999, help="Electron hcalPFClusterIso"),
     NTupleVariable("dr03TkSumPt", lambda lepton: lepton.dr03TkSumPt() if abs(lepton.pdgId())==11 else -999, help="Electron dr03TkSumPt isolation"),
     NTupleVariable("trackIso", lambda lepton :  lepton.trackIso() if abs(lepton.pdgId())==11 else -999, help="Electron trackIso (in cone of 0.4)"),
+    NTupleVariable("idEmu", lambda lepton: _susy2lss_idEmu_cuts(lepton), help="Electron pass trigger ID emulation cuts"),
+    NTupleVariable("idIsoEmu", lambda lepton: _susy2lss_idIsoEmu_cuts(lepton), help="Electron pass trigger ID+ISO emulation cuts"),
 ])
 leptonTypeSusyExtra.addSubObjects([
         NTupleSubObject("jetLepAwareJEC",lambda x: jetLepAwareJEC(x), tlorentzFourVectorType)
