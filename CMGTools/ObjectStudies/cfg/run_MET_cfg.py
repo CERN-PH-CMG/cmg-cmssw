@@ -12,10 +12,11 @@ from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import triggers_1mu_iso_
 
 #-------- INITIAL FLAG
 isDiJet=False
+isMonoJet=False
 isZSkim=False
 is1L=False
 isEle = False # default is diMuon
-isEarlyRun = True # to be used for the filters
+isEarlyRun = False # to switch the dataset Oct05 / PromptV4
 is25ns = True
 
 #-------- HOW TO RUN
@@ -138,7 +139,7 @@ elif test==13:
         else:
             comp.triggers = triggers_mumu
         if is25ns:
-            comp.json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258714_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
+            comp.json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_v2.txt"
         else:
             comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON_v2.txt"
         comp.intLumi= 0.04003
@@ -168,14 +169,14 @@ elif test==15:
         comp.splitFactor = 1000
         comp.files = comp.files[:]
         if is25ns:
-            comp.json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258714_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
+            comp.json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_v2.txt"
         else:
             comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON_v2.txt"
         comp.intLumi= 0.04003
-        if isEarlyRun:
-            comp.run_range=(251027,251585) # in 17july runInJSON: 251244,251251,251252,251561,251562
-        else:
-            comp.run_range=(251585,251883) # in promptReco runInJSON: 251643,251721,251883
+#        if isEarlyRun:
+#            comp.run_range=(251027,251585) # in 17july runInJSON: 251244,251251,251252,251561,251562
+#        else:
+#            comp.run_range=(251585,251883) # in promptReco runInJSON: 251643,251721,251883
 
         print comp
 
@@ -194,7 +195,7 @@ elif test==16:
         comp.splitFactor = 1
         comp.files = comp.files[:]
         if is25ns:
-            comp.json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258714_13TeV_PromptReco_Collisions15_25ns_JSON.txt"
+            comp.json = "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_v2.txt"
         else:
             comp.json = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data/json/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON_v2.txt"
         comp.intLumi= 0.04003
@@ -269,19 +270,11 @@ if is1L:
     metSequence.insert(metSequence.index(lepAna)+1,ttHLepSkim)
 
 if isDiJet:
-    metSequence.insert(metSequence.index(photonAna)+1,jetAna)
     metSequence.insert(metSequence.index(photonAna)+2,ttHJetMETSkim)
-    jetAna.recalibrateJets = True,
-    if not is25ns:
-        #50ns runD residuals in hands
-        jetAna.applyL2L3Residual = True
-        jetAna.mcGT     = "Summer15_50nsV4_MC",
-        jetAna.dataGT   = "Summer15_50nsV4_DATA",
-    else:
-        #25ns runD residuals not ready yet
-        jetAna.applyL2L3Residual = False
-        jetAna.mcGT     = "Summer15_25nsV2_MC",
-        jetAna.dataGT   = "Summer15_25nsV2_DATA",
+
+if isMonoJet:
+    ttHJetMETSkim.jetPtCuts = [200]
+    metSequence.insert(metSequence.index(photonAna)+2,ttHJetMETSkim)
 
 if comp.isData and not isEarlyRun:
     eventFlagsAna.processName = 'RECO'
