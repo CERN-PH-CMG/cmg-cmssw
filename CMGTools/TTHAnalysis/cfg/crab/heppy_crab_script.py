@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 import os
-#cfg.Analyzer.nosubdir=True
 
 import ROOT
 from DataFormats.FWLite import *
 import sys
 import re
-#import PSet
+import subprocess
 
 dataset = ""
 total = 0  # total number of jobs for given dataset, not used at the moment
 nevents = None # this means run all events
 nprint  = 0 # quiet printout, change if you want to print the first nprint events
-useAAA = True # use xrootd by default
+useAAA = ""
+cfgfile=""
+_filestounpack=""
+filestounpack=[]
 
 def XrootdRedirector():
     americas     = ["CO", "MX","US"]
@@ -35,28 +37,52 @@ for arg in sys.argv[2:]:
         nevents = int(arg.split("=")[1])
         print "selected to run over", nevents, "events"
     elif arg.split("=")[0] == "useAAA":
-        useAAA = not (arg.split("=")[1] == 'False') # 'True' by default
-        if useAAA: print "chosen to run via xrootd"
+        useAAA = arg.split("=")[1]
+    elif arg.split("=")[0] == "cfgfile":
+        cfgfile = arg.split("=")[1]
+    elif arg.split("=")[0] == "filestounpack":
+        _filestounpack = arg.split("=")[1]
+
+if useAAA=="full": print 'Chosen free usage of AAA to access remote files'
+elif useAAA=="eos": print 'Forcing usage of AAA to access data from EOS'
+elif useAAA=="local": print 'Using local file access on the remote site without AAA'
+else: raise RuntimeError, 'Unknown or unspecified AAA configuration parameter'
 
 print "dataset:", dataset
 print "job", job , " out of", total
 
 # fetch config file
 import imp
-handle = open("heppy_config.py", 'r')
-cfo = imp.load_source("heppy_config", "heppy_config.py", handle)
+import json
+from PhysicsTools.HeppyCore.framework.heppy_loop import _heppyGlobalOptions
+jfile = open ('options.json', 'r')
+opts=json.loads(jfile.readline())
+for k,v in opts.iteritems():
+    _heppyGlobalOptions[k]=v
+jfile.close()
+handle = open(cfgfile, 'r')
+cfo = imp.load_source(cfgfile.rstrip('py'), cfgfile, handle)
 config = cfo.config
 handle.close()
 
 from PhysicsTools.HeppyCore.framework.heppy_loop import split
 # pick right component from dataset and file from jobID
 selectedComponents = []
+localPrefix = ""
 for comp in config.components:
     if comp.name == dataset:
         # this selects the files and events and changes the name to _ChunkX according to fineSplitFactor and splitFactor
         newComp = split([comp])[job-1] # first job number is 1
-        if useAAA:
-            newComp.files = [x.replace("root://eoscms.cern.ch//eos/cms","root://" + XrootdRedirector()) for x in newComp.files]
+        if useAAA=="full": newComp.files = [x.replace("root://eoscms.cern.ch//eos/cms","root://" + XrootdRedirector()) for x in newComp.files]
+        elif useAAA=="local":
+            if localPrefix=="" and len(newComp.files)>0:
+                myfile = newComp.files[0].replace("root://eoscms.cern.ch//eos/cms","") # == /store/...
+                mycheck = subprocess.check_output(["edmFileUtil","-d",myfile]).split('\n')[0] # == root://storage/store/....root?...
+                if len(mycheck)>0:
+                    localPrefix = mycheck.split('?')[0].replace(myfile,"") # == root://storage
+                    print 'Will use %s as local file prefix'%localPrefix
+            newComp.files = [x.replace("root://eoscms.cern.ch//eos/cms",localPrefix) for x in newComp.files]
+        elif useAAA=="eos": pass
         selectedComponents.append(newComp)
 
 # check selectedComponents
@@ -84,25 +110,17 @@ looper.write()
 
 #os.system("ls -lR") # for debugging
 
-# assign the right name
-os.rename("Output/mt2.root", "mt2.root")
-os.rename("Output/RLTInfo.root", "RLTInfo.root")
-
 # print in crab log file the content of the job log files, so one can see it from 'crab getlog'
 print "-"*25
-print "printing output txt files"
+print "printing output txt and log files"
 os.system('for i in Output/*.txt; do echo $i; cat $i; echo "---------"; done')
+os.system('for i in Output/*.log; do echo $i; cat $i; echo "---------"; done')
 
-# pack job log files to be sent to output site
-os.system("tar czf output.log.tgz Output/")
-#os.system("mkdir log")
-#os.rename("output.log.tgz log/output.log.tgz")
+# assign the right name
+os.system("rm Output/cmsswPreProcessing.root")
+if _filestounpack!="": filestounpack=_filestounpack.split(',')
+for mytree in filestounpack:
+    os.rename("Output/"+mytree, './'+mytree.replace('/','_'))
+os.system("tar czf heppyOutput.tgz Output/")
 
-
-import ROOT
-f=ROOT.TFile.Open('mt2.root')
-entries=f.Get('mt2').GetEntries()
-f.Close()
-
-print entries, "events processed"
-print "job succesful"
+print "---> job successful <---"
