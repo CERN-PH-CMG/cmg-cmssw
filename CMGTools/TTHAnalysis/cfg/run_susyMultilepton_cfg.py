@@ -49,6 +49,7 @@ isolation = "miniIso"
 
 jetAna.copyJetsByValue = True # do not remove this
 metAna.copyMETsByValue = True # do not remove this
+jetAna.addJECShifts = True
 susyCoreSequence.insert(susyCoreSequence.index(jetAna)+1, jetAnaScaleDown)
 susyCoreSequence.insert(susyCoreSequence.index(jetAna)+1, jetAnaScaleUp)
 susyCoreSequence.insert(susyCoreSequence.index(metAna)+1, metAnaScaleDown)
