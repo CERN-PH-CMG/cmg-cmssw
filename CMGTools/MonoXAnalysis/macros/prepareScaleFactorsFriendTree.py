@@ -5,14 +5,8 @@ import os.path
 
 MODULES = []
 
-from CMGTools.TTHAnalysis.tools.btagSFs_POG import bTagSFEvent3WPErrs as btagSFEvent
-#MODULES += [ ('btag', btagSFEvent) ]
-
 from CMGTools.MonoXAnalysis.tools.lep_SF import AllLepSFs
-MODULES += [ ('lep',AllLepSFs())  ]
-
-from CMGTools.TTHAnalysis.tools.btagRWTs_ND import BTag_RWT_EventErrs
-#MODULES += [ ('btagRwt', BTag_RWT_EventErrs()) ]
+MODULES.append( ('lep',AllLepSFs()) )
 
 class ScaleFactorProducer(Module):
     def __init__(self,name,booker,modules):
