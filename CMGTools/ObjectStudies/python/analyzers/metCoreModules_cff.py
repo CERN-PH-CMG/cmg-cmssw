@@ -232,7 +232,7 @@ metAna = cfg.Analyzer(
     doMetNoMu = False,
     doMetNoEle = False,
     doMetNoPhoton = False,
-    recalibrate = False, # or "type1", or True
+    recalibrate = True, # or "type1", or True
     applyJetSmearing = False, # does nothing unless the jet smearing is turned on in the jet analyzer
     old74XMiniAODs = False, # set to True to get the correct Raw MET when running on old 74X MiniAODs
     jetAnalyzerPostFix = "",
@@ -254,7 +254,7 @@ metNoHFAna = cfg.Analyzer(
     doMetNoMu = False,
     doMetNoEle = False,
     doMetNoPhoton = False,
-    recalibrate = False, # or "type1", or True
+    recalibrate = True, # or "type1", or True
     applyJetSmearing = False, # does nothing unless the jet smearing is turned on in the jet analyzer
     old74XMiniAODs = False, # set to True to get the correct Raw MET when running on old 74X MiniAODs
     jetAnalyzerPostFix = "",
@@ -326,14 +326,14 @@ jetAna = cfg.Analyzer(
     minLepPt = 10,
     relaxJetId = False,
     doPuId = False, # Not commissioned in 7.0.X
-    recalibrateJets = False, #'MC', # True, False, 'MC', 'Data'
+    recalibrateJets = True, #'MC', # True, False, 'MC', 'Data'
     applyL2L3Residual = True, # Switch to 'Data' when they will become available for Data
     recalibrationType = "AK4PFchs",
-    mcGT     = "Summer15_50nsV2_MC",
-    dataGT   = "Summer15_50nsV5_MC",
+    mcGT     = "Summer15_25nsV6_MC",
+    dataGT   = "Summer15_25nsV6_DATA",
     jecPath = "${CMSSW_BASE}/src/CMGTools/RootTools/data/jec/",
     shiftJEC = 0, # set to +1 or -1 to apply +/-1 sigma shift to the nominal jet energies
-    addJECShifts = False, # if true, add  "corr", "corrJECUp", and "corrJECDown" for each jet (requires uncertainties to be available!)
+    addJECShifts = True, # if true, add  "corr", "corrJECUp", and "corrJECDown" for each jet (requires uncertainties to be available!)
     smearJets = False,
     shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts
     alwaysCleanPhotons = False,
@@ -343,7 +343,7 @@ jetAna = cfg.Analyzer(
     doQG = False,
     do_mc_match = False,
     cleanGenJetsFromPhoton = False,
-    calculateSeparateCorrections = False, # should be True if recalibrateJets is True, otherwise L1s will be inconsistent
+    calculateSeparateCorrections = True, # should be True if recalibrateJets is True, otherwise L1s will be inconsistent
     calculateType1METCorrection  = False,
     type1METParams = { 'jetPtThreshold':15., 'skipEMfractionThreshold':0.9, 'skipMuons':True },
     collectionPostFix = ""
@@ -384,7 +384,7 @@ metCoreSequence = [
 ##### photon modules below
     photonAna,
 ##### jet modules below
-   #jetAna,
+    jetAna,
 ##### met modules below
     metAna,
     metNoHFAna,
