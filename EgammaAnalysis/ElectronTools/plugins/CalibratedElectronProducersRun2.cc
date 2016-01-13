@@ -10,11 +10,13 @@
 
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
+
 #include "CondFormats/DataRecord/interface/GBRWrapperRcd.h"
 #include "CondFormats/EgammaObjects/interface/GBRForest.h"
 #include "EgammaAnalysis/ElectronTools/interface/EpCombinationTool.h"
 #include "EgammaAnalysis/ElectronTools/interface/ElectronEnergyCalibratorRun2.h"
 
+#include <vector>
 
 template<typename T>
 class CalibratedElectronProducerRun2T: public edm::stream::EDProducer<>
@@ -38,7 +40,7 @@ CalibratedElectronProducerRun2T<T>::CalibratedElectronProducerRun2T( const edm::
     theElectronToken(consumes<edm::View<T> >(conf.getParameter<edm::InputTag>("electrons"))),
     theGBRForestName(conf.getParameter<std::string>("grbForestName")),
     theEpCombinationTool(),
-    theEnCorrectorRun2(theEpCombinationTool, conf.getParameter<bool>("isMC"), conf.getParameter<bool>("isSynchronization"))
+    theEnCorrectorRun2(theEpCombinationTool, conf.getParameter<bool>("isMC"), conf.getParameter<bool>("isSynchronization"), conf.getParameter<std::vector<double> >("smearings"), conf.getParameter<std::vector<double> >("scales"))
 {
     produces<std::vector<T> >();
 }

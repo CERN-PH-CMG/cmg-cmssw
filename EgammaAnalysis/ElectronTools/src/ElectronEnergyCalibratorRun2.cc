@@ -4,10 +4,13 @@
 #include "FWCore/Utilities/interface/RandomNumberGenerator.h"
 #include "FWCore/Utilities/interface/Exception.h"
 
-ElectronEnergyCalibratorRun2::ElectronEnergyCalibratorRun2(EpCombinationTool &combinator, bool isMC, bool synchronization) :
-    epCombinationTool_(&combinator),
-    isMC_(isMC), synchronization_(synchronization),
-    rng_(0)
+ElectronEnergyCalibratorRun2::ElectronEnergyCalibratorRun2(EpCombinationTool &combinator, bool isMC, bool synchronization, 
+							   std::vector<double> smearings, std::vector<double> scales) :
+  epCombinationTool_(&combinator),
+  isMC_(isMC), synchronization_(synchronization),
+  rng_(0),
+  smearings_(smearings),
+  scales_(scales)
 {
 }
 
@@ -33,17 +36,18 @@ void ElectronEnergyCalibratorRun2::calibrate(SimpleElectron &electron, edm::Stre
     float aeta = std::abs(electron.getEta()), r9 = electron.getR9();
     bool bad = (r9 < 0.94), gold = !bad;
     // FIXME replace hard-coded numbers below with something dependent on a real payload
-    if      (0.0    <= aeta && aeta < 1.0    && bad ) { smear = 0.013654; scale = 0.99544; }
-    else if (0.0    <= aeta && aeta < 1.0    && gold) { smear = 0.014142; scale = 0.99882; }
-    else if (1.0    <= aeta && aeta < 1.4442 && bad ) { smear = 0.020859; scale = 0.99662; }
-    else if (1.0    <= aeta && aeta < 1.4442 && gold) { smear = 0.017120; scale = 1.0065;  }
-    else if (1.566  <= aeta && aeta < 2.0    && bad ) { smear = 0.028083; scale = 0.98633; }
-    else if (1.566  <= aeta && aeta < 2.0    && gold) { smear = 0.027289; scale = 0.99536; }
-    else if (2.0    <= aeta && aeta < 2.5    && bad ) { smear = 0.031793; scale = 0.97859; }
-    else if (2.0    <= aeta && aeta < 2.5    && gold) { smear = 0.030831; scale = 0.98567; }
+    if      (0.0    <= aeta && aeta < 1.0    && bad ) { smear = smearings_[0]; scale = scales_[0]; }
+    else if (0.0    <= aeta && aeta < 1.0    && gold) { smear = smearings_[1]; scale = scales_[1]; }
+    else if (1.0    <= aeta && aeta < 1.4442 && bad ) { smear = smearings_[2]; scale = scales_[2]; }
+    else if (1.0    <= aeta && aeta < 1.4442 && gold) { smear = smearings_[3]; scale = scales_[3]; }
+    else if (1.566  <= aeta && aeta < 2.0    && bad ) { smear = smearings_[4]; scale = scales_[4]; }
+    else if (1.566  <= aeta && aeta < 2.0    && gold) { smear = smearings_[5]; scale = scales_[5]; }
+    else if (2.0    <= aeta && aeta < 2.5    && bad ) { smear = smearings_[6]; scale = scales_[6]; }
+    else if (2.0    <= aeta && aeta < 2.5    && gold) { smear = smearings_[7]; scale = scales_[7]; }
     /// use the 1.566-2.0 also for the 1.4442-1.566 area, in the lack of a new correction
-    else if (1.4442 <= aeta && aeta < 1.566  && bad ) { smear = 0.028083; scale = 0.98633; } 
-    else if (1.4442 <= aeta && aeta < 1.566  && gold) { smear = 0.027289; scale = 0.99536; } 
+    else if (1.4442 <= aeta && aeta < 1.566  && bad ) { smear = smearings_[8]; scale = scales_[8]; } 
+    else if (1.4442 <= aeta && aeta < 1.566  && gold) { smear = smearings_[9]; scale = scales_[9]; } 
+
     double newEcalEnergy, newEcalEnergyError;
     if (isMC_) {
         double corr = 1.0 + smear * gauss(id);
