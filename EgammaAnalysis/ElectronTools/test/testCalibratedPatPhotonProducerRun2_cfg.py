@@ -21,29 +21,34 @@ process.source = cms.Source("PoolSource",
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, '74X_dataRun2_Prompt_v4', '')
 
-process.selectedElectrons = cms.EDFilter("PATElectronSelector",
-                                         src = cms.InputTag("slimmedElectrons"),
-                                         cut = cms.string("pt > 8 && pfIsolationVariables().sumChargedHadronPt/pt < 0.3"),
-)
+process.selectedPhotons = cms.EDFilter("PATPhotonSelector",
+                                       src = cms.InputTag("slimmedPhotons"),
+                                       cut = cms.string("pt > 8 && chargedHadronIso()/pt < 0.3"),
+                                       )
 
-process.load('EgammaAnalysis.ElectronTools.calibratedElectronsRun2_cfi')
-process.calibratedPatElectrons.electrons = "selectedElectrons"
+process.load('EgammaAnalysis.ElectronTools.calibratedPhotonsRun2_cfi')
+process.calibratedPatPhotons.photons = "selectedPhotons"
 
 process.zeeUncalib = cms.EDProducer("CandViewShallowCloneCombiner",
-                                    decay = cms.string("selectedElectrons@+ selectedElectrons@-"),
+                                    decay = cms.string("selectedPhotons@+ selectedPhotons@-"),
+                                    checkCharge = cms.bool(False),                                    
                                     cut   = cms.string("min(daughter(0).pt,daughter(1).pt) > 15 && mass > 50"),
                                     )
 
 process.zeeCalib = process.zeeUncalib.clone(
-    decay = cms.string("calibratedPatElectrons@+ calibratedPatElectrons@-"),
+    decay = cms.string("calibratedPatPhotons@+ calibratedPatPhotons@-"),
     )
 
 process.zeeUncalibTree = cms.EDFilter("ProbeTreeProducer",
                                       src = cms.InputTag("zeeUncalib"),
                                       variables = cms.PSet(
         mass = cms.string("mass"),
-        massErr = cms.string("0.5 * mass * sqrt( pow( daughter(0).masterClone.p4Error('P4_COMBINATION') / daughter(0).masterClone.p4('P4_COMBINATION').P(), 2 ) + "+
-                             "pow( daughter(0).masterClone.p4Error('P4_COMBINATION') / daughter(0).masterClone.p4('P4_COMBINATION').P(), 2 ) ) "),
+        #        reco::Photon::P4type::regression2
+
+        #0286     float getCorrectedEnergy( P4type type) const;
+        #0287     float getCorrectedEnergyError( P4type type) const ;
+        #massErr = cms.string("0.5 * mass * sqrt( pow( daughter(0).masterClone.getCorrectedEnergyError(3) / daughter(0).masterClone.p4().P(), 2 ) + "+
+        #                     "pow( daughter(0).masterClone.getCorrectedEnergyError(3) / daughter(0).masterClone.p4().P(), 2 ) ) "),
         l1pt = cms.string("daughter(0).pt"),
         l2pt = cms.string("daughter(1).pt"),
         l1eta = cms.string("daughter(0).eta"),
@@ -56,9 +61,18 @@ process.zeeCalibTree = process.zeeUncalibTree.clone(
     src = cms.InputTag("zeeCalib"),
     )
 
-process.path = cms.Path(process.selectedElectrons + process.calibratedPatElectrons +
+process.path = cms.Path(process.selectedPhotons + process.calibratedPatPhotons +
                         process.zeeUncalib + process.zeeUncalibTree +
                         process.zeeCalib + process.zeeCalibTree
                         )
 
-process.TFileService = cms.Service("TFileService", fileName = cms.string("plots.root"))
+process.TFileService = cms.Service("TFileService", fileName = cms.string("plots_photons.root"))
+
+
+#process.out = cms.OutputModule("PoolOutputModule",
+#                               outputCommands = cms.untracked.vstring('keep *_*_*_GETGBR'),
+#                               #    fileName = cms.untracked.string('CandidateZ_newEscale.root')
+#                               fileName = cms.untracked.string('testMC.root')
+#                               )
+#
+#process.end = cms.EndPath(process.out)

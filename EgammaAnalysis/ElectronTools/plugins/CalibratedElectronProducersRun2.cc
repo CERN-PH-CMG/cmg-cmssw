@@ -1,5 +1,5 @@
-#ifndef CalibratedElectronProducer_h
-#define CalibratedElectronProducer_h
+#ifndef CalibratedElectronProducerRun2_h
+#define CalibratedElectronProducerRun2_h
 
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/stream/EDProducer.h"
@@ -37,12 +37,12 @@ class CalibratedElectronProducerRun2T: public edm::stream::EDProducer<>
 
 template<typename T>
 CalibratedElectronProducerRun2T<T>::CalibratedElectronProducerRun2T( const edm::ParameterSet & conf ) :
-    theElectronToken(consumes<edm::View<T> >(conf.getParameter<edm::InputTag>("electrons"))),
-    theGBRForestName(conf.getParameter<std::string>("grbForestName")),
-    theEpCombinationTool(),
-    theEnCorrectorRun2(theEpCombinationTool, conf.getParameter<bool>("isMC"), conf.getParameter<bool>("isSynchronization"), conf.getParameter<std::vector<double> >("smearings"), conf.getParameter<std::vector<double> >("scales"))
+  theElectronToken(consumes<edm::View<T> >(conf.getParameter<edm::InputTag>("electrons"))),
+  theGBRForestName(conf.getParameter<std::string>("gbrForestName")),
+  theEpCombinationTool(),
+  theEnCorrectorRun2(theEpCombinationTool, conf.getParameter<bool>("isMC"), conf.getParameter<bool>("isSynchronization"), conf.getParameter<std::vector<double> >("smearings"), conf.getParameter<std::vector<double> >("scales"))
 {
-    produces<std::vector<T> >();
+  produces<std::vector<T> >();
 }
 
 template<typename T>

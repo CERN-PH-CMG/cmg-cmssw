@@ -52,6 +52,7 @@ void PhotonEnergyCalibratorRun2::calibrate(SimplePhoton &photon, edm::StreamID c
         newEcalEnergy      = photon.getNewEnergy() / scale;
         newEcalEnergyError = std::hypot(photon.getNewEnergyError() / scale, smear * newEcalEnergy);
     }
+
     photon.setNewEnergy(newEcalEnergy); 
     photon.setNewEnergyError(newEcalEnergyError); 
 }
