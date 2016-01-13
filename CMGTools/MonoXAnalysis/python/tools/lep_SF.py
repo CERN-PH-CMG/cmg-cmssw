@@ -27,8 +27,9 @@ class Lep_SF_both:
         return sf(lepton)
 
 class Lep_SF_Event:
-    def __init__(self,hists_el,hists_mu,tight,loose=None):
+    def __init__(self,evtSel,hists_el,hists_mu,tight,loose=None):
         self.sf_tight = Lep_SF_both(hists_el,hists_mu,tight)
+        self.evtSel = evtSel
         if loose != None: 
             self.sf_loose = Lep_SF_both(hists_el,hists_mu,loose)
     def __call__(self,event,nlep):
@@ -36,11 +37,10 @@ class Lep_SF_Event:
         sfev = 1.0
         # the following is not completely correct for asymmetric selection, it should be the full combinatorics
         if self.sf_loose != None:
-            evVars = EventVarsMonojet()
             for i,l in enumerate(leps):
                 if i >= nlep: break
-                if evVars.lepIdTight(l): sfev *= self.sf_tight(l)
-                elif evVars.lepIdVeto(l): sfev *= self.sf_loose(l)
+                if self.evtSel.lepIdTight(l): sfev *= self.sf_tight(l)
+                elif self.evtSel.lepIdVeto(l): sfev *= self.sf_loose(l)
                 else: sfev *= 1.0
         else:
             for i,l in enumerate(leps):
@@ -52,8 +52,9 @@ class AllLepSFs:
     def __init__(self):
         self.f_el = ROOT.TFile("/afs/cern.ch/work/e/emanuele/public/monox/leptonsf/eff_electron.root")
         self.f_mu = ROOT.TFile("/afs/cern.ch/work/e/emanuele/public/monox/leptonsf/eff_muon.root")
-        self.sf_TightLoose = Lep_SF_Event(self.f_el,self.f_mu,"LepTightSF1","LepLooseSF1")
-        self.sf_Tight = Lep_SF_Event(self.f_el,self.f_mu,"LepTightSF1")
+        self.evtSel = EventVarsMonojet()
+        self.sf_TightLoose = Lep_SF_Event(self.evtSel,self.f_el,self.f_mu,"LepTightSF1","LepLooseSF1")
+        self.sf_Tight = Lep_SF_Event(self.evtSel,self.f_el,self.f_mu,"LepTightSF1")
         self.f_el.Close()
         self.f_mu.Close()
     def listBranches(self):
