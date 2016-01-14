@@ -8,6 +8,11 @@ MODULES = []
 from CMGTools.MonoXAnalysis.tools.lep_SF import AllLepSFs
 MODULES.append( ('lep',AllLepSFs()) )
 
+from CMGTools.MonoXAnalysis.tools.trigger_SF import LepTriggerSF_Event, MetNoMuTriggerSF
+MODULES.append( ('trig1lep',LepTriggerSF_Event()) )
+
+MODULES.append( ('trigmetnomu',MetNoMuTriggerSF()) )
+
 class ScaleFactorProducer(Module):
     def __init__(self,name,booker,modules):
         Module.__init__(self,name,booker)
