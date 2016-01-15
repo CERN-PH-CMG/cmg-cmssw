@@ -113,11 +113,13 @@ genAna = cfg.Analyzer(
     # Make also the splitted lists
     makeSplittedGenLists = True,
     allGenTaus = False,
-    # Save LHE weights from LHEEventProduct
-    makeLHEweights = False,
     # Print out debug information
     verbose = False,
     )
+
+lheWeightAna = cfg.Analyzer(
+    LHEWeightAnalyzer, name="LHEWeightAnalyzer",
+)
 
 
 ## Gen Info Analyzer
@@ -210,6 +212,7 @@ photonAna = cfg.Analyzer(
     gammaID = "POG_SPRING15_50ns_Tight",
     rhoPhoton = 'fixedGridRhoFastjetAll',
     gamma_isoCorr = 'rhoArea',
+    conversionSafe_eleVeto = False,
     do_mc_match = False,
     do_randomCone = False,
 )
@@ -368,6 +371,7 @@ ttHJetMETSkim = cfg.Analyzer(
 
 
 metCoreSequence = [
+    lheWeightAna,
     susyCounter,
     skimAnalyzer,
    #eventSelector,
