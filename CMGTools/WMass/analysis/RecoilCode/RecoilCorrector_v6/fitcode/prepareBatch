@@ -1,11 +1,13 @@
 #!/bin/bash
 
+#cat LSFJOB_*/STDOUT | grep 'Processing runRecoilFit3G'
+
 i=0
 
-while [  $i -lt 21 ]; do
+while [  $i -lt 50 ]; do
 
 echo The counter i is $i
-sed 's/$1/'$i'/g' < batch.sh | bsub -q 1nh -J job_$i
+sed 's/$1/'$i'/g' < batch.sh | bsub -C 0 -q 1nd -J job_$i\_DATAY1
 
 let i=i+1
 

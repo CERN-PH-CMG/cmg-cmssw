@@ -86,15 +86,17 @@ Currently the recoil non-closure is evaluated comparing Powheg morphed to Madgra
 
 To build the uncorrected Madgraph distributions set the `useRecoilCorr` variable to `0`
 (remember to set  `WMassNSteps` at `0` to save computations).  
-To build the Powheg morphed to Madgraph distributions set the `correctToMadgraph` to `1`.  
+To build the Powheg morphed to Madgraph distributions with 3G fits set the `useRecoilCorr` variable to `2` and the `correctToMadgraph` to `1`.
+To build the Powheg morphed to Madgraph distributions with rooKeys fits set the `useRecoilCorr` variable to `3` and the `correctToMadgraph` to `1`.
 If you need the fit stat. error band you'll also need to build the varied distributions, as explained in Part II, with the  `RecoilCorrVarDiagoParU1orU2fromDATAorMC` flag.
 
-After the merge you should have 8 rootfiles, copy them somewhere and rename them:
+After the merge you should have 15 rootfiles, copy them somewhere and rename them:
 
 * Madgraph uncorrected -> `madnocorr.root`
-* Powhed to Madgraph central -> `0.root`
+* Powhed to Madgraph alternative (with rooKey) -> `rookeys.root`
+* Powhed to Madgraph cental (with 3G) -> `0.root`
 * First block of variated Pow2Mad -> `1.root`
 * ...
-* Last block of variated Pow2Mad -> `6.root`
+* Last block of variated Pow2Mad -> `12.root`
 
 Now they are ready to be passed under the `closure_recoil_plots{,2d}.C` macros, in `utils`.
