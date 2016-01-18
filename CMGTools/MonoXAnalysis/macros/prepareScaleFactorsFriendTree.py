@@ -13,6 +13,9 @@ MODULES.append( ('trig1lep',LepTriggerSF_Event()) )
 
 MODULES.append( ('trigmetnomu',MetNoMuTriggerSF()) )
 
+from CMGTools.MonoXAnalysis.tools.xsec_KF import xsec_KF
+MODULES.append( ('nlokf', xsec_KF("/afs/cern.ch/work/e/emanuele/public/monox/leptonsf/xsec_kfactors.root","nominal")) )
+
 class ScaleFactorProducer(Module):
     def __init__(self,name,booker,modules):
         Module.__init__(self,name,booker)
