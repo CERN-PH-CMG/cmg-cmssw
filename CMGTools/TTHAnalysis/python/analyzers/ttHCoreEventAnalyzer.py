@@ -12,7 +12,7 @@ class ttHCoreEventAnalyzer( Analyzer ):
         self.maxLeps = cfg_ana.maxLeps
         self.mhtForBiasedDPhi = cfg_ana.mhtForBiasedDPhi
         self.jetForBiasedDPhi = cfg_ana.jetForBiasedDPhi
-        self.leptonMVAKindTTH = getattr(self.cfg_ana, "leptonMVAKindTTH", "WithPtV2")
+        self.leptonMVAKindTTH = getattr(self.cfg_ana, "leptonMVAKindTTH", "forMoriond16")
         self.leptonMVAPathTTH = getattr(self.cfg_ana, "leptonMVAPathTTH", "CMGTools/TTHAnalysis/data/leptonMVA/tth/%s_BDTG.weights.xml")
         if self.leptonMVAPathTTH[0] != "/": self.leptonMVAPathTTH = "%s/src/%s" % ( os.environ['CMSSW_BASE'], self.leptonMVAPathTTH)
         self.leptonMVATTH = LeptonMVA(self.leptonMVAKindTTH, self.leptonMVAPathTTH, self.cfg_comp.isMC)
