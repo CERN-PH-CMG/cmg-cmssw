@@ -469,13 +469,13 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         TRG_TIGHT_ISO_muons_SF  *= eff_ISO_SF;
       }
       if(useEffSF==2 || useEffSF!=5){
-        // cout << "eff_TIGHT_subleading_SF"<<endl;
+	 // cout << "eff_TIGHT_subleading_SF"<<endl;
         eff_TIGHT_subleading_SF = SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(isChargePos?MuNeg_eta:MuPos_eta,isChargePos?MuNeg_pt:MuPos_pt));
         TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
       }
       if(useEffSF==2 || useEffSF!=6){
         // cout << "eff_TRG_SF"<<endl;
-        eff_TRG_SF              = SF_HLT->GetBinContent(SF_HLT->FindBin(1,isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt:MuNeg_pt));
+        eff_TRG_SF              = SF_HLT->GetBinContent(SF_HLT->FindBin(isChargePos?1:-1,isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt:MuNeg_pt));
         TRG_TIGHT_ISO_muons_SF  *= eff_TRG_SF;
       }
     }
@@ -1192,10 +1192,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             // Recoil plots: u1, u2, u1vsZpt, u2vsZpt, u1vsZptvsZrap, u2vsZptvsZrap
                             //---------------------------------------------------------------------
                             if(correctToMadgraph || controlplots){
+
+			      common_stuff::calculateU1U2(met_trasv, metphi_trasv,  ZGen_pt, ZGen_phi,
+							  ZNocorr.Pt(), ZNocorr.Phi(),  u1_recoil, u2_recoil);
+
                               double u_recoil = sqrt(u2_recoil*u2_recoil+u1_recoil*u1_recoil);
-                              
-                              common_stuff::calculateU1U2(met_trasv, metphi_trasv,  ZGen_pt, ZGen_phi,
-                                                          ZNocorr.Pt(), ZNocorr.Phi(),  u1_recoil, u2_recoil);
 
                               common_stuff::plot1D(Form("hWlike%s_u1_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                 u1_recoil, weight, h_1d, 60, -20, 20 );
@@ -1208,7 +1209,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                 ZNocorr.Pt(), u1_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, -20, 20 );
                               common_stuff::plot2D(Form("hWlike%s_u2vsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                 ZNocorr.Pt(), u2_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, -20, 20 );
-                              common_stuff::plot2D(Form("hWlike%s_u2vsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+                              common_stuff::plot2D(Form("hWlike%s_uvsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                 ZNocorr.Pt(),  u_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, +00, 20 );
 
                               common_stuff::plot2D(Form("hWlike%s_u1vsZrap_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
