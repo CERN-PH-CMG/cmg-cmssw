@@ -1,0 +1,14 @@
+weight: 1.0*hasTT_Loop*(LepGood_charge[i1_Loop[]]*LepGood_charge[i2_Loop[]]>0)*btagMediumSF_LightDown_Mini/btagMediumSF_Mini
+
+change: LepGood1_(\w+) : LepGood_\1[i1_Loop[]]
+change: LepGood2_(\w+) : LepGood_\1[i2_Loop[]]
+change: nJet40\b: nJet40_Mini
+change: htJet40j\b: htJet40j_Mini
+change: nBJetMedium25\b: nBJetMedium25_Mini
+change: nBJetLoose25\b: nBJetLoose25_Mini
+change: SR\b: SR_Loop
+change: hasTT\b: hasTT_Loop
+change: hasTF\b: hasTF_Loop
+change: hasFF\b: hasFF_Loop
+change: appWeight\b: appWeight_Loop
+

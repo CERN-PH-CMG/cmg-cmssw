@@ -1,0 +1,11 @@
+LepGood1_(\w+) : LepGood_\1[i1_SortFO[]]; AlsoData
+LepGood2_(\w+) : LepGood_\1[i2_SortFO[]]; AlsoData
+nJet40\b: nJet40_Mini; AlsoData
+htJet40j\b: htJet40j_Mini; AlsoData
+nBJetMedium25\b: nBJetMedium25_Mini; AlsoData
+nBJetLoose25\b: nBJetLoose25_Mini; AlsoData
+SR\b: SR_SortFO; AlsoData
+hasTT\b: hasTT_SortFO; AlsoData
+hasTF\b: hasTF_SortFO; AlsoData
+hasFF\b: hasFF_SortFO; AlsoData
+appWeight\b: appWeight_SortFO; AlsoData

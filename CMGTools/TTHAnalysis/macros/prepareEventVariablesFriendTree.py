@@ -9,21 +9,64 @@ from CMGTools.TTHAnalysis.tools.eventVars_2lss import EventVars2LSS
 MODULES.append( ('ttH2lss', lambda : EventVars2LSS()) )
 from CMGTools.TTHAnalysis.tools.susyVars_2lssInc import SusyVars2LSSInc 
 MODULES.append( ('susy2lss', lambda : SusyVars2LSSInc()) )
-from CMGTools.TTHAnalysis.tools.leptonJetReCleaner import LeptonJetReCleaner,_susy2lss_lepId_CB,_susy2lss_lepId_CBloose,_susy2lss_multiIso,_tthlep_lepId
-#--- TTH instances
-MODULES.append( ('leptonJetReCleanerTTH', lambda : LeptonJetReCleaner("I03Sip8", 
-                lambda lep : lep.relIso03 < 0.5 and lep.sip3d < 8 and _tthlep_lepId(lep), 
-                lambda lep : lep.mvaTTH > 0.6 and lep.mediumMuonId,
-                cleanJet = lambda lep,jet,dr : (lep.pt > 10 and dr < 0.4)) ))
-MODULES.append( ('leptonJetReCleanerTTH', lambda : LeptonJetReCleaner("MiniSip8", 
-                lambda lep : lep.miniRelIso < 0.4 and lep.sip3d < 8 and _tthlep_lepId(lep), 
-                lambda lep : lep.mvaTTH > 0.6 and lep.mediumMuonId,
-                cleanJet = lambda lep,jet,dr : (lep.pt > 10 and dr < 0.4)) ))
+from CMGTools.TTHAnalysis.tools.leptonJetReCleaner import LeptonJetReCleaner,_susy2lss_lepId_CB,_susy2lss_lepId_CBloose,_susy2lss_multiIso,_tthlep_lepId,_susy2lss_idEmu_cuts,_susy2lss_idIsoEmu_cuts,_susy2lss_lepId_loosestFO,_susy2lss_lepId_tighterFO,_susy2lss_lepId_IPcuts,_susy2lss_lepConePt1015,_susy2lss_lepId_inSituLoosestFO,_susy2lss_lepId_inSituTighterFO,_susy2lss_multiIso_relaxedForInSituApp
+from CMGTools.TTHAnalysis.tools.leptonChoiceRA5 import LeptonChoiceRA5
+##--- TTH instances
+#MODULES.append( ('leptonJetReCleanerTTH', lambda : LeptonJetReCleaner("I03Sip8", 
+#                lambda lep : lep.relIso03 < 0.5 and lep.sip3d < 8 and _tthlep_lepId(lep), 
+#                lambda lep : lep.mvaTTH > 0.6 and lep.mediumMuonId,
+#                cleanJet = lambda lep,jet,dr : (lep.pt > 10 and dr < 0.4)) ))
+#MODULES.append( ('leptonJetReCleanerTTH', lambda : LeptonJetReCleaner("MiniSip8", 
+#                lambda lep : lep.miniRelIso < 0.4 and lep.sip3d < 8 and _tthlep_lepId(lep), 
+#                lambda lep : lep.mvaTTH > 0.6 and lep.mediumMuonId,
+#                cleanJet = lambda lep,jet,dr : (lep.pt > 10 and dr < 0.4)) ))
+
+isFastSim = False
+
+utility_files_dir= "/afs/cern.ch/work/p/peruzzi/ra5trees/cms_utility_files"
+btagSF = utility_files_dir+"/CSVv2_25ns.csv"
+btagEFF = utility_files_dir+"/btageff__ttbar_powheg_pythia8_25ns.root"
+btagSF_FastSim = utility_files_dir+"/CSV_13TEV_Combined_20_11_2015_FullSim_FastSim.csv"
+
 #--- Susy multilep instances
-MODULES.append( ('leptonJetReCleanerSusy', lambda : LeptonJetReCleaner("Mini", 
-                lambda lep : lep.miniRelIso < 0.4 and _susy2lss_lepId_CBloose(lep), 
-                lambda lep : lep.sip3d < 4 and _susy2lss_multiIso(lep) and _susy2lss_lepId_CB(lep),
-                cleanJet = lambda lep,jet,dr : (lep.pt > 10 and dr < 0.4)) ))
+MODULES.append( ('leptonJetReCleanerSusyQCD', lambda : LeptonJetReCleaner("Mini", 
+                   lambda lep : lep.miniRelIso < 0.4 and _susy2lss_lepId_CBloose(lep), 
+                   lambda lep : lep.pt>10 and _susy2lss_lepId_loosestFO(lep) and _susy2lss_lepId_IPcuts(lep), # cuts applied on top of loose
+                   lambda lep,ht : lep.pt>10 and _susy2lss_lepConePt1015(lep) and _susy2lss_lepId_IPcuts(lep) and (_susy2lss_lepId_loosestFO(lep) if ht>300 else _susy2lss_lepId_tighterFO(lep)), # cuts applied on top of loose
+                   lambda lep,ht : lep.pt>10 and _susy2lss_lepConePt1015(lep) and _susy2lss_multiIso(lep) and _susy2lss_lepId_CB(lep) and (ht>300 or _susy2lss_idIsoEmu_cuts(lep)), # cuts applied on top of loose
+                   cleanJet = lambda lep,jet,dr : dr<0.4,
+                   selectJet = lambda jet: abs(jet.eta)<2.4,
+                   isFastSim = isFastSim,
+                   CSVbtagFileName = btagSF, EFFbtagFileName = btagEFF, CSVbtagFileNameFastSim = btagSF_FastSim ) ))
+
+#MODULES.append( ('leptonJetReCleanerSusyInSitu', lambda : LeptonJetReCleaner("MiniInSitu", 
+#                lambda lep : lep.miniRelIso < 0.4 and _susy2lss_lepId_CBloose(lep), 
+#                lambda lep : lep.pt>10 and _susy2lss_lepId_loosestFO(lep) and _susy2lss_lepId_IPcuts(lep), # cuts applied on top of loose
+#                lambda lep,ht : lep.pt>10 and _susy2lss_lepConePt1015(lep) and _susy2lss_lepId_IPcuts(lep) and (_susy2lss_lepId_inSituLoosestFO(lep) if ht>300 else _susy2lss_lepId_inSituTighterFO(lep)) and _susy2lss_multiIso_relaxedForInSituApp(lep), # cuts applied on top of loose
+#                lambda lep,ht : lep.pt>10 and _susy2lss_lepConePt1015(lep) and _susy2lss_multiIso(lep) and _susy2lss_lepId_CB(lep) and (ht>300 or _susy2lss_idIsoEmu_cuts(lep)), # cuts applied on top of loose
+#                cleanJet = lambda lep,jet,dr : dr<0.4,
+#                selectJet = lambda jet: abs(jet.eta)<2.4,
+#                isMC = True, # SET TO THE RIGHT THING
+#                CSVbtagFileName = btagSF, EFFbtagFileName = btagEFF ) ))
+
+#FRname=utility_files_dir+"/FakeRatesUCSXMethod_301115_withEWKsyst_v6.root"
+FRname="hardcodedUCSx"
+FS_lepSF=[utility_files_dir+"/sf_mu_mediumID_multi.root",utility_files_dir+"/sf_el_tight_IDEmu_ISOEMu_ra5.root"]
+
+MODULES.append( ('leptonChoiceRA5', lambda : LeptonChoiceRA5("Loop","Mini",whichApplication="Fakes",lepChoiceMethod="TT_loopTF_2FF",FRFileName=FRname,isFastSim=isFastSim,lepSFFileNameFastSim=FS_lepSF))) 
+#MODULES.append( ('leptonChoiceRA5_FO', lambda : LeptonChoiceRA5("SortFO","Mini",whichApplication="Fakes",lepChoiceMethod="sort_FO",FRFileName=FRname,isFastSim=isFastSim,lepSFFileNameFastSim=FS_lepSF))) 
+#MODULES.append( ('leptonChoiceRA5_InSitu', lambda : LeptonChoiceRA5("InSitu","MiniInSitu",whichApplication="Fakes",lepChoiceMethod="TT_loopTF_2FF",FRFileName="InSituHardCoded",isFastSim=isFastSim,lepSFFileNameFastSim=FS_lepSF))) 
+MODULES.append( ('leptonChoiceRA5_Flips', lambda : LeptonChoiceRA5("Flips","Mini",whichApplication="Flips",FRFileName="hardcodedUCSx",isFastSim=isFastSim,lepSFFileNameFastSim=FS_lepSF)))
+#MODULES.append( ('leptonChoiceRA5_WZ', lambda : LeptonChoiceRA5("WZ","Mini",whichApplication="WZ",isFastSim=isFastSim,lepSFFileNameFastSim=FS_lepSF)))
+
+
+#MODULES.append( ('leptonJetReCleanerSusyFO', lambda : LeptonJetReCleaner("FOsel", 
+#                lambda lep : lep.miniRelIso < 0.4 and _susy2lss_lepId_CBloose(lep), 
+#                lambda lep : (_susy2lss_lepId_loosestFO(lep) and _susy2lss_lepId_IPcuts(lep)), # cuts applied on top of previous selection
+#                lambda lep,ht : _susy2lss_lepId_IPcuts(lep) and (_susy2lss_lepId_loosestFO(lep) if ht>300 else _susy2lss_lepId_tighterFO(lep)),
+#                cleanJet = lambda lep,jet,dr : (lep.conept > (10 if abs(lep.pdgId)==13 else 15) and dr < 0.4),
+#                selectJet = lambda jet: abs(jet.eta)<2.4,
+#                isMC = True ) )) # SET TO THE RIGHT THING
 from CMGTools.TTHAnalysis.tools.leptonFakeRateQCDVars import LeptonFakeRateQCDVars
 #--- TTH instances
 MODULES.append( ('leptonFakeRateQCDVarsTTH', lambda : LeptonFakeRateQCDVars(
@@ -31,76 +74,52 @@ MODULES.append( ('leptonFakeRateQCDVarsTTH', lambda : LeptonFakeRateQCDVars(
                 lambda jet, lep, dr : jet.pt > (20 if abs(jet.eta)<2.4 else 30) and dr > 0.7) ) )
 #--- Susy multilep instances
 MODULES.append( ('leptonFakeRateQCDVarsSusy', lambda : LeptonFakeRateQCDVars(
-                lambda lep : lep.miniRelIso < 0.4 and _susy2lss_lepId_CBloose(lep),
+                lambda lep : lep.miniRelIso < 0.4 and _susy2lss_lepId_CBloose(lep) and _susy2lss_lepId_loosestFO(lep) and _susy2lss_lepId_IPcuts(lep),
                 lambda jet, lep, dr : jet.pt > 40 and abs(jet.eta)<2.4 and dr > 1.0 and jet.id ) ) )
 
-from CMGTools.TTHAnalysis.tools.leptonJetReCleaner import _susy2lss_multiIso_withMiniIsoRelaxed_ConePtJetPtRatio,_susy2lss_multiIso_withMiniIsoRelaxed_CutForFO4
-list_cuts_tightlepid_nomultiiso_noeltightmvaid_nosip_nodxy = [
-            lambda lep : (abs(lep.pdgId)==11 or abs(lep.pdgId)==13),
-            lambda lep : lep.miniRelIso<0.4,
-            lambda lep : abs(lep.dz)<0.1,
-            lambda lep : lep.pt > 10,
-            lambda lep : ((abs(lep.eta)<2.4 and abs(lep.pdgId)==13) or (abs(lep.eta)<2.5 and abs(lep.pdgId)==11)),
-            lambda lep : ((abs(lep.pdgId)!=11) or abs(lep.eta)<1.4442 or abs(lep.eta)>1.566),
-            lambda lep : (lep.mediumMuonId > 0 or abs(lep.pdgId)!=13),
-            lambda lep : (lep.mvaIdPhys14 > -0.11+(-0.35+0.11)*(abs(lep.eta)>0.8)+(-0.55+0.35)*(abs(lep.eta)>1.479) or abs(lep.pdgId)!=11),
-            lambda lep : (lep.lostHits==0 or abs(lep.pdgId)!=11),
-            lambda lep : lep.convVeto,
-            lambda lep : lep.tightCharge > (abs(lep.pdgId) == 11),
-            lambda lep: (lep.mcMatchId == 0) if hasattr(lep,"mcMatchId") else True
-            ]
+#from CMGTools.TTHAnalysis.tools.leptonJetReCleaner import _susy2lss_multiIso_withMiniIsoRelaxed_ConePtJetPtRatio,_susy2lss_multiIso_withMiniIsoRelaxed_CutForFO4
 
 from CMGTools.TTHAnalysis.tools.objTagger import ObjTagger
-MODULES.append ( ('leptonFakeRateFO1', lambda : ObjTagger('FO1','LepGood',
-            list_cuts_tightlepid_nomultiiso_noeltightmvaid_nosip_nodxy+[
-                lambda lep : (lep.mvaIdPhys14 > 0.73+(0.57-0.73)*(abs(lep.eta)>0.8)+(+0.05-0.57)*(abs(lep.eta)>1.479) or abs(lep.pdgId)!=11),
-                lambda lep : lep.sip3d<4,
-                lambda lep : abs(lep.dxy)<0.05,
-            ]) ) )
-MODULES.append ( ('leptonFakeRateFO2', lambda : ObjTagger('FO2','LepGood',
-            list_cuts_tightlepid_nomultiiso_noeltightmvaid_nosip_nodxy+[
-                lambda lep : lep.sip3d<4,
-                lambda lep : abs(lep.dxy)<0.05,
-            ]) ) )
-MODULES.append ( ('leptonFakeRateFO3', lambda : ObjTagger('FO3','LepGood',
-            list_cuts_tightlepid_nomultiiso_noeltightmvaid_nosip_nodxy+[
-                lambda lep : _susy2lss_multiIso_withMiniIsoRelaxed_ConePtJetPtRatio(lep),
-                lambda lep : (lep.mvaIdPhys14 > 0.73+(0.57-0.73)*(abs(lep.eta)>0.8)+(+0.05-0.57)*(abs(lep.eta)>1.479) or abs(lep.pdgId)!=11),
-                lambda lep : lep.sip3d<4,
-                lambda lep : abs(lep.dxy)<0.05,
-            ]) ) )
-MODULES.append ( ('leptonFakeRateFO4', lambda : ObjTagger('FO4','LepGood',
-            list_cuts_tightlepid_nomultiiso_noeltightmvaid_nosip_nodxy+[
-                lambda lep : _susy2lss_multiIso_withMiniIsoRelaxed_CutForFO4(lep),
-                lambda lep : (lep.mvaIdPhys14 > 0.73+(0.57-0.73)*(abs(lep.eta)>0.8)+(+0.05-0.57)*(abs(lep.eta)>1.479) or abs(lep.pdgId)!=11),
-                lambda lep : lep.sip3d<4,
-                lambda lep : abs(lep.dxy)<0.05,
-            ]) ) )
-MODULES.append ( ('leptonFakeRateFO1InSitu', lambda : ObjTagger('FO1InSitu','LepGood',
-            list_cuts_tightlepid_nomultiiso_noeltightmvaid_nosip_nodxy+[
-                lambda lep : (lep.mvaIdPhys14 > 0.73+(0.57-0.73)*(abs(lep.eta)>0.8)+(+0.05-0.57)*(abs(lep.eta)>1.479) or abs(lep.pdgId)!=11),
-                lambda lep : lep.sip3d>=4,
-            ]) ) )
-MODULES.append ( ('leptonFakeRateFO2InSitu', lambda : ObjTagger('FO2InSitu','LepGood',
-            list_cuts_tightlepid_nomultiiso_noeltightmvaid_nosip_nodxy+[
-                lambda lep : lep.sip3d>=4,
-            ]) ) )
-MODULES.append ( ('leptonFakeRateFO3InSitu', lambda : ObjTagger('FO3InSitu','LepGood',
-            list_cuts_tightlepid_nomultiiso_noeltightmvaid_nosip_nodxy+[
-                lambda lep : _susy2lss_multiIso_withMiniIsoRelaxed_ConePtJetPtRatio(lep),
-                lambda lep : (lep.mvaIdPhys14 > 0.73+(0.57-0.73)*(abs(lep.eta)>0.8)+(+0.05-0.57)*(abs(lep.eta)>1.479) or abs(lep.pdgId)!=11),
-                lambda lep : lep.sip3d>=4,
-            ]) ) )
-MODULES.append ( ('leptonFakeRateFO4InSitu', lambda : ObjTagger('FO4InSitu','LepGood',
-            list_cuts_tightlepid_nomultiiso_noeltightmvaid_nosip_nodxy+[
-                lambda lep : _susy2lss_multiIso_withMiniIsoRelaxed_CutForFO4(lep),
-                lambda lep : (lep.mvaIdPhys14 > 0.73+(0.57-0.73)*(abs(lep.eta)>0.8)+(+0.05-0.57)*(abs(lep.eta)>1.479) or abs(lep.pdgId)!=11),
-                lambda lep : lep.sip3d>=4,
-            ]) ) )
+MODULES.append ( ('leptonFakeRateFO2', lambda: ObjTagger('FO2','LepGood',[
+                lambda lep: lep.miniRelIso<0.4,
+                lambda lep: _susy2lss_lepId_CBloose(lep),
+                lambda lep: _susy2lss_lepId_loosestFO(lep),
+                lambda lep: _susy2lss_lepId_IPcuts(lep),
+                ] ) ) )
+MODULES.append ( ('leptonFakeRateFO2iso', lambda: ObjTagger('FO2iso','LepGood',[
+                lambda lep: lep.miniRelIso<0.4,
+                lambda lep: _susy2lss_lepId_CBloose(lep),
+                lambda lep: _susy2lss_lepId_tighterFO(lep),
+                lambda lep: _susy2lss_lepId_IPcuts(lep),
+                ] ) ) )
+MODULES.append ( ('leptonFakeRateFO2InSitu', lambda: ObjTagger('FO2InSitu','LepGood',[
+                lambda lep: lep.miniRelIso<0.4,
+                lambda lep: _susy2lss_lepId_CBloose(lep),
+                lambda lep: _susy2lss_lepId_loosestFO(lep),
+                ] ) ) )
+MODULES.append ( ('leptonFakeRateFO2isoInSitu', lambda: ObjTagger('FO2isoInSitu','LepGood',[
+                lambda lep: lep.miniRelIso<0.4,
+                lambda lep: _susy2lss_lepId_CBloose(lep),
+                lambda lep: _susy2lss_lepId_tighterFO(lep),
+                ] ) ) )
 
-#from CMGTools.TTHAnalysis.tools.vertexWeightFriend import VertexWeightFriend
-#pufile="../path/to/nvtx/file.root"
-#MODULES.append ( ('puWeights', VertexWeightFriend(pufile,pufile,"nvtx_signal","nvtx_data",verbose=True) ) )
+# obsolete: it is now calculated in ntupleTypes
+#MODULES.append ( ('leptonIdEmuCuts', ObjTagger('idEmu','LepGood',[lambda lep: _susy2lss_idEmu_cuts(lep)]) ) )
+#MODULES.append ( ('leptonIdIsoEmuCuts', ObjTagger('idIsoEmu','LepGood',[lambda lep: _susy2lss_idIsoEmu_cuts(lep)]) ) )
+
+from CMGTools.TTHAnalysis.tools.vertexWeightFriend import VertexWeightFriend
+
+pufile="/afs/cern.ch/user/p/peruzzi/work/cmgtools/CMSSW_7_4_14/src/CMGTools/TTHAnalysis/python/plotter/susy-multilepton/for-pu-rew/pu_plots_258750/zjets-4-nvtx_plots.root"
+MODULES.append ( ('puWeightsVtx', lambda : VertexWeightFriend(pufile,pufile,"nvtx_signal","nvtx_data",verbose=True) ) )
+
+putruefiledata_central = utility_files_dir+"/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_pileup_69000_50.root"
+putruefiledata_up = utility_files_dir+"/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_pileup_69000_50_p5pc.root"
+putruefiledata_down = utility_files_dir+"/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_pileup_69000_50_m5pc.root"
+putruefilemc = "/afs/cern.ch/user/p/peruzzi/work/cmgtools/CMSSW_7_4_14/src/CMGTools/TTHAnalysis/python/plotter/susy-multilepton/for-pu-rew/pu_plots_true_miniAODv2/zjets-4-nvtx_plots_true.root"
+MODULES.append ( ('puWeightsTrue_central', lambda : VertexWeightFriend(putruefilemc,putruefiledata_central,"nTrueInt_signal","pileup",verbose=True,vtx_coll_to_reweight="nTrueInt",name="vtxWeight") ) )
+MODULES.append ( ('puWeightsTrue_up', lambda : VertexWeightFriend(putruefilemc,putruefiledata_up,"nTrueInt_signal","pileup",verbose=True,vtx_coll_to_reweight="nTrueInt",postfix="up",name="vtxWeightUp") ) )
+MODULES.append ( ('puWeightsTrue_down', lambda : VertexWeightFriend(putruefilemc,putruefiledata_down,"nTrueInt_signal","pileup",verbose=True,vtx_coll_to_reweight="nTrueInt",postfix="down",name="vtxWeightDown") ) )
+
 
 
 from CMGTools.TTHAnalysis.tools.objFloatCalc import ObjFloatCalc
@@ -169,6 +188,8 @@ class VariableProducer(Module):
         self.t = PyTree(self.book("TTree","t","t"))
         self.branches = {}
         for name,mod in self._modules:
+            print name
+            print mod.listBranches()
             for B in mod.listBranches():
                 # don't add the same branch twice
                 if B in self.branches: 
@@ -236,10 +257,16 @@ jobs = []
 for D in glob(args[0]+"/*"):
     treename = options.tree
     fname    = "%s/%s/%s_tree.root" % (D,options.tree,options.tree)
-    if (not os.path.exists(fname)) and os.path.exists("%s/%s/tree.root" % (D,options.tree)):
+    if (not os.path.exists(fname)) and (os.path.exists("%s/%s/tree.root" % (D,options.tree)) ):
         treename = "tree"
         fname    = "%s/%s/tree.root" % (D,options.tree)
-    if os.path.exists(fname):
+
+    if (not os.path.exists(fname)) and (os.path.exists("%s/%s/tree.root.url" % (D,options.tree)) ):
+        treename = "tree"
+        fname    = "%s/%s/tree.root" % (D,options.tree)
+        fname    = open(fname+".url","r").readline().strip()
+
+    if os.path.exists(fname) or (os.path.exists("%s/%s/tree.root.url" % (D,options.tree))):
         short = os.path.basename(D)
         if options.datasets != []:
             if short not in options.datasets: continue
@@ -280,7 +307,7 @@ for D in glob(args[0]+"/*"):
                 r = xrange(int(i*chunk),min(int((i+1)*chunk),entries))
                 jobs.append((short,fname,"%s/evVarFriend_%s.chunk%d.root" % (args[1],short,i),data,r,i))
 print "\n"
-print "I have %d taks to process" % len(jobs)
+print "I have %d task(s) to process" % len(jobs)
 
 if options.queue:
     import os, sys
@@ -305,13 +332,23 @@ maintimer = ROOT.TStopwatch()
 def _runIt(myargs):
     (name,fin,fout,data,range,chunk) = myargs
     timer = ROOT.TStopwatch()
-    fb = ROOT.TFile(fin)
+    if "root://" in fin:        
+        ROOT.gEnv.SetValue("TFile.AsyncReading", 1);
+        ROOT.gEnv.SetValue("XNet.Debug", -1); # suppress output about opening connections
+        ROOT.gEnv.SetValue("XrdClientDebug.kUSERDEBUG", -1); # suppress output about opening connections
+        fb   = ROOT.TXNetFile(fin+"?readaheadsz=65535")
+    else:
+        fb = ROOT.TFile(fin)
+
+    print "getting tree.."
     tb = fb.Get(options.tree)
+
     if not tb: tb = fb.Get("tree") # new trees
     if options.vectorTree:
         tb.vectorTree = True
     else:
         tb.vectorTree = False
+
     friends = options.friendTrees[:]
     friends += (options.friendTreesData if data else options.friendTreesMC)
     friends_ = [] # to make sure pyroot does not delete them

@@ -1,0 +1,14 @@
+weight: appWeight_Flips*hasTF_Flips*(LepGood_charge[i1_Flips[]]*LepGood_charge[i2_Flips[]]<0)
+
+change: LepGood1_(\w+) : LepGood_\1[i1_Flips[]]
+change: LepGood2_(\w+) : LepGood_\1[i2_Flips[]]
+change: nJet40\b: nJet40_Mini
+change: htJet40j\b: htJet40j_Mini
+change: nBJetMedium25\b: nBJetMedium25_Mini
+change: nBJetLoose25\b: nBJetLoose25_Mini
+change: SR\b: SR_Flips
+change: hasTT\b: hasTT_Flips
+change: hasTF\b: hasTF_Flips
+change: hasFF\b: hasFF_Flips
+change: appWeight\b: appWeight_Flips
+
