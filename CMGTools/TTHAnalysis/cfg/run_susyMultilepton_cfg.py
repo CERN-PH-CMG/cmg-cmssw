@@ -665,8 +665,17 @@ elif test == '74X-MC':
         selectedComponents = [ TTLep_pow ]
         comp = selectedComponents[0]
         comp.files = [ '/store/mc/RunIISpring15DR74/TTTo2L2Nu_13TeV-powheg/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/50000/0C1B984D-F408-E511-872E-0002C90B7F2E.root' ]
-        if is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
+        if is50ns or runData or not old74XMiniAODs: raise RuntimeError, 'Incorrect is50ns or runData or old74XMiniAODs configuration'
         tmpfil = os.path.expandvars("/tmp/$USER/0C1B984D-F408-E511-872E-0002C90B7F2E.root")
+        if not os.path.exists(tmpfil):
+            os.system("xrdcp root://eoscms//eos/cms%s %s" % (comp.files[0],tmpfil))
+        comp.files = [ tmpfil ]
+    elif what == "TTLep_v2":
+        selectedComponents = [ TTLep_pow ]
+        comp = selectedComponents[0]
+        comp.files = [ '/store/mc/RunIISpring15MiniAODv2/TTTo2L2Nu_13TeV-powheg/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/725B5B34-C66D-E511-86AC-001E67248688.root' ]
+        if is50ns or runData or old74XMiniAODs: raise RuntimeError, 'Incorrect is50ns or runData or old74XMiniAODs configuration'
+        tmpfil = os.path.expandvars("/tmp/$USER/725B5B34-C66D-E511-86AC-001E67248688.root")
         if not os.path.exists(tmpfil):
             os.system("xrdcp root://eoscms//eos/cms%s %s" % (comp.files[0],tmpfil))
         comp.files = [ tmpfil ]
@@ -706,6 +715,27 @@ elif test == 'PromptReco':
         else:
             comp.fineSplitFactor = 2
     if jsonAna in sequence: sequence.remove(jsonAna)
+elif test == 'PromptRecoD':
+    DoubleMuon = kreator.makeDataComponent("DoubleMuon_Run2015D_run260577",
+                        "/DoubleMuon/Run2015D-PromptReco-v4/MINIAOD", 
+                        "CMS", ".*root",
+                        run_range = (260577,260577),
+                        triggers = triggers_mumu_iso)
+    DoubleEG = kreator.makeDataComponent("DoubleEG_Run2015D_run260577",
+                        "/DoubleEG/Run2015D-PromptReco-v4/MINIAOD", 
+                        "CMS", ".*root",
+                        run_range = (260577,260577),
+                        triggers = triggers_ee)
+    selectedComponents = [ DoubleMuon, DoubleEG ]
+    if old74XMiniAODs or doMETpreprocessor or is50ns or not runData: raise RuntimeError, 'Wrong settings'
+    for comp in selectedComponents:
+        comp.json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
+        comp.splitFactor = 1
+        if not getHeppyOption("full"):
+            comp.files = comp.files[:1]
+            comp.fineSplitFactor = 2
+        else:
+            comp.splitFactor = len(comp.files)
 elif test == "express":
 
 #    # beware of cmgdataset caching!!!
