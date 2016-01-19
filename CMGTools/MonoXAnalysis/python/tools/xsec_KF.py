@@ -44,12 +44,7 @@ class xsec_KF:
         searchedIds = [23,24]
         kf = 1.0
         for p in genParts:
-            if abs(p.pdgId) in searchedIds: 
+            if abs(p.pdgId) in searchedIds and p.motherId == -9999: 
                 kf = self.getEvKF(abs(p.pdgId),p.pt,self.systematic)
-                print "PDG ID = ",p.pdgId, "  pt = ",p.pt,"  kf = ", kf
         ret['NLO'] = kf
         return ret
-
-
-        
-            
