@@ -1,11 +1,19 @@
 from CMGTools.TTHAnalysis.treeReAnalyzer import *
 from CMGTools.MonoXAnalysis.tools.PileUpReWeighter import PileUpReWeighter
+from CMGTools.MonoXAnalysis.tools.BTagWeightCalculator import BTagWeightCalculator
+import types
+
+BTagReweight74X = lambda : BTagWeightCalculator("/afs/cern.ch/work/g/gpetrucc/CMSSW_7_4_13/src/CMGTools/TTHAnalysis/data/btag/csv_rwt_fit_hf_2015_11_20.root",
+                                                "/afs/cern.ch/work/g/gpetrucc/CMSSW_7_4_13/src/CMGTools/TTHAnalysis/data/btag/csv_rwt_fit_lf_2015_11_20.root")
 
 class EventVarsMonojet:
     def __init__(self):
-        self.branches = [ "nMu10V", "nMu20T", "nEle10V", "nEle20T", "nTau18V", "nGamma15V", "nGamma175T", "nBTag15",
-                          "dphijj", "dphijm", "weight", "events_ntot", "phmet_pt", "phmet_phi"
+        self.branches = [ "nMu10V", "nMu20T", "nEle10V", "nEle40T", "nTau18V", "nGamma15V", "nGamma175T", "nBTag15",
+                          "dphijj", "dphijm", "weight", "events_ntot", "phmet_pt", "phmet_phi","SF_BTag"
                           ]
+        btagreweight = BTagReweight74X()
+        self._btagreweight = (btagreweight() if type(btagreweight) == types.FunctionType else btagreweight)
+        self._btagreweight.btag = "btagCSV"
     def initSampleNormalization(self,sample_nevt):
         self.sample_nevt = sample_nevt        
     def listBranches(self):
@@ -33,7 +41,7 @@ class EventVarsMonojet:
             return lep.lostHits <= (2 if abs(lep.etaSc)<1.479 else 3)
     def lepIdTight(self,lep):
         if abs(lep.pdgId) == 13:
-            if lep.pt <= 20: return False
+            if lep.pt <= 40: return False
             return abs(lep.eta) < 2.4 and lep.tightId > 0 and lep.relIso04 < 0.12
         elif abs(lep.pdgId) == 11:
             if lep.pt <= 40: return False
@@ -57,6 +65,10 @@ class EventVarsMonojet:
         ret = ROOT.TVector3()
         ret.SetXYZ(px,py,0.)
         return ret
+    def BTagEventReweight(self,jets,rwtKind='final',rwtSyst='nominal',mcOnly=True):
+        # for j in jets:
+        #     print "    single wgt for jpt=%.3f jeta=%.3f, mcFlav=%d, btag=%.3f, SF=%.3f" % (j.pt, j.eta, j.mcFlavour, j.btagCSV, self._btagreweight.calcJetWeight(j,rwtKind,rwtSyst) )
+        return self._btagreweight.calcEventWeight(jets, rwtKind, rwtSyst)
     def __call__(self,event):
         # prepare output
         ret = {}; jetret = {}; tauret = {}
@@ -66,7 +78,7 @@ class EventVarsMonojet:
         ret['nMu10V'] = sum([(abs(l.pdgId)==13 and int(self.lepIdVeto(l))) for l in leps ])
         ret['nMu20T'] = sum([(abs(l.pdgId)==13 and int(self.lepIdTight(l))) for l in leps ])
         ret['nEle10V'] = sum([(abs(l.pdgId)==11 and int(self.lepIdVeto(l))) for l in leps ])
-        ret['nEle20T'] = sum([(abs(l.pdgId)==11 and int(self.lepIdTight(l))) for l in leps ])
+        ret['nEle40T'] = sum([(abs(l.pdgId)==11 and int(self.lepIdTight(l))) for l in leps ])
         taus = [t for t in Collection(event,"TauGood","nTauGood")]
         ret['nTau18V'] = sum([(int(self.tauIdVeto(t))) for t in taus ])
         photons = [p for p in Collection(event,"GammaGood","nGammaGood")]
@@ -142,12 +154,17 @@ class EventVarsMonojet:
         # 5. compute the sums 
         ret["nJetClean30"] = 0
         ret["nBTag15"] = 0
+        lowptjets = []
         for j in jets: # these are all central
             if not j._clean: continue
             if j.pt > 30:
                 ret["nJetClean30"] += 1
-            if j.pt > 15  and j.btagCSV > 0.89:
-                ret["nBTag15"] += 1
+            if j.pt > 15:
+                lowptjets.append(j)
+                if j.btagCSV > 0.89:
+                    ret["nBTag15"] += 1
+
+        ret["SF_BTag"] = self.BTagEventReweight(lowptjets) if event.run == 1 else 1.0
 
         ### muon-tau cleaning
         # Define cleaned taus
