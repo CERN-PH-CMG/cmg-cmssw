@@ -319,14 +319,14 @@ class TreeToYield:
                 if profile2D:
                     histo = ROOT.TProfile2D("dummy","dummy",len(xedges)-1,array('d',xedges),len(yedges)-1,array('d',yedges))
                 else:
-                    histo = ROOT.TH2F("dummy","dummy",len(xedges)-1,array('f',xedges),len(yedges)-1,array('f',yedges))
+                    histo = ROOT.TH2D("dummy","dummy",len(xedges)-1,array('f',xedges),len(yedges)-1,array('f',yedges))
             else:
                 (nbx,xmin,xmax,nby,ymin,ymax) = bins.split(",")
                 if profile2D:
                     histo = ROOT.TProfile2D("dummy","dummy",int(nbx),float(xmin),float(xmax),int(nby),float(ymin),float(ymax))
                     unbinnedData2D = False 
                 else:
-                    histo = ROOT.TH2F("dummy","dummy",int(nbx),float(xmin),float(xmax),int(nby),float(ymin),float(ymax))
+                    histo = ROOT.TH2D("dummy","dummy",int(nbx),float(xmin),float(xmax),int(nby),float(ymin),float(ymax))
                     unbinnedData2D = (self._name == "data") and unbinnedData2D
         elif nvars == 3:
             ez,ey,ex = [ e.replace("--","::") for e in expr.replace("::","--").split(":") ]
@@ -335,10 +335,10 @@ class TreeToYield:
                 xedges = [ float(f) for f in xbins[1:-1].split(",") ]
                 yedges = [ float(f) for f in ybins[1:-1].split(",") ]
                 zedges = [ float(f) for f in zbins[1:-1].split(",") ]
-                histo = ROOT.TH3F("dummy","dummy",len(xedges)-1,array('f',xedges),len(yedges)-1,array('f',yedges),len(zedges)-1,array('f',zedges))
+                histo = ROOT.TH3D("dummy","dummy",len(xedges)-1,array('f',xedges),len(yedges)-1,array('f',yedges),len(zedges)-1,array('f',zedges))
             else:
                 (nbx,xmin,xmax,nby,ymin,ymax,nbz,zmin,zmax) = bins.split(",")
-                histo = ROOT.TH3F("dummy","dummy",int(nbx),float(xmin),float(xmax),int(nby),float(ymin),float(ymax),int(nbz),float(zmin),float(zmax))
+                histo = ROOT.TH3D("dummy","dummy",int(nbx),float(xmin),float(xmax),int(nby),float(ymin),float(ymax),int(nbz),float(zmin),float(zmax))
             histo.GetXaxis().SetTitle(ex)
             histo.GetYaxis().SetTitle(ey)
             histo.GetZaxis().SetTitle(ez)
@@ -346,8 +346,9 @@ class TreeToYield:
             raise RuntimeError, "Can't make a plot with %d dimensions" % nvars
         histo.Sumw2()
         if unbinnedData2D:
-            self._tree.Draw("%s" % expr, cut, "", self._options.maxEntries)
-            graph = ROOT.gROOT.FindObject("Graph").Clone(name)
+            nent = self._tree.Draw("%s" % expr, cut, "", self._options.maxEntries)
+            if nent == 0: return ROOT.TGraph(0)
+            graph = ROOT.gROOT.FindObject("Graph").Clone(name) #ROOT.gPad.GetPrimitive("Graph").Clone(name)
             return graph
         drawOpt = "goff"
         if profile1D or profile2D: drawOpt += " PROF";
