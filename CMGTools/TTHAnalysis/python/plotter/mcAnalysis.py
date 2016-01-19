@@ -127,6 +127,9 @@ class MCAnalysis:
                     nevt = counters['All Events']
                     scale = "%s/%g" % (field[2], 0.001*nevt)
                 if len(field) == 4: scale += "*("+field[3]+")"
+                for p0,s in options.processesToScale:
+                    for p in p0.split(","):
+                        if re.match(p+"$", pname): scale += "*("+s+")"
                 tty.setScaleFactor(scale)
                 if options.fullSampleYields:
                     fullYield = 0.0;
@@ -166,6 +169,9 @@ class MCAnalysis:
             for p0 in options.processesToFix:
                 for p in p0.split(","):
                     if re.match(p+"$", pname): tty.setOption('FreeFloat', False)
+            for p0, p1 in options.processesToPeg:
+                for p in p0.split(","):
+                    if re.match(p+"$", pname): tty.setOption('PegNormToProcess', p1)
             if pname not in self._rank: self._rank[pname] = len(self._rank)
         #if len(self._signals) == 0: raise RuntimeError, "No signals!"
         #if len(self._backgrounds) == 0: raise RuntimeError, "No backgrounds!"
@@ -427,6 +433,8 @@ def addMCAnalysisOptions(parser,addTreeToYieldOnesToo=True):
     parser.add_option("--sp", "--signal-process", dest="processesAsSignal", type="string", default=[], action="append", help="Processes to set as signal (overriding the '+' in the text file)");
     parser.add_option("--float-process", "--flp", dest="processesToFloat", type="string", default=[], action="append", help="Processes to set as freely floating (overriding the 'FreeFloat' in the text file; affects e.g. mcPlots with --fitData)");
     parser.add_option("--fix-process", "--fxp", dest="processesToFix", type="string", default=[], action="append", help="Processes to set as not freely floating (overriding the 'FreeFloat' in the text file; affects e.g. mcPlots with --fitData)");
+    parser.add_option("--peg-process", dest="processesToPeg", type="string", default=[], nargs=2, action="append", help="--peg-process X Y make X scale as Y (equivalent to set PegNormToProcess=Y in the mca.txt)");
+    parser.add_option("--scale-process", dest="processesToScale", type="string", default=[], nargs=2, action="append", help="--scale-process X Y make X scale by Y (equivalent to add it in the mca.txt)");
     parser.add_option("--AP", "--all-processes", dest="allProcesses", action="store_true", help="Include also processes that are marked with SkipMe=True in the MCA.txt")
     parser.add_option("--project", dest="project", type="string", help="Project to a scenario (e.g 14TeV_300fb_scenario2)")
     parser.add_option("--plotgroup", dest="plotmergemap", type="string", default=[], action="append", help="Group plots into one. Syntax is '<newname> := (comma-separated list of regexp)', can specify multiple times. Note it is applied after plotting.")
