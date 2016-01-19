@@ -50,9 +50,9 @@ class MCAnalysis:
             field = [f.strip() for f in line.split(':')]
             if len(field) == 1 and field[0] == "*":
                 if len(self._allData): raise RuntimeError, "MCA defaults ('*') can be specified only before all processes"
-                print "Setting the following defaults for all samples: "
+                #print "Setting the following defaults for all samples: "
                 for k,v in extra.iteritems():
-                    print "\t%s: %r" % (k,v)
+                    #print "\t%s: %r" % (k,v)
                     defaults[k] = v
                 continue
             else:
