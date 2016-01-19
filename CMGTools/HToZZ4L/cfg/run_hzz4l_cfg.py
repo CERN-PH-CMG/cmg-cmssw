@@ -13,7 +13,23 @@ from CMGTools.HToZZ4L.tools.configTools import *
 #-------- SEQUENCE
 from CMGTools.HToZZ4L.samples.samples_13TeV_Spring15 import *
 
-selectedComponents = dataSamples
+selectedComponents = [ d for d in data_50ns if "SingleMu" not in d.name ]
+#redefineRunRange(selectedComponents,[258158,258158])
+#selectedComponents = [ DoubleMuon_Run2015D_PromptV4_25ns, DoubleEG_Run2015D_PromptV4_25ns, MuonEG_Run2015D_PromptV4_25ns, SingleMuon_Run2015D_PromptV4_25ns, SingleElectron_Run2015D_PromptV4_25ns ]
+#redefineRunRange(selectedComponents,[258214,258214])
+selectedComponents = H4L + [ ZZTo4L, ZZTo4L_aMC ] + GGZZTo4L + [DYJetsToLL_M10to50,DYJetsToLL_M50] + [ WZTo3LNu, TTLep ] + SingleTop
+selectedComponents = H4L + GGZZTo4L + [DYJetsToLL_M10to50,DYJetsToLL_M50] + [ WZTo3LNu, TTLep ] + SingleTop
+cropToLumi( [DYJetsToLL_M10to50,DYJetsToLL_M50,TTLep]+SingleTop, 100.0 )
+cropToLumi( [ZZTo4L, ZZTo4L_aMC]+GGZZTo4L, 500.0 )
+cropToLumi( H4L, 10000.0 )
+configureSplittingFromTime(DYJets+SingleTop+[WZTo3LNu,TTLep,GGZZTo4tau], 10.0, 1)
+configureSplittingFromTime([DYJetsToLL_M10to50], 5.0, 1)
+configureSplittingFromTime([ ZZTo4L, ZZTo4L_aMC, GGZZTo2mu2tau, GGZZTo2e2tau ], 25.0, 1)
+configureSplittingFromTime( H4L + [ GGZZTo4mu, GGZZTo4e, GGZZTo2e2mu], 100.0, 1)
+selectedComponents = [ DYJetsToLL_M50, DYJetsToLL_LO_M50, DYBJetsToLL, DYBBJetsToLL ] + DYJetsM50HT
+configureSplittingFromTime(selectedComponents, 20.0, 1)
+configureSplittingFromTime([DYJetsToLL_M50_HT400to600], 40.0, 1)
+configureSplittingFromTime([DYJetsToLL_M50_HT600toInf], 60.0, 1)
 
 sequence = cfg.Sequence(hzz4lCoreSequence)
 
@@ -21,15 +37,23 @@ for comp in mcSamples:
     comp.triggers = triggers_any
     comp.vetoTriggers = []
 
-printSummary(selectedComponents)
 
-if True: autoAAA(selectedComponents)
+doECalCorrections(era="25ns")
+
+if not getHeppyOption("test"):
+    printSummary(selectedComponents)
+    autoAAA(selectedComponents)
 
 
 from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 test = getHeppyOption('test')
 if test == "1":
-    selectedComponents = doTest1( ZZTo4L, sequence=sequence )
+    selectedComponents = doTest1( GGHZZ4L, sequence=sequence, cache=True )
+elif test == "1ZZ":
+    selectedComponents = doTest1( ZZTo4L, sequence=sequence, cache=True )
+elif test == "1F":
+    DYJetsToLL_M50.files = [ '/afs/cern.ch/work/g/gpetrucc/CMSSW_7_4_13/src/CMGTools/HToZZ4L/cfg/four-events.root' ]
+    selectedComponents = doTest1( DYJetsToLL_M50, sequence=sequence, cache=False )
 elif test in ('2','3','5'):
     doTestN(test,selectedComponents)
 elif test == "data":
@@ -53,5 +77,7 @@ elif test=="sync":
         comp.splitFactor = 1 if getHeppyOption('single') else 5
     selectedComponents = [ comp ]
     if getHeppyOption('events'): insertEventSelector(sequence)
+    doECalCorrections(sync=True)
+    
 
 config = autoConfig(selectedComponents, sequence)

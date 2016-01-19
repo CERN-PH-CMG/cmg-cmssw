@@ -1,3 +1,5 @@
+from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
+
 def autoAAA(selectedComponents):
     import re
     from CMGTools.Production import changeComponentAccessMode
@@ -30,13 +32,45 @@ def printSummary(selectedComponents):
         nev   = getattr(comp, 'dataset_entries', 0)
         lumi  = nev/(1.e3 * comp.xSection) if comp.isMC and getattr(comp,'xSection',0) > 0 else 0
         totj += njobs; totf += len(comp.files); tote += nev     
-        print "%-55s | %8d %12.3f | %7d | %8.2f %11.3f | %11.3f " % (comp.name, len(comp.files), nev/1000., njobs, len(comp.files)/float(njobs), (nev/njobs if njobs else 0)/1000, lumi)
+        print "%-55s | %8d %12.3f | %7d | %8.2f %11.3f | %11.3f " % (comp.name, len(comp.files), nev/1000., njobs, len(comp.files)/float(njobs) if njobs else 0, (nev/njobs if njobs else 0)/1000, lumi)
     print "%-55s | %8s %12s | %7s | %8s %11s | %11s" % (55*"-", 8*"-", 12*"-", 7*"-", 8*"-", 11*"-", 11*"-")
     print "%-55s | %8d %12.3f | %7d | %8.2f %11.3f |" % ("TOTAL", totf, tote/1000., totj, totf/totj, tote/totj/1000.)
 
+def configureSplittingFromTime(selectedComponents,msPerEvent,jobTimeInHours):
+    from math import ceil, floor
+    for comp in selectedComponents:
+        nev = getattr(comp, 'dataset_entries', 0)
+        if nev == 0: continue
+        njobs = (nev * msPerEvent) / (3.6e6 * jobTimeInHours)
+        filesPerJob = len(comp.files)/njobs
+        if filesPerJob < 0.6:
+            comp.splitFactor = 1
+            comp.fineSplitFactor = ceil(1.0/filesPerJob)
+        else:
+            filesPerJob = max(floor(filesPerJob),1)
+            comp.splitFactor = int(ceil(len(comp.files)/float(filesPerJob)))
+        #print "for %s: %d events, %.1f ms/ev --> %.2f jobs" % (comp.name, nev, msPerEvent, njobs)
+
+def cropToLumi(selectedComponents, maxLumi):
+    from math import ceil
+    for comp in selectedComponents:
+        nev   = getattr(comp, 'dataset_entries', 0)
+        lumi  = nev/(1.e3 * comp.xSection) if comp.isMC and getattr(comp,'xSection',0) > 0 else 0
+        if not lumi: continue
+        if lumi > maxLumi:
+            cfiles = int(ceil(len(comp.files) * maxLumi/lumi))
+            comp.dataset_entries = nev * cfiles / float(len(comp.files))
+            comp.files = comp.files[:cfiles]
+
+def prescaleComponents(selectedComponents, factor):
+    from math import ceil
+    for comp in selectedComponents:
+        comp.dataset_entries = getattr(comp, 'dataset_entries', 0) / factor 
+        comp.files = [ f for (i,f) in enumerate(comp.files) if ( (i % factor) == 0 ) ]
+
+
 def autoConfig(selectedComponents,sequence,services=[],xrd_aggressive=2):
     import PhysicsTools.HeppyCore.framework.config as cfg
-    from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
     from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
     from CMGTools.TTHAnalysis.tools.EOSEventsWithDownload import EOSEventsWithDownload
     event_class = EOSEventsWithDownload
@@ -56,7 +90,7 @@ def insertEventSelector(sequence):
     print "Will select events ",eventSelector.toSelect
 
 def doTest1(comp, url=None, sequence=None, cache=False):
-    from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
+    from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption, setHeppyOption
     comp.files = [ url if url else comp.files[0] ]
     if cache:
         import os
@@ -65,8 +99,9 @@ def doTest1(comp, url=None, sequence=None, cache=False):
             os.system("xrdcp %s %s" % (comp.files[0],tmpfil))
         comp.files = [ tmpfil ]
     comp.splitFactor = 1
-    comp.fineSplitFactor = 1 if getHeppyOption('single') else 5
+    comp.fineSplitFactor = 5 if getHeppyOption('multi') else 1
     if getHeppyOption('events'): insertEventSelector(sequence)
+    if not getHeppyOption('fetch'): setHeppyOption('nofetch')
     return [ comp ]
 
 def doTestN(test, selectedComponents):

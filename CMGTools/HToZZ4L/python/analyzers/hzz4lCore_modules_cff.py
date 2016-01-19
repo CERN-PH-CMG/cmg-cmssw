@@ -12,6 +12,7 @@ from CMGTools.HToZZ4L.analyzers.FourLeptonEventSkimmer import *
 from CMGTools.HToZZ4L.analyzers.FSRPhotonMaker import *
 from CMGTools.HToZZ4L.analyzers.GenFSRAnalyzer import *
 from CMGTools.HToZZ4L.analyzers.fourLeptonTree import *
+from CMGTools.HToZZ4L.analyzers.GenDPhiZZWeight import GenDPhiZZWeight
 from CMGTools.HToZZ4L.samples.samples_13TeV_Spring15 import *
 
 from CMGTools.TTHAnalysis.analyzers.ttHFastLepSkimmer import ttHFastLepSkimmer
@@ -21,8 +22,8 @@ fastSkim2LnoSip = cfg.Analyzer( ttHFastLepSkimmer, name="fastLepSkim2LnoSIP",
         minLeptons = 2,
 )
 fastSkim2L = fastSkim2LnoSip.clone(name="fastLepSkim2L",
-        muons = 'slimmedMuons', muCut = lambda mu : mu.pt() > 5 and abs(mu.dB(mu.PV3D) / mu.edB(mu.PV3D)) < 4,
-        electrons = 'slimmedElectrons', eleCut = lambda ele : ele.pt() > 7 and (abs(ele.dB(ele.PV3D)) <= 4*ele.edB(ele.PV3D)),
+        muCut = lambda mu : mu.pt() > 5 and abs(mu.dB(mu.PV3D) / mu.edB(mu.PV3D)) < 4,
+        eleCut = lambda ele : ele.pt() > 7 and (abs(ele.dB(ele.PV3D)) <= 4*ele.edB(ele.PV3D)),
 )
 fastSkim3L = fastSkim2L.clone(name="fastLepSkim3L", minLeptons = 3)
 fastSkim4L = fastSkim2L.clone(name="fastLepSkim3L", minLeptons = 4)
@@ -50,7 +51,9 @@ genAna = cfg.Analyzer(
 genFSRAna = cfg.Analyzer(
     GenFSRAnalyzer, name="GenFSRAnalyzer"
     )
-
+genDPhiZZWeight = cfg.Analyzer(
+    GenDPhiZZWeight, name="genDPhiZZWeight"
+)
 
 # Find the initial events before the skim
 skimAnalyzer = cfg.Analyzer(
@@ -131,8 +134,7 @@ lepAna = cfg.Analyzer(
     rhoMuon= 'fixedGridRhoFastjetAll',
     rhoElectron = 'fixedGridRhoFastjetAll',
     # energy scale corrections and ghost muon suppression (off by default)
-    doMuScleFitCorrections=False, # "rereco"
-    doRochesterCorrections=False,
+    doMuonScaleCorrections=False,
     doElectronScaleCorrections=False, # "embedded" in 5.18 for regression
     doSegmentBasedMuonCleaning=True,
     notCleaningElectrons=True, # no deltaR(ele,mu) cleaning at this step
@@ -183,6 +185,7 @@ lepAna = cfg.Analyzer(
     # do MC matching 
     do_mc_match = True, # note: it will in any case try it only on MC, not on data
     match_inclusiveLeptons = False, # match to all inclusive leptons
+    do_mc_match_photons = "all", # do MC matching to all photons (packed gen particles) 
     )
 
 from CMGTools.HToZZ4L.analyzers.ElectronMuonCleaner import ElectronMuonCleaner
@@ -281,18 +284,21 @@ fourLeptonAnalyzerSignal = cfg.Analyzer(
 fourLeptonAnalyzer2P2F = cfg.Analyzer(
     FourLeptonAnalyzer2P2F, name="fourLeptonAnalyzer2P2F",
     tag = "2P2F",
+    maxCand = 999, # save all, not just the best one
     attachFsrToGlobalClosestLeptonOnly = True
 )
 
 fourLeptonAnalyzer3P1F = cfg.Analyzer(
     FourLeptonAnalyzer3P1F, name="fourLeptonAnalyzer3P1F",
     tag = "3P1F",
+    maxCand = 999, # save all, not just the best one
     attachFsrToGlobalClosestLeptonOnly = True
 )
 
 fourLeptonAnalyzerSS = cfg.Analyzer(
     FourLeptonAnalyzerSS, name="fourLeptonAnalyzerSS",
     tag = "SS",
+    maxCand = 999, # save all, not just the best one
     attachFsrToGlobalClosestLeptonOnly = True
 )
 
@@ -326,7 +332,26 @@ treeProducer = cfg.Analyzer(
 )
 
 
-
+def doECalCorrections(sync=False,era="25ns"):
+    global lepAna, fastSkim4L, fastSkim2L, fastSkim3L
+    lepAna.doElectronScaleCorrections = {
+        'GBRForest': ('$CMSSW_BASE/src/CMGTools/RootTools/data/egamma_epComb_GBRForest_74Xv2.root',
+                      'gedelectron_p4combination_'+era),
+        'isSync': sync
+    }
+    fastSkim2L.eleCut = lambda ele : ele.pt() > 7*0.97/(1+10*0.032) and (abs(ele.dB(ele.PV3D)) <= 4*ele.edB(ele.PV3D))
+    fastSkim3L.eleCut = lambda ele : ele.pt() > 7*0.97/(1+10*0.032) and (abs(ele.dB(ele.PV3D)) <= 4*ele.edB(ele.PV3D))
+    fastSkim4L.eleCut = lambda ele : ele.pt() > 7*0.97/(1+10*0.032) and (abs(ele.dB(ele.PV3D)) <= 4*ele.edB(ele.PV3D))
+def doKalmanMuonCorrections(sync=False):
+    global lepAna, fastSkim4L, fastSkim2L, fastSkim3L
+    lepAna.doMuonScaleCorrections = ( 'Kalman', {
+        'MC': 'MC_74X_13TeV',
+        'Data': 'DATA_Prompt_13TeV',
+        'isSync': sync
+    })
+    fastSkim2L.muCut = lambda mu : mu.pt() > 3 and (abs(mu.dB(mu.PV3D)) <= 4*mu.edB(mu.PV3D))
+    fastSkim3L.muCut = lambda mu : mu.pt() > 3 and (abs(mu.dB(mu.PV3D)) <= 4*mu.edB(mu.PV3D))
+    fastSkim4L.muCut = lambda mu : mu.pt() > 3 and (abs(mu.dB(mu.PV3D)) <= 4*mu.edB(mu.PV3D))
 
 # Core sequence of all common modules
 hzz4lPreSequence = [
@@ -336,6 +361,7 @@ hzz4lPreSequence = [
 ]
 hzz4lObjSequence = [
     genAna,
+    genDPhiZZWeight,
     pileUpAna,
     vertexAna,
     lepAna,

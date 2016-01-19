@@ -134,7 +134,9 @@ class BaseDumper(Module):
             if self.options.ismore:
                 print " iso ch %5.2f nh %5.2f ph %5.2f pu %5.2f rho %5.2f ea %4.3f preFSR %5.3f" % ( l.chargedHadIso04, l.neutralHadIso04, l.photonIso04, l.puChargedHadIso04, l.rho, l.EffectiveArea04, l.relIso04 ),
             if self.options.ismc:
-                print "   mcMatch id %+3d, any %+2d" % (l.mcMatchId, l.mcMatchAny),
+                print "   mcMatch id %+4d, any %+2d" % (l.mcMatchId, l.mcMatchAny),
+                if self.options.ismore:
+                    print " promptLep %d promptTau %d promptPho %d anyPho %d" % (l.mcPrompt, l.mcPromptTau, l.mcPromptGamma, l.mcGamma),
             print ""
         for i,j in enumerate(jets):
             if self.options.ismc:

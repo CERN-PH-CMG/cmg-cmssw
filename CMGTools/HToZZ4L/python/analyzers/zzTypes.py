@@ -27,6 +27,13 @@ leptonTypeHZZ = NTupleObjectType("leptonHZZ", baseObjectTypes = [ leptonTypeExtr
     NTupleVariable("r9",   lambda x : x.r9() if abs(x.pdgId())==11 else 1.0, help="electron r9"),
     NTupleVariable("fbrem",   lambda x : x.fbrem() if abs(x.pdgId())==11 else 0.0, help="electron fbrem"),
     NTupleVariable("eleClass",   lambda x : x.classification() if abs(x.pdgId())==11 else -1, int, help="electron classification"),
+    # ----------------------
+    NTupleVariable("mcPrompt",    lambda x : x.mcMatchAny_gp.isPromptFinalState() if getattr(x,"mcMatchAny_gp",None) else 0, int, mcOnly=True, help="isPromptFinalState"),
+    NTupleVariable("mcPromptTau", lambda x : x.mcMatchAny_gp.isDirectPromptTauDecayProductFinalState() if getattr(x,"mcMatchAny_gp",None) else 0, int, mcOnly=True, help="isDirectPromptTauDecayProductFinalState"),
+    NTupleVariable("mcPromptGamma", lambda x : x.mcPho.isPromptFinalState() if getattr(x,"mcPho",None) else 0, int, mcOnly=True, help="Photon isPromptFinalState"),
+    NTupleVariable("mcGamma", lambda x : getattr(x,"mcPho",None) != None, int, mcOnly=True, help="Matched to a photon"),
+    # ----------------------
+    NTupleVariable("hlt1L", lambda x : getattr(x,'matchedTrgObj1El',None) != None or  getattr(x,'matchedTrgObj1Mu',None) != None, int, help="Matched to single lepton trigger"),
 ])
 
 fsrPhotonTypeHZZ = NTupleObjectType("fsrPhotonHZZ", baseObjectTypes = [ particleType ], variables = [
@@ -95,6 +102,23 @@ WZType = NTupleObjectType("WZType", baseObjectTypes=[fourVectorType], variables 
     NTupleVariable("mll_12",   lambda x : (x.z.leg1.p4()+x.z.leg2.p4()).M()),
     NTupleVariable("mll_13",   lambda x : (x.z.leg1.p4()+x.lep3.p4()).M()),
     NTupleVariable("mll_23",   lambda x : (x.z.leg2.p4()+x.lep3.p4()).M()),
+   ## -------
+   #NTupleVariable("nJet30", lambda x : len(x.cleanJets), int, help="Number of jets (after cleaning with tight leptons + leptons of the candidate, and their FSR photons)"),
+   #NTupleVariable("ij1",    lambda x : x.cleanJetIndices[1-1] if len(x.cleanJetIndices) >= 1 else -1, int, help="Index of 1st jet after cleaning"),
+   #NTupleVariable("ij2",    lambda x : x.cleanJetIndices[2-1] if len(x.cleanJetIndices) >= 2 else -1, int, help="Index of 2nd jet after cleaning"),
+   #NTupleVariable("ij3",    lambda x : x.cleanJetIndices[3-1] if len(x.cleanJetIndices) >= 3 else -1, int, help="Index of 3rd jet after cleaning"),
+   #NTupleVariable("ij4",    lambda x : x.cleanJetIndices[4-1] if len(x.cleanJetIndices) >= 4 else -1, int, help="Index of 4th jet after cleaning"),
+   #NTupleVariable("ij5",    lambda x : x.cleanJetIndices[5-1] if len(x.cleanJetIndices) >= 5 else -1, int, help="Index of 5th jet after cleaning"),
+   #NTupleVariable("ij6",    lambda x : x.cleanJetIndices[6-1] if len(x.cleanJetIndices) >= 6 else -1, int, help="Index of 6th jet after cleaning"),
+   #NTupleVariable("ij7",    lambda x : x.cleanJetIndices[7-1] if len(x.cleanJetIndices) >= 7 else -1, int, help="Index of 7th jet after cleaning"),
+   #NTupleVariable("ij8",    lambda x : x.cleanJetIndices[8-1] if len(x.cleanJetIndices) >= 8 else -1, int, help="Index of 8th jet after cleaning"),
+   #NTupleVariable("ij9",    lambda x : x.cleanJetIndices[9-1] if len(x.cleanJetIndices) >= 9 else -1, int, help="Index of 9th jet after cleaning"),
+   #NTupleVariable("ij10",    lambda x : x.cleanJetIndices[10-1] if len(x.cleanJetIndices) >= 10 else -1, int, help="Index of 10th jet after cleaning"),
+   #NTupleVariable("ij11",    lambda x : x.cleanJetIndices[11-1] if len(x.cleanJetIndices) >= 11 else -1, int, help="Index of 11th jet after cleaning"),
+   #NTupleVariable("ij12",    lambda x : x.cleanJetIndices[12-1] if len(x.cleanJetIndices) >= 12 else -1, int, help="Index of 12th jet after cleaning"),
+   #NTupleVariable("ij13",    lambda x : x.cleanJetIndices[13-1] if len(x.cleanJetIndices) >= 13 else -1, int, help="Index of 13th jet after cleaning"),
+   #NTupleVariable("ij14",    lambda x : x.cleanJetIndices[14-1] if len(x.cleanJetIndices) >= 14 else -1, int, help="Index of 14th jet after cleaning"),
+   #NTupleVariable("ij15",    lambda x : x.cleanJetIndices[15-1] if len(x.cleanJetIndices) >= 15 else -1, int, help="Index of 15th jet after cleaning"),
 ])
 
 
