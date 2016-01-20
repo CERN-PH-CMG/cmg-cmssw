@@ -7,6 +7,7 @@ from PhysicsTools.HeppyCore.utils.deltar import *
 import PhysicsTools.HeppyCore.framework.config as cfg
 from CMGTools.VVResonances.tools.PyJetToolbox import *
 from copy import copy
+from copy import deepcopy
 
 
 
@@ -113,7 +114,16 @@ class EventInterpretationBase( Analyzer ):
             return True
         return False
                 
-                
+
+    def puppiWeight(self,cands):
+        skimmedCollection=[]
+        for p in cands:
+            p.setP4(p.p4()*p.puppiWeight())
+
+
+            if p.pt()>0:
+                skimmedCollection.append(p)
+        return skimmedCollection        
 
                     
     def makeFatJets(self,cands):

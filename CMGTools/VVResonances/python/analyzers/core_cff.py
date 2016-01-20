@@ -212,8 +212,8 @@ tauAna = cfg.Analyzer(
 
 metAna = cfg.Analyzer(
     METAnalyzer, name="metAnalyzer",
-    metCollection     = "slimmedMETs",
-    noPUMetCollection = "slimmedMETs",    
+    metCollection     = "slimmedMETsPuppi",
+    noPUMetCollection = "slimmedMETsPuppi",    
     copyMETsByValue = False,
     doTkMet = False,
     doMetNoPU = True,
@@ -253,12 +253,13 @@ multiStateAna = cfg.Analyzer(
     rFat = 0.8,
     massdrop=True,
     subjets=2,
-    doCHS = True,
+    doCHS = False,
+    doPUPPI = True,
     prunning=True,
     softdrop = True,
     softdrop_beta=0.0,
     softdrop_zeta=0.1,
-    selectFat = (lambda x: x.pt()>200.0 and abs(x.eta())<2.4 and x.prunedJet.mass()>0.0 and len(x.subjets)>1 and x.looseID),
+    selectFat = (lambda x: x.pt()>200.0 and abs(x.eta())<2.4 and x.softDropJet.mass()>0.0 and len(x.subjets_SD)>1 and x.looseID),
     ktPower=-1.0,
     r = 0.4,
     selectPairLL = (lambda x:  x.mass()>0 and x.deltaPhi()>1.5 and x.leg1.pt()>200),
@@ -267,8 +268,8 @@ multiStateAna = cfg.Analyzer(
     selectPairJJNuNu = (lambda x: x.leg1.pt()>200 and x.deltaPhi()>1.5 ),
     suffix = '',
     recalibrateJets = True, # True, False, 'MC', 'Data'
-    recalibrationType = "AK4PFchs",
-    recalibrationTypeFAT = "AK8PFchs",
+    recalibrationType = "AK4PFPuppi",
+    recalibrationTypeFAT = "AK8PFPuppi",
     jecPath = "%s/src/CMGTools/RootTools/data/jec/" % os.environ['CMSSW_BASE'],
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     rho = ('fixedGridRhoFastjetAll','',''),
@@ -279,6 +280,8 @@ multiStateAna = cfg.Analyzer(
     subJets = 'slimmedJetsAK8PFCHSSoftDropPacked',
     doSkim = True
     )
+
+
 
 
 
