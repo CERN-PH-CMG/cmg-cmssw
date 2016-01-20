@@ -844,6 +844,38 @@ elif test == "ra5-sync-data":
     comp.json = os.environ['CMSSW_BASE']+'/src/CMGTools/TTHAnalysis/data/json/Cert_246908-258750_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
     selectedComponents = [ comp ]
     if is50ns or (not runData): raise RuntimeError, 'Wrong configuration'
+elif test != None:
+    raise RuntimeError, "Unknown test %r" % test
+
+## FAST mode: pre-skim using reco leptons, don't do accounting of LHE weights (slow)"
+## Useful for large background samples with low skim efficiency
+if getHeppyOption("fast"):
+    susyCounter.doLHE = False
+    from CMGTools.TTHAnalysis.analyzers.ttHFastLepSkimmer import ttHFastLepSkimmer
+    fastSkim = cfg.Analyzer(
+        ttHFastLepSkimmer, name="ttHFastLepSkimmer",
+        muons = 'slimmedMuons', muCut = lambda mu : mu.pt() > 5 and mu.isLooseMuon(),
+        electrons = 'slimmedElectrons', eleCut = lambda ele : ele.pt() > 7,
+        minLeptons = 2, 
+    )
+    if jsonAna in sequence:
+        sequence.insert(sequence.index(jsonAna)+1, fastSkim)
+    else:
+        sequence.insert(sequence.index(skimAnalyzer)+1, fastSkim)
+
+## Auto-AAA
+if not getHeppyOption("isCrab"):
+    from CMGTools.Production import changeComponentAccessMode
+    from CMGTools.Production.localityChecker import LocalityChecker
+    tier2Checker = LocalityChecker("T2_CH_CERN", datasets="/*/*/MINIAOD*")
+    for comp in selectedComponents:
+        if not hasattr(comp,'dataset'): continue
+        if not re.match("/[^/]+/[^/]+/MINIAOD(SIM)?", comp.dataset): continue
+        if "/store/" not in comp.files[0]: continue
+        if re.search("/store/(group|user|cmst3)/", comp.files[0]): continue
+        if not tier2Checker.available(comp.dataset):
+            print "Dataset %s is not available, will use AAA" % comp.dataset
+            changeComponentAccessMode.convertComponent(comp, "root://cms-xrd-global.cern.ch/%s")
 
 ## output histogram
 outputService=[]
