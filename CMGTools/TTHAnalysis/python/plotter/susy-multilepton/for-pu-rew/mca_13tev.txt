@@ -1,10 +1,35 @@
-DY : DYJetsToLL_M50: xsec ; FillColor=ROOT.kCyan
+#DY : DYJetsToLL_M50: xsec ; FillColor=ROOT.kCyan
 
-# 2015D 25ns data
+#data: DoubleEG_Run2015C_Oct05_runs_254231_254914
+#data: DoubleEG_Run2015D_Oct05_runs_256630_258158
+#data: DoubleEG_Run2015D_PromptV4_runs_258159_258750
+#data: DoubleEG_Run2015D_PromptV4_runs_258751_260627
+#data: DoubleMuon_Run2015C_Oct05_runs_254231_254914
+#data: DoubleMuon_Run2015D_Oct05_runs_256630_258158
+#data: DoubleMuon_Run2015D_PromptV4_runs_258159_258750
+#data: DoubleMuon_Run2015D_PromptV4_runs_258751_260627
+#data: MuonEG_Run2015C_Oct05_runs_254231_254914
+#data: MuonEG_Run2015D_Oct05_runs_256630_258158
+#data: MuonEG_Run2015D_PromptV4_runs_258159_258750
+#data: MuonEG_Run2015D_PromptV4_runs_258751_260627
+#data: SingleElectron_Run2015C_Oct05_runs_254231_254914
+#data: SingleElectron_Run2015D_Oct05_runs_256630_258158
+#data: SingleElectron_Run2015D_PromptV4_runs_258159_258750
+#data: SingleElectron_Run2015D_PromptV4_runs_258751_260627
+#data: SingleMuon_Run2015C_Oct05_runs_254231_254914
+#data: SingleMuon_Run2015D_Oct05_runs_256630_258158
+#data: SingleMuon_Run2015D_PromptV4_runs_258159_258750
+#data: SingleMuon_Run2015D_PromptV4_runs_258751_260627
 
-data: DoubleMuon_Run2015D_v3_runs_256630_257599
-data: DoubleEG_Run2015D_v3_runs_256630_257599
-data: MuonEG_Run2015D_v3_runs_256630_257599
-data: SingleMuon_Run2015D_v3_runs_256630_257599
-data: SingleElectron_Run2015D_v3_runs_256630_257599
+ZZTo4L: ZZTo4L: xsec ; FillColor=ROOT.kOrange
 
+##v6
+data: DoubleEG_Run2015C_Oct05_runs_254231_254914
+data: DoubleEG_Run2015D_Oct05_runs_256630_258158
+data: DoubleEG_Run2015D_PromptV4_runs_258159_260627
+data: DoubleMuon_Run2015C_Oct05_runs_254231_254914
+data: DoubleMuon_Run2015D_Oct05_runs_256630_258158
+data: DoubleMuon_Run2015D_PromptV4_runs_258159_260627
+data: MuonEG_Run2015C_Oct05_runs_254231_254914
+data: MuonEG_Run2015D_Oct05_runs_256630_258158
+data: MuonEG_Run2015D_PromptV4_runs_258159_260627

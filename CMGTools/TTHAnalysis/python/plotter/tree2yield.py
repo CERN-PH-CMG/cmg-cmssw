@@ -58,6 +58,7 @@ class TreeToYield:
         self._weightString  = options.weightString if not self._isdata else "1"
         self._scaleFactor = scaleFactor
         self._fullYield = 0 # yield of the full sample, as if it passed the full skim and all cuts
+        self._fullNevt = 0 # number of events of the full sample, as if it passed the full skim and all cuts
         self._settings = settings
         loadMCCorrections(options)            ## make sure this is loaded
         self._mcCorrs = globalMCCorrections() ##  get defaults
@@ -100,6 +101,8 @@ class TreeToYield:
         return self._scaleFactor
     def setFullYield(self,fullYield):
         self._fullYield = fullYield
+    def setFullNevt(self,fullNevt):
+        self._fullNevt = fullNevt
     def name(self):
         return self._name
     def cname(self):
@@ -178,7 +181,7 @@ class TreeToYield:
                 cut = cv
             report.append((cn,self._getYield(self._tree,cut)))
         if self._options.fullSampleYields and not noEntryLine:
-            report.insert(0, ('full sample', [self._fullYield,0]) )
+            report.insert(0, ('full sample', [self._fullYield,0,self._fullNevt]) )
         return report
     def prettyPrint(self,report):
         # maximum length of the cut descriptions
@@ -224,13 +227,13 @@ class TreeToYield:
             histo = ROOT.TH1D("dummy","dummy",1,0.0,1.0); histo.Sumw2()
             nev = tree.Draw("0.5>>dummy", cut, "goff", self._options.maxEntries)
             self.negativeCheck(histo)
-            return [ histo.GetBinContent(1), histo.GetBinError(1) ]
+            return [ histo.GetBinContent(1), histo.GetBinError(1), nev ]
         else: 
             cut = self.adaptExpr(cut,cut=True)
             if self._options.doS2V:
                 cut  = scalarToVector(cut)
             npass = tree.Draw("1",self.adaptExpr(cut,cut=True),"goff", self._options.maxEntries);
-            return [ npass, sqrt(npass) ]
+            return [ npass, sqrt(npass), npass ]
     def _stylePlot(self,plot,spec):
         ## Sample specific-options, from self
         if self.hasOption('FillColor'):
@@ -243,7 +246,7 @@ class TreeToYield:
         plot.SetLineStyle(self.getOption('LineStyle',1))
         plot.SetMarkerColor(self.getOption('MarkerColor',1))
         plot.SetMarkerStyle(self.getOption('MarkerStyle',20))
-        plot.SetMarkerSize(self.getOption('MarkerSize',1.6))
+        plot.SetMarkerSize(self.getOption('MarkerSize',1.1))
         ## Plot specific-options, from spec
         if "TH3" not in plot.ClassName():
             plot.GetYaxis().SetTitle(spec.getOption('YTitle',"Events"))
@@ -432,6 +435,7 @@ def mergeReports(reports):
         for i,(c,x) in enumerate(two):
             one[i][1][0] += x[0]
             one[i][1][1] += pow(x[1],2)
+            one[i][1][2] += x[2]
     for i,(c,x) in enumerate(one):
         one[i][1][1] = sqrt(one[i][1][1])
     return one

@@ -10,11 +10,49 @@ parser.add_option("-o",   "--out",    dest="outname", type="string", default=Non
 parser.add_option("--od", "--outdir", dest="outdir", type="string", default=None, help="output name") 
 parser.add_option("-v", "--verbose",  dest="verbose",  default=0,  type="int",    help="Verbosity level (0 = quiet, 1 = verbose, 2+ = more)")
 parser.add_option("--asimov", dest="asimov", action="store_true", help="Asimov")
+parser.add_option("--postfix-pred",dest="postfixmap", type="string", default=[], action="append", help="Function to apply to prediction, to correct it before running limits")
 
 (options, args) = parser.parse_args()
 options.weight = True
 options.final  = True
 options.allProcesses  = True
+
+def cutCentralValueAtZero(mca,cut,pname,oldplots):
+    if pname=='data': return
+    oldplot = oldplots[pname]
+    for b in xrange(1,oldplot.GetNbinsX()+1):
+        if oldplot.GetBinContent(b)<=0:
+            old = oldplot.GetBinContent(b),oldplot.GetBinError(b)
+            oldplot.SetBinContent(b,1e-5)
+            oldplot.SetBinError(b,1e-6)
+            if old!=(0,0): print 'cutCentralValueAtZero: Fixing bin %d in %s: set to %f +/- %f (was %f +/- %f)'%(b,pname,oldplot.GetBinContent(b),oldplot.GetBinError(b),old[0],old[1])
+
+def takeFakesPredictionFromMC(mca,cut,pname,oldplots):
+    if pname=='data': return
+    oldplot = oldplots[pname]
+    for b in xrange(1,oldplot.GetNbinsX()+1):
+        if oldplot.GetBinContent(b)<=0:
+            old= oldplot.GetBinContent(b),oldplot.GetBinError(b)
+            oldplot.SetBinContent(b,1e-5)
+            new = oldplots['_special_TT_foremptybins'].GetBinContent(b)
+            oldplot.SetBinError(b,new if new>1e-4 else 1e-6)
+            print 'takeFakesPredictionFromMC: Fixing bin %d in %s: set to %f +/- %f (was %f +/- %f)'%(b,pname,oldplot.GetBinContent(b),oldplot.GetBinError(b),old[0],old[1])
+
+def normTo1Observed(mca,cut,pname,oldplots):
+    if pname=='data': return
+    oldplot = oldplots[pname]
+    old = oldplot.Integral()
+    oldplot.Scale(1.0/old)
+    print 'normTo1Observed: Normalizing %s to 1 (was %f)'%(pname,old)
+
+def compilePostFixMap(inlist,relist):
+    for m in inlist:
+        dset,function = m.split("=")
+        if dset[-1] == "*": dset = dset[:-1]
+        else: raise RuntimeError, 'Incorrect plotscalemap format: %s'%m
+        relist.append((re.compile(dset.strip()+"$"),globals()[function]))
+postfixes = []
+compilePostFixMap(options.postfixmap,postfixes)
 
 mca  = MCAnalysis(args[0],options)
 cuts = CutsFile(args[1],options)
@@ -23,6 +61,22 @@ binname = os.path.basename(args[1]).replace(".txt","") if options.outname == Non
 outdir  = options.outdir+"/" if options.outdir else ""
 
 report = mca.getPlotsRaw("x", args[2], args[3], cuts.allCuts(), nodata=options.asimov)
+
+
+for post in postfixes:
+    for rep in report:
+        if re.match(post[0],rep): post[1](mca,cuts.allCuts(),rep,report)
+if '_special_TT_foremptybins' in report: del report['_special_TT_foremptybins']
+
+#def fixClopperPearsonForXG0b(mca,cut,pname,oldplot):
+#    for b in xrange(1,oldplot.GetNbinsX()+1):
+#        cut_b = CutsFile([['mymergedcuts',cut]],ignoreEmptyOptionsEnforcement=True)
+#        cut_b.add('bin%d'%(b+1),"((%s)==%d)"%(options.doPrintOutNev,(b+1)))
+#        eventcounts = mca.getYields(cut_b,makeSummary=True)
+#        for p in eventcounts: eventcounts[p] = dict(eventcounts[p])['all']
+#        nev = eventcounts[pname][2]
+#        if nev>1: nulla
+        
 
 if options.asimov:
     tomerge = []
@@ -36,11 +90,11 @@ allyields = dict([(p,h.Integral()) for p,h in report.iteritems()])
 procs = []; iproc = {}
 signals, backgrounds = [], []
 for i,s in enumerate(mca.listSignals()):
-    if allyields[s] == 0: continue
+    if (s not in allyields) or allyields[s] == 0: continue
     signals.append(s)
     procs.append(s); iproc[s] = i-len(mca.listSignals())+1
 for i,b in enumerate(mca.listBackgrounds()):
-    if allyields[b] == 0: continue
+    if (b not in allyields) or allyields[b] == 0: continue
     backgrounds.append(b)
     procs.append(b); iproc[b] = i+1
 
@@ -62,8 +116,13 @@ for sysfile in args[4:]:
         elif field[4] in ["envelop","shapeOnly","templates","alternateShapeOnly"]:
             (name, procmap, binmap, amount) = field[:4]
             if re.match(binmap,binname) == None: continue
-            if name not in systs: systsEnv[name] = []
+            if name not in systsEnv: systsEnv[name] = []
             systsEnv[name].append((re.compile(procmap),amount,field[4]))
+        elif field[4] in ["lnN_in_shape_bins","stat_foreach_shape_bins"]:
+            (name, procmap, binmap, amount) = field[:4]
+            if re.match(binmap,binname) == None: continue
+            if name not in systsEnv: systsEnv[name] = []
+            systsEnv[name].append((re.compile(procmap),amount,field[4],field[5].split(',')))
         else:
             raise RuntimeError, "Unknown systematic type %s" % field[4]
     if options.verbose > 0:
@@ -87,8 +146,10 @@ for name in systsEnv.keys():
         effect = "-"
         effect0  = "-"
         effect12 = "-"
-        for (procmap,amount,mode) in systsEnv[name]:
+        for entry in systsEnv[name]:
+            (procmap,amount,mode) = entry[:3]
             if re.match(procmap, p): effect = float(amount) if mode not in ["templates","alternateShape", "alternateShapeOnly"] else amount
+            morefields=entry[3:]
         if mca._projection != None and effect not in ["-","0","1",1.0,0.0] and type(effect) == type(1.0):
             effect = mca._projection.scaleSyst(name, effect)
         if effect == "-" or effect == "0": 
@@ -143,6 +204,47 @@ for name in systsEnv.keys():
             if mca._projection != None:
                 mca._projection.scaleSystTemplate(name,nominal,p0Up)
                 mca._projection.scaleSystTemplate(name,nominal,p0Dn)
+        elif mode in ["lnN_in_shape_bins"]:
+            nominal = report[p]
+            p0Up = nominal.Clone("%s_%sUp"% (nominal.GetName(),name))
+            p0Dn = nominal.Clone("%s_%sDn"% (nominal.GetName(),name))
+            for bin in xrange(1,nominal.GetNbinsX()+1):
+                for binmatch in morefields[0]:
+                    if re.match(binmatch,'%d'%bin):
+                        p0Up.SetBinContent(bin,p0Up.GetBinContent(bin)*effect)
+                        p0Up.SetBinError(bin,p0Up.GetBinError(bin)*effect)
+                        p0Dn.SetBinContent(bin,p0Dn.GetBinContent(bin)/effect)
+                        p0Dn.SetBinError(bin,p0Dn.GetBinError(bin)/effect)
+                        break # otherwise you apply more than once to the same bin if more regexps match
+            p0Up.SetName("%s_%sUp"   % (nominal.GetName(),name))
+            p0Dn.SetName("%s_%sDown" % (nominal.GetName(),name))
+            report[str(p0Up.GetName())[2:]] = p0Up
+            report[str(p0Dn.GetName())[2:]] = p0Dn
+            effect0  = "1"
+            effect12 = "-"
+            if mca._projection != None:
+                mca._projection.scaleSystTemplate(name,nominal,p0Up)
+                mca._projection.scaleSystTemplate(name,nominal,p0Dn)
+        elif mode in ["stat_foreach_shape_bins"]:
+            nominal = report[p]
+            for bin in xrange(1,nominal.GetNbinsX()+1):
+                for binmatch in morefields[0]:
+                    if re.match(binmatch,'%d'%bin):
+                        p0Up = nominal.Clone("%s_%s_%s_bin%dUp"% (nominal.GetName(),name,p,bin))
+                        p0Dn = nominal.Clone("%s_%s_%s_bin%dDown"% (nominal.GetName(),name,p,bin))
+                        p0Up.SetBinContent(bin,p0Up.GetBinContent(bin)+effect*p0Up.GetBinError(bin))
+                        p0Up.SetBinError(bin,p0Up.GetBinError(bin)*(p0Up.GetBinContent(bin)/nominal.GetBinContent(bin) if nominal.GetBinContent(bin)!=0 else 1))
+                        p0Dn.SetBinContent(bin,max(1e-5,p0Dn.GetBinContent(bin)-effect*p0Dn.GetBinError(bin)))
+                        p0Dn.SetBinError(bin,p0Dn.GetBinError(bin)*(p0Dn.GetBinContent(bin)/nominal.GetBinContent(bin) if nominal.GetBinContent(bin)!=0 else 1))
+                        report[str(p0Up.GetName())[2:]] = p0Up
+                        report[str(p0Dn.GetName())[2:]] = p0Dn
+                        break # otherwise you apply more than once to the same bin if more regexps match
+            effect0  = "1"
+            effect12 = "-"
+            if mca._projection != None:
+                raise RuntimeError,'mca._projection.scaleSystTemplate not implemented in the case of stat_foreach_shape_bins'
+###                mca._projection.scaleSystTemplate(name,nominal,p0Up) # should be implemented differently
+###                mca._projection.scaleSystTemplate(name,nominal,p0Dn) # should be implemented differently
         elif mode in ["alternateShape", "alternateShapeOnly"]:
             nominal = report[p]
             alternate = report[effect]
@@ -176,6 +278,7 @@ for name in systsEnv.keys():
         effmap12[p] = effect12 
     systsEnv[name] = (effmap0,effmap12,mode)
 
+
 for signal in mca.listSignals():
     myout = outdir
     myout += "%s/" % signal 
@@ -204,8 +307,16 @@ for signal in mca.listSignals():
     for name,effmap in systs.iteritems():
         datacard.write(('%-12s lnN' % name) + " ".join([kpatt % effmap[p]   for p in myprocs]) +"\n")
     for name,(effmap0,effmap12,mode) in systsEnv.iteritems():
-        if mode == "templates":
-            datacard.write(('%-10s shape' % name) + " ".join([kpatt % effmap0[p]  for p in myprocs]) +"\n")
+        if mode in ["templates","lnN_in_shape_bins"]:
+            datacard.write(('%-10s shape' % name) + " ".join([kpatt % effmap0[p] for p in myprocs]) +"\n")
+        if mode == "stat_foreach_shape_bins":
+            nbins = None
+            for p in myprocs:
+                if nbins and nbins!=report[p].GetNbinsX(): raise RuntimeError,'Histos with different number of bins for different processes'
+                nbins = report[p].GetNbinsX()
+                if effmap0[p] in ['-','0']: continue
+                for bin in xrange(1,nbins+1):
+                    datacard.write(('%-10s shape' % ("%s_%s_bin%d"%(name,p,bin))) + " ".join([kpatt % effmap0[_p] for _p in myprocs]) +"\n")
         if mode == "envelop":
             datacard.write(('%-10s shape' % (name+"0")) + " ".join([kpatt % effmap0[p]  for p in myprocs]) +"\n")
         if mode in ["envelop", "shapeOnly"]:

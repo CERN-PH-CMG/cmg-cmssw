@@ -1,0 +1,50 @@
+### experimental uncertainties
+
+lumi         : _sig_.* : .* : 1.046
+lumi         : _standard_prompt_(?!WZ) : .* : 1.046
+
+trigeff_lep  : _sig_.* : .* : 1.02
+trigeff_lep  : _standard_prompt_.* : .* : 1.02
+
+trigeff_highht   : _sig_.* : .* : 1.02 : lnN_in_shape_bins : 1
+trigeff_highht   : _standard_prompt_.* : .* : 1.02	: lnN_in_shape_bins : 1
+
+jec	     : _standard_prompt_.* : .* : jec	: templates
+
+bTag_BC	     : _standard_prompt_.* : .* : bTag_BC	: templates
+bTag_Light	     : _standard_prompt_.* : .* : bTag_Light	: templates
+
+fakesrate    : _fakesappl_data : .* : 1.30
+flipsrate    : _flipsappl_data : .* : 1.26
+
+ewk_sub	     : _fakesappl_data : .* : ewk : templates
+
+
+### theoretical uncertainties
+
+pdf_sigma_ttwz	: _standard_prompt_ttW : .* : 1.04
+pdf_sigma_ttwz	: _standard_prompt_ttZH : .* : 1.04
+
+q2_xsec_ttw	: _standard_prompt_ttW : .* : 1.13
+q2_xsec_ttzh	: _standard_prompt_ttZH : .* : 1.11
+
+q2_acc_highHT	: _standard_prompt_ttW : .* : 1.08 : lnN_in_shape_bins : 1
+q2_acc_highHT	: _standard_prompt_ttZH : .* : 1.08 : lnN_in_shape_bins : 1
+
+WZ_norm	      : _standard_prompt_WZ : .* : 1.30
+WW_norm	      : _standard_prompt_WWss : .* : 1.30
+XG_norm	      : _standard_prompt_XG : .* : 1.50
+Rares_norm     : _standard_prompt_Rares : .* : 1.50
+
+
+### propagation of statistical uncertainties on signal, prompt backgrounds and application regions
+
+stat_standard_prompt_ttW : _standard_prompt_ttW : .* : 1.0 : stat_foreach_shape_bins : .*
+stat_standard_prompt_ttZH : _standard_prompt_ttZH : .* : 1.0 : stat_foreach_shape_bins : .*
+stat_standard_prompt_WZ : _standard_prompt_WZ : .* : 1.0 : stat_foreach_shape_bins : .*
+stat_standard_prompt_WWss : _standard_prompt_WWss : .* : 1.0 : stat_foreach_shape_bins : .*
+stat_standard_prompt_XG : _standard_prompt_XG : .* : 1.0 : stat_foreach_shape_bins : .*
+stat_standard_prompt_Rares : _standard_prompt_Rares : .* : 1.0 : stat_foreach_shape_bins : .*
+stat_fakes   : _fakesappl_data : .* : 1.0 : stat_foreach_shape_bins : .*
+stat_flips   : _flipsappl_data : .* : 1.0 : stat_foreach_shape_bins : .*
+

@@ -1,0 +1,10 @@
+nJet30 : nJetClean30 : 7,0.5,7.5  ; XTitle='N(jet\, p_{T} > 30 GeV)', Legend='TR'
+nvtx   : nVert       : 40,0.5,40.5 ; XTitle="N_{vtx}", Legend='TR'
+mZ1    : mZ1         : 120,60,120  ; XTitle="m(#mu^{+}#mu^{-})  [GeV]", Legend='TL'
+met    : met_pt      : 100,0,300   ; XTitle="E_{T}^{miss}  [GeV]", Logy, LegendCutoff=1e-4, YMin=1, YMax=1e6
+j1pt   : JetClean1_pt: 22,100,1200 ; XTitle="Leading jet p_{T}  [GeV]",  Legend='TR',Logy, LegendCutoff=1e-4, YMin=1, YMax=1e4
+j2pt   : JetClean2_pt: 23,50,1200  ; XTitle="Trailing jet p_{T}  [GeV]", Legend='TR',Logy, LegendCutoff=1e-4, YMin=1, YMax=1e4
+ptZ: pt_2(LepGood1_pt,LepGood1_phi,LepGood2_pt,LepGood2_phi): [0,20,40,60,80,100,125,150,200,250,300,350,400,500,650,1000] ; XTitle="di-lep p_{T} [GeV]", Logy, LegendCutoff=1e-4, YMin=1, YMax=1e6
+metnomu: metNoMu_pt  : [200,250,300,350,400,500,650,1000]  ; XTitle="Recoil [GeV]",Logy, LegendCutoff=1e-3, YMin=1, YMax=1e5
+#j1qgl: Jet1_qgl: 40,0.0,1.0; XTitle="Leading jet QGL", Legend='TR'
+#j2qgl: Jet2_qgl: 40,0.0,1.0; XTitle="Trailing jet QGL", Legend='TR'

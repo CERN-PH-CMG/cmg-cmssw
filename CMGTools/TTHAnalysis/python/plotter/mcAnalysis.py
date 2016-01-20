@@ -108,6 +108,7 @@ class MCAnalysis:
             if "data" not in pname:
                 pckobj  = pickle.load(open(pckfile,'r'))
                 counters = dict(pckobj)
+                tty.setFullNevt(int(counters['All Events']))
                 if ('Sum Weights' in counters) and options.weight:
                     nevt = counters['Sum Weights']
                     scale = "genWeight*%s/%g" % (field[2], 0.001*nevt)
@@ -136,8 +137,17 @@ class MCAnalysis:
                         counters = dict(pckobj)
                         nevt = counters['All Events']
                         tty.setFullYield(nevt)
+                        tty.setFullNevt(int(nevt))
                     except:
                         tty.setFullYield(0)
+                        tty.setFullNevt(0)
+            else:
+                try:
+                    pckobj  = pickle.load(open(pckfile,'r'))
+                    counters = dict(pckobj)
+                    tty.setFullNevt(int(counters['All Events']))
+                except:
+                    tty.setFullNevt(0)
             # Adjust free-float and fixed from command line
             for p0 in options.processesToFloat:
                 for p in p0.split(","):
@@ -195,6 +205,8 @@ class MCAnalysis:
             from multiprocessing import Pool
             pool = Pool(self._options.jobs)
             retlist  = pool.map(_runYields, tasks)
+            pool.close()
+            pool.join()
         ## then gather results with the same process
         mergemap = {}
         for (k,v) in retlist: 
@@ -202,6 +214,17 @@ class MCAnalysis:
             mergemap[k].append(v)
         ## and finally merge them
         ret = dict([ (k,mergeReports(v)) for k,v in mergemap.iteritems() ])
+
+        rescales = []
+        self.compilePlotScaleMap(self._options.plotscalemap,rescales)
+        for p,v in ret.items():
+            for regexp in rescales:
+                if re.match(regexp[0],p): ret[p]=[v[0], [x*regexp[1] for x in v[1]]]
+
+        regroups = [] # [(compiled regexp,target)]
+        self.compilePlotMergeMap(self._options.plotmergemap,regroups)
+        for regexp in regroups: ret = self.regroupReports(ret,regexp)
+
         # if necessary project to different lumi, energy,
         if self._projection:
             self._projection.scaleReport(ret)
@@ -237,6 +260,8 @@ class MCAnalysis:
             from multiprocessing import Pool
             pool = Pool(self._options.jobs)
             retlist  = pool.map(_runPlot, tasks)
+            pool.close()
+            pool.join()
         ## then gather results with the same process
         mergemap = {}
         for (k,v) in retlist: 
@@ -244,6 +269,17 @@ class MCAnalysis:
             mergemap[k].append(v)
         ## and finally merge them
         ret = dict([ (k,mergePlots(plotspec.name+"_"+k,v)) for k,v in mergemap.iteritems() ])
+
+        rescales = []
+        self.compilePlotScaleMap(self._options.plotscalemap,rescales)
+        for p,v in ret.items():
+            for regexp in rescales:
+                if re.match(regexp[0],p): v.Scale(regexp[1])
+
+        regroups = [] # [(compiled regexp,target)]
+        self.compilePlotMergeMap(self._options.plotmergemap,regroups)
+        for regexp in regroups: ret = self.regroupPlots(ret,regexp,plotspec)
+
         # if necessary project to different lumi, energy,
         if self._projection:
             self._projection.scalePlots(ret)
@@ -307,7 +343,7 @@ class MCAnalysis:
             for i,(cut,dummy) in enumerate(table[0][1]):
                 print cfmt % cut,
                 for name,report in table:
-                    (nev,err) = report[i][1]
+                    (nev,err,nev_run_upon) = report[i][1]
                     den = report[i-1][1][0] if i>0 else 0
                     fraction = nev/float(den) if den > 0 else 1
                     if self._options.nMinusOne: 
@@ -335,6 +371,38 @@ class MCAnalysis:
         for p in self.listProcesses():
             for tty in self._allData[p]:
                 tty.processEvents(eventLoop,cut)
+    def compilePlotMergeMap(self,inlist,relist):
+        for m in inlist:
+            to,fro = m.split("=")
+            if to[-1] == "+": to = to[:-1]
+            else: raise RuntimeError, 'Incorrect plotmergemap format: %s'%m
+            to = to.strip()
+            for k in fro.split(","):
+                relist.append((re.compile(k.strip()+"$"), to))
+    def compilePlotScaleMap(self,inlist,relist):
+        for m in inlist:
+            dset,scale = m.split("=")
+            if dset[-1] == "*": dset = dset[:-1]
+            else: raise RuntimeError, 'Incorrect plotscalemap format: %s'%m
+            relist.append((re.compile(dset.strip()+"$"),float(scale)))
+    def regroupReports(self,pmap,regexp):
+        patt, to = regexp
+        mergemap={}
+        for (k,v) in pmap.items():
+            k2 = k
+            if k2 != to and re.match(patt,k2): k2 = to
+            if k2 not in mergemap: mergemap[k2]=[]
+            mergemap[k2].append(v)
+        return dict([ (k,mergeReports(v)) for k,v in mergemap.iteritems() ])
+    def regroupPlots(self,pmap,regexp,pspec):
+        patt, to = regexp
+        mergemap={}
+        for (k,v) in pmap.items():
+            k2 = k
+            if k2 != to and re.match(patt,k2): k2 = to
+            if k2 not in mergemap: mergemap[k2]=[]
+            mergemap[k2].append(v)
+        return dict([ (k,mergePlots(pspec.name+"_"+k,v)) for k,v in mergemap.iteritems() ])
 
 def addMCAnalysisOptions(parser,addTreeToYieldOnesToo=True):
     if addTreeToYieldOnesToo: addTreeToYieldOptions(parser)
@@ -350,6 +418,8 @@ def addMCAnalysisOptions(parser,addTreeToYieldOnesToo=True):
     parser.add_option("--fix-process", "--fxp", dest="processesToFix", type="string", default=[], action="append", help="Processes to set as not freely floating (overriding the 'FreeFloat' in the text file; affects e.g. mcPlots with --fitData)");
     parser.add_option("--AP", "--all-processes", dest="allProcesses", action="store_true", help="Include also processes that are marked with SkipMe=True in the MCA.txt")
     parser.add_option("--project", dest="project", type="string", help="Project to a scenario (e.g 14TeV_300fb_scenario2)")
+    parser.add_option("--plotgroup", dest="plotmergemap", type="string", default=[], action="append", help="Group plots into one. Syntax is '<newname> := (comma-separated list of regexp)', can specify multiple times. Note it is applied after plotting.")
+    parser.add_option("--scaleplot", dest="plotscalemap", type="string", default=[], action="append", help="Scale plots by this factor (before grouping). Syntax is '<newname> := (comma-separated list of regexp)', can specify multiple times.")
 
 if __name__ == "__main__":
     from optparse import OptionParser

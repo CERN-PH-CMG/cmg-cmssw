@@ -22,7 +22,7 @@ if "/functions_cc.so" not in ROOT.gSystem.GetLibraries():
 
 def scalarToVector(x):
     x0 = x
-    x = re.sub(r"(LepGood|Lep|JetFwd|JetClean|Jet|GenTop|SV)(\d)_(\w+)", lambda m : "%s_%s[%d]" % (m.group(1),m.group(3),int(m.group(2))-1), x)
+    x = re.sub(r"(LepGood|Lep|CalibEle|JetFwd|JetClean|Jet|GenTop|SV)(\d)_(\w+)", lambda m : "%s_%s[%d]" % (m.group(1),m.group(3),int(m.group(2))-1), x)
     x = re.sub(r"\bmet\b", "met_pt", x)
     return x
 
@@ -120,10 +120,15 @@ class PlotSpec:
         self.expr = expr
         self.bins = bins
         self.opts = opts
+        self.logs = {}
     def hasOption(self,name):
         return (name in self.opts)
     def getOption(self,name,default=None):
         return self.opts[name] if (name in self.opts) else default
+    def setLog(self,name,value):
+        self.logs[name] = value
+    def allLogs(self):
+        return self.logs.iteritems()
 
 class TreeToYield:
     def __init__(self,root,options,scaleFactor=1.0,name=None,cname=None,settings={},treename=None):

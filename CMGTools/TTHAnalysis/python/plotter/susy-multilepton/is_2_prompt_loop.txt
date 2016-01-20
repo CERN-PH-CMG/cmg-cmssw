@@ -1,0 +1,1 @@
+is2prompt_rightcharge: (LepGood_mcMatchId[i1_Loop[]]!=0 && LepGood_mcMatchPdgId[i1_Loop[]]==LepGood_pdgId[i1_Loop[]] && LepGood_mcMatchId[i2_Loop[]]!=0 && LepGood_mcMatchPdgId[i2_Loop[]]==LepGood_pdgId[i2_Loop[]])
