@@ -38,9 +38,13 @@ parser.add_option("-p","--paveText",dest="label",default='CMS Preliminary , L = 
 f=ROOT.TFile(args[0])
 limit=f.Get("limit")
 data={}
+
+
 for event in limit:
     if not (event.mh in data.keys()):
         data[event.mh]={}
+
+    print 'processing',event.mh,event.quantileExpected,event.limit     
 
     if event.quantileExpected<0:            
         data[event.mh]['obs']=event.limit
@@ -54,6 +58,9 @@ for event in limit:
         data[event.mh]['+1sigma']=event.limit
     if event.quantileExpected>0.974 and event.quantileExpected<0.976:            
         data[event.mh]['+2sigma']=event.limit
+
+
+print data
 
 
 band68=ROOT.TGraphAsymmErrors()
