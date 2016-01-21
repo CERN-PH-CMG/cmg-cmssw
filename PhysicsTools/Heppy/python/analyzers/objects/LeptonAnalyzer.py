@@ -22,16 +22,25 @@ class LeptonAnalyzer( Analyzer ):
     
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(LeptonAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
-        if self.cfg_ana.doMuScleFitCorrections and self.cfg_ana.doMuScleFitCorrections != "none":
-            if self.cfg_ana.doMuScleFitCorrections not in [ "none", "prompt", "prompt-sync", "rereco", "rereco-sync" ]:
-                raise RuntimeError, 'doMuScleFitCorrections must be one of "none", "prompt", "prompt-sync", "rereco", "rereco-sync"'
-            rereco = ("prompt" not in self.cfg_ana.doMuScleFitCorrections)
-            sync   = ("sync"       in self.cfg_ana.doMuScleFitCorrections)
-            self.muscleCorr = MuScleFitCorr(cfg_comp.isMC, rereco, sync)
-            if hasattr(self.cfg_ana, "doRochesterCorrections") and self.cfg_ana.doRochesterCorrections:
-                raise RuntimeError, "You can't run both Rochester and MuScleFit corrections!"
+        if hasattr(self.cfg_ana, 'doMuScleFitCorrections'):
+            raise RuntimeError, "doMuScleFitCorrections is not supported. Please set instead doMuonScaleCorrections = ( 'MuScleFit', <name> )"
+        if hasattr(self.cfg_ana, 'doRochesterCorrections'):
+            raise RuntimeError, "doRochesterCorrections is not supported. Please set instead doMuonScaleCorrections = ( 'Rochester', <name> )"
+        if self.cfg_ana.doMuonScaleCorrections:
+            algo, options = self.cfg_ana.doMuonScaleCorrections
+            if algo == "Rochester":
+                print "WARNING: the Rochester correction in heppy is still from Run 1"
+                self.muonScaleCorrector = RochesterCorrections()
+            elif algo == "MuScleFit":
+                print "WARNING: the MuScleFit correction in heppy is still from Run 1 (and probably no longer functional)"
+                if options not in [ "prompt", "prompt-sync", "rereco", "rereco-sync" ]:
+                    raise RuntimeError, 'MuScleFit correction name must be one of [ "prompt", "prompt-sync", "rereco", "rereco-sync" ] '
+                    rereco = ("prompt" not in self.cfg_ana.doMuScleFitCorrections)
+                    sync   = ("sync"       in self.cfg_ana.doMuScleFitCorrections)
+                    self.muonScaleCorrector = MuScleFitCorr(cfg_comp.isMC, rereco, sync)
+            else: raise RuntimeError, "Unknown muon scale correction algorithm"
         else:
-            self.cfg_ana.doMuScleFitCorrections = False
+            self.muonScaleCorrector = None
 	#FIXME: only Embedded works
         if self.cfg_ana.doElectronScaleCorrections:
             conf = cfg_ana.doElectronScaleCorrections
@@ -88,6 +97,8 @@ class LeptonAnalyzer( Analyzer ):
                 self.IsolationComputer = heppy.IsolationComputer()
             
 
+        self.doMatchToPhotons = getattr(cfg_ana, 'do_mc_match_photons', False)
+
     #----------------------------------------
     # DECLARATION OF HANDLES OF LEPTONS STUFF   
     #----------------------------------------
@@ -107,6 +118,13 @@ class LeptonAnalyzer( Analyzer ):
 
         if self.doMiniIsolation or self.doIsolationScan:
             self.handles['packedCandidates'] = AutoHandle( self.cfg_ana.packedCandidates, 'std::vector<pat::PackedCandidate>')
+
+        if self.doMatchToPhotons:
+            if self.doMatchToPhotons == "any":
+                self.mchandles['genPhotons'] = AutoHandle( 'packedGenParticles', 'std::vector<pat::PackedGenParticle>' )
+            else:
+                self.mchandles['genPhotons'] = AutoHandle( 'prunedGenParticles', 'std::vector<reco::GenParticle>' )
+
     def beginLoop(self, setup):
         super(LeptonAnalyzer,self).beginLoop(setup)
         self.counters.addCounter('events')
@@ -219,13 +237,8 @@ class LeptonAnalyzer( Analyzer ):
         allmuons = map( Muon, self.handles['muons'].product() )
 
         # Muon scale and resolution corrections (if enabled)
-        if self.cfg_ana.doMuScleFitCorrections:
-            for mu in allmuons:
-                self.muscleCorr.correct(mu, event.run)
-        elif self.cfg_ana.doRochesterCorrections:
-            for mu in allmuons:
-                corp4 = rochcor.corrected_p4(mu, event.run) 
-                mu.setP4( corp4 )
+        if self.muonScaleCorrector:
+            self.muonScaleCorrector.correct_all(allmuons, event.run)
 
         # Clean up dulicate muons (note: has no effect unless the muon id is removed)
         if self.cfg_ana.doSegmentBasedMuonCleaning:
@@ -527,7 +540,7 @@ class LeptonAnalyzer( Analyzer ):
             momid = abs(mom.pdgId())
             if momid / 1000 == bid or momid / 100 == bid or momid == bid: 
                 return True
-            elif mom.status() == 2 and self.isFromB(mom, done=done):
+            elif mom.status() == 2 and self.isFromB(mom, done=done, bid=bid):
                 return True
         return False
 
@@ -542,16 +555,39 @@ class LeptonAnalyzer( Analyzer ):
                 if   self.isFromB(gen):       lep.mcMatchAny = 5 # B (inclusive of B->D)
                 elif self.isFromB(gen,bid=4): lep.mcMatchAny = 4 # Charm
                 else: lep.mcMatchAny = 1
+                if not getattr(lep, 'mcLep', None): lep.mcLep = gen
             else: 
+                if not getattr(lep, 'mcLep', None): lep.mcLep = None
                 lep.mcMatchAny = 0
             # fix case where the matching with the only prompt leptons failed, but we still ended up with a prompt match
             if gen != None and hasattr(lep,'mcMatchId') and lep.mcMatchId == 0:
-                if isPromptLepton(gen, False):
+                if isPromptLepton(gen, False) or (gen.isPromptFinalState() or gen.isDirectPromptTauDecayProductFinalState()): 
                     lep.mcMatchId = 100
                     lep.mcLep = gen
             elif not hasattr(lep,'mcMatchId'):
                 lep.mcMatchId = 0
             if not hasattr(lep,'mcMatchTau'): lep.mcMatchTau = 0
+
+    def matchToPhotons(self, event): 
+        event.anyPho = [ x for x in self.mchandles['genPhotons'].product() if x.status() == 1 and x.pdgId() == 22 and x.pt() > 1.0 ]
+        leps = event.inclusiveLeptons if hasattr(event, 'inclusiveLeptons') else event.selectedLeptons
+        leps = [ l for l in leps if abs(l.pdgId()) == 11 ]
+        plausible = lambda rec, gen : 0.3*gen.pt() < rec.pt() and rec.pt() < 1.5*gen.pt()
+        match = matchObjectCollection3(leps, event.anyPho, deltaRMax = 0.3, filter = plausible)
+        for lep in leps:
+            gen = match[lep]
+            lep.mcPho = gen
+            if lep.mcPho and lep.mcLep:
+                # I have both, I should keep the best one
+                def distance(rec,gen): 
+                    dr = deltaR(rec.eta(),rec.phi(),gen.eta(),gen.phi())
+                    dptRel = abs(rec.pt()-gen.pt())/gen.pt()
+                    return dr + 0.2*dptRel
+                dpho = distance(lep,lep.mcPho)
+                dlep = distance(lep,lep.mcLep)
+                if getattr(lep,'mcMatchAny_gp',None) and lep.mcMatchAny_gp != lep.mcLep:
+                    dlep = min(dlep, distance(lep,lep.mcMatchAny_gp))
+                if dlep <= dpho: lep.mcPho = None
 
     def process(self, event):
         self.readCollections( event.input )
@@ -563,6 +599,8 @@ class LeptonAnalyzer( Analyzer ):
         if self.cfg_comp.isMC and self.cfg_ana.do_mc_match:
             self.matchLeptons(event)
             self.matchAnyLeptons(event)
+            if self.cfg_ana.do_mc_match_photons:
+                self.matchToPhotons(event)
             
         return True
 
@@ -577,9 +615,8 @@ setattr(LeptonAnalyzer,"defaultConfig",cfg.Analyzer(
     rhoElectron = 'fixedGridRhoFastjetAll',
 ##    photons='slimmedPhotons',
     # energy scale corrections and ghost muon suppression (off by default)
-    doMuScleFitCorrections=False, # "rereco"
-    doRochesterCorrections=False,
-    doElectronScaleCorrections=False, # "embedded" in 5.18 for regression
+    doMuonScaleCorrections=False, 
+    doElectronScaleCorrections=False, 
     doSegmentBasedMuonCleaning=False,
     # inclusive very loose muon selection
     inclusive_muon_id  = "POG_ID_Loose",
