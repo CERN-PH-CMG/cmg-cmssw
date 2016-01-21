@@ -44,3 +44,6 @@ class Lepton( PhysicsObject):
 	else :	
 		return self.innerTrack().hitPattern().numberOfHits(ROOT.reco.HitPattern.MISSING_INNER_HITS)	
 
+    def __str__(self):
+        ptc = super(Lepton, self).__str__()
+        return '{ptc}, iso={iso:5.2f}'.format(ptc=ptc, iso=self.relIso())
