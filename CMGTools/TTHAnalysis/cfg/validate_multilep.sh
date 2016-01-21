@@ -55,7 +55,7 @@ function do_plot {
         fi;
       fi
       python mcPlots.py -f --s2v --tree treeProducerSusyMultilepton  -P ${DIR} $MCA $CUTS ${CUTS/.txt/_plots.txt} \
-              --pdir plots/74X/validation/${OUTNAME} -p new,ref -u -e \
+              --pdir plots/74X/validation/${OUTNAME}${LABEL} -p new,ref -u -e \
               --plotmode=nostack --showRatio --maxRatioRange 0.65 1.35 --flagDifferences
     );
 }
