@@ -179,6 +179,13 @@ metTypeSusy = NTupleObjectType("metSusy", baseObjectTypes = [ metType ], variabl
 ## GENPARTICLE
 ##------------------------------------------  
 
+genPhotonType = NTupleObjectType("genPhoton", baseObjectTypes = [ genParticleType ], mcOnly=True, variables = [
+    NTupleVariable("drMinParton", lambda x : getattr(x,'drMinParton',-99.), float, help="Delta R between photon and hard partons"),
+    NTupleVariable("isPrompt", lambda x : getattr(x,'isPrompt',-99.), float, help="Prompt photon flag"),
+    NTupleVariable("isPromptDirect", lambda x : getattr(x,'isPromptDirect',-99.), float, help="Prompt direct photon flag"),
+])
+
+
 
 ##------------------------------------------  
 ## SECONDARY VERTEX CANDIDATE
