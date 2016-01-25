@@ -430,7 +430,7 @@ class JetAnalyzer( Analyzer ):
             if gen != None:
                genpt, jetpt, aeta = gen.pt(), jet.pt(), abs(jet.eta())
                # from https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
-               #8 TeV tables
+               #13 TeV tables
                factor = shiftJERfactor(self.shiftJER, aeta)
                ptscale = max(0.0, (jetpt + (factor-1)*(jetpt-genpt))/jetpt)             
                #print "get with pt %.1f (gen pt %.1f, ptscale = %.3f)" % (jetpt,genpt,ptscale)
