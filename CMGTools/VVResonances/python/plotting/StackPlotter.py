@@ -64,7 +64,7 @@ def CMS_lumi(lumi,pad):
         print lumi
 
     lumiText = "#scale[0.85]{" + str(lumi) + " fb^{-1} (13 TeV) }"
-    print "lumiText: ", lumiText
+#    print "lumiText: ", lumiText
 
     latex = ROOT.TLatex()
     latex.SetNDC()
@@ -74,18 +74,13 @@ def CMS_lumi(lumi,pad):
 
     posX_ =   1-r
     posY_ =   1-t+lumiTextOffset*t
-    print "posX_: ", posX_
-    print "posY_: ", posY_
     latex.SetTextFont(42)
     latex.SetTextAlign(31) 
     latex.SetTextSize(lumiTextSize*t)    
     latex.DrawLatex(posX_,posY_,lumiText)
 
-    posX_ =   l
+    posX_ =   l+cmsTextOffset
     posY_ =   1-t+lumiTextOffset*t
-    print "posX_: ", posX_
-    print "posY_: ", posY_
-    print "cmsText: ", cmsText," l: ", l, " 1-t+lumiTextOffset*t: ", 1-t+lumiTextOffset*t 
     latex.SetTextFont(cmsTextFont)
     latex.SetTextAlign(11) 
     latex.SetTextSize(cmsTextSize*t)    
@@ -93,11 +88,8 @@ def CMS_lumi(lumi,pad):
 
     relPosX    = 0.15
     relPosY    = 0.035
-    relExtraDY = 1.2
-    posX_ =   l + relPosX*(1-l-r)
+    posX_ =   posX_ + relPosX*(1-r)
     posY_ =   1-t+lumiTextOffset*t
-    print "posX_: ", posX_
-    print "posY_: ", posY_
     latex.SetTextFont(extraTextFont)
     latex.SetTextSize(extraTextSize*t)
     latex.SetTextAlign(11)
@@ -109,7 +101,7 @@ def getPad4var():
     pad = ROOT.TPad("pad4var","Histos",0.,0.27,1.0,1.0)
     pad.SetBottomMargin(0.03)
     pad.SetLeftMargin(0.15)
-    pad.SetRightMargin(0.05)
+    pad.SetRightMargin(0.08)
     pad.SetTopMargin(0.1)
     
     pad.SetFillColor(0)
@@ -129,7 +121,7 @@ def getPad4ratio():
     pad.SetBottomMargin(0.25)
     pad.SetTopMargin(0)
     pad.SetLeftMargin(0.15)
-    pad.SetRightMargin(0.05)
+    pad.SetRightMargin(0.08)
     
     pad.SetFillColor(0)
     pad.SetBorderMode(0)
@@ -208,6 +200,7 @@ class StackPlotter(object):
         canvas = ROOT.TCanvas("canvas","",900,900)
         ROOT.gStyle.SetOptStat(0)
         ROOT.gStyle.SetOptTitle(0)
+        ROOT.gStyle.SetOptTitle(0)
         ROOT.TGaxis.SetMaxDigits(4)
         canvas.Range(-68.75,-7.5,856.25,42.5)
         canvas.SetFillColor(0)
@@ -217,7 +210,165 @@ class StackPlotter(object):
         canvas.SetTicky(1)
         canvas.SetLeftMargin(0.15)
         canvas.SetRightMargin(0.05)
-        canvas.SetTopMargin(0.05)
+        canvas.SetTopMargin(0.08)
+        canvas.SetBottomMargin(0.15)
+        canvas.SetFrameFillStyle(0)
+        canvas.SetFrameBorderMode(0)
+        
+        canvas.cd()
+
+        #if data not found plot stack only
+        if data != None:                  
+            datamax = ROOT.Math.chisquared_quantile_c((1-0.6827)/2.,2*(data.GetMaximum()+1))/2.
+        else: 
+            datamax = stack.GetMaximum()
+
+        if not self.log:
+            frame = canvas.DrawFrame(mini,0.0,maxi,max(stack.GetMaximum(),datamax)*1.20)
+        else:    
+            frame = canvas.DrawFrame(mini,0.1,maxi,max(stack.GetMaximum(),datamax)*100)
+
+        frame.GetXaxis().SetLabelFont(42)
+        frame.GetXaxis().SetLabelOffset(0.007)
+        frame.GetXaxis().SetLabelSize(0.045)
+        frame.GetXaxis().SetTitleSize(0.05)
+        frame.GetXaxis().SetTitleOffset(1.15)
+        frame.GetXaxis().SetTitleFont(42)
+        frame.GetYaxis().SetLabelFont(42)
+        frame.GetYaxis().SetLabelOffset(0.007)
+        frame.GetYaxis().SetLabelSize(0.045)
+        frame.GetYaxis().SetTitleSize(0.05)
+        frame.GetYaxis().SetTitleOffset(1.4)
+        frame.GetYaxis().SetTitleFont(42)
+        frame.GetZaxis().SetLabelFont(42)
+        frame.GetZaxis().SetLabelOffset(0.007)
+        frame.GetZaxis().SetLabelSize(0.045)
+        frame.GetZaxis().SetTitleSize(0.05)
+        frame.GetZaxis().SetTitleFont(42)
+
+
+        if len(units)>0:
+            frame.GetXaxis().SetTitle(titlex + " (" +units+")")
+            frame.GetYaxis().SetTitle("Events / "+str((maxi-mini)/bins)+ " "+units)
+        else:    
+            frame.GetXaxis().SetTitle(titlex)
+            frame.GetYaxis().SetTitle("Events")
+
+        frame.Draw()
+        stack.Draw("A,HIST,SAME")
+        if data !=None:
+            dataG.Draw("Psame")              
+
+        legend = ROOT.TLegend(0.58,0.55,0.88,0.85,"","brNDC")
+	legend.SetBorderSize(0)
+	legend.SetLineColor(1)
+	legend.SetLineStyle(1)
+	legend.SetLineWidth(1)
+	legend.SetFillColor(0)
+	legend.SetFillStyle(0)
+	legend.SetTextFont(42)
+
+        legend.SetFillColor(ROOT.kWhite)
+        for (histo,label,typeP) in reversed(zip(hists,self.labels,self.types)):
+            if typeP != "data" and typeP !='signal':
+                legend.AddEntry(histo,label,"f")
+            elif typeP == 'data':
+                legend.AddEntry(histo,label,"p")
+
+        for (histo,label,typeP) in reversed(zip(hists,self.labels,self.types)):
+            if typeP == "signal":
+                legend.AddEntry(histo,label,"f")
+
+ #       ROOT.SetOwnership(legend,False)
+
+        legend.Draw()
+
+        if self.log:
+            pad1.SetLogy()
+
+        canvas.cd()
+        canvas.SetLeftMargin(canvas.GetLeftMargin()*1.15)
+        canvas.SetRightMargin(canvas.GetRightMargin()*2.)
+        cmsText = CMS_lumi(lumi,canvas)
+
+        canvas.Update()
+
+
+        print"---------------------------"
+        print "Signal = %f" %(signal)
+        print "Bkg    = %f" %(background)
+        if data is not None:
+            print "Observed = %f"%(data.Integral())
+            integral = data.IntegralAndError(1,data.GetNbinsX(),error)
+            if background>0.0:
+                print "Data/Bkg= {ratio} +- {err}".format(ratio=integral/background,err=math.sqrt(error*error/(background*background)+integral*integral*backgroundErr/(background*background*background*background)))
+
+
+        plot={'canvas':canvas,'stack':stack,'legend':legend,'data':data,'dataG':dataG,'cmsText':cmsText}
+
+        canvas.RedrawAxis()
+        canvas.Update()
+
+
+        return plot
+
+
+    def drawStackAndRatio(self,var,cut,lumi,bins,mini,maxi,titlex = "", units = ""):
+        # handling input histograms
+        hists=[]
+        stack = ROOT.THStack("stack","")
+        
+        signal=0
+        background=0
+        backgroundErr=0
+        
+        data=None
+        dataG=None
+        error=ROOT.Double(0.0)
+
+        cutL="("+self.defaultCut+")*("+cut+")"
+
+        bkg = ROOT.TH1F("bkg","bkg",bins,mini,maxi)
+
+        for (plotter,typeP,label,name) in zip(self.plotters,self.types,self.labels,self.names):
+            if typeP == "signal" or typeP =="background":
+                hist = plotter.drawTH1(var,cutL,lumi,bins,mini,maxi,titlex,units)
+                hist.SetName(name)
+                stack.Add(hist)
+                hists.append(hist)
+                print label+" : %f\n" % hist.Integral()
+ 
+                if typeP == "signal" :
+                    signal+=hist.Integral()
+                if typeP == "background" :
+                    background+=hist.IntegralAndError(1,hist.GetNbinsX(),error)
+                    backgroundErr+=error*error
+                    bkg.Add(hist)
+
+            if typeP =="data":
+                hist = plotter.drawTH1(var,cutL,"1",bins,mini,maxi,titlex,units)
+                hist.SetName(hist.GetName()+label)
+                hists.append(hist)
+                data=hist
+                dataG=convertToPoisson(hist)
+                dataG.SetLineWidth(1)
+                print label+" : %f\n" % hist.Integral()
+                
+
+        # plotting
+        canvas = ROOT.TCanvas("canvas","",900,900)
+        ROOT.gStyle.SetOptStat(0)
+        ROOT.gStyle.SetOptTitle(0)
+        ROOT.TGaxis.SetMaxDigits(4)
+        canvas.Range(-68.75,-7.5,856.25,42.5)
+        canvas.SetFillColor(0)
+        canvas.SetBorderMode(0)
+        canvas.SetBorderSize(2)
+        canvas.SetTickx(1)
+        canvas.SetTicky(1)
+        canvas.SetLeftMargin(0.15)
+        canvas.SetRightMargin(0.05)
+        canvas.SetTopMargin(0.08)
         canvas.SetBottomMargin(0.15)
         canvas.SetFrameFillStyle(0)
         canvas.SetFrameBorderMode(0)
@@ -234,8 +385,6 @@ class StackPlotter(object):
 
         ###########
 
-        print "pad1: ", pad1
-        print "pad2: ", pad2
         if pad2 == None:
             pad2 = getPad4ratio()
 
@@ -282,14 +431,11 @@ class StackPlotter(object):
         else: 
             datamax = stack.GetMaximum()
 
-        print "pad1: ", pad1
         if not self.log:
             frame = pad1.DrawFrame(mini,0.0,maxi,max(stack.GetMaximum(),datamax)*1.20)
         else:    
             frame = pad1.DrawFrame(mini,0.1,maxi,max(stack.GetMaximum(),datamax)*100)
 
-        print "pad1: ", pad1
-        print "frame: ", frame
         frame.GetXaxis().SetLabelFont(0)
         frame.GetXaxis().SetLabelOffset(9999)
         frame.GetXaxis().SetLabelSize(0)
