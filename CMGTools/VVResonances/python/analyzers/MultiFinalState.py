@@ -39,6 +39,8 @@ class MultiFinalState( EventInterpretationBase ):
 
         if self.cfg_ana.doCHS:
             cleanedPackedCandidates = filter(lambda x: x.fromPV(0) ,cleanedPackedCandidates)
+        elif self.cfg_ana.doPUPPI:
+            cleanedPackedCandidates = self.puppiWeight(cleanedPackedCandidates)   
           
         selectedFatJets = self.makeFatJets(cleanedPackedCandidates)
         if self.isMC:

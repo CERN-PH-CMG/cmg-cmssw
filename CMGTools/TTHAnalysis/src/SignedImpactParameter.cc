@@ -19,6 +19,19 @@ SignedImpactParameter::SignedImpactParameter() {
 SignedImpactParameter::~SignedImpactParameter() {
 }
 
+bool
+SignedImpactParameter::qualitytrk(const reco::Track trk, const reco::Vertex &vtx) {
+ bool isgoodtrk = false;
+ if(trk.pt()>1 &&
+   trk.hitPattern().numberOfValidHits()>=8 &&
+   trk.hitPattern().numberOfValidPixelHits()>=2 &&
+   trk.normalizedChi2()<5 &&
+   std::fabs(trk.dxy(vtx.position()))<0.2 &&
+   std::fabs(trk.dz(vtx.position()))<17
+   ) isgoodtrk = true;
+ return isgoodtrk;
+}
+
 //Signed 3D IP
 
 Measurement1D 

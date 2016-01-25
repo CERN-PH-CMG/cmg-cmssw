@@ -1,12 +1,11 @@
-LepGood1_(\w+) : LepGood_\1[iL1TV_Mini]; AlsoData
-LepGood2_(\w+) : LepGood_\1[iL2TV_Mini]; AlsoData
-nLepGood10\b: nLepTightVeto10_Mini; AlsoData
-\bmZ1\b: mZ1cut10TL_Mini; AlsoData
-minMllAFOS\b: minMllAFOSTL_Mini; AlsoData
-minMllAFAS\b: mllTV_Mini; AlsoData
+LepGood1_(\w+) : LepGood_\1[i1_Loop[]]; AlsoData
+LepGood2_(\w+) : LepGood_\1[i2_Loop[]]; AlsoData
 nJet40\b: nJet40_Mini; AlsoData
 htJet40j\b: htJet40j_Mini; AlsoData
-nBJetMedium40\b: nBJetMedium40_Mini; AlsoData
-nJet25\b: nJet25_Mini; AlsoData
-htJet25j\b: htJet25j_Mini; AlsoData
 nBJetMedium25\b: nBJetMedium25_Mini; AlsoData
+nBJetLoose25\b: nBJetLoose25_Mini; AlsoData
+SR\b: SR_Loop; AlsoData
+hasTT\b: hasTT_Loop; AlsoData
+hasTF\b: hasTF_Loop; AlsoData
+hasFF\b: hasFF_Loop; AlsoData
+appWeight\b: appWeight_Loop; AlsoData

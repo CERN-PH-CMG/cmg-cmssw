@@ -48,6 +48,11 @@ case $WHAT in
         do_plot DoubleMuon_Run2015B_run251252 DoubleMuon_Run2015B_run251252
         do_plot DoubleEG_Run2015B_run251252 DoubleEG_Run2015B_run251252
         ;;
+    DataV2)
+        $RUN && do_run $DIR -o test=PromptRecoD  -N 5000 -o runData -o doT1METCorr -o old74XMiniAODs=False ;
+        do_plot DoubleMuon_Run2015D_run260577 DoubleMuon_Run2015D_run260577
+        do_plot DoubleEG_Run2015D_run260577 DoubleEG_Run2015D_run260577
+        ;;
     Data_PreProc)
         $RUN && do_run $DIR -o test=PromptReco  -N 5000 -o runData -o is50ns -o doMETpreprocessor;
         do_plot DoubleMuon_Run2015B_run251252 DoubleMuon_Run2015B_run251252
@@ -61,6 +66,10 @@ case $WHAT in
     MC)
         $RUN && do_run $DIR -o test=74X-MC -o sample=TTLep -N 2000 -o doT1METCorr -o noMETNoHF;
         do_plot TTLep_pow TTLep_pow
+        ;;
+    MCV2)
+        $RUN && do_run $DIR -o test=74X-MC -o sample=TTLep_v2 -N 2000 -o doT1METCorr -o old74XMiniAODs=False;
+        do_plot TTLep_pow TTLep_pow .v2
         ;;
     MC_PreProc)
         $RUN && do_run $DIR -o test=74X-MC -o sample=TTLep -N 2000 -o doMETpreprocessor;

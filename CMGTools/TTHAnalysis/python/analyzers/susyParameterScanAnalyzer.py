@@ -64,9 +64,12 @@ class susyParameterScanAnalyzer( Analyzer ):
                 self.warned_already = True
             return
         lheprod = self.mchandles['lhe'].product()
-        scanline = re.compile(r"#\s*model\s+([A-Za-z0-9]+)_((\d+\.?\d*)(_\d+\.?\d*)*)\s+(\d+\.?\d*)\s*")
+        scanline = re.compile(r"#\s*model\s+([A-Za-z0-9]+)_((\d+\.?\d*)(_\d+\.?\d*)*)(\s+(\d+\.?\d*))*\s*")
         for i in xrange(lheprod.comments_size()):
             comment = lheprod.getComment(i)
+            if (not hasattr(self,'model_printed')) and ('model' in comment):
+                print 'LHE contains this model string: %s (will not print the ones in the following events)'%comment
+                self.model_printed = True
             m = re.match(scanline, comment) 
             if m:
                 event.susyModel = m.group(1)

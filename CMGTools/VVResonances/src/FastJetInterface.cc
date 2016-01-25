@@ -70,8 +70,6 @@ FastJetInterface::FastJetInterface(const std::vector<LorentzVector> & objects, d
   clusterSeq_ = ClusterSequencePtr( new fastjet::ClusterSequenceArea( input_, jet_def,area_def)); 
 }
 
-
-
 std::vector<math::XYZTLorentzVector> FastJetInterface::makeP4s(const std::vector<fastjet::PseudoJet> &jets) {
   std::vector<math::XYZTLorentzVector> JetObjectsAll;
   for (const fastjet::PseudoJet & pj : jets) {

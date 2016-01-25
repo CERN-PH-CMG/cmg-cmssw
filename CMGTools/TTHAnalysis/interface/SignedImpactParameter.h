@@ -18,6 +18,7 @@ class SignedImpactParameter {
         SignedImpactParameter() ;
         ~SignedImpactParameter() ;
 
+        bool qualitytrk(const reco::Track trk, const reco::Vertex &vtx);
         Measurement1D signedIP3D(const reco::Track &tk, const reco::Vertex &vtx, const reco::Track::Vector jetdir) const ;
         Measurement1D signedIP3D(const reco::Track &tk, const reco::VertexCompositePtrCandidate &vtx, const reco::Track::Vector jetdir) const ;
         Measurement1D signedIP2D(const reco::Track &tk, const reco::Vertex &vtx, const reco::Track::Vector jetdir) const ;

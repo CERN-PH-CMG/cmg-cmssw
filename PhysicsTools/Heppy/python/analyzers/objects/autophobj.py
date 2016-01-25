@@ -51,6 +51,7 @@ leptonType = NTupleObjectType("lepton", baseObjectTypes = [ particleType ], vari
     NTupleVariable("tightId",     lambda x : x.tightId(), int, help="POG Tight ID (for electrons it's configured in the analyzer)"),
     NTupleVariable("eleCutIdCSA14_25ns_v1",     lambda x : (1*x.electronID("POG_Cuts_ID_CSA14_25ns_v1_Veto") + 1*x.electronID("POG_Cuts_ID_CSA14_25ns_v1_Loose") + 1*x.electronID("POG_Cuts_ID_CSA14_25ns_v1_Medium") + 1*x.electronID("POG_Cuts_ID_CSA14_25ns_v1_Tight")) if abs(x.pdgId()) == 11 else -1, int, help="Electron cut-based id (POG CSA14_25ns_v1): 0=none, 1=veto, 2=loose, 3=medium, 4=tight"),
     NTupleVariable("eleCutIdCSA14_50ns_v1",     lambda x : (1*x.electronID("POG_Cuts_ID_CSA14_50ns_v1_Veto") + 1*x.electronID("POG_Cuts_ID_CSA14_50ns_v1_Loose") + 1*x.electronID("POG_Cuts_ID_CSA14_50ns_v1_Medium") + 1*x.electronID("POG_Cuts_ID_CSA14_50ns_v1_Tight")) if abs(x.pdgId()) == 11 else -1, int, help="Electron cut-based id (POG CSA14_50ns_v1): 0=none, 1=veto, 2=loose, 3=medium, 4=tight"),
+    NTupleVariable("eleCutIdSpring15_25ns_v1",     lambda x : (1*x.electronID("cutBasedElectronID-Spring15-25ns-V1-standalone-veto") + 1*x.electronID("cutBasedElectronID-Spring15-25ns-V1-standalone-loose") + 1*x.electronID("cutBasedElectronID-Spring15-25ns-V1-standalone-medium") + 1*x.electronID("cutBasedElectronID-Spring15-25ns-V1-standalone-tight")) if abs(x.pdgId()) == 11 and x.isElectronIDAvailable("cutBasedElectronID-Spring15-25ns-V1-standalone-veto") else -1, int, help="Electron cut-based id (POG Spring15_25ns_v1): 0=none, 1=veto, 2=loose, 3=medium, 4=tight"),
     # Impact parameter
     NTupleVariable("dxy",   lambda x : x.dxy(), help="d_{xy} with respect to PV, in cm (with sign)"),
     NTupleVariable("dz",    lambda x : x.dz() , help="d_{z} with respect to PV, in cm (with sign)"),
@@ -111,6 +112,7 @@ leptonTypeExtra = NTupleObjectType("leptonExtra", baseObjectTypes = [ leptonType
 #    new version used by EGM in Spring15, 7_4_14:
     NTupleVariable("eInvMinusPInv_tkMom", lambda x: ((1.0/x.ecalEnergy()) - (1.0 / x.trackMomentumAtVtx().R() ) if (x.ecalEnergy()>0. and x.trackMomentumAtVtx().R()>0.) else 9e9) if abs(x.pdgId())==11 else 0, help="Electron 1/E - 1/p_tk_vtx  (without absolute value!)"),
     NTupleVariable("etaSc", lambda x : x.superCluster().eta() if abs(x.pdgId())==11 else -100, help="Electron supercluster pseudorapidity"),
+    NTupleVariable("mcMatchPdgId",  lambda x : x.mcLep.pdgId() if getattr(x,'mcLep',None)!=None else -99, int, mcOnly=True, help="Match to source from hard scatter (pdgId of heaviest particle in chain, 25 for H, 6 for t, 23/24 for W/Z): pdgId of the matched gen-level lepton, zero if non-prompt or fake")
 ])
  
 
@@ -181,11 +183,15 @@ jetType = NTupleObjectType("jet",  baseObjectTypes = [ fourVectorType ], variabl
     NTupleVariable("rawPt",  lambda x : x.pt() * x.rawFactor(), help="p_{T} before JEC"),
     NTupleVariable("mcPt",   lambda x : x.mcJet.pt() if getattr(x,"mcJet",None) else 0., mcOnly=True, help="p_{T} of associated gen jet"),
     NTupleVariable("mcFlavour", lambda x : x.partonFlavour(), int,     mcOnly=True, help="parton flavour (physics definition, i.e. including b's from shower)"),
+    NTupleVariable("partonFlavour", lambda x : x.partonFlavour(), int,     mcOnly=True, help="purely parton-based flavour"),
     NTupleVariable("hadronFlavour", lambda x : x.hadronFlavour(), int,     mcOnly=True, help="hadron flavour (ghost matching to B/C hadrons)"),
     NTupleVariable("mcMatchId",  lambda x : getattr(x, 'mcMatchId', -99), int, mcOnly=True, help="Match to source from hard scatter (pdgId of heaviest particle in chain, 25 for H, 6 for t, 23/24 for W/Z), zero if non-prompt or fake"),
-    NTupleVariable("corr_JECUp",  lambda x : getattr(x, 'corrJECUp', -99), float, mcOnly=True, help=""),
-    NTupleVariable("corr_JECDown",  lambda x : getattr(x, 'corrJECDown', -99), float, mcOnly=True, help=""),
-    NTupleVariable("corr",  lambda x : getattr(x, 'corr', -99), float, mcOnly=True, help=""),
+    NTupleVariable("corr_JECUp",  lambda x : getattr(x, 'corrJECUp', -99), float,  help=""),
+    NTupleVariable("corr_JECDown",  lambda x : getattr(x, 'corrJECDown', -99), float,help=""),
+    NTupleVariable("corr",  lambda x : getattr(x, 'corr', -99), float, help=""),
+    NTupleVariable("corr_JERUp",  lambda x : getattr(x, 'corrJERUp', -99), float, mcOnly=True, help=""),
+    NTupleVariable("corr_JERDown", lambda x : getattr(x, 'corrJERDown', -99), float, mcOnly=True, help=""),
+    NTupleVariable("corr_JER", lambda x : getattr(x, 'corrJER', -99), float, mcOnly=True, help=""),
 ])
 jetTypeExtra = NTupleObjectType("jetExtra",  baseObjectTypes = [ jetType ], variables = [
     NTupleVariable("area",   lambda x : x.jetArea(), help="Catchment area of jet"),

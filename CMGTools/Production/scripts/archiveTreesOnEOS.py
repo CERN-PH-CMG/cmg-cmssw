@@ -26,6 +26,7 @@ if __name__ == "__main__":
 	parser.add_option("-t", dest="treeproducername", type='string', default="myTreeProducer", help='Name of the tree producer module')
 	parser.add_option("-f", dest="friendtreestring", type='string', default="evVarFriend", help='String identifying friend trees (must be contained in the root file name)')
 	parser.add_option("-T", dest="treename", type='string', default="tree.root", help='Name of the tree file')
+	parser.add_option("--dset", dest="dset", type='string', default=None, help='Name of the dataset to process')
 	(options, args) = parser.parse_args()
 	if len(args)<2: raise RuntimeError, 'Expecting at least two arguments'
 	
@@ -36,12 +37,16 @@ if __name__ == "__main__":
 	if not eostools.isEOS(remdir): raise RuntimeError, 'Remote directory should be on EOS.'
 	if (not eostools.fileExists(locdir)) or eostools.isFile(locdir): 
 	    raise RuntimeError, 'The local directory that should contain the trees does not exist.'
-	if eostools.fileExists('%s/%s' % (remdir,locdir)):
-	    raise RuntimeError, 'The remote EOS directory where the trees should be archived already exists.'
+
+# check removed to allow for top-up of tree productions
+#	if eostools.fileExists('%s/%s' % (remdir,locdir)):
+#	    raise RuntimeError, 'The remote EOS directory where the trees should be archived already exists.'
 	
 	alldsets = eostools.ls(locdir)
 	dsets = [d for d in alldsets if [ fname for fname in eostools.ls(d) if options.friendtreestring in fname]==[] ]
+	if options.dset: dsets = [d for d in dsets if options.dset in d]
 	friends = [d for d in alldsets if d not in dsets]
+	if options.dset: friends = [d for d in friends if options.dset in d]
 	
 	tocopy = []
 	for d in dsets:
