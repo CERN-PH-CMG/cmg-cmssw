@@ -124,3 +124,7 @@ class Muon( Lepton ):
         else:
              raise RuntimeError, "Unsupported PU correction scheme %s" % puCorr
         return self.chargedHadronIsoR(R)+max(0.,photonIso+self.neutralHadronIsoR(R)-offset)            
+
+    def ptErr(self):
+        if "_ptErr" in self.__dict__: return self.__dict__['_ptErr']
+        return self.bestTrack().ptError()
