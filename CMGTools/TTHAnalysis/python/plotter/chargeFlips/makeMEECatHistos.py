@@ -16,8 +16,9 @@ addPlotMakerOptions(parser)
 
 ## Some default options (too lazy to give them on the command line)
 options.tree = 'treeProducerSusyMultilepton'
-#options.lumi = 0.2092
-options.lumi = 0.83231
+# options.lumi = 0.2092
+# options.lumi = 0.83231
+options.lumi = 2.16
 
 try:
     print "Processing %s" % args[1]

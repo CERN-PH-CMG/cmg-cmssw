@@ -1,41 +1,16 @@
-#TT : TT_pow: xsec ;  FillColor=ROOT.kGray, Label="t\#bar{t}"
-#TT : TTJets: xsec ;  FillColor=ROOT.kGray, Label="t\#bar{t}"
-
-#WZ : WZTo3LNu: xsec ; FillColor=ROOT.kViolet-4, Label="WZ"
-#ZZ : ZZTo4L: xsec ; FillColor=ROOT.kViolet-4, Label="Diboson"
-
-#Single top : T_tWch:           xsec; FillColor=ROOT.kGray+2, Label="Single top"
-#Single top : TBar_tWch:        xsec; FillColor=ROOT.kGray+2, Label="Single top"
-#Single top : TToLeptons_tch:   xsec; FillColor=ROOT.kGray+2, Label="Single top"
-#Single top : TToLeptons_sch:   xsec; FillColor=ROOT.kGray+2, Label="Single top"
-
-#WJets    : WJetsToLNu :  xsec; FillColor=ROOT.kCyan+2, Label="W+jets"
-#VV : WWTo2L2Nu: xsec ; FillColor=ROOT.kViolet-4, Label="Diboson"
 DY : DYJetsToLL_M10to50: xsec ; FillColor=ROOT.kCyan, Label="DY"
 DY : DYJetsToLL_M50:     xsec ; FillColor=ROOT.kCyan, Label="DY"
 
 
-# 832.31 /pb
-data: DoubleMuon_Run2015D_v3_runs_256630_257599
-data: DoubleEG_Run2015D_v3_runs_256630_257599
-data: MuonEG_Run2015D_v3_runs_256630_257599
-data: SingleMuon_Run2015D_v3_runs_256630_257599
-data: SingleElectron_Run2015D_v3_runs_256630_257599
+# 2.2 /fb
+data: DoubleEG_Run2015C_Oct05_runs_254231_254914
+data: DoubleEG_Run2015D_Oct05_runs_256630_258158
+data: DoubleEG_Run2015D_PromptV4_runs_258159_260627
 
-data: DoubleMuon_Run2015D_v3_run_256926
-data: DoubleEG_Run2015D_v3_run_256926
-data: MuonEG_Run2015D_v3_run_256926
-data: SingleMuon_Run2015D_v3_run_256926
-data: SingleElectron_Run2015D_v3_run_256926
+data: DoubleMuon_Run2015C_Oct05_runs_254231_254914
+data: DoubleMuon_Run2015D_Oct05_runs_256630_258158
+data: DoubleMuon_Run2015D_PromptV4_runs_258159_260627
 
-data: DoubleMuon_Run2015D_v3_runs_257600_258158
-data: DoubleEG_Run2015D_v3_runs_257600_258158
-data: MuonEG_Run2015D_v3_runs_257600_258158
-data: SingleMuon_Run2015D_v3_runs_257600_258158
-data: SingleElectron_Run2015D_v3_runs_257600_258158
-
-data: DoubleMuon_Run2015D_v4_runs_258159_258714
-data: DoubleEG_Run2015D_v4_runs_258159_258714
-data: MuonEG_Run2015D_v4_runs_258159_258714
-data: SingleMuon_Run2015D_v4_runs_258159_258714
-data: SingleElectron_Run2015D_v4_runs_258159_258714
+data: MuonEG_Run2015C_Oct05_runs_254231_254914
+data: MuonEG_Run2015D_Oct05_runs_256630_258158
+data: MuonEG_Run2015D_PromptV4_runs_258159_260627
