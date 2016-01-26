@@ -459,21 +459,25 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
     if(useEffSF>=2 && useEffSF<=6 && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
       if(useEffSF==2 || useEffSF!=3){
+	// === leading
         // cout << "eff_TIGHT_SF"<<endl;
         eff_TIGHT_SF            = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt:MuNeg_pt));
         TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_SF;
       }
       if(useEffSF==2 || useEffSF!=4){
+	// === subleading
         // cout << "eff_ISO_SF"<<endl;
         eff_ISO_SF              = SF_ISO05_PT10->GetBinContent(SF_ISO05_PT10->FindBin(costh_HX,TMath::Abs(phi_HX),ZNocorr.Pt()));
         TRG_TIGHT_ISO_muons_SF  *= eff_ISO_SF;
       }
       if(useEffSF==2 || useEffSF!=5){
+	// === subleading
 	 // cout << "eff_TIGHT_subleading_SF"<<endl;
         eff_TIGHT_subleading_SF = SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(isChargePos?MuNeg_eta:MuPos_eta,isChargePos?MuNeg_pt:MuPos_pt));
         TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
       }
       if(useEffSF==2 || useEffSF!=6){
+	// === leading
         // cout << "eff_TRG_SF"<<endl;
         eff_TRG_SF              = SF_HLT->GetBinContent(SF_HLT->FindBin(isChargePos?1:-1,isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt:MuNeg_pt));
         TRG_TIGHT_ISO_muons_SF  *= eff_TRG_SF;
@@ -1130,6 +1134,19 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             //------------------------------------------------------------------------------------------------ 
                             
                             if(Wlike_met.Pt()>0 && m==m_start && n==0 && controlplots && WMass::WMassNSteps==j) {
+
+			      common_stuff::plot1D(Form("h_eff_TIGHT_SF%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+                                                   eff_TIGHT_SF, weight, h_1d, 200, -0.5, 1.5 );
+
+			      common_stuff::plot1D(Form("h_eff_ISO_SF%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+                                                   eff_ISO_SF, weight, h_1d, 200, -0.5, 1.5 );
+
+			      common_stuff::plot1D(Form("h_eff_TIGHT_subleading_SF%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+                                                   eff_TIGHT_subleading_SF, weight, h_1d, 200, -0.5, 1.5 );
+
+			      common_stuff::plot1D(Form("h_eff_TRG_SF%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+                                                   eff_TRG_SF, weight, h_1d, 200, -0.5, 1.5 );
+
 
                               string tag_zPtcut;
                               if ( Zcorr.Pt()<2 ) tag_zPtcut = "_Zpt02";
