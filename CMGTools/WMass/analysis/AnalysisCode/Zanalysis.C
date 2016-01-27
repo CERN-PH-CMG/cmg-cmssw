@@ -238,11 +238,17 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       // hZPtSF->Divide(hZPtSFbase);
     // }
   // } else 
-  if(usePtSF==0){
-    TFile* finZPtSF = new TFile("../utils/fptout_ZdataMC.root"); // used only to build templates
-    // hZPtSF=(TH1D*)finZPtSF->Get(Form("hWlike%s_ZpT_8_JetCut_pdf229800-0_eta0p9_91188_smooth", WCharge_str.Data())); hZPtSF->Sumw2();
-    // TEMP !!! WE HAVE ONLY THE POS HISTO, BUT SHOULD NOT MATTER MUCH
-    hZPtSF=(TH1D*)finZPtSF->Get("hWlikePos_ZpT_8_JetCut_pdf229800-0_eta0p9_91188_smooth"); hZPtSF->Sumw2();
+
+  if(usePtSF==0 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow"))) {
+    // old weights
+    //    TFile* finZPtSF = new TFile("../utils/fptout_ZdataMC.root"); // used only to build templates
+    //    hZPtSF=(TH1D*) finZPtSF->Get("hWlikePos_ZpT_8_JetCut_pdf229800-0_eta0p9_91188_smooth"); hZPtSF->Sumw2();
+
+    TString filename=Form("../utils/Zpt_output_%s_Pos.root",sampleName.Data());
+    cout << "hZmassSF_central = " << filename.Data() << endl;
+
+    TFile* finZPtSF = new TFile(filename.Data());
+    hZPtSF=(TH1D*) finZPtSF->Get("hWlikePos_ZpT_8_JetCut_pdf229800-0_eta0p9_91188"); hZPtSF->Sumw2();
     
   } else hZPtSF = new TH1D("hZPtSF","hZPtSF",10,0,1);
 
@@ -257,6 +263,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // Long64_t nentries = fChain->GetEntriesFast();
   Long64_t first_entry = Entry_ini;
   Long64_t nentries = Entry_fin;
+  // OBSOLETE setting
   if(IS_MC_CLOSURE_TEST==1 && isMCorDATA==1) first_entry=nentries/2; // in case of closure test, DATA runs from N/2 to N
   if(IS_MC_CLOSURE_TEST==1 && isMCorDATA==0) nentries=nentries/2; // in case of closure test, MC runs from 0 to N/2
   if(IS_MC_CLOSURE_TEST==1) lumi_scaling=lumi_scaling*2; // in case of closure test, scaling must be multiplied by 2
@@ -546,8 +553,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         }
       }
     }
-    //---------------- PT weight
-    if(usePtSF!=-1  && usePtSF!=1 &&usePtSF!=2 /* && ZGen_pt<ZPt_cut */ && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")))
+    //---------------- PT weight (usePtSF = -1; # Boson pT reweighting: -1=none, 0=data, 1...=other options)
+    // OBSOLETE setting
+    if(usePtSF!=-1 && usePtSF!=0 && usePtSF!=1 &&usePtSF!=2 /* && ZGen_pt<ZPt_cut */ && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")))
       // evt_weight_original*=hZPtSF->GetBinContent(hZPtSF->GetXaxis()->FindBin(/* Z_pt>0?Z_pt: */ZGen_pt));
       evt_weight_original*=hZPtSF->Interpolate(ZGen_pt)>0?hZPtSF->Interpolate(ZGen_pt):1;
     else if(usePtSF==1 && ZGen_pt<ZPt_cut && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){
@@ -842,6 +850,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
                 Zcorr = muPosCorr + muNegCorr;
                 ZcorrCentral = muPosCorrCentral + muNegCorrCentral;
+
+                //------------------------------------------------------------------------------------------------
+                // Apply PT weight based on RECO
+                //------------------------------------------------------------------------------------------------
+
+		if(usePtSF!=-1  && usePtSF!=1 &&usePtSF!=2 /* && ZGen_pt<ZPt_cut */ && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")))
+		  evt_weight*=hZPtSF->Interpolate(ZcorrCentral.Pt())>0?hZPtSF->Interpolate(ZcorrCentral.Pt()):1;
+
                 //------------------------------------------------------------------------------------------------
                 // Apply recoil corrections
                 //------------------------------------------------------------------------------------------------

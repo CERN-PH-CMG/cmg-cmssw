@@ -8,7 +8,7 @@ import string, os, shutil, sys, subprocess, ROOT
 
 useLHAPDF = False
 
-outfolder_prefix="PREFIX";
+outfolder_prefix="PREFIX2";
 
 ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
 ntuple_basepathFIX = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2015_05_24_53X_sumEtFIX/";
@@ -44,7 +44,7 @@ usePhiMETCorr = 0; # 0=none, 1=yes
 ### EWK CORR
 syst_ewk_Alcaraz = 0; # -1=none, 0=POWHEG QCD+EWK NLO (bug-fixed), 1= 0 +syst photos vs pythia (31 = 3 times), 2= 0 +syst no nloewk vs nloewk (32 = 3 times)
 ### REWEIGHT POLARIZATION
-reweight_polarization = 1; # 0 = none, 1 = reweight POWHEG QCD+EWK NLO TO 8 TeV DATA
+reweight_polarization = 0; # 0 = none, 1 = reweight POWHEG QCD+EWK NLO TO 8 TeV DATA
 
 # LHAPDF_reweighting_sets="11200"  # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
 # LHAPDF_reweighting_members="51"  # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
