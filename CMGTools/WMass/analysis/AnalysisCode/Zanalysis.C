@@ -260,7 +260,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   //------------------------------------------------------
 
   TH2D* hZPolSF;
-  if(reweight_polarization>0 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow"))) {
+  if(reweight_polarization==1 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow"))) {
 
     TString filename=Form("../utils/Zpol_output_%s_Pos.root",sampleName.Data());
     cout << "hZpolSF_central = " << filename.Data() << endl;
@@ -524,11 +524,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     if((IS_MC_CLOSURE_TEST || isMCorDATA==0) && controlplots) 
       common_stuff::plot1D("hPileUp_Fall11",npu, 1, h_1d, 50,0,50);
 
-    /*
+    /**/
     // THIS IS OBSOLETE
     //---------------- Angular coefficients weight
     // cout << "reweight_polarization= " << reweight_polarization << endl;
-    if(reweight_polarization>0 && sampleName.Contains("DYJetsPow")){
+    if(reweight_polarization==2 && sampleName.Contains("DYJetsPow")){
       common_stuff::ComputeAllVarPietro(muPosGen_status3,muNegGen_status3, costh_CS_gen_pietro, phi_CS_gen_pietro, costh_HX_gen_pietro, phi_HX_gen_pietro);
       // cout
       // << " ZGen_status3.Rapidity()= " << ZGen_status3.Rapidity()
@@ -556,7 +556,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       evt_weight_original*= AngCoef_sf!=0 ? AngCoef_sf : 1;
       // hZmassSF_central->Print();
     }
-    */
+    /**/
 
 
     //---------------- Invariant Mass weight
@@ -880,24 +880,24 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 // Apply PT and Pol weight based on RECO
                 //------------------------------------------------------------------------------------------------
 
-		if(usePtSF!=-1  && usePtSF!=1 &&usePtSF!=2 /* && ZGen_pt<ZPt_cut */ && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")))
-		  evt_weight*=hZPtSF->Interpolate(ZcorrCentral.Pt())>0?hZPtSF->Interpolate(ZcorrCentral.Pt()):1;
+                if(usePtSF!=-1  && usePtSF!=1 &&usePtSF!=2 /* && ZGen_pt<ZPt_cut */ && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")))
+                  evt_weight*=hZPtSF->Interpolate(ZcorrCentral.Pt())>0?hZPtSF->Interpolate(ZcorrCentral.Pt()):1;
 
-		// Boson Polarization
-		common_stuff::ComputeAllVarPietro(muPosCorrCentral,muNegCorrCentral, costh_CS, phi_CS, costh_HX, phi_HX);
+                // Boson Polarization
+                common_stuff::ComputeAllVarPietro(muPosCorrCentral,muNegCorrCentral, costh_CS, phi_CS, costh_HX, phi_HX);
 
-		// cout
-		// << " ZcorrCentral.Rapidity()= " << ZcorrCentral.Rapidity()
-		// << " ZcorrCentral.Pt()= " << ZcorrCentral.Pt()
-		// << " hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())= " << hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())
-		// << " hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())= " << hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())
-		// << " costh_CS= " << costh_CS
-		// << " phi_CS= " << phi_CS
-		// << endl;
+                // cout
+                // << " ZcorrCentral.Rapidity()= " << ZcorrCentral.Rapidity()
+                // << " ZcorrCentral.Pt()= " << ZcorrCentral.Pt()
+                // << " hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())= " << hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())
+                // << " hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())= " << hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())
+                // << " costh_CS= " << costh_CS
+                // << " phi_CS= " << phi_CS
+                // << endl;
 
-		if(reweight_polarization>0 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow")))
-		  //		  evt_weight*=hZPolSF->GetBinContent(hZPolSF->FindBin(costh_CS,TMath::Abs(phi_CS)))>0?hZPolSF->GetBinContent(hZPolSF->FindBin(costh_CS,TMath::Abs(phi_CS))):1;
-		  evt_weight*=hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS))>0?hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS)):1;
+                if(reweight_polarization==1 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow")))
+                  //		  evt_weight*=hZPolSF->GetBinContent(hZPolSF->FindBin(costh_CS,TMath::Abs(phi_CS)))>0?hZPolSF->GetBinContent(hZPolSF->FindBin(costh_CS,TMath::Abs(phi_CS))):1;
+                  evt_weight*=hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS))>0?hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS)):1;
 
                 //------------------------------------------------------------------------------------------------
                 // Apply recoil corrections
