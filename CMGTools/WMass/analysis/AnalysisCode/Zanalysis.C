@@ -347,8 +347,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     
     // TKMET type2
     int model_name_idx=0;
-    string fileCorrectTo = /*POW */ "../RecoilCode/NOV30/recoilfit_NOV30_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
-    string fileZmmMC =     /*POW */ "../RecoilCode/NOV30/recoilfit_NOV30_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_powheg.root";
+    string fileCorrectTo = /*POW */ Form("../RecoilCode/NOV30/recoilfit_NOV30_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",generatorSuffix.Data());
+    string fileZmmMC =     /*POW */ Form("../RecoilCode/NOV30/recoilfit_NOV30_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s_powheg.root",generatorSuffix.Data());
     // need to add the half stat
     string fileZmmData =   /*DATA*/ "../RecoilCode/NOV30/recoilfit_NOV30_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
     if(correctToMadgraph) fileZmmData = /*MAD */ "../RecoilCode/NOV30/recoilfit_NOV30_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
@@ -356,8 +356,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     // string fileZmmData =   /*MAD */ "../RecoilCode/AUG19/recoilfit_AUG19_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
 
     // the sample are in the root://eoscms//eos/cms//store/group/phys_smp/Wmass/dalfonso/RecoilFiles/DEC6/; download from there
-    string fileZmmKeysCorrectTo = "../RecoilCode/DEC6/keysrecoilfit_DEC6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X_powheg.root";
-    string fileZmmKeysMC = "../RecoilCode/DEC6/keysrecoilfit_DEC6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X_powheg.root";
+    string fileZmmKeysCorrectTo = Form("../RecoilCode/DEC6/keysrecoilfit_DEC6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X%s.root",generatorSuffix.Data());
+    string fileZmmKeysMC = Form("../RecoilCode/DEC6/keysrecoilfit_DEC6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X%s.root",generatorSuffix.Data());
     // need to add the half stat
     string fileZmmKeysData = "../RecoilCode/DEC6/keysrecoilfit_DEC6_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
     if(correctToMadgraph) fileZmmKeysData = "../RecoilCode/DEC6/keysrecoilfit_DEC6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X_madgraph.root";

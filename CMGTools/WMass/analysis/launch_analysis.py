@@ -649,6 +649,7 @@ if(runWanalysis or runZanalysis):
               os.system("chmod 755 runZanalysis_"+str(chunk)+".sh")
             # Send array if we reached maximum capacity (1000) or last chunk
             if chunk-jobfirst == 999 or chunk == nChuncks-1:
+##            if chunk-jobfirst == 9 or chunk == nChuncks-1:
               joblist = str(jobfirst)+"-"+str(chunk)
               jobname = "Zanalysis_"+outfolder_name+"_"+sample[i]+"["+joblist+"]"
               LSFJobOutput = ''
