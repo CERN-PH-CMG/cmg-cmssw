@@ -24,6 +24,7 @@ use_PForNoPUorTKmet = 2; # 0:PF, 1:NOPU, 2:TK
 use_LHE_weights = 0; # 0=no, 1=yes
 usePileupSF = 1; # 0=no, 1=yes
 useEffSF = 2; # 0=no, 1=MuonPOG, 2=Heiner all, 3=Heiner no tight, 4=Heiner no iso, 5=Heiner no tight subleading mu, 6=Heiner no hlt
+                                            # 13=Heiner tight 1%, 14=Heiner iso 1%, 15=Heiner tight subleading mu 1%, 16=Heiner hlt 1%
 usePtSF = 0; # Boson pT reweighting: -1=none, 0=data, 1...=other options
 
 ### MUON
