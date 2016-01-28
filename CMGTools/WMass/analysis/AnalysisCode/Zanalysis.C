@@ -45,6 +45,8 @@ double costh_CS_gen_pietro = -1e10, phi_CS_gen_pietro = -1e10;
 double costh_CS_gen = -1e10, phi_CS_gen = -1e10;
 
 const double ZPt_cut = 30; // ADDED DURING PLOTS PRE-UNBLINDING
+const bool preUnblinding = true; // this is meant to save only the inclusive plots the controlplots variable is used for the various binned plots
+
 
 void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, /* unused*/ int buildTemplates, int useMomentumCorr, int varyMuonCorrNsigma, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int usePhiMETCorr, int useRecoilCorr, int correctToMadgraph, int RecoilCorrVarDiagoParSigmas, int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights, int reweight_polarization)
 {
@@ -245,12 +247,28 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     //    hZPtSF=(TH1D*) finZPtSF->Get("hWlikePos_ZpT_8_JetCut_pdf229800-0_eta0p9_91188_smooth"); hZPtSF->Sumw2();
 
     TString filename=Form("../utils/Zpt_output_%s_Pos.root",sampleName.Data());
-    cout << "hZmassSF_central = " << filename.Data() << endl;
+    cout << "hZPtSF_central = " << filename.Data() << endl;
 
     TFile* finZPtSF = new TFile(filename.Data());
     hZPtSF=(TH1D*) finZPtSF->Get("hWlikePos_ZpT_8_JetCut_pdf229800-0_eta0p9_91188"); hZPtSF->Sumw2();
     
   } else hZPtSF = new TH1D("hZPtSF","hZPtSF",10,0,1);
+
+
+  //------------------------------------------------------
+  // Polarization
+  //------------------------------------------------------
+
+  TH2D* hZPolSF;
+  if(reweight_polarization>0 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow"))) {
+
+    TString filename=Form("../utils/Zpol_output_%s_Pos.root",sampleName.Data());
+    cout << "hZpolSF_central = " << filename.Data() << endl;
+
+    TFile* finZPolSF = new TFile(filename.Data());
+    hZPolSF=(TH2D*) finZPolSF->Get("hWlikePos_phi_vs_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188"); hZPolSF->Sumw2();
+
+  } else hZPolSF = new TH2D("hZPolSF","hZPolSF",10,0,1,10,0,1);
 
   // the following variables will get the recoil components from the corrector
   double u1_recoil = 0;
@@ -503,6 +521,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     if((IS_MC_CLOSURE_TEST || isMCorDATA==0) && controlplots) 
       common_stuff::plot1D("hPileUp_Fall11",npu, 1, h_1d, 50,0,50);
 
+    /*
+    // THIS IS OBSOLETE
     //---------------- Angular coefficients weight
     // cout << "reweight_polarization= " << reweight_polarization << endl;
     if(reweight_polarization>0 && sampleName.Contains("DYJetsPow")){
@@ -533,7 +553,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       evt_weight_original*= AngCoef_sf!=0 ? AngCoef_sf : 1;
       // hZmassSF_central->Print();
     }
-    
+    */
+
+
     //---------------- Invariant Mass weight
     // cout << "mass= " << ZGen_PostFSR_mass << " use_syst_ewk_Alcaraz = "<< use_syst_ewk_Alcaraz << endl;
     if(use_syst_ewk_Alcaraz>-1 && use_syst_ewk_Alcaraz!=100 && sampleName.Contains("DYJetsPow")){
@@ -852,11 +874,27 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 ZcorrCentral = muPosCorrCentral + muNegCorrCentral;
 
                 //------------------------------------------------------------------------------------------------
-                // Apply PT weight based on RECO
+                // Apply PT and Pol weight based on RECO
                 //------------------------------------------------------------------------------------------------
 
 		if(usePtSF!=-1  && usePtSF!=1 &&usePtSF!=2 /* && ZGen_pt<ZPt_cut */ && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")))
 		  evt_weight*=hZPtSF->Interpolate(ZcorrCentral.Pt())>0?hZPtSF->Interpolate(ZcorrCentral.Pt()):1;
+
+		// Boson Polarization
+		common_stuff::ComputeAllVarPietro(muPosCorrCentral,muNegCorrCentral, costh_CS, phi_CS, costh_HX, phi_HX);
+
+		// cout
+		// << " ZcorrCentral.Rapidity()= " << ZcorrCentral.Rapidity()
+		// << " ZcorrCentral.Pt()= " << ZcorrCentral.Pt()
+		// << " hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())= " << hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())
+		// << " hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())= " << hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())
+		// << " costh_CS= " << costh_CS
+		// << " phi_CS= " << phi_CS
+		// << endl;
+
+		if(reweight_polarization>0 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow")))
+		  //		  evt_weight*=hZPolSF->GetBinContent(hZPolSF->FindBin(costh_CS,TMath::Abs(phi_CS)))>0?hZPolSF->GetBinContent(hZPolSF->FindBin(costh_CS,TMath::Abs(phi_CS))):1;
+		  evt_weight*=hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS))>0?hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS)):1;
 
                 //------------------------------------------------------------------------------------------------
                 // Apply recoil corrections
@@ -1145,12 +1183,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                                     Wlike_var_NotScaled[k], weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
                             }
 
-                            //------------------------------------------------------------------------------------------------
-                            // BELOW PLOTS for CLOSURE TEST
-                            //------------------------------------------------------------------------------------------------ 
-                            
-                            if(Wlike_met.Pt()>0 && m==m_start && n==0 && controlplots && WMass::WMassNSteps==j) {
 
+                            //------------------------------------------------------------------------------------------------
+                            // EXTRA PLOTS - these are inclusive distributions used to derive and verify weights
+                            //------------------------------------------------------------------------------------------------
+
+                            if(m==m_start && n==0 && WMass::WMassNSteps==j && (controlplots || preUnblinding)){
+
+			      // Leptons Efficiencies
 			      common_stuff::plot1D(Form("h_eff_TIGHT_SF%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                                    eff_TIGHT_SF, weight, h_1d, 200, -0.5, 1.5 );
 
@@ -1163,6 +1203,66 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 			      common_stuff::plot1D(Form("h_eff_TRG_SF%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                                    eff_TRG_SF, weight, h_1d, 200, -0.5, 1.5 );
 
+
+			      // Boson Kinematics Zpt, Zmass, Zrecoil, Zrapidity
+                              common_stuff::plot1D(Form("hWlike%s_ZpT_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+                                                ZcorrCentral.Pt(), weight, h_1d, 200, 0, 100 );
+                              common_stuff::plot1D(Form("hWlike%s_Zmass_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+                                                ZcorrCentral.M(), weight, h_1d, 200, 50, 150 );
+
+                              common_stuff::plot1D(Form("hWlike%s_Recoil_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+                                                Wlike.Pt(), weight, h_1d, 50, 0, 25 );
+
+                              common_stuff::plot1D(Form("hWlike%s_Zrap_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+						   Zcorr.Rapidity(), weight, h_1d, 50,-5,5 );
+
+
+			      if(controlplots) {
+				common_stuff::plot2D(Form("hWlike%s_MtLinVsMt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+						     Wlike_var_NotScaled[1],Wlike_var_NotScaled[3], weight,
+						     h_2d, 50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio,
+						     50, WMass::fit_xmin[3]*ZWmassRatio, WMass::fit_xmax[3]*ZWmassRatio );
+				common_stuff::plot2D(Form("hWlike%s_MtLinVsGenZPt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+						     ZGen_pt,Wlike_var_NotScaled[3], weight,
+						     h_2d, 40, 0,20,
+						     50, WMass::fit_xmin[3]*ZWmassRatio, WMass::fit_xmax[3]*ZWmassRatio );
+				common_stuff::plot2D(Form("hWlike%s_MtVsGenZPt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+						     ZGen_pt,Wlike_var_NotScaled[1], weight,
+						     h_2d, 40, 0,20,
+						     50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio );
+			      }
+
+			      // Boson polarization
+                              common_stuff::plot2D(Form("hWlike%s_phi_vs_costh_CS_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+						   costh_CS,TMath::Abs(phi_CS), weight,
+						   h_2d, 20,-1,1,
+						   10,0,TMath::Pi() );
+
+			      if(controlplots) {
+				if( TMath::Abs(ZcorrCentral.Rapidity())<2.1 && ZcorrCentral.Pt()<1000 ){
+				  int i_rapbin = hrapbins->GetXaxis()->FindBin(TMath::Abs(ZcorrCentral.Rapidity()))-1 ;
+				  // cout << "i_rapbin= " << i_rapbin<< endl;;
+				  int i_ptbin = hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())>0 ? hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())-1 : 0 ;
+				  // cout << " i_ptbin= " << i_ptbin<< endl;;
+				  // hratioAngCoefSF[i_rapbin][i_ptbin]->Print();
+				  int costh_bin = hratioAngCoefSF[i_rapbin][i_ptbin]->GetXaxis()->FindBin(costh_CS);
+				  // cout << " costh_bin= " << costh_bin<< endl;;
+				  int phi_bin = hratioAngCoefSF[i_rapbin][i_ptbin]->GetYaxis()->FindBin(TMath::Abs(phi_CS));
+				  // cout << " phi_bin= " << phi_bin<< endl;;
+				  common_stuff::plot1D(Form("costh_CS_rapbin%d_ptbin%d_Wlike%s_8_JetCut_pdf%d-%d%s_kalman%s_eta%s_%d",i_rapbin,i_ptbin,WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+						       costh_CS, weight, h_1d, 12, -1, 1);
+				  common_stuff::plot1D(Form("phi_CS_rapbin%d_ptbin%d_Wlike%s_8_JetCut_pdf%d-%d%s_kalman%s_eta%s_%d",i_rapbin,i_ptbin,WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+						       TMath::Abs(phi_CS), weight, h_1d, 12, 0, TMath::Pi());
+				}
+			      }
+
+                            }
+
+                            //------------------------------------------------------------------------------------------------
+                            // BELOW PLOTS for CLOSURE TEST - Various binned plots
+                            //------------------------------------------------------------------------------------------------
+
+                            if(Wlike_met.Pt()>0 && m==m_start && n==0 && controlplots && WMass::WMassNSteps==j) {
 
                               string tag_zPtcut;
                               if ( Zcorr.Pt()<2 ) tag_zPtcut = "_Zpt02";
@@ -1221,6 +1321,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, "closure", tag_VTX.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps, jZmass_MeV);
                               plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, "closure", tag_y.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps , jZmass_MeV);
                             }
+
                             //---------------------------------------------------------------------
                             // Recoil plots: u1, u2, u1vsZpt, u2vsZpt, u1vsZptvsZrap, u2vsZptvsZrap
                             //---------------------------------------------------------------------
@@ -1232,16 +1333,16 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               double u_recoil = sqrt(u2_recoil*u2_recoil+u1_recoil*u1_recoil);
 
                               common_stuff::plot1D(Form("hWlike%s_u1_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                u1_recoil, weight, h_1d, 60, -20, 20 );
+				u1_recoil, weight, h_1d, 60, -20, 20 );
                               common_stuff::plot1D(Form("hWlike%s_u2_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                u2_recoil, weight, h_1d, 60, -20, 20 );
+				u2_recoil, weight, h_1d, 60, -20, 20 );
                               common_stuff::plot1D(Form("hWlike%s_u_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                 u_recoil, weight, h_1d, 60, +00, 20 );
+				u_recoil, weight, h_1d, 60, +00, 20 );
 
-                              common_stuff::plot2D(Form("hWlike%s_u1vsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                ZNocorr.Pt(), u1_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, -20, 20 );
+			      common_stuff::plot2D(Form("hWlike%s_u1vsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+				ZNocorr.Pt(), u1_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, -20, 20 );
                               common_stuff::plot2D(Form("hWlike%s_u2vsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                ZNocorr.Pt(), u2_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, -20, 20 );
+				ZNocorr.Pt(), u2_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, -20, 20 );
                               common_stuff::plot2D(Form("hWlike%s_uvsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                 ZNocorr.Pt(),  u_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, +00, 20 );
 
@@ -1254,37 +1355,10 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                 ZNocorr.Pt(), ZGen_status3.Rapidity(), u1_recoil, weight, h_3d, 60, 0, ZPt_cut, 60, -4, +4, 60, -20, 20 );
                               common_stuff::plot3D(Form("hWlike%s_u2vsZptvsZrap_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                 ZNocorr.Pt(), ZGen_status3.Rapidity(), u2_recoil, weight, h_3d, 60, 0, ZPt_cut, 60, -4, +4, 60, -20, 20 );
+
                             }
+
                             
-                            //////////////////////////////////////////////
-                            ///////////// OTHER CONTROL PLOTS ////////////
-                            //////////////////////////////////////////////
-                            if(controlplots){
-                              common_stuff::ComputeAllVarPietro(muPosCorrCentral,muNegCorrCentral, costh_CS, phi_CS, costh_HX, phi_HX);
-                              // cout
-                              // << " ZcorrCentral.Rapidity()= " << ZcorrCentral.Rapidity()
-                              // << " ZcorrCentral.Pt()= " << ZcorrCentral.Pt()
-                              // << " hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())= " << hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())
-                              // << " hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())= " << hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())
-                              // << " costh_CS= " << costh_CS
-                              // << " phi_CS= " << phi_CS
-                              // << endl;
-                              if( TMath::Abs(ZcorrCentral.Rapidity())<2.1 && ZcorrCentral.Pt()<1000 ){
-                                int i_rapbin = hrapbins->GetXaxis()->FindBin(TMath::Abs(ZcorrCentral.Rapidity()))-1 ;
-                                // cout << "i_rapbin= " << i_rapbin<< endl;;
-                                int i_ptbin = hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())>0 ? hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())-1 : 0 ;
-                                // cout << " i_ptbin= " << i_ptbin<< endl;;
-                                // hratioAngCoefSF[i_rapbin][i_ptbin]->Print();
-                                int costh_bin = hratioAngCoefSF[i_rapbin][i_ptbin]->GetXaxis()->FindBin(costh_CS);
-                                // cout << " costh_bin= " << costh_bin<< endl;;
-                                int phi_bin = hratioAngCoefSF[i_rapbin][i_ptbin]->GetYaxis()->FindBin(TMath::Abs(phi_CS));
-                                // cout << " phi_bin= " << phi_bin<< endl;;
-                                common_stuff::plot1D(Form("costh_CS_rapbin%d_ptbin%d_Wlike%s_8_JetCut_pdf%d-%d%s_kalman%s_eta%s_%d",i_rapbin,i_ptbin,WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                        costh_CS, weight, h_1d, 12, -1, 1);
-                                common_stuff::plot1D(Form("phi_CS_rapbin%d_ptbin%d_Wlike%s_8_JetCut_pdf%d-%d%s_kalman%s_eta%s_%d",i_rapbin,i_ptbin,WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                        TMath::Abs(phi_CS), weight, h_1d, 12, 0, TMath::Pi());
-                              }
-                              
                               //------------------------------------------------------------------------------------------------
                               // PLOTS FOR GIGI's TEST see 11 apr 2014 (CMG presentations)
                               //------------------------------------------------------------------------------------------------
@@ -1294,33 +1368,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
                               common_stuff::plot1D(Form("deltaMET_Wlike%s_8_JetCut_pdf%d-%d%s_kalman%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                       Wlike_met.Pt() - Wlike_metCentral.Pt(), weight, h_1d, 200, -0.1, 0.1);
-                            }
 
-                            //------------------------------------------------------------------------------------------------
-                            // EXTRA PLOTS
-                            //------------------------------------------------------------------------------------------------ 
-                            if(m==m_start && n==0 && controlplots && WMass::WMassNSteps==j){
-                              common_stuff::plot1D(Form("hWlike%s_ZpT_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                                ZcorrCentral.Pt(), weight, h_1d, 200, 0, 100 );
-                              common_stuff::plot1D(Form("hWlike%s_Zmass_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                                ZcorrCentral.M(), weight, h_1d, 200, 50, 150 );
-
-                              common_stuff::plot1D(Form("hWlike%s_Recoil_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                                Wlike.Pt(), weight, h_1d, 50, 0, 25 );
-
-                              common_stuff::plot2D(Form("hWlike%s_MtLinVsMt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                                Wlike_var_NotScaled[1],Wlike_var_NotScaled[3], 1,
-                                                h_2d, 50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio,
-                                                50, WMass::fit_xmin[3]*ZWmassRatio, WMass::fit_xmax[3]*ZWmassRatio );
-                              common_stuff::plot2D(Form("hWlike%s_MtLinVsGenZPt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                                ZGen_pt,Wlike_var_NotScaled[3], 1,
-                                                h_2d, 40, 0,20,
-                                                50, WMass::fit_xmin[3]*ZWmassRatio, WMass::fit_xmax[3]*ZWmassRatio );
-                              common_stuff::plot2D(Form("hWlike%s_MtVsGenZPt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                                ZGen_pt,Wlike_var_NotScaled[1], 1,
-                                                h_2d, 40, 0,20,
-                                                50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio );
-                            }
                           } // end loop PDF
                           
                           //------------------------------------------------------------------------------------------------

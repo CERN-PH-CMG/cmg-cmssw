@@ -8,7 +8,7 @@ import string, os, shutil, sys, subprocess, ROOT
 
 useLHAPDF = False
 
-outfolder_prefix="PREFIX2";
+outfolder_prefix="PREFIX";
 
 ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
 ntuple_basepathFIX = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2015_05_24_53X_sumEtFIX/";
@@ -44,7 +44,7 @@ usePhiMETCorr = 0; # 0=none, 1=yes
 ### EWK CORR
 syst_ewk_Alcaraz = 0; # -1=none, 0=POWHEG QCD+EWK NLO (bug-fixed), 1= 0 +syst photos vs pythia (31 = 3 times), 2= 0 +syst no nloewk vs nloewk (32 = 3 times)
 ### REWEIGHT POLARIZATION
-reweight_polarization = 0; # 0 = none, 1 = reweight POWHEG QCD+EWK NLO TO 8 TeV DATA
+reweight_polarization = 1; # 0 = none, 1 = reweight POW to DATA
 
 # LHAPDF_reweighting_sets="11200"  # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
 # LHAPDF_reweighting_members="51"  # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
@@ -69,7 +69,7 @@ WMassCentral_MeV = "80398"; # 80.385
 WMassSkipNSteps = "5"; # 15 -- used for next to nothing, at the moment
 
 # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
-resubmit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
+resubmit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig, DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
 # resubmit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 # resubmit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
 
@@ -83,7 +83,7 @@ etaMaxMuons = "0.9"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
 runWanalysis = 0;
 runZanalysis = 1;
-controlplots = 1;
+controlplots = 0;
 noLSFJobOutput = 0; # 1: Puts all the batch logs in a single file
 recreateSubPrograms = 0; # 1: Recompiles run?analysis.o and remakes run?analysis.sh
 
