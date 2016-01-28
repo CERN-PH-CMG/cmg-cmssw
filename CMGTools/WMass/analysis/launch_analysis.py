@@ -8,9 +8,10 @@ import string, os, shutil, sys, subprocess, ROOT
 
 useLHAPDF = False
 
-outfolder_prefix="PREFIX";
+outfolder_prefix="PREFIX2";
 
 ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
+ntuple_basepathFIX = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2015_05_24_53X_sumEtFIX/";
 ntuple_basepath_8TeV_ABC = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_8TeV/";
 # ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/";
 # ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_10_15/";
@@ -43,7 +44,7 @@ usePhiMETCorr = 0; # 0=none, 1=yes
 ### EWK CORR
 syst_ewk_Alcaraz = 0; # -1=none, 0=POWHEG QCD+EWK NLO (bug-fixed), 1= 0 +syst photos vs pythia (31 = 3 times), 2= 0 +syst no nloewk vs nloewk (32 = 3 times)
 ### REWEIGHT POLARIZATION
-reweight_polarization = 1; # 0 = none, 1 = reweight POWHEG QCD+EWK NLO TO 8 TeV DATA
+reweight_polarization = 0; # 0 = none, 1 = reweight POWHEG QCD+EWK NLO TO 8 TeV DATA
 
 # LHAPDF_reweighting_sets="11200"  # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
 # LHAPDF_reweighting_members="51"  # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
@@ -81,7 +82,7 @@ etaMuonNSteps = "1"; # 5 <-- lenght of the etaMaxMuons
 etaMaxMuons = "0.9"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
 runWanalysis = 0;
-runZanalysis = 0;
+runZanalysis = 1;
 controlplots = 1;
 noLSFJobOutput = 0; # 1: Puts all the batch logs in a single file
 recreateSubPrograms = 0; # 1: Recompiles run?analysis.o and remakes run?analysis.sh
@@ -385,17 +386,17 @@ fWana_str = [
 
 fZana_str = [
 #  ntuple_basepath_8TeV_ABC+"DATA_Run2012ABCD/ZTreeProducer_tree.root", # this is the 8TeV data contain also the tkmetABC
-  ntuple_basepath+"DATA/ZTreeProducer_tree_RecoSkimmed.root",
+  ntuple_basepathFIX+"DATA/ZTreeProducer_tree_RecoSkimmed.root",
   ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
   ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
   ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
   ntuple_basepath+"WJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",
-  ntuple_basepath+"DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root",
+  ntuple_basepathFIX+"DYMM/ZTreeProducer_tree_SignalRecoSkimmed.root",
   # ntuple_basepath+"DYJetsMM/InclWeights/ZTreeProducer_tree.root",
   # ntuple_basepath+"DYJetsMM/allEvts/ZTreeProducer_tree.root",
 #  ntuple_basepath_8TeV_ABC+"DYJetsLL/ZTreeProducer_tree_tkmetABC.root",  # this is the 8TeV DYJetsLL contains also the tkmetABC
-  ntuple_basepath+"DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"DYJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",
+  ntuple_basepathFIX+"DYLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
+  ntuple_basepathFIX+"DYLL/ZTreeProducer_tree_FakeRecoSkimmed.root",
   ntuple_basepath+"TTJets/ZTreeProducer_tree.root",
   ntuple_basepath+"VVJets/ZZ/ZTreeProducer_tree.root",
   ntuple_basepath+"VVJets/WW/ZTreeProducer_tree.root",
