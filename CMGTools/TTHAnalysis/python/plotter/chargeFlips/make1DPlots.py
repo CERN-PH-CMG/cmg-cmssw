@@ -75,7 +75,7 @@ def make1DPlots(hist_data, hist_mc, basename=''):
         leg.SetShadowColor(0)
         leg.SetTextFont(43)
         leg.SetTextSize(20)
-        leg.AddEntry(hda, "Data 0.83 fb^{-1}", "P")
+        leg.AddEntry(hda, "Data 2.26 fb^{-1}", "P")
         leg.AddEntry(hmc, "DY MC", "F")
 
         c = ROOT.TCanvas("c", "C", 800, 600)

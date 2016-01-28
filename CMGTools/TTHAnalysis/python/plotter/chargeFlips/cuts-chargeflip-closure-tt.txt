@@ -6,10 +6,13 @@ pt2010       : LepGood_pt[0]>20 && LepGood_pt[1]>10
 
 elel         : abs(LepGood_pdgId[0]) == 11 && abs(LepGood_pdgId[1]) == 11
 
-leptonMVA    : LepGood_mvaTTH[0]>0.65 &&  LepGood_mvaTTH[1]>0.65
+leptonMVA    : LepGood_mvaTTH[0]>0.60 &&  LepGood_mvaTTH[1]>0.60
+leptonJetCSV : LepGood_jetBTagCSV[0]<0.89 && LepGood_jetBTagCSV[1]<0.89
 
 minMllAFAS   : (minMllAFAS > 60 && minMllAFAS < 120)
 tight-charge : LepGood_tightCharge[0] > 1 && LepGood_tightCharge[1] > 1
+conv-veto    : (LepGood_convVeto[0] && LepGood_lostHits[0]==0) && (LepGood_convVeto[1] && LepGood_lostHits[1]==0)
+
 same-sign    : LepGood_charge[0]*LepGood_charge[1] > 0
 
 njets        : nJet25>1 && nJet25<4

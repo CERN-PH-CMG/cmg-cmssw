@@ -1,3 +1,5 @@
-minMllAFAS : minMllAFAS : 60,60,120; XTitle="m(ll) [GeV]", Legend='TL'
-met        : met_pt     : 32,0,200; XTitle="E_{T}^{miss}  [GeV]"
-nJet25     : nJet25     : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5] ; XTitle='N(jet\, p_{T} > 25)', Logy
+minMllAFAS : minMllAFAS    : 60,60,120; XTitle="m(ll) [GeV]", Legend='TL'
+ptlep1     : LepGood_pt[0] : 60,20,200; XTitle="Leading lepton p_{T} [GeV]", Legend='TL'
+ptlep2     : LepGood_pt[1] : 60,10,100; XTitle="Sub-leading lepton p_{T} [GeV]", Legend='TL'
+met        : met_pt        : 32,0,200; XTitle="E_{T}^{miss}  [GeV]"
+nJet25     : nJet25        : [-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5] ; XTitle='N(jet\, p_{T} > 25)', Logy
