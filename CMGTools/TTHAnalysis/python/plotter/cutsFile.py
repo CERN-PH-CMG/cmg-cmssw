@@ -22,11 +22,28 @@ class CutsFile:
                     if re.match(cr,"entry point"): self._cuts.append((cn,cv))
             for line in file:
               try:
-                if len(line.strip()) == 0 or line.strip()[0] == '#': continue
-                while line.strip()[-1] == "\\":
-                    line = line.strip()[:-1] + file.next()
+                line = line.strip()
+                if len(line) == 0 or line[0] == '#': continue
+                line = re.sub(r"(?<!\\)#.*","",line)  ## regexp black magic: match a # only if not preceded by a \!
+                line = line.replace(r"\#","#")        ## and now we just unescape the remaining #'s
+                while line[-1] == "\\":
+                    line = line[:-1] + " " + file.next().strip()
+                    line = re.sub(r"(?<!\\)#.*","",line)  ## regexp black magic: match a # only if not preceded by a \!
+                    line = line.replace(r"\#","#")        ## and now we just unescape the remaining #'s
+                extra = {}
+                if ";" in line:
+                    (line,more) = line.split(";")[:2]
+                    for setting in [f.replace(';',',').strip() for f in more.replace('\\,',';').split(',')]:
+                        if "=" in setting:
+                            (key,val) = [f.strip() for f in setting.split("=")]
+                            extra[key] = eval(val)
+                        else: extra[setting] = True
                 (name,cut) = [x.strip().replace(";",":") for x in line.replace("\:",";").split(":")]
                 if name == "entry point" and cut == "1": continue
+                if options:
+                    for cn in options.cutsToEnable:
+                        if re.search(cn,name): extra["Disable"] = False 
+                if "Disable" in extra and extra["Disable"] == True: continue
                 if options:
                     if options.startCut and not re.search(options.startCut,name): continue
                     if options.startCut and re.search(options.startCut,name): options.startCut = None

@@ -152,8 +152,7 @@ lepAna = cfg.Analyzer(
     rhoMuon= 'fixedGridRhoFastjetCentralNeutral',
     rhoElectron = 'fixedGridRhoFastjetCentralNeutral',
     # energy scale corrections and ghost muon suppression (off by default)
-    doMuScleFitCorrections=False, # "rereco"
-    doRochesterCorrections=False,
+    doMuonScaleCorrections=False,
     doElectronScaleCorrections=False, # "embedded" in 5.18 for regression
     doSegmentBasedMuonCleaning=False,
     # inclusive very loose muon selection
@@ -201,6 +200,7 @@ lepAna = cfg.Analyzer(
     min_dr_electron_muon = 0.05,
     # do MC matching 
     do_mc_match = True, # note: it will in any case try it only on MC, not on data
+    do_mc_match_photons = False,
     match_inclusiveLeptons = False, # match to all inclusive leptons
     )
 
@@ -545,7 +545,7 @@ metNoHFAna = cfg.Analyzer(
     noPUMetCollection = "slimmedMETsNoHF",
     copyMETsByValue = False,
     doTkMet = False,
-    doMetNoPU = True,
+    doMetNoPU = False,
     doMetNoMu = False,
     doMetNoEle = False,
     doMetNoPhoton = False,

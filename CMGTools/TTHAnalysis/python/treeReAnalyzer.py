@@ -103,7 +103,7 @@ class Object:
         ret.SetPtEtaPhiM(self.pt,self.eta,self.phi,self.mass)
         return ret
     def subObj(self,prefix):
-        return Object(self,self._event,self._prefix+prefix)
+        return Object(self._event,self._prefix+prefix)
     def __repr__(self):
         return ("<%s[%s]>" % (self._prefix[:-1],self._index)) if self._index != None else ("<%s>" % self._prefix[:-1])
     def __str__(self):

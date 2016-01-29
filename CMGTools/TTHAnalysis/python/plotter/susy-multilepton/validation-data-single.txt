@@ -1,0 +1,2 @@
+trigger : HLT_SingleMu || HLT_SingleEl
+lep1PtEta : LepGood1_pt > 25+5*(abs(LepGood_pdgId)==11) && abs(LepGood_eta) < 2.1

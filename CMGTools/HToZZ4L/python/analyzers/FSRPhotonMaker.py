@@ -1,6 +1,6 @@
 from math import *
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
-from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi
+from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi, bestMatch, inConeCollection
 from PhysicsTools.Heppy.physicsobjects.PhysicsObject import PhysicsObject
 
 
@@ -30,16 +30,11 @@ class FSRPhotonMaker( Analyzer ):
 
     def process(self, event):
         self.readCollections( event.input )
-        pf = map( PhysicsObject, self.handles['pf'].product() )
+        pf = self.handles['pf'].product()
         leptons = getattr(event,self.leptonTag)
         self.IsolationComputer.setPackedCandidates(self.handles['pf'].product())
 
-
-        #first trim the photons that are only near leptons
-        direct=[]
-        forIso=[]
-
-
+        forIso = []
         for p in pf:
             if p.pdgId() != 22 or not( p.pt() > 2.0 and abs(p.eta()) < 2.4 ):
                 continue
@@ -57,34 +52,52 @@ class FSRPhotonMaker( Analyzer ):
                     else: 
                         raise RuntimeError, "electronVeto option %r not implemented" % self.cfg_ana.electronVeto
             if scVetoed: continue
-            okNoIso = False; okIfIso = False
-            for l in leptons:
-                DR =deltaR(l.eta(),l.phi(),p.eta(),p.phi())     
-                if DR<0.07 and p.pt()>2.0:
-                    direct.append(p)
-                    okNoIso = True
-                    break;
-                elif  DR<0.5 and p.pt()>4.0:   
-                    okIfIso = True
-            if okIfIso and not okNoIso:
-                forIso.append(p)
-        isolatedPhotons=[]        
+            closestLepton, minDR2 = bestMatch(p, leptons)
+            if minDR2 >= 0.5*0.5: continue
+            p.globalClosestLepton = closestLepton
+            forIso.append(p)
+
+        isolatedPhotons = []
+        relIsoCut = self.cfg_ana.relIsoCut        
         for g in forIso:
-            g.absIsoCH = self.IsolationComputer.chargedAbsIso(g.physObj,0.3,0.0001,0.2)
-            g.absIsoPU = self.IsolationComputer.puAbsIso(g.physObj,0.3,0.0001,0.2)
-            g.absIsoNH = self.IsolationComputer.neutralHadAbsIsoRaw(g.physObj,0.3,0.01,0.5)
-            g.absIsoPH = self.IsolationComputer.photonAbsIsoRaw(g.physObj,0.3,0.01,0.5)
+            g.absIsoCH = self.IsolationComputer.chargedAbsIso(g,0.3,0.0001,0.2)
+            g.absIsoPU = self.IsolationComputer.puAbsIso(g,0.3,0.0001,0.2)
+            g.absIsoNH = self.IsolationComputer.neutralHadAbsIsoRaw(g,0.3,0.01,0.5)
+            g.absIsoPH = self.IsolationComputer.photonAbsIsoRaw(g,0.3,0.01,0.5)
             g.relIso   = (g.absIsoCH+g.absIsoPU+g.absIsoNH+g.absIsoPH)/g.pt()
-            if g.relIso<1.0:
+            if g.relIso < relIsoCut:
                 isolatedPhotons.append(g)
 
-        event.fsrPhotons = isolatedPhotons+direct
-                    
-        # save all, for debugging
-        event.fsrPhotonsNoIso = forIso + direct
-        for fsr in event.fsrPhotonsNoIso:
-            closest = min(leptons, key = lambda l : deltaR(fsr.eta(),fsr.phi(),l.eta(),l.phi()))
-            fsr.globalClosestLepton = closest
+        event.fsrPhotonsNoIso = forIso
+        event.fsrPhotonsIso   = isolatedPhotons
+
+        event.attachedFsrPhotons = []
+        drOverET2Cut = self.cfg_ana.drOverET2Cut
+        for l in leptons:
+            best = None
+            for p in event.fsrPhotonsIso:
+                if p.globalClosestLepton != l: continue
+                drOverET2 = deltaR(p.eta(),p.phi(),l.eta(),l.phi())/p.et2()
+                if drOverET2 >= drOverET2Cut: continue
+                p.drOverET2 = drOverET2
+                if best == None or best.drOverET2 > drOverET2:
+                    best = p
+            if best:
+                event.attachedFsrPhotons.append(best)
+                l.ownFsrPhotons = [ best ]
+            else: 
+                l.ownFsrPhotons = [ ]
+
+        #now attach FSR photons to all leptons (for isolation)
+        for l in leptons:
+            l.fsrPhotons = inConeCollection(l, event.attachedFsrPhotons, 0.5, -1)
+            l.relIsoAfterFSR = l.absIsoWithFSR()/l.pt()
+
+        #define list of FSR photons attached to photons that pass post-FSR iso, for jet cleaning
+        event.selectedPhotons = []
+        for l in leptons:
+            if l.tightId() and l.relIsoAfterFSR < (0.4 if abs(l.pdgId()) == 13 else 0.5):
+                event.selectedPhotons += l.ownFsrPhotons
 
         return True
         

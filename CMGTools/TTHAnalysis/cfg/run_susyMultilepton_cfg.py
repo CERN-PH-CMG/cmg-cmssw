@@ -282,10 +282,7 @@ treeProducer.globalVariables.append(NTupleVariable("met_trkPhi", lambda ev : ev.
 # MET preprocessor and ak4PFchs charged-only jets
 if doMETpreprocessor or (not noMETNoHF):
     susyCoreSequence.insert(susyCoreSequence.index(metAna)+1,metNoHFAna)
-    metNoHFAna.doTkMet = True
     treeProducer.globalObjects.update({"metNoHF"  : NTupleObject("metNoHF", metType, help="PF E_{T}^{miss}, after type 1 corrections (NoHF)")})
-    treeProducer.globalVariables.append(NTupleVariable("metNoHF_trkPt", lambda ev : ev.tkMetNoHF.pt() if  hasattr(ev,'tkMetNoHF') else  0, help="tkmetNoHF p_{T}"))
-    treeProducer.globalVariables.append(NTupleVariable("metNoHF_trkPhi", lambda ev : ev.tkMetNoHF.phi() if  hasattr(ev,'tkMetNoHF') else  0, help="tkmetNoHF phi"))
 if doT1METCorr:
     if doMETpreprocessor: 
         print "WARNING: you're running the MET preprocessor and also Type1 MET corrections. This is probably not intended."
@@ -694,6 +691,38 @@ elif test == '74X-MC':
             comp.files = comp.files[:1]
             comp.splitFactor = 1
             comp.fineSplitFactor = 1 if getHeppyOption("single") else 4
+elif test == '74Xv2-MC':
+    what = getHeppyOption("sample", "TTLep")
+    #susyCounter.doLHE = False
+    if what == "TTLep":
+        selectedComponents = [ TTLep_pow ]
+        comp = selectedComponents[0]
+        comp.files = [ '/store/mc/RunIISpring15MiniAODv2/TTTo2L2Nu_13TeV-powheg/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/004613BA-C46D-E511-9EB6-001E67248732.root' ]
+        if is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
+        if old74XMiniAODs: raise RuntimeError, 'Incorrect old74XMiniAODs configuration'
+        if doT1METCorr or doMETpreprocessor or noMETNoHF or not removeJetReCalibration: 
+            print "WARNING: running some option which is not needed on miniAOD v2 out of the box" 
+        tmpfil = os.path.expandvars("/tmp/$USER/004613BA-C46D-E511-9EB6-001E67248732.root")
+        if not os.path.exists(tmpfil):
+            os.system("xrdcp root://eoscms//eos/cms%s %s" % (comp.files[0],tmpfil))
+        comp.files = [ tmpfil ]
+    elif what == "TTJets":
+        selectedComponents = [ TTJets_LO ]
+        comp = selectedComponents[0]
+        comp.files = [ '/store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/30000/001F4F14-786E-E511-804F-0025905A60FE.root' ]
+        if is50ns: raise RuntimeError, 'Incorrect is50ns configuration'
+        if old74XMiniAODs: raise RuntimeError, 'Incorrect old74XMiniAODs configuration'
+        if doT1METCorr or doMETpreprocessor or noMETNoHF or not removeJetReCalibration: 
+            print "WARNING: running some option which is not needed on miniAOD v2 out of the box" 
+        tmpfil = os.path.expandvars("/tmp/$USER/001F4F14-786E-E511-804F-0025905A60FE.root")
+        if not os.path.exists(tmpfil):
+            os.system("xrdcp root://eoscms//eos/cms%s %s" % (comp.files[0],tmpfil))
+        comp.files = [ tmpfil ]
+    else: raise RuntimeError, "Unknown sample: "+what
+    for comp in selectedComponents:
+        comp.files = comp.files[:1]
+        comp.splitFactor = 1
+        comp.fineSplitFactor = 1 if getHeppyOption("single") else 4
 elif test == 'PromptReco':
     DoubleMuon = kreator.makeDataComponent("DoubleMuon_Run2015B_run251252",
                         "/DoubleMuon/Run2015B-PromptReco-v1/MINIAOD", 
@@ -737,7 +766,6 @@ elif test == 'PromptRecoD':
         else:
             comp.splitFactor = len(comp.files)
 elif test == "express":
-
 #    # beware of cmgdataset caching!!!
 #    comp = kreator.makeDataComponent("ExpressRun2015D",
 #                                     "/ExpressPhysics/Run2015D-Express-v3/FEVT",
@@ -748,7 +776,6 @@ elif test == "express":
 #                                     useAAA=False)
 #    comp.splitFactor = 200
 #    selectedComponents = [ comp ]
-
     comp = cfg.DataComponent( files = ["root://eoscms//store/express/Run2015D/ExpressPhysics/FEVT/Express-v3/000/256/675/00000/ACC501C8-E95C-E511-A432-02163E014147.root"], name="ExpressPhysics_2015D", intLumi=1 )
     comp.triggers = []
     comp.json     = None
@@ -817,6 +844,38 @@ elif test == "ra5-sync-data":
     comp.json = os.environ['CMSSW_BASE']+'/src/CMGTools/TTHAnalysis/data/json/Cert_246908-258750_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
     selectedComponents = [ comp ]
     if is50ns or (not runData): raise RuntimeError, 'Wrong configuration'
+elif test != None:
+    raise RuntimeError, "Unknown test %r" % test
+
+## FAST mode: pre-skim using reco leptons, don't do accounting of LHE weights (slow)"
+## Useful for large background samples with low skim efficiency
+if getHeppyOption("fast"):
+    susyCounter.doLHE = False
+    from CMGTools.TTHAnalysis.analyzers.ttHFastLepSkimmer import ttHFastLepSkimmer
+    fastSkim = cfg.Analyzer(
+        ttHFastLepSkimmer, name="ttHFastLepSkimmer",
+        muons = 'slimmedMuons', muCut = lambda mu : mu.pt() > 5 and mu.isLooseMuon(),
+        electrons = 'slimmedElectrons', eleCut = lambda ele : ele.pt() > 7,
+        minLeptons = 2, 
+    )
+    if jsonAna in sequence:
+        sequence.insert(sequence.index(jsonAna)+1, fastSkim)
+    else:
+        sequence.insert(sequence.index(skimAnalyzer)+1, fastSkim)
+
+## Auto-AAA
+if not getHeppyOption("isCrab"):
+    from CMGTools.Production import changeComponentAccessMode
+    from CMGTools.Production.localityChecker import LocalityChecker
+    tier2Checker = LocalityChecker("T2_CH_CERN", datasets="/*/*/MINIAOD*")
+    for comp in selectedComponents:
+        if not hasattr(comp,'dataset'): continue
+        if not re.match("/[^/]+/[^/]+/MINIAOD(SIM)?", comp.dataset): continue
+        if "/store/" not in comp.files[0]: continue
+        if re.search("/store/(group|user|cmst3)/", comp.files[0]): continue
+        if not tier2Checker.available(comp.dataset):
+            print "Dataset %s is not available, will use AAA" % comp.dataset
+            changeComponentAccessMode.convertComponent(comp, "root://cms-xrd-global.cern.ch/%s")
 
 ## output histogram
 outputService=[]

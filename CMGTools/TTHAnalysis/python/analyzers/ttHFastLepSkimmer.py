@@ -15,15 +15,14 @@ class ttHFastLepSkimmer( Analyzer ):
     def beginLoop(self, setup):
         super(ttHFastLepSkimmer,self).beginLoop(setup)
         self.counters.addCounter('events')
-        count = self.counters.counter('events')
-        count.register('all events')
-        count.register('vetoed events')
-        count.register('accepted events')
+        self.count = self.counters.counter('events')
+        self.count.register('all events')
+        self.count.register('accepted events')
 
 
     def process(self, event):
         self.readCollections( event.input )
-        self.counters.counter('events').inc('all events')
+        self.count.inc('all events')
         
         leptons = 0
 
@@ -34,6 +33,7 @@ class ttHFastLepSkimmer( Analyzer ):
             if self.muIdCut(mu): leptons += 1
 
         if leptons >= self.cfg_ana.minLeptons:
+             self.count.inc('accepted events')
              return True
 
         return False
