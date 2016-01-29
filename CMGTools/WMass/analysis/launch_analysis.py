@@ -284,9 +284,13 @@ if(int(useRecoilCorr)>0):
 if(int(useEffSF)==1): outfolder_name+="_EffSFCorr";
 if(int(useEffSF)>=2): outfolder_name+="_EffHeinerSFCorr";
 if(int(useEffSF)==3): outfolder_name+="_noTight";
+if(int(useEffSF)==13): outfolder_name+="_Tight1perc";
 if(int(useEffSF)==4): outfolder_name+="_noIso";
+if(int(useEffSF)==14): outfolder_name+="_Iso1perc";
 if(int(useEffSF)==5): outfolder_name+="_noTightSub";
+if(int(useEffSF)==15): outfolder_name+="_TightSub1perc";
 if(int(useEffSF)==6): outfolder_name+="_noHLT";
+if(int(useEffSF)==16): outfolder_name+="_HLT1perc";
 if(int(usePtSF)!=-1): outfolder_name+="_PtSFCorr"+str(usePtSF);
 if(int(usePileupSF)==1): outfolder_name+="_PileupSFCorr";
 
