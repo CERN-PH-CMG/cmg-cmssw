@@ -140,7 +140,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   TH2F *SF_TIGHT_PT10;
   TH3F *SF_ISO05_PT10;
   
-  if(useEffSF>=2 && useEffSF<=6 && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
+  cout << "checKING EFFICIENCIES, useEffSF= " << useEffSF << endl;
+  if(((useEffSF>=2 && useEffSF<=6) || (useEffSF>=13 && useEffSF<=16)) && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
     
     TFile* finEffSF = new TFile("../utils/MuonEfficiencies_SF_2011_53X_DataMC_Heiner.root"); // used only to build templates
     if(!finEffSF){
@@ -484,14 +485,16 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     if(MuPosGen_pt>0 && MuNegGen_pt>0) ComputeHXVarAndPhiStarEta(muPosGen_status3,muNegGen_status3,true);
     if(MuPos_pt>0 && MuNeg_pt>0) ComputeHXVarAndPhiStarEta(muPosNoCorr,muNegNoCorr,false);
 
+    // cout << "CHECKING EFFICIENCIES" << endl;
     if((useEffSF>=2 && useEffSF<=6 || useEffSF>=13 && useEffSF<=16) && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
       if(useEffSF==2 || useEffSF==13 || useEffSF!=3){
         // === leading
-        // cout << "eff_TIGHT_SF"<<endl;
         eff_TIGHT_SF            = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt:MuNeg_pt));
+        // cout << "eff_TIGHT_SF no smear= "<< eff_TIGHT_SF << endl;
         if(useEffSF==13){
           random_->SetSeed(UInt_t(TMath::Abs(isChargePos?MuPos_phi:MuNeg_phi)*1e9 + TMath::Abs(isChargePos?MuPos_eta:MuNeg_eta)*1e6 + TMath::Abs(isChargePos?MuPos_pt:MuNeg_pt)*1e3));
-          eff_TIGHT_SF += random_->Gaus(1,0.01);
+          eff_TIGHT_SF += random_->Gaus(0,0.01);
+          // cout << "eff_TIGHT_SF smear= "<< eff_TIGHT_SF << endl;
         }
         TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_SF;
       }
@@ -499,9 +502,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         // === subleading
         // cout << "eff_ISO_SF"<<endl;
         eff_ISO_SF              = SF_ISO05_PT10->GetBinContent(SF_ISO05_PT10->FindBin(costh_HX,TMath::Abs(phi_HX),ZNocorr.Pt()));
+        // cout << "eff_ISO_SF no smear= "<< eff_ISO_SF << endl;
         if(useEffSF==14){
           random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(TMath::Abs(phi_HX))*1e6 + TMath::Abs(ZNocorr.Pt())*1e3));
-          eff_ISO_SF += random_->Gaus(1,0.01);
+          eff_ISO_SF += random_->Gaus(0,0.01);
+          // cout << "eff_ISO_SF smear= "<< eff_ISO_SF << endl;
         }
         TRG_TIGHT_ISO_muons_SF  *= eff_ISO_SF;
       }
@@ -509,9 +514,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         // === subleading
         // cout << "eff_TIGHT_subleading_SF"<<endl;
         eff_TIGHT_subleading_SF = SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(isChargePos?MuNeg_eta:MuPos_eta,isChargePos?MuNeg_pt:MuPos_pt));
+        // cout << "eff_TIGHT_subleading_SF no smear= "<< eff_TIGHT_subleading_SF << endl;
         if(useEffSF==15){
           random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(TMath::Abs(phi_HX))*1e6 + TMath::Abs(ZNocorr.Pt())*1e3));
-          eff_TIGHT_subleading_SF += random_->Gaus(1,0.01);
+          eff_TIGHT_subleading_SF += random_->Gaus(0,0.01);
+          // cout << "eff_TIGHT_subleading_SF smear= "<< eff_TIGHT_subleading_SF << endl;
         }
         TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
       }
@@ -519,14 +526,16 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         // === leading
         // cout << "eff_TRG_SF"<<endl;
         eff_TRG_SF              = SF_HLT->GetBinContent(SF_HLT->FindBin(isChargePos?1:-1,isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt:MuNeg_pt));
+        // cout << "eff_TRG_SF no smear= "<< eff_TRG_SF << endl;
         if(useEffSF==16){
           random_->SetSeed(UInt_t(TMath::Abs(isChargePos?1:-1)*1e9 + TMath::Abs(TMath::Abs(isChargePos?MuPos_eta:MuNeg_eta))*1e6 + TMath::Abs(isChargePos?MuPos_pt:MuNeg_pt)*1e3));
-          eff_TRG_SF += random_->Gaus(1,0.01);
+          eff_TRG_SF += random_->Gaus(0,0.01);
+          // cout << "eff_TRG_SF smear= "<< eff_TRG_SF << endl;
         }
         TRG_TIGHT_ISO_muons_SF  *= eff_TRG_SF;
       }
     }else if(useEffSF==7){
-      cout << "flat SF at 0.98"<<endl;
+      // cout << "flat SF at 0.98"<<endl;
       TRG_TIGHT_ISO_muons_SF=0.98;
     }
     // cout << "TRG_TIGHT_ISO_muons_SF= " << TRG_TIGHT_ISO_muons_SF << endl;
