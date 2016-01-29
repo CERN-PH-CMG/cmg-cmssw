@@ -78,11 +78,11 @@ void syst_recoil_one(TString recstr="u2")
 
   TH1D* hsystfit = (TH1D*)hcentral->Clone("hsystfit");
   for(int i=1;i<hsystfit->GetNbinsX()+1; i++){
-    double error = 0;
+    double error2 = 0;
     for(int j=0; j<ntotsysts; j++){
-      error = sqrt(error*error+(hsyst[j]->GetBinContent(i)-1)*(hsyst[j]->GetBinContent(i)-1));
+      error2 = error2+(hsyst[j]->GetBinContent(i)-1)*(hsyst[j]->GetBinContent(i)-1);
     }
-    hsystfit->SetBinError(i, error);
+    hsystfit->SetBinError(i, sqrt(error2));
   }
 
   TH1D* hstat = (TH1D*)hcentral->Clone("hstat");
