@@ -89,7 +89,7 @@ noLSFJobOutput = 0; # 1: Puts all the batch logs in a single file
 recreateSubPrograms = 0; # 1: Recompiles run?analysis.o and remakes run?analysis.sh
 
 mergeSigEWKbkg = 0;
-removeChunks = 0; # 0: Don't remove chunks after merge --- 1: Remove them
+removeChunks = 1; # 0: Don't remove chunks after merge --- 1: Remove them
 
 #######################
 ### FIT ###

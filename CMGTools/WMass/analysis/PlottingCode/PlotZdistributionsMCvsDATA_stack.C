@@ -23,21 +23,21 @@ void PlotZdistributionsMCvsDATA_stack(TString folderMCsig="",TString folderMCEWK
   // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"Zmass_zoomed_Sig_eta2p1",0,0,0,1,";Z mass [GeV];Counts",80,100,10);
   // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"Zmass_Sig_eta2p1",0,0,0,1,";Z mass [GeV];Counts",50,-1,1);
   // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"Zmass_QCD_eta2p1",0,1,0,1,";Z mass [GeV];Counts",50,-1,1);
-  // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hpfMET_WlikePos_Sig_eta2p1",0,1,0,1,";WlikePos MET [GeV];Counts",25,-1,1);
-  // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hpfMET_WlikePos_QCD_eta2p1",0,1,0,1,";WlikePos MET [GeV];Counts",25,-1,1);
-  // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hpfMET_WlikePos_QCD_eta2p1",0,1,0,1,";WlikePos MET [GeV];Counts",25,-1,1);
-  // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hWlikePos_mt_Sig_eta2p1",0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
-  // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hWlikePos_mt_QCD_eta2p1",0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
-  // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hWlikePos_mt_Sig_eta2p1",0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
-  // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hMupt_WlikePos_Sig_eta2p1",0,1,0,1,";WlikePos muon p_{T} [GeV];Counts",20,-1,1);
-  // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hMueta_WlikePos_Sig_eta2p1",0,0,0,1,";WlikePos muon p_{T} [GeV];Counts",20,-1,1);
+  // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hpfMET_WlikePos_Sig_eta2p1",0,1,0,1,";WlikeNeg MET [GeV];Counts",25,-1,1);
+  // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hpfMET_WlikePos_QCD_eta2p1",0,1,0,1,";WlikeNeg MET [GeV];Counts",25,-1,1);
+  // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hpfMET_WlikePos_QCD_eta2p1",0,1,0,1,";WlikeNeg MET [GeV];Counts",25,-1,1);
+  // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hWlikePos_mt_Sig_eta2p1",0,1,0,1,";WlikeNeg m_{T} [GeV];Counts",50,-1,1);
+  // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hWlikePos_mt_QCD_eta2p1",0,1,0,1,";WlikeNeg m_{T} [GeV];Counts",50,-1,1);
+  // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hWlikePos_mt_Sig_eta2p1",0,1,0,1,";WlikeNeg m_{T} [GeV];Counts",50,-1,1);
+  // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hMupt_WlikePos_Sig_eta2p1",0,1,0,1,";WlikeNeg muon p_{T} [GeV];Counts",20,-1,1);
+  // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hMueta_WlikePos_Sig_eta2p1",0,0,0,1,";WlikeNeg muon p_{T} [GeV];Counts",20,-1,1);
   // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hnvtx_Sig_eta2p1",0,0,0,1,";number of vertices;Counts",-1,-1,1);
   // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hu1_WlikePos_Sig_eta2p1",0,1,0,1,";u1 (GeV);Counts",-1,-1,1);
   // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hu2_WlikePos_Sig_eta2p1",0,1,0,1,";u2 (GeV);Counts",-1,-1,1);
 
   TString MuCharge_str[2] = {"Pos" ,"Neg"};
   
-  TString LegendEvTypeTeX=Form("WlikePos#rightarrow#mu#nu");
+  TString LegendEvTypeTeX=Form("WlikeNeg#rightarrow#mu#nu");
   common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hnvtx_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,0,0,1,Form(";Number of vertices;Counts"),70,110,1,1);
   common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("Zmass_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,0,0,1,Form(";Dimuon mass [GeV];Counts"),70,110,1,1);
   common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("Zmass_zoomed_WlikePos_8_JetCut_Sig_eta0p9_91188"),0,0,0,1,Form(";Dimuon mass [GeV];Counts"),70,110,20,1);
@@ -59,7 +59,7 @@ void PlotZdistributionsMCvsDATA_stack(TString folderMCsig="",TString folderMCEWK
   
   TString string = "closure"; //"_8_JetCut"
   
-  for(int i=1;i<21;i++){
+  for(int i=1;i<21;i++){ // recoil plots binnined in nvtx
     common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_met_VTX%d_tk",string.Data(),i),0,0,0,1,Form(";MET [GeV] for nvtx=%d;Counts",i),0,50,2,1);
     common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_metphi_VTX%d_tk",string.Data(),i),0,0,0,1,Form(";MET #phi [rad] for nvtx=%d;Counts",i),-1,-1,4,1);
     common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_ptZ_VTX%d_tk",string.Data(),i),0,0,0,1,Form(";Z pT [GeV] for nvtx=%d;Counts",i),-1,-1,2,1);
@@ -70,7 +70,7 @@ void PlotZdistributionsMCvsDATA_stack(TString folderMCsig="",TString folderMCEWK
   TString zpt_range_name[13] = {"[0,2]","[10,12]","[12,14]","[14,16]","[16,18]","[18,20]","[20,30]","[2,4]","[4,6]","[6,8]","[8,10]","[30,50]","[50,inf]"};
   TString zpt_range[13] = {"02","1012","1214","1416","1618","1820","2030","24","46","68","810","3050","50"};
   // for(int i=0;i<13;i++){ // commented out after Zpt<30
-  for(int i=0;i<11;i++){
+  for(int i=0;i<11;i++){ // recoil plots binnined in Zpt
     common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_met_Zpt%s_tk",string.Data(),zpt_range[i].Data()),0,0,0,1,Form(";MET [GeV] for Z pT=%s;Counts",zpt_range_name[i].Data()),0,50,1,1);
     common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_u_Zpt%s_tk",string.Data(),zpt_range[i].Data()),0,0,0,1,Form(";Recoil [rad] for Z pT=%s;Counts",zpt_range_name[i].Data()),-1,-1,1,1);
     common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_u1_Zpt%s_tk",string.Data(),zpt_range[i].Data()),0,0,0,1,Form(";u1 [GeV] for Z pT=%s;Counts",zpt_range_name[i].Data()),-30,30,1,1);
@@ -79,14 +79,14 @@ void PlotZdistributionsMCvsDATA_stack(TString folderMCsig="",TString folderMCEWK
   TString zy_range_name[8] = {"[0.0,0.5]","[-0.5,0.0]","[0.5,1.0]","[1.0,0.5]","[1.0,1.5]","[1.5,1.0]","[1.5,2.0]","[2.0,1.5]"};
   TString zy_range[8] = {"0005","0500","0510","1005","1015","1510","1520","2015"};
   // for(int i=0;i<8;i++){ // commented out after Zpt<30
-  for(int i=0;i<6;i++){
+  for(int i=0;i<6;i++){// recoil plots binnined in Z rapidity
     common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_met_Zy%s_tk",string.Data(),zy_range[i].Data()),0,0,0,1,Form(";MET [GeV] for Z rapidity=%s;Counts",zy_range_name[i].Data()),0,50,1,1);
     common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_u_Zy%s_tk",string.Data(),zy_range[i].Data()),0,0,0,1,Form(";Recoil [rad] for Z rapidity=%s;Counts",zy_range_name[i].Data()),-1,-1,1,1);
     common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_u1_Zy%s_tk",string.Data(),zy_range[i].Data()),0,0,0,1,Form(";u1 [GeV] for Z rapidity=%s;Counts",zy_range_name[i].Data()),-30,30,1,1);
     common_stuff::plotAndSaveHisto1D_stack(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("h_%s_u2_Zy%s_tk",string.Data(),zy_range[i].Data()),0,0,0,1,Form(";u2 [GeV] for Z rapidity=%s;Counts",zy_range_name[i].Data()),-30,30,1,1);
   }
-  for(int i=0;i<2;i++){
-    for(int j=0;j<7;j++){
+  for(int i=0;i<2;i++){ // polarization plots binnined in Z rapidity
+    for(int j=0;j<7;j++){ // polarization plots binnined in Z pT
       // if(j>4) continue; // commented out after Zpt<30
       if(j>2) continue;
       // if(i==1 && j==6) continue;
@@ -109,14 +109,14 @@ void PlotZdistributionsMCvsDATA_stack(TString folderMCsig="",TString folderMCEWK
         // }
         // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("Zmass_Sig_eta%s_%d",eta_str.Data(),jWmass),0,0,0,1,";Z mass [GeV];Counts",50,-1,1);
         // // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("Zmass_QCD_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";Z mass [GeV];Counts",50,-1,1);
-        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hpfMET_WlikePos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos MET [GeV];Counts",25,-1,1);
-        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hpfMET_WlikePos_QCD_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos MET [GeV];Counts",25,-1,1);
-        // // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hpfMET_WlikePos_QCD_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos MET [GeV];Counts",25,-1,1);
-        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_mt_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
-        // // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_mt_QCD_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
-        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_mt_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
-        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMupt_WlikePos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikePos muon p_{T} [GeV];Counts",20,-1,1);
-        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMueta_WlikePos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,0,0,1,";WlikePos muon p_{T} [GeV];Counts",20,-1,1);
+        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hpfMET_WlikePos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikeNeg MET [GeV];Counts",25,-1,1);
+        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hpfMET_WlikePos_QCD_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikeNeg MET [GeV];Counts",25,-1,1);
+        // // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hpfMET_WlikePos_QCD_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikeNeg MET [GeV];Counts",25,-1,1);
+        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_mt_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikeNeg m_{T} [GeV];Counts",50,-1,1);
+        // // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_mt_QCD_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikeNeg m_{T} [GeV];Counts",50,-1,1);
+        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_mt_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikeNeg m_{T} [GeV];Counts",50,-1,1);
+        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMupt_WlikePos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";WlikeNeg muon p_{T} [GeV];Counts",20,-1,1);
+        // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hMueta_WlikePos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,0,0,1,";WlikeNeg muon p_{T} [GeV];Counts",20,-1,1);
         // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hnvtx_Sig_eta%s_%d",eta_str.Data(),jWmass),0,0,0,1,";number of vertices;Counts",-1,-1,1);
         // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hu1_WlikePos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";u1 (GeV);Counts",-1,-1,1);
         // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hu2_WlikePos_Sig_eta%s_%d",eta_str.Data(),jWmass),0,1,0,1,";u2 (GeV);Counts",-1,-1,1);
@@ -124,12 +124,12 @@ void PlotZdistributionsMCvsDATA_stack(TString folderMCsig="",TString folderMCEWK
       // }
       // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"Zmass_Sig_eta0p6",0,0,0,1,";Z mass [GeV];Counts",50,-1,1);
       // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"Zmass_zoomed_Sig_eta0p6",0,0,0,1,";Z mass [GeV];Counts",80,100,10);
-      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hpfMET_WlikePos_Sig_eta0p6",0,1,0,1,";WlikePos MET [GeV];Counts",25,-1,1);
-      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hpfMET_WlikePos_QCD_eta0p6",0,1,0,1,";WlikePos MET [GeV];Counts",25,-1,1);
-      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hWlikePos_mt_Sig_eta0p6",0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
-      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hWlikePos_mt_Sig_eta0p6",0,1,0,1,";WlikePos m_{T} [GeV];Counts",50,-1,1);
-      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hMupt_WlikePos_Sig_eta0p6",0,1,0,1,";WlikePos muon p_{T} [GeV];Counts",20,-1,1);
-      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hMueta_WlikePos_Sig_eta0p6",0,0,0,1,";WlikePos muon p_{T} [GeV];Counts",20,-1,1);
+      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hpfMET_WlikePos_Sig_eta0p6",0,1,0,1,";WlikeNeg MET [GeV];Counts",25,-1,1);
+      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hpfMET_WlikePos_QCD_eta0p6",0,1,0,1,";WlikeNeg MET [GeV];Counts",25,-1,1);
+      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hWlikePos_mt_Sig_eta0p6",0,1,0,1,";WlikeNeg m_{T} [GeV];Counts",50,-1,1);
+      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hWlikePos_mt_Sig_eta0p6",0,1,0,1,";WlikeNeg m_{T} [GeV];Counts",50,-1,1);
+      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hMupt_WlikePos_Sig_eta0p6",0,1,0,1,";WlikeNeg muon p_{T} [GeV];Counts",20,-1,1);
+      // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hMueta_WlikePos_Sig_eta0p6",0,0,0,1,";WlikeNeg muon p_{T} [GeV];Counts",20,-1,1);
       // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hu1_WlikePos_Sig_eta0p6",0,1,0,1,";u1 (GeV);Counts",-1,-1,1);
       // // common_stuff::plotAndSaveHisto1D_stack(fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,"hu2_WlikePos_Sig_eta0p6",0,1,0,1,";u2 (GeV);Counts",-1,-1,1);
 
