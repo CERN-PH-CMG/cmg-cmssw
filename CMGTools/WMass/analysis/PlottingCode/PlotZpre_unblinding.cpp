@@ -171,10 +171,10 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
     hstat->SetBinError(i, sqrt(errMC*errMC + errDATA*errDATA));
   }
 
-  int ntotsyst = systfiles_MCsum.size();
+  int systtotnum = systfiles_MCsum.size();
   std::vector<TH1D*> herrors_stacked; // works only with single syst files !!!
   
-  for (int systnum = 0; systnum < ntotsyst; ++systnum) {
+  for (int systnum = 0; systnum < systtotnum; ++systnum) {
     herrors_stacked.push_back((TH1D*)systfiles_MCsum[systnum]->Get(HistoName_st.Data()));
     herrors_stacked[systnum]->Scale(hDATA->Integral()/herrors_stacked[systnum]->Integral());
     herrors_stacked[systnum]->Divide(hMCsum_noerr);
@@ -199,17 +199,17 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   hDATAratio->Draw("p hist");
   
   const int fillstyle = 3001;
-  for (int systnum = ntotsyst-1; systnum >= 0; --systnum) {
+  for (int systnum = systtotnum-1; systnum >= 0; --systnum) {
     herrors_stacked[systnum]->SetMarkerSize(0);
     herrors_stacked[systnum]->SetFillColor(2+systnum);
     herrors_stacked[systnum]->SetFillStyle(fillstyle);
     herrors_stacked[systnum]->Draw("same E2");
   }
-  hstat->SetFillColor(2+ntotsyst);
+  hstat->SetFillColor(2+systtotnum);
   hstat->SetFillStyle(fillstyle);
   hstat->SetMarkerSize(0);
   hstat->Draw("same E2");
-  hMCsum->SetFillColor(2+ntotsyst+1);
+  hMCsum->SetFillColor(2+systtotnum+1);
   hMCsum->SetFillStyle(fillstyle);
   hMCsum->SetMarkerSize(0);
   hMCsum->Draw("same E2");
@@ -219,7 +219,7 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   leg->AddEntry(hDATAratio,                 "DATA / MC",        "p");
   leg->AddEntry(hMCsum,                     "MC stat uncert",   "f");
   leg->AddEntry(hstat,                      "DATA stat unc",    "f");
-  for (int systnum = 0; systnum < ntotsyst; ++systnum) {
+  for (int systnum = 0; systnum < systtotnum; ++systnum) {
     leg->AddEntry(herrors_stacked[systnum], systnames[systnum], "f");
   }
 
@@ -248,14 +248,23 @@ void PlotZpre_unblinding(TString folderMCsig=".",TString folderMCEWK=".",TString
   gStyle->SetOptStat(0);
   
   TString basefolder = "../";
-  std::vector<TString> systfolders = {
+  
+  // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+  
+  const int systtotnum = 2;
+  
+  TString systfolders[systtotnum] = {
     "../../JAN28_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_globalScaleSigma1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
     "../../JAN28_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr3_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
   };
-  std::vector<TString> systnames = {
+  TString systnames_IHATECXX98[systtotnum] = {
     "Lepton scale",
     "Recoil alt model",
   };
+  
+  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  
+  std::vector<TString> systnames(systnames_IHATECXX98, systnames_IHATECXX98 + systtotnum);
   
   TFile *fMCsig= new TFile(Form("%s/%s/ZanalysisOnDATA.root", basefolder.Data(), folderMCsig.Data()));
   TFile *fMCEWK= new TFile(Form("%s/%s/ZanalysisOnDATA.root", basefolder.Data(), folderMCEWK.Data()));
@@ -264,7 +273,7 @@ void PlotZpre_unblinding(TString folderMCsig=".",TString folderMCEWK=".",TString
   TFile *fDATA = new TFile(Form("%s/%s/ZanalysisOnDATA.root", basefolder.Data(), folderDATA.Data() ));
 
   std::vector<TFile*> systfiles_MCsum;
-  for (size_t systnum = 0; systnum < systfolders.size(); ++systnum) {
+  for (int systnum = 0; systnum < systtotnum; ++systnum) {
     TString filepath = Form("%s/%s/ZanalysisOnDATA.root", systfolders[systnum].Data(), folderMCsum.Data());
     systfiles_MCsum.push_back(new TFile(filepath));
   }
