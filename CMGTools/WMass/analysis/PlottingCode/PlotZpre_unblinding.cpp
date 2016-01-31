@@ -10,8 +10,9 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TLine.h"
+#include "TSystem.h"
 
-void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEWK, TFile*fMCTT, TFile*fMCQCD, TFile*fDATA, TString HistoName_st, int logx, int logy, int logz, int scaleMCtoDATA, TString title, double xmin, double xmax, int rebinfactor, int PullOrRatio, std::vector<TFile*> systfiles_MCsum, std::vector<TString> systnames){
+void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEWK, TFile*fMCTT, TFile*fMCQCD, TFile*fDATA, TString HistoName_st, int logx, int logy, int logz, int scaleMCtoDATA, TString title, double xmin, double xmax, int rebinfactor, std::vector<TFile*> systfiles_MCsum, std::vector<TString> systnames, TString destinationfolder){
 
   std::cout << "retrieving hMCsig  = " << HistoName_st.Data() << std::endl;
   TH1D*hMCsig=(TH1D*)fMCsig->Get(HistoName_st.Data());
@@ -121,7 +122,7 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   // Draw pad1
   pad1->cd();  
   if(logy!=1)
-    hDATA->GetYaxis()->SetRangeUser(0,hDATA->GetMaximum()*1.1);
+    hDATA->GetYaxis()->SetRangeUser(0,hDATA->GetMaximum()*1.2);
   else
     hDATA->GetYaxis()->SetRangeUser(1,hDATA->GetMaximum()*10);
   
@@ -135,7 +136,7 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   hDATA->Draw("same pe");
   pad1->RedrawAxis();
   
-  TLegend *leg = new TLegend(0.6,0.6,0.85,0.9,"4.75 fb^{-1} at #sqrt{7} TeV","brNDC");
+  TLegend *leg = new TLegend(0.63,0.6,0.87,0.9,"4.75 fb^{-1} at #sqrt{7} TeV","brNDC");
   leg->SetBorderSize(0);
   leg->SetTextFont(62);
   leg->SetLineColor(1);
@@ -154,7 +155,7 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   
   // Draw pad2
   pad2->cd();
-  TH1D* hDATAratio = (TH1D*)hDATA->Clone("hDATAratio_noerr");
+  TH1D* hDATAratio = (TH1D*)hDATA->Clone("hDATAratio");
   TH1D* hMCsum = &MCsum;
   TH1D* hMCsum_noerr = (TH1D*)hMCsum->Clone("hMCsum_noerr");
   for(int i=1;i<hMCsum_noerr->GetNbinsX()+1; i++){
@@ -190,7 +191,7 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   hDATAratio->GetXaxis()->SetLabelSize(0.04*0.75/0.25);
   hDATAratio->GetXaxis()->SetTitleOffset(1);
   hDATAratio->GetXaxis()->SetTitleSize(0.04*0.75/0.25);
-  hDATAratio->GetYaxis()->SetTitle(PullOrRatio==0?"Pull":"Ratio");
+  hDATAratio->GetYaxis()->SetTitle("Ratio");
   hDATAratio->GetYaxis()->SetLabelSize(0.04*0.75/0.25);
   hDATAratio->GetYaxis()->SetTitleOffset(0.35);
   hDATAratio->GetYaxis()->SetTitleSize(0.04*0.75/0.25);
@@ -223,14 +224,16 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
     leg->AddEntry(herrors_stacked[systnum], systnames[systnum], "f");
   }
 
-  TLine*l0=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin,PullOrRatio==0?0:1,xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax,PullOrRatio==0?0:1);l0->SetLineColor(kBlack);
-  TLine*lp5=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin,PullOrRatio==0?5:1.05,xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax,PullOrRatio==0?5:1.05);lp5->SetLineColor(kGray+2);
-  TLine*lm5=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin,PullOrRatio==0?-5:0.95,xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax,PullOrRatio==0?-5:0.95);lm5->SetLineColor(kGray+2);
+  TLine*l0=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin, 1, xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax, 1); l0->SetLineColor(kBlack);
+  TLine*lp5=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin, 1.05, xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax, 1.05); lp5->SetLineColor(kGray+2);
+  TLine*lm5=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin, 0.95, xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax, 0.95); lm5->SetLineColor(kGray+2);
   l0->Draw("histo same");
   lp5->Draw("histo same");
   lm5->Draw("histo same");
   
   // Output files
+  gSystem->mkdir(destinationfolder);
+  gSystem->cd(destinationfolder);
   TString extra_ouput_str = "";
   if(logx)extra_ouput_str+="_logx";
   if(logy)extra_ouput_str+="_logy";
@@ -242,35 +245,44 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   c1->SaveAs(HistoName_st+extra_ouput_str+".root");
 }
 
-void PlotZpre_unblinding(TString folderMCsig=".",TString folderMCEWK=".",TString folderMCTT=".",TString folderMCQCD=".",TString folderDATA=".",TString folderMCsum="."){
+void PlotZpre_unblinding(){
 
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
   
-  TString basefolder = "../";
+  TString folderMCsig = "output_DYJetsPow/";
+  TString folderMCEWK = "output_EWK/";
+  TString folderMCTT  = "output_TTJets/";
+  TString folderMCQCD = "output_QCD/";
+  TString folderDATA  = "output_DATA/";
+  TString folderMCsum = "output_MCDATALIKEPOW/";
   
-  // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+  TString basefolder = "../JobOutputs/dalfonso/"; // Supposed to be run from PlottingCode/
+  TString prefix = "JAN31";
   
-  const int systtotnum = 2;
+  TString destinationfolder = "../JobOutputs/"+prefix+"_pre_unblinding_plots";
   
-  TString systfolders[systtotnum] = {
-    "../../JAN28_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_globalScaleSigma1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
-    "../../JAN28_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr3_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
+  TString templatefolder = basefolder+prefix+"_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/";
+  
+  TString systfolders[] = {
+    basefolder+prefix+"_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_globalScaleSigma1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
+    basefolder+prefix+"_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_globalScaleSigma-1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
+    basefolder+prefix+"_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr3_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
   };
-  TString systnames_IHATECXX98[systtotnum] = {
-    "Lepton scale",
+  TString systnames_IHATECXX98[] = {
+    "Lepton scale +1",
+    "Lepton scale -1",
     "Recoil alt model",
   };
   
-  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  
+  const int systtotnum = sizeof(systfolders)/sizeof(TString);
   std::vector<TString> systnames(systnames_IHATECXX98, systnames_IHATECXX98 + systtotnum);
   
-  TFile *fMCsig= new TFile(Form("%s/%s/ZanalysisOnDATA.root", basefolder.Data(), folderMCsig.Data()));
-  TFile *fMCEWK= new TFile(Form("%s/%s/ZanalysisOnDATA.root", basefolder.Data(), folderMCEWK.Data()));
-  TFile *fMCTT = new TFile(Form("%s/%s/ZanalysisOnDATA.root", basefolder.Data(), folderMCTT.Data() ));
-  TFile *fMCQCD= new TFile(Form("%s/%s/ZanalysisOnDATA.root", basefolder.Data(), folderMCQCD.Data()));
-  TFile *fDATA = new TFile(Form("%s/%s/ZanalysisOnDATA.root", basefolder.Data(), folderDATA.Data() ));
+  TFile *fMCsig= new TFile(Form("%s/%s/ZanalysisOnDATA.root", templatefolder.Data(), folderMCsig.Data()));
+  TFile *fMCEWK= new TFile(Form("%s/%s/ZanalysisOnDATA.root", templatefolder.Data(), folderMCEWK.Data()));
+  TFile *fMCTT = new TFile(Form("%s/%s/ZanalysisOnDATA.root", templatefolder.Data(), folderMCTT.Data() ));
+  TFile *fMCQCD= new TFile(Form("%s/%s/ZanalysisOnDATA.root", templatefolder.Data(), folderMCQCD.Data()));
+  TFile *fDATA = new TFile(Form("%s/%s/ZanalysisOnDATA.root", templatefolder.Data(), folderDATA.Data() ));
 
   std::vector<TFile*> systfiles_MCsum;
   for (int systnum = 0; systnum < systtotnum; ++systnum) {
@@ -279,14 +291,16 @@ void PlotZpre_unblinding(TString folderMCsig=".",TString folderMCEWK=".",TString
   }
 
   TString LegendEvTypeTeX=Form("WlikePos#rightarrow#mu#nu");
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_Zrap_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Dimuon rapidity;Counts"),-1,-1,1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_Zmass_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Dimuon mass [GeV];Counts"),70,110,1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_Recoil_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Recoil [GeV];Counts"),-1,-1,1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_ZpT_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Z pT [GeV];Counts"),0,50,1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_Recoil_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Recoil [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames,destinationfolder);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_Zmass_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Dimuon mass [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames,destinationfolder);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_ZpT_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Z pT [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames,destinationfolder);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_Zrap_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Dimuon rapidity;Counts"),-1,-1,1,systfiles_MCsum,systnames,destinationfolder);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";#cos{#theta^{*}_{CS}};Counts"),-1,-1,1,systfiles_MCsum,systnames,destinationfolder);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_phi_CS_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";#phi^{*}_{CS} [rad];Counts"),-1,-1,1,systfiles_MCsum,systnames,destinationfolder);
 }
 
 int main()
 {
-  PlotZpre_unblinding("output_DYJetsPow/", "output_EWK/", "output_TTJets/", "output_QCD/", "output_DATA/", "output_MCDATALIKEPOW/");
+  PlotZpre_unblinding();
   return 0;
 }
