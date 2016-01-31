@@ -4277,6 +4277,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   /// temporary fix
   if(lPar!=fU1) fZPtMax=50;
   if(lPar==fU1) fZPtMax=30;
+  if(lPar==fU1 && !doKeys) fZPtMin = 1;
+
 
   //RooFit Build a double Gaussian
   TRandom lRand(0xDEADBEEF);
@@ -4627,7 +4629,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   if(doRecoParam) fileName2D += "_doRecoParam";
   if(doLepProjAbsolute) fileName2D += "_doLepProjAbsolute";
   if(doKeys) fileName2D += "_keys";
-  fileName2D += "_JAN26";
+  fileName2D += "_JAN31";
   fileName2D += ".root";
   
   //  if(doPrint /*&& !doKeys*/) {
@@ -4914,7 +4916,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   */
 
   TString fileName2DFIT="file2Dfit_";
-  fileName2DFIT += "JAN26_";
+  fileName2DFIT += "JAN31_";
   if(!fData && (!doPosW && doNegW) && !doBKG) fileName2DFIT += "Wneg";
   if(!fData && (doPosW && !doNegW) && !doBKG) fileName2DFIT += "Wpos";
   if(!fData && (!doPosW && !doNegW) && !doBKG) fileName2DFIT += "Z";
@@ -7262,7 +7264,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
   //  TString name="recoilfits/recoilfit_JAN22_MADtoMAD";
   //  TString name="recoilfits/recoilfit_JAN22_POWtoMAD";
   //  TString name="recoilfits/recoilfit_JAN28";
-  TString name="recoilfits/recoilfit_JAN26";
+  TString name="recoilfits/recoilfit_JAN31";
   if(do8TeV) name +="_8TeV";
   if(doABC) name +="_ABC";
 
@@ -7271,7 +7273,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
   //  fNJetSelect = -1; fMetMax = 500; fZPtMin = 4; fZPtMax = 50; 
   //  fNJetSelect = -1; fMetMax = 500; fZPtMin = 0; fZPtMax = 21; 
   //  fNJetSelect = -1; fMetMax = 500; fZPtMin = 1; fZPtMax = 20;
-  //  fNJetSelect = -1; fMetMax = 500; fZPtMin = 1; fZPtMax = 30;
+  //  fNJetSelect = -1; fMetMax = 500; fZPtMin = 0; fZPtMax = 30;
   fNJetSelect = -1; fMetMax = 500; fZPtMin = 0; fZPtMax = 50;
   //  fNJetSelect = -1; fMetMax = 500; fZPtMin = 1; fZPtMax = 20;
   ///// process Type is used inside the checkPDF
