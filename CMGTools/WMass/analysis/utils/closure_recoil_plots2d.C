@@ -20,7 +20,7 @@ void syst_recoil_one(TString recstr="u1")
   gStyle->SetOptFit(111);
   gStyle->SetLegendBorderSize(0);
 
-  const int nhists = 6;
+  const int nhists = 12;
 
   int IniVar[] = {0,  9,  0, 0,  9,  0, 0,  9,  0, 0,  9,  0};
   int NVars[]  = {9, 21, 15, 9, 21, 15, 9, 21, 15, 9, 21, 15};
@@ -282,6 +282,7 @@ void syst_recoil_one(TString recstr="u1")
   c_nevt->Write();
   c_mean->Write();
   c_rms ->Write();
+  fout->Close();
   // c_nevt->SaveAs(".png");
   // c_mean->SaveAs(".png");
   // c_rms->SaveAs(".png");

@@ -1,1 +1,8 @@
+# Precompiled
+*.o
+*.d
+*.so
+*.pcm
+
+# Specific stuff
 JobOutputs

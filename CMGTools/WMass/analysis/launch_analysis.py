@@ -89,6 +89,7 @@ noLSFJobOutput = 0; # 1: Puts all the batch logs in a single file
 recreateSubPrograms = 0; # 1: Recompiles run?analysis.o and remakes run?analysis.sh
 
 mergeSigEWKbkg = 0;
+mergeWhichAnalysis = "Zanalysis"  # "Zanalysis Wanalysis" -- no comma!
 removeChunks = 1; # 0: Don't remove chunks after merge --- 1: Remove them
 
 #######################
@@ -679,7 +680,7 @@ if(runWanalysis or runZanalysis):
 
 if(mergeSigEWKbkg):
   os.chdir("utils/");
-  os.system("./merge_MC.sh \"../JobOutputs/"+outfolder_name+"/\"")
+  os.system("./merge_MC.sh \"../JobOutputs/"+outfolder_name+"/ "+mergeWhichAnalysis+"\"")
   os.chdir(base_path);
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type d -name LSFJOB_* -exec rm -rf {} +")
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name batch_logs_* -delete")
