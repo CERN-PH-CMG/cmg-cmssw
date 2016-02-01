@@ -90,7 +90,7 @@ recreateSubPrograms = 0; # 1: Recompiles run?analysis.o and remakes run?analysis
 
 mergeSigEWKbkg = 0;
 mergeWhichAnalysis = "Zanalysis"  # "Zanalysis Wanalysis" -- no comma!
-removeChunks = 1; # 0: Don't remove chunks after merge --- 1: Remove them
+removeChunks = 0; # 0: Don't remove chunks after merge --- 1: Remove them
 
 #######################
 ### FIT ###
