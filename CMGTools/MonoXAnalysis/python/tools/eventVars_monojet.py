@@ -3,8 +3,8 @@ from CMGTools.MonoXAnalysis.tools.PileUpReWeighter import PileUpReWeighter
 from CMGTools.MonoXAnalysis.tools.BTagWeightCalculator import BTagWeightCalculator
 import types
 
-BTagReweight74X = lambda : BTagWeightCalculator("/afs/cern.ch/work/g/gpetrucc/CMSSW_7_4_13/src/CMGTools/TTHAnalysis/data/btag/csv_rwt_fit_hf_2015_11_20.root",
-                                                "/afs/cern.ch/work/g/gpetrucc/CMSSW_7_4_13/src/CMGTools/TTHAnalysis/data/btag/csv_rwt_fit_lf_2015_11_20.root")
+BTagReweight74X = lambda : BTagWeightCalculator("/afs/cern.ch/work/e/emanuele/public/monox/leptonsf/csv_rwt_fit_hf_2015_11_20.root",
+                                                "/afs/cern.ch/work/e/emanuele/public/monox/leptonsf/csv_rwt_fit_lf_2015_11_20.root")
 
 class EventVarsMonojet:
     def __init__(self):
