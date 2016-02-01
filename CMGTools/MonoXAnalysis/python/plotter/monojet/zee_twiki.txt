@@ -1,3 +1,5 @@
+trigger: HLT_SingleEl==1
+metfilters: cscfilter==1 && ecalfilter==1 && Flag_eeBadScFilter==1 && hbheFilterNew25ns==1 && hbheFilterIso==1
 2 loose ele: nEle10V == 2
 >=1 tight ele: nEle20T > 0 && LepGood1_pt > 40 && abs(LepGood1_pdgId)==11 
 SF/OS: LepGood1_pdgId == -LepGood2_pdgId
