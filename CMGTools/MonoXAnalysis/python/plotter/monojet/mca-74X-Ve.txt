@@ -2,17 +2,17 @@
 
 # ---- Spring15 25ns samples -------
 
-# Z+jets HT-binned
-DYJetsHT: DYJetsToLL_M50_HT100to200 :  xsec; FillColor=ROOT.kAzure+5,  Label="ZJets"
-DYJetsHT: DYJetsToLL_M50_HT200to400 :  xsec; FillColor=ROOT.kAzure+5,  Label="ZJets"
-DYJetsHT: DYJetsToLL_M50_HT400to600 :  xsec; FillColor=ROOT.kAzure+5,  Label="ZJets"
-DYJetsHT: DYJetsToLL_M50_HT600toInf :  xsec; FillColor=ROOT.kAzure+5,  Label="ZJets"
+# Z+jets HT-binned: replace the xsec in the ntuple (NLO) with the LO, in order to apply the ptV-dependent k-factors
+DYJetsHT: DYJetsToLL_M50_HT100to200 :  139.4; FillColor=ROOT.kAzure+5,  Label="ZJets"
+DYJetsHT: DYJetsToLL_M50_HT200to400 :  42.75; FillColor=ROOT.kAzure+5,  Label="ZJets"
+DYJetsHT: DYJetsToLL_M50_HT400to600 :  5.497; FillColor=ROOT.kAzure+5,  Label="ZJets"
+DYJetsHT: DYJetsToLL_M50_HT600toInf :  2.210; FillColor=ROOT.kAzure+5,  Label="ZJets"
 
-# W+jets HT-binned
-WJetsHT: WJetsToLNu_HT100to200 :  xsec; FillColor=ROOT.kCyan-7,  Label="WJets"
-WJetsHT: WJetsToLNu_HT200to400 :  xsec; FillColor=ROOT.kCyan-7,  Label="WJets"
-WJetsHT: WJetsToLNu_HT400to600 :  xsec; FillColor=ROOT.kCyan-7,  Label="WJets"
-WJetsHT: WJetsToLNu_HT600toInf :  xsec; FillColor=ROOT.kCyan-7,  Label="WJets"
+# W+jets HT-binned: replace the xsec in the ntuple (NLO) with the LO, in order to apply the ptV-dependent k-factors
+WJetsHT: WJetsToLNu_HT100to200 :  1347; FillColor=ROOT.kCyan-7,  Label="WJets"
+WJetsHT: WJetsToLNu_HT200to400 :  360; FillColor=ROOT.kCyan-7,  Label="WJets"
+WJetsHT: WJetsToLNu_HT400to600 :  48.9; FillColor=ROOT.kCyan-7,  Label="WJets"
+WJetsHT: WJetsToLNu_HT600toInf :  18.77; FillColor=ROOT.kCyan-7,  Label="WJets"
 
 # -- Top --
 Top      : TTJets_LO : xsec; FillColor=ROOT.kGreen+2, Label="top", NormSystematic=0.5
