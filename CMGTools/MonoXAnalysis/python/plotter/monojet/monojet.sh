@@ -26,14 +26,15 @@ if [ "$WHAT" == "wen" ] || [ "$WHAT" == "zee" ] ; then
 elif [ "$WHAT" == "wmn" ] || [ "$WHAT" == "zmm" ] ; then
     MCA="${WORKDIR}/mca-74X-Vm.txt "
 else
-    MCA="${WORKDIR}/mca-74X-analysis.txt "
+    MCA="${WORKDIR}/mca-74X-sr.txt "
 fi
 
 ROOT="plots/Summer15/v1.0/$WHAT"
-COREOPT="-P $T --s2v -j $J -l 2.215 -W vtxWeight "
+COREOPT="-P $T --s2v -j $J -l 2.215 "
 COREY="mcAnalysis.py ${MCA} ${COREOPT} -G  "
 COREP="mcPlots.py ${MCA} ${COREOPT} -f --poisson --pdir ${ROOT} --showRatio --maxRatioRange 0 2 "
 FEV=" -F mjvars/t \"$T/friends/evVarFriend_{cname}.root\" "
+SF=" --FM sf/t \"$T/friends/sfFriend_{cname}.root\" "
 
 RUNYSR="${COREY} ${WORKDIR}/monojet_twiki.txt "
 RUNY2M="${COREY} ${WORKDIR}/zmumu_twiki.txt "
@@ -50,36 +51,28 @@ PLOT1E="${COREP} ${WORKDIR}/wenu_twiki.txt ${WORKDIR}/wenu_plots.txt "
 
 case $WHAT in
 sr)
-        SF=" "
-        echo "python ${RUNYSR} $FEV $SF "
-        echo "python ${PLOTSR} $FEV $SF "
+        FULLOPT=" $FEV $SF -W 'vtxWeight*SF_trigmetnomu*SF_BTag' "
+        echo "python ${RUNYSR} ${FULLOPT} "
+        echo "python ${PLOTSR} ${FULLOPT} "
 ;;
 zmm)
-        echo "python ${RUNY2M} $FEV --sp DYJetsHT "
-        echo "python ${PLOT2M} $FEV --sp DYJetsHT "
+        FULLOPT=" $FEV $SF -W 'vtxWeight*SF_trigmetnomu*SF_LepTightLoose*SF_BTag*SF_NLO' "
+        echo "python ${RUNY2M} ${FULLOPT} --sp DYJetsHT "
+        echo "python ${PLOT2M} ${FULLOPT} --sp DYJetsHT "
 ;;
 wmn)
-        echo "python ${RUNY1M} $FEV --sp WJetsHT "
-        echo "python ${PLOT1M} $FEV --sp WJetsHT "
+        FULLOPT=" $FEV $SF -W 'vtxWeight*SF_trigmetnomu*SF_LepTight*SF_BTag*SF_NLO' "
+        echo "python ${RUNY1M} ${FULLOPT} --sp WJetsHT "
+        echo "python ${PLOT1M} ${FULLOPT} --sp WJetsHT "
 ;;
 zee)
-        echo "python ${RUNY2E} $FEV --sp DYJetsHT "
-        echo "python ${PLOT2E} $FEV --sp DYJetsHT "
+        FULLOPT=" $FEV $SF -W 'vtxWeight*SF_trig1lep*SF_LepTightLoose*SF_BTag*SF_NLO' "
+        echo "python ${RUNY2E} ${FULLOPT} --sp DYJetsHT "
+        echo "python ${PLOT2E} ${FULLOPT} --sp DYJetsHT "
 ;;
 wen)
-        echo "python ${RUNY1E} $FEV --sp WJetsHT "
-        echo "python ${PLOT1E} $FEV --sp WJetsHT "
+        FULLOPT=" $FEV $SF -W 'vtxWeight*SF_trig1lep*SF_LepTight*SF_BTag*SF_NLO' "
+        echo "python ${RUNY1E} ${FULLOPT} --sp WJetsHT "
+        echo "python ${PLOT1E} ${FULLOPT} --sp WJetsHT "
 ;;
-# zmmI)
-#         echo "python ${RUNY2M} -X recoil -X jet100 -X jetclean -X dphijm $FEV --sp DYJets "
-#         echo "python ${PLOT} zmumu_twiki.txt control-samples/zmumu_incl_plots.txt -X recoil -X jet100 -X jetclean -X dphijm $FEV --sp DYJets --pdir ${ROOT} --showRatio --maxRatioRange 0 2 "
-# ;;
-# zeeI)
-#         echo "python ${RUNY2E} -X recoil -X jet100 -X jetclean -X dphijm $FEV --sp DYJets "
-#         echo "python ${PLOT} zee_twiki.txt control-samples/zee_incl_plots.txt -X recoil -X jet100 -X jetclean -X dphijm $FEV --sp DYJets --pdir ${ROOT} --showRatio --maxRatioRange 0 2 "
-# ;;
-# wmnI)
-#         echo "python ${RUNY1M} $FEV --sp WJets --xp DYJetsHT --xp WJetsHT -X recoil -X jet100 -X jetclean -X dphijm "
-#         echo "python ${PLOT} wmunu_twiki.txt wmunu_incl_plots.txt $FEV --sp WJets  --xp DYJetsHT --xp WJetsHT -X recoil -X jet100 -X jetclean -X dphijm --pdir ${ROOT} --showRatio --maxRatioRange 0 2 "
-# ;;
 esac;
