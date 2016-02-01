@@ -7,7 +7,7 @@ from PhysicsTools.HeppyCore.utils.deltar import *
 import PhysicsTools.HeppyCore.framework.config as cfg
 from  itertools import combinations
 from CMGTools.VVResonances.tools.Pair import *
-
+from copy import copy
 
 class LeptonicVMaker( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName):
@@ -246,7 +246,7 @@ class LeptonicVMaker( Analyzer ):
         
         
         #now make Z first . for the remaining leptons after Z make W
-        leptons=list(event.selectedLeptons)
+        leptons=copy(event.selectedLeptons)
         used = []
 
 
@@ -254,7 +254,10 @@ class LeptonicVMaker( Analyzer ):
             used.extend([z.leg1,z.leg2])
 
         for u in used:
-            leptons.remove(u)
+#            print 'found used lepton',u.pt(),u.pdgId()
+            if u in leptons:
+                leptons.remove(u)
+#                print 'is in list,removed, is it in now?',(u in leptons)
 
 
         event.LNu = self.makeLeptonsMET(leptons,event.met)

@@ -1,0 +1,87 @@
+### STANDARD SELECTION
+
+# Fakes+flips
+
+_standard_fakes_TT: TTJets_DiLepton: 1.52249*xsec ;  FillColor=ROOT.kGray, FakeRate="susy-multilepton/standard_sel.txt", Label="TT (fakes\,flips)"
+_standard_fakes_TT: TTJets_SingleLeptonFromT: 1.598029*xsec ;  FillColor=ROOT.kGray, FakeRate="susy-multilepton/standard_sel.txt", Label="TT (fakes\,flips)"
+_standard_fakes_TT: TTJets_SingleLeptonFromTbar: 1.58966*xsec ;  FillColor=ROOT.kGray, FakeRate="susy-multilepton/standard_sel.txt", Label="TT (fakes\,flips)"
+_standard_fakes_DY: DYJetsToLL_M10to50: xsec ; FillColor=ROOT.kCyan, FakeRate="susy-multilepton/standard_sel.txt", Label="DY (fakes\,flips)"
+_standard_fakes_DY: DYJetsToLL_M50: xsec ; FillColor=ROOT.kCyan, FakeRate="susy-multilepton/standard_sel.txt", Label="DY (fakes\,flips)"
+_standard_fakes_WJets: WJetsToLNu_HT100to200 :  xsec; FillColor=ROOT.kCyan+2, FakeRate="susy-multilepton/standard_sel.txt", Label="WJets (fakes)"
+_standard_fakes_WJets: WJetsToLNu_HT1200to2500 :  xsec; FillColor=ROOT.kCyan+2, FakeRate="susy-multilepton/standard_sel.txt", Label="WJets (fakes)"
+_standard_fakes_WJets: WJetsToLNu_HT200to400 :  xsec; FillColor=ROOT.kCyan+2, FakeRate="susy-multilepton/standard_sel.txt", Label="WJets (fakes)"
+_standard_fakes_WJets: WJetsToLNu_HT2500toInf :  xsec; FillColor=ROOT.kCyan+2, FakeRate="susy-multilepton/standard_sel.txt", Label="WJets (fakes)"
+_standard_fakes_WJets: WJetsToLNu_HT400to600 :  xsec; FillColor=ROOT.kCyan+2, FakeRate="susy-multilepton/standard_sel.txt", Label="WJets (fakes)"
+_standard_fakes_WJets: WJetsToLNu_HT600to800 :  xsec; FillColor=ROOT.kCyan+2, FakeRate="susy-multilepton/standard_sel.txt", Label="WJets (fakes)"
+_standard_fakes_WJets: WJetsToLNu_HT600toInf :  xsec; FillColor=ROOT.kCyan+2, FakeRate="susy-multilepton/standard_sel.txt", Label="WJets (fakes)"
+_standard_fakes_WJets: WJetsToLNu_HT800to1200 :  xsec; FillColor=ROOT.kCyan+2, FakeRate="susy-multilepton/standard_sel.txt", Label="WJets (fakes)"
+_standard_fakes_SingleTop: TToLeptons_tch:     xsec ;  FillColor=ROOT.kGray+2, FakeRate="susy-multilepton/standard_sel.txt", Label="Single top (fakes)"
+_standard_fakes_SingleTop: TbarToLeptons_tch:     xsec ;  FillColor=ROOT.kGray+2, FakeRate="susy-multilepton/standard_sel.txt", Label="Single top (fakes)"
+_standard_fakes_SingleTop: TToLeptons_sch_amcatnlo:     xsec ;  FillColor=ROOT.kGray+2, FakeRate="susy-multilepton/standard_sel.txt", Label="Single top (fakes)"
+_standard_fakes_SingleTop: TBar_tWch:     xsec ;  FillColor=ROOT.kGray+2, FakeRate="susy-multilepton/standard_sel.txt", Label="Single top (fakes)"
+_standard_fakes_SingleTop: T_tWch:     xsec ;  FillColor=ROOT.kGray+2, FakeRate="susy-multilepton/standard_sel.txt", Label="Single top (fakes)"
+_standard_fakes_WW: WWTo2L2Nu: xsec ; FillColor=ROOT.kGray+1, FakeRate="susy-multilepton/standard_sel.txt", Label="WW (fakes\,flips)"
+
+### FAKES
+
+# data for fake rate application
+
+data: DoubleEG_Run2015C_Oct05_runs_254231_254914 ; FakeRate="susy-multilepton/fakes_appl_sel.txt", Label="Data pred."
+data: DoubleEG_Run2015D_Oct05_runs_256630_258158 ; FakeRate="susy-multilepton/fakes_appl_sel.txt", Label="Data pred."
+data: DoubleEG_Run2015D_PromptV4_runs_258159_260627 ; FakeRate="susy-multilepton/fakes_appl_sel.txt", Label="Data pred."
+data: DoubleMuon_Run2015C_Oct05_runs_254231_254914 ; FakeRate="susy-multilepton/fakes_appl_sel.txt", Label="Data pred."
+data: DoubleMuon_Run2015D_Oct05_runs_256630_258158 ; FakeRate="susy-multilepton/fakes_appl_sel.txt", Label="Data pred."
+data: DoubleMuon_Run2015D_PromptV4_runs_258159_260627 ; FakeRate="susy-multilepton/fakes_appl_sel.txt", Label="Data pred."
+data: MuonEG_Run2015C_Oct05_runs_254231_254914 ; FakeRate="susy-multilepton/fakes_appl_sel.txt", Label="Data pred."
+data: MuonEG_Run2015D_Oct05_runs_256630_258158 ; FakeRate="susy-multilepton/fakes_appl_sel.txt", Label="Data pred."
+data: MuonEG_Run2015D_PromptV4_runs_258159_260627 ; FakeRate="susy-multilepton/fakes_appl_sel.txt", Label="Data pred."
+
+
+# prompt rate sub
+
+_promptratesub_ttW: TTWToLNu : xsec ;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR ttW"
+_promptratesub_ttZH: TTZToLLNuNu : xsec ;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR ttZ/H"
+_promptratesub_ttZH: TTLLJets_m1to10 : xsec ;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR ttZ/H"
+_promptratesub_ttZH: TTHnobb : xsec;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR ttZ/H"
+_promptratesub_WZ: WZTo3LNu: 1.22*xsec ;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR WZ"
+_promptratesub_WWss: WpWpJJ : xsec;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR WWss"
+_promptratesub_XG: TTGJets : xsec;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR X+G"
+_promptratesub_XG: TGJets : xsec;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR X+G"
+_promptratesub_XG: WGToLNuG : xsec;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR X+G"
+_promptratesub_XG: ZGTo2LG : xsec;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR X+G"
+_promptratesub_Rares: WWDouble : xsec;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR Rares"
+_promptratesub_Rares: ZZTo4L: xsec ;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR Rares"
+_promptratesub_Rares: tZq_ll : xsec ;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR Rares"
+_promptratesub_Rares: GGHZZ4L : xsec ;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR Rares"
+_promptratesub_Rares: VHToNonbb : xsec ;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR Rares"
+_promptratesub_Rares: WWZ : xsec ;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR Rares"
+_promptratesub_Rares: ZZZ : xsec;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR Rares"
+_promptratesub_Rares: WZZ : xsec;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR Rares"
+_promptratesub_Rares: TTTT : xsec;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt\,susy-multilepton/load_is_2_prompt_loop.txt", Label="PR Rares"
+
+# Fakes+flips
+
+#_promptratesub_TT: TTJets: xsec ;   FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt", Label="PR TT"
+#_promptratesub_DY: DYJetsToLL_M10to50: xsec ;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt", Label="PR DY"
+#_promptratesub_DY: DYJetsToLL_M50: xsec ;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt", Label="PR DY"
+#_promptratesub_WJets: WJetsToLNu :  xsec;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt", Label="PR WJets"
+#_promptratesub_SingleTop: TToLeptons_tch:     xsec ;   FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt", Label="PR sT"
+#_promptratesub_SingleTop: TbarToLeptons_tch:     xsec ;   FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt", Label="PR sT"
+#_promptratesub_SingleTop: TToLeptons_sch_amcatnlo:     xsec ;   FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt", Label="PR sT"
+#_promptratesub_SingleTop: TBar_tWch:     xsec ;   FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt", Label="PR sT"
+#_promptratesub_SingleTop: T_tWch:     xsec ;   FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt", Label="PR sT"
+#_promptratesub_WW: WWTo2L2Nu: xsec ;  FakeRate="susy-multilepton/mc_promptrate_subtr_sel.txt", Label="PR WW"
+
+### FLIPS
+
+# data for flip rate application
+
+data: DoubleEG_Run2015C_Oct05_runs_254231_254914 ; FakeRate="susy-multilepton/flips_appl_sel.txt", Label="Data pred."
+data: DoubleEG_Run2015D_Oct05_runs_256630_258158 ; FakeRate="susy-multilepton/flips_appl_sel.txt", Label="Data pred."
+data: DoubleEG_Run2015D_PromptV4_runs_258159_260627 ; FakeRate="susy-multilepton/flips_appl_sel.txt", Label="Data pred."
+data: DoubleMuon_Run2015C_Oct05_runs_254231_254914 ; FakeRate="susy-multilepton/flips_appl_sel.txt", Label="Data pred."
+data: DoubleMuon_Run2015D_Oct05_runs_256630_258158 ; FakeRate="susy-multilepton/flips_appl_sel.txt", Label="Data pred."
+data: DoubleMuon_Run2015D_PromptV4_runs_258159_260627 ; FakeRate="susy-multilepton/flips_appl_sel.txt", Label="Data pred."
+data: MuonEG_Run2015C_Oct05_runs_254231_254914 ; FakeRate="susy-multilepton/flips_appl_sel.txt", Label="Data pred."
+data: MuonEG_Run2015D_Oct05_runs_256630_258158 ; FakeRate="susy-multilepton/flips_appl_sel.txt", Label="Data pred."
+data: MuonEG_Run2015D_PromptV4_runs_258159_260627 ; FakeRate="susy-multilepton/flips_appl_sel.txt", Label="Data pred."

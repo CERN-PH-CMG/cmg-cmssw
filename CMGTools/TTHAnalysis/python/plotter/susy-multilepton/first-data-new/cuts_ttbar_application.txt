@@ -1,0 +1,14 @@
+filters : hbheFilterNew25ns==1 && Flag_CSCTightHaloFilter==1 && Flag_eeBadScFilter==1
+trigger : HLT_DoubleMu || HLT_DoubleEl || HLT_MuEG
+lep2_pt10 : nLepGood10 == 2
+same-sign : LepGood1_charge*LepGood2_charge > 0
+lepMVA_appl: (LepGood1_mvaTTH>0.65) + (LepGood2_mvaTTH>0.65) == 1
+#lep mu id : LepGood1_mediumMuonId > 0 && LepGood2_mediumMuonId > 0
+#lep el id : ( LepGood1_mvaIdSpring15 >=0.87+(0.60-0.87)*(abs(LepGood1_eta)>0.8)+(+0.17-0.60)*(abs(LepGood1_eta)>1.479) || abs(LepGood1_pdgId) == 13) &&            ( LepGood2_mvaIdSpring15 >=0.87+(0.60-0.87)*(abs(LepGood2_eta)>0.8)+(+0.17-0.60)*(abs(LepGood2_eta)>1.479) || abs(LepGood2_pdgId) == 13)
+#lep dxy : max(LepGood1_sip3d,LepGood2_sip3d) < 4
+ele cuts : (abs(LepGood1_pdgId) == 13 || (LepGood1_convVeto && LepGood1_lostHits == 0)) &&           (abs(LepGood2_pdgId) == 13 || (LepGood2_convVeto && LepGood2_lostHits == 0))
+tight charge : LepGood1_tightCharge > (abs(LepGood1_pdgId) == 11) && LepGood2_tightCharge > (abs(LepGood2_pdgId) == 11)
+4j: nJet25>=4
+2b loose: nBJetLoose25 >= 2 || nBJetMedium25 >= 1
+#2B tight: nBJetMedium25 >= 2
+

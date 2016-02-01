@@ -1,18 +1,26 @@
-void trainLeptonID(TString name, TString train="GoodvsBad") {
-    TTree *dSig = (TTree*) _file0->Get("tree");
-    TTree *dBg1 = (TTree*) _file1->Get("tree");
+void trainLeptonID(TString name, TString sigfile, TString bkg1file, TString bkg2file="", TString train="GoodvsBad") {
+    TFile *_f_s = new TFile(sigfile.Data(),"read");
+    TFile *_f_b1 = new TFile(bkg1file.Data(),"read");
+    TFile *_f_b2 =  (bkg2file=="") ? NULL : new TFile(bkg2file.Data(),"read");
+    TTree *dSig = (TTree*) _f_s->Get("tree");
+    TTree *dBg1 = (TTree*) _f_b1->Get("tree");
+    TTree *dBg2 = (_f_b2) ? ((TTree*) _f_b2->Get("tree")) : NULL;
     TFile *fOut = new TFile(name+".root","RECREATE");
     TMVA::Factory *factory = new TMVA::Factory(name, fOut, "!V:!Color:Transformations=I");
     
-    if (name.Contains("withpt")) {
+    if (name.Contains("withpt") || name.Contains("forMoriond16")) {
         factory->AddVariable("LepGood_pt", 'D');
+    }
+    if (name.Contains("forMoriond16")) {
+        factory->AddVariable("LepGood_eta", 'D');
+        factory->AddVariable("LepGood_jetNDauChargedMVASel", 'D');
     }
 
     factory->AddVariable("LepGood_miniRelIsoCharged", 'D');
     factory->AddVariable("LepGood_miniRelIsoNeutral", 'D');
-    if (name.Contains("v2")) {
+    if (name.Contains("v2") || name.Contains("forMoriond16")) {
         factory->AddVariable("LepGood_jetPtRelv2", 'D');
-        factory->AddVariable("LepGood_jetPtRatio := min(LepGood_jetPtRatio_LepAwareJECv2,1.5)", 'D');
+        factory->AddVariable("LepGood_jetPtRatio := min(LepGood_jetPtRatiov2,1.5)", 'D');
     } else {
         factory->AddVariable("LepGood_jetPtRel", 'D');
         factory->AddVariable("LepGood_jetPtRatio := min(LepGood_jetPtRatio,1.5)", 'D');
@@ -34,7 +42,8 @@ void trainLeptonID(TString name, TString train="GoodvsBad") {
     } else if (name.Contains("el")) {
       //electron variables
         if (!name.Contains("NoID")) {
-            factory->AddVariable("LepGood_mvaIdPhys14",'D');
+	  if (name.Contains("mvaIdPhys14")) factory->AddVariable("LepGood_mvaIdPhys14",'D');
+          else factory->AddVariable("LepGood_mvaIdSpring15",'D');
         }
     } else { std::cerr << "ERROR: must either be electron or muon." << std::endl; return; }
 
@@ -85,7 +94,13 @@ void trainLeptonID(TString name, TString train="GoodvsBad") {
 
     double wSig = 1.0, wBkg = 1.0;
     factory->AddSignalTree(dSig, wSig);
-    factory->AddBackgroundTree(dBg1, wBkg);
+    if (!dBg2) factory->AddBackgroundTree(dBg1, wBkg);
+    else {
+      double int1 = dBg1->GetEntries();
+      double int2 = dBg2->GetEntries();
+      factory->AddBackgroundTree(dBg1, wBkg/int1/2.);
+      factory->AddBackgroundTree(dBg2, wBkg/int2/2.);
+    }
 
     if (name.Contains("w05")) {
         factory->SetWeightExpression("exp(min(max(LepGood_pt,10),25)/17 * (1 - 2*(LepGood_mcMatchId != 0)))");

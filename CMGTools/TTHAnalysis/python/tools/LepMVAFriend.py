@@ -23,7 +23,31 @@ from CMGTools.TTHAnalysis.leptonMVA import MVATool, CategorizedMVA
 _CommonSpect = [ 
 ]
 _CommonVars = {
-'WithPtV2': [
+'forMoriond16': [
+    MVAVar("LepGood_pt",lambda x: x.pt),
+    MVAVar("LepGood_eta",lambda x: x.eta),
+    MVAVar("LepGood_jetNDauChargedMVASel",lambda x: x.jetNDauChargedMVASel),
+    MVAVar("LepGood_miniRelIsoCharged",lambda x: x.miniRelIsoCharged),
+    MVAVar("LepGood_miniRelIsoNeutral",lambda x: x.miniRelIsoNeutral),
+    MVAVar("LepGood_jetPtRelv2",lambda x: x.jetPtRelv2),
+    MVAVar("LepGood_jetPtRatio := min(LepGood_jetPtRatiov2,1.5)", lambda x : min(x.jetPtRatiov2,1.5)),
+    MVAVar("LepGood_jetBTagCSV := max(LepGood_jetBTagCSV,0)", lambda x : max(x.jetBTagCSV,0.)),
+    MVAVar("LepGood_sip3d",lambda x: x.sip3d),
+    MVAVar("LepGood_dxy := log(abs(LepGood_dxy))",lambda x: log(abs(x.dxy))),
+    MVAVar("LepGood_dz  := log(abs(LepGood_dz))", lambda x: log(abs(x.dz))),
+], 'forMoriond16elmvaIdPhys14': [
+    MVAVar("LepGood_pt",lambda x: x.pt),
+    MVAVar("LepGood_eta",lambda x: x.eta),
+    MVAVar("LepGood_jetNDauChargedMVASel",lambda x: x.jetNDauChargedMVASel),
+    MVAVar("LepGood_miniRelIsoCharged",lambda x: x.miniRelIsoCharged),
+    MVAVar("LepGood_miniRelIsoNeutral",lambda x: x.miniRelIsoNeutral),
+    MVAVar("LepGood_jetPtRelv2",lambda x: x.jetPtRelv2),
+    MVAVar("LepGood_jetPtRatio := min(LepGood_jetPtRatiov2,1.5)", lambda x : min(x.jetPtRatiov2,1.5)),
+    MVAVar("LepGood_jetBTagCSV := max(LepGood_jetBTagCSV,0)", lambda x : max(x.jetBTagCSV,0.)),
+    MVAVar("LepGood_sip3d",lambda x: x.sip3d),
+    MVAVar("LepGood_dxy := log(abs(LepGood_dxy))",lambda x: log(abs(x.dxy))),
+    MVAVar("LepGood_dz  := log(abs(LepGood_dz))", lambda x: log(abs(x.dz))),
+], 'WithPtV2': [
     MVAVar("LepGood_pt",lambda x: x.pt),
     MVAVar("LepGood_miniRelIsoCharged",lambda x: x.miniRelIsoCharged),
     MVAVar("LepGood_miniRelIsoNeutral",lambda x: x.miniRelIsoNeutral),
@@ -47,7 +71,11 @@ _CommonVars = {
 }
 
 _ElectronVars = {
- 'V2': [
+ 'forMoriond16': [
+    MVAVar("LepGood_mvaIdSpring15",lambda x: x.mvaIdSpring15)
+ ], 'forMoriond16elmvaIdPhys14': [
+    MVAVar("LepGood_mvaIdPhys14",lambda x: x.mvaIdPhys14)
+ ], 'V2': [
     MVAVar("LepGood_mvaIdPhys14",lambda x: x.mvaIdPhys14)
  ]
 }
@@ -57,7 +85,7 @@ _MuonVars = [
 ]
 
 class LeptonMVA:
-    def __init__(self,basepath,training="WithPtV2"):
+    def __init__(self,basepath,training="forMoriond16"):
         global _CommonVars, _CommonSpect, _ElectronVars, _MuonVars, _SVVars
         if type(basepath) == tuple: basepathmu, basepathel  = basepath
         else:                       basepathmu, basepathel  = basepath, basepath
@@ -65,8 +93,15 @@ class LeptonMVA:
         if "V2" in training:
             muVars = _CommonVars[training][:] + _MuonVars[:]
             elVars = _CommonVars[training][:] + _ElectronVars['V2'][:]
+        elif "forMoriond16" in training:
+            muVars = _CommonVars[training][:] + _MuonVars[:]
+            elVars = _CommonVars[training][:] + _ElectronVars[training][:]
         if not muVars:
             self.mu = lambda mu, ncorr : -37.0;
+        elif "forMoriond16" in training:
+            self.mu = CategorizedMVA([
+                ( lambda x: True , MVATool("BDTG",basepathmu%"mu",_CommonSpect,muVars) ),
+            ])
         else:
             self.mu = CategorizedMVA([
                 ( lambda x: abs(x.eta) <  1.5 , MVATool("BDTG",basepathmu%"mu_eta_b",_CommonSpect,muVars) ),
@@ -74,6 +109,10 @@ class LeptonMVA:
             ])
         if not elVars:
             self.el = lambda el, ncorr : -37.0;
+        elif "forMoriond16" in training:
+            self.el = CategorizedMVA([
+                ( lambda x: True, MVATool("BDTG",basepathel%"el",_CommonSpect,elVars) ),
+            ])
         else:
             self.el = CategorizedMVA([
                 ( lambda x: abs(x.eta) <  0.8                         , MVATool("BDTG",basepathel%"el_eta_cb",_CommonSpect,elVars) ),
@@ -86,7 +125,7 @@ class LeptonMVA:
         else: return -99
 
 class LepMVAFriend:
-    def __init__(self,path,training="WithPtV2",label="",fast=True):
+    def __init__(self,path,training="forMoriond16",label="",fast=True):
         self.mva = LeptonMVA(path+"/%s_BDTG.weights.xml" if type(path) == str else path, training=training)
         self.fast = fast
         self.label = label
@@ -111,9 +150,12 @@ if __name__ == '__main__':
         def __init__(self, name, trees="new"):
             Module.__init__(self,name,None)
             self.mvas = {
-                'WithPtV2' : LepMVAFriend(("/afs/cern.ch/work/g/gpetrucc/CMSSW_7_4_7/src/CMGTools/TTHAnalysis/macros/leptons/weights/%s_withpt_v2_BDTG.weights.xml",
-                                           "/afs/cern.ch/work/g/gpetrucc/CMSSW_7_4_7/src/CMGTools/TTHAnalysis/macros/leptons/weights/%s_withpt_v2_BDTG.weights.xml",),
-                                           training=("WithPtV2_oldTrees" if trees=="old" else 'WithPtV2')),
+                'forMoriond16' : LepMVAFriend(("/afs/cern.ch/user/p/peruzzi/work/cmgtools/CMSSW_7_4_14/src/CMGTools/TTHAnalysis/macros/leptons/weights/forMoriond16%s_BDTG.weights.xml",
+                                               "/afs/cern.ch/user/p/peruzzi/work/cmgtools/CMSSW_7_4_14/src/CMGTools/TTHAnalysis/macros/leptons/weights/forMoriond16%s_BDTG.weights.xml",),
+                                              training="forMoriond16"),
+#                'WithPtV2' : LepMVAFriend(("/afs/cern.ch/work/g/gpetrucc/CMSSW_7_4_7/src/CMGTools/TTHAnalysis/macros/leptons/weights/%s_withpt_v2_BDTG.weights.xml",
+#                                           "/afs/cern.ch/work/g/gpetrucc/CMSSW_7_4_7/src/CMGTools/TTHAnalysis/macros/leptons/weights/%s_withpt_v2_BDTG.weights.xml",),
+#                                           training=("WithPtV2_oldTrees" if trees=="old" else 'WithPtV2')),
             }
         def analyze(self,ev):
             print "\nrun %6d lumi %4d event %d: leps %d" % (ev.run, ev.lumi, ev.evt, ev.nLepGood)

@@ -13,6 +13,9 @@ def convertComponent(comp,pattern,verbose=0):
     return comp
 
 def convertPickled(filename,pattern,verbose=0):
+    if os.path.isdir(filename):
+        if os.path.exists(filename+"/config.pck"):
+            filename += "/config.pck"
     if not os.path.exists(filename):
         raise RuntimeError, "Filename '%s' does not exist" % filename
     if not os.path.exists(filename+".sav"):

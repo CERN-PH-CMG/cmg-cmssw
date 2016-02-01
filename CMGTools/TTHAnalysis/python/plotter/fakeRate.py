@@ -40,7 +40,7 @@ class FakeRate:
 	            if self._weight is None: raise RuntimeError, "cut-file must follow weight declaration in fake rate file "+file
 	            addcuts = CutsFile(fields[1],options=None,ignoreEmptyOptionsEnforcement=True)
 	            self._weight = '((%s)*(%s))' % (self._weight,addcuts.allCuts(doProduct=True))
-                    print "WARNING: cuts loaded from fake rate file "+file
+#                    print "WARNING: cuts loaded from fake rate file "+file
 	        else:
 	            raise RuntimeError, "Unknown directive "+fields[0]
             if file==files[0]:

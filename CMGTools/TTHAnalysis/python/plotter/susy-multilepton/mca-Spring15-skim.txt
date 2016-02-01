@@ -1,0 +1,62 @@
+sms1200800: SMS_miniAODv2_T1tttt_mGluino_1200_mLSP_1to825 : xsec
+
+data: DoubleEG_Run2015C_Oct05_runs_254231_254914
+data: DoubleEG_Run2015D_Oct05_runs_256630_258158
+data: DoubleEG_Run2015D_PromptV4_runs_258159_260627
+data: DoubleMuon_Run2015C_Oct05_runs_254231_254914
+data: DoubleMuon_Run2015D_Oct05_runs_256630_258158
+data: DoubleMuon_Run2015D_PromptV4_runs_258159_260627
+data: MuonEG_Run2015C_Oct05_runs_254231_254914
+data: MuonEG_Run2015D_Oct05_runs_256630_258158
+data: MuonEG_Run2015D_PromptV4_runs_258159_260627
+
+DYJetsToLL_M10to50: DYJetsToLL_M10to50: xsec
+DYJetsToLL_M50: DYJetsToLL_M50: xsec
+GGHZZ4L: GGHZZ4L: xsec
+T1tttt_mGo1200_mChi800: T1tttt_mGo1200_mChi800: xsec
+T1tttt_mGo1500_mChi100: T1tttt_mGo1500_mChi100: xsec
+T5qqqqWWDeg_mGo1000_mCh315_mChi300_dilep: T5qqqqWWDeg_mGo1000_mCh315_mChi300_dilep: xsec
+T5qqqqWW_mGo1200_mCh1000_mChi800_dilep: T5qqqqWW_mGo1200_mCh1000_mChi800_dilep: xsec
+T5ttttDeg_mGo1000_mStop300_mCh285_mChi280: T5ttttDeg_mGo1000_mStop300_mCh285_mChi280: xsec
+T6ttWW_mSbot600_mCh425_mChi50: T6ttWW_mSbot600_mCh425_mChi50: xsec
+T6ttWW_mSbot650_mCh150_mChi50: T6ttWW_mSbot650_mCh150_mChi50: xsec
+TBar_tWch: TBar_tWch: xsec
+TGJets: TGJets: xsec
+TTGJets: TTGJets: xsec
+TTHnobb: TTHnobb: xsec
+TTJets: TTJets: xsec
+TTJets_DiLepton: TTJets_DiLepton: 1.52249*xsec
+TTJets_SingleLeptonFromT: TTJets_SingleLeptonFromT: 1.598029*xsec
+
+TTLLJets_m1to10: TTLLJets_m1to10: xsec
+TTTT: TTTT: xsec
+TTWToLNu: TTWToLNu: xsec
+TTZToLLNuNu: TTZToLLNuNu: xsec
+VHToNonbb: VHToNonbb: xsec
+WGToLNuG: WGToLNuG: xsec
+WWDouble: WWDouble: xsec
+WWZ: WWZ: xsec
+WZTo3LNu: WZTo3LNu: 1.22*xsec
+WZZ: WZZ: xsec
+WpWpJJ: WpWpJJ: xsec
+ZGTo2LG: ZGTo2LG: xsec
+ZZTo4L: ZZTo4L: xsec
+ZZZ: ZZZ: xsec
+tZq_ll: tZq_ll: xsec
+
+TTJets_SingleLeptonFromTbar: TTJets_SingleLeptonFromTbar: 1.58966*xsec
+TToLeptons_sch_amcatnlo: TToLeptons_sch_amcatnlo: xsec
+TToLeptons_tch: TToLeptons_tch: xsec
+T_tWch: T_tWch: xsec
+TbarToLeptons_tch: TbarToLeptons_tch: xsec
+WJetsToLNu: WJetsToLNu: xsec
+WJetsToLNu_HT100to200: WJetsToLNu_HT100to200: xsec
+WJetsToLNu_HT1200to2500: WJetsToLNu_HT1200to2500: xsec
+WJetsToLNu_HT200to400: WJetsToLNu_HT200to400: xsec
+WJetsToLNu_HT2500toInf: WJetsToLNu_HT2500toInf: xsec
+WJetsToLNu_HT400to600: WJetsToLNu_HT400to600: xsec
+WJetsToLNu_HT600to800: WJetsToLNu_HT600to800: xsec
+WJetsToLNu_HT600toInf: WJetsToLNu_HT600toInf: xsec
+WJetsToLNu_HT800to1200: WJetsToLNu_HT800to1200: xsec
+WWTo2L2Nu: WWTo2L2Nu: xsec
+

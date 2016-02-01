@@ -1,0 +1,4 @@
+Triggers_ee\b : (HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v || (htJet40j>300)) && (HLT_DoubleElHT || (htJet40j<300)); AlsoData
+Triggers_mm\b : (HLT_DoubleMu || (htJet40j>300)) && (HLT_DoubleMuHT || (htJet40j<300)) ; AlsoData
+Triggers_em\b : ((HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v || HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v) || (htJet40j>300)) && (HLT_MuEGHT || (htJet40j<300)); AlsoData
+

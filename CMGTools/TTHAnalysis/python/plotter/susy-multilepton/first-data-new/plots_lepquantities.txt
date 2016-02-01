@@ -1,0 +1,28 @@
+#lep_pt: LepGood_pt[iChosen]: 24,0,150; XTitle="Lepton p_{T} [GeV]", Legend='TR', LegendCutoff=1e-2
+#lep_eta: LepGood_eta[iChosen]: 24,-2.5,2.5; XTitle="Lepton #eta", Legend='TR', LegendCutoff=1e-2
+#lep_miniRelIso: LepGood_miniRelIso[iChosen]: 24,0,.4; XTitle="Lepton Isolation", LegendCutoff=1e-2
+lep_miniRelIso_log: LepGood_miniRelIso[iChosen]: 24,0,.4; Logy, XTitle="Lepton Isolation", LegendCutoff=1e-2
+#lep_miniRelIsoCharged: LepGood_miniRelIsoCharged[iChosen]: 20,0,.4; XTitle="Lepton Charged Isolation", LegendCutoff=1e-2
+#lep_miniRelIsoCharged_log: LepGood_miniRelIsoCharged[iChosen]: 20,0,.4; Logy, XTitle="Lepton Charged Isolation", LegendCutoff=1e-2
+#lep_miniRelIsoNeutral: LepGood_miniRelIsoNeutral[iChosen]: 20,0,.4; XTitle="Lepton Neutral Isolation", LegendCutoff=1e-2
+#lep_miniRelIsoNeutral_log: LepGood_miniRelIsoNeutral[iChosen]: 20,0,.4; Logy, XTitle="Lepton Neutral Isolation", LegendCutoff=1e-2
+#lep_sip3d: LepGood_sip3d[iChosen]: 80,0,15 ; XTitle="Lepton SIP_{3D}", Legend='TR', LegendCutoff=1e-2
+lep_sip3d_log: LepGood_sip3d[iChosen]: 80,0,15 ; Logy, XTitle="Lepton SIP_{3D}", Legend='TR', LegendCutoff=1e-2
+#lep_dxy: abs(LepGood_dxy[iChosen])*10000: 40,0.0,100. ; XTitle="Lepton d_{xy} [#mum]", Legend='TR', LegendCutoff=1e-2
+#lep_dxy_log: abs(LepGood_dxy[iChosen])*10000: 40,0.0,100. ; XTitle="Lepton d_{xy} [#mum]",Logy , Legend='TR', LegendCutoff=1e-2
+#lep_dz: abs(LepGood_dz[iChosen])*10000: 40,0.0,500. ; XTitle="Lepton d_{z} [#mum]", Legend='TR', LegendCutoff=1e-2
+#lep_dz_log: abs(LepGood_dz[iChosen])*10000: 40,0.0,500. ; XTitle="Lepton d_{z} [#mum]",Logy ,Legend='TR', LegendCutoff=1e-2
+#el_mvaIdSpring15: LepGood_mvaIdSpring15[iChosen]: 40,-1,1; XTitle="Electron mvaIdSpring15", Legend='TR', LegendCutoff=1e-2
+#el_mvaIdSpring15_log: LepGood_mvaIdSpring15[iChosen]: 40,-1,1; Logy, XTitle="Electron mvaIdSpring15", Legend='TL', LegendCutoff=1e-2
+#lep_jetPtRelv1: LepGood_jetPtRelv1[iChosen]: 40,0,40; XTitle="Lepton Jet p_{T} Relv1 [GeV]", Legend='TR', LegendCutoff=1e-2
+lep_jetPtRelv2: LepGood_jetPtRelv2[iChosen]: 40,0,40; XTitle="Lepton Jet p_{T} Relv2 [GeV]", Legend='TR', LegendCutoff=1e-2
+#lep_jetPtRatiov1: LepGood_jetPtRatiov1[iChosen]: 40,0,1.2; XTitle="Lepton Jet p_{T} Ratiov1 ", Legend='TL', LegendCutoff=1e-2
+lep_jetPtRatiov2: LepGood_jetPtRatiov2[iChosen]: 40,0,1.2; XTitle="Lepton Jet p_{T} Ratiov2 ", Legend='TL', LegendCutoff=1e-2
+#lep_mvaTTH: LepGood_mvaTTH[iChosen]: 40,-1,1; XTitle="Lepton mvaTTH", Legend='TR', LegendCutoff=1e-2
+lep_mvaTTH_log: LepGood_mvaTTH[iChosen]: 40,-1,1; Logy, XTitle="Lepton mvaTTH", Legend='TL', LegendCutoff=1e-2
+#lep_SegmentCompatibility: LepGood_segmentCompatibility[iChosen]: 24,0,1; XTitle="Lepton Segment-based compatibility", Legend='TR', LegendCutoff=1e-2
+#lep_SegmentCompatibility_log: LepGood_segmentCompatibility[iChosen]: 24,0,1; Logy, XTitle="Lepton Segment-based compatibility", Legend='TR', LegendCutoff=1e-2
+#lep_pixelLayers: LepGood_pixelLayers[iChosen]: 10,0,10; XTitle="Pixel Layers", Legend='TR', LegendCutoff=1e-2
+#lep_trackerLayers: LepGood_trackerLayers[iChosen]: 20,0,20; XTitle="Tracker Layers", Legend='TL', LegendCutoff=1e-2
+#lep_lostHits: LepGood_lostHits[iChosen]: 15,-5,10; XTitle="Lost hits on inner track", Legend='TR', LegendCutoff=1e-2
+lep_jetBTagCSV: LepGood_jetBTagCSV[iChosen]: 40,0,1; XTitle="CSV btag of nearest jet ", Legend='TR', LegendCutoff=1e-2

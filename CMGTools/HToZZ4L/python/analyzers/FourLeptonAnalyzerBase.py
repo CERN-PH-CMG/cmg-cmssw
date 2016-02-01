@@ -1,6 +1,6 @@
 from math import *
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
-from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi
+from PhysicsTools.HeppyCore.utils.deltar import deltaR, deltaPhi, bestMatch
 from PhysicsTools.HeppyCore.framework.event import *
 
 from CMGTools.HToZZ4L.tools.DiObject import DiObject
@@ -44,7 +44,7 @@ class EventBox(object):
 class FourLeptonAnalyzerBase( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(FourLeptonAnalyzerBase,self).__init__(cfg_ana,cfg_comp,looperName)
-        self._MEMs = ROOT.MEMCalculatorsWrapper(13.0)
+        self._MEMs = ROOT.MEMCalculatorsWrapper(13.0,125.0)
 
     def declareHandles(self):
         super(FourLeptonAnalyzerBase, self).declareHandles()
@@ -69,10 +69,10 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
 
     def muonIsolation(self,lepton):
-        return lepton.absIsoWithFSR(R=0.4,puCorr="deltaBeta")/lepton.pt()<0.4
+        return lepton.relIsoAfterFSR < 0.4 #absIsoWithFSR(R=0.4,puCorr="deltaBeta")/lepton.pt()<0.4
 
     def electronIsolation(self,lepton):
-        return lepton.absIsoWithFSR(R=0.4,puCorr="rhoArea")/lepton.pt()<0.5
+        return lepton.relIsoAfterFSR < 0.5 #absIsoWithFSR(R=0.4,puCorr="rhoArea")/lepton.pt()<0.5
 
     def diLeptonMass(self,dilepton):
         return dilepton.M()>12.0 and dilepton.M()<120.
@@ -88,22 +88,13 @@ class FourLeptonAnalyzerBase( Analyzer ):
         if abs(fourLepton.leg1.leg1.pdgId())!=abs(fourLepton.leg2.leg1.pdgId()):
             return True
 
-        #print "Nominal, mZ1 %.3f, mZ2 %.3f: %s" % (fourLepton.leg1.M(),fourLepton.leg2.M(),fourLepton)
-        #find Alternative pairing.Do not forget FSR
+        #print "\nNominal, mZ1 %.3f, mZ2 %.3f: %s" % (fourLepton.leg1.M(),fourLepton.leg2.M(),fourLepton)
         leptons  = [ fourLepton.leg1.leg1, fourLepton.leg1.leg2, fourLepton.leg2.leg1, fourLepton.leg2.leg2 ]
         quads = []
-        for quad in self.findOSSFQuads(leptons, fourLepton.daughterPhotons()): # only re-search for FSR from already-attached photons
+        for quad in self.findOSSFQuads(leptons): 
             # skip self
             if fourLepton.leg1.leg1 == quad.leg1.leg1 and fourLepton.leg1.leg2 == quad.leg1.leg2 and fourLepton.leg2.leg1 == quad.leg2.leg1:
                 continue
-
-            # we used to skip those that fail cuts except Z2 mass
-            ### if not self.fourLeptonIsolation(quad) or not self.fourLeptonMassZ1(quad) or not self.qcdSuppression(quad):
-            ###    continue
-            # however:
-            # - we've now decided in the sync that we don't re-check for isolation on the alternate pairing
-            # - QCD suppression does not depend on photons, and so it doesn't depend on the pairing
-            # - if the new pairing has a better Z1 mass than the original one, then it passes the Z1 mass cut
 
             # skip those that have a worse Z1 mass than the nominal
             if abs(fourLepton.leg1.M()-91.1876) < abs(quad.leg1.M()-91.1876):
@@ -127,22 +118,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
 
     def fourLeptonIsolation(self,fourLepton):
-        ##First ! attach the FSR photons of this candidate to the leptons!
-        
-
-
-
-        leptons = fourLepton.daughterLeptons()
-        photons = fourLepton.daughterPhotons()
-
-        
-
-
-        for l in leptons:
-            l.fsrPhotons=[]
-            for g in photons:
-                if deltaR(g.eta(),g.phi(),l.eta(),l.phi())<0.4:
-                    l.fsrPhotons.append(g)
+        for l in fourLepton.daughterLeptons():
             if abs(l.pdgId())==11:
                 if not self.electronIsolation(l):
                     return False
@@ -161,17 +137,16 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
 
     def qcdSuppression(self, fourLepton):
-        return fourLepton.minOSPairMass()>4.0
+        return fourLepton.minPairMll(onlyOS=True)>4.0
 
         
     def zSorting(self,Z1,Z2):
         return abs(Z1.M()-91.1876) <= abs(Z2.M()-91.1876)
 
-    def findOSSFQuads(self, leptons,photons):
+    def findOSSFQuads(self, leptons):
         '''Make combinatorics and make permulations of four leptons
            Cut the permutations by asking Z1 nearest to Z and also 
            that plus is the first
-           Include FSR if in cfg file
         '''
         out = []
         for l1, l2,l3,l4 in itertools.permutations(leptons, 4):
@@ -185,117 +160,34 @@ class FourLeptonAnalyzerBase( Analyzer ):
                 continue;
 
             quadObject =DiObjectPair(l1, l2,l3,l4)
-            self.attachFSR(quadObject,photons)
             if not self.zSorting(quadObject.leg1,quadObject.leg2):
                 continue
             out.append(quadObject)
 
         return out
-
-
-
-    def attachFSR(self,quad,photons):
-        #first attach photons to the closest leptons
-        quad.allPhotonsForFSR = photons # record this for later
-        
-        legs=[quad.leg1.leg1,quad.leg1.leg2,quad.leg2.leg1,quad.leg2.leg2]
-
-        assocPhotons=[]
-        for g in photons:
-            for l in legs:
-                DR=deltaR(l.eta(),l.phi(),g.eta(),g.phi())
-                if DR>0.5:
-                    continue;
-                if self.cfg_ana.attachFsrToGlobalClosestLeptonOnly:
-                    if l != g.globalClosestLepton:
-                        continue
-                if hasattr(g,'DR'):
-                    if DR<g.DR:
-                        g.DR=DR
-                        g.nearestLepton = l
-                else:        
-                    g.DR=DR
-                    g.nearestLepton = l
-            if hasattr(g,'DR'):
-                assocPhotons.append(g)
-
-        
-        #Now we have the association . Check criteria
-        #First on Z1
-        z1Photons=[]
-        z2Photons=[]
-
-        z1Above4=False
-        z2Above4=False
-        for g in assocPhotons:
-            if g.nearestLepton in [quad.leg1.leg1,quad.leg1.leg2]:
-                mll = quad.leg1.M()
-                mllg = (quad.leg1.leg1.p4()+quad.leg1.leg2.p4()+g.p4()).M()
-                if mllg<4 or mllg>100:
-                    continue
-                if abs(mllg-91.1876)>abs(mll-91.1876):
-                    continue
-                z1Photons.append(g)
-                if g.pt()>4:
-                    z1Above4 = True
-
-            if g.nearestLepton in [quad.leg2.leg1,quad.leg2.leg2]:
-                mll = quad.leg2.M()
-                mllg = (quad.leg2.leg1.p4()+quad.leg2.leg2.p4()+g.p4()).M()
-                if mllg<4 or mllg>100:
-                    continue
-                if abs(mllg-91.1876)>abs(mll-91.1876):
-                    continue
-                z2Photons.append(g)
-                if g.pt()>4:
-                    z2Above4 = True
                 
-            
+    def attachJets(self,quad,jets):
+        # must clean jets from the leptons in the candidate in addition to the ones already cleaned
+        leptonsAndPhotons = quad.daughterLeptons() + quad.daughterPhotons()
+        quad.cleanJets = []
+        quad.cleanJetIndices = [ ]
+        for ij,j in enumerate(jets):
+           bm, dr2 = bestMatch(j, leptonsAndPhotons)
+           if dr2 < 0.4**2: 
+                continue
+           quad.cleanJets.append(j)
+           quad.cleanJetIndices.append(ij)
 
-        if len(z1Photons)>0:
-            if z1Above4: #Take the highest pt
-                fsr = max(z1Photons,key=lambda x: x.pt())
-                quad.leg1.setFSR(fsr)
-            else:    #Take the smallest DR
-                fsr = min(z1Photons,key=lambda x: x.DR)
-                quad.leg1.setFSR(fsr)
-        if len(z2Photons)>0:
-            if z2Above4: #Take the highest pt
-                fsr = max(z2Photons,key=lambda x: x.pt())
-                quad.leg2.setFSR(fsr)
-            else:    #Take the smallest DR
-                fsr = min(z2Photons,key=lambda x: x.DR)
-                quad.leg2.setFSR(fsr)
-
-        quad.updateP4()        
-        #cleanup for next combination!        
-        for g in assocPhotons:
-            del g.DR
-            del g.nearestLepton
-            
-                
-    def fillMEs(self,quad):
+ 
+    def fillMEs(self,quad,jets):
         legs = [ quad.leg1.leg1, quad.leg1.leg2, quad.leg2.leg1, quad.leg2.leg2 ]
-        lvs  = [ ROOT.TLorentzVector(l.px(),l.py(),l.pz(),l.energy()) for l in legs ]
-
-        if hasattr(quad.leg1,'fsrPhoton'):
-            photon = ROOT.TLorentzVector(quad.leg1.fsrPhoton.px(),quad.leg1.fsrPhoton.py(),quad.leg1.fsrPhoton.pz(),quad.leg1.fsrPhoton.energy())
-            if quad.leg1.fsrDR1() < quad.leg1.fsrDR2():
-                lvs[0] = lvs[0]+photon
-            else:
-                lvs[1]=lvs[1]+photon
-
-        if hasattr(quad.leg2,'fsrPhoton'):
-            photon = ROOT.TLorentzVector(quad.leg2.fsrPhoton.px(),quad.leg2.fsrPhoton.py(),quad.leg2.fsrPhoton.pz(),quad.leg2.fsrPhoton.energy())
-            if quad.leg2.fsrDR1() < quad.leg2.fsrDR2():
-                lvs[2] = lvs[2]+photon
-            else:
-                lvs[3]=lvs[3]+photon
-
-
-        ids  = [ l.pdgId() for l in legs ]
+        lvs  = [ l.p4WithFSR() for l in legs ]
+        ids  = [ l.pdgId()     for l in legs ]
+        jp4s = ROOT.std.vector(ROOT.math.XYZTLorentzVector)()
+        for j in jets: jp4s.push_back(j.p4())
         quad.melaAngles = self._MEMs.computeAngles(lvs[0],ids[0], lvs[1],ids[1], lvs[2],ids[2], lvs[3],ids[3])
-        self._MEMs.computeAll(lvs[0],ids[0], lvs[1],ids[1], lvs[2],ids[2], lvs[3],ids[3])
-        quad.KD = self._MEMs.getKD()
-        return True
+        quad.KDs = {}
+        for KD in self._MEMs.computeNew(lvs[0],ids[0], lvs[1],ids[1], lvs[2],ids[2], lvs[3],ids[3], jp4s):
+            quad.KDs[KD.first] = KD.second
+        quad.KD = quad.KDs["D_bkg^kin"]
 

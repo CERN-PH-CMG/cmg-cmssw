@@ -67,7 +67,7 @@ class AutoFillTreeProducer( TreeAnalyzerNumpy ):
             ## PU weights
             tr.var("puWeight")
             ## number of true interactions
-            tr.var("nTrueInt",int)
+            tr.var("nTrueInt")
             ## generator weight
             tr.var("genWeight")
             ## PDF weights
@@ -125,7 +125,7 @@ class AutoFillTreeProducer( TreeAnalyzerNumpy ):
             ## PU weights, check if a PU analyzer actually filled it
             if hasattr(event,"nPU"):
                     tr.fill("nTrueInt", event.nPU)
-                    tr.fill("puWeight", event.eventWeight)
+                    tr.fill("puWeight", event.puWeight)
             else :
                     tr.fill("nTrueInt", -1)
                     tr.fill("puWeight", 1.0)

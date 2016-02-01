@@ -1,0 +1,7 @@
+alwaystrue: 1
+filters:  hbheFilterNew25ns==1 && hbheFilterIso==1 && (Flag_CSCTightHaloFilter==1 || (isData && run>=256630)) && Flag_eeBadScFilter==1
+haspair: hasTT_Loop || hasTF_Loop || hasFF_Loop || hasTT_Flips || (hasTF_Flips && isData)
+ht: htJet40j_Mini > 80
+met: met_pt > 30 || htJet40j_Mini > 500
+njet: nJet40_Mini >=2
+nBjet: nBJetMedium25_Mini >= 0

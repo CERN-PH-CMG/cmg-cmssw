@@ -45,10 +45,20 @@ class CFG(object):
         all = [ header ]
         all.extend(varlines)
         return '\n'.join( all )
+
+    def clone(self, **kwargs):
+        import copy
+        other = copy.copy(self)
+        for k,v in kwargs.iteritems():
+            setattr(other, k, v)
+        return other
     
 class Analyzer( CFG ):
     '''Base analyzer configuration, see constructor'''
-    def __init__(self, class_object, instance_label='1', 
+
+    num_instance = 0
+    
+    def __init__(self, class_object, instance_label=None, 
                  verbose=False, **kwargs):
         '''
         One could for example define the analyzer configuration for a
@@ -74,6 +84,9 @@ class Analyzer( CFG ):
         '''
 
         self.class_object = class_object
+        self.__class__.num_instance += 1 
+        if instance_label is None:
+            instance_label = str(self.__class__.num_instance)
         self.instance_label = instance_label
         self.verbose = verbose
         super(Analyzer, self).__init__(**kwargs)
@@ -91,13 +104,25 @@ class Analyzer( CFG ):
         name = '_'.join([class_name, self.instance_label])
         return name 
 
+    def clone(self, **kwargs):
+        other = super(Analyzer, self).clone(**kwargs)
+        if 'class_object' in kwargs and 'name' not in kwargs:
+            other.name = other.build_name()
+        return other
+
     
 class Service( CFG ):
     
-    def __init__(self, class_object, instance_label='1', 
+    num_instance = 0
+
+    def __init__(self, class_object, instance_label=None, 
                  verbose=False, **kwargs):
         self.class_object = class_object
+        self.__class__.num_instance += 1 
+        if instance_label is None:
+            instance_label = str(self.__class__.num_instance)
         self.instance_label = instance_label
+        self.__class__.num_instance += 1 
         self.name = self.build_name()
         self.verbose = verbose
         super(Service, self).__init__(**kwargs)
@@ -107,7 +132,20 @@ class Service( CFG ):
                                self.class_object.__name__])
         name = '_'.join([class_name, self.instance_label])
         return name 
-   
+
+    def __setattr__(self, name, value):
+        '''You may decide to copy an existing analyzer and change
+        its instance_label. In that case, one must stay consistent.'''
+        self.__dict__[name] = value
+        if name == 'instance_label':
+            self.name = self.build_name()   
+
+    def clone(self, **kwargs):
+        other = super(Service, self).clone(**kwargs)
+        if 'class_object' in kwargs and 'name' not in kwargs:
+            other.name = other.build_name()
+        return other
+
 
 class Sequence( list ):
     '''A list with print functionalities.

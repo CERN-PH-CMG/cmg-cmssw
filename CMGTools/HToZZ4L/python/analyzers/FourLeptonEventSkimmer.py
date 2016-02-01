@@ -13,13 +13,19 @@ class FourLeptonEventSkimmer( Analyzer ):
 
     def beginLoop(self, setup):
         super(FourLeptonEventSkimmer,self).beginLoop(setup)
+        self.counters.addCounter('events')
+        self.count = self.counters.counter('events')
+        self.count.register('all events')
+        self.count.register('passing events')
 
     def process(self, event):
         self.readCollections( event.input )
+        self.count.inc('all events')
 
         for col in self.required:
             if hasattr(event,col):
                 if len(getattr(event,col))>0:
+                    self.count.inc('passing events')
                     return True
         
         return False    

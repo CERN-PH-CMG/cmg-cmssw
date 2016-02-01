@@ -1,16 +1,6 @@
-from CMGTools.TTHAnalysis.analyzers.ttHLepTreeProducerNew import *
+from PhysicsTools.Heppy.analyzers.core.AutoFillTreeProducer  import * 
 
-class treeProducerSusyGenLevelOnly( ttHLepTreeProducerNew ):
-
-    #-----------------------------------
-    # CORE TREE PRODUCER FOR THE SUSY ANALYSES
-    # defines the core variables that will be present in the trees of all final states
-    #-----------------------------------
-    def __init__(self, cfg_ana, cfg_comp, looperName):
-        super(treeProducerSusyGenLevelOnly,self).__init__(cfg_ana, cfg_comp, looperName)
-
-        ## Declare what we want to fill
-        self.globalVariables = [
+treeProducerSusyGenLevelOnly_globalVariables = [
             #NTupleVariable("rho",  lambda ev: ev.rho, float, help="kt6PFJets rho"),
             #NTupleVariable("nVert",  lambda ev: len(ev.goodVertices), int, help="Number of good vertices"),
             NTupleVariable("nJet25", lambda ev: len(ev.cleanJets), int, help="Number of jets with pt > 25"),
@@ -58,18 +48,16 @@ class treeProducerSusyGenLevelOnly( ttHLepTreeProducerNew ):
             NTupleVariable("ht4l", lambda ev: ev.ht4l, help="H_{T}(4l)"),
             NTupleVariable("q3l", lambda ev: ev.q3l, int, help="q(3l)"),
             NTupleVariable("q4l", lambda ev: ev.q4l, int, help="q(4l)"),
-        ]
+]
 
-        self.globalObjects = {
+treeProducerSusyGenLevelOnly_globalObjects = {
             "met" : NTupleObject("met", fourVectorType, help="PF E_{T}^{miss}, after type 1 corrections"),
-        }
-        self.collections = {
+}
+treeProducerSusyGenLevelOnly_collections = {
             "selectedLeptons" : NTupleCollection("LepGood", particleType, 8, help="Leptons after the preselection"),
+            "genLeptons"      : NTupleCollection("GenLep",  genParticleWithMotherId, 12, help="Leptons, no preselection"),
             "cleanJets"       : NTupleCollection("Jet",     fourVectorType, 8, help="Cental jets after full selection and cleaning, sorted by pt"),
             "cleanJetsFwd"    : NTupleCollection("JetFwd",  fourVectorType, 4, help="Forward jets after full selection and cleaning, sorted by pt"),            
-            }
+            "genTops"         : NTupleCollection("GenTop",  genParticleType, 8, help="Generated top quarks"),
+}
 
-        ## Book the variables, but only if we're called explicitly and not through a base class
-        if cfg_ana.name == "treeProducerSusyGenLevelOnly":
-            self.initDone = True
-            self.declareVariables()

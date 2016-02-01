@@ -147,7 +147,7 @@ TH1KeysNew::TH1KeysNew(const char *name,const char *title,Int_t nbinsx,const Dou
 
 
 TH1KeysNew::TH1KeysNew(const TH1KeysNew &other)  :
-    TH1(other),
+    TH1(),
     min_(other.min_), max_(other.max_),
     x_(new RooRealVar("x", "x", min_, max_)),
     w_(new RooRealVar("w", "w", 1.0)),
@@ -160,6 +160,7 @@ TH1KeysNew::TH1KeysNew(const TH1KeysNew &other)  :
     cache_((TH1*)other.cache_->Clone()),
     isCacheGood_(other.isCacheGood_)
 {
+    other.Copy(*this);
     fDimension = 1;
     x_->setBinning(other.x_->getBinning());
 }

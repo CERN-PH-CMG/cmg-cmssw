@@ -36,7 +36,7 @@ for i in range(0,len(points)-1):
     f=open("submitContour_{i}.sh".format(i=i),'w')
     execScript = 'cd {cwd} \n'.format(cwd=os.getcwd())
     execScript += 'eval `scramv1 runtime -sh` \n'
-    execScript += "combine -n Contour_{i} -m {mass} -M MultiDimFit --algo=grid {options} --points={points} --firstPoint={mini} --lastPoint={maxi} {file}\n".format(i=i,points=options.points,mass=options.mass,options=options.options,file=args[0],mini=mini,maxi=maxi)
+    execScript += "combine -m {mass} -M MultiDimFit --algo=grid {options} --points={points} --firstPoint={mini} --lastPoint={maxi} {file}\n".format(points=options.points,mass=options.mass,options=options.options,file=args[0],mini=mini,maxi=maxi)
     f.write(execScript)
     f.close()
     os.system('chmod +x submitContour_{i}.sh'.format(i=i))

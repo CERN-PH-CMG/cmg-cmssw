@@ -1,14 +1,10 @@
-1) edit ../run_susyMT2.cfg to run over your favorite components (and set splitting -> NJOBS)
+1) Source the CRAB3 environment and run cmsenv (in this order)
+> source /cvmfs/cms.cern.ch/crab3/crab.sh
+> cmsenv
 
-2) edit launchall.py to change the CMG-version/tag and the production name
-
-3) run!!!
+2) Ensure that you have a valid proxy:
 > voms-proxy-init -voms cms --valid=50:00
-Enter GRID pass phrase for this identity: xxxx
-> python launchall.py
 
+3) Execute heppy_crab.py with the correct options: see the integrated help
+> ./heppy_crab.py --help
 
-Notes: 
-- debugging: debug option can be set on launchall.py (be smart and choose a single component in the cfg)
-- if useAAA=True in launchall.py, xrootd will be use instead of the default eos (from samples.py)
-- modify heppy_crab_config.py to run only on your favorite sites

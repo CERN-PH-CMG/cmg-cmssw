@@ -135,8 +135,7 @@ lepAna = cfg.Analyzer(
     rhoMuon= 'fixedGridRhoFastjetAll',
     rhoElectron = 'fixedGridRhoFastjetAll',
     # energy scale corrections and ghost muon suppression (off by default)
-    doMuScleFitCorrections=False, # "rereco"
-    doRochesterCorrections=False,
+    doMuonScaleCorrections=False,
     doElectronScaleCorrections=False, # "embedded" in 5.18 for regression
     doSegmentBasedMuonCleaning=False,
     # inclusive very loose muon selection
@@ -186,6 +185,7 @@ lepAna = cfg.Analyzer(
     # do MC matching 
     do_mc_match = True, # note: it will in any case try it only on MC, not on data
     match_inclusiveLeptons = False, # match to all inclusive leptons
+    do_mc_match_photons = False, # do not do MC matching of electrons to photons
     )
 
 

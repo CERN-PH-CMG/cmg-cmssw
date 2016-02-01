@@ -19,6 +19,9 @@ from CMGTools.VVResonances.samples.loadSamples import *
 selectedComponents = mcSamples+dataSamples
 #selectedComponents = dataSamples
 
+
+#import pdb;pdb.set_trace()
+
 #-------- Analyzer
 from CMGTools.VVResonances.analyzers.tree_cff import * 
 
@@ -67,28 +70,10 @@ elif test==4:
     # test all components (1 thread per component).
     selectedComponents = [RSGravToWWToLNQQ_kMpl01_4500]
     for comp in selectedComponents:
-        comp.splitFactor = 20
-
-## output histogram
-outputService=[]
-from PhysicsTools.HeppyCore.framework.services.tfile import TFileService
-output_service = cfg.Service(
-    TFileService,
-    'outputfile',
-    name="outputfile",
-    fname='vvTreeProducer/tree.root',
-    option='recreate'
-    )    
-outputService.append(output_service)
-
-
+        comp.splitFactor = 1
 
 from PhysicsTools.HeppyCore.framework.eventsfwlite import Events
-from CMGTools.TTHAnalysis.tools.EOSEventsWithDownload import EOSEventsWithDownload
-event_class = EOSEventsWithDownload
 event_class = Events
-if getHeppyOption("nofetch"):
-    event_class = Events 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence,
                      services = [],  

@@ -1,13 +1,17 @@
 import ROOT 
 from math import *
 
-def doSpam(text,x1,y1,x2,y2,align=12,fill=False,textSize=0.033,_noDelete={}):
+def doSpam(text,x1,y1,x2,y2,align=12,fill=False,textSize=0.033,_noDelete={},debugMargins=False):
     cmsprel = ROOT.TPaveText(x1,y1,x2,y2,"NDC");
     cmsprel.SetTextSize(textSize);
     cmsprel.SetFillColor(0);
     cmsprel.SetFillStyle(1001 if fill else 0);
-    cmsprel.SetLineStyle(2);
-    cmsprel.SetLineColor(0);
+    if debugMargins:
+        cmsprel.SetLineStyle(1);
+        cmsprel.SetLineColor(ROOT.kRed);
+    else:
+        cmsprel.SetLineStyle(2);
+        cmsprel.SetLineColor(0);
     cmsprel.SetTextAlign(align);
     cmsprel.SetTextFont(42);
     cmsprel.AddText(text);

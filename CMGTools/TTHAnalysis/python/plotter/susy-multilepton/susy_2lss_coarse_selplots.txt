@@ -1,0 +1,46 @@
+BR: if3(nBJetMedium25>3,3,nBJetMedium25) : 4,-0.5,3.5; XTitle="Baseline region", Legend='TR', LegendCutoff=1e-4
+BR_log: if3(nBJetMedium25>3,3,nBJetMedium25) : 4,-0.5,3.5; XTitle="Baseline region", Legend='TR', LegendCutoff=1e-4, Logy
+
+SR_hh: SR : 32,0.5,32.5; XTitle="HH signal region", Legend='TR', LegendCutoff=1e-4
+SR_hl: SR-32 : 26,0.5,26.5; XTitle="HL signal region", Legend='TR', LegendCutoff=1e-4
+SR_ll: SR-58 : 8,0.5,8.5; XTitle="LL signal region", Legend='TR', LegendCutoff=1e-4
+SR_ii: SR: 66,0.5,66.5; XTitle="Signal region", Legend='TR', LegendCutoff=1e-4
+
+SR_hh_log: SR : 32,0.5,32.5; XTitle="HH signal region", Legend='TR', LegendCutoff=1e-4, Logy
+SR_hl_log: SR-32 : 26,0.5,26.5; XTitle="HL signal region", Legend='TR', LegendCutoff=1e-4, Logy
+SR_ll_log: SR-58 : 8,0.5,8.5; XTitle="LL signal region", Legend='TR', LegendCutoff=1e-4, Logy
+SR_ii_log: SR: 66,0.5,66.5; XTitle="Signal region", Legend='TR', LegendCutoff=1e-4, Logy
+
+SR_hh_regrouped : regroupSignalRegions_RA5(SR) : 36,0.5,36.5; XTitle="HH regrouped signal region", Legend='TR', LegendCutoff=1e-4
+SR_hl_regrouped : regroupSignalRegions_RA5(SR)-18 : 36,0.5,36.5; XTitle="HL regrouped signal region", Legend='TR', LegendCutoff=1e-4
+SR_ll_regrouped : regroupSignalRegions_RA5(SR)-33 : 36,0.5,36.5; XTitle="LL regrouped signal region", Legend='TR', LegendCutoff=1e-4
+SR_ii_regrouped : regroupSignalRegions_RA5(SR) : 36,0.5,36.5; XTitle="Regrouped signal region", Legend='TR', LegendCutoff=1e-4
+
+appWeight: appWeight : 30,-0.5,1; XTitle = "appWeight", Legend='TL', LegendCutoff=1e-3
+
+flavor: if3(abs(LepGood1_pdgId)!=abs(LepGood2_pdgId),1,abs(LepGood1_pdgId)-11) : 3,-0.5,2.5 ; XTitle="ee/e#mu/#mu#mu", Legend='TL', LegendCutoff=1e-4, MoreY=2.0
+
+htJet40j:   htJet40j: 20,0,800    ; XTitle="H_{T}(jet p_{T} > 40)  [GeV]"
+met:   met_pt: 35,0,700    ; XTitle="E_{T}^{miss}  [GeV]"
+mll  : mass_2(LepGood1_conePt,LepGood1_eta,LepGood1_phi,LepGood1_mass, LepGood2_conePt,LepGood2_eta,LepGood2_phi,LepGood2_mass): 10,0,200; XTitle="m(ll\,cone) [GeV]"
+mll_wide  : mass_2(LepGood1_conePt,LepGood1_eta,LepGood1_phi,LepGood1_mass, LepGood2_conePt,LepGood2_eta,LepGood2_phi,LepGood2_mass): 20,0,400; XTitle="m(ll\,cone) [GeV]"
+mtWmin: min(mt_2(LepGood1_conePt,LepGood1_phi,met_pt,met_phi),mt_2(LepGood2_conePt,LepGood2_phi,met_pt,met_phi)) : 20,0,200; XTitle="min M_{T}(l_{i}\,E_{T}^{miss}) [GeV]"
+nJet40 : nJet40 : 10,-0.5,9.5 ; XTitle='N(jet\, p_{T} > 40)'
+nBJet25 : nBJetMedium25 : 5,-0.5,4.5 ; XTitle='N(b-jet\, p_{T} > 25\, CSVM)'
+nBJetLoose25 : nBJetLoose25 : 5,-0.5,4.5 ; XTitle='N(b-jet\, p_{T} > 25\, CSVL)'
+
+htJet40j_log:   htJet40j: 20,0,800    ; XTitle="H_{T}(jet p_{T} > 40)  [GeV]", Logy
+met_log:   met_pt: 35,0,700    ; XTitle="E_{T}^{miss}  [GeV]", Logy
+mll_log  : mass_2(LepGood1_conePt,LepGood1_eta,LepGood1_phi,LepGood1_mass, LepGood2_conePt,LepGood2_eta,LepGood2_phi,LepGood2_mass): 10,0,200; XTitle="m(ll\,cone) [GeV]", Logy
+mll_wide_log  : mass_2(LepGood1_conePt,LepGood1_eta,LepGood1_phi,LepGood1_mass, LepGood2_conePt,LepGood2_eta,LepGood2_phi,LepGood2_mass): 20,0,400; XTitle="m(ll\,cone) [GeV]", Logy
+mtWmin_log: min(mt_2(LepGood1_conePt,LepGood1_phi,met_pt,met_phi),mt_2(LepGood2_conePt,LepGood2_phi,met_pt,met_phi)) : 20,0,200; XTitle="min M_{T}(l_{i}\,E_{T}^{miss}) [GeV]", Logy
+nJet40_log : nJet40 : 10,-0.5,9.5 ; XTitle='N(jet\, p_{T} > 40)', Logy
+nBJet25_log : nBJetMedium25 : 5,-0.5,4.5 ; XTitle='N(b-jet\, p_{T} > 25\, CSVM)', Logy
+nBJetLoose25_log : nBJetLoose25 : 5,-0.5,4.5 ; XTitle='N(b-jet\, p_{T} > 25\, CSVL)', Logy
+
+lep1_pt: LepGood1_conePt : 20,0,200; XTitle="p_{T\,cone}(leading lep.)"
+lep1_pt_coarser: LepGood1_conePt : 14,0,210; XTitle="p_{T\,cone}(leading lep.)"
+lep2_pt: LepGood2_conePt : 20,0,200; XTitle="p_{T\,cone}(subleading lep.)"
+
+#tightness : LepGood2_isTight\:LepGood1_isTight : 2,-0.5,1.5,2,-0.5,1.5 ; XTitle="LepGood1_isTight",YTitle="LepGood2_isTight"
+#one : 1 : 1,0.5,1.5; XTitle="1"

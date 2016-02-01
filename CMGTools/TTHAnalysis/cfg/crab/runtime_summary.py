@@ -1,15 +1,17 @@
 import ROOT
 from numpy import mean, std
+from optparse import OptionParser
 
-# crab status --long -d crab_fullProd_test4/crab_TTJets_MT2_CMGTools-from-CMSSW_7_2_3/ | grep finished | grep T2_ > ttjets_summary.txt
-filename = "ttjets_summary.txt"
+parser = OptionParser()
+parser.add_option("-f", dest="filename", help="input text file name, to be obtained with: crab status --long -d mycrabdir | grep finished | grep T2_ > my_crab_summary.txt", default="my_crab_summary.txt")
+(options,args) = parser.parse_args()
 
 def time2num(time): # time format is hh:mm:ss
     t = time.split(":")
     return float(t[0])+(float(t[1])+float(t[2])/60.)/60.
 
 
-lines = open(filename).readlines()
+lines = open(options.filename).readlines()
 
 maxtime = 0.
 sites = {}

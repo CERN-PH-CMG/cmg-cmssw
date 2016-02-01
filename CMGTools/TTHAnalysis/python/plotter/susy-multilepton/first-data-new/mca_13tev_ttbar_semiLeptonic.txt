@@ -1,28 +1,44 @@
-TTTb : TT_pow: xsec : LepGood2_mcMatchId ==0 && LepGood2_mcMatchAny == 5;    FillColor=ROOT.kGreen-5,    Label="tt\, b\#rightarrowl"
-TTTj : TT_pow: xsec : LepGood2_mcMatchId ==0 && LepGood2_mcMatchAny < 4 ;    FillColor=ROOT.kGreen-8, Label="tt\, j\#rightarrowl"
-TTTc : TT_pow: xsec : LepGood2_mcMatchId ==0 && LepGood2_mcMatchAny == 4;    FillColor=ROOT.kGreen-9,    Label="tt\, c\#rightarrowl"
-TTT2l: TT_pow: xsec : LepGood2_mcMatchId !=0;    FillColor=ROOT.kGray,    Label="tt\, prompt"
+TTTb : TTJets: xsec : LepGood2_mcMatchId ==0 && LepGood2_mcMatchAny == 5;    FillColor=ROOT.kGreen-5,    Label="tt\, b\#rightarrowl"
+TTTj : TTJets: xsec : LepGood2_mcMatchId ==0 && LepGood2_mcMatchAny < 4 ;    FillColor=ROOT.kGreen-8, Label="tt\, j\#rightarrowl"
+TTTc : TTJets: xsec : LepGood2_mcMatchId ==0 && LepGood2_mcMatchAny == 4;    FillColor=ROOT.kGreen-9,    Label="tt\, c\#rightarrowl"
+TTT2l: TTJets: xsec : LepGood2_mcMatchId !=0;    FillColor=ROOT.kGray,    Label="tt\, prompt"
 
 DY : DYJetsToLL_M10to50: xsec ; FillColor=ROOT.kCyan
 DY : DYJetsToLL_M50: xsec ; FillColor=ROOT.kCyan
  
-VV : WZp8: xsec ; FillColor=ROOT.kViolet-4
-VV : ZZp8: xsec ; FillColor=ROOT.kViolet-4
+VV : WZTo3LNu: xsec ; FillColor=ROOT.kViolet-4
+VV : ZZTo4L: xsec ; FillColor=ROOT.kViolet-4
 VV : WWTo2L2Nu: xsec ; FillColor=ROOT.kViolet-4
 
 TW : T_tWch: xsec; FillColor=ROOT.kGray+2
 TW : TBar_tWch: xsec; FillColor=ROOT.kGray+2
 
 Single top    : TToLeptons_tch:     xsec ;  FillColor=ROOT.kGray+2
-Single top    : TToLeptons_sch:     xsec ;  FillColor=ROOT.kGray+2
+Single top    : TToLeptons_sch_amcatnlo:     xsec ;  FillColor=ROOT.kGray+2
 
 WJets    : WJetsToLNu :  xsec; FillColor=ROOT.kCyan+2
 
-# 2015D 25ns data
+TTV: TTWToLNu:     xsec ;  FillColor=ROOT.kOrange
+TTV: TTZToLLNuNu:     xsec ;  FillColor=ROOT.kOrange
+TTV: TTLLJets_m1to10:     xsec ;  FillColor=ROOT.kOrange
 
-data: DoubleMuon_Run2015D_v3_runs_256630_256843
-data: DoubleEG_Run2015D_v3_runs_256630_256843
-data: MuonEG_Run2015D_v3_runs_256630_256843
-data: SingleMuon_Run2015D_v3_runs_256630_256843
-data: SingleElectron_Run2015D_v3_runs_256630_256843
-
+data: DoubleEG_Run2015C_Oct05_runs_254231_254914
+data: DoubleEG_Run2015D_Oct05_runs_256630_258158
+data: DoubleEG_Run2015D_PromptV4_runs_258159_258750
+data: DoubleEG_Run2015D_PromptV4_runs_258751_260627
+data: DoubleMuon_Run2015C_Oct05_runs_254231_254914
+data: DoubleMuon_Run2015D_Oct05_runs_256630_258158
+data: DoubleMuon_Run2015D_PromptV4_runs_258159_258750
+data: DoubleMuon_Run2015D_PromptV4_runs_258751_260627
+data: MuonEG_Run2015C_Oct05_runs_254231_254914
+data: MuonEG_Run2015D_Oct05_runs_256630_258158
+data: MuonEG_Run2015D_PromptV4_runs_258159_258750
+data: MuonEG_Run2015D_PromptV4_runs_258751_260627
+data: SingleElectron_Run2015C_Oct05_runs_254231_254914
+data: SingleElectron_Run2015D_Oct05_runs_256630_258158
+data: SingleElectron_Run2015D_PromptV4_runs_258159_258750
+data: SingleElectron_Run2015D_PromptV4_runs_258751_260627
+data: SingleMuon_Run2015C_Oct05_runs_254231_254914
+data: SingleMuon_Run2015D_Oct05_runs_256630_258158
+data: SingleMuon_Run2015D_PromptV4_runs_258159_258750
+data: SingleMuon_Run2015D_PromptV4_runs_258751_260627

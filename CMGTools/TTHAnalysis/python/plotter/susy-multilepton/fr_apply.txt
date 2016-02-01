@@ -1,0 +1,5 @@
+weight: fakeRateReader_2lss_fHT_FO(LepGood1_eta,LepGood_conePt,LepGood2_eta,LepGood2_conePt,LepGood1_pdgId,LepGood2_pdgId,LepGood1_isTight,LepGood2_isTight,htJet40j<300)
+load-histo: FR_mu_QCD_iso: FakeRates_241015.root : FRMuPtCorr_ETH_iso
+load-histo: FR_mu_QCD_noniso: FakeRates_241015.root : FRMuPtCorr_ETH_non
+load-histo: FR_el_QCD_iso: FakeRates_241015.root : FRElPtCorr_ETH_iso
+load-histo: FR_el_QCD_noniso: FakeRates_241015.root : FRElPtCorr_ETH_non

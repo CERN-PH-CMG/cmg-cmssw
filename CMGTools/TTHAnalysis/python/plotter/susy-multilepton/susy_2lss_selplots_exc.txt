@@ -1,0 +1,17 @@
+
+worst_lep_miniRelIso: max(LepGood1_miniRelIso,LepGood2_miniRelIso): 24,0,.4; XTitle="Worst miniRelIso", LegendCutoff=1e-2
+worst_lep_sip3d: max(LepGood1_sip3d,LepGood2_sip3d): 21,0,4.2; XTitle="Worst sip3d", LegendCutoff=1e-2
+worst_lep_mvaTTH: min(LepGood1_mvaTTH,LepGood2_mvaTTH): 40,0,1.0; XTitle="Worst mvaTTH", LegendCutoff=1e-2
+worst_lep_jetPtRatiov2: min(LepGood1_jetPtRatiov2,LepGood2_jetPtRatiov2): 24,0,1.2; XTitle="Worst jetPtRatiov2", LegendCutoff=1e-2
+worst_lep_jetPtRelv2: min(LepGood1_jetPtRelv2,LepGood2_jetPtRelv2): 24,0,48; XTitle="Worst jetPtRelv2", LegendCutoff=1e-2
+
+pair_charge: (LepGood1_charge+LepGood2_charge)/2 : 3,-1.5,1.5 ; XTitle="Charge --/-+/++", Legend='TR', LegendCutoff=1e-2
+min_dphi_lep_met: min(abs(deltaPhi(LepGood1_phi,met_phi)),abs(deltaPhi(LepGood2_phi,met_phi))) : 20,0,3.15; XTitle="Min dPhi(lep\,MET)",Legend='TL', LegendCutoff=1e-2
+max_dphi_lep_j: maxDeltaPhiLepJet_Loop : 20,0,3.15; XTitle="Max dPhi(lep\,jet)",Legend='TL', LegendCutoff=1e-2
+max_dphi_lep_b: maxDeltaPhiLepBJet_Loop : 20,0,3.15; XTitle="Max dPhi(lep\,bjet)",Legend='TL', LegendCutoff=1e-2
+max_dphi_j_j: maxDeltaPhiJetJet_Loop : 20,0,3.15; XTitle="Max dPhi(jet\,jet)",Legend='TL', LegendCutoff=1e-2
+min_dR_lep_j: minDeltaRLepJet_Loop : 20,0,3.15; XTitle="Min dR(lep\,jet)",Legend='TL', LegendCutoff=1e-2
+min_dR_lep_b: minDeltaRLepBJet_Loop : 20,0,3.15; XTitle="Min dR(lep\,bjet)",Legend='TL', LegendCutoff=1e-2
+
+
+

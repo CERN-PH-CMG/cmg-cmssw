@@ -3,6 +3,9 @@ import ROOT
 #ROOT.gSystem.Load("libCMGToolsTTHAnalysis")
 SignedImpactParameterComputer = ROOT.SignedImpactParameter()
 
+def qualityTrk(Trk, vertex):
+    return SignedImpactParameterComputer.qualitytrk(Trk,vertex)
+
 def signedSip3D(lepton, vertex=None):
     if vertex is None:
         vertex = lepton.associatedVertex
