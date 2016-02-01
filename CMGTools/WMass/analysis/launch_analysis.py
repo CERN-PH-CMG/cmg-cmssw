@@ -680,7 +680,7 @@ if(runWanalysis or runZanalysis):
 
 if(mergeSigEWKbkg):
   os.chdir("utils/");
-  os.system("./merge_MC.sh \"../JobOutputs/"+outfolder_name+"/ "+mergeWhichAnalysis+"\"")
+  os.system("./merge_MC.sh \"../JobOutputs/"+outfolder_name+"/\" \""+mergeWhichAnalysis+"\"")
   os.chdir(base_path);
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type d -name LSFJOB_* -exec rm -rf {} +")
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name batch_logs_* -delete")
