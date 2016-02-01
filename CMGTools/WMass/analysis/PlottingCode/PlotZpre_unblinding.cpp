@@ -199,19 +199,15 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   hDATAratio->GetYaxis()->SetRangeUser(0.8,1.2);
   hDATAratio->Draw("p hist");
   
-  const int fillstyle = 3001;
   for (int systnum = systtotnum-1; systnum >= 0; --systnum) {
     herrors_stacked[systnum]->SetMarkerSize(0);
     herrors_stacked[systnum]->SetFillColor(2+systnum);
-    herrors_stacked[systnum]->SetFillStyle(fillstyle);
     herrors_stacked[systnum]->Draw("same E2");
   }
-  hstat->SetFillColor(2+systtotnum);
-  hstat->SetFillStyle(fillstyle);
+  hstat->SetFillColor(2+systtotnum+1);
   hstat->SetMarkerSize(0);
   hstat->Draw("same E2");
-  hMCsum->SetFillColor(2+systtotnum+1);
-  hMCsum->SetFillStyle(fillstyle);
+  hMCsum->SetFillColor(2+systtotnum);
   hMCsum->SetMarkerSize(0);
   hMCsum->Draw("same E2");
   hDATAratio->Draw("hist p same");
@@ -258,7 +254,7 @@ void PlotZpre_unblinding(){
   TString folderMCsum = "output_MCDATALIKEPOW/";
   
   TString basefolder = "../JobOutputs/dalfonso/"; // Supposed to be run from PlottingCode/
-  TString prefix = "JAN31";
+  TString prefix = "FEB1";
   
   TString destinationfolder = "../JobOutputs/"+prefix+"_pre_unblinding_plots";
   
