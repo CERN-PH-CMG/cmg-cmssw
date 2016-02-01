@@ -712,22 +712,24 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               }
             }
           }
-          common_stuff::plot1D(Form("z_mass_gen"), ZGen_status3.M(), 1, h_1d, 200, 0, 200 );
-          common_stuff::plot1D(Form("z_rap_gen"), ZGen_status3.Rapidity(), 1, h_1d, 200, 0, 200 );
-          
-          common_stuff::plot1D(Form("mupos_pt_gen"), muPosGen_status3.Pt(), 1, h_1d, 100, 0, 100 );
-          common_stuff::plot1D(Form("muneg_pt_gen"), muNegGen_status3.Pt(), 1, h_1d, 100, 0, 100 );
-          common_stuff::plot1D(Form("mupos_eta_gen"), muPosGen_status3.Eta(), 1, h_1d, 50, -5, 5 );
-          common_stuff::plot1D(Form("muneg_eta_gen"), muNegGen_status3.Eta(), 1, h_1d, 50, -5, 5 );
-          
-          // put polarization plots here:
-          common_stuff::plot2D(Form("phi_vs_costh_CS"),
+          if (controlplots) {
+            common_stuff::plot1D(Form("z_mass_gen"), ZGen_status3.M(), 1, h_1d, 200, 0, 200 );
+            common_stuff::plot1D(Form("z_rap_gen"), ZGen_status3.Rapidity(), 1, h_1d, 200, -5, 5 );
+            
+            common_stuff::plot1D(Form("mupos_pt_gen"), muPosGen_status3.Pt(), 1, h_1d, 100, 0, 100 );
+            common_stuff::plot1D(Form("muneg_pt_gen"), muNegGen_status3.Pt(), 1, h_1d, 100, 0, 100 );
+            common_stuff::plot1D(Form("mupos_eta_gen"), muPosGen_status3.Eta(), 1, h_1d, 50, -5, 5 );
+            common_stuff::plot1D(Form("muneg_eta_gen"), muNegGen_status3.Eta(), 1, h_1d, 50, -5, 5 );
+          }
+          if(controlplots || preUnblinding) {
+            // put polarization plots here:
+            common_stuff::plot2D(Form("phi_vs_costh_CS"),
                                           costh_CS_gen,TMath::Abs(phi_CS_gen), 1, 
                                           h_2d, 12,-1,1,12,0,TMath::Pi() );
-          common_stuff::plot2D(Form("phi_vs_costh_HX"),
+            common_stuff::plot2D(Form("phi_vs_costh_HX"),
                                           costh_HX_gen,TMath::Abs(phi_HX_gen), 1, 
                                           h_2d, 12,-1,1,12,0,TMath::Pi() );
-
+          }
           // continue;
           // TO BE FITTED WITH
           // [1] The fit function for binning in cos_theta and phi:
@@ -1396,7 +1398,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
                             }
 
-                            
+                            if (controlplots) {
                               //------------------------------------------------------------------------------------------------
                               // PLOTS FOR GIGI's TEST see 11 apr 2014 (CMG presentations)
                               //------------------------------------------------------------------------------------------------
@@ -1406,6 +1408,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
                               common_stuff::plot1D(Form("deltaMET_Wlike%s_8_JetCut_pdf%d-%d%s_kalman%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                       Wlike_met.Pt() - Wlike_metCentral.Pt(), weight, h_1d, 200, -0.1, 0.1);
+                            }
 
                           } // end loop PDF
                           
