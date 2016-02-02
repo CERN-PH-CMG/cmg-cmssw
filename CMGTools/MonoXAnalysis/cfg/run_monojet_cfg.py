@@ -24,7 +24,7 @@ isTest = getHeppyOption("test",None) != None and not re.match("^\d+$",getHeppyOp
 # Define skims
 signalSkim = False
 diLepSkim = False
-singleLepSkim = True
+singleLepSkim = False
 
 # --- MONOJET SKIMMING ---
 if signalSkim == True:
@@ -341,7 +341,7 @@ elif test == 'synch-74X': # sync
         #comp.files = [ '/tmp/emanuele/1486FE25-A16D-E511-93F2-001EC9ADE672.root' ]
         selectedComponents = [ comp ]
     elif what == "DMS":
-        comp = DMS_Mchi_100_gSM_1p0_gDM_1p0
+        comp = kreator.makeMCComponent("TTbarDM","/TTbarDMJets_pseudoscalar_Mchi-1_Mphi-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM", "CMS", ".*root", 1.0, useAAA=True)
         comp.files = [ 'root://eoscms//eos/cms/store/mc/RunIISpring15MiniAODv2/DMS_NNPDF30_Scalar_Mphi-300_Mchi-100_gSM-1p0_gDM-1p0_13TeV-powheg/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/6872703C-7972-E511-8228-0CC47A009E26.root' ]
         selectedComponents = [ comp ]
     elif what == "TTLep":
