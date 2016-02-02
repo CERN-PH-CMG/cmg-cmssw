@@ -1,6 +1,6 @@
 from CMGTools.TTHAnalysis.treeReAnalyzer import *
 from CMGTools.MonoXAnalysis.tools.PileUpReWeighter import PileUpReWeighter
-from CMGTools.MonoXAnalysis.tools.BTagWeightCalculator import BTagWeightCalculator
+from PhysicsTools.Heppy.physicsutils.BTagWeightCalculator import BTagWeightCalculator
 import types
 
 BTagReweight74X = lambda : BTagWeightCalculator("/afs/cern.ch/work/e/emanuele/public/monox/leptonsf/csv_rwt_fit_hf_2015_11_20.root",
