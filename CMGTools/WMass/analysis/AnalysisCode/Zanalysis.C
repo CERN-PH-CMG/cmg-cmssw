@@ -911,7 +911,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   evt_weight*=hZPtSF->Interpolate(ZcorrCentral.Pt())>0?hZPtSF->Interpolate(ZcorrCentral.Pt()):1;
 
                 // Boson Polarization
-                common_stuff::ComputeAllVarPietro(muPosCorrCentral,muNegCorrCentral, costh_CS, phi_CS, costh_HX, phi_HX);
+                common_stuff::ComputeAllVarPietro(muPosCorr,muNegCorr, costh_CS, phi_CS, costh_HX, phi_HX);
 
                 // cout
                 // << " ZcorrCentral.Rapidity()= " << ZcorrCentral.Rapidity()
@@ -1125,7 +1125,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                       // cut on W recoil (BY DEFAULT IS 15)
                       //------------------------------------------------------
                       if(WlikeCentral.Pt()<WMass::WpTcut*ZWmassRatio
-                          && Zcorr.Pt() < ZPt_cut // ADDED DURING PLOTS PRE-UNBLINDING
+                          && ZcorrCentral.Pt() < ZPt_cut // ADDED DURING PLOTS PRE-UNBLINDING
                          ){
                         for(int k=0;k<WMass::NFitVar;k++)
                           if(m==m_start && n==0 && WMass::WMassNSteps==j) common_stuff::plot1D(Form("hWlike%s_%sNonScaled_7_RecoilCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jZmass_MeV),
@@ -1255,9 +1255,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
                               // Boson Kinematics Zpt, Zmass, Zrecoil, Zrapidity
                               common_stuff::plot1D(Form("hWlike%s_ZpT_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                                ZcorrCentral.Pt(), weight, h_1d, 100, 0, 50 );
+                                                Zcorr.Pt(), weight, h_1d, 100, 0, 50 );
                               common_stuff::plot1D(Form("hWlike%s_Zmass_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                                ZcorrCentral.M(), weight, h_1d, 150, 75., 105. );
+                                                Zcorr.M(), weight, h_1d, 150, 75., 105. );
 
                               common_stuff::plot1D(Form("hWlike%s_Recoil_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                                 Wlike.Pt(), weight, h_1d, 50, 0, 25 );
@@ -1312,28 +1312,28 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             }
 
                             //------------------------------------------------------------------------------------------------
-                            // BELOW PLOTS for CLOSURE TEST - Various binned plots
+                            // BELOW PLOTS for CLOSURE TEST - Various binned plots - for recoil plots - Zcentral info to avoid randomization
                             //------------------------------------------------------------------------------------------------
 
                             if(Wlike_met.Pt()>0 && m==m_start && n==0 && controlplots && WMass::WMassNSteps==j) {
 
                               string tag_zPtcut;
-                              if ( Zcorr.Pt()<2 ) tag_zPtcut = "_Zpt02";
-                              else if  ( Zcorr.Pt()>=2 && Zcorr.Pt()<4 ) tag_zPtcut = "_Zpt24";
-                              else if  ( Zcorr.Pt()>=4 && Zcorr.Pt()<6 ) tag_zPtcut = "_Zpt46";
-                              else if  ( Zcorr.Pt()>=6 && Zcorr.Pt()<8 ) tag_zPtcut = "_Zpt68";
-                              else if  ( Zcorr.Pt()>=8 && Zcorr.Pt()<10 ) tag_zPtcut = "_Zpt810";
-                              else if  ( Zcorr.Pt()>=10 && Zcorr.Pt()<12 ) tag_zPtcut = "_Zpt1012";
-                              else if  ( Zcorr.Pt()>=12 && Zcorr.Pt()<14 ) tag_zPtcut = "_Zpt1214";
-                              else if  ( Zcorr.Pt()>=14 && Zcorr.Pt()<16 ) tag_zPtcut = "_Zpt1416";
-                              else if  ( Zcorr.Pt()>=16 && Zcorr.Pt()<18 ) tag_zPtcut = "_Zpt1618";
-                              else if  ( Zcorr.Pt()>=18 && Zcorr.Pt()<20 ) tag_zPtcut = "_Zpt1820";
-                              else if  ( Zcorr.Pt()>=20 && Zcorr.Pt()<30 ) tag_zPtcut = "_Zpt2030";
-                              else if  ( Zcorr.Pt()>=30 && Zcorr.Pt()<50 ) tag_zPtcut = "_Zpt3050";
-                              else if  ( Zcorr.Pt()>=50 ) tag_zPtcut = "_Zpt50";
+                              if ( ZcorrCentral.Pt()<2 ) tag_zPtcut = "_Zpt02";
+                              else if  ( ZcorrCentral.Pt()>=2 && ZcorrCentral.Pt()<4 ) tag_zPtcut = "_Zpt24";
+                              else if  ( ZcorrCentral.Pt()>=4 && ZcorrCentral.Pt()<6 ) tag_zPtcut = "_Zpt46";
+                              else if  ( ZcorrCentral.Pt()>=6 && ZcorrCentral.Pt()<8 ) tag_zPtcut = "_Zpt68";
+                              else if  ( ZcorrCentral.Pt()>=8 && ZcorrCentral.Pt()<10 ) tag_zPtcut = "_Zpt810";
+                              else if  ( ZcorrCentral.Pt()>=10 && ZcorrCentral.Pt()<12 ) tag_zPtcut = "_Zpt1012";
+                              else if  ( ZcorrCentral.Pt()>=12 && ZcorrCentral.Pt()<14 ) tag_zPtcut = "_Zpt1214";
+                              else if  ( ZcorrCentral.Pt()>=14 && ZcorrCentral.Pt()<16 ) tag_zPtcut = "_Zpt1416";
+                              else if  ( ZcorrCentral.Pt()>=16 && ZcorrCentral.Pt()<18 ) tag_zPtcut = "_Zpt1618";
+                              else if  ( ZcorrCentral.Pt()>=18 && ZcorrCentral.Pt()<20 ) tag_zPtcut = "_Zpt1820";
+                              else if  ( ZcorrCentral.Pt()>=20 && ZcorrCentral.Pt()<30 ) tag_zPtcut = "_Zpt2030";
+                              else if  ( ZcorrCentral.Pt()>=30 && ZcorrCentral.Pt()<50 ) tag_zPtcut = "_Zpt3050";
+                              else if  ( ZcorrCentral.Pt()>=50 ) tag_zPtcut = "_Zpt50";
                               else tag_zPtcut = "_ignore";
 
-                              double Zy=Zcorr.Rapidity();
+                              double Zy=ZcorrCentral.Rapidity();
                               string tag_y;
                               if ( Zy>=0 && Zy<0.5 ) tag_y = "_Zy0005";
                               else if  ( Zy>=0.5 && Zy<1.0 ) tag_y = "_Zy0510";
@@ -1355,7 +1355,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               else if(nvtx>n_vtx_max) tag_VTX=Form("_VTX%d",n_vtx_max);
                               
                               TLorentzVector VisPt;
-                              VisPt.SetPtEtaPhiM(Zcorr.Pt(),0,Zcorr.Phi(),0);
+                              VisPt.SetPtEtaPhiM(ZcorrCentral.Pt(),0,ZcorrCentral.Phi(),0);
 
                               TLorentzVector Zgen;
                               Zgen.SetPtEtaPhiM(ZGen_pt,0,ZGen_phi,0);
@@ -1370,13 +1370,13 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               // }
                               
                               double u1_scale=0;
-                              plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, "closure", tag_zPtcut.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps, jZmass_MeV);
-                              plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, "closure", tag_VTX.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps, jZmass_MeV);
-                              plotVariables( Z_met, VisPt,  Zcorr, Zgen, u1_scale, "closure", tag_y.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps , jZmass_MeV);
+                              plotVariables( Z_met, VisPt,  ZcorrCentral, Zgen, u1_scale, "closure", tag_zPtcut.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps, jZmass_MeV);
+                              plotVariables( Z_met, VisPt,  ZcorrCentral, Zgen, u1_scale, "closure", tag_VTX.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps, jZmass_MeV);
+                              plotVariables( Z_met, VisPt,  ZcorrCentral, Zgen, u1_scale, "closure", tag_y.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps , jZmass_MeV);
                             }
 
                             //---------------------------------------------------------------------
-                            // Recoil plots: u1, u2, u1vsZpt, u2vsZpt, u1vsZptvsZrap, u2vsZptvsZrap
+                            // Recoil plots: u1, u2, u1vsZpt, u2vsZpt, u1vsZptvsZrap, u2vsZptvsZrap (for recoil plots - Zcentral info to avoid randomization)
                             //---------------------------------------------------------------------
                             if(correctToMadgraph || controlplots){
 
@@ -1393,11 +1393,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 				u_recoil, weight, h_1d, 60, +00, 20 );
 
 			      common_stuff::plot2D(Form("hWlike%s_u1vsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-				ZNocorr.Pt(), u1_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, -20, 20 );
+				ZcorrCentral.Pt(), u1_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, -20, 20 );
                               common_stuff::plot2D(Form("hWlike%s_u2vsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-				ZNocorr.Pt(), u2_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, -20, 20 );
+				ZcorrCentral.Pt(), u2_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, -20, 20 );
                               common_stuff::plot2D(Form("hWlike%s_uvsZpt_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                ZNocorr.Pt(),  u_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, +00, 20 );
+                                ZcorrCentral.Pt(),  u_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, +00, 20 );
 
                               common_stuff::plot2D(Form("hWlike%s_u1vsZrap_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                 ZGen_status3.Rapidity(), u1_recoil, weight, h_2d, 60, -4, +4, 60, -20, 20 );
@@ -1405,9 +1405,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                 ZGen_status3.Rapidity(), u2_recoil, weight, h_2d, 60, -4, +4, 60, -20, 20 );
 
                               common_stuff::plot3D(Form("hWlike%s_u1vsZptvsZrap_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                ZNocorr.Pt(), ZGen_status3.Rapidity(), u1_recoil, weight, h_3d, 60, 0, ZPt_cut, 60, -4, +4, 60, -20, 20 );
+                                ZcorrCentral.Pt(), ZGen_status3.Rapidity(), u1_recoil, weight, h_3d, 60, 0, ZPt_cut, 60, -4, +4, 60, -20, 20 );
                               common_stuff::plot3D(Form("hWlike%s_u2vsZptvsZrap_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                ZNocorr.Pt(), ZGen_status3.Rapidity(), u2_recoil, weight, h_3d, 60, 0, ZPt_cut, 60, -4, +4, 60, -20, 20 );
+                                ZcorrCentral.Pt(), ZGen_status3.Rapidity(), u2_recoil, weight, h_3d, 60, 0, ZPt_cut, 60, -4, +4, 60, -20, 20 );
 
                             }
 
