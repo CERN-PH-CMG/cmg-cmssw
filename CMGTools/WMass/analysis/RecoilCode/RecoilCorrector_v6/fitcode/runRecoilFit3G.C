@@ -3314,7 +3314,7 @@ void constructPDF(double lPar) {
   // this is the p0 value of the sigma
   // should not be negative and the
   startSigma1=0.6; 
-  minSigma1=0.2; 
+  minSigma1=0.1; 
   maxSigma1=1.2;
 
   startSigma2=1.5; 
@@ -3328,7 +3328,7 @@ void constructPDF(double lPar) {
   if(do3G) {
 
     startSigma1=0.4;
-    minSigma1=0.2;
+    minSigma1=0.1;
     maxSigma1=1.2;
     if(doAsymGaus && lPar==fU1) maxSigma1=2.5;
 
@@ -3337,7 +3337,7 @@ void constructPDF(double lPar) {
     maxSigma2=2.;
     if(doAsymGaus && lPar==fU1) maxSigma2=2.5;
 
-    startSigma3 = 2.1; //2.
+    startSigma3 = 1.5; //2.
     if(doAsymGaus && lPar==fU1) startSigma3 = 2.1; //2.
     minSigma3 = 1.;
     if(doAsymGaus && lPar==fU1) minSigma3 = 0.5;
@@ -3352,7 +3352,7 @@ void constructPDF(double lPar) {
     //    if(lPar!=fU1) maxFrac = 0.6;
 
     minMean=0.;
-    maxMean=1.5;
+    maxMean=2.;
     minMean2=-0.5;
     maxMean2=0.;
 
@@ -4277,6 +4277,8 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   /// temporary fix
   if(lPar!=fU1) fZPtMax=50;
   if(lPar==fU1) fZPtMax=30;
+  if(lPar==fU1 && !doKeys) fZPtMin = 1;
+
 
   //RooFit Build a double Gaussian
   TRandom lRand(0xDEADBEEF);
@@ -4627,7 +4629,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   if(doRecoParam) fileName2D += "_doRecoParam";
   if(doLepProjAbsolute) fileName2D += "_doLepProjAbsolute";
   if(doKeys) fileName2D += "_keys";
-  fileName2D += "_JAN26";
+  fileName2D += "_JAN31";
   fileName2D += ".root";
   
   //  if(doPrint /*&& !doKeys*/) {
@@ -4914,7 +4916,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
   */
 
   TString fileName2DFIT="file2Dfit_";
-  fileName2DFIT += "JAN26_";
+  fileName2DFIT += "JAN31_";
   if(!fData && (!doPosW && doNegW) && !doBKG) fileName2DFIT += "Wneg";
   if(!fData && (doPosW && !doNegW) && !doBKG) fileName2DFIT += "Wpos";
   if(!fData && (!doPosW && !doNegW) && !doBKG) fileName2DFIT += "Z";
@@ -5930,7 +5932,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     //// cin.get();
     //////
 
-    if(pFR->status()>=100) iC->SetFillColor(38);
+    if(pFR->status()>1) iC->SetFillColor(38); 
 
     iC->cd();
     //  TFitResultPtr  lFitPtr1 = lG1->Fit(lFit,"SR","",0,fZPtMax); 
@@ -7262,7 +7264,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
   //  TString name="recoilfits/recoilfit_JAN22_MADtoMAD";
   //  TString name="recoilfits/recoilfit_JAN22_POWtoMAD";
   //  TString name="recoilfits/recoilfit_JAN28";
-  TString name="recoilfits/recoilfit_JAN26";
+  TString name="recoilfits/recoilfit_JAN31";
   if(do8TeV) name +="_8TeV";
   if(doABC) name +="_ABC";
 
@@ -7271,7 +7273,7 @@ void runRecoilFit3G(int MCtype, int iloop, int processType, bool doMadCFG=true, 
   //  fNJetSelect = -1; fMetMax = 500; fZPtMin = 4; fZPtMax = 50; 
   //  fNJetSelect = -1; fMetMax = 500; fZPtMin = 0; fZPtMax = 21; 
   //  fNJetSelect = -1; fMetMax = 500; fZPtMin = 1; fZPtMax = 20;
-  //  fNJetSelect = -1; fMetMax = 500; fZPtMin = 1; fZPtMax = 30;
+  //  fNJetSelect = -1; fMetMax = 500; fZPtMin = 0; fZPtMax = 30;
   fNJetSelect = -1; fMetMax = 500; fZPtMin = 0; fZPtMax = 50;
   //  fNJetSelect = -1; fMetMax = 500; fZPtMin = 1; fZPtMax = 20;
   ///// process Type is used inside the checkPDF
