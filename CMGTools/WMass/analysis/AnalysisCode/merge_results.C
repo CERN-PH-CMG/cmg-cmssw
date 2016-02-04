@@ -30,7 +30,7 @@ double offset_from_string(string str, double limit)
   return fmod(accumulator, limit);
 }
 
-void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int useBatch=0, int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0, string offset_string){
+void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int useBatch=0, int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0, string offset_string=""){
 
   bool some_fit_failed = false;
   
