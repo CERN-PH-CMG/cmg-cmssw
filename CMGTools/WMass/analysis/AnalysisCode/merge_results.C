@@ -17,7 +17,7 @@
 
 using namespace std;
 
-TString offset_string = "random offset";
+TString offset_string = "";
 int offset_from_string(string str, double limit)
 {
 	int len = str.length();
