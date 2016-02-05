@@ -493,7 +493,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         // cout << "eff_TIGHT_SF no smear= "<< eff_TIGHT_SF << endl;
         if(useEffSF==13){
           random_->SetSeed(UInt_t(TMath::Abs(isChargePos?MuPos_phi:MuNeg_phi)*1e9 + TMath::Abs(isChargePos?MuPos_eta:MuNeg_eta)*1e6 + TMath::Abs(isChargePos?MuPos_pt:MuNeg_pt)*1e3));
-          eff_TIGHT_SF += random_->Gaus(0,0.01);
+          eff_TIGHT_SF += random_->Gaus(0,TMath::Hypot(0.02,SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt:MuNeg_pt))));
           // cout << "eff_TIGHT_SF smear= "<< eff_TIGHT_SF << endl;
         }
         TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_SF;
@@ -505,7 +505,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         // cout << "eff_ISO_SF no smear= "<< eff_ISO_SF << endl;
         if(useEffSF==14){
           random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(TMath::Abs(phi_HX))*1e6 + TMath::Abs(ZNocorr.Pt())*1e3));
-          eff_ISO_SF += random_->Gaus(0,0.01);
+          eff_ISO_SF += random_->Gaus(0,TMath::Hypot(0.02,SF_ISO05_PT10->GetBinError(SF_ISO05_PT10->FindBin(costh_HX,TMath::Abs(phi_HX),ZNocorr.Pt()))));
           // cout << "eff_ISO_SF smear= "<< eff_ISO_SF << endl;
         }
         TRG_TIGHT_ISO_muons_SF  *= eff_ISO_SF;
@@ -517,7 +517,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         // cout << "eff_TIGHT_subleading_SF no smear= "<< eff_TIGHT_subleading_SF << endl;
         if(useEffSF==15){
           random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(TMath::Abs(phi_HX))*1e6 + TMath::Abs(ZNocorr.Pt())*1e3));
-          eff_TIGHT_subleading_SF += random_->Gaus(0,0.01);
+          eff_TIGHT_subleading_SF += random_->Gaus(0,TMath::Hypot(0.02,SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(isChargePos?MuNeg_eta:MuPos_eta,isChargePos?MuNeg_pt:MuPos_pt))));
           // cout << "eff_TIGHT_subleading_SF smear= "<< eff_TIGHT_subleading_SF << endl;
         }
         TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
@@ -529,7 +529,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         // cout << "eff_TRG_SF no smear= "<< eff_TRG_SF << endl;
         if(useEffSF==16){
           random_->SetSeed(UInt_t(TMath::Abs(isChargePos?1:-1)*1e9 + TMath::Abs(TMath::Abs(isChargePos?MuPos_eta:MuNeg_eta))*1e6 + TMath::Abs(isChargePos?MuPos_pt:MuNeg_pt)*1e3));
-          eff_TRG_SF += random_->Gaus(0,0.01);
+          eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.02,SF_HLT->GetBinContent(SF_HLT->FindBin(isChargePos?1:-1,isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt:MuNeg_pt))));
           // cout << "eff_TRG_SF smear= "<< eff_TRG_SF << endl;
         }
         TRG_TIGHT_ISO_muons_SF  *= eff_TRG_SF;
@@ -702,7 +702,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   common_stuff::plot1D(Form("hWlike%s_%sNonScaled_3_Mu1GenCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jZmass_MeV),
                                         WlikeGen_var_NotScaled[k], evt_weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
                 
-                if(TMath::Abs(neutrinoGen_status3.Eta())<2.4){
+                if(TMath::Abs(neutrinoGen_status3.Eta())<2.1){
                   for(int k=0;k<WMass::NFitVar-1;k++)
                     common_stuff::plot1D(Form("hWlike%s_%sNonScaled_4_Mu2GenCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jZmass_MeV),
                                           WlikeGen_var_NotScaled[k], evt_weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
@@ -1211,26 +1211,30 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                    // << endl;
                               common_stuff::plot1D(Form("hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                                     Wlike_var_NotScaled[k], weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
+                              
+                              // 2D plot obs_i vs obs_j (no MtLin)
+                              for(int k2=1;k2<WMass::NFitVar-1;k2++){
+                                if(k==k2 || k==3) continue;
+                                common_stuff::plot2D(Form("hWlike%s_%svs%s_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+                                       Wlike_var_NotScaled[k],Wlike_var_NotScaled[k2], weight,
+                                       h_2d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio,
+                                       50, WMass::fit_xmin[k2]*ZWmassRatio, WMass::fit_xmax[k2]*ZWmassRatio );
+                                common_stuff::plot2D(Form("hWlike%s_%svs%s_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::FitVar_str[2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+                                       Wlike_var_NotScaled[k],Wlike_var_NotScaled[2], weight,
+                                       h_2d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio,
+                                       50, WMass::fit_xmin[2]*ZWmassRatio, WMass::fit_xmax[2]*ZWmassRatio );
+                                common_stuff::plot2D(Form("hWlike%s_%svs%s_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k2].Data(),WMass::FitVar_str[2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+                                       Wlike_var_NotScaled[k2],Wlike_var_NotScaled[2], weight,
+                                       h_2d, 50, WMass::fit_xmin[k2]*ZWmassRatio, WMass::fit_xmax[k2]*ZWmassRatio,
+                                       50, WMass::fit_xmin[2]*ZWmassRatio, WMass::fit_xmax[2]*ZWmassRatio );
+                              }
                             }
-                            // 2D plot obs_i vs obs_j (no MtLin)
-                            common_stuff::plot2D(Form("hWlike%s_%svs%s_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::FitVar_str[2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                   Wlike_var_NotScaled[1],Wlike_var_NotScaled[2], weight,
-                                   h_2d, 50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio,
-                                   50, WMass::fit_xmin[2]*ZWmassRatio, WMass::fit_xmax[2]*ZWmassRatio );
-                            common_stuff::plot2D(Form("hWlike%s_%svs%s_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::FitVar_str[3].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                   Wlike_var_NotScaled[1],Wlike_var_NotScaled[3], weight,
-                                   h_2d, 50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio,
-                                   50, WMass::fit_xmin[3]*ZWmassRatio, WMass::fit_xmax[3]*ZWmassRatio );
-                            common_stuff::plot2D(Form("hWlike%s_%svs%s_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[2].Data(),WMass::FitVar_str[3].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                   Wlike_var_NotScaled[2],Wlike_var_NotScaled[3], weight,
-                                   h_2d, 50, WMass::fit_xmin[2]*ZWmassRatio, WMass::fit_xmax[2]*ZWmassRatio,
-                                   50, WMass::fit_xmin[3]*ZWmassRatio, WMass::fit_xmax[3]*ZWmassRatio );
                             // 3D plot
-                            common_stuff::plot3D(Form("hWlike%s_%svs%svs%s_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::FitVar_str[2].Data(),WMass::FitVar_str[3].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                   Wlike_var_NotScaled[1],Wlike_var_NotScaled[2],Wlike_var_NotScaled[3], weight,
-                                   h_3d, 50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio,
-                                   50, WMass::fit_xmin[2]*ZWmassRatio, WMass::fit_xmax[2]*ZWmassRatio,
-                                   50, WMass::fit_xmin[3]*ZWmassRatio, WMass::fit_xmax[3]*ZWmassRatio );
+                            common_stuff::plot3D(Form("hWlike%s_%svs%svs%s_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[0].Data(),WMass::FitVar_str[1].Data(),WMass::FitVar_str[2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+                                   Wlike_var_NotScaled[0],Wlike_var_NotScaled[1],Wlike_var_NotScaled[2], weight,
+                                   h_3d, 50, WMass::fit_xmin[0]*ZWmassRatio, WMass::fit_xmax[0]*ZWmassRatio,
+                                   50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio,
+                                   50, WMass::fit_xmin[2]*ZWmassRatio, WMass::fit_xmax[2]*ZWmassRatio );
 
 
                             //------------------------------------------------------------------------------------------------

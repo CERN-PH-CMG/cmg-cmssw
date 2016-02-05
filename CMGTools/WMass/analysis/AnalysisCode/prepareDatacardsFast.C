@@ -46,6 +46,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
     // TOKENIZE SAMPLES
     TFile* finTemplatesW[Nsamples];
     TH1D *TemplatesW_NonScaled[2][m_end][WMass::KalmanNvariations][WMass::PDF_members][WMass::NFitVar][Nsamples][WMass::etaMuonNSteps][2*WMass::WMassNSteps+1];
+    TH2D *TemplatesW_NonScaled_2d[2][m_end][WMass::KalmanNvariations][WMass::PDF_members][WMass::NFitVar-1][Nsamples][WMass::etaMuonNSteps][2*WMass::WMassNSteps+1];
 
     // LOAD ALL THE HISTOS FROM THE VARIOUS FILES IN MEMORY
     for(int isample=0; isample<Nsamples;isample++){
@@ -66,6 +67,13 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
 
                     TemplatesW_NonScaled[c][m][n][h][k][isample][ieta][jmass] = (TH1D*) finTemplatesW[isample]->Get(Form("hW%s%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass));
                     if(TemplatesW_NonScaled[c][m][n][h][k][isample][ieta][jmass]) TemplatesW_NonScaled[c][m][n][h][k][isample][ieta][jmass]->Print();
+                    
+                    for(int k2=1;k2<WMass::NFitVar-1;k2++){
+                      if(k==k2 || k==3) continue;
+                      // cout << "searching for " << Form("hWlike%s_%svs%s_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass) << endl;
+                      TemplatesW_NonScaled_2d[c][m][n][h][k][isample][ieta][jmass] = (TH2D*) finTemplatesW[isample]->Get(Form("hWlike%s_%svs%s_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass));
+                      if(TemplatesW_NonScaled_2d[c][m][n][h][k][isample][ieta][jmass]) TemplatesW_NonScaled_2d[c][m][n][h][k][isample][ieta][jmass]->Print();
+                    }
                   }
                 }
               }
@@ -92,7 +100,21 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
                       double norm_factor_to_match_data = int_hist_mcdatalike>0 && int_hist_data>0 ? int_hist_data/int_hist_mcdatalike : 1;
 
                       TemplatesW_NonScaled[c][m][n][h][k][isample][ieta][jmass]->Scale(norm_factor_to_match_data);
-                      cout <<"c "<<c<<" m "<<m<<" n "<<n<<" h "<<h<<" k "<<k<<" isample "<<samples_str[isample]<<" ieta "<<ieta<<" jmass "<<jmass<<" norm "<<norm_factor_to_match_data<<endl;
+                      cout <<"1 c "<<c<<" m "<<m<<" n "<<n<<" h "<<h<<" k "<<k<<" isample "<<samples_str[isample]<<" ieta "<<ieta<<" jmass "<<jmass<<" norm "<<norm_factor_to_match_data<<endl;
+                    }
+                    for(int k2=1;k2<WMass::NFitVar-1;k2++){
+                      if(k==k2 || k==3) continue;
+                      if(TemplatesW_NonScaled_2d[c][m][n][h][k][isample][ieta][jmass]){
+                        double int_hist_data = 0;
+                        if(TemplatesW_NonScaled_2d[c][m_start][0][0][k][isample][ieta][WMass::WMassNSteps])
+                          int_hist_data =TemplatesW_NonScaled_2d[c][m_start][0][0][k][isample][ieta][WMass::WMassNSteps]->Integral();
+                        double int_hist_mcdatalike = TemplatesW_NonScaled_2d[c][m][n][h][k][isample][ieta][jmass]->Integral();
+                        double norm_factor_to_match_data = int_hist_mcdatalike>0 && int_hist_data>0 ? int_hist_data/int_hist_mcdatalike : 1;
+
+                        TemplatesW_NonScaled_2d[c][m][n][h][k][isample][ieta][jmass]->Print();
+                        TemplatesW_NonScaled_2d[c][m][n][h][k][isample][ieta][jmass]->Scale(norm_factor_to_match_data);
+                        cout <<"2 c "<<c<<" m "<<m<<" n "<<n<<" h "<<h<<" k "<<k<<" isample "<<samples_str[isample]<<" ieta "<<ieta<<" jmass "<<jmass<<" norm "<<norm_factor_to_match_data<<endl;
+                      }
                     }
                   }
                 }
@@ -150,7 +172,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
                 outTXTfile << endl;
 
                 TString Z_histoname[2*Nsamples], W_histoname[2*Nsamples];
-                TString Z_histoname_NonScaled[2*Nsamples], W_histoname_NonScaled[2*Nsamples];
+                TString Z_histoname_NonScaled[2*Nsamples], W_histoname_NonScaled[2*Nsamples], W_histoname_NonScaled_2d[2*Nsamples];
                 // double Z_integrals[2*Nsamples];
                 double W_integrals[2*Nsamples];
 
@@ -185,6 +207,32 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
                     outTXTfile << W_integrals[isample] << endl;
 
                     Wtempl_NonScaled->Delete();
+
+                    // 2D
+                    for(int k2=1;k2<WMass::NFitVar-1;k2++){
+                      if(k==k2 || k==3) continue;
+                      if(TemplatesW_NonScaled_2d[c][m][n][h][k][isample][ieta][jmass]){
+                        
+                        // DECLARE NEW HISTOS
+                        TH2D* Wtempl_NonScaled_2d;
+
+                        W_histoname_NonScaled_2d[isample] = samples_str[isample] == "DATA" ? Form("data_obs_W%s%s_%svs%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data()) : Form("W%s%s_%s_%svs%s_pdf%d-%d%s%s",Wlike.Data(),WCharge_str[c].Data(),samples_str[isample].Data(),WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h, RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"");
+                        Wtempl_NonScaled_2d=(TH2D*)TemplatesW_NonScaled[c][m][n][h][k][isample][ieta][jmass]->Clone(W_histoname_NonScaled_2d[isample]);
+                        Wtempl_NonScaled_2d->SetName(W_histoname_NonScaled_2d[isample]);
+                        // cout << "W_histoname_NonScaled_2d[isample]="<<W_histoname_NonScaled_2d[isample]<<endl;
+                        Wtempl_NonScaled_2d->SetTitle(W_histoname_NonScaled_2d[isample]);
+
+                        Wtempl_NonScaled_2d->Write();
+
+                        int nspaces2 = 50 - W_histoname_NonScaled_2d[isample].Length();
+                        outTXTfile << Wtempl_NonScaled_2d->GetName();
+                        for(int ispace=0;ispace<nspaces2;ispace++) outTXTfile << " ";
+                        W_integrals[isample] = Wtempl_NonScaled_2d->Integral();
+                        outTXTfile << W_integrals[isample] << endl;
+
+                        Wtempl_NonScaled_2d->Delete();
+                      }
+                    }
                   }
                 }
                 outTXTfile << endl;

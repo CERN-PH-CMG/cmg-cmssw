@@ -45,7 +45,7 @@ usePhiMETCorr = 0; # 0=none, 1=yes
 ### EWK CORR
 syst_ewk_Alcaraz = 0; # -1=none, 0=POWHEG QCD+EWK NLO (bug-fixed), 1= 0 +syst photos vs pythia (31 = 3 times), 2= 0 +syst no nloewk vs nloewk (32 = 3 times)
 ### REWEIGHT POLARIZATION
-reweight_polarization = 1; # 0 = none, 1 = reweight POW to DATA
+reweight_polarization = 1; # 0 = none, 1 = reweight POW to DATA, 2 = reweight POW to 8 TeV angular coefficients 
 
 # LHAPDF_reweighting_sets="11200"  # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
 # LHAPDF_reweighting_members="51"  # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
@@ -686,10 +686,10 @@ if(mergeSigEWKbkg):
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name batch_logs_* -delete")
 
 if(removeChunks):
-  if file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEMAD/WanalysisOnDATA.root") \
-  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEMAD/ZanalysisOnDATA.root") \
-  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEPOW/WanalysisOnDATA.root") \
-  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEPOW/ZanalysisOnDATA.root") :
+  if file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEMAD/WanalysisOnDATA.root") \
+  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEMAD/ZanalysisOnDATA.root") \
+  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEPOW/WanalysisOnDATA.root") \
+  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEPOW/ZanalysisOnDATA.root") :
     print "Removing chunks from JobOutputs/"+outfolder_name
     os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name [WZ]analysis_chunk*.root -delete")
   else:
