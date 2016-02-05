@@ -216,6 +216,24 @@ void common_stuff::cloneHisto1D(std::string title_old, std::string title_new, st
 
 }
 
+///////////////////////////////////////////////////////////////
+
+void common_stuff::cloneHisto2D(std::string title_old, std::string title_new, std::map<std::string, TH2D*> &allhistos){
+  
+  std::map<std::string, TH2D*>::iterator iter_old= allhistos.find(title_old);
+  std::map<std::string, TH2D*>::iterator iter_new= allhistos.find(title_new);
+  if( !(iter_old == allhistos.end()) && (iter_new == allhistos.end()) ) 
+    {
+      TH2D* newHisto= (TH2D*)(*iter_old).second->Clone(title_new.c_str());
+      // newHisto->SetMarkerStyle(20);
+      // newHisto->SetMarkerSize(0.7);
+      newHisto->SetName(title_new.c_str());
+      newHisto->SetTitle(title_new.c_str());
+      allhistos.insert(std::pair<std::string, TH2D*> (title_new,newHisto) );
+    }
+
+}
+
 
 ///////////////////////////////////////////////////////////////
 
