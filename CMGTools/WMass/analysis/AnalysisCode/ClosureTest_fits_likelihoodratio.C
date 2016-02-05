@@ -53,6 +53,7 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
               for(int j=0; j<2*WMass2::WMassNSteps+1; j++){
                 int jWmass = WorZ.Contains("Z")? WMass2::Zmass_values_array[j] : WMass2::Wmass_values_array[j];
                 cout << "mass value = " << jWmass << endl;
+                
                 for(int k=0;k<WMass::NFitVar;k++){
                   TString text2workspace_str = Form("text2workspace.py -P HiggsAnalysis.CombinedLimit.HiggsJPC:twoHypothesisHiggs dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.txt -o output_W%s%s_%s_pdf%d-%d%s%s_eta%s_%d.root -m %d  > dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log 2>&1",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data(),Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
                   TString combine_str = Form("combine -S 0 -m %d -M HybridNew --testStat=TEV --singlePoint 1 --onlyTestStat output_W%s%s_%s_pdf%d-%d%s%s_eta%s_%d.root   >> dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.log 2>&1 ",jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
@@ -74,6 +75,36 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
                     // gROOT->ProcessLine(".! ls -lrt "+outfilename_str);
                     gROOT->ProcessLine(".! chmod 755 "+outfilename_str);
                     gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J runMfit "+outfilename_str);
+                  }
+                  // 2d fits
+                  for(int k2=k+1;k2<WMass::NFitVar-1;k2++){
+                    if(k==k2 || k==3) continue;
+                    TString text2workspace_str = Form("text2workspace.py -P HiggsAnalysis.CombinedLimit.HiggsJPC:twoHypothesisHiggs dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%svs%s.txt -o output_W%s%s_%svs%s_pdf%d-%d%s%s_eta%s_%d.root -m %d  > dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%svs%s.log 2>&1",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data(),Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data());
+                    // cout << "text2workspace_str= " << text2workspace_str << endl;
+                    
+                    TString combine_str = Form("combine -S 0 -m %d -M HybridNew --testStat=TEV --singlePoint 1 --onlyTestStat output_W%s%s_%svs%s_pdf%d-%d%s%s_eta%s_%d.root   >> dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%svs%s.log 2>&1 ",jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data());
+                    // cout << "combine_str= " << combine_str << endl;
+
+                    TString outfilename_str = Form("submit_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%svs%s.sh",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data());
+                    if(useBatch==0){
+                      gROOT->ProcessLine(".! "+text2workspace_str);
+                      gROOT->ProcessLine(".! "+combine_str+" &");
+                    }else{
+                      ofstream outTXTfile;
+                      cout << "creating " << outfilename_str << endl;
+                      outTXTfile.open(outfilename_str);
+                      outTXTfile << "user=$(whoami); cd /afs/cern.ch/work/${user:0:1}/${user}/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462; eval `scramv1 runtime -sh`; cd -;\n";
+                      outTXTfile << "source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh;\n";
+                      outTXTfile << "cd "<<currentdir_str<<"\n";
+                      outTXTfile << text2workspace_str << endl;
+                      outTXTfile << combine_str << endl;
+                      outTXTfile.close();
+                      gROOT->ProcessLine(".! usleep 100000");
+                      // gROOT->ProcessLine(".! ls -lrt "+outfilename_str);
+                      gROOT->ProcessLine(".! chmod 755 "+outfilename_str);
+                      gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J runMfit "+outfilename_str);
+                      // return;
+                    }                    
                   }
                 }
               }
