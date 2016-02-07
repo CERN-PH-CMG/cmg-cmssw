@@ -47,6 +47,7 @@ double costh_CS_gen_pietro = -1e10, phi_CS_gen_pietro = -1e10;
 double costh_CS_gen = -1e10, phi_CS_gen = -1e10;
 
 const double ZPt_cut = 30; // ADDED DURING PLOTS PRE-UNBLINDING
+const double submuon_eta_cut = 2.1;
 const bool preUnblinding = true; // this is meant to save only the inclusive plots the controlplots variable is used for the various binned plots
 
 
@@ -702,7 +703,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   common_stuff::plot1D(Form("hWlike%s_%sNonScaled_3_Mu1GenCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jZmass_MeV),
                                         WlikeGen_var_NotScaled[k], evt_weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
                 
-                if(TMath::Abs(neutrinoGen_status3.Eta())<2.1){
+                if(TMath::Abs(neutrinoGen_status3.Eta())<submuon_eta_cut){
                   for(int k=0;k<WMass::NFitVar-1;k++)
                     common_stuff::plot1D(Form("hWlike%s_%sNonScaled_4_Mu2GenCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),jZmass_MeV),
                                           WlikeGen_var_NotScaled[k], evt_weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
@@ -749,7 +750,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               // CUTS ADDED TO SPEED UP THE CODE
               && TMath::Abs(muCorrCentral.Eta())<WMass::etaMaxMuons[i]
               // && TMath::Abs(neutrinoCorrCentral.Eta())<2.4
-              && TMath::Abs(neutrinoCorrCentral.Eta())<2.1 // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING
+              && TMath::Abs(neutrinoCorrCentral.Eta())<submuon_eta_cut // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING
               && MuPos_charge != MuNeg_charge
               && muTrg
               && MuPosIsTight && MuPos_dxy<0.02
@@ -1091,7 +1092,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 if( ZcorrCentral.M()>50
                     && TMath::Abs(muCorrCentral.Eta())<WMass::etaMaxMuons[i] 
                     // && TMath::Abs(neutrinoCorrCentral.Eta())<2.4 
-                    && TMath::Abs(neutrinoCorrCentral.Eta())<2.1 // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING 
+                    && TMath::Abs(neutrinoCorrCentral.Eta())<submuon_eta_cut // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING 
                     && MuPos_charge != MuNeg_charge
                     && muTrg
                     && muCorrCentral.Pt()>WMass::sel_xmin[0]*ZWmassRatio 
@@ -1214,7 +1215,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                               
                               // 2D plot obs_i vs obs_j (no MtLin)
                               for(int k2=k+1;k2<WMass::NFitVar-1;k2++){
-                                if(k==k2 || k==3) continue;
                                 // cout << "k= " << k << " k2= " << k2 << endl;
                                 common_stuff::plot2D(Form("hWlike%s_%svs%s_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                        Wlike_var_NotScaled[k2],Wlike_var_NotScaled[k], weight,
@@ -1509,8 +1509,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                     if(k==k2 || k==3) continue;
                     
                     common_stuff::cloneHisto2D(Form("hWlike%s_%svs%s_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV), 
-                                                Form("hWlike%s_%svs%s_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV), 
-                                                h_2d);
+                                               Form("hWlike%s_%svs%s_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV), 
+                                               h_2d);
                   }
                 }
               }
