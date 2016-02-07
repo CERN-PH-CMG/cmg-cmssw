@@ -17,20 +17,20 @@
 
 using namespace std;
 
-TString offset_string = "";
-int offset_from_string(string str, double limit)
+int offset_from_string(TString str, int limit)
 {
-	int len = str.length();
-	double accumulator = 0;
-	for (int i=0; i<len; ++i) {
-		int ch = abs((int)(str[i]));
-		accumulator += pow(ch, 2.3456);
-	}
-	accumulator = pow(accumulator, 1.2345);
-	return (int) fmod(accumulator, limit);
+  int len = str.Length();
+  int accumulator = 0;
+  for (int i=0; i<len; ++i) {
+    int ch = abs((int)(str[i]));
+    accumulator += pow(ch, 2.3456);
+    accumulator %= limit;
+  }
+  accumulator = pow(accumulator, 1.2345);
+  return accumulator % limit;
 }
 
-void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int useBatch=0, int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0){
+void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int useBatch=0, int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0, TString offset_string=""){
 
   bool some_fit_failed = false;
   
@@ -228,7 +228,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                 result_NonScaled[i][m-m_start][h][k][c]->Write();
                 
                 c_chi2=new TCanvas(Form("c_chi2_W%s%s_%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),Form("c_chi2_W%s_%s_pdf%d-%d%s%s_eta%s",WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()));
-                ffit[i][k][c]=new TF1(Form("ffit_W%s%s_%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),Form("[0]+TMath::Power((x-[1]-%f)/[2],2)",offset_from_string(offset_string.Data(),1000)),70,100);
+                ffit[i][k][c]=new TF1(Form("ffit_W%s%s_%s_pdf%d-%d%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),Form("[0]+TMath::Power((x-[1]-%d)/[2],2)",offset_from_string(offset_string.Data(),1000)),70,100);
                 ffit[i][k][c]->SetParameter(0,result_NonScaled[i][m-m_start][h][k][c]->GetMinimum());
                 ffit[i][k][c]->SetParameter(1,WorZ.Contains("W")?80410:91170 + offset_from_string(offset_string.Data(),1000));
                 ffit[i][k][c]->SetParameter(2,10); // IF FIT DOES NOT CONVERGE, CHANGE THIS PARAMETER BY LOOKING AT THE CHI2 VS MASS DISTRIBUTION (~value for which Delta_chi2 = 1)
