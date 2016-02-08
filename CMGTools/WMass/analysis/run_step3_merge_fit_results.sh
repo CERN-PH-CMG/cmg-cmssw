@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# DEFINE FOLDER PREFIX
+outfolder_prefix="PREFIX"
 
 # RUN Z ANALYSIS ONLY
+sed -i "s/outfolder_prefix =.*/outfolder_prefix = \"${outfolder_prefix}\"/g" configdir/*.py
 sed -i "s/runZanalysis =.*/runZanalysis = 0/g" configdir/*.py
 sed -i "s/mergeSigEWKbkg =.*/mergeSigEWKbkg = 0/g" configdir/*.py
 sed -i "s/runPrepareDataCardsFast =.*/runPrepareDataCardsFast = 0/g" configdir/*.py

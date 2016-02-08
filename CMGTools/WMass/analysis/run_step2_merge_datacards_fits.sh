@@ -1,14 +1,19 @@
 #!/bin/bash
 
+# DEFINE FOLDER PREFIX
+outfolder_prefix="PREFIX"
+
 # DEFINE TEMPLATE FOLDER
 DataCards_templateFromFolder=""
 
 # RUN Z ANALYSIS ONLY
+sed -i "s/useBatch =.*/useBatch = 1/g" configdir/*.py
+sed -i "s/outfolder_prefix =.*/outfolder_prefix = \"${outfolder_prefix}\"/g" configdir/*.py
 sed -i "s/runZanalysis =.*/runZanalysis = 0/g" configdir/*.py
 sed -i "s/mergeSigEWKbkg =.*/mergeSigEWKbkg = 1/g" configdir/*.py
-sed -i "s/runPrepareDataCardsFast =.*/runPrepareDataCardsFast = 1/g" configdir/*.py
-sed -i "s/runClosureTestLikeLihoodRatio =.*/runClosureTestLikeLihoodRatio = 1/g" configdir/*.py
-sed -i "s/DataCards_templateFromFolder=.*/DataCards_templateFromFolder=\"${DataCards_templateFromFolder}\"/g" configdir/*.py
+sed -i "s/runPrepareDataCardsFast =.*/runPrepareDataCardsFast = 1 # TEMPLATES ARE IN THE TEMPLATE FOLDER, PSEUDO-DATA IN THE CURRENT FOLDER/g" configdir/*.py
+sed -i "s/DataCards_templateFromFolder=.*/DataCards_templateFromFolder=\"${DataCards_templateFromFolder}\"  # evaluate systematics wrt folder (or leave it empty) -- full template folder/g" configdir/*.py
+sed -i "s/runClosureTestLikeLihoodRatio =.*/runClosureTestLikeLihoodRatio = 1  # 1: also executes merge if not using batch jobs/g" configdir/*.py
 sed -i "s/mergeResults =.*/mergeResults = 0/g" configdir/*.py
 
 

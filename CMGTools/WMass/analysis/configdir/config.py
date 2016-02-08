@@ -36,5 +36,5 @@ DataCards_templateFromFolder=""  # evaluate systematics wrt folder (or leave it 
 
 ## NEW FIT
 runClosureTestLikeLihoodRatio = 0  # 1: also executes merge if not using batch jobs
-mergeResults = 0 
+mergeResults = 0
 blind_offset_string = ""  # "" -> 0
