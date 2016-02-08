@@ -1,6 +1,15 @@
 #!/usr/bin/env python
 
-import string, os, shutil, sys, subprocess, ROOT
+import os, shutil, sys, subprocess, ROOT
+
+### Import config
+
+sys.path.append("configdir")
+try:
+  conffile = sys.argv[1]
+except IndexError:
+  conffile = "config"
+config = __import__(conffile)
 
 ## ==============================================================
 ## STEERING PARAMETERS
@@ -8,36 +17,33 @@ import string, os, shutil, sys, subprocess, ROOT
 
 useLHAPDF = False
 
-outfolder_prefix="PREFIX";
+outfolder_prefix = config.outfolder_prefix
 
 ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
 ntuple_basepathFIX = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2015_05_24_53X_sumEtFIX/";
 ntuple_basepath_8TeV_ABC = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_8TeV/";
-# ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/";
-# ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_10_15/";
-# ntuple_basepath = "root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/";
-# ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/";
-# ntuple_basepath = "~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/";
 lhapdf_path="/afs/cern.ch/work/p/perrozzi/private/WMassMC/lhapdf/"
 
 use_PForNoPUorTKmet = 2; # 0:PF, 1:NOPU, 2:TK
 use_LHE_weights = 0; # 0=no, 1=yes
 usePileupSF = 1; # 0=no, 1=yes
-useEffSF = 2; # 0=no, 1=MuonPOG, 2=Heiner all, 3=Heiner no tight, 4=Heiner no iso, 5=Heiner no tight subleading mu, 6=Heiner no hlt
-                                            # 13=Heiner tight 1%, 14=Heiner iso 1%, 15=Heiner tight subleading mu 1%, 16=Heiner hlt 1%
 usePtSF = 0; # Boson pT reweighting: -1=none, 0=data, 1...=other options
 
-### MUON
-useMomentumCorr = 4; # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector, 4=KalmanCorrectorParam
-MuonCorrGlobalScaleNsigma = 0; # vary global muon scale    (0=no)
-MuonCorrKalmanNvarsNsigma = 0; # vary each muon fit eigenv (0=no)
+### Muon trigger efficiency
+useEffSF = config.useEffSF
 
-WlikeCharge = 1; # Charge of the Wlike (+1,-1)
+### MUON
+useMomentumCorr = 4  # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector, 4=KalmanCorrectorParam
+MuonCorrGlobalScaleNsigma = config.MuonCorrGlobalScaleNsigma
+MuonCorrKalmanNvarsNsigma = config.MuonCorrKalmanNvarsNsigma
+
+WlikeCharge = config.WlikeCharge
 
 ### RECOIL
-useRecoilCorr = 2; # 0=none, 1=yes, 2=PDFw3gaus, 3=RooKeys
-RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0; # SYST VARIATIONS: 0=NONE, RAPBIN 1 (1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p2, 6= U2 MC) RAPBIN 2 (7= U1 DATA p1, 8= U1 DATA p2, 9= U2 DATA, 10= U1 MC p1, 11= U1 MC p2, 12= U2 MC)
-RecoilCorrVarDiagoParSigmas = 0; # Number of sigmas for recoil syst
+useRecoilCorr = config.useRecoilCorr
+RecoilCorrVarDiagoParU1orU2fromDATAorMC = config.RecoilCorrVarDiagoParU1orU2fromDATAorMC
+RecoilCorrVarDiagoParSigmas = config.RecoilCorrVarDiagoParSigmas
+
 correctToMadgraph = 0; # 0: uses DATA as target -- 1: uses Madgraph as target (also needed to write recoil closure plots)
 
 usePhiMETCorr = 0; # 0=none, 1=yes
@@ -61,36 +67,35 @@ LHAPDF_reweighting_members="1"   # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_n
 IS_MC_CLOSURE_TEST= 0;
 
 indip_normalization_lumi_MC = 0; # independent normalization of MC in fb-1 (otherwise normalized to DATA)
-intLumi_MC_fb = 81293448/31314/1e3;# data = 4.7499 fb-1 prescaled trigger, 5.1 fb-1 unprescaled; works only if indip_normalization_lumi_MC is TRUE
+intLumi_MC_fb = 81293448/31314/1e3; # data = 4.7499 fb-1 prescaled trigger, 5.1 fb-1 unprescaled; works only if indip_normalization_lumi_MC is TRUE
 useAlsoGenPforSig= 1;
 normalize_MC_to_half_of_the_data = 1 # useful for W-like because we use half of it to calibrate the recoil
 
-ZMassCentral_MeV = "91188"; # 91.1876
-WMassCentral_MeV = "80398"; # 80.385
-WMassSkipNSteps = "5"; # 15 -- used for next to nothing, at the moment
+ZMassCentral_MeV = "91188"  # 91.1876 (PDG)
+WMassCentral_MeV = "80398"  # 80.385  (PDG)
+WMassSkipNSteps = "5"  # 15 -- used for LHE mass scaling
 
 # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
-resubmit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig, DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
+resubmit_sample = "WJetsMadSig,  WJetsMadFake,  DYJetsPow, DYJetsMadFake, TTJets, ZZJets, WWJets, WZJets, QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
 # resubmit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 # resubmit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
 
-useBatch = 1;
-batchQueue = "1nh";
+useBatch = config.useBatch
+batchQueue = config.batchQueue
 
-WMassNSteps = "5"; # 60 -- N of mass steps above and below the central
-# WMassNSteps = "0"; # 60 -- N of mass steps above and below the central
-etaMuonNSteps = "1"; # 5 <-- lenght of the etaMaxMuons
-etaMaxMuons = "0.9"; # 0.6, 0.8, 1.2, 1.6, 2.1
+WMassNSteps = str(config.WMassNSteps)
+etaMuonNSteps = "1"  # 5 <-- lenght of the etaMaxMuons
+etaMaxMuons = str(config.etaMaxMuons)
 
-runWanalysis = 0;
-runZanalysis = 1;
-controlplots = 0;
-noLSFJobOutput = 0; # 1: Puts all the batch logs in a single file
-recreateSubPrograms = 0; # 1: Recompiles run?analysis.o and remakes run?analysis.sh
+runWanalysis = 0
+runZanalysis = config.runZanalysis
+controlplots = config.controlplots
+noLSFJobOutput = 1  # 1: Puts all the batch logs in a single file
+recreateSubPrograms = 0  # 1: Recompiles run?analysis.o and remakes run?analysis.sh
 
-mergeSigEWKbkg = 0;
+mergeSigEWKbkg = config.mergeSigEWKbkg
 mergeWhichAnalysis = "Zanalysis"  # "Zanalysis Wanalysis" -- no comma!
-removeChunks = 0; # 0: Don't remove chunks after merge --- 1: Remove them
+removeChunks = 0  # 0: Don't remove chunks after merge --- 1: Remove them
 
 #######################
 ### FIT ###
@@ -99,14 +104,14 @@ removeChunks = 0; # 0: Don't remove chunks after merge --- 1: Remove them
 ## PERFORM W or Z MASS FIT
 fit_W_or_Z = "Z" # "W,Z" or "W" or "Z"
 
-usePowOrMadForSig = "POWHEG"; # use "POWHEG" or use "MADGRAPH"
-runPrepareDataCardsFast = 0; # ALTERNATIVE FAST WAY: TEMPLATES ARE IN THE TEMPLATE FOLDER, PSEUDO-DATA IN THE LOCAL FOLDER
-DataCards_templateFromFolder="" # evaluate systematics wrt folder (or leave it empty) -- full template folder
+usePowOrMadForSig = "POWHEG"  # use "POWHEG" or use "MADGRAPH"
+runPrepareDataCardsFast = config.runPrepareDataCardsFast
+DataCards_templateFromFolder = config.DataCards_templateFromFolder
 
 ## NEW FIT
-runClosureTestLikeLihoodRatio = 0; # 1: also executes merge if not using batch jobs
-mergeResults = 0;
-blind_offset_string = "";  # "" -> 0
+runClosureTestLikeLihoodRatio = config.runClosureTestLikeLihoodRatio
+mergeResults = config.mergeResults
+blind_offset_string = config.blind_offset_string
 
 #######################
 ### PLOTTING ###
@@ -180,7 +185,8 @@ if int(RecoilCorrVarDiagoParU1orU2fromDATAorMC) != 0 \
 or int(correctToMadgraph) !=0 \
 or str(LHAPDF_reweighting_members) !="1" \
 or int(MuonCorrGlobalScaleNsigma) != 0 \
-or int(MuonCorrKalmanNvarsNsigma) != 0 :
+or int(MuonCorrKalmanNvarsNsigma) != 0 \
+or int(useEffSF) != 2 :
 # or int(controlplots) != 0 :
   print "Computing a systematic: number of mass steps is set to 0\n"
   WMassNSteps = "0"
@@ -198,7 +204,7 @@ if (int(WlikeCharge) != 1) and (int(WlikeCharge) != -1) :
 
 # Muon internal (Zanalisys wants them this way)
 MuonCorrNsigma = 0
-MuonCorrKalmanNparameters = 1; # number of muon fit params (1: no eigen var --- 45: KalmanCorrectorParam)
+MuonCorrKalmanNparameters = 1  # number of muon fit params (1: no eigen var --- 45: KalmanCorrectorParam)
 if(int(MuonCorrGlobalScaleNsigma)!=0 and int(MuonCorrKalmanNvarsNsigma)!=0):
   print "Muon global scale and fit eigenvalues cannot be varied simultaneously (with the current Zanalysis.C)"
   sys.exit(1)
