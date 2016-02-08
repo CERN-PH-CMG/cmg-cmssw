@@ -6,7 +6,7 @@ outfolder_prefix="PREFIX"
 # DEFINE TEMPLATE FOLDER
 DataCards_templateFromFolder=""
 
-# RUN Z ANALYSIS ONLY
+# RUN MERGE CHUNCKS, PREPARE DATACARDS, RUN FITS
 sed -i "s/useBatch =.*/useBatch = 1/g" configdir/*.py
 sed -i "s/outfolder_prefix =.*/outfolder_prefix = \"${outfolder_prefix}\"/g" configdir/*.py
 sed -i "s/runZanalysis =.*/runZanalysis = 0/g" configdir/*.py
