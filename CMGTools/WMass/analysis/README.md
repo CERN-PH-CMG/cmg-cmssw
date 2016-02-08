@@ -100,3 +100,8 @@ After the merge you should have 15 rootfiles, copy them somewhere and rename the
 * Last block of variated Pow2Mad -> `12.root`
 
 Now they are ready to be passed under the `closure_recoil_plots{,2d}.C` macros, in `utils`.
+
+TO launch automatically the full analysis in 3 steps, 
+you can use the script run_step1_analysis.sh 
+then run_step2_merge_datacards_fits.sh 
+and then run_step3_merge_fir_results.sh  
