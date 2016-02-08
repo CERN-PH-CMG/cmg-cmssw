@@ -8,12 +8,12 @@
 #define Zanalysis_cxx
 #include "Zanalysis.h"
 #include "common.hpp"
-// #include "rochcor_42X.h"
 #include "common_stuff.h"
+// #include "rochcor_42X.h"
 // #include "rochcor_44X_v3.h"
+// #include "MuScleFitCorrector.h"
 // #include "KalmanCalibrator.h"
 #include "KalmanCalibratorParam.h"
-// #include "MuScleFitCorrector.h"
 #include "RecoilCorrector.h"
 #include "HTransformToHelicityFrame.c"
 #include "HTransformToCS.c"
@@ -24,7 +24,6 @@
 #include <TCanvas.h>
 #include <TMath.h>
 #include <TLorentzVector.h>
-#include <TGraphAsymmErrors.h>
 #include <ctime>
 #include <string>
 
@@ -432,7 +431,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         // cout << "eff_TIGHT_SF no smear= "<< eff_TIGHT_SF << endl;
         if(useEffSF==13){
           random_->SetSeed(UInt_t(TMath::Abs(isChargePos?MuPos_phi:MuNeg_phi)*1e9 + TMath::Abs(isChargePos?MuPos_eta:MuNeg_eta)*1e6 + TMath::Abs(isChargePos?MuPos_pt:MuNeg_pt)*1e3));
-          eff_TIGHT_SF += random_->Gaus(0,0.01);
+          eff_TIGHT_SF += random_->Gaus(0,TMath::Hypot(0.02,SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt:MuNeg_pt))));
           // cout << "eff_TIGHT_SF smear= "<< eff_TIGHT_SF << endl;
         }
         TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_SF;
@@ -444,7 +443,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         // cout << "eff_ISO_SF no smear= "<< eff_ISO_SF << endl;
         if(useEffSF==14){
           random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(TMath::Abs(phi_HX))*1e6 + TMath::Abs(ZNocorr.Pt())*1e3));
-          eff_ISO_SF += random_->Gaus(0,0.01);
+          eff_ISO_SF += random_->Gaus(0,TMath::Hypot(0.02,SF_ISO05_PT10->GetBinError(SF_ISO05_PT10->FindBin(costh_HX,TMath::Abs(phi_HX),ZNocorr.Pt()))));
           // cout << "eff_ISO_SF smear= "<< eff_ISO_SF << endl;
         }
         TRG_TIGHT_ISO_muons_SF  *= eff_ISO_SF;
@@ -456,7 +455,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         // cout << "eff_TIGHT_subleading_SF no smear= "<< eff_TIGHT_subleading_SF << endl;
         if(useEffSF==15){
           random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(TMath::Abs(phi_HX))*1e6 + TMath::Abs(ZNocorr.Pt())*1e3));
-          eff_TIGHT_subleading_SF += random_->Gaus(0,0.01);
+          eff_TIGHT_subleading_SF += random_->Gaus(0,TMath::Hypot(0.02,SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(isChargePos?MuNeg_eta:MuPos_eta,isChargePos?MuNeg_pt:MuPos_pt))));
           // cout << "eff_TIGHT_subleading_SF smear= "<< eff_TIGHT_subleading_SF << endl;
         }
         TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
@@ -468,7 +467,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         // cout << "eff_TRG_SF no smear= "<< eff_TRG_SF << endl;
         if(useEffSF==16){
           random_->SetSeed(UInt_t(TMath::Abs(isChargePos?1:-1)*1e9 + TMath::Abs(TMath::Abs(isChargePos?MuPos_eta:MuNeg_eta))*1e6 + TMath::Abs(isChargePos?MuPos_pt:MuNeg_pt)*1e3));
-          eff_TRG_SF += random_->Gaus(0,0.01);
+          eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.02,SF_HLT->GetBinContent(SF_HLT->FindBin(isChargePos?1:-1,isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt:MuNeg_pt))));
           // cout << "eff_TRG_SF smear= "<< eff_TRG_SF << endl;
         }
         TRG_TIGHT_ISO_muons_SF  *= eff_TRG_SF;
@@ -954,28 +953,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                       common_stuff::plot1D(Form("hWlike%s_%s_8_JetCut_pdf%d-%d_eta%s_%.0f",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,eta_str.Data(),Zmass_MeV),
                                             Wlike_vars[k], weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
                     }
-                    if (false) {
-                      // 2D plot obs_i vs obs_j (no MtLin)
-                      common_stuff::plot2D(Form("hWlike%s_%svs%s_8_JetCut_pdf%d-%d_eta%s_%.0f",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::FitVar_str[2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,eta_str.Data(),Zmass_MeV),
-                             Wlike_vars[1],Wlike_vars[2], weight,
-                             h_2d, 50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio,
-                             50, WMass::fit_xmin[2]*ZWmassRatio, WMass::fit_xmax[2]*ZWmassRatio );
-                      common_stuff::plot2D(Form("hWlike%s_%svs%s_8_JetCut_pdf%d-%d_eta%s_%.0f",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::FitVar_str[3].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,eta_str.Data(),Zmass_MeV),
-                             Wlike_vars[1],Wlike_vars[3], weight,
-                             h_2d, 50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio,
-                             50, WMass::fit_xmin[3]*ZWmassRatio, WMass::fit_xmax[3]*ZWmassRatio );
-                      common_stuff::plot2D(Form("hWlike%s_%svs%s_8_JetCut_pdf%d-%d_eta%s_%.0f",WCharge_str.Data(),WMass::FitVar_str[2].Data(),WMass::FitVar_str[3].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,eta_str.Data(),Zmass_MeV),
-                             Wlike_vars[2],Wlike_vars[3], weight,
-                             h_2d, 50, WMass::fit_xmin[2]*ZWmassRatio, WMass::fit_xmax[2]*ZWmassRatio,
-                             50, WMass::fit_xmin[3]*ZWmassRatio, WMass::fit_xmax[3]*ZWmassRatio );
-                      // 3D plot
-                      common_stuff::plot3D(Form("hWlike%s_%svs%svs%s_8_JetCut_pdf%d-%d_eta%s_%.0f",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::FitVar_str[2].Data(),WMass::FitVar_str[3].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,eta_str.Data(),Zmass_MeV),
-                             Wlike_vars[1],Wlike_vars[2],Wlike_vars[3], weight,
-                             h_3d, 50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio,
-                             50, WMass::fit_xmin[2]*ZWmassRatio, WMass::fit_xmax[2]*ZWmassRatio,
-                             50, WMass::fit_xmin[3]*ZWmassRatio, WMass::fit_xmax[3]*ZWmassRatio );
-                    }
-
 
                     //------------------------------------------------------------------------------------------------
                     // EXTRA PLOTS - these are inclusive distributions used to derive and verify weights
