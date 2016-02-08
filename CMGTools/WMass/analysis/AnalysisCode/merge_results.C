@@ -1,5 +1,6 @@
 #include <fstream>
 #include <cmath>
+#include <iostream>
 
 #include "TString.h"
 #include "TFile.h"
@@ -103,9 +104,9 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
       
       for(int h=0; h<WMass::PDF_members; h++){
         for(int m=m_start; m<m_end; m++){
-            TString Kalmantoys_str = "";
-            if(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0) Kalmantoys_str = Form("_RecoilCorrVar%d",m);
-            cout << Form("fitting RecoilCorrVar%d",m) << endl;
+          TString Kalmantoys_str = "";
+          if(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0) Kalmantoys_str = Form("_RecoilCorrVar%d",m);
+          cout << Form("fitting RecoilCorrVar%d",m) << endl;
           for(int n=0; n<WMass::KalmanNvariations; n++){
             // for(int i=0; i<WMass::etaMuonNSteps; i++){
             cout << "using pdf " << (WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets) << "-"<<h<< endl;
@@ -279,7 +280,50 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                 
                 // result_NonScaled[i][h][k]->Delete();
                 // result->Delete();
+                int best_template_mass = 0;
+                  
+                // TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
+                // cout << "merging pdf eta bin= " << i << endl;
                 
+                // cout << "ffit[i][k][c]->GetParameter(1)= " << ffit[i][k][c]->GetParameter(1) << endl;
+                // for(int j=0; j<2*WMass2::WMassNSteps+1; j++){
+                  // int jWmass = WorZ.Contains("Z")? WMass2::Zmass_values_array[j] : WMass2::Wmass_values_array[j];
+                  // if( TMath::Abs(jWmass-ffit[i][k][c]->GetParameter(1)) < TMath::Abs(best_template_mass-ffit[i][k][c]->GetParameter(1))){
+                    // best_template_mass = jWmass;
+                  // }
+                  // // cout << "j mass= " << jWmass << " best_template_mass = " << best_template_mass << endl;
+                // }
+                // cout << "final best_template_mass = " << best_template_mass << endl;
+                // TString best_mass_datacards_name =  Form("dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s_eta%s_%d_%sNonScaled.txt",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),best_template_mass,WMass::FitVar_str[k].Data());
+                // // gROOT->ProcessLine(".! more "+best_mass_datacards_name);
+                // ifstream in_stream;
+                // std::string line;
+                // TString line_tstring;
+
+                // in_stream.open(best_mass_datacards_name);
+                // vector<TString> list;
+                // int line_number = 0;
+                // while(!in_stream.eof())
+                // // while (std::getline(in_stream, line))
+                // {
+                    // in_stream >> line;
+                    // cout << line_number << " " << line << endl;
+                    // line_tstring = line.c_str();
+                    // list.push_back(line_tstring);
+                    // line_number++;
+                // }
+                // in_stream.close();
+
+                // cout << "input file templates list[3] " << list[3] << endl;
+                // cout << "input file (pseudo-)data list[9] " << list[9] << endl;
+                // cout << "mcdatalike list[12] " << list[12].ReplaceAll("DYJetsPow","MCDATALIKEPOW") << endl;
+                // cout << "eta bin list[18] " << list[18] << endl;
+                // // TFile *ftempl = new TFile("%s",list[3].Data());
+                // // TH1D*htemplates = (TH1D*)fout->Get("%s/%d/%s",list[18].Data(),best_template_mass,list[12].Data());
+                // // htemplates->Print();
+                // // TH1D*hpseudodata = (TH1D*)fout->Get("");
+
+ 
               }
               if(some_fit_failed) continue;
          
@@ -338,10 +382,11 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
               leg1->Draw("same");
               c_summary->Write();
 
+              // }
             }
-            // }
           }
         }
+      
       }
       if(some_fit_failed) continue;
       
