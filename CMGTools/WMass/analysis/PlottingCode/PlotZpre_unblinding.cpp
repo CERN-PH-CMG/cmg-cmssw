@@ -253,17 +253,18 @@ void PlotZpre_unblinding(){
   TString folderDATA  = "output_DATA/";
   TString folderMCsum = "output_MCDATALIKEPOW/";
   
-  TString basefolder = "../JobOutputs/dalfonso/"; // Supposed to be run from PlottingCode/
-  TString prefix = "FEB1";
-  
+  TString basefolder = "../JobOutputs/"; // Supposed to be run from PlottingCode/
+  TString posNeg = "Neg";
+  TString prefix = Form("FEB7_mu%s",posNeg.Data());
+
   TString destinationfolder = "../JobOutputs/"+prefix+"_pre_unblinding_plots";
   
-  TString templatefolder = basefolder+prefix+"_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/";
+  TString templatefolder = basefolder+prefix+"_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/";
   
   TString systfolders[] = {
-    basefolder+prefix+"_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_globalScaleSigma1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
-    basefolder+prefix+"_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_globalScaleSigma-1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
-    basefolder+prefix+"_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr3_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
+    basefolder+prefix+"_tkmet_ewk0_polariz1_KalmanCorrParam_globalScaleSigma1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
+    basefolder+prefix+"_tkmet_ewk0_polariz1_KalmanCorrParam_globalScaleSigma-1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
+    basefolder+prefix+"_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr3_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
   };
   TString systnames_IHATECXX98[] = {
     "Lepton scale +1",
@@ -286,13 +287,13 @@ void PlotZpre_unblinding(){
     systfiles_MCsum.push_back(new TFile(filepath));
   }
 
-  TString LegendEvTypeTeX=Form("WlikePos#rightarrow#mu#nu");
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_Recoil_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Recoil [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames,destinationfolder);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_Zmass_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Dimuon mass [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames,destinationfolder);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_ZpT_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Z pT [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames,destinationfolder);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_Zrap_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";Dimuon rapidity;Counts"),-1,-1,1,systfiles_MCsum,systnames,destinationfolder);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";#cos{#theta^{*}_{CS}};Counts"),-1,-1,1,systfiles_MCsum,systnames,destinationfolder);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlikePos_phi_CS_8_JetCut_pdf229800-0_eta0p9_91188"),0,0,0,1,Form(";#phi^{*}_{CS} [rad];Counts"),-1,-1,1,systfiles_MCsum,systnames,destinationfolder);
+  TString LegendEvTypeTeX=Form("Wlike%s#rightarrow#mu#nu",posNeg.Data());
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_Recoil_8_JetCut_pdf229800-0_eta0p9_91188",posNeg.Data()),0,0,0,1,Form(";Recoil [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames,destinationfolder);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_Zmass_8_JetCut_pdf229800-0_eta0p9_91188",posNeg.Data()),0,0,0,1,Form(";Dimuon mass [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames,destinationfolder);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_ZpT_8_JetCut_pdf229800-0_eta0p9_91188",posNeg.Data()),0,0,0,1,Form(";Z pT [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames,destinationfolder);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_Zrap_8_JetCut_pdf229800-0_eta0p9_91188",posNeg.Data()),0,0,0,1,Form(";Dimuon rapidity;Counts"),-1,-1,1,systfiles_MCsum,systnames,destinationfolder);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188",posNeg.Data()),0,0,0,1,Form(";#cos{#theta^{*}_{CS}};Counts"),-1,-1,1,systfiles_MCsum,systnames,destinationfolder);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_phi_CS_8_JetCut_pdf229800-0_eta0p9_91188",posNeg.Data()),0,0,0,1,Form(";#phi^{*}_{CS} [rad];Counts"),-1,-1,1,systfiles_MCsum,systnames,destinationfolder);
 }
 
 int main()
