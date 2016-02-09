@@ -16,6 +16,9 @@ sed -i "s/DataCards_templateFromFolder=.*/DataCards_templateFromFolder=\"${DataC
 sed -i "s/runClosureTestLikeLihoodRatio =.*/runClosureTestLikeLihoodRatio = 1  # 1: also executes merge if not using batch jobs/g" configdir/*.py
 sed -i "s/mergeResults =.*/mergeResults = 0/g" configdir/*.py
 
+# SET ENVIRONMENT VARIABLES BEFORE TO LAUNCH. CAVEAT: IT ASSUMES BASH
+eval `scramv1 runtime -sh`
+source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh
 
 # COMMENT UNWANTED SYSTEMATICS
 
@@ -28,7 +31,7 @@ python launch_analysis.py config_eff_14
 python launch_analysis.py config_eff_15
 python launch_analysis.py config_eff_16
 
-# SYST MUON +1 sigma
+# SYST MUON -1 sigma
 python launch_analysis.py config_muscale_minus1
 python launch_analysis.py config_mustat_minus1
 

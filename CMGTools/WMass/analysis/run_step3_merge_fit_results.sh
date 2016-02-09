@@ -12,6 +12,9 @@ sed -i "s/runClosureTestLikeLihoodRatio =.*/runClosureTestLikeLihoodRatio = 0/g"
 # sed -i "s/DataCards_templateFromFolder=.*/DataCards_templateFromFolder=\"${DataCards_templateFromFolder}\"/g" configdir/*.py
 sed -i "s/mergeResults =.*/mergeResults = 1/g" configdir/*.py
 
+# SET ENVIRONMENT VARIABLES BEFORE TO LAUNCH. CAVEAT: IT ASSUMES BASH
+eval `scramv1 runtime -sh`
+source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh
 
 # COMMENT UNWANTED SYSTEMATICS
 
