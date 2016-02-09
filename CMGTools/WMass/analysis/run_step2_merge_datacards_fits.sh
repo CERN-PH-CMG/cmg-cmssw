@@ -2,6 +2,7 @@
 
 # DEFINE FOLDER PREFIX
 outfolder_prefix="PREFIX"
+WlikeCharge=1 # 1, -1
 
 # DEFINE TEMPLATE FOLDER
 DataCards_templateFromFolder=""
@@ -15,6 +16,7 @@ sed -i "s/runPrepareDataCardsFast =.*/runPrepareDataCardsFast = 1 # TEMPLATES AR
 sed -i "s/DataCards_templateFromFolder=.*/DataCards_templateFromFolder=\"${DataCards_templateFromFolder}\"  # evaluate systematics wrt folder (or leave it empty) -- full template folder/g" configdir/*.py
 sed -i "s/runClosureTestLikeLihoodRatio =.*/runClosureTestLikeLihoodRatio = 1  # 1: also executes merge if not using batch jobs/g" configdir/*.py
 sed -i "s/mergeResults =.*/mergeResults = 0/g" configdir/*.py
+sed -i "s/WlikeCharge =.*/WlikeCharge = ${WlikeCharge}  # Charge of the Wlike (+1,-1)/g" configdir/*.py
 
 # SET ENVIRONMENT VARIABLES BEFORE TO LAUNCH. CAVEAT: IT ASSUMES BASH
 eval `scramv1 runtime -sh`

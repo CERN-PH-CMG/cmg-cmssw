@@ -2,6 +2,7 @@
 
 # DEFINE FOLDER PREFIX
 outfolder_prefix="PREFIX"
+WlikeCharge=1 # 1, -1
 
 # RUN Z ANALYSIS ONLY
 sed -i "s/useBatch =.*/useBatch = 1/g" configdir/*.py
@@ -12,6 +13,7 @@ sed -i "s/runPrepareDataCardsFast =.*/runPrepareDataCardsFast = 0  # TEMPLATES A
 sed -i "s/DataCards_templateFromFolder=.*/DataCards_templateFromFolder=\"\"  # evaluate systematics wrt folder (or leave it empty) -- full template folder/g" configdir/*.py
 sed -i "s/runClosureTestLikeLihoodRatio =.*/runClosureTestLikeLihoodRatio = 0  # 1: also executes merge if not using batch jobs/g" configdir/*.py
 sed -i "s/mergeResults =.*/mergeResults = 0/g" configdir/*.py
+sed -i "s/WlikeCharge =.*/WlikeCharge = ${WlikeCharge}  # Charge of the Wlike (+1,-1)/g" configdir/*.py
 
 # SET ENVIRONMENT VARIABLES BEFORE TO LAUNCH. CAVEAT: IT ASSUMES BASH
 eval `scramv1 runtime -sh`
