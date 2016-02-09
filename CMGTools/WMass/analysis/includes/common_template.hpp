@@ -6,7 +6,9 @@ namespace WMass{
   static const double WMassCentral_MeV = 80398;
   static const double ZWmassRatio = ZMassCentral_MeV/WMassCentral_MeV;
 
-  static const double Zmass_value = _ZMASS_VALUE;
+  static const int NMassValues = _N_MASS_VALUES;
+  static const double Zmass_values[NMassValues] = { _ZMASS_VALUES };
+  static const int WMassSkipNSteps = 5;
   
   static const int PDF_sets = _PDF_SETS;
   static const int PDF_members = _PDF_MEMBERS;

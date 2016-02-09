@@ -1,7 +1,10 @@
 #!\bin\bash
 
-# static const double Zmass_value = _ZMASS_VALUE;
-sed "s:_ZMASS_VALUE:${1}:g" -i ${14}
+
+#static const int NMassValues = _N_MASS_VALUES;
+sed "s:_N_MASS_VALUES:${1}:g" -i ${14}
+# static const double Zmass_values[NMassValues] = { _ZMASS_VALUES };
+sed "s:_ZMASS_VALUES:${15}:g" -i ${14}
 
 #static const int PDF_sets = _PDF_SETS;
 sed "s:_PDF_SETS:${2}:g" -i ${14}
@@ -38,8 +41,8 @@ sed "s:_PTSF_TYPE:${12}:g" -i ${14}
 # static const int LHE_mass_central_index = _LHE_MASS_CENTRAL_INDEX;
 sed "s:_LHE_MASS_CENTRAL_INDEX:${13}:g" -i ${14}
 
-
-# echo ZMASS_VALUE: ${1}
+# echo N_MASS_VALUES: ${1}
+# echo ZMASS_VALUES: ${15}
 # echo PDF_SETS: ${2}
 # echo PDF_MEMBERS: ${3}
 # echo ETA_MAX_MUONS: ${4}

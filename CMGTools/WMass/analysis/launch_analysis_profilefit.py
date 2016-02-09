@@ -34,7 +34,8 @@ MuonScaleVariation = False  # vary global muon scale (True/False)
 MuonVariationSigmas = 0     # vary a muon fit eigenv (0...45)
 
 # Wlike properies
-Zmass = 91188    # Mass of the Wlike
+NMassValues = 11
+Zmass_values = [91138, 91148, 91158, 91168, 91178, 91188, 91198, 91208, 91218, 91228, 91238]  # Masses of the Wlike
 WlikeCharge = 1  # Charge of the Wlike (+1,-1)
 
 etaMaxMuons = 0.9  # Leading muon cut
@@ -385,11 +386,11 @@ if(runZanalysis):
     print "Creating JobOutputs/"+outfolder_name+"/common.hpp from includes/common_template.hpp"
     shutil.copyfile("includes/common_template.hpp", "JobOutputs/"+outfolder_name+"/common.hpp")
     # Edit template
-    os.system("sh "+base_path+"/utils/build_common.sh "+str(Zmass)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(etaMaxMuons)+" "+str(etaMaxMuons2)+" "+str(WlikeCharge)+" "+str(MuonKalmanVariation)+" "+str(MuonScaleVariation).lower()+" "+str(MuonVariationSigmas)+" "+str(RecoilStatVariation)+" "+str(RecoilVariationSigmas)+" "+str(usePtSF)+" "+str(dummy_deltaM_MeV_central_Index)+" "+"JobOutputs/"+outfolder_name+"/common.hpp")
+    os.system("sh "+base_path+"/utils/build_common.sh "+str(NMassValues)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(etaMaxMuons)+" "+str(etaMaxMuons2)+" "+str(WlikeCharge)+" "+str(MuonKalmanVariation)+" "+str(MuonScaleVariation).lower()+" "+str(MuonVariationSigmas)+" "+str(RecoilStatVariation)+" "+str(RecoilVariationSigmas)+" "+str(usePtSF)+" "+str(dummy_deltaM_MeV_central_Index)+" "+"JobOutputs/"+outfolder_name+"/common.hpp"+" \""+(", ".join(map(str,Zmass_values)))+"\"")
 
   print ""
   os.chdir(base_path+"/JobOutputs/"+outfolder_name)
-  code_dir = base_path + "/AnalysisCode/"
+  code_dir = base_path + "/ProfileCode/"
 
   ### Compiling run?analysis.o (if needed)
 
