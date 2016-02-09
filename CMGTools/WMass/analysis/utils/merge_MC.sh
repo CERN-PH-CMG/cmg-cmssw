@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #foldername=${1}
-echo "merging chunks (if they exist)"
+echo "Merging chunks (if they exist)"
 
 samples=("DATA"   "WJetsPowPlus"  "WJetsPowNeg"  "WJetsMadSig"  "WJetsMadFake"  "DYJetsPow"  "DYJetsMadSig"  "DYJetsMadFake"   "TTJets"   "ZZJets"   "WWJets"  "WZJets"    "QCD"  "T_s"  "T_t"  "T_tW"  "Tbar_s"  "Tbar_t"  "Tbar_tW")
 cmd_params=($@)
@@ -13,13 +13,13 @@ do
   doEWKMerge=1
   for (( id_sample=0; id_sample<${#samples[@]}; id_sample++ ))
   do
+    echo ""
     # Check if dir exists
     if [ ! -d "${1}/output_${samples[id_sample]}" ];
     then
       echo "No output_${samples[id_sample]} directory found, continuing..."
       continue
     else
-      echo ""
       echo "Merging output_${samples[id_sample]}"
     fi
     # Delete empty chunks before counting
@@ -48,6 +48,8 @@ do
           printf "%s "  "${ARRAY[@]}"
           echo ""
           doEWKMerge=0
+        else
+          echo "Found already merged output_${samples[id_sample]}/${analyses[id_ana]}OnDATA.root"
         fi
       else
         hadd -f ${1}/output_${samples[id_sample]}/${analyses[id_ana]}OnDATA.root ${1}/output_${samples[id_sample]}/${analyses[id_ana]}_chunk*.root
