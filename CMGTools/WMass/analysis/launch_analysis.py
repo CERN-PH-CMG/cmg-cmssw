@@ -429,10 +429,13 @@ if not os.path.exists("JobOutputs/"+outfolder_name):
   os.makedirs("JobOutputs/"+outfolder_name)
 
 print "Copying script over:"
-print "cp "+os.path.basename(__file__)+" JobOutputs/"+outfolder_name;
+print "cp "+os.path.basename(__file__)+" JobOutputs/"+outfolder_name
+print "cp configdir/"+conffile+".py JobOutputs/"+outfolder_name
 print
 path_dest="JobOutputs/"+outfolder_name+"/"+os.path.basename(__file__)
 shutil.copyfile(os.path.basename(__file__), path_dest)
+path_dest="JobOutputs/"+outfolder_name+"/"+conffile+".py"
+shutil.copyfile(base_path+"/configdir/"+conffile+".py", path_dest)
 
 if(runWanalysis or runZanalysis):
 
