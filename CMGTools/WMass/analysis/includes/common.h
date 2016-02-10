@@ -4,7 +4,7 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <TMath.h>
-#include <TLorentzVector.h>
+#include <TString.h>
 
 namespace WMass{
 
@@ -22,10 +22,13 @@ namespace WMass{
   
   static const int etaMuonNSteps = PAR_ETA_NSTEP;
   static const float etaMaxMuons[etaMuonNSteps] = { PAR_ETA_STEPS };
+
   static const int nSigOrQCD = 2;
   TString nSigOrQCD_str[nSigOrQCD] = {"Sig","QCD"};
-  static const int NFitVar = 4;
-  TString FitVar_str[NFitVar] = {"Pt","Mt","MET","MtLin"};
+
+  static const int NFitVar = 3;
+  TString FitVar_str[] = {"Pt","Mt","MET","MtLin"};
+
   static const int PDF_sets = PAR_PDF_SETS;
   static const int PDF_members = PAR_PDF_MEMBERS;
   static const int NVarRecoilCorr = 1; // not used in main chain anymore

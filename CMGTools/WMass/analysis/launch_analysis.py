@@ -169,7 +169,13 @@ def file_exists_and_is_not_empty(fpath):
 ## ============================================================== #
 ## END FUNCTION DEFINITIONS
 ## ============================================================== #
-  
+
+# Check if it's running on lxplus
+import socket
+if "lxplus" not in socket.gethostname():
+  print "YOU NEED TO RUN THIS SCRIPT ON LXPLUS"
+  sys.exit(1)
+
 # Check if it's running from the correct dir
 base_path = os.getcwd()
 if os.path.dirname(os.path.realpath(__file__)) == base_path:
