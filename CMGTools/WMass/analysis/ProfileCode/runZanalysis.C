@@ -14,7 +14,7 @@ int main(int argc, char ** argv)
     cout << "ERROR: " << argc-1 << " arguments provided instead of 1";
     exit(1);
   }
-  const int Nvars=26;
+  const int Nvars=27;
   TString original, tokenized[Nvars];
   original = Form("%s",argv[1]);
       
@@ -77,6 +77,8 @@ int main(int argc, char ** argv)
   if(GetEntriesOrNchunck>-1) cout << "contains_LHE_weights= " << contains_LHE_weights << endl;
   int reweight_polarization=tokenized[25].Atof();
   if(GetEntriesOrNchunck>-1) cout << "reweight_polarization= " << reweight_polarization << endl;
+  TString systid=tokenized[26];
+  if(GetEntriesOrNchunck>-1) cout << "systid= " << systid << endl;
   if(GetEntriesOrNchunck>-1) cout << endl;
   
 //////////////  
@@ -98,7 +100,7 @@ int main(int argc, char ** argv)
   }
   
   cout<< "chunk " << GetEntriesOrNchunck << " Entry_ini= " << Entry_ini << " Entry_fin= " << Entry_fin << endl;
-  zDATA.Loop(GetEntriesOrNchunck,Entry_ini,Entry_fin,IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight,usePhiMETCorr,useRecoilCorr,correctToMadgraph,use_PForNoPUorTKmet,use_syst_ewk_Alcaraz,gen_mass_value_MeV,contains_LHE_weights,reweight_polarization);
+  zDATA.Loop(GetEntriesOrNchunck,Entry_ini,Entry_fin,IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight,usePhiMETCorr,useRecoilCorr,correctToMadgraph,use_PForNoPUorTKmet,use_syst_ewk_Alcaraz,gen_mass_value_MeV,contains_LHE_weights,reweight_polarization,systid);
   TString chunk_str = GetEntriesOrNchunck>0? Form("_chunk%d",GetEntriesOrNchunck) : "";
   TString outputfilename = "ZanalysisOnDATA";
   if(GetEntriesOrNchunck==0)
