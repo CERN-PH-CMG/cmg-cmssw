@@ -61,7 +61,7 @@ normalize_MC_to_half_of_the_data = 1  # useful for W-like because we use half of
 
 ### MUON
 useMomentumCorr = 4  # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector, 4=KalmanCorrectorParam
-MuonKalmanVariation = 0     # vary a muon fit eigenv (0...45)
+MuonKalmanVariation = 0     # vary a muon fit eigenv 0=No, [1...45]=Yes
 MuonScaleVariation = False  # vary global muon scale (True/False)
 MuonVariationSigmas = 0     # n of sigmas for muon options
 
@@ -539,16 +539,14 @@ if(mergeSigEWKbkg):
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type d -name LSFJOB_* -exec rm -rf {} +")
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name batch_logs_* -delete")
 
+if  not file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_EWKTT/ZanalysisOnDATA.root") \
+and not file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_EWKTT/ZanalysisOnDATA.root") :
+  print "Cannot find any merged histogram in "+outfolder_name+", exiting"
+  sys.exit(1)
+
 if(removeChunks):
-  if file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEMAD/WanalysisOnDATA.root") \
-  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEMAD/ZanalysisOnDATA.root") \
-  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEPOW/WanalysisOnDATA.root") \
-  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEPOW/ZanalysisOnDATA.root") :
-    print "Removing chunks from JobOutputs/"+outfolder_name
-    os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name [WZ]analysis_chunk*.root -delete")
-  else:
-    print "Cannot find any merged histogram in "+outfolder_name+", not deleting chunks"
-  os.chdir(base_path)
+  print "Removing chunks from JobOutputs/"+outfolder_name
+  os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name [WZ]analysis_chunk*.root -delete")
 
 # Legacy
 RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0

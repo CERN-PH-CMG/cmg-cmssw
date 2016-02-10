@@ -671,7 +671,6 @@ if(runWanalysis or runZanalysis):
               os.system("chmod 755 runZanalysis_"+str(chunk)+".sh")
             # Send array if we reached maximum capacity (1000) or last chunk
             if chunk-jobfirst == 999 or chunk == nChuncks-1:
-##            if chunk-jobfirst == 9 or chunk == nChuncks-1:
               joblist = str(jobfirst)+"-"+str(chunk)
               jobname = "Zanalysis_"+outfolder_name+"_"+sample[i]+"["+joblist+"]"
               LSFJobOutput = ''
@@ -702,16 +701,16 @@ if(mergeSigEWKbkg):
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type d -name LSFJOB_* -exec rm -rf {} +")
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name batch_logs_* -delete")
 
+if  not file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEMAD/WanalysisOnDATA.root") \
+and not file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEMAD/ZanalysisOnDATA.root") \
+and not file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEPOW/WanalysisOnDATA.root") \
+and not file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEPOW/ZanalysisOnDATA.root") :
+  print "Cannot find any merged histogram in "+outfolder_name+", exiting"
+  sys.exit(1)
+
 if(removeChunks):
-  if file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEMAD/WanalysisOnDATA.root") \
-  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEMAD/ZanalysisOnDATA.root") \
-  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEPOW/WanalysisOnDATA.root") \
-  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEPOW/ZanalysisOnDATA.root") :
-    print "Removing chunks from JobOutputs/"+outfolder_name
-    os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name [WZ]analysis_chunk*.root -delete")
-  else:
-    print "Cannot find any merged histogram in "+outfolder_name+", not deleting chunks"
-  os.chdir(base_path);
+  print "Removing chunks from JobOutputs/"+outfolder_name
+  os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name [WZ]analysis_chunk*.root -delete")
 
 if(runPrepareDataCards):
   os.chdir("AnalysisCode/");
