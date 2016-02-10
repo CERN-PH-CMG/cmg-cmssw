@@ -47,6 +47,7 @@ double costh_CS_gen = -1e10, phi_CS_gen = -1e10;
 
 const double ZPt_cut = 30; // ADDED DURING PLOTS PRE-UNBLINDING
 const bool preUnblinding = false; // this is meant to save only the inclusive plots the controlplots variable is used for the various binned plots
+const bool progressPlots = false; // for the _1_ through _7_ plots, disabled for fast profiling
 
 
 void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, int useMomentumCorr, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int usePhiMETCorr, int useRecoilCorr, int correctToMadgraph, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights, int reweight_polarization, TString systid)
@@ -578,7 +579,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     // SELECT EVENT WITH Z/W SCALED CUTS
     // gen stuff to be used only when required
     if(useGenVar){
-      if(ZGen_mass>0){
+      if(progressPlots && ZGen_mass>0){
         double WlikeGen_var_NotScaled[WMass::NFitVar] = {muGen_status3.Pt(), ZGen_mt, neutrinoGen_status3.Pt()};
         
         for(int k=0;k<WMass::NFitVar;k++)
@@ -818,12 +819,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
           //------------------------------------------------------
           // full ID and tight requirements on the muons as defined by Heiner for the efficiencies
           //------------------------------------------------------
-          if(
-              MuPosIsTight && MuPos_dxy<0.02
+          if( MuPosIsTight && MuPos_dxy<0.02
               && MuNegIsTight && MuNeg_dxy<0.02
-              && muRelIso<0.12 && neutrinoRelIso<0.5
-            ){
-            for(int k=0;k<WMass::NFitVar;k++)
+              && muRelIso<0.12 && neutrinoRelIso<0.5 )
+          {
+            if (progressPlots) for(int k=0;k<WMass::NFitVar;k++)
               common_stuff::plot1D(Form("hWlike%s_%s_5_RecoCut_eta%s_%.0f",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
                 Wlike_vars[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
   
@@ -831,7 +831,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             // cut on MET
             //------------------------------------------------------
             if(Wlike_metCentral.Pt()>WMass::sel_xmin[2]*ZWmassRatio){
-              for(int k=0;k<WMass::NFitVar;k++)
+              if (progressPlots) for(int k=0;k<WMass::NFitVar;k++)
                 common_stuff::plot1D(Form("hWlike%s_%s_6_METCut_eta%s_%.0f",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
                   Wlike_vars[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
               
@@ -845,7 +845,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               if(WlikeCentral.Pt()<WMass::WpTcut*ZWmassRatio
                   && ZcorrCentral.Pt() < ZPt_cut // ADDED DURING PLOTS PRE-UNBLINDING
                  ){
-                for(int k=0;k<WMass::NFitVar;k++)
+                if (progressPlots) for(int k=0;k<WMass::NFitVar;k++)
                   common_stuff::plot1D(Form("hWlike%s_%s_7_RecoilCut_eta%s_%.0f",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
                               Wlike_vars[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
                 
