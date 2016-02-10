@@ -689,9 +689,10 @@ if(runWanalysis or runZanalysis):
     os.chdir(base_path);
 
 if(mergeSigEWKbkg):
-  os.chdir("utils/");
-  os.system("./merge_MC.sh \"../JobOutputs/"+outfolder_name+"/\" \""+mergeWhichAnalysis+"\"")
-  os.chdir(base_path);
+  rcode = os.system("utils/merge_MC.sh \"JobOutputs/"+outfolder_name+"/\" \""+mergeWhichAnalysis+"\"")
+  if rcode != 0:
+    print "Some merges failed, exiting"
+    sys.exit(rcode)
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type d -name LSFJOB_* -exec rm -rf {} +")
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name batch_logs_* -delete")
 

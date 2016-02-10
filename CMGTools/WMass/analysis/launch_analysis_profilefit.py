@@ -132,7 +132,13 @@ def file_exists_and_is_not_empty(fpath):
 ## ============================================================== #
 ## END FUNCTION DEFINITIONS
 ## ============================================================== #
-  
+
+# Check if it's running on lxplus
+import socket
+if "lxplus" not in socket.gethostname():
+  print "YOU NEED TO RUN THIS SCRIPT ON LXPLUS"
+  sys.exit(1)
+
 # Check if it's running from the correct dir
 base_path = os.getcwd()
 if os.path.dirname(os.path.realpath(__file__)) == base_path:
@@ -516,9 +522,10 @@ if(runZanalysis):
     os.chdir(base_path)
 
 if(mergeSigEWKbkg):
-  os.chdir("utils/")
-  os.system("./merge_MC.sh \"../JobOutputs/"+outfolder_name+"/\" \""+mergeWhichAnalysis+"\"")
-  os.chdir(base_path)
+  rcode = os.system(code_dir+"/merge_MC.sh \"JobOutputs/"+outfolder_name+"/\" \""+mergeWhichAnalysis+"\"")
+  if rcode != 0:
+    print "Some merges failed, exiting"
+    sys.exit(rcode)
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type d -name LSFJOB_* -exec rm -rf {} +")
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name batch_logs_* -delete")
 
