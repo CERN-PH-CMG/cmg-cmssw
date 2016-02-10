@@ -63,6 +63,7 @@ do
   if [ ${doEWKMerge} == 0 ]
   then
     echo "NO ${analyses[id_ana]} EWK MERGE DONE, AS THERE WERE MISSING HISTOGRAMS"
+    exit 1
   else
     echo ${analyses[id_ana]}" MERGE"
     filename=${analyses[id_ana]}OnDATA
