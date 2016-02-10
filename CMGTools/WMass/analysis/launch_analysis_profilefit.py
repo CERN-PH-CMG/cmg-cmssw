@@ -82,7 +82,7 @@ batchQueue = "1nh"
 runZanalysis = 1
 controlplots = 0
 noLSFJobOutput = 1  # 1: Puts all the batch logs in a single file
-recreateSubPrograms = 0  # 1: Recompiles run?analysis.o and remakes run?analysis.sh
+recreateSubPrograms = 0  # 1: Recompiles run?analysis and remakes run?analysis.sh
 
 ### MERGE ###
 mergeSigEWKbkg = 0
@@ -396,18 +396,18 @@ if(runZanalysis):
   os.chdir(base_path+"/JobOutputs/"+outfolder_name)
   code_dir = base_path + "/ProfileCode/"
 
-  ### Compiling run?analysis.o (if needed)
+  ### Compiling run?analysis (if needed)
 
-  if (recreateSubPrograms or not file_exists_and_is_not_empty("runZanalysis.o")):
+  if (recreateSubPrograms or not file_exists_and_is_not_empty("runZanalysis")):
     # Copy Zanalysis.C in the dest folder (it has some parameters)
     shutil.copyfile(code_dir+"/Zanalysis.C", "Zanalysis.C")
     cpp_command = "c++ -O2"
     if(useLHAPDF):
       print(cpp_command+" -o runZanalysis -DLHAPDF_ON `root-config --glibs --libs --cflags`  -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
-      os.system(cpp_command+" -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+      os.system(cpp_command+" -o runZanalysis -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
     else:
       print(cpp_command+" -o runZanalysis `root-config --cflags --glibs` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
-      os.system(cpp_command+" -o runZanalysis.o `root-config --glibs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+      os.system(cpp_command+" -o runZanalysis `root-config --glibs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
   
   for i in range(0, nsamples):
 
@@ -460,12 +460,12 @@ if(runZanalysis):
 
     zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(correctToMadgraph)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])+","+str(reweight_polarization)
 
-    line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o -1,0,0,"+zstring).read()
+    line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis -1,0,0,"+zstring).read()
     nEntries = [int(s) for s in line.split() if s.isdigit()][0]
 
     if not useBatch:
       os.chdir(code_dir)
-      os.system(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o 0,0,"+str(nEntries)+","+zstring)
+      os.system(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis 0,0,"+str(nEntries)+","+zstring)
     else:
       jobfirst = 1
       nevents = 1e5
@@ -493,7 +493,7 @@ if(runZanalysis):
             text_file.write("cd "+code_dir+"\n")
             text_file.write("eval `scramv1 runtime -sh`\n")
             text_file.write("source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/bin/thisroot.sh \n")
-            text_file.write(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o "+str(chunk)+","+str(ev_ini)+","+str(ev_fin)+","+zstring)
+            text_file.write(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis "+str(chunk)+","+str(ev_ini)+","+str(ev_fin)+","+zstring)
             text_file.close()
             os.system("chmod 755 runZanalysis_"+str(chunk)+".sh")
           # Send array if we reached maximum capacity (1000) or last chunk
@@ -529,10 +529,10 @@ if(mergeSigEWKbkg):
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name batch_logs_* -delete")
 
 if(removeChunks):
-  if file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEMAD/WanalysisOnDATA.root") \
-  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEMAD/ZanalysisOnDATA.root") \
-  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEPOW/WanalysisOnDATA.root") \
-  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEPOW/ZanalysisOnDATA.root") :
+  if file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEMAD/WanalysisOnDATA.root") \
+  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEMAD/ZanalysisOnDATA.root") \
+  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEPOW/WanalysisOnDATA.root") \
+  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEPOW/ZanalysisOnDATA.root") :
     print "Removing chunks from JobOutputs/"+outfolder_name
     os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name [WZ]analysis_chunk*.root -delete")
   else:
