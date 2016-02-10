@@ -20,8 +20,9 @@ namespace WMass{
   static const int PtSFNSteps = PAR_PTSF_NSTEP;
   static const int PtSFtype[PtSFNSteps] = { PAR_PTSF_STEPS };
   
-  static const int etaMuonNSteps = PAR_ETA_NSTEP;
-  static const float etaMaxMuons[etaMuonNSteps] = { PAR_ETA_STEPS };
+  static const double etaMaxMuons = PAR_ETA_CUT;
+  
+  static const int efficiency_toys = PAR_EFF_TOYS;
 
   static const int nSigOrQCD = 2;
   TString nSigOrQCD_str[nSigOrQCD] = {"Sig","QCD"};

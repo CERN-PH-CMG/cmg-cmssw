@@ -469,78 +469,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     // compute event weight
     //------------------------------------------------------
 
-    //---------------- MUON weight
-    // int runopt = r->Rndm()<0.457451 ? 0 : 1;
-    double TRG_TIGHT_ISO_muons_SF = 1;
-    double eff_TIGHT_SF = 1;
-    double eff_TIGHT_subleading_SF = 1;
-    double eff_ISO_SF = 1;
-    double eff_TRG_SF = 1;
-    // double MuNeg_tight_muon_SF = 1;
-
-    costh_HX = -1e10;     phi_HX = -1e10;
-    costh_HX_gen = -1e10; phi_HX_gen = -1e10;
-    costh_CS = -1e10;     phi_CS = -1e10;
-    costh_CS_gen = -1e10; phi_CS_gen = -1e10;
-
-    if(MuPosGen_pt>0 && MuNegGen_pt>0) ComputeHXVarAndPhiStarEta(muPosGen_status3,muNegGen_status3,true);
-    if(MuPos_pt>0 && MuNeg_pt>0) ComputeHXVarAndPhiStarEta(muPosNoCorr,muNegNoCorr,false);
-
-    // cout << "CHECKING EFFICIENCIES" << endl;
-    if((useEffSF>=2 && useEffSF<=6 || useEffSF>=13 && useEffSF<=16) && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
-      if(useEffSF==2 || useEffSF==13 || useEffSF!=3){
-        // === leading
-        eff_TIGHT_SF            = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt:MuNeg_pt));
-        // cout << "eff_TIGHT_SF no smear= "<< eff_TIGHT_SF << endl;
-        if(useEffSF==13){
-          random_->SetSeed(UInt_t(TMath::Abs(isChargePos?MuPos_phi:MuNeg_phi)*1e9 + TMath::Abs(isChargePos?MuPos_eta:MuNeg_eta)*1e6 + TMath::Abs(isChargePos?MuPos_pt:MuNeg_pt)*1e3));
-          eff_TIGHT_SF += random_->Gaus(0,TMath::Hypot(0.02,SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt:MuNeg_pt))));
-          // cout << "eff_TIGHT_SF smear= "<< eff_TIGHT_SF << endl;
-        }
-        TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_SF;
-      }
-      if(useEffSF==2 || useEffSF==14 || useEffSF!=4){
-        // === subleading
-        // cout << "eff_ISO_SF"<<endl;
-        eff_ISO_SF              = SF_ISO05_PT10->GetBinContent(SF_ISO05_PT10->FindBin(costh_HX,TMath::Abs(phi_HX),ZNocorr.Pt()));
-        // cout << "eff_ISO_SF no smear= "<< eff_ISO_SF << endl;
-        if(useEffSF==14){
-          random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(TMath::Abs(phi_HX))*1e6 + TMath::Abs(ZNocorr.Pt())*1e3));
-          eff_ISO_SF += random_->Gaus(0,TMath::Hypot(0.02,SF_ISO05_PT10->GetBinError(SF_ISO05_PT10->FindBin(costh_HX,TMath::Abs(phi_HX),ZNocorr.Pt()))));
-          // cout << "eff_ISO_SF smear= "<< eff_ISO_SF << endl;
-        }
-        TRG_TIGHT_ISO_muons_SF  *= eff_ISO_SF;
-      }
-      if(useEffSF==2 || useEffSF==15 || useEffSF!=5){
-        // === subleading
-        // cout << "eff_TIGHT_subleading_SF"<<endl;
-        eff_TIGHT_subleading_SF = SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(isChargePos?MuNeg_eta:MuPos_eta,isChargePos?MuNeg_pt:MuPos_pt));
-        // cout << "eff_TIGHT_subleading_SF no smear= "<< eff_TIGHT_subleading_SF << endl;
-        if(useEffSF==15){
-          random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(TMath::Abs(phi_HX))*1e6 + TMath::Abs(ZNocorr.Pt())*1e3));
-          eff_TIGHT_subleading_SF += random_->Gaus(0,TMath::Hypot(0.02,SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(isChargePos?MuNeg_eta:MuPos_eta,isChargePos?MuNeg_pt:MuPos_pt))));
-          // cout << "eff_TIGHT_subleading_SF smear= "<< eff_TIGHT_subleading_SF << endl;
-        }
-        TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
-      }
-      if(useEffSF==2 || useEffSF==16 || useEffSF!=6){
-        // === leading
-        // cout << "eff_TRG_SF"<<endl;
-        eff_TRG_SF              = SF_HLT->GetBinContent(SF_HLT->FindBin(isChargePos?1:-1,isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt:MuNeg_pt));
-        // cout << "eff_TRG_SF no smear= "<< eff_TRG_SF << endl;
-        if(useEffSF==16){
-          random_->SetSeed(UInt_t(TMath::Abs(isChargePos?1:-1)*1e9 + TMath::Abs(TMath::Abs(isChargePos?MuPos_eta:MuNeg_eta))*1e6 + TMath::Abs(isChargePos?MuPos_pt:MuNeg_pt)*1e3));
-          eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.02,SF_HLT->GetBinContent(SF_HLT->FindBin(isChargePos?1:-1,isChargePos?MuPos_eta:MuNeg_eta,isChargePos?MuPos_pt:MuNeg_pt))));
-          // cout << "eff_TRG_SF smear= "<< eff_TRG_SF << endl;
-        }
-        TRG_TIGHT_ISO_muons_SF  *= eff_TRG_SF;
-      }
-    }else if(useEffSF==7){
-      // cout << "flat SF at 0.98"<<endl;
-      TRG_TIGHT_ISO_muons_SF=0.98;
-    }
-    // cout << "TRG_TIGHT_ISO_muons_SF= " << TRG_TIGHT_ISO_muons_SF << endl;
-
     //---------------- LUMI weight
     double evt_weight = lumi_scaling;
     // cout << "evt_weight_original " << evt_weight_original << endl;
@@ -583,7 +511,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       evt_weight *= AngCoef_sf!=0 ? AngCoef_sf : 1;
       // hZmassSF_central->Print();
     }
-
 
     //---------------- Invariant Mass weight
     // cout << "mass= " << ZGen_PostFSR_mass << " use_syst_ewk_Alcaraz = "<< use_syst_ewk_Alcaraz << endl;
@@ -630,13 +557,78 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       }else if(use_syst_ewk_Alcaraz==0){
       }        
     }
-    
+
     //------------------------------------------------------
-    // start loop on eta_max cuts
-    //------------------------------------------------------    
-    for(int i=0; i<WMass::etaMuonNSteps; i++){
-      TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
-      // cout << "eta_str " << eta_str << endl;
+    // define eta_max cut
+    // WMass::etaMaxMuons = 0.9
+    //------------------------------------------------------
+    TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
+
+    //---------------- MUON weight
+    // int runopt = r->Rndm()<0.457451 ? 0 : 1;
+    double TRG_TIGHT_ISO_muons_SF = 1;
+    double eff_TIGHT_SF = 1;
+    double eff_TIGHT_subleading_SF = 1;
+    double eff_ISO_SF = 1;
+    double eff_TRG_SF = 1;
+    // double MuNeg_tight_muon_SF = 1;
+
+    costh_HX = -1e10;     phi_HX = -1e10;
+    costh_HX_gen = -1e10; phi_HX_gen = -1e10;
+    costh_CS = -1e10;     phi_CS = -1e10;
+    costh_CS_gen = -1e10; phi_CS_gen = -1e10;
+
+    if(MuPosGen_pt>0 && MuNegGen_pt>0) ComputeHXVarAndPhiStarEta(muPosGen_status3,muNegGen_status3,true);
+    if(MuPos_pt>0 && MuNeg_pt>0) ComputeHXVarAndPhiStarEta(muPosNoCorr,muNegNoCorr,false);
+    
+    //-----------------------------
+    // Throw toys for efficiency (i)
+    //------------------------------
+    for (int i=0; i<WMass::efficiency_toys; ++i) {
+      // charge invariant variables
+      double& Mu_pt  = isChargePos ? MuPos_pt  : MuNeg_pt;
+      double& Mu_eta = isChargePos ? MuPos_eta : MuNeg_eta;
+      double& Mu_phi = isChargePos ? MuPos_phi : MuNeg_phi;
+      
+      if((useEffSF>=2 && useEffSF<=6 || useEffSF>=13 && useEffSF<=16) && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
+        if(useEffSF==2 || useEffSF==13 || useEffSF!=3){
+          // === leading
+          eff_TIGHT_SF = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(Mu_eta,Mu_pt));
+          if(useEffSF==13){
+            random_->SetSeed(UInt_t(TMath::Abs(Mu_phi)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
+            eff_TIGHT_SF += random_->Gaus(0, TMath::Hypot(0.02, SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt))));
+          }
+          TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_SF;
+        }
+        if(useEffSF==2 || useEffSF==14 || useEffSF!=4){
+          // === subleading
+          eff_ISO_SF   = SF_ISO05_PT10->GetBinContent(SF_ISO05_PT10->FindBin(costh_HX,TMath::Abs(phi_HX),ZNocorr.Pt()));
+          if(useEffSF==14){
+            random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
+            eff_ISO_SF += random_->Gaus(0, TMath::Hypot(0.02, SF_ISO05_PT10->GetBinError(SF_ISO05_PT10->FindBin(costh_HX, TMath::Abs(phi_HX),ZNocorr.Pt()))));
+          }
+          TRG_TIGHT_ISO_muons_SF  *= eff_ISO_SF;
+        }
+        if(useEffSF==2 || useEffSF==15 || useEffSF!=5){
+          // === subleading
+          eff_TIGHT_subleading_SF = SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt));
+          if(useEffSF==15){
+            random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
+            eff_TIGHT_subleading_SF += random_->Gaus(0,TMath::Hypot(0.02, SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt))));
+          }
+          TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
+        }
+        if(useEffSF==2 || useEffSF==16 || useEffSF!=6){
+          // === leading
+          eff_TRG_SF = SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt));
+          if(useEffSF==16){
+            random_->SetSeed(UInt_t(TMath::Abs(isChargePos?1:2)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
+            eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.02,SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))));
+          }
+        }
+      }else if(useEffSF==7){
+        TRG_TIGHT_ISO_muons_SF=0.98;
+      }
       
       //------------------------------------------------------
       // retrieve and use gen-level info
@@ -661,7 +653,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               common_stuff::plot1D(Form("hWlike%s_%sNonScaled_2_ZGenMassCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
                                     WlikeGen_var_NotScaled[k], evt_weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
             
-            if(TMath::Abs(muGen_status3.Eta())<WMass::etaMaxMuons[i]){
+            if(TMath::Abs(muGen_status3.Eta())<WMass::etaMaxMuons){
               for(int k=0;k<WMass::NFitVar;k++)
                 common_stuff::plot1D(Form("hWlike%s_%sNonScaled_3_Mu1GenCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
                                       WlikeGen_var_NotScaled[k], evt_weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
@@ -711,7 +703,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         //------------------------------------------------------
         if( evtHasGoodVtx && evtHasTrg && muNoCorr.Pt()>0
             // CUTS ADDED TO SPEED UP THE CODE
-            && TMath::Abs(muCorrCentral.Eta())<WMass::etaMaxMuons[i]
+            && TMath::Abs(muCorrCentral.Eta())<WMass::etaMaxMuons
             // && TMath::Abs(neutrinoCorrCentral.Eta())<2.4
             && TMath::Abs(neutrinoCorrCentral.Eta())<submuon_eta_cut // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING
             && MuPos_charge != MuNeg_charge
@@ -1055,7 +1047,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               // good pair within acceptance cuts for both muons
               //------------------------------------------------------
               if( ZcorrCentral.M()>50
-                  && TMath::Abs(muCorrCentral.Eta())<WMass::etaMaxMuons[i] 
+                  && TMath::Abs(muCorrCentral.Eta())<WMass::etaMaxMuons
                   // && TMath::Abs(neutrinoCorrCentral.Eta())<2.4 
                   && TMath::Abs(neutrinoCorrCentral.Eta())<submuon_eta_cut // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING 
                   && MuPos_charge != MuNeg_charge
@@ -1461,8 +1453,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         } // end if for good reco event
       } // end if for dummy signal/fake separation
       first_time_in_the_event=false;
-    } // end muon eta loop
-    
+    } // end efficiency toys    
   } // end event loop
 
   // outTXTfile.close();
@@ -1473,8 +1464,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   hZPtSF->Write();
 
   if(!(sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){
-    for(int i=0; i<WMass::etaMuonNSteps; i++){
-      TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
+    for(int i=0; i<WMass::efficiency_toys; i++){
+      TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
       for(int j=0; j<2*WMass::WMassNSteps+1; j++){
         if(WMass::WMassNSteps!=j){
           // int jZmass_MeV = (WMass::WMassCentral_MeV-(WMass::WMassNSteps-j)*WMass::WMass_SkipNSteps);
