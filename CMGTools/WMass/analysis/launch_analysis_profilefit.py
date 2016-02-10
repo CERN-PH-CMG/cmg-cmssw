@@ -73,7 +73,7 @@ useAlsoGenPforSig= 1
 normalize_MC_to_half_of_the_data = 1  # useful for W-like because we use half of it to calibrate the recoil
 
 # {DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW}
-resubmit_sample = "WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
+resubmit_sample = "WJetsMadFake, DYJetsPow, DYJetsMadFake, TTJets, ZZJets, WWJets, WZJets, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
 # resubmit_sample = "DATA"
 
 useBatch = 1

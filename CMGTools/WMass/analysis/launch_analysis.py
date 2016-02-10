@@ -76,8 +76,8 @@ WMassCentral_MeV = "80398"  # 80.385  (PDG)
 WMassSkipNSteps = "5"  # 15 -- used for LHE mass scaling
 
 # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
-resubmit_sample = "WJetsMadSig,  WJetsMadFake,  DYJetsPow, DYJetsMadFake, TTJets, ZZJets, WWJets, WZJets, QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
-# resubmit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
+resubmit_sample = "WJetsMadFake, DYJetsPow, DYJetsMadFake, TTJets, ZZJets, WWJets, WZJets, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
+# resubmit_sample = "DYJetsPow"
 # resubmit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
 
 useBatch = config.useBatch
