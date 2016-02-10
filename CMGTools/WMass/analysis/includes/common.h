@@ -22,7 +22,7 @@ namespace WMass{
   
   static const double etaMaxMuons = PAR_ETA_CUT;
   
-  static const int efficiency_toys = PAR_EFF_TOYS;
+  static const int efficiency_toys = PAR_EFF_TOYS; // 0=No, >1=Yes
 
   static const int nSigOrQCD = 2;
   TString nSigOrQCD_str[nSigOrQCD] = {"Sig","QCD"};

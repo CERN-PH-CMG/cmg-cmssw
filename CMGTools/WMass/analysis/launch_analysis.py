@@ -31,22 +31,8 @@ usePtSF = 0; # Boson pT reweighting: -1=none, 0=data, 1...=other options
 
 ### Muon trigger efficiency
 useEffSF = config.useEffSF
-
-### MUON
-useMomentumCorr = 4  # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector, 4=KalmanCorrectorParam
-MuonCorrGlobalScaleNsigma = config.MuonCorrGlobalScaleNsigma
-MuonCorrKalmanNvarsNsigma = config.MuonCorrKalmanNvarsNsigma
-
-WlikeCharge = config.WlikeCharge
-
-### RECOIL
-useRecoilCorr = config.useRecoilCorr
-RecoilCorrVarDiagoParU1orU2fromDATAorMC = config.RecoilCorrVarDiagoParU1orU2fromDATAorMC
-RecoilCorrVarDiagoParSigmas = config.RecoilCorrVarDiagoParSigmas
-
-correctToMadgraph = 0; # 0: uses DATA as target -- 1: uses Madgraph as target (also needed to write recoil closure plots)
-
-usePhiMETCorr = 0; # 0=none, 1=yes
+### EFFICIENCY TOYS
+efficiency_toys = 0  # 0=No, >1=Yes
 
 ### EWK CORR
 syst_ewk_Alcaraz = 0; # -1=none, 0=POWHEG QCD+EWK NLO (bug-fixed), 1= 0 +syst photos vs pythia (31 = 3 times), 2= 0 +syst no nloewk vs nloewk (32 = 3 times)
@@ -75,6 +61,25 @@ ZMassCentral_MeV = "91188"  # 91.1876 (PDG)
 WMassCentral_MeV = "80398"  # 80.385  (PDG)
 WMassSkipNSteps = "5"  # 15 -- used for LHE mass scaling
 
+### MUON
+useMomentumCorr = 4  # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector, 4=KalmanCorrectorParam
+MuonCorrGlobalScaleNsigma = config.MuonCorrGlobalScaleNsigma
+MuonCorrKalmanNvarsNsigma = config.MuonCorrKalmanNvarsNsigma
+
+# Wlike properties
+WMassNSteps = str(config.WMassNSteps)
+WlikeCharge = config.WlikeCharge
+etaMaxMuons = str(config.etaMaxMuons)
+
+### RECOIL
+useRecoilCorr = config.useRecoilCorr
+RecoilCorrVarDiagoParU1orU2fromDATAorMC = config.RecoilCorrVarDiagoParU1orU2fromDATAorMC
+RecoilCorrVarDiagoParSigmas = config.RecoilCorrVarDiagoParSigmas
+
+correctToMadgraph = 0; # 0: uses DATA as target -- 1: uses Madgraph as target (also needed to write recoil closure plots)
+
+usePhiMETCorr = 0; # 0=none, 1=yes
+
 # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 resubmit_sample = "WJetsMadFake, DYJetsPow, DYJetsMadFake, TTJets, ZZJets, WWJets, WZJets, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
 # resubmit_sample = "DYJetsPow"
@@ -82,10 +87,6 @@ resubmit_sample = "WJetsMadFake, DYJetsPow, DYJetsMadFake, TTJets, ZZJets, WWJet
 
 useBatch = config.useBatch
 batchQueue = config.batchQueue
-
-WMassNSteps = str(config.WMassNSteps)
-etaMuonNSteps = "1"  # 5 <-- lenght of the etaMaxMuons
-etaMaxMuons = str(config.etaMaxMuons)
 
 runWanalysis = 0
 runZanalysis = config.runZanalysis
@@ -472,7 +473,7 @@ if(runWanalysis or runZanalysis):
     print "Creating JobOutputs/"+outfolder_name+"/common.h from includes/common.h"
     shutil.copyfile("includes/common.h", "JobOutputs/"+outfolder_name+"/common.h");
     # Edit template
-    os.system("sh "+base_path+"/utils/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMuonNSteps+" \""+etaMaxMuons+"\" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(WlikeCharge)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrKalmanNparameters)+" "+"JobOutputs/"+outfolder_name+"/common.h")
+    os.system("sh "+base_path+"/utils/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMaxMuons+" "+efficiency_toys+" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(WlikeCharge)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrKalmanNparameters)+" "+"JobOutputs/"+outfolder_name+"/common.h")
 
   print ""
 
