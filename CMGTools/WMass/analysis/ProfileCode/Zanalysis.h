@@ -74,8 +74,6 @@ class Zanalysis {
   Double_t        ZGen_phi;
   Double_t        ZGen_mass;
   Double_t        ZGen_mt;
-  Double_t        u1;
-  Double_t        u2;
   Double_t        MuPos_pt;
   Double_t        MuPos_eta;
   Double_t        MuPos_phi;
@@ -165,8 +163,6 @@ class Zanalysis {
   TBranch        *b_ZGen_phi;   //!
   TBranch        *b_ZGen_mass;   //!
   TBranch        *b_ZGen_mt;   //!
-  TBranch        *b_u1;   //!
-  TBranch        *b_u2;   //!
   TBranch        *b_MuPos_pt;   //!
   TBranch        *b_MuPos_eta;   //!
   TBranch        *b_MuPos_phi;   //!
@@ -345,8 +341,6 @@ void Zanalysis::Init(TTree *tree)
   fChain->SetBranchAddress("Z_phi", &Z_phi, &b_Z_phi);
   fChain->SetBranchAddress("Z_mass", &Z_mass, &b_Z_mass);
   fChain->SetBranchAddress("Z_mt", &Z_mt, &b_Z_mt);
-  fChain->SetBranchAddress("u1corr", &u1, &b_u1); // TEMP WITH Jul 2nd NTUPLES!!!!
-  fChain->SetBranchAddress("u2corr", &u2, &b_u2); // TEMP WITH Jul 2nd NTUPLES!!!!
   fChain->SetBranchAddress("MuPos_pt", &MuPos_pt, &b_MuPos_pt);
   fChain->SetBranchAddress("MuPos_eta", &MuPos_eta, &b_MuPos_eta);
   fChain->SetBranchAddress("MuPos_phi", &MuPos_phi, &b_MuPos_phi);
@@ -373,7 +367,6 @@ void Zanalysis::Init(TTree *tree)
   fChain->SetBranchAddress("FSRWeight", &FSRWeight, &b_FSRWeight);
   fChain->SetBranchAddress("ZGen_PostFSR_mass", &ZGen_PostFSR_mass, &b_ZGen_PostFSR_mass);
 
- 
   if(useGenVar){
     fChain->SetBranchAddress("ZGen_mass", &ZGen_mass, &b_ZGen_mass);
     fChain->SetBranchAddress("ZGen_pt", &ZGen_pt, &b_ZGen_pt);
@@ -396,7 +389,7 @@ void Zanalysis::Init(TTree *tree)
     // fChain->SetBranchAddress("LHE_ren", LHE_ren, &b_LHE_ren);
     // fChain->SetBranchAddress("LHE_fac", LHE_fac, &b_LHE_fac);
     // fChain->SetBranchAddress("LHE_pdf", LHE_pdf, &b_LHE_pdf);
- }
+  }
   Notify();
 }
 
@@ -623,21 +616,6 @@ void Zanalysis::fillControlPlots(TLorentzVector Zcorr, TLorentzVector met, TLore
   common_stuff::plot1D(Form("hJetphi_%s_%s_eta%s_%d",phaseSpace_str.Data(),SigOrQCD_str.Data(),eta_str.Data(),jZmass_MeV),
 		       Jet_leading_phi,weight,
 		       h_1d, 100, -TMath::Pi(),TMath::Pi() );
-  common_stuff::plot1D(Form("hu1_%s_%s_eta%s_%d",phaseSpace_str.Data(),SigOrQCD_str.Data(),eta_str.Data(),jZmass_MeV),
-		       u1,weight,
-		       h_1d, 360,-30,150 );
-  common_stuff::plot1D(Form("hu1_Zpt_%s_%s_eta%s_%d",phaseSpace_str.Data(),SigOrQCD_str.Data(),eta_str.Data(),jZmass_MeV),
-		       u1-Zcorr.Pt(),weight,
-		       h_1d, 360,-30,150 );
-  common_stuff::plot1D(Form("hu2_%s_%s_eta%s_%d",phaseSpace_str.Data(),SigOrQCD_str.Data(),eta_str.Data(),jZmass_MeV),
-		       u2,weight,
-		       h_1d, 250,-50,50 );
-  common_stuff::plot2D(Form("hu1vsZpt_%s_%s_eta%s_%d",phaseSpace_str.Data(),SigOrQCD_str.Data(),eta_str.Data(),jZmass_MeV),
-		       Zcorr.Pt(),u1,weight,
-		       h_2d, 100,0,25,360,-30,150 );
-  common_stuff::plot2D(Form("hu2vsZpt_%s_%s_eta%s_%d",phaseSpace_str.Data(),SigOrQCD_str.Data(),eta_str.Data(),jZmass_MeV),
-		       Zcorr.Pt(),u2,weight,
-		       h_2d, 100,0,25,250,-50,50 );
 
 }
 
