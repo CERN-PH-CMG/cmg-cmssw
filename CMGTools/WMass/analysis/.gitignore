@@ -6,3 +6,7 @@
 
 # Specific stuff
 JobOutputs
+
+# Common
+common.h
+common2.h

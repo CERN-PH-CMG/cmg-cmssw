@@ -29,9 +29,9 @@ usePtSF = 0  # Boson pT reweighting: -1=none, 0=data, 1...=other options
 
 ### MUON
 useMomentumCorr = 4  # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector, 4=KalmanCorrectorParam
-MuonKalmanVariation = 0     # n of sigmas for muon options
+MuonKalmanVariation = 0     # vary a muon fit eigenv (0...45)
 MuonScaleVariation = False  # vary global muon scale (True/False)
-MuonVariationSigmas = 0     # vary a muon fit eigenv (0...45)
+MuonVariationSigmas = 0     # n of sigmas for muon options
 
 # Wlike properies
 NMassValues = 11
@@ -72,11 +72,9 @@ intLumi_MC_fb = 81293448/31314/1e3  # data = 4.7499 fb-1 prescaled trigger, 5.1 
 useAlsoGenPforSig= 1
 normalize_MC_to_half_of_the_data = 1  # useful for W-like because we use half of it to calibrate the recoil
 
-# DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
-resubmit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
-#resubmit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig, DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
-#resubmit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
-# resubmit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
+# {DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW}
+resubmit_sample = "WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
+# resubmit_sample = "DATA"
 
 useBatch = 1
 batchQueue = "1nh"
@@ -195,7 +193,7 @@ elif(int(useMomentumCorr)==4):
   outfolder_name+=""  # "_KalmanCorrParam" is implicit
 
 if(int(MuonVariationSigmas)!=0):
-  syststring=["Down", "Up"](MuonVariationSigmas>0)
+  syststring=["Down", "Up"][MuonVariationSigmas>0]
   if(int(MuonKalmanVariation) != 0):
     outfolder_name+="_KalmanVar"+str(MuonKalmanVariation)+syststring
   if(int(MuonScaleVariation) == True):
@@ -209,7 +207,7 @@ if(int(useRecoilCorr)>0):
   if(int(correctToMadgraph)):
     outfolder_name+="_toMad"
   if(int(RecoilStatVariation)!=0):
-    syststring=["Down", "Up"](RecoilVariationSigmas>0)
+    syststring=["Down", "Up"][RecoilVariationSigmas>0]
     outfolder_name+="_RecoilEigen"+str(RecoilStatVariation)+syststring
 
 if(int(useEffSF)==1): outfolder_name+="_EffSFCorr"
@@ -397,7 +395,7 @@ if(runZanalysis):
   if (recreateSubPrograms or not file_exists_and_is_not_empty("runZanalysis.o")):
     # Copy Zanalysis.C in the dest folder (it has some parameters)
     shutil.copyfile(code_dir+"/Zanalysis.C", "Zanalysis.C")
-    cpp_command = "c++ -g -O2"
+    cpp_command = "c++ -O2"
     if(useLHAPDF):
       print(cpp_command+" -o runZanalysis -DLHAPDF_ON `root-config --glibs --libs --cflags`  -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
       os.system(cpp_command+" -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
@@ -464,9 +462,9 @@ if(runZanalysis):
       os.system(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o 0,0,"+str(nEntries)+","+zstring)
     else:
       jobfirst = 1
-      nevents = 2e5
+      nevents = 1e5
       if ("DYJetsMadSig" in sample[i] or "DYJetsPow" in sample[i]):
-        nevents = 1e5
+        nevents = 5e4
 
       os.chdir(outputSamplePath)
 

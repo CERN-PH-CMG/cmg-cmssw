@@ -954,8 +954,10 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                              // << " " << WMass::fit_xmin[k]*ZWmassRatio 
                              // << " " <<  WMass::fit_xmax[k]*ZWmassRatio 
                              // << endl;
-                        common_stuff::plot1D(Form("hWlike%s_%s_8_JetCut_pdf%d-%d_eta%s_%.0f",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,eta_str.Data(),Zmass_MeV),
-                                              Wlike_vars[k], weight_mass, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
+                        TString plotname = Form("hWlike%s_%s_8_JetCut_pdf%d-%d_eta%s", WCharge_str.Data(), WMass::FitVar_str[k].Data(), WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets, h, eta_str.Data())
+                        if (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))
+                          plotname = Form("%s_.0f", plotname.Data(), Zmass_MeV);
+                        common_stuff::plot1D(plotname, Wlike_vars[k], weight_mass, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
                         
                         // 2D plot obs_i vs obs_j (no MtLin)
                         if (false) {
@@ -1192,7 +1194,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   TFile*fout = new TFile(Form("%s/Zanalysis%s.root",outputdir.Data(),chunk_str.Data()),"RECREATE");
   fout->cd();
 
-  hZPtSF->Write();
+  if (controlplots) hZPtSF->Write();
 
   common_stuff::writeOutHistos(fout, h_1d, h_2d, h_3d);
     
