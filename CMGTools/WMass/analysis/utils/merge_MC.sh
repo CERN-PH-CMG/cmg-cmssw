@@ -83,9 +83,9 @@ do
     mkdir -p ${1}/output_MCDATALIKEPOW
     hadd -f ${1}/output_MCDATALIKEPOW/${filename}.root ${1}/output_EWKTT/${filename}.root ${1}/output_DYJetsPow/${filename}.root
 
-    echo ""; echo 'EWK + TT + Single Top + SIG MADGRAPH (MCDATALIKEMAD)'
-    # EWK + TT + SIG
-    mkdir -p ${1}/output_MCDATALIKEMAD
-    hadd -f ${1}/output_MCDATALIKEMAD/${filename}.root ${1}/output_EWKTT/${filename}.root ${1}/output_DYJetsMadSig/${filename}.root
+#    echo ""; echo 'EWK + TT + Single Top + SIG MADGRAPH (MCDATALIKEMAD)'
+#    # EWK + TT + SIG
+#    mkdir -p ${1}/output_MCDATALIKEMAD
+#    hadd -f ${1}/output_MCDATALIKEMAD/${filename}.root ${1}/output_EWKTT/${filename}.root ${1}/output_DYJetsMadSig/${filename}.root
   fi
 done
