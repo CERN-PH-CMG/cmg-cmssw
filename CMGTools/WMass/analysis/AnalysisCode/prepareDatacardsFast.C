@@ -52,11 +52,11 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
     for(int isample=0; isample<Nsamples;isample++){
       finTemplatesW[isample] = new TFile(Form("%s/output_%s/%sanalysisOnDATA.root",folder.Data(),samples_str[isample].Data(),WorZ.Data()));
       finTemplatesW[isample]->Print();
+      TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
       TString effToy_str = "";
       for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
         if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
 
-        TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
         for(int jmass=0; jmass<2*WMass::WMassNSteps+1; jmass++){
           // int jWmass = WMass::WMassCentral_MeV-(WMass::WMassNSteps-jmass)*WMass::WMassStep_MeV;
           int jWmass = WorZ.Contains("Z")? WMass::Zmass_values_array[jmass] : WMass::Wmass_values_array[jmass];
@@ -151,11 +151,11 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
 
       // LOOP OVER MAX-ETA BINS
 
+      TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
       TString effToy_str = "";
       for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
         if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
 
-        TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
         outTXTfile << "-----------------------" << endl;
         outTXTfile << "-----------------------" << endl;
         outTXTfile << "Mu"<<Wlike.Data()<<WCharge_str[c].Data()<< " with |eta| < " << WMass::etaMaxMuons[ieta] << endl;
@@ -280,11 +280,11 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
       }
 
 
+      TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
       TString effToy_str = "";
       for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
       if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
 
-        TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
         for(int jmass=0; jmass<2*WMass2::WMassNSteps+1; jmass++){
           int jWmass = WorZ.Contains("Z")? WMass2::Zmass_values_array[jmass] : WMass2::Wmass_values_array[jmass];
           for(int h=0; h<WMass::PDF_members; h++){

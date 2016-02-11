@@ -88,10 +88,11 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
       
       if(WMass::PDF_members>1 || m_end>1){
         for(int k=0;k<WMass::NFitVar;k++){
+        TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
+        TString effToy_str = "";
         for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
           if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
 
-            TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
             // TString eta_str = Form("%.1f",WMass::etaMaxMuons[0]); eta_str.ReplaceAll(".","p");
 
             g_deltaM_PDF[i][k][c] = new TGraphErrors();
@@ -116,10 +117,11 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
             // for(int i=0; i<1; i++){
             for(int i=0; i<WMass::etaMuonNSteps; i++){
             
+              TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
+              TString effToy_str = "";
               for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
                 if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
 
-                TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
                 cout << "merging pdf eta bin= " << i << endl;
                 
                 for(int k=0;k<WMass::NFitVar;k++){
@@ -397,7 +399,11 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
       if(some_fit_failed) continue;
       
       for(int i=0; i<WMass::etaMuonNSteps; i++){
-        TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
+        TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
+        TString effToy_str = "";
+        for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
+          if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
+
         for(int k=0;k<WMass::NFitVar;k++){
           if(WMass::PDF_members>1){
 
