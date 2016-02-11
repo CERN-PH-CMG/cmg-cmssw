@@ -797,216 +797,156 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             metphi_trasv = met_phicorr.second;
           }
 
-          //-----------------------------
-          // Throw toys for efficiency (i)
-          //------------------------------
-          TString effToy_str = "";
-          for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
-            if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
-            
-            if((useEffSF>=2 && useEffSF<=6 || useEffSF>=13 && useEffSF<=16) && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
-              if(useEffSF==2 || useEffSF==13 || useEffSF!=3){
-                // === leading
-                eff_TIGHT_SF = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(Mu_eta,Mu_pt));
-                if(useEffSF==13){
-                  random_->SetSeed(UInt_t(TMath::Abs(Mu_phi)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
-                  eff_TIGHT_SF += random_->Gaus(0, TMath::Hypot(0.01, SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt))));
+          for(int n=0; n<WMass::KalmanNvariations; n++){
+
+            TString KalmanVars_str = "";
+            if(WMass::KalmanNvariations>1) KalmanVars_str = Form("_KalmanVar%d",n);
+
+            //------------------------------------------------------------------------------------------------
+            // Apply muon corrections
+            //------------------------------------------------------------------------------------------------
+            if(first_time_in_the_event && m==m_start){ // use rochester corrections if required
+              //if(useMomentumCorr==1){ // use rochester corrections if required
+                //if(IS_MC_CLOSURE_TEST || isMCorDATA==0){
+                  //rmcor44X->momcor_mc(muPosCorr, MuPos_charge, varyMuonCorrNsigma/* , runopt */);
+                  //rmcor44X->momcor_mc(muNegCorr, MuNeg_charge, varyMuonCorrNsigma/* , runopt */);
+                  //rmcor44X->momcor_mc(muPosCorrCentral, MuPos_charge, 0/* , runopt */);
+                  //rmcor44X->momcor_mc(muNegCorrCentral, MuNeg_charge, 0/* , runopt */);
+                //}
+                //else{
+                  //rmcor44X->momcor_data(muPosCorr, MuPos_charge, varyMuonCorrNsigma , run<175832 ? 0 : 1 );
+                  //rmcor44X->momcor_data(muNegCorr, MuNeg_charge, varyMuonCorrNsigma , run<175832 ? 0 : 1 );
+                  //rmcor44X->momcor_data(muPosCorrCentral, MuPos_charge, 0 , run<175832 ? 0 : 1 );
+                  //rmcor44X->momcor_data(muNegCorrCentral, MuNeg_charge, 0 , run<175832 ? 0 : 1 );
+                //}
+              //}
+              if(useMomentumCorr==2){ // use Momentum scale corrections if required
+                corrector->applyPtCorrection(muPosCorr,MuPos_charge);
+                corrector->applyPtCorrection(muNegCorr,MuNeg_charge);
+                corrector->applyPtCorrection(muPosCorrCentral,MuPos_charge);
+                corrector->applyPtCorrection(muNegCorrCentral,MuNeg_charge);
+              }else if(useMomentumCorr==3){ // use Momentum scale corrections from Kalman calibrator if required
+                
+                if(n==0){
+                  corrector_Kalman->getCorrectedPt(muPosCorrCentral,MuPos_charge); //returns the corrected pt 
+                  corrector_Kalman->getCorrectedPt(muNegCorrCentral,MuNeg_charge); //returns the corrected pt 
+                  corrector_Kalman->smear(muPosCorrCentral);
+                  corrector_Kalman->smear(muNegCorrCentral);
                 }
-                TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_SF;
-              }
-              if(useEffSF==2 || useEffSF==14 || useEffSF!=4){
-                // === subleading
-                eff_ISO_SF   = SF_ISO05_PT10->GetBinContent(SF_ISO05_PT10->FindBin(costh_HX,TMath::Abs(phi_HX),ZNocorr.Pt()));
-                if(useEffSF==14){
-                  random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
-                  eff_ISO_SF += random_->Gaus(0, TMath::Hypot(0.01, SF_ISO05_PT10->GetBinError(SF_ISO05_PT10->FindBin(costh_HX, TMath::Abs(phi_HX),ZNocorr.Pt()))));
+                if(varyMuonCorrNsigma!=0){
+                  if(WMass::KalmanNvariations==1){
+                    corrector_Kalman->varyClosure(varyMuonCorrNsigma);
+                  }else{
+                    muPosCorr = muPosNoCorr;
+                    muNegCorr = muNegNoCorr;
+                    corrector_Kalman->reset(); 
+                    corrector_Kalman->vary(n,varyMuonCorrNsigma);
+                  }
                 }
-                TRG_TIGHT_ISO_muons_SF  *= eff_ISO_SF;
+                corrector_Kalman->getCorrectedPt(muPosCorr,MuPos_charge); //returns the corrected pt 
+                corrector_Kalman->getCorrectedPt(muNegCorr,MuNeg_charge); //returns the corrected pt 
+                corrector_Kalman->smear(muPosCorr);
+                corrector_Kalman->smear(muNegCorr);
               }
-              if(useEffSF==2 || useEffSF==15 || useEffSF!=5){
-                // === subleading
-                eff_TIGHT_subleading_SF = SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt));
-                if(useEffSF==15){
-                  random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
-                  eff_TIGHT_subleading_SF += random_->Gaus(0,TMath::Hypot(0.01, SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt))));
+              else if(useMomentumCorr==4){ // use Momentum scale corrections from KalmanParam calibrator if required
+                
+                if(n==0){
+                  corrector_KalmanParam->getCorrectedPt(muPosCorrCentral,MuPos_charge); //returns the corrected pt 
+                  corrector_KalmanParam->getCorrectedPt(muNegCorrCentral,MuNeg_charge); //returns the corrected pt 
+                  corrector_KalmanParam->smear(muPosCorrCentral);
+                  corrector_KalmanParam->smear(muNegCorrCentral);
                 }
-                TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
-              }
-              if(useEffSF==2 || useEffSF==16 || useEffSF!=6){
-                // === leading
-                eff_TRG_SF = SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt));
-                if(useEffSF==16){
-                  random_->SetSeed(UInt_t(TMath::Abs(isChargePos?1:2)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
-                  eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.01,SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))));
+                if(varyMuonCorrNsigma!=0){
+                  if(WMass::KalmanNvariations==1){ // vary global scale (just once)
+                    corrector_KalmanParam->varyClosure(varyMuonCorrNsigma);
+                  }else{ // vary n-th fit eigen
+                    muPosCorr = muPosNoCorr;
+                    muNegCorr = muNegNoCorr;
+                    corrector_KalmanParam->reset(); 
+                    corrector_KalmanParam->vary(n,varyMuonCorrNsigma);
+                  }
                 }
+                corrector_KalmanParam->getCorrectedPt(muPosCorr,MuPos_charge); //returns the corrected pt 
+                corrector_KalmanParam->getCorrectedPt(muNegCorr,MuNeg_charge); //returns the corrected pt 
+                corrector_KalmanParam->smear(muPosCorr);
+                corrector_KalmanParam->smear(muNegCorr);
               }
-            }else if(useEffSF==7){
-              TRG_TIGHT_ISO_muons_SF=0.98;
+
             }
 
-            for(int n=0; n<WMass::KalmanNvariations; n++){
+            Zcorr = muPosCorr + muNegCorr;
+            ZcorrCentral = muPosCorrCentral + muNegCorrCentral;
 
-              TString KalmanVars_str = "";
-              if(WMass::KalmanNvariations>1) KalmanVars_str = Form("_KalmanVar%d",n);
+            //------------------------------------------------------------------------------------------------
+            // Apply PT and Pol weight based on RECO
+            //------------------------------------------------------------------------------------------------
+            
+            if(first_time_in_the_event && m==m_start && n==0) {
+              if(usePtSF!=-1  && usePtSF!=1 &&usePtSF!=2 && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")))
+                evt_weight *= hZPtSF->Interpolate(ZcorrCentral.Pt())>0?hZPtSF->Interpolate(ZcorrCentral.Pt()):1;
 
-              //------------------------------------------------------------------------------------------------
-              // Apply muon corrections
-              //------------------------------------------------------------------------------------------------
-              if(first_time_in_the_event && m==m_start){ // use rochester corrections if required
-                //if(useMomentumCorr==1){ // use rochester corrections if required
-                  //if(IS_MC_CLOSURE_TEST || isMCorDATA==0){
-                    //rmcor44X->momcor_mc(muPosCorr, MuPos_charge, varyMuonCorrNsigma/* , runopt */);
-                    //rmcor44X->momcor_mc(muNegCorr, MuNeg_charge, varyMuonCorrNsigma/* , runopt */);
-                    //rmcor44X->momcor_mc(muPosCorrCentral, MuPos_charge, 0/* , runopt */);
-                    //rmcor44X->momcor_mc(muNegCorrCentral, MuNeg_charge, 0/* , runopt */);
-                  //}
-                  //else{
-                    //rmcor44X->momcor_data(muPosCorr, MuPos_charge, varyMuonCorrNsigma , run<175832 ? 0 : 1 );
-                    //rmcor44X->momcor_data(muNegCorr, MuNeg_charge, varyMuonCorrNsigma , run<175832 ? 0 : 1 );
-                    //rmcor44X->momcor_data(muPosCorrCentral, MuPos_charge, 0 , run<175832 ? 0 : 1 );
-                    //rmcor44X->momcor_data(muNegCorrCentral, MuNeg_charge, 0 , run<175832 ? 0 : 1 );
-                  //}
-                //}
-                if(useMomentumCorr==2){ // use Momentum scale corrections if required
-                  corrector->applyPtCorrection(muPosCorr,MuPos_charge);
-                  corrector->applyPtCorrection(muNegCorr,MuNeg_charge);
-                  corrector->applyPtCorrection(muPosCorrCentral,MuPos_charge);
-                  corrector->applyPtCorrection(muNegCorrCentral,MuNeg_charge);
-                }else if(useMomentumCorr==3){ // use Momentum scale corrections from Kalman calibrator if required
-                  
-                  // corrector_Kalman->getCorrectedPt(pt,eta,phi,charge); //returns the corrected pt 
-                  // if(isMCorDATA==0) corrector_Kalman->smear(pt,eta); // Applies smearing to the MC to match the data-returns the smeared pt -> Only for MC . 
-                  
-                  // if(TMath::Abs(muPosCorr.Eta())<0.9){
-                  
-                    // cout << "muPosCorr before muon correction" << endl; 
-                    // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
-                    // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
+              // Boson Polarization
+              common_stuff::ComputeAllVarPietro(muPosCorr,muNegCorr, costh_CS, phi_CS, costh_HX, phi_HX);
 
-                    if(n==0){
-                      corrector_Kalman->getCorrectedPt(muPosCorrCentral,MuPos_charge); //returns the corrected pt 
-                      corrector_Kalman->getCorrectedPt(muNegCorrCentral,MuNeg_charge); //returns the corrected pt 
-                      corrector_Kalman->smear(muPosCorrCentral);
-                      corrector_Kalman->smear(muNegCorrCentral);
-                    }
-                    if(varyMuonCorrNsigma!=0){
-                      if(WMass::KalmanNvariations==1){
-                        corrector_Kalman->varyClosure(varyMuonCorrNsigma);
-                      }else{
-                        muPosCorr = muPosNoCorr;
-                        muNegCorr = muNegNoCorr;
-                        corrector_Kalman->reset(); 
-                        corrector_Kalman->vary(n,varyMuonCorrNsigma);
-                      }
-                    }
-                    corrector_Kalman->getCorrectedPt(muPosCorr,MuPos_charge); //returns the corrected pt 
-                    corrector_Kalman->getCorrectedPt(muNegCorr,MuNeg_charge); //returns the corrected pt 
-                    corrector_Kalman->smear(muPosCorr);
-                    corrector_Kalman->smear(muNegCorr);
-                    // corrector_Kalman->getCorrectedPt(muNegCorrCentral,MuNeg_charge); //returns the corrected pt 
-                      
-                    // cout << "muPosCorr after scale correction, varyMuonCorrNsigma=" << varyMuonCorrNsigma << endl;
-                    // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
-                    // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
-                    // muPosCorr.Print();
-                    
-                    // if(isMCorDATA==0){ // Applies smearing to the MC to match the data-returns the smeared pt -> Only for MC .
-                      // corrector_Kalman->smear(muPosCorrCentral);
-                      // corrector_Kalman->smear(muNegCorrCentral);
-                    // }
-                    // cout << "corrector_Kalman->getN()= " << corrector_Kalman->getN() << endl;
-                    
-                    // cout << "muPosCorr after smear correction, varyMuonCorrNsigma=" << varyMuonCorrNsigma << endl;
-                    // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
-                    // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
-                    // if(varyMuonCorrNsigma!=0){
-                      // corrector_Kalman->applyPtBias(muPosCorr,1e-3*varyMuonCorrNsigma); //returns the corrected pt
-                      // // corrector_Kalman->applyPtBias(muNegCorr,1e-3*varyMuonCorrNsigma); //returns the corrected pt
-                    // }
-                    // cout << "muPosCorr after muon correction" << endl; 
-                    // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
-                    // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
-                  // }
-                }else if(useMomentumCorr==4){ // use Momentum scale corrections from KalmanParam calibrator if required
-                  
-                    // cout << "muPosCorr before muon correction" << endl; 
-                    // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
-                    // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
+              // cout
+              // << " ZcorrCentral.Rapidity()= " << ZcorrCentral.Rapidity()
+              // << " ZcorrCentral.Pt()= " << ZcorrCentral.Pt()
+              // << " hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())= " << hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())
+              // << " hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())= " << hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())
+              // << " costh_CS= " << costh_CS
+              // << " phi_CS= " << phi_CS
+              // << endl;
 
-                    if(n==0){
-                      corrector_KalmanParam->getCorrectedPt(muPosCorrCentral,MuPos_charge); //returns the corrected pt 
-                      corrector_KalmanParam->getCorrectedPt(muNegCorrCentral,MuNeg_charge); //returns the corrected pt 
-                      corrector_KalmanParam->smear(muPosCorrCentral);
-                      corrector_KalmanParam->smear(muNegCorrCentral);
-                    }
-                    if(varyMuonCorrNsigma!=0){
-                      if(WMass::KalmanNvariations==1){ // vary global scale (just once)
-                        corrector_KalmanParam->varyClosure(varyMuonCorrNsigma);
-                      }else{ // vary n-th fit eigen
-                        muPosCorr = muPosNoCorr;
-                        muNegCorr = muNegNoCorr;
-                        corrector_KalmanParam->reset(); 
-                        corrector_KalmanParam->vary(n,varyMuonCorrNsigma);
-                      }
-                    }
-                    corrector_KalmanParam->getCorrectedPt(muPosCorr,MuPos_charge); //returns the corrected pt 
-                    corrector_KalmanParam->getCorrectedPt(muNegCorr,MuNeg_charge); //returns the corrected pt 
-                    corrector_KalmanParam->smear(muPosCorr);
-                    corrector_KalmanParam->smear(muNegCorr);
-                    // corrector_KalmanParam->getCorrectedPt(muNegCorrCentral,MuNeg_charge); //returns the corrected pt 
-                      
-                    // cout << "muPosCorr after scale correction, varyMuonCorrNsigma=" << varyMuonCorrNsigma << endl;
-                    // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
-                    // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
-                    // muPosCorr.Print();
-                    
-                    // if(isMCorDATA==0){ // Applies smearing to the MC to match the data-returns the smeared pt -> Only for MC .
-                      // corrector_KalmanParam->smear(muPosCorrCentral);
-                      // corrector_KalmanParam->smear(muNegCorrCentral);
-                    // }
-                    // cout << "corrector_KalmanParam->getN()= " << corrector_KalmanParam->getN() << endl;
-                    
-                    // cout << "muPosCorr after smear correction, varyMuonCorrNsigma=" << varyMuonCorrNsigma << endl;
-                    // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
-                    // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
-                    // if(varyMuonCorrNsigma!=0){
-                      // corrector_KalmanParam->applyPtBias(muPosCorr,1e-3*varyMuonCorrNsigma); //returns the corrected pt
-                      // // corrector_KalmanParam->applyPtBias(muNegCorr,1e-3*varyMuonCorrNsigma); //returns the corrected pt
-                    // }
-                    // cout << "muPosCorr after muon correction" << endl; 
-                    // cout << "muPosCorr.Pt()= " << muPosCorr.Pt() << " muPosCorr.Eta()= " << muPosCorr.Eta() << " muPosCorr.Phi()= " << muPosCorr.Phi() << endl;
-                    // cout << "muPosCorrCentral.Pt()= " << muPosCorrCentral.Pt() << " muPosCorrCentral.Eta()= " << muPosCorrCentral.Eta() << " muPosCorrCentral.Phi()= " << muPosCorrCentral.Phi() << endl;
-                  // }
-                }
+              if(reweight_polarization==1 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow")))
+                // evt_weight *= hZPolSF->GetBinContent(hZPolSF->FindBin(costh_CS,TMath::Abs(phi_CS)))>0?hZPolSF->GetBinContent(hZPolSF->FindBin(costh_CS,TMath::Abs(phi_CS))):1;
+                evt_weight *= hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS))>0?hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS)):1;
+            }
 
-              }
-
-              Zcorr = muPosCorr + muNegCorr;
-              ZcorrCentral = muPosCorrCentral + muNegCorrCentral;
-
-              //------------------------------------------------------------------------------------------------
-              // Apply PT and Pol weight based on RECO
-              //------------------------------------------------------------------------------------------------
+            //-----------------------------
+            // Throw toys for efficiency (i)
+            //------------------------------
+            TString effToy_str = "";
+            for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
+              if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
               
-              if(first_time_in_the_event && m==m_start && n==0) {
-                if(usePtSF!=-1  && usePtSF!=1 &&usePtSF!=2 && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")))
-                  evt_weight *= hZPtSF->Interpolate(ZcorrCentral.Pt())>0?hZPtSF->Interpolate(ZcorrCentral.Pt()):1;
-
-                // Boson Polarization
-                common_stuff::ComputeAllVarPietro(muPosCorr,muNegCorr, costh_CS, phi_CS, costh_HX, phi_HX);
-
-                // cout
-                // << " ZcorrCentral.Rapidity()= " << ZcorrCentral.Rapidity()
-                // << " ZcorrCentral.Pt()= " << ZcorrCentral.Pt()
-                // << " hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())= " << hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())
-                // << " hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())= " << hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())
-                // << " costh_CS= " << costh_CS
-                // << " phi_CS= " << phi_CS
-                // << endl;
-
-                if(reweight_polarization==1 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow")))
-                  // evt_weight *= hZPolSF->GetBinContent(hZPolSF->FindBin(costh_CS,TMath::Abs(phi_CS)))>0?hZPolSF->GetBinContent(hZPolSF->FindBin(costh_CS,TMath::Abs(phi_CS))):1;
-                  evt_weight *= hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS))>0?hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS)):1;
+              if((useEffSF>=2 && useEffSF<=6 || useEffSF>=13 && useEffSF<=16) && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
+                if(useEffSF==2 || useEffSF==13 || useEffSF!=3){
+                  // === leading
+                  eff_TIGHT_SF = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(Mu_eta,Mu_pt));
+                  if(useEffSF==13){
+                    random_->SetSeed(UInt_t(TMath::Abs(Mu_phi)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
+                    eff_TIGHT_SF += random_->Gaus(0, TMath::Hypot(0.01, SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt))));
+                  }
+                  TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_SF;
+                }
+                if(useEffSF==2 || useEffSF==14 || useEffSF!=4){
+                  // === subleading
+                  eff_ISO_SF   = SF_ISO05_PT10->GetBinContent(SF_ISO05_PT10->FindBin(costh_HX,TMath::Abs(phi_HX),ZNocorr.Pt()));
+                  if(useEffSF==14){
+                    random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
+                    eff_ISO_SF += random_->Gaus(0, TMath::Hypot(0.01, SF_ISO05_PT10->GetBinError(SF_ISO05_PT10->FindBin(costh_HX, TMath::Abs(phi_HX),ZNocorr.Pt()))));
+                  }
+                  TRG_TIGHT_ISO_muons_SF  *= eff_ISO_SF;
+                }
+                if(useEffSF==2 || useEffSF==15 || useEffSF!=5){
+                  // === subleading
+                  eff_TIGHT_subleading_SF = SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt));
+                  if(useEffSF==15){
+                    random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
+                    eff_TIGHT_subleading_SF += random_->Gaus(0,TMath::Hypot(0.01, SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt))));
+                  }
+                  TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
+                }
+                if(useEffSF==2 || useEffSF==16 || useEffSF!=6){
+                  // === leading
+                  eff_TRG_SF = SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt));
+                  if(useEffSF==16){
+                    random_->SetSeed(UInt_t(TMath::Abs(isChargePos?1:2)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
+                    eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.01,SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))));
+                  }
+                }
+              }else if(useEffSF==7){
+                TRG_TIGHT_ISO_muons_SF=0.98;
               }
 
               //------------------------------------------------------
@@ -1452,8 +1392,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   } // end if for qcd enriched
                 } // end else for muon cuts (sig or qcd enriched)
               } // end if for good pair within acceptance cuts for both muons
-            } // end KalmanVars loop
-          } // end efficiency toys
+            } // end efficiency toys
+          } // end KalmanVars loop
         } // end RecoilCorr params loop
       } // end if for good reco event
       first_time_in_the_event=false;
