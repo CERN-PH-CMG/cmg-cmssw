@@ -21,7 +21,10 @@ source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/
 # COMMENT UNWANTED SYSTEMATICS
 
 # CENTRAL
-python launch_analysis.py config
+python launch_analysis.py config_nominal
+
+# SYST PDF NNPDF2.3
+python launch_analysis.py config_pdf_nnpdf23
 
 # SYST EFFICIENCIES
 python launch_analysis.py config_eff_13

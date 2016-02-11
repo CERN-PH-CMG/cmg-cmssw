@@ -15,8 +15,8 @@ WlikeCharge = 1  # Charge of the Wlike (+1,-1)
 
 ### RECOIL
 useRecoilCorr = 2  # 0=none, 1=yes, 2=PDFw3gaus, 3=RooKeys
-RecoilCorrVarDiagoParU1orU2fromDATAorMC = 11  # SYST VARIATIONS: 0=NONE, RAPBIN 1 (1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p2, 6= U2 MC) RAPBIN 2 (7= U1 DATA p1, 8= U1 DATA p2, 9= U2 DATA, 10= U1 MC p1, 11= U1 MC p2, 12= U2 MC)
-RecoilCorrVarDiagoParSigmas = 1  # Number of sigmas for recoil syst
+RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0  # SYST VARIATIONS: 0=NONE, RAPBIN 1 (1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p2, 6= U2 MC) RAPBIN 2 (7= U1 DATA p1, 8= U1 DATA p2, 9= U2 DATA, 10= U1 MC p1, 11= U1 MC p2, 12= U2 MC)
+RecoilCorrVarDiagoParSigmas = 0  # Number of sigmas for recoil syst
 
 ### Working setup
 useBatch = 1
@@ -39,3 +39,7 @@ DataCards_templateFromFolder=""  # evaluate systematics wrt folder (or leave it 
 runClosureTestLikeLihoodRatio = 0  # 1: also executes merge if not using batch jobs
 mergeResults = 0
 blind_offset_string = ""  # "" -> 0
+
+useLHAPDF = True
+LHAPDF_reweighting_sets="229800" # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
+LHAPDF_reweighting_members="100"   # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41

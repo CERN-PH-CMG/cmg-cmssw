@@ -16,37 +16,43 @@ config = __import__(conffile)
 ## ==============================================================
 
 useLHAPDF = False
+if(config.useLHAPDF):
+  useLHAPDF = config.useLHAPDF
 
-outfolder_prefix = config.outfolder_prefix
+outfolder_prefix = "TEST"
+if(config.outfolder_prefix):
+  outfolder_prefix = config.outfolder_prefix
 
 ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
+if(config.ntuple_basepath): 
+  ntuple_basepath = str(config.ntuple_basepath);
 ntuple_basepathFIX = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2015_05_24_53X_sumEtFIX/";
+if(config.ntuple_basepathFIX): 
+  ntuple_basepathFIX = str(config.ntuple_basepathFIX);
 ntuple_basepath_8TeV_ABC = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_8TeV/";
+if(config.ntuple_basepath_8TeV_ABC): 
+  ntuple_basepath_8TeV_ABC = str(config.ntuple_basepath_8TeV_ABC);
 lhapdf_path="/afs/cern.ch/work/p/perrozzi/private/WMassMC/lhapdf/"
+if(config.lhapdf_path): 
+  lhapdf_path = str(config.lhapdf_path);
 
 use_PForNoPUorTKmet = 2; # 0:PF, 1:NOPU, 2:TK
+if(config.use_PForNoPUorTKmet): 
+  use_PForNoPUorTKmet = int(config.use_PForNoPUorTKmet); # 0:PF, 1:NOPU, 2:TK
 use_LHE_weights = 0; # 0=no, 1=yes
+if(config.use_LHE_weights): 
+  use_LHE_weights = config.use_LHE_weights; # 0=no, 1=yes
 usePileupSF = 1; # 0=no, 1=yes
+if(config.usePileupSF): 
+usePileupSF = int(config.usePileupSF); # 0=no, 1=yes
 usePtSF = 0; # Boson pT reweighting: -1=none, 0=data, 1...=other options
+if(config.usePtSF): 
+usePtSF = int(config.usePtSF); # Boson pT reweighting: -1=none, 0=data, 1...=other options
 
 ### Muon trigger efficiency
 useEffSF = config.useEffSF
-
-### MUON
-useMomentumCorr = 4  # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector, 4=KalmanCorrectorParam
-MuonCorrGlobalScaleNsigma = config.MuonCorrGlobalScaleNsigma
-MuonCorrKalmanNvarsNsigma = config.MuonCorrKalmanNvarsNsigma
-
-WlikeCharge = config.WlikeCharge
-
-### RECOIL
-useRecoilCorr = config.useRecoilCorr
-RecoilCorrVarDiagoParU1orU2fromDATAorMC = config.RecoilCorrVarDiagoParU1orU2fromDATAorMC
-RecoilCorrVarDiagoParSigmas = config.RecoilCorrVarDiagoParSigmas
-
-correctToMadgraph = 0; # 0: uses DATA as target -- 1: uses Madgraph as target (also needed to write recoil closure plots)
-
-usePhiMETCorr = 0; # 0=none, 1=yes
+### EFFICIENCY TOYS
+efficiency_toys = str(config.efficiency_toys)  # 0=No, >1=Yes
 
 ### EWK CORR
 syst_ewk_Alcaraz = 0; # -1=none, 0=POWHEG QCD+EWK NLO (bug-fixed), 1= 0 +syst photos vs pythia (31 = 3 times), 2= 0 +syst no nloewk vs nloewk (32 = 3 times)
@@ -61,6 +67,10 @@ reweight_polarization = 1; # 0 = none, 1 = reweight POW to DATA, 2 = reweight PO
 # LHAPDF_reweighting_members="1"   # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
 LHAPDF_reweighting_sets="229800" # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
 LHAPDF_reweighting_members="1"   # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
+if(config.LHAPDF_reweighting_sets):
+  LHAPDF_reweighting_sets=str(config.LHAPDF_reweighting_sets) # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
+if(config.LHAPDF_reweighting_members):
+  LHAPDF_reweighting_members=str(config.LHAPDF_reweighting_members)   # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
 # LHAPDF_reweighting_sets="11000"  # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
 # LHAPDF_reweighting_members="53"  # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
 ## CHOOSE WETHER IS MC CLOSURE OR NOT (half statistics used as DATA, half as MC)
@@ -75,17 +85,33 @@ ZMassCentral_MeV = "91188"  # 91.1876 (PDG)
 WMassCentral_MeV = "80398"  # 80.385  (PDG)
 WMassSkipNSteps = "5"  # 15 -- used for LHE mass scaling
 
+### MUON
+useMomentumCorr = 4  # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector, 4=KalmanCorrectorParam
+MuonCorrGlobalScaleNsigma = config.MuonCorrGlobalScaleNsigma
+MuonCorrKalmanNvarsNsigma = config.MuonCorrKalmanNvarsNsigma
+
+# Wlike properties
+WMassNSteps = str(config.WMassNSteps)
+WlikeCharge = str(config.WlikeCharge)
+etaMaxMuons = str(config.etaMaxMuons)
+
+### RECOIL
+useRecoilCorr = config.useRecoilCorr
+RecoilCorrVarDiagoParU1orU2fromDATAorMC = config.RecoilCorrVarDiagoParU1orU2fromDATAorMC
+RecoilCorrVarDiagoParSigmas = config.RecoilCorrVarDiagoParSigmas
+
+correctToMadgraph = 0; # 0: uses DATA as target -- 1: uses Madgraph as target (also needed to write recoil closure plots)
+
+usePhiMETCorr = 0; # 0=none, 1=yes
+
 # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 resubmit_sample = "WJetsMadFake, DYJetsPow, DYJetsMadFake, TTJets, ZZJets, WWJets, WZJets, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
-# resubmit_sample = "DYJetsPow"
+if config.datasets:
+  resubmit_sample = str(config.datasets)
 # resubmit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
 
 useBatch = config.useBatch
 batchQueue = config.batchQueue
-
-WMassNSteps = str(config.WMassNSteps)
-etaMuonNSteps = "1"  # 5 <-- lenght of the etaMaxMuons
-etaMaxMuons = str(config.etaMaxMuons)
 
 runWanalysis = 0
 runZanalysis = config.runZanalysis
@@ -192,6 +218,7 @@ or int(correctToMadgraph) !=0 \
 or str(LHAPDF_reweighting_members) !="1" \
 or int(MuonCorrGlobalScaleNsigma) != 0 \
 or int(MuonCorrKalmanNvarsNsigma) != 0 \
+or int(efficiency_toys) != 0 \
 or int(useEffSF) != 2 :
 # or int(controlplots) != 0 :
   print "Computing a systematic: number of mass steps is set to 0\n"
@@ -268,6 +295,9 @@ if(int(useMomentumCorr)!=0):
 
 if(int(usePhiMETCorr)==1):
   outfolder_name+="_phiMETcorr";
+
+if(int(LHAPDF_reweighting_members)>1):
+  outfolder_name+="_pdf"+str(LHAPDF_reweighting_sets);
 
 if(int(useRecoilCorr)>0):
   outfolder_name+="_RecoilCorr"+str(useRecoilCorr);
@@ -445,6 +475,9 @@ shutil.copyfile(base_path+"/configdir/"+conffile+".py", path_dest)
 
 if(runWanalysis or runZanalysis):
 
+  if(not useLHAPDF and int(LHAPDF_reweighting_members)>1):
+    print 'SWITCH ON useLHAPDF to compute PDF variations !!!!'
+    sys.exit()
   if(useLHAPDF and os.environ.get('LHAPATH') == lhapdf_path+"share/lhapdf/PDFsets"):
     print "ENVIRONMENT VARIABLES OK"
   else:
@@ -472,7 +505,7 @@ if(runWanalysis or runZanalysis):
     print "Creating JobOutputs/"+outfolder_name+"/common.h from includes/common.h"
     shutil.copyfile("includes/common.h", "JobOutputs/"+outfolder_name+"/common.h");
     # Edit template
-    os.system("sh "+base_path+"/utils/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMuonNSteps+" \""+etaMaxMuons+"\" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(WlikeCharge)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrKalmanNparameters)+" "+"JobOutputs/"+outfolder_name+"/common.h")
+    os.system("sh "+base_path+"/utils/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMaxMuons+" "+efficiency_toys+" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(WlikeCharge)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrKalmanNparameters)+" "+"JobOutputs/"+outfolder_name+"/common.h")
 
   print ""
 
