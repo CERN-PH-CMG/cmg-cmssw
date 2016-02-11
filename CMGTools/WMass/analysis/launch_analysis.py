@@ -51,9 +51,14 @@ if(hasattr(config, 'usePtSF')):
   usePtSF = int(config.usePtSF)  # Boson pT reweighting: -1=none, 0=data, 1...=other options
 
 ### Muon trigger efficiency
-useEffSF = config.useEffSF
+useEffSF = 2  # 0=no, 1=MuonPOG, 2=Heiner all, 3=Heiner no tight, 4=Heiner no iso, 5=Heiner no tight subleading mu, 6=Heiner no hlt
+              # 13=Heiner tight 1%, 14=Heiner iso 1%, 15=Heiner tight subleading mu 1%, 16=Heiner hlt 1%
+if(hasattr(config, 'usePtSF')):
+  useEffSF = config.useEffSF
 ### EFFICIENCY TOYS
-efficiency_toys = str(config.efficiency_toys)  # 0=No, >1=Yes
+efficiency_toys = 0  # 0=No, >1=Yes
+if(hasattr(config, 'efficiency_toys')):
+  efficiency_toys = str(config.efficiency_toys)  # 0=No, >1=Yes
 
 ### EWK CORR
 syst_ewk_Alcaraz = 0  # -1=none, 0=POWHEG QCD+EWK NLO (bug-fixed), 1= 0 +syst photos vs pythia (31 = 3 times), 2= 0 +syst no nloewk vs nloewk (32 = 3 times)
@@ -107,7 +112,7 @@ usePhiMETCorr = 0; # 0=none, 1=yes
 
 # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 resubmit_sample = "WJetsMadFake, DYJetsPow, DYJetsMadFake, TTJets, ZZJets, WWJets, WZJets, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
-if config.datasets:
+if hasattr(config, 'datasets'):
   resubmit_sample = str(config.datasets)
 # resubmit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
 
