@@ -702,33 +702,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               metphi_trasv = tkmet_phi;
             }
             
-            // cout
-            // << "m= " << m 
-            // << " u1u2 " << WMass::RecoilCorrVarDiagoParU1orU2fromDATAorMC_[m]
-            // << " par " << WMass::RecoilCorrVarDiagoParN_[m] 
-            // << " first_time_in_the_event " << first_time_in_the_event << endl;
-            // cout
-            // << " met_trasv before=" << met_trasv
-            // << " metphi_trasv before=" << metphi_trasv
-            // << " met_trasvCentral before=" << met_trasvCentral
-            // << " metphi_trasvCentral before=" << metphi_trasvCentral
-            // << endl;
-            //if(useRecoilCorr==1){}
+            // cout << "m= " << m  << " u1u2 " << WMass::RecoilCorrVarDiagoParU1orU2fromDATAorMC_[m] << " par " << WMass::RecoilCorrVarDiagoParN_[m]  << " first_time_in_the_event " << first_time_in_the_event << endl;
+            // cout << " met_trasv before=" << met_trasv << " metphi_trasv before=" << metphi_trasv << " met_trasvCentral before=" << met_trasvCentral << " metphi_trasvCentral before=" << metphi_trasvCentral << endl;
 
             if(useRecoilCorr==2 || useRecoilCorr==3){
-              // cout
-              // << "ZGen_pt=" << ZGen_pt
-              // << " ZGen_phi=" << ZGen_phi
-              // << " ZNocorr.Pt()=" << ZNocorr.Pt()
-              // << " ZNocorr.Phi()=" << ZNocorr.Phi()
-              // << endl
-              // << " first_time_in_the_event=" << first_time_in_the_event
-              // << " RecoilCorrVarDiagoParU1orU2fromDATAorMC=" << RecoilCorrVarDiagoParU1orU2fromDATAorMC
-              // << " m=" << m
-              // << " RecoilCorrVarDiagoParSigmas=" << RecoilCorrVarDiagoParSigmas
-              // << " rapBin=" << rapBin
-              // << Form(" hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,0,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV)
-              // << endl;
+              // cout << "ZGen_pt=" << ZGen_pt << " ZGen_phi=" << ZGen_phi << " ZNocorr.Pt()=" << ZNocorr.Pt() << " ZNocorr.Phi()=" << ZNocorr.Phi() << endl;
+              // cout << " first_time_in_the_event=" << first_time_in_the_event << " RecoilCorrVarDiagoParU1orU2fromDATAorMC=" << RecoilCorrVarDiagoParU1orU2fromDATAorMC << " m=" << m << " RecoilCorrVarDiagoParSigmas=" << RecoilCorrVarDiagoParSigmas << " rapBin=" << rapBin << Form(" hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,0,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV) << endl;
               // cout << "Before correction:" << m << " - " << met_trasv << " - " << metphi_trasv << endl;
               correctorRecoil_Z->reset(WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[2],
                                        WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[3],
@@ -773,20 +752,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   metphi_trasvCentral = metphi_trasv;
                 }
                 // if(m_start==13){
-                  // correctorRecoil_Z->NonClosure_scale(met_trasv,metphi_trasv,
-                         // ZGen_pt,ZGen_phi,ZGen_rap,
-                         // Zcorr.Pt(),Zcorr.Phi());
+                  // correctorRecoil_Z->NonClosure_scale(met_trasv,metphi_trasv,ZGen_pt,ZGen_phi,ZGen_rap,Zcorr.Pt(),Zcorr.Phi());
                 // }
               }
             }
-            // cout
-            // << "met_trasv after=" << met_trasv
-            // << " metphi_trasv after=" << metphi_trasv
-            // << " met_trasvCentral after=" << met_trasvCentral
-            // << " metphi_trasvCentral after=" << metphi_trasvCentral
-            // << endl;
+            // cout << "met_trasv after=" << met_trasv << " metphi_trasv after=" << metphi_trasv << " met_trasvCentral after=" << met_trasvCentral << " metphi_trasvCentral after=" << metphi_trasvCentral << endl;
           }
-
 
           //------------------------------------------------------
           // Apply met phi corrections
@@ -806,20 +777,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             // Apply muon corrections
             //------------------------------------------------------------------------------------------------
             if(first_time_in_the_event && m==m_start){ // use rochester corrections if required
-              //if(useMomentumCorr==1){ // use rochester corrections if required
-                //if(IS_MC_CLOSURE_TEST || isMCorDATA==0){
-                  //rmcor44X->momcor_mc(muPosCorr, MuPos_charge, varyMuonCorrNsigma/* , runopt */);
-                  //rmcor44X->momcor_mc(muNegCorr, MuNeg_charge, varyMuonCorrNsigma/* , runopt */);
-                  //rmcor44X->momcor_mc(muPosCorrCentral, MuPos_charge, 0/* , runopt */);
-                  //rmcor44X->momcor_mc(muNegCorrCentral, MuNeg_charge, 0/* , runopt */);
-                //}
-                //else{
-                  //rmcor44X->momcor_data(muPosCorr, MuPos_charge, varyMuonCorrNsigma , run<175832 ? 0 : 1 );
-                  //rmcor44X->momcor_data(muNegCorr, MuNeg_charge, varyMuonCorrNsigma , run<175832 ? 0 : 1 );
-                  //rmcor44X->momcor_data(muPosCorrCentral, MuPos_charge, 0 , run<175832 ? 0 : 1 );
-                  //rmcor44X->momcor_data(muNegCorrCentral, MuNeg_charge, 0 , run<175832 ? 0 : 1 );
-                //}
-              //}
               if(useMomentumCorr==2){ // use Momentum scale corrections if required
                 corrector->applyPtCorrection(muPosCorr,MuPos_charge);
                 corrector->applyPtCorrection(muNegCorr,MuNeg_charge);
@@ -888,14 +845,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               // Boson Polarization
               common_stuff::ComputeAllVarPietro(muPosCorr,muNegCorr, costh_CS, phi_CS, costh_HX, phi_HX);
 
-              // cout
-              // << " ZcorrCentral.Rapidity()= " << ZcorrCentral.Rapidity()
-              // << " ZcorrCentral.Pt()= " << ZcorrCentral.Pt()
-              // << " hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())= " << hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())
-              // << " hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())= " << hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())
-              // << " costh_CS= " << costh_CS
-              // << " phi_CS= " << phi_CS
-              // << endl;
+              // cout << " ZcorrCentral.Rapidity()= " << ZcorrCentral.Rapidity() << " ZcorrCentral.Pt()= " << ZcorrCentral.Pt() << " hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())= " << hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity()) << " hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())= " << hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt()) << " costh_CS= " << costh_CS << " phi_CS= " << phi_CS << endl;
 
               if(reweight_polarization==1 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow")))
                 // evt_weight *= hZPolSF->GetBinContent(hZPolSF->FindBin(costh_CS,TMath::Abs(phi_CS)))>0?hZPolSF->GetBinContent(hZPolSF->FindBin(costh_CS,TMath::Abs(phi_CS))):1;
@@ -983,10 +933,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               //------------------------------------------------------
               double Wlike_var_NotScaledCentral[] = {muCorrCentral.Pt(),WlikeCentral.Mt(),Wlike_metCentral.Pt(),MTFirstOrder_central}; // Zcorr would be TEMP !!!!
               
-              // LUCA ADD TO AVOID OVERFLOW
-              // for(int k=0;k<WMass::NFitVar;k++)
-                // if(Wlike_var_jacobian[k]>=xmax) Wlike_var_jacobian[k]=xmax-binsize2/2;
-
               //------------------------------------------------------
               // good pair within acceptance cuts for both muons
               //------------------------------------------------------
@@ -1090,13 +1036,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                           if(reweight_recoil_pre_unblinding && sampleName.Contains("DYJetsPow")){
                             // double weight_pre_unblinding_rew = weight;
                             weight *= pre_unblinding5_recoil_ratiomc_div_data->Interpolate(Wlike.Pt())>0?pre_unblinding5_recoil_ratiomc_div_data->Interpolate(Wlike.Pt()):1;
-                            // if(Wlike.Pt()<2) {
-                              // cout << "Wlike.Pt()= " << Wlike.Pt();
-                              // cout << " histo_ratio= " << pre_unblinding5_recoil_ratiomc_div_data->Interpolate(Wlike.Pt());
-                              // cout << " weight before= " << weight_pre_unblinding_rew;
-                              // cout << " weight after/before= " << weight/weight_pre_unblinding_rew;
-                              // cout << endl;
-                            // }
+                            // if(Wlike.Pt()<2) cout << "Wlike.Pt()= " << Wlike.Pt() << " histo_ratio= " << pre_unblinding5_recoil_ratiomc_div_data->Interpolate(Wlike.Pt()) << " weight before= " << weight_pre_unblinding_rew << " weight after/before= " << weight/weight_pre_unblinding_rew << endl;
                           }
                           
                           //------------------------------------------------------
@@ -1129,14 +1069,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             //------------------------------------------------------
                             
                             for(int k=0;k<WMass::NFitVar;k++){
-                              // cout << Form("hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV) 
-                                   // << " " << Wlike_var_NotScaled[k] 
-                                   // << " " << weight
-                                   // // << " " << h_1d 
-                                   // << " " << 50
-                                   // << " " << WMass::fit_xmin[k]*ZWmassRatio 
-                                   // << " " <<  WMass::fit_xmax[k]*ZWmassRatio 
-                                   // << endl;
+                              // cout << Form("hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV) << " " << Wlike_var_NotScaled[k]  << " " << weight  << " " << 50 << " " << WMass::fit_xmin[k]*ZWmassRatio  << " " <<  WMass::fit_xmax[k]*ZWmassRatio << endl;
                               common_stuff::plot1D(Form("hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
                                                     Wlike_var_NotScaled[k], weight_mass, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
                               
