@@ -111,7 +111,7 @@ int main(int argc, char ** argv)
   TString outputfilename = "ZanalysisOnDATA";
   if(GetEntriesOrNchunck==0)
     gROOT->ProcessLine(Form(".! mv %s/Zanalysis%s.root %s/%s.root",filename_outputdir.Data(),chunk_str.Data(),filename_outputdir.Data(),outputfilename.Data()));
-  //gROOT->ProcessLine(Form(".! cp Zanalysis.* %s/",filename_outputdir.Data()));
-  
+  // Race conditions
+  gROOT->ProcessLine(".! sleep 1");
 }
 
