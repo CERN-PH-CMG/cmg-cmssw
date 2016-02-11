@@ -36,6 +36,7 @@ lhapdf_path="/afs/cern.ch/work/p/perrozzi/private/WMassMC/lhapdf/"
 if(config.lhapdf_path): 
   lhapdf_path = str(config.lhapdf_path);
 
+###  EFFICIENCY
 use_PForNoPUorTKmet = 2; # 0:PF, 1:NOPU, 2:TK
 if(config.use_PForNoPUorTKmet): 
   use_PForNoPUorTKmet = int(config.use_PForNoPUorTKmet); # 0:PF, 1:NOPU, 2:TK
@@ -44,10 +45,10 @@ if(config.use_LHE_weights):
   use_LHE_weights = config.use_LHE_weights; # 0=no, 1=yes
 usePileupSF = 1; # 0=no, 1=yes
 if(config.usePileupSF): 
-usePileupSF = int(config.usePileupSF); # 0=no, 1=yes
+  usePileupSF = int(config.usePileupSF); # 0=no, 1=yes
 usePtSF = 0; # Boson pT reweighting: -1=none, 0=data, 1...=other options
 if(config.usePtSF): 
-usePtSF = int(config.usePtSF); # Boson pT reweighting: -1=none, 0=data, 1...=other options
+  usePtSF = int(config.usePtSF); # Boson pT reweighting: -1=none, 0=data, 1...=other options
 
 ### Muon trigger efficiency
 useEffSF = config.useEffSF
