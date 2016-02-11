@@ -32,7 +32,7 @@ usePtSF = 0; # Boson pT reweighting: -1=none, 0=data, 1...=other options
 ### Muon trigger efficiency
 useEffSF = config.useEffSF
 ### EFFICIENCY TOYS
-efficiency_toys = 0  # 0=No, >1=Yes
+efficiency_toys = config.efficiency_toys
 
 ### EWK CORR
 syst_ewk_Alcaraz = 0; # -1=none, 0=POWHEG QCD+EWK NLO (bug-fixed), 1= 0 +syst photos vs pythia (31 = 3 times), 2= 0 +syst no nloewk vs nloewk (32 = 3 times)

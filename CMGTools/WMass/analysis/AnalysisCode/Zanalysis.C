@@ -645,13 +645,15 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     //-----------------------------
     // Throw toys for efficiency (i)
     //------------------------------
+    
+    // charge invariant variables
+    double& Mu_pt  = isChargePos ? MuPos_pt  : MuNeg_pt;
+    double& Mu_eta = isChargePos ? MuPos_eta : MuNeg_eta;
+    double& Mu_phi = isChargePos ? MuPos_phi : MuNeg_phi;
+
     TString effToy_str = "";
     for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
       if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
-      // charge invariant variables
-      double& Mu_pt  = isChargePos ? MuPos_pt  : MuNeg_pt;
-      double& Mu_eta = isChargePos ? MuPos_eta : MuNeg_eta;
-      double& Mu_phi = isChargePos ? MuPos_phi : MuNeg_phi;
       
       if((useEffSF>=2 && useEffSF<=6 || useEffSF>=13 && useEffSF<=16) && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
         if(useEffSF==2 || useEffSF==13 || useEffSF!=3){
