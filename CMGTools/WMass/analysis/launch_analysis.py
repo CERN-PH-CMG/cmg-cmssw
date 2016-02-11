@@ -8,7 +8,7 @@ sys.path.append("configdir")
 try:
   conffile = sys.argv[1]
 except IndexError:
-  conffile = "config"
+  conffile = "config_nominal"
 config = __import__(conffile)
 
 ## ==============================================================
