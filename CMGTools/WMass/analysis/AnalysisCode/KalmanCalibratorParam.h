@@ -62,6 +62,8 @@ class KalmanCalibratorParam {
   TH3F* smearing_;
 
   TH3F *closure_;
+  TH2F *closure_pt_eta_;
+
   TMatrixDSym *cholesky_;
   TMatrixD *eigenvectors_;
   TVectorD *eigenvalues_;
