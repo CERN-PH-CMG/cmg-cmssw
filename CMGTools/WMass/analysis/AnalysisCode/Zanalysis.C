@@ -647,82 +647,82 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     double& Mu_eta = isChargePos ? MuPos_eta : MuNeg_eta;
     double& Mu_phi = isChargePos ? MuPos_phi : MuNeg_phi;
 
-      if(!useGenVar || Z_mass>0){ // dummy thing to separate signal and background in DY+Jets (useless)
-        // cout <<"WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_["<<RecoilCorrVarDiagoParU1orU2fromDATAorMC<<"]= "
-        // << WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC]
-        // << " WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_["<<RecoilCorrVarDiagoParU1orU2fromDATAorMC<<"]= " 
-        // << WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC]
-        // <<endl;
+    if(!useGenVar || Z_mass>0){ // dummy thing to separate signal and background in DY+Jets (useless)
+      // cout <<"WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_["<<RecoilCorrVarDiagoParU1orU2fromDATAorMC<<"]= "
+      // << WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC]
+      // << " WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_["<<RecoilCorrVarDiagoParU1orU2fromDATAorMC<<"]= " 
+      // << WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC]
+      // <<endl;
 
-        //------------------------------------------------------
-        // start reco event selection
-        //------------------------------------------------------
-        if( evtHasGoodVtx && evtHasTrg && muNoCorr.Pt()>0
-            // CUTS ADDED TO SPEED UP THE CODE
-            && TMath::Abs(muCorrCentral.Eta())<WMass::etaMaxMuons
-            // && TMath::Abs(neutrinoCorrCentral.Eta())<2.4
-            && TMath::Abs(neutrinoCorrCentral.Eta())<submuon_eta_cut // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING
-            && MuPos_charge != MuNeg_charge
-            && muTrg
-            && MuPosIsTight && MuPos_dxy<0.02
-            && MuNegIsTight && MuNeg_dxy<0.02
-            && muRelIso<0.12 && neutrinoRelIso<0.5
-          ){ // good reco event
+      //------------------------------------------------------
+      // start reco event selection
+      //------------------------------------------------------
+      if( evtHasGoodVtx && evtHasTrg && muNoCorr.Pt()>0
+          // CUTS ADDED TO SPEED UP THE CODE
+          && TMath::Abs(muCorrCentral.Eta())<WMass::etaMaxMuons
+          // && TMath::Abs(neutrinoCorrCentral.Eta())<2.4
+          && TMath::Abs(neutrinoCorrCentral.Eta())<submuon_eta_cut // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING
+          && MuPos_charge != MuNeg_charge
+          && muTrg
+          && MuPosIsTight && MuPos_dxy<0.02
+          && MuNegIsTight && MuNeg_dxy<0.02
+          && muRelIso<0.12 && neutrinoRelIso<0.5
+        ){ // good reco event
 
-          for(int m=m_start; m<m_end; m++){
+        for(int m=m_start; m<m_end; m++){
 
-            TString RecoilVar_str = "";
-            if(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0) RecoilVar_str = Form("_RecoilCorrVar%d",m);
-            // cout << RecoilVar_str << endl;
+          TString RecoilVar_str = "";
+          if(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0) RecoilVar_str = Form("_RecoilCorrVar%d",m);
+          // cout << RecoilVar_str << endl;
 
-            //-----------------------------
-            // Throw toys for efficiency (i)
-            //------------------------------
-            TString effToy_str = "";
-            for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
-              if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
-              
-              if((useEffSF>=2 && useEffSF<=6 || useEffSF>=13 && useEffSF<=16) && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
-                if(useEffSF==2 || useEffSF==13 || useEffSF!=3){
-                  // === leading
-                  eff_TIGHT_SF = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(Mu_eta,Mu_pt));
-                  if(useEffSF==13){
-                    random_->SetSeed(UInt_t(TMath::Abs(Mu_phi)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
-                    eff_TIGHT_SF += random_->Gaus(0, TMath::Hypot(0.01, SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt))));
-                  }
-                  TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_SF;
+          //-----------------------------
+          // Throw toys for efficiency (i)
+          //------------------------------
+          TString effToy_str = "";
+          for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
+            if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
+            
+            if((useEffSF>=2 && useEffSF<=6 || useEffSF>=13 && useEffSF<=16) && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
+              if(useEffSF==2 || useEffSF==13 || useEffSF!=3){
+                // === leading
+                eff_TIGHT_SF = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(Mu_eta,Mu_pt));
+                if(useEffSF==13){
+                  random_->SetSeed(UInt_t(TMath::Abs(Mu_phi)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
+                  eff_TIGHT_SF += random_->Gaus(0, TMath::Hypot(0.01, SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt))));
                 }
-                if(useEffSF==2 || useEffSF==14 || useEffSF!=4){
-                  // === subleading
-                  eff_ISO_SF   = SF_ISO05_PT10->GetBinContent(SF_ISO05_PT10->FindBin(costh_HX,TMath::Abs(phi_HX),ZNocorr.Pt()));
-                  if(useEffSF==14){
-                    random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
-                    eff_ISO_SF += random_->Gaus(0, TMath::Hypot(0.01, SF_ISO05_PT10->GetBinError(SF_ISO05_PT10->FindBin(costh_HX, TMath::Abs(phi_HX),ZNocorr.Pt()))));
-                  }
-                  TRG_TIGHT_ISO_muons_SF  *= eff_ISO_SF;
-                }
-                if(useEffSF==2 || useEffSF==15 || useEffSF!=5){
-                  // === subleading
-                  eff_TIGHT_subleading_SF = SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt));
-                  if(useEffSF==15){
-                    random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
-                    eff_TIGHT_subleading_SF += random_->Gaus(0,TMath::Hypot(0.01, SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt))));
-                  }
-                  TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
-                }
-                if(useEffSF==2 || useEffSF==16 || useEffSF!=6){
-                  // === leading
-                  eff_TRG_SF = SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt));
-                  if(useEffSF==16){
-                    random_->SetSeed(UInt_t(TMath::Abs(isChargePos?1:2)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
-                    eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.01,SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))));
-                  }
-                }
-              }else if(useEffSF==7){
-                TRG_TIGHT_ISO_muons_SF=0.98;
+                TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_SF;
               }
+              if(useEffSF==2 || useEffSF==14 || useEffSF!=4){
+                // === subleading
+                eff_ISO_SF   = SF_ISO05_PT10->GetBinContent(SF_ISO05_PT10->FindBin(costh_HX,TMath::Abs(phi_HX),ZNocorr.Pt()));
+                if(useEffSF==14){
+                  random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
+                  eff_ISO_SF += random_->Gaus(0, TMath::Hypot(0.01, SF_ISO05_PT10->GetBinError(SF_ISO05_PT10->FindBin(costh_HX, TMath::Abs(phi_HX),ZNocorr.Pt()))));
+                }
+                TRG_TIGHT_ISO_muons_SF  *= eff_ISO_SF;
+              }
+              if(useEffSF==2 || useEffSF==15 || useEffSF!=5){
+                // === subleading
+                eff_TIGHT_subleading_SF = SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt));
+                if(useEffSF==15){
+                  random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
+                  eff_TIGHT_subleading_SF += random_->Gaus(0,TMath::Hypot(0.01, SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt))));
+                }
+                TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
+              }
+              if(useEffSF==2 || useEffSF==16 || useEffSF!=6){
+                // === leading
+                eff_TRG_SF = SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt));
+                if(useEffSF==16){
+                  random_->SetSeed(UInt_t(TMath::Abs(isChargePos?1:2)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
+                  eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.01,SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))));
+                }
+              }
+            }else if(useEffSF==7){
+              TRG_TIGHT_ISO_muons_SF=0.98;
+            }
 
-              for(int n=0; n<WMass::KalmanNvariations; n++){
+            for(int n=0; n<WMass::KalmanNvariations; n++){
 
               TString KalmanVars_str = "";
               if(WMass::KalmanNvariations>1) KalmanVars_str = Form("_KalmanVar%d",n);
