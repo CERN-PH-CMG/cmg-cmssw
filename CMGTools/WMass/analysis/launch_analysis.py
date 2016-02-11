@@ -16,18 +16,38 @@ config = __import__(conffile)
 ## ==============================================================
 
 useLHAPDF = False
+if(config.useLHAPDF):
+  useLHAPDF = config.useLHAPDF
 
-outfolder_prefix = config.outfolder_prefix
+outfolder_prefix = "TEST"
+if(config.outfolder_prefix):
+  outfolder_prefix = config.outfolder_prefix
 
 ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
+if(config.ntuple_basepath): 
+  ntuple_basepath = str(config.ntuple_basepath);
 ntuple_basepathFIX = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2015_05_24_53X_sumEtFIX/";
+if(config.ntuple_basepathFIX): 
+  ntuple_basepathFIX = str(config.ntuple_basepathFIX);
 ntuple_basepath_8TeV_ABC = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_8TeV/";
+if(config.ntuple_basepath_8TeV_ABC): 
+  ntuple_basepath_8TeV_ABC = str(config.ntuple_basepath_8TeV_ABC);
 lhapdf_path="/afs/cern.ch/work/p/perrozzi/private/WMassMC/lhapdf/"
+if(config.lhapdf_path): 
+  lhapdf_path = str(config.lhapdf_path);
 
 use_PForNoPUorTKmet = 2; # 0:PF, 1:NOPU, 2:TK
+if(config.use_PForNoPUorTKmet): 
+  use_PForNoPUorTKmet = int(config.use_PForNoPUorTKmet); # 0:PF, 1:NOPU, 2:TK
 use_LHE_weights = 0; # 0=no, 1=yes
+if(config.use_LHE_weights): 
+  use_LHE_weights = config.use_LHE_weights; # 0=no, 1=yes
 usePileupSF = 1; # 0=no, 1=yes
+if(config.usePileupSF): 
+usePileupSF = int(config.usePileupSF); # 0=no, 1=yes
 usePtSF = 0; # Boson pT reweighting: -1=none, 0=data, 1...=other options
+if(config.usePtSF): 
+usePtSF = int(config.usePtSF); # Boson pT reweighting: -1=none, 0=data, 1...=other options
 
 ### Muon trigger efficiency
 useEffSF = config.useEffSF
@@ -47,6 +67,10 @@ reweight_polarization = 1; # 0 = none, 1 = reweight POW to DATA, 2 = reweight PO
 # LHAPDF_reweighting_members="1"   # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
 LHAPDF_reweighting_sets="229800" # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
 LHAPDF_reweighting_members="1"   # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
+if(config.LHAPDF_reweighting_sets):
+  LHAPDF_reweighting_sets=str(config.LHAPDF_reweighting_sets) # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
+if(config.LHAPDF_reweighting_members):
+  LHAPDF_reweighting_members=str(config.LHAPDF_reweighting_members)   # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
 # LHAPDF_reweighting_sets="11000"  # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
 # LHAPDF_reweighting_members="53"  # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
 ## CHOOSE WETHER IS MC CLOSURE OR NOT (half statistics used as DATA, half as MC)
@@ -272,6 +296,9 @@ if(int(useMomentumCorr)!=0):
 if(int(usePhiMETCorr)==1):
   outfolder_name+="_phiMETcorr";
 
+if(int(LHAPDF_reweighting_members)>1):
+  outfolder_name+="_pdf"+str(LHAPDF_reweighting_sets);
+
 if(int(useRecoilCorr)>0):
   outfolder_name+="_RecoilCorr"+str(useRecoilCorr);
   if(int(correctToMadgraph)):
@@ -448,6 +475,9 @@ shutil.copyfile(base_path+"/configdir/"+conffile+".py", path_dest)
 
 if(runWanalysis or runZanalysis):
 
+  if(not useLHAPDF and int(LHAPDF_reweighting_members)>1):
+    print 'SWITCH ON useLHAPDF to compute PDF variations !!!!'
+    sys.exit()
   if(useLHAPDF and os.environ.get('LHAPATH') == lhapdf_path+"share/lhapdf/PDFsets"):
     print "ENVIRONMENT VARIABLES OK"
   else:

@@ -2,12 +2,10 @@
 
 outfolder_prefix = "PREFIX"
 
-datasets = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
-
 ### Muon trigger efficiency
-useEffSF = 13  # 0=no, 1=MuonPOG, 2=Heiner all, 3=Heiner no tight, 4=Heiner no iso, 5=Heiner no tight subleading mu, 6=Heiner no hlt
+useEffSF = 2  # 0=no, 1=MuonPOG, 2=Heiner all, 3=Heiner no tight, 4=Heiner no iso, 5=Heiner no tight subleading mu, 6=Heiner no hlt
               # 13=Heiner tight 1%, 14=Heiner iso 1%, 15=Heiner tight subleading mu 1%, 16=Heiner hlt 1%
-efficiency_toys = 100  # 0=No, >1=Yes
+efficiency_toys = 0  # 0=No, >1=Yes
 
 ### MUON
 MuonCorrGlobalScaleNsigma = 0  # vary global muon scale    (0=no)
@@ -17,11 +15,11 @@ WlikeCharge = 1  # Charge of the Wlike (+1,-1)
 
 ### RECOIL
 useRecoilCorr = 2  # 0=none, 1=yes, 2=PDFw3gaus, 3=RooKeys
-RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0  # SYST VARIATIONS: 0=NONE, RAPBIN 1 (1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p2, 6= U2 MC) RAPBIN 2 (7= U1 DATA p1, 8= U1 DATA p2, 9= U2 DATA, 10= U1 MC p1, 11= U1 MC p2, 12= U2 MC)
-RecoilCorrVarDiagoParSigmas = 0  # Number of sigmas for recoil syst
+RecoilCorrVarDiagoParU1orU2fromDATAorMC = 9  # SYST VARIATIONS: 0=NONE, RAPBIN 1 (1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p2, 6= U2 MC) RAPBIN 2 (7= U1 DATA p1, 8= U1 DATA p2, 9= U2 DATA, 10= U1 MC p1, 11= U1 MC p2, 12= U2 MC)
+RecoilCorrVarDiagoParSigmas = 1  # Number of sigmas for recoil syst
 
 ### Working setup
-useBatch = 0
+useBatch = 1
 batchQueue = "1nh"
 
 WMassNSteps = 5    # 60 -- N of mass steps above and below the central
@@ -41,7 +39,3 @@ DataCards_templateFromFolder=""  # evaluate systematics wrt folder (or leave it 
 runClosureTestLikeLihoodRatio = 0  # 1: also executes merge if not using batch jobs
 mergeResults = 0
 blind_offset_string = ""  # "" -> 0
-
-useLHAPDF = False
-LHAPDF_reweighting_sets="229800" # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
-LHAPDF_reweighting_members="1"   # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
