@@ -41,11 +41,11 @@ namespace WMass{
   static const int KalmanNvariations = PAR_KALMAN_VARIATIONS; // 1 or 45
   
   // static const double sel_xmin[3]={30,  60, 30};
-  static const double sel_xmin[NFitVar]={30,  60, 30,  60};
-  static const double sel_xmax[NFitVar]={55, 100, 55, 100};
+  static const double sel_xmin[NFitVar]={30,  60, 30/* ,  60 */};
+  static const double sel_xmax[NFitVar]={55, 100, 55/* , 100 */};
   
-  static const double fit_xmin[NFitVar]={32,  65, 32,  65};
-  static const double fit_xmax[NFitVar]={45,  90, 45,  90};
+  static const double fit_xmin[NFitVar]={32,  65, 32/* ,  65 */};
+  static const double fit_xmax[NFitVar]={45,  90, 45/* ,  90 */};
 
   static const int LHE_mass_central_index = PAR_DELTAM_MEV_CENTRAL_INDEX;
   // 209 #w,ren,fac,pdf,mW,mZ 1.0 1.0 1.0 229800 80.398 91.1876               <------------ NNPDF2.3 NLO
