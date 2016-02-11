@@ -15,7 +15,7 @@ process                         signal          signal_ALT      background
 process                         -1              0               1
 rate                            -1              -1              -1
 -------------------------------------------------------------------------------
-bkgUncert       lnN             -               -               1.1
+bkgUncert       lnN             -               -               1.01
 MuonScale       shape           1               -               1
 KalmanVar1      shape           1               -               1
 
