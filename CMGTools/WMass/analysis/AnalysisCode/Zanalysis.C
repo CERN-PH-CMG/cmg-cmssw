@@ -401,8 +401,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // start the event loop
   //------------------------------------------------------
   int cout_freq=TMath::Min(1+(nentries-first_entry)/10,(Long64_t) 25000);
-  cout_freq=1; // FOR DEBUGGING PURPOSE
-  nentries=100; // FOR DEBUGGING PURPOSE
+  // cout_freq=1; // FOR DEBUGGING PURPOSE
+  // nentries=100; // FOR DEBUGGING PURPOSE
   cout << "couts every " << cout_freq << " events" << endl;
   Long64_t nbytes = 0, nb = 0;
   for(Long64_t jentry=first_entry; jentry<=nentries; jentry++) {
