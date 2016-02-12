@@ -45,8 +45,8 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
 
     // TOKENIZE SAMPLES
     TFile* finTemplatesW[Nsamples];
-    TH1D *TemplatesW_NonScaled[2][m_end][WMass::KalmanNvariations][WMass::PDF_members][WMass::NFitVar][Nsamples][WMass::efficiency_toys][2*WMass::WMassNSteps+1];
-    // TH2D *TemplatesW_NonScaled_2d[2][m_end][WMass::KalmanNvariations][WMass::PDF_members][WMass::NFitVar-1][Nsamples][WMass::efficiency_toys][2*WMass::WMassNSteps+1];
+    TH1D *TemplatesW_NonScaled[2][m_end][WMass::KalmanNvariations][WMass::PDF_members][WMass::NFitVar][Nsamples][max(1, WMass::efficiency_toys)][2*WMass::WMassNSteps+1];
+    // TH2D *TemplatesW_NonScaled_2d[2][m_end][WMass::KalmanNvariations][WMass::PDF_members][WMass::NFitVar-1][Nsamples][max(1, WMass::efficiency_toys)][2*WMass::WMassNSteps+1];
     
     // ETA CUT
     TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
