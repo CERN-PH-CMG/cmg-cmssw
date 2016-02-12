@@ -8,7 +8,7 @@ sys.path.append("configdir")
 try:
   conffile = sys.argv[1]
 except IndexError:
-  conffile = "config"
+  conffile = "config_nominal"
 config = __import__(conffile)
 
 ## ==============================================================
@@ -22,11 +22,6 @@ outfolder_prefix="profileFit"
 ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/"
 ntuple_basepathFIX = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2015_05_24_53X_sumEtFIX/"
 ntuple_basepath_8TeV_ABC = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_8TeV/"
-# ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/"
-# ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_10_15/"
-# ntuple_basepath = "root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/"
-# ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/"
-# ntuple_basepath = "~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/"
 lhapdf_path="/afs/cern.ch/work/p/perrozzi/private/WMassMC/lhapdf/"
 
 use_PForNoPUorTKmet = 2  # 0:PF, 1:NOPU, 2:TK
@@ -65,7 +60,7 @@ MuonKalmanVariation = 0     # vary a muon fit eigenv 0=No, [1...45]=Yes
 MuonScaleVariation = False  # vary global muon scale (True/False)
 MuonVariationSigmas = 0     # n of sigmas for muon options
 
-# Wlike properies
+# Wlike properties
 NMassValues = 11
 Zmass_values = [91138, 91148, 91158, 91168, 91178, 91188, 91198, 91208, 91218, 91228, 91238]  # Masses of the Wlike
 WlikeCharge = 1  # Charge of the Wlike (+1,-1)
@@ -172,76 +167,78 @@ if(int(MuonVariationSigmas)!=0 and int(MuonKalmanVariation)==0 and MuonScaleVari
   print "You asked to variate the muon by "+str(MuonVariationSigmas)+" sigmas but gave no syst to vary"
   sys.exit(1)
 
-# Build systid & outfolder name
+# Build  outfolder name
 
-systid = ""
+outfolder_name = outfolder_prefix
 
 if (int(WlikeCharge) == 1):
-  systid+="_muPos"
+  outfolder_name+="_muPos"
 else:
-  systid+="_muNeg"
+  outfolder_name+="_muNeg"
+
+outfolder_name += "_eta"+str(etaMaxMuons).replace('.','p')+"_"
+
+#---------------------
 
 if(int(use_PForNoPUorTKmet)==0): # 0:PF, 1:NOPU, 2:TK
-  systid+="_pfmet"
+  outfolder_name+="_pfmet"
 elif(int(use_PForNoPUorTKmet)==1): # 0:PF, 1:NOPU, 2:TK
-  systid+="_pfnopu"
+  outfolder_name+="_pfnopu"
 elif(int(use_PForNoPUorTKmet)==2): # 0:PF, 1:NOPU, 2:TK
-  systid+=""  # "_tkmet" is implicit
+  outfolder_name+=""  # "_tkmet" is implicit
 
 if(int(use_LHE_weights)==1):
-  systid+="_LHEweights"
+  outfolder_name+="_LHEweights"
 
 if(int(IS_MC_CLOSURE_TEST)==1):
-  systid+="_MCclosureTest"
+  outfolder_name+="_MCclosureTest"
 
 if(int(syst_ewk_Alcaraz)>-1):
-  systid+=""  # "_ewk"+str(syst_ewk_Alcaraz) is implicit
+  outfolder_name+=""  # "_ewk"+str(syst_ewk_Alcaraz) is implicit
 if(int(reweight_polarization)>0):
-  systid+=""  # "_polariz"+str(reweight_polarization) is implicit
+  outfolder_name+=""  # "_polariz"+str(reweight_polarization) is implicit
 
 if  (int(useMomentumCorr)==1):
-  systid+="_RochCorr"
+  outfolder_name+="_RochCorr"
 elif(int(useMomentumCorr)==2):
-  systid+="_MuscleFitCorr"
+  outfolder_name+="_MuscleFitCorr"
 elif(int(useMomentumCorr)==3):
-  systid+="_KalmanCorr"
+  outfolder_name+="_KalmanCorr"
 elif(int(useMomentumCorr)==4):
-  systid+=""  # "_KalmanCorrParam" is implicit
+  outfolder_name+=""  # "_KalmanCorrParam" is implicit
 
 if(int(MuonVariationSigmas)!=0):
   syststring=["Down", "Up"][MuonVariationSigmas>0]
   if(int(MuonKalmanVariation) != 0):
-    systid+="_KalmanVar"+str(MuonKalmanVariation)+syststring
+    outfolder_name+="_KalmanVar"+str(MuonKalmanVariation)+syststring
   if(int(MuonScaleVariation) == True):
-    systid+="_MuonScale"+syststring
+    outfolder_name+="_MuonScale"+syststring
 
 # if(int(usePhiMETCorr)==1):
-#   systid+="_phiMETcorr" is implicit
+#   outfolder_name+="_phiMETcorr" is implicit
 
 if(int(useRecoilCorr)>0):
-  systid+=""  # "_RecoilCorr"+str(useRecoilCorr) is implicit
+  outfolder_name+=""  # "_RecoilCorr"+str(useRecoilCorr) is implicit
   if(int(correctToMadgraph)):
-    systid+="_toMad"
+    outfolder_name+="_toMad"
   if(int(RecoilStatVariation)!=0):
     syststring=["Down", "Up"][RecoilVariationSigmas>0]
-    systid+="_RecoilEigen"+str(RecoilStatVariation)+syststring
+    outfolder_name+="_RecoilEigen"+str(RecoilStatVariation)+syststring
 
-if(int(useEffSF)==1): systid+="_EffSFCorr"
-if(int(useEffSF)>=2): systid+=""  # "_EffHeinerSFCorr" implicit
-if(int(useEffSF)==3): systid+="_noTight"
-if(int(useEffSF)==13): systid+="_Tight1perc"
-if(int(useEffSF)==4): systid+="_noIso"
-if(int(useEffSF)==14): systid+="_Iso1perc"
-if(int(useEffSF)==5): systid+="_noTightSub"
-if(int(useEffSF)==15): systid+="_TightSub1perc"
-if(int(useEffSF)==6): systid+="_noHLT"
-if(int(useEffSF)==16): systid+="_HLT1perc"
+if(int(useEffSF)==1): outfolder_name+="_EffSFCorr"
+if(int(useEffSF)>=2): outfolder_name+=""  # "_EffHeinerSFCorr" implicit
+if(int(useEffSF)==3): outfolder_name+="_noTight"
+if(int(useEffSF)==13): outfolder_name+="_Tight1perc"
+if(int(useEffSF)==4): outfolder_name+="_noIso"
+if(int(useEffSF)==14): outfolder_name+="_Iso1perc"
+if(int(useEffSF)==5): outfolder_name+="_noTightSub"
+if(int(useEffSF)==15): outfolder_name+="_TightSub1perc"
+if(int(useEffSF)==6): outfolder_name+="_noHLT"
+if(int(useEffSF)==16): outfolder_name+="_HLT1perc"
 
 # Both implicit
-# if(int(usePtSF)!=-1): systid+="_PtSFCorr"+str(usePtSF)
-# if(int(usePileupSF)==1): systid+="_PileupSFCorr"
-
-outfolder_name = outfolder_prefix + systid
+# if(int(usePtSF)!=-1): outfolder_name+="_PtSFCorr"+str(usePtSF)
+# if(int(usePileupSF)==1): outfolder_name+="_PileupSFCorr"
 
 ## END INITIAL CHECKS AND FOLDERNAME BUILDING
 ## ============================================================== #
@@ -469,7 +466,7 @@ if(runZanalysis):
     if not os.path.exists(outputSamplePath):
       os.makedirs(outputSamplePath)
 
-    zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(correctToMadgraph)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])+","+str(reweight_polarization)+",\""+str(systid)+"\""
+    zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(correctToMadgraph)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])+","+str(reweight_polarization)
 
     line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis -1,0,0,"+zstring).read()
     nEntries = [int(s) for s in line.split() if s.isdigit()][0]
@@ -539,8 +536,8 @@ if(mergeSigEWKbkg):
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type d -name LSFJOB_* -exec rm -rf {} +")
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name batch_logs_* -delete")
 
-if  not file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_EWKTT/ZanalysisOnDATA.root") \
-and not file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_EWKTT/ZanalysisOnDATA.root") :
+if  not file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_EWKTT/Zanalysis.root") \
+and not file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_EWKTT/Zanalysis.root") :
   print "Cannot find any merged histogram in "+outfolder_name+", exiting"
   sys.exit(1)
 

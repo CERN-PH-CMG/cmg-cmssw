@@ -2,27 +2,27 @@ imax    1       number of categories
 jmax    2       number of samples minus one 
 kmax    *       number of nuisance parameters 
 ------------------------------------------------------------------------------- 
-shapes data_obs         *       DATALIKE.root   hWlike%CHARGE%_%OBSERVABLE%_8_%ETA%_91188_mu%CHARGE%
-shapes signal           *       DYJetsPow.root  hWlike%CHARGE%_%OBSERVABLE%_8_%ETA%_$MASS_mu%CHARGE%    hWlike%CHARGE%_%OBSERVABLE%_8_%ETA%_$MASS_mu%CHARGE%_$SYSTEMATIC
-shapes signal_ALT       *       DYJetsPow.root  hWlike%CHARGE%_%OBSERVABLE%_8_%ETA%_91188_mu%CHARGE%
-shapes background       *       EWKTTbkg.root   hWlike%CHARGE%_%OBSERVABLE%_8_%ETA%_mu%CHARGE%          hWlike%CHARGE%_%OBSERVABLE%_8_%ETA%_mu%CHARGE%_$SYSTEMATIC
+shapes data_obs         *       %JOBFOLDER%/Datacards/DATALIKE.root                                                   hWlike_%OBSERVABLE%_91188
+shapes reference        *       %JOBFOLDER%/profileFit_mu%CHARGE%_%ETA%_$SYSTEMATIC/output_DYJetsPow/Zanalysis.root   hWlike_%OBSERVABLE%_91138
+shapes signal_ALT       *       %JOBFOLDER%/profileFit_mu%CHARGE%_%ETA%_$SYSTEMATIC/output_DYJetsPow/Zanalysis.root   hWlike_%OBSERVABLE%_$MASS   hWlike_%OBSERVABLE%_$MASS_$SYSTEMATIC
+shapes background       *       %JOBFOLDER%/profileFit_mu%CHARGE%_%ETA%_$SYSTEMATIC/output_EWKTT/Zanalysis.root       hWlike_%OBSERVABLE%         hWlike_%OBSERVABLE%_$SYSTEMATIC
 ------------------------------------------------------------------------------- 
 bin                             Wlike
 observation                     -1
 ------------------------------------------------------------------------------- 
 bin                             Wlike           Wlike           Wlike
-process                         signal          signal_ALT      background
+process                         reference       signal_ALT      background
 process                         -1              0               1
 rate                            -1              -1              -1
 -------------------------------------------------------------------------------
 bkgUncert       lnN             -               -               1.01
-MuonScale       shape           1               -               1
-KalmanVar1      shape           1               -               1
+# MuonScale       shape           1               -               1
+# KalmanVar1      shape           1               -               1
 
 # KalmanVar%N%    shape           1               -               1
 # RecoilEigen%N%  shape           1               -               1
 
-
+# ALT è quello al numeratore (massa variabile)!
 
 # shapes   *          *   ../../table_central_effsystpt30sub_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/DataCards/datacards_DATA_Wlike.root $CHANNEL/$MASS/$PROCESS $CHANNEL/$MASS/$PROCESS_$SYSTEMATIC
 # shapes   data_obs   *   datacards_DATA_Wlike.root $CHANNEL/91188/WlikePos_MCDATALIKEPOW_MtLinNonScaled_pdf229800-0

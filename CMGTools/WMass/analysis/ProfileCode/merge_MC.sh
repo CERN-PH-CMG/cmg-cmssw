@@ -31,7 +31,7 @@ do
       if [ $nchunks -ne $nchunks_planned ]
       then
         # Check if full file exists before complaining
-        if [ ! -f "${1}/output_${samples[id_sample]}/${analyses[id_ana]}OnDATA.root" ]
+        if [ ! -f "${1}/output_${samples[id_sample]}/${analyses[id_ana]}.root" ]
         then
           echo "MISSING "${analyses[id_ana]}" chunk for "${samples[id_sample]}": nchunks="${nchunks}" nchunks_planned="${nchunks_planned}"!!! EXITING"
           # Building array of missing pieces
@@ -49,10 +49,10 @@ do
           echo ""
           doEWKMerge=0
         else
-          echo "Found already merged output_${samples[id_sample]}/${analyses[id_ana]}OnDATA.root"
+          echo "Found already merged output_${samples[id_sample]}/${analyses[id_ana]}.root"
         fi
       else
-        hadd -f ${1}/output_${samples[id_sample]}/${analyses[id_ana]}OnDATA.root ${1}/output_${samples[id_sample]}/${analyses[id_ana]}_chunk*.root
+        hadd -f ${1}/output_${samples[id_sample]}/${analyses[id_ana]}.root ${1}/output_${samples[id_sample]}/${analyses[id_ana]}_chunk*.root
       fi
     else
       echo "No ${analyses[id_ana]}_nChuncks.log found in output_${samples[id_sample]}, continuing..."
@@ -66,7 +66,7 @@ do
     exit 1
   else
     echo ${analyses[id_ana]}" MERGE"
-    filename=${analyses[id_ana]}OnDATA
+    filename=${analyses[id_ana]}
     
     echo ""; echo 'EWK ONLY (EWK)'
     # EWK ONLY

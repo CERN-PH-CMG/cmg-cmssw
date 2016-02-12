@@ -50,7 +50,7 @@ const bool preUnblinding = false; // this is meant to save only the inclusive pl
 const bool progressPlots = false; // for the _1_ through _7_ plots, disabled for fast profiling
 
 
-void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, int useMomentumCorr, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int usePhiMETCorr, int useRecoilCorr, int correctToMadgraph, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights, int reweight_polarization, TString systid)
+void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, int useMomentumCorr, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int usePhiMETCorr, int useRecoilCorr, int correctToMadgraph, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights, int reweight_polarization)
 {
 
   if (fChain == 0) return;
@@ -946,18 +946,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                       //------------------------------------------------------
                       
                       for(int k=0;k<WMass::NFitVar;k++){
-                        // cout << Form("hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV) 
-                             // << " " << Wlike_var_NotScaled[k] 
-                             // << " " << weight
-                             // // << " " << h_1d 
-                             // << " " << 50
-                             // << " " << WMass::fit_xmin[k]*ZWmassRatio 
-                             // << " " <<  WMass::fit_xmax[k]*ZWmassRatio 
-                             // << endl;
-                        TString plotname = Form("hWlike%s_%s_8_eta%s", WCharge_str.Data(), WMass::FitVar_str[k].Data(), eta_str.Data());
+                        TString plotname = Form("hWlike_%s", WMass::FitVar_str[k].Data());
                         if (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))
                           plotname += Form("_%.0f", Zmass_MeV);
-                        plotname += systid;
                         common_stuff::plot1D(plotname.Data(), Wlike_vars[k], weight_mass, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
                         
                         // 2D plot obs_i vs obs_j (no MtLin)
