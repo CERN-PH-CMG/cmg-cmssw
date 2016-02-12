@@ -53,7 +53,7 @@ if(hasattr(config, 'usePtSF')):
 ### Muon trigger efficiency
 useEffSF = 2  # 0=no, 1=MuonPOG, 2=Heiner all, 3=Heiner no tight, 4=Heiner no iso, 5=Heiner no tight subleading mu, 6=Heiner no hlt
               # 13=Heiner tight 1%, 14=Heiner iso 1%, 15=Heiner tight subleading mu 1%, 16=Heiner hlt 1%
-if(hasattr(config, 'usePtSF')):
+if(hasattr(config, 'useEffSF')):
   useEffSF = config.useEffSF
 ### EFFICIENCY TOYS
 efficiency_toys = 0  # 0=No, >1=Yes
