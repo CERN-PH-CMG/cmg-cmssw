@@ -254,8 +254,8 @@ if(int(MuonCorrKalmanNvarsNsigma)!=0):
   MuonCorrKalmanNparameters=45
   MuonCorrNsigma = MuonCorrKalmanNvarsNsigma
 
-if (int(efficiency_toys) > 0) and (int(useEffSF) >= 13) and (int(useEffSF) <= 16) :
-  print "ERROR: Asked to do", WlikeCharge, "efficiency toys, but you specified no efficiency to variate"
+if (int(efficiency_toys) > 0) and not ((int(useEffSF) >= 13) and (int(useEffSF) <= 16)) :
+  print "ERROR: Asked to do", efficiency_toys, "efficiency toys, but you specified no efficiency to variate"
   print "Check the 'useEffSF' variable"
   sys.exit(1)
 
