@@ -176,69 +176,74 @@ if (int(WlikeCharge) == 1):
 else:
   outfolder_name+="_muNeg"
 
-outfolder_name += "_eta"+str(etaMaxMuons).replace('.','p')+"_"
+outfolder_name += "_eta"+str(etaMaxMuons).replace('.','p')
 
-#---------------------
+systid =""
 
 if(int(use_PForNoPUorTKmet)==0): # 0:PF, 1:NOPU, 2:TK
-  outfolder_name+="_pfmet"
+  systid+="_pfmet"
 elif(int(use_PForNoPUorTKmet)==1): # 0:PF, 1:NOPU, 2:TK
-  outfolder_name+="_pfnopu"
+  systid+="_pfnopu"
 elif(int(use_PForNoPUorTKmet)==2): # 0:PF, 1:NOPU, 2:TK
-  outfolder_name+=""  # "_tkmet" is implicit
+  systid+=""  # "_tkmet" is implicit
 
 if(int(use_LHE_weights)==1):
-  outfolder_name+="_LHEweights"
+  systid+="_LHEweights"
 
 if(int(IS_MC_CLOSURE_TEST)==1):
-  outfolder_name+="_MCclosureTest"
+  systid+="_MCclosureTest"
 
 if(int(syst_ewk_Alcaraz)>-1):
-  outfolder_name+=""  # "_ewk"+str(syst_ewk_Alcaraz) is implicit
+  systid+=""  # "_ewk"+str(syst_ewk_Alcaraz) is implicit
 if(int(reweight_polarization)>0):
-  outfolder_name+=""  # "_polariz"+str(reweight_polarization) is implicit
+  systid+=""  # "_polariz"+str(reweight_polarization) is implicit
 
 if  (int(useMomentumCorr)==1):
-  outfolder_name+="_RochCorr"
+  systid+="_RochCorr"
 elif(int(useMomentumCorr)==2):
-  outfolder_name+="_MuscleFitCorr"
+  systid+="_MuscleFitCorr"
 elif(int(useMomentumCorr)==3):
-  outfolder_name+="_KalmanCorr"
+  systid+="_KalmanCorr"
 elif(int(useMomentumCorr)==4):
-  outfolder_name+=""  # "_KalmanCorrParam" is implicit
+  systid+=""  # "_KalmanCorrParam" is implicit
 
 if(int(MuonVariationSigmas)!=0):
   syststring=["Down", "Up"][MuonVariationSigmas>0]
   if(int(MuonKalmanVariation) != 0):
-    outfolder_name+="_KalmanVar"+str(MuonKalmanVariation)+syststring
+    systid+="_KalmanVar"+str(MuonKalmanVariation)+syststring
   if(int(MuonScaleVariation) == True):
-    outfolder_name+="_MuonScale"+syststring
+    systid+="_MuonScale"+syststring
 
 # if(int(usePhiMETCorr)==1):
-#   outfolder_name+="_phiMETcorr" is implicit
+#   systid+="_phiMETcorr" is implicit
 
 if(int(useRecoilCorr)>0):
-  outfolder_name+=""  # "_RecoilCorr"+str(useRecoilCorr) is implicit
+  systid+=""  # "_RecoilCorr"+str(useRecoilCorr) is implicit
   if(int(correctToMadgraph)):
-    outfolder_name+="_toMad"
+    systid+="_toMad"
   if(int(RecoilStatVariation)!=0):
     syststring=["Down", "Up"][RecoilVariationSigmas>0]
-    outfolder_name+="_RecoilEigen"+str(RecoilStatVariation)+syststring
+    systid+="_RecoilEigen"+str(RecoilStatVariation)+syststring
 
-if(int(useEffSF)==1): outfolder_name+="_EffSFCorr"
-if(int(useEffSF)>=2): outfolder_name+=""  # "_EffHeinerSFCorr" implicit
-if(int(useEffSF)==3): outfolder_name+="_noTight"
-if(int(useEffSF)==13): outfolder_name+="_Tight1perc"
-if(int(useEffSF)==4): outfolder_name+="_noIso"
-if(int(useEffSF)==14): outfolder_name+="_Iso1perc"
-if(int(useEffSF)==5): outfolder_name+="_noTightSub"
-if(int(useEffSF)==15): outfolder_name+="_TightSub1perc"
-if(int(useEffSF)==6): outfolder_name+="_noHLT"
-if(int(useEffSF)==16): outfolder_name+="_HLT1perc"
+if(int(useEffSF)==1): systid+="_EffSFCorr"
+if(int(useEffSF)>=2): systid+=""  # "_EffHeinerSFCorr" implicit
+if(int(useEffSF)==3): systid+="_noTight"
+if(int(useEffSF)==13): systid+="_Tight1perc"
+if(int(useEffSF)==4): systid+="_noIso"
+if(int(useEffSF)==14): systid+="_Iso1perc"
+if(int(useEffSF)==5): systid+="_noTightSub"
+if(int(useEffSF)==15): systid+="_TightSub1perc"
+if(int(useEffSF)==6): systid+="_noHLT"
+if(int(useEffSF)==16): systid+="_HLT1perc"
 
 # Both implicit
 # if(int(usePtSF)!=-1): outfolder_name+="_PtSFCorr"+str(usePtSF)
 # if(int(usePileupSF)==1): outfolder_name+="_PileupSFCorr"
+
+if (systid==""):
+  systid = "_"
+
+outfolder_name += systid
 
 ## END INITIAL CHECKS AND FOLDERNAME BUILDING
 ## ============================================================== #
