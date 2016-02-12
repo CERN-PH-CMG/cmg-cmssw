@@ -43,7 +43,6 @@ class Zanalysis {
   Int_t           evtZSel;
   Int_t           nMuons;
   Int_t           nTrgMuons;
-  Int_t           nNoTrgMuons;
   Int_t           noTrgExtraMuonsLeadingPt;  
   Double_t        pfmet;
   Double_t        pfmet_phi;
@@ -54,16 +53,6 @@ class Zanalysis {
   Double_t        tkmet;
   Double_t        tkmet_phi;
   Double_t        tkmet_sumEt;
-  Double_t        pfmetWlikeNeg;
-  Double_t        pfmetWlikeNeg_phi;
-  Double_t        pfmetWlikePos;
-  Double_t        pfmetWlikePos_phi;
-  Double_t        WlikePos_pt;
-  Double_t        WlikePos_phi;
-  Double_t        WlikePos_mt;
-  Double_t        WlikeNeg_pt;
-  Double_t        WlikeNeg_phi;
-  Double_t        WlikeNeg_mt;
   Double_t        Z_pt;
   Double_t        Z_rap;
   Double_t        Z_phi;
@@ -82,7 +71,6 @@ class Zanalysis {
   Double_t        MuPos_dxy;
   Double_t        MuPosRelIso;
   Int_t           MuPosTrg;
-  Int_t           MuPosIsTightAndIso;
   Int_t           MuPosIsTight;
   Double_t        MuPosGen_pt;
   Double_t        MuPosGen_eta;
@@ -98,7 +86,6 @@ class Zanalysis {
   Double_t        MuNeg_dxy;
   Double_t        MuNegRelIso;
   Int_t           MuNegTrg;
-  Int_t           MuNegIsTightAndIso;
   Int_t           MuNegIsTight;
   Double_t        MuNegGen_pt;
   Double_t        MuNegGen_eta;
@@ -132,7 +119,6 @@ class Zanalysis {
   TBranch        *b_evtZSel;   //!
   TBranch        *b_nMuons;   //!
   TBranch        *b_nTrgMuons;   //!
-  TBranch        *b_nNoTrgMuons;   //!
   TBranch        *b_noTrgExtraMuonsLeadingPt;   //!
   TBranch        *b_pfmet;   //!
   TBranch        *b_pfmet_phi;   //!
@@ -143,16 +129,6 @@ class Zanalysis {
   TBranch        *b_tkmet;   //!
   TBranch        *b_tkmet_phi;   //!
   TBranch        *b_tkmet_sumEt;   //!
-  TBranch        *b_pfmetWlikeNeg;   //!
-  TBranch        *b_pfmetWlikeNeg_phi;   //!
-  TBranch        *b_pfmetWlikePos;   //!
-  TBranch        *b_pfmetWlikePos_phi;   //!
-  TBranch        *b_WlikePos_pt;   //!
-  TBranch        *b_WlikePos_phi;   //!
-  TBranch        *b_WlikePos_mt;   //!
-  TBranch        *b_WlikeNeg_pt;   //!
-  TBranch        *b_WlikeNeg_phi;   //!
-  TBranch        *b_WlikeNeg_mt;   //!
   TBranch        *b_Z_pt;   //!
   TBranch        *b_Z_rap;   //!
   TBranch        *b_Z_phi;   //!
@@ -171,7 +147,6 @@ class Zanalysis {
   TBranch        *b_MuPos_dxy;   //!
   TBranch        *b_MuPosRelIso;   //!
   TBranch        *b_MuPosTrg;   //!
-  TBranch        *b_MuPosIsTightAndIso;   //!
   TBranch        *b_MuPosIsTight;   //!
   TBranch        *b_MuPosGen_pt;   //!
   TBranch        *b_MuPosGen_eta;   //!
@@ -187,7 +162,6 @@ class Zanalysis {
   TBranch        *b_MuNeg_dxy;   //!
   TBranch        *b_MuNegRelIso;   //!
   TBranch        *b_MuNegTrg;   //!
-  TBranch        *b_MuNegIsTightAndIso;   //!
   TBranch        *b_MuNegIsTight;   //!
   TBranch        *b_MuNegGen_pt;   //!
   TBranch        *b_MuNegGen_eta;   //!
@@ -309,7 +283,6 @@ void Zanalysis::Init(TTree *tree)
   fChain->SetBranchAddress("evtZSel", &evtZSel, &b_evtZSel);
   fChain->SetBranchAddress("nMuons", &nMuons, &b_nMuons);
   fChain->SetBranchAddress("nTrgMuons", &nTrgMuons, &b_nTrgMuons);
-  fChain->SetBranchAddress("nNoTrgMuons", &nNoTrgMuons, &b_nNoTrgMuons);
   fChain->SetBranchAddress("noTrgExtraMuonsLeadingPt", &noTrgExtraMuonsLeadingPt, &b_noTrgExtraMuonsLeadingPt);
   fChain->SetBranchAddress("pfmet", &pfmet, &b_pfmet);
   fChain->SetBranchAddress("pfmet_phi", &pfmet_phi, &b_pfmet_phi);
@@ -326,16 +299,6 @@ void Zanalysis::Init(TTree *tree)
   //  fChain->SetBranchAddress("tkmetABC", &tkmet, &b_tkmet);
   //  fChain->SetBranchAddress("tkmetABC_phi", &tkmet_phi, &b_tkmet_phi);
   //  fChain->SetBranchAddress("tkmetABC_sumEt", &tkmet_sumEt, &b_tkmet_sumEt);
-  fChain->SetBranchAddress("pfmetWlikeNeg", &pfmetWlikeNeg, &b_pfmetWlikeNeg);
-  fChain->SetBranchAddress("pfmetWlikeNeg_phi", &pfmetWlikeNeg_phi, &b_pfmetWlikeNeg_phi);
-  fChain->SetBranchAddress("pfmetWlikePos", &pfmetWlikePos, &b_pfmetWlikePos);
-  fChain->SetBranchAddress("pfmetWlikePos_phi", &pfmetWlikePos_phi, &b_pfmetWlikePos_phi);
-  fChain->SetBranchAddress("WlikePos_pt", &WlikePos_pt, &b_WlikePos_pt);
-  fChain->SetBranchAddress("WlikePos_phi", &WlikePos_phi, &b_WlikePos_phi);
-  fChain->SetBranchAddress("WlikePos_mt", &WlikePos_mt, &b_WlikePos_mt);
-  fChain->SetBranchAddress("WlikeNeg_pt", &WlikeNeg_pt, &b_WlikeNeg_pt);
-  fChain->SetBranchAddress("WlikeNeg_phi", &WlikeNeg_phi, &b_WlikeNeg_phi);
-  fChain->SetBranchAddress("WlikeNeg_mt", &WlikeNeg_mt, &b_WlikeNeg_mt);
   fChain->SetBranchAddress("Z_pt", &Z_pt, &b_Z_pt);
   fChain->SetBranchAddress("Z_rap", &Z_rap, &b_Z_rap);
   fChain->SetBranchAddress("Z_phi", &Z_phi, &b_Z_phi);
@@ -349,7 +312,6 @@ void Zanalysis::Init(TTree *tree)
   fChain->SetBranchAddress("MuPos_dxy", &MuPos_dxy, &b_MuPos_dxy);
   fChain->SetBranchAddress("MuPosRelIso", &MuPosRelIso, &b_MuPosRelIso);
   fChain->SetBranchAddress("MuPosTrg", &MuPosTrg, &b_MuPosTrg);
-  fChain->SetBranchAddress("MuPosIsTightAndIso", &MuPosIsTightAndIso, &b_MuPosIsTightAndIso);
   fChain->SetBranchAddress("MuPosIsTight", &MuPosIsTight, &b_MuPosIsTight);
   fChain->SetBranchAddress("MuNeg_pt", &MuNeg_pt, &b_MuNeg_pt);
   fChain->SetBranchAddress("MuNeg_eta", &MuNeg_eta, &b_MuNeg_eta);
@@ -359,7 +321,6 @@ void Zanalysis::Init(TTree *tree)
   fChain->SetBranchAddress("MuNeg_dxy", &MuNeg_dxy, &b_MuNeg_dxy);
   fChain->SetBranchAddress("MuNegRelIso", &MuNegRelIso, &b_MuNegRelIso);
   fChain->SetBranchAddress("MuNegTrg", &MuNegTrg, &b_MuNegTrg);
-  fChain->SetBranchAddress("MuNegIsTightAndIso", &MuNegIsTightAndIso, &b_MuNegIsTightAndIso);
   fChain->SetBranchAddress("MuNegIsTight", &MuNegIsTight, &b_MuNegIsTight);
   fChain->SetBranchAddress("Jet_leading_pt", &Jet_leading_pt, &b_Jet_leading_pt);
   fChain->SetBranchAddress("Jet_leading_eta", &Jet_leading_eta, &b_Jet_leading_eta);
@@ -568,21 +529,6 @@ void Zanalysis::fillControlPlots(TLorentzVector Zcorr, TLorentzVector met, TLore
   common_stuff::plot2D(Form("hZ_ptVsmt_%s_%s_eta%s_%d",phaseSpace_str.Data(),SigOrQCD_str.Data(),eta_str.Data(),jZmass_MeV),
 		       Zcorr.Mt(),Zcorr.Pt(),weight,
 		       h_2d, 150,50,200,100,0,25 );
-  common_stuff::plot1D(Form("hWlikePos_pt_%s_%s_eta%s_%d",phaseSpace_str.Data(),SigOrQCD_str.Data(),eta_str.Data(),jZmass_MeV),
-		       WlikePos_pt,weight,
-		       h_1d, 100,0,25 );
-  common_stuff::plot1D(Form("hWlikePos_phi_%s_%s_eta%s_%d",phaseSpace_str.Data(),SigOrQCD_str.Data(),eta_str.Data(),jZmass_MeV),
-		       WlikePos_phi,weight,
-		       h_1d, 100,-TMath::Pi(),TMath::Pi() );
-  common_stuff::plot1D(Form("hWlikePos_mt_%s_%s_eta%s_%d",phaseSpace_str.Data(),SigOrQCD_str.Data(),eta_str.Data(),jZmass_MeV),
-		       WlikePos_mt,weight,
-		       h_1d, 200,0,200 );
-  common_stuff::plot1D(Form("hpfMET_%s_%s_eta%s_%d",phaseSpace_str.Data(),SigOrQCD_str.Data(),eta_str.Data(),jZmass_MeV),
-		       pfmetWlikePos,weight,
-		       h_1d, 100,0,200 );
-  common_stuff::plot1D(Form("hpfMETphi_%s_%s_eta%s_%d",phaseSpace_str.Data(),SigOrQCD_str.Data(),eta_str.Data(),jZmass_MeV),
-		       pfmetWlikePos_phi,weight,
-		       h_1d, 100,-TMath::Pi(),TMath::Pi() );
   common_stuff::plot1D(Form("hMupt_%s_%s_eta%s_%d",phaseSpace_str.Data(),SigOrQCD_str.Data(),eta_str.Data(),jZmass_MeV),
 		       muPosCorr.Pt()<200 ? muPosCorr.Pt() : 199.5,weight,
 		       h_1d, 200,0,200 );
