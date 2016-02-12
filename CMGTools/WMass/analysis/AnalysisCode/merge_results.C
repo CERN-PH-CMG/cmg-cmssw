@@ -58,7 +58,6 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
   
   for(unsigned int itoken=0; itoken<tokenized.size(); itoken++){
 
-
     TRandom3 *initmass = new TRandom3(0); 
     // TString WorZ = "Z"; // "Z" or "W"
     WorZ = tokenized.at(itoken); // "Z" or "W"
@@ -72,17 +71,38 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
     
     TFile *fout = new TFile(Form("likelihood_results_W%s.root",Wlike.Data()),"RECREATE");
     
-      TCanvas*c_chi2;
-      TF1*ffit[WMass::etaMuonNSteps][WMass::NFitVar][2];
-      // TGraph *result_NonScaled[WMass::PDF_members][WMass::NFitVar];
-      TGraph *result_NonScaled[WMass::etaMuonNSteps][m_end-m_start][WMass::PDF_members][WMass::NFitVar][2];
-      double deltaM[WMass::etaMuonNSteps][m_end-m_start][WMass::PDF_members][WMass::NFitVar][2];
-      double deltaMmin[WMass::etaMuonNSteps][WMass::NFitVar][2]={{{0}}},deltaMmax[WMass::etaMuonNSteps][WMass::NFitVar][2]={{{0}}};
-      double deltaMnegSummed[WMass::etaMuonNSteps][WMass::NFitVar][2]={{{0}}},deltaMposSummed[WMass::etaMuonNSteps][WMass::NFitVar][2]={{{0}}};
-      double deltaMSummed[WMass::etaMuonNSteps][WMass::NFitVar][2]={{{0}}},deltaMJuan[WMass::etaMuonNSteps][WMass::NFitVar][2]={{{0}}};
-      TH1D*h_deltaM_PDF[WMass::etaMuonNSteps][WMass::NFitVar][2];
-      TGraphErrors*g_deltaM_PDF[WMass::etaMuonNSteps][WMass::NFitVar][2];
-
+    TCanvas*c_chi2;
+    TF1*ffit[max(1, WMass::efficiency_toys)][WMass::NFitVar][2];
+    // TGraph *result_NonScaled[WMass::PDF_members][WMass::NFitVar];
+    TGraph *result_NonScaled[max(1, WMass::efficiency_toys)][m_end-m_start][WMass::PDF_members][WMass::NFitVar][2];
+    double deltaM[max(1, WMass::efficiency_toys)][m_end-m_start][WMass::PDF_members][WMass::NFitVar][2];
+    double deltaMmin[max(1, WMass::efficiency_toys)][WMass::NFitVar][2];
+    double deltaMmax[max(1, WMass::efficiency_toys)][WMass::NFitVar][2];
+    double deltaMnegSummed[max(1, WMass::efficiency_toys)][WMass::NFitVar][2];
+    double deltaMposSummed[max(1, WMass::efficiency_toys)][WMass::NFitVar][2];
+    double deltaMSummed[max(1, WMass::efficiency_toys)][WMass::NFitVar][2];
+    double deltaMJuan[max(1, WMass::efficiency_toys)][WMass::NFitVar][2];
+    TH1D*h_deltaM_PDF[max(1, WMass::efficiency_toys)][WMass::NFitVar][2];
+    TGraphErrors*g_deltaM_PDF[max(1, WMass::efficiency_toys)][WMass::NFitVar][2];
+    
+    // Initialize arrays
+    for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
+      for (int k=0;k<WMass::NFitVar;k++){
+        deltaMmin[i][k][0] = 0;
+        deltaMmin[i][k][1] = 0;
+        deltaMmax[i][k][0] = 0;
+        deltaMmax[i][k][1] = 0;
+        deltaMnegSummed[i][k][0] = 0;
+        deltaMnegSummed[i][k][1] = 0;
+        deltaMposSummed[i][k][0] = 0;
+        deltaMposSummed[i][k][1] = 0;
+        deltaMSummed[i][k][0] = 0;
+        deltaMSummed[i][k][1] = 0;
+        deltaMJuan[i][k][0] = 0;
+        deltaMJuan[i][k][1] = 0;
+      }
+    }
+    
     for(int c=charge_start; c<charge_end; c++){
       cout <<"merging W"<<Wlike<<" " << WCharge_str[c].Data() << endl;
       
@@ -243,7 +263,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                 // ffit[i][k]->SetParameter(2,1e4); // IF FIT DOES NOT CONVERGE, CHANGE THIS PARAMETER BY LOOKING AT THE CHI2 VS MASS DISTRIBUTION (~value for which Delta_chi2 = 1)
                 ffit[i][k][c]->SetLineColor(2);
                 ffit[i][k][c]->SetLineWidth(1);
-                int fires = result_NonScaled[i][m-m_start][h][k][c]->Fit(Form("ffit_W%s%s_%s_pdf%d-%d%s%s%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),"WEM");
+                int fires = result_NonScaled[i][m-m_start][h][k][c]->Fit(Form("ffit_W%s%s_%s_pdf%d-%d%s%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),"WEM");
                 cout << "fitres= " << fires << " chi2= " << ffit[i][k][c]->GetChisquare() << " ndof= " << ffit[i][k][c]->GetNDF() << " chi2/ndof= " << (ffit[i][k][c]->GetChisquare()/ffit[i][k][c]->GetNDF()) << endl;
                 int attempts=0;
                 while((ffit[i][k][c]->GetChisquare()/ ffit[i][k][c]->GetNDF())>1*(WorZ.Contains("W")?1:3) && attempts<5){
@@ -253,7 +273,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                   ffit[i][k][c]->SetParameter(2,TMath::Abs(initmass->Gaus(0, 1+5*(WorZ.Contains("W")?attempts-1:attempts/5)))); // IF FIT DOES NOT CONVERGE, CHANGE THIS PARAMETER BY LOOKING AT THE CHI2 VS MASS DISTRIBUTION (~value for which Delta_chi2 = 1)
                   ffit[i][k][c]->SetLineColor(2);
                   ffit[i][k][c]->SetLineWidth(1);
-                  result_NonScaled[i][m-m_start][h][k][c]->Fit(Form("ffit_W%s%s_%s_pdf%d-%d%s%s%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),"WEM");
+                  result_NonScaled[i][m-m_start][h][k][c]->Fit(Form("ffit_W%s%s_%s_pdf%d-%d%s%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),"WEM");
                   cout << "refitted with init mass: " << rmass << " chi2 norm: " << (ffit[i][k][c]->GetChisquare()/ ffit[i][k][c]->GetNDF()) << endl;
                   attempts++;
                 }
@@ -261,10 +281,10 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                   if((ffit[i][k][c]->GetChisquare()/ ffit[i][k][c]->GetNDF())>1e3 || TMath::Abs(ffit[i][k][c]->GetParameter(1) - (massCentral_MeV))>1e5 ){
                     // ffit[i][k][c]->SetParameter(0,result_NonScaled[i][m-m_start][h][k][c]->GetMinimum());
                     // ffit[i][k][c]->SetParameter(1, initmass->Gaus(80410, 200); );
-                    result_NonScaled[i][m-m_start][h][k][c]->Fit(Form("ffit_W%s%s_%s_pdf%d-%d%s%s%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),"QWEM");
+                    result_NonScaled[i][m-m_start][h][k][c]->Fit(Form("ffit_W%s%s_%s_pdf%d-%d%s%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),"QWEM");
                     }
                 }
-                result_NonScaled[i][m-m_start][h][k][c]->Fit(Form("ffit_W%s%s_%s_pdf%d-%d%s%s%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),"WEM");
+                result_NonScaled[i][m-m_start][h][k][c]->Fit(Form("ffit_W%s%s_%s_pdf%d-%d%s%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),"WEM");
                 
                 result_NonScaled[i][m-m_start][h][k][c]->Draw("ap");
                 TLatex *text,*text2;
@@ -334,10 +354,10 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
               }
               if(some_fit_failed) continue;
          
-              TCanvas *c_summary=new TCanvas(Form("c_summary_W%s%s_pdf%d-%d%s%s%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),Form("c_summary_pdf%d-%d%s%s%s%s_eta%s",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data())); 
+              TCanvas *c_summary=new TCanvas(Form("c_summary_W%s%s_pdf%d-%d%s%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()),Form("c_summary_pdf%d-%d%s%s%s_eta%s",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data())); 
               c_summary->SetGridy();
               c_summary->SetGridx();
-              TH2D*frame=new TH2D("frame",Form("pdf %d-%d %s %s eta %s;M_{W%s} (MeV); -2ln(L/L_{ref})",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),Wlike.Data()),2*WMass2::WMassNSteps+1,WorZ.Contains("Z")? WMass2::Zmass_values_array[0] : WMass2::Wmass_values_array[0],WorZ.Contains("Z")? WMass2::Zmass_values_array[2*WMass2::WMassNSteps] : WMass2::Wmass_values_array[2*WMass2::WMassNSteps],10,0,5);
+              TH2D*frame=new TH2D("frame",Form("pdf %d-%d %s %s %s eta %s;M_{W%s} (MeV); -2ln(L/L_{ref})",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),Wlike.Data()),2*WMass2::WMassNSteps+1,WorZ.Contains("Z")? WMass2::Zmass_values_array[0] : WMass2::Wmass_values_array[0],WorZ.Contains("Z")? WMass2::Zmass_values_array[2*WMass2::WMassNSteps] : WMass2::Wmass_values_array[2*WMass2::WMassNSteps],10,0,5);
               frame->Draw();
               TLine *l=new TLine((massCentral_MeV),0,(massCentral_MeV),5);
               l->SetLineStyle(6);
@@ -354,7 +374,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
               for(int k=0;k<WMass::NFitVar;k++){
                 // cout << result_NonScaled[i][h][k]->GetParameter(1) << " " << ffit[i][k]->GetParameter(2) << endl;
                 // ffit[i][k]->Draw("");
-                f[k] = (TF1*) result_NonScaled[i][m-m_start][h][k][c]->GetFunction(Form("ffit_W%s%s_%s_pdf%d-%d%s%s%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()));
+                f[k] = (TF1*) result_NonScaled[i][m-m_start][h][k][c]->GetFunction(Form("ffit_W%s%s_%s_pdf%d-%d%s%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data()));
                 f[k]->SetLineColor(k+1);
                 f[k]->SetLineWidth(2);
                 f[k]->Draw("same");
@@ -397,94 +417,95 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
       }
       if(some_fit_failed) continue;
       
-      for(int i=0; i<WMass::etaMuonNSteps; i++){
-        TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
+      TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
+      for(int i=0; i<max(1, WMass::efficiency_toys); i++){
         TString effToy_str = "";
         for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
           if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
 
-        for(int k=0;k<WMass::NFitVar;k++){
-          if(WMass::PDF_members>1){
+          for(int k=0;k<WMass::NFitVar;k++){
+            if(WMass::PDF_members>1){
 
-            cout << endl;
-            int usedpdf = WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets;
-            cout << Form("PDF %d with %s: #DeltaM_{W%s, min}= %.1f MeV, #DeltaM_{W,max}= %.1f MeV", WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets, WMass::FitVar_str[k].Data(), Wlike.Data(),deltaMmin[i][k][c], deltaMmax[i][k][c]) << endl;
-            double denominator = 1;
+              cout << endl;
+              int usedpdf = WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets;
+              cout << Form("PDF %d with %s: #DeltaM_{W%s, min}= %.1f MeV, #DeltaM_{W,max}= %.1f MeV", WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets, WMass::FitVar_str[k].Data(), Wlike.Data(),deltaMmin[i][k][c], deltaMmax[i][k][c]) << endl;
+              double denominator = 1;
 
-            TCanvas*c1= new TCanvas(Form("c_deltaM_PDF_W%s%s_%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),eta_str.Data()),Form("c_deltaM_PDF_W%s%s_%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),eta_str.Data()));
-            
-            g_deltaM_PDF[i][k][c]->Draw("ape");
-            TLatex *text;
-            text = new TLatex(0.2,0.85,Form("W%s%s, PDF %d with %s: #DeltaM_{W%s, min}= %.1f MeV, #DeltaM_{W%s,max}= %.1f MeV",Wlike.Data() , WCharge_str[c].Data(), WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets, WMass::FitVar_str[k].Data(), Wlike.Data(),deltaMmin[i][k][c], Wlike.Data(),deltaMmax[i][k][c]));
-            text->SetTextSize(0.035);
-            text->SetNDC();
-            text->Draw();
-            
-            if(usedpdf==232000 || usedpdf==229800){ // NNPDF, see ref. http://arxiv.org/pdf/1301.6754v1.pdf formulae 2.23 and 2.25
-              // cout << Form("PDF %d with %s: #DeltaM_{W} square summed = -%.1f MeV, #DeltaM_{W} square summed = %.1f MeV", WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets, WMass::FitVar_str[k].Data(), deltaMnegSummed[i][k]/denominator, deltaMposSummed[i][k]/denominator) << endl;
-              denominator = TMath::Sqrt(WMass::PDF_members/2-1);
-              cout << Form("PDF %d with %s: #DeltaM_{W%s} square summed = %.1f MeV", WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets, WMass::FitVar_str[k].Data(), Wlike.Data(),deltaMSummed[i][k][c]/denominator) << endl;
-              text = new TLatex(0.2,0.8,Form("PDF %d with %s: #DeltaM_{W%s} square summed = %.1f MeV", WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets, WMass::FitVar_str[k].Data(), Wlike.Data(),deltaMSummed[i][k][c]/denominator));
+              TCanvas*c1= new TCanvas(Form("c_deltaM_PDF_W%s%s_%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),eta_str.Data()),Form("c_deltaM_PDF_W%s%s_%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),eta_str.Data()));
+              
+              g_deltaM_PDF[i][k][c]->Draw("ape");
+              TLatex *text;
+              text = new TLatex(0.2,0.85,Form("W%s%s, PDF %d with %s: #DeltaM_{W%s, min}= %.1f MeV, #DeltaM_{W%s,max}= %.1f MeV",Wlike.Data() , WCharge_str[c].Data(), WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets, WMass::FitVar_str[k].Data(), Wlike.Data(),deltaMmin[i][k][c], Wlike.Data(),deltaMmax[i][k][c]));
               text->SetTextSize(0.035);
               text->SetNDC();
               text->Draw();
-            }else{
-              cout << Form("PDF %d with %s: #DeltaM_{W%s} as of J. Rojo = %.1f MeV", WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets, WMass::FitVar_str[k].Data(),Wlike.Data(), (deltaMJuan[i][k][c]/2/denominator)) << endl;
-              text = new TLatex(0.2,0.8,Form("PDF %d with %s: #DeltaM_{W%s} as of J. Rojo = %.1f MeV", WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets, WMass::FitVar_str[k].Data(), Wlike.Data(),(deltaMJuan[i][k][c]/2/denominator)));
-              text->SetTextSize(0.035);
-              text->SetNDC();
-              text->Draw();
+              
+              if(usedpdf==232000 || usedpdf==229800){ // NNPDF, see ref. http://arxiv.org/pdf/1301.6754v1.pdf formulae 2.23 and 2.25
+                // cout << Form("PDF %d with %s: #DeltaM_{W} square summed = -%.1f MeV, #DeltaM_{W} square summed = %.1f MeV", WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets, WMass::FitVar_str[k].Data(), deltaMnegSummed[i][k]/denominator, deltaMposSummed[i][k]/denominator) << endl;
+                denominator = TMath::Sqrt(WMass::PDF_members/2-1);
+                cout << Form("PDF %d with %s: #DeltaM_{W%s} square summed = %.1f MeV", WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets, WMass::FitVar_str[k].Data(), Wlike.Data(),deltaMSummed[i][k][c]/denominator) << endl;
+                text = new TLatex(0.2,0.8,Form("PDF %d with %s: #DeltaM_{W%s} square summed = %.1f MeV", WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets, WMass::FitVar_str[k].Data(), Wlike.Data(),deltaMSummed[i][k][c]/denominator));
+                text->SetTextSize(0.035);
+                text->SetNDC();
+                text->Draw();
+              }else{
+                cout << Form("PDF %d with %s: #DeltaM_{W%s} as of J. Rojo = %.1f MeV", WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets, WMass::FitVar_str[k].Data(),Wlike.Data(), (deltaMJuan[i][k][c]/2/denominator)) << endl;
+                text = new TLatex(0.2,0.8,Form("PDF %d with %s: #DeltaM_{W%s} as of J. Rojo = %.1f MeV", WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets, WMass::FitVar_str[k].Data(), Wlike.Data(),(deltaMJuan[i][k][c]/2/denominator)));
+                text->SetTextSize(0.035);
+                text->SetNDC();
+                text->Draw();
+              }
+
+              g_deltaM_PDF[i][k][c]->Write();
+              h_deltaM_PDF[i][k][c]->Write();
+              c1->Write();
+              
+              // mean = TMath::Mean(n, &v[0]);
+              // vector<double> v;
+              // // std::generate(v.begin(), v.end(), 1);
+              // if(k==1)
+                // for(int h=0; h<WMass::PDF_members; h++){
+                  // // v.push_back(deltaM[i][h][k]);
+                  // cout << deltaM[i][h][k] << endl;
+                // }
+              // double meanWmass= TMath::Mean(v.begin(), v.end());
+              // cout << "meanWmass= " << meanWmass << endl;
             }
+            if(m_end>1){
+              cout << endl;
+              // int usedpdf = WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets;
+              cout << Form("MomCorr toys with %s: #DeltaM_{W%s, min}= %.1f MeV, #DeltaM_{W%s,max}= %.1f MeV", WMass::FitVar_str[k].Data(), Wlike.Data(),deltaMmin[i][k][c], Wlike.Data(),deltaMmax[i][k][c]) << endl;
+              double denominator = 1;
 
-            g_deltaM_PDF[i][k][c]->Write();
-            h_deltaM_PDF[i][k][c]->Write();
-            c1->Write();
-            
-            // mean = TMath::Mean(n, &v[0]);
-            // vector<double> v;
-            // // std::generate(v.begin(), v.end(), 1);
-            // if(k==1)
-              // for(int h=0; h<WMass::PDF_members; h++){
-                // // v.push_back(deltaM[i][h][k]);
-                // cout << deltaM[i][h][k] << endl;
-              // }
-            // double meanWmass= TMath::Mean(v.begin(), v.end());
-            // cout << "meanWmass= " << meanWmass << endl;
-          }
-          if(m_end>1){
-            cout << endl;
-            // int usedpdf = WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets;
-            cout << Form("MomCorr toys with %s: #DeltaM_{W%s, min}= %.1f MeV, #DeltaM_{W%s,max}= %.1f MeV", WMass::FitVar_str[k].Data(), Wlike.Data(),deltaMmin[i][k][c], Wlike.Data(),deltaMmax[i][k][c]) << endl;
-            double denominator = 1;
-
-            TCanvas*c1= new TCanvas(Form("c_deltaM_PDF_%s_eta%s",WMass::FitVar_str[k].Data(),eta_str.Data()),Form("c_deltaM_PDF_%s_eta%s",WMass::FitVar_str[k].Data(),eta_str.Data()));
-            g_deltaM_PDF[i][k][c]->Draw("ape");
-            TLatex *text;
-            text = new TLatex(0.2,0.85,Form("MomCorr toys with %s: #DeltaM_{W%s, min}= %.1f MeV, #DeltaM_{W%s,max}= %.1f MeV", WMass::FitVar_str[k].Data(), Wlike.Data(),deltaMmin[i][k][c], Wlike.Data(),deltaMmax[i][k][c]));
-            text->SetTextSize(0.035);
-            text->SetNDC();
-            text->Draw();
-            
-            // if(usedpdf==232000){ // NNPDF, see ref. http://arxiv.org/pdf/1301.6754v1.pdf formulae 2.23 and 2.25
-              // cout << Form("PDF %d with %s: #DeltaM_{W} square summed = -%.1f MeV, #DeltaM_{W} square summed = %.1f MeV", WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets, WMass::FitVar_str[k].Data(), deltaMnegSummed[i][k]/denominator, deltaMposSummed[i][k]/denominator) << endl;
-              // denominator = TMath::Sqrt(WMass::NVarRecoilCorr/2-1);
-              cout << Form("MomCorr toys with %s: #DeltaM_{W%s} square summed = %.1f MeV", WMass::FitVar_str[k].Data(), Wlike.Data(),deltaMSummed[i][k][c]/denominator) << endl;
-              text = new TLatex(0.2,0.8,Form("MomCorr toys with %s: #DeltaM_{W%s} square summed = %.1f MeV", WMass::FitVar_str[k].Data(), Wlike.Data(),deltaMSummed[i][k][c]/denominator));
+              TCanvas*c1= new TCanvas(Form("c_deltaM_PDF_%s_eta%s",WMass::FitVar_str[k].Data(),eta_str.Data()),Form("c_deltaM_PDF_%s_eta%s",WMass::FitVar_str[k].Data(),eta_str.Data()));
+              g_deltaM_PDF[i][k][c]->Draw("ape");
+              TLatex *text;
+              text = new TLatex(0.2,0.85,Form("MomCorr toys with %s: #DeltaM_{W%s, min}= %.1f MeV, #DeltaM_{W%s,max}= %.1f MeV", WMass::FitVar_str[k].Data(), Wlike.Data(),deltaMmin[i][k][c], Wlike.Data(),deltaMmax[i][k][c]));
               text->SetTextSize(0.035);
               text->SetNDC();
               text->Draw();
-            // }else{
-              // cout << Form("MomCorr toys with %s: #DeltaM_{W} as of J. Rojo = %.1f MeV", WMass::FitVar_str[k].Data(), (deltaMJuan[i][k]/2/denominator)) << endl;
-              // text = new TLatex(0.2,0.8,Form("MomCorr toys with %s: #DeltaM_{W} as of J. Rojo = %.1f MeV", WMass::FitVar_str[k].Data(), (deltaMJuan[i][k]/2/denominator)));
-              // text->SetTextSize(0.035);
-              // text->SetNDC();
-              // text->Draw();
-            // }
+              
+              // if(usedpdf==232000){ // NNPDF, see ref. http://arxiv.org/pdf/1301.6754v1.pdf formulae 2.23 and 2.25
+                // cout << Form("PDF %d with %s: #DeltaM_{W} square summed = -%.1f MeV, #DeltaM_{W} square summed = %.1f MeV", WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets, WMass::FitVar_str[k].Data(), deltaMnegSummed[i][k]/denominator, deltaMposSummed[i][k]/denominator) << endl;
+                // denominator = TMath::Sqrt(WMass::NVarRecoilCorr/2-1);
+                cout << Form("MomCorr toys with %s: #DeltaM_{W%s} square summed = %.1f MeV", WMass::FitVar_str[k].Data(), Wlike.Data(),deltaMSummed[i][k][c]/denominator) << endl;
+                text = new TLatex(0.2,0.8,Form("MomCorr toys with %s: #DeltaM_{W%s} square summed = %.1f MeV", WMass::FitVar_str[k].Data(), Wlike.Data(),deltaMSummed[i][k][c]/denominator));
+                text->SetTextSize(0.035);
+                text->SetNDC();
+                text->Draw();
+              // }else{
+                // cout << Form("MomCorr toys with %s: #DeltaM_{W} as of J. Rojo = %.1f MeV", WMass::FitVar_str[k].Data(), (deltaMJuan[i][k]/2/denominator)) << endl;
+                // text = new TLatex(0.2,0.8,Form("MomCorr toys with %s: #DeltaM_{W} as of J. Rojo = %.1f MeV", WMass::FitVar_str[k].Data(), (deltaMJuan[i][k]/2/denominator)));
+                // text->SetTextSize(0.035);
+                // text->SetNDC();
+                // text->Draw();
+              // }
 
-            g_deltaM_PDF[i][k][c]->Write();
-            h_deltaM_PDF[i][k][c]->Write();
-            c1->Write();
+              g_deltaM_PDF[i][k][c]->Write();
+              h_deltaM_PDF[i][k][c]->Write();
+              c1->Write();
 
+            }
           }
         }
       }
