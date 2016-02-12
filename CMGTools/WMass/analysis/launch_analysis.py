@@ -53,7 +53,7 @@ if(hasattr(config, 'usePtSF')):
 ### Muon trigger efficiency
 useEffSF = 2  # 0=no, 1=MuonPOG, 2=Heiner all, 3=Heiner no tight, 4=Heiner no iso, 5=Heiner no tight subleading mu, 6=Heiner no hlt
               # 13=Heiner tight 1%, 14=Heiner iso 1%, 15=Heiner tight subleading mu 1%, 16=Heiner hlt 1%
-if(hasattr(config, 'usePtSF')):
+if(hasattr(config, 'useEffSF')):
   useEffSF = config.useEffSF
 ### EFFICIENCY TOYS
 efficiency_toys = 0  # 0=No, >1=Yes
@@ -254,6 +254,11 @@ if(int(MuonCorrKalmanNvarsNsigma)!=0):
   MuonCorrKalmanNparameters=45
   MuonCorrNsigma = MuonCorrKalmanNvarsNsigma
 
+if (int(efficiency_toys) > 0) and not ((int(useEffSF) >= 13) and (int(useEffSF) <= 16)) :
+  print "ERROR: Asked to do", efficiency_toys, "efficiency toys, but you specified no efficiency to variate"
+  print "Check the 'useEffSF' variable"
+  sys.exit(1)
+
 # Build outfolder name
 
 outfolder_name = outfolder_prefix
@@ -331,17 +336,17 @@ if(int(useRecoilCorr)>0):
     if  (int(RecoilCorrVarDiagoParSigmas)!=0):
       outfolder_name+="_RecCorrNSigma_"+str(RecoilCorrVarDiagoParSigmas)
 
-if(int(useEffSF)==1): outfolder_name+="_EffSFCorr";
-if(int(useEffSF)>=2): outfolder_name+="_EffHeinerSFCorr";
-if(int(useEffSF)==3): outfolder_name+="_noTight";
-if(int(useEffSF)==13): outfolder_name+="_Tight1perc";
-if(int(useEffSF)==4): outfolder_name+="_noIso";
-if(int(useEffSF)==14): outfolder_name+="_Iso1perc";
-if(int(useEffSF)==5): outfolder_name+="_noTightSub";
-if(int(useEffSF)==15): outfolder_name+="_TightSub1perc";
-if(int(useEffSF)==6): outfolder_name+="_noHLT";
-if(int(useEffSF)==16): outfolder_name+="_HLT1perc";
-if(int(usePtSF)!=-1): outfolder_name+="_PtSFCorr"+str(usePtSF);
+if(int(useEffSF)==1):    outfolder_name+="_EffSFCorr";
+if(int(useEffSF)>=2):    outfolder_name+="_EffHeinerSFCorr";
+if(int(useEffSF)==3):    outfolder_name+="_noTight";
+if(int(useEffSF)==13):   outfolder_name+="_TightToys"+str(efficiency_toys);
+if(int(useEffSF)==4):    outfolder_name+="_noIso";
+if(int(useEffSF)==14):   outfolder_name+="_IsoToys"+str(efficiency_toys);
+if(int(useEffSF)==5):    outfolder_name+="_noTightSub";
+if(int(useEffSF)==15):   outfolder_name+="_TightSubToys"+str(efficiency_toys);
+if(int(useEffSF)==6):    outfolder_name+="_noHLT";
+if(int(useEffSF)==16):   outfolder_name+="_HLTToys"+str(efficiency_toys);
+if(int(usePtSF)!=-1):    outfolder_name+="_PtSFCorr"+str(usePtSF);
 if(int(usePileupSF)==1): outfolder_name+="_PileupSFCorr";
 
 ## END INITIAL CHECKS AND FOLDERNAME BUILDING
@@ -679,6 +684,8 @@ if(runWanalysis or runZanalysis):
         nevents = 2e5
         if ("DYJetsMadSig" in sample[i]  or "DYJetsPow" in sample[i]):
           nevents = 3e4
+          if int(useRecoilCorr)==3:
+            nevents = nevents*10
           if int(useRecoilCorr)>0 and int(RecoilCorrVarDiagoParSigmas)!=0:
             nevents = nevents/3
           if (int(MuonCorrKalmanNvarsNsigma)!=0):

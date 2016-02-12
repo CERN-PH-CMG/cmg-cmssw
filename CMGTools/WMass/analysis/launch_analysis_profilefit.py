@@ -128,7 +128,7 @@ def file_exists_and_is_not_empty(fpath):
   if not (os.path.isfile(fpath) and (os.path.getsize(fpath) > 0)): return False
   if fpath.endswith('.root'):
     f = ROOT.TFile(fpath)
-    if f.GetNkeys() == 0 or f.TestBit(ROOT.TFile.kRecovered) or f.IsZombie():
+    if f.TestBit(ROOT.TFile.kRecovered) or f.IsZombie():
       return False
   return True
 
