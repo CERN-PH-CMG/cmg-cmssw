@@ -53,28 +53,6 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
     
     cout << "LOAD ALL THE HISTOS FROM THE VARIOUS FILES IN MEMORY" << endl;
     for(int isample=0; isample<Nsamples;isample++){
-      if(
-         samples_str[isample].Contains("DATA") 
-         || samples_str[isample].Contains("WJetsPowPlus") 
-         || samples_str[isample].Contains("WJetsPowNeg") 
-         || samples_str[isample].Contains("WJetsMadSig") 
-         || samples_str[isample].Contains("WJetsMadFake") 
-         || samples_str[isample].Contains("DYJetsMadSig") 
-         || samples_str[isample].Contains("DYJetsMadFake") 
-         || samples_str[isample].Contains("TTJets") 
-         || samples_str[isample].Contains("ZZJets") 
-         || samples_str[isample].Contains("WWJets") 
-         || samples_str[isample].Contains("WZJets") 
-         || samples_str[isample].Contains("QCD") 
-         || samples_str[isample].Contains("T_s") 
-         || samples_str[isample].Contains("T_t") 
-         || samples_str[isample].Contains("T_tW") 
-         || samples_str[isample].Contains("Tbar_s") 
-         || samples_str[isample].Contains("Tbar_t") 
-         || samples_str[isample].Contains("Tbar_tW") 
-         || samples_str[isample].Contains("EWK") 
-         || samples_str[isample].Contains("MCDATALIKEMAD") 
-         ) continue;
          
       finTemplatesW[isample] = new TFile(Form("%s/output_%s/%sanalysisOnDATA.root",folder.Data(),samples_str[isample].Data(),WorZ.Data()));
       finTemplatesW[isample]->Print();
@@ -236,7 +214,29 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
                     cout << "W_histoname_NonScaled[isample]="<<W_histoname_NonScaled[isample]<<endl;
                     Wtempl_NonScaled->SetTitle(W_histoname_NonScaled[isample]);
 
-                    Wtempl_NonScaled->Write();
+                    if( !(
+                       samples_str[isample].Contains("DATA") 
+                       || samples_str[isample].Contains("WJetsPowPlus") 
+                       || samples_str[isample].Contains("WJetsPowNeg") 
+                       || samples_str[isample].Contains("WJetsMadSig") 
+                       || samples_str[isample].Contains("WJetsMadFake") 
+                       || samples_str[isample].Contains("DYJetsMadSig") 
+                       || samples_str[isample].Contains("DYJetsMadFake") 
+                       || samples_str[isample].Contains("TTJets") 
+                       || samples_str[isample].Contains("ZZJets") 
+                       || samples_str[isample].Contains("WWJets") 
+                       || samples_str[isample].Contains("WZJets") 
+                       || samples_str[isample].Contains("QCD") 
+                       || samples_str[isample].Contains("T_s") 
+                       || samples_str[isample].Contains("T_t") 
+                       || samples_str[isample].Contains("T_tW") 
+                       || samples_str[isample].Contains("Tbar_s") 
+                       || samples_str[isample].Contains("Tbar_t") 
+                       || samples_str[isample].Contains("Tbar_tW") 
+                       || samples_str[isample].Contains("EWK") 
+                       || samples_str[isample].Contains("MCDATALIKEMAD") 
+                       ) ) 
+                       Wtempl_NonScaled->Write();
 
                     int nspaces1 = 50 - W_histoname_NonScaled[isample].Length();
                     // outTXTfile << Wtempl->GetName();
