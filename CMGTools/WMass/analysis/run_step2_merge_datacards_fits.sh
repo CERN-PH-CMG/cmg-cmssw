@@ -8,15 +8,15 @@ WlikeCharge=1 # 1, -1
 DataCards_templateFromFolder=""
 
 # RUN MERGE CHUNCKS, PREPARE DATACARDS, RUN FITS
-sed -i "s/useBatch =.*/useBatch = 1/g" configdir/*.py
-sed -i "s/outfolder_prefix =.*/outfolder_prefix = \"${outfolder_prefix}\"/g" configdir/*.py
-sed -i "s/runZanalysis =.*/runZanalysis = 0/g" configdir/*.py
-sed -i "s/mergeSigEWKbkg =.*/mergeSigEWKbkg = 1/g" configdir/*.py
-sed -i "s/runPrepareDataCardsFast =.*/runPrepareDataCardsFast = 1 # TEMPLATES ARE IN THE TEMPLATE FOLDER, PSEUDO-DATA IN THE CURRENT FOLDER/g" configdir/*.py
-sed -i "s/DataCards_templateFromFolder=.*/DataCards_templateFromFolder=\"${DataCards_templateFromFolder}\"  # evaluate systematics wrt folder (or leave it empty) -- full template folder/g" configdir/*.py
-sed -i "s/runClosureTestLikeLihoodRatio =.*/runClosureTestLikeLihoodRatio = 1  # 1: also executes merge if not using batch jobs/g" configdir/*.py
-sed -i "s/mergeResults =.*/mergeResults = 0/g" configdir/*.py
-sed -i "s/WlikeCharge =.*/WlikeCharge = ${WlikeCharge}  # Charge of the Wlike (+1,-1)/g" configdir/*.py
+sed -i "s/useBatch =.*/useBatch = 1/g;\
+        s/outfolder_prefix =.*/outfolder_prefix = \"${outfolder_prefix}\"/g;\
+        s/runZanalysis =.*/runZanalysis = 0/g;\
+        s/mergeSigEWKbkg =.*/mergeSigEWKbkg = 1/g;\
+        s/runPrepareDataCardsFast =.*/runPrepareDataCardsFast = 1 # TEMPLATES ARE IN THE TEMPLATE FOLDER, PSEUDO-DATA IN THE CURRENT FOLDER/g;\
+        s/DataCards_templateFromFolder=.*/DataCards_templateFromFolder=\"${DataCards_templateFromFolder}\"  # evaluate systematics wrt folder (or leave it empty) -- full template folder/g;\
+        s/runClosureTestLikeLihoodRatio =.*/runClosureTestLikeLihoodRatio = 1  # 1: also executes merge if not using batch jobs/g;\
+        s/mergeResults =.*/mergeResults = 0/g;\
+        s/WlikeCharge =.*/WlikeCharge = ${WlikeCharge}  # Charge of the Wlike (+1,-1)/g" configdir/*.py
 
 # SET ENVIRONMENT VARIABLES BEFORE TO LAUNCH. CAVEAT: IT ASSUMES BASH
 eval `scramv1 runtime -sh`
