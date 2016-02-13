@@ -484,6 +484,14 @@ shutil.copyfile(os.path.basename(__file__), path_dest)
 path_dest="JobOutputs/"+outfolder_name+"/"+conffile+".py"
 shutil.copyfile(base_path+"/configdir/"+conffile+".py", path_dest)
 
+with open("JobOutputs/"+outfolder_name+"/log.txt", "a") as logfile:
+  commit_SHA = subprocess.Popen("git rev-parse HEAD", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.read()
+  import datetime
+  logstring = str(datetime.datetime.now()) + " - " + commit_SHA
+  print "Writing on log file:", logstring
+  logfile.write(logstring)
+print ""
+
 if(runWanalysis or runZanalysis):
 
   if(not useLHAPDF and int(LHAPDF_reweighting_members)>1):
