@@ -172,29 +172,31 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
       ofstream outTXTfile;
       outTXTfile.open(Form("%s/DataCards/datacard_Wmass_Mu%s%s_normalizations.txt",folder.Data(),Wlike.Data(),WCharge_str[c].Data()));
 
+      TDirectory *channel_dir = foutDATA->mkdir(Form("Mu%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),eta_str.Data()));
+      foutDATA->cd(Form("Mu%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),eta_str.Data()));
+      
       TString effToy_str = "";
-      for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
-        if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
 
-        outTXTfile << "-----------------------" << endl;
-        outTXTfile << "-----------------------" << endl;
-        outTXTfile << "Mu"<<Wlike.Data()<<WCharge_str[c].Data()<< " with |eta| < " << WMass::etaMaxMuons << endl;
-        outTXTfile << "-----------------------" << endl;
-        outTXTfile << "-----------------------" << endl;
-        outTXTfile << endl;
-        TDirectory *channel_dir = foutDATA->mkdir(Form("Mu%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),eta_str.Data()));
-        foutDATA->cd(Form("Mu%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),eta_str.Data()));
+      //LOOP OVER w MASS BINS
+      for(int jmass=0; jmass<2*WMass::WMassNSteps+1; jmass++){
+        // int jWmass = WMass::WMassCentral_MeV-(WMass::WMassNSteps-jmass)*WMass::WMassStep_MeV;
+        int jWmass = WorZ.Contains("Z")? WMass::Zmass_values_array[jmass] : WMass::Wmass_values_array[jmass];
 
-        //LOOP OVER w MASS BINS
-        for(int jmass=0; jmass<2*WMass::WMassNSteps+1; jmass++){
-          // int jWmass = WMass::WMassCentral_MeV-(WMass::WMassNSteps-jmass)*WMass::WMassStep_MeV;
-          int jWmass = WorZ.Contains("Z")? WMass::Zmass_values_array[jmass] : WMass::Wmass_values_array[jmass];
+        cout << "W"<<Wlike.Data()<<WCharge_str[c]<<" eta cut " << WMass::etaMaxMuons << " jWmass= " << jWmass; fflush(stdout);
+        TDirectory *mass_dir = channel_dir->mkdir(Form("%d",jWmass));
+        mass_dir->cd();
 
+        for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
+          if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
+
+          outTXTfile << "-----------------------" << endl;
+          outTXTfile << "-----------------------" << endl;
+          outTXTfile << "Mu"<<Wlike.Data()<<WCharge_str[c].Data()<< " with |eta| < " << WMass::etaMaxMuons << endl;
+          outTXTfile << "-----------------------" << endl;
+          outTXTfile << "-----------------------" << endl;
+          outTXTfile << endl;
           // double fitrange_Scaling = 1;
 
-          cout << "W"<<Wlike.Data()<<WCharge_str[c]<<" eta cut " << WMass::etaMaxMuons << " jWmass= " << jWmass; fflush(stdout);
-          TDirectory *mass_dir = channel_dir->mkdir(Form("%d",jWmass));
-          mass_dir->cd();
 
           for(int h=0; h<WMass::PDF_members; h++){
             cout << " PDF " << (WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets) << "-" << h << endl;
