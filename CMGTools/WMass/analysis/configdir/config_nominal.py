@@ -18,6 +18,9 @@ useRecoilCorr = 2  # 0=none, 1=yes, 2=PDFw3gaus, 3=RooKeys
 RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0  # SYST VARIATIONS: 0=NONE, RAPBIN 1 (1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p2, 6= U2 MC) RAPBIN 2 (7= U1 DATA p1, 8= U1 DATA p2, 9= U2 DATA, 10= U1 MC p1, 11= U1 MC p2, 12= U2 MC)
 RecoilCorrVarDiagoParSigmas = 0  # Number of sigmas for recoil syst
 
+### define sample
+resubmit_sample = "DATA, WJetsMadFake, DYJetsPow, DYJetsMadFake, TTJets, ZZJets, WWJets, WZJets, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW, QCD"
+
 ### Working setup
 useBatch = 1
 batchQueue = "1nh"
