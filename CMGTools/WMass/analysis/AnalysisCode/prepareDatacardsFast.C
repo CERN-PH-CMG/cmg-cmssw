@@ -215,27 +215,27 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
                     Wtempl_NonScaled->SetTitle(W_histoname_NonScaled[isample]);
 
                     if( !(
-                       samples_str[isample].Data() = "DATA"
-                       || samples_str[isample].Data() = "WJetsPowPlus"
-                       || samples_str[isample].Data() = "WJetsPowNeg"
-                       || samples_str[isample].Data() = "WJetsMadSig"
-                       || samples_str[isample].Data() = "WJetsMadFake"
-                       || samples_str[isample].Data() = "DYJetsMadSig"
-                       || samples_str[isample].Data() = "DYJetsMadFake"
-                       || samples_str[isample].Data() = "TTJets"
-                       || samples_str[isample].Data() = "ZZJets"
-                       || samples_str[isample].Data() = "WWJets"
-                       || samples_str[isample].Data() = "WZJets"
-                       || samples_str[isample].Data() = "QCD"
-                       || samples_str[isample].Data() = "T_s"
-                       || samples_str[isample].Data() = "T_t"
-                       || samples_str[isample].Data() = "T_tW"
-                       || samples_str[isample].Data() = "Tbar_s"
-                       || samples_str[isample].Data() = "Tbar_t"
-                       || samples_str[isample].Data() = "Tbar_tW"
-                       || samples_str[isample].Data() = "EWK"
-                       || samples_str[isample].Data() = "MCDATALIKEMAD"
-                       ) ) 
+                       samples_str[isample].Data() == "DATA"
+                       || samples_str[isample].Data() == "WJetsPowPlus"
+                       || samples_str[isample].Data() == "WJetsPowNeg"
+                       || samples_str[isample].Data() == "WJetsMadSig"
+                       || samples_str[isample].Data() == "WJetsMadFake"
+                       || samples_str[isample].Data() == "DYJetsMadSig"
+                       || samples_str[isample].Data() == "DYJetsMadFake"
+                       || samples_str[isample].Data() == "TTJets"
+                       || samples_str[isample].Data() == "ZZJets"
+                       || samples_str[isample].Data() == "WWJets"
+                       || samples_str[isample].Data() == "WZJets"
+                       || samples_str[isample].Data() == "QCD"
+                       || samples_str[isample].Data() == "T_s"
+                       || samples_str[isample].Data() == "T_t"
+                       || samples_str[isample].Data() == "T_tW"
+                       || samples_str[isample].Data() == "Tbar_s"
+                       || samples_str[isample].Data() == "Tbar_t"
+                       || samples_str[isample].Data() == "Tbar_tW"
+                       || samples_str[isample].Data() == "EWK"
+                       || samples_str[isample].Data() == "MCDATALIKEMAD"
+                       ) )
                        Wtempl_NonScaled->Write();
 
                     int nspaces1 = 50 - W_histoname_NonScaled[isample].Length();
