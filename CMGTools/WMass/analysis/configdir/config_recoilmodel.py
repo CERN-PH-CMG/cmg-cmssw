@@ -20,7 +20,7 @@ RecoilCorrVarDiagoParSigmas = 0  # Number of sigmas for recoil syst
 
 ### Working setup
 useBatch = 1
-batchQueue = "1nh"
+batchQueue = "8nh"
 
 WMassNSteps = 5    # 60 -- N of mass steps above and below the central
 etaMaxMuons = 0.9  # 0.6, 0.8, 1.2, 1.6, 2.1
