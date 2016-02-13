@@ -53,6 +53,15 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
     
     cout << "LOAD ALL THE HISTOS FROM THE VARIOUS FILES IN MEMORY" << endl;
     for(int isample=0; isample<Nsamples;isample++){
+      // FIX TO AVOID WRITING ALL HISTOS, KEEP ONLY RELEVANT
+      if( !(
+            isample == DYJetsPow 
+         || isample ==EWKTT 
+         || isample ==MCDATALIKEPOW 
+          )
+         ){
+           continue;
+         }
          
       finTemplatesW[isample] = new TFile(Form("%s/output_%s/%sanalysisOnDATA.root",folder.Data(),samples_str[isample].Data(),WorZ.Data()));
       finTemplatesW[isample]->Print();
@@ -108,7 +117,17 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
               for(int n=0; n<WMass::KalmanNvariations; n++){
                 for(int k=0;k<WMass::NFitVar;k++){
                   for(int c=charge_start;c<charge_end;c++){
-
+                    
+                    // FIX TO AVOID WRITING ALL HISTOS, KEEP ONLY RELEVANT
+                    if( !(
+                          isample == DYJetsPow 
+                       || isample ==EWKTT 
+                       || isample ==MCDATALIKEPOW 
+                        )
+                       ){
+                         continue;
+                       }
+                     
                     if(TemplatesW_NonScaled[c][m][n][h][k][isample][i][jmass]){
                       double int_hist_data = 0;
                       if(TemplatesW_NonScaled[c][m_start][0][0][k][isample][i][WMass::WMassNSteps])
@@ -198,6 +217,15 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
                 for(int isample=0; isample<Nsamples;isample++){
                   for(int k=0;k<WMass::NFitVar;k++){
 
+                    // FIX TO AVOID WRITING ALL HISTOS, KEEP ONLY RELEVANT
+                    if( !(
+                          isample == DYJetsPow 
+                       || isample ==EWKTT 
+                       || isample ==MCDATALIKEPOW 
+                        )
+                       ){
+                         continue;
+                       }
                     if(!TemplatesW_NonScaled[c][m][n][h][k][isample][i][jmass]) continue;
                     histcounter++;
 
@@ -214,29 +242,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
                     cout << "W_histoname_NonScaled[isample]="<<W_histoname_NonScaled[isample]<<endl;
                     Wtempl_NonScaled->SetTitle(W_histoname_NonScaled[isample]);
 
-                    if( !(
-                       samples_str[isample].Data() == "DATA"
-                       || samples_str[isample].Data() == "WJetsPowPlus"
-                       || samples_str[isample].Data() == "WJetsPowNeg"
-                       || samples_str[isample].Data() == "WJetsMadSig"
-                       || samples_str[isample].Data() == "WJetsMadFake"
-                       || samples_str[isample].Data() == "DYJetsMadSig"
-                       || samples_str[isample].Data() == "DYJetsMadFake"
-                       || samples_str[isample].Data() == "TTJets"
-                       || samples_str[isample].Data() == "ZZJets"
-                       || samples_str[isample].Data() == "WWJets"
-                       || samples_str[isample].Data() == "WZJets"
-                       || samples_str[isample].Data() == "QCD"
-                       || samples_str[isample].Data() == "T_s"
-                       || samples_str[isample].Data() == "T_t"
-                       || samples_str[isample].Data() == "T_tW"
-                       || samples_str[isample].Data() == "Tbar_s"
-                       || samples_str[isample].Data() == "Tbar_t"
-                       || samples_str[isample].Data() == "Tbar_tW"
-                       || samples_str[isample].Data() == "EWK"
-                       || samples_str[isample].Data() == "MCDATALIKEMAD"
-                       ) )
-                       Wtempl_NonScaled->Write();
+                    Wtempl_NonScaled->Write();
 
                     int nspaces1 = 50 - W_histoname_NonScaled[isample].Length();
                     // outTXTfile << Wtempl->GetName();
