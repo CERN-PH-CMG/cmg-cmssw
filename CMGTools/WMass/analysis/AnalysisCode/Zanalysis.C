@@ -859,7 +859,10 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
               if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
               
-              if((useEffSF>=2 && useEffSF<=6 || useEffSF>=13 && useEffSF<=16) && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
+              if( (first_time_in_the_event && m==m_start && n==0) 
+                  && (useEffSF>=2 && useEffSF<=6 || useEffSF>=13 && useEffSF<=16) 
+                  && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
+                
                 if(useEffSF==2 || useEffSF==13 || useEffSF!=3){
                   // === leading
                   eff_TIGHT_SF = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(Mu_eta,Mu_pt));
