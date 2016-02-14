@@ -81,7 +81,7 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
                     // gROOT->ProcessLine(".! ls -lrt "+outfilename_str);
                     gROOT->ProcessLine(".! chmod 755 "+outfilename_str);
                     gROOT->ProcessLine(Form(".! rm -f submit_datacard_Wmass_%d.sh; ln -s %s submit_datacard_Wmass_%d.sh",job_counter,outfilename_str.Data(),job_counter));
-                    gROOT->ProcessLine(Form(".! chmod 755 submit_datacard_Wmass_%d.sh",job_counter));
+                    // gROOT->ProcessLine(Form(".! chmod 755 submit_datacard_Wmass_%d.sh",job_counter));
                     job_counter++;
                     // gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J fit"+jobname+" "+outfilename_str);
                   }
@@ -125,13 +125,15 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
       }
     }
   }
-  int chunks = (int)job_counter/1000;
+  int nbatch = 100;
+  int chunks = (int)job_counter/nbatch;
   cout << "chunks= " << chunks << endl;
   for(int i=0;i<=chunks;i++){
-    int i_init = i*1000;
-    int i_final = 999+i*1000;
-    cout << Form("bsub -C 0 -u pippo123 -q 1nh -J submit_datacard_Wmass_[%d-%d].sh",i_init,i==chunks?job_counter:i_final) << endl;
-    gROOT->ProcessLine(Form(".! bsub -C 0 -u pippo123 -q 1nh -J submit_datacard_Wmass_[%d-%d].sh",i_init,i==chunks?job_counter:i_final));
+    int i_init = i*nbatch;
+    int i_final = (nbatch-1)+i*nbatch;
+    cout << Form("bsub -C 0 -u pippo123 -q 1nh -J fits[%d-%d] submit_datacard_Wmass_\${LSB_JOBINDEX}.sh",i_init,i==chunks?job_counter:i_final) << endl;
+    gROOT->ProcessLine(Form(".! bsub -C 0 -u pippo123 -q 1nh -J fits[%d-%d] submit_datacard_Wmass_\${LSB_JOBINDEX}.sh",i_init,i==chunks?job_counter:i_final));
+    gROOT->ProcessLine(Form(".! sleep 10"));
   }
   // The sleep 1 fixes a race condition with the last fit (afs is sloooow)
   // gROOT->ProcessLine(".! sleep 1");
