@@ -127,10 +127,10 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
   }
   int nbatch = 100;
   int chunks = (int)job_counter/nbatch;
-  cout << "chunks= " << chunks << endl;
+  cout << "job_counter= " << job_counter << " chunks= " << chunks << endl;
   for(int i=0;i<=chunks;i++){
-    int i_init = i*nbatch;
-    int i_final = (nbatch-1)+i*nbatch;
+    int i_init = i*nbatch+1;
+    int i_final = (nbatch-1)+i*nbatch+1;
     cout << Form("bsub -C 0 -u pippo123 -q 1nh -J fits[%d-%d] submit_datacard_Wmass_\${LSB_JOBINDEX}.sh",i_init,i==chunks?job_counter:i_final) << endl;
     gROOT->ProcessLine(Form(".! bsub -C 0 -u pippo123 -q 1nh -J fits[%d-%d] submit_datacard_Wmass_\${LSB_JOBINDEX}.sh",i_init,i==chunks?job_counter:i_final));
     gROOT->ProcessLine(Form(".! sleep 10"));
