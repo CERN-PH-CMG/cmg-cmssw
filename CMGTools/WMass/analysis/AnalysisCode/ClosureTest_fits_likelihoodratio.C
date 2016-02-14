@@ -133,8 +133,8 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
   for(int i=0;i<=chunks;i++){
     int i_init = i*nbatch+1;
     int i_final = (nbatch-1)+i*nbatch+1;
-    cout << Form("bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final) << endl;
-    gROOT->ProcessLine(Form(".! bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final));
+    cout << Form("bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final) << endl;
+    gROOT->ProcessLine(Form(".! bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final));
     gROOT->ProcessLine(Form(".! sleep 10"));
   }
   // The sleep 1 fixes a race condition with the last fit (afs is sloooow)
