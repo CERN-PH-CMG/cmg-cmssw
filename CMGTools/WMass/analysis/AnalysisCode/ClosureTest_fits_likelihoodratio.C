@@ -13,6 +13,7 @@ using namespace std;
 void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int useBatch=0, TString currentdir_str="", int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0){
   
   int job_counter=0;
+  TString job_sub = "";
 
   int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
   int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
@@ -68,6 +69,7 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
                   }else{
                     ofstream outTXTfile;
                     TString jobname = Form("Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%s",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
+                    if(job_sub.Length()==0) job_sub = Form("Mu%s%s_pdf%d-%d%s%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,WMass::efficiency_toys>0? Form("_effToy%d", WMass::efficiency_toys):"",RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data());;
                     TString outfilename_str = "submit_datacard_Wmass_"+jobname+"NonScaled.sh";
                     cout << "creating " << outfilename_str << endl;
                     outTXTfile.open(outfilename_str);
@@ -131,8 +133,8 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
   for(int i=0;i<=chunks;i++){
     int i_init = i*nbatch+1;
     int i_final = (nbatch-1)+i*nbatch+1;
-    cout << Form("bsub -C 0 -u pippo123 -q 1nh -J fits[%d-%d] submit_datacard_Wmass_\${LSB_JOBINDEX}.sh",i_init,i==chunks?job_counter:i_final) << endl;
-    gROOT->ProcessLine(Form(".! bsub -C 0 -u pippo123 -q 1nh -J fits[%d-%d] submit_datacard_Wmass_\${LSB_JOBINDEX}.sh",i_init,i==chunks?job_counter:i_final));
+    cout << Form("bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final) << endl;
+    gROOT->ProcessLine(Form(".! bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final));
     gROOT->ProcessLine(Form(".! sleep 10"));
   }
   // The sleep 1 fixes a race condition with the last fit (afs is sloooow)
