@@ -11,6 +11,8 @@
 using namespace std;
 
 void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int useBatch=0, TString currentdir_str="", int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0){
+  
+  int job_counter=0;
 
   int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
   int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
@@ -75,10 +77,13 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
                     outTXTfile << text2workspace_str << endl;
                     outTXTfile << combine_str << endl;
                     outTXTfile.close();
-                    gROOT->ProcessLine(".! usleep 100000");
+                    // gROOT->ProcessLine(".! usleep 100000");
                     // gROOT->ProcessLine(".! ls -lrt "+outfilename_str);
                     gROOT->ProcessLine(".! chmod 755 "+outfilename_str);
-                    gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J fit"+jobname+" "+outfilename_str);
+                    gROOT->ProcessLine(Form(".! rm submit_datacard_Wmass_%d.sh; ln -s %s submit_datacard_Wmass_%d.sh 2>&1 > /dev/null",job_counter,outfilename_str.Data(),job_counter));
+                    gROOT->ProcessLine(Form(".! chmod 755 submit_datacard_Wmass_%d.sh",job_counter));
+                    job_counter++;
+                    // gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J fit"+jobname+" "+outfilename_str);
                   }
                   // 2d fits
                   // for(int k2=k+1;k2<WMass::NFitVar-1;k2++){
@@ -120,7 +125,15 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
       }
     }
   }
+  int chunks = (int)job_counter/1000;
+  cout << "chunks= " << chunks << endl;
+  for(int i=0;i<=chunks;i++){
+    int i_init = i*1000;
+    int i_final = 999+i*1000;
+    cout << Form(".! bsub -C 0 -u pippo123 -q 1nh -J submit_datacard_Wmass_[%d-%d].sh",i_init,i==chunks?job_counter:i_final) << endl;
+    gROOT->ProcessLine(Form(".! bsub -C 0 -u pippo123 -q 1nh -J submit_datacard_Wmass_[%d-%d].sh",i_init,i==chunks?job_counter:i_final));
+  }
   // The sleep 1 fixes a race condition with the last fit (afs is sloooow)
-  gROOT->ProcessLine(".! sleep 1");
-  gROOT->ProcessLine(".! rm -rf LSF* ");
+  // gROOT->ProcessLine(".! sleep 1");
+  // gROOT->ProcessLine(".! rm -rf LSF* ");
 }
