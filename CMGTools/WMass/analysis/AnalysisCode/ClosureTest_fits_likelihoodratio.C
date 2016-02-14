@@ -12,11 +12,12 @@ using namespace std;
 
 void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int useBatch=0, TString currentdir_str="", int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0){
   
-  int job_counter=0;
-  TString job_sub = "";
-
   int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
   int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
+  TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
+
+  int job_counter=0;
+  TString job_sub = Form("Mu_pdf%d-%s%s%s_eta%s",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,WMass::efficiency_toys>0? Form("_effToy%d", WMass::efficiency_toys):"",RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?"_RecoilCorrVar":"",WMass::KalmanNvariations>1?"_KalmanVar":"",eta_str.Data());
 
   cout << "currentdir_str= " << currentdir_str << endl;
   TString original;
@@ -43,7 +44,6 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
       for(int h=0; h<WMass::PDF_members; h++){
         cout << "using pdf " << (WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets) << "-"<<h<< endl;
         
-        TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
         TString effToy_str = "";
         for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
           if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
@@ -69,7 +69,6 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
                   }else{
                     ofstream outTXTfile;
                     TString jobname = Form("Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%s",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
-                    if(job_sub.Length()==0) job_sub = Form("Mu%s%s_pdf%d-%d%s%s%s_eta%s",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,WMass::efficiency_toys>0? Form("_effToy%d", WMass::efficiency_toys):"",RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data());;
                     TString outfilename_str = "submit_datacard_Wmass_"+jobname+"NonScaled.sh";
                     cout << "creating " << outfilename_str << endl;
                     outTXTfile.open(outfilename_str);
@@ -83,7 +82,6 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
                     // gROOT->ProcessLine(".! ls -lrt "+outfilename_str);
                     gROOT->ProcessLine(".! chmod 755 "+outfilename_str);
                     gROOT->ProcessLine(Form(".! rm -f submit_datacard_Wmass_%d.sh; ln -s %s submit_datacard_Wmass_%d.sh",job_counter,outfilename_str.Data(),job_counter));
-                    // gROOT->ProcessLine(Form(".! chmod 755 submit_datacard_Wmass_%d.sh",job_counter));
                     job_counter++;
                     // gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J fit"+jobname+" "+outfilename_str);
                   }
