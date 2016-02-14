@@ -45,7 +45,7 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
         cout << "using pdf " << (WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets) << "-"<<h<< endl;
         
         TString effToy_str = "";
-        for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
+        for (int i=0; i<max(1, 1); ++i) {
           if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
 
           cout << "preparing pdf eta bin = " << i << endl;
