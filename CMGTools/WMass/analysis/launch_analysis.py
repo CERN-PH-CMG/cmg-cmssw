@@ -109,9 +109,9 @@ if(hasattr(config, 'MuonCorrKalmanNvarsNsigma')):
   MuonCorrKalmanNvarsNsigma = int(config.MuonCorrKalmanNvarsNsigma)  # 0=No, >1=Yes
 
 # Wlike properties
-WMassNSteps = 5
+WMassNSteps = "5"
 if(hasattr(config, 'WMassNSteps')):
-  WMassNSteps = int(config.WMassNSteps)  # 0=No, >1=Yes
+  WMassNSteps = str(config.WMassNSteps)  # 0=No, >1=Yes
 WlikeCharge = 1
 if(hasattr(config, 'WlikeCharge')):
   WlikeCharge = int(config.WlikeCharge)  # 0=No, >1=Yes
