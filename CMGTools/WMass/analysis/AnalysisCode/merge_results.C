@@ -17,7 +17,7 @@
 #include "../common2.h"
 #include <TROOT.h>
 
-int pippo_baudo = 1; // resubstitute with WMass::efficiency_toys
+// int pippo_baudo = 1; // resubstitute with WMass::efficiency_toys
 
 using namespace std;
 
