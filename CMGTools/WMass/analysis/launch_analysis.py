@@ -62,8 +62,12 @@ if(hasattr(config, 'efficiency_toys')):
 
 ### EWK CORR
 syst_ewk_Alcaraz = 0  # -1=none, 0=POWHEG QCD+EWK NLO (bug-fixed), 1= 0 +syst photos vs pythia (31 = 3 times), 2= 0 +syst no nloewk vs nloewk (32 = 3 times)
+if(hasattr(config, 'syst_ewk_Alcaraz')):
+  syst_ewk_Alcaraz = int(config.syst_ewk_Alcaraz)  # 0=No, >1=Yes
 ### REWEIGHT POLARIZATION
 reweight_polarization = 1  # 0 = none, 1 = reweight POW to DATA, 2 = reweight POW to 8 TeV angular coefficients
+if(hasattr(config, 'reweight_polarization')):
+  reweight_polarization = int(config.reweight_polarization)  # 0=No, >1=Yes
 
 # LHAPDF_reweighting_sets="11200"  # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
 # LHAPDF_reweighting_members="51"  # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
@@ -90,21 +94,42 @@ normalize_MC_to_half_of_the_data = 1 # useful for W-like because we use half of 
 ZMassCentral_MeV = "91188"  # 91.1876 (PDG)
 WMassCentral_MeV = "80398"  # 80.385  (PDG)
 WMassSkipNSteps = "5"  # 15 -- used for LHE mass scaling
+if(hasattr(config, 'WMassSkipNSteps')):
+  WMassSkipNSteps = str(config.WMassSkipNSteps)  # 0=No, >1=Yes
 
 ### MUON
 useMomentumCorr = 4  # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector, 4=KalmanCorrectorParam
-MuonCorrGlobalScaleNsigma = config.MuonCorrGlobalScaleNsigma
-MuonCorrKalmanNvarsNsigma = config.MuonCorrKalmanNvarsNsigma
+if(hasattr(config, 'useMomentumCorr')):
+  useMomentumCorr = int(config.useMomentumCorr)  # 0=No, >1=Yes
+MuonCorrGlobalScaleNsigma = 0
+if(hasattr(config, 'MuonCorrGlobalScaleNsigma')):
+  MuonCorrGlobalScaleNsigma = int(config.MuonCorrGlobalScaleNsigma)  # 0=No, >1=Yes
+MuonCorrKalmanNvarsNsigma = 0
+if(hasattr(config, 'MuonCorrKalmanNvarsNsigma')):
+  MuonCorrKalmanNvarsNsigma = int(config.MuonCorrKalmanNvarsNsigma)  # 0=No, >1=Yes
 
 # Wlike properties
-WMassNSteps = str(config.WMassNSteps)
-WlikeCharge = str(config.WlikeCharge)
-etaMaxMuons = str(config.etaMaxMuons)
+WMassNSteps = 5
+if(hasattr(config, 'WMassNSteps')):
+  WMassNSteps = int(config.WMassNSteps)  # 0=No, >1=Yes
+WlikeCharge = 1
+if(hasattr(config, 'WlikeCharge')):
+  WlikeCharge = int(config.WlikeCharge)  # 0=No, >1=Yes
+etaMaxMuons = "0.9"
+if(hasattr(config, 'etaMaxMuons')):
+  etaMaxMuons = str(config.etaMaxMuons)  # 0=No, >1=Yes
 
 ### RECOIL
-useRecoilCorr = config.useRecoilCorr
-RecoilCorrVarDiagoParU1orU2fromDATAorMC = config.RecoilCorrVarDiagoParU1orU2fromDATAorMC
-RecoilCorrVarDiagoParSigmas = config.RecoilCorrVarDiagoParSigmas
+useRecoilCorr = 2
+if(hasattr(config, 'useRecoilCorr')):
+  useRecoilCorr = int(config.useRecoilCorr)  # 0=No, >1=Yes
+
+RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0
+if(hasattr(config, 'RecoilCorrVarDiagoParU1orU2fromDATAorMC')):
+  RecoilCorrVarDiagoParU1orU2fromDATAorMC = int(config.RecoilCorrVarDiagoParU1orU2fromDATAorMC)  # 0=No, >1=Yes
+RecoilCorrVarDiagoParSigmas = 0
+if(hasattr(config, 'RecoilCorrVarDiagoParSigmas')):
+  RecoilCorrVarDiagoParSigmas = int(config.RecoilCorrVarDiagoParSigmas)  # 0=No, >1=Yes
 
 correctToMadgraph = 0; # 0: uses DATA as target -- 1: uses Madgraph as target (also needed to write recoil closure plots)
 
