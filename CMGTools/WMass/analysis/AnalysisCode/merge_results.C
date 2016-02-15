@@ -17,6 +17,8 @@
 #include "../common2.h"
 #include <TROOT.h>
 
+int pippo_baudo = 1; // resubstitute with WMass::efficiency_toys
+
 using namespace std;
 
 int offset_from_string(TString str, int limit)
@@ -381,7 +383,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                 TH1D*hpseudodata = (TH1D*)fpseudodata->Get(Form("%s/%d/%s",list[18].Data(),best_template_mass,pseudodata_histoname.Data()));
                 // hpseudodata->Print();
                 // return;
-                // common_stuff::plotAndSaveHisto1D_stack("pre-unblinding",htemplates,hpseudodata,0,0,0,1,Form(";Number of vertices;Counts"),-1,-1,1,1);
+                common_stuff::plotAndSave_preunblindings("pre-unblinding",WMass::FitVar_str[k].Data(),htemplates,hpseudodata,0,0,0,1,Form(";"+WMass::FitVar_str[k]+";Counts"),-1,-1,1,1);
 
  
               }
@@ -451,7 +453,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
       if(some_fit_failed) continue;
       
       TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
-      for(int i=0; i<max(1, WMass::efficiency_toys); i++){
+      // for(int i=0; i<max(1, WMass::efficiency_toys); i++){
         TString effToy_str = "";
         for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
           if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
@@ -541,7 +543,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
             }
           }
         }
-      }
+      // }
     }
       
       fout->Write();
