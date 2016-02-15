@@ -6,7 +6,7 @@ class xsec_KF:
 
     def getQCDHistosFromFile(self, systematics):
         ret = {}
-        bosons = {"z":23, "w":22}
+        bosons = {"z":23, "w":24}
         for k,v in bosons.iteritems():
             for s in systematics:
                 hnlo = self.tfile.Get("%snlo012/%snlo012_%s" % (k,k,s)).Clone("kfac")
@@ -18,7 +18,7 @@ class xsec_KF:
 
     def getEWKHistosFromFile(self):
         ret = {}
-        bosons = {"z":23, "w":22}
+        bosons = {"z":23, "w":24}
         for k,v in bosons.iteritems():
             kFac = self.tfile.Get("%s_ewkcorr/%s_ewkcorr" % (k,k)).Clone("kfac")
             kFac.SetDirectory(None)
