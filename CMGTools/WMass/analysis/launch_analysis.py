@@ -165,13 +165,14 @@ usePowOrMadForSig = "POWHEG"  # use "POWHEG" or use "MADGRAPH"
 runPrepareDataCardsFast = config.runPrepareDataCardsFast
 DataCards_templateFromFolder = config.DataCards_templateFromFolder
 
+fitDATALIKEorDATA = 0
+if hasattr(config, 'fitDATALIKEorDATA'):
+  fitDATALIKEorDATA = config.fitDATALIKEorDATA
+
 ## NEW FIT
 runClosureTestLikeLihoodRatio = 0
 if hasattr(config, 'runClosureTestLikeLihoodRatio'):
   runClosureTestLikeLihoodRatio = config.runClosureTestLikeLihoodRatio
-fitDATALIKEorDATA = 0
-if hasattr(config, 'fitDATALIKEorDATA'):
-  fitDATALIKEorDATA = config.fitDATALIKEorDATA
 
 mergeResults = 0
 if hasattr(config, 'mergeResults'):
@@ -820,8 +821,7 @@ if(runPrepareDataCardsFast):
   if not os.path.exists("JobOutputs/"+outfolder_name+"/DataCards"): os.makedirs("JobOutputs/"+outfolder_name+"/DataCards")
   shutil.copyfile(base_path+"/AnalysisCode/prepareDatacardsFast.C", base_path+"/JobOutputs/"+outfolder_name+"/prepareDatacardsFast.C");
   os.chdir("JobOutputs/"+outfolder_name);
-  print "running .x prepareDatacardsFast.C++(\"./\",\"../"+DataCards_templateFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+")\'"
-  os.system("root -l -b -q \'prepareDatacardsFast.C++(\"./\",\"../"+DataCards_templateFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+")\'")
+  os.system("root -l -b -q \'prepareDatacardsFast.C++(\"./\",\"../"+DataCards_templateFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(fitDATALIKEorDATA)+")\'")
   os.chdir(base_path);
 
 
@@ -842,7 +842,7 @@ if(runClosureTestLikeLihoodRatio):
             "eval `scramv1 runtime -sh`;"
             "cd -;"
             "source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh;"
-            "root -l -b -q \'ClosureTest_fits_likelihoodratio.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+",\""+os.getcwd()+"\","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+fitDATALIKEorDATA+")\'")
+            "root -l -b -q \'ClosureTest_fits_likelihoodratio.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+",\""+os.getcwd()+"\","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+")\'")
   # proc=subprocess.Popen("ls "+os.getcwd()+"/submit_datacard_*", shell=True, stdout=subprocess.PIPE, )
   # a = proc.communicate()[0].rstrip().split('\n')
   # print a

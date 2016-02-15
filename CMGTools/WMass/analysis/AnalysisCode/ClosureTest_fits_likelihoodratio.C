@@ -17,7 +17,7 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
   TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
 
   int job_counter=1;
-  TString job_sub = Form("Mu_pdf%d-%s%s%s_eta%s",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,WMass::efficiency_toys>0? Form("_effToy%d", WMass::efficiency_toys):"",RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?"_RecoilCorrVar":"",WMass::KalmanNvariations>1?"_KalmanVar":"",eta_str.Data());
+  TString job_sub = Form("Mu_pdf%d%s%s%s_eta%s",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,WMass::efficiency_toys>0? Form("_effToy%d", WMass::efficiency_toys):"",RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?"_RecoilCorrVar":"",WMass::KalmanNvariations>1?"_KalmanVar":"",eta_str.Data());
 
   cout << "currentdir_str= " << currentdir_str << endl;
   TString original;
@@ -129,11 +129,11 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
   int chunks = (int)job_counter/nbatch;
   cout << "job_counter= " << job_counter << " chunks= " << chunks << endl;
   for(int i=0;i<=chunks;i++){
-    int i_init = i*nbatch+1;
-    int i_final = (nbatch-1)+i*nbatch+1;
+    int i_init =       1 + i*nbatch;
+    int i_final = nbatch + i*nbatch;
     cout << Form("bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final) << endl;
     gROOT->ProcessLine(Form(".! bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final));
-    gROOT->ProcessLine(Form(".! sleep 10"));
+    if (i<chunks) gROOT->ProcessLine(Form(".! sleep 10"));
   }
   // The sleep 1 fixes a race condition with the last fit (afs is sloooow)
   // gROOT->ProcessLine(".! sleep 1");

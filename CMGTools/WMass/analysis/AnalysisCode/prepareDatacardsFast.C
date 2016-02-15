@@ -21,7 +21,8 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
   TString WCharge_str[]={"Pos","Neg"};
   
   sample datalike = SignalSample.Contains("POWHEG") ? MCDATALIKEPOW : MCDATALIKEMAD;
-  sample fit_target = fitDATALIKEorDATA ? datalike : DATA;
+  sample fit_target = fitDATALIKEorDATA ? DATA : datalike;
+  cout << "Fit target: " << samples_str[fit_target] << endl;
 
   TString original;
   std::vector<TString> tokenized;
@@ -240,7 +241,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
                     // To BE CHECKED
                     // W_histoname[isample] = samples_str[isample] == "DATA" ? Form("data_obs_W%s%s_%s",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data()) : Form("W%s%s_%s_%s_pdf%d-%d%s",Wlike.Data(),WCharge_str[c].Data(),samples_str[isample].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(), RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"");
                     // Wtempl=new TH1D(W_histoname[isample],W_histoname[isample],TemplatesW[c][m][n][h][k][isample][ieta][jmass]->GetXaxis()->FindBin(xmax*fitrange_Scaling)-TemplatesW[c][m][n][h][k][isample][ieta][jmass]->GetXaxis()->FindBin(xmin*fitrange_Scaling),xmin*fitrange_Scaling,xmax*fitrange_Scaling);
-                    W_histoname_NonScaled[isample] = samples_str[isample] == "DATA" ? Form("data_obs_W%s%s_%sNonScaled",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data()) : Form("W%s%s_%s_%sNonScaled_pdf%d-%d%s%s%s",Wlike.Data(),WCharge_str[c].Data(),samples_str[isample].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(), RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"");
+                    W_histoname_NonScaled[isample] = Form("W%s%s_%s_%sNonScaled_pdf%d-%d%s%s%s",Wlike.Data(),WCharge_str[c].Data(),samples_str[isample].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(), RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"");
                     // Wtempl_NonScaled=new TH1D(W_histoname_NonScaled[isample],W_histoname_NonScaled[isample],50, WMass::fit_xmin[k],WMass::fit_xmax[k]);
                     Wtempl_NonScaled=(TH1D*)TemplatesW_NonScaled[c][m][n][h][k][isample][i][jmass]->Clone(W_histoname_NonScaled[isample]);
                     Wtempl_NonScaled->SetName(W_histoname_NonScaled[isample]);
