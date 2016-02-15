@@ -8,12 +8,20 @@
 
 using namespace std;
 
-void prepareDatacardsFast(TString folder, TString template_folder, TString SignalSample, int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0){
+void prepareDatacardsFast(TString folder, TString template_folder, TString SignalSample, int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0, int fitDATALIKEorDATA=0){
 
   const int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
   const int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
 
   cout << "m_start= " << m_start << " m_end= " << m_end << endl;
+
+  static const int Nsamples=23;
+  enum    sample                   {  DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW, EWK, EWKTT, MCDATALIKEPOW, MCDATALIKEMAD  };
+  TString samples_str[Nsamples]  = { "DATA" , "WJetsPowPlus", "WJetsPowNeg", "WJetsMadSig", "WJetsMadFake", "DYJetsPow", "DYJetsMadSig", "DYJetsMadFake",  "TTJets",  "ZZJets",  "WWJets", "WZJets",   "QCD", "T_s", "T_t", "T_tW", "Tbar_s", "Tbar_t", "Tbar_tW", "EWK", "EWKTT", "MCDATALIKEPOW", "MCDATALIKEMAD" };
+  TString WCharge_str[]={"Pos","Neg"};
+  
+  sample datalike = SignalSample.Contains("POWHEG") ? MCDATALIKEPOW : MCDATALIKEMAD;
+  sample fit_target = fitDATALIKEorDATA ? datalike : DATA;
 
   TString original;
   std::vector<TString> tokenized;
@@ -28,11 +36,6 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
   }
 
   for(unsigned int itoken=0; itoken<tokenized.size(); itoken++){
-
-    static const int Nsamples=23;
-    enum                             {  DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW, EWK, EWKTT, MCDATALIKEPOW, MCDATALIKEMAD  };
-    TString samples_str[Nsamples]  = { "DATA" , "WJetsPowPlus", "WJetsPowNeg", "WJetsMadSig", "WJetsMadFake", "DYJetsPow", "DYJetsMadSig", "DYJetsMadFake",  "TTJets",  "ZZJets",  "WWJets", "WZJets",   "QCD", "T_s", "T_t", "T_tW", "Tbar_s", "Tbar_t", "Tbar_tW", "EWK", "EWKTT", "MCDATALIKEPOW", "MCDATALIKEMAD" };
-    TString WCharge_str[]={"Pos","Neg"};
 
     cout << "folder= " << folder << endl;
     cout << "SignalSample= " << SignalSample << endl;
@@ -56,8 +59,8 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
       // FIX TO AVOID WRITING ALL HISTOS, KEEP ONLY RELEVANT
       if( !(
             isample == DYJetsPow 
-         || isample ==EWKTT 
-         || isample ==MCDATALIKEPOW 
+         || isample == EWKTT 
+         || isample == fit_target
           )
          ){
            continue;
@@ -121,8 +124,8 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
                     // FIX TO AVOID WRITING ALL HISTOS, KEEP ONLY RELEVANT
                     if( !(
                           isample == DYJetsPow 
-                       || isample ==EWKTT 
-                       || isample ==MCDATALIKEPOW 
+                       || isample == EWKTT 
+                       || isample == fit_target
                         )
                        ){
                          continue;
@@ -222,8 +225,8 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
                     // FIX TO AVOID WRITING ALL HISTOS, KEEP ONLY RELEVANT
                     if( !(
                           isample == DYJetsPow 
-                       || isample ==EWKTT 
-                       || isample ==MCDATALIKEPOW 
+                       || isample == EWKTT 
+                       || isample == fit_target
                         )
                        ){
                          continue;
@@ -342,7 +345,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
                   }
 
                   // Datacard << "shapes   data_obs   *   datacards_DATA"<<(WorZ.Contains("W")?"":"_Wlike")<<".root $CHANNEL/"<<(WMass2::WMassCentral_MeV)<<Form("/W%s%s_MCDATALIKE%s_%sNonScaled_pdf%d-%d%s",Wlike.Data(),WCharge_str[c].Data(),SignalSample.Contains("POWHEG")?"POW":"MAD",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(), RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"") << endl;
-                  Datacard << "shapes   data_obs   *   datacards_DATA"<<(WorZ.Contains("W")?"":"_Wlike")<<".root $CHANNEL/"<<(WorZ.Contains("W") ? WMass2::WMassCentral_MeV : WMass2::ZMassCentral_MeV)<<Form("/W%s%s_MCDATALIKE%s_%sNonScaled_pdf%d-%d%s%s%s",Wlike.Data(),WCharge_str[c].Data(),SignalSample.Contains("POWHEG")?"POW":"MAD",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(), RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"") << endl;
+                  Datacard << "shapes   data_obs   *   datacards_DATA"<<(WorZ.Contains("W")?"":"_Wlike")<<".root $CHANNEL/"<<(WorZ.Contains("W") ? WMass2::WMassCentral_MeV : WMass2::ZMassCentral_MeV)<<Form("/W%s%s_%s_%sNonScaled_pdf%d-%d%s%s%s",Wlike.Data(),WCharge_str[c].Data(),samples_str[fit_target].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(), RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"") << endl;
 
                   if(template_folder.Length()<5){
                     // Datacard << Form("shapes   W%s%s_%sJets%s_%sNonScaled_ALT   *   datacards_DATA%s.root $CHANNEL/",Wlike.Data(),WCharge_str[c].Data(),WorZ.Contains("W")?"W":"DY",SigSample_str.Data(),WMass::FitVar_str[k].Data(),WorZ.Contains("W")?"":"_Wlike")<<(WMass2::WMassCentral_MeV-WMass2::WMassNSteps*WMass2::WMassStep_MeV)<<Form("/W%s%s_%sJets%s_%sNonScaled_pdf%d-%d%s",Wlike.Data(),WCharge_str[c].Data(),WorZ.Contains("W")?"W":"DY",SigSample_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,0, RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"") << endl;
