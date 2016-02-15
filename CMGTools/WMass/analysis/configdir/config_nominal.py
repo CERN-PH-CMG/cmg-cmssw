@@ -37,6 +37,7 @@ mergeSigEWKbkg = 0
 ## PERFORM W or Z MASS FIT
 runPrepareDataCardsFast = 0  # TEMPLATES ARE IN THE TEMPLATE FOLDER, PSEUDO-DATA IN THE CURRENT FOLDER
 DataCards_templateFromFolder=""  # evaluate systematics wrt folder (or leave it empty) -- full template folder
+fitDATALIKEorDATA = 0
 
 ## NEW FIT
 runClosureTestLikeLihoodRatio = 0  # 1: also executes merge if not using batch jobs
