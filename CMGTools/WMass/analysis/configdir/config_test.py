@@ -2,7 +2,7 @@
 
 outfolder_prefix = "PREFIX"
 
-datasets = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
+resubmit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 
 ### Muon trigger efficiency
 useEffSF = 13  # 0=no, 1=MuonPOG, 2=Heiner all, 3=Heiner no tight, 4=Heiner no iso, 5=Heiner no tight subleading mu, 6=Heiner no hlt
