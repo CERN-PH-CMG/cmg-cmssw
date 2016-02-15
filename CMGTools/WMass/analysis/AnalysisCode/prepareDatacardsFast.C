@@ -62,6 +62,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
             isample == DYJetsPow 
          || isample == EWKTT 
          || isample == fit_target
+         || isample == datalike
           )
          ){
            continue;
@@ -127,6 +128,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
                           isample == DYJetsPow 
                        || isample == EWKTT 
                        || isample == fit_target
+                       || isample == datalike
                         )
                        ){
                          continue;
@@ -228,6 +230,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
                           isample == DYJetsPow 
                        || isample == EWKTT 
                        || isample == fit_target
+                       || isample == datalike
                         )
                        ){
                          continue;
