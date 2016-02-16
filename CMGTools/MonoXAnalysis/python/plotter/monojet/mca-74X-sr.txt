@@ -5,6 +5,12 @@
 
 # ---- Spring15 25ns samples -------
 
+# Z+jets -> nunu HT-binned: replace the xsec in the ntuple (NLO) with the LO, in order to apply the ptV-dependent k-factors
+ZNuNuHT: ZJetsToNuNu_HT100to200 : 280.47; FillColor=ROOT.kRed+3, Label="Znunu"
+ZNuNuHT: ZJetsToNuNu_HT200to400 :  78.36; FillColor=ROOT.kRed+3, Label="Znunu"
+ZNuNuHT: ZJetsToNuNu_HT400to600 :  10.94; FillColor=ROOT.kRed+3, Label="Znunu"
+ZNuNuHT: ZJetsToNuNu_HT600toInf :  4.203; FillColor=ROOT.kRed+3, Label="Znunu"
+
 # Z+jets HT-binned: replace the xsec in the ntuple (NLO) with the LO, in order to apply the ptV-dependent k-factors
 DYJetsHT: DYJetsToLL_M50_HT100to200 :  139.4; FillColor=ROOT.kAzure+5,  Label="ZJets"
 DYJetsHT: DYJetsToLL_M50_HT200to400 :  42.75; FillColor=ROOT.kAzure+5,  Label="ZJets"
