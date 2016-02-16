@@ -194,7 +194,8 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                   // cout << test1 << endl;
                   if (!std::ifstream(test1.Data())){
                     cout << "scream_orribly: file "<< test1 << " doesn't exists" << endl;
-                    return;
+                    some_fit_failed = true;
+                    continue;
                   }
                   std::ifstream fileNames_NonScaled(test1.Data());
                   // string StringFromFile;
