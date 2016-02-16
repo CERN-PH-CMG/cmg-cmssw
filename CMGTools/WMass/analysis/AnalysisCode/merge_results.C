@@ -1,7 +1,7 @@
 #include <fstream>
 #include <cmath>
 #include <iostream>
-#include "../../../AnalysisCode/common_stuff.C"
+// #include "../../../AnalysisCode/common_stuff.C"
 
 #include "TString.h"
 #include "TFile.h"
@@ -313,79 +313,80 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                 
                 c_chi2->Write();
                 
+                // Obsolete plots enclosed in if(false){}
                 if(false){
-                  // result_NonScaled[i][h][k]->Delete();
-                  // result->Delete();
-                  int best_template_mass = 0;
+                  //// result_NonScaled[i][h][k]->Delete();
+                  //// result->Delete();
+                  //// int best_template_mass = 0;
                     
-                  // TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
-                  // cout << "merging pdf eta bin= " << i << endl;
+                  //// TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
+                  //// cout << "merging pdf eta bin= " << i << endl;
                   
-                  // cout << "ffit[i][k][c]->GetParameter(1)= " << ffit[i][k][c]->GetParameter(1) << endl;
-                  for(int j=0; j<2*WMass2::WMassNSteps+1; j++){
-                    int jWmass = WorZ.Contains("Z")? WMass2::Zmass_values_array[j] : WMass2::Wmass_values_array[j];
-                    if( TMath::Abs(jWmass-ffit[i][k][c]->GetParameter(1)) < TMath::Abs(best_template_mass-ffit[i][k][c]->GetParameter(1))){
-                      best_template_mass = jWmass;
-                    }
-                    // cout << "j mass= " << jWmass << " best_template_mass = " << best_template_mass << endl;
-                  }
-                  cout << "retrieving final best_template_mass and pseudodata for ratio" << endl;
-                  // cout << "final best_template_mass = " << best_template_mass << endl;
-                  TString best_mass_datacards_name =  Form("dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%sNonScaled.txt",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),best_template_mass,WMass::FitVar_str[k].Data());
-                  // gROOT->ProcessLine(".! more "+best_mass_datacards_name);
-                  ifstream in_stream;
-                  std::string line;
-                  TString line_tstring;
+                  //// cout << "ffit[i][k][c]->GetParameter(1)= " << ffit[i][k][c]->GetParameter(1) << endl;
+                  //for(int j=0; j<2*WMass2::WMassNSteps+1; j++){
+                    //int jWmass = WorZ.Contains("Z")? WMass2::Zmass_values_array[j] : WMass2::Wmass_values_array[j];
+                    //if( TMath::Abs(jWmass-ffit[i][k][c]->GetParameter(1)) < TMath::Abs(best_template_mass-ffit[i][k][c]->GetParameter(1))){
+                      //best_template_mass = jWmass;
+                    //}
+                    //// cout << "j mass= " << jWmass << " best_template_mass = " << best_template_mass << endl;
+                  //}
+                  //cout << "retrieving final best_template_mass and pseudodata for ratio" << endl;
+                  //// cout << "final best_template_mass = " << best_template_mass << endl;
+                  //TString best_mass_datacards_name =  Form("dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%sNonScaled.txt",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),best_template_mass,WMass::FitVar_str[k].Data());
+                  //// gROOT->ProcessLine(".! more "+best_mass_datacards_name);
+                  //ifstream in_stream;
+                  //std::string line;
+                  //TString line_tstring;
 
-                  in_stream.open(best_mass_datacards_name);
-                  vector<TString> list;
-                  int line_number = 0;
-                  while(!in_stream.eof())
-                  // while (std::getline(in_stream, line))
-                  {
-                      in_stream >> line;
-                      // cout << line_number << " " << line << endl;
-                      line_tstring = line.c_str();
-                      list.push_back(line_tstring);
-                      line_number++;
-                  }
-                  in_stream.close();
+                  //in_stream.open(best_mass_datacards_name);
+                  //vector<TString> list;
+                  //int line_number = 0;
+                  //while(!in_stream.eof())
+                  //// while (std::getline(in_stream, line))
+                  //{
+                      //in_stream >> line;
+                      //// cout << line_number << " " << line << endl;
+                      //line_tstring = line.c_str();
+                      //list.push_back(line_tstring);
+                      //line_number++;
+                  //}
+                  //in_stream.close();
 
                   // cout << "input file templates list[3] " << list[3] << endl;
                   // cout << "input file (pseudo-)data list[9] " << list[9] << endl;
                   // cout << "eta bin list[18] " << list[18] << endl;
                   
                   // cout << "list[15] " << list[15] << endl;
-                  TObjArray *strobj_templates = list[15].ReplaceAll("DYJetsPow","MCDATALIKEPOW").Tokenize("\/");
-                  Int_t numsep = strobj_templates->GetEntries() - 1;
+                  // TObjArray *strobj_templates = list[15].ReplaceAll("DYJetsPow","MCDATALIKEPOW").Tokenize("\/");
+                  // Int_t numsep = strobj_templates->GetEntries() - 1;
                   // cout << "numsep = " << numsep << endl;
-                  TString templ_histoname = ((TObjString *)strobj_templates->At(2))->GetString();
+                  // TString templ_histoname = ((TObjString *)strobj_templates->At(2))->GetString();
                   // cout << "templ_histoname from list[15] " << templ_histoname << endl;
                   
                   // cout << "list[10] " << list[10] << endl;
-                  TObjArray *strobj_pseusodata = list[10].Tokenize("\/");
-                  numsep = strobj_pseusodata->GetEntries() - 1;
+                  // TObjArray *strobj_pseusodata = list[10].Tokenize("\/");
+                  // numsep = strobj_pseusodata->GetEntries() - 1;
                   // cout << "numsep = " << numsep << endl;
-                  TString pseudodata_histoname = ((TObjString *)strobj_pseusodata->At(2))->GetString();
+                  // TString pseudodata_histoname = ((TObjString *)strobj_pseusodata->At(2))->GetString();
                   // cout << "pseudodata_histoname from list[15] " << pseudodata_histoname << endl;
                  
-                  TFile *ftempl = new TFile(Form("%s",list[3].Data()));
+                  // TFile *ftempl = new TFile(Form("%s",list[3].Data()));
                   // ftempl->Print();
                   // ftempl->cd(Form("%s/%d/",list[18].Data(),best_template_mass));
                   // ftempl->ls();
                   // cout << "loading template " << Form("%s/%d/%s",list[18].Data(),best_template_mass,templ_histoname.Data()) << endl;
-                  TH1D*htemplates = (TH1D*)ftempl->Get(Form("%s/%d/%s",list[18].Data(),best_template_mass,templ_histoname.Data()));
+                  // TH1D*htemplates = (TH1D*)ftempl->Get(Form("%s/%d/%s",list[18].Data(),best_template_mass,templ_histoname.Data()));
                   // htemplates->Print();
                   
-                  TFile *fpseudodata = new TFile(Form("%s",list[9].Data()));
+                  // TFile *fpseudodata = new TFile(Form("%s",list[9].Data()));
                   // fpseudodata->Print();
                   // fpseudodata->cd(Form("%s/%d/",list[18].Data(),best_template_mass));
                   // fpseudodata->ls();
                   // cout << "loading pseudodata " << Form("%s/%d/%s",list[18].Data(),best_template_mass,pseudodata_histoname.Data()) << endl;
-                  TH1D*hpseudodata = (TH1D*)fpseudodata->Get(Form("%s/%d/%s",list[18].Data(),best_template_mass,pseudodata_histoname.Data()));
+                  // TH1D*hpseudodata = (TH1D*)fpseudodata->Get(Form("%s/%d/%s",list[18].Data(),best_template_mass,pseudodata_histoname.Data()));
                   // hpseudodata->Print();
                   // return;
-                  common_stuff::plotAndSave_preunblindings("pre-unblinding",WMass::FitVar_str[k].Data(),htemplates,hpseudodata,0,0,0,1,Form(";"+WMass::FitVar_str[k]+";Counts"),-1,-1,1,1);
+                  // common_stuff::plotAndSave_preunblindings("pre-unblinding",WMass::FitVar_str[k].Data(),htemplates,hpseudodata,0,0,0,1,Form(";"+WMass::FitVar_str[k]+";Counts"),-1,-1,1,1);
                 }
  
               }
