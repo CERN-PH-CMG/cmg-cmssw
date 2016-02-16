@@ -189,37 +189,39 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                   // likelihood_val = (double) (str_icol.Atof());
                   // if(likelihood_val<0) result->SetPoint(npoint,jWmass,likelihood_val);
 
-                  cout << Form("dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%sNonScaled.log ",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
-                  TString test1 = Form("dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%sNonScaled.log",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
-                  // cout << test1 << endl;
-                  if (!std::ifstream(test1.Data())){
-                    cout << "scream_orribly: file "<< test1 << " doesn't exists" << endl;
-                    some_fit_failed = true;
-                    continue;
-                  }
-                  std::ifstream fileNames_NonScaled(test1.Data());
-                  // string StringFromFile;
-                  // TString TStringFromFile;
-                  while (!fileNames_NonScaled.eof()){
-                    getline (fileNames_NonScaled,StringFromFile);
-                    TStringFromFile = StringFromFile.c_str();
-                    // if(TStringFromFile.Contains("nll S+B ->")){
-                    if(TStringFromFile.Contains("-2 ln Q_{TEV}")){
-                      break;
+                  bool this_fit_failed = false;
+                  TString logfile = Form("dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%sNonScaled.log",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
+                  cout << logfile;
+                  std::ifstream fileNames_NonScaled(logfile.Data());
+                  if (fileNames_NonScaled){
+                    while (!fileNames_NonScaled.eof()){
+                      getline(fileNames_NonScaled,StringFromFile);
+                      TStringFromFile = StringFromFile.c_str();
+                      // if(TStringFromFile.Contains("nll S+B ->")){
+                      if(TStringFromFile.Contains("-2 ln Q_{TEV}")){
+                        break;
+                      }
+                    }
+                    if(!TStringFromFile.Contains("-2 ln Q_{TEV}")) {
+                      cout << "\nERROR: COULDN'T FIND FIT RESULT IN "<< logfile << endl;
+                      this_fit_failed = true;
                     }
                   }
-                  if(!TStringFromFile.Contains("-2 ln Q_{TEV}")){
-                    cout << "\nERROR: COULDN'T FIND FIT RESULT IN "<< 
-                    Form("dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%sNonScaled.log ",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):""),WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data()) <<endl;
+                  else {
+                    cout << "\nERROR: File "<< logfile << " doesn't exist" << endl;
+                    this_fit_failed = true;
+                  }
+                  if (this_fit_failed) {
                     if (useBatch) {
-                    TString jobname = Form("Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%s",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
-                    TString outfilename_str = "submit_datacard_Wmass_"+jobname+"NonScaled.sh";
-                    gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J fit"+jobname+" "+outfilename_str);
+                      TString jobname = Form("Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%s",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
+                      TString outfilename_str = "submit_datacard_Wmass_"+jobname+"NonScaled.sh";
+                      gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J fit"+jobname+" "+outfilename_str);
                       gROOT->ProcessLine(".! rm -rf LSF* ");
                     }
                     some_fit_failed = true;
                     continue;
                   }
+                  
                   LineColumns = TStringFromFile.Tokenize(" ");
                   // ncol = LineColumns->GetEntries();
                   // str_icol = ((TObjString *)LineColumns->At(3))->GetString();
