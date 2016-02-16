@@ -89,7 +89,7 @@ noLSFJobOutput = 1  # 1: Puts all the batch logs in a single file
 recreateSubPrograms = 0  # 1: Recompiles run?analysis and remakes run?analysis.sh
 
 ### MERGE ###
-mergeSigEWKbkg = 0
+mergeSigEWKbkg = 1
 mergeWhichAnalysis = "Zanalysis"  # "Zanalysis Wanalysis" -- no comma!
 removeChunks = 0  # 0: Don't remove chunks after merge --- 1: Remove them
 
@@ -212,7 +212,7 @@ if(int(MuonVariationSigmas)!=0):
   if(int(MuonKalmanVariation) != 0):
     systid+="_KalmanVar"+str(MuonKalmanVariation)+syststring
   if(int(MuonScaleVariation) == True):
-    systid+="_MuonScale"+syststring
+    systid+="_MuonScale"+str(abs(int(MuonVariationSigmas)))+syststring
 
 # if(int(usePhiMETCorr)==1):
 #   systid+="_phiMETcorr" is implicit
@@ -371,9 +371,20 @@ if not os.path.exists("JobOutputs/"+outfolder_name):
 
 print "Copying script over:"
 print "cp "+os.path.basename(__file__)+" JobOutputs/"+outfolder_name
+print "cp configdir/"+conffile+".py JobOutputs/"+outfolder_name
 print
 path_dest="JobOutputs/"+outfolder_name+"/"+os.path.basename(__file__)
 shutil.copyfile(os.path.basename(__file__), path_dest)
+path_dest="JobOutputs/"+outfolder_name+"/"+conffile+".py"
+shutil.copyfile(base_path+"/configdir/"+conffile+".py", path_dest)
+
+with open("JobOutputs/"+outfolder_name+"/log.txt", "a") as logfile:
+  commit_SHA = subprocess.Popen("git rev-parse HEAD", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.read()
+  import datetime
+  logstring = str(datetime.datetime.now()) + " - " + commit_SHA
+  print "Writing on log file:", logstring
+  logfile.write(logstring)
+print ""
 
 if(runZanalysis):
 
@@ -541,9 +552,11 @@ if(mergeSigEWKbkg):
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type d -name LSFJOB_* -exec rm -rf {} +")
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name batch_logs_* -delete")
 
-if  not file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_EWKTT/Zanalysis.root") \
-and not file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_EWKTT/Zanalysis.root") :
-  print "Cannot find any merged histogram in "+outfolder_name+", exiting"
+if  file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_EWKTT/Zanalysis.root") \
+and file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_DYJetsPow/Zanalysis.root") :
+  open("JobOutputs/"+outfolder_name+"/MERGED", "a").close()
+else:
+  print "Cannot find merged histogram in "+outfolder_name+", exiting"
   sys.exit(1)
 
 if(removeChunks):
