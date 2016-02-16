@@ -18,7 +18,7 @@ basefolder="/afs/cern.ch/work/a/astacchi/CMSSW_5_3_22_patch1_Wmass/src/CMGTools/
 destfolder="${basefolder}/Datacards/"
 
 # sed 's/%CHARGE%/Pos/g; s/%OBSERVABLE%/Pt/g; s/%ETA%/eta0p9/g' "Datacard.txt" > "${destfolder}/Datacard.txt"
-sed 's|%JOBFOLDER%|../JobOutputs|g; s/%CHARGE%/Pos/g; s/%OBSERVABLE%/Pt/g; s/%ETA%/eta0p9/g' "DatacardALT.txt" > "${destfolder}/DatacardALT.txt"
+sed 's|%JOBFOLDER%|../|g; s/%CHARGE%/Pos/g; s/%OBSERVABLE%/Pt/g; s/%ETA%/eta0p9/g' "DatacardALT.txt" > "${destfolder}/DatacardALT.txt"
 
 cd ${destfolder}
 

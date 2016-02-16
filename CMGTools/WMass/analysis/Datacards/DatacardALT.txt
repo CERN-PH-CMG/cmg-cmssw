@@ -2,11 +2,11 @@ imax    1       number of categories
 jmax    2       number of samples minus one 
 kmax    *       number of nuisance parameters 
 ------------------------------------------------------------------------------- 
-shapes data_obs     *   %JOBFOLDER%/Datacards/DATALIKE.root                                                     hWlike_%OBSERVABLE%_91188
+shapes data_obs     *   %JOBFOLDER%/Datacards/DATALIKE.root                                                     hWlike%CHARGE%_%OBSERVABLE%NonScaled_8_JetCut_pdf229800-0_%ETA%_91188
 # shapes data_obs   *   %JOBFOLDER%/Datacards/DATA.root                                                         hWlike_%OBSERVABLE%
 shapes reference    *   %JOBFOLDER%/profileFit_mu%CHARGE%_%ETA%_$SYSTEMATIC/output_DYJetsPow/Zanalysis.root     hWlike_%OBSERVABLE%_91138
-shapes signal_ALT   *   %JOBFOLDER%/profileFit_mu%CHARGE%_%ETA%_$SYSTEMATIC/output_DYJetsPow/Zanalysis.root     hWlike_%OBSERVABLE%_$MASS   hWlike_%OBSERVABLE%_$MASS_$SYSTEMATIC
-shapes background   *   %JOBFOLDER%/profileFit_mu%CHARGE%_%ETA%_$SYSTEMATIC/output_EWKTT/Zanalysis.root         hWlike_%OBSERVABLE%         hWlike_%OBSERVABLE%_$SYSTEMATIC
+shapes signal_ALT   *   %JOBFOLDER%/profileFit_mu%CHARGE%_%ETA%_$SYSTEMATIC/output_DYJetsPow/Zanalysis.root     hWlike_%OBSERVABLE%_$MASS   hWlike_%OBSERVABLE%_$MASS
+shapes background   *   %JOBFOLDER%/profileFit_mu%CHARGE%_%ETA%_$SYSTEMATIC/output_EWKTT/Zanalysis.root         hWlike_%OBSERVABLE%         hWlike_%OBSERVABLE%
 ------------------------------------------------------------------------------- 
 bin                             Wlike
 observation                     -1
@@ -17,11 +17,11 @@ process                         -1              0               1
 rate                            -1              -1              -1
 -------------------------------------------------------------------------------
 bkgUncert       lnN             -               -               1.01
-MuonScale       shape           1               -               1
-# KalmanVar1      shape           1               -               1
+MuonScale       shape           -               1               1
+# KalmanVar1      shape           -               1               1
 
-# KalmanVar%N%    shape           1               -               1
-# RecoilEigen%N%  shape           1               -               1
+# KalmanVar%N%    shape           -               1               1
+# RecoilEigen%N%  shape           -               1               1
 
 # ALT is at numerator (variable mass)!
 
