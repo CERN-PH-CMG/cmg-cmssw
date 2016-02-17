@@ -862,7 +862,7 @@ if(mergeResults or (runClosureTestLikeLihoodRatio and useBatch==0)):
   os.chdir("JobOutputs/"+outfolder_name+"/DataCards");
   print os.getcwd();
   os.system("rm -rf LSF*; rm -f output_W*.root");
-  os.system("root -l -b -q \'merge_results.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+",\""+blind_offset_string+"\","+str(fitDATALIKEorDATA)+")\'");
+  os.system("root -l -b -q \'merge_results.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+",\""+blind_offset_string+"\")\'");
   os.chdir(base_path);
 
 
