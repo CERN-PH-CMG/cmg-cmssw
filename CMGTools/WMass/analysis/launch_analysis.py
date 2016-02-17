@@ -188,6 +188,8 @@ runWSigBkgFit = 0;
 runZSigBkgFit = 0;
 
 run_Z_MCandDATAcomparisons_stack = 0; # <<<<--------- USE THIS FLAG TO GENERATE PRE-UNBLINDING PLOTS AFTER mergeSigEWKbkg
+if hasattr(config, 'run_Z_MCandDATAcomparisons_stack'):
+  run_Z_MCandDATAcomparisons_stack = config.run_Z_MCandDATAcomparisons_stack
 run_W_MCandDATAcomparisons_stack = 0;
 
 #######################
@@ -459,51 +461,51 @@ for i in xrange(-int(WMassNSteps),int(WMassNSteps)+1):
 # print Zmass_values_array
 
 fWana_str = [
-  ntuple_basepath+"DATA/WTreeProducer_tree_RecoSkimmed.root",
-  ntuple_basepath+"WPlusPOWHEG/WTreeProducer_tree.root",
-  ntuple_basepath+"WMinusPOWHEG/WTreeProducer_tree.root",
-  ntuple_basepath+"WJetsLL/WTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"WJetsLL/WTreeProducer_tree_FakeRecoSkimmed.root",
-  ntuple_basepath+"DYJetsMM/WTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"DYJetsLL/WTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"DYJetsLL/WTreeProducer_tree_FakeRecoSkimmed.root",
-  ntuple_basepath+"TTJets/WTreeProducer_tree.root",
-  ntuple_basepath+"VVJets/ZZ/WTreeProducer_tree.root",
-  ntuple_basepath+"VVJets/WW/WTreeProducer_tree.root",
-  ntuple_basepath+"VVJets/WZ/WTreeProducer_tree.root",
-  ntuple_basepath+"QCD/QCD20Mu15/WTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/T_s/WTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/T_t/WTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/T_tW/WTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/Tbar_s/WTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/Tbar_t/WTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/Tbar_tW/WTreeProducer_tree.root"
+  [ntuple_basepath+"DATA/WTreeProducer_tree_RecoSkimmed.root",-1],
+  [ntuple_basepath+"WPlusPOWHEG/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"WMinusPOWHEG/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"WJetsLL/WTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"WJetsLL/WTreeProducer_tree_FakeRecoSkimmed.root",-1],
+  [ntuple_basepath+"DYJetsMM/WTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"DYJetsLL/WTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"DYJetsLL/WTreeProducer_tree_FakeRecoSkimmed.root",-1],
+  [ntuple_basepath+"TTJets/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"VVJets/ZZ/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"VVJets/WW/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"VVJets/WZ/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"QCD/QCD20Mu15/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/T_s/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/T_t/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/T_tW/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/Tbar_s/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/Tbar_t/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/Tbar_tW/WTreeProducer_tree.root",-1]
 ];
 
 fZana_str = [
 #  ntuple_basepath_8TeV_ABC+"DATA_Run2012ABCD/ZTreeProducer_tree.root", # this is the 8TeV data contain also the tkmetABC
-  ntuple_basepathFIX+"DATA/ZTreeProducer_tree_RecoSkimmed.root",
-  ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"WJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",
-  ntuple_basepathFIX+"DYMM/ZTreeProducer_tree_SignalRecoSkimmed.root",
+  [ntuple_basepathFIX+"DATA/ZTreeProducer_tree_RecoSkimmed.root",-1],
+  [ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"WJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",-1],
+  [ntuple_basepathFIX+"DYMM/ZTreeProducer_tree_SignalRecoSkimmed.root",-1],
   # ntuple_basepath+"DYJetsMM/InclWeights/ZTreeProducer_tree.root",
   # ntuple_basepath+"DYJetsMM/allEvts/ZTreeProducer_tree.root",
 #  ntuple_basepath_8TeV_ABC+"DYJetsLL/ZTreeProducer_tree_tkmetABC.root",  # this is the 8TeV DYJetsLL contains also the tkmetABC
-  ntuple_basepathFIX+"DYLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepathFIX+"DYLL/ZTreeProducer_tree_FakeRecoSkimmed.root",
-  ntuple_basepath+"TTJets/ZTreeProducer_tree.root",
-  ntuple_basepath+"VVJets/ZZ/ZTreeProducer_tree.root",
-  ntuple_basepath+"VVJets/WW/ZTreeProducer_tree.root",
-  ntuple_basepath+"VVJets/WZ/ZTreeProducer_tree.root",
-  ntuple_basepath+"QCD/QCD20Mu15/ZTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/T_s/ZTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/T_t/ZTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/T_tW/ZTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/Tbar_s/ZTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/Tbar_t/ZTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/Tbar_tW/ZTreeProducer_tree.root"
+  [ntuple_basepathFIX+"DYLL/ZTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepathFIX+"DYLL/ZTreeProducer_tree_FakeRecoSkimmed.root",-1],
+  [ntuple_basepath+"TTJets/ZTreeProducer_tree.root",-1],
+  [ntuple_basepath+"VVJets/ZZ/ZTreeProducer_tree.root",-1],
+  [ntuple_basepath+"VVJets/WW/ZTreeProducer_tree.root",-1],
+  [ntuple_basepath+"VVJets/WZ/ZTreeProducer_tree.root",-1],
+  [ntuple_basepath+"QCD/QCD20Mu15/ZTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/T_s/ZTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/T_t/ZTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/T_tW/ZTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/Tbar_s/ZTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/Tbar_t/ZTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/Tbar_tW/ZTreeProducer_tree.root",-1]
 ];
 
 if not os.path.exists("JobOutputs/"+outfolder_name):
@@ -604,8 +606,8 @@ if(runWanalysis or runZanalysis):
     print ''
     print "ANALYZING sampleID =", sampleID ;
 
-    WfileDATA= fWana_str[i];
-    ZfileDATA= fZana_str[i];
+    WfileDATA= fWana_str[i][0];
+    ZfileDATA= fZana_str[i][0];
     if( ("WJetsMadSig" in sample[i] or "WJetsPow" in sample[i]) and int(useAlsoGenPforSig)): WfileDATA.replace("_SignalRecoSkimmed","");
     else:
       if( ("DYJetsPow" in sample[i]  or "DYJetsMadSig" in sample[i]) and int(useAlsoGenPforSig)): ZfileDATA.replace("_SignalRecoSkimmed","");
@@ -651,8 +653,11 @@ if(runWanalysis or runZanalysis):
 
       wstring="\""+WfileDATA+"\","+str(WfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(MuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(0)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])+","+str(reweight_polarization)
 
-      line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o -1,0,0,"+wstring).read()
-      nEntries = [int(s) for s in line.split() if s.isdigit()][0]
+      if fWana_str[i][1] == -1:
+        line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o -1,0,0,"+wstring).read()
+        nEntries = [int(s) for s in line.split() if s.isdigit()][0]
+      else:
+        nEntries = fWana_str[i][1]
 
       if not useBatch:
         os.chdir(code_dir)
@@ -717,8 +722,11 @@ if(runWanalysis or runZanalysis):
 
       zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(MuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(0)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(correctToMadgraph)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])+","+str(reweight_polarization)
 
-      line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o -1,0,0,"+zstring).read();
-      nEntries = [int(s) for s in line.split() if s.isdigit()][0]
+      if fZana_str[i][1] == -1:
+        line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o -1,0,0,"+zstring).read();
+        nEntries = [int(s) for s in line.split() if s.isdigit()][0]
+      else:
+        nEntries = fZana_str[i][1]
 
       if not useBatch:
         os.chdir(code_dir)
@@ -854,7 +862,7 @@ if(mergeResults or (runClosureTestLikeLihoodRatio and useBatch==0)):
   os.chdir("JobOutputs/"+outfolder_name+"/DataCards");
   print os.getcwd();
   os.system("rm -rf LSF*; rm -f output_W*.root");
-  os.system("root -l -b -q \'merge_results.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+",\""+blind_offset_string+"\")\'");
+  os.system("root -l -b -q \'merge_results.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+",\""+blind_offset_string+"\","+str(fitDATALIKEorDATA)+")\'");
   os.chdir(base_path);
 
 
