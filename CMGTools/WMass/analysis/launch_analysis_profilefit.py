@@ -364,10 +364,12 @@ fZana_str = [
   [ntuple_basepath+"SingleTop/Tbar_tW/ZTreeProducer_tree.root",2085]
 ];
 
+first_analysis_run = False
 if not os.path.exists("JobOutputs/"+outfolder_name):
   print "Out folder doesn't exists, making directory"
   print "JobOutputs/"+outfolder_name
   os.makedirs("JobOutputs/"+outfolder_name)
+  first_analysis_run = True
 
 print "Copying script over:"
 print "cp "+os.path.basename(__file__)+" JobOutputs/"+outfolder_name
@@ -485,7 +487,7 @@ if(runZanalysis and not os.path.isfile("JobOutputs/"+outfolder_name+"/MERGED")):
     zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(correctToMadgraph)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])+","+str(reweight_polarization)
     
     if fWana_str[i][1] == -1:
-      line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o -1,0,0,"+wstring).read()
+      line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis -1,0,0,"+zstring).read()
       nEntries = [int(s) for s in line.split() if s.isdigit()][0]
     else:
       nEntries = fWana_str[i][1]
@@ -497,7 +499,7 @@ if(runZanalysis and not os.path.isfile("JobOutputs/"+outfolder_name+"/MERGED")):
       jobfirst = 1
       nevents = 1e5
       if (sample[i] == "DYJetsMadSig" or sample[i] == "DYJetsPow" or sample[i] == "TTJets"):
-        nevents = 5e4
+        nevents = 75000
 
       os.chdir(outputSamplePath)
 
@@ -513,7 +515,7 @@ if(runZanalysis and not os.path.isfile("JobOutputs/"+outfolder_name+"/MERGED")):
         if (chunk==nChuncks-1):
           ev_fin= nEntries
         print chunk,ev_ini,ev_fin
-        if not file_exists_and_is_not_empty("Zanalysis_chunk"+str(chunk)+".root") and not batch_job_is_running("Zanalysis_"+outfolder_name+"_"+sample[i],str(chunk)):
+        if first_analysis_run or (not file_exists_and_is_not_empty("Zanalysis_chunk"+str(chunk)+".root") and not batch_job_is_running("Zanalysis_"+outfolder_name+"_"+sample[i],str(chunk))):
           # Create scripts if needed
           if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runZanalysis_"+str(chunk)+".sh"):
             text_file = open("runZanalysis_"+str(chunk)+".sh", "w")

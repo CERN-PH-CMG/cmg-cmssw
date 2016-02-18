@@ -488,24 +488,24 @@ fZana_str = [
   [ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",-1],
   [ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",-1],
   [ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",-1],
-  [ntuple_basepath+"WJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",-1],
-  [ntuple_basepathFIX+"DYMM/ZTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"WJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",133],
+  [ntuple_basepathFIX+"DYMM/ZTreeProducer_tree_SignalRecoSkimmed.root",20921509],
   # ntuple_basepath+"DYJetsMM/InclWeights/ZTreeProducer_tree.root",
   # ntuple_basepath+"DYJetsMM/allEvts/ZTreeProducer_tree.root",
 #  ntuple_basepath_8TeV_ABC+"DYJetsLL/ZTreeProducer_tree_tkmetABC.root",  # this is the 8TeV DYJetsLL contains also the tkmetABC
   [ntuple_basepathFIX+"DYLL/ZTreeProducer_tree_SignalRecoSkimmed.root",-1],
-  [ntuple_basepathFIX+"DYLL/ZTreeProducer_tree_FakeRecoSkimmed.root",-1],
-  [ntuple_basepath+"TTJets/ZTreeProducer_tree.root",-1],
-  [ntuple_basepath+"VVJets/ZZ/ZTreeProducer_tree.root",-1],
-  [ntuple_basepath+"VVJets/WW/ZTreeProducer_tree.root",-1],
-  [ntuple_basepath+"VVJets/WZ/ZTreeProducer_tree.root",-1],
+  [ntuple_basepathFIX+"DYLL/ZTreeProducer_tree_FakeRecoSkimmed.root",8481],
+  [ntuple_basepath+"TTJets/ZTreeProducer_tree.root",143880],
+  [ntuple_basepath+"VVJets/ZZ/ZTreeProducer_tree.root",127139],
+  [ntuple_basepath+"VVJets/WW/ZTreeProducer_tree.root",7990],
+  [ntuple_basepath+"VVJets/WZ/ZTreeProducer_tree.root",63875],
   [ntuple_basepath+"QCD/QCD20Mu15/ZTreeProducer_tree.root",-1],
-  [ntuple_basepath+"SingleTop/T_s/ZTreeProducer_tree.root",-1],
-  [ntuple_basepath+"SingleTop/T_t/ZTreeProducer_tree.root",-1],
-  [ntuple_basepath+"SingleTop/T_tW/ZTreeProducer_tree.root",-1],
-  [ntuple_basepath+"SingleTop/Tbar_s/ZTreeProducer_tree.root",-1],
-  [ntuple_basepath+"SingleTop/Tbar_t/ZTreeProducer_tree.root",-1],
-  [ntuple_basepath+"SingleTop/Tbar_tW/ZTreeProducer_tree.root",-1]
+  [ntuple_basepath+"SingleTop/T_s/ZTreeProducer_tree.root",11],
+  [ntuple_basepath+"SingleTop/T_t/ZTreeProducer_tree.root",280],
+  [ntuple_basepath+"SingleTop/T_tW/ZTreeProducer_tree.root",1902],
+  [ntuple_basepath+"SingleTop/Tbar_s/ZTreeProducer_tree.root",12],
+  [ntuple_basepath+"SingleTop/Tbar_t/ZTreeProducer_tree.root",192],
+  [ntuple_basepath+"SingleTop/Tbar_tW/ZTreeProducer_tree.root",2085]
 ];
 
 if not os.path.exists("JobOutputs/"+outfolder_name):
