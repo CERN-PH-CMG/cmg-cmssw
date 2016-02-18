@@ -24,22 +24,22 @@ cd ${destfolder}
 
 for ((m=91138; m<=91238; m=m+10))
 do
-    echo 
+    :
     #text2workspace.py -m ${m} "Datacard.txt" -o "wtoy${m}.root" &
     #text2workspace.py -m ${m} "Datacard.txt" --X-allow-no-background -o "wpull${m}.root" &
     #text2workspace.py -m ${m} "Datacard.txt" -o "wcentral${m}.root" &
-    text2workspace.py -m ${m} "Datacard.txt" -o "wdlike${m}.root" &
+    #text2workspace.py -m ${m} "Datacard.txt" -o "wdlike${m}.root" &
 done
 
 wait
 
 for ((m=91138; m<=91238; m=m+10))
 do
-    echo "Computing ${m}:"
+    echo "Computing ${m}"
     #combine -v9 -M "MaxLikelihoodFit" "wtoy${m}.root" --robustFit 1 --skipBOnlyFit -m ${m} --setPhysicsModelParameters MuonScale5=1.0 -t -1 -n "Wlike" > "mtoy${m}.log" &
     #combine -v9 -M "MaxLikelihoodFit" "wpull${m}.root" --robustFit 1 --skipBOnlyFit -m ${m} --setPhysicsModelParameters bkgUncert=-7 --expectSignal=1 -n "Wlike" > "mpull${m}.log" &
     #combine -v9 -M "MaxLikelihoodFit" "wcentral${m}.root" --robustFit 1 --skipBOnlyFit -m ${m} -n "Wlike" > "mcentral${m}.log" &
-    combine -v9 -M "MaxLikelihoodFit" "wdlike${m}.root" --justFit --minimizerStrategy 2 --minimizerStrategyForMinos 2 --minos=all --robustFit 1 -m ${m} -n "Wlike" &> "mdlike${m}.log" &
+    combine -v9 -M "MaxLikelihoodFit" "wdlike${m}.root" --saveNLL --minimizerStrategy 2 --minimizerStrategyForMinos 2 --minos=all --robustFit 1 -m ${m} -n "Wlike${m}" &> "mdlike${m}.log" &
 done
 
 wait

@@ -24,7 +24,7 @@ cd ${destfolder}
 
 for ((m=91138; m<=91238; m=m+10))
 do
-    echo 
+    :
     text2workspace.py -m ${m} "DatacardALT.txt" -P "HiggsAnalysis.CombinedLimit.HiggsJPC:twoHypothesisHiggs" -o "wALT${m}.root" &
 done
 
@@ -33,7 +33,7 @@ wait
 for ((m=91138; m<=91238; m=m+10))
 do
     echo "Computing ${m}:"
-    combine -v9 -M "MaxLikelihoodFit" "wALT${m}.root" --saveNLL --minimizerStrategy 2 --minimizerStrategyForMinos 2 --minos=all --robustFit 1 -m ${m} -n "WlikeALT${m}" &> "mALT${m}.log" &
+    combine -v9 -M "MaxLikelihoodFit" "wALT${m}.root" --setPhysicsModelParameterRanges x=1.0,1.0 --minimizerStrategy 2 --minimizerStrategyForMinos 2 --minos=all --robustFit 1 -m ${m} -n "WlikeALT${m}" &> "mALT${m}.log" &
 done
 
 wait
