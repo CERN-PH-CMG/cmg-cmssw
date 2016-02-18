@@ -89,7 +89,7 @@ noLSFJobOutput = 1  # 1: Puts all the batch logs in a single file
 recreateSubPrograms = 0  # 1: Recompiles run?analysis and remakes run?analysis.sh
 
 ### MERGE ###
-mergeSigEWKbkg = 1
+mergeSigEWKbkg = 0
 mergeWhichAnalysis = "Zanalysis"  # "Zanalysis Wanalysis" -- no comma!
 removeChunks = 0  # 0: Don't remove chunks after merge --- 1: Remove them
 
@@ -317,52 +317,52 @@ for i in xrange(-int(WMassNSteps),int(WMassNSteps)+1):
   counter = counter+1
 
 fWana_str = [
-  ntuple_basepath+"DATA/WTreeProducer_tree_RecoSkimmed.root",
-  ntuple_basepath+"WPlusPOWHEG/WTreeProducer_tree.root",
-  ntuple_basepath+"WMinusPOWHEG/WTreeProducer_tree.root",
-  ntuple_basepath+"WJetsLL/WTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"WJetsLL/WTreeProducer_tree_FakeRecoSkimmed.root",
-  ntuple_basepath+"DYJetsMM/WTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"DYJetsLL/WTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"DYJetsLL/WTreeProducer_tree_FakeRecoSkimmed.root",
-  ntuple_basepath+"TTJets/WTreeProducer_tree.root",
-  ntuple_basepath+"VVJets/ZZ/WTreeProducer_tree.root",
-  ntuple_basepath+"VVJets/WW/WTreeProducer_tree.root",
-  ntuple_basepath+"VVJets/WZ/WTreeProducer_tree.root",
-  ntuple_basepath+"QCD/QCD20Mu15/WTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/T_s/WTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/T_t/WTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/T_tW/WTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/Tbar_s/WTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/Tbar_t/WTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/Tbar_tW/WTreeProducer_tree.root"
-]
+  [ntuple_basepath+"DATA/WTreeProducer_tree_RecoSkimmed.root",-1],
+  [ntuple_basepath+"WPlusPOWHEG/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"WMinusPOWHEG/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"WJetsLL/WTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"WJetsLL/WTreeProducer_tree_FakeRecoSkimmed.root",-1],
+  [ntuple_basepath+"DYJetsMM/WTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"DYJetsLL/WTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"DYJetsLL/WTreeProducer_tree_FakeRecoSkimmed.root",-1],
+  [ntuple_basepath+"TTJets/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"VVJets/ZZ/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"VVJets/WW/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"VVJets/WZ/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"QCD/QCD20Mu15/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/T_s/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/T_t/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/T_tW/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/Tbar_s/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/Tbar_t/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/Tbar_tW/WTreeProducer_tree.root",-1]
+];
 
 fZana_str = [
 #  ntuple_basepath_8TeV_ABC+"DATA_Run2012ABCD/ZTreeProducer_tree.root", # this is the 8TeV data contain also the tkmetABC
-  ntuple_basepathFIX+"DATA/ZTreeProducer_tree_RecoSkimmed.root",
-  ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"WJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",
-  ntuple_basepathFIX+"DYMM/ZTreeProducer_tree_SignalRecoSkimmed.root",
+  [ntuple_basepathFIX+"DATA/ZTreeProducer_tree_RecoSkimmed.root",-1],
+  [ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"WJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",133],
+  [ntuple_basepathFIX+"DYMM/ZTreeProducer_tree_SignalRecoSkimmed.root",20921509],
   # ntuple_basepath+"DYJetsMM/InclWeights/ZTreeProducer_tree.root",
   # ntuple_basepath+"DYJetsMM/allEvts/ZTreeProducer_tree.root",
 #  ntuple_basepath_8TeV_ABC+"DYJetsLL/ZTreeProducer_tree_tkmetABC.root",  # this is the 8TeV DYJetsLL contains also the tkmetABC
-  ntuple_basepathFIX+"DYLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepathFIX+"DYLL/ZTreeProducer_tree_FakeRecoSkimmed.root",
-  ntuple_basepath+"TTJets/ZTreeProducer_tree.root",
-  ntuple_basepath+"VVJets/ZZ/ZTreeProducer_tree.root",
-  ntuple_basepath+"VVJets/WW/ZTreeProducer_tree.root",
-  ntuple_basepath+"VVJets/WZ/ZTreeProducer_tree.root",
-  ntuple_basepath+"QCD/QCD20Mu15/ZTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/T_s/ZTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/T_t/ZTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/T_tW/ZTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/Tbar_s/ZTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/Tbar_t/ZTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/Tbar_tW/ZTreeProducer_tree.root"
-]
+  [ntuple_basepathFIX+"DYLL/ZTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepathFIX+"DYLL/ZTreeProducer_tree_FakeRecoSkimmed.root",8481],
+  [ntuple_basepath+"TTJets/ZTreeProducer_tree.root",143880],
+  [ntuple_basepath+"VVJets/ZZ/ZTreeProducer_tree.root",127139],
+  [ntuple_basepath+"VVJets/WW/ZTreeProducer_tree.root",7990],
+  [ntuple_basepath+"VVJets/WZ/ZTreeProducer_tree.root",63875],
+  [ntuple_basepath+"QCD/QCD20Mu15/ZTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/T_s/ZTreeProducer_tree.root",11],
+  [ntuple_basepath+"SingleTop/T_t/ZTreeProducer_tree.root",280],
+  [ntuple_basepath+"SingleTop/T_tW/ZTreeProducer_tree.root",1902],
+  [ntuple_basepath+"SingleTop/Tbar_s/ZTreeProducer_tree.root",12],
+  [ntuple_basepath+"SingleTop/Tbar_t/ZTreeProducer_tree.root",192],
+  [ntuple_basepath+"SingleTop/Tbar_tW/ZTreeProducer_tree.root",2085]
+];
 
 if not os.path.exists("JobOutputs/"+outfolder_name):
   print "Out folder doesn't exists, making directory"
@@ -386,7 +386,7 @@ with open("JobOutputs/"+outfolder_name+"/log.txt", "a") as logfile:
   logfile.write(logstring)
 print ""
 
-if(runZanalysis):
+if(runZanalysis and not os.path.isfile("JobOutputs/"+outfolder_name+"/MERGED")):
 
   if(useLHAPDF and os.environ.get('LHAPATH') == lhapdf_path+"share/lhapdf/PDFsets"):
     print "ENVIRONMENT VARIABLES OK"
@@ -448,8 +448,8 @@ if(runZanalysis):
     print ''
     print "ANALYZING sampleID =", sampleID
 
-    WfileDATA= fWana_str[i]
-    ZfileDATA= fZana_str[i]
+    WfileDATA= fWana_str[i][0]
+    ZfileDATA= fZana_str[i][0]
     if( ("WJetsMadSig" in sample[i] or "WJetsPow" in sample[i]) and int(useAlsoGenPforSig)): WfileDATA.replace("_SignalRecoSkimmed","")
     else:
       if( ("DYJetsPow" in sample[i] or "DYJetsMadSig" in sample[i]) and int(useAlsoGenPforSig)): ZfileDATA.replace("_SignalRecoSkimmed","")
@@ -483,9 +483,12 @@ if(runZanalysis):
       os.makedirs(outputSamplePath)
 
     zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(correctToMadgraph)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])+","+str(reweight_polarization)
-
-    line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis -1,0,0,"+zstring).read()
-    nEntries = [int(s) for s in line.split() if s.isdigit()][0]
+    
+    if fWana_str[i][1] == -1:
+      line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o -1,0,0,"+wstring).read()
+      nEntries = [int(s) for s in line.split() if s.isdigit()][0]
+    else:
+      nEntries = fWana_str[i][1]
 
     if not useBatch:
       os.chdir(code_dir)
@@ -544,7 +547,7 @@ if(runZanalysis):
 
     os.chdir(base_path)
 
-if(mergeSigEWKbkg):
+if(mergeSigEWKbkg and not os.path.isfile("JobOutputs/"+outfolder_name+"/MERGED")):
   rcode = os.system(code_dir+"/merge_MC.sh \"JobOutputs/"+outfolder_name+"/\" \""+mergeWhichAnalysis+"\"")
   if rcode != 0:
     print "Some merges failed, exiting"
