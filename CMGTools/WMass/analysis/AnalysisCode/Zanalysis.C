@@ -853,6 +853,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 evt_weight *= hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS))>0?hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS)):1;
             }
 
+            //-----------------------------
+            // Throw toys for efficiency (i)
+            //------------------------------
             TString effToy_str = "";
             for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
               //---------------- MUON weight
@@ -862,9 +865,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               double eff_ISO_SF = 1;
               double eff_TRG_SF = 1;
               
-              //-----------------------------
-              // Throw toys for efficiency (i)
-              //------------------------------
               if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
               
               if( (first_time_in_the_event && m==m_start && n==0) 
@@ -894,7 +894,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   eff_TIGHT_subleading_SF = SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt));
                   if(useEffSF==15){
                     random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
-                    eff_TIGHT_subleading_SF += random_->Gaus(0,TMath::Hypot(0.01, SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt))));
+                    eff_TIGHT_subleading_SF += random_->Gaus(0,TMath::Hypot(0.01, SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt))));
                   }
                   TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
                 }
@@ -903,13 +903,21 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   eff_TRG_SF = SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt));
                   if(useEffSF==16){
                     random_->SetSeed(UInt_t(TMath::Abs(isChargePos?1:2)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
-                    eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.01,SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))));
+                    eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.01,SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))));
                   }
                 }
               }else if(useEffSF==7){
                 TRG_TIGHT_ISO_muons_SF=0.98;
               }
 
+              // cout 
+              // << "TRG_TIGHT_ISO_muons_SF= " << TRG_TIGHT_ISO_muons_SF
+              // << " eff_TIGHT_SF= " << eff_TIGHT_SF
+              // << " eff_TIGHT_subleading_SF= " << eff_TIGHT_subleading_SF
+              // << " eff_ISO_SF= " << eff_ISO_SF
+              // << " eff_TRG_SF= " << eff_TRG_SF
+              // << endl;
+              
               //------------------------------------------------------
               // Define mu+, mu-, Z
               //------------------------------------------------------
