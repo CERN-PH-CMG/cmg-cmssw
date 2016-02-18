@@ -14,7 +14,7 @@ with open(input_filename, "r") as ins:
         if(not (line.startswith("#") or line.startswith("=")) ):
           var_counter = var_counter+1
           if not line_temp == '':
-            line_temp = str(line_temp)+"  "+(line)
+            line_temp = str(line_temp)+"    "+(line) # adjust spaces between variables on the same line
           else:
             line_temp = line
         if(line.startswith("#") or line.startswith("=")):
