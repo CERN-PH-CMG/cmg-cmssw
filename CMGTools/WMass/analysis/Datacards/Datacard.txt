@@ -2,9 +2,8 @@ imax    1       number of categories
 jmax    1       number of samples minus one 
 kmax    *       number of nuisance parameters 
 ------------------------------------------------------------------------------- 
-# shapes data_obs   *   %JOBFOLDER%/Datacards/DATALIKE.root                                                     hWlike%CHARGE%_%OBSERVABLE%NonScaled_8_JetCut_pdf229800-0_%ETA%_91188
+shapes data_obs     *   %JOBFOLDER%/Datacards/DATALIKE.root                                                     hWlike%CHARGE%_%OBSERVABLE%NonScaled_8_JetCut_pdf229800-0_%ETA%_91188
 # shapes data_obs   *   %JOBFOLDER%/Datacards/DATA.root                                                         hWlike%CHARGE%_%OBSERVABLE%NonScaled_8_JetCut_pdf229800-0_%ETA%_91188
-shapes data_obs     *   %JOBFOLDER%/profileFit_mu%CHARGE%_%ETA%_MuonScale5Up/output_DYJetsPow/Zanalysis.root    hWlike_%OBSERVABLE%_91188
 shapes signal       *   %JOBFOLDER%/profileFit_mu%CHARGE%_%ETA%_$SYSTEMATIC/output_DYJetsPow/Zanalysis.root     hWlike_%OBSERVABLE%_$MASS   hWlike_%OBSERVABLE%_$MASS
 shapes background   *   %JOBFOLDER%/profileFit_mu%CHARGE%_%ETA%_$SYSTEMATIC/output_EWKTT/Zanalysis.root         hWlike_%OBSERVABLE%         hWlike_%OBSERVABLE%
 ------------------------------------------------------------------------------- 
@@ -17,8 +16,55 @@ process                                 0               1
 rate                                    -1              -1
 -------------------------------------------------------------------------------
 bkgUncert           lnN                 -               1.01
-MuonScale5          shape               0.2             0.2
-# KalmanVar1        shape               1               1
+
+MuonScale           shape               1               1
+
+KalmanVar1          shape               1               1
+KalmanVar2          shape               1               1
+KalmanVar3          shape               1               1
+KalmanVar4          shape               1               1
+KalmanVar5          shape               1               1
+KalmanVar6          shape               1               1
+KalmanVar7          shape               1               1
+KalmanVar8          shape               1               1
+KalmanVar9          shape               1               1
+KalmanVar10         shape               1               1
+KalmanVar11         shape               1               1
+KalmanVar12         shape               1               1
+KalmanVar13         shape               1               1
+KalmanVar14         shape               1               1
+KalmanVar15         shape               1               1
+KalmanVar16         shape               1               1
+KalmanVar17         shape               1               1
+KalmanVar18         shape               1               1
+KalmanVar19         shape               1               1
+KalmanVar20         shape               1               1
+KalmanVar21         shape               1               1
+KalmanVar22         shape               1               1
+KalmanVar23         shape               1               1
+KalmanVar24         shape               1               1
+KalmanVar25         shape               1               1
+KalmanVar26         shape               1               1
+KalmanVar27         shape               1               1
+KalmanVar28         shape               1               1
+KalmanVar29         shape               1               1
+KalmanVar30         shape               1               1
+KalmanVar31         shape               1               1
+KalmanVar32         shape               1               1
+KalmanVar33         shape               1               1
+KalmanVar34         shape               1               1
+KalmanVar35         shape               1               1
+KalmanVar36         shape               1               1
+KalmanVar37         shape               1               1
+KalmanVar38         shape               1               1
+KalmanVar39         shape               1               1
+KalmanVar40         shape               1               1
+KalmanVar41         shape               1               1
+KalmanVar42         shape               1               1
+KalmanVar43         shape               1               1
+KalmanVar44         shape               1               1
+KalmanVar45         shape               1               1
+
 
 # KalmanVar%N%      shape               1               1
 # RecoilEigen%N%    shape               1               1

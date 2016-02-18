@@ -56,7 +56,7 @@ namespace WMass{
     RapBinCorr = (block & (1<<2)) ? 2 : 1;
     DATAorMC   = (block & (1<<1)) ? 2 : 1;
     U1orU2     = (block & (1<<0)) ? 2 : 1;
-    RecoilEigenNum = RecoilStatVariation;
+    RecoilEigenNum = RecoilStatVariation - 1;
   }
   
   static const int LHE_mass_central_index = _LHE_MASS_CENTRAL_INDEX;
