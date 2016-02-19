@@ -23,15 +23,19 @@ using namespace std;
 
 int offset_from_string(TString str, int limit)
 {
+  TRandom3 *sign = new TRandom3(0); 
   int len = str.Length();
   int accumulator = 0;
   for (int i=0; i<len; ++i) {
     int ch = abs((int)(str[i]));
     accumulator += pow(ch, 2.3456);
     accumulator %= limit;
+    sign->Uniform();
   }
   accumulator = pow(accumulator, 1.2345);
-  return accumulator % limit;
+  accumulator = accumulator % limit;
+  accumulator *= sign->Uniform()<0.5? -1 : 1;
+  return accumulator;
 }
 
 void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int useBatch=0, int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0, TString offset_string=""){
