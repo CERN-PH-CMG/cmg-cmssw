@@ -6,6 +6,11 @@ set -e
 # observable=( "Pt", "Mt", "MET" )
 # eta="eta"( "0p9" )
 
+debuglevel=0
+mass_initial=91138
+mass_final=91238
+mass_step=10
+
 # Check if it's running on lxplus
 if [[ ${HOSTNAME} != *"lxplus"* ]]
 then
@@ -22,18 +27,18 @@ cp "fit_2H.cpp" ${destfolder}
 
 cd ${destfolder}
 
-for ((m=91138; m<=91238; m=m+10))
+for ((m=mass_initial; m<=mass_final; m=m+mass_step))
 do
     text2workspace.py -m ${m} "Datacard2H.txt" -P "HiggsAnalysis.CombinedLimit.HiggsJPC:twoHypothesisHiggs" -o "w2H${m}.root" &
 done
 
 wait
 
-for ((m=91138; m<=91238; m=m+10))
+echo "Combining..."
+
+for ((m=mass_initial; m<=mass_final; m=m+mass_step))
 do
-    echo "Computing ${m}"
-    #combine -v9 -M "MaxLikelihoodFit" "wALT${m}.root" --setPhysicsModelParameterRanges x=1.0,1.0 --skipBOnlyFit --minimizerStrategy 2 --minimizerStrategyForMinos 2 --minos=all --robustFit 1 -m ${m} -n "WlikeALT${m}" &> "mALT${m}.log" &
-    combine -v9 -M "HybridNew" --testStat=TEV --singlePoint 1 --onlyTestStat --saveHybridResult "w2H${m}.root" -m ${m} -n "Wlike2H" &> "m2H${m}.log" &
+    combine -v${debuglevel} -M "HybridNew" --testStat=TEV --singlePoint 1 --onlyTestStat --saveHybridResult "w2H${m}.root" -m ${m} -n "Wlike2H" &> "m2H${m}.log" &
 done
 
 wait
