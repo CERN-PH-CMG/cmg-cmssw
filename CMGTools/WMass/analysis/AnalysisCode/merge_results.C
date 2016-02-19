@@ -23,7 +23,7 @@ using namespace std;
 
 int offset_from_string(TString str, int limit)
 {
-  TRandom3 *sign = new TRandom3(0); 
+  TRandom3 *sign = new TRandom3(123456); 
   int len = str.Length();
   int accumulator = 0;
   for (int i=0; i<len; ++i) {
@@ -317,7 +317,7 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                 if(!silent_fit.IsNull()) cout << "blind central value!" << endl;
                 cout << Form("Best M_W%s value with %s = %.1f +/- %.1f MeV,\t DeltaM_W%s = %.1f +/- %.1f MeV,\t chi2/ndof= %.2f",Wlike.Data(),WMass::FitVar_str[k].Data(), !silent_fit.IsNull() ? 99999 : ffit[i][k][c]->GetParameter(1), ffit[i][k][c]->GetParameter(2),Wlike.Data(), (ffit[i][k][c]->GetParameter(1) - (massCentral_MeV)), ffit[i][k][c]->GetParameter(2),(ffit[i][k][c]->GetChisquare()/ffit[i][k][c]->GetNDF())) << endl;
                 outTXTfile2 << Form("Best M_W%s %s value with %s = %.1f +/- %.1f MeV,\t DeltaM_W%s = %.1f +/- %.1f MeV,\t chi2/ndof= %.2f",Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(), !silent_fit.IsNull() ? 99999 : ffit[i][k][c]->GetParameter(1), ffit[i][k][c]->GetParameter(2),Wlike.Data(), (ffit[i][k][c]->GetParameter(1) - (massCentral_MeV)), ffit[i][k][c]->GetParameter(2),(ffit[i][k][c]->GetChisquare()/ffit[i][k][c]->GetNDF())) << endl;
-                outTXTfile << Form("%.2g\t%.2g",(ffit[i][k][c]->GetParameter(1) - (massCentral_MeV)), TMath::Abs(ffit[i][k][c]->GetParameter(2))) << endl;
+                outTXTfile << Form("%.2f\t%.2f",(ffit[i][k][c]->GetParameter(1) - (massCentral_MeV)), TMath::Abs(ffit[i][k][c]->GetParameter(2))) << endl;
                 // cout << "Best chi2 ratio value = " << ffit[i][k]->GetParameter(0) << endl;
                 // cout << "Measured mass points chi2 min = " << chi2min << " max = " << chi2max << endl;
                 
