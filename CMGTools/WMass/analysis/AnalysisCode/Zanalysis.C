@@ -267,11 +267,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   TH2D* hZPolSF;
   if(reweight_polarization==1 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow"))) {
 
-    TString filename=Form("../utils/Zpol_output_%s_Pos_PtSFCorr0.root",sampleName.Data());
+    //    TString filename=Form("../utils/Zpol_output_%s_Pos_PtSFCorr0.root",sampleName.Data());
+    TString filename=Form("../utils/Zpol_Zrap_cosTheta_output_%s_Pos_PtSFCorr0.root",sampleName.Data());
     cout << "hZpolSF_central = " << filename.Data() << endl;
 
     TFile* finZPolSF = new TFile(filename.Data());
-    hZPolSF=(TH2D*) finZPolSF->Get("hWlikePos_phi_vs_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188"); hZPolSF->Sumw2();
+    hZPolSF=(TH2D*) finZPolSF->Get("hWlikePos_Zrap_vs_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188"); hZPolSF->Sumw2();
 
   } else hZPolSF = new TH2D("hZPolSF","hZPolSF",10,0,1,10,0,1);
 
@@ -850,7 +851,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
               if(reweight_polarization==1 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow")))
                 // evt_weight *= hZPolSF->GetBinContent(hZPolSF->FindBin(costh_CS,TMath::Abs(phi_CS)))>0?hZPolSF->GetBinContent(hZPolSF->FindBin(costh_CS,TMath::Abs(phi_CS))):1;
-                evt_weight *= hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS))>0?hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS)):1;
+		// evt_weight *= hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS))>0?hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS)):1;
+                evt_weight *= hZPolSF->Interpolate(costh_CS,TMath::Abs(Zcorr.Rapidity()))>0?hZPolSF->Interpolate(costh_CS,TMath::Abs(Zcorr.Rapidity())):1;
             }
 
             //-----------------------------
