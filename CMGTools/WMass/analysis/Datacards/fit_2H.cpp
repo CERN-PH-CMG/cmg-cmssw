@@ -22,6 +22,7 @@ int fit_2H(string filename = "2H_likelihoods.txt")
 		cout << "ERROR: Could not open " << filename << endl;
 		return 1;
 	}
+	else cout << "Working on " << filename << endl;
 
 	TGraph* g = new TGraph();
 

@@ -17,9 +17,11 @@ process                         reference       signal_ALT      background
 process                         -1              0               1
 rate                            -1              -1              -1
 -------------------------------------------------------------------------------
-bkgUncert           lnN         -       -               1.01
+BkgUncert           lnN         -       -               1.01
 
 MuonScale           shape       -       1               1
+
+MuonScales group = MuonScale
 
 KalmanVar1          shape       -       1               1
 KalmanVar2          shape       -       1               1
@@ -66,6 +68,8 @@ KalmanVar42         shape       -       1               1
 KalmanVar43         shape       -       1               1
 KalmanVar44         shape       -       1               1
 KalmanVar45         shape       -       1               1
+
+KalmanVars group = KalmanVar1 KalmanVar2 KalmanVar3 KalmanVar4 KalmanVar5 KalmanVar6 KalmanVar7 KalmanVar8 KalmanVar9 KalmanVar10 KalmanVar11 KalmanVar12 KalmanVar13 KalmanVar14 KalmanVar15 KalmanVar16 KalmanVar17 KalmanVar18 KalmanVar19 KalmanVar20 KalmanVar21 KalmanVar22 KalmanVar23 KalmanVar24 KalmanVar25 KalmanVar26 KalmanVar27 KalmanVar28 KalmanVar29 KalmanVar30 KalmanVar31 KalmanVar32 KalmanVar33 KalmanVar34 KalmanVar35 KalmanVar36 KalmanVar37 KalmanVar38 KalmanVar39 KalmanVar40 KalmanVar41 KalmanVar42 KalmanVar43 KalmanVar44 KalmanVar45
 
 # KalmanVar%N%      shape       -       1               1
 # RecoilEigen%N%    shape       -       1               1
