@@ -268,11 +268,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   if(reweight_polarization==1 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow"))) {
 
     //    TString filename=Form("../utils/Zpol_output_%s_Pos_PtSFCorr0.root",sampleName.Data());
-    TString filename=Form("../utils/Zpol_Zrap_cosTheta_output_%s_Pos_PtSFCorr0.root",sampleName.Data());
+    TString filename=Form("../utils/Zpol_Zrap_cosTheta_output_%s_%s_PtSFCorr0.root",sampleName.Data(),WCharge_str.Data());
     cout << "hZpolSF_central = " << filename.Data() << endl;
 
     TFile* finZPolSF = new TFile(filename.Data());
-    hZPolSF=(TH2D*) finZPolSF->Get("hWlikePos_Zrap_vs_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188"); hZPolSF->Sumw2();
+    hZPolSF=(TH2D*) finZPolSF->Get(Form("hWlike%s_Zrap_vs_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188",WCharge_str.Data())); hZPolSF->Sumw2();
 
   } else hZPolSF = new TH2D("hZPolSF","hZPolSF",10,0,1,10,0,1);
 
@@ -1165,7 +1165,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             // Boson polarization
                             common_stuff::plot2D(Form("hWlike%s_Zrap_vs_costh_CS_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
 						 costh_CS,TMath::Abs(Zcorr.Rapidity()), weight,
-                                 h_2d, 20,-1,1,
+                                 h_2d, 40,-1,1,
                                  9,0,1.8 );
 
                             common_stuff::plot2D(Form("hWlike%s_phi_CS_vs_costh_CS_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
