@@ -23,6 +23,7 @@ outfolder_prefix = "TEST"
 if(hasattr(config, 'outfolder_prefix')):
   outfolder_prefix = config.outfolder_prefix
 
+### NTUPLES
 ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/"
 if(hasattr(config, 'ntuple_basepath')):
   ntuple_basepath = str(config.ntuple_basepath)
@@ -107,6 +108,9 @@ if(hasattr(config, 'MuonCorrGlobalScaleNsigma')):
 MuonCorrKalmanNvarsNsigma = 0
 if(hasattr(config, 'MuonCorrKalmanNvarsNsigma')):
   MuonCorrKalmanNvarsNsigma = int(config.MuonCorrKalmanNvarsNsigma)  # 0=No, >1=Yes
+MuonCorrAsDATA = 0  # 0=Correct as whatever it really is, 1=Correct as DATA
+if(hasattr(config, 'MuonCorrAsDATA')):
+  MuonCorrAsDATA = int(config.MuonCorrAsDATA)
 
 # Wlike properties
 WMassNSteps = "5"
