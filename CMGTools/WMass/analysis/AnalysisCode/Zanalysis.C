@@ -283,6 +283,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     TFile* finZPolSF = new TFile(filename.Data());
     hZPolSF_1d_costh_new=(TH1D*) finZPolSF->Get(Form("hWlike%s_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188",WCharge_str.Data())); hZPolSF_1d_costh_new->Sumw2();
 
+  } else if(reweight_polarization==4 && sampleName.Contains("DYJetsPow")){
+
+    TString filename=Form("../utils/Zpol_output_DYJetsPow_pdf229800-0_eta0p9_91188.root");
+    cout << "hZPolSF_2d_rap_costh_new = " << filename.Data() << endl;
+
+    TFile* finZPolSF = new TFile(filename.Data());
+    hZPolSF_2d_rap_costh_new=(TH2D*) finZPolSF->Get(Form("hWlike%s_Zrap_vs_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188",WCharge_str.Data())); hZPolSF_2d_rap_costh_new->Sumw2();
+
   } else hZPolSF = new TH2D("hZPolSF","hZPolSF",10,0,1,10,0,1);
 
   // the following variables will get the recoil components from the corrector
@@ -868,8 +876,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 // evt_weight *= hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS))>0?hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS)):1;
                 evt_weight *= hZPolSF->Interpolate(costh_CS,TMath::Abs(Zcorr.Rapidity()))>0?hZPolSF->Interpolate(costh_CS,TMath::Abs(Zcorr.Rapidity())):1;
               
-              }else if(reweight_polarization==3 && sampleName.Contains("DYJetsPow"))
+              }else if(reweight_polarization==3 && sampleName.Contains("DYJetsPow")){
                 evt_weight *= hZPolSF_1d_costh_new->Interpolate(costh_CS)>0?hZPolSF_1d_costh_new->Interpolate(costh_CS):1;
+              }else if(reweight_polarization==4 && sampleName.Contains("DYJetsPow")){
+                evt_weight *= hZPolSF_2d_rap_costh_new->Interpolate(costh_CS,TMath::Abs(Zcorr.Rapidity()))>0?hZPolSF_2d_rap_costh_new->Interpolate(costh_CS,TMath::Abs(Zcorr.Rapidity())):1;
+              }
             }
 
             //-----------------------------
