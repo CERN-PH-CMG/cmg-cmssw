@@ -264,7 +264,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // Polarization
   //------------------------------------------------------
 
-  TH2D* hZPolSF;
+  TH2D* hZPolSF, *hZPolSF_2d_rap_costh_new;
+  TH1D *hZPolSF_1d_costh_new;
   if(reweight_polarization==1 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow"))) {
 
     //    TString filename=Form("../utils/Zpol_output_%s_Pos_PtSFCorr0.root",sampleName.Data());
@@ -273,6 +274,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
     TFile* finZPolSF = new TFile(filename.Data());
     hZPolSF=(TH2D*) finZPolSF->Get("hWlikePos_Zrap_vs_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188"); hZPolSF->Sumw2();
+
+  } else if(reweight_polarization==3 && sampleName.Contains("DYJetsPow")){
+
+    TString filename=Form("../utils/Zpol_output_DYJetsPow_pdf229800-0_eta0p9_91188.root");
+    cout << "hZPolSF_1d_costh_new = " << filename.Data() << endl;
+
+    TFile* finZPolSF = new TFile(filename.Data());
+    hZPolSF_1d_costh_new=(TH1D*) finZPolSF->Get(Form("hWlike%s_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188",WCharge_str.Data())); hZPolSF_1d_costh_new->Sumw2();
 
   } else hZPolSF = new TH2D("hZPolSF","hZPolSF",10,0,1,10,0,1);
 
@@ -849,10 +858,18 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
               // cout << " ZcorrCentral.Rapidity()= " << ZcorrCentral.Rapidity() << " ZcorrCentral.Pt()= " << ZcorrCentral.Pt() << " hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())= " << hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity()) << " hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())= " << hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt()) << " costh_CS= " << costh_CS << " phi_CS= " << phi_CS << endl;
 
-              if(reweight_polarization==1 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow")))
+              if(reweight_polarization==1 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow"))){
                 // evt_weight *= hZPolSF->GetBinContent(hZPolSF->FindBin(costh_CS,TMath::Abs(phi_CS)))>0?hZPolSF->GetBinContent(hZPolSF->FindBin(costh_CS,TMath::Abs(phi_CS))):1;
 		// evt_weight *= hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS))>0?hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS)):1;
                 evt_weight *= hZPolSF->Interpolate(costh_CS,TMath::Abs(Zcorr.Rapidity()))>0?hZPolSF->Interpolate(costh_CS,TMath::Abs(Zcorr.Rapidity())):1;
+              
+              }else if(reweight_polarization==2 && sampleName.Contains("DYJetsPow")){
+                // evt_weight *= hZPolSF->GetBinContent(hZPolSF->FindBin(costh_CS,TMath::Abs(phi_CS)))>0?hZPolSF->GetBinContent(hZPolSF->FindBin(costh_CS,TMath::Abs(phi_CS))):1;
+                // evt_weight *= hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS))>0?hZPolSF->Interpolate(costh_CS,TMath::Abs(phi_CS)):1;
+                evt_weight *= hZPolSF->Interpolate(costh_CS,TMath::Abs(Zcorr.Rapidity()))>0?hZPolSF->Interpolate(costh_CS,TMath::Abs(Zcorr.Rapidity())):1;
+              
+              }else if(reweight_polarization==3 && sampleName.Contains("DYJetsPow"))
+                evt_weight *= hZPolSF_1d_costh_new->Interpolate(costh_CS)>0?hZPolSF_1d_costh_new->Interpolate(costh_CS):1;
             }
 
             //-----------------------------
@@ -879,6 +896,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   if(useEffSF==13){
                     random_->SetSeed(UInt_t(TMath::Abs(Mu_phi)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
                     eff_TIGHT_SF += random_->Gaus(0, TMath::Hypot(0.01, SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt))));
+                    // cout << "SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt)= " << SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt)) << endl;
                   }
                   TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_SF;
                 }
@@ -888,6 +906,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   if(useEffSF==14){
                     random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
                     eff_ISO_SF += random_->Gaus(0, TMath::Hypot(0.01, SF_ISO05_PT10->GetBinError(SF_ISO05_PT10->FindBin(costh_HX, TMath::Abs(phi_HX),ZNocorr.Pt()))));
+                    // cout << "SF_ISO05_PT10->GetBinError(SF_ISO05_PT10->FindBin(costh_HX, TMath::Abs(phi_HX),ZNocorr.Pt()))= " << SF_ISO05_PT10->GetBinError(SF_ISO05_PT10->FindBin(costh_HX, TMath::Abs(phi_HX),ZNocorr.Pt())) << endl;
                   }
                   TRG_TIGHT_ISO_muons_SF  *= eff_ISO_SF;
                 }
@@ -897,6 +916,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   if(useEffSF==15){
                     random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
                     eff_TIGHT_subleading_SF += random_->Gaus(0,TMath::Hypot(0.01, SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt))));
+                    // cout << "SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt))= " << SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt)) << endl;
                   }
                   TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
                 }
@@ -906,6 +926,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   if(useEffSF==16){
                     random_->SetSeed(UInt_t(TMath::Abs(isChargePos?1:2)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
                     eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.01,SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))));
+                    // cout << "SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))= " << SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt)) << endl;
                   }
                 }
               }else if(useEffSF==7){
@@ -1164,9 +1185,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
                             // Boson polarization
                             common_stuff::plot2D(Form("hWlike%s_Zrap_vs_costh_CS_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-						 costh_CS,TMath::Abs(Zcorr.Rapidity()), weight,
-                                 h_2d, 20,-1,1,
-                                 9,0,1.8 );
+                                 costh_CS,TMath::Abs(Zcorr.Rapidity()), weight,
+                                 h_2d, 40,-1,1,
+                                 5,0,1.8 );
 
                             common_stuff::plot2D(Form("hWlike%s_phi_CS_vs_costh_CS_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
                                  costh_CS,TMath::Abs(phi_CS), weight,
