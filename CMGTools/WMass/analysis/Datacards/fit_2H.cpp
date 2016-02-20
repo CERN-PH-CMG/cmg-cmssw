@@ -15,7 +15,7 @@
 
 using namespace std;
 
-int fit_2H(string filename = "2H_likelihoods.txt")
+int fit_2H(string filename = "likelihoods.txt")
 {
 	ifstream infile(filename.c_str());
 	if (infile.fail()) {
@@ -43,9 +43,6 @@ int fit_2H(string filename = "2H_likelihoods.txt")
 	double uncert = fitted->GetParameter(2);
 	cout << "Mass: " << mass << endl;
 	cout << "Uncert.: " << uncert << endl;
-	
-	g->SetMarkerStyle(20);
-	g->Draw("AP");
 	
 	return 0;
 }

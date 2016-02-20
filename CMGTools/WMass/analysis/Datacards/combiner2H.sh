@@ -43,5 +43,5 @@ done
 
 wait
 
-grep "Q_{TEV}" m2H*.log |cut -d' ' -f5 > "2H_likelihoods.txt"
-root -l -b -q "fit_2H.cpp(\"2H_likelihoods.txt\")"
+grep "Q_{TEV}" m2H*.log |cut -d' ' -f5 > "likelihoods_2H.txt"
+root -l -b -q "fit_2H.cpp(\"likelihoods_2H.txt\")"

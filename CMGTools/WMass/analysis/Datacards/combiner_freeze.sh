@@ -36,12 +36,12 @@ done
 
 wait
 
-echo "Doing best fits"
+echo "Float all (best fit)"
 
 for ((m=mass_initial; m<=mass_final; m=m+mass_step))
 do
     #Running and saving the best-fit snapshot:
-    combine -v${debuglevel} -M "HybridNew" --testStat=TEV --singlePoint 1 --onlyTestStat "w2H${m}.root" -m ${m} -n "Wlike2H_bestfit" --saveWorkspace &> "m2H${m}_bestfit.log" &
+    combine -v${debuglevel} -M "HybridNew" --testStat=TEV --singlePoint 1 --onlyTestStat "w2H${m}.root" -m ${m} -n "Wlike2H_freezeNone" &> "freezeNone_m2H${m}.log" &
 done
 
 wait
@@ -51,7 +51,7 @@ echo "Freezing all"
 for ((m=mass_initial; m<=mass_final; m=m+mass_step))
 do
     #Profiling with all groups frozen to best-fit values:
-    combine -v${debuglevel} -M "HybridNew" --testStat=TEV --singlePoint 1 --onlyTestStat --freezeNuisanceGroups MuonScales,KalmanVars "higgsCombineWlike2H_bestfit.HybridNew.mH${m}.root" -m ${m} -n "Wlike2H_freeze${group}" --saveWorkspace &> "m2H${m}_freezeAll.log" &
+    combine -v${debuglevel} -M "HybridNew" --testStat=TEV --singlePoint 1 --onlyTestStat "w2H${m}.root" -m ${m} -n "Wlike2H_freeze${group}"  --freezeNuisanceGroups MuonScales,KalmanVars &> "freezeAll_m2H${m}.log" &
 done
 
 wait
@@ -62,7 +62,7 @@ for ((m=mass_initial; m<=mass_final; m=m+mass_step))
 do
     #Profiling with groups frozen to best-fit values:
     for group in MuonScales KalmanVars; do
-        combine -v${debuglevel} -M "HybridNew" --testStat=TEV --singlePoint 1 --onlyTestStat --freezeNuisanceGroups ${group} "higgsCombineWlike2H_bestfit.HybridNew.mH${m}.root" -m ${m} -n "Wlike2H_freeze${group}" --saveWorkspace &> "m2H${m}_freeze${group}.log" &
+        combine -v${debuglevel} -M "HybridNew" --testStat=TEV --singlePoint 1 --onlyTestStat "w2H${m}.root" -m ${m} -n "Wlike2H_freeze${group}" --freezeNuisanceGroups ${group} &> "freeze${group}_m2H${m}.log" &
     done
 done
 
