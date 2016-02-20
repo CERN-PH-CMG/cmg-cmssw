@@ -12,6 +12,7 @@ mass_final=91238
 mass_step=10
 
 # Nuisance values gathered by floating all and getting the values at MW = 91188
+# cat freezeNone_m2H91188.log | head -n-5 | tail -n47 | tr -s ' ' | cut -d' ' -f2,4
 nuisancesAtM91188="BkgUncert=-3.8406e-05,KalmanVar1=-5.3786e-02,KalmanVar10=-6.6429e-03,KalmanVar11=-3.6258e-03,KalmanVar12=-1.1924e-02,KalmanVar13=-2.8164e-02,KalmanVar14=-5.8273e-02,KalmanVar15=-1.1065e-02,KalmanVar16=8.5962e-03,KalmanVar17=-6.6637e-02,KalmanVar18=1.1620e-02,KalmanVar19=-3.3417e-04,KalmanVar2=1.0221e-02,KalmanVar20=2.3358e-02,KalmanVar21=-5.3619e-03,KalmanVar22=-4.3355e-02,KalmanVar23=8.8184e-03,KalmanVar24=4.3815e-02,KalmanVar25=-9.6382e-02,KalmanVar26=-4.2929e-02,KalmanVar27=-2.5852e-02,KalmanVar28=-1.5915e-02,KalmanVar29=-1.6504e-02,KalmanVar3=7.7801e-03,KalmanVar30=2.7800e-03,KalmanVar31=3.4584e-02,KalmanVar32=-2.1771e-02,KalmanVar33=-1.3059e-02,KalmanVar34=-5.2465e-02,KalmanVar35=-6.2209e-03,KalmanVar36=5.8398e-02,KalmanVar37=2.1289e-03,KalmanVar38=7.2898e-02,KalmanVar39=4.0143e-03,KalmanVar4=-2.2333e-02,KalmanVar40=-2.4858e-02,KalmanVar41=-3.7107e-02,KalmanVar42=-6.2846e-02,KalmanVar43=-2.8481e-02,KalmanVar44=-7.0899e-02,KalmanVar45=-3.3085e-12,KalmanVar5=4.4581e-03,KalmanVar6=2.5758e-03,KalmanVar7=3.7686e-03,KalmanVar8=5.9778e-03,KalmanVar9=-1.9123e-02,MuonScale=5.8688e-02"
 
 # Check if it's running on lxplus

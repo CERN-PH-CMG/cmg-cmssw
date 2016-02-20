@@ -486,11 +486,11 @@ if(runZanalysis and not os.path.isfile("JobOutputs/"+outfolder_name+"/MERGED")):
 
     zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(correctToMadgraph)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])+","+str(reweight_polarization)
     
-    if fWana_str[i][1] == -1:
+    if fZana_str[i][1] == -1:
       line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis -1,0,0,"+zstring).read()
       nEntries = [int(s) for s in line.split() if s.isdigit()][0]
     else:
-      nEntries = fWana_str[i][1]
+      nEntries = fZana_str[i][1]
 
     if not useBatch:
       os.chdir(code_dir)
