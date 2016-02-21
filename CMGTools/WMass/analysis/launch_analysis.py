@@ -345,6 +345,8 @@ if(int(useMomentumCorr)!=0):
     outfolder_name+="_globalScaleSigma"+str(MuonCorrGlobalScaleNsigma)
   if(int(MuonCorrKalmanNvarsNsigma) != 0):
     outfolder_name+="_KalmanVarsNSigma"+str(MuonCorrKalmanNvarsNsigma)
+  if(int(MuonCorrAsDATA) != 0):
+    outfolder_name+="_DataLike"+str(MuonCorrAsDATA)
 
 if(int(usePhiMETCorr)==1):
   outfolder_name+="_phiMETcorr";
