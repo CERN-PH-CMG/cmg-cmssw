@@ -29,14 +29,14 @@ int fit_2H(string filename = "likelihoods.txt")
 	for (int m=91138; m<=91238; m+=10) {
 		double thisNLL;
 		infile >> thisNLL;
-		cout << thisNLL << endl;
+		//cout << thisNLL << endl;
 		g->SetPoint(g->GetN(), m, thisNLL);
 	}
 	
 	const double central_mass = 91188;
 	TF1* fun = new TF1("fun","[0] + pow((x-[1])/[2], 2)");
 	fun->SetParameters(0, central_mass, 30);
-	g->Fit(fun, "M");
+	g->Fit(fun, "MQ");
 
 	TF1* fitted = g->GetFunction("fun");
 	double mass = fitted->GetParameter(1);
