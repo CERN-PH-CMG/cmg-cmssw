@@ -902,6 +902,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   && (useEffSF>=2 && useEffSF<=6 || useEffSF>=13 && useEffSF<=16) 
                   && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
                 
+                TRG_TIGHT_ISO_muons_SF = 1;
+                eff_TIGHT_SF = 1;
+                eff_TIGHT_subleading_SF = 1;
+                eff_ISO_SF = 1;
+                eff_TRG_SF = 1;
+                
                 if(useEffSF==2 || useEffSF==13 || useEffSF!=3){
                   // === leading
                   eff_TIGHT_SF = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(Mu_eta,Mu_pt));
