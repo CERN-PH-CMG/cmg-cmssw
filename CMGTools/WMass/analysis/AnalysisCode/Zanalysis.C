@@ -657,6 +657,13 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     double& Mu_pt  = isChargePos ? MuPos_pt  : MuNeg_pt;
     double& Mu_eta = isChargePos ? MuPos_eta : MuNeg_eta;
     double& Mu_phi = isChargePos ? MuPos_phi : MuNeg_phi;
+    
+    //---------------- MUON weight
+    double TRG_TIGHT_ISO_muons_SF = 1;
+    double eff_TIGHT_SF = 1;
+    double eff_TIGHT_subleading_SF = 1;
+    double eff_ISO_SF = 1;
+    double eff_TRG_SF = 1;
 
     if(!useGenVar || Z_mass>0){ // dummy thing to separate signal and background in DY+Jets (useless)
       // cout <<"WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_["<<RecoilCorrVarDiagoParU1orU2fromDATAorMC<<"]= "
@@ -849,7 +856,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               }
 
             }
-
+            
             Zcorr = muPosCorr + muNegCorr;
             ZcorrCentral = muPosCorrCentral + muNegCorrCentral;
 
@@ -888,12 +895,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             //------------------------------
             TString effToy_str = "";
             for (int i=0; i<max(1, WMass::efficiency_toys); ++i) {
-              //---------------- MUON weight
-              double TRG_TIGHT_ISO_muons_SF = 1;
-              double eff_TIGHT_SF = 1;
-              double eff_TIGHT_subleading_SF = 1;
-              double eff_ISO_SF = 1;
-              double eff_TRG_SF = 1;
               
               if(WMass::efficiency_toys>0) effToy_str = Form("_effToy%d", i);
               
@@ -1083,7 +1084,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             lha_weight = LHE_weight[PDF_reweighting_central_Index+h];
                           }
                           
-                          // WEIGHT DEFINITION
+                          // WEIGHT DEFINITION                          
                           double weight = evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight;
 
                           // RECOIL PRE-UNBLINDING REWEIGHTING
@@ -1122,7 +1123,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                             //------------------------------------------------------
                             // "MONEY" PLOTS OF FIT VARIABLES WITHIN THE FIT RANGE
                             //------------------------------------------------------
-                            
+
                             for(int k=0;k<WMass::NFitVar;k++){
                               // cout << Form("hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV) << " " << Wlike_var_NotScaled[k]  << " " << weight  << " " << 50 << " " << WMass::fit_xmin[k]*ZWmassRatio  << " " <<  WMass::fit_xmax[k]*ZWmassRatio << endl;
                               common_stuff::plot1D(Form("hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
