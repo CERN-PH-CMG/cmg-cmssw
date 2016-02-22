@@ -54,7 +54,8 @@ class RFactorMaker:
                     errUp = abs(histUp.GetBinContent(b) - histNom.GetBinContent(b))
                     errDn = abs(histDown.GetBinContent(b) - histNom.GetBinContent(b))
                     val = max(errUp,errDn)
-                    totSyst += math.sqrt(val)
+                    totSyst += val*val
+                totSyst = math.sqrt(totSyst)
                 print "bin ",b, " value = ",histNom.GetBinContent(b)," +/- ",statErr, " (stat) +/- ",totSyst, " (syst) "
                 histFullErr.SetBinError(b,math.sqrt(statErr*statErr + totSyst*totSyst))
             if(writeHistos):
