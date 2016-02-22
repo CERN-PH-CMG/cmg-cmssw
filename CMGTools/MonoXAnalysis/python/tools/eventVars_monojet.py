@@ -41,7 +41,7 @@ class EventVarsMonojet:
             return lep.lostHits <= (2 if abs(lep.etaSc)<1.479 else 3)
     def lepIdTight(self,lep):
         if abs(lep.pdgId) == 13:
-            if lep.pt <= 40: return False
+            if lep.pt <= 20: return False
             return abs(lep.eta) < 2.4 and lep.tightId > 0 and lep.relIso04 < 0.12
         elif abs(lep.pdgId) == 11:
             if lep.pt <= 40: return False
