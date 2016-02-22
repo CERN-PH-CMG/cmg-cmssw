@@ -93,7 +93,11 @@ useAlsoGenPforSig= 1;
 normalize_MC_to_half_of_the_data = 1 # useful for W-like because we use half of it to calibrate the recoil
 
 ZMassCentral_MeV = "91188"  # 91.1876 (PDG)
+if(hasattr(config, 'ZMassCentral_MeV')):
+  ZMassCentral_MeV = str(config.ZMassCentral_MeV)  # 0=No, >1=Yes
 WMassCentral_MeV = "80398"  # 80.385  (PDG)
+if(hasattr(config, 'WMassCentral_MeV')):
+  WMassCentral_MeV = str(config.WMassCentral_MeV)  # 0=No, >1=Yes
 WMassSkipNSteps = "5"  # 15 -- used for LHE mass scaling
 if(hasattr(config, 'WMassSkipNSteps')):
   WMassSkipNSteps = str(config.WMassSkipNSteps)  # 0=No, >1=Yes
