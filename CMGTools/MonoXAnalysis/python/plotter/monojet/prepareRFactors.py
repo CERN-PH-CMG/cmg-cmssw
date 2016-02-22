@@ -54,7 +54,7 @@ class RFactorMaker:
                     errUp = abs(histUp.GetBinContent(b) - histNom.GetBinContent(b))
                     errDn = abs(histDown.GetBinContent(b) - histNom.GetBinContent(b))
                     val = max(errUp,errDn)
-                    totSyst += val*val
+                    totSyst += pow(val*corr_eigenvalues[p],2)
                 totSyst = math.sqrt(totSyst)
                 print "bin ",b, " value = ",histNom.GetBinContent(b)," +/- ",statErr, " (stat) +/- ",totSyst, " (syst) "
                 histFullErr.SetBinError(b,math.sqrt(statErr*statErr + totSyst*totSyst))
@@ -112,13 +112,31 @@ class RFactorMaker:
 
         graph_stat.SetMarkerStyle(ROOT.kFullCircle)
         graph_stat.SetMarkerSize(1.5)
-        graph_full.SetFillColor(ROOT.kOrange);
-        graph_full.SetLineColor(ROOT.kOrange+3);
+        graph_full.SetFillColor(ROOT.kOrange-3);
         graph_full.SetMarkerStyle(0)        
         graph_full.GetYaxis().SetTitle(text)
         ROOT.gStyle.SetErrorX(0.5);
         graph_full.Draw("A E2")
+        xmin = hist_full.GetXaxis().GetXmin()
+        xmax = hist_full.GetXaxis().GetXmax()
+        graph_full.GetXaxis().SetRangeUser(xmin,xmax)
+        graph_full.GetXaxis().SetNdivisions(505)
+        graph_full.GetYaxis().SetRangeUser(4,16)
+        graph_full.Draw("A E2")
         graph_stat.Draw("PE SAME")
+
+        legWidth=0.30
+        (x1,y1,x2,y2) = (.93-legWidth, .75, .93, .93)
+        leg = ROOT.TLegend(x1,y1,x2,y2)
+        leg.SetFillColor(0)
+        leg.SetShadowColor(0)
+        leg.SetLineColor(0)
+        leg.SetTextFont(42)
+        leg.SetTextSize(0.03)
+        leg.AddEntry(graph_stat,'Stat. Uncert.','PE')
+        leg.AddEntry(graph_full,'Stat. + Syst. Uncert.','F')
+        leg.Draw()
+
         self.printCanvas(c1, name, lumi, text, options, xoffs, spam)
 
 if __name__ == "__main__":
@@ -133,6 +151,10 @@ if __name__ == "__main__":
 
     num_procs = ["ZNuNuHT"]
     den_procs = ["DYJetsHT"]
+    # to account for 80% correlation between numerator and denominator systematics. 
+    # 2x2 matrix with rho=0.8 has eigenvalues 0.95 and 0.32
+    corr_eigenvalues = {'ZNuNuHT':0.32, 'DYJetsHT':0.95}
+
     titles = {'DYJetsHT':'R_{Z(#mu#mu)}'}
 
     outname = options.out if options.out else "rfactors.root"
