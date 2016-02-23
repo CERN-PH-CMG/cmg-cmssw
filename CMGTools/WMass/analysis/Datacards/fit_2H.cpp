@@ -15,7 +15,7 @@
 
 using namespace std;
 
-int fit_2H(string filename = "likelihoods.txt")
+void fit_2H(string filename = "likelihoods.txt", string results_filename = "results.txt", bool recreate = false)
 {
 	ifstream infile(filename.c_str());
 	if (infile.fail()) {
@@ -32,6 +32,7 @@ int fit_2H(string filename = "likelihoods.txt")
 		//cout << thisNLL << endl;
 		g->SetPoint(g->GetN(), m, thisNLL);
 	}
+	infile.close();
 	
 	const double central_mass = 91188;
 	TF1* fun = new TF1("fun","[0] + pow((x-[1])/[2], 2)");
@@ -41,13 +42,18 @@ int fit_2H(string filename = "likelihoods.txt")
 	TF1* fitted = g->GetFunction("fun");
 	double mass = fitted->GetParameter(1);
 	double uncert = fitted->GetParameter(2);
-	cout << "Mass: " << mass << endl;
-	cout << "Uncert.: " << uncert << endl;
 	
-	return 0;
+	ios_base::openmode mode = ios_base::app;
+	if (recreate) mode = ios_base::out;
+	ofstream outfile(results_filename.c_str(), mode);
+	outfile << filename << endl;
+	outfile << "Mass: " << mass << endl;
+	outfile << "Uncert.: " << uncert << endl << endl;
+	outfile.close();
 }
 
 int main(int, char**)
 {
-	return fit_2H();
+	fit_2H();
+	return 0;
 }
