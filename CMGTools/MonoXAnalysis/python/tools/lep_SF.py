@@ -32,15 +32,15 @@ class Lep_SF_Event:
         self.evtSel = evtSel
         if loose != None: 
             self.sf_loose = Lep_SF_both(hists_el,hists_mu,loose)
-    def __call__(self,event,nlep):
+    def __call__(self,event,nlep,flatSyst=0.0):
         leps = Collection(event,"LepGood","nLepGood",2)
         sfev = 1.0
         # the following is not completely correct for asymmetric selection, it should be the full combinatorics
         if self.sf_loose != None:
             for i,l in enumerate(leps):
                 if i >= nlep: break
-                if self.evtSel.lepIdTight(l): sfev *= self.sf_tight(l)
-                elif self.evtSel.lepIdVeto(l): sfev *= self.sf_loose(l)
+                if self.evtSel.lepIdTight(l): sfev *= self.sf_tight(l) * (1+flatSyst)
+                elif self.evtSel.lepIdVeto(l): sfev *= self.sf_loose(l) * (1+flatSyst)
                 else: sfev *= 1.0
         else:
             for i,l in enumerate(leps):
@@ -58,11 +58,15 @@ class AllLepSFs:
         self.f_el.Close()
         self.f_mu.Close()
     def listBranches(self):
-        return [ 'LepTightLoose', 'LepTight' ]
+        return [ 'LepTightLoose', 'LepTight', 'LepTightLooseUp', 'LepTightUp', 'LepTightLooseDown', 'LepTightDown' ]
     def __call__(self,event):
         return {
             'LepTightLoose' : self.sf_TightLoose(event,2),
             'LepTight' : self.sf_TightLoose(event,1),
+            'LepTightLooseUp' : self.sf_TightLoose(event,2,0.02),
+            'LepTightUp' : self.sf_TightLoose(event,1,0.02),
+            'LepTightLooseDown' : self.sf_TightLoose(event,2,-0.02),
+            'LepTightDown' : self.sf_TightLoose(event,1,-0.02),
         }
 
 if __name__ == '__main__':
