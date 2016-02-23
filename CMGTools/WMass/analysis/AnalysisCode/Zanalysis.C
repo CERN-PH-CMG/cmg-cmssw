@@ -697,8 +697,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
           // Apply recoil corrections
           //------------------------------------------------------------------------------------------------
 
-          int rapBin=1;
-          if(fabs(ZGen_rap)>=1 ) rapBin=2;
+          int rapBin=0;
+          if(fabs(ZGen_rap)>=1 ) rapBin=1;
           // if(fabs(ZGen_rap)<1) rapBin=1;
           // if(fabs(ZGen_rap)>=1 && fabs(ZGen_rap)<=1.25) rapBin=125;
           // if(fabs(ZGen_rap)>=1.25 && fabs(ZGen_rap)<=1.5) rapBin=150;
@@ -732,7 +732,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               correctorRecoil_Z->reset(WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[2],
                                        WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[3],
                                        RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 ? 1 : 2);
-              if( (RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 && rapBin==1) || (RecoilCorrVarDiagoParU1orU2fromDATAorMC > 6 && rapBin==2)){
+              if( (RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 && rapBin==0) || (RecoilCorrVarDiagoParU1orU2fromDATAorMC > 6 && rapBin==1)){
                 // cout << "correcting met_trasv to eigen par " << (RecoilCorrVarDiagoParU1orU2fromDATAorMC>6?RecoilCorrVarDiagoParU1orU2fromDATAorMC-6:RecoilCorrVarDiagoParU1orU2fromDATAorMC) << ", m= " << m << endl;
                 correctorRecoil_Z->CorrectMET3gaus(
                         met_trasv,metphi_trasv,
@@ -755,7 +755,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 // cout << "before setting met_trasvCentral "<< RecoilCorrVarDiagoParU1orU2fromDATAorMC<< " " << m << " " << RecoilCorrVarDiagoParSigmas << endl;
                 if(
                     (RecoilCorrVarDiagoParU1orU2fromDATAorMC!=0 || m!=0 || RecoilCorrVarDiagoParSigmas!=0)
-                    && ((RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 && rapBin==1) || (RecoilCorrVarDiagoParU1orU2fromDATAorMC > 6 && rapBin==2))
+                    && ((RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 && rapBin==0) || (RecoilCorrVarDiagoParU1orU2fromDATAorMC > 6 && rapBin==1))
                   ){
                   // cout << " setting met_trasvCentral to central" << endl;
                   correctorRecoil_Z->reset(WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[2],
