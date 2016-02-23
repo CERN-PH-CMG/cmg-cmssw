@@ -453,19 +453,17 @@ for x in xrange(102,302,4):
 # print dummy_deltaM_MeV
 # print dummy_deltaM_MeV_central_Index
 
-Wmass_values_array = ""
-Zmass_values_array = ""
+Wmass_values_list = []
+Zmass_values_list = []
 if(WMassSkipNSteps=="0"): WMassSkipNSteps = "1"
-counter=0
 
 for i in xrange(-int(WMassNSteps),int(WMassNSteps)+1):
-  WmassJoin_string = str(gen_mass_value_MeV[WJetsPowPlus]+int(round(float(dummy_deltaM_MeV[dummy_deltaM_MeV_central_Index+(int(WMassSkipNSteps))*i]))))
-  if(counter>0): Wmass_values_array = ''.join((Wmass_values_array, ","))
-  Wmass_values_array = ''.join((Wmass_values_array, WmassJoin_string))
-  ZmassJoin_string = str(gen_mass_value_MeV[DYJetsPow]+int(round(float(dummy_deltaM_MeV[dummy_deltaM_MeV_central_Index+(int(WMassSkipNSteps))*i]))))
-  if(counter>0): Zmass_values_array = ''.join((Zmass_values_array, ","))
-  Zmass_values_array = ''.join((Zmass_values_array, ZmassJoin_string))
-  counter = counter+1
+  WmassJoin_string = str(int(WMassCentral_MeV)+int(round(float(dummy_deltaM_MeV[dummy_deltaM_MeV_central_Index+(int(WMassSkipNSteps))*i]))))
+  Wmass_values_list.append(WmassJoin_string)
+  ZmassJoin_string = str(int(ZMassCentral_MeV)+int(round(float(dummy_deltaM_MeV[dummy_deltaM_MeV_central_Index+(int(WMassSkipNSteps))*i]))))
+  Zmass_values_list.append(ZmassJoin_string)
+Wmass_values_array = ','.join(Wmass_values_list)
+Zmass_values_array = ','.join(Zmass_values_list)
 
 # print Wmass_values_array
 # print Zmass_values_array
