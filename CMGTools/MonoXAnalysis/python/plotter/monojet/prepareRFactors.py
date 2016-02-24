@@ -130,7 +130,6 @@ class RFactorMaker:
         graph_full.GetXaxis().SetNdivisions(505)
         ymin = .9*graph_full.GetYaxis().GetXmin()
         ymax = 1.1*graph_full.GetYaxis().GetXmax()
-        graph_full.GetYaxis().SetNdivisions(505)
         graph_full.GetYaxis().SetRangeUser(ymin,ymax)
         graph_full.Draw("A E2")
         graph_stat.Draw("PE SAME")
