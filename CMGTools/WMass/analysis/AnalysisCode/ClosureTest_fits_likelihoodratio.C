@@ -125,18 +125,21 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
       }
     }
   }
-  if (job_counter==1) return;
-  int nbatch = 100;
-  int chunks = (int)job_counter/nbatch;
-  cout << "job_counter= " << job_counter << " chunks= " << chunks << endl;
-  for(int i=0;i<=chunks;i++){
-    int i_init =       1 + i*nbatch;
-    int i_final = nbatch + i*nbatch;
-    cout << Form("bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final) << endl;
-    gROOT->ProcessLine(Form(".! bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final));
-    if (i<chunks) gROOT->ProcessLine(Form(".! sleep 10"));
+  if (job_counter==1) {
+    // The sleep 1 fixes a race condition with the last fit (afs is sloooow)
+    gROOT->ProcessLine(".! sleep 1");
   }
-  // The sleep 1 fixes a race condition with the last fit (afs is sloooow)
-  // gROOT->ProcessLine(".! sleep 1");
+  else {
+    int nbatch = 100;
+    int chunks = (int)job_counter/nbatch;
+    cout << "job_counter= " << job_counter << " chunks= " << chunks << endl;
+    for(int i=0;i<=chunks;i++){
+      int i_init =       1 + i*nbatch;
+      int i_final = nbatch + i*nbatch;
+      cout << Form("bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final) << endl;
+      gROOT->ProcessLine(Form(".! bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final));
+      if (i<chunks) gROOT->ProcessLine(Form(".! sleep 10"));
+    }
+  }
   // gROOT->ProcessLine(".! rm -rf LSF* ");
 }
