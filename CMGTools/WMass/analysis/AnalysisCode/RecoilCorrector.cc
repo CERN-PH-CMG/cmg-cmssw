@@ -18,7 +18,7 @@ RecoilCorrector::RecoilCorrector(bool doKeys, string iNameZ, string iNameZ_key, 
   // hNonClosure[1][1]->Smooth(10);
   
   // fId = 0; 
-  i_rapbin = 0;
+  // i_rapbin = 0;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
