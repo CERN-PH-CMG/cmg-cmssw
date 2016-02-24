@@ -265,13 +265,13 @@ void RecoilCorrector::reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int 
   // reset all to zero
   for(int ipar=0; ipar<RecoilCorrParMaxU1; ipar++){
     TString eig = Form("eig_eig%d",ipar);
-    wU1[1][rapBinCorr]->var(eig)->setVal(0);
-    wU1[2][rapBinCorr]->var(eig)->setVal(0);
+    wU1[ZDATA][rapBinCorr]->var(eig)->setVal(0);
+    wU1[ZMC][rapBinCorr]->var(eig)->setVal(0);
   }
   for(int ipar=0; ipar<RecoilCorrParMaxU2; ipar++){
     TString eig = Form("eig_eig%d",ipar);
-    wU2[1][rapBinCorr]->var(eig)->setVal(0);
-    wU2[2][rapBinCorr]->var(eig)->setVal(0);
+    wU2[ZDATA][rapBinCorr]->var(eig)->setVal(0);
+    wU2[ZMC][rapBinCorr]->var(eig)->setVal(0);
   }
 }
 
@@ -438,23 +438,23 @@ double &pU1,double &pU2
     break;
   }
 
-  // pdfU1Cdf[2][rapbin] = (RooAbsReal*)wU1[2][rapbin]->function(Form("AddU1Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",rapbin));
-  // pdfU1Cdf[1][rapbin] = (RooAbsReal*)wU1[1][rapbin]->function(Form("AddU1Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",rapbin));
-  // pdfU2Cdf[2][rapbin] = (RooAbsReal*)wU2[2][rapbin]->function(Form("AddU2Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",rapbin));
-  // pdfU2Cdf[1][rapbin] = (RooAbsReal*)wU2[1][rapbin]->function(Form("AddU2Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",rapbin));
+  // pdfU1Cdf[ZMC][rapbin] = (RooAbsReal*)wU1[ZMC][rapbin]->function(Form("AddU1Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",rapbin));
+  // pdfU1Cdf[ZDATA][rapbin] = (RooAbsReal*)wU1[ZDATA][rapbin]->function(Form("AddU1Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",rapbin));
+  // pdfU2Cdf[ZMC][rapbin] = (RooAbsReal*)wU2[ZMC][rapbin]->function(Form("AddU2Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",rapbin));
+  // pdfU2Cdf[ZDATA][rapbin] = (RooAbsReal*)wU2[ZDATA][rapbin]->function(Form("AddU2Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",rapbin));
 
 
   // cout 
     // << "before triGausInvGraphPDF"
-    // << " pdfU1Cdf[2]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[2][rapbin]->getVal()
-    // << " pdfU1Cdf[1]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[1][rapbin]->getVal()
-    // << " pdfU2Cdf[2]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[2][rapbin]->getVal()
-    // << " pdfU2Cdf[1]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[1][rapbin]->getVal()
+    // << " pdfU1Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZMC][rapbin]->getVal()
+    // << " pdfU1Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZDATA][rapbin]->getVal()
+    // << " pdfU2Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZMC][rapbin]->getVal()
+    // << " pdfU2Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZDATA][rapbin]->getVal()
     // << endl;
-  pdfU1Cdf[2][rapbin]->getVal();
-  pdfU1Cdf[1][rapbin]->getVal();
-  pdfU2Cdf[2][rapbin]->getVal();
-  pdfU2Cdf[1][rapbin]->getVal();
+  pdfU1Cdf[ZMC][rapbin]->getVal();
+  pdfU1Cdf[ZDATA][rapbin]->getVal();
+  pdfU2Cdf[ZMC][rapbin]->getVal();
+  pdfU2Cdf[ZDATA][rapbin]->getVal();
 
   pU1Diff = pU1Diff/pMRMSU1;
   pU2Diff = pU2Diff/pMRMSU2;
@@ -468,8 +468,8 @@ double &pU1,double &pU2
   if(doKeys && doAbsolute) {
     // triGausInvGraphKeys
     // this need the absolute space
-    pU1ValD = triGausInvGraphKeys(pU1,iGenPt,pdfKeyU1Cdf[2][rapbin],pdfKeyU1Cdf[1][rapbin],wU1key[2][rapbin],wU1key[1][rapbin],true, 50);
-    pU2ValD = triGausInvGraphKeys(pU2,iGenPt,pdfKeyU2Cdf[2][rapbin],pdfKeyU2Cdf[1][rapbin],wU2key[2][rapbin],wU2key[1][rapbin],false, 50);
+    pU1ValD = triGausInvGraphKeys(pU1,iGenPt,pdfKeyU1Cdf[ZMC][rapbin],pdfKeyU1Cdf[ZDATA][rapbin],wU1key[ZMC][rapbin],wU1key[ZDATA][rapbin],true, 50);
+    pU2ValD = triGausInvGraphKeys(pU2,iGenPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],wU2key[ZMC][rapbin],wU2key[ZDATA][rapbin],false, 50);
 
     pU1=pU1ValD;
     pU2=pU2ValD;
@@ -479,13 +479,13 @@ double &pU1,double &pU2
     if(doKeys) {
       // triGausInvGraphKeys
       // this need the relative space
-      pU1ValD = triGausInvGraphKeys(pU1Diff,iGenPt,pdfKeyU1Cdf[2][rapbin],pdfKeyU1Cdf[1][rapbin],wU1key[2][rapbin],wU1key[1][rapbin],true,5);
-      pU2ValD = triGausInvGraphKeys(pU2Diff,iGenPt,pdfKeyU2Cdf[2][rapbin],pdfKeyU2Cdf[1][rapbin],wU2key[2][rapbin],wU2key[1][rapbin],false,5);
+      pU1ValD = triGausInvGraphKeys(pU1Diff,iGenPt,pdfKeyU1Cdf[ZMC][rapbin],pdfKeyU1Cdf[ZDATA][rapbin],wU1key[ZMC][rapbin],wU1key[ZDATA][rapbin],true,5);
+      pU2ValD = triGausInvGraphKeys(pU2Diff,iGenPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],wU2key[ZMC][rapbin],wU2key[ZDATA][rapbin],false,5);
     } else {
       // cout << "triGausInvGraphPDF U1" << endl;
       // this need the reduced space
-      pU1ValD = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[2][rapbin],pdfU1Cdf[1][rapbin],wU1[2][rapbin],wU1[1][rapbin],5);
-      pU2ValD = triGausInvGraphPDF(pU2Diff,iGenPt,pdfU2Cdf[2][rapbin],pdfU2Cdf[1][rapbin],wU2[2][rapbin],wU2[1][rapbin],5);
+      pU1ValD = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[ZMC][rapbin],pdfU1Cdf[ZDATA][rapbin],wU1[ZMC][rapbin],wU1[ZDATA][rapbin],5);
+      pU2ValD = triGausInvGraphPDF(pU2Diff,iGenPt,pdfU2Cdf[ZMC][rapbin],pdfU2Cdf[ZDATA][rapbin],wU2[ZMC][rapbin],wU2[ZDATA][rapbin],5);
     }
     pU1ValD = pU1ValD*pDRMSU1;
     pDefU1 *= (pDU1/pMU1);
@@ -504,20 +504,20 @@ double &pU1,double &pU2
 
   // cout 
   // << "after triGausInvGraphPDF U1"
-  // << " pdfU1Cdf[2]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[2][rapbin]->getVal()
-  // << " pdfU1Cdf[1]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[1][rapbin]->getVal()
-  // << " pdfU2Cdf[2]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[2][rapbin]->getVal()
-  // << " pdfU2Cdf[1]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[1][rapbin]->getVal()
+  // << " pdfU1Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZMC][rapbin]->getVal()
+  // << " pdfU1Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZDATA][rapbin]->getVal()
+  // << " pdfU2Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZMC][rapbin]->getVal()
+  // << " pdfU2Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZDATA][rapbin]->getVal()
   // << endl;
 
   // cout << "triGausInvGraphPDF U2" << endl;
 
   // cout 
   // << "after triGausInvGraphPDF U2"
-  // << " pdfU1Cdf[2]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[2][rapbin]->getVal()
-  // << " pdfU1Cdf[1]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[1][rapbin]->getVal()
-  // << " pdfU2Cdf[2]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[2][rapbin]->getVal()
-  // << " pdfU2Cdf[1]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[1][rapbin]->getVal()
+  // << " pdfU1Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZMC][rapbin]->getVal()
+  // << " pdfU1Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZDATA][rapbin]->getVal()
+  // << " pdfU2Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZMC][rapbin]->getVal()
+  // << " pdfU2Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZDATA][rapbin]->getVal()
   // << endl;
 
   // pU1ValD*=p1Charge;

@@ -250,6 +250,7 @@ protected:
   int fId; int i_rapbin;
 
   bool doKeys;
+  enum { targetMC , ZDATA , ZMC };
 
 };
 
