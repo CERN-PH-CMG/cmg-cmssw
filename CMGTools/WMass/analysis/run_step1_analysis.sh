@@ -5,12 +5,13 @@ outfolder_prefix="PREFIX"
 ##WlikeCharge=1 # 1, -1
 WlikeCharge=("${1}")
 
-if [ $WlikeCharge -eq 1 ]; then
-    ZMassCentral_MeV="XXXXX" # best fit value ## POS
-fi
-if [ $WlikeCharge -eq -1 ]; then
-    ZMassCentral_MeV="YYYYY"  # best fit value ## NEG
-fi
+ZMassCentral_MeV="91188"
+#if [ $WlikeCharge -eq 1 ]; then
+#    ZMassCentral_MeV="XXXXX" # best fit value ## POS
+#fi
+#if [ $WlikeCharge -eq -1 ]; then
+#    ZMassCentral_MeV="YYYYY"  # best fit value ## NEG
+#fi
 
 # RUN Z ANALYSIS ONLY
 sed -i "s/useBatch =.*/useBatch = 1/g;\
