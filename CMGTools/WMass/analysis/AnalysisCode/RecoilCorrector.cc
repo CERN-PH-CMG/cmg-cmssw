@@ -16,21 +16,16 @@ RecoilCorrector::RecoilCorrector(bool doKeys, string iNameZ, string iNameZ_key, 
   // hNonClosure[0][1]->Smooth(10);
   // hNonClosure[1][0]->Smooth(10);
   // hNonClosure[1][1]->Smooth(10);
-  
-  // fId = 0; 
-  i_rapbin = 0;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector::addDataFile(std::string iNameData, std::string iNameData_key, /* ,int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int RecoilCorrU1VarDiagoParN, int RecoilCorrVarDiagoParSigmas */TString model_name) {
-  readRecoil(fD1U1Fit,fD1U1RMSSMFit,fD1U1RMS1Fit,fD1U1RMS2Fit,fD1U1RMS3Fit,fD1U1FracFit, fD1U1Mean1Fit, fD1U1Mean2Fit, fD1U2Fit,fD1U2RMSSMFit,fD1U2RMS1Fit,fD1U2RMS2Fit,fD1U2RMS3Fit,fD1U2FracFit,fD1U2Mean1Fit, fD1U2Mean2Fit,iNameData, iNameData_key, "PF",1,1,/* , RecoilCorrVarDiagoParU1orU2fromDATAorMC,RecoilCorrU1VarDiagoParN, RecoilCorrVarDiagoParSigmas */
+void RecoilCorrector::addDataFile(std::string iNameData, std::string iNameData_key, TString model_name) {
+  readRecoil(fD1U1Fit,fD1U1RMSSMFit,fD1U1RMS1Fit,fD1U1RMS2Fit,fD1U1RMS3Fit,fD1U1FracFit, fD1U1Mean1Fit, fD1U1Mean2Fit, fD1U2Fit,fD1U2RMSSMFit,fD1U2RMS1Fit,fD1U2RMS2Fit,fD1U2RMS3Fit,fD1U2FracFit,fD1U2Mean1Fit, fD1U2Mean2Fit,iNameData, iNameData_key, "PF",1,1,
   model_name
 );  
-  // fId++;   
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------
 void RecoilCorrector::addMCFile(std::string iNameMC, std::string iNameMC_key, TString model_name) {
-  // fId++;
   readRecoil(fM1U1Fit,fM1U1RMSSMFit,fM1U1RMS1Fit,fM1U1RMS2Fit,fM1U1RMS3Fit,fM1U1FracFit, fM1U1Mean1Fit, fM1U1Mean2Fit, fM1U2Fit,fM1U2RMSSMFit,fM1U2RMS1Fit,fM1U2RMS2Fit,fM1U2RMS3Fit,fM1U2FracFit,fM1U2Mean1Fit, fM1U2Mean2Fit,iNameMC,iNameMC_key, "PF",1,2,model_name
 );  
   
@@ -44,7 +39,7 @@ std::vector<TF1*> &iU1FracFit,std::vector<TF1*> &iU1Mean1Fit, std::vector<TF1*> 
 std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,
 std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2RMS3Fit,
 std::vector<TF1*> &iU2FracFit,std::vector<TF1*> &iU2Mean1Fit, std::vector<TF1*> &iU2Mean2Fit,//std::vector<TF1*> &iU2Sig3Fit,
-std::string iFName , std::string iFKeyName , std::string iPrefix,int vtxBin, int mytype,/* , int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int RecoilCorrU1VarDiagoParN, int RecoilCorrVarDiagoParSigmas */
+std::string iFName , std::string iFKeyName , std::string iPrefix,int vtxBin, int mytype,
 TString model_name
 ) {
 
@@ -62,79 +57,77 @@ TString model_name
   // lFile->ls();
 
   // now defined in the .h
-  // const int lNBins = 2;                   
+  // const int lNBins = 2;
 
-  int init = 1; // this is for the binned
-  
-  cout << "init " << init<< " lNBins " << lNBins<<" vtxBin " << vtxBin<< endl;
+  cout << " lNBins " << lNBins<<" vtxBin " << vtxBin<< endl;
 
-  for(int i0 = init; i0 <= lNBins; i0++) {
-    // if(i0!=vtxBin) continue;
-    cout << "reading bin " << i0 << endl;
+  for(int rapbin = 0; rapbin < lNBins; rapbin++) {
+    // if(rapbin!=vtxBin) continue;
+    cout << "reading bin " << rapbin << endl;
+    int original_file_rapbin = rapbin+1;
 
     std::string lStr = iPrefix;
-    //iSumEt.push_back(lGraph->GetY()[i0]);                                                                                                                     
 
     std::stringstream pSS1,pSS2,pSS3,pSS4,pSS5,pSS6,pSS7,pSS8,pSS9,pSS10,pSS11,pSS12,pSS13,pSS14,pSS15,pSS16;
 
-    pSS1  << lStr << "u1Mean_"    << i0;  iU1Fit.push_back    ( (TF1*) lFile->FindObjectAny((pSS1.str()).c_str())); //iU1Fit[i0]->SetDirectory(0);              
+    pSS1  << lStr << "u1Mean_"    << original_file_rapbin;  iU1Fit.push_back    ( (TF1*) lFile->FindObjectAny((pSS1.str()).c_str())); //iU1Fit[rapbin]->SetDirectory(0);              
     // cout << "pSS1 " << pSS1.str() << endl;
     // iU1Fit[0]->Print();
-    pSS2  << lStr << "u1MeanRMS_" << i0;  iU1MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS2.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);           
-    pSS3  << lStr << "u1RMS1_"    << i0;  iU1RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS3.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);     
-    pSS4  << lStr << "u1RMS2_"    << i0;  iU1RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS4.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);     
-    pSS5  << lStr << "u1RMS3_"    << i0;  iU1RMS3Fit.push_back( (TF1*) lFile->FindObjectAny((pSS5.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);     
-    //pSS5  << "u1Sig3_"    << i0;  iU1Sig3Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+pSS5.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);         
-    pSS6  << lStr << "u2Mean_"    << i0;  iU2Fit    .push_back( (TF1*) lFile->FindObjectAny((pSS6.str()).c_str())); //iU2Fit[i0]->SetDirectory(0);              
-    pSS7  << lStr << "u2MeanRMS_" << i0;  iU2MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS7.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);           
-    pSS8  << lStr << "u2RMS1_"    << i0;  iU2RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS8.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);     
-    pSS9  << lStr << "u2RMS2_"    << i0;  iU2RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS9.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);     
-    pSS10  << lStr << "u2RMS3_"    << i0;  iU2RMS3Fit.push_back( (TF1*) lFile->FindObjectAny((pSS10.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);
-    //pSS10 << "u2Sig3_"    << i0;  iU2Sig3Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+pSS10.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);
-    pSS11  << lStr << "u1Frac_"    << i0;  iU1FracFit.push_back( (TF1*) lFile->FindObjectAny((pSS11.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);     
-    pSS12  << lStr << "u2Frac_"    << i0;  iU2FracFit.push_back( (TF1*) lFile->FindObjectAny((pSS12.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);           
-    pSS13  << lStr << "u1Mean1_"    << i0;  iU1Mean1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS13.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);
-    pSS14  << lStr << "u1Mean2_"    << i0;  iU1Mean2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS14.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);
-    pSS15  << lStr << "u2Mean1_"    << i0;  iU2Mean1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS15.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);
-    pSS16  << lStr << "u2Mean2_"    << i0;  iU2Mean2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS16.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);
+    pSS2  << lStr << "u1MeanRMS_" << original_file_rapbin;  iU1MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS2.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);           
+    pSS3  << lStr << "u1RMS1_"    << original_file_rapbin;  iU1RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS3.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);     
+    pSS4  << lStr << "u1RMS2_"    << original_file_rapbin;  iU1RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS4.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);     
+    pSS5  << lStr << "u1RMS3_"    << original_file_rapbin;  iU1RMS3Fit.push_back( (TF1*) lFile->FindObjectAny((pSS5.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);     
+    //pSS5  << "u1Sig3_"    << original_file_rapbin;  iU1Sig3Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+pSS5.str()).c_str())); //iU2RMSFit[rapbin]->SetDirectory(0);         
+    pSS6  << lStr << "u2Mean_"    << original_file_rapbin;  iU2Fit    .push_back( (TF1*) lFile->FindObjectAny((pSS6.str()).c_str())); //iU2Fit[rapbin]->SetDirectory(0);              
+    pSS7  << lStr << "u2MeanRMS_" << original_file_rapbin;  iU2MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS7.str()).c_str())); //iU2RMSFit[rapbin]->SetDirectory(0);           
+    pSS8  << lStr << "u2RMS1_"    << original_file_rapbin;  iU2RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS8.str()).c_str())); //iU2RMSFit[rapbin]->SetDirectory(0);     
+    pSS9  << lStr << "u2RMS2_"    << original_file_rapbin;  iU2RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS9.str()).c_str())); //iU2RMSFit[rapbin]->SetDirectory(0);     
+    pSS10  << lStr << "u2RMS3_"    << original_file_rapbin;  iU2RMS3Fit.push_back( (TF1*) lFile->FindObjectAny((pSS10.str()).c_str())); //iU2RMSFit[rapbin]->SetDirectory(0);
+    //pSS10 << "u2Sig3_"    << original_file_rapbin;  iU2Sig3Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+pSS10.str()).c_str())); //iU2RMSFit[rapbin]->SetDirectory(0);
+    pSS11  << lStr << "u1Frac_"    << original_file_rapbin;  iU1FracFit.push_back( (TF1*) lFile->FindObjectAny((pSS11.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);     
+    pSS12  << lStr << "u2Frac_"    << original_file_rapbin;  iU2FracFit.push_back( (TF1*) lFile->FindObjectAny((pSS12.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);           
+    pSS13  << lStr << "u1Mean1_"    << original_file_rapbin;  iU1Mean1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS13.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);
+    pSS14  << lStr << "u1Mean2_"    << original_file_rapbin;  iU1Mean2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS14.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);
+    pSS15  << lStr << "u2Mean1_"    << original_file_rapbin;  iU2Mean1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS15.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);
+    pSS16  << lStr << "u2Mean2_"    << original_file_rapbin;  iU2Mean2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS16.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);
 
-    wU1[mytype][i0] = new RooWorkspace("wU1","wU1");
-    pdfU1[mytype][i0] = (RooAddPdf*) lFile->Get(Form("AddU1Y%d",i0));
-    wU1[mytype][i0]->import(*pdfU1[mytype][i0],RooFit::Silence());
-    frU1[mytype][i0] = (RooFitResult*) lFile->Get(Form("%sU1Y%d_Crapsky0_U1_2D",model_name.Data(),i0));
-    // cout << "CALLING frU1[mytype][i0]->Print(\"V\")" << endl;
-    // frU1[mytype][i0]->Print("V");
-    // wU1[mytype][i0]->Print();
-    runDiago(wU1[mytype][i0],frU1[mytype][i0],Form("AddU1Y%d",i0),pdfU1Cdf[mytype][i0]);
+    wU1[mytype][rapbin] = new RooWorkspace("wU1","wU1");
+    pdfU1[mytype][rapbin] = (RooAddPdf*) lFile->Get(Form("AddU1Y%d",original_file_rapbin));
+    wU1[mytype][rapbin]->import(*pdfU1[mytype][rapbin],RooFit::Silence());
+    frU1[mytype][rapbin] = (RooFitResult*) lFile->Get(Form("%sU1Y%d_Crapsky0_U1_2D",model_name.Data(),original_file_rapbin));
+    // cout << "CALLING frU1[mytype][rapbin]->Print(\"V\")" << endl;
+    // frU1[mytype][rapbin]->Print("V");
+    // wU1[mytype][rapbin]->Print();
+    runDiago(wU1[mytype][rapbin],frU1[mytype][rapbin],Form("AddU1Y%d",original_file_rapbin),pdfU1Cdf[mytype][rapbin]);
 
-    wU1key[mytype][i0] = new RooWorkspace("wU1key","wU1key");
+    wU1key[mytype][rapbin] = new RooWorkspace("wU1key","wU1key");
     //    cout << "reading recoilKeys " << endl;
-    if (doKeys) makeKeysVec(wU1key[mytype][i0], lFileKeys, Form("Keys_U1_%d",i0), pdfKeyU1Cdf[mytype][i0],true);
+    if (doKeys) makeKeysVec(wU1key[mytype][rapbin], lFileKeys, Form("Keys_U1_%d",original_file_rapbin), pdfKeyU1Cdf[mytype][rapbin],true);
 
-    //    RooRealVar* myptU1=wU1[mytype][i0]->var("pt");
+    //    RooRealVar* myptU1=wU1[mytype][rapbin]->var("pt");
     //    myptU1->setVal(10);
-    //    cout <<  "U1cdf=" << pdfU1Cdf[mytype][i0]->getVal()    << endl;
+    //    cout <<  "U1cdf=" << pdfU1Cdf[mytype][rapbin]->getVal()    << endl;
 
-    //    delete pdfU1[mytype][i0];
-    //    delete frU1[mytype][i0];
+    //    delete pdfU1[mytype][rapbin];
+    //    delete frU1[mytype][rapbin];
 
-    wU2[mytype][i0] = new RooWorkspace("wU2","wU2");
-    pdfU2[mytype][i0] = (RooAddPdf*) lFile->Get(Form("AddU2Y%d",i0));
-    wU2[mytype][i0]->import(*pdfU2[mytype][i0],RooFit::Silence());
-    frU2[mytype][i0] = (RooFitResult*) lFile->Get(Form("%sU2Y%d_Crapsky0_U2_2D",model_name.Data(),i0));
-    // wU2[mytype][i0]->Print();
-    // wU2diago[mytype][i0] = wU2[mytype][i0];
-    runDiago(wU2[mytype][i0],frU2[mytype][i0],Form("AddU2Y%d",i0),pdfU2Cdf[mytype][i0]);
+    wU2[mytype][rapbin] = new RooWorkspace("wU2","wU2");
+    pdfU2[mytype][rapbin] = (RooAddPdf*) lFile->Get(Form("AddU2Y%d",original_file_rapbin));
+    wU2[mytype][rapbin]->import(*pdfU2[mytype][rapbin],RooFit::Silence());
+    frU2[mytype][rapbin] = (RooFitResult*) lFile->Get(Form("%sU2Y%d_Crapsky0_U2_2D",model_name.Data(),original_file_rapbin));
+    // wU2[mytype][rapbin]->Print();
+    // wU2diago[mytype][rapbin] = wU2[mytype][rapbin];
+    runDiago(wU2[mytype][rapbin],frU2[mytype][rapbin],Form("AddU2Y%d",original_file_rapbin),pdfU2Cdf[mytype][rapbin]);
     
-    wU2key[mytype][i0] = new RooWorkspace("wU2key","wU2key");
-    if (doKeys) makeKeysVec(wU2key[mytype][i0], lFileKeys, Form("Keys_U2_%d",i0), pdfKeyU2Cdf[mytype][i0],false);
+    wU2key[mytype][rapbin] = new RooWorkspace("wU2key","wU2key");
+    if (doKeys) makeKeysVec(wU2key[mytype][rapbin], lFileKeys, Form("Keys_U2_%d",original_file_rapbin), pdfKeyU2Cdf[mytype][rapbin],false);
 
-    //    RooRealVar* myptU2=wU2[mytype][i0]->var("pt");
+    //    RooRealVar* myptU2=wU2[mytype][rapbin]->var("pt");
     //    myptU2->setVal(10);
-    //    cout <<  "U2cdf= " << pdfU2Cdf[mytype][i0]->getVal()    << endl;
+    //    cout <<  "U2cdf= " << pdfU2Cdf[mytype][rapbin]->getVal()    << endl;
 
-    //    delete pdfU2[mytype][i0];
-    //    delete frU2[mytype][i0];
+    //    delete pdfU2[mytype][rapbin];
+    //    delete frU2[mytype][rapbin];
 
   }
 
@@ -264,25 +257,25 @@ void RecoilCorrector::reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int 
   // reset all to zero
   for(int ipar=0; ipar<RecoilCorrParMaxU1; ipar++){
     TString eig = Form("eig_eig%d",ipar);
-    wU1[1][rapBinCorr]->var(eig)->setVal(0);
-    wU1[2][rapBinCorr]->var(eig)->setVal(0);
+    wU1[ZDATA][rapBinCorr]->var(eig)->setVal(0);
+    wU1[ZMC][rapBinCorr]->var(eig)->setVal(0);
   }
   for(int ipar=0; ipar<RecoilCorrParMaxU2; ipar++){
     TString eig = Form("eig_eig%d",ipar);
-    wU2[1][rapBinCorr]->var(eig)->setVal(0);
-    wU2[2][rapBinCorr]->var(eig)->setVal(0);
+    wU2[ZDATA][rapBinCorr]->var(eig)->setVal(0);
+    wU2[ZMC][rapBinCorr]->var(eig)->setVal(0);
   }
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int rapbin, bool doSingleGauss, int mytype, bool key) {
 
-  doKeys=key;
+  RecoilCorrector::doKeys=key;
 
   // cout << "TYPE2: nVTX " << rapbin << " function size "<< fD1U1Fit.size() << endl;
-  i_rapbin = rapbin; 
+  // rapbin = rapbin; 
 
-  if(i_rapbin >= int(fF1U1Fit.size())) i_rapbin = int(fF1U1Fit.size()) - 1; 
+  // if(rapbin >= int(fF1U1Fit.size())) rapbin = int(fF1U1Fit.size()) - 1; 
 
   // // iU1,iU2,
   // RecoilCorrVarDiagoParU1orU2fromDATAorMC,RecoilCorrVarDiagoParN,RecoilCorrVarDiagoParSigmas, mytype
@@ -290,26 +283,26 @@ void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt
   // );
   
   applyCorrMET3gausPDF(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,
-  fF1U1Fit[i_rapbin],
-  fD1U1Fit[i_rapbin],  fM1U1Fit[i_rapbin],
-  fD1U1RMSSMFit[i_rapbin], fM1U1RMSSMFit[i_rapbin], 
-  // fD1U1RMS1Fit[i_rapbin], fM1U1RMS1Fit[i_rapbin], 
-  // fD1U1RMS2Fit[i_rapbin], fM1U1RMS2Fit[i_rapbin], 
-  // fD1U1RMS3Fit[i_rapbin], fM1U1RMS3Fit[i_rapbin],
-  // fD1U1FracFit[i_rapbin], fM1U1FracFit[i_rapbin],
-  // fD1U1Mean1Fit[i_rapbin], fM1U1Mean1Fit[i_rapbin],
-  // fD1U1Mean2Fit[i_rapbin], fM1U1Mean2Fit[i_rapbin],
+  fF1U1Fit[rapbin],
+  fD1U1Fit[rapbin],  fM1U1Fit[rapbin],
+  fD1U1RMSSMFit[rapbin], fM1U1RMSSMFit[rapbin], 
+  // fD1U1RMS1Fit[rapbin], fM1U1RMS1Fit[rapbin], 
+  // fD1U1RMS2Fit[rapbin], fM1U1RMS2Fit[rapbin], 
+  // fD1U1RMS3Fit[rapbin], fM1U1RMS3Fit[rapbin],
+  // fD1U1FracFit[rapbin], fM1U1FracFit[rapbin],
+  // fD1U1Mean1Fit[rapbin], fM1U1Mean1Fit[rapbin],
+  // fD1U1Mean2Fit[rapbin], fM1U1Mean2Fit[rapbin],
   //
-  // fD1U2Fit[i_rapbin], fM1U2Fit[i_rapbin],
-  fD1U2RMSSMFit[i_rapbin], fM1U2RMSSMFit[i_rapbin],        
-  // fD1U2RMS1Fit[i_rapbin], fM1U2RMS1Fit[i_rapbin],
-  // fD1U2RMS2Fit[i_rapbin], fM1U2RMS2Fit[i_rapbin],
-  // fD1U2RMS3Fit[i_rapbin], fM1U2RMS3Fit[i_rapbin],
-  // fD1U2FracFit[i_rapbin], fM1U2FracFit[i_rapbin],
-  // fD1U2Mean1Fit[i_rapbin], fM1U2Mean1Fit[i_rapbin],
-  // fD1U2Mean2Fit[i_rapbin], fM1U2Mean2Fit[i_rapbin],
+  // fD1U2Fit[rapbin], fM1U2Fit[rapbin],
+  fD1U2RMSSMFit[rapbin], fM1U2RMSSMFit[rapbin],        
+  // fD1U2RMS1Fit[rapbin], fM1U2RMS1Fit[rapbin],
+  // fD1U2RMS2Fit[rapbin], fM1U2RMS2Fit[rapbin],
+  // fD1U2RMS3Fit[rapbin], fM1U2RMS3Fit[rapbin],
+  // fD1U2FracFit[rapbin], fM1U2FracFit[rapbin],
+  // fD1U2Mean1Fit[rapbin], fM1U2Mean1Fit[rapbin],
+  // fD1U2Mean2Fit[rapbin], fM1U2Mean2Fit[rapbin],
 
-  RecoilCorrVarDiagoParU1orU2fromDATAorMC,RecoilCorrVarDiagoParN,RecoilCorrVarDiagoParSigmas, mytype, i_rapbin
+  RecoilCorrVarDiagoParU1orU2fromDATAorMC,RecoilCorrVarDiagoParN,RecoilCorrVarDiagoParSigmas, mytype, rapbin
   ,iU1,iU2
   // , doSingleGauss 
   );
@@ -337,7 +330,7 @@ TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
 //                     RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1, 
 //                     RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2 
 int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,
-int mytype, int i_rapbin,
+int mytype, int rapbin,
 double &pU1,double &pU2
 ) {
 
@@ -411,12 +404,12 @@ double &pU1,double &pU2
   // // cout << newpdf->getVal() << endl;
 
   // cout 
-    // << "RecoilCorrVarDiagoParU1orU2fromDATAorMC=="<<RecoilCorrVarDiagoParU1orU2fromDATAorMC
-    // << " RecoilCorrVarDiagoParN=="<<RecoilCorrVarDiagoParN
-    // << " RecoilCorrVarDiagoParSigmas=="<<RecoilCorrVarDiagoParSigmas
+    // << "applyCorrMET3gausPDF: RecoilCorrVarDiagoParU1orU2fromDATAorMC="<<RecoilCorrVarDiagoParU1orU2fromDATAorMC
+    // << " RecoilCorrVarDiagoParN="<<RecoilCorrVarDiagoParN
+    // << " RecoilCorrVarDiagoParSigmas="<<RecoilCorrVarDiagoParSigmas
     // <<endl;
 
-  uint DataOrMcMap[] = {0,1,1,1,2,2,2};
+  uint DataOrMcMap[] = {0, ZDATA, ZDATA, ZDATA, ZMC, ZMC, ZMC};
   uint DataOrMc = DataOrMcMap[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
   TString eig = Form("eig_eig%d",RecoilCorrVarDiagoParN);
 
@@ -427,31 +420,33 @@ double &pU1,double &pU2
     case 2:
     case 4:
     case 5:
-      wU1[DataOrMc][i_rapbin]->var(eig)->setVal(RecoilCorrVarDiagoParSigmas);
+      // cout << "wU1["<<DataOrMc<<"]["<<rapbin<<"]->var("<<eig<<")->setVal("<<RecoilCorrVarDiagoParSigmas<<");" << endl;
+      wU1[DataOrMc][rapbin]->var(eig)->setVal(RecoilCorrVarDiagoParSigmas);
     break;
     case 3:
     case 6:
-      wU2[DataOrMc][i_rapbin]->var(eig)->setVal(RecoilCorrVarDiagoParSigmas);
+      // cout << "wU2["<<DataOrMc<<"]["<<rapbin<<"]->var("<<eig<<")->setVal("<<RecoilCorrVarDiagoParSigmas<<");" << endl;
+      wU2[DataOrMc][rapbin]->var(eig)->setVal(RecoilCorrVarDiagoParSigmas);
     break;
   }
 
-  // pdfU1Cdf[2][i_rapbin] = (RooAbsReal*)wU1[2][i_rapbin]->function(Form("AddU1Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",i_rapbin));
-  // pdfU1Cdf[1][i_rapbin] = (RooAbsReal*)wU1[1][i_rapbin]->function(Form("AddU1Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",i_rapbin));
-  // pdfU2Cdf[2][i_rapbin] = (RooAbsReal*)wU2[2][i_rapbin]->function(Form("AddU2Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",i_rapbin));
-  // pdfU2Cdf[1][i_rapbin] = (RooAbsReal*)wU2[1][i_rapbin]->function(Form("AddU2Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",i_rapbin));
+  // pdfU1Cdf[ZMC][rapbin] = (RooAbsReal*)wU1[ZMC][rapbin]->function(Form("AddU1Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",rapbin));
+  // pdfU1Cdf[ZDATA][rapbin] = (RooAbsReal*)wU1[ZDATA][rapbin]->function(Form("AddU1Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",rapbin));
+  // pdfU2Cdf[ZMC][rapbin] = (RooAbsReal*)wU2[ZMC][rapbin]->function(Form("AddU2Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",rapbin));
+  // pdfU2Cdf[ZDATA][rapbin] = (RooAbsReal*)wU2[ZDATA][rapbin]->function(Form("AddU2Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",rapbin));
 
 
   // cout 
     // << "before triGausInvGraphPDF"
-    // << " pdfU1Cdf[2]["<<i_rapbin<<"]->getVal()= " << pdfU1Cdf[2][i_rapbin]->getVal()
-    // << " pdfU1Cdf[1]["<<i_rapbin<<"]->getVal()= " << pdfU1Cdf[1][i_rapbin]->getVal()
-    // << " pdfU2Cdf[2]["<<i_rapbin<<"]->getVal()= " << pdfU2Cdf[2][i_rapbin]->getVal()
-    // << " pdfU2Cdf[1]["<<i_rapbin<<"]->getVal()= " << pdfU2Cdf[1][i_rapbin]->getVal()
+    // << " pdfU1Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZMC][rapbin]->getVal()
+    // << " pdfU1Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZDATA][rapbin]->getVal()
+    // << " pdfU2Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZMC][rapbin]->getVal()
+    // << " pdfU2Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZDATA][rapbin]->getVal()
     // << endl;
-  pdfU1Cdf[2][i_rapbin]->getVal();
-  pdfU1Cdf[1][i_rapbin]->getVal();
-  pdfU2Cdf[2][i_rapbin]->getVal();
-  pdfU2Cdf[1][i_rapbin]->getVal();
+  pdfU1Cdf[ZMC][rapbin]->getVal();
+  pdfU1Cdf[ZDATA][rapbin]->getVal();
+  pdfU2Cdf[ZMC][rapbin]->getVal();
+  pdfU2Cdf[ZDATA][rapbin]->getVal();
 
   pU1Diff = pU1Diff/pMRMSU1;
   pU2Diff = pU2Diff/pMRMSU2;
@@ -465,8 +460,8 @@ double &pU1,double &pU2
   if(doKeys && doAbsolute) {
     // triGausInvGraphKeys
     // this need the absolute space
-    pU1ValD = triGausInvGraphKeys(pU1,iGenPt,pdfKeyU1Cdf[2][i_rapbin],pdfKeyU1Cdf[1][i_rapbin],wU1key[2][i_rapbin],wU1key[1][i_rapbin],true, 50);
-    pU2ValD = triGausInvGraphKeys(pU2,iGenPt,pdfKeyU2Cdf[2][i_rapbin],pdfKeyU2Cdf[1][i_rapbin],wU2key[2][i_rapbin],wU2key[1][i_rapbin],false, 50);
+    pU1ValD = triGausInvGraphKeys(pU1,iGenPt,pdfKeyU1Cdf[ZMC][rapbin],pdfKeyU1Cdf[ZDATA][rapbin],wU1key[ZMC][rapbin],wU1key[ZDATA][rapbin],true, 50);
+    pU2ValD = triGausInvGraphKeys(pU2,iGenPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],wU2key[ZMC][rapbin],wU2key[ZDATA][rapbin],false, 50);
 
     pU1=pU1ValD;
     pU2=pU2ValD;
@@ -476,13 +471,13 @@ double &pU1,double &pU2
     if(doKeys) {
       // triGausInvGraphKeys
       // this need the relative space
-      pU1ValD = triGausInvGraphKeys(pU1Diff,iGenPt,pdfKeyU1Cdf[2][i_rapbin],pdfKeyU1Cdf[1][i_rapbin],wU1key[2][i_rapbin],wU1key[1][i_rapbin],true,5);
-      pU2ValD = triGausInvGraphKeys(pU2Diff,iGenPt,pdfKeyU2Cdf[2][i_rapbin],pdfKeyU2Cdf[1][i_rapbin],wU2key[2][i_rapbin],wU2key[1][i_rapbin],false,5);
+      pU1ValD = triGausInvGraphKeys(pU1Diff,iGenPt,pdfKeyU1Cdf[ZMC][rapbin],pdfKeyU1Cdf[ZDATA][rapbin],wU1key[ZMC][rapbin],wU1key[ZDATA][rapbin],true,5);
+      pU2ValD = triGausInvGraphKeys(pU2Diff,iGenPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],wU2key[ZMC][rapbin],wU2key[ZDATA][rapbin],false,5);
     } else {
       // cout << "triGausInvGraphPDF U1" << endl;
       // this need the reduced space
-      pU1ValD = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[2][i_rapbin],pdfU1Cdf[1][i_rapbin],wU1[2][i_rapbin],wU1[1][i_rapbin],5);
-      pU2ValD = triGausInvGraphPDF(pU2Diff,iGenPt,pdfU2Cdf[2][i_rapbin],pdfU2Cdf[1][i_rapbin],wU2[2][i_rapbin],wU2[1][i_rapbin],5);
+      pU1ValD = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[ZMC][rapbin],pdfU1Cdf[ZDATA][rapbin],wU1[ZMC][rapbin],wU1[ZDATA][rapbin],5);
+      pU2ValD = triGausInvGraphPDF(pU2Diff,iGenPt,pdfU2Cdf[ZMC][rapbin],pdfU2Cdf[ZDATA][rapbin],wU2[ZMC][rapbin],wU2[ZDATA][rapbin],5);
     }
     pU1ValD = pU1ValD*pDRMSU1;
     pDefU1 *= (pDU1/pMU1);
@@ -501,20 +496,20 @@ double &pU1,double &pU2
 
   // cout 
   // << "after triGausInvGraphPDF U1"
-  // << " pdfU1Cdf[2]["<<i_rapbin<<"]->getVal()= " << pdfU1Cdf[2][i_rapbin]->getVal()
-  // << " pdfU1Cdf[1]["<<i_rapbin<<"]->getVal()= " << pdfU1Cdf[1][i_rapbin]->getVal()
-  // << " pdfU2Cdf[2]["<<i_rapbin<<"]->getVal()= " << pdfU2Cdf[2][i_rapbin]->getVal()
-  // << " pdfU2Cdf[1]["<<i_rapbin<<"]->getVal()= " << pdfU2Cdf[1][i_rapbin]->getVal()
+  // << " pdfU1Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZMC][rapbin]->getVal()
+  // << " pdfU1Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZDATA][rapbin]->getVal()
+  // << " pdfU2Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZMC][rapbin]->getVal()
+  // << " pdfU2Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZDATA][rapbin]->getVal()
   // << endl;
 
   // cout << "triGausInvGraphPDF U2" << endl;
 
   // cout 
   // << "after triGausInvGraphPDF U2"
-  // << " pdfU1Cdf[2]["<<i_rapbin<<"]->getVal()= " << pdfU1Cdf[2][i_rapbin]->getVal()
-  // << " pdfU1Cdf[1]["<<i_rapbin<<"]->getVal()= " << pdfU1Cdf[1][i_rapbin]->getVal()
-  // << " pdfU2Cdf[2]["<<i_rapbin<<"]->getVal()= " << pdfU2Cdf[2][i_rapbin]->getVal()
-  // << " pdfU2Cdf[1]["<<i_rapbin<<"]->getVal()= " << pdfU2Cdf[1][i_rapbin]->getVal()
+  // << " pdfU1Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZMC][rapbin]->getVal()
+  // << " pdfU1Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZDATA][rapbin]->getVal()
+  // << " pdfU2Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZMC][rapbin]->getVal()
+  // << " pdfU2Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZDATA][rapbin]->getVal()
   // << endl;
 
   // pU1ValD*=p1Charge;

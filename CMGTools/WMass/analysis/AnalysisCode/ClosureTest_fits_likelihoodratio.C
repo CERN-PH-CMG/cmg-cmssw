@@ -17,7 +17,7 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
   TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
 
   int job_counter=1;
-  TString job_sub = Form("Mu_pdf%d%s%s%s_eta%s",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,WMass::efficiency_toys>0? Form("_effToy%d", WMass::efficiency_toys):"",RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?"_RecoilCorrVar":"",WMass::KalmanNvariations>1?"_KalmanVar":"",eta_str.Data());
+  TString job_sub = Form("Fit_pdf%d%s%s%s_eta%s",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,WMass::efficiency_toys>0? Form("_effToy%d", WMass::efficiency_toys):"",RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?"_RecoilCorrVar":"",WMass::KalmanNvariations>1?"_KalmanVar":"",eta_str.Data());
 
   cout << "currentdir_str= " << currentdir_str << endl;
   TString original;
@@ -125,6 +125,7 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
       }
     }
   }
+  if (job_counter==1) return;
   int nbatch = 100;
   int chunks = (int)job_counter/nbatch;
   cout << "job_counter= " << job_counter << " chunks= " << chunks << endl;
