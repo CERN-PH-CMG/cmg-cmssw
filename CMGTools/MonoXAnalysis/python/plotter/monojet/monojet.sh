@@ -1,9 +1,9 @@
 #!/bin/bash
 
-RFAC=0
+RINPUTS=0
 if [[ "$1" == "-r" ]]; then
     echo "# will print the command to write the inputs for the R factors"
-    RFAC=1; shift;
+    RINPUTS=1; shift;
 fi;
 
 WHAT=$1; if [[ "$1" == "" ]]; then echo "monojet.sh <what>"; exit 1; fi
@@ -67,7 +67,7 @@ SYST1E="${CORER} ${WORKDIR}/wenu_twiki.txt ${WORKDIR}/wenu_plots.txt monojet/sys
 case $WHAT in
 sr)
         FULLOPT=" $FEV $SF -W 'vtxWeight*SF_trigmetnomu*SF_BTag*SF_NLO_QCD*SF_NLO_EWK' "
-        if [[ "$RFAC" != "0" ]]; then
+        if [[ "$RINPUTS" != "0" ]]; then
             echo "python ${SYSTSR} ${FULLOPT} -p 'ZNuNuHT,WJetsHT' -o ${ROOTR}/rinputs_SR.root "
         else
             echo "python ${RUNYSR} ${FULLOPT} "
@@ -76,7 +76,7 @@ sr)
 ;;
 zmm)
         FULLOPT=" $FEV $SF -W 'vtxWeight*SF_trigmetnomu*SF_LepTightLoose*SF_BTag*SF_NLO_QCD*SF_NLO_EWK' "
-        if [[ "$RFAC" != "0" ]]; then
+        if [[ "$RINPUTS" != "0" ]]; then
             echo "python ${SYST2M} ${FULLOPT} -p DYJetsHT -o ${ROOTR}/rinputs_DYJetsHT_CR2MU.root "
         else
             echo "python ${RUNY2M} ${FULLOPT} --sp DYJetsHT "
@@ -85,7 +85,7 @@ zmm)
 ;;
 wmn)
         FULLOPT=" $FEV $SF -W 'vtxWeight*SF_trigmetnomu*SF_LepTight*SF_BTag*SF_NLO_QCD*SF_NLO_EWK' "
-        if [[ "$RFAC" != "0" ]]; then
+        if [[ "$RINPUTS" != "0" ]]; then
             echo "python ${SYST1M} ${FULLOPT} -p WJetsHT -o ${ROOTR}/rinputs_WJetsHT_CR1MU.root "
         else
             echo "python ${RUNY1M} ${FULLOPT} --sp WJetsHT "
@@ -94,7 +94,7 @@ wmn)
 ;;
 zee)
         FULLOPT=" $FEV $SF -W 'vtxWeight*SF_trig1lep*SF_LepTightLoose*SF_BTag*SF_NLO_QCD*SF_NLO_EWK' "
-        if [[ "$RFAC" != "0" ]]; then
+        if [[ "$RINPUTS" != "0" ]]; then
             echo "python ${SYST2E} ${FULLOPT} -p DYJetsHT -o ${ROOTR}/rinputs_DYJetsHT_CR2E.root "
         else
             echo "python ${RUNY2E} ${FULLOPT} --sp DYJetsHT "
@@ -103,11 +103,15 @@ zee)
 ;;
 wen)
         FULLOPT=" $FEV $SF -W 'vtxWeight*SF_trig1lep*SF_LepTight*SF_BTag*SF_NLO_QCD*SF_NLO_EWK' "
-        if [[ "$RFAC" != "0" ]]; then
+        if [[ "$RINPUTS" != "0" ]]; then
             echo "python ${SYST1E} ${FULLOPT} -p WJetsHT -o ${ROOTR}/rinputs_WJetsHT_CR1E.root "
         else
             echo "python ${RUNY1E} ${FULLOPT} --sp WJetsHT "
             echo "python ${PLOT1E} ${FULLOPT} --sp WJetsHT "
         fi;
 ;;
+TF)
+        echo "python monojet/prepareRFactors.py ZNuNuHT DYJetsHT ${ROOTR}/rinputs_SR.root ${ROOTR}/rinputs_DYJetsHT_CR2MU.root SR CR --pdir ${ROOTR}"
+        echo "python monojet/prepareRFactors.py WJetsHT WJetsHT ${ROOTR}/rinputs_SR.root ${ROOTR}/rinputs_WJetsHT_CR1MU.root SR CR --pdir ${ROOTR}"
+        echo "python monojet/prepareRFactors.py ZNuNuHT WJetsHT ${ROOTR}/rinputs_SR.root ${ROOTR}/rinputs_SR.root SR SR --pdir ${ROOTR}"
 esac;
