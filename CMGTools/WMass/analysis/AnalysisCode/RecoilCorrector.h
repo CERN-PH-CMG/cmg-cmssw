@@ -187,7 +187,6 @@ protected:
 		     TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
 		     //                     RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1, 
 		     //                     RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2 
-         int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas, 
          int mytype, int rapbin, double &pU1, double &pU2
 		     );
   double calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2);

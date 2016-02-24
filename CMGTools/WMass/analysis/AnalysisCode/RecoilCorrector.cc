@@ -272,15 +272,40 @@ void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt
 
   RecoilCorrector::doKeys=key;
 
-  // cout << "TYPE2: nVTX " << rapbin << " function size "<< fD1U1Fit.size() << endl;
-  // rapbin = rapbin; 
+  // ---------------------------
+  // CHANGE STAT EIGEN IF NEEDED
+  // ---------------------------
+  
+  // cout 
+    // << "applyCorrMET3gausPDF: RecoilCorrVarDiagoParU1orU2fromDATAorMC="<<RecoilCorrVarDiagoParU1orU2fromDATAorMC
+    // << " RecoilCorrVarDiagoParN="<<RecoilCorrVarDiagoParN
+    // << " RecoilCorrVarDiagoParSigmas="<<RecoilCorrVarDiagoParSigmas
+    // <<endl;
 
-  // if(rapbin >= int(fF1U1Fit.size())) rapbin = int(fF1U1Fit.size()) - 1; 
+  uint DataOrMcMap[] = {0, ZDATA, ZDATA, ZDATA, ZMC, ZMC, ZMC};
+  uint DataOrMc = DataOrMcMap[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
+  TString eig = Form("eig_eig%d",RecoilCorrVarDiagoParN);
 
-  // // iU1,iU2,
-  // RecoilCorrVarDiagoParU1orU2fromDATAorMC,RecoilCorrVarDiagoParN,RecoilCorrVarDiagoParSigmas, mytype
-  // // , doSingleGauss 
-  // );
+  switch(RecoilCorrVarDiagoParU1orU2fromDATAorMC){
+    case 0:
+    break;
+    case 1:
+    case 2:
+    case 4:
+    case 5:
+      // cout << "wU1["<<DataOrMc<<"]["<<rapbin<<"]->var("<<eig<<")->setVal("<<RecoilCorrVarDiagoParSigmas<<");" << endl;
+      wU1[DataOrMc][rapbin]->var(eig)->setVal(RecoilCorrVarDiagoParSigmas);
+    break;
+    case 3:
+    case 6:
+      // cout << "wU2["<<DataOrMc<<"]["<<rapbin<<"]->var("<<eig<<")->setVal("<<RecoilCorrVarDiagoParSigmas<<");" << endl;
+      wU2[DataOrMc][rapbin]->var(eig)->setVal(RecoilCorrVarDiagoParSigmas);
+    break;
+  }
+  
+  // ---------------------------
+  // CALL REAL WORKER FUNCTION
+  // ---------------------------
   
   applyCorrMET3gausPDF(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,
   fF1U1Fit[rapbin],
@@ -302,9 +327,8 @@ void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt
   // fD1U2Mean1Fit[rapbin], fM1U2Mean1Fit[rapbin],
   // fD1U2Mean2Fit[rapbin], fM1U2Mean2Fit[rapbin],
 
-  RecoilCorrVarDiagoParU1orU2fromDATAorMC,RecoilCorrVarDiagoParN,RecoilCorrVarDiagoParSigmas, mytype, rapbin
-  ,iU1,iU2
-  // , doSingleGauss 
+  mytype, rapbin,
+  iU1,iU2
   );
   
 }
@@ -329,7 +353,6 @@ TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
 TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
 //                     RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1, 
 //                     RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2 
-int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,
 int mytype, int rapbin,
 double &pU1,double &pU2
 ) {
@@ -386,8 +409,8 @@ double &pU1,double &pU2
 
   double pU1ValD = 0 ;
   double pU2ValD = 0;
-  double pUValM = 0;
-  double pUValD = 0 ;
+  // double pUValM = 0;
+  // double pUValD = 0 ;
 
   // go to the pull space (we are on MC)
   // ????? what to do for the scale ??????
@@ -402,33 +425,6 @@ double &pU1,double &pU2
   // // cout << newpdf->getVal() << endl;
   // // v->Print();
   // // cout << newpdf->getVal() << endl;
-
-  // cout 
-    // << "applyCorrMET3gausPDF: RecoilCorrVarDiagoParU1orU2fromDATAorMC="<<RecoilCorrVarDiagoParU1orU2fromDATAorMC
-    // << " RecoilCorrVarDiagoParN="<<RecoilCorrVarDiagoParN
-    // << " RecoilCorrVarDiagoParSigmas="<<RecoilCorrVarDiagoParSigmas
-    // <<endl;
-
-  uint DataOrMcMap[] = {0, ZDATA, ZDATA, ZDATA, ZMC, ZMC, ZMC};
-  uint DataOrMc = DataOrMcMap[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
-  TString eig = Form("eig_eig%d",RecoilCorrVarDiagoParN);
-
-  switch(RecoilCorrVarDiagoParU1orU2fromDATAorMC){
-    case 0:
-    break;
-    case 1:
-    case 2:
-    case 4:
-    case 5:
-      // cout << "wU1["<<DataOrMc<<"]["<<rapbin<<"]->var("<<eig<<")->setVal("<<RecoilCorrVarDiagoParSigmas<<");" << endl;
-      wU1[DataOrMc][rapbin]->var(eig)->setVal(RecoilCorrVarDiagoParSigmas);
-    break;
-    case 3:
-    case 6:
-      // cout << "wU2["<<DataOrMc<<"]["<<rapbin<<"]->var("<<eig<<")->setVal("<<RecoilCorrVarDiagoParSigmas<<");" << endl;
-      wU2[DataOrMc][rapbin]->var(eig)->setVal(RecoilCorrVarDiagoParSigmas);
-    break;
-  }
 
   // pdfU1Cdf[ZMC][rapbin] = (RooAbsReal*)wU1[ZMC][rapbin]->function(Form("AddU1Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",rapbin));
   // pdfU1Cdf[ZDATA][rapbin] = (RooAbsReal*)wU1[ZDATA][rapbin]->function(Form("AddU1Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",rapbin));
