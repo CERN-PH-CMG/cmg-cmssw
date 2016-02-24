@@ -204,11 +204,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   TH1D* hZPtSF;
   if(usePtSF==0 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow"))) {
 
-    TString filename=Form("../utils/Zpt_output_%s_Pos.root",sampleName.Data());
+    TString filename=Form("../utils/Zpt_output_%s_%s.root",sampleName.Data(),WCharge_str.Data());
     cout << "hZPtSF_central = " << filename.Data() << endl;
 
     TFile* finZPtSF = new TFile(filename.Data());
-    hZPtSF=(TH1D*) finZPtSF->Get("hWlikePos_ZpT_8_JetCut_pdf229800-0_eta0p9_91188"); hZPtSF->Sumw2();
+    hZPtSF=(TH1D*) finZPtSF->Get(Form("hWlike%s_ZpT_8_JetCut_pdf229800-0_eta0p9_91188",WCharge_str.Data())); hZPtSF->Sumw2();
     
   } else hZPtSF = new TH1D("hZPtSF","hZPtSF",10,0,1);
 
