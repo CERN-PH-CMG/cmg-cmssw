@@ -68,7 +68,7 @@ case $WHAT in
 sr)
         FULLOPT=" $FEV $SF -W 'vtxWeight*SF_trigmetnomu*SF_BTag*SF_NLO_QCD*SF_NLO_EWK' "
         if [[ "$RFAC" != "0" ]]; then
-            echo "python ${SYSTSR} ${FULLOPT} -p ZNuNuHT -o ${ROOTR}/rinputs_ZNuNuHT_SR.root "
+            echo "python ${SYSTSR} ${FULLOPT} -p 'ZNuNuHT,WJetsHT' -o ${ROOTR}/rinputs_SR.root "
         else
             echo "python ${RUNYSR} ${FULLOPT} "
             echo "python ${PLOTSR} ${FULLOPT} "
@@ -86,7 +86,7 @@ zmm)
 wmn)
         FULLOPT=" $FEV $SF -W 'vtxWeight*SF_trigmetnomu*SF_LepTight*SF_BTag*SF_NLO_QCD*SF_NLO_EWK' "
         if [[ "$RFAC" != "0" ]]; then
-            echo "python ${SYST1M} ${FULLOPT} -p WJetsHT -o ${ROOTR}/rinputs_DYJetsHT_CR1MU.root "
+            echo "python ${SYST1M} ${FULLOPT} -p WJetsHT -o ${ROOTR}/rinputs_WJetsHT_CR1MU.root "
         else
             echo "python ${RUNY1M} ${FULLOPT} --sp WJetsHT "
             echo "python ${PLOT1M} ${FULLOPT} --sp WJetsHT "
@@ -104,7 +104,7 @@ zee)
 wen)
         FULLOPT=" $FEV $SF -W 'vtxWeight*SF_trig1lep*SF_LepTight*SF_BTag*SF_NLO_QCD*SF_NLO_EWK' "
         if [[ "$RFAC" != "0" ]]; then
-            echo "python ${SYST1E} ${FULLOPT} -p WJetsHT -o ${ROOTR}/rinputs_DYJetsHT_CR1E.root "
+            echo "python ${SYST1E} ${FULLOPT} -p WJetsHT -o ${ROOTR}/rinputs_WJetsHT_CR1E.root "
         else
             echo "python ${RUNY1E} ${FULLOPT} --sp WJetsHT "
             echo "python ${PLOT1E} ${FULLOPT} --sp WJetsHT "
