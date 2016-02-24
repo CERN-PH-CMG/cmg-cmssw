@@ -188,7 +188,7 @@ protected:
 		     //                     RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1, 
 		     //                     RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2 
          int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas, 
-         int mytype, int i_rapbin, double &pU1, double &pU2
+         int mytype, int rapbin, double &pU1, double &pU2
 		     );
   double calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2);
   double diGausInvGraph(double iPVal,double iFracMC,double iSigma1MC,double iSigma2MC,double iFracDATA,double iSigma1DATA,double iSigma2DATA);
@@ -247,7 +247,6 @@ protected:
   vector<TF1*> fM1U1U2Corr;     vector<TF1*> fM2U1U2Corr;
   vector<TF1*> fM1M2U1Corr;     vector<TF1*> fM1M2U2Corr;
   vector<TF1*> fM1M2U1U2Corr;   vector<TF1*> fM1M2U2U1Corr;
-  int fId; int i_rapbin;
 
   bool doKeys;
   enum { targetMC , ZDATA , ZMC };

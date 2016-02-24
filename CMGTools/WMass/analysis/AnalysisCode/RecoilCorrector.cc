@@ -16,21 +16,16 @@ RecoilCorrector::RecoilCorrector(bool doKeys, string iNameZ, string iNameZ_key, 
   // hNonClosure[0][1]->Smooth(10);
   // hNonClosure[1][0]->Smooth(10);
   // hNonClosure[1][1]->Smooth(10);
-  
-  // fId = 0; 
-  // i_rapbin = 0;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector::addDataFile(std::string iNameData, std::string iNameData_key, /* ,int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int RecoilCorrU1VarDiagoParN, int RecoilCorrVarDiagoParSigmas */TString model_name) {
-  readRecoil(fD1U1Fit,fD1U1RMSSMFit,fD1U1RMS1Fit,fD1U1RMS2Fit,fD1U1RMS3Fit,fD1U1FracFit, fD1U1Mean1Fit, fD1U1Mean2Fit, fD1U2Fit,fD1U2RMSSMFit,fD1U2RMS1Fit,fD1U2RMS2Fit,fD1U2RMS3Fit,fD1U2FracFit,fD1U2Mean1Fit, fD1U2Mean2Fit,iNameData, iNameData_key, "PF",1,1,/* , RecoilCorrVarDiagoParU1orU2fromDATAorMC,RecoilCorrU1VarDiagoParN, RecoilCorrVarDiagoParSigmas */
+void RecoilCorrector::addDataFile(std::string iNameData, std::string iNameData_key, TString model_name) {
+  readRecoil(fD1U1Fit,fD1U1RMSSMFit,fD1U1RMS1Fit,fD1U1RMS2Fit,fD1U1RMS3Fit,fD1U1FracFit, fD1U1Mean1Fit, fD1U1Mean2Fit, fD1U2Fit,fD1U2RMSSMFit,fD1U2RMS1Fit,fD1U2RMS2Fit,fD1U2RMS3Fit,fD1U2FracFit,fD1U2Mean1Fit, fD1U2Mean2Fit,iNameData, iNameData_key, "PF",1,1,
   model_name
 );  
-  // fId++;   
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------
 void RecoilCorrector::addMCFile(std::string iNameMC, std::string iNameMC_key, TString model_name) {
-  // fId++;
   readRecoil(fM1U1Fit,fM1U1RMSSMFit,fM1U1RMS1Fit,fM1U1RMS2Fit,fM1U1RMS3Fit,fM1U1FracFit, fM1U1Mean1Fit, fM1U1Mean2Fit, fM1U2Fit,fM1U2RMSSMFit,fM1U2RMS1Fit,fM1U2RMS2Fit,fM1U2RMS3Fit,fM1U2FracFit,fM1U2Mean1Fit, fM1U2Mean2Fit,iNameMC,iNameMC_key, "PF",1,2,model_name
 );  
   
@@ -44,7 +39,7 @@ std::vector<TF1*> &iU1FracFit,std::vector<TF1*> &iU1Mean1Fit, std::vector<TF1*> 
 std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,
 std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2RMS3Fit,
 std::vector<TF1*> &iU2FracFit,std::vector<TF1*> &iU2Mean1Fit, std::vector<TF1*> &iU2Mean2Fit,//std::vector<TF1*> &iU2Sig3Fit,
-std::string iFName , std::string iFKeyName , std::string iPrefix,int vtxBin, int mytype,/* , int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int RecoilCorrU1VarDiagoParN, int RecoilCorrVarDiagoParSigmas */
+std::string iFName , std::string iFKeyName , std::string iPrefix,int vtxBin, int mytype,
 TString model_name
 ) {
 
@@ -62,11 +57,9 @@ TString model_name
   // lFile->ls();
 
   // now defined in the .h
-  // const int lNBins = 2;                   
+  // const int lNBins = 2;
 
-  // int init = 1; // this is for the binned
-  
-  cout << /* "init " << init<< */ " lNBins " << lNBins<<" vtxBin " << vtxBin<< endl;
+  cout << " lNBins " << lNBins<<" vtxBin " << vtxBin<< endl;
 
   for(int rapbin = 0; rapbin < lNBins; rapbin++) {
     // if(rapbin!=vtxBin) continue;
@@ -74,7 +67,6 @@ TString model_name
     int original_file_rapbin = rapbin+1;
 
     std::string lStr = iPrefix;
-    //iSumEt.push_back(lGraph->GetY()[rapbin]);                                                                                                                     
 
     std::stringstream pSS1,pSS2,pSS3,pSS4,pSS5,pSS6,pSS7,pSS8,pSS9,pSS10,pSS11,pSS12,pSS13,pSS14,pSS15,pSS16;
 
@@ -278,7 +270,7 @@ void RecoilCorrector::reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int rapbin, bool doSingleGauss, int mytype, bool key) {
 
-  doKeys=key;
+  RecoilCorrector::doKeys=key;
 
   // cout << "TYPE2: nVTX " << rapbin << " function size "<< fD1U1Fit.size() << endl;
   // rapbin = rapbin; 
@@ -417,7 +409,7 @@ double &pU1,double &pU2
     // << " RecoilCorrVarDiagoParSigmas="<<RecoilCorrVarDiagoParSigmas
     // <<endl;
 
-  uint DataOrMcMap[] = {0,1,1,1,2,2,2};
+  uint DataOrMcMap[] = {0, ZDATA, ZDATA, ZDATA, ZMC, ZMC, ZMC};
   uint DataOrMc = DataOrMcMap[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
   TString eig = Form("eig_eig%d",RecoilCorrVarDiagoParN);
 
