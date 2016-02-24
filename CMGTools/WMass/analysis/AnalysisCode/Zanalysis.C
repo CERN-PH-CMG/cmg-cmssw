@@ -789,6 +789,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                     eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.01,SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))));
                     // cout << "SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))= " << SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt)) << endl;
                   }
+                  TRG_TIGHT_ISO_muons_SF *= eff_TRG_SF;
                 }
               }else if(useEffSF==7){
                 TRG_TIGHT_ISO_muons_SF=0.98;
