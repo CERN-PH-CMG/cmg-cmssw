@@ -7,7 +7,7 @@ from CMGTools.TTHAnalysis.tools.plotDecorations import *
 ROOT.gROOT.SetBatch(True)
 
 class RFactorMaker:        
-    def getHistosFromFile(self, tfile, pname, systematics):
+    def getHistosFromFile(self, tfile, pname, sel, systematics):
         ret = {}
         directions = ['up','down']
         for v in systematics:
@@ -16,14 +16,16 @@ class RFactorMaker:
             remove = '|'.join(directions)
             regex = re.compile(r'('+remove+')', flags=re.IGNORECASE)
             basesyst = regex.sub("", v)
-            if('nominal' not in v and basesyst not in self.systs[pname]): self.systs[pname].append(basesyst)
-            ret[(pname,basesyst)] = hist1D
+            if('nominal' not in v and basesyst not in self.systs[(pname,sel)]): self.systs[(pname,sel)].append(basesyst)
+            ret[(pname,sel,basesyst)] = hist1D
         return ret
 
     def __init__(self, srfile, crfile, num, den, systematics):
-        files = [srfile,crfile]
+        self.selections = ['SR','CR']
         procs = [num,den]
-        histsdic = dict(zip(procs,files))
+        files = [srfile,crfile]
+        histsdic = dict(zip(self.selections,files))
+        seldic = dict(zip(self.selections,procs))
 
         self.histsUp = {} 
         self.histsDown = {}
@@ -31,27 +33,31 @@ class RFactorMaker:
         self.numproc = num
         self.denproc = den
         self.systs = {}
-        for k,v in histsdic.iteritems():
-            self.systs[k] = []
+        for sel,v in histsdic.iteritems():
+            proc=seldic[sel]
+            print "Look for proc ",proc," with sel ",sel," in file ",v
+            self.systs[(proc,sel)] = []
             tfile = ROOT.TFile(v)
-            self.histsUp.update(self.getHistosFromFile(tfile,k,systematics[(k,'up')]))
-            self.histsDown.update(self.getHistosFromFile(tfile,k,systematics[(k,'down')]))
-            self.hists_nominal.update(self.getHistosFromFile(tfile,k,["nominal"]))
+            self.histsUp.update(self.getHistosFromFile(tfile,proc,sel,systematics[(proc,sel,'up')]))
+            self.histsDown.update(self.getHistosFromFile(tfile,proc,sel,systematics[(proc,sel,'down')]))
+            self.hists_nominal.update(self.getHistosFromFile(tfile,proc,sel,["nominal"]))
             tfile.Close()
 
     def computeFullError(self,outfile,writeHistos=False):
         ret = {}
         procs = [self.numproc,self.denproc]
-        for p in procs: 
-            print "List of systematics for proc ",p," = ",self.systs[p]
-            histNom = self.hists_nominal[(p,'nominal')]
+        seldic = dict(zip(self.selections,procs))
+        for sel in self.selections: 
+            p=seldic[sel]
+            print "List of systematics for proc ",p," and sel ",sel," = ",self.systs[(p,sel)]
+            histNom = self.hists_nominal[(p,sel,'nominal')]
             histFullErr = histNom.Clone("metnomu_%s_fullErr" % p)
             for b in range(1,histFullErr.GetNbinsX()+1):
                 statErr = histNom.GetBinError(b)
                 totSyst = 0
-                for s in self.systs[p]:
-                    histUp = self.histsUp[(p,s)]
-                    histDown = self.histsDown[(p,s)]
+                for s in self.systs[(p,sel)]:
+                    histUp = self.histsUp[(p,sel,s)]
+                    histDown = self.histsDown[(p,sel,s)]
                     errUp = abs(histUp.GetBinContent(b) - histNom.GetBinContent(b))
                     errDn = abs(histDown.GetBinContent(b) - histNom.GetBinContent(b))
                     val = max(errUp,errDn)
@@ -62,13 +68,13 @@ class RFactorMaker:
             if(writeHistos):
                 histFullErr.SetDirectory(outfile)
                 outfile.WriteTObject(histFullErr)
-            ret[p] = histFullErr
+            ret[(p,sel)] = histFullErr
         return ret
 
     def computeRFactors(self,hists,outfile,unc):
-        rfac = hists[self.numproc].Clone("rfac_%s_%s" % (self.denproc,unc))
-        num = hists[self.numproc]
-        denom = hists[self.denproc]
+        rfac = hists[(self.numproc,'SR')].Clone("rfac_%s_%s" % (self.denproc,unc))
+        num = hists[(self.numproc,'SR')]
+        denom = hists[(self.denproc,'CR')]
         for b in range(1,rfac.GetNbinsX()+1): 
             r = num.GetBinContent(b)/denom.GetBinContent(b)
             sigmar = r * math.sqrt(math.pow(num.GetBinError(b)/num.GetBinContent(b),2) + math.pow(denom.GetBinError(b)/denom.GetBinContent(b),2))
@@ -122,7 +128,10 @@ class RFactorMaker:
         xmax = hist_full.GetXaxis().GetXmax()
         graph_full.GetXaxis().SetRangeUser(xmin,xmax)
         graph_full.GetXaxis().SetNdivisions(505)
-        graph_full.GetYaxis().SetRangeUser(4,16)
+        ymin = .9*hist_full.GetYaxis().GetXmin()
+        ymax = 1.1*hist_full.GetYaxis().GetXmax()
+        graph_full.GetYaxis().SetNdivisions(505)
+        graph_full.GetYaxis().SetRangeUser(ymin,ymax)
         graph_full.Draw("A E2")
         graph_stat.Draw("PE SAME")
 
@@ -169,25 +178,25 @@ if __name__ == "__main__":
     systs={}
 
     if den_proc=='DYJetsHT' or den_proc=='WJetsHT':
-        systs[(den_proc,'up')]=systsUpL
-        systs[(den_proc,'down')]=systsDownL
+        systs[(den_proc,'CR','up')]=systsUpL
+        systs[(den_proc,'CR','down')]=systsDownL
     elif den_proc=='GJetsHT':
-        systs[(den_proc,'up')]=systsUpG
-        systs[(den_proc,'down')]=systsDownG
+        systs[(den_proc,'CR','up')]=systsUpG
+        systs[(den_proc,'CR','down')]=systsDownG
     else:
         print "ERROR! Numerator processes can be only DYJetsHT or WJetsHT or GJetsHT"
         exit()
 
     if num_proc=='ZNuNuHT':
-        systs[(num_proc,'up')]=[]
-        systs[(num_proc,'down')]=[]
+        systs[(num_proc,'SR','up')]=[]
+        systs[(num_proc,'SR','down')]=[]
         if den_proc=='DYJetsHT': title = 'R_{Z}'
         elif den_proc=='WJetsHT': title = 'R_{Z/W}'
         elif den_proc=='GJetsHT': title = 'R_{#gamma}'
         else: exit()
     elif num_proc=='WJetsHT':
-        systs[(num_proc,'up')]=[]
-        systs[(num_proc,'up')]=[]
+        systs[(num_proc,'SR','up')]=[]
+        systs[(num_proc,'SR','down')]=[]
         if den_proc=='WJetsHT': title = 'R_{W}'
         else:
             print "Num is ",num_proc," so only WJetsHT is allowed as denominator"
@@ -204,8 +213,8 @@ if __name__ == "__main__":
     hists = rfm.computeFullError(outfile)
     rfac_full = rfm.computeRFactors(hists,outfile,"full")
     hists_statonly = {}
-    hists_statonly[num_proc] = rfm.hists_nominal[num_proc,'nominal']
-    hists_statonly[den_proc] = rfm.hists_nominal[den_proc,'nominal']
+    hists_statonly[(num_proc,'SR')] = rfm.hists_nominal[(num_proc,'SR','nominal')]
+    hists_statonly[(den_proc,'CR')] = rfm.hists_nominal[(den_proc,'CR','nominal')]
     rfac_statonly = rfm.computeRFactors(hists_statonly,outfile,"stat")
     name = outname.replace(".root","")
     lumi = options.lumi if options.lumi else "xxx"
