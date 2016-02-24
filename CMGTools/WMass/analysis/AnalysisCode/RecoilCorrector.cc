@@ -64,77 +64,78 @@ TString model_name
   // now defined in the .h
   // const int lNBins = 2;                   
 
-  int init = 1; // this is for the binned
+  // int init = 1; // this is for the binned
   
-  cout << "init " << init<< " lNBins " << lNBins<<" vtxBin " << vtxBin<< endl;
+  cout << /* "init " << init<< */ " lNBins " << lNBins<<" vtxBin " << vtxBin<< endl;
 
-  for(int i0 = init; i0 <= lNBins; i0++) {
-    // if(i0!=vtxBin) continue;
-    cout << "reading bin " << i0 << endl;
+  for(int rapbin = 0; rapbin < lNBins; rapbin++) {
+    // if(rapbin!=vtxBin) continue;
+    cout << "reading bin " << rapbin << endl;
+    int original_file_rapbin = rapbin+1;
 
     std::string lStr = iPrefix;
-    //iSumEt.push_back(lGraph->GetY()[i0]);                                                                                                                     
+    //iSumEt.push_back(lGraph->GetY()[rapbin]);                                                                                                                     
 
     std::stringstream pSS1,pSS2,pSS3,pSS4,pSS5,pSS6,pSS7,pSS8,pSS9,pSS10,pSS11,pSS12,pSS13,pSS14,pSS15,pSS16;
 
-    pSS1  << lStr << "u1Mean_"    << i0;  iU1Fit.push_back    ( (TF1*) lFile->FindObjectAny((pSS1.str()).c_str())); //iU1Fit[i0]->SetDirectory(0);              
+    pSS1  << lStr << "u1Mean_"    << original_file_rapbin;  iU1Fit.push_back    ( (TF1*) lFile->FindObjectAny((pSS1.str()).c_str())); //iU1Fit[rapbin]->SetDirectory(0);              
     // cout << "pSS1 " << pSS1.str() << endl;
     // iU1Fit[0]->Print();
-    pSS2  << lStr << "u1MeanRMS_" << i0;  iU1MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS2.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);           
-    pSS3  << lStr << "u1RMS1_"    << i0;  iU1RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS3.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);     
-    pSS4  << lStr << "u1RMS2_"    << i0;  iU1RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS4.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);     
-    pSS5  << lStr << "u1RMS3_"    << i0;  iU1RMS3Fit.push_back( (TF1*) lFile->FindObjectAny((pSS5.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);     
-    //pSS5  << "u1Sig3_"    << i0;  iU1Sig3Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+pSS5.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);         
-    pSS6  << lStr << "u2Mean_"    << i0;  iU2Fit    .push_back( (TF1*) lFile->FindObjectAny((pSS6.str()).c_str())); //iU2Fit[i0]->SetDirectory(0);              
-    pSS7  << lStr << "u2MeanRMS_" << i0;  iU2MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS7.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);           
-    pSS8  << lStr << "u2RMS1_"    << i0;  iU2RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS8.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);     
-    pSS9  << lStr << "u2RMS2_"    << i0;  iU2RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS9.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);     
-    pSS10  << lStr << "u2RMS3_"    << i0;  iU2RMS3Fit.push_back( (TF1*) lFile->FindObjectAny((pSS10.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);
-    //pSS10 << "u2Sig3_"    << i0;  iU2Sig3Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+pSS10.str()).c_str())); //iU2RMSFit[i0]->SetDirectory(0);
-    pSS11  << lStr << "u1Frac_"    << i0;  iU1FracFit.push_back( (TF1*) lFile->FindObjectAny((pSS11.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);     
-    pSS12  << lStr << "u2Frac_"    << i0;  iU2FracFit.push_back( (TF1*) lFile->FindObjectAny((pSS12.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);           
-    pSS13  << lStr << "u1Mean1_"    << i0;  iU1Mean1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS13.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);
-    pSS14  << lStr << "u1Mean2_"    << i0;  iU1Mean2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS14.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);
-    pSS15  << lStr << "u2Mean1_"    << i0;  iU2Mean1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS15.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);
-    pSS16  << lStr << "u2Mean2_"    << i0;  iU2Mean2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS16.str()).c_str())); //iU1RMSFit[i0]->SetDirectory(0);
+    pSS2  << lStr << "u1MeanRMS_" << original_file_rapbin;  iU1MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS2.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);           
+    pSS3  << lStr << "u1RMS1_"    << original_file_rapbin;  iU1RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS3.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);     
+    pSS4  << lStr << "u1RMS2_"    << original_file_rapbin;  iU1RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS4.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);     
+    pSS5  << lStr << "u1RMS3_"    << original_file_rapbin;  iU1RMS3Fit.push_back( (TF1*) lFile->FindObjectAny((pSS5.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);     
+    //pSS5  << "u1Sig3_"    << original_file_rapbin;  iU1Sig3Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+pSS5.str()).c_str())); //iU2RMSFit[rapbin]->SetDirectory(0);         
+    pSS6  << lStr << "u2Mean_"    << original_file_rapbin;  iU2Fit    .push_back( (TF1*) lFile->FindObjectAny((pSS6.str()).c_str())); //iU2Fit[rapbin]->SetDirectory(0);              
+    pSS7  << lStr << "u2MeanRMS_" << original_file_rapbin;  iU2MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS7.str()).c_str())); //iU2RMSFit[rapbin]->SetDirectory(0);           
+    pSS8  << lStr << "u2RMS1_"    << original_file_rapbin;  iU2RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS8.str()).c_str())); //iU2RMSFit[rapbin]->SetDirectory(0);     
+    pSS9  << lStr << "u2RMS2_"    << original_file_rapbin;  iU2RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS9.str()).c_str())); //iU2RMSFit[rapbin]->SetDirectory(0);     
+    pSS10  << lStr << "u2RMS3_"    << original_file_rapbin;  iU2RMS3Fit.push_back( (TF1*) lFile->FindObjectAny((pSS10.str()).c_str())); //iU2RMSFit[rapbin]->SetDirectory(0);
+    //pSS10 << "u2Sig3_"    << original_file_rapbin;  iU2Sig3Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+pSS10.str()).c_str())); //iU2RMSFit[rapbin]->SetDirectory(0);
+    pSS11  << lStr << "u1Frac_"    << original_file_rapbin;  iU1FracFit.push_back( (TF1*) lFile->FindObjectAny((pSS11.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);     
+    pSS12  << lStr << "u2Frac_"    << original_file_rapbin;  iU2FracFit.push_back( (TF1*) lFile->FindObjectAny((pSS12.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);           
+    pSS13  << lStr << "u1Mean1_"    << original_file_rapbin;  iU1Mean1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS13.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);
+    pSS14  << lStr << "u1Mean2_"    << original_file_rapbin;  iU1Mean2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS14.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);
+    pSS15  << lStr << "u2Mean1_"    << original_file_rapbin;  iU2Mean1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS15.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);
+    pSS16  << lStr << "u2Mean2_"    << original_file_rapbin;  iU2Mean2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS16.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);
 
-    wU1[mytype][i0] = new RooWorkspace("wU1","wU1");
-    pdfU1[mytype][i0] = (RooAddPdf*) lFile->Get(Form("AddU1Y%d",i0));
-    wU1[mytype][i0]->import(*pdfU1[mytype][i0],RooFit::Silence());
-    frU1[mytype][i0] = (RooFitResult*) lFile->Get(Form("%sU1Y%d_Crapsky0_U1_2D",model_name.Data(),i0));
-    // cout << "CALLING frU1[mytype][i0]->Print(\"V\")" << endl;
-    // frU1[mytype][i0]->Print("V");
-    // wU1[mytype][i0]->Print();
-    runDiago(wU1[mytype][i0],frU1[mytype][i0],Form("AddU1Y%d",i0),pdfU1Cdf[mytype][i0]);
+    wU1[mytype][rapbin] = new RooWorkspace("wU1","wU1");
+    pdfU1[mytype][rapbin] = (RooAddPdf*) lFile->Get(Form("AddU1Y%d",original_file_rapbin));
+    wU1[mytype][rapbin]->import(*pdfU1[mytype][rapbin],RooFit::Silence());
+    frU1[mytype][rapbin] = (RooFitResult*) lFile->Get(Form("%sU1Y%d_Crapsky0_U1_2D",model_name.Data(),original_file_rapbin));
+    // cout << "CALLING frU1[mytype][rapbin]->Print(\"V\")" << endl;
+    // frU1[mytype][rapbin]->Print("V");
+    // wU1[mytype][rapbin]->Print();
+    runDiago(wU1[mytype][rapbin],frU1[mytype][rapbin],Form("AddU1Y%d",original_file_rapbin),pdfU1Cdf[mytype][rapbin]);
 
-    wU1key[mytype][i0] = new RooWorkspace("wU1key","wU1key");
+    wU1key[mytype][rapbin] = new RooWorkspace("wU1key","wU1key");
     //    cout << "reading recoilKeys " << endl;
-    if (doKeys) makeKeysVec(wU1key[mytype][i0], lFileKeys, Form("Keys_U1_%d",i0), pdfKeyU1Cdf[mytype][i0],true);
+    if (doKeys) makeKeysVec(wU1key[mytype][rapbin], lFileKeys, Form("Keys_U1_%d",original_file_rapbin), pdfKeyU1Cdf[mytype][rapbin],true);
 
-    //    RooRealVar* myptU1=wU1[mytype][i0]->var("pt");
+    //    RooRealVar* myptU1=wU1[mytype][rapbin]->var("pt");
     //    myptU1->setVal(10);
-    //    cout <<  "U1cdf=" << pdfU1Cdf[mytype][i0]->getVal()    << endl;
+    //    cout <<  "U1cdf=" << pdfU1Cdf[mytype][rapbin]->getVal()    << endl;
 
-    //    delete pdfU1[mytype][i0];
-    //    delete frU1[mytype][i0];
+    //    delete pdfU1[mytype][rapbin];
+    //    delete frU1[mytype][rapbin];
 
-    wU2[mytype][i0] = new RooWorkspace("wU2","wU2");
-    pdfU2[mytype][i0] = (RooAddPdf*) lFile->Get(Form("AddU2Y%d",i0));
-    wU2[mytype][i0]->import(*pdfU2[mytype][i0],RooFit::Silence());
-    frU2[mytype][i0] = (RooFitResult*) lFile->Get(Form("%sU2Y%d_Crapsky0_U2_2D",model_name.Data(),i0));
-    // wU2[mytype][i0]->Print();
-    // wU2diago[mytype][i0] = wU2[mytype][i0];
-    runDiago(wU2[mytype][i0],frU2[mytype][i0],Form("AddU2Y%d",i0),pdfU2Cdf[mytype][i0]);
+    wU2[mytype][rapbin] = new RooWorkspace("wU2","wU2");
+    pdfU2[mytype][rapbin] = (RooAddPdf*) lFile->Get(Form("AddU2Y%d",original_file_rapbin));
+    wU2[mytype][rapbin]->import(*pdfU2[mytype][rapbin],RooFit::Silence());
+    frU2[mytype][rapbin] = (RooFitResult*) lFile->Get(Form("%sU2Y%d_Crapsky0_U2_2D",model_name.Data(),original_file_rapbin));
+    // wU2[mytype][rapbin]->Print();
+    // wU2diago[mytype][rapbin] = wU2[mytype][rapbin];
+    runDiago(wU2[mytype][rapbin],frU2[mytype][rapbin],Form("AddU2Y%d",original_file_rapbin),pdfU2Cdf[mytype][rapbin]);
     
-    wU2key[mytype][i0] = new RooWorkspace("wU2key","wU2key");
-    if (doKeys) makeKeysVec(wU2key[mytype][i0], lFileKeys, Form("Keys_U2_%d",i0), pdfKeyU2Cdf[mytype][i0],false);
+    wU2key[mytype][rapbin] = new RooWorkspace("wU2key","wU2key");
+    if (doKeys) makeKeysVec(wU2key[mytype][rapbin], lFileKeys, Form("Keys_U2_%d",original_file_rapbin), pdfKeyU2Cdf[mytype][rapbin],false);
 
-    //    RooRealVar* myptU2=wU2[mytype][i0]->var("pt");
+    //    RooRealVar* myptU2=wU2[mytype][rapbin]->var("pt");
     //    myptU2->setVal(10);
-    //    cout <<  "U2cdf= " << pdfU2Cdf[mytype][i0]->getVal()    << endl;
+    //    cout <<  "U2cdf= " << pdfU2Cdf[mytype][rapbin]->getVal()    << endl;
 
-    //    delete pdfU2[mytype][i0];
-    //    delete frU2[mytype][i0];
+    //    delete pdfU2[mytype][rapbin];
+    //    delete frU2[mytype][rapbin];
 
   }
 
@@ -411,9 +412,9 @@ double &pU1,double &pU2
   // // cout << newpdf->getVal() << endl;
 
   // cout 
-    // << "RecoilCorrVarDiagoParU1orU2fromDATAorMC=="<<RecoilCorrVarDiagoParU1orU2fromDATAorMC
-    // << " RecoilCorrVarDiagoParN=="<<RecoilCorrVarDiagoParN
-    // << " RecoilCorrVarDiagoParSigmas=="<<RecoilCorrVarDiagoParSigmas
+    // << "applyCorrMET3gausPDF: RecoilCorrVarDiagoParU1orU2fromDATAorMC="<<RecoilCorrVarDiagoParU1orU2fromDATAorMC
+    // << " RecoilCorrVarDiagoParN="<<RecoilCorrVarDiagoParN
+    // << " RecoilCorrVarDiagoParSigmas="<<RecoilCorrVarDiagoParSigmas
     // <<endl;
 
   uint DataOrMcMap[] = {0,1,1,1,2,2,2};
@@ -427,10 +428,12 @@ double &pU1,double &pU2
     case 2:
     case 4:
     case 5:
+      // cout << "wU1["<<DataOrMc<<"]["<<i_rapbin<<"]->var("<<eig<<")->setVal("<<RecoilCorrVarDiagoParSigmas<<");" << endl;
       wU1[DataOrMc][i_rapbin]->var(eig)->setVal(RecoilCorrVarDiagoParSigmas);
     break;
     case 3:
     case 6:
+      // cout << "wU2["<<DataOrMc<<"]["<<i_rapbin<<"]->var("<<eig<<")->setVal("<<RecoilCorrVarDiagoParSigmas<<");" << endl;
       wU2[DataOrMc][i_rapbin]->var(eig)->setVal(RecoilCorrVarDiagoParSigmas);
     break;
   }
