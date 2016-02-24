@@ -2,10 +2,20 @@
 
 # DEFINE FOLDER PREFIX
 outfolder_prefix="PREFIX"
-WlikeCharge=1 # 1, -1
+#WlikeCharge=1 # 1, -1
+WlikeCharge=("${1}")
 
 # DEFINE TEMPLATE FOLDER
-DataCards_templateFromFolder=""
+#DataCards_templateFromFolder=""
+
+if [ $WlikeCharge -eq 1 ]; then
+    DataCards_templateFromFolder="PREFIX_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr"
+#    DataCards_templateFromFolder="PREFIX_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_DataLike1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr"
+fi
+if [ $WlikeCharge -eq -1 ]; then
+    DataCards_templateFromFolder="PREFIX_muNeg_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr"
+#    DataCards_templateFromFolder="PREFIX_muNeg_tkmet_ewk0_polariz1_KalmanCorrParam_DataLike1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr"
+fi
 
 # RUN MERGE CHUNCKS, PREPARE DATACARDS, RUN FITS
 sed -i "s/useBatch =.*/useBatch = 1/g;\
@@ -26,6 +36,8 @@ source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/
 
 # CENTRAL
 python launch_analysis.py config_nominal
+python launch_analysis.py config_unblinding
+python launch_analysis.py config_Data_nominal
 
 # SYST PDF NNPDF2.3
 python launch_analysis.py config_pdf_nnpdf23
@@ -39,10 +51,12 @@ python launch_analysis.py config_eff_16
 # SYST MUON -1 sigma
 python launch_analysis.py config_muscale_minus1
 python launch_analysis.py config_mustat_minus1
+python launch_analysis.py config_mustatData_minus1
 
 # SYST MUON +1 sigma
 python launch_analysis.py config_muscale_plus1
 python launch_analysis.py config_mustat_plus1
+python launch_analysis.py config_mustatData_plus1
 
 # SYST ALTERNATIVE RECOIL MODEL
 python launch_analysis.py config_recoilmodel

@@ -2,7 +2,15 @@
 
 # DEFINE FOLDER PREFIX
 outfolder_prefix="PREFIX"
-WlikeCharge=1 # 1, -1
+##WlikeCharge=1 # 1, -1
+WlikeCharge=("${1}")
+
+if [ $WlikeCharge -eq 1 ]; then
+    ZMassCentral_MeV="XXXXX" # best fit value ## POS
+fi
+if [ $WlikeCharge -eq -1 ]; then
+    ZMassCentral_MeV="YYYYY"  # best fit value ## NEG
+fi
 
 # RUN Z ANALYSIS ONLY
 sed -i "s/useBatch =.*/useBatch = 1/g;\
@@ -13,6 +21,7 @@ sed -i "s/useBatch =.*/useBatch = 1/g;\
         s/DataCards_templateFromFolder=.*/DataCards_templateFromFolder=\"\"  # evaluate systematics wrt folder (or leave it empty) -- full template folder/g;\
         s/runClosureTestLikeLihoodRatio =.*/runClosureTestLikeLihoodRatio = 0  # 1: also executes merge if not using batch jobs/g;\
         s/mergeResults =.*/mergeResults = 0/g;\
+        s/ZMassCentral_MeV =.*/ZMassCentral_MeV = ${ZMassCentral_MeV}/g;\
         s/WlikeCharge =.*/WlikeCharge = ${WlikeCharge}  # Charge of the Wlike (+1,-1)/g" configdir/*.py
 
 # SET ENVIRONMENT VARIABLES BEFORE TO LAUNCH. CAVEAT: IT ASSUMES BASH
@@ -23,6 +32,8 @@ source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.24/x86_64-slc6-gcc47-opt/root/
 
 # CENTRAL
 python launch_analysis.py config_nominal
+python launch_analysis.py config_unblinding
+python launch_analysis.py config_Data_nominal
 
 # SYST PDF NNPDF2.3
 python launch_analysis.py config_pdf_nnpdf23
@@ -36,10 +47,12 @@ python launch_analysis.py config_eff_16
 # SYST MUON -1 sigma
 python launch_analysis.py config_muscale_minus1
 python launch_analysis.py config_mustat_minus1
+python launch_analysis.py config_mustatData_minus1
 
 # SYST MUON +1 sigma
 python launch_analysis.py config_muscale_plus1
 python launch_analysis.py config_mustat_plus1
+python launch_analysis.py config_mustatData_plus1
 
 # SYST ALTERNATIVE RECOIL MODEL
 python launch_analysis.py config_recoilmodel
