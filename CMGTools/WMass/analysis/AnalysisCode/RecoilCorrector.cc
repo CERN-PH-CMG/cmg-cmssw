@@ -281,9 +281,9 @@ void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt
   doKeys=key;
 
   // cout << "TYPE2: nVTX " << rapbin << " function size "<< fD1U1Fit.size() << endl;
-  i_rapbin = rapbin; 
+  // rapbin = rapbin; 
 
-  if(i_rapbin >= int(fF1U1Fit.size())) i_rapbin = int(fF1U1Fit.size()) - 1; 
+  // if(rapbin >= int(fF1U1Fit.size())) rapbin = int(fF1U1Fit.size()) - 1; 
 
   // // iU1,iU2,
   // RecoilCorrVarDiagoParU1orU2fromDATAorMC,RecoilCorrVarDiagoParN,RecoilCorrVarDiagoParSigmas, mytype
@@ -291,26 +291,26 @@ void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt
   // );
   
   applyCorrMET3gausPDF(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,
-  fF1U1Fit[i_rapbin],
-  fD1U1Fit[i_rapbin],  fM1U1Fit[i_rapbin],
-  fD1U1RMSSMFit[i_rapbin], fM1U1RMSSMFit[i_rapbin], 
-  // fD1U1RMS1Fit[i_rapbin], fM1U1RMS1Fit[i_rapbin], 
-  // fD1U1RMS2Fit[i_rapbin], fM1U1RMS2Fit[i_rapbin], 
-  // fD1U1RMS3Fit[i_rapbin], fM1U1RMS3Fit[i_rapbin],
-  // fD1U1FracFit[i_rapbin], fM1U1FracFit[i_rapbin],
-  // fD1U1Mean1Fit[i_rapbin], fM1U1Mean1Fit[i_rapbin],
-  // fD1U1Mean2Fit[i_rapbin], fM1U1Mean2Fit[i_rapbin],
+  fF1U1Fit[rapbin],
+  fD1U1Fit[rapbin],  fM1U1Fit[rapbin],
+  fD1U1RMSSMFit[rapbin], fM1U1RMSSMFit[rapbin], 
+  // fD1U1RMS1Fit[rapbin], fM1U1RMS1Fit[rapbin], 
+  // fD1U1RMS2Fit[rapbin], fM1U1RMS2Fit[rapbin], 
+  // fD1U1RMS3Fit[rapbin], fM1U1RMS3Fit[rapbin],
+  // fD1U1FracFit[rapbin], fM1U1FracFit[rapbin],
+  // fD1U1Mean1Fit[rapbin], fM1U1Mean1Fit[rapbin],
+  // fD1U1Mean2Fit[rapbin], fM1U1Mean2Fit[rapbin],
   //
-  // fD1U2Fit[i_rapbin], fM1U2Fit[i_rapbin],
-  fD1U2RMSSMFit[i_rapbin], fM1U2RMSSMFit[i_rapbin],        
-  // fD1U2RMS1Fit[i_rapbin], fM1U2RMS1Fit[i_rapbin],
-  // fD1U2RMS2Fit[i_rapbin], fM1U2RMS2Fit[i_rapbin],
-  // fD1U2RMS3Fit[i_rapbin], fM1U2RMS3Fit[i_rapbin],
-  // fD1U2FracFit[i_rapbin], fM1U2FracFit[i_rapbin],
-  // fD1U2Mean1Fit[i_rapbin], fM1U2Mean1Fit[i_rapbin],
-  // fD1U2Mean2Fit[i_rapbin], fM1U2Mean2Fit[i_rapbin],
+  // fD1U2Fit[rapbin], fM1U2Fit[rapbin],
+  fD1U2RMSSMFit[rapbin], fM1U2RMSSMFit[rapbin],        
+  // fD1U2RMS1Fit[rapbin], fM1U2RMS1Fit[rapbin],
+  // fD1U2RMS2Fit[rapbin], fM1U2RMS2Fit[rapbin],
+  // fD1U2RMS3Fit[rapbin], fM1U2RMS3Fit[rapbin],
+  // fD1U2FracFit[rapbin], fM1U2FracFit[rapbin],
+  // fD1U2Mean1Fit[rapbin], fM1U2Mean1Fit[rapbin],
+  // fD1U2Mean2Fit[rapbin], fM1U2Mean2Fit[rapbin],
 
-  RecoilCorrVarDiagoParU1orU2fromDATAorMC,RecoilCorrVarDiagoParN,RecoilCorrVarDiagoParSigmas, mytype, i_rapbin
+  RecoilCorrVarDiagoParU1orU2fromDATAorMC,RecoilCorrVarDiagoParN,RecoilCorrVarDiagoParSigmas, mytype, rapbin
   ,iU1,iU2
   // , doSingleGauss 
   );
