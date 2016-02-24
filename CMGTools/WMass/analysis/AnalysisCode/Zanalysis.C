@@ -286,7 +286,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     generatorSuffix="_madgraph";
 
   RecoilCorrector*  correctorRecoil_Z; // TYPE2
-  bool doSingleGauss=false;
+  int recoilCorrSigmas = 1;
   bool doKeys= useRecoilCorr==3 ? true : false;
   if(useRecoilCorr>0){
     TString model_name[2]={"fitresult_Add","fitresult_model2D"};
@@ -608,7 +608,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                         ZNocorr.Pt(),ZNocorr.Phi(),
                         u1_recoil, u2_recoil,
                         RecoilCorrVarDiagoParU1orU2fromDATAorMC>6?RecoilCorrVarDiagoParU1orU2fromDATAorMC-6:RecoilCorrVarDiagoParU1orU2fromDATAorMC, m, RecoilCorrVarDiagoParSigmas,
-                        rapBin,doSingleGauss,1,doKeys);
+                        rapBin,recoilCorrSigmas,1,doKeys);
               }else{
                 // cout << "correcting met_trasv to default eigen par 0, m= " << m << endl;
                 correctorRecoil_Z->CorrectMET3gaus(
@@ -617,7 +617,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                         ZNocorr.Pt(),ZNocorr.Phi(),
                         u1_recoil, u2_recoil,
                         0, 0, 0,
-                        rapBin,doSingleGauss,1,doKeys);
+                        rapBin,recoilCorrSigmas,1,doKeys);
               }
               if(m==m_start){
                 // cout << "before setting met_trasvCentral "<< RecoilCorrVarDiagoParU1orU2fromDATAorMC<< " " << m << " " << RecoilCorrVarDiagoParSigmas << endl;
@@ -636,7 +636,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                           ZNocorr.Pt(),ZNocorr.Phi(),
                           u1_recoil, u2_recoil,
                           0, 0, 0,
-                          rapBin,doSingleGauss,1,doKeys);
+                          rapBin,recoilCorrSigmas,1,doKeys);
                 }else{
                   // cout << "correcting met_trasvCentral to default met_trasv, m= " << m << endl;
                   // cout << " met_trasvCentral = met_trasv" << endl;

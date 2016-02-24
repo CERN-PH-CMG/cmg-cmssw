@@ -268,141 +268,14 @@ void RecoilCorrector::reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int 
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int rapbin, bool doSingleGauss, int mytype, bool key) {
+void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int rapbin, int recoilCorrSigmas, int mytype, bool key) {
 
   RecoilCorrector::doKeys=key;
 
-  // cout << "TYPE2: nVTX " << rapbin << " function size "<< fD1U1Fit.size() << endl;
-  // rapbin = rapbin; 
-
-  // if(rapbin >= int(fF1U1Fit.size())) rapbin = int(fF1U1Fit.size()) - 1; 
-
-  // // iU1,iU2,
-  // RecoilCorrVarDiagoParU1orU2fromDATAorMC,RecoilCorrVarDiagoParN,RecoilCorrVarDiagoParSigmas, mytype
-  // // , doSingleGauss 
-  // );
+  // ---------------------------
+  // CHANGE STAT EIGEN IF NEEDED
+  // ---------------------------
   
-  applyCorrMET3gausPDF(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,
-  fF1U1Fit[rapbin],
-  fD1U1Fit[rapbin],  fM1U1Fit[rapbin],
-  fD1U1RMSSMFit[rapbin], fM1U1RMSSMFit[rapbin], 
-  // fD1U1RMS1Fit[rapbin], fM1U1RMS1Fit[rapbin], 
-  // fD1U1RMS2Fit[rapbin], fM1U1RMS2Fit[rapbin], 
-  // fD1U1RMS3Fit[rapbin], fM1U1RMS3Fit[rapbin],
-  // fD1U1FracFit[rapbin], fM1U1FracFit[rapbin],
-  // fD1U1Mean1Fit[rapbin], fM1U1Mean1Fit[rapbin],
-  // fD1U1Mean2Fit[rapbin], fM1U1Mean2Fit[rapbin],
-  //
-  // fD1U2Fit[rapbin], fM1U2Fit[rapbin],
-  fD1U2RMSSMFit[rapbin], fM1U2RMSSMFit[rapbin],        
-  // fD1U2RMS1Fit[rapbin], fM1U2RMS1Fit[rapbin],
-  // fD1U2RMS2Fit[rapbin], fM1U2RMS2Fit[rapbin],
-  // fD1U2RMS3Fit[rapbin], fM1U2RMS3Fit[rapbin],
-  // fD1U2FracFit[rapbin], fM1U2FracFit[rapbin],
-  // fD1U2Mean1Fit[rapbin], fM1U2Mean1Fit[rapbin],
-  // fD1U2Mean2Fit[rapbin], fM1U2Mean2Fit[rapbin],
-
-  RecoilCorrVarDiagoParU1orU2fromDATAorMC,RecoilCorrVarDiagoParN,RecoilCorrVarDiagoParSigmas, mytype, rapbin
-  ,iU1,iU2
-  // , doSingleGauss 
-  );
-  
-}
-
-
-//-----------------------------------------------------------------------------------------------------------------------------------------
-// RooAddPdf* pdfMCU1;
-// RooAddPdf* pdfMCU2;
-// RooAddPdf* pdfDATAU1;
-// RooAddPdf* pdfDATAU2;
-
-// RooWorkspace *wMCU1; 
-// RooWorkspace *wMCU2; 
-// RooWorkspace *wDATAU1; 
-// RooWorkspace *wDATAU2; 
-// NEW WITH PDFs
-void RecoilCorrector::applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
-double iLepPt,double iLepPhi,/*TRandom3 *iRand,*/
-TF1 *iU1Default,
-TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
-TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
-TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
-//                     RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1, 
-//                     RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2 
-int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,
-int mytype, int rapbin,
-double &pU1,double &pU2
-) {
-
-  //bool dodebug=false;
-  //bool doIterativeMet = false;
-  //bool invGraph = true;
-  //bool doSingleGauss = false;
-  //bool doTriGauss = true;
-  //bool doApplyCorr = false; // smearing along the recoil vector
-  //bool doOnlyU1 = false;
-  //bool doOnlyU2 = true;
-  //bool writeTree = false;
-  //bool doClosure = false;
-
-  double lRescale  = sqrt((TMath::Pi())/2.);
-  //  double lRescale  = 1;     // for squares
-
-  double pDefU1    = iU1Default->Eval(iGenPt);
-
-  double pDU1       = iU1RZDatFit ->Eval(iGenPt); // U1 average scale
-  double pDRMSU1    = iU1MSZDatFit->Eval(iGenPt)*lRescale; // U1 average RMS
-  double pDRMSU2    = iU2MSZDatFit->Eval(iGenPt)*lRescale; // U2 average RMS
-
-  double pMU1       = iU1RZMCFit  ->Eval(iGenPt);
-  double pMRMSU1    = iU1MSZMCFit ->Eval(iGenPt)*lRescale;
-  double pMRMSU2    = iU2MSZMCFit ->Eval(iGenPt)*lRescale;
-
-  ///
-  /// ENDING of the PARAMETERS
-  ///
-
-  double pUX   = iMet*cos(iMPhi) + iLepPt*cos(iLepPhi);
-  double pUY   = iMet*sin(iMPhi) + iLepPt*sin(iLepPhi);
-  double pU    = sqrt(pUX*pUX+pUY*pUY);
-
-  double pCos  = - (pUX*cos(iGenPhi) + pUY*sin(iGenPhi))/pU;
-  double pSin  =   (pUX*sin(iGenPhi) - pUY*cos(iGenPhi))/pU;
-
-  /////
-  
-  // double pU1   = pU*pCos;
-  pU1   = pU*pCos;
-  // double pU2   = pU*pSin;
-  pU2   = pU*pSin;
-  double pU1Diff  = pU1-pDefU1;
-  double pU2Diff  = pU2;
-
-  //  cout << " ------------------------------------------------------- " << endl;
-  // cout << " initial pU1 = " << pU1 << " pU2 = " << pU2 << endl;
-
-  //  double p1Charge        = pU1Diff/fabs(pU1Diff);
-  //  double p2Charge        = pU2Diff/fabs(pU2Diff);
-
-  double pU1ValD = 0 ;
-  double pU2ValD = 0;
-  double pUValM = 0;
-  double pUValD = 0 ;
-
-  // go to the pull space (we are on MC)
-  // ????? what to do for the scale ??????
-  
-    
-  // // // DIAGONALIZER !!!
-  // // cout << newpdf->getVal() << endl; 
-  // // v->Print();
-  // // Float_t oldVal = v->getVal();
-  // v->setVal(3);
-  // // v->Print();
-  // // cout << newpdf->getVal() << endl;
-  // // v->Print();
-  // // cout << newpdf->getVal() << endl;
-
   // cout 
     // << "applyCorrMET3gausPDF: RecoilCorrVarDiagoParU1orU2fromDATAorMC="<<RecoilCorrVarDiagoParU1orU2fromDATAorMC
     // << " RecoilCorrVarDiagoParN="<<RecoilCorrVarDiagoParN
@@ -429,13 +302,97 @@ double &pU1,double &pU2
       wU2[DataOrMc][rapbin]->var(eig)->setVal(RecoilCorrVarDiagoParSigmas);
     break;
   }
+  
+  // ---------------------------
+  // CALL REAL WORKER FUNCTION
+  // ---------------------------
+  
+  applyCorrMET3gausPDF(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,
+  fF1U1Fit[rapbin],
+  fD1U1Fit[rapbin],  fM1U1Fit[rapbin],
+  fD1U1RMSSMFit[rapbin], fM1U1RMSSMFit[rapbin], 
+  // fD1U1RMS1Fit[rapbin], fM1U1RMS1Fit[rapbin], 
+  // fD1U1RMS2Fit[rapbin], fM1U1RMS2Fit[rapbin], 
+  // fD1U1RMS3Fit[rapbin], fM1U1RMS3Fit[rapbin],
+  // fD1U1FracFit[rapbin], fM1U1FracFit[rapbin],
+  // fD1U1Mean1Fit[rapbin], fM1U1Mean1Fit[rapbin],
+  // fD1U1Mean2Fit[rapbin], fM1U1Mean2Fit[rapbin],
+  //
+  // fD1U2Fit[rapbin], fM1U2Fit[rapbin],
+  fD1U2RMSSMFit[rapbin], fM1U2RMSSMFit[rapbin],        
+  // fD1U2RMS1Fit[rapbin], fM1U2RMS1Fit[rapbin],
+  // fD1U2RMS2Fit[rapbin], fM1U2RMS2Fit[rapbin],
+  // fD1U2RMS3Fit[rapbin], fM1U2RMS3Fit[rapbin],
+  // fD1U2FracFit[rapbin], fM1U2FracFit[rapbin],
+  // fD1U2Mean1Fit[rapbin], fM1U2Mean1Fit[rapbin],
+  // fD1U2Mean2Fit[rapbin], fM1U2Mean2Fit[rapbin],
 
-  // pdfU1Cdf[ZMC][rapbin] = (RooAbsReal*)wU1[ZMC][rapbin]->function(Form("AddU1Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",rapbin));
-  // pdfU1Cdf[ZDATA][rapbin] = (RooAbsReal*)wU1[ZDATA][rapbin]->function(Form("AddU1Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",rapbin));
-  // pdfU2Cdf[ZMC][rapbin] = (RooAbsReal*)wU2[ZMC][rapbin]->function(Form("AddU2Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",rapbin));
-  // pdfU2Cdf[ZDATA][rapbin] = (RooAbsReal*)wU2[ZDATA][rapbin]->function(Form("AddU2Y%d_eig_cdf_Int[XVar_prime|CDF]_Norm[XVar_prime]",rapbin));
+  mytype, rapbin,
+  recoilCorrSigmas,
+  iU1,iU2
+  );
+  
+}
 
 
+//-----------------------------------------------------------------------------------------------------------------------------------------
+// RooAddPdf* pdfMCU1;
+// RooAddPdf* pdfMCU2;
+// RooAddPdf* pdfDATAU1;
+// RooAddPdf* pdfDATAU2;
+
+// RooWorkspace *wMCU1; 
+// RooWorkspace *wMCU2; 
+// RooWorkspace *wDATAU1; 
+// RooWorkspace *wDATAU2; 
+// NEW WITH PDFs
+void RecoilCorrector::applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
+double iLepPt,double iLepPhi,/*TRandom3 *iRand,*/
+TF1 *iU1Default,
+TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
+TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
+TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
+//                     RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1, 
+//                     RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2 
+int mytype, int rapbin,
+int nSigmas,
+double &pU1,double &pU2
+) {
+
+  double lRescale  = sqrt((TMath::Pi())/2.);  // Magic normalization number
+  //  double lRescale  = 1;     // for squares
+
+  double pDefU1    = iU1Default->Eval(iGenPt);
+
+  double pDU1       = iU1RZDatFit ->Eval(iGenPt); // U1 average scale
+  double pDRMSU1    = iU1MSZDatFit->Eval(iGenPt)*lRescale; // U1 average RMS
+  double pDRMSU2    = iU2MSZDatFit->Eval(iGenPt)*lRescale; // U2 average RMS
+
+  double pMU1       = iU1RZMCFit  ->Eval(iGenPt);
+  double pMRMSU1    = iU1MSZMCFit ->Eval(iGenPt)*lRescale;
+  double pMRMSU2    = iU2MSZMCFit ->Eval(iGenPt)*lRescale;
+
+  //
+  // ENDING of the PARAMETERS
+  //
+
+  double pUX   = iMet*cos(iMPhi) + iLepPt*cos(iLepPhi);
+  double pUY   = iMet*sin(iMPhi) + iLepPt*sin(iLepPhi);
+  double pU    = sqrt(pUX*pUX+pUY*pUY);
+
+  double pCos  = - (pUX*cos(iGenPhi) + pUY*sin(iGenPhi))/pU;
+  double pSin  =   (pUX*sin(iGenPhi) - pUY*cos(iGenPhi))/pU;
+
+  // Get real values of recoil (from the pull space vars)
+  double pU1noCorr = pU*pCos;
+  double pU2noCorr = pU*pSin;
+
+  // cout << " ------------------------------------------------------- " << endl;
+  // cout << " initial pU1 = " << pU1noCorr << " pU2 = " << pU2noCorr << endl;
+
+  // go to the pull space (we are on MC)
+  // ????? what to do for the scale ??????
+  
   // cout 
     // << "before triGausInvGraphPDF"
     // << " pdfU1Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZMC][rapbin]->getVal()
@@ -448,82 +405,59 @@ double &pU1,double &pU2
   pdfU2Cdf[ZMC][rapbin]->getVal();
   pdfU2Cdf[ZDATA][rapbin]->getVal();
 
-  pU1Diff = pU1Diff/pMRMSU1;
-  pU2Diff = pU2Diff/pMRMSU2;
-  
-
-  //  std::cout << "================= " << std::endl;
-  //  std::cout << " Before: pU1Diff " << pU1Diff << " pU2Diff " << pU2Diff << std::endl;
+  // Will contain corrected values of U1 and U2
+  double pU1corr;
+  double pU2corr;
 
   bool doAbsolute=true;
 
   if(doKeys && doAbsolute) {
     // triGausInvGraphKeys
     // this need the absolute space
-    pU1ValD = triGausInvGraphKeys(pU1,iGenPt,pdfKeyU1Cdf[ZMC][rapbin],pdfKeyU1Cdf[ZDATA][rapbin],wU1key[ZMC][rapbin],wU1key[ZDATA][rapbin],true, 50);
-    pU2ValD = triGausInvGraphKeys(pU2,iGenPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],wU2key[ZMC][rapbin],wU2key[ZDATA][rapbin],false, 50);
-
-    pU1=pU1ValD;
-    pU2=pU2ValD;
+    pU1corr = triGausInvGraphKeys(pU1noCorr,iGenPt,pdfKeyU1Cdf[ZMC][rapbin],pdfKeyU1Cdf[ZDATA][rapbin],wU1key[ZMC][rapbin],wU1key[ZDATA][rapbin],true, 50);
+    pU2corr = triGausInvGraphKeys(pU2noCorr,iGenPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],wU2key[ZMC][rapbin],wU2key[ZDATA][rapbin],false, 50);
 
   } else {
-
+    // Relative for all
+    double pU1Diff  = pU1noCorr-pDefU1;
+    double pU2Diff  = pU2noCorr;
+    
+    pU1Diff = pU1Diff/pMRMSU1;
+    pU2Diff = pU2Diff/pMRMSU2;
+    
+    //  std::cout << "================= " << std::endl;
+    //  std::cout << " Before: pU1Diff " << pU1Diff << " pU2Diff " << pU2Diff << std::endl;
+    
     if(doKeys) {
-      // triGausInvGraphKeys
       // this need the relative space
-      pU1ValD = triGausInvGraphKeys(pU1Diff,iGenPt,pdfKeyU1Cdf[ZMC][rapbin],pdfKeyU1Cdf[ZDATA][rapbin],wU1key[ZMC][rapbin],wU1key[ZDATA][rapbin],true,5);
-      pU2ValD = triGausInvGraphKeys(pU2Diff,iGenPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],wU2key[ZMC][rapbin],wU2key[ZDATA][rapbin],false,5);
+      pU1corr = triGausInvGraphKeys(pU1Diff,iGenPt,pdfKeyU1Cdf[ZMC][rapbin],pdfKeyU1Cdf[ZDATA][rapbin],wU1key[ZMC][rapbin],wU1key[ZDATA][rapbin],true,5);
+      pU2corr = triGausInvGraphKeys(pU2Diff,iGenPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],wU2key[ZMC][rapbin],wU2key[ZDATA][rapbin],false,5);
     } else {
       // cout << "triGausInvGraphPDF U1" << endl;
       // this need the reduced space
-      pU1ValD = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[ZMC][rapbin],pdfU1Cdf[ZDATA][rapbin],wU1[ZMC][rapbin],wU1[ZDATA][rapbin],5);
-      pU2ValD = triGausInvGraphPDF(pU2Diff,iGenPt,pdfU2Cdf[ZMC][rapbin],pdfU2Cdf[ZDATA][rapbin],wU2[ZMC][rapbin],wU2[ZDATA][rapbin],5);
+      pU1corr = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[ZMC][rapbin],pdfU1Cdf[ZDATA][rapbin],wU1[ZMC][rapbin],wU1[ZDATA][rapbin],5);
+      pU2corr = triGausInvGraphPDF(pU2Diff,iGenPt,pdfU2Cdf[ZMC][rapbin],pdfU2Cdf[ZDATA][rapbin],wU2[ZMC][rapbin],wU2[ZDATA][rapbin],5);
     }
-    pU1ValD = pU1ValD*pDRMSU1;
+    
+    // Go back to the absolute space (from pull)
+    pU1corr *= pDRMSU1;
     pDefU1 *= (pDU1/pMU1);
+    pU1corr = pDefU1 + pU1corr;
 
-    pU2ValD = pU2ValD*pDRMSU2;
-
-    pU1   = pDefU1             + pU1ValD;
-    pU2   =                      pU2ValD;
-
+    pU2corr *= pDRMSU2;
 
   }
-
-  //  std::cout << " After: pU1ValD " << pU1ValD << " pU2ValD " << pU2ValD  << std::endl;
-
-  //  pU2ValD*=p2Charge; // removed the ABS value on the argument of the triGausInvGraphPDF
-
-  // cout 
-  // << "after triGausInvGraphPDF U1"
-  // << " pdfU1Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZMC][rapbin]->getVal()
-  // << " pdfU1Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZDATA][rapbin]->getVal()
-  // << " pdfU2Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZMC][rapbin]->getVal()
-  // << " pdfU2Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZDATA][rapbin]->getVal()
-  // << endl;
-
-  // cout << "triGausInvGraphPDF U2" << endl;
-
-  // cout 
-  // << "after triGausInvGraphPDF U2"
-  // << " pdfU1Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZMC][rapbin]->getVal()
-  // << " pdfU1Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZDATA][rapbin]->getVal()
-  // << " pdfU2Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZMC][rapbin]->getVal()
-  // << " pdfU2Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZDATA][rapbin]->getVal()
-  // << endl;
-
-  // pU1ValD*=p1Charge;
-
-  //  cout << "       pU1Diff=" << pU1Diff << "  pU1ValD=" << pU1ValD << "  pMRMSU1=" << pMRMSU1 << "  pDRMSU1=" << pDRMSU1  << endl;
-  //  cout << "       pU2Diff=" << pU2Diff << "  pU2ValD=" << pU2ValD << "  pMRMSU2=" << pMRMSU2 << "  pDRMSU2=" << pDRMSU2  << endl;
-
+  
+  double pU1delta = pU1corr - pU1noCorr;
+  double pU2delta = pU2corr - pU2noCorr;
+  
+  pU1 = pU1noCorr + nSigmas * pU1delta;
+  pU2 = pU2noCorr + nSigmas * pU2delta;
 
   iMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
   iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
 
-   // cout << " after pU1 = " << pU1 << " pU2 = " << pU2 << endl;
-
-  return;
+  // cout << " after pU1 = " << pU1 << " pU2 = " << pU2 << endl;
 
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------
