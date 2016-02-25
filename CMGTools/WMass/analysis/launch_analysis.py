@@ -140,6 +140,8 @@ if(hasattr(config, 'RecoilCorrVarDiagoParSigmas')):
   RecoilCorrVarDiagoParSigmas = int(config.RecoilCorrVarDiagoParSigmas)  # 0=No, >1=Yes
 
 correctToMadgraph = 0; # 0: uses DATA as target -- 1: uses Madgraph as target (also needed to write recoil closure plots)
+if(hasattr(config, 'correctToMadgraph')):
+  correctToMadgraph = int(config.correctToMadgraph)  # 0=No, >1=Yes
 
 usePhiMETCorr = 0; # 0=none, 1=yes
 

@@ -216,7 +216,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
                 outTXTfile << "-----------------------" << endl;
                 outTXTfile << endl;
 
-                TString Z_histoname[2*Nsamples], W_histoname[2*Nsamples];
+                // TString Z_histoname[2*Nsamples], W_histoname[2*Nsamples];
                 TString Z_histoname_NonScaled[2*Nsamples], W_histoname_NonScaled[2*Nsamples], W_histoname_NonScaled_2d[2*Nsamples];
                 // double Z_integrals[2*Nsamples];
                 double W_integrals[2*Nsamples];
