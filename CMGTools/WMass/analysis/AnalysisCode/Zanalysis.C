@@ -343,11 +343,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     //------------------------------------------------------------
     // Reject even events in DATA, ALSO in case of controlplots, since they were used for Recoil Corrections
     //------------------------------------------------------------
-    if(useAlternateEventXweights) {
-      if(jentry%2!=0 && sampleName.Contains("DATA")) continue;
-    } else {
-      if(jentry%2==0 && sampleName.Contains("DATA")) continue;
-    }
+    if(jentry%2==0 && sampleName.Contains("DATA")) continue;
 
     // The following variables will get the recoil components from the corrector
     double u1_recoil = 0;
