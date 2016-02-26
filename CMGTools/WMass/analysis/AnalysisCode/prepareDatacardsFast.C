@@ -13,6 +13,14 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
   const int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
   const int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
 
+  TFile *check_template_file = new TFile(Form("../%s/DataCards/datacards_DATA%s.root",template_folder.Data(),WorZ.Contains("W")?"":"_Wlike"));
+  if(!check_template_file){
+    cout << "Requested template source " Form("../%s/DataCards/datacards_DATA%s.root",template_folder.Data(),WorZ.Contains("W")?"":"_Wlike") << "NOT AVAILABLE" << endl;
+    return
+  }else{
+    check_template_file->Close();
+  }
+  
   cout << "m_start= " << m_start << " m_end= " << m_end << endl;
 
   static const int Nsamples=23;
