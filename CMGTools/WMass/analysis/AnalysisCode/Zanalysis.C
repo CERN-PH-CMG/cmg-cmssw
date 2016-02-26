@@ -218,7 +218,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   //------------------------------------------------------
 
   TH2D* hZPolSF;
-  if(reweight_polarization==1 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow"))) {
+  if(reweight_polarization==1 && sampleName.Contains("DYJetsPow")) {
 
     TString filename = Form("../utils/Zpol_Zrap_cosTheta_output_%s_%s_PtSFCorr0.root",sampleName.Data(),WCharge_str.Data());
     cout << "hZpolSF_central = " << filename.Data() << endl;
