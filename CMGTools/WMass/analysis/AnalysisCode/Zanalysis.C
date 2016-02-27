@@ -206,7 +206,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   TH1D* hZPtSF;
   if(usePtSF==0 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow"))) {
 
-    TString filename=Form("../utils/Zpt_%soutput_%s_%s.root",useAlternateEventXweights?"":"altern_",sampleName.Data(),WCharge_str.Data());
+    TString filename=Form("../utils/Zpt_%soutput_%s_%s.root",useAlternateEventXweights?"altern_":"",sampleName.Data(),WCharge_str.Data());
     cout << "hZPtSF_central = " << filename.Data() << endl;
 
     TFile* finZPtSF = new TFile(filename.Data());
@@ -226,7 +226,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   TH2D* hZPolSF;
   if(reweight_polarization==1 && sampleName.Contains("DYJetsPow")) {
 
-    TString filename = Form("../utils/Zpol_Zrap_cosTheta_%soutput_%s_%s_PtSFCorr0.root",useAlternateEventXweights?"":"altern_",sampleName.Data(),WCharge_str.Data());
+    TString filename = Form("../utils/Zpol_Zrap_cosTheta_%soutput_%s_%s_PtSFCorr0.root",useAlternateEventXweights?"altern_":"",sampleName.Data(),WCharge_str.Data());
     cout << "hZpolSF_central = " << filename.Data() << endl;
 
     TFile* finZPolSF = new TFile(filename.Data());
