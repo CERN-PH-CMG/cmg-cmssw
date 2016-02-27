@@ -3,6 +3,7 @@
 #include "TFile.h"
 #include "TObjArray.h"
 #include "TObjString.h"
+#include "TString.h"
 #include "common.h"
 #include "common2.h"
 
@@ -13,10 +14,12 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
   const int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
   const int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
 
-  TFile *check_template_file = new TFile(Form("../%s/DataCards/datacards_DATA%s.root",template_folder.Data(),WorZ.Contains("W")?"":"_Wlike"));
+  TString template_filepath = Form("../%s/DataCards/datacards_DATA%s.root",template_folder.Data(),WorZ.Contains("W")?"":"_Wlike");
+
+  TFile *check_template_file = new TFile(template_filepath);
   if(!check_template_file){
-    cout << "Requested template source " Form("../%s/DataCards/datacards_DATA%s.root",template_folder.Data(),WorZ.Contains("W")?"":"_Wlike") << "NOT AVAILABLE" << endl;
-    return
+    cout << "Requested template source " << template_filepath << "NOT AVAILABLE" << endl;
+    return;
   }else{
     check_template_file->Close();
   }
@@ -353,7 +356,7 @@ void prepareDatacardsFast(TString folder, TString template_folder, TString Signa
                   if(template_folder.Length()<5){
                     Datacard << "shapes   *          *   datacards_DATA"<<(WorZ.Contains("W")?"":"_Wlike")<<".root $CHANNEL/$MASS/$PROCESS $CHANNEL/$MASS/$PROCESS_$SYSTEMATIC" << endl;
                   }else{
-                    Datacard << "shapes   *          *   "<<Form("../%s/DataCards/datacards_DATA%s.root",template_folder.Data(),WorZ.Contains("W")?"":"_Wlike") << " $CHANNEL/$MASS/$PROCESS $CHANNEL/$MASS/$PROCESS_$SYSTEMATIC" << endl;
+                    Datacard << "shapes   *          *   "<< template_filepath << " $CHANNEL/$MASS/$PROCESS $CHANNEL/$MASS/$PROCESS_$SYSTEMATIC" << endl;
                   }
 
                   // Datacard << "shapes   data_obs   *   datacards_DATA"<<(WorZ.Contains("W")?"":"_Wlike")<<".root $CHANNEL/"<<(WMass2::WMassCentral_MeV)<<Form("/W%s%s_MCDATALIKE%s_%sNonScaled_pdf%d-%d%s",Wlike.Data(),WCharge_str[c].Data(),SignalSample.Contains("POWHEG")?"POW":"MAD",WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(), RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"") << endl;
