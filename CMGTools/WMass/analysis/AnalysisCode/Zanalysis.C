@@ -158,7 +158,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   TH1D*hPileupSF;
 
   if(useVtxSF && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
-    TString vtx_str = sampleName; vtx_str.ReplaceAll("Sig",""); vtx_str.ReplaceAll("Fake","");
+    // TString vtx_str = sampleName; vtx_str.ReplaceAll("Sig",""); vtx_str.ReplaceAll("Fake","");
     // finPileupSF = new TFile(Form("../utils/pileup_reweighting_%s.root",vtx_str.Data())); // used only to build templates
     TFile* finPileupSF = new TFile(Form("../utils/pileup/pileup_reweighting_Fall11.root")); // used only to build templates
     // TFile* finPileupSF = new TFile(Form("../utils/pileup/pileup_reweighting_Fall11_7TeV_Markus.root")); // used only to build templates
@@ -210,6 +210,10 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     cout << "hZPtSF_central = " << filename.Data() << endl;
 
     TFile* finZPtSF = new TFile(filename.Data());
+    if(!finZPtSF){
+      cout << "ERROR: file " << filename << " is missing, impossible to retrieve Zpt reweighting factors" << endl;
+      return;
+    }
     hZPtSF=(TH1D*) finZPtSF->Get(Form("hWlike%s_ZpT_8_JetCut_pdf229800-0_eta0p9_91188",WCharge_str.Data())); hZPtSF->Sumw2();
     
   } else hZPtSF = new TH1D("hZPtSF","hZPtSF",10,0,1);
@@ -226,6 +230,10 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     cout << "hZpolSF_central = " << filename.Data() << endl;
 
     TFile* finZPolSF = new TFile(filename.Data());
+    if(!finZPolSF){
+      cout << "ERROR: file " << filename << " is missing, impossible to retrieve Zpol reweighting factors" << endl;
+      return;
+    }
     hZPolSF=(TH2D*) finZPolSF->Get(Form("hWlike%s_Zrap_vs_costh_CS_8_JetCut_pdf229800-0_eta0p9_91188",WCharge_str.Data())); hZPolSF->Sumw2();
 
   }
