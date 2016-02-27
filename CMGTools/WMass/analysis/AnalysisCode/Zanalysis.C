@@ -48,6 +48,7 @@ const double submuon_eta_cut = 2.1;
 const bool preUnblinding = true; // this is meant to save only the inclusive plots the controlplots variable is used for the various binned plots
 const bool polarization_checks = false; // this is meant to save only the inclusive plots the controlplots variable is used for the various binned plots
 const bool useAlternateEventXweights = false; // this is meant to save only the inclusive plots the controlplots variable is used for the various binned plots
+const bool doRecoilMassVariations = false; // this is meant to save Recoil distribution for different mass hypotheses
 
 
 void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, int useMomentumCorr, int varyMuonCorrNsigma, int MuonCorrAsDATA, int useEffSF, int usePtSF, int useVtxSF, int controlplots, TString sampleName, int generated_PDF_set, int generated_PDF_member, int contains_PDF_reweight, int usePhiMETCorr, int useRecoilCorr, int correctToMadgraph, int RecoilCorrVarDiagoParSigmas, int RecoilCorrVarDiagoParU1orU2fromDATAorMC, int use_PForNoPUorTKmet, int use_syst_ewk_Alcaraz, int gen_mass_value_MeV, int contains_LHE_weights, int reweight_polarization)
@@ -985,6 +986,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                  50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio,
                                  50, WMass::fit_xmin[2]*ZWmassRatio, WMass::fit_xmax[2]*ZWmassRatio );
                             }
+                            if(doRecoilMassVariations){
+                              common_stuff::plot1D(Form("hWlike%s_RecoilNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                                Wlike.Pt(), weight, h_1d, 50, 0, 20 );
+                            }
+
                           }
                         
                           //------------------------------------------------------------------------------------------------
