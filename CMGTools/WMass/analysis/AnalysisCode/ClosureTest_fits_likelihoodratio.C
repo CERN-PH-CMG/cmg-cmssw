@@ -12,8 +12,10 @@ using namespace std;
 
 void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int useBatch=0, TString currentdir_str="", int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0){
   
-  int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
-  int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
+  const int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
+  const int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
+  const int KalmanNvariations_start=0;
+  const int KalmanNvariations_end=WMass::KalmanNvariations;
   TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
 
   int job_counter=1;
@@ -52,10 +54,9 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
           for(int m=m_start; m<m_end; m++){
             if(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0)
               cout << "recoil eigenvar = " << m << endl;
-            int KalmanNvariations_start=0;
-            int KalmanNvariations_end=WMass::KalmanNvariations;
             for(int n=KalmanNvariations_start; n<KalmanNvariations_end; n++){
-              cout << "kalman corr variation = " << n << endl;
+              if(KalmanNvariations_end-KalmanNvariations_start>1)
+                cout << "kalman corr variation = " << n << endl;
               for(int j=0; j<2*WMass2::WMassNSteps+1; j++){
                 int jWmass = WorZ.Contains("Z")? WMass2::Zmass_values_array[j] : WMass2::Wmass_values_array[j];
                 cout << "mass value = " << jWmass << endl;
@@ -73,13 +74,11 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
                     cout << "creating " << outfilename_str << endl;
                     outTXTfile.open(outfilename_str);
                     outTXTfile << "user=$(whoami); cd /afs/cern.ch/work/${user:0:1}/${user}/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462; eval `scramv1 runtime -sh`; cd -;\n";
-                    outTXTfile << "source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh;\n";
                     outTXTfile << "cd "<<currentdir_str<<"\n";
                     outTXTfile << text2workspace_str << endl;
                     outTXTfile << combine_str << endl;
                     outTXTfile.close();
                     // gROOT->ProcessLine(".! usleep 100000");
-                    // gROOT->ProcessLine(".! ls -lrt "+outfilename_str);
                     gROOT->ProcessLine(".! chmod 755 "+outfilename_str);
                     gROOT->ProcessLine(Form(".! rm -f submit_datacard_Wmass_%d.sh; ln -s %s submit_datacard_Wmass_%d.sh",job_counter,outfilename_str.Data(),job_counter));
                     job_counter++;
