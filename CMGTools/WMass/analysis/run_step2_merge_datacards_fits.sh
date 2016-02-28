@@ -3,18 +3,16 @@
 # DEFINE FOLDER PREFIX
 outfolder_prefix="PREFIX"
 #WlikeCharge=1 # 1, -1
-WlikeCharge=("${1}")
+WlikeCharge="${1}"
 
 # DEFINE TEMPLATE FOLDER
 #DataCards_templateFromFolder=""
 
 if [ $WlikeCharge -eq 1 ]; then
-    DataCards_templateFromFolder="PREFIX_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr"
-#    DataCards_templateFromFolder="PREFIX_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_DataLike1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr"
+    DataCards_templateFromFolder="${outfolder_prefix}_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr"
 fi
 if [ $WlikeCharge -eq -1 ]; then
-    DataCards_templateFromFolder="PREFIX_muNeg_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr"
-#    DataCards_templateFromFolder="PREFIX_muNeg_tkmet_ewk0_polariz1_KalmanCorrParam_DataLike1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr"
+    DataCards_templateFromFolder="${outfolder_prefix}_muNeg_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr"
 fi
 
 # RUN MERGE CHUNCKS, PREPARE DATACARDS, RUN FITS
