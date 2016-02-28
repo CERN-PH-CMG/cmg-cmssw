@@ -10,9 +10,11 @@ WlikeCharge="${1}"
 
 if [ $WlikeCharge -eq 1 ]; then
     DataCards_templateFromFolder="${outfolder_prefix}_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr"
+    # DataCards_templateFromFolder="${outfolder_prefix}_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_DataLike1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr"
 fi
 if [ $WlikeCharge -eq -1 ]; then
     DataCards_templateFromFolder="${outfolder_prefix}_muNeg_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr"
+    # DataCards_templateFromFolder="${outfolder_prefix}_muNeg_tkmet_ewk0_polariz1_KalmanCorrParam_DataLike1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr"
 fi
 
 # RUN MERGE CHUNCKS, PREPARE DATACARDS, RUN FITS
