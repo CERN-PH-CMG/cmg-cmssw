@@ -995,8 +995,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                  50, WMass::fit_xmin[2]*ZWmassRatio, WMass::fit_xmax[2]*ZWmassRatio );
                             }
                             if(doRecoilMassVariations){
-                              common_stuff::plot1D(Form("hWlike%s_RecoilNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                                Wlike.Pt(), weight, h_1d, 50, 0, 20 );
+                              common_stuff::plot1D(Form("hWlike%s_RecoilNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+                                                Wlike.Pt(), weight_mass, h_1d, 50, 0, 18 );
                             }
 
                           }
