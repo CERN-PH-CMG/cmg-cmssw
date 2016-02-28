@@ -278,18 +278,15 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // Initialize recoil corrections
   //------------------------------------------------------
 
-  int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
-  int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
+  const int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
+  const int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
 
   // int use_PForNoPUorTKmet = 0; // 0:PF, 1:NOPU, 2:TK // TO BE CHANGED BY HAND FOR THE MOMENT!!!
-  // bool use_InclusiveNVTX_RecoilCorr = true; // TO BE CHANGED BY HAND FOR THE MOMENT!!!
-  // TString InclusiveNVTXSuffix="";
-  // if(use_InclusiveNVTX_RecoilCorr) InclusiveNVTXSuffix="_inclusiveNvtx";
 
-  TString metSuffix;
-  if(use_PForNoPUorTKmet==0) metSuffix="_pfmet"; // this doesn't work since we do no have the pfmet as of JAN25
-  if(use_PForNoPUorTKmet==1) metSuffix="_pfnoPU";
-  if(use_PForNoPUorTKmet==2) metSuffix="_tkmet";
+  // TString metSuffix;
+  // if(use_PForNoPUorTKmet==0) metSuffix="_pfmet"; // this doesn't work since we do no have the pfmet as of JAN25
+  // if(use_PForNoPUorTKmet==1) metSuffix="_pfnoPU";
+  // if(use_PForNoPUorTKmet==2) metSuffix="_tkmet";
   
   TString generatorSuffix="_powheg";
   if (sampleName.Contains("DYJetsMadSig"))
@@ -299,10 +296,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   int recoilCorrSigmas = 1;
   bool doKeys= useRecoilCorr==3 ? true : false;
   if(useRecoilCorr>0){
-    TString model_name[2]={"fitresult_Add","fitresult_model2D"};
-    
     // TKMET type2
-    int model_name_idx=0;
     string fileCorrectTo = /*POW */ Form("../RecoilCode/JAN31/recoilfit_JAN31_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",generatorSuffix.Data());
     string fileZmmMC =     /*POW */ Form("../RecoilCode/JAN31/recoilfit_JAN31_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",generatorSuffix.Data());
     // need to add the half stat
@@ -317,11 +311,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     if(correctToMadgraph) fileZmmKeysData = "../RecoilCode/DEC6/keysrecoilfit_DEC6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X_madgraph.root";
 
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;
-    correctorRecoil_Z = new RecoilCorrector(doKeys, fileCorrectTo.c_str(),fileZmmKeysCorrectTo.c_str(),123456,model_name[0],"../RecoilCode/MAY25/nonClosureMAY25.root");
+    correctorRecoil_Z = new RecoilCorrector(doKeys, fileCorrectTo.c_str(),fileZmmKeysCorrectTo.c_str(),123456, "fitresult_Add","../RecoilCode/MAY25/nonClosureMAY25.root");
     cout << "INITIALIZING RECOIL Z DATA FILE" << endl;
-    correctorRecoil_Z->addDataFile(fileZmmData.c_str(), fileZmmKeysData.c_str(), model_name[model_name_idx] );
+    correctorRecoil_Z->addDataFile(fileZmmData.c_str(), fileZmmKeysData.c_str(), "fitresult_Add");
     cout << "INITIALIZING RECOIL Z MC FILE" << endl;
-    correctorRecoil_Z->addMCFile(fileZmmMC.c_str(), fileZmmKeysMC.c_str(), model_name[0]);
+    correctorRecoil_Z->addMCFile(fileZmmMC.c_str(), fileZmmKeysMC.c_str(), "fitresult_Add");
 
   }
 
