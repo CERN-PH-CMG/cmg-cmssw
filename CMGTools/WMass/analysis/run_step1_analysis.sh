@@ -2,8 +2,8 @@
 
 # DEFINE FOLDER PREFIX
 outfolder_prefix="PREFIX"
-##WlikeCharge=1 # 1, -1
-WlikeCharge=("${1}")
+#WlikeCharge=1 # 1, -1
+WlikeCharge="${1}"
 
 ZMassCentral_MeV="91188"
 #if [ $WlikeCharge -eq 1 ]; then

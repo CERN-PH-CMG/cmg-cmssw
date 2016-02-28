@@ -6,14 +6,14 @@ WlikeCharge=1 # 1, -1
 
 sed_and_run()
 {
-        # RUN MERGE RESULTS
-        sed -i "s/outfolder_prefix =.*/outfolder_prefix = \"${outfolder_prefix}\"/g;\
-                s/runZanalysis =.*/runZanalysis = 0/g;\
-                s/mergeSigEWKbkg =.*/mergeSigEWKbkg = 0/g;\
-                s/runPrepareDataCardsFast =.*/runPrepareDataCardsFast = 0/g;\
-                s/runClosureTestLikeLihoodRatio =.*/runClosureTestLikeLihoodRatio = 0/g;\
-                s/mergeResults =.*/mergeResults = 1/g;\
-                s/WlikeCharge =.*/WlikeCharge = ${WlikeCharge}  # Charge of the Wlike (+1,-1)/g" configdir/${1}.py
+    # RUN MERGE RESULTS
+    sed -i "s/outfolder_prefix =.*/outfolder_prefix = \"${outfolder_prefix}\"/g;\
+            s/runZanalysis =.*/runZanalysis = 0/g;\
+            s/mergeSigEWKbkg =.*/mergeSigEWKbkg = 0/g;\
+            s/runPrepareDataCardsFast =.*/runPrepareDataCardsFast = 0/g;\
+            s/runClosureTestLikeLihoodRatio =.*/runClosureTestLikeLihoodRatio = 0/g;\
+            s/mergeResults =.*/mergeResults = 1/g;\
+            s/WlikeCharge =.*/WlikeCharge = ${WlikeCharge}  # Charge of the Wlike (+1,-1)/g" configdir/${1}.py
     python launch_analysis.py ${1}
 }
 
