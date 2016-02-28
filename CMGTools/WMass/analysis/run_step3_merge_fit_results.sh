@@ -2,7 +2,7 @@
 
 # DEFINE FOLDER PREFIX
 outfolder_prefix="PREFIX"
-WlikeCharge=1 # 1, -1
+WlikeCharge="${1}" # 1, -1
 
 sed_and_run()
 {
