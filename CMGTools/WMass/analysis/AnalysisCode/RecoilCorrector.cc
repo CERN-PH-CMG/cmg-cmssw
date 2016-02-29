@@ -336,7 +336,7 @@ void RecoilCorrector::applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGe
   double &pU1,double &pU2
 ) {
 
-  double lRescale  = sqrt((TMath::Pi())/2.);  // Magic normalization number
+  double lRescale  = sqrt((TMath::Pi())/2.);  // Magic normalization number due to usage of absolute values while computing the overall RMS
   //  double lRescale  = 1;     // for squares
 
   double pDefU1    = iU1Default->Eval(iGenPt);
