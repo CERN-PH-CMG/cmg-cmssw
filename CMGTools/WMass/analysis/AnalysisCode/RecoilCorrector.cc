@@ -1,7 +1,7 @@
 #include "RecoilCorrector.h"
 
 // mytype: 0 = target file , 1 = ZDATA , 2 = ZMC
-RecoilCorrector::RecoilCorrector(bool doKeys, string iNameZ, string iNameZ_key, int iSeed,TString model_name, TString fNonClosure_name) {
+RecoilCorrector::RecoilCorrector(bool doKeys, string iNameZ, string iNameZ_key, TString model_name, TString fNonClosure_name) {
 
   RecoilCorrector::doKeys = doKeys;
   readRecoil(fF1U1Fit,fF1U1RMSSMFit,fF1U1RMS1Fit,fF1U1RMS2Fit,fF1U1RMS3Fit,fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit, fF1U2Fit,fF1U2RMSSMFit,fF1U2RMS1Fit,fF1U2RMS2Fit,fF1U2RMS3Fit,fF1U2FracFit,fF1U2Mean1Fit, fF1U2Mean2Fit,iNameZ,iNameZ_key,"PF",1,RecoilCorrector::targetMC,model_name);
@@ -187,7 +187,7 @@ double RecoilCorrector::NonClosure_weight(double iMet,double iMPhi,double iGenPt
   if(weight_NonClosure==0) weight_NonClosure=1;
   // cout << " ------->>> " << weight_NonClosure << endl;
   
-  
+  return 1; // I'm tired of getting a compiler warning
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -236,6 +236,8 @@ double RecoilCorrector::NonClosure_scale(double &iMet,double &iMPhi,double iGenP
   // << " iMPhi= " << iMPhi
   // << " after rescaling "
   // << endl;
+  
+  return 1; // I'm tired of getting a compiler warning
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
