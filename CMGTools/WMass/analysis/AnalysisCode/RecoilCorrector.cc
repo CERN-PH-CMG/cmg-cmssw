@@ -1,7 +1,9 @@
 #include "RecoilCorrector.h"
 
+using namespace std;
+
 // mytype: 0 = target file , 1 = ZDATA , 2 = ZMC
-RecoilCorrector::RecoilCorrector(bool doKeys, string iNameZ, string iNameZ_key, TString model_name) {
+RecoilCorrector::RecoilCorrector(bool doKeys, std::string iNameZ, std::string iNameZ_key, TString model_name) {
 
   RecoilCorrector::doKeys = doKeys;
   
