@@ -51,15 +51,15 @@ TString model_name
   if(mytype==1) cout << " read DATA"  << endl;
   if(mytype==2) cout << " read MC"  << endl;
 
-  TFile *lFile  = new TFile(iFName.c_str());
-  TFile *lFileKeys;
-  if (doKeys) lFileKeys = new TFile(iFKeyName.c_str());
+  TFile *lFile;
+  if (doKeys) {
+    lFile = new TFile(iFKeyName.c_str());
+  }
+  else {
+    lFile  = new TFile(iFName.c_str());
+  }
 
-  // now defined in the .h
   // const int rapbins = 2;
-
-  cout << " rapbins " << rapbins << endl;
-
   for(int rapbin = 0; rapbin < rapbins; rapbin++) {
     cout << "reading bin " << rapbin << endl;
     int file_rapbin = rapbin+1;
@@ -105,15 +105,14 @@ TString model_name
       //    cout << "reading recoilKeys " << endl;
       
       wU1key[mytype][rapbin] = new RooWorkspace("wU1key","wU1key");
-      if (doKeys) makeKeysVec(wU1key[mytype][rapbin], lFileKeys, Form("Keys_U1_%d",file_rapbin), pdfKeyU1Cdf[mytype][rapbin],true);
+      if (doKeys) makeKeysVec(wU1key[mytype][rapbin], lFile, Form("Keys_U1_%d",file_rapbin), pdfKeyU1Cdf[mytype][rapbin],true);
       
       wU2key[mytype][rapbin] = new RooWorkspace("wU2key","wU2key");
-      if (doKeys) makeKeysVec(wU2key[mytype][rapbin], lFileKeys, Form("Keys_U2_%d",file_rapbin), pdfKeyU2Cdf[mytype][rapbin],false);
+      if (doKeys) makeKeysVec(wU2key[mytype][rapbin], lFile, Form("Keys_U2_%d",file_rapbin), pdfKeyU2Cdf[mytype][rapbin],false);
     }
   }
 
   lFile->Close();
-  if (doKeys) lFileKeys->Close();
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -516,7 +515,7 @@ double RecoilCorrector::triGausInvGraphKeys(double iPVal, double Zpt, std::vecto
 //-----------------------------------------------------------------------------------------------------------------------------------------
 void RecoilCorrector::makeKeysVec(RooWorkspace *w, TFile * lFileKeys, TString fit, std::vector<RooAbsReal*> &pdfUiCdf, bool isU1) {
 
-  //  lFileKeys->ls();
+  //  lFile->ls();
 
   int Zmax=29;
   if(!isU1) Zmax=49;
