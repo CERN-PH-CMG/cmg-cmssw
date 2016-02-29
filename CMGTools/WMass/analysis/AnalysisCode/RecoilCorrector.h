@@ -82,111 +82,109 @@ protected:
   // void readRecoil(std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,
   // std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,
   // std::string iFName,std::string iPrefix); 
-  void readRecoil(/* std::vector<double> &iSumEt, */
-                     std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,
-                     std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,std::vector<TF1*> &iU1RMS3Fit,
-		     std::vector<TF1*> &iU1FracFit,std::vector<TF1*> &iU1Mean1Fit, std::vector<TF1*> &iU1Mean2Fit,//std::vector<TF1*> &iU1Sig3Fit,
-                     std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,
-                     std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2RMS3Fit,
-		     std::vector<TF1*> &iU2FracFit,std::vector<TF1*> &iU2Mean1Fit, std::vector<TF1*> &iU2Mean2Fit,//std::vector<TF1*> &iU2Sig3Fit,
-                     std::string iFName,std::string iFKeyName, std::string iPrefix, int mytype, TString model_name = "fitresult_Add");
+  void readRecoil(
+    std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,
+    std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,std::vector<TF1*> &iU1RMS3Fit,
+    std::vector<TF1*> &iU1FracFit,std::vector<TF1*> &iU1Mean1Fit, std::vector<TF1*> &iU1Mean2Fit,//std::vector<TF1*> &iU1Sig3Fit,
+    std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,
+    std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2RMS3Fit,
+    std::vector<TF1*> &iU2FracFit,std::vector<TF1*> &iU2Mean1Fit, std::vector<TF1*> &iU2Mean2Fit,//std::vector<TF1*> &iU2Sig3Fit,
+    std::string iFName,std::string iFKeyName, std::string iPrefix, int mytype, TString model_name = "fitresult_Add");
                      
   void readCorr(std::string iName,//int iType=2,
   std::vector<TF1*> &iF1U1U2Corr  ,std::vector<TF1*> &iF2U1U2Corr,std::vector<TF1*> &iF1F2U1Corr,std::vector<TF1*> &iF1F2U2Corr,
   std::vector<TF1*> &iF1F2U1U2Corr,std::vector<TF1*> &iF1F2U2U1Corr,int iType=2);
 
   void metDistribution(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
-  double iLepPt,double iLepPhi,TRandom3 *iRand,
-  TF1 *iU1RZFit, 
-  TF1 *iU1MSZFit, 
-  TF1 *iU1S1ZFit,
-  TF1 *iU1S2ZFit,
-  TF1 *iU2MSZFit,		   
-  TF1 *iU2S1ZFit, 
-  TF1 *iU2S2ZFit, 
-  TF1 *iU1U2Corr, 
-  double &iU1,double &iU2,double iFluc=0,double iScale=0);
+    double iLepPt,double iLepPhi,TRandom3 *iRand,
+    TF1 *iU1RZFit,
+    TF1 *iU1MSZFit,
+    TF1 *iU1S1ZFit,
+    TF1 *iU1S2ZFit,
+    TF1 *iU2MSZFit,
+    TF1 *iU2S1ZFit,
+    TF1 *iU2S2ZFit,
+    TF1 *iU1U2Corr,
+    double &iU1,double &iU2,double iFluc=0,double iScale=0);
 
   void metDistribution(double &iPFMet,double &iPFMPhi,double &iTKMet,double &iTKMPhi,
-  double iGenPt,double iGenPhi,
-  double iLepPt,double iLepPhi,TRandom3 *iRand,
-  TF1 *iU1RZPFFit,  TF1 *iU1RZTKFit, 
-  TF1 *iU1MSZPFFit, TF1 *iU1MSZTKFit, 
-  TF1 *iU1S1ZPFFit, TF1 *iU1S1ZTKFit,
-  TF1 *iU1S2ZPFFit, TF1 *iU1S2ZTKFit,
-  TF1 *iU2MSZPFFit, TF1 *iU2MSZTKFit,		   
-  TF1 *iU2S1ZPFFit, TF1 *iU2S1ZTKFit, 
-  TF1 *iU2S2ZPFFit, TF1 *iU2S2ZTKFit, 
-  TF1 *iPFU1U2Corr, TF1 *iTKU1U2Corr,
-  TF1 *iPFTKU1Corr, TF1 *iPFTKU2Corr,
-  TF1 *iPFTKU1MCorr,TF1 *iPFTKU2MCorr,
-  double &iU1,double &iU2,double iFluc=0,double iScale=0);
+    double iGenPt,double iGenPhi,
+    double iLepPt,double iLepPhi,TRandom3 *iRand,
+    TF1 *iU1RZPFFit,  TF1 *iU1RZTKFit,
+    TF1 *iU1MSZPFFit, TF1 *iU1MSZTKFit,
+    TF1 *iU1S1ZPFFit, TF1 *iU1S1ZTKFit,
+    TF1 *iU1S2ZPFFit, TF1 *iU1S2ZTKFit,
+    TF1 *iU2MSZPFFit, TF1 *iU2MSZTKFit,
+    TF1 *iU2S1ZPFFit, TF1 *iU2S1ZTKFit,
+    TF1 *iU2S2ZPFFit, TF1 *iU2S2ZTKFit,
+    TF1 *iPFU1U2Corr, TF1 *iTKU1U2Corr,
+    TF1 *iPFTKU1Corr, TF1 *iPFTKU2Corr,
+    TF1 *iPFTKU1MCorr,TF1 *iPFTKU2MCorr,
+    double &iU1,double &iU2,double iFluc=0,double iScale=0);
 
   void metDistributionType1(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
-  double iLepPt,double iLepPhi,TRandom3 *iRand,
-  TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
-  TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit, 
-  TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
-  double &iU1,double &iU2,double iFlucU2=0,double iFlucU1=0,double iScale=0);
+    double iLepPt,double iLepPhi,TRandom3 *iRand,
+    TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
+    TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
+    TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
+    double &iU1,double &iU2,double iFlucU2=0,double iFlucU1=0,double iScale=0);
 
   void metDistributionType2(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
-  double iLepPt,double iLepPhi,
-  TF1 *iU1Default,
-  TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
-  TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit, 
-  TF1 *iU1S1ZDatFit, TF1 *iU1S1ZMCFit, 
-  TF1 *iU1S2ZDatFit, TF1 *iU1S2ZMCFit, 
-  TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
-  TF1 *iU2S1ZDatFit, TF1 *iU2S1ZMCFit,	   
-  TF1 *iU2S2ZDatFit, TF1 *iU2S2ZMCFit,	   
-  //			    TF1 *iU1U2ZDatCorr,TF1 *iU1U2ZMCCorr, // MARIA comment for now since not used
-  double &iU1, double &iU2,double iFlucU2=0,double iFlucU1=0,double iScale=0,
-  bool doSingleGauss=false);
+    double iLepPt,double iLepPhi,
+    TF1 *iU1Default,
+    TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
+    TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
+    TF1 *iU1S1ZDatFit, TF1 *iU1S1ZMCFit,
+    TF1 *iU1S2ZDatFit, TF1 *iU1S2ZMCFit,
+    TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
+    TF1 *iU2S1ZDatFit, TF1 *iU2S1ZMCFit,
+    TF1 *iU2S2ZDatFit, TF1 *iU2S2ZMCFit,
+    double &iU1, double &iU2,double iFlucU2=0,double iFlucU1=0,double iScale=0,
+    bool doSingleGauss=false);
 
   void metDistributionType2CorrU(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
-  double iLepPt,double iLepPhi,
-  TF1 *iU1Default,
-  TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
-  TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
-  TF1 *iU1S1ZDatFit, TF1 *iU1S1ZMCFit,
-  TF1 *iU1S2ZDatFit, TF1 *iU1S2ZMCFit,
-  TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
-  TF1 *iU2S1ZDatFit, TF1 *iU2S1ZMCFit,
-  TF1 *iU2S2ZDatFit, TF1 *iU2S2ZMCFit,
-  //                                         TF1 *iU1U2ZDatCorr,TF1 *iU1U2ZMCCorr, // MARIA comment for now                              
-  double &iU1,double &iU2,double iFlucU2, double iFlucU1, double iScale,
-  bool doSingleGauss);
+    double iLepPt,double iLepPhi,
+    TF1 *iU1Default,
+    TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
+    TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
+    TF1 *iU1S1ZDatFit, TF1 *iU1S1ZMCFit,
+    TF1 *iU1S2ZDatFit, TF1 *iU1S2ZMCFit,
+    TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
+    TF1 *iU2S1ZDatFit, TF1 *iU2S1ZMCFit,
+    TF1 *iU2S2ZDatFit, TF1 *iU2S2ZMCFit,
+    double &iU1,double &iU2,double iFlucU2, double iFlucU1, double iScale,
+    bool doSingleGauss);
 
   void applyCorrMET3gaus(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
-  double iLepPt,double iLepPhi,
-  TF1 *iU1Default,
-  TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
-  TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit, 
-  TF1 *iU1S1ZDatFit, TF1 *iU1S1ZMCFit, 
-  TF1 *iU1S2ZDatFit, TF1 *iU1S2ZMCFit, 
-  TF1 *iU1S3ZDatFit, TF1 *iU1S3ZMCFit,
-  TF1 *iU1fracZDatFit, TF1 *iU1fracZMCFit,
-  TF1 *iU1mean1ZDatFit, TF1 *iU1mean1ZMCFit,
-  TF1 *iU1mean2ZDatFit, TF1 *iU1mean2ZMCFit,
-  //
-  TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
-  TF1 *iU2S1ZDatFit, TF1 *iU2S1ZMCFit,        
-  TF1 *iU2S2ZDatFit, TF1 *iU2S2ZMCFit,
-  TF1 *iU2S3ZDatFit, TF1 *iU2S3ZMCFit,
-  TF1 *iU2fracZDatFit, TF1 *iU2fracZMCFit,
-  TF1 *iU2mean1ZDatFit, TF1 *iU2mean1ZMCFit,
-  TF1 *iU2mean2ZDatFit, TF1 *iU2mean2ZMCFit,
-  double iFlucU2,double iFlucU1,double iScale, int mytype
+    double iLepPt,double iLepPhi,
+    TF1 *iU1Default,
+    TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
+    TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
+    TF1 *iU1S1ZDatFit, TF1 *iU1S1ZMCFit,
+    TF1 *iU1S2ZDatFit, TF1 *iU1S2ZMCFit,
+    TF1 *iU1S3ZDatFit, TF1 *iU1S3ZMCFit,
+    TF1 *iU1fracZDatFit, TF1 *iU1fracZMCFit,
+    TF1 *iU1mean1ZDatFit, TF1 *iU1mean1ZMCFit,
+    TF1 *iU1mean2ZDatFit, TF1 *iU1mean2ZMCFit,
+    //
+    TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
+    TF1 *iU2S1ZDatFit, TF1 *iU2S1ZMCFit,
+    TF1 *iU2S2ZDatFit, TF1 *iU2S2ZMCFit,
+    TF1 *iU2S3ZDatFit, TF1 *iU2S3ZMCFit,
+    TF1 *iU2fracZDatFit, TF1 *iU2fracZMCFit,
+    TF1 *iU2mean1ZDatFit, TF1 *iU2mean1ZMCFit,
+    TF1 *iU2mean2ZDatFit, TF1 *iU2mean2ZMCFit,
+    double iFlucU2,double iFlucU1,double iScale, int mytype
   );
   void applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
-		     double iLepPt,double iLepPhi,/*TRandom3 *iRand,*/
-		     TF1 *iU1Default,
-		     TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
-		     TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
-		     TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
-		     //                     RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1, 
-		     //                     RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2 
-         int rapbin, int nSigmas, double &pU1, double &pU2
+    double iLepPt,double iLepPhi,
+    TF1 *iU1Default,
+    TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
+    TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
+    TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
+    // RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1,
+    // RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2,
+    int rapbin, int nSigmas, double &pU1, double &pU2
   );
   double calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2);
   double diGausInvGraph(double iPVal,double iFracMC,double iSigma1MC,double iSigma2MC,double iFracDATA,double iSigma1DATA,double iSigma2DATA);
@@ -223,8 +221,10 @@ protected:
   vector<RooAbsReal*> pdfKeyU1Cdf[Ntypes][rapbins], pdfKeyU2Cdf[Ntypes][rapbins];
   RooFitResult* frU1[Ntypes][rapbins];
   RooFitResult* frU2[Ntypes][rapbins];
-  TFile *fNonClosure; 
-  TH2D *hNonClosure[2][2]; 
+  
+  TFile *fNonClosure;
+  TH2D *hNonClosure[2][2];
+  
   vector<TF1*> fF1U1Fit; vector<TF1*> fF1U1RMSSMFit; vector<TF1*> fF1U1RMS1Fit; vector<TF1*> fF1U1RMS2Fit, fF1U1RMS3Fit, fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit; 
   vector<TF1*> fF1U2Fit; vector<TF1*> fF1U2RMSSMFit; vector<TF1*> fF1U2RMS1Fit; vector<TF1*> fF1U2RMS2Fit, fF1U2RMS3Fit, fF1U2FracFit, fF1U2Mean1Fit, fF1U2Mean2Fit;; 
   vector<TF1*> fF2U1Fit; vector<TF1*> fF2U1RMSSMFit; vector<TF1*> fF2U1RMS1Fit; vector<TF1*> fF2U1RMS2Fit, fF2U1RMS3Fit, fF2U1FracFit, fF2U1Mean1Fit, fF2U1Mean2Fit; 
