@@ -45,25 +45,6 @@ public:
   void addMCFile  (std::string iNameMC, std::string iNameKeyMC, TString model_name = "fitresult_Add");
 
 protected:
-  enum Recoil { 
-    PFU1,
-    PFU2,
-    PFMSU1,
-    PFMSU2,
-    PFS1U1,
-    PFS2U1,
-    PFS1U2,
-    PFS2U2,
-    TKU1,
-    TKU2,
-    TKMSU1,
-    TKMSU2,
-    TKS1U1,
-    TKS2U1,
-    TKS1U2,
-    TKS2U2
-  };
-
   void readRecoil(
     std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,
     std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,std::vector<TF1*> &iU1RMS3Fit,
@@ -74,27 +55,6 @@ protected:
     std::string iFName,std::string iFKeyName, std::string iPrefix, int mytype, TString model_name = "fitresult_Add"
   );
 
-  void applyCorrMET3gaus(double &iMet,double &iMETPhi,double bosonPt,double bosonPhi,
-    double i,double iLepPhi,
-    TF1 *iU1Default,
-    TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
-    TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
-    TF1 *iU1S1ZDatFit, TF1 *iU1S1ZMCFit,
-    TF1 *iU1S2ZDatFit, TF1 *iU1S2ZMCFit,
-    TF1 *iU1S3ZDatFit, TF1 *iU1S3ZMCFit,
-    TF1 *iU1fracZDatFit, TF1 *iU1fracZMCFit,
-    TF1 *iU1mean1ZDatFit, TF1 *iU1mean1ZMCFit,
-    TF1 *iU1mean2ZDatFit, TF1 *iU1mean2ZMCFit,
-    //
-    TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
-    TF1 *iU2S1ZDatFit, TF1 *iU2S1ZMCFit,
-    TF1 *iU2S2ZDatFit, TF1 *iU2S2ZMCFit,
-    TF1 *iU2S3ZDatFit, TF1 *iU2S3ZMCFit,
-    TF1 *iU2fracZDatFit, TF1 *iU2fracZMCFit,
-    TF1 *iU2mean1ZDatFit, TF1 *iU2mean1ZMCFit,
-    TF1 *iU2mean2ZDatFit, TF1 *iU2mean2ZMCFit,
-    double iFlucU2,double iFlucU1,double iScale, int mytype
-  );
   void applyCorrMET3gausPDF(double &iMet,double &iMETPhi,double bosonPt,double bosonPhi,
     double sumLepPt,double sumLepPhi,
     TF1 *iU1Default,
@@ -103,6 +63,7 @@ protected:
     TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
     int rapbin, int nSigmas, double &pU1, double &pU2
   );
+
   double calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2);
   void runDiago(RooWorkspace *w,RooFitResult *result, TString fit, RooAbsReal *&pdfUiCdf);
   void makeKeysVec(RooWorkspace *w, TFile *file, TString fit, std::vector<RooAbsReal*> &pdfUiCdfm, bool isU1);
