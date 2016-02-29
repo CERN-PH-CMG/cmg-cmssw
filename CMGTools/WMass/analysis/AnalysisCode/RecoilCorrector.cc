@@ -247,7 +247,7 @@ void RecoilCorrector::reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int 
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int rapbin, int recoilCorrSigmas, int mytype)
+void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int rapbin, int recoilCorrSigmas)
 {
   // ---------------------------
   // CHANGE STAT EIGEN IF NEEDED
@@ -304,7 +304,7 @@ void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt
     // fD1U2Mean1Fit[rapbin], fM1U2Mean1Fit[rapbin],
     // fD1U2Mean2Fit[rapbin], fM1U2Mean2Fit[rapbin],
 
-    mytype, rapbin,
+    rapbin,
     recoilCorrSigmas,
     iU1,iU2
   );
@@ -331,7 +331,7 @@ void RecoilCorrector::applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGe
   TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
   //                     RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1,
   //                     RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2,
-  int mytype, int rapbin,
+  int rapbin,
   int nSigmas,
   double &pU1,double &pU2
 ) {
