@@ -54,8 +54,7 @@ public:
   void CorrectMET3gaus(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int njet=0, int recoilCorrSigmas=1, int mytype=0,bool key=false);
   void CorrectU1U2(double &pfu1, double &pfu2, double &trku1, double &trku2, 
   double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double iFluc,double iScale=0,int njet=0);
-  void addDataFile(std::string iNameDat, std::string iNameKeyDat, /* , int RecoilCorrVarDiagoParU1orU2=1, int RecoilCorrU1VarDiagoParN=0, int RecoilCorrVarDiagoParSigmas=0 */
-		   TString model_name = "fitresult_Add");
+  void addDataFile(std::string iNameDat, std::string iNameKeyDat, TString model_name = "fitresult_Add");
   void addMCFile  (std::string iNameMC, std::string iNameKeyMC, TString model_name = "fitresult_Add");
   double NonClosure_weight(double iMet,double iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi);
   double NonClosure_scale(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi);
@@ -90,7 +89,7 @@ protected:
                      std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,
                      std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2RMS3Fit,
 		     std::vector<TF1*> &iU2FracFit,std::vector<TF1*> &iU2Mean1Fit, std::vector<TF1*> &iU2Mean2Fit,//std::vector<TF1*> &iU2Sig3Fit,
-                     std::string iFName,std::string iFKeyName, std::string iPrefix,int vtxBin, int mytype=0,/* , int RecoilCorrVarDiagoParU1orU2=1, int RecoilCorrU1VarDiagoParN=0, int RecoilCorrVarDiagoParSigmas=0 */TString model_name = "fitresult_Add");
+                     std::string iFName,std::string iFKeyName, std::string iPrefix, int mytype, TString model_name = "fitresult_Add");
                      
   void readCorr(std::string iName,//int iType=2,
   std::vector<TF1*> &iF1U1U2Corr  ,std::vector<TF1*> &iF2U1U2Corr,std::vector<TF1*> &iF1F2U1Corr,std::vector<TF1*> &iF1F2U2Corr,

@@ -4,7 +4,7 @@
 RecoilCorrector::RecoilCorrector(bool doKeys, string iNameZ, string iNameZ_key, TString model_name, TString fNonClosure_name) {
 
   RecoilCorrector::doKeys = doKeys;
-  readRecoil(fF1U1Fit,fF1U1RMSSMFit,fF1U1RMS1Fit,fF1U1RMS2Fit,fF1U1RMS3Fit,fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit, fF1U2Fit,fF1U2RMSSMFit,fF1U2RMS1Fit,fF1U2RMS2Fit,fF1U2RMS3Fit,fF1U2FracFit,fF1U2Mean1Fit, fF1U2Mean2Fit,iNameZ,iNameZ_key,"PF",1,RecoilCorrector::targetMC,model_name);
+  readRecoil(fF1U1Fit,fF1U1RMSSMFit,fF1U1RMS1Fit,fF1U1RMS2Fit,fF1U1RMS3Fit,fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit, fF1U2Fit,fF1U2RMSSMFit,fF1U2RMS1Fit,fF1U2RMS2Fit,fF1U2RMS3Fit,fF1U2FracFit,fF1U2Mean1Fit, fF1U2Mean2Fit,iNameZ,iNameZ_key,"PF",RecoilCorrector::targetMC,model_name);
   
   fNonClosure = new TFile(fNonClosure_name.Data());
   hNonClosure[0][0] = (TH2D*) fNonClosure->Get("mean_U1_y1");
@@ -21,13 +21,13 @@ RecoilCorrector::RecoilCorrector(bool doKeys, string iNameZ, string iNameZ_key, 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 void RecoilCorrector::addDataFile(std::string iNameData, std::string iNameData_key, TString model_name)
 {
-  readRecoil(fD1U1Fit,fD1U1RMSSMFit,fD1U1RMS1Fit,fD1U1RMS2Fit,fD1U1RMS3Fit,fD1U1FracFit, fD1U1Mean1Fit, fD1U1Mean2Fit, fD1U2Fit,fD1U2RMSSMFit,fD1U2RMS1Fit,fD1U2RMS2Fit,fD1U2RMS3Fit,fD1U2FracFit,fD1U2Mean1Fit, fD1U2Mean2Fit,iNameData, iNameData_key, "PF", 1,RecoilCorrector::ZDATA, model_name
+  readRecoil(fD1U1Fit,fD1U1RMSSMFit,fD1U1RMS1Fit,fD1U1RMS2Fit,fD1U1RMS3Fit,fD1U1FracFit, fD1U1Mean1Fit, fD1U1Mean2Fit, fD1U2Fit,fD1U2RMSSMFit,fD1U2RMS1Fit,fD1U2RMS2Fit,fD1U2RMS3Fit,fD1U2FracFit,fD1U2Mean1Fit, fD1U2Mean2Fit,iNameData, iNameData_key, "PF",RecoilCorrector::ZDATA, model_name
   );
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------
 void RecoilCorrector::addMCFile(std::string iNameMC, std::string iNameMC_key, TString model_name)
 {
-  readRecoil(fM1U1Fit,fM1U1RMSSMFit,fM1U1RMS1Fit,fM1U1RMS2Fit,fM1U1RMS3Fit,fM1U1FracFit, fM1U1Mean1Fit, fM1U1Mean2Fit, fM1U2Fit,fM1U2RMSSMFit,fM1U2RMS1Fit,fM1U2RMS2Fit,fM1U2RMS3Fit,fM1U2FracFit,fM1U2Mean1Fit, fM1U2Mean2Fit,iNameMC,iNameMC_key, "PF", 1,RecoilCorrector::ZMC, model_name
+  readRecoil(fM1U1Fit,fM1U1RMSSMFit,fM1U1RMS1Fit,fM1U1RMS2Fit,fM1U1RMS3Fit,fM1U1FracFit, fM1U1Mean1Fit, fM1U1Mean2Fit, fM1U2Fit,fM1U2RMSSMFit,fM1U2RMS1Fit,fM1U2RMS2Fit,fM1U2RMS3Fit,fM1U2FracFit,fM1U2Mean1Fit, fM1U2Mean2Fit,iNameMC,iNameMC_key, "PF",RecoilCorrector::ZMC, model_name
   );
 }
 
@@ -39,7 +39,7 @@ std::vector<TF1*> &iU1FracFit,std::vector<TF1*> &iU1Mean1Fit, std::vector<TF1*> 
 std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,
 std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2RMS3Fit,
 std::vector<TF1*> &iU2FracFit,std::vector<TF1*> &iU2Mean1Fit, std::vector<TF1*> &iU2Mean2Fit,//std::vector<TF1*> &iU2Sig3Fit,
-std::string iFName , std::string iFKeyName , std::string iPrefix,int vtxBin, int mytype,
+std::string iFName , std::string iFKeyName , std::string iPrefix, int mytype,
 TString model_name
 ) {
 
@@ -59,10 +59,9 @@ TString model_name
   // now defined in the .h
   // const int lNBins = 2;
 
-  cout << " lNBins " << lNBins<<" vtxBin " << vtxBin<< endl;
+  cout << " lNBins " << lNBins << endl;
 
   for(int rapbin = 0; rapbin < lNBins; rapbin++) {
-    // if(rapbin!=vtxBin) continue;
     cout << "reading bin " << rapbin << endl;
     int original_file_rapbin = rapbin+1;
 
