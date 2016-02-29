@@ -51,7 +51,7 @@ public:
   void CorrectType1(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFlucU2,double iFlucU1,double iScale=0,int njet=0);
   void CorrectType2(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFlucU2,double iFlucU1,double iScale=0,int njet=0,bool doSingleGauss=false);
   void reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int rapBinCorr);
-  void CorrectMET3gaus(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int njet=0, int recoilCorrSigmas=1);
+  void CorrectMET3gaus(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double sumLepPt,double sumLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int njet=0, int recoilCorrSigmas=1);
   void CorrectU1U2(double &pfu1, double &pfu2, double &trku1, double &trku2, 
   double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double iFluc,double iScale=0,int njet=0);
   void addDataFile(std::string iNameDat, std::string iNameKeyDat, TString model_name = "fitresult_Add");
@@ -156,7 +156,7 @@ protected:
     bool doSingleGauss);
 
   void applyCorrMET3gaus(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
-    double iLepPt,double iLepPhi,
+    double i,double iLepPhi,
     TF1 *iU1Default,
     TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
     TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
@@ -177,7 +177,7 @@ protected:
     double iFlucU2,double iFlucU1,double iScale, int mytype
   );
   void applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
-    double iLepPt,double iLepPhi,
+    double sumLepPt,double sumLepPhi,
     TF1 *iU1Default,
     TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
     TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,

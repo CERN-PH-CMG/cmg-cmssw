@@ -247,7 +247,7 @@ void RecoilCorrector::reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int 
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int rapbin, int recoilCorrSigmas)
+void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt, double lGenPhi, double sumLepPt, double sumLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int rapbin, int recoilCorrSigmas)
 {
   // ---------------------------
   // CHANGE STAT EIGEN IF NEEDED
@@ -284,7 +284,7 @@ void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt
   // CALL REAL WORKER FUNCTION
   // ---------------------------
   
-  applyCorrMET3gausPDF(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,
+  applyCorrMET3gausPDF(met,metphi,lGenPt,lGenPhi,sumLepPt,sumLepPhi,
     fF1U1Fit[rapbin],
     fD1U1Fit[rapbin],  fM1U1Fit[rapbin],
     fD1U1RMSSMFit[rapbin], fM1U1RMSSMFit[rapbin],
@@ -324,7 +324,7 @@ void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt
 // RooWorkspace *wDATAU2; 
 // NEW WITH PDFs
 void RecoilCorrector::applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
-  double iLepPt,double iLepPhi,
+  double sumLepPt,double sumLepPhi,
   TF1 *iU1Default,
   TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
   TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
@@ -353,8 +353,8 @@ void RecoilCorrector::applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGe
   // ENDING of the PARAMETERS
   //
 
-  double pUX   = iMet*cos(iMPhi) + iLepPt*cos(iLepPhi);
-  double pUY   = iMet*sin(iMPhi) + iLepPt*sin(iLepPhi);
+  double pUX   = iMet*cos(iMPhi) + sumLepPt*cos(sumLepPhi);
+  double pUY   = iMet*sin(iMPhi) + sumLepPt*sin(sumLepPhi);
   double pU    = sqrt(pUX*pUX+pUY*pUY);
 
   double pCos  = - (pUX*cos(iGenPhi) + pUY*sin(iGenPhi))/pU;
@@ -431,8 +431,8 @@ void RecoilCorrector::applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGe
   pU1 = pU1noCorr + nSigmas * pU1delta;
   pU2 = pU2noCorr + nSigmas * pU2delta;
 
-  iMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
-  iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
+  iMet  = calculate(0,sumLepPt,sumLepPhi,iGenPhi,pU1,pU2);
+  iMPhi = calculate(1,sumLepPt,sumLepPhi,iGenPhi,pU1,pU2);
 
   // cout << " after pU1 = " << pU1 << " pU2 = " << pU2 << endl;
 
