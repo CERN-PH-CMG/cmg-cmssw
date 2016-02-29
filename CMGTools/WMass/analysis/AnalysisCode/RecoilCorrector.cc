@@ -285,28 +285,28 @@ void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt
   // ---------------------------
   
   applyCorrMET3gausPDF(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,
-  fF1U1Fit[rapbin],
-  fD1U1Fit[rapbin],  fM1U1Fit[rapbin],
-  fD1U1RMSSMFit[rapbin], fM1U1RMSSMFit[rapbin], 
-  // fD1U1RMS1Fit[rapbin], fM1U1RMS1Fit[rapbin], 
-  // fD1U1RMS2Fit[rapbin], fM1U1RMS2Fit[rapbin], 
-  // fD1U1RMS3Fit[rapbin], fM1U1RMS3Fit[rapbin],
-  // fD1U1FracFit[rapbin], fM1U1FracFit[rapbin],
-  // fD1U1Mean1Fit[rapbin], fM1U1Mean1Fit[rapbin],
-  // fD1U1Mean2Fit[rapbin], fM1U1Mean2Fit[rapbin],
-  //
-  // fD1U2Fit[rapbin], fM1U2Fit[rapbin],
-  fD1U2RMSSMFit[rapbin], fM1U2RMSSMFit[rapbin],        
-  // fD1U2RMS1Fit[rapbin], fM1U2RMS1Fit[rapbin],
-  // fD1U2RMS2Fit[rapbin], fM1U2RMS2Fit[rapbin],
-  // fD1U2RMS3Fit[rapbin], fM1U2RMS3Fit[rapbin],
-  // fD1U2FracFit[rapbin], fM1U2FracFit[rapbin],
-  // fD1U2Mean1Fit[rapbin], fM1U2Mean1Fit[rapbin],
-  // fD1U2Mean2Fit[rapbin], fM1U2Mean2Fit[rapbin],
+    fF1U1Fit[rapbin],
+    fD1U1Fit[rapbin],  fM1U1Fit[rapbin],
+    fD1U1RMSSMFit[rapbin], fM1U1RMSSMFit[rapbin],
+    // fD1U1RMS1Fit[rapbin], fM1U1RMS1Fit[rapbin],
+    // fD1U1RMS2Fit[rapbin], fM1U1RMS2Fit[rapbin],
+    // fD1U1RMS3Fit[rapbin], fM1U1RMS3Fit[rapbin],
+    // fD1U1FracFit[rapbin], fM1U1FracFit[rapbin],
+    // fD1U1Mean1Fit[rapbin], fM1U1Mean1Fit[rapbin],
+    // fD1U1Mean2Fit[rapbin], fM1U1Mean2Fit[rapbin],
+    //
+    // fD1U2Fit[rapbin], fM1U2Fit[rapbin],
+    fD1U2RMSSMFit[rapbin], fM1U2RMSSMFit[rapbin],
+    // fD1U2RMS1Fit[rapbin], fM1U2RMS1Fit[rapbin],
+    // fD1U2RMS2Fit[rapbin], fM1U2RMS2Fit[rapbin],
+    // fD1U2RMS3Fit[rapbin], fM1U2RMS3Fit[rapbin],
+    // fD1U2FracFit[rapbin], fM1U2FracFit[rapbin],
+    // fD1U2Mean1Fit[rapbin], fM1U2Mean1Fit[rapbin],
+    // fD1U2Mean2Fit[rapbin], fM1U2Mean2Fit[rapbin],
 
-  mytype, rapbin,
-  recoilCorrSigmas,
-  iU1,iU2
+    mytype, rapbin,
+    recoilCorrSigmas,
+    iU1,iU2
   );
   
 }
@@ -324,16 +324,16 @@ void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt
 // RooWorkspace *wDATAU2; 
 // NEW WITH PDFs
 void RecoilCorrector::applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
-double iLepPt,double iLepPhi,/*TRandom3 *iRand,*/
-TF1 *iU1Default,
-TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
-TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
-TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
-//                     RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1, 
-//                     RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2 
-int mytype, int rapbin,
-int nSigmas,
-double &pU1,double &pU2
+  double iLepPt,double iLepPhi,
+  TF1 *iU1Default,
+  TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
+  TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
+  TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
+  //                     RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1,
+  //                     RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2,
+  int mytype, int rapbin,
+  int nSigmas,
+  double &pU1,double &pU2
 ) {
 
   double lRescale  = sqrt((TMath::Pi())/2.);  // Magic normalization number
