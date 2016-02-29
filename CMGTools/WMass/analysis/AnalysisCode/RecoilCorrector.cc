@@ -68,26 +68,24 @@ TString model_name
 
     std::stringstream pSS1,pSS2,pSS3,pSS4,pSS5,pSS6,pSS7,pSS8,pSS9,pSS10,pSS11,pSS12,pSS13,pSS14,pSS15,pSS16;
 
-    pSS1  << lStr << "u1Mean_"    << original_file_rapbin;  iU1Fit.push_back    ( (TF1*) lFile->FindObjectAny((pSS1.str()).c_str())); //iU1Fit[rapbin]->SetDirectory(0);              
-    // cout << "pSS1 " << pSS1.str() << endl;
-    // iU1Fit[0]->Print();
-    pSS2  << lStr << "u1MeanRMS_" << original_file_rapbin;  iU1MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS2.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);           
-    pSS3  << lStr << "u1RMS1_"    << original_file_rapbin;  iU1RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS3.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);     
-    pSS4  << lStr << "u1RMS2_"    << original_file_rapbin;  iU1RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS4.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);     
-    pSS5  << lStr << "u1RMS3_"    << original_file_rapbin;  iU1RMS3Fit.push_back( (TF1*) lFile->FindObjectAny((pSS5.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);     
-    //pSS5  << "u1Sig3_"    << original_file_rapbin;  iU1Sig3Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+pSS5.str()).c_str())); //iU2RMSFit[rapbin]->SetDirectory(0);         
-    pSS6  << lStr << "u2Mean_"    << original_file_rapbin;  iU2Fit    .push_back( (TF1*) lFile->FindObjectAny((pSS6.str()).c_str())); //iU2Fit[rapbin]->SetDirectory(0);              
-    pSS7  << lStr << "u2MeanRMS_" << original_file_rapbin;  iU2MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS7.str()).c_str())); //iU2RMSFit[rapbin]->SetDirectory(0);           
-    pSS8  << lStr << "u2RMS1_"    << original_file_rapbin;  iU2RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS8.str()).c_str())); //iU2RMSFit[rapbin]->SetDirectory(0);     
-    pSS9  << lStr << "u2RMS2_"    << original_file_rapbin;  iU2RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS9.str()).c_str())); //iU2RMSFit[rapbin]->SetDirectory(0);     
-    pSS10  << lStr << "u2RMS3_"    << original_file_rapbin;  iU2RMS3Fit.push_back( (TF1*) lFile->FindObjectAny((pSS10.str()).c_str())); //iU2RMSFit[rapbin]->SetDirectory(0);
-    //pSS10 << "u2Sig3_"    << original_file_rapbin;  iU2Sig3Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+pSS10.str()).c_str())); //iU2RMSFit[rapbin]->SetDirectory(0);
-    pSS11  << lStr << "u1Frac_"    << original_file_rapbin;  iU1FracFit.push_back( (TF1*) lFile->FindObjectAny((pSS11.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);     
-    pSS12  << lStr << "u2Frac_"    << original_file_rapbin;  iU2FracFit.push_back( (TF1*) lFile->FindObjectAny((pSS12.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);           
-    pSS13  << lStr << "u1Mean1_"    << original_file_rapbin;  iU1Mean1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS13.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);
-    pSS14  << lStr << "u1Mean2_"    << original_file_rapbin;  iU1Mean2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS14.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);
-    pSS15  << lStr << "u2Mean1_"    << original_file_rapbin;  iU2Mean1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS15.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);
-    pSS16  << lStr << "u2Mean2_"    << original_file_rapbin;  iU2Mean2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS16.str()).c_str())); //iU1RMSFit[rapbin]->SetDirectory(0);
+    pSS1  << lStr << "u1Mean_"    << original_file_rapbin;  iU1Fit.push_back    ( (TF1*) lFile->FindObjectAny((pSS1.str()).c_str()));
+    pSS2  << lStr << "u1MeanRMS_" << original_file_rapbin;  iU1MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS2.str()).c_str()));
+    pSS3  << lStr << "u1RMS1_"    << original_file_rapbin;  iU1RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS3.str()).c_str()));
+    pSS4  << lStr << "u1RMS2_"    << original_file_rapbin;  iU1RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS4.str()).c_str()));
+    pSS5  << lStr << "u1RMS3_"    << original_file_rapbin;  iU1RMS3Fit.push_back( (TF1*) lFile->FindObjectAny((pSS5.str()).c_str()));
+    //pSS5  << "u1Sig3_"    << original_file_rapbin;  iU1Sig3Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+pSS5.str()).c_str()));
+    pSS6  << lStr << "u2Mean_"    << original_file_rapbin;  iU2Fit    .push_back( (TF1*) lFile->FindObjectAny((pSS6.str()).c_str()));
+    pSS7  << lStr << "u2MeanRMS_" << original_file_rapbin;  iU2MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS7.str()).c_str()));
+    pSS8  << lStr << "u2RMS1_"    << original_file_rapbin;  iU2RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS8.str()).c_str()));
+    pSS9  << lStr << "u2RMS2_"    << original_file_rapbin;  iU2RMS2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS9.str()).c_str()));
+    pSS10 << lStr << "u2RMS3_"    << original_file_rapbin;  iU2RMS3Fit.push_back( (TF1*) lFile->FindObjectAny((pSS10.str()).c_str()));
+    //pSS10 << "u2Sig3_"    << original_file_rapbin;  iU2Sig3Fit.push_back( (TF1*) lFile->FindObjectAny((iPrefix+pSS10.str()).c_str()));
+    pSS11 << lStr << "u1Frac_"    << original_file_rapbin;  iU1FracFit.push_back( (TF1*) lFile->FindObjectAny((pSS11.str()).c_str()));
+    pSS12 << lStr << "u2Frac_"    << original_file_rapbin;  iU2FracFit.push_back( (TF1*) lFile->FindObjectAny((pSS12.str()).c_str()));
+    pSS13 << lStr << "u1Mean1_"   << original_file_rapbin;  iU1Mean1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS13.str()).c_str()));
+    pSS14 << lStr << "u1Mean2_"   << original_file_rapbin;  iU1Mean2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS14.str()).c_str()));
+    pSS15 << lStr << "u2Mean1_"   << original_file_rapbin;  iU2Mean1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS15.str()).c_str()));
+    pSS16 << lStr << "u2Mean2_"   << original_file_rapbin;  iU2Mean2Fit.push_back( (TF1*) lFile->FindObjectAny((pSS16.str()).c_str()));
 
     wU1[mytype][rapbin] = new RooWorkspace("wU1","wU1");
     pdfU1[mytype][rapbin] = (RooAddPdf*) lFile->Get(Form("AddU1Y%d",original_file_rapbin));
