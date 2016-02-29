@@ -310,12 +310,13 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     string fileZmmKeysData = "../RecoilCode/DEC6/keysrecoilfit_DEC6_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
     if(correctToMadgraph) fileZmmKeysData = "../RecoilCode/DEC6/keysrecoilfit_DEC6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X_madgraph.root";
 
+    TString model_name = "fitresult_Add";
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;
-    correctorRecoil_Z = new RecoilCorrector(doKeys, fileCorrectTo.c_str(),fileZmmKeysCorrectTo.c_str(), "fitresult_Add","../RecoilCode/MAY25/nonClosureMAY25.root");
+    correctorRecoil_Z = new RecoilCorrector(doKeys, fileCorrectTo.c_str(), fileZmmKeysCorrectTo.c_str(), model_name,"../RecoilCode/MAY25/nonClosureMAY25.root");
     cout << "INITIALIZING RECOIL Z DATA FILE" << endl;
-    correctorRecoil_Z->addDataFile(fileZmmData.c_str(), fileZmmKeysData.c_str(), "fitresult_Add");
+    correctorRecoil_Z->addDataFile(fileZmmData.c_str(), fileZmmKeysData.c_str(), model_name);
     cout << "INITIALIZING RECOIL Z MC FILE" << endl;
-    correctorRecoil_Z->addMCFile(fileZmmMC.c_str(), fileZmmKeysMC.c_str(), "fitresult_Add");
+    correctorRecoil_Z->addMCFile(fileZmmMC.c_str(), fileZmmKeysMC.c_str(), model_name);
 
   }
 
