@@ -13,14 +13,12 @@ RecoilCorrector::RecoilCorrector(bool doKeys, std::string iNameZ, std::string iN
 //-----------------------------------------------------------------------------------------------------------------------------------------
 void RecoilCorrector::addDataFile(std::string iNameData, std::string iNameData_key, TString model_name)
 {
-  readRecoil(fD1U1Fit,fD1U1RMSSMFit, fD1U2Fit,fD1U2RMSSMFit, iNameData, iNameData_key, "PF",RecoilCorrector::ZDATA, model_name
-  );
+  readRecoil(fD1U1Fit,fD1U1RMSSMFit, fD1U2Fit,fD1U2RMSSMFit, iNameData, iNameData_key, "PF",RecoilCorrector::ZDATA, model_name);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------
 void RecoilCorrector::addMCFile(std::string iNameMC, std::string iNameMC_key, TString model_name)
 {
-  readRecoil(fM1U1Fit,fM1U1RMSSMFit, fM1U2Fit,fM1U2RMSSMFit, iNameMC,iNameMC_key, "PF",RecoilCorrector::ZMC, model_name
-  );
+  readRecoil(fM1U1Fit,fM1U1RMSSMFit, fM1U2Fit,fM1U2RMSSMFit, iNameMC,iNameMC_key, "PF",RecoilCorrector::ZMC, model_name);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -191,6 +189,10 @@ void RecoilCorrector::applyCorrMET3gausPDF(
   int nSigmas,
   double &pU1,double &pU2
 ) {
+  // =================================================
+  // NOTE: This function tacitely assumes targetMC==MC
+  // DO NOT USE FOR W BEFORE DEBUGGING
+  // =================================================
 
   double lRescale  = sqrt((TMath::Pi())/2.);  // Magic normalization number due to usage of absolute values while computing the overall RMS
   //  double lRescale  = 1;     // for squares
