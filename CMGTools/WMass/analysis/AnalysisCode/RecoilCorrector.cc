@@ -54,14 +54,13 @@ TString model_name
   TFile *lFile  = new TFile(iFName.c_str());
   TFile *lFileKeys;
   if (doKeys) lFileKeys = new TFile(iFKeyName.c_str());
-  // lFile->ls();
 
   // now defined in the .h
-  // const int lNBins = 2;
+  // const int rapbins = 2;
 
-  cout << " lNBins " << lNBins << endl;
+  cout << " rapbins " << rapbins << endl;
 
-  for(int rapbin = 0; rapbin < lNBins; rapbin++) {
+  for(int rapbin = 0; rapbin < rapbins; rapbin++) {
     cout << "reading bin " << rapbin << endl;
     int original_file_rapbin = rapbin+1;
 
@@ -135,7 +134,6 @@ TString model_name
   
   lFile->Close();
   // iSumEt.push_back(1000);
-  // return lNBins;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------

@@ -196,7 +196,7 @@ protected:
   void runDiago(RooWorkspace *w,RooFitResult *result, TString fit, RooAbsReal *&pdfUiCdf);
   void makeKeysVec(RooWorkspace *w, TFile *file, TString fit, std::vector<RooAbsReal*> &pdfUiCdfm, bool isU1);
   double diGausPVal(double iVal, double iFrac,double iSimga1,double iSigma2);
-  double triGausInvGraph(double iPVal, /**/ double meanRMSMC, double iMean1MC, double iMean2MC, double iFrac1MC,double iSigma1MC,double iSigma2MC,double iSigma3MC,/**/ double meanRMSDATA, double iMean1DATA, double iMean2DATA,double iFrac1DATA,double iSigma1DATA,double iSigma2DATA,double iSigma3DATA);
+  double triGausInvGraph(double iPVal, double meanRMSMC, double iMean1MC, double iMean2MC, double iFrac1MC,double iSigma1MC,double iSigma2MC,double iSigma3MC,/**/ double meanRMSDATA, double iMean1DATA, double iMean2DATA,double iFrac1DATA,double iSigma1DATA,double iSigma2DATA,double iSigma3DATA);
   double triGausInvGraphKeys(double iPVal, double Zpt, std::vector<RooAbsReal*> pdfKeyMCcdf, std::vector<RooAbsReal*> pdfKeyDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA, bool isU1, double max);
   // double triGausInvGraphPDF(double iPVal, double Zpt, RooAddPdf *pdfMC, RooAddPdf *pdfDATA, RooWorkspace *wMC, RooWorkspace *wDATA);
   double triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsReal *pdfDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA, double max);
@@ -212,14 +212,14 @@ protected:
   double CorrVal(double iPt,double iVal,Recoil iType);
   //void   Correct(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double iFluc,int njet);
   
-  static const int lNBins = 2;//lGraph->GetN();                   
-  RooWorkspace *wU1[3][lNBins],*wU2[3][lNBins],*wU1diago[3][lNBins],*wU2diago[3][lNBins];
-  RooWorkspace *wU1key[3][lNBins],*wU2key[3][lNBins];
-  RooAddPdf *pdfU1[3][lNBins],*pdfU2[3][lNBins];
-  RooAbsReal *pdfU1Cdf[3][lNBins],*pdfU2Cdf[3][lNBins];
-  vector<RooAbsReal*> pdfKeyU1Cdf[3][lNBins], pdfKeyU2Cdf[3][lNBins];
-  RooFitResult* frU1[3][lNBins];
-  RooFitResult* frU2[3][lNBins];
+  static const int rapbins = 2;
+  RooWorkspace *wU1[3][rapbins],*wU2[3][rapbins],*wU1diago[3][rapbins],*wU2diago[3][rapbins];
+  RooWorkspace *wU1key[3][rapbins],*wU2key[3][rapbins];
+  RooAddPdf *pdfU1[3][rapbins],*pdfU2[3][rapbins];
+  RooAbsReal *pdfU1Cdf[3][rapbins],*pdfU2Cdf[3][rapbins];
+  vector<RooAbsReal*> pdfKeyU1Cdf[3][rapbins], pdfKeyU2Cdf[3][rapbins];
+  RooFitResult* frU1[3][rapbins];
+  RooFitResult* frU2[3][rapbins];
   TFile *fNonClosure; 
   TH2D *hNonClosure[2][2]; 
   vector<TF1*> fF1U1Fit; vector<TF1*> fF1U1RMSSMFit; vector<TF1*> fF1U1RMS1Fit; vector<TF1*> fF1U1RMS2Fit, fF1U1RMS3Fit, fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit; 
