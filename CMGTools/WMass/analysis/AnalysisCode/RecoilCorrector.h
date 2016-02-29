@@ -73,10 +73,10 @@ protected:
   void readRecoil(
     std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,
     std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,std::vector<TF1*> &iU1RMS3Fit,
-    std::vector<TF1*> &iU1FracFit,std::vector<TF1*> &iU1Mean1Fit, std::vector<TF1*> &iU1Mean2Fit,//std::vector<TF1*> &iU1Sig3Fit,
+    std::vector<TF1*> &iU1FracFit,std::vector<TF1*> &iU1Mean1Fit, std::vector<TF1*> &iU1Mean2Fit,
     std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,
     std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2RMS3Fit,
-    std::vector<TF1*> &iU2FracFit,std::vector<TF1*> &iU2Mean1Fit, std::vector<TF1*> &iU2Mean2Fit,//std::vector<TF1*> &iU2Sig3Fit,
+    std::vector<TF1*> &iU2FracFit,std::vector<TF1*> &iU2Mean1Fit, std::vector<TF1*> &iU2Mean2Fit,
     std::string iFName,std::string iFKeyName, std::string iPrefix, int mytype, TString model_name = "fitresult_Add"
   );
 
@@ -107,8 +107,6 @@ protected:
     TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
     TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
     TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
-    // RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1,
-    // RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2,
     int rapbin, int nSigmas, double &pU1, double &pU2
   );
   double calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2);
@@ -120,21 +118,25 @@ protected:
   static const int rapbins = 2;
   enum filetype { targetMC , ZDATA , ZMC };
   static const int Ntypes = 3;
+  
   RooWorkspace *wU1[Ntypes][rapbins],*wU2[Ntypes][rapbins];
   RooWorkspace *wU1diago[Ntypes][rapbins],*wU2diago[Ntypes][rapbins];
   RooWorkspace *wU1key[Ntypes][rapbins],*wU2key[Ntypes][rapbins];
+  
   RooAddPdf *pdfU1[Ntypes][rapbins],*pdfU2[Ntypes][rapbins];
   RooAbsReal *pdfU1Cdf[Ntypes][rapbins],*pdfU2Cdf[Ntypes][rapbins];
+  
   vector<RooAbsReal*> pdfKeyU1Cdf[Ntypes][rapbins], pdfKeyU2Cdf[Ntypes][rapbins];
+  
   RooFitResult* frU1[Ntypes][rapbins];
   RooFitResult* frU2[Ntypes][rapbins];
   
   vector<TF1*> fF1U1Fit; vector<TF1*> fF1U1RMSSMFit; vector<TF1*> fF1U1RMS1Fit; vector<TF1*> fF1U1RMS2Fit, fF1U1RMS3Fit, fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit; 
-  vector<TF1*> fF1U2Fit; vector<TF1*> fF1U2RMSSMFit; vector<TF1*> fF1U2RMS1Fit; vector<TF1*> fF1U2RMS2Fit, fF1U2RMS3Fit, fF1U2FracFit, fF1U2Mean1Fit, fF1U2Mean2Fit;; 
+  vector<TF1*> fF1U2Fit; vector<TF1*> fF1U2RMSSMFit; vector<TF1*> fF1U2RMS1Fit; vector<TF1*> fF1U2RMS2Fit, fF1U2RMS3Fit, fF1U2FracFit, fF1U2Mean1Fit, fF1U2Mean2Fit; 
   vector<TF1*> fF2U1Fit; vector<TF1*> fF2U1RMSSMFit; vector<TF1*> fF2U1RMS1Fit; vector<TF1*> fF2U1RMS2Fit, fF2U1RMS3Fit, fF2U1FracFit, fF2U1Mean1Fit, fF2U1Mean2Fit; 
   vector<TF1*> fF2U2Fit; vector<TF1*> fF2U2RMSSMFit; vector<TF1*> fF2U2RMS1Fit; vector<TF1*> fF2U2RMS2Fit, fF2U2RMS3Fit, fF2U2FracFit, fF2U2Mean1Fit, fF2U2Mean2Fit; 
 
-  vector<TF1*> fD1U1Fit; vector<TF1*> fD1U1RMSSMFit; vector<TF1*> fD1U1RMS1Fit; vector<TF1*> fD1U1RMS2Fit,fD1U1RMS3Fit, fD1U1FracFit, fD1U1Mean1Fit, fD1U1Mean2Fit; 
+  vector<TF1*> fD1U1Fit; vector<TF1*> fD1U1RMSSMFit; vector<TF1*> fD1U1RMS1Fit; vector<TF1*> fD1U1RMS2Fit, fD1U1RMS3Fit, fD1U1FracFit, fD1U1Mean1Fit, fD1U1Mean2Fit; 
   vector<TF1*> fD1U2Fit; vector<TF1*> fD1U2RMSSMFit; vector<TF1*> fD1U2RMS1Fit; vector<TF1*> fD1U2RMS2Fit, fD1U2RMS3Fit, fD1U2FracFit, fD1U2Mean1Fit, fD1U2Mean2Fit; 
   vector<TF1*> fD2U1Fit; vector<TF1*> fD2U1RMSSMFit; vector<TF1*> fD2U1RMS1Fit; vector<TF1*> fD2U1RMS2Fit, fD2U1RMS3Fit, fD2U1FracFit, fD2U1Mean1Fit, fD2U1Mean2Fit; 
   vector<TF1*> fD2U2Fit; vector<TF1*> fD2U2RMSSMFit; vector<TF1*> fD2U2RMS1Fit; vector<TF1*> fD2U2RMS2Fit, fD2U2RMS3Fit, fD2U2FracFit, fD2U2Mean1Fit, fD2U2Mean2Fit; 
@@ -155,7 +157,6 @@ protected:
   bool doKeys;
 
 };
-
 
 
 #endif
