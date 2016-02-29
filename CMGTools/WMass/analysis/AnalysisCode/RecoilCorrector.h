@@ -47,11 +47,7 @@ public:
 protected:
   void readRecoil(
     std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,
-    std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,std::vector<TF1*> &iU1RMS3Fit,
-    std::vector<TF1*> &iU1FracFit,std::vector<TF1*> &iU1Mean1Fit, std::vector<TF1*> &iU1Mean2Fit,
     std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,
-    std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2RMS3Fit,
-    std::vector<TF1*> &iU2FracFit,std::vector<TF1*> &iU2Mean1Fit, std::vector<TF1*> &iU2Mean2Fit,
     std::string iFName,std::string iFKeyName, std::string iPrefix, int mytype, TString model_name = "fitresult_Add"
   );
 
@@ -86,28 +82,14 @@ protected:
   RooFitResult* frU1[Ntypes][rapbins];
   RooFitResult* frU2[Ntypes][rapbins];
   
-  std::vector<TF1*> fF1U1Fit; std::vector<TF1*> fF1U1RMSSMFit; std::vector<TF1*> fF1U1RMS1Fit; std::vector<TF1*> fF1U1RMS2Fit, fF1U1RMS3Fit, fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit;
-  std::vector<TF1*> fF1U2Fit; std::vector<TF1*> fF1U2RMSSMFit; std::vector<TF1*> fF1U2RMS1Fit; std::vector<TF1*> fF1U2RMS2Fit, fF1U2RMS3Fit, fF1U2FracFit, fF1U2Mean1Fit, fF1U2Mean2Fit;
-  std::vector<TF1*> fF2U1Fit; std::vector<TF1*> fF2U1RMSSMFit; std::vector<TF1*> fF2U1RMS1Fit; std::vector<TF1*> fF2U1RMS2Fit, fF2U1RMS3Fit, fF2U1FracFit, fF2U1Mean1Fit, fF2U1Mean2Fit;
-  std::vector<TF1*> fF2U2Fit; std::vector<TF1*> fF2U2RMSSMFit; std::vector<TF1*> fF2U2RMS1Fit; std::vector<TF1*> fF2U2RMS2Fit, fF2U2RMS3Fit, fF2U2FracFit, fF2U2Mean1Fit, fF2U2Mean2Fit;
+  std::vector<TF1*> fF1U1Fit; std::vector<TF1*> fF1U1RMSSMFit;
+  std::vector<TF1*> fF1U2Fit; std::vector<TF1*> fF1U2RMSSMFit;
 
-  std::vector<TF1*> fD1U1Fit; std::vector<TF1*> fD1U1RMSSMFit; std::vector<TF1*> fD1U1RMS1Fit; std::vector<TF1*> fD1U1RMS2Fit, fD1U1RMS3Fit, fD1U1FracFit, fD1U1Mean1Fit, fD1U1Mean2Fit;
-  std::vector<TF1*> fD1U2Fit; std::vector<TF1*> fD1U2RMSSMFit; std::vector<TF1*> fD1U2RMS1Fit; std::vector<TF1*> fD1U2RMS2Fit, fD1U2RMS3Fit, fD1U2FracFit, fD1U2Mean1Fit, fD1U2Mean2Fit;
-  std::vector<TF1*> fD2U1Fit; std::vector<TF1*> fD2U1RMSSMFit; std::vector<TF1*> fD2U1RMS1Fit; std::vector<TF1*> fD2U1RMS2Fit, fD2U1RMS3Fit, fD2U1FracFit, fD2U1Mean1Fit, fD2U1Mean2Fit;
-  std::vector<TF1*> fD2U2Fit; std::vector<TF1*> fD2U2RMSSMFit; std::vector<TF1*> fD2U2RMS1Fit; std::vector<TF1*> fD2U2RMS2Fit, fD2U2RMS3Fit, fD2U2FracFit, fD2U2Mean1Fit, fD2U2Mean2Fit;
+  std::vector<TF1*> fD1U1Fit; std::vector<TF1*> fD1U1RMSSMFit;
+  std::vector<TF1*> fD1U2Fit; std::vector<TF1*> fD1U2RMSSMFit;
 
-  std::vector<TF1*> fM1U1Fit; std::vector<TF1*> fM1U1RMSSMFit; std::vector<TF1*> fM1U1RMS1Fit; std::vector<TF1*> fM1U1RMS2Fit, fM1U1RMS3Fit, fM1U1FracFit, fM1U1Mean1Fit, fM1U1Mean2Fit;
-  std::vector<TF1*> fM1U2Fit; std::vector<TF1*> fM1U2RMSSMFit; std::vector<TF1*> fM1U2RMS1Fit; std::vector<TF1*> fM1U2RMS2Fit, fM1U2RMS3Fit, fM1U2FracFit, fM1U2Mean1Fit, fM1U2Mean2Fit;
-  std::vector<TF1*> fM2U1Fit; std::vector<TF1*> fM2U1RMSSMFit; std::vector<TF1*> fM2U1RMS1Fit; std::vector<TF1*> fM2U1RMS2Fit, fM2U1RMS3Fit, fM2U1FracFit, fM2U1Mean1Fit, fM2U1Mean2Fit;
-  std::vector<TF1*> fM2U2Fit; std::vector<TF1*> fM2U2RMSSMFit; std::vector<TF1*> fM2U2RMS1Fit; std::vector<TF1*> fM2U2RMS2Fit, fM2U2RMS3Fit, fM2U2FracFit, fM2U2Mean1Fit, fM2U2Mean2Fit;
-
-  std::vector<TF1*> fF1U1U2Corr;     std::vector<TF1*> fF2U1U2Corr;
-  std::vector<TF1*> fF1F2U1Corr;     std::vector<TF1*> fF1F2U2Corr;
-  std::vector<TF1*> fF1F2U1U2Corr;   std::vector<TF1*> fF1F2U2U1Corr;
-
-  std::vector<TF1*> fM1U1U2Corr;     std::vector<TF1*> fM2U1U2Corr;
-  std::vector<TF1*> fM1M2U1Corr;     std::vector<TF1*> fM1M2U2Corr;
-  std::vector<TF1*> fM1M2U1U2Corr;   std::vector<TF1*> fM1M2U2U1Corr;
+  std::vector<TF1*> fM1U1Fit; std::vector<TF1*> fM1U1RMSSMFit;
+  std::vector<TF1*> fM1U2Fit; std::vector<TF1*> fM1U2RMSSMFit;
 
   bool doKeys;
 

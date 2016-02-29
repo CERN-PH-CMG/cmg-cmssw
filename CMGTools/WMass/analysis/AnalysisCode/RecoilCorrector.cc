@@ -7,32 +7,28 @@ RecoilCorrector::RecoilCorrector(bool doKeys, std::string iNameZ, std::string iN
 
   RecoilCorrector::doKeys = doKeys;
   
-  readRecoil(fF1U1Fit,fF1U1RMSSMFit,fF1U1RMS1Fit,fF1U1RMS2Fit,fF1U1RMS3Fit,fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit, fF1U2Fit,fF1U2RMSSMFit,fF1U2RMS1Fit,fF1U2RMS2Fit,fF1U2RMS3Fit,fF1U2FracFit,fF1U2Mean1Fit, fF1U2Mean2Fit,iNameZ,iNameZ_key,"PF",RecoilCorrector::targetMC,model_name);
+  readRecoil(fF1U1Fit,fF1U1RMSSMFit, fF1U2Fit,fF1U2RMSSMFit, iNameZ,iNameZ_key,"PF",RecoilCorrector::targetMC,model_name);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 void RecoilCorrector::addDataFile(std::string iNameData, std::string iNameData_key, TString model_name)
 {
-  readRecoil(fD1U1Fit,fD1U1RMSSMFit,fD1U1RMS1Fit,fD1U1RMS2Fit,fD1U1RMS3Fit,fD1U1FracFit, fD1U1Mean1Fit, fD1U1Mean2Fit, fD1U2Fit,fD1U2RMSSMFit,fD1U2RMS1Fit,fD1U2RMS2Fit,fD1U2RMS3Fit,fD1U2FracFit,fD1U2Mean1Fit, fD1U2Mean2Fit,iNameData, iNameData_key, "PF",RecoilCorrector::ZDATA, model_name
+  readRecoil(fD1U1Fit,fD1U1RMSSMFit, fD1U2Fit,fD1U2RMSSMFit, iNameData, iNameData_key, "PF",RecoilCorrector::ZDATA, model_name
   );
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------
 void RecoilCorrector::addMCFile(std::string iNameMC, std::string iNameMC_key, TString model_name)
 {
-  readRecoil(fM1U1Fit,fM1U1RMSSMFit,fM1U1RMS1Fit,fM1U1RMS2Fit,fM1U1RMS3Fit,fM1U1FracFit, fM1U1Mean1Fit, fM1U1Mean2Fit, fM1U2Fit,fM1U2RMSSMFit,fM1U2RMS1Fit,fM1U2RMS2Fit,fM1U2RMS3Fit,fM1U2FracFit,fM1U2Mean1Fit, fM1U2Mean2Fit,iNameMC,iNameMC_key, "PF",RecoilCorrector::ZMC, model_name
+  readRecoil(fM1U1Fit,fM1U1RMSSMFit, fM1U2Fit,fM1U2RMSSMFit, iNameMC,iNameMC_key, "PF",RecoilCorrector::ZMC, model_name
   );
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector::readRecoil(/* std::vector<double> &iSumEt, */
-std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,
-std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,std::vector<TF1*> &iU1RMS3Fit,
-std::vector<TF1*> &iU1FracFit,std::vector<TF1*> &iU1Mean1Fit, std::vector<TF1*> &iU1Mean2Fit,//std::vector<TF1*> &iU1Sig3Fit,
-std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,
-std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,std::vector<TF1*> &iU2RMS3Fit,
-std::vector<TF1*> &iU2FracFit,std::vector<TF1*> &iU2Mean1Fit, std::vector<TF1*> &iU2Mean2Fit,//std::vector<TF1*> &iU2Sig3Fit,
-std::string iFName , std::string iFKeyName , std::string iPrefix, int mytype,
-TString model_name
+void RecoilCorrector::readRecoil(
+  std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,
+  std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,
+  std::string iFName , std::string iFKeyName , std::string iPrefix, int mytype,
+  TString model_name
 ) {
 
   //type=1 read U1; type=2 read U2;
@@ -69,20 +65,8 @@ TString model_name
       // Fill TF1 vectors from rootfile
       iU1Fit.push_back    ( (TF1*)lFile->FindObjectAny(Form("%su1Mean_%d",    iPrefix.c_str(), file_rapbin)));
       iU1MRMSFit.push_back( (TF1*)lFile->FindObjectAny(Form("%su1MeanRMS_%d", iPrefix.c_str(), file_rapbin)));
-      iU1RMS1Fit.push_back( (TF1*)lFile->FindObjectAny(Form("%su1RMS1_%d",    iPrefix.c_str(), file_rapbin)));
-      iU1RMS2Fit.push_back( (TF1*)lFile->FindObjectAny(Form("%su1RMS2_%d",    iPrefix.c_str(), file_rapbin)));
-      iU1RMS3Fit.push_back( (TF1*)lFile->FindObjectAny(Form("%su1RMS3_%d",    iPrefix.c_str(), file_rapbin)));
       iU2Fit    .push_back( (TF1*)lFile->FindObjectAny(Form("%su2Mean_%d",    iPrefix.c_str(), file_rapbin)));
       iU2MRMSFit.push_back( (TF1*)lFile->FindObjectAny(Form("%su2MeanRMS_%d", iPrefix.c_str(), file_rapbin)));
-      iU2RMS1Fit.push_back( (TF1*)lFile->FindObjectAny(Form("%su2RMS1_%d",    iPrefix.c_str(), file_rapbin)));
-      iU2RMS2Fit.push_back( (TF1*)lFile->FindObjectAny(Form("%su2RMS2_%d",    iPrefix.c_str(), file_rapbin)));
-      iU2RMS3Fit.push_back( (TF1*)lFile->FindObjectAny(Form("%su2RMS3_%d",    iPrefix.c_str(), file_rapbin)));
-      iU1FracFit.push_back( (TF1*)lFile->FindObjectAny(Form("%su1Frac_%d",    iPrefix.c_str(), file_rapbin)));
-      iU2FracFit.push_back( (TF1*)lFile->FindObjectAny(Form("%su2Frac_%d",    iPrefix.c_str(), file_rapbin)));
-      iU1Mean1Fit.push_back((TF1*)lFile->FindObjectAny(Form("%su1Mean1_%d",   iPrefix.c_str(), file_rapbin)));
-      iU1Mean2Fit.push_back((TF1*)lFile->FindObjectAny(Form("%su1Mean2_%d",   iPrefix.c_str(), file_rapbin)));
-      iU2Mean1Fit.push_back((TF1*)lFile->FindObjectAny(Form("%su2Mean1_%d",   iPrefix.c_str(), file_rapbin)));
-      iU2Mean2Fit.push_back((TF1*)lFile->FindObjectAny(Form("%su2Mean2_%d",   iPrefix.c_str(), file_rapbin)));
 
       wU1[mytype][rapbin] = new RooWorkspace("wU1","wU1");
       pdfU1[mytype][rapbin] = (RooAddPdf*) lFile->Get(Form("AddU1Y%d",file_rapbin));
@@ -175,22 +159,7 @@ void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double bosonP
     fF1U1Fit[rapbin],
     fD1U1Fit[rapbin],  fM1U1Fit[rapbin],
     fD1U1RMSSMFit[rapbin], fM1U1RMSSMFit[rapbin],
-    // fD1U1RMS1Fit[rapbin], fM1U1RMS1Fit[rapbin],
-    // fD1U1RMS2Fit[rapbin], fM1U1RMS2Fit[rapbin],
-    // fD1U1RMS3Fit[rapbin], fM1U1RMS3Fit[rapbin],
-    // fD1U1FracFit[rapbin], fM1U1FracFit[rapbin],
-    // fD1U1Mean1Fit[rapbin], fM1U1Mean1Fit[rapbin],
-    // fD1U1Mean2Fit[rapbin], fM1U1Mean2Fit[rapbin],
-    //
-    // fD1U2Fit[rapbin], fM1U2Fit[rapbin],
     fD1U2RMSSMFit[rapbin], fM1U2RMSSMFit[rapbin],
-    // fD1U2RMS1Fit[rapbin], fM1U2RMS1Fit[rapbin],
-    // fD1U2RMS2Fit[rapbin], fM1U2RMS2Fit[rapbin],
-    // fD1U2RMS3Fit[rapbin], fM1U2RMS3Fit[rapbin],
-    // fD1U2FracFit[rapbin], fM1U2FracFit[rapbin],
-    // fD1U2Mean1Fit[rapbin], fM1U2Mean1Fit[rapbin],
-    // fD1U2Mean2Fit[rapbin], fM1U2Mean2Fit[rapbin],
-
     rapbin,
     recoilCorrSigmas,
     iU1,iU2
