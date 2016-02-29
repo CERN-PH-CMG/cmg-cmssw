@@ -90,47 +90,30 @@ TString model_name
     pdfU1[mytype][rapbin] = (RooAddPdf*) lFile->Get(Form("AddU1Y%d",file_rapbin));
     wU1[mytype][rapbin]->import(*pdfU1[mytype][rapbin],RooFit::Silence());
     frU1[mytype][rapbin] = (RooFitResult*) lFile->Get(Form("%sU1Y%d_Crapsky0_U1_2D",model_name.Data(),file_rapbin));
-    // cout << "CALLING frU1[mytype][rapbin]->Print(\"V\")" << endl;
-    // frU1[mytype][rapbin]->Print("V");
-    // wU1[mytype][rapbin]->Print();
+
     runDiago(wU1[mytype][rapbin],frU1[mytype][rapbin],Form("AddU1Y%d",file_rapbin),pdfU1Cdf[mytype][rapbin]);
 
-    wU1key[mytype][rapbin] = new RooWorkspace("wU1key","wU1key");
-    //    cout << "reading recoilKeys " << endl;
-    if (doKeys) makeKeysVec(wU1key[mytype][rapbin], lFileKeys, Form("Keys_U1_%d",file_rapbin), pdfKeyU1Cdf[mytype][rapbin],true);
-
-    //    RooRealVar* myptU1=wU1[mytype][rapbin]->var("pt");
-    //    myptU1->setVal(10);
-    //    cout <<  "U1cdf=" << pdfU1Cdf[mytype][rapbin]->getVal()    << endl;
-
-    //    delete pdfU1[mytype][rapbin];
-    //    delete frU1[mytype][rapbin];
 
     wU2[mytype][rapbin] = new RooWorkspace("wU2","wU2");
     pdfU2[mytype][rapbin] = (RooAddPdf*) lFile->Get(Form("AddU2Y%d",file_rapbin));
     wU2[mytype][rapbin]->import(*pdfU2[mytype][rapbin],RooFit::Silence());
     frU2[mytype][rapbin] = (RooFitResult*) lFile->Get(Form("%sU2Y%d_Crapsky0_U2_2D",model_name.Data(),file_rapbin));
-    // wU2[mytype][rapbin]->Print();
-    // wU2diago[mytype][rapbin] = wU2[mytype][rapbin];
+
     runDiago(wU2[mytype][rapbin],frU2[mytype][rapbin],Form("AddU2Y%d",file_rapbin),pdfU2Cdf[mytype][rapbin]);
     
-    wU2key[mytype][rapbin] = new RooWorkspace("wU2key","wU2key");
-    if (doKeys) makeKeysVec(wU2key[mytype][rapbin], lFileKeys, Form("Keys_U2_%d",file_rapbin), pdfKeyU2Cdf[mytype][rapbin],false);
-
-    //    RooRealVar* myptU2=wU2[mytype][rapbin]->var("pt");
-    //    myptU2->setVal(10);
-    //    cout <<  "U2cdf= " << pdfU2Cdf[mytype][rapbin]->getVal()    << endl;
-
-    //    delete pdfU2[mytype][rapbin];
-    //    delete frU2[mytype][rapbin];
-
+    if (doKeys) {
+      //    cout << "reading recoilKeys " << endl;
+      
+      wU1key[mytype][rapbin] = new RooWorkspace("wU1key","wU1key");
+      if (doKeys) makeKeysVec(wU1key[mytype][rapbin], lFileKeys, Form("Keys_U1_%d",file_rapbin), pdfKeyU1Cdf[mytype][rapbin],true);
+      
+      wU2key[mytype][rapbin] = new RooWorkspace("wU2key","wU2key");
+      if (doKeys) makeKeysVec(wU2key[mytype][rapbin], lFileKeys, Form("Keys_U2_%d",file_rapbin), pdfKeyU2Cdf[mytype][rapbin],false);
+    }
   }
 
-  //  cout << "read U1 size: " << iU1Fit.size() << endl;
-  
-  
   lFile->Close();
-  // iSumEt.push_back(1000);
+  if (doKeys) lFileKeys->Close();
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
