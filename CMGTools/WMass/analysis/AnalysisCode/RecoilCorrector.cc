@@ -247,10 +247,8 @@ void RecoilCorrector::reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int 
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int rapbin, int recoilCorrSigmas, int mytype, bool key) {
-
-  RecoilCorrector::doKeys=key;
-
+void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int rapbin, int recoilCorrSigmas, int mytype)
+{
   // ---------------------------
   // CHANGE STAT EIGEN IF NEEDED
   // ---------------------------
