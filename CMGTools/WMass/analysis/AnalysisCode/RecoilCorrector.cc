@@ -276,8 +276,8 @@ void RecoilCorrector::applyCorrMET3gausPDF(
     
     // Go back to the absolute space (from pull)
     pU1corr *= pDRMSU1;
-    pDefU1 *= (pDU1/pMU1);
-    pU1corr = pDefU1 + pU1corr;
+    pDefU1  *= pDU1/pMU1;
+    pU1corr += pDefU1;
 
     pU2corr *= pDRMSU2;
 
