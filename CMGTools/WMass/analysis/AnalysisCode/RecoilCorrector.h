@@ -61,7 +61,7 @@ protected:
   double calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2);
   void runDiago(RooWorkspace *w,RooFitResult *result, TString fit, RooAbsReal *&pdfUiCdf);
   void makeKeysVec(RooWorkspace *w, TFile *file, TString fit, std::vector<RooAbsReal*> &pdfUiCdfm, bool isU1);
-  double keysInvGraph(double iPVal, double Zpt, std::vector<RooAbsReal*> pdfKeyMCcdf, std::vector<RooAbsReal*> pdfKeyDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA, bool isU1, double max);
+  double keysInvGraph(double iPVal, double Zpt, std::vector<RooAbsReal*> pdfKeyMCcdf, std::vector<RooAbsReal*> pdfKeyDATAcdf, bool isU1, double max);
   double triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal *pdfMCcdf, RooAbsReal *pdfDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA, double max);
   
   static const int rapbins = 2;

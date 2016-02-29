@@ -249,8 +249,8 @@ void RecoilCorrector::applyCorrMET3gausPDF(
   if(doKeys && doAbsolute) {
     // keysInvGraph
     // this need the absolute space
-    pU1corr = keysInvGraph(pU1noCorr,bosonPt,pdfKeyU1Cdf[ZMC][rapbin],pdfKeyU1Cdf[ZDATA][rapbin],wU1key[ZMC][rapbin],wU1key[ZDATA][rapbin],true, 50);
-    pU2corr = keysInvGraph(pU2noCorr,bosonPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],wU2key[ZMC][rapbin],wU2key[ZDATA][rapbin],false, 50);
+    pU1corr = keysInvGraph(pU1noCorr,bosonPt,pdfKeyU1Cdf[ZMC][rapbin],pdfKeyU1Cdf[ZDATA][rapbin],true, 50);
+    pU2corr = keysInvGraph(pU2noCorr,bosonPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],false, 50);
 
   } else {
     // Relative for all
@@ -265,8 +265,8 @@ void RecoilCorrector::applyCorrMET3gausPDF(
     
     if(doKeys) {
       // this need the relative space
-      pU1corr = keysInvGraph(pU1Diff,bosonPt,pdfKeyU1Cdf[ZMC][rapbin],pdfKeyU1Cdf[ZDATA][rapbin],wU1key[ZMC][rapbin],wU1key[ZDATA][rapbin],true,5);
-      pU2corr = keysInvGraph(pU2Diff,bosonPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],wU2key[ZMC][rapbin],wU2key[ZDATA][rapbin],false,5);
+      pU1corr = keysInvGraph(pU1Diff,bosonPt,pdfKeyU1Cdf[ZMC][rapbin],pdfKeyU1Cdf[ZDATA][rapbin],true,5);
+      pU2corr = keysInvGraph(pU2Diff,bosonPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],false,5);
     } else {
       // cout << "triGausInvGraphPDF U1" << endl;
       // this need the reduced space
@@ -332,7 +332,7 @@ double RecoilCorrector::triGausInvGraphPDF(double iPVal, double Zpt, RooAbsReal 
 
 }
 
-double RecoilCorrector::keysInvGraph(double iPVal, double Zpt, std::vector<RooAbsReal*> pdfKeyMCcdf, std::vector<RooAbsReal*> pdfKeyDATAcdf, RooWorkspace *wMC, RooWorkspace *wDATA, bool isU1, double max) {
+double RecoilCorrector::keysInvGraph(double iPVal, double Zpt, std::vector<RooAbsReal*> pdfKeyMCcdf, std::vector<RooAbsReal*> pdfKeyDATAcdf, bool isU1, double max) {
 
   // add protection for outlier since I tabulated up to max
   if(TMath::Abs(iPVal)>=max) return iPVal;
