@@ -42,7 +42,7 @@ class RecoilCorrector
 {
 
 public:
-  RecoilCorrector(bool doKeys, string iNameZDat, string iNameZ_key, TString model_name = "fitresult_Add", TString fNonClosure_name = "");
+  RecoilCorrector(bool doKeys, string iNameZDat, string iNameZ_key, TString model_name = "fitresult_Add");
   void reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int rapBinCorr);
   void CorrectMET3gaus(double &pfmet, double &pfmetphi,double bosonPt,double bosonPhi,double sumLepPt,double sumLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int njet=0, int recoilCorrSigmas=1);
   void CorrectU1U2(double &pfu1, double &pfu2, double &trku1, double &trku2, 
@@ -128,9 +128,6 @@ protected:
   vector<RooAbsReal*> pdfKeyU1Cdf[Ntypes][rapbins], pdfKeyU2Cdf[Ntypes][rapbins];
   RooFitResult* frU1[Ntypes][rapbins];
   RooFitResult* frU2[Ntypes][rapbins];
-  
-  TFile *fNonClosure;
-  TH2D *hNonClosure[2][2];
   
   vector<TF1*> fF1U1Fit; vector<TF1*> fF1U1RMSSMFit; vector<TF1*> fF1U1RMS1Fit; vector<TF1*> fF1U1RMS2Fit, fF1U1RMS3Fit, fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit; 
   vector<TF1*> fF1U2Fit; vector<TF1*> fF1U2RMSSMFit; vector<TF1*> fF1U2RMS1Fit; vector<TF1*> fF1U2RMS2Fit, fF1U2RMS3Fit, fF1U2FracFit, fF1U2Mean1Fit, fF1U2Mean2Fit;; 

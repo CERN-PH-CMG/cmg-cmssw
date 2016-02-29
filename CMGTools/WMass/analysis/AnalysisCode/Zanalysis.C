@@ -312,7 +312,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
     TString model_name = "fitresult_Add";
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;
-    correctorRecoil_Z = new RecoilCorrector(doKeys, fileCorrectTo.c_str(), fileZmmKeysCorrectTo.c_str(), model_name,"../RecoilCode/MAY25/nonClosureMAY25.root");
+    correctorRecoil_Z = new RecoilCorrector(doKeys, fileCorrectTo.c_str(), fileZmmKeysCorrectTo.c_str(), model_name);
     cout << "INITIALIZING RECOIL Z DATA FILE" << endl;
     correctorRecoil_Z->addDataFile(fileZmmData.c_str(), fileZmmKeysData.c_str(), model_name);
     cout << "INITIALIZING RECOIL Z MC FILE" << endl;

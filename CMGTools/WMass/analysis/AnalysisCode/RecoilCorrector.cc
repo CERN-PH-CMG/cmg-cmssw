@@ -1,21 +1,11 @@
 #include "RecoilCorrector.h"
 
 // mytype: 0 = target file , 1 = ZDATA , 2 = ZMC
-RecoilCorrector::RecoilCorrector(bool doKeys, string iNameZ, string iNameZ_key, TString model_name, TString fNonClosure_name) {
+RecoilCorrector::RecoilCorrector(bool doKeys, string iNameZ, string iNameZ_key, TString model_name) {
 
   RecoilCorrector::doKeys = doKeys;
+  
   readRecoil(fF1U1Fit,fF1U1RMSSMFit,fF1U1RMS1Fit,fF1U1RMS2Fit,fF1U1RMS3Fit,fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit, fF1U2Fit,fF1U2RMSSMFit,fF1U2RMS1Fit,fF1U2RMS2Fit,fF1U2RMS3Fit,fF1U2FracFit,fF1U2Mean1Fit, fF1U2Mean2Fit,iNameZ,iNameZ_key,"PF",RecoilCorrector::targetMC,model_name);
-  
-  fNonClosure = new TFile(fNonClosure_name.Data());
-  hNonClosure[0][0] = (TH2D*) fNonClosure->Get("mean_U1_y1");
-  hNonClosure[0][1] = (TH2D*) fNonClosure->Get("mean_U1_y2");
-  hNonClosure[1][0] = (TH2D*) fNonClosure->Get("RMS_U2_y1");
-  hNonClosure[1][1] = (TH2D*) fNonClosure->Get("RMS_U2_y2");
-  
-  // hNonClosure[0][0]->Smooth(10);
-  // hNonClosure[0][1]->Smooth(10);
-  // hNonClosure[1][0]->Smooth(10);
-  // hNonClosure[1][1]->Smooth(10);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
