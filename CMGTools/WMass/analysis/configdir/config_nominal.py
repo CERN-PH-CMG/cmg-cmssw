@@ -1,6 +1,6 @@
 ### Configuration variables for launch_analysis
 
-outfolder_prefix = "RCORRWORK"
+outfolder_prefix = "PREFIX"
 
 ### Muon trigger efficiency
 useEffSF = 2  # 0=no, 1=MuonPOG, 2=Heiner all, 3=Heiner no tight, 4=Heiner no iso, 5=Heiner no tight subleading mu, 6=Heiner no hlt
@@ -19,12 +19,10 @@ RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0  # SYST VARIATIONS: 0=NONE, RAPBIN 1
 RecoilCorrVarDiagoParSigmas = 0  # Number of sigmas for recoil syst
 
 ### define sample
-#resubmit_sample = "DATA, WJetsMadFake, DYJetsPow, DYJetsMadFake, TTJets, ZZJets, WWJets, WZJets, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW, QCD"
-resubmit_sample = "DYJetsPow"
-
+resubmit_sample = "DATA, WJetsMadFake, DYJetsPow, DYJetsMadFake, TTJets, ZZJets, WWJets, WZJets, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW, QCD"
 
 ### Working setup
-useBatch = 0
+useBatch = 1
 batchQueue = "1nh"
 
 WMassNSteps = 5    # 60 -- N of mass steps above and below the central
@@ -33,8 +31,6 @@ etaMaxMuons = 0.9  # 0.6, 0.8, 1.2, 1.6, 2.1
 ### ANALYSIS
 runZanalysis = 1
 controlplots = 0
-
-recreateSubPrograms = 1
 
 mergeSigEWKbkg = 0
 

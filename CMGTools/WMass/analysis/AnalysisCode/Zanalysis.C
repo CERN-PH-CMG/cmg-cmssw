@@ -601,7 +601,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             if(useRecoilCorr==2 || useRecoilCorr==3){
               // cout << "ZGen_pt=" << ZGen_pt << " ZGen_phi=" << ZGen_phi << " ZNocorr.Pt()=" << ZNocorr.Pt() << " ZNocorr.Phi()=" << ZNocorr.Phi() << endl;
               // cout << " RecoilCorrVarDiagoParU1orU2fromDATAorMC=" << RecoilCorrVarDiagoParU1orU2fromDATAorMC << " m=" << m << " RecoilCorrVarDiagoParSigmas=" << RecoilCorrVarDiagoParSigmas << " rapBin=" << rapBin << Form(" hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,0,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV) << endl;
-              cout << "Before correction:" << m << " - " << met_trasv << " - " << metphi_trasv << endl;
+              // cout << "Before correction:" << m << " - " << met_trasv << " - " << metphi_trasv << endl;
               correctorRecoil_Z->reset(WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[2],
                                        WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[3],
                                        RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 ? 0 : 1);
@@ -652,8 +652,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             }
             // cout << "met_trasv after=" << met_trasv << " metphi_trasv after=" << metphi_trasv << " met_trasvCentral after=" << met_trasvCentral << " metphi_trasvCentral after=" << metphi_trasvCentral << endl;
           }
-          cout << "met_trasvCentral after=" << met_trasvCentral << endl;
-          cout << "met_trasv after=" << met_trasv << endl;
+          // cout << "met_trasvCentral after=" << met_trasvCentral << endl;
+          // cout << "met_trasv after=" << met_trasv << endl;
 
           for(int n=0; n<WMass::KalmanNvariations; n++){
 

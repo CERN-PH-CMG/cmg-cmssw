@@ -37,8 +37,6 @@ public:
   RecoilCorrector(bool doKeys, std::string iNameZDat, std::string iNameZ_key, TString model_name = "fitresult_Add");
   void reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int rapBinCorr);
   void CorrectMET3gaus(double &pfmet, double &pfmetphi,double bosonPt,double bosonPhi,double sumLepPt,double sumLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int njet=0, int recoilCorrSigmas=1);
-  void CorrectU1U2(double &pfu1, double &pfu2, double &trku1, double &trku2, 
-    double bosonPt, double bosonPhi, double iLepPt, double iLepPhi,double iFluc,double iScale=0,int njet=0);
   void addDataFile(std::string iNameDat, std::string iNameKeyDat, TString model_name = "fitresult_Add");
   void addMCFile  (std::string iNameMC, std::string iNameKeyMC, TString model_name = "fitresult_Add");
 
