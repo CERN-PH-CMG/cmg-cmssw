@@ -45,19 +45,19 @@ public:
   RecoilCorrector(bool doKeys, string iNameZDat, string iNameZ_key, TString model_name = "fitresult_Add", TString fNonClosure_name = "");
   RecoilCorrector(string iNameZDat1, string iPrefix, int iSeed=0xDEADBEEF);
   ~RecoilCorrector();
-  void CorrectAll(double &met, double &metphi, double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double &iU1,double &iU2,double iFluc,double iScale=0,int njet=0);
+  void CorrectAll(double &met, double &metphi, double bosonPt, double bosonPhi, double iLepPt, double iLepPhi,double &iU1,double &iU2,double iFluc,double iScale=0,int njet=0);
   void Correct(double &pfmet, double &pfmetphi, double &trkmet, double &trkmetphi, 
-  double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double iFluc    ,double iScale=0,int njet=0);
-  void CorrectType1(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFlucU2,double iFlucU1,double iScale=0,int njet=0);
-  void CorrectType2(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFlucU2,double iFlucU1,double iScale=0,int njet=0,bool doSingleGauss=false);
+  double bosonPt, double bosonPhi, double iLepPt, double iLepPhi,double iFluc    ,double iScale=0,int njet=0);
+  void CorrectType1(double &pfmet, double &pfmetphi,double bosonPt,double bosonPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFlucU2,double iFlucU1,double iScale=0,int njet=0);
+  void CorrectType2(double &pfmet, double &pfmetphi,double bosonPt,double bosonPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFlucU2,double iFlucU1,double iScale=0,int njet=0,bool doSingleGauss=false);
   void reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int rapBinCorr);
-  void CorrectMET3gaus(double &pfmet, double &pfmetphi,double iGenPt,double iGenPhi,double sumLepPt,double sumLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int njet=0, int recoilCorrSigmas=1);
+  void CorrectMET3gaus(double &pfmet, double &pfmetphi,double bosonPt,double bosonPhi,double sumLepPt,double sumLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int njet=0, int recoilCorrSigmas=1);
   void CorrectU1U2(double &pfu1, double &pfu2, double &trku1, double &trku2, 
-  double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double iFluc,double iScale=0,int njet=0);
+  double bosonPt, double bosonPhi, double iLepPt, double iLepPhi,double iFluc,double iScale=0,int njet=0);
   void addDataFile(std::string iNameDat, std::string iNameKeyDat, TString model_name = "fitresult_Add");
   void addMCFile  (std::string iNameMC, std::string iNameKeyMC, TString model_name = "fitresult_Add");
-  double NonClosure_weight(double iMet,double iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi);
-  double NonClosure_scale(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi);
+  double NonClosure_weight(double iMet,double iMPhi,double bosonPt,double bosonPhi,double iGenRap, double iLepPt,double iLepPhi);
+  double NonClosure_scale(double &iMet,double &iMPhi,double bosonPt,double bosonPhi,double iGenRap, double iLepPt,double iLepPhi);
 
 protected:
   enum Recoil { 
@@ -95,7 +95,7 @@ protected:
   std::vector<TF1*> &iF1U1U2Corr  ,std::vector<TF1*> &iF2U1U2Corr,std::vector<TF1*> &iF1F2U1Corr,std::vector<TF1*> &iF1F2U2Corr,
   std::vector<TF1*> &iF1F2U1U2Corr,std::vector<TF1*> &iF1F2U2U1Corr,int iType=2);
 
-  void metDistribution(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
+  void metDistribution(double &iMet,double &iMPhi,double bosonPt,double bosonPhi,
     double iLepPt,double iLepPhi,TRandom3 *iRand,
     TF1 *iU1RZFit,
     TF1 *iU1MSZFit,
@@ -108,7 +108,7 @@ protected:
     double &iU1,double &iU2,double iFluc=0,double iScale=0);
 
   void metDistribution(double &iPFMet,double &iPFMPhi,double &iTKMet,double &iTKMPhi,
-    double iGenPt,double iGenPhi,
+    double bosonPt,double bosonPhi,
     double iLepPt,double iLepPhi,TRandom3 *iRand,
     TF1 *iU1RZPFFit,  TF1 *iU1RZTKFit,
     TF1 *iU1MSZPFFit, TF1 *iU1MSZTKFit,
@@ -122,14 +122,14 @@ protected:
     TF1 *iPFTKU1MCorr,TF1 *iPFTKU2MCorr,
     double &iU1,double &iU2,double iFluc=0,double iScale=0);
 
-  void metDistributionType1(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
+  void metDistributionType1(double &iMet,double &iMPhi,double bosonPt,double bosonPhi,
     double iLepPt,double iLepPhi,TRandom3 *iRand,
     TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
     TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
     TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
     double &iU1,double &iU2,double iFlucU2=0,double iFlucU1=0,double iScale=0);
 
-  void metDistributionType2(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
+  void metDistributionType2(double &iMet,double &iMPhi,double bosonPt,double bosonPhi,
     double iLepPt,double iLepPhi,
     TF1 *iU1Default,
     TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
@@ -142,7 +142,7 @@ protected:
     double &iU1, double &iU2,double iFlucU2=0,double iFlucU1=0,double iScale=0,
     bool doSingleGauss=false);
 
-  void metDistributionType2CorrU(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
+  void metDistributionType2CorrU(double &iMet,double &iMPhi,double bosonPt,double bosonPhi,
     double iLepPt,double iLepPhi,
     TF1 *iU1Default,
     TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
@@ -155,7 +155,7 @@ protected:
     double &iU1,double &iU2,double iFlucU2, double iFlucU1, double iScale,
     bool doSingleGauss);
 
-  void applyCorrMET3gaus(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
+  void applyCorrMET3gaus(double &iMet,double &iMPhi,double bosonPt,double bosonPhi,
     double i,double iLepPhi,
     TF1 *iU1Default,
     TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
@@ -176,7 +176,7 @@ protected:
     TF1 *iU2mean2ZDatFit, TF1 *iU2mean2ZMCFit,
     double iFlucU2,double iFlucU1,double iScale, int mytype
   );
-  void applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
+  void applyCorrMET3gausPDF(double &iMet,double &iMPhi,double bosonPt,double bosonPhi,
     double sumLepPt,double sumLepPhi,
     TF1 *iU1Default,
     TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,

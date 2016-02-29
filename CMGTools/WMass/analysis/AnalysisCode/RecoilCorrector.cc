@@ -118,13 +118,13 @@ TString model_name
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
-double RecoilCorrector::NonClosure_weight(double iMet,double iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi) {
+double RecoilCorrector::NonClosure_weight(double iMet,double iMPhi,double bosonPt,double bosonPhi,double iGenRap, double iLepPt,double iLepPhi) {
   
   // cout
   // << "iMet= " << iMet
   // << " iMPhi= " << iMPhi
-  // << " iGenPt= " << iGenPt
-  // << " iGenPhi= " << iGenPhi
+  // << " bosonPt= " << bosonPt
+  // << " bosonPhi= " << bosonPhi
   // << " iGenRap= " << iGenRap
   // << " iLepPt= " << iLepPt
   // << " iLepPhi= " << iLepPhi
@@ -134,8 +134,8 @@ double RecoilCorrector::NonClosure_weight(double iMet,double iMPhi,double iGenPt
   double pUY   = iMet*sin(iMPhi) + iLepPt*sin(iLepPhi);
   double pU    = sqrt(pUX*pUX+pUY*pUY);
 
-  double pCos  = - (pUX*cos(iGenPhi) + pUY*sin(iGenPhi))/pU;
-  double pSin  =   (pUX*sin(iGenPhi) - pUY*cos(iGenPhi))/pU;
+  double pCos  = - (pUX*cos(bosonPhi) + pUY*sin(bosonPhi))/pU;
+  double pSin  =   (pUX*sin(bosonPhi) - pUY*cos(bosonPhi))/pU;
 
   double pU1   = pU*pCos;
   double pU2   = pU*pSin; 
@@ -148,18 +148,18 @@ double RecoilCorrector::NonClosure_weight(double iMet,double iMPhi,double iGenPt
  
  // if(iGenRap>1) rap_bin = 1 // for the moment we use only one rapidity bin, i.e. y1
 
- // weight_NonClosure *= hNonClosure[0][rap_bin]->GetBinContent(hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1)); // u1
- if(hNonClosure[0][rap_bin]->GetBinContent(hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1)!=0))
-  weight_NonClosure /= hNonClosure[0][rap_bin]->GetBinContent(hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1)); // u1
-  // cout << "hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1)= " << hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1) << endl;
+ // weight_NonClosure *= hNonClosure[0][rap_bin]->GetBinContent(hNonClosure[0][rap_bin]->FindBin(bosonPt,pU1)); // u1
+ if(hNonClosure[0][rap_bin]->GetBinContent(hNonClosure[0][rap_bin]->FindBin(bosonPt,pU1)!=0))
+  weight_NonClosure /= hNonClosure[0][rap_bin]->GetBinContent(hNonClosure[0][rap_bin]->FindBin(bosonPt,pU1)); // u1
+  // cout << "hNonClosure[0][rap_bin]->FindBin(bosonPt,pU1)= " << hNonClosure[0][rap_bin]->FindBin(bosonPt,pU1) << endl;
   // cout << "weight_NonClosure after u1= " << weight_NonClosure;
   if(weight_NonClosure==0) weight_NonClosure=1;
   // cout << " ------->>> " << weight_NonClosure << endl;
 
-  // weight_NonClosure *= hNonClosure[1][rap_bin]->GetBinContent(hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2)); // u2
-  if(hNonClosure[1][rap_bin]->GetBinContent(hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2))!=0)
-    weight_NonClosure /= hNonClosure[1][rap_bin]->GetBinContent(hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2)); // u2
-  // cout << "hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2)= " << hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2) << endl;
+  // weight_NonClosure *= hNonClosure[1][rap_bin]->GetBinContent(hNonClosure[1][rap_bin]->FindBin(bosonPt,abs_pU2)); // u2
+  if(hNonClosure[1][rap_bin]->GetBinContent(hNonClosure[1][rap_bin]->FindBin(bosonPt,abs_pU2))!=0)
+    weight_NonClosure /= hNonClosure[1][rap_bin]->GetBinContent(hNonClosure[1][rap_bin]->FindBin(bosonPt,abs_pU2)); // u2
+  // cout << "hNonClosure[1][rap_bin]->FindBin(bosonPt,abs_pU2)= " << hNonClosure[1][rap_bin]->FindBin(bosonPt,abs_pU2) << endl;
   // cout << "weight_NonClosure after u2= " << weight_NonClosure;
   if(weight_NonClosure==0) weight_NonClosure=1;
   // cout << " ------->>> " << weight_NonClosure << endl;
@@ -168,13 +168,13 @@ double RecoilCorrector::NonClosure_weight(double iMet,double iMPhi,double iGenPt
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector::NonClosure_scale(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,double iGenRap, double iLepPt,double iLepPhi) {
+double RecoilCorrector::NonClosure_scale(double &iMet,double &iMPhi,double bosonPt,double bosonPhi,double iGenRap, double iLepPt,double iLepPhi) {
   
   // cout
   // << "iMet= " << iMet
   // << " iMPhi= " << iMPhi
-  // << " iGenPt= " << iGenPt
-  // << " iGenPhi= " << iGenPhi
+  // << " bosonPt= " << bosonPt
+  // << " bosonPhi= " << bosonPhi
   // << " iGenRap= " << iGenRap
   // << " iLepPt= " << iLepPt
   // << " iLepPhi= " << iLepPhi
@@ -184,8 +184,8 @@ double RecoilCorrector::NonClosure_scale(double &iMet,double &iMPhi,double iGenP
   double pUY   = iMet*sin(iMPhi) + iLepPt*sin(iLepPhi);
   double pU    = sqrt(pUX*pUX+pUY*pUY);
 
-  double pCos  = - (pUX*cos(iGenPhi) + pUY*sin(iGenPhi))/pU;
-  double pSin  =   (pUX*sin(iGenPhi) - pUY*cos(iGenPhi))/pU;
+  double pCos  = - (pUX*cos(bosonPhi) + pUY*sin(bosonPhi))/pU;
+  double pSin  =   (pUX*sin(bosonPhi) - pUY*cos(bosonPhi))/pU;
 
   double pU1   = pU*pCos;
   double pU2   = pU*pSin; 
@@ -197,16 +197,16 @@ double RecoilCorrector::NonClosure_scale(double &iMet,double &iMPhi,double iGenP
  
   // if(iGenRap>1) rap_bin = 1 // for the moment we use only one rapidity bin, i.e. y1
 
-  if(hNonClosure[0][rap_bin]->GetBinContent(hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1)!=0))
-    pU1 /= hNonClosure[0][rap_bin]->GetBinContent(hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1)); // u1
-  // cout << "hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1)= " << hNonClosure[0][rap_bin]->FindBin(iGenPt,pU1) << endl;
+  if(hNonClosure[0][rap_bin]->GetBinContent(hNonClosure[0][rap_bin]->FindBin(bosonPt,pU1)!=0))
+    pU1 /= hNonClosure[0][rap_bin]->GetBinContent(hNonClosure[0][rap_bin]->FindBin(bosonPt,pU1)); // u1
+  // cout << "hNonClosure[0][rap_bin]->FindBin(bosonPt,pU1)= " << hNonClosure[0][rap_bin]->FindBin(bosonPt,pU1) << endl;
 
-  if(hNonClosure[1][rap_bin]->GetBinContent(hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2))!=0)
-    pU2 /= hNonClosure[1][rap_bin]->GetBinContent(hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2)); // u2
-  // cout << "hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2)= " << hNonClosure[1][rap_bin]->FindBin(iGenPt,abs_pU2) << endl;
+  if(hNonClosure[1][rap_bin]->GetBinContent(hNonClosure[1][rap_bin]->FindBin(bosonPt,abs_pU2))!=0)
+    pU2 /= hNonClosure[1][rap_bin]->GetBinContent(hNonClosure[1][rap_bin]->FindBin(bosonPt,abs_pU2)); // u2
+  // cout << "hNonClosure[1][rap_bin]->FindBin(bosonPt,abs_pU2)= " << hNonClosure[1][rap_bin]->FindBin(bosonPt,abs_pU2) << endl;
   
-  iMet  = calculate(0,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
-  iMPhi = calculate(1,iLepPt,iLepPhi,iGenPhi,pU1,pU2);
+  iMet  = calculate(0,iLepPt,iLepPhi,bosonPhi,pU1,pU2);
+  iMPhi = calculate(1,iLepPt,iLepPhi,bosonPhi,pU1,pU2);
   
   // cout 
   // << "iMet= " << iMet
@@ -247,7 +247,7 @@ void RecoilCorrector::reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int 
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt, double lGenPhi, double sumLepPt, double sumLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int rapbin, int recoilCorrSigmas)
+void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double bosonPt, double bosonPhi, double sumLepPt, double sumLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int rapbin, int recoilCorrSigmas)
 {
   // ---------------------------
   // CHANGE STAT EIGEN IF NEEDED
@@ -284,7 +284,7 @@ void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt
   // CALL REAL WORKER FUNCTION
   // ---------------------------
   
-  applyCorrMET3gausPDF(met,metphi,lGenPt,lGenPhi,sumLepPt,sumLepPhi,
+  applyCorrMET3gausPDF(met,metphi,bosonPt,bosonPhi,sumLepPt,sumLepPhi,
     fF1U1Fit[rapbin],
     fD1U1Fit[rapbin],  fM1U1Fit[rapbin],
     fD1U1RMSSMFit[rapbin], fM1U1RMSSMFit[rapbin],
@@ -323,14 +323,14 @@ void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double lGenPt
 // RooWorkspace *wDATAU1; 
 // RooWorkspace *wDATAU2; 
 // NEW WITH PDFs
-void RecoilCorrector::applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
+void RecoilCorrector::applyCorrMET3gausPDF(
+  double &iMet,double &iMPhi,
+  double bosonPt,double bosonPhi,
   double sumLepPt,double sumLepPhi,
   TF1 *iU1Default,
   TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
   TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
   TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
-  //                     RooAddPdf* pdfMCU1, RooAddPdf* pdfDATAU1,
-  //                     RooAddPdf* pdfMCU2, RooAddPdf* pdfDATAU2,
   int rapbin,
   int nSigmas,
   double &pU1,double &pU2
@@ -339,15 +339,15 @@ void RecoilCorrector::applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGe
   double lRescale  = sqrt((TMath::Pi())/2.);  // Magic normalization number due to usage of absolute values while computing the overall RMS
   //  double lRescale  = 1;     // for squares
 
-  double pDefU1    = iU1Default->Eval(iGenPt); // U1 average scale for target sample
+  double pDefU1    = iU1Default->Eval(bosonPt); // U1 average scale for target sample
 
-  double pDU1       = iU1RZDatFit ->Eval(iGenPt); // U1 average scale for ZDATA
-  double pDRMSU1    = iU1MSZDatFit->Eval(iGenPt)*lRescale; // U1 average RMS for ZDATA
-  double pDRMSU2    = iU2MSZDatFit->Eval(iGenPt)*lRescale; // U2 average RMS for ZDATA
+  double pDU1       = iU1RZDatFit ->Eval(bosonPt); // U1 average scale for ZDATA
+  double pDRMSU1    = iU1MSZDatFit->Eval(bosonPt)*lRescale; // U1 average RMS for ZDATA
+  double pDRMSU2    = iU2MSZDatFit->Eval(bosonPt)*lRescale; // U2 average RMS for ZDATA
 
-  double pMU1       = iU1RZMCFit  ->Eval(iGenPt); // U1 average scale for ZMC
-  double pMRMSU1    = iU1MSZMCFit ->Eval(iGenPt)*lRescale; // U1 average RMS for ZMC
-  double pMRMSU2    = iU2MSZMCFit ->Eval(iGenPt)*lRescale; // U2 average RMS for ZMC
+  double pMU1       = iU1RZMCFit  ->Eval(bosonPt); // U1 average scale for ZMC
+  double pMRMSU1    = iU1MSZMCFit ->Eval(bosonPt)*lRescale; // U1 average RMS for ZMC
+  double pMRMSU2    = iU2MSZMCFit ->Eval(bosonPt)*lRescale; // U2 average RMS for ZMC
 
   //
   // ENDING of the PARAMETERS
@@ -357,8 +357,8 @@ void RecoilCorrector::applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGe
   double pUY   = iMet*sin(iMPhi) + sumLepPt*sin(sumLepPhi);
   double pU    = sqrt(pUX*pUX+pUY*pUY);
 
-  double pCos  = - (pUX*cos(iGenPhi) + pUY*sin(iGenPhi))/pU;
-  double pSin  =   (pUX*sin(iGenPhi) - pUY*cos(iGenPhi))/pU;
+  double pCos  = - (pUX*cos(bosonPhi) + pUY*sin(bosonPhi))/pU;
+  double pSin  =   (pUX*sin(bosonPhi) - pUY*cos(bosonPhi))/pU;
 
   // Get real values of recoil (from the pull space vars)
   double pU1noCorr = pU*pCos;
@@ -391,8 +391,8 @@ void RecoilCorrector::applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGe
   if(doKeys && doAbsolute) {
     // triGausInvGraphKeys
     // this need the absolute space
-    pU1corr = triGausInvGraphKeys(pU1noCorr,iGenPt,pdfKeyU1Cdf[ZMC][rapbin],pdfKeyU1Cdf[ZDATA][rapbin],wU1key[ZMC][rapbin],wU1key[ZDATA][rapbin],true, 50);
-    pU2corr = triGausInvGraphKeys(pU2noCorr,iGenPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],wU2key[ZMC][rapbin],wU2key[ZDATA][rapbin],false, 50);
+    pU1corr = triGausInvGraphKeys(pU1noCorr,bosonPt,pdfKeyU1Cdf[ZMC][rapbin],pdfKeyU1Cdf[ZDATA][rapbin],wU1key[ZMC][rapbin],wU1key[ZDATA][rapbin],true, 50);
+    pU2corr = triGausInvGraphKeys(pU2noCorr,bosonPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],wU2key[ZMC][rapbin],wU2key[ZDATA][rapbin],false, 50);
 
   } else {
     // Relative for all
@@ -407,13 +407,13 @@ void RecoilCorrector::applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGe
     
     if(doKeys) {
       // this need the relative space
-      pU1corr = triGausInvGraphKeys(pU1Diff,iGenPt,pdfKeyU1Cdf[ZMC][rapbin],pdfKeyU1Cdf[ZDATA][rapbin],wU1key[ZMC][rapbin],wU1key[ZDATA][rapbin],true,5);
-      pU2corr = triGausInvGraphKeys(pU2Diff,iGenPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],wU2key[ZMC][rapbin],wU2key[ZDATA][rapbin],false,5);
+      pU1corr = triGausInvGraphKeys(pU1Diff,bosonPt,pdfKeyU1Cdf[ZMC][rapbin],pdfKeyU1Cdf[ZDATA][rapbin],wU1key[ZMC][rapbin],wU1key[ZDATA][rapbin],true,5);
+      pU2corr = triGausInvGraphKeys(pU2Diff,bosonPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],wU2key[ZMC][rapbin],wU2key[ZDATA][rapbin],false,5);
     } else {
       // cout << "triGausInvGraphPDF U1" << endl;
       // this need the reduced space
-      pU1corr = triGausInvGraphPDF(pU1Diff,iGenPt,pdfU1Cdf[ZMC][rapbin],pdfU1Cdf[ZDATA][rapbin],wU1[ZMC][rapbin],wU1[ZDATA][rapbin],5);
-      pU2corr = triGausInvGraphPDF(pU2Diff,iGenPt,pdfU2Cdf[ZMC][rapbin],pdfU2Cdf[ZDATA][rapbin],wU2[ZMC][rapbin],wU2[ZDATA][rapbin],5);
+      pU1corr = triGausInvGraphPDF(pU1Diff,bosonPt,pdfU1Cdf[ZMC][rapbin],pdfU1Cdf[ZDATA][rapbin],wU1[ZMC][rapbin],wU1[ZDATA][rapbin],5);
+      pU2corr = triGausInvGraphPDF(pU2Diff,bosonPt,pdfU2Cdf[ZMC][rapbin],pdfU2Cdf[ZDATA][rapbin],wU2[ZMC][rapbin],wU2[ZDATA][rapbin],5);
     }
     
     // Go back to the absolute space (from pull)
@@ -431,8 +431,8 @@ void RecoilCorrector::applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGe
   pU1 = pU1noCorr + nSigmas * pU1delta;
   pU2 = pU2noCorr + nSigmas * pU2delta;
 
-  iMet  = calculate(0,sumLepPt,sumLepPhi,iGenPhi,pU1,pU2);
-  iMPhi = calculate(1,sumLepPt,sumLepPhi,iGenPhi,pU1,pU2);
+  iMet  = calculate(0,sumLepPt,sumLepPhi,bosonPhi,pU1,pU2);
+  iMPhi = calculate(1,sumLepPt,sumLepPhi,bosonPhi,pU1,pU2);
 
   // cout << " after pU1 = " << pU1 << " pU2 = " << pU2 << endl;
 
