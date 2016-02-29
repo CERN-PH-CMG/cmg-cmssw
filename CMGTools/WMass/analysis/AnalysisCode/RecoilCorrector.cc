@@ -223,7 +223,7 @@ void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double bosonP
 // RooWorkspace *wDATAU2; 
 // NEW WITH PDFs
 void RecoilCorrector::applyCorrMET3gausPDF(
-  double &iMet,double &iMPhi,
+  double &iMet,double &iMETPhi,
   double bosonPt,double bosonPhi,
   double sumLepPt,double sumLepPhi,
   TF1 *iU1Default,
@@ -252,8 +252,8 @@ void RecoilCorrector::applyCorrMET3gausPDF(
   // ENDING of the PARAMETERS
   //
 
-  double pUX   = iMet*cos(iMPhi) + sumLepPt*cos(sumLepPhi);
-  double pUY   = iMet*sin(iMPhi) + sumLepPt*sin(sumLepPhi);
+  double pUX   = iMet*cos(iMETPhi) + sumLepPt*cos(sumLepPhi);
+  double pUY   = iMet*sin(iMETPhi) + sumLepPt*sin(sumLepPhi);
   double pU    = sqrt(pUX*pUX+pUY*pUY);
 
   double pCos  = - (pUX*cos(bosonPhi) + pUY*sin(bosonPhi))/pU;
@@ -331,7 +331,7 @@ void RecoilCorrector::applyCorrMET3gausPDF(
   pU2 = pU2noCorr + nSigmas * pU2delta;
 
   iMet  = calculate(0,sumLepPt,sumLepPhi,bosonPhi,pU1,pU2);
-  iMPhi = calculate(1,sumLepPt,sumLepPhi,bosonPhi,pU1,pU2);
+  iMETPhi = calculate(1,sumLepPt,sumLepPhi,bosonPhi,pU1,pU2);
 
   // cout << " after pU1 = " << pU1 << " pU2 = " << pU2 << endl;
 

@@ -80,7 +80,7 @@ protected:
     std::string iFName,std::string iFKeyName, std::string iPrefix, int mytype, TString model_name = "fitresult_Add"
   );
 
-  void applyCorrMET3gaus(double &iMet,double &iMPhi,double bosonPt,double bosonPhi,
+  void applyCorrMET3gaus(double &iMet,double &iMETPhi,double bosonPt,double bosonPhi,
     double i,double iLepPhi,
     TF1 *iU1Default,
     TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
@@ -101,7 +101,7 @@ protected:
     TF1 *iU2mean2ZDatFit, TF1 *iU2mean2ZMCFit,
     double iFlucU2,double iFlucU1,double iScale, int mytype
   );
-  void applyCorrMET3gausPDF(double &iMet,double &iMPhi,double bosonPt,double bosonPhi,
+  void applyCorrMET3gausPDF(double &iMet,double &iMETPhi,double bosonPt,double bosonPhi,
     double sumLepPt,double sumLepPhi,
     TF1 *iU1Default,
     TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
