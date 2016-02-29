@@ -339,15 +339,15 @@ void RecoilCorrector::applyCorrMET3gausPDF(double &iMet,double &iMPhi,double iGe
   double lRescale  = sqrt((TMath::Pi())/2.);  // Magic normalization number due to usage of absolute values while computing the overall RMS
   //  double lRescale  = 1;     // for squares
 
-  double pDefU1    = iU1Default->Eval(iGenPt);
+  double pDefU1    = iU1Default->Eval(iGenPt); // U1 average scale for target sample
 
-  double pDU1       = iU1RZDatFit ->Eval(iGenPt); // U1 average scale
-  double pDRMSU1    = iU1MSZDatFit->Eval(iGenPt)*lRescale; // U1 average RMS
-  double pDRMSU2    = iU2MSZDatFit->Eval(iGenPt)*lRescale; // U2 average RMS
+  double pDU1       = iU1RZDatFit ->Eval(iGenPt); // U1 average scale for ZDATA
+  double pDRMSU1    = iU1MSZDatFit->Eval(iGenPt)*lRescale; // U1 average RMS for ZDATA
+  double pDRMSU2    = iU2MSZDatFit->Eval(iGenPt)*lRescale; // U2 average RMS for ZDATA
 
-  double pMU1       = iU1RZMCFit  ->Eval(iGenPt);
-  double pMRMSU1    = iU1MSZMCFit ->Eval(iGenPt)*lRescale;
-  double pMRMSU2    = iU2MSZMCFit ->Eval(iGenPt)*lRescale;
+  double pMU1       = iU1RZMCFit  ->Eval(iGenPt); // U1 average scale for ZMC
+  double pMRMSU1    = iU1MSZMCFit ->Eval(iGenPt)*lRescale; // U1 average RMS for ZMC
+  double pMRMSU2    = iU2MSZMCFit ->Eval(iGenPt)*lRescale; // U2 average RMS for ZMC
 
   //
   // ENDING of the PARAMETERS
