@@ -213,13 +213,16 @@ protected:
   //void   Correct(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double iFluc,int njet);
   
   static const int rapbins = 2;
-  RooWorkspace *wU1[3][rapbins],*wU2[3][rapbins],*wU1diago[3][rapbins],*wU2diago[3][rapbins];
-  RooWorkspace *wU1key[3][rapbins],*wU2key[3][rapbins];
-  RooAddPdf *pdfU1[3][rapbins],*pdfU2[3][rapbins];
-  RooAbsReal *pdfU1Cdf[3][rapbins],*pdfU2Cdf[3][rapbins];
-  vector<RooAbsReal*> pdfKeyU1Cdf[3][rapbins], pdfKeyU2Cdf[3][rapbins];
-  RooFitResult* frU1[3][rapbins];
-  RooFitResult* frU2[3][rapbins];
+  enum filetype { targetMC , ZDATA , ZMC };
+  static const int Ntypes = 3;
+  RooWorkspace *wU1[Ntypes][rapbins],*wU2[Ntypes][rapbins];
+  RooWorkspace *wU1diago[Ntypes][rapbins],*wU2diago[Ntypes][rapbins];
+  RooWorkspace *wU1key[Ntypes][rapbins],*wU2key[Ntypes][rapbins];
+  RooAddPdf *pdfU1[Ntypes][rapbins],*pdfU2[Ntypes][rapbins];
+  RooAbsReal *pdfU1Cdf[Ntypes][rapbins],*pdfU2Cdf[Ntypes][rapbins];
+  vector<RooAbsReal*> pdfKeyU1Cdf[Ntypes][rapbins], pdfKeyU2Cdf[Ntypes][rapbins];
+  RooFitResult* frU1[Ntypes][rapbins];
+  RooFitResult* frU2[Ntypes][rapbins];
   TFile *fNonClosure; 
   TH2D *hNonClosure[2][2]; 
   vector<TF1*> fF1U1Fit; vector<TF1*> fF1U1RMSSMFit; vector<TF1*> fF1U1RMS1Fit; vector<TF1*> fF1U1RMS2Fit, fF1U1RMS3Fit, fF1U1FracFit, fF1U1Mean1Fit, fF1U1Mean2Fit; 
@@ -246,7 +249,6 @@ protected:
   vector<TF1*> fM1M2U1U2Corr;   vector<TF1*> fM1M2U2U1Corr;
 
   bool doKeys;
-  enum { targetMC , ZDATA , ZMC };
 
 };
 

@@ -66,6 +66,7 @@ TString model_name
 
     std::stringstream pSS1,pSS2,pSS3,pSS4,pSS5,pSS6,pSS7,pSS8,pSS9,pSS10,pSS11,pSS12,pSS13,pSS14,pSS15,pSS16;
 
+    // Fill TF1 from rootfile
     pSS1  << iPrefix << "u1Mean_"    << file_rapbin;  iU1Fit.push_back    ( (TF1*) lFile->FindObjectAny((pSS1.str()).c_str()));
     pSS2  << iPrefix << "u1MeanRMS_" << file_rapbin;  iU1MRMSFit.push_back( (TF1*) lFile->FindObjectAny((pSS2.str()).c_str()));
     pSS3  << iPrefix << "u1RMS1_"    << file_rapbin;  iU1RMS1Fit.push_back( (TF1*) lFile->FindObjectAny((pSS3.str()).c_str()));
