@@ -75,15 +75,15 @@ do
     mkdir -p ${1}/output_EWK
     hadd -f ${1}/output_EWK/${filename}.root ${1}/output_WJetsMadFake/${filename}.root ${1}/output_DYJetsMadFake/${filename}.root ${1}/output_ZZJets/${filename}.root ${1}/output_WZJets/${filename}.root ${1}/output_WWJets/${filename}.root
 
-    echo ""; echo 'EWK + TT + Single Top (EWKTT)'
-    # EWK + TT
-    mkdir -p ${1}/output_EWKTT
-    hadd -f ${1}/output_EWKTT/${filename}.root ${1}/output_EWK/${filename}.root ${1}/output_TTJets/${filename}.root ${1}/output_T_s/${filename}.root ${1}/output_T_t/${filename}.root ${1}/output_T_tW/${filename}.root ${1}/output_Tbar_s/${filename}.root ${1}/output_Tbar_t/${filename}.root ${1}/output_Tbar_tW/${filename}.root
-
-    echo ""; echo 'TT + Single Top (TT)'
+    echo ""; echo 'TTbar + Single Top (TT)'
     # TT
     mkdir -p ${1}/output_TT
     hadd -f ${1}/output_TT/${filename}.root ${1}/output_TTJets/${filename}.root ${1}/output_T_s/${filename}.root ${1}/output_T_t/${filename}.root ${1}/output_T_tW/${filename}.root ${1}/output_Tbar_s/${filename}.root ${1}/output_Tbar_t/${filename}.root ${1}/output_Tbar_tW/${filename}.root
+
+    echo ""; echo 'EWK + TT + Single Top (EWKTT)'
+    # EWK + TT
+    mkdir -p ${1}/output_EWKTT
+    hadd -f ${1}/output_EWKTT/${filename}.root ${1}/output_EWK/${filename}.root ${1}/output_TT/${filename}.root
 
     echo ""; echo 'EWK + TT + Single Top + SIG POWHEG (MCDATALIKEPOW)'
     # EWK + TT + SIG
