@@ -533,9 +533,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     if(MuPos_pt>0 && MuNeg_pt>0) ComputeHXVarAndPhiStarEta(muPosNoCorr,muNegNoCorr,false);
         
     // charge invariant variables
-    double& Mu_pt  = isChargePos ? MuPos_pt  : MuNeg_pt;
-    double& Mu_eta = isChargePos ? MuPos_eta : MuNeg_eta;
-    double& Mu_phi = isChargePos ? MuPos_phi : MuNeg_phi;
+    double& Leading_Mu_pt  = MuPos_pt>MuNeg_pt ? MuPos_pt  : MuNeg_pt;
+    double& Leading_Mu_eta = MuPos_pt>MuNeg_pt ? MuPos_eta : MuNeg_eta;
+    double& Leading_Mu_phi = MuPos_pt>MuNeg_pt ? MuPos_phi : MuNeg_phi;
+    double& SubLeading_Mu_pt  = MuPos_pt>MuNeg_pt ? MuNeg_pt  : MuPos_pt;
+    double& SubLeading_Mu_eta = MuPos_pt>MuNeg_pt ? MuNeg_eta : MuPos_eta;
+    double& SubLeading_Mu_phi = MuPos_pt>MuNeg_pt ? MuNeg_phi : MuPos_phi;
     
     //---------------- MUON weight
     double TRG_TIGHT_ISO_muons_SF = 1;
@@ -763,11 +766,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 
                 if(useEffSF==2 || useEffSF==13 || useEffSF!=3){
                   // === leading
-                  eff_TIGHT_SF = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(Mu_eta,Mu_pt));
+                  eff_TIGHT_SF = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(Leading_Mu_eta,Leading_Mu_pt));
                   if(useEffSF==13){
-                    random_->SetSeed(UInt_t(TMath::Abs(Mu_phi)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
-                    eff_TIGHT_SF += random_->Gaus(0, TMath::Hypot(0.01, SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt))));
-                    // cout << "SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt)= " << SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt)) << endl;
+                    random_->SetSeed(UInt_t(TMath::Abs(Leading_Mu_phi)*1e9 + TMath::Abs(Leading_Mu_eta)*1e6 + TMath::Abs(Leading_Mu_pt)*1e3 + i));
+                    eff_TIGHT_SF += random_->Gaus(0, TMath::Hypot(0.01, SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Leading_Mu_eta, Leading_Mu_pt))));
+                    // cout << "SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Leading_Mu_eta, Leading_Mu_pt)= " << SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Leading_Mu_eta, Leading_Mu_pt)) << endl;
                   }
                   TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_SF;
                 }
@@ -783,21 +786,21 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 }
                 if(useEffSF==2 || useEffSF==15 || useEffSF!=5){
                   // === subleading
-                  eff_TIGHT_subleading_SF = SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt));
+                  eff_TIGHT_subleading_SF = SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(SubLeading_Mu_eta, SubLeading_Mu_pt));
                   if(useEffSF==15){
                     random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
-                    eff_TIGHT_subleading_SF += random_->Gaus(0,TMath::Hypot(0.01, SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt))));
-                    // cout << "SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt))= " << SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt)) << endl;
+                    eff_TIGHT_subleading_SF += random_->Gaus(0,TMath::Hypot(0.01, SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(SubLeading_Mu_eta, SubLeading_Mu_pt))));
+                    // cout << "SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(SubLeading_Mu_eta, SubLeading_Mu_pt))= " << SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(SubLeading_Mu_eta, SubLeading_Mu_pt)) << endl;
                   }
                   TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
                 }
                 if(useEffSF==2 || useEffSF==16 || useEffSF!=6){
                   // === leading
-                  eff_TRG_SF = SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt));
+                  eff_TRG_SF = SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Leading_Mu_eta, Leading_Mu_pt));
                   if(useEffSF==16){
-                    random_->SetSeed(UInt_t(TMath::Abs(isChargePos?1:2)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
-                    eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.01,SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))));
-                    // cout << "SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))= " << SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt)) << endl;
+                    random_->SetSeed(UInt_t(TMath::Abs(isChargePos?1:2)*1e9 + TMath::Abs(Leading_Mu_eta)*1e6 + TMath::Abs(Leading_Mu_pt)*1e3 + i));
+                    eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.01,SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Leading_Mu_eta, Leading_Mu_pt))));
+                    // cout << "SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Leading_Mu_eta, Leading_Mu_pt))= " << SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Leading_Mu_eta, Leading_Mu_pt)) << endl;
                   }
                   TRG_TIGHT_ISO_muons_SF *= eff_TRG_SF;
                 }
