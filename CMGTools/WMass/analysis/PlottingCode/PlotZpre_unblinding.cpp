@@ -143,6 +143,7 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   hs->Draw("hist same");
   hMCsig2->Draw("hist same");
   hMCEWK->Draw("hist same");
+  hMCTT->Draw("hist same");
   hDATA->Draw("same pe");
   pad1->RedrawAxis();
   
@@ -200,7 +201,6 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
       herrors_stacked[systnum]->SetBinError(bin, sqrt(error_pred*error_pred + error_curr*error_curr));
     }
   }
-  
 
   hDATAratio->GetXaxis()->SetLabelSize(0.05*0.75/0.25);
   hDATAratio->GetXaxis()->SetTitleOffset(1);
@@ -263,7 +263,7 @@ void PlotZpre_unblinding(){
   
   TString folderMCsig = "output_DYJetsPow/";
   TString folderMCEWK = "output_EWK/";
-  TString folderMCTT  = "output_TTJets/";
+  TString folderMCTT  = "output_TT/";
   TString folderMCQCD = "output_QCD/";
   TString folderDATA  = "output_DATA/";
   TString folderMCsum = "output_MCDATALIKEPOW/";
