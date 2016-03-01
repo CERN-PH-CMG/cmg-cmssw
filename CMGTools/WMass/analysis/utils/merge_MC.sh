@@ -80,6 +80,11 @@ do
     mkdir -p ${1}/output_EWKTT
     hadd -f ${1}/output_EWKTT/${filename}.root ${1}/output_EWK/${filename}.root ${1}/output_TTJets/${filename}.root ${1}/output_T_s/${filename}.root ${1}/output_T_t/${filename}.root ${1}/output_T_tW/${filename}.root ${1}/output_Tbar_s/${filename}.root ${1}/output_Tbar_t/${filename}.root ${1}/output_Tbar_tW/${filename}.root
 
+    echo ""; echo 'TT + Single Top (TT)'
+    # TT
+    mkdir -p ${1}/output_TT
+    hadd -f ${1}/output_TT/${filename}.root ${1}/output_TTJets/${filename}.root ${1}/output_T_s/${filename}.root ${1}/output_T_t/${filename}.root ${1}/output_T_tW/${filename}.root ${1}/output_Tbar_s/${filename}.root ${1}/output_Tbar_t/${filename}.root ${1}/output_Tbar_tW/${filename}.root
+
     echo ""; echo 'EWK + TT + Single Top + SIG POWHEG (MCDATALIKEPOW)'
     # EWK + TT + SIG
     mkdir -p ${1}/output_MCDATALIKEPOW
