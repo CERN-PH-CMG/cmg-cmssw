@@ -66,17 +66,17 @@ void RecoilCorrector::readRecoil(
       iU2Fit    .push_back( (TF1*)lFile->FindObjectAny(Form("%su2Mean_%d",    iPrefix.c_str(), file_rapbin)));
       iU2MRMSFit.push_back( (TF1*)lFile->FindObjectAny(Form("%su2MeanRMS_%d", iPrefix.c_str(), file_rapbin)));
 
-      wU1[mytype][rapbin] = new RooWorkspace("wU1","wU1");
+      wU1[mytype][rapbin] = new RooWorkspace(Form("wU1_type%d_Y%d", mytype, rapbin), "wU1");
       pdfU1[mytype][rapbin] = (RooAddPdf*) lFile->Get(Form("AddU1Y%d",file_rapbin));
-      wU1[mytype][rapbin]->import(*pdfU1[mytype][rapbin],RooFit::Silence());
+      wU1[mytype][rapbin]->import(*pdfU1[mytype][rapbin]/*,RooFit::Silence()*/);
       frU1[mytype][rapbin] = (RooFitResult*) lFile->Get(Form("%sU1Y%d_Crapsky0_U1_2D",model_name.Data(),file_rapbin));
 
       runDiago(wU1[mytype][rapbin],frU1[mytype][rapbin],Form("AddU1Y%d",file_rapbin),pdfU1Cdf[mytype][rapbin]);
 
 
-      wU2[mytype][rapbin] = new RooWorkspace("wU2","wU2");
+      wU2[mytype][rapbin] = new RooWorkspace(Form("wU2_type%d_Y%d", mytype, rapbin), "wU2");
       pdfU2[mytype][rapbin] = (RooAddPdf*) lFile->Get(Form("AddU2Y%d",file_rapbin));
-      wU2[mytype][rapbin]->import(*pdfU2[mytype][rapbin],RooFit::Silence());
+      wU2[mytype][rapbin]->import(*pdfU2[mytype][rapbin]/*,RooFit::Silence()*/);
       frU2[mytype][rapbin] = (RooFitResult*) lFile->Get(Form("%sU2Y%d_Crapsky0_U2_2D",model_name.Data(),file_rapbin));
 
       runDiago(wU2[mytype][rapbin],frU2[mytype][rapbin],Form("AddU2Y%d",file_rapbin),pdfU2Cdf[mytype][rapbin]);
@@ -235,6 +235,8 @@ void RecoilCorrector::applyCorrMET3gausPDF(
     // << " pdfU2Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZMC][rapbin]->getVal()
     // << " pdfU2Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZDATA][rapbin]->getVal()
     // << endl;
+    
+  // It shouldn't be needed, but without this it crashes
   pdfU1Cdf[ZMC][rapbin]->getVal();
   pdfU1Cdf[ZDATA][rapbin]->getVal();
   pdfU2Cdf[ZMC][rapbin]->getVal();
@@ -274,11 +276,18 @@ void RecoilCorrector::applyCorrMET3gausPDF(
       pU2corr = triGausInvGraphPDF(pU2Diff,bosonPt,pdfU2Cdf[ZMC][rapbin],pdfU2Cdf[ZDATA][rapbin],wU2[ZMC][rapbin],wU2[ZDATA][rapbin],5);
     }
     
+    // ==============================================================
     // Go back to the absolute space (from pull)
+    // In comments are the version for correcting a different MC
+    // If you use the same targetMC as ZMC it simplifies to the uncommented ones
+    // ==============================================================
+    
+    // pU1corr *= pDefRMSU1 * (pDRMSU1/pMRMSU1);
     pU1corr *= pDRMSU1;
-    pDefU1  *= pDU1/pMU1;
-    pU1corr += pDefU1;
+    // pU1corr += pDefU1 + (pDU1-pMU1);
+    pU1corr += pDU1;
 
+    // pU2corr *= pDefRMSU2 * (pDRMSU2/pMRMSU2);
     pU2corr *= pDRMSU2;
 
   }
