@@ -7,7 +7,8 @@ WlikeCharge="${1}" # 1, -1
 sed_and_run()
 {
     # RUN MERGE RESULTS
-    sed -i "s/outfolder_prefix =.*/outfolder_prefix = \"${outfolder_prefix}\"/g;\
+    sed -i "s/useBatch =.*/useBatch = 1/g;\
+            s/outfolder_prefix =.*/outfolder_prefix = \"${outfolder_prefix}\"/g;\
             s/runZanalysis =.*/runZanalysis = 0/g;\
             s/mergeSigEWKbkg =.*/mergeSigEWKbkg = 0/g;\
             s/runPrepareDataCardsFast =.*/runPrepareDataCardsFast = 0/g;\

@@ -90,3 +90,21 @@ sed_and_run config_recoilstat_p10_minus1
 sed_and_run config_recoilstat_p11_minus1
 sed_and_run config_recoilstat_p12_minus1
 
+# CLOSURE POW to MAD
+sed_and_run config_powToMadKeys
+sed_and_run config_powToMad3G
+sed_and_run config_madNoCorr
+
+sed_and_run config_powToMad_p1_plus1
+sed_and_run config_powToMad_p2_plus1
+sed_and_run config_powToMad_p3_plus1
+sed_and_run config_powToMad_p4_plus1
+sed_and_run config_powToMad_p5_plus1
+sed_and_run config_powToMad_p6_plus1
+sed_and_run config_powToMad_p7_plus1
+sed_and_run config_powToMad_p8_plus1
+sed_and_run config_powToMad_p9_plus1
+sed_and_run config_powToMad_p10_plus1
+sed_and_run config_powToMad_p11_plus1
+sed_and_run config_powToMad_p12_plus1
+
