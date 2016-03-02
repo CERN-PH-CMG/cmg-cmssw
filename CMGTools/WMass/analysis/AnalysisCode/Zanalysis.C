@@ -278,18 +278,15 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // Initialize recoil corrections
   //------------------------------------------------------
 
-  int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
-  int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
+  const int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
+  const int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
 
   // int use_PForNoPUorTKmet = 0; // 0:PF, 1:NOPU, 2:TK // TO BE CHANGED BY HAND FOR THE MOMENT!!!
-  // bool use_InclusiveNVTX_RecoilCorr = true; // TO BE CHANGED BY HAND FOR THE MOMENT!!!
-  // TString InclusiveNVTXSuffix="";
-  // if(use_InclusiveNVTX_RecoilCorr) InclusiveNVTXSuffix="_inclusiveNvtx";
 
-  TString metSuffix;
-  if(use_PForNoPUorTKmet==0) metSuffix="_pfmet"; // this doesn't work since we do no have the pfmet as of JAN25
-  if(use_PForNoPUorTKmet==1) metSuffix="_pfnoPU";
-  if(use_PForNoPUorTKmet==2) metSuffix="_tkmet";
+  // TString metSuffix;
+  // if(use_PForNoPUorTKmet==0) metSuffix="_pfmet"; // this doesn't work since we do no have the pfmet as of JAN25
+  // if(use_PForNoPUorTKmet==1) metSuffix="_pfnoPU";
+  // if(use_PForNoPUorTKmet==2) metSuffix="_tkmet";
   
   TString generatorSuffix="_powheg";
   if (sampleName.Contains("DYJetsMadSig"))
@@ -299,10 +296,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   int recoilCorrSigmas = 1;
   bool doKeys= useRecoilCorr==3 ? true : false;
   if(useRecoilCorr>0){
-    TString model_name[2]={"fitresult_Add","fitresult_model2D"};
-    
     // TKMET type2
-    int model_name_idx=0;
     string fileCorrectTo = /*POW */ Form("../RecoilCode/JAN31/recoilfit_JAN31_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",generatorSuffix.Data());
     string fileZmmMC =     /*POW */ Form("../RecoilCode/JAN31/recoilfit_JAN31_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",generatorSuffix.Data());
     // need to add the half stat
@@ -316,12 +310,13 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     string fileZmmKeysData = "../RecoilCode/DEC6/keysrecoilfit_DEC6_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
     if(correctToMadgraph) fileZmmKeysData = "../RecoilCode/DEC6/keysrecoilfit_DEC6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X_madgraph.root";
 
+    TString model_name = "fitresult_Add";
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;
-    correctorRecoil_Z = new RecoilCorrector(doKeys, fileCorrectTo.c_str(),fileZmmKeysCorrectTo.c_str(),123456,model_name[0],"../RecoilCode/MAY25/nonClosureMAY25.root");
+    correctorRecoil_Z = new RecoilCorrector(doKeys, fileCorrectTo.c_str(), fileZmmKeysCorrectTo.c_str(), model_name);
     cout << "INITIALIZING RECOIL Z DATA FILE" << endl;
-    correctorRecoil_Z->addDataFile(fileZmmData.c_str(), fileZmmKeysData.c_str(), model_name[model_name_idx] );
+    correctorRecoil_Z->addDataFile(fileZmmData.c_str(), fileZmmKeysData.c_str(), model_name);
     cout << "INITIALIZING RECOIL Z MC FILE" << endl;
-    correctorRecoil_Z->addMCFile(fileZmmMC.c_str(), fileZmmKeysMC.c_str(), model_name[0]);
+    correctorRecoil_Z->addMCFile(fileZmmMC.c_str(), fileZmmKeysMC.c_str(), model_name);
 
   }
 
@@ -533,9 +528,12 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     if(MuPos_pt>0 && MuNeg_pt>0) ComputeHXVarAndPhiStarEta(muPosNoCorr,muNegNoCorr,false);
         
     // charge invariant variables
-    double& Mu_pt  = isChargePos ? MuPos_pt  : MuNeg_pt;
-    double& Mu_eta = isChargePos ? MuPos_eta : MuNeg_eta;
-    double& Mu_phi = isChargePos ? MuPos_phi : MuNeg_phi;
+    double& Leading_Mu_pt  = MuPos_pt>MuNeg_pt ? MuPos_pt  : MuNeg_pt;
+    double& Leading_Mu_eta = MuPos_pt>MuNeg_pt ? MuPos_eta : MuNeg_eta;
+    double& Leading_Mu_phi = MuPos_pt>MuNeg_pt ? MuPos_phi : MuNeg_phi;
+    double& SubLeading_Mu_pt  = MuPos_pt>MuNeg_pt ? MuNeg_pt  : MuPos_pt;
+    double& SubLeading_Mu_eta = MuPos_pt>MuNeg_pt ? MuNeg_eta : MuPos_eta;
+    double& SubLeading_Mu_phi = MuPos_pt>MuNeg_pt ? MuNeg_phi : MuPos_phi;
     
     //---------------- MUON weight
     double TRG_TIGHT_ISO_muons_SF = 1;
@@ -618,7 +616,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                         ZNocorr.Pt(),ZNocorr.Phi(),
                         u1_recoil, u2_recoil,
                         RecoilCorrVarDiagoParU1orU2fromDATAorMC>6?RecoilCorrVarDiagoParU1orU2fromDATAorMC-6:RecoilCorrVarDiagoParU1orU2fromDATAorMC, m, RecoilCorrVarDiagoParSigmas,
-                        rapBin,recoilCorrSigmas,1,doKeys);
+                        rapBin,recoilCorrSigmas);
               }else{
                 // cout << "correcting met_trasv to default eigen par 0, m= " << m << endl;
                 correctorRecoil_Z->CorrectMET3gaus(
@@ -627,7 +625,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                         ZNocorr.Pt(),ZNocorr.Phi(),
                         u1_recoil, u2_recoil,
                         0, 0, 0,
-                        rapBin,recoilCorrSigmas,1,doKeys);
+                        rapBin,recoilCorrSigmas);
               }
               if(m==m_start){
                 // cout << "before setting met_trasvCentral "<< RecoilCorrVarDiagoParU1orU2fromDATAorMC<< " " << m << " " << RecoilCorrVarDiagoParSigmas << endl;
@@ -646,7 +644,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                           ZNocorr.Pt(),ZNocorr.Phi(),
                           u1_recoil, u2_recoil,
                           0, 0, 0,
-                          rapBin,recoilCorrSigmas,1,doKeys);
+                          rapBin,recoilCorrSigmas);
                 }else{
                   // cout << "correcting met_trasvCentral to default met_trasv, m= " << m << endl;
                   // cout << " met_trasvCentral = met_trasv" << endl;
@@ -763,11 +761,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 
                 if(useEffSF==2 || useEffSF==13 || useEffSF!=3){
                   // === leading
-                  eff_TIGHT_SF = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(Mu_eta,Mu_pt));
+                  eff_TIGHT_SF = SF_TIGHT_ISO->GetBinContent(SF_TIGHT_ISO->FindBin(Leading_Mu_eta,Leading_Mu_pt));
                   if(useEffSF==13){
-                    random_->SetSeed(UInt_t(TMath::Abs(Mu_phi)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
-                    eff_TIGHT_SF += random_->Gaus(0, TMath::Hypot(0.01, SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt))));
-                    // cout << "SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt)= " << SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Mu_eta, Mu_pt)) << endl;
+                    random_->SetSeed(UInt_t(TMath::Abs(Leading_Mu_phi)*1e9 + TMath::Abs(Leading_Mu_eta)*1e6 + TMath::Abs(Leading_Mu_pt)*1e3 + i));
+                    eff_TIGHT_SF += random_->Gaus(0, TMath::Hypot(0.01, SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Leading_Mu_eta, Leading_Mu_pt))));
+                    // cout << "SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Leading_Mu_eta, Leading_Mu_pt)= " << SF_TIGHT_ISO->GetBinError(SF_TIGHT_ISO->FindBin(Leading_Mu_eta, Leading_Mu_pt)) << endl;
                   }
                   TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_SF;
                 }
@@ -783,21 +781,21 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 }
                 if(useEffSF==2 || useEffSF==15 || useEffSF!=5){
                   // === subleading
-                  eff_TIGHT_subleading_SF = SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt));
+                  eff_TIGHT_subleading_SF = SF_TIGHT_PT10->GetBinContent(SF_TIGHT_PT10->FindBin(SubLeading_Mu_eta, SubLeading_Mu_pt));
                   if(useEffSF==15){
                     random_->SetSeed(UInt_t(TMath::Abs(costh_HX)*1e9 + TMath::Abs(phi_HX)*1e6 + TMath::Abs(ZNocorr.Pt())*1e3 + i));
-                    eff_TIGHT_subleading_SF += random_->Gaus(0,TMath::Hypot(0.01, SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt))));
-                    // cout << "SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt))= " << SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(Mu_eta, Mu_pt)) << endl;
+                    eff_TIGHT_subleading_SF += random_->Gaus(0,TMath::Hypot(0.01, SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(SubLeading_Mu_eta, SubLeading_Mu_pt))));
+                    // cout << "SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(SubLeading_Mu_eta, SubLeading_Mu_pt))= " << SF_TIGHT_PT10->GetBinError(SF_TIGHT_PT10->FindBin(SubLeading_Mu_eta, SubLeading_Mu_pt)) << endl;
                   }
                   TRG_TIGHT_ISO_muons_SF  *= eff_TIGHT_subleading_SF;
                 }
                 if(useEffSF==2 || useEffSF==16 || useEffSF!=6){
                   // === leading
-                  eff_TRG_SF = SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt));
+                  eff_TRG_SF = SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Leading_Mu_eta, Leading_Mu_pt));
                   if(useEffSF==16){
-                    random_->SetSeed(UInt_t(TMath::Abs(isChargePos?1:2)*1e9 + TMath::Abs(Mu_eta)*1e6 + TMath::Abs(Mu_pt)*1e3 + i));
-                    eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.01,SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))));
-                    // cout << "SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt))= " << SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Mu_eta, Mu_pt)) << endl;
+                    random_->SetSeed(UInt_t(TMath::Abs(isChargePos?1:2)*1e9 + TMath::Abs(Leading_Mu_eta)*1e6 + TMath::Abs(Leading_Mu_pt)*1e3 + i));
+                    eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.01,SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Leading_Mu_eta, Leading_Mu_pt))));
+                    // cout << "SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Leading_Mu_eta, Leading_Mu_pt))= " << SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Leading_Mu_eta, Leading_Mu_pt)) << endl;
                   }
                   TRG_TIGHT_ISO_muons_SF *= eff_TRG_SF;
                 }

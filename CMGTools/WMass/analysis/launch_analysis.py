@@ -156,9 +156,14 @@ batchQueue = config.batchQueue
 
 runWanalysis = 0
 runZanalysis = config.runZanalysis
-controlplots = config.controlplots
+controlplots = 0
+if hasattr(config, 'controlplots'):
+  controlplots = str(config.controlplots)
+
 noLSFJobOutput = 1  # 1: Puts all the batch logs in a single file
 recreateSubPrograms = 0  # 1: Recompiles run?analysis.o and remakes run?analysis.sh
+if hasattr(config, 'recreateSubPrograms'):
+  recreateSubPrograms = str(config.recreateSubPrograms)
 
 mergeSigEWKbkg = config.mergeSigEWKbkg
 mergeWhichAnalysis = "Zanalysis"  # "Zanalysis Wanalysis" -- no comma!
