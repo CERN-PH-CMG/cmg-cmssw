@@ -32,8 +32,8 @@ class correctionValue_class
 public:
   // values
   float scale, scale_err, scale_err_syst;
-  float constTerm, constTerm_err;
-  float alpha, alpha_err;
+  float rho, rho_err;
+  float phi, phi_err;
   float Emean, Emean_err;
   
   correctionValue_class(void)
@@ -41,10 +41,10 @@ public:
     scale = 1;
     scale_err = 0;
     scale_err_syst=0;
-    constTerm = 0;
-    constTerm_err = 0;
-    alpha = 0;
-    alpha_err = 0;
+    rho = 0;
+    rho_err = 0;
+    phi = 0;
+    phi_err = 0;
     Emean = 0;
     Emean_err = 0;
   };
@@ -54,9 +54,9 @@ public:
     os <<  "( "
        << a.scale << " +/- " << a.scale_err << " +/- " << a.scale_err_syst << ")" 
        <<  "\t"
-       << a.constTerm << " +/- " << a.constTerm_err 
+       << a.rho << " +/- " << a.rho_err 
        <<  "\t"
-       << a.alpha << " +/- " << a.alpha_err
+       << a.phi << " +/- " << a.phi_err
        <<  "\t"
        << a.Emean << " +/- " << a.Emean_err;
     return os;
@@ -137,6 +137,13 @@ class EnergyScaleCorrection_class
     ECALELF_TOY,
     ECALELF
   };
+
+  enum paramSmear_t {
+        kNone = 0,
+        kRho,
+        kPhi,
+        kNParamSmear
+  };
   
 public:
   bool doScale, doSmearings;
@@ -168,7 +175,8 @@ private:
 
 	//============================== smearings
 public:
-	float getSmearingSigma(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle) const;
+	float getSmearingSigma(int runNumber, bool isEBEle, float R9Ele, float etaSCEle, float EtEle, paramSmear_t par, float nSigma = 0.) const;
+	float getSmearingSigma(int runNumber, bool isEBEle, float R9Ele, float etaSCEle, float EtEle, float nSigma_rho, float nSigma_phi) const;
 
 
 private:
@@ -178,7 +186,7 @@ private:
 	correction_map_t smearings, smearings_not_defined;
 
 	void AddSmearing(TString category_, int runMin_, int runMax_, //double smearing_, double err_smearing_);
-	                 double constTerm, double err_constTerm, double alpha, double err_alpha, double Emean, double err_Emean);
+	                 double rho, double err_rho, double phi, double err_phi, double Emean, double err_Emean);
 	void ReadSmearingFromFile(TString filename); ///< File structure: category constTerm alpha;
 public:
 	inline void SetSmearingType(fileFormat_t value)
@@ -190,7 +198,7 @@ public:
 		}
 	};
 
-	float getSmearingRho(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle) const; ///< public for sigmaE estimate
+	float getSmearingRho(int runNumber, bool isEBEle, float R9Ele, float etaSCEle, float EtEle) const; ///< public for sigmaE estimate
 
 
 
