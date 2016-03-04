@@ -222,9 +222,9 @@ class Zanalysis {
   virtual void     Show(Long64_t entry = -1);
   void ComputeHXVarAndPhiStarEta(TLorentzVector muPosNoCorr,TLorentzVector muNegNoCorr, bool isGen);
 
-  virtual void plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorentzVector Z, TLorentzVector ZGen,double u1_scale, string phaseSpace_str, string leptCharge, string cut , bool doCut, bool doneu, std::map<std::string, TH1D*> &h_1d, std::map<std::string, TH2D*> &h_2d,double weight , int jZmass_MeV , TString eta_str);
+  void plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorentzVector Z, double u1_scale, string phaseSpace_str, string leptCharge, string cut, bool doneu, std::map<std::string, TH1D*> &h_1d, std::map<std::string, TH2D*> &h_2d, double weight, int jZmass_MeV, TString eta_str);
 
-  virtual void fillControlPlots(TLorentzVector Zcorr, TLorentzVector met, TLorentzVector muPosCorr, TLorentzVector muNegCorr, std::map<std::string, TH1D*> &h_1d, std::map<std::string, TH2D*> &h_2d, double weight, int jZmass_MeV , TString eta_str, TString SigOrQCD_str, TString phaseSpace_str);
+  void fillControlPlots(TLorentzVector Zcorr, TLorentzVector met, TLorentzVector muPosCorr, TLorentzVector muNegCorr, std::map<std::string, TH1D*> &h_1d, std::map<std::string, TH2D*> &h_2d, double weight, int jZmass_MeV , TString eta_str, TString SigOrQCD_str, TString phaseSpace_str);
 
 };
 
@@ -427,7 +427,7 @@ Int_t Zanalysis::Cut(Long64_t entry)
 }
 
 
-void Zanalysis::plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorentzVector Z, TLorentzVector Zgen, double u1_scale, string phaseSpace, string leptCharge, string cut , bool doCut, bool doneu, std::map<std::string, TH1D*> &h_1d, std::map<std::string, TH2D*> &h_2d,double weight, int jZmass_MeV , TString eta_str)
+void Zanalysis::plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorentzVector Z, double u1_scale, string phaseSpace, string leptCharge, string cut, bool doneu, std::map<std::string, TH1D*> &h_1d, std::map<std::string, TH2D*> &h_2d, double weight, int jZmass_MeV, TString eta_str)
 {
 
   double u_parall=-999;
