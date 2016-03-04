@@ -255,11 +255,17 @@ void RecoilCorrector::applyCorrMET3gausPDF(
     pU2corr = keysInvGraph(pU2noCorr,bosonPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],false, 50);
 
   } else {
-    // Relative for all
+    // ==============================================================
+    // Go to the pull space (from absolute)
+    // In comments are the version for correcting a different MC
+    // If you use the same targetMC as ZMC it simplifies to the uncommented ones
+    // ==============================================================
     double pU1Diff  = pU1noCorr-pDefU1;
     double pU2Diff  = pU2noCorr;
     
+    // pU1Diff = pU1Diff/pDefRMSU1;
     pU1Diff = pU1Diff/pMRMSU1;
+    // pU1Diff = pU1Diff/pDefRMSU2;
     pU2Diff = pU2Diff/pMRMSU2;
     
     //  std::cout << "================= " << std::endl;
