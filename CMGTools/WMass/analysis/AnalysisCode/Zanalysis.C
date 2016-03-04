@@ -296,19 +296,19 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   int recoilCorrSigmas = 1;
   bool doKeys= useRecoilCorr==3 ? true : false;
   if(useRecoilCorr>0){
-    // TKMET type2
-    string fileCorrectTo = /*POW */ Form("../RecoilCode/JAN31/recoilfit_JAN31_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",generatorSuffix.Data());
-    string fileZmmMC =     /*POW */ Form("../RecoilCode/JAN31/recoilfit_JAN31_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root",generatorSuffix.Data());
-    // need to add the half stat
-    string fileZmmData =   /*DATA*/ "../RecoilCode/JAN31/recoilfit_JAN31_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
-    if(correctToMadgraph) fileZmmData = /*MAD */ "../RecoilCode/JAN31/recoilfit_JAN31_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root";
+    string RCset = "JAN31";
+    string fileCorrectTo = /*POW */ Form("../RecoilCode/%s/recoilfit_%s_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root", RCset.c_str(), RCset.c_str(), generatorSuffix.Data());
+    string fileZmmMC =     /*POW */ Form("../RecoilCode/%s/recoilfit_%s_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root", RCset.c_str(), RCset.c_str(), generatorSuffix.Data());
+    string fileZmmData =   /*DATA*/ Form("../RecoilCode/%s/recoilfit_%s_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root", RCset.c_str(), RCset.c_str());
+    if(correctToMadgraph)
+           fileZmmData =   /*MAD */ Form("../RecoilCode/%s/recoilfit_%s_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root", RCset.c_str(), RCset.c_str());
 
     // the sample are in the root://eoscms//eos/cms//store/group/phys_smp/Wmass/dalfonso/RecoilFiles/DEC6/; download from there
     string fileZmmKeysCorrectTo = Form("../RecoilCode/DEC6/keysrecoilfit_DEC6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X%s.root",generatorSuffix.Data());
     string fileZmmKeysMC = Form("../RecoilCode/DEC6/keysrecoilfit_DEC6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X%s.root",generatorSuffix.Data());
-    // need to add the half stat
     string fileZmmKeysData = "../RecoilCode/DEC6/keysrecoilfit_DEC6_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
-    if(correctToMadgraph) fileZmmKeysData = "../RecoilCode/DEC6/keysrecoilfit_DEC6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X_madgraph.root";
+    if(correctToMadgraph) 
+           fileZmmKeysData = "../RecoilCode/DEC6/keysrecoilfit_DEC6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X_madgraph.root";
 
     TString model_name = "fitresult_Add";
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;
