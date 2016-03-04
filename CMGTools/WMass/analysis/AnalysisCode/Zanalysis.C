@@ -488,13 +488,19 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       //------------------------------------------------------
       // start reco event selection
       //------------------------------------------------------
+      
+      //------------------------------------------------------
+      // good muon pair within acceptance cuts
+      //------------------------------------------------------
       if( evtHasGoodVtx && evtHasTrg && muNoCorr.Pt()>0
-          // CUTS ADDED TO SPEED UP THE CODE
           && TMath::Abs(muCorrCentral.Eta())<WMass::etaMaxMuons
           // && TMath::Abs(neutrinoCorrCentral.Eta())<2.4
           && TMath::Abs(neutrinoCorrCentral.Eta())<submuon_eta_cut // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING
           && MuPos_charge != MuNeg_charge
           && muTrg
+          //-----------------------------------------------------------------
+          // full ID and tight requirements on the muons as defined by Heiner for the efficiencies
+          //-----------------------------------------------------------------
           && MuPosIsTight && MuPos_dxy<0.02
           && MuNegIsTight && MuNeg_dxy<0.02
           && muRelIso<0.12 && neutrinoRelIso<0.5
@@ -778,390 +784,377 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               double Wlike_var_NotScaledCentral[] = {muCorrCentral.Pt(),WlikeCentral.Mt(),Wlike_metCentral.Pt(),MTFirstOrder_central}; // Zcorr would be TEMP !!!!
               
               //------------------------------------------------------
-              // good pair within acceptance cuts for both muons
+              // cuts for both muons
               //------------------------------------------------------
               if( ZcorrCentral.M()>50
-                  && TMath::Abs(muCorrCentral.Eta())<WMass::etaMaxMuons
-                  && TMath::Abs(neutrinoCorrCentral.Eta())<submuon_eta_cut // CHANGED TO 2.1 DURING PLOTS PRE-UNBLINDING 
-                  && MuPos_charge != MuNeg_charge
-                  && muTrg
                   && muCorrCentral.Pt()>WMass::sel_xmin[0]*ZWmassRatio 
                   && neutrinoCorrCentral.Pt()>10 
-                  // && noTrgExtraMuonsLeadingPt<10 // REMOVED BECAUSE OF MARKUS
                 ){
+                for(int k=0;k<WMass::NFitVar;k++)
+                  if(m==m_start && n==0 && i==0) common_stuff::plot1D(Form("hWlike%s_%sNonScaled_5_RecoCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                   Wlike_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
+      
                 //------------------------------------------------------
-                // full ID and tight requirements on the muons as defined by Heiner for the efficiencies
+                // cut on MET
                 //------------------------------------------------------
-                if(    MuPosIsTight && MuPos_dxy<0.02
-                    && MuNegIsTight && MuNeg_dxy<0.02
-                    && muRelIso<0.12 && neutrinoRelIso<0.5
-                  ){
+                if(Wlike_metCentral.Pt()>WMass::sel_xmin[2]*ZWmassRatio){
                   for(int k=0;k<WMass::NFitVar;k++)
-                    if(m==m_start && n==0 && i==0) common_stuff::plot1D(Form("hWlike%s_%sNonScaled_5_RecoCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                    if(m==m_start && n==0 && i==0) common_stuff::plot1D(Form("hWlike%s_%sNonScaled_6_METCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
                      Wlike_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
-        
+                  
+                  if(controlplots && m==m_start && n==0 && i==0) common_stuff::plot1D(Form("hZ_pt_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                  Zcorr.Pt(),evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 1000,0,250 );
+
                   //------------------------------------------------------
-                  // cut on MET
+                  // cut on W recoil (BY DEFAULT IS 15)
                   //------------------------------------------------------
-                  if(Wlike_metCentral.Pt()>WMass::sel_xmin[2]*ZWmassRatio){
+                  if(WlikeCentral.Pt()<WMass::WpTcut*ZWmassRatio
+                      && ZcorrCentral.Pt() < ZPt_cut // ADDED DURING PLOTS PRE-UNBLINDING
+                     ){
                     for(int k=0;k<WMass::NFitVar;k++)
-                      if(m==m_start && n==0 && i==0) common_stuff::plot1D(Form("hWlike%s_%sNonScaled_6_METCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                       Wlike_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
+                      if(m==m_start && n==0 && i==0) common_stuff::plot1D(Form("hWlike%s_%sNonScaled_7_RecoilCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                        Wlike_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
                     
-                    if(controlplots && m==m_start && n==0 && i==0) common_stuff::plot1D(Form("hZ_pt_%s_eta%s_%d",WMass::nSigOrQCD_str[0].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                    Zcorr.Pt(),evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 1000,0,250 );
-
                     //------------------------------------------------------
-                    // cut on W recoil (BY DEFAULT IS 15)
+                    // Apply the "box" cuts on pT, mT, MET -- based on central correction
                     //------------------------------------------------------
-                    if(WlikeCentral.Pt()<WMass::WpTcut*ZWmassRatio
-                        && ZcorrCentral.Pt() < ZPt_cut // ADDED DURING PLOTS PRE-UNBLINDING
-                       ){
-                      for(int k=0;k<WMass::NFitVar;k++)
-                        if(m==m_start && n==0 && i==0) common_stuff::plot1D(Form("hWlike%s_%sNonScaled_7_RecoilCut_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                          Wlike_var_NotScaled[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
-                      
+                    if(
+                        Wlike_var_NotScaledCentral[0] > WMass::sel_xmin[0]*ZWmassRatio && Wlike_var_NotScaledCentral[0] < WMass::sel_xmax[0]*ZWmassRatio  // Pt
+                        && Wlike_var_NotScaledCentral[1] > WMass::sel_xmin[1]*ZWmassRatio && Wlike_var_NotScaledCentral[1] < WMass::sel_xmax[1]*ZWmassRatio // Mt
+                        && Wlike_var_NotScaledCentral[2] > WMass::sel_xmin[2]*ZWmassRatio && Wlike_var_NotScaledCentral[2] < WMass::sel_xmax[2]*ZWmassRatio // MET
+                        // && Wlike_var_NotScaledCentral[3] > WMass::sel_xmin[3]*ZWmassRatio && Wlike_var_NotScaledCentral[3] < WMass::sel_xmax[3]*ZWmassRatio // MtLin
+                      ){
+                    
                       //------------------------------------------------------
-                      // Apply the "box" cuts on pT, mT, MET -- based on central correction
+                      // Compute/retrieve PDF weights with LHAPDF or LHE
                       //------------------------------------------------------
-                      if(
-                          Wlike_var_NotScaledCentral[0] > WMass::sel_xmin[0]*ZWmassRatio && Wlike_var_NotScaledCentral[0] < WMass::sel_xmax[0]*ZWmassRatio  // Pt
-                          && Wlike_var_NotScaledCentral[1] > WMass::sel_xmin[1]*ZWmassRatio && Wlike_var_NotScaledCentral[1] < WMass::sel_xmax[1]*ZWmassRatio // Mt
-                          && Wlike_var_NotScaledCentral[2] > WMass::sel_xmin[2]*ZWmassRatio && Wlike_var_NotScaledCentral[2] < WMass::sel_xmax[2]*ZWmassRatio // MET
-                          // && Wlike_var_NotScaledCentral[3] > WMass::sel_xmin[3]*ZWmassRatio && Wlike_var_NotScaledCentral[3] < WMass::sel_xmax[3]*ZWmassRatio // MtLin
-                        ){
+                      double lha_weight = 1;
+                      double weight_old = 1;
+                      #ifdef LHAPDF_ON
+                        if(parton1_x>1e-7 && parton2_x>1e-7 && parton1_x<1 && parton2_x<1)
+                          if (!sampleName.Contains("DATA"))
+                            weight_old = LHAPDF::xfx(1,parton1_x,scalePDF,parton1_pdgId)*LHAPDF::xfx(1,parton2_x,scalePDF,parton2_pdgId);
+                      if(m==m_start && n==0 && controlplots){
+                        common_stuff::plot1D("hPDF_x1",TMath::Log10(parton1_x), 1, h_1d, 1000,-4,0 );
+                        common_stuff::plot1D("hPDF_x1unweighted",TMath::Log10(parton1_x), 1/weight_old, h_1d, 1000,-4,0 );
+                        common_stuff::plot1D("hPDF_x2",TMath::Log10(parton2_x), 1, h_1d, 1000,-4,0 );
+                        common_stuff::plot1D("hPDF_x2unweighted",TMath::Log10(parton2_x), 1/weight_old, h_1d, 1000,-4,0 );
+                      }
+                      #endif
                       
-                        //------------------------------------------------------
-                        // Compute/retrieve PDF weights with LHAPDF or LHE
-                        //------------------------------------------------------
-                        double lha_weight = 1;
-                        double weight_old = 1;
-                        #ifdef LHAPDF_ON
-                          if(parton1_x>1e-7 && parton2_x>1e-7 && parton1_x<1 && parton2_x<1)
-                            if (!sampleName.Contains("DATA"))
-                              weight_old = LHAPDF::xfx(1,parton1_x,scalePDF,parton1_pdgId)*LHAPDF::xfx(1,parton2_x,scalePDF,parton2_pdgId);
-                        if(m==m_start && n==0 && controlplots){
-                          common_stuff::plot1D("hPDF_x1",TMath::Log10(parton1_x), 1, h_1d, 1000,-4,0 );
-                          common_stuff::plot1D("hPDF_x1unweighted",TMath::Log10(parton1_x), 1/weight_old, h_1d, 1000,-4,0 );
-                          common_stuff::plot1D("hPDF_x2",TMath::Log10(parton2_x), 1, h_1d, 1000,-4,0 );
-                          common_stuff::plot1D("hPDF_x2unweighted",TMath::Log10(parton2_x), 1/weight_old, h_1d, 1000,-4,0 );
+                      for(int h=0; h<WMass::PDF_members; h++){
+                        if( !contains_LHE_weights || (!sampleName.Contains("DATA") && WMass::PDF_sets>0 && WMass::PDF_sets!=generated_PDF_set && WMass::PDF_members!=generated_PDF_member)){
+                          double weight_new = 1;
+                          #ifdef LHAPDF_ON
+                            LHAPDF::usePDFMember(0,h);
+                            if(parton1_x>1e-7 && parton2_x>1e-7 && parton1_x<1 && parton2_x<1)
+                              weight_new = (LHAPDF::xfx(0,parton1_x,scalePDF,parton1_pdgId)*LHAPDF::xfx(0,parton2_x,scalePDF,parton2_pdgId));
+                          #endif
+                          lha_weight = weight_new/weight_old;
+                          if(m==m_start && n==0 && i==0 && controlplots)
+                            common_stuff::plot1D(Form("hPDF_weights_%d_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h),
+                                          lha_weight, 1, h_1d, 1000,0,2
+                                        );
+                        } else if(contains_LHE_weights){
+                          lha_weight = LHE_weight[PDF_reweighting_central_Index+h];
                         }
-                        #endif
                         
-                        for(int h=0; h<WMass::PDF_members; h++){
-                          if( !contains_LHE_weights || (!sampleName.Contains("DATA") && WMass::PDF_sets>0 && WMass::PDF_sets!=generated_PDF_set && WMass::PDF_members!=generated_PDF_member)){
-                            double weight_new = 1;
-                            #ifdef LHAPDF_ON
-                              LHAPDF::usePDFMember(0,h);
-                              if(parton1_x>1e-7 && parton2_x>1e-7 && parton1_x<1 && parton2_x<1)
-                                weight_new = (LHAPDF::xfx(0,parton1_x,scalePDF,parton1_pdgId)*LHAPDF::xfx(0,parton2_x,scalePDF,parton2_pdgId));
-                            #endif
-                            lha_weight = weight_new/weight_old;
-                            if(m==m_start && n==0 && i==0 && controlplots)
-                              common_stuff::plot1D(Form("hPDF_weights_%d_%d",WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h),
-                                            lha_weight, 1, h_1d, 1000,0,2
-                                          );
-                          } else if(contains_LHE_weights){
-                            lha_weight = LHE_weight[PDF_reweighting_central_Index+h];
-                          }
+                        // WEIGHT DEFINITION
+                        double weight = evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight;
+
+                        //------------------------------------------------------
+                        // start loop on mass hypotheses
+                        //------------------------------------------------------
+                        for(int j=0; j<2*WMass::WMassNSteps+1; j++){
+
+                          if(!isPowOrMad && WMass::WMassNSteps!=j) continue;
+                          int jZmass_MeV = WMass::Zmass_values_array[j];
+                          double iZmass_GeV = WMass::Zmass_values_array[j]/1e3;
                           
-                          // WEIGHT DEFINITION                          
-                          double weight = evt_weight*TRG_TIGHT_ISO_muons_SF*lha_weight;
-
                           //------------------------------------------------------
-                          // start loop on mass hypotheses
+                          // compute weight for mass hypotheses wiht Breit-Wigner reweighting or LHE
                           //------------------------------------------------------
-                          for(int j=0; j<2*WMass::WMassNSteps+1; j++){
-
-                            if(!isPowOrMad && WMass::WMassNSteps!=j) continue;
-                            int jZmass_MeV = WMass::Zmass_values_array[j];
-                            double iZmass_GeV = WMass::Zmass_values_array[j]/1e3;
-                            
-                            //------------------------------------------------------
-                            // compute weight for mass hypotheses wiht Breit-Wigner reweighting or LHE
-                            //------------------------------------------------------
-                            double weight_i=1; // bweight_i=1,lheweight_i=1;
-                            if(useGenVar){
-                              if(!contains_LHE_weights){
-                                double gamma=2.141; /*HARD CODED TO PDG VALUE*/
-                                weight_i = common_stuff::BWweight(ZGen_mass, iZmass_GeV, gen_mass_value_MeV, gamma);
-                              }
-                              else{
-                                weight_i = LHE_weight [ (WMass::LHE_mass_central_index + ( -WMass::WMassNSteps + j)*WMass::WMassSkipNSteps) ];
-                              }
+                          double weight_i=1; // bweight_i=1,lheweight_i=1;
+                          if(useGenVar){
+                            if(!contains_LHE_weights){
+                              double gamma=2.141; /*HARD CODED TO PDG VALUE*/
+                              weight_i = common_stuff::BWweight(ZGen_mass, iZmass_GeV, gen_mass_value_MeV, gamma);
                             }
-                            double weight_mass = weight * weight_i;
-
-                            
-                            //------------------------------------------------------
-                            // "MONEY" PLOTS OF FIT VARIABLES WITHIN THE FIT RANGE
-                            //------------------------------------------------------
-
-                            for(int k=0;k<WMass::NFitVar;k++){
-                              common_stuff::plot1D(Form("hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                                    Wlike_var_NotScaled[k], weight_mass, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
-                              
-                              // 2D plot obs_i vs obs_j (no MtLin)
-                              if (false) {
-                                for(int k2=k+1;k2<WMass::NFitVar;k2++){
-                                  // cout << "k= " << k << " k2= " << k2 << endl;
-                                  common_stuff::plot2D(Form("hWlike%s_%svs%s_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                         Wlike_var_NotScaled[k2],Wlike_var_NotScaled[k], weight_mass,
-                                         h_2d, 50, WMass::fit_xmin[k2]*ZWmassRatio, WMass::fit_xmax[k2]*ZWmassRatio,
-                                         50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
-                                }
-                              }
+                            else{
+                              weight_i = LHE_weight [ (WMass::LHE_mass_central_index + ( -WMass::WMassNSteps + j)*WMass::WMassSkipNSteps) ];
                             }
+                          }
+                          double weight_mass = weight * weight_i;
 
+                          
+                          //------------------------------------------------------
+                          // "MONEY" PLOTS OF FIT VARIABLES WITHIN THE FIT RANGE
+                          //------------------------------------------------------
+
+                          for(int k=0;k<WMass::NFitVar;k++){
+                            common_stuff::plot1D(Form("hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+                                                  Wlike_var_NotScaled[k], weight_mass, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
+                            
+                            // 2D plot obs_i vs obs_j (no MtLin)
                             if (false) {
-                              // 3D plot
-                              common_stuff::plot3D(Form("hWlike%s_%svs%svs%s_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[2].Data(),WMass::FitVar_str[1].Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                 Wlike_var_NotScaled[0],Wlike_var_NotScaled[1],Wlike_var_NotScaled[2], weight_mass,
-                                 h_3d, 50, WMass::fit_xmin[0]*ZWmassRatio, WMass::fit_xmax[0]*ZWmassRatio,
-                                 50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio,
-                                 50, WMass::fit_xmin[2]*ZWmassRatio, WMass::fit_xmax[2]*ZWmassRatio );
-                            }
-                            if(doRecoilMassVariations){
-                              common_stuff::plot1D(Form("hWlike%s_RecoilNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
-                                                Wlike.Pt(), weight_mass, h_1d, 50, 0, 18 );
-                            }
-
-                          }
-                        
-                          //------------------------------------------------------------------------------------------------
-                          // EXTRA PLOTS - these are inclusive distributions used to derive and verify weights
-                          //------------------------------------------------------------------------------------------------
-
-                          if(m==m_start && n==0 && (controlplots || preUnblinding)){
-
-                            // Leptons Efficiencies
-                            common_stuff::plot1D(Form("h_eff_TIGHT_SF%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                                 eff_TIGHT_SF, weight, h_1d, 200, -0.5, 1.5 );
-
-                            common_stuff::plot1D(Form("h_eff_ISO_SF%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                                 eff_ISO_SF, weight, h_1d, 200, -0.5, 1.5 );
-
-                            common_stuff::plot1D(Form("h_eff_TIGHT_subleading_SF%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                                 eff_TIGHT_subleading_SF, weight, h_1d, 200, -0.5, 1.5 );
-
-                            common_stuff::plot1D(Form("h_eff_TRG_SF%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                                 eff_TRG_SF, weight, h_1d, 200, -0.5, 1.5 );
-
-                            // Lepton rapidity
-                            common_stuff::plot1D(Form("hWlike%s_MuEta_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                              muCorr.Rapidity(), weight, h_1d, 60, -2.4, 2.4 );
-                            common_stuff::plot1D(Form("hWlike%s_NuEta_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                              neutrinoCorr.Rapidity(), weight, h_1d, 60, -2.4, 2.4 );
-                            
-                            // Boson Kinematics Zpt, Zmass, Zrecoil, Zrapidity
-                            common_stuff::plot1D(Form("hWlike%s_ZpT_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                              Zcorr.Pt(), weight, h_1d, 80, 0, 40 );
-                            common_stuff::plot1D(Form("hWlike%s_Zmass_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                              Zcorr.M(), weight, h_1d, 80, 80, 100 );
-
-                            common_stuff::plot1D(Form("hWlike%s_Recoil_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                              Wlike.Pt(), weight, h_1d, 40, 0, 20 );
-
-                            common_stuff::plot1D(Form("hWlike%s_Zrap_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                              Zcorr.Rapidity(), weight, h_1d, 80, -2, 2 );
-
-
-                            if(controlplots) {
-                              common_stuff::plot2D(Form("hWlike%s_MtLinVsGenZPt_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                 ZGen_pt,Wlike_var_NotScaled[3], weight,
-                                 h_2d, 40, 0,20,
-                                 50, WMass::fit_xmin[3]*ZWmassRatio, WMass::fit_xmax[3]*ZWmassRatio );
-                              common_stuff::plot2D(Form("hWlike%s_MtVsGenZPt_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                 ZGen_pt,Wlike_var_NotScaled[1], weight,
-                                 h_2d, 40, 0,20,
-                                 50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio );
-                            }
-
-                            // Boson polarization
-                            common_stuff::plot2D(Form("hWlike%s_Zrap_vs_costh_CS_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                 costh_CS,TMath::Abs(Zcorr.Rapidity()), weight,
-                                 h_2d, 40,-1,1,
-                                 9,0,1.8 );
-
-                            common_stuff::plot2D(Form("hWlike%s_phi_CS_vs_costh_CS_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                 costh_CS,TMath::Abs(phi_CS), weight,
-                                 h_2d, 20,-1,1,
-                                 8,0,TMath::Pi() );
-
-                            common_stuff::plot1D(Form("hWlike%s_costh_CS_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                 costh_CS, weight,
-                                 h_1d, 40,-1,1 );
-
-                            common_stuff::plot1D(Form("hWlike%s_phi_CS_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                 TMath::Abs(phi_CS), weight,
-                                 h_1d, 16, 0, TMath::Pi() );
-                            
-                            if(polarization_checks){
-                              
-                              common_stuff::plot1D(Form("hWlike%s_Eta_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d_all",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                                    muCorr.Pt(), weight, h_1d, 50, -2.5, 2.5 );
-                              
-                              if(TMath::Abs(costh_CS)<0.2){
-                                
-                                common_stuff::plot1D(Form("hWlike%s_costh_CS_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d_central",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                     costh_CS, weight,
-                                     h_1d, 40,-1,1 );
-                                common_stuff::plot1D(Form("hWlike%s_phi_CS_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d_central",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                     TMath::Abs(phi_CS), weight,
-                                     h_1d, 16, 0, TMath::Pi() );
-
-                                  common_stuff::plot1D(Form("hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d_central",WCharge_str.Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                                        Wlike_var_NotScaled[0], weight, h_1d, 50, WMass::fit_xmin[0]*ZWmassRatio, WMass::fit_xmax[0]*ZWmassRatio );
-                                  common_stuff::plot1D(Form("hWlike%s_Eta_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d_central",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                                        Wlike_var_NotScaled[0], weight, h_1d, 50, -2.5, 2.5 );
-                                  
-                              }
-                            }
-
-                            if(controlplots || polarization_checks) {
-                              if( TMath::Abs(ZcorrCentral.Rapidity())<2.1 && ZcorrCentral.Pt()<1000 ){
-                                int i_rapbin = hrapbins->GetXaxis()->FindBin(TMath::Abs(ZcorrCentral.Rapidity()))-1 ;
-                                // cout << "i_rapbin= " << i_rapbin<< endl;;
-                                int i_ptbin = hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())>0 ? hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())-1 : 0 ;
-                                // cout << " i_ptbin= " << i_ptbin<< endl;;
-                                // hratioAngCoefSF[i_rapbin][i_ptbin]->Print();
-                                // int costh_bin = hratioAngCoefSF[i_rapbin][i_ptbin]->GetXaxis()->FindBin(costh_CS);
-                                // cout << " costh_bin= " << costh_bin<< endl;;
-                                // int phi_bin = hratioAngCoefSF[i_rapbin][i_ptbin]->GetYaxis()->FindBin(TMath::Abs(phi_CS));
-                                // cout << " phi_bin= " << phi_bin<< endl;;
-                                common_stuff::plot1D(Form("costh_CS_rapbin%d_ptbin%d_Wlike%s_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",i_rapbin,i_ptbin,WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                         costh_CS, weight, h_1d, 12, -1, 1);
-                                common_stuff::plot1D(Form("phi_CS_rapbin%d_ptbin%d_Wlike%s_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",i_rapbin,i_ptbin,WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                         TMath::Abs(phi_CS), weight, h_1d, 12, 0, TMath::Pi());
+                              for(int k2=k+1;k2<WMass::NFitVar;k2++){
+                                // cout << "k= " << k << " k2= " << k2 << endl;
+                                common_stuff::plot2D(Form("hWlike%s_%svs%s_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+                                       Wlike_var_NotScaled[k2],Wlike_var_NotScaled[k], weight_mass,
+                                       h_2d, 50, WMass::fit_xmin[k2]*ZWmassRatio, WMass::fit_xmax[k2]*ZWmassRatio,
+                                       50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
                               }
                             }
                           }
 
-                          //------------------------------------------------------------------------------------------------
-                          // BELOW PLOTS for CLOSURE TEST - Various binned plots - for recoil plots - Zcentral info to avoid randomization
-                          //------------------------------------------------------------------------------------------------
-
-                          // if(Wlike_met.Pt()>0 && m==m_start && n==0 && i==0 && controlplots) {
-
-                            // string tag_zPtcut;
-                            // if ( ZcorrCentral.Pt()<2 ) tag_zPtcut = "_Zpt02";
-                            // else if  ( ZcorrCentral.Pt()>=2 && ZcorrCentral.Pt()<4 ) tag_zPtcut = "_Zpt24";
-                            // else if  ( ZcorrCentral.Pt()>=4 && ZcorrCentral.Pt()<6 ) tag_zPtcut = "_Zpt46";
-                            // else if  ( ZcorrCentral.Pt()>=6 && ZcorrCentral.Pt()<8 ) tag_zPtcut = "_Zpt68";
-                            // else if  ( ZcorrCentral.Pt()>=8 && ZcorrCentral.Pt()<10 ) tag_zPtcut = "_Zpt810";
-                            // else if  ( ZcorrCentral.Pt()>=10 && ZcorrCentral.Pt()<12 ) tag_zPtcut = "_Zpt1012";
-                            // else if  ( ZcorrCentral.Pt()>=12 && ZcorrCentral.Pt()<14 ) tag_zPtcut = "_Zpt1214";
-                            // else if  ( ZcorrCentral.Pt()>=14 && ZcorrCentral.Pt()<16 ) tag_zPtcut = "_Zpt1416";
-                            // else if  ( ZcorrCentral.Pt()>=16 && ZcorrCentral.Pt()<18 ) tag_zPtcut = "_Zpt1618";
-                            // else if  ( ZcorrCentral.Pt()>=18 && ZcorrCentral.Pt()<20 ) tag_zPtcut = "_Zpt1820";
-                            // else if  ( ZcorrCentral.Pt()>=20 && ZcorrCentral.Pt()<30 ) tag_zPtcut = "_Zpt2030";
-                            // else if  ( ZcorrCentral.Pt()>=30 && ZcorrCentral.Pt()<50 ) tag_zPtcut = "_Zpt3050";
-                            // else if  ( ZcorrCentral.Pt()>=50 ) tag_zPtcut = "_Zpt50";
-                            // else tag_zPtcut = "_ignore";
-
-                            // double Zy=ZcorrCentral.Rapidity();
-                            // string tag_y;
-                            // if ( Zy>=0 && Zy<0.5 ) tag_y = "_Zy0005";
-                            // else if  ( Zy>=0.5 && Zy<1.0 ) tag_y = "_Zy0510";
-                            // else if  ( Zy>=1.0 && Zy<1.5 ) tag_y = "_Zy1015";
-                            // else if  ( Zy>=1.5 && Zy<2.0 ) tag_y = "_Zy1520";
-                            // else if  ( Zy>=2.0 ) tag_y = "_Zy20inf";
-                            // else if  ( Zy>=(-0.5) && Zy<0.0 ) tag_y = "_Zy0500";
-                            // else if  ( Zy>=(-1.0) && Zy<(-0.5) ) tag_y = "_Zy1005";
-                            // else if  ( Zy>=(-1.5) && Zy<(-1.0) ) tag_y = "_Zy1510";
-                            // else if  ( Zy>=(-2.0) && Zy<(-1.5) ) tag_y = "_Zy2015";
-                            // else if  ( Zy<(-2.0) ) tag_y = "_Zyinf20";
-                            // else tag_y = "_ignore";
-
-                            // string tag_VTX="";
-                            // int n_vtx_max = 20; // 7 TeV
-                            // // int n_vtx_max = 35; // 8 TeV
-                            // if(nvtx==0) tag_VTX="_VTX1";
-                            // else if(nvtx>=1 && nvtx<=n_vtx_max) tag_VTX=Form("_VTX%d",nvtx);
-                            // else if(nvtx>n_vtx_max) tag_VTX=Form("_VTX%d",n_vtx_max);
-                            
-                            // TLorentzVector VisPt;
-                            // VisPt.SetPtEtaPhiM(ZcorrCentral.Pt(),0,ZcorrCentral.Phi(),0);
-
-                            // TLorentzVector Zgen;
-                            // Zgen.SetPtEtaPhiM(ZGen_pt,0,ZGen_phi,0);
-
-                            // string mettype="_tk";
-                            
-                            // bool plot_vtx_binned_Wlike_var_NotScaled = true;
-                            // if(plot_vtx_binned_Wlike_var_NotScaled){
-                              // for(int k=0;k<WMass::NFitVar;k++)
-                                // common_stuff::plot1D(Form("hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d%s",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV,tag_VTX.c_str()),
-                                                  // Wlike_var_NotScaled[k], weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
-                            // }
-                            
-                            // double u1_scale=0;
-                            // plotVariables( Z_met, VisPt,  ZcorrCentral, Zgen, u1_scale, "closure", tag_zPtcut.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps, WMass::ZMassCentral_MeV);
-                            // plotVariables( Z_met, VisPt,  ZcorrCentral, Zgen, u1_scale, "closure", tag_VTX.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps, WMass::ZMassCentral_MeV);
-                            // plotVariables( Z_met, VisPt,  ZcorrCentral, Zgen, u1_scale, "closure", tag_y.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps , WMass::ZMassCentral_MeV);
-                          // }
-
-                          //---------------------------------------------------------------------
-                          // Recoil plots: u1, u2, u1vsZpt, u2vsZpt, u1vsZptvsZrap, u2vsZptvsZrap (for recoil plots - Zcentral info to avoid randomization)
-                          //---------------------------------------------------------------------
-                          if(correctToMadgraph || controlplots){
-
-                            common_stuff::calculateU1U2(met_trasv, metphi_trasv,  ZGen_pt, ZGen_phi,
-                              ZNocorr.Pt(), ZNocorr.Phi(),  u1_recoil, u2_recoil);
-
-                            double u_recoil = sqrt(u2_recoil*u2_recoil+u1_recoil*u1_recoil);
-
-                            common_stuff::plot1D(Form("hWlike%s_u1_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                              u1_recoil, weight, h_1d, 60, -20, 20 );
-                            common_stuff::plot1D(Form("hWlike%s_u2_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                              u2_recoil, weight, h_1d, 60, -20, 20 );
-                            common_stuff::plot1D(Form("hWlike%s_u_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                              u_recoil, weight, h_1d, 60, +00, 20 );
-
-                            common_stuff::plot2D(Form("hWlike%s_u1vsZpt_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                              ZcorrCentral.Pt(), u1_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, -20, 20 );
-                            common_stuff::plot2D(Form("hWlike%s_u2vsZpt_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                              ZcorrCentral.Pt(), u2_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, -20, 20 );
-                            common_stuff::plot2D(Form("hWlike%s_uvsZpt_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                              ZcorrCentral.Pt(),  u_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, +00, 20 );
+                          if (false) {
+                            // 3D plot
+                            common_stuff::plot3D(Form("hWlike%s_%svs%svs%s_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[2].Data(),WMass::FitVar_str[1].Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+                               Wlike_var_NotScaled[0],Wlike_var_NotScaled[1],Wlike_var_NotScaled[2], weight_mass,
+                               h_3d, 50, WMass::fit_xmin[0]*ZWmassRatio, WMass::fit_xmax[0]*ZWmassRatio,
+                               50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio,
+                               50, WMass::fit_xmin[2]*ZWmassRatio, WMass::fit_xmax[2]*ZWmassRatio );
+                          }
+                          if(doRecoilMassVariations){
+                            common_stuff::plot1D(Form("hWlike%s_RecoilNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV),
+                                              Wlike.Pt(), weight_mass, h_1d, 50, 0, 18 );
                           }
 
-                          if (controlplots) {
-                            common_stuff::plot2D(Form("hWlike%s_u1vsZrap_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                              ZGen_status3.Rapidity(), u1_recoil, weight, h_2d, 60, -4, +4, 60, -20, 20 );
-                            common_stuff::plot2D(Form("hWlike%s_u2vsZrap_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                              ZGen_status3.Rapidity(), u2_recoil, weight, h_2d, 60, -4, +4, 60, -20, 20 );
-
-                            common_stuff::plot3D(Form("hWlike%s_u1vsZptvsZrap_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                              ZcorrCentral.Pt(), ZGen_status3.Rapidity(), u1_recoil, weight, h_3d, 60, 0, ZPt_cut, 60, -4, +4, 60, -20, 20 );
-                            common_stuff::plot3D(Form("hWlike%s_u2vsZptvsZrap_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                              ZcorrCentral.Pt(), ZGen_status3.Rapidity(), u2_recoil, weight, h_3d, 60, 0, ZPt_cut, 60, -4, +4, 60, -20, 20 );
-                          }
-
-                          if (controlplots) {
-                            //------------------------------------------------------------------------------------------------
-                            // PLOTS FOR GIGI's TEST see 11 apr 2014 (CMG presentations)
-                            //------------------------------------------------------------------------------------------------
-                            //      cout << "filling control plot RecoilVar=" << RecoilVar_str.Data() << endl;
-                            common_stuff::plot1D(Form("deltaMT_Wlike%s_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                    Wlike.Mt() - WlikeCentral.Mt(), weight, h_1d, 200, -0.1, 0.1);
-
-                            common_stuff::plot1D(Form("deltaMET_Wlike%s_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
-                                    Wlike_met.Pt() - Wlike_metCentral.Pt(), weight, h_1d, 200, -0.1, 0.1);
-                          }
-
-                        } // end loop PDF
-                        
+                        }
+                      
                         //------------------------------------------------------------------------------------------------
-                        // control plots for different etas but only for central W mass
-                        //------------------------------------------------------------------------------------------------ 
-                        if(controlplots && m==m_start && n==0 && i==0) fillControlPlots(Zcorr, Z_met, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, WMass::ZMassCentral_MeV, eta_str, WMass::nSigOrQCD_str[0],Form("Wlike%s_8_JetCut",WCharge_str.Data()));
+                        // EXTRA PLOTS - these are inclusive distributions used to derive and verify weights
+                        //------------------------------------------------------------------------------------------------
 
-                      } // end if for box cuts
-                    } // end if for recoil
-                  } // end if for MET cuts
-                } // end if for muon cuts
-              } // end if for good pair within acceptance cuts for both muons
+                        if(m==m_start && n==0 && (controlplots || preUnblinding)){
+
+                          // Leptons Efficiencies
+                          common_stuff::plot1D(Form("h_eff_TIGHT_SF%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                               eff_TIGHT_SF, weight, h_1d, 200, -0.5, 1.5 );
+
+                          common_stuff::plot1D(Form("h_eff_ISO_SF%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                               eff_ISO_SF, weight, h_1d, 200, -0.5, 1.5 );
+
+                          common_stuff::plot1D(Form("h_eff_TIGHT_subleading_SF%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                               eff_TIGHT_subleading_SF, weight, h_1d, 200, -0.5, 1.5 );
+
+                          common_stuff::plot1D(Form("h_eff_TRG_SF%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[1].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                               eff_TRG_SF, weight, h_1d, 200, -0.5, 1.5 );
+
+                          // Lepton rapidity
+                          common_stuff::plot1D(Form("hWlike%s_MuEta_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                            muCorr.Rapidity(), weight, h_1d, 60, -2.4, 2.4 );
+                          common_stuff::plot1D(Form("hWlike%s_NuEta_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                            neutrinoCorr.Rapidity(), weight, h_1d, 60, -2.4, 2.4 );
+                          
+                          // Boson Kinematics Zpt, Zmass, Zrecoil, Zrapidity
+                          common_stuff::plot1D(Form("hWlike%s_ZpT_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                            Zcorr.Pt(), weight, h_1d, 80, 0, 40 );
+                          common_stuff::plot1D(Form("hWlike%s_Zmass_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                            Zcorr.M(), weight, h_1d, 80, 80, 100 );
+
+                          common_stuff::plot1D(Form("hWlike%s_Recoil_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                            Wlike.Pt(), weight, h_1d, 40, 0, 20 );
+
+                          common_stuff::plot1D(Form("hWlike%s_Zrap_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                            Zcorr.Rapidity(), weight, h_1d, 80, -2, 2 );
+
+
+                          if(controlplots) {
+                            common_stuff::plot2D(Form("hWlike%s_MtLinVsGenZPt_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                               ZGen_pt,Wlike_var_NotScaled[3], weight,
+                               h_2d, 40, 0,20,
+                               50, WMass::fit_xmin[3]*ZWmassRatio, WMass::fit_xmax[3]*ZWmassRatio );
+                            common_stuff::plot2D(Form("hWlike%s_MtVsGenZPt_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                               ZGen_pt,Wlike_var_NotScaled[1], weight,
+                               h_2d, 40, 0,20,
+                               50, WMass::fit_xmin[1]*ZWmassRatio, WMass::fit_xmax[1]*ZWmassRatio );
+                          }
+
+                          // Boson polarization
+                          common_stuff::plot2D(Form("hWlike%s_Zrap_vs_costh_CS_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                               costh_CS,TMath::Abs(Zcorr.Rapidity()), weight,
+                               h_2d, 40,-1,1,
+                               9,0,1.8 );
+
+                          common_stuff::plot2D(Form("hWlike%s_phi_CS_vs_costh_CS_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                               costh_CS,TMath::Abs(phi_CS), weight,
+                               h_2d, 20,-1,1,
+                               8,0,TMath::Pi() );
+
+                          common_stuff::plot1D(Form("hWlike%s_costh_CS_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                               costh_CS, weight,
+                               h_1d, 40,-1,1 );
+
+                          common_stuff::plot1D(Form("hWlike%s_phi_CS_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                               TMath::Abs(phi_CS), weight,
+                               h_1d, 16, 0, TMath::Pi() );
+                          
+                          if(polarization_checks){
+                            
+                            common_stuff::plot1D(Form("hWlike%s_Eta_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d_all",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                                  muCorr.Pt(), weight, h_1d, 50, -2.5, 2.5 );
+                            
+                            if(TMath::Abs(costh_CS)<0.2){
+                              
+                              common_stuff::plot1D(Form("hWlike%s_costh_CS_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d_central",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                   costh_CS, weight,
+                                   h_1d, 40,-1,1 );
+                              common_stuff::plot1D(Form("hWlike%s_phi_CS_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d_central",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                   TMath::Abs(phi_CS), weight,
+                                   h_1d, 16, 0, TMath::Pi() );
+
+                                common_stuff::plot1D(Form("hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d_central",WCharge_str.Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                                      Wlike_var_NotScaled[0], weight, h_1d, 50, WMass::fit_xmin[0]*ZWmassRatio, WMass::fit_xmax[0]*ZWmassRatio );
+                                common_stuff::plot1D(Form("hWlike%s_Eta_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d_central",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                                      Wlike_var_NotScaled[0], weight, h_1d, 50, -2.5, 2.5 );
+                                
+                            }
+                          }
+
+                          if(controlplots || polarization_checks) {
+                            if( TMath::Abs(ZcorrCentral.Rapidity())<2.1 && ZcorrCentral.Pt()<1000 ){
+                              int i_rapbin = hrapbins->GetXaxis()->FindBin(TMath::Abs(ZcorrCentral.Rapidity()))-1 ;
+                              // cout << "i_rapbin= " << i_rapbin<< endl;;
+                              int i_ptbin = hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())>0 ? hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())-1 : 0 ;
+                              // cout << " i_ptbin= " << i_ptbin<< endl;;
+                              // hratioAngCoefSF[i_rapbin][i_ptbin]->Print();
+                              // int costh_bin = hratioAngCoefSF[i_rapbin][i_ptbin]->GetXaxis()->FindBin(costh_CS);
+                              // cout << " costh_bin= " << costh_bin<< endl;;
+                              // int phi_bin = hratioAngCoefSF[i_rapbin][i_ptbin]->GetYaxis()->FindBin(TMath::Abs(phi_CS));
+                              // cout << " phi_bin= " << phi_bin<< endl;;
+                              common_stuff::plot1D(Form("costh_CS_rapbin%d_ptbin%d_Wlike%s_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",i_rapbin,i_ptbin,WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                       costh_CS, weight, h_1d, 12, -1, 1);
+                              common_stuff::plot1D(Form("phi_CS_rapbin%d_ptbin%d_Wlike%s_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",i_rapbin,i_ptbin,WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                       TMath::Abs(phi_CS), weight, h_1d, 12, 0, TMath::Pi());
+                            }
+                          }
+                        }
+
+                        //------------------------------------------------------------------------------------------------
+                        // BELOW PLOTS for CLOSURE TEST - Various binned plots - for recoil plots - Zcentral info to avoid randomization
+                        //------------------------------------------------------------------------------------------------
+
+                        // if(Wlike_met.Pt()>0 && m==m_start && n==0 && i==0 && controlplots) {
+
+                          // string tag_zPtcut;
+                          // if ( ZcorrCentral.Pt()<2 ) tag_zPtcut = "_Zpt02";
+                          // else if  ( ZcorrCentral.Pt()>=2 && ZcorrCentral.Pt()<4 ) tag_zPtcut = "_Zpt24";
+                          // else if  ( ZcorrCentral.Pt()>=4 && ZcorrCentral.Pt()<6 ) tag_zPtcut = "_Zpt46";
+                          // else if  ( ZcorrCentral.Pt()>=6 && ZcorrCentral.Pt()<8 ) tag_zPtcut = "_Zpt68";
+                          // else if  ( ZcorrCentral.Pt()>=8 && ZcorrCentral.Pt()<10 ) tag_zPtcut = "_Zpt810";
+                          // else if  ( ZcorrCentral.Pt()>=10 && ZcorrCentral.Pt()<12 ) tag_zPtcut = "_Zpt1012";
+                          // else if  ( ZcorrCentral.Pt()>=12 && ZcorrCentral.Pt()<14 ) tag_zPtcut = "_Zpt1214";
+                          // else if  ( ZcorrCentral.Pt()>=14 && ZcorrCentral.Pt()<16 ) tag_zPtcut = "_Zpt1416";
+                          // else if  ( ZcorrCentral.Pt()>=16 && ZcorrCentral.Pt()<18 ) tag_zPtcut = "_Zpt1618";
+                          // else if  ( ZcorrCentral.Pt()>=18 && ZcorrCentral.Pt()<20 ) tag_zPtcut = "_Zpt1820";
+                          // else if  ( ZcorrCentral.Pt()>=20 && ZcorrCentral.Pt()<30 ) tag_zPtcut = "_Zpt2030";
+                          // else if  ( ZcorrCentral.Pt()>=30 && ZcorrCentral.Pt()<50 ) tag_zPtcut = "_Zpt3050";
+                          // else if  ( ZcorrCentral.Pt()>=50 ) tag_zPtcut = "_Zpt50";
+                          // else tag_zPtcut = "_ignore";
+
+                          // double Zy=ZcorrCentral.Rapidity();
+                          // string tag_y;
+                          // if ( Zy>=0 && Zy<0.5 ) tag_y = "_Zy0005";
+                          // else if  ( Zy>=0.5 && Zy<1.0 ) tag_y = "_Zy0510";
+                          // else if  ( Zy>=1.0 && Zy<1.5 ) tag_y = "_Zy1015";
+                          // else if  ( Zy>=1.5 && Zy<2.0 ) tag_y = "_Zy1520";
+                          // else if  ( Zy>=2.0 ) tag_y = "_Zy20inf";
+                          // else if  ( Zy>=(-0.5) && Zy<0.0 ) tag_y = "_Zy0500";
+                          // else if  ( Zy>=(-1.0) && Zy<(-0.5) ) tag_y = "_Zy1005";
+                          // else if  ( Zy>=(-1.5) && Zy<(-1.0) ) tag_y = "_Zy1510";
+                          // else if  ( Zy>=(-2.0) && Zy<(-1.5) ) tag_y = "_Zy2015";
+                          // else if  ( Zy<(-2.0) ) tag_y = "_Zyinf20";
+                          // else tag_y = "_ignore";
+
+                          // string tag_VTX="";
+                          // int n_vtx_max = 20; // 7 TeV
+                          // // int n_vtx_max = 35; // 8 TeV
+                          // if(nvtx==0) tag_VTX="_VTX1";
+                          // else if(nvtx>=1 && nvtx<=n_vtx_max) tag_VTX=Form("_VTX%d",nvtx);
+                          // else if(nvtx>n_vtx_max) tag_VTX=Form("_VTX%d",n_vtx_max);
+                          
+                          // TLorentzVector VisPt;
+                          // VisPt.SetPtEtaPhiM(ZcorrCentral.Pt(),0,ZcorrCentral.Phi(),0);
+
+                          // TLorentzVector Zgen;
+                          // Zgen.SetPtEtaPhiM(ZGen_pt,0,ZGen_phi,0);
+
+                          // string mettype="_tk";
+                          
+                          // bool plot_vtx_binned_Wlike_var_NotScaled = true;
+                          // if(plot_vtx_binned_Wlike_var_NotScaled){
+                            // for(int k=0;k<WMass::NFitVar;k++)
+                              // common_stuff::plot1D(Form("hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d%s",WCharge_str.Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV,tag_VTX.c_str()),
+                                                // Wlike_var_NotScaled[k], weight, h_1d, 50, WMass::fit_xmin[k]*ZWmassRatio, WMass::fit_xmax[k]*ZWmassRatio );
+                          // }
+                          
+                          // double u1_scale=0;
+                          // plotVariables( Z_met, VisPt,  ZcorrCentral, Zgen, u1_scale, "closure", tag_zPtcut.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps, WMass::ZMassCentral_MeV);
+                          // plotVariables( Z_met, VisPt,  ZcorrCentral, Zgen, u1_scale, "closure", tag_VTX.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps, WMass::ZMassCentral_MeV);
+                          // plotVariables( Z_met, VisPt,  ZcorrCentral, Zgen, u1_scale, "closure", tag_y.c_str(), mettype.c_str() , false, false, h_1d, h_2d, weight, WMass::WMassNSteps , WMass::ZMassCentral_MeV);
+                        // }
+
+                        //---------------------------------------------------------------------
+                        // Recoil plots: u1, u2, u1vsZpt, u2vsZpt, u1vsZptvsZrap, u2vsZptvsZrap (for recoil plots - Zcentral info to avoid randomization)
+                        //---------------------------------------------------------------------
+                        if(correctToMadgraph || controlplots){
+
+                          common_stuff::calculateU1U2(met_trasv, metphi_trasv,  ZGen_pt, ZGen_phi,
+                            ZNocorr.Pt(), ZNocorr.Phi(),  u1_recoil, u2_recoil);
+
+                          double u_recoil = sqrt(u2_recoil*u2_recoil+u1_recoil*u1_recoil);
+
+                          common_stuff::plot1D(Form("hWlike%s_u1_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                            u1_recoil, weight, h_1d, 60, -20, 20 );
+                          common_stuff::plot1D(Form("hWlike%s_u2_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                            u2_recoil, weight, h_1d, 60, -20, 20 );
+                          common_stuff::plot1D(Form("hWlike%s_u_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                            u_recoil, weight, h_1d, 60, +00, 20 );
+
+                          common_stuff::plot2D(Form("hWlike%s_u1vsZpt_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                            ZcorrCentral.Pt(), u1_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, -20, 20 );
+                          common_stuff::plot2D(Form("hWlike%s_u2vsZpt_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                            ZcorrCentral.Pt(), u2_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, -20, 20 );
+                          common_stuff::plot2D(Form("hWlike%s_uvsZpt_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                            ZcorrCentral.Pt(),  u_recoil, weight, h_2d, 60, 0, ZPt_cut, 60, +00, 20 );
+                        }
+
+                        if (controlplots) {
+                          common_stuff::plot2D(Form("hWlike%s_u1vsZrap_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                            ZGen_status3.Rapidity(), u1_recoil, weight, h_2d, 60, -4, +4, 60, -20, 20 );
+                          common_stuff::plot2D(Form("hWlike%s_u2vsZrap_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                            ZGen_status3.Rapidity(), u2_recoil, weight, h_2d, 60, -4, +4, 60, -20, 20 );
+
+                          common_stuff::plot3D(Form("hWlike%s_u1vsZptvsZrap_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                            ZcorrCentral.Pt(), ZGen_status3.Rapidity(), u1_recoil, weight, h_3d, 60, 0, ZPt_cut, 60, -4, +4, 60, -20, 20 );
+                          common_stuff::plot3D(Form("hWlike%s_u2vsZptvsZrap_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                            ZcorrCentral.Pt(), ZGen_status3.Rapidity(), u2_recoil, weight, h_3d, 60, 0, ZPt_cut, 60, -4, +4, 60, -20, 20 );
+                        }
+
+                        if (controlplots) {
+                          //------------------------------------------------------------------------------------------------
+                          // PLOTS FOR GIGI's TEST see 11 apr 2014 (CMG presentations)
+                          //------------------------------------------------------------------------------------------------
+                          //      cout << "filling control plot RecoilVar=" << RecoilVar_str.Data() << endl;
+                          common_stuff::plot1D(Form("deltaMT_Wlike%s_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                  Wlike.Mt() - WlikeCentral.Mt(), weight, h_1d, 200, -0.1, 0.1);
+
+                          common_stuff::plot1D(Form("deltaMET_Wlike%s_8_JetCut_pdf%d-%d%s%s%s_eta%s_%d",WCharge_str.Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),WMass::ZMassCentral_MeV),
+                                  Wlike_met.Pt() - Wlike_metCentral.Pt(), weight, h_1d, 200, -0.1, 0.1);
+                        }
+
+                      } // end loop PDF
+                      
+                      //------------------------------------------------------------------------------------------------
+                      // control plots for different etas but only for central W mass
+                      //------------------------------------------------------------------------------------------------ 
+                      if(controlplots && m==m_start && n==0 && i==0) fillControlPlots(Zcorr, Z_met, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, WMass::ZMassCentral_MeV, eta_str, WMass::nSigOrQCD_str[0],Form("Wlike%s_8_JetCut",WCharge_str.Data()));
+
+                    } // end if for box cuts
+                  } // end if for recoil
+                } // end if for MET cuts
+              } // end if for muon cuts
             } // end efficiency toys
           } // end KalmanVars loop
         } // end RecoilCorr params loop
