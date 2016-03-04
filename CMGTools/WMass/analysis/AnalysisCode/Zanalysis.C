@@ -730,8 +730,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   }
                   TRG_TIGHT_ISO_muons_SF *= eff_TRG_SF;
                 }
-              }else if(useEffSF==7){
-                TRG_TIGHT_ISO_muons_SF=0.98;
               }
 
               // cout 
