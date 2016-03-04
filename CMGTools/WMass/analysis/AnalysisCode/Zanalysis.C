@@ -282,14 +282,17 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
   const int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
   const int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
+  const bool varyRecoilCorr = (RecoilCorrVarDiagoParU1orU2fromDATAorMC>0);
+  const int rapBinRecoilVariation = RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 ? 0 : 1;
+  const int recoilCorrVariationParReduced = RecoilCorrVarDiagoParU1orU2fromDATAorMC>6 ? RecoilCorrVarDiagoParU1orU2fromDATAorMC-6 : RecoilCorrVarDiagoParU1orU2fromDATAorMC;
 
   TString generatorSuffix="_powheg";
   if (isMadgraph)
     generatorSuffix="_madgraph";
 
   RecoilCorrector*  correctorRecoil_Z; // TYPE2
-  int recoilCorrSigmas = 1;
-  bool doKeys= useRecoilCorr==3 ? true : false;
+  const int recoilCorrScale = 1;
+  const bool doKeys = (useRecoilCorr==3);
   if(useRecoilCorr>0){
     string RCset = "JAN31";
     string fileCorrectTo = /*POW */ Form("../RecoilCode/%s/recoilfit_%s_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root", RCset.c_str(), RCset.c_str(), generatorSuffix.Data());
@@ -312,7 +315,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     correctorRecoil_Z->addDataFile(fileZmmData.c_str(), fileZmmKeysData.c_str(), model_name);
     cout << "INITIALIZING RECOIL Z MC FILE" << endl;
     correctorRecoil_Z->addMCFile(fileZmmMC.c_str(), fileZmmKeysMC.c_str(), model_name);
-
   }
 
   double ZWmassRatio = ((double)WMass::ZMassCentral_MeV)/((double)WMass::WMassCentral_MeV);
@@ -488,11 +490,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     } // end gen stuff 
 
     if(!useGenVar || Z_mass>0){ // dummy thing to separate signal and background in DY+Jets (useless)
-      // cout <<"WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_["<<RecoilCorrVarDiagoParU1orU2fromDATAorMC<<"]= "
-      // << WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC]
-      // << " WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_["<<RecoilCorrVarDiagoParU1orU2fromDATAorMC<<"]= " 
-      // << WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC]
-      // <<endl;
 
       //------------------------------------------------------
       // start reco event selection
@@ -533,24 +530,19 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         double eff_ISO_SF = 1;
         double eff_TRG_SF = 1;
 
+        // Build variables for Recoil corrections
+        int rapBin=0;
+        if(fabs(ZGen_rap)>=1) rapBin=1;
+
         for(int m=m_start; m<m_end; m++){
 
           TString RecoilVar_str = "";
-          if(RecoilCorrVarDiagoParU1orU2fromDATAorMC>0) RecoilVar_str = Form("_RecoilCorrVar%d",m);
+          if(varyRecoilCorr) RecoilVar_str = Form("_RecoilCorrVar%d",m);
           // cout << RecoilVar_str << endl;
 
           //------------------------------------------------------------------------------------------------
           // Apply recoil corrections
           //------------------------------------------------------------------------------------------------
-
-          int rapBin=0;
-          if(fabs(ZGen_rap)>=1 ) rapBin=1;
-          // if(fabs(ZGen_rap)<1) rapBin=1;
-          // if(fabs(ZGen_rap)>=1 && fabs(ZGen_rap)<=1.25) rapBin=125;
-          // if(fabs(ZGen_rap)>=1.25 && fabs(ZGen_rap)<=1.5) rapBin=150;
-          // if(fabs(ZGen_rap)>=1.5 && fabs(ZGen_rap)<=1.75) rapBin=175;
-          // if(fabs(ZGen_rap)>=1.75 && fabs(ZGen_rap)<=2.0) rapBin=200;
-          // if(fabs(ZGen_rap)>2.0) rapBin=201;
           
           if(use_PForNoPUorTKmet<3 && isPowOrMad){ // use MET corrections if required
             
@@ -572,20 +564,20 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
             if(useRecoilCorr==2 || useRecoilCorr==3){
               // cout << "ZGen_pt=" << ZGen_pt << " ZGen_phi=" << ZGen_phi << " ZNocorr.Pt()=" << ZNocorr.Pt() << " ZNocorr.Phi()=" << ZNocorr.Phi() << endl;
-              // cout << " RecoilCorrVarDiagoParU1orU2fromDATAorMC=" << RecoilCorrVarDiagoParU1orU2fromDATAorMC << " m=" << m << " RecoilCorrVarDiagoParSigmas=" << RecoilCorrVarDiagoParSigmas << " rapBin=" << rapBin << Form(" hWlike%s_%sNonScaled_8_JetCut_pdf%d-%d%s%s_eta%s_%d",WCharge_str.Data(),WMass::FitVar_str[0].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,0,RecoilVar_str.Data(),KalmanVars_str.Data(),eta_str.Data(),jZmass_MeV) << endl;
+              // cout << " RecoilCorrVarDiagoParU1orU2fromDATAorMC=" << RecoilCorrVarDiagoParU1orU2fromDATAorMC << " m=" << m << " RecoilCorrVarDiagoParSigmas=" << RecoilCorrVarDiagoParSigmas << " rapBin=" << rapBin << endl;
               // cout << "Before correction:" << m << " - " << met_trasv << " - " << metphi_trasv << endl;
               correctorRecoil_Z->reset(WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[2],
                                        WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[3],
-                                       RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 ? 0 : 1);
-              if( (RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 && rapBin==0) || (RecoilCorrVarDiagoParU1orU2fromDATAorMC > 6 && rapBin==1)){
-                // cout << "correcting met_trasv to eigen par " << (RecoilCorrVarDiagoParU1orU2fromDATAorMC>6?RecoilCorrVarDiagoParU1orU2fromDATAorMC-6:RecoilCorrVarDiagoParU1orU2fromDATAorMC) << ", m= " << m << endl;
+                                       rapBinRecoilVariation);
+              if(varyRecoilCorr && rapBin==rapBinRecoilVariation){
+                // cout << "correcting met_trasv to eigen par " << recoilCorrVariationParReduced << ", m= " << m << endl;
                 correctorRecoil_Z->CorrectMET3gaus(
                         met_trasv,metphi_trasv,
                         ZGen_pt,ZGen_phi,
                         ZNocorr.Pt(),ZNocorr.Phi(),
                         u1_recoil, u2_recoil,
-                        RecoilCorrVarDiagoParU1orU2fromDATAorMC>6?RecoilCorrVarDiagoParU1orU2fromDATAorMC-6:RecoilCorrVarDiagoParU1orU2fromDATAorMC, m, RecoilCorrVarDiagoParSigmas,
-                        rapBin,recoilCorrSigmas);
+                        recoilCorrVariationParReduced, m, RecoilCorrVarDiagoParSigmas,
+                        rapBinRecoilVariation,recoilCorrScale);
               }else{
                 // cout << "correcting met_trasv to default eigen par 0, m= " << m << endl;
                 correctorRecoil_Z->CorrectMET3gaus(
@@ -594,26 +586,23 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                         ZNocorr.Pt(),ZNocorr.Phi(),
                         u1_recoil, u2_recoil,
                         0, 0, 0,
-                        rapBin,recoilCorrSigmas);
+                        rapBin,recoilCorrScale);
               }
               if(m==m_start){
                 // cout << "before setting met_trasvCentral "<< RecoilCorrVarDiagoParU1orU2fromDATAorMC<< " " << m << " " << RecoilCorrVarDiagoParSigmas << endl;
-                if(
-                    (RecoilCorrVarDiagoParU1orU2fromDATAorMC!=0 || m!=0 || RecoilCorrVarDiagoParSigmas!=0)
-                    && ((RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 && rapBin==0) || (RecoilCorrVarDiagoParU1orU2fromDATAorMC > 6 && rapBin==1))
-                  ){
+                if(varyRecoilCorr && rapBin==rapBinRecoilVariation) {
                   // cout << " setting met_trasvCentral to central" << endl;
                   correctorRecoil_Z->reset(WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[2],
                                            WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[3],
-                                           RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 ? 0 : 1);
-                  // cout << "correcting met_trasvCentral to eigen par " << (RecoilCorrVarDiagoParU1orU2fromDATAorMC>6?RecoilCorrVarDiagoParU1orU2fromDATAorMC-6:RecoilCorrVarDiagoParU1orU2fromDATAorMC) << ", m= " << m << endl;
+                                           rapBinRecoilVariation);
+                  // cout << "correcting met_trasvCentral to eigen par " << recoilCorrVariationParReduced << ", m= " << m << endl;
                   correctorRecoil_Z->CorrectMET3gaus(
                           met_trasvCentral,metphi_trasvCentral,
                           ZGen_pt,ZGen_phi,
                           ZNocorr.Pt(),ZNocorr.Phi(),
                           u1_recoil, u2_recoil,
                           0, 0, 0,
-                          rapBin,recoilCorrSigmas);
+                          rapBin,recoilCorrScale);
                 }else{
                   // cout << "correcting met_trasvCentral to default met_trasv, m= " << m << endl;
                   // cout << " met_trasvCentral = met_trasv" << endl;
@@ -1183,8 +1172,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     } // end if for dummy signal/fake separation
   } // end event loop
 
-  // outTXTfile.close();
-  
   TFile*fout = new TFile(Form("%s/Zanalysis%s.root",outputdir.Data(),chunk_str.Data()),"RECREATE");
   fout->cd();
 

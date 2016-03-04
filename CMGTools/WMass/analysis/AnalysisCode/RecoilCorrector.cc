@@ -116,7 +116,7 @@ void RecoilCorrector::reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int 
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double bosonPt, double bosonPhi, double sumLepPt, double sumLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int rapbin, int recoilCorrSigmas)
+void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double bosonPt, double bosonPhi, double sumLepPt, double sumLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int rapbin, int recoilCorrScale)
 {
   // ---------------------------
   // CHANGE STAT EIGEN IF NEEDED
@@ -159,7 +159,7 @@ void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double bosonP
     fD1U1RMSSMFit[rapbin], fM1U1RMSSMFit[rapbin],
     fD1U2RMSSMFit[rapbin], fM1U2RMSSMFit[rapbin],
     rapbin,
-    recoilCorrSigmas,
+    recoilCorrScale,
     iU1,iU2
   );
   
@@ -186,7 +186,7 @@ void RecoilCorrector::applyCorrMET3gausPDF(
   TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
   TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
   int rapbin,
-  int nSigmas,
+  int corrScale,
   double &pU1,double &pU2
 ) {
   // =================================================
@@ -301,8 +301,8 @@ void RecoilCorrector::applyCorrMET3gausPDF(
   double pU1delta = pU1corr - pU1noCorr;
   double pU2delta = pU2corr - pU2noCorr;
   
-  pU1 = pU1noCorr + nSigmas * pU1delta;
-  pU2 = pU2noCorr + nSigmas * pU2delta;
+  pU1 = pU1noCorr + corrScale * pU1delta;
+  pU2 = pU2noCorr + corrScale * pU2delta;
 
   iMet  = calculate(0,sumLepPt,sumLepPhi,bosonPhi,pU1,pU2);
   iMETPhi = calculate(1,sumLepPt,sumLepPhi,bosonPhi,pU1,pU2);
