@@ -14,7 +14,7 @@ int main(int argc, char ** argv)
     cout << "ERROR: " << argc-1 << " arguments provided instead of 1";
     exit(1);
   }
-  const int Nvars=30;
+  const int Nvars=29;
   TString original, tokenized[Nvars];
   original = Form("%s",argv[1]);
       
