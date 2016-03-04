@@ -283,13 +283,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   const int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
   const int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
 
-  // int use_PForNoPUorTKmet = 0; // 0:PF, 1:NOPU, 2:TK // TO BE CHANGED BY HAND FOR THE MOMENT!!!
-
-  // TString metSuffix;
-  // if(use_PForNoPUorTKmet==0) metSuffix="_pfmet"; // this doesn't work since we do no have the pfmet as of JAN25
-  // if(use_PForNoPUorTKmet==1) metSuffix="_pfnoPU";
-  // if(use_PForNoPUorTKmet==2) metSuffix="_tkmet";
-  
   TString generatorSuffix="_powheg";
   if (isMadgraph)
     generatorSuffix="_madgraph";
@@ -334,12 +327,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // cout_freq=1; // FOR DEBUGGING PURPOSE
   // nentries=100; // FOR DEBUGGING PURPOSE
   cout << "couts every " << cout_freq << " events" << endl;
-  Long64_t nbytes = 0, nb = 0;
   for(Long64_t jentry=first_entry; jentry<=nentries; jentry++) {
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
-    nb = fChain->GetEntry(jentry);   nbytes += nb;
-    // if (Cut(ientry) < 0) continue;
+    fChain->GetEntry(jentry);
+
     if(jentry%cout_freq==0){
       time_t now = time(0);
       TString dt = ctime(&now); dt.ReplaceAll("\n"," ");
@@ -410,46 +402,27 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     //---------------- Invariant Mass weight
     // cout << "mass= " << ZGen_PostFSR_mass << " use_syst_ewk_Alcaraz = "<< use_syst_ewk_Alcaraz << endl;
     if(use_syst_ewk_Alcaraz>-1 && use_syst_ewk_Alcaraz!=100 && isPowheg){
-      double ewk_weight_central=ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200?hZmassSF_central->Interpolate(ZGen_PostFSR_mass):1;
+      double ewk_weight_central = (ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200)?hZmassSF_central->Interpolate(ZGen_PostFSR_mass):1;
       // cout << "ewk_weight_central = ewk_weight_central ("<<ewk_weight_central<<")" << endl;
       evt_weight *= ewk_weight_central;
       if(use_syst_ewk_Alcaraz>0){
-        double ewk_weight_syst=ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200?hZmassSF_syst->Interpolate(ZGen_PostFSR_mass):1;
+        double ewk_weight_syst = (ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200)?hZmassSF_syst->Interpolate(ZGen_PostFSR_mass):1;
         // cout << "evt_weight_original *= ewk_weight_syst ("<<ewk_weight_syst<<")" << endl;
-          evt_weight *= ewk_weight_syst;
+        evt_weight *= ewk_weight_syst;
         if(use_syst_ewk_Alcaraz>30){ // 3 times the corrections (3 sigmas)
           // cout << "evt_weight_original *= (ewk_weight_syst*ewk_weight_syst)" << endl;
           evt_weight *= (ewk_weight_syst*ewk_weight_syst);
       
-        // hZmassSF_central->Print();
-        // cout << "mass= " << ZGen_PostFSR_mass << " ewk weight= " << (ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200?hZmassSF_central->Interpolate(ZGen_PostFSR_mass):1) << endl;
+        // cout << "mass= " << ZGen_PostFSR_mass << " ewk weight= " << ewk_weight_central << endl;
         }
       }
     }
-    //---------------- PT weight (usePtSF = -1; # Boson pT reweighting: -1=none, 0=data, 1...=other options)
-    // OBSOLETE setting
-    if(usePtSF!=-1 && usePtSF!=0 && usePtSF!=1 &&usePtSF!=2 /* && ZGen_pt<ZPt_cut */ && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && isPowOrMad)
-      // evt_weight_original*=hZPtSF->GetBinContent(hZPtSF->GetXaxis()->FindBin(/* Z_pt>0?Z_pt: */ZGen_pt));
-      evt_weight *= hZPtSF->Interpolate(ZGen_pt)>0?hZPtSF->Interpolate(ZGen_pt):1;
-    else if(usePtSF==1 && ZGen_pt<ZPt_cut && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && isPowOrMad){
-      evt_weight *= TMath::Min(1+0.1*(25-ZGen_pt)/25,0.5);
-      common_stuff::plot2D(Form("weight1_vs_genpT"),
-                                      ZGen_pt,(1+0.1*(25-ZGen_pt)/25), 1, 
-                                          h_2d, 50,0,50,50,0,2 );
-    }
-    else if(usePtSF==2 && ZGen_pt<ZPt_cut && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && isPowOrMad){
-      evt_weight *= (1+0.1*(ZGen_pt-25)/25);
-      common_stuff::plot2D(Form("weight2_vs_genpT"),
-                                      ZGen_pt,(1+0.1*(25-ZGen_pt)/25), 1, 
-                                          h_2d, 50,0,50,50,0,2 );
-    }
     
     //---------------- EWK weight
-    if(use_syst_ewk_Alcaraz && isPowOrMad){
+    if(isPowOrMad){
       if(use_syst_ewk_Alcaraz==100 && FSRWeight>-99){ 
         evt_weight *= FSRWeight;
         // cout << "FSRWeight= " << FSRWeight << endl;
-      }else if(use_syst_ewk_Alcaraz==0){
       }        
     }
 
