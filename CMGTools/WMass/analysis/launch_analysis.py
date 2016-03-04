@@ -745,8 +745,6 @@ if(runWanalysis or runZanalysis):
         nevents = 2e5
         if ("DYJetsMadSig" in sample[i]  or "DYJetsPow" in sample[i]):
           nevents = 3e4
-          if int(useRecoilCorr)==3:
-            nevents = nevents*10
           if int(useRecoilCorr)>0 and int(RecoilCorrVarDiagoParSigmas)!=0:
             nevents = nevents/3
           if (int(MuonCorrKalmanNvarsNsigma)!=0):
