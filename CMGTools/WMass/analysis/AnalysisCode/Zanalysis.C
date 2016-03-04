@@ -290,9 +290,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   if (isMadgraph)
     generatorSuffix="_madgraph";
 
-  RecoilCorrector*  correctorRecoil_Z; // TYPE2
+  RecoilCorrector*  correctorRecoil_Z;
+  const bool correctWithKeys = (useRecoilCorr==3);
   const int recoilCorrScale = 1;
-  const bool doKeys = (useRecoilCorr==3);
   if(useRecoilCorr>0){
     string RCset = "JAN31";
     string fileCorrectTo = /*POW */ Form("../RecoilCode/%s/recoilfit_%s_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X%s.root", RCset.c_str(), RCset.c_str(), generatorSuffix.Data());
@@ -310,14 +310,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
     TString model_name = "fitresult_Add";
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;
-    correctorRecoil_Z = new RecoilCorrector(doKeys, fileCorrectTo.c_str(), fileZmmKeysCorrectTo.c_str(), model_name);
+    correctorRecoil_Z = new RecoilCorrector(correctWithKeys, fileCorrectTo.c_str(), fileZmmKeysCorrectTo.c_str(), model_name);
     cout << "INITIALIZING RECOIL Z DATA FILE" << endl;
     correctorRecoil_Z->addDataFile(fileZmmData.c_str(), fileZmmKeysData.c_str(), model_name);
     cout << "INITIALIZING RECOIL Z MC FILE" << endl;
     correctorRecoil_Z->addMCFile(fileZmmMC.c_str(), fileZmmKeysMC.c_str(), model_name);
   }
 
-  double ZWmassRatio = ((double)WMass::ZMassCentral_MeV)/((double)WMass::WMassCentral_MeV);
+  const double ZWmassRatio = ((double)WMass::ZMassCentral_MeV)/((double)WMass::WMassCentral_MeV);
   
   GoToHXframe = new HTransformToHelicityFrame();
   GoToCSframe = new HTransformToCS();
@@ -571,38 +571,38 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                                        rapBinRecoilVariation);
               if(varyRecoilCorr && rapBin==rapBinRecoilVariation){
                 // cout << "correcting met_trasv to eigen par " << recoilCorrVariationParReduced << ", m= " << m << endl;
-                correctorRecoil_Z->CorrectMET3gaus(
+                correctorRecoil_Z->CorrectMET(
                         met_trasv,metphi_trasv,
                         ZGen_pt,ZGen_phi,
                         ZNocorr.Pt(),ZNocorr.Phi(),
                         u1_recoil, u2_recoil,
                         recoilCorrVariationParReduced, m, RecoilCorrVarDiagoParSigmas,
-                        rapBinRecoilVariation,recoilCorrScale);
+                        rapBinRecoilVariation,recoilCorrScale,false);
               }else{
                 // cout << "correcting met_trasv to default eigen par 0, m= " << m << endl;
-                correctorRecoil_Z->CorrectMET3gaus(
+                correctorRecoil_Z->CorrectMET(
                         met_trasv,metphi_trasv,
                         ZGen_pt,ZGen_phi,
                         ZNocorr.Pt(),ZNocorr.Phi(),
                         u1_recoil, u2_recoil,
                         0, 0, 0,
-                        rapBin,recoilCorrScale);
+                        rapBin,recoilCorrScale,correctWithKeys);
               }
               if(m==m_start){
                 // cout << "before setting met_trasvCentral "<< RecoilCorrVarDiagoParU1orU2fromDATAorMC<< " " << m << " " << RecoilCorrVarDiagoParSigmas << endl;
-                if(varyRecoilCorr && rapBin==rapBinRecoilVariation) {
+                if(correctWithKeys || (varyRecoilCorr && rapBin==rapBinRecoilVariation)) {
                   // cout << " setting met_trasvCentral to central" << endl;
                   correctorRecoil_Z->reset(WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[2],
                                            WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[3],
                                            rapBinRecoilVariation);
                   // cout << "correcting met_trasvCentral to eigen par " << recoilCorrVariationParReduced << ", m= " << m << endl;
-                  correctorRecoil_Z->CorrectMET3gaus(
+                  correctorRecoil_Z->CorrectMET(
                           met_trasvCentral,metphi_trasvCentral,
                           ZGen_pt,ZGen_phi,
                           ZNocorr.Pt(),ZNocorr.Phi(),
                           u1_recoil, u2_recoil,
                           0, 0, 0,
-                          rapBin,recoilCorrScale);
+                          rapBin,recoilCorrScale,false);
                 }else{
                   // cout << "correcting met_trasvCentral to default met_trasv, m= " << m << endl;
                   // cout << " met_trasvCentral = met_trasv" << endl;

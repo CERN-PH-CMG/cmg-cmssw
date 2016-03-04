@@ -34,9 +34,9 @@ class RecoilCorrector
 {
 
 public:
-  RecoilCorrector(bool doKeys, std::string iNameZDat, std::string iNameZ_key, TString model_name = "fitresult_Add");
+  RecoilCorrector(bool loadKeys, std::string iNameZDat, std::string iNameZ_key, TString model_name = "fitresult_Add");
   void reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int rapBinCorr);
-  void CorrectMET3gaus(double &pfmet, double &pfmetphi,double bosonPt,double bosonPhi,double sumLepPt,double sumLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas, int rapbin=0, int recoilCorrScale=1);
+  void CorrectMET(double &pfmet, double &pfmetphi,double bosonPt,double bosonPhi,double sumLepPt,double sumLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas, int rapbin, int recoilCorrScale=1, bool correctWithKeys=false);
   void addDataFile(std::string iNameDat, std::string iNameKeyDat, TString model_name = "fitresult_Add");
   void addMCFile  (std::string iNameMC, std::string iNameKeyMC, TString model_name = "fitresult_Add");
 
@@ -47,13 +47,14 @@ protected:
     std::string iFName,std::string iFKeyName, std::string iPrefix, int mytype, TString model_name = "fitresult_Add"
   );
 
-  void applyCorrMET3gausPDF(double &iMet,double &iMETPhi,double bosonPt,double bosonPhi,
+  void applyMETCorrection(double &iMet,double &iMETPhi,double bosonPt,double bosonPhi,
     double sumLepPt,double sumLepPhi,
     TF1 *iU1Default,
     TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
     TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit,
     TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
-    int rapbin, int corrScale, double &pU1, double &pU2
+    int rapbin, int corrScale, bool correctWithKeys,
+    double &pU1, double &pU2
   );
 
   double calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2);
@@ -87,7 +88,7 @@ protected:
   std::vector<TF1*> fM1U1Fit; std::vector<TF1*> fM1U1RMSSMFit;
   std::vector<TF1*> fM1U2Fit; std::vector<TF1*> fM1U2RMSSMFit;
 
-  bool doKeys;
+  bool loadKeys;
 
 };
 

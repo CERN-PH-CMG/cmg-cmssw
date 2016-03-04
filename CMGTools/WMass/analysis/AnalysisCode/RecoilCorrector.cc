@@ -3,9 +3,9 @@
 using namespace std;
 
 // mytype: 0 = target file , 1 = ZDATA , 2 = ZMC
-RecoilCorrector::RecoilCorrector(bool doKeys, std::string iNameZ, std::string iNameZ_key, TString model_name) {
+RecoilCorrector::RecoilCorrector(bool loadKeys, std::string iNameZ, std::string iNameZ_key, TString model_name) {
 
-  RecoilCorrector::doKeys = doKeys;
+  RecoilCorrector::loadKeys = loadKeys;
   
   readRecoil(fF1U1Fit,fF1U1RMSSMFit, fF1U2Fit,fF1U2RMSSMFit, iNameZ,iNameZ_key,"PF",RecoilCorrector::targetMC,model_name);
 }
@@ -33,57 +33,54 @@ void RecoilCorrector::readRecoil(
   cout << "inside readRecoil" << iFName.c_str() << endl;
   cout << "inside readRecoil Key " << iFKeyName.c_str() << endl;
 
-  if(mytype==0) cout << " read target"   << endl;
-  if(mytype==1) cout << " read DATA"  << endl;
-  if(mytype==2) cout << " read MC"  << endl;
+  if(mytype==targetMC) cout << " read target" << endl;
+  if(mytype==ZDATA)    cout << " read DATA"   << endl;
+  if(mytype==ZMC)      cout << " read MC"     << endl;
 
-  TFile *lFile;
-  if (doKeys) {
-    lFile = new TFile(iFKeyName.c_str());
-  }
-  else {
-    lFile  = new TFile(iFName.c_str());
-  }
+  TFile *lFile = new TFile(iFName.c_str());
 
-  // const int rapbins = 2;
   for(int rapbin = 0; rapbin < rapbins; rapbin++) {
     cout << "reading bin " << rapbin << endl;
     int file_rapbin = rapbin+1;
 
-    if (doKeys) {
-      //    cout << "reading recoilKeys " << endl;
-      
+    // Fill TF1 vectors from rootfile
+    iU1Fit.push_back    ( (TF1*)lFile->FindObjectAny(Form("%su1Mean_%d",    iPrefix.c_str(), file_rapbin)));
+    iU1MRMSFit.push_back( (TF1*)lFile->FindObjectAny(Form("%su1MeanRMS_%d", iPrefix.c_str(), file_rapbin)));
+    iU2Fit    .push_back( (TF1*)lFile->FindObjectAny(Form("%su2Mean_%d",    iPrefix.c_str(), file_rapbin)));
+    iU2MRMSFit.push_back( (TF1*)lFile->FindObjectAny(Form("%su2MeanRMS_%d", iPrefix.c_str(), file_rapbin)));
+
+    wU1[mytype][rapbin] = new RooWorkspace(Form("wU1_type%d_Y%d", mytype, rapbin), "wU1");
+    pdfU1[mytype][rapbin] = (RooAddPdf*) lFile->Get(Form("AddU1Y%d",file_rapbin));
+    wU1[mytype][rapbin]->import(*pdfU1[mytype][rapbin]/*,RooFit::Silence()*/);
+    frU1[mytype][rapbin] = (RooFitResult*) lFile->Get(Form("%sU1Y%d_Crapsky0_U1_2D",model_name.Data(),file_rapbin));
+
+    runDiago(wU1[mytype][rapbin],frU1[mytype][rapbin],Form("AddU1Y%d",file_rapbin),pdfU1Cdf[mytype][rapbin]);
+
+
+    wU2[mytype][rapbin] = new RooWorkspace(Form("wU2_type%d_Y%d", mytype, rapbin), "wU2");
+    pdfU2[mytype][rapbin] = (RooAddPdf*) lFile->Get(Form("AddU2Y%d",file_rapbin));
+    wU2[mytype][rapbin]->import(*pdfU2[mytype][rapbin]/*,RooFit::Silence()*/);
+    frU2[mytype][rapbin] = (RooFitResult*) lFile->Get(Form("%sU2Y%d_Crapsky0_U2_2D",model_name.Data(),file_rapbin));
+
+    runDiago(wU2[mytype][rapbin],frU2[mytype][rapbin],Form("AddU2Y%d",file_rapbin),pdfU2Cdf[mytype][rapbin]);
+  }
+  lFile->Close();
+  
+  if (loadKeys) {
+    TFile* keysFile = new TFile(iFKeyName.c_str());
+    
+    for(int rapbin = 0; rapbin < rapbins; rapbin++) {
+      cout << "reading bin " << rapbin << endl;
+      int file_rapbin = rapbin+1;
+
       wU1key[mytype][rapbin] = new RooWorkspace("wU1key","wU1key");
       makeKeysVec(wU1key[mytype][rapbin], lFile, Form("Keys_U1_%d",file_rapbin), pdfKeyU1Cdf[mytype][rapbin],true);
       
       wU2key[mytype][rapbin] = new RooWorkspace("wU2key","wU2key");
       makeKeysVec(wU2key[mytype][rapbin], lFile, Form("Keys_U2_%d",file_rapbin), pdfKeyU2Cdf[mytype][rapbin],false);
     }
-    else {
-      // Fill TF1 vectors from rootfile
-      iU1Fit.push_back    ( (TF1*)lFile->FindObjectAny(Form("%su1Mean_%d",    iPrefix.c_str(), file_rapbin)));
-      iU1MRMSFit.push_back( (TF1*)lFile->FindObjectAny(Form("%su1MeanRMS_%d", iPrefix.c_str(), file_rapbin)));
-      iU2Fit    .push_back( (TF1*)lFile->FindObjectAny(Form("%su2Mean_%d",    iPrefix.c_str(), file_rapbin)));
-      iU2MRMSFit.push_back( (TF1*)lFile->FindObjectAny(Form("%su2MeanRMS_%d", iPrefix.c_str(), file_rapbin)));
-
-      wU1[mytype][rapbin] = new RooWorkspace(Form("wU1_type%d_Y%d", mytype, rapbin), "wU1");
-      pdfU1[mytype][rapbin] = (RooAddPdf*) lFile->Get(Form("AddU1Y%d",file_rapbin));
-      wU1[mytype][rapbin]->import(*pdfU1[mytype][rapbin]/*,RooFit::Silence()*/);
-      frU1[mytype][rapbin] = (RooFitResult*) lFile->Get(Form("%sU1Y%d_Crapsky0_U1_2D",model_name.Data(),file_rapbin));
-
-      runDiago(wU1[mytype][rapbin],frU1[mytype][rapbin],Form("AddU1Y%d",file_rapbin),pdfU1Cdf[mytype][rapbin]);
-
-
-      wU2[mytype][rapbin] = new RooWorkspace(Form("wU2_type%d_Y%d", mytype, rapbin), "wU2");
-      pdfU2[mytype][rapbin] = (RooAddPdf*) lFile->Get(Form("AddU2Y%d",file_rapbin));
-      wU2[mytype][rapbin]->import(*pdfU2[mytype][rapbin]/*,RooFit::Silence()*/);
-      frU2[mytype][rapbin] = (RooFitResult*) lFile->Get(Form("%sU2Y%d_Crapsky0_U2_2D",model_name.Data(),file_rapbin));
-
-      runDiago(wU2[mytype][rapbin],frU2[mytype][rapbin],Form("AddU2Y%d",file_rapbin),pdfU2Cdf[mytype][rapbin]);
-    }
+    keysFile->Close();
   }
-
-  lFile->Close();
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -116,20 +113,14 @@ void RecoilCorrector::reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int 
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double bosonPt, double bosonPhi, double sumLepPt, double sumLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int rapbin, int recoilCorrScale)
+void RecoilCorrector::CorrectMET(double &met, double &metphi, double bosonPt, double bosonPhi, double sumLepPt, double sumLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas,int rapbin, int recoilCorrScale, bool correctWithKeys)
 {
   // ---------------------------
   // CHANGE STAT EIGEN IF NEEDED
   // ---------------------------
   
-  // cout 
-    // << "applyCorrMET3gausPDF: RecoilCorrVarDiagoParU1orU2fromDATAorMC="<<RecoilCorrVarDiagoParU1orU2fromDATAorMC
-    // << " RecoilCorrVarDiagoParN="<<RecoilCorrVarDiagoParN
-    // << " RecoilCorrVarDiagoParSigmas="<<RecoilCorrVarDiagoParSigmas
-    // <<endl;
-
-  uint DataOrMcMap[] = {0, ZDATA, ZDATA, ZDATA, ZMC, ZMC, ZMC};
-  uint DataOrMc = DataOrMcMap[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
+  int DataOrMcMap[] = {0, ZDATA, ZDATA, ZDATA, ZMC, ZMC, ZMC};
+  int DataOrMc = DataOrMcMap[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
   TString eig = Form("eig_eig%d",RecoilCorrVarDiagoParN);
 
   switch(RecoilCorrVarDiagoParU1orU2fromDATAorMC){
@@ -153,13 +144,14 @@ void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double bosonP
   // CALL REAL WORKER FUNCTION
   // ---------------------------
   
-  applyCorrMET3gausPDF(met,metphi,bosonPt,bosonPhi,sumLepPt,sumLepPhi,
+  applyMETCorrection(met,metphi,bosonPt,bosonPhi,sumLepPt,sumLepPhi,
     fF1U1Fit[rapbin],
     fD1U1Fit[rapbin],  fM1U1Fit[rapbin],
     fD1U1RMSSMFit[rapbin], fM1U1RMSSMFit[rapbin],
     fD1U2RMSSMFit[rapbin], fM1U2RMSSMFit[rapbin],
     rapbin,
     recoilCorrScale,
+    correctWithKeys,
     iU1,iU2
   );
   
@@ -167,17 +159,7 @@ void RecoilCorrector::CorrectMET3gaus(double &met, double &metphi, double bosonP
 
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-// RooAddPdf* pdfMCU1;
-// RooAddPdf* pdfMCU2;
-// RooAddPdf* pdfDATAU1;
-// RooAddPdf* pdfDATAU2;
-
-// RooWorkspace *wMCU1; 
-// RooWorkspace *wMCU2; 
-// RooWorkspace *wDATAU1; 
-// RooWorkspace *wDATAU2; 
-// NEW WITH PDFs
-void RecoilCorrector::applyCorrMET3gausPDF(
+void RecoilCorrector::applyMETCorrection(
   double &iMet,double &iMETPhi,
   double bosonPt,double bosonPhi,
   double sumLepPt,double sumLepPhi,
@@ -187,29 +169,9 @@ void RecoilCorrector::applyCorrMET3gausPDF(
   TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit,
   int rapbin,
   int corrScale,
+  bool correctWithKeys,
   double &pU1,double &pU2
 ) {
-  // =================================================
-  // NOTE: This function tacitely assumes targetMC==MC
-  // DO NOT USE FOR W BEFORE DEBUGGING
-  // =================================================
-
-  double lRescale  = sqrt((TMath::Pi())/2.);  // Magic normalization number due to usage of absolute values while computing the overall RMS
-  //  double lRescale  = 1;     // for squares
-
-  double pDefU1    = iU1Default->Eval(bosonPt); // U1 average scale for target sample
-
-  double pDU1       = iU1RZDatFit ->Eval(bosonPt); // U1 average scale for ZDATA
-  double pDRMSU1    = iU1MSZDatFit->Eval(bosonPt)*lRescale; // U1 average RMS for ZDATA
-  double pDRMSU2    = iU2MSZDatFit->Eval(bosonPt)*lRescale; // U2 average RMS for ZDATA
-
-  double pMU1       = iU1RZMCFit  ->Eval(bosonPt); // U1 average scale for ZMC
-  double pMRMSU1    = iU1MSZMCFit ->Eval(bosonPt)*lRescale; // U1 average RMS for ZMC
-  double pMRMSU2    = iU2MSZMCFit ->Eval(bosonPt)*lRescale; // U2 average RMS for ZMC
-
-  //
-  // ENDING of the PARAMETERS
-  //
 
   double pUX   = iMet*cos(iMETPhi) + sumLepPt*cos(sumLepPhi);
   double pUY   = iMet*sin(iMETPhi) + sumLepPt*sin(sumLepPhi);
@@ -225,36 +187,50 @@ void RecoilCorrector::applyCorrMET3gausPDF(
   // cout << " ------------------------------------------------------- " << endl;
   // cout << " initial pU1 = " << pU1noCorr << " pU2 = " << pU2noCorr << endl;
 
-  // go to the pull space (we are on MC)
-  // ????? what to do for the scale ??????
-  
-  // cout 
-    // << "before triGausInvGraphPDF"
-    // << " pdfU1Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZMC][rapbin]->getVal()
-    // << " pdfU1Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZDATA][rapbin]->getVal()
-    // << " pdfU2Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZMC][rapbin]->getVal()
-    // << " pdfU2Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZDATA][rapbin]->getVal()
-    // << endl;
-    
-  // It shouldn't be needed, but without this it crashes
-  pdfU1Cdf[ZMC][rapbin]->getVal();
-  pdfU1Cdf[ZDATA][rapbin]->getVal();
-  pdfU2Cdf[ZMC][rapbin]->getVal();
-  pdfU2Cdf[ZDATA][rapbin]->getVal();
-
   // Will contain corrected values of U1 and U2
   double pU1corr;
   double pU2corr;
 
-  bool doAbsolute=true;
-
-  if(doKeys && doAbsolute) {
-    // keysInvGraph
+  if(correctWithKeys) {
     // this need the absolute space
     pU1corr = keysInvGraph(pU1noCorr,bosonPt,pdfKeyU1Cdf[ZMC][rapbin],pdfKeyU1Cdf[ZDATA][rapbin],true, 50);
     pU2corr = keysInvGraph(pU2noCorr,bosonPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],false, 50);
 
-  } else {
+  }
+  else {
+    // Get the absolute <-> pull space conversion variables
+    
+    double lRescale  = sqrt((TMath::Pi())/2.);  // Magic normalization number due to usage of absolute values while computing the overall RMS
+    //  double lRescale  = 1;     // for squares
+
+    double pDefU1    = iU1Default->Eval(bosonPt); // U1 average scale for target sample
+
+    double pDU1       = iU1RZDatFit ->Eval(bosonPt); // U1 average scale for ZDATA
+    double pDRMSU1    = iU1MSZDatFit->Eval(bosonPt)*lRescale; // U1 average RMS for ZDATA
+    double pDRMSU2    = iU2MSZDatFit->Eval(bosonPt)*lRescale; // U2 average RMS for ZDATA
+
+    double pMU1       = iU1RZMCFit  ->Eval(bosonPt); // U1 average scale for ZMC
+    double pMRMSU1    = iU1MSZMCFit ->Eval(bosonPt)*lRescale; // U1 average RMS for ZMC
+    double pMRMSU2    = iU2MSZMCFit ->Eval(bosonPt)*lRescale; // U2 average RMS for ZMC
+
+    //
+    // ENDING of the PARAMETERS
+    //
+    
+    // cout 
+      // << "before triGausInvGraphPDF"
+      // << " pdfU1Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZMC][rapbin]->getVal()
+      // << " pdfU1Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU1Cdf[ZDATA][rapbin]->getVal()
+      // << " pdfU2Cdf[ZMC]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZMC][rapbin]->getVal()
+      // << " pdfU2Cdf[ZDATA]["<<rapbin<<"]->getVal()= " << pdfU2Cdf[ZDATA][rapbin]->getVal()
+      // << endl;
+    
+    // It shouldn't be needed, but without this it crashes
+    pdfU1Cdf[ZMC][rapbin]->getVal();
+    pdfU1Cdf[ZDATA][rapbin]->getVal();
+    pdfU2Cdf[ZMC][rapbin]->getVal();
+    pdfU2Cdf[ZDATA][rapbin]->getVal();
+    
     // ==============================================================
     // Go to the pull space (from absolute)
     // In comments are the version for correcting a different MC
@@ -271,16 +247,9 @@ void RecoilCorrector::applyCorrMET3gausPDF(
     //  std::cout << "================= " << std::endl;
     //  std::cout << " Before: pU1Diff " << pU1Diff << " pU2Diff " << pU2Diff << std::endl;
     
-    if(doKeys) {
-      // this need the relative space
-      pU1corr = keysInvGraph(pU1Diff,bosonPt,pdfKeyU1Cdf[ZMC][rapbin],pdfKeyU1Cdf[ZDATA][rapbin],true,5);
-      pU2corr = keysInvGraph(pU2Diff,bosonPt,pdfKeyU2Cdf[ZMC][rapbin],pdfKeyU2Cdf[ZDATA][rapbin],false,5);
-    } else {
-      // cout << "triGausInvGraphPDF U1" << endl;
-      // this need the reduced space
-      pU1corr = triGausInvGraphPDF(pU1Diff,bosonPt,pdfU1Cdf[ZMC][rapbin],pdfU1Cdf[ZDATA][rapbin],wU1[ZMC][rapbin],wU1[ZDATA][rapbin],5);
-      pU2corr = triGausInvGraphPDF(pU2Diff,bosonPt,pdfU2Cdf[ZMC][rapbin],pdfU2Cdf[ZDATA][rapbin],wU2[ZMC][rapbin],wU2[ZDATA][rapbin],5);
-    }
+    // Call correcting function in pull space
+    pU1corr = triGausInvGraphPDF(pU1Diff,bosonPt,pdfU1Cdf[ZMC][rapbin],pdfU1Cdf[ZDATA][rapbin],wU1[ZMC][rapbin],wU1[ZDATA][rapbin],5);
+    pU2corr = triGausInvGraphPDF(pU2Diff,bosonPt,pdfU2Cdf[ZMC][rapbin],pdfU2Cdf[ZDATA][rapbin],wU2[ZMC][rapbin],wU2[ZDATA][rapbin],5);
     
     // ==============================================================
     // Go back to the absolute space (from pull)
