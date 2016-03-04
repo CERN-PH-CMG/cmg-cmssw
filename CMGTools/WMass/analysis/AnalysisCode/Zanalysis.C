@@ -487,30 +487,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
     } // end gen stuff 
 
-
-    costh_HX = -1e10;     phi_HX = -1e10;
-    costh_HX_gen = -1e10; phi_HX_gen = -1e10;
-    costh_CS = -1e10;     phi_CS = -1e10;
-    costh_CS_gen = -1e10; phi_CS_gen = -1e10;
-
-    if(MuPosGen_pt>0 && MuNegGen_pt>0) ComputeHXVarAndPhiStarEta(muPosGen_status3,muNegGen_status3,true);
-    if(MuPos_pt>0 && MuNeg_pt>0) ComputeHXVarAndPhiStarEta(muPosNoCorr,muNegNoCorr,false);
-        
-    // charge invariant variables
-    double& Leading_Mu_pt  = MuPos_pt>MuNeg_pt ? MuPos_pt  : MuNeg_pt;
-    double& Leading_Mu_eta = MuPos_pt>MuNeg_pt ? MuPos_eta : MuNeg_eta;
-    double& Leading_Mu_phi = MuPos_pt>MuNeg_pt ? MuPos_phi : MuNeg_phi;
-    double& SubLeading_Mu_pt  = MuPos_pt>MuNeg_pt ? MuNeg_pt  : MuPos_pt;
-    double& SubLeading_Mu_eta = MuPos_pt>MuNeg_pt ? MuNeg_eta : MuPos_eta;
-    double& SubLeading_Mu_phi = MuPos_pt>MuNeg_pt ? MuNeg_phi : MuPos_phi;
-    
-    //---------------- MUON weight
-    double TRG_TIGHT_ISO_muons_SF = 1;
-    double eff_TIGHT_SF = 1;
-    double eff_TIGHT_subleading_SF = 1;
-    double eff_ISO_SF = 1;
-    double eff_TRG_SF = 1;
-
     if(!useGenVar || Z_mass>0){ // dummy thing to separate signal and background in DY+Jets (useless)
       // cout <<"WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_["<<RecoilCorrVarDiagoParU1orU2fromDATAorMC<<"]= "
       // << WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC]
@@ -532,6 +508,30 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
           && MuNegIsTight && MuNeg_dxy<0.02
           && muRelIso<0.12 && neutrinoRelIso<0.5
         ){ // good reco event
+
+        // Polarization variables
+        costh_HX = -1e10;     phi_HX = -1e10;
+        costh_HX_gen = -1e10; phi_HX_gen = -1e10;
+        costh_CS = -1e10;     phi_CS = -1e10;
+        costh_CS_gen = -1e10; phi_CS_gen = -1e10;
+
+        if(MuPosGen_pt>0 && MuNegGen_pt>0) ComputeHXVarAndPhiStarEta(muPosGen_status3,muNegGen_status3,true);
+        if(MuPos_pt>0 && MuNeg_pt>0) ComputeHXVarAndPhiStarEta(muPosNoCorr,muNegNoCorr,false);
+        
+        // charge invariant variables
+        double& Leading_Mu_pt  = MuPos_pt>MuNeg_pt ? MuPos_pt  : MuNeg_pt;
+        double& Leading_Mu_eta = MuPos_pt>MuNeg_pt ? MuPos_eta : MuNeg_eta;
+        double& Leading_Mu_phi = MuPos_pt>MuNeg_pt ? MuPos_phi : MuNeg_phi;
+        double& SubLeading_Mu_pt  = MuPos_pt>MuNeg_pt ? MuNeg_pt  : MuPos_pt;
+        double& SubLeading_Mu_eta = MuPos_pt>MuNeg_pt ? MuNeg_eta : MuPos_eta;
+        double& SubLeading_Mu_phi = MuPos_pt>MuNeg_pt ? MuNeg_phi : MuPos_phi;
+        
+        //---------------- MUON weight
+        double TRG_TIGHT_ISO_muons_SF = 1;
+        double eff_TIGHT_SF = 1;
+        double eff_TIGHT_subleading_SF = 1;
+        double eff_ISO_SF = 1;
+        double eff_TRG_SF = 1;
 
         for(int m=m_start; m<m_end; m++){
 
@@ -698,7 +698,8 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               
               if( (m==m_start && n==0) 
                   && ((useEffSF>=2 && useEffSF<=6) || (useEffSF>=13 && useEffSF<=16)) 
-                  && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
+                  && (IS_MC_CLOSURE_TEST || isMCorDATA==0))
+              {
                 
                 TRG_TIGHT_ISO_muons_SF = 1;
                 eff_TIGHT_SF = 1;
@@ -1170,39 +1171,10 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                         //------------------------------------------------------------------------------------------------ 
                         if(controlplots && m==m_start && n==0) fillControlPlots(Zcorr, Z_met, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, WMass::ZMassCentral_MeV, eta_str, WMass::nSigOrQCD_str[0],Form("Wlike%s_8_JetCut",WCharge_str.Data()));
 
-                      }
-                    }
-                  }
-                }else if(controlplots && m==m_start && n==0 && isChargePos){
-                  // NOTE: ONLY DONE FOR WLIKEPOS !!!
-                  
-                  // Iso and dxy for muons which fail either tight requirement, isolation or dxy cut
-                  if(pfmetWlikePos>25 && WlikePos_pt<20){
-                    // if( (TMath::Abs(zmass1 - WMass::WMassCentral_MeV) > 1)) continue;
-                  }
-
-                  //------------------------------------------------------
-                  // Control plots in the QCD enriched region
-                  //------------------------------------------------------
-                  // invert cuts to select QCD enriched region, no cuts on met or jet
-                  if(
-                    MuPosRelIso>0.12 // single muon cuts (inverted iso (is <0.5 for signal) , no tight requirement)
-                    && MuPos_dxy>0.02 // single muon cuts (MuPosIsTight contains dxy < 0.2 cut)
-                    && WlikePos_pt<20/* *WMass::ZMassCentral_MeV/iZmass_GeV */ 
-                    ){
-
-                    // for(int k=0;k<WMass::NFitVar;k++)
-                      // common_stuff::plot1D(Form("hWlikePos_%sScaled_QCD_eta%s_%d",WMass::FitVar_str[k].Data(),eta_str.Data(),jZmass_MeV),
-                                          // MuPos_var_jacobian[k], evt_weight*TRG_TIGHT_ISO_muons_SF, h_1d, nbins, bins_scaled[k] );
-
-                    //------------------------------------------------------
-                    // QCD distributions for central W mass
-                    //------------------------------------------------------
-
-                    fillControlPlots(Zcorr, Z_met, muPosCorr, muNegCorr, h_1d, h_2d, evt_weight*TRG_TIGHT_ISO_muons_SF, WMass::ZMassCentral_MeV, eta_str, WMass::nSigOrQCD_str[1],Form("Wlike%s_8_JetCut",WCharge_str.Data()));
-
-                  } // end if for qcd enriched
-                } // end else for muon cuts (sig or qcd enriched)
+                      } // end if for box cuts
+                    } // end if for recoil
+                  } // end if for MET cuts
+                } // end if for muon cuts
               } // end if for good pair within acceptance cuts for both muons
             } // end efficiency toys
           } // end KalmanVars loop
