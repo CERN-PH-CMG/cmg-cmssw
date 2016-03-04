@@ -128,6 +128,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     }
   #endif
   
+  // Booleans for MC signal samples, we use these a lot:
+  bool isPowheg   = sampleName.Contains("DYJetsPow");
+  bool isMadgraph = sampleName.Contains("DYJetsMadSig");
+  bool isPowOrMad = isPowheg || isMadgraph;
+  
   //------------------------------------------------------
   // retrieve efficiencies SF
   //------------------------------------------------------
@@ -158,16 +163,14 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   TH1D*hPileupSF;
 
   if(useVtxSF && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
-    // TString vtx_str = sampleName; vtx_str.ReplaceAll("Sig",""); vtx_str.ReplaceAll("Fake","");
-    // finPileupSF = new TFile(Form("../utils/pileup_reweighting_%s.root",vtx_str.Data())); // used only to build templates
-    TFile* finPileupSF = new TFile(Form("../utils/pileup/pileup_reweighting_Fall11.root")); // used only to build templates
-    // TFile* finPileupSF = new TFile(Form("../utils/pileup/pileup_reweighting_Fall11_7TeV_Markus.root")); // used only to build templates
+    TFile* finPileupSF = new TFile("../utils/pileup/pileup_reweighting_Fall11.root"); // used only to build templates
     if(!finPileupSF){
       cout << "ERROR: file ../utils/pileup/pileup_reweighting_Fall11.root is missing, impossible to retrieve pileup reweighting factors" << endl;
       return;
     }
     hPileupSF=(TH1D*)finPileupSF->Get("hpileup_reweighting_Fall11");
   }
+  
   //------------------------------------------------------
   // retrieve invariant mass SF (for EWK)
   //------------------------------------------------------
@@ -190,6 +193,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       hZmassSF_syst=(TH1D*)finZmassSF->Get("noewk_p8std_div_ewk_p8std"); hZmassSF_syst->Sumw2();
     }
   }
+  
   //------------------------------------------------------
   // Define binning for rap and pt
   //------------------------------------------------------
@@ -204,7 +208,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // retrieve boson pT SF
   //------------------------------------------------------
   TH1D* hZPtSF;
-  if(usePtSF==0 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow"))) {
+  if(usePtSF==0 && isPowOrMad) {
 
     TString filename=Form("../utils/Zpt_%soutput_%s_%s.root",useAlternateEventXweights?"altern_":"",sampleName.Data(),WCharge_str.Data());
     cout << "hZPtSF_central = " << filename.Data() << endl;
@@ -224,7 +228,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   //------------------------------------------------------
 
   TH2D* hZPolSF;
-  if(reweight_polarization==1 && sampleName.Contains("DYJetsPow")) {
+  if(reweight_polarization==1 && isPowheg) {
 
     TString filename = Form("../utils/Zpol_Zrap_cosTheta_%soutput_%s_%s_PtSFCorr0.root",useAlternateEventXweights?"altern_":"",sampleName.Data(),WCharge_str.Data());
     cout << "hZpolSF_central = " << filename.Data() << endl;
@@ -252,7 +256,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   if(IS_MC_CLOSURE_TEST==1) lumi_scaling=lumi_scaling*2; // in case of closure test, scaling must be multiplied by 2
   
   //------------------------------------------------------
-  // Initilize momentum scale corrections
+  // Initialize momentum scale corrections
   //------------------------------------------------------
   // To get the central value of the momentum correction
   // TString MuscleCard = (IS_MC_CLOSURE_TEST || isMCorDATA==0) ? "MuScleFit_2011_MC_44X" : "MuScleFit_2011_DATA_44X";
@@ -289,7 +293,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // if(use_PForNoPUorTKmet==2) metSuffix="_tkmet";
   
   TString generatorSuffix="_powheg";
-  if (sampleName.Contains("DYJetsMadSig"))
+  if (isMadgraph)
     generatorSuffix="_madgraph";
 
   RecoilCorrector*  correctorRecoil_Z; // TYPE2
@@ -407,7 +411,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
     //---------------- Invariant Mass weight
     // cout << "mass= " << ZGen_PostFSR_mass << " use_syst_ewk_Alcaraz = "<< use_syst_ewk_Alcaraz << endl;
-    if(use_syst_ewk_Alcaraz>-1 && use_syst_ewk_Alcaraz!=100 && sampleName.Contains("DYJetsPow")){
+    if(use_syst_ewk_Alcaraz>-1 && use_syst_ewk_Alcaraz!=100 && isPowheg){
       double ewk_weight_central=ZGen_PostFSR_mass>50&&ZGen_PostFSR_mass<200?hZmassSF_central->Interpolate(ZGen_PostFSR_mass):1;
       // cout << "ewk_weight_central = ewk_weight_central ("<<ewk_weight_central<<")" << endl;
       evt_weight *= ewk_weight_central;
@@ -426,16 +430,16 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     }
     //---------------- PT weight (usePtSF = -1; # Boson pT reweighting: -1=none, 0=data, 1...=other options)
     // OBSOLETE setting
-    if(usePtSF!=-1 && usePtSF!=0 && usePtSF!=1 &&usePtSF!=2 /* && ZGen_pt<ZPt_cut */ && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")))
+    if(usePtSF!=-1 && usePtSF!=0 && usePtSF!=1 &&usePtSF!=2 /* && ZGen_pt<ZPt_cut */ && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && isPowOrMad)
       // evt_weight_original*=hZPtSF->GetBinContent(hZPtSF->GetXaxis()->FindBin(/* Z_pt>0?Z_pt: */ZGen_pt));
       evt_weight *= hZPtSF->Interpolate(ZGen_pt)>0?hZPtSF->Interpolate(ZGen_pt):1;
-    else if(usePtSF==1 && ZGen_pt<ZPt_cut && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){
+    else if(usePtSF==1 && ZGen_pt<ZPt_cut && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && isPowOrMad){
       evt_weight *= TMath::Min(1+0.1*(25-ZGen_pt)/25,0.5);
       common_stuff::plot2D(Form("weight1_vs_genpT"),
                                       ZGen_pt,(1+0.1*(25-ZGen_pt)/25), 1, 
                                           h_2d, 50,0,50,50,0,2 );
     }
-    else if(usePtSF==2 && ZGen_pt<ZPt_cut && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){
+    else if(usePtSF==2 && ZGen_pt<ZPt_cut && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && isPowOrMad){
       evt_weight *= (1+0.1*(ZGen_pt-25)/25);
       common_stuff::plot2D(Form("weight2_vs_genpT"),
                                       ZGen_pt,(1+0.1*(25-ZGen_pt)/25), 1, 
@@ -443,7 +447,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     }
     
     //---------------- EWK weight
-    if(use_syst_ewk_Alcaraz && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){
+    if(use_syst_ewk_Alcaraz && isPowOrMad){
       if(use_syst_ewk_Alcaraz==100 && FSRWeight>-99){ 
         evt_weight *= FSRWeight;
         // cout << "FSRWeight= " << FSRWeight << endl;
@@ -583,7 +587,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
           // if(fabs(ZGen_rap)>=1.75 && fabs(ZGen_rap)<=2.0) rapBin=200;
           // if(fabs(ZGen_rap)>2.0) rapBin=201;
           
-          if(use_PForNoPUorTKmet<3 && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){ // use MET corrections if required
+          if(use_PForNoPUorTKmet<3 && isPowOrMad){ // use MET corrections if required
             
             if(use_PForNoPUorTKmet==0){
               met_trasv = pfmet;
@@ -727,7 +731,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
             //------------------------------------------------------------------------------------------------
             
             if(m==m_start && n==0) {
-              if(usePtSF!=-1  && usePtSF!=1 &&usePtSF!=2 && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && (sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")))
+              if(usePtSF!=-1  && usePtSF!=1 &&usePtSF!=2 && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && isPowOrMad)
                 evt_weight *= hZPtSF->Interpolate(ZcorrCentral.Pt())>0?hZPtSF->Interpolate(ZcorrCentral.Pt()):1;
 
               // Boson Polarization
@@ -735,7 +739,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
               // cout << " ZcorrCentral.Rapidity()= " << ZcorrCentral.Rapidity() << " ZcorrCentral.Pt()= " << ZcorrCentral.Pt() << " hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())= " << hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity()) << " hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())= " << hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt()) << " costh_CS= " << costh_CS << " phi_CS= " << phi_CS << endl;
 
-              if(reweight_polarization==1 && (sampleName.Contains("DYJetsMadSig") || sampleName.Contains("DYJetsPow"))){
+              if(reweight_polarization==1 && isPowOrMad){
                 double interpolated_weight = hZPolSF->Interpolate(costh_CS, TMath::Abs(Zcorr.Rapidity()));
                 evt_weight *= interpolated_weight>0 ? interpolated_weight : 1;
               }
@@ -944,7 +948,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                           //------------------------------------------------------
                           for(int j=0; j<2*WMass::WMassNSteps+1; j++){
 
-                            if(!(sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig")) && WMass::WMassNSteps!=j) continue;
+                            if(!isPowOrMad && WMass::WMassNSteps!=j) continue;
                             int jZmass_MeV = WMass::Zmass_values_array[j];
                             double iZmass_GeV = WMass::Zmass_values_array[j]/1e3;
                             
@@ -1271,7 +1275,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
   hZPtSF->Write();
 
-  if(!(sampleName.Contains("DYJetsPow") || sampleName.Contains("DYJetsMadSig"))){
+  if(!isPowOrMad){
     TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
     for(int i=0; i<max(1, WMass::efficiency_toys); i++){
       TString effToy_str = "";
