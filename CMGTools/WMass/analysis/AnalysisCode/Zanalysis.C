@@ -253,7 +253,13 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   if(IS_MC_CLOSURE_TEST==1 && isMCorDATA==1) first_entry=nentries/2; // in case of closure test, DATA runs from N/2 to N
   if(IS_MC_CLOSURE_TEST==1 && isMCorDATA==0) nentries=nentries/2; // in case of closure test, MC runs from 0 to N/2
   if(IS_MC_CLOSURE_TEST==1) lumi_scaling=lumi_scaling*2; // in case of closure test, scaling must be multiplied by 2
-  
+
+  //------------------------------------------------------
+  // Define eta_max cut
+  // WMass::etaMaxMuons = 0.9
+  //------------------------------------------------------
+  TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
+
   //------------------------------------------------------
   // Initialize momentum scale corrections
   //------------------------------------------------------
@@ -446,12 +452,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
       }else if(use_syst_ewk_Alcaraz==0){
       }        
     }
-
-    //------------------------------------------------------
-    // define eta_max cut
-    // WMass::etaMaxMuons = 0.9
-    //------------------------------------------------------
-    TString eta_str = Form("%.1f",WMass::etaMaxMuons); eta_str.ReplaceAll(".","p");
 
     //------------------------------------------------------
     // retrieve and use gen-level info
