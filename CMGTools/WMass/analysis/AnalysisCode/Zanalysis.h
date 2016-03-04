@@ -217,7 +217,7 @@ class Zanalysis {
   virtual Long64_t LoadTree(Long64_t entry);
   virtual Long64_t NumEntries();
   virtual void     Init(TTree *tree);
-  virtual void     Loop(int chunk=0, int Entry_ini=0, int Entry_fin=0, int IS_MC_CLOSURE_TEST=0, int isMCorDATA=0, TString outputdir="", int useMomentumCorr=0, int varyMuonCorrNsigma=0, int MuonCorrAsDATA=0, int useEffSF=0, int usePtSF=0, int useVtxSF=0, int controlplots=0, TString sampleName="", int generated_PDF_set=-1, int generated_PDF_member=-1, int contains_PDF_reweight=-1, int usePhiMETCorr=0, int useRecoilCorr=0, int RecoilCorrResolutionNSigmaU1=0, int RecoilCorrScaleNSigmaU1=0, int RecoilCorrResolutionNSigmaU2=0, int use_PForNoPUorTKmet=0, int use_syst_ewk_Alcaraz=0, int gen_mass_value_MeV=0, int contains_LHE_weights=0, int reweight_polarization=0);
+  virtual void     Loop(int chunk=0, int Entry_ini=0, int Entry_fin=0, int IS_MC_CLOSURE_TEST=0, int isMCorDATA=0, TString outputdir="", int useMomentumCorr=0, int varyMuonCorrNsigma=0, int MuonCorrAsDATA=0, int useEffSF=0, int usePtSF=0, int useVtxSF=0, int controlplots=0, TString sampleName="", int generated_PDF_set=-1, int generated_PDF_member=-1, int contains_PDF_reweight=-1, int useRecoilCorr=0, int correctToMadgraph=0, int RecoilCorrVarDiagoParSigmas=0, int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0, int use_PForNoPUorTKmet=0, int use_syst_ewk_Alcaraz=0, int gen_mass_value_MeV=0, int contains_LHE_weights=0, int reweight_polarization=0);
   virtual Bool_t   Notify();
   virtual void     Show(Long64_t entry = -1);
   void ComputeHXVarAndPhiStarEta(TLorentzVector muPosNoCorr,TLorentzVector muNegNoCorr, bool isGen);
