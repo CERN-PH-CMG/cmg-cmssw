@@ -51,7 +51,7 @@ void RecoilCorrector::readRecoil(
 
     wU1[mytype][rapbin] = new RooWorkspace(Form("wU1_type%d_Y%d", mytype, rapbin), "wU1");
     pdfU1[mytype][rapbin] = (RooAddPdf*) lFile->Get(Form("AddU1Y%d",file_rapbin));
-    wU1[mytype][rapbin]->import(*pdfU1[mytype][rapbin]/*,RooFit::Silence()*/);
+    wU1[mytype][rapbin]->import(*pdfU1[mytype][rapbin],RooFit::Silence());
     frU1[mytype][rapbin] = (RooFitResult*) lFile->Get(Form("%sU1Y%d_Crapsky0_U1_2D",model_name.Data(),file_rapbin));
 
     runDiago(wU1[mytype][rapbin],frU1[mytype][rapbin],Form("AddU1Y%d",file_rapbin),pdfU1Cdf[mytype][rapbin]);
@@ -59,7 +59,7 @@ void RecoilCorrector::readRecoil(
 
     wU2[mytype][rapbin] = new RooWorkspace(Form("wU2_type%d_Y%d", mytype, rapbin), "wU2");
     pdfU2[mytype][rapbin] = (RooAddPdf*) lFile->Get(Form("AddU2Y%d",file_rapbin));
-    wU2[mytype][rapbin]->import(*pdfU2[mytype][rapbin]/*,RooFit::Silence()*/);
+    wU2[mytype][rapbin]->import(*pdfU2[mytype][rapbin],RooFit::Silence());
     frU2[mytype][rapbin] = (RooFitResult*) lFile->Get(Form("%sU2Y%d_Crapsky0_U2_2D",model_name.Data(),file_rapbin));
 
     runDiago(wU2[mytype][rapbin],frU2[mytype][rapbin],Form("AddU2Y%d",file_rapbin),pdfU2Cdf[mytype][rapbin]);
@@ -74,10 +74,10 @@ void RecoilCorrector::readRecoil(
       int file_rapbin = rapbin+1;
 
       wU1key[mytype][rapbin] = new RooWorkspace("wU1key","wU1key");
-      makeKeysVec(wU1key[mytype][rapbin], lFile, Form("Keys_U1_%d",file_rapbin), pdfKeyU1Cdf[mytype][rapbin],true);
+      makeKeysVec(wU1key[mytype][rapbin], keysFile, Form("Keys_U1_%d",file_rapbin), pdfKeyU1Cdf[mytype][rapbin],true);
       
       wU2key[mytype][rapbin] = new RooWorkspace("wU2key","wU2key");
-      makeKeysVec(wU2key[mytype][rapbin], lFile, Form("Keys_U2_%d",file_rapbin), pdfKeyU2Cdf[mytype][rapbin],false);
+      makeKeysVec(wU2key[mytype][rapbin], keysFile, Form("Keys_U2_%d",file_rapbin), pdfKeyU2Cdf[mytype][rapbin],false);
     }
     keysFile->Close();
   }
