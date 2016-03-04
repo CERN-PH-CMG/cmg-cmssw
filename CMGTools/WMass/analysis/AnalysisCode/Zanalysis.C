@@ -9,7 +9,6 @@
 #include "Zanalysis.h"
 #include "common.h"
 //#include "common_stuff.h"
-//#include "KalmanCalibrator.h"
 #include "KalmanCalibratorParam.h"
 #include "RecoilCorrector.h"
 #include "HTransformToHelicityFrame.c"
@@ -264,11 +263,6 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // Initialize momentum scale corrections
   //------------------------------------------------------
   // To get the central value of the momentum correction
-  // KalmanCalibrator *corrector_Kalman;
-  // if(useMomentumCorr==3){
-  //   cout << "using Kalman Calibrator" << endl;
-  //   corrector_Kalman = new KalmanCalibrator(isMCorDATA==0?false:true); // True for data , //False for MC
-  // }
   KalmanCalibratorParam *corrector_KalmanParam;
   if(useMomentumCorr==4){
     cout << "using Kalman Calibrator Param" << endl;
