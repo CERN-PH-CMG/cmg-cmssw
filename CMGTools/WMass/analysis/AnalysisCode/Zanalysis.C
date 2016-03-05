@@ -8,7 +8,7 @@
 #define Zanalysis_cxx
 #include "Zanalysis.h"
 #include "common.h"
-//#include "common_stuff.h"
+#include "common_stuff.h"
 #include "KalmanCalibratorParam.h"
 #include "RecoilCorrector.h"
 #include "HTransformToHelicityFrame.c"

@@ -1,3 +1,6 @@
+#ifndef _COMMON_STUFF_H
+#define _COMMON_STUFF_H
+
 #include <iostream>
 #include <TChain.h>
 #include <TClonesArray.h>
@@ -65,3 +68,5 @@ class common_stuff {
   static TString getCompleteTitleReturnName(std::string title);
 
 };
+
+#endif // _COMMON_STUFF_H
