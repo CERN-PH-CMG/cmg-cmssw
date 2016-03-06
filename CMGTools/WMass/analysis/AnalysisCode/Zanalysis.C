@@ -57,9 +57,9 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   using namespace std;
 
   // maps needed for common_stuff histos
-  map<string, TH1D*> h_1d;
-  map<string, TH2D*> h_2d;
-  map<string, TH3D*> h_3d;
+  std::map<string, TH1D*> h_1d;
+  std::map<string, TH2D*> h_2d;
+  std::map<string, TH3D*> h_3d;
 
   cout << "generated_PDF_set= "<<generated_PDF_set
        << " generated_PDF_member= " << generated_PDF_member
