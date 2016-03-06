@@ -295,12 +295,13 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
     if(correctToMadgraph)
            fileZmmData =   /*MAD */ Form("../RecoilCode/%s/recoilfit_%s_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_UNBINNED_3G_53X_madgraph.root", RCset.c_str(), RCset.c_str());
 
-    // the sample are in the root://eoscms//eos/cms//store/group/phys_smp/Wmass/dalfonso/RecoilFiles/DEC6/; download from there
-    string fileZmmKeysCorrectTo = Form("../RecoilCode/DEC6/keysrecoilfit_DEC6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X%s.root",generatorSuffix.Data());
-    string fileZmmKeysMC = Form("../RecoilCode/DEC6/keysrecoilfit_DEC6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X%s.root",generatorSuffix.Data());
-    string fileZmmKeysData = "../RecoilCode/DEC6/keysrecoilfit_DEC6_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
+    // ROOKEYS
+    string basepath = "root://eoscms//eos/cms//store/group/phys_smp/Wmass/dalfonso/RecoilFiles/DEC6/";
+    string fileZmmKeysCorrectTo = Form("%s/keysrecoilfit_DEC6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X%s.root", basepath.c_str(), generatorSuffix.Data());
+    string fileZmmKeysMC = Form("%s/keysrecoilfit_DEC6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X%s.root", basepath.c_str(), generatorSuffix.Data());
+    string fileZmmKeysData = basepath + "keysrecoilfit_DEC6_DATA_tkmet_eta21_MZ81101_pol3_type2_doubleGauss_triGauss_halfStat_UNBINNED_3G_53X.root";
     if(correctToMadgraph) 
-           fileZmmKeysData = "../RecoilCode/DEC6/keysrecoilfit_DEC6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X_madgraph.root";
+           fileZmmKeysData = basepath + "keysrecoilfit_DEC6_genZ_tkmet_eta21_MZ81101_PDF-1_pol3_type2_doubleGauss_triGauss_x2Stat_absolute_UNBINNED_3G_53X_madgraph.root";
 
     TString model_name = "fitresult_Add";
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;

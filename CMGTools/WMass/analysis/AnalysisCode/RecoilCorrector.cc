@@ -37,7 +37,7 @@ void RecoilCorrector::readRecoil(
   if(mytype==ZDATA)    cout << " read DATA"   << endl;
   if(mytype==ZMC)      cout << " read MC"     << endl;
 
-  TFile *lFile = new TFile(iFName.c_str());
+  TFile *lFile = TFile::Open(iFName.c_str());
 
   for(int rapbin = 0; rapbin < rapbins; rapbin++) {
     cout << "reading bin " << rapbin << endl;
@@ -67,7 +67,7 @@ void RecoilCorrector::readRecoil(
   lFile->Close();
   
   if (loadKeys) {
-    TFile* keysFile = new TFile(iFKeyName.c_str());
+    TFile* keysFile = TFile::Open(iFKeyName.c_str());
     
     for(int rapbin = 0; rapbin < rapbins; rapbin++) {
       cout << "reading bin " << rapbin << endl;
