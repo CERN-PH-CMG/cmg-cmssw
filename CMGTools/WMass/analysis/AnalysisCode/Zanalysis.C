@@ -74,7 +74,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
   // Set variables for charge
   //------------------------------------------------------
   
-  bool isChargePos = WMass::WlikeCharge==1;
+  const bool isChargePos = WMass::WlikeCharge==1;
   TString WCharge_str = isChargePos?"Pos":"Neg";
   TLorentzVector& muNoCorr            = isChargePos?muPosNoCorr     :muNegNoCorr;
   TLorentzVector& neutrinoNoCorr      = isChargePos?muNegNoCorr     :muPosNoCorr;
@@ -666,7 +666,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 evt_weight *= hZPtSF->Interpolate(ZcorrCentral.Pt())>0?hZPtSF->Interpolate(ZcorrCentral.Pt()):1;
 
               // Boson Polarization
-              common_stuff::ComputeAllVarPietro(muPosCorr,muNegCorr, costh_CS, phi_CS, costh_HX, phi_HX);
+              common_stuff::ComputeAllVarPietro(muPosCorrCentral, muNegCorrCentral, costh_CS, phi_CS, costh_HX, phi_HX);
 
               // cout << " ZcorrCentral.Rapidity()= " << ZcorrCentral.Rapidity() << " ZcorrCentral.Pt()= " << ZcorrCentral.Pt() << " hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity())= " << hrapbins->GetXaxis()->FindBin(ZcorrCentral.Rapidity()) << " hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt())= " << hptbins->GetXaxis()->FindBin(ZcorrCentral.Pt()) << " costh_CS= " << costh_CS << " phi_CS= " << phi_CS << endl;
 
