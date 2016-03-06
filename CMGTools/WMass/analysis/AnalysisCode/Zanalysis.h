@@ -113,9 +113,9 @@ class Zanalysis {
   Double_t        Jet_leading_phi;
   Double_t        FSRWeight;
   Double_t        LHE_weight[465];
-  Double_t        LHE_ren[200];
-  Double_t        LHE_fac[200];
-  Double_t        LHE_pdf[200];
+  // Double_t        LHE_ren[200];
+  // Double_t        LHE_fac[200];
+  // Double_t        LHE_pdf[200];
   Double_t        ZGen_PostFSR_mass;
 
   // List of branches
@@ -204,9 +204,9 @@ class Zanalysis {
   TBranch        *b_Jet_leading_phi;   //!
   TBranch        *b_FSRWeight;   //!
   TBranch        *b_LHE_weight;   //!
-  TBranch        *b_LHE_ren;   //!
-  TBranch        *b_LHE_fac;   //!
-  TBranch        *b_LHE_pdf;   //!
+  // TBranch        *b_LHE_ren;   //!
+  // TBranch        *b_LHE_fac;   //!
+  // TBranch        *b_LHE_pdf;   //!
   TBranch        *b_ZGen_PostFSR_mass;   //!
 
 

@@ -95,9 +95,8 @@ int main(int argc, char ** argv)
   Zanalysis zDATA(ZfileDATA.Data(),ZfileDATA_lumi_SF,(sample.Contains("DYJetsPow") || sample.Contains("DYJetsMadSig"))?useAlsoGenPforSig:0);
                              
   if(GetEntriesOrNchunck>-1) cout << "processing line "<< Form("zDATA.Loop(%d,%d,\"../%s\",%d,%d,%d,%d,%d,%d,\"%s\",%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)",IS_MC_CLOSURE_TEST,isMCorDATA,filename_outputdir.Data(),useMomentumCorr,varyMuonCorrNsigma,useEffSF,usePtSF,usePileupSF,controlplots,sample.Data(),generated_PDF_set,generated_PDF_member,contains_PDF_reweight,useRecoilCorr,correctToMadgraph,RecoilCorrVarDiagoParSigmas,RecoilCorrVarDiagoParU1orU2,use_PForNoPUorTKmet,use_syst_ewk_Alcaraz,gen_mass_value_MeV,contains_LHE_weights,reweight_polarization) << endl;
-  int nEntries;
   if(GetEntriesOrNchunck==-1){
-    nEntries = zDATA.NumEntries();
+    int nEntries = zDATA.NumEntries();
     cout << "nEntries= " <<  nEntries << endl;
     return 0;
   }

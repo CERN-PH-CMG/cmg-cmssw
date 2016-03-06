@@ -304,11 +304,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
     TString model_name = "fitresult_Add";
     cout << "INITIALIZING RECOIL MC TARGET FILE" << endl;
-    correctorRecoil_Z = new RecoilCorrector(correctWithKeys, fileCorrectTo.c_str(), fileZmmKeysCorrectTo.c_str(), model_name);
+    correctorRecoil_Z = new RecoilCorrector(correctWithKeys, fileCorrectTo, fileZmmKeysCorrectTo, model_name);
     cout << "INITIALIZING RECOIL Z DATA FILE" << endl;
-    correctorRecoil_Z->addDataFile(fileZmmData.c_str(), fileZmmKeysData.c_str(), model_name);
+    correctorRecoil_Z->addDataFile(fileZmmData, fileZmmKeysData, model_name);
     cout << "INITIALIZING RECOIL Z MC FILE" << endl;
-    correctorRecoil_Z->addMCFile(fileZmmMC.c_str(), fileZmmKeysMC.c_str(), model_name);
+    correctorRecoil_Z->addMCFile(fileZmmMC, fileZmmKeysMC, model_name);
   }
 
   const double ZWmassRatio = ((double)WMass::ZMassCentral_MeV)/((double)WMass::WMassCentral_MeV);
@@ -653,17 +653,16 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                 corrector_KalmanParam->smear(muNegCorr);
               }
 
+              Zcorr = muPosCorr + muNegCorr;
+              ZcorrCentral = muPosCorrCentral + muNegCorrCentral;
             }
-            
-            Zcorr = muPosCorr + muNegCorr;
-            ZcorrCentral = muPosCorrCentral + muNegCorrCentral;
 
             //------------------------------------------------------------------------------------------------
             // Apply PT and Pol weight based on RECO
             //------------------------------------------------------------------------------------------------
             
             if(m==m_start && n==0) {
-              if(usePtSF!=-1  && usePtSF!=1 &&usePtSF!=2 && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && hZPtSF && isPowOrMad)
+              if(usePtSF!=-1  && usePtSF!=1 &&usePtSF!=2 && (IS_MC_CLOSURE_TEST || isMCorDATA==0) && isPowOrMad)
                 evt_weight *= hZPtSF->Interpolate(ZcorrCentral.Pt())>0?hZPtSF->Interpolate(ZcorrCentral.Pt()):1;
 
               // Boson Polarization
@@ -730,7 +729,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                   // === leading
                   eff_TRG_SF = SF_HLT->GetBinContent(SF_HLT->FindBin(WMass::WlikeCharge, Leading_Mu_eta, Leading_Mu_pt));
                   if(useEffSF==16){
-                    random_->SetSeed(UInt_t(TMath::Abs(isChargePos?1:2)*1e9 + TMath::Abs(Leading_Mu_eta)*1e6 + TMath::Abs(Leading_Mu_pt)*1e3 + i));
+                    random_->SetSeed(UInt_t((isChargePos?1:2)*1e9 + TMath::Abs(Leading_Mu_eta)*1e6 + TMath::Abs(Leading_Mu_pt)*1e3 + i));
                     eff_TRG_SF += random_->Gaus(0,TMath::Hypot(0.01,SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Leading_Mu_eta, Leading_Mu_pt))));
                     // cout << "SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Leading_Mu_eta, Leading_Mu_pt))= " << SF_HLT->GetBinError(SF_HLT->FindBin(WMass::WlikeCharge, Leading_Mu_eta, Leading_Mu_pt)) << endl;
                   }
