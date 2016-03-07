@@ -186,6 +186,10 @@ class ValidationJob:
                     "script": script,
                     "bsub": "/afs/cern.ch/cms/caf/scripts/cmsbsub"
                     }
+                for ext in ("stdout", "stderr", "stdout.gz", "stderr.gz"):
+                    oldlog = "%(logDir)s/%(jobName)s."%repMap + ext
+                    if os.path.exists(oldlog):
+                        os.remove(oldlog)
                 bsubOut=getCommandOutput2("%(bsub)s %(commands)s "
                                           "-J %(jobName)s "
                                           "-o %(logDir)s/%(jobName)s.stdout "
@@ -306,9 +310,9 @@ def createMergeScript( path, validations ):
             repMap["haddLoop"] = validation.appendToMerge(repMap["haddLoop"])
             repMap["haddLoop"] += "tmpMergeRetCode=${?}\n"
             repMap["haddLoop"] += ("if [[ tmpMergeRetCode -eq 0 ]]; then "
-                                   "cmsStage -f "
+                                   "xrdcp -f "
                                    +validation.getRepMap()["finalOutputFile"]
-                                   +" "
+                                   +" root://eoscms//eos/cms"
                                    +validation.getRepMap()["finalResultFile"]
                                    +"; fi\n")
             repMap["haddLoop"] += ("if [[ ${tmpMergeRetCode} -gt ${mergeRetCode} ]]; then "
@@ -316,7 +320,7 @@ def createMergeScript( path, validations ):
             for f in validation.getRepMap()["outputFiles"]:
                 longName = os.path.join("/store/caf/user/$USER/",
                                         validation.getRepMap()["eosdir"], f)
-                repMap["rmUnmerged"] += "    cmsRm "+longName+"\n"
+                repMap["rmUnmerged"] += "    $eos rm "+longName+"\n"
     repMap["rmUnmerged"] += ("else\n"
                              "    echo -e \\n\"WARNING: Merging failed, unmerged"
                              " files won't be deleted.\\n"
@@ -539,6 +543,11 @@ To merge the outcome of all validation procedures run TkAlMerge.sh in your valid
                 "bsub": "/afs/cern.ch/cms/caf/scripts/cmsbsub",
                 "conditions": '"' + " && ".join(["ended(" + jobId + ")" for jobId in ValidationJob.batchJobIds]) + '"'
                 }
+            for ext in ("stdout", "stderr", "stdout.gz", "stderr.gz"):
+                oldlog = "%(logDir)s/%(jobName)s."%repMap + ext
+                if os.path.exists(oldlog):
+                    os.remove(oldlog)
+
             getCommandOutput2("%(bsub)s %(commands)s "
                               "-o %(logDir)s/%(jobName)s.stdout "
                               "-e %(logDir)s/%(jobName)s.stderr "
