@@ -36,7 +36,7 @@ def make2DPlot(histo, outname='probmap'):
     for ext in ['.pdf', '.png']:
         c.SaveAs("%s%s" % (outname, ext))
 
-def make1DPlots(hist_data, hist_mc):
+def make1DPlots(hist_data, hist_mc, basename=''):
     xhists_da = [hist_data.ProjectionX(hist_data.GetName()+'_data_%d'%i, i, i+1)
                                     for i in range(hist_data.GetNbinsY())]
     xhists_mc = [hist_mc.ProjectionX(hist_mc.GetName()+'_mc_%d'%i, i, i+1)
@@ -75,7 +75,7 @@ def make1DPlots(hist_data, hist_mc):
         leg.SetShadowColor(0)
         leg.SetTextFont(43)
         leg.SetTextSize(20)
-        leg.AddEntry(hda, "Data 0.83 fb^{-1}", "P")
+        leg.AddEntry(hda, "Data 2.26 fb^{-1}", "P")
         leg.AddEntry(hmc, "DY MC", "F")
 
         c = ROOT.TCanvas("c", "C", 800, 600)
@@ -96,7 +96,7 @@ def make1DPlots(hist_data, hist_mc):
         hda.GetXaxis().SetMoreLogLabels()
 
         for ext in ['.pdf', '.png']:
-            c.SaveAs("chmid_prob_proj_%d%s" % (n, ext))
+            c.SaveAs("chmid_prob_proj_%d%s%s" % (n, basename, ext))
 
     return 0
 
@@ -123,6 +123,11 @@ def printTable(hist,title=''):
 def main():
     ROOT.gROOT.SetBatch(1)
 
+    print 70*'-'
+    print "Reading data histo from %s" % args[0]
+    print "Reading MC histo from %s" % args[1]
+    print 70*'-'
+
     ofile = ROOT.TFile.Open(args[0], "READ")
     histo_da = ofile.Get("chargeMisId")
     histo_da.SetDirectory(0)
@@ -140,13 +145,13 @@ def main():
 
     try: histo_mc.GetName()
     except AttributeError:
-        print "ERROR: Could not read data histo from %s" % args[1]
+        print "ERROR: Could not read MC histo from %s" % args[1]
         return -1
 
 
     make2DPlot(histo_da, outname='chmid_prob_map_'+BASENAME1)
     make2DPlot(histo_mc, outname='chmid_prob_map_'+BASENAME2)
-    make1DPlots(histo_da, histo_mc)
+    make1DPlots(histo_da, histo_mc, basename='_%s_%s'%(BASENAME1,BASENAME2))
     printTable(histo_da,title='Data')
     printTable(histo_mc,title='MC')
 
