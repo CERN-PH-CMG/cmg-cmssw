@@ -1,0 +1,11 @@
+nominal: vtxWeight*SF_trigmetnomu*SF_LepTightLoose*SF_BTag*SF_NLO_QCD*SF_NLO_EWK
+QCD_renScaleUp: vtxWeight*SF_trigmetnomu*SF_LepTightLoose*SF_BTag*SF_NLO_QCD_renScaleUp*SF_NLO_EWK
+QCD_renScaleDown: vtxWeight*SF_trigmetnomu*SF_LepTightLoose*SF_BTag*SF_NLO_QCD_renScaleDown*SF_NLO_EWK
+QCD_facScaleUp: vtxWeight*SF_trigmetnomu*SF_LepTightLoose*SF_BTag*SF_NLO_QCD_facScaleUp*SF_NLO_EWK
+QCD_facScaleDown: vtxWeight*SF_trigmetnomu*SF_LepTightLoose*SF_BTag*SF_NLO_QCD_facScaleDown*SF_NLO_EWK
+QCD_pdfUp: vtxWeight*SF_trigmetnomu*SF_LepTightLoose*SF_BTag*SF_NLO_QCD_pdfUp*SF_NLO_EWK
+QCD_pdfDown: vtxWeight*SF_trigmetnomu*SF_LepTightLoose*SF_BTag*SF_NLO_QCD_pdfDown*SF_NLO_EWK
+EWK_up: vtxWeight*SF_trigmetnomu*SF_LepTightLoose*SF_BTag*SF_NLO_EWK_up*SF_NLO_QCD
+EWK_down: vtxWeight*SF_trigmetnomu*SF_LepTightLoose*SF_BTag*SF_NLO_EWK_down*SF_NLO_QCD
+lepID_up: vtxWeight*SF_trigmetnomu*SF_LepTightLooseUp*SF_BTag*SF_NLO_QCD*SF_NLO_EWK
+lepID_down: vtxWeight*SF_trigmetnomu*SF_LepTightLooseDown*SF_BTag*SF_NLO_QCD*SF_NLO_EWK

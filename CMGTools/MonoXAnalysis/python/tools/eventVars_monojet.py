@@ -1,10 +1,10 @@
 from CMGTools.TTHAnalysis.treeReAnalyzer import *
 from CMGTools.MonoXAnalysis.tools.PileUpReWeighter import PileUpReWeighter
-from CMGTools.MonoXAnalysis.tools.BTagWeightCalculator import BTagWeightCalculator
+from PhysicsTools.Heppy.physicsutils.BTagWeightCalculator import BTagWeightCalculator
 import types
 
-BTagReweight74X = lambda : BTagWeightCalculator("/afs/cern.ch/work/g/gpetrucc/CMSSW_7_4_13/src/CMGTools/TTHAnalysis/data/btag/csv_rwt_fit_hf_2015_11_20.root",
-                                                "/afs/cern.ch/work/g/gpetrucc/CMSSW_7_4_13/src/CMGTools/TTHAnalysis/data/btag/csv_rwt_fit_lf_2015_11_20.root")
+BTagReweight74X = lambda : BTagWeightCalculator("/afs/cern.ch/work/e/emanuele/public/monox/leptonsf/csv_rwt_fit_hf_2015_11_20.root",
+                                                "/afs/cern.ch/work/e/emanuele/public/monox/leptonsf/csv_rwt_fit_lf_2015_11_20.root")
 
 class EventVarsMonojet:
     def __init__(self):
@@ -41,7 +41,7 @@ class EventVarsMonojet:
             return lep.lostHits <= (2 if abs(lep.etaSc)<1.479 else 3)
     def lepIdTight(self,lep):
         if abs(lep.pdgId) == 13:
-            if lep.pt <= 40: return False
+            if lep.pt <= 20: return False
             return abs(lep.eta) < 2.4 and lep.tightId > 0 and lep.relIso04 < 0.12
         elif abs(lep.pdgId) == 11:
             if lep.pt <= 40: return False

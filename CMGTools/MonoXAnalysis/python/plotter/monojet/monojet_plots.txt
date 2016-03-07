@@ -1,0 +1,3 @@
+metnomu: metNoMu_pt  : [200, 230, 260, 290, 320, 350, 390, 430, 470, 510, 550, 590, 640, 690, 740, 790, 840, 900, 960, 1020, 1090, 1160]  ; XTitle="Recoil [GeV]",Logy, LegendCutoff=1e-3, YMin=1, YMax=1e4
+nJet30 : nJetClean30 : 15,0.5,15.5  ; XTitle='N(jet\, p_{T} > 30 GeV)', Logy, Legend='TR'
+j1pt   : JetClean1_pt: 22,100,1200 ; XTitle="Leading jet p_{T}  [GeV]",  Legend='TR',Logy, LegendCutoff=1e-4, YMin=1, YMax=1e4

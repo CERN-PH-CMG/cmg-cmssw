@@ -1,22 +1,5 @@
 ### SIGNAL AND CONTROL SAMPLES
 
 # signals for sync 
-# DM+:        TTbarDM          : 1.0; FillColor=ROOT.kRed-9, Label="TTDM"
-
-# ---- Spring15 25ns samples -------
-# inclusive V+jets
-DYJets: DYJetsToLL_M10to50: xsec ; FillColor=ROOT.kCyan, Label="DY+jets"
-DYJets: DYJetsToLL_M50: xsec ; FillColor=ROOT.kCyan, Label="DY+jets"
-WJets    : WJetsToLNu : xsec;  FillColor=ROOT.kAzure+3, NormSystematic=0.2
-
-# -- Top --
-Top      : TTJets_LO : xsec; FillColor=ROOT.kGreen+3, Label="top", NormSystematic=0.5
-
-# 2015 25ns data
-data: DoubleEG_Run2015C_05Oct_runs_254227_255031 ;  Label="Data"
-data: DoubleEG_Run2015D_05Oct_runs_256630_258158 ;  Label="Data"
-data: DoubleEG_Run2015D_v4_runs_258159_260627 ;  Label="Data"
-data: DoubleMuon_Run2015C_05Oct_runs_254227_255031 ;  Label="Data"
-data: DoubleMuon_Run2015D_05Oct_runs_256630_258158 ;  Label="Data"
-data: DoubleMuon_Run2015D_v4_runs_258159_260627 ;  Label="Data"
+DM+:        TTbarDM          : 1.0; FillColor=ROOT.kRed-9, Label="TTDM"
 
