@@ -43,7 +43,7 @@ if(hasattr(config, 'use_PForNoPUorTKmet')):
   use_PForNoPUorTKmet = int(config.use_PForNoPUorTKmet)  # 0:PF, 1:NOPU, 2:TK
 use_LHE_weights = 0  # 0=no, 1=yes
 if(hasattr(config, 'use_LHE_weights')):
-  use_LHE_weights = config.use_LHE_weights  # 0=no, 1=yes
+  use_LHE_weights = int(config.use_LHE_weights)  # 0=no, 1=yes
 usePileupSF = 1  # 0=no, 1=yes
 if(hasattr(config, 'usePileupSF')):
   usePileupSF = int(config.usePileupSF)  # 0=no, 1=yes
@@ -59,7 +59,7 @@ if(hasattr(config, 'useEffSF')):
 ### EFFICIENCY TOYS
 efficiency_toys = 0  # 0=No, >1=Yes
 if(hasattr(config, 'efficiency_toys')):
-  efficiency_toys = str(config.efficiency_toys)  # 0=No, >1=Yes
+  efficiency_toys = int(config.efficiency_toys)  # 0=No, >1=Yes
 
 ### EWK CORR
 syst_ewk_Alcaraz = 0  # -1=none, 0=POWHEG QCD+EWK NLO (bug-fixed), 1= 0 +syst photos vs pythia (31 = 3 times), 2= 0 +syst no nloewk vs nloewk (32 = 3 times)
@@ -143,8 +143,6 @@ correctToMadgraph = 0; # 0: uses DATA as target -- 1: uses Madgraph as target (a
 if(hasattr(config, 'correctToMadgraph')):
   correctToMadgraph = int(config.correctToMadgraph)  # 0=No, >1=Yes
 
-usePhiMETCorr = 0; # 0=none, 1=yes
-
 # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
 resubmit_sample = "WJetsMadFake, DYJetsPow, DYJetsMadFake, TTJets, ZZJets, WWJets, WZJets, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
 if hasattr(config, 'resubmit_sample'):
@@ -156,9 +154,14 @@ batchQueue = config.batchQueue
 
 runWanalysis = 0
 runZanalysis = config.runZanalysis
-controlplots = config.controlplots
+controlplots = 0
+if hasattr(config, 'controlplots'):
+  controlplots = int(config.controlplots)
+
 noLSFJobOutput = 1  # 1: Puts all the batch logs in a single file
 recreateSubPrograms = 0  # 1: Recompiles run?analysis.o and remakes run?analysis.sh
+if hasattr(config, 'recreateSubPrograms'):
+  recreateSubPrograms = int(config.recreateSubPrograms)
 
 mergeSigEWKbkg = config.mergeSigEWKbkg
 mergeWhichAnalysis = "Zanalysis"  # "Zanalysis Wanalysis" -- no comma!
@@ -235,7 +238,7 @@ def batch_job_is_running(jobname,chunk):
   jobname = jobname+"["+chunk+"]"
   if jobname in job_running:
     return True
-  else: 
+  else:
     return False
 
 def file_exists_and_is_not_empty(fpath):
@@ -265,7 +268,6 @@ else:
   print "You need to execute this script from the 'analysis' directory"
   sys.exit(1)
 
-# if usePhiMETCorr != 0 \
 # or syst_ewk_Alcaraz != 0
 if int(RecoilCorrVarDiagoParU1orU2fromDATAorMC) != 0 \
 or int(correctToMadgraph) !=0 \
@@ -353,9 +355,6 @@ if(int(useMomentumCorr)!=0):
     outfolder_name+="_KalmanVarsNSigma"+str(MuonCorrKalmanNvarsNsigma)
   if(int(MuonCorrAsDATA) != 0):
     outfolder_name+="_DataLike"+str(MuonCorrAsDATA)
-
-if(int(usePhiMETCorr)==1):
-  outfolder_name+="_phiMETcorr";
 
 if(int(LHAPDF_reweighting_members)>1):
   outfolder_name+="_pdf"+str(LHAPDF_reweighting_sets);
@@ -572,7 +571,7 @@ if(runWanalysis or runZanalysis):
     print "Creating JobOutputs/"+outfolder_name+"/common.h from includes/common.h"
     shutil.copyfile("includes/common.h", "JobOutputs/"+outfolder_name+"/common.h");
     # Edit template
-    os.system("sh "+base_path+"/utils/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMaxMuons+" "+efficiency_toys+" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(WlikeCharge)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrKalmanNparameters)+" "+"JobOutputs/"+outfolder_name+"/common.h")
+    os.system("sh "+base_path+"/utils/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMaxMuons+" "+str(efficiency_toys)+" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(WlikeCharge)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrKalmanNparameters)+" "+"JobOutputs/"+outfolder_name+"/common.h")
 
   print ""
 
@@ -661,7 +660,7 @@ if(runWanalysis or runZanalysis):
 
     if(runWanalysis):
 
-      wstring="\""+WfileDATA+"\","+str(WfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(MuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(0)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])+","+str(reweight_polarization)
+      wstring="\""+WfileDATA+"\","+str(WfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(MuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(0)+","+str(useRecoilCorr)+","+str(0)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])+","+str(reweight_polarization)
 
       if fWana_str[i][1] == -1:
         line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o -1,0,0,"+wstring).read()
@@ -730,7 +729,7 @@ if(runWanalysis or runZanalysis):
 
     if(runZanalysis):
 
-      zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(MuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(MuonCorrAsDATA)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(correctToMadgraph)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])+","+str(reweight_polarization)
+      zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(MuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(MuonCorrAsDATA)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(useRecoilCorr)+","+str(correctToMadgraph)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])+","+str(reweight_polarization)
 
       if fZana_str[i][1] == -1:
         line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o -1,0,0,"+zstring).read();
@@ -746,8 +745,6 @@ if(runWanalysis or runZanalysis):
         nevents = 2e5
         if ("DYJetsMadSig" in sample[i]  or "DYJetsPow" in sample[i]):
           nevents = 3e4
-          if int(useRecoilCorr)==3:
-            nevents = nevents*10
           if int(useRecoilCorr)>0 and int(RecoilCorrVarDiagoParSigmas)!=0:
             nevents = nevents/3
           if (int(MuonCorrKalmanNvarsNsigma)!=0):
