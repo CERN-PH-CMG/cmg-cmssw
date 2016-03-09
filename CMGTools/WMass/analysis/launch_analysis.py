@@ -366,24 +366,27 @@ if(int(useRecoilCorr)>0):
   if(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)>0):
     RecoilCorrVarDiagoParBlock = int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)
     if(int(RecoilCorrVarDiagoParBlock)<7):
-      outfolder_name+="_Rap1";
+        outfolder_name+="_toys";
     else:
-      RecoilCorrVarDiagoParBlock = RecoilCorrVarDiagoParBlock - 6
-      outfolder_name+="_Rap2";
-    if  (int(RecoilCorrVarDiagoParBlock)==1):
-      outfolder_name+="_U1Datap1";
-    elif(int(RecoilCorrVarDiagoParBlock)==2):
-      outfolder_name+="_U1Datap2";
-    elif(int(RecoilCorrVarDiagoParBlock)==3):
-      outfolder_name+="_U2Data";
-    elif(int(RecoilCorrVarDiagoParBlock)==4):
-      outfolder_name+="_U1MCp1";
-    elif(int(RecoilCorrVarDiagoParBlock)==5):
-      outfolder_name+="_U1MCp2";
-    elif(int(RecoilCorrVarDiagoParBlock)==6):
-      outfolder_name+="_U2MC";
-    if  (int(RecoilCorrVarDiagoParSigmas)!=0):
-      outfolder_name+="_RecCorrNSigma_"+str(RecoilCorrVarDiagoParSigmas)
+      if(int(RecoilCorrVarDiagoParBlock)<7):
+        outfolder_name+="_Rap1";
+      else:
+        RecoilCorrVarDiagoParBlock = RecoilCorrVarDiagoParBlock - 6
+        outfolder_name+="_Rap2";
+      if  (int(RecoilCorrVarDiagoParBlock)==1):
+        outfolder_name+="_U1Datap1";
+      elif(int(RecoilCorrVarDiagoParBlock)==2):
+        outfolder_name+="_U1Datap2";
+      elif(int(RecoilCorrVarDiagoParBlock)==3):
+        outfolder_name+="_U2Data";
+      elif(int(RecoilCorrVarDiagoParBlock)==4):
+        outfolder_name+="_U1MCp1";
+      elif(int(RecoilCorrVarDiagoParBlock)==5):
+        outfolder_name+="_U1MCp2";
+      elif(int(RecoilCorrVarDiagoParBlock)==6):
+        outfolder_name+="_U2MC";
+      if  (int(RecoilCorrVarDiagoParSigmas)!=0):
+        outfolder_name+="_RecCorrNSigma_"+str(RecoilCorrVarDiagoParSigmas)
 
 if(int(useEffSF)==1):    outfolder_name+="_EffSFCorr";
 if(int(useEffSF)>=2):    outfolder_name+="_EffHeinerSFCorr";
