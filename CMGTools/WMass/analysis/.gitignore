@@ -1,1 +1,12 @@
+# Precompiled
+*.o
+*.d
+*.so
+*.pcm
+
+# Specific stuff
 JobOutputs
+
+# Common
+common.h
+common2.h

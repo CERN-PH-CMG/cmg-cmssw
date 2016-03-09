@@ -18,7 +18,7 @@ void syst_recoil_one(TString recstr="u2")
   gStyle->SetOptFit(111);
   gStyle->SetLegendBorderSize(0);
 
-  const int nhists = 6;
+  const int nhists = 12;
 
   int IniVar[] = {0,  9,  0, 0,  9,  0, 0,  9,  0, 0,  9,  0};
   int NVars[]  = {9, 21, 15, 9, 21, 15, 9, 21, 15, 9, 21, 15};
@@ -78,11 +78,11 @@ void syst_recoil_one(TString recstr="u2")
 
   TH1D* hsystfit = (TH1D*)hcentral->Clone("hsystfit");
   for(int i=1;i<hsystfit->GetNbinsX()+1; i++){
-    double error = 0;
+    double error2 = 0;
     for(int j=0; j<ntotsysts; j++){
-      error = sqrt(error*error+(hsyst[j]->GetBinContent(i)-1)*(hsyst[j]->GetBinContent(i)-1));
+      error2 = error2+(hsyst[j]->GetBinContent(i)-1)*(hsyst[j]->GetBinContent(i)-1);
     }
-    hsystfit->SetBinError(i, error);
+    hsystfit->SetBinError(i, sqrt(error2));
   }
 
   TH1D* hstat = (TH1D*)hcentral->Clone("hstat");
@@ -167,6 +167,7 @@ void syst_recoil_one(TString recstr="u2")
   c_closure->Write();
   hsigmas->Write();
   c_pull->Write();
+  fout->Close();
   // c->SaveAs(".png");
   // c_closure->SaveAs(".png");
   // hsigmas->SaveAs(".png");

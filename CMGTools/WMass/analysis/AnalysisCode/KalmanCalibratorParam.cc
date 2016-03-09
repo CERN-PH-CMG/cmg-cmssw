@@ -64,7 +64,8 @@ KalmanCalibratorParam::KalmanCalibratorParam(bool isData) {
   
 
 
-  closure_ = (TH3F*)file_->Get("closure"); 
+  closure_ = (TH3F*)file_->Get("closure");
+  closure_pt_eta_ = (TH2F*)closure_->Project3D("yx");
 
   cholesky_ = (TMatrixDSym*)file_->Get("cholesky");
   covHistoMap_ = (TH1I*)file_->Get("covHistoMap");
@@ -147,14 +148,9 @@ void KalmanCalibratorParam::randomize() {
 //-----------------------------------------------------------------------------------//
 double KalmanCalibratorParam::closure(double pt,double eta) {
 
-  if (fabs(eta)>1.4)
+  if (fabs(eta)>1.4 || pt>80)
   return 0.0;
-
-  Int_t bin = closure_->GetBin(
-                              closure_->GetXaxis()->FindBin(pt),	       
-                              closure_->GetYaxis()->FindBin(fabs(eta)),
-                              1);
-  return closure_->GetBinContent(bin)-1.0;
+  return closure_pt_eta_->Interpolate(pt, fabs(eta)) - 1.0;
 }
 
 //-----------------------------------------------------------------------------------//

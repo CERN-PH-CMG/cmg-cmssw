@@ -216,6 +216,24 @@ void common_stuff::cloneHisto1D(std::string title_old, std::string title_new, st
 
 }
 
+///////////////////////////////////////////////////////////////
+
+void common_stuff::cloneHisto2D(std::string title_old, std::string title_new, std::map<std::string, TH2D*> &allhistos){
+  
+  std::map<std::string, TH2D*>::iterator iter_old= allhistos.find(title_old);
+  std::map<std::string, TH2D*>::iterator iter_new= allhistos.find(title_new);
+  if( !(iter_old == allhistos.end()) && (iter_new == allhistos.end()) ) 
+    {
+      TH2D* newHisto= (TH2D*)(*iter_old).second->Clone(title_new.c_str());
+      // newHisto->SetMarkerStyle(20);
+      // newHisto->SetMarkerSize(0.7);
+      newHisto->SetName(title_new.c_str());
+      newHisto->SetTitle(title_new.c_str());
+      allhistos.insert(std::pair<std::string, TH2D*> (title_new,newHisto) );
+    }
+
+}
+
 
 ///////////////////////////////////////////////////////////////
 
@@ -644,6 +662,135 @@ void common_stuff::plotAndSaveHisto1D_stack(TString LegendEvTypeTeX, TFile*fMCsi
   if(xmax!=-1)extra_ouput_str+=Form("_xmax%.f",xmax);
   c1->SaveAs(HistoName_st+extra_ouput_str+".png");
   c1->SaveAs(HistoName_st+extra_ouput_str+".root");
+}
+
+
+void common_stuff::plotAndSave_preunblindings(TString LegendEvTypeTeX, TString FitVar_str, TH1D* htemplates, TH1D* hpseudodata, int logx, int logy, int logz, int scaleMCtoDATA, TString title,double xmin, double xmax, int rebinfactor, int PullOrRatio){
+
+  std::cout << "retrieving htemplates= " << FitVar_str.Data() << std::endl;
+  htemplates->Rebin(rebinfactor);
+  htemplates->SetLineColor(kOrange-3);
+  std::cout << "retrieving hpseudodata= " << FitVar_str.Data() << std::endl;
+  hpseudodata->SetMarkerColor(1);
+  hpseudodata->SetLineColor(1);
+  hpseudodata->SetMarkerStyle(20);
+  hpseudodata->SetMarkerSize(0.7);
+  hpseudodata->Rebin(rebinfactor);
+
+  TH1D MCsum=(*htemplates);
+  
+  std::cout << "Total DATA/MC scaling factor = " << hpseudodata->Integral()/MCsum.Integral() << std::endl;
+  if(scaleMCtoDATA){
+    htemplates->Scale(hpseudodata->Integral()/MCsum.Integral());
+    MCsum.Scale(hpseudodata->Integral()/MCsum.Integral());
+  }
+  
+  double fsig = htemplates->Integral()/MCsum.Integral()*100;
+
+  THStack *hs= new THStack("hs","test stacked histograms");
+  hs->Add(htemplates);
+
+  std::cout << "Integral hpseudodata= " << hpseudodata->Integral() << " htemplates= " << htemplates->Integral() << " MCsum= " << MCsum.Integral() << std::endl;
+  Double_t chi2; Int_t ndf; Int_t igood;
+  std::cout << "DATA-MC chi2: " << hpseudodata->Chi2TestX((TH1D*)&MCsum,chi2,ndf,igood,"") << std::endl;
+  std::cout << "chi2= " << chi2 << " ndf= " << ndf << " norm chi2= " << (chi2/ndf) << " prob= " << TMath::Prob(chi2,ndf) << " igood= " << igood << std::endl;
+  std::cout << std::endl;
+  TLatex *t = new TLatex();
+  t->SetNDC();
+  // t->SetTextAlign(22);
+  t->SetTextFont(63);
+  t->SetTextSizePixels(17);
+
+  TCanvas *c1 = new TCanvas("c1","c1",800,800);
+  TPad *pad1 = new TPad("pad1", "",0,0.25,1,1);
+  pad1->SetLogx(logx);
+  pad1->SetLogy(logy);
+  pad1->SetLogz(logz);
+  pad1->SetTickx(1);
+  pad1->SetTicky(1);
+  pad1->SetBottomMargin(0);
+  pad1->SetTopMargin(0.075);
+  pad1->Draw();
+  TPad *pad2 = new TPad("pad2", "",0,0,1,0.25);
+  pad2->SetLogx(logx);
+  pad2->SetTickx(1);
+  pad2->SetTicky(1);
+  pad2->SetTopMargin(0);
+  pad2->SetBottomMargin(0.35);
+  pad2->Draw();
+
+  pad1->cd();  
+  if(logy!=1)
+    hpseudodata->GetYaxis()->SetRangeUser(0.11,hpseudodata->GetMaximum()*1.2);
+  else
+    hpseudodata->GetYaxis()->SetRangeUser(1,hpseudodata->GetMaximum()*10);
+  
+  hpseudodata->SetTitle(title.Data());
+  hpseudodata->GetXaxis()->SetRangeUser(xmin==-1?hpseudodata->GetXaxis()->GetBinLowEdge(1):xmin,xmax==-1?hpseudodata->GetXaxis()->GetBinCenter(hpseudodata->GetNbinsX()):xmax);
+  hpseudodata->GetYaxis()->SetTitle(Form("Counts / %.2f",hpseudodata->GetBinWidth(1)));
+  hpseudodata->Draw("pe");
+  hs->Draw("hist same");
+  htemplates->Draw("hist same");
+  hpseudodata->Draw("same pe");
+  pad1->RedrawAxis();
+  
+  TLegend *leg = new TLegend(0.6,0.7,0.85,0.9,"4.75 fb^{-1} at #sqrt{7} TeV","brNDC");
+  leg->SetBorderSize(0);
+  leg->SetTextFont(62);
+  leg->SetLineColor(1);
+  leg->SetLineStyle(1);
+  leg->SetLineWidth(1);
+  leg->SetFillColor(0);
+  leg->SetFillStyle(1001);
+  leg->AddEntry(hpseudodata,"DATA","pl");
+  leg->AddEntry(htemplates,Form("%s (%.1f \%%)",LegendEvTypeTeX.Data(), fsig),"f");
+  leg->Draw();
+  
+  t->DrawLatex(0.15,0.85,Form("norm chi2= %.2f, prob %.3e",(chi2/ndf),TMath::Prob(chi2,ndf)));
+  
+  pad2->cd();
+  TH1D*hPullOrRatio=(TH1D*)hpseudodata->Clone("hPullOrRatio");
+  if(PullOrRatio==0){
+    for(int i=1;i<hPullOrRatio->GetNbinsX()+1;i++){
+      hPullOrRatio->SetBinContent(i,hpseudodata->GetBinError(i)>0?(hpseudodata->GetBinContent(i)-MCsum.GetBinContent(i))/hpseudodata->GetBinError(i):0);
+      // std::cout << Form("%f",hpseudodata->GetBinError(i)>0?(hpseudodata->GetBinContent(i)-MCsum.GetBinContent(i))/hpseudodata->GetBinError(i):0) << std::endl;
+    }  
+  }else{
+    hPullOrRatio->Divide(((TH1D*)&MCsum));
+  }
+    
+  hPullOrRatio->GetXaxis()->SetLabelSize(0.04*0.75/0.25);
+  hPullOrRatio->GetXaxis()->SetTitleOffset(1);
+  hPullOrRatio->GetXaxis()->SetTitleSize(0.04*0.75/0.25);
+  hPullOrRatio->GetYaxis()->SetTitle(PullOrRatio==0?"Pull":"Ratio");
+  hPullOrRatio->GetYaxis()->SetLabelSize(0.04*0.75/0.25);
+  hPullOrRatio->GetYaxis()->SetTitleOffset(0.35);
+  hPullOrRatio->GetYaxis()->SetTitleSize(0.04*0.75/0.25);
+  hPullOrRatio->GetYaxis()->SetNdivisions(410);
+  // hPullOrRatio->GetYaxis()->SetRangeUser(-14.9,14.9);
+  if(PullOrRatio==0)
+    hPullOrRatio->GetYaxis()->SetRangeUser(-5.9,5.9);
+  else
+    hPullOrRatio->GetYaxis()->SetRangeUser(0.8,1.2);
+  
+  hPullOrRatio->Draw("p");
+  TLine*l0=new TLine(xmin==-1?hpseudodata->GetXaxis()->GetBinLowEdge(1):xmin,PullOrRatio==0?0:1,xmax==-1?hpseudodata->GetXaxis()->GetBinCenter(hpseudodata->GetNbinsX()):xmax,PullOrRatio==0?0:1);l0->SetLineColor(kGray);
+  TLine*lp5=new TLine(xmin==-1?hpseudodata->GetXaxis()->GetBinLowEdge(1):xmin,PullOrRatio==0?5:1.05,xmax==-1?hpseudodata->GetXaxis()->GetBinCenter(hpseudodata->GetNbinsX()):xmax,PullOrRatio==0?5:1.05);lp5->SetLineColor(kGray);
+  TLine*lm5=new TLine(xmin==-1?hpseudodata->GetXaxis()->GetBinLowEdge(1):xmin,PullOrRatio==0?-5:0.95,xmax==-1?hpseudodata->GetXaxis()->GetBinCenter(hpseudodata->GetNbinsX()):xmax,PullOrRatio==0?-5:0.95);lm5->SetLineColor(kGray);
+  l0->Draw("histo same");
+  lp5->Draw("histo same");
+  lm5->Draw("histo same");
+  hPullOrRatio->Draw("p same");
+  
+  TString extra_ouput_str = "";
+  if(logx)extra_ouput_str+="_logx";
+  if(logy)extra_ouput_str+="_logy";
+  if(logz)extra_ouput_str+="_logz";
+  if(scaleMCtoDATA)extra_ouput_str+="_norm";
+  if(xmin!=-1)extra_ouput_str+=Form("_xmin%.f",xmin);
+  if(xmax!=-1)extra_ouput_str+=Form("_xmax%.f",xmax);
+  c1->SaveAs(Form("../%s%s-closest_template_ratio.png",FitVar_str.Data(),extra_ouput_str.Data()));
+  c1->SaveAs(Form("../%s%s-closest_template_ratio.root",FitVar_str.Data(),extra_ouput_str.Data()));
 }
 
 

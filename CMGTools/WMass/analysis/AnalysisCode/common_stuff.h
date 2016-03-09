@@ -1,3 +1,6 @@
+#ifndef _COMMON_STUFF_H
+#define _COMMON_STUFF_H
+
 #include <iostream>
 #include <TChain.h>
 #include <TClonesArray.h>
@@ -54,6 +57,7 @@ class common_stuff {
   static void plotAndSaveHisto1D_stack(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEWK, TFile*fMCTT, TFile*fMCQCD, TFile*fDATA, TString HistoName_st, int logx, int logy, int logz, int scaleMCtoDATA, TString title,double xmin, double xmax, int rebinfactor, int PullOrRatio);
   // static const double fit_xmin[];
   // static const double fit_xmax[];
+  static void plotAndSave_preunblindings(TString LegendEvTypeTeX, TString FitVar_str, TH1D* htemplates, TH1D* hpseudodata, int logx, int logy, int logz, int scaleMCtoDATA, TString title,double xmin, double xmax, int rebinfactor, int PullOrRatio);
   
   static void ComputeAllVarPietro(TLorentzVector lepP,TLorentzVector lepN, double &costh_CS, double &phi_CS, double &costh_HX, double &phi_HX);
 
@@ -64,3 +68,5 @@ class common_stuff {
   static TString getCompleteTitleReturnName(std::string title);
 
 };
+
+#endif // _COMMON_STUFF_H

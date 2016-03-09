@@ -26,16 +26,16 @@ public:
   void TransformToCS(TLorentzVector muplus,TLorentzVector muminus);
 
   //! return theta in the Collins-Soper frame
-  const Double_t GetTheta() { return theta_cs; }
+  Double_t GetTheta() const { return theta_cs; }
   
   //! return cos theta in the Collins-Soper frame
-  const Double_t GetCosTheta() { return cos_theta_cs; }
+  Double_t GetCosTheta() const { return cos_theta_cs; }
 
   //! return phi in the Collins-Soper frame
-  const Double_t GetPhi() { return phi_cs; }
+  Double_t GetPhi() const { return phi_cs; }
 
   //! return the TVector3 of the negative muon rotated to the Collins-Soper frame
-  TVector3 GetTVector3CS() { return muminusVec; }
+  TVector3 GetTVector3CS() const { return muminusVec; }
 
 private:
 

@@ -12,6 +12,7 @@ eval `scramv1 runtime -sh`
 source /afs/cern.ch/work/d/dalfonso/CMSSW_5_3_22_patch1_Wmass_aug5/src/CMGTools/WMass/analysis/RecoilCode/RecoilCorrector_v6/source.csh
 
 mkdir keysrecoilfits
+mkdir keys$myJobN\recoilfits
 
 ##cd $TOP
 

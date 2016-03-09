@@ -18,8 +18,6 @@
 
 #include "common_stuff.h"
 
-using namespace std;
-
 class Zanalysis {
   public :
   TTree          *fChain;   //!pointer to the analyzed TTree or TChain
@@ -113,9 +111,9 @@ class Zanalysis {
   Double_t        Jet_leading_phi;
   Double_t        FSRWeight;
   Double_t        LHE_weight[465];
-  Double_t        LHE_ren[200];
-  Double_t        LHE_fac[200];
-  Double_t        LHE_pdf[200];
+  // Double_t        LHE_ren[200];
+  // Double_t        LHE_fac[200];
+  // Double_t        LHE_pdf[200];
   Double_t        ZGen_PostFSR_mass;
 
   // List of branches
@@ -204,9 +202,9 @@ class Zanalysis {
   TBranch        *b_Jet_leading_phi;   //!
   TBranch        *b_FSRWeight;   //!
   TBranch        *b_LHE_weight;   //!
-  TBranch        *b_LHE_ren;   //!
-  TBranch        *b_LHE_fac;   //!
-  TBranch        *b_LHE_pdf;   //!
+  // TBranch        *b_LHE_ren;   //!
+  // TBranch        *b_LHE_fac;   //!
+  // TBranch        *b_LHE_pdf;   //!
   TBranch        *b_ZGen_PostFSR_mass;   //!
 
 
@@ -217,14 +215,14 @@ class Zanalysis {
   virtual Long64_t LoadTree(Long64_t entry);
   virtual Long64_t NumEntries();
   virtual void     Init(TTree *tree);
-  virtual void     Loop(int chunk=0, int Entry_ini=0, int Entry_fin=0, int IS_MC_CLOSURE_TEST=0, int isMCorDATA=0, TString outputdir="", int buildTemplates=0, int useMomentumCorr=0, int smearRochCorrByNsigma=0, int useEffSF=0, int usePtSF=0, int useVtxSF=0, int controlplots=0, TString sampleName="", int generated_PDF_set=-1, int generated_PDF_member=-1, int contains_PDF_reweight=-1, int usePhiMETCorr=0, int useRecoilCorr=0, int RecoilCorrResolutionNSigmaU1=0, int RecoilCorrScaleNSigmaU1=0, int RecoilCorrResolutionNSigmaU2=0, int use_PForNoPUorTKmet=0, int use_syst_ewk_Alcaraz=0, int gen_mass_value_MeV=0, int contains_LHE_weights=0, int reweight_polarization=0);
+  virtual void     Loop(int chunk=0, int Entry_ini=0, int Entry_fin=0, int IS_MC_CLOSURE_TEST=0, int isMCorDATA=0, TString outputdir="", int useMomentumCorr=0, int varyMuonCorrNsigma=0, int MuonCorrAsDATA=0, int useEffSF=0, int usePtSF=0, int useVtxSF=0, int controlplots=0, TString sampleName="", int generated_PDF_set=-1, int generated_PDF_member=-1, int contains_PDF_reweight=-1, int useRecoilCorr=0, int correctToMadgraph=0, int RecoilCorrVarDiagoParSigmas=0, int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0, int use_PForNoPUorTKmet=0, int use_syst_ewk_Alcaraz=0, int gen_mass_value_MeV=0, int contains_LHE_weights=0, int reweight_polarization=0);
   virtual Bool_t   Notify();
   virtual void     Show(Long64_t entry = -1);
   void ComputeHXVarAndPhiStarEta(TLorentzVector muPosNoCorr,TLorentzVector muNegNoCorr, bool isGen);
 
-  virtual void plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorentzVector Z, TLorentzVector ZGen,double u1_scale, string phaseSpace_str, string leptCharge, string cut , bool doCut, bool doneu, std::map<std::string, TH1D*> &h_1d, std::map<std::string, TH2D*> &h_2d,double weight , int jZmass_MeV , TString eta_str);
+  void plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorentzVector Z, double u1_scale, std::string phaseSpace_str, std::string leptCharge, std::string cut, bool doneu, std::map<std::string, TH1D*> &h_1d, std::map<std::string, TH2D*> &h_2d, double weight, int jZmass_MeV, TString eta_str);
 
-  virtual void fillControlPlots(TLorentzVector Zcorr, TLorentzVector met, TLorentzVector muPosCorr, TLorentzVector muNegCorr, std::map<std::string, TH1D*> &h_1d, std::map<std::string, TH2D*> &h_2d, double weight, int jZmass_MeV , TString eta_str, TString SigOrQCD_str, TString phaseSpace_str);
+  void fillControlPlots(TLorentzVector Zcorr, TLorentzVector met, TLorentzVector muPosCorr, TLorentzVector muNegCorr, std::map<std::string, TH1D*> &h_1d, std::map<std::string, TH2D*> &h_2d, double weight, int jZmass_MeV , TString eta_str, TString SigOrQCD_str, TString phaseSpace_str);
 
 };
 
@@ -236,14 +234,9 @@ Zanalysis::Zanalysis(TString f_str, double lumi_scaling_input, int useGen, TTree
   // if parameter tree is not specified (or zero), connect the file
   // used to generate this class and read the Tree.
   if (tree == 0) {
-    // TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("temp/ZTreeProducer_tree.root");
-    // if (!f) {
-    cout << gSystem->WorkingDirectory() << endl;
-    // TFile *f = new TFile(Form("%s",f_str.Data()));
-    TFile *f = TFile::Open(Form("%s",f_str.Data()));
-    // }
-    tree = (TTree*)gDirectory->Get("ZTreeProducer");
-
+    std::cout << gSystem->WorkingDirectory() << std::endl;
+    TFile* f = TFile::Open(Form("%s",f_str.Data()));
+    tree = (TTree*)f->Get("ZTreeProducer");
   }
   lumi_scaling=lumi_scaling_input;
   useGenVar=useGen;
@@ -418,7 +411,7 @@ void Zanalysis::Show(Long64_t entry)
   if (!fChain) return;
   fChain->Show(entry);
 }
-Int_t Zanalysis::Cut(Long64_t entry)
+Int_t Zanalysis::Cut(Long64_t)
 {
   // This function may be called from Loop.
   // returns  1 if entry is accepted.
@@ -427,7 +420,7 @@ Int_t Zanalysis::Cut(Long64_t entry)
 }
 
 
-void Zanalysis::plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorentzVector Z, TLorentzVector Zgen, double u1_scale, string phaseSpace, string leptCharge, string cut , bool doCut, bool doneu, std::map<std::string, TH1D*> &h_1d, std::map<std::string, TH2D*> &h_2d,double weight, int jZmass_MeV , TString eta_str)
+void Zanalysis::plotVariables( TLorentzVector met, TLorentzVector ptVis, TLorentzVector Z, double u1_scale, std::string phaseSpace, std::string leptCharge, std::string cut, bool doneu, std::map<std::string, TH1D*> &h_1d, std::map<std::string, TH2D*> &h_2d, double weight, int jZmass_MeV, TString eta_str)
 {
 
   double u_parall=-999;

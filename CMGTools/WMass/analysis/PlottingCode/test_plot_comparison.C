@@ -19,94 +19,49 @@ void test_plot_comparison(){
   std::vector <TFile*> files;
   std::vector <TString> labels;
   std::vector <int> colors;
+  
+  TString base_folder = "../JobOutputs/";
 
-  // TString outputfolder="scaleW/";  
-  // /////
-  // file_temp = new TFile("../JobOutputs/test_MR1p1_recoilOK_tkmet_RochCorr_RecoilCorr_EffHeinerSFCorr_PileupSFCorr/output_WJetsSig/WanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC corr"); colors.push_back(1);
-  // /////
-  // file_temp = new TFile("../JobOutputs/test_MR1p1_recoilOK_tkmet_RochCorr_RecoilCorr_Scale1_EffHeinerSFCorr_PileupSFCorr/output_WJetsSig/WanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC corr scale+1"); colors.push_back(2);
-  // /////
-  // file_temp = new TFile("../JobOutputs/test_MR1p1_recoilOK_tkmet_RochCorr_RecoilCorr_Scale-1_EffHeinerSFCorr_PileupSFCorr/output_WJetsSig/WanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC corr scale-1"); colors.push_back(4);
-  
-  // TString outputfolder="scaleWlike/";  
-  // /////
-  // file_temp = new TFile("../JobOutputs/test_MR1p1_recoilOK_tkmet_RochCorr_RecoilCorr_EffHeinerSFCorr_PileupSFCorr/output_DYJetsSig/ZanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC corr"); colors.push_back(1);
-  // /////
-  // file_temp = new TFile("../JobOutputs/test_MR1p1_recoilOK_tkmet_RochCorr_RecoilCorr_Scale1_EffHeinerSFCorr_PileupSFCorr/output_DYJetsSig/ZanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC corr scale+1"); colors.push_back(2);
-  // /////
-  // file_temp = new TFile("../JobOutputs/test_MR1p1_recoilOK_tkmet_RochCorr_RecoilCorr_Scale-1_EffHeinerSFCorr_PileupSFCorr/output_DYJetsSig/ZanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC corr scale-1"); colors.push_back(4);
-  
-  // TString outputfolder="CorrNOcorr/";  
-  // /////
-  // file_temp = new TFile("../JobOutputs/test_MR1p1_recoilOK_tkmet_RochCorr_RecoilCorr_EffHeinerSFCorr_PileupSFCorr/output_WJetsSig/WanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC corr"); colors.push_back(1);
-  // /////
-  // file_temp = new TFile("../JobOutputs/test_MR1p1_recoilOK_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_WJetsSig/WanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC NO corr"); colors.push_back(4);
-  
-  // TString outputfolder="CDFrangeSelLarge/";  
-  // /////
-  // file_temp = new TFile("../JobOutputs/test_MR1p1_CDFrangeLargeSel_tkmet_RochCorr_RecoilCorr_EffHeinerSFCorr_PileupSFCorr/output_WJetsSig/WanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC corr"); colors.push_back(1);
-  // /////
-  // file_temp = new TFile("../JobOutputs/test_MR1p1_CDFrangeLargeSel_tkmet_RochCorr_RecoilCorr_Scale1_EffHeinerSFCorr_PileupSFCorr/output_WJetsSig/WanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC corr scale+1"); colors.push_back(2);
-  // /////
-  // file_temp = new TFile("../JobOutputs/test_MR1p1_CDFrangeLargeSel_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_WJetsSig/WanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC NO corr "); colors.push_back(4);
-  
-  // TString outputfolder="CDFrangeSelLargeWlike/";  
-  // /////
-  // file_temp = new TFile("../JobOutputs/test_MR1p1_CDFrangeLargeSel_tkmet_RochCorr_RecoilCorr_EffHeinerSFCorr_PileupSFCorr/output_DYJetsSig/ZanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC corr"); colors.push_back(1);
-  // /////
-  // file_temp = new TFile("../JobOutputs/test_MR1p1_CDFrangeLargeSel_tkmet_RochCorr_RecoilCorr_Scale1_EffHeinerSFCorr_PileupSFCorr/output_DYJetsSig/ZanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC corr scale+1"); colors.push_back(2);
-  // /////
-  // file_temp = new TFile("../JobOutputs/test_MR1p1_CDFrangeLargeSel_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_DYJetsSig/ZanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC NO corr "); colors.push_back(4);
-  
-  // TString outputfolder="CDFrange/";  
-  // /////
-  // file_temp = new TFile("../JobOutputs/test_MR1p1_CDFrange_tkmet_RochCorr_RecoilCorr_EffHeinerSFCorr_PileupSFCorr/output_WJetsSig/WanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC corr"); colors.push_back(1);
-  // /////
-  // file_temp = new TFile("../JobOutputs/test_MR1p1_CDFrange_tkmet_RochCorr_RecoilCorr_Scale1_EffHeinerSFCorr_PileupSFCorr/output_WJetsSig/WanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC corr scale+1"); colors.push_back(2);
-  // /////
-  // // file_temp = new TFile("../JobOutputs/test_MR1p1_CDFrange_tkmet_RochCorr_EffHeinerSFCorr_PileupSFCorr/output_WJetsSig/WanalysisOnDATA.root");
-  // // files.push_back(file_temp);labels.push_back("MC NO corr "); colors.push_back(4);
-  
-  /////
-  // file_temp = new TFile("/afs/cern.ch/work/p/perrozzi/private/git/v5_18_0/common_maria/CMSSW_5_3_22_patch1/src/CMGTools/WMass/analysis/JobOutputs/test_metfix2_norecoil_tkmet_ewk-1_KalmanCorr_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/output_DYJetsPow/ZanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC central"); colors.push_back(1);
-
-  // TString outputfolder="lepton_nonclosure/";  
-  // file_temp = new TFile("/afs/cern.ch/work/p/perrozzi/private/git/v5_18_0/common_maria/CMSSW_5_3_22_patch1/src/CMGTools/WMass/analysis/JobOutputs/test_metfix2_norecoil_tkmet_ewk-1_KalmanCorr1s_smear_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/output_DYJetsPow/ZanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC muon scale"); colors.push_back(2);
-
-  // TString outputfolder="ewkpythia_photos/";  
-  // file_temp = new TFile("/afs/cern.ch/work/p/perrozzi/private/git/v5_18_0/common_maria/CMSSW_5_3_22_patch1/src/CMGTools/WMass/analysis/JobOutputs/test_metfix2_norecoil_tkmet_ewk1_KalmanCorr_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/output_DYJetsPow/ZanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC muon scale"); colors.push_back(2);
-  
-  // TString outputfolder="ewk_nlo/";  
-  // file_temp = new TFile("/afs/cern.ch/work/p/perrozzi/private/git/v5_18_0/common_maria/CMSSW_5_3_22_patch1/src/CMGTools/WMass/analysis/JobOutputs/test_metfix2_norecoil_tkmet_ewk2_KalmanCorr_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/output_DYJetsPow/ZanalysisOnDATA.root");
-  // files.push_back(file_temp);labels.push_back("MC muon scale"); colors.push_back(2);
-  
-  TString outputfolder="recoilcorr_nonclosure/";  
-  file_temp = new TFile("/afs/cern.ch/work/p/perrozzi/private/git/v5_18_0/common_maria/CMSSW_5_3_22_patch1/src/CMGTools/WMass/analysis/JobOutputs/test_metfix3_tkmet_ewk-1_KalmanCorr_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/output_DYJetsPow/ZanalysisOnDATA.root");
+  file_temp = new TFile(base_folder+"table_central_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/output_MCDATALIKEPOW/ZanalysisOnDATA.root");
   files.push_back(file_temp);labels.push_back("MC central"); colors.push_back(1);
   
-  file_temp = new TFile("/afs/cern.ch/work/p/perrozzi/private/git/v5_18_0/common_maria/CMSSW_5_3_22_patch1/src/CMGTools/WMass/analysis/JobOutputs/test_metfix3_tkmet_ewk-1_KalmanCorr_RecoilCorr2_NonClosure_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/output_DYJetsPow/ZanalysisOnDATA.root");
-  files.push_back(file_temp);labels.push_back("MC Recoil nonclosure"); colors.push_back(2);
+  // TString outputfolder="MuonScaleWlike/";  
+  // file_temp = new TFile(base_folder+"table_central_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_globalScaleSigma1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/output_MCDATALIKEPOW/ZanalysisOnDATA.root");
+  // labels.push_back("MC muon scale + 1sigma"); 
+
+  // TString outputfolder="NoZpTReweightWlike/";  
+  // file_temp = new TFile(base_folder+"table_central_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PileupSFCorr/output_MCDATALIKEPOW/ZanalysisOnDATA.root");
+  // labels.push_back("MC No Zpt reweighting"); 
+
+  // TString outputfolder="NoPolReweightWlike/";  
+  // file_temp = new TFile(base_folder+"table_central_muPos_tkmet_ewk0_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/output_MCDATALIKEPOW/ZanalysisOnDATA.root");
+  // labels.push_back("MC no polarization reweighting"); 
+
+  // TString outputfolder="RecoilAlternativeModelWlike/";  
+  // file_temp = new TFile(base_folder+"table_central_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr3_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/output_MCDATALIKEPOW/ZanalysisOnDATA.root");
+  // labels.push_back("MC Recoil alternative model"); 
+
+  // TString outputfolder="NoNLOEWKcorrWlike/";  
+  // file_temp = new TFile(base_folder+"table_central_muPos_tkmet_ewk2_polariz1_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/output_MCDATALIKEPOW/ZanalysisOnDATA.root");
+  // labels.push_back("MC No NLO EWK corrections"); 
+
+  TString outputfolder="NoPUreweightingWlike/";  
+  file_temp = new TFile(base_folder+"datamc_comparison5_muPos_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0/output_MCDATALIKEPOW/ZanalysisOnDATA.root");
+  labels.push_back("MC no PU reweighting"); 
+
+  colors.push_back(2);
+  files.push_back(file_temp);
   
-  
+  // TString outputfolder="scaleW/";  
+  // /////
+  // file_temp = new TFile(base_folder+"test_MR1p1_recoilOK_tkmet_RochCorr_RecoilCorr_EffHeinerSFCorr_PileupSFCorr/output_WJetsSig/WanalysisOnDATA.root");
+  // files.push_back(file_temp);labels.push_back("MC corr"); colors.push_back(1);
+  // /////
+  // file_temp = new TFile(base_folder+"test_MR1p1_recoilOK_tkmet_RochCorr_RecoilCorr_Scale1_EffHeinerSFCorr_PileupSFCorr/output_WJetsSig/WanalysisOnDATA.root");
+  // files.push_back(file_temp);labels.push_back("MC corr scale+1"); colors.push_back(2);
+  // /////
+  // file_temp = new TFile(base_folder+"test_MR1p1_recoilOK_tkmet_RochCorr_RecoilCorr_Scale-1_EffHeinerSFCorr_PileupSFCorr/output_WJetsSig/WanalysisOnDATA.root");
+  // files.push_back(file_temp);labels.push_back("MC corr scale-1"); colors.push_back(4);  
   
   bool useUpDown = false;
 
@@ -126,6 +81,12 @@ void test_plot_comparison(){
     if(hname.Contains("_91") && !hname.Contains("_91188")) continue;
     if(!hname.Contains("_8_")) continue;
     if(hname.Contains("smooth")) continue;
+    if(hname.Contains("ZlepDelta")) continue;
+    if(hname.Contains("deltaMET")) continue;
+    if(hname.Contains("hMuMETeta")) continue;
+    if(!hname.Contains("hWlike")) continue;
+    if(!hname.Contains("MET") && !hname.Contains("Mt") && !hname.Contains("Pt") ) continue;
+
     cout << "processing histo " << hname << endl;
     // if(!hname.Contains("NonScaled_8_")) continue;
     

@@ -1,49 +1,74 @@
 #!/usr/bin/env python
 
-import string, os, shutil, sys, subprocess, ROOT
+import os, shutil, sys, subprocess, ROOT
+
+### Import config
+
+sys.path.append("configdir")
+try:
+  conffile = sys.argv[1]
+except IndexError:
+  conffile = "config_nominal"
+config = __import__(conffile)
 
 ## ==============================================================
 ## STEERING PARAMETERS
 ## ==============================================================
 
 useLHAPDF = False
+if(hasattr(config, 'useLHAPDF')):
+  useLHAPDF = config.useLHAPDF
 
-outfolder_prefix="PREFIX";
+outfolder_prefix = "TEST"
+if(hasattr(config, 'outfolder_prefix')):
+  outfolder_prefix = config.outfolder_prefix
 
-ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/";
-ntuple_basepath_8TeV_ABC = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_8TeV/";
-# ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_09_14/";
-# ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2013_10_15/";
-# ntuple_basepath = "root://eoscms//eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/";
-# ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2012_07_02/";
-# ntuple_basepath = "~/eos/cms/store/cmst3/user/perrozzi/CMG/ntuples_2012_12_20/";
+### NTUPLES
+ntuple_basepath = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_05_23_53X/"
+if(hasattr(config, 'ntuple_basepath')):
+  ntuple_basepath = str(config.ntuple_basepath)
+ntuple_basepathFIX = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2015_05_24_53X_sumEtFIX/"
+if(hasattr(config, 'ntuple_basepathFIX')):
+  ntuple_basepathFIX = str(config.ntuple_basepathFIX)
+ntuple_basepath_8TeV_ABC = "root://eoscms//eos/cms/store/group/phys_smp/Wmass/perrozzi/ntuples/ntuples_2014_08_19_53X_8TeV/"
+if(hasattr(config, 'ntuple_basepath_8TeV_ABC')):
+  ntuple_basepath_8TeV_ABC = str(config.ntuple_basepath_8TeV_ABC)
 lhapdf_path="/afs/cern.ch/work/p/perrozzi/private/WMassMC/lhapdf/"
+if(hasattr(config, 'lhapdf_path')):
+  lhapdf_path = str(config.lhapdf_path)
 
-use_PForNoPUorTKmet = 2; # 0:PF, 1:NOPU, 2:TK
-use_LHE_weights = 0; # 0=no, 1=yes
-usePileupSF = 1; # 0=no, 1=yes
-useEffSF = 2; # 0=no, 1=MuonPOG, 2=Heiner all, 3=Heiner no tight, 4=Heiner no iso, 5=Heiner no tight subleading mu, 6=Heiner no hlt
-usePtSF = 0; # Boson pT reweighting: -1=none, 0=data, 1...=other options
+###  EFFICIENCY
+use_PForNoPUorTKmet = 2  # 0:PF, 1:NOPU, 2:TK
+if(hasattr(config, 'use_PForNoPUorTKmet')):
+  use_PForNoPUorTKmet = int(config.use_PForNoPUorTKmet)  # 0:PF, 1:NOPU, 2:TK
+use_LHE_weights = 0  # 0=no, 1=yes
+if(hasattr(config, 'use_LHE_weights')):
+  use_LHE_weights = int(config.use_LHE_weights)  # 0=no, 1=yes
+usePileupSF = 1  # 0=no, 1=yes
+if(hasattr(config, 'usePileupSF')):
+  usePileupSF = int(config.usePileupSF)  # 0=no, 1=yes
+usePtSF = 0  # Boson pT reweighting: -1=none, 0=data, 1...=other options
+if(hasattr(config, 'usePtSF')):
+  usePtSF = int(config.usePtSF)  # Boson pT reweighting: -1=none, 0=data, 1...=other options
 
-### MUON
-useMomentumCorr = 4; # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector, 4=KalmanCorrectorParam
-MuonCorrGlobalScaleNsigma = 0; # vary global muon scale    (0=no)
-MuonCorrKalmanNvarsNsigma = 0; # vary each muon fit eigenv (0=no)
-
-WlikeCharge = 1; # Charge of the Wlike (+1,-1)
-
-### RECOIL
-useRecoilCorr = 2; # 0=none, 1=yes, 2=PDFw3gaus, 3=RooKeys
-RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0; # SYST VARIATIONS: 0=NONE, RAPBIN 1 (1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p2, 6= U2 MC) RAPBIN 2 (7= U1 DATA p1, 8= U1 DATA p2, 9= U2 DATA, 10= U1 MC p1, 11= U1 MC p2, 12= U2 MC)
-RecoilCorrVarDiagoParSigmas = 0; # Number of sigmas for recoil syst
-correctToMadgraph = 0; # 0: uses DATA as target -- 1: uses Madgraph as target (also needed to write recoil closure plots)
-
-usePhiMETCorr = 0; # 0=none, 1=yes
+### Muon trigger efficiency
+useEffSF = 2  # 0=no, 1=MuonPOG, 2=Heiner all, 3=Heiner no tight, 4=Heiner no iso, 5=Heiner no tight subleading mu, 6=Heiner no hlt
+              # 13=Heiner tight 1%, 14=Heiner iso 1%, 15=Heiner tight subleading mu 1%, 16=Heiner hlt 1%
+if(hasattr(config, 'useEffSF')):
+  useEffSF = config.useEffSF
+### EFFICIENCY TOYS
+efficiency_toys = 0  # 0=No, >1=Yes
+if(hasattr(config, 'efficiency_toys')):
+  efficiency_toys = int(config.efficiency_toys)  # 0=No, >1=Yes
 
 ### EWK CORR
-syst_ewk_Alcaraz = 0; # -1=none, 0=POWHEG QCD+EWK NLO (bug-fixed), 1= 0 +syst photos vs pythia (31 = 3 times), 2= 0 +syst no nloewk vs nloewk (32 = 3 times)
+syst_ewk_Alcaraz = 0  # -1=none, 0=POWHEG QCD+EWK NLO (bug-fixed), 1= 0 +syst photos vs pythia (31 = 3 times), 2= 0 +syst no nloewk vs nloewk (32 = 3 times)
+if(hasattr(config, 'syst_ewk_Alcaraz')):
+  syst_ewk_Alcaraz = int(config.syst_ewk_Alcaraz)  # 0=No, >1=Yes
 ### REWEIGHT POLARIZATION
-reweight_polarization = 1; # 0 = none, 1 = reweight POWHEG QCD+EWK NLO TO 8 TeV DATA
+reweight_polarization = 1  # 0 = none, 1 = reweight POW to DATA, 2 = reweight POW to 8 TeV angular coefficients
+if(hasattr(config, 'reweight_polarization')):
+  reweight_polarization = int(config.reweight_polarization)  # 0=No, >1=Yes
 
 # LHAPDF_reweighting_sets="11200"  # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
 # LHAPDF_reweighting_members="51"  # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
@@ -53,41 +78,94 @@ reweight_polarization = 1; # 0 = none, 1 = reweight POWHEG QCD+EWK NLO TO 8 TeV 
 # LHAPDF_reweighting_members="1"   # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
 LHAPDF_reweighting_sets="229800" # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
 LHAPDF_reweighting_members="1"   # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
+if(hasattr(config, 'LHAPDF_reweighting_sets')):
+  LHAPDF_reweighting_sets=str(config.LHAPDF_reweighting_sets) # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
+if(hasattr(config, 'LHAPDF_reweighting_members')):
+  LHAPDF_reweighting_members=str(config.LHAPDF_reweighting_members)   # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
 # LHAPDF_reweighting_sets="11000"  # cteq6ll.LHpdf=10042 CT10nnlo.LHgrid=11200, NNPDF23_nnlo_as_0118.LHgrid=232000, MSTW2008nnlo68cl.LHgrid=21200
 # LHAPDF_reweighting_members="53"  # cteq6ll.LHpdf=1 CT10nnlo.LHgrid=51, NNPDF23_nnlo_as_0118.LHgrid=100, MSTW2008nnlo68cl.LHgrid=41
 ## CHOOSE WETHER IS MC CLOSURE OR NOT (half statistics used as DATA, half as MC)
-IS_MC_CLOSURE_TEST= 0;
+IS_MC_CLOSURE_TEST= 0
 
 indip_normalization_lumi_MC = 0; # independent normalization of MC in fb-1 (otherwise normalized to DATA)
-intLumi_MC_fb = 81293448/31314/1e3;# data = 4.7499 fb-1 prescaled trigger, 5.1 fb-1 unprescaled; works only if indip_normalization_lumi_MC is TRUE
+intLumi_MC_fb = 81293448/31314/1e3; # data = 4.7499 fb-1 prescaled trigger, 5.1 fb-1 unprescaled; works only if indip_normalization_lumi_MC is TRUE
 useAlsoGenPforSig= 1;
 normalize_MC_to_half_of_the_data = 1 # useful for W-like because we use half of it to calibrate the recoil
 
-ZMassCentral_MeV = "91188"; # 91.1876
-WMassCentral_MeV = "80398"; # 80.385
-WMassSkipNSteps = "5"; # 15 -- used for next to nothing, at the moment
+ZMassCentral_MeV = "91188"  # 91.1876 (PDG)
+if(hasattr(config, 'ZMassCentral_MeV')):
+  ZMassCentral_MeV = str(config.ZMassCentral_MeV)  # 0=No, >1=Yes
+WMassCentral_MeV = "80398"  # 80.385  (PDG)
+if(hasattr(config, 'WMassCentral_MeV')):
+  WMassCentral_MeV = str(config.WMassCentral_MeV)  # 0=No, >1=Yes
+WMassSkipNSteps = "5"  # 15 -- used for LHE mass scaling
+if(hasattr(config, 'WMassSkipNSteps')):
+  WMassSkipNSteps = str(config.WMassSkipNSteps)  # 0=No, >1=Yes
+
+### MUON
+useMomentumCorr = 4  # 0=none, 1=Rochester, 2=MuscleFit, 3=KalmanCorrector, 4=KalmanCorrectorParam
+if(hasattr(config, 'useMomentumCorr')):
+  useMomentumCorr = int(config.useMomentumCorr)  # 0=No, >1=Yes
+MuonCorrGlobalScaleNsigma = 0
+if(hasattr(config, 'MuonCorrGlobalScaleNsigma')):
+  MuonCorrGlobalScaleNsigma = int(config.MuonCorrGlobalScaleNsigma)  # 0=No, >1=Yes
+MuonCorrKalmanNvarsNsigma = 0
+if(hasattr(config, 'MuonCorrKalmanNvarsNsigma')):
+  MuonCorrKalmanNvarsNsigma = int(config.MuonCorrKalmanNvarsNsigma)  # 0=No, >1=Yes
+MuonCorrAsDATA = 0  # 0=Correct as whatever it really is, 1=Correct as DATA
+if(hasattr(config, 'MuonCorrAsDATA')):
+  MuonCorrAsDATA = int(config.MuonCorrAsDATA)
+
+# Wlike properties
+WMassNSteps = "5"
+if(hasattr(config, 'WMassNSteps')):
+  WMassNSteps = str(config.WMassNSteps)  # 0=No, >1=Yes
+WlikeCharge = 1
+if(hasattr(config, 'WlikeCharge')):
+  WlikeCharge = int(config.WlikeCharge)  # 0=No, >1=Yes
+etaMaxMuons = "0.9"
+if(hasattr(config, 'etaMaxMuons')):
+  etaMaxMuons = str(config.etaMaxMuons)  # 0=No, >1=Yes
+
+### RECOIL
+useRecoilCorr = 2
+if(hasattr(config, 'useRecoilCorr')):
+  useRecoilCorr = int(config.useRecoilCorr)  # 0=No, >1=Yes
+
+RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0
+if(hasattr(config, 'RecoilCorrVarDiagoParU1orU2fromDATAorMC')):
+  RecoilCorrVarDiagoParU1orU2fromDATAorMC = int(config.RecoilCorrVarDiagoParU1orU2fromDATAorMC)  # 0=No, >1=Yes
+RecoilCorrVarDiagoParSigmas = 0
+if(hasattr(config, 'RecoilCorrVarDiagoParSigmas')):
+  RecoilCorrVarDiagoParSigmas = int(config.RecoilCorrVarDiagoParSigmas)  # 0=No, >1=Yes
+
+correctToMadgraph = 0; # 0: uses DATA as target -- 1: uses Madgraph as target (also needed to write recoil closure plots)
+if(hasattr(config, 'correctToMadgraph')):
+  correctToMadgraph = int(config.correctToMadgraph)  # 0=No, >1=Yes
 
 # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
-resubmit_sample = "DATA, WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
-# resubmit_sample = "DYJetsPow" # DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  DYJetsPow,  DYJetsMadSig,  DYJetsMadFake,   TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW
+resubmit_sample = "WJetsMadFake, DYJetsPow, DYJetsMadFake, TTJets, ZZJets, WWJets, WZJets, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
+if hasattr(config, 'resubmit_sample'):
+  resubmit_sample = str(config.resubmit_sample)
 # resubmit_sample = "DATA, WJetsPowPlus,  WJetsPowNeg,  WJetsMadSig,  WJetsMadFake,  TTJets,   ZZJets,   WWJets,  WZJets,  QCD, T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW"
 
-useBatch = 1;
-batchQueue = "1nh";
+useBatch = config.useBatch
+batchQueue = config.batchQueue
 
-WMassNSteps = "5"; # 60 -- N of mass steps above and below the central
-# WMassNSteps = "0"; # 60 -- N of mass steps above and below the central
-etaMuonNSteps = "1"; # 5 <-- lenght of the etaMaxMuons
-etaMaxMuons = "0.9"; # 0.6, 0.8, 1.2, 1.6, 2.1
+runWanalysis = 0
+runZanalysis = config.runZanalysis
+controlplots = 0
+if hasattr(config, 'controlplots'):
+  controlplots = int(config.controlplots)
 
-runWanalysis = 0;
-runZanalysis = 0;
-controlplots = 1;
-noLSFJobOutput = 0; # 1: Puts all the batch logs in a single file
-recreateSubPrograms = 0; # 1: Recompiles run?analysis.o and remakes run?analysis.sh
+noLSFJobOutput = 1  # 1: Puts all the batch logs in a single file
+recreateSubPrograms = 0  # 1: Recompiles run?analysis.o and remakes run?analysis.sh
+if hasattr(config, 'recreateSubPrograms'):
+  recreateSubPrograms = int(config.recreateSubPrograms)
 
-mergeSigEWKbkg = 0;
-removeChunks = 0; # 0: Don't remove chunks after merge --- 1: Remove them
+mergeSigEWKbkg = config.mergeSigEWKbkg
+mergeWhichAnalysis = "Zanalysis"  # "Zanalysis Wanalysis" -- no comma!
+removeChunks = 0  # 0: Don't remove chunks after merge --- 1: Remove them
 
 #######################
 ### FIT ###
@@ -96,13 +174,25 @@ removeChunks = 0; # 0: Don't remove chunks after merge --- 1: Remove them
 ## PERFORM W or Z MASS FIT
 fit_W_or_Z = "Z" # "W,Z" or "W" or "Z"
 
-usePowOrMadForSig = "POWHEG"; # use "POWHEG" or use "MADGRAPH"
-runPrepareDataCardsFast = 0; # ALTERNATIVE FAST WAY: TEMPLATES ARE IN THE TEMPLATE FOLDER, PSEUDO-DATA IN THE LOCAL FOLDER
-DataCards_templateFromFolder="" # evaluate systematics wrt folder (or leave it empty) -- full template folder
+usePowOrMadForSig = "POWHEG"  # use "POWHEG" or use "MADGRAPH"
+runPrepareDataCardsFast = config.runPrepareDataCardsFast
+DataCards_templateFromFolder = config.DataCards_templateFromFolder
+
+fitDATALIKEorDATA = 0
+if hasattr(config, 'fitDATALIKEorDATA'):
+  fitDATALIKEorDATA = config.fitDATALIKEorDATA
 
 ## NEW FIT
-runClosureTestLikeLihoodRatio = 0; # 1: also executes merge if not using batch jobs
-mergeResults = 0;
+runClosureTestLikeLihoodRatio = 0
+if hasattr(config, 'runClosureTestLikeLihoodRatio'):
+  runClosureTestLikeLihoodRatio = config.runClosureTestLikeLihoodRatio
+
+mergeResults = 0
+if hasattr(config, 'mergeResults'):
+  mergeResults = config.mergeResults
+blind_offset_string = ""
+if hasattr(config, 'blind_offset_string'):
+  blind_offset_string = config.blind_offset_string
 
 #######################
 ### PLOTTING ###
@@ -111,6 +201,8 @@ runWSigBkgFit = 0;
 runZSigBkgFit = 0;
 
 run_Z_MCandDATAcomparisons_stack = 0; # <<<<--------- USE THIS FLAG TO GENERATE PRE-UNBLINDING PLOTS AFTER mergeSigEWKbkg
+if hasattr(config, 'run_Z_MCandDATAcomparisons_stack'):
+  run_Z_MCandDATAcomparisons_stack = config.run_Z_MCandDATAcomparisons_stack
 run_W_MCandDATAcomparisons_stack = 0;
 
 #######################
@@ -146,7 +238,7 @@ def batch_job_is_running(jobname,chunk):
   jobname = jobname+"["+chunk+"]"
   if jobname in job_running:
     return True
-  else: 
+  else:
     return False
 
 def file_exists_and_is_not_empty(fpath):
@@ -160,7 +252,13 @@ def file_exists_and_is_not_empty(fpath):
 ## ============================================================== #
 ## END FUNCTION DEFINITIONS
 ## ============================================================== #
-  
+
+# Check if it's running on lxplus
+import socket
+if "lxplus" not in socket.gethostname():
+  print "YOU NEED TO RUN THIS SCRIPT ON LXPLUS"
+  sys.exit(1)
+
 # Check if it's running from the correct dir
 base_path = os.getcwd()
 if os.path.dirname(os.path.realpath(__file__)) == base_path:
@@ -170,13 +268,14 @@ else:
   print "You need to execute this script from the 'analysis' directory"
   sys.exit(1)
 
-# if usePhiMETCorr != 0 \
 # or syst_ewk_Alcaraz != 0
 if int(RecoilCorrVarDiagoParU1orU2fromDATAorMC) != 0 \
 or int(correctToMadgraph) !=0 \
 or str(LHAPDF_reweighting_members) !="1" \
 or int(MuonCorrGlobalScaleNsigma) != 0 \
-or int(MuonCorrKalmanNvarsNsigma) != 0 :
+or int(MuonCorrKalmanNvarsNsigma) != 0 \
+or int(efficiency_toys) != 0 \
+or int(useEffSF) != 2 :
 # or int(controlplots) != 0 :
   print "Computing a systematic: number of mass steps is set to 0\n"
   WMassNSteps = "0"
@@ -194,7 +293,7 @@ if (int(WlikeCharge) != 1) and (int(WlikeCharge) != -1) :
 
 # Muon internal (Zanalisys wants them this way)
 MuonCorrNsigma = 0
-MuonCorrKalmanNparameters = 1; # number of muon fit params (1: no eigen var --- 45: KalmanCorrectorParam)
+MuonCorrKalmanNparameters = 1  # number of muon fit params (1: no eigen var --- 45: KalmanCorrectorParam)
 if(int(MuonCorrGlobalScaleNsigma)!=0 and int(MuonCorrKalmanNvarsNsigma)!=0):
   print "Muon global scale and fit eigenvalues cannot be varied simultaneously (with the current Zanalysis.C)"
   sys.exit(1)
@@ -204,6 +303,11 @@ if(int(MuonCorrGlobalScaleNsigma)!=0):
 if(int(MuonCorrKalmanNvarsNsigma)!=0):
   MuonCorrKalmanNparameters=45
   MuonCorrNsigma = MuonCorrKalmanNvarsNsigma
+
+if (int(efficiency_toys) > 0) and not ((int(useEffSF) >= 13) and (int(useEffSF) <= 16)) :
+  print "ERROR: Asked to do", efficiency_toys, "efficiency toys, but you specified no efficiency to variate"
+  print "Check the 'useEffSF' variable"
+  sys.exit(1)
 
 # Build outfolder name
 
@@ -249,9 +353,11 @@ if(int(useMomentumCorr)!=0):
     outfolder_name+="_globalScaleSigma"+str(MuonCorrGlobalScaleNsigma)
   if(int(MuonCorrKalmanNvarsNsigma) != 0):
     outfolder_name+="_KalmanVarsNSigma"+str(MuonCorrKalmanNvarsNsigma)
+  if(int(MuonCorrAsDATA) != 0):
+    outfolder_name+="_DataLike"+str(MuonCorrAsDATA)
 
-if(int(usePhiMETCorr)==1):
-  outfolder_name+="_phiMETcorr";
+if(int(LHAPDF_reweighting_members)>1):
+  outfolder_name+="_pdf"+str(LHAPDF_reweighting_sets);
 
 if(int(useRecoilCorr)>0):
   outfolder_name+="_RecoilCorr"+str(useRecoilCorr);
@@ -279,13 +385,17 @@ if(int(useRecoilCorr)>0):
     if  (int(RecoilCorrVarDiagoParSigmas)!=0):
       outfolder_name+="_RecCorrNSigma_"+str(RecoilCorrVarDiagoParSigmas)
 
-if(int(useEffSF)==1): outfolder_name+="_EffSFCorr";
-if(int(useEffSF)>=2): outfolder_name+="_EffHeinerSFCorr";
-if(int(useEffSF)==3): outfolder_name+="_noTight";
-if(int(useEffSF)==4): outfolder_name+="_noIso";
-if(int(useEffSF)==5): outfolder_name+="_noTightSub";
-if(int(useEffSF)==6): outfolder_name+="_noHLT";
-if(int(usePtSF)!=-1): outfolder_name+="_PtSFCorr"+str(usePtSF);
+if(int(useEffSF)==1):    outfolder_name+="_EffSFCorr";
+if(int(useEffSF)>=2):    outfolder_name+="_EffHeinerSFCorr";
+if(int(useEffSF)==3):    outfolder_name+="_noTight";
+if(int(useEffSF)==13):   outfolder_name+="_TightToys"+str(efficiency_toys);
+if(int(useEffSF)==4):    outfolder_name+="_noIso";
+if(int(useEffSF)==14):   outfolder_name+="_IsoToys"+str(efficiency_toys);
+if(int(useEffSF)==5):    outfolder_name+="_noTightSub";
+if(int(useEffSF)==15):   outfolder_name+="_TightSubToys"+str(efficiency_toys);
+if(int(useEffSF)==6):    outfolder_name+="_noHLT";
+if(int(useEffSF)==16):   outfolder_name+="_HLTToys"+str(efficiency_toys);
+if(int(usePtSF)!=-1):    outfolder_name+="_PtSFCorr"+str(usePtSF);
 if(int(usePileupSF)==1): outfolder_name+="_PileupSFCorr";
 
 ## END INITIAL CHECKS AND FOLDERNAME BUILDING
@@ -344,69 +454,67 @@ for x in xrange(102,302,4):
 # print dummy_deltaM_MeV
 # print dummy_deltaM_MeV_central_Index
 
-Wmass_values_array = ""
-Zmass_values_array = ""
+Wmass_values_list = []
+Zmass_values_list = []
 if(WMassSkipNSteps=="0"): WMassSkipNSteps = "1"
-counter=0
 
 for i in xrange(-int(WMassNSteps),int(WMassNSteps)+1):
-  WmassJoin_string = str(gen_mass_value_MeV[WJetsPowPlus]+int(round(float(dummy_deltaM_MeV[dummy_deltaM_MeV_central_Index+(int(WMassSkipNSteps))*i]))))
-  if(counter>0): Wmass_values_array = ''.join((Wmass_values_array, ","))
-  Wmass_values_array = ''.join((Wmass_values_array, WmassJoin_string))
-  ZmassJoin_string = str(gen_mass_value_MeV[DYJetsPow]+int(round(float(dummy_deltaM_MeV[dummy_deltaM_MeV_central_Index+(int(WMassSkipNSteps))*i]))))
-  if(counter>0): Zmass_values_array = ''.join((Zmass_values_array, ","))
-  Zmass_values_array = ''.join((Zmass_values_array, ZmassJoin_string))
-  counter = counter+1
+  WmassJoin_string = str(int(WMassCentral_MeV)+int(round(float(dummy_deltaM_MeV[dummy_deltaM_MeV_central_Index+(int(WMassSkipNSteps))*i]))))
+  Wmass_values_list.append(WmassJoin_string)
+  ZmassJoin_string = str(int(ZMassCentral_MeV)+int(round(float(dummy_deltaM_MeV[dummy_deltaM_MeV_central_Index+(int(WMassSkipNSteps))*i]))))
+  Zmass_values_list.append(ZmassJoin_string)
+Wmass_values_array = ','.join(Wmass_values_list)
+Zmass_values_array = ','.join(Zmass_values_list)
 
 # print Wmass_values_array
 # print Zmass_values_array
 
 fWana_str = [
-  ntuple_basepath+"DATA/WTreeProducer_tree_RecoSkimmed.root",
-  ntuple_basepath+"WPlusPOWHEG/WTreeProducer_tree.root",
-  ntuple_basepath+"WMinusPOWHEG/WTreeProducer_tree.root",
-  ntuple_basepath+"WJetsLL/WTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"WJetsLL/WTreeProducer_tree_FakeRecoSkimmed.root",
-  ntuple_basepath+"DYJetsMM/WTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"DYJetsLL/WTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"DYJetsLL/WTreeProducer_tree_FakeRecoSkimmed.root",
-  ntuple_basepath+"TTJets/WTreeProducer_tree.root",
-  ntuple_basepath+"VVJets/ZZ/WTreeProducer_tree.root",
-  ntuple_basepath+"VVJets/WW/WTreeProducer_tree.root",
-  ntuple_basepath+"VVJets/WZ/WTreeProducer_tree.root",
-  ntuple_basepath+"QCD/QCD20Mu15/WTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/T_s/WTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/T_t/WTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/T_tW/WTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/Tbar_s/WTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/Tbar_t/WTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/Tbar_tW/WTreeProducer_tree.root"
+  [ntuple_basepath+"DATA/WTreeProducer_tree_RecoSkimmed.root",-1],
+  [ntuple_basepath+"WPlusPOWHEG/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"WMinusPOWHEG/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"WJetsLL/WTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"WJetsLL/WTreeProducer_tree_FakeRecoSkimmed.root",-1],
+  [ntuple_basepath+"DYJetsMM/WTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"DYJetsLL/WTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"DYJetsLL/WTreeProducer_tree_FakeRecoSkimmed.root",-1],
+  [ntuple_basepath+"TTJets/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"VVJets/ZZ/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"VVJets/WW/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"VVJets/WZ/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"QCD/QCD20Mu15/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/T_s/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/T_t/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/T_tW/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/Tbar_s/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/Tbar_t/WTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/Tbar_tW/WTreeProducer_tree.root",-1]
 ];
 
 fZana_str = [
 #  ntuple_basepath_8TeV_ABC+"DATA_Run2012ABCD/ZTreeProducer_tree.root", # this is the 8TeV data contain also the tkmetABC
-  ntuple_basepath+"DATA/ZTreeProducer_tree_RecoSkimmed.root",
-  ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"WJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",
-  ntuple_basepath+"DYJetsMM/ZTreeProducer_tree_SignalRecoSkimmed.root",
+  [ntuple_basepathFIX+"DATA/ZTreeProducer_tree_RecoSkimmed.root",-1],
+  [ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"WJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepath+"WJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",133],
+  [ntuple_basepathFIX+"DYMM/ZTreeProducer_tree_SignalRecoSkimmed.root",20921509],
   # ntuple_basepath+"DYJetsMM/InclWeights/ZTreeProducer_tree.root",
   # ntuple_basepath+"DYJetsMM/allEvts/ZTreeProducer_tree.root",
 #  ntuple_basepath_8TeV_ABC+"DYJetsLL/ZTreeProducer_tree_tkmetABC.root",  # this is the 8TeV DYJetsLL contains also the tkmetABC
-  ntuple_basepath+"DYJetsLL/ZTreeProducer_tree_SignalRecoSkimmed.root",
-  ntuple_basepath+"DYJetsLL/ZTreeProducer_tree_FakeRecoSkimmed.root",
-  ntuple_basepath+"TTJets/ZTreeProducer_tree.root",
-  ntuple_basepath+"VVJets/ZZ/ZTreeProducer_tree.root",
-  ntuple_basepath+"VVJets/WW/ZTreeProducer_tree.root",
-  ntuple_basepath+"VVJets/WZ/ZTreeProducer_tree.root",
-  ntuple_basepath+"QCD/QCD20Mu15/ZTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/T_s/ZTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/T_t/ZTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/T_tW/ZTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/Tbar_s/ZTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/Tbar_t/ZTreeProducer_tree.root",
-  ntuple_basepath+"SingleTop/Tbar_tW/ZTreeProducer_tree.root"
+  [ntuple_basepathFIX+"DYLL/ZTreeProducer_tree_SignalRecoSkimmed.root",-1],
+  [ntuple_basepathFIX+"DYLL/ZTreeProducer_tree_FakeRecoSkimmed.root",8481],
+  [ntuple_basepath+"TTJets/ZTreeProducer_tree.root",143880],
+  [ntuple_basepath+"VVJets/ZZ/ZTreeProducer_tree.root",127139],
+  [ntuple_basepath+"VVJets/WW/ZTreeProducer_tree.root",7990],
+  [ntuple_basepath+"VVJets/WZ/ZTreeProducer_tree.root",63875],
+  [ntuple_basepath+"QCD/QCD20Mu15/ZTreeProducer_tree.root",-1],
+  [ntuple_basepath+"SingleTop/T_s/ZTreeProducer_tree.root",11],
+  [ntuple_basepath+"SingleTop/T_t/ZTreeProducer_tree.root",280],
+  [ntuple_basepath+"SingleTop/T_tW/ZTreeProducer_tree.root",1902],
+  [ntuple_basepath+"SingleTop/Tbar_s/ZTreeProducer_tree.root",12],
+  [ntuple_basepath+"SingleTop/Tbar_t/ZTreeProducer_tree.root",192],
+  [ntuple_basepath+"SingleTop/Tbar_tW/ZTreeProducer_tree.root",2085]
 ];
 
 if not os.path.exists("JobOutputs/"+outfolder_name):
@@ -415,13 +523,27 @@ if not os.path.exists("JobOutputs/"+outfolder_name):
   os.makedirs("JobOutputs/"+outfolder_name)
 
 print "Copying script over:"
-print "cp "+os.path.basename(__file__)+" JobOutputs/"+outfolder_name;
+print "cp "+os.path.basename(__file__)+" JobOutputs/"+outfolder_name
+print "cp configdir/"+conffile+".py JobOutputs/"+outfolder_name
 print
 path_dest="JobOutputs/"+outfolder_name+"/"+os.path.basename(__file__)
 shutil.copyfile(os.path.basename(__file__), path_dest)
+path_dest="JobOutputs/"+outfolder_name+"/"+conffile+".py"
+shutil.copyfile(base_path+"/configdir/"+conffile+".py", path_dest)
+
+with open("JobOutputs/"+outfolder_name+"/log.txt", "a") as logfile:
+  commit_SHA = subprocess.Popen("git rev-parse HEAD", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.read()
+  import datetime
+  logstring = str(datetime.datetime.now()) + " - " + commit_SHA
+  print "Writing on log file:", logstring
+  logfile.write(logstring)
+print ""
 
 if(runWanalysis or runZanalysis):
 
+  if(not useLHAPDF and int(LHAPDF_reweighting_members)>1):
+    print 'SWITCH ON useLHAPDF to compute PDF variations !!!!'
+    sys.exit()
   if(useLHAPDF and os.environ.get('LHAPATH') == lhapdf_path+"share/lhapdf/PDFsets"):
     print "ENVIRONMENT VARIABLES OK"
   else:
@@ -449,7 +571,7 @@ if(runWanalysis or runZanalysis):
     print "Creating JobOutputs/"+outfolder_name+"/common.h from includes/common.h"
     shutil.copyfile("includes/common.h", "JobOutputs/"+outfolder_name+"/common.h");
     # Edit template
-    os.system("sh "+base_path+"/utils/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMuonNSteps+" \""+etaMaxMuons+"\" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(WlikeCharge)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrKalmanNparameters)+" "+"JobOutputs/"+outfolder_name+"/common.h")
+    os.system("sh "+base_path+"/utils/manipulate_parameters.sh "+ZMassCentral_MeV+" "+WMassCentral_MeV+" "+WMassSkipNSteps+" "+WMassNSteps+" "+etaMaxMuons+" "+str(efficiency_toys)+" "+str(NPDF_sets)+" "+str(PAR_PDF_SETS)+" "+str(PAR_PDF_MEMBERS)+" "+str(WlikeCharge)+" "+Wmass_values_array+" "+Zmass_values_array+" "+str(dummy_deltaM_MeV_central_Index)+" "+str(usePtSF)+" "+str(MuonCorrKalmanNparameters)+" "+"JobOutputs/"+outfolder_name+"/common.h")
 
   print ""
 
@@ -462,21 +584,21 @@ if(runWanalysis or runZanalysis):
     # Copy Wanalysis.C in the dest folder (it has some parameters)
     shutil.copyfile(code_dir+"/Wanalysis.C", "Wanalysis.C")
     if(useLHAPDF):
-      print("c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
-      os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
+      print("c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
+      os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF  -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
     else:
-      print("c++ -O2 -o runWanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
-      os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"common_stuff.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
+      print("c++ -O2 -o runWanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
+      os.system("rm -f runWanalysis.o; c++ -O2 -o runWanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Wanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runWanalysis.C")
 
   if runZanalysis and (recreateSubPrograms or not file_exists_and_is_not_empty("runZanalysis.o")):
     # Copy Zanalysis.C in the dest folder (it has some parameters)
     shutil.copyfile(code_dir+"/Zanalysis.C", "Zanalysis.C")
     if(useLHAPDF):
-      print("c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags`  -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
-      os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+      print("c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags`  -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+      os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o -DLHAPDF_ON `root-config --glibs --libs --cflags` -I "+lhapdf_path+"/include -L "+lhapdf_path+"/lib -lLHAPDF -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
     else:
-      print("c++ -O2 -o runZanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
-      os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"rochcor_44X_v3.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"KalmanCalibrator.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+      print("c++ -O2 -o runZanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
+      os.system("rm -f runZanalysis.o; c++ -O2 -o runZanalysis.o `root-config --glibs --libs --cflags` -L $ROOFITSYS/lib -lRooFit -lRooStats -lRooFit -lRooFitCore -lFoam -lMathMore -I$ROOFITSYS/include -lm -I . -I "+code_dir+"  Zanalysis.C "+code_dir+"common_stuff.C "+code_dir+"RecoilCorrector.cc "+code_dir+"KalmanCalibratorParam.cc "+code_dir+"PdfDiagonalizer.cc "+code_dir+"runZanalysis.C")
   
   for i in range(0, nsamples):
 
@@ -493,8 +615,8 @@ if(runWanalysis or runZanalysis):
     print ''
     print "ANALYZING sampleID =", sampleID ;
 
-    WfileDATA= fWana_str[i];
-    ZfileDATA= fZana_str[i];
+    WfileDATA= fWana_str[i][0];
+    ZfileDATA= fZana_str[i][0];
     if( ("WJetsMadSig" in sample[i] or "WJetsPow" in sample[i]) and int(useAlsoGenPforSig)): WfileDATA.replace("_SignalRecoSkimmed","");
     else:
       if( ("DYJetsPow" in sample[i]  or "DYJetsMadSig" in sample[i]) and int(useAlsoGenPforSig)): ZfileDATA.replace("_SignalRecoSkimmed","");
@@ -538,10 +660,13 @@ if(runWanalysis or runZanalysis):
 
     if(runWanalysis):
 
-      wstring="\""+WfileDATA+"\","+str(WfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(MuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(0)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])+","+str(reweight_polarization)
+      wstring="\""+WfileDATA+"\","+str(WfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(MuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(0)+","+str(useRecoilCorr)+","+str(0)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])+","+str(reweight_polarization)
 
-      line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o -1,0,0,"+wstring).read()
-      nEntries = [int(s) for s in line.split() if s.isdigit()][0]
+      if fWana_str[i][1] == -1:
+        line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runWanalysis.o -1,0,0,"+wstring).read()
+        nEntries = [int(s) for s in line.split() if s.isdigit()][0]
+      else:
+        nEntries = fWana_str[i][1]
 
       if not useBatch:
         os.chdir(code_dir)
@@ -604,10 +729,13 @@ if(runWanalysis or runZanalysis):
 
     if(runZanalysis):
 
-      zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(MuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(0)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(usePhiMETCorr)+","+str(useRecoilCorr)+","+str(correctToMadgraph)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])+","+str(reweight_polarization)
+      zstring="\""+ZfileDATA+"\","+str(ZfileDATA_lumi_SF)+",\""+sample[i]+"\","+str(useAlsoGenPforSig)+","+str(IS_MC_CLOSURE_TEST)+","+str(isMCorDATA[i])+",\""+outputSamplePath+"\","+str(useMomentumCorr)+","+str(MuonCorrNsigma)+","+str(useEffSF)+","+str(usePtSF)+","+str(usePileupSF)+","+str(MuonCorrAsDATA)+","+str(controlplots)+","+str(generated_PDF_set[i])+""+","+str(generated_PDF_member[i])+","+str(contains_LHE_weights[i])+","+str(useRecoilCorr)+","+str(correctToMadgraph)+","+str(RecoilCorrVarDiagoParSigmas)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(use_PForNoPUorTKmet)+","+str(syst_ewk_Alcaraz)+","+str(gen_mass_value_MeV[i])+","+str(contains_LHE_weights[i])+","+str(reweight_polarization)
 
-      line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o -1,0,0,"+zstring).read();
-      nEntries = [int(s) for s in line.split() if s.isdigit()][0]
+      if fZana_str[i][1] == -1:
+        line = os.popen(base_path+"/JobOutputs/"+outfolder_name+"/runZanalysis.o -1,0,0,"+zstring).read();
+        nEntries = [int(s) for s in line.split() if s.isdigit()][0]
+      else:
+        nEntries = fZana_str[i][1]
 
       if not useBatch:
         os.chdir(code_dir)
@@ -671,22 +799,23 @@ if(runWanalysis or runZanalysis):
     os.chdir(base_path);
 
 if(mergeSigEWKbkg):
-  os.chdir("utils/");
-  os.system("./merge_MC.sh \"../JobOutputs/"+outfolder_name+"/\"")
-  os.chdir(base_path);
+  rcode = os.system("utils/merge_MC.sh \"JobOutputs/"+outfolder_name+"/\" \""+mergeWhichAnalysis+"\"")
+  if rcode != 0:
+    print "Some merges failed, exiting"
+    sys.exit(rcode)
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type d -name LSFJOB_* -exec rm -rf {} +")
   os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name batch_logs_* -delete")
 
+if  not file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEMAD/WanalysisOnDATA.root") \
+and not file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEMAD/ZanalysisOnDATA.root") \
+and not file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEPOW/WanalysisOnDATA.root") \
+and not file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"/output_MCDATALIKEPOW/ZanalysisOnDATA.root") :
+  print "Cannot find any merged histogram in "+outfolder_name+", exiting"
+  sys.exit(1)
+
 if(removeChunks):
-  if file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEMAD/WanalysisOnDATA.root") \
-  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEMAD/ZanalysisOnDATA.root") \
-  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEPOW/WanalysisOnDATA.root") \
-  or file_exists_and_is_not_empty("JobOutputs/"+outfolder_name+"output_MCDATALIKEPOW/ZanalysisOnDATA.root") :
-    print "Removing chunks from JobOutputs/"+outfolder_name
-    os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name [WZ]analysis_chunk*.root -delete")
-  else:
-    print "Cannot find any merged histogram in "+outfolder_name+", not deleting chunks"
-  os.chdir(base_path);
+  print "Removing chunks from JobOutputs/"+outfolder_name
+  os.system("find JobOutputs/"+outfolder_name+"/output_* -type f -name [WZ]analysis_chunk*.root -delete")
 
 if(runPrepareDataCards):
   os.chdir("AnalysisCode/");
@@ -707,8 +836,7 @@ if(runPrepareDataCardsFast):
   if not os.path.exists("JobOutputs/"+outfolder_name+"/DataCards"): os.makedirs("JobOutputs/"+outfolder_name+"/DataCards")
   shutil.copyfile(base_path+"/AnalysisCode/prepareDatacardsFast.C", base_path+"/JobOutputs/"+outfolder_name+"/prepareDatacardsFast.C");
   os.chdir("JobOutputs/"+outfolder_name);
-  print "running .x prepareDatacardsFast.C++(\"./\",\"../"+DataCards_templateFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+")\'"
-  os.system("root -l -b -q \'prepareDatacardsFast.C++(\"./\",\"../"+DataCards_templateFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+")\'")
+  os.system("root -l -b -q \'prepareDatacardsFast.C++(\"./\",\"../"+DataCards_templateFromFolder+"\",\""+usePowOrMadForSig+"\",1,1,\""+str(fit_W_or_Z)+"\","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+","+str(fitDATALIKEorDATA)+")\'")
   os.chdir(base_path);
 
 
@@ -741,7 +869,7 @@ if(mergeResults or (runClosureTestLikeLihoodRatio and useBatch==0)):
   os.chdir("JobOutputs/"+outfolder_name+"/DataCards");
   print os.getcwd();
   os.system("rm -rf LSF*; rm -f output_W*.root");
-  os.system("root -l -b -q \'merge_results.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+")\'");
+  os.system("root -l -b -q \'merge_results.C++(1,0,\""+str(fit_W_or_Z)+"\","+str(useBatch)+","+str(RecoilCorrVarDiagoParU1orU2fromDATAorMC)+",\""+blind_offset_string+"\")\'");
   os.chdir(base_path);
 
 
