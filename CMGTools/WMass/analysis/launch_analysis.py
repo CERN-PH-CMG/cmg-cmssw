@@ -365,8 +365,8 @@ if(int(useRecoilCorr)>0):
     outfolder_name+="_toMad";
   if(int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)>0):
     RecoilCorrVarDiagoParBlock = int(RecoilCorrVarDiagoParU1orU2fromDATAorMC)
-    if(int(RecoilCorrVarDiagoParBlock)<7):
-        outfolder_name+="_toys";
+    if(int(RecoilCorrVarDiagoParBlock)==13):
+        outfolder_name+="_RecoilToys";
     else:
       if(int(RecoilCorrVarDiagoParBlock)<7):
         outfolder_name+="_Rap1";
