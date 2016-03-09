@@ -134,7 +134,7 @@ if(hasattr(config, 'useRecoilCorr')):
 
 RecoilCorrVarDiagoParU1orU2fromDATAorMC = 0
 if(hasattr(config, 'RecoilCorrVarDiagoParU1orU2fromDATAorMC')):
-  RecoilCorrVarDiagoParU1orU2fromDATAorMC = int(config.RecoilCorrVarDiagoParU1orU2fromDATAorMC)  # 0=No, >1=Yes
+  RecoilCorrVarDiagoParU1orU2fromDATAorMC = int(config.RecoilCorrVarDiagoParU1orU2fromDATAorMC)  # SYST VARIATIONS: 0=NONE, RAPBIN 1 (1= U1 DATA p1, 2= U1 DATA p2, 3= U2 DATA, 4= U1 MC p1, 5= U1 MC p2, 6= U2 MC) RAPBIN 2 (7= U1 DATA p1, 8= U1 DATA p2, 9= U2 DATA, 10= U1 MC p1, 11= U1 MC p2, 12= U2 MC) -- 13: RECOIL TOYS
 RecoilCorrVarDiagoParSigmas = 0
 if(hasattr(config, 'RecoilCorrVarDiagoParSigmas')):
   RecoilCorrVarDiagoParSigmas = int(config.RecoilCorrVarDiagoParSigmas)  # 0=No, >1=Yes

@@ -36,6 +36,7 @@ class RecoilCorrector
 public:
   RecoilCorrector(bool loadKeys, std::string iNameZDat, std::string iNameZ_key, TString model_name = "fitresult_Add");
   void reset(int RecoilCorrParMaxU1, int RecoilCorrParMaxU2, int rapBinCorr);
+  double calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2);
   void CorrectMET(double &pfmet, double &pfmetphi,double bosonPt,double bosonPhi,double sumLepPt,double sumLepPhi,double &iU1,double &iU2,int RecoilCorrVarDiagoParU1orU2fromDATAorMC,int RecoilCorrVarDiagoParN,int RecoilCorrVarDiagoParSigmas, int rapbin, int recoilCorrScale=1, bool correctWithKeys=false);
   void addDataFile(std::string iNameDat, std::string iNameKeyDat, TString model_name = "fitresult_Add");
   void addMCFile  (std::string iNameMC, std::string iNameKeyMC, TString model_name = "fitresult_Add");
@@ -57,7 +58,6 @@ protected:
     double &pU1, double &pU2
   );
 
-  double calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2);
   void runDiago(RooWorkspace *w,RooFitResult *result, TString fit, RooAbsReal *&pdfUiCdf);
   void makeKeysVec(RooWorkspace *w, TFile *file, TString fit, std::vector<RooAbsReal*> &pdfUiCdfm, bool isU1);
   double keysInvGraph(double iPVal, double Zpt, std::vector<RooAbsReal*> pdfKeyMCcdf, std::vector<RooAbsReal*> pdfKeyDATAcdf, bool isU1, double max);

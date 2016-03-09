@@ -276,9 +276,11 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
 
   const int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
   const int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
-  const bool varyRecoilCorr = (RecoilCorrVarDiagoParU1orU2fromDATAorMC>0);
+  const bool varyRecoilCorr = (0<RecoilCorrVarDiagoParU1orU2fromDATAorMC && RecoilCorrVarDiagoParU1orU2fromDATAorMC<13);
+  const bool useRecoilToys = (RecoilCorrVarDiagoParU1orU2fromDATAorMC==13);
   const int rapBinRecoilVariation = RecoilCorrVarDiagoParU1orU2fromDATAorMC <= 6 ? 0 : 1;
   const int recoilCorrVariationParReduced = RecoilCorrVarDiagoParU1orU2fromDATAorMC>6 ? RecoilCorrVarDiagoParU1orU2fromDATAorMC-6 : RecoilCorrVarDiagoParU1orU2fromDATAorMC;
+  const double recoilSmearing = 0.01;
 
   TString generatorSuffix="_powheg";
   if (isMadgraph)
@@ -579,7 +581,16 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
                         u1_recoil, u2_recoil,
                         recoilCorrVariationParReduced, m, RecoilCorrVarDiagoParSigmas,
                         rapBinRecoilVariation,recoilCorrScale,false);
-              }else{
+              }
+              else if (useRecoilToys) {
+                common_stuff::calculateU1U2(met_trasv, metphi_trasv,  ZGen_pt, ZGen_phi,ZNocorr.Pt(), ZNocorr.Phi(),  u1_recoil, u2_recoil);
+                random_->SetSeed(uint(abs(u1_recoil)*1e9 + abs(u2_recoil)*1e6 + m));
+                u1_recoil *= random_->Gaus(1, recoilSmearing);
+                u2_recoil *= random_->Gaus(1, recoilSmearing);
+                met_trasv    = correctorRecoil_Z->calculate(0,ZNocorr.Pt(),ZNocorr.Phi(),ZGen_phi,u1_recoil,u2_recoil);
+                metphi_trasv = correctorRecoil_Z->calculate(1,ZNocorr.Pt(),ZNocorr.Phi(),ZGen_phi,u1_recoil,u2_recoil);
+              }
+              else{
                 // cout << "correcting met_trasv to default eigen par 0, m= " << m << endl;
                 correctorRecoil_Z->CorrectMET(
                         met_trasv,metphi_trasv,
@@ -591,7 +602,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
               }
               if(m==m_start){
                 // cout << "before setting met_trasvCentral "<< RecoilCorrVarDiagoParU1orU2fromDATAorMC<< " " << m << " " << RecoilCorrVarDiagoParSigmas << endl;
-                if(correctWithKeys || (varyRecoilCorr && rapBin==rapBinRecoilVariation)) {
+                if(correctWithKeys || (varyRecoilCorr && rapBin==rapBinRecoilVariation) || useRecoilToys) {
                   // cout << " setting met_trasvCentral to central" << endl;
                   correctorRecoil_Z->reset(WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[2],
                                            WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[3],
