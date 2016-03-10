@@ -520,10 +520,12 @@ fZana_str = [
   [ntuple_basepath+"SingleTop/Tbar_tW/ZTreeProducer_tree.root",2085]
 ];
 
+first_analysis_run = False
 if not os.path.exists("JobOutputs/"+outfolder_name):
   print "Out folder doesn't exists, making directory"
   print "JobOutputs/"+outfolder_name
   os.makedirs("JobOutputs/"+outfolder_name)
+  first_analysis_run = True
 
 print "Copying script over:"
 print "cp "+os.path.basename(__file__)+" JobOutputs/"+outfolder_name
@@ -698,7 +700,7 @@ if(runWanalysis or runZanalysis):
           if (chunk==nChuncks-1):
             ev_fin= nEntries
           print chunk,ev_ini,ev_fin
-          if not file_exists_and_is_not_empty("Wanalysis_chunk"+str(chunk)+".root") and not batch_job_is_running("Wanalysis_"+outfolder_name+"_"+sample[i],str(chunk)):
+          if first_analysis_run or (not file_exists_and_is_not_empty("Wanalysis_chunk"+str(chunk)+".root") and not batch_job_is_running("Wanalysis_"+outfolder_name+"_"+sample[i],str(chunk))):
             # Create script if needed
             if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runWanalysis_"+str(chunk)+".sh"):
               text_file = open("runWanalysis_"+str(chunk)+".sh", "w")
@@ -767,7 +769,7 @@ if(runWanalysis or runZanalysis):
           if (chunk==nChuncks-1):
             ev_fin= nEntries
           print chunk,ev_ini,ev_fin
-          if not file_exists_and_is_not_empty("Zanalysis_chunk"+str(chunk)+".root") and not batch_job_is_running("Zanalysis_"+outfolder_name+"_"+sample[i],str(chunk)):
+          if first_analysis_run or (not file_exists_and_is_not_empty("Zanalysis_chunk"+str(chunk)+".root") and not batch_job_is_running("Zanalysis_"+outfolder_name+"_"+sample[i],str(chunk))):
             # Create scripts if needed
             if recreateSubPrograms>0 or not file_exists_and_is_not_empty("runZanalysis_"+str(chunk)+".sh"):
               text_file = open("runZanalysis_"+str(chunk)+".sh", "w")
