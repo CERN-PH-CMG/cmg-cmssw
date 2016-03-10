@@ -540,7 +540,7 @@ void Zanalysis::Loop(int chunk, int Entry_ini, int Entry_fin, int IS_MC_CLOSURE_
         for(int m=m_start; m<m_end; m++){
 
           TString RecoilVar_str = "";
-          if(varyRecoilCorr) RecoilVar_str = Form("_RecoilCorrVar%d",m);
+          if(varyRecoilCorr || useRecoilToys) RecoilVar_str = Form("_RecoilCorrVar%d",m);
           // cout << RecoilVar_str << endl;
 
           //------------------------------------------------------------------------------------------------
