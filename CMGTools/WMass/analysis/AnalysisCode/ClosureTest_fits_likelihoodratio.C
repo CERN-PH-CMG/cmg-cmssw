@@ -61,61 +61,28 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
                 int jWmass = WorZ.Contains("Z")? WMass2::Zmass_values_array[j] : WMass2::Wmass_values_array[j];
                 cout << "mass value = " << jWmass << endl;
                 
+                ofstream outTXTfile;
+                TString jobname = Form("Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass);
+                TString outfilename_str = "submit_datacard_Wmass_"+jobname+".sh";
+                cout << "creating " << outfilename_str << endl;
+                outTXTfile.open(outfilename_str);
+                
                 for(int k=0;k<WMass::NFitVar;k++){
                   TString text2workspace_str = Form("text2workspace.py -P HiggsAnalysis.CombinedLimit.HiggsJPC:twoHypothesisHiggs dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%sNonScaled.txt -o output_W%s%s_%s_pdf%d-%d%s%s%s_eta%s_%d.root -m %d  > dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%sNonScaled.log 2>&1",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data(),Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
                   TString combine_str = Form("combine -S 0 -m %d -M HybridNew --testStat=TEV --singlePoint 1 --onlyTestStat output_W%s%s_%s_pdf%d-%d%s%s%s_eta%s_%d.root   >> dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%sNonScaled.log 2>&1 ",jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
-                  if(useBatch==0){
-                    gROOT->ProcessLine(".! "+text2workspace_str);
-                    gROOT->ProcessLine(".! "+combine_str+" &");
-                  }else{
-                    ofstream outTXTfile;
-                    TString jobname = Form("Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%s",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
-                    TString outfilename_str = "submit_datacard_Wmass_"+jobname+"NonScaled.sh";
-                    cout << "creating " << outfilename_str << endl;
-                    outTXTfile.open(outfilename_str);
-                    outTXTfile << "user=$(whoami); cd /afs/cern.ch/work/${user:0:1}/${user}/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462; eval `scramv1 runtime -sh`; cd -;\n";
+                  if(k==0){
+                    outTXTfile << "user=$(whoami); cd /afs/cern.ch/work/${user:0:1}/${user}/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462; eval `scramv1 runtime -sh`; cd - 2>&1 > /dev/null;\n";
                     outTXTfile << "source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh;\n";
-                    outTXTfile << "cd "<<currentdir_str<<"\n";
-                    outTXTfile << text2workspace_str << endl;
-                    outTXTfile << combine_str << endl;
-                    outTXTfile.close();
-                    // gROOT->ProcessLine(".! usleep 100000");
-                    gROOT->ProcessLine(".! chmod 755 "+outfilename_str);
-                    gROOT->ProcessLine(Form(".! rm -f submit_datacard_Wmass_%d.sh; ln -s %s submit_datacard_Wmass_%d.sh",job_counter,outfilename_str.Data(),job_counter));
-                    job_counter++;
-                    // gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J fit"+jobname+" "+outfilename_str);
+                    outTXTfile << "cd "<<currentdir_str<<"\n\n";
                   }
-                  // 2d fits
-                  // for(int k2=k+1;k2<WMass::NFitVar-1;k2++){
-                    // if(k==k2 || k==3) continue;
-                    // TString text2workspace_str = Form("text2workspace.py -P HiggsAnalysis.CombinedLimit.HiggsJPC:twoHypothesisHiggs dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%svs%s.txt -o output_W%s%s_%svs%s_pdf%d-%d%s%s%s_eta%s_%d.root -m %d  > dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%svs%s.log 2>&1",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data(),Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data());
-                    // // cout << "text2workspace_str= " << text2workspace_str << endl;
-                    
-                    // TString combine_str = Form("combine -S 0 -m %d -M HybridNew --testStat=TEV --singlePoint 1 --onlyTestStat output_W%s%s_%svs%s_pdf%d-%d%s%s%s_eta%s_%d.root   >> dummy_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%svs%s.log 2>&1 ",jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data());
-                    // // cout << "combine_str= " << combine_str << endl;
-
-                    // TString outfilename_str = Form("submit_datacard_Wmass_Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%svs%s.sh",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data(),WMass::FitVar_str[k2].Data());
-                    // if(useBatch==0){
-                      // gROOT->ProcessLine(".! "+text2workspace_str);
-                      // gROOT->ProcessLine(".! "+combine_str+" &");
-                    // }else{
-                      // ofstream outTXTfile;
-                      // cout << "creating " << outfilename_str << endl;
-                      // outTXTfile.open(outfilename_str);
-                      // outTXTfile << "user=$(whoami); cd /afs/cern.ch/work/${user:0:1}/${user}/private/CMSSW_6_1_1/src; SCRAM_ARCH=slc5_amd64_gcc462; eval `scramv1 runtime -sh`; cd -;\n";
-                      // outTXTfile << "source /afs/cern.ch/sw/lcg/contrib/gcc/4.6/x86_64-slc6-gcc46-opt/setup.sh;\n";
-                      // outTXTfile << "cd "<<currentdir_str<<"\n";
-                      // outTXTfile << text2workspace_str << endl;
-                      // outTXTfile << combine_str << endl;
-                      // outTXTfile.close();
-                      // gROOT->ProcessLine(".! usleep 100000");
-                      // // gROOT->ProcessLine(".! ls -lrt "+outfilename_str);
-                      // gROOT->ProcessLine(".! chmod 755 "+outfilename_str);
-                      // gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J runMfit "+outfilename_str);
-                      // // return;
-                    // }                    
-                  // }
+                  outTXTfile << text2workspace_str << endl;
+                  outTXTfile << combine_str << endl;
+                  outTXTfile << endl;
                 }
+                gROOT->ProcessLine(".! chmod 755 "+outfilename_str);
+                gROOT->ProcessLine(Form(".! rm -f submit_datacard_Wmass_%d.sh; ln -s %s submit_datacard_Wmass_%d.sh",job_counter,outfilename_str.Data(),job_counter));
+                job_counter++;
+                outTXTfile.close();
               }
               cout << endl;
             }
@@ -125,6 +92,7 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
       }
     }
   }
+  
   if (job_counter==1) {
     // The sleep 1 fixes a race condition with the last fit (afs is sloooow)
     gROOT->ProcessLine(".! sleep 1");
@@ -132,13 +100,21 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
   else {
     int nbatch = 100;
     int chunks = (int)job_counter/nbatch;
-    cout << "job_counter= " << job_counter << " chunks= " << chunks << endl;
-    for(int i=0;i<=chunks;i++){
-      int i_init =       1 + i*nbatch;
-      int i_final = nbatch + i*nbatch;
-      cout << Form("bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final) << endl;
-      gROOT->ProcessLine(Form(".! bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final));
-      if (i<chunks) gROOT->ProcessLine(Form(".! sleep 10"));
+    if(useBatch==1){
+      cout << "job_counter= " << job_counter << " chunks= " << chunks << endl;
+      for(int i=0;i<=chunks;i++){
+        int i_init =       1 + i*nbatch;
+        int i_final = nbatch + i*nbatch;
+        cout << Form("bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final) << endl;
+        gROOT->ProcessLine(Form(".! bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final));
+        if (i<chunks) gROOT->ProcessLine(Form(".! sleep 10"));
+      }
+    }else{
+      cout << "job_counter= " << job_counter << endl;
+      for(int i=1;i<=job_counter;i++){
+        cout << Form("running datacard %d/%d",i,job_counter) << endl;
+        gROOT->ProcessLine(Form(".! sh submit_datacard_Wmass_%d.sh",i));
+      }
     }
   }
   // gROOT->ProcessLine(".! rm -rf LSF* ");
