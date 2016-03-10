@@ -12,8 +12,6 @@
 #include "TLine.h"
 #include "TSystem.h"
 
-const int goodColors[] = {2, 3, 7, 9, 11};
-
 void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEWKTT, TFile*fDATA, TString HistoName_st, int logx, int logy, int logz, int scaleMCtoDATA, TString title, double xmin, double xmax, int rebinfactor, std::vector<TFile*> systfiles_MCsum, std::vector<TString> systnames){
 
   std::cout << "retrieving hMCsig  = " << HistoName_st.Data() << std::endl;
@@ -129,7 +127,7 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   pad1->RedrawAxis();
   
   //  TLegend *leg = new TLegend(0.63,0.6,0.87,0.9,"4.75 fb^{-1} at #sqrt{7} TeV","brNDC");
-  TLegend *leg = new TLegend(0.68,0.7,0.88,0.9,"","brNDC");
+  TLegend *leg = new TLegend(0.62,0.65,0.88,0.9,"","brNDC");
   leg->SetBorderSize(0);
   leg->SetTextFont(62);
   leg->SetLineColor(1);
@@ -149,7 +147,8 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   // Draw pad2
   pad2->cd();
   TH1D* hDATApull = (TH1D*)hDATA->Clone("hDATApull");
-  TH1D* hERRsum = &MCsum;
+  TH1D* hMCsum = &MCsum;
+  TH1D* hERRsum = (TH1D*)hMCsum->Clone("hERRsum");
   for(int i=1;i<hERRsum->GetNbinsX()+1; i++){
     hERRsum->SetBinError(i, 0);
   }
@@ -164,7 +163,7 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   for (int systnum = 0; systnum < systtotnum; ++systnum) {
     herrors_stacked.push_back((TH1D*)systfiles_MCsum[systnum]->Get(HistoName_st.Data()));
     herrors_stacked[systnum]->Scale(hDATA->Integral()/herrors_stacked[systnum]->Integral());
-    herrors_stacked[systnum]->Add(hERRsum,-1);
+    herrors_stacked[systnum]->Add(hMCsum,-1);
     for(int bin=1; bin<herrors_stacked[systnum]->GetNbinsX()+1; bin++){
       double error_curr = herrors_stacked[systnum]->GetBinContent(bin);
       // double error_pred;
@@ -184,7 +183,6 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   hDATApull->GetYaxis()->SetTitleSize(0.05*0.75/0.25);
   hDATApull->GetYaxis()->SetNdivisions(4);
   hDATApull->GetYaxis()->SetRangeUser(-5,5);
-  // hDATApull->Draw("p hist");
   
   hDATApull->Divide(hERRsum);
   
@@ -193,30 +191,13 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
     hDATApull->SetBinError(i,0);
     chi2_all+= hDATApull->GetBinContent(i)*hDATApull->GetBinContent(i);
   }
-  int colorindex=0;
   
   Double_t chi2; Int_t ndf; Int_t igood;
   std::cout << "DATA-MC chi2: " << hDATA->Chi2TestX((TH1D*)&MCsum,chi2,ndf,igood,"") << std::endl;
-  std::cout << "chi2= " << chi2 << " ndf= " << ndf << " norm chi2= " << (chi2/ndf) << " prob= " << TMath::Prob(chi2,ndf) << " igood= " << igood << std::endl << std::endl;
-  cout << "chi2 including systematics= " << (chi2_all/ndf) << endl;
+  std::cout << "chi2= " << chi2 << " ndf= " << ndf << " norm chi2= " << (chi2/ndf) << " prob= " << TMath::Prob(chi2,ndf) << " igood= " << igood << std::endl;
+  std::cout << "chi2 including systematics= " << (chi2_all/ndf) << std::endl << std::endl;
   
-  // for (int systnum = systtotnum-1; systnum >= 0; --systnum) {
-    // herrors_stacked[systnum]->SetMarkerSize(0);
-    // herrors_stacked[systnum]->SetFillColor(goodColors[colorindex++]);
-    // herrors_stacked[systnum]->Draw("same E2");
-  // }
-  // hERRsum->SetFillColor(goodColors[colorindex++]);
-  // hERRsum->SetMarkerSize(0);
-  // hERRsum->Draw("same E2");
-  // hDATApull->Draw("PEX0 same");
   hDATApull->Draw("P");
-
-  // leg->AddEntry((TObject*)0, "", "");
-  // leg->AddEntry(hDATApull,                 "DATA / MC",        "pel");
-  // leg->AddEntry(hERRsum,                     "MC stat uncert",   "f");
-  // for (int systnum = 0; systnum < systtotnum; ++systnum) {
-    // leg->AddEntry(herrors_stacked[systnum], systnames[systnum], "f");
-  // }
 
   TLine*l0=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin, 0, xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax, 0); l0->SetLineColor(kBlack);
   TLine*lp5=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin, 1, xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax,1); lp5->SetLineColor(kGray);
@@ -253,21 +234,21 @@ void PlotZpre_unblinding(){
   TString posNeg_str = "Pos";
   const int mass = 91188;
 
-  TString prefix = "OCT25_mu" + posNeg_str;
+  TString prefix = "moriond_stable_mu" + posNeg_str;
 
   TString destinationfolder = "../JobOutputs/"+prefix+"_pre_unblinding_plots";
   
   TString templatefolder = basefolder+prefix+"_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/";
   
   TString systfolders[] = {
-    // basefolder+prefix+"_tkmet_ewk0_polariz1_KalmanCorrParam_globalScaleSigma1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
-    // basefolder+prefix+"_tkmet_ewk0_polariz1_KalmanCorrParam_globalScaleSigma-1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
-    // basefolder+prefix+"_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr3_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
+    basefolder+prefix+"_tkmet_ewk0_polariz1_KalmanCorrParam_globalScaleSigma1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
+    basefolder+prefix+"_tkmet_ewk0_polariz1_KalmanCorrParam_globalScaleSigma-1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
+    basefolder+prefix+"_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr3_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
   };
   TString systnames_IHATECXX98[] = {
-    // "Lepton scale +1",
-    // "Lepton scale -1",
-    // "Recoil alt model",
+    "Lepton scale +1",
+    "Lepton scale -1",
+    "Recoil alt model",
   };
   
   const int systtotnum = sizeof(systfolders)/sizeof(TString);
