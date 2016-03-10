@@ -39,7 +39,7 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   hDATA->SetMarkerColor(1);
   hDATA->SetLineColor(1);
   hDATA->SetMarkerStyle(20);
-  hDATA->SetMarkerSize(0.7);
+  hDATA->SetMarkerSize(0.9);
   hDATA->Rebin(rebinfactor);
 
   TH1D MCsum=(*hMCsig)+(*hMCEWKTT);
@@ -67,9 +67,6 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   // std::cout << "Entries hDATA= " << hDATA->GetEntries() << " hMCsig= " << hMCsig->GetEntries() << " hMCEWKTT= " << hMCEWKTT->GetEntries() << " MCsum= " << MCsum.GetEntries() << std::endl;
   
   // Double_t TH1::Chi2TestX(const TH1* h2,  Double_t &chi2, Int_t &ndf, Int_t &igood, Option_t *option,  Double_t *res) const
-  Double_t chi2; Int_t ndf; Int_t igood;
-  std::cout << "DATA-MC chi2: " << hDATA->Chi2TestX((TH1D*)&MCsum,chi2,ndf,igood,"") << std::endl;
-  std::cout << "chi2= " << chi2 << " ndf= " << ndf << " norm chi2= " << (chi2/ndf) << " prob= " << TMath::Prob(chi2,ndf) << " igood= " << igood << std::endl << std::endl;
   
   TLatex *t = new TLatex();
   t->SetNDC();
@@ -90,6 +87,8 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   pad1->SetTickx(1);
   pad1->SetTicky(1);
   pad1->SetBottomMargin(0);
+  // pad1->SetLeftMargin(-1);
+  // pad1->SetRightMargin(0.2);
   pad1->SetTopMargin(0.075);
   pad1->Draw();
   
@@ -98,6 +97,8 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   pad2->SetTickx(1);
   pad2->SetTicky(1);
   pad2->SetTopMargin(0);
+  pad2->SetLeftMargin(-1);
+  // pad2->SetRightMargin(0.2);
   pad2->SetBottomMargin(0.35);
   pad2->Draw();
 
@@ -128,7 +129,7 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   pad1->RedrawAxis();
   
   //  TLegend *leg = new TLegend(0.63,0.6,0.87,0.9,"4.75 fb^{-1} at #sqrt{7} TeV","brNDC");
-  TLegend *leg = new TLegend(0.68,0.55,0.88,0.9,"4.75 fb^{-1}","brNDC");
+  TLegend *leg = new TLegend(0.68,0.7,0.88,0.9,"","brNDC");
   leg->SetBorderSize(0);
   leg->SetTextFont(62);
   leg->SetLineColor(1);
@@ -141,20 +142,21 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   leg->AddEntry(hMCEWKTT,Form("Background (%.1f \%%)",fewktt),"f");
   leg->Draw();
 
-  t->DrawLatex(0.15,0.85,Form("stat chi2/ndf: %.2f, prob: %.3e",(chi2/ndf),TMath::Prob(chi2,ndf)));
+  // t->DrawLatex(0.15,0.85,Form("stat chi2/ndf: %.2f, prob: %.3e",(chi2/ndf),TMath::Prob(chi2,ndf)));
 
-  t->DrawLatex(0.55,0.94,"CMS Preliminary, #sqrt{s}=7 TeV");
+  t->DrawLatex(0.42,0.94,"CMS Preliminary, #sqrt{s}=7 TeV (4.7 fb^{-1})");
   
   // Draw pad2
   pad2->cd();
-  TH1D* hDATAratio = (TH1D*)hDATA->Clone("hDATAratio");
-  TH1D* hMCsum = &MCsum;
-  TH1D* hMCsum_noerr = (TH1D*)hMCsum->Clone("hMCsum_noerr");
-  for(int i=1;i<hMCsum_noerr->GetNbinsX()+1; i++){
-    hMCsum_noerr->SetBinError(i, 0);
+  TH1D* hDATApull = (TH1D*)hDATA->Clone("hDATApull");
+  TH1D* hERRsum = &MCsum;
+  for(int i=1;i<hERRsum->GetNbinsX()+1; i++){
+    hERRsum->SetBinError(i, 0);
   }
-  hDATAratio->Divide(hMCsum_noerr);
-  hMCsum->Divide(hMCsum_noerr);
+  hDATApull->Add(hERRsum,-1);
+  for(int i=1;i<hERRsum->GetNbinsX()+1; i++){
+    hERRsum->SetBinContent(i, TMath::Hypot(hERRsum->GetBinError(i),hDATApull->GetBinError(i)));
+  }
 
   int systtotnum = systfiles_MCsum.size();
   std::vector<TH1D*> herrors_stacked; // works only with single syst files !!!
@@ -162,49 +164,63 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   for (int systnum = 0; systnum < systtotnum; ++systnum) {
     herrors_stacked.push_back((TH1D*)systfiles_MCsum[systnum]->Get(HistoName_st.Data()));
     herrors_stacked[systnum]->Scale(hDATA->Integral()/herrors_stacked[systnum]->Integral());
-    herrors_stacked[systnum]->Divide(hMCsum_noerr);
+    herrors_stacked[systnum]->Add(hERRsum,-1);
     for(int bin=1; bin<herrors_stacked[systnum]->GetNbinsX()+1; bin++){
-      double error_curr = herrors_stacked[systnum]->GetBinContent(bin)-1;
-      double error_pred;
-      if (systnum > 0) error_pred = herrors_stacked[systnum-1]->GetBinError(bin);
-      else error_pred = hMCsum->GetBinError(bin);
-      herrors_stacked[systnum]->SetBinError(bin, sqrt(error_pred*error_pred + error_curr*error_curr));
+      double error_curr = herrors_stacked[systnum]->GetBinContent(bin);
+      // double error_pred;
+      // if (systnum > 0) error_pred = herrors_stacked[systnum-1]->GetBinError(bin);
+      // else error_pred = hERRsum->GetBinError(bin);
+      // herrors_stacked[systnum]->SetBinError(bin, sqrt(error_pred*error_pred + error_curr*error_curr));
+      hERRsum->SetBinContent(bin, TMath::Hypot(hERRsum->GetBinContent(bin),error_curr));
     }
   }
 
-  hDATAratio->GetXaxis()->SetLabelSize(0.05*0.75/0.25);
-  hDATAratio->GetXaxis()->SetTitleOffset(1);
-  hDATAratio->GetXaxis()->SetTitleSize(0.05*0.75/0.25);
-  hDATAratio->GetYaxis()->SetTitle("Ratio");
-  hDATAratio->GetYaxis()->SetLabelSize(0.05*0.75/0.25);
-  hDATAratio->GetYaxis()->SetTitleOffset(1.);
-  hDATAratio->GetYaxis()->SetTitleSize(0.05*0.75/0.25);
-  hDATAratio->GetYaxis()->SetNdivisions(4);
-  hDATAratio->GetYaxis()->SetRangeUser(0.9,1.1);
-  hDATAratio->Draw("p hist");
+  hDATApull->GetXaxis()->SetLabelSize(0.05*0.75/0.25);
+  hDATApull->GetXaxis()->SetTitleOffset(1);
+  hDATApull->GetXaxis()->SetTitleSize(0.05*0.75/0.25);
+  hDATApull->GetYaxis()->SetTitle("Pull");
+  hDATApull->GetYaxis()->SetLabelSize(0.05*0.75/0.25);
+  hDATApull->GetYaxis()->SetTitleOffset(1.);
+  hDATApull->GetYaxis()->SetTitleSize(0.05*0.75/0.25);
+  hDATApull->GetYaxis()->SetNdivisions(4);
+  hDATApull->GetYaxis()->SetRangeUser(-5,5);
+  // hDATApull->Draw("p hist");
   
+  hDATApull->Divide(hERRsum);
+  
+  double chi2_all = 0;
+  for(int i=1;i<hDATApull->GetNbinsX()+1; i++){
+    hDATApull->SetBinError(i,0);
+    chi2_all+= hDATApull->GetBinContent(i)*hDATApull->GetBinContent(i);
+  }
   int colorindex=0;
   
-  for (int systnum = systtotnum-1; systnum >= 0; --systnum) {
-    herrors_stacked[systnum]->SetMarkerSize(0);
-    herrors_stacked[systnum]->SetFillColor(goodColors[colorindex++]);
-    herrors_stacked[systnum]->Draw("same E2");
-  }
-  hMCsum->SetFillColor(goodColors[colorindex++]);
-  hMCsum->SetMarkerSize(0);
-  hMCsum->Draw("same E2");
-  hDATAratio->Draw("PEX0 same");
+  Double_t chi2; Int_t ndf; Int_t igood;
+  std::cout << "DATA-MC chi2: " << hDATA->Chi2TestX((TH1D*)&MCsum,chi2,ndf,igood,"") << std::endl;
+  std::cout << "chi2= " << chi2 << " ndf= " << ndf << " norm chi2= " << (chi2/ndf) << " prob= " << TMath::Prob(chi2,ndf) << " igood= " << igood << std::endl << std::endl;
+  cout << "chi2 including systematics= " << (chi2_all/ndf) << endl;
+  
+  // for (int systnum = systtotnum-1; systnum >= 0; --systnum) {
+    // herrors_stacked[systnum]->SetMarkerSize(0);
+    // herrors_stacked[systnum]->SetFillColor(goodColors[colorindex++]);
+    // herrors_stacked[systnum]->Draw("same E2");
+  // }
+  // hERRsum->SetFillColor(goodColors[colorindex++]);
+  // hERRsum->SetMarkerSize(0);
+  // hERRsum->Draw("same E2");
+  // hDATApull->Draw("PEX0 same");
+  hDATApull->Draw("P");
 
-  leg->AddEntry((TObject*)0, "", "");
-  leg->AddEntry(hDATAratio,                 "DATA / MC",        "pel");
-  leg->AddEntry(hMCsum,                     "MC stat uncert",   "f");
-  for (int systnum = 0; systnum < systtotnum; ++systnum) {
-    leg->AddEntry(herrors_stacked[systnum], systnames[systnum], "f");
-  }
+  // leg->AddEntry((TObject*)0, "", "");
+  // leg->AddEntry(hDATApull,                 "DATA / MC",        "pel");
+  // leg->AddEntry(hERRsum,                     "MC stat uncert",   "f");
+  // for (int systnum = 0; systnum < systtotnum; ++systnum) {
+    // leg->AddEntry(herrors_stacked[systnum], systnames[systnum], "f");
+  // }
 
-  TLine*l0=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin, 1, xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax, 1); l0->SetLineColor(kBlack);
-  TLine*lp5=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin, 1.05, xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax, 1.05); lp5->SetLineColor(kGray+2);
-  TLine*lm5=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin, 0.95, xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax, 0.95); lm5->SetLineColor(kGray+2);
+  TLine*l0=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin, 0, xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax, 0); l0->SetLineColor(kBlack);
+  TLine*lp5=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin, 1, xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax,1); lp5->SetLineColor(kGray);
+  TLine*lm5=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin, -1, xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax, -1); lm5->SetLineColor(kGray);
   l0->Draw("histo same");
   lp5->Draw("histo same");
   lm5->Draw("histo same");
